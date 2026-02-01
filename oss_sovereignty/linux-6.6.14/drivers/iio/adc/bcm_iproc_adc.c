@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2016 Broadcom
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -15,7 +13,7 @@
 
 #include <linux/iio/iio.h>
 
-/* Below Register's are common to IPROC ADC and Touchscreen IP */
+ 
 #define IPROC_REGCTL1			0x00
 #define IPROC_REGCTL2			0x04
 #define IPROC_INTERRUPT_THRES		0x08
@@ -27,7 +25,7 @@
 #define IPROC_SOFT_BYPASS_CONTROL	0x38
 #define IPROC_SOFT_BYPASS_DATA		0x3C
 
-/* IPROC ADC Channel register offsets */
+ 
 #define IPROC_ADC_CHANNEL_REGCTL1		0x800
 #define IPROC_ADC_CHANNEL_REGCTL2		0x804
 #define IPROC_ADC_CHANNEL_STATUS		0x808
@@ -36,23 +34,23 @@
 #define IPROC_ADC_CHANNEL_DATA			0x814
 #define IPROC_ADC_CHANNEL_OFFSET		0x20
 
-/* Bit definitions for IPROC_REGCTL2 */
+ 
 #define IPROC_ADC_AUXIN_SCAN_ENA	BIT(0)
 #define IPROC_ADC_PWR_LDO		BIT(5)
 #define IPROC_ADC_PWR_ADC		BIT(4)
 #define IPROC_ADC_PWR_BG		BIT(3)
 #define IPROC_ADC_CONTROLLER_EN		BIT(17)
 
-/* Bit definitions for IPROC_INTERRUPT_MASK and IPROC_INTERRUPT_STATUS */
+ 
 #define IPROC_ADC_AUXDATA_RDY_INTR	BIT(3)
 #define IPROC_ADC_INTR			9
 #define IPROC_ADC_INTR_MASK		(0xFF << IPROC_ADC_INTR)
 
-/* Bit definitions for IPROC_ANALOG_CONTROL */
+ 
 #define IPROC_ADC_CHANNEL_SEL		11
 #define IPROC_ADC_CHANNEL_SEL_MASK	(0x7 << IPROC_ADC_CHANNEL_SEL)
 
-/* Bit definitions for IPROC_ADC_CHANNEL_REGCTL1 */
+ 
 #define IPROC_ADC_CHANNEL_ROUNDS	0x2
 #define IPROC_ADC_CHANNEL_ROUNDS_MASK	(0x3F << IPROC_ADC_CHANNEL_ROUNDS)
 #define IPROC_ADC_CHANNEL_MODE		0x1
@@ -62,14 +60,14 @@
 #define IPROC_ADC_CHANNEL_ENABLE	0x0
 #define IPROC_ADC_CHANNEL_ENABLE_MASK	0x1
 
-/* Bit definitions for IPROC_ADC_CHANNEL_REGCTL2 */
+ 
 #define IPROC_ADC_CHANNEL_WATERMARK	0x0
 #define IPROC_ADC_CHANNEL_WATERMARK_MASK \
 		(0x3F << IPROC_ADC_CHANNEL_WATERMARK)
 
 #define IPROC_ADC_WATER_MARK_LEVEL	0x1
 
-/* Bit definitions for IPROC_ADC_CHANNEL_STATUS */
+ 
 #define IPROC_ADC_CHANNEL_DATA_LOST		0x0
 #define IPROC_ADC_CHANNEL_DATA_LOST_MASK	\
 		(0x0 << IPROC_ADC_CHANNEL_DATA_LOST)
@@ -80,7 +78,7 @@
 #define IPROC_ADC_CHANNEL_TOTAL_ENTERIES_MASK	\
 		(0xFF << IPROC_ADC_CHANNEL_TOTAL_ENTERIES)
 
-/* Bit definitions for IPROC_ADC_CHANNEL_INTERRUPT_MASK */
+ 
 #define IPROC_ADC_CHANNEL_WTRMRK_INTR			0x0
 #define IPROC_ADC_CHANNEL_WTRMRK_INTR_MASK		\
 		(0x1 << IPROC_ADC_CHANNEL_WTRMRK_INTR)
@@ -93,7 +91,7 @@
 
 #define IPROC_ADC_WATER_MARK_INTR_ENABLE		0x1
 
-/* Number of time to retry a set of the interrupt mask reg */
+ 
 #define IPROC_ADC_INTMASK_RETRY_ATTEMPTS		10
 
 #define IPROC_ADC_READ_TIMEOUT        (HZ*2)
@@ -140,11 +138,7 @@ static irqreturn_t iproc_adc_interrupt_thread(int irq, void *data)
 	struct iio_dev *indio_dev = data;
 	struct iproc_adc_priv *adc_priv = iio_priv(indio_dev);
 
-	/*
-	 * This interrupt is shared with the touchscreen driver.
-	 * Make sure this interrupt is intended for us.
-	 * Handle only ADC channel specific interrupts.
-	 */
+	 
 	regmap_read(adc_priv->regmap, IPROC_INTERRUPT_STATUS, &intr_status);
 	regmap_read(adc_priv->regmap, IPROC_INTERRUPT_MASK, &intr_mask);
 	intr_status = intr_status & intr_mask;
@@ -234,21 +228,18 @@ static int iproc_adc_do_read(struct iio_dev *indio_dev,
 
 	mutex_lock(&adc_priv->mutex);
 
-	/*
-	 * After a read is complete the ADC interrupts will be disabled so
-	 * we can assume this section of code is safe from interrupts.
-	 */
+	 
 	adc_priv->chan_val = -1;
 	adc_priv->chan_id = channel;
 
 	reinit_completion(&adc_priv->completion);
-	/* Clear any pending interrupt */
+	 
 	regmap_update_bits(adc_priv->regmap, IPROC_INTERRUPT_STATUS,
 			IPROC_ADC_INTR_MASK | IPROC_ADC_AUXDATA_RDY_INTR,
 			((0x0 << channel) << IPROC_ADC_INTR) |
 			IPROC_ADC_AUXDATA_RDY_INTR);
 
-	/* Configure channel for snapshot mode and enable  */
+	 
 	val = (BIT(IPROC_ADC_CHANNEL_ROUNDS) |
 		(IPROC_ADC_CHANNEL_MODE_SNAPSHOT << IPROC_ADC_CHANNEL_MODE) |
 		(0x1 << IPROC_ADC_CHANNEL_ENABLE));
@@ -259,13 +250,13 @@ static int iproc_adc_do_read(struct iio_dev *indio_dev,
 				IPROC_ADC_CHANNEL_OFFSET * channel),
 				mask, val);
 
-	/* Set the Watermark for a channel */
+	 
 	regmap_update_bits(adc_priv->regmap, (IPROC_ADC_CHANNEL_REGCTL2 +
 					IPROC_ADC_CHANNEL_OFFSET * channel),
 					IPROC_ADC_CHANNEL_WATERMARK_MASK,
 					0x1);
 
-	/* Enable water mark interrupt */
+	 
 	regmap_update_bits(adc_priv->regmap, (IPROC_ADC_CHANNEL_INTERRUPT_MASK +
 					IPROC_ADC_CHANNEL_OFFSET *
 					channel),
@@ -273,17 +264,11 @@ static int iproc_adc_do_read(struct iio_dev *indio_dev,
 					IPROC_ADC_WATER_MARK_INTR_ENABLE);
 	regmap_read(adc_priv->regmap, IPROC_INTERRUPT_MASK, &val);
 
-	/* Enable ADC interrupt for a channel */
+	 
 	val |= (BIT(channel) << IPROC_ADC_INTR);
 	regmap_write(adc_priv->regmap, IPROC_INTERRUPT_MASK, val);
 
-	/*
-	 * There seems to be a very rare issue where writing to this register
-	 * does not take effect.  To work around the issue we will try multiple
-	 * writes.  In total we will spend about 10*10 = 100 us attempting this.
-	 * Testing has shown that this may loop a few time, but we have never
-	 * hit the full count.
-	 */
+	 
 	regmap_read(adc_priv->regmap, IPROC_INTERRUPT_MASK, &val_check);
 	while (val_check != val) {
 		failed_cnt++;
@@ -315,17 +300,12 @@ static int iproc_adc_do_read(struct iio_dev *indio_dev,
 	if (wait_for_completion_timeout(&adc_priv->completion,
 		IPROC_ADC_READ_TIMEOUT) > 0) {
 
-		/* Only the lower 16 bits are relevant */
+		 
 		*p_adc_data = adc_priv->chan_val & 0xFFFF;
 		read_len = sizeof(*p_adc_data);
 
 	} else {
-		/*
-		 * We never got the interrupt, something went wrong.
-		 * Perhaps the interrupt may still be coming, we do not want
-		 * that now.  Lets disable the ADC interrupt, and clear the
-		 * status to put it back in to normal state.
-		 */
+		 
 		read_len = -ETIMEDOUT;
 		goto adc_err;
 	}
@@ -356,7 +336,7 @@ static int iproc_adc_enable(struct iio_dev *indio_dev)
 	struct iproc_adc_priv *adc_priv = iio_priv(indio_dev);
 	int ret;
 
-	/* Set i_amux = 3b'000, select channel 0 */
+	 
 	ret = regmap_update_bits(adc_priv->regmap, IPROC_ANALOG_CONTROL,
 				IPROC_ADC_CHANNEL_SEL_MASK, 0);
 	if (ret) {
@@ -366,10 +346,7 @@ static int iproc_adc_enable(struct iio_dev *indio_dev)
 	}
 	adc_priv->chan_val = -1;
 
-	/*
-	 * PWR up LDO, ADC, and Band Gap (0 to enable)
-	 * Also enable ADC controller (set high)
-	 */
+	 
 	ret = regmap_read(adc_priv->regmap, IPROC_REGCTL2, &val);
 	if (ret) {
 		dev_err(&indio_dev->dev,

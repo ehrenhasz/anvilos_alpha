@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Omnivision OV2680 CMOS Image Sensor driver
- *
- * Copyright (C) 2018 Linaro Ltd
- *
- * Based on OV5640 Sensor Driver
- * Copyright (C) 2011-2013 Freescale Semiconductor, Inc. All Rights Reserved.
- * Copyright (C) 2014-2017 Mentor Graphics Inc.
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -76,26 +67,26 @@
 #define OV2680_MIN_CROP_WIDTH			2
 #define OV2680_MIN_CROP_HEIGHT			2
 
-/* Fixed pre-div of 1/2 */
+ 
 #define OV2680_PLL_PREDIV0			2
 
-/* Pre-div configurable through reg 0x3080, left at its default of 0x02 : 1/2 */
+ 
 #define OV2680_PLL_PREDIV			2
 
-/* 66MHz pixel clock: 66MHz / 1704 * 1294 = 30fps */
+ 
 #define OV2680_PIXELS_PER_LINE			1704
 #define OV2680_LINES_PER_FRAME			1294
 
-/* If possible send 16 extra rows / lines to the ISP as padding */
+ 
 #define OV2680_END_MARGIN			16
 
-/* Max exposure time is VTS - 8 */
+ 
 #define OV2680_INTEGRATION_TIME_MARGIN		8
 
 #define OV2680_DEFAULT_WIDTH			800
 #define OV2680_DEFAULT_HEIGHT			600
 
-/* For enum_frame_size() full-size + binned-/quarter-size */
+ 
 #define OV2680_FRAME_SIZES			2
 
 static const char * const ov2680_supply_name[] = {
@@ -161,7 +152,7 @@ struct ov2680_dev {
 	struct regulator_bulk_data	supplies[OV2680_NUM_SUPPLIES];
 
 	struct gpio_desc		*pwdn_gpio;
-	struct mutex			lock; /* protect members */
+	struct mutex			lock;  
 
 	bool				is_streaming;
 
@@ -192,70 +183,64 @@ static const int ov2680_hv_flip_bayer_order[] = {
 };
 
 static const struct reg_sequence ov2680_global_setting[] = {
-	/* MIPI PHY, 0x10 -> 0x1c enable bp_c_hs_en_lat and bp_d_hs_en_lat */
+	 
 	{0x3016, 0x1c},
 
-	/* R MANUAL set exposure and gain to manual (hw does not do auto) */
+	 
 	{0x3503, 0x03},
 
-	/* Analog control register tweaks */
-	{0x3603, 0x39}, /* Reset value 0x99 */
-	{0x3604, 0x24}, /* Reset value 0x74 */
-	{0x3621, 0x37}, /* Reset value 0x44 */
+	 
+	{0x3603, 0x39},  
+	{0x3604, 0x24},  
+	{0x3621, 0x37},  
 
-	/* Sensor control register tweaks */
-	{0x3701, 0x64}, /* Reset value 0x61 */
-	{0x3705, 0x3c}, /* Reset value 0x21 */
-	{0x370c, 0x50}, /* Reset value 0x10 */
-	{0x370d, 0xc0}, /* Reset value 0x00 */
-	{0x3718, 0x88}, /* Reset value 0x80 */
+	 
+	{0x3701, 0x64},  
+	{0x3705, 0x3c},  
+	{0x370c, 0x50},  
+	{0x370d, 0xc0},  
+	{0x3718, 0x88},  
 
-	/* PSRAM tweaks */
-	{0x3781, 0x80}, /* Reset value 0x00 */
-	{0x3784, 0x0c}, /* Reset value 0x00, based on OV2680_R1A_AM10.ovt */
-	{0x3789, 0x60}, /* Reset value 0x50 */
+	 
+	{0x3781, 0x80},  
+	{0x3784, 0x0c},  
+	{0x3789, 0x60},  
 
-	/* BLC CTRL00 0x01 -> 0x81 set avg_weight to 8 */
+	 
 	{0x4000, 0x81},
 
-	/* Set black level compensation range to 0 - 3 (default 0 - 11) */
+	 
 	{0x4008, 0x00},
 	{0x4009, 0x03},
 
-	/* VFIFO R2 0x00 -> 0x02 set Frame reset enable */
+	 
 	{0x4602, 0x02},
 
-	/* MIPI ctrl CLK PREPARE MIN change from 0x26 (38) -> 0x36 (54) */
+	 
 	{0x481f, 0x36},
 
-	/* MIPI ctrl CLK LPX P MIN change from 0x32 (50) -> 0x36 (54) */
+	 
 	{0x4825, 0x36},
 
-	/* R ISP CTRL2 0x20 -> 0x30, set sof_sel bit */
+	 
 	{0x5002, 0x30},
 
-	/*
-	 * Window CONTROL 0x00 -> 0x01, enable manual window control,
-	 * this is necessary for full size flip and mirror support.
-	 */
+	 
 	{0x5708, 0x01},
 
-	/*
-	 * DPC CTRL0 0x14 -> 0x3e, set enable_tail, enable_3x3_cluster
-	 * and enable_general_tail bits based OV2680_R1A_AM10.ovt.
-	 */
+	 
 	{0x5780, 0x3e},
 
-	/* DPC MORE CONNECTION CASE THRE 0x0c (12) -> 0x02 (2) */
+	 
 	{0x5788, 0x02},
 
-	/* DPC GAIN LIST1 0x0f (15) -> 0x08 (8) */
+	 
 	{0x578e, 0x08},
 
-	/* DPC GAIN LIST2 0x3f (63) -> 0x0c (12) */
+	 
 	{0x578f, 0x0c},
 
-	/* DPC THRE RATIO 0x04 (4) -> 0x00 (0) */
+	 
 	{0x5792, 0x00},
 };
 
@@ -497,7 +482,7 @@ static int ov2680_stream_enable(struct ov2680_dev *sensor)
 	if (ret < 0)
 		return ret;
 
-	/* Restore value of all ctrls */
+	 
 	ret = __v4l2_ctrl_handler_setup(&sensor->ctrls.handler);
 	if (ret < 0)
 		return ret;
@@ -641,7 +626,7 @@ static int ov2680_set_fmt(struct v4l2_subdev *sd,
 	crop = __ov2680_get_pad_crop(sensor, sd_state, format->pad,
 				     format->which);
 
-	/* Limit set_fmt max size to crop width / height */
+	 
 	width = clamp_val(ALIGN(format->format.width, 2),
 			  OV2680_MIN_CROP_WIDTH, crop->width);
 	height = clamp_val(ALIGN(format->format.height, 2),
@@ -713,11 +698,7 @@ static int ov2680_set_selection(struct v4l2_subdev *sd,
 	if (sel->target != V4L2_SEL_TGT_CROP)
 		return -EINVAL;
 
-	/*
-	 * Clamp the boundaries of the crop rectangle to the size of the sensor
-	 * pixel array. Align to multiples of 2 to ensure Bayer pattern isn't
-	 * disrupted.
-	 */
+	 
 	rect.left = clamp_val(ALIGN(sel->r.left, 2),
 			      OV2680_NATIVE_START_LEFT, OV2680_NATIVE_WIDTH);
 	rect.top = clamp_val(ALIGN(sel->r.top, 2),
@@ -727,7 +708,7 @@ static int ov2680_set_selection(struct v4l2_subdev *sd,
 	rect.height = clamp_val(ALIGN(sel->r.height, 2),
 				OV2680_MIN_CROP_HEIGHT, OV2680_NATIVE_HEIGHT);
 
-	/* Make sure the crop rectangle isn't outside the bounds of the array */
+	 
 	rect.width = min_t(unsigned int, rect.width,
 			   OV2680_NATIVE_WIDTH - rect.left);
 	rect.height = min_t(unsigned int, rect.height,
@@ -737,10 +718,7 @@ static int ov2680_set_selection(struct v4l2_subdev *sd,
 
 	mutex_lock(&sensor->lock);
 	if (rect.width != crop->width || rect.height != crop->height) {
-		/*
-		 * Reset the output image size if the crop rectangle size has
-		 * been modified.
-		 */
+		 
 		format = __ov2680_get_pad_format(sensor, state, sel->pad,
 						 sel->which);
 		format->width = rect.width;
@@ -819,7 +797,7 @@ static int ov2680_enum_frame_interval(struct v4l2_subdev *sd,
 {
 	struct ov2680_dev *sensor = to_ov2680_dev(sd);
 
-	/* Only 1 framerate */
+	 
 	if (fie->index || !ov2680_valid_frame_size(sd, sd_state, fie))
 		return -EINVAL;
 
@@ -834,7 +812,7 @@ static int ov2680_s_ctrl(struct v4l2_ctrl *ctrl)
 	struct ov2680_dev *sensor = to_ov2680_dev(sd);
 	int ret;
 
-	/* Only apply changes to the controls if the device is powered up */
+	 
 	if (!pm_runtime_get_if_in_use(sensor->sd.dev)) {
 		ov2680_set_bayer_order(sensor, &sensor->mode.fmt);
 		return 0;
@@ -893,7 +871,7 @@ static const struct v4l2_subdev_ops ov2680_subdev_ops = {
 
 static int ov2680_mode_init(struct ov2680_dev *sensor)
 {
-	/* set initial mode */
+	 
 	sensor->mode.crop = ov2680_default_crop;
 	ov2680_fill_format(sensor, &sensor->mode.fmt,
 			   OV2680_DEFAULT_WIDTH, OV2680_DEFAULT_HEIGHT);
@@ -1018,10 +996,7 @@ static int ov2680_parse_dt(struct ov2680_dev *sensor)
 	unsigned int rate = 0;
 	int i, ret;
 
-	/*
-	 * Sometimes the fwnode graph is initialized by the bridge driver.
-	 * Bridge drivers doing this may also add GPIO mappings, wait for this.
-	 */
+	 
 	ep_fwnode = fwnode_graph_get_next_endpoint(dev_fwnode(dev), NULL);
 	if (!ep_fwnode)
 		return dev_err_probe(dev, -EPROBE_DEFER,
@@ -1032,12 +1007,7 @@ static int ov2680_parse_dt(struct ov2680_dev *sensor)
 	if (ret)
 		return ret;
 
-	/*
-	 * The pin we want is named XSHUTDN in the datasheet. Linux sensor
-	 * drivers have standardized on using "powerdown" as con-id name
-	 * for powerdown or shutdown pins. Older DTB files use "reset",
-	 * so fallback to that if there is no "powerdown" pin.
-	 */
+	 
 	gpio = devm_gpiod_get_optional(dev, "powerdown", GPIOD_OUT_HIGH);
 	if (!gpio)
 		gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
@@ -1057,15 +1027,7 @@ static int ov2680_parse_dt(struct ov2680_dev *sensor)
 		goto out_free_bus_cfg;
 	}
 
-	/*
-	 * We could have either a 24MHz or 19.2MHz clock rate from either DT or
-	 * ACPI... but we also need to support the weird IPU3 case which will
-	 * have an external clock AND a clock-frequency property. Check for the
-	 * clock-frequency property and if found, set that rate if we managed
-	 * to acquire a clock. This should cover the ACPI case. If the system
-	 * uses devicetree then the configured rate should already be set, so
-	 * we can just read it.
-	 */
+	 
 	ret = fwnode_property_read_u32(dev_fwnode(dev), "clock-frequency",
 				       &rate);
 	if (ret && !sensor->xvclk) {
@@ -1100,11 +1062,11 @@ static int ov2680_parse_dt(struct ov2680_dev *sensor)
 	sensor->link_freq[0] = sensor->xvclk_freq / OV2680_PLL_PREDIV0 /
 			       OV2680_PLL_PREDIV * sensor->pll_mult;
 
-	/* CSI-2 is double data rate, bus-format is 10 bpp */
+	 
 	sensor->pixel_rate = sensor->link_freq[0] * 2;
 	do_div(sensor->pixel_rate, 10);
 
-	/* Verify bus cfg */
+	 
 	if (bus_cfg.bus.mipi_csi2.num_data_lanes != 1) {
 		ret = dev_err_probe(dev, -EINVAL,
 				    "only a 1-lane CSI2 config is supported");
@@ -1160,10 +1122,7 @@ static int ov2680_probe(struct i2c_client *client)
 
 	mutex_init(&sensor->lock);
 
-	/*
-	 * Power up and verify the chip now, so that if runtime pm is
-	 * disabled the chip is left on and streaming will work.
-	 */
+	 
 	ret = ov2680_power_on(sensor);
 	if (ret < 0)
 		goto lock_destroy;
@@ -1208,10 +1167,7 @@ static void ov2680_remove(struct i2c_client *client)
 	media_entity_cleanup(&sensor->sd.entity);
 	v4l2_ctrl_handler_free(&sensor->ctrls.handler);
 
-	/*
-	 * Disable runtime PM. In case runtime PM is disabled in the kernel,
-	 * make sure to turn power off manually.
-	 */
+	 
 	pm_runtime_disable(&client->dev);
 	if (!pm_runtime_status_suspended(&client->dev))
 		ov2680_power_off(sensor);
@@ -1259,13 +1215,13 @@ static DEFINE_RUNTIME_DEV_PM_OPS(ov2680_pm_ops, ov2680_suspend, ov2680_resume,
 
 static const struct of_device_id ov2680_dt_ids[] = {
 	{ .compatible = "ovti,ov2680" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, ov2680_dt_ids);
 
 static const struct acpi_device_id ov2680_acpi_ids[] = {
 	{ "OVTI2680" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(acpi, ov2680_acpi_ids);
 

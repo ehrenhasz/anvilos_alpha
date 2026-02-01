@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* client.c: NFS client sharing and management code
- *
- * Copyright (C) 2006 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 
 #include <linux/module.h>
@@ -59,9 +55,7 @@ static DEFINE_SPINLOCK(nfs_version_lock);
 static DEFINE_MUTEX(nfs_version_mutex);
 static LIST_HEAD(nfs_versions);
 
-/*
- * RPC cruft for NFS
- */
+ 
 static const struct rpc_version *nfs_version[5] = {
 	[2] = NULL,
 	[3] = NULL,
@@ -140,12 +134,7 @@ void unregister_nfs_version(struct nfs_subversion *nfs)
 }
 EXPORT_SYMBOL_GPL(unregister_nfs_version);
 
-/*
- * Allocate a shared client record
- *
- * Since these are allocated/deallocated very rarely, we don't
- * bother putting them in a slab cache...
- */
+ 
 struct nfs_client *nfs_alloc_client(const struct nfs_client_initdata *cl_init)
 {
 	struct nfs_client *clp;
@@ -204,7 +193,7 @@ static void nfs_cleanup_cb_ident_idr(struct net *net)
 	idr_destroy(&nn->cb_ident_idr);
 }
 
-/* nfs_client_lock held */
+ 
 static void nfs_cb_idr_remove_locked(struct nfs_client *clp)
 {
 	struct nfs_net *nn = net_generic(clp->cl_net, nfs_net_id);
@@ -231,14 +220,12 @@ static void pnfs_init_server(struct nfs_server *server)
 {
 }
 
-#endif /* CONFIG_NFS_V4 */
+#endif  
 
-/*
- * Destroy a shared client record
- */
+ 
 void nfs_free_client(struct nfs_client *clp)
 {
-	/* -EIO all pending I/O */
+	 
 	if (!IS_ERR(clp->cl_rpcclient))
 		rpc_shutdown_client(clp->cl_rpcclient);
 
@@ -250,9 +237,7 @@ void nfs_free_client(struct nfs_client *clp)
 }
 EXPORT_SYMBOL_GPL(nfs_free_client);
 
-/*
- * Release a reference to a shared client record
- */
+ 
 void nfs_put_client(struct nfs_client *clp)
 {
 	struct nfs_net *nn;
@@ -274,10 +259,7 @@ void nfs_put_client(struct nfs_client *clp)
 }
 EXPORT_SYMBOL_GPL(nfs_put_client);
 
-/*
- * Find an nfs_client on the list that matches the initialisation data
- * that is supplied.
- */
+ 
 static struct nfs_client *nfs_match_client(const struct nfs_client_initdata *data)
 {
 	struct nfs_client *clp;
@@ -288,11 +270,11 @@ static struct nfs_client *nfs_match_client(const struct nfs_client_initdata *dat
 again:
 	list_for_each_entry(clp, &nn->nfs_client_list, cl_share_link) {
 	        const struct sockaddr *clap = (struct sockaddr *)&clp->cl_addr;
-		/* Don't match clients that failed to initialise properly */
+		 
 		if (clp->cl_cons_state < 0)
 			continue;
 
-		/* If a client is still initializing then we need to wait */
+		 
 		if (clp->cl_cons_state > NFS_CS_READY) {
 			refcount_inc(&clp->cl_count);
 			spin_unlock(&nn->nfs_client_lock);
@@ -304,30 +286,30 @@ again:
 			goto again;
 		}
 
-		/* Different NFS versions cannot share the same nfs_client */
+		 
 		if (clp->rpc_ops != data->nfs_mod->rpc_ops)
 			continue;
 
 		if (clp->cl_proto != data->proto)
 			continue;
-		/* Match nfsv4 minorversion */
+		 
 		if (clp->cl_minorversion != data->minorversion)
 			continue;
 
-		/* Match request for a dedicated DS */
+		 
 		if (test_bit(NFS_CS_DS, &data->init_flags) !=
 		    test_bit(NFS_CS_DS, &clp->cl_flags))
 			continue;
 
-		/* Match the full socket address */
+		 
 		if (!rpc_cmp_addr_port(sap, clap))
-			/* Match all xprt_switch full socket addresses */
+			 
 			if (IS_ERR(clp->cl_rpcclient) ||
                             !rpc_clnt_xprt_switch_has_addr(clp->cl_rpcclient,
 							   sap))
 				continue;
 
-		/* Match the xprt security policy */
+		 
 		if (clp->cl_xprtsec.policy != data->xprtsec.policy)
 			continue;
 
@@ -337,26 +319,17 @@ again:
 	return NULL;
 }
 
-/*
- * Return true if @clp is done initializing, false if still working on it.
- *
- * Use nfs_client_init_status to check if it was successful.
- */
+ 
 bool nfs_client_init_is_complete(const struct nfs_client *clp)
 {
 	return clp->cl_cons_state <= NFS_CS_READY;
 }
 EXPORT_SYMBOL_GPL(nfs_client_init_is_complete);
 
-/*
- * Return 0 if @clp was successfully initialized, -errno otherwise.
- *
- * This must be called *after* nfs_client_init_is_complete() returns true,
- * otherwise it will pop WARN_ON_ONCE and return -EINVAL
- */
+ 
 int nfs_client_init_status(const struct nfs_client *clp)
 {
-	/* called without checking nfs_client_init_is_complete */
+	 
 	if (clp->cl_cons_state > NFS_CS_READY) {
 		WARN_ON_ONCE(1);
 		return -EINVAL;
@@ -372,9 +345,7 @@ int nfs_wait_client_init_complete(const struct nfs_client *clp)
 }
 EXPORT_SYMBOL_GPL(nfs_wait_client_init_complete);
 
-/*
- * Found an existing client.  Make sure it's ready before returning.
- */
+ 
 static struct nfs_client *
 nfs_found_client(const struct nfs_client_initdata *cl_init,
 		 struct nfs_client *clp)
@@ -397,10 +368,7 @@ nfs_found_client(const struct nfs_client_initdata *cl_init,
 	return clp;
 }
 
-/*
- * Look up a client by IP address and protocol version
- * - creates a new record if one doesn't yet exist
- */
+ 
 struct nfs_client *nfs_get_client(const struct nfs_client_initdata *cl_init)
 {
 	struct nfs_client *clp, *new = NULL;
@@ -412,7 +380,7 @@ struct nfs_client *nfs_get_client(const struct nfs_client_initdata *cl_init)
 		return ERR_PTR(-EINVAL);
 	}
 
-	/* see if the client already exists */
+	 
 	do {
 		spin_lock(&nn->nfs_client_lock);
 
@@ -441,9 +409,7 @@ struct nfs_client *nfs_get_client(const struct nfs_client_initdata *cl_init)
 }
 EXPORT_SYMBOL_GPL(nfs_get_client);
 
-/*
- * Mark a server as ready or failed
- */
+ 
 void nfs_mark_client_ready(struct nfs_client *clp, int state)
 {
 	smp_wmb();
@@ -452,9 +418,7 @@ void nfs_mark_client_ready(struct nfs_client *clp, int state)
 }
 EXPORT_SYMBOL_GPL(nfs_mark_client_ready);
 
-/*
- * Initialise the timeout values for a connection
- */
+ 
 void nfs_init_timeout_values(struct rpc_timeout *to, int proto,
 				    int timeo, int retrans)
 {
@@ -495,9 +459,7 @@ void nfs_init_timeout_values(struct rpc_timeout *to, int proto,
 }
 EXPORT_SYMBOL_GPL(nfs_init_timeout_values);
 
-/*
- * Create an RPC client handle
- */
+ 
 int nfs_create_rpc_client(struct nfs_client *clp,
 			  const struct nfs_client_initdata *cl_init,
 			  rpc_authflavor_t flavor)
@@ -551,18 +513,14 @@ int nfs_create_rpc_client(struct nfs_client *clp,
 }
 EXPORT_SYMBOL_GPL(nfs_create_rpc_client);
 
-/*
- * Version 2 or 3 client destruction
- */
+ 
 static void nfs_destroy_server(struct nfs_server *server)
 {
 	if (server->nlm_host)
 		nlmclnt_done(server->nlm_host);
 }
 
-/*
- * Version 2 or 3 lockd setup
- */
+ 
 static int nfs_start_lockd(struct nfs_server *server)
 {
 	struct nlm_host *host;
@@ -605,9 +563,7 @@ static int nfs_start_lockd(struct nfs_server *server)
 	return 0;
 }
 
-/*
- * Create a general RPC client
- */
+ 
 int nfs_init_server_rpcclient(struct nfs_server *server,
 		const struct rpc_timeout *timeo,
 		rpc_authflavor_t pseudoflavour)
@@ -636,27 +592,17 @@ int nfs_init_server_rpcclient(struct nfs_server *server,
 }
 EXPORT_SYMBOL_GPL(nfs_init_server_rpcclient);
 
-/**
- * nfs_init_client - Initialise an NFS2 or NFS3 client
- *
- * @clp: nfs_client to initialise
- * @cl_init: Initialisation parameters
- *
- * Returns pointer to an NFS client, or an ERR_PTR value.
- */
+ 
 struct nfs_client *nfs_init_client(struct nfs_client *clp,
 				   const struct nfs_client_initdata *cl_init)
 {
 	int error;
 
-	/* the client is already initialised */
+	 
 	if (clp->cl_cons_state == NFS_CS_READY)
 		return clp;
 
-	/*
-	 * Create a client RPC handle for doing FSSTAT with UNIX auth only
-	 * - RFC 2623, sec 2.3.2
-	 */
+	 
 	error = nfs_create_rpc_client(clp, cl_init, RPC_AUTH_UNIX);
 	nfs_mark_client_ready(clp, error == 0 ? NFS_CS_READY : error);
 	if (error < 0) {
@@ -667,9 +613,7 @@ struct nfs_client *nfs_init_client(struct nfs_client *clp,
 }
 EXPORT_SYMBOL_GPL(nfs_init_client);
 
-/*
- * Create a version 2 or 3 client
- */
+ 
 static int nfs_init_server(struct nfs_server *server,
 			   const struct fs_context *fc)
 {
@@ -696,7 +640,7 @@ static int nfs_init_server(struct nfs_server *server,
 	if (ctx->flags & NFS_MOUNT_NORESVPORT)
 		set_bit(NFS_CS_NORESVPORT, &cl_init.init_flags);
 
-	/* Allocate or find a client reference we can use */
+	 
 	clp = nfs_get_client(&cl_init);
 	if (IS_ERR(clp))
 		return PTR_ERR(clp);
@@ -705,7 +649,7 @@ static int nfs_init_server(struct nfs_server *server,
 	nfs_sysfs_add_server(server);
 	nfs_sysfs_link_rpc_client(server, clp->cl_rpcclient, "_state");
 
-	/* Initialise the client representation from the mount data */
+	 
 	server->flags = ctx->flags;
 	server->options = ctx->options;
 	server->caps |= NFS_CAP_HARDLINKS | NFS_CAP_SYMLINKS;
@@ -731,7 +675,7 @@ static int nfs_init_server(struct nfs_server *server,
 	server->acdirmin = ctx->acdirmin * HZ;
 	server->acdirmax = ctx->acdirmax * HZ;
 
-	/* Start lockd here, before we might error out */
+	 
 	error = nfs_start_lockd(server);
 	if (error < 0)
 		goto error;
@@ -744,7 +688,7 @@ static int nfs_init_server(struct nfs_server *server,
 	if (error < 0)
 		goto error;
 
-	/* Preserve the values of mount_server-related mount options */
+	 
 	if (ctx->mount_server.addrlen) {
 		memcpy(&server->mountd_address, &ctx->mount_server.address,
 			ctx->mount_server.addrlen);
@@ -763,16 +707,14 @@ error:
 	return error;
 }
 
-/*
- * Load up the server record from information gained in an fsinfo record
- */
+ 
 static void nfs_server_set_fsinfo(struct nfs_server *server,
 				  struct nfs_fsinfo *fsinfo)
 {
 	struct nfs_client *clp = server->nfs_client;
 	unsigned long max_rpc_payload, raw_max_rpc_payload;
 
-	/* Work out a lot of parameters */
+	 
 	if (server->rsize == 0)
 		server->rsize = nfs_io_size(fsinfo->rtpref, clp->cl_proto);
 	if (server->wsize == 0)
@@ -817,13 +759,11 @@ static void nfs_server_set_fsinfo(struct nfs_server *server,
 	server->change_attr_type = fsinfo->change_attr_type;
 
 	server->clone_blksize = fsinfo->clone_blksize;
-	/* We're airborne Set socket buffersize */
+	 
 	rpc_setbufsize(server->client, server->wsize + 100, server->rsize + 100);
 
 #ifdef CONFIG_NFS_V4_2
-	/*
-	 * Defaults until limited by the session parameters.
-	 */
+	 
 	server->gxasize = min_t(unsigned int, raw_max_rpc_payload,
 				XATTR_SIZE_MAX);
 	server->sxasize = min_t(unsigned int, raw_max_rpc_payload,
@@ -836,9 +776,7 @@ static void nfs_server_set_fsinfo(struct nfs_server *server,
 #endif
 }
 
-/*
- * Probe filesystem information, including the FSID on v2/v3
- */
+ 
 static int nfs_probe_fsinfo(struct nfs_server *server, struct nfs_fh *mntfh, struct nfs_fattr *fattr)
 {
 	struct nfs_fsinfo fsinfo;
@@ -860,7 +798,7 @@ static int nfs_probe_fsinfo(struct nfs_server *server, struct nfs_fh *mntfh, str
 
 	nfs_server_set_fsinfo(server, &fsinfo);
 
-	/* Get some general file system info */
+	 
 	if (server->namelen == 0) {
 		struct nfs_pathconf pathinfo;
 
@@ -882,12 +820,7 @@ static int nfs_probe_fsinfo(struct nfs_server *server, struct nfs_fh *mntfh, str
 	return 0;
 }
 
-/*
- * Grab the destination's particulars, including lease expiry time.
- *
- * Returns zero if probe succeeded and retrieved FSID matches the FSID
- * we have cached.
- */
+ 
 int nfs_probe_server(struct nfs_server *server, struct nfs_fh *mntfh)
 {
 	struct nfs_fattr *fattr;
@@ -897,8 +830,7 @@ int nfs_probe_server(struct nfs_server *server, struct nfs_fh *mntfh)
 	if (fattr == NULL)
 		return -ENOMEM;
 
-	/* Sanity: the probe won't work if the destination server
-	 * does not recognize the migrated FH. */
+	 
 	error = nfs_probe_fsinfo(server, mntfh, fattr);
 
 	nfs_free_fattr(fattr);
@@ -906,9 +838,7 @@ int nfs_probe_server(struct nfs_server *server, struct nfs_fh *mntfh)
 }
 EXPORT_SYMBOL_GPL(nfs_probe_server);
 
-/*
- * Copy useful information when duplicating a server record
- */
+ 
 void nfs_server_copy_userdata(struct nfs_server *target, struct nfs_server *source)
 {
 	target->flags = source->flags;
@@ -960,9 +890,7 @@ EXPORT_SYMBOL_GPL(nfs_server_remove_lists);
 
 static DEFINE_IDA(s_sysfs_ids);
 
-/*
- * Allocate and initialise a server record
- */
+ 
 struct nfs_server *nfs_alloc_server(void)
 {
 	struct nfs_server *server;
@@ -979,7 +907,7 @@ struct nfs_server *nfs_alloc_server(void)
 
 	server->client = server->client_acl = ERR_PTR(-EINVAL);
 
-	/* Zero out the NFS state stuff */
+	 
 	INIT_LIST_HEAD(&server->client_link);
 	INIT_LIST_HEAD(&server->master_link);
 	INIT_LIST_HEAD(&server->delegations);
@@ -1006,9 +934,7 @@ struct nfs_server *nfs_alloc_server(void)
 }
 EXPORT_SYMBOL_GPL(nfs_alloc_server);
 
-/*
- * Free up a server record
- */
+ 
 void nfs_free_server(struct nfs_server *server)
 {
 	nfs_server_remove_lists(server);
@@ -1038,10 +964,7 @@ void nfs_free_server(struct nfs_server *server)
 }
 EXPORT_SYMBOL_GPL(nfs_free_server);
 
-/*
- * Create a version 2 or 3 volume record
- * - keyed on server and FSID
- */
+ 
 struct nfs_server *nfs_create_server(struct fs_context *fc)
 {
 	struct nfs_fs_context *ctx = nfs_fc2context(fc);
@@ -1060,12 +983,12 @@ struct nfs_server *nfs_create_server(struct fs_context *fc)
 	if (fattr == NULL)
 		goto error;
 
-	/* Get a client representation */
+	 
 	error = nfs_init_server(server, fc);
 	if (error < 0)
 		goto error;
 
-	/* Probe the root fh to retrieve its FSID */
+	 
 	error = nfs_probe_fsinfo(server, ctx->mntfh, fattr);
 	if (error < 0)
 		goto error;
@@ -1105,9 +1028,7 @@ error:
 }
 EXPORT_SYMBOL_GPL(nfs_create_server);
 
-/*
- * Clone an NFS2, NFS3 or NFS4 server record
- */
+ 
 struct nfs_server *nfs_clone_server(struct nfs_server *source,
 				    struct nfs_fh *fh,
 				    struct nfs_fattr *fattr,
@@ -1122,7 +1043,7 @@ struct nfs_server *nfs_clone_server(struct nfs_server *source,
 
 	server->cred = get_cred(source->cred);
 
-	/* Copy data from the source */
+	 
 	server->nfs_client = source->nfs_client;
 	server->destroy = source->destroy;
 	refcount_inc(&server->nfs_client->cl_count);
@@ -1141,7 +1062,7 @@ struct nfs_server *nfs_clone_server(struct nfs_server *source,
 	if (error < 0)
 		goto out_free_server;
 
-	/* probe the filesystem info for this server filesystem */
+	 
 	error = nfs_probe_server(server, fh);
 	if (error < 0)
 		goto out_free_server;
@@ -1214,22 +1135,18 @@ static const struct seq_operations nfs_volume_list_ops = {
 	.show	= nfs_volume_list_show,
 };
 
-/*
- * set up the iterator to start reading from the server list and return the first item
- */
+ 
 static void *nfs_server_list_start(struct seq_file *m, loff_t *_pos)
 				__acquires(&nn->nfs_client_lock)
 {
 	struct nfs_net *nn = net_generic(seq_file_net(m), nfs_net_id);
 
-	/* lock the list against modification */
+	 
 	spin_lock(&nn->nfs_client_lock);
 	return seq_list_start_head(&nn->nfs_client_list, *_pos);
 }
 
-/*
- * move to next server
- */
+ 
 static void *nfs_server_list_next(struct seq_file *p, void *v, loff_t *pos)
 {
 	struct nfs_net *nn = net_generic(seq_file_net(p), nfs_net_id);
@@ -1237,9 +1154,7 @@ static void *nfs_server_list_next(struct seq_file *p, void *v, loff_t *pos)
 	return seq_list_next(v, &nn->nfs_client_list, pos);
 }
 
-/*
- * clean up after reading from the transports list
- */
+ 
 static void nfs_server_list_stop(struct seq_file *p, void *v)
 				__releases(&nn->nfs_client_lock)
 {
@@ -1248,24 +1163,22 @@ static void nfs_server_list_stop(struct seq_file *p, void *v)
 	spin_unlock(&nn->nfs_client_lock);
 }
 
-/*
- * display a header line followed by a load of call lines
- */
+ 
 static int nfs_server_list_show(struct seq_file *m, void *v)
 {
 	struct nfs_client *clp;
 	struct nfs_net *nn = net_generic(seq_file_net(m), nfs_net_id);
 
-	/* display header on line 1 */
+	 
 	if (v == &nn->nfs_client_list) {
 		seq_puts(m, "NV SERVER   PORT USE HOSTNAME\n");
 		return 0;
 	}
 
-	/* display one transport per line on subsequent lines */
+	 
 	clp = list_entry(v, struct nfs_client, cl_share_link);
 
-	/* Check if the client is initialized */
+	 
 	if (clp->cl_cons_state != NFS_CS_READY)
 		return 0;
 
@@ -1281,22 +1194,18 @@ static int nfs_server_list_show(struct seq_file *m, void *v)
 	return 0;
 }
 
-/*
- * set up the iterator to start reading from the volume list and return the first item
- */
+ 
 static void *nfs_volume_list_start(struct seq_file *m, loff_t *_pos)
 				__acquires(&nn->nfs_client_lock)
 {
 	struct nfs_net *nn = net_generic(seq_file_net(m), nfs_net_id);
 
-	/* lock the list against modification */
+	 
 	spin_lock(&nn->nfs_client_lock);
 	return seq_list_start_head(&nn->nfs_volume_list, *_pos);
 }
 
-/*
- * move to next volume
- */
+ 
 static void *nfs_volume_list_next(struct seq_file *p, void *v, loff_t *pos)
 {
 	struct nfs_net *nn = net_generic(seq_file_net(p), nfs_net_id);
@@ -1304,9 +1213,7 @@ static void *nfs_volume_list_next(struct seq_file *p, void *v, loff_t *pos)
 	return seq_list_next(v, &nn->nfs_volume_list, pos);
 }
 
-/*
- * clean up after reading from the transports list
- */
+ 
 static void nfs_volume_list_stop(struct seq_file *p, void *v)
 				__releases(&nn->nfs_client_lock)
 {
@@ -1315,24 +1222,22 @@ static void nfs_volume_list_stop(struct seq_file *p, void *v)
 	spin_unlock(&nn->nfs_client_lock);
 }
 
-/*
- * display a header line followed by a load of call lines
- */
+ 
 static int nfs_volume_list_show(struct seq_file *m, void *v)
 {
 	struct nfs_server *server;
 	struct nfs_client *clp;
-	char dev[13];	// 8 for 2^24, 1 for ':', 3 for 2^8, 1 for '\0'
-	char fsid[34];	// 2 * 16 for %llx, 1 for ':', 1 for '\0'
+	char dev[13];	 
+	char fsid[34];	 
 	struct nfs_net *nn = net_generic(seq_file_net(m), nfs_net_id);
 
-	/* display header on line 1 */
+	 
 	if (v == &nn->nfs_volume_list) {
 		seq_puts(m, "NV SERVER   PORT DEV          FSID"
 			    "                              FSC\n");
 		return 0;
 	}
-	/* display one transport per line on subsequent lines */
+	 
 	server = list_entry(v, struct nfs_server, master_link);
 	clp = server->nfs_client;
 
@@ -1365,13 +1270,13 @@ int nfs_fs_proc_net_init(struct net *net)
 	if (!nn->proc_nfsfs)
 		goto error_0;
 
-	/* a file of servers with which we're dealing */
+	 
 	p = proc_create_net("servers", S_IFREG|S_IRUGO, nn->proc_nfsfs,
 			&nfs_server_list_ops, sizeof(struct seq_net_private));
 	if (!p)
 		goto error_1;
 
-	/* a file of volumes that we have mounted */
+	 
 	p = proc_create_net("volumes", S_IFREG|S_IRUGO, nn->proc_nfsfs,
 			&nfs_volume_list_ops, sizeof(struct seq_net_private));
 	if (!p)
@@ -1389,19 +1294,17 @@ void nfs_fs_proc_net_exit(struct net *net)
 	remove_proc_subtree("nfsfs", net->proc_net);
 }
 
-/*
- * initialise the /proc/fs/nfsfs/ directory
- */
+ 
 int __init nfs_fs_proc_init(void)
 {
 	if (!proc_mkdir("fs/nfsfs", NULL))
 		goto error_0;
 
-	/* a file of servers with which we're dealing */
+	 
 	if (!proc_symlink("fs/nfsfs/servers", NULL, "../../net/nfsfs/servers"))
 		goto error_1;
 
-	/* a file of volumes that we have mounted */
+	 
 	if (!proc_symlink("fs/nfsfs/volumes", NULL, "../../net/nfsfs/volumes"))
 		goto error_1;
 
@@ -1412,13 +1315,11 @@ error_0:
 	return -ENOMEM;
 }
 
-/*
- * clean up the /proc/fs/nfsfs/ directory
- */
+ 
 void nfs_fs_proc_exit(void)
 {
 	remove_proc_subtree("fs/nfsfs", NULL);
 	ida_destroy(&s_sysfs_ids);
 }
 
-#endif /* CONFIG_PROC_FS */
+#endif  

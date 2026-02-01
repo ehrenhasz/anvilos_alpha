@@ -1,17 +1,15 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license. When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2022 Advanced Micro Devices, Inc.
-//
-// Authors: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
-//	    Vijendar Mukunda <Vijendar.Mukunda@amd.com>
-//
 
-/*
- * Generic Hardware interface for ACP Audio PDM controller
- */
+
+
+
+
+
+
+
+
+
+
+ 
 
 #include <linux/err.h>
 #include <linux/io.h>
@@ -34,7 +32,7 @@ static int acp_dmic_prepare(struct snd_pcm_substream *substream,
 	u32 physical_addr, size_dmic, period_bytes;
 	unsigned int dmic_ctrl;
 
-	/* Enable default DMIC clk */
+	 
 	writel(PDM_CLK_FREQ_MASK, adata->acp_base + ACP_WOV_CLK_CTRL);
 	dmic_ctrl = readl(adata->acp_base + ACP_WOV_MISC_CTRL);
 	dmic_ctrl |= PDM_MISC_CTRL_MASK;
@@ -47,7 +45,7 @@ static int acp_dmic_prepare(struct snd_pcm_substream *substream,
 
 	physical_addr = stream->reg_offset + MEM_WINDOW_START;
 
-	/* Init DMIC Ring buffer */
+	 
 	writel(physical_addr, adata->acp_base + ACP_WOV_RX_RINGBUFADDR);
 	writel(size_dmic, adata->acp_base + ACP_WOV_RX_RINGBUFSIZE);
 	writel(period_bytes, adata->acp_base + ACP_WOV_RX_INTR_WATERMARK_SIZE);
@@ -148,7 +146,7 @@ static int acp_dmic_dai_startup(struct snd_pcm_substream *substream,
 	stream->pte_offset = ACP_SRAM_PDM_PTE_OFFSET;
 	stream->reg_offset = ACP_REGION2_OFFSET;
 
-	/* Enable DMIC Interrupts */
+	 
 	ext_int_ctrl = readl(ACP_EXTERNAL_INTR_CNTL(adata, 0));
 	ext_int_ctrl |= PDM_DMA_INTR_MASK;
 	writel(ext_int_ctrl, ACP_EXTERNAL_INTR_CNTL(adata, 0));
@@ -163,7 +161,7 @@ static void acp_dmic_dai_shutdown(struct snd_pcm_substream *substream,
 	struct acp_dev_data *adata = dev_get_drvdata(dev);
 	u32 ext_int_ctrl;
 
-	/* Disable DMIC interrupts */
+	 
 	ext_int_ctrl = readl(ACP_EXTERNAL_INTR_CNTL(adata, 0));
 	ext_int_ctrl &= ~PDM_DMA_INTR_MASK;
 	writel(ext_int_ctrl, ACP_EXTERNAL_INTR_CNTL(adata, 0));

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * USB Serial Converter Generic functions
- *
- * Copyright (C) 2010 - 2013 Johan Hovold (jhovold@gmail.com)
- * Copyright (C) 1999 - 2002 Greg Kroah-Hartman (greg@kroah.com)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/sched/signal.h>
@@ -32,7 +27,7 @@ MODULE_PARM_DESC(vendor, "User specified USB idVendor");
 module_param(product, ushort, 0);
 MODULE_PARM_DESC(product, "User specified USB idProduct");
 
-static struct usb_device_id generic_device_ids[2]; /* Initially all zeroes. */
+static struct usb_device_id generic_device_ids[2];  
 
 static int usb_serial_generic_probe(struct usb_serial *serial,
 					const struct usb_device_id *id)
@@ -142,15 +137,7 @@ int usb_serial_generic_prepare_write_buffer(struct usb_serial_port *port,
 	return kfifo_out_locked(&port->write_fifo, dest, size, &port->lock);
 }
 
-/**
- * usb_serial_generic_write_start - start writing buffered data
- * @port: usb-serial port
- * @mem_flags: flags to use for memory allocations
- *
- * Serialised using USB_SERIAL_WRITE_BUSY flag.
- *
- * Return: Zero on success or if busy, otherwise a negative errno value.
- */
+ 
 int usb_serial_generic_write_start(struct usb_serial_port *port,
 							gfp_t mem_flags)
 {
@@ -196,20 +183,11 @@ retry:
 		return result;
 	}
 
-	goto retry;	/* try sending off another urb */
+	goto retry;	 
 }
 EXPORT_SYMBOL_GPL(usb_serial_generic_write_start);
 
-/**
- * usb_serial_generic_write - generic write function
- * @tty: tty for the port
- * @port: usb-serial port
- * @buf: data to write
- * @count: number of bytes to write
- *
- * Return: The number of characters buffered, which may be anything from
- * zero to @count, or a negative errno value.
- */
+ 
 int usb_serial_generic_write(struct tty_struct *tty,
 	struct usb_serial_port *port, const unsigned char *buf, int count)
 {
@@ -274,11 +252,8 @@ void usb_serial_generic_wait_until_sent(struct tty_struct *tty, long timeout)
 
 	bps = tty_get_baud_rate(tty);
 	if (!bps)
-		bps = 9600;	/* B0 */
-	/*
-	 * Use a poll-period of roughly the time it takes to send one
-	 * character or at least one jiffy.
-	 */
+		bps = 9600;	 
+	 
 	period = max_t(unsigned long, (10 * HZ / bps), 1);
 	if (timeout)
 		period = min_t(unsigned long, period, timeout);
@@ -350,11 +325,7 @@ void usb_serial_generic_process_read_urb(struct urb *urb)
 
 	if (!urb->actual_length)
 		return;
-	/*
-	 * The per character mucking around with sysrq path it too slow for
-	 * stuff like 3G modems, so shortcircuit it in the 99.9999999% of
-	 * cases where the USB serial is not a console anyway.
-	 */
+	 
 	if (port->sysrq) {
 		for (i = 0; i < urb->actual_length; i++, ch++) {
 			if (!usb_serial_handle_sysrq_char(port, *ch))
@@ -406,19 +377,10 @@ void usb_serial_generic_read_bulk_callback(struct urb *urb)
 		break;
 	}
 
-	/*
-	 * Make sure URB processing is done before marking as free to avoid
-	 * racing with unthrottle() on another CPU. Matches the barriers
-	 * implied by the test_and_clear_bit() in
-	 * usb_serial_generic_submit_read_urb().
-	 */
+	 
 	smp_mb__before_atomic();
 	set_bit(i, &port->read_urbs_free);
-	/*
-	 * Make sure URB is marked as free before checking the throttled flag
-	 * to avoid racing with unthrottle() on another CPU. Matches the
-	 * smp_mb__after_atomic() in unthrottle().
-	 */
+	 
 	smp_mb__after_atomic();
 
 	if (stopped)
@@ -485,10 +447,7 @@ void usb_serial_generic_unthrottle(struct tty_struct *tty)
 
 	clear_bit(USB_SERIAL_THROTTLED, &port->flags);
 
-	/*
-	 * Matches the smp_mb__after_atomic() in
-	 * usb_serial_generic_read_bulk_callback().
-	 */
+	 
 	smp_mb__after_atomic();
 
 	usb_serial_generic_submit_read_urbs(port, GFP_KERNEL);
@@ -503,15 +462,12 @@ static bool usb_serial_generic_msr_changed(struct tty_struct *tty,
 	unsigned long flags;
 	bool ret;
 
-	/*
-	 * Use tty-port initialised flag to detect all hangups including the
-	 * one generated at USB-device disconnect.
-	 */
+	 
 	if (!tty_port_initialized(&port->port))
 		return true;
 
 	spin_lock_irqsave(&port->lock, flags);
-	cnow = port->icount;				/* atomic copy*/
+	cnow = port->icount;				 
 	spin_unlock_irqrestore(&port->lock, flags);
 
 	ret =	((arg & TIOCM_RNG) && (cnow.rng != cprev->rng)) ||
@@ -532,7 +488,7 @@ int usb_serial_generic_tiocmiwait(struct tty_struct *tty, unsigned long arg)
 	int ret;
 
 	spin_lock_irqsave(&port->lock, flags);
-	cnow = port->icount;				/* atomic copy */
+	cnow = port->icount;				 
 	spin_unlock_irqrestore(&port->lock, flags);
 
 	ret = wait_event_interruptible(port->port.delta_msr_wait,
@@ -552,7 +508,7 @@ int usb_serial_generic_get_icount(struct tty_struct *tty,
 	unsigned long flags;
 
 	spin_lock_irqsave(&port->lock, flags);
-	cnow = port->icount;				/* atomic copy */
+	cnow = port->icount;				 
 	spin_unlock_irqrestore(&port->lock, flags);
 
 	icount->cts = cnow.cts;
@@ -601,12 +557,7 @@ int usb_serial_handle_break(struct usb_serial_port *port)
 EXPORT_SYMBOL_GPL(usb_serial_handle_break);
 #endif
 
-/**
- * usb_serial_handle_dcd_change - handle a change of carrier detect state
- * @port: usb-serial port
- * @tty: tty for the port
- * @status: new carrier detect status, nonzero if active
- */
+ 
 void usb_serial_handle_dcd_change(struct usb_serial_port *port,
 				struct tty_struct *tty, unsigned int status)
 {

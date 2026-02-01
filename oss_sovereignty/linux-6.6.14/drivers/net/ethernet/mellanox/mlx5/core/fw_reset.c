@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2020, Mellanox Technologies inc.  All rights reserved. */
+
+ 
 
 #include <devlink.h>
 
@@ -207,7 +207,7 @@ static void mlx5_fw_reset_complete_reload(struct mlx5_core_dev *dev, bool unload
 {
 	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
 
-	/* if this is the driver that initiated the fw reset, devlink completed the reload */
+	 
 	if (test_bit(MLX5_FW_RESET_FLAGS_PENDING_COMP, &fw_reset->reset_flags)) {
 		complete(&fw_reset->done);
 	} else {
@@ -355,9 +355,7 @@ static int mlx5_check_dev_ids(struct mlx5_core_dev *dev, u16 dev_id)
 	u16 sdev_id;
 	int err;
 
-	/* Check that all functions under the pci bridge are PFs of
-	 * this device otherwise fail this function.
-	 */
+	 
 	list_for_each_entry(sdev, &bridge_bus->devices, bus_list) {
 		err = pci_read_config_word(sdev, PCI_DEVICE_ID, &sdev_id);
 		if (err)
@@ -439,7 +437,7 @@ static int mlx5_pci_link_toggle(struct mlx5_core_dev *dev)
 		pci_save_state(sdev);
 		pci_cfg_access_lock(sdev);
 	}
-	/* PCI link toggle */
+	 
 	err = pcie_capability_set_word(bridge, PCI_EXP_LNKCTL, PCI_EXP_LNKCTL_LD);
 	if (err)
 		return pcibios_err_to_errno(err);
@@ -448,7 +446,7 @@ static int mlx5_pci_link_toggle(struct mlx5_core_dev *dev)
 	if (err)
 		return pcibios_err_to_errno(err);
 
-	/* Check link */
+	 
 	if (!bridge->link_active_reporting) {
 		mlx5_core_warn(dev, "No PCI link reporting capability\n");
 		msleep(1000);

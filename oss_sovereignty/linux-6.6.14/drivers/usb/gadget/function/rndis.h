@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * RNDIS	Definitions for Remote NDIS
- *
- * Authors:	Benedikt Spranger, Pengutronix
- *		Robert Schwebel, Pengutronix
- *
- *		This software was originally developed in conformance with
- *		Microsoft's Remote NDIS Specification License Agreement.
- */
+ 
+ 
 
 #ifndef _LINUX_RNDIS_H
 #define _LINUX_RNDIS_H
@@ -142,7 +134,7 @@ struct rndis_config_parameter {
 	__le32	ParameterValueLength;
 };
 
-/* implementation specific */
+ 
 enum rndis_state {
 	RNDIS_UNINITIALIZED,
 	RNDIS_INITIALIZED,
@@ -177,7 +169,7 @@ typedef struct rndis_params {
 	spinlock_t		resp_lock;
 } rndis_params;
 
-/* RNDIS Message parser and other useless functions */
+ 
 int  rndis_msg_parser(struct rndis_params *params, u8 *buf);
 struct rndis_params *rndis_register(void (*resp_avail)(void *v), void *v);
 void rndis_deregister(struct rndis_params *params);
@@ -199,4 +191,4 @@ int  rndis_signal_disconnect(struct rndis_params *params);
 int  rndis_state(struct rndis_params *params);
 extern void rndis_set_host_mac(struct rndis_params *params, const u8 *addr);
 
-#endif  /* _LINUX_RNDIS_H */
+#endif   

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2018-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef ATH12K_CORE_H
 #define ATH12K_CORE_H
@@ -29,7 +26,7 @@
 
 #define ATH12K_TX_MGMT_TARGET_MAX_SUPPORT_WMI 64
 
-/* Pending management packets threshold for dropping probe responses */
+ 
 #define ATH12K_PRB_RSP_DROP_THRESHOLD ((ATH12K_TX_MGMT_TARGET_MAX_SUPPORT_WMI * 3) / 4)
 
 #define ATH12K_INVALID_HW_MAC_ID	0xFF
@@ -57,9 +54,9 @@ enum wme_ac {
 #define ATH12K_HE_MCS_MAX	11
 
 enum ath12k_crypt_mode {
-	/* Only use hardware crypto engine */
+	 
 	ATH12K_CRYPT_MODE_HW,
-	/* Only use software crypto */
+	 
 	ATH12K_CRYPT_MODE_SW,
 };
 
@@ -109,10 +106,10 @@ enum ath12k_hw_rev {
 };
 
 enum ath12k_firmware_mode {
-	/* the default mode, standard 802.11 functionality */
+	 
 	ATH12K_FIRMWARE_MODE_NORMAL,
 
-	/* factory tests etc */
+	 
 	ATH12K_FIRMWARE_MODE_FTM,
 };
 
@@ -137,7 +134,7 @@ struct ath12k_ext_irq_grp {
 
 #define HE_PPET16_PPET8_SIZE            8
 
-/* 802.11ax PPE (PPDU packet Extension) threshold */
+ 
 struct he_ppe_threshold {
 	u32 numss_m1;
 	u32 ru_mask;
@@ -212,13 +209,13 @@ struct ath12k_vif {
 			u32 uapsd;
 		} sta;
 		struct {
-			/* 127 stations; wmi limit */
+			 
 			u8 tim_bitmap[16];
 			u8 tim_len;
 			u32 ssid_len;
 			u8 ssid[IEEE80211_MAX_SSID_LEN];
 			bool hidden_ssid;
-			/* P2P_IE with NoA attribute for P2P_GO case */
+			 
 			u32 noa_len;
 			u8 *noa_data;
 		} ap;
@@ -381,8 +378,8 @@ struct ath12k_wbm_tx_stats {
 struct ath12k_sta {
 	struct ath12k_vif *arvif;
 
-	/* the following are protected by ar->data_lock */
-	u32 changed; /* IEEE80211_RC_* */
+	 
+	u32 changed;  
 	u32 bw;
 	u32 nss;
 	u32 smps;
@@ -411,10 +408,10 @@ enum ath12k_state {
 	ATH12K_STATE_RESTARTING,
 	ATH12K_STATE_RESTARTED,
 	ATH12K_STATE_WEDGED,
-	/* Add other states as required */
+	 
 };
 
-/* Antenna noise floor */
+ 
 #define ATH12K_DEFAULT_NOISE_FLOOR -95
 
 struct ath12k_fw_stats {
@@ -489,28 +486,23 @@ struct ath12k {
 	u32 num_stations;
 	u32 max_num_stations;
 	bool monitor_present;
-	/* To synchronize concurrent synchronous mac80211 callback operations,
-	 * concurrent debugfs configuration and concurrent FW statistics events.
-	 */
+	 
 	struct mutex conf_mutex;
-	/* protects the radio specific data like debug stats, ppdu_stats_info stats,
-	 * vdev_stop_status info, scan data, ath12k_sta info, ath12k_vif info,
-	 * channel context data, survey info, test mode data.
-	 */
+	 
 	spinlock_t data_lock;
 
 	struct list_head arvifs;
-	/* should never be NULL; needed for regular htt rx */
+	 
 	struct ieee80211_channel *rx_channel;
 
-	/* valid during scan; needed for mgmt rx during scan */
+	 
 	struct ieee80211_channel *scan_channel;
 
 	u8 cfg_tx_chainmask;
 	u8 cfg_rx_chainmask;
 	u8 num_rx_chains;
 	u8 num_tx_chains;
-	/* pdev_idx starts from 0 whereas pdev->pdev_id starts with 1 */
+	 
 	u8 pdev_idx;
 	u8 lmac_id;
 
@@ -531,23 +523,16 @@ struct ath12k {
 	unsigned long long allocated_vdev_map;
 
 	struct idr txmgmt_idr;
-	/* protects txmgmt_idr data */
+	 
 	spinlock_t txmgmt_idr_lock;
 	atomic_t num_pending_mgmt_tx;
 	wait_queue_head_t txmgmt_empty_waitq;
 
-	/* cycle count is reported twice for each visited channel during scan.
-	 * access protected by data_lock
-	 */
+	 
 	u32 survey_last_rx_clear_count;
 	u32 survey_last_cycle_count;
 
-	/* Channel info events are expected to come in pairs without and with
-	 * COMPLETE flag set respectively for each channel visit during scan.
-	 *
-	 * However there are deviations from this rule. This flag is used to
-	 * avoid reporting garbage data.
-	 */
+	 
 	bool ch_info_can_report_survey;
 	struct survey_info survey[ATH12K_NUM_CHANS];
 	struct completion bss_survey_done;
@@ -636,11 +621,9 @@ struct ath12k_board_data {
 };
 
 struct ath12k_soc_dp_tx_err_stats {
-	/* TCL Ring Descriptor unavailable */
+	 
 	u32 desc_na[DP_TCL_NUM_RING_MAX];
-	/* Other failures during dp_tx due to mem allocation failure
-	 * idr unavailable etc.
-	 */
+	 
 	atomic_t misc_fail;
 };
 
@@ -653,7 +636,7 @@ struct ath12k_soc_dp_stats {
 	struct ath12k_soc_dp_tx_err_stats tx_err;
 };
 
-/* Master structure to hold the hw data which may be used in core module */
+ 
 struct ath12k_base {
 	enum ath12k_hw_rev hw_rev;
 	struct platform_device *pdev;
@@ -662,7 +645,7 @@ struct ath12k_base {
 	struct ath12k_wmi_base wmi_ab;
 	struct completion fw_ready;
 	int num_radios;
-	/* HW channel counters frequency value in hertz common to all MACs */
+	 
 	u32 cc_freq_hz;
 
 	struct ath12k_htc htc;
@@ -680,27 +663,15 @@ struct ath12k_base {
 	struct ath12k_ce ce;
 	struct timer_list rx_replenish_retry;
 	struct ath12k_hal hal;
-	/* To synchronize core_start/core_stop */
+	 
 	struct mutex core_lock;
-	/* Protects data like peers */
+	 
 	spinlock_t base_lock;
 
-	/* Single pdev device (struct ath12k_hw_params::single_pdev_only):
-	 *
-	 * Firmware maintains data for all bands but advertises a single
-	 * phy to the host which is stored as a single element in this
-	 * array.
-	 *
-	 * Other devices:
-	 *
-	 * This array will contain as many elements as the number of
-	 * radios.
-	 */
+	 
 	struct ath12k_pdev pdevs[MAX_RADIOS];
 
-	/* struct ath12k_hw_params::single_pdev_only devices use this to
-	 * store phy specific data
-	 */
+	 
 	struct ath12k_fw_pdev fw_pdev[MAX_RADIOS];
 	u8 fw_pdev_count;
 
@@ -725,17 +696,13 @@ struct ath12k_base {
 
 	const struct firmware *cal_file;
 
-	/* Below regd's are protected by ab->data_lock */
-	/* This is the regd set for every radio
-	 * by the firmware during initialization
-	 */
+	 
+	 
 	struct ieee80211_regdomain *default_regd[MAX_RADIOS];
-	/* This regd is set during dynamic country setting
-	 * This may or may not be used during the runtime
-	 */
+	 
 	struct ieee80211_regdomain *new_regd[MAX_RADIOS];
 
-	/* Current DFS Regulatory */
+	 
 	enum ath12k_dfs_region dfs_region;
 	struct ath12k_soc_dp_stats soc_stats;
 
@@ -752,11 +719,11 @@ struct ath12k_base {
 	struct completion reset_complete;
 	struct completion reconfigure_complete;
 	struct completion recovery_start;
-	/* continuous recovery fail count */
+	 
 	atomic_t fail_cont_count;
 	unsigned long reset_fail_timeout;
 	struct {
-		/* protected by data_lock */
+		 
 		u32 fw_crash_counter;
 	} stats;
 	u32 pktlog_defs_checksum;
@@ -771,7 +738,7 @@ struct ath12k_base {
 	u64 fw_soc_drop_count;
 	bool static_window_map;
 
-	/* must be last */
+	 
 	u8 drv_priv[] __aligned(sizeof(void *));
 };
 
@@ -854,4 +821,4 @@ static inline const char *ath12k_bus_str(enum ath12k_bus bus)
 	return "unknown";
 }
 
-#endif /* _CORE_H_ */
+#endif  

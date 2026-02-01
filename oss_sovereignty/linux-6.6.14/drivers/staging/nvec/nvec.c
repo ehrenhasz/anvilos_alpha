@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NVEC: NVIDIA compliant embedded controller interface
- *
- * Copyright (C) 2011 The AC100 Kernel Team <ac100@lists.lauchpad.net>
- *
- * Authors:  Pierre-Hugues Husson <phhusson@free.fr>
- *           Ilya Petrov <ilya.muromec@gmail.com>
- *           Marc Dietrich <marvin24@gmx.de>
- *           Julian Andres Klode <jak@jak-linux.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -52,11 +43,7 @@
 #define I2C_SL_ADDR2		0x30
 #define I2C_SL_DELAY_COUNT	0x3c
 
-/**
- * enum nvec_msg_category - Message categories for nvec_msg_alloc()
- * @NVEC_MSG_RX: The message is an incoming message (from EC)
- * @NVEC_MSG_TX: The message is an outgoing message (to EC)
- */
+ 
 enum nvec_msg_category  {
 	NVEC_MSG_RX,
 	NVEC_MSG_TX,
@@ -95,16 +82,7 @@ static const struct mfd_cell nvec_devices[] = {
 	},
 };
 
-/**
- * nvec_register_notifier - Register a notifier with nvec
- * @nvec: A &struct nvec_chip
- * @nb: The notifier block to register
- * @events: Unused
- *
- * Registers a notifier with @nvec. The notifier will be added to an atomic
- * notifier chain that is called for all received messages except those that
- * correspond to a request initiated by nvec_write_sync().
- */
+ 
 int nvec_register_notifier(struct nvec_chip *nvec, struct notifier_block *nb,
 			   unsigned int events)
 {
@@ -112,26 +90,14 @@ int nvec_register_notifier(struct nvec_chip *nvec, struct notifier_block *nb,
 }
 EXPORT_SYMBOL_GPL(nvec_register_notifier);
 
-/**
- * nvec_unregister_notifier - Unregister a notifier with nvec
- * @nvec: A &struct nvec_chip
- * @nb: The notifier block to unregister
- *
- * Unregisters a notifier with @nvec. The notifier will be removed from the
- * atomic notifier chain.
- */
+ 
 int nvec_unregister_notifier(struct nvec_chip *nvec, struct notifier_block *nb)
 {
 	return atomic_notifier_chain_unregister(&nvec->notifier_list, nb);
 }
 EXPORT_SYMBOL_GPL(nvec_unregister_notifier);
 
-/*
- * nvec_status_notifier - The final notifier
- *
- * Prints a message about control events not handled in the notifier
- * chain.
- */
+ 
 static int nvec_status_notifier(struct notifier_block *nb,
 				unsigned long event_type, void *data)
 {
@@ -149,20 +115,7 @@ static int nvec_status_notifier(struct notifier_block *nb,
 	return NOTIFY_OK;
 }
 
-/**
- * nvec_msg_alloc:
- * @nvec: A &struct nvec_chip
- * @category: Pool category, see &enum nvec_msg_category
- *
- * Allocate a single &struct nvec_msg object from the message pool of
- * @nvec. The result shall be passed to nvec_msg_free() if no longer
- * used.
- *
- * Outgoing messages are placed in the upper 75% of the pool, keeping the
- * lower 25% available for RX buffers only. The reason is to prevent a
- * situation where all buffers are full and a message is thus endlessly
- * retried because the response could never be processed.
- */
+ 
 static struct nvec_msg *nvec_msg_alloc(struct nvec_chip *nvec,
 				       enum nvec_msg_category category)
 {
@@ -181,13 +134,7 @@ static struct nvec_msg *nvec_msg_alloc(struct nvec_chip *nvec,
 	return NULL;
 }
 
-/**
- * nvec_msg_free:
- * @nvec: A &struct nvec_chip
- * @msg:  A message (must be allocated by nvec_msg_alloc() and belong to @nvec)
- *
- * Free the given message
- */
+ 
 void nvec_msg_free(struct nvec_chip *nvec, struct nvec_msg *msg)
 {
 	if (msg != &nvec->tx_scratch)
@@ -196,27 +143,19 @@ void nvec_msg_free(struct nvec_chip *nvec, struct nvec_msg *msg)
 }
 EXPORT_SYMBOL_GPL(nvec_msg_free);
 
-/**
- * nvec_msg_is_event - Return %true if @msg is an event
- * @msg: A message
- */
+ 
 static bool nvec_msg_is_event(struct nvec_msg *msg)
 {
 	return msg->data[0] >> 7;
 }
 
-/**
- * nvec_msg_size - Get the size of a message
- * @msg: The message to get the size for
- *
- * This only works for received messages, not for outgoing messages.
- */
+ 
 static size_t nvec_msg_size(struct nvec_msg *msg)
 {
 	bool is_event = nvec_msg_is_event(msg);
 	int event_length = (msg->data[0] & 0x60) >> 5;
 
-	/* for variable size, payload size in byte 1 + count (1) + cmd (1) */
+	 
 	if (!is_event || event_length == NVEC_VAR_SIZE)
 		return (msg->pos || msg->size) ? (msg->data[1] + 2) : 0;
 	else if (event_length == NVEC_2BYTES)
@@ -226,13 +165,7 @@ static size_t nvec_msg_size(struct nvec_msg *msg)
 	return 0;
 }
 
-/**
- * nvec_gpio_set_value - Set the GPIO value
- * @nvec: A &struct nvec_chip
- * @value: The value to write (0 or 1)
- *
- * Like gpio_set_value(), but generating debugging information
- */
+ 
 static void nvec_gpio_set_value(struct nvec_chip *nvec, int value)
 {
 	dev_dbg(nvec->dev, "GPIO changed from %u to %u\n",
@@ -240,18 +173,7 @@ static void nvec_gpio_set_value(struct nvec_chip *nvec, int value)
 	gpiod_set_value(nvec->gpiod, value);
 }
 
-/**
- * nvec_write_async - Asynchronously write a message to NVEC
- * @nvec: An nvec_chip instance
- * @data: The message data, starting with the request type
- * @size: The size of @data
- *
- * Queue a single message to be transferred to the embedded controller
- * and return immediately.
- *
- * Returns: 0 on success, a negative error code on failure. If a failure
- * occurred, the nvec driver may print an error.
- */
+ 
 int nvec_write_async(struct nvec_chip *nvec, const unsigned char *data,
 		     short size)
 {
@@ -277,23 +199,7 @@ int nvec_write_async(struct nvec_chip *nvec, const unsigned char *data,
 }
 EXPORT_SYMBOL(nvec_write_async);
 
-/**
- * nvec_write_sync - Write a message to nvec and read the response
- * @nvec: An &struct nvec_chip
- * @data: The data to write
- * @size: The size of @data
- * @msg:  The response message received
- *
- * This is similar to nvec_write_async(), but waits for the
- * request to be answered before returning. This function
- * uses a mutex and can thus not be called from e.g.
- * interrupt handlers.
- *
- * Returns: 0 on success, a negative error code on failure.
- * The response message is returned in @msg. Shall be freed
- * with nvec_msg_free() once no longer used.
- *
- */
+ 
 int nvec_write_sync(struct nvec_chip *nvec,
 		    const unsigned char *data, short size,
 		    struct nvec_msg **msg)
@@ -328,13 +234,7 @@ int nvec_write_sync(struct nvec_chip *nvec,
 }
 EXPORT_SYMBOL(nvec_write_sync);
 
-/**
- * nvec_toggle_global_events - enables or disables global event reporting
- * @nvec: nvec handle
- * @state: true for enable, false for disable
- *
- * This switches on/off global event reports by the embedded controller.
- */
+ 
 static void nvec_toggle_global_events(struct nvec_chip *nvec, bool state)
 {
 	unsigned char global_events[] = { NVEC_SLEEP, GLOBAL_EVENTS, state };
@@ -342,19 +242,7 @@ static void nvec_toggle_global_events(struct nvec_chip *nvec, bool state)
 	nvec_write_async(nvec, global_events, 3);
 }
 
-/**
- * nvec_event_mask - fill the command string with event bitfield
- * @ev: points to event command string
- * @mask: bit to insert into the event mask
- *
- * Configure event command expects a 32 bit bitfield which describes
- * which events to enable. The bitfield has the following structure
- * (from highest byte to lowest):
- *	system state bits 7-0
- *	system state bits 15-8
- *	oem system state bits 7-0
- *	oem system state bits 15-8
- */
+ 
 static void nvec_event_mask(char *ev, u32 mask)
 {
 	ev[3] = mask >> 16 & 0xff;
@@ -363,14 +251,7 @@ static void nvec_event_mask(char *ev, u32 mask)
 	ev[6] = mask >> 8  & 0xff;
 }
 
-/**
- * nvec_request_master - Process outgoing messages
- * @work: A &struct work_struct (the tx_worker member of &struct nvec_chip)
- *
- * Processes all outgoing requests by sending the request and awaiting the
- * response, then continuing with the next request. Once a request has a
- * matching response, it will be freed and removed from the list.
- */
+ 
 static void nvec_request_master(struct work_struct *work)
 {
 	struct nvec_chip *nvec = container_of(work, struct nvec_chip, tx_work);
@@ -402,14 +283,7 @@ static void nvec_request_master(struct work_struct *work)
 	spin_unlock_irqrestore(&nvec->tx_lock, flags);
 }
 
-/**
- * parse_msg - Print some information and call the notifiers on an RX message
- * @nvec: A &struct nvec_chip
- * @msg: A message received by @nvec
- *
- * Paarse some pieces of the message and then call the chain of notifiers
- * registered via nvec_register_notifier.
- */
+ 
 static int parse_msg(struct nvec_chip *nvec, struct nvec_msg *msg)
 {
 	if ((msg->data[0] & 1 << 7) == 0 && msg->data[3]) {
@@ -428,13 +302,7 @@ static int parse_msg(struct nvec_chip *nvec, struct nvec_msg *msg)
 	return 0;
 }
 
-/**
- * nvec_dispatch - Process messages received from the EC
- * @work: A &struct work_struct (the tx_worker member of &struct nvec_chip)
- *
- * Process messages previously received from the EC and put into the RX
- * queue of the &struct nvec_chip instance associated with @work.
- */
+ 
 static void nvec_dispatch(struct work_struct *work)
 {
 	struct nvec_chip *nvec = container_of(work, struct nvec_chip, rx_work);
@@ -462,15 +330,10 @@ static void nvec_dispatch(struct work_struct *work)
 	spin_unlock_irqrestore(&nvec->rx_lock, flags);
 }
 
-/**
- * nvec_tx_completed - Complete the current transfer
- * @nvec: A &struct nvec_chip
- *
- * This is called when we have received an END_TRANS on a TX transfer.
- */
+ 
 static void nvec_tx_completed(struct nvec_chip *nvec)
 {
-	/* We got an END_TRANS, let's skip this, maybe there's an event */
+	 
 	if (nvec->tx->pos != nvec->tx->size) {
 		dev_err(nvec->dev, "premature END_TRANS, resending\n");
 		nvec->tx->pos = 0;
@@ -480,12 +343,7 @@ static void nvec_tx_completed(struct nvec_chip *nvec)
 	}
 }
 
-/**
- * nvec_rx_completed - Complete the current transfer
- * @nvec: A &struct nvec_chip
- *
- * This is called when we have received an END_TRANS on a RX transfer.
- */
+ 
 static void nvec_rx_completed(struct nvec_chip *nvec)
 {
 	if (nvec->rx->pos != nvec_msg_size(nvec->rx)) {
@@ -496,7 +354,7 @@ static void nvec_rx_completed(struct nvec_chip *nvec)
 		nvec_msg_free(nvec, nvec->rx);
 		nvec->state = 0;
 
-		/* Battery quirk - Often incomplete, and likes to crash */
+		 
 		if (nvec->rx->data[0] == NVEC_BAT)
 			complete(&nvec->ec_transfer);
 
@@ -505,10 +363,7 @@ static void nvec_rx_completed(struct nvec_chip *nvec)
 
 	spin_lock(&nvec->rx_lock);
 
-	/*
-	 * Add the received data to the work list and move the ring buffer
-	 * pointer to the next entry.
-	 */
+	 
 	list_add_tail(&nvec->rx->node, &nvec->rx_data);
 
 	spin_unlock(&nvec->rx_lock);
@@ -521,12 +376,7 @@ static void nvec_rx_completed(struct nvec_chip *nvec)
 	schedule_work(&nvec->rx_work);
 }
 
-/**
- * nvec_invalid_flags - Send an error message about invalid flags and jump
- * @nvec: The nvec device
- * @status: The status flags
- * @reset: Whether we shall jump to state 0.
- */
+ 
 static void nvec_invalid_flags(struct nvec_chip *nvec, unsigned int status,
 			       bool reset)
 {
@@ -536,14 +386,7 @@ static void nvec_invalid_flags(struct nvec_chip *nvec, unsigned int status,
 		nvec->state = 0;
 }
 
-/**
- * nvec_tx_set - Set the message to transfer (nvec->tx)
- * @nvec: A &struct nvec_chip
- *
- * Gets the first entry from the tx_data list of @nvec and sets the
- * tx member to it. If the tx_data list is empty, this uses the
- * tx_scratch message to send a no operation message.
- */
+ 
 static void nvec_tx_set(struct nvec_chip *nvec)
 {
 	spin_lock(&nvec->tx_lock);
@@ -565,15 +408,7 @@ static void nvec_tx_set(struct nvec_chip *nvec)
 		(uint)nvec->tx->size, nvec->tx->data[1]);
 }
 
-/**
- * nvec_interrupt - Interrupt handler
- * @irq: The IRQ
- * @dev: The nvec device
- *
- * Interrupt handler that fills our RX buffers and empties our TX
- * buffers. This uses a finite state machine with ridiculous amounts
- * of error checking, in order to be fairly reliable.
- */
+ 
 static irqreturn_t nvec_interrupt(int irq, void *dev)
 {
 	unsigned long status;
@@ -585,7 +420,7 @@ static irqreturn_t nvec_interrupt(int irq, void *dev)
 
 	status = readl(nvec->base + I2C_SL_STATUS);
 
-	/* Filter out some errors */
+	 
 	if ((status & irq_mask) == 0 && (status & ~irq_mask) != 0) {
 		dev_err(nvec->dev, "unexpected irq mask %lx\n", status);
 		return IRQ_HANDLED;
@@ -595,7 +430,7 @@ static irqreturn_t nvec_interrupt(int irq, void *dev)
 		return IRQ_HANDLED;
 	}
 
-	/* The EC did not request a read, so it send us something, read it */
+	 
 	if ((status & RNW) == 0) {
 		received = readl(nvec->base + I2C_SL_RCVD);
 		if (status & RCVD)
@@ -606,16 +441,16 @@ static irqreturn_t nvec_interrupt(int irq, void *dev)
 		nvec->state = 0;
 
 	switch (nvec->state) {
-	case 0:		/* Verify that its a transfer start, the rest later */
+	case 0:		 
 		if (status != (I2C_SL_IRQ | RCVD))
 			nvec_invalid_flags(nvec, status, false);
 		break;
-	case 1:		/* command byte */
+	case 1:		 
 		if (status != I2C_SL_IRQ) {
 			nvec_invalid_flags(nvec, status, true);
 		} else {
 			nvec->rx = nvec_msg_alloc(nvec, NVEC_MSG_RX);
-			/* Should not happen in a normal world */
+			 
 			if (unlikely(!nvec->rx)) {
 				nvec->state = 0;
 				break;
@@ -625,7 +460,7 @@ static irqreturn_t nvec_interrupt(int irq, void *dev)
 			nvec->state = 2;
 		}
 		break;
-	case 2:		/* first byte after command */
+	case 2:		 
 		if (status == (I2C_SL_IRQ | RNW | RCVD)) {
 			udelay(33);
 			if (nvec->rx->data[0] != 0x01) {
@@ -647,7 +482,7 @@ static irqreturn_t nvec_interrupt(int irq, void *dev)
 			nvec_invalid_flags(nvec, status, true);
 		}
 		break;
-	case 3:		/* EC does a block read, we transmit data */
+	case 3:		 
 		if (status & END_TRANS) {
 			nvec_tx_completed(nvec);
 		} else if ((status & RNW) == 0 || (status & RCVD)) {
@@ -663,7 +498,7 @@ static irqreturn_t nvec_interrupt(int irq, void *dev)
 			nvec->state = 0;
 		}
 		break;
-	case 4:		/* EC does some write, we read the data */
+	case 4:		 
 		if ((status & (END_TRANS | RNW)) == END_TRANS)
 			nvec_rx_completed(nvec);
 		else if (status & (RNW | RCVD))
@@ -680,7 +515,7 @@ static irqreturn_t nvec_interrupt(int irq, void *dev)
 		nvec->state = 0;
 	}
 
-	/* If we are told that a new transfer starts, verify it */
+	 
 	if ((status & (RCVD | RNW)) == RCVD) {
 		if (received != nvec->i2c_addr)
 			dev_err(nvec->dev,
@@ -689,11 +524,11 @@ static irqreturn_t nvec_interrupt(int irq, void *dev)
 		nvec->state = 1;
 	}
 
-	/* Send data if requested, but not on end of transmission */
+	 
 	if ((status & (RNW | END_TRANS)) == RNW)
 		writel(to_send, nvec->base + I2C_SL_RCVD);
 
-	/* If we have send the first byte */
+	 
 	if (status == (I2C_SL_IRQ | RNW | RCVD))
 		nvec_gpio_set_value(nvec, 1);
 
@@ -708,12 +543,7 @@ static irqreturn_t nvec_interrupt(int irq, void *dev)
 		status & RCVD ? " RCVD" : "",
 		status & RNW ? " RNW" : "");
 
-	/*
-	 * TODO: A correct fix needs to be found for this.
-	 *
-	 * We experience less incomplete messages with this delay than without
-	 * it, but we don't know why. Help is appreciated.
-	 */
+	 
 	udelay(100);
 
 	return IRQ_HANDLED;
@@ -842,7 +672,7 @@ static int tegra_nvec_probe(struct platform_device *pdev)
 
 	tegra_init_i2c_slave(nvec);
 
-	/* enable event reporting */
+	 
 	nvec_toggle_global_events(nvec, true);
 
 	nvec->nvec_status_notifier.notifier_call = nvec_status_notifier;
@@ -851,7 +681,7 @@ static int tegra_nvec_probe(struct platform_device *pdev)
 	nvec_power_handle = nvec;
 	pm_power_off = nvec_power_off;
 
-	/* Get Firmware Version */
+	 
 	err = nvec_write_sync(nvec, get_firmware_version, 2, &msg);
 
 	if (!err) {
@@ -868,14 +698,14 @@ static int tegra_nvec_probe(struct platform_device *pdev)
 	if (ret)
 		dev_err(dev, "error adding subdevices\n");
 
-	/* unmute speakers? */
+	 
 	nvec_write_async(nvec, unmute_speakers, 4);
 
-	/* enable lid switch event */
+	 
 	nvec_event_mask(enable_event, LID_SWITCH);
 	nvec_write_async(nvec, enable_event, 7);
 
-	/* enable power button event */
+	 
 	nvec_event_mask(enable_event, PWR_BUTTON);
 	nvec_write_async(nvec, enable_event, 7);
 
@@ -891,7 +721,7 @@ static void tegra_nvec_remove(struct platform_device *pdev)
 	nvec_unregister_notifier(nvec, &nvec->nvec_status_notifier);
 	cancel_work_sync(&nvec->rx_work);
 	cancel_work_sync(&nvec->tx_work);
-	/* FIXME: needs check whether nvec is responsible for power off */
+	 
 	pm_power_off = NULL;
 }
 
@@ -905,7 +735,7 @@ static int nvec_suspend(struct device *dev)
 
 	dev_dbg(nvec->dev, "suspending\n");
 
-	/* keep these sync or you'll break suspend */
+	 
 	nvec_toggle_global_events(nvec, false);
 
 	err = nvec_write_sync(nvec, ap_suspend, sizeof(ap_suspend), &msg);
@@ -931,7 +761,7 @@ static int nvec_resume(struct device *dev)
 
 static SIMPLE_DEV_PM_OPS(nvec_pm_ops, nvec_suspend, nvec_resume);
 
-/* Match table for of_platform binding */
+ 
 static const struct of_device_id nvidia_nvec_of_match[] = {
 	{ .compatible = "nvidia,nvec", },
 	{},

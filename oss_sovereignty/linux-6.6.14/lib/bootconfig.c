@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Extra Boot Config
- * Masami Hiramatsu <mhiramat@kernel.org>
- */
+
+ 
 
 #ifdef __KERNEL__
 #include <linux/bootconfig.h>
@@ -14,7 +11,7 @@
 #include <linux/string.h>
 
 #ifdef CONFIG_BOOT_CONFIG_EMBED
-/* embedded_bootconfig_data is defined in bootconfig-data.S */
+ 
 extern __visible const char embedded_bootconfig_data[];
 extern __visible const char embedded_bootconfig_data_end[];
 
@@ -25,25 +22,12 @@ const char * __init xbc_get_embedded_bootconfig(size_t *size)
 }
 #endif
 
-#else /* !__KERNEL__ */
-/*
- * NOTE: This is only for tools/bootconfig, because tools/bootconfig will
- * run the parser sanity test.
- * This does NOT mean lib/bootconfig.c is available in the user space.
- * However, if you change this file, please make sure the tools/bootconfig
- * has no issue on building and running.
- */
+#else  
+ 
 #include <linux/bootconfig.h>
 #endif
 
-/*
- * Extra Boot Config (XBC) is given as tree-structured ascii text of
- * key-value pairs on memory.
- * xbc_parse() parses the text to build a simple tree. Each tree node is
- * simply a key word or a value. A key node may have a next key node or/and
- * a child node (both key and value). A value node may have a next value
- * node (for array).
- */
+ 
 
 static struct xbc_node *xbc_nodes __initdata;
 static int xbc_node_num __initdata;
@@ -66,7 +50,7 @@ static inline void __init xbc_free_mem(void *addr, size_t size)
 	memblock_free(addr, size);
 }
 
-#else /* !__KERNEL__ */
+#else  
 
 static inline void *xbc_alloc_mem(size_t size)
 {
@@ -78,15 +62,7 @@ static inline void xbc_free_mem(void *addr, size_t size)
 	free(addr);
 }
 #endif
-/**
- * xbc_get_info() - Get the information of loaded boot config
- * @node_size: A pointer to store the number of nodes.
- * @data_size: A pointer to store the size of bootconfig data.
- *
- * Get the number of used nodes in @node_size if it is not NULL,
- * and the size of bootconfig data in @data_size if it is not NULL.
- * Return 0 if the boot config is initialized, or return -ENODEV.
- */
+ 
 int __init xbc_get_info(int *node_size, size_t *data_size)
 {
 	if (!xbc_data)
@@ -107,12 +83,7 @@ static int __init xbc_parse_error(const char *msg, const char *p)
 	return -EINVAL;
 }
 
-/**
- * xbc_root_node() - Get the root node of extended boot config
- *
- * Return the address of root node of extended boot config. If the
- * extended boot config is not initiized, return NULL.
- */
+ 
 struct xbc_node * __init xbc_root_node(void)
 {
 	if (unlikely(!xbc_data))
@@ -121,62 +92,31 @@ struct xbc_node * __init xbc_root_node(void)
 	return xbc_nodes;
 }
 
-/**
- * xbc_node_index() - Get the index of XBC node
- * @node: A target node of getting index.
- *
- * Return the index number of @node in XBC node list.
- */
+ 
 int __init xbc_node_index(struct xbc_node *node)
 {
 	return node - &xbc_nodes[0];
 }
 
-/**
- * xbc_node_get_parent() - Get the parent XBC node
- * @node: An XBC node.
- *
- * Return the parent node of @node. If the node is top node of the tree,
- * return NULL.
- */
+ 
 struct xbc_node * __init xbc_node_get_parent(struct xbc_node *node)
 {
 	return node->parent == XBC_NODE_MAX ? NULL : &xbc_nodes[node->parent];
 }
 
-/**
- * xbc_node_get_child() - Get the child XBC node
- * @node: An XBC node.
- *
- * Return the first child node of @node. If the node has no child, return
- * NULL.
- */
+ 
 struct xbc_node * __init xbc_node_get_child(struct xbc_node *node)
 {
 	return node->child ? &xbc_nodes[node->child] : NULL;
 }
 
-/**
- * xbc_node_get_next() - Get the next sibling XBC node
- * @node: An XBC node.
- *
- * Return the NEXT sibling node of @node. If the node has no next sibling,
- * return NULL. Note that even if this returns NULL, it doesn't mean @node
- * has no siblings. (You also has to check whether the parent's child node
- * is @node or not.)
- */
+ 
 struct xbc_node * __init xbc_node_get_next(struct xbc_node *node)
 {
 	return node->next ? &xbc_nodes[node->next] : NULL;
 }
 
-/**
- * xbc_node_get_data() - Get the data of XBC node
- * @node: An XBC node.
- *
- * Return the data (which is always a null terminated string) of @node.
- * If the node has invalid data, warn and return NULL.
- */
+ 
 const char * __init xbc_node_get_data(struct xbc_node *node)
 {
 	int offset = node->data & ~XBC_VALUE;
@@ -206,15 +146,7 @@ xbc_node_match_prefix(struct xbc_node *node, const char **prefix)
 	return true;
 }
 
-/**
- * xbc_node_find_subkey() - Find a subkey node which matches given key
- * @parent: An XBC node.
- * @key: A key string.
- *
- * Search a key node under @parent which matches @key. The @key can contain
- * several words jointed with '.'. If @parent is NULL, this searches the
- * node from whole tree. Return NULL if no node is matched.
- */
+ 
 struct xbc_node * __init
 xbc_node_find_subkey(struct xbc_node *parent, const char *key)
 {
@@ -237,21 +169,7 @@ xbc_node_find_subkey(struct xbc_node *parent, const char *key)
 	return node;
 }
 
-/**
- * xbc_node_find_value() - Find a value node which matches given key
- * @parent: An XBC node.
- * @key: A key string.
- * @vnode: A container pointer of found XBC node.
- *
- * Search a value node under @parent whose (parent) key node matches @key,
- * store it in *@vnode, and returns the value string.
- * The @key can contain several words jointed with '.'. If @parent is NULL,
- * this searches the node from whole tree. Return the value string if a
- * matched key found, return NULL if no node is matched.
- * Note that this returns 0-length string and stores NULL in *@vnode if the
- * key has no value. And also it will return the value of the first entry if
- * the value is an array.
- */
+ 
 const char * __init
 xbc_node_find_value(struct xbc_node *parent, const char *key,
 		    struct xbc_node **vnode)
@@ -271,22 +189,7 @@ xbc_node_find_value(struct xbc_node *parent, const char *key,
 	return node ? xbc_node_get_data(node) : "";
 }
 
-/**
- * xbc_node_compose_key_after() - Compose partial key string of the XBC node
- * @root: Root XBC node
- * @node: Target XBC node.
- * @buf: A buffer to store the key.
- * @size: The size of the @buf.
- *
- * Compose the partial key of the @node into @buf, which is starting right
- * after @root (@root is not included.) If @root is NULL, this returns full
- * key words of @node.
- * Returns the total length of the key stored in @buf. Returns -EINVAL
- * if @node is NULL or @root is not the ancestor of @node or @root is @node,
- * or returns -ERANGE if the key depth is deeper than max depth.
- * This is expected to be used with xbc_find_node() to list up all (child)
- * keys under given key.
- */
+ 
 int __init xbc_node_compose_key_after(struct xbc_node *root,
 				      struct xbc_node *node,
 				      char *buf, size_t size)
@@ -327,15 +230,7 @@ int __init xbc_node_compose_key_after(struct xbc_node *root,
 	return total;
 }
 
-/**
- * xbc_node_find_next_leaf() - Find the next leaf node under given node
- * @root: An XBC root node
- * @node: An XBC node which starts from.
- *
- * Search the next leaf node (which means the terminal key node) of @node
- * under @root node (including @root node itself).
- * Return the next node or NULL if next leaf node is not found.
- */
+ 
 struct xbc_node * __init xbc_node_find_next_leaf(struct xbc_node *root,
 						 struct xbc_node *node)
 {
@@ -344,26 +239,26 @@ struct xbc_node * __init xbc_node_find_next_leaf(struct xbc_node *root,
 	if (unlikely(!xbc_data))
 		return NULL;
 
-	if (!node) {	/* First try */
+	if (!node) {	 
 		node = root;
 		if (!node)
 			node = xbc_nodes;
 	} else {
-		/* Leaf node may have a subkey */
+		 
 		next = xbc_node_get_subkey(node);
 		if (next) {
 			node = next;
 			goto found;
 		}
 
-		if (node == root)	/* @root was a leaf, no child node. */
+		if (node == root)	 
 			return NULL;
 
 		while (!node->next) {
 			node = xbc_node_get_parent(node);
 			if (node == root)
 				return NULL;
-			/* User passed a node which is not uder parent */
+			 
 			if (WARN_ON(!node))
 				return NULL;
 		}
@@ -377,21 +272,11 @@ found:
 	return node;
 }
 
-/**
- * xbc_node_find_next_key_value() - Find the next key-value pair nodes
- * @root: An XBC root node
- * @leaf: A container pointer of XBC node which starts from.
- *
- * Search the next leaf node (which means the terminal key node) of *@leaf
- * under @root node. Returns the value and update *@leaf if next leaf node
- * is found, or NULL if no next leaf node is found.
- * Note that this returns 0-length string if the key has no value, or
- * the value of the first entry if the value is an array.
- */
+ 
 const char * __init xbc_node_find_next_key_value(struct xbc_node *root,
 						 struct xbc_node **leaf)
 {
-	/* tip must be passed */
+	 
 	if (WARN_ON(!leaf))
 		return NULL;
 
@@ -401,10 +286,10 @@ const char * __init xbc_node_find_next_key_value(struct xbc_node *root,
 	if ((*leaf)->child)
 		return xbc_node_get_data(xbc_node_get_child(*leaf));
 	else
-		return "";	/* No value key */
+		return "";	 
 }
 
-/* XBC parse and tree build */
+ 
 
 static int __init xbc_init_node(struct xbc_node *node, char *data, uint32_t flag)
 {
@@ -456,7 +341,7 @@ static struct xbc_node * __init __xbc_add_sibling(char *data, uint32_t flag, boo
 
 	if (node) {
 		if (!last_parent) {
-			/* Ignore @head in this case */
+			 
 			node->parent = XBC_NODE_MAX;
 			sib = xbc_last_sibling(xbc_nodes);
 			sib->next = xbc_node_index(node);
@@ -530,7 +415,7 @@ static char *skip_spaces_until_newline(char *p)
 
 static int __init __xbc_open_brace(char *p)
 {
-	/* Push the last key as open brace */
+	 
 	open_brace[brace_index++] = xbc_node_index(last_parent);
 	if (brace_index >= XBC_DEPTH_MAX)
 		return xbc_parse_error("Exceed max depth of braces", p);
@@ -553,10 +438,7 @@ static int __init __xbc_close_brace(char *p)
 	return 0;
 }
 
-/*
- * Return delimiter or error, no node added. As same as lib/cmdline.c,
- * you can use " around spaces, but can't escape " for value.
- */
+ 
 static int __init __xbc_parse_value(char **__v, char **__n)
 {
 	char *p, *v = *__v;
@@ -598,7 +480,7 @@ static int __init __xbc_parse_value(char **__v, char **__n)
 		return xbc_parse_error("No closing quotes", p);
 	if (c == '#') {
 		p = skip_comment(p);
-		c = '\n';	/* A comment must be treated as a newline */
+		c = '\n';	 
 	}
 	*__n = p;
 	*__v = v;
@@ -651,11 +533,11 @@ static int __init __xbc_add_key(char *k)
 	if (unlikely(xbc_node_num == 0))
 		goto add_node;
 
-	if (!last_parent)	/* the first level */
+	if (!last_parent)	 
 		node = find_match_node(xbc_nodes, k);
 	else {
 		child = xbc_node_get_child(last_parent);
-		/* Since the value node is the first child, skip it. */
+		 
 		if (child && xbc_node_is_value(child))
 			child = xbc_node_get_next(child);
 		node = find_match_node(child, k);
@@ -712,18 +594,18 @@ static int __init xbc_parse_kv(char **k, char *v, int op)
 			unsigned short nidx = child->next;
 
 			xbc_init_node(child, v, XBC_VALUE);
-			child->next = nidx;	/* keep subkeys */
+			child->next = nidx;	 
 			goto array;
 		}
-		/* op must be '+' */
+		 
 		last_parent = xbc_last_child(child);
 	}
-	/* The value node should always be the first child */
+	 
 	if (!xbc_add_head_sibling(v, XBC_VALUE))
 		return -ENOMEM;
 
 array:
-	if (c == ',') {	/* Array */
+	if (c == ',') {	 
 		c = xbc_parse_array(&next);
 		if (c < 0)
 			return c;
@@ -778,7 +660,7 @@ static int __init xbc_close_brace(char **k, char *n)
 	ret = xbc_parse_key(k, n);
 	if (ret)
 		return ret;
-	/* k is updated in xbc_parse_key() */
+	 
 
 	return __xbc_close_brace(n - 1);
 }
@@ -788,14 +670,14 @@ static int __init xbc_verify_tree(void)
 	int i, depth, len, wlen;
 	struct xbc_node *n, *m;
 
-	/* Brace closing */
+	 
 	if (brace_index) {
 		n = &xbc_nodes[open_brace[brace_index]];
 		return xbc_parse_error("Brace is not closed",
 					xbc_node_get_data(n));
 	}
 
-	/* Empty tree */
+	 
 	if (xbc_node_num == 0) {
 		xbc_parse_error("Empty config", xbc_data);
 		return -ENOENT;
@@ -808,7 +690,7 @@ static int __init xbc_verify_tree(void)
 		}
 	}
 
-	/* Key tree limitation check */
+	 
 	n = &xbc_nodes[0];
 	depth = 1;
 	len = 0;
@@ -845,7 +727,7 @@ static int __init xbc_verify_tree(void)
 	return 0;
 }
 
-/* Need to setup xbc_data and xbc_nodes before call this. */
+ 
 static int __init xbc_parse_tree(void)
 {
 	char *p, *q;
@@ -897,13 +779,7 @@ static int __init xbc_parse_tree(void)
 	return ret;
 }
 
-/**
- * xbc_exit() - Clean up all parsed bootconfig
- *
- * This clears all data structures of parsed bootconfig on memory.
- * If you need to reuse xbc_init() with new boot config, you can
- * use this.
- */
+ 
 void __init xbc_exit(void)
 {
 	xbc_free_mem(xbc_data, xbc_data_size);
@@ -915,21 +791,7 @@ void __init xbc_exit(void)
 	brace_index = 0;
 }
 
-/**
- * xbc_init() - Parse given XBC file and build XBC internal tree
- * @data: The boot config text original data
- * @size: The size of @data
- * @emsg: A pointer of const char * to store the error message
- * @epos: A pointer of int to store the error position
- *
- * This parses the boot config text in @data. @size must be smaller
- * than XBC_DATA_MAX.
- * Return the number of stored nodes (>0) if succeeded, or -errno
- * if there is any error.
- * In error cases, @emsg will be updated with an error message and
- * @epos will be updated with the error position which is the byte offset
- * of @buf. If the error is not a parser error, @epos will be -1.
- */
+ 
 int __init xbc_init(const char *data, size_t size, const char **emsg, int *epos)
 {
 	int ret;

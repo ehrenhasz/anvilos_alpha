@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2012 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+
+ 
 #include <drv_types.h>
 #include <rtw_debug.h>
 #include <hal_data.h>
@@ -35,7 +31,7 @@ void rtw_hal_def_value_init(struct adapter *padapter)
 
 void rtw_hal_free_data(struct adapter *padapter)
 {
-	/* free HAL Data */
+	 
 	rtw_hal_data_deinit(padapter);
 
 	if (is_primary_adapter(padapter))
@@ -52,7 +48,7 @@ void rtw_hal_dm_init(struct adapter *padapter)
 
 void rtw_hal_dm_deinit(struct adapter *padapter)
 {
-	/*  cancel dm  timer */
+	 
 	if (is_primary_adapter(padapter))
 		if (padapter->HalFunc.dm_deinit)
 			padapter->HalFunc.dm_deinit(padapter);
@@ -204,22 +200,20 @@ s32	rtw_hal_xmit(struct adapter *padapter, struct xmit_frame *pxmitframe)
 	return false;
 }
 
-/*
- * [IMPORTANT] This function would be run in interrupt context.
- */
+ 
 s32	rtw_hal_mgnt_xmit(struct adapter *padapter, struct xmit_frame *pmgntframe)
 {
 	s32 ret = _FAIL;
 
 	update_mgntframe_attrib_addr(padapter, pmgntframe);
-	/* pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET; */
-	/* pwlanhdr = (struct rtw_ieee80211_hdr *)pframe; */
-	/* memcpy(pmgntframe->attrib.ra, pwlanhdr->addr1, ETH_ALEN); */
+	 
+	 
+	 
 
 	if (padapter->securitypriv.binstallBIPkey == true) {
 		if (is_multicast_ether_addr(pmgntframe->attrib.ra)) {
 			pmgntframe->attrib.encrypt = _BIP_;
-			/* pmgntframe->attrib.bswenc = true; */
+			 
 		} else {
 			pmgntframe->attrib.encrypt = _AES_;
 			pmgntframe->attrib.bswenc = true;
@@ -285,13 +279,13 @@ void rtw_hal_add_ra_tid(struct adapter *padapter, u32 bitmap, u8 *arg, u8 rssi_l
 		padapter->HalFunc.Add_RateATid(padapter, bitmap, arg, rssi_level);
 }
 
-/*Start specifical interface thread		*/
+ 
 void rtw_hal_start_thread(struct adapter *padapter)
 {
 	if (padapter->HalFunc.run_thread)
 		padapter->HalFunc.run_thread(padapter);
 }
-/*Start specifical interface thread		*/
+ 
 void rtw_hal_stop_thread(struct adapter *padapter)
 {
 	if (padapter->HalFunc.cancel_thread)
@@ -351,7 +345,7 @@ void rtw_hal_dm_watchdog_in_lps(struct adapter *padapter)
 {
 	if (adapter_to_pwrctl(padapter)->fw_current_in_ps_mode) {
 		if (padapter->HalFunc.hal_dm_watchdog_in_lps)
-			padapter->HalFunc.hal_dm_watchdog_in_lps(padapter); /* this function caller is in interrupt context */
+			padapter->HalFunc.hal_dm_watchdog_in_lps(padapter);  
 	}
 }
 

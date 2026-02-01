@@ -1,20 +1,4 @@
-/* Test renameatu.
-   Copyright (C) 2009-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Eric Blake <ebb9@byu.net>, 2009.  */
+ 
 
 #include <config.h>
 
@@ -45,7 +29,7 @@ SIGNATURE_CHECK (renameatu, int,
 static int dfd1 = AT_FDCWD;
 static int dfd2 = AT_FDCWD;
 
-/* Wrapper to test renameatu like rename.  */
+ 
 static int
 do_rename (char const *name1, char const *name2)
 {
@@ -60,10 +44,10 @@ main (void)
   char *cwd;
   int result;
 
-  /* Clean up any trash from prior testsuite runs.  */
+   
   ignore_value (system ("rm -rf " BASE "*"));
 
-  /* Test behaviour for invalid file descriptors.  */
+   
   {
     errno = 0;
     ASSERT (renameatu (-1, "foo", AT_FDCWD, "bar", 0) == -1);
@@ -88,7 +72,7 @@ main (void)
   }
   ASSERT (unlink (BASE "oo") == 0);
 
-  /* Test basic rename functionality, using current directory.  */
+   
   result = test_rename (do_rename, false);
   dfd1 = open (".", O_RDONLY);
   ASSERT (0 <= dfd1);
@@ -99,7 +83,7 @@ main (void)
   ASSERT (test_rename (do_rename, false) == result);
   ASSERT (close (dfd2) == 0);
 
-  /* Create locations to manipulate.  */
+   
   ASSERT (mkdir (BASE "sub1", 0700) == 0);
   ASSERT (mkdir (BASE "sub2", 0700) == 0);
   dfd = creat (BASE "00", 0600);
@@ -112,17 +96,7 @@ main (void)
   ASSERT (0 <= dfd);
   ASSERT (chdir (BASE "sub2") == 0);
 
-  /* There are 16 possible scenarios, based on whether an fd is
-     AT_FDCWD or real, and whether a file is absolute or relative.
-
-     To ensure that we test all of the code paths (rather than
-     triggering early normalization optimizations), we use a loop to
-     repeatedly rename a file in the parent directory, use an fd open
-     on subdirectory 1, all while executing in subdirectory 2; all
-     relative names are thus given with a leading "../".  Finally, the
-     last scenario (two relative paths given, neither one AT_FDCWD)
-     has two paths, based on whether the two fds are equivalent, so we
-     do the other variant after the loop.  */
+   
   for (i = 0; i < 16; i++)
     {
       int fd1 = (i & 8) ? dfd : AT_FDCWD;
@@ -141,9 +115,7 @@ main (void)
   ASSERT (renameatu (dfd, "../" BASE "16", dfd2, BASE "17", 0) == 0);
   ASSERT (close (dfd2) == 0);
 
-  /* Now we change back to the parent directory, and set dfd to ".";
-     using dfd in remaining tests will expose any bugs if emulation
-     via /proc/self/fd doesn't check for empty names.  */
+   
   ASSERT (chdir ("..") == 0);
   ASSERT (close (dfd) == 0);
   dfd = open (".", O_RDONLY);
@@ -158,11 +130,11 @@ main (void)
   ASSERT (renameatu (dfd, BASE "sub2", dfd, BASE "sub1/.", 0) == -1);
   ASSERT (errno == EINVAL || errno == EISDIR || errno == EBUSY
           || errno == ENOTEMPTY || errno == EEXIST
-          || errno == ENOENT /* WSL */);
+          || errno == ENOENT  );
   errno = 0;
   ASSERT (renameatu (dfd, BASE "sub2/.", dfd, BASE "sub1", 0) == -1);
   ASSERT (errno == EINVAL || errno == EBUSY || errno == EEXIST
-          || errno == ENOENT /* WSL */);
+          || errno == ENOENT  );
   errno = 0;
   ASSERT (renameatu (dfd, BASE "17", dfd, BASE "sub1", 0) == -1);
   ASSERT (errno == EISDIR);
@@ -185,7 +157,7 @@ main (void)
   ASSERT (renameatu (dfd, BASE "17", dfd, BASE "18/", 0) == -1);
   ASSERT (errno == ENOTDIR || errno == ENOENT);
 
-  /* Finally, make sure we cannot overwrite existing files.  */
+   
   ASSERT (close (creat (BASE "sub2/file", 0600)) == 0);
   errno = 0;
   ASSERT ((renameatu (dfd, BASE "sub2/file", dfd, BASE "sub2/file",
@@ -205,7 +177,7 @@ main (void)
            == -1)
           && errno == EEXIST);
 
-  /* Cleanup.  */
+   
   ASSERT (close (dfd) == 0);
   ASSERT (unlink (BASE "sub2/file") == 0);
   ASSERT (unlink (BASE "17") == 0);

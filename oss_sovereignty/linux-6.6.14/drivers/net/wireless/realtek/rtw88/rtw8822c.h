@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+ 
+ 
 
 #ifndef __RTW8822C_H__
 #define __RTW8822C_H__
@@ -8,21 +7,21 @@
 #include <asm/byteorder.h>
 
 struct rtw8822cu_efuse {
-	u8 res0[0x30];			/* 0x120 */
-	u8 vid[2];			/* 0x150 */
+	u8 res0[0x30];			 
+	u8 vid[2];			 
 	u8 pid[2];
 	u8 res1[3];
-	u8 mac_addr[ETH_ALEN];		/* 0x157 */
+	u8 mac_addr[ETH_ALEN];		 
 	u8 res2[0x3d];
 };
 
 struct rtw8822cs_efuse {
-	u8 res0[0x4a];			/* 0x120 */
-	u8 mac_addr[ETH_ALEN];		/* 0x16a */
+	u8 res0[0x4a];			 
+	u8 mac_addr[ETH_ALEN];		 
 } __packed;
 
 struct rtw8822ce_efuse {
-	u8 mac_addr[ETH_ALEN];		/* 0x120 */
+	u8 mac_addr[ETH_ALEN];		 
 	u8 vender_id[2];
 	u8 device_id[2];
 	u8 sub_vender_id[2];
@@ -30,12 +29,12 @@ struct rtw8822ce_efuse {
 	u8 pmc[2];
 	u8 exp_device_cap[2];
 	u8 msi_cap;
-	u8 ltr_cap;			/* 0x133 */
+	u8 ltr_cap;			 
 	u8 exp_link_control[2];
 	u8 link_cap[4];
 	u8 link_control[2];
 	u8 serial_number[8];
-	u8 res0:2;			/* 0x144 */
+	u8 res0:2;			 
 	u8 ltr_en:1;
 	u8 res1:2;
 	u8 obff:2;
@@ -61,14 +60,14 @@ struct rtw8822c_efuse {
 	__le16 rtl_id;
 	u8 res0[0x0e];
 
-	/* power index for four RF paths */
+	 
 	struct rtw_txpwr_idx txpwr_idx_table[4];
 
-	u8 channel_plan;		/* 0xb8 */
+	u8 channel_plan;		 
 	u8 xtal_k;
 	u8 res1;
 	u8 iqk_lck;
-	u8 res2[5];			/* 0xbc */
+	u8 res2[5];			 
 	u8 rf_board_option;
 	u8 rf_feature_option;
 	u8 rf_bt_setting;
@@ -77,11 +76,11 @@ struct rtw8822c_efuse {
 	u8 tx_bb_swing_setting_2g;
 	u8 tx_bb_swing_setting_5g;
 	u8 tx_pwr_calibrate_rate;
-	u8 rf_antenna_option;		/* 0xc9 */
+	u8 rf_antenna_option;		 
 	u8 rfe_option;
 	u8 country_code[2];
 	u8 res3[3];
-	u8 path_a_thermal;		/* 0xd0 */
+	u8 path_a_thermal;		 
 	u8 path_b_thermal;
 	u8 res4[2];
 	u8 rx_gain_gap_2g_ofdm;
@@ -138,7 +137,7 @@ const struct rtw_table name ## _tbl = {			\
 #define DACK_RF_8822C		1
 #define DACK_SN_8822C		100
 
-/* phy status page0 */
+ 
 #define GET_PHY_STAT_P0_PWDB_A(phy_stat)                                       \
 	le32_get_bits(*((__le32 *)(phy_stat) + 0x00), GENMASK(15, 8))
 #define GET_PHY_STAT_P0_PWDB_B(phy_stat)                                       \
@@ -150,7 +149,7 @@ const struct rtw_table name ## _tbl = {			\
 #define GET_PHY_STAT_P0_GAIN_B(phy_stat)                                       \
 	le32_get_bits(*((__le32 *)(phy_stat) + 0x04), GENMASK(29, 24))
 
-/* phy status page1 */
+ 
 #define GET_PHY_STAT_P1_PWDB_A(phy_stat)                                       \
 	le32_get_bits(*((__le32 *)(phy_stat) + 0x00), GENMASK(15, 8))
 #define GET_PHY_STAT_P1_PWDB_B(phy_stat)                                       \

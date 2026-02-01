@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Virtual I/O topology
- *
- * The Virtual I/O Translation Table (VIOT) describes the topology of
- * para-virtual IOMMUs and the endpoints they manage. The OS uses it to
- * initialize devices in the right order, preventing endpoints from issuing DMA
- * before their IOMMU is ready.
- *
- * When binding a driver to a device, before calling the device driver's probe()
- * method, the driver infrastructure calls dma_configure(). At that point the
- * VIOT driver looks for an IOMMU associated to the device in the VIOT table.
- * If an IOMMU exists and has been initialized, the VIOT driver initializes the
- * device's IOMMU fwspec, allowing the DMA infrastructure to invoke the IOMMU
- * ops when the device driver configures DMA mappings. If an IOMMU exists and
- * hasn't yet been initialized, VIOT returns -EPROBE_DEFER to postpone probing
- * the device until the IOMMU is available.
- */
+
+ 
 #define pr_fmt(fmt) "ACPI: VIOT: " fmt
 
 #include <linux/acpi_viot.h>
@@ -26,7 +10,7 @@
 #include <linux/platform_device.h>
 
 struct viot_iommu {
-	/* Node offset within the table */
+	 
 	unsigned int			offset;
 	struct fwnode_handle		*fwnode;
 	struct list_head		list;
@@ -34,14 +18,14 @@ struct viot_iommu {
 
 struct viot_endpoint {
 	union {
-		/* PCI range */
+		 
 		struct {
 			u16		segment_start;
 			u16		segment_end;
 			u16		bdf_start;
 			u16		bdf_end;
 		};
-		/* MMIO */
+		 
 		u64			address;
 	};
 	u32				endpoint_id;
@@ -89,10 +73,7 @@ static int __init viot_get_pci_iommu_fwnode(struct viot_iommu *viommu,
 
 	fwnode = dev_fwnode(&pdev->dev);
 	if (!fwnode) {
-		/*
-		 * PCI devices aren't necessarily described by ACPI. Create a
-		 * fwnode so the IOMMU subsystem can identify this device.
-		 */
+		 
 		fwnode = acpi_alloc_fwnode_static();
 		if (!fwnode) {
 			pci_dev_put(pdev);
@@ -231,10 +212,7 @@ static int __init viot_parse_node(const struct acpi_viot_header *hdr)
 
 	if (!ep->viommu) {
 		pr_warn("No IOMMU node found\n");
-		/*
-		 * A future version of the table may use the node for other
-		 * purposes. Keep parsing.
-		 */
+		 
 		ret = 0;
 		goto err_free;
 	}
@@ -247,12 +225,7 @@ err_free:
 	return ret;
 }
 
-/**
- * acpi_viot_early_init - Test the presence of VIOT and enable ACS
- *
- * If the VIOT does exist, ACS must be enabled. This cannot be
- * done in acpi_viot_init() which is called after the bus scan
- */
+ 
 void __init acpi_viot_early_init(void)
 {
 #ifdef CONFIG_PCI
@@ -267,12 +240,7 @@ void __init acpi_viot_early_init(void)
 #endif
 }
 
-/**
- * acpi_viot_init - Parse the VIOT table
- *
- * Parse the VIOT table, prepare the list of endpoints to be used during DMA
- * setup of devices.
- */
+ 
 void __init acpi_viot_init(void)
 {
 	int i;
@@ -312,7 +280,7 @@ static int viot_dev_iommu_init(struct device *dev, struct viot_iommu *viommu,
 	if (!viommu)
 		return -ENODEV;
 
-	/* We're not translating ourself */
+	 
 	if (device_match_fwnode(dev, viommu->fwnode))
 		return -EINVAL;
 
@@ -363,12 +331,7 @@ static int viot_mmio_dev_iommu_init(struct platform_device *pdev)
 	return -ENODEV;
 }
 
-/**
- * viot_iommu_configure - Setup IOMMU ops for an endpoint described by VIOT
- * @dev: the endpoint
- *
- * Return: 0 on success, <0 on failure
- */
+ 
 int viot_iommu_configure(struct device *dev)
 {
 	if (dev_is_pci(dev))

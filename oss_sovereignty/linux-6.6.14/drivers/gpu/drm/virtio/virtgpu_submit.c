@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright (C) 2015 Red Hat, Inc.
- * All Rights Reserved.
- *
- * Authors:
- *    Dave Airlie
- *    Alon Levy
- */
+
+ 
 
 #include <linux/dma-fence-unwrap.h>
 #include <linux/file.h>
@@ -98,12 +91,7 @@ virtio_gpu_parse_deps(struct virtio_gpu_submit *submit)
 	if (!num_in_syncobjs)
 		return 0;
 
-	/*
-	 * kvalloc at first tries to allocate memory using kmalloc and
-	 * falls back to vmalloc only on failure. It also uses __GFP_NOWARN
-	 * internally for allocations larger than a page size, preventing
-	 * storm of KMSG warnings.
-	 */
+	 
 	syncobjs = kvcalloc(num_in_syncobjs, sizeof(*syncobjs), GFP_KERNEL);
 	if (!syncobjs)
 		return -ENOMEM;
@@ -442,10 +430,7 @@ static int virtio_gpu_wait_in_fence(struct virtio_gpu_submit *submit)
 		if (!in_fence)
 			return -EINVAL;
 
-		/*
-		 * Wait if the fence is from a foreign context, or if the
-		 * fence array contains any fence from a foreign context.
-		 */
+		 
 		ret = virtio_gpu_dma_fence_wait(submit, in_fence);
 
 		dma_fence_put(in_fence);
@@ -513,11 +498,7 @@ int virtio_gpu_execbuffer_ioctl(struct drm_device *dev, void *data,
 	if (ret)
 		goto cleanup;
 
-	/*
-	 * Await in-fences in the end of the job submission path to
-	 * optimize the path by proceeding directly to the submission
-	 * to virtio after the waits.
-	 */
+	 
 	ret = virtio_gpu_wait_in_fence(&submit);
 	if (ret)
 		goto cleanup;
@@ -528,10 +509,7 @@ int virtio_gpu_execbuffer_ioctl(struct drm_device *dev, void *data,
 
 	virtio_gpu_submit(&submit);
 
-	/*
-	 * Set up usr-out data after submitting the job to optimize
-	 * the job submission path.
-	 */
+	 
 	virtio_gpu_install_out_fence_fd(&submit);
 	virtio_gpu_process_post_deps(&submit);
 	virtio_gpu_complete_submit(&submit);

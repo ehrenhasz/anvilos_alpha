@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AU Optronics A030JTN01.0 TFT LCD panel driver
- *
- * Copyright (C) 2023, Paul Cercueil <paul@crapouillou.net>
- * Copyright (C) 2023, Christophe Branchereau <cbranchereau@gmail.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -67,28 +62,23 @@ static int a030jtn01_prepare(struct drm_panel *panel)
 
 	usleep_range(1000, 8000);
 
-	/* Reset the chip */
+	 
 	gpiod_set_value_cansleep(priv->reset_gpio, 1);
 	usleep_range(100, 8000);
 	gpiod_set_value_cansleep(priv->reset_gpio, 0);
 	usleep_range(2000, 8000);
 
-	/*
-	 * No idea why, but a register read (doesn't matter which) is needed to
-	 * properly initialize the chip after a reset; otherwise, the colors
-	 * will be wrong. It doesn't seem to be timing-related as a msleep(200)
-	 * doesn't fix it.
-	 */
+	 
 	err = regmap_read(priv->map, REG05, &dummy);
 	if (err)
 		goto err_disable_regulator;
 
-	/* Use (24 + 6) == 0x1e as the vertical back porch */
+	 
 	err = regmap_write(priv->map, REG06, FIELD_PREP(REG06_VBLK, 0x1e));
 	if (err)
 		goto err_disable_regulator;
 
-	/* Use (42 + 30) * 3 == 0xd8 as the horizontal back porch */
+	 
 	err = regmap_write(priv->map, REG07, FIELD_PREP(REG07_HBLK, 0xd8));
 	if (err)
 		goto err_disable_regulator;
@@ -120,7 +110,7 @@ static int a030jtn01_enable(struct drm_panel *panel)
 	if (ret)
 		return ret;
 
-	/* Wait for the picture to be stable */
+	 
 	if (panel->backlight)
 		msleep(100);
 
@@ -245,7 +235,7 @@ static void a030jtn01_remove(struct spi_device *spi)
 }
 
 static const struct drm_display_mode a030jtn01_modes[] = {
-	{ /* 60 Hz */
+	{  
 		.clock = 14400,
 		.hdisplay = 320,
 		.hsync_start = 320 + 8,
@@ -257,7 +247,7 @@ static const struct drm_display_mode a030jtn01_modes[] = {
 		.vtotal = 480 + 90 + 24 + 6,
 		.flags = DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC,
 	},
-	{ /* 50 Hz */
+	{  
 		.clock = 12000,
 		.hdisplay = 320,
 		.hsync_start = 320 + 8,
@@ -282,13 +272,13 @@ static const struct a030jtn01_info a030jtn01_info = {
 
 static const struct spi_device_id a030jtn01_id[] = {
 	{ "a030jtn01", (kernel_ulong_t) &a030jtn01_info },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(spi, a030jtn01_id);
 
 static const struct of_device_id a030jtn01_of_match[] = {
 	{ .compatible = "auo,a030jtn01" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, a030jtn01_of_match);
 

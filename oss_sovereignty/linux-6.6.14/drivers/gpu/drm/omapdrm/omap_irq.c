@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Rob Clark <rob.clark@linaro.org>
- */
+
+ 
 
 #include <drm/drm_vblank.h>
 
@@ -15,7 +12,7 @@ struct omap_irq_wait {
 	int count;
 };
 
-/* call with wait_lock and dispc runtime held */
+ 
 static void omap_irq_update(struct drm_device *dev)
 {
 	struct omap_drm_private *priv = dev->dev_private;
@@ -98,18 +95,7 @@ int omap_irq_enable_framedone(struct drm_crtc *crtc, bool enable)
 	return 0;
 }
 
-/**
- * omap_irq_enable_vblank - enable vblank interrupt events
- * @crtc: DRM CRTC
- *
- * Enable vblank interrupts for @crtc.  If the device doesn't have
- * a hardware vblank counter, this routine should be a no-op, since
- * interrupts will have to stay on to keep the count accurate.
- *
- * RETURNS
- * Zero on success, appropriate errno if the given @crtc's vblank
- * interrupt cannot be enabled.
- */
+ 
 int omap_irq_enable_vblank(struct drm_crtc *crtc)
 {
 	struct drm_device *dev = crtc->dev;
@@ -128,14 +114,7 @@ int omap_irq_enable_vblank(struct drm_crtc *crtc)
 	return 0;
 }
 
-/**
- * omap_irq_disable_vblank - disable vblank interrupt events
- * @crtc: DRM CRTC
- *
- * Disable vblank interrupts for @crtc.  If the device doesn't have
- * a hardware vblank counter, this routine should be a no-op, since
- * interrupts will have to stay on to keep the count accurate.
- */
+ 
 void omap_irq_disable_vblank(struct drm_crtc *crtc)
 {
 	struct drm_device *dev = crtc->dev;
@@ -213,7 +192,7 @@ static irqreturn_t omap_irq_handler(int irq, void *arg)
 
 	irqstatus = dispc_read_irqstatus(priv->dispc);
 	dispc_clear_irqstatus(priv->dispc, irqstatus);
-	dispc_read_irqstatus(priv->dispc);	/* flush posted write */
+	dispc_read_irqstatus(priv->dispc);	 
 
 	VERB("irqs: %08x", irqstatus);
 

@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * bebob_hwdep.c - a part of driver for BeBoB based devices
- *
- * Copyright (c) 2013-2014 Takashi Sakamoto
- */
 
-/*
- * This codes give three functionality.
- *
- * 1.get firewire node infomation
- * 2.get notification about starting/stopping stream
- * 3.lock/unlock stream
- */
+ 
+
+ 
 
 #include "bebob.h"
 

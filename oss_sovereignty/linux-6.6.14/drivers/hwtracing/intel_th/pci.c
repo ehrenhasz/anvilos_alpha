@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel(R) Trace Hub pci driver
- *
- * Copyright (C) 2014-2015 Intel Corporation.
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -145,167 +141,167 @@ static const struct pci_device_id intel_th_pci_id_table[] = {
 		.driver_data = (kernel_ulong_t)0,
 	},
 	{
-		/* Apollo Lake */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x5a8e),
 		.driver_data = (kernel_ulong_t)0,
 	},
 	{
-		/* Broxton */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x0a80),
 		.driver_data = (kernel_ulong_t)0,
 	},
 	{
-		/* Broxton B-step */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x1a8e),
 		.driver_data = (kernel_ulong_t)0,
 	},
 	{
-		/* Kaby Lake PCH-H */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0xa2a6),
 		.driver_data = (kernel_ulong_t)&intel_th_1x_multi_is_broken,
 	},
 	{
-		/* Denverton */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x19e1),
 		.driver_data = (kernel_ulong_t)0,
 	},
 	{
-		/* Lewisburg PCH */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0xa1a6),
 		.driver_data = (kernel_ulong_t)0,
 	},
 	{
-		/* Lewisburg PCH */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0xa226),
 		.driver_data = (kernel_ulong_t)0,
 	},
 	{
-		/* Gemini Lake */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x318e),
 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 	},
 	{
-		/* Cannon Lake H */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0xa326),
 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 	},
 	{
-		/* Cannon Lake LP */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x9da6),
 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 	},
 	{
-		/* Cedar Fork PCH */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x18e1),
 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 	},
 	{
-		/* Ice Lake PCH */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x34a6),
 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 	},
 	{
-		/* Comet Lake */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x02a6),
 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 	},
 	{
-		/* Comet Lake PCH */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x06a6),
 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 	},
 	{
-		/* Comet Lake PCH-V */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0xa3a6),
 		.driver_data = (kernel_ulong_t)&intel_th_1x_multi_is_broken,
 	},
 	{
-		/* Ice Lake NNPI */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x45c5),
 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 	},
 	{
-		/* Ice Lake CPU */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x8a29),
 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 	},
 	{
-		/* Tiger Lake CPU */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x9a33),
 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 	},
 	{
-		/* Tiger Lake PCH */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0xa0a6),
 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 	},
 	{
-		/* Tiger Lake PCH-H */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x43a6),
 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 	},
 	{
-		/* Jasper Lake PCH */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x4da6),
 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 	},
 	{
-		/* Jasper Lake CPU */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x4e29),
 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 	},
 	{
-		/* Elkhart Lake CPU */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x4529),
 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 	},
 	{
-		/* Elkhart Lake */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x4b26),
 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 	},
 	{
-		/* Emmitsburg PCH */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x1bcc),
 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 	},
 	{
-		/* Alder Lake */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x7aa6),
 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 	},
 	{
-		/* Alder Lake-P */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x51a6),
 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 	},
 	{
-		/* Alder Lake-M */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x54a6),
 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 	},
 	{
-		/* Meteor Lake-P */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x7e24),
 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 	},
 	{
-		/* Raptor Lake-S */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x7a26),
 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 	},
 	{
-		/* Raptor Lake-S CPU */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0xa76f),
 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 	},
 	{
-		/* Alder Lake CPU */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x466f),
 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 	},
 	{
-		/* Rocket Lake CPU */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x4c19),
 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 	},

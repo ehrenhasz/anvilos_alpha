@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HDMI interface DSS driver for TI's OMAP4 family of SoCs.
- * Copyright (C) 2010-2011 Texas Instruments Incorporated - https://www.ti.com/
- * Authors: Yong Zhi
- *	Mythri pk <mythripk@ti.com>
- */
+
+ 
 
 #define DSS_SUBSYS_NAME "HDMI"
 
@@ -65,12 +60,7 @@ static irqreturn_t hdmi_irq_handler(int irq, void *data)
 
 	if ((irqstatus & HDMI_IRQ_LINK_CONNECT) &&
 			irqstatus & HDMI_IRQ_LINK_DISCONNECT) {
-		/*
-		 * If we get both connect and disconnect interrupts at the same
-		 * time, turn off the PHY, clear interrupts, and restart, which
-		 * raises connect interrupt if a cable is connected, or nothing
-		 * if cable is not connected.
-		 */
+		 
 		hdmi_wp_set_phy_pwr(wp, HDMI_PHYPWRCMD_OFF);
 
 		hdmi_wp_set_irqstatus(wp, HDMI_IRQ_LINK_CONNECT |
@@ -118,7 +108,7 @@ static int hdmi_power_on_core(struct omap_dss_device *dssdev)
 	if (r)
 		goto err_runtime_get;
 
-	/* Make selection of HDMI in DSS */
+	 
 	dss_select_hdmi_venc_clk_source(DSS_HDMI_M_PCLK);
 
 	hdmi.core_enabled = true;
@@ -151,7 +141,7 @@ static int hdmi_power_on_full(struct omap_dss_device *dssdev)
 	if (r)
 		return r;
 
-	/* disable and clear irqs */
+	 
 	hdmi_wp_clear_irqenable(wp, 0xffffffff);
 	hdmi_wp_set_irqstatus(wp, 0xffffffff);
 
@@ -186,10 +176,10 @@ static int hdmi_power_on_full(struct omap_dss_device *dssdev)
 
 	hdmi4_configure(&hdmi.core, &hdmi.wp, &hdmi.cfg);
 
-	/* bypass TV gamma table */
+	 
 	dispc_enable_gamma_table(0);
 
-	/* tv size */
+	 
 	dss_mgr_set_timings(mgr, p);
 
 	r = hdmi_wp_video_start(&hdmi.wp);
@@ -545,7 +535,7 @@ err:
 	return r;
 }
 
-/* Audio callbacks */
+ 
 static int hdmi_audio_startup(struct device *dev,
 			      void (*abort_cb)(struct device *dev))
 {
@@ -662,7 +652,7 @@ static int hdmi_audio_register(struct device *dev)
 	return PTR_ERR_OR_ZERO(hdmi.audio_pdev);
 }
 
-/* HDMI HW IP initialisation */
+ 
 static int hdmi4_bind(struct device *dev, struct device *master, void *data)
 {
 	struct platform_device *pdev = to_platform_device(dev);

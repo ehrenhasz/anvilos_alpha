@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2021-2022 Intel Corporation
- */
+
+ 
 
 #include <net/mac80211.h>
 #include "fw/api/rs.h"
@@ -11,9 +9,7 @@
 #define IWL_DECLARE_RATE_INFO(r) \
 	[IWL_RATE_##r##M_INDEX] = IWL_RATE_##r##M_PLCP
 
-/*
- * Translate from fw_rate_index (IWL_RATE_XXM_INDEX) to PLCP
- * */
+ 
 static const u8 fw_rate_idx_to_plcp[IWL_RATE_COUNT] = {
 	IWL_DECLARE_RATE_INFO(1),
 	IWL_DECLARE_RATE_INFO(2),
@@ -29,7 +25,7 @@ static const u8 fw_rate_idx_to_plcp[IWL_RATE_COUNT] = {
 	IWL_DECLARE_RATE_INFO(54),
 };
 
-/* mbps, mcs */
+ 
 static const struct iwl_rate_mcs_info rate_mcs[IWL_RATE_COUNT] = {
 	{  "1", "BPSK DSSS"},
 	{  "2", "QPSK DSSS"},
@@ -112,7 +108,7 @@ u32 iwl_new_rate_from_v1(u32 rate_v1)
 
 	if (rate_v1 == 0)
 		return rate_v1;
-	/* convert rate */
+	 
 	if (rate_v1 & RATE_MCS_HT_MSK_V1) {
 		u32 nss = 0;
 
@@ -139,10 +135,7 @@ u32 iwl_new_rate_from_v1(u32 rate_v1)
 			if ((he_type_bits == RATE_MCS_HE_TYPE_SU ||
 			     he_type_bits == RATE_MCS_HE_TYPE_EXT_SU) &&
 			    he_gi_ltf == RATE_MCS_HE_SU_4_LTF)
-				/* the new rate have an additional bit to
-				 * represent the value 4 rather then using SGI
-				 * bit for this purpose - as it was done in the old
-				 * rate */
+				 
 				he_gi_ltf += (rate_v1 & RATE_MCS_SGI_MSK_V1) >>
 					RATE_MCS_SGI_POS_V1;
 
@@ -154,7 +147,7 @@ u32 iwl_new_rate_from_v1(u32 rate_v1)
 		} else {
 			rate_v2 |= RATE_MCS_VHT_MSK;
 		}
-	/* if legacy format */
+	 
 	} else {
 		u32 legacy_rate = iwl_legacy_rate_to_fw_idx(rate_v1);
 
@@ -167,7 +160,7 @@ u32 iwl_new_rate_from_v1(u32 rate_v1)
 			rate_v2 |= RATE_MCS_LEGACY_OFDM_MSK;
 	}
 
-	/* convert flags */
+	 
 	if (rate_v1 & RATE_MCS_LDPC_MSK_V1)
 		rate_v2 |= RATE_MCS_LDPC_MSK;
 	rate_v2 |= (rate_v1 & RATE_MCS_CHAN_WIDTH_MSK_V1) |
@@ -221,7 +214,7 @@ int rs_pretty_print_rate(char *buf, int bufsz, const u32 rate)
 	else if (format == RATE_MCS_EHT_MSK)
 		type = "EHT";
 	else
-		type = "Unknown"; /* shouldn't happen */
+		type = "Unknown";  
 
 	mcs = format == RATE_MCS_HT_MSK ?
 		RATE_HT_MCS_INDEX(rate) :

@@ -1,26 +1,4 @@
-/*
- * Copyright 2013 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #define gk104_ram(p) container_of((p), struct gk104_ram, base)
 #include "ram.h"
 #include "ramfuc.h"
@@ -96,7 +74,7 @@ struct gk104_ramfuc {
 	struct ramfuc_reg r_0x10f910;
 	struct ramfuc_reg r_0x10f914;
 
-	struct ramfuc_reg r_mr[16]; /* MR0 - MR8, MR15 */
+	struct ramfuc_reg r_mr[16];  
 
 	struct ramfuc_reg r_0x62c000;
 
@@ -134,9 +112,7 @@ struct gk104_ram {
 	int N2, M2, P2;
 };
 
-/*******************************************************************************
- * GDDR5
- ******************************************************************************/
+ 
 static void
 gk104_ram_train(struct gk104_ramfuc *fuc, u32 mask, u32 data)
 {
@@ -172,7 +148,7 @@ r1373f4_init(struct gk104_ramfuc *fuc)
 	ram_mask(fuc, 0x1373f4, 0x00000003, 0x00000000);
 	ram_mask(fuc, 0x1373f4, 0x00000010, 0x00000000);
 
-	/* (re)program refpll, if required */
+	 
 	if ((ram_rd32(fuc, 0x132024) & 0xffffffff) != rcoef ||
 	    (ram_rd32(fuc, 0x132034) & 0x0000ffff) != runk1) {
 		ram_mask(fuc, 0x132000, 0x00000001, 0x00000000);
@@ -187,7 +163,7 @@ r1373f4_init(struct gk104_ramfuc *fuc)
 		ram_mask(fuc, 0x132028, 0x00080000, 0x00000000);
 	}
 
-	/* (re)program mempll, if required */
+	 
 	if (ram->mode == 2) {
 		ram_mask(fuc, 0x1373f4, 0x00010000, 0x00000000);
 		ram_mask(fuc, 0x132000, 0x80000000, 0x80000000);
@@ -263,7 +239,7 @@ gk104_ram_calc_gddr5(struct gk104_ram *ram, u32 freq)
 	if (ram->base.fb->subdev.device->disp)
 		ram_wr32(fuc, 0x62c000, 0x0f0f0000);
 
-	/* MR1: turn termination on early, for some reason.. */
+	 
 	if ((ram->base.mr[1] & 0x03c) != 0x030) {
 		ram_mask(fuc, mr[1], 0x03c, ram->base.mr[1] & 0x03c);
 		ram_nuts(ram, mr[1], 0x03c, ram->base.mr1_nuts & 0x03c, 0x000);
@@ -281,13 +257,13 @@ gk104_ram_calc_gddr5(struct gk104_ram *ram, u32 freq)
 
 	gk104_ram_train(fuc, 0x01020000, 0x000c0000);
 
-	ram_wr32(fuc, 0x10f210, 0x00000000); /* REFRESH_AUTO = 0 */
+	ram_wr32(fuc, 0x10f210, 0x00000000);  
 	ram_nsec(fuc, 1000);
-	ram_wr32(fuc, 0x10f310, 0x00000001); /* REFRESH */
+	ram_wr32(fuc, 0x10f310, 0x00000001);  
 	ram_nsec(fuc, 1000);
 
 	ram_mask(fuc, 0x10f200, 0x80000000, 0x80000000);
-	ram_wr32(fuc, 0x10f314, 0x00000001); /* PRECHARGE */
+	ram_wr32(fuc, 0x10f314, 0x00000001);  
 	ram_mask(fuc, 0x10f200, 0x80000000, 0x00000000);
 	ram_wr32(fuc, 0x10f090, 0x00000061);
 	ram_wr32(fuc, 0x10f090, 0xc000007f);
@@ -296,11 +272,7 @@ gk104_ram_calc_gddr5(struct gk104_ram *ram, u32 freq)
 	ram_wr32(fuc, 0x10f698, 0x00000000);
 	ram_wr32(fuc, 0x10f69c, 0x00000000);
 
-	/*XXX: there does appear to be some kind of condition here, simply
-	 *     modifying these bits in the vbios from the default pl0
-	 *     entries shows no change.  however, the data does appear to
-	 *     be correct and may be required for the transition back
-	 */
+	 
 	mask = 0x800f07e0;
 	data = 0x00030000;
 	if (ram_rd32(fuc, 0x10f978) & 0x00800000)
@@ -371,7 +343,7 @@ gk104_ram_calc_gddr5(struct gk104_ram *ram, u32 freq)
 	}
 
 	if (ram->from != 2 && ram->mode == 2) {
-		if (0 /*XXX: Titan */)
+		if (0  )
 			ram_mask(fuc, 0x10f200, 0x18000000, 0x18000000);
 		ram_mask(fuc, 0x10f800, 0x00000004, 0x00000000);
 		ram_mask(fuc, 0x1373f0, 0x00000000, 0x00000002);
@@ -387,7 +359,7 @@ gk104_ram_calc_gddr5(struct gk104_ram *ram, u32 freq)
 		r1373f4_fini(fuc);
 	}
 
-	if (ram->mode != 2) /*XXX*/ {
+	if (ram->mode != 2)   {
 		if (next->bios.ramcfg_11_07_40)
 			ram_mask(fuc, 0x10f670, 0x80000000, 0x80000000);
 	}
@@ -457,7 +429,7 @@ gk104_ram_calc_gddr5(struct gk104_ram *ram, u32 freq)
 		data |= 0x00004000;
 	ram_mask(fuc, 0x10f830, 0x00007000, data);
 
-	/* PFB timing */
+	 
 	ram_mask(fuc, 0x10f248, 0xffffffff, next->bios.timing[10]);
 	ram_mask(fuc, 0x10f290, 0xffffffff, next->bios.timing[0]);
 	ram_mask(fuc, 0x10f294, 0xffffffff, next->bios.timing[1]);
@@ -520,9 +492,7 @@ gk104_ram_calc_gddr5(struct gk104_ram *ram, u32 freq)
 		data |= 0x20200000;
 	if (!next->bios.ramcfg_11_07_80)
 		data |= 0x12800000;
-	/*XXX: see note above about there probably being some condition
-	 *     for the 10f824 stuff that uses ramcfg 3...
-	 */
+	 
 	if (next->bios.ramcfg_11_03_f0) {
 		if (next->bios.rammap_11_08_0c) {
 			if (!next->bios.ramcfg_11_07_80)
@@ -578,13 +548,13 @@ gk104_ram_calc_gddr5(struct gk104_ram *ram, u32 freq)
 
 	ram_wr32(fuc, 0x10f090, 0x4000007e);
 	ram_nsec(fuc, 2000);
-	ram_wr32(fuc, 0x10f314, 0x00000001); /* PRECHARGE */
-	ram_wr32(fuc, 0x10f310, 0x00000001); /* REFRESH */
-	ram_wr32(fuc, 0x10f210, 0x80000000); /* REFRESH_AUTO = 1 */
+	ram_wr32(fuc, 0x10f314, 0x00000001);  
+	ram_wr32(fuc, 0x10f310, 0x00000001);  
+	ram_wr32(fuc, 0x10f210, 0x80000000);  
 
-	if (next->bios.ramcfg_11_08_10 && (ram->mode == 2) /*XXX*/) {
+	if (next->bios.ramcfg_11_08_10 && (ram->mode == 2)  ) {
 		u32 temp = ram_mask(fuc, 0x10f294, 0xff000000, 0x24000000);
-		gk104_ram_train(fuc, 0xbc0e0000, 0xa4010000); /*XXX*/
+		gk104_ram_train(fuc, 0xbc0e0000, 0xa4010000);  
 		ram_nsec(fuc, 1000);
 		ram_wr32(fuc, 0x10f294, temp);
 	}
@@ -594,7 +564,7 @@ gk104_ram_calc_gddr5(struct gk104_ram *ram, u32 freq)
 	ram_mask(fuc, mr[8], 0xfff, ram->base.mr[8]);
 	ram_nsec(fuc, 1000);
 	ram_mask(fuc, mr[1], 0xfff, ram->base.mr[1]);
-	ram_mask(fuc, mr[5], 0xfff, ram->base.mr[5] & ~0x004); /* LP3 later */
+	ram_mask(fuc, mr[5], 0xfff, ram->base.mr[5] & ~0x004);  
 	ram_mask(fuc, mr[6], 0xfff, ram->base.mr[6]);
 	ram_mask(fuc, mr[7], 0xfff, ram->base.mr[7]);
 
@@ -607,7 +577,7 @@ gk104_ram_calc_gddr5(struct gk104_ram *ram, u32 freq)
 	}
 
 	ram_mask(fuc, 0x10f200, 0x80000000, 0x80000000);
-	ram_wr32(fuc, 0x10f318, 0x00000001); /* NOP? */
+	ram_wr32(fuc, 0x10f318, 0x00000001);  
 	ram_mask(fuc, 0x10f200, 0x80000000, 0x00000000);
 	ram_nsec(fuc, 1000);
 	ram_nuts(ram, 0x10f200, 0x18808800, 0x00000000, 0x18808800);
@@ -640,14 +610,14 @@ gk104_ram_calc_gddr5(struct gk104_ram *ram, u32 freq)
 		data = 0xa40e0000;
 	}
 	gk104_ram_train(fuc, 0xbc0f0000, data);
-	if (1) /* XXX: not always? */
+	if (1)  
 		ram_nsec(fuc, 1000);
 
-	if (ram->mode == 2) { /*XXX*/
+	if (ram->mode == 2) {  
 		ram_mask(fuc, 0x10f800, 0x00000004, 0x00000004);
 	}
 
-	/* LP3 */
+	 
 	if (ram_mask(fuc, mr[5], 0x004, ram->base.mr[5]) != ram->base.mr[5])
 		ram_nsec(fuc, 1000);
 
@@ -673,9 +643,7 @@ gk104_ram_calc_gddr5(struct gk104_ram *ram, u32 freq)
 	return 0;
 }
 
-/*******************************************************************************
- * DDR3
- ******************************************************************************/
+ 
 
 static void
 nvkm_sddr3_dll_reset(struct gk104_ramfuc *fuc)
@@ -726,26 +694,22 @@ gk104_ram_calc_sddr3(struct gk104_ram *ram, u32 freq)
 	if (next->bios.ramcfg_11_03_f0)
 		ram_mask(fuc, 0x10f808, 0x04000000, 0x04000000);
 
-	ram_wr32(fuc, 0x10f314, 0x00000001); /* PRECHARGE */
+	ram_wr32(fuc, 0x10f314, 0x00000001);  
 
 	if (next->bios.ramcfg_DLLoff)
 		nvkm_sddr3_dll_disable(fuc);
 
-	ram_wr32(fuc, 0x10f210, 0x00000000); /* REFRESH_AUTO = 0 */
-	ram_wr32(fuc, 0x10f310, 0x00000001); /* REFRESH */
+	ram_wr32(fuc, 0x10f210, 0x00000000);  
+	ram_wr32(fuc, 0x10f310, 0x00000001);  
 	ram_mask(fuc, 0x10f200, 0x80000000, 0x80000000);
-	ram_wr32(fuc, 0x10f310, 0x00000001); /* REFRESH */
+	ram_wr32(fuc, 0x10f310, 0x00000001);  
 	ram_mask(fuc, 0x10f200, 0x80000000, 0x00000000);
 	ram_nsec(fuc, 1000);
 
 	ram_wr32(fuc, 0x10f090, 0x00000060);
 	ram_wr32(fuc, 0x10f090, 0xc000007e);
 
-	/*XXX: there does appear to be some kind of condition here, simply
-	 *     modifying these bits in the vbios from the default pl0
-	 *     entries shows no change.  however, the data does appear to
-	 *     be correct and may be required for the transition back
-	 */
+	 
 	mask = 0x00010000;
 	data = 0x00010000;
 
@@ -788,7 +752,7 @@ gk104_ram_calc_sddr3(struct gk104_ram *ram, u32 freq)
 	ram_mask(fuc, 0x1373f4, 0x00000003, 0x00000000);
 	ram_mask(fuc, 0x1373f4, 0x00000010, 0x00000000);
 
-	/* (re)program refpll, if required */
+	 
 	if ((ram_rd32(fuc, 0x132024) & 0xffffffff) != rcoef ||
 	    (ram_rd32(fuc, 0x132034) & 0x0000ffff) != runk1) {
 		ram_mask(fuc, 0x132000, 0x00000001, 0x00000000);
@@ -821,7 +785,7 @@ gk104_ram_calc_sddr3(struct gk104_ram *ram, u32 freq)
 		ram_nsec(fuc, 20000);
 	}
 
-	if (ram->mode != 2) /*XXX*/ {
+	if (ram->mode != 2)   {
 		if (next->bios.ramcfg_11_07_40)
 			ram_mask(fuc, 0x10f670, 0x80000000, 0x80000000);
 	}
@@ -851,7 +815,7 @@ gk104_ram_calc_sddr3(struct gk104_ram *ram, u32 freq)
 		data = 0x00000000;
 	ram_mask(fuc, 0x10f82c, 0x00100000, data);
 
-	/* PFB timing */
+	 
 	ram_mask(fuc, 0x10f248, 0xffffffff, next->bios.timing[10]);
 	ram_mask(fuc, 0x10f290, 0xffffffff, next->bios.timing[0]);
 	ram_mask(fuc, 0x10f294, 0xffffffff, next->bios.timing[1]);
@@ -870,9 +834,7 @@ gk104_ram_calc_sddr3(struct gk104_ram *ram, u32 freq)
 		data |= 0x20200000;
 	if (!next->bios.ramcfg_11_07_80)
 		data |= 0x12800000;
-	/*XXX: see note above about there probably being some condition
-	 *     for the 10f824 stuff that uses ramcfg 3...
-	 */
+	 
 	if (next->bios.ramcfg_11_03_f0) {
 		if (next->bios.rammap_11_08_0c) {
 			if (!next->bios.ramcfg_11_07_80)
@@ -903,9 +865,9 @@ gk104_ram_calc_sddr3(struct gk104_ram *ram, u32 freq)
 	ram_wr32(fuc, 0x10f090, 0x4000007f);
 	ram_nsec(fuc, 1000);
 
-	ram_wr32(fuc, 0x10f314, 0x00000001); /* PRECHARGE */
-	ram_wr32(fuc, 0x10f310, 0x00000001); /* REFRESH */
-	ram_wr32(fuc, 0x10f210, 0x80000000); /* REFRESH_AUTO = 1 */
+	ram_wr32(fuc, 0x10f314, 0x00000001);  
+	ram_wr32(fuc, 0x10f310, 0x00000001);  
+	ram_wr32(fuc, 0x10f210, 0x80000000);  
 	ram_nsec(fuc, 1000);
 
 	if (!next->bios.ramcfg_DLLoff) {
@@ -937,7 +899,7 @@ gk104_ram_calc_sddr3(struct gk104_ram *ram, u32 freq)
 	}
 
 	ram_mask(fuc, 0x10f200, 0x80000000, 0x80000000);
-	ram_wr32(fuc, 0x10f318, 0x00000001); /* NOP? */
+	ram_wr32(fuc, 0x10f318, 0x00000001);  
 	ram_mask(fuc, 0x10f200, 0x80000000, 0x00000000);
 	ram_nsec(fuc, 1000);
 
@@ -954,9 +916,7 @@ gk104_ram_calc_sddr3(struct gk104_ram *ram, u32 freq)
 	return 0;
 }
 
-/*******************************************************************************
- * main hooks
- ******************************************************************************/
+ 
 
 static int
 gk104_ram_calc_data(struct gk104_ram *ram, u32 khz, struct nvkm_ram_data *data)
@@ -993,9 +953,9 @@ gk104_pll_calc_hiclk(int target_khz, int crystal,
 	bool upper = false;
 
 	*M1 = 1;
-	/* M has to be 1, otherwise it gets unstable */
+	 
 	*M2 = 1;
-	/* can be 1 or 2, sticking with 1 for simplicity */
+	 
 	*P2 = 1;
 
 	for (p_ref = 0x7; p_ref >= 0x5; --p_ref) {
@@ -1007,7 +967,7 @@ gk104_pll_calc_hiclk(int target_khz, int crystal,
 			cur_err = target_khz
 				- gk104_calc_pll_output(0xf000, 1, cur_N, 1, cur_clk);
 
-			/* we found a better combination */
+			 
 			if (cur_err < best_err) {
 				best_err = cur_err;
 				*N2 = cur_N;
@@ -1029,7 +989,7 @@ gk104_pll_calc_hiclk(int target_khz, int crystal,
 		}
 	}
 
-	/* adjust fN to get closer to the target clock */
+	 
 	*fN1 = (u16)((((best_err / *N2 * *P2) * (*P1 * *M1)) << 13) / crystal);
 	if (upper)
 		*fN1 = (u16)(1 - *fN1);
@@ -1052,14 +1012,7 @@ gk104_ram_calc_xits(struct gk104_ram *ram, struct nvkm_ram_data *next)
 	ram->mode = (next->freq > fuc->refpll.vco1.max_freq) ? 2 : 1;
 	ram->from = ram_rd32(fuc, 0x1373f4) & 0x0000000f;
 
-	/* XXX: this is *not* what nvidia do.  on fermi nvidia generally
-	 * select, based on some unknown condition, one of the two possible
-	 * reference frequencies listed in the vbios table for mempll and
-	 * program refpll to that frequency.
-	 *
-	 * so far, i've seen very weird values being chosen by nvidia on
-	 * kepler boards, no idea how/why they're chosen.
-	 */
+	 
 	refclk = next->freq;
 	if (ram->mode == 2) {
 		ret = gk104_pll_calc_hiclk(next->freq, subdev->device->crystal,
@@ -1073,7 +1026,7 @@ gk104_ram_calc_xits(struct gk104_ram *ram, struct nvkm_ram_data *next)
 		nvkm_debug(subdev, "successfully calced PLLs for clock %i kHz"
 				" (refclock: %i kHz)\n", next->freq, ret);
 	} else {
-		/* calculate refpll coefficients */
+		 
 		ret = gt215_pll_calc(subdev, &fuc->refpll, refclk, &ram->N1,
 				     &ram->fN1, &ram->M1, &ram->P1);
 		fuc->mempll.refclk = ret;
@@ -1280,7 +1233,7 @@ gk104_ram_train_type(struct nvkm_ram *ram, int i, u8 ramcfg,
 	u8  ver, hdr, cnt, len;
 	u32 data;
 
-	/* determine type of data for this index */
+	 
 	if (!(data = nvbios_M0205Ep(bios, i, &ver, &hdr, &cnt, &len, &M0205E)))
 		return -ENOENT;
 
@@ -1296,24 +1249,21 @@ gk104_ram_train_type(struct nvkm_ram *ram, int i, u8 ramcfg,
 		return 0;
 	}
 
-	/* training data index determined by ramcfg strap */
+	 
 	if (!(data = nvbios_M0205Sp(bios, i, ramcfg, &ver, &hdr, &M0205S)))
 		return -EINVAL;
 	i = M0205S.data;
 
-	/* training data format information */
+	 
 	if (!(data = nvbios_M0209Ep(bios, i, &ver, &hdr, &cnt, &len, &M0209E)))
 		return -EINVAL;
 
-	/* ... and the raw data */
+	 
 	if (!(data = nvbios_M0209Sp(bios, i, 0, &ver, &hdr, value)))
 		return -EINVAL;
 
 	if (M0209E.v02_07 == 2) {
-		/* of course! why wouldn't we have a pointer to another entry
-		 * in the same table, and use the first one as an array of
-		 * remap indices...
-		 */
+		 
 		if (!(data = nvbios_M0209Sp(bios, M0209E.v03, 0, &ver, &hdr,
 					    remap)))
 			return -EINVAL;
@@ -1403,23 +1353,13 @@ gk104_ram_init(struct nvkm_ram *ram)
 	u32 data, save;
 	int i;
 
-	/* run a bunch of tables from rammap table.  there's actually
-	 * individual pointers for each rammap entry too, but, nvidia
-	 * seem to just run the last two entries' scripts early on in
-	 * their init, and never again.. we'll just run 'em all once
-	 * for now.
-	 *
-	 * i strongly suspect that each script is for a separate mode
-	 * (likely selected by 0x10f65c's lower bits?), and the
-	 * binary driver skips the one that's already been setup by
-	 * the init tables.
-	 */
+	 
 	data = nvbios_rammapTe(bios, &ver, &hdr, &cnt, &len, &snr, &ssz);
 	if (!data || hdr < 0x15)
 		return -EINVAL;
 
-	cnt  = nvbios_rd08(bios, data + 0x14); /* guess at count */
-	data = nvbios_rd32(bios, data + 0x10); /* guess u32... */
+	cnt  = nvbios_rd08(bios, data + 0x14);  
+	data = nvbios_rd32(bios, data + 0x10);  
 	save = nvkm_rd32(device, 0x10f65c) & 0x000000f0;
 	for (i = 0; i < cnt; i++, data += 4) {
 		if (i != save >> 4) {
@@ -1451,14 +1391,14 @@ gk104_ram_ctor_data(struct gk104_ram *ram, u8 ramcfg, int i)
 	p = &list_last_entry(&ram->cfg, typeof(*cfg), head)->bios;
 	n = &cfg->bios;
 
-	/* memory config data for a range of target frequencies */
+	 
 	data = nvbios_rammapEp(bios, i, &ver, &hdr, &cnt, &len, &cfg->bios);
 	if (ret = -ENOENT, !data)
 		goto done;
 	if (ret = -ENOSYS, ver != 0x11 || hdr < 0x12)
 		goto done;
 
-	/* ... and a portion specific to the attached memory */
+	 
 	data = nvbios_rammapSp(bios, data, ver, hdr, cnt, len, ramcfg,
 			       &ver, &hdr, &cfg->bios);
 	if (ret = -EINVAL, !data)
@@ -1466,7 +1406,7 @@ gk104_ram_ctor_data(struct gk104_ram *ram, u8 ramcfg, int i)
 	if (ret = -ENOSYS, ver != 0x11 || hdr < 0x0a)
 		goto done;
 
-	/* lookup memory timings, if bios says they're present */
+	 
 	if (cfg->bios.ramcfg_timing != 0xff) {
 		data = nvbios_timingEp(bios, cfg->bios.ramcfg_timing,
 				       &ver, &hdr, &cnt, &len,
@@ -1540,11 +1480,7 @@ gk104_ram_new_(const struct nvkm_ram_func *func, struct nvkm_fb *fb,
 
 	INIT_LIST_HEAD(&ram->cfg);
 
-	/* calculate a mask of differently configured memory partitions,
-	 * because, of course reclocking wasn't complicated enough
-	 * already without having to treat some of them differently to
-	 * the others....
-	 */
+	 
 	ram->parts = nvkm_rd32(device, 0x022438);
 	ram->pmask = nvkm_rd32(device, 0x022554);
 	ram->pnuts = 0;
@@ -1559,17 +1495,7 @@ gk104_ram_new_(const struct nvkm_ram_func *func, struct nvkm_fb *fb,
 		}
 	}
 
-	/* parse bios data for all rammap table entries up-front, and
-	 * build information on whether certain fields differ between
-	 * any of the entries.
-	 *
-	 * the binary driver appears to completely ignore some fields
-	 * when all entries contain the same value.  at first, it was
-	 * hoped that these were mere optimisations and the bios init
-	 * tables had configured as per the values here, but there is
-	 * evidence now to suggest that this isn't the case and we do
-	 * need to treat this condition as a "don't touch" indicator.
-	 */
+	 
 	for (i = 0; !ret; i++) {
 		ret = gk104_ram_ctor_data(ram, ramcfg, i);
 		if (ret && ret != -ENOENT) {
@@ -1578,7 +1504,7 @@ gk104_ram_new_(const struct nvkm_ram_func *func, struct nvkm_fb *fb,
 		}
 	}
 
-	/* parse bios data for both pll's */
+	 
 	ret = nvbios_pll_parse(bios, 0x0c, &ram->fuc.refpll);
 	if (ret) {
 		nvkm_error(subdev, "mclk refpll data not found\n");
@@ -1591,7 +1517,7 @@ gk104_ram_new_(const struct nvkm_ram_func *func, struct nvkm_fb *fb,
 		return ret;
 	}
 
-	/* lookup memory voltage gpios */
+	 
 	ret = nvkm_gpio_find(device->gpio, 0, 0x18, DCB_GPIO_UNUSED, &gpio);
 	if (ret == 0) {
 		ram->fuc.r_gpioMV = ramfuc_reg(0x00d610 + (gpio.line * 0x04));

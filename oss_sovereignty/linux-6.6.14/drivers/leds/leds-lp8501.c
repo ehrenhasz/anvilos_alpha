@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI LP8501 9 channel LED Driver
- *
- * Copyright (C) 2013 Texas Instruments
- *
- * Author: Milo(Woogyom) Kim <milo.kim@ti.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/firmware.h>
@@ -23,7 +17,7 @@
 #define LP8501_PROGRAM_LENGTH		32
 #define LP8501_MAX_LEDS			9
 
-/* Registers */
+ 
 #define LP8501_REG_ENABLE		0x00
 #define LP8501_ENABLE			BIT(6)
 #define LP8501_EXEC_M			0x3F
@@ -96,7 +90,7 @@ static int lp8501_post_init_device(struct lp55xx_chip *chip)
 	if (ret)
 		return ret;
 
-	/* Chip startup time is 500 us, 1 - 2 ms gives some margin */
+	 
 	usleep_range(1000, 2000);
 
 	if (chip->pdata->clock_mode != LP55XX_CLOCK_EXT)
@@ -108,7 +102,7 @@ static int lp8501_post_init_device(struct lp55xx_chip *chip)
 	if (ret)
 		return ret;
 
-	/* Power selection for each output */
+	 
 	return lp55xx_update_bits(chip, LP8501_REG_PWR_CONFIG,
 				LP8501_PWR_CONFIG_M, chip->pdata->pwr_sel);
 }
@@ -161,17 +155,14 @@ static void lp8501_run_engine(struct lp55xx_chip *chip, bool start)
 	u8 mode;
 	u8 exec;
 
-	/* stop engine */
+	 
 	if (!start) {
 		lp8501_stop_engine(chip);
 		lp8501_turn_off_channels(chip);
 		return;
 	}
 
-	/*
-	 * To run the engine,
-	 * operation mode and enable register should updated at the same time
-	 */
+	 
 
 	ret = lp55xx_read(chip, LP8501_REG_OP_MODE, &mode);
 	if (ret)
@@ -181,7 +172,7 @@ static void lp8501_run_engine(struct lp55xx_chip *chip, bool start)
 	if (ret)
 		return;
 
-	/* change operation mode to RUN only when each engine is loading */
+	 
 	if (LP8501_ENG1_IS_LOADING(mode)) {
 		mode = (mode & ~LP8501_MODE_ENG1_M) | LP8501_RUN_ENG1;
 		exec = (exec & ~LP8501_EXEC_ENG1_M) | LP8501_RUN_ENG1;
@@ -215,13 +206,13 @@ static int lp8501_update_program_memory(struct lp55xx_chip *chip,
 	int ret;
 	int i;
 
-	/* clear program memory before updating */
+	 
 	for (i = 0; i < LP8501_PROGRAM_LENGTH; i++)
 		lp55xx_write(chip, LP8501_REG_PROG_MEM + i, 0);
 
 	i = 0;
 	while ((offset < size - 1) && (i < LP8501_PROGRAM_LENGTH)) {
-		/* separate sscanfs because length is working only for %s */
+		 
 		ret = sscanf(data + offset, "%2s%n ", c, &nrchars);
 		if (ret != 1)
 			goto err;
@@ -235,7 +226,7 @@ static int lp8501_update_program_memory(struct lp55xx_chip *chip,
 		i++;
 	}
 
-	/* Each instruction is 16bit long. Check that length is even */
+	 
 	if (i % 2)
 		goto err;
 
@@ -260,11 +251,7 @@ static void lp8501_firmware_loaded(struct lp55xx_chip *chip)
 		return;
 	}
 
-	/*
-	 * Program memory sequence
-	 *  1) set engine mode to "LOAD"
-	 *  2) write firmware data into program memory
-	 */
+	 
 
 	lp8501_load_engine(chip);
 	lp8501_update_program_memory(chip, fw->data, fw->size);
@@ -283,7 +270,7 @@ static int lp8501_led_brightness(struct lp55xx_led *led)
 	return ret;
 }
 
-/* Chip specific configurations */
+ 
 static struct lp55xx_device_config lp8501_cfg = {
 	.reset = {
 		.addr = LP8501_REG_RESET,

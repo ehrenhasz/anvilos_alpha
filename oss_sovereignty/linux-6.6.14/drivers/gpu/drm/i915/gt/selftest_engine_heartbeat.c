@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2018 Intel Corporation
- */
+
+ 
 
 #include <linux/sort.h>
 
@@ -133,7 +131,7 @@ static int __live_idle_pulse(struct intel_engine_cs *engine,
 
 	GEM_BUG_ON(READ_ONCE(engine->serial) != engine->wakeref_serial);
 
-	pulse_unlock_wait(p); /* synchronize with the retirement callback */
+	pulse_unlock_wait(p);  
 
 	if (!i915_active_is_idle(&p->active)) {
 		struct drm_printer m = drm_err_printer("pulse");
@@ -158,7 +156,7 @@ static int live_idle_flush(void *arg)
 	enum intel_engine_id id;
 	int err = 0;
 
-	/* Check that we can flush the idle barriers */
+	 
 
 	for_each_engine(engine, gt, id) {
 		st_engine_heartbeat_disable(engine);
@@ -178,7 +176,7 @@ static int live_idle_pulse(void *arg)
 	enum intel_engine_id id;
 	int err = 0;
 
-	/* Check that heartbeat pulses flush the idle barriers */
+	 
 
 	for_each_engine(engine, gt, id) {
 		st_engine_heartbeat_disable(engine);
@@ -222,10 +220,10 @@ static int __live_heartbeat_fast(struct intel_engine_cs *engine)
 
 	for (i = 0; i < ARRAY_SIZE(times); i++) {
 		do {
-			/* Manufacture a tick */
+			 
 			intel_engine_park_heartbeat(engine);
 			GEM_BUG_ON(engine->heartbeat.systole);
-			engine->serial++; /*  pretend we are not idle! */
+			engine->serial++;  
 			intel_engine_unpark_heartbeat(engine);
 
 			flush_delayed_work(&engine->heartbeat.work);
@@ -245,7 +243,7 @@ static int __live_heartbeat_fast(struct intel_engine_cs *engine)
 
 		t0 = ktime_get();
 		while (rq == READ_ONCE(engine->heartbeat.systole))
-			yield(); /* work is on the local cpu! */
+			yield();  
 		t1 = ktime_get();
 
 		i915_request_put(rq);
@@ -260,13 +258,7 @@ static int __live_heartbeat_fast(struct intel_engine_cs *engine)
 		times[0],
 		times[ARRAY_SIZE(times) - 1]);
 
-	/*
-	 * Ideally, the upper bound on min work delay would be something like
-	 * 2 * 2 (worst), +1 for scheduling, +1 for slack. In practice, we
-	 * are, even with system_wq_highpri, at the mercy of the CPU scheduler
-	 * and may be stuck behind some slow work for many millisecond. Such
-	 * as our very own display workers.
-	 */
+	 
 	if (times[ARRAY_SIZE(times) / 2] > error_threshold) {
 		pr_err("%s: Heartbeat delay was %uus, expected less than %dus\n",
 		       engine->name,
@@ -289,7 +281,7 @@ static int live_heartbeat_fast(void *arg)
 	enum intel_engine_id id;
 	int err = 0;
 
-	/* Check that the heartbeat ticks at the desired rate. */
+	 
 	if (!CONFIG_DRM_I915_HEARTBEAT_INTERVAL)
 		return 0;
 
@@ -351,7 +343,7 @@ static int live_heartbeat_off(void *arg)
 	enum intel_engine_id id;
 	int err = 0;
 
-	/* Check that we can turn off heartbeat and not interrupt VIP */
+	 
 	if (!CONFIG_DRM_I915_HEARTBEAT_INTERVAL)
 		return 0;
 
@@ -410,12 +402,7 @@ void st_engine_heartbeat_disable_no_pm(struct intel_engine_cs *engine)
 {
 	engine->props.heartbeat_interval_ms = 0;
 
-	/*
-	 * Park the heartbeat but without holding the PM lock as that
-	 * makes the engines appear not-idle. Note that if/when unpark
-	 * is called due to the PM lock being acquired later the
-	 * heartbeat still won't be enabled because of the above = 0.
-	 */
+	 
 	if (intel_engine_pm_get_if_awake(engine)) {
 		intel_engine_park_heartbeat(engine);
 		intel_engine_pm_put(engine);

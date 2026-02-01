@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Thunderbolt driver - Tunneling support
- *
- * Copyright (c) 2014 Andreas Noever <andreas.noever@gmail.com>
- * Copyright (C) 2019, Intel Corporation
- */
+ 
+ 
 
 #ifndef TB_TUNNEL_H_
 #define TB_TUNNEL_H_
@@ -18,34 +13,7 @@ enum tb_tunnel_type {
 	TB_TUNNEL_USB3,
 };
 
-/**
- * struct tb_tunnel - Tunnel between two ports
- * @tb: Pointer to the domain
- * @src_port: Source port of the tunnel
- * @dst_port: Destination port of the tunnel. For discovered incomplete
- *	      tunnels may be %NULL or null adapter port instead.
- * @paths: All paths required by the tunnel
- * @npaths: Number of paths in @paths
- * @init: Optional tunnel specific initialization
- * @deinit: Optional tunnel specific de-initialization
- * @activate: Optional tunnel specific activation/deactivation
- * @maximum_bandwidth: Returns maximum possible bandwidth for this tunnel
- * @allocated_bandwidth: Return how much bandwidth is allocated for the tunnel
- * @alloc_bandwidth: Change tunnel bandwidth allocation
- * @consumed_bandwidth: Return how much bandwidth the tunnel consumes
- * @release_unused_bandwidth: Release all unused bandwidth
- * @reclaim_available_bandwidth: Reclaim back available bandwidth
- * @list: Tunnels are linked using this field
- * @type: Type of the tunnel
- * @max_up: Maximum upstream bandwidth (Mb/s) available for the tunnel.
- *	    Only set if the bandwidth needs to be limited.
- * @max_down: Maximum downstream bandwidth (Mb/s) available for the tunnel.
- *	      Only set if the bandwidth needs to be limited.
- * @allocated_up: Allocated upstream bandwidth (only for USB3)
- * @allocated_down: Allocated downstream bandwidth (only for USB3)
- * @bw_mode: DP bandwidth allocation mode registers can be used to
- *	     determine consumed and allocated bandwidth
- */
+ 
 struct tb_tunnel {
 	struct tb *tb;
 	struct tb_port *src_port;

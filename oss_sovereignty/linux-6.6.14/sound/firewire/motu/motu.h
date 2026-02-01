@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * motu.h - a part of driver for MOTU FireWire series
- *
- * Copyright (c) 2015-2017 Takashi Sakamoto <o-takashi@sakamocchi.jp>
- */
+ 
+ 
 
 #ifndef SOUND_FIREWIRE_MOTU_H_INCLUDED
 #define SOUND_FIREWIRE_MOTU_H_INCLUDED
@@ -54,10 +50,10 @@ struct snd_motu {
 	struct mutex mutex;
 	spinlock_t lock;
 
-	/* Model dependent information. */
+	 
 	const struct snd_motu_spec *spec;
 
-	/* For packet streaming */
+	 
 	struct snd_motu_packet_format tx_packet_formats;
 	struct snd_motu_packet_format rx_packet_formats;
 	struct amdtp_stream tx_stream;
@@ -66,11 +62,11 @@ struct snd_motu {
 	struct fw_iso_resources rx_resources;
 	unsigned int substreams_counter;
 
-	/* For notification. */
+	 
 	struct fw_address_handler async_handler;
 	u32 msg;
 
-	/* For uapi */
+	 
 	int dev_lock_count;
 	bool dev_lock_changed;
 	wait_queue_head_t hwdep_wait;
@@ -120,7 +116,7 @@ enum snd_motu_protocol_version {
 struct snd_motu_spec {
 	const char *const name;
 	enum snd_motu_protocol_version protocol_version;
-	// The combination of snd_motu_spec_flags enumeration-constants.
+	
 	unsigned int flags;
 
 	unsigned char tx_fixed_pcm_chunks[3];

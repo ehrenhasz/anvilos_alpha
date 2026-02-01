@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2021, Mellanox Technologies inc. All rights reserved. */
+
+ 
 
 #include "rx_res.h"
 #include "channels.h"
@@ -32,7 +32,7 @@ struct mlx5e_rx_res {
 	} ptp;
 };
 
-/* API for rx_res_rss_* */
+ 
 
 static int mlx5e_rx_res_rss_init_def(struct mlx5e_rx_res *res,
 				     unsigned int init_nch)
@@ -181,7 +181,7 @@ static void mlx5e_rx_res_rss_disable(struct mlx5e_rx_res *res)
 	}
 }
 
-/* Updates the indirection table SW shadow, does not update the HW resources yet */
+ 
 void mlx5e_rx_res_rss_set_indir_uniform(struct mlx5e_rx_res *res, unsigned int nch)
 {
 	WARN_ON_ONCE(res->rss_active);
@@ -282,7 +282,7 @@ struct mlx5e_rss *mlx5e_rx_res_rss_get(struct mlx5e_rx_res *res, u32 rss_idx)
 	return res->rss[rss_idx];
 }
 
-/* End of API rx_res_rss_* */
+ 
 
 struct mlx5e_rx_res *mlx5e_rx_res_alloc(void)
 {
@@ -366,7 +366,7 @@ static int mlx5e_rx_res_ptp_init(struct mlx5e_rx_res *res)
 	if (err)
 		goto out;
 
-	/* Separated from the channels RQs, does not share pkt_merge state with them */
+	 
 	mlx5e_tir_builder_build_rqt(builder, res->mdev->mlx5e_res.hw_objs.td.tdn,
 				    mlx5e_rqt_get_rqtn(&res->ptp.rqt),
 				    inner_ft_support);

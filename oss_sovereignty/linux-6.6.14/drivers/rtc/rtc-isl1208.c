@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Intersil ISL1208 rtc class driver
- *
- * Copyright 2005,2006 Hebert Valerio Riedel <hvr@gnu.org>
- */
+
+ 
 
 #include <linux/bcd.h>
 #include <linux/clk.h>
@@ -13,38 +9,38 @@
 #include <linux/of_irq.h>
 #include <linux/rtc.h>
 
-/* Register map */
-/* rtc section */
+ 
+ 
 #define ISL1208_REG_SC  0x00
 #define ISL1208_REG_MN  0x01
 #define ISL1208_REG_HR  0x02
-#define ISL1208_REG_HR_MIL     (1<<7)	/* 24h/12h mode */
-#define ISL1208_REG_HR_PM      (1<<5)	/* PM/AM bit in 12h mode */
+#define ISL1208_REG_HR_MIL     (1<<7)	 
+#define ISL1208_REG_HR_PM      (1<<5)	 
 #define ISL1208_REG_DT  0x03
 #define ISL1208_REG_MO  0x04
 #define ISL1208_REG_YR  0x05
 #define ISL1208_REG_DW  0x06
 #define ISL1208_RTC_SECTION_LEN 7
 
-/* control/status section */
+ 
 #define ISL1208_REG_SR  0x07
-#define ISL1208_REG_SR_ARST    (1<<7)	/* auto reset */
-#define ISL1208_REG_SR_XTOSCB  (1<<6)	/* crystal oscillator */
-#define ISL1208_REG_SR_WRTC    (1<<4)	/* write rtc */
-#define ISL1208_REG_SR_EVT     (1<<3)	/* event */
-#define ISL1208_REG_SR_ALM     (1<<2)	/* alarm */
-#define ISL1208_REG_SR_BAT     (1<<1)	/* battery */
-#define ISL1208_REG_SR_RTCF    (1<<0)	/* rtc fail */
+#define ISL1208_REG_SR_ARST    (1<<7)	 
+#define ISL1208_REG_SR_XTOSCB  (1<<6)	 
+#define ISL1208_REG_SR_WRTC    (1<<4)	 
+#define ISL1208_REG_SR_EVT     (1<<3)	 
+#define ISL1208_REG_SR_ALM     (1<<2)	 
+#define ISL1208_REG_SR_BAT     (1<<1)	 
+#define ISL1208_REG_SR_RTCF    (1<<0)	 
 #define ISL1208_REG_INT 0x08
-#define ISL1208_REG_INT_ALME   (1<<6)   /* alarm enable */
-#define ISL1208_REG_INT_IM     (1<<7)   /* interrupt/alarm mode */
+#define ISL1208_REG_INT_ALME   (1<<6)    
+#define ISL1208_REG_INT_IM     (1<<7)    
 #define ISL1219_REG_EV  0x09
-#define ISL1219_REG_EV_EVEN    (1<<4)   /* event detection enable */
-#define ISL1219_REG_EV_EVIENB  (1<<7)   /* event in pull-up disable */
+#define ISL1219_REG_EV_EVEN    (1<<4)    
+#define ISL1219_REG_EV_EVIENB  (1<<7)    
 #define ISL1208_REG_ATR 0x0a
 #define ISL1208_REG_DTR 0x0b
 
-/* alarm section */
+ 
 #define ISL1208_REG_SCA 0x0c
 #define ISL1208_REG_MNA 0x0d
 #define ISL1208_REG_HRA 0x0e
@@ -53,12 +49,12 @@
 #define ISL1208_REG_DWA 0x11
 #define ISL1208_ALARM_SECTION_LEN 6
 
-/* user section */
+ 
 #define ISL1208_REG_USR1 0x12
 #define ISL1208_REG_USR2 0x13
 #define ISL1208_USR_SECTION_LEN 2
 
-/* event section */
+ 
 #define ISL1219_REG_SCT 0x14
 #define ISL1219_REG_MNT 0x15
 #define ISL1219_REG_HRT 0x16
@@ -69,7 +65,7 @@
 
 static struct i2c_driver isl1208_driver;
 
-/* Chip capabilities table */
+ 
 struct isl1208_config {
 	unsigned int	nvmem_length;
 	unsigned	has_tamper:1;
@@ -127,14 +123,14 @@ static const __maybe_unused struct of_device_id isl1208_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, isl1208_of_match);
 
-/* Device state */
+ 
 struct isl1208_state {
 	struct nvmem_config nvmem_config;
 	struct rtc_device *rtc;
 	const struct isl1208_config *config;
 };
 
-/* block read */
+ 
 static int
 isl1208_i2c_read_regs(struct i2c_client *client, u8 reg, u8 buf[],
 		      unsigned len)
@@ -148,7 +144,7 @@ isl1208_i2c_read_regs(struct i2c_client *client, u8 reg, u8 buf[],
 	return (ret < 0) ? ret : 0;
 }
 
-/* block write */
+ 
 static int
 isl1208_i2c_set_regs(struct i2c_client *client, u8 reg, u8 const buf[],
 		     unsigned len)
@@ -162,7 +158,7 @@ isl1208_i2c_set_regs(struct i2c_client *client, u8 reg, u8 const buf[],
 	return (ret < 0) ? ret : 0;
 }
 
-/* simple check to see whether we have a isl1208 */
+ 
 static int
 isl1208_i2c_validate_client(struct i2c_client *client)
 {
@@ -178,7 +174,7 @@ isl1208_i2c_validate_client(struct i2c_client *client)
 		return ret;
 
 	for (i = 0; i < ISL1208_RTC_SECTION_LEN; ++i) {
-		if (regs[i] & zero_mask[i])	/* check if bits are cleared */
+		if (regs[i] & zero_mask[i])	 
 			return -ENODEV;
 	}
 
@@ -187,7 +183,7 @@ isl1208_i2c_validate_client(struct i2c_client *client)
 
 static int isl1208_set_xtoscb(struct i2c_client *client, int sr, int xtosb_val)
 {
-	/* Do nothing if bit is already set to desired value */
+	 
 	if (!!(sr & ISL1208_REG_SR_XTOSCB) == xtosb_val)
 		return 0;
 
@@ -212,25 +208,16 @@ isl1208_i2c_get_atr(struct i2c_client *client)
 	if (atr < 0)
 		return atr;
 
-	/* The 6bit value in the ATR register controls the load
-	 * capacitance C_load * in steps of 0.25pF
-	 *
-	 * bit (1<<5) of the ATR register is inverted
-	 *
-	 * C_load(ATR=0x20) =  4.50pF
-	 * C_load(ATR=0x00) = 12.50pF
-	 * C_load(ATR=0x1f) = 20.25pF
-	 *
-	 */
+	 
 
-	atr &= 0x3f;		/* mask out lsb */
-	atr ^= 1 << 5;		/* invert 6th bit */
-	atr += 2 * 9;		/* add offset of 4.5pF; unit[atr] = 0.25pF */
+	atr &= 0x3f;		 
+	atr ^= 1 << 5;		 
+	atr += 2 * 9;		 
 
 	return atr;
 }
 
-/* returns adjustment value + 100 */
+ 
 static int
 isl1208_i2c_get_dtr(struct i2c_client *client)
 {
@@ -238,7 +225,7 @@ isl1208_i2c_get_dtr(struct i2c_client *client)
 	if (dtr < 0)
 		return -EIO;
 
-	/* dtr encodes adjustments of {-60,-40,-20,0,20,40,60} ppm */
+	 
 	dtr = ((dtr & 0x3) * 20) * (dtr & (1 << 2) ? -1 : 1);
 
 	return dtr + 100;
@@ -355,21 +342,21 @@ isl1208_i2c_read_time(struct i2c_client *client, struct rtc_time *tm)
 	tm->tm_sec = bcd2bin(regs[ISL1208_REG_SC]);
 	tm->tm_min = bcd2bin(regs[ISL1208_REG_MN]);
 
-	/* HR field has a more complex interpretation */
+	 
 	{
 		const u8 _hr = regs[ISL1208_REG_HR];
-		if (_hr & ISL1208_REG_HR_MIL)	/* 24h format */
+		if (_hr & ISL1208_REG_HR_MIL)	 
 			tm->tm_hour = bcd2bin(_hr & 0x3f);
 		else {
-			/* 12h format */
+			 
 			tm->tm_hour = bcd2bin(_hr & 0x1f);
-			if (_hr & ISL1208_REG_HR_PM)	/* PM flag set */
+			if (_hr & ISL1208_REG_HR_PM)	 
 				tm->tm_hour += 12;
 		}
 	}
 
 	tm->tm_mday = bcd2bin(regs[ISL1208_REG_DT]);
-	tm->tm_mon = bcd2bin(regs[ISL1208_REG_MO]) - 1;	/* rtc starts at 1 */
+	tm->tm_mon = bcd2bin(regs[ISL1208_REG_MO]) - 1;	 
 	tm->tm_year = bcd2bin(regs[ISL1208_REG_YR]) + 100;
 	tm->tm_wday = bcd2bin(regs[ISL1208_REG_DW]);
 
@@ -396,7 +383,7 @@ isl1208_i2c_read_alarm(struct i2c_client *client, struct rtc_wkalrm *alarm)
 		return sr;
 	}
 
-	/* MSB of each alarm register is an enable bit */
+	 
 	tm->tm_sec = bcd2bin(regs[ISL1208_REG_SCA - ISL1208_REG_SCA] & 0x7f);
 	tm->tm_min = bcd2bin(regs[ISL1208_REG_MNA - ISL1208_REG_SCA] & 0x7f);
 	tm->tm_hour = bcd2bin(regs[ISL1208_REG_HRA - ISL1208_REG_SCA] & 0x3f);
@@ -405,7 +392,7 @@ isl1208_i2c_read_alarm(struct i2c_client *client, struct rtc_wkalrm *alarm)
 		bcd2bin(regs[ISL1208_REG_MOA - ISL1208_REG_SCA] & 0x1f) - 1;
 	tm->tm_wday = bcd2bin(regs[ISL1208_REG_DWA - ISL1208_REG_SCA] & 0x03);
 
-	/* The alarm doesn't store the year so get it from the rtc section */
+	 
 	yr = i2c_smbus_read_byte_data(client, ISL1208_REG_YR);
 	if (yr < 0) {
 		dev_err(&client->dev, "%s: reading RTC YR failed\n", __func__);
@@ -436,13 +423,13 @@ isl1208_i2c_set_alarm(struct i2c_client *client, struct rtc_wkalrm *alarm)
 	if (err)
 		return err;
 
-	/* If the alarm time is before the current time disable the alarm */
+	 
 	if (!alarm->enabled || rtc_tm_sub(alarm_tm, &rtc_tm) <= 0)
 		enable = 0x00;
 	else
 		enable = 0x80;
 
-	/* Program the alarm and enable it for each setting */
+	 
 	regs[ISL1208_REG_SCA - offs] = bin2bcd(alarm_tm->tm_sec) | enable;
 	regs[ISL1208_REG_MNA - offs] = bin2bcd(alarm_tm->tm_min) | enable;
 	regs[ISL1208_REG_HRA - offs] = bin2bcd(alarm_tm->tm_hour) |
@@ -452,7 +439,7 @@ isl1208_i2c_set_alarm(struct i2c_client *client, struct rtc_wkalrm *alarm)
 	regs[ISL1208_REG_MOA - offs] = bin2bcd(alarm_tm->tm_mon + 1) | enable;
 	regs[ISL1208_REG_DWA - offs] = bin2bcd(alarm_tm->tm_wday & 7) | enable;
 
-	/* write ALARM registers */
+	 
 	err = isl1208_i2c_set_regs(client, offs, regs,
 				  ISL1208_ALARM_SECTION_LEN);
 	if (err < 0) {
@@ -480,10 +467,7 @@ isl1208_i2c_set_time(struct i2c_client *client, struct rtc_time const *tm)
 	int sr;
 	u8 regs[ISL1208_RTC_SECTION_LEN] = { 0, };
 
-	/* The clock has an 8 bit wide bcd-coded register (they never learn)
-	 * for the year. tm_year is an offset from 1900 and we are interested
-	 * in the 2000-2099 range, so any value less than 100 is invalid.
-	 */
+	 
 	if (tm->tm_year < 100)
 		return -EINVAL;
 
@@ -503,7 +487,7 @@ isl1208_i2c_set_time(struct i2c_client *client, struct rtc_time const *tm)
 		return sr;
 	}
 
-	/* set WRTC */
+	 
 	sr = i2c_smbus_write_byte_data(client, ISL1208_REG_SR,
 				       sr | ISL1208_REG_SR_WRTC);
 	if (sr < 0) {
@@ -511,7 +495,7 @@ isl1208_i2c_set_time(struct i2c_client *client, struct rtc_time const *tm)
 		return sr;
 	}
 
-	/* write RTC registers */
+	 
 	sr = isl1208_i2c_set_regs(client, 0, regs, ISL1208_RTC_SECTION_LEN);
 	if (sr < 0) {
 		dev_err(&client->dev, "%s: writing RTC section failed\n",
@@ -519,7 +503,7 @@ isl1208_i2c_set_time(struct i2c_client *client, struct rtc_time const *tm)
 		return sr;
 	}
 
-	/* clear WRTC again */
+	 
 	sr = isl1208_i2c_get_sr(client);
 	if (sr < 0) {
 		dev_err(&client->dev, "%s: reading SR failed\n", __func__);
@@ -601,7 +585,7 @@ static ssize_t timestamp0_show(struct device *dev,
 		return 0;
 	}
 
-	/* MSB of each alarm register is an enable bit */
+	 
 	tm.tm_sec = bcd2bin(regs[ISL1219_REG_SCT - ISL1219_REG_SCT] & 0x7f);
 	tm.tm_min = bcd2bin(regs[ISL1219_REG_MNT - ISL1219_REG_SCT] & 0x7f);
 	tm.tm_hour = bcd2bin(regs[ISL1219_REG_HRT - ISL1219_REG_SCT] & 0x3f);
@@ -628,11 +612,7 @@ isl1208_rtc_interrupt(int irq, void *data)
 	struct isl1208_state *isl1208 = i2c_get_clientdata(client);
 	int handled = 0, sr, err;
 
-	/*
-	 * I2C reads get NAK'ed if we read straight away after an interrupt?
-	 * Using a mdelay/msleep didn't seem to help either, so we work around
-	 * this by continually trying to read the register for a short time.
-	 */
+	 
 	while (1) {
 		sr = isl1208_i2c_get_sr(client);
 		if (sr >= 0)
@@ -650,7 +630,7 @@ isl1208_rtc_interrupt(int irq, void *data)
 
 		rtc_update_irq(isl1208->rtc, 1, RTC_IRQF | RTC_AF);
 
-		/* Clear the alarm */
+		 
 		sr &= ~ISL1208_REG_SR_ALM;
 		sr = i2c_smbus_write_byte_data(client, ISL1208_REG_SR, sr);
 		if (sr < 0)
@@ -659,7 +639,7 @@ isl1208_rtc_interrupt(int irq, void *data)
 		else
 			handled = 1;
 
-		/* Disable the alarm */
+		 
 		err = isl1208_rtc_toggle_alarm(client, 0);
 		if (err)
 			return err;
@@ -684,7 +664,7 @@ static const struct rtc_class_ops isl1208_rtc_ops = {
 	.set_alarm = isl1208_rtc_set_alarm,
 };
 
-/* sysfs interface */
+ 
 
 static ssize_t
 isl1208_sysfs_show_atrim(struct device *dev,
@@ -777,7 +757,7 @@ static int isl1208_nvmem_read(void *priv, unsigned int off, void *buf,
 	struct i2c_client *client = to_i2c_client(isl1208->rtc->dev.parent);
 	int ret;
 
-	/* nvmem sanitizes offset/count for us, but count==0 is possible */
+	 
 	if (!count)
 		return count;
 	ret = isl1208_i2c_read_regs(client, ISL1208_REG_USR1 + off, buf,
@@ -792,7 +772,7 @@ static int isl1208_nvmem_write(void *priv, unsigned int off, void *buf,
 	struct i2c_client *client = to_i2c_client(isl1208->rtc->dev.parent);
 	int ret;
 
-	/* nvmem sanitizes off/count for us, but count==0 is possible */
+	 
 	if (!count)
 		return count;
 	ret = isl1208_i2c_set_regs(client, ISL1208_REG_USR1 + off, buf,
@@ -805,7 +785,7 @@ static const struct nvmem_config isl1208_nvmem_config = {
 	.name = "isl1208_nvram",
 	.word_size = 1,
 	.stride = 1,
-	/* .size from chip specific config */
+	 
 	.reg_read = isl1208_nvmem_read,
 	.reg_write = isl1208_nvmem_write,
 };
@@ -855,13 +835,13 @@ isl1208_probe(struct i2c_client *client)
 	if (isl1208_i2c_validate_client(client) < 0)
 		return -ENODEV;
 
-	/* Allocate driver state, point i2c client data to it */
+	 
 	isl1208 = devm_kzalloc(&client->dev, sizeof(*isl1208), GFP_KERNEL);
 	if (!isl1208)
 		return -ENOMEM;
 	i2c_set_clientdata(client, isl1208);
 
-	/* Determine which chip we have */
+	 
 	isl1208->config = i2c_get_match_data(client);
 	if (!isl1208->config)
 		return -ENODEV;
@@ -885,7 +865,7 @@ isl1208_probe(struct i2c_client *client)
 
 	isl1208->rtc->ops = &isl1208_rtc_ops;
 
-	/* Setup nvmem configuration in driver state struct */
+	 
 	isl1208->nvmem_config = isl1208_nvmem_config;
 	isl1208->nvmem_config.size = isl1208->config->nvmem_length;
 	isl1208->nvmem_config.priv = isl1208;

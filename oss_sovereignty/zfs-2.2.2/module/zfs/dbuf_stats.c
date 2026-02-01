@@ -1,38 +1,13 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/dbuf.h>
 #include <sys/dmu_objset.h>
 
-/*
- * Calculate the index of the arc header for the state, disabled by default.
- */
+ 
 int zfs_dbuf_state_index = 0;
 
-/*
- * ==========================================================================
- * Dbuf Hash Read Routines
- * ==========================================================================
- */
+ 
 typedef struct dbuf_stats_t {
 	kmutex_t		lock;
 	kstat_t			*kstat;
@@ -79,7 +54,7 @@ __dbuf_stats_hash_table_data(char *buf, size_t size, dmu_buf_impl_t *db)
 	    "%-7lu %-3d | %-5d %-5d 0x%-7x %-6lu %-8llu %-12llu "
 	    "%-6lu %-6lu %-6lu %-6lu %-6lu %-8llu %-8llu %-8d %-6lu | "
 	    "%-6d %-6d %-8lu %-8lu %-6llu %-6lu %-6lu %-8llu %-8llu\n",
-	    /* dmu_buf_impl_t */
+	     
 	    spa_name(dn->dn_objset->os_spa),
 	    (u_longlong_t)dmu_objset_id(db->db_objset),
 	    (longlong_t)db->db.db_object,
@@ -91,7 +66,7 @@ __dbuf_stats_hash_table_data(char *buf, size_t size, dmu_buf_impl_t *db)
 	    db->db_state,
 	    (ulong_t)zfs_refcount_count(&db->db_holds),
 	    multilist_link_active(&db->db_cache_link),
-	    /* arc_buf_info_t */
+	     
 	    abi.abi_state_type,
 	    abi.abi_state_contents,
 	    abi.abi_flags,
@@ -107,7 +82,7 @@ __dbuf_stats_hash_table_data(char *buf, size_t size, dmu_buf_impl_t *db)
 	    (u_longlong_t)abi.abi_l2arc_asize,
 	    abi.abi_l2arc_compress,
 	    (ulong_t)abi.abi_holds,
-	    /* dmu_object_info_t */
+	     
 	    doi.doi_type,
 	    doi.doi_bonus_type,
 	    (ulong_t)doi.doi_data_block_size,
@@ -139,10 +114,7 @@ dbuf_stats_hash_table_data(char *buf, size_t size, void *data)
 
 	mutex_enter(DBUF_HASH_MUTEX(h, dsh->idx));
 	for (db = h->hash_table[dsh->idx]; db != NULL; db = db->db_hash_next) {
-		/*
-		 * Returning ENOMEM will cause the data and header functions
-		 * to be called with a larger scratch buffers.
-		 */
+		 
 		if (size < 512) {
 			error = SET_ERROR(ENOMEM);
 			break;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe host controller driver for Amlogic MESON SoCs
- *
- * Copyright (c) 2018 Amlogic, inc.
- * Author: Yue Wang <yue.wang@amlogic.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -26,7 +21,7 @@
 #define PCIE_CAP_MAX_PAYLOAD_SIZE(x)	((x) << 5)
 #define PCIE_CAP_MAX_READ_REQ_SIZE(x)	((x) << 12)
 
-/* PCIe specific config registers */
+ 
 #define PCIE_CFG0			0x0
 #define APP_LTSSM_ENABLE		BIT(7)
 
@@ -249,11 +244,7 @@ static int meson_size_to_payload(struct meson_pcie *mp, int size)
 {
 	struct device *dev = mp->pci.dev;
 
-	/*
-	 * dwc supports 2^(val+7) payload size, which val is 0~5 default to 1.
-	 * So if input size is not 2^order alignment or less than 2^7 or bigger
-	 * than 2^12, just set to default size 2^(1+7).
-	 */
+	 
 	if (!is_power_of_2(size) || size < 128 || size > 4096) {
 		dev_warn(dev, "payload size %d, set to default 256\n", size);
 		return 1;
@@ -313,11 +304,7 @@ static int meson_pcie_rd_own_conf(struct pci_bus *bus, u32 devfn,
 	if (ret != PCIBIOS_SUCCESSFUL)
 		return ret;
 
-	/*
-	 * There is a bug in the MESON AXG PCIe controller whereby software
-	 * cannot program the PCI_CLASS_DEVICE register, so we must fabricate
-	 * the return value in the config accessors.
-	 */
+	 
 	if ((where & ~3) == PCI_CLASS_REVISION) {
 		if (size <= 2)
 			*val = (*val & ((1 << (size * 8)) - 1)) << (8 * (where & 3));

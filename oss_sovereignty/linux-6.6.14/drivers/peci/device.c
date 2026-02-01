@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2018-2021 Intel Corporation
+
+
 
 #include <linux/bitfield.h>
 #include <linux/peci.h>
@@ -8,11 +8,7 @@
 
 #include "internal.h"
 
-/*
- * PECI device can be removed using sysfs, but the removal can also happen as
- * a result of controller being removed.
- * Mutex is used to protect PECI device from being double-deleted.
- */
+ 
 static DEFINE_MUTEX(peci_device_del_lock);
 
 #define REVISION_NUM_MASK GENMASK(15, 8)
@@ -25,12 +21,7 @@ static int peci_get_revision(struct peci_device *device, u8 *revision)
 	if (IS_ERR(req))
 		return PTR_ERR(req);
 
-	/*
-	 * PECI device may be in a state where it is unable to return a proper
-	 * DIB, in which case it returns 0 as DIB value.
-	 * Let's treat this as an error to avoid carrying on with the detection
-	 * using invalid revision.
-	 */
+	 
 	dib = peci_request_dib_read(req);
 	if (dib == 0) {
 		peci_request_free(req);
@@ -115,11 +106,7 @@ static int peci_device_info_init(struct peci_device *device)
 
 static int peci_detect(struct peci_controller *controller, u8 addr)
 {
-	/*
-	 * PECI Ping is a command encoded by tx_len = 0, rx_len = 0.
-	 * We expect correct Write FCS if the device at the target address
-	 * is able to respond.
-	 */
+	 
 	struct peci_request req = { 0 };
 	int ret;
 
@@ -154,17 +141,14 @@ int peci_device_create(struct peci_controller *controller, u8 addr)
 	if (!peci_addr_valid(addr))
 		return -EINVAL;
 
-	/* Check if we have already detected this device before. */
+	 
 	ret = device_for_each_child(&controller->dev, &addr, peci_dev_exists);
 	if (ret)
 		return 0;
 
 	ret = peci_detect(controller, addr);
 	if (ret) {
-		/*
-		 * Device not present or host state doesn't allow successful
-		 * detection at this time.
-		 */
+		 
 		if (ret == -EIO || ret == -ETIMEDOUT)
 			return 0;
 

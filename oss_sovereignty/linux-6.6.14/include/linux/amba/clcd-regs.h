@@ -1,19 +1,9 @@
-/*
- * David A Rusling
- *
- * Copyright (C) 2001 ARM Limited
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file COPYING in the main directory of this archive
- * for more details.
- */
+ 
 
 #ifndef AMBA_CLCD_REGS_H
 #define AMBA_CLCD_REGS_H
 
-/*
- * CLCD Controller Internal Register addresses
- */
+ 
 #define CLCD_TIM0		0x00000000
 #define CLCD_TIM1 		0x00000004
 #define CLCD_TIM2 		0x00000008
@@ -73,7 +63,7 @@
 #define CNTL_LDMAFIFOTIME	(1 << 15)
 #define CNTL_WATERMARK		(1 << 16)
 
-/* ST Microelectronics variant bits */
+ 
 #define CNTL_ST_1XBPP_444	0x0
 #define CNTL_ST_1XBPP_5551	(1 << 17)
 #define CNTL_ST_1XBPP_565	(1 << 18)
@@ -84,4 +74,4 @@
 #define CNTL_ST_CEAEN		(1 << 21)
 #define CNTL_ST_LCDBPP24_PACKED	(6 << 1)
 
-#endif /* AMBA_CLCD_REGS_H */
+#endif  

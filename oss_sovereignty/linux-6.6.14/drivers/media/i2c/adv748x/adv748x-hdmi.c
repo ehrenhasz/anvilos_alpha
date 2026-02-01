@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for Analog Devices ADV748X HDMI receiver and Component Processor (CP)
- *
- * Copyright (C) 2017 Renesas Electronics Corp.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mutex.h>
@@ -17,23 +13,21 @@
 
 #include "adv748x.h"
 
-/* -----------------------------------------------------------------------------
- * HDMI and CP
- */
+ 
 
 #define ADV748X_HDMI_MIN_WIDTH		640
 #define ADV748X_HDMI_MAX_WIDTH		1920
 #define ADV748X_HDMI_MIN_HEIGHT		480
 #define ADV748X_HDMI_MAX_HEIGHT		1200
 
-/* V4L2_DV_BT_CEA_720X480I59_94 - 0.5 MHz */
+ 
 #define ADV748X_HDMI_MIN_PIXELCLOCK	13000000
-/* V4L2_DV_BT_DMT_1600X1200P60 */
+ 
 #define ADV748X_HDMI_MAX_PIXELCLOCK	162000000
 
 static const struct v4l2_dv_timings_cap adv748x_hdmi_timings_cap = {
 	.type = V4L2_DV_BT_656_1120,
-	/* keep this initialization for compatibility with GCC < 4.4.6 */
+	 
 	.reserved = { 0 },
 
 	V4L2_INIT_BT_TIMINGS(ADV748X_HDMI_MIN_WIDTH, ADV748X_HDMI_MAX_WIDTH,
@@ -64,26 +58,26 @@ adv748x_hdmi_video_standards[] = {
 	{ V4L2_DV_BT_CEA_1920X1080P30, 0x5e, 0x02 },
 	{ V4L2_DV_BT_CEA_1920X1080P25, 0x5e, 0x03 },
 	{ V4L2_DV_BT_CEA_1920X1080P24, 0x5e, 0x04 },
-	/* SVGA */
+	 
 	{ V4L2_DV_BT_DMT_800X600P56, 0x80, 0x00 },
 	{ V4L2_DV_BT_DMT_800X600P60, 0x81, 0x00 },
 	{ V4L2_DV_BT_DMT_800X600P72, 0x82, 0x00 },
 	{ V4L2_DV_BT_DMT_800X600P75, 0x83, 0x00 },
 	{ V4L2_DV_BT_DMT_800X600P85, 0x84, 0x00 },
-	/* SXGA */
+	 
 	{ V4L2_DV_BT_DMT_1280X1024P60, 0x85, 0x00 },
 	{ V4L2_DV_BT_DMT_1280X1024P75, 0x86, 0x00 },
-	/* VGA */
+	 
 	{ V4L2_DV_BT_DMT_640X480P60, 0x88, 0x00 },
 	{ V4L2_DV_BT_DMT_640X480P72, 0x89, 0x00 },
 	{ V4L2_DV_BT_DMT_640X480P75, 0x8a, 0x00 },
 	{ V4L2_DV_BT_DMT_640X480P85, 0x8b, 0x00 },
-	/* XGA */
+	 
 	{ V4L2_DV_BT_DMT_1024X768P60, 0x8c, 0x00 },
 	{ V4L2_DV_BT_DMT_1024X768P70, 0x8d, 0x00 },
 	{ V4L2_DV_BT_DMT_1024X768P75, 0x8e, 0x00 },
 	{ V4L2_DV_BT_DMT_1024X768P85, 0x8f, 0x00 },
-	/* UXGA */
+	 
 	{ V4L2_DV_BT_DMT_1600X1200P60, 0x96, 0x00 },
 };
 
@@ -96,7 +90,7 @@ static void adv748x_hdmi_fill_format(struct adv748x_hdmi *hdmi,
 	fmt->field = hdmi->timings.bt.interlaced ?
 			V4L2_FIELD_ALTERNATE : V4L2_FIELD_NONE;
 
-	/* TODO: The colorspace depends on the AVI InfoFrame contents */
+	 
 	fmt->colorspace = V4L2_COLORSPACE_SRGB;
 
 	fmt->width = hdmi->timings.bt.width;
@@ -116,7 +110,7 @@ static bool adv748x_hdmi_has_signal(struct adv748x_state *state)
 {
 	int val;
 
-	/* Check that VERT_FILTER and DE_REGEN is locked */
+	 
 	val = hdmi_read(state, ADV748X_HDMI_LW1);
 	return (val & ADV748X_HDMI_LW1_VERT_FILTER) &&
 	       (val & ADV748X_HDMI_LW1_DE_REGEN);
@@ -131,34 +125,21 @@ static int adv748x_hdmi_read_pixelclock(struct adv748x_state *state)
 	if (a < 0 || b < 0)
 		return -ENODATA;
 
-	/*
-	 * The high 9 bits store TMDS frequency measurement in MHz
-	 * The low 7 bits of TMDS_2 store the 7-bit TMDS fractional frequency
-	 * measurement in 1/128 MHz
-	 */
+	 
 	return ((a << 1) | (b >> 7)) * 1000000 + (b & 0x7f) * 1000000 / 128;
 }
 
-/*
- * adv748x_hdmi_set_de_timings: Adjust horizontal picture offset through DE
- *
- * HDMI CP uses a Data Enable synchronisation timing reference
- *
- * Vary the leading and trailing edge position of the DE signal output by the CP
- * core. Values are stored as signed-twos-complement in one-pixel-clock units
- *
- * The start and end are shifted equally by the 10-bit shift value.
- */
+ 
 static void adv748x_hdmi_set_de_timings(struct adv748x_state *state, int shift)
 {
 	u8 high, low;
 
-	/* POS_HIGH stores bits 8 and 9 of both the start and end */
+	 
 	high = ADV748X_CP_DE_POS_HIGH_SET;
 	high |= (shift & 0x300) >> 8;
 	low = shift & 0xff;
 
-	/* The sequence of the writes is important and must be followed */
+	 
 	cp_write(state, ADV748X_CP_DE_POS_HIGH, high);
 	cp_write(state, ADV748X_CP_DE_POS_END_LOW, low);
 
@@ -184,18 +165,13 @@ static int adv748x_hdmi_set_video_timings(struct adv748x_state *state,
 	if (i >= ARRAY_SIZE(adv748x_hdmi_video_standards))
 		return -EINVAL;
 
-	/*
-	 * When setting cp_vid_std to either 720p, 1080i, or 1080p, the video
-	 * will get shifted horizontally to the left in active video mode.
-	 * The de_h_start and de_h_end controls are used to centre the picture
-	 * correctly
-	 */
+	 
 	switch (stds[i].vid_std) {
-	case 0x53: /* 720p */
+	case 0x53:  
 		adv748x_hdmi_set_de_timings(state, -40);
 		break;
-	case 0x54: /* 1080i */
-	case 0x5e: /* 1080p */
+	case 0x54:  
+	case 0x5e:  
 		adv748x_hdmi_set_de_timings(state, -44);
 		break;
 	default:
@@ -210,9 +186,7 @@ static int adv748x_hdmi_set_video_timings(struct adv748x_state *state,
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * v4l2_subdev_video_ops
- */
+ 
 
 static int adv748x_hdmi_s_dv_timings(struct v4l2_subdev *sd,
 				     struct v4l2_dv_timings *timings)
@@ -283,11 +257,7 @@ static int adv748x_hdmi_query_dv_timings(struct v4l2_subdev *sd,
 
 	memset(timings, 0, sizeof(struct v4l2_dv_timings));
 
-	/*
-	 * If the pattern generator is enabled the device shall not be queried
-	 * for timings. Instead the timings programmed shall be reported as they
-	 * are the ones being used to generate the pattern.
-	 */
+	 
 	if (cp_read(state, ADV748X_CP_PAT_GEN) & ADV748X_CP_PAT_GEN_EN) {
 		*timings = hdmi->timings;
 		return 0;
@@ -336,11 +306,7 @@ static int adv748x_hdmi_query_dv_timings(struct v4l2_subdev *sd,
 
 	adv748x_fill_optional_dv_timings(timings);
 
-	/*
-	 * No interrupt handling is implemented yet.
-	 * There should be an IRQ when a cable is plugged and the new timings
-	 * should be figured out and stored to state.
-	 */
+	 
 	hdmi->timings = *timings;
 
 	return 0;
@@ -400,9 +366,7 @@ static const struct v4l2_subdev_video_ops adv748x_video_ops_hdmi = {
 	.g_pixelaspect = adv748x_hdmi_g_pixelaspect,
 };
 
-/* -----------------------------------------------------------------------------
- * v4l2_subdev_pad_ops
- */
+ 
 
 static int adv748x_hdmi_propagate_pixelrate(struct adv748x_hdmi *hdmi)
 {
@@ -535,11 +499,11 @@ static int adv748x_hdmi_set_edid(struct v4l2_subdev *sd, struct v4l2_edid *edid)
 		hdmi->edid.blocks = 0;
 		hdmi->edid.present = 0;
 
-		/* Fall back to a 16:9 aspect ratio */
+		 
 		hdmi->aspect_ratio.numerator = 16;
 		hdmi->aspect_ratio.denominator = 9;
 
-		/* Disable the EDID */
+		 
 		repeater_write(state, ADV748X_REPEATER_EDID_SZ,
 			       edid->blocks << ADV748X_REPEATER_EDID_SZ_SHIFT);
 
@@ -614,18 +578,14 @@ static const struct v4l2_subdev_pad_ops adv748x_pad_ops_hdmi = {
 	.enum_dv_timings = adv748x_hdmi_enum_dv_timings,
 };
 
-/* -----------------------------------------------------------------------------
- * v4l2_subdev_ops
- */
+ 
 
 static const struct v4l2_subdev_ops adv748x_ops_hdmi = {
 	.video = &adv748x_video_ops_hdmi,
 	.pad = &adv748x_pad_ops_hdmi,
 };
 
-/* -----------------------------------------------------------------------------
- * Controls
- */
+ 
 
 static const char * const hdmi_ctrl_patgen_menu[] = {
 	"Disabled",
@@ -644,7 +604,7 @@ static int adv748x_hdmi_s_ctrl(struct v4l2_ctrl *ctrl)
 	int ret;
 	u8 pattern;
 
-	/* Enable video adjustment first */
+	 
 	ret = cp_clrset(state, ADV748X_CP_VID_ADJ,
 			ADV748X_CP_VID_ADJ_ENABLE,
 			ADV748X_CP_VID_ADJ_ENABLE);
@@ -667,7 +627,7 @@ static int adv748x_hdmi_s_ctrl(struct v4l2_ctrl *ctrl)
 	case V4L2_CID_TEST_PATTERN:
 		pattern = ctrl->val;
 
-		/* Pattern is 0-indexed. Ctrl Menu is 1-indexed */
+		 
 		if (pattern) {
 			pattern--;
 			pattern |= ADV748X_CP_PAT_GEN_EN;
@@ -693,7 +653,7 @@ static int adv748x_hdmi_init_controls(struct adv748x_hdmi *hdmi)
 
 	v4l2_ctrl_handler_init(&hdmi->ctrl_hdl, 5);
 
-	/* Use our mutex for the controls */
+	 
 	hdmi->ctrl_hdl.lock = &state->mutex;
 
 	v4l2_ctrl_new_std(&hdmi->ctrl_hdl, &adv748x_hdmi_ctrl_ops,
@@ -709,10 +669,7 @@ static int adv748x_hdmi_init_controls(struct adv748x_hdmi *hdmi)
 			  V4L2_CID_HUE, ADV748X_CP_HUE_MIN,
 			  ADV748X_CP_HUE_MAX, 1, ADV748X_CP_HUE_DEF);
 
-	/*
-	 * Todo: V4L2_CID_DV_RX_POWER_PRESENT should also be supported when
-	 * interrupts are handled correctly
-	 */
+	 
 
 	v4l2_ctrl_new_std_menu_items(&hdmi->ctrl_hdl, &adv748x_hdmi_ctrl_ops,
 				     V4L2_CID_TEST_PATTERN,
@@ -736,7 +693,7 @@ int adv748x_hdmi_init(struct adv748x_hdmi *hdmi)
 
 	adv748x_hdmi_s_dv_timings(&hdmi->sd, &cea1280x720);
 
-	/* Initialise a default 16:9 aspect ratio */
+	 
 	hdmi->aspect_ratio.numerator = 16;
 	hdmi->aspect_ratio.denominator = 9;
 

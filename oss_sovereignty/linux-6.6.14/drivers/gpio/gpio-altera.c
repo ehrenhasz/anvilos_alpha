@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2013 Altera Corporation
- * Based on gpio-mpc8xxx.c
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/module.h>
@@ -16,15 +13,7 @@
 #define ALTERA_GPIO_IRQ_MASK		0x8
 #define ALTERA_GPIO_EDGE_CAP		0xc
 
-/**
-* struct altera_gpio_chip
-* @mmchip		: memory mapped chip structure.
-* @gpio_lock		: synchronization lock so that new irq/set/get requests
-*			  will be blocked until the current one completes.
-* @interrupt_trigger	: specifies the hardware configured IRQ trigger type
-*			  (rising, falling, both, high)
-* @mapped_irq		: kernel mapped irq number.
-*/
+ 
 struct altera_gpio_chip {
 	struct of_mm_gpio_chip mmchip;
 	raw_spinlock_t gpio_lock;
@@ -45,7 +34,7 @@ static void altera_gpio_irq_unmask(struct irq_data *d)
 
 	raw_spin_lock_irqsave(&altera_gc->gpio_lock, flags);
 	intmask = readl(mm_gc->regs + ALTERA_GPIO_IRQ_MASK);
-	/* Set ALTERA_GPIO_IRQ_MASK bit to unmask */
+	 
 	intmask |= BIT(irqd_to_hwirq(d));
 	writel(intmask, mm_gc->regs + ALTERA_GPIO_IRQ_MASK);
 	raw_spin_unlock_irqrestore(&altera_gc->gpio_lock, flags);
@@ -63,17 +52,14 @@ static void altera_gpio_irq_mask(struct irq_data *d)
 
 	raw_spin_lock_irqsave(&altera_gc->gpio_lock, flags);
 	intmask = readl(mm_gc->regs + ALTERA_GPIO_IRQ_MASK);
-	/* Clear ALTERA_GPIO_IRQ_MASK bit to mask */
+	 
 	intmask &= ~BIT(irqd_to_hwirq(d));
 	writel(intmask, mm_gc->regs + ALTERA_GPIO_IRQ_MASK);
 	raw_spin_unlock_irqrestore(&altera_gc->gpio_lock, flags);
 	gpiochip_disable_irq(&mm_gc->gc, irqd_to_hwirq(d));
 }
 
-/*
- * This controller's IRQ type is synthesized in hardware, so this function
- * just checks if the requested set_type matches the synthesized IRQ type
- */
+ 
 static int altera_gpio_irq_set_type(struct irq_data *d,
 				   unsigned int type)
 {
@@ -143,7 +129,7 @@ static int altera_gpio_direction_input(struct gpio_chip *gc, unsigned offset)
 	chip = gpiochip_get_data(gc);
 
 	raw_spin_lock_irqsave(&chip->gpio_lock, flags);
-	/* Set pin as input, assumes software controlled IP */
+	 
 	gpio_ddr = readl(mm_gc->regs + ALTERA_GPIO_DIR);
 	gpio_ddr &= ~BIT(offset);
 	writel(gpio_ddr, mm_gc->regs + ALTERA_GPIO_DIR);
@@ -164,7 +150,7 @@ static int altera_gpio_direction_output(struct gpio_chip *gc,
 	chip = gpiochip_get_data(gc);
 
 	raw_spin_lock_irqsave(&chip->gpio_lock, flags);
-	/* Sets the GPIO value */
+	 
 	data_reg = readl(mm_gc->regs + ALTERA_GPIO_DATA);
 	if (value)
 		data_reg |= BIT(offset);
@@ -172,7 +158,7 @@ static int altera_gpio_direction_output(struct gpio_chip *gc,
 		data_reg &= ~BIT(offset);
 	writel(data_reg, mm_gc->regs + ALTERA_GPIO_DATA);
 
-	/* Set pin as output, assumes software controlled IP */
+	 
 	gpio_ddr = readl(mm_gc->regs + ALTERA_GPIO_DIR);
 	gpio_ddr |= BIT(offset);
 	writel(gpio_ddr, mm_gc->regs + ALTERA_GPIO_DIR);
@@ -258,7 +244,7 @@ static int altera_gpio_probe(struct platform_device *pdev)
 	raw_spin_lock_init(&altera_gc->gpio_lock);
 
 	if (of_property_read_u32(node, "altr,ngpio", &reg))
-		/* By default assume maximum ngpio */
+		 
 		altera_gc->mmchip.gc.ngpio = ALTERA_GPIO_MAX_NGPIO;
 	else
 		altera_gc->mmchip.gc.ngpio = reg;

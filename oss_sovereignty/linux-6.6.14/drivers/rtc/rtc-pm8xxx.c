@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * pm8xxx RTC driver
- *
- * Copyright (c) 2010-2011, Code Aurora Forum. All rights reserved.
- * Copyright (c) 2023, Linaro Limited
- */
+
+ 
 #include <linux/of.h>
 #include <linux/module.h>
 #include <linux/nvmem-consumer.h>
@@ -19,23 +14,14 @@
 
 #include <asm/unaligned.h>
 
-/* RTC_CTRL register bit fields */
+ 
 #define PM8xxx_RTC_ENABLE		BIT(7)
 #define PM8xxx_RTC_ALARM_CLEAR		BIT(0)
 #define PM8xxx_RTC_ALARM_ENABLE		BIT(7)
 
 #define NUM_8_BIT_RTC_REGS		0x4
 
-/**
- * struct pm8xxx_rtc_regs - describe RTC registers per PMIC versions
- * @ctrl:		address of control register
- * @write:		base address of write registers
- * @read:		base address of read registers
- * @alarm_ctrl:		address of alarm control register
- * @alarm_ctrl2:	address of alarm control2 register
- * @alarm_rw:		base address of alarm read-write registers
- * @alarm_en:		alarm enable mask
- */
+ 
 struct pm8xxx_rtc_regs {
 	unsigned int ctrl;
 	unsigned int write;
@@ -46,17 +32,7 @@ struct pm8xxx_rtc_regs {
 	unsigned int alarm_en;
 };
 
-/**
- * struct pm8xxx_rtc -  RTC driver internal structure
- * @rtc:		RTC device
- * @regmap:		regmap used to access registers
- * @allow_set_time:	whether the time can be set
- * @alarm_irq:		alarm irq number
- * @regs:		register description
- * @dev:		device structure
- * @nvmem_cell:		nvmem cell for offset
- * @offset:		offset from epoch in seconds
- */
+ 
 struct pm8xxx_rtc {
 	struct rtc_device *rtc;
 	struct regmap *regmap;
@@ -129,10 +105,7 @@ static int pm8xxx_rtc_read_raw(struct pm8xxx_rtc *rtc_dd, u32 *secs)
 	if (rc)
 		return rc;
 
-	/*
-	 * Read the LSB again and check if there has been a carry over.
-	 * If there has, redo the read operation.
-	 */
+	 
 	rc = regmap_read(rtc_dd->regmap, regs->read, &reg);
 	if (rc < 0)
 		return rc;
@@ -176,15 +149,7 @@ static int pm8xxx_rtc_update_offset(struct pm8xxx_rtc *rtc_dd, u32 secs)
 	return 0;
 }
 
-/*
- * Steps to write the RTC registers.
- * 1. Disable alarm if enabled.
- * 2. Disable rtc if enabled.
- * 3. Write 0x00 to LSB.
- * 4. Write Byte[1], Byte[2], Byte[3] then Byte[0].
- * 5. Enable rtc if disabled in step 2.
- * 6. Enable alarm if disabled in step 1.
- */
+ 
 static int __pm8xxx_rtc_set_time(struct pm8xxx_rtc *rtc_dd, u32 secs)
 {
 	const struct pm8xxx_rtc_regs *regs = rtc_dd->regs;
@@ -199,28 +164,28 @@ static int __pm8xxx_rtc_set_time(struct pm8xxx_rtc *rtc_dd, u32 secs)
 	if (rc)
 		return rc;
 
-	/* Disable RTC */
+	 
 	rc = regmap_update_bits(rtc_dd->regmap, regs->ctrl, PM8xxx_RTC_ENABLE, 0);
 	if (rc)
 		return rc;
 
-	/* Write 0 to Byte[0] */
+	 
 	rc = regmap_write(rtc_dd->regmap, regs->write, 0);
 	if (rc)
 		return rc;
 
-	/* Write Byte[1], Byte[2], Byte[3] */
+	 
 	rc = regmap_bulk_write(rtc_dd->regmap, regs->write + 1,
 			       &value[1], sizeof(value) - 1);
 	if (rc)
 		return rc;
 
-	/* Write Byte[0] */
+	 
 	rc = regmap_write(rtc_dd->regmap, regs->write, value[0]);
 	if (rc)
 		return rc;
 
-	/* Enable RTC */
+	 
 	rc = regmap_update_bits(rtc_dd->regmap, regs->ctrl, PM8xxx_RTC_ENABLE,
 				PM8xxx_RTC_ENABLE);
 	if (rc)
@@ -356,7 +321,7 @@ static int pm8xxx_rtc_alarm_irq_enable(struct device *dev, unsigned int enable)
 	if (rc)
 		return rc;
 
-	/* Clear alarm register */
+	 
 	if (!enable) {
 		rc = regmap_bulk_write(rtc_dd->regmap, regs->alarm_rw, value,
 				       sizeof(value));
@@ -383,13 +348,13 @@ static irqreturn_t pm8xxx_alarm_trigger(int irq, void *dev_id)
 
 	rtc_update_irq(rtc_dd->rtc, 1, RTC_IRQF | RTC_AF);
 
-	/* Disable alarm */
+	 
 	rc = regmap_update_bits(rtc_dd->regmap, regs->alarm_ctrl,
 				regs->alarm_en, 0);
 	if (rc)
 		return IRQ_NONE;
 
-	/* Clear alarm status */
+	 
 	rc = regmap_update_bits(rtc_dd->regmap, regs->alarm_ctrl2,
 				PM8xxx_RTC_ALARM_CLEAR, 0);
 	if (rc)

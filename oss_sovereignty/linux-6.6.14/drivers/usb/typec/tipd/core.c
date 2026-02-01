@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for TI TPS6598x USB Power Delivery controller family
- *
- * Copyright (C) 2017, Intel Corporation
- * Author: Heikki Krogerus <heikki.krogerus@linux.intel.com>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/acpi.h>
@@ -21,7 +16,7 @@
 #include "tps6598x.h"
 #include "trace.h"
 
-/* Register offsets */
+ 
 #define TPS_REG_VID			0x00
 #define TPS_REG_MODE			0x03
 #define TPS_REG_CMD1			0x08
@@ -40,7 +35,7 @@
 #define TPS_REG_RX_IDENTITY_SOP		0x48
 #define TPS_REG_DATA_STATUS		0x5f
 
-/* TPS_REG_SYSTEM_CONF bits */
+ 
 #define TPS_SYSCONF_PORTINFO(c)		((c) & 7)
 
 enum {
@@ -53,13 +48,13 @@ enum {
 	TPS_PORTINFO_SOURCE,
 };
 
-/* TPS_REG_RX_IDENTITY_SOP */
+ 
 struct tps6598x_rx_identity_reg {
 	u8 status;
 	struct usb_pd_identity identity;
 } __packed;
 
-/* Standard Task return codes */
+ 
 #define TPS_TASK_TIMEOUT		1
 #define TPS_TASK_REJECTED		3
 
@@ -77,13 +72,13 @@ static const char *const modes[] = {
 	[TPS_MODE_DISC]	= "DISC",
 };
 
-/* Unrecognized commands will be replaced with "!CMD" */
+ 
 #define INVALID_CMD(_cmd_)		(_cmd_ == 0x444d4321)
 
 struct tps6598x {
 	struct device *dev;
 	struct regmap *regmap;
-	struct mutex lock; /* device lock */
+	struct mutex lock;  
 	u8 i2c_protocol:1;
 
 	struct typec_port *port;
@@ -114,10 +109,7 @@ static enum power_supply_usb_type tps6598x_psy_usb_types[] = {
 
 static const char *tps6598x_psy_name_prefix = "tps6598x-source-psy-";
 
-/*
- * Max data bytes for Data1, Data2, and other registers. See ch 1.3.2:
- * https://www.ti.com/lit/ug/slvuan1a/slvuan1a.pdf
- */
+ 
 #define TPS_MAX_LEN	64
 
 static int
@@ -235,7 +227,7 @@ static int tps6598x_connect(struct tps6598x *tps, u32 status)
 	mode = TPS_POWER_STATUS_PWROPMODE(tps->pwr_status);
 
 	desc.usb_pd = mode == TYPEC_PWR_MODE_PD;
-	desc.accessory = TYPEC_ACCESSORY_NONE; /* XXX: handle accessories */
+	desc.accessory = TYPEC_ACCESSORY_NONE;  
 	desc.identity = NULL;
 
 	if (desc.usb_pd) {
@@ -307,7 +299,7 @@ static int tps6598x_exec_cmd(struct tps6598x *tps, const char *cmd,
 	if (ret < 0)
 		return ret;
 
-	/* XXX: Using 1s for now, but it may not be enough for every command. */
+	 
 	timeout = jiffies + msecs_to_jiffies(1000);
 
 	do {
@@ -498,7 +490,7 @@ static irqreturn_t cd321x_interrupt(int irq, void *data)
 		if (!tps6598x_read_data_status(tps))
 			goto err_clear_ints;
 
-	/* Handle plug insert or removal */
+	 
 	if (event & APPLE_CD_REG_INT_PLUG_EVENT)
 		tps6598x_handle_plug_event(tps, status);
 
@@ -545,7 +537,7 @@ static irqreturn_t tps6598x_interrupt(int irq, void *data)
 		if (!tps6598x_read_data_status(tps))
 			goto err_clear_ints;
 
-	/* Handle plug insert or removal */
+	 
 	if ((event1 | event2) & TPS_REG_INT_PLUG_EVENT)
 		tps6598x_handle_plug_event(tps, status);
 
@@ -561,8 +553,8 @@ err_unlock:
 	return IRQ_NONE;
 }
 
-/* Time interval for Polling */
-#define POLL_INTERVAL	500 /* msecs */
+ 
+#define POLL_INTERVAL	500  
 static void tps6598x_poll_work(struct work_struct *work)
 {
 	struct tps6598x *tps = container_of(to_delayed_work(work),
@@ -725,34 +717,31 @@ static int tps6598x_probe(struct i2c_client *client)
 	if (ret < 0 || !vid)
 		return -ENODEV;
 
-	/*
-	 * Checking can the adapter handle SMBus protocol. If it can not, the
-	 * driver needs to take care of block reads separately.
-	 */
+	 
 	if (i2c_check_functionality(client->adapter, I2C_FUNC_I2C))
 		tps->i2c_protocol = true;
 
 	if (np && of_device_is_compatible(np, "apple,cd321x")) {
-		/* Switch CD321X chips to the correct system power state */
+		 
 		ret = cd321x_switch_power_state(tps, TPS_SYSTEM_POWER_STATE_S0);
 		if (ret)
 			return ret;
 
-		/* CD321X chips have all interrupts masked initially */
+		 
 		mask1 = APPLE_CD_REG_INT_POWER_STATUS_UPDATE |
 			APPLE_CD_REG_INT_DATA_STATUS_UPDATE |
 			APPLE_CD_REG_INT_PLUG_EVENT;
 
 		irq_handler = cd321x_interrupt;
 	} else {
-		/* Enable power status, data status and plug event interrupts */
+		 
 		mask1 = TPS_REG_INT_POWER_STATUS_UPDATE |
 			TPS_REG_INT_DATA_STATUS_UPDATE |
 			TPS_REG_INT_PLUG_EVENT;
 	}
 
 	tps->irq_handler = irq_handler;
-	/* Make sure the controller has application firmware running */
+	 
 	ret = tps6598x_check_mode(tps);
 	if (ret)
 		return ret;
@@ -770,13 +759,7 @@ static int tps6598x_probe(struct i2c_client *client)
 	if (ret < 0)
 		goto err_clear_mask;
 
-	/*
-	 * This fwnode has a "compatible" property, but is never populated as a
-	 * struct device. Instead we simply parse it to read the properties.
-	 * This breaks fw_devlink=on. To maintain backward compatibility
-	 * with existing DT files, we work around this by deleting any
-	 * fwnode_links to/from this fwnode.
-	 */
+	 
 	fwnode = device_get_named_child_node(&client->dev, "connector");
 	if (fwnode)
 		fw_devlink_purge_absent_suppliers(fwnode);

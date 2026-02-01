@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2018-2020 Broadcom */
+
+ 
 
 #include <linux/device.h>
 #include <linux/iopoll.h>
@@ -55,7 +55,7 @@ static int brcm_rescal_reset_set(struct reset_controller_dev *rcdev,
 static int brcm_rescal_reset_xlate(struct reset_controller_dev *rcdev,
 				   const struct of_phandle_args *reset_spec)
 {
-	/* This is needed if #reset-cells == 0. */
+	 
 	return 0;
 }
 

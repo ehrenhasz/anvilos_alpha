@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Device tree based initialization code for reserved memory.
- *
- * Copyright (c) 2013, 2015 The Linux Foundation. All Rights Reserved.
- * Copyright (c) 2013,2014 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- * Author: Marek Szyprowski <m.szyprowski@samsung.com>
- * Author: Josh Cartwright <joshc@codeaurora.org>
- */
+
+ 
 
 #define pr_fmt(fmt)	"OF: reserved mem: " fmt
 
@@ -55,9 +47,7 @@ static int __init early_init_dt_alloc_reserved_memory_arch(phys_addr_t size,
 	return err;
 }
 
-/*
- * fdt_reserved_mem_save_node() - save fdt node for second pass initialization
- */
+ 
 void __init fdt_reserved_mem_save_node(unsigned long node, const char *uname,
 				      phys_addr_t base, phys_addr_t size)
 {
@@ -77,11 +67,7 @@ void __init fdt_reserved_mem_save_node(unsigned long node, const char *uname,
 	return;
 }
 
-/*
- * __reserved_mem_alloc_in_range() - allocate reserved memory described with
- *	'alloc-ranges'. Choose bottom-up/top-down depending on nearby existing
- *	reserved regions to keep the reserved memory contiguous if possible.
- */
+ 
 static int __init __reserved_mem_alloc_in_range(phys_addr_t size,
 	phys_addr_t align, phys_addr_t start, phys_addr_t end, bool nomap,
 	phys_addr_t *res_base)
@@ -93,45 +79,34 @@ static int __init __reserved_mem_alloc_in_range(phys_addr_t size,
 	for (i = 0; i < reserved_mem_count; i++) {
 		struct reserved_mem *rmem = &reserved_mem[i];
 
-		/* Skip regions that were not reserved yet */
+		 
 		if (rmem->size == 0)
 			continue;
 
-		/*
-		 * If range starts next to an existing reservation, use bottom-up:
-		 *	|....RRRR................RRRRRRRR..............|
-		 *	       --RRRR------
-		 */
+		 
 		if (start >= rmem->base && start <= (rmem->base + rmem->size))
 			bottom_up = true;
 
-		/*
-		 * If range ends next to an existing reservation, use top-down:
-		 *	|....RRRR................RRRRRRRR..............|
-		 *	              -------RRRR-----
-		 */
+		 
 		if (end >= rmem->base && end <= (rmem->base + rmem->size))
 			top_down = true;
 	}
 
-	/* Change setting only if either bottom-up or top-down was selected */
+	 
 	if (bottom_up != top_down)
 		memblock_set_bottom_up(bottom_up);
 
 	ret = early_init_dt_alloc_reserved_memory_arch(size, align,
 			start, end, nomap, res_base);
 
-	/* Restore old setting if needed */
+	 
 	if (bottom_up != top_down)
 		memblock_set_bottom_up(prev_bottom_up);
 
 	return ret;
 }
 
-/*
- * __reserved_mem_alloc_size() - allocate reserved memory described by
- *	'size', 'alignment'  and 'alloc-ranges' properties.
- */
+ 
 static int __init __reserved_mem_alloc_size(unsigned long node,
 	const char *uname, phys_addr_t *res_base, phys_addr_t *res_size)
 {
@@ -165,7 +140,7 @@ static int __init __reserved_mem_alloc_size(unsigned long node,
 
 	nomap = of_get_flat_dt_prop(node, "no-map", NULL) != NULL;
 
-	/* Need adjust the alignment to satisfy the CMA requirement */
+	 
 	if (IS_ENABLED(CONFIG_CMA)
 	    && of_flat_dt_is_compatible(node, "shared-dma-pool")
 	    && of_get_flat_dt_prop(node, "reusable", NULL)
@@ -222,9 +197,7 @@ static int __init __reserved_mem_alloc_size(unsigned long node,
 static const struct of_device_id __rmem_of_table_sentinel
 	__used __section("__reservedmem_of_table_end");
 
-/*
- * __reserved_mem_init_node() - call region specific reserved memory init code
- */
+ 
 static int __init __reserved_mem_init_node(struct reserved_mem *rmem)
 {
 	extern const struct of_device_id __reservedmem_of_table[];
@@ -258,11 +231,7 @@ static int __init __rmem_cmp(const void *a, const void *b)
 	if (ra->base > rb->base)
 		return 1;
 
-	/*
-	 * Put the dynamic allocations (address == 0, size == 0) before static
-	 * allocations at address 0x0 so that overlap detection works
-	 * correctly.
-	 */
+	 
 	if (ra->size < rb->size)
 		return -1;
 	if (ra->size > rb->size)
@@ -303,14 +272,12 @@ static void __init __rmem_check_for_overlap(void)
 	}
 }
 
-/**
- * fdt_init_reserved_mem() - allocate and init all saved reserved memory regions
- */
+ 
 void __init fdt_init_reserved_mem(void)
 {
 	int i;
 
-	/* check for overlapping reserved regions */
+	 
 	__rmem_check_for_overlap();
 
 	for (i = 0; i < reserved_mem_count; i++) {
@@ -378,21 +345,7 @@ struct rmem_assigned_device {
 static LIST_HEAD(of_rmem_assigned_device_list);
 static DEFINE_MUTEX(of_rmem_assigned_device_mutex);
 
-/**
- * of_reserved_mem_device_init_by_idx() - assign reserved memory region to
- *					  given device
- * @dev:	Pointer to the device to configure
- * @np:		Pointer to the device_node with 'reserved-memory' property
- * @idx:	Index of selected region
- *
- * This function assigns respective DMA-mapping operations based on reserved
- * memory region specified by 'memory-region' property in @np node to the @dev
- * device. When driver needs to use more than one reserved memory region, it
- * should allocate child devices and initialize regions by name for each of
- * child device.
- *
- * Returns error code or zero on success.
- */
+ 
 int of_reserved_mem_device_init_by_idx(struct device *dev,
 				       struct device_node *np, int idx)
 {
@@ -441,15 +394,7 @@ int of_reserved_mem_device_init_by_idx(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(of_reserved_mem_device_init_by_idx);
 
-/**
- * of_reserved_mem_device_init_by_name() - assign named reserved memory region
- *					   to given device
- * @dev: pointer to the device to configure
- * @np: pointer to the device node with 'memory-region' property
- * @name: name of the selected memory region
- *
- * Returns: 0 on success or a negative error-code on failure.
- */
+ 
 int of_reserved_mem_device_init_by_name(struct device *dev,
 					struct device_node *np,
 					const char *name)
@@ -460,13 +405,7 @@ int of_reserved_mem_device_init_by_name(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(of_reserved_mem_device_init_by_name);
 
-/**
- * of_reserved_mem_device_release() - release reserved memory device structures
- * @dev:	Pointer to the device to deconfigure
- *
- * This function releases structures allocated for memory region handling for
- * the given device.
- */
+ 
 void of_reserved_mem_device_release(struct device *dev)
 {
 	struct rmem_assigned_device *rd, *tmp;
@@ -488,15 +427,7 @@ void of_reserved_mem_device_release(struct device *dev)
 }
 EXPORT_SYMBOL_GPL(of_reserved_mem_device_release);
 
-/**
- * of_reserved_mem_lookup() - acquire reserved_mem from a device node
- * @np:		node pointer of the desired reserved-memory region
- *
- * This function allows drivers to acquire a reference to the reserved_mem
- * struct based on a device node handle.
- *
- * Returns a reserved_mem reference, or NULL on error.
- */
+ 
 struct reserved_mem *of_reserved_mem_lookup(struct device_node *np)
 {
 	const char *name;

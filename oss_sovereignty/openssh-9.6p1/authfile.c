@@ -1,27 +1,5 @@
-/* $OpenBSD: authfile.c,v 1.144 2023/03/14 07:26:25 dtucker Exp $ */
-/*
- * Copyright (c) 2000, 2013 Markus Friedl.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -51,7 +29,7 @@
 
 #define MAX_KEY_FILE_SIZE	(1024 * 1024)
 
-/* Save a key blob to a file */
+ 
 static int
 sshkey_save_private_blob(struct sshbuf *keybuf, const char *filename)
 {
@@ -85,7 +63,7 @@ sshkey_save_private(struct sshkey *key, const char *filename,
 	return r;
 }
 
-/* XXX remove error() calls from here? */
+ 
 int
 sshkey_perm_ok(int fd, const char *filename)
 {
@@ -93,11 +71,7 @@ sshkey_perm_ok(int fd, const char *filename)
 
 	if (fstat(fd, &st) == -1)
 		return SSH_ERR_SYSTEM_ERROR;
-	/*
-	 * if a key owned by the user is accessed, then we check the
-	 * permissions of the file. if the key owned by a different user,
-	 * then we don't care.
-	 */
+	 
 #ifdef HAVE_CYGWIN
 	if (check_ntsec(filename))
 #endif
@@ -162,14 +136,14 @@ sshkey_load_private_type_fd(int fd, int type, const char *passphrase,
 	    passphrase, keyp, commentp)) != 0)
 		goto out;
 
-	/* success */
+	 
 	r = 0;
  out:
 	sshbuf_free(buffer);
 	return r;
 }
 
-/* Load a pubkey from the unencrypted envelope of a new-format private key */
+ 
 static int
 sshkey_load_pubkey_from_private(const char *filename, struct sshkey **pubkeyp)
 {
@@ -188,7 +162,7 @@ sshkey_load_pubkey_from_private(const char *filename, struct sshkey **pubkeyp)
 		goto out;
 	if ((r = sshkey_set_filename(pubkey, filename)) != 0)
 		goto out;
-	/* success */
+	 
 	if (pubkeyp != NULL) {
 		*pubkeyp = pubkey;
 		pubkey = NULL;
@@ -230,11 +204,11 @@ sshkey_try_load_public(struct sshkey **kp, const char *filename,
 		case '\0':
 			continue;
 		}
-		/* Abort loading if this looks like a private key */
+		 
 		if (strncmp(cp, "-----BEGIN", 10) == 0 ||
 		    strcmp(cp, "SSH PRIVATE KEY FILE") == 0)
 			break;
-		/* Skip leading whitespace. */
+		 
 		for (; *cp && (*cp == ' ' || *cp == '\t'); cp++)
 			;
 		if (*cp) {
@@ -246,7 +220,7 @@ sshkey_try_load_public(struct sshkey **kp, const char *filename,
 					if (*commentp == NULL)
 						r = SSH_ERR_ALLOC_FAIL;
 				}
-				/* success */
+				 
 				*kp = k;
 				free(line);
 				fclose(f);
@@ -260,7 +234,7 @@ sshkey_try_load_public(struct sshkey **kp, const char *filename,
 	return SSH_ERR_INVALID_FORMAT;
 }
 
-/* load public key from any pubkey file */
+ 
 int
 sshkey_load_public(const char *filename, struct sshkey **keyp, char **commentp)
 {
@@ -275,17 +249,17 @@ sshkey_load_public(const char *filename, struct sshkey **keyp, char **commentp)
 	if ((r = sshkey_try_load_public(keyp, filename, commentp)) == 0)
 		goto out;
 
-	/* try .pub suffix */
+	 
 	if (asprintf(&pubfile, "%s.pub", filename) == -1)
 		return SSH_ERR_ALLOC_FAIL;
 	if ((r = sshkey_try_load_public(keyp, pubfile, commentp)) == 0)
 		goto out;
 
-	/* finally, try to extract public key from private key file */
+	 
 	if ((r = sshkey_load_pubkey_from_private(filename, keyp)) == 0)
 		goto out;
 
-	/* Pretend we couldn't find the key */
+	 
 	r = SSH_ERR_SYSTEM_ERROR;
 	errno = ENOENT;
 
@@ -296,7 +270,7 @@ sshkey_load_public(const char *filename, struct sshkey **keyp, char **commentp)
 	return r;
 }
 
-/* Load the certificate associated with the named private key */
+ 
 int
 sshkey_load_cert(const char *filename, struct sshkey **keyp)
 {
@@ -316,7 +290,7 @@ sshkey_load_cert(const char *filename, struct sshkey **keyp)
 	return r;
 }
 
-/* Load private key and certificate */
+ 
 int
 sshkey_load_private_cert(int type, const char *filename, const char *passphrase,
     struct sshkey **keyp)
@@ -332,7 +306,7 @@ sshkey_load_private_cert(int type, const char *filename, const char *passphrase,
 	case KEY_RSA:
 	case KEY_DSA:
 	case KEY_ECDSA:
-#endif /* WITH_OPENSSL */
+#endif  
 	case KEY_ED25519:
 	case KEY_XMSS:
 	case KEY_UNSPEC:
@@ -346,7 +320,7 @@ sshkey_load_private_cert(int type, const char *filename, const char *passphrase,
 	    (r = sshkey_load_cert(filename, &cert)) != 0)
 		goto out;
 
-	/* Make sure the private key matches the certificate */
+	 
 	if (sshkey_equal_public(key, cert) == 0) {
 		r = SSH_ERR_KEY_CERT_MISMATCH;
 		goto out;
@@ -366,14 +340,7 @@ sshkey_load_private_cert(int type, const char *filename, const char *passphrase,
 	return r;
 }
 
-/*
- * Returns success if the specified "key" is listed in the file "filename",
- * SSH_ERR_KEY_NOT_FOUND: if the key is not listed or another error.
- * If "strict_type" is set then the key type must match exactly,
- * otherwise a comparison that ignores certificate data is performed.
- * If "check_ca" is set and "key" is a certificate, then its CA key is
- * also checked and sshkey_in_file() will return success if either is found.
- */
+ 
 int
 sshkey_in_file(struct sshkey *key, const char *filename, int strict_type,
     int check_ca)
@@ -395,11 +362,11 @@ sshkey_in_file(struct sshkey *key, const char *filename, int strict_type,
 		pub = NULL;
 		cp = line;
 
-		/* Skip leading whitespace. */
+		 
 		for (; *cp && (*cp == ' ' || *cp == '\t'); cp++)
 			;
 
-		/* Skip comments and empty lines */
+		 
 		switch (*cp) {
 		case '#':
 		case '\n':
@@ -434,45 +401,32 @@ sshkey_in_file(struct sshkey *key, const char *filename, int strict_type,
 	return r;
 }
 
-/*
- * Checks whether the specified key is revoked, returning 0 if not,
- * SSH_ERR_KEY_REVOKED if it is or another error code if something
- * unexpected happened.
- * This will check both the key and, if it is a certificate, its CA key too.
- * "revoked_keys_file" may be a KRL or a one-per-line list of public keys.
- */
+ 
 int
 sshkey_check_revoked(struct sshkey *key, const char *revoked_keys_file)
 {
 	int r;
 
 	r = ssh_krl_file_contains_key(revoked_keys_file, key);
-	/* If this was not a KRL to begin with then continue below */
+	 
 	if (r != SSH_ERR_KRL_BAD_MAGIC)
 		return r;
 
-	/*
-	 * If the file is not a KRL or we can't handle KRLs then attempt to
-	 * parse the file as a flat list of keys.
-	 */
+	 
 	switch ((r = sshkey_in_file(key, revoked_keys_file, 0, 1))) {
 	case 0:
-		/* Key found => revoked */
+		 
 		return SSH_ERR_KEY_REVOKED;
 	case SSH_ERR_KEY_NOT_FOUND:
-		/* Key not found => not revoked */
+		 
 		return 0;
 	default:
-		/* Some other error occurred */
+		 
 		return r;
 	}
 }
 
-/*
- * Advanced *cpp past the end of key options, defined as the first unquoted
- * whitespace character. Returns 0 on success or -1 on failure (e.g.
- * unterminated quotes).
- */
+ 
 int
 sshkey_advance_past_options(char **cpp)
 {
@@ -481,16 +435,16 @@ sshkey_advance_past_options(char **cpp)
 
 	for (; *cp && (quoted || (*cp != ' ' && *cp != '\t')); cp++) {
 		if (*cp == '\\' && cp[1] == '"')
-			cp++;	/* Skip both */
+			cp++;	 
 		else if (*cp == '"')
 			quoted = !quoted;
 	}
 	*cpp = cp;
-	/* return failure for unterminated quotes */
+	 
 	return (*cp == '\0' && quoted) ? -1 : 0;
 }
 
-/* Save a public key */
+ 
 int
 sshkey_save_public(const struct sshkey *key, const char *path,
     const char *comment)

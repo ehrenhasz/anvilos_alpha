@@ -1,19 +1,17 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2018 Intel Corporation. All rights reserved.
-//
-// Authors: Liam Girdwood <liam.r.girdwood@linux.intel.com>
-//	    Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-//	    Rander Wang <rander.wang@intel.com>
-//          Keyon Jie <yang.jie@linux.intel.com>
-//
 
-/*
- * Hardware interface for audio DSP on Apollolake and GeminiLake
- */
+
+
+
+
+
+
+
+
+
+
+
+
+ 
 
 #include <sound/sof/ext_manifest4.h>
 #include "../ipc4-priv.h"
@@ -27,26 +25,26 @@ static const struct snd_sof_debugfs_map apl_dsp_debugfs[] = {
 	{"dsp", HDA_DSP_BAR,  0, 0x10000, SOF_DEBUGFS_ACCESS_ALWAYS},
 };
 
-/* apollolake ops */
+ 
 struct snd_sof_dsp_ops sof_apl_ops;
 EXPORT_SYMBOL_NS(sof_apl_ops, SND_SOC_SOF_INTEL_HDA_COMMON);
 
 int sof_apl_ops_init(struct snd_sof_dev *sdev)
 {
-	/* common defaults */
+	 
 	memcpy(&sof_apl_ops, &sof_hda_common_ops, sizeof(struct snd_sof_dsp_ops));
 
-	/* probe/remove/shutdown */
+	 
 	sof_apl_ops.shutdown	= hda_dsp_shutdown;
 
 	if (sdev->pdata->ipc_type == SOF_IPC) {
-		/* doorbell */
+		 
 		sof_apl_ops.irq_thread	= hda_dsp_ipc_irq_thread;
 
-		/* ipc */
+		 
 		sof_apl_ops.send_msg	= hda_dsp_ipc_send_msg;
 
-		/* debug */
+		 
 		sof_apl_ops.ipc_dump	= hda_ipc_dump;
 
 		sof_apl_ops.set_power_state = hda_dsp_set_power_state_ipc3;
@@ -64,35 +62,35 @@ int sof_apl_ops_init(struct snd_sof_dev *sdev)
 
 		ipc4_data->mtrace_type = SOF_IPC4_MTRACE_INTEL_CAVS_1_5;
 
-		/* External library loading support */
+		 
 		ipc4_data->load_library = hda_dsp_ipc4_load_library;
 
-		/* doorbell */
+		 
 		sof_apl_ops.irq_thread	= hda_dsp_ipc4_irq_thread;
 
-		/* ipc */
+		 
 		sof_apl_ops.send_msg	= hda_dsp_ipc4_send_msg;
 
-		/* debug */
+		 
 		sof_apl_ops.ipc_dump	= hda_ipc4_dump;
 
 		sof_apl_ops.set_power_state = hda_dsp_set_power_state_ipc4;
 	}
 
-	/* set DAI driver ops */
+	 
 	hda_set_dai_drv_ops(sdev, &sof_apl_ops);
 
-	/* debug */
+	 
 	sof_apl_ops.debug_map	= apl_dsp_debugfs;
 	sof_apl_ops.debug_map_count	= ARRAY_SIZE(apl_dsp_debugfs);
 
-	/* firmware run */
+	 
 	sof_apl_ops.run = hda_dsp_cl_boot_firmware;
 
-	/* pre/post fw run */
+	 
 	sof_apl_ops.post_fw_run = hda_dsp_post_fw_run;
 
-	/* dsp core get/put */
+	 
 	sof_apl_ops.core_get = hda_dsp_core_get;
 
 	return 0;
@@ -100,7 +98,7 @@ int sof_apl_ops_init(struct snd_sof_dev *sdev)
 EXPORT_SYMBOL_NS(sof_apl_ops_init, SND_SOC_SOF_INTEL_HDA_COMMON);
 
 const struct sof_intel_dsp_desc apl_chip_info = {
-	/* Apollolake */
+	 
 	.cores_num = 2,
 	.init_core_mask = 1,
 	.host_managed_cores_mask = GENMASK(1, 0),

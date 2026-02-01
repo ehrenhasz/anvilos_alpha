@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * GPIO driver for the ACCES PCIe-IDIO-24 family
- * Copyright (C) 2018 William Breathitt Gray
- *
- * This driver supports the following ACCES devices: PCIe-IDIO-24,
- * PCIe-IDI-24, PCIe-IDO-24, and PCIe-IDIO-12.
- */
+
+ 
 #include <linux/bits.h>
 #include <linux/device.h>
 #include <linux/err.h>
@@ -18,43 +12,7 @@
 #include <linux/spinlock.h>
 #include <linux/types.h>
 
-/*
- * PLX PEX8311 PCI LCS_INTCSR Interrupt Control/Status
- *
- * Bit: Description
- *   0: Enable Interrupt Sources (Bit 0)
- *   1: Enable Interrupt Sources (Bit 1)
- *   2: Generate Internal PCI Bus Internal SERR# Interrupt
- *   3: Mailbox Interrupt Enable
- *   4: Power Management Interrupt Enable
- *   5: Power Management Interrupt
- *   6: Slave Read Local Data Parity Check Error Enable
- *   7: Slave Read Local Data Parity Check Error Status
- *   8: Internal PCI Wire Interrupt Enable
- *   9: PCI Express Doorbell Interrupt Enable
- *  10: PCI Abort Interrupt Enable
- *  11: Local Interrupt Input Enable
- *  12: Retry Abort Enable
- *  13: PCI Express Doorbell Interrupt Active
- *  14: PCI Abort Interrupt Active
- *  15: Local Interrupt Input Active
- *  16: Local Interrupt Output Enable
- *  17: Local Doorbell Interrupt Enable
- *  18: DMA Channel 0 Interrupt Enable
- *  19: DMA Channel 1 Interrupt Enable
- *  20: Local Doorbell Interrupt Active
- *  21: DMA Channel 0 Interrupt Active
- *  22: DMA Channel 1 Interrupt Active
- *  23: Built-In Self-Test (BIST) Interrupt Active
- *  24: Direct Master was the Bus Master during a Master or Target Abort
- *  25: DMA Channel 0 was the Bus Master during a Master or Target Abort
- *  26: DMA Channel 1 was the Bus Master during a Master or Target Abort
- *  27: Target Abort after internal 256 consecutive Master Retrys
- *  28: PCI Bus wrote data to LCS_MBOX0
- *  29: PCI Bus wrote data to LCS_MBOX1
- *  30: PCI Bus wrote data to LCS_MBOX2
- *  31: PCI Bus wrote data to LCS_MBOX3
- */
+ 
 #define PLX_PEX8311_PCI_LCS_INTCSR  0x68
 #define INTCSR_INTERNAL_PCI_WIRE    BIT(8)
 #define INTCSR_LOCAL_INPUT          BIT(11)
@@ -130,25 +88,20 @@ static const struct regmap_config idio_24_regmap_config = {
 #define IDIO_24_TTL_IRQ(_id) IDIO_24_REGMAP_IRQ(24 + _id)
 
 static const struct regmap_irq idio_24_regmap_irqs[] = {
-	IDIO_24_IIN_IRQ(0), IDIO_24_IIN_IRQ(1), IDIO_24_IIN_IRQ(2), /* IIN 0-2 */
-	IDIO_24_IIN_IRQ(3), IDIO_24_IIN_IRQ(4), IDIO_24_IIN_IRQ(5), /* IIN 3-5 */
-	IDIO_24_IIN_IRQ(6), IDIO_24_IIN_IRQ(7), IDIO_24_IIN_IRQ(8), /* IIN 6-8 */
-	IDIO_24_IIN_IRQ(9), IDIO_24_IIN_IRQ(10), IDIO_24_IIN_IRQ(11), /* IIN 9-11 */
-	IDIO_24_IIN_IRQ(12), IDIO_24_IIN_IRQ(13), IDIO_24_IIN_IRQ(14), /* IIN 12-14 */
-	IDIO_24_IIN_IRQ(15), IDIO_24_IIN_IRQ(16), IDIO_24_IIN_IRQ(17), /* IIN 15-17 */
-	IDIO_24_IIN_IRQ(18), IDIO_24_IIN_IRQ(19), IDIO_24_IIN_IRQ(20), /* IIN 18-20 */
-	IDIO_24_IIN_IRQ(21), IDIO_24_IIN_IRQ(22), IDIO_24_IIN_IRQ(23), /* IIN 21-23 */
-	IDIO_24_TTL_IRQ(0), IDIO_24_TTL_IRQ(1), IDIO_24_TTL_IRQ(2), /* TTL 0-2 */
-	IDIO_24_TTL_IRQ(3), IDIO_24_TTL_IRQ(4), IDIO_24_TTL_IRQ(5), /* TTL 3-5 */
-	IDIO_24_TTL_IRQ(6), IDIO_24_TTL_IRQ(7), /* TTL 6-7 */
+	IDIO_24_IIN_IRQ(0), IDIO_24_IIN_IRQ(1), IDIO_24_IIN_IRQ(2),  
+	IDIO_24_IIN_IRQ(3), IDIO_24_IIN_IRQ(4), IDIO_24_IIN_IRQ(5),  
+	IDIO_24_IIN_IRQ(6), IDIO_24_IIN_IRQ(7), IDIO_24_IIN_IRQ(8),  
+	IDIO_24_IIN_IRQ(9), IDIO_24_IIN_IRQ(10), IDIO_24_IIN_IRQ(11),  
+	IDIO_24_IIN_IRQ(12), IDIO_24_IIN_IRQ(13), IDIO_24_IIN_IRQ(14),  
+	IDIO_24_IIN_IRQ(15), IDIO_24_IIN_IRQ(16), IDIO_24_IIN_IRQ(17),  
+	IDIO_24_IIN_IRQ(18), IDIO_24_IIN_IRQ(19), IDIO_24_IIN_IRQ(20),  
+	IDIO_24_IIN_IRQ(21), IDIO_24_IIN_IRQ(22), IDIO_24_IIN_IRQ(23),  
+	IDIO_24_TTL_IRQ(0), IDIO_24_TTL_IRQ(1), IDIO_24_TTL_IRQ(2),  
+	IDIO_24_TTL_IRQ(3), IDIO_24_TTL_IRQ(4), IDIO_24_TTL_IRQ(5),  
+	IDIO_24_TTL_IRQ(6), IDIO_24_TTL_IRQ(7),  
 };
 
-/**
- * struct idio_24_gpio - GPIO device private data structure
- * @map:	regmap for the device
- * @lock:	synchronization lock to prevent I/O race conditions
- * @irq_type:	type configuration for IRQs
- */
+ 
 struct idio_24_gpio {
 	struct regmap *map;
 	raw_spinlock_t lock;
@@ -165,7 +118,7 @@ static int idio_24_handle_mask_sync(const int index, const unsigned int mask_buf
 
 	raw_spin_lock(&idio24gpio->lock);
 
-	/* if all are masked, then disable interrupts, else set to type */
+	 
 	type = (mask_buf == mask_buf_def) ? ~type_mask : idio24gpio->irq_type;
 
 	ret = regmap_update_bits(idio24gpio->map, IDIO_24_COS_ENABLE, type_mask, type);
@@ -204,14 +157,14 @@ static int idio_24_set_type_config(unsigned int **const buf, const unsigned int 
 
 	raw_spin_lock(&idio24gpio->lock);
 
-	/* replace old bitmap with new bitmap */
+	 
 	idio24gpio->irq_type = (idio24gpio->irq_type & ~mask) | (new & mask);
 
 	ret = regmap_read(idio24gpio->map, IDIO_24_COS_ENABLE, &cos_enable);
 	if (ret)
 		goto exit_unlock;
 
-	/* if COS is currently enabled then update the edge type */
+	 
 	if (cos_enable & mask) {
 		ret = regmap_update_bits(idio24gpio->map, IDIO_24_COS_ENABLE, mask,
 					 idio24gpio->irq_type);
@@ -239,13 +192,13 @@ static int idio_24_reg_mask_xlate(struct gpio_regmap *const gpio, const unsigned
 	case IDIO_24_OUT_BASE:
 		*mask = BIT(offset % IDIO_24_NGPIO_PER_REG);
 
-		/* FET Outputs */
+		 
 		if (offset < 24) {
 			*reg = IDIO_24_OUT_BASE + out_stride;
 			return 0;
 		}
 
-		/* Isolated Inputs */
+		 
 		if (offset < 48) {
 			*reg = IDIO_24_IN_BASE + in_stride;
 			return 0;
@@ -255,17 +208,17 @@ static int idio_24_reg_mask_xlate(struct gpio_regmap *const gpio, const unsigned
 		if (err)
 			return err;
 
-		/* TTL/CMOS Outputs */
+		 
 		if (ctrl_reg & CONTROL_REG_OUT_MODE) {
 			*reg = IDIO_24_TTLCMOS_OUT_REG;
 			return 0;
 		}
 
-		/* TTL/CMOS Inputs */
+		 
 		*reg = IDIO_24_TTLCMOS_IN_REG;
 		return 0;
 	case IDIO_24_CONTROL_REG:
-		/* We can only set direction for TTL/CMOS lines */
+		 
 		if (offset < 48)
 			return -EOPNOTSUPP;
 
@@ -273,7 +226,7 @@ static int idio_24_reg_mask_xlate(struct gpio_regmap *const gpio, const unsigned
 		*mask = CONTROL_REG_OUT_MODE;
 		return 0;
 	default:
-		/* Should never reach this path */
+		 
 		return -EINVAL;
 	}
 }
@@ -335,7 +288,7 @@ static int idio_24_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	raw_spin_lock_init(&idio24gpio->lock);
 
-	/* Initialize all IRQ type configuration to IRQ_TYPE_EDGE_BOTH */
+	 
 	idio24gpio->irq_type = GENMASK(7, 0);
 
 	chip = devm_kzalloc(dev, sizeof(*chip), GFP_KERNEL);
@@ -353,14 +306,11 @@ static int idio_24_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	chip->set_type_config = idio_24_set_type_config;
 	chip->irq_drv_data = idio24gpio;
 
-	/* Software board reset */
+	 
 	err = regmap_write(idio24gpio->map, IDIO_24_SOFT_RESET, 0);
 	if (err)
 		return err;
-	/*
-	 * enable PLX PEX8311 internal PCI wire interrupt and local interrupt
-	 * input
-	 */
+	 
 	err = regmap_update_bits(intcsr_map, 0x0, IDIO_24_ENABLE_IRQ, IDIO_24_ENABLE_IRQ);
 	if (err)
 		return err;

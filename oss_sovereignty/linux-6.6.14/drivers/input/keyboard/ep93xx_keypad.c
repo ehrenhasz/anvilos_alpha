@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the Cirrus EP93xx matrix keypad controller.
- *
- * Copyright (c) 2008 H Hartley Sweeten <hsweeten@visionengravers.com>
- *
- * Based on the pxa27x matrix keypad controller by Rodolfo Giometti.
- *
- * NOTE:
- *
- * The 3-key reset is triggered by pressing the 3 keys in
- * Row 0, Columns 2, 4, and 7 at the same time.  This action can
- * be disabled by setting the EP93XX_KEYPAD_DISABLE_3_KEY flag.
- *
- * Normal operation for the matrix does not autorepeat the key press.
- * This action can be enabled by setting the EP93XX_KEYPAD_AUTOREPEAT
- * flag.
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/module.h>
@@ -30,14 +14,12 @@
 #include <linux/platform_data/keypad-ep93xx.h>
 #include <linux/pm_wakeirq.h>
 
-/*
- * Keypad Interface Register offsets
- */
-#define KEY_INIT		0x00	/* Key Scan Initialization register */
-#define KEY_DIAG		0x04	/* Key Scan Diagnostic register */
-#define KEY_REG			0x08	/* Key Value Capture register */
+ 
+#define KEY_INIT		0x00	 
+#define KEY_DIAG		0x04	 
+#define KEY_REG			0x08	 
 
-/* Key Scan Initialization Register bit defines */
+ 
 #define KEY_INIT_DBNC_MASK	GENMASK(23, 16)
 #define KEY_INIT_DBNC_SHIFT	16
 #define KEY_INIT_DIS3KY		BIT(15)
@@ -47,11 +29,11 @@
 #define KEY_INIT_PRSCL_MASK	GENMASK(9, 0)
 #define KEY_INIT_PRSCL_SHIFT	0
 
-/* Key Scan Diagnostic Register bit defines */
+ 
 #define KEY_DIAG_MASK		GENMASK(5, 0)
 #define KEY_DIAG_SHIFT		0
 
-/* Key Value Capture Register bit defines */
+ 
 #define KEY_REG_K		BIT(15)
 #define KEY_REG_INT		BIT(14)
 #define KEY_REG_2KEYS		BIT(13)

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * arch/powerpc/sysdev/qe_lib/ucc.c
- *
- * QE UCC API Set - UCC specific routines implementations.
- *
- * Copyright (C) 2006 Freescale Semiconductor, Inc. All rights reserved.
- *
- * Authors: 	Shlomi Gridish <gridish@freescale.com>
- * 		Li Yang <leoli@freescale.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/stddef.h>
@@ -42,22 +33,12 @@ int ucc_set_qe_mux_mii_mng(unsigned int ucc_num)
 }
 EXPORT_SYMBOL(ucc_set_qe_mux_mii_mng);
 
-/* Configure the UCC to either Slow or Fast.
- *
- * A given UCC can be figured to support either "slow" devices (e.g. UART)
- * or "fast" devices (e.g. Ethernet).
- *
- * 'ucc_num' is the UCC number, from 0 - 7.
- *
- * This function also sets the UCC_GUEMR_SET_RESERVED3 bit because that bit
- * must always be set to 1.
- */
+ 
 int ucc_set_type(unsigned int ucc_num, enum ucc_speed_type speed)
 {
 	u8 __iomem *guemr;
 
-	/* The GUEMR register is at the same location for both slow and fast
-	   devices, so we just use uccX.slow.guemr. */
+	 
 	switch (ucc_num) {
 	case 0: guemr = &qe_immr->ucc1.slow.guemr;
 		break;
@@ -101,7 +82,7 @@ int ucc_mux_set_grant_tsa_bkpt(unsigned int ucc_num, int set, u32 mask)
 	unsigned int reg_num;
 	unsigned int shift;
 
-	/* check if the UCC number is in range. */
+	 
 	if (ucc_num > UCC_MAX_NUM - 1)
 		return -EINVAL;
 
@@ -123,11 +104,11 @@ int ucc_set_qe_mux_rxtx(unsigned int ucc_num, enum qe_clock clock,
 	unsigned int shift;
 	u32 clock_bits = 0;
 
-	/* check if the UCC number is in range. */
+	 
 	if (ucc_num > UCC_MAX_NUM - 1)
 		return -EINVAL;
 
-	/* The communications direction must be RX or TX */
+	 
 	if (!((mode == COMM_DIR_RX) || (mode == COMM_DIR_TX)))
 		return -EINVAL;
 
@@ -199,7 +180,7 @@ int ucc_set_qe_mux_rxtx(unsigned int ucc_num, enum qe_clock clock,
 	default: break;
 	}
 
-	/* Check for invalid combination of clock and UCC number */
+	 
 	if (!clock_bits)
 		return -ENOENT;
 
@@ -216,12 +197,7 @@ static int ucc_get_tdm_common_clk(u32 tdm_num, enum qe_clock clock)
 {
 	int clock_bits = -EINVAL;
 
-	/*
-	 * for TDM[0, 1, 2, 3], TX and RX use  common
-	 * clock source BRG3,4 and CLK1,2
-	 * for TDM[4, 5, 6, 7], TX and RX use  common
-	 * clock source BRG12,13 and CLK23,24
-	 */
+	 
 	switch (tdm_num) {
 	case 0:
 	case 1:
@@ -484,7 +460,7 @@ static int ucc_get_tdm_tx_clk(u32 tdm_num, enum qe_clock clock)
 	return clock_bits;
 }
 
-/* tdm_num: TDM A-H port num is 0-7 */
+ 
 static int ucc_get_tdm_rxtx_clk(enum comm_dir mode, u32 tdm_num,
 				enum qe_clock clock)
 {
@@ -526,7 +502,7 @@ int ucc_set_tdm_rxtx_clk(u32 tdm_num, enum qe_clock clock,
 	if (tdm_num > 7)
 		return -EINVAL;
 
-	/* The communications direction must be RX or TX */
+	 
 	if (mode != COMM_DIR_RX && mode != COMM_DIR_TX)
 		return -EINVAL;
 
@@ -639,7 +615,7 @@ int ucc_set_tdm_rxtx_sync(u32 tdm_num, enum qe_clock clock,
 	if (tdm_num >= UCC_TDM_NUM)
 		return -EINVAL;
 
-	/* The communications direction must be RX or TX */
+	 
 	if (mode != COMM_DIR_RX && mode != COMM_DIR_TX)
 		return -EINVAL;
 

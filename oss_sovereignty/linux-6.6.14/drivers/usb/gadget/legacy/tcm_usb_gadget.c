@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Target based USB-Gadget
- *
- * UAS protocol handling, target callbacks, configfs handling,
- * BBB (USB Mass Storage Class Bulk-Only (BBB) and Transport protocol handling.
- *
- * Author: Sebastian Andrzej Siewior <bigeasy at linutronix dot de>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/types.h>
@@ -25,13 +19,13 @@
 
 USB_GADGET_COMPOSITE_OPTIONS();
 
-#define UAS_VENDOR_ID	0x0525	/* NetChip */
-#define UAS_PRODUCT_ID	0xa4a5	/* Linux-USB File-backed Storage Gadget */
+#define UAS_VENDOR_ID	0x0525	 
+#define UAS_PRODUCT_ID	0xa4a5	 
 
 static struct usb_device_descriptor usbg_device_desc = {
 	.bLength =		sizeof(usbg_device_desc),
 	.bDescriptorType =	USB_DT_DEVICE,
-	/* .bcdUSB = DYNAMIC */
+	 
 	.bDeviceClass =		USB_CLASS_PER_INTERFACE,
 	.idVendor =		cpu_to_le16(UAS_VENDOR_ID),
 	.idProduct =		cpu_to_le16(UAS_PRODUCT_ID),

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2021 MediaTek Inc.
- */
+ 
+ 
 
 #ifndef __LINUX_REGULATOR_MT6359_H
 #define __LINUX_REGULATOR_MT6359_H
@@ -56,4 +54,4 @@ enum {
 
 #define MT6359_MAX_REGULATOR	MT6359_ID_RG_MAX
 
-#endif /* __LINUX_REGULATOR_MT6359_H */
+#endif  

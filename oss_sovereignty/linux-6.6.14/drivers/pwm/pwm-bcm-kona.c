@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2014 Broadcom Corporation
+
+
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -14,26 +14,7 @@
 #include <linux/slab.h>
 #include <linux/types.h>
 
-/*
- * The Kona PWM has some unusual characteristics.  Here are the main points.
- *
- * 1) There is no disable bit and the hardware docs advise programming a zero
- *    duty to achieve output equivalent to that of a normal disable operation.
- *
- * 2) Changes to prescale, duty, period, and polarity do not take effect until
- *    a subsequent rising edge of the trigger bit.
- *
- * 3) If the smooth bit and trigger bit are both low, the output is a constant
- *    high signal.  Otherwise, the earlier waveform continues to be output.
- *
- * 4) If the smooth bit is set on the rising edge of the trigger bit, output
- *    will transition to the new settings on a period boundary (which could be
- *    seconds away).  If the smooth bit is clear, new settings will be applied
- *    as soon as possible (the hardware always has a 400ns delay).
- *
- * 5) When the external clock that feeds the PWM is disabled, output is pegged
- *    high or low depending on its state at that exact instant.
- */
+ 
 
 #define PWM_CONTROL_OFFSET			0x00000000
 #define PWM_CONTROL_SMOOTH_SHIFT(chan)		(24 + (chan))
@@ -66,9 +47,7 @@ static inline struct kona_pwmc *to_kona_pwmc(struct pwm_chip *chip)
 	return container_of(chip, struct kona_pwmc, chip);
 }
 
-/*
- * Clear trigger bit but set smooth bit to maintain old output.
- */
+ 
 static void kona_pwmc_prepare_for_settings(struct kona_pwmc *kp,
 	unsigned int chan)
 {
@@ -78,10 +57,7 @@ static void kona_pwmc_prepare_for_settings(struct kona_pwmc *kp,
 	value &= ~(1 << PWM_CONTROL_TRIGGER_SHIFT(chan));
 	writel(value, kp->base + PWM_CONTROL_OFFSET);
 
-	/*
-	 * There must be a min 400ns delay between clearing trigger and setting
-	 * it. Failing to do this may result in no PWM signal.
-	 */
+	 
 	ndelay(400);
 }
 
@@ -89,12 +65,12 @@ static void kona_pwmc_apply_settings(struct kona_pwmc *kp, unsigned int chan)
 {
 	unsigned int value = readl(kp->base + PWM_CONTROL_OFFSET);
 
-	/* Set trigger bit and clear smooth bit to apply new settings */
+	 
 	value &= ~(1 << PWM_CONTROL_SMOOTH_SHIFT(chan));
 	value |= 1 << PWM_CONTROL_TRIGGER_SHIFT(chan);
 	writel(value, kp->base + PWM_CONTROL_OFFSET);
 
-	/* Trigger bit must be held high for at least 400 ns. */
+	 
 	ndelay(400);
 }
 
@@ -106,16 +82,7 @@ static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	unsigned long prescale = PRESCALE_MIN, pc, dc;
 	unsigned int value, chan = pwm->hwpwm;
 
-	/*
-	 * Find period count, duty count and prescale to suit duty_ns and
-	 * period_ns. This is done according to formulas described below:
-	 *
-	 * period_ns = 10^9 * (PRESCALE + 1) * PC / PWM_CLK_RATE
-	 * duty_ns = 10^9 * (PRESCALE + 1) * DC / PWM_CLK_RATE
-	 *
-	 * PC = (PWM_CLK_RATE * period_ns) / (10^9 * (PRESCALE + 1))
-	 * DC = (PWM_CLK_RATE * duty_ns) / (10^9 * (PRESCALE + 1))
-	 */
+	 
 
 	rate = clk_get_rate(kp->clk);
 
@@ -125,15 +92,15 @@ static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
 		pc = mul_u64_u64_div_u64(rate, period_ns, div);
 		dc = mul_u64_u64_div_u64(rate, duty_ns, div);
 
-		/* If duty_ns or period_ns are not achievable then return */
+		 
 		if (pc < PERIOD_COUNT_MIN)
 			return -EINVAL;
 
-		/* If pc and dc are in bounds, the calculation is done */
+		 
 		if (pc <= PERIOD_COUNT_MAX && dc <= DUTY_CYCLE_HIGH_MAX)
 			break;
 
-		/* Otherwise, increase prescale and recalculate pc and dc */
+		 
 		if (++prescale > PRESCALE_MAX)
 			return -EINVAL;
 	}
@@ -208,11 +175,11 @@ static void kona_pwmc_disable(struct pwm_chip *chip, struct pwm_device *pwm)
 
 	kona_pwmc_prepare_for_settings(kp, chan);
 
-	/* Simulate a disable by configuring for zero duty */
+	 
 	writel(0, kp->base + DUTY_CYCLE_HIGH_OFFSET(chan));
 	writel(0, kp->base + PERIOD_COUNT_OFFSET(chan));
 
-	/* Set prescale to 0 for this channel */
+	 
 	value = readl(kp->base + PRESCALE_OFFSET);
 	value &= ~PRESCALE_MASK(chan);
 	writel(value, kp->base + PRESCALE_OFFSET);
@@ -247,14 +214,7 @@ static int kona_pwmc_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 			kona_pwmc_disable(chip, pwm);
 		return 0;
 	} else if (!enabled) {
-		/*
-		 * This is a bit special here, usually the PWM should only be
-		 * enabled when duty and period are setup. But before this
-		 * driver was converted to .apply it was done the other way
-		 * around and so this behaviour was kept even though this might
-		 * result in a glitch. This might be improvable by someone with
-		 * hardware and/or documentation.
-		 */
+		 
 		err = kona_pwmc_enable(chip, pwm);
 		if (err)
 			return err;
@@ -304,7 +264,7 @@ static int kona_pwmc_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Set push/pull for all channels */
+	 
 	for (chan = 0; chan < kp->chip.npwm; chan++)
 		value |= (1 << PWM_CONTROL_TYPE_SHIFT(chan));
 

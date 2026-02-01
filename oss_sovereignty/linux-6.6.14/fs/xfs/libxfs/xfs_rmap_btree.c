@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2014 Red Hat, Inc.
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -24,30 +21,7 @@
 
 static struct kmem_cache	*xfs_rmapbt_cur_cache;
 
-/*
- * Reverse map btree.
- *
- * This is a per-ag tree used to track the owner(s) of a given extent. With
- * reflink it is possible for there to be multiple owners, which is a departure
- * from classic XFS. Owner records for data extents are inserted when the
- * extent is mapped and removed when an extent is unmapped.  Owner records for
- * all other block types (i.e. metadata) are inserted when an extent is
- * allocated and removed when an extent is freed. There can only be one owner
- * of a metadata extent, usually an inode or some other metadata structure like
- * an AG btree.
- *
- * The rmap btree is part of the free space management, so blocks for the tree
- * are sourced from the agfl. Hence we need transaction reservation support for
- * this tree so that the freelist is always large enough. This also impacts on
- * the minimum space we need to leave free in the AG.
- *
- * The tree is ordered by [ag block, owner, offset]. This is a large key size,
- * but it is the only way to enforce unique keys when a block can be owned by
- * multiple files at any offset. There's no need to order/search by extent
- * size for online updating/management of the tree. It is intended that most
- * reverse lookups will be to find the owner(s) of a particular block, or to
- * try to recover tree and file data from corrupt primary metadata.
- */
+ 
 
 static struct xfs_btree_cur *
 xfs_rmapbt_dup_cursor(
@@ -89,7 +63,7 @@ xfs_rmapbt_alloc_block(
 	int			error;
 	xfs_agblock_t		bno;
 
-	/* Allocate the new block from the freelist. If we can't, give up.  */
+	 
 	error = xfs_alloc_get_freelist(pag, cur->bc_tp, cur->bc_ag.agbp,
 				       &bno, 1);
 	if (error)
@@ -156,11 +130,7 @@ xfs_rmapbt_get_maxrecs(
 	return cur->bc_mp->m_rmap_mxr[level != 0];
 }
 
-/*
- * Convert the ondisk record's offset field into the ondisk key's offset field.
- * Fork and bmbt are significant parts of the rmap record key, but written
- * status is merely a record attribute.
- */
+ 
 static inline __be64 ondisk_rec_offset_to_key(const union xfs_btree_rec *rec)
 {
 	return rec->rmap.rm_offset & ~cpu_to_be64(XFS_RMAP_OFF_UNWRITTEN);
@@ -176,13 +146,7 @@ xfs_rmapbt_init_key_from_rec(
 	key->rmap.rm_offset = ondisk_rec_offset_to_key(rec);
 }
 
-/*
- * The high key for a reverse mapping record can be computed by shifting
- * the startblock and offset to the highest value that would still map
- * to that record.  In practice this means that we add blockcount-1 to
- * the startblock for all records, and if the record is for a data/attr
- * fork mapping, we add blockcount-1 to the offset too.
- */
+ 
 STATIC void
 xfs_rmapbt_init_high_key_from_rec(
 	union xfs_btree_key		*key,
@@ -229,11 +193,7 @@ xfs_rmapbt_init_ptr_from_cur(
 	ptr->s = agf->agf_roots[cur->bc_btnum];
 }
 
-/*
- * Mask the appropriate parts of the ondisk key field for a key comparison.
- * Fork and bmbt are significant parts of the rmap record key, but written
- * status is merely a record attribute.
- */
+ 
 static inline uint64_t offset_keymask(uint64_t offset)
 {
 	return offset & ~XFS_RMAP_OFF_UNWRITTEN;
@@ -281,7 +241,7 @@ xfs_rmapbt_diff_two_keys(
 	int64_t				d;
 	__u64				x, y;
 
-	/* Doesn't make sense to mask off the physical space part */
+	 
 	ASSERT(!mask || mask->rmap.rm_startblock);
 
 	d = (int64_t)be32_to_cpu(kp1->rm_startblock) -
@@ -299,7 +259,7 @@ xfs_rmapbt_diff_two_keys(
 	}
 
 	if (!mask || mask->rmap.rm_offset) {
-		/* Doesn't make sense to allow offset but not owner */
+		 
 		ASSERT(!mask || mask->rmap.rm_owner);
 
 		x = offset_keymask(be64_to_cpu(kp1->rm_offset));
@@ -323,18 +283,7 @@ xfs_rmapbt_verify(
 	xfs_failaddr_t		fa;
 	unsigned int		level;
 
-	/*
-	 * magic number and level verification
-	 *
-	 * During growfs operations, we can't verify the exact level or owner as
-	 * the perag is not fully initialised and hence not attached to the
-	 * buffer.  In this case, check against the maximum tree depth.
-	 *
-	 * Similarly, during log recovery we will have a perag structure
-	 * attached, but the agf information will not yet have been initialised
-	 * from the on disk AGF. Again, we can only check against maximum limits
-	 * in this case.
-	 */
+	 
 	if (!xfs_verify_magic(bp, block->bb_magic))
 		return __this_address;
 
@@ -465,11 +414,7 @@ xfs_rmapbt_keys_contiguous(
 {
 	ASSERT(!mask || mask->rmap.rm_startblock);
 
-	/*
-	 * We only support checking contiguity of the physical space component.
-	 * If any callers ever need more specificity than that, they'll have to
-	 * implement it here.
-	 */
+	 
 	ASSERT(!mask || (!mask->rmap.rm_owner && !mask->rmap.rm_offset));
 
 	return xbtree_key_contig(be32_to_cpu(key1->rmap.rm_startblock),
@@ -506,7 +451,7 @@ xfs_rmapbt_init_common(
 {
 	struct xfs_btree_cur	*cur;
 
-	/* Overlapping btree; 2 keys per pointer. */
+	 
 	cur = xfs_btree_alloc_cursor(mp, tp, XFS_BTNUM_RMAP,
 			mp->m_rmap_maxlevels, xfs_rmapbt_cur_cache);
 	cur->bc_flags = XFS_BTREE_CRC_BLOCKS | XFS_BTREE_OVERLAPPING;
@@ -517,7 +462,7 @@ xfs_rmapbt_init_common(
 	return cur;
 }
 
-/* Create a new reverse mapping btree cursor. */
+ 
 struct xfs_btree_cur *
 xfs_rmapbt_init_cursor(
 	struct xfs_mount	*mp,
@@ -534,7 +479,7 @@ xfs_rmapbt_init_cursor(
 	return cur;
 }
 
-/* Create a new reverse mapping btree cursor with a fake root for staging. */
+ 
 struct xfs_btree_cur *
 xfs_rmapbt_stage_cursor(
 	struct xfs_mount	*mp,
@@ -548,10 +493,7 @@ xfs_rmapbt_stage_cursor(
 	return cur;
 }
 
-/*
- * Install a new reverse mapping btree root.  Caller is responsible for
- * invalidating and freeing the old btree blocks.
- */
+ 
 void
 xfs_rmapbt_commit_staged_btree(
 	struct xfs_btree_cur	*cur,
@@ -571,7 +513,7 @@ xfs_rmapbt_commit_staged_btree(
 	xfs_btree_commit_afakeroot(cur, tp, agbp, &xfs_rmapbt_ops);
 }
 
-/* Calculate number of records in a reverse mapping btree block. */
+ 
 static inline unsigned int
 xfs_rmapbt_block_maxrecs(
 	unsigned int		blocklen,
@@ -583,9 +525,7 @@ xfs_rmapbt_block_maxrecs(
 		(2 * sizeof(struct xfs_rmap_key) + sizeof(xfs_rmap_ptr_t));
 }
 
-/*
- * Calculate number of records in an rmap btree block.
- */
+ 
 int
 xfs_rmapbt_maxrecs(
 	int			blocklen,
@@ -595,7 +535,7 @@ xfs_rmapbt_maxrecs(
 	return xfs_rmapbt_block_maxrecs(blocklen, leaf);
 }
 
-/* Compute the max possible height for reverse mapping btrees. */
+ 
 unsigned int
 xfs_rmapbt_maxlevels_ondisk(void)
 {
@@ -607,21 +547,11 @@ xfs_rmapbt_maxlevels_ondisk(void)
 	minrecs[0] = xfs_rmapbt_block_maxrecs(blocklen, true) / 2;
 	minrecs[1] = xfs_rmapbt_block_maxrecs(blocklen, false) / 2;
 
-	/*
-	 * Compute the asymptotic maxlevels for an rmapbt on any reflink fs.
-	 *
-	 * On a reflink filesystem, each AG block can have up to 2^32 (per the
-	 * refcount record format) owners, which means that theoretically we
-	 * could face up to 2^64 rmap records.  However, we're likely to run
-	 * out of blocks in the AG long before that happens, which means that
-	 * we must compute the max height based on what the btree will look
-	 * like if it consumes almost all the blocks in the AG due to maximal
-	 * sharing factor.
-	 */
+	 
 	return xfs_btree_space_to_height(minrecs, XFS_MAX_CRC_AG_BLOCKS);
 }
 
-/* Compute the maximum height of an rmap btree. */
+ 
 void
 xfs_rmapbt_compute_maxlevels(
 	struct xfs_mount		*mp)
@@ -632,33 +562,18 @@ xfs_rmapbt_compute_maxlevels(
 	}
 
 	if (xfs_has_reflink(mp)) {
-		/*
-		 * Compute the asymptotic maxlevels for an rmap btree on a
-		 * filesystem that supports reflink.
-		 *
-		 * On a reflink filesystem, each AG block can have up to 2^32
-		 * (per the refcount record format) owners, which means that
-		 * theoretically we could face up to 2^64 rmap records.
-		 * However, we're likely to run out of blocks in the AG long
-		 * before that happens, which means that we must compute the
-		 * max height based on what the btree will look like if it
-		 * consumes almost all the blocks in the AG due to maximal
-		 * sharing factor.
-		 */
+		 
 		mp->m_rmap_maxlevels = xfs_btree_space_to_height(mp->m_rmap_mnr,
 				mp->m_sb.sb_agblocks);
 	} else {
-		/*
-		 * If there's no block sharing, compute the maximum rmapbt
-		 * height assuming one rmap record per AG block.
-		 */
+		 
 		mp->m_rmap_maxlevels = xfs_btree_compute_maxlevels(
 				mp->m_rmap_mnr, mp->m_sb.sb_agblocks);
 	}
 	ASSERT(mp->m_rmap_maxlevels <= xfs_rmapbt_maxlevels_ondisk());
 }
 
-/* Calculate the refcount btree size for some records. */
+ 
 xfs_extlen_t
 xfs_rmapbt_calc_size(
 	struct xfs_mount	*mp,
@@ -667,24 +582,20 @@ xfs_rmapbt_calc_size(
 	return xfs_btree_calc_size(mp->m_rmap_mnr, len);
 }
 
-/*
- * Calculate the maximum refcount btree size.
- */
+ 
 xfs_extlen_t
 xfs_rmapbt_max_size(
 	struct xfs_mount	*mp,
 	xfs_agblock_t		agblocks)
 {
-	/* Bail out if we're uninitialized, which can happen in mkfs. */
+	 
 	if (mp->m_rmap_mxr[0] == 0)
 		return 0;
 
 	return xfs_rmapbt_calc_size(mp, agblocks);
 }
 
-/*
- * Figure out how many blocks to reserve and how many are used by this btree.
- */
+ 
 int
 xfs_rmapbt_calc_reserves(
 	struct xfs_mount	*mp,
@@ -711,15 +622,11 @@ xfs_rmapbt_calc_reserves(
 	tree_len = be32_to_cpu(agf->agf_rmap_blocks);
 	xfs_trans_brelse(tp, agbp);
 
-	/*
-	 * The log is permanently allocated, so the space it occupies will
-	 * never be available for the kinds of things that would require btree
-	 * expansion.  We therefore can pretend the space isn't there.
-	 */
+	 
 	if (xfs_ag_contains_log(mp, pag->pag_agno))
 		agblocks -= mp->m_sb.sb_logblocks;
 
-	/* Reserve 1% of the AG or enough for 1 block per record. */
+	 
 	*ask += max(agblocks / 100, xfs_rmapbt_max_size(mp, agblocks));
 	*used += tree_len;
 

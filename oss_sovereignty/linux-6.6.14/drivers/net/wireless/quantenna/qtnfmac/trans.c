@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Copyright (c) 2015-2016 Quantenna Communications. All rights reserved. */
+
+ 
 
 #include <linux/types.h>
 #include <linux/export.h>
@@ -139,7 +139,7 @@ void qtnf_trans_init(struct qtnf_bus *bus)
 	trans->curr_cmd.resp_skb = NULL;
 	spin_unlock(&trans->curr_cmd.resp_lock);
 
-	/* Init event handling related fields */
+	 
 	skb_queue_head_init(&trans->event_queue);
 	trans->event_queue_max_len = QTNF_MAX_EVENT_QUEUE_LEN;
 }

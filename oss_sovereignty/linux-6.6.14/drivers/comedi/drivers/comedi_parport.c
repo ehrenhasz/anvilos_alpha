@@ -1,67 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * comedi_parport.c
- * Comedi driver for standard parallel port
- *
- * For more information see:
- *	http://retired.beyondlogic.org/spp/parallel.htm
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1998,2001 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Driver: comedi_parport
- * Description: Standard PC parallel port
- * Author: ds
- * Status: works in immediate mode
- * Devices: [standard] parallel port (comedi_parport)
- * Updated: Tue, 30 Apr 2002 21:11:45 -0700
- *
- * A cheap and easy way to get a few more digital I/O lines. Steal
- * additional parallel ports from old computers or your neighbors'
- * computers.
- *
- * Option list:
- *   0: I/O port base for the parallel port.
- *   1: IRQ (optional)
- *
- * Parallel Port Lines:
- *
- *	 pin   subdev  chan  type  name
- *	-----  ------  ----  ----  --------------
- *	  1      2       0    DO   strobe
- *	  2      0       0    DIO  data 0
- *	  3      0       1    DIO  data 1
- *	  4      0       2    DIO  data 2
- *	  5      0       3    DIO  data 3
- *	  6      0       4    DIO  data 4
- *	  7      0       5    DIO  data 5
- *	  8      0       6    DIO  data 6
- *	  9      0       7    DIO  data 7
- *	 10      1       3    DI   ack
- *	 11      1       4    DI   busy
- *	 12      1       2    DI   paper out
- *	 13      1       1    DI   select in
- *	 14      2       1    DO   auto LF
- *	 15      1       0    DI   error
- *	 16      2       2    DO   init
- *	 17      2       3    DO   select printer
- *	18-25                      ground
- *
- * When an IRQ is configured subdevice 3 pretends to be a digital
- * input subdevice, but it always returns 0 when read. However, if
- * you run a command with scan_begin_src=TRIG_EXT, it uses pin 10
- * as a external trigger, which can be used to wake up tasks.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
 #include <linux/comedi/comedidev.h>
 
-/*
- * Register map
- */
+ 
 #define PARPORT_DATA_REG	0x00
 #define PARPORT_STATUS_REG	0x01
 #define PARPORT_CTRL_REG	0x02
@@ -147,7 +93,7 @@ static int parport_intr_cmdtest(struct comedi_device *dev,
 {
 	int err = 0;
 
-	/* Step 1 : check if triggers are trivially valid */
+	 
 
 	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW);
 	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_EXT);
@@ -158,10 +104,10 @@ static int parport_intr_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 1;
 
-	/* Step 2a : make sure trigger sources are unique */
-	/* Step 2b : and mutually compatible */
+	 
+	 
 
-	/* Step 3: check if arguments are trivially valid */
+	 
 
 	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
 	err |= comedi_check_trigger_arg_is(&cmd->scan_begin_arg, 0);
@@ -173,9 +119,9 @@ static int parport_intr_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 3;
 
-	/* Step 4: fix up any arguments */
+	 
 
-	/* Step 5: check channel list if it exists */
+	 
 
 	return 0;
 }
@@ -242,7 +188,7 @@ static int parport_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* Digial I/O subdevice - Parallel port DATA register */
+	 
 	s = &dev->subdevices[0];
 	s->type		= COMEDI_SUBD_DIO;
 	s->subdev_flags	= SDF_READABLE | SDF_WRITABLE;
@@ -252,7 +198,7 @@ static int parport_attach(struct comedi_device *dev,
 	s->insn_bits	= parport_data_reg_insn_bits;
 	s->insn_config	= parport_data_reg_insn_config;
 
-	/* Digial Input subdevice - Parallel port STATUS register */
+	 
 	s = &dev->subdevices[1];
 	s->type		= COMEDI_SUBD_DI;
 	s->subdev_flags	= SDF_READABLE;
@@ -261,7 +207,7 @@ static int parport_attach(struct comedi_device *dev,
 	s->range_table	= &range_digital;
 	s->insn_bits	= parport_status_reg_insn_bits;
 
-	/* Digial Output subdevice - Parallel port CONTROL register */
+	 
 	s = &dev->subdevices[2];
 	s->type		= COMEDI_SUBD_DO;
 	s->subdev_flags	= SDF_WRITABLE;
@@ -271,7 +217,7 @@ static int parport_attach(struct comedi_device *dev,
 	s->insn_bits	= parport_ctrl_reg_insn_bits;
 
 	if (dev->irq) {
-		/* Digial Input subdevice - Interrupt support */
+		 
 		s = &dev->subdevices[3];
 		dev->read_subdev = s;
 		s->type		= COMEDI_SUBD_DI;

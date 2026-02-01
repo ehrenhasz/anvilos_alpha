@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2014 Jiri Pirko <jiri@resnulli.us>
- */
+ 
+ 
 
 #ifndef __NET_TC_VLAN_H
 #define __NET_TC_VLAN_H
@@ -88,4 +86,4 @@ static inline void tcf_vlan_push_eth(unsigned char *src, unsigned char *dest,
 	rcu_read_unlock();
 }
 
-#endif /* __NET_TC_VLAN_H */
+#endif  

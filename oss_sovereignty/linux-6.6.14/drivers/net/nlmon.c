@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/ethtool.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -93,10 +93,7 @@ static void nlmon_setup(struct net_device *dev)
 			NETIF_F_HIGHDMA | NETIF_F_LLTX;
 	dev->flags = IFF_NOARP;
 
-	/* That's rather a softlimit here, which, of course,
-	 * can be altered. Not a real MTU, but what is to be
-	 * expected in most cases.
-	 */
+	 
 	dev->mtu = NLMSG_GOODSIZE;
 	dev->min_mtu = sizeof(struct nlmsghdr);
 }

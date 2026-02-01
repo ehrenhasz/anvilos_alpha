@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Gateworks Corporation, Inc. All Rights Reserved.
- */
+
+ 
 #include <linux/i2c.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -15,7 +13,7 @@
 
 #define DRIVER_NAME		"ltc3676"
 
-/* LTC3676 Registers */
+ 
 #define LTC3676_BUCK1     0x01
 #define LTC3676_BUCK2     0x02
 #define LTC3676_BUCK3     0x03
@@ -82,7 +80,7 @@ static int ltc3676_set_suspend_voltage(struct regulator_dev *rdev, int uV)
 	if (sel < 0)
 		return sel;
 
-	/* DVBB register follows right after the corresponding DVBA register */
+	 
 	return regmap_update_bits(ltc3676->regmap, rdev->desc->vsel_reg + 1,
 				  rdev->desc->vsel_mask, sel);
 }
@@ -100,10 +98,10 @@ static int ltc3676_set_suspend_mode(struct regulator_dev *rdev,
 	mask = LTC3676_DVBxA_REF_SELECT;
 	switch (mode) {
 	case REGULATOR_MODE_STANDBY:
-		val = 0; /* select DVBxA */
+		val = 0;  
 		break;
 	case REGULATOR_MODE_NORMAL:
-		val = LTC3676_DVBxA_REF_SELECT; /* select DVBxB */
+		val = LTC3676_DVBxA_REF_SELECT;  
 		break;
 	default:
 		dev_warn(&rdev->dev, "%s: regulator mode: 0x%x not supported\n",
@@ -151,7 +149,7 @@ static int ltc3676_of_parse_cb(struct device_node *np,
 	u32 r[2];
 	int ret;
 
-	/* LDO3 has a fixed output */
+	 
 	if (desc->id == LTC3676_LDO3)
 		return 0;
 
@@ -169,7 +167,7 @@ static int ltc3676_of_parse_cb(struct device_node *np,
 	return 0;
 }
 
-/* SW1, SW2, SW3, SW4 linear 0.8V-3.3V with scalar via R1/R2 feeback res */
+ 
 static const struct regulator_ops ltc3676_linear_regulator_ops = {
 	.enable = regulator_enable_regmap,
 	.disable = regulator_disable_regmap,
@@ -181,11 +179,11 @@ static const struct regulator_ops ltc3676_linear_regulator_ops = {
 	.set_suspend_mode = ltc3676_set_suspend_mode,
 };
 
-/* LDO1 always on fixed 0.8V-3.3V via scalar via R1/R2 feeback res */
+ 
 static const struct regulator_ops ltc3676_fixed_standby_regulator_ops = {
 };
 
-/* LDO2, LDO3 fixed (LDO2 has external scalar via R1/R2 feedback res) */
+ 
 static const struct regulator_ops ltc3676_fixed_regulator_ops = {
 	.enable = regulator_enable_regmap,
 	.disable = regulator_disable_regmap,
@@ -289,7 +287,7 @@ static irqreturn_t ltc3676_isr(int irq, void *dev_id)
 						      event, NULL);
 	}
 
-	/* Clear warning condition */
+	 
 	regmap_write(ltc3676->regmap, LTC3676_CLIRQ, 0);
 
 	return IRQ_HANDLED;
@@ -312,7 +310,7 @@ static int ltc3676_regulator_probe(struct i2c_client *client)
 
 	descs = ltc3676->regulator_descs;
 	memcpy(descs, ltc3676_regulators, sizeof(ltc3676_regulators));
-	descs[LTC3676_LDO3].fixed_uV = 1800000; /* LDO3 is fixed 1.8V */
+	descs[LTC3676_LDO3].fixed_uV = 1800000;  
 
 	ltc3676->regmap = devm_regmap_init_i2c(client, &ltc3676_regmap_config);
 	if (IS_ERR(ltc3676->regmap)) {

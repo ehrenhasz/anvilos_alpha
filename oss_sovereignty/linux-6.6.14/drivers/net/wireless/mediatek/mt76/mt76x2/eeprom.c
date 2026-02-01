@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -167,7 +165,7 @@ mt76x2_eeprom_load(struct mt76x02_dev *dev)
 	if (found) {
 		mt76x2_apply_cal_free_data(dev, efuse);
 	} else {
-		/* FIXME: check if efuse data is complete */
+		 
 		found = true;
 		memcpy(dev->mt76.eeprom.data, efuse, MT7662_EEPROM_SIZE);
 	}

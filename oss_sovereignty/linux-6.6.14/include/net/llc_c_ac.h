@@ -1,21 +1,8 @@
 #ifndef LLC_C_AC_H
 #define LLC_C_AC_H
-/*
- * Copyright (c) 1997 by Procom Technology,Inc.
- * 		 2001 by Arnaldo Carvalho de Melo <acme@conectiva.com.br>
- *
- * This program can be redistributed or modified under the terms of the
- * GNU General Public License as published by the Free Software Foundation.
- * This program is distributed without any warranty or implied warranty
- * of merchantability or fitness for a particular purpose.
- *
- * See the GNU General Public License for more details.
- */
-/* Connection component state transition actions */
-/*
- * Connection state transition actions
- * (Fb = F bit; Pb = P bit; Xb = X bit)
- */
+ 
+ 
+ 
 
 #include <linux/types.h>
 
@@ -183,4 +170,4 @@ void llc_conn_ack_tmr_cb(struct timer_list *t);
 void llc_conn_rej_tmr_cb(struct timer_list *t);
 
 void llc_conn_set_p_flag(struct sock *sk, u8 value);
-#endif /* LLC_C_AC_H */
+#endif  

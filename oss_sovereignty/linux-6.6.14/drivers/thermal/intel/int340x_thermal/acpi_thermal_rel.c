@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* acpi_thermal_rel.c driver for exporting ACPI thermal relationship
- *
- * Copyright (c) 2014 Intel Corp
- */
 
-/*
- * Two functionalities included:
- * 1. Export _TRT, _ART, via misc device interface to the userspace.
- * 2. Provide parsing result to kernel drivers
- *
- */
+ 
+
+ 
 #include <linux/init.h>
 #include <linux/export.h>
 #include <linux/module.h>
@@ -24,8 +16,8 @@
 
 static acpi_handle acpi_thermal_rel_handle;
 static DEFINE_SPINLOCK(acpi_thermal_rel_chrdev_lock);
-static int acpi_thermal_rel_chrdev_count;	/* #times opened */
-static int acpi_thermal_rel_chrdev_exclu;	/* already open exclusive? */
+static int acpi_thermal_rel_chrdev_count;	 
+static int acpi_thermal_rel_chrdev_exclu;	 
 
 static int acpi_thermal_rel_open(struct inode *inode, struct file *file)
 {
@@ -55,15 +47,7 @@ static int acpi_thermal_rel_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
-/**
- * acpi_parse_trt - Thermal Relationship Table _TRT for passive cooling
- *
- * @handle: ACPI handle of the device contains _TRT
- * @trt_count: the number of valid entries resulted from parsing _TRT
- * @trtp: pointer to pointer of array of _TRT entries in parsing result
- * @create_dev: whether to create platform devices for target and source
- *
- */
+ 
 int acpi_parse_trt(acpi_handle handle, int *trt_count, struct trt **trtp,
 		bool create_dev)
 {
@@ -121,7 +105,7 @@ int acpi_parse_trt(acpi_handle handle, int *trt_count, struct trt **trtp,
 	result = 0;
 
 	*trtp = trts;
-	/* don't count bad entries */
+	 
 	*trt_count -= nr_bad_entries;
 end:
 	kfree(buffer.pointer);
@@ -129,15 +113,7 @@ end:
 }
 EXPORT_SYMBOL(acpi_parse_trt);
 
-/**
- * acpi_parse_art - Parse Active Relationship Table _ART
- *
- * @handle: ACPI handle of the device contains _ART
- * @art_count: the number of valid entries resulted from parsing _ART
- * @artp: pointer to pointer of array of art entries in parsing result
- * @create_dev: whether to create platform devices for target and source
- *
- */
+ 
 int acpi_parse_art(acpi_handle handle, int *art_count, struct art **artp,
 		bool create_dev)
 {
@@ -163,7 +139,7 @@ int acpi_parse_art(acpi_handle handle, int *art_count, struct art **artp,
 		goto end;
 	}
 
-	/* ignore p->package.elements[0], as this is _ART Revision field */
+	 
 	*art_count = p->package.count - 1;
 	arts = kcalloc(*art_count, sizeof(struct art), GFP_KERNEL);
 	if (!arts) {
@@ -195,7 +171,7 @@ int acpi_parse_art(acpi_handle handle, int *art_count, struct art **artp,
 	}
 
 	*artp = arts;
-	/* don't count bad entries */
+	 
 	*art_count -= nr_bad_entries;
 end:
 	kfree(buffer.pointer);
@@ -203,14 +179,7 @@ end:
 }
 EXPORT_SYMBOL(acpi_parse_art);
 
-/*
- * acpi_parse_psvt - Passive Table (PSVT) for passive cooling
- *
- * @handle: ACPI handle of the device which contains PSVT
- * @psvt_count: the number of valid entries resulted from parsing PSVT
- * @psvtp: pointer to array of psvt entries
- *
- */
+ 
 static int acpi_parse_psvt(acpi_handle handle, int *psvt_count, struct psvt **psvtp)
 {
 	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
@@ -233,7 +202,7 @@ static int acpi_parse_psvt(acpi_handle handle, int *psvt_count, struct psvt **ps
 		goto end;
 	}
 
-	/* first package is the revision number */
+	 
 	if (p->package.count > 0) {
 		union acpi_object *prev = &(p->package.elements[0]);
 
@@ -244,7 +213,7 @@ static int acpi_parse_psvt(acpi_handle handle, int *psvt_count, struct psvt **ps
 		goto end;
 	}
 
-	/* Support only version 2 */
+	 
 	if (revision != 2) {
 		result = -EFAULT;
 		goto end;
@@ -262,7 +231,7 @@ static int acpi_parse_psvt(acpi_handle handle, int *psvt_count, struct psvt **ps
 		goto end;
 	}
 
-	/* Start index is 1 because the first package is the revision number */
+	 
 	for (i = 1; i < p->package.count; i++) {
 		struct acpi_buffer psvt_int_format = { sizeof("RRNNNNNNNNNN"), "RRNNNNNNNNNN" };
 		struct acpi_buffer psvt_str_format = { sizeof("RRNNNNNSNNNN"), "RRNNNNNSNNNN" };
@@ -304,7 +273,7 @@ static int acpi_parse_psvt(acpi_handle handle, int *psvt_count, struct psvt **ps
 
 		memcpy(psvt, psvt_ptr, sizeof(*psvt));
 
-		/* The limit element can be string or U64 */
+		 
 		psvt->control_knob_type = (u64)knob->type;
 
 		if (knob->type == ACPI_TYPE_STRING) {
@@ -331,7 +300,7 @@ static int acpi_parse_psvt(acpi_handle handle, int *psvt_count, struct psvt **ps
 		}
 	}
 
-	/* don't count bad entries */
+	 
 	*psvt_count -= nr_bad_entries;
 
 	if (!*psvt_count) {
@@ -349,7 +318,7 @@ end:
 	return result;
 }
 
-/* get device name from acpi handle */
+ 
 static void get_single_name(acpi_handle handle, char *name)
 {
 	struct acpi_buffer buffer = {ACPI_ALLOCATE_BUFFER};
@@ -380,12 +349,12 @@ static int fill_art(char __user *ubuf)
 		ret = -ENOMEM;
 		goto free_art;
 	}
-	/* now fill in user art data */
+	 
 	for (i = 0; i < count; i++) {
-		/* userspace art needs device name instead of acpi reference */
+		 
 		get_single_name(arts[i].source, art_user[i].source_device);
 		get_single_name(arts[i].target, art_user[i].target_device);
-		/* copy the rest int data in addition to source and target */
+		 
 		BUILD_BUG_ON(sizeof(art_user[i].data) !=
 			     sizeof(u64) * (ACPI_NR_ART_ELEMENTS - 2));
 		memcpy(&art_user[i].data, &arts[i].data, sizeof(art_user[i].data));
@@ -417,9 +386,9 @@ static int fill_trt(char __user *ubuf)
 		ret = -ENOMEM;
 		goto free_trt;
 	}
-	/* now fill in user trt data */
+	 
 	for (i = 0; i < count; i++) {
-		/* userspace trt needs device name instead of acpi reference */
+		 
 		get_single_name(trts[i].source, trt_user[i].source_device);
 		get_single_name(trts[i].target, trt_user[i].target_device);
 		trt_user[i].sample_period = trts[i].sample_period;
@@ -452,9 +421,9 @@ static int fill_psvt(char __user *ubuf)
 		goto free_psvt;
 	}
 
-	/* now fill in user psvt data */
+	 
 	for (i = 0; i < count; i++) {
-		/* userspace psvt needs device name instead of acpi reference */
+		 
 		get_single_name(psvts[i].source, psvt_user[i].source_device);
 		get_single_name(psvts[i].target, psvt_user[i].target_device);
 
@@ -542,7 +511,7 @@ static long acpi_thermal_rel_ioctl(struct file *f, unsigned int cmd,
 		return ret;
 
 	case ACPI_THERMAL_GET_PSVT_LEN:
-		/* total length of the data retrieved (count * PSVT entry size) */
+		 
 		ret = acpi_parse_psvt(acpi_thermal_rel_handle, &count, &psvts);
 		length = count * sizeof(union psvt_object);
 		if (!ret) {

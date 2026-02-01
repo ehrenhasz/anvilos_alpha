@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * definitions for PCM179X
- *
- * Copyright 2013 Amarula Solutions
- */
+ 
+ 
 
 #ifndef __PCM179X_H__
 #define __PCM179X_H__

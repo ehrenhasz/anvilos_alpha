@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2007 Oracle.  All rights reserved.
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include "messages.h"
@@ -31,29 +29,7 @@ void btrfs_init_map_token(struct btrfs_map_token *token, struct extent_buffer *e
 	token->offset = 0;
 }
 
-/*
- * Macro templates that define helpers to read/write extent buffer data of a
- * given size, that are also used via ctree.h for access to item members by
- * specialized helpers.
- *
- * Generic helpers:
- * - btrfs_set_8 (for 8/16/32/64)
- * - btrfs_get_8 (for 8/16/32/64)
- *
- * Generic helpers with a token (cached address of the most recently accessed
- * page):
- * - btrfs_set_token_8 (for 8/16/32/64)
- * - btrfs_get_token_8 (for 8/16/32/64)
- *
- * The set/get functions handle data spanning two pages transparently, in case
- * metadata block size is larger than page.  Every pointer to metadata items is
- * an offset into the extent buffer page array, cast to a specific type.  This
- * gives us all the type checking.
- *
- * The extent buffer pages stored in the array pages do not form a contiguous
- * phyusical range, but the API functions assume the linear offset to the range
- * from 0 to metadata node size.
- */
+ 
 
 #define DEFINE_BTRFS_SETGET_BITS(bits)					\
 u##bits btrfs_get_token_##bits(struct btrfs_map_token *token,		\

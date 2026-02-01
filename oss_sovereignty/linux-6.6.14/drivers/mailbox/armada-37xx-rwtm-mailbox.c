@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * rWTM BIU Mailbox driver for Armada 37xx
- *
- * Author: Marek Behún <kabel@kernel.org>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/interrupt.h>
@@ -17,7 +13,7 @@
 
 #define DRIVER_NAME	"armada-37xx-rwtm-mailbox"
 
-/* relative to rWTM BIU Mailbox Registers */
+ 
 #define RWTM_MBOX_PARAM(i)		(0x0 + ((i) << 2))
 #define RWTM_MBOX_COMMAND		0x40
 #define RWTM_MBOX_RETURN_STATUS		0x80
@@ -113,7 +109,7 @@ static int a37xx_mbox_startup(struct mbox_chan *chan)
 		return ret;
 	}
 
-	/* enable IRQ generation */
+	 
 	reg = readl(mbox->base + RWTM_HOST_INT_MASK);
 	reg &= ~(SP_CMD_COMPLETE | SP_CMD_QUEUE_FULL_ACCESS | SP_CMD_QUEUE_FULL);
 	writel(reg, mbox->base + RWTM_HOST_INT_MASK);
@@ -126,7 +122,7 @@ static void a37xx_mbox_shutdown(struct mbox_chan *chan)
 	u32 reg;
 	struct a37xx_mbox *mbox = chan->con_priv;
 
-	/* disable interrupt generation */
+	 
 	reg = readl(mbox->base + RWTM_HOST_INT_MASK);
 	reg |= SP_CMD_COMPLETE | SP_CMD_QUEUE_FULL_ACCESS | SP_CMD_QUEUE_FULL;
 	writel(reg, mbox->base + RWTM_HOST_INT_MASK);
@@ -150,7 +146,7 @@ static int armada_37xx_mbox_probe(struct platform_device *pdev)
 	if (!mbox)
 		return -ENOMEM;
 
-	/* Allocated one channel */
+	 
 	chans = devm_kzalloc(&pdev->dev, sizeof(*chans), GFP_KERNEL);
 	if (!chans)
 		return -ENOMEM;
@@ -165,7 +161,7 @@ static int armada_37xx_mbox_probe(struct platform_device *pdev)
 
 	mbox->dev = &pdev->dev;
 
-	/* Hardware supports only one channel. */
+	 
 	chans[0].con_priv = mbox;
 	mbox->controller.dev = mbox->dev;
 	mbox->controller.num_chans = 1;

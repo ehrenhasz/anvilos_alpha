@@ -1,25 +1,25 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// System Control and Management Interface (SCMI) based regulator driver
-//
-// Copyright (C) 2020-2021 ARM Ltd.
-//
-// Implements a regulator driver on top of the SCMI Voltage Protocol.
-//
-// The ARM SCMI Protocol aims in general to hide as much as possible all the
-// underlying operational details while providing an abstracted interface for
-// its users to operate upon: as a consequence the resulting operational
-// capabilities and configurability of this regulator device are much more
-// limited than the ones usually available on a standard physical regulator.
-//
-// The supported SCMI regulator ops are restricted to the bare minimum:
-//
-//  - 'status_ops': enable/disable/is_enabled
-//  - 'voltage_ops': get_voltage_sel/set_voltage_sel
-//		     list_voltage/map_voltage
-//
-// Each SCMI regulator instance is associated, through the means of a proper DT
-// entry description, to a specific SCMI Voltage Domain.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -141,16 +141,12 @@ scmi_config_linear_regulator_mappings(struct scmi_regulator *sreg,
 {
 	s32 delta_uV;
 
-	/*
-	 * Note that SCMI voltage domains describable by linear ranges
-	 * (segments) {low, high, step} are guaranteed to come in one single
-	 * triplet by the SCMI Voltage Domain protocol support itself.
-	 */
+	 
 
 	delta_uV = (vinfo->levels_uv[SCMI_VOLTAGE_SEGMENT_HIGH] -
 			vinfo->levels_uv[SCMI_VOLTAGE_SEGMENT_LOW]);
 
-	/* Rule out buggy negative-intervals answers from fw */
+	 
 	if (delta_uV < 0) {
 		dev_err(&sreg->sdev->dev,
 			"Invalid volt-range %d-%duV for domain %d\n",
@@ -161,13 +157,13 @@ scmi_config_linear_regulator_mappings(struct scmi_regulator *sreg,
 	}
 
 	if (!delta_uV) {
-		/* Just one fixed voltage exposed by SCMI */
+		 
 		sreg->desc.fixed_uV =
 			vinfo->levels_uv[SCMI_VOLTAGE_SEGMENT_LOW];
 		sreg->desc.n_voltages = 1;
 		sreg->desc.ops = &scmi_reg_fixed_ops;
 	} else {
-		/* One simple linear mapping. */
+		 
 		sreg->desc.min_uV =
 			vinfo->levels_uv[SCMI_VOLTAGE_SEGMENT_LOW];
 		sreg->desc.uV_step =
@@ -184,7 +180,7 @@ static int
 scmi_config_discrete_regulator_mappings(struct scmi_regulator *sreg,
 					const struct scmi_voltage_info *vinfo)
 {
-	/* Discrete non linear levels are mapped to volt_table */
+	 
 	sreg->desc.n_voltages = vinfo->num_levels;
 
 	if (sreg->desc.n_voltages > 1) {
@@ -211,12 +207,7 @@ static int scmi_regulator_common_init(struct scmi_regulator *sreg)
 		return -ENODEV;
 	}
 
-	/*
-	 * Regulator framework does not fully support negative voltages
-	 * so we discard any voltage domain reported as supporting negative
-	 * voltages: as a consequence each levels_uv entry is guaranteed to
-	 * be non-negative from here on.
-	 */
+	 
 	if (vinfo->negative_volts_allowed) {
 		dev_warn(dev, "Negative voltages NOT supported...skip %s\n",
 			 sreg->of_node->full_name);
@@ -240,13 +231,10 @@ static int scmi_regulator_common_init(struct scmi_regulator *sreg)
 	if (ret)
 		return ret;
 
-	/*
-	 * Using the scmi device here to have DT searched from Voltage
-	 * protocol node down.
-	 */
+	 
 	sreg->conf.dev = dev;
 
-	/* Store for later retrieval via rdev_get_drvdata() */
+	 
 	sreg->conf.driver_data = sreg;
 
 	return 0;
@@ -283,7 +271,7 @@ static int process_scmi_regulator_of_node(struct scmi_device *sdev,
 	rinfo->sregv[dom]->sdev = sdev;
 	rinfo->sregv[dom]->ph = ph;
 
-	/* get hold of good nodes */
+	 
 	of_node_get(np);
 	rinfo->sregv[dom]->of_node = np;
 
@@ -325,7 +313,7 @@ static int scmi_regulator_probe(struct scmi_device *sdev)
 	if (!rinfo)
 		return -ENOMEM;
 
-	/* Allocate pointers array for all possible domains */
+	 
 	rinfo->sregv = devm_kcalloc(&sdev->dev, num_doms,
 				    sizeof(void *), GFP_KERNEL);
 	if (!rinfo->sregv)
@@ -333,37 +321,28 @@ static int scmi_regulator_probe(struct scmi_device *sdev)
 
 	rinfo->num_doms = num_doms;
 
-	/*
-	 * Start collecting into rinfo->sregv possibly good SCMI Regulators as
-	 * described by a well-formed DT entry and associated with an existing
-	 * plausible SCMI Voltage Domain number, all belonging to this SCMI
-	 * platform instance node (handle->dev->of_node).
-	 */
+	 
 	of_node_get(handle->dev->of_node);
 	np = of_find_node_by_name(handle->dev->of_node, "regulators");
 	for_each_child_of_node(np, child) {
 		ret = process_scmi_regulator_of_node(sdev, ph, child, rinfo);
-		/* abort on any mem issue */
+		 
 		if (ret == -ENOMEM) {
 			of_node_put(child);
 			return ret;
 		}
 	}
 	of_node_put(np);
-	/*
-	 * Register a regulator for each valid regulator-DT-entry that we
-	 * can successfully reach via SCMI and has a valid associated voltage
-	 * domain.
-	 */
+	 
 	for (d = 0; d < num_doms; d++) {
 		struct scmi_regulator *sreg = rinfo->sregv[d];
 
-		/* Skip empty slots */
+		 
 		if (!sreg)
 			continue;
 
 		ret = scmi_regulator_common_init(sreg);
-		/* Skip invalid voltage domains */
+		 
 		if (ret)
 			continue;
 

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Realtek RTL2832 DVB-T demodulator driver
- *
- * Copyright (C) 2012 Thomas Mair <thomas.mair86@gmail.com>
- * Copyright (C) 2012-2014 Antti Palosaari <crope@iki.fi>
- */
+ 
+ 
 
 #ifndef RTL2832_PRIV_H
 #define RTL2832_PRIV_H
@@ -25,12 +20,12 @@ struct rtl2832_dev {
 	struct i2c_mux_core *muxc;
 	struct dvb_frontend fe;
 	enum fe_status fe_status;
-	u64 post_bit_error_prev; /* for old DVBv3 read_ber() calculation */
+	u64 post_bit_error_prev;  
 	u64 post_bit_error;
 	u64 post_bit_count;
 	bool sleeping;
 	struct delayed_work i2c_gate_work;
-	unsigned long filters; /* PID filter */
+	unsigned long filters;  
 	bool slave_ts;
 };
 
@@ -45,7 +40,7 @@ struct rtl2832_reg_value {
 	u32 value;
 };
 
-/* Demod register bit names */
+ 
 enum DVBT_REG_BIT_NAME {
 	DVBT_SOFT_RST,
 	DVBT_IIC_REPEAT,
@@ -412,4 +407,4 @@ static const struct rtl2832_reg_value rtl2832_tuner_init_si2157[] = {
 	{DVBT_SPEC_INV,                  0x0},
 };
 
-#endif /* RTL2832_PRIV_H */
+#endif  

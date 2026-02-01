@@ -1,19 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * vivid-vid-common.h - common video support functions.
- *
- * Copyright 2014 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+ 
+ 
 
 #ifndef _VIVID_VID_COMMON_H_
 #define _VIVID_VID_COMMON_H_
 
 typedef int (*fmtfunc)(struct file *file, void *priv, struct v4l2_format *f);
 
-/*
- * Conversion function that converts a single-planar format to a
- * single-plane multiplanar format.
- */
+ 
 void fmt_sp2mp(const struct v4l2_format *sp_fmt, struct v4l2_format *mp_fmt);
 int fmt_sp2mp_func(struct file *file, void *priv,
 		struct v4l2_format *f, fmtfunc func);

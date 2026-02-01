@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include <vmlinux.h>
 #include <bpf/bpf_tracing.h>
@@ -11,18 +11,14 @@ char _license[] SEC("license") = "GPL";
 
 int err, pid;
 
-/* Prototype for all of the program trace events below:
- *
- * TRACE_EVENT(task_newtask,
- *         TP_PROTO(struct task_struct *p, u64 clone_flags)
- */
+ 
 
 struct task_struct *bpf_task_acquire(struct task_struct *p) __ksym __weak;
 
 struct task_struct *bpf_task_acquire___one(struct task_struct *task) __ksym __weak;
-/* The two-param bpf_task_acquire doesn't exist */
+ 
 struct task_struct *bpf_task_acquire___two(struct task_struct *p, void *ctx) __ksym __weak;
-/* Incorrect type for first param */
+ 
 struct task_struct *bpf_task_acquire___three(void *ctx) __ksym __weak;
 
 void invalid_kfunc(void) __ksym __weak;
@@ -48,9 +44,9 @@ static int test_acquire_release(struct task_struct *task)
 		return 0;
 	}
 	if (bpf_ksym_exists(invalid_kfunc)) {
-		/* the verifier's dead code elimination should remove this */
+		 
 		err = 5;
-		asm volatile ("goto -1"); /* for (;;); */
+		asm volatile ("goto -1");  
 	}
 
 	acquired = bpf_task_acquire(task);
@@ -71,15 +67,12 @@ int BPF_PROG(test_task_kfunc_flavor_relo, struct task_struct *task, u64 clone_fl
 	if (bpf_ksym_exists(bpf_task_acquire___one)) {
 		acquired = bpf_task_acquire___one(task);
 	} else if (bpf_ksym_exists(bpf_task_acquire___two)) {
-		/* Here, bpf_object__resolve_ksym_func_btf_id's find_ksym_btf_id
-		 * call will find vmlinux's bpf_task_acquire, but subsequent
-		 * bpf_core_types_are_compat will fail
-		 */
+		 
 		acquired = bpf_task_acquire___two(task, &fake_ctx);
 		err = 3;
 		return 0;
 	} else if (bpf_ksym_exists(bpf_task_acquire___three)) {
-		/* bpf_core_types_are_compat will fail similarly to above case */
+		 
 		acquired = bpf_task_acquire___three(&fake_ctx);
 		err = 4;
 		return 0;
@@ -95,9 +88,7 @@ int BPF_PROG(test_task_kfunc_flavor_relo, struct task_struct *task, u64 clone_fl
 SEC("tp_btf/task_newtask")
 int BPF_PROG(test_task_kfunc_flavor_relo_not_found, struct task_struct *task, u64 clone_flags)
 {
-	/* Neither symbol should successfully resolve.
-	 * Success or failure of one ___flavor should not affect others
-	 */
+	 
 	if (bpf_ksym_exists(bpf_task_acquire___two))
 		err = 1;
 	else if (bpf_ksym_exists(bpf_task_acquire___three))
@@ -304,7 +295,7 @@ int BPF_PROG(task_kfunc_acquire_trusted_walked, struct task_struct *task, u64 cl
 {
 	struct task_struct *acquired;
 
-	/* task->group_leader is listed as a trusted, non-NULL field of task struct. */
+	 
 	acquired = bpf_task_acquire(task->group_leader);
 	if (acquired)
 		bpf_task_release(acquired);

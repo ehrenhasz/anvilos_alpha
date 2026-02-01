@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  Serial Port driver for Aspeed VUART device
- *
- *    Copyright (C) 2016 Jeremy Kerr <jk@ozlabs.org>, IBM Corp.
- *    Copyright (C) 2006 Arnd Bergmann <arnd@arndb.de>, IBM Corp.
- */
+
+ 
 #include <linux/device.h>
 #include <linux/module.h>
 #include <linux/of_address.h>
@@ -40,28 +35,10 @@ struct aspeed_vuart {
 	struct uart_8250_port	*port;
 };
 
-/*
- * If we fill the tty flip buffers, we throttle the data ready interrupt
- * to prevent dropped characters. This timeout defines how long we wait
- * to (conditionally, depending on buffer state) unthrottle.
- */
+ 
 static const int unthrottle_timeout = HZ/10;
 
-/*
- * The VUART is basically two UART 'front ends' connected by their FIFO
- * (no actual serial line in between). One is on the BMC side (management
- * controller) and one is on the host CPU side.
- *
- * It allows the BMC to provide to the host a "UART" that pipes into
- * the BMC itself and can then be turned by the BMC into a network console
- * of some sort for example.
- *
- * This driver is for the BMC side. The sysfs files allow the BMC
- * userspace which owns the system configuration policy, to specify
- * at what IO port and interrupt number the host side will appear
- * to the host on the Host <-> BMC LPC bus. It could be different on a
- * different system (though most of them use 3f8/4).
- */
+ 
 
 static inline u8 aspeed_vuart_readb(struct aspeed_vuart *vuart, u8 reg)
 {
@@ -236,7 +213,7 @@ static void aspeed_vuart_set_host_tx_discard(struct aspeed_vuart *vuart,
 
 	reg = aspeed_vuart_readb(vuart, ASPEED_VUART_GCRA);
 
-	/* If the DISABLE_HOST_TX_DISCARD bit is set, discard is disabled */
+	 
 	if (!discard)
 		reg |= ASPEED_VUART_GCRA_DISABLE_HOST_TX_DISCARD;
 	else
@@ -275,7 +252,7 @@ static void __aspeed_vuart_set_throttle(struct uart_8250_port *up,
 {
 	unsigned char irqs = UART_IER_RLSI | UART_IER_RDI;
 
-	/* Port locked to synchronize UART_IER access against the console. */
+	 
 	lockdep_assert_held_once(&up->port.lock);
 
 	up->ier &= ~irqs;
@@ -317,17 +294,7 @@ static void aspeed_vuart_unthrottle_exp(struct timer_list *timer)
 	aspeed_vuart_unthrottle(&up->port);
 }
 
-/*
- * Custom interrupt handler to manage finer-grained flow control. Although we
- * have throttle/unthrottle callbacks, we've seen that the VUART device can
- * deliver characters faster than the ldisc has a chance to check buffer space
- * against the throttle threshold. This results in dropped characters before
- * the throttle.
- *
- * We do this by checking for flip buffer space before RX. If we have no space,
- * throttle now and schedule an unthrottle for later, once the ldisc has had
- * a chance to drain the buffers.
- */
+ 
 static int aspeed_vuart_handle_irq(struct uart_port *port)
 {
 	struct uart_8250_port *up = up_to_u8250p(port);
@@ -348,7 +315,7 @@ static int aspeed_vuart_handle_irq(struct uart_port *port)
 		space = tty_buffer_space_avail(&port->state->port);
 
 		if (!space) {
-			/* throttle and schedule an unthrottle later */
+			 
 			struct aspeed_vuart *vuart = port->private_data;
 			__aspeed_vuart_set_throttle(up, true);
 
@@ -468,23 +435,23 @@ static int aspeed_vuart_probe(struct platform_device *pdev)
 		clk = clk_get_rate(vuart->clk);
 	}
 
-	/* If current-speed was set, then try not to change it. */
+	 
 	if (of_property_read_u32(np, "current-speed", &prop) == 0)
 		port.port.custom_divisor = clk / (16 * prop);
 
-	/* Check for shifted address mapping */
+	 
 	if (of_property_read_u32(np, "reg-offset", &prop) == 0)
 		port.port.mapbase += prop;
 
-	/* Check for registers offset within the devices address range */
+	 
 	if (of_property_read_u32(np, "reg-shift", &prop) == 0)
 		port.port.regshift = prop;
 
-	/* Check for fifo size */
+	 
 	if (of_property_read_u32(np, "fifo-size", &prop) == 0)
 		port.port.fifosize = prop;
 
-	/* Check for a fixed line number */
+	 
 	rc = of_alias_get_id(np, "serial");
 	if (rc >= 0)
 		port.port.line = rc;

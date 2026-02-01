@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *      sunxi Watchdog Driver
- *
- *      Copyright (c) 2013 Carlo Caione
- *                    2012 Henrik Nordstrom
- *
- *      Based on xen_wdt.c
- *      (c) Copyright 2010 Novell, Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -36,10 +28,7 @@
 static bool nowayout = WATCHDOG_NOWAYOUT;
 static unsigned int timeout;
 
-/*
- * This structure stores the register offsets for different variants
- * of Allwinner's watchdog hardware.
- */
+ 
 struct sunxi_wdt_reg {
 	u8 wdt_ctrl;
 	u8 wdt_cfg;
@@ -56,26 +45,20 @@ struct sunxi_wdt_dev {
 	const struct sunxi_wdt_reg *wdt_regs;
 };
 
-/*
- * wdt_timeout_map maps the watchdog timer interval value in seconds to
- * the value of the register WDT_MODE at bits .wdt_timeout_shift ~ +3
- *
- * [timeout seconds] = register value
- *
- */
+ 
 
 static const int wdt_timeout_map[] = {
-	[1] = 0x1,  /* 1s  */
-	[2] = 0x2,  /* 2s  */
-	[3] = 0x3,  /* 3s  */
-	[4] = 0x4,  /* 4s  */
-	[5] = 0x5,  /* 5s  */
-	[6] = 0x6,  /* 6s  */
-	[8] = 0x7,  /* 8s  */
-	[10] = 0x8, /* 10s */
-	[12] = 0x9, /* 12s */
-	[14] = 0xA, /* 14s */
-	[16] = 0xB, /* 16s */
+	[1] = 0x1,   
+	[2] = 0x2,   
+	[3] = 0x3,   
+	[4] = 0x4,   
+	[5] = 0x5,   
+	[6] = 0x6,   
+	[8] = 0x7,   
+	[10] = 0x8,  
+	[12] = 0x9,  
+	[14] = 0xA,  
+	[16] = 0xB,  
 };
 
 
@@ -87,24 +70,21 @@ static int sunxi_wdt_restart(struct watchdog_device *wdt_dev,
 	const struct sunxi_wdt_reg *regs = sunxi_wdt->wdt_regs;
 	u32 val;
 
-	/* Set system reset function */
+	 
 	val = readl(wdt_base + regs->wdt_cfg);
 	val &= ~(regs->wdt_reset_mask);
 	val |= regs->wdt_reset_val;
 	val |= regs->wdt_key_val;
 	writel(val, wdt_base + regs->wdt_cfg);
 
-	/* Set lowest timeout and enable watchdog */
+	 
 	val = readl(wdt_base + regs->wdt_mode);
 	val &= ~(WDT_TIMEOUT_MASK << regs->wdt_timeout_shift);
 	val |= WDT_MODE_EN;
 	val |= regs->wdt_key_val;
 	writel(val, wdt_base + regs->wdt_mode);
 
-	/*
-	 * Restart the watchdog. The default (and lowest) interval
-	 * value for the watchdog is 0.5s.
-	 */
+	 
 	writel(WDT_CTRL_RELOAD, wdt_base + regs->wdt_ctrl);
 
 	while (1) {
@@ -176,14 +156,14 @@ static int sunxi_wdt_start(struct watchdog_device *wdt_dev)
 	if (ret < 0)
 		return ret;
 
-	/* Set system reset function */
+	 
 	reg = readl(wdt_base + regs->wdt_cfg);
 	reg &= ~(regs->wdt_reset_mask);
 	reg |= regs->wdt_reset_val;
 	reg |= regs->wdt_key_val;
 	writel(reg, wdt_base + regs->wdt_cfg);
 
-	/* Enable watchdog */
+	 
 	reg = readl(wdt_base + regs->wdt_mode);
 	reg |= WDT_MODE_EN;
 	reg |= regs->wdt_key_val;
@@ -240,7 +220,7 @@ static const struct of_device_id sunxi_wdt_dt_ids[] = {
 	{ .compatible = "allwinner,sun4i-a10-wdt", .data = &sun4i_wdt_reg },
 	{ .compatible = "allwinner,sun6i-a31-wdt", .data = &sun6i_wdt_reg },
 	{ .compatible = "allwinner,sun20i-d1-wdt", .data = &sun20i_wdt_reg },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, sunxi_wdt_dt_ids);
 

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * dice.h - a part of driver for Dice based devices
- *
- * Copyright (c) Clemens Ladisch
- * Copyright (c) 2014 Takashi Sakamoto
- */
+ 
+ 
 
 #ifndef SOUND_DICE_H_INCLUDED
 #define SOUND_DICE_H_INCLUDED
@@ -39,27 +34,7 @@
 #include "../lib.h"
 #include "dice-interface.h"
 
-/*
- * This module support maximum 2 pairs of tx/rx isochronous streams for
- * our convinience.
- *
- * In documents for ASICs called with a name of 'DICE':
- *  - ASIC for DICE II:
- *   - Maximum 2 tx and 4 rx are supported.
- *   - A packet supports maximum 16 data channels.
- *  - TCD2210/2210-E (so-called 'Dice Mini'):
- *   - Maximum 2 tx and 2 rx are supported.
- *   - A packet supports maximum 16 data channels.
- *  - TCD2220/2220-E (so-called 'Dice Jr.')
- *   - 2 tx and 2 rx are supported.
- *   - A packet supports maximum 16 data channels.
- *  - TCD3070-CH (so-called 'Dice III')
- *   - Maximum 2 tx and 2 rx are supported.
- *   - A packet supports maximum 32 data channels.
- *
- * For the above, MIDI conformant data channel is just on the first isochronous
- * stream.
- */
+ 
 #define MAX_STREAMS	2
 
 enum snd_dice_rate_mode {
@@ -78,7 +53,7 @@ struct snd_dice {
 	spinlock_t lock;
 	struct mutex mutex;
 
-	/* Offsets for sub-addresses */
+	 
 	unsigned int global_offset;
 	unsigned int rx_offset;
 	unsigned int tx_offset;
@@ -95,12 +70,12 @@ struct snd_dice {
 	int owner_generation;
 	u32 notification_bits;
 
-	/* For uapi */
-	int dev_lock_count; /* > 0 driver, < 0 userspace */
+	 
+	int dev_lock_count;  
 	bool dev_lock_changed;
 	wait_queue_head_t hwdep_wait;
 
-	/* For streaming */
+	 
 	struct fw_iso_resources tx_resources[MAX_STREAMS];
 	struct fw_iso_resources rx_resources[MAX_STREAMS];
 	struct amdtp_stream tx_stream[MAX_STREAMS];

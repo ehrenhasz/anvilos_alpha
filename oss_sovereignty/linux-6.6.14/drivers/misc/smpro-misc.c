@@ -1,21 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Ampere Computing SoC's SMpro Misc Driver
- *
- * Copyright (c) 2022, Ampere Computing LLC
- */
+
+ 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 
-/* Boot Stage/Progress Registers */
+ 
 #define BOOTSTAGE	0xB0
 #define BOOTSTAGE_LO	0xB1
 #define CUR_BOOTSTAGE	0xB2
 #define BOOTSTAGE_HI	0xB3
 
-/* SOC State Registers */
+ 
 #define SOC_POWER_LIMIT		0xE5
 
 struct smpro_misc {
@@ -33,7 +29,7 @@ static ssize_t boot_progress_show(struct device *dev, struct device_attribute *d
 	u32 reg;
 	int ret;
 
-	/* Read current boot stage */
+	 
 	ret = regmap_read(misc->regmap, CUR_BOOTSTAGE, &reg);
 	if (ret)
 		return ret;
@@ -55,7 +51,7 @@ static ssize_t boot_progress_show(struct device *dev, struct device_attribute *d
 	if (ret)
 		return ret;
 
-	/* Firmware to report new boot stage next time */
+	 
 	if (boot_stage < cur_stage) {
 		ret = regmap_write(misc->regmap, BOOTSTAGE, ((bootstage & 0xff00) | 0x1));
 		if (ret)

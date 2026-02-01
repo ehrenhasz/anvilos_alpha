@@ -1,92 +1,7 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011, 2018 by Delphix. All rights reserved.
- * Copyright 2011 Nexenta Systems, Inc.  All rights reserved.
- * Copyright (c) 2013 Steven Hartland. All rights reserved.
- * Copyright (c) 2014 Integros [integros.com]
- * Copyright 2017 Joyent, Inc.
- * Copyright (c) 2017, Intel Corporation.
- */
+ 
+ 
 
-/*
- * The objective of this program is to provide a DMU/ZAP/SPA stress test
- * that runs entirely in userland, is easy to use, and easy to extend.
- *
- * The overall design of the ztest program is as follows:
- *
- * (1) For each major functional area (e.g. adding vdevs to a pool,
- *     creating and destroying datasets, reading and writing objects, etc)
- *     we have a simple routine to test that functionality.  These
- *     individual routines do not have to do anything "stressful".
- *
- * (2) We turn these simple functionality tests into a stress test by
- *     running them all in parallel, with as many threads as desired,
- *     and spread across as many datasets, objects, and vdevs as desired.
- *
- * (3) While all this is happening, we inject faults into the pool to
- *     verify that self-healing data really works.
- *
- * (4) Every time we open a dataset, we change its checksum and compression
- *     functions.  Thus even individual objects vary from block to block
- *     in which checksum they use and whether they're compressed.
- *
- * (5) To verify that we never lose on-disk consistency after a crash,
- *     we run the entire test in a child of the main process.
- *     At random times, the child self-immolates with a SIGKILL.
- *     This is the software equivalent of pulling the power cord.
- *     The parent then runs the test again, using the existing
- *     storage pool, as many times as desired. If backwards compatibility
- *     testing is enabled ztest will sometimes run the "older" version
- *     of ztest after a SIGKILL.
- *
- * (6) To verify that we don't have future leaks or temporal incursions,
- *     many of the functional tests record the transaction group number
- *     as part of their data.  When reading old data, they verify that
- *     the transaction group number is less than the current, open txg.
- *     If you add a new test, please do this if applicable.
- *
- * (7) Threads are created with a reduced stack size, for sanity checking.
- *     Therefore, it's important not to allocate huge buffers on the stack.
- *
- * When run with no arguments, ztest runs for about five minutes and
- * produces no output if successful.  To get a little bit of information,
- * specify -V.  To get more information, specify -VV, and so on.
- *
- * To turn this into an overnight stress test, use -T to specify run time.
- *
- * You can ask more vdevs [-v], datasets [-d], or threads [-t]
- * to increase the pool capacity, fanout, and overall stress level.
- *
- * Use the -k option to set the desired frequency of kills.
- *
- * When ztest invokes itself it passes all relevant information through a
- * temporary file which is mmap-ed in the child process. This allows shared
- * memory to survive the exec syscall. The ztest_shared_hdr_t struct is always
- * stored at offset 0 of this file and contains information on the size and
- * number of shared structures in the file. The information stored in this file
- * must remain backwards compatible with older versions of ztest so that
- * ztest can invoke them during backwards compatibility testing (-B).
- */
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/spa.h>
@@ -137,7 +52,7 @@
 #include <sys/crypto/icp.h>
 #include <sys/zfs_impl.h>
 #if (__GLIBC__ && !__UCLIBC__)
-#include <execinfo.h> /* for backtrace() */
+#include <execinfo.h>  
 #endif
 
 static int ztest_fd_data = -1;
@@ -195,11 +110,11 @@ typedef struct ztest_shared_opts {
 	char zo_gvars[ZO_GVARS_MAX_COUNT][ZO_GVARS_MAX_ARGLEN];
 } ztest_shared_opts_t;
 
-/* Default values for command line options. */
+ 
 #define	DEFAULT_POOL "ztest"
 #define	DEFAULT_VDEV_DIR "/tmp"
 #define	DEFAULT_VDEV_COUNT 5
-#define	DEFAULT_VDEV_SIZE (SPA_MINDEVSIZE * 4)	/* 256m default size */
+#define	DEFAULT_VDEV_SIZE (SPA_MINDEVSIZE * 4)	 
 #define	DEFAULT_VDEV_SIZE_STR "256M"
 #define	DEFAULT_ASHIFT SPA_MINBLOCKSHIFT
 #define	DEFAULT_MIRRORS 2
@@ -209,18 +124,18 @@ typedef struct ztest_shared_opts {
 #define	DEFAULT_DRAID_SPARES 1
 #define	DEFAULT_DATASETS_COUNT 7
 #define	DEFAULT_THREADS 23
-#define	DEFAULT_RUN_TIME 300 /* 300 seconds */
+#define	DEFAULT_RUN_TIME 300  
 #define	DEFAULT_RUN_TIME_STR "300 sec"
-#define	DEFAULT_PASS_TIME 60 /* 60 seconds */
+#define	DEFAULT_PASS_TIME 60  
 #define	DEFAULT_PASS_TIME_STR "60 sec"
-#define	DEFAULT_KILL_RATE 70 /* 70% kill rate */
+#define	DEFAULT_KILL_RATE 70  
 #define	DEFAULT_KILLRATE_STR "70%"
 #define	DEFAULT_INITS 1
-#define	DEFAULT_MAX_LOOPS 50 /* 5 minutes */
+#define	DEFAULT_MAX_LOOPS 50  
 #define	DEFAULT_FORCE_GANGING (64 << 10)
 #define	DEFAULT_FORCE_GANGING_STR "64K"
 
-/* Simplifying assumption: -1 is not a valid default. */
+ 
 #define	NO_DEFAULT -1
 
 static const ztest_shared_opts_t ztest_opts_defaults = {
@@ -235,8 +150,8 @@ static const ztest_shared_opts_t ztest_opts_defaults = {
 	.zo_raid_parity = DEFAULT_RAID_PARITY,
 	.zo_raid_type = VDEV_TYPE_RAIDZ,
 	.zo_vdev_size = DEFAULT_VDEV_SIZE,
-	.zo_draid_data = DEFAULT_DRAID_DATA,	/* data drives */
-	.zo_draid_spares = DEFAULT_DRAID_SPARES, /* distributed spares */
+	.zo_draid_data = DEFAULT_DRAID_DATA,	 
+	.zo_draid_spares = DEFAULT_DRAID_SPARES,  
 	.zo_datasets = DEFAULT_DATASETS_COUNT,
 	.zo_threads = DEFAULT_THREADS,
 	.zo_passtime = DEFAULT_PASS_TIME,
@@ -245,7 +160,7 @@ static const ztest_shared_opts_t ztest_opts_defaults = {
 	.zo_mmp_test = 0,
 	.zo_init = DEFAULT_INITS,
 	.zo_time = DEFAULT_RUN_TIME,
-	.zo_maxloops = DEFAULT_MAX_LOOPS, /* max loops during spa_freeze() */
+	.zo_maxloops = DEFAULT_MAX_LOOPS,  
 	.zo_metaslab_force_ganging = DEFAULT_FORCE_GANGING,
 	.zo_special_vdevs = ZTEST_VDEV_CLASS_RND,
 	.zo_gvars_count = 0,
@@ -305,11 +220,7 @@ typedef struct bufwad {
 	uint64_t	bw_data;
 } bufwad_t;
 
-/*
- * It would be better to use a rangelock_t per object.  Unfortunately
- * the rangelock_t is not a drop-in replacement for rl_t, because we
- * still need to map from object ID to rangelock_t.
- */
+ 
 typedef enum {
 	RL_READER,
 	RL_WRITER,
@@ -333,9 +244,7 @@ typedef struct rl {
 #define	ZTEST_RANGE_LOCKS	64
 #define	ZTEST_OBJECT_LOCKS	64
 
-/*
- * Object descriptor.  Used as a template for object lookup/create/remove.
- */
+ 
 typedef struct ztest_od {
 	uint64_t	od_dir;
 	uint64_t	od_object;
@@ -349,37 +258,33 @@ typedef struct ztest_od {
 	char		od_name[ZFS_MAX_DATASET_NAME_LEN];
 } ztest_od_t;
 
-/*
- * Per-dataset state.
- */
+ 
 typedef struct ztest_ds {
 	ztest_shared_ds_t *zd_shared;
 	objset_t	*zd_os;
 	pthread_rwlock_t zd_zilog_lock;
 	zilog_t		*zd_zilog;
-	ztest_od_t	*zd_od;		/* debugging aid */
+	ztest_od_t	*zd_od;		 
 	char		zd_name[ZFS_MAX_DATASET_NAME_LEN];
 	kmutex_t	zd_dirobj_lock;
 	rll_t		zd_object_lock[ZTEST_OBJECT_LOCKS];
 	rll_t		zd_range_lock[ZTEST_RANGE_LOCKS];
 } ztest_ds_t;
 
-/*
- * Per-iteration state.
- */
+ 
 typedef void ztest_func_t(ztest_ds_t *zd, uint64_t id);
 
 typedef struct ztest_info {
-	ztest_func_t	*zi_func;	/* test function */
-	uint64_t	zi_iters;	/* iterations per execution */
-	uint64_t	*zi_interval;	/* execute every <interval> seconds */
-	const char	*zi_funcname;	/* name of test function */
+	ztest_func_t	*zi_func;	 
+	uint64_t	zi_iters;	 
+	uint64_t	*zi_interval;	 
+	const char	*zi_funcname;	 
 } ztest_info_t;
 
 typedef struct ztest_shared_callstate {
-	uint64_t	zc_count;	/* per-pass count */
-	uint64_t	zc_time;	/* per-pass time */
-	uint64_t	zc_next;	/* next time to call this function */
+	uint64_t	zc_count;	 
+	uint64_t	zc_time;	 
+	uint64_t	zc_next;	 
 } ztest_shared_callstate_t;
 
 static ztest_shared_callstate_t *ztest_shared_callstate;
@@ -424,11 +329,11 @@ ztest_func_t ztest_fletcher;
 ztest_func_t ztest_fletcher_incr;
 ztest_func_t ztest_verify_dnode_bt;
 
-static uint64_t zopt_always = 0ULL * NANOSEC;		/* all the time */
-static uint64_t zopt_incessant = 1ULL * NANOSEC / 10;	/* every 1/10 second */
-static uint64_t zopt_often = 1ULL * NANOSEC;		/* every second */
-static uint64_t zopt_sometimes = 10ULL * NANOSEC;	/* every 10 seconds */
-static uint64_t zopt_rarely = 60ULL * NANOSEC;		/* every 60 seconds */
+static uint64_t zopt_always = 0ULL * NANOSEC;		 
+static uint64_t zopt_incessant = 1ULL * NANOSEC / 10;	 
+static uint64_t zopt_often = 1ULL * NANOSEC;		 
+static uint64_t zopt_sometimes = 10ULL * NANOSEC;	 
+static uint64_t zopt_rarely = 60ULL * NANOSEC;		 
 
 #define	ZTI_INIT(func, iters, interval) \
 	{   .zi_func = (func), \
@@ -481,18 +386,13 @@ static ztest_info_t ztest_info[] = {
 
 #define	ZTEST_FUNCS	(sizeof (ztest_info) / sizeof (ztest_info_t))
 
-/*
- * The following struct is used to hold a list of uncalled commit callbacks.
- * The callbacks are ordered by txg number.
- */
+ 
 typedef struct ztest_cb_list {
 	kmutex_t	zcl_callbacks_lock;
 	list_t		zcl_callbacks;
 } ztest_cb_list_t;
 
-/*
- * Stuff we need to share writably between parent and child.
- */
+ 
 typedef struct ztest_shared {
 	boolean_t	zs_do_init;
 	hrtime_t	zs_proc_start;
@@ -526,34 +426,22 @@ static boolean_t ztest_device_removal_active = B_FALSE;
 static boolean_t ztest_pool_scrubbed = B_FALSE;
 static kmutex_t ztest_checkpoint_lock;
 
-/*
- * The ztest_name_lock protects the pool and dataset namespace used by
- * the individual tests. To modify the namespace, consumers must grab
- * this lock as writer. Grabbing the lock as reader will ensure that the
- * namespace does not change while the lock is held.
- */
+ 
 static pthread_rwlock_t ztest_name_lock;
 
 static boolean_t ztest_dump_core = B_TRUE;
 static boolean_t ztest_exiting;
 
-/* Global commit callback list */
+ 
 static ztest_cb_list_t zcl;
-/* Commit cb delay */
+ 
 static uint64_t zc_min_txg_delay = UINT64_MAX;
 static int zc_cb_counter = 0;
 
-/*
- * Minimum number of commit callbacks that need to be registered for us to check
- * whether the minimum txg delay is acceptable.
- */
+ 
 #define	ZTEST_COMMIT_CB_MIN_REG	100
 
-/*
- * If a number of txgs equal to this threshold have been created after a commit
- * callback has been registered but not called, then we assume there is an
- * implementation bug.
- */
+ 
 #define	ZTEST_COMMIT_CB_THRESH	(TXG_CONCURRENT_STATES + 1000)
 
 enum ztest_object {
@@ -565,20 +453,17 @@ enum ztest_object {
 static __attribute__((noreturn)) void usage(boolean_t requested);
 static int ztest_scrub_impl(spa_t *spa);
 
-/*
- * These libumem hooks provide a reasonable set of defaults for the allocator's
- * debugging facilities.
- */
+ 
 const char *
 _umem_debug_init(void)
 {
-	return ("default,verbose"); /* $UMEM_DEBUG setting */
+	return ("default,verbose");  
 }
 
 const char *
 _umem_logging_init(void)
 {
-	return ("fail,contents"); /* $UMEM_LOGGING setting */
+	return ("fail,contents");  
 }
 
 static void
@@ -589,10 +474,7 @@ dump_debug_buffer(void)
 	if (!ztest_opts.zo_dump_dbgmsg)
 		return;
 
-	/*
-	 * We use write() instead of printf() so that this function
-	 * is safe to call from a signal handler.
-	 */
+	 
 	ret = write(STDOUT_FILENO, "\n", 1);
 	zfs_dbgmsg_print("ztest");
 }
@@ -602,7 +484,7 @@ dump_debug_buffer(void)
 static void sig_handler(int signo)
 {
 	struct sigaction action;
-#if (__GLIBC__ && !__UCLIBC__) /* backtrace() is a GNU extension */
+#if (__GLIBC__ && !__UCLIBC__)  
 	int nptrs;
 	void *buffer[BACKTRACE_SZ];
 
@@ -611,10 +493,7 @@ static void sig_handler(int signo)
 #endif
 	dump_debug_buffer();
 
-	/*
-	 * Restore default action and re-raise signal so SIGSEGV and
-	 * SIGABRT can trigger a core dump.
-	 */
+	 
 	action.sa_handler = SIG_DFL;
 	sigemptyset(&action.sa_mask);
 	action.sa_flags = 0;
@@ -640,7 +519,7 @@ fatal(int do_perror, const char *message, ...)
 
 	va_start(args, message);
 	(void) sprintf(buf, "ztest: ");
-	/* LINTED */
+	 
 	(void) vsprintf(buf + strlen(buf), message, args);
 	va_end(args);
 	if (do_perror) {
@@ -648,7 +527,7 @@ fatal(int do_perror, const char *message, ...)
 		    ": %s", strerror(save_errno));
 	}
 	(void) fprintf(stderr, "%s\n", buf);
-	fatal_msg = buf;			/* to ease debugging */
+	fatal_msg = buf;			 
 
 out:
 	if (ztest_dump_core)
@@ -696,11 +575,7 @@ nicenumtoull(const char *buf)
 	} else if (end[0] == '.') {
 		double fval = strtod(buf, &end);
 		fval *= pow(2, str2shift(end));
-		/*
-		 * UINT64_MAX is not exactly representable as a double.
-		 * The closest representation is UINT64_MAX + 1, so we
-		 * use a >= comparison instead of > for the bounds check.
-		 */
+		 
 		if (fval >= (double)UINT64_MAX) {
 			(void) fprintf(stderr, "ztest: value too large: %s\n",
 			    buf);
@@ -728,10 +603,7 @@ typedef struct ztest_option {
 	const char	*default_str;
 } ztest_option_t;
 
-/*
- * The following option_table is used for generating the usage info as well as
- * the long and short option information for calling getopt_long().
- */
+ 
 static ztest_option_t option_table[] = {
 	{ 'v',	"vdevs", "INTEGER", "Number of vdevs", DEFAULT_VDEV_COUNT,
 	    NULL},
@@ -1078,7 +950,7 @@ process_options(int argc, char **argv)
 
 	fini_options();
 
-	/* When raid choice is 'random' add a draid pool 50% of the time */
+	 
 	if (strcmp(raid_kind, "random") == 0) {
 		raid_kind = (ztest_random(2) == 0) ? "draid" : "raidz";
 
@@ -1089,14 +961,14 @@ process_options(int argc, char **argv)
 	if (strcmp(raid_kind, "draid") == 0) {
 		uint64_t min_devsize;
 
-		/* With fewer disk use 256M, otherwise 128M is OK */
+		 
 		min_devsize = (ztest_opts.zo_raid_children < 16) ?
 		    (256ULL << 20) : (128ULL << 20);
 
-		/* No top-level mirrors with dRAID for now */
+		 
 		zo->zo_mirrors = 0;
 
-		/* Use more appropriate defaults for dRAID */
+		 
 		if (zo->zo_vdevs == ztest_opts_defaults.zo_vdevs)
 			zo->zo_vdevs = 1;
 		if (zo->zo_raid_children ==
@@ -1119,7 +991,7 @@ process_options(int argc, char **argv)
 		(void) strlcpy(zo->zo_raid_type, VDEV_TYPE_DRAID,
 		    sizeof (zo->zo_raid_type));
 
-	} else /* using raidz */ {
+	} else   {
 		ASSERT0(strcmp(raid_kind, "raidz"));
 
 		zo->zo_raid_parity = MIN(zo->zo_raid_parity,
@@ -1162,10 +1034,7 @@ ztest_kill(ztest_shared_t *zs)
 	zs->zs_alloc = metaslab_class_get_alloc(spa_normal_class(ztest_spa));
 	zs->zs_space = metaslab_class_get_space(spa_normal_class(ztest_spa));
 
-	/*
-	 * Before we kill ourselves, make sure that the config is updated.
-	 * See comment above spa_write_cachefile().
-	 */
+	 
 	mutex_enter(&spa_namespace_lock);
 	spa_write_cachefile(ztest_spa, B_FALSE, B_FALSE, B_FALSE);
 	mutex_exit(&spa_namespace_lock);
@@ -1282,15 +1151,11 @@ make_vdev_raid(const char *path, const char *aux, const char *pool, size_t size,
 		uint64_t children = ztest_opts.zo_raid_children;
 		uint64_t ngroups = 1;
 
-		/*
-		 * Calculate the minimum number of groups required to fill a
-		 * slice. This is the LCM of the stripe width (data + parity)
-		 * and the number of data drives (children - spares).
-		 */
+		 
 		while (ngroups * (ndata + nparity) % (children - nspares) != 0)
 			ngroups++;
 
-		/* Store the basic dRAID configuration. */
+		 
 		fnvlist_add_uint64(raid, ZPOOL_CONFIG_DRAID_NDATA, ndata);
 		fnvlist_add_uint64(raid, ZPOOL_CONFIG_DRAID_NSPARES, nspares);
 		fnvlist_add_uint64(raid, ZPOOL_CONFIG_DRAID_NGROUPS, ngroups);
@@ -1352,7 +1217,7 @@ make_vdev_root(const char *path, const char *aux, const char *pool, size_t size,
 		fnvlist_add_uint64(child[c], ZPOOL_CONFIG_IS_LOG, log);
 
 		if (class != NULL && class[0] != '\0') {
-			ASSERT(m > 1 || log);   /* expecting a mirror */
+			ASSERT(m > 1 || log);    
 			fnvlist_add_string(child[c],
 			    ZPOOL_CONFIG_ALLOCATION_BIAS, class);
 		}
@@ -1371,10 +1236,7 @@ make_vdev_root(const char *path, const char *aux, const char *pool, size_t size,
 	return (root);
 }
 
-/*
- * Find a random spa version. Returns back a random spa version in the
- * range [initial_version, SPA_VERSION_FEATURES].
- */
+ 
 static uint64_t
 ztest_random_spa_version(uint64_t initial_version)
 {
@@ -1397,10 +1259,7 @@ ztest_random_blocksize(void)
 {
 	ASSERT3U(ztest_spa->spa_max_ashift, !=, 0);
 
-	/*
-	 * Choose a block size >= the ashift.
-	 * If the SPA supports new MAXBLOCKSIZE, test up to 1MB blocks.
-	 */
+	 
 	int maxbs = SPA_OLD_MAXBLOCKSHIFT;
 	if (spa_maxblocksize(ztest_spa) == SPA_MAXBLOCKSIZE)
 		maxbs = 20;
@@ -1418,11 +1277,7 @@ ztest_random_dnodesize(void)
 	if (max_slots == DNODE_MIN_SLOTS)
 		return (DNODE_MIN_SIZE);
 
-	/*
-	 * Weight the random distribution more heavily toward smaller
-	 * dnode sizes since that is more likely to reflect real-world
-	 * usage.
-	 */
+	 
 	ASSERT3U(max_slots, >, 4);
 	switch (ztest_random(10)) {
 	case 0:
@@ -1560,20 +1415,12 @@ ztest_dmu_objset_own(const char *name, dmu_objset_type_t type,
 		VERIFY0(dsl_crypto_params_create_nvlist(DCP_CMD_NONE, NULL,
 		    crypto_args, &dcp));
 		err = spa_keystore_load_wkey(ddname, dcp, B_FALSE);
-		/*
-		 * Note: if there was an error loading, the wkey was not
-		 * consumed, and needs to be freed.
-		 */
+		 
 		dsl_crypto_params_free(dcp, (err != 0));
 		fnvlist_free(crypto_args);
 
 		if (err == EINVAL) {
-			/*
-			 * We couldn't load a key for this dataset so try
-			 * the parent. This loop will eventually hit the
-			 * encryption root since ztest only makes clones
-			 * as children of their origin datasets.
-			 */
+			 
 			cp = strrchr(ddname, '/');
 			if (cp == NULL)
 				return (err);
@@ -1738,9 +1585,7 @@ ztest_tx_assign(dmu_tx_t *tx, uint64_t txg_how, const char *tag)
 	uint64_t txg;
 	int error;
 
-	/*
-	 * Attempt to assign tx to some transaction group.
-	 */
+	 
 	error = dmu_tx_assign(tx, txg_how);
 	if (error) {
 		if (error == ERESTART) {
@@ -1802,20 +1647,11 @@ ztest_bt_bonus(dmu_buf_t *db)
 	return (bt);
 }
 
-/*
- * Generate a token to fill up unused bonus buffer space.  Try to make
- * it unique to the object, generation, and offset to verify that data
- * is not getting overwritten by data from other dnodes.
- */
+ 
 #define	ZTEST_BONUS_FILL_TOKEN(obj, ds, gen, offset) \
 	(((ds) << 48) | ((gen) << 32) | ((obj) << 8) | (offset))
 
-/*
- * Fill up the unused bonus buffer region before the block tag with a
- * verifiable pattern. Filling the whole bonus area with non-zero data
- * helps ensure that all dnode traversal code properly skips the
- * interior regions of large dnodes.
- */
+ 
 static void
 ztest_fill_unused_bonus(dmu_buf_t *db, void *end, uint64_t obj,
     objset_t *os, uint64_t gen)
@@ -1831,10 +1667,7 @@ ztest_fill_unused_bonus(dmu_buf_t *db, void *end, uint64_t obj,
 	}
 }
 
-/*
- * Verify that the unused area of a bonus buffer is filled with the
- * expected tokens.
- */
+ 
 static void
 ztest_verify_unused_bonus(dmu_buf_t *db, void *end, uint64_t obj,
     objset_t *os, uint64_t gen)
@@ -1848,9 +1681,7 @@ ztest_verify_unused_bonus(dmu_buf_t *db, void *end, uint64_t obj,
 	}
 }
 
-/*
- * ZIL logging ops
- */
+ 
 
 #define	lrz_type	lr_mode
 #define	lrz_blocksize	lr_uid
@@ -1861,7 +1692,7 @@ ztest_verify_unused_bonus(dmu_buf_t *db, void *end, uint64_t obj,
 static void
 ztest_log_create(ztest_ds_t *zd, dmu_tx_t *tx, lr_create_t *lr)
 {
-	char *name = (void *)(lr + 1);		/* name follows lr */
+	char *name = (void *)(lr + 1);		 
 	size_t namesize = strlen(name) + 1;
 	itx_t *itx;
 
@@ -1878,7 +1709,7 @@ ztest_log_create(ztest_ds_t *zd, dmu_tx_t *tx, lr_create_t *lr)
 static void
 ztest_log_remove(ztest_ds_t *zd, dmu_tx_t *tx, lr_remove_t *lr, uint64_t object)
 {
-	char *name = (void *)(lr + 1);		/* name follows lr */
+	char *name = (void *)(lr + 1);		 
 	size_t namesize = strlen(name) + 1;
 	itx_t *itx;
 
@@ -1957,15 +1788,13 @@ ztest_log_setattr(ztest_ds_t *zd, dmu_tx_t *tx, lr_setattr_t *lr)
 	zil_itx_assign(zd->zd_zilog, itx, tx);
 }
 
-/*
- * ZIL replay ops
- */
+ 
 static int
 ztest_replay_create(void *arg1, void *arg2, boolean_t byteswap)
 {
 	ztest_ds_t *zd = arg1;
 	lr_create_t *lr = arg2;
-	char *name = (void *)(lr + 1);		/* name follows lr */
+	char *name = (void *)(lr + 1);		 
 	objset_t *os = zd->zd_os;
 	ztest_block_tag_t *bbt;
 	dmu_buf_t *db;
@@ -2055,7 +1884,7 @@ ztest_replay_remove(void *arg1, void *arg2, boolean_t byteswap)
 {
 	ztest_ds_t *zd = arg1;
 	lr_remove_t *lr = arg2;
-	char *name = (void *)(lr + 1);		/* name follows lr */
+	char *name = (void *)(lr + 1);		 
 	objset_t *os = zd->zd_os;
 	dmu_object_info_t doi;
 	dmu_tx_t *tx;
@@ -2109,7 +1938,7 @@ ztest_replay_write(void *arg1, void *arg2, boolean_t byteswap)
 	ztest_ds_t *zd = arg1;
 	lr_write_t *lr = arg2;
 	objset_t *os = zd->zd_os;
-	void *data = lr + 1;			/* data follows lr */
+	void *data = lr + 1;			 
 	uint64_t offset, length;
 	ztest_block_tag_t *bt = data;
 	ztest_block_tag_t *bbt;
@@ -2126,7 +1955,7 @@ ztest_replay_write(void *arg1, void *arg2, boolean_t byteswap)
 	offset = lr->lr_offset;
 	length = lr->lr_length;
 
-	/* If it's a dmu_sync() block, write the whole block */
+	 
 	if (lr->lr_common.lrc_reclen == sizeof (lr_write_t)) {
 		uint64_t blocksize = BP_GET_LSIZE(&lr->lr_blkptr);
 		if (length < blocksize) {
@@ -2173,11 +2002,7 @@ ztest_replay_write(void *arg1, void *arg2, boolean_t byteswap)
 	}
 
 	if (bt != NULL) {
-		/*
-		 * Usually, verify the old data before writing new data --
-		 * but not always, because we also want to verify correct
-		 * behavior when the data was not recently read into cache.
-		 */
+		 
 		ASSERT(doi.doi_data_block_size);
 		ASSERT0(offset % doi.doi_data_block_size);
 		if (ztest_random(4) != 0) {
@@ -2193,22 +2018,14 @@ ztest_replay_write(void *arg1, void *arg2, boolean_t byteswap)
 			}
 		}
 
-		/*
-		 * Writes can appear to be newer than the bonus buffer because
-		 * the ztest_get_data() callback does a dmu_read() of the
-		 * open-context data, which may be different than the data
-		 * as it was when the write was generated.
-		 */
+		 
 		if (zd->zd_zilog->zl_replay) {
 			ztest_bt_verify(bt, os, lr->lr_foid, 0, offset,
 			    MAX(gen, bt->bt_gen), MAX(txg, lrtxg),
 			    bt->bt_crtxg);
 		}
 
-		/*
-		 * Set the bt's gen/txg to the bonus buffer's gen/txg
-		 * so that all of the usual ASSERTs will work.
-		 */
+		 
 		ztest_bt_generate(bt, os, lr->lr_foid, 0, offset, gen, txg,
 		    crtxg);
 	}
@@ -2312,18 +2129,14 @@ ztest_replay_setattr(void *arg1, void *arg2, boolean_t byteswap)
 		ASSERT3U(lr->lr_mode, !=, 0);
 		ASSERT3U(lrtxg, !=, 0);
 	} else {
-		/*
-		 * Randomly change the size and increment the generation.
-		 */
+		 
 		lr->lr_size = (ztest_random(db->db_size / sizeof (*bbt)) + 1) *
 		    sizeof (*bbt);
 		lr->lr_mode = bbt->bt_gen + 1;
 		ASSERT0(lrtxg);
 	}
 
-	/*
-	 * Verify that the current bonus buffer is not newer than our txg.
-	 */
+	 
 	ztest_bt_verify(bbt, os, lr->lr_foid, dnodesize, -1ULL, lr->lr_mode,
 	    MAX(txg, lrtxg), crtxg);
 
@@ -2349,34 +2162,32 @@ ztest_replay_setattr(void *arg1, void *arg2, boolean_t byteswap)
 }
 
 static zil_replay_func_t *ztest_replay_vector[TX_MAX_TYPE] = {
-	NULL,			/* 0 no such transaction type */
-	ztest_replay_create,	/* TX_CREATE */
-	NULL,			/* TX_MKDIR */
-	NULL,			/* TX_MKXATTR */
-	NULL,			/* TX_SYMLINK */
-	ztest_replay_remove,	/* TX_REMOVE */
-	NULL,			/* TX_RMDIR */
-	NULL,			/* TX_LINK */
-	NULL,			/* TX_RENAME */
-	ztest_replay_write,	/* TX_WRITE */
-	ztest_replay_truncate,	/* TX_TRUNCATE */
-	ztest_replay_setattr,	/* TX_SETATTR */
-	NULL,			/* TX_ACL */
-	NULL,			/* TX_CREATE_ACL */
-	NULL,			/* TX_CREATE_ATTR */
-	NULL,			/* TX_CREATE_ACL_ATTR */
-	NULL,			/* TX_MKDIR_ACL */
-	NULL,			/* TX_MKDIR_ATTR */
-	NULL,			/* TX_MKDIR_ACL_ATTR */
-	NULL,			/* TX_WRITE2 */
-	NULL,			/* TX_SETSAXATTR */
-	NULL,			/* TX_RENAME_EXCHANGE */
-	NULL,			/* TX_RENAME_WHITEOUT */
+	NULL,			 
+	ztest_replay_create,	 
+	NULL,			 
+	NULL,			 
+	NULL,			 
+	ztest_replay_remove,	 
+	NULL,			 
+	NULL,			 
+	NULL,			 
+	ztest_replay_write,	 
+	ztest_replay_truncate,	 
+	ztest_replay_setattr,	 
+	NULL,			 
+	NULL,			 
+	NULL,			 
+	NULL,			 
+	NULL,			 
+	NULL,			 
+	NULL,			 
+	NULL,			 
+	NULL,			 
+	NULL,			 
+	NULL,			 
 };
 
-/*
- * ZIL get_data callbacks
- */
+ 
 
 static void
 ztest_get_done(zgd_t *zgd, int error)
@@ -2437,7 +2248,7 @@ ztest_get_data(void *arg, uint64_t arg2, lr_write_t *lr, char *buf,
 	zgd->zgd_lwb = lwb;
 	zgd->zgd_private = zd;
 
-	if (buf != NULL) {	/* immediate write */
+	if (buf != NULL) {	 
 		zgd->zgd_lr = (struct zfs_locked_range *)ztest_range_lock(zd,
 		    object, offset, size, RL_READER);
 
@@ -2503,9 +2314,7 @@ ztest_lr_free(void *lr, size_t lrsize, char *name)
 	umem_free(lr, lrsize + namesize);
 }
 
-/*
- * Lookup a bunch of objects.  Returns the number of objects not found.
- */
+ 
 static int
 ztest_lookup(ztest_ds_t *zd, ztest_od_t *od, int count)
 {
@@ -2529,7 +2338,7 @@ ztest_lookup(ztest_ds_t *zd, ztest_od_t *od, int count)
 			dmu_object_info_t doi;
 
 			ASSERT3U(od->od_object, !=, 0);
-			ASSERT0(missing);	/* there should be no gaps */
+			ASSERT0(missing);	 
 
 			ztest_object_lock(zd, od->od_object, RL_READER);
 			VERIFY0(dmu_bonus_hold(zd->zd_os, od->od_object,
@@ -2566,7 +2375,7 @@ ztest_create(ztest_ds_t *zd, ztest_od_t *od, int count)
 		lr_create_t *lr = ztest_lr_alloc(sizeof (*lr), od->od_name);
 
 		lr->lr_doid = od->od_dir;
-		lr->lr_foid = 0;	/* 0 to allocate, > 0 to claim */
+		lr->lr_foid = 0;	 
 		lr->lrz_type = od->od_crtype;
 		lr->lrz_blocksize = od->od_crblocksize;
 		lr->lrz_ibshift = ztest_random_ibshift();
@@ -2610,9 +2419,7 @@ ztest_remove(ztest_ds_t *zd, ztest_od_t *od, int count)
 			continue;
 		}
 
-		/*
-		 * No object was found.
-		 */
+		 
 		if (od->od_object == 0)
 			continue;
 
@@ -2739,9 +2546,7 @@ ztest_io(ztest_ds_t *zd, uint64_t object, uint64_t offset)
 	blocksize = doi.doi_data_block_size;
 	data = umem_alloc(blocksize, UMEM_NOFAIL);
 
-	/*
-	 * Pick an i/o type at random, biased toward writing block tags.
-	 */
+	 
 	io_type = ztest_random(ZTEST_IO_TYPES);
 	if (ztest_random(2) == 0)
 		io_type = ZTEST_IO_WRITE_TAG;
@@ -2759,11 +2564,7 @@ ztest_io(ztest_ds_t *zd, uint64_t object, uint64_t offset)
 	case ZTEST_IO_WRITE_PATTERN:
 		(void) memset(data, 'a' + (object + offset) % 5, blocksize);
 		if (ztest_random(2) == 0) {
-			/*
-			 * Induce fletcher2 collisions to ensure that
-			 * zio_ddt_collision() detects and resolves them
-			 * when using fletcher2-verify for deduplication.
-			 */
+			 
 			((uint64_t *)data)[0] ^= 1ULL << 63;
 			((uint64_t *)data)[4] ^= 1ULL << 63;
 		}
@@ -2810,9 +2611,7 @@ ztest_io(ztest_ds_t *zd, uint64_t object, uint64_t offset)
 	umem_free(data, blocksize);
 }
 
-/*
- * Initialize an object description template.
- */
+ 
 static void
 ztest_od_init(ztest_od_t *od, uint64_t id, const char *tag, uint64_t index,
     dmu_object_type_t type, uint64_t blocksize, uint64_t dnodesize,
@@ -2835,12 +2634,7 @@ ztest_od_init(ztest_od_t *od, uint64_t id, const char *tag, uint64_t index,
 	    tag, id, index);
 }
 
-/*
- * Lookup or create the objects for a test using the od template.
- * If the objects do not all exist, or if 'remove' is specified,
- * remove any existing objects and create new ones.  Otherwise,
- * use the existing objects.
- */
+ 
 static int
 ztest_object_init(ztest_ds_t *zd, ztest_od_t *od, size_t size, boolean_t remove)
 {
@@ -2868,11 +2662,7 @@ ztest_zil_commit(ztest_ds_t *zd, uint64_t id)
 
 	zil_commit(zilog, ztest_random(ZTEST_OBJECTS));
 
-	/*
-	 * Remember the committed values in zd, which is in parent/child
-	 * shared memory.  If we die, the next iteration of ztest_run()
-	 * will verify that the log really does contain this record.
-	 */
+	 
 	mutex_enter(&zilog->zl_lock);
 	ASSERT3P(zd->zd_shared, !=, NULL);
 	ASSERT3U(zd->zd_shared->zd_seq, <=, zilog->zl_commit_lr_seq);
@@ -2882,36 +2672,24 @@ ztest_zil_commit(ztest_ds_t *zd, uint64_t id)
 	(void) pthread_rwlock_unlock(&zd->zd_zilog_lock);
 }
 
-/*
- * This function is designed to simulate the operations that occur during a
- * mount/unmount operation.  We hold the dataset across these operations in an
- * attempt to expose any implicit assumptions about ZIL management.
- */
+ 
 void
 ztest_zil_remount(ztest_ds_t *zd, uint64_t id)
 {
 	(void) id;
 	objset_t *os = zd->zd_os;
 
-	/*
-	 * We hold the ztest_vdev_lock so we don't cause problems with
-	 * other threads that wish to remove a log device, such as
-	 * ztest_device_removal().
-	 */
+	 
 	mutex_enter(&ztest_vdev_lock);
 
-	/*
-	 * We grab the zd_dirobj_lock to ensure that no other thread is
-	 * updating the zil (i.e. adding in-memory log records) and the
-	 * zd_zilog_lock to block any I/O.
-	 */
+	 
 	mutex_enter(&zd->zd_dirobj_lock);
 	(void) pthread_rwlock_wrlock(&zd->zd_zilog_lock);
 
-	/* zfsvfs_teardown() */
+	 
 	zil_close(zd->zd_zilog);
 
-	/* zfsvfs_setup() */
+	 
 	VERIFY3P(zil_open(os, ztest_get_data, NULL), ==, zd->zd_zilog);
 	zil_replay(os, zd, ztest_replay_vector);
 
@@ -2920,10 +2698,7 @@ ztest_zil_remount(ztest_ds_t *zd, uint64_t id)
 	mutex_exit(&ztest_vdev_lock);
 }
 
-/*
- * Verify that we can't destroy an active pool, create an existing pool,
- * or create a pool with a bad vdev spec.
- */
+ 
 void
 ztest_spa_create_destroy(ztest_ds_t *zd, uint64_t id)
 {
@@ -2935,43 +2710,26 @@ ztest_spa_create_destroy(ztest_ds_t *zd, uint64_t id)
 	if (zo->zo_mmp_test)
 		return;
 
-	/*
-	 * Attempt to create using a bad file.
-	 */
+	 
 	nvroot = make_vdev_root("/dev/bogus", NULL, NULL, 0, 0, NULL, 0, 0, 1);
 	VERIFY3U(ENOENT, ==,
 	    spa_create("ztest_bad_file", nvroot, NULL, NULL, NULL));
 	fnvlist_free(nvroot);
 
-	/*
-	 * Attempt to create using a bad mirror.
-	 */
+	 
 	nvroot = make_vdev_root("/dev/bogus", NULL, NULL, 0, 0, NULL, 0, 2, 1);
 	VERIFY3U(ENOENT, ==,
 	    spa_create("ztest_bad_mirror", nvroot, NULL, NULL, NULL));
 	fnvlist_free(nvroot);
 
-	/*
-	 * Attempt to create an existing pool.  It shouldn't matter
-	 * what's in the nvroot; we should fail with EEXIST.
-	 */
+	 
 	(void) pthread_rwlock_rdlock(&ztest_name_lock);
 	nvroot = make_vdev_root("/dev/bogus", NULL, NULL, 0, 0, NULL, 0, 0, 1);
 	VERIFY3U(EEXIST, ==,
 	    spa_create(zo->zo_pool, nvroot, NULL, NULL, NULL));
 	fnvlist_free(nvroot);
 
-	/*
-	 * We open a reference to the spa and then we try to export it
-	 * expecting one of the following errors:
-	 *
-	 * EBUSY
-	 *	Because of the reference we just opened.
-	 *
-	 * ZFS_ERR_EXPORT_IN_PROGRESS
-	 *	For the case that there is another ztest thread doing
-	 *	an export concurrently.
-	 */
+	 
 	VERIFY0(spa_open(zo->zo_pool, &spa, FTAG));
 	int error = spa_destroy(zo->zo_pool);
 	if (error != EBUSY && error != ZFS_ERR_EXPORT_IN_PROGRESS) {
@@ -2983,10 +2741,7 @@ ztest_spa_create_destroy(ztest_ds_t *zd, uint64_t id)
 	(void) pthread_rwlock_unlock(&ztest_name_lock);
 }
 
-/*
- * Start and then stop the MMP threads to ensure the startup and shutdown code
- * works properly.  Actual protection and property-related code tested via ZTS.
- */
+ 
 void
 ztest_mmp_enable_disable(ztest_ds_t *zd, uint64_t id)
 {
@@ -2997,10 +2752,7 @@ ztest_mmp_enable_disable(ztest_ds_t *zd, uint64_t id)
 	if (zo->zo_mmp_test)
 		return;
 
-	/*
-	 * Since enabling MMP involves setting a property, it could not be done
-	 * while the pool is suspended.
-	 */
+	 
 	if (spa_suspended(spa))
 		return;
 
@@ -3046,25 +2798,20 @@ ztest_spa_upgrade(ztest_ds_t *zd, uint64_t id)
 	if (ztest_opts.zo_mmp_test)
 		return;
 
-	/* dRAID added after feature flags, skip upgrade test. */
+	 
 	if (strcmp(ztest_opts.zo_raid_type, VDEV_TYPE_DRAID) == 0)
 		return;
 
 	mutex_enter(&ztest_vdev_lock);
 	name = kmem_asprintf("%s_upgrade", ztest_opts.zo_pool);
 
-	/*
-	 * Clean up from previous runs.
-	 */
+	 
 	(void) spa_destroy(name);
 
 	nvroot = make_vdev_root(NULL, NULL, name, ztest_opts.zo_vdev_size, 0,
 	    NULL, ztest_opts.zo_raid_children, ztest_opts.zo_mirrors, 1);
 
-	/*
-	 * If we're configuring a RAIDZ device then make sure that the
-	 * initial version is capable of supporting that feature.
-	 */
+	 
 	switch (ztest_opts.zo_raid_parity) {
 	case 0:
 	case 1:
@@ -3078,10 +2825,7 @@ ztest_spa_upgrade(ztest_ds_t *zd, uint64_t id)
 		break;
 	}
 
-	/*
-	 * Create a pool with a spa version that can be upgraded. Pick
-	 * a value between initial_version and SPA_VERSION_BEFORE_FEATURES.
-	 */
+	 
 	do {
 		version = ztest_random_spa_version(initial_version);
 	} while (version > SPA_VERSION_BEFORE_FEATURES);
@@ -3194,9 +2938,7 @@ spa_num_top_vdevs(spa_t *spa)
 	return (rvd->vdev_children);
 }
 
-/*
- * Verify that vdev_add() works as expected.
- */
+ 
 void
 ztest_vdev_add_remove(ztest_ds_t *zd, uint64_t id)
 {
@@ -3219,15 +2961,11 @@ ztest_vdev_add_remove(ztest_ds_t *zd, uint64_t id)
 
 	ztest_shared->zs_vdev_next_leaf = spa_num_top_vdevs(spa) * leaves;
 
-	/*
-	 * If we have slogs then remove them 1/4 of the time.
-	 */
+	 
 	if (spa_has_slogs(spa) && ztest_random(4) == 0) {
 		metaslab_group_t *mg;
 
-		/*
-		 * find the first real slog in log allocation class
-		 */
+		 
 		mg =  spa_log_class(spa)->mc_allocator[0].mca_rotor;
 		while (!mg->mg_vd->vdev_islog)
 			mg = mg->mg_next;
@@ -3236,23 +2974,16 @@ ztest_vdev_add_remove(ztest_ds_t *zd, uint64_t id)
 
 		spa_config_exit(spa, SCL_VDEV, FTAG);
 
-		/*
-		 * We have to grab the zs_name_lock as writer to
-		 * prevent a race between removing a slog (dmu_objset_find)
-		 * and destroying a dataset. Removing the slog will
-		 * grab a reference on the dataset which may cause
-		 * dsl_destroy_head() to fail with EBUSY thus
-		 * leaving the dataset in an inconsistent state.
-		 */
+		 
 		pthread_rwlock_wrlock(&ztest_name_lock);
 		error = spa_vdev_remove(spa, guid, B_FALSE);
 		pthread_rwlock_unlock(&ztest_name_lock);
 
 		switch (error) {
 		case 0:
-		case EEXIST:	/* Generic zil_reset() error */
-		case EBUSY:	/* Replay required */
-		case EACCES:	/* Crypto key not loaded */
+		case EEXIST:	 
+		case EBUSY:	 
+		case EACCES:	 
 		case ZFS_ERR_CHECKPOINT_EXISTS:
 		case ZFS_ERR_DISCARDING_CHECKPOINT:
 			break;
@@ -3262,9 +2993,7 @@ ztest_vdev_add_remove(ztest_ds_t *zd, uint64_t id)
 	} else {
 		spa_config_exit(spa, SCL_VDEV, FTAG);
 
-		/*
-		 * Make 1/4 of the devices be log devices
-		 */
+		 
 		nvroot = make_vdev_root(NULL, NULL, NULL,
 		    ztest_opts.zo_vdev_size, 0, (ztest_random(4) == 0) ?
 		    "log" : NULL, ztest_opts.zo_raid_children, zs->zs_mirrors,
@@ -3299,9 +3028,7 @@ ztest_vdev_class_add(ztest_ds_t *zd, uint64_t id)
 	    VDEV_ALLOC_BIAS_SPECIAL : VDEV_ALLOC_BIAS_DEDUP;
 	int error;
 
-	/*
-	 * By default add a special vdev 50% of the time
-	 */
+	 
 	if ((ztest_opts.zo_special_vdevs == ZTEST_VDEV_CLASS_OFF) ||
 	    (ztest_opts.zo_special_vdevs == ZTEST_VDEV_CLASS_RND &&
 	    ztest_random(2) == 0)) {
@@ -3310,13 +3037,13 @@ ztest_vdev_class_add(ztest_ds_t *zd, uint64_t id)
 
 	mutex_enter(&ztest_vdev_lock);
 
-	/* Only test with mirrors */
+	 
 	if (zs->zs_mirrors < 2) {
 		mutex_exit(&ztest_vdev_lock);
 		return;
 	}
 
-	/* requires feature@allocation_classes */
+	 
 	if (!spa_feature_is_enabled(spa, SPA_FEATURE_ALLOCATION_CLASSES)) {
 		mutex_exit(&ztest_vdev_lock);
 		return;
@@ -3340,9 +3067,7 @@ ztest_vdev_class_add(ztest_ds_t *zd, uint64_t id)
 	else if (error != 0)
 		fatal(B_FALSE, "spa_vdev_add() = %d", error);
 
-	/*
-	 * 50% of the time allow small blocks in the special class
-	 */
+	 
 	if (error == 0 &&
 	    spa_special_class(spa)->mc_groups == 1 && ztest_random(2) == 0) {
 		if (ztest_opts.zo_verbose >= 3)
@@ -3366,9 +3091,7 @@ ztest_vdev_class_add(ztest_ds_t *zd, uint64_t id)
 	}
 }
 
-/*
- * Verify that adding/removing aux devices (l2arc, hot spare) works as expected.
- */
+ 
 void
 ztest_vdev_aux_add_remove(ztest_ds_t *zd, uint64_t id)
 {
@@ -3400,20 +3123,16 @@ ztest_vdev_aux_add_remove(ztest_ds_t *zd, uint64_t id)
 	spa_config_enter(spa, SCL_VDEV, FTAG, RW_READER);
 
 	if (sav->sav_count != 0 && ztest_random(4) == 0) {
-		/*
-		 * Pick a random device to remove.
-		 */
+		 
 		vdev_t *svd = sav->sav_vdevs[ztest_random(sav->sav_count)];
 
-		/* dRAID spares cannot be removed; try anyways to see ENOTSUP */
+		 
 		if (strstr(svd->vdev_path, VDEV_TYPE_DRAID) != NULL)
 			ignore_err = ENOTSUP;
 
 		guid = svd->vdev_guid;
 	} else {
-		/*
-		 * Find an unused device we can add.
-		 */
+		 
 		zs->zs_vdev_aux = 0;
 		for (;;) {
 			int c;
@@ -3434,9 +3153,7 @@ ztest_vdev_aux_add_remove(ztest_ds_t *zd, uint64_t id)
 	spa_config_exit(spa, SCL_VDEV, FTAG);
 
 	if (guid == 0) {
-		/*
-		 * Add a new device.
-		 */
+		 
 		nvlist_t *nvroot = make_vdev_root(NULL, aux, NULL,
 		    (ztest_opts.zo_vdev_size * 5) / 4, 0, NULL, 0, 0, 1);
 		error = spa_vdev_add(spa, nvroot);
@@ -3449,11 +3166,7 @@ ztest_vdev_aux_add_remove(ztest_ds_t *zd, uint64_t id)
 		}
 		fnvlist_free(nvroot);
 	} else {
-		/*
-		 * Remove an existing device.  Sometimes, dirty its
-		 * vdev state first to make sure we handle removal
-		 * of devices that have pending state changes.
-		 */
+		 
 		if (ztest_random(2) == 0)
 			(void) vdev_online(spa, guid, 0, NULL);
 
@@ -3478,9 +3191,7 @@ ztest_vdev_aux_add_remove(ztest_ds_t *zd, uint64_t id)
 	umem_free(path, MAXPATHLEN);
 }
 
-/*
- * split a pool if it has mirror tlvdevs
- */
+ 
 void
 ztest_split_pool(ztest_ds_t *zd, uint64_t id)
 {
@@ -3497,18 +3208,18 @@ ztest_split_pool(ztest_ds_t *zd, uint64_t id)
 
 	mutex_enter(&ztest_vdev_lock);
 
-	/* ensure we have a usable config; mirrors of raidz aren't supported */
+	 
 	if (zs->zs_mirrors < 3 || ztest_opts.zo_raid_children > 1) {
 		mutex_exit(&ztest_vdev_lock);
 		return;
 	}
 
-	/* clean up the old pool, if any */
+	 
 	(void) spa_destroy("splitp");
 
 	spa_config_enter(spa, SCL_VDEV, FTAG, RW_READER);
 
-	/* generate a config from the existing config */
+	 
 	mutex_enter(&spa->spa_props_lock);
 	tree = fnvlist_lookup_nvlist(spa->spa_config, ZPOOL_CONFIG_VDEV_TREE);
 	mutex_exit(&spa->spa_props_lock);
@@ -3540,7 +3251,7 @@ ztest_split_pool(ztest_ds_t *zd, uint64_t id)
 		schild[schildren++] = fnvlist_dup(mchild[0]);
 	}
 
-	/* OK, create a config that can be used to split */
+	 
 	split = fnvlist_alloc();
 	fnvlist_add_string(split, ZPOOL_CONFIG_TYPE, VDEV_TYPE_ROOT);
 	fnvlist_add_nvlist_array(split, ZPOOL_CONFIG_CHILDREN,
@@ -3574,9 +3285,7 @@ ztest_split_pool(ztest_ds_t *zd, uint64_t id)
 	mutex_exit(&ztest_vdev_lock);
 }
 
-/*
- * Verify that we can attach and detach devices.
- */
+ 
 void
 ztest_vdev_attach_detach(ztest_ds_t *zd, uint64_t id)
 {
@@ -3612,45 +3321,32 @@ ztest_vdev_attach_detach(ztest_ds_t *zd, uint64_t id)
 
 	spa_config_enter(spa, SCL_ALL, FTAG, RW_WRITER);
 
-	/*
-	 * If a vdev is in the process of being removed, its removal may
-	 * finish while we are in progress, leading to an unexpected error
-	 * value.  Don't bother trying to attach while we are in the middle
-	 * of removal.
-	 */
+	 
 	if (ztest_device_removal_active) {
 		spa_config_exit(spa, SCL_ALL, FTAG);
 		goto out;
 	}
 
-	/*
-	 * Decide whether to do an attach or a replace.
-	 */
+	 
 	replacing = ztest_random(2);
 
-	/*
-	 * Pick a random top-level vdev.
-	 */
+	 
 	top = ztest_random_vdev_top(spa, B_TRUE);
 
-	/*
-	 * Pick a random leaf within it.
-	 */
+	 
 	leaf = ztest_random(leaves);
 
-	/*
-	 * Locate this vdev.
-	 */
+	 
 	oldvd = rvd->vdev_child[top];
 
-	/* pick a child from the mirror */
+	 
 	if (zs->zs_mirrors >= 1) {
 		ASSERT3P(oldvd->vdev_ops, ==, &vdev_mirror_ops);
 		ASSERT3U(oldvd->vdev_children, >=, zs->zs_mirrors);
 		oldvd = oldvd->vdev_child[leaf / ztest_opts.zo_raid_children];
 	}
 
-	/* pick a child out of the raidz group */
+	 
 	if (ztest_opts.zo_raid_children > 1) {
 		if (strcmp(oldvd->vdev_ops->vdev_op_type, "raidz") == 0)
 			ASSERT3P(oldvd->vdev_ops, ==, &vdev_raidz_ops);
@@ -3660,10 +3356,7 @@ ztest_vdev_attach_detach(ztest_ds_t *zd, uint64_t id)
 		oldvd = oldvd->vdev_child[leaf % ztest_opts.zo_raid_children];
 	}
 
-	/*
-	 * If we're already doing an attach or replace, oldvd may be a
-	 * mirror vdev -- in which case, pick a random child.
-	 */
+	 
 	while (oldvd->vdev_children != 0) {
 		oldvd_has_siblings = B_TRUE;
 		ASSERT3U(oldvd->vdev_children, >=, 2);
@@ -3680,11 +3373,7 @@ ztest_vdev_attach_detach(ztest_ds_t *zd, uint64_t id)
 	pvd = oldvd->vdev_parent;
 	pguid = pvd->vdev_guid;
 
-	/*
-	 * If oldvd has siblings, then half of the time, detach it.  Prior
-	 * to the detach the pool is scrubbed in order to prevent creating
-	 * unrepairable blocks as a result of the data corruption injection.
-	 */
+	 
 	if (oldvd_has_siblings && ztest_random(2) == 0) {
 		spa_config_exit(spa, SCL_ALL, FTAG);
 
@@ -3701,10 +3390,7 @@ ztest_vdev_attach_detach(ztest_ds_t *zd, uint64_t id)
 		goto out;
 	}
 
-	/*
-	 * For the new vdev, choose with equal probability between the two
-	 * standard paths (ending in either 'a' or 'b') or a random hot spare.
-	 */
+	 
 	if (sav->sav_count != 0 && ztest_random(3) == 0) {
 		newvd = sav->sav_vdevs[ztest_random(sav->sav_count)];
 		newvd_is_spare = B_TRUE;
@@ -3723,32 +3409,15 @@ ztest_vdev_attach_detach(ztest_ds_t *zd, uint64_t id)
 	}
 
 	if (newvd) {
-		/*
-		 * Reopen to ensure the vdev's asize field isn't stale.
-		 */
+		 
 		vdev_reopen(newvd);
 		newsize = vdev_get_min_asize(newvd);
 	} else {
-		/*
-		 * Make newsize a little bigger or smaller than oldsize.
-		 * If it's smaller, the attach should fail.
-		 * If it's larger, and we're doing a replace,
-		 * we should get dynamic LUN growth when we're done.
-		 */
+		 
 		newsize = 10 * oldsize / (9 + ztest_random(3));
 	}
 
-	/*
-	 * If pvd is not a mirror or root, the attach should fail with ENOTSUP,
-	 * unless it's a replace; in that case any non-replacing parent is OK.
-	 *
-	 * If newvd is already part of the pool, it should fail with EBUSY.
-	 *
-	 * If newvd is too small, it should fail with EOVERFLOW.
-	 *
-	 * If newvd is a distributed spare and it's being attached to a
-	 * dRAID which is not its parent it should fail with EINVAL.
-	 */
+	 
 	if (pvd->vdev_ops != &vdev_mirror_ops &&
 	    pvd->vdev_ops != &vdev_root_ops && (!replacing ||
 	    pvd->vdev_ops == &vdev_replacing_ops ||
@@ -3772,15 +3441,11 @@ ztest_vdev_attach_detach(ztest_ds_t *zd, uint64_t id)
 
 	spa_config_exit(spa, SCL_ALL, FTAG);
 
-	/*
-	 * Build the nvlist describing newpath.
-	 */
+	 
 	root = make_vdev_root(newpath, NULL, NULL, newvd == NULL ? newsize : 0,
 	    ashift, NULL, 0, 0, 1);
 
-	/*
-	 * When supported select either a healing or sequential resilver.
-	 */
+	 
 	boolean_t rebuilding = B_FALSE;
 	if (pvd->vdev_ops == &vdev_mirror_ops ||
 	    pvd->vdev_ops ==  &vdev_root_ops) {
@@ -3791,18 +3456,12 @@ ztest_vdev_attach_detach(ztest_ds_t *zd, uint64_t id)
 
 	fnvlist_free(root);
 
-	/*
-	 * If our parent was the replacing vdev, but the replace completed,
-	 * then instead of failing with ENOTSUP we may either succeed,
-	 * fail with ENODEV, or fail with EOVERFLOW.
-	 */
+	 
 	if (expected_error == ENOTSUP &&
 	    (error == 0 || error == ENODEV || error == EOVERFLOW))
 		expected_error = error;
 
-	/*
-	 * If someone grew the LUN, the replacement may be too small.
-	 */
+	 
 	if (error == EOVERFLOW || error == EBUSY)
 		expected_error = error;
 
@@ -3841,9 +3500,7 @@ ztest_device_removal(ztest_ds_t *zd, uint64_t id)
 		return;
 	}
 
-	/*
-	 * Remove a random top-level vdev and wait for removal to finish.
-	 */
+	 
 	spa_config_enter(spa, SCL_VDEV, FTAG, RW_READER);
 	vd = vdev_lookup_top(spa, ztest_random_vdev_top(spa, B_FALSE));
 	guid = vd->vdev_guid;
@@ -3854,13 +3511,7 @@ ztest_device_removal(ztest_ds_t *zd, uint64_t id)
 		ztest_device_removal_active = B_TRUE;
 		mutex_exit(&ztest_vdev_lock);
 
-		/*
-		 * spa->spa_vdev_removal is created in a sync task that
-		 * is initiated via dsl_sync_task_nowait(). Since the
-		 * task may not run before spa_vdev_remove() returns, we
-		 * must wait at least 1 txg to ensure that the removal
-		 * struct has been created.
-		 */
+		 
 		txg_wait_synced(spa_get_dsl(spa), 0);
 
 		while (spa->spa_removing_phys.sr_state == DSS_SCANNING)
@@ -3870,12 +3521,7 @@ ztest_device_removal(ztest_ds_t *zd, uint64_t id)
 		return;
 	}
 
-	/*
-	 * The pool needs to be scrubbed after completing device removal.
-	 * Failure to do so may result in checksum errors due to the
-	 * strategy employed by ztest_fault_inject() when selecting which
-	 * offset are redundant and can be damaged.
-	 */
+	 
 	error = spa_scan(spa, POOL_SCAN_SCRUB);
 	if (error == 0) {
 		while (dsl_scan_scrubbing(spa_get_dsl(spa)))
@@ -3887,9 +3533,7 @@ ztest_device_removal(ztest_ds_t *zd, uint64_t id)
 	mutex_exit(&ztest_vdev_lock);
 }
 
-/*
- * Callback function which expands the physical size of the vdev.
- */
+ 
 static vdev_t *
 grow_vdev(vdev_t *vd, void *arg)
 {
@@ -3915,9 +3559,7 @@ grow_vdev(vdev_t *vd, void *arg)
 	return (NULL);
 }
 
-/*
- * Callback function which expands a given vdev by calling vdev_online().
- */
+ 
 static vdev_t *
 online_vdev(vdev_t *vd, void *arg)
 {
@@ -3932,16 +3574,12 @@ online_vdev(vdev_t *vd, void *arg)
 	ASSERT3S(spa_config_held(spa, SCL_STATE, RW_READER), ==, SCL_STATE);
 	ASSERT(vd->vdev_ops->vdev_op_leaf);
 
-	/* Calling vdev_online will initialize the new metaslabs */
+	 
 	spa_config_exit(spa, SCL_STATE, spa);
 	error = vdev_online(spa, guid, ZFS_ONLINE_EXPAND, &newstate);
 	spa_config_enter(spa, SCL_STATE, spa, RW_READER);
 
-	/*
-	 * If vdev_online returned an error or the underlying vdev_open
-	 * failed then we abort the expand. The only way to know that
-	 * vdev_open fails is by checking the returned newstate.
-	 */
+	 
 	if (error || newstate != VDEV_STATE_HEALTHY) {
 		if (ztest_opts.zo_verbose >= 5) {
 			(void) printf("Unable to expand vdev, state %u, "
@@ -3951,12 +3589,7 @@ online_vdev(vdev_t *vd, void *arg)
 	}
 	ASSERT3U(newstate, ==, VDEV_STATE_HEALTHY);
 
-	/*
-	 * Since we dropped the lock we need to ensure that we're
-	 * still talking to the original vdev. It's possible this
-	 * vdev may have been detached/replaced while we were
-	 * trying to online it.
-	 */
+	 
 	if (generation != spa->spa_config_generation) {
 		if (ztest_opts.zo_verbose >= 5) {
 			(void) printf("vdev configuration has changed, "
@@ -3972,13 +3605,7 @@ online_vdev(vdev_t *vd, void *arg)
 	return (NULL);
 }
 
-/*
- * Traverse the vdev tree calling the supplied function.
- * We continue to walk the tree until we either have walked all
- * children or we receive a non-NULL return from the callback.
- * If a NULL callback is passed, then we just return back the first
- * leaf vdev we encounter.
- */
+ 
 static vdev_t *
 vdev_walk_tree(vdev_t *vd, vdev_t *(*func)(vdev_t *, void *), void *arg)
 {
@@ -3999,9 +3626,7 @@ vdev_walk_tree(vdev_t *vd, vdev_t *(*func)(vdev_t *, void *), void *arg)
 	return (NULL);
 }
 
-/*
- * Verify that dynamic LUN growth works as expected.
- */
+ 
 void
 ztest_vdev_LUN_growth(ztest_ds_t *zd, uint64_t id)
 {
@@ -4018,12 +3643,7 @@ ztest_vdev_LUN_growth(ztest_ds_t *zd, uint64_t id)
 	mutex_enter(&ztest_vdev_lock);
 	spa_config_enter(spa, SCL_STATE, spa, RW_READER);
 
-	/*
-	 * If there is a vdev removal in progress, it could complete while
-	 * we are running, in which case we would not be able to verify
-	 * that the metaslab_class space increased (because it decreases
-	 * when the device removal completes).
-	 */
+	 
 	if (ztest_device_removal_active) {
 		spa_config_exit(spa, SCL_STATE, spa);
 		mutex_exit(&ztest_vdev_lock);
@@ -4039,20 +3659,14 @@ ztest_vdev_LUN_growth(ztest_ds_t *zd, uint64_t id)
 	old_ms_count = tvd->vdev_ms_count;
 	old_class_space = metaslab_class_get_space(mc);
 
-	/*
-	 * Determine the size of the first leaf vdev associated with
-	 * our top-level device.
-	 */
+	 
 	vd = vdev_walk_tree(tvd, NULL, NULL);
 	ASSERT3P(vd, !=, NULL);
 	ASSERT(vd->vdev_ops->vdev_op_leaf);
 
 	psize = vd->vdev_psize;
 
-	/*
-	 * We only try to expand the vdev if it's healthy, less than 4x its
-	 * original size, and it has a valid psize.
-	 */
+	 
 	if (tvd->vdev_state != VDEV_STATE_HEALTHY ||
 	    psize == 0 || psize >= 4 * ztest_opts.zo_vdev_size) {
 		spa_config_exit(spa, SCL_STATE, spa);
@@ -4069,11 +3683,7 @@ ztest_vdev_LUN_growth(ztest_ds_t *zd, uint64_t id)
 		    vd->vdev_path, (ulong_t)psize, (ulong_t)newsize);
 	}
 
-	/*
-	 * Growing the vdev is a two step process:
-	 *	1). expand the physical size (i.e. relabel)
-	 *	2). online the vdev to create the new metaslabs
-	 */
+	 
 	if (vdev_walk_tree(tvd, grow_vdev, &newsize) != NULL ||
 	    vdev_walk_tree(tvd, online_vdev, NULL) != NULL ||
 	    tvd->vdev_state != VDEV_STATE_HEALTHY) {
@@ -4089,11 +3699,7 @@ ztest_vdev_LUN_growth(ztest_ds_t *zd, uint64_t id)
 
 	spa_config_exit(spa, SCL_STATE, spa);
 
-	/*
-	 * Expanding the LUN will update the config asynchronously,
-	 * thus we must wait for the async thread to complete any
-	 * pending tasks before proceeding.
-	 */
+	 
 	for (;;) {
 		boolean_t done;
 		mutex_enter(&spa->spa_async_lock);
@@ -4122,18 +3728,14 @@ ztest_vdev_LUN_growth(ztest_ds_t *zd, uint64_t id)
 		return;
 	}
 
-	/*
-	 * Make sure we were able to grow the vdev.
-	 */
+	 
 	if (new_ms_count <= old_ms_count) {
 		fatal(B_FALSE,
 		    "LUN expansion failed: ms_count %"PRIu64" < %"PRIu64"\n",
 		    old_ms_count, new_ms_count);
 	}
 
-	/*
-	 * Make sure we were able to grow the pool.
-	 */
+	 
 	if (new_class_space <= old_class_space) {
 		fatal(B_FALSE,
 		    "LUN expansion failed: class_space %"PRIu64" < %"PRIu64"\n",
@@ -4154,17 +3756,13 @@ ztest_vdev_LUN_growth(ztest_ds_t *zd, uint64_t id)
 	mutex_exit(&ztest_checkpoint_lock);
 }
 
-/*
- * Verify that dmu_objset_{create,destroy,open,close} work as expected.
- */
+ 
 static void
 ztest_objset_create_cb(objset_t *os, void *arg, cred_t *cr, dmu_tx_t *tx)
 {
 	(void) arg, (void) cr;
 
-	/*
-	 * Create the objects common to all ztest datasets.
-	 */
+	 
 	VERIFY0(zap_create_claim(os, ZTEST_DIROBJ,
 	    DMU_OT_ZAP_OTHER, DMU_OT_NONE, 0, tx));
 }
@@ -4176,17 +3774,13 @@ ztest_dataset_create(char *dsname)
 	uint64_t rand;
 	dsl_crypto_params_t *dcp = NULL;
 
-	/*
-	 * 50% of the time, we create encrypted datasets
-	 * using a random cipher suite and a hard-coded
-	 * wrapping key.
-	 */
+	 
 	rand = ztest_random(2);
 	if (rand != 0) {
 		nvlist_t *crypto_args = fnvlist_alloc();
 		nvlist_t *props = fnvlist_alloc();
 
-		/* slight bias towards the default cipher suite */
+		 
 		rand = ztest_random(ZIO_CRYPT_FUNCTIONS);
 		if (rand < ZIO_CRYPT_AES_128_CCM)
 			rand = ZIO_CRYPT_ON;
@@ -4196,11 +3790,7 @@ ztest_dataset_create(char *dsname)
 		fnvlist_add_uint8_array(crypto_args, "wkeydata",
 		    (uint8_t *)ztest_wkeydata, WRAPPING_KEY_LEN);
 
-		/*
-		 * These parameters aren't really used by the kernel. They
-		 * are simply stored so that userspace knows how to load
-		 * the wrapping key.
-		 */
+		 
 		fnvlist_add_uint64(props,
 		    zfs_prop_to_name(ZFS_PROP_KEYFORMAT), ZFS_KEYFORMAT_RAW);
 		fnvlist_add_string(props,
@@ -4213,10 +3803,7 @@ ztest_dataset_create(char *dsname)
 		VERIFY0(dsl_crypto_params_create_nvlist(DCP_CMD_NONE, props,
 		    crypto_args, &dcp));
 
-		/*
-		 * Cycle through all available encryption implementations
-		 * to verify interoperability.
-		 */
+		 
 		VERIFY0(gcm_impl_set("cycle"));
 		VERIFY0(aes_impl_set("cycle"));
 
@@ -4246,40 +3833,32 @@ ztest_objset_destroy_cb(const char *name, void *arg)
 	dmu_object_info_t doi;
 	int error;
 
-	/*
-	 * Verify that the dataset contains a directory object.
-	 */
+	 
 	VERIFY0(ztest_dmu_objset_own(name, DMU_OST_OTHER, B_TRUE,
 	    B_TRUE, FTAG, &os));
 	error = dmu_object_info(os, ZTEST_DIROBJ, &doi);
 	if (error != ENOENT) {
-		/* We could have crashed in the middle of destroying it */
+		 
 		ASSERT0(error);
 		ASSERT3U(doi.doi_type, ==, DMU_OT_ZAP_OTHER);
 		ASSERT3S(doi.doi_physical_blocks_512, >=, 0);
 	}
 	dmu_objset_disown(os, B_TRUE, FTAG);
 
-	/*
-	 * Destroy the dataset.
-	 */
+	 
 	if (strchr(name, '@') != NULL) {
 		error = dsl_destroy_snapshot(name, B_TRUE);
 		if (error != ECHRNG) {
-			/*
-			 * The program was executed, but encountered a runtime
-			 * error, such as insufficient slop, or a hold on the
-			 * dataset.
-			 */
+			 
 			ASSERT0(error);
 		}
 	} else {
 		error = dsl_destroy_head(name);
 		if (error == ENOSPC) {
-			/* There could be checkpoint or insufficient slop */
+			 
 			ztest_record_enospc(FTAG);
 		} else if (error != EBUSY) {
-			/* There could be a hold on this dataset */
+			 
 			ASSERT0(error);
 		}
 	}
@@ -4341,11 +3920,7 @@ ztest_dmu_objset_create_destroy(ztest_ds_t *zd, uint64_t id)
 	(void) snprintf(name, sizeof (name), "%s/temp_%"PRIu64"",
 	    ztest_opts.zo_pool, id);
 
-	/*
-	 * If this dataset exists from a previous run, process its replay log
-	 * half of the time.  If we don't replay it, then dsl_destroy_head()
-	 * (invoked from ztest_objset_destroy_cb()) should just throw it away.
-	 */
+	 
 	if (ztest_random(2) == 0 &&
 	    ztest_dmu_objset_own(name, DMU_OST_OTHER, B_FALSE,
 	    B_TRUE, FTAG, &os) == 0) {
@@ -4355,18 +3930,11 @@ ztest_dmu_objset_create_destroy(ztest_ds_t *zd, uint64_t id)
 		dmu_objset_disown(os, B_TRUE, FTAG);
 	}
 
-	/*
-	 * There may be an old instance of the dataset we're about to
-	 * create lying around from a previous run.  If so, destroy it
-	 * and all of its snapshots.
-	 */
+	 
 	(void) dmu_objset_find(name, ztest_objset_destroy_cb, NULL,
 	    DS_FIND_CHILDREN | DS_FIND_SNAPSHOTS);
 
-	/*
-	 * Verify that the destroyed dataset is no longer in the namespace.
-	 * It may still be present if the destroy above fails with ENOSPC.
-	 */
+	 
 	error = ztest_dmu_objset_own(name, DMU_OST_OTHER, B_TRUE, B_TRUE,
 	    FTAG, &os);
 	if (error == 0) {
@@ -4376,9 +3944,7 @@ ztest_dmu_objset_create_destroy(ztest_ds_t *zd, uint64_t id)
 	}
 	VERIFY3U(ENOENT, ==, error);
 
-	/*
-	 * Verify that we can create a new dataset.
-	 */
+	 
 	error = ztest_dataset_create(name);
 	if (error) {
 		if (error == ENOSPC) {
@@ -4393,15 +3959,10 @@ ztest_dmu_objset_create_destroy(ztest_ds_t *zd, uint64_t id)
 
 	ztest_zd_init(zdtmp, NULL, os);
 
-	/*
-	 * Open the intent log for it.
-	 */
+	 
 	zilog = zil_open(os, ztest_get_data, NULL);
 
-	/*
-	 * Put some objects in there, do a little I/O to them,
-	 * and randomly take a couple of snapshots along the way.
-	 */
+	 
 	iters = ztest_random(5);
 	for (i = 0; i < iters; i++) {
 		ztest_dmu_object_alloc_free(zdtmp, id);
@@ -4409,21 +3970,15 @@ ztest_dmu_objset_create_destroy(ztest_ds_t *zd, uint64_t id)
 			(void) ztest_snapshot_create(name, i);
 	}
 
-	/*
-	 * Verify that we cannot create an existing dataset.
-	 */
+	 
 	VERIFY3U(EEXIST, ==,
 	    dmu_objset_create(name, DMU_OST_OTHER, 0, NULL, NULL, NULL));
 
-	/*
-	 * Verify that we can hold an objset that is also owned.
-	 */
+	 
 	VERIFY0(dmu_objset_hold(name, FTAG, &os2));
 	dmu_objset_rele(os2, FTAG);
 
-	/*
-	 * Verify that we cannot own an objset that is already owned.
-	 */
+	 
 	VERIFY3U(EBUSY, ==, ztest_dmu_objset_own(name, DMU_OST_OTHER,
 	    B_FALSE, B_TRUE, FTAG, &os2));
 
@@ -4436,9 +3991,7 @@ out:
 	umem_free(zdtmp, sizeof (ztest_ds_t));
 }
 
-/*
- * Verify that dmu_snapshot_{create,destroy,open,close} work as expected.
- */
+ 
 void
 ztest_dmu_snapshot_create_destroy(ztest_ds_t *zd, uint64_t id)
 {
@@ -4448,9 +4001,7 @@ ztest_dmu_snapshot_create_destroy(ztest_ds_t *zd, uint64_t id)
 	(void) pthread_rwlock_unlock(&ztest_name_lock);
 }
 
-/*
- * Cleanup non-standard snapshots and clones.
- */
+ 
 static void
 ztest_dsl_dataset_cleanup(char *osname, uint64_t id)
 {
@@ -4504,9 +4055,7 @@ ztest_dsl_dataset_cleanup(char *osname, uint64_t id)
 	umem_free(snap3name, ZFS_MAX_DATASET_NAME_LEN);
 }
 
-/*
- * Verify dsl_dataset_promote handles EBUSY
- */
+ 
 void
 ztest_dsl_dataset_promote_busy(ztest_ds_t *zd, uint64_t id)
 {
@@ -4615,9 +4164,7 @@ out:
 #undef OD_ARRAY_SIZE
 #define	OD_ARRAY_SIZE	4
 
-/*
- * Verify that dmu_object_{alloc,free} work as expected.
- */
+ 
 void
 ztest_dmu_object_alloc_free(ztest_ds_t *zd, uint64_t id)
 {
@@ -4634,10 +4181,7 @@ ztest_dmu_object_alloc_free(ztest_ds_t *zd, uint64_t id)
 		ztest_od_init(od + b, id, FTAG, b, DMU_OT_UINT64_OTHER,
 		    0, 0, 0);
 
-	/*
-	 * Destroy the previous batch of objects, create a new batch,
-	 * and do some I/O on the new objects.
-	 */
+	 
 	if (ztest_object_init(zd, od, size, B_TRUE) != 0) {
 		zd->zd_od = NULL;
 		umem_free(od, size);
@@ -4651,9 +4195,7 @@ ztest_dmu_object_alloc_free(ztest_ds_t *zd, uint64_t id)
 	umem_free(od, size);
 }
 
-/*
- * Rewind the global allocator to verify object allocation backfilling.
- */
+ 
 void
 ztest_dmu_object_next_chunk(ztest_ds_t *zd, uint64_t id)
 {
@@ -4662,10 +4204,7 @@ ztest_dmu_object_next_chunk(ztest_ds_t *zd, uint64_t id)
 	uint_t dnodes_per_chunk = 1 << dmu_object_alloc_chunk_shift;
 	uint64_t object;
 
-	/*
-	 * Rewind the global allocator randomly back to a lower object number
-	 * to force backfilling and reclamation of recently freed dnodes.
-	 */
+	 
 	mutex_enter(&os->os_obj_lock);
 	object = ztest_random(os->os_obj_next_chunk);
 	os->os_obj_next_chunk = P2ALIGN(object, dnodes_per_chunk);
@@ -4675,9 +4214,7 @@ ztest_dmu_object_next_chunk(ztest_ds_t *zd, uint64_t id)
 #undef OD_ARRAY_SIZE
 #define	OD_ARRAY_SIZE	2
 
-/*
- * Verify that dmu_{read,write} work as expected.
- */
+ 
 void
 ztest_dmu_read_write(ztest_ds_t *zd, uint64_t id)
 {
@@ -4698,33 +4235,9 @@ ztest_dmu_read_write(ztest_ds_t *zd, uint64_t id)
 	uint64_t width = 40;
 	int free_percent = 5;
 
-	/*
-	 * This test uses two objects, packobj and bigobj, that are always
-	 * updated together (i.e. in the same tx) so that their contents are
-	 * in sync and can be compared.  Their contents relate to each other
-	 * in a simple way: packobj is a dense array of 'bufwad' structures,
-	 * while bigobj is a sparse array of the same bufwads.  Specifically,
-	 * for any index n, there are three bufwads that should be identical:
-	 *
-	 *	packobj, at offset n * sizeof (bufwad_t)
-	 *	bigobj, at the head of the nth chunk
-	 *	bigobj, at the tail of the nth chunk
-	 *
-	 * The chunk size is arbitrary. It doesn't have to be a power of two,
-	 * and it doesn't have any relation to the object blocksize.
-	 * The only requirement is that it can hold at least two bufwads.
-	 *
-	 * Normally, we write the bufwad to each of these locations.
-	 * However, free_percent of the time we instead write zeroes to
-	 * packobj and perform a dmu_free_range() on bigobj.  By comparing
-	 * bigobj to packobj, we can verify that the DMU is correctly
-	 * tracking which parts of an object are allocated and free,
-	 * and that the contents of the allocated blocks are correct.
-	 */
+	 
 
-	/*
-	 * Read the directory info.  If it's the first time, set things up.
-	 */
+	 
 	ztest_od_init(od, id, FTAG, 0, DMU_OT_UINT64_OTHER, 0, 0, chunksize);
 	ztest_od_init(od + 1, id, FTAG, 1, DMU_OT_UINT64_OTHER, 0, 0,
 	    chunksize);
@@ -4739,20 +4252,13 @@ ztest_dmu_read_write(ztest_ds_t *zd, uint64_t id)
 	chunksize = od[0].od_gen;
 	ASSERT3U(chunksize, ==, od[1].od_gen);
 
-	/*
-	 * Prefetch a random chunk of the big object.
-	 * Our aim here is to get some async reads in flight
-	 * for blocks that we may free below; the DMU should
-	 * handle this race correctly.
-	 */
+	 
 	n = ztest_random(regions) * stride + ztest_random(width);
 	s = 1 + ztest_random(2 * width - 1);
 	dmu_prefetch(os, bigobj, 0, n * chunksize, s * chunksize,
 	    ZIO_PRIORITY_SYNC_READ);
 
-	/*
-	 * Pick a random index and compute the offsets into packobj and bigobj.
-	 */
+	 
 	n = ztest_random(regions) * stride + ztest_random(width);
 	s = 1 + ztest_random(width - 1);
 
@@ -4765,15 +4271,10 @@ ztest_dmu_read_write(ztest_ds_t *zd, uint64_t id)
 	packbuf = umem_alloc(packsize, UMEM_NOFAIL);
 	bigbuf = umem_alloc(bigsize, UMEM_NOFAIL);
 
-	/*
-	 * free_percent of the time, free a range of bigobj rather than
-	 * overwriting it.
-	 */
+	 
 	freeit = (ztest_random(100) < free_percent);
 
-	/*
-	 * Read the current contents of our objects.
-	 */
+	 
 	error = dmu_read(os, packobj, packoff, packsize, packbuf,
 	    DMU_READ_PREFETCH);
 	ASSERT0(error);
@@ -4781,9 +4282,7 @@ ztest_dmu_read_write(ztest_ds_t *zd, uint64_t id)
 	    DMU_READ_PREFETCH);
 	ASSERT0(error);
 
-	/*
-	 * Get a tx for the mods to both packobj and bigobj.
-	 */
+	 
 	tx = dmu_tx_create(os);
 
 	dmu_tx_hold_write(tx, packobj, packoff, packsize);
@@ -4793,7 +4292,7 @@ ztest_dmu_read_write(ztest_ds_t *zd, uint64_t id)
 	else
 		dmu_tx_hold_write(tx, bigobj, bigoff, bigsize);
 
-	/* This accounts for setting the checksum/compression. */
+	 
 	dmu_tx_hold_bonus(tx, bigobj);
 
 	txg = ztest_tx_assign(tx, TXG_MIGHTWAIT, FTAG);
@@ -4818,18 +4317,13 @@ ztest_dmu_read_write(ztest_ds_t *zd, uint64_t id)
 	} while (comp >= ZIO_COMPRESS_LEGACY_FUNCTIONS);
 	dmu_object_set_compress(os, bigobj, comp, tx);
 
-	/*
-	 * For each index from n to n + s, verify that the existing bufwad
-	 * in packobj matches the bufwads at the head and tail of the
-	 * corresponding chunk in bigobj.  Then update all three bufwads
-	 * with the new values we want to write out.
-	 */
+	 
 	for (i = 0; i < s; i++) {
-		/* LINTED */
+		 
 		pack = (bufwad_t *)((char *)packbuf + i * sizeof (bufwad_t));
-		/* LINTED */
+		 
 		bigH = (bufwad_t *)((char *)bigbuf + i * chunksize);
-		/* LINTED */
+		 
 		bigT = (bufwad_t *)((char *)bigH + chunksize) - 1;
 
 		ASSERT3U((uintptr_t)bigH - (uintptr_t)bigbuf, <, bigsize);
@@ -4864,10 +4358,7 @@ ztest_dmu_read_write(ztest_ds_t *zd, uint64_t id)
 		*bigT = *pack;
 	}
 
-	/*
-	 * We've verified all the old bufwads, and made new ones.
-	 * Now write them out.
-	 */
+	 
 	dmu_write(os, packobj, packoff, packsize, packbuf, tx);
 
 	if (freeit) {
@@ -4888,9 +4379,7 @@ ztest_dmu_read_write(ztest_ds_t *zd, uint64_t id)
 
 	dmu_tx_commit(tx);
 
-	/*
-	 * Sanity check the stuff we just wrote.
-	 */
+	 
 	{
 		void *packcheck = umem_alloc(packsize, UMEM_NOFAIL);
 		void *bigcheck = umem_alloc(bigsize, UMEM_NOFAIL);
@@ -4921,18 +4410,13 @@ compare_and_update_pbbufs(uint64_t s, bufwad_t *packbuf, bufwad_t *bigbuf,
 	bufwad_t *bigH;
 	bufwad_t *bigT;
 
-	/*
-	 * For each index from n to n + s, verify that the existing bufwad
-	 * in packobj matches the bufwads at the head and tail of the
-	 * corresponding chunk in bigobj.  Then update all three bufwads
-	 * with the new values we want to write out.
-	 */
+	 
 	for (i = 0; i < s; i++) {
-		/* LINTED */
+		 
 		pack = (bufwad_t *)((char *)packbuf + i * sizeof (bufwad_t));
-		/* LINTED */
+		 
 		bigH = (bufwad_t *)((char *)bigbuf + i * chunksize);
-		/* LINTED */
+		 
 		bigT = (bufwad_t *)((char *)bigH + chunksize) - 1;
 
 		ASSERT3U((uintptr_t)bigH - (uintptr_t)bigbuf, <, bigsize);
@@ -4992,25 +4476,9 @@ ztest_dmu_read_write_zcopy(ztest_ds_t *zd, uint64_t id)
 	size = sizeof (ztest_od_t) * OD_ARRAY_SIZE;
 	od = umem_alloc(size, UMEM_NOFAIL);
 
-	/*
-	 * This test uses two objects, packobj and bigobj, that are always
-	 * updated together (i.e. in the same tx) so that their contents are
-	 * in sync and can be compared.  Their contents relate to each other
-	 * in a simple way: packobj is a dense array of 'bufwad' structures,
-	 * while bigobj is a sparse array of the same bufwads.  Specifically,
-	 * for any index n, there are three bufwads that should be identical:
-	 *
-	 *	packobj, at offset n * sizeof (bufwad_t)
-	 *	bigobj, at the head of the nth chunk
-	 *	bigobj, at the tail of the nth chunk
-	 *
-	 * The chunk size is set equal to bigobj block size so that
-	 * dmu_assign_arcbuf_by_dbuf() can be tested for object updates.
-	 */
+	 
 
-	/*
-	 * Read the directory info.  If it's the first time, set things up.
-	 */
+	 
 	ztest_od_init(od, id, FTAG, 0, DMU_OT_UINT64_OTHER, blocksize, 0, 0);
 	ztest_od_init(od + 1, id, FTAG, 1, DMU_OT_UINT64_OTHER, 0, 0,
 	    chunksize);
@@ -5032,9 +4500,7 @@ ztest_dmu_read_write_zcopy(ztest_ds_t *zd, uint64_t id)
 	VERIFY3U(chunksize, ==, doi.doi_data_block_size);
 	VERIFY3U(chunksize, >=, 2 * sizeof (bufwad_t));
 
-	/*
-	 * Pick a random index and compute the offsets into packobj and bigobj.
-	 */
+	 
 	n = ztest_random(regions) * stride + ztest_random(width);
 	s = 1 + ztest_random(width - 1);
 
@@ -5051,25 +4517,12 @@ ztest_dmu_read_write_zcopy(ztest_ds_t *zd, uint64_t id)
 
 	bigbuf_arcbufs = umem_zalloc(2 * s * sizeof (arc_buf_t *), UMEM_NOFAIL);
 
-	/*
-	 * Iteration 0 test zcopy for DB_UNCACHED dbufs.
-	 * Iteration 1 test zcopy to already referenced dbufs.
-	 * Iteration 2 test zcopy to dirty dbuf in the same txg.
-	 * Iteration 3 test zcopy to dbuf dirty in previous txg.
-	 * Iteration 4 test zcopy when dbuf is no longer dirty.
-	 * Iteration 5 test zcopy when it can't be done.
-	 * Iteration 6 one more zcopy write.
-	 */
+	 
 	for (i = 0; i < 7; i++) {
 		uint64_t j;
 		uint64_t off;
 
-		/*
-		 * In iteration 5 (i == 5) use arcbufs
-		 * that don't match bigobj blksz to test
-		 * dmu_assign_arcbuf_by_dbuf() when it can't directly
-		 * assign an arcbuf to a dbuf.
-		 */
+		 
 		for (j = 0; j < s; j++) {
 			if (i != 5 || chunksize < (SPA_MINBLOCKSIZE * 2)) {
 				bigbuf_arcbufs[j] =
@@ -5082,9 +4535,7 @@ ztest_dmu_read_write_zcopy(ztest_ds_t *zd, uint64_t id)
 			}
 		}
 
-		/*
-		 * Get a tx for the mods to both packobj and bigobj.
-		 */
+		 
 		tx = dmu_tx_create(os);
 
 		dmu_tx_hold_write(tx, packobj, packoff, packsize);
@@ -5111,11 +4562,7 @@ ztest_dmu_read_write_zcopy(ztest_ds_t *zd, uint64_t id)
 			return;
 		}
 
-		/*
-		 * 50% of the time don't read objects in the 1st iteration to
-		 * test dmu_assign_arcbuf_by_dbuf() for the case when there are
-		 * no existing dbufs for the specified offsets.
-		 */
+		 
 		if (i != 0 || ztest_random(2) != 0) {
 			error = dmu_read(os, packobj, packoff,
 			    packsize, packbuf, DMU_READ_PREFETCH);
@@ -5127,10 +4574,7 @@ ztest_dmu_read_write_zcopy(ztest_ds_t *zd, uint64_t id)
 		compare_and_update_pbbufs(s, packbuf, bigbuf, bigsize,
 		    n, chunksize, txg);
 
-		/*
-		 * We've verified all the old bufwads, and made new ones.
-		 * Now write them out.
-		 */
+		 
 		dmu_write(os, packobj, packoff, packsize, packbuf, tx);
 		if (ztest_opts.zo_verbose >= 7) {
 			(void) printf("writing offset %"PRIx64" size %"PRIx64""
@@ -5173,9 +4617,7 @@ ztest_dmu_read_write_zcopy(ztest_ds_t *zd, uint64_t id)
 		}
 		dmu_tx_commit(tx);
 
-		/*
-		 * Sanity check the stuff we just wrote.
-		 */
+		 
 		{
 			void *packcheck = umem_alloc(packsize, UMEM_NOFAIL);
 			void *bigcheck = umem_alloc(bigsize, UMEM_NOFAIL);
@@ -5215,11 +4657,7 @@ ztest_dmu_write_parallel(ztest_ds_t *zd, uint64_t id)
 	uint64_t offset = (1ULL << (ztest_random(20) + 43)) +
 	    (ztest_random(ZTEST_RANGE_LOCKS) << SPA_MAXBLOCKSHIFT);
 
-	/*
-	 * Have multiple threads write to large offsets in an object
-	 * to verify that parallel writes to an object -- even to the
-	 * same blocks within the object -- doesn't cause any trouble.
-	 */
+	 
 	ztest_od_init(od, ID_PARALLEL, FTAG, 0, DMU_OT_UINT64_OTHER, 0, 0, 0);
 
 	if (ztest_object_init(zd, od, sizeof (ztest_od_t), B_FALSE) != 0)
@@ -5273,9 +4711,7 @@ ztest_dmu_prealloc(ztest_ds_t *zd, uint64_t id)
 	umem_free(od, sizeof (ztest_od_t));
 }
 
-/*
- * Verify that zap_{create,destroy,add,remove,update} work as expected.
- */
+ 
 #define	ZTEST_ZAP_MIN_INTS	1
 #define	ZTEST_ZAP_MAX_INTS	4
 #define	ZTEST_ZAP_MAX_PROPS	1000
@@ -5304,10 +4740,7 @@ ztest_zap(ztest_ds_t *zd, uint64_t id)
 
 	object = od->od_object;
 
-	/*
-	 * Generate a known hash collision, and verify that
-	 * we can lookup and remove both entries.
-	 */
+	 
 	tx = dmu_tx_create(os);
 	dmu_tx_hold_zap(tx, object, B_TRUE, NULL);
 	txg = ztest_tx_assign(tx, TXG_MIGHTWAIT, FTAG);
@@ -5331,9 +4764,7 @@ ztest_zap(ztest_ds_t *zd, uint64_t id)
 	}
 	dmu_tx_commit(tx);
 
-	/*
-	 * Generate a bunch of random entries.
-	 */
+	 
 	ints = MAX(ZTEST_ZAP_MIN_INTS, object % ZTEST_ZAP_MAX_INTS);
 
 	prop = ztest_random(ZTEST_ZAP_MAX_PROPS);
@@ -5342,9 +4773,7 @@ ztest_zap(ztest_ds_t *zd, uint64_t id)
 	memset(value, 0, sizeof (value));
 	last_txg = 0;
 
-	/*
-	 * If these zap entries already exist, validate their contents.
-	 */
+	 
 	error = zap_length(os, object, txgname, &zl_intsize, &zl_ints);
 	if (error == 0) {
 		ASSERT3U(zl_intsize, ==, sizeof (uint64_t));
@@ -5369,13 +4798,7 @@ ztest_zap(ztest_ds_t *zd, uint64_t id)
 		ASSERT3U(error, ==, ENOENT);
 	}
 
-	/*
-	 * Atomically update two entries in our zap object.
-	 * The first is named txg_%llu, and contains the txg
-	 * in which the property was last updated.  The second
-	 * is named prop_%llu, and the nth element of its value
-	 * should be txg + object + n.
-	 */
+	 
 	tx = dmu_tx_create(os);
 	dmu_tx_hold_zap(tx, object, B_TRUE, NULL);
 	txg = ztest_tx_assign(tx, TXG_MIGHTWAIT, FTAG);
@@ -5396,9 +4819,7 @@ ztest_zap(ztest_ds_t *zd, uint64_t id)
 
 	dmu_tx_commit(tx);
 
-	/*
-	 * Remove a random pair of entries.
-	 */
+	 
 	prop = ztest_random(ZTEST_ZAP_MAX_PROPS);
 	(void) sprintf(propname, "prop_%"PRIu64"", prop);
 	(void) sprintf(txgname, "txg_%"PRIu64"", prop);
@@ -5422,9 +4843,7 @@ out:
 	umem_free(od, sizeof (ztest_od_t));
 }
 
-/*
- * Test case to test the upgrading of a microzap to fatzap.
- */
+ 
 void
 ztest_fzap(ztest_ds_t *zd, uint64_t id)
 {
@@ -5440,11 +4859,7 @@ ztest_fzap(ztest_ds_t *zd, uint64_t id)
 		goto out;
 	object = od->od_object;
 
-	/*
-	 * Add entries to this ZAP and make sure it spills over
-	 * and gets upgraded to a fatzap. Also, since we are adding
-	 * 2050 entries we should see ptrtbl growth and leaf-block split.
-	 */
+	 
 	for (value = 0; value < 2050; value++) {
 		char name[ZFS_MAX_DATASET_NAME_LEN];
 		dmu_tx_t *tx;
@@ -5490,12 +4905,7 @@ ztest_zap_parallel(ztest_ds_t *zd, uint64_t id)
 
 	object = od->od_object;
 
-	/*
-	 * Generate a random name of the form 'xxx.....' where each
-	 * x is a random printable character and the dots are dots.
-	 * There are 94 such characters, and the name length goes from
-	 * 6 to 20, so there are 94^3 * 15 = 12,458,760 possible names.
-	 */
+	 
 	namelen = ztest_random(sizeof (name) - 5) + 5 + 1;
 
 	for (i = 0; i < 3; i++)
@@ -5518,9 +4928,7 @@ ztest_zap_parallel(ztest_ds_t *zd, uint64_t id)
 	VERIFY0(zap_count(os, object, &count));
 	ASSERT3S(count, !=, -1ULL);
 
-	/*
-	 * Select an operation: length, lookup, add, update, remove.
-	 */
+	 
 	i = ztest_random(5);
 
 	if (i >= 2) {
@@ -5583,9 +4991,7 @@ ztest_zap_parallel(ztest_ds_t *zd, uint64_t id)
 	umem_free(od, sizeof (ztest_od_t));
 }
 
-/*
- * Commit callback data.
- */
+ 
 typedef struct ztest_cb_data {
 	list_node_t		zcd_node;
 	uint64_t		zcd_txg;
@@ -5595,7 +5001,7 @@ typedef struct ztest_cb_data {
 	spa_t			*zcd_spa;
 } ztest_cb_data_t;
 
-/* This is the actual commit callback function */
+ 
 static void
 ztest_commit_callback(void *arg, int error)
 {
@@ -5619,11 +5025,7 @@ ztest_commit_callback(void *arg, int error)
 		ASSERT0(data->zcd_txg);
 		ASSERT(!data->zcd_added);
 
-		/*
-		 * The private callback data should be destroyed here, but
-		 * since we are going to check the zcd_called field after
-		 * dmu_tx_abort(), we will destroy it there.
-		 */
+		 
 		return;
 	}
 
@@ -5632,11 +5034,11 @@ ztest_commit_callback(void *arg, int error)
 
 	(void) mutex_enter(&zcl.zcl_callbacks_lock);
 
-	/* See if this cb was called more quickly */
+	 
 	if ((synced_txg - data->zcd_txg) < zc_min_txg_delay)
 		zc_min_txg_delay = synced_txg - data->zcd_txg;
 
-	/* Remove our callback from the list */
+	 
 	list_remove(&zcl.zcl_callbacks, data);
 
 	(void) mutex_exit(&zcl.zcl_callbacks_lock);
@@ -5644,7 +5046,7 @@ ztest_commit_callback(void *arg, int error)
 	umem_free(data, sizeof (ztest_cb_data_t));
 }
 
-/* Allocate and initialize callback data structure */
+ 
 static ztest_cb_data_t *
 ztest_create_cb_data(objset_t *os, uint64_t txg)
 {
@@ -5659,9 +5061,7 @@ ztest_create_cb_data(objset_t *os, uint64_t txg)
 	return (cb_data);
 }
 
-/*
- * Commit callback test.
- */
+ 
 void
 ztest_dmu_commit_callbacks(ztest_ds_t *zd, uint64_t id)
 {
@@ -5687,7 +5087,7 @@ ztest_dmu_commit_callbacks(ztest_ds_t *zd, uint64_t id)
 
 	dmu_tx_hold_write(tx, od->od_object, 0, sizeof (uint64_t));
 
-	/* Every once in a while, abort the transaction on purpose */
+	 
 	if (ztest_random(100) == 0)
 		error = -1;
 
@@ -5701,12 +5101,7 @@ ztest_dmu_commit_callbacks(ztest_ds_t *zd, uint64_t id)
 	dmu_tx_callback_register(tx, ztest_commit_callback, cb_data[1]);
 
 	if (error) {
-		/*
-		 * It's not a strict requirement to call the registered
-		 * callbacks from inside dmu_tx_abort(), but that's what
-		 * it's supposed to happen in the current implementation
-		 * so we will check for that.
-		 */
+		 
 		for (i = 0; i < 2; i++) {
 			cb_data[i]->zcd_expected_err = ECANCELED;
 			VERIFY(!cb_data[i]->zcd_called);
@@ -5726,9 +5121,7 @@ ztest_dmu_commit_callbacks(ztest_ds_t *zd, uint64_t id)
 	cb_data[2] = ztest_create_cb_data(os, txg);
 	dmu_tx_callback_register(tx, ztest_commit_callback, cb_data[2]);
 
-	/*
-	 * Read existing data to make sure there isn't a future leak.
-	 */
+	 
 	VERIFY0(dmu_read(os, od->od_object, 0, sizeof (uint64_t),
 	    &old_txg, DMU_READ_PREFETCH));
 
@@ -5741,18 +5134,7 @@ ztest_dmu_commit_callbacks(ztest_ds_t *zd, uint64_t id)
 
 	(void) mutex_enter(&zcl.zcl_callbacks_lock);
 
-	/*
-	 * Since commit callbacks don't have any ordering requirement and since
-	 * it is theoretically possible for a commit callback to be called
-	 * after an arbitrary amount of time has elapsed since its txg has been
-	 * synced, it is difficult to reliably determine whether a commit
-	 * callback hasn't been called due to high load or due to a flawed
-	 * implementation.
-	 *
-	 * In practice, we will assume that if after a certain number of txgs a
-	 * commit callback hasn't been called, then most likely there's an
-	 * implementation bug..
-	 */
+	 
 	tmp_cb = list_head(&zcl.zcl_callbacks);
 	if (tmp_cb != NULL &&
 	    tmp_cb->zcd_txg + ZTEST_COMMIT_CB_THRESH < txg) {
@@ -5762,19 +5144,12 @@ ztest_dmu_commit_callbacks(ztest_ds_t *zd, uint64_t id)
 		    tmp_cb->zcd_txg, txg);
 	}
 
-	/*
-	 * Let's find the place to insert our callbacks.
-	 *
-	 * Even though the list is ordered by txg, it is possible for the
-	 * insertion point to not be the end because our txg may already be
-	 * quiescing at this point and other callbacks in the open txg
-	 * (from other objsets) may have sneaked in.
-	 */
+	 
 	tmp_cb = list_tail(&zcl.zcl_callbacks);
 	while (tmp_cb != NULL && tmp_cb->zcd_txg > txg)
 		tmp_cb = list_prev(&zcl.zcl_callbacks, tmp_cb);
 
-	/* Add the 3 callbacks to the list */
+	 
 	for (i = 0; i < 3; i++) {
 		if (tmp_cb == NULL)
 			list_insert_head(&zcl.zcl_callbacks, cb_data[i]);
@@ -5797,11 +5172,7 @@ ztest_dmu_commit_callbacks(ztest_ds_t *zd, uint64_t id)
 	umem_free(od, sizeof (ztest_od_t));
 }
 
-/*
- * Visit each object in the dataset. Verify that its properties
- * are consistent what was stored in the block tag when it was created,
- * and that its unused bonus buffer space has not been overwritten.
- */
+ 
 void
 ztest_verify_dnode_bt(ztest_ds_t *zd, uint64_t id)
 {
@@ -5899,9 +5270,7 @@ user_release_one(const char *snapname, const char *holdname)
 	return (error);
 }
 
-/*
- * Test snapshot hold/release and deferred destroy.
- */
+ 
 void
 ztest_dmu_snapshot_hold(ztest_ds_t *zd, uint64_t id)
 {
@@ -5925,9 +5294,7 @@ ztest_dmu_snapshot_hold(ztest_ds_t *zd, uint64_t id)
 	    osname, id);
 	(void) snprintf(tag, sizeof (tag), "tag_%"PRIu64"", id);
 
-	/*
-	 * Clean up from any previous run.
-	 */
+	 
 	error = dsl_destroy_head(clonename);
 	if (error != ENOENT)
 		ASSERT0(error);
@@ -5938,10 +5305,7 @@ ztest_dmu_snapshot_hold(ztest_ds_t *zd, uint64_t id)
 	if (error != ENOENT)
 		ASSERT0(error);
 
-	/*
-	 * Create snapshot, clone it, mark snap for deferred destroy,
-	 * destroy clone, verify snap was also destroyed.
-	 */
+	 
 	error = dmu_objset_snapshot_one(osname, snapname);
 	if (error) {
 		if (error == ENOSPC) {
@@ -5974,11 +5338,7 @@ ztest_dmu_snapshot_hold(ztest_ds_t *zd, uint64_t id)
 	if (error != ENOENT)
 		fatal(B_FALSE, "dmu_objset_hold(%s) = %d", fullname, error);
 
-	/*
-	 * Create snapshot, add temporary hold, verify that we can't
-	 * destroy a held snapshot, mark for deferred destroy,
-	 * release hold, verify snapshot was destroyed.
-	 */
+	 
 	error = dmu_objset_snapshot_one(osname, snapname);
 	if (error) {
 		if (error == ENOSPC) {
@@ -6024,9 +5384,7 @@ out:
 	(void) pthread_rwlock_unlock(&ztest_name_lock);
 }
 
-/*
- * Inject random faults into the on-disk data.
- */
+ 
 void
 ztest_fault_inject(ztest_ds_t *zd, uint64_t id)
 {
@@ -6054,12 +5412,7 @@ ztest_fault_inject(ztest_ds_t *zd, uint64_t id)
 
 	mutex_enter(&ztest_vdev_lock);
 
-	/*
-	 * Device removal is in progress, fault injection must be disabled
-	 * until it completes and the pool is scrubbed.  The fault injection
-	 * strategy for damaging blocks does not take in to account evacuated
-	 * blocks which may have already been damaged.
-	 */
+	 
 	if (ztest_device_removal_active) {
 		mutex_exit(&ztest_vdev_lock);
 		goto out;
@@ -6072,45 +5425,22 @@ ztest_fault_inject(ztest_ds_t *zd, uint64_t id)
 
 	ASSERT3U(leaves, >=, 1);
 
-	/*
-	 * While ztest is running the number of leaves will not change.  This
-	 * is critical for the fault injection logic as it determines where
-	 * errors can be safely injected such that they are always repairable.
-	 *
-	 * When restarting ztest a different number of leaves may be requested
-	 * which will shift the regions to be damaged.  This is fine as long
-	 * as the pool has been scrubbed prior to using the new mapping.
-	 * Failure to do can result in non-repairable damage being injected.
-	 */
+	 
 	if (ztest_pool_scrubbed == B_FALSE)
 		goto out;
 
-	/*
-	 * Grab the name lock as reader. There are some operations
-	 * which don't like to have their vdevs changed while
-	 * they are in progress (i.e. spa_change_guid). Those
-	 * operations will have grabbed the name lock as writer.
-	 */
+	 
 	(void) pthread_rwlock_rdlock(&ztest_name_lock);
 
-	/*
-	 * We need SCL_STATE here because we're going to look at vd0->vdev_tsd.
-	 */
+	 
 	spa_config_enter(spa, SCL_STATE, FTAG, RW_READER);
 
 	if (ztest_random(2) == 0) {
-		/*
-		 * Inject errors on a normal data device or slog device.
-		 */
+		 
 		top = ztest_random_vdev_top(spa, B_TRUE);
 		leaf = ztest_random(leaves) + zs->zs_splits;
 
-		/*
-		 * Generate paths to the first leaf in this top-level vdev,
-		 * and to the random leaf we selected.  We'll induce transient
-		 * write failures and random online/offline activity on leaf 0,
-		 * and we'll write random garbage to the randomly chosen leaf.
-		 */
+		 
 		(void) snprintf(path0, MAXPATHLEN, ztest_dev_template,
 		    ztest_opts.zo_dir, ztest_opts.zo_pool,
 		    top * leaves + zs->zs_splits);
@@ -6122,24 +5452,11 @@ ztest_fault_inject(ztest_ds_t *zd, uint64_t id)
 		if (vd0 != NULL && vd0->vdev_top->vdev_islog)
 			islog = B_TRUE;
 
-		/*
-		 * If the top-level vdev needs to be resilvered
-		 * then we only allow faults on the device that is
-		 * resilvering.
-		 */
+		 
 		if (vd0 != NULL && maxfaults != 1 &&
 		    (!vdev_resilver_needed(vd0->vdev_top, NULL, NULL) ||
 		    vd0->vdev_resilver_txg != 0)) {
-			/*
-			 * Make vd0 explicitly claim to be unreadable,
-			 * or unwritable, or reach behind its back
-			 * and close the underlying fd.  We can do this if
-			 * maxfaults == 0 because we'll fail and reexecute,
-			 * and we can do it if maxfaults >= 2 because we'll
-			 * have enough redundancy.  If maxfaults == 1, the
-			 * combination of this with injection of random data
-			 * corruption below exceeds the pool's fault tolerance.
-			 */
+			 
 			vdev_file_t *vf = vd0->vdev_tsd;
 
 			zfs_dbgmsg("injecting fault to vdev %llu; maxfaults=%d",
@@ -6156,9 +5473,7 @@ ztest_fault_inject(ztest_ds_t *zd, uint64_t id)
 			guid0 = vd0->vdev_guid;
 		}
 	} else {
-		/*
-		 * Inject errors on an l2cache device.
-		 */
+		 
 		spa_aux_vdev_t *sav = &spa->spa_l2cache;
 
 		if (sav->sav_count == 0) {
@@ -6173,29 +5488,19 @@ ztest_fault_inject(ztest_ds_t *zd, uint64_t id)
 
 		leaf = 0;
 		leaves = 1;
-		maxfaults = INT_MAX;	/* no limit on cache devices */
+		maxfaults = INT_MAX;	 
 	}
 
 	spa_config_exit(spa, SCL_STATE, FTAG);
 	(void) pthread_rwlock_unlock(&ztest_name_lock);
 
-	/*
-	 * If we can tolerate two or more faults, or we're dealing
-	 * with a slog, randomly online/offline vd0.
-	 */
+	 
 	if ((maxfaults >= 2 || islog) && guid0 != 0) {
 		if (ztest_random(10) < 6) {
 			int flags = (ztest_random(2) == 0 ?
 			    ZFS_OFFLINE_TEMPORARY : 0);
 
-			/*
-			 * We have to grab the zs_name_lock as writer to
-			 * prevent a race between offlining a slog and
-			 * destroying a dataset. Offlining the slog will
-			 * grab a reference on the dataset which may cause
-			 * dsl_destroy_head() to fail with EBUSY thus
-			 * leaving the dataset in an inconsistent state.
-			 */
+			 
 			if (islog)
 				(void) pthread_rwlock_wrlock(&ztest_name_lock);
 
@@ -6204,15 +5509,7 @@ ztest_fault_inject(ztest_ds_t *zd, uint64_t id)
 			if (islog)
 				(void) pthread_rwlock_unlock(&ztest_name_lock);
 		} else {
-			/*
-			 * Ideally we would like to be able to randomly
-			 * call vdev_[on|off]line without holding locks
-			 * to force unpredictable failures but the side
-			 * effects of vdev_[on|off]line prevent us from
-			 * doing so. We grab the ztest_vdev_lock here to
-			 * prevent a race between injection testing and
-			 * aux_vdev removal.
-			 */
+			 
 			mutex_enter(&ztest_vdev_lock);
 			(void) vdev_online(spa, guid0, 0, NULL);
 			mutex_exit(&ztest_vdev_lock);
@@ -6222,68 +5519,25 @@ ztest_fault_inject(ztest_ds_t *zd, uint64_t id)
 	if (maxfaults == 0)
 		goto out;
 
-	/*
-	 * We have at least single-fault tolerance, so inject data corruption.
-	 */
+	 
 	fd = open(pathrand, O_RDWR);
 
-	if (fd == -1) /* we hit a gap in the device namespace */
+	if (fd == -1)  
 		goto out;
 
 	fsize = lseek(fd, 0, SEEK_END);
 
 	while (--iters != 0) {
-		/*
-		 * The offset must be chosen carefully to ensure that
-		 * we do not inject a given logical block with errors
-		 * on two different leaf devices, because ZFS can not
-		 * tolerate that (if maxfaults==1).
-		 *
-		 * To achieve this we divide each leaf device into
-		 * chunks of size (# leaves * SPA_MAXBLOCKSIZE * 4).
-		 * Each chunk is further divided into error-injection
-		 * ranges (can accept errors) and clear ranges (we do
-		 * not inject errors in those). Each error-injection
-		 * range can accept errors only for a single leaf vdev.
-		 * Error-injection ranges are separated by clear ranges.
-		 *
-		 * For example, with 3 leaves, each chunk looks like:
-		 *    0 to  32M: injection range for leaf 0
-		 *  32M to  64M: clear range - no injection allowed
-		 *  64M to  96M: injection range for leaf 1
-		 *  96M to 128M: clear range - no injection allowed
-		 * 128M to 160M: injection range for leaf 2
-		 * 160M to 192M: clear range - no injection allowed
-		 *
-		 * Each clear range must be large enough such that a
-		 * single block cannot straddle it. This way a block
-		 * can't be a target in two different injection ranges
-		 * (on different leaf vdevs).
-		 */
+		 
 		offset = ztest_random(fsize / (leaves << bshift)) *
 		    (leaves << bshift) + (leaf << bshift) +
 		    (ztest_random(1ULL << (bshift - 1)) & -8ULL);
 
-		/*
-		 * Only allow damage to the labels at one end of the vdev.
-		 *
-		 * If all labels are damaged, the device will be totally
-		 * inaccessible, which will result in loss of data,
-		 * because we also damage (parts of) the other side of
-		 * the mirror/raidz.
-		 *
-		 * Additionally, we will always have both an even and an
-		 * odd label, so that we can handle crashes in the
-		 * middle of vdev_config_sync().
-		 */
+		 
 		if ((leaf & 1) == 0 && offset < VDEV_LABEL_START_SIZE)
 			continue;
 
-		/*
-		 * The two end labels are stored at the "end" of the disk, but
-		 * the end of the disk (vdev_psize) is aligned to
-		 * sizeof (vdev_label_t).
-		 */
+		 
 		uint64_t psize = P2ALIGN(fsize, sizeof (vdev_label_t));
 		if ((leaf & 1) == 1 &&
 		    offset + sizeof (bad) > psize - VDEV_LABEL_END_SIZE)
@@ -6314,14 +5568,7 @@ out:
 	umem_free(pathrand, MAXPATHLEN);
 }
 
-/*
- * By design ztest will never inject uncorrectable damage in to the pool.
- * Issue a scrub, wait for it to complete, and verify there is never any
- * persistent damage.
- *
- * Only after a full scrub has been completed is it safe to start injecting
- * data corruption.  See the comment in zfs_fault_inject().
- */
+ 
 static int
 ztest_scrub_impl(spa_t *spa)
 {
@@ -6340,9 +5587,7 @@ ztest_scrub_impl(spa_t *spa)
 	return (0);
 }
 
-/*
- * Scrub the pool.
- */
+ 
 void
 ztest_scrub(ztest_ds_t *zd, uint64_t id)
 {
@@ -6350,15 +5595,11 @@ ztest_scrub(ztest_ds_t *zd, uint64_t id)
 	spa_t *spa = ztest_spa;
 	int error;
 
-	/*
-	 * Scrub in progress by device removal.
-	 */
+	 
 	if (ztest_device_removal_active)
 		return;
 
-	/*
-	 * Start a scrub, wait a moment, then force a restart.
-	 */
+	 
 	(void) spa_scan(spa, POOL_SCAN_SCRUB);
 	(void) poll(NULL, 0, 100);
 
@@ -6368,9 +5609,7 @@ ztest_scrub(ztest_ds_t *zd, uint64_t id)
 	ASSERT0(error);
 }
 
-/*
- * Change the guid for the pool.
- */
+ 
 void
 ztest_reguid(ztest_ds_t *zd, uint64_t id)
 {
@@ -6439,7 +5678,7 @@ ztest_blake3(ztest_ds_t *zd, uint64_t id)
 		void *res1 = &zc_res1;
 		void *res2 = &zc_res2;
 
-		/* BLAKE3_KEY_LEN = 32 */
+		 
 		VERIFY0(blake3->setname("generic"));
 		templ = abd_checksum_blake3_tmpl_init(&salt);
 		Blake3_InitKeyed(&ctx, salt_ptr);
@@ -6452,7 +5691,7 @@ ztest_blake3(ztest_ds_t *zd, uint64_t id)
 		VERIFY0(blake3->setname("cycle"));
 		while (run_count-- > 0) {
 
-			/* Test current implementation */
+			 
 			Blake3_InitKeyed(&ctx, salt_ptr);
 			Blake3_Update(&ctx, buf, size);
 			Blake3_Final(&ctx, res1);
@@ -6462,7 +5701,7 @@ ztest_blake3(ztest_ds_t *zd, uint64_t id)
 			VERIFY0(memcmp(ref1, res1, 32));
 			VERIFY0(memcmp(ref2, res2, 32));
 
-			/* Test ABD - data */
+			 
 			templ = abd_checksum_blake3_tmpl_init(&salt);
 			abd_checksum_blake3_native(abd_data, size,
 			    templ, &zc_res1);
@@ -6472,7 +5711,7 @@ ztest_blake3(ztest_ds_t *zd, uint64_t id)
 			VERIFY0(memcmp(ref1, res1, 32));
 			VERIFY0(memcmp(ref2, res2, 32));
 
-			/* Test ABD - metadata */
+			 
 			abd_checksum_blake3_native(abd_meta, size,
 			    templ, &zc_res1);
 			abd_checksum_blake3_byteswap(abd_meta, size,
@@ -6534,7 +5773,7 @@ ztest_fletcher(ztest_ds_t *zd, uint64_t id)
 			VERIFY0(memcmp(&zc_byteswap, &zc_ref_byteswap,
 			    sizeof (zc_byteswap)));
 
-			/* Test ABD - data */
+			 
 			abd_fletcher_4_byteswap(abd_data, size, NULL,
 			    &zc_byteswap);
 			abd_fletcher_4_native(abd_data, size, NULL, &zc);
@@ -6543,7 +5782,7 @@ ztest_fletcher(ztest_ds_t *zd, uint64_t id)
 			VERIFY0(memcmp(&zc_byteswap, &zc_ref_byteswap,
 			    sizeof (zc_byteswap)));
 
-			/* Test ABD - metadata */
+			 
 			abd_fletcher_4_byteswap(abd_meta, size, NULL,
 			    &zc_byteswap);
 			abd_fletcher_4_native(abd_meta, size, NULL, &zc);
@@ -6598,7 +5837,7 @@ ztest_fletcher_incr(ztest_ds_t *zd, uint64_t id)
 
 			while (pos < size) {
 				size_t inc = 64 * ztest_random(size / 67);
-				/* sometimes add few bytes to test non-simd */
+				 
 				if (ztest_random(100) < 10)
 					inc += P2ALIGN(ztest_random(64),
 					    sizeof (uint32_t));
@@ -6619,10 +5858,7 @@ ztest_fletcher_incr(ztest_ds_t *zd, uint64_t id)
 			VERIFY(ZIO_CHECKSUM_EQUAL(zc, zc_ref));
 			VERIFY(ZIO_CHECKSUM_EQUAL(zc_bswap, zc_ref_bswap));
 
-			/*
-			 * verify if incremental on the whole buffer is
-			 * equivalent to non-incremental version
-			 */
+			 
 			ZIO_SET_CHECKSUM(&zc, 0, 0, 0, 0);
 			ZIO_SET_CHECKSUM(&zc_bswap, 0, 0, 0, 0);
 
@@ -6674,7 +5910,7 @@ ztest_global_vars_to_zdb_args(void)
 	return (args);
 }
 
-/* The end of strings is indicated by a NULL element */
+ 
 static char *
 join_strings(char **strings, const char *sep)
 {
@@ -6689,7 +5925,7 @@ join_strings(char **strings, const char *sep)
 	}
 
 	size_t buflen = totallen + 1;
-	char *o = umem_alloc(buflen, UMEM_NOFAIL); /* trailing 0 byte */
+	char *o = umem_alloc(buflen, UMEM_NOFAIL);  
 	o[0] = '\0';
 	for (char **sp = strings; *sp != NULL; sp++) {
 		size_t would;
@@ -6709,7 +5945,7 @@ static int
 ztest_check_path(char *path)
 {
 	struct stat s;
-	/* return true on success */
+	 
 	return (!stat(path, &s));
 }
 
@@ -6717,12 +5953,9 @@ static void
 ztest_get_zdb_bin(char *bin, int len)
 {
 	char *zdb_path;
-	/*
-	 * Try to use $ZDB and in-tree zdb path. If not successful, just
-	 * let popen to search through PATH.
-	 */
+	 
 	if ((zdb_path = getenv("ZDB"))) {
-		strlcpy(bin, zdb_path, len); /* In env */
+		strlcpy(bin, zdb_path, len);  
 		if (!ztest_check_path(bin)) {
 			ztest_dump_core = 0;
 			fatal(B_TRUE, "invalid ZDB '%s'", bin);
@@ -6732,7 +5965,7 @@ ztest_get_zdb_bin(char *bin, int len)
 
 	VERIFY3P(realpath(getexecname(), bin), !=, NULL);
 	if (strstr(bin, ".libs/ztest")) {
-		strstr(bin, ".libs/ztest")[0] = '\0'; /* In-tree */
+		strstr(bin, ".libs/ztest")[0] = '\0';  
 		strcat(bin, "zdb");
 		if (ztest_check_path(bin))
 			return;
@@ -6777,7 +6010,7 @@ ztest_initialize(ztest_ds_t *zd, uint64_t id)
 
 	spa_config_enter(spa, SCL_VDEV, FTAG, RW_READER);
 
-	/* Random leaf vdev */
+	 
 	vdev_t *rand_vd = ztest_random_concrete_vdev_leaf(spa->spa_root_vdev);
 	if (rand_vd == NULL) {
 		spa_config_exit(spa, SCL_VDEV, FTAG);
@@ -6785,11 +6018,7 @@ ztest_initialize(ztest_ds_t *zd, uint64_t id)
 		return;
 	}
 
-	/*
-	 * The random vdev we've selected may change as soon as we
-	 * drop the spa_config_lock. We create local copies of things
-	 * we're interested in.
-	 */
+	 
 	uint64_t guid = rand_vd->vdev_guid;
 	char *path = strdup(rand_vd->vdev_path);
 	boolean_t active = rand_vd->vdev_initialize_thread != NULL;
@@ -6849,7 +6078,7 @@ ztest_trim(ztest_ds_t *zd, uint64_t id)
 
 	spa_config_enter(spa, SCL_VDEV, FTAG, RW_READER);
 
-	/* Random leaf vdev */
+	 
 	vdev_t *rand_vd = ztest_random_concrete_vdev_leaf(spa->spa_root_vdev);
 	if (rand_vd == NULL) {
 		spa_config_exit(spa, SCL_VDEV, FTAG);
@@ -6857,11 +6086,7 @@ ztest_trim(ztest_ds_t *zd, uint64_t id)
 		return;
 	}
 
-	/*
-	 * The random vdev we've selected may change as soon as we
-	 * drop the spa_config_lock. We create local copies of things
-	 * we're interested in.
-	 */
+	 
 	uint64_t guid = rand_vd->vdev_guid;
 	char *path = strdup(rand_vd->vdev_path);
 	boolean_t active = rand_vd->vdev_trim_thread != NULL;
@@ -6914,9 +6139,7 @@ ztest_trim(ztest_ds_t *zd, uint64_t id)
 	mutex_exit(&ztest_vdev_lock);
 }
 
-/*
- * Verify pool integrity by running zdb.
- */
+ 
 static void
 ztest_run_zdb(uint64_t guid)
 {
@@ -7007,19 +6230,13 @@ ztest_spa_import_export(char *oldname, char *newname)
 		    oldname, newname);
 	}
 
-	/*
-	 * Clean up from previous runs.
-	 */
+	 
 	(void) spa_destroy(newname);
 
-	/*
-	 * Get the pool's configuration and guid.
-	 */
+	 
 	VERIFY0(spa_open(oldname, &spa, FTAG));
 
-	/*
-	 * Kick off a scrub to tickle scrub/export races.
-	 */
+	 
 	if (ztest_random(2) == 0)
 		(void) spa_scan(spa, POOL_SCAN_SCRUB);
 
@@ -7028,23 +6245,17 @@ ztest_spa_import_export(char *oldname, char *newname)
 
 	ztest_walk_pool_directory("pools before export");
 
-	/*
-	 * Export it.
-	 */
+	 
 	VERIFY0(spa_export(oldname, &config, B_FALSE, B_FALSE));
 
 	ztest_walk_pool_directory("pools after export");
 
-	/*
-	 * Try to import it.
-	 */
+	 
 	newconfig = spa_tryimport(config);
 	ASSERT3P(newconfig, !=, NULL);
 	fnvlist_free(newconfig);
 
-	/*
-	 * Import it under the new name.
-	 */
+	 
 	error = spa_import(newname, config, NULL, 0);
 	if (error != 0) {
 		dump_nvlist(config, 0);
@@ -7054,24 +6265,16 @@ ztest_spa_import_export(char *oldname, char *newname)
 
 	ztest_walk_pool_directory("pools after import");
 
-	/*
-	 * Try to import it again -- should fail with EEXIST.
-	 */
+	 
 	VERIFY3U(EEXIST, ==, spa_import(newname, config, NULL, 0));
 
-	/*
-	 * Try to import it under a different name -- should fail with EEXIST.
-	 */
+	 
 	VERIFY3U(EEXIST, ==, spa_import(oldname, config, NULL, 0));
 
-	/*
-	 * Verify that the pool is no longer visible under the old name.
-	 */
+	 
 	VERIFY3U(ENOENT, ==, spa_open(oldname, &spa, FTAG));
 
-	/*
-	 * Verify that we can open and close the pool using the new name.
-	 */
+	 
 	VERIFY0(spa_open(newname, &spa, FTAG));
 	ASSERT3U(pool_guid, ==, spa_guid(spa));
 	spa_close(spa, FTAG);
@@ -7100,15 +6303,11 @@ ztest_resume_thread(void *arg)
 			ztest_resume(spa);
 		(void) poll(NULL, 0, 100);
 
-		/*
-		 * Periodically change the zfs_compressed_arc_enabled setting.
-		 */
+		 
 		if (ztest_random(10) == 0)
 			zfs_compressed_arc_enabled = ztest_random(2);
 
-		/*
-		 * Periodically change the zfs_abd_scatter_enabled setting.
-		 */
+		 
 		if (ztest_random(10) == 0)
 			zfs_abd_scatter_enabled = ztest_random(2);
 	}
@@ -7127,21 +6326,13 @@ ztest_deadman_thread(void *arg)
 	    MSEC2NSEC(zfs_deadman_synctime_ms);
 
 	while (!ztest_exiting) {
-		/*
-		 * Wait for the delay timer while checking occasionally
-		 * if we should stop.
-		 */
+		 
 		if (gethrtime() < last_run + delay) {
 			(void) poll(NULL, 0, 1000);
 			continue;
 		}
 
-		/*
-		 * If the pool is suspended then fail immediately. Otherwise,
-		 * check to see if the pool is making any progress. If
-		 * vdev_deadman() discovers that there hasn't been any recent
-		 * I/Os then it will end up aborting the tests.
-		 */
+		 
 		if (spa_suspended(spa) || spa->spa_root_vdev == NULL) {
 			fatal(B_FALSE,
 			    "aborting test after %llu seconds because "
@@ -7150,11 +6341,7 @@ ztest_deadman_thread(void *arg)
 		}
 		vdev_deadman(spa->spa_root_vdev, FTAG);
 
-		/*
-		 * If the process doesn't complete within a grace period of
-		 * zfs_deadman_synctime_ms over the expected finish time,
-		 * then it may be hung and is terminated.
-		 */
+		 
 		overdue = zs->zs_proc_stop + MSEC2NSEC(zfs_deadman_synctime_ms);
 		if (gethrtime() > overdue) {
 			fatal(B_FALSE,
@@ -7206,21 +6393,15 @@ ztest_thread(void *arg)
 	ztest_shared_callstate_t *zc;
 
 	while ((now = gethrtime()) < zs->zs_thread_stop) {
-		/*
-		 * See if it's time to force a crash.
-		 */
+		 
 		if (now > zs->zs_thread_kill)
 			ztest_kill(zs);
 
-		/*
-		 * If we're getting ENOSPC with some regularity, stop.
-		 */
+		 
 		if (zs->zs_enospc_count > 10)
 			break;
 
-		/*
-		 * Pick a random function to execute.
-		 */
+		 
 		rand = ztest_random(ZTEST_FUNCS);
 		zi = &ztest_info[rand];
 		zc = ZTEST_GET_SHARED_CALLSTATE(rand);
@@ -7253,11 +6434,7 @@ ztest_dataset_destroy(int d)
 	if (ztest_opts.zo_verbose >= 3)
 		(void) printf("Destroying %s to free up space\n", name);
 
-	/*
-	 * Cleanup any non-standard clones and snapshots.  In general,
-	 * ztest thread t operates on dataset (t % zopt_datasets),
-	 * so there may be more than one thing to clean up.
-	 */
+	 
 	for (t = d; t < ztest_opts.zo_threads;
 	    t += ztest_opts.zo_datasets)
 		ztest_dsl_dataset_cleanup(name, t);
@@ -7271,17 +6448,7 @@ ztest_dataset_dirobj_verify(ztest_ds_t *zd)
 {
 	uint64_t usedobjs, dirobjs, scratch;
 
-	/*
-	 * ZTEST_DIROBJ is the object directory for the entire dataset.
-	 * Therefore, the number of objects in use should equal the
-	 * number of ZTEST_DIROBJ entries, +1 for ZTEST_DIROBJ itself.
-	 * If not, we have an object leak.
-	 *
-	 * Note that we can only check this in ztest_dataset_open(),
-	 * when the open-context and syncing-context values agree.
-	 * That's because zap_count() returns the open-context value,
-	 * while dmu_objset_space() returns the rootbp fill count.
-	 */
+	 
 	VERIFY0(zap_count(zd->zd_os, ZTEST_DIROBJ, &dirobjs));
 	dmu_objset_space(zd->zd_os, &scratch, &scratch, &usedobjs, &scratch);
 	ASSERT3U(dirobjs + 1, ==, usedobjs);
@@ -7408,11 +6575,7 @@ ztest_freeze(void)
 	VERIFY0(ztest_dataset_open(0));
 	ztest_spa = spa;
 
-	/*
-	 * Force the first log block to be transactionally allocated.
-	 * We have to do this before we freeze the pool -- otherwise
-	 * the log chain won't be anchored.
-	 */
+	 
 	while (BP_IS_HOLE(&zd->zd_zilog->zl_header->zh_log)) {
 		ztest_dmu_object_alloc_free(zd, 0);
 		zil_commit(zd->zd_zilog, 0);
@@ -7420,29 +6583,13 @@ ztest_freeze(void)
 
 	txg_wait_synced(spa_get_dsl(spa), 0);
 
-	/*
-	 * Freeze the pool.  This stops spa_sync() from doing anything,
-	 * so that the only way to record changes from now on is the ZIL.
-	 */
+	 
 	spa_freeze(spa);
 
-	/*
-	 * Because it is hard to predict how much space a write will actually
-	 * require beforehand, we leave ourselves some fudge space to write over
-	 * capacity.
-	 */
+	 
 	uint64_t capacity = metaslab_class_get_space(spa_normal_class(spa)) / 2;
 
-	/*
-	 * Run tests that generate log records but don't alter the pool config
-	 * or depend on DSL sync tasks (snapshots, objset create/destroy, etc).
-	 * We do a txg_wait_synced() after each iteration to force the txg
-	 * to increase well beyond the last synced value in the uberblock.
-	 * The ZIL should be OK with that.
-	 *
-	 * Run a random number of times less than zo_maxloops and ensure we do
-	 * not run out of space on the pool.
-	 */
+	 
 	while (ztest_random(10) != 0 &&
 	    numloops++ < ztest_opts.zo_maxloops &&
 	    metaslab_class_get_alloc(spa_normal_class(spa)) < capacity) {
@@ -7454,22 +6601,16 @@ ztest_freeze(void)
 		txg_wait_synced(spa_get_dsl(spa), 0);
 	}
 
-	/*
-	 * Commit all of the changes we just generated.
-	 */
+	 
 	zil_commit(zd->zd_zilog, 0);
 	txg_wait_synced(spa_get_dsl(spa), 0);
 
-	/*
-	 * Close our dataset and close the pool.
-	 */
+	 
 	ztest_dataset_close(0);
 	spa_close(spa, FTAG);
 	kernel_fini();
 
-	/*
-	 * Open and close the pool and dataset to induce log replay.
-	 */
+	 
 	kernel_init(SPA_MODE_READ | SPA_MODE_WRITE);
 	VERIFY0(spa_open(ztest_opts.zo_pool, &spa, FTAG));
 	ASSERT3U(spa_freeze_txg(spa), ==, UINT64_MAX);
@@ -7507,9 +6648,7 @@ ztest_import_impl(void)
 	fnvlist_free(cfg);
 }
 
-/*
- * Import a storage pool with the given name.
- */
+ 
 static void
 ztest_import(ztest_shared_t *zs)
 {
@@ -7542,9 +6681,7 @@ ztest_import(ztest_shared_t *zs)
 	mutex_destroy(&ztest_checkpoint_lock);
 }
 
-/*
- * Kick off threads to run tests on all datasets in parallel.
- */
+ 
 static void
 ztest_run(ztest_shared_t *zs)
 {
@@ -7558,9 +6695,7 @@ ztest_run(ztest_shared_t *zs)
 
 	ztest_exiting = B_FALSE;
 
-	/*
-	 * Initialize parent/child shared state.
-	 */
+	 
 	mutex_init(&ztest_vdev_lock, NULL, MUTEX_DEFAULT, NULL);
 	mutex_init(&ztest_checkpoint_lock, NULL, MUTEX_DEFAULT, NULL);
 	VERIFY0(pthread_rwlock_init(&ztest_name_lock, NULL));
@@ -7580,10 +6715,7 @@ ztest_run(ztest_shared_t *zs)
 	list_create(&zcl.zcl_callbacks, sizeof (ztest_cb_data_t),
 	    offsetof(ztest_cb_data_t, zcd_node));
 
-	/*
-	 * Open our pool.  It may need to be imported first depending on
-	 * what tests were running when the previous pass was terminated.
-	 */
+	 
 	kernel_init(SPA_MODE_READ | SPA_MODE_WRITE);
 	error = spa_open(ztest_opts.zo_pool, &spa, FTAG);
 	if (error) {
@@ -7607,26 +6739,17 @@ ztest_run(ztest_shared_t *zs)
 	dsl_pool_config_exit(dmu_objset_pool(os), FTAG);
 	dmu_objset_disown(os, B_TRUE, FTAG);
 
-	/*
-	 * Create a thread to periodically resume suspended I/O.
-	 */
+	 
 	resume_thread = thread_create(NULL, 0, ztest_resume_thread,
 	    spa, 0, NULL, TS_RUN | TS_JOINABLE, defclsyspri);
 
-	/*
-	 * Create a deadman thread and set to panic if we hang.
-	 */
+	 
 	deadman_thread = thread_create(NULL, 0, ztest_deadman_thread,
 	    zs, 0, NULL, TS_RUN | TS_JOINABLE, defclsyspri);
 
 	spa->spa_deadman_failmode = ZIO_FAILURE_MODE_PANIC;
 
-	/*
-	 * Verify that we can safely inquire about any object,
-	 * whether it's allocated or not.  To make it interesting,
-	 * we probe a 5-wide window around each power of two.
-	 * This hits all edge cases, including zero and the max.
-	 */
+	 
 	for (t = 0; t < 64; t++) {
 		for (d = -5; d <= 5; d++) {
 			error = dmu_object_info(spa->spa_meta_objset,
@@ -7636,25 +6759,14 @@ ztest_run(ztest_shared_t *zs)
 		}
 	}
 
-	/*
-	 * If we got any ENOSPC errors on the previous run, destroy something.
-	 */
+	 
 	if (zs->zs_enospc_count != 0) {
 		int d = ztest_random(ztest_opts.zo_datasets);
 		ztest_dataset_destroy(d);
 	}
 	zs->zs_enospc_count = 0;
 
-	/*
-	 * If we were in the middle of ztest_device_removal() and were killed
-	 * we need to ensure the removal and scrub complete before running
-	 * any tests that check ztest_device_removal_active. The removal will
-	 * be restarted automatically when the spa is opened, but we need to
-	 * initiate the scrub manually if it is not already in progress. Note
-	 * that we always run the scrub whenever an indirect vdev exists
-	 * because we have no way of knowing for sure if ztest_device_removal()
-	 * fully completed its scrub before the pool was reimported.
-	 */
+	 
 	if (spa->spa_removing_phys.sr_state == DSS_SCANNING ||
 	    spa->spa_removing_phys.sr_prev_indirect_vdev != -1) {
 		while (spa->spa_removing_phys.sr_state == DSS_SCANNING)
@@ -7672,18 +6784,11 @@ ztest_run(ztest_shared_t *zs)
 	if (ztest_opts.zo_verbose >= 4)
 		(void) printf("starting main threads...\n");
 
-	/*
-	 * Replay all logs of all datasets in the pool. This is primarily for
-	 * temporary datasets which wouldn't otherwise get replayed, which
-	 * can trigger failures when attempting to offline a SLOG in
-	 * ztest_fault_inject().
-	 */
+	 
 	(void) dmu_objset_find(ztest_opts.zo_pool, ztest_replay_zil_cb,
 	    NULL, DS_FIND_CHILDREN);
 
-	/*
-	 * Kick off all the tests that run in parallel.
-	 */
+	 
 	for (t = 0; t < ztest_opts.zo_threads; t++) {
 		if (t < ztest_opts.zo_datasets && ztest_dataset_open(t) != 0) {
 			umem_free(run_threads, ztest_opts.zo_threads *
@@ -7696,17 +6801,11 @@ ztest_run(ztest_shared_t *zs)
 		    defclsyspri);
 	}
 
-	/*
-	 * Wait for all of the tests to complete.
-	 */
+	 
 	for (t = 0; t < ztest_opts.zo_threads; t++)
 		VERIFY0(thread_join(run_threads[t]));
 
-	/*
-	 * Close all datasets. This must be done after all the threads
-	 * are joined so we can be sure none of the datasets are in-use
-	 * by any of the threads.
-	 */
+	 
 	for (t = 0; t < ztest_opts.zo_threads; t++) {
 		if (t < ztest_opts.zo_datasets)
 			ztest_dataset_close(t);
@@ -7719,40 +6818,32 @@ ztest_run(ztest_shared_t *zs)
 
 	umem_free(run_threads, ztest_opts.zo_threads * sizeof (kthread_t *));
 
-	/* Kill the resume and deadman threads */
+	 
 	ztest_exiting = B_TRUE;
 	VERIFY0(thread_join(resume_thread));
 	VERIFY0(thread_join(deadman_thread));
 	ztest_resume(spa);
 
-	/*
-	 * Right before closing the pool, kick off a bunch of async I/O;
-	 * spa_close() should wait for it to complete.
-	 */
+	 
 	for (object = 1; object < 50; object++) {
 		dmu_prefetch(spa->spa_meta_objset, object, 0, 0, 1ULL << 20,
 		    ZIO_PRIORITY_SYNC_READ);
 	}
 
-	/* Verify that at least one commit cb was called in a timely fashion */
+	 
 	if (zc_cb_counter >= ZTEST_COMMIT_CB_MIN_REG)
 		VERIFY0(zc_min_txg_delay);
 
 	spa_close(spa, FTAG);
 
-	/*
-	 * Verify that we can loop over all pools.
-	 */
+	 
 	mutex_enter(&spa_namespace_lock);
 	for (spa = spa_next(NULL); spa != NULL; spa = spa_next(spa))
 		if (ztest_opts.zo_verbose > 3)
 			(void) printf("spa_next: found %s\n", spa_name(spa));
 	mutex_exit(&spa_namespace_lock);
 
-	/*
-	 * Verify that we can export the pool and reimport it under a
-	 * different name.
-	 */
+	 
 	if ((ztest_random(2) == 0) && !ztest_opts.zo_mmp_test) {
 		char name[ZFS_MAX_DATASET_NAME_LEN];
 		(void) snprintf(name, sizeof (name), "%s_import",
@@ -7811,10 +6902,7 @@ make_random_props(void)
 	return (props);
 }
 
-/*
- * Create a storage pool with the given name and initial vdev size.
- * Then test spa_freeze() functionality.
- */
+ 
 static void
 ztest_init(ztest_shared_t *zs)
 {
@@ -7828,9 +6916,7 @@ ztest_init(ztest_shared_t *zs)
 
 	kernel_init(SPA_MODE_READ | SPA_MODE_WRITE);
 
-	/*
-	 * Create the storage pool.
-	 */
+	 
 	(void) spa_destroy(ztest_opts.zo_pool);
 	ztest_shared->zs_vdev_next_leaf = 0;
 	zs->zs_splits = 0;
@@ -7839,11 +6925,7 @@ ztest_init(ztest_shared_t *zs)
 	    NULL, ztest_opts.zo_raid_children, zs->zs_mirrors, 1);
 	props = make_random_props();
 
-	/*
-	 * We don't expect the pool to suspend unless maxfaults == 0,
-	 * in which case ztest_fault_inject() temporarily takes away
-	 * the only valid replica.
-	 */
+	 
 	fnvlist_add_uint64(props,
 	    zpool_prop_to_name(ZPOOL_PROP_FAILUREMODE),
 	    MAXFAULTS(zs) ? ZIO_FAILURE_MODE_PANIC : ZIO_FAILURE_MODE_WAIT);
@@ -7854,11 +6936,7 @@ ztest_init(ztest_shared_t *zs)
 		if (!spa_feature_table[i].fi_zfs_mod_supported)
 			continue;
 
-		/*
-		 * 75% chance of using the log space map feature. We want ztest
-		 * to exercise both the code paths that use the log space map
-		 * feature and the ones that don't.
-		 */
+		 
 		if (i == SPA_FEATURE_LOG_SPACEMAP && ztest_random(4) == 0)
 			continue;
 
@@ -7988,7 +7066,7 @@ exec_child(char *cmd, char *libpath, boolean_t ignorekill, int *statusp)
 	if (pid == -1)
 		fatal(B_TRUE, "fork failed");
 
-	if (pid == 0) {	/* child */
+	if (pid == 0) {	 
 		char fd_data_str[12];
 
 		VERIFY3S(11, >=,
@@ -8049,9 +7127,7 @@ ztest_run_init(void)
 
 	ztest_shared_t *zs = ztest_shared;
 
-	/*
-	 * Blow away any existing copy of zpool.cache
-	 */
+	 
 	(void) remove(spa_config_path);
 
 	if (ztest_opts.zo_init == 0) {
@@ -8062,9 +7138,7 @@ ztest_run_init(void)
 		return;
 	}
 
-	/*
-	 * Create and initialize our storage pool.
-	 */
+	 
 	for (i = 1; i <= ztest_opts.zo_init; i++) {
 		memset(zs, 0, sizeof (*zs));
 		if (ztest_opts.zo_verbose >= 3 &&
@@ -8098,23 +7172,10 @@ main(int argc, char **argv)
 	dprintf_setup(&argc, argv);
 	zfs_deadman_synctime_ms = 300000;
 	zfs_deadman_checktime_ms = 30000;
-	/*
-	 * As two-word space map entries may not come up often (especially
-	 * if pool and vdev sizes are small) we want to force at least some
-	 * of them so the feature get tested.
-	 */
+	 
 	zfs_force_some_double_word_sm_entries = B_TRUE;
 
-	/*
-	 * Verify that even extensively damaged split blocks with many
-	 * segments can be reconstructed in a reasonable amount of time
-	 * when reconstruction is known to be possible.
-	 *
-	 * Note: the lower this value is, the more damage we inflict, and
-	 * the more time ztest spends in recovering that damage. We chose
-	 * to induce damage 1/100th of the time so recovery is tested but
-	 * not so frequently that ztest doesn't get to test other code paths.
-	 */
+	 
 	zfs_reconstruct_indirect_damage_fraction = 100;
 
 	action.sa_handler = sig_handler;
@@ -8133,10 +7194,7 @@ main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	/*
-	 * Force random_get_bytes() to use /dev/urandom in order to prevent
-	 * ztest from needlessly depleting the system entropy pool.
-	 */
+	 
 	random_path = "/dev/urandom";
 	ztest_fd_rand = open(random_path, O_RDONLY | O_CLOEXEC);
 	ASSERT3S(ztest_fd_rand, >=, 0);
@@ -8158,14 +7216,14 @@ main(int argc, char **argv)
 
 	err = ztest_set_global_vars();
 	if (err != 0 && !fd_data_str) {
-		/* error message done by ztest_set_global_vars */
+		 
 		exit(EXIT_FAILURE);
 	} else {
-		/* children should not be spawned if setting gvars fails */
+		 
 		VERIFY3S(err, ==, 0);
 	}
 
-	/* Override location of zpool.cache */
+	 
 	VERIFY3S(asprintf((char **)&spa_config_path, "%s/zpool.cache",
 	    ztest_opts.zo_dir), !=, -1);
 
@@ -8227,25 +7285,19 @@ main(int argc, char **argv)
 			    ztest_random(2 * zi->zi_interval[0] + 1);
 	}
 
-	/*
-	 * Run the tests in a loop.  These tests include fault injection
-	 * to verify that self-healing data works, and forced crashes
-	 * to verify that we never lose on-disk consistency.
-	 */
+	 
 	while (gethrtime() < zs->zs_proc_stop) {
 		int status;
 		boolean_t killed;
 
-		/*
-		 * Initialize the workload counters for each function.
-		 */
+		 
 		for (f = 0; f < ZTEST_FUNCS; f++) {
 			zc = ZTEST_GET_SHARED_CALLSTATE(f);
 			zc->zc_count = 0;
 			zc->zc_time = 0;
 		}
 
-		/* Set the allocation switch size */
+		 
 		zs->zs_metaslab_df_alloc_threshold =
 		    ztest_random(zs->zs_metaslab_sz / 4) + 1;
 

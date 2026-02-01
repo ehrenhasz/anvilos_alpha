@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * phy-brcm-usb.c - Broadcom USB Phy Driver
- *
- * Copyright (C) 2015-2017 Broadcom
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -66,7 +62,7 @@ struct brcm_usb_phy_data {
 	struct clk		*usb_20_clk;
 	struct clk		*usb_30_clk;
 	struct clk		*suspend_clk;
-	struct mutex		mutex;	/* serialize phy init */
+	struct mutex		mutex;	 
 	int			init_count;
 	int			wake_irq;
 	struct brcm_usb_phy	phys[BRCM_USB_PHY_ID_MAX];
@@ -117,10 +113,7 @@ static int brcm_usb_phy_init(struct phy *gphy)
 	if (priv->pm_active)
 		return 0;
 
-	/*
-	 * Use a lock to make sure a second caller waits until
-	 * the base phy is inited before using it.
-	 */
+	 
 	mutex_lock(&priv->mutex);
 	if (priv->init_count++ == 0) {
 		clk_prepare_enable(priv->usb_20_clk);
@@ -155,7 +148,7 @@ static int brcm_usb_phy_exit(struct phy *gphy)
 	if (phy->id == BRCM_USB_PHY_3_0)
 		brcm_usb_uninit_xhci(&priv->ini);
 
-	/* If both xhci and eohci are gone, reset everything else */
+	 
 	mutex_lock(&priv->mutex);
 	if (--priv->init_count == 0) {
 		brcm_usb_uninit_common(&priv->ini);
@@ -179,10 +172,7 @@ static struct phy *brcm_usb_phy_xlate(struct device *dev,
 {
 	struct brcm_usb_phy_data *data = dev_get_drvdata(dev);
 
-	/*
-	 * values 0 and 1 are for backward compatibility with
-	 * device tree nodes from older bootloaders.
-	 */
+	 
 	switch (args->args[0]) {
 	case 0:
 	case PHY_TYPE_USB2:
@@ -341,7 +331,7 @@ static const struct of_device_id brcm_usb_dt_ids[] = {
 		.compatible = "brcm,brcmstb-usb-phy",
 		.data = &chip_info_7445,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static int brcm_usb_get_regs(struct platform_device *pdev,
@@ -351,7 +341,7 @@ static int brcm_usb_get_regs(struct platform_device *pdev,
 {
 	struct resource *res;
 
-	/* Older DT nodes have ctrl and optional xhci_ec by index only */
+	 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
 						node_reg_names[regs]);
 	if (res == NULL) {
@@ -359,7 +349,7 @@ static int brcm_usb_get_regs(struct platform_device *pdev,
 			res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 		} else if (regs == BRCM_REGS_XHCI_EC) {
 			res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
-			/* XHCI_EC registers are optional */
+			 
 			if (res == NULL)
 				return 0;
 		}
@@ -502,7 +492,7 @@ static int brcm_usb_phy_probe(struct platform_device *pdev)
 			      ARRAY_SIZE(brcm_dr_mode_to_name),
 			mode, &priv->ini.supported_port_modes);
 	}
-	/* Default port_mode to supported port_modes */
+	 
 	priv->ini.port_mode = priv->ini.supported_port_modes;
 
 	if (of_property_read_bool(dn, "brcm,has-xhci"))
@@ -535,20 +525,17 @@ static int brcm_usb_phy_probe(struct platform_device *pdev)
 
 	mutex_init(&priv->mutex);
 
-	/* make sure invert settings are correct */
+	 
 	brcm_usb_init_ipp(&priv->ini);
 
-	/*
-	 * Create sysfs entries for mode.
-	 * Remove "dual_select" attribute if not in dual mode
-	 */
+	 
 	if (priv->ini.supported_port_modes != USB_CTLR_MODE_DRD)
 		brcm_usb_phy_attrs[1] = NULL;
 	err = sysfs_create_group(&dev->kobj, &brcm_usb_phy_group);
 	if (err)
 		dev_warn(dev, "Error creating sysfs attributes\n");
 
-	/* Get piarbctl syscon if it exists */
+	 
 	rmap = syscon_regmap_lookup_by_phandle(dev->of_node,
 						 "syscon-piarbctl");
 	if (IS_ERR(rmap))
@@ -557,7 +544,7 @@ static int brcm_usb_phy_probe(struct platform_device *pdev)
 	if (!IS_ERR(rmap))
 		priv->ini.syscon_piarbctl = rmap;
 
-	/* start with everything off */
+	 
 	if (priv->has_xhci)
 		brcm_usb_uninit_xhci(&priv->ini);
 	if (priv->has_eohci)
@@ -593,11 +580,7 @@ static int brcm_usb_phy_suspend(struct device *dev)
 			brcm_usb_uninit_eohci(&priv->ini);
 		brcm_usb_uninit_common(&priv->ini);
 
-		/*
-		 * Handle the clocks unless needed for wake. This has
-		 * to work for both older XHCI->3.0-clks, EOHCI->2.0-clks
-		 * and newer XHCI->2.0-clks/3.0-clks.
-		 */
+		 
 
 		if (!priv->ini.wake_enabled) {
 			if (priv->phys[BRCM_USB_PHY_3_0].inited)
@@ -622,10 +605,7 @@ static int brcm_usb_phy_resume(struct device *dev)
 	}
 	brcm_usb_init_ipp(&priv->ini);
 
-	/*
-	 * Initialize anything that was previously initialized.
-	 * Uninitialize anything that wasn't previously initialized.
-	 */
+	 
 	if (priv->init_count) {
 		dev_dbg(dev, "RESUME\n");
 		if (priv->wake_irq >= 0)
@@ -657,7 +637,7 @@ static int brcm_usb_phy_resume(struct device *dev)
 	priv->ini.wake_enabled = false;
 	return 0;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct dev_pm_ops brcm_usb_phy_pm_ops = {
 	SET_LATE_SYSTEM_SLEEP_PM_OPS(brcm_usb_phy_suspend, brcm_usb_phy_resume)

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2020 Intel Corporation. */
+
+ 
 #include <linux/device.h>
 #include <linux/slab.h>
 #include <linux/idr.h>
@@ -7,19 +7,7 @@
 #include <cxl.h>
 #include "core.h"
 
-/**
- * DOC: cxl pmem
- *
- * The core CXL PMEM infrastructure supports persistent memory
- * provisioning and serves as a bridge to the LIBNVDIMM subsystem. A CXL
- * 'bridge' device is added at the root of a CXL device topology if
- * platform firmware advertises at least one persistent memory capable
- * CXL window. That root-level bridge corresponds to a LIBNVDIMM 'bus'
- * device. Then for each cxl_memdev in the CXL device topology a bridge
- * device is added to host a LIBNVDIMM dimm object. When these bridges
- * are registered native LIBNVDIMM uapis are translated to CXL
- * operations, for example, namespace label access commands.
- */
+ 
 
 static DEFINE_IDA(cxl_nvdimm_bridge_ida);
 
@@ -120,13 +108,7 @@ static void unregister_nvb(void *_cxl_nvb)
 	device_unregister(&cxl_nvb->dev);
 }
 
-/**
- * devm_cxl_add_nvdimm_bridge() - add the root of a LIBNVDIMM topology
- * @host: platform firmware root device
- * @port: CXL port at the root of a CXL topology
- *
- * Return: bridge device that can host cxl_nvdimm objects
- */
+ 
 struct cxl_nvdimm_bridge *devm_cxl_add_nvdimm_bridge(struct device *host,
 						     struct cxl_port *port)
 {
@@ -216,10 +198,7 @@ static struct cxl_nvdimm *cxl_nvdimm_alloc(struct cxl_nvdimm_bridge *cxl_nvb,
 	dev->parent = &cxlmd->dev;
 	dev->bus = &cxl_bus_type;
 	dev->type = &cxl_nvdimm_type;
-	/*
-	 * A "%llx" string is 17-bytes vs dimm_id that is max
-	 * NVDIMM_KEY_DESC_LEN
-	 */
+	 
 	BUILD_BUG_ON(sizeof(cxl_nvd->dev_id) < 17 ||
 		     sizeof(cxl_nvd->dev_id) > NVDIMM_KEY_DESC_LEN);
 	sprintf(cxl_nvd->dev_id, "%llx", cxlmd->cxlds->serial);
@@ -240,12 +219,7 @@ static void cxlmd_release_nvdimm(void *_cxlmd)
 	put_device(&cxl_nvb->dev);
 }
 
-/**
- * devm_cxl_add_nvdimm() - add a bridge between a cxl_memdev and an nvdimm
- * @cxlmd: cxl_memdev instance that will perform LIBNVDIMM operations
- *
- * Return: 0 on success negative error code on failure.
- */
+ 
 int devm_cxl_add_nvdimm(struct cxl_memdev *cxlmd)
 {
 	struct cxl_nvdimm_bridge *cxl_nvb;
@@ -275,7 +249,7 @@ int devm_cxl_add_nvdimm(struct cxl_memdev *cxlmd)
 
 	dev_dbg(&cxlmd->dev, "register %s\n", dev_name(dev));
 
-	/* @cxlmd carries a reference on @cxl_nvb until cxlmd_release_nvdimm */
+	 
 	return devm_add_action_or_reset(&cxlmd->dev, cxlmd_release_nvdimm, cxlmd);
 
 err:

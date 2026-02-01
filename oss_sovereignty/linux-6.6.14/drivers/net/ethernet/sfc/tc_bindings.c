@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2022 Xilinx Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
- */
+
+ 
 
 #include "tc_bindings.h"
 #include "tc.h"
@@ -16,7 +9,7 @@ struct efx_tc_block_binding {
 	struct list_head list;
 	struct efx_nic *efx;
 	struct efx_rep *efv;
-	struct net_device *otherdev; /* may actually be us */
+	struct net_device *otherdev;  
 	struct flow_block *block;
 };
 
@@ -120,11 +113,7 @@ int efx_tc_setup_block(struct net_device *net_dev, struct efx_nic *efx,
 				return 0;
 			}
 		}
-		/* If we're in driver teardown, then we expect to have
-		 * already unbound all our blocks (we did it early while
-		 * we still had MCDI to remove the filters), so getting
-		 * unbind callbacks now isn't a problem.
-		 */
+		 
 		netif_cond_dbg(efx, drv, efx->net_dev,
 			       !efx->tc->up, warn,
 			       "%sdirect block unbind for device %s, was never bound\n",
@@ -207,9 +196,7 @@ int efx_tc_indr_setup_cb(struct net_device *net_dev, struct Qdisc *sch,
 	}
 }
 
-/* .ndo_setup_tc implementation
- * Entry point for flower block and filter management.
- */
+ 
 int efx_tc_setup(struct net_device *net_dev, enum tc_setup_type type,
 		 void *type_data)
 {

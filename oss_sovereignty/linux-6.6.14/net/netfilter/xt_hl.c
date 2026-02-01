@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IP tables module for matching the value of the TTL
- * (C) 2000,2001 by Harald Welte <laforge@netfilter.org>
- *
- * Hop Limit matching module
- * (C) 2001-2002 Maciej Soltysiak <solt@dns.toxicfilms.tv>
- */
+
+ 
 
 #include <linux/ip.h>
 #include <linux/ipv6.h>

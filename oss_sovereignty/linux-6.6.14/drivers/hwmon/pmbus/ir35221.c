@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hardware monitoring driver for IR35221
- *
- * Copyright (C) IBM Corporation 2017.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>

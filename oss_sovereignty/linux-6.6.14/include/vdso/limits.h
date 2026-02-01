@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __VDSO_LIMITS_H
 #define __VDSO_LIMITS_H
 
@@ -16,4 +16,4 @@
 #define ULLONG_MAX	(~0ULL)
 #define UINTPTR_MAX	ULONG_MAX
 
-#endif /* __VDSO_LIMITS_H */
+#endif  

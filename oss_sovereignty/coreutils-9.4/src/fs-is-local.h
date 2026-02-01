@@ -1,6 +1,4 @@
-/* Map each S_MAGIC_* value to 1, 0 or -1.
-   1 if it is known to be a remote file system type,
-   0 if it is known to be a local file system type, or -1 otherwise.  */
+ 
 static inline int
 is_local_fs_type (unsigned long int magic)
 {

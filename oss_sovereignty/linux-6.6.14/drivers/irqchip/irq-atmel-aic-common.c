@@ -1,18 +1,4 @@
-/*
- * Atmel AT91 common AIC (Advanced Interrupt Controller) code shared by
- * irq-atmel-aic and irq-atmel-aic5 drivers
- *
- *  Copyright (C) 2004 SAN People
- *  Copyright (C) 2004 ATMEL
- *  Copyright (C) Rick Bronson
- *  Copyright (C) 2014 Free Electrons
- *
- *  Author: Boris BREZILLON <boris.brezillon@free-electrons.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/errno.h>
 #include <linux/io.h>
@@ -161,19 +147,16 @@ void __init aic_common_rtc_irq_fixup(void)
 	iounmap(regs);
 }
 
-#define AT91_RTT_MR		0x00			/* Real-time Mode Register */
-#define AT91_RTT_ALMIEN		(1 << 16)		/* Alarm Interrupt Enable */
-#define AT91_RTT_RTTINCIEN	(1 << 17)		/* Real Time Timer Increment Interrupt Enable */
+#define AT91_RTT_MR		0x00			 
+#define AT91_RTT_ALMIEN		(1 << 16)		 
+#define AT91_RTT_RTTINCIEN	(1 << 17)		 
 
 void __init aic_common_rtt_irq_fixup(void)
 {
 	struct device_node *np;
 	void __iomem *regs;
 
-	/*
-	 * The at91sam9263 SoC has 2 instances of the RTT block, hence we
-	 * iterate over the DT to find each occurrence.
-	 */
+	 
 	for_each_compatible_node(np, NULL, "atmel,at91sam9260-rtt") {
 		regs = of_iomap(np, 0);
 		if (!regs)

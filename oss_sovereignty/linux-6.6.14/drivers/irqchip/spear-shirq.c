@@ -1,16 +1,4 @@
-/*
- * SPEAr platform shared irq layer source file
- *
- * Copyright (C) 2009-2012 ST Microelectronics
- * Viresh Kumar <vireshk@kernel.org>
- *
- * Copyright (C) 2012 ST Microelectronics
- * Shiraz Hashim <shiraz.linux.kernel@gmail.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/err.h>
@@ -25,19 +13,7 @@
 #include <linux/of_irq.h>
 #include <linux/spinlock.h>
 
-/*
- * struct spear_shirq: shared irq structure
- *
- * base:	Base register address
- * status_reg:	Status register offset for chained interrupt handler
- * mask_reg:	Mask register offset for irq chip
- * mask:	Mask to apply to the status register
- * virq_base:	Base virtual interrupt number
- * nr_irqs:	Number of interrupts handled by this block
- * offset:	Bit offset of the first interrupt
- * irq_chip:	Interrupt controller chip used for this instance,
- *		if NULL group is disabled, but accounted
- */
+ 
 struct spear_shirq {
 	void __iomem		*base;
 	u32			status_reg;
@@ -49,7 +25,7 @@ struct spear_shirq {
 	struct irq_chip		*irq_chip;
 };
 
-/* spear300 shared irq registers offsets and masks */
+ 
 #define SPEAR300_INT_ENB_MASK_REG	0x54
 #define SPEAR300_INT_STS_MASK_REG	0x58
 
@@ -98,7 +74,7 @@ static struct spear_shirq *spear300_shirq_blocks[] = {
 	&spear300_shirq_ras1,
 };
 
-/* spear310 shared irq registers offsets and masks */
+ 
 #define SPEAR310_INT_STS_MASK_REG	0x04
 
 static struct spear_shirq spear310_shirq_ras1 = {
@@ -140,7 +116,7 @@ static struct spear_shirq *spear310_shirq_blocks[] = {
 	&spear310_shirq_intrcomm_ras,
 };
 
-/* spear320 shared irq registers offsets and masks */
+ 
 #define SPEAR320_INT_STS_MASK_REG		0x04
 #define SPEAR320_INT_CLR_MASK_REG		0x04
 #define SPEAR320_INT_ENB_MASK_REG		0x08

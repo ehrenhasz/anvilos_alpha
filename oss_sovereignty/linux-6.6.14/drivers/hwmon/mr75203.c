@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020 MaxLinear, Inc.
- *
- * This driver is a hardware monitoring driver for PVT controller
- * (MR75203) which is used to configure & control Moortec embedded
- * analog IP to enable multiple embedded temperature sensor(TS),
- * voltage monitor(VM) & process detector(PD) modules.
- */
+
+ 
 #include <linux/bits.h>
 #include <linux/clk.h>
 #include <linux/debugfs.h>
@@ -22,7 +15,7 @@
 #include <linux/slab.h>
 #include <linux/units.h>
 
-/* PVT Common register */
+ 
 #define PVT_IP_CONFIG	0x04
 #define TS_NUM_MSK	GENMASK(4, 0)
 #define TS_NUM_SFT	0
@@ -35,7 +28,7 @@
 
 #define VM_NUM_MAX	(VM_NUM_MSK >> VM_NUM_SFT)
 
-/* Macro Common Register */
+ 
 #define CLK_SYNTH		0x00
 #define CLK_SYNTH_LO_SFT	0
 #define CLK_SYNTH_HI_SFT	8
@@ -60,7 +53,7 @@
 #define SDIF_CTRL	0x14
 #define SDIF_SMPL_CTRL	0x20
 
-/* TS & PD Individual Macro Register */
+ 
 #define COM_REG_SIZE	0x40
 
 #define SDIF_DONE(n)	(COM_REG_SIZE + 0x14 + 0x40 * (n))
@@ -71,13 +64,13 @@
 
 #define HILO_RESET(n)	(COM_REG_SIZE + 0x2c + 0x40 * (n))
 
-/* VM Individual Macro Register */
+ 
 #define VM_COM_REG_SIZE	0x200
 #define VM_SDIF_DONE(vm)	(VM_COM_REG_SIZE + 0x34 + 0x200 * (vm))
 #define VM_SDIF_DATA(vm, ch)	\
 	(VM_COM_REG_SIZE + 0x40 + 0x200 * (vm) + 0x4 * (ch))
 
-/* SDA Slave Register */
+ 
 #define IP_CTRL			0x00
 #define IP_RST_REL		BIT(1)
 #define IP_RUN_CONT		BIT(3)
@@ -111,13 +104,13 @@
 #define PVT_TEMP_MIN_mC		-40000
 #define PVT_TEMP_MAX_mC		125000
 
-/* Temperature coefficients for series 5 */
+ 
 #define PVT_SERIES5_H_CONST	200000
 #define PVT_SERIES5_G_CONST	60000
 #define PVT_SERIES5_J_CONST	-100
 #define PVT_SERIES5_CAL5_CONST	4094
 
-/* Temperature coefficients for series 6 */
+ 
 #define PVT_SERIES6_H_CONST	249400
 #define PVT_SERIES6_G_CONST	57400
 #define PVT_SERIES6_J_CONST	0
@@ -129,30 +122,14 @@
 #define PRE_SCALER_X1	1
 #define PRE_SCALER_X2	2
 
-/**
- * struct voltage_device - VM single input parameters.
- * @vm_map: Map channel number to VM index.
- * @ch_map: Map channel number to channel index.
- * @pre_scaler: Pre scaler value (1 or 2) used to normalize the voltage output
- *              result.
- *
- * The structure provides mapping between channel-number (0..N-1) to VM-index
- * (0..num_vm-1) and channel-index (0..ch_num-1) where N = num_vm * ch_num.
- * It also provides normalization factor for the VM equation.
- */
+ 
 struct voltage_device {
 	u32 vm_map;
 	u32 ch_map;
 	u32 pre_scaler;
 };
 
-/**
- * struct voltage_channels - VM channel count.
- * @total: Total number of channels in all VMs.
- * @max: Maximum number of channels among all VMs.
- *
- * The structure provides channel count information across all VMs.
- */
+ 
 struct voltage_channels {
 	u32 total;
 	u8 max;
@@ -260,10 +237,7 @@ static umode_t pvt_is_visible(const void *data, enum hwmon_sensor_types type,
 
 static long pvt_calc_temp(struct pvt_device *pvt, u32 nbs)
 {
-	/*
-	 * Convert the register value to degrees centigrade temperature:
-	 * T = G + H * (n / cal5 - 0.5) + J * F
-	 */
+	 
 	struct temp_coeff *ts_coeff = &pvt->ts_coeff;
 
 	s64 tmp = ts_coeff->g +
@@ -296,10 +270,7 @@ static int pvt_read_temp(struct device *dev, u32 attr, int channel, long *val)
 
 		nbs &= SAMPLE_DATA_MSK;
 
-		/*
-		 * Convert the register value to
-		 * degrees centigrade temperature
-		 */
+		 
 		*val = pvt_calc_temp(pvt, nbs);
 
 		return 0;
@@ -337,17 +308,7 @@ static int pvt_read_in(struct device *dev, u32 attr, int channel, long *val)
 
 		n &= SAMPLE_DATA_MSK;
 		pre_scaler = pvt->vd[channel].pre_scaler;
-		/*
-		 * Convert the N bitstream count into voltage.
-		 * To support negative voltage calculation for 64bit machines
-		 * n must be cast to long, since n and *val differ both in
-		 * signedness and in size.
-		 * Division is used instead of right shift, because for signed
-		 * numbers, the sign bit is used to fill the vacated bit
-		 * positions, and if the number is negative, 1 is used.
-		 * BIT(x) may not be used instead of (1 << x) because it's
-		 * unsigned.
-		 */
+		 
 		*val = pre_scaler * (PVT_N_CONST * (long)n - PVT_R_CONST) /
 			(1 << PVT_CONV_BITS);
 
@@ -414,10 +375,7 @@ static int pvt_init(struct pvt_device *pvt)
 		}
 	}
 
-	/*
-	 * The system supports 'clk_sys' to 'clk_ip' frequency ratios
-	 * from 2:1 to 512:1
-	 */
+	 
 	key = clamp_val(key, CLK_SYS_CYCLES_MIN, CLK_SYS_CYCLES_MAX) - 2;
 
 	clk_synth = ((key + 1) >> 1) << CLK_SYNTH_LO_SFT |
@@ -638,10 +596,7 @@ static int pvt_get_active_channel(struct device *dev, struct pvt_device *pvt,
 	ret = device_property_read_u8_array(dev, "moortec,vm-active-channels",
 					    vm_active_ch, vm_num);
 	if (ret) {
-		/*
-		 * Incase "moortec,vm-active-channels" property is not defined,
-		 * we assume each VM sensor has all of its channels active.
-		 */
+		 
 		memset(vm_active_ch, ch_num, vm_num);
 		pvt->vm_channels.max = ch_num;
 		pvt->vm_channels.total = ch_num * vm_num;
@@ -660,12 +615,7 @@ static int pvt_get_active_channel(struct device *dev, struct pvt_device *pvt,
 		}
 	}
 
-	/*
-	 * Map between the channel-number to VM-index and channel-index.
-	 * Example - 3 VMs, "moortec,vm_active_ch" = <5 2 4>:
-	 * vm_map = [0 0 0 0 0 1 1 2 2 2 2]
-	 * ch_map = [0 1 2 3 4 0 1 0 1 2 3]
-	 */
+	 
 	pvt->vd = devm_kcalloc(dev, pvt->vm_channels.total, sizeof(*pvt->vd),
 			       GFP_KERNEL);
 	if (!pvt->vd)
@@ -689,11 +639,11 @@ static int pvt_get_pre_scaler(struct device *dev, struct pvt_device *pvt)
 	int i, ret, num_ch;
 	u32 channel;
 
-	/* Set default pre-scaler value to be 1. */
+	 
 	for (i = 0; i < pvt->vm_channels.total; i++)
 		pvt->vd[i].pre_scaler = PRE_SCALER_X1;
 
-	/* Get number of channels configured in "moortec,vm-pre-scaler-x2". */
+	 
 	num_ch = device_property_count_u8(dev, "moortec,vm-pre-scaler-x2");
 	if (num_ch <= 0)
 		return 0;
@@ -703,7 +653,7 @@ static int pvt_get_pre_scaler(struct device *dev, struct pvt_device *pvt)
 	if (!pre_scaler_ch_list)
 		return -ENOMEM;
 
-	/* Get list of all channels that have pre-scaler of 2. */
+	 
 	ret = device_property_read_u8_array(dev, "moortec,vm-pre-scaler-x2",
 					    pre_scaler_ch_list, num_ch);
 	if (ret)
@@ -726,7 +676,7 @@ static int pvt_set_temp_coeff(struct device *dev, struct pvt_device *pvt)
 	u32 series;
 	int ret;
 
-	/* Incase ts-series property is not defined, use default 5. */
+	 
 	ret = device_property_read_u32(dev, "moortec,ts-series", &series);
 	if (ret)
 		series = TEMPERATURE_SENSOR_SERIES_5;
@@ -752,7 +702,7 @@ static int pvt_set_temp_coeff(struct device *dev, struct pvt_device *pvt)
 
 	dev_dbg(dev, "temperature sensor series = %u\n", series);
 
-	/* Override ts-coeff-h/g/j/cal5 if they are defined. */
+	 
 	device_property_read_u32(dev, "moortec,ts-coeff-h", &ts_coeff->h);
 	device_property_read_u32(dev, "moortec,ts-coeff-g", &ts_coeff->g);
 	device_property_read_u32(dev, "moortec,ts-coeff-j", &ts_coeff->j);
@@ -860,10 +810,7 @@ static int mr75203_probe(struct platform_device *pdev)
 		ret = device_property_read_u8_array(dev, "intel,vm-map", vm_idx,
 						    vm_num);
 		if (ret) {
-			/*
-			 * Incase intel,vm-map property is not defined, we
-			 * assume incremental channel numbers.
-			 */
+			 
 			for (i = 0; i < vm_num; i++)
 				vm_idx[i] = i;
 		} else {

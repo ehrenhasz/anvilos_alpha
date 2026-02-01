@@ -1,25 +1,22 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/perf_event.h>
 #include <asm/perf_event.h>
 
 #include "../perf_event.h"
 
-/* LBR Branch Select valid bits */
+ 
 #define LBR_SELECT_MASK		0x1ff
 
-/*
- * LBR Branch Select filter bits which when set, ensures that the
- * corresponding type of branches are not recorded
- */
-#define LBR_SELECT_KERNEL		0	/* Branches ending in CPL = 0 */
-#define LBR_SELECT_USER			1	/* Branches ending in CPL > 0 */
-#define LBR_SELECT_JCC			2	/* Conditional branches */
-#define LBR_SELECT_CALL_NEAR_REL	3	/* Near relative calls */
-#define LBR_SELECT_CALL_NEAR_IND	4	/* Indirect relative calls */
-#define LBR_SELECT_RET_NEAR		5	/* Near returns */
-#define LBR_SELECT_JMP_NEAR_IND		6	/* Near indirect jumps (excl. calls and returns) */
-#define LBR_SELECT_JMP_NEAR_REL		7	/* Near relative jumps (excl. calls) */
-#define LBR_SELECT_FAR_BRANCH		8	/* Far branches */
+ 
+#define LBR_SELECT_KERNEL		0	 
+#define LBR_SELECT_USER			1	 
+#define LBR_SELECT_JCC			2	 
+#define LBR_SELECT_CALL_NEAR_REL	3	 
+#define LBR_SELECT_CALL_NEAR_IND	4	 
+#define LBR_SELECT_RET_NEAR		5	 
+#define LBR_SELECT_JMP_NEAR_IND		6	 
+#define LBR_SELECT_JMP_NEAR_REL		7	 
+#define LBR_SELECT_FAR_BRANCH		8	 
 
 #define LBR_KERNEL	BIT(LBR_SELECT_KERNEL)
 #define LBR_USER	BIT(LBR_SELECT_USER)
@@ -30,7 +27,7 @@
 #define LBR_REL_JMP	BIT(LBR_SELECT_JMP_NEAR_REL)
 #define LBR_IND_JMP	BIT(LBR_SELECT_JMP_NEAR_IND)
 #define LBR_FAR		BIT(LBR_SELECT_FAR_BRANCH)
-#define LBR_NOT_SUPP	-1	/* unsupported filter */
+#define LBR_NOT_SUPP	-1	 
 #define LBR_IGNORE	0
 
 #define LBR_ANY		\
@@ -102,7 +99,7 @@ static void amd_pmu_lbr_filter(void)
 	bool fused_only = false;
 	u64 from, to;
 
-	/* If sampling all branches, there is nothing to filter */
+	 
 	if (((br_sel & X86_BR_ALL) == X86_BR_ALL) &&
 	    ((br_sel & X86_BR_TYPE_SAVE) != X86_BR_TYPE_SAVE))
 		fused_only = true;
@@ -112,20 +109,16 @@ static void amd_pmu_lbr_filter(void)
 		to = cpuc->lbr_entries[i].to;
 		type = branch_type_fused(from, to, 0, &offset);
 
-		/*
-		 * Adjust the branch from address in case of instruction
-		 * fusion where it points to an instruction preceding the
-		 * actual branch
-		 */
+		 
 		if (offset) {
 			cpuc->lbr_entries[i].from += offset;
 			if (fused_only)
 				continue;
 		}
 
-		/* If type does not correspond, then discard */
+		 
 		if (type == X86_BR_NONE || (br_sel & type) != type) {
-			cpuc->lbr_entries[i].from = 0;	/* mark invalid */
+			cpuc->lbr_entries[i].from = 0;	 
 			compress = true;
 		}
 
@@ -136,7 +129,7 @@ static void amd_pmu_lbr_filter(void)
 	if (!compress)
 		return;
 
-	/* Remove all invalid entries */
+	 
 	for (i = 0; i < cpuc->lbr_stack.nr; ) {
 		if (!cpuc->lbr_entries[i].from) {
 			j = i;
@@ -171,10 +164,7 @@ void amd_pmu_lbr_read(void)
 		entry.from.full	= amd_pmu_lbr_get_from(i);
 		entry.to.full	= amd_pmu_lbr_get_to(i);
 
-		/*
-		 * Check if a branch has been logged; if valid = 0, spec = 0
-		 * then no branch was recorded
-		 */
+		 
 		if (!entry.to.split.valid && !entry.to.split.spec)
 			continue;
 
@@ -185,22 +175,7 @@ void amd_pmu_lbr_read(void)
 		br[out].mispred	= entry.from.split.mispredict;
 		br[out].predicted = !br[out].mispred;
 
-		/*
-		 * Set branch speculation information using the status of
-		 * the valid and spec bits.
-		 *
-		 * When valid = 0, spec = 0, no branch was recorded and the
-		 * entry is discarded as seen above.
-		 *
-		 * When valid = 0, spec = 1, the recorded branch was
-		 * speculative but took the wrong path.
-		 *
-		 * When valid = 1, spec = 0, the recorded branch was
-		 * non-speculative but took the correct path.
-		 *
-		 * When valid = 1, spec = 1, the recorded branch was
-		 * speculative and took the correct path
-		 */
+		 
 		idx = (entry.to.split.valid << 1) | entry.to.split.spec;
 		br[out].spec = lbr_spec_map[idx];
 		out++;
@@ -208,13 +183,10 @@ void amd_pmu_lbr_read(void)
 
 	cpuc->lbr_stack.nr = out;
 
-	/*
-	 * Internal register renaming always ensures that LBR From[0] and
-	 * LBR To[0] always represent the TOS
-	 */
+	 
 	cpuc->lbr_stack.hw_idx = 0;
 
-	/* Perform further software filtering */
+	 
 	amd_pmu_lbr_filter();
 }
 
@@ -247,7 +219,7 @@ static int amd_pmu_lbr_setup_filter(struct perf_event *event)
 	u64 mask = 0, v;
 	int i;
 
-	/* No LBR support */
+	 
 	if (!x86_pmu.lbr_nr)
 		return -EOPNOTSUPP;
 
@@ -257,7 +229,7 @@ static int amd_pmu_lbr_setup_filter(struct perf_event *event)
 	if (br_type & PERF_SAMPLE_BRANCH_KERNEL)
 		mask |= X86_BR_KERNEL;
 
-	/* Ignore BRANCH_HV here */
+	 
 
 	if (br_type & PERF_SAMPLE_BRANCH_ANY)
 		mask |= X86_BR_ANY;
@@ -298,7 +270,7 @@ static int amd_pmu_lbr_setup_filter(struct perf_event *event)
 			mask |= v;
 	}
 
-	/* Filter bits operate in suppress mode */
+	 
 	reg->config = mask ^ LBR_SELECT_MASK;
 
 	return 0;
@@ -308,7 +280,7 @@ int amd_pmu_lbr_hw_config(struct perf_event *event)
 {
 	int ret = 0;
 
-	/* LBR is not recommended in counting mode */
+	 
 	if (!is_sampling_event(event))
 		return -EINVAL;
 
@@ -327,7 +299,7 @@ void amd_pmu_lbr_reset(void)
 	if (!x86_pmu.lbr_nr)
 		return;
 
-	/* Reset all branch records individually */
+	 
 	for (i = 0; i < x86_pmu.lbr_nr; i++) {
 		amd_pmu_lbr_set_from(i, 0);
 		amd_pmu_lbr_set_to(i, 0);
@@ -377,11 +349,7 @@ void amd_pmu_lbr_sched_task(struct perf_event_pmu_context *pmu_ctx, bool sched_i
 {
 	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
 
-	/*
-	 * A context switch can flip the address space and LBR entries are
-	 * not tagged with an identifier. Hence, branches cannot be resolved
-	 * from the old address space and the LBR records should be wiped.
-	 */
+	 
 	if (cpuc->lbr_users && sched_in)
 		amd_pmu_lbr_reset();
 }
@@ -394,7 +362,7 @@ void amd_pmu_lbr_enable_all(void)
 	if (!cpuc->lbr_users || !x86_pmu.lbr_nr)
 		return;
 
-	/* Set hardware branch filter */
+	 
 	if (cpuc->lbr_select) {
 		lbr_select = cpuc->lbr_sel->config & LBR_SELECT_MASK;
 		wrmsrl(MSR_AMD64_LBR_SELECT, lbr_select);
@@ -429,7 +397,7 @@ __init int amd_pmu_lbr_init(void)
 	if (x86_pmu.version < 2 || !boot_cpu_has(X86_FEATURE_AMD_LBR_V2))
 		return -EOPNOTSUPP;
 
-	/* Set number of entries */
+	 
 	ebx.full = cpuid_ebx(EXT_PERFMON_DEBUG_FEATURES);
 	x86_pmu.lbr_nr = ebx.split.lbr_v2_stack_sz;
 

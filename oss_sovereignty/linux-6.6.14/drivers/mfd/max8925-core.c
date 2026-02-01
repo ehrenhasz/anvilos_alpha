@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Base driver for Maxim MAX8925
- *
- * Copyright (C) 2009-2010 Marvell International Ltd.
- *	Haojian Zhuang <haojian.zhuang@marvell.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -321,15 +316,15 @@ static struct mfd_cell reg_devs[] = {
 };
 
 enum {
-	FLAGS_ADC = 1,	/* register in ADC component */
-	FLAGS_RTC,	/* register in RTC component */
+	FLAGS_ADC = 1,	 
+	FLAGS_RTC,	 
 };
 
 struct max8925_irq_data {
 	int	reg;
 	int	mask_reg;
-	int	enable;		/* enable or not */
-	int	offs;		/* bit offset in mask register */
+	int	enable;		 
+	int	offs;		 
 	int	flags;
 	int	tsc_irq;
 };
@@ -478,7 +473,7 @@ static irqreturn_t max8925_irq(int irq, void *data)
 
 	for (i = 0; i < ARRAY_SIZE(max8925_irqs); i++) {
 		irq_data = &max8925_irqs[i];
-		/* TSC IRQ should be serviced in max8925_tsc_irq() */
+		 
 		if (irq_data->tsc_irq)
 			continue;
 		if (irq_data->flags == FLAGS_RTC)
@@ -507,7 +502,7 @@ static irqreturn_t max8925_tsc_irq(int irq, void *data)
 
 	for (i = 0; i < ARRAY_SIZE(max8925_irqs); i++) {
 		irq_data = &max8925_irqs[i];
-		/* non TSC IRQ should be serviced in max8925_irq() */
+		 
 		if (!irq_data->tsc_irq)
 			continue;
 		if (irq_data->flags == FLAGS_RTC)
@@ -544,7 +539,7 @@ static void max8925_irq_sync_unlock(struct irq_data *data)
 	unsigned char irq_rtc, irq_tsc;
 	int i;
 
-	/* Load cached value. In initial, all IRQs are masked */
+	 
 	irq_chg[0] = cache_chg[0];
 	irq_chg[1] = cache_chg[1];
 	irq_on[0] = cache_on[0];
@@ -553,7 +548,7 @@ static void max8925_irq_sync_unlock(struct irq_data *data)
 	irq_tsc = cache_tsc;
 	for (i = 0; i < ARRAY_SIZE(max8925_irqs); i++) {
 		irq_data = &max8925_irqs[i];
-		/* 1 -- disable, 0 -- enable */
+		 
 		switch (irq_data->mask_reg) {
 		case MAX8925_CHG_IRQ1_MASK:
 			irq_chg[0] &= ~irq_data->enable;
@@ -578,7 +573,7 @@ static void max8925_irq_sync_unlock(struct irq_data *data)
 			break;
 		}
 	}
-	/* update mask into registers */
+	 
 	if (cache_chg[0] != irq_chg[0]) {
 		cache_chg[0] = irq_chg[0];
 		max8925_reg_write(chip->i2c, MAX8925_CHG_IRQ1_MASK,
@@ -658,14 +653,14 @@ static int max8925_irq_init(struct max8925_chip *chip, int irq,
 	int ret;
 	struct device_node *node = chip->dev->of_node;
 
-	/* clear all interrupts */
+	 
 	max8925_reg_read(chip->i2c, MAX8925_CHG_IRQ1);
 	max8925_reg_read(chip->i2c, MAX8925_CHG_IRQ2);
 	max8925_reg_read(chip->i2c, MAX8925_ON_OFF_IRQ1);
 	max8925_reg_read(chip->i2c, MAX8925_ON_OFF_IRQ2);
 	max8925_reg_read(chip->rtc, MAX8925_RTC_IRQ);
 	max8925_reg_read(chip->adc, MAX8925_TSC_IRQ);
-	/* mask all interrupts except for TSC */
+	 
 	max8925_reg_write(chip->rtc, MAX8925_ALARM0_CNTL, 0);
 	max8925_reg_write(chip->rtc, MAX8925_ALARM1_CNTL, 0);
 	max8925_reg_write(chip->i2c, MAX8925_CHG_IRQ1_MASK, 0xff);
@@ -685,7 +680,7 @@ static int max8925_irq_init(struct max8925_chip *chip, int irq,
 	irq_domain_add_legacy(node, MAX8925_NR_IRQS, chip->irq_base, 0,
 			      &max8925_irq_domain_ops, chip);
 
-	/* request irq handler for pmic main irq*/
+	 
 	chip->core_irq = irq;
 	if (!chip->core_irq)
 		return -EBUSY;
@@ -697,9 +692,9 @@ static int max8925_irq_init(struct max8925_chip *chip, int irq,
 		return -EBUSY;
 	}
 
-	/* request irq handler for pmic tsc irq*/
+	 
 
-	/* mask TSC interrupt */
+	 
 	max8925_reg_write(chip->adc, MAX8925_TSC_IRQ_MASK, 0x0f);
 
 	if (!pdata->tsc_irq) {
@@ -831,19 +826,19 @@ int max8925_device_init(struct max8925_chip *chip,
 	max8925_irq_init(chip, chip->i2c->irq, pdata);
 
 	if (pdata && (pdata->power || pdata->touch)) {
-		/* enable ADC to control internal reference */
+		 
 		max8925_set_bits(chip->i2c, MAX8925_RESET_CNFG, 1, 1);
-		/* enable internal reference for ADC */
+		 
 		max8925_set_bits(chip->adc, MAX8925_TSC_CNFG1, 3, 2);
-		/* check for internal reference IRQ */
+		 
 		do {
 			ret = max8925_reg_read(chip->adc, MAX8925_TSC_IRQ);
 		} while (ret & MAX8925_NREF_OK);
-		/* enaable ADC scheduler, interval is 1 second */
+		 
 		max8925_set_bits(chip->adc, MAX8925_ADC_SCHED, 3, 2);
 	}
 
-	/* enable Momentary Power Loss */
+	 
 	max8925_set_bits(chip->rtc, MAX8925_MPL_CNTL, 1 << 4, 1 << 4);
 
 	ret = mfd_add_devices(chip->dev, 0, &rtc_devs[0],

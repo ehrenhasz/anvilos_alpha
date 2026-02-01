@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for TPS65218 Integrated power management chipsets
- *
- * Copyright (C) 2014 Texas Instruments Incorporated - https://www.ti.com/
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/device.h>
@@ -36,14 +32,7 @@ static const struct mfd_cell tps65218_cells[] = {
 	{ .name = "tps65218-regulator", },
 };
 
-/**
- * tps65218_reg_write: Write a single tps65218 register.
- *
- * @tps: Device to write to.
- * @reg: Register to write to.
- * @val: Value to write.
- * @level: Password protected level
- */
+ 
 int tps65218_reg_write(struct tps65218 *tps, unsigned int reg,
 			unsigned int val, unsigned int level)
 {
@@ -67,15 +56,7 @@ int tps65218_reg_write(struct tps65218 *tps, unsigned int reg,
 }
 EXPORT_SYMBOL_GPL(tps65218_reg_write);
 
-/**
- * tps65218_update_bits: Modify bits w.r.t mask, val and level.
- *
- * @tps: Device to write to.
- * @reg: Register to read-write to.
- * @mask: Mask.
- * @val: Value to write.
- * @level: Password protected level
- */
+ 
 static int tps65218_update_bits(struct tps65218 *tps, unsigned int reg,
 		unsigned int mask, unsigned int val, unsigned int level)
 {
@@ -132,7 +113,7 @@ static const struct regmap_config tps65218_regmap_config = {
 };
 
 static const struct regmap_irq tps65218_irqs[] = {
-	/* INT1 IRQs */
+	 
 	[TPS65218_PRGC_IRQ] = {
 		.mask = TPS65218_INT1_PRGC,
 	},
@@ -155,7 +136,7 @@ static const struct regmap_irq tps65218_irqs[] = {
 	},
 	[TPS65218_INVALID2_IRQ] = {
 	},
-	/* INT2 IRQs*/
+	 
 	[TPS65218_LS1_I_IRQ] = {
 		.mask = TPS65218_INT2_LS1_I,
 		.reg_offset = 1,

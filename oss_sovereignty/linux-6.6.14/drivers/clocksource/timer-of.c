@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017, Linaro Ltd.  All rights reserved.
- *
- * Author: Daniel Lezcano <daniel.lezcano@linaro.org>
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
 #include <linux/of.h>
@@ -13,12 +9,7 @@
 
 #include "timer-of.h"
 
-/**
- * timer_of_irq_exit - Release the interrupt
- * @of_irq: an of_timer_irq structure pointer
- *
- * Free the irq resource
- */
+ 
 static __init void timer_of_irq_exit(struct of_timer_irq *of_irq)
 {
 	struct timer_of *to = container_of(of_irq, struct timer_of, of_irq);
@@ -31,22 +22,7 @@ static __init void timer_of_irq_exit(struct of_timer_irq *of_irq)
 		free_irq(of_irq->irq, clkevt);
 }
 
-/**
- * timer_of_irq_init - Request the interrupt
- * @np: a device tree node pointer
- * @of_irq: an of_timer_irq structure pointer
- *
- * Get the interrupt number from the DT from its definition and
- * request it. The interrupt is gotten by falling back the following way:
- *
- * - Get interrupt number by name
- * - Get interrupt number by index
- *
- * When the interrupt is per CPU, 'request_percpu_irq()' is called,
- * otherwise 'request_irq()' is used.
- *
- * Returns 0 on success, < 0 otherwise
- */
+ 
 static __init int timer_of_irq_init(struct device_node *np,
 				    struct of_timer_irq *of_irq)
 {
@@ -85,12 +61,7 @@ static __init int timer_of_irq_init(struct device_node *np,
 	return 0;
 }
 
-/**
- * timer_of_clk_exit - Release the clock resources
- * @of_clk: a of_timer_clk structure pointer
- *
- * Disables and releases the refcount on the clk
- */
+ 
 static __init void timer_of_clk_exit(struct of_timer_clk *of_clk)
 {
 	of_clk->rate = 0;
@@ -98,15 +69,7 @@ static __init void timer_of_clk_exit(struct of_timer_clk *of_clk)
 	clk_put(of_clk->clk);
 }
 
-/**
- * timer_of_clk_init - Initialize the clock resources
- * @np: a device tree node pointer
- * @of_clk: a of_timer_clk structure pointer
- *
- * Get the clock by name or by index, enable it and get the rate
- *
- * Returns 0 on success, < 0 otherwise
- */
+ 
 static __init int timer_of_clk_init(struct device_node *np,
 				    struct of_timer_clk *of_clk)
 {
@@ -210,13 +173,7 @@ out_fail:
 	return ret;
 }
 
-/**
- * timer_of_cleanup - release timer_of resources
- * @to: timer_of structure
- *
- * Release the resources that has been used in timer_of_init().
- * This function should be called in init error cases
- */
+ 
 void __init timer_of_cleanup(struct timer_of *to)
 {
 	if (to->flags & TIMER_OF_IRQ)

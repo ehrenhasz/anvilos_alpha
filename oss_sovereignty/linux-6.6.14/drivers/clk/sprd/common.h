@@ -1,9 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-//
-// Spreadtrum clock infrastructure
-//
-// Copyright (C) 2017 Spreadtrum, Inc.
-// Author: Chunyan Zhang <chunyan.zhang@spreadtrum.com>
+ 
+
+
+
+
+
 
 #ifndef _SPRD_CLK_COMMON_H_
 #define _SPRD_CLK_COMMON_H_
@@ -35,4 +35,4 @@ int sprd_clk_regmap_init(struct platform_device *pdev,
 			 const struct sprd_clk_desc *desc);
 int sprd_clk_probe(struct device *dev, struct clk_hw_onecell_data *clkhw);
 
-#endif /* _SPRD_CLK_COMMON_H_ */
+#endif  

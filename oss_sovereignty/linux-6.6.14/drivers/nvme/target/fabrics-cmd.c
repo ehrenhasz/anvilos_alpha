@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NVMe Fabrics command implementation.
- * Copyright (c) 2015-2016 HGST, a Western Digital Company.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/blkdev.h>
 #include "nvmet.h"
@@ -172,7 +169,7 @@ static u16 nvmet_install_queue(struct nvmet_ctrl *ctrl, struct nvmet_req *req)
 		return NVME_SC_CONNECT_CTRL_BUSY | NVME_SC_DNR;
 	}
 
-	/* note: convert queue size from 0's-based value to 1's-based value */
+	 
 	nvmet_cq_setup(ctrl, req->cq, qid, sqsize + 1);
 	nvmet_sq_setup(ctrl, req->sq, qid, sqsize + 1);
 
@@ -225,7 +222,7 @@ static void nvmet_execute_admin_connect(struct nvmet_req *req)
 	if (status)
 		goto out;
 
-	/* zero out initial completion result, assign values as needed */
+	 
 	req->cqe->result.u32 = 0;
 
 	if (c->recfmt != 0) {
@@ -305,7 +302,7 @@ static void nvmet_execute_io_connect(struct nvmet_req *req)
 	if (status)
 		goto out;
 
-	/* zero out initial completion result, assign values as needed */
+	 
 	req->cqe->result.u32 = 0;
 
 	if (c->recfmt != 0) {

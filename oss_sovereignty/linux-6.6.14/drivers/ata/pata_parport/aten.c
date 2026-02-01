@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * (c) 1997-8  Grant R. Guenther <grant@torque.net>
- *
- * aten.c is a low-level protocol driver for the ATEN EH-100
- * parallel port adapter.  The EH-100 supports 4-bit and 8-bit
- * modes only.  There is also an EH-132 which supports EPP mode
- * transfers.  The EH-132 is not yet supported.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -19,10 +12,7 @@
 
 #define j44(a,b)                ((((a>>4)&0x0f)|(b&0xf0))^0x88)
 
-/*
- * cont = 0 - access the IDE register file
- * cont = 1 - access the IDE command set
- */
+ 
 static int  cont_map[2] = { 0x08, 0x20 };
 
 static void aten_write_regr(struct pi_adapter *pi, int cont, int regr, int val)

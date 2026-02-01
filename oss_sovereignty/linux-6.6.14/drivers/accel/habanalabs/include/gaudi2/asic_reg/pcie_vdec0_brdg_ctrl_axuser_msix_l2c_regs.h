@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+ 
 
 #ifndef ASIC_REG_PCIE_VDEC0_BRDG_CTRL_AXUSER_MSIX_L2C_REGS_H_
 #define ASIC_REG_PCIE_VDEC0_BRDG_CTRL_AXUSER_MSIX_L2C_REGS_H_
 
-/*
- *****************************************
- *   PCIE_VDEC0_BRDG_CTRL_AXUSER_MSIX_L2C
- *   (Prototype: AXUSER)
- *****************************************
- */
+ 
 
 #define mmPCIE_VDEC0_BRDG_CTRL_AXUSER_MSIX_L2C_HB_ASID 0x4F03900
 
@@ -58,4 +45,4 @@
 
 #define mmPCIE_VDEC0_BRDG_CTRL_AXUSER_MSIX_L2C_LB_OVRD 0x4F0394C
 
-#endif /* ASIC_REG_PCIE_VDEC0_BRDG_CTRL_AXUSER_MSIX_L2C_REGS_H_ */
+#endif  

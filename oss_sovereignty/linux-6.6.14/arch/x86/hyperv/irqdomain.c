@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Irqdomain for Linux to run as the root partition on Microsoft Hypervisor.
- *
- * Authors:
- *  Sunil Muthuswamy <sunilmut@microsoft.com>
- *  Wei Liu <wei.liu@kernel.org>
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/irq.h>
@@ -50,11 +44,7 @@ static int hv_map_interrupt(union hv_device_id device_id, bool level,
 	}
 	intr_desc->target.flags = HV_DEVICE_INTERRUPT_TARGET_PROCESSOR_SET;
 
-	/*
-	 * var-sized hypercall, var-size starts after vp_mask (thus
-	 * vp_set.format does not count, but vp_set.valid_bank_mask
-	 * does).
-	 */
+	 
 	var_size = nr_bank + 1;
 
 	status = hv_do_rep_hypercall(HVCALL_MAP_DEVICE_INTERRUPT, 0, var_size,
@@ -132,18 +122,7 @@ static union hv_device_id hv_build_pci_dev_id(struct pci_dev *dev)
 	if (data.bridge) {
 		int pos;
 
-		/*
-		 * Microsoft Hypervisor requires a bus range when the bridge is
-		 * running in PCI-X mode.
-		 *
-		 * To distinguish conventional vs PCI-X bridge, we can check
-		 * the bridge's PCI-X Secondary Status Register, Secondary Bus
-		 * Mode and Frequency bits. See PCI Express to PCI/PCI-X Bridge
-		 * Specification Revision 1.0 5.2.2.1.3.
-		 *
-		 * Value zero means it is in conventional mode, otherwise it is
-		 * in PCI-X mode.
-		 */
+		 
 
 		pos = pci_find_capability(data.bridge, PCI_CAP_ID_PCIX);
 		if (pos) {
@@ -153,7 +132,7 @@ static union hv_device_id hv_build_pci_dev_id(struct pci_dev *dev)
 					PCI_X_BRIDGE_SSTATUS, &status);
 
 			if (status & PCI_X_SSTATUS_FREQ) {
-				/* Non-zero, PCI-X mode */
+				 
 				u8 sec_bus, sub_bus;
 
 				dev_id.pci.source_shadow = HV_SOURCE_SHADOW_BRIDGE_BUS_RANGE;
@@ -179,7 +158,7 @@ static int hv_map_msi_interrupt(struct pci_dev *dev, int cpu, int vector,
 
 static inline void entry_to_msi_msg(struct hv_interrupt_entry *entry, struct msi_msg *msg)
 {
-	/* High address is always 0 */
+	 
 	msg->address_hi = 0;
 	msg->address_lo = entry->msi_entry.address.as_uint32;
 	msg->data = entry->msi_entry.data.as_uint32;
@@ -208,14 +187,7 @@ static void hv_irq_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
 	cpu = cpumask_first_and(affinity, cpu_online_mask);
 
 	if (data->chip_data) {
-		/*
-		 * This interrupt is already mapped. Let's unmap first.
-		 *
-		 * We don't use retarget interrupt hypercalls here because
-		 * Microsoft Hypervisor doens't allow root to change the vector
-		 * or specify VPs outside of the set that is initially used
-		 * during mapping.
-		 */
+		 
 		stored_entry = data->chip_data;
 		data->chip_data = NULL;
 
@@ -292,10 +264,7 @@ static void hv_msi_free_irq(struct irq_domain *domain,
 	hv_teardown_msi_irq(to_pci_dev(desc->dev), irqd);
 }
 
-/*
- * IRQ Chip for MSI PCI/PCI-X/PCI-Express Devices,
- * which implement the MSI or MSI-X Capability Structure.
- */
+ 
 static struct irq_chip hv_pci_msi_controller = {
 	.name			= "HV-PCI-MSI",
 	.irq_unmask		= pci_msi_unmask_irq,
@@ -330,13 +299,13 @@ struct irq_domain * __init hv_create_pci_msi_domain(void)
 	if (fn)
 		d = pci_msi_create_irq_domain(fn, &hv_pci_msi_domain_info, x86_vector_domain);
 
-	/* No point in going further if we can't get an irq domain */
+	 
 	BUG_ON(!d);
 
 	return d;
 }
 
-#endif /* CONFIG_PCI_MSI */
+#endif  
 
 int hv_unmap_ioapic_interrupt(int ioapic_id, struct hv_interrupt_entry *entry)
 {

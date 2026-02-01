@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  ebtable_broute
- *
- *	Authors:
- *	Bart De Schuymer <bdschuym@pandora.be>
- *
- *  April, 2002
- *
- *  This table lets you choose between routing and bridging for frames
- *  entering on a bridge enslaved nic. This table is traversed before any
- *  other ebtables table. See net/bridge/br_input.c.
- */
+
+ 
 
 #include <linux/netfilter_bridge/ebtables.h>
 #include <linux/module.h>
@@ -18,9 +7,7 @@
 
 #include "../br_private.h"
 
-/* EBT_ACCEPT means the frame will be bridged
- * EBT_DROP means the frame will be routed
- */
+ 
 static struct ebt_entries initial_chain = {
 	.name		= "BROUTING",
 	.policy		= EBT_ACCEPT,
@@ -62,18 +49,10 @@ static unsigned int ebt_broute(void *priv, struct sk_buff *skb,
 	if (ret != NF_DROP)
 		return ret;
 
-	/* DROP in ebtables -t broute means that the
-	 * skb should be routed, not bridged.
-	 * This is awkward, but can't be changed for compatibility
-	 * reasons.
-	 *
-	 * We map DROP to ACCEPT and set the ->br_netfilter_broute flag.
-	 */
+	 
 	BR_INPUT_SKB_CB(skb)->br_netfilter_broute = 1;
 
-	/* undo PACKET_HOST mangling done in br_input in case the dst
-	 * address matches the logical bridge but not the port.
-	 */
+	 
 	dest = eth_hdr(skb)->h_dest;
 	if (skb->pkt_type == PACKET_HOST &&
 	    !ether_addr_equal(skb->dev->dev_addr, dest) &&

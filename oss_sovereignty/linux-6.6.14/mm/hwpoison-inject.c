@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Inject a hwpoison memory failure on a arbitrary pfn */
+
+ 
 #include <linux/module.h>
 #include <linux/debugfs.h>
 #include <linux/kernel.h>
@@ -31,17 +31,11 @@ static int hwpoison_inject(void *data, u64 val)
 		goto inject;
 
 	shake_page(hpage);
-	/*
-	 * This implies unable to support non-LRU pages except free page.
-	 */
+	 
 	if (!PageLRU(hpage) && !PageHuge(p) && !is_free_buddy_page(p))
 		return 0;
 
-	/*
-	 * do a racy check to make sure PG_hwpoison will only be set for
-	 * the targeted owner (or on a free page).
-	 * memory_failure() will redo the check reliably inside page lock.
-	 */
+	 
 	err = hwpoison_filter(hpage);
 	if (err)
 		return 0;
@@ -73,11 +67,7 @@ static int __init pfn_inject_init(void)
 {
 	hwpoison_dir = debugfs_create_dir("hwpoison", NULL);
 
-	/*
-	 * Note that the below poison/unpoison interfaces do not involve
-	 * hardware status change, hence do not require hardware support.
-	 * They are mainly for testing hwpoison in software level.
-	 */
+	 
 	debugfs_create_file("corrupt-pfn", 0200, hwpoison_dir, NULL,
 			    &hwpoison_fops);
 

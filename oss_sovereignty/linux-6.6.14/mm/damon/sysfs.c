@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * DAMON sysfs Interface
- *
- * Copyright (c) 2022 SeongJae Park <sj@kernel.org>
- */
+
+ 
 
 #include <linux/pid.h>
 #include <linux/sched.h>
@@ -11,9 +7,7 @@
 
 #include "sysfs-common.h"
 
-/*
- * init region directory
- */
+ 
 
 struct damon_sysfs_region {
 	struct kobject kobj;
@@ -87,9 +81,7 @@ static const struct kobj_type damon_sysfs_region_ktype = {
 	.default_groups = damon_sysfs_region_groups,
 };
 
-/*
- * init_regions directory
- */
+ 
 
 struct damon_sysfs_regions {
 	struct kobject kobj;
@@ -204,9 +196,7 @@ static const struct kobj_type damon_sysfs_regions_ktype = {
 	.default_groups = damon_sysfs_regions_groups,
 };
 
-/*
- * target directory
- */
+ 
 
 struct damon_sysfs_target {
 	struct kobject kobj;
@@ -283,9 +273,7 @@ static const struct kobj_type damon_sysfs_target_ktype = {
 	.default_groups = damon_sysfs_target_groups,
 };
 
-/*
- * targets directory
- */
+ 
 
 struct damon_sysfs_targets {
 	struct kobject kobj;
@@ -408,9 +396,7 @@ static const struct kobj_type damon_sysfs_targets_ktype = {
 	.default_groups = damon_sysfs_targets_groups,
 };
 
-/*
- * intervals directory
- */
+ 
 
 struct damon_sysfs_intervals {
 	struct kobject kobj;
@@ -536,9 +522,7 @@ static const struct kobj_type damon_sysfs_intervals_ktype = {
 	.default_groups = damon_sysfs_intervals_groups,
 };
 
-/*
- * monitoring_attrs directory
- */
+ 
 
 struct damon_sysfs_attrs {
 	struct kobject kobj;
@@ -618,11 +602,9 @@ static const struct kobj_type damon_sysfs_attrs_ktype = {
 	.default_groups = damon_sysfs_attrs_groups,
 };
 
-/*
- * context directory
- */
+ 
 
-/* This should match with enum damon_ops_id */
+ 
 static const char * const damon_sysfs_ops_strs[] = {
 	"vaddr",
 	"fvaddr",
@@ -806,9 +788,7 @@ static const struct kobj_type damon_sysfs_context_ktype = {
 	.default_groups = damon_sysfs_context_groups,
 };
 
-/*
- * contexts directory
- */
+ 
 
 struct damon_sysfs_contexts {
 	struct kobject kobj;
@@ -897,7 +877,7 @@ static ssize_t nr_contexts_store(struct kobject *kobj,
 	err = kstrtoint(buf, 0, &nr);
 	if (err)
 		return err;
-	/* TODO: support multiple contexts per kdamond */
+	 
 	if (nr < 0 || 1 < nr)
 		return -EINVAL;
 
@@ -932,9 +912,7 @@ static const struct kobj_type damon_sysfs_contexts_ktype = {
 	.default_groups = damon_sysfs_contexts_groups,
 };
 
-/*
- * kdamond directory
- */
+ 
 
 struct damon_sysfs_kdamond {
 	struct kobject kobj;
@@ -984,43 +962,27 @@ static bool damon_sysfs_ctx_running(struct damon_ctx *ctx)
 	return running;
 }
 
-/*
- * enum damon_sysfs_cmd - Commands for a specific kdamond.
- */
+ 
 enum damon_sysfs_cmd {
-	/* @DAMON_SYSFS_CMD_ON: Turn the kdamond on. */
+	 
 	DAMON_SYSFS_CMD_ON,
-	/* @DAMON_SYSFS_CMD_OFF: Turn the kdamond off. */
+	 
 	DAMON_SYSFS_CMD_OFF,
-	/* @DAMON_SYSFS_CMD_COMMIT: Update kdamond inputs. */
+	 
 	DAMON_SYSFS_CMD_COMMIT,
-	/*
-	 * @DAMON_SYSFS_CMD_UPDATE_SCHEMES_STATS: Update scheme stats sysfs
-	 * files.
-	 */
+	 
 	DAMON_SYSFS_CMD_UPDATE_SCHEMES_STATS,
-	/*
-	 * @DAMON_SYSFS_CMD_UPDATE_SCHEMES_TRIED_BYTES: Update
-	 * tried_regions/total_bytes sysfs files for each scheme.
-	 */
+	 
 	DAMON_SYSFS_CMD_UPDATE_SCHEMES_TRIED_BYTES,
-	/*
-	 * @DAMON_SYSFS_CMD_UPDATE_SCHEMES_TRIED_REGIONS: Update schemes tried
-	 * regions
-	 */
+	 
 	DAMON_SYSFS_CMD_UPDATE_SCHEMES_TRIED_REGIONS,
-	/*
-	 * @DAMON_SYSFS_CMD_CLEAR_SCHEMES_TRIED_REGIONS: Clear schemes tried
-	 * regions
-	 */
+	 
 	DAMON_SYSFS_CMD_CLEAR_SCHEMES_TRIED_REGIONS,
-	/*
-	 * @NR_DAMON_SYSFS_CMDS: Total number of DAMON sysfs commands.
-	 */
+	 
 	NR_DAMON_SYSFS_CMDS,
 };
 
-/* Should match with enum damon_sysfs_cmd */
+ 
 static const char * const damon_sysfs_cmd_strs[] = {
 	"on",
 	"off",
@@ -1031,23 +993,13 @@ static const char * const damon_sysfs_cmd_strs[] = {
 	"clear_schemes_tried_regions",
 };
 
-/*
- * struct damon_sysfs_cmd_request - A request to the DAMON callback.
- * @cmd:	The command that needs to be handled by the callback.
- * @kdamond:	The kobject wrapper that associated to the kdamond thread.
- *
- * This structure represents a sysfs command request that need to access some
- * DAMON context-internal data.  Because DAMON context-internal data can be
- * safely accessed from DAMON callbacks without additional synchronization, the
- * request will be handled by the DAMON callback.  None-``NULL`` @kdamond means
- * the request is valid.
- */
+ 
 struct damon_sysfs_cmd_request {
 	enum damon_sysfs_cmd cmd;
 	struct damon_sysfs_kdamond *kdamond;
 };
 
-/* Current DAMON callback request.  Protected by damon_sysfs_lock. */
+ 
 static struct damon_sysfs_cmd_request damon_sysfs_cmd_request;
 
 static ssize_t state_show(struct kobject *kobj, struct kobj_attribute *attr,
@@ -1180,12 +1132,7 @@ static int damon_sysfs_update_target(struct damon_target *target,
 			return err;
 	}
 
-	/*
-	 * Do monitoring target region boundary update only if one or more
-	 * regions are set by the user.  This is for keeping current monitoring
-	 * target results and range easier, especially for dynamic monitoring
-	 * target regions update ops like 'vaddr'.
-	 */
+	 
 	if (sys_target->regions->nr)
 		err = damon_sysfs_set_regions(target, sys_target->regions);
 	return err;
@@ -1197,7 +1144,7 @@ static int damon_sysfs_set_targets(struct damon_ctx *ctx,
 	struct damon_target *t, *next;
 	int i = 0, err;
 
-	/* Multiple physical address space monitoring targets makes no sense */
+	 
 	if (ctx->ops.id == DAMON_OPS_PADDR && sysfs_targets->nr > 1)
 		return -EINVAL;
 
@@ -1233,7 +1180,7 @@ static void damon_sysfs_before_terminate(struct damon_ctx *ctx)
 	struct damon_sysfs_kdamond *kdamond;
 	enum damon_sysfs_cmd cmd;
 
-	/* damon_sysfs_schemes_update_regions_stop() might not yet called */
+	 
 	kdamond = damon_sysfs_cmd_request.kdamond;
 	cmd = damon_sysfs_cmd_request.cmd;
 	if (kdamond && ctx == kdamond->damon_ctx &&
@@ -1256,15 +1203,7 @@ static void damon_sysfs_before_terminate(struct damon_ctx *ctx)
 	mutex_unlock(&ctx->kdamond_lock);
 }
 
-/*
- * damon_sysfs_upd_schemes_stats() - Update schemes stats sysfs files.
- * @kdamond:	The kobject wrapper that associated to the kdamond thread.
- *
- * This function reads the schemes stats of specific kdamond and update the
- * related values for sysfs files.  This function should be called from DAMON
- * callbacks while holding ``damon_syfs_lock``, to safely access the DAMON
- * contexts-internal data and DAMON sysfs variables.
- */
+ 
 static int damon_sysfs_upd_schemes_stats(struct damon_sysfs_kdamond *kdamond)
 {
 	struct damon_ctx *ctx = kdamond->damon_ctx;
@@ -1333,17 +1272,12 @@ static int damon_sysfs_apply_inputs(struct damon_ctx *ctx,
 	return damon_sysfs_set_schemes(ctx, sys_ctx->schemes);
 }
 
-/*
- * damon_sysfs_commit_input() - Commit user inputs to a running kdamond.
- * @kdamond:	The kobject wrapper for the associated kdamond.
- *
- * If the sysfs input is wrong, the kdamond will be terminated.
- */
+ 
 static int damon_sysfs_commit_input(struct damon_sysfs_kdamond *kdamond)
 {
 	if (!damon_sysfs_kdamond_running(kdamond))
 		return -EINVAL;
-	/* TODO: Support multiple contexts per kdamond */
+	 
 	if (kdamond->contexts->nr != 1)
 		return -EINVAL;
 
@@ -1351,20 +1285,14 @@ static int damon_sysfs_commit_input(struct damon_sysfs_kdamond *kdamond)
 			kdamond->contexts->contexts_arr[0]);
 }
 
-/*
- * damon_sysfs_cmd_request_callback() - DAMON callback for handling requests.
- * @c:	The DAMON context of the callback.
- *
- * This function is periodically called back from the kdamond thread for @c.
- * Then, it checks if there is a waiting DAMON sysfs request and handles it.
- */
+ 
 static int damon_sysfs_cmd_request_callback(struct damon_ctx *c)
 {
 	struct damon_sysfs_kdamond *kdamond;
 	bool total_bytes_only = false;
 	int err = 0;
 
-	/* avoid deadlock due to concurrent state_store('off') */
+	 
 	if (!damon_sysfs_schemes_regions_updating &&
 			!mutex_trylock(&damon_sysfs_lock))
 		return 0;
@@ -1400,7 +1328,7 @@ static int damon_sysfs_cmd_request_callback(struct damon_ctx *c)
 	default:
 		break;
 	}
-	/* Mark the request as invalid now. */
+	 
 	damon_sysfs_cmd_request.kdamond = NULL;
 out:
 	if (!damon_sysfs_schemes_regions_updating)
@@ -1439,7 +1367,7 @@ static int damon_sysfs_turn_damon_on(struct damon_sysfs_kdamond *kdamond)
 		return -EBUSY;
 	if (damon_sysfs_cmd_request.kdamond == kdamond)
 		return -EBUSY;
-	/* TODO: support multiple contexts per kdamond */
+	 
 	if (kdamond->contexts->nr != 1)
 		return -EINVAL;
 
@@ -1464,32 +1392,16 @@ static int damon_sysfs_turn_damon_off(struct damon_sysfs_kdamond *kdamond)
 	if (!kdamond->damon_ctx)
 		return -EINVAL;
 	return damon_stop(&kdamond->damon_ctx, 1);
-	/*
-	 * To allow users show final monitoring results of already turned-off
-	 * DAMON, we free kdamond->damon_ctx in next
-	 * damon_sysfs_turn_damon_on(), or kdamonds_nr_store()
-	 */
+	 
 }
 
-/*
- * damon_sysfs_handle_cmd() - Handle a command for a specific kdamond.
- * @cmd:	The command to handle.
- * @kdamond:	The kobject wrapper for the associated kdamond.
- *
- * This function handles a DAMON sysfs command for a kdamond.  For commands
- * that need to access running DAMON context-internal data, it requests
- * handling of the command to the DAMON callback
- * (@damon_sysfs_cmd_request_callback()) and wait until it is properly handled,
- * or the context is completed.
- *
- * Return: 0 on success, negative error code otherwise.
- */
+ 
 static int damon_sysfs_handle_cmd(enum damon_sysfs_cmd cmd,
 		struct damon_sysfs_kdamond *kdamond)
 {
 	bool need_wait = true;
 
-	/* Handle commands that doesn't access DAMON context-internal data */
+	 
 	switch (cmd) {
 	case DAMON_SYSFS_CMD_ON:
 		return damon_sysfs_turn_damon_on(kdamond);
@@ -1499,7 +1411,7 @@ static int damon_sysfs_handle_cmd(enum damon_sysfs_cmd cmd,
 		break;
 	}
 
-	/* Pass the command to DAMON callback for safe DAMON context access */
+	 
 	if (damon_sysfs_cmd_request.kdamond)
 		return -EBUSY;
 	if (!damon_sysfs_kdamond_running(kdamond))
@@ -1507,20 +1419,17 @@ static int damon_sysfs_handle_cmd(enum damon_sysfs_cmd cmd,
 	damon_sysfs_cmd_request.cmd = cmd;
 	damon_sysfs_cmd_request.kdamond = kdamond;
 
-	/*
-	 * wait until damon_sysfs_cmd_request_callback() handles the request
-	 * from kdamond context
-	 */
+	 
 	mutex_unlock(&damon_sysfs_lock);
 	while (need_wait) {
 		schedule_timeout_idle(msecs_to_jiffies(100));
 		if (!mutex_trylock(&damon_sysfs_lock))
 			continue;
 		if (!damon_sysfs_cmd_request.kdamond) {
-			/* damon_sysfs_cmd_request_callback() handled */
+			 
 			need_wait = false;
 		} else if (!damon_sysfs_kdamond_running(kdamond)) {
-			/* kdamond has already finished */
+			 
 			need_wait = false;
 			damon_sysfs_cmd_request.kdamond = NULL;
 		}
@@ -1604,9 +1513,7 @@ static const struct kobj_type damon_sysfs_kdamond_ktype = {
 	.default_groups = damon_sysfs_kdamond_groups,
 };
 
-/*
- * kdamonds directory
- */
+ 
 
 struct damon_sysfs_kdamonds {
 	struct kobject kobj;
@@ -1747,9 +1654,7 @@ static const struct kobj_type damon_sysfs_kdamonds_ktype = {
 	.default_groups = damon_sysfs_kdamonds_groups,
 };
 
-/*
- * damon user interface directory
- */
+ 
 
 struct damon_sysfs_ui_dir {
 	struct kobject kobj;

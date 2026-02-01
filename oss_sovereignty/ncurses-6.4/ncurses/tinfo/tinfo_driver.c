@@ -1,46 +1,16 @@
-/****************************************************************************
- * Copyright 2018-2021,2022 Thomas E. Dickey                                *
- * Copyright 2008-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Juergen Pfeifer                                                 *
- *     and: Thomas E. Dickey                                                *
- ****************************************************************************/
+ 
 
 #include <curses.priv.h>
 #define CUR TerminalType((TERMINAL*)TCB).
 #include <tic.h>
-#include <termcap.h>		/* ospeed */
+#include <termcap.h>		 
 
 #if HAVE_NANOSLEEP
 #include <time.h>
 #if HAVE_SYS_TIME_H
-#include <sys/time.h>		/* needed for MacOS X DP3 */
+#include <sys/time.h>		 
 #endif
 #endif
 
@@ -54,10 +24,7 @@
 
 MODULE_ID("$Id: tinfo_driver.c,v 1.73 2022/08/13 14:36:43 tom Exp $")
 
-/*
- * SCO defines TIOCGSIZE and the corresponding struct.  Other systems (SunOS,
- * Solaris, IRIX) define TIOCGWINSZ and struct winsize.
- */
+ 
 #ifdef TIOCGSIZE
 # define IOCTL_WINSIZE TIOCGSIZE
 # define STRUCT_WINSIZE struct ttysize
@@ -72,11 +39,7 @@ MODULE_ID("$Id: tinfo_driver.c,v 1.73 2022/08/13 14:36:43 tom Exp $")
 # endif
 #endif
 
-/*
- * These should be screen structure members.  They need to be globals for
- * historical reasons.  So we assign them in start_color() and also in
- * set_term()'s screen-switching logic.
- */
+ 
 #if USE_REENTRANT
 NCURSES_EXPORT(int)
 NCURSES_PUBLIC_VAR(COLOR_PAIRS) (void)
@@ -97,10 +60,7 @@ NCURSES_EXPORT_VAR(int) COLORS = 0;
 #define AssertTCB() assert(TCB!=0 && TCB->magic==TCBMAGIC)
 #define SetSP() assert(TCB->csp!=0); sp = TCB->csp; (void) sp
 
-/*
- * This routine needs to do all the work to make curscr look
- * like newscr.
- */
+ 
 static int
 drv_doupdate(TERMINAL_CONTROL_BLOCK * TCB)
 {
@@ -124,7 +84,7 @@ get_baudrate(TERMINAL *termp)
 #ifdef TERMIOS
 	termp->Nttyb.c_oflag &= (unsigned) (~OFLAGS_TABS);
 #elif defined(EXP_WIN32_DRIVER)
-	/* noop */
+	 
 #else
 	termp->Nttyb.sg_flags &= (unsigned) (~XTABS);
 #endif
@@ -132,11 +92,11 @@ get_baudrate(TERMINAL *termp)
 #ifdef USE_OLD_TTY
     result = (int) cfgetospeed(&(termp->Nttyb));
     my_ospeed = (NCURSES_OSPEED) _nc_ospeed(result);
-#else /* !USE_OLD_TTY */
+#else  
 #ifdef TERMIOS
     my_ospeed = (NCURSES_OSPEED) cfgetospeed(&(termp->Nttyb));
 #elif defined(EXP_WIN32_DRIVER)
-    /* noop */
+     
     my_ospeed = 0;
 #else
     my_ospeed = (NCURSES_OSPEED) termp->Nttyb.sg_ospeed;
@@ -176,7 +136,7 @@ drv_CanHandle(TERMINAL_CONTROL_BLOCK * TCB, const char *tname, int *errret)
     status = TGETENT_NO;
 #endif
 
-    /* try fallback list if entry on disk */
+     
     if (status != TGETENT_YES) {
 	const TERMTYPE2 *fallback = _nc_fallback2(tname);
 
@@ -209,12 +169,7 @@ drv_CanHandle(TERMINAL_CONTROL_BLOCK * TCB, const char *tname, int *errret)
     if (command_character)
 	_nc_tinfo_cmdch(termp, *command_character);
 
-    /*
-     * If an application calls setupterm() rather than initscr() or
-     * newterm(), we will not have the def_prog_mode() call in
-     * _nc_setupscreen().  Do it now anyway, so we can initialize the
-     * baudrate.
-     */
+     
     if (sp == 0 && NC_ISATTY(termp->Filedes)) {
 	get_baudrate(termp);
     }
@@ -228,10 +183,7 @@ drv_CanHandle(TERMINAL_CONTROL_BLOCK * TCB, const char *tname, int *errret)
 #endif
 
     if (generic_type) {
-	/*
-	 * BSD 4.3's termcap contains mis-typed "gn" for wy99.  Do a sanity
-	 * check before giving up.
-	 */
+	 
 	if ((VALID_STRING(cursor_address)
 	     || (VALID_STRING(cursor_down) && VALID_STRING(cursor_home)))
 	    && VALID_STRING(clear_screen)) {
@@ -262,7 +214,7 @@ drv_dobeepflash(TERMINAL_CONTROL_BLOCK * TCB, int beepFlag)
     AssertTCB();
     SetSP();
 
-    /* FIXME: should make sure that we are not in altchar mode */
+     
     if (beepFlag) {
 	if (bell) {
 	    res = NCURSES_PUTP2("bell", bell);
@@ -283,11 +235,7 @@ drv_dobeepflash(TERMINAL_CONTROL_BLOCK * TCB, int beepFlag)
     return res;
 }
 
-/*
- * SVr4 curses is known to interchange color codes (1,4) and (3,6), possibly
- * to maintain compatibility with a pre-ANSI scheme.  The same scheme is
- * also used in the FreeBSD syscons.
- */
+ 
 static int
 toggled_colors(int c)
 {
@@ -422,7 +370,7 @@ drv_size(TERMINAL_CONTROL_BLOCK * TCB, int *linep, int *colp)
     bool useTioctl = TRUE;
 
     AssertTCB();
-    sp = TCB->csp;		/* can be null here */
+    sp = TCB->csp;		 
 
     if (sp) {
 	useEnv = sp->_use_env;
@@ -433,13 +381,11 @@ drv_size(TERMINAL_CONTROL_BLOCK * TCB, int *linep, int *colp)
     }
 
 #ifdef EXP_WIN32_DRIVER
-    /* If we are here, then Windows console is used in terminfo mode.
-       We need to figure out the size using the console API
-     */
+     
     _nc_console_size(linep, colp);
     T(("screen size: winconsole lines = %d columns = %d", *linep, *colp));
 #else
-    /* figure out the size of the screen */
+     
     T(("screen size: terminfo lines = %d columns = %d", lines, columns));
 
     *linep = (int) lines;
@@ -461,7 +407,7 @@ drv_size(TERMINAL_CONTROL_BLOCK * TCB, int *linep, int *colp)
 	}
 #endif
 #if HAVE_SIZECHANGE
-	/* try asking the OS */
+	 
 	{
 	    TERMINAL *termp = (TERMINAL *) TCB;
 	    if (NC_ISATTY(termp->Filedes)) {
@@ -482,13 +428,11 @@ drv_size(TERMINAL_CONTROL_BLOCK * TCB, int *linep, int *colp)
 		    (errno == EINTR);
 	    }
 	}
-#endif /* HAVE_SIZECHANGE */
+#endif  
 
 	if (useEnv) {
 	    if (useTioctl) {
-		/*
-		 * If environment variables are used, update them.
-		 */
+		 
 		if ((sp == 0 || !sp->_filtered) && _nc_getenv_num("LINES") > 0) {
 		    _nc_setenv_num("LINES", *linep);
 		}
@@ -497,12 +441,7 @@ drv_size(TERMINAL_CONTROL_BLOCK * TCB, int *linep, int *colp)
 		}
 	    }
 
-	    /*
-	     * Finally, look for environment variables.
-	     *
-	     * Solaris lets users override either dimension with an environment
-	     * variable.
-	     */
+	     
 	    if ((value = _nc_getenv_num("LINES")) > 0) {
 		*linep = value;
 		T(("screen size: environment LINES = %d", *linep));
@@ -513,7 +452,7 @@ drv_size(TERMINAL_CONTROL_BLOCK * TCB, int *linep, int *colp)
 	    }
 	}
 
-	/* if we can't get dynamic info about the size, use static */
+	 
 	if (*linep <= 0) {
 	    *linep = (int) lines;
 	}
@@ -521,7 +460,7 @@ drv_size(TERMINAL_CONTROL_BLOCK * TCB, int *linep, int *colp)
 	    *colp = (int) columns;
 	}
 
-	/* the ultimate fallback, assume fixed 24x80 size */
+	 
 	if (*linep <= 0) {
 	    *linep = 24;
 	}
@@ -529,10 +468,7 @@ drv_size(TERMINAL_CONTROL_BLOCK * TCB, int *linep, int *colp)
 	    *colp = 80;
 	}
 
-	/*
-	 * Put the derived values back in the screen-size caps, so
-	 * tigetnum() and tgetnum() will do the right thing.
-	 */
+	 
 	lines = (short) (*linep);
 	columns = (short) (*colp);
     }
@@ -604,25 +540,23 @@ drv_mode(TERMINAL_CONTROL_BLOCK * TCB, int progFlag, int defFlag)
     AssertTCB();
     sp = TCB->csp;
 
-    if (progFlag)		/* prog mode */
+    if (progFlag)		 
     {
 	if (defFlag) {
-	    /* def_prog_mode */
-	    /*
-	     * Turn off the XTABS bit in the tty structure if it was on.
-	     */
+	     
+	     
 	    if ((drv_sgmode(TCB, FALSE, &(_term->Nttyb)) == OK)) {
 #ifdef TERMIOS
 		_term->Nttyb.c_oflag &= (unsigned) ~OFLAGS_TABS;
 #elif defined(EXP_WIN32_DRIVER)
-		/* noop */
+		 
 #else
 		_term->Nttyb.sg_flags &= (unsigned) ~XTABS;
 #endif
 		code = OK;
 	    }
 	} else {
-	    /* reset_prog_mode */
+	     
 	    if (drv_sgmode(TCB, TRUE, &(_term->Nttyb)) == OK) {
 		if (sp) {
 		    if (sp->_keypad_on)
@@ -631,18 +565,16 @@ drv_mode(TERMINAL_CONTROL_BLOCK * TCB, int progFlag, int defFlag)
 		code = OK;
 	    }
 	}
-    } else {			/* shell mode */
+    } else {			 
 	if (defFlag) {
-	    /* def_shell_mode */
-	    /*
-	     * If XTABS was on, remove the tab and backtab capabilities.
-	     */
+	     
+	     
 	    if (drv_sgmode(TCB, FALSE, &(_term->Ottyb)) == OK) {
 #ifdef TERMIOS
 		if (_term->Ottyb.c_oflag & OFLAGS_TABS)
 		    tab = back_tab = NULL;
 #elif defined(EXP_WIN32_DRIVER)
-		/* noop */
+		 
 #else
 		if (_term->Ottyb.sg_flags & XTABS)
 		    tab = back_tab = NULL;
@@ -650,7 +582,7 @@ drv_mode(TERMINAL_CONTROL_BLOCK * TCB, int progFlag, int defFlag)
 		code = OK;
 	    }
 	} else {
-	    /* reset_shell_mode */
+	     
 	    if (sp) {
 		_nc_keypad(sp, FALSE);
 		NCURSES_SP_NAME(_nc_flush) (sp);
@@ -667,7 +599,7 @@ drv_wrap(SCREEN *sp)
     if (sp) {
 	sp->_mouse_wrap(sp);
 	NCURSES_SP_NAME(_nc_screen_wrap) (sp);
-	NCURSES_SP_NAME(_nc_mvcur_wrap) (sp);	/* wrap up cursor addressing */
+	NCURSES_SP_NAME(_nc_mvcur_wrap) (sp);	 
     }
 }
 
@@ -685,23 +617,11 @@ drv_screen_init(SCREEN *sp)
 
     AssertTCB();
 
-    /*
-     * Check for mismatched graphic-rendition capabilities.  Most SVr4
-     * terminfo trees contain entries that have rmul or rmso equated to
-     * sgr0 (Solaris curses copes with those entries).  We do this only
-     * for curses, since many termcap applications assume that
-     * smso/rmso and smul/rmul are paired, and will not function
-     * properly if we remove rmso or rmul.  Curses applications
-     * shouldn't be looking at this detail.
-     */
+     
     sp->_use_rmso = SGR0_TEST(exit_standout_mode);
     sp->_use_rmul = SGR0_TEST(exit_underline_mode);
 
-    /*
-     * Check whether we can optimize scrolling under dumb terminals in
-     * case we do not have any of these capabilities, scrolling
-     * optimization will be useless.
-     */
+     
     sp->_scrolling = ((scroll_forward && scroll_reverse) ||
 		      ((parm_rindex ||
 			parm_insert_line ||
@@ -713,7 +633,7 @@ drv_screen_init(SCREEN *sp)
     NCURSES_SP_NAME(baudrate) (sp);
 
     NCURSES_SP_NAME(_nc_mvcur_init) (sp);
-    /* initialize terminal to a sane state */
+     
     NCURSES_SP_NAME(_nc_screen_init) (sp);
 }
 
@@ -748,12 +668,7 @@ drv_init(TERMINAL_CONTROL_BLOCK * TCB)
 
     TCB->info.defaultPalette = hue_lightness_saturation ? _nc_hls_palette : _nc_cga_palette;
 
-    /*
-     * If an application calls setupterm() rather than initscr() or
-     * newterm(), we will not have the def_prog_mode() call in
-     * _nc_setupscreen().  Do it now anyway, so we can initialize the
-     * baudrate.
-     */
+     
     if (NC_ISATTY(trm->Filedes)) {
 	TCB->drv->td_mode(TCB, TRUE, TRUE);
     }
@@ -855,11 +770,7 @@ drv_do_color(TERMINAL_CONTROL_BLOCK * TCB,
 	if ((isDefaultColor(fg) && !isDefaultColor(old_fg))
 	    || (isDefaultColor(bg) && !isDefaultColor(old_bg))) {
 #if NCURSES_EXT_FUNCS
-	    /*
-	     * A minor optimization - but extension.  If "AX" is specified in
-	     * the terminal description, treat it as screen's indicator of ECMA
-	     * SGR 39 and SGR 49, and assume the two sequences are independent.
-	     */
+	     
 	    if (sp->_has_sgr_39_49
 		&& isDefaultColor(old_bg)
 		&& !isDefaultColor(old_fg)) {
@@ -920,7 +831,7 @@ drv_initmouse(TERMINAL_CONTROL_BLOCK * TCB)
     AssertTCB();
     SetSP();
 
-    /* we know how to recognize mouse events under "xterm" */
+     
     if (sp != 0) {
 	if (NonEmpty(key_mouse)) {
 	    init_xterm_mouse(sp);
@@ -1056,7 +967,7 @@ drv_setfilter(TERMINAL_CONTROL_BLOCK * TCB)
 {
     AssertTCB();
 
-    /* *INDENT-EQLS* */
+     
     clear_screen     = ABSENT_STRING;
     cursor_address   = ABSENT_STRING;
     cursor_down      = ABSENT_STRING;
@@ -1081,16 +992,7 @@ drv_initacs(TERMINAL_CONTROL_BLOCK * TCB, chtype *real_map, chtype *fake_map)
 	NCURSES_PUTP2("ena_acs", ena_acs);
     }
 #if NCURSES_EXT_FUNCS
-    /*
-     * Linux console "supports" the "PC ROM" character set by the coincidence
-     * that smpch/rmpch and smacs/rmacs have the same values.  ncurses has
-     * no codepage support (see SCO Merge for an example).  Outside of the
-     * values defined in acsc, there are no definitions for the "PC ROM"
-     * character set (assumed by some applications to be codepage 437), but we
-     * allow those applications to use those codepoints.
-     *
-     * test/blue.c uses this feature.
-     */
+     
 #define PCH_KLUDGE(a,b) (a != 0 && b != 0 && !strcmp(a,b))
     if (PCH_KLUDGE(enter_pc_charset_mode, enter_alt_charset_mode) &&
 	PCH_KLUDGE(exit_pc_charset_mode, exit_alt_charset_mode)) {
@@ -1126,9 +1028,7 @@ drv_initacs(TERMINAL_CONTROL_BLOCK * TCB, chtype *real_map, chtype *fake_map)
 	}
     }
 #ifdef TRACE
-    /* Show the equivalent mapping, noting if it does not match the
-     * given attribute, whether by re-ordering or duplication.
-     */
+     
     if (USE_TRACEF(TRACE_CALLS)) {
 	size_t n, m;
 	char show[ACS_LEN * 2 + 1];
@@ -1152,7 +1052,7 @@ drv_initacs(TERMINAL_CONTROL_BLOCK * TCB, chtype *real_map, chtype *fake_map)
 		_nc_visbuf(show));
 	_nc_unlock_global(tracef);
     }
-#endif /* TRACE */
+#endif  
 }
 
 #define ENSURE_TINFO(sp) (TCBOf(sp)->drv->isTerminfo)
@@ -1167,10 +1067,7 @@ _nc_cookie_init(SCREEN *sp)
 	return;
 
 #if USE_XMC_SUPPORT
-    /*
-     * If we have no magic-cookie support compiled-in, or if it is suppressed
-     * in the environment, reset the support-flag.
-     */
+     
     if (magic_cookie_glitch >= 0) {
 	if (getenv("NCURSES_NO_MAGIC_COOKIE") != 0) {
 	    support_cookies = FALSE;
@@ -1182,15 +1079,11 @@ _nc_cookie_init(SCREEN *sp)
 	T(("will disable attributes to work w/o magic cookies"));
     }
 
-    if (magic_cookie_glitch > 0) {	/* tvi, wyse */
+    if (magic_cookie_glitch > 0) {	 
 
 	sp->_xmc_triggers = sp->_ok_attributes & XMC_CONFLICT;
 #if 0
-	/*
-	 * We "should" treat colors as an attribute.  The wyse350 (and its
-	 * clones) appear to be the only ones that have both colors and magic
-	 * cookies.
-	 */
+	 
 	if (has_colors()) {
 	    sp->_xmc_triggers |= A_COLOR;
 	}
@@ -1198,32 +1091,23 @@ _nc_cookie_init(SCREEN *sp)
 	sp->_xmc_suppress = sp->_xmc_triggers & (chtype) ~(A_BOLD);
 
 	T(("magic cookie attributes %s", _traceattr(sp->_xmc_suppress)));
-	/*
-	 * Supporting line-drawing may be possible.  But make the regular
-	 * video attributes work first.
-	 */
+	 
 	acs_chars = ABSENT_STRING;
 	ena_acs = ABSENT_STRING;
 	enter_alt_charset_mode = ABSENT_STRING;
 	exit_alt_charset_mode = ABSENT_STRING;
 #if USE_XMC_SUPPORT
-	/*
-	 * To keep the cookie support simple, suppress all of the optimization
-	 * hooks except for clear_screen and the cursor addressing.
-	 */
+	 
 	if (support_cookies) {
 	    clr_eol = ABSENT_STRING;
 	    clr_eos = ABSENT_STRING;
 	    set_attributes = ABSENT_STRING;
 	}
 #endif
-    } else if (magic_cookie_glitch == 0) {	/* hpterm */
+    } else if (magic_cookie_glitch == 0) {	 
     }
 
-    /*
-     * If magic cookies are not supported, cancel the strings that set
-     * video attributes.
-     */
+     
     if (!support_cookies && magic_cookie_glitch >= 0) {
 	magic_cookie_glitch = ABSENT_NUMERIC;
 	set_attributes = ABSENT_STRING;
@@ -1235,7 +1119,7 @@ _nc_cookie_init(SCREEN *sp)
 	enter_underline_mode = ABSENT_STRING;
     }
 
-    /* initialize normal acs before wide, since we use mapping in the latter */
+     
 #if !USE_WIDEC_SUPPORT
     if (_nc_unicode_locale() && _nc_locale_breaks_acs(sp->_term)) {
 	acs_chars = NULL;
@@ -1452,50 +1336,46 @@ drv_kyExist(TERMINAL_CONTROL_BLOCK * TCB, int key)
 
 NCURSES_EXPORT_VAR (TERM_DRIVER) _nc_TINFO_DRIVER = {
     TRUE,
-	drv_Name,		/* Name */
-	drv_CanHandle,		/* CanHandle */
-	drv_init,		/* init */
-	drv_release,		/* release */
-	drv_size,		/* size */
-	drv_sgmode,		/* sgmode */
-	drv_conattr,		/* conattr */
-	drv_mvcur,		/* hwcur */
-	drv_mode,		/* mode */
-	drv_rescol,		/* rescol */
-	drv_rescolors,		/* rescolors */
-	drv_setcolor,		/* color */
-	drv_dobeepflash,	/* doBeepOrFlash */
-	drv_initpair,		/* initpair */
-	drv_initcolor,		/* initcolor */
-	drv_do_color,		/* docolor */
-	drv_initmouse,		/* initmouse */
-	drv_testmouse,		/* testmouse */
-	drv_setfilter,		/* setfilter */
-	drv_hwlabel,		/* hwlabel */
-	drv_hwlabelOnOff,	/* hwlabelOnOff */
-	drv_doupdate,		/* update */
-	drv_defaultcolors,	/* defaultcolors */
-	drv_print,		/* print */
-	drv_getsize,		/* getsize */
-	drv_setsize,		/* setsize */
-	drv_initacs,		/* initacs */
-	drv_screen_init,	/* scinit */
-	drv_wrap,		/* scexit */
-	drv_twait,		/* twait  */
-	drv_read,		/* read */
-	drv_nap,		/* nap */
-	drv_kpad,		/* kpad */
-	drv_keyok,		/* kyOk */
-	drv_kyExist,		/* kyExist */
-	drv_cursorSet		/* cursorSet */
+	drv_Name,		 
+	drv_CanHandle,		 
+	drv_init,		 
+	drv_release,		 
+	drv_size,		 
+	drv_sgmode,		 
+	drv_conattr,		 
+	drv_mvcur,		 
+	drv_mode,		 
+	drv_rescol,		 
+	drv_rescolors,		 
+	drv_setcolor,		 
+	drv_dobeepflash,	 
+	drv_initpair,		 
+	drv_initcolor,		 
+	drv_do_color,		 
+	drv_initmouse,		 
+	drv_testmouse,		 
+	drv_setfilter,		 
+	drv_hwlabel,		 
+	drv_hwlabelOnOff,	 
+	drv_doupdate,		 
+	drv_defaultcolors,	 
+	drv_print,		 
+	drv_getsize,		 
+	drv_setsize,		 
+	drv_initacs,		 
+	drv_screen_init,	 
+	drv_wrap,		 
+	drv_twait,		 
+	drv_read,		 
+	drv_nap,		 
+	drv_kpad,		 
+	drv_keyok,		 
+	drv_kyExist,		 
+	drv_cursorSet		 
 };
 
 #ifdef EXP_WIN32_DRIVER
-/*
- * The terminfo driver is mandatory and must always be present.
- * So this is the natural place for the driver initialisation
- * logic.
- */
+ 
 
 typedef struct DriverEntry {
     const char *name;
@@ -1507,7 +1387,7 @@ static DRIVER_ENTRY DriverTable[] =
 #ifdef _NC_WINDOWS
     {"win32console", &_nc_WIN_DRIVER},
 #endif
-    {"tinfo", &_nc_TINFO_DRIVER}	/* must be last */
+    {"tinfo", &_nc_TINFO_DRIVER}	 
 };
 
 NCURSES_EXPORT(int)
@@ -1527,11 +1407,7 @@ _nc_get_driver(TERMINAL_CONTROL_BLOCK * TCB, const char *name, int *errret)
 	res = DriverTable[i].driver;
 #ifdef _NC_WINDOWS
 	if ((i + 1) == SIZEOF(DriverTable)) {
-	    /* For Windows >= 10.0.17763 Windows Console interface implements
-	       virtual Terminal functionality.
-	       If on Windows td_CanHandle returned FALSE although the terminal
-	       name is empty, we default to ms-terminal as tinfo TERM type.
-	     */
+	     
 	    if (name == 0 || *name == 0 || (strcmp(name, "unknown") == 0)) {
 		name = MS_TERMINAL;
 		T(("Set TERM=%s", name));
@@ -1551,4 +1427,4 @@ _nc_get_driver(TERMINAL_CONTROL_BLOCK * TCB, const char *name, int *errret)
     }
     returnCode(code);
 }
-#endif /* EXP_WIN32_DRIVER */
+#endif  

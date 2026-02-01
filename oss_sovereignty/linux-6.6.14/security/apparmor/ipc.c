@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AppArmor security module
- *
- * This file contains AppArmor ipc mediation
- *
- * Copyright (C) 1998-2008 Novell/SUSE
- * Copyright 2009-2017 Canonical Ltd.
- */
+
+ 
 
 #include <linux/gfp.h>
 
@@ -29,12 +22,7 @@ static inline int map_signal_num(int sig)
 	return SIGUNKNOWN;
 }
 
-/**
- * audit_signal_mask - convert mask to permission string
- * @mask: permission mask to convert
- *
- * Returns: pointer to static string
- */
+ 
 static const char *audit_signal_mask(u32 mask)
 {
 	if (mask & MAY_READ)
@@ -44,11 +32,7 @@ static const char *audit_signal_mask(u32 mask)
 	return "";
 }
 
-/**
- * audit_signal_cb() - call back for signal specific audit fields
- * @ab: audit_buffer  (NOT NULL)
- * @va: audit struct to audit values of  (NOT NULL)
- */
+ 
 static void audit_signal_cb(struct audit_buffer *ab, void *va)
 {
 	struct common_audit_data *sa = va;
@@ -91,7 +75,7 @@ static int profile_signal_perm(const struct cred *cred,
 
 	ad->subj_cred = cred;
 	ad->peer = peer;
-	/* TODO: secondary cache check <profile, profile, perm> */
+	 
 	state = aa_dfa_next(rules->policy.dfa,
 			    rules->policy.start[AA_CLASS_SIGNAL],
 			    ad->signal);

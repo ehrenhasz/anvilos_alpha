@@ -1,31 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * vmk80xx.c
- * Velleman USB Board Low-Level Driver
- *
- * Copyright (C) 2009 Manuel Gebele <forensixs@gmx.de>, Germany
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 2000 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Driver: vmk80xx
- * Description: Velleman USB Board Low-Level Driver
- * Devices: [Velleman] K8055 (K8055/VM110), K8061 (K8061/VM140),
- *   VM110 (K8055/VM110), VM140 (K8061/VM140)
- * Author: Manuel Gebele <forensixs@gmx.de>
- * Updated: Sun, 10 May 2009 11:14:59 +0200
- * Status: works
- *
- * Supports:
- *  - analog input
- *  - analog output
- *  - digital input
- *  - digital output
- *  - counter
- *  - pwm
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -69,19 +45,19 @@ enum {
 #define VMK8055_CMD_WRT_AD	0x05
 
 #define VMK8061_CMD_RD_AI	0x00
-#define VMK8061_CMR_RD_ALL_AI	0x01	/* !non-active! */
+#define VMK8061_CMR_RD_ALL_AI	0x01	 
 #define VMK8061_CMD_SET_AO	0x02
-#define VMK8061_CMD_SET_ALL_AO	0x03	/* !non-active! */
+#define VMK8061_CMD_SET_ALL_AO	0x03	 
 #define VMK8061_CMD_OUT_PWM	0x04
 #define VMK8061_CMD_RD_DI	0x05
-#define VMK8061_CMD_DO		0x06	/* !non-active! */
+#define VMK8061_CMD_DO		0x06	 
 #define VMK8061_CMD_CLR_DO	0x07
 #define VMK8061_CMD_SET_DO	0x08
-#define VMK8061_CMD_RD_CNT	0x09	/* TODO: completely pointless? */
-#define VMK8061_CMD_RST_CNT	0x0a	/* TODO: completely pointless? */
-#define VMK8061_CMD_RD_VERSION	0x0b	/* internal usage */
-#define VMK8061_CMD_RD_JMP_STAT	0x0c	/* TODO: not implemented yet */
-#define VMK8061_CMD_RD_PWR_STAT	0x0d	/* internal usage */
+#define VMK8061_CMD_RD_CNT	0x09	 
+#define VMK8061_CMD_RST_CNT	0x0a	 
+#define VMK8061_CMD_RD_VERSION	0x0b	 
+#define VMK8061_CMD_RD_JMP_STAT	0x0c	 
+#define VMK8061_CMD_RD_PWR_STAT	0x0d	 
 #define VMK8061_CMD_RD_DO	0x0e
 #define VMK8061_CMD_RD_AO	0x0f
 #define VMK8061_CMD_RD_PWM	0x10
@@ -90,7 +66,7 @@ enum {
 #define IC6_VERSION		BIT(1)
 
 #define MIN_BUF_SIZE		64
-#define PACKET_TIMEOUT		10000	/* ms */
+#define PACKET_TIMEOUT		10000	 
 
 enum vmk80xx_model {
 	VMK8055_MODEL,
@@ -136,7 +112,7 @@ static const struct vmk80xx_board vmk80xx_boardinfo[] = {
 		.ai_maxdata	= 0x03ff,
 		.ao_nchans	= 8,
 		.di_nchans	= 8,
-		.cnt_maxdata	= 0,	/* unknown, device is not writeable */
+		.cnt_maxdata	= 0,	 
 		.pwm_nchans	= 1,
 		.pwm_maxdata	= 0x03ff,
 	},
@@ -227,7 +203,7 @@ static int vmk80xx_reset_device(struct comedi_device *dev)
 	retval = vmk80xx_write_packet(dev, VMK8055_CMD_RST);
 	if (retval)
 		return retval;
-	/* set outputs to known state as we cannot read them */
+	 
 	return vmk80xx_write_packet(dev, VMK8055_CMD_WRT_AD);
 }
 
@@ -269,7 +245,7 @@ static int vmk80xx_ai_insn_read(struct comedi_device *dev,
 			continue;
 		}
 
-		/* VMK8061_MODEL */
+		 
 		data[n] = devpriv->usb_rx_buf[reg[0]] + 256 *
 		    devpriv->usb_rx_buf[reg[1]];
 	}
@@ -301,7 +277,7 @@ static int vmk80xx_ao_insn_write(struct comedi_device *dev,
 		else
 			reg = VMK8055_AO2_REG;
 		break;
-	default:		/* NOTE: avoid compiler warnings */
+	default:		 
 		cmd = VMK8061_CMD_SET_AO;
 		reg = VMK8061_AO_REG;
 		devpriv->usb_tx_buf[VMK8061_CH_REG] = chan;
@@ -402,7 +378,7 @@ static int vmk80xx_do_insn_bits(struct comedi_device *dev,
 	if (devpriv->model == VMK8061_MODEL) {
 		reg = VMK8061_DO_REG;
 		cmd = VMK8061_CMD_DO;
-	} else { /* VMK8055_MODEL */
+	} else {  
 		reg = VMK8055_DO_REG;
 		cmd = VMK8055_CMD_WRT_AD;
 	}
@@ -466,7 +442,7 @@ static int vmk80xx_cnt_insn_read(struct comedi_device *dev,
 
 		if (devpriv->model == VMK8055_MODEL)
 			data[n] = devpriv->usb_rx_buf[reg[0]];
-		else /* VMK8061_MODEL */
+		else  
 			data[n] = devpriv->usb_rx_buf[reg[0] * (chan + 1) + 1]
 			    + 256 * devpriv->usb_rx_buf[reg[1] * 2 + 2];
 	}
@@ -538,7 +514,7 @@ static int vmk80xx_cnt_insn_write(struct comedi_device *dev,
 		if (debtime == 0)
 			debtime = 1;
 
-		/* TODO: Prevent overflows */
+		 
 		if (debtime > 7450)
 			debtime = 7450;
 
@@ -610,19 +586,7 @@ static int vmk80xx_pwm_insn_write(struct comedi_device *dev,
 
 	cmd = VMK8061_CMD_OUT_PWM;
 
-	/*
-	 * The followin piece of code was translated from the inline
-	 * assembler code in the DLL source code.
-	 *
-	 * asm
-	 *   mov eax, k  ; k is the value (data[n])
-	 *   and al, 03h ; al are the lower 8 bits of eax
-	 *   mov lo, al  ; lo is the low part (tx_buf[reg[0]])
-	 *   mov eax, k
-	 *   shr eax, 2  ; right shift eax register by 2
-	 *   mov hi, al  ; hi is the high part (tx_buf[reg[1]])
-	 * end;
-	 */
+	 
 	for (n = 0; n < insn->n; n++) {
 		tx_buf[reg[0]] = (unsigned char)(data[n] & 0x03);
 		tx_buf[reg[1]] = (unsigned char)(data[n] >> 2) & 0xff;
@@ -712,7 +676,7 @@ static int vmk80xx_init_subdevices(struct comedi_device *dev)
 		return ret;
 	}
 
-	/* Analog input subdevice */
+	 
 	s = &dev->subdevices[0];
 	s->type		= COMEDI_SUBD_AI;
 	s->subdev_flags	= SDF_READABLE | SDF_GROUND;
@@ -721,7 +685,7 @@ static int vmk80xx_init_subdevices(struct comedi_device *dev)
 	s->range_table	= board->range;
 	s->insn_read	= vmk80xx_ai_insn_read;
 
-	/* Analog output subdevice */
+	 
 	s = &dev->subdevices[1];
 	s->type		= COMEDI_SUBD_AO;
 	s->subdev_flags	= SDF_WRITABLE | SDF_GROUND;
@@ -734,7 +698,7 @@ static int vmk80xx_init_subdevices(struct comedi_device *dev)
 		s->insn_read	= vmk80xx_ao_insn_read;
 	}
 
-	/* Digital input subdevice */
+	 
 	s = &dev->subdevices[2];
 	s->type		= COMEDI_SUBD_DI;
 	s->subdev_flags	= SDF_READABLE;
@@ -743,7 +707,7 @@ static int vmk80xx_init_subdevices(struct comedi_device *dev)
 	s->range_table	= &range_digital;
 	s->insn_bits	= vmk80xx_di_insn_bits;
 
-	/* Digital output subdevice */
+	 
 	s = &dev->subdevices[3];
 	s->type		= COMEDI_SUBD_DO;
 	s->subdev_flags	= SDF_WRITABLE;
@@ -752,7 +716,7 @@ static int vmk80xx_init_subdevices(struct comedi_device *dev)
 	s->range_table	= &range_digital;
 	s->insn_bits	= vmk80xx_do_insn_bits;
 
-	/* Counter subdevice */
+	 
 	s = &dev->subdevices[4];
 	s->type		= COMEDI_SUBD_COUNTER;
 	s->subdev_flags	= SDF_READABLE;
@@ -765,7 +729,7 @@ static int vmk80xx_init_subdevices(struct comedi_device *dev)
 		s->insn_write	= vmk80xx_cnt_insn_write;
 	}
 
-	/* PWM subdevice */
+	 
 	if (devpriv->model == VMK8061_MODEL) {
 		s = &dev->subdevices[5];
 		s->type		= COMEDI_SUBD_PWM;

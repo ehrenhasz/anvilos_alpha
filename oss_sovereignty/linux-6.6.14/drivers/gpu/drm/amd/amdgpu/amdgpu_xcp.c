@@ -1,25 +1,4 @@
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "amdgpu.h"
 #include "amdgpu_xcp.h"
 #include "amdgpu_drv.h"
@@ -132,7 +111,7 @@ int amdgpu_xcp_init(struct amdgpu_xcp_mgr *xcp_mgr, int num_xcps, int mode)
 	for (i = 0; i < MAX_XCP; ++i)
 		xcp_mgr->xcp[i].valid = false;
 
-	/* This is needed for figuring out memory id of xcp */
+	 
 	xcp_mgr->num_xcp_per_mem_partition = num_xcps / xcp_mgr->adev->gmc.num_mem_partitions;
 
 	for (i = 0; i < num_xcps; ++i) {
@@ -179,13 +158,13 @@ int amdgpu_xcp_switch_partition_mode(struct amdgpu_xcp_mgr *xcp_mgr, int mode)
 	mutex_lock(&xcp_mgr->xcp_lock);
 
 	curr_mode = xcp_mgr->mode;
-	/* State set to transient mode */
+	 
 	xcp_mgr->mode = AMDGPU_XCP_MODE_TRANS;
 
 	ret = xcp_mgr->funcs->switch_partition_mode(xcp_mgr, mode, &num_xcps);
 
 	if (ret) {
-		/* Failed, get whatever mode it's at now */
+		 
 		if (xcp_mgr->funcs->query_partition_mode)
 			xcp_mgr->mode = amdgpu_xcp_query_partition_mode(
 				xcp_mgr, AMDGPU_XCP_FL_LOCKED);
@@ -234,7 +213,7 @@ static int amdgpu_xcp_dev_alloc(struct amdgpu_device *adev)
 
 	ddev = adev_to_drm(adev);
 
-	/* xcp #0 shares drm device setting with adev */
+	 
 	adev->xcp_mgr->xcp->ddev = ddev;
 
 	for (i = 1; i < MAX_XCP; i++) {
@@ -247,7 +226,7 @@ static int amdgpu_xcp_dev_alloc(struct amdgpu_device *adev)
 			return ret;
 		}
 
-		/* Redirect all IOCTLs to the primary device */
+		 
 		adev->xcp_mgr->xcp[i].rdev = p_ddev->render->dev;
 		adev->xcp_mgr->xcp[i].pdev = p_ddev->primary->dev;
 		adev->xcp_mgr->xcp[i].driver = (struct drm_driver *)p_ddev->driver;

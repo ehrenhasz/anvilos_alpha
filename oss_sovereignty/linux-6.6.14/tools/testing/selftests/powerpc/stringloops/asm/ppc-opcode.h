@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 2009 Freescale Semiconductor, Inc.
- *
- * provides masks and opcode images for use by code generation, emulation
- * and for instructions that older assemblers might not know about
- */
+ 
+ 
 #ifndef _ASM_POWERPC_PPC_OPCODE_H
 #define _ASM_POWERPC_PPC_OPCODE_H
 
@@ -18,7 +13,7 @@
 
 #define __PPC_RC21     (0x1 << 10)
 
-/* macros to insert fields into opcodes */
+ 
 #define ___PPC_RA(a)	(((a) & 0x1f) << 16)
 #define ___PPC_RB(b)	(((b) & 0x1f) << 11)
 #define ___PPC_RS(s)	(((s) & 0x1f) << 21)
@@ -32,4 +27,4 @@
 			      ___PPC_RT(vrt) | ___PPC_RA(vra) | \
 			      ___PPC_RB(vrb) | __PPC_RC21)
 
-#endif /* _ASM_POWERPC_PPC_OPCODE_H */
+#endif  

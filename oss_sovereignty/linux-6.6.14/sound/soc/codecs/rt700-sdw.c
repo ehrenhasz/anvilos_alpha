@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// rt700-sdw.c -- rt700 ALSA SoC audio driver
-//
-// Copyright(c) 2019 Realtek Semiconductor Corp.
-//
-//
+
+
+
+
+
+
+
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -64,11 +64,11 @@ static bool rt700_volatile_register(struct device *dev, unsigned int reg)
 	case 0x2021:
 	case 0x2023:
 	case 0x2230:
-	case 0x200b ... 0x200e: /* i2c read */
-	case 0x2012 ... 0x2015: /* HD-A read */
-	case 0x202d ... 0x202f: /* BRA */
-	case 0x2201 ... 0x2212: /* i2c debug */
-	case 0x2220 ... 0x2223: /* decoded HD-A */
+	case 0x200b ... 0x200e:  
+	case 0x2012 ... 0x2015:  
+	case 0x202d ... 0x202f:  
+	case 0x2201 ... 0x2212:  
+	case 0x2220 ... 0x2223:  
 	case 0x9c00 ... 0x9cff:
 	case 0xb900 ... 0xb9ff:
 	case 0xff01:
@@ -96,7 +96,7 @@ static int rt700_sdw_read(void *context, unsigned int reg, unsigned int *val)
 
 	mask = reg & 0xf000;
 
-	if (is_index_reg) { /* index registers */
+	if (is_index_reg) {  
 		val2 = reg & 0xff;
 		reg = reg >> 8;
 		nid = reg & 0xff;
@@ -136,7 +136,7 @@ static int rt700_sdw_read(void *context, unsigned int reg, unsigned int *val)
 		ret = regmap_write(rt700->sdw_regmap, reg2, (*val & 0xff));
 		if (ret < 0)
 			return ret;
-	} else if ((reg & 0xff00) == 0x8300) { /* for R channel */
+	} else if ((reg & 0xff00) == 0x8300) {  
 		reg2 = reg - 0x1000;
 		reg2 &= ~0x80;
 		ret = regmap_write(rt700->sdw_regmap,
@@ -218,7 +218,7 @@ static int rt700_sdw_write(void *context, unsigned int reg, unsigned int val)
 
 	mask = reg & 0xf000;
 
-	if (is_index_reg) { /* index registers */
+	if (is_index_reg) {  
 		val2 = reg & 0xff;
 		reg = reg >> 8;
 		nid = reg & 0xff;
@@ -260,7 +260,7 @@ static int rt700_sdw_write(void *context, unsigned int reg, unsigned int val)
 		ret = regmap_write(rt700->sdw_regmap, reg2, (val & 0xff));
 		if (ret < 0)
 			return ret;
-	} else if ((reg & 0xff00) == 0x8300) {  /* for R channel */
+	} else if ((reg & 0xff00) == 0x8300) {   
 		reg2 = reg - 0x1000;
 		reg2 &= ~0x80;
 		ret = regmap_write(rt700->sdw_regmap,
@@ -318,14 +318,11 @@ static int rt700_update_status(struct sdw_slave *slave,
 	if (status == SDW_SLAVE_UNATTACHED)
 		rt700->hw_init = false;
 
-	/*
-	 * Perform initialization only if slave status is present and
-	 * hw_init flag is false
-	 */
+	 
 	if (rt700->hw_init || status != SDW_SLAVE_ATTACHED)
 		return 0;
 
-	/* perform I/O transfers required for Slave initialization */
+	 
 	return rt700_io_init(&slave->dev, slave);
 }
 
@@ -343,9 +340,9 @@ static int rt700_read_prop(struct sdw_slave *slave)
 
 	prop->paging_support = false;
 
-	/* first we need to allocate memory for set bits in port lists */
-	prop->source_ports = 0x14; /* BITMAP: 00010100 */
-	prop->sink_ports = 0xA; /* BITMAP:  00001010 */
+	 
+	prop->source_ports = 0x14;  
+	prop->sink_ports = 0xA;  
 
 	nval = hweight32(prop->source_ports);
 	prop->src_dpn_prop = devm_kcalloc(&slave->dev, nval,
@@ -365,7 +362,7 @@ static int rt700_read_prop(struct sdw_slave *slave)
 		i++;
 	}
 
-	/* do this again for sink now */
+	 
 	nval = hweight32(prop->sink_ports);
 	prop->sink_dpn_prop = devm_kcalloc(&slave->dev, nval,
 						sizeof(*prop->sink_dpn_prop),
@@ -384,10 +381,10 @@ static int rt700_read_prop(struct sdw_slave *slave)
 		i++;
 	}
 
-	/* set the timeout values */
+	 
 	prop->clk_stop_timeout = 20;
 
-	/* wake-up event */
+	 
 	prop->wake_capable = 1;
 
 	return 0;
@@ -426,10 +423,7 @@ static int rt700_interrupt_callback(struct sdw_slave *slave,
 	return 0;
 }
 
-/*
- * slave_ops: callbacks for get_clock_stop_mode, clock_stop and
- * port_prep are not defined for now
- */
+ 
 static const struct sdw_slave_ops rt700_slave_ops = {
 	.read_prop = rt700_read_prop,
 	.interrupt_callback = rt700_interrupt_callback,
@@ -442,7 +436,7 @@ static int rt700_sdw_probe(struct sdw_slave *slave,
 {
 	struct regmap *sdw_regmap, *regmap;
 
-	/* Regmap Initialization */
+	 
 	sdw_regmap = devm_regmap_init_sdw(slave, &rt700_sdw_regmap);
 	if (IS_ERR(sdw_regmap))
 		return PTR_ERR(sdw_regmap);
@@ -499,11 +493,7 @@ static int __maybe_unused rt700_dev_system_suspend(struct device *dev)
 	if (!rt700->hw_init)
 		return 0;
 
-	/*
-	 * prevent new interrupts from being handled after the
-	 * deferred work completes and before the parent disables
-	 * interrupts on the link
-	 */
+	 
 	mutex_lock(&rt700->disable_irq_lock);
 	rt700->disable_irq = true;
 	ret = sdw_update_no_pm(slave, SDW_SCP_INTMASK1,
@@ -511,7 +501,7 @@ static int __maybe_unused rt700_dev_system_suspend(struct device *dev)
 	mutex_unlock(&rt700->disable_irq_lock);
 
 	if (ret < 0) {
-		/* log but don't prevent suspend from happening */
+		 
 		dev_dbg(&slave->dev, "%s: could not disable imp-def interrupts\n:", __func__);
 	}
 

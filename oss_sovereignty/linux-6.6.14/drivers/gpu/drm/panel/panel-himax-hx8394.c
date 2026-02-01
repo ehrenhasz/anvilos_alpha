@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for panels based on Himax HX8394 controller, such as:
- *
- * - HannStar HSD060BHW4 5.99" MIPI-DSI panel
- *
- * Copyright (C) 2021 Kamil Trzciński
- *
- * Based on drivers/gpu/drm/panel/panel-sitronix-st7703.c
- * Copyright (C) Purism SPC 2019
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -26,7 +17,7 @@
 
 #define DRV_NAME "panel-himax-hx8394"
 
-/* Manufacturer specific commands sent via DSI, listed in HX8394-F datasheet */
+ 
 #define HX8394_CMD_SETSEQUENCE	  0xb0
 #define HX8394_CMD_SETPOWER	  0xb1
 #define HX8394_CMD_SETDISP	  0xb2
@@ -90,36 +81,36 @@ static int hsd060bhw4_init_sequence(struct hx8394 *ctx)
 {
 	struct mipi_dsi_device *dsi = to_mipi_dsi_device(ctx->dev);
 
-	/* 5.19.8 SETEXTC: Set extension command (B9h) */
+	 
 	mipi_dsi_dcs_write_seq(dsi, HX8394_CMD_SETEXTC,
 			       0xff, 0x83, 0x94);
 
-	/* 5.19.2 SETPOWER: Set power (B1h) */
+	 
 	mipi_dsi_dcs_write_seq(dsi, HX8394_CMD_SETPOWER,
 			       0x48, 0x11, 0x71, 0x09, 0x32, 0x24, 0x71, 0x31, 0x55, 0x30);
 
-	/* 5.19.9 SETMIPI: Set MIPI control (BAh) */
+	 
 	mipi_dsi_dcs_write_seq(dsi, HX8394_CMD_SETMIPI,
 			       0x63, 0x03, 0x68, 0x6b, 0xb2, 0xc0);
 
-	/* 5.19.3 SETDISP: Set display related register (B2h) */
+	 
 	mipi_dsi_dcs_write_seq(dsi, HX8394_CMD_SETDISP,
 			       0x00, 0x80, 0x78, 0x0c, 0x07);
 
-	/* 5.19.4 SETCYC: Set display waveform cycles (B4h) */
+	 
 	mipi_dsi_dcs_write_seq(dsi, HX8394_CMD_SETCYC,
 			       0x12, 0x63, 0x12, 0x63, 0x12, 0x63, 0x01, 0x0c, 0x7c, 0x55,
 			       0x00, 0x3f, 0x12, 0x6b, 0x12, 0x6b, 0x12, 0x6b, 0x01, 0x0c,
 			       0x7c);
 
-	/* 5.19.19 SETGIP0: Set GIP Option0 (D3h) */
+	 
 	mipi_dsi_dcs_write_seq(dsi, HX8394_CMD_SETGIP0,
 			       0x00, 0x00, 0x00, 0x00, 0x3c, 0x1c, 0x00, 0x00, 0x32, 0x10,
 			       0x09, 0x00, 0x09, 0x32, 0x15, 0xad, 0x05, 0xad, 0x32, 0x00,
 			       0x00, 0x00, 0x00, 0x37, 0x03, 0x0b, 0x0b, 0x37, 0x00, 0x00,
 			       0x00, 0x0c, 0x40);
 
-	/* 5.19.20 Set GIP Option1 (D5h) */
+	 
 	mipi_dsi_dcs_write_seq(dsi, HX8394_CMD_SETGIP1,
 			       0x19, 0x19, 0x18, 0x18, 0x1b, 0x1b, 0x1a, 0x1a, 0x00, 0x01,
 			       0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x20, 0x21, 0x18, 0x18,
@@ -127,7 +118,7 @@ static int hsd060bhw4_init_sequence(struct hx8394 *ctx)
 			       0x24, 0x25, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18,
 			       0x18, 0x18, 0x18, 0x18, 0x18, 0x18);
 
-	/* 5.19.21 Set GIP Option2 (D6h) */
+	 
 	mipi_dsi_dcs_write_seq(dsi, HX8394_CMD_SETGIP2,
 			       0x18, 0x18, 0x19, 0x19, 0x1b, 0x1b, 0x1a, 0x1a, 0x07, 0x06,
 			       0x05, 0x04, 0x03, 0x02, 0x01, 0x00, 0x25, 0x24, 0x18, 0x18,
@@ -135,7 +126,7 @@ static int hsd060bhw4_init_sequence(struct hx8394 *ctx)
 			       0x21, 0x20, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18,
 			       0x18, 0x18, 0x18, 0x18, 0x18, 0x18);
 
-	/* 5.19.25 SETGAMMA: Set gamma curve related setting (E0h) */
+	 
 	mipi_dsi_dcs_write_seq(dsi, HX8394_CMD_SETGAMMA,
 			       0x00, 0x04, 0x0c, 0x12, 0x14, 0x18, 0x1a, 0x18, 0x31, 0x3f,
 			       0x4d, 0x4c, 0x54, 0x65, 0x6b, 0x70, 0x7f, 0x82, 0x7e, 0x8a,
@@ -145,35 +136,35 @@ static int hsd060bhw4_init_sequence(struct hx8394 *ctx)
 			       0x82, 0x7e, 0x8a, 0x99, 0x4a, 0x48, 0x49, 0x4b,
 			       0x4a, 0x4c, 0x4b, 0x7f);
 
-	/* 5.19.17 SETPANEL (CCh) */
+	 
 	mipi_dsi_dcs_write_seq(dsi, HX8394_CMD_SETPANEL,
 			       0x0b);
 
-	/* Unknown command, not listed in the HX8394-F datasheet */
+	 
 	mipi_dsi_dcs_write_seq(dsi, HX8394_CMD_UNKNOWN1,
 			       0x1f, 0x31);
 
-	/* 5.19.5 SETVCOM: Set VCOM voltage (B6h) */
+	 
 	mipi_dsi_dcs_write_seq(dsi, HX8394_CMD_SETVCOM,
 			       0x7d, 0x7d);
 
-	/* Unknown command, not listed in the HX8394-F datasheet */
+	 
 	mipi_dsi_dcs_write_seq(dsi, HX8394_CMD_UNKNOWN3,
 			       0x02);
 
-	/* 5.19.11 Set register bank (BDh) */
+	 
 	mipi_dsi_dcs_write_seq(dsi, HX8394_CMD_SETREGBANK,
 			       0x01);
 
-	/* 5.19.2 SETPOWER: Set power (B1h) */
+	 
 	mipi_dsi_dcs_write_seq(dsi, HX8394_CMD_SETPOWER,
 			       0x00);
 
-	/* 5.19.11 Set register bank (BDh) */
+	 
 	mipi_dsi_dcs_write_seq(dsi, HX8394_CMD_SETREGBANK,
 			       0x00);
 
-	/* Unknown command, not listed in the HX8394-F datasheet */
+	 
 	mipi_dsi_dcs_write_seq(dsi, HX8394_CMD_UNKNOWN3,
 			       0xed);
 
@@ -221,7 +212,7 @@ static int hx8394_enable(struct drm_panel *panel)
 		return ret;
 	}
 
-	/* Panel is operational 120 msec after reset */
+	 
 	msleep(120);
 
 	ret = mipi_dsi_dcs_set_display_on(dsi);
@@ -233,7 +224,7 @@ static int hx8394_enable(struct drm_panel *panel)
 	return 0;
 
 sleep_in:
-	/* This will probably fail, but let's try orderly power off anyway. */
+	 
 	ret = mipi_dsi_dcs_enter_sleep_mode(dsi);
 	if (!ret)
 		msleep(50);
@@ -253,7 +244,7 @@ static int hx8394_disable(struct drm_panel *panel)
 		return ret;
 	}
 
-	msleep(50); /* about 3 frames */
+	msleep(50);  
 
 	return 0;
 }
@@ -431,7 +422,7 @@ static void hx8394_remove(struct mipi_dsi_device *dsi)
 
 static const struct of_device_id hx8394_of_match[] = {
 	{ .compatible = "hannstar,hsd060bhw4", .data = &hsd060bhw4_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, hx8394_of_match);
 

@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2018, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #ifndef __LIB_TRACER_H__
 #define __LIB_TRACER_H__
@@ -77,7 +47,7 @@ struct mlx5_fw_tracer {
 	struct work_struct ownership_change_work;
 	struct work_struct read_fw_strings_work;
 
-	/* Strings DB */
+	 
 	struct {
 		u8 first_string_trace;
 		u8 num_string_trace;
@@ -88,7 +58,7 @@ struct mlx5_fw_tracer {
 		bool loaded;
 	} str_db;
 
-	/* Log Buffer */
+	 
 	struct {
 		u32 pdn;
 		void *log_buf;
@@ -98,11 +68,11 @@ struct mlx5_fw_tracer {
 		u32 consumer_index;
 	} buff;
 
-	/* Saved Traces Array */
+	 
 	struct {
 		struct mlx5_fw_trace_data straces[SAVED_TRACES_NUM];
 		u32 saved_traces_index;
-		struct mutex lock; /* Protect st_arr access */
+		struct mutex lock;  
 	} st_arr;
 
 	u64 last_timestamp;
@@ -110,7 +80,7 @@ struct mlx5_fw_tracer {
 	struct hlist_head hash[MESSAGE_HASH_SIZE];
 	struct list_head ready_strings_list;
 	struct work_struct update_db_work;
-	struct mutex state_lock; /* Synchronize update work with reload flows */
+	struct mutex state_lock;  
 	unsigned long state;
 };
 

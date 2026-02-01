@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2005 Cisco Systems. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #ifndef MTHCA_WQE_H
 #define MTHCA_WQE_H
@@ -55,10 +25,10 @@ enum {
 };
 
 struct mthca_next_seg {
-	__be32 nda_op;		/* [31:6] next WQE [4:0] next opcode */
-	__be32 ee_nds;		/* [31:8] next EE  [7] DBD [6] F [5:0] next WQE size */
-	__be32 flags;		/* [3] CQ [2] Event [1] Solicit */
-	__be32 imm;		/* immediate data */
+	__be32 nda_op;		 
+	__be32 ee_nds;		 
+	__be32 flags;		 
+	__be32 imm;		 
 };
 
 struct mthca_tavor_ud_seg {
@@ -79,7 +49,7 @@ struct mthca_arbel_ud_seg {
 };
 
 struct mthca_bind_seg {
-	__be32 flags;		/* [31] Atomic [30] rem write [29] rem read */
+	__be32 flags;		 
 	u32    reserved;
 	__be32 new_rkey;
 	__be32 lkey;
@@ -107,8 +77,7 @@ struct mthca_data_seg {
 struct mthca_mlx_seg {
 	__be32 nda_op;
 	__be32 nds;
-	__be32 flags;		/* [17] VL15 [16] SLR [14:12] static rate
-				   [11:8] SL [3] C [2] E */
+	__be32 flags;		 
 	__be16 rlid;
 	__be16 vcrc;
 };
@@ -128,4 +97,4 @@ static __always_inline void mthca_set_data_seg_inval(struct mthca_data_seg *dseg
 	dseg->addr       = 0;
 }
 
-#endif /* MTHCA_WQE_H */
+#endif  

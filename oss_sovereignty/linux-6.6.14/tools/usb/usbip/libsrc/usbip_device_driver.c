@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2015 Karol Kosik <karo9@interia.eu>
- *		 2015 Samsung Electronics
- * Author:	 Igor Kotrasinski <i.kotrasinsk@samsung.com>
- *
- * Based on tools/usb/usbip/libsrc/usbip_host_driver.c, which is:
- * Copyright (C) 2011 matt mooney <mfm@muteddisk.com>
- *               2005-2007 Takahiro Hirofuchi
- */
+
+ 
 
 #include <fcntl.h>
 #include <string.h>
@@ -107,7 +99,7 @@ int read_usb_vudc_device(struct udev_device *sdev, struct usbip_usb_device *dev)
 		}
 	}
 
-	/* Only used for user output, little sense to output them in general */
+	 
 	dev->bNumInterfaces = 0;
 	dev->bConfigurationValue = 0;
 	dev->busnum = 0;

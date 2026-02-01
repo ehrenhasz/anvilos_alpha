@@ -1,26 +1,4 @@
-/*
- * Copyright 2007 Matthieu CASTET <castet.matthieu@free.fr>
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragr) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * PRECISION INSIGHT AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "nv10.h"
 #include "regs.h"
 
@@ -126,7 +104,7 @@ static int nv10_gr_ctx_regs[] = {
 	NV10_PGRAPH_NOTIFY,
 	NV04_PGRAPH_PATT_COLOR0,
 	NV04_PGRAPH_PATT_COLOR1,
-	NV04_PGRAPH_PATT_COLORRAM, /* 64 values from 0x400900 to 0x4009fc */
+	NV04_PGRAPH_PATT_COLORRAM,  
 	0x00400904,
 	0x00400908,
 	0x0040090c,
@@ -190,7 +168,7 @@ static int nv10_gr_ctx_regs[] = {
 	0x004009f4,
 	0x004009f8,
 	0x004009fc,
-	NV04_PGRAPH_PATTERN,	/* 2 values from 0x400808 to 0x40080c */
+	NV04_PGRAPH_PATTERN,	 
 	0x0040080c,
 	NV04_PGRAPH_PATTERN_SHAPE,
 	NV03_PGRAPH_MONO_COLOR0,
@@ -213,8 +191,8 @@ static int nv10_gr_ctx_regs[] = {
 	0x00400e94,
 	0x00400e98,
 	0x00400e9c,
-	NV10_PGRAPH_WINDOWCLIP_HORIZONTAL, /* 8 values from 0x400f00-0x400f1c */
-	NV10_PGRAPH_WINDOWCLIP_VERTICAL,   /* 8 values from 0x400f20-0x400f3c */
+	NV10_PGRAPH_WINDOWCLIP_HORIZONTAL,  
+	NV10_PGRAPH_WINDOWCLIP_VERTICAL,    
 	0x00400f04,
 	0x00400f24,
 	0x00400f08,
@@ -235,8 +213,8 @@ static int nv10_gr_ctx_regs[] = {
 	NV10_PGRAPH_GLOBALSTATE1,
 	NV04_PGRAPH_STORED_FMT,
 	NV04_PGRAPH_SOURCE_COLOR,
-	NV03_PGRAPH_ABS_X_RAM,	/* 32 values from 0x400400 to 0x40047c */
-	NV03_PGRAPH_ABS_Y_RAM,	/* 32 values from 0x400480 to 0x4004fc */
+	NV03_PGRAPH_ABS_X_RAM,	 
+	NV03_PGRAPH_ABS_Y_RAM,	 
 	0x00400404,
 	0x00400484,
 	0x00400408,
@@ -407,9 +385,7 @@ struct nv10_gr_chan {
 };
 
 
-/*******************************************************************************
- * Graphics object classes
- ******************************************************************************/
+ 
 
 #define PIPE_SAVE(gr, state, addr)					\
 	do {								\
@@ -539,9 +515,7 @@ nv10_gr_mthd(struct nv10_gr_chan *chan, u8 class, u32 mthd, u32 data)
 	return func(chan, mthd, data);
 }
 
-/*******************************************************************************
- * PGRAPH context
- ******************************************************************************/
+ 
 
 static struct nv10_gr_chan *
 nv10_gr_channel(struct nv10_gr *gr)
@@ -585,7 +559,7 @@ nv10_gr_load_pipe(struct nv10_gr_chan *chan)
 	int i;
 
 	nv04_gr_idle(&gr->base);
-	/* XXX check haiku comments */
+	 
 	xfmode0 = nvkm_rd32(device, NV10_PGRAPH_XFMODE0);
 	xfmode1 = nvkm_rd32(device, NV10_PGRAPH_XFMODE1);
 	nvkm_wr32(device, NV10_PGRAPH_XFMODE0, 0x10000000);
@@ -611,7 +585,7 @@ nv10_gr_load_pipe(struct nv10_gr_chan *chan)
 	PIPE_RESTORE(gr, pipe->pipe_0x0200, 0x0200);
 	nv04_gr_idle(&gr->base);
 
-	/* restore XFMODE */
+	 
 	nvkm_wr32(device, NV10_PGRAPH_XFMODE0, xfmode0);
 	nvkm_wr32(device, NV10_PGRAPH_XFMODE1, xfmode1);
 	PIPE_RESTORE(gr, pipe->pipe_0x6400, 0x6400);
@@ -817,12 +791,9 @@ nv10_gr_load_dma_vtxbuf(struct nv10_gr_chan *chan, int chid, u32 inst)
 	u32 ctx_user, ctx_switch[5];
 	int i, subchan = -1;
 
-	/* NV10TCL_DMA_VTXBUF (method 0x18c) modifies hidden state
-	 * that cannot be restored via MMIO. Do it through the FIFO
-	 * instead.
-	 */
+	 
 
-	/* Look for a celsius object */
+	 
 	for (i = 0; i < 8; i++) {
 		int class = nvkm_rd32(device, NV10_PGRAPH_CTX_CACHE(i, 0)) & 0xfff;
 
@@ -835,12 +806,12 @@ nv10_gr_load_dma_vtxbuf(struct nv10_gr_chan *chan, int chid, u32 inst)
 	if (subchan < 0 || !inst)
 		return;
 
-	/* Save the current ctx object */
+	 
 	ctx_user = nvkm_rd32(device, NV10_PGRAPH_CTX_USER);
 	for (i = 0; i < 5; i++)
 		ctx_switch[i] = nvkm_rd32(device, NV10_PGRAPH_CTX_SWITCH(i));
 
-	/* Save the FIFO state */
+	 
 	st2 = nvkm_rd32(device, NV10_PGRAPH_FFINTFC_ST2);
 	st2_dl = nvkm_rd32(device, NV10_PGRAPH_FFINTFC_ST2_DL);
 	st2_dh = nvkm_rd32(device, NV10_PGRAPH_FFINTFC_ST2_DH);
@@ -849,13 +820,13 @@ nv10_gr_load_dma_vtxbuf(struct nv10_gr_chan *chan, int chid, u32 inst)
 	for (i = 0; i < ARRAY_SIZE(fifo); i++)
 		fifo[i] = nvkm_rd32(device, 0x4007a0 + 4 * i);
 
-	/* Switch to the celsius subchannel */
+	 
 	for (i = 0; i < 5; i++)
 		nvkm_wr32(device, NV10_PGRAPH_CTX_SWITCH(i),
 			nvkm_rd32(device, NV10_PGRAPH_CTX_CACHE(subchan, i)));
 	nvkm_mask(device, NV10_PGRAPH_CTX_USER, 0xe000, subchan << 13);
 
-	/* Inject NV10TCL_DMA_VTXBUF */
+	 
 	nvkm_wr32(device, NV10_PGRAPH_FFINTFC_FIFO_PTR, 0);
 	nvkm_wr32(device, NV10_PGRAPH_FFINTFC_ST2,
 		0x2c000000 | chid << 20 | subchan << 16 | 0x18c);
@@ -864,7 +835,7 @@ nv10_gr_load_dma_vtxbuf(struct nv10_gr_chan *chan, int chid, u32 inst)
 	nvkm_mask(device, NV04_PGRAPH_FIFO, 0x00000001, 0x00000001);
 	nvkm_mask(device, NV04_PGRAPH_FIFO, 0x00000001, 0x00000000);
 
-	/* Restore the FIFO state */
+	 
 	for (i = 0; i < ARRAY_SIZE(fifo); i++)
 		nvkm_wr32(device, 0x4007a0 + 4 * i, fifo[i]);
 
@@ -873,7 +844,7 @@ nv10_gr_load_dma_vtxbuf(struct nv10_gr_chan *chan, int chid, u32 inst)
 	nvkm_wr32(device, NV10_PGRAPH_FFINTFC_ST2_DL, st2_dl);
 	nvkm_wr32(device, NV10_PGRAPH_FFINTFC_ST2_DH, st2_dh);
 
-	/* Restore the current ctx object */
+	 
 	for (i = 0; i < 5; i++)
 		nvkm_wr32(device, NV10_PGRAPH_CTX_SWITCH(i), ctx_switch[i]);
 	nvkm_wr32(device, NV10_PGRAPH_CTX_USER, ctx_user);
@@ -938,12 +909,12 @@ nv10_gr_context_switch(struct nv10_gr *gr)
 
 	nv04_gr_idle(&gr->base);
 
-	/* If previous context is valid, we need to save it */
+	 
 	prev = nv10_gr_channel(gr);
 	if (prev)
 		nv10_gr_unload_context(prev);
 
-	/* load context for next channel */
+	 
 	chid = (nvkm_rd32(device, NV04_PGRAPH_TRAPPED_ADDR) >> 20) & 0x1f;
 	next = gr->chan[chid];
 	if (next)
@@ -1022,7 +993,7 @@ nv10_gr_chan_new(struct nvkm_gr *base, struct nvkm_chan *fifoch,
 	NV_WRITE_CTX(0x00400e30, 0x00080008);
 	NV_WRITE_CTX(0x00400e34, 0x00080008);
 	if (device->card_type >= NV_11 && device->chipset >= 0x17) {
-		/* is it really needed ??? */
+		 
 		NV17_WRITE_CTX(NV10_PGRAPH_DEBUG_4,
 			       nvkm_rd32(device, NV10_PGRAPH_DEBUG_4));
 		NV17_WRITE_CTX(0x004006b0, nvkm_rd32(device, 0x004006b0));
@@ -1041,9 +1012,7 @@ nv10_gr_chan_new(struct nvkm_gr *base, struct nvkm_chan *fifoch,
 	return 0;
 }
 
-/*******************************************************************************
- * PGRAPH engine/subdev functions
- ******************************************************************************/
+ 
 
 void
 nv10_gr_tile(struct nvkm_gr *base, int i, struct nvkm_fb_tile *tile)
@@ -1144,7 +1113,7 @@ nv10_gr_init(struct nvkm_gr *base)
 	nvkm_wr32(device, NV04_PGRAPH_DEBUG_0, 0xFFFFFFFF);
 	nvkm_wr32(device, NV04_PGRAPH_DEBUG_0, 0x00000000);
 	nvkm_wr32(device, NV04_PGRAPH_DEBUG_1, 0x00118700);
-	/* nvkm_wr32(device, NV04_PGRAPH_DEBUG_2, 0x24E00810); */ /* 0x25f92ad9 */
+	   
 	nvkm_wr32(device, NV04_PGRAPH_DEBUG_2, 0x25f92ad9);
 	nvkm_wr32(device, NV04_PGRAPH_DEBUG_3, 0x55DE0830 | (1 << 29) | (1 << 31));
 
@@ -1192,24 +1161,24 @@ nv10_gr = {
 	.tile = nv10_gr_tile,
 	.chan_new = nv10_gr_chan_new,
 	.sclass = {
-		{ -1, -1, 0x0012, &nv04_gr_object }, /* beta1 */
-		{ -1, -1, 0x0019, &nv04_gr_object }, /* clip */
-		{ -1, -1, 0x0030, &nv04_gr_object }, /* null */
-		{ -1, -1, 0x0039, &nv04_gr_object }, /* m2mf */
-		{ -1, -1, 0x0043, &nv04_gr_object }, /* rop */
-		{ -1, -1, 0x0044, &nv04_gr_object }, /* pattern */
-		{ -1, -1, 0x004a, &nv04_gr_object }, /* gdi */
-		{ -1, -1, 0x0052, &nv04_gr_object }, /* swzsurf */
-		{ -1, -1, 0x005f, &nv04_gr_object }, /* blit */
-		{ -1, -1, 0x0062, &nv04_gr_object }, /* surf2d */
-		{ -1, -1, 0x0072, &nv04_gr_object }, /* beta4 */
-		{ -1, -1, 0x0089, &nv04_gr_object }, /* sifm */
-		{ -1, -1, 0x008a, &nv04_gr_object }, /* ifc */
-		{ -1, -1, 0x009f, &nv04_gr_object }, /* blit */
-		{ -1, -1, 0x0093, &nv04_gr_object }, /* surf3d */
-		{ -1, -1, 0x0094, &nv04_gr_object }, /* ttri */
-		{ -1, -1, 0x0095, &nv04_gr_object }, /* mtri */
-		{ -1, -1, 0x0056, &nv04_gr_object }, /* celcius */
+		{ -1, -1, 0x0012, &nv04_gr_object },  
+		{ -1, -1, 0x0019, &nv04_gr_object },  
+		{ -1, -1, 0x0030, &nv04_gr_object },  
+		{ -1, -1, 0x0039, &nv04_gr_object },  
+		{ -1, -1, 0x0043, &nv04_gr_object },  
+		{ -1, -1, 0x0044, &nv04_gr_object },  
+		{ -1, -1, 0x004a, &nv04_gr_object },  
+		{ -1, -1, 0x0052, &nv04_gr_object },  
+		{ -1, -1, 0x005f, &nv04_gr_object },  
+		{ -1, -1, 0x0062, &nv04_gr_object },  
+		{ -1, -1, 0x0072, &nv04_gr_object },  
+		{ -1, -1, 0x0089, &nv04_gr_object },  
+		{ -1, -1, 0x008a, &nv04_gr_object },  
+		{ -1, -1, 0x009f, &nv04_gr_object },  
+		{ -1, -1, 0x0093, &nv04_gr_object },  
+		{ -1, -1, 0x0094, &nv04_gr_object },  
+		{ -1, -1, 0x0095, &nv04_gr_object },  
+		{ -1, -1, 0x0056, &nv04_gr_object },  
 		{}
 	}
 };

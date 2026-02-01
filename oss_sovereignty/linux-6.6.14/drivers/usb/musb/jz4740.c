@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Ingenic JZ4740 "glue layer"
- *
- * Copyright (C) 2013, Apelete Seketeli <apelete@seketeli.net>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -40,11 +36,7 @@ static irqreturn_t jz4740_musb_interrupt(int irq, void *__hci)
 	musb->int_tx = musb_readw(musb->mregs, MUSB_INTRTX);
 	musb->int_rx = musb_readw(musb->mregs, MUSB_INTRRX);
 
-	/*
-	 * The controller is gadget only, the state of the host mode IRQ bits is
-	 * undefined. Mask them to make sure that the musb driver core will
-	 * never see them set
-	 */
+	 
 	musb->int_usb &= MUSB_INTR_SUSPEND | MUSB_INTR_RESUME |
 			 MUSB_INTR_RESET | MUSB_INTR_SOF;
 
@@ -66,11 +58,11 @@ static struct musb_fifo_cfg jz4740_musb_fifo_cfg[] = {
 };
 
 static const struct musb_hdrc_config jz4740_musb_config = {
-	/* Silicon does not implement USB OTG. */
+	 
 	.multipoint	= 0,
-	/* Max EPs scanned, driver will decide which EP can be used. */
+	 
 	.num_eps	= 4,
-	/* RAMbits needed to configure EPs from table */
+	 
 	.ram_bits	= 9,
 	.fifo_cfg	= jz4740_musb_fifo_cfg,
 	.fifo_cfg_size	= ARRAY_SIZE(jz4740_musb_fifo_cfg),
@@ -156,10 +148,7 @@ static int jz4740_musb_init(struct musb *musb)
 		goto err_phy_power_down;
 	}
 
-	/*
-	 * Silicon does not implement ConfigData register.
-	 * Set dyn_fifo to avoid reading EP config from hardware.
-	 */
+	 
 	musb->dyn_fifo = true;
 
 	musb->isr = jz4740_musb_interrupt;
@@ -227,7 +216,7 @@ static struct musb_hdrc_config jz4770_musb_config = {
 };
 
 static const struct musb_hdrc_platform_data jz4770_musb_pdata = {
-	.mode		= MUSB_PERIPHERAL, /* TODO: support OTG */
+	.mode		= MUSB_PERIPHERAL,  
 	.config		= &jz4770_musb_config,
 	.platform_ops	= &jz4740_musb_ops,
 };
@@ -319,7 +308,7 @@ static void jz4740_remove(struct platform_device *pdev)
 static const struct of_device_id jz4740_musb_of_match[] = {
 	{ .compatible = "ingenic,jz4740-musb", .data = &jz4740_musb_pdata },
 	{ .compatible = "ingenic,jz4770-musb", .data = &jz4770_musb_pdata },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, jz4740_musb_of_match);
 

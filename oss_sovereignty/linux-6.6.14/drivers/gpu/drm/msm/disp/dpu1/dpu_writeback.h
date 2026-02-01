@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DPU_WRITEBACK_H
 #define _DPU_WRITEBACK_H
@@ -28,4 +26,4 @@ static inline struct dpu_wb_connector *to_dpu_wb_conn(struct drm_writeback_conne
 int dpu_writeback_init(struct drm_device *dev, struct drm_encoder *enc,
 		const u32 *format_list, u32 num_formats);
 
-#endif /*_DPU_WRITEBACK_H */
+#endif  

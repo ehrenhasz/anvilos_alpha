@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * MIPI Display Bus Interface (DBI) LCD controller support
- *
- * Copyright 2016 Noralf Trønnes
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/debugfs.h>
@@ -29,7 +25,7 @@
 #include <drm/drm_rect.h>
 #include <video/mipi_display.h>
 
-#define MIPI_DBI_MAX_SPI_READ_SPEED 2000000 /* 2MHz */
+#define MIPI_DBI_MAX_SPI_READ_SPEED 2000000  
 
 #define DCS_POWER_MODE_DISPLAY			BIT(2)
 #define DCS_POWER_MODE_DISPLAY_NORMAL_MODE	BIT(3)
@@ -38,34 +34,7 @@
 #define DCS_POWER_MODE_IDLE_MODE		BIT(6)
 #define DCS_POWER_MODE_RESERVED_MASK		(BIT(0) | BIT(1) | BIT(7))
 
-/**
- * DOC: overview
- *
- * This library provides helpers for MIPI Display Bus Interface (DBI)
- * compatible display controllers.
- *
- * Many controllers for tiny lcd displays are MIPI compliant and can use this
- * library. If a controller uses registers 0x2A and 0x2B to set the area to
- * update and uses register 0x2C to write to frame memory, it is most likely
- * MIPI compliant.
- *
- * Only MIPI Type 1 displays are supported since a full frame memory is needed.
- *
- * There are 3 MIPI DBI implementation types:
- *
- * A. Motorola 6800 type parallel bus
- *
- * B. Intel 8080 type parallel bus
- *
- * C. SPI type with 3 options:
- *
- *    1. 9-bit with the Data/Command signal as the ninth bit
- *    2. Same as above except it's sent as 16 bits
- *    3. 8-bit with the Data/Command signal as a separate D/CX pin
- *
- * Currently mipi_dbi only supports Type C options 1 and 3 with
- * mipi_dbi_spi_init().
- */
+ 
 
 #define MIPI_DBI_DEBUG_COMMAND(cmd, data, len) \
 ({ \
@@ -98,7 +67,7 @@ static const u8 mipi_dbi_dcs_read_commands[] = {
 	MIPI_DCS_GET_CABC_MIN_BRIGHTNESS,
 	MIPI_DCS_READ_DDB_START,
 	MIPI_DCS_READ_DDB_CONTINUE,
-	0, /* sentinel */
+	0,  
 };
 
 static bool mipi_dbi_command_is_read(struct mipi_dbi *dbi, u8 cmd)
@@ -118,17 +87,7 @@ static bool mipi_dbi_command_is_read(struct mipi_dbi *dbi, u8 cmd)
 	return false;
 }
 
-/**
- * mipi_dbi_command_read - MIPI DCS read command
- * @dbi: MIPI DBI structure
- * @cmd: Command
- * @val: Value read
- *
- * Send MIPI DCS read command to the controller.
- *
- * Returns:
- * Zero on success, negative error code on failure.
- */
+ 
 int mipi_dbi_command_read(struct mipi_dbi *dbi, u8 cmd, u8 *val)
 {
 	if (!dbi->read_commands)
@@ -141,22 +100,13 @@ int mipi_dbi_command_read(struct mipi_dbi *dbi, u8 cmd, u8 *val)
 }
 EXPORT_SYMBOL(mipi_dbi_command_read);
 
-/**
- * mipi_dbi_command_buf - MIPI DCS command with parameter(s) in an array
- * @dbi: MIPI DBI structure
- * @cmd: Command
- * @data: Parameter buffer
- * @len: Buffer length
- *
- * Returns:
- * Zero on success, negative error code on failure.
- */
+ 
 int mipi_dbi_command_buf(struct mipi_dbi *dbi, u8 cmd, u8 *data, size_t len)
 {
 	u8 *cmdbuf;
 	int ret;
 
-	/* SPI requires dma-safe buffers */
+	 
 	cmdbuf = kmemdup(&cmd, 1, GFP_KERNEL);
 	if (!cmdbuf)
 		return -ENOMEM;
@@ -171,7 +121,7 @@ int mipi_dbi_command_buf(struct mipi_dbi *dbi, u8 cmd, u8 *data, size_t len)
 }
 EXPORT_SYMBOL(mipi_dbi_command_buf);
 
-/* This should only be used by mipi_dbi_command() */
+ 
 int mipi_dbi_command_stackbuf(struct mipi_dbi *dbi, u8 cmd, const u8 *data,
 			      size_t len)
 {
@@ -190,17 +140,7 @@ int mipi_dbi_command_stackbuf(struct mipi_dbi *dbi, u8 cmd, const u8 *data,
 }
 EXPORT_SYMBOL(mipi_dbi_command_stackbuf);
 
-/**
- * mipi_dbi_buf_copy - Copy a framebuffer, transforming it if necessary
- * @dst: The destination buffer
- * @src: The source buffer
- * @fb: The source framebuffer
- * @clip: Clipping rectangle of the area to be copied
- * @swap: When true, swap MSB/LSB of 16-bit values
- *
- * Returns:
- * Zero on success, negative error code on failure.
- */
+ 
 int mipi_dbi_buf_copy(void *dst, struct iosys_map *src, struct drm_framebuffer *fb,
 		      struct drm_rect *clip, bool swap)
 {
@@ -274,7 +214,7 @@ static void mipi_dbi_fb_dirty(struct iosys_map *src, struct drm_framebuffer *fb,
 		if (ret)
 			goto err_msg;
 	} else {
-		tr = src->vaddr; /* TODO: Use mapping abstraction properly */
+		tr = src->vaddr;  
 	}
 
 	mipi_dbi_set_window_address(dbidev, rect->x1, rect->x2 - 1, rect->y1,
@@ -287,15 +227,7 @@ err_msg:
 		drm_err_once(fb->dev, "Failed to update display %d\n", ret);
 }
 
-/**
- * mipi_dbi_pipe_mode_valid - MIPI DBI mode-valid helper
- * @pipe: Simple display pipe
- * @mode: The mode to test
- *
- * This function validates a given display mode against the MIPI DBI's hardware
- * display. Drivers can use this as their &drm_simple_display_pipe_funcs->mode_valid
- * callback.
- */
+ 
 enum drm_mode_status mipi_dbi_pipe_mode_valid(struct drm_simple_display_pipe *pipe,
 					      const struct drm_display_mode *mode)
 {
@@ -305,14 +237,7 @@ enum drm_mode_status mipi_dbi_pipe_mode_valid(struct drm_simple_display_pipe *pi
 }
 EXPORT_SYMBOL(mipi_dbi_pipe_mode_valid);
 
-/**
- * mipi_dbi_pipe_update - Display pipe update helper
- * @pipe: Simple display pipe
- * @old_state: Old plane state
- *
- * This function handles framebuffer flushing and vblank events. Drivers can use
- * this as their &drm_simple_display_pipe_funcs->update callback.
- */
+ 
 void mipi_dbi_pipe_update(struct drm_simple_display_pipe *pipe,
 			  struct drm_plane_state *old_state)
 {
@@ -338,19 +263,7 @@ void mipi_dbi_pipe_update(struct drm_simple_display_pipe *pipe,
 }
 EXPORT_SYMBOL(mipi_dbi_pipe_update);
 
-/**
- * mipi_dbi_enable_flush - MIPI DBI enable helper
- * @dbidev: MIPI DBI device structure
- * @crtc_state: CRTC state
- * @plane_state: Plane state
- *
- * Flushes the whole framebuffer and enables the backlight. Drivers can use this
- * in their &drm_simple_display_pipe_funcs->enable callback.
- *
- * Note: Drivers which don't use mipi_dbi_pipe_update() because they have custom
- * framebuffer flushing, can't use this function since they both use the same
- * flushing code.
- */
+ 
 void mipi_dbi_enable_flush(struct mipi_dbi_dev *dbidev,
 			   struct drm_crtc_state *crtc_state,
 			   struct drm_plane_state *plane_state)
@@ -396,14 +309,7 @@ static void mipi_dbi_blank(struct mipi_dbi_dev *dbidev)
 	drm_dev_exit(idx);
 }
 
-/**
- * mipi_dbi_pipe_disable - MIPI DBI pipe disable helper
- * @pipe: Display pipe
- *
- * This function disables backlight if present, if not the display memory is
- * blanked. The regulator is disabled if in use. Drivers can use this as their
- * &drm_simple_display_pipe_funcs->disable callback.
- */
+ 
 void mipi_dbi_pipe_disable(struct drm_simple_display_pipe *pipe)
 {
 	struct mipi_dbi_dev *dbidev = drm_to_mipi_dbi_dev(pipe->crtc.dev);
@@ -422,19 +328,7 @@ void mipi_dbi_pipe_disable(struct drm_simple_display_pipe *pipe)
 }
 EXPORT_SYMBOL(mipi_dbi_pipe_disable);
 
-/**
- * mipi_dbi_pipe_begin_fb_access - MIPI DBI pipe begin-access helper
- * @pipe: Display pipe
- * @plane_state: Plane state
- *
- * This function implements struct &drm_simple_display_funcs.begin_fb_access.
- *
- * See drm_gem_begin_shadow_fb_access() for details and mipi_dbi_pipe_cleanup_fb()
- * for cleanup.
- *
- * Returns:
- * 0 on success, or a negative errno code otherwise.
- */
+ 
 int mipi_dbi_pipe_begin_fb_access(struct drm_simple_display_pipe *pipe,
 				  struct drm_plane_state *plane_state)
 {
@@ -442,15 +336,7 @@ int mipi_dbi_pipe_begin_fb_access(struct drm_simple_display_pipe *pipe,
 }
 EXPORT_SYMBOL(mipi_dbi_pipe_begin_fb_access);
 
-/**
- * mipi_dbi_pipe_end_fb_access - MIPI DBI pipe end-access helper
- * @pipe: Display pipe
- * @plane_state: Plane state
- *
- * This function implements struct &drm_simple_display_funcs.end_fb_access.
- *
- * See mipi_dbi_pipe_begin_fb_access().
- */
+ 
 void mipi_dbi_pipe_end_fb_access(struct drm_simple_display_pipe *pipe,
 				 struct drm_plane_state *plane_state)
 {
@@ -458,47 +344,21 @@ void mipi_dbi_pipe_end_fb_access(struct drm_simple_display_pipe *pipe,
 }
 EXPORT_SYMBOL(mipi_dbi_pipe_end_fb_access);
 
-/**
- * mipi_dbi_pipe_reset_plane - MIPI DBI plane-reset helper
- * @pipe: Display pipe
- *
- * This function implements struct &drm_simple_display_funcs.reset_plane
- * for MIPI DBI planes.
- */
+ 
 void mipi_dbi_pipe_reset_plane(struct drm_simple_display_pipe *pipe)
 {
 	drm_gem_reset_shadow_plane(&pipe->plane);
 }
 EXPORT_SYMBOL(mipi_dbi_pipe_reset_plane);
 
-/**
- * mipi_dbi_pipe_duplicate_plane_state - duplicates MIPI DBI plane state
- * @pipe: Display pipe
- *
- * This function implements struct &drm_simple_display_funcs.duplicate_plane_state
- * for MIPI DBI planes.
- *
- * See drm_gem_duplicate_shadow_plane_state() for additional details.
- *
- * Returns:
- * A pointer to a new plane state on success, or NULL otherwise.
- */
+ 
 struct drm_plane_state *mipi_dbi_pipe_duplicate_plane_state(struct drm_simple_display_pipe *pipe)
 {
 	return drm_gem_duplicate_shadow_plane_state(&pipe->plane);
 }
 EXPORT_SYMBOL(mipi_dbi_pipe_duplicate_plane_state);
 
-/**
- * mipi_dbi_pipe_destroy_plane_state - cleans up MIPI DBI plane state
- * @pipe: Display pipe
- * @plane_state: Plane state
- *
- * This function implements struct drm_simple_display_funcs.destroy_plane_state
- * for MIPI DBI planes.
- *
- * See drm_gem_destroy_shadow_plane_state() for additional details.
- */
+ 
 void mipi_dbi_pipe_destroy_plane_state(struct drm_simple_display_pipe *pipe,
 				       struct drm_plane_state *plane_state)
 {
@@ -553,29 +413,7 @@ static const uint32_t mipi_dbi_formats[] = {
 	DRM_FORMAT_XRGB8888,
 };
 
-/**
- * mipi_dbi_dev_init_with_formats - MIPI DBI device initialization with custom formats
- * @dbidev: MIPI DBI device structure to initialize
- * @funcs: Display pipe functions
- * @formats: Array of supported formats (DRM_FORMAT\_\*).
- * @format_count: Number of elements in @formats
- * @mode: Display mode
- * @rotation: Initial rotation in degrees Counter Clock Wise
- * @tx_buf_size: Allocate a transmit buffer of this size.
- *
- * This function sets up a &drm_simple_display_pipe with a &drm_connector that
- * has one fixed &drm_display_mode which is rotated according to @rotation.
- * This mode is used to set the mode config min/max width/height properties.
- *
- * Use mipi_dbi_dev_init() if you don't need custom formats.
- *
- * Note:
- * Some of the helper functions expects RGB565 to be the default format and the
- * transmit buffer sized to fit that.
- *
- * Returns:
- * Zero on success, negative error code on failure.
- */
+ 
 int mipi_dbi_dev_init_with_formats(struct mipi_dbi_dev *dbidev,
 				   const struct drm_simple_display_pipe_funcs *funcs,
 				   const uint32_t *formats, unsigned int format_count,
@@ -633,23 +471,7 @@ int mipi_dbi_dev_init_with_formats(struct mipi_dbi_dev *dbidev,
 }
 EXPORT_SYMBOL(mipi_dbi_dev_init_with_formats);
 
-/**
- * mipi_dbi_dev_init - MIPI DBI device initialization
- * @dbidev: MIPI DBI device structure to initialize
- * @funcs: Display pipe functions
- * @mode: Display mode
- * @rotation: Initial rotation in degrees Counter Clock Wise
- *
- * This function sets up a &drm_simple_display_pipe with a &drm_connector that
- * has one fixed &drm_display_mode which is rotated according to @rotation.
- * This mode is used to set the mode config min/max width/height properties.
- * Additionally &mipi_dbi.tx_buf is allocated.
- *
- * Supported formats: Native RGB565 and emulated XRGB8888.
- *
- * Returns:
- * Zero on success, negative error code on failure.
- */
+ 
 int mipi_dbi_dev_init(struct mipi_dbi_dev *dbidev,
 		      const struct drm_simple_display_pipe_funcs *funcs,
 		      const struct drm_display_mode *mode, unsigned int rotation)
@@ -664,12 +486,7 @@ int mipi_dbi_dev_init(struct mipi_dbi_dev *dbidev,
 }
 EXPORT_SYMBOL(mipi_dbi_dev_init);
 
-/**
- * mipi_dbi_hw_reset - Hardware reset of controller
- * @dbi: MIPI DBI structure
- *
- * Reset controller if the &mipi_dbi->reset gpio is set.
- */
+ 
 void mipi_dbi_hw_reset(struct mipi_dbi *dbi)
 {
 	if (!dbi->reset)
@@ -682,18 +499,7 @@ void mipi_dbi_hw_reset(struct mipi_dbi *dbi)
 }
 EXPORT_SYMBOL(mipi_dbi_hw_reset);
 
-/**
- * mipi_dbi_display_is_on - Check if display is on
- * @dbi: MIPI DBI structure
- *
- * This function checks the Power Mode register (if readable) to see if
- * display output is turned on. This can be used to see if the bootloader
- * has already turned on the display avoiding flicker when the pipeline is
- * enabled.
- *
- * Returns:
- * true if the display can be verified to be on, false otherwise.
- */
+ 
 bool mipi_dbi_display_is_on(struct mipi_dbi *dbi)
 {
 	u8 val;
@@ -703,7 +509,7 @@ bool mipi_dbi_display_is_on(struct mipi_dbi *dbi)
 
 	val &= ~DCS_POWER_MODE_RESERVED_MASK;
 
-	/* The poweron/reset value is 08h DCS_POWER_MODE_DISPLAY_NORMAL_MODE */
+	 
 	if (val != (DCS_POWER_MODE_DISPLAY |
 	    DCS_POWER_MODE_DISPLAY_NORMAL_MODE | DCS_POWER_MODE_SLEEP_MODE))
 		return false;
@@ -752,11 +558,7 @@ static int mipi_dbi_poweron_reset_conditional(struct mipi_dbi_dev *dbidev, bool 
 		return ret;
 	}
 
-	/*
-	 * If we did a hw reset, we know the controller is in Sleep mode and
-	 * per MIPI DSC spec should wait 5ms after soft reset. If we didn't,
-	 * we assume worst case and wait 120ms.
-	 */
+	 
 	if (dbi->reset)
 		usleep_range(5000, 20000);
 	else
@@ -765,34 +567,14 @@ static int mipi_dbi_poweron_reset_conditional(struct mipi_dbi_dev *dbidev, bool 
 	return 0;
 }
 
-/**
- * mipi_dbi_poweron_reset - MIPI DBI poweron and reset
- * @dbidev: MIPI DBI device structure
- *
- * This function enables the regulator if used and does a hardware and software
- * reset.
- *
- * Returns:
- * Zero on success, or a negative error code.
- */
+ 
 int mipi_dbi_poweron_reset(struct mipi_dbi_dev *dbidev)
 {
 	return mipi_dbi_poweron_reset_conditional(dbidev, false);
 }
 EXPORT_SYMBOL(mipi_dbi_poweron_reset);
 
-/**
- * mipi_dbi_poweron_conditional_reset - MIPI DBI poweron and conditional reset
- * @dbidev: MIPI DBI device structure
- *
- * This function enables the regulator if used and if the display is off, it
- * does a hardware and software reset. If mipi_dbi_display_is_on() determines
- * that the display is on, no reset is performed.
- *
- * Returns:
- * Zero if the controller was reset, 1 if the display was already on, or a
- * negative error code.
- */
+ 
 int mipi_dbi_poweron_conditional_reset(struct mipi_dbi_dev *dbidev)
 {
 	return mipi_dbi_poweron_reset_conditional(dbidev, true);
@@ -801,19 +583,11 @@ EXPORT_SYMBOL(mipi_dbi_poweron_conditional_reset);
 
 #if IS_ENABLED(CONFIG_SPI)
 
-/**
- * mipi_dbi_spi_cmd_max_speed - get the maximum SPI bus speed
- * @spi: SPI device
- * @len: The transfer buffer length.
- *
- * Many controllers have a max speed of 10MHz, but can be pushed way beyond
- * that. Increase reliability by running pixel data at max speed and the rest
- * at 10MHz, preventing transfer glitches from messing up the init settings.
- */
+ 
 u32 mipi_dbi_spi_cmd_max_speed(struct spi_device *spi, size_t len)
 {
 	if (len > 64)
-		return 0; /* use default */
+		return 0;  
 
 	return min_t(u32, 10000000, spi->max_speed_hz);
 }
@@ -828,23 +602,7 @@ static bool mipi_dbi_machine_little_endian(void)
 #endif
 }
 
-/*
- * MIPI DBI Type C Option 1
- *
- * If the SPI controller doesn't have 9 bits per word support,
- * use blocks of 9 bytes to send 8x 9-bit words using a 8-bit SPI transfer.
- * Pad partial blocks with MIPI_DCS_NOP (zero).
- * This is how the D/C bit (x) is added:
- *     x7654321
- *     0x765432
- *     10x76543
- *     210x7654
- *     3210x765
- *     43210x76
- *     543210x7
- *     6543210x
- *     76543210
- */
+ 
 
 static int mipi_dbi_spi1e_transfer(struct mipi_dbi *dbi, int dc,
 				   const void *buf, size_t len,
@@ -873,7 +631,7 @@ static int mipi_dbi_spi1e_transfer(struct mipi_dbi *dbi, int dc,
 		if (WARN_ON_ONCE(len != 1))
 			return -EINVAL;
 
-		/* Command: pad no-op's (zeroes) at beginning of block */
+		 
 		dst = dbi->tx_buf9;
 		memset(dst, 0, 9);
 		dst[8] = *src;
@@ -882,11 +640,11 @@ static int mipi_dbi_spi1e_transfer(struct mipi_dbi *dbi, int dc,
 		return spi_sync(spi, &m);
 	}
 
-	/* max with room for adding one bit per byte */
+	 
 	max_chunk = max_chunk / 9 * 8;
-	/* but no bigger than len */
+	 
 	max_chunk = min(max_chunk, len);
-	/* 8 byte blocks */
+	 
 	max_chunk = max_t(size_t, 8, max_chunk & ~0x7);
 
 	while (len) {
@@ -899,7 +657,7 @@ static int mipi_dbi_spi1e_transfer(struct mipi_dbi *dbi, int dc,
 		if (chunk < 8) {
 			u8 val, carry = 0;
 
-			/* Data: pad no-op's (zeroes) at end of block */
+			 
 			memset(dst, 0, 9);
 
 			if (swap_bytes) {
@@ -1054,20 +812,13 @@ static int mipi_dbi_typec1_command_read(struct mipi_dbi *dbi, u8 *cmd,
 		return -EINVAL;
 
 	if (!spi_is_bpw_supported(spi, 9)) {
-		/*
-		 * FIXME: implement something like mipi_dbi_spi1e_transfer() but
-		 * for reads using emulation.
-		 */
+		 
 		dev_err(&spi->dev,
 			"reading on host not supporting 9 bpw not yet implemented\n");
 		return -EOPNOTSUPP;
 	}
 
-	/*
-	 * Turn the 8bit command into a 16bit version of the command in the
-	 * buffer. Only 9 bits of this will be used when executing the actual
-	 * transfer.
-	 */
+	 
 	dst16 = dbi->tx_buf9;
 	dst16[0] = *cmd;
 
@@ -1098,7 +849,7 @@ static int mipi_dbi_typec1_command(struct mipi_dbi *dbi, u8 *cmd,
 	return mipi_dbi_spi1_transfer(dbi, 1, parameters, num, bpw);
 }
 
-/* MIPI DBI Type C Option 3 */
+ 
 
 static int mipi_dbi_typec3_command_read(struct mipi_dbi *dbi, u8 *cmd,
 					u8 *data, size_t len)
@@ -1123,10 +874,7 @@ static int mipi_dbi_typec3_command_read(struct mipi_dbi *dbi, u8 *cmd,
 	if (!len)
 		return -EINVAL;
 
-	/*
-	 * Support non-standard 24-bit and 32-bit Nokia read commands which
-	 * start with a dummy clock, so we need to read an extra byte.
-	 */
+	 
 	if (*cmd == MIPI_DCS_GET_DISPLAY_ID ||
 	    *cmd == MIPI_DCS_GET_DISPLAY_STATUS) {
 		if (!(len == 3 || len == 4))
@@ -1200,44 +948,14 @@ static int mipi_dbi_typec3_command(struct mipi_dbi *dbi, u8 *cmd,
 	return ret;
 }
 
-/**
- * mipi_dbi_spi_init - Initialize MIPI DBI SPI interface
- * @spi: SPI device
- * @dbi: MIPI DBI structure to initialize
- * @dc: D/C gpio (optional)
- *
- * This function sets &mipi_dbi->command, enables &mipi_dbi->read_commands for the
- * usual read commands. It should be followed by a call to mipi_dbi_dev_init() or
- * a driver-specific init.
- *
- * If @dc is set, a Type C Option 3 interface is assumed, if not
- * Type C Option 1.
- *
- * If the SPI master driver doesn't support the necessary bits per word,
- * the following transformation is used:
- *
- * - 9-bit: reorder buffer as 9x 8-bit words, padded with no-op command.
- * - 16-bit: if big endian send as 8-bit, if little endian swap bytes
- *
- * Returns:
- * Zero on success, negative error code on failure.
- */
+ 
 int mipi_dbi_spi_init(struct spi_device *spi, struct mipi_dbi *dbi,
 		      struct gpio_desc *dc)
 {
 	struct device *dev = &spi->dev;
 	int ret;
 
-	/*
-	 * Even though it's not the SPI device that does DMA (the master does),
-	 * the dma mask is necessary for the dma_alloc_wc() in the GEM code
-	 * (e.g., drm_gem_dma_create()). The dma_addr returned will be a physical
-	 * address which might be different from the bus address, but this is
-	 * not a problem since the address will not be used.
-	 * The virtual address is used in the transfer and the SPI core
-	 * re-maps it on the SPI master device using the DMA streaming API
-	 * (spi_map_buf()).
-	 */
+	 
 	if (!dev->coherent_dma_mask) {
 		ret = dma_coerce_mask_and_coherent(dev, DMA_BIT_MASK(32));
 		if (ret) {
@@ -1270,21 +988,7 @@ int mipi_dbi_spi_init(struct spi_device *spi, struct mipi_dbi *dbi,
 }
 EXPORT_SYMBOL(mipi_dbi_spi_init);
 
-/**
- * mipi_dbi_spi_transfer - SPI transfer helper
- * @spi: SPI device
- * @speed_hz: Override speed (optional)
- * @bpw: Bits per word
- * @buf: Buffer to transfer
- * @len: Buffer length
- *
- * This SPI transfer helper breaks up the transfer of @buf into chunks which
- * the SPI controller driver can handle. The SPI bus must be locked when
- * calling this.
- *
- * Returns:
- * Zero on success, negative error code on failure.
- */
+ 
 int mipi_dbi_spi_transfer(struct spi_device *spi, u32 speed_hz,
 			  u8 bpw, const void *buf, size_t len)
 {
@@ -1297,11 +1001,7 @@ int mipi_dbi_spi_transfer(struct spi_device *spi, u32 speed_hz,
 	size_t chunk;
 	int ret;
 
-	/* In __spi_validate, there's a validation that no partial transfers
-	 * are accepted (xfer->len % w_size must be zero).
-	 * Here we align max_chunk to multiple of 2 (16bits),
-	 * to prevent transfers from being rejected.
-	 */
+	 
 	max_chunk = ALIGN_DOWN(max_chunk, 2);
 
 	spi_message_init_with_transfers(&m, &tr, 1);
@@ -1323,7 +1023,7 @@ int mipi_dbi_spi_transfer(struct spi_device *spi, u32 speed_hz,
 }
 EXPORT_SYMBOL(mipi_dbi_spi_transfer);
 
-#endif /* CONFIG_SPI */
+#endif  
 
 #ifdef CONFIG_DEBUG_FS
 
@@ -1346,7 +1046,7 @@ static ssize_t mipi_dbi_debugfs_command_write(struct file *file,
 		goto err_exit;
 	}
 
-	/* strip trailing whitespace */
+	 
 	for (i = count - 1; i > 0; i--)
 		if (isspace(buf[i]))
 			buf[i] = '\0';
@@ -1447,15 +1147,7 @@ static const struct file_operations mipi_dbi_debugfs_command_fops = {
 	.write = mipi_dbi_debugfs_command_write,
 };
 
-/**
- * mipi_dbi_debugfs_init - Create debugfs entries
- * @minor: DRM minor
- *
- * This function creates a 'command' debugfs file for sending commands to the
- * controller or getting the read command values.
- * Drivers can use this as their &drm_driver->debugfs_init callback.
- *
- */
+ 
 void mipi_dbi_debugfs_init(struct drm_minor *minor)
 {
 	struct mipi_dbi_dev *dbidev = drm_to_mipi_dbi_dev(minor->dev);

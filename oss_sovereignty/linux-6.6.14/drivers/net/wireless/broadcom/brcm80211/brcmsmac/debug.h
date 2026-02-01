@@ -1,19 +1,4 @@
-/*
- * Copyright (c) 2012 Broadcom Corporation
- * Copyright (c) 2012 Canonical Ltd.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
- * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 #ifndef _BRCMS_DEBUG_H_
 #define _BRCMS_DEBUG_H_
 
@@ -45,11 +30,7 @@ void __brcms_dbg(struct device *dev, u32 level, const char *func,
 }
 #endif
 
-/*
- * Debug macros cannot be used when wlc is uninitialized. Generally
- * this means any code that could run before brcms_c_attach() has
- * returned successfully probably shouldn't use the following macros.
- */
+ 
 
 #define brcms_dbg(core, l, f, a...)	__brcms_dbg(&(core)->dev, l, __func__, f, ##a)
 #define brcms_info(core, f, a...)	__brcms_info(&(core)->dev, f, ##a)
@@ -73,4 +54,4 @@ void brcms_debugfs_detach(struct brcms_pub *drvr);
 struct dentry *brcms_debugfs_get_devdir(struct brcms_pub *drvr);
 void brcms_debugfs_create_files(struct brcms_pub *drvr);
 
-#endif /* _BRCMS_DEBUG_H_ */
+#endif  

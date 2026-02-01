@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * DMA driver header for STMicroelectronics STi FDMA controller
- *
- * Copyright (C) 2014 STMicroelectronics
- *
- * Author: Ludovic Barre <Ludovic.barre@st.com>
- */
+ 
+ 
 #ifndef __DMA_ST_FDMA_H
 #define __DMA_ST_FDMA_H
 
@@ -19,33 +13,14 @@
 #define FW_NAME_SIZE 30
 #define DRIVER_NAME "st-fdma"
 
-/**
- * struct st_fdma_generic_node - Free running/paced generic node
- *
- * @length: Length in bytes of a line in a 2D mem to mem
- * @sstride: Stride, in bytes, between source lines in a 2D data move
- * @dstride: Stride, in bytes, between destination lines in a 2D data move
- */
+ 
 struct st_fdma_generic_node {
 	u32 length;
 	u32 sstride;
 	u32 dstride;
 };
 
-/**
- * struct st_fdma_hw_node - Node structure used by fdma hw
- *
- * @next: Pointer to next node
- * @control: Transfer Control Parameters
- * @nbytes: Number of Bytes to read
- * @saddr: Source address
- * @daddr: Destination address
- *
- * @generic: generic node for free running/paced transfert type
- * 2 others transfert type are possible, but not yet implemented
- *
- * The NODE structures must be aligned to a 32 byte boundary
- */
+ 
 struct st_fdma_hw_node {
 	u32 next;
 	u32 control;
@@ -57,9 +32,7 @@ struct st_fdma_hw_node {
 	};
 } __aligned(32);
 
-/*
- * node control parameters
- */
+ 
 #define FDMA_NODE_CTRL_REQ_MAP_MASK	GENMASK(4, 0)
 #define FDMA_NODE_CTRL_REQ_MAP_FREE_RUN	0x0
 #define FDMA_NODE_CTRL_REQ_MAP_DREQ(n)	((n)&FDMA_NODE_CTRL_REQ_MAP_MASK)
@@ -74,12 +47,7 @@ struct st_fdma_hw_node {
 #define FDMA_NODE_CTRL_PAUSE_EON	BIT(30)
 #define FDMA_NODE_CTRL_INT_EON		BIT(31)
 
-/**
- * struct st_fdma_sw_node - descriptor structure for link list
- *
- * @pdesc: Physical address of desc
- * @node: link used for putting this into a channel queue
- */
+ 
 struct st_fdma_sw_node {
 	dma_addr_t pdesc;
 	struct st_fdma_hw_node *desc;
@@ -110,8 +78,8 @@ struct st_fdma_cfg {
 	enum st_fdma_type type;
 	dma_addr_t dev_addr;
 	enum dma_transfer_direction dir;
-	int req_line; /* request line */
-	long req_ctrl; /* Request control */
+	int req_line;  
+	long req_ctrl;  
 };
 
 struct st_fdma_chan {
@@ -145,7 +113,7 @@ struct st_fdma_dev {
 	char fw_name[FW_NAME_SIZE];
 };
 
-/* Peripheral Registers*/
+ 
 
 #define FDMA_CMD_STA_OFST	0xFC0
 #define FDMA_CMD_SET_OFST	0xFC4
@@ -169,7 +137,7 @@ struct st_fdma_dev {
 #define fdma_write(fdev, val, name) \
 	writel((val), (fdev)->slim_rproc->peri + name)
 
-/* fchan interface (dmem) */
+ 
 #define FDMA_CH_CMD_OFST	0x200
 #define FDMA_CH_CMD_STA_MASK		GENMASK(1, 0)
 #define FDMA_CH_CMD_STA_IDLE		(0x0)
@@ -191,13 +159,13 @@ struct st_fdma_dev {
 			+ (fchan)->vchan.chan.chan_id * 0x4 \
 			+ name)
 
-/* req interface */
+ 
 #define FDMA_REQ_CTRL_OFST	0x240
 #define dreq_write(fchan, val, name) \
 	writel((val), (fchan)->fdev->slim_rproc->mem[ST_SLIM_DMEM].cpu_addr \
 			+ fchan->dreq_line * 0x04 \
 			+ name)
-/* node interface */
+ 
 #define FDMA_NODE_SZ 128
 #define FDMA_PTRN_OFST		0x800
 #define FDMA_CNTN_OFST		0x808
@@ -213,9 +181,7 @@ struct st_fdma_dev {
 			+ (fchan)->vchan.chan.chan_id * FDMA_NODE_SZ \
 			+ name)
 
-/*
- * request control bits
- */
+ 
 #define FDMA_REQ_CTRL_NUM_OPS_MASK	GENMASK(31, 24)
 #define FDMA_REQ_CTRL_NUM_OPS(n)	(FDMA_REQ_CTRL_NUM_OPS_MASK & \
 					((n) << 24))
@@ -236,10 +202,10 @@ struct st_fdma_dev {
 #define FDMA_REQ_CTRL_HOLDOFF_MASK	GENMASK(2, 0)
 #define FDMA_REQ_CTRL_HOLDOFF(n)	((n) & FDMA_REQ_CTRL_HOLDOFF_MASK)
 
-/* bits used by client to configure request control */
+ 
 #define FDMA_REQ_CTRL_CFG_MASK (FDMA_REQ_CTRL_HOLDOFF_MASK | \
 				FDMA_REQ_CTRL_DATA_SWAP_ON | \
 				FDMA_REQ_CTRL_INC_ADDR_ON | \
 				FDMA_REQ_CTRL_INITIATOR_MASK)
 
-#endif	/* __DMA_ST_FDMA_H */
+#endif	 

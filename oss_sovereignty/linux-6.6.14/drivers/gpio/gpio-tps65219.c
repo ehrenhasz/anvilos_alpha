@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * GPIO driver for TI TPS65219 PMICs
- *
- * Copyright (C) 2022 Texas Instruments Incorporated - http://www.ti.com/
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/gpio/driver.h>
@@ -56,10 +52,7 @@ static int tps65219_gpio_get(struct gpio_chip *gc, unsigned int offset)
 	ret = !!(val & BIT(TPS65219_MFP_GPIO_STATUS_MASK));
 	dev_warn(dev, "GPIO%d = %d, MULTI_DEVICE_ENABLE, not a standard GPIO\n", offset, ret);
 
-	/*
-	 * Depending on NVM config, return an error if direction is output, otherwise the GPIO0
-	 * status bit.
-	 */
+	 
 
 	if (tps65219_gpio_get_direction(gc, offset) == TPS65219_GPIO_DIR_OUT)
 		return -ENOTSUPP;
@@ -88,13 +81,7 @@ static int tps65219_gpio_change_direction(struct gpio_chip *gc, unsigned int off
 	struct tps65219_gpio *gpio = gpiochip_get_data(gc);
 	struct device *dev = gpio->tps->dev;
 
-	/*
-	 * Documentation is stating that GPIO0 direction must not be changed in Linux:
-	 * Table 8-34. MFP_1_CONFIG(3): MULTI_DEVICE_ENABLE, should only be changed in INITIALIZE
-	 * state (prior to ON Request).
-	 * Set statically by NVM, changing direction in application can cause a hang.
-	 * Below can be used for test purpose only.
-	 */
+	 
 
 	if (IS_ENABLED(CONFIG_DEBUG_GPIO)) {
 		int ret = regmap_update_bits(gpio->tps->regmap, TPS65219_REG_MFP_1_CONFIG,

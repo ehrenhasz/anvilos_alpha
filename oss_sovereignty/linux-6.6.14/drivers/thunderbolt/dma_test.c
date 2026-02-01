@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * DMA traffic test driver
- *
- * Copyright (C) 2020, Intel Corporation
- * Authors: Isaac Hazan <isaac.hazan@intel.com>
- *	    Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/debugfs.h>
@@ -66,29 +60,7 @@ static const char * const dma_test_result_names[] = {
 	[DMA_TEST_FAIL] = "failed",
 };
 
-/**
- * struct dma_test - DMA test device driver private data
- * @svc: XDomain service the driver is bound to
- * @xd: XDomain the service belongs to
- * @rx_ring: Software ring holding RX frames
- * @rx_hopid: HopID used for receiving frames
- * @tx_ring: Software ring holding TX frames
- * @tx_hopid: HopID used for sending fames
- * @packets_to_send: Number of packets to send
- * @packets_to_receive: Number of packets to receive
- * @packets_sent: Actual number of packets sent
- * @packets_received: Actual number of packets received
- * @link_speed: Expected link speed (Gb/s), %0 to use whatever is negotiated
- * @link_width: Expected link width (Gb/s), %0 to use whatever is negotiated
- * @crc_errors: Number of CRC errors during the test run
- * @buffer_overflow_errors: Number of buffer overflow errors during the test
- *			    run
- * @result: Result of the last run
- * @error_code: Error code of the last run
- * @complete: Used to wait for the Rx to complete
- * @lock: Lock serializing access to this structure
- * @debugfs_dir: dentry of this dma_test
- */
+ 
 struct dma_test {
 	const struct tb_service *svc;
 	struct tb_xdomain *xd;
@@ -111,7 +83,7 @@ struct dma_test {
 	struct dentry *debugfs_dir;
 };
 
-/* DMA test property directory UUID: 3188cd10-6523-4a5a-a682-fdca07a248d8 */
+ 
 static const uuid_t dma_test_dir_uuid =
 	UUID_INIT(0x3188cd10, 0x6523, 0x4a5a,
 		  0xa6, 0x82, 0xfd, 0xca, 0x07, 0xa2, 0x48, 0xd8);
@@ -140,11 +112,7 @@ static int dma_test_start_rings(struct dma_test *dt)
 	int ret, e2e_tx_hop = 0;
 	struct tb_ring *ring;
 
-	/*
-	 * If we are both sender and receiver (traffic goes over a
-	 * special loopback dongle) enable E2E flow control. This avoids
-	 * losing packets.
-	 */
+	 
 	if (dt->packets_to_send && dt->packets_to_receive)
 		flags |= RING_FLAG_E2E;
 
@@ -322,7 +290,7 @@ static int dma_test_submit_tx(struct dma_test *dt, size_t npackets)
 		if (!tf)
 			return -ENOMEM;
 
-		tf->frame.size = 0; /* means 4096 */
+		tf->frame.size = 0;  
 		tf->dma_test = dt;
 
 		tf->data = kmemdup(dma_test_pattern, DMA_TEST_FRAME_SIZE, GFP_KERNEL);
@@ -668,14 +636,7 @@ static void dma_test_remove(struct tb_service *svc)
 
 static int __maybe_unused dma_test_suspend(struct device *dev)
 {
-	/*
-	 * No need to do anything special here. If userspace is writing
-	 * to the test attribute when suspend started, it comes out from
-	 * wait_for_completion_interruptible() with -ERESTARTSYS and the
-	 * DMA test fails tearing down the rings. Once userspace is
-	 * thawed the kernel restarts the write syscall effectively
-	 * re-running the test.
-	 */
+	 
 	return 0;
 }
 

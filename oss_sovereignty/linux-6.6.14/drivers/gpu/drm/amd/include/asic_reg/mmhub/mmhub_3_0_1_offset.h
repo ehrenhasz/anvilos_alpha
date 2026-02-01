@@ -1,32 +1,11 @@
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #ifndef _mmhub_3_0_1_OFFSET_HEADER
 #define _mmhub_3_0_1_OFFSET_HEADER
 
 
 
-// addressBlock: mmhub_dagbdec
-// base address: 0x68000
+
+
 #define regDAGB0_RDCLI0                                                                                 0x0000
 #define regDAGB0_RDCLI0_BASE_IDX                                                                        1
 #define regDAGB0_RDCLI1                                                                                 0x0001
@@ -397,8 +376,8 @@
 #define regDAGB0_SDP_LATENCY_SAMPLING_BASE_IDX                                                          1
 
 
-// addressBlock: mmhub_pctldec
-// base address: 0x68e00
+
+
 #define regPCTL_CTRL                                                                                    0x0380
 #define regPCTL_CTRL_BASE_IDX                                                                           1
 #define regPCTL_MMHUB_DEEPSLEEP_IB                                                                      0x0381
@@ -517,8 +496,8 @@
 #define regPCTL_RESERVED_3_BASE_IDX                                                                     1
 
 
-// addressBlock: mmhub_l1tlb_mmutcl1pfdec
-// base address: 0x69600
+
+
 #define regMMMC_VM_MX_L1_TLB0_STATUS                                                                    0x0588
 #define regMMMC_VM_MX_L1_TLB0_STATUS_BASE_IDX                                                           1
 #define regMMMC_VM_MX_L1_TLB1_STATUS                                                                    0x0589
@@ -537,8 +516,8 @@
 #define regMMMC_VM_MX_L1_TLB7_STATUS_BASE_IDX                                                           1
 
 
-// addressBlock: mmhub_l1tlb_mmutcl1pldec
-// base address: 0x69670
+
+
 #define regMMMC_VM_MX_L1_PERFCOUNTER0_CFG                                                               0x059c
 #define regMMMC_VM_MX_L1_PERFCOUNTER0_CFG_BASE_IDX                                                      1
 #define regMMMC_VM_MX_L1_PERFCOUNTER1_CFG                                                               0x059d
@@ -551,16 +530,16 @@
 #define regMMMC_VM_MX_L1_PERFCOUNTER_RSLT_CNTL_BASE_IDX                                                 1
 
 
-// addressBlock: mmhub_l1tlb_mmutcl1prdec
-// base address: 0x69690
+
+
 #define regMMMC_VM_MX_L1_PERFCOUNTER_LO                                                                 0x05a4
 #define regMMMC_VM_MX_L1_PERFCOUNTER_LO_BASE_IDX                                                        1
 #define regMMMC_VM_MX_L1_PERFCOUNTER_HI                                                                 0x05a5
 #define regMMMC_VM_MX_L1_PERFCOUNTER_HI_BASE_IDX                                                        1
 
 
-// addressBlock: mmhub_l1tlb_mmvmtlspfdec
-// base address: 0x696c0
+
+
 #define regMMMC_VM_MX_L1_TLS0_CNTL                                                                      0x05b0
 #define regMMMC_VM_MX_L1_TLS0_CNTL_BASE_IDX                                                             1
 #define regMMMC_VM_MX_L1_TLS0_CNTL0                                                                     0x05b1
@@ -995,8 +974,8 @@
 #define regMMMC_VM_MX_L1_TLS0_IOMMU_FAULT_GVADDR_HI32_BASE_IDX                                          1
 
 
-// addressBlock: mmhub_mmutcl2_mmatcl2dec
-// base address: 0x69b00
+
+
 #define regMM_ATC_L2_CNTL                                                                               0x06c0
 #define regMM_ATC_L2_CNTL_BASE_IDX                                                                      1
 #define regMM_ATC_L2_CNTL2                                                                              0x06c1
@@ -1029,8 +1008,8 @@
 #define regMM_ATC_L2_SDPPORT_CTRL_BASE_IDX                                                              1
 
 
-// addressBlock: mmhub_mmutcl2_mmvml2pfdec
-// base address: 0x69c00
+
+
 #define regMMVM_L2_CNTL                                                                                 0x0700
 #define regMMVM_L2_CNTL_BASE_IDX                                                                        1
 #define regMMVM_L2_CNTL2                                                                                0x0701
@@ -1113,8 +1092,8 @@
 #define regMMVML2_WALKER_CREDIT_SAFETY_FETCH_RDREQ_BASE_IDX                                             1
 
 
-// addressBlock: mmhub_mmutcl2_mmvml2vcdec
-// base address: 0x69d00
+
+
 #define regMMVM_CONTEXT0_CNTL                                                                           0x0740
 #define regMMVM_CONTEXT0_CNTL_BASE_IDX                                                                  1
 #define regMMVM_CONTEXT1_CNTL                                                                           0x0741
@@ -1557,8 +1536,8 @@
 #define regMMVM_L2_CONTEXT15_PER_PFVF_PTE_CACHE_FRAGMENT_SIZES_BASE_IDX                                 1
 
 
-// addressBlock: mmhub_mmutcl2_mmvml2pldec
-// base address: 0x6a090
+
+
 #define regMMMC_VM_L2_PERFCOUNTER0_CFG                                                                  0x0824
 #define regMMMC_VM_L2_PERFCOUNTER0_CFG_BASE_IDX                                                         1
 #define regMMMC_VM_L2_PERFCOUNTER1_CFG                                                                  0x0825
@@ -1589,8 +1568,8 @@
 #define regMMUTCL2_PERFCOUNTER_RSLT_CNTL_BASE_IDX                                                       1
 
 
-// addressBlock: mmhub_mmutcl2_mmvml2prdec
-// base address: 0x6a0e0
+
+
 #define regMMMC_VM_L2_PERFCOUNTER_LO                                                                    0x0838
 #define regMMMC_VM_L2_PERFCOUNTER_LO_BASE_IDX                                                           1
 #define regMMMC_VM_L2_PERFCOUNTER_HI                                                                    0x0839
@@ -1601,14 +1580,14 @@
 #define regMMUTCL2_PERFCOUNTER_HI_BASE_IDX                                                              1
 
 
-// addressBlock: mmhub_mmutcl2_mmvmsharedhvdec
-// base address: 0x6a130
+
+
 #define regMMVM_PCIE_ATS_CNTL                                                                           0x084c
 #define regMMVM_PCIE_ATS_CNTL_BASE_IDX                                                                  1
 
 
-// addressBlock: mmhub_mmutcl2_mmvmsharedpfdec
-// base address: 0x6a340
+
+
 #define regMMMC_VM_NB_MMIOBASE                                                                          0x08d0
 #define regMMMC_VM_NB_MMIOBASE_BASE_IDX                                                                 1
 #define regMMMC_VM_NB_MMIOLIMIT                                                                         0x08d1
@@ -1663,8 +1642,8 @@
 #define regMMUTCL2_GROUP_RET_FAULT_STATUS_BASE_IDX                                                      1
 
 
-// addressBlock: mmhub_mmutcl2_mmvmsharedvcdec
-// base address: 0x6a3b0
+
+
 #define regMMMC_VM_FB_LOCATION_BASE                                                                     0x08ec
 #define regMMMC_VM_FB_LOCATION_BASE_BASE_IDX                                                            1
 #define regMMMC_VM_FB_LOCATION_TOP                                                                      0x08ed
@@ -1683,16 +1662,16 @@
 #define regMMMC_VM_MX_L1_TLB_CNTL_BASE_IDX                                                              1
 
 
-// addressBlock: mmhub_mmutcl2_mmatcl2pfcntrdec
-// base address: 0x6a400
+
+
 #define regMM_ATC_L2_PERFCOUNTER_LO                                                                     0x0900
 #define regMM_ATC_L2_PERFCOUNTER_LO_BASE_IDX                                                            1
 #define regMM_ATC_L2_PERFCOUNTER_HI                                                                     0x0901
 #define regMM_ATC_L2_PERFCOUNTER_HI_BASE_IDX                                                            1
 
 
-// addressBlock: mmhub_mmutcl2_mmatcl2pfcntldec
-// base address: 0x6a420
+
+
 #define regMM_ATC_L2_PERFCOUNTER0_CFG                                                                   0x0908
 #define regMM_ATC_L2_PERFCOUNTER0_CFG_BASE_IDX                                                          1
 #define regMM_ATC_L2_PERFCOUNTER1_CFG                                                                   0x0909
@@ -1701,8 +1680,8 @@
 #define regMM_ATC_L2_PERFCOUNTER_RSLT_CNTL_BASE_IDX                                                     1
 
 
-// addressBlock: mmhub_mmutcl2_mmvml2pspdec
-// base address: 0x6aa50
+
+
 #define regMMUTCL2_TRANSLATION_BYPASS_BY_VMID                                                           0x0a94
 #define regMMUTCL2_TRANSLATION_BYPASS_BY_VMID_BASE_IDX                                                  1
 #define regMMVM_IOMMU_CONTROL_REGISTER                                                                  0x0a97
@@ -1715,20 +1694,20 @@
 #define regMMUTC_TRANSLATION_FAULT_CNTL1_BASE_IDX                                                       1
 
 
-// addressBlock: mmhub_mmutcl2_mml2tlbpspdec
-// base address: 0x6aa80
+
+
 #define regMMUTC_GPUVA_VMID_TRANSLATION_ASSIST_CNTL                                                     0x0aa0
 #define regMMUTC_GPUVA_VMID_TRANSLATION_ASSIST_CNTL_BASE_IDX                                            1
 
 
-// addressBlock: mmhub_mmutcl2_mmatcl2pspdec
-// base address: 0x6aa90
+
+
 #define regMM_ATC_L2_IOV_MODE_CNTL                                                                      0x0aa4
 #define regMM_ATC_L2_IOV_MODE_CNTL_BASE_IDX                                                             1
 
 
-// addressBlock: mmhub_mmutcl2_mml2tlbpfdec
-// base address: 0x6aac0
+
+
 #define regMML2TLB_TLB0_STATUS                                                                          0x0ab1
 #define regMML2TLB_TLB0_STATUS_BASE_IDX                                                                 1
 #define regMML2TLB_TMZ_CNTL                                                                             0x0ab2
@@ -1745,8 +1724,8 @@
 #define regMMUTCL2_L2TLB_CREDIT_SAFETY_FETCH_RDREQ_BASE_IDX                                             1
 
 
-// addressBlock: mmhub_mmutcl2_mml2tlbpldec
-// base address: 0x6ab00
+
+
 #define regMML2TLB_PERFCOUNTER0_CFG                                                                     0x0ac0
 #define regMML2TLB_PERFCOUNTER0_CFG_BASE_IDX                                                            1
 #define regMML2TLB_PERFCOUNTER1_CFG                                                                     0x0ac1
@@ -1759,8 +1738,8 @@
 #define regMML2TLB_PERFCOUNTER_RSLT_CNTL_BASE_IDX                                                       1
 
 
-// addressBlock: mmhub_mmutcl2_mml2tlbprdec
-// base address: 0x6ab20
+
+
 #define regMML2TLB_PERFCOUNTER_LO                                                                       0x0ac8
 #define regMML2TLB_PERFCOUNTER_LO_BASE_IDX                                                              1
 #define regMML2TLB_PERFCOUNTER_HI                                                                       0x0ac9

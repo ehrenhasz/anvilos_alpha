@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Clocksource using the Low Power Timer found in the Low Power Controller (LPC)
- *
- * Copyright (C) 2015 STMicroelectronics – All Rights Reserved
- *
- * Author(s): Francesco Virlinzi <francesco.virlinzi@st.com>
- *	      Ajit Pal Singh <ajitpal.singh@st.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clocksource.h>
@@ -17,7 +10,7 @@
 
 #include <dt-bindings/mfd/st-lpc.h>
 
-/* Low Power Timer */
+ 
 #define LPC_LPT_LSB_OFF		0x400
 #define LPC_LPT_MSB_OFF		0x404
 #define LPC_LPT_START_OFF	0x408
@@ -99,7 +92,7 @@ static int __init st_clksrc_of_register(struct device_node *np)
 		return ret;
 	}
 
-	/* LPC can either run as a Clocksource or in RTC or WDT mode */
+	 
 	if (mode != ST_LPC_MODE_CLKSRC)
 		return 0;
 

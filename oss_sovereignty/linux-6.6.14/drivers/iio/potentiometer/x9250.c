@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *
- * x9250.c  --  Renesas X9250 potentiometers IIO driver
- *
- * Copyright 2023 CS GROUP France
- *
- * Author: Herve Codina <herve.codina@bootlin.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -98,7 +91,7 @@ static int x9250_read_raw(struct iio_dev *indio_dev, struct iio_chan_spec const 
 static int x9250_read_avail(struct iio_dev *indio_dev, struct iio_chan_spec const *chan,
 			    const int **vals, int *type, int *length, long mask)
 {
-	static const int range[] = {0, 1, 255}; /* min, step, max */
+	static const int range[] = {0, 1, 255};  
 
 	switch (mask) {
 	case IIO_CHAN_INFO_RAW:
@@ -164,10 +157,7 @@ static int x9250_probe(struct spi_device *spi)
 	if (ret)
 		return dev_err_probe(&spi->dev, ret, "Failed to get regulators\n");
 
-	/*
-	 * The x9250 needs a 5ms maximum delay after the power-supplies are set
-	 * before performing the first write (1ms for the first read).
-	 */
+	 
 	usleep_range(5000, 6000);
 
 	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*x9250));

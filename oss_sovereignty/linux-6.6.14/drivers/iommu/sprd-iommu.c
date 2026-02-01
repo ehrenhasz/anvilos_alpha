@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Unisoc IOMMU driver
- *
- * Copyright (C) 2020 Unisoc, Inc.
- * Author: Chunyan Zhang <chunyan.zhang@unisoc.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -48,20 +43,7 @@ enum sprd_iommu_version {
 	SPRD_IOMMU_VAU,
 };
 
-/*
- * struct sprd_iommu_device - high-level sprd IOMMU device representation,
- * including hardware information and configuration, also driver data, etc
- *
- * @ver: sprd IOMMU IP version
- * @prot_page_va: protect page base virtual address
- * @prot_page_pa: protect page base physical address, data would be
- *		  written to here while translation fault
- * @base: mapped base address for accessing registers
- * @dev: pointer to basic device structure
- * @iommu: IOMMU core representation
- * @group: IOMMU group
- * @eb: gate clock which controls IOMMU access
- */
+ 
 struct sprd_iommu_device {
 	struct sprd_iommu_domain	*dom;
 	enum sprd_iommu_version	ver;
@@ -75,10 +57,10 @@ struct sprd_iommu_device {
 };
 
 struct sprd_iommu_domain {
-	spinlock_t		pgtlock; /* lock for page table */
+	spinlock_t		pgtlock;  
 	struct iommu_domain	domain;
-	u32			*pgt_va; /* page table virtual address base */
-	dma_addr_t		pgt_pa; /* page table physical address base */
+	u32			*pgt_va;  
+	dma_addr_t		pgt_pa;  
 	struct sprd_iommu_device	*sdev;
 };
 
@@ -230,7 +212,7 @@ static void sprd_iommu_cleanup(struct sprd_iommu_domain *dom)
 {
 	size_t pgt_size;
 
-	/* Nothing need to do if the domain hasn't been attached */
+	 
 	if (!dom->sdev)
 		return;
 
@@ -255,11 +237,11 @@ static int sprd_iommu_attach_device(struct iommu_domain *domain,
 	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
 	size_t pgt_size = sprd_iommu_pgt_size(domain);
 
-	/* The device is attached to this domain */
+	 
 	if (sdev->dom == dom)
 		return 0;
 
-	/* The first time that domain is attaching to a device */
+	 
 	if (!dom->pgt_va) {
 		dom->pgt_va = dma_alloc_coherent(sdev->dev, pgt_size, &dom->pgt_pa, GFP_KERNEL);
 		if (!dom->pgt_va)
@@ -270,11 +252,7 @@ static int sprd_iommu_attach_device(struct iommu_domain *domain,
 
 	sdev->dom = dom;
 
-	/*
-	 * One sprd IOMMU serves one client device only, disabled it before
-	 * configure mapping table to avoid access conflict in case other
-	 * mapping table is stored in.
-	 */
+	 
 	sprd_iommu_hw_en(sdev, false);
 	sprd_iommu_first_ppn(dom);
 	sprd_iommu_first_vpn(dom);
@@ -356,7 +334,7 @@ static void sprd_iommu_sync_map(struct iommu_domain *domain,
 	else
 		reg = SPRD_VAU_UPDATE;
 
-	/* clear IOMMU TLB buffer after page table updated */
+	 
 	sprd_iommu_write(dom->sdev, reg, 0xffffffff);
 }
 
@@ -444,11 +422,7 @@ static const struct of_device_id sprd_iommu_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, sprd_iommu_of_match);
 
-/*
- * Clock is not required, access to some of IOMMUs is controlled by gate
- * clk, enabled clocks for that kind of IOMMUs before accessing.
- * Return 0 for success or no clocks found.
- */
+ 
 static int sprd_iommu_clk_enable(struct sprd_iommu_device *sdev)
 {
 	struct clk *eb;
@@ -496,7 +470,7 @@ static int sprd_iommu_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, sdev);
 	sdev->dev = dev;
 
-	/* All the client devices are in the same iommu-group */
+	 
 	sdev->group = iommu_group_alloc();
 	if (IS_ERR(sdev->group)) {
 		ret = PTR_ERR(sdev->group);

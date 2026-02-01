@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * extcon driver for Basin Cove PMIC
- *
- * Copyright (c) 2019, Intel Corporation.
- * Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- */
+
+ 
 
 #include <linux/extcon-provider.h>
 #include <linux/interrupt.h>
@@ -114,11 +109,7 @@ static int mrfld_extcon_get_id(struct mrfld_extcon_data *data)
 		return INTEL_USB_RID_C;
 	}
 
-	/*
-	 * PMIC A0 reports USBIDSTS_GND = 1 for ID_GND,
-	 * but PMIC B0 reports USBIDSTS_GND = 0 for ID_GND.
-	 * Thus we must check this bit at last.
-	 */
+	 
 	ground = id & BCOVE_USBIDSTS_GND;
 	switch ('A' + BCOVE_MAJOR(data->id)) {
 	case 'A':
@@ -127,7 +118,7 @@ static int mrfld_extcon_get_id(struct mrfld_extcon_data *data)
 		return ground ? INTEL_USB_ID_FLOAT : INTEL_USB_ID_GND;
 	}
 
-	/* Unknown or unsupported type */
+	 
 	return INTEL_USB_ID_FLOAT;
 }
 
@@ -155,11 +146,7 @@ static int mrfld_extcon_cable_detect(struct mrfld_extcon_data *data)
 	unsigned int status, change;
 	int ret;
 
-	/*
-	 * It seems SCU firmware clears the content of BCOVE_CHGRIRQ1
-	 * and makes it useless for OS. Instead we compare a previously
-	 * stored status to the current one, provided by BCOVE_SCHGRIRQ1.
-	 */
+	 
 	ret = regmap_read(regmap, BCOVE_SCHGRIRQ1, &status);
 	if (ret)
 		return ret;
@@ -242,14 +229,10 @@ static int mrfld_extcon_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Get initial state */
+	 
 	mrfld_extcon_role_detect(data);
 
-	/*
-	 * Cached status value is used for cable detection, see comments
-	 * in mrfld_extcon_cable_detect(), we need to sync cached value
-	 * with a real state of the hardware.
-	 */
+	 
 	regmap_read(regmap, BCOVE_SCHGRIRQ1, &status);
 	data->status = status;
 

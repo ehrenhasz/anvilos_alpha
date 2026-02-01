@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Author: Conor Dooley <conor.dooley@microchip.com>
- *
- * Copyright (C) 2022 Microchip Technology Inc. and its subsidiaries
- */
+
+ 
 #include "asm-generic/errno-base.h"
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -11,7 +7,7 @@
 #include <linux/platform_device.h>
 #include <dt-bindings/clock/microchip,mpfs-clock.h>
 
-/* address offset of control registers */
+ 
 #define MPFS_CCC_PLL_CR			0x04u
 #define MPFS_CCC_REF_CR			0x08u
 #define MPFS_CCC_SSCG_2_CR		0x2Cu
@@ -54,10 +50,7 @@ struct mpfs_ccc_pll_hw_clock {
 
 #define to_mpfs_ccc_clk(_hw) container_of(_hw, struct mpfs_ccc_pll_hw_clock, hw)
 
-/*
- * mpfs_ccc_lock prevents anything else from writing to a fabric ccc
- * while a software locked register is being written.
- */
+ 
 static DEFINE_SPINLOCK(mpfs_ccc_lock);
 
 static const struct clk_parent_data mpfs_ccc_pll0_refs[] = {

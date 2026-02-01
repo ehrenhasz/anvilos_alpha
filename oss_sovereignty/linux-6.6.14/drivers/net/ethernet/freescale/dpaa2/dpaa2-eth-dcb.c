@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/* Copyright 2020 NXP */
+
+ 
 
 #include "dpaa2-eth.h"
 
@@ -37,10 +37,7 @@ static int dpaa2_eth_set_pfc_cn(struct dpaa2_eth_priv *priv, u8 pfc_en)
 			cfg.threshold_entry = DPAA2_ETH_CN_THRESH_ENTRY(priv);
 			cfg.threshold_exit = DPAA2_ETH_CN_THRESH_EXIT(priv);
 		} else {
-			/* For priorities not set in the pfc_en mask, we leave
-			 * the congestion thresholds at zero, which effectively
-			 * disables generation of PFC frames for them
-			 */
+			 
 			cfg.threshold_entry = 0;
 			cfg.threshold_exit = 0;
 		}
@@ -69,13 +66,11 @@ static int dpaa2_eth_dcbnl_ieee_setpfc(struct net_device *net_dev,
 	if (pfc->mbc || pfc->delay)
 		return -EOPNOTSUPP;
 
-	/* If same PFC enabled mask, nothing to do */
+	 
 	if (priv->pfc.pfc_en == pfc->pfc_en)
 		return 0;
 
-	/* We allow PFC configuration even if it won't have any effect until
-	 * general pause frames are enabled
-	 */
+	 
 	tx_pause = dpaa2_eth_tx_pause_enabled(priv->link_state.options);
 	if (!dpaa2_eth_rx_pause_enabled(priv->link_state.options) || !tx_pause)
 		netdev_warn(net_dev, "Pause support must be enabled in order for PFC to work!\n");
@@ -92,7 +87,7 @@ static int dpaa2_eth_dcbnl_ieee_setpfc(struct net_device *net_dev,
 		return err;
 	}
 
-	/* Configure congestion notifications for the enabled priorities */
+	 
 	err = dpaa2_eth_set_pfc_cn(priv, pfc->pfc_en);
 	if (err)
 		return err;

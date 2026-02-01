@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2022 Hewlett-Packard Enterprise Development Company, L.P. */
+
+ 
 
 #include <linux/err.h>
 #include <linux/io.h>
@@ -16,11 +16,11 @@ static const char * const gxp_i2c_name[] = {
 	"gxp-i2c4", "gxp-i2c5", "gxp-i2c6", "gxp-i2c7",
 	"gxp-i2c8", "gxp-i2c9" };
 
-/* GXP I2C Global interrupt status/enable register*/
+ 
 #define GXP_I2CINTSTAT		0x00
 #define GXP_I2CINTEN		0x04
 
-/* GXP I2C registers */
+ 
 #define GXP_I2CSTAT		0x00
 #define MASK_STOP_EVENT		0x20
 #define MASK_ACK		0x08
@@ -40,7 +40,7 @@ static const char * const gxp_i2c_name[] = {
 #define GXP_I2CTMOEDG		0x0E
 #define GXP_I2CCYCTIM		0x0F
 
-/* I2CSCMD Bits */
+ 
 #define SNOOP_EVT_CLR		0x80
 #define SLAVE_EVT_CLR		0x40
 #define	SNOOP_EVT_MASK		0x20
@@ -48,17 +48,17 @@ static const char * const gxp_i2c_name[] = {
 #define SLAVE_ACK_ENAB		0x08
 #define SLAVE_EVT_STALL		0x01
 
-/* I2CMCMD Bits */
+ 
 #define MASTER_EVT_CLR		0x80
 #define MASTER_ACK_ENAB		0x08
 #define RW_CMD			0x04
 #define STOP_CMD		0x02
 #define START_CMD		0x01
 
-/* I2CTMOEDG value */
-#define GXP_DATA_EDGE_RST_CTRL	0x0a /* 30ns */
+ 
+#define GXP_DATA_EDGE_RST_CTRL	0x0a  
 
-/* I2CFLTFAIR Bits */
+ 
 #define FILTER_CNT		0x30
 #define FAIRNESS_CNT		0x02
 
@@ -100,10 +100,10 @@ static void gxp_i2c_start(struct gxp_i2c_drvdata *drvdata)
 	drvdata->buf = drvdata->curr_msg->buf;
 	drvdata->buf_remaining = drvdata->curr_msg->len;
 
-	/* Note: Address in struct i2c_msg is 7 bits */
+	 
 	value = drvdata->curr_msg->addr << 9;
 
-	/* Read or Write */
+	 
 	value |= drvdata->curr_msg->flags & I2C_M_RD ? RW_CMD | START_CMD : START_CMD;
 
 	drvdata->state = GXP_I2C_ADDR_PHASE;
@@ -194,7 +194,7 @@ static const struct i2c_algorithm gxp_i2c_algo = {
 
 static void gxp_i2c_stop(struct gxp_i2c_drvdata *drvdata)
 {
-	/* Clear event and send stop */
+	 
 	writeb(MASTER_EVT_CLR | STOP_CMD, drvdata->base + GXP_I2CMCMD);
 
 	complete(&drvdata->completion);
@@ -210,10 +210,10 @@ static void gxp_i2c_restart(struct gxp_i2c_drvdata *drvdata)
 	value = drvdata->curr_msg->addr << 9;
 
 	if (drvdata->curr_msg->flags & I2C_M_RD) {
-		/* Read and clear master event */
+		 
 		value |= MASTER_EVT_CLR | RW_CMD | START_CMD;
 	} else {
-		/* Write and clear master event */
+		 
 		value |= MASTER_EVT_CLR | START_CMD;
 	}
 
@@ -228,16 +228,16 @@ static void gxp_i2c_chk_addr_ack(struct gxp_i2c_drvdata *drvdata)
 
 	value = readb(drvdata->base + GXP_I2CSTAT);
 	if (!(value & MASK_ACK)) {
-		/* Got no ack, stop */
+		 
 		drvdata->state = GXP_I2C_ADDR_NACK;
 		gxp_i2c_stop(drvdata);
 		return;
 	}
 
 	if (drvdata->curr_msg->flags & I2C_M_RD) {
-		/* Start to read data from slave */
+		 
 		if (drvdata->buf_remaining == 0) {
-			/* No more data to read, stop */
+			 
 			drvdata->msgs_remaining--;
 			drvdata->state = GXP_I2C_COMP;
 			gxp_i2c_stop(drvdata);
@@ -246,18 +246,18 @@ static void gxp_i2c_chk_addr_ack(struct gxp_i2c_drvdata *drvdata)
 		drvdata->state = GXP_I2C_RDATA_PHASE;
 
 		if (drvdata->buf_remaining == 1) {
-			/* The last data, do not ack */
+			 
 			writeb(MASTER_EVT_CLR | RW_CMD,
 			       drvdata->base + GXP_I2CMCMD);
 		} else {
-			/* Read data and ack it */
+			 
 			writeb(MASTER_EVT_CLR | MASTER_ACK_ENAB |
 			       RW_CMD, drvdata->base + GXP_I2CMCMD);
 		}
 	} else {
-		/* Start to write first data to slave */
+		 
 		if (drvdata->buf_remaining == 0) {
-			/* No more data to write, stop */
+			 
 			drvdata->msgs_remaining--;
 			drvdata->state = GXP_I2C_COMP;
 			gxp_i2c_stop(drvdata);
@@ -265,7 +265,7 @@ static void gxp_i2c_chk_addr_ack(struct gxp_i2c_drvdata *drvdata)
 		}
 		value = *drvdata->buf;
 		value = value << 8;
-		/* Clear master event */
+		 
 		value |= MASTER_EVT_CLR;
 		drvdata->buf++;
 		drvdata->buf_remaining--;
@@ -278,36 +278,36 @@ static void gxp_i2c_ack_data(struct gxp_i2c_drvdata *drvdata)
 {
 	u8 value;
 
-	/* Store the data returned */
+	 
 	value = readb(drvdata->base + GXP_I2CSNPDAT);
 	*drvdata->buf = value;
 	drvdata->buf++;
 	drvdata->buf_remaining--;
 
 	if (drvdata->buf_remaining == 0) {
-		/* No more data, this message is completed. */
+		 
 		drvdata->msgs_remaining--;
 
 		if (drvdata->msgs_remaining == 0) {
-			/* No more messages, stop */
+			 
 			drvdata->state = GXP_I2C_COMP;
 			gxp_i2c_stop(drvdata);
 			return;
 		}
-		/* Move to next message and start transfer */
+		 
 		drvdata->curr_msg++;
 		gxp_i2c_restart(drvdata);
 		return;
 	}
 
-	/* Ack the slave to make it send next byte */
+	 
 	drvdata->state = GXP_I2C_RDATA_PHASE;
 	if (drvdata->buf_remaining == 1) {
-		/* The last data, do not ack */
+		 
 		writeb(MASTER_EVT_CLR | RW_CMD,
 		       drvdata->base + GXP_I2CMCMD);
 	} else {
-		/* Read data and ack it */
+		 
 		writeb(MASTER_EVT_CLR | MASTER_ACK_ENAB |
 		       RW_CMD, drvdata->base + GXP_I2CMCMD);
 	}
@@ -319,34 +319,34 @@ static void gxp_i2c_chk_data_ack(struct gxp_i2c_drvdata *drvdata)
 
 	value = readb(drvdata->base + GXP_I2CSTAT);
 	if (!(value & MASK_ACK)) {
-		/* Received No ack, stop */
+		 
 		drvdata->state = GXP_I2C_DATA_NACK;
 		gxp_i2c_stop(drvdata);
 		return;
 	}
 
-	/* Got ack, check if there is more data to write */
+	 
 	if (drvdata->buf_remaining == 0) {
-		/* No more data, this message is completed */
+		 
 		drvdata->msgs_remaining--;
 
 		if (drvdata->msgs_remaining == 0) {
-			/* No more messages, stop */
+			 
 			drvdata->state = GXP_I2C_COMP;
 			gxp_i2c_stop(drvdata);
 			return;
 		}
-		/* Move to next message and start transfer */
+		 
 		drvdata->curr_msg++;
 		gxp_i2c_restart(drvdata);
 		return;
 	}
 
-	/* Write data to slave */
+	 
 	value = *drvdata->buf;
 	value = value << 8;
 
-	/* Clear master event */
+	 
 	value |= MASTER_EVT_CLR;
 	drvdata->buf++;
 	drvdata->buf_remaining--;
@@ -362,10 +362,10 @@ static bool gxp_i2c_slave_irq_handler(struct gxp_i2c_drvdata *drvdata)
 
 	value = readb(drvdata->base + GXP_I2CEVTERR);
 
-	/* Received start or stop event */
+	 
 	if (value & MASK_SLAVE_CMD_EVENT) {
 		value = readb(drvdata->base + GXP_I2CSTAT);
-		/* Master sent stop */
+		 
 		if (value & MASK_STOP_EVENT) {
 			if (drvdata->stopped == 0)
 				i2c_slave_event(drvdata->slave, I2C_SLAVE_STOP, &buf);
@@ -373,7 +373,7 @@ static bool gxp_i2c_slave_irq_handler(struct gxp_i2c_drvdata *drvdata)
 			       SLAVE_ACK_ENAB | SLAVE_EVT_STALL, drvdata->base + GXP_I2CSCMD);
 			drvdata->stopped = 1;
 		} else {
-			/* Master sent start and  wants to read */
+			 
 			drvdata->stopped = 0;
 			if (value & MASK_RW) {
 				i2c_slave_event(drvdata->slave,
@@ -382,16 +382,16 @@ static bool gxp_i2c_slave_irq_handler(struct gxp_i2c_drvdata *drvdata)
 						    SLAVE_EVT_STALL);
 				writew(value, drvdata->base + GXP_I2CSCMD);
 			} else {
-				/* Master wants to write to us */
+				 
 				ret = i2c_slave_event(drvdata->slave,
 						      I2C_SLAVE_WRITE_REQUESTED, &buf);
 				if (!ret) {
-					/* Ack next byte from master */
+					 
 					writeb(SLAVE_EVT_CLR | SNOOP_EVT_MASK |
 					       SLAVE_ACK_ENAB | SLAVE_EVT_STALL,
 					       drvdata->base + GXP_I2CSCMD);
 				} else {
-					/* Nack next byte from master */
+					 
 					writeb(SLAVE_EVT_CLR | SNOOP_EVT_MASK |
 					       SLAVE_EVT_STALL, drvdata->base + GXP_I2CSCMD);
 				}
@@ -399,9 +399,9 @@ static bool gxp_i2c_slave_irq_handler(struct gxp_i2c_drvdata *drvdata)
 		}
 	} else if (value & MASK_SLAVE_DATA_EVENT) {
 		value = readb(drvdata->base + GXP_I2CSTAT);
-		/* Master wants to read */
+		 
 		if (value & MASK_RW) {
-			/* Master wants another byte */
+			 
 			if (value & MASK_ACK) {
 				i2c_slave_event(drvdata->slave,
 						I2C_SLAVE_READ_PROCESSED, &buf);
@@ -409,24 +409,24 @@ static bool gxp_i2c_slave_irq_handler(struct gxp_i2c_drvdata *drvdata)
 						    SLAVE_EVT_STALL);
 				writew(value, drvdata->base + GXP_I2CSCMD);
 			} else {
-				/* No more bytes needed */
+				 
 				writew(SLAVE_EVT_CLR | SNOOP_EVT_MASK |
 				       SLAVE_ACK_ENAB | SLAVE_EVT_STALL,
 				       drvdata->base + GXP_I2CSCMD);
 			}
 		} else {
-			/* Master wants to write to us */
+			 
 			value = readb(drvdata->base + GXP_I2CSNPDAT);
 			buf = (uint8_t)value;
 			ret = i2c_slave_event(drvdata->slave,
 					      I2C_SLAVE_WRITE_RECEIVED, &buf);
 			if (!ret) {
-				/* Ack next byte from master */
+				 
 				writeb(SLAVE_EVT_CLR | SNOOP_EVT_MASK |
 				       SLAVE_ACK_ENAB | SLAVE_EVT_STALL,
 				       drvdata->base + GXP_I2CSCMD);
 			} else {
-				/* Nack next byte from master */
+				 
 				writeb(SLAVE_EVT_CLR | SNOOP_EVT_MASK |
 				       SLAVE_EVT_STALL, drvdata->base + GXP_I2CSCMD);
 			}
@@ -443,17 +443,17 @@ static irqreturn_t gxp_i2c_irq_handler(int irq, void *_drvdata)
 	struct gxp_i2c_drvdata *drvdata = (struct gxp_i2c_drvdata *)_drvdata;
 	u32 value;
 
-	/* Check if the interrupt is for the current engine */
+	 
 	regmap_read(i2cg_map, GXP_I2CINTSTAT, &value);
 	if (!(value & BIT(drvdata->engine)))
 		return IRQ_NONE;
 
 	value = readb(drvdata->base + GXP_I2CEVTERR);
 
-	/* Error */
+	 
 	if (value & ~(MASK_MASTER_EVENT | MASK_SLAVE_CMD_EVENT |
 				MASK_SLAVE_DATA_EVENT)) {
-		/* Clear all events */
+		 
 		writeb(0x00, drvdata->base + GXP_I2CEVTERR);
 		drvdata->state = GXP_I2C_ERROR;
 		gxp_i2c_stop(drvdata);
@@ -461,7 +461,7 @@ static irqreturn_t gxp_i2c_irq_handler(int irq, void *_drvdata)
 	}
 
 	if (IS_ENABLED(CONFIG_I2C_SLAVE)) {
-		/* Slave mode */
+		 
 		if (value & (MASK_SLAVE_CMD_EVENT | MASK_SLAVE_DATA_EVENT)) {
 			if (gxp_i2c_slave_irq_handler(drvdata))
 				return IRQ_HANDLED;
@@ -469,7 +469,7 @@ static irqreturn_t gxp_i2c_irq_handler(int irq, void *_drvdata)
 		}
 	}
 
-	/*  Master mode */
+	 
 	switch (drvdata->state) {
 	case GXP_I2C_ADDR_PHASE:
 		gxp_i2c_chk_addr_ack(drvdata);
@@ -519,7 +519,7 @@ static int gxp_i2c_probe(struct platform_device *pdev)
 					     "failed to map i2cg_handle\n");
 		}
 
-		/* Disable interrupt */
+		 
 		regmap_update_bits(i2cg_map, GXP_I2CINTEN, 0x00000FFF, 0);
 	}
 
@@ -536,7 +536,7 @@ static int gxp_i2c_probe(struct platform_device *pdev)
 	if (IS_ERR(drvdata->base))
 		return PTR_ERR(drvdata->base);
 
-	/* Use physical memory address to determine which I2C engine this is. */
+	 
 	drvdata->engine = ((size_t)drvdata->base & 0xf00) >> 8;
 
 	if (drvdata->engine >= GXP_MAX_I2C_ENGINE) {
@@ -558,7 +558,7 @@ static int gxp_i2c_probe(struct platform_device *pdev)
 
 	gxp_i2c_init(drvdata);
 
-	/* Enable interrupt */
+	 
 	regmap_update_bits(i2cg_map, GXP_I2CINTEN, BIT(drvdata->engine),
 			   BIT(drvdata->engine));
 
@@ -582,7 +582,7 @@ static void gxp_i2c_remove(struct platform_device *pdev)
 {
 	struct gxp_i2c_drvdata *drvdata = platform_get_drvdata(pdev);
 
-	/* Disable interrupt */
+	 
 	regmap_update_bits(i2cg_map, GXP_I2CINTEN, BIT(drvdata->engine), 0);
 	i2c_del_adapter(&drvdata->adapter);
 }

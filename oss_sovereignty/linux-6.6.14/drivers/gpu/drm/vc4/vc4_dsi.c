@@ -1,22 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Broadcom
- */
 
-/**
- * DOC: VC4 DSI0/DSI1 module
- *
- * BCM2835 contains two DSI modules, DSI0 and DSI1.  DSI0 is a
- * single-lane DSI controller, while DSI1 is a more modern 4-lane DSI
- * controller.
- *
- * Most Raspberry Pi boards expose DSI1 as their "DISPLAY" connector,
- * while the compute module brings both DSI0 and DSI1 out.
- *
- * This driver has been tested for DSI1 video-mode display only
- * currently, with most of the information necessary for DSI0
- * hopefully present.
- */
+ 
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/clk.h>
@@ -48,8 +33,8 @@
 
 #define DSI0_CTRL		0x00
 
-/* Command packet control. */
-#define DSI0_TXPKT1C		0x04 /* AKA PKTC */
+ 
+#define DSI0_TXPKT1C		0x04  
 #define DSI1_TXPKT1C		0x04
 # define DSI_TXPKT1C_TRIG_CMD_MASK	VC4_MASK(31, 24)
 # define DSI_TXPKT1C_TRIG_CMD_SHIFT	24
@@ -58,15 +43,11 @@
 
 # define DSI_TXPKT1C_DISPLAY_NO_MASK	VC4_MASK(9, 8)
 # define DSI_TXPKT1C_DISPLAY_NO_SHIFT	8
-/* Short, trigger, BTA, or a long packet that fits all in CMDFIFO. */
+ 
 # define DSI_TXPKT1C_DISPLAY_NO_SHORT		0
-/* Primary display where cmdfifo provides part of the payload and
- * pixelvalve the rest.
- */
+ 
 # define DSI_TXPKT1C_DISPLAY_NO_PRIMARY		1
-/* Secondary display where cmdfifo provides part of the payload and
- * pixfifo the rest.
- */
+ 
 # define DSI_TXPKT1C_DISPLAY_NO_SECONDARY	2
 
 # define DSI_TXPKT1C_CMD_TX_TIME_MASK	VC4_MASK(7, 6)
@@ -74,15 +55,13 @@
 
 # define DSI_TXPKT1C_CMD_CTRL_MASK	VC4_MASK(5, 4)
 # define DSI_TXPKT1C_CMD_CTRL_SHIFT	4
-/* Command only.  Uses TXPKT1H and DISPLAY_NO */
+ 
 # define DSI_TXPKT1C_CMD_CTRL_TX	0
-/* Command with BTA for either ack or read data. */
+ 
 # define DSI_TXPKT1C_CMD_CTRL_RX	1
-/* Trigger according to TRIG_CMD */
+ 
 # define DSI_TXPKT1C_CMD_CTRL_TRIG	2
-/* BTA alone for getting error status after a command, or a TE trigger
- * without a previous command.
- */
+ 
 # define DSI_TXPKT1C_CMD_CTRL_BTA	3
 
 # define DSI_TXPKT1C_CMD_MODE_LP	BIT(3)
@@ -90,8 +69,8 @@
 # define DSI_TXPKT1C_CMD_TE_EN		BIT(1)
 # define DSI_TXPKT1C_CMD_EN		BIT(0)
 
-/* Command packet header. */
-#define DSI0_TXPKT1H		0x08 /* AKA PKTH */
+ 
+#define DSI0_TXPKT1H		0x08  
 #define DSI1_TXPKT1H		0x08
 # define DSI_TXPKT1H_BC_CMDFIFO_MASK	VC4_MASK(31, 24)
 # define DSI_TXPKT1H_BC_CMDFIFO_SHIFT	24
@@ -100,7 +79,7 @@
 # define DSI_TXPKT1H_BC_DT_MASK		VC4_MASK(7, 0)
 # define DSI_TXPKT1H_BC_DT_SHIFT	0
 
-#define DSI0_RXPKT1H		0x0c /* AKA RX1_PKTH */
+#define DSI0_RXPKT1H		0x0c  
 #define DSI1_RXPKT1H		0x14
 # define DSI_RXPKT1H_CRC_ERR		BIT(31)
 # define DSI_RXPKT1H_DET_ERR		BIT(30)
@@ -108,10 +87,10 @@
 # define DSI_RXPKT1H_COR_ERR		BIT(28)
 # define DSI_RXPKT1H_INCOMP_PKT		BIT(25)
 # define DSI_RXPKT1H_PKT_TYPE_LONG	BIT(24)
-/* Byte count if DSI_RXPKT1H_PKT_TYPE_LONG */
+ 
 # define DSI_RXPKT1H_BC_PARAM_MASK	VC4_MASK(23, 8)
 # define DSI_RXPKT1H_BC_PARAM_SHIFT	8
-/* Short return bytes if !DSI_RXPKT1H_PKT_TYPE_LONG */
+ 
 # define DSI_RXPKT1H_SHORT_1_MASK	VC4_MASK(23, 16)
 # define DSI_RXPKT1H_SHORT_1_SHIFT	16
 # define DSI_RXPKT1H_SHORT_0_MASK	VC4_MASK(15, 8)
@@ -119,7 +98,7 @@
 # define DSI_RXPKT1H_DT_LP_CMD_MASK	VC4_MASK(7, 0)
 # define DSI_RXPKT1H_DT_LP_CMD_SHIFT	0
 
-#define DSI0_RXPKT2H		0x10 /* AKA RX2_PKTH */
+#define DSI0_RXPKT2H		0x10  
 #define DSI1_RXPKT2H		0x18
 # define DSI_RXPKT1H_DET_ERR		BIT(30)
 # define DSI_RXPKT1H_ECC_ERR		BIT(29)
@@ -130,7 +109,7 @@
 # define DSI_RXPKT1H_DT_MASK		VC4_MASK(7, 0)
 # define DSI_RXPKT1H_DT_SHIFT		0
 
-#define DSI0_TXPKT_CMD_FIFO	0x14 /* AKA CMD_DATAF */
+#define DSI0_TXPKT_CMD_FIFO	0x14  
 #define DSI1_TXPKT_CMD_FIFO	0x1c
 
 #define DSI0_DISP0_CTRL		0x18
@@ -142,19 +121,17 @@
 # define DSI_DISP0_LP_STOP_PERLINE	1
 # define DSI_DISP0_LP_STOP_PERFRAME	2
 
-/* Transmit RGB pixels and null packets only during HACTIVE, instead
- * of going to LP-STOP.
- */
+ 
 # define DSI_DISP_HACTIVE_NULL		BIT(10)
-/* Transmit blanking packet only during vblank, instead of allowing LP-STOP. */
+ 
 # define DSI_DISP_VBLP_CTRL		BIT(9)
-/* Transmit blanking packet only during HFP, instead of allowing LP-STOP. */
+ 
 # define DSI_DISP_HFP_CTRL		BIT(8)
-/* Transmit blanking packet only during HBP, instead of allowing LP-STOP. */
+ 
 # define DSI_DISP_HBP_CTRL		BIT(7)
 # define DSI_DISP0_CHANNEL_MASK		VC4_MASK(6, 5)
 # define DSI_DISP0_CHANNEL_SHIFT	5
-/* Enables end events for HSYNC/VSYNC, not just start events. */
+ 
 # define DSI_DISP0_ST_END		BIT(4)
 # define DSI_DISP0_PFORMAT_MASK		VC4_MASK(3, 2)
 # define DSI_DISP0_PFORMAT_SHIFT	2
@@ -162,13 +139,13 @@
 # define DSI_PFORMAT_RGB666_PACKED	1
 # define DSI_PFORMAT_RGB666		2
 # define DSI_PFORMAT_RGB888		3
-/* Default is VIDEO mode. */
+ 
 # define DSI_DISP0_COMMAND_MODE		BIT(1)
 # define DSI_DISP0_ENABLE		BIT(0)
 
 #define DSI0_DISP1_CTRL		0x1c
 #define DSI1_DISP1_CTRL		0x2c
-/* Format of the data written to TXPKT_PIX_FIFO. */
+ 
 # define DSI_DISP1_PFORMAT_MASK		VC4_MASK(2, 1)
 # define DSI_DISP1_PFORMAT_SHIFT	1
 # define DSI_DISP1_PFORMAT_16BIT	0
@@ -176,10 +153,10 @@
 # define DSI_DISP1_PFORMAT_32BIT_LE	2
 # define DSI_DISP1_PFORMAT_32BIT_BE	3
 
-/* DISP1 is always command mode. */
+ 
 # define DSI_DISP1_ENABLE		BIT(0)
 
-#define DSI0_TXPKT_PIX_FIFO		0x20 /* AKA PIX_FIFO */
+#define DSI0_TXPKT_PIX_FIFO		0x20  
 
 #define DSI0_INT_STAT			0x24
 #define DSI0_INT_EN			0x28
@@ -197,19 +174,19 @@
 # define DSI0_INT_PHY_D0_LPDT		BIT(16)
 # define DSI0_INT_PHY_D0_FTR		BIT(15)
 # define DSI0_INT_PHY_D0_STOP		BIT(14)
-/* Signaled when the clock lane enters the given state. */
+ 
 # define DSI0_INT_PHY_CLK_ULPS		BIT(13)
 # define DSI0_INT_PHY_CLK_HS		BIT(12)
 # define DSI0_INT_PHY_CLK_FTR		BIT(11)
-/* Signaled on timeouts */
+ 
 # define DSI0_INT_PR_TO			BIT(10)
 # define DSI0_INT_TA_TO			BIT(9)
 # define DSI0_INT_LPRX_TO		BIT(8)
 # define DSI0_INT_HSTX_TO		BIT(7)
-/* Contention on a line when trying to drive the line low */
+ 
 # define DSI0_INT_ERR_CONT_LP1		BIT(6)
 # define DSI0_INT_ERR_CONT_LP0		BIT(5)
-/* Control error: incorrect line state sequence on data lane 0. */
+ 
 # define DSI0_INT_ERR_CONTROL		BIT(4)
 # define DSI0_INT_ERR_SYNC_ESC		BIT(3)
 # define DSI0_INT_RX2_PKT		BIT(2)
@@ -240,40 +217,35 @@
 # define DSI1_INT_PHY_D0_LPDT		BIT(18)
 # define DSI1_INT_PHY_DIR_FTR		BIT(17)
 
-/* Signaled when the clock lane enters the given state. */
+ 
 # define DSI1_INT_PHY_CLOCK_ULPS	BIT(16)
 # define DSI1_INT_PHY_CLOCK_HS		BIT(15)
 # define DSI1_INT_PHY_CLOCK_STOP	BIT(14)
 
-/* Signaled on timeouts */
+ 
 # define DSI1_INT_PR_TO			BIT(13)
 # define DSI1_INT_TA_TO			BIT(12)
 # define DSI1_INT_LPRX_TO		BIT(11)
 # define DSI1_INT_HSTX_TO		BIT(10)
 
-/* Contention on a line when trying to drive the line low */
+ 
 # define DSI1_INT_ERR_CONT_LP1		BIT(9)
 # define DSI1_INT_ERR_CONT_LP0		BIT(8)
 
-/* Control error: incorrect line state sequence on data lane 0. */
+ 
 # define DSI1_INT_ERR_CONTROL		BIT(7)
-/* LPDT synchronization error (bits received not a multiple of 8. */
+ 
 
 # define DSI1_INT_ERR_SYNC_ESC		BIT(6)
-/* Signaled after receiving an error packet from the display in
- * response to a read.
- */
+ 
 # define DSI1_INT_RXPKT2		BIT(5)
-/* Signaled after receiving a packet.  The header and optional short
- * response will be in RXPKT1H, and a long response will be in the
- * RXPKT_FIFO.
- */
+ 
 # define DSI1_INT_RXPKT1		BIT(4)
 # define DSI1_INT_TXPKT2_DONE		BIT(3)
 # define DSI1_INT_TXPKT2_END		BIT(2)
-/* Signaled after all repeats of TXPKT1 are transferred. */
+ 
 # define DSI1_INT_TXPKT1_DONE		BIT(1)
-/* Signaled after each TXPKT1 repeat is scheduled. */
+ 
 # define DSI1_INT_TXPKT1_END		BIT(0)
 
 #define DSI1_INTERRUPTS_ALWAYS_ENABLED	(DSI1_INT_ERR_SYNC_ESC | \
@@ -415,9 +387,7 @@
 #define DSI1_DISP0_CTRL		0x28
 #define DSI1_INT_STAT		0x30
 #define DSI1_INT_EN		0x34
-/* State reporting bits.  These mostly behave like INT_STAT, where
- * writing a 1 clears the bit.
- */
+ 
 #define DSI1_STAT		0x38
 # define DSI1_STAT_PHY_D3_ULPS		BIT(31)
 # define DSI1_STAT_PHY_D3_STOP		BIT(30)
@@ -431,7 +401,7 @@
 # define DSI1_STAT_PHY_RXLPDT		BIT(22)
 # define DSI1_STAT_PHY_RXTRIG		BIT(21)
 # define DSI1_STAT_PHY_D0_LPDT		BIT(20)
-/* Set when in forward direction */
+ 
 # define DSI1_STAT_PHY_DIR		BIT(19)
 # define DSI1_STAT_PHY_CLOCK_ULPS	BIT(18)
 # define DSI1_STAT_PHY_CLOCK_HS		BIT(17)
@@ -530,13 +500,11 @@
 #define DSI1_PHY_TST1		0x80
 #define DSI1_PHY_TST2		0x84
 #define DSI1_PHY_FIFO_STAT	0x88
-/* Actually, all registers in the range that aren't otherwise claimed
- * will return the ID.
- */
+ 
 #define DSI1_ID			0x8c
 
 struct vc4_dsi_variant {
-	/* Whether we're on bcm2835's DSI0 or DSI1. */
+	 
 	unsigned int port;
 
 	bool broken_axi_workaround;
@@ -547,7 +515,7 @@ struct vc4_dsi_variant {
 
 };
 
-/* General DSI hardware state. */
+ 
 struct vc4_dsi {
 	struct vc4_encoder encoder;
 	struct mipi_dsi_host dsi_host;
@@ -568,31 +536,25 @@ struct vc4_dsi {
 
 	const struct vc4_dsi_variant *variant;
 
-	/* DSI channel for the panel we're connected to. */
+	 
 	u32 channel;
 	u32 lanes;
 	u32 format;
 	u32 divider;
 	u32 mode_flags;
 
-	/* Input clock from CPRMAN to the digital PHY, for the DSI
-	 * escape clock.
-	 */
+	 
 	struct clk *escape_clock;
 
-	/* Input clock to the analog PHY, used to generate the DSI bit
-	 * clock.
-	 */
+	 
 	struct clk *pll_phy_clock;
 
-	/* HS Clocks generated within the DSI analog PHY. */
+	 
 	struct clk_fixed_factor phy_clocks[3];
 
 	struct clk_hw_onecell_data *clk_onecell;
 
-	/* Pixel clock output to the pixelvalve, generated from the HS
-	 * clock.
-	 */
+	 
 	struct clk *pixel_clock;
 
 	struct completion xfer_completion;
@@ -620,7 +582,7 @@ dsi_dma_workaround_write(struct vc4_dsi *dsi, u32 offset, u32 val)
 
 	kunit_fail_current_test("Accessing a register in a unit test!\n");
 
-	/* DSI0 should be able to write normally. */
+	 
 	if (!chan) {
 		writel(val, dsi->regs + offset);
 		return;
@@ -723,7 +685,7 @@ static void vc4_dsi_latch_ulps(struct vc4_dsi *dsi, bool latch)
 	DSI_PORT_WRITE(PHY_AFEC0, afec0);
 }
 
-/* Enters or exits Ultra Low Power State. */
+ 
 static void vc4_dsi_ulps(struct vc4_dsi *dsi, bool ulps)
 {
 	bool non_continuous = dsi->mode_flags & MIPI_DSI_CLOCK_NON_CONTINUOUS;
@@ -761,11 +723,7 @@ static void vc4_dsi_ulps(struct vc4_dsi *dsi, bool ulps)
 		return;
 	}
 
-	/* The DSI module can't be disabled while the module is
-	 * generating ULPS state.  So, to be able to disable the
-	 * module, we have the AFE latch the ULPS state and continue
-	 * on to having the module enter STOP.
-	 */
+	 
 	vc4_dsi_latch_ulps(dsi, ulps);
 
 	DSI_PORT_WRITE(STAT, stat_stop);
@@ -783,13 +741,11 @@ static void vc4_dsi_ulps(struct vc4_dsi *dsi, bool ulps)
 static u32
 dsi_hs_timing(u32 ui_ns, u32 ns, u32 ui)
 {
-	/* The HS timings have to be rounded up to a multiple of 8
-	 * because we're using the byte clock.
-	 */
+	 
 	return roundup(ui + DIV_ROUND_UP(ns, ui_ns), 8);
 }
 
-/* ESC always runs at 100Mhz. */
+ 
 #define ESC_TIME_NS 10
 
 static u32
@@ -822,19 +778,7 @@ static void vc4_dsi_bridge_post_disable(struct drm_bridge *bridge,
 	pm_runtime_put(dev);
 }
 
-/* Extends the mode's blank intervals to handle BCM2835's integer-only
- * DSI PLL divider.
- *
- * On 2835, PLLD is set to 2Ghz, and may not be changed by the display
- * driver since most peripherals are hanging off of the PLLD_PER
- * divider.  PLLD_DSI1, which drives our DSI bit clock (and therefore
- * the pixel clock), only has an integer divider off of DSI.
- *
- * To get our panel mode to refresh at the expected 60Hz, we need to
- * extend the horizontal blank time.  This means we drive a
- * higher-than-expected clock rate to the panel, but that's what the
- * firmware does too.
- */
+ 
 static bool vc4_dsi_bridge_mode_fixup(struct drm_bridge *bridge,
 				      const struct drm_display_mode *mode,
 				      struct drm_display_mode *adjusted_mode)
@@ -846,23 +790,19 @@ static bool vc4_dsi_bridge_mode_fixup(struct drm_bridge *bridge,
 	unsigned long pll_clock = pixel_clock_hz * dsi->divider;
 	int divider;
 
-	/* Find what divider gets us a faster clock than the requested
-	 * pixel clock.
-	 */
+	 
 	for (divider = 1; divider < 255; divider++) {
 		if (parent_rate / (divider + 1) < pll_clock)
 			break;
 	}
 
-	/* Now that we've picked a PLL divider, calculate back to its
-	 * pixel clock.
-	 */
+	 
 	pll_clock = parent_rate / divider;
 	pixel_clock_hz = pll_clock / dsi->divider;
 
 	adjusted_mode->clock = pixel_clock_hz / 1000;
 
-	/* Given the new pixel clock, adjust HFP to keep vrefresh the same. */
+	 
 	adjusted_mode->htotal = adjusted_mode->clock * mode->htotal /
 				mode->clock;
 	adjusted_mode->hsync_end += adjusted_mode->htotal - mode->htotal;
@@ -884,7 +824,7 @@ static void vc4_dsi_bridge_pre_enable(struct drm_bridge *bridge,
 	unsigned long hs_clock;
 	struct drm_crtc *crtc;
 	u32 ui_ns;
-	/* Minimum LP state duration in escape clock cycles. */
+	 
 	u32 lpx = dsi_esc_timing(60);
 	unsigned long pixel_clock_hz;
 	unsigned long dsip_clock;
@@ -903,10 +843,7 @@ static void vc4_dsi_bridge_pre_enable(struct drm_bridge *bridge,
 		drm_print_regset32(&p, &dsi->regset);
 	}
 
-	/*
-	 * Retrieve the CRTC adjusted mode. This requires a little dance to go
-	 * from the bridge to the encoder, to the connector and to the CRTC.
-	 */
+	 
 	connector = drm_atomic_get_new_connector_for_encoder(state,
 							     bridge->encoder);
 	crtc = drm_atomic_get_new_connector_state(state, connector)->crtc;
@@ -915,10 +852,7 @@ static void vc4_dsi_bridge_pre_enable(struct drm_bridge *bridge,
 
 	pixel_clock_hz = mode->clock * 1000;
 
-	/* Round up the clk_set_rate() request slightly, since
-	 * PLLD_DSI1 is an integer divider and its rate selection will
-	 * never round up.
-	 */
+	 
 	phy_clock = (pixel_clock_hz + 1000) * dsi->divider;
 	ret = clk_set_rate(dsi->pll_phy_clock, phy_clock);
 	if (ret) {
@@ -926,7 +860,7 @@ static void vc4_dsi_bridge_pre_enable(struct drm_bridge *bridge,
 			"Failed to set phy clock to %ld: %d\n", phy_clock, ret);
 	}
 
-	/* Reset the DSI and all its fifos. */
+	 
 	DSI_PORT_WRITE(CTRL,
 		       DSI_CTRL_SOFT_RESET_CFG |
 		       DSI_PORT_BIT(CTRL_RESET_FIFOS));
@@ -935,10 +869,10 @@ static void vc4_dsi_bridge_pre_enable(struct drm_bridge *bridge,
 		       DSI_CTRL_HSDT_EOT_DISABLE |
 		       DSI_CTRL_RX_LPDT_EOT_DISABLE);
 
-	/* Clear all stat bits so we see what has happened during enable. */
+	 
 	DSI_PORT_WRITE(STAT, DSI_PORT_READ(STAT));
 
-	/* Set AFE CTR00/CTR1 to release powerdown of analog. */
+	 
 	if (dsi->variant->port == 0) {
 		u32 afec0 = (VC4_SET_FIELD(7, DSI_PHY_AFEC0_PTATADJ) |
 			     VC4_SET_FIELD(7, DSI_PHY_AFEC0_CTATADJ));
@@ -951,7 +885,7 @@ static void vc4_dsi_bridge_pre_enable(struct drm_bridge *bridge,
 
 		DSI_PORT_WRITE(PHY_AFEC0, afec0);
 
-		/* AFEC reset hold time */
+		 
 		mdelay(1);
 
 		DSI_PORT_WRITE(PHY_AFEC1,
@@ -980,7 +914,7 @@ static void vc4_dsi_bridge_pre_enable(struct drm_bridge *bridge,
 
 		DSI_PORT_WRITE(PHY_AFEC1, 0);
 
-		/* AFEC reset hold time */
+		 
 		mdelay(1);
 	}
 
@@ -998,13 +932,7 @@ static void vc4_dsi_bridge_pre_enable(struct drm_bridge *bridge,
 
 	hs_clock = clk_get_rate(dsi->pll_phy_clock);
 
-	/* Yes, we set the DSI0P/DSI1P pixel clock to the byte rate,
-	 * not the pixel clock rate.  DSIxP take from the APHY's byte,
-	 * DDR2, or DDR4 clock (we use byte) and feed into the PV at
-	 * that rate.  Separately, a value derived from PIX_CLK_DIV
-	 * and HS_CLKC is fed into the PV to divide down to the actual
-	 * pixel clock for pushing pixels into DSI.
-	 */
+	 
 	dsip_clock = phy_clock / 8;
 	ret = clk_set_rate(dsi->pixel_clock, dsip_clock);
 	if (ret) {
@@ -1018,9 +946,7 @@ static void vc4_dsi_bridge_pre_enable(struct drm_bridge *bridge,
 		return;
 	}
 
-	/* How many ns one DSI unit interval is.  Note that the clock
-	 * is DDR, so there's an extra divide by 2.
-	 */
+	 
 	ui_ns = DIV_ROUND_UP(500000000, hs_clock);
 
 	DSI_PORT_WRITE(HS_CLT0,
@@ -1057,15 +983,7 @@ static void vc4_dsi_bridge_pre_enable(struct drm_bridge *bridge,
 				     DSI_HS_DLT4_TRAIL) |
 		       VC4_SET_FIELD(0, DSI_HS_DLT4_ANLAT));
 
-	/* T_INIT is how long STOP is driven after power-up to
-	 * indicate to the slave (also coming out of power-up) that
-	 * master init is complete, and should be greater than the
-	 * maximum of two value: T_INIT,MASTER and T_INIT,SLAVE.  The
-	 * D-PHY spec gives a minimum 100us for T_INIT,MASTER and
-	 * T_INIT,SLAVE, while allowing protocols on top of it to give
-	 * greater minimums.  The vc4 firmware uses an extremely
-	 * conservative 5ms, and we maintain that here.
-	 */
+	 
 	DSI_PORT_WRITE(HS_DLT5, VC4_SET_FIELD(dsi_hs_timing(ui_ns,
 							    5 * 1000 * 1000, 0),
 					      DSI_HS_DLT5_INIT));
@@ -1096,30 +1014,28 @@ static void vc4_dsi_bridge_pre_enable(struct drm_bridge *bridge,
 		       DSI_PORT_READ(CTRL) |
 		       DSI_CTRL_CAL_BYTE);
 
-	/* HS timeout in HS clock cycles: disabled. */
+	 
 	DSI_PORT_WRITE(HSTX_TO_CNT, 0);
-	/* LP receive timeout in HS clocks. */
+	 
 	DSI_PORT_WRITE(LPRX_TO_CNT, 0xffffff);
-	/* Bus turnaround timeout */
+	 
 	DSI_PORT_WRITE(TA_TO_CNT, 100000);
-	/* Display reset sequence timeout */
+	 
 	DSI_PORT_WRITE(PR_TO_CNT, 100000);
 
-	/* Set up DISP1 for transferring long command payloads through
-	 * the pixfifo.
-	 */
+	 
 	DSI_PORT_WRITE(DISP1_CTRL,
 		       VC4_SET_FIELD(DSI_DISP1_PFORMAT_32BIT_LE,
 				     DSI_DISP1_PFORMAT) |
 		       DSI_DISP1_ENABLE);
 
-	/* Ungate the block. */
+	 
 	if (dsi->variant->port == 0)
 		DSI_PORT_WRITE(CTRL, DSI_PORT_READ(CTRL) | DSI0_CTRL_CTRL0);
 	else
 		DSI_PORT_WRITE(CTRL, DSI_PORT_READ(CTRL) | DSI1_CTRL_EN);
 
-	/* Bring AFE out of reset. */
+	 
 	DSI_PORT_WRITE(PHY_AFEC0,
 		       DSI_PORT_READ(PHY_AFEC0) &
 		       ~DSI_PORT_BIT(PHY_AFEC0_RESET));
@@ -1163,7 +1079,7 @@ static int vc4_dsi_bridge_attach(struct drm_bridge *bridge,
 {
 	struct vc4_dsi *dsi = bridge_to_vc4_dsi(bridge);
 
-	/* Attach the panel or bridge to the dsi bridge */
+	 
 	return drm_bridge_attach(bridge->encoder, dsi->out_bridge,
 				 &dsi->bridge, flags);
 }
@@ -1185,15 +1101,7 @@ static ssize_t vc4_dsi_host_transfer(struct mipi_dsi_host *host,
 			      (packet.header[2] << 8),
 			      DSI_TXPKT1H_BC_PARAM);
 	if (is_long) {
-		/* Divide data across the various FIFOs we have available.
-		 * The command FIFO takes byte-oriented data, but is of
-		 * limited size. The pixel FIFO (never actually used for
-		 * pixel data in reality) is word oriented, and substantially
-		 * larger. So, we use the pixel FIFO for most of the data,
-		 * sending the residual bytes in the command FIFO at the start.
-		 *
-		 * With this arrangement, the command FIFO will never get full.
-		 */
+		 
 		if (packet.payload_length <= 16) {
 			cmd_fifo_len = packet.payload_length;
 			pix_fifo_len = 0;
@@ -1234,9 +1142,7 @@ static ssize_t vc4_dsi_host_transfer(struct mipi_dsi_host *host,
 	if (is_long)
 		pktc |= DSI_TXPKT1C_CMD_TYPE_LONG;
 
-	/* Send one copy of the packet.  Larger repeats are used for pixel
-	 * data in command mode.
-	 */
+	 
 	pktc |= VC4_SET_FIELD(1, DSI_TXPKT1C_CMD_REPEAT);
 
 	pktc |= DSI_TXPKT1C_CMD_EN;
@@ -1248,7 +1154,7 @@ static ssize_t vc4_dsi_host_transfer(struct mipi_dsi_host *host,
 				      DSI_TXPKT1C_DISPLAY_NO);
 	}
 
-	/* Enable the appropriate interrupt for the transfer completion. */
+	 
 	dsi->xfer_result = 0;
 	reinit_completion(&dsi->xfer_completion);
 	if (dsi->variant->port == 0) {
@@ -1275,7 +1181,7 @@ static ssize_t vc4_dsi_host_transfer(struct mipi_dsi_host *host,
 		}
 	}
 
-	/* Send the packet. */
+	 
 	DSI_PORT_WRITE(TXPKT1H, pkth);
 	DSI_PORT_WRITE(TXPKT1C, pktc);
 
@@ -1312,7 +1218,7 @@ static ssize_t vc4_dsi_host_transfer(struct mipi_dsi_host *host,
 			for (i = 0; i < msg->rx_len; i++)
 				msg_rx[i] = DSI_READ(DSI1_RXPKT_FIFO);
 		} else {
-			/* FINISHME: Handle AWER */
+			 
 
 			msg_rx[0] = VC4_GET_FIELD(rxpkt1h,
 						  DSI_RXPKT1H_SHORT_0);
@@ -1472,12 +1378,7 @@ static void dsi_handle_error(struct vc4_dsi *dsi,
 	*ret = IRQ_HANDLED;
 }
 
-/*
- * Initial handler for port 1 where we need the reg_dma workaround.
- * The register DMA writes sleep, so we can't do it in the top half.
- * Instead we use IRQF_ONESHOT so that the IRQ gets disabled in the
- * parent interrupt contrller until our interrupt thread is done.
- */
+ 
 static irqreturn_t vc4_dsi_irq_defer_to_thread_handler(int irq, void *data)
 {
 	struct vc4_dsi *dsi = data;
@@ -1489,10 +1390,7 @@ static irqreturn_t vc4_dsi_irq_defer_to_thread_handler(int irq, void *data)
 	return IRQ_WAKE_THREAD;
 }
 
-/*
- * Normal IRQ handler for port 0, or the threaded IRQ handler for port
- * 1 where we need the reg_dma workaround.
- */
+ 
 static irqreturn_t vc4_dsi_irq_handler(int irq, void *data)
 {
 	struct vc4_dsi *dsi = data;
@@ -1532,11 +1430,7 @@ static irqreturn_t vc4_dsi_irq_handler(int irq, void *data)
 	return ret;
 }
 
-/**
- * vc4_dsi_init_phy_clocks - Exposes clocks generated by the analog
- * PHY that are consumed by CPRMAN (clk-bcm2835.c).
- * @dsi: DSI encoder
- */
+ 
 static int
 vc4_dsi_init_phy_clocks(struct vc4_dsi *dsi)
 {
@@ -1570,15 +1464,7 @@ vc4_dsi_init_phy_clocks(struct vc4_dsi *dsi)
 		snprintf(clk_name, sizeof(clk_name),
 			 "dsi%u_%s", dsi->variant->port, phy_clocks[i].name);
 
-		/* We just use core fixed factor clock ops for the PHY
-		 * clocks.  The clocks are actually gated by the
-		 * PHY_AFEC0_DDRCLK_EN bits, which we should be
-		 * setting if we use the DDR/DDR2 clocks.  However,
-		 * vc4_dsi_encoder_enable() is setting up both AFEC0,
-		 * setting both our parent DSI PLL's rate and this
-		 * clock's rate, so it knows if DDR/DDR2 are going to
-		 * be used and could enable the gates itself.
-		 */
+		 
 		fix->mult = 1;
 		fix->div = phy_clocks[i].div;
 		fix->hw.init = &init;
@@ -1676,10 +1562,7 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
 		return -ENODEV;
 	}
 
-	/* DSI1 on BCM2835/6/7 has a broken AXI slave that doesn't respond to
-	 * writes from the ARM.  It does handle writes from the DMA engine,
-	 * so set up a channel for talking to it.
-	 */
+	 
 	if (dsi->variant->broken_axi_workaround) {
 		dma_cap_mask_t dma_mask;
 
@@ -1711,18 +1594,15 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
 		if (ret)
 			return ret;
 
-		/* Get the physical address of the device's registers.  The
-		 * struct resource for the regs gives us the bus address
-		 * instead.
-		 */
+		 
 		dsi->reg_paddr = be32_to_cpup(of_get_address(dev->of_node,
 							     0, NULL, NULL));
 	}
 
 	init_completion(&dsi->xfer_completion);
-	/* At startup enable error-reporting interrupts and nothing else. */
+	 
 	DSI_PORT_WRITE(INT_EN, DSI1_INTERRUPTS_ALWAYS_ENABLED);
-	/* Clear any existing interrupt state. */
+	 
 	DSI_PORT_WRITE(INT_STAT, DSI_PORT_READ(INT_STAT));
 
 	if (dsi->reg_dma_mem)
@@ -1768,7 +1648,7 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
 	if (IS_ERR(dsi->out_bridge))
 		return PTR_ERR(dsi->out_bridge);
 
-	/* The esc clock rate is supposed to always be 100Mhz. */
+	 
 	ret = clk_set_rate(dsi->escape_clock, 100 * 1000000);
 	if (ret) {
 		dev_err(dev, "Failed to set esc clock: %d\n", ret);

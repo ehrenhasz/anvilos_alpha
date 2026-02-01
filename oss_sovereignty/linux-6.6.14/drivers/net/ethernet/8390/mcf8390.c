@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Support for ColdFire CPU based boards using a NS8390 Ethernet device.
- *
- *  Derived from the many other 8390 drivers.
- *
- *  (C) Copyright 2012,  Greg Ungerer <gerg@uclinux.org>
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -22,8 +15,8 @@ static const char version[] =
 	"mcf8390.c: (15-06-2012) Greg Ungerer <gerg@uclinux.org>";
 
 #define NE_CMD		0x00
-#define NE_DATAPORT	0x10	/* NatSemi-defined port window offset */
-#define NE_RESET	0x1f	/* Issue a read to reset ,a write to clear */
+#define NE_DATAPORT	0x10	 
+#define NE_RESET	0x1f	 
 #define NE_EN0_ISR	0x07
 #define NE_EN0_DCFG	0x0e
 #define NE_EN0_RSARLO	0x08
@@ -34,16 +27,11 @@ static const char version[] =
 #define NE_EN0_RCNTHI	0x0b
 #define NE_EN0_IMR	0x0f
 
-#define NESM_START_PG	0x40	/* First page of TX buffer */
-#define NESM_STOP_PG	0x80	/* Last page +1 of RX ring */
+#define NESM_START_PG	0x40	 
+#define NESM_STOP_PG	0x80	 
 
 #ifdef NE2000_ODDOFFSET
-/*
- * A lot of the ColdFire boards use a separate address region for odd offset
- * register addresses. The following functions convert and map as required.
- * Note that the data port accesses are treated a little differently, and
- * always accessed via the insX/outsX functions.
- */
+ 
 static inline u32 NE_PTR(u32 addr)
 {
 	if (addr & 1)
@@ -126,7 +114,7 @@ void ei_outsw(u32 addr, const void *vbuf, int len)
 	}
 }
 
-#else /* !NE2000_ODDOFFSET */
+#else  
 
 #define	ei_inb		inb
 #define	ei_outb		outb
@@ -135,17 +123,14 @@ void ei_outsw(u32 addr, const void *vbuf, int len)
 #define	ei_outsb	outsb
 #define	ei_outsw	outsw
 
-#endif /* !NE2000_ODDOFFSET */
+#endif  
 
 #define	ei_inb_p	ei_inb
 #define	ei_outb_p	ei_outb
 
 #include "lib8390.c"
 
-/*
- * Hard reset the card. This used to pause for the same period that a
- * 8390 reset command required, but that shouldn't be necessary.
- */
+ 
 static void mcf8390_reset_8390(struct net_device *dev)
 {
 	unsigned long reset_start_time = jiffies;
@@ -159,7 +144,7 @@ static void mcf8390_reset_8390(struct net_device *dev)
 	ei_status.txing = 0;
 	ei_status.dmaing = 0;
 
-	/* This check _should_not_ be necessary, omit eventually. */
+	 
 	while ((ei_inb(addr + NE_EN0_ISR) & ENISR_RESET) == 0) {
 		if (time_after(jiffies, reset_start_time + 2 * HZ / 100)) {
 			netdev_warn(dev, "%s: did not complete\n", __func__);
@@ -170,10 +155,7 @@ static void mcf8390_reset_8390(struct net_device *dev)
 	ei_outb(ENISR_RESET, addr + NE_EN0_ISR);
 }
 
-/*
- * This *shouldn't* happen.
- * If it does, it's the last thing you'll see
- */
+ 
 static void mcf8390_dmaing_err(const char *func, struct net_device *dev,
 			       struct ei_device *ei_local)
 {
@@ -181,11 +163,7 @@ static void mcf8390_dmaing_err(const char *func, struct net_device *dev,
 		func, ei_local->dmaing, ei_local->irqlock);
 }
 
-/*
- * Grab the 8390 specific header. Similar to the block_input routine, but
- * we don't need to be concerned with ring wrap as the header will be at
- * the start of a page, so we optimize accordingly.
- */
+ 
 static void mcf8390_get_8390_hdr(struct net_device *dev,
 				 struct e8390_pkt_hdr *hdr, int ring_page)
 {
@@ -202,25 +180,19 @@ static void mcf8390_get_8390_hdr(struct net_device *dev,
 	ei_outb(ENISR_RDC, addr + NE_EN0_ISR);
 	ei_outb(sizeof(struct e8390_pkt_hdr), addr + NE_EN0_RCNTLO);
 	ei_outb(0, addr + NE_EN0_RCNTHI);
-	ei_outb(0, addr + NE_EN0_RSARLO);		/* On page boundary */
+	ei_outb(0, addr + NE_EN0_RSARLO);		 
 	ei_outb(ring_page, addr + NE_EN0_RSARHI);
 	ei_outb(E8390_RREAD + E8390_START, addr + NE_CMD);
 
 	ei_insw(addr + NE_DATAPORT, hdr, sizeof(struct e8390_pkt_hdr) >> 1);
 
-	outb(ENISR_RDC, addr + NE_EN0_ISR);	/* Ack intr */
+	outb(ENISR_RDC, addr + NE_EN0_ISR);	 
 	ei_local->dmaing &= ~0x01;
 
 	hdr->count = cpu_to_le16(hdr->count);
 }
 
-/*
- * Block input and output, similar to the Crynwr packet driver.
- * If you are porting to a new ethercard, look at the packet driver source
- * for hints. The NEx000 doesn't share the on-board packet memory --
- * you have to put the packet out through the "remote DMA" dataport
- * using z_writeb.
- */
+ 
 static void mcf8390_block_input(struct net_device *dev, int count,
 				struct sk_buff *skb, int ring_offset)
 {
@@ -246,7 +218,7 @@ static void mcf8390_block_input(struct net_device *dev, int count,
 	if (count & 1)
 		buf[count - 1] = ei_inb(addr + NE_DATAPORT);
 
-	ei_outb(ENISR_RDC, addr + NE_EN0_ISR);	/* Ack intr */
+	ei_outb(ENISR_RDC, addr + NE_EN0_ISR);	 
 	ei_local->dmaing &= ~0x01;
 }
 
@@ -258,7 +230,7 @@ static void mcf8390_block_output(struct net_device *dev, int count,
 	u32 addr = dev->base_addr;
 	unsigned long dma_start;
 
-	/* Make sure we transfer all bytes if 16bit IO writes */
+	 
 	if (count & 0x1)
 		count++;
 
@@ -268,12 +240,12 @@ static void mcf8390_block_output(struct net_device *dev, int count,
 	}
 
 	ei_local->dmaing |= 0x01;
-	/* We should already be in page 0, but to be safe... */
+	 
 	ei_outb(E8390_PAGE0 + E8390_START + E8390_NODMA, addr + NE_CMD);
 
 	ei_outb(ENISR_RDC, addr + NE_EN0_ISR);
 
-	/* Now the normal output. */
+	 
 	ei_outb(count & 0xff, addr + NE_EN0_RCNTLO);
 	ei_outb(count >> 8, addr + NE_EN0_RCNTHI);
 	ei_outb(0x00, addr + NE_EN0_RSARLO);
@@ -284,7 +256,7 @@ static void mcf8390_block_output(struct net_device *dev, int count,
 
 	dma_start = jiffies;
 	while ((ei_inb(addr + NE_EN0_ISR) & ENISR_RDC) == 0) {
-		if (time_after(jiffies, dma_start + 2 * HZ / 100)) { /* 20ms */
+		if (time_after(jiffies, dma_start + 2 * HZ / 100)) {  
 			netdev_warn(dev, "timeout waiting for Tx RDC\n");
 			mcf8390_reset_8390(dev);
 			__NS8390_init(dev, 1);
@@ -292,7 +264,7 @@ static void mcf8390_block_output(struct net_device *dev, int count,
 		}
 	}
 
-	ei_outb(ENISR_RDC, addr + NE_EN0_ISR);	/* Ack intr */
+	ei_outb(ENISR_RDC, addr + NE_EN0_ISR);	 
 	ei_local->dmaing &= ~0x01;
 }
 
@@ -324,30 +296,24 @@ static int mcf8390_init(struct net_device *dev)
 
 	mcf8390_reset_8390(dev);
 
-	/*
-	 * Read the 16 bytes of station address PROM.
-	 * We must first initialize registers,
-	 * similar to NS8390_init(eifdev, 0).
-	 * We can't reliably read the SAPROM address without this.
-	 * (I learned the hard way!).
-	 */
+	 
 	{
 		static const struct {
 			u32 value;
 			u32 offset;
 		} program_seq[] = {
 			{E8390_NODMA + E8390_PAGE0 + E8390_STOP, NE_CMD},
-						/* Select page 0 */
-			{0x48,	NE_EN0_DCFG},	/* 0x48: Set byte-wide access */
-			{0x00,	NE_EN0_RCNTLO},	/* Clear the count regs */
+						 
+			{0x48,	NE_EN0_DCFG},	 
+			{0x00,	NE_EN0_RCNTLO},	 
 			{0x00,	NE_EN0_RCNTHI},
-			{0x00,	NE_EN0_IMR},	/* Mask completion irq */
+			{0x00,	NE_EN0_IMR},	 
 			{0xFF,	NE_EN0_ISR},
-			{E8390_RXOFF, NE_EN0_RXCR}, /* 0x20 Set to monitor */
-			{E8390_TXOFF, NE_EN0_TXCR}, /* 0x02 and loopback mode */
+			{E8390_RXOFF, NE_EN0_RXCR},  
+			{E8390_TXOFF, NE_EN0_TXCR},  
 			{32,	NE_EN0_RCNTLO},
 			{0x00,	NE_EN0_RCNTHI},
-			{0x00,	NE_EN0_RSARLO},	/* DMA starting at 0x0000 */
+			{0x00,	NE_EN0_RSARLO},	 
 			{0x00,	NE_EN0_RSARHI},
 			{E8390_RREAD + E8390_START, NE_CMD},
 		};
@@ -362,12 +328,12 @@ static int mcf8390_init(struct net_device *dev)
 		ei_inb(addr + NE_DATAPORT);
 	}
 
-	/* We must set the 8390 for word mode. */
+	 
 	ei_outb(0x49, addr + NE_EN0_DCFG);
 	start_page = NESM_START_PG;
 	stop_page = NESM_STOP_PG;
 
-	/* Install the Interrupt handler */
+	 
 	ret = request_irq(dev->irq, __ei_interrupt, 0, dev->name, dev);
 	if (ret)
 		return ret;

@@ -1,6 +1,4 @@
-/*
- * Test cases for lib/uuid.c module.
- */
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/init.h>
@@ -34,9 +32,9 @@ static const struct test_uuid_data test_uuid_test_data[] = {
 };
 
 static const char * const test_uuid_wrong_data[] = {
-	"c33f4995-3701-450e-9fbf206a2e98e576 ",	/* no hyphen(s) */
-	"64b4371c-77c1-48f9-8221-29f054XX023b",	/* invalid character(s) */
-	"0cb4ddff-a545-4401-9d06-688af53e",	/* not enough data */
+	"c33f4995-3701-450e-9fbf206a2e98e576 ",	 
+	"64b4371c-77c1-48f9-8221-29f054XX023b",	 
+	"0cb4ddff-a545-4401-9d06-688af53e",	 
 };
 
 static unsigned total_tests __initdata;
@@ -65,7 +63,7 @@ static void __init test_uuid_test(const struct test_uuid_data *data)
 	uuid_t be;
 	char buf[48];
 
-	/* LE */
+	 
 	total_tests++;
 	if (guid_parse(data->uuid, &le))
 		test_uuid_failed("conversion", false, false, data->uuid, NULL);
@@ -76,7 +74,7 @@ static void __init test_uuid_test(const struct test_uuid_data *data)
 		test_uuid_failed("cmp", false, false, data->uuid, buf);
 	}
 
-	/* BE */
+	 
 	total_tests++;
 	if (uuid_parse(data->uuid, &be))
 		test_uuid_failed("conversion", false, true, data->uuid, NULL);
@@ -93,12 +91,12 @@ static void __init test_uuid_wrong(const char *data)
 	guid_t le;
 	uuid_t be;
 
-	/* LE */
+	 
 	total_tests++;
 	if (!guid_parse(data, &le))
 		test_uuid_failed("negative", true, false, data, NULL);
 
-	/* BE */
+	 
 	total_tests++;
 	if (!uuid_parse(data, &be))
 		test_uuid_failed("negative", true, true, data, NULL);
@@ -125,7 +123,7 @@ module_init(test_uuid_init);
 
 static void __exit test_uuid_exit(void)
 {
-	/* do nothing */
+	 
 }
 module_exit(test_uuid_exit);
 

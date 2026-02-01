@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * (c) Copyright 2002-2010, Ralink Technology, Inc.
- * Copyright (C) 2014 Felix Fietkau <nbd@openwrt.org>
- * Copyright (C) 2015 Jakub Kicinski <kubakici@wp.pl>
- */
+
+ 
 
 #include "mt7601u.h"
 #include "eeprom.h"
@@ -17,11 +13,7 @@ mt7601u_set_wlan_state(struct mt7601u_dev *dev, u32 val, bool enable)
 {
 	int i;
 
-	/* Note: we don't turn off WLAN_CLK because that makes the device
-	 *	 not respond properly on the probe path.
-	 *	 In case anyone (PSM?) wants to use this function we can
-	 *	 bring the clock stuff back and fixup the probe path.
-	 */
+	 
 
 	if (enable)
 		val |= (MT_WLAN_FUN_CTRL_WLAN_EN |
@@ -48,10 +40,7 @@ mt7601u_set_wlan_state(struct mt7601u_dev *dev, u32 val, bool enable)
 		udelay(20);
 	}
 
-	/* Note: vendor driver tries to disable/enable wlan here and retry
-	 *       but the code which does it is so buggy it must have never
-	 *       triggered, so don't bother.
-	 */
+	 
 	if (!i)
 		dev_err(dev->dev, "Error: PLL and XTAL check failed!\n");
 }
@@ -268,7 +257,7 @@ static void mt7601u_mac_stop_hw(struct mt7601u_dev *dev)
 	if (!mt76_poll(dev, MT_USB_DMA_CFG, MT_USB_DMA_CFG_TX_BUSY, 0, 1000))
 		dev_warn(dev->dev, "Warning: TX DMA did not stop!\n");
 
-	/* Page count on TxQ */
+	 
 	i = 200;
 	while (i-- && ((mt76_rr(dev, 0x0438) & 0xffffffff) ||
 		       (mt76_rr(dev, 0x0a30) & 0x000000ff) ||
@@ -281,7 +270,7 @@ static void mt7601u_mac_stop_hw(struct mt7601u_dev *dev)
 	mt76_clear(dev, MT_MAC_SYS_CTRL, MT_MAC_SYS_CTRL_ENABLE_RX |
 					 MT_MAC_SYS_CTRL_ENABLE_TX);
 
-	/* Page count on RxQ */
+	 
 	ok = 0;
 	i = 200;
 	while (i--) {
@@ -317,7 +306,7 @@ static void mt7601u_stop_hardware(struct mt7601u_dev *dev)
 int mt7601u_init_hardware(struct mt7601u_dev *dev)
 {
 	static const u16 beacon_offsets[16] = {
-		/* 512 byte per beacon */
+		 
 		0xc000,	0xc200,	0xc400,	0xc600,
 		0xc800,	0xca00,	0xcc00,	0xce00,
 		0xd000,	0xd200,	0xd400,	0xd600,
@@ -343,7 +332,7 @@ int mt7601u_init_hardware(struct mt7601u_dev *dev)
 		goto err;
 	}
 
-	/* Wait for ASIC ready after FW load. */
+	 
 	ret = mt7601u_wait_asic_ready(dev);
 	if (ret)
 		goto err;
@@ -577,12 +566,10 @@ int mt7601u_register_device(struct mt7601u_dev *dev)
 	struct wiphy *wiphy = hw->wiphy;
 	int ret;
 
-	/* Reserve WCID 0 for mcast - thanks to this APs WCID will go to
-	 * entry no. 1 like it does in the vendor driver.
-	 */
+	 
 	dev->wcid_mask[0] |= 1;
 
-	/* init fake wcid for monitor interfaces */
+	 
 	dev->mon_wcid = devm_kmalloc(dev->dev, sizeof(*dev->mon_wcid),
 				     GFP_KERNEL);
 	if (!dev->mon_wcid)

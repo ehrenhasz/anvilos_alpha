@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __USBMIXER_H
 #define __USBMIXER_H
 
@@ -19,16 +19,16 @@ struct usb_mixer_interface {
 	struct list_head list;
 	unsigned int ignore_ctl_error;
 	struct urb *urb;
-	/* array[MAX_ID_ELEMS], indexed by unit id */
+	 
 	struct usb_mixer_elem_list **id_elems;
 
-	/* the usb audio specification version this interface complies to */
+	 
 	int protocol;
 
-	/* optional connector delegation map */
+	 
 	const struct usbmix_connector_map *connector_map;
 
-	/* Sound Blaster remote control stuff */
+	 
 	const struct rc_config *rc_cfg;
 	u32 rc_code;
 	wait_queue_head_t rc_waitq;
@@ -44,7 +44,7 @@ struct usb_mixer_interface {
 	void (*private_suspend)(struct usb_mixer_interface *mixer);
 };
 
-#define MAX_CHANNELS	16	/* max logical channels */
+#define MAX_CHANNELS	16	 
 
 enum {
 	USB_MIXER_BOOLEAN,
@@ -55,7 +55,7 @@ enum {
 	USB_MIXER_U16,
 	USB_MIXER_S32,
 	USB_MIXER_U32,
-	USB_MIXER_BESPOKEN,	/* non-standard type */
+	USB_MIXER_BESPOKEN,	 
 };
 
 typedef void (*usb_mixer_elem_dump_func_t)(struct snd_info_buffer *buffer,
@@ -64,7 +64,7 @@ typedef int (*usb_mixer_elem_resume_func_t)(struct usb_mixer_elem_list *elem);
 
 struct usb_mixer_elem_list {
 	struct usb_mixer_interface *mixer;
-	struct usb_mixer_elem_list *next_id_elem; /* list of controls with same id */
+	struct usb_mixer_elem_list *next_id_elem;  
 	struct snd_kcontrol *kctl;
 	unsigned int id;
 	bool is_std_info;
@@ -72,7 +72,7 @@ struct usb_mixer_elem_list {
 	usb_mixer_elem_resume_func_t resume;
 };
 
-/* iterate over mixer element list of the given unit id */
+ 
 #define for_each_mixer_elem(list, mixer, id)	\
 	for ((list) = (mixer)->id_elems[id]; (list); (list) = (list)->next_id_elem)
 #define mixer_elem_list_to_info(list) \
@@ -80,9 +80,9 @@ struct usb_mixer_elem_list {
 
 struct usb_mixer_elem_info {
 	struct usb_mixer_elem_list head;
-	unsigned int control;	/* CS or ICN (high byte) */
-	unsigned int cmask; /* channel mask bitmap: 0 = master */
-	unsigned int idx_off; /* Control index offset */
+	unsigned int control;	 
+	unsigned int cmask;  
+	unsigned int idx_off;  
 	unsigned int ch_readonly;
 	unsigned int master_readonly;
 	int channels;
@@ -131,4 +131,4 @@ extern void snd_usb_mixer_elem_free(struct snd_kcontrol *kctl);
 
 extern const struct snd_kcontrol_new *snd_usb_feature_unit_ctl;
 
-#endif /* __USBMIXER_H */
+#endif  

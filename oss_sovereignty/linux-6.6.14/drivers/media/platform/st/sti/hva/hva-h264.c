@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2015
- * Authors: Yannick Fertre <yannick.fertre@st.com>
- *          Hugues Fruchet <hugues.fruchet@st.com>
- */
+
+ 
 
 #include "hva.h"
 #include "hva-hw.h"
@@ -12,15 +8,15 @@
 
 #define BITSTREAM_OFFSET_MASK 0x7F
 
-/* video max size*/
+ 
 #define H264_MAX_SIZE_W 1920
 #define H264_MAX_SIZE_H 1920
 
-/* macroBlocs number (width & height) */
+ 
 #define MB_W(w) ((w + 0xF)  / 0x10)
 #define MB_H(h) ((h + 0xF)  / 0x10)
 
-/* formula to get temporal or spatial data size */
+ 
 #define DATA_SIZE(w, h) (MB_W(w) * MB_H(h) * 16)
 
 #define SEARCH_WINDOW_BUFFER_MAX_SIZE(w) ((4 * MB_W(w) + 42) * 256 * 3 / 2)
@@ -29,22 +25,19 @@
 #define SLICE_HEADER_SIZE (4 * 16)
 #define BRC_DATA_SIZE (5 * 16)
 
-/* source buffer copy in YUV 420 MB-tiled format with size=16*256*3/2 */
+ 
 #define CURRENT_WINDOW_BUFFER_MAX_SIZE (16 * 256 * 3 / 2)
 
-/*
- * 4 lines of pixels (in Luma, Chroma blue and Chroma red) of top MB
- * for deblocking with size=4*16*MBx*2
- */
+ 
 #define LOCAL_RECONSTRUCTED_BUFFER_MAX_SIZE(w) (4 * 16 * MB_W(w) * 2)
 
-/* factor for bitrate and cpb buffer size max values if profile >= high */
+ 
 #define H264_FACTOR_HIGH 1200
 
-/* factor for bitrate and cpb buffer size max values if profile < high */
+ 
 #define H264_FACTOR_BASELINE 1000
 
-/* number of bytes for NALU_TYPE_FILLER_DATA header and footer */
+ 
 #define H264_FILLER_DATA_SIZE 6
 
 struct h264_profile {
@@ -134,9 +127,7 @@ enum hva_h264_sei_payload_type {
 	SEI_FRAME_PACKING_ARRANGEMENT = 45
 };
 
-/*
- * stereo Video Info struct
- */
+ 
 struct hva_h264_stereo_video_sei {
 	u8 field_views_flag;
 	u8 top_field_is_left_view_flag;
@@ -146,137 +137,7 @@ struct hva_h264_stereo_video_sei {
 	u8 right_view_self_contained_flag;
 };
 
-/*
- * struct hva_h264_td
- *
- * @frame_width: width in pixels of the buffer containing the input frame
- * @frame_height: height in pixels of the buffer containing the input frame
- * @frame_num: the parameter to be written in the slice header
- * @picture_coding_type: type I, P or B
- * @pic_order_cnt_type: POC mode, as defined in H264 std : can be 0,1,2
- * @first_picture_in_sequence: flag telling to encoder that this is the
- *			       first picture in a video sequence.
- *			       Used for VBR
- * @slice_size_type: 0 = no constraint to close the slice
- *		     1= a slice is closed as soon as the slice_mb_size limit
- *			is reached
- *		     2= a slice is closed as soon as the slice_byte_size limit
- *			is reached
- *		     3= a slice is closed as soon as either the slice_byte_size
- *			limit or the slice_mb_size limit is reached
- * @slice_mb_size: defines the slice size in number of macroblocks
- *		   (used when slice_size_type=1 or slice_size_type=3)
- * @ir_param_option: defines the number of macroblocks per frame to be
- *		     refreshed by AIR algorithm OR the refresh period
- *		     by CIR algorithm
- * @intra_refresh_type: enables the adaptive intra refresh algorithm.
- *			Disable=0 / Adaptative=1 and Cycle=2 as intra refresh
- * @use_constrained_intra_flag: constrained_intra_pred_flag from PPS
- * @transform_mode: controls the use of 4x4/8x8 transform mode
- * @disable_deblocking_filter_idc:
- *		     0: specifies that all luma and chroma block edges of
- *			the slice are filtered.
- *		     1: specifies that deblocking is disabled for all block
- *			edges of the slice.
- *		     2: specifies that all luma and chroma block edges of
- *			the slice are filtered with exception of the block edges
- *			that coincide with slice boundaries
- * @slice_alpha_c0_offset_div2: to be written in slice header,
- *				controls deblocking
- * @slice_beta_offset_div2: to be written in slice header,
- *			    controls deblocking
- * @encoder_complexity: encoder complexity control (IME).
- *		     0 = I_16x16, P_16x16, Full ME Complexity
- *		     1 = I_16x16, I_NxN, P_16x16, Full ME Complexity
- *		     2 = I_16x16, I_NXN, P_16x16, P_WxH, Full ME Complexity
- *		     4 = I_16x16, P_16x16, Reduced ME Complexity
- *		     5 = I_16x16, I_NxN, P_16x16, Reduced ME Complexity
- *		     6 = I_16x16, I_NXN, P_16x16, P_WxH, Reduced ME Complexity
- *  @chroma_qp_index_offset: coming from picture parameter set
- *			     (PPS see [H.264 STD] 7.4.2.2)
- *  @entropy_coding_mode: entropy coding mode.
- *			  0 = CAVLC
- *			  1 = CABAC
- * @brc_type: selects the bit-rate control algorithm
- *		     0 = constant Qp, (no BRC)
- *		     1 = CBR
- *		     2 = VBR
- * @quant: Quantization param used in case of fix QP encoding (no BRC)
- * @non_VCL_NALU_Size: size of non-VCL NALUs (SPS, PPS, filler),
- *		       used by BRC
- * @cpb_buffer_size: size of Coded Picture Buffer, used by BRC
- * @bit_rate: target bitrate, for BRC
- * @qp_min: min QP threshold
- * @qp_max: max QP threshold
- * @framerate_num: target framerate numerator , used by BRC
- * @framerate_den: target framerate denomurator , used by BRC
- * @delay: End-to-End Initial Delay
- * @strict_HRD_compliancy: flag for HDR compliancy (1)
- *			   May impact quality encoding
- * @addr_source_buffer: address of input frame buffer for current frame
- * @addr_fwd_Ref_Buffer: address of reference frame buffer
- * @addr_rec_buffer: address of reconstructed frame buffer
- * @addr_output_bitstream_start: output bitstream start address
- * @addr_output_bitstream_end: output bitstream end address
- * @addr_external_sw : address of external search window
- * @addr_lctx : address of context picture buffer
- * @addr_local_rec_buffer: address of local reconstructed buffer
- * @addr_spatial_context: address of spatial context buffer
- * @bitstream_offset: offset in bits between aligned bitstream start
- *		      address and first bit to be written by HVA.
- *		      Range value is [0..63]
- * @sampling_mode: Input picture format .
- *		     0: YUV420 semi_planar Interleaved
- *		     1: YUV422 raster Interleaved
- * @addr_param_out: address of output parameters structure
- * @addr_scaling_matrix: address to the coefficient of
- *			 the inverse scaling matrix
- * @addr_scaling_matrix_dir: address to the coefficient of
- *			     the direct scaling matrix
- * @addr_cabac_context_buffer: address of cabac context buffer
- * @GmvX: Input information about the horizontal global displacement of
- *	  the encoded frame versus the previous one
- * @GmvY: Input information about the vertical global displacement of
- *	  the encoded frame versus the previous one
- * @window_width: width in pixels of the window to be encoded inside
- *		  the input frame
- * @window_height: width in pixels of the window to be encoded inside
- *		   the input frame
- * @window_horizontal_offset: horizontal offset in pels for input window
- *			      within input frame
- * @window_vertical_offset: vertical offset in pels for input window
- *			    within input frame
- * @addr_roi: Map of QP offset for the Region of Interest algorithm and
- *	      also used for Error map.
- *	      Bit 0-6 used for qp offset (value -64 to 63).
- *	      Bit 7 used to force intra
- * @addr_slice_header: address to slice header
- * @slice_header_size_in_bits: size in bits of the Slice header
- * @slice_header_offset0: Slice header offset where to insert
- *			  first_Mb_in_slice
- * @slice_header_offset1: Slice header offset where to insert
- *			  slice_qp_delta
- * @slice_header_offset2: Slice header offset where to insert
- *			  num_MBs_in_slice
- * @slice_synchro_enable: enable "slice ready" interrupt after each slice
- * @max_slice_number: Maximum number of slice in a frame
- *		      (0 is strictly forbidden)
- * @rgb2_yuv_y_coeff: Four coefficients (C0C1C2C3) to convert from RGB to
- *		      YUV for the Y component.
- *		      Y = C0*R + C1*G + C2*B + C3 (C0 is on byte 0)
- * @rgb2_yuv_u_coeff: four coefficients (C0C1C2C3) to convert from RGB to
- *		      YUV for the Y component.
- *		      Y = C0*R + C1*G + C2*B + C3 (C0 is on byte 0)
- * @rgb2_yuv_v_coeff: Four coefficients (C0C1C2C3) to convert from RGB to
- *		      YUV for the U (Cb) component.
- *		      U = C0*R + C1*G + C2*B + C3 (C0 is on byte 0)
- * @slice_byte_size: maximum slice size in bytes
- *		     (used when slice_size_type=2 or slice_size_type=3)
- * @max_air_intra_mb_nb: Maximum number of intra macroblock in a frame
- *			 for the AIR algorithm
- * @brc_no_skip: Disable skipping in the Bitrate Controller
- * @addr_brc_in_out_parameter: address of static buffer for BRC parameters
- */
+ 
 struct hva_h264_td {
 	u16 frame_width;
 	u16 frame_height;
@@ -354,14 +215,7 @@ struct hva_h264_td {
 	u32 addr_brc_in_out_parameter;
 };
 
-/*
- * struct hva_h264_slice_po
- *
- * @ slice_size: slice size
- * @ slice_start_time: start time
- * @ slice_stop_time: stop time
- * @ slice_num: slice number
- */
+ 
 struct hva_h264_slice_po {
 	u32 slice_size;
 	u32 slice_start_time;
@@ -369,17 +223,7 @@ struct hva_h264_slice_po {
 	u32 slice_num;
 };
 
-/*
- * struct hva_h264_po
- *
- * @ bitstream_size: bitstream size
- * @ dct_bitstream_size: dtc bitstream size
- * @ stuffing_bits: number of stuffing bits inserted by the encoder
- * @ removal_time: removal time of current frame (nb of ticks 1/framerate)
- * @ hvc_start_time: hvc start time
- * @ hvc_stop_time: hvc stop time
- * @ slice_count: slice count
- */
+ 
 struct hva_h264_po {
 	u32 bitstream_size;
 	u32 dct_bitstream_size;
@@ -397,14 +241,7 @@ struct hva_h264_task {
 	struct hva_h264_po po;
 };
 
-/*
- * struct hva_h264_ctx
- *
- * @seq_info:  sequence information buffer
- * @ref_frame: reference frame buffer
- * @rec_frame: reconstructed frame buffer
- * @task:      task descriptor
- */
+ 
 struct hva_h264_ctx {
 	struct hva_buffer *seq_info;
 	struct hva_buffer *ref_frame;
@@ -421,11 +258,7 @@ static int hva_h264_fill_slice_header(struct hva_ctx *pctx,
 				      u16 *header_offset1,
 				      u16 *header_offset2)
 {
-	/*
-	 * with this HVA hardware version, part of the slice header is computed
-	 * on host and part by hardware.
-	 * The part of host is precomputed and available through this array.
-	 */
+	 
 	struct device *dev = ctx_to_dev(pctx);
 	int  cabac = V4L2_MPEG_VIDEO_H264_ENTROPY_MODE_CABAC;
 	static const unsigned char slice_header[] = {
@@ -452,7 +285,7 @@ static int hva_h264_fill_slice_header(struct hva_ctx *pctx,
 		slice_header_addr[4] = 0x65;
 		slice_header_addr[5] = 0x11;
 
-		/* toggle the I frame */
+		 
 		if ((frame_num / ctrls->gop_size) % 2) {
 			*header_size += 4;
 			*header_offset1 += 4;
@@ -471,10 +304,7 @@ static int hva_h264_fill_slice_header(struct hva_ctx *pctx,
 			*header_offset1 += 1;
 			slice_header_addr[7] = 0x80;
 		}
-		/*
-		 * update slice header with P frame order
-		 * frame order is limited to 16 (coded on 4bits only)
-		 */
+		 
 		slice_header_addr[5] += ((frame_order & 0x0C) >> 2);
 		slice_header_addr[6] += ((frame_order & 0x03) << 6);
 	}
@@ -501,11 +331,11 @@ static int hva_h264_fill_data_nal(struct hva_ctx *pctx,
 		return 0;
 	}
 
-	/* start code */
+	 
 	memcpy(addr + *size, start, sizeof(start));
 	*size += sizeof(start);
 
-	/* nal_unit_type */
+	 
 	addr[*size] = NALU_TYPE_FILLER_DATA;
 	*size += 1;
 
@@ -528,15 +358,15 @@ static int hva_h264_fill_sei_nal(struct hva_ctx *pctx,
 	u8 offset = 7;
 	u8 msg = 0;
 
-	/* start code */
+	 
 	memcpy(addr + *size, start, sizeof(start));
 	*size += sizeof(start);
 
-	/* nal_unit_type */
+	 
 	addr[*size] = NALU_TYPE_SEI;
 	*size += 1;
 
-	/* payload type */
+	 
 	addr[*size] = type;
 	*size += 1;
 
@@ -544,15 +374,15 @@ static int hva_h264_fill_sei_nal(struct hva_ctx *pctx,
 	case SEI_STEREO_VIDEO_INFO:
 		memset(&info, 0, sizeof(info));
 
-		/* set to top/bottom frame packing arrangement */
+		 
 		info.field_views_flag = 1;
 		info.top_field_is_left_view_flag = 1;
 
-		/* payload size */
+		 
 		addr[*size] = 1;
 		*size += 1;
 
-		/* payload */
+		 
 		msg = info.field_views_flag << offset--;
 
 		if (info.field_views_flag) {
@@ -610,7 +440,7 @@ static int hva_h264_prepare_task(struct hva_ctx *pctx,
 	unsigned int payload = stream->bytesused;
 	u32 max_bitrate;
 
-	/* check width and height parameters */
+	 
 	if ((frame_width > max(H264_MAX_SIZE_W, H264_MAX_SIZE_H)) ||
 	    (frame_height > max(H264_MAX_SIZE_W, H264_MAX_SIZE_H))) {
 		dev_err(dev,
@@ -628,7 +458,7 @@ static int hva_h264_prepare_task(struct hva_ctx *pctx,
 	td->frame_width = frame_width;
 	td->frame_height = frame_height;
 
-	/* set frame alignment */
+	 
 	td->window_width =  frame_width;
 	td->window_height = frame_height;
 	td->window_horizontal_offset = 0;
@@ -636,10 +466,10 @@ static int hva_h264_prepare_task(struct hva_ctx *pctx,
 
 	td->first_picture_in_sequence = (!frame_num) ? 1 : 0;
 
-	/* pic_order_cnt_type hard coded to '2' as only I & P frames */
+	 
 	td->pic_order_cnt_type = 2;
 
-	/* useConstrainedIntraFlag set to false for better coding efficiency */
+	 
 	td->use_constrained_intra_flag = false;
 	td->brc_type = (ctrls->bitrate_mode == V4L2_MPEG_VIDEO_BITRATE_MODE_CBR)
 			? BRC_TYPE_CBR : BRC_TYPE_VBR;
@@ -649,22 +479,15 @@ static int hva_h264_prepare_task(struct hva_ctx *pctx,
 
 	td->bit_rate = ctrls->bitrate;
 
-	/* set framerate, framerate = 1 n/ time per frame */
+	 
 	if (time_per_frame->numerator >= 536) {
-		/*
-		 * due to a hardware bug, framerate denominator can't exceed
-		 * 536 (BRC overflow). Compute nearest framerate
-		 */
+		 
 		td->framerate_den = 1;
 		td->framerate_num = (time_per_frame->denominator +
 				    (time_per_frame->numerator >> 1) - 1) /
 				    time_per_frame->numerator;
 
-		/*
-		 * update bitrate to introduce a correction due to
-		 * the new framerate
-		 * new bitrate = (old bitrate * new framerate) / old framerate
-		 */
+		 
 		td->bit_rate /= time_per_frame->numerator;
 		td->bit_rate *= time_per_frame->denominator;
 		td->bit_rate /= td->framerate_num;
@@ -673,7 +496,7 @@ static int hva_h264_prepare_task(struct hva_ctx *pctx,
 		td->framerate_num = time_per_frame->denominator;
 	}
 
-	/* compute maximum bitrate depending on profile */
+	 
 	if (ctrls->profile >= V4L2_MPEG_VIDEO_H264_PROFILE_HIGH)
 		max_bitrate = h264_infos_list[level].max_bitrate *
 			      H264_FACTOR_HIGH;
@@ -681,7 +504,7 @@ static int hva_h264_prepare_task(struct hva_ctx *pctx,
 		max_bitrate = h264_infos_list[level].max_bitrate *
 			      H264_FACTOR_BASELINE;
 
-	/* check if bitrate doesn't exceed max size */
+	 
 	if (td->bit_rate > max_bitrate) {
 		dev_dbg(dev,
 			"%s   bitrate (%d) larger than level and profile allow, clip to %d\n",
@@ -689,10 +512,10 @@ static int hva_h264_prepare_task(struct hva_ctx *pctx,
 		td->bit_rate = max_bitrate;
 	}
 
-	/* convert cpb_buffer_size in bits */
+	 
 	td->cpb_buffer_size = ctrls->cpb_size * 8000;
 
-	/* compute maximum cpb buffer size depending on profile */
+	 
 	if (ctrls->profile >= V4L2_MPEG_VIDEO_H264_PROFILE_HIGH)
 		max_cpb_buffer_size =
 		    h264_infos_list[level].max_cpb_size * H264_FACTOR_HIGH;
@@ -700,7 +523,7 @@ static int hva_h264_prepare_task(struct hva_ctx *pctx,
 		max_cpb_buffer_size =
 		    h264_infos_list[level].max_cpb_size * H264_FACTOR_BASELINE;
 
-	/* check if cpb buffer size doesn't exceed max size */
+	 
 	if (td->cpb_buffer_size > max_cpb_buffer_size) {
 		dev_dbg(dev,
 			"%s   cpb size larger than level %d allows, clip to %d\n",
@@ -708,10 +531,10 @@ static int hva_h264_prepare_task(struct hva_ctx *pctx,
 		td->cpb_buffer_size = max_cpb_buffer_size;
 	}
 
-	/* enable skipping in the Bitrate Controller */
+	 
 	td->brc_no_skip = 0;
 
-	/* initial delay */
+	 
 	if ((ctrls->bitrate_mode == V4L2_MPEG_VIDEO_BITRATE_MODE_CBR) &&
 	    td->bit_rate)
 		td->delay = 1000 * (td->cpb_buffer_size / td->bit_rate);
@@ -732,23 +555,18 @@ static int hva_h264_prepare_task(struct hva_ctx *pctx,
 		return -EINVAL;
 	}
 
-	/*
-	 * fill matrix color converter (RGB to YUV)
-	 * Y = 0,299 R + 0,587 G + 0,114 B
-	 * Cb = -0,1687 R -0,3313 G + 0,5 B + 128
-	 * Cr = 0,5 R - 0,4187 G - 0,0813 B + 128
-	 */
+	 
 	td->rgb2_yuv_y_coeff = 0x12031008;
 	td->rgb2_yuv_u_coeff = 0x800EF7FB;
 	td->rgb2_yuv_v_coeff = 0x80FEF40E;
 
-	/* enable/disable transform mode */
+	 
 	td->transform_mode = ctrls->dct8x8;
 
-	/* encoder complexity fix to 2, ENCODE_I_16x16_I_NxN_P_16x16_P_WxH */
+	 
 	td->encoder_complexity = 2;
 
-	/* quant fix to 28, default VBR value */
+	 
 	td->quant = 28;
 
 	if (td->framerate_den == 0) {
@@ -757,14 +575,14 @@ static int hva_h264_prepare_task(struct hva_ctx *pctx,
 		return -EINVAL;
 	}
 
-	/* if automatic framerate, deactivate bitrate controller */
+	 
 	if (td->framerate_num == 0)
 		td->brc_type = 0;
 
-	/* compliancy fix to true */
+	 
 	td->strict_hrd_compliancy = 1;
 
-	/* set minimum & maximum quantizers */
+	 
 	td->qp_min = clamp_val(ctrls->qpmin, 0, 51);
 	td->qp_max = clamp_val(ctrls->qpmax, 0, 51);
 
@@ -781,7 +599,7 @@ static int hva_h264_prepare_task(struct hva_ctx *pctx,
 	td->addr_param_out = (u32)ctx->task->paddr +
 			     offsetof(struct hva_h264_task, po);
 
-	/* swap spatial and temporal context */
+	 
 	if (frame_num % 2) {
 		paddr = seq_info->paddr;
 		td->addr_spatial_context =  ALIGN(paddr, 0x100);
@@ -821,7 +639,7 @@ static int hva_h264_prepare_task(struct hva_ctx *pctx,
 		stream->vbuf.flags &= ~V4L2_BUF_FLAG_KEYFRAME;
 	}
 
-	/* fill the slice header part */
+	 
 	slice_header_vaddr = seq_info->vaddr + (td->addr_slice_header -
 			     seq_info->paddr);
 
@@ -835,11 +653,7 @@ static int hva_h264_prepare_task(struct hva_ctx *pctx,
 	td->slice_synchro_enable = 0;
 	td->max_slice_number = 1;
 
-	/*
-	 * check the sps/pps header size for key frame only
-	 * sps/pps header was previously fill by libv4l
-	 * during qbuf of stream buffer
-	 */
+	 
 	if ((stream->vbuf.flags == V4L2_BUF_FLAG_KEYFRAME) &&
 	    (payload > MAX_SPS_PPS_SIZE)) {
 		dev_err(dev, "%s   invalid sps/pps size %d\n", pctx->name,
@@ -851,7 +665,7 @@ static int hva_h264_prepare_task(struct hva_ctx *pctx,
 	if (stream->vbuf.flags != V4L2_BUF_FLAG_KEYFRAME)
 		payload = 0;
 
-	/* add SEI nal (video stereo info) */
+	 
 	if (ctrls->sei_fp && hva_h264_fill_sei_nal(pctx, SEI_STEREO_VIDEO_INFO,
 						   (u8 *)stream->vaddr,
 						   &payload)) {
@@ -860,10 +674,10 @@ static int hva_h264_prepare_task(struct hva_ctx *pctx,
 		return -EINVAL;
 	}
 
-	/* fill size of non-VCL NAL units (SPS, PPS, filler and SEI) */
+	 
 	td->non_vcl_nalu_size = payload * 8;
 
-	/* compute bitstream offset & new start address of bitstream */
+	 
 	td->addr_output_bitstream_start += ((payload >> 4) << 4);
 	td->bitstream_offset += (payload - ((payload >> 4) << 4)) * 8;
 
@@ -896,7 +710,7 @@ static int hva_h264_open(struct hva_ctx *pctx)
 	u32 size;
 	int ret;
 
-	/* check esram size necessary to encode a frame */
+	 
 	size = SEARCH_WINDOW_BUFFER_MAX_SIZE(frame_width) +
 	       LOCAL_RECONSTRUCTED_BUFFER_MAX_SIZE(frame_width) +
 	       CTX_MB_BUFFER_MAX_SIZE(max(frame_width, frame_height)) +
@@ -909,14 +723,14 @@ static int hva_h264_open(struct hva_ctx *pctx)
 		goto err;
 	}
 
-	/* allocate context for codec */
+	 
 	ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
 	if (!ctx) {
 		ret = -ENOMEM;
 		goto err;
 	}
 
-	/* allocate sequence info buffer */
+	 
 	ret = hva_mem_alloc(pctx,
 			    2 * DATA_SIZE(frame_width, frame_height) +
 			    SLICE_HEADER_SIZE +
@@ -930,7 +744,7 @@ static int hva_h264_open(struct hva_ctx *pctx)
 		goto err_ctx;
 	}
 
-	/* allocate reference frame buffer */
+	 
 	ret = hva_mem_alloc(pctx,
 			    frame_width * frame_height * 3 / 2,
 			    "hva reference frame",
@@ -941,7 +755,7 @@ static int hva_h264_open(struct hva_ctx *pctx)
 		goto err_seq_info;
 	}
 
-	/* allocate reconstructed frame buffer */
+	 
 	ret = hva_mem_alloc(pctx,
 			    frame_width * frame_height * 3 / 2,
 			    "hva reconstructed frame",
@@ -953,7 +767,7 @@ static int hva_h264_open(struct hva_ctx *pctx)
 		goto err_ref_frame;
 	}
 
-	/* allocate task descriptor */
+	 
 	ret = hva_mem_alloc(pctx,
 			    sizeof(struct hva_h264_task),
 			    "hva task descriptor",
@@ -1031,7 +845,7 @@ static int hva_h264_encode(struct hva_ctx *pctx, struct hva_frame *frame,
 				       stream->size,
 				       &stream->bytesused);
 
-	/* switch reference & reconstructed frame */
+	 
 	swap(ctx->ref_frame, ctx->rec_frame);
 
 	return 0;

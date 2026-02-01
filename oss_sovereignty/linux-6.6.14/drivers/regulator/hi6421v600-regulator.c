@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Device driver for regulators in Hisi IC
-//
-// Copyright (c) 2013 Linaro Ltd.
-// Copyright (c) 2011 HiSilicon Ltd.
-// Copyright (c) 2020-2021 Huawei Technologies Co., Ltd.
-//
-// Guodong Xu <guodong.xu@linaro.org>
+
+
+
+
+
+
+
+
+
 
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -17,7 +17,7 @@
 #include <linux/spmi.h>
 
 struct hi6421_spmi_reg_priv {
-	/* Serialize regulator enable logic */
+	 
 	struct mutex enable_mutex;
 };
 
@@ -59,18 +59,7 @@ static const unsigned int range_2v6_to_3v3[] = {
 	3000000, 3100000, 3200000, 3300000
 };
 
-/**
- * HI6421V600_LDO() - specify a LDO power line
- * @_id: LDO id name string
- * @vtable: voltage table
- * @ereg: enable register
- * @emask: enable mask
- * @vreg: voltage select register
- * @odelay: off/on delay time in uS
- * @etime: enable time in uS
- * @ecomask: eco mode mask
- * @ecoamp: eco mode load uppler limit in uA
- */
+ 
 #define HI6421V600_LDO(_id, vtable, ereg, emask, vreg,			       \
 		       odelay, etime, ecomask, ecoamp)			       \
 	[hi6421v600_##_id] = {						       \
@@ -101,14 +90,14 @@ static int hi6421_spmi_regulator_enable(struct regulator_dev *rdev)
 	struct hi6421_spmi_reg_priv *priv = rdev_get_drvdata(rdev);
 	int ret;
 
-	/* cannot enable more than one regulator at one time */
+	 
 	mutex_lock(&priv->enable_mutex);
 
 	ret = regmap_update_bits(rdev->regmap, rdev->desc->enable_reg,
 				 rdev->desc->enable_mask,
 				 rdev->desc->enable_mask);
 
-	/* Avoid powering up multiple devices at the same time */
+	 
 	usleep_range(rdev->desc->off_on_delay, rdev->desc->off_on_delay + 60);
 
 	mutex_unlock(&priv->enable_mutex);
@@ -183,7 +172,7 @@ static const struct regulator_ops hi6421_spmi_ldo_rops = {
 	.get_optimum_mode = hi6421_spmi_regulator_get_optimum_mode,
 };
 
-/* HI6421v600 regulators with known registers */
+ 
 enum hi6421_spmi_regulator_id {
 	hi6421v600_ldo3,
 	hi6421v600_ldo4,
@@ -241,11 +230,7 @@ static int hi6421_spmi_regulator_probe(struct platform_device *pdev)
 	struct regulator_dev *rdev;
 	int i;
 
-	/*
-	 * This driver is meant to be called by hi6421-spmi-core,
-	 * which should first set drvdata. If this doesn't happen, hit
-	 * a warn on and return.
-	 */
+	 
 	regmap = dev_get_drvdata(pmic_dev);
 	if (WARN_ON(!regmap))
 		return -ENODEV;

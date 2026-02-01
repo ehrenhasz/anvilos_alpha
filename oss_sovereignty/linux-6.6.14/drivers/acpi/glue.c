@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Link physical devices with ACPI devices support
- *
- * Copyright (c) 2005 David Shaohua Li <shaohua.li@intel.com>
- * Copyright (c) 2005 Intel Corp.
- */
+
+ 
 
 #define pr_fmt(fmt) "ACPI: " fmt
 
@@ -98,11 +93,7 @@ static int find_child_checks(struct acpi_device *adev, bool check_children)
 
 	status = acpi_evaluate_integer(adev->handle, "_STA", NULL, &sta);
 	if (status == AE_NOT_FOUND) {
-		/*
-		 * Special case: backlight device objects without _STA are
-		 * preferred to other objects with the same _ADR value, because
-		 * it is more likely that they are actually useful.
-		 */
+		 
 		if (adev->pnp.type.backlight)
 			return FIND_CHILD_MID_SCORE;
 
@@ -112,13 +103,7 @@ static int find_child_checks(struct acpi_device *adev, bool check_children)
 	if (ACPI_FAILURE(status) || !(sta & ACPI_STA_DEVICE_ENABLED))
 		return -ENODEV;
 
-	/*
-	 * If the device has a _HID returning a valid ACPI/PNP device ID, it is
-	 * better to make it look less attractive here, so that the other device
-	 * with the same _ADR value (that may not have a valid device ID) can be
-	 * matched going forward.  [This means a second spec violation in a row,
-	 * so whatever we do here is best effort anyway.]
-	 */
+	 
 	if (adev->pnp.type.platform_id)
 		return FIND_CHILD_MIN_SCORE;
 
@@ -142,23 +127,12 @@ static int check_one_child(struct acpi_device *adev, void *data)
 		return 0;
 
 	if (!wd->adev) {
-		/*
-		 * This is the first matching object, so save it.  If it is not
-		 * necessary to look for any other matching objects, stop the
-		 * search.
-		 */
+		 
 		wd->adev = adev;
 		return !(wd->check_sta || wd->check_children);
 	}
 
-	/*
-	 * There is more than one matching device object with the same _ADR
-	 * value.  That really is unexpected, so we are kind of beyond the scope
-	 * of the spec here.  We have to choose which one to return, though.
-	 *
-	 * First, get the score for the previously found object and terminate
-	 * the walk if it is maximum.
-	*/
+	 
 	if (!wd->score) {
 		score = find_child_checks(wd->adev, wd->check_children);
 		if (score == FIND_CHILD_MAX_SCORE)
@@ -166,11 +140,7 @@ static int check_one_child(struct acpi_device *adev, void *data)
 
 		wd->score = score;
 	}
-	/*
-	 * Second, if the object that has just been found has a better score,
-	 * replace the previously found one with it and terminate the walk if
-	 * the new score is maximum.
-	 */
+	 
 	score = find_child_checks(adev, wd->check_children);
 	if (score > wd->score) {
 		wd->adev = adev;
@@ -180,7 +150,7 @@ static int check_one_child(struct acpi_device *adev, void *data)
 		wd->score = score;
 	}
 
-	/* Continue, because there may be better matches. */
+	 
 	return 0;
 }
 
@@ -254,14 +224,11 @@ int acpi_bind_one(struct device *dev, struct acpi_device *acpi_dev)
 
 	mutex_lock(&acpi_dev->physical_node_lock);
 
-	/*
-	 * Keep the list sorted by node_id so that the IDs of removed nodes can
-	 * be recycled easily.
-	 */
+	 
 	physnode_list = &acpi_dev->physical_node_list;
 	node_id = 0;
 	list_for_each_entry(pn, &acpi_dev->physical_node_list, node) {
-		/* Sanity check. */
+		 
 		if (pn->dev == dev) {
 			mutex_unlock(&acpi_dev->physical_node_lock);
 
@@ -337,7 +304,7 @@ int acpi_unbind_one(struct device *dev)
 			sysfs_remove_link(&acpi_dev->dev.kobj, physnode_name);
 			sysfs_remove_link(&dev->kobj, "firmware_node");
 			ACPI_COMPANION_SET(dev, NULL);
-			/* Drop references taken by acpi_bind_one(). */
+			 
 			put_device(dev);
 			acpi_dev_put(acpi_dev);
 			kfree(entry);

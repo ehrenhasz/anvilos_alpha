@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Support for OMAP DES and Triple DES HW acceleration.
- *
- * Copyright (c) 2013 Texas Instruments Incorporated
- * Author: Joel Fernandes <joelf@ti.com>
- */
+
+ 
 
 #define pr_fmt(fmt) "%s: " fmt, __func__
 
@@ -137,17 +132,14 @@ struct omap_des_dev {
 
 	struct skcipher_request	*req;
 	struct crypto_engine		*engine;
-	/*
-	 * total is used by PIO mode for book keeping so introduce
-	 * variable total_save as need it to calc page_order
-	 */
+	 
 	size_t                          total;
 	size_t                          total_save;
 
 	struct scatterlist		*in_sg;
 	struct scatterlist		*out_sg;
 
-	/* Buffers for copying for unaligned cases */
+	 
 	struct scatterlist		in_sgl;
 	struct scatterlist		out_sgl;
 	struct scatterlist		*orig_out;
@@ -162,7 +154,7 @@ struct omap_des_dev {
 	const struct omap_des_pdata	*pdata;
 };
 
-/* keep registered devices data here */
+ 
 static LIST_HEAD(dev_list);
 static DEFINE_SPINLOCK(list_lock);
 
@@ -219,11 +211,7 @@ static int omap_des_hw_init(struct omap_des_dev *dd)
 {
 	int err;
 
-	/*
-	 * clocks are enabled when request starts and disabled when finished.
-	 * It may be long delays between requests.
-	 * Device might go to off mode to save power.
-	 */
+	 
 	err = pm_runtime_resume_and_get(dd->dev);
 	if (err < 0) {
 		dev_err(dd->dev, "%s: failed to get_sync(%d)\n", __func__, err);
@@ -250,7 +238,7 @@ static int omap_des_write_ctrl(struct omap_des_dev *dd)
 
 	key32 = dd->ctx->keylen / sizeof(u32);
 
-	/* it seems a key should always be set even if it has not changed */
+	 
 	for (i = 0; i < key32; i++) {
 		omap_des_write(dd, DES_REG_KEY(dd, i),
 			       __le32_to_cpu(dd->ctx->key[i]));
@@ -309,13 +297,13 @@ static struct omap_des_dev *omap_des_find_dev(struct omap_des_ctx *ctx)
 	spin_lock_bh(&list_lock);
 	if (!ctx->dd) {
 		list_for_each_entry(tmp, &dev_list, list) {
-			/* FIXME: take fist available des core */
+			 
 			dd = tmp;
 			break;
 		}
 		ctx->dd = dd;
 	} else {
-		/* already found before */
+		 
 		dd = ctx->dd;
 	}
 	spin_unlock_bh(&list_lock);
@@ -327,7 +315,7 @@ static void omap_des_dma_out_callback(void *data)
 {
 	struct omap_des_dev *dd = data;
 
-	/* dma_lch_out - completed */
+	 
 	tasklet_schedule(&dd->done_task);
 }
 
@@ -382,8 +370,7 @@ static int omap_des_crypt_dma(struct crypto_tfm *tfm,
 		scatterwalk_start(&dd->in_walk, dd->in_sg);
 		scatterwalk_start(&dd->out_walk, dd->out_sg);
 
-		/* Enable DATAIN interrupt and let it take
-		   care of the rest */
+		 
 		omap_des_write(dd, DES_REG_IRQ_ENABLE(dd), 0x2);
 		return 0;
 	}
@@ -399,7 +386,7 @@ static int omap_des_crypt_dma(struct crypto_tfm *tfm,
 	cfg.src_maxburst = DST_MAXBURST;
 	cfg.dst_maxburst = DST_MAXBURST;
 
-	/* IN */
+	 
 	ret = dmaengine_slave_config(dd->dma_lch_in, &cfg);
 	if (ret) {
 		dev_err(dd->dev, "can't configure IN dmaengine slave: %d\n",
@@ -415,10 +402,10 @@ static int omap_des_crypt_dma(struct crypto_tfm *tfm,
 		return -EINVAL;
 	}
 
-	/* No callback necessary */
+	 
 	tx_in->callback_param = dd;
 
-	/* OUT */
+	 
 	ret = dmaengine_slave_config(dd->dma_lch_out, &cfg);
 	if (ret) {
 		dev_err(dd->dev, "can't configure OUT dmaengine slave: %d\n",
@@ -443,7 +430,7 @@ static int omap_des_crypt_dma(struct crypto_tfm *tfm,
 	dma_async_issue_pending(dd->dma_lch_in);
 	dma_async_issue_pending(dd->dma_lch_out);
 
-	/* start DMA */
+	 
 	dd->pdata->trigger(dd, dd->total);
 
 	return 0;
@@ -526,7 +513,7 @@ static int omap_des_prepare_req(struct skcipher_request *req,
 	int ret;
 	u16 flags;
 
-	/* assign new request to device */
+	 
 	dd->req = req;
 	dd->total = req->cryptlen;
 	dd->total_save = req->cryptlen;
@@ -642,7 +629,7 @@ static int omap_des_crypt(struct skcipher_request *req, unsigned long mode)
 	return omap_des_handle_queue(dd, req);
 }
 
-/* ********************** ALG API ************************************ */
+ 
 
 static int omap_des_setkey(struct crypto_skcipher *cipher, const u8 *key,
 			   unsigned int keylen)
@@ -709,7 +696,7 @@ static int omap_des_init_tfm(struct crypto_skcipher *tfm)
 	return 0;
 }
 
-/* ********************** ALGS ************************************ */
+ 
 
 static struct skcipher_engine_alg algs_ecb_cbc[] = {
 {
@@ -857,11 +844,11 @@ static irqreturn_t omap_des_irq(int irq, void *dev_id)
 			}
 		}
 
-		/* Clear IRQ status */
+		 
 		status &= ~DES_REG_IRQ_DATA_IN;
 		omap_des_write(dd, DES_REG_IRQ_STATUS(dd), status);
 
-		/* Enable DATA_OUT interrupt */
+		 
 		omap_des_write(dd, DES_REG_IRQ_ENABLE(dd), 0x4);
 
 	} else if (status & DES_REG_IRQ_DATA_OUT) {
@@ -893,15 +880,15 @@ static irqreturn_t omap_des_irq(int irq, void *dev_id)
 
 		dd->total -= DES_BLOCK_SIZE;
 
-		/* Clear IRQ status */
+		 
 		status &= ~DES_REG_IRQ_DATA_OUT;
 		omap_des_write(dd, DES_REG_IRQ_STATUS(dd), status);
 
 		if (!dd->total)
-			/* All bytes read! */
+			 
 			tasklet_schedule(&dd->done_task);
 		else
-			/* Enable DATA_IN interrupt for next block */
+			 
 			omap_des_write(dd, DES_REG_IRQ_ENABLE(dd), 0x2);
 	}
 
@@ -940,7 +927,7 @@ static int omap_des_get_of(struct omap_des_dev *dd,
 static int omap_des_get_pdev(struct omap_des_dev *dd,
 		struct platform_device *pdev)
 {
-	/* non-DT devices get pdata from pdev */
+	 
 	dd->pdata = pdev->dev.platform_data;
 
 	return 0;
@@ -1023,7 +1010,7 @@ static int omap_des_probe(struct platform_device *pdev)
 	list_add_tail(&dd->list, &dev_list);
 	spin_unlock_bh(&list_lock);
 
-	/* Initialize des crypto engine */
+	 
 	dd->engine = crypto_engine_alloc_init(dev, 1);
 	if (!dd->engine) {
 		err = -ENOMEM;

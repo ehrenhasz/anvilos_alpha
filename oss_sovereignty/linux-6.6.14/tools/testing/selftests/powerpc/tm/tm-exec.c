@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2016, Cyril Bur, IBM Corp.
- *
- * Syscalls can be performed provided the transactions are suspended.
- * The exec() class of syscall is unique as a new process is loaded.
- *
- * It makes little sense for after an exec() call for the previously
- * suspended transaction to still exist.
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <errno.h>
@@ -38,7 +30,7 @@ static int test_exec(void)
 
 	execl(path, "tm-exec", "--child", NULL);
 
-	/* Shouldn't get here */
+	 
 	perror("execl() failed");
 	return 1;
 }

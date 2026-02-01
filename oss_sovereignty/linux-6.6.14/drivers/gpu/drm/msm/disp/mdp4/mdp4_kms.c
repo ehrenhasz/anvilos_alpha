@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <linux/delay.h>
 
@@ -29,17 +26,17 @@ static int mdp4_hw_init(struct msm_kms *kms)
 
 	mdp4_write(mdp4_kms, REG_MDP4_PORTMAP_MODE, 0x3);
 
-	/* max read pending cmd config, 3 pending requests: */
+	 
 	mdp4_write(mdp4_kms, REG_MDP4_READ_CNFG, 0x02222);
 
 	clk = clk_get_rate(mdp4_kms->clk);
 
 	if ((mdp4_kms->rev >= 1) || (clk >= 90000000)) {
-		dmap_cfg = 0x47;     /* 16 bytes-burst x 8 req */
-		vg_cfg = 0x47;       /* 16 bytes-burs x 8 req */
+		dmap_cfg = 0x47;      
+		vg_cfg = 0x47;        
 	} else {
-		dmap_cfg = 0x27;     /* 8 bytes-burst x 8 req */
-		vg_cfg = 0x43;       /* 16 bytes-burst x 4 req */
+		dmap_cfg = 0x27;      
+		vg_cfg = 0x43;        
 	}
 
 	DBG("fetch config: dmap=%02x, vg=%02x", dmap_cfg, vg_cfg);
@@ -56,7 +53,7 @@ static int mdp4_hw_init(struct msm_kms *kms)
 		mdp4_write(mdp4_kms, REG_MDP4_LAYERMIXER_IN_CFG_UPDATE_METHOD, 1);
 	mdp4_write(mdp4_kms, REG_MDP4_LAYERMIXER_IN_CFG, 0);
 
-	/* disable CSC matrix / YUV by default: */
+	 
 	mdp4_write(mdp4_kms, REG_MDP4_PIPE_OP_MODE(VG1), 0);
 	mdp4_write(mdp4_kms, REG_MDP4_PIPE_OP_MODE(VG2), 0);
 	mdp4_write(mdp4_kms, REG_MDP4_DMA_P_OP_MODE, 0);
@@ -86,7 +83,7 @@ static void mdp4_disable_commit(struct msm_kms *kms)
 
 static void mdp4_flush_commit(struct msm_kms *kms, unsigned crtc_mask)
 {
-	/* TODO */
+	 
 }
 
 static void mdp4_wait_flush(struct msm_kms *kms, unsigned crtc_mask)
@@ -105,7 +102,7 @@ static void mdp4_complete_commit(struct msm_kms *kms, unsigned crtc_mask)
 static long mdp4_round_pixclk(struct msm_kms *kms, unsigned long rate,
 		struct drm_encoder *encoder)
 {
-	/* if we had >1 encoder, we'd need something more clever: */
+	 
 	switch (encoder->encoder_type) {
 	case DRM_MODE_ENCODER_TMDS:
 		return mdp4_dtv_round_pixclk(encoder, rate);
@@ -198,10 +195,7 @@ static int mdp4_modeset_init_intf(struct mdp4_kms *mdp4_kms,
 
 	switch (intf_type) {
 	case DRM_MODE_ENCODER_LVDS:
-		/*
-		 * bail out early if there is no panel node (no need to
-		 * initialize LCDC encoder and LVDS connector)
-		 */
+		 
 		panel_node = of_graph_get_remote_node(dev->dev->of_node, 0, 0);
 		if (!panel_node)
 			return 0;
@@ -213,7 +207,7 @@ static int mdp4_modeset_init_intf(struct mdp4_kms *mdp4_kms,
 			return PTR_ERR(encoder);
 		}
 
-		/* LCDC can be hooked to DMA_P (TODO: Add DMA_S later?) */
+		 
 		encoder->possible_crtcs = 1 << DMA_P;
 
 		connector = mdp4_lvds_connector_init(dev, panel_node, encoder);
@@ -231,11 +225,11 @@ static int mdp4_modeset_init_intf(struct mdp4_kms *mdp4_kms,
 			return PTR_ERR(encoder);
 		}
 
-		/* DTV can be hooked to DMA_E: */
+		 
 		encoder->possible_crtcs = 1 << 1;
 
 		if (priv->hdmi) {
-			/* Construct bridge/connector for HDMI: */
+			 
 			ret = msm_hdmi_modeset_init(priv->hdmi, dev, encoder);
 			if (ret) {
 				DRM_DEV_ERROR(dev->dev, "failed to initialize HDMI: %d\n", ret);
@@ -245,7 +239,7 @@ static int mdp4_modeset_init_intf(struct mdp4_kms *mdp4_kms,
 
 		break;
 	case DRM_MODE_ENCODER_DSI:
-		/* only DSI1 supported for now */
+		 
 		dsi_id = 0;
 
 		if (!priv->dsi[dsi_id])
@@ -259,7 +253,7 @@ static int mdp4_modeset_init_intf(struct mdp4_kms *mdp4_kms,
 			return ret;
 		}
 
-		/* TODO: Add DMA_S later? */
+		 
 		encoder->possible_crtcs = 1 << DMA_P;
 
 		ret = msm_dsi_modeset_init(priv->dsi[dsi_id], dev, encoder);
@@ -303,7 +297,7 @@ static int modeset_init(struct mdp4_kms *mdp4_kms)
 		DRM_MODE_ENCODER_TMDS,
 	};
 
-	/* construct non-private planes: */
+	 
 	for (i = 0; i < ARRAY_SIZE(vg_planes); i++) {
 		plane = mdp4_plane_init(dev, vg_planes[i], false);
 		if (IS_ERR(plane)) {
@@ -335,15 +329,7 @@ static int modeset_init(struct mdp4_kms *mdp4_kms)
 		priv->num_crtcs++;
 	}
 
-	/*
-	 * we currently set up two relatively fixed paths:
-	 *
-	 * LCDC/LVDS path: RGB1 -> DMA_P -> LCDC -> LVDS
-	 *			or
-	 * DSI path: RGB1 -> DMA_P -> DSI1 -> DSI Panel
-	 *
-	 * DTV/HDMI path: RGB2 -> DMA_E -> DTV -> HDMI
-	 */
+	 
 
 	for (i = 0; i < ARRAY_SIZE(mdp4_intfs); i++) {
 		ret = mdp4_modeset_init_intf(mdp4_kms, mdp4_intfs[i]);
@@ -388,7 +374,7 @@ static int mdp4_kms_init(struct drm_device *dev)
 	u32 major, minor;
 	unsigned long max_clk;
 
-	/* TODO: Chips that aren't apq8064 have a 200 Mhz max_clk */
+	 
 	max_clk = 266667000;
 
 	mdp4_kms = kzalloc(sizeof(*mdp4_kms), GFP_KERNEL);
@@ -422,10 +408,7 @@ static int mdp4_kms_init(struct drm_device *dev)
 
 	kms->irq = irq;
 
-	/* NOTE: driver for this regulator still missing upstream.. use
-	 * _get_exclusive() and ignore the error if it does not exist
-	 * (and hope that the bootloader left it on for us)
-	 */
+	 
 	mdp4_kms->vdd = devm_regulator_get_exclusive(&pdev->dev, "vdd");
 	if (IS_ERR(mdp4_kms->vdd))
 		mdp4_kms->vdd = NULL;
@@ -482,10 +465,7 @@ static int mdp4_kms_init(struct drm_device *dev)
 	pm_runtime_enable(dev->dev);
 	mdp4_kms->rpm_enabled = true;
 
-	/* make sure things are off before attaching iommu (bootloader could
-	 * have left things on, in which case we'll start getting faults if
-	 * we don't disable):
-	 */
+	 
 	mdp4_enable(mdp4_kms);
 	mdp4_write(mdp4_kms, REG_MDP4_DTV_ENABLE, 0);
 	mdp4_write(mdp4_kms, REG_MDP4_LCDC_ENABLE, 0);
@@ -569,7 +549,7 @@ static int mdp4_remove(struct platform_device *pdev)
 
 static const struct of_device_id mdp4_dt_match[] = {
 	{ .compatible = "qcom,mdp4" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mdp4_dt_match);
 

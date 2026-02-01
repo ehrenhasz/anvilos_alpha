@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Hisilicon Fast Ethernet MDIO Bus Driver
- *
- * Copyright (c) 2016 HiSilicon Technologies Co., Ltd.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/iopoll.h>

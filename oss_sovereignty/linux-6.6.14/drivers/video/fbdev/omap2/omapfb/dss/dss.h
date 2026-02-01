@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * linux/drivers/video/omap2/dss/dss.h
- *
- * Copyright (C) 2009 Nokia Corporation
- * Author: Tomi Valkeinen <tomi.valkeinen@nokia.com>
- *
- * Some code and ideas taken from drivers/video/omap/ driver
- * by Imre Deak.
- */
+ 
+ 
 
 #ifndef __OMAP2_DSS_H
 #define __OMAP2_DSS_H
@@ -54,8 +46,7 @@
 	printk(KERN_WARNING "omapdss: " format, ## __VA_ARGS__)
 #endif
 
-/* OMAP TRM gives bitfields as start:end, where start is the higher bit
-   number. For example 7:0 */
+ 
 #define FLD_MASK(start, end)	(((1 << ((start) - (end) + 1)) - 1) << (end))
 #define FLD_VAL(val, start, end) (((val) << (end)) & FLD_MASK(start, end))
 #define FLD_GET(val, start, end) (((val) & FLD_MASK(start, end)) >> (end))
@@ -63,14 +54,11 @@
 	(((orig) & ~FLD_MASK(start, end)) | FLD_VAL(val, start, end))
 
 enum omap_dss_clk_source {
-	OMAP_DSS_CLK_SRC_FCK = 0,		/* OMAP2/3: DSS1_ALWON_FCLK
-						 * OMAP4: DSS_FCLK */
-	OMAP_DSS_CLK_SRC_DSI_PLL_HSDIV_DISPC,	/* OMAP3: DSI1_PLL_FCLK
-						 * OMAP4: PLL1_CLK1 */
-	OMAP_DSS_CLK_SRC_DSI_PLL_HSDIV_DSI,	/* OMAP3: DSI2_PLL_FCLK
-						 * OMAP4: PLL1_CLK2 */
-	OMAP_DSS_CLK_SRC_DSI2_PLL_HSDIV_DISPC,	/* OMAP4: PLL2_CLK1 */
-	OMAP_DSS_CLK_SRC_DSI2_PLL_HSDIV_DSI,	/* OMAP4: PLL2_CLK2 */
+	OMAP_DSS_CLK_SRC_FCK = 0,		 
+	OMAP_DSS_CLK_SRC_DSI_PLL_HSDIV_DISPC,	 
+	OMAP_DSS_CLK_SRC_DSI_PLL_HSDIV_DSI,	 
+	OMAP_DSS_CLK_SRC_DSI2_PLL_HSDIV_DISPC,	 
+	OMAP_DSS_CLK_SRC_DSI2_PLL_HSDIV_DSI,	 
 };
 
 enum dss_io_pad_mode {
@@ -101,17 +89,14 @@ struct dss_pll;
 
 #define DSS_PLL_MAX_HSDIVS 4
 
-/*
- * Type-A PLLs: clkout[]/mX[] refer to hsdiv outputs m4, m5, m6, m7.
- * Type-B PLLs: clkout[0] refers to m2.
- */
+ 
 struct dss_pll_clock_info {
-	/* rates that we get with dividers below */
+	 
 	unsigned long fint;
 	unsigned long clkdco;
 	unsigned long clkout[DSS_PLL_MAX_HSDIVS];
 
-	/* dividers */
+	 
 	u16 n;
 	u16 m;
 	u32 mf;
@@ -162,11 +147,11 @@ struct dss_pll {
 };
 
 struct dispc_clock_info {
-	/* rates that we get with dividers below */
+	 
 	unsigned long lck;
 	unsigned long pck;
 
-	/* dividers */
+	 
 	u16 lck_div;
 	u16 pck_div;
 };
@@ -187,14 +172,14 @@ struct dss_lcd_mgr_config {
 struct seq_file;
 struct platform_device;
 
-/* core */
+ 
 struct platform_device *dss_get_core_pdev(void);
 int dss_dsi_enable_pads(int dsi_id, unsigned lane_mask);
 void dss_dsi_disable_pads(int dsi_id, unsigned lane_mask);
 int dss_set_min_bus_tput(struct device *dev, unsigned long tput);
 void dss_debugfs_create_file(const char *name, void (*write)(struct seq_file *));
 
-/* display */
+ 
 int dss_suspend_all_devices(void);
 int dss_resume_all_devices(void);
 void dss_disable_all_devices(void);
@@ -202,7 +187,7 @@ void dss_disable_all_devices(void);
 int display_init_sysfs(struct platform_device *pdev);
 void display_uninit_sysfs(struct platform_device *pdev);
 
-/* manager */
+ 
 int dss_init_overlay_managers(void);
 void dss_uninit_overlay_managers(void);
 int dss_init_overlay_managers_sysfs(struct platform_device *pdev);
@@ -230,7 +215,7 @@ int dss_manager_kobj_init(struct omap_overlay_manager *mgr,
 		struct platform_device *pdev);
 void dss_manager_kobj_uninit(struct omap_overlay_manager *mgr);
 
-/* overlay */
+ 
 void dss_init_overlays(struct platform_device *pdev);
 void dss_uninit_overlays(struct platform_device *pdev);
 void dss_overlay_setup_dispc_manager(struct omap_overlay_manager *mgr);
@@ -244,7 +229,7 @@ int dss_overlay_kobj_init(struct omap_overlay *ovl,
 		struct platform_device *pdev);
 void dss_overlay_kobj_uninit(struct omap_overlay *ovl);
 
-/* DSS */
+ 
 int dss_init_platform_driver(void) __init;
 void dss_uninit_platform_driver(void);
 
@@ -258,12 +243,12 @@ enum dss_hdmi_venc_clk_source_select dss_get_hdmi_venc_clk_source(void);
 const char *dss_get_generic_clk_source_name(enum omap_dss_clk_source clk_src);
 void dss_dump_clocks(struct seq_file *s);
 
-/* DSS VIDEO PLL */
+ 
 struct dss_pll *dss_video_pll_init(struct platform_device *pdev, int id,
 	struct regulator *regulator);
 void dss_video_pll_uninit(struct dss_pll *pll);
 
-/* dss-of */
+ 
 struct device_node *dss_of_port_get_parent_device(struct device_node *port);
 u32 dss_of_port_get_port_number(struct device_node *port);
 
@@ -296,7 +281,7 @@ typedef bool (*dss_div_calc_func)(unsigned long fck, void *data);
 bool dss_div_calc(unsigned long pck, unsigned long fck_min,
 		dss_div_calc_func func, void *data);
 
-/* SDI */
+ 
 int sdi_init_platform_driver(void) __init;
 void sdi_uninit_platform_driver(void);
 
@@ -314,7 +299,7 @@ static inline void sdi_uninit_port(struct device_node *port)
 }
 #endif
 
-/* DSI */
+ 
 
 #ifdef CONFIG_FB_OMAP2_DSS_DSI
 
@@ -338,7 +323,7 @@ static inline u8 dsi_get_pixel_size(enum omap_dss_dsi_pixel_format fmt)
 }
 #endif
 
-/* DPI */
+ 
 int dpi_init_platform_driver(void) __init;
 void dpi_uninit_platform_driver(void);
 
@@ -356,7 +341,7 @@ static inline void dpi_uninit_port(struct device_node *port)
 }
 #endif
 
-/* DISPC */
+ 
 int dispc_init_platform_driver(void) __init;
 void dispc_uninit_platform_driver(void);
 void dispc_dump_clocks(struct seq_file *s);
@@ -430,11 +415,11 @@ int dispc_ovl_setup(enum omap_plane plane, const struct omap_overlay_info *oi,
 		bool replication, const struct omap_video_timings *mgr_timings,
 		bool mem_to_mem);
 
-/* VENC */
+ 
 int venc_init_platform_driver(void) __init;
 void venc_uninit_platform_driver(void);
 
-/* HDMI */
+ 
 int hdmi4_init_platform_driver(void) __init;
 void hdmi4_uninit_platform_driver(void);
 
@@ -453,7 +438,7 @@ static inline void dss_collect_irq_stats(u32 irqstatus, unsigned *irq_arr)
 }
 #endif
 
-/* PLL */
+ 
 typedef bool (*dss_pll_calc_func)(int n, int m, unsigned long fint,
 		unsigned long clkdco, void *data);
 typedef bool (*dss_hsdiv_calc_func)(int m_dispc, unsigned long dispc,
@@ -479,7 +464,7 @@ int dss_pll_write_config_type_b(struct dss_pll *pll,
 		const struct dss_pll_clock_info *cinfo);
 int dss_pll_wait_reset_done(struct dss_pll *pll);
 
-/* compat */
+ 
 
 struct dss_mgr_ops {
 	int (*connect)(struct omap_overlay_manager *mgr,

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2014, Michael Ellerman, IBM Corp.
- */
+ 
+ 
 
 #ifndef _SELFTESTS_POWERPC_REG_H
 #define _SELFTESTS_POWERPC_REG_H
@@ -19,7 +17,7 @@
 #define mb()		asm volatile("sync" : : : "memory");
 #define barrier()	asm volatile("" : : : "memory");
 
-#define SPRN_HDEXCR_RO 455	/* Userspace readonly view of SPRN_HDEXCR (471) */
+#define SPRN_HDEXCR_RO 455	 
 
 #define SPRN_MMCR2     769
 #define SPRN_MMCRA     770
@@ -29,14 +27,14 @@
 #define   MMCR0_FC     0x80000000
 #define SPRN_EBBHR     804
 #define SPRN_EBBRR     805
-#define SPRN_BESCR     806     /* Branch event status & control register */
-#define SPRN_BESCRS    800     /* Branch event status & control set (1 bits set to 1) */
-#define SPRN_BESCRSU   801     /* Branch event status & control set upper */
-#define SPRN_BESCRR    802     /* Branch event status & control REset (1 bits set to 0) */
-#define SPRN_BESCRRU   803     /* Branch event status & control REset upper */
+#define SPRN_BESCR     806      
+#define SPRN_BESCRS    800      
+#define SPRN_BESCRSU   801      
+#define SPRN_BESCRR    802      
+#define SPRN_BESCRRU   803      
 
-#define BESCR_PMEO     0x1     /* PMU Event-based exception Occurred */
-#define BESCR_PME      (0x1ul << 32) /* PMU Event-based exception Enable */
+#define BESCR_PMEO     0x1      
+#define BESCR_PME      (0x1ul << 32)  
 
 #define SPRN_PMC1      771
 #define SPRN_PMC2      772
@@ -49,24 +47,24 @@
 #define SPRN_SDAR      781
 #define SPRN_SIER      768
 
-#define SPRN_DEXCR_RO  812	/* Userspace readonly view of SPRN_DEXCR (828) */
+#define SPRN_DEXCR_RO  812	 
 
-#define SPRN_TEXASR     0x82    /* Transaction Exception and Status Register */
-#define SPRN_TFIAR      0x81    /* Transaction Failure Inst Addr    */
-#define SPRN_TFHAR      0x80    /* Transaction Failure Handler Addr */
-#define SPRN_TAR        0x32f	/* Target Address Register */
+#define SPRN_TEXASR     0x82     
+#define SPRN_TFIAR      0x81     
+#define SPRN_TFHAR      0x80     
+#define SPRN_TAR        0x32f	 
 
 #define PVR_VER(pvr)	(((pvr) >>  16) & 0xFFFF)
 #define SPRN_PVR	0x11F
 
-#define PVR_CFG(pvr)    (((pvr) >>  8) & 0xF)   /* Configuration field */
-#define PVR_MAJ(pvr)    (((pvr) >>  4) & 0xF)   /* Major revision field */
-#define PVR_MIN(pvr)    (((pvr) >>  0) & 0xF)   /* Minor revision field */
+#define PVR_CFG(pvr)    (((pvr) >>  8) & 0xF)    
+#define PVR_MAJ(pvr)    (((pvr) >>  4) & 0xF)    
+#define PVR_MIN(pvr)    (((pvr) >>  0) & 0xF)    
 
-#define SPRN_DSCR_PRIV 0x11	/* Privilege State DSCR */
-#define SPRN_DSCR      0x03	/* Data Stream Control Register */
-#define SPRN_PPR       896	/* Program Priority Register */
-#define SPRN_AMR       13	/* Authority Mask Register - problem state */
+#define SPRN_DSCR_PRIV 0x11	 
+#define SPRN_DSCR      0x03	 
+#define SPRN_PPR       896	 
+#define SPRN_AMR       13	 
 
 #define set_amr(v)	asm volatile("isync;" \
 				     "mtspr " __stringify(SPRN_AMR) ",%0;" \
@@ -74,7 +72,7 @@
 				    : "r" ((unsigned long)(v)) \
 				    : "memory")
 
-/* TEXASR register bits */
+ 
 #define TEXASR_FC	0xFE00000000000000
 #define TEXASR_FP	0x0100000000000000
 #define TEXASR_DA	0x0080000000000000
@@ -94,18 +92,18 @@
 #define TEXASR_TE	0x0000000004000000
 #define TEXASR_ROT	0x0000000002000000
 
-/* MSR register bits */
-#define MSR_HV 		(1ul << 60)	/* Hypervisor state */
-#define MSR_TS_S_LG     33              /* Trans Mem state: Suspended */
-#define MSR_TS_T_LG	34              /* Trans Mem state: Active */
+ 
+#define MSR_HV 		(1ul << 60)	 
+#define MSR_TS_S_LG     33               
+#define MSR_TS_T_LG	34               
 
 #define __MASK(X)       (1UL<<(X))
 
-/* macro to check TM MSR bits */
-#define MSR_TS_S        __MASK(MSR_TS_S_LG)   /* Transaction Suspended */
-#define MSR_TS_T	__MASK(MSR_TS_T_LG)   /* Transaction Transactional */
+ 
+#define MSR_TS_S        __MASK(MSR_TS_S_LG)    
+#define MSR_TS_T	__MASK(MSR_TS_T_LG)    
 
-/* Vector Instructions */
+ 
 #define VSX_XX1(xs, ra, rb)	(((xs) & 0x1f) << 21 | ((ra) << 16) |  \
 				 ((rb) << 11) | (((xs) >> 5)))
 #define STXVD2X(xs, ra, rb)	.long (0x7c000798 | VSX_XX1((xs), (ra), (rb)))
@@ -169,6 +167,6 @@
 void store_gpr(unsigned long *addr);
 void load_gpr(unsigned long *addr);
 void store_fpr(double *addr);
-#endif /* end of __ASSEMBLER__ */
+#endif  
 
-#endif /* _SELFTESTS_POWERPC_REG_H */
+#endif  

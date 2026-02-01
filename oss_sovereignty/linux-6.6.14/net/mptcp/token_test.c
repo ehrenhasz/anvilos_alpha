@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <kunit/test.h>
 
 #include "protocol.h"
@@ -25,7 +25,7 @@ static void mptcp_token_test_req_basic(struct kunit *test)
 	KUNIT_EXPECT_NE(test, 0, (int)req->token);
 	KUNIT_EXPECT_PTR_EQ(test, null_msk, mptcp_token_get_sock(&init_net, req->token));
 
-	/* cleanup */
+	 
 	mptcp_token_destroy_request((struct request_sock *)req);
 }
 
@@ -58,7 +58,7 @@ static struct mptcp_sock *build_msk(struct kunit *test)
 	refcount_set(&((struct sock *)msk)->sk_refcnt, 1);
 	sock_net_set((struct sock *)msk, &init_net);
 
-	/* be sure the token helpers can dereference sk->sk_prot */
+	 
 	((struct sock *)msk)->sk_prot = &tcp_prot;
 	return msk;
 }
@@ -97,11 +97,11 @@ static void mptcp_token_test_accept(struct kunit *test)
 	mptcp_token_accept(req, msk);
 	KUNIT_EXPECT_PTR_EQ(test, msk, mptcp_token_get_sock(&init_net, msk->token));
 
-	/* this is now a no-op */
+	 
 	mptcp_token_destroy_request((struct request_sock *)req);
 	KUNIT_EXPECT_PTR_EQ(test, msk, mptcp_token_get_sock(&init_net, msk->token));
 
-	/* cleanup */
+	 
 	mptcp_token_destroy(msk);
 }
 
@@ -119,11 +119,11 @@ static void mptcp_token_test_destroyed(struct kunit *test)
 	msk->token = req->token;
 	mptcp_token_accept(req, msk);
 
-	/* simulate race on removal */
+	 
 	refcount_set(&sk->sk_refcnt, 0);
 	KUNIT_EXPECT_PTR_EQ(test, null_msk, mptcp_token_get_sock(&init_net, msk->token));
 
-	/* cleanup */
+	 
 	mptcp_token_destroy(msk);
 }
 

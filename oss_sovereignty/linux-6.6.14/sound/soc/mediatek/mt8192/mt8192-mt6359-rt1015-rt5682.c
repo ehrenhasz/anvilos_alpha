@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// mt8192-mt6359-rt1015-rt5682.c  --
-//	MT8192-MT6359-RT1015-RT6358 ALSA SoC machine driver
-//
-// Copyright (c) 2020 MediaTek Inc.
-// Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
-//
+
+
+
+
+
+
+
+
 
 #include <linux/input.h>
 #include <linux/module.h>
@@ -43,7 +43,7 @@ struct mt8192_mt6359_priv {
 	struct snd_soc_jack hdmi_jack;
 };
 
-/* Headset jack detection DAPM pins */
+ 
 static struct snd_soc_jack_pin mt8192_jack_pins[] = {
 	{
 		.pin = "Headphone Jack",
@@ -169,16 +169,16 @@ static int mt8192_mt6359_mtkaif_calibration(struct snd_soc_pcm_runtime *rtd)
 
 	mt6359_mtkaif_calibration_enable(cmpnt_codec);
 
-	/* set clock protocol 2 */
+	 
 	regmap_update_bits(afe->regmap, AFE_AUD_PAD_TOP, 0xff, 0x38);
 	regmap_update_bits(afe->regmap, AFE_AUD_PAD_TOP, 0xff, 0x39);
 
-	/* set test type to synchronizer pulse */
+	 
 	regmap_update_bits(afe_priv->topckgen,
 			   CKSYS_AUD_TOP_CFG, 0xffff, 0x4);
 
 	mtkaif_calib_ok = true;
-	afe_priv->mtkaif_calibration_num_phase = 42;	/* mt6359: 0 ~ 42 */
+	afe_priv->mtkaif_calibration_num_phase = 42;	 
 	afe_priv->mtkaif_chosen_phase[0] = -1;
 	afe_priv->mtkaif_chosen_phase[1] = -1;
 	afe_priv->mtkaif_chosen_phase[2] = -1;
@@ -218,7 +218,7 @@ static int mt8192_mt6359_mtkaif_calibration(struct snd_soc_pcm_runtime *rtd)
 			if (test_done_3 == 1)
 				cycle_3 = (monitor >> 8) & 0xf;
 
-			/* handle if never test done */
+			 
 			if (++counter > 10000) {
 				dev_err(afe->dev, "%s(), test fail, cycle_1 %d, cycle_2 %d, cycle_3 %d, monitor 0x%x\n",
 					__func__,
@@ -281,7 +281,7 @@ static int mt8192_mt6359_mtkaif_calibration(struct snd_soc_pcm_runtime *rtd)
 					    chosen_phase_2,
 					    chosen_phase_3);
 
-	/* disable rx fifo */
+	 
 	regmap_update_bits(afe->regmap, AFE_AUD_PAD_TOP, 0xff, 0x38);
 
 	mt6359_mtkaif_calibration_disable(cmpnt_codec);
@@ -310,12 +310,12 @@ static int mt8192_mt6359_init(struct snd_soc_pcm_runtime *rtd)
 	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt_afe);
 	struct mt8192_afe_private *afe_priv = afe->platform_priv;
 
-	/* set mtkaif protocol */
+	 
 	mt6359_set_mtkaif_protocol(cmpnt_codec,
 				   MT6359_MTKAIF_PROTOCOL_2_CLK_P2);
 	afe_priv->mtkaif_protocol = MTKAIF_PROTOCOL_2_CLK_P2;
 
-	/* mtkaif calibration */
+	 
 	mt8192_mt6359_mtkaif_calibration(rtd);
 
 	return 0;
@@ -377,7 +377,7 @@ static int mt8192_mt6359_hdmi_init(struct snd_soc_pcm_runtime *rtd)
 static int mt8192_i2s_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 				      struct snd_pcm_hw_params *params)
 {
-	/* fix BE i2s format to S24_LE, clean param mask first */
+	 
 	snd_mask_reset_range(hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT),
 			     0, (__force unsigned int)SNDRV_PCM_FORMAT_LAST);
 
@@ -480,7 +480,7 @@ static const struct snd_soc_ops mt8192_mt6359_rt5682_ops = {
 	.startup = mt8192_mt6359_rt5682_startup,
 };
 
-/* FE */
+ 
 SND_SOC_DAILINK_DEFS(playback1,
 		     DAILINK_COMP_ARRAY(COMP_CPU("DL1")),
 		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
@@ -591,7 +591,7 @@ SND_SOC_DAILINK_DEFS(playback_hdmi,
 		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
 		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
 
-/* BE */
+ 
 SND_SOC_DAILINK_DEFS(primary_codec,
 		     DAILINK_COMP_ARRAY(COMP_CPU("ADDA")),
 		     DAILINK_COMP_ARRAY(COMP_CODEC("mt6359-sound",
@@ -682,7 +682,7 @@ SND_SOC_DAILINK_DEFS(tdm,
 		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
 
 static struct snd_soc_dai_link mt8192_mt6359_dai_links[] = {
-	/* Front End DAI links */
+	 
 	{
 		.name = "Playback_1",
 		.stream_name = "Playback_1",
@@ -884,7 +884,7 @@ static struct snd_soc_dai_link mt8192_mt6359_dai_links[] = {
 		.dpcm_playback = 1,
 		SND_SOC_DAILINK_REG(playback_hdmi),
 	},
-	/* Back End DAI links */
+	 
 	{
 		.name = "Primary Codec",
 		.no_pcm = 1,
@@ -1039,14 +1039,14 @@ mt8192_mt6359_rt1015_rt5682_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route mt8192_mt6359_rt1015_rt5682_routes[] = {
-	/* speaker */
+	 
 	{ "Left Spk", NULL, "Left SPO" },
 	{ "Right Spk", NULL, "Right SPO" },
-	/* headset */
+	 
 	{ "Headphone Jack", NULL, "HPOL" },
 	{ "Headphone Jack", NULL, "HPOR" },
 	{ "IN1P", NULL, "Headset Mic" },
-	/* TDM */
+	 
 	{ "TDM Out", NULL, "TDM" },
 };
 
@@ -1091,9 +1091,9 @@ static const struct snd_soc_dapm_widget mt8192_mt6359_rt1015p_rt5682x_widgets[] 
 };
 
 static const struct snd_soc_dapm_route mt8192_mt6359_rt1015p_rt5682x_routes[] = {
-	/* speaker */
+	 
 	{ "Speakers", NULL, "Speaker" },
-	/* headset */
+	 
 	{ "Headphone Jack", NULL, "HPOL" },
 	{ "Headphone Jack", NULL, "HPOR" },
 	{ "IN1P", NULL, "Headset Mic" },
@@ -1280,7 +1280,7 @@ static struct platform_driver mt8192_mt6359_driver = {
 
 module_platform_driver(mt8192_mt6359_driver);
 
-/* Module information */
+ 
 MODULE_DESCRIPTION("MT8192-MT6359 ALSA SoC machine driver");
 MODULE_AUTHOR("Jiaxin Yu <jiaxin.yu@mediatek.com>");
 MODULE_LICENSE("GPL v2");

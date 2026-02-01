@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * KVM page table test
- *
- * Copyright (C) 2021, Huawei, Inc.
- *
- * Make sure that THP has been enabled or enough HUGETLB pages with specific
- * page size have been pre-allocated on your system, if you are planning to
- * use hugepages to back the guest memory for testing.
- */
 
-#define _GNU_SOURCE /* for program_invocation_name */
+ 
+
+#define _GNU_SOURCE  
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,13 +16,13 @@
 
 #define TEST_MEM_SLOT_INDEX             1
 
-/* Default size(1GB) of the memory for testing */
+ 
 #define DEFAULT_TEST_MEM_SIZE		(1 << 30)
 
-/* Default guest test virtual memory offset */
+ 
 #define DEFAULT_GUEST_TEST_MEM		0xc0000000
 
-/* Different guest memory accessing stages */
+ 
 enum test_stage {
 	KVM_BEFORE_MAPPINGS,
 	KVM_CREATE_MAPPINGS,
@@ -58,33 +50,23 @@ struct test_args {
 	struct kvm_vcpu *vcpus[KVM_MAX_VCPUS];
 };
 
-/*
- * Guest variables. Use addr_gva2hva() if these variables need
- * to be changed in host.
- */
+ 
 static enum test_stage guest_test_stage;
 
-/* Host variables */
+ 
 static uint32_t nr_vcpus = 1;
 static struct test_args test_args;
 static enum test_stage *current_stage;
 static bool host_quit;
 
-/* Whether the test stage is updated, or completed */
+ 
 static sem_t test_stage_updated;
 static sem_t test_stage_completed;
 
-/*
- * Guest physical memory offset of the testing memory slot.
- * This will be set to the topmost valid physical address minus
- * the test memory size.
- */
+ 
 static uint64_t guest_test_phys_mem;
 
-/*
- * Guest virtual memory offset of the testing memory slot.
- * Must not conflict with identity mapped test code.
- */
+ 
 static uint64_t guest_test_virt_mem = DEFAULT_GUEST_TEST_MEM;
 
 static void guest_code(bool do_write)
@@ -98,20 +80,11 @@ static void guest_code(bool do_write)
 		addr = p->guest_test_virt_mem;
 
 		switch (READ_ONCE(*current_stage)) {
-		/*
-		 * All vCPU threads will be started in this stage,
-		 * where guest code of each vCPU will do nothing.
-		 */
+		 
 		case KVM_BEFORE_MAPPINGS:
 			break;
 
-		/*
-		 * Before dirty logging, vCPUs concurrently access the first
-		 * 8 bytes of each page (host page/large page) within the same
-		 * memory region with different accessing types (read/write).
-		 * Then KVM will create normal page mappings or huge block
-		 * mappings for them.
-		 */
+		 
 		case KVM_CREATE_MAPPINGS:
 			for (i = 0; i < p->large_num_pages; i++) {
 				if (do_write)
@@ -123,13 +96,7 @@ static void guest_code(bool do_write)
 			}
 			break;
 
-		/*
-		 * During dirty logging, KVM will only update attributes of the
-		 * normal page mappings from RO to RW if memory backing src type
-		 * is anonymous. In other cases, KVM will split the huge block
-		 * mappings into normal page mappings if memory backing src type
-		 * is THP or HUGETLB.
-		 */
+		 
 		case KVM_UPDATE_MAPPINGS:
 			if (p->src_type == VM_MEM_SRC_ANONYMOUS) {
 				for (i = 0; i < p->host_num_pages; i++) {
@@ -140,18 +107,10 @@ static void guest_code(bool do_write)
 			}
 
 			for (i = 0; i < p->large_num_pages; i++) {
-				/*
-				 * Write to the first host page in each large
-				 * page region, and triger break of large pages.
-				 */
+				 
 				*(uint64_t *)addr = 0x0123456789ABCDEF;
 
-				/*
-				 * Access the middle host pages in each large
-				 * page region. Since dirty logging is enabled,
-				 * this will create new mappings at the smallest
-				 * granularity.
-				 */
+				 
 				addr += p->large_page_size / 2;
 				for (j = 0; j < p->host_pages_per_lpage / 2; j++) {
 					READ_ONCE(*(uint64_t *)addr);
@@ -160,13 +119,7 @@ static void guest_code(bool do_write)
 			}
 			break;
 
-		/*
-		 * After dirty logging is stopped, vCPUs concurrently read
-		 * from every single host page. Then KVM will coalesce the
-		 * split page mappings back to block mappings. And a TLB
-		 * conflict abort could occur here if TLB entries of the
-		 * page mappings are not fully invalidated.
-		 */
+		 
 		case KVM_ADJUST_MAPPINGS:
 			for (i = 0; i < p->host_num_pages; i++) {
 				READ_ONCE(*(uint64_t *)addr);
@@ -212,10 +165,7 @@ static void *vcpu_worker(void *data)
 		pr_debug("Got sync event from vCPU %d\n", vcpu->id);
 		stage = READ_ONCE(*current_stage);
 
-		/*
-		 * Here we can know the execution time of every
-		 * single vcpu running in different test stages.
-		 */
+		 
 		pr_debug("vCPU %d has completed stage %s\n"
 			 "execution time is: %ld.%.9lds\n\n",
 			 vcpu->id, test_stage_string[stage],
@@ -248,16 +198,16 @@ static struct kvm_vm *pre_init_before_test(enum vm_guest_mode mode, void *arg)
 	void *host_test_mem;
 	struct kvm_vm *vm;
 
-	/* Align up the test memory size */
+	 
 	alignment = max(large_page_size, guest_page_size);
 	test_mem_size = (test_mem_size + alignment - 1) & ~(alignment - 1);
 
-	/* Create a VM with enough guest pages */
+	 
 	guest_num_pages = test_mem_size / guest_page_size;
 	vm = __vm_create_with_vcpus(mode, nr_vcpus, guest_num_pages,
 				    guest_code, test_args.vcpus);
 
-	/* Align down GPA of the testing memslot */
+	 
 	if (!p->phys_offset)
 		guest_test_phys_mem = (vm->max_gfn - guest_num_pages) *
 				       guest_page_size;
@@ -268,7 +218,7 @@ static struct kvm_vm *pre_init_before_test(enum vm_guest_mode mode, void *arg)
 #endif
 	guest_test_phys_mem = align_down(guest_test_phys_mem, alignment);
 
-	/* Set up the shared data structure test_args */
+	 
 	test_args.vm = vm;
 	test_args.guest_test_virt_mem = guest_test_virt_mem;
 	test_args.host_page_size = host_page_size;
@@ -278,17 +228,17 @@ static struct kvm_vm *pre_init_before_test(enum vm_guest_mode mode, void *arg)
 	test_args.host_pages_per_lpage = large_page_size / host_page_size;
 	test_args.src_type = src_type;
 
-	/* Add an extra memory slot with specified backing src type */
+	 
 	vm_userspace_mem_region_add(vm, src_type, guest_test_phys_mem,
 				    TEST_MEM_SLOT_INDEX, guest_num_pages, 0);
 
-	/* Do mapping(GVA->GPA) for the testing memory slot */
+	 
 	virt_map(vm, guest_test_virt_mem, guest_test_phys_mem, guest_num_pages);
 
-	/* Cache the HVA pointer of the region */
+	 
 	host_test_mem = addr_gpa2hva(vm, (vm_paddr_t)guest_test_phys_mem);
 
-	/* Export shared structure test_args to guest */
+	 
 	sync_global_to_guest(vm, test_args);
 
 	ret = sem_init(&test_stage_updated, 0, 0);
@@ -320,14 +270,14 @@ static void vcpus_complete_new_stage(enum test_stage stage)
 	int ret;
 	int vcpus;
 
-	/* Wake up all the vcpus to run new test stage */
+	 
 	for (vcpus = 0; vcpus < nr_vcpus; vcpus++) {
 		ret = sem_post(&test_stage_updated);
 		TEST_ASSERT(ret == 0, "Error in sem_post");
 	}
 	pr_debug("All vcpus have been notified to continue\n");
 
-	/* Wait for all the vcpus to complete new test stage */
+	 
 	for (vcpus = 0; vcpus < nr_vcpus; vcpus++) {
 		ret = sem_wait(&test_stage_completed);
 		TEST_ASSERT(ret == 0, "Error in sem_wait");
@@ -348,7 +298,7 @@ static void run_test(enum vm_guest_mode mode, void *arg)
 	struct timespec ts_diff;
 	int ret, i;
 
-	/* Create VM with vCPUs and make some pre-initialization */
+	 
 	vm = pre_init_before_test(mode, arg);
 
 	vcpu_threads = malloc(nr_vcpus * sizeof(*vcpu_threads));
@@ -364,7 +314,7 @@ static void run_test(enum vm_guest_mode mode, void *arg)
 	vcpus_complete_new_stage(*current_stage);
 	pr_info("Started all vCPUs successfully\n");
 
-	/* Test the stage of KVM creating mappings */
+	 
 	*current_stage = KVM_CREATE_MAPPINGS;
 
 	clock_gettime(CLOCK_MONOTONIC, &start);
@@ -374,7 +324,7 @@ static void run_test(enum vm_guest_mode mode, void *arg)
 	pr_info("KVM_CREATE_MAPPINGS: total execution time: %ld.%.9lds\n\n",
 		ts_diff.tv_sec, ts_diff.tv_nsec);
 
-	/* Test the stage of KVM updating mappings */
+	 
 	vm_mem_region_set_flags(vm, TEST_MEM_SLOT_INDEX,
 				KVM_MEM_LOG_DIRTY_PAGES);
 
@@ -387,7 +337,7 @@ static void run_test(enum vm_guest_mode mode, void *arg)
 	pr_info("KVM_UPDATE_MAPPINGS: total execution time: %ld.%.9lds\n\n",
 		ts_diff.tv_sec, ts_diff.tv_nsec);
 
-	/* Test the stage of KVM adjusting mappings */
+	 
 	vm_mem_region_set_flags(vm, TEST_MEM_SLOT_INDEX, 0);
 
 	*current_stage = KVM_ADJUST_MAPPINGS;
@@ -399,7 +349,7 @@ static void run_test(enum vm_guest_mode mode, void *arg)
 	pr_info("KVM_ADJUST_MAPPINGS: total execution time: %ld.%.9lds\n\n",
 		ts_diff.tv_sec, ts_diff.tv_nsec);
 
-	/* Tell the vcpu thread to quit */
+	 
 	host_quit = true;
 	for (i = 0; i < nr_vcpus; i++) {
 		ret = sem_post(&test_stage_updated);

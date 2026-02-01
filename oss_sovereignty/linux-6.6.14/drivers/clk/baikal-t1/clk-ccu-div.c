@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020 BAIKAL ELECTRONICS, JSC
- *
- * Authors:
- *   Serge Semin <Sergey.Semin@baikalelectronics.ru>
- *   Dmitry Dunaev <dmitry.dunaev@baikalelectronics.ru>
- *
- * Baikal-T1 CCU Dividers clock driver
- */
+
+ 
 
 #define pr_fmt(fmt) "bt1-ccu-div: " fmt
 
@@ -120,14 +112,7 @@ struct ccu_div_data {
 	struct ccu_rst *rsts;
 };
 
-/*
- * AXI Main Interconnect (axi_main_clk) and DDR AXI-bus (axi_ddr_clk) clocks
- * must be left enabled in any case, since former one is responsible for
- * clocking a bus between CPU cores and the rest of the SoC components, while
- * the later is clocking the AXI-bus between DDR controller and the Main
- * Interconnect. So should any of these clocks get to be disabled, the system
- * will literally stop working. That's why we marked them as critical.
- */
+ 
 static const struct ccu_div_info axi_info[] = {
 	CCU_DIV_VAR_INFO(CCU_AXI_MAIN_CLK, "axi_main_clk", "pcie_clk",
 			 CCU_AXI_MAIN_BASE, 4,
@@ -165,10 +150,7 @@ static const struct ccu_div_info axi_info[] = {
 			 CLK_SET_RATE_GATE, CCU_DIV_RESET_DOMAIN)
 };
 
-/*
- * APB-bus clock is marked as critical since it's a main communication bus
- * for the SoC devices registers IO-operations.
- */
+ 
 static const struct ccu_div_info sys_info[] = {
 	CCU_DIV_VAR_INFO(CCU_SYS_SATA_CLK, "sys_sata_clk",
 			 "sata_clk", CCU_SYS_SATA_REF_BASE, 4,
@@ -405,7 +387,7 @@ static void ccu_div_clk_unregister(struct ccu_div_data *data, bool defer)
 {
 	int idx;
 
-	/* Uninstall only the clocks registered on the specfied stage */
+	 
 	for (idx = 0; idx < data->divs_num; ++idx) {
 		if (!!(data->divs_info[idx].features & CCU_DIV_BASIC) ^ defer)
 			continue;

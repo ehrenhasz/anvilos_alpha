@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Initialize Owl Emulation Devices
- *
- * Copyright (C) 2016 Christian Lamparter <chunkeey@gmail.com>
- * Copyright (C) 2016 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
- *
- * Some devices (like the Cisco Meraki Z1 Cloud Managed Teleworker Gateway)
- * need to be able to initialize the PCIe wifi device. Normally, this is done
- * during the early stages as a pci quirk.
- * However, this isn't possible for devices which have the init code for the
- * Atheros chip stored on UBI Volume on NAND. Hence, this module can be used to
- * initialize the chip when the user-space is ready to extract the init code.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/completion.h>
 #include <linux/etherdevice.h>
@@ -47,7 +36,7 @@ static int ath9k_pci_fixup(struct pci_dev *pdev, const u16 *cal_data,
 	u32 bar0;
 	bool swap_needed = false;
 
-	/* also note that we are doing *u16 operations on the file */
+	 
 	if (cal_len > 4096 || cal_len < 0x200 || (cal_len & 1) == 1) {
 		dev_err(&pdev->dev, "eeprom has an invalid size.\n");
 		return -EINVAL;
@@ -78,7 +67,7 @@ static int ath9k_pci_fixup(struct pci_dev *pdev, const u16 *cal_data,
 	cmd |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
 	pci_write_config_word(pdev, PCI_COMMAND, cmd);
 
-	/* set pointer to first reg address */
+	 
 	for (data = (const void *)(cal_data + 3);
 	     (const void *)data <= cal_end && data->reg != (u16)~0;
 	     data++) {
@@ -116,9 +105,7 @@ static void owl_rescan(struct pci_dev *pdev)
 
 	pci_lock_rescan_remove();
 	pci_stop_and_remove_bus_device(pdev);
-	/* the device should come back with the proper
-	 * ProductId. But we have to initiate a rescan.
-	 */
+	 
 	pci_rescan_bus(bus);
 	pci_unlock_rescan_remove();
 }
@@ -149,7 +136,7 @@ static const char *owl_get_eeprom_name(struct pci_dev *pdev)
 	if (!eeprom_name)
 		return NULL;
 
-	/* this should match the pattern used in ath9k/init.c */
+	 
 	scnprintf(eeprom_name, EEPROM_FILENAME_LEN, "ath9k-eeprom-pci-%s.bin",
 		  dev_name(dev));
 
@@ -182,7 +169,7 @@ static int owl_nvmem_probe(struct owl_ctx *ctx)
 	if (IS_ERR(ctx->cell)) {
 		err = PTR_ERR(ctx->cell);
 		if (err == -ENOENT || err == -EOPNOTSUPP)
-			return 1; /* not present, try firmware_request */
+			return 1;  
 
 		return err;
 	}
@@ -243,8 +230,8 @@ static void owl_remove(struct pci_dev *pdev)
 }
 
 static const struct pci_device_id owl_pci_table[] = {
-	{ PCI_VDEVICE(ATHEROS, 0xff1c) }, /* PCIe */
-	{ PCI_VDEVICE(ATHEROS, 0xff1d) }, /* PCI */
+	{ PCI_VDEVICE(ATHEROS, 0xff1c) },  
+	{ PCI_VDEVICE(ATHEROS, 0xff1d) },  
 	{ },
 };
 MODULE_DEVICE_TABLE(pci, owl_pci_table);

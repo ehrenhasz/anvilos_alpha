@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2010 - 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+ 
+ 
 
 #ifndef __IA_CSS_FRAME_COMM_H__
 #define __IA_CSS_FRAME_COMM_H__
@@ -19,16 +7,12 @@
 #include "type_support.h"
 #include "platform_support.h"
 #include "runtime/bufq/interface/ia_css_bufq_comm.h"
-#include <system_local.h>	 /* ia_css_ptr */
+#include <system_local.h>	  
 
-/*
- * These structs are derived from structs defined in ia_css_types.h
- * (just take out the "_sp" from the struct name to get the "original")
- * All the fields that are not needed by the SP are removed.
- */
+ 
 struct ia_css_frame_sp_plane {
-	unsigned int offset;	/* offset in bytes to start of frame data */
-	/* offset is wrt data in sh_css_sp_sp_frame */
+	unsigned int offset;	 
+	 
 };
 
 struct ia_css_frame_sp_binary_plane {
@@ -63,23 +47,18 @@ struct ia_css_frame_sp_plane6 {
 };
 
 struct ia_css_sp_resolution {
-	u16 width;		/* width of valid data in pixels */
-	u16 height;	/* Height of valid data in lines */
+	u16 width;		 
+	u16 height;	 
 };
 
-/*
- * Frame info struct. This describes the contents of an image frame buffer.
- */
+ 
 struct ia_css_frame_sp_info {
 	struct ia_css_sp_resolution res;
-	u16 padded_width;		/* stride of line in memory
-					(in pixels) */
-	unsigned char format;		/* format of the frame data */
-	unsigned char raw_bit_depth;	/* number of valid bits per pixel,
-					only valid for RAW bayer frames */
-	unsigned char raw_bayer_order;	/* bayer order, only valid
-					for RAW bayer frames */
-	unsigned char padding[3];	/* Extend to 32 bit multiple */
+	u16 padded_width;		 
+	unsigned char format;		 
+	unsigned char raw_bit_depth;	 
+	unsigned char raw_bayer_order;	 
+	unsigned char padding[3];	 
 };
 
 struct ia_css_buffer_sp {
@@ -113,4 +92,4 @@ void ia_css_resolution_to_sp_resolution(
     struct ia_css_sp_resolution *sp_info,
     const struct ia_css_resolution *info);
 
-#endif /*__IA_CSS_FRAME_COMM_H__*/
+#endif  

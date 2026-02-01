@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2020 Rockchip Electronics Co., Ltd.
- * Author: Andy Yan <andy.yan@rock-chips.com>
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -39,35 +36,7 @@
 #include "rockchip_drm_vop2.h"
 #include "rockchip_rgb.h"
 
-/*
- * VOP2 architecture
- *
- +----------+   +-------------+                                                        +-----------+
- |  Cluster |   | Sel 1 from 6|                                                        | 1 from 3  |
- |  window0 |   |    Layer0   |                                                        |    RGB    |
- +----------+   +-------------+              +---------------+    +-------------+      +-----------+
- +----------+   +-------------+              |N from 6 layers|    |             |
- |  Cluster |   | Sel 1 from 6|              |   Overlay0    +--->| Video Port0 |      +-----------+
- |  window1 |   |    Layer1   |              |               |    |             |      | 1 from 3  |
- +----------+   +-------------+              +---------------+    +-------------+      |   LVDS    |
- +----------+   +-------------+                                                        +-----------+
- |  Esmart  |   | Sel 1 from 6|
- |  window0 |   |   Layer2    |              +---------------+    +-------------+      +-----------+
- +----------+   +-------------+              |N from 6 Layers|    |             | +--> | 1 from 3  |
- +----------+   +-------------+   -------->  |   Overlay1    +--->| Video Port1 |      |   MIPI    |
- |  Esmart  |   | Sel 1 from 6|   -------->  |               |    |             |      +-----------+
- |  Window1 |   |   Layer3    |              +---------------+    +-------------+
- +----------+   +-------------+                                                        +-----------+
- +----------+   +-------------+                                                        | 1 from 3  |
- |  Smart   |   | Sel 1 from 6|              +---------------+    +-------------+      |   HDMI    |
- |  Window0 |   |    Layer4   |              |N from 6 Layers|    |             |      +-----------+
- +----------+   +-------------+              |   Overlay2    +--->| Video Port2 |
- +----------+   +-------------+              |               |    |             |      +-----------+
- |  Smart   |   | Sel 1 from 6|              +---------------+    +-------------+      |  1 from 3 |
- |  Window1 |   |    Layer5   |                                                        |    eDP    |
- +----------+   +-------------+                                                        +-----------+
- *
- */
+ 
 
 enum vop2_data_format {
 	VOP2_FMT_ARGB8888 = 0,
@@ -105,19 +74,19 @@ enum vop2_afbc_format {
 union vop2_alpha_ctrl {
 	u32 val;
 	struct {
-		/* [0:1] */
+		 
 		u32 color_mode:1;
 		u32 alpha_mode:1;
-		/* [2:3] */
+		 
 		u32 blend_mode:2;
 		u32 alpha_cal_mode:1;
-		/* [5:7] */
+		 
 		u32 factor_mode:3;
-		/* [8:9] */
+		 
 		u32 alpha_en:1;
 		u32 src_dst_swap:1;
 		u32 reserved:6;
-		/* [16:23] */
+		 
 		u32 glb_alpha:8;
 	} bits;
 };
@@ -144,10 +113,7 @@ struct vop2_win {
 	const struct vop2_win_data *data;
 	struct regmap_field *reg[VOP2_WIN_MAX_REG];
 
-	/**
-	 * @win_id: graphic window id, a cluster may be split into two
-	 * graphics windows.
-	 */
+	 
 	u8 win_id;
 	u8 delay;
 	u32 offset;
@@ -165,9 +131,7 @@ struct vop2_video_port {
 
 	struct completion dsp_hold_completion;
 
-	/**
-	 * @win_mask: Bitmask of windows attached to the video port;
-	 */
+	 
 	u32 win_mask;
 
 	struct vop2_win *primary_plane;
@@ -182,10 +146,7 @@ struct vop2 {
 	struct vop2_video_port vps[ROCKCHIP_MAX_CRTC];
 
 	const struct vop2_data *data;
-	/*
-	 * Number of windows that are registered as plane, may be less than the
-	 * total number of hardware windows.
-	 */
+	 
 	u32 registered_num_wins;
 
 	void __iomem *regs;
@@ -193,28 +154,25 @@ struct vop2 {
 
 	struct regmap *grf;
 
-	/* physical map length of vop2 register */
+	 
 	u32 len;
 
 	void __iomem *lut_regs;
 
-	/* protects crtc enable/disable */
+	 
 	struct mutex vop2_lock;
 
 	int irq;
 
-	/*
-	 * Some global resources are shared between all video ports(crtcs), so
-	 * we need a ref counter here.
-	 */
+	 
 	unsigned int enable_count;
 	struct clk *hclk;
 	struct clk *aclk;
 
-	/* optional internal rgb encoder */
+	 
 	struct rockchip_rgb *rgb;
 
-	/* must be put at the end of the struct */
+	 
 	struct vop2_win win[];
 };
 
@@ -399,15 +357,7 @@ static bool vop2_win_dither_up(u32 format)
 
 static bool vop2_output_uv_swap(u32 bus_format, u32 output_mode)
 {
-	/*
-	 * FIXME:
-	 *
-	 * There is no media type for YUV444 output,
-	 * so when out_mode is AAAA or P888, assume output is YUV444 on
-	 * yuv format.
-	 *
-	 * From H/W testing, YUV444 mode need a rb swap.
-	 */
+	 
 	if (bus_format == MEDIA_BUS_FMT_YVYU8_1X16 ||
 	    bus_format == MEDIA_BUS_FMT_VYUY8_1X16 ||
 	    bus_format == MEDIA_BUS_FMT_YVYU8_2X8 ||
@@ -495,13 +445,13 @@ static u32 vop2_afbc_transform_offset(struct drm_plane_state *pstate,
 	u8 tx, ty;
 	u8 bottom_crop_line_num = 0;
 
-	/* 16 pixel align */
+	 
 	if (height & 0xf)
 		align16_crop = 16 - (height & 0xf);
 
 	height_tmp = height + align16_crop;
 
-	/* 64 pixel align */
+	 
 	if (height_tmp & 0x3f)
 		align64_crop = 64 - (height_tmp & 0x3f);
 
@@ -553,15 +503,7 @@ static u32 vop2_afbc_transform_offset(struct drm_plane_state *pstate,
 		FIELD_PREP(TRANSFORM_YOFFSET, ty);
 }
 
-/*
- * A Cluster window has 2048 x 16 line buffer, which can
- * works at 2048 x 16(Full) or 4096 x 8 (Half) mode.
- * for Cluster_lb_mode register:
- * 0: half mode, for plane input width range 2048 ~ 4096
- * 1: half mode, for cluster work at 2 * 2048 plane mode
- * 2: half mode, for rotate_90/270 mode
- *
- */
+ 
 static int vop2_get_cluster_lb_mode(struct vop2_win *win,
 				    struct drm_plane_state *pstate)
 {
@@ -636,10 +578,7 @@ static void vop2_setup_scale(struct vop2 *vop2, const struct vop2_win *win,
 	else
 		vscl_filter_mode = VOP2_SCALE_DOWN_BIL;
 
-	/*
-	 * RK3568 VOP Esmart/Smart dsp_w should be even pixel
-	 * at scale down mode
-	 */
+	 
 	if (!(win->data->feature & WIN_FEATURE_AFBDC)) {
 		if ((hor_scl_mode == SCALE_DOWN) && (dst_w & 0x1)) {
 			drm_dbg(vop2->drm, "%s dst_w[%d] should align as 2 pixel\n",
@@ -718,38 +657,7 @@ static int vop2_convert_csc_mode(int csc_mode)
 	}
 }
 
-/*
- * colorspace path:
- *      Input        Win csc                     Output
- * 1. YUV(2020)  --> Y2R->2020To709->R2Y   --> YUV_OUTPUT(601/709)
- *    RGB        --> R2Y                  __/
- *
- * 2. YUV(2020)  --> bypasss               --> YUV_OUTPUT(2020)
- *    RGB        --> 709To2020->R2Y       __/
- *
- * 3. YUV(2020)  --> Y2R->2020To709        --> RGB_OUTPUT(709)
- *    RGB        --> R2Y                  __/
- *
- * 4. YUV(601/709)-> Y2R->709To2020->R2Y   --> YUV_OUTPUT(2020)
- *    RGB        --> 709To2020->R2Y       __/
- *
- * 5. YUV(601/709)-> bypass                --> YUV_OUTPUT(709)
- *    RGB        --> R2Y                  __/
- *
- * 6. YUV(601/709)-> bypass                --> YUV_OUTPUT(601)
- *    RGB        --> R2Y(601)             __/
- *
- * 7. YUV        --> Y2R(709)              --> RGB_OUTPUT(709)
- *    RGB        --> bypass               __/
- *
- * 8. RGB        --> 709To2020->R2Y        --> YUV_OUTPUT(2020)
- *
- * 9. RGB        --> R2Y(709)              --> YUV_OUTPUT(709)
- *
- * 10. RGB       --> R2Y(601)              --> YUV_OUTPUT(601)
- *
- * 11. RGB       --> bypass                --> RGB_OUTPUT(709)
- */
+ 
 
 static void vop2_setup_csc_mode(struct vop2_video_port *vp,
 				struct vop2_win *win,
@@ -849,10 +757,7 @@ static void vop2_enable(struct vop2 *vop2)
 
 	vop2_writel(vop2, RK3568_REG_CFG_DONE, RK3568_REG_CFG_DONE__GLB_CFG_DONE_EN);
 
-	/*
-	 * Disable auto gating, this is a workaround to
-	 * avoid display image shift when a window enabled.
-	 */
+	 
 	regmap_clear_bits(vop2->map, RK3568_SYS_AUTO_GATING_CTRL,
 			  RK3568_SYS_AUTO_GATING_CTRL__AUTO_GATING_EN);
 
@@ -893,13 +798,7 @@ static void vop2_crtc_atomic_disable(struct drm_crtc *crtc,
 
 	drm_crtc_vblank_off(crtc);
 
-	/*
-	 * Vop standby will take effect at end of current frame,
-	 * if dsp hold valid irq happen, it means standby complete.
-	 *
-	 * we must wait standby complete when we want to disable aclk,
-	 * if not, memory bus maybe dead.
-	 */
+	 
 	reinit_completion(&vp->dsp_hold_completion);
 
 	vop2_crtc_enable_irq(vp, VP_INT_DSP_HOLD_VALID);
@@ -991,10 +890,7 @@ static int vop2_plane_atomic_check(struct drm_plane *plane,
 		return -EINVAL;
 	}
 
-	/*
-	 * Src.x1 can be odd when do clip, but yuv plane start point
-	 * need align with 2 pixel.
-	 */
+	 
 	if (fb->format->is_yuv && ((pstate->src.x1 >> 16) % 2)) {
 		drm_err(vop2->drm, "Invalid Source: Yuv format not support odd xpos\n");
 		return -EINVAL;
@@ -1021,10 +917,7 @@ static void vop2_plane_atomic_disable(struct drm_plane *plane,
 	vop2_win_write(win, VOP2_WIN_YUV_CLIP, 0);
 }
 
-/*
- * The color key is 10 bit, so all format should
- * convert to 10 bit here.
- */
+ 
 static void vop2_plane_setup_color_key(struct drm_plane *plane, u32 color_key)
 {
 	struct drm_plane_state *pstate = plane->state;
@@ -1103,9 +996,7 @@ static void vop2_plane_atomic_update(struct drm_plane *plane,
 	dma_addr_t yrgb_mst;
 	dma_addr_t uv_mst;
 
-	/*
-	 * can't update plane when vop2 is disabled.
-	 */
+	 
 	if (WARN_ON(!crtc))
 		return;
 
@@ -1118,9 +1009,7 @@ static void vop2_plane_atomic_update(struct drm_plane *plane,
 
 	offset = (src->x1 >> 16) * fb->format->cpp[0];
 
-	/*
-	 * AFBC HDR_PTR must set to the zero offset of the framebuffer.
-	 */
+	 
 	if (afbc_en)
 		offset = 0;
 	else if (pstate->rotation & DRM_MODE_REFLECT_Y)
@@ -1169,10 +1058,7 @@ static void vop2_plane_atomic_update(struct drm_plane *plane,
 		actual_h = dsp_h * actual_h / drm_rect_height(dest);
 	}
 
-	/*
-	 * This is workaround solution for IC design:
-	 * esmart can't support scale down when actual_w % 16 == 1.
-	 */
+	 
 	if (!(win->data->feature & WIN_FEATURE_AFBDC)) {
 		if (actual_w > dsp_w && (actual_w & 0xf) == 1) {
 			drm_err(vop2->drm, "vp%d %s act_w[%d] MODE 16 == 1\n",
@@ -1201,19 +1087,16 @@ static void vop2_plane_atomic_update(struct drm_plane *plane,
 	if (afbc_en) {
 		u32 stride;
 
-		/* the afbc superblock is 16 x 16 */
+		 
 		afbc_format = vop2_convert_afbc_format(fb->format->format);
 
-		/* Enable color transform for YTR */
+		 
 		if (fb->modifier & AFBC_FORMAT_MOD_YTR)
 			afbc_format |= (1 << 4);
 
 		afbc_tile_num = ALIGN(actual_w, 16) >> 4;
 
-		/*
-		 * AFBC pic_vir_width is count by pixel, this is different
-		 * with WIN_VIR_STRIDE.
-		 */
+		 
 		stride = (fb->pitches[0] << 3) / bpp;
 		if ((stride & 0x3f) && (xmirror || rotate_90 || rotate_270))
 			drm_err(vop2->drm, "vp%d %s stride[%d] not 64 pixel aligned\n",
@@ -1221,15 +1104,7 @@ static void vop2_plane_atomic_update(struct drm_plane *plane,
 
 		rb_swap = vop2_afbc_rb_swap(fb->format->format);
 		uv_swap = vop2_afbc_uv_swap(fb->format->format);
-		/*
-		 * This is a workaround for crazy IC design, Cluster
-		 * and Esmart/Smart use different format configuration map:
-		 * YUV420_10BIT: 0x10 for Cluster, 0x14 for Esmart/Smart.
-		 *
-		 * This is one thing we can make the convert simple:
-		 * AFBCD decode all the YUV data to YUV444. So we just
-		 * set all the yuv 10 bit to YUV444_10.
-		 */
+		 
 		if (fb->format->is_yuv && bpp == 10)
 			format = VOP2_CLUSTER_YUV444_10;
 
@@ -1743,7 +1618,7 @@ static void vop2_setup_cluster_alpha(struct vop2 *vop2, struct vop2_win *main_wi
 	bool premulti_en = false;
 	bool swap = false;
 
-	/* At one win mode, win0 is dst/bottom win, and win1 is a all zero src/top win */
+	 
 	bottom_win_pstate = main_win->base.state;
 	src_glb_alpha_val = 0;
 	dst_glb_alpha_val = main_win->base.state->alpha;
@@ -1754,7 +1629,7 @@ static void vop2_setup_cluster_alpha(struct vop2 *vop2, struct vop2_win *main_wi
 	alpha_config.src_premulti_en = premulti_en;
 	alpha_config.dst_premulti_en = false;
 	alpha_config.src_pixel_alpha_en = src_pixel_alpha_en;
-	alpha_config.dst_pixel_alpha_en = true; /* alpha value need transfer to next mix */
+	alpha_config.dst_pixel_alpha_en = true;  
 	alpha_config.src_glb_alpha_value = src_glb_alpha_val;
 	alpha_config.dst_glb_alpha_value = dst_glb_alpha_val;
 	vop2_parse_alpha(&alpha_config, &alpha);
@@ -1785,7 +1660,7 @@ static void vop2_setup_alpha(struct vop2_video_port *vp)
 	u32 dst_global_alpha = DRM_BLEND_ALPHA_OPAQUE;
 
 	mixer_id = vop2_find_start_mixer_id_for_vp(vop2, vp->id);
-	alpha_config.dst_pixel_alpha_en = true; /* alpha value need transfer to next mix */
+	alpha_config.dst_pixel_alpha_en = true;  
 
 	drm_atomic_crtc_for_each_plane(plane, &vp->crtc) {
 		struct vop2_win *win = to_vop2_win(plane);
@@ -1793,11 +1668,7 @@ static void vop2_setup_alpha(struct vop2_video_port *vp)
 		if (plane->state->normalized_zpos == 0 &&
 		    !is_opaque(plane->state->alpha) &&
 		    !vop2_cluster_window(win)) {
-			/*
-			 * If bottom layer have global alpha effect [except cluster layer,
-			 * because cluster have deal with bottom layer global alpha value
-			 * at cluster mix], bottom layer mix need deal with global alpha.
-			 */
+			 
 			bottom_layer_alpha_en = true;
 			dst_global_alpha = plane->state->alpha;
 		}
@@ -1821,19 +1692,19 @@ static void vop2_setup_alpha(struct vop2_video_port *vp)
 
 		if (bottom_layer_alpha_en && zpos == 1) {
 			gpremulti_en = premulti_en;
-			/* Cd = Cs + (1 - As) * Cd * Agd */
+			 
 			alpha_config.dst_premulti_en = false;
 			alpha_config.src_pixel_alpha_en = pixel_alpha_en;
 			alpha_config.src_glb_alpha_value = plane->state->alpha;
 			alpha_config.dst_glb_alpha_value = dst_global_alpha;
 		} else if (vop2_cluster_window(win)) {
-			/* Mix output data only have pixel alpha */
+			 
 			alpha_config.dst_premulti_en = true;
 			alpha_config.src_pixel_alpha_en = true;
 			alpha_config.src_glb_alpha_value = DRM_BLEND_ALPHA_OPAQUE;
 			alpha_config.dst_glb_alpha_value = DRM_BLEND_ALPHA_OPAQUE;
 		} else {
-			/* Cd = Cs + (1 - As) * Cd */
+			 
 			alpha_config.dst_premulti_en = true;
 			alpha_config.src_pixel_alpha_en = pixel_alpha_en;
 			alpha_config.src_glb_alpha_value = plane->state->alpha;
@@ -1855,7 +1726,7 @@ static void vop2_setup_alpha(struct vop2_video_port *vp)
 
 	if (vp->id == 0) {
 		if (bottom_layer_alpha_en) {
-			/* Transfer pixel alpha to hdr mix */
+			 
 			alpha_config.src_premulti_en = gpremulti_en;
 			alpha_config.dst_premulti_en = true;
 			alpha_config.src_pixel_alpha_en = true;
@@ -1971,7 +1842,7 @@ static void vop2_setup_layer_mixer(struct vop2_video_port *vp)
 		nlayer++;
 	}
 
-	/* configure unused layers to 0x5 (reserved) */
+	 
 	for (; nlayer < vp->nlayers; nlayer++) {
 		layer_sel &= ~RK3568_OVL_LAYER_SEL__LAYER(nlayer + ofs, 0x7);
 		layer_sel |= RK3568_OVL_LAYER_SEL__LAYER(nlayer + ofs, 5);
@@ -2138,10 +2009,7 @@ static irqreturn_t vop2_isr(int irq, void *data)
 	int ret = IRQ_NONE;
 	int i;
 
-	/*
-	 * The irq is shared with the iommu. If the runtime-pm state of the
-	 * vop2-device is disabled the irq has to be targeted at the iommu.
-	 */
+	 
 	if (!pm_runtime_get_if_in_use(vop2->dev))
 		return IRQ_NONE;
 
@@ -2306,11 +2174,7 @@ static int vop2_create_crtcs(struct vop2 *vop2)
 		u32 possible_crtcs = 0;
 
 		if (vop2->data->soc_id == 3566) {
-			/*
-			 * On RK3566 these windows don't have an independent
-			 * framebuffer. They share the framebuffer with smart0,
-			 * esmart0 and cluster0 respectively.
-			 */
+			 
 			switch (win->data->phys_id) {
 			case ROCKCHIP_VOP2_SMART1:
 			case ROCKCHIP_VOP2_ESMART1:
@@ -2326,7 +2190,7 @@ static int vop2_create_crtcs(struct vop2 *vop2)
 				vp->primary_plane = win;
 				nvp++;
 			} else {
-				/* change the unused primary window to overlay window */
+				 
 				win->type = DRM_PLANE_TYPE_OVERLAY;
 			}
 		}
@@ -2363,11 +2227,7 @@ static int vop2_create_crtcs(struct vop2 *vop2)
 		init_completion(&vp->dsp_hold_completion);
 	}
 
-	/*
-	 * On the VOP2 it's very hard to change the number of layers on a VP
-	 * during runtime, so we distribute the layers equally over the used
-	 * VPs
-	 */
+	 
 	for (i = 0; i < vop2->data->nr_vps; i++) {
 		struct vop2_video_port *vp = &vop2->vps[i];
 
@@ -2389,10 +2249,7 @@ static void vop2_destroy_crtcs(struct vop2 *vop2)
 	list_for_each_entry_safe(plane, tmpp, plane_list, head)
 		drm_plane_cleanup(plane);
 
-	/*
-	 * Destroy CRTC after vop2_plane_destroy() since vop2_disable_plane()
-	 * references the CRTC.
-	 */
+	 
 	list_for_each_entry_safe(crtc, tmpc, crtc_list, head) {
 		of_node_put(crtc->port);
 		drm_crtc_cleanup(crtc);
@@ -2435,7 +2292,7 @@ static struct reg_field vop2_cluster_regs[VOP2_WIN_MAX_REG] = {
 	[VOP2_WIN_R2Y_EN] = REG_FIELD(RK3568_CLUSTER_WIN_CTRL0, 9, 9),
 	[VOP2_WIN_CSC_MODE] = REG_FIELD(RK3568_CLUSTER_WIN_CTRL0, 10, 11),
 
-	/* Scale */
+	 
 	[VOP2_WIN_SCALE_YRGB_X] = REG_FIELD(RK3568_CLUSTER_WIN_SCL_FACTOR_YRGB, 0, 15),
 	[VOP2_WIN_SCALE_YRGB_Y] = REG_FIELD(RK3568_CLUSTER_WIN_SCL_FACTOR_YRGB, 16, 31),
 	[VOP2_WIN_YRGB_VER_SCL_MODE] = REG_FIELD(RK3568_CLUSTER_WIN_CTRL1, 14, 15),
@@ -2444,12 +2301,12 @@ static struct reg_field vop2_cluster_regs[VOP2_WIN_MAX_REG] = {
 	[VOP2_WIN_VSD_YRGB_GT2] = REG_FIELD(RK3568_CLUSTER_WIN_CTRL1, 28, 28),
 	[VOP2_WIN_VSD_YRGB_GT4] = REG_FIELD(RK3568_CLUSTER_WIN_CTRL1, 29, 29),
 
-	/* cluster regs */
+	 
 	[VOP2_WIN_AFBC_ENABLE] = REG_FIELD(RK3568_CLUSTER_CTRL, 1, 1),
 	[VOP2_WIN_CLUSTER_ENABLE] = REG_FIELD(RK3568_CLUSTER_CTRL, 0, 0),
 	[VOP2_WIN_CLUSTER_LB_MODE] = REG_FIELD(RK3568_CLUSTER_CTRL, 4, 7),
 
-	/* afbc regs */
+	 
 	[VOP2_WIN_AFBC_FORMAT] = REG_FIELD(RK3568_CLUSTER_WIN_AFBCD_CTRL, 2, 6),
 	[VOP2_WIN_AFBC_RB_SWAP] = REG_FIELD(RK3568_CLUSTER_WIN_AFBCD_CTRL, 9, 9),
 	[VOP2_WIN_AFBC_UV_SWAP] = REG_FIELD(RK3568_CLUSTER_WIN_AFBCD_CTRL, 10, 10),
@@ -2527,7 +2384,7 @@ static struct reg_field vop2_esmart_regs[VOP2_WIN_MAX_REG] = {
 	[VOP2_WIN_COLOR_KEY] = REG_FIELD(RK3568_SMART_COLOR_KEY_CTRL, 0, 29),
 	[VOP2_WIN_COLOR_KEY_EN] = REG_FIELD(RK3568_SMART_COLOR_KEY_CTRL, 31, 31),
 
-	/* Scale */
+	 
 	[VOP2_WIN_SCALE_YRGB_X] = REG_FIELD(RK3568_SMART_REGION0_SCL_FACTOR_YRGB, 0, 15),
 	[VOP2_WIN_SCALE_YRGB_Y] = REG_FIELD(RK3568_SMART_REGION0_SCL_FACTOR_YRGB, 16, 31),
 	[VOP2_WIN_SCALE_CBCR_X] = REG_FIELD(RK3568_SMART_REGION0_SCL_FACTOR_CBR, 0, 15),
@@ -2618,12 +2475,7 @@ static int vop2_win_init(struct vop2 *vop2)
 	return 0;
 }
 
-/*
- * The window registers are only updated when config done is written.
- * Until that they read back the old value. As we read-modify-write
- * these registers mark them as non-volatile. This makes sure we read
- * the new values from the regmap register cache.
- */
+ 
 static const struct regmap_range vop2_nonvolatile_range[] = {
 	regmap_reg_range(0x1000, 0x23ff),
 };
@@ -2657,7 +2509,7 @@ static int vop2_bind(struct device *dev, struct device *master, void *data)
 	if (!vop2_data)
 		return -ENODEV;
 
-	/* Allocate vop2 struct and its vop2_win array */
+	 
 	alloc_size = struct_size(vop2, win, vop2_data->win_size);
 	vop2 = devm_kzalloc(dev, alloc_size, GFP_KERNEL);
 	if (!vop2)

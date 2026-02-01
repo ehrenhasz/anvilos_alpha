@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Siemens SIMATIC IPC driver for CMOS battery monitoring
- *
- * Copyright (c) Siemens AG, 2023
- *
- * Authors:
- *  Henning Schild <henning.schild@siemens.com>
- */
+
+ 
 
 #include <linux/gpio/machine.h>
 #include <linux/gpio/consumer.h>
@@ -21,7 +14,7 @@ static struct gpiod_lookup_table simatic_ipc_batt_gpio_table_127e = {
 		GPIO_LOOKUP_IDX("apollolake-pinctrl.0", 55, NULL, 0, GPIO_ACTIVE_HIGH),
 		GPIO_LOOKUP_IDX("apollolake-pinctrl.0", 61, NULL, 1, GPIO_ACTIVE_HIGH),
 		GPIO_LOOKUP_IDX("apollolake-pinctrl.1", 41, NULL, 2, GPIO_ACTIVE_HIGH),
-		{} /* Terminating entry */
+		{}  
 	},
 };
 

@@ -1,23 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Copyright (C) 2015-2018 Broadcom */
 
-/**
- * DOC: V3D GEM BO management support
- *
- * Compared to VC4 (V3D 2.x), V3D 3.3 introduces an MMU between the
- * GPU and the bus, allowing us to use shmem objects for our storage
- * instead of CMA.
- *
- * Physically contiguous objects may still be imported to V3D, but the
- * driver doesn't allocate physically contiguous objects on its own.
- * Display engines requiring physically contiguous allocations should
- * look into Mesa's "renderonly" support (as used by the Mesa pl111
- * driver) for an example of how to integrate with V3D.
- *
- * Long term, we should support evicting pages from the MMU when under
- * memory pressure (thus the v3d_bo_get_pages() refcounting), but
- * that's not a high priority since our systems tend to not have swap.
- */
+ 
+
+ 
 
 #include <linux/dma-buf.h>
 #include <linux/pfn_t.h>
@@ -25,9 +9,7 @@
 #include "v3d_drv.h"
 #include "uapi/drm/v3d_drm.h"
 
-/* Called DRM core on the last userspace/kernel unreference of the
- * BO.
- */
+ 
 void v3d_free_object(struct drm_gem_object *obj)
 {
 	struct v3d_dev *v3d = to_v3d_dev(obj->dev);
@@ -44,7 +26,7 @@ void v3d_free_object(struct drm_gem_object *obj)
 	drm_mm_remove_node(&bo->node);
 	spin_unlock(&v3d->mm_lock);
 
-	/* GPU execution may have dirtied any pages in the BO. */
+	 
 	bo->base.pages_mark_dirty_on_put = true;
 
 	drm_gem_shmem_free(&bo->base);
@@ -62,9 +44,7 @@ static const struct drm_gem_object_funcs v3d_gem_funcs = {
 	.vm_ops = &drm_gem_shmem_vm_ops,
 };
 
-/* gem_create_object function for allocating a BO struct and doing
- * early setup.
- */
+ 
 struct drm_gem_object *v3d_create_object(struct drm_device *dev, size_t size)
 {
 	struct v3d_bo *bo;
@@ -93,18 +73,13 @@ v3d_bo_create_finish(struct drm_gem_object *obj)
 	struct sg_table *sgt;
 	int ret;
 
-	/* So far we pin the BO in the MMU for its lifetime, so use
-	 * shmem's helper for getting a lifetime sgt.
-	 */
+	 
 	sgt = drm_gem_shmem_get_pages_sgt(&bo->base);
 	if (IS_ERR(sgt))
 		return PTR_ERR(sgt);
 
 	spin_lock(&v3d->mm_lock);
-	/* Allocate the object's space in the GPU's page tables.
-	 * Inserting PTEs will happen later, but the offset is for the
-	 * lifetime of the BO.
-	 */
+	 
 	ret = drm_mm_insert_node_generic(&v3d->mm, &bo->node,
 					 obj->size >> PAGE_SHIFT,
 					 GMP_GRANULARITY >> PAGE_SHIFT, 0, 0);
@@ -112,7 +87,7 @@ v3d_bo_create_finish(struct drm_gem_object *obj)
 	if (ret)
 		return ret;
 
-	/* Track stats for /debug/dri/n/bo_stats. */
+	 
 	mutex_lock(&v3d->bo_lock);
 	v3d->bo_stats.num_allocated++;
 	v3d->bo_stats.pages_allocated += obj->size >> PAGE_SHIFT;

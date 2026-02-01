@@ -1,40 +1,7 @@
-/* $OpenBSD: blowfish.c,v 1.20 2021/11/29 01:04:45 djm Exp $ */
-/*
- * Blowfish block cipher for OpenBSD
- * Copyright 1997 Niels Provos <provos@physnet.uni-hamburg.de>
- * All rights reserved.
- *
- * Implementation advice by David Mazieres <dm@lcs.mit.edu>.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. The name of the author may not be used to endorse or promote products
- *    derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
-/*
- * This code is derived from section 14.3 and the given source
- * in section V of Applied Cryptography, second edition.
- * Blowfish is an unpatented fast block cipher designed by
- * Bruce Schneier.
- */
+ 
 
 #include "includes.h"
 
@@ -42,7 +9,7 @@
     !defined(HAVE_BLOWFISH_EXPAND0STATE) || !defined(HAVE_BLF_ENC))
 
 #if 0
-#include <stdio.h>		/* used for debugging */
+#include <stdio.h>		 
 #include <string.h>
 #endif
 
@@ -54,11 +21,11 @@
 #undef inline
 #ifdef __GNUC__
 #define inline __inline
-#else				/* !__GNUC__ */
+#else				 
 #define inline
-#endif				/* !__GNUC__ */
+#endif				 
 
-/* Function for Feistel Networks */
+ 
 
 #define F(s, x) ((((s)[        (((x)>>24)&0xFF)]  \
 		 + (s)[0x100 + (((x)>>16)&0xFF)]) \
@@ -120,7 +87,7 @@ Blowfish_decipher(blf_ctx *c, u_int32_t *xl, u_int32_t *xr)
 void
 Blowfish_initstate(blf_ctx *c)
 {
-	/* P-box and S-box tables initialized with digits of Pi */
+	 
 
 	static const blf_ctx initstate =
 	{ {
@@ -429,7 +396,7 @@ Blowfish_expand0state(blf_ctx *c, const u_int8_t *key, u_int16_t keybytes)
 
 	j = 0;
 	for (i = 0; i < BLF_N + 2; i++) {
-		/* Extract 4 int8 to 1 int32 from keystream */
+		 
 		temp = Blowfish_stream2word(key, keybytes, &j);
 		c->P[i] = c->P[i] ^ temp;
 	}
@@ -468,7 +435,7 @@ Blowfish_expandstate(blf_ctx *c, const u_int8_t *data, u_int16_t databytes,
 
 	j = 0;
 	for (i = 0; i < BLF_N + 2; i++) {
-		/* Extract 4 int8 to 1 int32 from keystream */
+		 
 		temp = Blowfish_stream2word(key, keybytes, &j);
 		c->P[i] = c->P[i] ^ temp;
 	}
@@ -501,10 +468,10 @@ Blowfish_expandstate(blf_ctx *c, const u_int8_t *data, u_int16_t databytes,
 void
 blf_key(blf_ctx *c, const u_int8_t *k, u_int16_t len)
 {
-	/* Initialize S-boxes and subkeys with Pi */
+	 
 	Blowfish_initstate(c);
 
-	/* Transform S-boxes and subkeys with key */
+	 
 	Blowfish_expand0state(c, k, len);
 }
 
@@ -667,7 +634,7 @@ main(void)
 
 	u_int16_t i;
 
-	/* First test */
+	 
 	for (i = 0; i < 10; i++)
 		data[i] = i;
 
@@ -678,7 +645,7 @@ main(void)
 	printf("Should read as 0 - 9.\n");
 	report(data, 10);
 
-	/* Second test */
+	 
 	blf_key(&c, (u_int8_t *) key2, strlen(key2));
 	blf_enc(&c, data2, 1);
 	printf("\nShould read as: 0x324ed0fe 0xf413a203.\n");
@@ -688,6 +655,5 @@ main(void)
 }
 #endif
 
-#endif /* !defined(HAVE_BCRYPT_PBKDF) && (!defined(HAVE_BLOWFISH_INITSTATE) || \
-    !defined(HAVE_BLOWFISH_EXPAND0STATE) || !defined(HAVE_BLF_ENC)) */
+#endif  
 

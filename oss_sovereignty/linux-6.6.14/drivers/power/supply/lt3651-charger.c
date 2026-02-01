@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  Driver for Analog Devices (Linear Technology) LT3651 charger IC.
- *  Copyright (C) 2017, Topic Embedded Products
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/gpio/consumer.h>
@@ -66,10 +63,7 @@ static int lt3651_charger_get_property(struct power_supply *psy,
 			val->intval = POWER_SUPPLY_HEALTH_GOOD;
 			break;
 		}
-		/*
-		 * If the fault pin is active, the chrg pin explains the type
-		 * of failure.
-		 */
+		 
 		if (!lt3651_charger->chrg_gpio) {
 			val->intval = POWER_SUPPLY_HEALTH_UNSPEC_FAILURE;
 			break;
@@ -143,11 +137,7 @@ static int lt3651_charger_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/*
-	 * Acquire IRQs for the GPIO pins if possible. If the system does not
-	 * support IRQs on these pins, userspace will have to poll the sysfs
-	 * files manually.
-	 */
+	 
 	if (lt3651_charger->acpr_gpio) {
 		ret = gpiod_to_irq(lt3651_charger->acpr_gpio);
 		if (ret >= 0)
@@ -185,7 +175,7 @@ static int lt3651_charger_probe(struct platform_device *pdev)
 }
 
 static const struct of_device_id lt3651_charger_match[] = {
-	{ .compatible = "lltc,ltc3651-charger" }, /* DEPRECATED */
+	{ .compatible = "lltc,ltc3651-charger" },  
 	{ .compatible = "lltc,lt3651-charger" },
 	{ }
 };

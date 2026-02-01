@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+ 
+ 
 
 #ifndef __MLX5_EN_POST_METER_H__
 #define __MLX5_EN_POST_METER_H__
@@ -43,7 +43,7 @@ mlx5e_post_meter_init(struct mlx5e_priv *priv,
 void
 mlx5e_post_meter_cleanup(struct mlx5_eswitch *esw, struct mlx5e_post_meter_priv *post_meter);
 
-#else /* CONFIG_MLX5_CLS_ACT */
+#else  
 
 static inline struct mlx5_flow_table *
 mlx5e_post_meter_get_mtu_true_ft(struct mlx5e_post_meter_priv *post_meter)
@@ -59,4 +59,4 @@ mlx5e_post_meter_get_mtu_false_ft(struct mlx5e_post_meter_priv *post_meter)
 
 #endif
 
-#endif /* __MLX5_EN_POST_METER_H__ */
+#endif  

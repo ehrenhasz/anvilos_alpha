@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2006 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 
 #include "xfs.h"
 #include "xfs_shared.h"
@@ -50,10 +47,10 @@
 
 static const struct super_operations xfs_super_operations;
 
-static struct dentry *xfs_debugfs;	/* top-level xfs debugfs dir */
-static struct kset *xfs_kset;		/* top-level xfs sysfs dir */
+static struct dentry *xfs_debugfs;	 
+static struct kset *xfs_kset;		 
 #ifdef DEBUG
-static struct xfs_kobj xfs_dbg_kobj;	/* global debug sysfs attrs */
+static struct xfs_kobj xfs_dbg_kobj;	 
 #endif
 
 enum xfs_dax_mode {
@@ -89,9 +86,7 @@ static const struct constant_table dax_param_enums[] = {
 	{}
 };
 
-/*
- * Table driven mount option parser.
- */
+ 
 enum {
 	Opt_logbufs, Opt_logbsize, Opt_logdev, Opt_rtdev,
 	Opt_wsync, Opt_noalign, Opt_swalloc, Opt_sunit, Opt_swidth, Opt_nouuid,
@@ -160,7 +155,7 @@ xfs_fs_show_options(
 	struct dentry		*root)
 {
 	static struct proc_xfs_info xfs_info_set[] = {
-		/* the few simple ones we can get from the mount struct */
+		 
 		{ XFS_FEAT_IKEEP,		",ikeep" },
 		{ XFS_FEAT_WSYNC,		",wsync" },
 		{ XFS_FEAT_NOALIGN,		",noalign" },
@@ -254,21 +249,7 @@ xfs_set_inode_alloc_perag(
 	return true;
 }
 
-/*
- * Set parameters for inode allocation heuristics, taking into account
- * filesystem size and inode32/inode64 mount options; i.e. specifically
- * whether or not XFS_FEAT_SMALL_INUMS is set.
- *
- * Inode allocation patterns are altered only if inode32 is requested
- * (XFS_FEAT_SMALL_INUMS), and the filesystem is sufficiently large.
- * If altered, XFS_OPSTATE_INODE32 is set as well.
- *
- * An agcount independent of that in the mount structure is provided
- * because in the growfs case, mp->m_sb.sb_agcount is not yet updated
- * to the potentially higher ag count.
- *
- * Returns the maximum AG index which may contain inodes.
- */
+ 
 xfs_agnumber_t
 xfs_set_inode_alloc(
 	struct xfs_mount *mp,
@@ -281,10 +262,7 @@ xfs_set_inode_alloc(
 	xfs_agino_t	agino;
 	xfs_ino_t	ino;
 
-	/*
-	 * Calculate how much should be reserved for inodes to meet
-	 * the max inode percentage.  Used only for inode32.
-	 */
+	 
 	if (M_IGEO(mp)->maxicount) {
 		uint64_t	icount;
 
@@ -297,15 +275,11 @@ xfs_set_inode_alloc(
 		max_metadata = agcount;
 	}
 
-	/* Get the last possible inode in the filesystem */
+	 
 	agino =	XFS_AGB_TO_AGINO(mp, sbp->sb_agblocks - 1);
 	ino = XFS_AGINO_TO_INO(mp, agcount - 1, agino);
 
-	/*
-	 * If user asked for no more than 32-bit inodes, and the fs is
-	 * sufficiently large, set XFS_OPSTATE_INODE32 if we must alter
-	 * the allocator to accommodate the request.
-	 */
+	 
 	if (xfs_has_small_inums(mp) && ino > XFS_MAXINUMBER_32)
 		set_bit(XFS_OPSTATE_INODE32, &mp->m_opstate);
 	else
@@ -379,32 +353,7 @@ STATIC void
 xfs_shutdown_devices(
 	struct xfs_mount	*mp)
 {
-	/*
-	 * Udev is triggered whenever anyone closes a block device or unmounts
-	 * a file systemm on a block device.
-	 * The default udev rules invoke blkid to read the fs super and create
-	 * symlinks to the bdev under /dev/disk.  For this, it uses buffered
-	 * reads through the page cache.
-	 *
-	 * xfs_db also uses buffered reads to examine metadata.  There is no
-	 * coordination between xfs_db and udev, which means that they can run
-	 * concurrently.  Note there is no coordination between the kernel and
-	 * blkid either.
-	 *
-	 * On a system with 64k pages, the page cache can cache the superblock
-	 * and the root inode (and hence the root directory) with the same 64k
-	 * page.  If udev spawns blkid after the mkfs and the system is busy
-	 * enough that it is still running when xfs_db starts up, they'll both
-	 * read from the same page in the pagecache.
-	 *
-	 * The unmount writes updated inode metadata to disk directly.  The XFS
-	 * buffer cache does not use the bdev pagecache, so it needs to
-	 * invalidate that pagecache on unmount.  If the above scenario occurs,
-	 * the pagecache no longer reflects what's on disk, xfs_db reads the
-	 * stale metadata, and fails to find /a.  Most of the time this succeeds
-	 * because closing a bdev invalidates the page cache, but when processes
-	 * race, everyone loses.
-	 */
+	 
 	if (mp->m_logdev_targp && mp->m_logdev_targp != mp->m_ddev_targp) {
 		blkdev_issue_flush(mp->m_logdev_targp->bt_bdev);
 		invalidate_bdev(mp->m_logdev_targp->bt_bdev);
@@ -417,16 +366,7 @@ xfs_shutdown_devices(
 	invalidate_bdev(mp->m_ddev_targp->bt_bdev);
 }
 
-/*
- * The file system configurations are:
- *	(1) device (partition) with data and internal log
- *	(2) logical volume with data and log subvolumes.
- *	(3) logical volume with data, log, and realtime subvolumes.
- *
- * We only have to handle opening the log and realtime volumes here if
- * they are present.  The data subvolume has already been opened by
- * get_sb_bdev() and is stored in sb->s_bdev.
- */
+ 
 STATIC int
 xfs_open_devices(
 	struct xfs_mount	*mp)
@@ -436,15 +376,10 @@ xfs_open_devices(
 	struct block_device	*logdev = NULL, *rtdev = NULL;
 	int			error;
 
-	/*
-	 * blkdev_put() can't be called under s_umount, see the comment
-	 * in get_tree_bdev() for more details
-	 */
+	 
 	up_write(&sb->s_umount);
 
-	/*
-	 * Open real time and log devices - order is important.
-	 */
+	 
 	if (mp->m_logname) {
 		error = xfs_blkdev_get(mp, mp->m_logname, &logdev);
 		if (error)
@@ -464,9 +399,7 @@ xfs_open_devices(
 		}
 	}
 
-	/*
-	 * Setup xfs_mount buffer target pointers
-	 */
+	 
 	error = -ENOMEM;
 	mp->m_ddev_targp = xfs_alloc_buftarg(mp, ddev);
 	if (!mp->m_ddev_targp)
@@ -505,9 +438,7 @@ out_relock:
 	goto out_relock;
 }
 
-/*
- * Setup xfs_mount buffer target pointers based on superblock
- */
+ 
 STATIC int
 xfs_setup_devices(
 	struct xfs_mount	*mp)
@@ -619,20 +550,12 @@ xfs_flush_inodes_worker(
 	}
 }
 
-/*
- * Flush all dirty data to disk. Must not be called while holding an XFS_ILOCK
- * or a page lock. We use sync_inodes_sb() here to ensure we block while waiting
- * for IO to complete so that we effectively throttle multiple callers to the
- * rate at which IO is completing.
- */
+ 
 void
 xfs_flush_inodes(
 	struct xfs_mount	*mp)
 {
-	/*
-	 * If flush_work() returns true then that means we waited for a flush
-	 * which was already in progress.  Don't bother running another scan.
-	 */
+	 
 	if (flush_work(&mp->m_flush_inodes_work))
 		return;
 
@@ -640,7 +563,7 @@ xfs_flush_inodes(
 	flush_work(&mp->m_flush_inodes_work);
 }
 
-/* Catch misguided souls that try to use this interface on XFS */
+ 
 STATIC struct inode *
 xfs_fs_alloc_inode(
 	struct super_block	*sb)
@@ -649,10 +572,7 @@ xfs_fs_alloc_inode(
 	return NULL;
 }
 
-/*
- * Now that the generic code is guaranteed not to be accessing
- * the linux inode, we can inactivate and reclaim the inode.
- */
+ 
 STATIC void
 xfs_fs_destroy_inode(
 	struct inode		*inode)
@@ -679,11 +599,7 @@ xfs_fs_dirty_inode(
 	if (!(inode->i_sb->s_flags & SB_LAZYTIME))
 		return;
 
-	/*
-	 * Only do the timestamp update if the inode is dirty (I_DIRTY_SYNC)
-	 * and has dirty timestamp (I_DIRTY_TIME). I_DIRTY_TIME can be passed
-	 * in flags possibly together with I_DIRTY_SYNC.
-	 */
+	 
 	if ((flags & ~I_DIRTY_TIME) != I_DIRTY_SYNC || !(flags & I_DIRTY_TIME))
 		return;
 
@@ -695,14 +611,7 @@ xfs_fs_dirty_inode(
 	xfs_trans_commit(tp);
 }
 
-/*
- * Slab object creation initialisation for the XFS inode.
- * This covers only the idempotent fields in the XFS inode;
- * all other fields need to be initialised on allocation
- * from the slab. This avoids the need to repeatedly initialise
- * fields in the xfs inode that left in the initialise state
- * when freeing the inode.
- */
+ 
 STATIC void
 xfs_fs_inode_init_once(
 	void			*inode)
@@ -711,10 +620,10 @@ xfs_fs_inode_init_once(
 
 	memset(ip, 0, sizeof(struct xfs_inode));
 
-	/* vfs inode */
+	 
 	inode_init_once(VFS_I(ip));
 
-	/* xfs inode */
+	 
 	atomic_set(&ip->i_pincount, 0);
 	spin_lock_init(&ip->i_flags_lock);
 
@@ -722,24 +631,14 @@ xfs_fs_inode_init_once(
 		     "xfsino", ip->i_ino);
 }
 
-/*
- * We do an unlocked check for XFS_IDONTCACHE here because we are already
- * serialised against cache hits here via the inode->i_lock and igrab() in
- * xfs_iget_cache_hit(). Hence a lookup that might clear this flag will not be
- * racing with us, and it avoids needing to grab a spinlock here for every inode
- * we drop the final reference on.
- */
+ 
 STATIC int
 xfs_fs_drop_inode(
 	struct inode		*inode)
 {
 	struct xfs_inode	*ip = XFS_I(inode);
 
-	/*
-	 * If this unlinked inode is in the middle of recovery, don't
-	 * drop the inode just yet; log recovery will take care of
-	 * that.  See the comment for this inode flag.
-	 */
+	 
 	if (ip->i_flags & XFS_IRECOVERY) {
 		ASSERT(xlog_recovery_needed(ip->i_mount->m_log));
 		return 0;
@@ -752,10 +651,7 @@ static void
 xfs_mount_free(
 	struct xfs_mount	*mp)
 {
-	/*
-	 * Free the buftargs here because blkdev_put needs to be called outside
-	 * of sb->s_umount, which is held around the call to ->put_super.
-	 */
+	 
 	if (mp->m_logdev_targp && mp->m_logdev_targp != mp->m_ddev_targp)
 		xfs_free_buftarg(mp->m_logdev_targp);
 	if (mp->m_rtdev_targp)
@@ -779,9 +675,7 @@ xfs_fs_sync_fs(
 
 	trace_xfs_fs_sync_fs(mp, __return_address);
 
-	/*
-	 * Doing anything during the async pass would be counterproductive.
-	 */
+	 
 	if (!wait)
 		return 0;
 
@@ -790,28 +684,11 @@ xfs_fs_sync_fs(
 		return error;
 
 	if (laptop_mode) {
-		/*
-		 * The disk must be active because we're syncing.
-		 * We schedule log work now (now that the disk is
-		 * active) instead of later (when it might not be).
-		 */
+		 
 		flush_delayed_work(&mp->m_log->l_work);
 	}
 
-	/*
-	 * If we are called with page faults frozen out, it means we are about
-	 * to freeze the transaction subsystem. Take the opportunity to shut
-	 * down inodegc because once SB_FREEZE_FS is set it's too late to
-	 * prevent inactivation races with freeze. The fs doesn't get called
-	 * again by the freezing process until after SB_FREEZE_FS has been set,
-	 * so it's now or never.  Same logic applies to speculative allocation
-	 * garbage collection.
-	 *
-	 * We don't care if this is a normal syncfs call that does this or
-	 * freeze that does this - we can run this multiple times without issue
-	 * and we won't race with a restart because a restart can only occur
-	 * when the state is either SB_FREEZE_FS or SB_FREEZE_COMPLETE.
-	 */
+	 
 	if (sb->s_writers.frozen == SB_FREEZE_PAGEFAULT) {
 		xfs_inodegc_stop(mp);
 		xfs_blockgc_stop(mp);
@@ -835,10 +712,7 @@ xfs_fs_statfs(
 	xfs_extlen_t		lsize;
 	int64_t			ffree;
 
-	/*
-	 * Expedite background inodegc but don't wait. We do not want to block
-	 * here waiting hours for a billion extent file to be truncated.
-	 */
+	 
 	xfs_inodegc_push(mp);
 
 	statp->f_type = XFS_SUPER_MAGIC;
@@ -857,7 +731,7 @@ xfs_fs_statfs(
 	statp->f_blocks = sbp->sb_dblocks - lsize;
 	spin_unlock(&mp->m_sb_lock);
 
-	/* make sure statp->f_bfree does not underflow */
+	 
 	statp->f_bfree = max_t(int64_t, 0,
 				fdblocks - xfs_fdblocks_unavailable(mp));
 	statp->f_bavail = statp->f_bfree;
@@ -869,12 +743,12 @@ xfs_fs_statfs(
 					statp->f_files,
 					M_IGEO(mp)->maxicount);
 
-	/* If sb_icount overshot maxicount, report actual allocation */
+	 
 	statp->f_files = max_t(typeof(statp->f_files),
 					statp->f_files,
 					sbp->sb_icount);
 
-	/* make sure statp->f_ffree does not underflow */
+	 
 	ffree = statp->f_files - (icount - ifree);
 	statp->f_ffree = max_t(int64_t, ffree, 0);
 
@@ -919,12 +793,7 @@ xfs_restore_resvblks(struct xfs_mount *mp)
 	xfs_reserve_blocks(mp, &resblks, NULL);
 }
 
-/*
- * Second stage of a freeze. The data is already frozen so we only
- * need to take care of the metadata. Once that's done sync the superblock
- * to the log to dirty it in case of a crash while frozen. This ensures that we
- * will recover the unlinked inode lists on the next mount.
- */
+ 
 STATIC int
 xfs_fs_freeze(
 	struct super_block	*sb)
@@ -933,23 +802,13 @@ xfs_fs_freeze(
 	unsigned int		flags;
 	int			ret;
 
-	/*
-	 * The filesystem is now frozen far enough that memory reclaim
-	 * cannot safely operate on the filesystem. Hence we need to
-	 * set a GFP_NOFS context here to avoid recursion deadlocks.
-	 */
+	 
 	flags = memalloc_nofs_save();
 	xfs_save_resvblks(mp);
 	ret = xfs_log_quiesce(mp);
 	memalloc_nofs_restore(flags);
 
-	/*
-	 * For read-write filesystems, we need to restart the inodegc on error
-	 * because we stopped it at SB_FREEZE_PAGEFAULT level and a thaw is not
-	 * going to be run to restart it now.  We are at SB_FREEZE_FS level
-	 * here, so we can restart safely without racing with a stop in
-	 * xfs_fs_sync_fs().
-	 */
+	 
 	if (ret && !xfs_is_readonly(mp)) {
 		xfs_blockgc_start(mp);
 		xfs_inodegc_start(mp);
@@ -967,12 +826,7 @@ xfs_fs_unfreeze(
 	xfs_restore_resvblks(mp);
 	xfs_log_work_queue(mp);
 
-	/*
-	 * Don't reactivate the inodegc worker on a readonly filesystem because
-	 * inodes are sent directly to reclaim.  Don't reactivate the blockgc
-	 * worker because there are no speculative preallocations on a readonly
-	 * filesystem.
-	 */
+	 
 	if (!xfs_is_readonly(mp)) {
 		xfs_blockgc_start(mp);
 		xfs_inodegc_start(mp);
@@ -981,15 +835,12 @@ xfs_fs_unfreeze(
 	return 0;
 }
 
-/*
- * This function fills in xfs_mount_t fields based on mount args.
- * Note: the superblock _has_ now been read in.
- */
+ 
 STATIC int
 xfs_finish_flags(
 	struct xfs_mount	*mp)
 {
-	/* Fail a mount where the logbuf is smaller than the log stripe */
+	 
 	if (xfs_has_logv2(mp)) {
 		if (mp->m_logbsize <= 0 &&
 		    mp->m_sb.sb_logsunit > XLOG_BIG_RECORD_BSIZE) {
@@ -1001,7 +852,7 @@ xfs_finish_flags(
 			return -EINVAL;
 		}
 	} else {
-		/* Fail a mount if the logbuf is larger than 32K */
+		 
 		if (mp->m_logbsize > XLOG_BIG_RECORD_BSIZE) {
 			xfs_warn(mp,
 		"logbuf size for version 1 logs must be 16K or 32K");
@@ -1009,18 +860,14 @@ xfs_finish_flags(
 		}
 	}
 
-	/*
-	 * V5 filesystems always use attr2 format for attributes.
-	 */
+	 
 	if (xfs_has_crc(mp) && xfs_has_noattr2(mp)) {
 		xfs_warn(mp, "Cannot mount a V5 filesystem as noattr2. "
 			     "attr2 is always enabled for V5 filesystems.");
 		return -EINVAL;
 	}
 
-	/*
-	 * prohibit r/w mounts of read-only filesystems
-	 */
+	 
 	if ((mp->m_sb.sb_flags & XFS_SBF_READONLY) && !xfs_is_readonly(mp)) {
 		xfs_warn(mp,
 			"cannot mount a read-only filesystem as read-write");
@@ -1156,7 +1003,7 @@ xfs_fs_nr_cached_objects(
 	struct super_block	*sb,
 	struct shrink_control	*sc)
 {
-	/* Paranoia: catch incorrect calls during mount setup or teardown */
+	 
 	if (WARN_ON_ONCE(!sb->s_fs_info))
 		return 0;
 	return xfs_reclaim_inodes_count(XFS_M(sb));
@@ -1235,20 +1082,14 @@ xfs_fs_warn_deprecated(
 	uint64_t		flag,
 	bool			value)
 {
-	/* Don't print the warning if reconfiguring and current mount point
-	 * already had the flag set
-	 */
+	 
 	if ((fc->purpose & FS_CONTEXT_FOR_RECONFIGURE) &&
             !!(XFS_M(fc->root->d_sb)->m_features & flag) == value)
 		return;
 	xfs_warn(fc->s_fs_info, "%s mount option is deprecated.", param->key);
 }
 
-/*
- * Set mount state from a mount option.
- *
- * NOTE: mp->m_super is NULL here!
- */
+ 
 static int
 xfs_fs_parse_param(
 	struct fs_context	*fc,
@@ -1377,7 +1218,7 @@ xfs_fs_parse_param(
 		xfs_mount_set_dax_mode(parsing_mp, result.uint_32);
 		return 0;
 #endif
-	/* Following mount options will be removed in September 2025 */
+	 
 	case Opt_ikeep:
 		xfs_fs_warn_deprecated(fc, param, XFS_FEAT_IKEEP, true);
 		parsing_mp->m_features |= XFS_FEAT_IKEEP;
@@ -1406,16 +1247,13 @@ static int
 xfs_fs_validate_params(
 	struct xfs_mount	*mp)
 {
-	/* No recovery flag requires a read-only mount */
+	 
 	if (xfs_has_norecovery(mp) && !xfs_is_readonly(mp)) {
 		xfs_warn(mp, "no-recovery mounts must be read-only.");
 		return -EINVAL;
 	}
 
-	/*
-	 * We have not read the superblock at this point, so only the attr2
-	 * mount option can set the attr2 feature by this stage.
-	 */
+	 
 	if (xfs_has_attr2(mp) && xfs_has_noattr2(mp)) {
 		xfs_warn(mp, "attr2 and noattr2 cannot both be specified.");
 		return -EINVAL;
@@ -1484,7 +1322,7 @@ xfs_debugfs_mkdir(
 {
 	struct dentry	*child;
 
-	/* Apparently we're expected to ignore error returns?? */
+	 
 	child = debugfs_create_dir(name, parent);
 	if (IS_ERR(child))
 		return NULL;
@@ -1516,11 +1354,7 @@ xfs_fs_fill_super(
 #endif
 	sb->s_op = &xfs_super_operations;
 
-	/*
-	 * Delay mount work if the debug hook is set. This is debug
-	 * instrumention to coordinate simulation of xfs mount failures with
-	 * VFS superblock operations
-	 */
+	 
 	if (xfs_globals.mount_delay) {
 		xfs_notice(mp, "Delaying mount for %d seconds.",
 			xfs_globals.mount_delay);
@@ -1553,7 +1387,7 @@ xfs_fs_fill_super(
 	if (error)
 		goto out_destroy_counters;
 
-	/* Allocate stats memory before we do operations that might use it */
+	 
 	mp->m_stats.xs_stats = alloc_percpu(struct xfsstats);
 	if (!mp->m_stats.xs_stats) {
 		error = -ENOMEM;
@@ -1576,7 +1410,7 @@ xfs_fs_fill_super(
 	if (error)
 		goto out_free_sb;
 
-	/* V4 support is undergoing deprecation. */
+	 
 	if (!xfs_has_crc(mp)) {
 #ifdef CONFIG_XFS_SUPPORT_V4
 		xfs_warn_once(mp,
@@ -1589,7 +1423,7 @@ xfs_fs_fill_super(
 #endif
 	}
 
-	/* ASCII case insensitivity is undergoing deprecation. */
+	 
 	if (xfs_has_asciici(mp)) {
 #ifdef CONFIG_XFS_SUPPORT_ASCII_CI
 		xfs_warn_once(mp,
@@ -1602,27 +1436,21 @@ xfs_fs_fill_super(
 #endif
 	}
 
-	/* Filesystem claims it needs repair, so refuse the mount. */
+	 
 	if (xfs_has_needsrepair(mp)) {
 		xfs_warn(mp, "Filesystem needs repair.  Please run xfs_repair.");
 		error = -EFSCORRUPTED;
 		goto out_free_sb;
 	}
 
-	/*
-	 * Don't touch the filesystem if a user tool thinks it owns the primary
-	 * superblock.  mkfs doesn't clear the flag from secondary supers, so
-	 * we don't check them at all.
-	 */
+	 
 	if (mp->m_sb.sb_inprogress) {
 		xfs_warn(mp, "Offline file system operation in progress!");
 		error = -EFSCORRUPTED;
 		goto out_free_sb;
 	}
 
-	/*
-	 * Until this is fixed only page-sized or smaller data blocks work.
-	 */
+	 
 	if (mp->m_sb.sb_blocksize > PAGE_SIZE) {
 		xfs_warn(mp,
 		"File system with blocksize %d bytes. "
@@ -1632,7 +1460,7 @@ xfs_fs_fill_super(
 		goto out_free_sb;
 	}
 
-	/* Ensure this filesystem fits in the page cache limits */
+	 
 	if (xfs_sb_validate_fsb_count(&mp->m_sb, mp->m_sb.sb_dblocks) ||
 	    xfs_sb_validate_fsb_count(&mp->m_sb, mp->m_sb.sb_rblocks)) {
 		xfs_warn(mp,
@@ -1641,17 +1469,7 @@ xfs_fs_fill_super(
 		goto out_free_sb;
 	}
 
-	/*
-	 * XFS block mappings use 54 bits to store the logical block offset.
-	 * This should suffice to handle the maximum file size that the VFS
-	 * supports (currently 2^63 bytes on 64-bit and ULONG_MAX << PAGE_SHIFT
-	 * bytes on 32-bit), but as XFS and VFS have gotten the s_maxbytes
-	 * calculation wrong on 32-bit kernels in the past, we'll add a WARN_ON
-	 * to check this assertion.
-	 *
-	 * Avoid integer overflow by comparing the maximum bmbt offset to the
-	 * maximum pagecache offset in units of fs blocks.
-	 */
+	 
 	if (!xfs_verify_fileoff(mp, XFS_B_TO_FSBT(mp, MAX_LFS_FILESIZE))) {
 		xfs_warn(mp,
 "MAX_LFS_FILESIZE block offset (%llu) exceeds extent map maximum (%llu)!",
@@ -1665,10 +1483,7 @@ xfs_fs_fill_super(
 	if (error)
 		goto out_free_sb;
 
-	/*
-	 * we must configure the block size in the superblock before we run the
-	 * full mount process as the mount process can lookup and cache inodes.
-	 */
+	 
 	sb->s_magic = XFS_SUPER_MAGIC;
 	sb->s_blocksize = mp->m_sb.sb_blocksize;
 	sb->s_blocksize_bits = ffs(sb->s_blocksize) - 1;
@@ -1687,7 +1502,7 @@ xfs_fs_fill_super(
 
 	set_posix_acl_flag(sb);
 
-	/* version 5 superblocks support inode version counters. */
+	 
 	if (xfs_has_crc(mp))
 		sb->s_flags |= SB_I_VERSION;
 
@@ -1796,10 +1611,7 @@ xfs_remount_rw(
 
 	clear_bit(XFS_OPSTATE_READONLY, &mp->m_opstate);
 
-	/*
-	 * If this is the first remount to writeable state we might have some
-	 * superblock changes to update.
-	 */
+	 
 	if (mp->m_update_sb) {
 		error = xfs_sync_sb(mp, false);
 		if (error) {
@@ -1809,20 +1621,17 @@ xfs_remount_rw(
 		mp->m_update_sb = false;
 	}
 
-	/*
-	 * Fill out the reserve pool if it is empty. Use the stashed value if
-	 * it is non-zero, otherwise go with the default.
-	 */
+	 
 	xfs_restore_resvblks(mp);
 	xfs_log_work_queue(mp);
 	xfs_blockgc_start(mp);
 
-	/* Create the per-AG metadata reservation pool .*/
+	 
 	error = xfs_fs_reserve_ag_blocks(mp);
 	if (error && error != -ENOSPC)
 		return error;
 
-	/* Re-enable the background inode inactivation worker. */
+	 
 	xfs_inodegc_start(mp);
 
 	return 0;
@@ -1837,52 +1646,32 @@ xfs_remount_ro(
 	};
 	int			error;
 
-	/* Flush all the dirty data to disk. */
+	 
 	error = sync_filesystem(mp->m_super);
 	if (error)
 		return error;
 
-	/*
-	 * Cancel background eofb scanning so it cannot race with the final
-	 * log force+buftarg wait and deadlock the remount.
-	 */
+	 
 	xfs_blockgc_stop(mp);
 
-	/*
-	 * Clear out all remaining COW staging extents and speculative post-EOF
-	 * preallocations so that we don't leave inodes requiring inactivation
-	 * cleanups during reclaim on a read-only mount.  We must process every
-	 * cached inode, so this requires a synchronous cache scan.
-	 */
+	 
 	error = xfs_blockgc_free_space(mp, &icw);
 	if (error) {
 		xfs_force_shutdown(mp, SHUTDOWN_CORRUPT_INCORE);
 		return error;
 	}
 
-	/*
-	 * Stop the inodegc background worker.  xfs_fs_reconfigure already
-	 * flushed all pending inodegc work when it sync'd the filesystem.
-	 * The VFS holds s_umount, so we know that inodes cannot enter
-	 * xfs_fs_destroy_inode during a remount operation.  In readonly mode
-	 * we send inodes straight to reclaim, so no inodes will be queued.
-	 */
+	 
 	xfs_inodegc_stop(mp);
 
-	/* Free the per-AG metadata reservation pool. */
+	 
 	error = xfs_fs_unreserve_ag_blocks(mp);
 	if (error) {
 		xfs_force_shutdown(mp, SHUTDOWN_CORRUPT_INCORE);
 		return error;
 	}
 
-	/*
-	 * Before we sync the metadata, we need to free up the reserve block
-	 * pool so that the used block count in the superblock on disk is
-	 * correct at the end of the remount. Stash the current* reserve pool
-	 * size so that if we get remounted rw, we can return it to the same
-	 * size.
-	 */
+	 
 	xfs_save_resvblks(mp);
 
 	xfs_log_clean(mp);
@@ -1891,18 +1680,7 @@ xfs_remount_ro(
 	return 0;
 }
 
-/*
- * Logically we would return an error here to prevent users from believing
- * they might have changed mount options using remount which can't be changed.
- *
- * But unfortunately mount(8) adds all options from mtab and fstab to the mount
- * arguments in some cases so we can't blindly reject options, but have to
- * check for each specified option if it actually differs from the currently
- * set option and only reject it if that's the case.
- *
- * Until that is implemented we return success for every remount request, and
- * silently ignore all options that we can't actually change.
- */
+ 
 static int
 xfs_fs_reconfigure(
 	struct fs_context *fc)
@@ -1912,7 +1690,7 @@ xfs_fs_reconfigure(
 	int			flags = fc->sb_flags;
 	int			error;
 
-	/* version 5 superblocks always support version counters. */
+	 
 	if (xfs_has_crc(mp))
 		fc->sb_flags |= SB_I_VERSION;
 
@@ -1920,26 +1698,26 @@ xfs_fs_reconfigure(
 	if (error)
 		return error;
 
-	/* inode32 -> inode64 */
+	 
 	if (xfs_has_small_inums(mp) && !xfs_has_small_inums(new_mp)) {
 		mp->m_features &= ~XFS_FEAT_SMALL_INUMS;
 		mp->m_maxagi = xfs_set_inode_alloc(mp, mp->m_sb.sb_agcount);
 	}
 
-	/* inode64 -> inode32 */
+	 
 	if (!xfs_has_small_inums(mp) && xfs_has_small_inums(new_mp)) {
 		mp->m_features |= XFS_FEAT_SMALL_INUMS;
 		mp->m_maxagi = xfs_set_inode_alloc(mp, mp->m_sb.sb_agcount);
 	}
 
-	/* ro -> rw */
+	 
 	if (xfs_is_readonly(mp) && !(flags & SB_RDONLY)) {
 		error = xfs_remount_rw(mp);
 		if (error)
 			return error;
 	}
 
-	/* rw -> ro */
+	 
 	if (!xfs_is_readonly(mp) && (flags & SB_RDONLY)) {
 		error = xfs_remount_ro(mp);
 		if (error)
@@ -1955,12 +1733,7 @@ xfs_fs_free(
 {
 	struct xfs_mount	*mp = fc->s_fs_info;
 
-	/*
-	 * mp is stored in the fs_context when it is initialized.
-	 * mp is transferred to the superblock on a successful mount,
-	 * but if an error occurs before the transfer we have to free
-	 * it here.
-	 */
+	 
 	if (mp)
 		xfs_mount_free(mp);
 }
@@ -1988,24 +1761,15 @@ static int xfs_init_fs_context(
 	INIT_WORK(&mp->m_flush_inodes_work, xfs_flush_inodes_worker);
 	INIT_DELAYED_WORK(&mp->m_reclaim_work, xfs_reclaim_worker);
 	mp->m_kobj.kobject.kset = xfs_kset;
-	/*
-	 * We don't create the finobt per-ag space reservation until after log
-	 * recovery, so we must set this to true so that an ifree transaction
-	 * started during log recovery will not depend on space reservations
-	 * for finobt expansion.
-	 */
+	 
 	mp->m_finobt_nores = true;
 
-	/*
-	 * These can be overridden by the mount option parsing.
-	 */
+	 
 	mp->m_logbufs = -1;
 	mp->m_logbsize = -1;
-	mp->m_allocsize_log = 16; /* 64k */
+	mp->m_allocsize_log = 16;  
 
-	/*
-	 * Copy binary VFS mount flags we are interested in.
-	 */
+	 
 	if (fc->sb_flags & SB_RDONLY)
 		set_bit(XFS_OPSTATE_READONLY, &mp->m_opstate);
 	if (fc->sb_flags & SB_DIRSYNC)
@@ -2083,11 +1847,7 @@ xfs_init_caches(void)
 		goto out_destroy_ifork_cache;
 
 
-	/*
-	 * The size of the cache-allocated buf log item is the maximum
-	 * size possible under XFS.  This wastes a little bit of memory,
-	 * but it is much faster.
-	 */
+	 
 	xfs_buf_item_cache = kmem_cache_create("xfs_buf_item",
 					      sizeof(struct xfs_buf_log_item),
 					      0, 0, NULL);
@@ -2233,10 +1993,7 @@ xfs_init_caches(void)
 STATIC void
 xfs_destroy_caches(void)
 {
-	/*
-	 * Make sure all delayed rcu free are flushed before we
-	 * destroy caches.
-	 */
+	 
 	rcu_barrier();
 	kmem_cache_destroy(xfs_iunlink_cache);
 	kmem_cache_destroy(xfs_attri_cache);
@@ -2265,12 +2022,7 @@ xfs_destroy_caches(void)
 STATIC int __init
 xfs_init_workqueues(void)
 {
-	/*
-	 * The allocation workqueue can be used in memory reclaim situations
-	 * (writepage path), and parallelism is only limited by the number of
-	 * AGs in all the filesystems mounted. Hence use the default large
-	 * max_active value for this workqueue.
-	 */
+	 
 	xfs_alloc_wq = alloc_workqueue("xfsalloc",
 			XFS_WQFLAGS(WQ_MEM_RECLAIM | WQ_FREEZABLE), 0);
 	if (!xfs_alloc_wq)

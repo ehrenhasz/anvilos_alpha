@@ -1,31 +1,31 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include "test_attach_kprobe_sleepable.skel.h"
 #include "test_attach_probe_manual.skel.h"
 #include "test_attach_probe.skel.h"
 
-/* this is how USDT semaphore is actually defined, except volatile modifier */
+ 
 volatile unsigned short uprobe_ref_ctr __attribute__((unused)) __attribute((section(".probes")));
 
-/* uprobe attach point */
+ 
 static noinline void trigger_func(void)
 {
 	asm volatile ("");
 }
 
-/* attach point for byname uprobe */
+ 
 static noinline void trigger_func2(void)
 {
 	asm volatile ("");
 }
 
-/* attach point for byname sleepable uprobe */
+ 
 static noinline void trigger_func3(void)
 {
 	asm volatile ("");
 }
 
-/* attach point for ref_ctr */
+ 
 static noinline void trigger_func4(void)
 {
 	asm volatile ("");
@@ -33,7 +33,7 @@ static noinline void trigger_func4(void)
 
 static char test_data[] = "test_data";
 
-/* manual attach kprobe/kretprobe/uprobe/uretprobe testings */
+ 
 static void test_attach_probe_manual(enum probe_attach_mode attach_mode)
 {
 	DECLARE_LIBBPF_OPTS(bpf_uprobe_opts, uprobe_opts);
@@ -51,7 +51,7 @@ static void test_attach_probe_manual(enum probe_attach_mode attach_mode)
 	if (!ASSERT_GE(uprobe_offset, 0, "uprobe_offset"))
 		goto cleanup;
 
-	/* manual-attach kprobe/kretprobe */
+	 
 	kprobe_opts.attach_mode = attach_mode;
 	kprobe_opts.retprobe = false;
 	kprobe_link = bpf_program__attach_kprobe_opts(skel->progs.handle_kprobe,
@@ -69,12 +69,12 @@ static void test_attach_probe_manual(enum probe_attach_mode attach_mode)
 		goto cleanup;
 	skel->links.handle_kretprobe = kretprobe_link;
 
-	/* manual-attach uprobe/uretprobe */
+	 
 	uprobe_opts.attach_mode = attach_mode;
 	uprobe_opts.ref_ctr_offset = 0;
 	uprobe_opts.retprobe = false;
 	uprobe_link = bpf_program__attach_uprobe_opts(skel->progs.handle_uprobe,
-						      0 /* self pid */,
+						      0  ,
 						      "/proc/self/exe",
 						      uprobe_offset,
 						      &uprobe_opts);
@@ -84,32 +84,32 @@ static void test_attach_probe_manual(enum probe_attach_mode attach_mode)
 
 	uprobe_opts.retprobe = true;
 	uretprobe_link = bpf_program__attach_uprobe_opts(skel->progs.handle_uretprobe,
-							 -1 /* any pid */,
+							 -1  ,
 							 "/proc/self/exe",
 							 uprobe_offset, &uprobe_opts);
 	if (!ASSERT_OK_PTR(uretprobe_link, "attach_uretprobe"))
 		goto cleanup;
 	skel->links.handle_uretprobe = uretprobe_link;
 
-	/* attach uprobe by function name manually */
+	 
 	uprobe_opts.func_name = "trigger_func2";
 	uprobe_opts.retprobe = false;
 	uprobe_opts.ref_ctr_offset = 0;
 	skel->links.handle_uprobe_byname =
 			bpf_program__attach_uprobe_opts(skel->progs.handle_uprobe_byname,
-							0 /* this pid */,
+							0  ,
 							"/proc/self/exe",
 							0, &uprobe_opts);
 	if (!ASSERT_OK_PTR(skel->links.handle_uprobe_byname, "attach_uprobe_byname"))
 		goto cleanup;
 
-	/* trigger & validate kprobe && kretprobe */
+	 
 	usleep(1);
 
-	/* trigger & validate uprobe & uretprobe */
+	 
 	trigger_func();
 
-	/* trigger & validate uprobe attached by name */
+	 
 	trigger_func2();
 
 	ASSERT_EQ(skel->bss->kprobe_res, 1, "check_kprobe_res");
@@ -126,29 +126,29 @@ static void test_attach_probe_auto(struct test_attach_probe *skel)
 {
 	struct bpf_link *uprobe_err_link;
 
-	/* auto-attachable kprobe and kretprobe */
+	 
 	skel->links.handle_kprobe_auto = bpf_program__attach(skel->progs.handle_kprobe_auto);
 	ASSERT_OK_PTR(skel->links.handle_kprobe_auto, "attach_kprobe_auto");
 
 	skel->links.handle_kretprobe_auto = bpf_program__attach(skel->progs.handle_kretprobe_auto);
 	ASSERT_OK_PTR(skel->links.handle_kretprobe_auto, "attach_kretprobe_auto");
 
-	/* verify auto-attach fails for old-style uprobe definition */
+	 
 	uprobe_err_link = bpf_program__attach(skel->progs.handle_uprobe_byname);
 	if (!ASSERT_EQ(libbpf_get_error(uprobe_err_link), -EOPNOTSUPP,
 		       "auto-attach should fail for old-style name"))
 		return;
 
-	/* verify auto-attach works */
+	 
 	skel->links.handle_uretprobe_byname =
 			bpf_program__attach(skel->progs.handle_uretprobe_byname);
 	if (!ASSERT_OK_PTR(skel->links.handle_uretprobe_byname, "attach_uretprobe_byname"))
 		return;
 
-	/* trigger & validate kprobe && kretprobe */
+	 
 	usleep(1);
 
-	/* trigger & validate uprobe attached by name */
+	 
 	trigger_func2();
 
 	ASSERT_EQ(skel->bss->kprobe2_res, 11, "check_kprobe_auto_res");
@@ -161,14 +161,12 @@ static void test_uprobe_lib(struct test_attach_probe *skel)
 	DECLARE_LIBBPF_OPTS(bpf_uprobe_opts, uprobe_opts);
 	FILE *devnull;
 
-	/* test attach by name for a library function, using the library
-	 * as the binary argument. libc.so.6 will be resolved via dlopen()/dlinfo().
-	 */
+	 
 	uprobe_opts.func_name = "fopen";
 	uprobe_opts.retprobe = false;
 	skel->links.handle_uprobe_byname2 =
 			bpf_program__attach_uprobe_opts(skel->progs.handle_uprobe_byname2,
-							0 /* this pid */,
+							0  ,
 							"libc.so.6",
 							0, &uprobe_opts);
 	if (!ASSERT_OK_PTR(skel->links.handle_uprobe_byname2, "attach_uprobe_byname2"))
@@ -178,13 +176,13 @@ static void test_uprobe_lib(struct test_attach_probe *skel)
 	uprobe_opts.retprobe = true;
 	skel->links.handle_uretprobe_byname2 =
 			bpf_program__attach_uprobe_opts(skel->progs.handle_uretprobe_byname2,
-							-1 /* any pid */,
+							-1  ,
 							"libc.so.6",
 							0, &uprobe_opts);
 	if (!ASSERT_OK_PTR(skel->links.handle_uretprobe_byname2, "attach_uretprobe_byname2"))
 		return;
 
-	/* trigger & validate shared library u[ret]probes attached by name */
+	 
 	devnull = fopen("/dev/null", "r");
 	fclose(devnull);
 
@@ -211,7 +209,7 @@ static void test_uprobe_ref_ctr(struct test_attach_probe *skel)
 	uprobe_opts.retprobe = false;
 	uprobe_opts.ref_ctr_offset = ref_ctr_offset;
 	uprobe_link = bpf_program__attach_uprobe_opts(skel->progs.handle_uprobe_ref_ctr,
-						      0 /* self pid */,
+						      0  ,
 						      "/proc/self/exe",
 						      uprobe_offset,
 						      &uprobe_opts);
@@ -221,11 +219,11 @@ static void test_uprobe_ref_ctr(struct test_attach_probe *skel)
 
 	ASSERT_GT(uprobe_ref_ctr, 0, "uprobe_ref_ctr_after");
 
-	/* if uprobe uses ref_ctr, uretprobe has to use ref_ctr as well */
+	 
 	uprobe_opts.retprobe = true;
 	uprobe_opts.ref_ctr_offset = ref_ctr_offset;
 	uretprobe_link = bpf_program__attach_uprobe_opts(skel->progs.handle_uretprobe_ref_ctr,
-							 -1 /* any pid */,
+							 -1  ,
 							 "/proc/self/exe",
 							 uprobe_offset, &uprobe_opts);
 	if (!ASSERT_OK_PTR(uretprobe_link, "attach_uretprobe_ref_ctr"))
@@ -241,7 +239,7 @@ static void test_kprobe_sleepable(void)
 	if (!ASSERT_OK_PTR(skel, "skel_kprobe_sleepable_open"))
 		return;
 
-	/* sleepable kprobe test case needs flags set before loading */
+	 
 	if (!ASSERT_OK(bpf_program__set_flags(skel->progs.handle_kprobe_sleepable,
 		BPF_F_SLEEPABLE), "kprobe_sleepable_flags"))
 		goto cleanup;
@@ -250,7 +248,7 @@ static void test_kprobe_sleepable(void)
 		       "skel_kprobe_sleepable_load"))
 		goto cleanup;
 
-	/* sleepable kprobes should not attach successfully */
+	 
 	skel->links.handle_kprobe_sleepable = bpf_program__attach(skel->progs.handle_kprobe_sleepable);
 	ASSERT_ERR_PTR(skel->links.handle_kprobe_sleepable, "attach_kprobe_sleepable");
 
@@ -260,7 +258,7 @@ cleanup:
 
 static void test_uprobe_sleepable(struct test_attach_probe *skel)
 {
-	/* test sleepable uprobe and uretprobe variants */
+	 
 	skel->links.handle_uprobe_byname3_sleepable = bpf_program__attach(skel->progs.handle_uprobe_byname3_sleepable);
 	if (!ASSERT_OK_PTR(skel->links.handle_uprobe_byname3_sleepable, "attach_uprobe_byname3_sleepable"))
 		return;
@@ -279,7 +277,7 @@ static void test_uprobe_sleepable(struct test_attach_probe *skel)
 
 	skel->bss->user_ptr = test_data;
 
-	/* trigger & validate sleepable uprobe attached by name */
+	 
 	trigger_func3();
 
 	ASSERT_EQ(skel->bss->uprobe_byname3_sleepable_res, 9, "check_uprobe_byname3_sleepable_res");

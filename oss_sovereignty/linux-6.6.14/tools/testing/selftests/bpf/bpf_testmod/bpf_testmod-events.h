@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2020 Facebook */
+ 
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM bpf_testmod
 
@@ -28,7 +28,7 @@ TRACE_EVENT(bpf_testmod_test_read,
 		  __entry->pid, __entry->comm, __entry->off, __entry->len)
 );
 
-/* A bare tracepoint with no event associated with it */
+ 
 DECLARE_TRACE(bpf_testmod_test_write_bare,
 	TP_PROTO(struct task_struct *task, struct bpf_testmod_test_write_ctx *ctx),
 	TP_ARGS(task, ctx)
@@ -49,7 +49,7 @@ BPF_TESTMOD_DECLARE_TRACE(bpf_testmod_test_writable_bare,
 	sizeof(struct bpf_testmod_test_writable_ctx)
 );
 
-#endif /* _BPF_TESTMOD_EVENTS_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

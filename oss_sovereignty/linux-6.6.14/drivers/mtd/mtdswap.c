@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Swap block device support for MTDs
- * Turns an MTD device into a swap device with block wear leveling
- *
- * Copyright © 2007,2011 Nokia Corporation. All rights reserved.
- *
- * Authors: Jarkko Lavinen <jarkko.lavinen@nokia.com>
- *
- * Based on Richard Purdie's earlier implementation in 2007. Background
- * support and lock-less operation written by Adrian Hunter.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -28,27 +18,13 @@
 
 #define MTDSWAP_PREFIX "mtdswap"
 
-/*
- * The number of free eraseblocks when GC should stop
- */
+ 
 #define CLEAN_BLOCK_THRESHOLD	20
 
-/*
- * Number of free eraseblocks below which GC can also collect low frag
- * blocks.
- */
+ 
 #define LOW_FRAG_GC_THRESHOLD	5
 
-/*
- * Wear level cost amortization. We want to do wear leveling on the background
- * without disturbing gc too much. This is made by defining max GC frequency.
- * Frequency value 6 means 1/6 of the GC passes will pick an erase block based
- * on the biggest wear difference rather than the biggest dirtiness.
- *
- * The lower freq2 should be chosen so that it makes sure the maximum erase
- * difference will decrease even if a malicious application is deliberately
- * trying to make erase differences large.
- */
+ 
 #define MAX_ERASE_DIFF		4000
 #define COLLECT_NONDIRTY_BASE	MAX_ERASE_DIFF
 #define COLLECT_NONDIRTY_FREQ1	6
@@ -73,7 +49,7 @@ struct swap_eb {
 	unsigned int flags;
 	unsigned int active_count;
 	unsigned int erase_count;
-	unsigned int pad;		/* speeds up pointer decrement */
+	unsigned int pad;		 
 };
 
 #define MTDSWAP_ECNT_MIN(rbroot) (rb_entry(rb_first(rbroot), struct swap_eb, \
@@ -138,7 +114,7 @@ struct mtdswap_oobdata {
 #define MTDSWAP_TYPE_DIRTY	1
 #define MTDSWAP_OOBSIZE		sizeof(struct mtdswap_oobdata)
 
-#define MTDSWAP_ERASE_RETRIES	3 /* Before marking erase block bad */
+#define MTDSWAP_ERASE_RETRIES	3  
 #define MTDSWAP_IO_RETRIES	3
 
 enum {
@@ -148,12 +124,7 @@ enum {
 	MTDSWAP_SCANNED_BAD,
 };
 
-/*
- * In the worst case mtdswap_writesect() has allocated the last clean
- * page from the current block and is then pre-empted by the GC
- * thread. The thread can consume a full erase block when moving a
- * block.
- */
+ 
 #define MIN_SPARE_EBLOCKS	2
 #define MIN_ERASE_BLOCKS	(MIN_SPARE_EBLOCKS + 1)
 
@@ -174,7 +145,7 @@ module_param(spare_eblocks, uint, 0444);
 MODULE_PARM_DESC(spare_eblocks, "Percentage of spare erase blocks for "
 		"garbage collection (default 10%)");
 
-static bool header; /* false */
+static bool header;  
 module_param(header, bool, 0444);
 MODULE_PARM_DESC(header,
 		"Include builtin swap header (default 0, without header)");
@@ -258,7 +229,7 @@ static int mtdswap_handle_badblock(struct mtdswap_dev *d, struct swap_eb *eb)
 	mtdswap_eb_detach(d, eb);
 	eb->root = NULL;
 
-	/* badblocks not supported */
+	 
 	if (!mtd_can_have_bb(d->mtd))
 		return 1;
 
@@ -327,7 +298,7 @@ static int mtdswap_read_markers(struct mtdswap_dev *d, struct swap_eb *eb)
 
 	offset = mtdswap_eb_offset(d, eb);
 
-	/* Check first if the block is bad. */
+	 
 	if (mtd_can_have_bb(d->mtd) && mtd_block_isbad(d->mtd, offset))
 		return MTDSWAP_SCANNED_BAD;
 
@@ -408,11 +379,7 @@ static int mtdswap_write_marker(struct mtdswap_dev *d, struct swap_eb *eb,
 	return 0;
 }
 
-/*
- * Are there any erase blocks without MAGIC_CLEAN header, presumably
- * because power was cut off after erase but before header write? We
- * need to guestimate the erase count.
- */
+ 
 static void mtdswap_check_counts(struct mtdswap_dev *d)
 {
 	struct rb_root hist_root = RB_ROOT;
@@ -497,10 +464,7 @@ static void mtdswap_scan_eblks(struct mtdswap_dev *d)
 	}
 }
 
-/*
- * Place eblk into a tree corresponding to its number of active blocks
- * it contains.
- */
+ 
 static void mtdswap_store_eb(struct mtdswap_dev *d, struct swap_eb *eb)
 {
 	unsigned int weight = eb->active_count;
@@ -773,21 +737,13 @@ static int mtdswap_wlfreq(unsigned int maxdiff)
 {
 	unsigned int h, x, y, dist, base;
 
-	/*
-	 * Calculate linear ramp down from f1 to f2 when maxdiff goes from
-	 * MAX_ERASE_DIFF to MAX_ERASE_DIFF + COLLECT_NONDIRTY_BASE.  Similar
-	 * to triangle with height f1 - f1 and width COLLECT_NONDIRTY_BASE.
-	 */
+	 
 
 	dist = maxdiff - MAX_ERASE_DIFF;
 	if (dist > COLLECT_NONDIRTY_BASE)
 		dist = COLLECT_NONDIRTY_BASE;
 
-	/*
-	 * Modelling the slop as right angular triangle with base
-	 * COLLECT_NONDIRTY_BASE and height freq1 - freq2. The ratio y/x is
-	 * equal to the ratio h/base.
-	 */
+	 
 	h = COLLECT_NONDIRTY_FREQ1 - COLLECT_NONDIRTY_FREQ2;
 	base = COLLECT_NONDIRTY_BASE;
 
@@ -1030,7 +986,7 @@ static int mtdswap_writesect(struct mtd_blktrans_dev *dev,
 		return -ENOSPC;
 
 	if (header) {
-		/* Ignore writes to the header page */
+		 
 		if (unlikely(page == 0))
 			return 0;
 
@@ -1057,7 +1013,7 @@ static int mtdswap_writesect(struct mtd_blktrans_dev *dev,
 	return 0;
 }
 
-/* Provide a dummy swap header for the kernel */
+ 
 static int mtdswap_auto_header(struct mtdswap_dev *d, char *buf)
 {
 	union swap_header *hd = (union swap_header *)(buf);

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ADXL355 3-Axis Digital Accelerometer IIO core driver
- *
- * Copyright (c) 2021 Puranjay Mohan <puranjay12@gmail.com>
- *
- * Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/adxl354_adxl355.pdf
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/bitfield.h>
@@ -26,7 +20,7 @@
 
 #include "adxl355.h"
 
-/* ADXL355 Register Definitions */
+ 
 #define ADXL355_DEVID_AD_REG		0x00
 #define ADXL355_DEVID_MST_REG		0x01
 #define ADXL355_PARTID_REG		0x02
@@ -88,23 +82,12 @@ const struct adxl355_chip_info adxl35x_chip_info[] = {
 	[ADXL355] = {
 		.name = "adxl355",
 		.part_id = ADXL355_PARTID_VAL,
-		/*
-		 * At +/- 2g with 20-bit resolution, scale is given in datasheet
-		 * as 3.9ug/LSB = 0.0000039 * 9.80665 = 0.00003824593 m/s^2.
-		 */
+		 
 		.accel_scale = {
 			.integer = 0,
 			.decimal = 38245,
 		},
-		/*
-		 * The datasheet defines an intercept of 1885 LSB at 25 degC
-		 * and a slope of -9.05 LSB/C. The following formula can be used
-		 * to find the temperature:
-		 * Temp = ((RAW - 1885)/(-9.05)) + 25 but this doesn't follow
-		 * the format of the IIO which is Temp = (RAW + OFFSET) * SCALE.
-		 * Hence using some rearranging we get the scale as -110.497238
-		 * and offset as -2111.25.
-		 */
+		 
 		.temp_offset = {
 			.integer =  -2111,
 			.decimal = 250000,
@@ -113,23 +96,12 @@ const struct adxl355_chip_info adxl35x_chip_info[] = {
 	[ADXL359] = {
 		.name = "adxl359",
 		.part_id = ADXL359_PARTID_VAL,
-		/*
-		 * At +/- 10g with 20-bit resolution, scale is given in datasheet
-		 * as 19.5ug/LSB = 0.0000195 * 9.80665 = 0.0.00019122967 m/s^2.
-		 */
+		 
 		.accel_scale = {
 			.integer = 0,
 			.decimal = 191229,
 		},
-		/*
-		 * The datasheet defines an intercept of 1852 LSB at 25 degC
-		 * and a slope of -9.05 LSB/C. The following formula can be used
-		 * to find the temperature:
-		 * Temp = ((RAW - 1852)/(-9.05)) + 25 but this doesn't follow
-		 * the format of the IIO which is Temp = (RAW + OFFSET) * SCALE.
-		 * Hence using some rearranging we get the scale as -110.497238
-		 * and offset as -2079.25.
-		 */
+		 
 		.temp_offset = {
 			.integer = -2079,
 			.decimal = 250000,
@@ -220,7 +192,7 @@ struct adxl355_data {
 	const struct adxl355_chip_info *chip_info;
 	struct regmap *regmap;
 	struct device *dev;
-	struct mutex lock; /* lock to protect op_mode */
+	struct mutex lock;  
 	enum adxl355_op_mode op_mode;
 	enum adxl355_odr odr;
 	enum adxl355_hpf_3db hpf_3db;
@@ -321,10 +293,7 @@ static int adxl355_setup(struct adxl355_data *data)
 	if (regval != ADXL355_PARTID_VAL)
 		dev_warn(data->dev, "Invalid DEV ID 0x%02x\n", regval);
 
-	/*
-	 * Perform a software reset to make sure the device is in a consistent
-	 * state after start-up.
-	 */
+	 
 	ret = regmap_write(data->regmap, ADXL355_RESET_REG, ADXL355_RESET_CODE);
 	if (ret)
 		return ret;
@@ -513,11 +482,7 @@ static int adxl355_read_raw(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_SCALE:
 		switch (chan->type) {
 		case IIO_TEMP:
-			/*
-			 * Temperature scale is -110.497238.
-			 * See the detailed explanation in adxl35x_chip_info
-			 * definition above.
-			 */
+			 
 			*val = -110;
 			*val2 = 497238;
 			return IIO_VAL_INT_PLUS_MICRO;
@@ -592,14 +557,14 @@ static int adxl355_read_avail(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_SAMP_FREQ:
 		*vals = (const int *)adxl355_odr_table;
 		*type = IIO_VAL_INT_PLUS_MICRO;
-		/* Values are stored in a 2D matrix */
+		 
 		*length = ARRAY_SIZE(adxl355_odr_table) * 2;
 
 		return IIO_AVAIL_LIST;
 	case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY:
 		*vals = (const int *)data->adxl355_hpf_3db_table;
 		*type = IIO_VAL_INT_PLUS_MICRO;
-		/* Values are stored in a 2D matrix */
+		 
 		*length = ARRAY_SIZE(data->adxl355_hpf_3db_table) * 2;
 
 		return IIO_AVAIL_LIST;
@@ -633,19 +598,10 @@ static irqreturn_t adxl355_trigger_handler(int irq, void *p)
 
 	mutex_lock(&data->lock);
 
-	/*
-	 * data->buffer is used both for triggered buffer support
-	 * and read/write_raw(), hence, it has to be zeroed here before usage.
-	 */
+	 
 	data->buffer.buf[0] = 0;
 
-	/*
-	 * The acceleration data is 24 bits and big endian. It has to be saved
-	 * in 32 bits, hence, it is saved in the 2nd byte of the 4 byte buffer.
-	 * The buf array is 14 bytes as it includes 3x4=12 bytes for
-	 * accelaration data of x, y, and z axis. It also includes 2 bytes for
-	 * temperature data.
-	 */
+	 
 	ret = regmap_bulk_read(data->regmap, ADXL355_XDATA3_REG,
 			       &data->buffer.buf[1], 3);
 	if (ret)

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2010 IBM Corporation
- * Copyright (c) 2019-2021, Linaro Limited
- *
- * See Documentation/security/keys/trusted-encrypted.rst
- */
+
+ 
 
 #include <keys/user-type.h>
 #include <keys/trusted-type.h>
@@ -64,12 +59,7 @@ static const match_table_t key_tokens = {
 	{Opt_err, NULL}
 };
 
-/*
- * datablob_parse - parse the keyctl data and fill in the
- *                  payload structure
- *
- * On success returns 0, otherwise -EINVAL.
- */
+ 
 static int datablob_parse(char **datablob, struct trusted_key_payload *p)
 {
 	substring_t args[MAX_OPT_ARGS];
@@ -78,14 +68,14 @@ static int datablob_parse(char **datablob, struct trusted_key_payload *p)
 	int key_cmd;
 	char *c;
 
-	/* main command */
+	 
 	c = strsep(datablob, " \t");
 	if (!c)
 		return -EINVAL;
 	key_cmd = match_token(c, key_tokens, args);
 	switch (key_cmd) {
 	case Opt_new:
-		/* first argument is key size */
+		 
 		c = strsep(datablob, " \t");
 		if (!c)
 			return -EINVAL;
@@ -96,7 +86,7 @@ static int datablob_parse(char **datablob, struct trusted_key_payload *p)
 		ret = Opt_new;
 		break;
 	case Opt_load:
-		/* first argument is sealed blob */
+		 
 		c = strsep(datablob, " \t");
 		if (!c)
 			return -EINVAL;
@@ -134,15 +124,7 @@ err:
 	return p;
 }
 
-/*
- * trusted_instantiate - create a new trusted key
- *
- * Unseal an existing trusted blob or, for a new key, get a
- * random key, then seal and create a trusted key-type key,
- * adding it to the specified keyring.
- *
- * On success, return 0. Otherwise return errno.
- */
+ 
 static int trusted_instantiate(struct key *key,
 			       struct key_preparsed_payload *prep)
 {
@@ -220,9 +202,7 @@ static void trusted_rcu_free(struct rcu_head *rcu)
 	kfree_sensitive(p);
 }
 
-/*
- * trusted_update - reseal an existing key with new PCR values
- */
+ 
 static int trusted_update(struct key *key, struct key_preparsed_payload *prep)
 {
 	struct trusted_key_payload *p;
@@ -258,7 +238,7 @@ static int trusted_update(struct key *key, struct key_preparsed_payload *prep)
 		goto out;
 	}
 
-	/* copy old key values, and reseal with new pcrs */
+	 
 	new_p->migratable = p->migratable;
 	new_p->key_len = p->key_len;
 	memcpy(new_p->key, p->key, p->key_len);
@@ -279,10 +259,7 @@ out:
 	return ret;
 }
 
-/*
- * trusted_read - copy the sealed blob data to userspace in hex.
- * On success, return to userspace the trusted key datablob size.
- */
+ 
 static long trusted_read(const struct key *key, char *buffer,
 			 size_t buflen)
 {
@@ -302,9 +279,7 @@ static long trusted_read(const struct key *key, char *buffer,
 	return 2 * p->blob_len;
 }
 
-/*
- * trusted_destroy - clear and free the key's payload
- */
+ 
 static void trusted_destroy(struct key *key)
 {
 	kfree_sensitive(key->payload.data[0]);
@@ -336,11 +311,7 @@ static int __init init_trusted(void)
 			    strlen(trusted_key_sources[i].name)))
 			continue;
 
-		/*
-		 * We always support trusted.rng="kernel" and "default" as
-		 * well as trusted.rng=$trusted.source if the trust source
-		 * defines its own get_random callback.
-		 */
+		 
 		get_random = trusted_key_sources[i].ops->get_random;
 		if (trusted_rng && strcmp(trusted_rng, "default")) {
 			if (!strcmp(trusted_rng, "kernel")) {
@@ -372,10 +343,7 @@ static int __init init_trusted(void)
 			break;
 	}
 
-	/*
-	 * encrypted_keys.ko depends on successful load of this module even if
-	 * trusted key implementation is not found.
-	 */
+	 
 	if (ret == -ENODEV)
 		return 0;
 

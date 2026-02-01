@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Base driver for Analog Devices ADP5520/ADP5501 MFD PMICs
- * LCD Backlight: drivers/video/backlight/adp5520_bl
- * LEDs		: drivers/led/leds-adp5520
- * GPIO		: drivers/gpio/adp5520-gpio (ADP5520 only)
- * Keys		: drivers/input/keyboard/adp5520-keys (ADP5520 only)
- *
- * Copyright 2009 Analog Devices Inc.
- *
- * Author: Michael Hennerich <michael.hennerich@analog.com>
- *
- * Derived from da903x:
- * Copyright (C) 2008 Compulab, Ltd.
- *	Mike Rapoport <mike@compulab.co.il>
- *
- * Copyright (C) 2006-2008 Marvell International Ltd.
- *	Eric Miao <eric.miao@marvell.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -186,7 +169,7 @@ static irqreturn_t adp5520_irq_thread(int irq, void *data)
 		ADP5520_GPI_INT | ADP5520_KR_INT | ADP5520_KP_INT);
 
 	blocking_notifier_call_chain(&chip->notifier_list, events, NULL);
-	/* ACK, Sticky bits are W1C */
+	 
 	__adp5520_ack_bits(chip->client, ADP5520_MODE_STATUS, events);
 
 out:
@@ -311,7 +294,7 @@ static int adp5520_suspend(struct device *dev)
 	struct adp5520_chip *chip = dev_get_drvdata(&client->dev);
 
 	adp5520_read(chip->dev, ADP5520_MODE_STATUS, &chip->mode);
-	/* All other bits are W1C */
+	 
 	chip->mode &= ADP5520_BL_EN | ADP5520_DIM_EN | ADP5520_nSTNBY;
 	adp5520_write(chip->dev, ADP5520_MODE_STATUS, 0);
 	return 0;

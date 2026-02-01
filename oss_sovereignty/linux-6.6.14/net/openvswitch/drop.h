@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * OpenvSwitch drop reason list.
- */
+ 
+ 
 
 #ifndef OPENVSWITCH_DROP_H
 #define OPENVSWITCH_DROP_H
@@ -20,7 +18,7 @@
 	R(OVS_DROP_FRAG_INVALID_PROTO)		\
 	R(OVS_DROP_CONNTRACK)			\
 	R(OVS_DROP_IP_TTL)			\
-	/* deliberate comment for trailing \ */
+	 
 
 enum ovs_drop_reason {
 	__OVS_DROP_REASON = SKB_DROP_REASON_SUBSYS_OPENVSWITCH <<
@@ -38,4 +36,4 @@ ovs_kfree_skb_reason(struct sk_buff *skb, enum ovs_drop_reason reason)
 	kfree_skb_reason(skb, (u32)reason);
 }
 
-#endif /* OPENVSWITCH_DROP_H */
+#endif  

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * PS3 BD/DVD/CD-ROM Storage Driver
- *
- * Copyright (C) 2007 Sony Computer Entertainment Inc.
- * Copyright 2007 Sony Corp.
- */
+
+ 
 
 #include <linux/cdrom.h>
 #include <linux/highmem.h>
@@ -38,14 +33,14 @@ struct ps3rom_private {
 #define LV1_STORAGE_SEND_ATAPI_COMMAND	(1)
 
 struct lv1_atapi_cmnd_block {
-	u8	pkt[32];	/* packet command block           */
-	u32	pktlen;		/* should be 12 for ATAPI 8020    */
+	u8	pkt[32];	 
+	u32	pktlen;		 
 	u32	blocks;
 	u32	block_size;
-	u32	proto;		/* transfer mode                  */
-	u32	in_out;		/* transfer direction             */
-	u64	buffer;		/* parameter except command block */
-	u32	arglen;		/* length above                   */
+	u32	proto;		 
+	u32	in_out;		 
+	u64	buffer;		 
+	u32	arglen;		 
 };
 
 enum lv1_atapi_proto {
@@ -56,8 +51,8 @@ enum lv1_atapi_proto {
 };
 
 enum lv1_atapi_in_out {
-	DIR_WRITE = 0,		/* memory -> device */
-	DIR_READ = 1		/* device -> memory */
+	DIR_WRITE = 0,		 
+	DIR_READ = 1		 
 };
 
 
@@ -69,13 +64,10 @@ static int ps3rom_slave_configure(struct scsi_device *scsi_dev)
 	dev_dbg(&dev->sbd.core, "%s:%u: id %u, lun %llu, channel %u\n", __func__,
 		__LINE__, scsi_dev->id, scsi_dev->lun, scsi_dev->channel);
 
-	/*
-	 * ATAPI SFF8020 devices use MODE_SENSE_10,
-	 * so we can prohibit MODE_SENSE_6
-	 */
+	 
 	scsi_dev->use_10_for_ms = 1;
 
-	/* we don't support {READ,WRITE}_6 */
+	 
 	scsi_dev->use_10_for_rw = 1;
 
 	return 0;
@@ -95,7 +87,7 @@ static int ps3rom_atapi_request(struct ps3_storage_device *dev,
 	memset(&atapi_cmnd, 0, sizeof(struct lv1_atapi_cmnd_block));
 	memcpy(&atapi_cmnd.pkt, cmd->cmnd, 12);
 	atapi_cmnd.pktlen = 12;
-	atapi_cmnd.block_size = 1; /* transfer size is block_size * blocks */
+	atapi_cmnd.block_size = 1;  
 	atapi_cmnd.blocks = atapi_cmnd.arglen = scsi_bufflen(cmd);
 	atapi_cmnd.buffer = dev->bounce_lpar;
 
@@ -210,11 +202,7 @@ static int ps3rom_queuecommand_lck(struct scsi_cmnd *cmd)
 	priv->curr_cmd = cmd;
 
 	opcode = cmd->cmnd[0];
-	/*
-	 * While we can submit READ/WRITE SCSI commands as ATAPI commands,
-	 * it's recommended for various reasons (performance, error handling,
-	 * ...) to use lv1_storage_{read,write}() instead
-	 */
+	 
 	switch (opcode) {
 	case READ_10:
 		res = ps3rom_read_request(dev, cmd, srb10_lba(cmd),
@@ -266,11 +254,7 @@ static irqreturn_t ps3rom_interrupt(int irq, void *data)
 	unsigned char sense_key, asc, ascq;
 
 	res = lv1_storage_get_async_status(dev->sbd.dev_id, &tag, &status);
-	/*
-	 * status = -1 may mean that ATAPI transport completed OK, but
-	 * ATAPI command itself resulted CHECK CONDITION
-	 * so, upper layer should issue REQUEST_SENSE to check the sense data
-	 */
+	 
 
 	if (tag != dev->tag)
 		dev_err(&dev->sbd.core,
@@ -288,7 +272,7 @@ static irqreturn_t ps3rom_interrupt(int irq, void *data)
 	cmd = priv->curr_cmd;
 
 	if (!status) {
-		/* OK, completed */
+		 
 		if (cmd->sc_data_direction == DMA_FROM_DEVICE) {
 			int len;
 
@@ -303,7 +287,7 @@ static irqreturn_t ps3rom_interrupt(int irq, void *data)
 	}
 
 	if (cmd->cmnd[0] == REQUEST_SENSE) {
-		/* SCSI spec says request sense should never get error */
+		 
 		dev_err(&dev->sbd.core, "%s:%u: end error without autosense\n",
 			__func__, __LINE__);
 		cmd->result = DID_ERROR << 16 | SAM_STAT_CHECK_CONDITION;
@@ -330,7 +314,7 @@ static const struct scsi_host_template ps3rom_host_template = {
 	.can_queue =		1,
 	.this_id =		7,
 	.sg_tablesize =		SG_ALL,
-	.emulated =             1,		/* only sg driver uses this */
+	.emulated =             1,		 
 	.max_sectors =		PS3ROM_MAX_SECTORS,
 	.module =		THIS_MODULE,
 };
@@ -372,7 +356,7 @@ static int ps3rom_probe(struct ps3_system_bus_device *_dev)
 	ps3_system_bus_set_drvdata(&dev->sbd, host);
 	priv->dev = dev;
 
-	/* One device/LUN per SCSI bus */
+	 
 	host->max_id = 1;
 	host->max_lun = 1;
 

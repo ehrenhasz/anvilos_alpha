@@ -1,32 +1,4 @@
-/*
- * Copyright © 2006-2010 Intel Corporation
- * Copyright (c) 2006 Dave Airlie <airlied@linux.ie>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- *
- * Authors:
- *	Eric Anholt <eric@anholt.net>
- *      Dave Airlie <airlied@linux.ie>
- *      Jesse Barnes <jesse.barnes@intel.com>
- *      Chris Wilson <chris@chris-wilson.co.uk>
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/pwm.h>
@@ -72,21 +44,17 @@ static bool is_best_fixed_mode(struct intel_connector *connector,
 			       int vrefresh, int fixed_mode_vrefresh,
 			       const struct drm_display_mode *best_mode)
 {
-	/* we want to always return something */
+	 
 	if (!best_mode)
 		return true;
 
-	/*
-	 * With VRR always pick a mode with equal/higher than requested
-	 * vrefresh, which we can then reduce to match the requested
-	 * vrefresh by extending the vblank length.
-	 */
+	 
 	if (is_in_vrr_range(connector, vrefresh) &&
 	    is_in_vrr_range(connector, fixed_mode_vrefresh) &&
 	    fixed_mode_vrefresh < vrefresh)
 		return false;
 
-	/* pick the fixed_mode that is closest in terms of vrefresh */
+	 
 	return abs(fixed_mode_vrefresh - vrefresh) <
 		abs(drm_mode_vrefresh(best_mode) - vrefresh);
 }
@@ -138,7 +106,7 @@ intel_panel_downclock_mode(struct intel_connector *connector,
 	int min_vrefresh = connector->panel.vbt.seamless_drrs_min_refresh_rate;
 	int max_vrefresh = drm_mode_vrefresh(adjusted_mode);
 
-	/* pick the fixed_mode with the lowest refresh rate */
+	 
 	list_for_each_entry(fixed_mode, &connector->panel.fixed_modes, head) {
 		int vrefresh = drm_mode_vrefresh(fixed_mode);
 
@@ -158,7 +126,7 @@ intel_panel_highest_mode(struct intel_connector *connector,
 {
 	const struct drm_display_mode *fixed_mode, *best_mode = adjusted_mode;
 
-	/* pick the fixed_mode that has the highest clock */
+	 
 	list_for_each_entry(fixed_mode, &connector->panel.fixed_modes, head) {
 		if (fixed_mode->clock > best_mode->clock)
 			best_mode = fixed_mode;
@@ -220,20 +188,12 @@ int intel_panel_compute_config(struct intel_connector *connector,
 	vrefresh = drm_mode_vrefresh(adjusted_mode);
 	fixed_mode_vrefresh = drm_mode_vrefresh(fixed_mode);
 
-	/*
-	 * Assume that we shouldn't muck about with the
-	 * timings if they don't land in the VRR range.
-	 */
+	 
 	is_vrr = is_in_vrr_range(connector, vrefresh) &&
 		is_in_vrr_range(connector, fixed_mode_vrefresh);
 
 	if (!is_vrr) {
-		/*
-		 * We don't want to lie too much to the user about the refresh
-		 * rate they're going to get. But we have to allow a bit of latitude
-		 * for Xorg since it likes to automagically cook up modes with slightly
-		 * off refresh rates.
-		 */
+		 
 		if (abs(vrefresh - fixed_mode_vrefresh) > 1) {
 			drm_dbg_kms(connector->base.dev,
 				    "[CONNECTOR:%d:%s] Requested mode vrefresh (%d Hz) does not match fixed mode vrefresh (%d Hz)\n",
@@ -284,7 +244,7 @@ static void intel_panel_add_edid_preferred_mode(struct intel_connector *connecto
 	if (list_empty(&connector->base.probed_modes))
 		return;
 
-	/* make sure the preferred mode is first */
+	 
 	list_for_each_entry(scan, &connector->base.probed_modes, head) {
 		if (scan->type & DRM_MODE_TYPE_PREFERRED) {
 			fixed_mode = scan;
@@ -389,7 +349,7 @@ void intel_panel_add_encoder_fixed_mode(struct intel_connector *connector,
 				   "current (BIOS)");
 }
 
-/* adjusted_mode has been preset to be the panel's fixed mode */
+ 
 static int pch_panel_fitting(struct intel_crtc_state *crtc_state,
 			     const struct drm_connector_state *conn_state)
 {
@@ -399,7 +359,7 @@ static int pch_panel_fitting(struct intel_crtc_state *crtc_state,
 	int pipe_src_h = drm_rect_height(&crtc_state->pipe_src);
 	int x, y, width, height;
 
-	/* Native modes don't need fitting */
+	 
 	if (adjusted_mode->crtc_hdisplay == pipe_src_w &&
 	    adjusted_mode->crtc_vdisplay == pipe_src_h &&
 	    crtc_state->output_format != INTEL_OUTPUT_FORMAT_YCBCR420)
@@ -414,18 +374,18 @@ static int pch_panel_fitting(struct intel_crtc_state *crtc_state,
 		break;
 
 	case DRM_MODE_SCALE_ASPECT:
-		/* Scale but preserve the aspect ratio */
+		 
 		{
 			u32 scaled_width = adjusted_mode->crtc_hdisplay * pipe_src_h;
 			u32 scaled_height = pipe_src_w * adjusted_mode->crtc_vdisplay;
-			if (scaled_width > scaled_height) { /* pillar */
+			if (scaled_width > scaled_height) {  
 				width = scaled_height / pipe_src_h;
 				if (width & 1)
 					width++;
 				x = (adjusted_mode->crtc_hdisplay - width + 1) / 2;
 				y = 0;
 				height = adjusted_mode->crtc_vdisplay;
-			} else if (scaled_width < scaled_height) { /* letter */
+			} else if (scaled_width < scaled_height) {  
 				height = scaled_width / pipe_src_w;
 				if (height & 1)
 				    height++;
@@ -468,13 +428,13 @@ centre_horizontally(struct drm_display_mode *adjusted_mode,
 {
 	u32 border, sync_pos, blank_width, sync_width;
 
-	/* keep the hsync and hblank widths constant */
+	 
 	sync_width = adjusted_mode->crtc_hsync_end - adjusted_mode->crtc_hsync_start;
 	blank_width = adjusted_mode->crtc_hblank_end - adjusted_mode->crtc_hblank_start;
 	sync_pos = (blank_width - sync_width + 1) / 2;
 
 	border = (adjusted_mode->crtc_hdisplay - width + 1) / 2;
-	border += border & 1; /* make the border even */
+	border += border & 1;  
 
 	adjusted_mode->crtc_hdisplay = width;
 	adjusted_mode->crtc_hblank_start = width + border;
@@ -490,7 +450,7 @@ centre_vertically(struct drm_display_mode *adjusted_mode,
 {
 	u32 border, sync_pos, blank_width, sync_width;
 
-	/* keep the vsync and vblank widths constant */
+	 
 	sync_width = adjusted_mode->crtc_vsync_end - adjusted_mode->crtc_vsync_start;
 	blank_width = adjusted_mode->crtc_vblank_end - adjusted_mode->crtc_vblank_start;
 	sync_pos = (blank_width - sync_width + 1) / 2;
@@ -507,11 +467,7 @@ centre_vertically(struct drm_display_mode *adjusted_mode,
 
 static u32 panel_fitter_scaling(u32 source, u32 target)
 {
-	/*
-	 * Floating point operation is not supported. So the FACTOR
-	 * is defined, which can avoid the floating point computation
-	 * when calculating the panel ratio.
-	 */
+	 
 #define ACCURACY 12
 #define FACTOR (1 << ACCURACY)
 	u32 ratio = source * FACTOR / target;
@@ -528,7 +484,7 @@ static void i965_scale_aspect(struct intel_crtc_state *crtc_state,
 	u32 scaled_width = adjusted_mode->crtc_hdisplay * pipe_src_h;
 	u32 scaled_height = pipe_src_w * adjusted_mode->crtc_vdisplay;
 
-	/* 965+ is easy, it does everything in hw */
+	 
 	if (scaled_width > scaled_height)
 		*pfit_control |= PFIT_ENABLE |
 			PFIT_SCALING_PILLAR;
@@ -550,12 +506,8 @@ static void i9xx_scale_aspect(struct intel_crtc_state *crtc_state,
 	u32 scaled_height = pipe_src_w * adjusted_mode->crtc_vdisplay;
 	u32 bits;
 
-	/*
-	 * For earlier chips we have to calculate the scaling
-	 * ratio by hand and program it into the
-	 * PFIT_PGM_RATIO register
-	 */
-	if (scaled_width > scaled_height) { /* pillar */
+	 
+	if (scaled_width > scaled_height) {  
 		centre_horizontally(adjusted_mode,
 				    scaled_height / pipe_src_h);
 
@@ -570,7 +522,7 @@ static void i9xx_scale_aspect(struct intel_crtc_state *crtc_state,
 					  PFIT_VERT_INTERP_BILINEAR |
 					  PFIT_HORIZ_INTERP_BILINEAR);
 		}
-	} else if (scaled_width < scaled_height) { /* letter */
+	} else if (scaled_width < scaled_height) {  
 		centre_vertically(adjusted_mode,
 				  scaled_width / pipe_src_w);
 
@@ -586,7 +538,7 @@ static void i9xx_scale_aspect(struct intel_crtc_state *crtc_state,
 					  PFIT_HORIZ_INTERP_BILINEAR);
 		}
 	} else {
-		/* Aspects match, Let hw scale both directions */
+		 
 		*pfit_control |= (PFIT_ENABLE |
 				  PFIT_VERT_AUTO_SCALE |
 				  PFIT_HORIZ_AUTO_SCALE |
@@ -605,23 +557,20 @@ static int gmch_panel_fitting(struct intel_crtc_state *crtc_state,
 	int pipe_src_w = drm_rect_width(&crtc_state->pipe_src);
 	int pipe_src_h = drm_rect_height(&crtc_state->pipe_src);
 
-	/* Native modes don't need fitting */
+	 
 	if (adjusted_mode->crtc_hdisplay == pipe_src_w &&
 	    adjusted_mode->crtc_vdisplay == pipe_src_h)
 		goto out;
 
 	switch (conn_state->scaling_mode) {
 	case DRM_MODE_SCALE_CENTER:
-		/*
-		 * For centered modes, we have to calculate border widths &
-		 * heights and modify the values programmed into the CRTC.
-		 */
+		 
 		centre_horizontally(adjusted_mode, pipe_src_w);
 		centre_vertically(adjusted_mode, pipe_src_h);
 		border = LVDS_BORDER_ENABLE;
 		break;
 	case DRM_MODE_SCALE_ASPECT:
-		/* Scale but preserve the aspect ratio */
+		 
 		if (DISPLAY_VER(dev_priv) >= 4)
 			i965_scale_aspect(crtc_state, &pfit_control);
 		else
@@ -629,10 +578,7 @@ static int gmch_panel_fitting(struct intel_crtc_state *crtc_state,
 					  &pfit_pgm_ratios, &border);
 		break;
 	case DRM_MODE_SCALE_FULLSCREEN:
-		/*
-		 * Full scaling, even if it changes the aspect ratio.
-		 * Fortunately this is all done for us in hw.
-		 */
+		 
 		if (pipe_src_h != adjusted_mode->crtc_vdisplay ||
 		    pipe_src_w != adjusted_mode->crtc_hdisplay) {
 			pfit_control |= PFIT_ENABLE;
@@ -650,8 +596,8 @@ static int gmch_panel_fitting(struct intel_crtc_state *crtc_state,
 		return -EINVAL;
 	}
 
-	/* 965+ wants fuzzy fitting */
-	/* FIXME: handle multiple panels by failing gracefully */
+	 
+	 
 	if (DISPLAY_VER(dev_priv) >= 4)
 		pfit_control |= PFIT_PIPE(crtc->pipe) | PFIT_FILTER_FUZZY;
 
@@ -661,7 +607,7 @@ out:
 		pfit_pgm_ratios = 0;
 	}
 
-	/* Make sure pre-965 set dither correctly for 18bpp panels. */
+	 
 	if (DISPLAY_VER(dev_priv) < 4 && crtc_state->pipe_bpp == 18)
 		pfit_control |= PFIT_PANEL_8TO6_DITHER_ENABLE;
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Driver for Realtek PCI-Express card reader
- *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Wei WANG <wei_wang@realsil.com.cn>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -53,18 +47,18 @@ static int rts5229_extra_init_hw(struct rtsx_pcr *pcr)
 {
 	rtsx_pci_init_cmd(pcr);
 
-	/* Configure GPIO as output */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, GPIO_CTL, 0x02, 0x02);
-	/* Reset ASPM state to default value */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, ASPM_FORCE_CTL, 0x3F, 0);
-	/* Force CLKREQ# PIN to drive 0 to request clock */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, PETXCFG, 0x08, 0x08);
-	/* Switch LDO3318 source from DV33 to card_3v3 */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, LDO_PWR_SEL, 0x03, 0x00);
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, LDO_PWR_SEL, 0x03, 0x01);
-	/* LED shine disabled, set initial shine cycle period */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, OLT_LED_CTL, 0x0F, 0x02);
-	/* Configure driving */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, SD30_DRIVE_SEL,
 			0xFF, pcr->sd30_drive_sel_3v3);
 
@@ -73,7 +67,7 @@ static int rts5229_extra_init_hw(struct rtsx_pcr *pcr)
 
 static int rts5229_optimize_phy(struct rtsx_pcr *pcr)
 {
-	/* Optimize RX sensitivity */
+	 
 	return rtsx_pci_write_phy_register(pcr, 0x00, 0xBA42);
 }
 
@@ -110,7 +104,7 @@ static int rts5229_card_power_on(struct rtsx_pcr *pcr, int card)
 	if (err < 0)
 		return err;
 
-	/* To avoid too large in-rush current */
+	 
 	udelay(150);
 
 	rtsx_pci_init_cmd(pcr);
@@ -175,60 +169,42 @@ static const struct pcr_ops rts5229_pcr_ops = {
 	.force_power_down = rts5229_force_power_down,
 };
 
-/* SD Pull Control Enable:
- *     SD_DAT[3:0] ==> pull up
- *     SD_CD       ==> pull up
- *     SD_WP       ==> pull up
- *     SD_CMD      ==> pull up
- *     SD_CLK      ==> pull down
- */
+ 
 static const u32 rts5229_sd_pull_ctl_enable_tbl1[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL2, 0xAA),
 	RTSX_REG_PAIR(CARD_PULL_CTL3, 0xE9),
 	0,
 };
 
-/* For RTS5229 version C */
+ 
 static const u32 rts5229_sd_pull_ctl_enable_tbl2[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL2, 0xAA),
 	RTSX_REG_PAIR(CARD_PULL_CTL3, 0xD9),
 	0,
 };
 
-/* SD Pull Control Disable:
- *     SD_DAT[3:0] ==> pull down
- *     SD_CD       ==> pull up
- *     SD_WP       ==> pull down
- *     SD_CMD      ==> pull down
- *     SD_CLK      ==> pull down
- */
+ 
 static const u32 rts5229_sd_pull_ctl_disable_tbl1[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL2, 0x55),
 	RTSX_REG_PAIR(CARD_PULL_CTL3, 0xD5),
 	0,
 };
 
-/* For RTS5229 version C */
+ 
 static const u32 rts5229_sd_pull_ctl_disable_tbl2[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL2, 0x55),
 	RTSX_REG_PAIR(CARD_PULL_CTL3, 0xE5),
 	0,
 };
 
-/* MS Pull Control Enable:
- *     MS CD       ==> pull up
- *     others      ==> pull down
- */
+ 
 static const u32 rts5229_ms_pull_ctl_enable_tbl[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL5, 0x55),
 	RTSX_REG_PAIR(CARD_PULL_CTL6, 0x15),
 	0,
 };
 
-/* MS Pull Control Disable:
- *     MS CD       ==> pull up
- *     others      ==> pull down
- */
+ 
 static const u32 rts5229_ms_pull_ctl_disable_tbl[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL5, 0x55),
 	RTSX_REG_PAIR(CARD_PULL_CTL6, 0x15),

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * net/psample/psample.c - Netlink channel for packet sampling
- * Copyright (c) 2017 Yotam Gigi <yotamg@mellanox.com>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -23,7 +20,7 @@
 static LIST_HEAD(psample_groups_list);
 static DEFINE_SPINLOCK(psample_groups_lock);
 
-/* multicast groups */
+ 
 enum psample_nl_multicast_groups {
 	PSAMPLE_NL_MCGRP_CONFIG,
 	PSAMPLE_NL_MCGRP_SAMPLE,
@@ -103,7 +100,7 @@ static const struct genl_small_ops psample_nl_ops[] = {
 		.cmd = PSAMPLE_CMD_GET_GROUP,
 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
 		.dumpit = psample_nl_cmd_get_group_dumpit,
-		/* can be retrieved by unprivileged users */
+		 
 	}
 };
 
@@ -312,7 +309,7 @@ static int psample_tunnel_meta_len(struct ip_tunnel_info *tun_info)
 	unsigned short tun_proto = ip_tunnel_info_af(tun_info);
 	const struct ip_tunnel_key *tun_key = &tun_info->key;
 	int tun_opts_len = tun_info->options_len;
-	int sum = nla_total_size(0);	/* PSAMPLE_ATTR_TUNNEL */
+	int sum = nla_total_size(0);	 
 
 	if (tun_key->tun_flags & TUNNEL_KEY)
 		sum += nla_total_size_64bit(sizeof(u64));
@@ -336,7 +333,7 @@ static int psample_tunnel_meta_len(struct ip_tunnel_info *tun_info)
 	}
 	if (tun_key->tos)
 		sum += nla_total_size(sizeof(u8));
-	sum += nla_total_size(sizeof(u8));	/* TTL */
+	sum += nla_total_size(sizeof(u8));	 
 	if (tun_key->tun_flags & TUNNEL_DONT_FRAGMENT)
 		sum += nla_total_size(0);
 	if (tun_key->tun_flags & TUNNEL_CSUM)
@@ -379,12 +376,12 @@ void psample_sample_packet(struct psample_group *group, struct sk_buff *skb,
 		   (md->out_tc_valid ? nla_total_size(sizeof(u16)) : 0) +
 		   (md->out_tc_occ_valid ? nla_total_size_64bit(sizeof(u64)) : 0) +
 		   (md->latency_valid ? nla_total_size_64bit(sizeof(u64)) : 0) +
-		   nla_total_size(sizeof(u32)) +	/* sample_rate */
-		   nla_total_size(sizeof(u32)) +	/* orig_size */
-		   nla_total_size(sizeof(u32)) +	/* group_num */
-		   nla_total_size(sizeof(u32)) +	/* seq */
-		   nla_total_size_64bit(sizeof(u64)) +	/* timestamp */
-		   nla_total_size(sizeof(u16));		/* protocol */
+		   nla_total_size(sizeof(u32)) +	 
+		   nla_total_size(sizeof(u32)) +	 
+		   nla_total_size(sizeof(u32)) +	 
+		   nla_total_size(sizeof(u32)) +	 
+		   nla_total_size_64bit(sizeof(u64)) +	 
+		   nla_total_size(sizeof(u16));		 
 
 #ifdef CONFIG_INET
 	tun_info = skb_tunnel_info(skb);

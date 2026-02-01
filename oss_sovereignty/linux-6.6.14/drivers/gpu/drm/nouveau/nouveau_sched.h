@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 
 #ifndef NOUVEAU_SCHED_H
 #define NOUVEAU_SCHED_H
@@ -73,9 +73,7 @@ struct nouveau_job {
 	} out_sync;
 
 	struct nouveau_job_ops {
-		/* If .submit() returns without any error, it is guaranteed that
-		 * armed_submit() is called.
-		 */
+		 
 		int (*submit)(struct nouveau_job *);
 		void (*armed_submit)(struct nouveau_job *);
 		struct dma_fence *(*run)(struct nouveau_job *);

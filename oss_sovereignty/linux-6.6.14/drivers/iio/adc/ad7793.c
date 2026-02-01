@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AD7785/AD7792/AD7793/AD7794/AD7795 SPI ADC driver
- *
- * Copyright 2011-2012 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/device.h>
@@ -26,80 +22,75 @@
 #include <linux/iio/adc/ad_sigma_delta.h>
 #include <linux/platform_data/ad7793.h>
 
-/* Registers */
-#define AD7793_REG_COMM		0 /* Communications Register (WO, 8-bit) */
-#define AD7793_REG_STAT		0 /* Status Register	     (RO, 8-bit) */
-#define AD7793_REG_MODE		1 /* Mode Register	     (RW, 16-bit */
-#define AD7793_REG_CONF		2 /* Configuration Register  (RW, 16-bit) */
-#define AD7793_REG_DATA		3 /* Data Register	     (RO, 16-/24-bit) */
-#define AD7793_REG_ID		4 /* ID Register	     (RO, 8-bit) */
-#define AD7793_REG_IO		5 /* IO Register	     (RO, 8-bit) */
-#define AD7793_REG_OFFSET	6 /* Offset Register	     (RW, 16-bit
-				   * (AD7792)/24-bit (AD7793)) */
-#define AD7793_REG_FULLSALE	7 /* Full-Scale Register
-				   * (RW, 16-bit (AD7792)/24-bit (AD7793)) */
+ 
+#define AD7793_REG_COMM		0  
+#define AD7793_REG_STAT		0  
+#define AD7793_REG_MODE		1  
+#define AD7793_REG_CONF		2  
+#define AD7793_REG_DATA		3  
+#define AD7793_REG_ID		4  
+#define AD7793_REG_IO		5  
+#define AD7793_REG_OFFSET	6  
+#define AD7793_REG_FULLSALE	7  
 
-/* Communications Register Bit Designations (AD7793_REG_COMM) */
-#define AD7793_COMM_WEN		(1 << 7) /* Write Enable */
-#define AD7793_COMM_WRITE	(0 << 6) /* Write Operation */
-#define AD7793_COMM_READ	(1 << 6) /* Read Operation */
-#define AD7793_COMM_ADDR(x)	(((x) & 0x7) << 3) /* Register Address */
-#define AD7793_COMM_CREAD	(1 << 2) /* Continuous Read of Data Register */
+ 
+#define AD7793_COMM_WEN		(1 << 7)  
+#define AD7793_COMM_WRITE	(0 << 6)  
+#define AD7793_COMM_READ	(1 << 6)  
+#define AD7793_COMM_ADDR(x)	(((x) & 0x7) << 3)  
+#define AD7793_COMM_CREAD	(1 << 2)  
 
-/* Status Register Bit Designations (AD7793_REG_STAT) */
-#define AD7793_STAT_RDY		(1 << 7) /* Ready */
-#define AD7793_STAT_ERR		(1 << 6) /* Error (Overrange, Underrange) */
-#define AD7793_STAT_CH3		(1 << 2) /* Channel 3 */
-#define AD7793_STAT_CH2		(1 << 1) /* Channel 2 */
-#define AD7793_STAT_CH1		(1 << 0) /* Channel 1 */
+ 
+#define AD7793_STAT_RDY		(1 << 7)  
+#define AD7793_STAT_ERR		(1 << 6)  
+#define AD7793_STAT_CH3		(1 << 2)  
+#define AD7793_STAT_CH2		(1 << 1)  
+#define AD7793_STAT_CH1		(1 << 0)  
 
-/* Mode Register Bit Designations (AD7793_REG_MODE) */
-#define AD7793_MODE_SEL(x)	(((x) & 0x7) << 13) /* Operation Mode Select */
-#define AD7793_MODE_SEL_MASK	(0x7 << 13) /* Operation Mode Select mask */
-#define AD7793_MODE_CLKSRC(x)	(((x) & 0x3) << 6) /* ADC Clock Source Select */
-#define AD7793_MODE_RATE(x)	((x) & 0xF) /* Filter Update Rate Select */
+ 
+#define AD7793_MODE_SEL(x)	(((x) & 0x7) << 13)  
+#define AD7793_MODE_SEL_MASK	(0x7 << 13)  
+#define AD7793_MODE_CLKSRC(x)	(((x) & 0x3) << 6)  
+#define AD7793_MODE_RATE(x)	((x) & 0xF)  
 
-#define AD7793_MODE_CONT		0 /* Continuous Conversion Mode */
-#define AD7793_MODE_SINGLE		1 /* Single Conversion Mode */
-#define AD7793_MODE_IDLE		2 /* Idle Mode */
-#define AD7793_MODE_PWRDN		3 /* Power-Down Mode */
-#define AD7793_MODE_CAL_INT_ZERO	4 /* Internal Zero-Scale Calibration */
-#define AD7793_MODE_CAL_INT_FULL	5 /* Internal Full-Scale Calibration */
-#define AD7793_MODE_CAL_SYS_ZERO	6 /* System Zero-Scale Calibration */
-#define AD7793_MODE_CAL_SYS_FULL	7 /* System Full-Scale Calibration */
+#define AD7793_MODE_CONT		0  
+#define AD7793_MODE_SINGLE		1  
+#define AD7793_MODE_IDLE		2  
+#define AD7793_MODE_PWRDN		3  
+#define AD7793_MODE_CAL_INT_ZERO	4  
+#define AD7793_MODE_CAL_INT_FULL	5  
+#define AD7793_MODE_CAL_SYS_ZERO	6  
+#define AD7793_MODE_CAL_SYS_FULL	7  
 
-#define AD7793_CLK_INT		0 /* Internal 64 kHz Clock not
-				   * available at the CLK pin */
-#define AD7793_CLK_INT_CO	1 /* Internal 64 kHz Clock available
-				   * at the CLK pin */
-#define AD7793_CLK_EXT		2 /* External 64 kHz Clock */
-#define AD7793_CLK_EXT_DIV2	3 /* External Clock divided by 2 */
+#define AD7793_CLK_INT		0  
+#define AD7793_CLK_INT_CO	1  
+#define AD7793_CLK_EXT		2  
+#define AD7793_CLK_EXT_DIV2	3  
 
-/* Configuration Register Bit Designations (AD7793_REG_CONF) */
-#define AD7793_CONF_VBIAS(x)	(((x) & 0x3) << 14) /* Bias Voltage
-						     * Generator Enable */
-#define AD7793_CONF_BO_EN	(1 << 13) /* Burnout Current Enable */
-#define AD7793_CONF_UNIPOLAR	(1 << 12) /* Unipolar/Bipolar Enable */
-#define AD7793_CONF_BOOST	(1 << 11) /* Boost Enable */
-#define AD7793_CONF_GAIN(x)	(((x) & 0x7) << 8) /* Gain Select */
-#define AD7793_CONF_REFSEL(x)	((x) << 6) /* INT/EXT Reference Select */
-#define AD7793_CONF_BUF		(1 << 4) /* Buffered Mode Enable */
-#define AD7793_CONF_CHAN(x)	((x) & 0xf) /* Channel select */
-#define AD7793_CONF_CHAN_MASK	0xf /* Channel select mask */
+ 
+#define AD7793_CONF_VBIAS(x)	(((x) & 0x3) << 14)  
+#define AD7793_CONF_BO_EN	(1 << 13)  
+#define AD7793_CONF_UNIPOLAR	(1 << 12)  
+#define AD7793_CONF_BOOST	(1 << 11)  
+#define AD7793_CONF_GAIN(x)	(((x) & 0x7) << 8)  
+#define AD7793_CONF_REFSEL(x)	((x) << 6)  
+#define AD7793_CONF_BUF		(1 << 4)  
+#define AD7793_CONF_CHAN(x)	((x) & 0xf)  
+#define AD7793_CONF_CHAN_MASK	0xf  
 
-#define AD7793_CH_AIN1P_AIN1M	0 /* AIN1(+) - AIN1(-) */
-#define AD7793_CH_AIN2P_AIN2M	1 /* AIN2(+) - AIN2(-) */
-#define AD7793_CH_AIN3P_AIN3M	2 /* AIN3(+) - AIN3(-) */
-#define AD7793_CH_AIN1M_AIN1M	3 /* AIN1(-) - AIN1(-) */
-#define AD7793_CH_TEMP		6 /* Temp Sensor */
-#define AD7793_CH_AVDD_MONITOR	7 /* AVDD Monitor */
+#define AD7793_CH_AIN1P_AIN1M	0  
+#define AD7793_CH_AIN2P_AIN2M	1  
+#define AD7793_CH_AIN3P_AIN3M	2  
+#define AD7793_CH_AIN1M_AIN1M	3  
+#define AD7793_CH_TEMP		6  
+#define AD7793_CH_AVDD_MONITOR	7  
 
-#define AD7795_CH_AIN4P_AIN4M	4 /* AIN4(+) - AIN4(-) */
-#define AD7795_CH_AIN5P_AIN5M	5 /* AIN5(+) - AIN5(-) */
-#define AD7795_CH_AIN6P_AIN6M	6 /* AIN6(+) - AIN6(-) */
-#define AD7795_CH_AIN1M_AIN1M	8 /* AIN1(-) - AIN1(-) */
+#define AD7795_CH_AIN4P_AIN4M	4  
+#define AD7795_CH_AIN5P_AIN5M	5  
+#define AD7795_CH_AIN6P_AIN6M	6  
+#define AD7795_CH_AIN1M_AIN1M	8  
 
-/* ID Register Bit Designations (AD7793_REG_ID) */
+ 
 #define AD7785_ID		0x3
 #define AD7792_ID		0xA
 #define AD7793_ID		0xB
@@ -111,27 +102,17 @@
 #define AD7799_ID		0x9
 #define AD7793_ID_MASK		0xF
 
-/* IO (Excitation Current Sources) Register Bit Designations (AD7793_REG_IO) */
-#define AD7793_IO_IEXC1_IOUT1_IEXC2_IOUT2	0 /* IEXC1 connect to IOUT1,
-						   * IEXC2 connect to IOUT2 */
-#define AD7793_IO_IEXC1_IOUT2_IEXC2_IOUT1	1 /* IEXC1 connect to IOUT2,
-						   * IEXC2 connect to IOUT1 */
-#define AD7793_IO_IEXC1_IEXC2_IOUT1		2 /* Both current sources
-						   * IEXC1,2 connect to IOUT1 */
-#define AD7793_IO_IEXC1_IEXC2_IOUT2		3 /* Both current sources
-						   * IEXC1,2 connect to IOUT2 */
+ 
+#define AD7793_IO_IEXC1_IOUT1_IEXC2_IOUT2	0  
+#define AD7793_IO_IEXC1_IOUT2_IEXC2_IOUT1	1  
+#define AD7793_IO_IEXC1_IEXC2_IOUT1		2  
+#define AD7793_IO_IEXC1_IEXC2_IOUT2		3  
 
-#define AD7793_IO_IXCEN_10uA	(1 << 0) /* Excitation Current 10uA */
-#define AD7793_IO_IXCEN_210uA	(2 << 0) /* Excitation Current 210uA */
-#define AD7793_IO_IXCEN_1mA	(3 << 0) /* Excitation Current 1mA */
+#define AD7793_IO_IXCEN_10uA	(1 << 0)  
+#define AD7793_IO_IXCEN_210uA	(2 << 0)  
+#define AD7793_IO_IXCEN_1mA	(3 << 0)  
 
-/* NOTE:
- * The AD7792/AD7793 features a dual use data out ready DOUT/RDY output.
- * In order to avoid contentions on the SPI bus, it's therefore necessary
- * to use spi bus locking.
- *
- * The DOUT/RDY output must also be wired to an interrupt capable GPIO.
- */
+ 
 
 #define AD7793_FLAG_HAS_CLKSEL		BIT(0)
 #define AD7793_FLAG_HAS_REFSEL		BIT(1)
@@ -265,13 +246,13 @@ static int ad7793_setup(struct iio_dev *indio_dev,
 	if (ret)
 		return ret;
 
-	/* reset the serial interface */
+	 
 	ret = ad_sd_reset(&st->sd, 32);
 	if (ret < 0)
 		goto out;
-	usleep_range(500, 2000); /* Wait for at least 500us */
+	usleep_range(500, 2000);  
 
-	/* write/read test for device presence */
+	 
 	ret = ad_sd_read_reg(&st->sd, AD7793_REG_ID, 1, &id);
 	if (ret)
 		goto out;
@@ -326,7 +307,7 @@ static int ad7793_setup(struct iio_dev *indio_dev,
 	if (ret)
 		goto out;
 
-	/* Populate available ADC input ranges */
+	 
 	for (i = 0; i < ARRAY_SIZE(st->scale_avail); i++) {
 		scale_uv = ((u64)vref_mv * 100000000)
 			>> (st->chip_info->channels[0].scan_type.realbits -
@@ -366,7 +347,7 @@ static int ad7793_read_avail(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_SCALE:
 		*vals = (int *)st->scale_avail;
 		*type = IIO_VAL_INT_PLUS_NANO;
-		/* Values are stored in a 2D matrix  */
+		 
 		*length = ARRAY_SIZE(st->scale_avail) * 2;
 
 		return IIO_AVAIL_LIST;
@@ -422,11 +403,11 @@ static int ad7793_read_raw(struct iio_dev *indio_dev,
 					scale_avail[(st->conf >> 8) & 0x7][1];
 				return IIO_VAL_INT_PLUS_NANO;
 			}
-			/* 1170mV / 2^23 * 6 */
+			 
 			scale_uv = (1170ULL * 1000000000ULL * 6ULL);
 			break;
 		case IIO_TEMP:
-				/* 1170mV / 0.81 mV/C / 2^23 */
+				 
 				scale_uv = 1444444444444444ULL;
 			break;
 		default:
@@ -443,7 +424,7 @@ static int ad7793_read_raw(struct iio_dev *indio_dev,
 		else
 			*val = 0;
 
-		/* Kelvin to Celsius */
+		 
 		if (chan->type == IIO_TEMP) {
 			unsigned long long offset;
 			unsigned int shift;
@@ -818,7 +799,7 @@ static int ad7793_probe(struct spi_device *spi)
 
 		vref_mv /= 1000;
 	} else {
-		vref_mv = 1170; /* Build-in ref */
+		vref_mv = 1170;  
 	}
 
 	st->chip_info =

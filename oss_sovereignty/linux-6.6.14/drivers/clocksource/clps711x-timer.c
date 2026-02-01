@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Cirrus Logic CLPS711X clocksource driver
- *
- *  Copyright (C) 2014 Alexander Shiyan <shc_work@mail.ru>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clockchips.h>
@@ -60,7 +56,7 @@ static int __init _clps711x_clkevt_init(struct clk *clock, void __iomem *base,
 
 	rate = clk_get_rate(clock);
 
-	/* Set Timer prescaler */
+	 
 	writew(DIV_ROUND_CLOSEST(rate, HZ), base);
 
 	clkevt->name = "clps711x-clockevent";

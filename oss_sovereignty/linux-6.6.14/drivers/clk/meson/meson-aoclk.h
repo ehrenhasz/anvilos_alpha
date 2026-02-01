@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
-/*
- * Copyright (c) 2017 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- *
- * Copyright (c) 2018 Amlogic, inc.
- * Author: Qiufang Dai <qiufang.dai@amlogic.com>
- * Author: Yixun Lan <yixun.lan@amlogic.com>
- */
+ 
+ 
 
 #ifndef __MESON_AOCLK_H__
 #define __MESON_AOCLK_H__

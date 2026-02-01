@@ -1,25 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "umc_v6_1.h"
 #include "amdgpu_ras.h"
 #include "amdgpu_umc.h"
@@ -98,7 +77,7 @@ static void umc_v6_1_clear_error_count_per_channel(struct amdgpu_device *adev,
 	uint32_t ecc_err_cnt_sel, ecc_err_cnt_sel_addr;
 
 	if (adev->asic_type == CHIP_ARCTURUS) {
-		/* UMC 6_1_2 registers */
+		 
 		ecc_err_cnt_sel_addr =
 			SOC15_REG_OFFSET(UMC, 0,
 					mmUMCCH0_0_EccErrCntSel_ARCT);
@@ -106,7 +85,7 @@ static void umc_v6_1_clear_error_count_per_channel(struct amdgpu_device *adev,
 			SOC15_REG_OFFSET(UMC, 0,
 					mmUMCCH0_0_EccErrCnt_ARCT);
 	} else {
-		/* UMC 6_1_1 registers */
+		 
 		ecc_err_cnt_sel_addr =
 			SOC15_REG_OFFSET(UMC, 0,
 					mmUMCCH0_0_EccErrCntSel);
@@ -115,7 +94,7 @@ static void umc_v6_1_clear_error_count_per_channel(struct amdgpu_device *adev,
 					mmUMCCH0_0_EccErrCnt);
 	}
 
-	/* select the lower chip */
+	 
 	ecc_err_cnt_sel = RREG32_PCIE((ecc_err_cnt_sel_addr +
 					umc_reg_offset) * 4);
 	ecc_err_cnt_sel = REG_SET_FIELD(ecc_err_cnt_sel,
@@ -124,11 +103,11 @@ static void umc_v6_1_clear_error_count_per_channel(struct amdgpu_device *adev,
 	WREG32_PCIE((ecc_err_cnt_sel_addr + umc_reg_offset) * 4,
 			ecc_err_cnt_sel);
 
-	/* clear lower chip error count */
+	 
 	WREG32_PCIE((ecc_err_cnt_addr + umc_reg_offset) * 4,
 			UMC_V6_1_CE_CNT_INIT);
 
-	/* select the higher chip */
+	 
 	ecc_err_cnt_sel = RREG32_PCIE((ecc_err_cnt_sel_addr +
 					umc_reg_offset) * 4);
 	ecc_err_cnt_sel = REG_SET_FIELD(ecc_err_cnt_sel,
@@ -137,7 +116,7 @@ static void umc_v6_1_clear_error_count_per_channel(struct amdgpu_device *adev,
 	WREG32_PCIE((ecc_err_cnt_sel_addr + umc_reg_offset) * 4,
 			ecc_err_cnt_sel);
 
-	/* clear higher chip error count */
+	 
 	WREG32_PCIE((ecc_err_cnt_addr + umc_reg_offset) * 4,
 			UMC_V6_1_CE_CNT_INIT);
 }
@@ -176,7 +155,7 @@ static void umc_v6_1_query_correctable_error_count(struct amdgpu_device *adev,
 	uint32_t mc_umc_status_addr;
 
 	if (adev->asic_type == CHIP_ARCTURUS) {
-		/* UMC 6_1_2 registers */
+		 
 		ecc_err_cnt_sel_addr =
 			SOC15_REG_OFFSET(UMC, 0, mmUMCCH0_0_EccErrCntSel_ARCT);
 		ecc_err_cnt_addr =
@@ -184,7 +163,7 @@ static void umc_v6_1_query_correctable_error_count(struct amdgpu_device *adev,
 		mc_umc_status_addr =
 			SOC15_REG_OFFSET(UMC, 0, mmMCA_UMC_UMC0_MCUMC_STATUST0_ARCT);
 	} else {
-		/* UMC 6_1_1 registers */
+		 
 		ecc_err_cnt_sel_addr =
 			SOC15_REG_OFFSET(UMC, 0, mmUMCCH0_0_EccErrCntSel);
 		ecc_err_cnt_addr =
@@ -193,7 +172,7 @@ static void umc_v6_1_query_correctable_error_count(struct amdgpu_device *adev,
 			SOC15_REG_OFFSET(UMC, 0, mmMCA_UMC_UMC0_MCUMC_STATUST0);
 	}
 
-	/* select the lower chip and check the error count */
+	 
 	ecc_err_cnt_sel = RREG32_PCIE((ecc_err_cnt_sel_addr + umc_reg_offset) * 4);
 	ecc_err_cnt_sel = REG_SET_FIELD(ecc_err_cnt_sel, UMCCH0_0_EccErrCntSel,
 					EccErrCntCsSel, 0);
@@ -204,7 +183,7 @@ static void umc_v6_1_query_correctable_error_count(struct amdgpu_device *adev,
 		(REG_GET_FIELD(ecc_err_cnt, UMCCH0_0_EccErrCnt, EccErrCnt) -
 		 UMC_V6_1_CE_CNT_INIT);
 
-	/* select the higher chip and check the err counter */
+	 
 	ecc_err_cnt_sel = REG_SET_FIELD(ecc_err_cnt_sel, UMCCH0_0_EccErrCntSel,
 					EccErrCntCsSel, 1);
 	WREG32_PCIE((ecc_err_cnt_sel_addr + umc_reg_offset) * 4, ecc_err_cnt_sel);
@@ -214,8 +193,7 @@ static void umc_v6_1_query_correctable_error_count(struct amdgpu_device *adev,
 		(REG_GET_FIELD(ecc_err_cnt, UMCCH0_0_EccErrCnt, EccErrCnt) -
 		 UMC_V6_1_CE_CNT_INIT);
 
-	/* check for SRAM correctable error
-	  MCUMC_STATUS is a 64 bit register */
+	 
 	mc_umc_status = RREG64_PCIE((mc_umc_status_addr + umc_reg_offset) * 4);
 	if (REG_GET_FIELD(mc_umc_status, MCA_UMC_UMC0_MCUMC_STATUST0, ErrorCodeExt) == 6 &&
 	    REG_GET_FIELD(mc_umc_status, MCA_UMC_UMC0_MCUMC_STATUST0, Val) == 1 &&
@@ -231,16 +209,16 @@ static void umc_v6_1_querry_uncorrectable_error_count(struct amdgpu_device *adev
 	uint32_t mc_umc_status_addr;
 
 	if (adev->asic_type == CHIP_ARCTURUS) {
-		/* UMC 6_1_2 registers */
+		 
 		mc_umc_status_addr =
 			SOC15_REG_OFFSET(UMC, 0, mmMCA_UMC_UMC0_MCUMC_STATUST0_ARCT);
 	} else {
-		/* UMC 6_1_1 registers */
+		 
 		mc_umc_status_addr =
 			SOC15_REG_OFFSET(UMC, 0, mmMCA_UMC_UMC0_MCUMC_STATUST0);
 	}
 
-	/* check the MCUMC_STATUS */
+	 
 	mc_umc_status = RREG64_PCIE((mc_umc_status_addr + umc_reg_offset) * 4);
 	if ((REG_GET_FIELD(mc_umc_status, MCA_UMC_UMC0_MCUMC_STATUST0, Val) == 1) &&
 	    (REG_GET_FIELD(mc_umc_status, MCA_UMC_UMC0_MCUMC_STATUST0, Deferred) == 1 ||
@@ -303,13 +281,13 @@ static void umc_v6_1_query_error_address(struct amdgpu_device *adev,
 	uint32_t channel_index = adev->umc.channel_idx_tbl[umc_inst * adev->umc.channel_inst_num + ch_inst];
 
 	if (adev->asic_type == CHIP_ARCTURUS) {
-		/* UMC 6_1_2 registers */
+		 
 		mc_umc_status_addr =
 			SOC15_REG_OFFSET(UMC, 0, mmMCA_UMC_UMC0_MCUMC_STATUST0_ARCT);
 		mc_umc_addrt0 =
 			SOC15_REG_OFFSET(UMC, 0, mmMCA_UMC_UMC0_MCUMC_ADDRT0_ARCT);
 	} else {
-		/* UMC 6_1_1 registers */
+		 
 		mc_umc_status_addr =
 			SOC15_REG_OFFSET(UMC, 0, mmMCA_UMC_UMC0_MCUMC_STATUST0);
 		mc_umc_addrt0 =
@@ -322,22 +300,22 @@ static void umc_v6_1_query_error_address(struct amdgpu_device *adev,
 		return;
 
 	if (!err_data->err_addr) {
-		/* clear umc status */
+		 
 		WREG64_PCIE((mc_umc_status_addr + umc_reg_offset) * 4, 0x0ULL);
 		return;
 	}
 
-	/* calculate error address if ue error is detected */
+	 
 	if (REG_GET_FIELD(mc_umc_status, MCA_UMC_UMC0_MCUMC_STATUST0, Val) == 1 &&
 	    REG_GET_FIELD(mc_umc_status, MCA_UMC_UMC0_MCUMC_STATUST0, UECC) == 1) {
 
 		err_addr = RREG64_PCIE((mc_umc_addrt0 + umc_reg_offset) * 4);
-		/* the lowest lsb bits should be ignored */
+		 
 		lsb = REG_GET_FIELD(err_addr, MCA_UMC_UMC0_MCUMC_ADDRT0, LSB);
 		err_addr = REG_GET_FIELD(err_addr, MCA_UMC_UMC0_MCUMC_ADDRT0, ErrorAddr);
 		err_addr &= ~((0x1ULL << lsb) - 1);
 
-		/* translate umc channel address to soc pa, 3 parts are included */
+		 
 		retired_page = ADDR_OF_8KB_BLOCK(err_addr) |
 				ADDR_OF_256B_BLOCK(channel_index) |
 				OFFSET_IN_256B_BLOCK(err_addr);
@@ -346,7 +324,7 @@ static void umc_v6_1_query_error_address(struct amdgpu_device *adev,
 					retired_page, channel_index, umc_inst);
 	}
 
-	/* clear umc status */
+	 
 	WREG64_PCIE((mc_umc_status_addr + umc_reg_offset) * 4, 0x0ULL);
 }
 
@@ -395,31 +373,31 @@ static void umc_v6_1_err_cnt_init_per_channel(struct amdgpu_device *adev,
 	uint32_t ecc_err_cnt_addr;
 
 	if (adev->asic_type == CHIP_ARCTURUS) {
-		/* UMC 6_1_2 registers */
+		 
 		ecc_err_cnt_sel_addr =
 			SOC15_REG_OFFSET(UMC, 0, mmUMCCH0_0_EccErrCntSel_ARCT);
 		ecc_err_cnt_addr =
 			SOC15_REG_OFFSET(UMC, 0, mmUMCCH0_0_EccErrCnt_ARCT);
 	} else {
-		/* UMC 6_1_1 registers */
+		 
 		ecc_err_cnt_sel_addr =
 			SOC15_REG_OFFSET(UMC, 0, mmUMCCH0_0_EccErrCntSel);
 		ecc_err_cnt_addr =
 			SOC15_REG_OFFSET(UMC, 0, mmUMCCH0_0_EccErrCnt);
 	}
 
-	/* select the lower chip and check the error count */
+	 
 	ecc_err_cnt_sel = RREG32_PCIE((ecc_err_cnt_sel_addr + umc_reg_offset) * 4);
 	ecc_err_cnt_sel = REG_SET_FIELD(ecc_err_cnt_sel, UMCCH0_0_EccErrCntSel,
 					EccErrCntCsSel, 0);
-	/* set ce error interrupt type to APIC based interrupt */
+	 
 	ecc_err_cnt_sel = REG_SET_FIELD(ecc_err_cnt_sel, UMCCH0_0_EccErrCntSel,
 					EccErrInt, 0x1);
 	WREG32_PCIE((ecc_err_cnt_sel_addr + umc_reg_offset) * 4, ecc_err_cnt_sel);
-	/* set error count to initial value */
+	 
 	WREG32_PCIE((ecc_err_cnt_addr + umc_reg_offset) * 4, UMC_V6_1_CE_CNT_INIT);
 
-	/* select the higher chip and check the err counter */
+	 
 	ecc_err_cnt_sel = REG_SET_FIELD(ecc_err_cnt_sel, UMCCH0_0_EccErrCntSel,
 					EccErrCntCsSel, 1);
 	WREG32_PCIE((ecc_err_cnt_sel_addr + umc_reg_offset) * 4, ecc_err_cnt_sel);

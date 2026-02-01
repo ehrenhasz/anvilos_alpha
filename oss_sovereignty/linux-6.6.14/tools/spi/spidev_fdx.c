@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -20,7 +20,7 @@ static void do_read(int fd, int len)
 	unsigned char	buf[32], *bp;
 	int		status;
 
-	/* read at least 2 bytes, no more than 32 */
+	 
 	if (len < 2)
 		len = 2;
 	else if (len > sizeof(buf))

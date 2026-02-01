@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef ATH11K_HAL_RX_H
 #define ATH11K_HAL_RX_H
@@ -448,7 +446,7 @@ struct hal_rx_rxpcu_classification_overview {
 
 struct hal_rx_msdu_desc_info {
 	u32 msdu_flags;
-	u16 msdu_len; /* 14 bits for length */
+	u16 msdu_len;  
 };
 
 #define HAL_RX_NUM_MSDU_DESC 6

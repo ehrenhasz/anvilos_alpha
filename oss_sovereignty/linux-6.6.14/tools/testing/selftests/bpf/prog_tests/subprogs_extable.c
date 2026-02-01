@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <test_progs.h>
 #include "test_subprogs_extable.skel.h"
@@ -17,7 +17,7 @@ void test_subprogs_extable(void)
 	if (!ASSERT_OK(err, "skel_attach"))
 		goto cleanup;
 
-	/* trigger tracepoint */
+	 
 	ASSERT_OK(trigger_module_test_read(read_sz), "trigger_read");
 
 	ASSERT_NEQ(skel->bss->triggered, 0, "verify at least one program ran");

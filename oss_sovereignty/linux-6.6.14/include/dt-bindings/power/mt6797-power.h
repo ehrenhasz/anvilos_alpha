@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2017 MediaTek Inc.
- * Author: Mars.C <mars.cheng@mediatek.com>
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_POWER_MT6797_POWER_H
 #define _DT_BINDINGS_POWER_MT6797_POWER_H
@@ -20,4 +17,4 @@
 #define MT6797_POWER_DOMAIN_MFG_CORE3		10
 #define MT6797_POWER_DOMAIN_MJC		11
 
-#endif /* _DT_BINDINGS_POWER_MT6797_POWER_H */
+#endif  

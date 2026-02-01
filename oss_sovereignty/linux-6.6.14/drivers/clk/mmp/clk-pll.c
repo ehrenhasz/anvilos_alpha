@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * MMP PLL clock rate calculation
- *
- * Copyright (C) 2020 Lubomir Rintel <lkundrak@v3.sk>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/slab.h>
@@ -35,7 +31,7 @@ static int mmp_clk_pll_is_enabled(struct clk_hw *hw)
 	if ((val & pll->enable) == pll->enable)
 		return 1;
 
-	/* Some PLLs, if not software controlled, output default clock. */
+	 
 	if (pll->default_rate > 0)
 		return 1;
 
@@ -64,7 +60,7 @@ static unsigned long mmp_clk_pll_recalc_rate(struct clk_hw *hw,
 	}
 
 	if (pll->postdiv_reg) {
-		/* MMP3 clock rate calculation */
+		 
 		static const u8 postdivs[] = {2, 3, 4, 5, 6, 8, 10, 12, 16};
 
 		val = readl_relaxed(pll->postdiv_reg);
@@ -75,7 +71,7 @@ static unsigned long mmp_clk_pll_recalc_rate(struct clk_hw *hw,
 		do_div(rate, refdiv);
 		do_div(rate, postdivs[postdiv]);
 	} else {
-		/* MMP2 clock rate calculation */
+		 
 		if (refdiv == 3) {
 			rate = 19200000;
 		} else if (refdiv == 4) {

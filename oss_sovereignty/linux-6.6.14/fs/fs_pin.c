@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/fs.h>
 #include <linux/sched.h>
 #include <linux/slab.h>
@@ -58,7 +58,7 @@ void pin_kill(struct fs_pin *p)
 		rcu_read_lock();
 		if (likely(list_empty(&wait.entry)))
 			break;
-		/* OK, we know p couldn't have been freed yet */
+		 
 		spin_lock_irq(&p->wait.lock);
 		if (p->done > 0) {
 			spin_unlock_irq(&p->wait.lock);

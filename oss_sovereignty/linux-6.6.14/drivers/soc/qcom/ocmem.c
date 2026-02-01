@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * The On Chip Memory (OCMEM) allocator allows various clients to allocate
- * memory from OCMEM based on performance, latency and power requirements.
- * This is typically used by the GPU, camera/video, and audio components on
- * some Snapdragon SoCs.
- *
- * Copyright (C) 2019 Brian Masney <masneyb@onstation.org>
- * Copyright (C) 2015 Red Hat. Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -154,7 +146,7 @@ static unsigned long device_address(struct ocmem *ocmem,
 {
 	WARN_ON(client != OCMEM_GRAPHICS);
 
-	/* TODO: gpu uses phys_to_offset, but others do not.. */
+	 
 	return phys_to_offset(ocmem, addr);
 }
 
@@ -219,7 +211,7 @@ struct ocmem_buf *ocmem_allocate(struct ocmem *ocmem, enum ocmem_client client,
 	struct ocmem_buf *buf;
 	int ret;
 
-	/* TODO: add support for other clients... */
+	 
 	if (WARN_ON(client != OCMEM_GRAPHICS))
 		return ERR_PTR(-ENODEV);
 
@@ -272,7 +264,7 @@ EXPORT_SYMBOL(ocmem_allocate);
 void ocmem_free(struct ocmem *ocmem, enum ocmem_client client,
 		struct ocmem_buf *buf)
 {
-	/* TODO: add support for other clients... */
+	 
 	if (WARN_ON(client != OCMEM_GRAPHICS))
 		return;
 
@@ -335,7 +327,7 @@ static int ocmem_dev_probe(struct platform_device *pdev)
 		return -ENXIO;
 	}
 
-	/* The core clock is synchronous with graphics */
+	 
 	WARN_ON(clk_set_rate(ocmem->core_clk, 1000) < 0);
 
 	ret = clk_prepare_enable(ocmem->core_clk);

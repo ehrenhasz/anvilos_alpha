@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * OnKey device driver for DA9063, DA9062 and DA9061 PMICs
- * Copyright (C) 2015  Dialog Semiconductor Ltd.
- */
+
+ 
 
 #include <linux/devm-helpers.h>
 #include <linux/module.h>
@@ -20,17 +17,17 @@
 #include <linux/mfd/da9062/registers.h>
 
 struct da906x_chip_config {
-	/* REGS */
+	 
 	int onkey_status;
 	int onkey_pwr_signalling;
 	int onkey_fault_log;
 	int onkey_shutdown;
-	/* MASKS */
+	 
 	int onkey_nonkey_mask;
 	int onkey_nonkey_lock_mask;
 	int onkey_key_reset_mask;
 	int onkey_shutdown_mask;
-	/* NAMES */
+	 
 	const char *name;
 };
 
@@ -45,32 +42,32 @@ struct da9063_onkey {
 };
 
 static const struct da906x_chip_config da9063_regs = {
-	/* REGS */
+	 
 	.onkey_status = DA9063_REG_STATUS_A,
 	.onkey_pwr_signalling = DA9063_REG_CONTROL_B,
 	.onkey_fault_log = DA9063_REG_FAULT_LOG,
 	.onkey_shutdown = DA9063_REG_CONTROL_F,
-	/* MASKS */
+	 
 	.onkey_nonkey_mask = DA9063_NONKEY,
 	.onkey_nonkey_lock_mask = DA9063_NONKEY_LOCK,
 	.onkey_key_reset_mask = DA9063_KEY_RESET,
 	.onkey_shutdown_mask = DA9063_SHUTDOWN,
-	/* NAMES */
+	 
 	.name = DA9063_DRVNAME_ONKEY,
 };
 
 static const struct da906x_chip_config da9062_regs = {
-	/* REGS */
+	 
 	.onkey_status = DA9062AA_STATUS_A,
 	.onkey_pwr_signalling = DA9062AA_CONTROL_B,
 	.onkey_fault_log = DA9062AA_FAULT_LOG,
 	.onkey_shutdown = DA9062AA_CONTROL_F,
-	/* MASKS */
+	 
 	.onkey_nonkey_mask = DA9062AA_NONKEY_MASK,
 	.onkey_nonkey_lock_mask = DA9062AA_NONKEY_LOCK_MASK,
 	.onkey_key_reset_mask = DA9062AA_KEY_RESET_MASK,
 	.onkey_shutdown_mask = DA9062AA_SHUTDOWN_MASK,
-	/* NAMES */
+	 
 	.name = "da9062-onkey",
 };
 
@@ -92,7 +89,7 @@ static void da9063_poll_on(struct work_struct *work)
 	bool poll = true;
 	int error;
 
-	/* Poll to see when the pin is released */
+	 
 	error = regmap_read(onkey->regmap,
 			    config->onkey_status,
 			    &val);
@@ -119,10 +116,7 @@ static void da9063_poll_on(struct work_struct *work)
 		poll = false;
 	}
 
-	/*
-	 * If the fault log KEY_RESET is detected, then clear it
-	 * and shut down the system.
-	 */
+	 
 	error = regmap_read(onkey->regmap,
 			    config->onkey_fault_log,
 			    &fault_log);
@@ -138,9 +132,7 @@ static void da9063_poll_on(struct work_struct *work)
 				 "Cannot reset KEY_RESET fault log: %d\n",
 				 error);
 		} else {
-			/* at this point we do any S/W housekeeping
-			 * and then send shutdown command
-			 */
+			 
 			dev_dbg(&onkey->input->dev,
 				"Sending SHUTDOWN to PMIC ...\n");
 			error = regmap_write(onkey->regmap,

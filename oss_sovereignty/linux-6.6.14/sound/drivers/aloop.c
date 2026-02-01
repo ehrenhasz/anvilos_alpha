@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Loopback soundcard
- *
- *  Original code:
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *
- *  More accurate positioning and full-duplex support:
- *  Copyright (c) Ahmet İnan <ainan at mathematik.uni-freiburg.de>
- *
- *  Major (almost complete) rewrite:
- *  Copyright (c) by Takashi Iwai <tiwai@suse.de>
- *
- *  A next major update in 2010 (separate timers for playback and capture):
- *  Copyright (c) Jaroslav Kysela <perex@perex.cz>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/jiffies.h>
@@ -36,8 +22,8 @@ MODULE_LICENSE("GPL");
 
 #define MAX_PCM_SUBSTREAMS	8
 
-static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
-static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
+static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	 
+static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	 
 static bool enable[SNDRV_CARDS] = {1, [1 ... (SNDRV_CARDS - 1)] = 0};
 static int pcm_substreams[SNDRV_CARDS] = {[0 ... (SNDRV_CARDS - 1)] = 8};
 static int pcm_notify[SNDRV_CARDS];
@@ -66,31 +52,21 @@ struct loopback_cable;
 struct loopback_pcm;
 
 struct loopback_ops {
-	/* optional
-	 * call in loopback->cable_lock
-	 */
+	 
 	int (*open)(struct loopback_pcm *dpcm);
-	/* required
-	 * call in cable->lock
-	 */
+	 
 	int (*start)(struct loopback_pcm *dpcm);
-	/* required
-	 * call in cable->lock
-	 */
+	 
 	int (*stop)(struct loopback_pcm *dpcm);
-	/* optional */
+	 
 	int (*stop_sync)(struct loopback_pcm *dpcm);
-	/* optional */
+	 
 	int (*close_substream)(struct loopback_pcm *dpcm);
-	/* optional
-	 * call in loopback->cable_lock
-	 */
+	 
 	int (*close_cable)(struct loopback_pcm *dpcm);
-	/* optional
-	 * call in cable->lock
-	 */
+	 
 	unsigned int (*pos_update)(struct loopback_cable *cable);
-	/* optional */
+	 
 	void (*dpcm_info)(struct loopback_pcm *dpcm,
 			  struct snd_info_buffer *buffer);
 };
@@ -99,13 +75,13 @@ struct loopback_cable {
 	spinlock_t lock;
 	struct loopback_pcm *streams[2];
 	struct snd_pcm_hardware hw;
-	/* flags */
+	 
 	unsigned int valid;
 	unsigned int running;
 	unsigned int pause;
-	/* timer specific */
+	 
 	const struct loopback_ops *ops;
-	/* If sound timer is used */
+	 
 	struct {
 		int stream;
 		struct snd_timer_id id;
@@ -140,23 +116,21 @@ struct loopback_pcm {
 	struct snd_pcm_substream *substream;
 	struct loopback_cable *cable;
 	unsigned int pcm_buffer_size;
-	unsigned int buf_pos;	/* position in buffer */
+	unsigned int buf_pos;	 
 	unsigned int silent_size;
-	/* PCM parameters */
+	 
 	unsigned int pcm_period_size;
-	unsigned int pcm_bps;		/* bytes per second */
-	unsigned int pcm_salign;	/* bytes per sample * channels */
-	unsigned int pcm_rate_shift;	/* rate shift value */
-	/* flags */
+	unsigned int pcm_bps;		 
+	unsigned int pcm_salign;	 
+	unsigned int pcm_rate_shift;	 
+	 
 	unsigned int period_update_pending :1;
-	/* timer stuff */
-	unsigned int irq_pos;		/* fractional IRQ position in jiffies
-					 * ticks
-					 */
-	unsigned int period_size_frac;	/* period size in jiffies ticks */
+	 
+	unsigned int irq_pos;		 
+	unsigned int period_size_frac;	 
 	unsigned int last_drift;
 	unsigned long last_jiffies;
-	/* If jiffies timer is used */
+	 
 	struct timer_list timer;
 };
 
@@ -175,7 +149,7 @@ static inline unsigned int byte_pos(struct loopback_pcm *dpcm, unsigned int x)
 
 static inline unsigned int frac_pos(struct loopback_pcm *dpcm, unsigned int x)
 {
-	if (dpcm->pcm_rate_shift == NO_PITCH) {	/* no pitch */
+	if (dpcm->pcm_rate_shift == NO_PITCH) {	 
 		return x * HZ;
 	} else {
 		x = div_u64(dpcm->pcm_rate_shift * (unsigned long long)x * HZ,
@@ -203,7 +177,7 @@ static inline unsigned int get_rate_shift(struct loopback_pcm *dpcm)
 	return get_setup(dpcm)->rate_shift;
 }
 
-/* call in cable->lock */
+ 
 static int loopback_jiffies_timer_start(struct loopback_pcm *dpcm)
 {
 	unsigned long tick;
@@ -224,21 +198,16 @@ static int loopback_jiffies_timer_start(struct loopback_pcm *dpcm)
 	return 0;
 }
 
-/* call in cable->lock */
+ 
 static int loopback_snd_timer_start(struct loopback_pcm *dpcm)
 {
 	struct loopback_cable *cable = dpcm->cable;
 	int err;
 
-	/* Loopback device has to use same period as timer card. Therefore
-	 * wake up for each snd_pcm_period_elapsed() call of timer card.
-	 */
+	 
 	err = snd_timer_start(cable->snd_timer.instance, 1);
 	if (err < 0) {
-		/* do not report error if trying to start but already
-		 * running. For example called by opposite substream
-		 * of the same cable
-		 */
+		 
 		if (err == -EBUSY)
 			return 0;
 
@@ -253,7 +222,7 @@ static int loopback_snd_timer_start(struct loopback_pcm *dpcm)
 	return err;
 }
 
-/* call in cable->lock */
+ 
 static inline int loopback_jiffies_timer_stop(struct loopback_pcm *dpcm)
 {
 	del_timer(&dpcm->timer);
@@ -262,13 +231,13 @@ static inline int loopback_jiffies_timer_stop(struct loopback_pcm *dpcm)
 	return 0;
 }
 
-/* call in cable->lock */
+ 
 static int loopback_snd_timer_stop(struct loopback_pcm *dpcm)
 {
 	struct loopback_cable *cable = dpcm->cable;
 	int err;
 
-	/* only stop if both devices (playback and capture) are not running */
+	 
 	if (cable->running ^ cable->pause)
 		return 0;
 
@@ -292,23 +261,19 @@ static inline int loopback_jiffies_timer_stop_sync(struct loopback_pcm *dpcm)
 	return 0;
 }
 
-/* call in loopback->cable_lock */
+ 
 static int loopback_snd_timer_close_cable(struct loopback_pcm *dpcm)
 {
 	struct loopback_cable *cable = dpcm->cable;
 
-	/* snd_timer was not opened */
+	 
 	if (!cable->snd_timer.instance)
 		return 0;
 
-	/* will only be called from free_cable() when other stream was
-	 * already closed. Other stream cannot be reopened as long as
-	 * loopback->cable_lock is locked. Therefore no need to lock
-	 * cable->lock;
-	 */
+	 
 	snd_timer_close(cable->snd_timer.instance);
 
-	/* wait till drain work has finished if requested */
+	 
 	cancel_work_sync(&cable->snd_timer.event_work);
 
 	snd_timer_instance_free(cable->snd_timer.instance);
@@ -473,7 +438,7 @@ static int loopback_prepare(struct snd_pcm_substream *substream)
 	dpcm->buf_pos = 0;
 	dpcm->pcm_buffer_size = frames_to_bytes(runtime, runtime->buffer_size);
 	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE) {
-		/* clear capture buffer */
+		 
 		dpcm->silent_size = dpcm->pcm_buffer_size;
 		snd_pcm_format_set_silence(runtime->format, runtime->dma_area,
 					   runtime->buffer_size * runtime->channels);
@@ -533,8 +498,7 @@ static void copy_play_buf(struct loopback_pcm *play,
 	unsigned int dst_off = capt->buf_pos;
 	unsigned int clear_bytes = 0;
 
-	/* check if playback is draining, trim the capture copy size
-	 * when our pointer is at the end of playback ring buffer */
+	 
 	if (runtime->state == SNDRV_PCM_STATE_DRAINING &&
 	    snd_pcm_playback_hw_avail(runtime) < runtime->buffer_size) { 
 	    	snd_pcm_uframes_t appl_ptr, appl_ptr1, diff;
@@ -597,7 +561,7 @@ static inline void bytepos_finish(struct loopback_pcm *dpcm,
 	dpcm->buf_pos %= dpcm->pcm_buffer_size;
 }
 
-/* call in cable->lock */
+ 
 static unsigned int loopback_jiffies_timer_pos_update
 		(struct loopback_cable *cable)
 {
@@ -637,7 +601,7 @@ static unsigned int loopback_jiffies_timer_pos_update
 	if (delta_play == 0 && delta_capt == 0)
 		goto unlock;
 
-	/* note delta_capt == delta_play at this moment */
+	 
 	count1 = bytepos_delta(dpcm_play, delta_play);
 	count2 = bytepos_delta(dpcm_capt, delta_capt);
 	if (count1 < count2) {
@@ -665,7 +629,7 @@ static void loopback_jiffies_timer_function(struct timer_list *t)
 		if (dpcm->period_update_pending) {
 			dpcm->period_update_pending = 0;
 			spin_unlock_irqrestore(&dpcm->cable->lock, flags);
-			/* need to unlock before calling below */
+			 
 			snd_pcm_period_elapsed(dpcm->substream);
 			return;
 		}
@@ -673,25 +637,17 @@ static void loopback_jiffies_timer_function(struct timer_list *t)
 	spin_unlock_irqrestore(&dpcm->cable->lock, flags);
 }
 
-/* call in cable->lock */
+ 
 static int loopback_snd_timer_check_resolution(struct snd_pcm_runtime *runtime,
 					       unsigned long resolution)
 {
 	if (resolution != runtime->timer_resolution) {
 		struct loopback_pcm *dpcm = runtime->private_data;
 		struct loopback_cable *cable = dpcm->cable;
-		/* Worst case estimation of possible values for resolution
-		 * resolution <= (512 * 1024) frames / 8kHz in nsec
-		 * resolution <= 65.536.000.000 nsec
-		 *
-		 * period_size <= 65.536.000.000 nsec / 1000nsec/usec * 192kHz +
-		 *  500.000
-		 * period_size <= 12.582.912.000.000  <64bit
-		 *  / 1.000.000 usec/sec
-		 */
+		 
 		snd_pcm_uframes_t period_size_usec =
 				resolution / 1000 * runtime->rate;
-		/* round to nearest sample rate */
+		 
 		snd_pcm_uframes_t period_size =
 				(period_size_usec + 500 * 1000) / (1000 * 1000);
 
@@ -719,7 +675,7 @@ static void loopback_snd_timer_period_elapsed(struct loopback_cable *cable,
 
 	spin_lock_irqsave(&cable->lock, flags);
 	running = cable->running ^ cable->pause;
-	/* no need to do anything if no stream is running */
+	 
 	if (!running) {
 		spin_unlock_irqrestore(&cable->lock, flags);
 		return;
@@ -745,12 +701,9 @@ static void loopback_snd_timer_period_elapsed(struct loopback_cable *cable,
 				dpcm_play->substream->runtime :
 				dpcm_capt->substream->runtime;
 
-	/* resolution is only valid for SNDRV_TIMER_EVENT_TICK events */
+	 
 	if (event == SNDRV_TIMER_EVENT_TICK) {
-		/* The hardware rules guarantee that playback and capture period
-		 * are the same. Therefore only one device has to be checked
-		 * here.
-		 */
+		 
 		if (loopback_snd_timer_check_resolution(valid_runtime,
 							resolution) < 0) {
 			spin_unlock_irqrestore(&cable->lock, flags);
@@ -764,7 +717,7 @@ static void loopback_snd_timer_period_elapsed(struct loopback_cable *cable,
 
 	elapsed_bytes = frames_to_bytes(valid_runtime,
 					valid_runtime->period_size);
-	/* The same timer interrupt is used for playback and capture device */
+	 
 	if ((running & (1 << SNDRV_PCM_STREAM_PLAYBACK)) &&
 	    (running & (1 << SNDRV_PCM_STREAM_CAPTURE))) {
 		copy_play_buf(dpcm_play, dpcm_capt, elapsed_bytes);
@@ -807,29 +760,12 @@ static void loopback_snd_timer_event(struct snd_timer_instance *timeri,
 				     struct timespec64 *tstamp,
 				     unsigned long resolution)
 {
-	/* Do not lock cable->lock here because timer->lock is already hold.
-	 * There are other functions which first lock cable->lock and than
-	 * timer->lock e.g.
-	 * loopback_trigger()
-	 * spin_lock(&cable->lock)
-	 * loopback_snd_timer_start()
-	 * snd_timer_start()
-	 * spin_lock(&timer->lock)
-	 * Therefore when using the oposit order of locks here it could result
-	 * in a deadlock.
-	 */
+	 
 
 	if (event == SNDRV_TIMER_EVENT_MSTOP) {
 		struct loopback_cable *cable = timeri->callback_data;
 
-		/* sound card of the timer was stopped. Therefore there will not
-		 * be any further timer callbacks. Due to this forward audio
-		 * data from here if in draining state. When still in running
-		 * state the streaming will be aborted by the usual timeout. It
-		 * should not be aborted here because may be the timer sound
-		 * card does only a recovery and the timer is back soon.
-		 * This work triggers loopback_snd_timer_work()
-		 */
+		 
 		schedule_work(&cable->snd_timer.event_work);
 	}
 }
@@ -891,8 +827,7 @@ static const struct snd_pcm_hardware loopback_pcm_hardware =
 	.channels_max =		32,
 	.buffer_bytes_max =	2 * 1024 * 1024,
 	.period_bytes_min =	64,
-	/* note check overflow in frac_pos() using pcm_rate_shift before
-	   changing period_bytes_max value */
+	 
 	.period_bytes_max =	1024 * 1024,
 	.periods_min =		1,
 	.periods_max =		1024,
@@ -999,7 +934,7 @@ static void free_cable(struct snd_pcm_substream *substream)
 	if (!cable)
 		return;
 	if (cable->streams[!substream->stream]) {
-		/* other stream is still alive */
+		 
 		spin_lock_irq(&cable->lock);
 		cable->streams[substream->stream] = NULL;
 		spin_unlock_irq(&cable->lock);
@@ -1008,7 +943,7 @@ static void free_cable(struct snd_pcm_substream *substream)
 
 		if (cable->ops && cable->ops->close_cable && dpcm)
 			cable->ops->close_cable(dpcm);
-		/* free the cable */
+		 
 		loopback->cables[substream->number][dev] = NULL;
 		kfree(cable);
 	}
@@ -1034,7 +969,7 @@ static const struct loopback_ops loopback_jiffies_timer_ops = {
 static int loopback_parse_timer_id(const char *str,
 				   struct snd_timer_id *tid)
 {
-	/* [<pref>:](<card name>|<card idx>)[{.,}<dev idx>[{.,}<subdev idx>]] */
+	 
 	const char * const sep_dev = ".,";
 	const char * const sep_pref = ":";
 	const char *name = str;
@@ -1052,7 +987,7 @@ static int loopback_parse_timer_id(const char *str,
 	}
 	err = kstrtoint(name, 0, &card_idx);
 	if (err == -EINVAL) {
-		/* Must be the name, not number */
+		 
 		for (card_idx = 0; card_idx < snd_ecards_limit; card_idx++) {
 			struct snd_card *card = snd_card_ref(card_idx);
 
@@ -1091,7 +1026,7 @@ static int loopback_parse_timer_id(const char *str,
 	return err;
 }
 
-/* call in loopback->cable_lock */
+ 
 static int loopback_snd_timer_open(struct loopback_pcm *dpcm)
 {
 	int err = 0;
@@ -1102,9 +1037,7 @@ static int loopback_snd_timer_open(struct loopback_pcm *dpcm)
 	struct snd_timer_instance *timeri;
 	struct loopback_cable *cable = dpcm->cable;
 
-	/* check if timer was already opened. It is only opened once
-	 * per playback and capture subdevice (aka cable).
-	 */
+	 
 	if (cable->snd_timer.instance)
 		goto exit;
 
@@ -1124,33 +1057,16 @@ static int loopback_snd_timer_open(struct loopback_pcm *dpcm)
 		err = -ENOMEM;
 		goto exit;
 	}
-	/* The callback has to be called from another work. If
-	 * SNDRV_TIMER_IFLG_FAST is specified it will be called from the
-	 * snd_pcm_period_elapsed() call of the selected sound card.
-	 * snd_pcm_period_elapsed() helds snd_pcm_stream_lock_irqsave().
-	 * Due to our callback loopback_snd_timer_function() also calls
-	 * snd_pcm_period_elapsed() which calls snd_pcm_stream_lock_irqsave().
-	 * This would end up in a dead lock.
-	 */
+	 
 	timeri->flags |= SNDRV_TIMER_IFLG_AUTO;
 	timeri->callback = loopback_snd_timer_function;
 	timeri->callback_data = (void *)cable;
 	timeri->ccallback = loopback_snd_timer_event;
 
-	/* initialise a work used for draining */
+	 
 	INIT_WORK(&cable->snd_timer.event_work, loopback_snd_timer_work);
 
-	/* The mutex loopback->cable_lock is kept locked.
-	 * Therefore snd_timer_open() cannot be called a second time
-	 * by the other device of the same cable.
-	 * Therefore the following issue cannot happen:
-	 * [proc1] Call loopback_timer_open() ->
-	 *	   Unlock cable->lock for snd_timer_close/open() call
-	 * [proc2] Call loopback_timer_open() -> snd_timer_open(),
-	 *	   snd_timer_start()
-	 * [proc1] Call snd_timer_open() and overwrite running timer
-	 *	   instance
-	 */
+	 
 	err = snd_timer_open(timeri, &cable->snd_timer.id, current->pid);
 	if (err < 0) {
 		pcm_err(dpcm->substream->pcm,
@@ -1169,9 +1085,7 @@ exit:
 	return err;
 }
 
-/* stop_sync() is not required for sound timer because it does not need to be
- * restarted in loopback_prepare() on Xrun recovery
- */
+ 
 static const struct loopback_ops loopback_snd_timer_ops = {
 	.open = loopback_snd_timer_open,
 	.start = loopback_snd_timer_start,
@@ -1224,9 +1138,9 @@ static int loopback_open(struct snd_pcm_substream *substream)
 
 	snd_pcm_hw_constraint_integer(runtime, SNDRV_PCM_HW_PARAM_PERIODS);
 
-	/* use dynamic rules based on actual runtime->hw values */
-	/* note that the default rules created in the PCM midlevel code */
-	/* are cached -> they do not reflect the actual state */
+	 
+	 
+	 
 	err = snd_pcm_hw_rule_add(runtime, 0,
 				  SNDRV_PCM_HW_PARAM_FORMAT,
 				  rule_format, dpcm,
@@ -1246,10 +1160,7 @@ static int loopback_open(struct snd_pcm_substream *substream)
 	if (err < 0)
 		goto unlock;
 
-	/* In case of sound timer the period time of both devices of the same
-	 * loop has to be the same.
-	 * This rule only takes effect if a sound timer was chosen
-	 */
+	 
 	if (cable->snd_timer.instance) {
 		err = snd_pcm_hw_rule_add(runtime, 0,
 					  SNDRV_PCM_HW_PARAM_PERIOD_BYTES,
@@ -1259,9 +1170,7 @@ static int loopback_open(struct snd_pcm_substream *substream)
 			goto unlock;
 	}
 
-	/* loopback_runtime_free() has not to be called if kfree(dpcm) was
-	 * already called here. Otherwise it will end up with a double free.
-	 */
+	 
 	runtime->private_free = loopback_runtime_free;
 	if (get_notify(dpcm))
 		runtime->hw = loopback_pcm_hardware;
@@ -1573,9 +1482,7 @@ static int loopback_mixer_new(struct loopback *loopback, int notify)
 				kctl->id.device = dev;
 				kctl->id.subdevice = substr;
 
-				/* Add the control before copying the id so that
-				 * the numid field of the id is set in the copy.
-				 */
+				 
 				err = snd_ctl_add(card, kctl);
 				if (err < 0)
 					return err;

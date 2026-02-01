@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * irqchip for the Faraday Technology FTINTC010 Copyright (C) 2017 Linus
- * Walleij <linus.walleij@linaro.org>
- *
- * Based on arch/arm/mach-gemini/irq.c
- * Copyright (C) 2001-2006 Storlink, Corp.
- * Copyright (C) 2008-2009 Paulius Zaleckas <paulius.zaleckas@gmail.com>
- */
+
+ 
 #include <linux/bitops.h>
 #include <linux/irq.h>
 #include <linux/io.h>
@@ -26,9 +19,9 @@
 #define FT010_IRQ_SOURCE(base_addr)	(base_addr + 0x00)
 #define FT010_IRQ_MASK(base_addr)	(base_addr + 0x04)
 #define FT010_IRQ_CLEAR(base_addr)	(base_addr + 0x08)
-/* Selects level- or edge-triggered */
+ 
 #define FT010_IRQ_MODE(base_addr)	(base_addr + 0x0C)
-/* Selects active low/high or falling/rising edge */
+ 
 #define FT010_IRQ_POLARITY(base_addr)	(base_addr + 0x10)
 #define FT010_IRQ_STATUS(base_addr)	(base_addr + 0x14)
 #define FT010_FIQ_SOURCE(base_addr)	(base_addr + 0x20)
@@ -38,12 +31,7 @@
 #define FT010_FIQ_POLARITY(base_addr)	(base_addr + 0x30)
 #define FT010_FIQ_STATUS(base_addr)	(base_addr + 0x34)
 
-/**
- * struct ft010_irq_data - irq data container for the Faraday IRQ controller
- * @base: memory offset in virtual memory
- * @chip: chip container for this instance
- * @domain: IRQ domain for this instance
- */
+ 
 struct ft010_irq_data {
 	void __iomem *base;
 	struct irq_chip chip;
@@ -122,7 +110,7 @@ static struct irq_chip ft010_irq_chip = {
 	.irq_set_type	= ft010_irq_set_type,
 };
 
-/* Local static for the IRQ entry call */
+ 
 static struct ft010_irq_data firq;
 
 static asmlinkage void __exception_irq_entry ft010_irqchip_handle_irq(struct pt_regs *regs)
@@ -143,7 +131,7 @@ static int ft010_irqdomain_map(struct irq_domain *d, unsigned int irq,
 	struct ft010_irq_data *f = d->host_data;
 
 	irq_set_chip_data(irq, f);
-	/* All IRQs should set up their type, flags as bad by default */
+	 
 	irq_set_chip_and_handler(irq, &ft010_irq_chip, handle_bad_irq);
 	irq_set_probe(irq);
 
@@ -167,16 +155,13 @@ static int __init ft010_of_init_irq(struct device_node *node,
 {
 	struct ft010_irq_data *f = &firq;
 
-	/*
-	 * Disable the idle handler by default since it is buggy
-	 * For more info see arch/arm/mach-gemini/idle.c
-	 */
+	 
 	cpu_idle_poll_ctrl(true);
 
 	f->base = of_iomap(node, 0);
 	WARN(!f->base, "unable to map gemini irq registers\n");
 
-	/* Disable all interrupts */
+	 
 	writel(0, FT010_IRQ_MASK(f->base));
 	writel(0, FT010_FIQ_MASK(f->base));
 

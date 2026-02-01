@@ -1,50 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * caam - Freescale FSL CAAM support for crypto API
- *
- * Copyright 2008-2011 Freescale Semiconductor, Inc.
- * Copyright 2016-2019, 2023 NXP
- *
- * Based on talitos crypto API driver.
- *
- * relationship of job descriptors to shared descriptors (SteveC Dec 10 2008):
- *
- * ---------------                     ---------------
- * | JobDesc #1  |-------------------->|  ShareDesc  |
- * | *(packet 1) |                     |   (PDB)     |
- * ---------------      |------------->|  (hashKey)  |
- *       .              |              | (cipherKey) |
- *       .              |    |-------->| (operation) |
- * ---------------      |    |         ---------------
- * | JobDesc #2  |------|    |
- * | *(packet 2) |           |
- * ---------------           |
- *       .                   |
- *       .                   |
- * ---------------           |
- * | JobDesc #3  |------------
- * | *(packet 3) |
- * ---------------
- *
- * The SharedDesc never changes for a connection unless rekeyed, but
- * each packet will likely be in a different place. So all we need
- * to know to process the packet is where the input is, where the
- * output goes, and what context we want to process with. Context is
- * in the SharedDesc, packet references in the JobDesc.
- *
- * So, a job desc looks like:
- *
- * ---------------------
- * | Header            |
- * | ShareDesc Pointer |
- * | SEQ_OUT_PTR       |
- * | (output buffer)   |
- * | (output length)   |
- * | SEQ_IN_PTR        |
- * | (input buffer)    |
- * | (input length)    |
- * ---------------------
- */
+
+ 
 
 #include "compat.h"
 
@@ -69,11 +24,9 @@
 #include <linux/slab.h>
 #include <linux/string.h>
 
-/*
- * crypto alg
- */
+ 
 #define CAAM_CRA_PRIORITY		3000
-/* max key is sum of AES_MAX_KEY_SIZE, max split key size */
+ 
 #define CAAM_MAX_KEY_SIZE		(AES_MAX_KEY_SIZE + \
 					 CTR_RFC3686_NONCE_SIZE + \
 					 SHA512_DIGEST_SIZE * 2)
@@ -109,9 +62,7 @@ struct caam_skcipher_alg {
 	bool registered;
 };
 
-/*
- * per-session context
- */
+ 
 struct caam_ctx {
 	u32 sh_desc_enc[DESC_MAX_USED_LEN];
 	u32 sh_desc_dec[DESC_MAX_USED_LEN];
@@ -146,10 +97,7 @@ static int aead_null_set_sh_desc(struct crypto_aead *aead)
 	int rem_bytes = CAAM_DESC_BYTES_MAX - AEAD_DESC_JOB_IO_LEN -
 			ctx->adata.keylen_pad;
 
-	/*
-	 * Job Descriptor and Shared Descriptors
-	 * must all fit into the 64-word Descriptor h/w Buffer
-	 */
+	 
 	if (rem_bytes >= DESC_AEAD_NULL_ENC_LEN) {
 		ctx->adata.key_inline = true;
 		ctx->adata.key_virt = ctx->key;
@@ -158,17 +106,14 @@ static int aead_null_set_sh_desc(struct crypto_aead *aead)
 		ctx->adata.key_dma = ctx->key_dma;
 	}
 
-	/* aead_encrypt shared descriptor */
+	 
 	desc = ctx->sh_desc_enc;
 	cnstr_shdsc_aead_null_encap(desc, &ctx->adata, ctx->authsize,
 				    ctrlpriv->era);
 	dma_sync_single_for_device(jrdev, ctx->sh_desc_enc_dma,
 				   desc_bytes(desc), ctx->dir);
 
-	/*
-	 * Job Descriptor and Shared Descriptors
-	 * must all fit into the 64-word Descriptor h/w Buffer
-	 */
+	 
 	if (rem_bytes >= DESC_AEAD_NULL_DEC_LEN) {
 		ctx->adata.key_inline = true;
 		ctx->adata.key_virt = ctx->key;
@@ -177,7 +122,7 @@ static int aead_null_set_sh_desc(struct crypto_aead *aead)
 		ctx->adata.key_dma = ctx->key_dma;
 	}
 
-	/* aead_decrypt shared descriptor */
+	 
 	desc = ctx->sh_desc_dec;
 	cnstr_shdsc_aead_null_decap(desc, &ctx->adata, ctx->authsize,
 				    ctrlpriv->era);
@@ -207,34 +152,22 @@ static int aead_set_sh_desc(struct crypto_aead *aead)
 	if (!ctx->authsize)
 		return 0;
 
-	/* NULL encryption / decryption */
+	 
 	if (!ctx->cdata.keylen)
 		return aead_null_set_sh_desc(aead);
 
-	/*
-	 * AES-CTR needs to load IV in CONTEXT1 reg
-	 * at an offset of 128bits (16bytes)
-	 * CONTEXT1[255:128] = IV
-	 */
+	 
 	if (ctr_mode)
 		ctx1_iv_off = 16;
 
-	/*
-	 * RFC3686 specific:
-	 *	CONTEXT1[255:128] = {NONCE, IV, COUNTER}
-	 */
+	 
 	if (is_rfc3686) {
 		ctx1_iv_off = 16 + CTR_RFC3686_NONCE_SIZE;
 		nonce = (u32 *)((void *)ctx->key + ctx->adata.keylen_pad +
 				ctx->cdata.keylen - CTR_RFC3686_NONCE_SIZE);
 	}
 
-	/*
-	 * In case |user key| > |derived key|, using DKP<imm,imm>
-	 * would result in invalid opcodes (last bytes of user key) in
-	 * the resulting descriptor. Use DKP<ptr,imm> instead => both
-	 * virtual and dma key addresses are needed.
-	 */
+	 
 	ctx->adata.key_virt = ctx->key;
 	ctx->adata.key_dma = ctx->key_dma;
 
@@ -247,10 +180,7 @@ static int aead_set_sh_desc(struct crypto_aead *aead)
 	if (alg->caam.geniv)
 		goto skip_enc;
 
-	/*
-	 * Job Descriptor and Shared Descriptors
-	 * must all fit into the 64-word Descriptor h/w Buffer
-	 */
+	 
 	if (desc_inline_query(DESC_AEAD_ENC_LEN +
 			      (is_rfc3686 ? DESC_AEAD_CTR_RFC3686_LEN : 0),
 			      AUTHENC_DESC_JOB_IO_LEN, data_len, &inl_mask,
@@ -260,7 +190,7 @@ static int aead_set_sh_desc(struct crypto_aead *aead)
 	ctx->adata.key_inline = !!(inl_mask & 1);
 	ctx->cdata.key_inline = !!(inl_mask & 2);
 
-	/* aead_encrypt shared descriptor */
+	 
 	desc = ctx->sh_desc_enc;
 	cnstr_shdsc_aead_encap(desc, &ctx->cdata, &ctx->adata, ivsize,
 			       ctx->authsize, is_rfc3686, nonce, ctx1_iv_off,
@@ -269,10 +199,7 @@ static int aead_set_sh_desc(struct crypto_aead *aead)
 				   desc_bytes(desc), ctx->dir);
 
 skip_enc:
-	/*
-	 * Job Descriptor and Shared Descriptors
-	 * must all fit into the 64-word Descriptor h/w Buffer
-	 */
+	 
 	if (desc_inline_query(DESC_AEAD_DEC_LEN +
 			      (is_rfc3686 ? DESC_AEAD_CTR_RFC3686_LEN : 0),
 			      AUTHENC_DESC_JOB_IO_LEN, data_len, &inl_mask,
@@ -282,7 +209,7 @@ skip_enc:
 	ctx->adata.key_inline = !!(inl_mask & 1);
 	ctx->cdata.key_inline = !!(inl_mask & 2);
 
-	/* aead_decrypt shared descriptor */
+	 
 	desc = ctx->sh_desc_dec;
 	cnstr_shdsc_aead_decap(desc, &ctx->cdata, &ctx->adata, ivsize,
 			       ctx->authsize, alg->caam.geniv, is_rfc3686,
@@ -293,10 +220,7 @@ skip_enc:
 	if (!alg->caam.geniv)
 		goto skip_givenc;
 
-	/*
-	 * Job Descriptor and Shared Descriptors
-	 * must all fit into the 64-word Descriptor h/w Buffer
-	 */
+	 
 	if (desc_inline_query(DESC_AEAD_GIVENC_LEN +
 			      (is_rfc3686 ? DESC_AEAD_CTR_RFC3686_LEN : 0),
 			      AUTHENC_DESC_JOB_IO_LEN, data_len, &inl_mask,
@@ -306,7 +230,7 @@ skip_enc:
 	ctx->adata.key_inline = !!(inl_mask & 1);
 	ctx->cdata.key_inline = !!(inl_mask & 2);
 
-	/* aead_givencrypt shared descriptor */
+	 
 	desc = ctx->sh_desc_enc;
 	cnstr_shdsc_aead_givencap(desc, &ctx->cdata, &ctx->adata, ivsize,
 				  ctx->authsize, is_rfc3686, nonce,
@@ -341,11 +265,7 @@ static int gcm_set_sh_desc(struct crypto_aead *aead)
 	if (!ctx->cdata.keylen || !ctx->authsize)
 		return 0;
 
-	/*
-	 * AES GCM encrypt shared descriptor
-	 * Job Descriptor and Shared Descriptor
-	 * must fit into the 64-word Descriptor h/w Buffer
-	 */
+	 
 	if (rem_bytes >= DESC_GCM_ENC_LEN) {
 		ctx->cdata.key_inline = true;
 		ctx->cdata.key_virt = ctx->key;
@@ -359,10 +279,7 @@ static int gcm_set_sh_desc(struct crypto_aead *aead)
 	dma_sync_single_for_device(jrdev, ctx->sh_desc_enc_dma,
 				   desc_bytes(desc), ctx->dir);
 
-	/*
-	 * Job Descriptor and Shared Descriptors
-	 * must all fit into the 64-word Descriptor h/w Buffer
-	 */
+	 
 	if (rem_bytes >= DESC_GCM_DEC_LEN) {
 		ctx->cdata.key_inline = true;
 		ctx->cdata.key_virt = ctx->key;
@@ -406,11 +323,7 @@ static int rfc4106_set_sh_desc(struct crypto_aead *aead)
 	if (!ctx->cdata.keylen || !ctx->authsize)
 		return 0;
 
-	/*
-	 * RFC4106 encrypt shared descriptor
-	 * Job Descriptor and Shared Descriptor
-	 * must fit into the 64-word Descriptor h/w Buffer
-	 */
+	 
 	if (rem_bytes >= DESC_RFC4106_ENC_LEN) {
 		ctx->cdata.key_inline = true;
 		ctx->cdata.key_virt = ctx->key;
@@ -425,10 +338,7 @@ static int rfc4106_set_sh_desc(struct crypto_aead *aead)
 	dma_sync_single_for_device(jrdev, ctx->sh_desc_enc_dma,
 				   desc_bytes(desc), ctx->dir);
 
-	/*
-	 * Job Descriptor and Shared Descriptors
-	 * must all fit into the 64-word Descriptor h/w Buffer
-	 */
+	 
 	if (rem_bytes >= DESC_RFC4106_DEC_LEN) {
 		ctx->cdata.key_inline = true;
 		ctx->cdata.key_virt = ctx->key;
@@ -474,11 +384,7 @@ static int rfc4543_set_sh_desc(struct crypto_aead *aead)
 	if (!ctx->cdata.keylen || !ctx->authsize)
 		return 0;
 
-	/*
-	 * RFC4543 encrypt shared descriptor
-	 * Job Descriptor and Shared Descriptor
-	 * must fit into the 64-word Descriptor h/w Buffer
-	 */
+	 
 	if (rem_bytes >= DESC_RFC4543_ENC_LEN) {
 		ctx->cdata.key_inline = true;
 		ctx->cdata.key_virt = ctx->key;
@@ -493,10 +399,7 @@ static int rfc4543_set_sh_desc(struct crypto_aead *aead)
 	dma_sync_single_for_device(jrdev, ctx->sh_desc_enc_dma,
 				   desc_bytes(desc), ctx->dir);
 
-	/*
-	 * Job Descriptor and Shared Descriptors
-	 * must all fit into the 64-word Descriptor h/w Buffer
-	 */
+	 
 	if (rem_bytes >= DESC_RFC4543_DEC_LEN) {
 		ctx->cdata.key_inline = true;
 		ctx->cdata.key_virt = ctx->key;
@@ -600,10 +503,7 @@ static int aead_setkey(struct crypto_aead *aead,
 	print_hex_dump_debug("key in @"__stringify(__LINE__)": ",
 			     DUMP_PREFIX_ADDRESS, 16, 4, key, keylen, 1);
 
-	/*
-	 * If DKP is supported, use it in the shared descriptor to generate
-	 * the split key.
-	 */
+	 
 	if (ctrlpriv->era >= 6) {
 		ctx->adata.keylen = keys.authkeylen;
 		ctx->adata.keylen_pad = split_key_len(ctx->adata.algtype &
@@ -628,7 +528,7 @@ static int aead_setkey(struct crypto_aead *aead,
 		goto badkey;
 	}
 
-	/* postpend encryption key to auth split key */
+	 
 	memcpy(ctx->key + ctx->adata.keylen_pad, keys.enckey, keys.enckeylen);
 	dma_sync_single_for_device(jrdev, ctx->key_dma, ctx->adata.keylen_pad +
 				   keys.enckeylen, ctx->dir);
@@ -700,10 +600,7 @@ static int rfc4106_setkey(struct crypto_aead *aead,
 
 	memcpy(ctx->key, key, keylen);
 
-	/*
-	 * The last four bytes of the key material are used as the salt value
-	 * in the nonce. Update the AES key length.
-	 */
+	 
 	ctx->cdata.keylen = keylen - 4;
 	dma_sync_single_for_device(jrdev, ctx->key_dma, ctx->cdata.keylen,
 				   ctx->dir);
@@ -726,10 +623,7 @@ static int rfc4543_setkey(struct crypto_aead *aead,
 
 	memcpy(ctx->key, key, keylen);
 
-	/*
-	 * The last four bytes of the key material are used as the salt value
-	 * in the nonce. Update the AES key length.
-	 */
+	 
 	ctx->cdata.keylen = keylen - 4;
 	dma_sync_single_for_device(jrdev, ctx->key_dma, ctx->cdata.keylen,
 				   ctx->dir);
@@ -755,14 +649,14 @@ static int skcipher_setkey(struct crypto_skcipher *skcipher, const u8 *key,
 	ctx->cdata.key_virt = key;
 	ctx->cdata.key_inline = true;
 
-	/* skcipher_encrypt shared descriptor */
+	 
 	desc = ctx->sh_desc_enc;
 	cnstr_shdsc_skcipher_encap(desc, &ctx->cdata, ivsize, is_rfc3686,
 				   ctx1_iv_off);
 	dma_sync_single_for_device(jrdev, ctx->sh_desc_enc_dma,
 				   desc_bytes(desc), ctx->dir);
 
-	/* skcipher_decrypt shared descriptor */
+	 
 	desc = ctx->sh_desc_dec;
 	cnstr_shdsc_skcipher_decap(desc, &ctx->cdata, ivsize, is_rfc3686,
 				   ctx1_iv_off);
@@ -790,11 +684,7 @@ static int rfc3686_skcipher_setkey(struct crypto_skcipher *skcipher,
 	u32 ctx1_iv_off;
 	int err;
 
-	/*
-	 * RFC3686 specific:
-	 *	| CONTEXT1[255:128] = {NONCE, IV, COUNTER}
-	 *	| *key = {KEY, NONCE}
-	 */
+	 
 	ctx1_iv_off = 16 + CTR_RFC3686_NONCE_SIZE;
 	keylen -= CTR_RFC3686_NONCE_SIZE;
 
@@ -811,11 +701,7 @@ static int ctr_skcipher_setkey(struct crypto_skcipher *skcipher,
 	u32 ctx1_iv_off;
 	int err;
 
-	/*
-	 * AES-CTR needs to load IV in CONTEXT1 reg
-	 * at an offset of 128bits (16bytes)
-	 * CONTEXT1[255:128] = IV
-	 */
+	 
 	ctx1_iv_off = 16;
 
 	err = aes_check_keylen(keylen);
@@ -867,13 +753,13 @@ static int xts_skcipher_setkey(struct crypto_skcipher *skcipher, const u8 *key,
 	ctx->cdata.key_virt = key;
 	ctx->cdata.key_inline = true;
 
-	/* xts_skcipher_encrypt shared descriptor */
+	 
 	desc = ctx->sh_desc_enc;
 	cnstr_shdsc_xts_skcipher_encap(desc, &ctx->cdata);
 	dma_sync_single_for_device(jrdev, ctx->sh_desc_enc_dma,
 				   desc_bytes(desc), ctx->dir);
 
-	/* xts_skcipher_decrypt shared descriptor */
+	 
 	desc = ctx->sh_desc_dec;
 	cnstr_shdsc_xts_skcipher_decap(desc, &ctx->cdata);
 	dma_sync_single_for_device(jrdev, ctx->sh_desc_dec_dma,
@@ -882,18 +768,7 @@ static int xts_skcipher_setkey(struct crypto_skcipher *skcipher, const u8 *key,
 	return 0;
 }
 
-/*
- * aead_edesc - s/w-extended aead descriptor
- * @src_nents: number of segments in input s/w scatterlist
- * @dst_nents: number of segments in output s/w scatterlist
- * @mapped_src_nents: number of segments in input h/w link table
- * @mapped_dst_nents: number of segments in output h/w link table
- * @sec4_sg_bytes: length of dma mapped sec4_sg space
- * @bklog: stored to determine if the request needs backlog
- * @sec4_sg_dma: bus physical mapped address of h/w link table
- * @sec4_sg: pointer to h/w link table
- * @hw_desc: the h/w job descriptor followed by any referenced link tables
- */
+ 
 struct aead_edesc {
 	int src_nents;
 	int dst_nents;
@@ -906,20 +781,7 @@ struct aead_edesc {
 	u32 hw_desc[];
 };
 
-/*
- * skcipher_edesc - s/w-extended skcipher descriptor
- * @src_nents: number of segments in input s/w scatterlist
- * @dst_nents: number of segments in output s/w scatterlist
- * @mapped_src_nents: number of segments in input h/w link table
- * @mapped_dst_nents: number of segments in output h/w link table
- * @iv_dma: dma address of iv for checking continuity and link table
- * @sec4_sg_bytes: length of dma mapped sec4_sg space
- * @bklog: stored to determine if the request needs backlog
- * @sec4_sg_dma: bus physical mapped address of h/w link table
- * @sec4_sg: pointer to h/w link table
- * @hw_desc: the h/w job descriptor followed by any referenced link tables
- *	     and IV
- */
+ 
 struct skcipher_edesc {
 	int src_nents;
 	int dst_nents;
@@ -998,10 +860,7 @@ static void aead_crypt_done(struct device *jrdev, u32 *desc, u32 err,
 
 	kfree(edesc);
 
-	/*
-	 * If no backlog flag, the completion of the request is done
-	 * by CAAM, not crypto engine.
-	 */
+	 
 	if (!has_bklog)
 		aead_request_complete(req, ecode);
 	else
@@ -1036,11 +895,7 @@ static void skcipher_crypt_done(struct device *jrdev, u32 *desc, u32 err,
 
 	skcipher_unmap(jrdev, edesc, req);
 
-	/*
-	 * The crypto API expects us to set the IV (req->iv) to the last
-	 * ciphertext block (CBC mode) or last counter (CTR mode).
-	 * This is used e.g. by the CTS mode.
-	 */
+	 
 	if (ivsize && !ecode) {
 		memcpy(req->iv, skcipher_edesc_iv(edesc), ivsize);
 
@@ -1055,19 +910,14 @@ static void skcipher_crypt_done(struct device *jrdev, u32 *desc, u32 err,
 
 	kfree(edesc);
 
-	/*
-	 * If no backlog flag, the completion of the request is done
-	 * by CAAM, not crypto engine.
-	 */
+	 
 	if (!has_bklog)
 		skcipher_request_complete(req, ecode);
 	else
 		crypto_finalize_skcipher_request(jrp->engine, req, ecode);
 }
 
-/*
- * Fill in aead job descriptor
- */
+ 
 static void init_aead_job(struct aead_request *req,
 			  struct aead_edesc *edesc,
 			  bool all_contig, bool encrypt)
@@ -1143,20 +993,20 @@ static void init_gcm_job(struct aead_request *req,
 	init_aead_job(req, edesc, all_contig, encrypt);
 	append_math_add_imm_u32(desc, REG3, ZERO, IMM, req->assoclen);
 
-	/* BUG This should not be specific to generic GCM. */
+	 
 	last = 0;
 	if (encrypt && generic_gcm && !(req->assoclen + req->cryptlen))
 		last = FIFOLD_TYPE_LAST1;
 
-	/* Read GCM IV */
+	 
 	append_cmd(desc, CMD_FIFO_LOAD | FIFOLD_CLASS_CLASS1 | IMMEDIATE |
 			 FIFOLD_TYPE_IV | FIFOLD_TYPE_FLUSH1 | GCM_AES_IV_SIZE | last);
-	/* Append Salt */
+	 
 	if (!generic_gcm)
 		append_data(desc, ctx->key + ctx->cdata.keylen, 4);
-	/* Append IV */
+	 
 	append_data(desc, req->iv, ivsize);
-	/* End of blank commands */
+	 
 }
 
 static void init_chachapoly_job(struct aead_request *req,
@@ -1172,22 +1022,16 @@ static void init_chachapoly_job(struct aead_request *req,
 	init_aead_job(req, edesc, all_contig, encrypt);
 
 	if (ivsize != CHACHAPOLY_IV_SIZE) {
-		/* IPsec specific: CONTEXT1[223:128] = {NONCE, IV} */
+		 
 		ctx_iv_off += 4;
 
-		/*
-		 * The associated data comes already with the IV but we need
-		 * to skip it when we authenticate or encrypt...
-		 */
+		 
 		assoclen -= ivsize;
 	}
 
 	append_math_add_imm_u32(desc, REG3, ZERO, IMM, assoclen);
 
-	/*
-	 * For IPsec load the IV further in the same register.
-	 * For RFC7539 simply load the 12 bytes nonce in a single operation
-	 */
+	 
 	append_load_as_imm(desc, req->iv, ivsize, LDST_CLASS_1_CCB |
 			   LDST_SRCDST_BYTE_CONTEXT |
 			   ctx_iv_off << LDST_OFFSET_SHIFT);
@@ -1210,27 +1054,17 @@ static void init_authenc_job(struct aead_request *req,
 	u32 *desc = edesc->hw_desc;
 	u32 ivoffset = 0;
 
-	/*
-	 * AES-CTR needs to load IV in CONTEXT1 reg
-	 * at an offset of 128bits (16bytes)
-	 * CONTEXT1[255:128] = IV
-	 */
+	 
 	if (ctr_mode)
 		ivoffset = 16;
 
-	/*
-	 * RFC3686 specific:
-	 *	CONTEXT1[255:128] = {NONCE, IV, COUNTER}
-	 */
+	 
 	if (is_rfc3686)
 		ivoffset = 16 + CTR_RFC3686_NONCE_SIZE;
 
 	init_aead_job(req, edesc, all_contig, encrypt);
 
-	/*
-	 * {REG3, DPOVRD} = assoclen, depending on whether MATH command supports
-	 * having DPOVRD as destination.
-	 */
+	 
 	if (ctrlpriv->era < 3)
 		append_math_add_imm_u32(desc, REG3, ZERO, IMM, req->assoclen);
 	else
@@ -1243,9 +1077,7 @@ static void init_authenc_job(struct aead_request *req,
 				   (ivoffset << LDST_OFFSET_SHIFT));
 }
 
-/*
- * Fill in skcipher job descriptor
- */
+ 
 static void init_skcipher_job(struct skcipher_request *req,
 			      struct skcipher_edesc *edesc,
 			      const bool encrypt)
@@ -1299,9 +1131,7 @@ static void init_skcipher_job(struct skcipher_request *req,
 	append_seq_out_ptr(desc, dst_dma, req->cryptlen + ivsize, out_options);
 }
 
-/*
- * allocate and map the aead extended descriptor
- */
+ 
 static struct aead_edesc *aead_edesc_alloc(struct aead_request *req,
 					   int desc_bytes, bool *all_contig_ptr,
 					   bool encrypt)
@@ -1355,7 +1185,7 @@ static struct aead_edesc *aead_edesc_alloc(struct aead_request *req,
 			return ERR_PTR(-ENOMEM);
 		}
 	} else {
-		/* Cover also the case of null (zero length) input data */
+		 
 		if (src_nents) {
 			mapped_src_nents = dma_map_sg(jrdev, req->src,
 						      src_nents, DMA_TO_DEVICE);
@@ -1367,7 +1197,7 @@ static struct aead_edesc *aead_edesc_alloc(struct aead_request *req,
 			mapped_src_nents = 0;
 		}
 
-		/* Cover also the case of null (zero length) output data */
+		 
 		if (dst_nents) {
 			mapped_dst_nents = dma_map_sg(jrdev, req->dst,
 						      dst_nents,
@@ -1383,10 +1213,7 @@ static struct aead_edesc *aead_edesc_alloc(struct aead_request *req,
 		}
 	}
 
-	/*
-	 * HW reads 4 S/G entries at a time; make sure the reads don't go beyond
-	 * the end of the table by allocating more S/G entries.
-	 */
+	 
 	sec4_sg_len = mapped_src_nents > 1 ? mapped_src_nents : 0;
 	if (mapped_dst_nents > 1)
 		sec4_sg_len += pad_sg_nents(mapped_dst_nents);
@@ -1395,7 +1222,7 @@ static struct aead_edesc *aead_edesc_alloc(struct aead_request *req,
 
 	sec4_sg_bytes = sec4_sg_len * sizeof(struct sec4_sg_entry);
 
-	/* allocate space for base edesc and hw desc commands, link tables */
+	 
 	edesc = kzalloc(sizeof(*edesc) + desc_bytes + sec4_sg_bytes, flags);
 	if (!edesc) {
 		caam_unmap(jrdev, req->src, req->dst, src_nents, dst_nents, 0,
@@ -1450,11 +1277,7 @@ static int aead_enqueue_req(struct device *jrdev, struct aead_request *req)
 	u32 *desc = edesc->hw_desc;
 	int ret;
 
-	/*
-	 * Only the backlog request are sent to crypto-engine since the others
-	 * can be handled by CAAM, if free, especially since JR has up to 1024
-	 * entries (more than the 10 entries from crypto-engine).
-	 */
+	 
 	if (req->base.flags & CRYPTO_TFM_REQ_MAY_BACKLOG)
 		ret = crypto_transfer_aead_request_to_engine(jrpriv->engine,
 							     req);
@@ -1511,13 +1334,13 @@ static inline int aead_crypt(struct aead_request *req, bool encrypt)
 	struct device *jrdev = ctx->jrdev;
 	bool all_contig;
 
-	/* allocate extended descriptor */
+	 
 	edesc = aead_edesc_alloc(req, AUTHENC_DESC_JOB_IO_LEN,
 				 &all_contig, encrypt);
 	if (IS_ERR(edesc))
 		return PTR_ERR(edesc);
 
-	/* Create and submit job descriptor */
+	 
 	init_authenc_job(req, edesc, all_contig, encrypt);
 
 	print_hex_dump_debug("aead jobdesc@"__stringify(__LINE__)": ",
@@ -1570,13 +1393,13 @@ static inline int gcm_crypt(struct aead_request *req, bool encrypt)
 	struct device *jrdev = ctx->jrdev;
 	bool all_contig;
 
-	/* allocate extended descriptor */
+	 
 	edesc = aead_edesc_alloc(req, GCM_DESC_JOB_IO_LEN, &all_contig,
 				 encrypt);
 	if (IS_ERR(edesc))
 		return PTR_ERR(edesc);
 
-	/* Create and submit job descriptor */
+	 
 	init_gcm_job(req, edesc, all_contig, encrypt);
 
 	print_hex_dump_debug("aead jobdesc@"__stringify(__LINE__)": ",
@@ -1606,9 +1429,7 @@ static int ipsec_gcm_decrypt(struct aead_request *req)
 	return crypto_ipsec_check_assoclen(req->assoclen) ? : gcm_decrypt(req);
 }
 
-/*
- * allocate and map the skcipher extended descriptor for skcipher
- */
+ 
 static struct skcipher_edesc *skcipher_edesc_alloc(struct skcipher_request *req,
 						   int desc_bytes)
 {
@@ -1666,23 +1487,12 @@ static struct skcipher_edesc *skcipher_edesc_alloc(struct skcipher_request *req,
 	}
 
 	if (!ivsize && mapped_src_nents == 1)
-		sec4_sg_ents = 0; // no need for an input hw s/g table
+		sec4_sg_ents = 0;  
 	else
 		sec4_sg_ents = mapped_src_nents + !!ivsize;
 	dst_sg_idx = sec4_sg_ents;
 
-	/*
-	 * Input, output HW S/G tables: [IV, src][dst, IV]
-	 * IV entries point to the same buffer
-	 * If src == dst, S/G entries are reused (S/G tables overlap)
-	 *
-	 * HW reads 4 S/G entries at a time; make sure the reads don't go beyond
-	 * the end of the table by allocating more S/G entries. Logic:
-	 * if (output S/G)
-	 *      pad output S/G, if needed
-	 * else if (input S/G) ...
-	 *      pad input S/G, if needed
-	 */
+	 
 	if (ivsize || mapped_dst_nents > 1) {
 		if (req->src == req->dst)
 			sec4_sg_ents = !!ivsize + pad_sg_nents(sec4_sg_ents);
@@ -1695,9 +1505,7 @@ static struct skcipher_edesc *skcipher_edesc_alloc(struct skcipher_request *req,
 
 	sec4_sg_bytes = sec4_sg_ents * sizeof(struct sec4_sg_entry);
 
-	/*
-	 * allocate space for base edesc and hw desc commands, link tables, IV
-	 */
+	 
 	aligned_size = sizeof(*edesc) + desc_bytes + sec4_sg_bytes;
 	aligned_size = ALIGN(aligned_size, dma_get_cache_alignment());
 	aligned_size += ~(ARCH_KMALLOC_MINALIGN - 1) &
@@ -1720,7 +1528,7 @@ static struct skcipher_edesc *skcipher_edesc_alloc(struct skcipher_request *req,
 						  desc_bytes);
 	rctx->edesc = edesc;
 
-	/* Make sure IV is located in a DMAable area */
+	 
 	if (ivsize) {
 		iv = skcipher_edesc_iv(edesc);
 		memcpy(iv, req->iv, ivsize);
@@ -1818,11 +1626,7 @@ static inline int skcipher_crypt(struct skcipher_request *req, bool encrypt)
 	u32 *desc;
 	int ret = 0;
 
-	/*
-	 * XTS is expected to return an error even for input length = 0
-	 * Note that the case input length < block size will be caught during
-	 * HW offloading and return an error.
-	 */
+	 
 	if (!req->cryptlen && !ctx->fallback)
 		return 0;
 
@@ -1842,12 +1646,12 @@ static inline int skcipher_crypt(struct skcipher_request *req, bool encrypt)
 				 crypto_skcipher_decrypt(&rctx->fallback_req);
 	}
 
-	/* allocate extended descriptor */
+	 
 	edesc = skcipher_edesc_alloc(req, DESC_JOB_IO_LEN * CAAM_CMD_SZ);
 	if (IS_ERR(edesc))
 		return PTR_ERR(edesc);
 
-	/* Create and submit job descriptor*/
+	 
 	init_skcipher_job(req, edesc, encrypt);
 
 	print_hex_dump_debug("skcipher jobdesc@" __stringify(__LINE__)": ",
@@ -1855,11 +1659,7 @@ static inline int skcipher_crypt(struct skcipher_request *req, bool encrypt)
 			     desc_bytes(edesc->hw_desc), 1);
 
 	desc = edesc->hw_desc;
-	/*
-	 * Only the backlog request are sent to crypto-engine since the others
-	 * can be handled by CAAM, if free, especially since JR has up to 1024
-	 * entries (more than the 10 entries from crypto-engine).
-	 */
+	 
 	if (req->base.flags & CRYPTO_TFM_REQ_MAY_BACKLOG)
 		ret = crypto_transfer_skcipher_request_to_engine(jrpriv->engine,
 								 req);
@@ -2110,7 +1910,7 @@ static struct caam_aead_alg driver_aeads[] = {
 			.nodkp = true,
 		},
 	},
-	/* Galois Counter Mode */
+	 
 	{
 		.aead.base = {
 			.base = {
@@ -2133,7 +1933,7 @@ static struct caam_aead_alg driver_aeads[] = {
 			.nodkp = true,
 		},
 	},
-	/* single-pass ipsec_esp descriptor */
+	 
 	{
 		.aead.base = {
 			.base = {
@@ -3610,7 +3410,7 @@ static int caam_init_common(struct caam_ctx *ctx, struct caam_alg_entry *caam,
 	ctx->key_dma = dma_addr + offsetof(struct caam_ctx, key) -
 					sh_desc_enc_offset;
 
-	/* copy descriptor header template value */
+	 
 	ctx->cdata.algtype = OP_TYPE_CLASS1_ALG | caam->class1_alg_type;
 	ctx->adata.algtype = OP_TYPE_CLASS2_ALG | caam->class2_alg_type;
 
@@ -3742,10 +3542,7 @@ int caam_algapi_init(struct device *ctrldev)
 	unsigned int md_limit = SHA512_DIGEST_SIZE;
 	bool registered = false, gcm_support;
 
-	/*
-	 * Register crypto algorithms the device supports.
-	 * First, detect presence and attributes of DES, AES, and MD blocks.
-	 */
+	 
 	if (priv->era < 10) {
 		struct caam_perfmon __iomem *perfmon = &priv->jr[0]->perfmon;
 		u32 cha_vid, cha_inst, aes_rn;
@@ -3783,7 +3580,7 @@ int caam_algapi_init(struct device *ctrldev)
 		gcm_support = aesa & CHA_VER_MISC_AES_GCM;
 	}
 
-	/* If MD is present, limit digest size based on LP256 */
+	 
 	if (md_inst && md_vid  == CHA_VER_VID_MD_LP256)
 		md_limit = SHA256_DIGEST_SIZE;
 
@@ -3791,20 +3588,17 @@ int caam_algapi_init(struct device *ctrldev)
 		struct caam_skcipher_alg *t_alg = driver_algs + i;
 		u32 alg_sel = t_alg->caam.class1_alg_type & OP_ALG_ALGSEL_MASK;
 
-		/* Skip DES algorithms if not supported by device */
+		 
 		if (!des_inst &&
 		    ((alg_sel == OP_ALG_ALGSEL_3DES) ||
 		     (alg_sel == OP_ALG_ALGSEL_DES)))
 				continue;
 
-		/* Skip AES algorithms if not supported by device */
+		 
 		if (!aes_inst && (alg_sel == OP_ALG_ALGSEL_AES))
 				continue;
 
-		/*
-		 * Check support for AES modes not available
-		 * on LP devices.
-		 */
+		 
 		if (aes_vid == CHA_VER_VID_AES_LP &&
 		    (t_alg->caam.class1_alg_type & OP_ALG_AAI_MASK) ==
 		    OP_ALG_AAI_XTS)
@@ -3831,33 +3625,30 @@ int caam_algapi_init(struct device *ctrldev)
 				 OP_ALG_ALGSEL_MASK;
 		u32 alg_aai = t_alg->caam.class1_alg_type & OP_ALG_AAI_MASK;
 
-		/* Skip DES algorithms if not supported by device */
+		 
 		if (!des_inst &&
 		    ((c1_alg_sel == OP_ALG_ALGSEL_3DES) ||
 		     (c1_alg_sel == OP_ALG_ALGSEL_DES)))
 				continue;
 
-		/* Skip AES algorithms if not supported by device */
+		 
 		if (!aes_inst && (c1_alg_sel == OP_ALG_ALGSEL_AES))
 				continue;
 
-		/* Skip CHACHA20 algorithms if not supported by device */
+		 
 		if (c1_alg_sel == OP_ALG_ALGSEL_CHACHA20 && !ccha_inst)
 			continue;
 
-		/* Skip POLY1305 algorithms if not supported by device */
+		 
 		if (c2_alg_sel == OP_ALG_ALGSEL_POLY1305 && !ptha_inst)
 			continue;
 
-		/* Skip GCM algorithms if not supported by device */
+		 
 		if (c1_alg_sel == OP_ALG_ALGSEL_AES &&
 		    alg_aai == OP_ALG_AAI_GCM && !gcm_support)
 			continue;
 
-		/*
-		 * Skip algorithms requiring message digests
-		 * if MD or MD size is not supported by device.
-		 */
+		 
 		if (is_mdha(c2_alg_sel) &&
 		    (!md_inst || t_alg->aead.base.maxauthsize > md_limit))
 			continue;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Amlogic SD/eMMC driver for the GX/S905 family SoCs
- *
- * Copyright (c) 2016 BayLibre, SAS.
- * Author: Kevin Hilman <khilman@baylibre.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -121,11 +116,11 @@
 #define SD_EMMC_SRAM_DATA_BUF_LEN 1536
 #define SD_EMMC_SRAM_DATA_BUF_OFF 0x200
 
-#define SD_EMMC_CFG_BLK_SIZE 512 /* internal buffer max: 512 bytes */
-#define SD_EMMC_CFG_RESP_TIMEOUT 256 /* in clock cycles */
-#define SD_EMMC_CMD_TIMEOUT 1024 /* in ms */
-#define SD_EMMC_CMD_TIMEOUT_DATA 4096 /* in ms */
-#define SD_EMMC_CFG_CMD_GAP 16 /* in clock cycles */
+#define SD_EMMC_CFG_BLK_SIZE 512  
+#define SD_EMMC_CFG_RESP_TIMEOUT 256  
+#define SD_EMMC_CMD_TIMEOUT 1024  
+#define SD_EMMC_CMD_TIMEOUT_DATA 4096  
+#define SD_EMMC_CFG_CMD_GAP 16  
 #define SD_EMMC_DESC_BUF_LEN PAGE_SIZE
 
 #define SD_EMMC_PRE_REQ_DONE BIT(0)
@@ -211,7 +206,7 @@ static unsigned int meson_mmc_get_timeout_msecs(struct mmc_data *data)
 
 	timeout = roundup_pow_of_two(timeout);
 
-	return min(timeout, 32768U); /* max. 2^15 ms */
+	return min(timeout, 32768U);  
 }
 
 static struct mmc_command *meson_mmc_get_next_command(struct mmc_command *cmd)
@@ -233,24 +228,13 @@ static void meson_mmc_get_transfer_mode(struct mmc_host *mmc,
 	struct scatterlist *sg;
 	int i;
 
-	/*
-	 * When Controller DMA cannot directly access DDR memory, disable
-	 * support for Chain Mode to directly use the internal SRAM using
-	 * the bounce buffer mode.
-	 */
+	 
 	if (host->dram_access_quirk)
 		return;
 
-	/* SD_IO_RW_EXTENDED (CMD53) can also use block mode under the hood */
+	 
 	if (data->blocks > 1 || mrq->cmd->opcode == SD_IO_RW_EXTENDED) {
-		/*
-		 * In block mode DMA descriptor format, "length" field indicates
-		 * number of blocks and there is no way to pass DMA size that
-		 * is not multiple of SDIO block size, making it impossible to
-		 * tie more than one memory buffer with single SDIO block.
-		 * Block mode sg buffer size should be aligned with SDIO block
-		 * size, otherwise chain mode could not be used.
-		 */
+		 
 		for_each_sg(data->sg, sg, data->sg_len, i) {
 			if (sg->length % data->blksz) {
 				dev_warn_once(mmc_dev(mmc),
@@ -262,7 +246,7 @@ static void meson_mmc_get_transfer_mode(struct mmc_host *mmc,
 	}
 
 	for_each_sg(data->sg, sg, data->sg_len, i) {
-		/* check for 8 byte alignment */
+		 
 		if (sg->offset % 8) {
 			dev_warn_once(mmc_dev(mmc),
 				      "unaligned sg offset %u, disabling descriptor DMA for transfer\n",
@@ -314,12 +298,7 @@ static void meson_mmc_post_req(struct mmc_host *mmc, struct mmc_request *mrq,
 			     mmc_get_dma_dir(data));
 }
 
-/*
- * Gating the clock on this controller is tricky.  It seems the mmc clock
- * is also used by the controller.  It may crash during some operation if the
- * clock is stopped.  The safest thing to do, whenever possible, is to keep
- * clock running at stop it at the pad using the pinmux.
- */
+ 
 static void meson_mmc_clk_gate(struct meson_host *host)
 {
 	u32 cfg;
@@ -327,10 +306,7 @@ static void meson_mmc_clk_gate(struct meson_host *host)
 	if (host->pins_clk_gate) {
 		pinctrl_select_state(host->pinctrl, host->pins_clk_gate);
 	} else {
-		/*
-		 * If the pinmux is not provided - default to the classic and
-		 * unsafe method
-		 */
+		 
 		cfg = readl(host->regs + SD_EMMC_CFG);
 		cfg |= CFG_STOP_CLOCK;
 		writel(cfg, host->regs + SD_EMMC_CFG);
@@ -344,7 +320,7 @@ static void meson_mmc_clk_ungate(struct meson_host *host)
 	if (host->pins_clk_gate)
 		pinctrl_select_default_state(host->dev);
 
-	/* Make sure the clock is not stopped in the controller */
+	 
 	cfg = readl(host->regs + SD_EMMC_CFG);
 	cfg &= ~CFG_STOP_CLOCK;
 	writel(cfg, host->regs + SD_EMMC_CFG);
@@ -357,26 +333,26 @@ static int meson_mmc_clk_set(struct meson_host *host, unsigned long rate,
 	int ret;
 	u32 cfg;
 
-	/* Same request - bail-out */
+	 
 	if (host->ddr == ddr && host->req_rate == rate)
 		return 0;
 
-	/* stop clock */
+	 
 	meson_mmc_clk_gate(host);
 	host->req_rate = 0;
 	mmc->actual_clock = 0;
 
-	/* return with clock being stopped */
+	 
 	if (!rate)
 		return 0;
 
-	/* Stop the clock during rate change to avoid glitches */
+	 
 	cfg = readl(host->regs + SD_EMMC_CFG);
 	cfg |= CFG_STOP_CLOCK;
 	writel(cfg, host->regs + SD_EMMC_CFG);
 
 	if (ddr) {
-		/* DDR modes require higher module clock */
+		 
 		rate <<= 1;
 		cfg |= CFG_DDR;
 	} else {
@@ -395,7 +371,7 @@ static int meson_mmc_clk_set(struct meson_host *host, unsigned long rate,
 	host->req_rate = rate;
 	mmc->actual_clock = clk_get_rate(host->mmc_clk);
 
-	/* We should report the real output frequency of the controller */
+	 
 	if (ddr) {
 		host->req_rate >>= 1;
 		mmc->actual_clock >>= 1;
@@ -405,17 +381,13 @@ static int meson_mmc_clk_set(struct meson_host *host, unsigned long rate,
 	if (rate != mmc->actual_clock)
 		dev_dbg(host->dev, "requested rate was %lu\n", rate);
 
-	/* (re)start clock */
+	 
 	meson_mmc_clk_ungate(host);
 
 	return 0;
 }
 
-/*
- * The SD/eMMC IP block has an internal mux and divider used for
- * generating the MMC clock.  Use the clock framework to create and
- * manage these clocks.
- */
+ 
 static int meson_mmc_clk_init(struct meson_host *host)
 {
 	struct clk_init_data init;
@@ -427,7 +399,7 @@ static int meson_mmc_clk_init(struct meson_host *host)
 	const char *clk_parent[1];
 	u32 clk_reg;
 
-	/* init SD_EMMC_CLOCK to sane defaults w/min clock rate */
+	 
 	clk_reg = CLK_ALWAYS_ON(host);
 	clk_reg |= CLK_DIV_MASK;
 	clk_reg |= FIELD_PREP(CLK_CORE_PHASE_MASK, CLK_PHASE_180);
@@ -437,7 +409,7 @@ static int meson_mmc_clk_init(struct meson_host *host)
 		clk_reg |= CLK_IRQ_SDIO_SLEEP(host);
 	writel(clk_reg, host->regs + SD_EMMC_CLOCK);
 
-	/* get the mux parents */
+	 
 	for (i = 0; i < MUX_CLK_NUM_PARENTS; i++) {
 		struct clk *clk;
 		char name[16];
@@ -451,7 +423,7 @@ static int meson_mmc_clk_init(struct meson_host *host)
 		mux_parent_names[i] = __clk_get_name(clk);
 	}
 
-	/* create the mux */
+	 
 	mux = devm_kzalloc(host->dev, sizeof(*mux), GFP_KERNEL);
 	if (!mux)
 		return -ENOMEM;
@@ -472,7 +444,7 @@ static int meson_mmc_clk_init(struct meson_host *host)
 	if (WARN_ON(IS_ERR(host->mux_clk)))
 		return PTR_ERR(host->mux_clk);
 
-	/* create the divider */
+	 
 	div = devm_kzalloc(host->dev, sizeof(*div), GFP_KERNEL);
 	if (!div)
 		return -ENOMEM;
@@ -495,7 +467,7 @@ static int meson_mmc_clk_init(struct meson_host *host)
 	if (WARN_ON(IS_ERR(host->mmc_clk)))
 		return PTR_ERR(host->mmc_clk);
 
-	/* init SD_EMMC_CLOCK to sane defaults w/min clock rate */
+	 
 	host->mmc->f_min = clk_round_rate(host->mmc_clk, 400000);
 	ret = clk_set_rate(host->mmc_clk, host->mmc->f_min);
 	if (ret)
@@ -529,7 +501,7 @@ static int meson_mmc_resampling_tuning(struct mmc_host *mmc, u32 opcode)
 	unsigned int val, dly, max_dly, i;
 	int ret;
 
-	/* Resampling is done using the source clock */
+	 
 	max_dly = DIV_ROUND_UP(clk_get_rate(host->mux_clk),
 			       clk_get_rate(host->mmc_clk));
 
@@ -597,10 +569,7 @@ static void meson_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	u32 bus_width, val;
 	int err;
 
-	/*
-	 * GPIO regulator, only controls switching between 1v8 and
-	 * 3v3, doesn't support MMC_POWER_OFF, MMC_POWER_ON.
-	 */
+	 
 	switch (ios->power_mode) {
 	case MMC_POWER_OFF:
 		mmc_regulator_set_ocr(mmc, mmc->supply.vmmc, 0);
@@ -619,7 +588,7 @@ static void meson_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		break;
 	}
 
-	/* Bus width */
+	 
 	switch (ios->bus_width) {
 	case MMC_BUS_WIDTH_1:
 		bus_width = CFG_BUS_WIDTH_1;
@@ -673,7 +642,7 @@ static void meson_mmc_set_blksz(struct mmc_host *mmc, unsigned int blksz)
 
 	blksz = ilog2(blksz);
 
-	/* check if block-size matches, if not update */
+	 
 	if (blksz == blksz_old)
 		return;
 
@@ -735,12 +704,12 @@ static void meson_mmc_desc_chain_transfer(struct mmc_host *mmc, u32 cmd_cfg)
 	}
 	desc[data->sg_count - 1].cmd_cfg |= CMD_CFG_END_OF_CHAIN;
 
-	dma_wmb(); /* ensure descriptor is written before kicked */
+	dma_wmb();  
 	start = host->descs_dma_addr | START_DESC_BUSY;
 	writel(start, host->regs + SD_EMMC_START);
 }
 
-/* local sg copy for dram_access_quirk */
+ 
 static void meson_mmc_copy_buffer(struct meson_host *host, struct mmc_data *data,
 				  size_t buflen, bool to_buffer)
 {
@@ -794,17 +763,17 @@ static void meson_mmc_start_cmd(struct mmc_host *mmc, struct mmc_command *cmd)
 	u32 cmd_cfg = 0, cmd_data = 0;
 	unsigned int xfer_bytes = 0;
 
-	/* Setup descriptors */
+	 
 	dma_rmb();
 
 	host->cmd = cmd;
 
 	cmd_cfg |= FIELD_PREP(CMD_CFG_CMD_INDEX_MASK, cmd->opcode);
-	cmd_cfg |= CMD_CFG_OWNER;  /* owned by CPU */
+	cmd_cfg |= CMD_CFG_OWNER;   
 
 	meson_mmc_set_response_bits(cmd, &cmd_cfg);
 
-	/* data? */
+	 
 	if (data) {
 		data->bytes_xfered = 0;
 		cmd_cfg |= CMD_CFG_DATA_IO;
@@ -843,12 +812,12 @@ static void meson_mmc_start_cmd(struct mmc_host *mmc, struct mmc_command *cmd)
 				      ilog2(SD_EMMC_CMD_TIMEOUT));
 	}
 
-	/* Last descriptor */
+	 
 	cmd_cfg |= CMD_CFG_END_OF_CHAIN;
 	writel(cmd_cfg, host->regs + SD_EMMC_CMD_CFG);
 	writel(cmd_data, host->regs + SD_EMMC_CMD_DAT);
 	writel(0, host->regs + SD_EMMC_CMD_RSP);
-	wmb(); /* ensure descriptor is written before kicked */
+	wmb();  
 	writel(cmd->arg, host->regs + SD_EMMC_CMD_ARG);
 }
 
@@ -857,7 +826,7 @@ static int meson_mmc_validate_dram_access(struct mmc_host *mmc, struct mmc_data 
 	struct scatterlist *sg;
 	int i;
 
-	/* Reject request if any element offset or size is not 32bit aligned */
+	 
 	for_each_sg(data->sg, sg, data->sg_len, i) {
 		if (!IS_ALIGNED(sg->offset, sizeof(u32)) ||
 		    !IS_ALIGNED(sg->length, sizeof(u32))) {
@@ -876,11 +845,7 @@ static void meson_mmc_request(struct mmc_host *mmc, struct mmc_request *mrq)
 	host->needs_pre_post_req = mrq->data &&
 			!(mrq->data->host_cookie & SD_EMMC_PRE_REQ_DONE);
 
-	/*
-	 * The memory at the end of the controller used as bounce buffer for
-	 * the dram_access_quirk only accepts 32bit read/write access,
-	 * check the aligment and length of the data before starting the request.
-	 */
+	 
 	if (host->dram_access_quirk && mrq->data) {
 		mrq->cmd->error = meson_mmc_validate_dram_access(mmc, mrq->data);
 		if (mrq->cmd->error) {
@@ -898,7 +863,7 @@ static void meson_mmc_request(struct mmc_host *mmc, struct mmc_request *mrq)
 	if (host->needs_pre_post_req)
 		meson_mmc_pre_req(mmc, mrq);
 
-	/* Stop execution */
+	 
 	writel(0, host->regs + SD_EMMC_START);
 
 	meson_mmc_start_cmd(mmc, mrq->sbc ?: mrq->cmd);
@@ -947,7 +912,7 @@ static irqreturn_t meson_mmc_irq(int irq, void *dev_id)
 		return IRQ_NONE;
 	}
 
-	/* ack all raised interrupts */
+	 
 	writel(status, host->regs + SD_EMMC_STATUS);
 
 	cmd = host->cmd;
@@ -993,7 +958,7 @@ static irqreturn_t meson_mmc_irq(int irq, void *dev_id)
 
 out:
 	if (cmd->error) {
-		/* Stop desc in case of errors */
+		 
 		u32 start = readl(host->regs + SD_EMMC_START);
 
 		start &= ~START_DESC_BUSY;
@@ -1007,13 +972,7 @@ static int meson_mmc_wait_desc_stop(struct meson_host *host)
 {
 	u32 status;
 
-	/*
-	 * It may sometimes take a while for it to actually halt. Here, we
-	 * are giving it 5ms to comply
-	 *
-	 * If we don't confirm the descriptor is stopped, it might raise new
-	 * IRQs after we have called mmc_request_done() which is bad.
-	 */
+	 
 
 	return readl_poll_timeout(host->regs + SD_EMMC_STATUS, status,
 				  !(status & (STATUS_BUSY | STATUS_DESC_BUSY)),
@@ -1066,7 +1025,7 @@ static void meson_mmc_cfg_init(struct meson_host *host)
 	cfg |= FIELD_PREP(CFG_RC_CC_MASK, ilog2(SD_EMMC_CFG_CMD_GAP));
 	cfg |= FIELD_PREP(CFG_BLK_LEN_MASK, ilog2(SD_EMMC_CFG_BLK_SIZE));
 
-	/* abort chain on R/W errors */
+	 
 	cfg |= CFG_ERR_ABORT;
 
 	writel(cfg, host->regs + SD_EMMC_CFG);
@@ -1079,7 +1038,7 @@ static int meson_mmc_card_busy(struct mmc_host *mmc)
 
 	regval = readl(host->regs + SD_EMMC_STATUS);
 
-	/* We are only interrested in lines 0 to 3, so mask the other ones */
+	 
 	return !(FIELD_GET(STATUS_DATI, regval) & 0xf);
 }
 
@@ -1087,20 +1046,14 @@ static int meson_mmc_voltage_switch(struct mmc_host *mmc, struct mmc_ios *ios)
 {
 	int ret;
 
-	/* vqmmc regulator is available */
+	 
 	if (!IS_ERR(mmc->supply.vqmmc)) {
-		/*
-		 * The usual amlogic setup uses a GPIO to switch from one
-		 * regulator to the other. While the voltage ramp up is
-		 * pretty fast, care must be taken when switching from 3.3v
-		 * to 1.8v. Please make sure the regulator framework is aware
-		 * of your own regulator constraints
-		 */
+		 
 		ret = mmc_regulator_set_vqmmc(mmc, ios);
 		return ret < 0 ? ret : 0;
 	}
 
-	/* no vqmmc regulator, assume fixed regulator at 3/3.3V */
+	 
 	if (ios->signal_voltage == MMC_SIGNAL_VOLTAGE_330)
 		return 0;
 
@@ -1151,11 +1104,11 @@ static int meson_mmc_probe(struct platform_device *pdev)
 	host->dev = &pdev->dev;
 	dev_set_drvdata(&pdev->dev, host);
 
-	/* The G12A SDIO Controller needs an SRAM bounce buffer */
+	 
 	host->dram_access_quirk = device_property_read_bool(&pdev->dev,
 					"amlogic,dram-access-quirk");
 
-	/* Get regulators and the supported OCR mask */
+	 
 	ret = mmc_regulator_get_supply(mmc);
 	if (ret)
 		return ret;
@@ -1208,13 +1161,13 @@ static int meson_mmc_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* set config to sane default */
+	 
 	meson_mmc_cfg_init(host);
 
-	/* Stop execution */
+	 
 	writel(0, host->regs + SD_EMMC_START);
 
-	/* clear, ack and enable interrupts */
+	 
 	writel(0, host->regs + SD_EMMC_IRQ_EN);
 	writel(IRQ_EN_MASK, host->regs + SD_EMMC_STATUS);
 	writel(IRQ_EN_MASK, host->regs + SD_EMMC_IRQ_EN);
@@ -1228,9 +1181,9 @@ static int meson_mmc_probe(struct platform_device *pdev)
 	spin_lock_init(&host->lock);
 
 	if (host->dram_access_quirk) {
-		/* Limit segments to 1 due to low available sram memory */
+		 
 		mmc->max_segs = 1;
-		/* Limit to the available sram memory */
+		 
 		mmc->max_blk_count = SD_EMMC_SRAM_DATA_BUF_LEN /
 				     mmc->max_blk_size;
 	} else {
@@ -1241,25 +1194,16 @@ static int meson_mmc_probe(struct platform_device *pdev)
 	mmc->max_req_size = mmc->max_blk_count * mmc->max_blk_size;
 	mmc->max_seg_size = mmc->max_req_size;
 
-	/*
-	 * At the moment, we don't know how to reliably enable HS400.
-	 * From the different datasheets, it is not even clear if this mode
-	 * is officially supported by any of the SoCs
-	 */
+	 
 	mmc->caps2 &= ~MMC_CAP2_HS400;
 
 	if (host->dram_access_quirk) {
-		/*
-		 * The MMC Controller embeds 1,5KiB of internal SRAM
-		 * that can be used to be used as bounce buffer.
-		 * In the case of the G12A SDIO controller, use these
-		 * instead of the DDR memory
-		 */
+		 
 		host->bounce_buf_size = SD_EMMC_SRAM_DATA_BUF_LEN;
 		host->bounce_iomem_buf = host->regs + SD_EMMC_SRAM_DATA_BUF_OFF;
 		host->bounce_dma_addr = res->start + SD_EMMC_SRAM_DATA_BUF_OFF;
 	} else {
-		/* data bounce buffer */
+		 
 		host->bounce_buf_size = mmc->max_req_size;
 		host->bounce_buf =
 			dmam_alloc_coherent(host->dev, host->bounce_buf_size,
@@ -1299,7 +1243,7 @@ static void meson_mmc_remove(struct platform_device *pdev)
 
 	mmc_remove_host(host->mmc);
 
-	/* disable interrupts */
+	 
 	writel(0, host->regs + SD_EMMC_IRQ_EN);
 	free_irq(host->irq, host);
 

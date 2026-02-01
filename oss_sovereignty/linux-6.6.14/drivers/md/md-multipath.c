@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * multipath.c : Multiple Devices driver for Linux
- *
- * Copyright (C) 1999, 2000, 2001 Ingo Molnar, Red Hat
- *
- * Copyright (C) 1996, 1997, 1998 Ingo Molnar, Miguel de Icaza, Gadi Oxman
- *
- * MULTIPATH management functions.
- *
- * derived from raid1.c.
- */
+
+ 
 
 #include <linux/blkdev.h>
 #include <linux/module.h>
@@ -27,10 +17,7 @@ static int multipath_map (struct mpconf *conf)
 {
 	int i, disks = conf->raid_disks;
 
-	/*
-	 * Later we do read balancing on the read side
-	 * now we use the first available disk.
-	 */
+	 
 
 	rcu_read_lock();
 	for (i = 0; i < disks; i++) {
@@ -60,11 +47,7 @@ static void multipath_reschedule_retry (struct multipath_bh *mp_bh)
 	md_wakeup_thread(mddev->thread);
 }
 
-/*
- * multipath_end_bh_io() is called when we have finished servicing a multipathed
- * operation and are ready to return a success/failure code to the buffer
- * cache layer.
- */
+ 
 static void multipath_end_bh_io(struct multipath_bh *mp_bh, blk_status_t status)
 {
 	struct bio *bio = mp_bh->master_bio;
@@ -84,9 +67,7 @@ static void multipath_end_request(struct bio *bio)
 	if (!bio->bi_status)
 		multipath_end_bh_io(mp_bh, 0);
 	else if (!(bio->bi_opf & REQ_RAHEAD)) {
-		/*
-		 * oops, IO error:
-		 */
+		 
 		md_error (mp_bh->mddev, rdev);
 		pr_info("multipath: %pg: rescheduling sector %llu\n",
 			rdev->bdev,
@@ -148,26 +129,18 @@ static void multipath_status(struct seq_file *seq, struct mddev *mddev)
 	seq_putc(seq, ']');
 }
 
-/*
- * Careful, this can execute in IRQ contexts as well!
- */
+ 
 static void multipath_error (struct mddev *mddev, struct md_rdev *rdev)
 {
 	struct mpconf *conf = mddev->private;
 
 	if (conf->raid_disks - mddev->degraded <= 1) {
-		/*
-		 * Uh oh, we can do nothing if this is our last path, but
-		 * first check if this is a queued request for a device
-		 * which has just failed.
-		 */
+		 
 		pr_warn("multipath: only one IO path left and IO error.\n");
-		/* leave it active... it's all we have */
+		 
 		return;
 	}
-	/*
-	 * Mark disk as unusable
-	 */
+	 
 	if (test_and_clear_bit(In_sync, &rdev->flags)) {
 		unsigned long flags;
 		spin_lock_irqsave(&conf->device_lock, flags);
@@ -261,7 +234,7 @@ static int multipath_remove_disk(struct mddev *mddev, struct md_rdev *rdev)
 		if (!test_bit(RemoveSynchronized, &rdev->flags)) {
 			synchronize_rcu();
 			if (atomic_read(&rdev->nr_pending)) {
-				/* lost the race, try later */
+				 
 				err = -EBUSY;
 				p->rdev = rdev;
 				goto abort;
@@ -275,13 +248,7 @@ abort:
 	return err;
 }
 
-/*
- * This is a kernel thread which:
- *
- *	1.	Retries failed read operations on working multipaths.
- *	2.	Updates the raid superblock when problems encounter.
- *	3.	Performs writes following reads for array syncronising.
- */
+ 
 
 static void multipathd(struct md_thread *thread)
 {
@@ -351,11 +318,7 @@ static int multipath_run (struct mddev *mddev)
 			mdname(mddev), mddev->level);
 		goto out;
 	}
-	/*
-	 * copy the already verified devices into our private MULTIPATH
-	 * bookkeeping area. [whatever we allocate in multipath_run(),
-	 * should be freed in multipath_free()]
-	 */
+	 
 
 	conf = kzalloc(sizeof(struct mpconf), GFP_KERNEL);
 	mddev->private = conf;
@@ -409,9 +372,7 @@ static int multipath_run (struct mddev *mddev)
 	pr_info("multipath: array %s active with %d out of %d IO paths\n",
 		mdname(mddev), conf->raid_disks - mddev->degraded,
 		mddev->raid_disks);
-	/*
-	 * Ok, everything is just fine now
-	 */
+	 
 	md_set_array_sectors(mddev, multipath_size(mddev, 0, 0));
 
 	if (md_integrity_register(mddev))
@@ -466,6 +427,6 @@ module_init(multipath_init);
 module_exit(multipath_exit);
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("simple multi-path personality for MD (deprecated)");
-MODULE_ALIAS("md-personality-7"); /* MULTIPATH */
+MODULE_ALIAS("md-personality-7");  
 MODULE_ALIAS("md-multipath");
 MODULE_ALIAS("md-level--4");

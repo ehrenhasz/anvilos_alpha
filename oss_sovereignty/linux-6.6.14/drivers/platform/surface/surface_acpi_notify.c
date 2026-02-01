@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for the Surface ACPI Notify (SAN) interface/shim.
- *
- * Translates communication from ACPI to Surface System Aggregator Module
- * (SSAM/SAM) requests and back, specifically SAM-over-SSH. Translates SSAM
- * events back to ACPI notifications. Allows handling of discrete GPU
- * notifications sent from ACPI via the SAN interface by providing them to any
- * registered external driver.
- *
- * Copyright (C) 2019-2022 Maximilian Luz <luzmaximilian@gmail.com>
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/acpi.h>
@@ -39,7 +29,7 @@ struct san_data {
 
 static struct workqueue_struct *san_wq;
 
-/* -- dGPU notifier interface. ---------------------------------------------- */
+ 
 
 struct san_rqsg_if {
 	struct rw_semaphore lock;
@@ -67,22 +57,7 @@ static int san_set_rqsg_interface_device(struct device *dev)
 	return status;
 }
 
-/**
- * san_client_link() - Link client as consumer to SAN device.
- * @client: The client to link.
- *
- * Sets up a device link between the provided client device as consumer and
- * the SAN device as provider. This function can be used to ensure that the
- * SAN interface has been set up and will be set up for as long as the driver
- * of the client device is bound. This guarantees that, during that time, all
- * dGPU events will be received by any registered notifier.
- *
- * The link will be automatically removed once the client device's driver is
- * unbound.
- *
- * Return: Returns zero on success, %-ENXIO if the SAN interface has not been
- * set up yet, and %-ENOMEM if device link creation failed.
- */
+ 
 int san_client_link(struct device *client)
 {
 	const u32 flags = DL_FLAG_PM_RUNTIME | DL_FLAG_AUTOREMOVE_CONSUMER;
@@ -111,24 +86,14 @@ int san_client_link(struct device *client)
 }
 EXPORT_SYMBOL_GPL(san_client_link);
 
-/**
- * san_dgpu_notifier_register() - Register a SAN dGPU notifier.
- * @nb: The notifier-block to register.
- *
- * Registers a SAN dGPU notifier, receiving any new SAN dGPU events sent from
- * ACPI. The registered notifier will be called with &struct san_dgpu_event
- * as notifier data and the command ID of that event as notifier action.
- */
+ 
 int san_dgpu_notifier_register(struct notifier_block *nb)
 {
 	return blocking_notifier_chain_register(&san_rqsg_if.nh, nb);
 }
 EXPORT_SYMBOL_GPL(san_dgpu_notifier_register);
 
-/**
- * san_dgpu_notifier_unregister() - Unregister a SAN dGPU notifier.
- * @nb: The notifier-block to unregister.
- */
+ 
 int san_dgpu_notifier_unregister(struct notifier_block *nb)
 {
 	return blocking_notifier_chain_unregister(&san_rqsg_if.nh, nb);
@@ -144,11 +109,11 @@ static int san_dgpu_notifier_call(struct san_dgpu_event *evt)
 }
 
 
-/* -- ACPI _DSM event relay. ------------------------------------------------ */
+ 
 
 #define SAN_DSM_REVISION	0
 
-/* 93b666c5-70c6-469f-a215-3d487c91ab3c */
+ 
 static const guid_t SAN_DSM_UUID =
 	GUID_INIT(0x93b666c5, 0x70c6, 0x469f, 0xa2, 0x15, 0x3d,
 		  0x48, 0x7c, 0x91, 0xab, 0x3c);
@@ -179,7 +144,7 @@ enum sam_event_cid_tmp {
 struct san_event_work {
 	struct delayed_work work;
 	struct device *dev;
-	struct ssam_event event;	/* must be last */
+	struct ssam_event event;	 
 };
 
 static int san_acpi_notify_event(struct device *dev, u64 func,
@@ -216,12 +181,7 @@ static int san_evt_bat_adp(struct device *dev, const struct ssam_event *event)
 	if (status)
 		return status;
 
-	/*
-	 * Ensure that the battery states get updated correctly. When the
-	 * battery is fully charged and an adapter is plugged in, it sometimes
-	 * is not updated correctly, instead showing it as charging.
-	 * Explicitly trigger battery updates to fix this.
-	 */
+	 
 
 	status = san_acpi_notify_event(dev, SAN_DSM_EVENT_FN_BAT1_STAT, NULL);
 	if (status)
@@ -258,11 +218,7 @@ static int san_evt_bat_dptf(struct device *dev, const struct ssam_event *event)
 {
 	union acpi_object payload;
 
-	/*
-	 * The Surface ACPI expects a buffer and not a package. It specifically
-	 * checks for ObjectType (Arg3) == 0x03. This will cause a warning in
-	 * acpica/nsarguments.c, but that warning can be safely ignored.
-	 */
+	 
 	payload.type = ACPI_TYPE_BUFFER;
 	payload.buffer.length = event->length;
 	payload.buffer.pointer = (u8 *)&event->data[0];
@@ -274,14 +230,11 @@ static unsigned long san_evt_bat_delay(u8 cid)
 {
 	switch (cid) {
 	case SAM_EVENT_CID_BAT_ADP:
-		/*
-		 * Wait for battery state to update before signaling adapter
-		 * change.
-		 */
+		 
 		return msecs_to_jiffies(5000);
 
 	case SAM_EVENT_CID_BAT_BST:
-		/* Ensure we do not miss anything important due to caching. */
+		 
 		return msecs_to_jiffies(2000);
 
 	default:
@@ -307,10 +260,7 @@ static bool san_evt_bat(const struct ssam_event *event, struct device *dev)
 		break;
 
 	case SAM_EVENT_CID_BAT_PROT:
-		/*
-		 * TODO: Implement support for battery protection status change
-		 *       event.
-		 */
+		 
 		return true;
 
 	case SAM_EVENT_CID_BAT_DPTF:
@@ -366,11 +316,7 @@ static int san_evt_tmp_trip(struct device *dev, const struct ssam_event *event)
 {
 	union acpi_object param;
 
-	/*
-	 * The Surface ACPI expects an integer and not a package. This will
-	 * cause a warning in acpica/nsarguments.c, but that warning can be
-	 * safely ignored.
-	 */
+	 
 	param.type = ACPI_TYPE_INTEGER;
 	param.integer.value = event->instance_id;
 
@@ -407,46 +353,46 @@ static u32 san_evt_tmp_nf(struct ssam_event_notifier *nf,
 }
 
 
-/* -- ACPI GSB OperationRegion handler -------------------------------------- */
+ 
 
 struct gsb_data_in {
 	u8 cv;
 } __packed;
 
 struct gsb_data_rqsx {
-	u8 cv;				/* Command value (san_gsb_request_cv). */
-	u8 tc;				/* Target category. */
-	u8 tid;				/* Target ID. */
-	u8 iid;				/* Instance ID. */
-	u8 snc;				/* Expect-response-flag. */
-	u8 cid;				/* Command ID. */
-	u16 cdl;			/* Payload length. */
-	u8 pld[];			/* Payload. */
+	u8 cv;				 
+	u8 tc;				 
+	u8 tid;				 
+	u8 iid;				 
+	u8 snc;				 
+	u8 cid;				 
+	u16 cdl;			 
+	u8 pld[];			 
 } __packed;
 
 struct gsb_data_etwl {
-	u8 cv;				/* Command value (should be 0x02). */
-	u8 etw3;			/* Unknown. */
-	u8 etw4;			/* Unknown. */
-	u8 msg[];			/* Error message (ASCIIZ). */
+	u8 cv;				 
+	u8 etw3;			 
+	u8 etw4;			 
+	u8 msg[];			 
 } __packed;
 
 struct gsb_data_out {
-	u8 status;			/* _SSH communication status. */
-	u8 len;				/* _SSH payload length. */
-	u8 pld[];			/* _SSH payload. */
+	u8 status;			 
+	u8 len;				 
+	u8 pld[];			 
 } __packed;
 
 union gsb_buffer_data {
-	struct gsb_data_in   in;	/* Common input. */
-	struct gsb_data_rqsx rqsx;	/* RQSX input. */
-	struct gsb_data_etwl etwl;	/* ETWL input. */
-	struct gsb_data_out  out;	/* Output. */
+	struct gsb_data_in   in;	 
+	struct gsb_data_rqsx rqsx;	 
+	struct gsb_data_etwl etwl;	 
+	struct gsb_data_out  out;	 
 };
 
 struct gsb_buffer {
-	u8 status;			/* GSB AttribRawProcess status. */
-	u8 len;				/* GSB AttribRawProcess length. */
+	u8 status;			 
+	u8 len;				 
 	union gsb_buffer_data data;
 } __packed;
 
@@ -476,7 +422,7 @@ static acpi_status san_etwl(struct san_data *d, struct gsb_buffer *b)
 		(unsigned int)(b->len - sizeof(struct gsb_data_etwl)),
 		(char *)etwl->msg);
 
-	/* Indicate success. */
+	 
 	b->status = 0x00;
 	b->len = 0x00;
 
@@ -535,20 +481,7 @@ static acpi_status san_rqst_fixup_suspended(struct san_data *d,
 	if (rqst->target_category == SSAM_SSH_TC_BAS && rqst->command_id == 0x0D) {
 		u8 base_state = 1;
 
-		/* Base state quirk:
-		 * The base state may be queried from ACPI when the EC is still
-		 * suspended. In this case it will return '-EPERM'. This query
-		 * will only be triggered from the ACPI lid GPE interrupt, thus
-		 * we are either in laptop or studio mode (base status 0x01 or
-		 * 0x02). Furthermore, we will only get here if the device (and
-		 * EC) have been suspended.
-		 *
-		 * We now assume that the device is in laptop mode (0x01). This
-		 * has the drawback that it will wake the device when unfolding
-		 * it in studio mode, but it also allows us to avoid actively
-		 * waiting for the EC to wake up, which may incur a notable
-		 * delay.
-		 */
+		 
 
 		dev_dbg(d->dev, "rqst: fixup: base-state quirk\n");
 
@@ -584,7 +517,7 @@ static acpi_status san_rqst(struct san_data *d, struct gsb_buffer *buffer)
 	rsp.length = 0;
 	rsp.pointer = &rspbuf[0];
 
-	/* Handle suspended device. */
+	 
 	if (d->dev->power.is_suspended) {
 		dev_warn(d->dev, "rqst: device is suspended, not executing\n");
 		return san_rqst_fixup_suspended(d, &rqst, buffer);
@@ -649,7 +582,7 @@ static acpi_status san_opreg_handler(u32 function, acpi_physical_address command
 		return AE_OK;
 	}
 
-	/* Buffer must have at least contain the command-value. */
+	 
 	if (buffer->len == 0) {
 		dev_err(d->dev, "request-package too small\n");
 		return AE_OK;
@@ -673,7 +606,7 @@ static acpi_status san_opreg_handler(u32 function, acpi_physical_address command
 }
 
 
-/* -- Driver setup. --------------------------------------------------------- */
+ 
 
 static int san_events_register(struct platform_device *pdev)
 {
@@ -771,14 +704,14 @@ static acpi_status san_consumer_setup(acpi_handle handle, u32 lvl,
 	if (!is_san_consumer(pdev, handle))
 		return AE_OK;
 
-	/* Ignore ACPI devices that are not present. */
+	 
 	adev = acpi_fetch_acpi_dev(handle);
 	if (!adev)
 		return AE_OK;
 
 	san_consumer_dbg(&pdev->dev, handle, "creating device link\n");
 
-	/* Try to set up device links, ignore but log errors. */
+	 
 	link = device_link_add(&adev->dev, &pdev->dev, flags);
 	if (!link) {
 		san_consumer_warn(&pdev->dev, handle, "failed to create device link\n");
@@ -859,10 +792,7 @@ static int san_remove(struct platform_device *pdev)
 					  &san_opreg_handler);
 	san_events_unregister(pdev);
 
-	/*
-	 * We have unregistered our event sources. Now we need to ensure that
-	 * all delayed works they may have spawned are run to completion.
-	 */
+	 
 	flush_workqueue(san_wq);
 
 	return 0;

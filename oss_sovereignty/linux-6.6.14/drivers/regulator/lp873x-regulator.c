@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Regulator driver for LP873X PMIC
- *
- * Copyright (C) 2016 Texas Instruments Incorporated - https://www.ti.com/
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -61,7 +57,7 @@ static const unsigned int lp873x_buck_ramp_delay[] = {
 	30000, 15000, 10000, 7500, 3800, 1900, 940, 470
 };
 
-/* LP873X BUCK current limit */
+ 
 static const unsigned int lp873x_buck_uA[] = {
 	1500000, 2000000, 2500000, 3000000, 3500000, 4000000,
 };
@@ -104,7 +100,7 @@ static int lp873x_buck_set_ramp_delay(struct regulator_dev *rdev,
 	return 0;
 }
 
-/* Operations permitted on BUCK0, BUCK1 */
+ 
 static const struct regulator_ops lp873x_buck01_ops = {
 	.is_enabled		= regulator_is_enabled_regmap,
 	.enable			= regulator_enable_regmap,
@@ -119,7 +115,7 @@ static const struct regulator_ops lp873x_buck01_ops = {
 	.get_current_limit	= regulator_get_current_limit_regmap,
 };
 
-/* Operations permitted on LDO0 and LDO1 */
+ 
 static const struct regulator_ops lp873x_ldo01_ops = {
 	.is_enabled		= regulator_is_enabled_regmap,
 	.enable			= regulator_enable_regmap,
@@ -180,7 +176,7 @@ static int lp873x_regulator_probe(struct platform_device *pdev)
 
 static const struct platform_device_id lp873x_regulator_id_table[] = {
 	{ "lp873x-regulator", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, lp873x_regulator_id_table);
 

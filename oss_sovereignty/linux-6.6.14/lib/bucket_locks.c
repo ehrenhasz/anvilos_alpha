@@ -4,12 +4,7 @@
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
 
-/* Allocate an array of spinlocks to be accessed by a hash. Two arguments
- * indicate the number of elements to allocate in the array. max_size
- * gives the maximum number of elements to allocate. cpu_mult gives
- * the number of locks per CPU to allocate. The size is rounded up
- * to a power of 2 to be suitable as a hash table.
- */
+ 
 
 int __alloc_bucket_spinlocks(spinlock_t **locks, unsigned int *locks_mask,
 			     size_t max_size, unsigned int cpu_mult, gfp_t gfp,

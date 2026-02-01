@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Mac80211 SPI driver for ST-Ericsson CW1200 device
- *
- * Copyright (c) 2011, Sagrad Inc.
- * Author:  Solomon Peachy <speachy@sagrad.com>
- *
- * Based on cw1200_sdio.c
- * Copyright (c) 2010, ST-Ericsson
- * Author: Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/gpio.h>
@@ -30,29 +21,22 @@ MODULE_DESCRIPTION("mac80211 ST-Ericsson CW1200 SPI driver");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("spi:cw1200_wlan_spi");
 
-/* #define SPI_DEBUG */
+ 
 
 struct hwbus_priv {
 	struct spi_device	*func;
 	struct cw1200_common	*core;
 	const struct cw1200_platform_data_spi *pdata;
-	spinlock_t		lock; /* Serialize all bus operations */
+	spinlock_t		lock;  
 	wait_queue_head_t       wq;
 	int claimed;
 };
 
 #define SDIO_TO_SPI_ADDR(addr) ((addr & 0x1f)>>2)
-#define SET_WRITE 0x7FFF /* usage: and operation */
-#define SET_READ 0x8000  /* usage: or operation */
+#define SET_WRITE 0x7FFF  
+#define SET_READ 0x8000   
 
-/* Notes on byte ordering:
-   LE:  B0 B1 B2 B3
-   BE:  B3 B2 B1 B0
-
-   Hardware expects 32-bit data to be written as 16-bit BE words:
-
-   B1 B0 B3 B2
-*/
+ 
 
 static int cw1200_spi_memcpy_fromio(struct hwbus_priv *self,
 				     unsigned int addr,
@@ -79,12 +63,10 @@ static int cw1200_spi_memcpy_fromio(struct hwbus_priv *self,
 	pr_info("READ : %04d from 0x%02x (%04x)\n", count, addr, regaddr);
 #endif
 
-	/* Header is LE16 */
+	 
 	regaddr = cpu_to_le16(regaddr);
 
-	/* We have to byteswap if the SPI bus is limited to 8b operation
-	   or we are running on a Big Endian system
-	*/
+	 
 #if defined(__LITTLE_ENDIAN)
 	if (self->func->bits_per_word == 8)
 #endif
@@ -105,9 +87,7 @@ static int cw1200_spi_memcpy_fromio(struct hwbus_priv *self,
 	printk("\n");
 #endif
 
-	/* We have to byteswap if the SPI bus is limited to 8b operation
-	   or we are running on a Big Endian system
-	*/
+	 
 #if defined(__LITTLE_ENDIAN)
 	if (self->func->bits_per_word == 8)
 #endif
@@ -144,12 +124,10 @@ static int cw1200_spi_memcpy_toio(struct hwbus_priv *self,
 	pr_info("WRITE: %04d  to  0x%02x (%04x)\n", count, addr, regaddr);
 #endif
 
-	/* Header is LE16 */
+	 
 	regaddr = cpu_to_le16(regaddr);
 
-	/* We have to byteswap if the SPI bus is limited to 8b operation
-	   or we are running on a Big Endian system
-	*/
+	 
 #if defined(__LITTLE_ENDIAN)
 	if (self->func->bits_per_word == 8)
 #endif
@@ -180,7 +158,7 @@ static int cw1200_spi_memcpy_toio(struct hwbus_priv *self,
 #endif
 
 #if defined(__LITTLE_ENDIAN)
-	/* We have to byteswap if the SPI bus is limited to 8b operation */
+	 
 	if (self->func->bits_per_word == 8)
 #endif
 	{
@@ -279,7 +257,7 @@ static int cw1200_spi_off(const struct cw1200_platform_data_spi *pdata)
 {
 	if (pdata->reset) {
 		gpio_set_value(pdata->reset, 0);
-		msleep(30); /* Min is 2 * CLK32K cycles */
+		msleep(30);  
 		gpio_free(pdata->reset);
 	}
 
@@ -293,7 +271,7 @@ static int cw1200_spi_off(const struct cw1200_platform_data_spi *pdata)
 
 static int cw1200_spi_on(const struct cw1200_platform_data_spi *pdata)
 {
-	/* Ensure I/Os are pulled low */
+	 
 	if (pdata->reset) {
 		gpio_request(pdata->reset, "cw1200_wlan_reset");
 		gpio_direction_output(pdata->reset, 0);
@@ -303,9 +281,9 @@ static int cw1200_spi_on(const struct cw1200_platform_data_spi *pdata)
 		gpio_direction_output(pdata->powerup, 0);
 	}
 	if (pdata->reset || pdata->powerup)
-		msleep(10); /* Settle time? */
+		msleep(10);  
 
-	/* Enable 3v3 and 1v8 to hardware */
+	 
 	if (pdata->power_ctrl) {
 		if (pdata->power_ctrl(pdata, true)) {
 			pr_err("power_ctrl() failed!\n");
@@ -313,24 +291,24 @@ static int cw1200_spi_on(const struct cw1200_platform_data_spi *pdata)
 		}
 	}
 
-	/* Enable CLK32K */
+	 
 	if (pdata->clk_ctrl) {
 		if (pdata->clk_ctrl(pdata, true)) {
 			pr_err("clk_ctrl() failed!\n");
 			return -1;
 		}
-		msleep(10); /* Delay until clock is stable for 2 cycles */
+		msleep(10);  
 	}
 
-	/* Enable POWERUP signal */
+	 
 	if (pdata->powerup) {
 		gpio_set_value(pdata->powerup, 1);
-		msleep(250); /* or more..? */
+		msleep(250);  
 	}
-	/* Enable RSTn signal */
+	 
 	if (pdata->reset) {
 		gpio_set_value(pdata->reset, 1);
-		msleep(50); /* Or more..? */
+		msleep(50);  
 	}
 	return 0;
 }
@@ -354,7 +332,7 @@ static const struct hwbus_ops cw1200_spi_hwbus_ops = {
 	.power_mgmt		= cw1200_spi_pm,
 };
 
-/* Probe Function to be called by SPI stack when device is discovered */
+ 
 static int cw1200_spi_probe(struct spi_device *func)
 {
 	const struct cw1200_platform_data_spi *plat_data =
@@ -362,19 +340,19 @@ static int cw1200_spi_probe(struct spi_device *func)
 	struct hwbus_priv *self;
 	int status;
 
-	/* Sanity check speed */
+	 
 	if (func->max_speed_hz > 52000000)
 		func->max_speed_hz = 52000000;
 	if (func->max_speed_hz < 1000000)
 		func->max_speed_hz = 1000000;
 
-	/* Fix up transfer size */
+	 
 	if (plat_data->spi_bits_per_word)
 		func->bits_per_word = plat_data->spi_bits_per_word;
 	if (!func->bits_per_word)
 		func->bits_per_word = 16;
 
-	/* And finally.. */
+	 
 	func->mode = SPI_MODE_0;
 
 	pr_info("cw1200_wlan_spi: Probe called (CS %d M %d BPW %d CLK %d)\n",
@@ -422,7 +400,7 @@ static int cw1200_spi_probe(struct spi_device *func)
 	return status;
 }
 
-/* Disconnect Function to be called by SPI stack when device is disconnected */
+ 
 static void cw1200_spi_disconnect(struct spi_device *func)
 {
 	struct hwbus_priv *self = spi_get_drvdata(func);
@@ -444,7 +422,7 @@ static int __maybe_unused cw1200_spi_suspend(struct device *dev)
 	if (!cw1200_can_suspend(self->core))
 		return -EAGAIN;
 
-	/* XXX notify host that we have to keep CW1200 powered on? */
+	 
 	return 0;
 }
 

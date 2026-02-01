@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Samsung Exynos USB HOST EHCI Controller
- *
- * Copyright (C) 2011 Samsung Electronics Co.Ltd
- * Author: Jingoo Han <jg1.han@samsung.com>
- * Author: Joonyoung Shim <jy0922.shim@samsung.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -53,7 +47,7 @@ static int exynos_ehci_get_phy(struct device *dev,
 	int phy_number, num_phys;
 	int ret;
 
-	/* Get PHYs for the controller */
+	 
 	num_phys = of_count_phandle_with_args(dev->of_node, "phys",
 					      "#phy-cells");
 	for (phy_number = 0; phy_number < num_phys; phy_number++) {
@@ -65,7 +59,7 @@ static int exynos_ehci_get_phy(struct device *dev,
 	if (num_phys > 0)
 		return 0;
 
-	/* Get PHYs using legacy bindings */
+	 
 	for_each_available_child_of_node(dev->of_node, child) {
 		ret = of_property_read_u32(child, "reg", &phy_number);
 		if (ret) {
@@ -138,11 +132,7 @@ static int exynos_ehci_probe(struct platform_device *pdev)
 	int irq;
 	int err;
 
-	/*
-	 * Right now device-tree probed devices don't get dma_mask set.
-	 * Since shared usb code relies on it, set it here for now.
-	 * Once we move to full device tree support this will vanish off.
-	 */
+	 
 	err = dma_coerce_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
 	if (err)
 		return err;
@@ -197,15 +187,12 @@ static int exynos_ehci_probe(struct platform_device *pdev)
 	ehci = hcd_to_ehci(hcd);
 	ehci->caps = hcd->regs;
 
-	/*
-	 * Workaround: reset of_node pointer to avoid conflict between legacy
-	 * Exynos EHCI port subnodes and generic USB device bindings
-	 */
+	 
 	exynos_ehci->of_node = pdev->dev.of_node;
 	if (exynos_ehci->legacy_phy)
 		pdev->dev.of_node = NULL;
 
-	/* DMA burst Enable */
+	 
 	writel(EHCI_INSNREG00_ENABLE_DMA_BURST, EHCI_INSNREG00(hcd->regs));
 
 	err = usb_add_hcd(hcd, irq, IRQF_SHARED);
@@ -282,7 +269,7 @@ static int exynos_ehci_resume(struct device *dev)
 		return ret;
 	}
 
-	/* DMA burst Enable */
+	 
 	writel(EHCI_INSNREG00_ENABLE_DMA_BURST, EHCI_INSNREG00(hcd->regs));
 
 	ehci_resume(hcd, false);

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AMD Secure Processor driver
- *
- * Copyright (C) 2017-2018 Advanced Micro Devices, Inc.
- *
- * Author: Tom Lendacky <thomas.lendacky@amd.com>
- * Author: Gary R Hook <gary.hook@amd.com>
- * Author: Brijesh Singh <brijesh.singh@amd.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -28,15 +20,11 @@ MODULE_LICENSE("GPL");
 MODULE_VERSION("1.1.0");
 MODULE_DESCRIPTION("AMD Secure Processor driver");
 
-/* List of SPs, SP count, read-write access lock, and access functions
- *
- * Lock structure: get sp_unit_lock for reading whenever we need to
- * examine the SP list.
- */
+ 
 static DEFINE_RWLOCK(sp_unit_lock);
 static LIST_HEAD(sp_units);
 
-/* Ever-increasing value to produce unique unit numbers */
+ 
 static atomic_t sp_ordinal;
 
 static void sp_add_device(struct sp_device *sp)
@@ -80,7 +68,7 @@ int sp_request_ccp_irq(struct sp_device *sp, irq_handler_t handler,
 	int ret;
 
 	if ((sp->psp_irq == sp->ccp_irq) && sp->dev_vdata->psp_vdata) {
-		/* Need a common routine to manage all interrupts */
+		 
 		sp->ccp_irq_data = data;
 		sp->ccp_irq_handler = handler;
 
@@ -93,7 +81,7 @@ int sp_request_ccp_irq(struct sp_device *sp, irq_handler_t handler,
 			sp->irq_registered = true;
 		}
 	} else {
-		/* Each sub-device can manage it's own interrupt */
+		 
 		ret = request_irq(sp->ccp_irq, handler, 0, name, data);
 		if (ret)
 			return ret;
@@ -108,7 +96,7 @@ int sp_request_psp_irq(struct sp_device *sp, irq_handler_t handler,
 	int ret;
 
 	if ((sp->psp_irq == sp->ccp_irq) && sp->dev_vdata->ccp_vdata) {
-		/* Need a common routine to manage all interrupts */
+		 
 		sp->psp_irq_data = data;
 		sp->psp_irq_handler = handler;
 
@@ -121,7 +109,7 @@ int sp_request_psp_irq(struct sp_device *sp, irq_handler_t handler,
 			sp->irq_registered = true;
 		}
 	} else {
-		/* Each sub-device can manage it's own interrupt */
+		 
 		ret = request_irq(sp->psp_irq, handler, 0, name, data);
 		if (ret)
 			return ret;
@@ -133,9 +121,9 @@ int sp_request_psp_irq(struct sp_device *sp, irq_handler_t handler,
 void sp_free_ccp_irq(struct sp_device *sp, void *data)
 {
 	if ((sp->psp_irq == sp->ccp_irq) && sp->dev_vdata->psp_vdata) {
-		/* Using common routine to manage all interrupts */
+		 
 		if (!sp->psp_irq_handler) {
-			/* Nothing else using it, so free it */
+			 
 			free_irq(sp->ccp_irq, sp);
 
 			sp->irq_registered = false;
@@ -144,7 +132,7 @@ void sp_free_ccp_irq(struct sp_device *sp, void *data)
 		sp->ccp_irq_handler = NULL;
 		sp->ccp_irq_data = NULL;
 	} else {
-		/* Each sub-device can manage it's own interrupt */
+		 
 		free_irq(sp->ccp_irq, data);
 	}
 }
@@ -152,9 +140,9 @@ void sp_free_ccp_irq(struct sp_device *sp, void *data)
 void sp_free_psp_irq(struct sp_device *sp, void *data)
 {
 	if ((sp->psp_irq == sp->ccp_irq) && sp->dev_vdata->ccp_vdata) {
-		/* Using common routine to manage all interrupts */
+		 
 		if (!sp->ccp_irq_handler) {
-			/* Nothing else using it, so free it */
+			 
 			free_irq(sp->psp_irq, sp);
 
 			sp->irq_registered = false;
@@ -163,16 +151,12 @@ void sp_free_psp_irq(struct sp_device *sp, void *data)
 		sp->psp_irq_handler = NULL;
 		sp->psp_irq_data = NULL;
 	} else {
-		/* Each sub-device can manage it's own interrupt */
+		 
 		free_irq(sp->psp_irq, data);
 	}
 }
 
-/**
- * sp_alloc_struct - allocate and initialize the sp_device struct
- *
- * @dev: device struct of the SP
- */
+ 
 struct sp_device *sp_alloc_struct(struct device *dev)
 {
 	struct sp_device *sp;

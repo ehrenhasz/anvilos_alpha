@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2015-2018 Netronome Systems, Inc. */
 
-/*
- * nfp_nsp.c
- * Author: Jakub Kicinski <jakub.kicinski@netronome.com>
- *         Jason McMullan <jason.mcmullan@netronome.com>
- */
+ 
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/bitfield.h>
@@ -26,7 +22,7 @@
 #define NFP_NSP_TIMEOUT_DEFAULT	30
 #define NFP_NSP_TIMEOUT_BOOT	30
 
-/* Offsets relative to the CSR base */
+ 
 #define NSP_STATUS		0x00
 #define   NSP_STATUS_MAGIC	GENMASK_ULL(63, 48)
 #define   NSP_STATUS_MAJOR	GENMASK_ULL(47, 44)
@@ -41,7 +37,7 @@
 #define   NSP_COMMAND_DMA_BUF	BIT_ULL(1)
 #define   NSP_COMMAND_START	BIT_ULL(0)
 
-/* CPP address to retrieve the data from */
+ 
 #define NSP_BUFFER		0x10
 #define   NSP_BUFFER_CPP	GENMASK_ULL(63, 40)
 #define   NSP_BUFFER_ADDRESS	GENMASK_ULL(39, 0)
@@ -82,25 +78,25 @@
 #define NSP_SFF_EEPROM_BLOCK_LEN	8
 
 enum nfp_nsp_cmd {
-	SPCODE_NOOP		= 0, /* No operation */
-	SPCODE_SOFT_RESET	= 1, /* Soft reset the NFP */
-	SPCODE_FW_DEFAULT	= 2, /* Load default (UNDI) FW */
-	SPCODE_PHY_INIT		= 3, /* Initialize the PHY */
-	SPCODE_MAC_INIT		= 4, /* Initialize the MAC */
-	SPCODE_PHY_RXADAPT	= 5, /* Re-run PHY RX Adaptation */
-	SPCODE_FW_LOAD		= 6, /* Load fw from buffer, len in option */
-	SPCODE_ETH_RESCAN	= 7, /* Rescan ETHs, write ETH_TABLE to buf */
-	SPCODE_ETH_CONTROL	= 8, /* Update media config from buffer */
-	SPCODE_NSP_WRITE_FLASH	= 11, /* Load and flash image from buffer */
-	SPCODE_NSP_SENSORS	= 12, /* Read NSP sensor(s) */
-	SPCODE_NSP_IDENTIFY	= 13, /* Read NSP version */
-	SPCODE_FW_STORED	= 16, /* If no FW loaded, load flash app FW */
-	SPCODE_HWINFO_LOOKUP	= 17, /* Lookup HWinfo with overwrites etc. */
-	SPCODE_HWINFO_SET	= 18, /* Set HWinfo entry */
-	SPCODE_FW_LOADED	= 19, /* Is application firmware loaded */
-	SPCODE_VERSIONS		= 21, /* Report FW versions */
-	SPCODE_READ_SFF_EEPROM	= 22, /* Read module EEPROM */
-	SPCODE_READ_MEDIA	= 23, /* Get either the supported or advertised media for a port */
+	SPCODE_NOOP		= 0,  
+	SPCODE_SOFT_RESET	= 1,  
+	SPCODE_FW_DEFAULT	= 2,  
+	SPCODE_PHY_INIT		= 3,  
+	SPCODE_MAC_INIT		= 4,  
+	SPCODE_PHY_RXADAPT	= 5,  
+	SPCODE_FW_LOAD		= 6,  
+	SPCODE_ETH_RESCAN	= 7,  
+	SPCODE_ETH_CONTROL	= 8,  
+	SPCODE_NSP_WRITE_FLASH	= 11,  
+	SPCODE_NSP_SENSORS	= 12,  
+	SPCODE_NSP_IDENTIFY	= 13,  
+	SPCODE_FW_STORED	= 16,  
+	SPCODE_HWINFO_LOOKUP	= 17,  
+	SPCODE_HWINFO_SET	= 18,  
+	SPCODE_FW_LOADED	= 19,  
+	SPCODE_VERSIONS		= 21,  
+	SPCODE_READ_SFF_EEPROM	= 22,  
+	SPCODE_READ_MEDIA	= 23,  
 };
 
 struct nfp_nsp_dma_buf {
@@ -132,23 +128,13 @@ struct nfp_nsp {
 		u16 minor;
 	} ver;
 
-	/* Eth table config state */
+	 
 	bool modified;
 	unsigned int idx;
 	void *entries;
 };
 
-/**
- * struct nfp_nsp_command_arg - NFP command argument structure
- * @code:	NFP SP Command Code
- * @dma:	@buf points to a host buffer, not NSP buffer
- * @timeout_sec:Timeout value to wait for completion in seconds
- * @option:	NFP SP Command Argument
- * @buf:	NFP SP Buffer Address
- * @error_cb:	Callback for interpreting option if error occurred
- * @error_quiet:Don't print command error/warning. Protocol errors are still
- *		    logged.
- */
+ 
 struct nfp_nsp_command_arg {
 	u16 code;
 	bool dma;
@@ -159,14 +145,7 @@ struct nfp_nsp_command_arg {
 	bool error_quiet;
 };
 
-/**
- * struct nfp_nsp_command_buf_arg - NFP command with buffer argument structure
- * @arg:	NFP command argument structure
- * @in_buf:	Buffer with data for input
- * @in_size:	Size of @in_buf
- * @out_buf:	Buffer for output data
- * @out_size:	Size of @out_buf
- */
+ 
 struct nfp_nsp_command_buf_arg {
 	struct nfp_nsp_command_arg arg;
 	const void *in_buf;
@@ -266,10 +245,7 @@ static int nfp_nsp_check(struct nfp_nsp *state)
 	return 0;
 }
 
-/**
- * nfp_nsp_open() - Prepare for communication and lock the NSP resource.
- * @cpp:	NFP CPP Handle
- */
+ 
 struct nfp_nsp *nfp_nsp_open(struct nfp_cpp *cpp)
 {
 	struct nfp_resource *res;
@@ -297,10 +273,7 @@ struct nfp_nsp *nfp_nsp_open(struct nfp_cpp *cpp)
 	return state;
 }
 
-/**
- * nfp_nsp_close() - Clean up and unlock the NSP resource.
- * @state:	NFP SP state
- */
+ 
 void nfp_nsp_close(struct nfp_nsp *state)
 {
 	nfp_resource_release(state->res);
@@ -341,21 +314,7 @@ nfp_nsp_wait_reg(struct nfp_cpp *cpp, u64 *reg, u32 nsp_cpp, u64 addr,
 	}
 }
 
-/**
- * __nfp_nsp_command() - Execute a command on the NFP Service Processor
- * @state:	NFP SP state
- * @arg:	NFP command argument structure
- *
- * Return: 0 for success with no result
- *
- *	 positive value for NSP completion with a result code
- *
- *	-EAGAIN if the NSP is not yet present
- *	-ENODEV if the NSP is not a supported model
- *	-EBUSY if the NSP is stuck
- *	-EINTR if interrupted while waiting for completion
- *	-ETIMEDOUT if the NSP took longer than @timeout_sec seconds to complete
- */
+ 
 static int
 __nfp_nsp_command(struct nfp_nsp *state, const struct nfp_nsp_command_arg *arg)
 {
@@ -386,7 +345,7 @@ __nfp_nsp_command(struct nfp_nsp *state, const struct nfp_nsp_command_arg *arg)
 	if (err < 0)
 		return err;
 
-	/* Wait for NSP_COMMAND_START to go to 0 */
+	 
 	err = nfp_nsp_wait_reg(cpp, &reg, nsp_cpp, nsp_command,
 			       NSP_COMMAND_START, 0, NFP_NSP_TIMEOUT_DEFAULT);
 	if (err) {
@@ -395,7 +354,7 @@ __nfp_nsp_command(struct nfp_nsp *state, const struct nfp_nsp_command_arg *arg)
 		return err;
 	}
 
-	/* Wait for NSP_STATUS_BUSY to go to 0 */
+	 
 	err = nfp_nsp_wait_reg(cpp, &reg, nsp_cpp, nsp_status, NSP_STATUS_BUSY,
 			       0, arg->timeout_sec ?: NFP_NSP_TIMEOUT_DEFAULT);
 	if (err) {
@@ -459,7 +418,7 @@ nfp_nsp_command_buf_def(struct nfp_nsp *nsp,
 		if (err < 0)
 			return err;
 	}
-	/* Zero out remaining part of the buffer */
+	 
 	if (arg->out_buf && arg->out_size && arg->out_size > arg->in_size) {
 		err = nfp_cpp_write(cpp, cpp_id, cpp_buf + arg->in_size,
 				    arg->out_buf, arg->out_size - arg->in_size);
@@ -675,7 +634,7 @@ nfp_nsp_command_buf(struct nfp_nsp *nsp, struct nfp_nsp_command_buf_arg *arg)
 	if (err < 0)
 		return err;
 
-	/* Zero out undefined part of the out buffer */
+	 
 	if (arg->out_buf && arg->out_size && arg->out_size > arg->in_size)
 		memset(arg->out_buf, 0, arg->out_size - arg->in_size);
 
@@ -738,26 +697,26 @@ int nfp_nsp_mac_reinit(struct nfp_nsp *state)
 static void nfp_nsp_load_fw_extended_msg(struct nfp_nsp *state, u32 ret_val)
 {
 	static const char * const major_msg[] = {
-		/* 0 */ "Firmware from driver loaded",
-		/* 1 */ "Firmware from flash loaded",
-		/* 2 */ "Firmware loading failure",
+		  "Firmware from driver loaded",
+		  "Firmware from flash loaded",
+		  "Firmware loading failure",
 	};
 	static const char * const minor_msg[] = {
-		/*  0 */ "",
-		/*  1 */ "no named partition on flash",
-		/*  2 */ "error reading from flash",
-		/*  3 */ "can not deflate",
-		/*  4 */ "not a trusted file",
-		/*  5 */ "can not parse FW file",
-		/*  6 */ "MIP not found in FW file",
-		/*  7 */ "null firmware name in MIP",
-		/*  8 */ "FW version none",
-		/*  9 */ "FW build number none",
-		/* 10 */ "no FW selection policy HWInfo key found",
-		/* 11 */ "static FW selection policy",
-		/* 12 */ "FW version has precedence",
-		/* 13 */ "different FW application load requested",
-		/* 14 */ "development build",
+		  "",
+		  "no named partition on flash",
+		  "error reading from flash",
+		  "can not deflate",
+		  "not a trusted file",
+		  "can not parse FW file",
+		  "MIP not found in FW file",
+		  "null firmware name in MIP",
+		  "FW version none",
+		  "FW build number none",
+		  "no FW selection policy HWInfo key found",
+		  "static FW selection policy",
+		  "FW version has precedence",
+		  "different FW application load requested",
+		  "development build",
 	};
 	unsigned int major, minor;
 	const char *level;
@@ -768,7 +727,7 @@ static void nfp_nsp_load_fw_extended_msg(struct nfp_nsp *state, u32 ret_val)
 	if (!nfp_nsp_has_stored_fw_load(state))
 		return;
 
-	/* Lower the message level in legacy case */
+	 
 	if (major == 0 && (minor == 0 || minor == 10))
 		level = KERN_DEBUG;
 	else if (major == 2)
@@ -940,9 +899,7 @@ int nfp_nsp_hwinfo_lookup_optional(struct nfp_nsp *state, void *buf,
 {
 	int err;
 
-	/* Ensure that the default value is usable irrespective of whether
-	 * it is actually going to be used.
-	 */
+	 
 	if (strnlen(default_val, size) == size)
 		return -EINVAL;
 
@@ -1077,7 +1034,7 @@ int nfp_nsp_read_module_eeprom(struct nfp_nsp *state, int eth_index,
 
 	BUILD_BUG_ON(offsetof(struct eeprom_buf, data) % 8);
 
-	/* Buffer must be large enough and rounded to the next block size. */
+	 
 	bufsz = struct_size(buf, data, round_up(len, NSP_SFF_EEPROM_BLOCK_LEN));
 	buf = kzalloc(bufsz, GFP_KERNEL);
 	if (!buf)

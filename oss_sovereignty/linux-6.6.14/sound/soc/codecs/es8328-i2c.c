@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * es8328-i2c.c  --  ES8328 ALSA SoC I2C Audio driver
- *
- * Copyright 2014 Sutajio Ko-Usagi PTE LTD
- *
- * Author: Sean Cross <xobs@kosagi.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>

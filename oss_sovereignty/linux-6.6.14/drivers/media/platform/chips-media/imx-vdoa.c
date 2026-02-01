@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * i.MX6 Video Data Order Adapter (VDOA)
- *
- * Copyright (C) 2014 Philipp Zabel
- * Copyright (C) 2016 Pengutronix, Michael Tretter <kernel@pengutronix.de>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -103,7 +98,7 @@ static irqreturn_t vdoa_irq_handler(int irq, void *data)
 	struct vdoa_ctx *curr_ctx;
 	u32 val;
 
-	/* Disable interrupts */
+	 
 	writel(0, vdoa->regs + VDOAIE);
 
 	curr_ctx = vdoa->curr_ctx;
@@ -162,7 +157,7 @@ void vdoa_device_run(struct vdoa_ctx *ctx, dma_addr_t dst, dma_addr_t src)
 	src_q_data = &ctx->q_data[V4L2_M2M_SRC];
 	dst_q_data = &ctx->q_data[V4L2_M2M_DST];
 
-	/* Progressive, no sync, 1 frame per run */
+	 
 	if (dst_q_data->pixelformat == V4L2_PIX_FMT_YUYV)
 		val = VDOAC_PFS;
 	else
@@ -190,7 +185,7 @@ void vdoa_device_run(struct vdoa_ctx *ctx, dma_addr_t dst, dma_addr_t src)
 	val = round_up(src_q_data->bytesperline * src_q_data->height, 4096);
 	writel(val, vdoa->regs + VDOAVUBO);
 
-	/* Enable interrupts and start transfer */
+	 
 	writel(VDOAIE_EITERR | VDOAIE_EIEOT, vdoa->regs + VDOAIE);
 	writel(VDOASRR_START, vdoa->regs + VDOASRR);
 }
@@ -247,7 +242,7 @@ int vdoa_context_configure(struct vdoa_ctx *ctx,
 	    pixelformat != V4L2_PIX_FMT_NV12)
 		return -EINVAL;
 
-	/* If no context is passed, only check if the format is valid */
+	 
 	if (!ctx)
 		return 0;
 

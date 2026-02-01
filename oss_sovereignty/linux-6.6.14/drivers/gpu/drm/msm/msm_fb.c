@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <drm/drm_crtc.h>
 #include <drm/drm_damage_helper.h>
@@ -20,10 +17,10 @@ struct msm_framebuffer {
 	struct drm_framebuffer base;
 	const struct msm_format *format;
 
-	/* Count of # of attached planes which need dirtyfb: */
+	 
 	refcount_t dirtyfb;
 
-	/* Framebuffer per-plane address, if pinned, else zero: */
+	 
 	uint64_t iova[DRM_FORMAT_MAX_PLANES];
 	atomic_t prepare_count;
 };
@@ -39,9 +36,7 @@ static int msm_framebuffer_dirtyfb(struct drm_framebuffer *fb,
 {
 	struct msm_framebuffer *msm_fb = to_msm_framebuffer(fb);
 
-	/* If this fb is not used on any display requiring pixel data to be
-	 * flushed, then skip dirtyfb
-	 */
+	 
 	if (refcount_read(&msm_fb->dirtyfb) == 1)
 		return 0;
 
@@ -73,8 +68,7 @@ void msm_framebuffer_describe(struct drm_framebuffer *fb, struct seq_file *m)
 }
 #endif
 
-/* prepare/pin all the fb's bo's for scanout.
- */
+ 
 int msm_framebuffer_prepare(struct drm_framebuffer *fb,
 		struct msm_gem_address_space *aspace,
 		bool needs_dirtyfb)
@@ -255,13 +249,13 @@ msm_alloc_stolen_fb(struct drm_device *dev, int w, int h, int p, uint32_t format
 	struct drm_framebuffer *fb;
 	int size;
 
-	/* allocate backing bo */
+	 
 	size = mode_cmd.pitches[0] * mode_cmd.height;
 	DBG("allocating %d bytes for fb %d", size, dev->primary->index);
 	bo = msm_gem_new(dev, size, MSM_BO_SCANOUT | MSM_BO_WC | MSM_BO_STOLEN);
 	if (IS_ERR(bo)) {
 		dev_warn(dev->dev, "could not allocate stolen bo\n");
-		/* try regular bo: */
+		 
 		bo = msm_gem_new(dev, size, MSM_BO_SCANOUT | MSM_BO_WC);
 	}
 	if (IS_ERR(bo)) {
@@ -274,9 +268,7 @@ msm_alloc_stolen_fb(struct drm_device *dev, int w, int h, int p, uint32_t format
 	fb = msm_framebuffer_init(dev, &mode_cmd, &bo);
 	if (IS_ERR(fb)) {
 		DRM_DEV_ERROR(dev->dev, "failed to allocate fb\n");
-		/* note: if fb creation failed, we can't rely on fb destroy
-		 * to unref the bo:
-		 */
+		 
 		drm_gem_object_put(bo);
 		return ERR_CAST(fb);
 	}

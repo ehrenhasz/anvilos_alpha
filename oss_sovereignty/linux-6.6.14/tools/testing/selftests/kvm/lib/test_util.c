@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tools/testing/selftests/kvm/lib/test_util.c
- *
- * Copyright (C) 2020, Google LLC.
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <stdio.h>
@@ -20,10 +16,7 @@
 
 #include "test_util.h"
 
-/*
- * Random number generator that is usable from guest code. This is the
- * Park-Miller LCG using standard constants.
- */
+ 
 
 struct guest_random_state new_guest_random_state(uint32_t seed)
 {
@@ -37,9 +30,7 @@ uint32_t guest_random_u32(struct guest_random_state *state)
 	return state->seed;
 }
 
-/*
- * Parses "[0-9]+[kmgt]?".
- */
+ 
 size_t parse_size(const char *size)
 {
 	size_t base;
@@ -273,12 +264,7 @@ const struct vm_mem_backing_src_alias *vm_mem_backing_src_alias(uint32_t i)
 		},
 		[VM_MEM_SRC_SHARED_HUGETLB] = {
 			.name = "shared_hugetlb",
-			/*
-			 * No MAP_HUGETLB, we use MFD_HUGETLB instead. Since
-			 * we're using "file backed" memory, we need to specify
-			 * this when the FD is created, not when the area is
-			 * mapped.
-			 */
+			 
 			.flag = MAP_SHARED,
 		},
 	};
@@ -354,7 +340,7 @@ long get_run_delay(void)
 
 	sprintf(path, "/proc/%ld/schedstat", syscall(SYS_gettid));
 	fp = fopen(path, "r");
-	/* Return MIN_RUN_DELAY_NS upon failure just to be safe */
+	 
 	if (fscanf(fp, "%ld %ld ", &val[0], &val[1]) < 2)
 		val[1] = MIN_RUN_DELAY_NS;
 	fclose(fp);

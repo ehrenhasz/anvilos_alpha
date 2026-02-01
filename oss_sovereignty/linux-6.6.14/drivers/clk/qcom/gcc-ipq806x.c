@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -2816,7 +2814,7 @@ static struct clk_dyn_rcg ubi32_core1_src_clk = {
 		.pre_div_width = 2,
 	},
 	.mux_sel_bit = 0,
-	/* nss freq table is selected based on the SoC compatible */
+	 
 	.clkr = {
 		.enable_reg = 0x3d20,
 		.enable_mask = BIT(1),
@@ -2869,7 +2867,7 @@ static struct clk_dyn_rcg ubi32_core2_src_clk = {
 		.pre_div_width = 2,
 	},
 	.mux_sel_bit = 0,
-	/* nss freq table is selected based on the SoC compatible */
+	 
 	.clkr = {
 		.enable_reg = 0x3d40,
 		.enable_mask = BIT(1),
@@ -3410,11 +3408,11 @@ static int gcc_ipq806x_probe(struct platform_device *pdev)
 	if (!regmap)
 		return -ENODEV;
 
-	/* Setup PLL18 static bits */
+	 
 	regmap_update_bits(regmap, 0x31a4, 0xffffffc0, 0x40000400);
 	regmap_write(regmap, 0x31b0, 0x3080);
 
-	/* Set GMAC footswitch sleep/wakeup values */
+	 
 	regmap_write(regmap, 0x3cb8, 8);
 	regmap_write(regmap, 0x3cd8, 8);
 	regmap_write(regmap, 0x3cf8, 8);

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * printer.c -- Printer gadget driver
- *
- * Copyright (C) 2003-2005 David Brownell
- * Copyright (C) 2006 Craig W. Nadler
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -24,21 +19,15 @@ static const char shortname [] = "printer";
 
 #include "u_printer.h"
 
-/*-------------------------------------------------------------------------*/
+ 
 
-/* DO NOT REUSE THESE IDs with a protocol-incompatible driver!!  Ever!!
- * Instead:  allocate your own, using normal USB-IF procedures.
- */
+ 
 
-/* Thanks to NetChip Technologies for donating this product ID.
- */
-#define PRINTER_VENDOR_NUM	0x0525		/* NetChip */
-#define PRINTER_PRODUCT_NUM	0xa4a8		/* Linux-USB Printer Gadget */
+ 
+#define PRINTER_VENDOR_NUM	0x0525		 
+#define PRINTER_PRODUCT_NUM	0xa4a8		 
 
-/* Some systems will want different product identifiers published in the
- * device descriptor, either numbers or strings or both.  These string
- * parameters are in UTF-8 (superset of ASCII's 7 bit characters).
- */
+ 
 
 module_param_named(iSerialNum, coverwrite.serial_number, charp, S_IRUGO);
 MODULE_PARM_DESC(iSerialNum, "1");
@@ -47,7 +36,7 @@ static char *iPNPstring;
 module_param(iPNPstring, charp, S_IRUGO);
 MODULE_PARM_DESC(iPNPstring, "MFG:linux;MDL:g_printer;CLS:PRINTER;SN:1;");
 
-/* Number of requests to allocate per endpoint, not used for ep0. */
+ 
 static unsigned qlen = 10;
 module_param(qlen, uint, S_IRUGO|S_IWUSR);
 MODULE_PARM_DESC(qlen, "The number of 8k buffers to use per endpoint");
@@ -57,17 +46,14 @@ MODULE_PARM_DESC(qlen, "The number of 8k buffers to use per endpoint");
 static struct usb_function_instance *fi_printer;
 static struct usb_function *f_printer;
 
-/*-------------------------------------------------------------------------*/
+ 
 
-/*
- * DESCRIPTORS ... most are static, but strings and (full) configuration
- * descriptors are built on demand.
- */
+ 
 
 static struct usb_device_descriptor device_desc = {
 	.bLength =		sizeof device_desc,
 	.bDescriptorType =	USB_DT_DEVICE,
-	/* .bcdUSB = DYNAMIC */
+	 
 	.bDeviceClass =		USB_CLASS_PER_INTERFACE,
 	.bDeviceSubClass =	0,
 	.bDeviceProtocol =	0,
@@ -78,25 +64,25 @@ static struct usb_device_descriptor device_desc = {
 
 static const struct usb_descriptor_header *otg_desc[2];
 
-/*-------------------------------------------------------------------------*/
+ 
 
-/* descriptors that are built on-demand */
+ 
 
 static char				product_desc [40] = DRIVER_DESC;
 static char				serial_num [40] = "1";
 static char				*pnp_string =
 	"MFG:linux;MDL:g_printer;CLS:PRINTER;SN:1;";
 
-/* static strings, in UTF-8 */
+ 
 static struct usb_string		strings [] = {
 	[USB_GADGET_MANUFACTURER_IDX].s = "",
 	[USB_GADGET_PRODUCT_IDX].s = product_desc,
 	[USB_GADGET_SERIAL_IDX].s =	serial_num,
-	{  }		/* end of list */
+	{  }		 
 };
 
 static struct usb_gadget_strings	stringtab_dev = {
-	.language	= 0x0409,	/* en-us */
+	.language	= 0x0409,	 
 	.strings	= strings,
 };
 
@@ -155,10 +141,7 @@ static int printer_bind(struct usb_composite_dev *cdev)
 			goto fail_put_func_inst;
 		}
 		opts->pnp_string_allocated = true;
-		/*
-		 * we don't free this memory in case of error
-		 * as printer cleanup func will do this for us
-		 */
+		 
 	} else {
 		opts->pnp_string = pnp_string;
 	}

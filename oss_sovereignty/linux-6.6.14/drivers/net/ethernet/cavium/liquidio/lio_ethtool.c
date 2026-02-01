@@ -1,20 +1,4 @@
-/**********************************************************************
- * Author: Cavium, Inc.
- *
- * Contact: support@cavium.com
- *          Please include "LiquidIO" in the subject.
- *
- * Copyright (c) 2003-2016 Cavium, Inc.
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- ***********************************************************************/
+ 
 #include <linux/ethtool.h>
 #include <linux/netdevice.h>
 #include <linux/net_tstamp.h>
@@ -48,7 +32,7 @@ struct oct_mdio_cmd_resp {
 
 #define OCT_MDIO45_RESP_SIZE   (sizeof(struct oct_mdio_cmd_resp))
 
-/* Octeon's interface mode of operation */
+ 
 enum {
 	INTERFACE_MODE_DISABLED,
 	INTERFACE_MODE_RGMII,
@@ -77,7 +61,7 @@ enum {
 #define OCT_ETHTOOL_REGDUMP_LEN_23XX_VF  (4096 * 2)
 #define OCT_ETHTOOL_REGSVER  1
 
-/* statistics of PF */
+ 
 static const char oct_stats_strings[][ETH_GSTRING_LEN] = {
 	"rx_packets",
 	"tx_packets",
@@ -154,7 +138,7 @@ static const char oct_stats_strings[][ETH_GSTRING_LEN] = {
 	"link_state_changes",
 };
 
-/* statistics of VF */
+ 
 static const char oct_vf_stats_strings[][ETH_GSTRING_LEN] = {
 	"rx_packets",
 	"tx_packets",
@@ -171,7 +155,7 @@ static const char oct_vf_stats_strings[][ETH_GSTRING_LEN] = {
 	"link_state_changes",
 };
 
-/* statistics of host tx queue */
+ 
 static const char oct_iq_stats_strings[][ETH_GSTRING_LEN] = {
 	"packets",
 	"bytes",
@@ -189,7 +173,7 @@ static const char oct_iq_stats_strings[][ETH_GSTRING_LEN] = {
 	"txq_restart",
 };
 
-/* statistics of host rx queue */
+ 
 static const char oct_droq_stats_strings[][ETH_GSTRING_LEN] = {
 	"packets",
 	"bytes",
@@ -205,7 +189,7 @@ static const char oct_droq_stats_strings[][ETH_GSTRING_LEN] = {
 	"buffer_alloc_failure",
 };
 
-/* LiquidIO driver private flags */
+ 
 static const char oct_priv_flags_strings[][ETH_GSTRING_LEN] = {
 };
 
@@ -316,17 +300,17 @@ static int lio_get_link_ksettings(struct net_device *netdev,
 					(ecmd, supported, FEC_RS);
 				ethtool_link_ksettings_add_link_mode
 					(ecmd, supported, FEC_NONE);
-					/*FEC_OFF*/
+					 
 				if (oct->props[lio->ifidx].fec == 1) {
-					/* ETHTOOL_FEC_RS */
+					 
 					ethtool_link_ksettings_add_link_mode
 						(ecmd, advertising, FEC_RS);
 				} else {
-					/* ETHTOOL_FEC_OFF */
+					 
 					ethtool_link_ksettings_add_link_mode
 						(ecmd, advertising, FEC_NONE);
 				}
-			} else { /* VF */
+			} else {  
 				if (linfo->link.s.speed == 10000) {
 					ethtool_link_ksettings_add_link_mode
 						(ecmd, supported,
@@ -546,9 +530,7 @@ lio_irq_reallocate_irqs(struct octeon_device *oct, uint32_t num_ioqs)
 	if (!oct->msix_on)
 		return 0;
 
-	/* Disable the input and output queues now. No more packets will
-	 * arrive from Octeon.
-	 */
+	 
 	oct->fn_list.disable_interrupt(oct, OCTEON_ALL_INTR);
 
 	if (oct->msix_on) {
@@ -560,7 +542,7 @@ lio_irq_reallocate_irqs(struct octeon_device *oct, uint32_t num_ioqs)
 		msix_entries = (struct msix_entry *)oct->msix_entries;
 		for (i = 0; i < num_msix_irqs; i++) {
 			if (oct->ioq_vector[i].vector) {
-				/* clear the affinity_cpumask */
+				 
 				irq_set_affinity_hint(msix_entries[i].vector,
 						      NULL);
 				free_irq(msix_entries[i].vector,
@@ -569,7 +551,7 @@ lio_irq_reallocate_irqs(struct octeon_device *oct, uint32_t num_ioqs)
 			}
 		}
 
-		/* non-iov vector's argument is oct struct */
+		 
 		if (OCTEON_CN23XX_PF(oct))
 			free_irq(msix_entries[i].vector, oct);
 
@@ -591,7 +573,7 @@ lio_irq_reallocate_irqs(struct octeon_device *oct, uint32_t num_ioqs)
 		return -1;
 	}
 
-	/* Enable Octeon device interrupts */
+	 
 	oct->fn_list.enable_interrupt(oct, OCTEON_ALL_INTR);
 
 	return 0;
@@ -753,9 +735,7 @@ static int octnet_id_active(struct net_device *netdev, int val)
 	return 0;
 }
 
-/* This routine provides PHY access routines for
- * mdio  clause45 .
- */
+ 
 static int
 octnet_mdio45_access(struct lio *lio, int op, int loc, int *value)
 {
@@ -798,9 +778,7 @@ octnet_mdio45_access(struct lio *lio, int op, int loc, int *value)
 		octeon_free_soft_command(oct_dev, sc);
 		return -EBUSY;
 	} else {
-		/* Sleep on a wait queue till the cond flag indicates that the
-		 * response arrived
-		 */
+		 
 		retval = wait_for_sc_completion_timeout(oct_dev, sc, 0);
 		if (retval)
 			return retval;
@@ -847,7 +825,7 @@ static int lio_set_phys_id(struct net_device *netdev,
 			return 2;
 
 		} else if (oct->chip_id == OCTEON_CN68XX) {
-			/* Save the current LED settings */
+			 
 			ret = octnet_mdio45_access(lio, 0,
 						   LIO68XX_LED_BEACON_ADDR,
 						   &lio->phy_beacon_val);
@@ -860,7 +838,7 @@ static int lio_set_phys_id(struct net_device *netdev,
 			if (ret)
 				return ret;
 
-			/* Configure Beacon values */
+			 
 			value = LIO68XX_LED_BEACON_CFGON;
 			ret = octnet_mdio45_access(lio, 1,
 						   LIO68XX_LED_BEACON_ADDR,
@@ -917,7 +895,7 @@ static int lio_set_phys_id(struct net_device *netdev,
 			octnet_gpio_access(netdev, VITESSE_PHY_GPIO_CFG,
 					   VITESSE_PHY_GPIO_DRIVEOFF);
 		} else if (oct->chip_id == OCTEON_CN68XX) {
-			/* Restore LED settings */
+			 
 			ret = octnet_mdio45_access(lio, 1,
 						   LIO68XX_LED_CTRL_ADDR,
 						   &lio->led_ctrl_val);
@@ -1101,11 +1079,9 @@ static int lio_reset_queues(struct net_device *netdev, uint32_t num_qs)
 		return -1;
 	}
 
-	/* Disable the input and output queues now. No more packets will
-	 * arrive from Octeon.
-	 */
+	 
 	oct->fn_list.disable_io_queues(oct);
-	/* Delete NAPI */
+	 
 	list_for_each_entry_safe(napi, n, &netdev->napi_list, dev_list)
 		netif_napi_del(napi);
 
@@ -1124,26 +1100,17 @@ static int lio_reset_queues(struct net_device *netdev, uint32_t num_qs)
 			return ret;
 		}
 
-		/* The value of queue_count_update decides whether it is the
-		 * queue count or the descriptor count that is being
-		 * re-configured.
-		 */
+		 
 		queue_count_update = 1;
 	}
 
-	/* Re-configuration of queues can happen in two scenarios, SRIOV enabled
-	 * and SRIOV disabled. Few things like recreating queue zero, resetting
-	 * glists and IRQs are required for both. For the latter, some more
-	 * steps like updating sriov_info for the octeon device need to be done.
-	 */
+	 
 	if (queue_count_update) {
 		cleanup_rx_oom_poll_fn(netdev);
 
 		lio_delete_glists(lio);
 
-		/* Delete mbox for PF which is SRIOV disabled because sriov_info
-		 * will be now changed.
-		 */
+		 
 		if ((OCTEON_CN23XX_PF(oct)) && !oct->sriov_info.sriov_enabled)
 			oct->fn_list.free_mbox(oct);
 	}
@@ -1161,7 +1128,7 @@ static int lio_reset_queues(struct net_device *netdev, uint32_t num_qs)
 	}
 
 	if (queue_count_update) {
-		/* For PF re-configure sriov related information */
+		 
 		if ((OCTEON_CN23XX_PF(oct)) &&
 		    !oct->sriov_info.sriov_enabled) {
 			oct->sriov_info.num_pf_rings = num_qs;
@@ -1180,9 +1147,7 @@ static int lio_reset_queues(struct net_device *netdev, uint32_t num_qs)
 		return -1;
 	}
 
-	/* The following are needed in case of queue count re-configuration and
-	 * not for descriptor count re-configuration.
-	 */
+	 
 	if (queue_count_update) {
 		if (octeon_setup_instr_queues(oct))
 			return -1;
@@ -1190,7 +1155,7 @@ static int lio_reset_queues(struct net_device *netdev, uint32_t num_qs)
 		if (octeon_setup_output_queues(oct))
 			return -1;
 
-		/* Recreating mbox for PF that is SRIOV disabled */
+		 
 		if (OCTEON_CN23XX_PF(oct) && !oct->sriov_info.sriov_enabled) {
 			if (oct->fn_list.setup_mbox(oct)) {
 				dev_err(&oct->pci_dev->dev, "Mailbox setup failed\n");
@@ -1198,15 +1163,13 @@ static int lio_reset_queues(struct net_device *netdev, uint32_t num_qs)
 			}
 		}
 
-		/* Deleting and recreating IRQs whether the interface is SRIOV
-		 * enabled or disabled.
-		 */
+		 
 		if (lio_irq_reallocate_irqs(oct, num_qs)) {
 			dev_err(&oct->pci_dev->dev, "IRQs could not be allocated\n");
 			return -1;
 		}
 
-		/* Enable the input and output queues for this Octeon device */
+		 
 		if (oct->fn_list.enable_io_queues(oct)) {
 			dev_err(&oct->pci_dev->dev, "Failed to enable input/output queues\n");
 			return -1;
@@ -1216,17 +1179,14 @@ static int lio_reset_queues(struct net_device *netdev, uint32_t num_qs)
 			writel(oct->droq[i]->max_count,
 			       oct->droq[i]->pkts_credit_reg);
 
-		/* Informing firmware about the new queue count. It is required
-		 * for firmware to allocate more number of queues than those at
-		 * load time.
-		 */
+		 
 		if (OCTEON_CN23XX_PF(oct) && !oct->sriov_info.sriov_enabled) {
 			if (lio_23xx_reconfigure_queue_count(lio))
 				return -1;
 		}
 	}
 
-	/* Once firmware is aware of the new value, queues can be recreated */
+	 
 	if (liquidio_setup_io_queues(oct, 0, num_qs, num_qs)) {
 		dev_err(&oct->pci_dev->dev, "I/O queues creation failed\n");
 		return -1;
@@ -1243,9 +1203,7 @@ static int lio_reset_queues(struct net_device *netdev, uint32_t num_qs)
 			return 1;
 		}
 
-		/* Send firmware the information about new number of queues
-		 * if the interface is a VF or a PF that is SRIOV enabled.
-		 */
+		 
 		if (oct->sriov_info.sriov_enabled || OCTEON_CN23XX_VF(oct))
 			if (lio_send_queue_count_update(netdev, num_qs))
 				return -1;
@@ -1289,7 +1247,7 @@ lio_ethtool_set_ringparam(struct net_device *netdev,
 		stopped = 1;
 	}
 
-	/* Change RX/TX DESCS  count */
+	 
 	if (tx_count != tx_count_old)
 		CFG_SET_NUM_TX_DESCS_NIC_IF(octeon_get_conf(oct), lio->ifidx,
 					    tx_count);
@@ -1350,9 +1308,7 @@ static void lio_vf_set_msglevel(struct net_device *netdev, u32 msglvl)
 static void
 lio_get_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *pause)
 {
-	/* Notes: Not supporting any auto negotiation in these
-	 * drivers. Just report pause frame support.
-	 */
+	 
 	struct lio *lio = GET_LIO(netdev);
 	struct octeon_device *oct = lio->oct_dev;
 
@@ -1365,9 +1321,7 @@ lio_get_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *pause)
 static int
 lio_set_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *pause)
 {
-	/* Notes: Not supporting any auto negotiation in these
-	 * drivers.
-	 */
+	 
 	struct lio *lio = GET_LIO(netdev);
 	struct octeon_device *oct = lio->oct_dev;
 	struct octnic_ctrl_pkt nctrl;
@@ -1379,12 +1333,12 @@ lio_set_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *pause)
 		return -EINVAL;
 
 	if (linfo->link.s.duplex == 0) {
-		/*no flow control for half duplex*/
+		 
 		if (pause->rx_pause || pause->tx_pause)
 			return -EINVAL;
 	}
 
-	/*do not support autoneg of link flow control*/
+	 
 	if (pause->autoneg == AUTONEG_ENABLE)
 		return -EINVAL;
 
@@ -1397,18 +1351,18 @@ lio_set_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *pause)
 	nctrl.cb_fn = liquidio_link_ctrl_cmd_completion;
 
 	if (pause->rx_pause) {
-		/*enable rx pause*/
+		 
 		nctrl.ncmd.s.param1 = 1;
 	} else {
-		/*disable rx pause*/
+		 
 		nctrl.ncmd.s.param1 = 0;
 	}
 
 	if (pause->tx_pause) {
-		/*enable tx pause*/
+		 
 		nctrl.ncmd.s.param2 = 1;
 	} else {
-		/*disable tx pause*/
+		 
 		nctrl.ncmd.s.param2 = 0;
 	}
 
@@ -1439,13 +1393,13 @@ lio_get_ethtool_stats(struct net_device *netdev,
 		return;
 
 	netdev->netdev_ops->ndo_get_stats64(netdev, &lstats);
-	/*sum of oct->droq[oq_no]->stats->rx_pkts_received */
+	 
 	data[i++] = lstats.rx_packets;
-	/*sum of oct->instr_queue[iq_no]->stats.tx_done */
+	 
 	data[i++] = lstats.tx_packets;
-	/*sum of oct->droq[oq_no]->stats->rx_bytes_received */
+	 
 	data[i++] = lstats.rx_bytes;
-	/*sum of oct->instr_queue[iq_no]->stats.tx_tot_bytes */
+	 
 	data[i++] = lstats.tx_bytes;
 	data[i++] = lstats.rx_errors +
 			oct_dev->link_stats.fromwire.fcs_err +
@@ -1453,11 +1407,7 @@ lio_get_ethtool_stats(struct net_device *netdev,
 			oct_dev->link_stats.fromwire.l2_err +
 			oct_dev->link_stats.fromwire.frame_err;
 	data[i++] = lstats.tx_errors;
-	/*sum of oct->droq[oq_no]->stats->rx_dropped +
-	 *oct->droq[oq_no]->stats->dropped_nodispatch +
-	 *oct->droq[oq_no]->stats->dropped_toomany +
-	 *oct->droq[oq_no]->stats->dropped_nomem
-	 */
+	 
 	data[i++] = lstats.rx_dropped +
 			oct_dev->link_stats.fromwire.fifo_err +
 			oct_dev->link_stats.fromwire.dmac_drop +
@@ -1465,7 +1415,7 @@ lio_get_ethtool_stats(struct net_device *netdev,
 			oct_dev->link_stats.fromwire.fw_err_pko +
 			oct_dev->link_stats.fromwire.fw_err_link +
 			oct_dev->link_stats.fromwire.fw_err_drop;
-	/*sum of oct->instr_queue[iq_no]->stats.tx_dropped */
+	 
 	data[i++] = lstats.tx_dropped +
 			oct_dev->link_stats.fromhost.max_collision_fail +
 			oct_dev->link_stats.fromhost.max_deferral_fail +
@@ -1475,220 +1425,186 @@ lio_get_ethtool_stats(struct net_device *netdev,
 			oct_dev->link_stats.fromhost.fw_err_drop +
 			oct_dev->link_stats.fromhost.fw_err_pki;
 
-	/* firmware tx stats */
-	/*per_core_stats[cvmx_get_core_num()].link_stats[mdata->from_ifidx].
-	 *fromhost.fw_total_sent
-	 */
+	 
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromhost.fw_total_sent);
-	/*per_core_stats[i].link_stats[port].fromwire.fw_total_fwd */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromhost.fw_total_fwd);
-	/*per_core_stats[j].link_stats[i].fromhost.fw_err_pko */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromhost.fw_err_pko);
-	/*per_core_stats[j].link_stats[i].fromhost.fw_err_pki */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromhost.fw_err_pki);
-	/*per_core_stats[j].link_stats[i].fromhost.fw_err_link */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromhost.fw_err_link);
-	/*per_core_stats[cvmx_get_core_num()].link_stats[idx].fromhost.
-	 *fw_err_drop
-	 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromhost.fw_err_drop);
 
-	/*per_core_stats[cvmx_get_core_num()].link_stats[idx].fromhost.fw_tso */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromhost.fw_tso);
-	/*per_core_stats[cvmx_get_core_num()].link_stats[idx].fromhost.
-	 *fw_tso_fwd
-	 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromhost.fw_tso_fwd);
-	/*per_core_stats[cvmx_get_core_num()].link_stats[idx].fromhost.
-	 *fw_err_tso
-	 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromhost.fw_err_tso);
-	/*per_core_stats[cvmx_get_core_num()].link_stats[idx].fromhost.
-	 *fw_tx_vxlan
-	 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromhost.fw_tx_vxlan);
 
-	/* Multicast packets sent by this port */
+	 
 	data[i++] = oct_dev->link_stats.fromhost.fw_total_mcast_sent;
 	data[i++] = oct_dev->link_stats.fromhost.fw_total_bcast_sent;
 
-	/* mac tx statistics */
-	/*CVMX_BGXX_CMRX_TX_STAT5 */
+	 
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromhost.total_pkts_sent);
-	/*CVMX_BGXX_CMRX_TX_STAT4 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromhost.total_bytes_sent);
-	/*CVMX_BGXX_CMRX_TX_STAT15 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromhost.mcast_pkts_sent);
-	/*CVMX_BGXX_CMRX_TX_STAT14 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromhost.bcast_pkts_sent);
-	/*CVMX_BGXX_CMRX_TX_STAT17 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromhost.ctl_sent);
-	/*CVMX_BGXX_CMRX_TX_STAT0 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromhost.total_collisions);
-	/*CVMX_BGXX_CMRX_TX_STAT3 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromhost.one_collision_sent);
-	/*CVMX_BGXX_CMRX_TX_STAT2 */
+	 
 	data[i++] =
 		CVM_CAST64(oct_dev->link_stats.fromhost.multi_collision_sent);
-	/*CVMX_BGXX_CMRX_TX_STAT0 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromhost.max_collision_fail);
-	/*CVMX_BGXX_CMRX_TX_STAT1 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromhost.max_deferral_fail);
-	/*CVMX_BGXX_CMRX_TX_STAT16 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromhost.fifo_err);
-	/*CVMX_BGXX_CMRX_TX_STAT6 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromhost.runts);
 
-	/* RX firmware stats */
-	/*per_core_stats[cvmx_get_core_num()].link_stats[ifidx].fromwire.
-	 *fw_total_rcvd
-	 */
+	 
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.fw_total_rcvd);
-	/*per_core_stats[cvmx_get_core_num()].link_stats[ifidx].fromwire.
-	 *fw_total_fwd
-	 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.fw_total_fwd);
-	/* Multicast packets received on this port */
+	 
 	data[i++] = oct_dev->link_stats.fromwire.fw_total_mcast;
 	data[i++] = oct_dev->link_stats.fromwire.fw_total_bcast;
-	/*per_core_stats[core_id].link_stats[ifidx].fromwire.jabber_err */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.jabber_err);
-	/*per_core_stats[core_id].link_stats[ifidx].fromwire.l2_err */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.l2_err);
-	/*per_core_stats[core_id].link_stats[ifidx].fromwire.frame_err */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.frame_err);
-	/*per_core_stats[cvmx_get_core_num()].link_stats[ifidx].fromwire.
-	 *fw_err_pko
-	 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.fw_err_pko);
-	/*per_core_stats[j].link_stats[i].fromwire.fw_err_link */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.fw_err_link);
-	/*per_core_stats[cvmx_get_core_num()].link_stats[lro_ctx->ifidx].
-	 *fromwire.fw_err_drop
-	 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.fw_err_drop);
 
-	/*per_core_stats[cvmx_get_core_num()].link_stats[lro_ctx->ifidx].
-	 *fromwire.fw_rx_vxlan
-	 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.fw_rx_vxlan);
-	/*per_core_stats[cvmx_get_core_num()].link_stats[lro_ctx->ifidx].
-	 *fromwire.fw_rx_vxlan_err
-	 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.fw_rx_vxlan_err);
 
-	/* LRO */
-	/*per_core_stats[cvmx_get_core_num()].link_stats[ifidx].fromwire.
-	 *fw_lro_pkts
-	 */
+	 
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.fw_lro_pkts);
-	/*per_core_stats[cvmx_get_core_num()].link_stats[ifidx].fromwire.
-	 *fw_lro_octs
-	 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.fw_lro_octs);
-	/*per_core_stats[j].link_stats[i].fromwire.fw_total_lro */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.fw_total_lro);
-	/*per_core_stats[j].link_stats[i].fromwire.fw_lro_aborts */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.fw_lro_aborts);
-	/*per_core_stats[cvmx_get_core_num()].link_stats[ifidx].fromwire.
-	 *fw_lro_aborts_port
-	 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.fw_lro_aborts_port);
-	/*per_core_stats[cvmx_get_core_num()].link_stats[ifidx].fromwire.
-	 *fw_lro_aborts_seq
-	 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.fw_lro_aborts_seq);
-	/*per_core_stats[cvmx_get_core_num()].link_stats[ifidx].fromwire.
-	 *fw_lro_aborts_tsval
-	 */
+	 
 	data[i++] =
 		CVM_CAST64(oct_dev->link_stats.fromwire.fw_lro_aborts_tsval);
-	/*per_core_stats[cvmx_get_core_num()].link_stats[ifidx].fromwire.
-	 *fw_lro_aborts_timer
-	 */
-	/* intrmod: packet forward rate */
+	 
+	 
 	data[i++] =
 		CVM_CAST64(oct_dev->link_stats.fromwire.fw_lro_aborts_timer);
-	/*per_core_stats[j].link_stats[i].fromwire.fw_lro_aborts */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.fwd_rate);
 
-	/* mac: link-level stats */
-	/*CVMX_BGXX_CMRX_RX_STAT0 */
+	 
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.total_rcvd);
-	/*CVMX_BGXX_CMRX_RX_STAT1 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.bytes_rcvd);
-	/*CVMX_PKI_STATX_STAT5 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.total_bcst);
-	/*CVMX_PKI_STATX_STAT5 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.total_mcst);
-	/*wqe->word2.err_code or wqe->word2.err_level */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.runts);
-	/*CVMX_BGXX_CMRX_RX_STAT2 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.ctl_rcvd);
-	/*CVMX_BGXX_CMRX_RX_STAT6 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.fifo_err);
-	/*CVMX_BGXX_CMRX_RX_STAT4 */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.dmac_drop);
-	/*wqe->word2.err_code or wqe->word2.err_level */
+	 
 	data[i++] = CVM_CAST64(oct_dev->link_stats.fromwire.fcs_err);
-	/*lio->link_changes*/
+	 
 	data[i++] = CVM_CAST64(lio->link_changes);
 
 	for (j = 0; j < MAX_OCTEON_INSTR_QUEUES(oct_dev); j++) {
 		if (!(oct_dev->io_qmask.iq & BIT_ULL(j)))
 			continue;
-		/*packets to network port*/
-		/*# of packets tx to network */
+		 
+		 
 		data[i++] = CVM_CAST64(oct_dev->instr_queue[j]->stats.tx_done);
-		/*# of bytes tx to network */
+		 
 		data[i++] =
 			CVM_CAST64(oct_dev->instr_queue[j]->stats.tx_tot_bytes);
-		/*# of packets dropped */
+		 
 		data[i++] =
 			CVM_CAST64(oct_dev->instr_queue[j]->stats.tx_dropped);
-		/*# of tx fails due to queue full */
+		 
 		data[i++] =
 			CVM_CAST64(oct_dev->instr_queue[j]->stats.tx_iq_busy);
-		/*XXX gather entries sent */
+		 
 		data[i++] =
 			CVM_CAST64(oct_dev->instr_queue[j]->stats.sgentry_sent);
 
-		/*instruction to firmware: data and control */
-		/*# of instructions to the queue */
+		 
+		 
 		data[i++] =
 			CVM_CAST64(oct_dev->instr_queue[j]->stats.instr_posted);
-		/*# of instructions processed */
+		 
 		data[i++] = CVM_CAST64(
 				oct_dev->instr_queue[j]->stats.instr_processed);
-		/*# of instructions could not be processed */
+		 
 		data[i++] = CVM_CAST64(
 				oct_dev->instr_queue[j]->stats.instr_dropped);
-		/*bytes sent through the queue */
+		 
 		data[i++] =
 			CVM_CAST64(oct_dev->instr_queue[j]->stats.bytes_sent);
 
-		/*tso request*/
+		 
 		data[i++] = CVM_CAST64(oct_dev->instr_queue[j]->stats.tx_gso);
-		/*vxlan request*/
+		 
 		data[i++] = CVM_CAST64(oct_dev->instr_queue[j]->stats.tx_vxlan);
-		/*txq restart*/
+		 
 		data[i++] =
 			CVM_CAST64(oct_dev->instr_queue[j]->stats.tx_restart);
 	}
 
-	/* RX */
+	 
 	for (j = 0; j < MAX_OCTEON_OUTPUT_QUEUES(oct_dev); j++) {
 		if (!(oct_dev->io_qmask.oq & BIT_ULL(j)))
 			continue;
 
-		/*packets send to TCP/IP network stack */
-		/*# of packets to network stack */
+		 
+		 
 		data[i++] =
 			CVM_CAST64(oct_dev->droq[j]->stats.rx_pkts_received);
-		/*# of bytes to network stack */
+		 
 		data[i++] =
 			CVM_CAST64(oct_dev->droq[j]->stats.rx_bytes_received);
-		/*# of packets dropped */
+		 
 		data[i++] = CVM_CAST64(oct_dev->droq[j]->stats.dropped_nomem +
 				       oct_dev->droq[j]->stats.dropped_toomany +
 				       oct_dev->droq[j]->stats.rx_dropped);
@@ -1699,7 +1615,7 @@ lio_get_ethtool_stats(struct net_device *netdev,
 		data[i++] =
 			CVM_CAST64(oct_dev->droq[j]->stats.rx_dropped);
 
-		/*control and data path*/
+		 
 		data[i++] =
 			CVM_CAST64(oct_dev->droq[j]->stats.pkts_received);
 		data[i++] =
@@ -1728,23 +1644,19 @@ static void lio_vf_get_ethtool_stats(struct net_device *netdev,
 		return;
 
 	netdev->netdev_ops->ndo_get_stats64(netdev, &lstats);
-	/* sum of oct->droq[oq_no]->stats->rx_pkts_received */
+	 
 	data[i++] = lstats.rx_packets;
-	/* sum of oct->instr_queue[iq_no]->stats.tx_done */
+	 
 	data[i++] = lstats.tx_packets;
-	/* sum of oct->droq[oq_no]->stats->rx_bytes_received */
+	 
 	data[i++] = lstats.rx_bytes;
-	/* sum of oct->instr_queue[iq_no]->stats.tx_tot_bytes */
+	 
 	data[i++] = lstats.tx_bytes;
 	data[i++] = lstats.rx_errors;
 	data[i++] = lstats.tx_errors;
-	 /* sum of oct->droq[oq_no]->stats->rx_dropped +
-	  * oct->droq[oq_no]->stats->dropped_nodispatch +
-	  * oct->droq[oq_no]->stats->dropped_toomany +
-	  * oct->droq[oq_no]->stats->dropped_nomem
-	  */
+	  
 	data[i++] = lstats.rx_dropped;
-	/* sum of oct->instr_queue[iq_no]->stats.tx_dropped */
+	 
 	data[i++] = lstats.tx_dropped +
 		oct_dev->link_stats.fromhost.fw_err_drop;
 
@@ -1753,59 +1665,59 @@ static void lio_vf_get_ethtool_stats(struct net_device *netdev,
 	data[i++] = oct_dev->link_stats.fromwire.fw_total_bcast;
 	data[i++] = oct_dev->link_stats.fromhost.fw_total_bcast_sent;
 
-	/* lio->link_changes */
+	 
 	data[i++] = CVM_CAST64(lio->link_changes);
 
 	for (vj = 0; vj < oct_dev->num_iqs; vj++) {
 		j = lio->linfo.txpciq[vj].s.q_no;
 
-		/* packets to network port */
-		/* # of packets tx to network */
+		 
+		 
 		data[i++] = CVM_CAST64(oct_dev->instr_queue[j]->stats.tx_done);
-		 /* # of bytes tx to network */
+		  
 		data[i++] = CVM_CAST64(
 				oct_dev->instr_queue[j]->stats.tx_tot_bytes);
-		/* # of packets dropped */
+		 
 		data[i++] = CVM_CAST64(
 				oct_dev->instr_queue[j]->stats.tx_dropped);
-		/* # of tx fails due to queue full */
+		 
 		data[i++] = CVM_CAST64(
 				oct_dev->instr_queue[j]->stats.tx_iq_busy);
-		/* XXX gather entries sent */
+		 
 		data[i++] = CVM_CAST64(
 				oct_dev->instr_queue[j]->stats.sgentry_sent);
 
-		/* instruction to firmware: data and control */
-		/* # of instructions to the queue */
+		 
+		 
 		data[i++] = CVM_CAST64(
 				oct_dev->instr_queue[j]->stats.instr_posted);
-		/* # of instructions processed */
+		 
 		data[i++] =
 		    CVM_CAST64(oct_dev->instr_queue[j]->stats.instr_processed);
-		/* # of instructions could not be processed */
+		 
 		data[i++] =
 		    CVM_CAST64(oct_dev->instr_queue[j]->stats.instr_dropped);
-		/* bytes sent through the queue */
+		 
 		data[i++] = CVM_CAST64(
 				oct_dev->instr_queue[j]->stats.bytes_sent);
-		/* tso request */
+		 
 		data[i++] = CVM_CAST64(oct_dev->instr_queue[j]->stats.tx_gso);
-		/* vxlan request */
+		 
 		data[i++] = CVM_CAST64(oct_dev->instr_queue[j]->stats.tx_vxlan);
-		/* txq restart */
+		 
 		data[i++] = CVM_CAST64(
 				oct_dev->instr_queue[j]->stats.tx_restart);
 	}
 
-	/* RX */
+	 
 	for (vj = 0; vj < oct_dev->num_oqs; vj++) {
 		j = lio->linfo.rxpciq[vj].s.q_no;
 
-		/* packets send to TCP/IP network stack */
-		/* # of packets to network stack */
+		 
+		 
 		data[i++] = CVM_CAST64(
 				oct_dev->droq[j]->stats.rx_pkts_received);
-		/* # of bytes to network stack */
+		 
 		data[i++] = CVM_CAST64(
 				oct_dev->droq[j]->stats.rx_bytes_received);
 		data[i++] = CVM_CAST64(oct_dev->droq[j]->stats.dropped_nomem +
@@ -1815,7 +1727,7 @@ static void lio_vf_get_ethtool_stats(struct net_device *netdev,
 		data[i++] = CVM_CAST64(oct_dev->droq[j]->stats.dropped_toomany);
 		data[i++] = CVM_CAST64(oct_dev->droq[j]->stats.rx_dropped);
 
-		/* control and data path */
+		 
 		data[i++] = CVM_CAST64(oct_dev->droq[j]->stats.pkts_received);
 		data[i++] = CVM_CAST64(oct_dev->droq[j]->stats.bytes_received);
 		data[i++] =
@@ -1995,7 +1907,7 @@ static int lio_vf_get_sset_count(struct net_device *netdev, int sset)
 	}
 }
 
-/*  get interrupt moderation parameters */
+ 
 static int octnet_get_intrmod_cfg(struct lio *lio,
 				  struct oct_intrmod_cfg *intr_cfg)
 {
@@ -2004,7 +1916,7 @@ static int octnet_get_intrmod_cfg(struct lio *lio,
 	int retval;
 	struct octeon_device *oct_dev = lio->oct_dev;
 
-	/* Alloc soft command */
+	 
 	sc = (struct octeon_soft_command *)
 		octeon_alloc_soft_command(oct_dev,
 					  0,
@@ -2030,9 +1942,7 @@ static int octnet_get_intrmod_cfg(struct lio *lio,
 		return -EINVAL;
 	}
 
-	/* Sleep on a wait queue till the cond flag indicates that the
-	 * response arrived or timed-out.
-	 */
+	 
 	retval = wait_for_sc_completion_timeout(oct_dev, sc, 0);
 	if (retval)
 		return -ENODEV;
@@ -2052,7 +1962,7 @@ static int octnet_get_intrmod_cfg(struct lio *lio,
 	return 0;
 }
 
-/*  Configure interrupt moderation parameters */
+ 
 static int octnet_set_intrmod_cfg(struct lio *lio,
 				  struct oct_intrmod_cfg *intr_cfg)
 {
@@ -2061,7 +1971,7 @@ static int octnet_set_intrmod_cfg(struct lio *lio,
 	int retval;
 	struct octeon_device *oct_dev = lio->oct_dev;
 
-	/* Alloc soft command */
+	 
 	sc = (struct octeon_soft_command *)
 		octeon_alloc_soft_command(oct_dev,
 					  sizeof(struct oct_intrmod_cfg),
@@ -2089,9 +1999,7 @@ static int octnet_set_intrmod_cfg(struct lio *lio,
 		return -EINVAL;
 	}
 
-	/* Sleep on a wait queue till the cond flag indicates that the
-	 * response arrived or timed-out.
-	 */
+	 
 	retval = wait_for_sc_completion_timeout(oct_dev, sc, 0);
 	if (retval)
 		return retval;
@@ -2187,7 +2095,7 @@ static int lio_get_intr_coalesce(struct net_device *netdev,
 	return 0;
 }
 
-/* Enable/Disable auto interrupt Moderation */
+ 
 static int oct_cfg_adaptive_intr(struct lio *lio,
 				 struct oct_intrmod_cfg *intrmod_cfg,
 				 struct ethtool_coalesce *intr_coal)
@@ -2229,7 +2137,7 @@ oct_cfg_rx_intrcnt(struct lio *lio,
 	struct octeon_device *oct = lio->oct_dev;
 	u32 rx_max_coalesced_frames;
 
-	/* Config Cnt based interrupt values */
+	 
 	switch (oct->chip_id) {
 	case OCTEON_CN68XX:
 	case OCTEON_CN66XX: {
@@ -2262,7 +2170,7 @@ oct_cfg_rx_intrcnt(struct lio *lio,
 				 oct, CN23XX_SLI_OQ_PKT_INT_LEVELS(q_no)) &
 			     (0x3fffff00000000UL)) |
 				(rx_max_coalesced_frames - 1));
-			/*consider setting resend bit*/
+			 
 		}
 		intrmod->rx_frames = rx_max_coalesced_frames;
 		oct->rx_max_coalesced_frames = rx_max_coalesced_frames;
@@ -2283,7 +2191,7 @@ oct_cfg_rx_intrcnt(struct lio *lio,
 				 oct, CN23XX_VF_SLI_OQ_PKT_INT_LEVELS(q_no)) &
 			     (0x3fffff00000000UL)) |
 				(rx_max_coalesced_frames - 1));
-			/*consider writing to resend bit here*/
+			 
 		}
 		intrmod->rx_frames = rx_max_coalesced_frames;
 		oct->rx_max_coalesced_frames = rx_max_coalesced_frames;
@@ -2302,7 +2210,7 @@ static int oct_cfg_rx_intrtime(struct lio *lio,
 	struct octeon_device *oct = lio->oct_dev;
 	u32 time_threshold, rx_coalesce_usecs;
 
-	/* Config Time based interrupt values */
+	 
 	switch (oct->chip_id) {
 	case OCTEON_CN68XX:
 	case OCTEON_CN66XX: {
@@ -2338,7 +2246,7 @@ static int oct_cfg_rx_intrtime(struct lio *lio,
 					   CN23XX_SLI_OQ_PKT_INT_LEVELS(q_no),
 					   (intrmod->rx_frames |
 					    ((u64)time_threshold << 32)));
-			/*consider writing to resend bit here*/
+			 
 		}
 		intrmod->rx_usecs = rx_coalesce_usecs;
 		oct->rx_coalesce_usecs = rx_coalesce_usecs;
@@ -2360,7 +2268,7 @@ static int oct_cfg_rx_intrtime(struct lio *lio,
 				oct, CN23XX_VF_SLI_OQ_PKT_INT_LEVELS(q_no),
 				(intrmod->rx_frames |
 				 ((u64)time_threshold << 32)));
-			/*consider setting resend bit*/
+			 
 		}
 		intrmod->rx_usecs = rx_coalesce_usecs;
 		oct->rx_coalesce_usecs = rx_coalesce_usecs;
@@ -2383,7 +2291,7 @@ oct_cfg_tx_intrcnt(struct lio *lio,
 	void __iomem *inst_cnt_reg;
 	u64 val;
 
-	/* Config Cnt based interrupt values */
+	 
 	switch (oct->chip_id) {
 	case OCTEON_CN68XX:
 	case OCTEON_CN66XX:
@@ -2401,12 +2309,12 @@ oct_cfg_tx_intrcnt(struct lio *lio,
 		for (q_no = 0; q_no < oct->num_iqs; q_no++) {
 			inst_cnt_reg = (oct->instr_queue[q_no])->inst_cnt_reg;
 			val = readq(inst_cnt_reg);
-			/*clear wmark and count.dont want to write count back*/
+			 
 			val = (val & 0xFFFF000000000000ULL) |
 			      ((u64)(iq_intr_pkt - 1)
 			       << CN23XX_PKT_IN_DONE_WMARK_BIT_POS);
 			writeq(val, inst_cnt_reg);
-			/*consider setting resend bit*/
+			 
 		}
 		intrmod->tx_frames = iq_intr_pkt;
 		oct->tx_max_coalesced_frames = iq_intr_pkt;
@@ -2526,7 +2434,7 @@ static int lio_get_ts_info(struct net_device *netdev,
 	return 0;
 }
 
-/* Return register dump len. */
+ 
 static int lio_get_regs_len(struct net_device *dev)
 {
 	struct lio *lio = GET_LIO(dev);
@@ -2549,44 +2457,44 @@ static int cn23xx_read_csr_reg(char *s, struct octeon_device *oct)
 	int len = 0;
 	int i;
 
-	/* PCI  Window Registers */
+	 
 
 	len += sprintf(s + len, "\n\t Octeon CSR Registers\n\n");
 
-	/*0x29030 or 0x29040*/
+	 
 	reg = CN23XX_SLI_PKT_MAC_RINFO64(oct->pcie_port, oct->pf_num);
 	len += sprintf(s + len,
 		       "\n[%08x] (SLI_PKT_MAC%d_PF%d_RINFO): %016llx\n",
 		       reg, oct->pcie_port, oct->pf_num,
 		       (u64)octeon_read_csr64(oct, reg));
 
-	/*0x27080 or 0x27090*/
+	 
 	reg = CN23XX_SLI_MAC_PF_INT_ENB64(oct->pcie_port, oct->pf_num);
 	len +=
 	    sprintf(s + len, "\n[%08x] (SLI_MAC%d_PF%d_INT_ENB): %016llx\n",
 		    reg, oct->pcie_port, oct->pf_num,
 		    (u64)octeon_read_csr64(oct, reg));
 
-	/*0x27000 or 0x27010*/
+	 
 	reg = CN23XX_SLI_MAC_PF_INT_SUM64(oct->pcie_port, oct->pf_num);
 	len +=
 	    sprintf(s + len, "\n[%08x] (SLI_MAC%d_PF%d_INT_SUM): %016llx\n",
 		    reg, oct->pcie_port, oct->pf_num,
 		    (u64)octeon_read_csr64(oct, reg));
 
-	/*0x29120*/
+	 
 	reg = 0x29120;
 	len += sprintf(s + len, "\n[%08x] (SLI_PKT_MEM_CTL): %016llx\n", reg,
 		       (u64)octeon_read_csr64(oct, reg));
 
-	/*0x27300*/
+	 
 	reg = 0x27300 + oct->pcie_port * CN23XX_MAC_INT_OFFSET +
 	      (oct->pf_num) * CN23XX_PF_INT_OFFSET;
 	len += sprintf(
 	    s + len, "\n[%08x] (SLI_MAC%d_PF%d_PKT_VF_INT): %016llx\n", reg,
 	    oct->pcie_port, oct->pf_num, (u64)octeon_read_csr64(oct, reg));
 
-	/*0x27200*/
+	 
 	reg = 0x27200 + oct->pcie_port * CN23XX_MAC_INT_OFFSET +
 	      (oct->pf_num) * CN23XX_PF_INT_OFFSET;
 	len += sprintf(s + len,
@@ -2594,51 +2502,51 @@ static int cn23xx_read_csr_reg(char *s, struct octeon_device *oct)
 		       reg, oct->pcie_port, oct->pf_num,
 		       (u64)octeon_read_csr64(oct, reg));
 
-	/*29130*/
+	 
 	reg = CN23XX_SLI_PKT_CNT_INT;
 	len += sprintf(s + len, "\n[%08x] (SLI_PKT_CNT_INT): %016llx\n", reg,
 		       (u64)octeon_read_csr64(oct, reg));
 
-	/*0x29140*/
+	 
 	reg = CN23XX_SLI_PKT_TIME_INT;
 	len += sprintf(s + len, "\n[%08x] (SLI_PKT_TIME_INT): %016llx\n", reg,
 		       (u64)octeon_read_csr64(oct, reg));
 
-	/*0x29160*/
+	 
 	reg = 0x29160;
 	len += sprintf(s + len, "\n[%08x] (SLI_PKT_INT): %016llx\n", reg,
 		       (u64)octeon_read_csr64(oct, reg));
 
-	/*0x29180*/
+	 
 	reg = CN23XX_SLI_OQ_WMARK;
 	len += sprintf(s + len, "\n[%08x] (SLI_PKT_OUTPUT_WMARK): %016llx\n",
 		       reg, (u64)octeon_read_csr64(oct, reg));
 
-	/*0x291E0*/
+	 
 	reg = CN23XX_SLI_PKT_IOQ_RING_RST;
 	len += sprintf(s + len, "\n[%08x] (SLI_PKT_RING_RST): %016llx\n", reg,
 		       (u64)octeon_read_csr64(oct, reg));
 
-	/*0x29210*/
+	 
 	reg = CN23XX_SLI_GBL_CONTROL;
 	len += sprintf(s + len,
 		       "\n[%08x] (SLI_PKT_GBL_CONTROL): %016llx\n", reg,
 		       (u64)octeon_read_csr64(oct, reg));
 
-	/*0x29220*/
+	 
 	reg = 0x29220;
 	len += sprintf(s + len, "\n[%08x] (SLI_PKT_BIST_STATUS): %016llx\n",
 		       reg, (u64)octeon_read_csr64(oct, reg));
 
-	/*PF only*/
+	 
 	if (pf_num == 0) {
-		/*0x29260*/
+		 
 		reg = CN23XX_SLI_OUT_BP_EN_W1S;
 		len += sprintf(s + len,
 			       "\n[%08x] (SLI_PKT_OUT_BP_EN_W1S):  %016llx\n",
 			       reg, (u64)octeon_read_csr64(oct, reg));
 	} else if (pf_num == 1) {
-		/*0x29270*/
+		 
 		reg = CN23XX_SLI_OUT_BP_EN2_W1S;
 		len += sprintf(s + len,
 			       "\n[%08x] (SLI_PKT_OUT_BP_EN2_W1S): %016llx\n",
@@ -2652,7 +2560,7 @@ static int cn23xx_read_csr_reg(char *s, struct octeon_device *oct)
 			    reg, i, (u64)octeon_read_csr64(oct, reg));
 	}
 
-	/*0x10040*/
+	 
 	for (i = 0; i < CN23XX_MAX_INPUT_QUEUES; i++) {
 		reg = CN23XX_SLI_IQ_INSTR_COUNT64(i);
 		len += sprintf(s + len,
@@ -2660,7 +2568,7 @@ static int cn23xx_read_csr_reg(char *s, struct octeon_device *oct)
 			       reg, i, (u64)octeon_read_csr64(oct, reg));
 	}
 
-	/*0x10080*/
+	 
 	for (i = 0; i < CN23XX_MAX_OUTPUT_QUEUES; i++) {
 		reg = CN23XX_SLI_OQ_PKTS_CREDIT(i);
 		len += sprintf(s + len,
@@ -2668,7 +2576,7 @@ static int cn23xx_read_csr_reg(char *s, struct octeon_device *oct)
 			       reg, i, (u64)octeon_read_csr64(oct, reg));
 	}
 
-	/*0x10090*/
+	 
 	for (i = 0; i < CN23XX_MAX_OUTPUT_QUEUES; i++) {
 		reg = CN23XX_SLI_OQ_SIZE(i);
 		len += sprintf(
@@ -2676,7 +2584,7 @@ static int cn23xx_read_csr_reg(char *s, struct octeon_device *oct)
 		    reg, i, (u64)octeon_read_csr64(oct, reg));
 	}
 
-	/*0x10050*/
+	 
 	for (i = 0; i < CN23XX_MAX_OUTPUT_QUEUES; i++) {
 		reg = CN23XX_SLI_OQ_PKT_CONTROL(i);
 		len += sprintf(
@@ -2685,7 +2593,7 @@ static int cn23xx_read_csr_reg(char *s, struct octeon_device *oct)
 			reg, i, (u64)octeon_read_csr64(oct, reg));
 	}
 
-	/*0x10070*/
+	 
 	for (i = 0; i < CN23XX_MAX_OUTPUT_QUEUES; i++) {
 		reg = CN23XX_SLI_OQ_BASE_ADDR64(i);
 		len += sprintf(s + len,
@@ -2693,7 +2601,7 @@ static int cn23xx_read_csr_reg(char *s, struct octeon_device *oct)
 			       reg, i, (u64)octeon_read_csr64(oct, reg));
 	}
 
-	/*0x100a0*/
+	 
 	for (i = 0; i < CN23XX_MAX_OUTPUT_QUEUES; i++) {
 		reg = CN23XX_SLI_OQ_PKT_INT_LEVELS(i);
 		len += sprintf(s + len,
@@ -2701,21 +2609,21 @@ static int cn23xx_read_csr_reg(char *s, struct octeon_device *oct)
 			       reg, i, (u64)octeon_read_csr64(oct, reg));
 	}
 
-	/*0x100b0*/
+	 
 	for (i = 0; i < CN23XX_MAX_OUTPUT_QUEUES; i++) {
 		reg = CN23XX_SLI_OQ_PKTS_SENT(i);
 		len += sprintf(s + len, "\n[%08x] (SLI_PKT%d_CNTS): %016llx\n",
 			       reg, i, (u64)octeon_read_csr64(oct, reg));
 	}
 
-	/*0x100c0*/
+	 
 	for (i = 0; i < CN23XX_MAX_OUTPUT_QUEUES; i++) {
 		reg = 0x100c0 + i * CN23XX_OQ_OFFSET;
 		len += sprintf(s + len,
 			       "\n[%08x] (SLI_PKT%d_ERROR_INFO): %016llx\n",
 			       reg, i, (u64)octeon_read_csr64(oct, reg));
 
-		/*0x10000*/
+		 
 		for (i = 0; i < CN23XX_MAX_INPUT_QUEUES; i++) {
 			reg = CN23XX_SLI_IQ_PKT_CONTROL64(i);
 			len += sprintf(
@@ -2724,7 +2632,7 @@ static int cn23xx_read_csr_reg(char *s, struct octeon_device *oct)
 				reg, i, (u64)octeon_read_csr64(oct, reg));
 		}
 
-		/*0x10010*/
+		 
 		for (i = 0; i < CN23XX_MAX_INPUT_QUEUES; i++) {
 			reg = CN23XX_SLI_IQ_BASE_ADDR64(i);
 			len += sprintf(
@@ -2733,7 +2641,7 @@ static int cn23xx_read_csr_reg(char *s, struct octeon_device *oct)
 			    i, (u64)octeon_read_csr64(oct, reg));
 		}
 
-		/*0x10020*/
+		 
 		for (i = 0; i < CN23XX_MAX_INPUT_QUEUES; i++) {
 			reg = CN23XX_SLI_IQ_DOORBELL(i);
 			len += sprintf(
@@ -2742,7 +2650,7 @@ static int cn23xx_read_csr_reg(char *s, struct octeon_device *oct)
 			    reg, i, (u64)octeon_read_csr64(oct, reg));
 		}
 
-		/*0x10030*/
+		 
 		for (i = 0; i < CN23XX_MAX_INPUT_QUEUES; i++) {
 			reg = CN23XX_SLI_IQ_SIZE(i);
 			len += sprintf(
@@ -2751,7 +2659,7 @@ static int cn23xx_read_csr_reg(char *s, struct octeon_device *oct)
 			    reg, i, (u64)octeon_read_csr64(oct, reg));
 		}
 
-		/*0x10040*/
+		 
 		for (i = 0; i < CN23XX_MAX_INPUT_QUEUES; i++)
 			reg = CN23XX_SLI_IQ_INSTR_COUNT64(i);
 		len += sprintf(s + len,
@@ -2768,7 +2676,7 @@ static int cn23xx_vf_read_csr_reg(char *s, struct octeon_device *oct)
 	u32 reg;
 	int i;
 
-	/* PCI  Window Registers */
+	 
 
 	len += sprintf(s + len, "\n\t Octeon CSR Registers\n\n");
 
@@ -2884,7 +2792,7 @@ static int cn6xxx_read_csr_reg(char *s, struct octeon_device *oct)
 	u32 reg;
 	int i, len = 0;
 
-	/* PCI  Window Registers */
+	 
 
 	len += sprintf(s + len, "\n\t Octeon CSR Registers\n\n");
 	reg = CN6XXX_WIN_WR_ADDR_LO;
@@ -2909,7 +2817,7 @@ static int cn6xxx_read_csr_reg(char *s, struct octeon_device *oct)
 		       CN6XXX_WIN_WR_MASK_REG,
 		       octeon_read_csr(oct, CN6XXX_WIN_WR_MASK_REG));
 
-	/* PCI  Interrupt Register */
+	 
 	len += sprintf(s + len, "\n[%x] (INT_ENABLE PORT 0): %08x\n",
 		       CN6XXX_SLI_INT_ENB64_PORT0, octeon_read_csr(oct,
 						CN6XXX_SLI_INT_ENB64_PORT0));
@@ -2919,7 +2827,7 @@ static int cn6xxx_read_csr_reg(char *s, struct octeon_device *oct)
 	len += sprintf(s + len, "[%x] (INT_SUM): %08x\n", CN6XXX_SLI_INT_SUM64,
 		       octeon_read_csr(oct, CN6XXX_SLI_INT_SUM64));
 
-	/* PCI  Output queue registers */
+	 
 	for (i = 0; i < oct->num_oqs; i++) {
 		reg = CN6XXX_SLI_OQ_PKTS_SENT(i);
 		len += sprintf(s + len, "\n[%x] (PKTS_SENT_%d): %08x\n",
@@ -2935,7 +2843,7 @@ static int cn6xxx_read_csr_reg(char *s, struct octeon_device *oct)
 	len += sprintf(s + len, "[%x] (PKTS_SENT_TIME): %08x\n",
 		       reg, octeon_read_csr(oct, reg));
 
-	/* PCI  Input queue registers */
+	 
 	for (i = 0; i <= 3; i++) {
 		u32 reg;
 
@@ -2947,7 +2855,7 @@ static int cn6xxx_read_csr_reg(char *s, struct octeon_device *oct)
 			       reg, i, octeon_read_csr(oct, reg));
 	}
 
-	/* PCI  DMA registers */
+	 
 
 	len += sprintf(s + len, "\n[%x] (DMA_CNT_0): %08x\n",
 		       CN6XXX_DMA_CNT(0),
@@ -2972,7 +2880,7 @@ static int cn6xxx_read_csr_reg(char *s, struct octeon_device *oct)
 		       CN6XXX_DMA_TIME_INT_LEVEL(1),
 		       octeon_read_csr(oct, reg));
 
-	/* PCI  Index registers */
+	 
 
 	len += sprintf(s + len, "\n");
 
@@ -2990,7 +2898,7 @@ static int cn6xxx_read_config_reg(char *s, struct octeon_device *oct)
 	u32 val;
 	int i, len = 0;
 
-	/* PCI CONFIG Registers */
+	 
 
 	len += sprintf(s + len,
 		       "\n\t Octeon Config space Registers\n\n");
@@ -3010,7 +2918,7 @@ static int cn6xxx_read_config_reg(char *s, struct octeon_device *oct)
 	return len;
 }
 
-/*  Return register dump user app.  */
+ 
 static void lio_get_regs(struct net_device *dev,
 			 struct ethtool_regs *regs, void *regbuf)
 {

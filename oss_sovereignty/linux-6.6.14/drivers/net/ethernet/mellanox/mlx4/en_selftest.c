@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2007 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/ethtool.h>
@@ -56,7 +25,7 @@ static int mlx4_en_test_loopback_xmit(struct mlx4_en_priv *priv)
 	int err;
 
 
-	/* build the pkt before xmit */
+	 
 	skb = netdev_alloc_skb(priv->dev, MLX4_LOOPBACK_TEST_PAYLOAD + ETH_HLEN + NET_IP_ALIGN);
 	if (!skb)
 		return -ENOMEM;
@@ -69,10 +38,10 @@ static int mlx4_en_test_loopback_xmit(struct mlx4_en_priv *priv)
 	eth_zero_addr(ethh->h_source);
 	ethh->h_proto = htons(ETH_P_ARP);
 	skb_reset_mac_header(skb);
-	for (i = 0; i < packet_size; ++i)	/* fill our packet */
+	for (i = 0; i < packet_size; ++i)	 
 		packet[i] = (unsigned char)(i & 0xff);
 
-	/* xmit the pkt */
+	 
 	err = mlx4_en_xmit(skb, priv->dev);
 	return err;
 }
@@ -87,13 +56,13 @@ static int mlx4_en_test_loopback(struct mlx4_en_priv *priv)
 
 	mlx4_en_update_loopback_state(priv->dev, priv->dev->features);
 
-	/* xmit */
+	 
 	if (mlx4_en_test_loopback_xmit(priv)) {
 		en_err(priv, "Transmitting loopback packet failed\n");
 		goto mlx4_en_test_loopback_exit;
 	}
 
-	/* polling for result */
+	 
 	for (i = 0; i < MLX4_EN_LOOPBACK_RETRIES; ++i) {
 		msleep(MLX4_EN_LOOPBACK_TIMEOUT);
 		if (priv->loopback_ok) {
@@ -119,14 +88,11 @@ static int mlx4_en_test_interrupts(struct mlx4_en_priv *priv)
 	int i = 0;
 
 	err = mlx4_test_async(mdev->dev);
-	/* When not in MSI_X or slave, test only async */
+	 
 	if (!(mdev->dev->flags & MLX4_FLAG_MSI_X) || mlx4_is_slave(mdev->dev))
 		return err;
 
-	/* A loop over all completion vectors of current port,
-	 * for each vector check whether it works by mapping command
-	 * completions to that vector and performing a NOP command
-	 */
+	 
 	for (i = 0; i < priv->rx_ring_num; i++) {
 		err = mlx4_test_interrupt(mdev->dev, priv->rx_cq[i]->vector);
 		if (err)
@@ -152,7 +118,7 @@ static int mlx4_en_test_speed(struct mlx4_en_priv *priv)
 	if (mlx4_en_QUERY_PORT(priv->mdev, priv->port))
 		return -ENOMEM;
 
-	/* The device supports 100M, 1G, 10G, 20G, 40G and 56G speed */
+	 
 	if (priv->port_state.link_speed != SPEED_100 &&
 	    priv->port_state.link_speed != SPEED_1000 &&
 	    priv->port_state.link_speed != SPEED_10000 &&
@@ -173,13 +139,11 @@ void mlx4_en_ex_selftest(struct net_device *dev, u32 *flags, u64 *buf)
 	memset(buf, 0, sizeof(u64) * MLX4_EN_NUM_SELF_TEST);
 
 	if (*flags & ETH_TEST_FL_OFFLINE) {
-		/* disable the interface */
+		 
 		carrier_ok = netif_carrier_ok(dev);
 
 		netif_carrier_off(dev);
-		/* Wait until all tx queues are empty.
-		 * there should not be any additional incoming traffic
-		 * since we turned the carrier off */
+		 
 		msleep(200);
 
 		if (priv->mdev->dev->caps.flags &

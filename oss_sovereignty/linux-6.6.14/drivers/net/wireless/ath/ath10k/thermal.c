@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2014-2015 Qualcomm Atheros, Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/sysfs.h>
@@ -68,7 +66,7 @@ static ssize_t ath10k_thermal_show_temp(struct device *dev,
 
 	mutex_lock(&ar->conf_mutex);
 
-	/* Can't get temperature when the card is off */
+	 
 	if (ar->state != ATH10K_STATE_ON) {
 		ret = -ENETDOWN;
 		goto out;
@@ -98,7 +96,7 @@ static ssize_t ath10k_thermal_show_temp(struct device *dev,
 	temperature = ar->thermal.temperature;
 	spin_unlock_bh(&ar->data_lock);
 
-	/* display in millidegree celsius */
+	 
 	ret = snprintf(buf, PAGE_SIZE, "%d\n", temperature * 1000);
 out:
 	mutex_unlock(&ar->conf_mutex);
@@ -179,15 +177,11 @@ int ath10k_thermal_register(struct ath10k *ar)
 	ar->thermal.cdev = cdev;
 	ar->thermal.quiet_period = ATH10K_QUIET_PERIOD_DEFAULT;
 
-	/* Do not register hwmon device when temperature reading is not
-	 * supported by firmware
-	 */
+	 
 	if (!(ar->wmi.ops->gen_pdev_get_temperature))
 		return 0;
 
-	/* Avoid linking error on devm_hwmon_device_register_with_groups, I
-	 * guess linux/hwmon.h is missing proper stubs.
-	 */
+	 
 	if (!IS_REACHABLE(CONFIG_HWMON))
 		return 0;
 

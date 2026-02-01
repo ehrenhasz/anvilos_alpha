@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* spk_priv.h
- * review functions for the speakup screen review package.
- * originally written by: Kirk Reiser and Andy Berdan.
- *
- * extensively modified by David Borowski.
- *
- * Copyright (C) 1998  Kirk Reiser.
- * Copyright (C) 2003  David Borowski.
- */
+ 
+ 
 #ifndef _SPEAKUP_PRIVATE_H
 #define _SPEAKUP_PRIVATE_H
 
@@ -18,9 +10,9 @@
 
 #define V_LAST_VAR { MAXVARS }
 #define SPACE 0x20
-#define SYNTH_CHECK 20030716 /* today's date ought to do for check value */
-/* synth flags, for odd synths */
-#define SF_DEC 1 /* to fiddle puncs in alpha strings so it doesn't spell */
+#define SYNTH_CHECK 20030716  
+ 
+#define SF_DEC 1  
 #ifdef MODULE
 #define SYNTH_START 1
 #else
@@ -28,7 +20,7 @@
 #endif
 
 #define KT_SPKUP 15
-#define SPK_SYNTH_TIMEOUT 100000 /* in micro-seconds */
+#define SPK_SYNTH_TIMEOUT 100000  
 #define SYNTH_DEFAULT_DEV "ttyS0"
 #define SYNTH_DEFAULT_SER 0
 

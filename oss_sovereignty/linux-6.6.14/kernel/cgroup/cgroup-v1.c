@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include "cgroup-internal.h"
 
 #include <linux/ctype.h>
@@ -18,27 +18,19 @@
 
 #include <trace/events/cgroup.h>
 
-/*
- * pidlists linger the following amount before being destroyed.  The goal
- * is avoiding frequent destruction in the middle of consecutive read calls
- * Expiring in the middle is a performance problem not a correctness one.
- * 1 sec should be enough.
- */
+ 
 #define CGROUP_PIDLIST_DESTROY_DELAY	HZ
 
-/* Controllers blocked by the commandline in v1 */
+ 
 static u16 cgroup_no_v1_mask;
 
-/* disable named v1 mounts */
+ 
 static bool cgroup_no_v1_named;
 
-/*
- * pidlist destructions need to be flushed on cgroup destruction.  Use a
- * separate workqueue as flush domain.
- */
+ 
 static struct workqueue_struct *cgroup_pidlist_destroy_wq;
 
-/* protects cgroup_subsys->release_agent_path */
+ 
 static DEFINE_SPINLOCK(release_agent_path_lock);
 
 bool cgroup1_ssid_disabled(int ssid)
@@ -46,13 +38,7 @@ bool cgroup1_ssid_disabled(int ssid)
 	return cgroup_no_v1_mask & (1 << ssid);
 }
 
-/**
- * cgroup_attach_task_all - attach task 'tsk' to all cgroups of task 'from'
- * @from: attach to all cgroups of a given task
- * @tsk: the task to be attached
- *
- * Return: %0 on success or a negative errno code on failure
- */
+ 
 int cgroup_attach_task_all(struct task_struct *from, struct task_struct *tsk)
 {
 	struct cgroup_root *root;
@@ -78,19 +64,7 @@ int cgroup_attach_task_all(struct task_struct *from, struct task_struct *tsk)
 }
 EXPORT_SYMBOL_GPL(cgroup_attach_task_all);
 
-/**
- * cgroup_transfer_tasks - move tasks from one cgroup to another
- * @to: cgroup to which the tasks will be moved
- * @from: cgroup in which the tasks currently reside
- *
- * Locking rules between cgroup_post_fork() and the migration path
- * guarantee that, if a task is forking while being migrated, the new child
- * is guaranteed to be either visible in the source cgroup after the
- * parent's migration is complete or put into the target cgroup.  No task
- * can slip out of migration through forking.
- *
- * Return: %0 on success or a negative errno code on failure
- */
+ 
 int cgroup_transfer_tasks(struct cgroup *to, struct cgroup *from)
 {
 	DEFINE_CGROUP_MGCTX(mgctx);
@@ -110,7 +84,7 @@ int cgroup_transfer_tasks(struct cgroup *to, struct cgroup *from)
 
 	cgroup_attach_lock(true);
 
-	/* all tasks in @from are being moved, all csets are source */
+	 
 	spin_lock_irq(&css_set_lock);
 	list_for_each_entry(link, &from->cset_links, cset_link)
 		cgroup_migrate_add_src(link->cset, to, &mgctx);
@@ -120,10 +94,7 @@ int cgroup_transfer_tasks(struct cgroup *to, struct cgroup *from)
 	if (ret)
 		goto out_err;
 
-	/*
-	 * Migrate tasks one-by-one until @from is empty.  This fails iff
-	 * ->can_attach() fails.
-	 */
+	 
 	do {
 		css_task_iter_start(&from->self, 0, &it);
 
@@ -149,50 +120,31 @@ out_err:
 	return ret;
 }
 
-/*
- * Stuff for reading the 'tasks'/'procs' files.
- *
- * Reading this file can return large amounts of data if a cgroup has
- * *lots* of attached tasks. So it may need several calls to read(),
- * but we cannot guarantee that the information we produce is correct
- * unless we produce it entirely atomically.
- *
- */
+ 
 
-/* which pidlist file are we talking about? */
+ 
 enum cgroup_filetype {
 	CGROUP_FILE_PROCS,
 	CGROUP_FILE_TASKS,
 };
 
-/*
- * A pidlist is a list of pids that virtually represents the contents of one
- * of the cgroup files ("procs" or "tasks"). We keep a list of such pidlists,
- * a pair (one each for procs, tasks) for each pid namespace that's relevant
- * to the cgroup.
- */
+ 
 struct cgroup_pidlist {
-	/*
-	 * used to find which pidlist is wanted. doesn't change as long as
-	 * this particular list stays in the list.
-	*/
+	 
 	struct { enum cgroup_filetype type; struct pid_namespace *ns; } key;
-	/* array of xids */
+	 
 	pid_t *list;
-	/* how many elements the above list has */
+	 
 	int length;
-	/* each of these stored in a list by its cgroup */
+	 
 	struct list_head links;
-	/* pointer to the cgroup we belong to, for list removal purposes */
+	 
 	struct cgroup *owner;
-	/* for delayed destruction */
+	 
 	struct delayed_work destroy_dwork;
 };
 
-/*
- * Used to destroy all pidlists lingering waiting for destroy timer.  None
- * should be left afterwards.
- */
+ 
 void cgroup1_pidlist_destroy_all(struct cgroup *cgrp)
 {
 	struct cgroup_pidlist *l, *tmp_l;
@@ -215,10 +167,7 @@ static void cgroup_pidlist_destroy_work_fn(struct work_struct *work)
 
 	mutex_lock(&l->owner->pidlist_mutex);
 
-	/*
-	 * Destroy iff we didn't get queued again.  The state won't change
-	 * as destroy_dwork can only be queued while locked.
-	 */
+	 
 	if (!delayed_work_pending(dwork)) {
 		list_del(&l->links);
 		kvfree(l->list);
@@ -230,29 +179,23 @@ static void cgroup_pidlist_destroy_work_fn(struct work_struct *work)
 	kfree(tofree);
 }
 
-/*
- * pidlist_uniq - given a kmalloc()ed list, strip out all duplicate entries
- * Returns the number of unique elements.
- */
+ 
 static int pidlist_uniq(pid_t *list, int length)
 {
 	int src, dest = 1;
 
-	/*
-	 * we presume the 0th element is unique, so i starts at 1. trivial
-	 * edge cases first; no work needs to be done for either
-	 */
+	 
 	if (length == 0 || length == 1)
 		return length;
-	/* src and dest walk down the list; dest counts unique elements */
+	 
 	for (src = 1; src < length; src++) {
-		/* find next unique element */
+		 
 		while (list[src] == list[src-1]) {
 			src++;
 			if (src == length)
 				goto after;
 		}
-		/* dest always points to where the next unique element goes */
+		 
 		list[dest] = list[src];
 		dest++;
 	}
@@ -260,15 +203,7 @@ after:
 	return dest;
 }
 
-/*
- * The two pid files - task and cgroup.procs - guaranteed that the result
- * is sorted, which forced this whole pidlist fiasco.  As pid order is
- * different per namespace, each namespace needs differently sorted list,
- * making it impossible to use, for example, single rbtree of member tasks
- * sorted by task pointer.  As pidlists can be fairly large, allocating one
- * per open file is dangerous, so cgroup had to implement shared pool of
- * pidlists keyed by cgroup and namespace.
- */
+ 
 static int cmppid(const void *a, const void *b)
 {
 	return *(pid_t *)a - *(pid_t *)b;
@@ -278,7 +213,7 @@ static struct cgroup_pidlist *cgroup_pidlist_find(struct cgroup *cgrp,
 						  enum cgroup_filetype type)
 {
 	struct cgroup_pidlist *l;
-	/* don't need task_nsproxy() if we're looking at ourself */
+	 
 	struct pid_namespace *ns = task_active_pid_ns(current);
 
 	lockdep_assert_held(&cgrp->pidlist_mutex);
@@ -289,12 +224,7 @@ static struct cgroup_pidlist *cgroup_pidlist_find(struct cgroup *cgrp,
 	return NULL;
 }
 
-/*
- * find the appropriate pidlist for our purpose (given procs vs tasks)
- * returns with the lock on that pidlist already held, and takes care
- * of the use count, or returns NULL with no locks held if we're out of
- * memory.
- */
+ 
 static struct cgroup_pidlist *cgroup_pidlist_find_create(struct cgroup *cgrp,
 						enum cgroup_filetype type)
 {
@@ -306,61 +236,54 @@ static struct cgroup_pidlist *cgroup_pidlist_find_create(struct cgroup *cgrp,
 	if (l)
 		return l;
 
-	/* entry not found; create a new one */
+	 
 	l = kzalloc(sizeof(struct cgroup_pidlist), GFP_KERNEL);
 	if (!l)
 		return l;
 
 	INIT_DELAYED_WORK(&l->destroy_dwork, cgroup_pidlist_destroy_work_fn);
 	l->key.type = type;
-	/* don't need task_nsproxy() if we're looking at ourself */
+	 
 	l->key.ns = get_pid_ns(task_active_pid_ns(current));
 	l->owner = cgrp;
 	list_add(&l->links, &cgrp->pidlists);
 	return l;
 }
 
-/*
- * Load a cgroup's pidarray with either procs' tgids or tasks' pids
- */
+ 
 static int pidlist_array_load(struct cgroup *cgrp, enum cgroup_filetype type,
 			      struct cgroup_pidlist **lp)
 {
 	pid_t *array;
 	int length;
-	int pid, n = 0; /* used for populating the array */
+	int pid, n = 0;  
 	struct css_task_iter it;
 	struct task_struct *tsk;
 	struct cgroup_pidlist *l;
 
 	lockdep_assert_held(&cgrp->pidlist_mutex);
 
-	/*
-	 * If cgroup gets more users after we read count, we won't have
-	 * enough space - tough.  This race is indistinguishable to the
-	 * caller from the case that the additional cgroup users didn't
-	 * show up until sometime later on.
-	 */
+	 
 	length = cgroup_task_count(cgrp);
 	array = kvmalloc_array(length, sizeof(pid_t), GFP_KERNEL);
 	if (!array)
 		return -ENOMEM;
-	/* now, populate the array */
+	 
 	css_task_iter_start(&cgrp->self, 0, &it);
 	while ((tsk = css_task_iter_next(&it))) {
 		if (unlikely(n == length))
 			break;
-		/* get tgid or pid for procs or tasks file respectively */
+		 
 		if (type == CGROUP_FILE_PROCS)
 			pid = task_tgid_vnr(tsk);
 		else
 			pid = task_pid_vnr(tsk);
-		if (pid > 0) /* make sure to only use valid results */
+		if (pid > 0)  
 			array[n++] = pid;
 	}
 	css_task_iter_end(&it);
 	length = n;
-	/* now sort & strip out duplicates (tgids or recycled thread PIDs) */
+	 
 	sort(array, length, sizeof(pid_t), cmppid, NULL);
 	length = pidlist_uniq(array, length);
 
@@ -370,7 +293,7 @@ static int pidlist_array_load(struct cgroup *cgrp, enum cgroup_filetype type,
 		return -ENOMEM;
 	}
 
-	/* store array, freeing old if necessary */
+	 
 	kvfree(l->list);
 	l->list = array;
 	l->length = length;
@@ -378,20 +301,11 @@ static int pidlist_array_load(struct cgroup *cgrp, enum cgroup_filetype type,
 	return 0;
 }
 
-/*
- * seq_file methods for the tasks/procs files. The seq_file position is the
- * next pid to display; the seq_file iterator is a pointer to the pid
- * in the cgroup->l->list array.
- */
+ 
 
 static void *cgroup_pidlist_start(struct seq_file *s, loff_t *pos)
 {
-	/*
-	 * Initially we receive a position value that corresponds to
-	 * one more than the last pid shown (or 0 on the first call or
-	 * after a seek to the start). Use a binary-search to find the
-	 * next pid to display, if any
-	 */
+	 
 	struct kernfs_open_file *of = s->private;
 	struct cgroup_file_ctx *ctx = of->priv;
 	struct cgroup *cgrp = seq_css(s)->cgroup;
@@ -402,19 +316,11 @@ static void *cgroup_pidlist_start(struct seq_file *s, loff_t *pos)
 
 	mutex_lock(&cgrp->pidlist_mutex);
 
-	/*
-	 * !NULL @ctx->procs1.pidlist indicates that this isn't the first
-	 * start() after open. If the matching pidlist is around, we can use
-	 * that. Look for it. Note that @ctx->procs1.pidlist can't be used
-	 * directly. It could already have been destroyed.
-	 */
+	 
 	if (ctx->procs1.pidlist)
 		ctx->procs1.pidlist = cgroup_pidlist_find(cgrp, type);
 
-	/*
-	 * Either this is the first start() after open or the matching
-	 * pidlist has been destroyed inbetween.  Create a new one.
-	 */
+	 
 	if (!ctx->procs1.pidlist) {
 		ret = pidlist_array_load(cgrp, type, &ctx->procs1.pidlist);
 		if (ret)
@@ -436,10 +342,10 @@ static void *cgroup_pidlist_start(struct seq_file *s, loff_t *pos)
 				end = mid;
 		}
 	}
-	/* If we're off the end of the array, we're done */
+	 
 	if (index >= l->length)
 		return NULL;
-	/* Update the abstract position to be the actual pid that we found */
+	 
 	iter = l->list + index;
 	*pos = *iter;
 	return iter;
@@ -464,10 +370,7 @@ static void *cgroup_pidlist_next(struct seq_file *s, void *v, loff_t *pos)
 	struct cgroup_pidlist *l = ctx->procs1.pidlist;
 	pid_t *p = v;
 	pid_t *end = l->list + l->length;
-	/*
-	 * Advance to the next pid in the array. If this goes off the
-	 * end, we're done
-	 */
+	 
 	p++;
 	if (p >= end) {
 		(*pos)++;
@@ -504,11 +407,7 @@ static ssize_t __cgroup1_procs_write(struct kernfs_open_file *of,
 	if (ret)
 		goto out_unlock;
 
-	/*
-	 * Even if we're attaching all tasks in the thread group, we only need
-	 * to check permissions on one of them. Check permissions using the
-	 * credentials from file open to protect against inherited fd attacks.
-	 */
+	 
 	cred = of->file->f_cred;
 	tcred = get_task_cred(task);
 	if (!uid_eq(cred->euid, GLOBAL_ROOT_UID) &&
@@ -549,10 +448,7 @@ static ssize_t cgroup_release_agent_write(struct kernfs_open_file *of,
 
 	BUILD_BUG_ON(sizeof(cgrp->root->release_agent_path) < PATH_MAX);
 
-	/*
-	 * Release agent gets called with all capabilities,
-	 * require capabilities to set release agent.
-	 */
+	 
 	ctx = of->priv;
 	if ((ctx->ns->user_ns != &init_user_ns) ||
 	    !file_ns_capable(of->file, &init_user_ns, CAP_SYS_ADMIN))
@@ -618,7 +514,7 @@ static int cgroup_clone_children_write(struct cgroup_subsys_state *css,
 	return 0;
 }
 
-/* cgroup core interface files for the legacy hierarchies */
+ 
 struct cftype cgroup1_base_files[] = {
 	{
 		.name = "cgroup.procs",
@@ -660,20 +556,17 @@ struct cftype cgroup1_base_files[] = {
 		.write = cgroup_release_agent_write,
 		.max_write_len = PATH_MAX - 1,
 	},
-	{ }	/* terminate */
+	{ }	 
 };
 
-/* Display information about each subsystem and each hierarchy */
+ 
 int proc_cgroupstats_show(struct seq_file *m, void *v)
 {
 	struct cgroup_subsys *ss;
 	int i;
 
 	seq_puts(m, "#subsys_name\thierarchy\tnum_cgroups\tenabled\n");
-	/*
-	 * Grab the subsystems state racily. No need to add avenue to
-	 * cgroup_mutex contention.
-	 */
+	 
 
 	for_each_subsys(ss, i)
 		seq_printf(m, "%s\t%d\t%d\t%d\n",
@@ -684,17 +577,7 @@ int proc_cgroupstats_show(struct seq_file *m, void *v)
 	return 0;
 }
 
-/**
- * cgroupstats_build - build and fill cgroupstats
- * @stats: cgroupstats to fill information into
- * @dentry: A dentry entry belonging to the cgroup for which stats have
- * been requested.
- *
- * Build and fill cgroupstats so that taskstats can export it to user
- * space.
- *
- * Return: %0 on success or a negative errno code on failure
- */
+ 
 int cgroupstats_build(struct cgroupstats *stats, struct dentry *dentry)
 {
 	struct kernfs_node *kn = kernfs_node_from_dentry(dentry);
@@ -702,16 +585,12 @@ int cgroupstats_build(struct cgroupstats *stats, struct dentry *dentry)
 	struct css_task_iter it;
 	struct task_struct *tsk;
 
-	/* it should be kernfs_node belonging to cgroupfs and is a directory */
+	 
 	if (dentry->d_sb->s_type != &cgroup_fs_type || !kn ||
 	    kernfs_type(kn) != KERNFS_DIR)
 		return -EINVAL;
 
-	/*
-	 * We aren't being called from kernfs and there's no guarantee on
-	 * @kn->priv's validity.  For this and css_tryget_online_from_dir(),
-	 * @kn->priv is RCU safe.  Let's do the RCU dancing.
-	 */
+	 
 	rcu_read_lock();
 	cgrp = rcu_dereference(*(void __rcu __force **)&kn->priv);
 	if (!cgrp || !cgroup_tryget(cgrp)) {
@@ -754,29 +633,7 @@ void cgroup1_check_for_release(struct cgroup *cgrp)
 		schedule_work(&cgrp->release_agent_work);
 }
 
-/*
- * Notify userspace when a cgroup is released, by running the
- * configured release agent with the name of the cgroup (path
- * relative to the root of cgroup file system) as the argument.
- *
- * Most likely, this user command will try to rmdir this cgroup.
- *
- * This races with the possibility that some other task will be
- * attached to this cgroup before it is removed, or that some other
- * user task will 'mkdir' a child cgroup of this cgroup.  That's ok.
- * The presumed 'rmdir' will fail quietly if this cgroup is no longer
- * unused, and this cgroup will be reprieved from its death sentence,
- * to continue to serve a useful existence.  Next time it's released,
- * we will get notified again, if it still has 'notify_on_release' set.
- *
- * The final arg to call_usermodehelper() is UMH_WAIT_EXEC, which
- * means only wait until the task is successfully execve()'d.  The
- * separate release agent task is forked by call_usermodehelper(),
- * then control in this thread returns here, without waiting for the
- * release agent task.  We don't bother to wait because the caller of
- * this routine has no use for the exit status of the release agent
- * task, so no sense holding our caller up for that.
- */
+ 
 void cgroup1_release_agent(struct work_struct *work)
 {
 	struct cgroup *cgrp =
@@ -785,11 +642,11 @@ void cgroup1_release_agent(struct work_struct *work)
 	char *argv[3], *envp[3];
 	int ret;
 
-	/* snoop agent path and exit early if empty */
+	 
 	if (!cgrp->root->release_agent_path[0])
 		return;
 
-	/* prepare argument buffers */
+	 
 	pathbuf = kmalloc(PATH_MAX, GFP_KERNEL);
 	agentbuf = kmalloc(PATH_MAX, GFP_KERNEL);
 	if (!pathbuf || !agentbuf)
@@ -809,7 +666,7 @@ void cgroup1_release_agent(struct work_struct *work)
 	argv[1] = pathbuf;
 	argv[2] = NULL;
 
-	/* minimal command environment */
+	 
 	envp[0] = "HOME=/";
 	envp[1] = "PATH=/sbin:/bin:/usr/sbin:/usr/bin";
 	envp[2] = NULL;
@@ -820,16 +677,14 @@ out_free:
 	kfree(pathbuf);
 }
 
-/*
- * cgroup_rename - Only allow simple rename of directories in place.
- */
+ 
 static int cgroup1_rename(struct kernfs_node *kn, struct kernfs_node *new_parent,
 			  const char *new_name_str)
 {
 	struct cgroup *cgrp = kn->priv;
 	int ret;
 
-	/* do not accept '\n' to prevent making /proc/<pid>/cgroup unparsable */
+	 
 	if (strchr(new_name_str, '\n'))
 		return -EINVAL;
 
@@ -838,11 +693,7 @@ static int cgroup1_rename(struct kernfs_node *kn, struct kernfs_node *new_parent
 	if (kn->parent != new_parent)
 		return -EIO;
 
-	/*
-	 * We're gonna grab cgroup_mutex which nests outside kernfs
-	 * active_ref.  kernfs_rename() doesn't require active_ref
-	 * protection.  Break them before grabbing cgroup_mutex.
-	 */
+	 
 	kernfs_break_active_protection(new_parent);
 	kernfs_break_active_protection(kn);
 
@@ -947,7 +798,7 @@ int cgroup1_parse_param(struct fs_context *fc, struct fs_parameter *param)
 
 	switch (opt) {
 	case Opt_none:
-		/* Explicitly have no subsystems */
+		 
 		ctx->none = true;
 		break;
 	case Opt_all:
@@ -972,28 +823,25 @@ int cgroup1_parse_param(struct fs_context *fc, struct fs_parameter *param)
 		ctx->flags &= ~CGRP_ROOT_FAVOR_DYNMODS;
 		break;
 	case Opt_release_agent:
-		/* Specifying two release agents is forbidden */
+		 
 		if (ctx->release_agent)
 			return invalfc(fc, "release_agent respecified");
-		/*
-		 * Release agent gets called with all capabilities,
-		 * require capabilities to set release agent.
-		 */
+		 
 		if ((fc->user_ns != &init_user_ns) || !capable(CAP_SYS_ADMIN))
 			return invalfc(fc, "Setting release_agent not allowed");
 		ctx->release_agent = param->string;
 		param->string = NULL;
 		break;
 	case Opt_name:
-		/* blocked by boot param? */
+		 
 		if (cgroup_no_v1_named)
 			return -ENOENT;
-		/* Can't specify an empty name */
+		 
 		if (!param->size)
 			return invalfc(fc, "Empty name");
 		if (param->size > MAX_CGROUP_ROOT_NAMELEN - 1)
 			return invalfc(fc, "Name too long");
-		/* Must match [\w.-]+ */
+		 
 		for (i = 0; i < param->size; i++) {
 			char c = param->string[i];
 			if (isalnum(c))
@@ -1002,7 +850,7 @@ int cgroup1_parse_param(struct fs_context *fc, struct fs_parameter *param)
 				continue;
 			return invalfc(fc, "Invalid name");
 		}
-		/* Specifying two names is forbidden */
+		 
 		if (ctx->name)
 			return invalfc(fc, "name respecified");
 		ctx->name = param->string;
@@ -1029,37 +877,27 @@ static int check_cgroupfs_options(struct fs_context *fc)
 
 	ctx->subsys_mask &= enabled;
 
-	/*
-	 * In absence of 'none', 'name=' and subsystem name options,
-	 * let's default to 'all'.
-	 */
+	 
 	if (!ctx->subsys_mask && !ctx->none && !ctx->name)
 		ctx->all_ss = true;
 
 	if (ctx->all_ss) {
-		/* Mutually exclusive option 'all' + subsystem name */
+		 
 		if (ctx->subsys_mask)
 			return invalfc(fc, "subsys name conflicts with all");
-		/* 'all' => select all the subsystems */
+		 
 		ctx->subsys_mask = enabled;
 	}
 
-	/*
-	 * We either have to specify by name or by subsystems. (So all
-	 * empty hierarchies must have a name).
-	 */
+	 
 	if (!ctx->subsys_mask && !ctx->name)
 		return invalfc(fc, "Need name or subsystem set");
 
-	/*
-	 * Option noprefix was introduced just for backward compatibility
-	 * with the old cpuset, so we allow noprefix only if mounting just
-	 * the cpuset subsystem.
-	 */
+	 
 	if ((ctx->flags & CGRP_ROOT_NOPREFIX) && (ctx->subsys_mask & mask))
 		return invalfc(fc, "noprefix used incorrectly");
 
-	/* Can't specify "none" and some subsystems */
+	 
 	if (ctx->subsys_mask && ctx->none)
 		return invalfc(fc, "none used incorrectly");
 
@@ -1076,7 +914,7 @@ int cgroup1_reconfigure(struct fs_context *fc)
 
 	cgroup_lock_and_drain_offline(&cgrp_dfl_root.cgrp);
 
-	/* See what subsystems are wanted */
+	 
 	ret = check_cgroupfs_options(fc);
 	if (ret)
 		goto out_unlock;
@@ -1088,7 +926,7 @@ int cgroup1_reconfigure(struct fs_context *fc)
 	added_mask = ctx->subsys_mask & ~root->subsys_mask;
 	removed_mask = root->subsys_mask & ~ctx->subsys_mask;
 
-	/* Don't allow flags or name to change at remount */
+	 
 	if ((ctx->flags ^ root->flags) ||
 	    (ctx->name && strcmp(ctx->name, root->name))) {
 		errorfc(fc, "option or name mismatch, new: 0x%x \"%s\", old: 0x%x \"%s\"",
@@ -1097,7 +935,7 @@ int cgroup1_reconfigure(struct fs_context *fc)
 		goto out_unlock;
 	}
 
-	/* remounting is not allowed for populated hierarchies */
+	 
 	if (!list_empty(&root->cgrp.self.children)) {
 		ret = -EBUSY;
 		goto out_unlock;
@@ -1130,14 +968,7 @@ struct kernfs_syscall_ops cgroup1_kf_syscall_ops = {
 	.show_path		= cgroup_show_path,
 };
 
-/*
- * The guts of cgroup1 mount - find or create cgroup_root to use.
- * Called with cgroup_mutex held; returns 0 on success, -E... on
- * error and positive - in case when the candidate is busy dying.
- * On success it stashes a reference to cgroup_root into given
- * cgroup_fs_context; that reference is *NOT* counting towards the
- * cgroup_root refcount.
- */
+ 
 static int cgroup1_root_to_use(struct fs_context *fc)
 {
 	struct cgroup_fs_context *ctx = cgroup_fc2context(fc);
@@ -1145,25 +976,19 @@ static int cgroup1_root_to_use(struct fs_context *fc)
 	struct cgroup_subsys *ss;
 	int i, ret;
 
-	/* First find the desired set of subsystems */
+	 
 	ret = check_cgroupfs_options(fc);
 	if (ret)
 		return ret;
 
-	/*
-	 * Destruction of cgroup root is asynchronous, so subsystems may
-	 * still be dying after the previous unmount.  Let's drain the
-	 * dying subsystems.  We just need to ensure that the ones
-	 * unmounted previously finish dying and don't care about new ones
-	 * starting.  Testing ref liveliness is good enough.
-	 */
+	 
 	for_each_subsys(ss, i) {
 		if (!(ctx->subsys_mask & (1 << i)) ||
 		    ss->root == &cgrp_dfl_root)
 			continue;
 
 		if (!percpu_ref_tryget_live(&ss->root->cgrp.self.refcnt))
-			return 1;	/* restart */
+			return 1;	 
 		cgroup_put(&ss->root->cgrp);
 	}
 
@@ -1173,21 +998,14 @@ static int cgroup1_root_to_use(struct fs_context *fc)
 		if (root == &cgrp_dfl_root)
 			continue;
 
-		/*
-		 * If we asked for a name then it must match.  Also, if
-		 * name matches but sybsys_mask doesn't, we should fail.
-		 * Remember whether name matched.
-		 */
+		 
 		if (ctx->name) {
 			if (strcmp(ctx->name, root->name))
 				continue;
 			name_match = true;
 		}
 
-		/*
-		 * If we asked for subsystems (or explicitly for no
-		 * subsystems) then they must match.
-		 */
+		 
 		if ((ctx->subsys_mask || ctx->none) &&
 		    (ctx->subsys_mask != root->subsys_mask)) {
 			if (!name_match)
@@ -1202,15 +1020,11 @@ static int cgroup1_root_to_use(struct fs_context *fc)
 		return 0;
 	}
 
-	/*
-	 * No such thing, create a new one.  name= matching without subsys
-	 * specification is allowed for already existing hierarchies but we
-	 * can't create new one without subsys specification.
-	 */
+	 
 	if (!ctx->subsys_mask && !ctx->none)
 		return invalfc(fc, "No subsys list or none specified");
 
-	/* Hierarchies may only be created in the initial cgroup namespace. */
+	 
 	if (ctx->ns != &init_cgroup_ns)
 		return -EPERM;
 
@@ -1235,7 +1049,7 @@ int cgroup1_get_tree(struct fs_context *fc)
 	struct cgroup_fs_context *ctx = cgroup_fc2context(fc);
 	int ret;
 
-	/* Check if the caller has permission to mount. */
+	 
 	if (!ns_capable(ctx->ns->user_ns, CAP_SYS_ADMIN))
 		return -EPERM;
 
@@ -1243,7 +1057,7 @@ int cgroup1_get_tree(struct fs_context *fc)
 
 	ret = cgroup1_root_to_use(fc);
 	if (!ret && !percpu_ref_tryget_live(&ctx->root->cgrp.self.refcnt))
-		ret = 1;	/* restart */
+		ret = 1;	 
 
 	cgroup_unlock();
 
@@ -1264,10 +1078,7 @@ int cgroup1_get_tree(struct fs_context *fc)
 
 static int __init cgroup1_wq_init(void)
 {
-	/*
-	 * Used to destroy pidlists and separate to serve as flush domain.
-	 * Cap @max_active to 1 too.
-	 */
+	 
 	cgroup_pidlist_destroy_wq = alloc_workqueue("cgroup_pidlist_destroy",
 						    0, 1);
 	BUG_ON(!cgroup_pidlist_destroy_wq);

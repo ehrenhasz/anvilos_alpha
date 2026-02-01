@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell OcteonTX CPT driver
- *
- * Copyright (C) 2019 Marvell International Ltd.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
+
+ 
 
 #include <linux/ctype.h>
 #include <linux/firmware.h>
@@ -15,14 +8,14 @@
 #include "otx_cptpf.h"
 
 #define CSR_DELAY 30
-/* Tar archive defines */
+ 
 #define TAR_MAGIC		"ustar"
 #define TAR_MAGIC_LEN		6
 #define TAR_BLOCK_LEN		512
 #define REGTYPE			'0'
 #define AREGTYPE		'\0'
 
-/* tar header as defined in POSIX 1003.1-1990. */
+ 
 struct tar_hdr_t {
 	char name[100];
 	char mode[8];
@@ -189,10 +182,7 @@ static int cpt_set_ucode_base(struct otx_cpt_eng_grp_info *eng_grp, void *obj)
 	else
 		dma_addr = eng_grp->ucode[0].align_dma;
 
-	/*
-	 * Set UCODE_BASE only for the cores which are not used,
-	 * other cores should have already valid UCODE_BASE set
-	 */
+	 
 	for_each_set_bit(i, bmap.bits, bmap.size)
 		if (!eng_grp->g->eng_ref_cnt[i])
 			writeq((u64) dma_addr, cpt->reg_base +
@@ -213,7 +203,7 @@ static int cpt_detach_and_disable_cores(struct otx_cpt_eng_grp_info *eng_grp,
 	if (!bmap.size)
 		return -EINVAL;
 
-	/* Detach the cores from group */
+	 
 	reg = readq(cpt->reg_base + OTX_CPT_PF_GX_EN(eng_grp->idx));
 	for_each_set_bit(i, bmap.bits, bmap.size) {
 		if (reg & (1ull << i)) {
@@ -223,7 +213,7 @@ static int cpt_detach_and_disable_cores(struct otx_cpt_eng_grp_info *eng_grp,
 	}
 	writeq(reg, cpt->reg_base + OTX_CPT_PF_GX_EN(eng_grp->idx));
 
-	/* Wait for cores to become idle */
+	 
 	do {
 		busy = 0;
 		usleep_range(10000, 20000);
@@ -238,7 +228,7 @@ static int cpt_detach_and_disable_cores(struct otx_cpt_eng_grp_info *eng_grp,
 			}
 	} while (busy);
 
-	/* Disable the cores only if they are not used anymore */
+	 
 	reg = readq(cpt->reg_base + OTX_CPT_PF_EXE_CTL);
 	for_each_set_bit(i, bmap.bits, bmap.size)
 		if (!eng_grp->g->eng_ref_cnt[i])
@@ -260,7 +250,7 @@ static int cpt_attach_and_enable_cores(struct otx_cpt_eng_grp_info *eng_grp,
 	if (!bmap.size)
 		return -EINVAL;
 
-	/* Attach the cores to the group */
+	 
 	reg = readq(cpt->reg_base + OTX_CPT_PF_GX_EN(eng_grp->idx));
 	for_each_set_bit(i, bmap.bits, bmap.size) {
 		if (!(reg & (1ull << i))) {
@@ -270,7 +260,7 @@ static int cpt_attach_and_enable_cores(struct otx_cpt_eng_grp_info *eng_grp,
 	}
 	writeq(reg, cpt->reg_base + OTX_CPT_PF_GX_EN(eng_grp->idx));
 
-	/* Enable the cores */
+	 
 	reg = readq(cpt->reg_base + OTX_CPT_PF_EXE_CTL);
 	for_each_set_bit(i, bmap.bits, bmap.size)
 		reg |= 1ull << i;
@@ -288,19 +278,12 @@ static int process_tar_file(struct device *dev,
 	int ucode_type, ucode_size;
 	unsigned int code_length;
 
-	/*
-	 * If size is less than microcode header size then don't report
-	 * an error because it might not be microcode file, just process
-	 * next file from archive
-	 */
+	 
 	if (size < sizeof(struct otx_cpt_ucode_hdr))
 		return 0;
 
 	ucode_hdr = (struct otx_cpt_ucode_hdr *) data;
-	/*
-	 * If microcode version can't be found don't report an error
-	 * because it might not be microcode file, just process next file
-	 */
+	 
 	if (get_ucode_type(ucode_hdr, &ucode_type))
 		return 0;
 
@@ -417,7 +400,7 @@ static struct tar_arch_info_t *load_tar_archive(struct device *dev,
 
 	INIT_LIST_HEAD(&tar_arch->ucodes);
 
-	/* Load tar archive */
+	 
 	ret = request_firmware(&tar_arch->fw, tar_filename, dev);
 	if (ret)
 		goto release_tar_arch;
@@ -436,7 +419,7 @@ static struct tar_arch_info_t *load_tar_archive(struct device *dev,
 	}
 
 	while (1) {
-		/* Read current file size */
+		 
 		ret = kstrtouint(tar_blk->hdr.size, 8, &cur_size);
 		if (ret)
 			goto release_tar_arch;
@@ -462,7 +445,7 @@ static struct tar_arch_info_t *load_tar_archive(struct device *dev,
 		if (cur_size % TAR_BLOCK_LEN)
 			tar_offs += TAR_BLOCK_LEN;
 
-		/* Check for the end of the archive */
+		 
 		if (tar_offs + 2*TAR_BLOCK_LEN > tar_size) {
 			dev_err(dev, "Invalid tar archive %s\n", tar_filename);
 			goto release_tar_arch;
@@ -472,7 +455,7 @@ static struct tar_arch_info_t *load_tar_archive(struct device *dev,
 		    2*TAR_BLOCK_LEN))
 			break;
 
-		/* Read next block from tar archive */
+		 
 		tar_blk = (struct tar_blk_t *) &tar_arch->fw->data[tar_offs];
 	}
 
@@ -786,14 +769,14 @@ static int reserve_engines(struct device *dev, struct otx_cpt_eng_grp_info *grp,
 {
 	int i, ret;
 
-	/* Validate if a number of requested engines is available */
+	 
 	for (i = 0; i < req_cnt; i++) {
 		ret = check_engines_availability(dev, grp, &req_engs[i]);
 		if (ret)
 			return ret;
 	}
 
-	/* Reserve requested engines for this engine group */
+	 
 	for (i = 0; i < req_cnt; i++) {
 		ret = do_reserve_engines(dev, grp, &req_engs[i]);
 		if (ret)
@@ -862,7 +845,7 @@ static int copy_ucode_to_dma_mem(struct device *dev,
 {
 	u32 i;
 
-	/*  Allocate DMAable space */
+	 
 	ucode->va = dma_alloc_coherent(dev, ucode->size +
 				       OTX_CPT_UCODE_ALIGNMENT,
 				       &ucode->dma, GFP_KERNEL);
@@ -876,11 +859,11 @@ static int copy_ucode_to_dma_mem(struct device *dev,
 	memcpy((void *) ucode->align_va, (void *) ucode_data +
 	       sizeof(struct otx_cpt_ucode_hdr), ucode->size);
 
-	/* Byte swap 64-bit */
+	 
 	for (i = 0; i < (ucode->size / 8); i++)
 		((__be64 *)ucode->align_va)[i] =
 				cpu_to_be64(((u64 *)ucode->align_va)[i]);
-	/*  Ucode needs 16-bit swap */
+	 
 	for (i = 0; i < (ucode->size / 2); i++)
 		((__be16 *)ucode->align_va)[i] =
 				cpu_to_be16(((u16 *)ucode->align_va)[i]);
@@ -957,7 +940,7 @@ static int disable_eng_grp(struct device *dev,
 	if (ret)
 		return ret;
 
-	/* Unload ucode used by this engine group */
+	 
 	ucode_unload(dev, &eng_grp->ucode[0]);
 
 	for (i = 0; i < OTX_CPT_MAX_ETYPES_PER_GRP; i++) {
@@ -975,12 +958,12 @@ static int disable_eng_grp(struct device *dev,
 static void setup_eng_grp_mirroring(struct otx_cpt_eng_grp_info *dst_grp,
 				    struct otx_cpt_eng_grp_info *src_grp)
 {
-	/* Setup fields for engine group which is mirrored */
+	 
 	src_grp->mirror.is_ena = false;
 	src_grp->mirror.idx = 0;
 	src_grp->mirror.ref_count++;
 
-	/* Setup fields for mirroring engine group */
+	 
 	dst_grp->mirror.is_ena = true;
 	dst_grp->mirror.idx = src_grp->idx;
 	dst_grp->mirror.ref_count = 0;
@@ -1013,20 +996,7 @@ static void update_requested_engs(struct otx_cpt_eng_grp_info *mirrored_eng_grp,
 		if (!mirrored_engs)
 			continue;
 
-		/*
-		 * If mirrored group has this type of engines attached then
-		 * there are 3 scenarios possible:
-		 * 1) mirrored_engs.count == engs[i].count then all engines
-		 * from mirrored engine group will be shared with this engine
-		 * group
-		 * 2) mirrored_engs.count > engs[i].count then only a subset of
-		 * engines from mirrored engine group will be shared with this
-		 * engine group
-		 * 3) mirrored_engs.count < engs[i].count then all engines
-		 * from mirrored engine group will be shared with this group
-		 * and additional engines will be reserved for exclusively use
-		 * by this engine group
-		 */
+		 
 		engs[i].count -= mirrored_engs->count;
 	}
 }
@@ -1160,15 +1130,15 @@ static int delete_engine_group(struct device *dev,
 		return -EINVAL;
 	}
 
-	/* Removing engine group mirroring if enabled */
+	 
 	remove_eng_grp_mirroring(eng_grp);
 
-	/* Disable engine group */
+	 
 	ret = disable_eng_grp(dev, eng_grp, eng_grp->g->obj);
 	if (ret)
 		return ret;
 
-	/* Release all engines held by this engine group */
+	 
 	ret = release_engines(dev, eng_grp);
 	if (ret)
 		return ret;
@@ -1185,7 +1155,7 @@ static int validate_1_ucode_scenario(struct device *dev,
 {
 	int i;
 
-	/* Verify that ucode loaded supports requested engine types */
+	 
 	for (i = 0; i < engs_cnt; i++) {
 		if (!otx_cpt_uc_supports_eng_type(&eng_grp->ucode[0],
 						  engs[i].type)) {
@@ -1225,7 +1195,7 @@ static int create_engine_group(struct device *dev,
 	if (ucodes_cnt > OTX_CPT_MAX_ETYPES_PER_GRP)
 		return -EINVAL;
 
-	/* Validate if requested engine types are supported by this device */
+	 
 	for (i = 0; i < engs_cnt; i++)
 		if (!dev_supports_eng_type(eng_grps, engs[i].type)) {
 			dev_err(dev, "Device does not support %s engines\n",
@@ -1233,14 +1203,14 @@ static int create_engine_group(struct device *dev,
 			return -EPERM;
 		}
 
-	/* Find engine group which is not used */
+	 
 	eng_grp = find_unused_eng_grp(eng_grps);
 	if (!eng_grp) {
 		dev_err(dev, "Error all engine groups are being used\n");
 		return -ENOSPC;
 	}
 
-	/* Load ucode */
+	 
 	for (i = 0; i < ucodes_cnt; i++) {
 		if (use_uc_from_tar_arch) {
 			tar_info = (struct tar_ucode_info_t *) ucode_data[i];
@@ -1254,52 +1224,45 @@ static int create_engine_group(struct device *dev,
 			goto err_ucode_unload;
 	}
 
-	/* Validate scenario where 1 ucode is used */
+	 
 	ret = validate_1_ucode_scenario(dev, eng_grp, engs, engs_cnt);
 	if (ret)
 		goto err_ucode_unload;
 
-	/* Check if this group mirrors another existing engine group */
+	 
 	mirrored_eng_grp = find_mirrored_eng_grp(eng_grp);
 	if (mirrored_eng_grp) {
-		/* Setup mirroring */
+		 
 		setup_eng_grp_mirroring(eng_grp, mirrored_eng_grp);
 
-		/*
-		 * Update count of requested engines because some
-		 * of them might be shared with mirrored group
-		 */
+		 
 		update_requested_engs(mirrored_eng_grp, engs, engs_cnt);
 	}
 
-	/* Reserve engines */
+	 
 	ret = reserve_engines(dev, eng_grp, engs, engs_cnt);
 	if (ret)
 		goto err_ucode_unload;
 
-	/* Update ucode pointers used by engines */
+	 
 	update_ucode_ptrs(eng_grp);
 
-	/* Update engine masks used by this group */
+	 
 	ret = eng_grp_update_masks(dev, eng_grp);
 	if (ret)
 		goto err_release_engs;
 
-	/* Create sysfs entry for engine group info */
+	 
 	ret = create_sysfs_eng_grps_info(dev, eng_grp);
 	if (ret)
 		goto err_release_engs;
 
-	/* Enable engine group */
+	 
 	ret = enable_eng_grp(eng_grp, eng_grps->obj);
 	if (ret)
 		goto err_release_engs;
 
-	/*
-	 * If this engine group mirrors another engine group
-	 * then we need to unload ucode as we will use ucode
-	 * from mirrored engine group
-	 */
+	 
 	if (eng_grp->mirror.is_ena)
 		ucode_unload(dev, &eng_grp->ucode[0]);
 
@@ -1404,7 +1367,7 @@ static ssize_t ucode_load_store(struct device *dev,
 		}
 	}
 
-	/* Validate input parameters */
+	 
 	if (del_grp_idx == -1) {
 		if (!(grp_idx && ucode_idx))
 			goto err_print;
@@ -1446,12 +1409,12 @@ static ssize_t ucode_load_store(struct device *dev,
 	}
 
 	if (del_grp_idx == -1)
-		/* create engine group */
+		 
 		ret = create_engine_group(dev, eng_grps, engs, grp_idx,
 					  (void **) ucode_filename,
 					  ucode_idx, false);
 	else
-		/* delete engine group */
+		 
 		ret = delete_engine_group(dev, &eng_grps->grp[del_grp_idx]);
 	if (ret)
 		goto err_unlock;
@@ -1478,15 +1441,12 @@ int otx_cpt_try_create_default_eng_grps(struct pci_dev *pdev,
 
 	mutex_lock(&eng_grps->lock);
 
-	/*
-	 * We don't create engine group for kernel crypto if attempt to create
-	 * it was already made (when user enabled VFs for the first time)
-	 */
+	 
 	if (eng_grps->is_first_try)
 		goto unlock_mutex;
 	eng_grps->is_first_try = true;
 
-	/* We create group for kcrypto only if no groups are configured */
+	 
 	for (i = 0; i < OTX_CPT_MAX_ENGINE_GROUPS; i++)
 		if (eng_grps->grp[i].is_enabled)
 			goto unlock_mutex;
@@ -1507,11 +1467,7 @@ int otx_cpt_try_create_default_eng_grps(struct pci_dev *pdev,
 	if (!tar_arch)
 		goto unlock_mutex;
 
-	/*
-	 * If device supports SE engines and there is SE microcode in tar
-	 * archive try to create engine group with SE engines for kernel
-	 * crypto functionality (symmetric crypto)
-	 */
+	 
 	tar_info[0] = get_uc_from_tar_archive(tar_arch, OTX_CPT_SE_TYPES);
 	if (tar_info[0] &&
 	    dev_supports_eng_type(eng_grps, OTX_CPT_SE_TYPES)) {
@@ -1524,11 +1480,7 @@ int otx_cpt_try_create_default_eng_grps(struct pci_dev *pdev,
 		if (ret)
 			goto release_tar_arch;
 	}
-	/*
-	 * If device supports AE engines and there is AE microcode in tar
-	 * archive try to create engine group with AE engines for asymmetric
-	 * crypto functionality.
-	 */
+	 
 	tar_info[0] = get_uc_from_tar_archive(tar_arch, OTX_CPT_AE_TYPES);
 	if (tar_info[0] &&
 	    dev_supports_eng_type(eng_grps, OTX_CPT_AE_TYPES)) {
@@ -1565,7 +1517,7 @@ void otx_cpt_disable_all_cores(struct otx_cpt_device *cpt)
 	int grp, timeout = 100;
 	u64 reg;
 
-	/* Disengage the cores from groups */
+	 
 	for (grp = 0; grp < OTX_CPT_MAX_ENGINE_GROUPS; grp++) {
 		writeq(0, cpt->reg_base + OTX_CPT_PF_GX_EN(grp));
 		udelay(CSR_DELAY);
@@ -1581,7 +1533,7 @@ void otx_cpt_disable_all_cores(struct otx_cpt_device *cpt)
 		}
 	}
 
-	/* Disable the cores */
+	 
 	writeq(0, cpt->reg_base + OTX_CPT_PF_EXE_CTL);
 }
 
@@ -1598,16 +1550,16 @@ void otx_cpt_cleanup_eng_grps(struct pci_dev *pdev,
 		eng_grps->is_ucode_load_created = false;
 	}
 
-	/* First delete all mirroring engine groups */
+	 
 	for (i = 0; i < OTX_CPT_MAX_ENGINE_GROUPS; i++)
 		if (eng_grps->grp[i].mirror.is_ena)
 			delete_engine_group(&pdev->dev, &eng_grps->grp[i]);
 
-	/* Delete remaining engine groups */
+	 
 	for (i = 0; i < OTX_CPT_MAX_ENGINE_GROUPS; i++)
 		delete_engine_group(&pdev->dev, &eng_grps->grp[i]);
 
-	/* Release memory */
+	 
 	for (i = 0; i < OTX_CPT_MAX_ENGINE_GROUPS; i++) {
 		grp = &eng_grps->grp[i];
 		for (j = 0; j < OTX_CPT_MAX_ETYPES_PER_GRP; j++) {
@@ -1660,12 +1612,12 @@ int otx_cpt_init_eng_grps(struct pci_dev *pdev,
 
 	switch (pf_type) {
 	case OTX_CPT_SE:
-		/* OcteonTX 83XX SE CPT PF has only SE engines attached */
+		 
 		eng_grps->eng_types_supported = 1 << OTX_CPT_SE_TYPES;
 		break;
 
 	case OTX_CPT_AE:
-		/* OcteonTX 83XX AE CPT PF has only AE engines attached */
+		 
 		eng_grps->eng_types_supported = 1 << OTX_CPT_AE_TYPES;
 		break;
 

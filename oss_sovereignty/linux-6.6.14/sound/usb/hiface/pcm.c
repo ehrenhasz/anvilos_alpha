@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Linux driver for M2Tech hiFace compatible devices
- *
- * Copyright 2012-2013 (C) M2TECH S.r.l and Amarula Solutions B.V.
- *
- * Authors:  Michael Trimarchi <michael@amarulasolutions.com>
- *           Antonio Ospite <ao2@amarulasolutions.com>
- *
- * The driver is based on the work done in TerraTec DMX 6Fire USB
- */
+
+ 
 
 #include <linux/slab.h>
 #include <sound/pcm.h>
@@ -34,14 +25,14 @@ struct pcm_substream {
 	struct snd_pcm_substream *instance;
 
 	bool active;
-	snd_pcm_uframes_t dma_off;    /* current position in alsa dma_area */
-	snd_pcm_uframes_t period_off; /* current position in current period */
+	snd_pcm_uframes_t dma_off;     
+	snd_pcm_uframes_t period_off;  
 };
 
-enum { /* pcm streaming states */
-	STREAM_DISABLED, /* no pcm streaming */
-	STREAM_STARTING, /* pcm streaming requested, waiting to become ready */
-	STREAM_RUNNING,  /* pcm streaming running */
+enum {  
+	STREAM_DISABLED,  
+	STREAM_STARTING,  
+	STREAM_RUNNING,   
 	STREAM_STOPPING
 };
 
@@ -50,12 +41,12 @@ struct pcm_runtime {
 	struct snd_pcm *instance;
 
 	struct pcm_substream playback;
-	bool panic; /* if set driver won't do anymore pcm on device */
+	bool panic;  
 
 	struct pcm_urb out_urbs[PCM_N_URBS];
 
 	struct mutex stream_mutex;
-	u8 stream_state; /* one of STREAM_XXX */
+	u8 stream_state;  
 	u8 extra_freq;
 	wait_queue_head_t stream_wait_queue;
 	bool stream_wait_cond;
@@ -87,7 +78,7 @@ static const struct snd_pcm_hardware pcm_hw = {
 		SNDRV_PCM_RATE_192000,
 
 	.rate_min = 44100,
-	.rate_max = 192000, /* changes in hiface_pcm_open to support extra rates */
+	.rate_max = 192000,  
 	.channels_min = 2,
 	.channels_max = 2,
 	.buffer_bytes_max = PCM_BUFFER_SIZE,
@@ -97,7 +88,7 @@ static const struct snd_pcm_hardware pcm_hw = {
 	.periods_max = 1024
 };
 
-/* message values used to change the sample rate */
+ 
 #define HIFACE_SET_RATE_REQUEST 0xb0
 
 #define HIFACE_RATE_44100  0x43
@@ -115,9 +106,7 @@ static int hiface_pcm_set_rate(struct pcm_runtime *rt, unsigned int rate)
 	u16 rate_value;
 	int ret;
 
-	/* We are already sure that the rate is supported here thanks to
-	 * ALSA constraints
-	 */
+	 
 	switch (rate) {
 	case 44100:
 		rate_value = HIFACE_RATE_44100;
@@ -148,14 +137,7 @@ static int hiface_pcm_set_rate(struct pcm_runtime *rt, unsigned int rate)
 		return -EINVAL;
 	}
 
-	/*
-	 * USBIO: Vendor 0xb0(wValue=0x0043, wIndex=0x0000)
-	 * 43 b0 43 00 00 00 00 00
-	 * USBIO: Vendor 0xb0(wValue=0x004b, wIndex=0x0000)
-	 * 43 b0 4b 00 00 00 00 00
-	 * This control message doesn't have any ack from the
-	 * other side
-	 */
+	 
 	ret = usb_control_msg_send(device, 0,
 				   HIFACE_SET_RATE_REQUEST,
 				   USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_OTHER,
@@ -179,7 +161,7 @@ static struct pcm_substream *hiface_pcm_get_substream(struct snd_pcm_substream
 	return NULL;
 }
 
-/* call with stream_mutex locked */
+ 
 static void hiface_pcm_stream_stop(struct pcm_runtime *rt)
 {
 	int i, time;
@@ -200,7 +182,7 @@ static void hiface_pcm_stream_stop(struct pcm_runtime *rt)
 	}
 }
 
-/* call with stream_mutex locked */
+ 
 static int hiface_pcm_stream_start(struct pcm_runtime *rt)
 {
 	int ret = 0;
@@ -208,10 +190,10 @@ static int hiface_pcm_stream_start(struct pcm_runtime *rt)
 
 	if (rt->stream_state == STREAM_DISABLED) {
 
-		/* reset panic state when starting a new stream */
+		 
 		rt->panic = false;
 
-		/* submit our out urbs zero init */
+		 
 		rt->stream_state = STREAM_STARTING;
 		for (i = 0; i < PCM_N_URBS; i++) {
 			memset(rt->out_urbs[i].buffer, 0, PCM_PACKET_SIZE);
@@ -225,7 +207,7 @@ static int hiface_pcm_stream_start(struct pcm_runtime *rt)
 			}
 		}
 
-		/* wait for first out urb to return (sent in urb handler) */
+		 
 		wait_event_timeout(rt->stream_wait_queue, rt->stream_wait_cond,
 				   HZ);
 		if (rt->stream_wait_cond) {
@@ -241,7 +223,7 @@ static int hiface_pcm_stream_start(struct pcm_runtime *rt)
 	return ret;
 }
 
-/* The hardware wants word-swapped 32-bit values */
+ 
 static void memcpy_swahw32(u8 *dest, u8 *src, unsigned int n)
 {
 	unsigned int i;
@@ -250,8 +232,8 @@ static void memcpy_swahw32(u8 *dest, u8 *src, unsigned int n)
 		((u32 *)dest)[i] = swahw32(((u32 *)src)[i]);
 }
 
-/* call with substream locked */
-/* returns true if a period elapsed */
+ 
+ 
 static bool hiface_pcm_playback(struct pcm_substream *sub, struct pcm_urb *urb)
 {
 	struct snd_pcm_runtime *alsa_rt = sub->instance->runtime;
@@ -271,7 +253,7 @@ static bool hiface_pcm_playback(struct pcm_substream *sub, struct pcm_urb *urb)
 		source = alsa_rt->dma_area + sub->dma_off;
 		memcpy_swahw32(urb->buffer, source, PCM_PACKET_SIZE);
 	} else {
-		/* wrap around at end of ring buffer */
+		 
 		unsigned int len;
 
 		dev_dbg(device, "%s: (2) buffer_size %#x dma_offset %#x\n", __func__,
@@ -311,10 +293,10 @@ static void hiface_pcm_out_urb_handler(struct urb *usb_urb)
 	if (rt->panic || rt->stream_state == STREAM_STOPPING)
 		return;
 
-	if (unlikely(usb_urb->status == -ENOENT ||	/* unlinked */
-		     usb_urb->status == -ENODEV ||	/* device removed */
-		     usb_urb->status == -ECONNRESET ||	/* unlinked */
-		     usb_urb->status == -ESHUTDOWN)) {	/* device disabled */
+	if (unlikely(usb_urb->status == -ENOENT ||	 
+		     usb_urb->status == -ENODEV ||	 
+		     usb_urb->status == -ECONNRESET ||	 
+		     usb_urb->status == -ESHUTDOWN)) {	 
 		goto out_fail;
 	}
 
@@ -323,7 +305,7 @@ static void hiface_pcm_out_urb_handler(struct urb *usb_urb)
 		wake_up(&rt->stream_wait_queue);
 	}
 
-	/* now send our playback data (if a free out urb was found) */
+	 
 	sub = &rt->playback;
 	spin_lock_irqsave(&sub->lock, flags);
 	if (sub->active)
@@ -373,7 +355,7 @@ static int hiface_pcm_open(struct snd_pcm_substream *alsa_sub)
 		alsa_rt->hw.rates |= SNDRV_PCM_RATE_KNOT;
 		alsa_rt->hw.rate_max = 384000;
 
-		/* explicit constraints needed as we added SNDRV_PCM_RATE_KNOT */
+		 
 		ret = snd_pcm_hw_constraint_list(alsa_sub->runtime, 0,
 						 SNDRV_PCM_HW_PARAM_RATE,
 						 &constraints_extra_rates);
@@ -402,7 +384,7 @@ static int hiface_pcm_close(struct snd_pcm_substream *alsa_sub)
 	if (sub) {
 		hiface_pcm_stream_stop(rt);
 
-		/* deactivate substream */
+		 
 		spin_lock_irqsave(&sub->lock, flags);
 		sub->instance = NULL;
 		sub->active = false;

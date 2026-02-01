@@ -1,27 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef MOD_HDCP_LOG_H_
 #define MOD_HDCP_LOG_H_
@@ -32,7 +9,7 @@
 #define HDCP_LOG_TOP(hdcp, ...) pr_debug("[HDCP_TOP]:"__VA_ARGS__)
 #define HDCP_LOG_DDC(hdcp, ...) pr_debug("[HDCP_DDC]:"__VA_ARGS__)
 
-/* default logs */
+ 
 #define HDCP_ERROR_TRACE(hdcp, status) \
 		HDCP_LOG_ERR(hdcp, \
 			"[Link %d] WARNING %s IN STATE %s STAY COUNT %d", \
@@ -57,7 +34,7 @@
 			"[Link %d] HDCP 2.2 disabled on display %d", \
 			hdcp->config.index, displayIndex)
 
-/* state machine logs */
+ 
 #define HDCP_REMOVE_DISPLAY_TRACE(hdcp, displayIndex) \
 		HDCP_LOG_FSM(hdcp, \
 			"[Link %d] HDCP_REMOVE_DISPLAY index %d", \
@@ -90,7 +67,7 @@
 			HDCP_TIMEOUT_TRACE(hdcp); \
 		else if (event == MOD_HDCP_EVENT_CPIRQ) \
 			HDCP_CPIRQ_TRACE(hdcp)
-/* TODO: find some way to tell if logging is off to save time */
+ 
 #define HDCP_DDC_READ_TRACE(hdcp, msg_name, msg, msg_size) do { \
 		mod_hdcp_dump_binary_message(msg, msg_size, hdcp->buf, \
 				sizeof(hdcp->buf)); \
@@ -129,4 +106,4 @@
 		HDCP_LOG_TOP(hdcp, "[Link %d] %s display %d", hdcp->config.index, __func__, i); \
 } while (0)
 
-#endif // MOD_HDCP_LOG_H_
+#endif 

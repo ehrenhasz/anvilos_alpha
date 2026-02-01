@@ -1,61 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright 2007-2010 Red Hat, Inc.
- *  by Peter Jones <pjones@redhat.com>
- *  Copyright 2008 IBM, Inc.
- *  by Konrad Rzeszutek <konradr@linux.vnet.ibm.com>
- *  Copyright 2008
- *  by Konrad Rzeszutek <ketuzsezr@darnok.org>
- *
- * This code exposes the iSCSI Boot Format Table to userland via sysfs.
- *
- * Changelog:
- *
- *  06 Jan 2010 - Peter Jones <pjones@redhat.com>
- *    New changelog entries are in the git log from now on.  Not here.
- *
- *  14 Mar 2008 - Konrad Rzeszutek <ketuzsezr@darnok.org>
- *    Updated comments and copyrights. (v0.4.9)
- *
- *  11 Feb 2008 - Konrad Rzeszutek <konradr@linux.vnet.ibm.com>
- *    Converted to using ibft_addr. (v0.4.8)
- *
- *   8 Feb 2008 - Konrad Rzeszutek <konradr@linux.vnet.ibm.com>
- *    Combined two functions in one: reserve_ibft_region. (v0.4.7)
- *
- *  30 Jan 2008 - Konrad Rzeszutek <konradr@linux.vnet.ibm.com>
- *   Added logic to handle IPv6 addresses. (v0.4.6)
- *
- *  25 Jan 2008 - Konrad Rzeszutek <konradr@linux.vnet.ibm.com>
- *   Added logic to handle badly not-to-spec iBFT. (v0.4.5)
- *
- *   4 Jan 2008 - Konrad Rzeszutek <konradr@linux.vnet.ibm.com>
- *   Added __init to function declarations. (v0.4.4)
- *
- *  21 Dec 2007 - Konrad Rzeszutek <konradr@linux.vnet.ibm.com>
- *   Updated kobject registration, combined unregister functions in one
- *   and code and style cleanup. (v0.4.3)
- *
- *   5 Dec 2007 - Konrad Rzeszutek <konradr@linux.vnet.ibm.com>
- *   Added end-markers to enums and re-organized kobject registration. (v0.4.2)
- *
- *   4 Dec 2007 - Konrad Rzeszutek <konradr@linux.vnet.ibm.com>
- *   Created 'device' sysfs link to the NIC and style cleanup. (v0.4.1)
- *
- *  28 Nov 2007 - Konrad Rzeszutek <konradr@linux.vnet.ibm.com>
- *   Added sysfs-ibft documentation, moved 'find_ibft' function to
- *   in its own file and added text attributes for every struct field.  (v0.4)
- *
- *  21 Nov 2007 - Konrad Rzeszutek <konradr@linux.vnet.ibm.com>
- *   Added text attributes emulating OpenFirmware /proc/device-tree naming.
- *   Removed binary /sysfs interface (v0.3)
- *
- *  29 Aug 2007 - Konrad Rzeszutek <konradr@linux.vnet.ibm.com>
- *   Added functionality in setup.c to reserve iBFT region. (v0.2)
- *
- *  27 Aug 2007 - Konrad Rzeszutek <konradr@linux.vnet.ibm.com>
- *   First version exposing iBFT data via a binary /sysfs. (v0.1)
- */
+
+ 
 
 
 #include <linux/blkdev.h>
@@ -150,23 +94,18 @@ struct ibft_tgt {
 	u16 rev_chap_secret_off;
 } __attribute__((__packed__));
 
-/*
- * The kobject different types and its names.
- *
-*/
+ 
 enum ibft_id {
-	id_reserved = 0, /* We don't support. */
-	id_control = 1, /* Should show up only once and is not exported. */
+	id_reserved = 0,  
+	id_control = 1,  
 	id_initiator = 2,
 	id_nic = 3,
 	id_target = 4,
-	id_extensions = 5, /* We don't support. */
+	id_extensions = 5,  
 	id_end_marker,
 };
 
-/*
- * The kobject and attribute structures.
- */
+ 
 
 struct ibft_kobject {
 	struct acpi_table_ibft *header;
@@ -180,10 +119,10 @@ struct ibft_kobject {
 
 static struct iscsi_boot_kset *boot_kset;
 
-/* fully null address */
+ 
 static const char nulls[16];
 
-/* IPv4-mapped IPv6 ::ffff:0.0.0.0 */
+ 
 static const char mapped_nulls[16] = { 0x00, 0x00, 0x00, 0x00,
                                        0x00, 0x00, 0x00, 0x00,
                                        0x00, 0x00, 0xff, 0xff,
@@ -194,9 +133,7 @@ static int address_not_null(u8 *ip)
 	return (memcmp(ip, nulls, 16) && memcmp(ip, mapped_nulls, 16));
 }
 
-/*
- * Helper functions to parse data properly.
- */
+ 
 static ssize_t sprintf_ipaddr(char *buf, u8 *ip)
 {
 	char *str = buf;
@@ -204,14 +141,10 @@ static ssize_t sprintf_ipaddr(char *buf, u8 *ip)
 	if (ip[0] == 0 && ip[1] == 0 && ip[2] == 0 && ip[3] == 0 &&
 	    ip[4] == 0 && ip[5] == 0 && ip[6] == 0 && ip[7] == 0 &&
 	    ip[8] == 0 && ip[9] == 0 && ip[10] == 0xff && ip[11] == 0xff) {
-		/*
-		 * IPV4
-		 */
+		 
 		str += sprintf(buf, "%pI4", ip + 12);
 	} else {
-		/*
-		 * IPv6
-		 */
+		 
 		str += sprintf(str, "%pI6", ip);
 	}
 	str += sprintf(str, "\n");
@@ -223,9 +156,7 @@ static ssize_t sprintf_string(char *str, int len, char *buf)
 	return sprintf(str, "%.*s\n", len, buf);
 }
 
-/*
- * Helper function to verify the IBFT header.
- */
+ 
 static int ibft_verify_hdr(char *t, struct ibft_hdr *hdr, int id, int length)
 {
 	if (hdr->id != id) {
@@ -244,9 +175,7 @@ static int ibft_verify_hdr(char *t, struct ibft_hdr *hdr, int id, int length)
 	return 0;
 }
 
-/*
- *  Routines for parsing the iBFT data to be human readable.
- */
+ 
 static ssize_t ibft_attr_show_initiator(void *data, int type, char *buf)
 {
 	struct ibft_kobject *entry = data;
@@ -445,7 +374,7 @@ static int __init ibft_check_device(void)
 
 	len = ibft_addr->header.length;
 
-	/* Sanity checking of iBFT. */
+	 
 	if (ibft_addr->header.revision != 1) {
 		printk(KERN_ERR "iBFT module supports only revision 1, " \
 				"while this is %d.\n",
@@ -463,10 +392,7 @@ static int __init ibft_check_device(void)
 	return 0;
 }
 
-/*
- * Helper routiners to check to determine if the entry is valid
- * in the proper iBFT structure.
- */
+ 
 static umode_t ibft_check_nic_for(void *data, int type)
 {
 	struct ibft_kobject *entry = data;
@@ -619,9 +545,7 @@ static void ibft_kobj_release(void *data)
 	kfree(data);
 }
 
-/*
- * Helper function for ibft_register_kobjects.
- */
+ 
 static int __init ibft_create_kobject(struct acpi_table_ibft *header,
 				      struct ibft_hdr *hdr)
 {
@@ -690,7 +614,7 @@ static int __init ibft_create_kobject(struct acpi_table_ibft *header,
 	case id_reserved:
 	case id_control:
 	case id_extensions:
-		/* Fields which we don't support. Ignore them */
+		 
 		rc = 1;
 		break;
 	default:
@@ -702,18 +626,13 @@ static int __init ibft_create_kobject(struct acpi_table_ibft *header,
 	}
 
 	if (rc) {
-		/* Skip adding this kobject, but exit with non-fatal error. */
+		 
 		rc = 0;
 		goto free_ibft_obj;
 	}
 
 	if (hdr->id == id_nic) {
-		/*
-		* We don't search for the device in other domains than
-		* zero. This is because on x86 platforms the BIOS
-		* executes only devices which are in domain 0. Furthermore, the
-		* iBFT spec doesn't have a domain id field :-(
-		*/
+		 
 		pci_dev = pci_get_domain_bus_and_slot(0,
 						(nic->pci_bdf & 0xff00) >> 8,
 						(nic->pci_bdf & 0xff));
@@ -730,11 +649,7 @@ free_ibft_obj:
 	return rc;
 }
 
-/*
- * Scan the IBFT table structure for the NIC and Target fields. When
- * found add them on the passed-in list. We do not support the other
- * fields at this point, so they are skipped.
- */
+ 
 static int __init ibft_register_kobjects(struct acpi_table_ibft *header)
 {
 	struct ibft_control *control = NULL;
@@ -750,7 +665,7 @@ static int __init ibft_register_kobjects(struct acpi_table_ibft *header)
 	eot_offset = (void *)header + header->header.length - (void *)control;
 	rc = ibft_verify_hdr("control", (struct ibft_hdr *)control, id_control, 0);
 
-	/* iBFT table safety checking */
+	 
 	rc |= ((control->hdr.index) ? -ENODEV : 0);
 	rc |= ((control->hdr.length < sizeof(*control)) ? -ENODEV : 0);
 	if (rc) {
@@ -775,7 +690,7 @@ static int __init ibft_register_kobjects(struct acpi_table_ibft *header)
 		return -ENOMEM;
 
 	ibft_kobj->header = header;
-	ibft_kobj->hdr = NULL; /*for ibft_unregister*/
+	ibft_kobj->hdr = NULL;  
 
 	boot_kobj = iscsi_boot_create_acpitbl(boot_kset, 0,
 					ibft_kobj,
@@ -820,13 +735,10 @@ static void __exit ibft_exit(void)
 static const struct {
 	char *sign;
 } ibft_signs[] = {
-	/*
-	 * One spec says "IBFT", the other says "iBFT". We have to check
-	 * for both.
-	 */
+	 
 	{ ACPI_SIG_IBFT },
 	{ "iBFT" },
-	{ "BIFT" },	/* Broadcom iSCSI Offload */
+	{ "BIFT" },	 
 };
 
 static void __init acpi_find_ibft_region(void)
@@ -862,18 +774,12 @@ static int __init acpi_find_isa_region(void)
 	return -ENODEV;
 }
 #endif
-/*
- * ibft_init() - creates sysfs tree entries for the iBFT data.
- */
+ 
 static int __init ibft_init(void)
 {
 	int rc = 0;
 
-	/*
-	   As on UEFI systems the setup_arch()/reserve_ibft_region()
-	   is called before ACPI tables are parsed and it only does
-	   legacy finding.
-	*/
+	 
 	if (acpi_find_isa_region())
 		acpi_find_ibft_region();
 
@@ -888,7 +794,7 @@ static int __init ibft_init(void)
 		if (!boot_kset)
 			return -ENOMEM;
 
-		/* Scan the IBFT for data and register the kobjects. */
+		 
 		rc = ibft_register_kobjects(ibft_addr);
 		if (rc)
 			goto out_free;

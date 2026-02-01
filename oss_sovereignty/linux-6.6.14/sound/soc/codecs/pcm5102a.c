@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the PCM5102A codec
- *
- * Author:	Florian Meier <florian.meier@koalo.de>
- *		Copyright 2013
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>

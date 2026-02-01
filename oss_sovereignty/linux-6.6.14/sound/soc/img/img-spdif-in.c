@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IMG SPDIF input controller driver
- *
- * Copyright (C) 2015 Imagination Technologies Ltd.
- *
- * Author: Damien Horsley <Damien.Horsley@imgtec.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/init.h>
@@ -83,7 +77,7 @@ struct img_spdif_in {
 	u32 suspend_clkgen;
 	u32 suspend_ctl;
 
-	/* Write-only registers */
+	 
 	unsigned int aclkgen_regs[IMG_SPDIF_IN_NUM_ACLKGEN];
 };
 
@@ -133,7 +127,7 @@ static int img_spdif_in_check_max_rate(struct img_spdif_in *spdif,
 {
 	unsigned long min_freq, freq_t;
 
-	/* Clock rate must be at least 24x the bit rate */
+	 
 	min_freq = sample_rate * 2 * 32 * 24;
 
 	freq_t = clk_get_rate(spdif->clk_sys);
@@ -151,10 +145,7 @@ static int img_spdif_in_do_clkgen_calc(unsigned int rate, unsigned int *pnom,
 {
 	unsigned int ori, nom, hld;
 
-	/*
-	 * Calculate oversampling ratio, nominal phase increment and hold
-	 * increment for the given rate / frequency
-	 */
+	 
 
 	if (!rate)
 		return -EINVAL;

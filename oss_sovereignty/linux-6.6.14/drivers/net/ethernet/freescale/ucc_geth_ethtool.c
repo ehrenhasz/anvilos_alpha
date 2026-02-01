@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2007 Freescale Semiconductor, Inc. All rights reserved.
- *
- * Description: QE UCC Gigabit Ethernet Ethtool API Set
- *
- * Author: Li Yang <leoli@freescale.com>
- *
- * Limitation:
- * Can only get/set settings of the first queue.
- * Need to re-open the interface manually after changing some parameters.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -153,7 +143,7 @@ uec_set_pauseparam(struct net_device *netdev,
 
 	if (ugeth->phydev->autoneg) {
 		if (netif_running(netdev)) {
-			/* FIXME: automatically restart */
+			 
 			netdev_info(netdev, "Please re-open the interface\n");
 		}
 	} else {
@@ -332,7 +322,7 @@ static void uec_get_ethtool_stats(struct net_device *netdev,
 	}
 }
 
-/* Report driver information */
+ 
 static void
 uec_get_drvinfo(struct net_device *netdev,
                        struct ethtool_drvinfo *drvinfo)
@@ -377,7 +367,7 @@ static int uec_set_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
 #else
 #define uec_get_wol NULL
 #define uec_set_wol NULL
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct ethtool_ops uec_ethtool_ops = {
 	.get_drvinfo            = uec_get_drvinfo,

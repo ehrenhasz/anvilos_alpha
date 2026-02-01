@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021  Maciej W. Rozycki
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -155,11 +153,7 @@ static inline bool test_div64_verify(u64 quotient, u32 remainder, int i, int j)
 		remainder == test_div64_results[i][j].remainder);
 }
 
-/*
- * This needs to be a macro, because we don't want to rely on the compiler
- * to do constant propagation, and `do_div' may take a different path for
- * constants, so we do want to verify that as well.
- */
+ 
 #define test_div64_one(dividend, divisor, i, j) ({			\
 	bool result = true;						\
 	u64 quotient;							\
@@ -178,11 +172,7 @@ static inline bool test_div64_verify(u64 quotient, u32 remainder, int i, int j)
 	result;								\
 })
 
-/*
- * Run calculation for the same divisor value expressed as a constant
- * and as a variable, so as to verify the implementation for both cases
- * should they be handled by different code execution paths.
- */
+ 
 static bool __init test_div64(void)
 {
 	u64 dividend;

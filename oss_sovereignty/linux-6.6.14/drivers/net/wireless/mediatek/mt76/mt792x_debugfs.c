@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2023 MediaTek Inc. */
+
+ 
 
 #include "mt792x.h"
 
@@ -15,7 +15,7 @@ mt792x_ampdu_stat_read_phy(struct mt792x_phy *phy,
 
 	mt792x_mac_update_mib_stats(phy);
 
-	/* Tx ampdu stat */
+	 
 	for (i = 0; i < ARRAY_SIZE(range); i++)
 		range[i] = mt76_rr(dev, MT_MIB_ARNG(0, i));
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * cxd2880_spi_device.c
- * Sony CXD2880 DVB-T2/T tuner + demodulator driver
- * SPI access functions
- *
- * Copyright (C) 2016, 2017, 2018 Sony Semiconductor Solutions Corporation
- */
+
+ 
 
 #include <linux/spi/spi.h>
 

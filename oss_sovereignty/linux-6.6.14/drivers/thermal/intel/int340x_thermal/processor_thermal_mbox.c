@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * processor thermal device mailbox driver for Workload type hints
- * Copyright (c) 2020, Intel Corporation.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -29,7 +26,7 @@ static int wait_for_mbox_ready(struct proc_thermal_device *proc_priv)
 	u32 retries, data;
 	int ret;
 
-	/* Poll for rb bit == 0 */
+	 
 	retries = MBOX_RETRY_COUNT;
 	do {
 		data = readl(proc_priv->mmio_base + MBOX_OFFSET_INTERFACE);
@@ -59,7 +56,7 @@ static int send_mbox_write_cmd(struct pci_dev *pdev, u16 id, u32 data)
 		goto unlock_mbox;
 
 	writel(data, (proc_priv->mmio_base + MBOX_OFFSET_DATA));
-	/* Write command register */
+	 
 	reg_data = BIT_ULL(MBOX_BUSY_BIT) | id;
 	writel(reg_data, (proc_priv->mmio_base + MBOX_OFFSET_INTERFACE));
 
@@ -84,7 +81,7 @@ static int send_mbox_read_cmd(struct pci_dev *pdev, u16 id, u64 *resp)
 	if (ret)
 		goto unlock_mbox;
 
-	/* Write command register */
+	 
 	reg_data = BIT_ULL(MBOX_BUSY_BIT) | id;
 	writel(reg_data, (proc_priv->mmio_base + MBOX_OFFSET_INTERFACE));
 
@@ -114,7 +111,7 @@ int processor_thermal_send_mbox_write_cmd(struct pci_dev *pdev, u16 id, u32 data
 }
 EXPORT_SYMBOL_NS_GPL(processor_thermal_send_mbox_write_cmd, INT340X_THERMAL);
 
-/* List of workload types */
+ 
 static const char * const workload_types[] = {
 	"none",
 	"idle",
@@ -213,7 +210,7 @@ int proc_thermal_mbox_add(struct pci_dev *pdev, struct proc_thermal_device *proc
 	u64 cmd_resp;
 	int ret;
 
-	/* Check if there is a mailbox support, if fails return success */
+	 
 	ret = send_mbox_read_cmd(pdev, MBOX_CMD_WORKLOAD_TYPE_READ, &cmd_resp);
 	if (ret)
 		return 0;

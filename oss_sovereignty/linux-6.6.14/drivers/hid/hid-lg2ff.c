@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Force feedback support for Logitech RumblePad and Rumblepad 2
- *
- *  Copyright (c) 2008 Anssi Hannula <anssi.hannula@gmail.com>
- */
 
-/*
- */
+ 
+
+ 
 
 
 #include <linux/input.h>
@@ -61,7 +56,7 @@ int lg2ff_init(struct hid_device *hid)
 	hidinput = list_entry(hid->inputs.next, struct hid_input, list);
 	dev = hidinput->input;
 
-	/* Check that the report looks ok */
+	 
 	report = hid_validate_values(hid, HID_OUTPUT_REPORT, 0, 0, 7);
 	if (!report)
 		return -ENODEV;

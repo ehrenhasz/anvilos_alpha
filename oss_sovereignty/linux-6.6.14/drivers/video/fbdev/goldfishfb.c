@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2007 Google, Inc.
- * Copyright (C) 2012 Intel, Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -257,7 +254,7 @@ static int goldfish_fb_probe(struct platform_device *pdev)
 		goto err_request_irq_failed;
 
 	writel(FB_INT_BASE_UPDATE_DONE, fb->reg_base + FB_INT_ENABLE);
-	goldfish_fb_pan_display(&fb->fb.var, &fb->fb); /* updates base */
+	goldfish_fb_pan_display(&fb->fb.var, &fb->fb);  
 
 	ret = register_framebuffer(&fb->fb);
 	if (ret)

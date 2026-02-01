@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * AD7124 SPI ADC driver
- *
- * Copyright 2018 Analog Devices Inc.
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -22,7 +18,7 @@
 #include <linux/iio/adc/ad_sigma_delta.h>
 #include <linux/iio/sysfs.h>
 
-/* AD7124 registers */
+ 
 #define AD7124_COMMS			0x00
 #define AD7124_STATUS			0x00
 #define AD7124_ADC_CONTROL		0x01
@@ -39,10 +35,10 @@
 #define AD7124_OFFSET(x)		(0x29 + (x))
 #define AD7124_GAIN(x)			(0x31 + (x))
 
-/* AD7124_STATUS */
+ 
 #define AD7124_STATUS_POR_FLAG_MSK	BIT(4)
 
-/* AD7124_ADC_CONTROL */
+ 
 #define AD7124_ADC_STATUS_EN_MSK	BIT(10)
 #define AD7124_ADC_STATUS_EN(x)		FIELD_PREP(AD7124_ADC_STATUS_EN_MSK, x)
 #define AD7124_ADC_CTRL_REF_EN_MSK	BIT(8)
@@ -52,7 +48,7 @@
 #define AD7124_ADC_CTRL_MODE_MSK	GENMASK(5, 2)
 #define AD7124_ADC_CTRL_MODE(x)	FIELD_PREP(AD7124_ADC_CTRL_MODE_MSK, x)
 
-/* AD7124 ID */
+ 
 #define AD7124_DEVICE_ID_MSK		GENMASK(7, 4)
 #define AD7124_DEVICE_ID_GET(x)		FIELD_GET(AD7124_DEVICE_ID_MSK, x)
 #define AD7124_SILICON_REV_MSK		GENMASK(3, 0)
@@ -61,7 +57,7 @@
 #define CHIPID_AD7124_4			0x0
 #define CHIPID_AD7124_8			0x1
 
-/* AD7124_CHANNEL_X */
+ 
 #define AD7124_CHANNEL_EN_MSK		BIT(15)
 #define AD7124_CHANNEL_EN(x)		FIELD_PREP(AD7124_CHANNEL_EN_MSK, x)
 #define AD7124_CHANNEL_SETUP_MSK	GENMASK(14, 12)
@@ -71,7 +67,7 @@
 #define AD7124_CHANNEL_AINM_MSK	GENMASK(4, 0)
 #define AD7124_CHANNEL_AINM(x)		FIELD_PREP(AD7124_CHANNEL_AINM_MSK, x)
 
-/* AD7124_CONFIG_X */
+ 
 #define AD7124_CONFIG_BIPOLAR_MSK	BIT(11)
 #define AD7124_CONFIG_BIPOLAR(x)	FIELD_PREP(AD7124_CONFIG_BIPOLAR_MSK, x)
 #define AD7124_CONFIG_REF_SEL_MSK	GENMASK(4, 3)
@@ -81,7 +77,7 @@
 #define AD7124_CONFIG_IN_BUFF_MSK	GENMASK(6, 5)
 #define AD7124_CONFIG_IN_BUFF(x)	FIELD_PREP(AD7124_CONFIG_IN_BUFF_MSK, x)
 
-/* AD7124_FILTER_X */
+ 
 #define AD7124_FILTER_FS_MSK		GENMASK(10, 0)
 #define AD7124_FILTER_FS(x)		FIELD_PREP(AD7124_FILTER_FS_MSK, x)
 #define AD7124_FILTER_TYPE_MSK		GENMASK(23, 21)
@@ -172,8 +168,8 @@ struct ad7124_state {
 	struct clk *mclk;
 	unsigned int adc_control;
 	unsigned int num_channels;
-	struct mutex cfgs_lock; /* lock for configs access */
-	unsigned long cfg_slots_status; /* bitmap with slot status (1 means it is used) */
+	struct mutex cfgs_lock;  
+	unsigned long cfg_slots_status;  
 	DECLARE_KFIFO(live_cfgs_fifo, struct ad7124_channel_config *, AD7124_MAX_CONFIGS);
 };
 
@@ -262,13 +258,7 @@ static void ad7124_set_channel_odr(struct ad7124_state *st, unsigned int channel
 	unsigned int fclk, odr_sel_bits;
 
 	fclk = clk_get_rate(st->mclk);
-	/*
-	 * FS[10:0] = fCLK / (fADC x 32) where:
-	 * fADC is the output data rate
-	 * fCLK is the master clock frequency
-	 * FS[10:0] are the bits in the filter register
-	 * FS[10:0] can have a value from 1 to 2047
-	 */
+	 
 	odr_sel_bits = DIV_ROUND_CLOSEST(fclk, odr * 32);
 	if (odr_sel_bits < 1)
 		odr_sel_bits = 1;
@@ -278,7 +268,7 @@ static void ad7124_set_channel_odr(struct ad7124_state *st, unsigned int channel
 	if (odr_sel_bits != st->channels[channel].cfg.odr_sel_bits)
 		st->channels[channel].cfg.live = false;
 
-	/* fADC = fCLK / (FS[10:0] x 32) */
+	 
 	st->channels[channel].cfg.odr = DIV_ROUND_CLOSEST(fclk, odr_sel_bits * 32);
 	st->channels[channel].cfg.odr_sel_bits = odr_sel_bits;
 }
@@ -370,7 +360,7 @@ static int ad7124_init_config_vref(struct ad7124_state *st, struct ad7124_channe
 			return PTR_ERR(st->vref[refsel]);
 		}
 		cfg->vref_mv = regulator_get_voltage(st->vref[refsel]);
-		/* Conversion from uV to mV */
+		 
 		cfg->vref_mv /= 1000;
 		return 0;
 	case AD7124_INT_REF:
@@ -423,20 +413,17 @@ static struct ad7124_channel_config *ad7124_pop_config(struct ad7124_state *st)
 	int ret;
 	int i;
 
-	/*
-	 * Pop least recently used config from the fifo
-	 * in order to make room for the new one
-	 */
+	 
 	ret = kfifo_get(&st->live_cfgs_fifo, &lru_cfg);
 	if (ret <= 0)
 		return NULL;
 
 	lru_cfg->live = false;
 
-	/* mark slot as free */
+	 
 	assign_bit(lru_cfg->cfg_slot, &st->cfg_slots_status, 0);
 
-	/* invalidate all other configs that pointed to this one */
+	 
 	for (i = 0; i < st->num_channels; i++) {
 		cfg = &st->channels[i].cfg;
 
@@ -454,20 +441,20 @@ static int ad7124_push_config(struct ad7124_state *st, struct ad7124_channel_con
 
 	free_cfg_slot = ad7124_find_free_config_slot(st);
 	if (free_cfg_slot >= 0) {
-		/* push the new config in configs queue */
+		 
 		kfifo_put(&st->live_cfgs_fifo, cfg);
 	} else {
-		/* pop one config to make room for the new one */
+		 
 		lru_cfg = ad7124_pop_config(st);
 		if (!lru_cfg)
 			return -EINVAL;
 
-		/* push the new config in configs queue */
+		 
 		free_cfg_slot = lru_cfg->cfg_slot;
 		kfifo_put(&st->live_cfgs_fifo, cfg);
 	}
 
-	/* mark slot as used */
+	 
 	assign_bit(free_cfg_slot, &st->cfg_slots_status, 1);
 
 	return ad7124_write_config(st, cfg, free_cfg_slot);
@@ -485,12 +472,9 @@ static int ad7124_prepare_read(struct ad7124_state *st, int address)
 	struct ad7124_channel_config *cfg = &st->channels[address].cfg;
 	struct ad7124_channel_config *live_cfg;
 
-	/*
-	 * Before doing any reads assign the channel a configuration.
-	 * Check if channel's config is on the device
-	 */
+	 
 	if (!cfg->live) {
-		/* check if config matches another one */
+		 
 		live_cfg = ad7124_find_similar_live_cfg(st, cfg);
 		if (!live_cfg)
 			ad7124_push_config(st, cfg);
@@ -498,7 +482,7 @@ static int ad7124_prepare_read(struct ad7124_state *st, int address)
 			cfg->cfg_slot = live_cfg->cfg_slot;
 	}
 
-	/* point channel to the config slot and enable */
+	 
 	return ad7124_enable_channel(st, &st->channels[address]);
 }
 
@@ -581,7 +565,7 @@ static int ad7124_read_raw(struct iio_dev *indio_dev,
 		if (ret < 0)
 			return ret;
 
-		/* After the conversion is performed, disable the channel */
+		 
 		ret = ad_sd_write_reg(&st->sd, AD7124_CHANNEL(chan->address), 2,
 				      st->channels[chan->address].ain | AD7124_CHANNEL_EN(0));
 		if (ret < 0)
@@ -770,7 +754,7 @@ static int ad7124_soft_reset(struct ad7124_state *st)
 		if (!(readval & AD7124_STATUS_POR_FLAG_MSK))
 			return 0;
 
-		/* The AD7124 requires typically 2ms to power up and settle */
+		 
 		usleep_range(100, 2000);
 	} while (--timeout);
 
@@ -895,7 +879,7 @@ static int ad7124_setup(struct ad7124_state *st)
 	if (!fclk)
 		return -EINVAL;
 
-	/* The power mode changes the master clock frequency */
+	 
 	power_mode = ad7124_find_closest_match(ad7124_master_clk_freq_hz,
 					ARRAY_SIZE(ad7124_master_clk_freq_hz),
 					fclk);
@@ -905,7 +889,7 @@ static int ad7124_setup(struct ad7124_state *st)
 			return ret;
 	}
 
-	/* Set the power mode */
+	 
 	st->adc_control &= ~AD7124_ADC_CTRL_PWR_MSK;
 	st->adc_control |= AD7124_ADC_CTRL_PWR(power_mode);
 	ret = ad_sd_write_reg(&st->sd, AD7124_ADC_CONTROL, 2, st->adc_control);
@@ -920,11 +904,7 @@ static int ad7124_setup(struct ad7124_state *st)
 		if (ret < 0)
 			return ret;
 
-		/*
-		 * 9.38 SPS is the minimum output data rate supported
-		 * regardless of the selected power mode. Round it up to 10 and
-		 * set all channels to this default value.
-		 */
+		 
 		ad7124_set_channel_odr(st, i, 10);
 	}
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright(c) 2009 - 2009 Atheros Corporation. All rights reserved.
- *
- * Derived from Intel e1000 driver
- * Copyright(c) 1999 - 2005 Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/netdevice.h>
 #include <linux/ethtool.h>
@@ -186,7 +181,7 @@ static int atl1c_get_eeprom(struct net_device *netdev,
 	if (eeprom->len == 0)
 		return -EINVAL;
 
-	if (!atl1c_check_eeprom_exist(hw)) /* not exist */
+	if (!atl1c_check_eeprom_exist(hw))  
 		return -EINVAL;
 
 	eeprom->magic = adapter->pdev->vendor |
@@ -252,7 +247,7 @@ static int atl1c_set_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
 	if (wol->wolopts & (WAKE_ARP | WAKE_MAGICSECURE |
 			    WAKE_UCAST | WAKE_BCAST | WAKE_MCAST))
 		return -EOPNOTSUPP;
-	/* these settings will always override what we currently have */
+	 
 	adapter->wol = 0;
 
 	if (wol->wolopts & WAKE_MAGIC)

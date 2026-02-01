@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ACPI device specific properties support.
- *
- * Copyright (C) 2014, Intel Corporation
- * All rights reserved.
- *
- * Authors: Mika Westerberg <mika.westerberg@linux.intel.com>
- *          Darren Hart <dvhart@linux.intel.com>
- *          Rafael J. Wysocki <rafael.j.wysocki@intel.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/device.h>
@@ -21,36 +12,29 @@ static int acpi_data_get_property_array(const struct acpi_device_data *data,
 					acpi_object_type type,
 					const union acpi_object **obj);
 
-/*
- * The GUIDs here are made equivalent to each other in order to avoid extra
- * complexity in the properties handling code, with the caveat that the
- * kernel will accept certain combinations of GUID and properties that are
- * not defined without a warning. For instance if any of the properties
- * from different GUID appear in a property list of another, it will be
- * accepted by the kernel. Firmware validation tools should catch these.
- */
+ 
 static const guid_t prp_guids[] = {
-	/* ACPI _DSD device properties GUID: daffd814-6eba-4d8c-8a91-bc9bbf4aa301 */
+	 
 	GUID_INIT(0xdaffd814, 0x6eba, 0x4d8c,
 		  0x8a, 0x91, 0xbc, 0x9b, 0xbf, 0x4a, 0xa3, 0x01),
-	/* Hotplug in D3 GUID: 6211e2c0-58a3-4af3-90e1-927a4e0c55a4 */
+	 
 	GUID_INIT(0x6211e2c0, 0x58a3, 0x4af3,
 		  0x90, 0xe1, 0x92, 0x7a, 0x4e, 0x0c, 0x55, 0xa4),
-	/* External facing port GUID: efcc06cc-73ac-4bc3-bff0-76143807c389 */
+	 
 	GUID_INIT(0xefcc06cc, 0x73ac, 0x4bc3,
 		  0xbf, 0xf0, 0x76, 0x14, 0x38, 0x07, 0xc3, 0x89),
-	/* Thunderbolt GUID for IMR_VALID: c44d002f-69f9-4e7d-a904-a7baabdf43f7 */
+	 
 	GUID_INIT(0xc44d002f, 0x69f9, 0x4e7d,
 		  0xa9, 0x04, 0xa7, 0xba, 0xab, 0xdf, 0x43, 0xf7),
-	/* Thunderbolt GUID for WAKE_SUPPORTED: 6c501103-c189-4296-ba72-9bf5a26ebe5d */
+	 
 	GUID_INIT(0x6c501103, 0xc189, 0x4296,
 		  0xba, 0x72, 0x9b, 0xf5, 0xa2, 0x6e, 0xbe, 0x5d),
-	/* Storage device needs D3 GUID: 5025030f-842f-4ab4-a561-99a5189762d0 */
+	 
 	GUID_INIT(0x5025030f, 0x842f, 0x4ab4,
 		  0xa5, 0x61, 0x99, 0xa5, 0x18, 0x97, 0x62, 0xd0),
 };
 
-/* ACPI _DSD data subnodes GUID: dbb8e3e6-5886-4ba6-8795-1319f52a966b */
+ 
 static const guid_t ads_guid =
 	GUID_INIT(0xdbb8e3e6, 0x5886, 0x4ba6,
 		  0x87, 0x95, 0x13, 0x19, 0xf5, 0x2a, 0x96, 0x6b);
@@ -92,12 +76,7 @@ static bool acpi_nondev_subnode_extract(union acpi_object *desc,
 		acpi_handle scope;
 		acpi_status status;
 
-		/*
-		 * The scope for the subnode object lookup is the one of the
-		 * namespace node (device) containing the object that has
-		 * returned the package.  That is, it's the scope of that
-		 * object's parent.
-		 */
+		 
 		status = acpi_get_parent(handle, &scope);
 		if (ACPI_SUCCESS(status)
 		    && acpi_enumerate_nondev_subnodes(scope, desc, &dn->data,
@@ -174,15 +153,15 @@ static bool acpi_add_nondev_subnodes(acpi_handle scope,
 		bool result;
 
 		link = &links->package.elements[i];
-		/* Only two elements allowed. */
+		 
 		if (link->package.count != 2)
 			continue;
 
-		/* The first one must be a string. */
+		 
 		if (link->package.elements[0].type != ACPI_TYPE_STRING)
 			continue;
 
-		/* The second one may be a string, a reference or a package. */
+		 
 		switch (link->package.elements[1].type) {
 		case ACPI_TYPE_STRING:
 			result = acpi_nondev_subnode_ok(scope, link, list,
@@ -215,7 +194,7 @@ static bool acpi_enumerate_nondev_subnodes(acpi_handle scope,
 {
 	int i;
 
-	/* Look for the ACPI data subnodes GUID. */
+	 
 	for (i = 0; i < desc->package.count; i += 2) {
 		const union acpi_object *guid;
 		union acpi_object *links;
@@ -223,10 +202,7 @@ static bool acpi_enumerate_nondev_subnodes(acpi_handle scope,
 		guid = &desc->package.elements[i];
 		links = &desc->package.elements[i + 1];
 
-		/*
-		 * The first element must be a GUID and the second one must be
-		 * a package.
-		 */
+		 
 		if (guid->type != ACPI_TYPE_BUFFER ||
 		    guid->buffer.length != 16 ||
 		    links->type != ACPI_TYPE_PACKAGE)
@@ -246,10 +222,7 @@ static bool acpi_property_value_ok(const union acpi_object *value)
 {
 	int j;
 
-	/*
-	 * The value must be an integer, a string, a reference, or a package
-	 * whose every element must be an integer, a string, or a reference.
-	 */
+	 
 	switch (value->type) {
 	case ACPI_TYPE_INTEGER:
 	case ACPI_TYPE_STRING:
@@ -281,10 +254,7 @@ static bool acpi_properties_format_valid(const union acpi_object *properties)
 		const union acpi_object *property;
 
 		property = &properties->package.elements[i];
-		/*
-		 * Only two elements allowed, the first one must be a string and
-		 * the second one has to satisfy certain conditions.
-		 */
+		 
 		if (property->package.count != 2
 		    || property->package.elements[0].type != ACPI_TYPE_STRING
 		    || !acpi_property_value_ok(&property->package.elements[1]))
@@ -414,14 +384,14 @@ static void acpi_data_add_buffer_props(acpi_handle handle,
 	props->bufs = (void *)(props + 1);
 	props->properties = (void *)(props->bufs + properties->package.count);
 
-	/* Outer package */
+	 
 	package = props->properties;
 	package->type = ACPI_TYPE_PACKAGE;
 	package->package.elements = package + 1;
 	count = &package->package.count;
 	*count = 0;
 
-	/* Inner packages */
+	 
 	package++;
 
 	for (i = 0; i < properties->package.count; i++) {
@@ -466,7 +436,7 @@ static void acpi_data_add_buffer_props(acpi_handle handle,
 
 		buf_obj = buf.pointer;
 
-		/* Replace the string object with a buffer object */
+		 
 		obj->type = ACPI_TYPE_BUFFER;
 		obj->buffer.length = buf_obj->buffer.length;
 		obj->buffer.pointer = buf_obj->buffer.pointer;
@@ -490,7 +460,7 @@ static bool acpi_extract_properties(acpi_handle scope, union acpi_object *desc,
 	if (desc->package.count % 2)
 		return false;
 
-	/* Look for the device properties GUID. */
+	 
 	for (i = 0; i < desc->package.count; i += 2) {
 		const union acpi_object *guid;
 		union acpi_object *properties;
@@ -498,10 +468,7 @@ static bool acpi_extract_properties(acpi_handle scope, union acpi_object *desc,
 		guid = &desc->package.elements[i];
 		properties = &desc->package.elements[i + 1];
 
-		/*
-		 * The first element must be a GUID and the second one must be
-		 * a package.
-		 */
+		 
 		if (guid->type != ACPI_TYPE_BUFFER ||
 		    guid->buffer.length != 16 ||
 		    properties->type != ACPI_TYPE_PACKAGE)
@@ -516,10 +483,7 @@ static bool acpi_extract_properties(acpi_handle scope, union acpi_object *desc,
 		if (!acpi_is_property_guid((guid_t *)guid->buffer.pointer))
 			continue;
 
-		/*
-		 * We found the matching GUID. Now validate the format of the
-		 * package immediately following it.
-		 */
+		 
 		if (!acpi_properties_format_valid(properties))
 			continue;
 
@@ -543,10 +507,7 @@ void acpi_init_properties(struct acpi_device *adev)
 	if (!adev->handle)
 		return;
 
-	/*
-	 * Check if ACPI_DT_NAMESPACE_HID is present and inthat case we fill in
-	 * Device Tree compatible properties for this device.
-	 */
+	 
 	list_for_each_entry(hwid, &adev->pnp.ids, list) {
 		if (!strcmp(hwid->id, ACPI_DT_NAMESPACE_HID)) {
 			acpi_of = true;
@@ -593,7 +554,7 @@ static void acpi_free_device_properties(struct list_head *list)
 		u32 i;
 
 		list_del(&props->list);
-		/* Buffer data properties were separately allocated */
+		 
 		if (props->bufs)
 			for (i = 0; i < props->properties->package.count; i++)
 				ACPI_FREE(props->bufs[i]);
@@ -628,24 +589,7 @@ void acpi_free_properties(struct acpi_device *adev)
 	acpi_free_device_properties(&adev->data.properties);
 }
 
-/**
- * acpi_data_get_property - return an ACPI property with given name
- * @data: ACPI device deta object to get the property from
- * @name: Name of the property
- * @type: Expected property type
- * @obj: Location to store the property value (if not %NULL)
- *
- * Look up a property with @name and store a pointer to the resulting ACPI
- * object at the location pointed to by @obj if found.
- *
- * Callers must not attempt to free the returned objects.  These objects will be
- * freed by the ACPI core automatically during the removal of @data.
- *
- * Return: %0 if property with @name has been found (success),
- *         %-EINVAL if the arguments are invalid,
- *         %-EINVAL if the property doesn't exist,
- *         %-EPROTO if the property value type doesn't match @type.
- */
+ 
 static int acpi_data_get_property(const struct acpi_device_data *data,
 				  const char *name, acpi_object_type type,
 				  const union acpi_object **obj)
@@ -686,13 +630,7 @@ static int acpi_data_get_property(const struct acpi_device_data *data,
 	return -EINVAL;
 }
 
-/**
- * acpi_dev_get_property - return an ACPI property with given name.
- * @adev: ACPI device to get the property from.
- * @name: Name of the property.
- * @type: Expected property type.
- * @obj: Location to store the property value (if not %NULL).
- */
+ 
 int acpi_dev_get_property(const struct acpi_device *adev, const char *name,
 			  acpi_object_type type, const union acpi_object **obj)
 {
@@ -714,12 +652,7 @@ acpi_device_data_of_node(const struct fwnode_handle *fwnode)
 	return NULL;
 }
 
-/**
- * acpi_node_prop_get - return an ACPI property with given name.
- * @fwnode: Firmware node to get the property from.
- * @propname: Name of the property.
- * @valptr: Location to store a pointer to the property value (if not %NULL).
- */
+ 
 int acpi_node_prop_get(const struct fwnode_handle *fwnode,
 		       const char *propname, void **valptr)
 {
@@ -728,25 +661,7 @@ int acpi_node_prop_get(const struct fwnode_handle *fwnode,
 				      (const union acpi_object **)valptr);
 }
 
-/**
- * acpi_data_get_property_array - return an ACPI array property with given name
- * @data: ACPI data object to get the property from
- * @name: Name of the property
- * @type: Expected type of array elements
- * @obj: Location to store a pointer to the property value (if not NULL)
- *
- * Look up an array property with @name and store a pointer to the resulting
- * ACPI object at the location pointed to by @obj if found.
- *
- * Callers must not attempt to free the returned objects.  Those objects will be
- * freed by the ACPI core automatically during the removal of @data.
- *
- * Return: %0 if array property (package) with @name has been found (success),
- *         %-EINVAL if the arguments are invalid,
- *         %-EINVAL if the property doesn't exist,
- *         %-EPROTO if the property is not a package or the type of its elements
- *           doesn't match @type.
- */
+ 
 static int acpi_data_get_property_array(const struct acpi_device_data *data,
 					const char *name,
 					acpi_object_type type,
@@ -760,7 +675,7 @@ static int acpi_data_get_property_array(const struct acpi_device_data *data,
 		return ret;
 
 	if (type != ACPI_TYPE_ANY) {
-		/* Check that all elements are of correct type. */
+		 
 		for (i = 0; i < prop->package.count; i++)
 			if (prop->package.elements[i].type != type)
 				return -EPROTO;
@@ -799,10 +714,7 @@ static int acpi_get_ref_args(struct fwnode_reference_args *args,
 {
 	u32 nargs = 0, i;
 
-	/*
-	 * Find the referred data extension node under the
-	 * referred device node.
-	 */
+	 
 	for (; *element < end && (*element)->type == ACPI_TYPE_STRING;
 	     (*element)++) {
 		const char *child_name = (*element)->string.pointer;
@@ -812,11 +724,7 @@ static int acpi_get_ref_args(struct fwnode_reference_args *args,
 			return -EINVAL;
 	}
 
-	/*
-	 * Assume the following integer elements are all args. Stop counting on
-	 * the first reference or end of the package arguments. In case of
-	 * neither reference, nor integer, return an error, we can't parse it.
-	 */
+	 
 	for (i = 0; (*element) + i < end && i < num_args; i++) {
 		acpi_object_type type = (*element)[i].type;
 
@@ -844,42 +752,7 @@ static int acpi_get_ref_args(struct fwnode_reference_args *args,
 	return 0;
 }
 
-/**
- * __acpi_node_get_property_reference - returns handle to the referenced object
- * @fwnode: Firmware node to get the property from
- * @propname: Name of the property
- * @index: Index of the reference to return
- * @num_args: Maximum number of arguments after each reference
- * @args: Location to store the returned reference with optional arguments
- *	  (may be NULL)
- *
- * Find property with @name, verifify that it is a package containing at least
- * one object reference and if so, store the ACPI device object pointer to the
- * target object in @args->adev.  If the reference includes arguments, store
- * them in the @args->args[] array.
- *
- * If there's more than one reference in the property value package, @index is
- * used to select the one to return.
- *
- * It is possible to leave holes in the property value set like in the
- * example below:
- *
- * Package () {
- *     "cs-gpios",
- *     Package () {
- *        ^GPIO, 19, 0, 0,
- *        ^GPIO, 20, 0, 0,
- *        0,
- *        ^GPIO, 21, 0, 0,
- *     }
- * }
- *
- * Calling this function with index %2 or index %3 return %-ENOENT. If the
- * property does not contain any more values %-ENOENT is returned. The NULL
- * entry must be single integer and preferably contain value %0.
- *
- * Return: %0 on success, negative error code on failure.
- */
+ 
 int __acpi_node_get_property_reference(const struct fwnode_handle *fwnode,
 	const char *propname, size_t index, size_t num_args,
 	struct fwnode_reference_args *args)
@@ -900,7 +773,7 @@ int __acpi_node_get_property_reference(const struct fwnode_handle *fwnode,
 
 	switch (obj->type) {
 	case ACPI_TYPE_LOCAL_REFERENCE:
-		/* Plain single reference without arguments. */
+		 
 		if (index)
 			return -ENOENT;
 
@@ -915,15 +788,7 @@ int __acpi_node_get_property_reference(const struct fwnode_handle *fwnode,
 		args->nargs = 0;
 		return 0;
 	case ACPI_TYPE_PACKAGE:
-		/*
-		 * If it is not a single reference, then it is a package of
-		 * references followed by number of ints as follows:
-		 *
-		 *  Package () { REF, INT, REF, INT, INT }
-		 *
-		 * The index argument is then used to determine which reference
-		 * the caller wants (along with the arguments).
-		 */
+		 
 		break;
 	default:
 		return -EINVAL;
@@ -1015,7 +880,7 @@ static int acpi_data_prop_read_single(const struct acpi_device_data *data,
 		return -EINVAL;
 	}
 
-	/* When no storage provided return number of available values */
+	 
 	return val ? 0 : 1;
 }
 
@@ -1075,18 +940,11 @@ static int acpi_data_prop_read(const struct acpi_device_data *data,
 
 	if (nval == 1 || !val) {
 		ret = acpi_data_prop_read_single(data, propname, proptype, val);
-		/*
-		 * The overflow error means that the property is there and it is
-		 * single-value, but its type does not match, so return.
-		 */
+		 
 		if (ret >= 0 || ret == -EOVERFLOW)
 			return ret;
 
-		/*
-		 * Reading this property as a single-value one failed, but its
-		 * value may still be represented as one-element array, so
-		 * continue.
-		 */
+		 
 	}
 
 	ret = acpi_data_get_property_array(data, propname, ACPI_TYPE_ANY, &obj);
@@ -1152,18 +1010,7 @@ static int acpi_data_prop_read(const struct acpi_device_data *data,
 	return ret;
 }
 
-/**
- * acpi_node_prop_read - retrieve the value of an ACPI property with given name.
- * @fwnode: Firmware node to get the property from.
- * @propname: Name of the property.
- * @proptype: Expected property type.
- * @val: Location to store the property value (if not %NULL).
- * @nval: Size of the array pointed to by @val.
- *
- * If @val is %NULL, return the number of array elements comprising the value
- * of the property.  Otherwise, read at most @nval values to the array at the
- * location pointed to by @val.
- */
+ 
 static int acpi_node_prop_read(const struct fwnode_handle *fwnode,
 			       const char *propname, enum dev_prop_type proptype,
 			       void *val, size_t nval)
@@ -1181,18 +1028,14 @@ static int stop_on_next(struct acpi_device *adev, void *data)
 		return 1;
 	}
 
-	/* Skip until the "previous" object is found. */
+	 
 	if (*ret_p == adev)
 		*ret_p = NULL;
 
 	return 0;
 }
 
-/**
- * acpi_get_next_subnode - Return the next child node handle for a fwnode
- * @fwnode: Firmware node to find the next child node for.
- * @child: Handle to one of the device's child nodes or a null handle.
- */
+ 
 struct fwnode_handle *acpi_get_next_subnode(const struct fwnode_handle *fwnode,
 					    struct fwnode_handle *child)
 {
@@ -1214,13 +1057,7 @@ struct fwnode_handle *acpi_get_next_subnode(const struct fwnode_handle *fwnode,
 		struct list_head *next;
 		struct acpi_data_node *dn;
 
-		/*
-		 * We can have a combination of device and data nodes, e.g. with
-		 * hierarchical _DSD properties. Make sure the adev pointer is
-		 * restored before going through data nodes, otherwise we will
-		 * be looking for data_nodes below the last device found instead
-		 * of the common fwnode shared by device_nodes and data_nodes.
-		 */
+		 
 		adev = to_acpi_device_node(fwnode);
 		if (adev)
 			head = &adev->data.subnodes;
@@ -1247,18 +1084,12 @@ struct fwnode_handle *acpi_get_next_subnode(const struct fwnode_handle *fwnode,
 	return NULL;
 }
 
-/**
- * acpi_node_get_parent - Return parent fwnode of this fwnode
- * @fwnode: Firmware node whose parent to get
- *
- * Returns parent node of an ACPI device or data firmware node or %NULL if
- * not available.
- */
+ 
 static struct fwnode_handle *
 acpi_node_get_parent(const struct fwnode_handle *fwnode)
 {
 	if (is_acpi_data_node(fwnode)) {
-		/* All data nodes have parent pointer so just return that */
+		 
 		return to_acpi_data_node(fwnode)->parent;
 	}
 	if (is_acpi_device_node(fwnode)) {
@@ -1272,10 +1103,7 @@ acpi_node_get_parent(const struct fwnode_handle *fwnode)
 	return NULL;
 }
 
-/*
- * Return true if the node is an ACPI graph node. Called on either ports
- * or endpoints.
- */
+ 
 static bool is_acpi_graph_node(struct fwnode_handle *fwnode,
 			       const char *str)
 {
@@ -1292,15 +1120,7 @@ static bool is_acpi_graph_node(struct fwnode_handle *fwnode,
 		fwnode_property_present(fwnode, str);
 }
 
-/**
- * acpi_graph_get_next_endpoint - Get next endpoint ACPI firmware node
- * @fwnode: Pointer to the parent firmware node
- * @prev: Previous endpoint node or %NULL to get the first
- *
- * Looks up next endpoint ACPI firmware node below a given @fwnode. Returns
- * %NULL if there is no next endpoint or in case of error. In case of success
- * the next endpoint is returned.
- */
+ 
 static struct fwnode_handle *acpi_graph_get_next_endpoint(
 	const struct fwnode_handle *fwnode, struct fwnode_handle *prev)
 {
@@ -1310,13 +1130,7 @@ static struct fwnode_handle *acpi_graph_get_next_endpoint(
 	if (!prev) {
 		do {
 			port = fwnode_get_next_child_node(fwnode, port);
-			/*
-			 * The names of the port nodes begin with "port@"
-			 * followed by the number of the port node and they also
-			 * have a "reg" property that also has the number of the
-			 * port node. For compatibility reasons a node is also
-			 * recognised as a port node from the "port" property.
-			 */
+			 
 			if (is_acpi_graph_node(port, "port"))
 				break;
 		} while (port);
@@ -1336,28 +1150,14 @@ static struct fwnode_handle *acpi_graph_get_next_endpoint(
 			endpoint = fwnode_get_next_child_node(port, NULL);
 	}
 
-	/*
-	 * The names of the endpoint nodes begin with "endpoint@" followed by
-	 * the number of the endpoint node and they also have a "reg" property
-	 * that also has the number of the endpoint node. For compatibility
-	 * reasons a node is also recognised as an endpoint node from the
-	 * "endpoint" property.
-	 */
+	 
 	if (!is_acpi_graph_node(endpoint, "endpoint"))
 		return NULL;
 
 	return endpoint;
 }
 
-/**
- * acpi_graph_get_child_prop_value - Return a child with a given property value
- * @fwnode: device fwnode
- * @prop_name: The name of the property to look for
- * @val: the desired property value
- *
- * Return the port node corresponding to a given port number. Returns
- * the child node on success, NULL otherwise.
- */
+ 
 static struct fwnode_handle *acpi_graph_get_child_prop_value(
 	const struct fwnode_handle *fwnode, const char *prop_name,
 	unsigned int val)
@@ -1378,12 +1178,7 @@ static struct fwnode_handle *acpi_graph_get_child_prop_value(
 }
 
 
-/**
- * acpi_graph_get_remote_endpoint - Parses and returns remote end of an endpoint
- * @__fwnode: Endpoint firmware node pointing to a remote device
- *
- * Returns the remote endpoint corresponding to @__fwnode. NULL on error.
- */
+ 
 static struct fwnode_handle *
 acpi_graph_get_remote_endpoint(const struct fwnode_handle *__fwnode)
 {
@@ -1398,14 +1193,11 @@ acpi_graph_get_remote_endpoint(const struct fwnode_handle *__fwnode)
 	if (ret)
 		return NULL;
 
-	/* Direct endpoint reference? */
+	 
 	if (!is_acpi_device_node(args.fwnode))
 		return args.nargs ? NULL : args.fwnode;
 
-	/*
-	 * Always require two arguments with the reference: port and
-	 * endpoint indices.
-	 */
+	 
 	if (args.nargs != 2)
 		return NULL;
 
@@ -1502,7 +1294,7 @@ static const char *acpi_fwnode_get_name(const struct fwnode_handle *fwnode)
 	const struct acpi_device *adev;
 	struct fwnode_handle *parent;
 
-	/* Is this the root node? */
+	 
 	parent = fwnode_get_parent(fwnode);
 	if (!parent)
 		return "\\";
@@ -1527,19 +1319,19 @@ acpi_fwnode_get_name_prefix(const struct fwnode_handle *fwnode)
 {
 	struct fwnode_handle *parent;
 
-	/* Is this the root node? */
+	 
 	parent = fwnode_get_parent(fwnode);
 	if (!parent)
 		return "";
 
-	/* Is this 2nd node from the root? */
+	 
 	parent = fwnode_get_next_parent(parent);
 	if (!parent)
 		return "";
 
 	fwnode_handle_put(parent);
 
-	/* ACPI device or data node. */
+	 
 	return ".";
 }
 

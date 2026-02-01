@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2018 Samsung Electronics Co., Ltd.
-// Author: Marek Szyprowski <m.szyprowski@samsung.com>
-// Common Clock Framework support for Exynos5 power-domain dependent clocks
+
+
+
+
+
 
 #include <linux/io.h>
 #include <linux/of.h>
@@ -44,17 +44,7 @@ static void exynos5_subcmu_defer_gate(struct samsung_clk_provider *ctx,
 		samsung_clk_add_lookup(ctx, ERR_PTR(-EPROBE_DEFER), list++->id);
 }
 
-/*
- * Pass the needed clock provider context and register sub-CMU clocks
- *
- * NOTE: This function has to be called from the main, CLK_OF_DECLARE-
- * initialized clock provider driver. This happens very early during boot
- * process. Then this driver, during core_initcall registers two platform
- * drivers: one which binds to the same device-tree node as CLK_OF_DECLARE
- * driver and second, for handling its per-domain child-devices. Those
- * platform drivers are bound to their devices a bit later in arch_initcall,
- * when OF-core populates all device-tree nodes.
- */
+ 
 void exynos5_subcmus_init(struct samsung_clk_provider *_ctx, int _nr_cmus,
 			  const struct exynos5_subcmu_info **_cmu)
 {

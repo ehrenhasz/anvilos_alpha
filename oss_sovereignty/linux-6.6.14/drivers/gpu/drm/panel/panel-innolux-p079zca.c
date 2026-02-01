@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2017, Fuzhou Rockchip Electronics Co., Ltd
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -124,12 +122,12 @@ static int innolux_panel_prepare(struct drm_panel *panel)
 	if (err < 0)
 		return err;
 
-	/* p079zca: t2 (20ms), p097pfg: t4 (15ms) */
+	 
 	usleep_range(20000, 21000);
 
 	gpiod_set_value_cansleep(innolux->enable_gpio, 1);
 
-	/* p079zca: t4, p097pfg: t5 */
+	 
 	usleep_range(20000, 21000);
 
 	if (innolux->desc->init_cmds) {
@@ -147,11 +145,7 @@ static int innolux_panel_prepare(struct drm_panel *panel)
 				goto poweroff;
 			}
 
-			/*
-			 * Included by random guessing, because without this
-			 * (or at least, some delay), the panel sometimes
-			 * didn't appear to pick up the command sequence.
-			 */
+			 
 			err = mipi_dsi_dcs_nop(innolux->link);
 			if (err < 0) {
 				dev_err(panel->dev, "failed to send DCS nop: %d\n", err);
@@ -166,7 +160,7 @@ static int innolux_panel_prepare(struct drm_panel *panel)
 		goto poweroff;
 	}
 
-	/* T6: 120ms - 1000ms*/
+	 
 	msleep(120);
 
 	err = mipi_dsi_dcs_set_display_on(innolux->link);
@@ -175,7 +169,7 @@ static int innolux_panel_prepare(struct drm_panel *panel)
 		goto poweroff;
 	}
 
-	/* T7: 5ms */
+	 
 	usleep_range(5000, 6000);
 
 	innolux->prepared = true;
@@ -230,7 +224,7 @@ static const struct panel_desc innolux_p079zca_panel_desc = {
 	.lanes = 4,
 	.supply_names = innolux_p079zca_supply_names,
 	.num_supplies = ARRAY_SIZE(innolux_p079zca_supply_names),
-	.power_down_delay = 80, /* T8: 80ms - 1000ms */
+	.power_down_delay = 80,  
 };
 
 static const char * const innolux_p097pfg_supply_names[] = {
@@ -250,13 +244,9 @@ static const struct drm_display_mode innolux_p097pfg_mode = {
 	.vtotal = 2048 + 100 + 2 + 18,
 };
 
-/*
- * Display manufacturer failed to provide init sequencing according to
- * https://chromium-review.googlesource.com/c/chromiumos/third_party/coreboot/+/892065/
- * so the init sequence stems from a register dump of a working panel.
- */
+ 
 static const struct panel_init_cmd innolux_p097pfg_init_cmds[] = {
-	/* page 0 */
+	 
 	_INIT_CMD(0xF0, 0x55, 0xAA, 0x52, 0x08, 0x00),
 	_INIT_CMD(0xB1, 0xE8, 0x11),
 	_INIT_CMD(0xB2, 0x25, 0x02),
@@ -272,7 +262,7 @@ static const struct panel_init_cmd innolux_p097pfg_init_cmds[] = {
 	_INIT_CMD(0xC5, 0x12, 0x21, 0x00),
 	_INIT_CMD(0xBB, 0x93, 0x93),
 
-	/* page 1 */
+	 
 	_INIT_CMD(0xF0, 0x55, 0xAA, 0x52, 0x08, 0x01),
 	_INIT_CMD(0xB3, 0x3C, 0x3C),
 	_INIT_CMD(0xB4, 0x0F, 0x0F),
@@ -285,7 +275,7 @@ static const struct panel_init_cmd innolux_p097pfg_init_cmds[] = {
 	_INIT_CMD(0xBC, 0x82, 0x01),
 	_INIT_CMD(0xBD, 0x9E, 0x01),
 
-	/* page 2 */
+	 
 	_INIT_CMD(0xF0, 0x55, 0xAA, 0x52, 0x08, 0x02),
 	_INIT_CMD(0xB0, 0x82),
 	_INIT_CMD(0xD1, 0x00, 0x00, 0x00, 0x3E, 0x00, 0x82, 0x00, 0xA5,
@@ -303,7 +293,7 @@ static const struct panel_init_cmd innolux_p097pfg_init_cmds[] = {
 		  0x03, 0xAC, 0x03, 0xCB, 0x03, 0xE0, 0x03, 0xED),
 	_INIT_CMD(0xE3, 0x03, 0xFF, 0x03, 0xFF),
 
-	/* page 3 */
+	 
 	_INIT_CMD(0xF0, 0x55, 0xAA, 0x52, 0x08, 0x03),
 	_INIT_CMD(0xB0, 0x00, 0x00, 0x00, 0x00),
 	_INIT_CMD(0xB1, 0x00, 0x00, 0x00, 0x00),
@@ -318,11 +308,11 @@ static const struct panel_init_cmd innolux_p097pfg_init_cmds[] = {
 	_INIT_CMD(0xC4, 0x00, 0x00),
 	_INIT_CMD(0xEF, 0x41),
 
-	/* page 4 */
+	 
 	_INIT_CMD(0xF0, 0x55, 0xAA, 0x52, 0x08, 0x04),
 	_INIT_CMD(0xEC, 0x4C),
 
-	/* page 5 */
+	 
 	_INIT_CMD(0xF0, 0x55, 0xAA, 0x52, 0x08, 0x05),
 	_INIT_CMD(0xB0, 0x13, 0x03, 0x03, 0x01),
 	_INIT_CMD(0xB1, 0x30, 0x00),
@@ -338,7 +328,7 @@ static const struct panel_init_cmd innolux_p097pfg_init_cmds[] = {
 	_INIT_CMD(0xD0, 0x00, 0x48, 0x08, 0x00, 0x00),
 	_INIT_CMD(0xD1, 0x00, 0x48, 0x09, 0x00, 0x00),
 
-	/* page 6 */
+	 
 	_INIT_CMD(0xF0, 0x55, 0xAA, 0x52, 0x08, 0x06),
 	_INIT_CMD(0xB0, 0x02, 0x32, 0x32, 0x08, 0x2F),
 	_INIT_CMD(0xB1, 0x2E, 0x15, 0x14, 0x13, 0x12),
@@ -378,7 +368,7 @@ static const struct panel_desc innolux_p097pfg_panel_desc = {
 	.lanes = 4,
 	.supply_names = innolux_p097pfg_supply_names,
 	.num_supplies = ARRAY_SIZE(innolux_p097pfg_supply_names),
-	.sleep_mode_delay = 100, /* T15 */
+	.sleep_mode_delay = 100,  
 };
 
 static int innolux_panel_get_modes(struct drm_panel *panel,

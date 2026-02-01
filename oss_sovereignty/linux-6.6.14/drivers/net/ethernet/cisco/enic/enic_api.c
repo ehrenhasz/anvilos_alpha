@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright 2013 Cisco Systems, Inc.  All rights reserved.
+
+
 
 #include <linux/netdevice.h>
 #include <linux/spinlock.h>

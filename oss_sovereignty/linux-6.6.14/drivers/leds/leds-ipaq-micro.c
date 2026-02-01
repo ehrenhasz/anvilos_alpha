@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * h3xxx atmel micro companion support, notification LED subdevice
- *
- * Author : Linus Walleij <linus.walleij@linaro.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -14,26 +9,15 @@
 #define LED_YELLOW	0x00
 #define LED_GREEN	0x01
 
-#define LED_EN       (1 << 4) /* LED ON/OFF 0:off, 1:on                       */
-#define LED_AUTOSTOP (1 << 5) /* LED ON/OFF auto stop set 0:disable, 1:enable */
-#define LED_ALWAYS   (1 << 6) /* LED Interrupt Mask 0:No mask, 1:mask         */
+#define LED_EN       (1 << 4)  
+#define LED_AUTOSTOP (1 << 5)  
+#define LED_ALWAYS   (1 << 6)  
 
 static int micro_leds_brightness_set(struct led_classdev *led_cdev,
 				      enum led_brightness value)
 {
 	struct ipaq_micro *micro = dev_get_drvdata(led_cdev->dev->parent->parent);
-	/*
-	 * In this message:
-	 * Byte 0 = LED color: 0 = yellow, 1 = green
-	 *          yellow LED is always ~30 blinks per minute
-	 * Byte 1 = duration (flags?) appears to be ignored
-	 * Byte 2 = green ontime in 1/10 sec (deciseconds)
-	 *          1 = 1/10 second
-	 *          0 = 256/10 second
-	 * Byte 3 = green offtime in 1/10 sec (deciseconds)
-	 *          1 = 1/10 second
-	 *          0 = 256/10 seconds
-	 */
+	 
 	struct ipaq_micro_msg msg = {
 		.id = MSG_NOTIFY_LED,
 		.tx_len = 4,
@@ -42,16 +26,16 @@ static int micro_leds_brightness_set(struct led_classdev *led_cdev,
 	msg.tx_data[0] = LED_GREEN;
 	msg.tx_data[1] = 0;
 	if (value) {
-		msg.tx_data[2] = 0; /* Duty cycle 256 */
+		msg.tx_data[2] = 0;  
 		msg.tx_data[3] = 1;
 	} else {
 		msg.tx_data[2] = 1;
-		msg.tx_data[3] = 0; /* Duty cycle 256 */
+		msg.tx_data[3] = 0;  
 	}
 	return ipaq_micro_tx_msg_sync(micro, &msg);
 }
 
-/* Maximum duty cycle in ms 256/10 sec = 25600 ms */
+ 
 #define IPAQ_LED_MAX_DUTY 25600
 
 static int micro_leds_blink_set(struct led_classdev *led_cdev,
@@ -59,18 +43,7 @@ static int micro_leds_blink_set(struct led_classdev *led_cdev,
 				unsigned long *delay_off)
 {
 	struct ipaq_micro *micro = dev_get_drvdata(led_cdev->dev->parent->parent);
-	/*
-	 * In this message:
-	 * Byte 0 = LED color: 0 = yellow, 1 = green
-	 *          yellow LED is always ~30 blinks per minute
-	 * Byte 1 = duration (flags?) appears to be ignored
-	 * Byte 2 = green ontime in 1/10 sec (deciseconds)
-	 *          1 = 1/10 second
-	 *          0 = 256/10 second
-	 * Byte 3 = green offtime in 1/10 sec (deciseconds)
-	 *          1 = 1/10 second
-	 *          0 = 256/10 seconds
-	 */
+	 
 	struct ipaq_micro_msg msg = {
 		.id = MSG_NOTIFY_LED,
 		.tx_len = 4,

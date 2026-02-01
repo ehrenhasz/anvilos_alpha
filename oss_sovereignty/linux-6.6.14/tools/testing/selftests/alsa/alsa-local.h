@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// kselftest configuration helpers for the hw specific configuration
-//
-// Original author: Jaroslav Kysela <perex@perex.cz>
-// Copyright (c) 2022 Red Hat Inc.
+
+
+
+
+
+
 
 #ifndef __ALSA_LOCAL_H
 #define __ALSA_LOCAL_H
@@ -24,4 +24,4 @@ int conf_get_bool(snd_config_t *root, const char *key1, const char *key2, int de
 void conf_get_string_array(snd_config_t *root, const char *key1, const char *key2,
 			   const char **array, int array_size, const char *def);
 
-#endif /* __ALSA_LOCAL_H */
+#endif  

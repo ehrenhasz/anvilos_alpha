@@ -1,17 +1,4 @@
-/* bnx2x_fw_file_hdr.h: FW binary file header structure.
- *
- * Copyright (c) 2007-2013 Broadcom Corporation
- * Copyright (c) 2014 QLogic Corporation
- * All rights reserved
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- *
- * Maintained by: Ariel Elior <ariel.elior@qlogic.com>
- * Written by: Vladislav Zolotarov
- * Based on the original idea of John Wright <john.wright@hp.com>.
- */
+ 
 
 #ifndef BNX2X_INIT_FILE_HDR_H
 #define BNX2X_INIT_FILE_HDR_H
@@ -37,4 +24,4 @@ struct bnx2x_fw_file_hdr {
 	struct bnx2x_fw_file_section fw_version;
 };
 
-#endif /* BNX2X_INIT_FILE_HDR_H */
+#endif  

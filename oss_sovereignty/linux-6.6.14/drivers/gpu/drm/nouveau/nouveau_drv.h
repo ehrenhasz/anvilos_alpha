@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NOUVEAU_DRV_H__
 #define __NOUVEAU_DRV_H__
 
@@ -13,30 +13,7 @@
 #define DRIVER_MINOR		4
 #define DRIVER_PATCHLEVEL	0
 
-/*
- * 1.1.1:
- * 	- added support for tiled system memory buffer objects
- *      - added support for NOUVEAU_GETPARAM_GRAPH_UNITS on [nvc0,nve0].
- *      - added support for compressed memory storage types on [nvc0,nve0].
- *      - added support for software methods 0x600,0x644,0x6ac on nvc0
- *        to control registers on the MPs to enable performance counters,
- *        and to control the warp error enable mask (OpenGL requires out of
- *        bounds access to local memory to be silently ignored / return 0).
- * 1.1.2:
- *      - fixes multiple bugs in flip completion events and timestamping
- * 1.2.0:
- * 	- object api exposed to userspace
- * 	- fermi,kepler,maxwell zbc
- * 1.2.1:
- *      - allow concurrent access to bo's mapped read/write.
- * 1.2.2:
- *      - add NOUVEAU_GEM_DOMAIN_COHERENT flag
- * 1.3.0:
- *      - NVIF ABI modified, safe because only (current) users are test
- *        programs that get directly linked with NVKM.
- * 1.3.1:
- *      - implemented limited ABI16/NVIF interop
- */
+ 
 
 #include <linux/notifier.h>
 
@@ -80,7 +57,7 @@ enum nouveau_drm_object_route {
 };
 
 enum nouveau_drm_handle {
-	NVDRM_CHAN    = 0xcccc0000, /* |= client chid */
+	NVDRM_CHAN    = 0xcccc0000,  
 	NVDRM_NVSW    = 0x55550000,
 };
 
@@ -208,9 +185,7 @@ struct nouveau_drm {
 
 	struct list_head clients;
 
-	/**
-	 * @clients_lock: Protects access to the @clients list of &struct nouveau_cli.
-	 */
+	 
 	struct mutex clients_lock;
 
 	u8 old_pm_cap;
@@ -222,7 +197,7 @@ struct nouveau_drm {
 		bool cma;
 	} agp;
 
-	/* TTM interface support */
+	 
 	struct {
 		struct ttm_device bdev;
 		atomic_t validate_sequence;
@@ -239,18 +214,18 @@ struct nouveau_drm {
 		struct list_head io_reserve_lru;
 	} ttm;
 
-	/* GEM interface support */
+	 
 	struct {
 		u64 vram_available;
 		u64 gart_available;
 	} gem;
 
-	/* synchronisation */
+	 
 	void *fence;
 
-	/* Global channel management. */
-	int chan_total; /* Number of channels across all runlists. */
-	int chan_nr;	/* 0 if per-runlist CHIDs. */
+	 
+	int chan_total;  
+	int chan_nr;	 
 	int runl_nr;
 	struct {
 		int chan_nr;
@@ -258,19 +233,19 @@ struct nouveau_drm {
 		u64 context_base;
 	} *runl;
 
-	/* context for accelerated drm-internal operations */
+	 
 	struct nouveau_channel *cechan;
 	struct nouveau_channel *channel;
 	struct nvkm_gpuobj *notify;
 	struct nvif_object ntfy;
 
-	/* nv10-nv40 tiling regions */
+	 
 	struct {
 		struct nouveau_drm_tile reg[15];
 		spinlock_t lock;
 	} tile;
 
-	/* modesetting */
+	 
 	struct nvbios vbios;
 	struct nouveau_display *display;
 	struct work_struct hpd_work;
@@ -280,11 +255,11 @@ struct nouveau_drm {
 	struct notifier_block acpi_nb;
 #endif
 
-	/* power management */
+	 
 	struct nouveau_hwmon *hwmon;
 	struct nouveau_debugfs *debugfs;
 
-	/* led management */
+	 
 	struct nouveau_led *led;
 
 	struct dev_pm_domain vga_pm_domain;

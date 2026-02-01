@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AD7887 SPI ADC driver
- *
- * Copyright 2010-2011 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -25,14 +21,14 @@
 
 #include <linux/platform_data/ad7887.h>
 
-#define AD7887_REF_DIS		BIT(5)	/* on-chip reference disable */
-#define AD7887_DUAL		BIT(4)	/* dual-channel mode */
-#define AD7887_CH_AIN1		BIT(3)	/* convert on channel 1, DUAL=1 */
-#define AD7887_CH_AIN0		0	/* convert on channel 0, DUAL=0,1 */
-#define AD7887_PM_MODE1		0	/* CS based shutdown */
-#define AD7887_PM_MODE2		1	/* full on */
-#define AD7887_PM_MODE3		2	/* auto shutdown after conversion */
-#define AD7887_PM_MODE4		3	/* standby mode */
+#define AD7887_REF_DIS		BIT(5)	 
+#define AD7887_DUAL		BIT(4)	 
+#define AD7887_CH_AIN1		BIT(3)	 
+#define AD7887_CH_AIN0		0	 
+#define AD7887_PM_MODE1		0	 
+#define AD7887_PM_MODE2		1	 
+#define AD7887_PM_MODE3		2	 
+#define AD7887_PM_MODE4		3	 
 
 enum ad7887_channels {
 	AD7887_CH0,
@@ -40,14 +36,7 @@ enum ad7887_channels {
 	AD7887_CH1,
 };
 
-/**
- * struct ad7887_chip_info - chip specifc information
- * @int_vref_mv:	the internal reference voltage
- * @channels:		channels specification
- * @num_channels:	number of channels
- * @dual_channels:	channels specification in dual mode
- * @num_dual_channels:	number of channels in dual mode
- */
+ 
 struct ad7887_chip_info {
 	u16				int_vref_mv;
 	const struct iio_chan_spec	*channels;
@@ -65,12 +54,7 @@ struct ad7887_state {
 	struct spi_message		*ring_msg;
 	unsigned char			tx_cmd_buf[4];
 
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache lines.
-	 * Buffer needs to be large enough to hold two 16 bit samples and a
-	 * 64 bit aligned 64 bit timestamp.
-	 */
+	 
 	unsigned char data[ALIGN(4, sizeof(s64)) + sizeof(s64)] __aligned(IIO_DMA_MINALIGN);
 };
 
@@ -82,14 +66,14 @@ static int ad7887_ring_preenable(struct iio_dev *indio_dev)
 {
 	struct ad7887_state *st = iio_priv(indio_dev);
 
-	/* We know this is a single long so can 'cheat' */
+	 
 	switch (*indio_dev->active_scan_mask) {
 	case (1 << 0):
 		st->ring_msg = &st->msg[AD7887_CH0];
 		break;
 	case (1 << 1):
 		st->ring_msg = &st->msg[AD7887_CH1];
-		/* Dummy read: push CH1 setting down to hardware */
+		 
 		spi_sync(st->spi, st->ring_msg);
 		break;
 	case ((1 << 1) | (1 << 0)):
@@ -104,7 +88,7 @@ static int ad7887_ring_postdisable(struct iio_dev *indio_dev)
 {
 	struct ad7887_state *st = iio_priv(indio_dev);
 
-	/* dummy read: restore default CH0 settin */
+	 
 	return spi_sync(st->spi, &st->msg[AD7887_CH0]);
 }
 
@@ -209,9 +193,7 @@ static const struct iio_chan_spec ad7887_dual_channels[] = {
 };
 
 static const struct ad7887_chip_info ad7887_chip_info_tbl[] = {
-	/*
-	 * More devices added in future
-	 */
+	 
 	[ID_AD7887] = {
 		.channels = ad7887_channels,
 		.num_channels = ARRAY_SIZE(ad7887_channels),
@@ -273,7 +255,7 @@ static int ad7887_probe(struct spi_device *spi)
 	indio_dev->info = &ad7887_info;
 	indio_dev->modes = INDIO_DIRECT_MODE;
 
-	/* Setup default message */
+	 
 
 	mode = AD7887_PM_MODE4;
 	if (!st->reg)

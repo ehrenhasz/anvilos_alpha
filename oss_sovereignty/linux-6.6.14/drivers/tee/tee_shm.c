@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015-2017, 2019-2021 Linaro Limited
- */
+
+ 
 #include <linux/anon_inodes.h>
 #include <linux/device.h>
 #include <linux/idr.h>
@@ -86,7 +84,7 @@ static struct tee_shm *shm_alloc_helper(struct tee_context *ctx, size_t size,
 		return ERR_PTR(-EINVAL);
 
 	if (!teedev->pool) {
-		/* teedev has been detached from driver */
+		 
 		ret = ERR_PTR(-EINVAL);
 		goto err_dev_put;
 	}
@@ -101,12 +99,7 @@ static struct tee_shm *shm_alloc_helper(struct tee_context *ctx, size_t size,
 	shm->flags = flags;
 	shm->id = id;
 
-	/*
-	 * We're assigning this as it is needed if the shm is to be
-	 * registered. If this function returns OK then the caller expected
-	 * to call teedev_ctx_get() or clear shm->ctx in case it's not
-	 * needed any longer.
-	 */
+	 
 	shm->ctx = ctx;
 
 	rc = teedev->pool->ops->alloc(teedev->pool, shm, size, align);
@@ -124,18 +117,7 @@ err_dev_put:
 	return ret;
 }
 
-/**
- * tee_shm_alloc_user_buf() - Allocate shared memory for user space
- * @ctx:	Context that allocates the shared memory
- * @size:	Requested size of shared memory
- *
- * Memory allocated as user space shared memory is automatically freed when
- * the TEE file pointer is closed. The primary usage of this function is
- * when the TEE driver doesn't support registering ordinary user space
- * memory.
- *
- * @returns a pointer to 'struct tee_shm'
- */
+ 
 struct tee_shm *tee_shm_alloc_user_buf(struct tee_context *ctx, size_t size)
 {
 	u32 flags = TEE_SHM_DYNAMIC | TEE_SHM_POOL;
@@ -169,18 +151,7 @@ struct tee_shm *tee_shm_alloc_user_buf(struct tee_context *ctx, size_t size)
 	return shm;
 }
 
-/**
- * tee_shm_alloc_kernel_buf() - Allocate shared memory for kernel buffer
- * @ctx:	Context that allocates the shared memory
- * @size:	Requested size of shared memory
- *
- * The returned memory registered in secure world and is suitable to be
- * passed as a memory buffer in parameter argument to
- * tee_client_invoke_func(). The memory allocated is later freed with a
- * call to tee_shm_free().
- *
- * @returns a pointer to 'struct tee_shm'
- */
+ 
 struct tee_shm *tee_shm_alloc_kernel_buf(struct tee_context *ctx, size_t size)
 {
 	u32 flags = TEE_SHM_DYNAMIC | TEE_SHM_POOL;
@@ -189,22 +160,7 @@ struct tee_shm *tee_shm_alloc_kernel_buf(struct tee_context *ctx, size_t size)
 }
 EXPORT_SYMBOL_GPL(tee_shm_alloc_kernel_buf);
 
-/**
- * tee_shm_alloc_priv_buf() - Allocate shared memory for a privately shared
- *			      kernel buffer
- * @ctx:	Context that allocates the shared memory
- * @size:	Requested size of shared memory
- *
- * This function returns similar shared memory as
- * tee_shm_alloc_kernel_buf(), but with the difference that the memory
- * might not be registered in secure world in case the driver supports
- * passing memory not registered in advance.
- *
- * This function should normally only be used internally in the TEE
- * drivers.
- *
- * @returns a pointer to 'struct tee_shm'
- */
+ 
 struct tee_shm *tee_shm_alloc_priv_buf(struct tee_context *ctx, size_t size)
 {
 	u32 flags = TEE_SHM_PRIV | TEE_SHM_POOL;
@@ -293,14 +249,7 @@ err_dev_put:
 	return ret;
 }
 
-/**
- * tee_shm_register_user_buf() - Register a userspace shared memory buffer
- * @ctx:	Context that registers the shared memory
- * @addr:	The userspace address of the shared buffer
- * @length:	Length of the shared buffer
- *
- * @returns a pointer to 'struct tee_shm'
- */
+ 
 struct tee_shm *tee_shm_register_user_buf(struct tee_context *ctx,
 					  unsigned long addr, size_t length)
 {
@@ -338,15 +287,7 @@ struct tee_shm *tee_shm_register_user_buf(struct tee_context *ctx,
 	return shm;
 }
 
-/**
- * tee_shm_register_kernel_buf() - Register kernel memory to be shared with
- *				   secure world
- * @ctx:	Context that registers the shared memory
- * @addr:	The buffer
- * @length:	Length of the buffer
- *
- * @returns a pointer to 'struct tee_shm'
- */
+ 
 
 struct tee_shm *tee_shm_register_kernel_buf(struct tee_context *ctx,
 					    void *addr, size_t length)
@@ -368,11 +309,11 @@ static int tee_shm_fop_mmap(struct file *filp, struct vm_area_struct *vma)
 	struct tee_shm *shm = filp->private_data;
 	size_t size = vma->vm_end - vma->vm_start;
 
-	/* Refuse sharing shared memory provided by application */
+	 
 	if (shm->flags & TEE_SHM_USER_MAPPED)
 		return -EINVAL;
 
-	/* check for overflowing the buffer's size */
+	 
 	if (vma->vm_pgoff + vma_pages(vma) > shm->size >> PAGE_SHIFT)
 		return -EINVAL;
 
@@ -386,11 +327,7 @@ static const struct file_operations tee_shm_fops = {
 	.mmap = tee_shm_fop_mmap,
 };
 
-/**
- * tee_shm_get_fd() - Increase reference count and return file descriptor
- * @shm:	Shared memory handle
- * @returns user space file descriptor to shared memory
- */
+ 
 int tee_shm_get_fd(struct tee_shm *shm)
 {
 	int fd;
@@ -398,7 +335,7 @@ int tee_shm_get_fd(struct tee_shm *shm)
 	if (shm->id < 0)
 		return -EINVAL;
 
-	/* matched by tee_shm_put() in tee_shm_op_release() */
+	 
 	refcount_inc(&shm->refcount);
 	fd = anon_inode_getfd("tee_shm", &tee_shm_fops, shm, O_RDWR);
 	if (fd < 0)
@@ -406,23 +343,14 @@ int tee_shm_get_fd(struct tee_shm *shm)
 	return fd;
 }
 
-/**
- * tee_shm_free() - Free shared memory
- * @shm:	Handle to shared memory to free
- */
+ 
 void tee_shm_free(struct tee_shm *shm)
 {
 	tee_shm_put(shm);
 }
 EXPORT_SYMBOL_GPL(tee_shm_free);
 
-/**
- * tee_shm_get_va() - Get virtual address of a shared memory plus an offset
- * @shm:	Shared memory handle
- * @offs:	Offset from start of this shared memory
- * @returns virtual address of the shared memory + offs if offs is within
- *	the bounds of this shared memory, else an ERR_PTR
- */
+ 
 void *tee_shm_get_va(struct tee_shm *shm, size_t offs)
 {
 	if (!shm->kaddr)
@@ -433,14 +361,7 @@ void *tee_shm_get_va(struct tee_shm *shm, size_t offs)
 }
 EXPORT_SYMBOL_GPL(tee_shm_get_va);
 
-/**
- * tee_shm_get_pa() - Get physical address of a shared memory plus an offset
- * @shm:	Shared memory handle
- * @offs:	Offset from start of this shared memory
- * @pa:		Physical address to return
- * @returns 0 if offs is within the bounds of this shared memory, else an
- *	error code.
- */
+ 
 int tee_shm_get_pa(struct tee_shm *shm, size_t offs, phys_addr_t *pa)
 {
 	if (offs >= shm->size)
@@ -451,13 +372,7 @@ int tee_shm_get_pa(struct tee_shm *shm, size_t offs, phys_addr_t *pa)
 }
 EXPORT_SYMBOL_GPL(tee_shm_get_pa);
 
-/**
- * tee_shm_get_from_id() - Find shared memory object and increase reference
- * count
- * @ctx:	Context owning the shared memory
- * @id:		Id of shared memory object
- * @returns a pointer to 'struct tee_shm' on success or an ERR_PTR on failure
- */
+ 
 struct tee_shm *tee_shm_get_from_id(struct tee_context *ctx, int id)
 {
 	struct tee_device *teedev;
@@ -469,11 +384,7 @@ struct tee_shm *tee_shm_get_from_id(struct tee_context *ctx, int id)
 	teedev = ctx->teedev;
 	mutex_lock(&teedev->mutex);
 	shm = idr_find(&teedev->idr, id);
-	/*
-	 * If the tee_shm was found in the IDR it must have a refcount
-	 * larger than 0 due to the guarantee in tee_shm_put() below. So
-	 * it's safe to use refcount_inc().
-	 */
+	 
 	if (!shm || shm->ctx != ctx)
 		shm = ERR_PTR(-EINVAL);
 	else
@@ -483,10 +394,7 @@ struct tee_shm *tee_shm_get_from_id(struct tee_context *ctx, int id)
 }
 EXPORT_SYMBOL_GPL(tee_shm_get_from_id);
 
-/**
- * tee_shm_put() - Decrease reference count on a shared memory handle
- * @shm:	Shared memory handle
- */
+ 
 void tee_shm_put(struct tee_shm *shm)
 {
 	struct tee_device *teedev = shm->ctx->teedev;
@@ -494,12 +402,7 @@ void tee_shm_put(struct tee_shm *shm)
 
 	mutex_lock(&teedev->mutex);
 	if (refcount_dec_and_test(&shm->refcount)) {
-		/*
-		 * refcount has reached 0, we must now remove it from the
-		 * IDR before releasing the mutex. This will guarantee that
-		 * the refcount_inc() in tee_shm_get_from_id() never starts
-		 * from 0.
-		 */
+		 
 		if (shm->id >= 0)
 			idr_remove(&teedev->idr, shm->id);
 		do_release = true;

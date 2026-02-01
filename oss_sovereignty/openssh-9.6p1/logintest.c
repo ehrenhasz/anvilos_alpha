@@ -1,31 +1,6 @@
-/*
- * Copyright (c) 2000 Andre Lucas.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
-/**
- ** logintest.c:  simple test driver for platform-independent login recording
- **               and lastlog retrieval
- **/
+ 
 
 #include "includes.h"
 
@@ -56,11 +31,11 @@ int compile_opts_only = 0;
 int be_verbose = 0;
 
 
-/* Dump a logininfo to stdout. Assumes a tab size of 8 chars. */
+ 
 void
 dump_logininfo(struct logininfo *li, char *descname)
 {
-	/* yes I know how nasty this is */
+	 
 	printf("struct logininfo %s = {\n\t"
 	    "progname\t'%s'\n\ttype\t\t%d\n\t"
 	    "pid\t\t%d\n\tuid\t\t%d\n\t"
@@ -92,7 +67,7 @@ testAPI()
 #ifdef HAVE_TIME_H
 	time_t t0, t1, t2, logintime, logouttime;
 	char s_t0[64],s_t1[64],s_t2[64];
-	char s_logintime[64], s_logouttime[64]; /* ctime() strings */
+	char s_logintime[64], s_logouttime[64];  
 #endif
 
 	printf("**\n** Testing the API...\n**\n");
@@ -100,11 +75,11 @@ testAPI()
 	pw = getpwuid(getuid());
 	strlcpy(username, pw->pw_name, sizeof(username));
 
-	/* gethostname(hostname, sizeof(hostname)); */
+	 
 
 	printf("login_alloc_entry test (no host info):\n");
 
-	/* FIXME fake tty more effectively - this could upset some platforms */
+	 
 	li1 = login_alloc_entry((int)getpid(), username, NULL, ttyname(0));
 	strlcpy(li1->progname, "OpenSSH-logintest", sizeof(li1->progname));
 
@@ -115,8 +90,7 @@ testAPI()
 	if (! (he = gethostbyname("localhost"))) {
 		printf("Couldn't set hostname(lookup failed)\n");
 	} else {
-		/* NOTE: this is messy, but typically a program wouldn't have to set
-		 *  any of this, a sockaddr_in* would be already prepared */
+		 
 		memcpy((void *)&(sa_in4.sin_addr), (void *)&(he->h_addr_list[0][0]),
 		    sizeof(struct in_addr));
 		login_set_addr(li1, (struct sockaddr *) &sa_in4, sizeof(sa_in4));
@@ -190,8 +164,7 @@ testAPI()
 		    "same.\nThis indicates that lastlog is ** NOT WORKING "
 		    "CORRECTLY **\n");
 	else if (t0 != t2)
-		/* We can be off by a second or so, even when recording works fine.
-		 * I'm not 100% sure why, but it's true. */
+		 
 		printf("** The login time and the lastlog time differ.\n"
 		    "** This indicates that lastlog is either recording the "
 		    "wrong time,\n** or retrieving the wrong entry.\n"
@@ -214,14 +187,13 @@ testAPI()
 	login_free_entry(li1);
 
 	return 1;
-} /* testAPI() */
+}  
 
 
 void
 testLineName(char *line)
 {
-	/* have to null-terminate - these functions are designed for
-	 * structures with fixed-length char arrays, and don't null-term.*/
+	 
 	char full[17], strip[9], abbrev[5];
 
 	memset(full, '\0', sizeof(full));
@@ -233,7 +205,7 @@ testLineName(char *line)
 	line_abbrevname(abbrev, full, sizeof(abbrev)-1);
 	printf("%s: %s, %s, %s\n", line, full, strip, abbrev);
 
-} /* testLineName() */
+}  
 
 
 int
@@ -247,10 +219,10 @@ testOutput()
 	testLineName("ttyp00");
 
 	return 1;
-} /* testOutput() */
+}  
 
 
-/* show which options got compiled in */
+ 
 void
 showOptions(void)
 {
@@ -277,7 +249,7 @@ showOptions(void)
 #endif
 	printf("\n");
 
-} /* showOptions() */
+}  
 
 
 int
@@ -304,5 +276,5 @@ main(int argc, char *argv[])
 	showOptions();
 
 	return 0;
-} /* main() */
+}  
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file is based on code from OCTEON SDK by Cavium Networks.
- *
- * Copyright (c) 2003-2007 Cavium Networks
- */
+
+ 
 
 #include <linux/phy.h>
 #include <linux/kernel.h>
@@ -25,6 +21,6 @@ int cvm_oct_sgmii_init(struct net_device *dev)
 {
 	cvm_oct_common_init(dev);
 
-	/* FIXME: Need autoneg logic */
+	 
 	return 0;
 }

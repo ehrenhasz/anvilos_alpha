@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	xt_connmark - Netfilter module to operate on connection marks
- *
- *	Copyright (C) 2002,2004 MARA Systems AB <https://www.marasystems.com>
- *	by Henrik Nordstrom <hno@marasystems.com>
- *	Copyright © CC Computer Consultants GmbH, 2007 - 2008
- *	Jan Engelhardt <jengelh@medozas.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/skbuff.h>

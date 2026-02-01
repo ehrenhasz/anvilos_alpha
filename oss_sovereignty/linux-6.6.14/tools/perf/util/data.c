@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/compiler.h>
 #include <linux/kernel.h>
 #include <linux/string.h>
@@ -14,7 +14,7 @@
 #include <dirent.h>
 
 #include "data.h"
-#include "util.h" // rm_rf_perf_data()
+#include "util.h" 
 #include "debug.h"
 #include "header.h"
 #include <internal/lib.h>
@@ -81,17 +81,14 @@ int perf_data__open_dir(struct perf_data *data)
 	DIR *dir;
 	int nr = 0;
 
-	/*
-	 * Directory containing a single regular perf data file which is already
-	 * open, means there is nothing more to do here.
-	 */
+	 
 	if (perf_data__is_single_file(data))
 		return 0;
 
 	if (WARN_ON(!data->is_dir))
 		return -EINVAL;
 
-	/* The version is provided by DIR_FORMAT feature. */
+	 
 	if (WARN_ON(data->dir.version != PERF_DIR_VERSION))
 		return -1;
 
@@ -330,10 +327,7 @@ static int open_dir(struct perf_data *data)
 {
 	int ret;
 
-	/*
-	 * So far we open only the header, so we can read the data version and
-	 * layout.
-	 */
+	 
 	if (asprintf(&data->file.path, "%s/data", data->path) < 0)
 		return -1;
 
@@ -343,7 +337,7 @@ static int open_dir(struct perf_data *data)
 
 	ret = open_file(data);
 
-	/* Cleanup whatever we managed to create so far. */
+	 
 	if (ret && perf_data__is_write(data))
 		rm_rf_perf_data(data->path);
 
@@ -355,7 +349,7 @@ int perf_data__open(struct perf_data *data)
 	if (check_pipe(data))
 		return 0;
 
-	/* currently it allows stdio for pipe only */
+	 
 	data->use_stdio = false;
 
 	if (!data->path)
@@ -426,10 +420,7 @@ int perf_data__switch(struct perf_data *data,
 	if (asprintf(new_filepath, "%s.%s", data->path, postfix) < 0)
 		return -ENOMEM;
 
-	/*
-	 * Only fire a warning, don't return error, continue fill
-	 * original file.
-	 */
+	 
 	if (rename(data->path, *new_filepath))
 		pr_warning("Failed to rename %s to %s\n", data->path, *new_filepath);
 

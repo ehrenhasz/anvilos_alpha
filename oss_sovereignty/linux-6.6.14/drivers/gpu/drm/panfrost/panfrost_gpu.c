@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright 2018 Marty E. Plummer <hanetzer@startmail.com> */
-/* Copyright 2019 Linaro, Ltd., Rob Herring <robh@kernel.org> */
-/* Copyright 2019 Collabora ltd. */
+
+ 
+ 
+ 
 #include <linux/bitfield.h>
 #include <linux/bitmap.h>
 #include <linux/delay.h>
@@ -72,7 +72,7 @@ int panfrost_gpu_soft_reset(struct panfrost_device *pfdev)
 
 	gpu_write(pfdev, GPU_INT_CLEAR, GPU_IRQ_MASK_ALL);
 
-	/* Only enable the interrupts we care about */
+	 
 	gpu_write(pfdev, GPU_INT_MASK,
 		  GPU_IRQ_MASK_ERROR |
 		  GPU_IRQ_PERFCNT_SAMPLE_COMPLETED |
@@ -83,11 +83,7 @@ int panfrost_gpu_soft_reset(struct panfrost_device *pfdev)
 
 void panfrost_gpu_amlogic_quirk(struct panfrost_device *pfdev)
 {
-	/*
-	 * The Amlogic integrated Mali-T820, Mali-G31 & Mali-G52 needs
-	 * these undocumented bits in GPU_PWR_OVERRIDE1 to be set in order
-	 * to operate correctly.
-	 */
+	 
 	gpu_write(pfdev, GPU_PWR_KEY, GPU_PWR_KEY_UNLOCK);
 	gpu_write(pfdev, GPU_PWR_OVERRIDE1, 0xfff | (0x20 << 16));
 }
@@ -107,9 +103,9 @@ static void panfrost_gpu_init_quirks(struct panfrost_device *pfdev)
 		quirks |= SC_ENABLE_TEXGRD_FLAGS;
 
 	if (!panfrost_has_hw_issue(pfdev, GPUCORE_1619)) {
-		if (panfrost_model_cmp(pfdev, 0x750) < 0) /* T60x, T62x, T72x */
+		if (panfrost_model_cmp(pfdev, 0x750) < 0)  
 			quirks |= SC_LS_ATTR_CHECK_DISABLE;
-		else if (panfrost_model_cmp(pfdev, 0x880) <= 0) /* T76x, T8xx */
+		else if (panfrost_model_cmp(pfdev, 0x880) <= 0)  
 			quirks |= SC_LS_ALLOW_ATTR_TYPES;
 	}
 
@@ -125,7 +121,7 @@ static void panfrost_gpu_init_quirks(struct panfrost_device *pfdev)
 
 	quirks = gpu_read(pfdev, GPU_TILER_CONFIG);
 
-	/* Set tiler clock gate override if required */
+	 
 	if (panfrost_has_hw_issue(pfdev, HW_ISSUE_T76X_3953))
 		quirks |= TC_CLOCK_GATE_OVERRIDE;
 
@@ -147,7 +143,7 @@ static void panfrost_gpu_init_quirks(struct panfrost_device *pfdev)
 	if (quirks)
 		gpu_write(pfdev, GPU_JM_CONFIG, quirks);
 
-	/* Here goes platform specific quirks */
+	 
 	if (pfdev->comp->vendor_quirk)
 		pfdev->comp->vendor_quirk(pfdev);
 }
@@ -183,7 +179,7 @@ struct panfrost_model {
 #define GPU_REV(name, r, p) GPU_REV_EXT(name, r, p, 0, )
 
 static const struct panfrost_model gpu_models[] = {
-	/* T60x has an oddball version */
+	 
 	GPU_MODEL(t600, 0x600,
 		GPU_REV_EXT(t600, 0, 0, 1, _15dev0)),
 	GPU_MODEL(t620, 0x620,
@@ -210,11 +206,7 @@ static const struct panfrost_model gpu_models[] = {
 	GPU_MODEL(g57, 0x9001,
 		GPU_REV(g57, 0, 0)),
 
-	/* MediaTek MT8192 has a Mali-G57 with a different GPU ID from the
-	 * standard. Arm's driver does not appear to handle this model.
-	 * ChromeOS has a hack downstream for it. Treat it as equivalent to
-	 * standard Mali-G57 for now.
-	 */
+	 
 	GPU_MODEL(g57, 0x9003,
 		GPU_REV(g57, 0, 0)),
 };
@@ -268,9 +260,7 @@ static void panfrost_gpu_init_features(struct panfrost_device *pfdev)
 	pfdev->features.revision = gpu_id & 0xffff;
 	pfdev->features.id = gpu_id >> 16;
 
-	/* The T60x has an oddball ID value. Fix it up to the standard Midgard
-	 * format so we (and userspace) don't have to special case it.
-	 */
+	 
 	if (pfdev->features.id == 0x6956)
 		pfdev->features.id = 0x0600;
 
@@ -333,13 +323,7 @@ static u64 panfrost_get_core_mask(struct panfrost_device *pfdev)
 	if (pfdev->features.l2_present == 1)
 		return U64_MAX;
 
-	/*
-	 * Only support one core group now.
-	 * ~(l2_present - 1) unsets all bits in l2_present except
-	 * the bottom bit. (l2_present - 2) has all the bits in
-	 * the first core group set. AND them together to generate
-	 * a mask of cores in the first core group.
-	 */
+	 
 	core_mask = ~(pfdev->features.l2_present - 1) &
 		     (pfdev->features.l2_present - 2);
 	dev_info_once(pfdev->dev, "using only 1st core group (%lu cores from %lu)\n",
@@ -447,7 +431,7 @@ u32 panfrost_gpu_get_latest_flush_id(struct panfrost_device *pfdev)
 	u32 flush_id;
 
 	if (panfrost_has_hw_feature(pfdev, HW_FEATURE_FLUSH_REDUCTION)) {
-		/* Flush reduction only makes sense when the GPU is kept powered on between jobs */
+		 
 		if (pm_runtime_get_if_in_use(pfdev->dev)) {
 			flush_id = gpu_read(pfdev, GPU_LATEST_FLUSH_ID);
 			pm_runtime_put(pfdev->dev);

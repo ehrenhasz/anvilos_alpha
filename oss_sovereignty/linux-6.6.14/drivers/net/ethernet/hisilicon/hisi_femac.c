@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hisilicon Fast Ethernet MAC Driver
- *
- * Copyright (c) 2016 HiSilicon Technologies Co., Ltd.
- */
+
+ 
 
 #include <linux/circ_buf.h>
 #include <linux/clk.h>
@@ -15,7 +11,7 @@
 #include <linux/platform_device.h>
 #include <linux/reset.h>
 
-/* MAC control register list */
+ 
 #define MAC_PORTSEL			0x0200
 #define MAC_PORTSEL_STAT_CPU		BIT(0)
 #define MAC_PORTSEL_RMII		BIT(1)
@@ -45,7 +41,7 @@
 #define TX_CNT_INUSE_MASK		GENMASK(5, 0)
 #define BIT_TX_READY			BIT(24)
 #define BIT_RX_READY			BIT(25)
-/* global control register list */
+ 
 #define GLB_HOSTMAC_L32			0x0000
 #define GLB_HOSTMAC_H16			0x0004
 #define GLB_SOFT_RESET			0x0008
@@ -83,7 +79,7 @@
 #define MAX_UNICAST_ADDRESSES		2
 #define MAX_MULTICAST_ADDRESSES		(MAX_MAC_FILTER_NUM - \
 					MAX_UNICAST_ADDRESSES)
-/* software tx and rx queue number, should be power of 2 */
+ 
 #define TXQ_NUM				64
 #define RXQ_NUM				128
 #define FEMAC_POLL_WEIGHT		16
@@ -256,7 +252,7 @@ static int hisi_femac_rx(struct net_device *dev, int limit)
 		len = rx_pkt_info & RX_FRAME_LEN_MASK;
 		len -= ETH_FCS_LEN;
 
-		/* tell hardware we will deal with this packet */
+		 
 		writel(IRQ_INT_RX_RDY, priv->glb_base + GLB_IRQ_RAW);
 
 		rx_pkts_num++;
@@ -609,7 +605,7 @@ static void hisi_femac_set_promisc_mode(struct hisi_femac_priv *priv,
 	writel(val, priv->glb_base + GLB_FWCTRL);
 }
 
-/* Handle multiple multicast addresses (perfect filtering)*/
+ 
 static void hisi_femac_set_mc_addr_filter(struct hisi_femac_priv *priv)
 {
 	struct net_device *dev = priv->ndev;
@@ -636,7 +632,7 @@ static void hisi_femac_set_mc_addr_filter(struct hisi_femac_priv *priv)
 	writel(val, priv->glb_base + GLB_MACTCTRL);
 }
 
-/* Handle multiple unicast addresses (perfect filtering)*/
+ 
 static void hisi_femac_set_uc_addr_filter(struct hisi_femac_priv *priv)
 {
 	struct net_device *dev = priv->ndev;
@@ -712,20 +708,15 @@ static void hisi_femac_sleep_us(u32 time_us)
 
 static void hisi_femac_phy_reset(struct hisi_femac_priv *priv)
 {
-	/* To make sure PHY hardware reset success,
-	 * we must keep PHY in deassert state first and
-	 * then complete the hardware reset operation
-	 */
+	 
 	reset_control_deassert(priv->phy_rst);
 	hisi_femac_sleep_us(priv->phy_reset_delays[PRE_DELAY]);
 
 	reset_control_assert(priv->phy_rst);
-	/* delay some time to ensure reset ok,
-	 * this depends on PHY hardware feature
-	 */
+	 
 	hisi_femac_sleep_us(priv->phy_reset_delays[PULSE]);
 	reset_control_deassert(priv->phy_rst);
-	/* delay some time to ensure later MDIO access */
+	 
 	hisi_femac_sleep_us(priv->phy_reset_delays[POST_DELAY]);
 }
 
@@ -733,13 +724,13 @@ static void hisi_femac_port_init(struct hisi_femac_priv *priv)
 {
 	u32 val;
 
-	/* MAC gets link status info and phy mode by software config */
+	 
 	val = MAC_PORTSEL_STAT_CPU;
 	if (priv->ndev->phydev->interface == PHY_INTERFACE_MODE_RMII)
 		val |= MAC_PORTSEL_RMII;
 	writel(val, priv->port_base + MAC_PORTSEL);
 
-	/*clear all interrupt status */
+	 
 	writel(IRQ_ENA_PORT0_MASK, priv->glb_base + GLB_IRQ_RAW);
 	hisi_femac_irq_disable(priv, IRQ_ENA_PORT0_MASK | IRQ_ENA_PORT0);
 

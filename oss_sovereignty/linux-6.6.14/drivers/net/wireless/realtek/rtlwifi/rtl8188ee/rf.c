@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2013  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "reg.h"
@@ -110,7 +110,7 @@ void rtl88e_phy_rf6052_set_cck_txpower(struct ieee80211_hw *hw,
 
 	tmpval = tx_agc[RF90_PATH_A] >> 8;
 
-	/*tmpval = tmpval & 0xff00ffff;*/
+	 
 
 	rtl_set_bbreg(hw, RTXAGC_B_CCK11_A_CCK2_11, 0xffffff00, tmpval);
 

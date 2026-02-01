@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2011-2016 Synaptics Incorporated
- * Copyright (c) 2011 Unixphere
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/rmi.h>
@@ -21,10 +18,10 @@
 #define PRODUCT_INFO_OFFSET 0x1E
 
 
-/* Force a firmware reset of the sensor */
+ 
 #define RMI_F01_CMD_DEVICE_RESET	1
 
-/* Various F01_RMI_QueryX bits */
+ 
 
 #define RMI_F01_QRY1_CUSTOM_MAP		BIT(0)
 #define RMI_F01_QRY1_NON_COMPLIANT	BIT(1)
@@ -41,35 +38,32 @@
 
 #define RMI_F01_QRY2_PRODINFO_MASK	0x7f
 
-#define RMI_F01_BASIC_QUERY_LEN		21 /* From Query 00 through 20 */
+#define RMI_F01_BASIC_QUERY_LEN		21  
 
 struct f01_basic_properties {
 	u8 manufacturer_id;
 	bool has_lts;
 	bool has_adjustable_doze;
 	bool has_adjustable_doze_holdoff;
-	char dom[11]; /* YYYY/MM/DD + '\0' */
+	char dom[11];  
 	u8 product_id[RMI_PRODUCT_ID_LENGTH + 1];
 	u16 productinfo;
 	u32 firmware_id;
 	u32 package_id;
 };
 
-/* F01 device status bits */
+ 
 
-/* Most recent device status event */
+ 
 #define RMI_F01_STATUS_CODE(status)		((status) & 0x0f)
-/* The device has lost its configuration for some reason. */
+ 
 #define RMI_F01_STATUS_UNCONFIGURED(status)	(!!((status) & 0x80))
-/* The device is in bootloader mode */
+ 
 #define RMI_F01_STATUS_BOOTLOADER(status)	((status) & 0x40)
 
-/* Control register bits */
+ 
 
-/*
- * Sleep mode controls power management on the device and affects all
- * functions of the device.
- */
+ 
 #define RMI_F01_CTRL0_SLEEP_MODE_MASK	0x03
 
 #define RMI_SLEEP_MODE_NORMAL		0x00
@@ -77,42 +71,19 @@ struct f01_basic_properties {
 #define RMI_SLEEP_MODE_RESERVED0	0x02
 #define RMI_SLEEP_MODE_RESERVED1	0x03
 
-/*
- * This bit disables whatever sleep mode may be selected by the sleep_mode
- * field and forces the device to run at full power without sleeping.
- */
+ 
 #define RMI_F01_CTRL0_NOSLEEP_BIT	BIT(2)
 
-/*
- * When this bit is set, the touch controller employs a noise-filtering
- * algorithm designed for use with a connected battery charger.
- */
+ 
 #define RMI_F01_CTRL0_CHARGER_BIT	BIT(5)
 
-/*
- * Sets the report rate for the device. The effect of this setting is
- * highly product dependent. Check the spec sheet for your particular
- * touch sensor.
- */
+ 
 #define RMI_F01_CTRL0_REPORTRATE_BIT	BIT(6)
 
-/*
- * Written by the host as an indicator that the device has been
- * successfully configured.
- */
+ 
 #define RMI_F01_CTRL0_CONFIGURED_BIT	BIT(7)
 
-/**
- * struct f01_device_control - controls basic sensor functions
- *
- * @ctrl0: see the bit definitions above.
- * @doze_interval: controls the interval between checks for finger presence
- *	when the touch sensor is in doze mode, in units of 10ms.
- * @wakeup_threshold: controls the capacitance threshold at which the touch
- *	sensor will decide to wake up from that low power state.
- * @doze_holdoff: controls how long the touch sensor waits after the last
- *	finger lifts before entering the doze state, in units of 100ms.
- */
+ 
 struct f01_device_control {
 	u8 ctrl0;
 	u8 doze_interval;
@@ -160,7 +131,7 @@ static int rmi_f01_read_properties(struct rmi_device *rmi_dev,
 	prod_info_addr = query_offset + 17;
 	query_offset += RMI_F01_BASIC_QUERY_LEN;
 
-	/* Now parse what we got */
+	 
 	props->manufacturer_id = queries[0];
 
 	props->has_lts = queries[1] & RMI_F01_QRY1_HAS_LTS;
@@ -404,10 +375,7 @@ static int rmi_f01_probe(struct rmi_function *fn)
 
 	f01->num_of_irq_regs = driver_data->num_of_irq_regs;
 
-	/*
-	 * Set the configured bit and (optionally) other important stuff
-	 * in the device control register.
-	 */
+	 
 
 	error = rmi_read(rmi_dev, fn->fd.control_base_addr,
 			 &f01->device_control.ctrl0);
@@ -427,11 +395,7 @@ static int rmi_f01_probe(struct rmi_function *fn)
 		break;
 	}
 
-	/*
-	 * Sleep mode might be set as a hangover from a system crash or
-	 * reboot without power cycle.  If so, clear it so the sensor
-	 * is certain to function.
-	 */
+	 
 	if ((f01->device_control.ctrl0 & RMI_F01_CTRL0_SLEEP_MODE_MASK) !=
 			RMI_SLEEP_MODE_NORMAL) {
 		dev_warn(&fn->dev,
@@ -448,7 +412,7 @@ static int rmi_f01_probe(struct rmi_function *fn)
 		return error;
 	}
 
-	/* Dummy read in order to clear irqs */
+	 
 	error = rmi_read(rmi_dev, fn->fd.data_base_addr + 1, &temp);
 	if (error < 0) {
 		dev_err(&fn->dev, "Failed to read Interrupt Status.\n");
@@ -466,11 +430,11 @@ static int rmi_f01_probe(struct rmi_function *fn)
 		 f01->properties.manufacturer_id == 1 ? "Synaptics" : "unknown",
 		 f01->properties.product_id, f01->properties.firmware_id);
 
-	/* Advance to interrupt control registers, then skip over them. */
+	 
 	ctrl_base_addr++;
 	ctrl_base_addr += f01->num_of_irq_regs;
 
-	/* read control register */
+	 
 	if (f01->properties.has_adjustable_doze) {
 		f01->doze_interval_addr = ctrl_base_addr;
 		ctrl_base_addr++;
@@ -578,7 +542,7 @@ static int rmi_f01_probe(struct rmi_function *fn)
 
 static void rmi_f01_remove(struct rmi_function *fn)
 {
-	/* Note that the bus device is used, not the F01 device */
+	 
 	sysfs_remove_group(&fn->rmi_dev->dev.kobj, &rmi_f01_attr_group);
 }
 
@@ -713,10 +677,7 @@ static irqreturn_t rmi_f01_attention(int irq, void *ctx)
 struct rmi_function_handler rmi_f01_handler = {
 	.driver = {
 		.name	= "rmi4_f01",
-		/*
-		 * Do not allow user unbinding F01 as it is critical
-		 * function.
-		 */
+		 
 		.suppress_bind_attrs = true,
 	},
 	.func		= 0x01,

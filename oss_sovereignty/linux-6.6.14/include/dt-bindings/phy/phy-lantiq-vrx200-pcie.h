@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2019 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
- */
+ 
+ 
 
 #define LANTIQ_PCIE_PHY_MODE_25MHZ		0
 #define LANTIQ_PCIE_PHY_MODE_25MHZ_SSC		1

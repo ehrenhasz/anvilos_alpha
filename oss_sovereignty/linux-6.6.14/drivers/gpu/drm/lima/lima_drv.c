@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/* Copyright 2017-2019 Qiang Yu <yuq825@gmail.com> */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -256,11 +256,7 @@ static const struct drm_ioctl_desc lima_drm_driver_ioctls[] = {
 
 DEFINE_DRM_GEM_FOPS(lima_drm_driver_fops);
 
-/*
- * Changelog:
- *
- * - 1.1.0 - add heap buffer support
- */
+ 
 
 static const struct drm_driver lima_drm_driver = {
 	.driver_features    = DRIVER_RENDER | DRIVER_GEM | DRIVER_SYNCOBJ,
@@ -388,7 +384,7 @@ static int lima_pdev_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, ldev);
 
-	/* Allocate and initialize the DRM device. */
+	 
 	ddev = drm_dev_alloc(&lima_drm_driver, &pdev->dev);
 	if (IS_ERR(ddev)) {
 		err = PTR_ERR(ddev);
@@ -414,10 +410,7 @@ static int lima_pdev_probe(struct platform_device *pdev)
 	pm_runtime_use_autosuspend(ldev->dev);
 	pm_runtime_enable(ldev->dev);
 
-	/*
-	 * Register the DRM device with the core and the connectors with
-	 * sysfs.
-	 */
+	 
 	err = drm_dev_register(ddev, 0);
 	if (err < 0)
 		goto err_out3;
@@ -448,7 +441,7 @@ static void lima_pdev_remove(struct platform_device *pdev)
 
 	drm_dev_unregister(ddev);
 
-	/* stop autosuspend to make sure device is in active state */
+	 
 	pm_runtime_set_autosuspend_delay(ldev->dev, -1);
 	pm_runtime_disable(ldev->dev);
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vivid-vid-out.c - video output support functions.
- *
- * Copyright 2014 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -36,28 +32,19 @@ static int vid_out_queue_setup(struct vb2_queue *vq,
 			vfmt->data_offset[p];
 
 	if (dev->field_out == V4L2_FIELD_ALTERNATE) {
-		/*
-		 * You cannot use write() with FIELD_ALTERNATE since the field
-		 * information (TOP/BOTTOM) cannot be passed to the kernel.
-		 */
+		 
 		if (vb2_fileio_is_active(vq))
 			return -EINVAL;
 	}
 
 	if (dev->queue_setup_error) {
-		/*
-		 * Error injection: test what happens if queue_setup() returns
-		 * an error.
-		 */
+		 
 		dev->queue_setup_error = false;
 		return -EINVAL;
 	}
 
 	if (*nplanes) {
-		/*
-		 * Check if the number of requested planes match
-		 * the number of planes in the current format. You can't mix that.
-		 */
+		 
 		if (*nplanes != planes)
 			return -EINVAL;
 		if (sizes[0] < size)
@@ -117,10 +104,7 @@ static int vid_out_buf_prepare(struct vb2_buffer *vb)
 		return -EINVAL;
 
 	if (dev->buf_prepare_error) {
-		/*
-		 * Error injection: test what happens if buf_prepare() returns
-		 * an error.
-		 */
+		 
 		dev->buf_prepare_error = false;
 		return -EINVAL;
 	}
@@ -181,7 +165,7 @@ static int vid_out_start_streaming(struct vb2_queue *vq, unsigned count)
 	return err;
 }
 
-/* abort streaming and wait for last buffer */
+ 
 static void vid_out_stop_streaming(struct vb2_queue *vq)
 {
 	struct vivid_dev *dev = vb2_get_drv_priv(vq);
@@ -210,10 +194,7 @@ const struct vb2_ops vivid_vid_out_qops = {
 	.wait_finish		= vb2_ops_wait_finish,
 };
 
-/*
- * Called whenever the format has to be reset which can occur when
- * changing outputs, standard, timings, etc.
- */
+ 
 void vivid_update_format_out(struct vivid_dev *dev)
 {
 	struct v4l2_bt_timings *bt = &dev->dv_timings_out.bt;
@@ -278,7 +259,7 @@ void vivid_update_format_out(struct vivid_dev *dev)
 			(dev->sink_rect.width * dev->fmt_out->bit_depth[p]) / 8;
 }
 
-/* Map the field to something that is valid for the current output */
+ 
 static enum v4l2_field vivid_field_out(struct vivid_dev *dev, enum v4l2_field field)
 {
 	if (vivid_is_svid_out(dev)) {
@@ -398,13 +379,13 @@ int vivid_try_fmt_vid_out(struct file *file, void *priv,
 		mp->height = r.height / factor;
 	}
 
-	/* This driver supports custom bytesperline values */
+	 
 
 	mp->num_planes = fmt->buffers;
 	for (p = 0; p < fmt->buffers; p++) {
-		/* Calculate the minimum supported bytesperline value */
+		 
 		bytesperline = (mp->width * fmt->bit_depth[p]) >> 3;
-		/* Calculate the maximum supported bytesperline value */
+		 
 		max_bpl = (MAX_ZOOM * MAX_WIDTH * fmt->bit_depth[p]) >> 3;
 
 		if (pfmt[p].bytesperline > max_bpl)
@@ -469,11 +450,7 @@ int vivid_s_fmt_vid_out(struct file *file, void *priv,
 		return -EBUSY;
 	}
 
-	/*
-	 * Allow for changing the colorspace on the fly. Useful for testing
-	 * purposes, and it is something that HDMI transmitters are able
-	 * to do.
-	 */
+	 
 	if (vb2_is_busy(q))
 		goto set_colorspace;
 
@@ -859,10 +836,7 @@ int vidioc_try_fmt_vid_out_overlay(struct file *file, void *priv,
 			     -dev->display_height, dev->display_height);
 	win->w.width = compose->width;
 	win->w.height = compose->height;
-	/*
-	 * It makes no sense for an OSD to overlay only top or bottom fields,
-	 * so always set this to ANY.
-	 */
+	 
 	win->field = V4L2_FIELD_ANY;
 	return 0;
 }

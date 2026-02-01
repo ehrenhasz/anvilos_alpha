@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
@@ -35,10 +35,7 @@ int BPF_PROG(on_lookup)
 	if (!test_pid || task->pid != test_pid)
 		return 0;
 
-	/* The bpf_task_storage_delete will call
-	 * bpf_local_storage_lookup.  The prog->active will
-	 * stop the recursion.
-	 */
+	 
 	bpf_task_storage_delete(&map_a, task);
 	bpf_task_storage_delete(&map_b, task);
 	return 0;
@@ -55,12 +52,7 @@ int BPF_PROG(on_update)
 
 	ptr = bpf_task_storage_get(&map_a, task, 0,
 				   BPF_LOCAL_STORAGE_GET_F_CREATE);
-	/* ptr will not be NULL when it is called from
-	 * the bpf_task_storage_get(&map_b,...F_CREATE) in
-	 * the BPF_PROG(on_enter) below.  It is because
-	 * the value can be found in map_a and the kernel
-	 * does not need to acquire any spin_lock.
-	 */
+	 
 	if (ptr) {
 		int err;
 
@@ -70,12 +62,7 @@ int BPF_PROG(on_update)
 			nr_del_errs++;
 	}
 
-	/* This will still fail because map_b is empty and
-	 * this BPF_PROG(on_update) has failed to acquire
-	 * the percpu busy lock => meaning potential
-	 * deadlock is detected and it will fail to create
-	 * new storage.
-	 */
+	 
 	ptr = bpf_task_storage_get(&map_b, task, 0,
 				   BPF_LOCAL_STORAGE_GET_F_CREATE);
 	if (ptr)

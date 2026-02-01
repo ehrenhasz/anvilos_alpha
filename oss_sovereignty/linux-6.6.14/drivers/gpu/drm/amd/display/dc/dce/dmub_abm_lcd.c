@@ -1,27 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dmub_abm.h"
 #include "dmub_abm_lcd.h"
@@ -125,9 +102,7 @@ unsigned int dmub_abm_get_current_backlight(struct abm *abm)
 	struct dce_abm *dce_abm = TO_DMUB_ABM(abm);
 	unsigned int backlight = REG_READ(BL1_PWM_CURRENT_ABM_LEVEL);
 
-	/* return backlight in hardware format which is unsigned 17 bits, with
-	 * 1 bit integer and 16 bit fractional
-	 */
+	 
 	return backlight;
 }
 
@@ -136,9 +111,7 @@ unsigned int dmub_abm_get_target_backlight(struct abm *abm)
 	struct dce_abm *dce_abm = TO_DMUB_ABM(abm);
 	unsigned int backlight = REG_READ(BL1_PWM_TARGET_ABM_LEVEL);
 
-	/* return backlight in hardware format which is unsigned 17 bits, with
-	 * 1 bit integer and 16 bit fractional
-	 */
+	 
 	return backlight;
 }
 
@@ -169,14 +142,14 @@ void dmub_abm_init_config(struct abm *abm,
 	struct dc_context *dc = abm->ctx;
 	uint8_t panel_mask = 0x01 << inst;
 
-	// TODO: Optimize by only reading back final 4 bytes
+	
 	dmub_flush_buffer_mem(&dc->dmub_srv->dmub->scratch_mem_fb);
 
-	// Copy iramtable into cw7
+	
 	memcpy(dc->dmub_srv->dmub->scratch_mem_fb.cpu_addr, (void *)src, bytes);
 
 	memset(&cmd, 0, sizeof(cmd));
-	// Fw will copy from cw7 to fw_state
+	
 	cmd.abm_init_config.header.type = DMUB_CMD__ABM;
 	cmd.abm_init_config.header.sub_type = DMUB_CMD__ABM_INIT_CONFIG;
 	cmd.abm_init_config.abm_init_config_data.src.quad_part = dc->dmub_srv->dmub->scratch_mem_fb.gpu_addr;
@@ -209,17 +182,7 @@ bool dmub_abm_set_pause(struct abm *abm, bool pause, unsigned int panel_inst, un
 }
 
 
-/*****************************************************************************
- *  dmub_abm_save_restore() - dmub interface for abm save+pause and restore+
- *                           un-pause
- *  @dc: dc context
- *  @panel_inst: panel instance index
- *  @pData: contains command to pause/un-pause abm and exchange abm parameters
- *
- *  When called Pause will get abm data and store in pData, and un-pause will
- *  set/apply abm data stored in pData.
- *
- *****************************************************************************/
+ 
 bool dmub_abm_save_restore(
 		struct dc_context *dc,
 		unsigned int panel_inst,
@@ -229,10 +192,10 @@ bool dmub_abm_save_restore(
 	uint8_t panel_mask = 0x01 << panel_inst;
 	unsigned int bytes = sizeof(struct abm_save_restore);
 
-	// TODO: Optimize by only reading back final 4 bytes
+	
 	dmub_flush_buffer_mem(&dc->dmub_srv->dmub->scratch_mem_fb);
 
-	// Copy iramtable into cw7
+	
 	memcpy(dc->dmub_srv->dmub->scratch_mem_fb.cpu_addr, (void *)pData, bytes);
 
 	memset(&cmd, 0, sizeof(cmd));
@@ -248,7 +211,7 @@ bool dmub_abm_save_restore(
 
 	dm_execute_dmub_cmd(dc, &cmd, DM_DMUB_WAIT_TYPE_WAIT);
 
-	// Copy iramtable data into local structure
+	
 	memcpy((void *)pData, dc->dmub_srv->dmub->scratch_mem_fb.cpu_addr, bytes);
 
 	return true;

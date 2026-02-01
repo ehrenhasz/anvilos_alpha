@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * R-Car Gen2 Clock Pulse Generator
- *
- * Copyright (C) 2016 Cogent Embedded Inc.
- */
+
+ 
 
 #include <linux/bug.h>
 #include <linux/clk.h>
@@ -32,15 +28,7 @@
 
 static spinlock_t cpg_lock;
 
-/*
- * Z Clock
- *
- * Traits of this clock:
- * prepare - clk_prepare only ensures that parents are prepared
- * enable - clk_enable only ensures that parents are enabled
- * rate - rate is adjustable.  clk->rate = parent->rate * mult / 32
- * parent - fixed parent.  No clk_set_parent support
- */
+ 
 
 struct cpg_z_clk {
 	struct clk_hw hw;
@@ -100,23 +88,12 @@ static int cpg_z_clk_set_rate(struct clk_hw *hw, unsigned long rate,
 	val |= (32 - mult) << CPG_FRQCRC_ZFC_SHIFT;
 	writel(val, zclk->reg);
 
-	/*
-	 * Set KICK bit in FRQCRB to update hardware setting and wait for
-	 * clock change completion.
-	 */
+	 
 	kick = readl(zclk->kick_reg);
 	kick |= CPG_FRQCRB_KICK;
 	writel(kick, zclk->kick_reg);
 
-	/*
-	 * Note: There is no HW information about the worst case latency.
-	 *
-	 * Using experimental measurements, it seems that no more than
-	 * ~10 iterations are needed, independently of the CPU rate.
-	 * Since this value might be dependent on external xtal rate, pll1
-	 * rate or even the other emulation clocks rate, use 1000 as a
-	 * "super" safe value.
-	 */
+	 
 	for (i = 1000; i; i--) {
 		if (!(readl(zclk->kick_reg) & CPG_FRQCRB_KICK))
 			return 0;
@@ -198,7 +175,7 @@ static struct clk * __init cpg_rcan_clk_register(const char *name,
 	return clk;
 }
 
-/* ADSP divisors */
+ 
 static const struct clk_div_table cpg_adsp_div_table[] = {
 	{  1,  3 }, {  2,  4 }, {  3,  6 }, {  4,  8 },
 	{  5, 12 }, {  6, 16 }, {  7, 18 }, {  8, 24 },
@@ -244,7 +221,7 @@ static struct clk * __init cpg_adsp_clk_register(const char *name,
 	return clk;
 }
 
-/* SDHI divisors */
+ 
 static const struct clk_div_table cpg_sdh_div_table[] = {
 	{  0,  2 }, {  1,  3 }, {  2,  4 }, {  3,  6 },
 	{  4,  8 }, {  5, 12 }, {  6, 16 }, {  7, 18 },
@@ -262,14 +239,14 @@ static unsigned int cpg_pll0_div __initdata;
 static u32 cpg_mode __initdata;
 static u32 cpg_quirks __initdata;
 
-#define SD_SKIP_FIRST	BIT(0)		/* Skip first clock in SD table */
+#define SD_SKIP_FIRST	BIT(0)		 
 
 static const struct soc_device_attribute cpg_quirks_match[] __initconst = {
 	{
 		.soc_id = "r8a77470",
 		.data = (void *)SD_SKIP_FIRST,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 struct clk * __init rcar_gen2_cpg_clk_register(struct device *dev,
@@ -291,18 +268,13 @@ struct clk * __init rcar_gen2_cpg_clk_register(struct device *dev,
 	parent_name = __clk_get_name(parent);
 
 	switch (core->type) {
-	/* R-Car Gen2 */
+	 
 	case CLK_TYPE_GEN2_MAIN:
 		div = cpg_pll_config->extal_div;
 		break;
 
 	case CLK_TYPE_GEN2_PLL0:
-		/*
-		 * PLL0 is a  configurable multiplier clock except on R-Car
-		 * V2H/E2. Register the PLL0 clock as a fixed factor clock for
-		 * now as there's no generic multiplier clock implementation and
-		 * we  currently  have no need to change  the multiplier value.
-		 */
+		 
 		mult = cpg_pll_config->pll0_mult;
 		div  = cpg_pll0_div;
 		if (!mult) {

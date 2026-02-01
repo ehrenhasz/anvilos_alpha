@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM hda_intel
 #define TRACE_INCLUDE_FILE hda_intel_trace
@@ -46,9 +46,9 @@ DEFINE_EVENT(hda_pm, azx_runtime_resume,
 );
 #endif
 
-#endif /* _TRACE_HDA_INTEL_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #include <trace/define_trace.h>

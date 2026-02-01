@@ -1,55 +1,16 @@
-/****************************************************************************
- * Copyright 2020 Thomas E. Dickey                                          *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- ****************************************************************************/
+ 
 
-/*
- *	lib_baudrate.c
- *
- */
+ 
 
 #include <curses.priv.h>
-#include <termcap.h>		/* ospeed */
+#include <termcap.h>		 
 #if defined(__FreeBSD__) || defined(__OpenBSD__)
 #include <sys/param.h>
 #endif
 
-/*
- * These systems use similar header files, which define B1200 as 1200, etc.,
- * but can be overridden by defining USE_OLD_TTY so B1200 is 9, which makes all
- * of the indices up to B115200 fit nicely in a 'short', allowing us to retain
- * ospeed's type for compatibility.
- */
+ 
 #if NCURSES_OSPEED_COMPAT && \
  	((defined(__FreeBSD__) && (__FreeBSD_version < 700000)) || \
 	defined(__NetBSD__) || \
@@ -82,21 +43,15 @@
 #include <sys/ttydev.h>
 #else
 #undef USE_OLD_TTY
-#endif /* USE_OLD_TTY */
+#endif  
 
 MODULE_ID("$Id: lib_baudrate.c,v 1.45 2020/09/05 21:15:32 tom Exp $")
 
-/*
- *	int
- *	baudrate()
- *
- *	Returns the current terminal's baud rate.
- *
- */
+ 
 
 struct speed {
-    int given_speed;		/* values for 'ospeed' */
-    int actual_speed;		/* the actual speed */
+    int given_speed;		 
+    int actual_speed;		 
 };
 
 #if !defined(EXP_WIN32_DRIVER)
@@ -134,7 +89,7 @@ static struct speed const speeds[] =
 #ifdef B57600
     DATA(57600),
 #endif
-    /* ifdef to prevent overflow when OLD_TTY is not available */
+     
 #if !(NCURSES_OSPEED_COMPAT && defined(__FreeBSD__) && (__FreeBSD_version > 700000))
 #ifdef B76800
     DATA(76800),
@@ -189,13 +144,13 @@ static struct speed const speeds[] =
 #endif
 #endif
 };
-#endif /* !EXP_WIN32_DRIVER */
+#endif  
 
 NCURSES_EXPORT(int)
 _nc_baudrate(int OSpeed)
 {
 #if defined(EXP_WIN32_DRIVER)
-    /* On Windows this is a noop */
+     
     (void) OSpeed;
     return (OK);
 #else
@@ -237,7 +192,7 @@ _nc_baudrate(int OSpeed)
 #endif
     }
     return (result);
-#endif /* !EXP_WIN32_DRIVER */
+#endif  
 }
 
 NCURSES_EXPORT(int)
@@ -271,11 +226,7 @@ NCURSES_SP_NAME(baudrate) (NCURSES_SP_DCL0)
 #if defined(EXP_WIN32_DRIVER)
     result = OK;
 #else
-    /*
-     * In debugging, allow the environment symbol to override when we're
-     * redirecting to a file, so we can construct repeatable test-cases
-     * that take into account costs that depend on baudrate.
-     */
+     
 #ifdef TRACE
     if (IsValidTIScreen(SP_PARM)
 	&& !NC_ISATTY(fileno((SP_PARM && SP_PARM->_ofp) ? SP_PARM->_ofp : stdout))
@@ -292,7 +243,7 @@ NCURSES_SP_NAME(baudrate) (NCURSES_SP_DCL0)
 #ifdef USE_OLD_TTY
 	result = (int) cfgetospeed(&(TerminalOf(SP_PARM)->Nttyb));
 	ospeed = (NCURSES_OSPEED) _nc_ospeed(result);
-#else /* !USE_OLD_TTY */
+#else  
 #ifdef TERMIOS
 	ospeed = (NCURSES_OSPEED) cfgetospeed(&(TerminalOf(SP_PARM)->Nttyb));
 #else
@@ -304,7 +255,7 @@ NCURSES_SP_NAME(baudrate) (NCURSES_SP_DCL0)
     } else {
 	result = ERR;
     }
-#endif /* !EXP_WIN32_DRIVER */
+#endif  
     returnCode(result);
 }
 

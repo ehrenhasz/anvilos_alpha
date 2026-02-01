@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -118,13 +118,13 @@ static void get_term_dimensions(struct winsize *ws)
 static void pretty_print_string_list(struct cmdnames *cmds, int longest)
 {
 	int cols = 1, rows;
-	int space = longest + 1; /* min 1 SP between words */
+	int space = longest + 1;  
 	struct winsize win;
 	int max_cols;
 	int i, j;
 
 	get_term_dimensions(&win);
-	max_cols = win.ws_col - 1; /* don't print *on* the edge */
+	max_cols = win.ws_col - 1;  
 
 	if (space < max_cols)
 		cols = max_cols / space;
@@ -151,7 +151,7 @@ static int is_executable(const char *name)
 {
 	struct stat st;
 
-	if (stat(name, &st) || /* stat, not lstat */
+	if (stat(name, &st) ||  
 	    !S_ISREG(st.st_mode))
 		return 0;
 

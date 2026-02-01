@@ -1,26 +1,4 @@
-/*
- * Copyright 2009 Jerome Glisse.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Jerome Glisse
- */
+ 
 
 #include <drm/radeon_drm.h>
 #include "radeon_reg.h"
@@ -189,54 +167,54 @@ void radeon_benchmark(struct radeon_device *rdev, int test_number)
 
 	switch (test_number) {
 	case 1:
-		/* simple test, VRAM to GTT and GTT to VRAM */
+		 
 		radeon_benchmark_move(rdev, 1024*1024, RADEON_GEM_DOMAIN_GTT,
 				      RADEON_GEM_DOMAIN_VRAM);
 		radeon_benchmark_move(rdev, 1024*1024, RADEON_GEM_DOMAIN_VRAM,
 				      RADEON_GEM_DOMAIN_GTT);
 		break;
 	case 2:
-		/* simple test, VRAM to VRAM */
+		 
 		radeon_benchmark_move(rdev, 1024*1024, RADEON_GEM_DOMAIN_VRAM,
 				      RADEON_GEM_DOMAIN_VRAM);
 		break;
 	case 3:
-		/* GTT to VRAM, buffer size sweep, powers of 2 */
+		 
 		for (i = 1; i <= 16384; i <<= 1)
 			radeon_benchmark_move(rdev, i * RADEON_GPU_PAGE_SIZE,
 					      RADEON_GEM_DOMAIN_GTT,
 					      RADEON_GEM_DOMAIN_VRAM);
 		break;
 	case 4:
-		/* VRAM to GTT, buffer size sweep, powers of 2 */
+		 
 		for (i = 1; i <= 16384; i <<= 1)
 			radeon_benchmark_move(rdev, i * RADEON_GPU_PAGE_SIZE,
 					      RADEON_GEM_DOMAIN_VRAM,
 					      RADEON_GEM_DOMAIN_GTT);
 		break;
 	case 5:
-		/* VRAM to VRAM, buffer size sweep, powers of 2 */
+		 
 		for (i = 1; i <= 16384; i <<= 1)
 			radeon_benchmark_move(rdev, i * RADEON_GPU_PAGE_SIZE,
 					      RADEON_GEM_DOMAIN_VRAM,
 					      RADEON_GEM_DOMAIN_VRAM);
 		break;
 	case 6:
-		/* GTT to VRAM, buffer size sweep, common modes */
+		 
 		for (i = 0; i < RADEON_BENCHMARK_COMMON_MODES_N; i++)
 			radeon_benchmark_move(rdev, common_modes[i],
 					      RADEON_GEM_DOMAIN_GTT,
 					      RADEON_GEM_DOMAIN_VRAM);
 		break;
 	case 7:
-		/* VRAM to GTT, buffer size sweep, common modes */
+		 
 		for (i = 0; i < RADEON_BENCHMARK_COMMON_MODES_N; i++)
 			radeon_benchmark_move(rdev, common_modes[i],
 					      RADEON_GEM_DOMAIN_VRAM,
 					      RADEON_GEM_DOMAIN_GTT);
 		break;
 	case 8:
-		/* VRAM to VRAM, buffer size sweep, common modes */
+		 
 		for (i = 0; i < RADEON_BENCHMARK_COMMON_MODES_N; i++)
 			radeon_benchmark_move(rdev, common_modes[i],
 					      RADEON_GEM_DOMAIN_VRAM,

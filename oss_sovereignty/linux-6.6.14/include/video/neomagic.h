@@ -1,12 +1,4 @@
-/*
- * linux/include/video/neo_reg.h -- NeoMagic Framebuffer Driver
- *
- * Copyright (c) 2001  Denis Oliver Kropp <dok@convergence.de>
- *
- * This file is subject to the terms and conditions of the GNU General
- * Public License.  See the file COPYING in the main directory of this
- * archive for more details.
- */
+ 
 
 #define NEO_BS0_BLT_BUSY        0x00000001
 #define NEO_BS0_FIFO_AVAIL      0x00000002
@@ -55,7 +47,7 @@
 #define NEO_MODE1_X_1600        0x1c00
 #define NEO_MODE1_BLT_ON_ADDR   0x2000
 
-/* These are offseted in MMIO space by par->CursorOff */
+ 
 #define NEOREG_CURSCNTL		0x00
 #define NEOREG_CURSX		0x04
 #define NEOREG_CURSY		0x08
@@ -90,7 +82,7 @@
 #define PCI_CHIP_NM2360 0x0006
 #define PCI_CHIP_NM2380 0x0016
 
-/* --------------------------------------------------------------------- */
+ 
 
 typedef volatile struct {
 	__u32 bltStat;
@@ -125,11 +117,11 @@ struct neofb_par {
 	struct vgastate state;
 	unsigned int ref_count;
 
-	unsigned char MiscOutReg;	/* Misc */
-	unsigned char CRTC[25];		/* Crtc Controller */
-	unsigned char Sequencer[5];	/* Video Sequencer */
-	unsigned char Graphics[9];	/* Video Graphics */
-	unsigned char Attribute[21];	/* Video Attribute */
+	unsigned char MiscOutReg;	 
+	unsigned char CRTC[25];		 
+	unsigned char Sequencer[5];	 
+	unsigned char Graphics[9];	 
+	unsigned char Attribute[21];	 
 
 	unsigned char GeneralLockReg;
 	unsigned char ExtCRTDispAddr;
@@ -162,11 +154,11 @@ struct neofb_par {
 	int wc_cookie;
 	u8 __iomem *mmio_vbase;
 	u8 cursorOff;
-	u8 *cursorPad;		/* Must die !! */
+	u8 *cursorPad;		 
 
 	Neo2200 __iomem *neo2200;
 
-	/* Panels size */
+	 
 	int NeoPanelWidth;
 	int NeoPanelHeight;
 

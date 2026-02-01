@@ -1,26 +1,4 @@
-/*
- * Copyright 2015 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs <bskeggs@redhat.com>
- */
+ 
 #include <core/memory.h>
 #include <core/mm.h>
 #include <subdev/fb.h>
@@ -54,10 +32,7 @@ nvkm_memory_tags_get(struct nvkm_memory *memory, struct nvkm_device *device,
 
 	mutex_lock(&fb->tags.mutex);
 	if ((tags = memory->tags)) {
-		/* If comptags exist for the memory, but a different amount
-		 * than requested, the buffer is being mapped with settings
-		 * that are incompatible with existing mappings.
-		 */
+		 
 		if (tags->mn && tags->mn->length != nr) {
 			mutex_unlock(&fb->tags.mutex);
 			return -EINVAL;
@@ -78,15 +53,7 @@ nvkm_memory_tags_get(struct nvkm_memory *memory, struct nvkm_device *device,
 		if (clr)
 			clr(device, tags->mn->offset, tags->mn->length);
 	} else {
-		/* Failure to allocate HW comptags is not an error, the
-		 * caller should fall back to an uncompressed map.
-		 *
-		 * As memory can be mapped in multiple places, we still
-		 * need to track the allocation failure and ensure that
-		 * any additional mappings remain uncompressed.
-		 *
-		 * This is handled by returning an empty nvkm_tags.
-		 */
+		 
 		tags->mn = NULL;
 	}
 

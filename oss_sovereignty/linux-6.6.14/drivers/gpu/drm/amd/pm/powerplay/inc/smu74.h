@@ -1,25 +1,4 @@
-/*
- * Copyright 2014 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 
 #ifndef SMU74_H
@@ -131,15 +110,15 @@ typedef struct {
 
 #define SMU_MAX_SMIO_LEVELS              4
 
-#define SMU74_MAX_LEVELS_GRAPHICS        SMU__NUM_SCLK_DPM_STATE   /* SCLK + SQ DPM + ULV */
-#define SMU74_MAX_LEVELS_MEMORY          SMU__NUM_MCLK_DPM_LEVELS   /* MCLK Levels DPM */
-#define SMU74_MAX_LEVELS_GIO             SMU__NUM_LCLK_DPM_LEVELS  /* LCLK Levels */
-#define SMU74_MAX_LEVELS_LINK            SMU__NUM_PCIE_DPM_LEVELS  /* PCIe speed and number of lanes */
-#define SMU74_MAX_LEVELS_UVD             8   /* VCLK/DCLK levels for UVD */
-#define SMU74_MAX_LEVELS_VCE             8   /* ECLK levels for VCE */
-#define SMU74_MAX_LEVELS_ACP             8   /* ACLK levels for ACP */
-#define SMU74_MAX_LEVELS_SAMU            8   /* SAMCLK levels for SAMU */
-#define SMU74_MAX_ENTRIES_SMIO           32  /* Number of entries in SMIO table */
+#define SMU74_MAX_LEVELS_GRAPHICS        SMU__NUM_SCLK_DPM_STATE    
+#define SMU74_MAX_LEVELS_MEMORY          SMU__NUM_MCLK_DPM_LEVELS    
+#define SMU74_MAX_LEVELS_GIO             SMU__NUM_LCLK_DPM_LEVELS   
+#define SMU74_MAX_LEVELS_LINK            SMU__NUM_PCIE_DPM_LEVELS   
+#define SMU74_MAX_LEVELS_UVD             8    
+#define SMU74_MAX_LEVELS_VCE             8    
+#define SMU74_MAX_LEVELS_ACP             8    
+#define SMU74_MAX_LEVELS_SAMU            8    
+#define SMU74_MAX_ENTRIES_SMIO           32   
 
 #define DPM_NO_LIMIT 0
 #define DPM_NO_UP 1
@@ -174,7 +153,7 @@ typedef struct {
 #define SCRATCH_B_CURR_SAMU_INDEX_SHIFT 27
 #define SCRATCH_B_CURR_SAMU_INDEX_MASK  (0x7<<SCRATCH_B_CURR_SAMU_INDEX_SHIFT)
 
-/* Virtualization Defines */
+ 
 #define CG_XDMA_MASK  0x1
 #define CG_XDMA_SHIFT 0
 #define CG_UVD_MASK   0x2
@@ -388,7 +367,7 @@ struct SMU7_VoltageScoreboard {
 
 typedef struct SMU7_VoltageScoreboard SMU7_VoltageScoreboard;
 
-#define SMU7_MAX_PCIE_LINK_SPEEDS 3 /* 0:Gen1 1:Gen2 2:Gen3 */
+#define SMU7_MAX_PCIE_LINK_SPEEDS 3  
 
 struct SMU7_PCIeLinkSpeedScoreboard {
 	uint8_t     DpmEnable;
@@ -498,7 +477,7 @@ typedef struct SMU7_ThermalScoreboard SMU7_ThermalScoreboard;
 #define SMU7_VCE_MCLK_HANDSHAKE_DISABLE                  0x00010000
 #define SMU7_VCE_SCLK_HANDSHAKE_DISABLE                  0x00020000
 
-/* All 'soft registers' should be uint32_t. */
+ 
 struct SMU74_SoftRegisters {
 	uint32_t        RefClockFrequency;
 	uint32_t        PmTimerPeriod;
@@ -636,11 +615,9 @@ typedef struct SMU7_Local_Cac_Table SMU7_Local_Cac_Table;
 
 #pragma pack(pop)
 
-/* Description of Clock Gating bitmask for Tonga:
- * System Clock Gating
- */
-#define CG_SYS_BITMASK_FIRST_BIT      0  /* First bit of Sys CG bitmask */
-#define CG_SYS_BITMASK_LAST_BIT       9  /* Last bit of Sys CG bitmask */
+ 
+#define CG_SYS_BITMASK_FIRST_BIT      0   
+#define CG_SYS_BITMASK_LAST_BIT       9   
 #define CG_SYS_BIF_MGLS_SHIFT         0
 #define CG_SYS_ROM_SHIFT              1
 #define CG_SYS_MC_MGCG_SHIFT          2
@@ -665,9 +642,9 @@ typedef struct SMU7_Local_Cac_Table SMU7_Local_Cac_Table;
 #define CG_SYS_DRM_MGLS_MASK          0x200
 #define CG_SYS_BIF_MGCG_MASK          0x400
 
-/* Graphics Clock Gating */
-#define CG_GFX_BITMASK_FIRST_BIT      16 /* First bit of Gfx CG bitmask */
-#define CG_GFX_BITMASK_LAST_BIT       24 /* Last bit of Gfx CG bitmask */
+ 
+#define CG_GFX_BITMASK_FIRST_BIT      16  
+#define CG_GFX_BITMASK_LAST_BIT       24  
 
 #define CG_GFX_CGCG_SHIFT             16
 #define CG_GFX_CGLS_SHIFT             17
@@ -690,8 +667,7 @@ typedef struct SMU7_Local_Cac_Table SMU7_Local_Cac_Table;
 #define CG_GFX_CP_LS_MASK             0x01000000
 
 
-/* Voltage Regulator Configuration
-VR Config info is contained in dpmTable.VRConfig */
+ 
 
 #define VRCONF_VDDC_MASK         0x000000FF
 #define VRCONF_VDDC_SHIFT        0
@@ -709,12 +685,12 @@ VR Config info is contained in dpmTable.VRConfig */
 #define VR_SMIO_PATTERN_2        4
 #define VR_STATIC_VOLTAGE        5
 
-/* Clock Stretcher Configuration */
+ 
 
 #define CLOCK_STRETCHER_MAX_ENTRIES 0x4
 #define CKS_LOOKUPTable_MAX_ENTRIES 0x4
 
-/* The 'settings' field is subdivided in the following way: */
+ 
 #define CLOCK_STRETCHER_SETTING_DDT_MASK             0x01
 #define CLOCK_STRETCHER_SETTING_DDT_SHIFT            0x0
 #define CLOCK_STRETCHER_SETTING_STRETCH_AMOUNT_MASK  0x1E
@@ -791,7 +767,7 @@ struct VFT_TABLE_t {
 typedef struct VFT_TABLE_t VFT_TABLE_t;
 
 
-/* Total margin, root mean square of Fmax + DC + Platform */
+ 
 struct AVFS_Margin_t {
 	VFT_CELL_t Cell[NUM_VFT_COLUMNS];
 };

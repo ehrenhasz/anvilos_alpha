@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * es8328.h  --  ES8328 ALSA SoC Audio driver
- */
+ 
+ 
 
 #ifndef _ES8328_H
 #define _ES8328_H
@@ -176,12 +174,12 @@ int es8328_probe(struct device *dev, struct regmap *regmap);
 #define ES8328_DACCONTROL7_VPP_SCALE_4p0	(1 << 0)
 #define ES8328_DACCONTROL7_VPP_SCALE_3p0	(2 << 0)
 #define ES8328_DACCONTROL7_VPP_SCALE_2p5	(3 << 0)
-#define ES8328_DACCONTROL7_SHELVING_STRENGTH (1 << 2) /* In eights */
+#define ES8328_DACCONTROL7_SHELVING_STRENGTH (1 << 2)  
 #define ES8328_DACCONTROL7_MONO		(1 << 5)
 #define ES8328_DACCONTROL7_ZEROR	(1 << 6)
 #define ES8328_DACCONTROL7_ZEROL	(1 << 7)
 
-/* Shelving filter */
+ 
 #define ES8328_DACCONTROL8	0x1e
 #define ES8328_DACCONTROL9	0x1f
 #define ES8328_DACCONTROL10	0x20
@@ -243,31 +241,31 @@ int es8328_probe(struct device *dev, struct regmap *regmap);
 #define ES8328_DACCONTROL23_OUT3_RIGHT_MIXER	(3 << 5)
 #define ES8328_DACCONTROL23_ROUT2INV		(1 << 7)
 
-/* LOUT1 Amplifier */
+ 
 #define ES8328_LOUT1VOL 0x2e
 #define ES8328_LOUT1VOL_MASK (0 << 5)
 #define ES8328_LOUT1VOL_MAX (0x24)
 
-/* ROUT1 Amplifier */
+ 
 #define ES8328_ROUT1VOL 0x2f
 #define ES8328_ROUT1VOL_MASK (0 << 5)
 #define ES8328_ROUT1VOL_MAX (0x24)
 
 #define ES8328_OUT1VOL_MAX (0x24)
 
-/* LOUT2 Amplifier */
+ 
 #define ES8328_LOUT2VOL 0x30
 #define ES8328_LOUT2VOL_MASK (0 << 5)
 #define ES8328_LOUT2VOL_MAX (0x24)
 
-/* ROUT2 Amplifier */
+ 
 #define ES8328_ROUT2VOL 0x31
 #define ES8328_ROUT2VOL_MASK (0 << 5)
 #define ES8328_ROUT2VOL_MAX (0x24)
 
 #define ES8328_OUT2VOL_MAX (0x24)
 
-/* Mono Out Amplifier */
+ 
 #define ES8328_MONOOUTVOL 0x32
 #define ES8328_MONOOUTVOL_MASK (0 << 5)
 #define ES8328_MONOOUTVOL_MAX (0x24)

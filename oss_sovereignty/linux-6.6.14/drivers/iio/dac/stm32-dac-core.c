@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file is part of STM32 DAC driver
- *
- * Copyright (C) 2017, STMicroelectronics - All Rights Reserved
- * Author: Fabrice Gasnier <fabrice.gasnier@st.com>.
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -17,22 +11,14 @@
 
 #include "stm32-dac-core.h"
 
-/**
- * struct stm32_dac_priv - stm32 DAC core private data
- * @pclk:		peripheral clock common for all DACs
- * @vref:		regulator reference
- * @common:		Common data for all DAC instances
- */
+ 
 struct stm32_dac_priv {
 	struct clk *pclk;
 	struct regulator *vref;
 	struct stm32_dac_common common;
 };
 
-/**
- * struct stm32_dac_cfg - DAC configuration
- * @has_hfsel: DAC has high frequency control
- */
+ 
 struct stm32_dac_cfg {
 	bool has_hfsel;
 };
@@ -152,7 +138,7 @@ static int stm32_dac_probe(struct platform_device *pdev)
 	}
 
 	if (cfg && cfg->has_hfsel) {
-		/* When clock speed is higher than 80MHz, set HFSEL */
+		 
 		priv->common.hfsel = (clk_get_rate(priv->pclk) > 80000000UL);
 		ret = regmap_update_bits(regmap, STM32_DAC_CR,
 					 STM32H7_DAC_CR_HFSEL,
@@ -202,7 +188,7 @@ static int stm32_dac_core_resume(struct device *dev)
 	int ret;
 
 	if (priv->common.hfsel) {
-		/* restore hfsel (maybe lost under low power state) */
+		 
 		ret = regmap_update_bits(priv->common.regmap, STM32_DAC_CR,
 					 STM32H7_DAC_CR_HFSEL,
 					 STM32H7_DAC_CR_HFSEL);

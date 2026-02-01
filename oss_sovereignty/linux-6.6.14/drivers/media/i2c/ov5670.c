@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2017 Intel Corporation.
+
+
 
 #include <asm/unaligned.h>
 #include <linux/acpi.h>
@@ -35,34 +35,30 @@
 #define OV5670_MIPI_SC_CTRL0_MIPI_EN		BIT(4)
 #define OV5670_MIPI_SC_CTRL0_RESERVED		BIT(1)
 
-/* vertical-timings from sensor */
+ 
 #define OV5670_REG_VTS			0x380e
-#define OV5670_VTS_30FPS		0x0808 /* default for 30 fps */
+#define OV5670_VTS_30FPS		0x0808  
 #define OV5670_VTS_MAX			0xffff
 
-/* horizontal-timings from sensor */
+ 
 #define OV5670_REG_HTS			0x380c
 
-/*
- * Pixels-per-line(PPL) = Time-per-line * pixel-rate
- * In OV5670, Time-per-line = HTS/SCLK.
- * HTS is fixed for all resolutions, not recommended to change.
- */
-#define OV5670_FIXED_PPL		2724	/* Pixels per line */
+ 
+#define OV5670_FIXED_PPL		2724	 
 
-/* Exposure controls from sensor */
+ 
 #define OV5670_REG_EXPOSURE		0x3500
 #define	OV5670_EXPOSURE_MIN		4
 #define	OV5670_EXPOSURE_STEP		1
 
-/* Analog gain controls from sensor */
+ 
 #define OV5670_REG_ANALOG_GAIN		0x3508
 #define	ANALOG_GAIN_MIN			0
 #define	ANALOG_GAIN_MAX			8191
 #define	ANALOG_GAIN_STEP		1
 #define	ANALOG_GAIN_DEFAULT		128
 
-/* Digital gain controls from sensor */
+ 
 #define OV5670_REG_R_DGTL_GAIN		0x5032
 #define OV5670_REG_G_DGTL_GAIN		0x5034
 #define OV5670_REG_B_DGTL_GAIN		0x5036
@@ -71,7 +67,7 @@
 #define OV5670_DGTL_GAIN_STEP		1
 #define OV5670_DGTL_GAIN_DEFAULT	1024
 
-/* Test Pattern Control */
+ 
 #define OV5670_REG_TEST_PATTERN		0x4303
 #define OV5670_TEST_PATTERN_ENABLE	BIT(3)
 #define OV5670_REG_TEST_PATTERN_CTRL	0x4320
@@ -80,11 +76,11 @@
 #define OV5670_REG_VALUE_16BIT		2
 #define OV5670_REG_VALUE_24BIT		3
 
-/* Pixel Array */
+ 
 #define OV5670_NATIVE_WIDTH		2624
 #define OV5670_NATIVE_HEIGHT		1980
 
-/* Initial number of frames to skip to avoid possible garbage */
+ 
 #define OV5670_NUM_OF_SKIP_FRAMES	2
 
 struct ov5670_reg {
@@ -102,41 +98,37 @@ struct ov5670_link_freq_config {
 };
 
 static const char * const ov5670_supply_names[] = {
-	"avdd",		/* Analog power */
-	"dvdd",		/* Digital power */
-	"dovdd",	/* Digital output power */
+	"avdd",		 
+	"dvdd",		 
+	"dovdd",	 
 };
 
 #define OV5670_NUM_SUPPLIES ARRAY_SIZE(ov5670_supply_names)
 
 struct ov5670_mode {
-	/* Frame width in pixels */
+	 
 	u32 width;
 
-	/* Frame height in pixels */
+	 
 	u32 height;
 
-	/* Default vertical timining size */
+	 
 	u32 vts_def;
 
-	/* Min vertical timining size */
+	 
 	u32 vts_min;
 
-	/* Link frequency needed for this resolution */
+	 
 	u32 link_freq_index;
 
-	/* Analog crop rectangle */
+	 
 	const struct v4l2_rect *analog_crop;
 
-	/* Sensor register settings for this resolution */
+	 
 	const struct ov5670_reg_list reg_list;
 };
 
-/*
- * All the modes supported by the driver are obtained by subsampling the
- * full pixel array. The below values are reflected in registers from
- * 0x3800-0x3807 in the modes register-value tables.
- */
+ 
 static const struct v4l2_rect ov5670_analog_crop = {
 	.left	= 12,
 	.top	= 4,
@@ -1756,7 +1748,7 @@ static const char * const ov5670_test_pattern_menu[] = {
 	"Vertical Color Bar Type 1",
 };
 
-/* Supported link frequencies */
+ 
 #define OV5670_LINK_FREQ_422MHZ		422400000
 #define OV5670_LINK_FREQ_422MHZ_INDEX	0
 static const struct ov5670_link_freq_config link_freq_configs[] = {
@@ -1772,11 +1764,7 @@ static const s64 link_freq_menu_items[] = {
 	OV5670_LINK_FREQ_422MHZ
 };
 
-/*
- * OV5670 sensor supports following resolutions with full FOV:
- * 4:3  ==> {2592x1944, 1296x972, 648x486}
- * 16:9 ==> {2560x1440, 1280x720, 640x360}
- */
+ 
 static const struct ov5670_mode supported_modes[] = {
 	{
 		.width = 2592,
@@ -1859,38 +1847,38 @@ struct ov5670 {
 	struct v4l2_fwnode_endpoint endpoint;
 
 	struct v4l2_ctrl_handler ctrl_handler;
-	/* V4L2 Controls */
+	 
 	struct v4l2_ctrl *link_freq;
 	struct v4l2_ctrl *pixel_rate;
 	struct v4l2_ctrl *vblank;
 	struct v4l2_ctrl *hblank;
 	struct v4l2_ctrl *exposure;
 
-	/* Current mode */
+	 
 	const struct ov5670_mode *cur_mode;
 
-	/* xvclk input clock */
+	 
 	struct clk *xvclk;
 
-	/* Regulators */
+	 
 	struct regulator_bulk_data supplies[OV5670_NUM_SUPPLIES];
 
-	/* Power-down and reset gpios. */
-	struct gpio_desc *pwdn_gpio; /* PWDNB pin. */
-	struct gpio_desc *reset_gpio; /* XSHUTDOWN pin. */
+	 
+	struct gpio_desc *pwdn_gpio;  
+	struct gpio_desc *reset_gpio;  
 
-	/* To serialize asynchronus callbacks */
+	 
 	struct mutex mutex;
 
-	/* Streaming on/off */
+	 
 	bool streaming;
-	/* True if the device has been identified */
+	 
 	bool identified;
 };
 
 #define to_ov5670(_sd)	container_of(_sd, struct ov5670, sd)
 
-/* Read registers up to 4 at a time */
+ 
 static int ov5670_read_reg(struct ov5670 *ov5670, u16 reg, unsigned int len,
 			   u32 *val)
 {
@@ -1905,13 +1893,13 @@ static int ov5670_read_reg(struct ov5670 *ov5670, u16 reg, unsigned int len,
 		return -EINVAL;
 
 	data_be_p = (u8 *)&data_be;
-	/* Write register address */
+	 
 	msgs[0].addr = client->addr;
 	msgs[0].flags = 0;
 	msgs[0].len = 2;
 	msgs[0].buf = (u8 *)&reg_addr_be;
 
-	/* Read data from register */
+	 
 	msgs[1].addr = client->addr;
 	msgs[1].flags = I2C_M_RD;
 	msgs[1].len = len;
@@ -1926,7 +1914,7 @@ static int ov5670_read_reg(struct ov5670 *ov5670, u16 reg, unsigned int len,
 	return 0;
 }
 
-/* Write registers up to 4 at a time */
+ 
 static int ov5670_write_reg(struct ov5670 *ov5670, u16 reg, unsigned int len,
 			    u32 val)
 {
@@ -1957,7 +1945,7 @@ static int ov5670_write_reg(struct ov5670 *ov5670, u16 reg, unsigned int len,
 	return 0;
 }
 
-/* Write a list of registers */
+ 
 static int ov5670_write_regs(struct ov5670 *ov5670,
 			     const struct ov5670_reg *regs, unsigned int len)
 {
@@ -2009,7 +1997,7 @@ static int ov5670_enable_test_pattern(struct ov5670 *ov5670, u32 pattern)
 	u32 val;
 	int ret;
 
-	/* Set the bayer order that we support */
+	 
 	ret = ov5670_write_reg(ov5670, OV5670_REG_TEST_PATTERN_CTRL,
 			       OV5670_REG_VALUE_08BIT, 0);
 	if (ret)
@@ -2029,7 +2017,7 @@ static int ov5670_enable_test_pattern(struct ov5670 *ov5670, u32 pattern)
 				OV5670_REG_VALUE_08BIT, val);
 }
 
-/* Initialize control handlers */
+ 
 static int ov5670_set_ctrl(struct v4l2_ctrl *ctrl)
 {
 	struct ov5670 *ov5670 = container_of(ctrl->handler,
@@ -2038,10 +2026,10 @@ static int ov5670_set_ctrl(struct v4l2_ctrl *ctrl)
 	s64 max;
 	int ret;
 
-	/* Propagate change of current control to all related controls */
+	 
 	switch (ctrl->id) {
 	case V4L2_CID_VBLANK:
-		/* Update max exposure while meeting expected vblanking */
+		 
 		max = ov5670->cur_mode->height + ctrl->val - 8;
 		__v4l2_ctrl_modify_range(ov5670->exposure,
 					 ov5670->exposure->minimum, max,
@@ -2049,7 +2037,7 @@ static int ov5670_set_ctrl(struct v4l2_ctrl *ctrl)
 		break;
 	}
 
-	/* V4L2 controls values will be applied only when power is already up */
+	 
 	if (!pm_runtime_get_if_in_use(&client->dev))
 		return 0;
 
@@ -2062,12 +2050,12 @@ static int ov5670_set_ctrl(struct v4l2_ctrl *ctrl)
 		ret = ov5670_update_digital_gain(ov5670, ctrl->val);
 		break;
 	case V4L2_CID_EXPOSURE:
-		/* 4 least significant bits of expsoure are fractional part */
+		 
 		ret = ov5670_write_reg(ov5670, OV5670_REG_EXPOSURE,
 				       OV5670_REG_VALUE_24BIT, ctrl->val << 4);
 		break;
 	case V4L2_CID_VBLANK:
-		/* Update VTS that meets expected vertical blanking */
+		 
 		ret = ov5670_write_reg(ov5670, OV5670_REG_VTS,
 				       OV5670_REG_VALUE_16BIT,
 				       ov5670->cur_mode->height + ctrl->val);
@@ -2096,7 +2084,7 @@ static const struct v4l2_ctrl_ops ov5670_ctrl_ops = {
 	.s_ctrl = ov5670_set_ctrl,
 };
 
-/* Initialize control handlers */
+ 
 static int ov5670_init_controls(struct ov5670 *ov5670)
 {
 	struct v4l2_mbus_config_mipi_csi2 *bus_mipi_csi2 =
@@ -2125,7 +2113,7 @@ static int ov5670_init_controls(struct ov5670 *ov5670)
 	if (ov5670->link_freq)
 		ov5670->link_freq->flags |= V4L2_CTRL_FLAG_READ_ONLY;
 
-	/* By default, V4L2_CID_PIXEL_RATE is read only */
+	 
 	lanes_count = bus_mipi_csi2->num_data_lanes;
 	mipi_pixel_rate = OV5670_LINK_FREQ_422MHZ * 2 * lanes_count / 10;
 
@@ -2151,17 +2139,17 @@ static int ov5670_init_controls(struct ov5670 *ov5670)
 	if (ov5670->hblank)
 		ov5670->hblank->flags |= V4L2_CTRL_FLAG_READ_ONLY;
 
-	/* Get min, max, step, default from sensor */
+	 
 	v4l2_ctrl_new_std(ctrl_hdlr, &ov5670_ctrl_ops, V4L2_CID_ANALOGUE_GAIN,
 			  ANALOG_GAIN_MIN, ANALOG_GAIN_MAX, ANALOG_GAIN_STEP,
 			  ANALOG_GAIN_DEFAULT);
 
-	/* Digital gain */
+	 
 	v4l2_ctrl_new_std(ctrl_hdlr, &ov5670_ctrl_ops, V4L2_CID_DIGITAL_GAIN,
 			  OV5670_DGTL_GAIN_MIN, OV5670_DGTL_GAIN_MAX,
 			  OV5670_DGTL_GAIN_STEP, OV5670_DGTL_GAIN_DEFAULT);
 
-	/* Get min, max, step, default from sensor */
+	 
 	exposure_max = ov5670->cur_mode->vts_def - 8;
 	ov5670->exposure = v4l2_ctrl_new_std(ctrl_hdlr, &ov5670_ctrl_ops,
 					     V4L2_CID_EXPOSURE,
@@ -2224,7 +2212,7 @@ static int ov5670_enum_mbus_code(struct v4l2_subdev *sd,
 				 struct v4l2_subdev_state *sd_state,
 				 struct v4l2_subdev_mbus_code_enum *code)
 {
-	/* Only one bayer order GRBG is supported */
+	 
 	if (code->index > 0)
 		return -EINVAL;
 
@@ -2319,12 +2307,12 @@ static int ov5670_set_pad_format(struct v4l2_subdev *sd,
 
 		lanes_count = bus_mipi_csi2->num_data_lanes;
 		link_freq = link_freq_menu_items[mode->link_freq_index];
-		/* pixel_rate = link_freq * 2 * nr_of_lanes / bits_per_sample */
+		 
 		mipi_pixel_rate = div_s64(link_freq * 2 * lanes_count, 10);
 		__v4l2_ctrl_s_ctrl_int64(
 			ov5670->pixel_rate,
 			mipi_pixel_rate);
-		/* Update limits and set FPS to default */
+		 
 		vblank_def = ov5670->cur_mode->vts_def -
 			     ov5670->cur_mode->height;
 		__v4l2_ctrl_modify_range(
@@ -2350,7 +2338,7 @@ static int ov5670_get_skip_frames(struct v4l2_subdev *sd, u32 *frames)
 	return 0;
 }
 
-/* Verify chip ID */
+ 
 static int ov5670_identify_module(struct ov5670 *ov5670)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&ov5670->sd);
@@ -2389,7 +2377,7 @@ static int ov5670_mipi_configure(struct ov5670 *ov5670)
 				OV5670_MIPI_SC_CTRL0_RESERVED);
 }
 
-/* Prepare streaming by writing default values and customized values */
+ 
 static int ov5670_start_streaming(struct ov5670 *ov5670)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&ov5670->sd);
@@ -2401,7 +2389,7 @@ static int ov5670_start_streaming(struct ov5670 *ov5670)
 	if (ret)
 		return ret;
 
-	/* Get out of from software reset */
+	 
 	ret = ov5670_write_reg(ov5670, OV5670_REG_SOFTWARE_RST,
 			       OV5670_REG_VALUE_08BIT, OV5670_SOFTWARE_RST);
 	if (ret) {
@@ -2410,7 +2398,7 @@ static int ov5670_start_streaming(struct ov5670 *ov5670)
 		return ret;
 	}
 
-	/* Setup PLL */
+	 
 	link_freq_index = ov5670->cur_mode->link_freq_index;
 	reg_list = &link_freq_configs[link_freq_index].reg_list;
 	ret = ov5670_write_reg_list(ov5670, reg_list);
@@ -2419,7 +2407,7 @@ static int ov5670_start_streaming(struct ov5670 *ov5670)
 		return ret;
 	}
 
-	/* Apply default values of current mode */
+	 
 	reg_list = &ov5670->cur_mode->reg_list;
 	ret = ov5670_write_reg_list(ov5670, reg_list);
 	if (ret) {
@@ -2437,7 +2425,7 @@ static int ov5670_start_streaming(struct ov5670 *ov5670)
 	if (ret)
 		return ret;
 
-	/* Write stream on list */
+	 
 	ret = ov5670_write_reg(ov5670, OV5670_REG_MODE_SELECT,
 			       OV5670_REG_VALUE_08BIT, OV5670_MODE_STREAMING);
 	if (ret) {
@@ -2458,9 +2446,7 @@ static int ov5670_stop_streaming(struct ov5670 *ov5670)
 	if (ret)
 		dev_err(&client->dev, "%s failed to set stream\n", __func__);
 
-	/* Return success even if it was an error, as there is nothing the
-	 * caller can do about it.
-	 */
+	 
 	return 0;
 }
 
@@ -2519,7 +2505,7 @@ static int __maybe_unused ov5670_runtime_resume(struct device *dev)
 	gpiod_set_value_cansleep(ov5670->pwdn_gpio, 0);
 	gpiod_set_value_cansleep(ov5670->reset_gpio, 0);
 
-	/* 8192 * 2 clock pulses before the first SCCB transaction. */
+	 
 	delay_us = DIV_ROUND_UP(8192 * 2 * 1000,
 				DIV_ROUND_UP(OV5670_XVCLK_FREQ, 1000));
 	fsleep(delay_us);
@@ -2707,7 +2693,7 @@ static int ov5670_probe(struct i2c_client *client)
 		return -EINVAL;
 	}
 
-	/* Initialize subdev */
+	 
 	v4l2_i2c_subdev_init(&ov5670->sd, client, &ov5670_subdev_ops);
 
 	ret = ov5670_regulators_probe(ov5670);
@@ -2718,7 +2704,7 @@ static int ov5670_probe(struct i2c_client *client)
 	if (ret)
 		return dev_err_probe(&client->dev, ret, "GPIO probe failed\n");
 
-	/* Graph Endpoint */
+	 
 	handle = fwnode_graph_get_next_endpoint(dev_fwnode(&client->dev), NULL);
 	if (!handle)
 		return dev_err_probe(&client->dev, -ENXIO, "Endpoint for node get failed\n");
@@ -2739,7 +2725,7 @@ static int ov5670_probe(struct i2c_client *client)
 			goto error_endpoint;
 		}
 
-		/* Check module identity */
+		 
 		ret = ov5670_identify_module(ov5670);
 		if (ret) {
 			dev_err_probe(&client->dev, ret, "ov5670_identify_module() error\n");
@@ -2749,7 +2735,7 @@ static int ov5670_probe(struct i2c_client *client)
 
 	mutex_init(&ov5670->mutex);
 
-	/* Set default mode to max resolution */
+	 
 	ov5670->cur_mode = &supported_modes[0];
 
 	ret = ov5670_init_controls(ov5670);
@@ -2763,7 +2749,7 @@ static int ov5670_probe(struct i2c_client *client)
 	ov5670->sd.entity.ops = &ov5670_subdev_entity_ops;
 	ov5670->sd.entity.function = MEDIA_ENT_F_CAM_SENSOR;
 
-	/* Source pad initialization */
+	 
 	ov5670->pad.flags = MEDIA_PAD_FL_SOURCE;
 	ret = media_entity_pads_init(&ov5670->sd.entity, 1, &ov5670->pad);
 	if (ret) {
@@ -2773,12 +2759,12 @@ static int ov5670_probe(struct i2c_client *client)
 
 	ov5670->streaming = false;
 
-	/* Set the device's state to active if it's in D0 state. */
+	 
 	if (full_power)
 		pm_runtime_set_active(&client->dev);
 	pm_runtime_enable(&client->dev);
 
-	/* Async register for subdev */
+	 
 	ret = v4l2_async_register_subdev_sensor(&ov5670->sd);
 	if (ret < 0) {
 		dev_err_probe(&client->dev, ret, "v4l2_async_register_subdev() error\n");
@@ -2834,7 +2820,7 @@ static const struct dev_pm_ops ov5670_pm_ops = {
 #ifdef CONFIG_ACPI
 static const struct acpi_device_id ov5670_acpi_ids[] = {
 	{ "INT3479" },
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(acpi, ov5670_acpi_ids);
@@ -2842,7 +2828,7 @@ MODULE_DEVICE_TABLE(acpi, ov5670_acpi_ids);
 
 static const struct of_device_id ov5670_of_ids[] = {
 	{ .compatible = "ovti,ov5670" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ov5670_of_ids);
 

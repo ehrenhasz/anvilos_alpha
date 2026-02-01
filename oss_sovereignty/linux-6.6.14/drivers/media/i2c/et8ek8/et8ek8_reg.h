@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * et8ek8_reg.h
- *
- * Copyright (C) 2008 Nokia Corporation
- *
- * Contact: Sakari Ailus <sakari.ailus@iki.fi>
- *          Tuukka Toivonen <tuukkat76@gmail.com>
- */
+ 
+ 
 
 #ifndef ET8EK8REGS_H
 #define ET8EK8REGS_H
@@ -20,7 +13,7 @@ struct v4l2_mbus_framefmt;
 struct v4l2_subdev_pad_mbus_code_enum;
 
 struct et8ek8_mode {
-	/* Physical sensor resolution and current image window */
+	 
 	u16 sensor_width;
 	u16 sensor_height;
 	u16 sensor_window_origin_x;
@@ -28,7 +21,7 @@ struct et8ek8_mode {
 	u16 sensor_window_width;
 	u16 sensor_window_height;
 
-	/* Image data coming from sensor (after scaling) */
+	 
 	u16 width;
 	u16 height;
 	u16 window_origin_x;
@@ -36,12 +29,12 @@ struct et8ek8_mode {
 	u16 window_width;
 	u16 window_height;
 
-	u32 pixel_clock;		/* in Hz */
-	u32 ext_clock;			/* in Hz */
+	u32 pixel_clock;		 
+	u32 ext_clock;			 
 	struct v4l2_fract timeperframe;
-	u32 max_exp;			/* Maximum exposure value */
-	u32 bus_format;			/* MEDIA_BUS_FMT_ */
-	u32 sensitivity;		/* 16.16 fixed point */
+	u32 max_exp;			 
+	u32 bus_format;			 
+	u32 sensitivity;		 
 };
 
 #define ET8EK8_REG_8BIT			1
@@ -50,11 +43,11 @@ struct et8ek8_mode {
 #define ET8EK8_REG_TERM			0xff
 struct et8ek8_reg {
 	u16 type;
-	u16 reg;			/* 16-bit offset */
-	u32 val;			/* 8/16/32-bit value */
+	u16 reg;			 
+	u32 val;			 
 };
 
-/* Possible struct smia_reglist types. */
+ 
 #define ET8EK8_REGLIST_STANDBY		0
 #define ET8EK8_REGLIST_POWERON		1
 #define ET8EK8_REGLIST_RESUME		2
@@ -85,4 +78,4 @@ struct et8ek8_meta_reglist {
 
 extern struct et8ek8_meta_reglist meta_reglist;
 
-#endif /* ET8EK8REGS */
+#endif  

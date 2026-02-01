@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 
 #ifndef _ROCKCHIP_AV1_ENTROPYMODE_H_
 #define _ROCKCHIP_AV1_ENTROPYMODE_H_
@@ -10,7 +10,7 @@ struct hantro_ctx;
 #define AV1_INTER_MODE_CONTEXTS 15
 #define AV1_INTRA_MODES 13
 #define AV1_REF_CONTEXTS 3
-#define AV1_SWITCHABLE_FILTERS 3	/* number of switchable filters */
+#define AV1_SWITCHABLE_FILTERS 3	 
 #define AV1_TX_SIZE_CONTEXTS 3
 #define BLOCK_SIZE_GROUPS 4
 #define BR_CDF_SIZE 4
@@ -139,20 +139,20 @@ enum txsize {
 enum { SIMPLE_TRANSLATION, OBMC_CAUSAL, MOTION_MODE_COUNT };
 
 enum mb_prediction_mode {
-	DC_PRED,		/* average of above and left pixels */
-	V_PRED,			/* vertical prediction */
-	H_PRED,			/* horizontal prediction */
-	D45_PRED,		/* Directional 45 deg prediction  [anti-clockwise from 0 deg hor] */
-	D135_PRED,		/* Directional 135 deg prediction [anti-clockwise from 0 deg hor] */
-	D117_PRED,		/* Directional 112 deg prediction [anti-clockwise from 0 deg hor] */
-	D153_PRED,		/* Directional 157 deg prediction [anti-clockwise from 0 deg hor] */
-	D27_PRED,		/* Directional 22 deg prediction  [anti-clockwise from 0 deg hor] */
-	D63_PRED,		/* Directional 67 deg prediction  [anti-clockwise from 0 deg hor] */
+	DC_PRED,		 
+	V_PRED,			 
+	H_PRED,			 
+	D45_PRED,		 
+	D135_PRED,		 
+	D117_PRED,		 
+	D153_PRED,		 
+	D27_PRED,		 
+	D63_PRED,		 
 	SMOOTH_PRED,
 	TM_PRED_AV1 = SMOOTH_PRED,
-	SMOOTH_V_PRED,		// Vertical interpolation
-	SMOOTH_H_PRED,		// Horizontal interpolation
-	TM_PRED,		/* Truemotion prediction */
+	SMOOTH_V_PRED,		
+	SMOOTH_H_PRED,		
+	TM_PRED,		 
 	PAETH_PRED = TM_PRED,
 	NEARESTMV,
 	NEARMV,
@@ -238,7 +238,7 @@ struct av1cdfs {
 	u16 comp_group_idx_cdf[COMP_GROUP_IDX_CONTEXTS][CDF_SIZE(2)];
 	u16 compound_idx_cdf[COMP_INDEX_CONTEXTS][CDF_SIZE(2)];
 	u16 dummy0[14];
-	// Palette index contexts; sizes 1/7, 2/6, 3/5 packed together
+	
 	u16 palette_y_color_index_cdf[PALETTE_IDX_CONTEXTS][8];
 	u16 palette_uv_color_index_cdf[PALETTE_IDX_CONTEXTS][8];
 	u16 tx_type_intra0_cdf[EXTTX_SIZES][AV1_INTRA_MODES][8];
@@ -269,4 +269,4 @@ void rockchip_av1_set_default_cdfs(struct av1cdfs *cdfs,
 				   struct mvcdfs *cdfs_ndvc);
 void rockchip_av1_default_coeff_probs(u32 base_qindex, void *ptr);
 
-#endif /* _ROCKCHIP_AV1_ENTROPYMODE_H_ */
+#endif  

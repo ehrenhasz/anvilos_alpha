@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas RZ/G1H System Controller
- *
- * Copyright (C) 2020 Renesas Electronics Corp.
- */
+
+ 
 
 #include <linux/kernel.h>
 

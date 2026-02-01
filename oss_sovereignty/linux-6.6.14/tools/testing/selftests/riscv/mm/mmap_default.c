@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <sys/mman.h>
 #include <mmap_test.h>
 
@@ -6,7 +6,7 @@
 
 TEST(default_rlimit)
 {
-// Only works on 64 bit
+
 #if __riscv_xlen == 64
 	struct addresses mmap_addresses;
 

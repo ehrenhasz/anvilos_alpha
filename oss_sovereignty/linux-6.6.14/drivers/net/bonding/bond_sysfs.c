@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright(c) 2004-2005 Intel Corporation. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -28,9 +26,7 @@
 
 #define to_bond(cd)	((struct bonding *)(netdev_priv(to_net_dev(cd))))
 
-/* "show" function for the bond_masters attribute.
- * The class parameter is ignored.
- */
+ 
 static ssize_t bonding_show_bonds(const struct class *cls,
 				  const struct class_attribute *attr,
 				  char *buf)
@@ -44,7 +40,7 @@ static ssize_t bonding_show_bonds(const struct class *cls,
 
 	list_for_each_entry(bond, &bn->dev_list, bond_list) {
 		if (res > (PAGE_SIZE - IFNAMSIZ)) {
-			/* not enough space for another interface name */
+			 
 			if ((PAGE_SIZE - res) > 10)
 				res = PAGE_SIZE - 10;
 			res += sysfs_emit_at(buf, res, "++more++ ");
@@ -53,7 +49,7 @@ static ssize_t bonding_show_bonds(const struct class *cls,
 		res += sysfs_emit_at(buf, res, "%s ", bond->dev->name);
 	}
 	if (res)
-		buf[res-1] = '\n'; /* eat the leftover space */
+		buf[res-1] = '\n';  
 
 	rtnl_unlock();
 	return res;
@@ -70,11 +66,7 @@ static struct net_device *bond_get_by_name(const struct bond_net *bn, const char
 	return NULL;
 }
 
-/* "store" function for the bond_masters attribute.  This is what
- * creates and deletes entire bonds.
- *
- * The class parameter is ignored.
- */
+ 
 static ssize_t bonding_store_bonds(const struct class *cls,
 				   const struct class_attribute *attr,
 				   const char *buffer, size_t count)
@@ -85,7 +77,7 @@ static ssize_t bonding_store_bonds(const struct class *cls,
 	char *ifname;
 	int rv, res = count;
 
-	sscanf(buffer, "%16s", command); /* IFNAMSIZ*/
+	sscanf(buffer, "%16s", command);  
 	ifname = command + 1;
 	if ((strlen(command) <= 1) ||
 	    !dev_valid_name(ifname))
@@ -117,9 +109,7 @@ static ssize_t bonding_store_bonds(const struct class *cls,
 	} else
 		goto err_no_cmd;
 
-	/* Always return either count or an error.  If you return 0, you'll
-	 * get called forever, which is bad.
-	 */
+	 
 	return res;
 
 err_no_cmd:
@@ -127,7 +117,7 @@ err_no_cmd:
 	return -EPERM;
 }
 
-/* class attribute for bond_masters file.  This ends up in /sys/class/net */
+ 
 static const struct class_attribute class_attr_bonding_masters = {
 	.attr = {
 		.name = "bonding_masters",
@@ -137,7 +127,7 @@ static const struct class_attribute class_attr_bonding_masters = {
 	.store = bonding_store_bonds,
 };
 
-/* Generic "store" method for bonding sysfs option setting */
+ 
 static ssize_t bonding_sysfs_store_option(struct device *d,
 					  struct device_attribute *attr,
 					  const char *buffer, size_t count)
@@ -161,7 +151,7 @@ static ssize_t bonding_sysfs_store_option(struct device *d,
 	return ret;
 }
 
-/* Show the slaves in the current bond. */
+ 
 static ssize_t bonding_show_slaves(struct device *d,
 				   struct device_attribute *attr, char *buf)
 {
@@ -175,7 +165,7 @@ static ssize_t bonding_show_slaves(struct device *d,
 
 	bond_for_each_slave(bond, slave, iter) {
 		if (res > (PAGE_SIZE - IFNAMSIZ)) {
-			/* not enough space for another interface name */
+			 
 			if ((PAGE_SIZE - res) > 10)
 				res = PAGE_SIZE - 10;
 			res += sysfs_emit_at(buf, res, "++more++ ");
@@ -187,14 +177,14 @@ static ssize_t bonding_show_slaves(struct device *d,
 	rtnl_unlock();
 
 	if (res)
-		buf[res-1] = '\n'; /* eat the leftover space */
+		buf[res-1] = '\n';  
 
 	return res;
 }
 static DEVICE_ATTR(slaves, 0644, bonding_show_slaves,
 		   bonding_sysfs_store_option);
 
-/* Show the bonding mode. */
+ 
 static ssize_t bonding_show_mode(struct device *d,
 				 struct device_attribute *attr, char *buf)
 {
@@ -207,7 +197,7 @@ static ssize_t bonding_show_mode(struct device *d,
 }
 static DEVICE_ATTR(mode, 0644, bonding_show_mode, bonding_sysfs_store_option);
 
-/* Show the bonding transmit hash method. */
+ 
 static ssize_t bonding_show_xmit_hash(struct device *d,
 				      struct device_attribute *attr,
 				      char *buf)
@@ -222,7 +212,7 @@ static ssize_t bonding_show_xmit_hash(struct device *d,
 static DEVICE_ATTR(xmit_hash_policy, 0644,
 		   bonding_show_xmit_hash, bonding_sysfs_store_option);
 
-/* Show arp_validate. */
+ 
 static ssize_t bonding_show_arp_validate(struct device *d,
 					 struct device_attribute *attr,
 					 char *buf)
@@ -238,7 +228,7 @@ static ssize_t bonding_show_arp_validate(struct device *d,
 static DEVICE_ATTR(arp_validate, 0644, bonding_show_arp_validate,
 		   bonding_sysfs_store_option);
 
-/* Show arp_all_targets. */
+ 
 static ssize_t bonding_show_arp_all_targets(struct device *d,
 					 struct device_attribute *attr,
 					 char *buf)
@@ -254,7 +244,7 @@ static ssize_t bonding_show_arp_all_targets(struct device *d,
 static DEVICE_ATTR(arp_all_targets, 0644,
 		   bonding_show_arp_all_targets, bonding_sysfs_store_option);
 
-/* Show fail_over_mac. */
+ 
 static ssize_t bonding_show_fail_over_mac(struct device *d,
 					  struct device_attribute *attr,
 					  char *buf)
@@ -270,7 +260,7 @@ static ssize_t bonding_show_fail_over_mac(struct device *d,
 static DEVICE_ATTR(fail_over_mac, 0644,
 		   bonding_show_fail_over_mac, bonding_sysfs_store_option);
 
-/* Show the arp timer interval. */
+ 
 static ssize_t bonding_show_arp_interval(struct device *d,
 					 struct device_attribute *attr,
 					 char *buf)
@@ -282,7 +272,7 @@ static ssize_t bonding_show_arp_interval(struct device *d,
 static DEVICE_ATTR(arp_interval, 0644,
 		   bonding_show_arp_interval, bonding_sysfs_store_option);
 
-/* Show the arp targets. */
+ 
 static ssize_t bonding_show_arp_targets(struct device *d,
 					struct device_attribute *attr,
 					char *buf)
@@ -296,14 +286,14 @@ static ssize_t bonding_show_arp_targets(struct device *d,
 					     &bond->params.arp_targets[i]);
 	}
 	if (res)
-		buf[res-1] = '\n'; /* eat the leftover space */
+		buf[res-1] = '\n';  
 
 	return res;
 }
 static DEVICE_ATTR(arp_ip_target, 0644,
 		   bonding_show_arp_targets, bonding_sysfs_store_option);
 
-/* Show the arp missed max. */
+ 
 static ssize_t bonding_show_missed_max(struct device *d,
 				       struct device_attribute *attr,
 				       char *buf)
@@ -315,7 +305,7 @@ static ssize_t bonding_show_missed_max(struct device *d,
 static DEVICE_ATTR(arp_missed_max, 0644,
 		   bonding_show_missed_max, bonding_sysfs_store_option);
 
-/* Show the up and down delays. */
+ 
 static ssize_t bonding_show_downdelay(struct device *d,
 				      struct device_attribute *attr,
 				      char *buf)
@@ -351,7 +341,7 @@ static ssize_t bonding_show_peer_notif_delay(struct device *d,
 static DEVICE_ATTR(peer_notif_delay, 0644,
 		   bonding_show_peer_notif_delay, bonding_sysfs_store_option);
 
-/* Show the LACP activity and interval. */
+ 
 static ssize_t bonding_show_lacp_active(struct device *d,
 					struct device_attribute *attr,
 					char *buf)
@@ -405,7 +395,7 @@ static ssize_t bonding_show_ad_select(struct device *d,
 static DEVICE_ATTR(ad_select, 0644,
 		   bonding_show_ad_select, bonding_sysfs_store_option);
 
-/* Show the number of peer notifications to send after a failover event. */
+ 
 static ssize_t bonding_show_num_peer_notif(struct device *d,
 					   struct device_attribute *attr,
 					   char *buf)
@@ -419,7 +409,7 @@ static DEVICE_ATTR(num_grat_arp, 0644,
 static DEVICE_ATTR(num_unsol_na, 0644,
 		   bonding_show_num_peer_notif, bonding_sysfs_store_option);
 
-/* Show the MII monitor interval. */
+ 
 static ssize_t bonding_show_miimon(struct device *d,
 				   struct device_attribute *attr,
 				   char *buf)
@@ -431,7 +421,7 @@ static ssize_t bonding_show_miimon(struct device *d,
 static DEVICE_ATTR(miimon, 0644,
 		   bonding_show_miimon, bonding_sysfs_store_option);
 
-/* Show the primary slave. */
+ 
 static ssize_t bonding_show_primary(struct device *d,
 				    struct device_attribute *attr,
 				    char *buf)
@@ -451,7 +441,7 @@ static ssize_t bonding_show_primary(struct device *d,
 static DEVICE_ATTR(primary, 0644,
 		   bonding_show_primary, bonding_sysfs_store_option);
 
-/* Show the primary_reselect flag. */
+ 
 static ssize_t bonding_show_primary_reselect(struct device *d,
 					     struct device_attribute *attr,
 					     char *buf)
@@ -468,7 +458,7 @@ static ssize_t bonding_show_primary_reselect(struct device *d,
 static DEVICE_ATTR(primary_reselect, 0644,
 		   bonding_show_primary_reselect, bonding_sysfs_store_option);
 
-/* Show the use_carrier flag. */
+ 
 static ssize_t bonding_show_carrier(struct device *d,
 				    struct device_attribute *attr,
 				    char *buf)
@@ -481,7 +471,7 @@ static DEVICE_ATTR(use_carrier, 0644,
 		   bonding_show_carrier, bonding_sysfs_store_option);
 
 
-/* Show currently active_slave. */
+ 
 static ssize_t bonding_show_active_slave(struct device *d,
 					 struct device_attribute *attr,
 					 char *buf)
@@ -501,7 +491,7 @@ static ssize_t bonding_show_active_slave(struct device *d,
 static DEVICE_ATTR(active_slave, 0644,
 		   bonding_show_active_slave, bonding_sysfs_store_option);
 
-/* Show link status of the bond interface. */
+ 
 static ssize_t bonding_show_mii_status(struct device *d,
 				       struct device_attribute *attr,
 				       char *buf)
@@ -513,7 +503,7 @@ static ssize_t bonding_show_mii_status(struct device *d,
 }
 static DEVICE_ATTR(mii_status, 0444, bonding_show_mii_status, NULL);
 
-/* Show current 802.3ad aggregator ID. */
+ 
 static ssize_t bonding_show_ad_aggregator(struct device *d,
 					  struct device_attribute *attr,
 					  char *buf)
@@ -534,7 +524,7 @@ static ssize_t bonding_show_ad_aggregator(struct device *d,
 static DEVICE_ATTR(ad_aggregator, 0444, bonding_show_ad_aggregator, NULL);
 
 
-/* Show number of active 802.3ad ports. */
+ 
 static ssize_t bonding_show_ad_num_ports(struct device *d,
 					 struct device_attribute *attr,
 					 char *buf)
@@ -555,7 +545,7 @@ static ssize_t bonding_show_ad_num_ports(struct device *d,
 static DEVICE_ATTR(ad_num_ports, 0444, bonding_show_ad_num_ports, NULL);
 
 
-/* Show current 802.3ad actor key. */
+ 
 static ssize_t bonding_show_ad_actor_key(struct device *d,
 					 struct device_attribute *attr,
 					 char *buf)
@@ -576,7 +566,7 @@ static ssize_t bonding_show_ad_actor_key(struct device *d,
 static DEVICE_ATTR(ad_actor_key, 0444, bonding_show_ad_actor_key, NULL);
 
 
-/* Show current 802.3ad partner key. */
+ 
 static ssize_t bonding_show_ad_partner_key(struct device *d,
 					   struct device_attribute *attr,
 					   char *buf)
@@ -597,7 +587,7 @@ static ssize_t bonding_show_ad_partner_key(struct device *d,
 static DEVICE_ATTR(ad_partner_key, 0444, bonding_show_ad_partner_key, NULL);
 
 
-/* Show current 802.3ad partner mac. */
+ 
 static ssize_t bonding_show_ad_partner_mac(struct device *d,
 					   struct device_attribute *attr,
 					   char *buf)
@@ -616,7 +606,7 @@ static ssize_t bonding_show_ad_partner_mac(struct device *d,
 }
 static DEVICE_ATTR(ad_partner_mac, 0444, bonding_show_ad_partner_mac, NULL);
 
-/* Show the queue_ids of the slaves in the current bond. */
+ 
 static ssize_t bonding_show_queue_id(struct device *d,
 				     struct device_attribute *attr,
 				     char *buf)
@@ -631,7 +621,7 @@ static ssize_t bonding_show_queue_id(struct device *d,
 
 	bond_for_each_slave(bond, slave, iter) {
 		if (res > (PAGE_SIZE - IFNAMSIZ - 6)) {
-			/* not enough space for another interface_name:queue_id pair */
+			 
 			if ((PAGE_SIZE - res) > 10)
 				res = PAGE_SIZE - 10;
 			res += sysfs_emit_at(buf, res, "++more++ ");
@@ -641,7 +631,7 @@ static ssize_t bonding_show_queue_id(struct device *d,
 				     slave->dev->name, slave->queue_id);
 	}
 	if (res)
-		buf[res-1] = '\n'; /* eat the leftover space */
+		buf[res-1] = '\n';  
 
 	rtnl_unlock();
 
@@ -651,7 +641,7 @@ static DEVICE_ATTR(queue_id, 0644, bonding_show_queue_id,
 		   bonding_sysfs_store_option);
 
 
-/* Show the all_slaves_active flag. */
+ 
 static ssize_t bonding_show_slaves_active(struct device *d,
 					  struct device_attribute *attr,
 					  char *buf)
@@ -663,7 +653,7 @@ static ssize_t bonding_show_slaves_active(struct device *d,
 static DEVICE_ATTR(all_slaves_active, 0644,
 		   bonding_show_slaves_active, bonding_sysfs_store_option);
 
-/* Show the number of IGMP membership reports to send on link failure */
+ 
 static ssize_t bonding_show_resend_igmp(struct device *d,
 					struct device_attribute *attr,
 					char *buf)
@@ -800,9 +790,7 @@ static const struct attribute_group bonding_group = {
 	.attrs = per_bond_attrs,
 };
 
-/* Initialize sysfs.  This sets up the bonding_masters file in
- * /sys/class/net.
- */
+ 
 int __net_init bond_create_sysfs(struct bond_net *bn)
 {
 	int ret;
@@ -812,18 +800,9 @@ int __net_init bond_create_sysfs(struct bond_net *bn)
 
 	ret = netdev_class_create_file_ns(&bn->class_attr_bonding_masters,
 					  bn->net);
-	/* Permit multiple loads of the module by ignoring failures to
-	 * create the bonding_masters sysfs file.  Bonding devices
-	 * created by second or subsequent loads of the module will
-	 * not be listed in, or controllable by, bonding_masters, but
-	 * will have the usual "bonding" sysfs directory.
-	 *
-	 * This is done to preserve backwards compatibility for
-	 * initscripts/sysconfig, which load bonding multiple times to
-	 * configure multiple bonding devices.
-	 */
+	 
 	if (ret == -EEXIST) {
-		/* Is someone being kinky and naming a device bonding_master? */
+		 
 		if (netdev_name_in_use(bn->net,
 				       class_attr_bonding_masters.attr.name))
 			pr_err("network device named %s already exists in sysfs\n",
@@ -835,15 +814,13 @@ int __net_init bond_create_sysfs(struct bond_net *bn)
 
 }
 
-/* Remove /sys/class/net/bonding_masters. */
+ 
 void __net_exit bond_destroy_sysfs(struct bond_net *bn)
 {
 	netdev_class_remove_file_ns(&bn->class_attr_bonding_masters, bn->net);
 }
 
-/* Initialize sysfs for each bond.  This sets up and registers
- * the 'bondctl' directory for each individual bond under /sys/class/net.
- */
+ 
 void bond_prepare_sysfs_group(struct bonding *bond)
 {
 	bond->dev->sysfs_groups[0] = &bonding_group;

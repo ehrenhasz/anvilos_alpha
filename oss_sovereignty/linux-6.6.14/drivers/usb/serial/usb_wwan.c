@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
-  USB Driver layer for GSM modems
 
-  Copyright (C) 2005  Matthias Urlichs <smurf@smurf.noris.de>
-
-  Portions copied from the Keyspan driver by Hugh Blemings <hugh@blemings.org>
-
-  History: see the git log.
-
-  Work sponsored by: Sigos GmbH, Germany <info@sigos.de>
-
-  This driver exists because the "normal" serial driver doesn't work too well
-  with GSM modems. Issues:
-  - data loss -- one single Receive URB is not nearly enough
-  - controlling the baud rate doesn't make sense
-*/
+ 
 
 #define DRIVER_AUTHOR "Matthias Urlichs <smurf@smurf.noris.de>"
 #define DRIVER_DESC "USB Driver for GSM modems"
@@ -34,10 +19,7 @@
 #include <linux/serial.h>
 #include "usb-wwan.h"
 
-/*
- * Generate DTR/RTS signals on the port using the SET_CONTROL_LINE_STATE request
- * in CDC ACM.
- */
+ 
 static int usb_wwan_send_setup(struct usb_serial_port *port)
 {
 	struct usb_serial *serial = port->serial;
@@ -80,7 +62,7 @@ void usb_wwan_dtr_rts(struct usb_serial_port *port, int on)
 		return;
 
 	portdata = usb_get_serial_port_data(port);
-	/* FIXME: locking */
+	 
 	portdata->rts_state = on;
 	portdata->dtr_state = on;
 
@@ -120,7 +102,7 @@ int usb_wwan_tiocmset(struct tty_struct *tty,
 	if (!intfdata->use_send_setup)
 		return -EINVAL;
 
-	/* FIXME: what locks portdata fields ? */
+	 
 	if (set & TIOCM_RTS)
 		portdata->rts_state = 1;
 	if (set & TIOCM_DTR)
@@ -141,7 +123,7 @@ int usb_wwan_write(struct tty_struct *tty, struct usb_serial_port *port,
 	struct usb_wwan_intf_private *intfdata;
 	int i;
 	int left, todo;
-	struct urb *this_urb = NULL;	/* spurious */
+	struct urb *this_urb = NULL;	 
 	int err;
 	unsigned long flags;
 
@@ -173,7 +155,7 @@ int usb_wwan_write(struct tty_struct *tty, struct usb_serial_port *port,
 			break;
 		}
 
-		/* send the data */
+		 
 		memcpy(this_urb->transfer_buffer, buf, todo);
 		this_urb->transfer_buffer_length = todo;
 
@@ -227,7 +209,7 @@ static void usb_wwan_indat_callback(struct urb *urb)
 		dev_dbg(dev, "%s: nonzero status: %d on endpoint %02x.\n",
 			__func__, status, endpoint);
 
-		/* don't resubmit on fatal errors */
+		 
 		if (status == -ESHUTDOWN || status == -ENOENT)
 			return;
 	} else {
@@ -238,13 +220,13 @@ static void usb_wwan_indat_callback(struct urb *urb)
 		} else
 			dev_dbg(dev, "%s: empty read urb received\n", __func__);
 	}
-	/* Resubmit urb so we continue receiving */
+	 
 	err = usb_submit_urb(urb, GFP_ATOMIC);
 	if (err) {
 		if (err != -EPERM && err != -ENODEV) {
 			dev_err(dev, "%s: resubmit read urb failed. (%d)\n",
 				__func__, err);
-			/* busy also in error unless we are killed */
+			 
 			usb_mark_last_busy(port->serial->dev);
 		}
 	} else {
@@ -312,8 +294,7 @@ unsigned int usb_wwan_chars_in_buffer(struct tty_struct *tty)
 
 	for (i = 0; i < N_OUT_URB; i++) {
 		this_urb = portdata->out_urbs[i];
-		/* FIXME: This locking is insufficient as this_urb may
-		   go unused during the test */
+		 
 		if (this_urb && test_bit(i, &portdata->out_busy))
 			data_len += this_urb->transfer_buffer_length;
 	}
@@ -341,7 +322,7 @@ int usb_wwan_open(struct tty_struct *tty, struct usb_serial_port *port)
 		}
 	}
 
-	/* Start reading from the IN endpoint */
+	 
 	for (i = 0; i < N_IN_URB; i++) {
 		urb = portdata->in_urbs[i];
 		if (!urb)
@@ -358,7 +339,7 @@ int usb_wwan_open(struct tty_struct *tty, struct usb_serial_port *port)
 	if (++intfdata->open_ports == 1)
 		serial->interface->needs_remote_wakeup = 1;
 	spin_unlock_irq(&intfdata->susp_lock);
-	/* this balances a get in the generic USB serial code */
+	 
 	usb_autopm_put_interface(serial->interface);
 
 	return 0;
@@ -388,11 +369,7 @@ void usb_wwan_close(struct usb_serial_port *port)
 
 	portdata = usb_get_serial_port_data(port);
 
-	/*
-	 * Need to take susp_lock to make sure port is not already being
-	 * resumed, but no need to hold it due to the tty-port initialized
-	 * flag.
-	 */
+	 
 	spin_lock_irq(&intfdata->susp_lock);
 	if (--intfdata->open_ports == 0)
 		serial->interface->needs_remote_wakeup = 0;
@@ -425,7 +402,7 @@ static struct urb *usb_wwan_setup_urb(struct usb_serial_port *port,
 	struct usb_wwan_intf_private *intfdata = usb_get_serial_data(serial);
 	struct urb *urb;
 
-	urb = usb_alloc_urb(0, GFP_KERNEL);	/* No ISO */
+	urb = usb_alloc_urb(0, GFP_KERNEL);	 
 	if (!urb)
 		return NULL;
 
@@ -562,7 +539,7 @@ int usb_wwan_suspend(struct usb_serial *serial, pm_message_t message)
 }
 EXPORT_SYMBOL(usb_wwan_suspend);
 
-/* Caller must hold susp_lock. */
+ 
 static int usb_wwan_submit_delayed_urbs(struct usb_serial_port *port)
 {
 	struct usb_serial *serial = port->serial;

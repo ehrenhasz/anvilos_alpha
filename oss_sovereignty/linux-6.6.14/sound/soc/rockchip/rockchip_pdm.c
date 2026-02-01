@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Rockchip PDM ALSA SoC Digital Audio Interface(DAI)  driver
- *
- * Copyright (C) 2017 Fuzhou Rockchip Electronics Co., Ltd
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/clk.h>
@@ -18,7 +14,7 @@
 
 #include "rockchip_pdm.h"
 
-#define PDM_DMA_BURST_SIZE	(8) /* size * width: 8*4 = 32 bytes */
+#define PDM_DMA_BURST_SIZE	(8)  
 #define PDM_SIGNOFF_CLK_RATE	(100000000)
 #define PDM_PATH_MAX		(4)
 
@@ -310,7 +306,7 @@ static int rockchip_pdm_hw_params(struct snd_pcm_substream *substream,
 	regmap_update_bits(pdm->regmap, PDM_CTRL0,
 			   PDM_PATH_MSK | PDM_VDW_MSK,
 			   val);
-	/* all channels share the single FIFO */
+	 
 	regmap_update_bits(pdm->regmap, PDM_DMA_CTRL, PDM_DMA_RDL_MSK,
 			   PDM_DMA_RDL(8 * params_channels(params)));
 

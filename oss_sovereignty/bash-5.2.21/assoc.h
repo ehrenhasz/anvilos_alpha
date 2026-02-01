@@ -1,23 +1,6 @@
-/* assoc.h -- definitions for the interface exported by assoc.c that allows
-   the rest of the shell to manipulate associative array variables. */
+ 
 
-/* Copyright (C) 2008,2009-2021 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #ifndef _ASSOC_H_
 #define _ASSOC_H_
@@ -63,4 +46,4 @@ extern WORD_LIST *assoc_keys_to_word_list PARAMS((HASH_TABLE *));
 extern WORD_LIST *assoc_to_kvpair_list PARAMS((HASH_TABLE *));
 
 extern char *assoc_to_string PARAMS((HASH_TABLE *, char *, int));
-#endif /* _ASSOC_H_ */
+#endif  

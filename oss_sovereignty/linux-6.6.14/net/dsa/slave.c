@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/dsa/slave.c - Slave device handling
- * Copyright (c) 2008-2009 Marvell Semiconductor
- */
+
+ 
 
 #include <linux/list.h>
 #include <linux/etherdevice.h>
@@ -36,9 +33,7 @@ struct dsa_switchdev_event_work {
 	struct net_device *orig_dev;
 	struct work_struct work;
 	unsigned long event;
-	/* Specific for SWITCHDEV_FDB_ADD_TO_DEVICE and
-	 * SWITCHDEV_FDB_DEL_TO_DEVICE
-	 */
+	 
 	unsigned char addr[ETH_ALEN];
 	u16 vid;
 	bool host_addr;
@@ -315,7 +310,7 @@ void dsa_slave_unsync_ha(struct net_device *dev)
 		dsa_flush_workqueue();
 }
 
-/* slave mii_bus handling ***************************************************/
+ 
 static int dsa_slave_phy_read(struct mii_bus *bus, int addr, int reg)
 {
 	struct dsa_switch *ds = bus->priv;
@@ -349,7 +344,7 @@ void dsa_slave_mii_bus_init(struct dsa_switch *ds)
 }
 
 
-/* slave device handling ****************************************************/
+ 
 static int dsa_slave_get_iflink(const struct net_device *dev)
 {
 	return dsa_slave_to_master(dev)->ifindex;
@@ -457,9 +452,7 @@ static int dsa_slave_set_mac_address(struct net_device *dev, void *a)
 	if (!is_valid_ether_addr(addr->sa_data))
 		return -EADDRNOTAVAIL;
 
-	/* If the port is down, the address isn't synced yet to hardware or
-	 * to the DSA master, so there is nothing to change.
-	 */
+	 
 	if (!(dev->flags & IFF_UP))
 		goto out_change_dev_addr;
 
@@ -570,7 +563,7 @@ static int dsa_slave_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 	struct dsa_switch *ds = p->dp->ds;
 	int port = p->dp->index;
 
-	/* Pass through to switch driver if it supports timestamping */
+	 
 	switch (cmd) {
 	case SIOCGHWTSTAMP:
 		if (ds->ops->port_hwtstamp_get)
@@ -654,7 +647,7 @@ static int dsa_slave_port_attr_set(struct net_device *dev, const void *ctx,
 	return ret;
 }
 
-/* Must be called under rcu_read_lock() */
+ 
 static int
 dsa_slave_vlan_check_for_8021q_uppers(struct net_device *slave,
 				      const struct switchdev_obj_port_vlan *vlan)
@@ -691,9 +684,7 @@ static int dsa_slave_vlan_add(struct net_device *dev,
 
 	vlan = SWITCHDEV_OBJ_PORT_VLAN(obj);
 
-	/* Deny adding a bridge VLAN when there is already an 802.1Q upper with
-	 * the same VID.
-	 */
+	 
 	if (br_vlan_enabled(dsa_port_bridge_dev_get(dp))) {
 		rcu_read_lock();
 		err = dsa_slave_vlan_check_for_8021q_uppers(dev, vlan);
@@ -708,9 +699,7 @@ static int dsa_slave_vlan_add(struct net_device *dev,
 	return dsa_port_vlan_add(dp, vlan, extack);
 }
 
-/* Offload a VLAN installed on the bridge or on a foreign interface by
- * installing it as a VLAN towards the CPU port.
- */
+ 
 static int dsa_slave_host_vlan_add(struct net_device *dev,
 				   const struct switchdev_obj *obj,
 				   struct netlink_ext_ack *extack)
@@ -718,7 +707,7 @@ static int dsa_slave_host_vlan_add(struct net_device *dev,
 	struct dsa_port *dp = dsa_slave_to_port(dev);
 	struct switchdev_obj_port_vlan vlan;
 
-	/* Do nothing if this is a software bridge */
+	 
 	if (!dp->bridge)
 		return -EOPNOTSUPP;
 
@@ -729,9 +718,7 @@ static int dsa_slave_host_vlan_add(struct net_device *dev,
 
 	vlan = *SWITCHDEV_OBJ_PORT_VLAN(obj);
 
-	/* Even though drivers often handle CPU membership in special ways,
-	 * it doesn't make sense to program a PVID, so clear this flag.
-	 */
+	 
 	vlan.flags &= ~BRIDGE_VLAN_INFO_PVID;
 
 	return dsa_port_host_vlan_add(dp, &vlan, extack);
@@ -807,7 +794,7 @@ static int dsa_slave_host_vlan_del(struct net_device *dev,
 	struct dsa_port *dp = dsa_slave_to_port(dev);
 	struct switchdev_obj_port_vlan *vlan;
 
-	/* Do nothing if this is a software bridge */
+	 
 	if (!dp->bridge)
 		return -EOPNOTSUPP;
 
@@ -897,15 +884,11 @@ static void dsa_skb_tx_timestamp(struct dsa_slave_priv *p,
 
 netdev_tx_t dsa_enqueue_skb(struct sk_buff *skb, struct net_device *dev)
 {
-	/* SKB for netpoll still need to be mangled with the protocol-specific
-	 * tag to be successfully transmitted
-	 */
+	 
 	if (unlikely(netpoll_tx_running(dev)))
 		return dsa_slave_netpoll_send_skb(dev, skb);
 
-	/* Queue the SKB for transmission on the parent interface, but
-	 * do not modify its EtherType
-	 */
+	 
 	skb->dev = dsa_slave_to_master(dev);
 	dev_queue_xmit(skb);
 
@@ -918,19 +901,15 @@ static int dsa_realloc_skb(struct sk_buff *skb, struct net_device *dev)
 	int needed_headroom = dev->needed_headroom;
 	int needed_tailroom = dev->needed_tailroom;
 
-	/* For tail taggers, we need to pad short frames ourselves, to ensure
-	 * that the tail tag does not fail at its role of being at the end of
-	 * the packet, once the master interface pads the frame. Account for
-	 * that pad length here, and pad later.
-	 */
+	 
 	if (unlikely(needed_tailroom && skb->len < ETH_ZLEN))
 		needed_tailroom += ETH_ZLEN - skb->len;
-	/* skb_headroom() returns unsigned int... */
+	 
 	needed_headroom = max_t(int, needed_headroom - skb_headroom(skb), 0);
 	needed_tailroom = max_t(int, needed_tailroom - skb_tailroom(skb), 0);
 
 	if (likely(!needed_headroom && !needed_tailroom && !skb_cloned(skb)))
-		/* No reallocation needed, yay! */
+		 
 		return 0;
 
 	return pskb_expand_head(skb, needed_headroom, needed_tailroom,
@@ -946,7 +925,7 @@ static netdev_tx_t dsa_slave_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	memset(skb->cb, 0, sizeof(skb->cb));
 
-	/* Handle tx timestamp if any */
+	 
 	dsa_skb_tx_timestamp(p, skb);
 
 	if (dsa_realloc_skb(skb, dev)) {
@@ -954,15 +933,11 @@ static netdev_tx_t dsa_slave_xmit(struct sk_buff *skb, struct net_device *dev)
 		return NETDEV_TX_OK;
 	}
 
-	/* needed_tailroom should still be 'warm' in the cache line from
-	 * dsa_realloc_skb(), which has also ensured that padding is safe.
-	 */
+	 
 	if (dev->needed_tailroom)
 		eth_skb_pad(skb);
 
-	/* Transmit function may have to reallocate the original SKB,
-	 * in which case it must have freed it. Only free it here on error.
-	 */
+	 
 	nskb = p->xmit(skb, dev);
 	if (!nskb) {
 		kfree_skb(skb);
@@ -972,7 +947,7 @@ static netdev_tx_t dsa_slave_xmit(struct sk_buff *skb, struct net_device *dev)
 	return dsa_enqueue_skb(nskb, dev);
 }
 
-/* ethtool operations *******************************************************/
+ 
 
 static void dsa_slave_get_drvinfo(struct net_device *dev,
 				  struct ethtool_drvinfo *drvinfo)
@@ -1244,7 +1219,7 @@ static int dsa_slave_set_eee(struct net_device *dev, struct ethtool_eee *e)
 	struct dsa_switch *ds = dp->ds;
 	int ret;
 
-	/* Port's PHY and MAC both need to be EEE capable */
+	 
 	if (!dev->phydev || !dp->pl)
 		return -ENODEV;
 
@@ -1264,7 +1239,7 @@ static int dsa_slave_get_eee(struct net_device *dev, struct ethtool_eee *e)
 	struct dsa_switch *ds = dp->ds;
 	int ret;
 
-	/* Port's PHY and MAC both need to be EEE capable */
+	 
 	if (!dev->phydev || !dp->pl)
 		return -ENODEV;
 
@@ -1760,7 +1735,7 @@ static int dsa_slave_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
 	struct switchdev_obj_port_vlan vlan = {
 		.obj.id = SWITCHDEV_OBJ_ID_PORT_VLAN,
 		.vid = vid,
-		/* This API only allows programming tagged, non-PVID VIDs */
+		 
 		.flags = 0,
 	};
 	struct netlink_ext_ack extack = {0};
@@ -1769,7 +1744,7 @@ static int dsa_slave_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
 	struct dsa_vlan *v;
 	int ret;
 
-	/* User port... */
+	 
 	ret = dsa_port_vlan_add(dp, &vlan, &extack);
 	if (ret) {
 		if (extack._msg)
@@ -1777,7 +1752,7 @@ static int dsa_slave_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
 		return ret;
 	}
 
-	/* And CPU port... */
+	 
 	ret = dsa_port_host_vlan_add(dp, &vlan, &extack);
 	if (ret) {
 		if (extack._msg)
@@ -1834,7 +1809,7 @@ static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
 	struct dsa_port *dp = dsa_slave_to_port(dev);
 	struct switchdev_obj_port_vlan vlan = {
 		.vid = vid,
-		/* This API only allows programming tagged, non-PVID VIDs */
+		 
 		.flags = 0,
 	};
 	struct dsa_switch *ds = dp->ds;
@@ -1900,37 +1875,7 @@ static int dsa_slave_clear_vlan(struct net_device *vdev, int vid, void *arg)
 	return dsa_slave_vlan_rx_kill_vid(arg, proto, vid);
 }
 
-/* Keep the VLAN RX filtering list in sync with the hardware only if VLAN
- * filtering is enabled. The baseline is that only ports that offload a
- * VLAN-aware bridge are VLAN-aware, and standalone ports are VLAN-unaware,
- * but there are exceptions for quirky hardware.
- *
- * If ds->vlan_filtering_is_global = true, then standalone ports which share
- * the same switch with other ports that offload a VLAN-aware bridge are also
- * inevitably VLAN-aware.
- *
- * To summarize, a DSA switch port offloads:
- *
- * - If standalone (this includes software bridge, software LAG):
- *     - if ds->needs_standalone_vlan_filtering = true, OR if
- *       (ds->vlan_filtering_is_global = true AND there are bridges spanning
- *       this switch chip which have vlan_filtering=1)
- *         - the 8021q upper VLANs
- *     - else (standalone VLAN filtering is not needed, VLAN filtering is not
- *       global, or it is, but no port is under a VLAN-aware bridge):
- *         - no VLAN (any 8021q upper is a software VLAN)
- *
- * - If under a vlan_filtering=0 bridge which it offload:
- *     - if ds->configure_vlan_while_not_filtering = true (default):
- *         - the bridge VLANs. These VLANs are committed to hardware but inactive.
- *     - else (deprecated):
- *         - no VLAN. The bridge VLANs are not restored when VLAN awareness is
- *           enabled, so this behavior is broken and discouraged.
- *
- * - If under a vlan_filtering=1 bridge which it offload:
- *     - the bridge VLANs
- *     - the 8021q upper VLANs
- */
+ 
 int dsa_slave_manage_vlan_filtering(struct net_device *slave,
 				    bool vlan_filtering)
 {
@@ -1998,7 +1943,7 @@ static void dsa_hw_port_list_free(struct list_head *hw_port_list)
 		kfree(p);
 }
 
-/* Make the hardware datapath to/from @dev limited to a common MTU */
+ 
 static void dsa_bridge_mtu_normalization(struct dsa_port *dp)
 {
 	struct list_head hw_port_list;
@@ -2015,9 +1960,7 @@ static void dsa_bridge_mtu_normalization(struct dsa_port *dp)
 
 	INIT_LIST_HEAD(&hw_port_list);
 
-	/* Populate the list of ports that are part of the same bridge
-	 * as the newly added/modified port
-	 */
+	 
 	list_for_each_entry(dst, &dsa_tree_list, list) {
 		list_for_each_entry(other_dp, &dst->ports, list) {
 			struct dsa_hw_port *hw_port;
@@ -2048,18 +1991,12 @@ static void dsa_bridge_mtu_normalization(struct dsa_port *dp)
 		}
 	}
 
-	/* Attempt to configure the entire hardware bridge to the newly added
-	 * interface's MTU first, regardless of whether the intention of the
-	 * user was to raise or lower it.
-	 */
+	 
 	err = dsa_hw_port_list_set_mtu(&hw_port_list, dp->slave->mtu);
 	if (!err)
 		goto out;
 
-	/* Clearly that didn't work out so well, so just set the minimum MTU on
-	 * all hardware bridge ports now. If this fails too, then all ports will
-	 * still have their old MTU rolled back anyway.
-	 */
+	 
 	dsa_hw_port_list_set_mtu(&hw_port_list, min_mtu);
 
 out:
@@ -2087,16 +2024,11 @@ int dsa_slave_change_mtu(struct net_device *dev, int new_mtu)
 	dsa_tree_for_each_user_port(other_dp, ds->dst) {
 		int slave_mtu;
 
-		/* During probe, this function will be called for each slave
-		 * device, while not all of them have been allocated. That's
-		 * ok, it doesn't change what the maximum is, so ignore it.
-		 */
+		 
 		if (!other_dp->slave)
 			continue;
 
-		/* Pretend that we already applied the setting, which we
-		 * actually haven't (still haven't done all integrity checks)
-		 */
+		 
 		if (dp == other_dp)
 			slave_mtu = new_mtu;
 		else
@@ -2113,20 +2045,16 @@ int dsa_slave_change_mtu(struct net_device *dev, int new_mtu)
 	if (new_master_mtu > mtu_limit)
 		return -ERANGE;
 
-	/* If the master MTU isn't over limit, there's no need to check the CPU
-	 * MTU, since that surely isn't either.
-	 */
+	 
 	cpu_mtu = largest_mtu;
 
-	/* Start applying stuff */
+	 
 	if (new_master_mtu != old_master_mtu) {
 		err = dev_set_mtu(master, new_master_mtu);
 		if (err < 0)
 			goto out_master_failed;
 
-		/* We only need to propagate the MTU of the CPU port to
-		 * upstream switches, so emit a notifier which updates them.
-		 */
+		 
 		err = dsa_port_mtu_change(cpu_dp, cpu_mtu);
 		if (err)
 			goto out_cpu_failed;
@@ -2302,9 +2230,7 @@ static int __maybe_unused dsa_slave_dcbnl_ieee_delapp(struct net_device *dev,
 	}
 }
 
-/* Pre-populate the DCB application priority table with the priorities
- * configured during switch setup, which we read from hardware here.
- */
+ 
 static int dsa_slave_dcbnl_init(struct net_device *dev)
 {
 	struct dsa_port *dp = dsa_slave_to_port(dev);
@@ -2464,13 +2390,11 @@ static void dsa_slave_phylink_fixed_state(struct phylink_config *config,
 	struct dsa_port *dp = container_of(config, struct dsa_port, pl_config);
 	struct dsa_switch *ds = dp->ds;
 
-	/* No need to check that this operation is valid, the callback would
-	 * not be called if it was not.
-	 */
+	 
 	ds->ops->phylink_fixed_state(ds, dp->index, state);
 }
 
-/* slave device setup *******************************************************/
+ 
 static int dsa_slave_phy_connect(struct net_device *slave_dev, int addr,
 				 u32 flags)
 {
@@ -2499,10 +2423,7 @@ static int dsa_slave_phy_setup(struct net_device *slave_dev)
 	dp->pl_config.dev = &slave_dev->dev;
 	dp->pl_config.type = PHYLINK_NETDEV;
 
-	/* The get_fixed_state callback takes precedence over polling the
-	 * link GPIO in PHYLINK (see phylink_get_fixed_state).  Only set
-	 * this if the switch provides such a callback.
-	 */
+	 
 	if (ds->ops->phylink_fixed_state) {
 		dp->pl_config.get_fixed_state = dsa_slave_phylink_fixed_state;
 		dp->pl_config.poll_fixed_state = true;
@@ -2517,9 +2438,7 @@ static int dsa_slave_phy_setup(struct net_device *slave_dev)
 
 	ret = phylink_of_phy_connect(dp->pl, port_dn, phy_flags);
 	if (ret == -ENODEV && ds->slave_mii_bus) {
-		/* We could not connect to a designated PHY or SFP, so try to
-		 * use the switch internal MDIO bus instead
-		 */
+		 
 		ret = dsa_slave_phy_connect(slave_dev, dp->index, phy_flags);
 	}
 	if (ret) {
@@ -2541,10 +2460,7 @@ void dsa_slave_setup_tagger(struct net_device *slave)
 
 	slave->needed_headroom = cpu_dp->tag_ops->needed_headroom;
 	slave->needed_tailroom = cpu_dp->tag_ops->needed_tailroom;
-	/* Try to save one extra realloc later in the TX path (in the master)
-	 * by also inheriting the master's needed headroom and tailroom.
-	 * The 8021q driver also does this.
-	 */
+	 
 	slave->needed_headroom += master->needed_headroom;
 	slave->needed_tailroom += master->needed_tailroom;
 
@@ -2770,10 +2686,7 @@ int dsa_slave_change_master(struct net_device *dev, struct net_device *master,
 		return -EOPNOTSUPP;
 	}
 
-	/* Since we allow live-changing the DSA master, plus we auto-open the
-	 * DSA master when the user port opens => we need to ensure that the
-	 * new DSA master is open too.
-	 */
+	 
 	if (dev->flags & IFF_UP) {
 		err = dev_open(master, extack);
 		if (err)
@@ -2790,7 +2703,7 @@ int dsa_slave_change_master(struct net_device *dev, struct net_device *master,
 	if (err)
 		goto out_revert_master_link;
 
-	/* Update the MTU of the new CPU port through cross-chip notifiers */
+	 
 	err = dsa_slave_change_mtu(dev, dev->mtu);
 	if (err && err != -EOPNOTSUPP) {
 		netdev_warn(dev,
@@ -2798,9 +2711,7 @@ int dsa_slave_change_master(struct net_device *dev, struct net_device *master,
 			    ERR_PTR(err));
 	}
 
-	/* If the port doesn't have its own MAC address and relies on the DSA
-	 * master's one, inherit it again from the new DSA master.
-	 */
+	 
 	if (is_zero_ether_addr(dp->mac))
 		eth_hw_addr_inherit(dev, master);
 
@@ -2890,9 +2801,7 @@ static int dsa_slave_prechangeupper(struct net_device *dev,
 		dsa_port_pre_bridge_leave(dp, info->upper_dev);
 	else if (netif_is_lag_master(info->upper_dev) && !info->linking)
 		dsa_port_pre_lag_leave(dp, info->upper_dev);
-	/* dsa_port_pre_hsr_leave is not yet necessary since hsr cannot be
-	 * meaningfully enslaved to a bridge yet
-	 */
+	 
 
 	return NOTIFY_DONE;
 }
@@ -2915,7 +2824,7 @@ dsa_slave_lag_changeupper(struct net_device *dev,
 
 		dp = dsa_slave_to_port(lower);
 		if (!dp->lag)
-			/* Software LAG */
+			 
 			continue;
 
 		err = dsa_slave_changeupper(lower, info);
@@ -2926,9 +2835,7 @@ dsa_slave_lag_changeupper(struct net_device *dev,
 	return err;
 }
 
-/* Same as dsa_slave_lag_changeupper() except that it calls
- * dsa_slave_prechangeupper()
- */
+ 
 static int
 dsa_slave_lag_prechangeupper(struct net_device *dev,
 			     struct netdev_notifier_changeupper_info *info)
@@ -2947,7 +2854,7 @@ dsa_slave_lag_prechangeupper(struct net_device *dev,
 
 		dp = dsa_slave_to_port(lower);
 		if (!dp->lag)
-			/* Software LAG */
+			 
 			continue;
 
 		err = dsa_slave_prechangeupper(lower, info);
@@ -2980,7 +2887,7 @@ dsa_prevent_bridging_8021q_upper(struct net_device *dev,
 	if (!br)
 		return NOTIFY_DONE;
 
-	/* Deny enslaving a VLAN device into a VLAN-aware bridge */
+	 
 	if (br_vlan_enabled(br) &&
 	    netif_is_bridge_master(info->upper_dev) && info->linking) {
 		NL_SET_ERR_MSG_MOD(ext_ack,
@@ -3008,10 +2915,7 @@ dsa_slave_check_8021q_upper(struct net_device *dev,
 	extack = netdev_notifier_info_to_extack(&info->info);
 	vid = vlan_dev_vlan_id(info->upper_dev);
 
-	/* br_vlan_get_info() returns -EINVAL or -ENOENT if the
-	 * device, respectively the VID is not found, returning
-	 * 0 means success, which is a failure for us here.
-	 */
+	 
 	err = br_vlan_get_info(br, vid, &br_info);
 	if (err == 0) {
 		NL_SET_ERR_MSG_MOD(extack,
@@ -3048,10 +2952,7 @@ dsa_slave_prechangeupper_sanity_check(struct net_device *dev,
 	return NOTIFY_DONE;
 }
 
-/* To be eligible as a DSA master, a LAG must have all lower interfaces be
- * eligible DSA masters. Additionally, all LAG slaves must be DSA masters of
- * switches in the same switch tree.
- */
+ 
 static int dsa_lag_master_validate(struct net_device *lag_dev,
 				   struct netlink_ext_ack *extack)
 {
@@ -3094,19 +2995,15 @@ dsa_master_prechangeupper_sanity_check(struct net_device *master,
 	if (!info->linking)
 		return NOTIFY_DONE;
 
-	/* Allow DSA switch uppers */
+	 
 	if (dsa_slave_dev_check(info->upper_dev))
 		return NOTIFY_DONE;
 
-	/* Allow bridge uppers of DSA masters, subject to further
-	 * restrictions in dsa_bridge_prechangelower_sanity_check()
-	 */
+	 
 	if (netif_is_bridge_master(info->upper_dev))
 		return NOTIFY_DONE;
 
-	/* Allow LAG uppers, subject to further restrictions in
-	 * dsa_lag_master_prechangelower_sanity_check()
-	 */
+	 
 	if (netif_is_lag_master(info->upper_dev))
 		return dsa_lag_master_validate(info->upper_dev, extack);
 
@@ -3149,15 +3046,7 @@ dsa_lag_master_prechangelower_sanity_check(struct net_device *dev,
 	return NOTIFY_DONE;
 }
 
-/* Don't allow bridging of DSA masters, since the bridge layer rx_handler
- * prevents the DSA fake ethertype handler to be invoked, so we don't get the
- * chance to strip off and parse the DSA switch tag protocol header (the bridge
- * layer just returns RX_HANDLER_CONSUMED, stopping RX processing for these
- * frames).
- * The only case where that would not be an issue is when bridging can already
- * be offloaded, such as when the DSA master is itself a DSA or plain switchdev
- * port, and is bridged only with other ports from the same hardware device.
- */
+ 
 static int
 dsa_bridge_prechangelower_sanity_check(struct net_device *new_lower,
 				       struct netdev_notifier_changeupper_info *info)
@@ -3269,28 +3158,20 @@ static void dsa_master_lag_leave(struct net_device *master,
 	}
 
 	if (new_cpu_dp) {
-		/* Update the CPU port of the user ports still under the LAG
-		 * so that dsa_port_to_master() continues to work properly
-		 */
+		 
 		dsa_tree_for_each_user_port(dp, dst)
 			if (dsa_port_to_master(dp) == lag_dev)
 				dp->cpu_dp = new_cpu_dp;
 
-		/* Update the index of the virtual CPU port to match the lowest
-		 * physical CPU port
-		 */
+		 
 		lag_dev->dsa_ptr = new_cpu_dp;
 		wmb();
 	} else {
-		/* If the LAG DSA master has no ports left, migrate back all
-		 * user ports to the first physical CPU port
-		 */
+		 
 		dsa_tree_migrate_ports_from_lag_master(dst, lag_dev);
 	}
 
-	/* This DSA master has left its LAG in any case, so let
-	 * the CPU port leave the hardware LAG as well
-	 */
+	 
 	dsa_master_lag_teardown(lag_dev, master->dsa_ptr);
 }
 
@@ -3383,9 +3264,7 @@ static int dsa_slave_netdevice_event(struct notifier_block *nb,
 			err = dsa_port_lag_change(dp, info->lower_state_info);
 		}
 
-		/* Mirror LAG port events on DSA masters that are in
-		 * a LAG towards their respective switch CPU ports
-		 */
+		 
 		if (netdev_uses_dsa(dev)) {
 			dp = dev->dsa_ptr;
 
@@ -3396,26 +3275,16 @@ static int dsa_slave_netdevice_event(struct notifier_block *nb,
 	}
 	case NETDEV_CHANGE:
 	case NETDEV_UP: {
-		/* Track state of master port.
-		 * DSA driver may require the master port (and indirectly
-		 * the tagger) to be available for some special operation.
-		 */
+		 
 		if (netdev_uses_dsa(dev)) {
 			struct dsa_port *cpu_dp = dev->dsa_ptr;
 			struct dsa_switch_tree *dst = cpu_dp->ds->dst;
 
-			/* Track when the master port is UP */
+			 
 			dsa_tree_master_oper_state_change(dst, dev,
 							  netif_oper_up(dev));
 
-			/* Track when the master port is ready and can accept
-			 * packet.
-			 * NETDEV_UP event is not enough to flag a port as ready.
-			 * We also have to wait for linkwatch_do_dev to dev_activate
-			 * and emit a NETDEV_CHANGE event.
-			 * We check if a master port is ready by checking if the dev
-			 * have a qdisc assigned and is not noop.
-			 */
+			 
 			dsa_tree_master_admin_state_change(dst, dev,
 							   !qdisc_tx_is_noop(dev));
 
@@ -3532,7 +3401,7 @@ static bool dsa_foreign_dev_check(const struct net_device *dev,
 	if (netif_is_bridge_port(foreign_dev))
 		return !dsa_tree_offloads_bridge_port(dst, foreign_dev);
 
-	/* Everything else is foreign */
+	 
 	return true;
 }
 
@@ -3556,24 +3425,16 @@ static int dsa_slave_fdb_event(struct net_device *dev,
 		if (dsa_port_offloads_bridge_port(dp, orig_dev))
 			return 0;
 
-		/* FDB entries learned by the software bridge or by foreign
-		 * bridge ports should be installed as host addresses only if
-		 * the driver requests assisted learning.
-		 */
+		 
 		if (!ds->assisted_learning_on_cpu_port)
 			return 0;
 	}
 
-	/* Also treat FDB entries on foreign interfaces bridged with us as host
-	 * addresses.
-	 */
+	 
 	if (dsa_foreign_dev_check(dev, orig_dev))
 		host_addr = true;
 
-	/* Check early that we're not doing work in vain.
-	 * Host addresses on LAG ports still require regular FDB ops,
-	 * since the CPU port isn't in a LAG.
-	 */
+	 
 	if (dp->lag && !host_addr) {
 		if (!ds->ops->lag_fdb_add || !ds->ops->lag_fdb_del)
 			return -EOPNOTSUPP;
@@ -3605,7 +3466,7 @@ static int dsa_slave_fdb_event(struct net_device *dev,
 	return 0;
 }
 
-/* Called under rcu_read_lock() */
+ 
 static int dsa_slave_switchdev_event(struct notifier_block *unused,
 				     unsigned long event, void *ptr)
 {

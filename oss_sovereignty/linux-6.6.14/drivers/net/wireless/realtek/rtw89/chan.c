@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2020-2022  Realtek Corporation
- */
+
+ 
 
 #include "chan.h"
 #include "debug.h"
@@ -362,13 +361,11 @@ void rtw89_chanctx_ops_remove(struct rtw89_dev *rtwdev,
 
 	roll = find_next_bit(hal->entity_map, NUM_OF_RTW89_SUB_ENTITY, drop + 1);
 
-	/* Follow rtw89_config_default_chandef() when rtw89_entity_recalc(). */
+	 
 	if (roll == NUM_OF_RTW89_SUB_ENTITY)
 		goto out;
 
-	/* RTW89_SUB_ENTITY_0 is going to release, and another exists.
-	 * Make another roll down to RTW89_SUB_ENTITY_0 to replace.
-	 */
+	 
 	hal->sub[roll].cfg->idx = RTW89_SUB_ENTITY_0;
 	hal->sub[RTW89_SUB_ENTITY_0] = hal->sub[roll];
 

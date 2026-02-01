@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "ubifs.h"
 
 static int ubifs_crypt_get_context(struct inode *inode, void *ctx, size_t len)
@@ -10,11 +10,7 @@ static int ubifs_crypt_get_context(struct inode *inode, void *ctx, size_t len)
 static int ubifs_crypt_set_context(struct inode *inode, const void *ctx,
 				   size_t len, void *fs_data)
 {
-	/*
-	 * Creating an encryption context is done unlocked since we
-	 * operate on a new inode which is not visible to other users
-	 * at this point. So, no need to check whether inode is locked.
-	 */
+	 
 	return ubifs_xattr_set(inode, UBIFS_XATTR_NAME_ENCRYPTION_CONTEXT,
 			       ctx, len, 0, false);
 }
@@ -24,17 +20,7 @@ static bool ubifs_crypt_empty_dir(struct inode *inode)
 	return ubifs_check_dir_empty(inode) == 0;
 }
 
-/**
- * ubifs_encrypt - Encrypt data.
- * @inode: inode which refers to the data node
- * @dn: data node to encrypt
- * @in_len: length of data to be compressed
- * @out_len: allocated memory size for the data area of @dn
- * @block: logical block number of the block
- *
- * This function encrypt a possibly-compressed data in the data node.
- * The encrypted data length will store in @out_len.
- */
+ 
 int ubifs_encrypt(const struct inode *inode, struct ubifs_data_node *dn,
 		  unsigned int in_len, unsigned int *out_len, int block)
 {
@@ -46,7 +32,7 @@ int ubifs_encrypt(const struct inode *inode, struct ubifs_data_node *dn,
 	ubifs_assert(c, pad_len <= *out_len);
 	dn->compr_size = cpu_to_le16(in_len);
 
-	/* pad to full block cipher length */
+	 
 	if (pad_len != in_len)
 		memset(p + in_len, 0, pad_len - in_len);
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MStar WDT driver
- *
- * Copyright (C) 2019 - 2021 Daniel Palmer
- * Copyright (C) 2021 Romain Perier
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -90,7 +84,7 @@ static const struct watchdog_ops msc313e_wdt_ops = {
 
 static const struct of_device_id msc313e_wdt_of_match[] = {
 	{ .compatible = "mstar,msc313e-wdt", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, msc313e_wdt_of_match);
 
@@ -120,7 +114,7 @@ static int msc313e_wdt_probe(struct platform_device *pdev)
 	priv->wdev.max_timeout = U32_MAX / clk_get_rate(priv->clk);
 	priv->wdev.timeout = MSC313E_WDT_DEFAULT_TIMEOUT;
 
-	/* If the period is non-zero the WDT is running */
+	 
 	if (readw(priv->base + REG_WDT_MAX_PRD_L) | (readw(priv->base + REG_WDT_MAX_PRD_H) << 16))
 		set_bit(WDOG_HW_RUNNING, &priv->wdev.status);
 

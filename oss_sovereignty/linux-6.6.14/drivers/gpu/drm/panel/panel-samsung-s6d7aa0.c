@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Samsung S6D7AA0 MIPI-DSI TFT LCD controller drm_panel driver.
- *
- * Copyright (C) 2022 Artur Weber <aweber.kernel@gmail.com>
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -17,7 +13,7 @@
 #include <drm/drm_modes.h>
 #include <drm/drm_panel.h>
 
-/* Manufacturer command set */
+ 
 #define MCS_BL_CTL		0xc3
 #define MCS_OTP_RELOAD		0xd0
 #define MCS_PASSWD1		0xf0
@@ -179,7 +175,7 @@ static int s6d7aa0_unprepare(struct drm_panel *panel)
 	return 0;
 }
 
-/* Backlight control code */
+ 
 
 static int s6d7aa0_bl_update_status(struct backlight_device *bl)
 {
@@ -226,7 +222,7 @@ s6d7aa0_create_backlight(struct mipi_dsi_device *dsi)
 					      &s6d7aa0_bl_ops, &props);
 }
 
-/* Initialization code and structures for LSL080AL02 panel */
+ 
 
 static int s6d7aa0_lsl080al02_init(struct s6d7aa0 *ctx)
 {
@@ -245,10 +241,10 @@ static int s6d7aa0_lsl080al02_init(struct s6d7aa0 *ctx)
 	mipi_dsi_dcs_write_seq(dsi, MCS_OTP_RELOAD, 0x00, 0x10);
 	usleep_range(1000, 1500);
 
-	/* SEQ_B6_PARAM_8_R01 */
+	 
 	mipi_dsi_dcs_write_seq(dsi, 0xb6, 0x10);
 
-	/* BL_CTL_ON */
+	 
 	mipi_dsi_dcs_write_seq(dsi, MCS_BL_CTL, 0x40, 0x00, 0x28);
 
 	usleep_range(5000, 6000);
@@ -283,7 +279,7 @@ static int s6d7aa0_lsl080al02_off(struct s6d7aa0 *ctx)
 {
 	struct mipi_dsi_device *dsi = ctx->dsi;
 
-	/* BL_CTL_OFF */
+	 
 	mipi_dsi_dcs_write_seq(dsi, MCS_BL_CTL, 0x40, 0x00, 0x20);
 
 	return 0;
@@ -315,7 +311,7 @@ static const struct s6d7aa0_panel_desc s6d7aa0_lsl080al02_desc = {
 	.use_passwd3 = false,
 };
 
-/* Initialization code and structures for LSL080AL03 panel */
+ 
 
 static int s6d7aa0_lsl080al03_init(struct s6d7aa0 *ctx)
 {
@@ -418,7 +414,7 @@ static const struct s6d7aa0_panel_desc s6d7aa0_lsl080al03_desc = {
 	.use_passwd3 = true,
 };
 
-/* Initialization structures for LTL101AT01 panel */
+ 
 
 static const struct drm_display_mode s6d7aa0_ltl101at01_mode = {
 	.clock = (768 + 96 + 16 + 184) * (1024 + 8 + 2 + 6) * 60 / 1000,
@@ -436,7 +432,7 @@ static const struct drm_display_mode s6d7aa0_ltl101at01_mode = {
 
 static const struct s6d7aa0_panel_desc s6d7aa0_ltl101at01_desc = {
 	.panel_type = S6D7AA0_PANEL_LTL101AT01,
-	.init_func = s6d7aa0_lsl080al03_init, /* Similar init to LSL080AL03 */
+	.init_func = s6d7aa0_lsl080al03_init,  
 	.off_func = s6d7aa0_lsl080al03_off,
 	.drm_mode = &s6d7aa0_ltl101at01_mode,
 	.mode_flags = MIPI_DSI_MODE_NO_EOT_PACKET,
@@ -520,7 +516,7 @@ static int s6d7aa0_probe(struct mipi_dsi_device *dsi)
 	if (ret)
 		return dev_err_probe(dev, ret, "Failed to get backlight\n");
 
-	/* Use DSI-based backlight as fallback if available */
+	 
 	if (ctx->desc->has_backlight && !ctx->panel.backlight) {
 		ctx->panel.backlight = s6d7aa0_create_backlight(dsi);
 		if (IS_ERR(ctx->panel.backlight))
@@ -565,7 +561,7 @@ static const struct of_device_id s6d7aa0_of_match[] = {
 		.compatible = "samsung,ltl101at01",
 		.data = &s6d7aa0_ltl101at01_desc
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, s6d7aa0_of_match);
 

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2010  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL8821AE_TRX_H__
 #define __RTL8821AE_TRX_H__
@@ -339,7 +339,7 @@ static inline void set_rx_desc_buff_addr(__le32 *__pdesc, u32 __val)
 	*(__pdesc + 6) = cpu_to_le32(__val);
 }
 
-/* TX report 2 format in Rx desc*/
+ 
 
 static inline u32 get_rx_rpt2_desc_macid_valid_1(__le32 *__status)
 {
@@ -409,37 +409,37 @@ struct phy_rx_agc_info_t {
 };
 
 struct phy_status_rpt {
-	/* DWORD 0 */
+	 
 	u8 gain_trsw[2];
 #ifdef __LITTLE_ENDIAN
 	u16 chl_num:10;
 	u16 sub_chnl:4;
 	u16 r_rfmod:2;
-#else	/* _BIG_ENDIAN_ */
+#else	 
 	u16 r_rfmod:2;
 	u16 sub_chnl:4;
 	u16 chl_num:10;
 #endif
-	/* DWORD 1 */
+	 
 	u8 pwdb_all;
-	u8 cfosho[4];	/* DW 1 byte 1 DW 2 byte 0 */
+	u8 cfosho[4];	 
 
-	/* DWORD 2 */
-	s8 cfotail[4];	/* DW 2 byte 1 DW 3 byte 0 */
+	 
+	s8 cfotail[4];	 
 
-	/* DWORD 3 */
-	s8 rxevm[2];	/* DW 3 byte 1 DW 3 byte 2 */
-	s8 rxsnr[2];	/* DW 3 byte 3 DW 4 byte 0 */
+	 
+	s8 rxevm[2];	 
+	s8 rxsnr[2];	 
 
-	/* DWORD 4 */
+	 
 	u8 pcts_msk_rpt[2];
-	u8 pdsnr[2];	/* DW 4 byte 3 DW 5 Byte 0 */
+	u8 pdsnr[2];	 
 
-	/* DWORD 5 */
+	 
 	u8 csi_current[2];
 	u8 rx_gain_c;
 
-	/* DWORD 6 */
+	 
 	u8 rx_gain_d;
 	u8 sigevm;
 	u8 resvd_0;

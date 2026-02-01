@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * mac80211 glue code for mac80211 ST-Ericsson CW1200 drivers
- *
- * Copyright (c) 2010, ST-Ericsson
- * Author: Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>
- *
- * Based on:
- * Copyright (c) 2006, Michael Wu <flamingice@sourmilk.net>
- * Copyright (c) 2007-2009, Christian Lamparter <chunkeey@web.de>
- * Copyright 2008, Johannes Berg <johannes@sipsolutions.net>
- *
- * Based on:
- * - the islsm (softmac prism54) driver, which is:
- *   Copyright 2004-2006 Jean-Baptiste Note <jbnote@gmail.com>, et al.
- * - stlc45xx driver
- *   Copyright (C) 2008 Nokia Corporation and/or its subsidiary(-ies).
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/firmware.h>
@@ -41,7 +25,7 @@ MODULE_DESCRIPTION("Softmac ST-Ericsson CW1200 common code");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("cw1200_core");
 
-/* Accept MAC address of the form macaddr=0x00,0x80,0xE1,0x30,0x40,0x50 */
+ 
 static u8 cw1200_mac_template[ETH_ALEN] = {0x02, 0x80, 0xe1, 0x00, 0x00, 0x00};
 module_param_array_named(macaddr, cw1200_mac_template, byte, NULL, 0444);
 MODULE_PARM_DESC(macaddr, "Override platform_data MAC address");
@@ -196,10 +180,10 @@ static struct ieee80211_supported_band cw1200_band_5ghz = {
 };
 
 static const unsigned long cw1200_ttl[] = {
-	1 * HZ,	/* VO */
-	2 * HZ,	/* VI */
-	5 * HZ, /* BE */
-	10 * HZ	/* BK */
+	1 * HZ,	 
+	2 * HZ,	 
+	5 * HZ,  
+	10 * HZ	 
 };
 
 static const struct ieee80211_ops cw1200_ops = {
@@ -229,10 +213,10 @@ static const struct ieee80211_ops cw1200_ops = {
 	.suspend		= cw1200_wow_suspend,
 	.resume			= cw1200_wow_resume,
 #endif
-	/* Intentionally not offloaded:					*/
-	/*.channel_switch	= cw1200_channel_switch,		*/
-	/*.remain_on_channel	= cw1200_remain_on_channel,		*/
-	/*.cancel_remain_on_channel = cw1200_cancel_remain_on_channel,	*/
+	 
+	 
+	 
+	 
 };
 
 static int cw1200_ba_rx_tids = -1;
@@ -244,7 +228,7 @@ MODULE_PARM_DESC(cw1200_ba_tx_tids, "Block ACK TX TIDs");
 
 #ifdef CONFIG_PM
 static const struct wiphy_wowlan_support cw1200_wowlan_support = {
-	/* Support only for limited wowlan functionalities */
+	 
 	.flags = WIPHY_WOWLAN_ANY | WIPHY_WOWLAN_DISCONNECT,
 };
 #endif
@@ -265,16 +249,16 @@ static struct ieee80211_hw *cw1200_init_common(const u8 *macaddr,
 	priv->hw = hw;
 	priv->hw_type = -1;
 	priv->mode = NL80211_IFTYPE_UNSPECIFIED;
-	priv->rates = cw1200_rates; /* TODO: fetch from FW */
+	priv->rates = cw1200_rates;  
 	priv->mcs_rates = cw1200_n_rates;
 	if (cw1200_ba_rx_tids != -1)
 		priv->ba_rx_tid_mask = cw1200_ba_rx_tids;
 	else
-		priv->ba_rx_tid_mask = 0xFF; /* Enable RX BLKACK for all TIDs */
+		priv->ba_rx_tid_mask = 0xFF;  
 	if (cw1200_ba_tx_tids != -1)
 		priv->ba_tx_tid_mask = cw1200_ba_tx_tids;
 	else
-		priv->ba_tx_tid_mask = 0xff; /* Enable TX BLKACK for all TIDs */
+		priv->ba_tx_tid_mask = 0xff;  
 
 	ieee80211_hw_set(hw, NEED_DTIM_BEFORE_ASSOC);
 	ieee80211_hw_set(hw, TX_AMPDU_SETUP_IN_HW);
@@ -305,7 +289,7 @@ static struct ieee80211_hw *cw1200_init_common(const u8 *macaddr,
 	hw->max_rates = 8;
 	hw->max_rate_tries = 15;
 	hw->extra_tx_headroom = WSM_TX_EXTRA_HEADROOM +
-		8;  /* TKIP IV */
+		8;   
 
 	hw->sta_data_size = sizeof(struct cw1200_sta_priv);
 
@@ -313,7 +297,7 @@ static struct ieee80211_hw *cw1200_init_common(const u8 *macaddr,
 	if (have_5ghz)
 		hw->wiphy->bands[NL80211_BAND_5GHZ] = &cw1200_band_5ghz;
 
-	/* Channel params have to be cleared before registering wiphy again */
+	 
 	for (band = 0; band < NUM_NL80211_BANDS; band++) {
 		struct ieee80211_supported_band *sband = hw->wiphy->bands[band];
 		if (!sband)
@@ -333,7 +317,7 @@ static struct ieee80211_hw *cw1200_init_common(const u8 *macaddr,
 	else
 		SET_IEEE80211_PERM_ADDR(hw, cw1200_mac_template);
 
-	/* Fix up mac address if necessary */
+	 
 	if (hw->wiphy->perm_addr[3] == 0 &&
 	    hw->wiphy->perm_addr[4] == 0 &&
 	    hw->wiphy->perm_addr[5] == 0) {
@@ -480,31 +464,31 @@ static void cw1200_unregister_common(struct ieee80211_hw *dev)
 #endif
 }
 
-/* Clock is in KHz */
+ 
 u32 cw1200_dpll_from_clk(u16 clk_khz)
 {
 	switch (clk_khz) {
-	case 0x32C8: /* 13000 KHz */
+	case 0x32C8:  
 		return 0x1D89D241;
-	case 0x3E80: /* 16000 KHz */
+	case 0x3E80:  
 		return 0x000001E1;
-	case 0x41A0: /* 16800 KHz */
+	case 0x41A0:  
 		return 0x124931C1;
-	case 0x4B00: /* 19200 KHz */
+	case 0x4B00:  
 		return 0x00000191;
-	case 0x5DC0: /* 24000 KHz */
+	case 0x5DC0:  
 		return 0x00000141;
-	case 0x6590: /* 26000 KHz */
+	case 0x6590:  
 		return 0x0EC4F121;
-	case 0x8340: /* 33600 KHz */
+	case 0x8340:  
 		return 0x092490E1;
-	case 0x9600: /* 38400 KHz */
+	case 0x9600:  
 		return 0x100010C1;
-	case 0x9C40: /* 40000 KHz */
+	case 0x9C40:  
 		return 0x000000C1;
-	case 0xBB80: /* 48000 KHz */
+	case 0xBB80:  
 		return 0x000000A1;
-	case 0xCB20: /* 52000 KHz */
+	case 0xCB20:  
 		return 0x07627091;
 	default:
 		pr_err("Unknown Refclk freq (0x%04x), using 26000KHz\n",
@@ -546,7 +530,7 @@ int cw1200_core_probe(const struct hwbus_ops *hwbus_ops,
 	priv->pdev = pdev;
 	SET_IEEE80211_DEV(priv->hw, pdev);
 
-	/* Pass struct cw1200_common back up */
+	 
 	*core = priv;
 
 	err = cw1200_register_bh(priv);
@@ -560,18 +544,16 @@ int cw1200_core_probe(const struct hwbus_ops *hwbus_ops,
 	if (wait_event_interruptible_timeout(priv->wsm_startup_done,
 					     priv->firmware_ready,
 					     3*HZ) <= 0) {
-		/* TODO: Need to find how to reset device
-		   in QUEUE mode properly.
-		*/
+		 
 		pr_err("Timeout waiting on device startup\n");
 		err = -ETIMEDOUT;
 		goto err2;
 	}
 
-	/* Set low-power mode. */
+	 
 	wsm_set_operational_mode(priv, &mode);
 
-	/* Enable multi-TX confirmation */
+	 
 	wsm_use_multi_tx_conf(priv, true);
 
 	err = cw1200_register_common(dev);
@@ -592,12 +574,12 @@ EXPORT_SYMBOL_GPL(cw1200_core_probe);
 
 void cw1200_core_release(struct cw1200_common *self)
 {
-	/* Disable device interrupts */
+	 
 	self->hwbus_ops->lock(self->hwbus_priv);
 	__cw1200_irq_enable(self, 0);
 	self->hwbus_ops->unlock(self->hwbus_priv);
 
-	/* And then clean up */
+	 
 	cw1200_unregister_common(self->hw);
 	cw1200_free_common(self->hw);
 	return;

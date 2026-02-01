@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl1271
- *
- * Copyright (C) 2010 Nokia Corporation
- *
- * Contact: Luciano Coelho <luciano.coelho@nokia.com>
- */
+
+ 
 #include "testmode.h"
 
 #include <linux/pm_runtime.h>
@@ -24,9 +18,9 @@ enum wl1271_tm_commands {
 	WL1271_TM_CMD_TEST,
 	WL1271_TM_CMD_INTERROGATE,
 	WL1271_TM_CMD_CONFIGURE,
-	WL1271_TM_CMD_NVS_PUSH,		/* Not in use. Keep to not break ABI */
+	WL1271_TM_CMD_NVS_PUSH,		 
 	WL1271_TM_CMD_SET_PLT_MODE,
-	WL1271_TM_CMD_RECOVER,		/* Not in use. Keep to not break ABI */
+	WL1271_TM_CMD_RECOVER,		 
 	WL1271_TM_CMD_GET_MAC,
 
 	__WL1271_TM_CMD_AFTER_LAST
@@ -94,7 +88,7 @@ static int wl1271_tm_cmd_test(struct wl1271 *wl, struct nlattr *tb[])
 	}
 
 	if (answer) {
-		/* If we got bip calibration answer print radio status */
+		 
 		struct wl1271_cmd_cal_p2g *params =
 			(struct wl1271_cmd_cal_p2g *) buf;
 
@@ -234,7 +228,7 @@ static int wl1271_tm_cmd_configure(struct wl1271 *wl, struct nlattr *tb[])
 
 static int wl1271_tm_detect_fem(struct wl1271 *wl, struct nlattr *tb[])
 {
-	/* return FEM type */
+	 
 	int ret, len;
 	struct sk_buff *skb;
 
@@ -263,7 +257,7 @@ static int wl1271_tm_detect_fem(struct wl1271 *wl, struct nlattr *tb[])
 out_mutex:
 	mutex_unlock(&wl->mutex);
 
-	/* We always stop plt after DETECT mode */
+	 
 	wl1271_plt_stop(wl);
 out:
 	return ret;
@@ -364,7 +358,7 @@ int wl1271_tm_cmd(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 
 	nla_cmd = nla_get_u32(tb[WL1271_TM_ATTR_CMD_ID]);
 
-	/* Only SET_PLT_MODE is allowed in case of mode PLT_CHIP_AWAKE */
+	 
 	if (wl->plt_mode == PLT_CHIP_AWAKE &&
 	    nla_cmd != WL1271_TM_CMD_SET_PLT_MODE)
 		return -EOPNOTSUPP;

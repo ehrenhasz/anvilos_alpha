@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2022 Intel Corporation. */
+
+ 
 
 #include <linux/firmware.h>
 #include <asm/cpu.h>
@@ -10,25 +10,25 @@
 #define IFS_CHUNK_ALIGNMENT	256
 union meta_data {
 	struct {
-		u32 meta_type;		// metadata type
-		u32 meta_size;		// size of this entire struct including hdrs.
-		u32 test_type;		// IFS test type
-		u32 fusa_info;		// Fusa info
-		u32 total_images;	// Total number of images
-		u32 current_image;	// Current Image #
-		u32 total_chunks;	// Total number of chunks in this image
-		u32 starting_chunk;	// Starting chunk number in this image
-		u32 size_per_chunk;	// size of each chunk
-		u32 chunks_per_stride;	// number of chunks in a stride
+		u32 meta_type;		
+		u32 meta_size;		
+		u32 test_type;		
+		u32 fusa_info;		
+		u32 total_images;	
+		u32 current_image;	
+		u32 total_chunks;	
+		u32 starting_chunk;	
+		u32 size_per_chunk;	
+		u32 chunks_per_stride;	
 	};
 	u8 padding[IFS_CHUNK_ALIGNMENT];
 };
 
 #define IFS_HEADER_SIZE	(sizeof(struct microcode_header_intel))
 #define META_TYPE_IFS	1
-static  struct microcode_header_intel *ifs_header_ptr;	/* pointer to the ifs image header */
-static u64 ifs_hash_ptr;			/* Address of ifs metadata (hash) */
-static u64 ifs_test_image_ptr;			/* 256B aligned address of test pattern */
+static  struct microcode_header_intel *ifs_header_ptr;	 
+static u64 ifs_hash_ptr;			 
+static u64 ifs_test_image_ptr;			 
 static DECLARE_COMPLETION(ifs_done);
 
 static const char * const scan_hash_status[] = {
@@ -80,12 +80,7 @@ static struct metadata_header *find_meta_data(void *ucode, unsigned int meta_typ
 	return NULL;
 }
 
-/*
- * To copy scan hashes and authenticate test chunks, the initiating cpu must point
- * to the EDX:EAX to the test image in linear address.
- * Run wrmsr(MSR_COPY_SCAN_HASHES) for scan hash copy and run wrmsr(MSR_AUTHENTICATE_AND_COPY_CHUNK)
- * for scan hash copy and test chunk authentication.
- */
+ 
 static void copy_hashes_authenticate_chunks(struct work_struct *work)
 {
 	struct ifs_work *local_work = container_of(work, struct ifs_work, w);
@@ -98,11 +93,11 @@ static void copy_hashes_authenticate_chunks(struct work_struct *work)
 	u32 err_code;
 
 	ifsd = ifs_get_data(dev);
-	/* run scan hash copy */
+	 
 	wrmsrl(MSR_COPY_SCAN_HASHES, ifs_hash_ptr);
 	rdmsrl(MSR_SCAN_HASHES_STATUS, hashes_status.data);
 
-	/* enumerate the scan image information */
+	 
 	num_chunks = hashes_status.num_chunks;
 	chunk_size = hashes_status.chunk_size * 1024;
 	err_code = hashes_status.error_code;
@@ -117,10 +112,10 @@ static void copy_hashes_authenticate_chunks(struct work_struct *work)
 		goto done;
 	}
 
-	/* base linear address to the scan data */
+	 
 	base = ifs_test_image_ptr;
 
-	/* scan data authentication and copy chunks to secured memory */
+	 
 	for (i = 0; i < num_chunks; i++) {
 		linear_addr = base + i * chunk_size;
 		linear_addr |= i;
@@ -166,7 +161,7 @@ static int validate_ifs_metadata(struct device *dev)
 
 	ifs_test_image_ptr = (u64)ifs_meta + sizeof(union meta_data);
 
-	/* Scan chunk start must be 256 byte aligned */
+	 
 	if (!IS_ALIGNED(ifs_test_image_ptr, IFS_CHUNK_ALIGNMENT)) {
 		dev_err(dev, "Scan pattern is not aligned on %d bytes aligned in %s\n",
 			IFS_CHUNK_ALIGNMENT, test_file);
@@ -182,11 +177,7 @@ static int validate_ifs_metadata(struct device *dev)
 	return 0;
 }
 
-/*
- * IFS requires scan chunks authenticated per each socket in the platform.
- * Once the test chunk is authenticated, it is automatically copied to secured memory
- * and proceed the authentication for the next chunk.
- */
+ 
 static int scan_chunks_sanity_check(struct device *dev)
 {
 	struct ifs_data *ifsd = ifs_get_data(dev);
@@ -201,7 +192,7 @@ static int scan_chunks_sanity_check(struct device *dev)
 	ifsd->loading_error = false;
 	ifsd->loaded_version = ifs_header_ptr->rev;
 
-	/* copy the scan hash and authenticate per package */
+	 
 	cpus_read_lock();
 	for_each_online_cpu(cpu) {
 		curr_pkg = topology_physical_package_id(cpu);
@@ -229,7 +220,7 @@ static int image_sanity_check(struct device *dev, const struct microcode_header_
 {
 	struct ucode_cpu_info uci;
 
-	/* Provide a specific error message when loading an older/unsupported image */
+	 
 	if (data->hdrver != MC_HEADER_TYPE_IFS) {
 		dev_err(dev, "Header version %d not supported\n", data->hdrver);
 		return -EINVAL;
@@ -252,10 +243,7 @@ static int image_sanity_check(struct device *dev, const struct microcode_header_
 	return 0;
 }
 
-/*
- * Load ifs image. Before loading ifs module, the ifs image must be located
- * in /lib/firmware/intel/ifs_x/ and named as family-model-stepping-02x.{testname}.
- */
+ 
 int ifs_load_firmware(struct device *dev)
 {
 	const struct ifs_test_caps *test = ifs_get_test_caps(dev);

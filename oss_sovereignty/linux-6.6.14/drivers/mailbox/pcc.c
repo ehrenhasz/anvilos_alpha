@@ -1,50 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Copyright (C) 2014 Linaro Ltd.
- *	Author:	Ashwin Chaugule <ashwin.chaugule@linaro.org>
- *
- *  PCC (Platform Communication Channel) is defined in the ACPI 5.0+
- *  specification. It is a mailbox like mechanism to allow clients
- *  such as CPPC (Collaborative Processor Performance Control), RAS
- *  (Reliability, Availability and Serviceability) and MPST (Memory
- *  Node Power State Table) to talk to the platform (e.g. BMC) through
- *  shared memory regions as defined in the PCC table entries. The PCC
- *  specification supports a Doorbell mechanism for the PCC clients
- *  to notify the platform about new data. This Doorbell information
- *  is also specified in each PCC table entry.
- *
- *  Typical high level flow of operation is:
- *
- *  PCC Reads:
- *  * Client tries to acquire a channel lock.
- *  * After it is acquired it writes READ cmd in communication region cmd
- *		address.
- *  * Client issues mbox_send_message() which rings the PCC doorbell
- *		for its PCC channel.
- *  * If command completes, then client has control over channel and
- *		it can proceed with its reads.
- *  * Client releases lock.
- *
- *  PCC Writes:
- *  * Client tries to acquire channel lock.
- *  * Client writes to its communication region after it acquires a
- *		channel lock.
- *  * Client writes WRITE cmd in communication region cmd address.
- *  * Client issues mbox_send_message() which rings the PCC doorbell
- *		for its PCC channel.
- *  * If command completes, then writes have succeeded and it can release
- *		the channel lock.
- *
- *  There is a Nominal latency defined for each channel which indicates
- *  how long to wait until a command completes. If command is not complete
- *  the client needs to retry or assume failure.
- *
- *	For more details about PCC, please see the ACPI specification from
- *  http://www.uefi.org/ACPIv5.1 Section 14.
- *
- *  This file implements PCC as a Mailbox controller and allows for PCC
- *  clients to be implemented as its Mailbox Client Channels.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -63,15 +18,7 @@
 
 #define MBOX_IRQ_NAME		"pcc-mbox"
 
-/**
- * struct pcc_chan_reg - PCC register bundle
- *
- * @vaddr: cached virtual address for this register
- * @gas: pointer to the generic address structure for this register
- * @preserve_mask: bitmask to preserve when writing to this register
- * @set_mask: bitmask to set when writing to this register
- * @status_mask: bitmask to determine and/or update the status for this register
- */
+ 
 struct pcc_chan_reg {
 	void __iomem *vaddr;
 	struct acpi_generic_address *gas;
@@ -80,18 +27,7 @@ struct pcc_chan_reg {
 	u64 status_mask;
 };
 
-/**
- * struct pcc_chan_info - PCC channel specific information
- *
- * @chan: PCC channel information with Shared Memory Region info
- * @db: PCC register bundle for the doorbell register
- * @plat_irq_ack: PCC register bundle for the platform interrupt acknowledge
- *	register
- * @cmd_complete: PCC register bundle for the command complete check register
- * @cmd_update: PCC register bundle for the command complete update register
- * @error: PCC register bundle for the error status register
- * @plat_irq: platform interrupt
- */
+ 
 struct pcc_chan_info {
 	struct pcc_mbox_chan chan;
 	struct pcc_chan_reg db;
@@ -106,14 +42,7 @@ struct pcc_chan_info {
 static struct pcc_chan_info *chan_info;
 static int pcc_chan_count;
 
-/*
- * PCC can be used with perf critical drivers such as CPPC
- * So it makes sense to locally cache the virtual address and
- * use it to read/write to PCC registers such as doorbell register
- *
- * The below read_register and write_registers are used to read and
- * write from perf critical registers such as PCC doorbell register
- */
+ 
 static void read_register(void __iomem *vaddr, u64 *val, unsigned int bit_width)
 {
 	switch (bit_width) {
@@ -197,14 +126,7 @@ static int pcc_chan_reg_read_modify_write(struct pcc_chan_reg *reg)
 	return pcc_chan_reg_write(reg, val);
 }
 
-/**
- * pcc_map_interrupt - Map a PCC subspace GSI to a linux IRQ number
- * @interrupt: GSI number.
- * @flags: interrupt flags
- *
- * Returns: a valid linux IRQ number on success
- *		0 or -EINVAL on failure
- */
+ 
 static int pcc_map_interrupt(u32 interrupt, u32 flags)
 {
 	int trigger, polarity;
@@ -221,13 +143,7 @@ static int pcc_map_interrupt(u32 interrupt, u32 flags)
 	return acpi_register_gsi(NULL, interrupt, trigger, polarity);
 }
 
-/**
- * pcc_mbox_irq - PCC mailbox interrupt handler
- * @irq:	interrupt number
- * @p: data/cookie passed from the caller to identify the channel
- *
- * Returns: IRQ_HANDLED if interrupt is handled or IRQ_NONE if not
- */
+ 
 static irqreturn_t pcc_mbox_irq(int irq, void *p)
 {
 	struct pcc_chan_info *pchan;
@@ -241,7 +157,7 @@ static irqreturn_t pcc_mbox_irq(int irq, void *p)
 	if (ret)
 		return IRQ_NONE;
 
-	if (val) { /* Ensure GAS exists and value is non-zero */
+	if (val) {  
 		val &= pchan->cmd_complete.status_mask;
 		if (!val)
 			return IRQ_NONE;
@@ -265,18 +181,7 @@ static irqreturn_t pcc_mbox_irq(int irq, void *p)
 	return IRQ_HANDLED;
 }
 
-/**
- * pcc_mbox_request_channel - PCC clients call this function to
- *		request a pointer to their PCC subspace, from which they
- *		can get the details of communicating with the remote.
- * @cl: Pointer to Mailbox client, so we know where to bind the
- *		Channel.
- * @subspace_id: The PCC Subspace index as parsed in the PCC client
- *		ACPI package. This is used to lookup the array of PCC
- *		subspaces as parsed by the PCC Mailbox controller.
- *
- * Return: Pointer to the PCC Mailbox Channel if successful or ERR_PTR.
- */
+ 
 struct pcc_mbox_chan *
 pcc_mbox_request_channel(struct mbox_client *cl, int subspace_id)
 {
@@ -302,12 +207,7 @@ pcc_mbox_request_channel(struct mbox_client *cl, int subspace_id)
 }
 EXPORT_SYMBOL_GPL(pcc_mbox_request_channel);
 
-/**
- * pcc_mbox_free_channel - Clients call this to free their Channel.
- *
- * @pchan: Pointer to the PCC mailbox channel as returned by
- *	   pcc_mbox_request_channel()
- */
+ 
 void pcc_mbox_free_channel(struct pcc_mbox_chan *pchan)
 {
 	struct mbox_chan *chan = pchan->mchan;
@@ -319,18 +219,7 @@ void pcc_mbox_free_channel(struct pcc_mbox_chan *pchan)
 }
 EXPORT_SYMBOL_GPL(pcc_mbox_free_channel);
 
-/**
- * pcc_send_data - Called from Mailbox Controller code. Used
- *		here only to ring the channel doorbell. The PCC client
- *		specific read/write is done in the client driver in
- *		order to maintain atomicity over PCC channel once
- *		OS has control over it. See above for flow of operations.
- * @chan: Pointer to Mailbox channel over which to send data.
- * @data: Client specific data written over channel. Used here
- *		only for debug after PCC transaction completes.
- *
- * Return: Err if something failed else 0 for success.
- */
+ 
 static int pcc_send_data(struct mbox_chan *chan, void *data)
 {
 	int ret;
@@ -343,13 +232,7 @@ static int pcc_send_data(struct mbox_chan *chan, void *data)
 	return pcc_chan_reg_read_modify_write(&pchan->db);
 }
 
-/**
- * pcc_startup - Called from Mailbox Controller code. Used here
- *		to request the interrupt.
- * @chan: Pointer to Mailbox channel to startup.
- *
- * Return: Err if something failed else 0 for success.
- */
+ 
 static int pcc_startup(struct mbox_chan *chan)
 {
 	struct pcc_chan_info *pchan = chan->con_priv;
@@ -368,11 +251,7 @@ static int pcc_startup(struct mbox_chan *chan)
 	return 0;
 }
 
-/**
- * pcc_shutdown - Called from Mailbox Controller code. Used here
- *		to free the interrupt.
- * @chan: Pointer to Mailbox channel to shutdown.
- */
+ 
 static void pcc_shutdown(struct mbox_chan *chan)
 {
 	struct pcc_chan_info *pchan = chan->con_priv;
@@ -387,16 +266,7 @@ static const struct mbox_chan_ops pcc_chan_ops = {
 	.shutdown = pcc_shutdown,
 };
 
-/**
- * parse_pcc_subspace - Count PCC subspaces defined
- * @header: Pointer to the ACPI subtable header under the PCCT.
- * @end: End of subtable entry.
- *
- * Return: If we find a PCC subspace entry of a valid type, return 0.
- *	Otherwise, return -EINVAL.
- *
- * This gets called for each entry in the PCC table.
- */
+ 
 static int parse_pcc_subspace(union acpi_subtable_headers *header,
 		const unsigned long end)
 {
@@ -433,18 +303,7 @@ pcc_chan_reg_init(struct pcc_chan_reg *reg, struct acpi_generic_address *gas,
 	return 0;
 }
 
-/**
- * pcc_parse_subspace_irq - Parse the PCC IRQ and PCC ACK register
- *
- * @pchan: Pointer to the PCC channel info structure.
- * @pcct_entry: Pointer to the ACPI subtable header.
- *
- * Return: 0 for Success, else errno.
- *
- * There should be one entry per PCC channel. This gets called for each
- * entry in the PCC table. This uses PCCY Type1 structure for all applicable
- * types(Type 1-4) to fetch irq
- */
+ 
 static int pcc_parse_subspace_irq(struct pcc_chan_info *pchan,
 				  struct acpi_subtable_header *pcct_entry)
 {
@@ -487,14 +346,7 @@ static int pcc_parse_subspace_irq(struct pcc_chan_info *pchan,
 	return ret;
 }
 
-/**
- * pcc_parse_subspace_db_reg - Parse the PCC doorbell register
- *
- * @pchan: Pointer to the PCC channel info structure.
- * @pcct_entry: Pointer to the ACPI subtable header.
- *
- * Return: 0 for Success, else errno.
- */
+ 
 static int pcc_parse_subspace_db_reg(struct pcc_chan_info *pchan,
 				     struct acpi_subtable_header *pcct_entry)
 {
@@ -545,13 +397,7 @@ static int pcc_parse_subspace_db_reg(struct pcc_chan_info *pchan,
 	return ret;
 }
 
-/**
- * pcc_parse_subspace_shmem - Parse the PCC Shared Memory Region information
- *
- * @pchan: Pointer to the PCC channel info structure.
- * @pcct_entry: Pointer to the ACPI subtable header.
- *
- */
+ 
 static void pcc_parse_subspace_shmem(struct pcc_chan_info *pchan,
 				     struct acpi_subtable_header *pcct_entry)
 {
@@ -576,11 +422,7 @@ static void pcc_parse_subspace_shmem(struct pcc_chan_info *pchan,
 	}
 }
 
-/**
- * acpi_pcc_probe - Parse the ACPI tree for the PCCT.
- *
- * Return: 0 for Success, else errno.
- */
+ 
 static int __init acpi_pcc_probe(void)
 {
 	int count, i, rc = 0;
@@ -592,7 +434,7 @@ static int __init acpi_pcc_probe(void)
 	if (ACPI_FAILURE(status) || !pcct_tbl)
 		return -ENODEV;
 
-	/* Set up the subtable handlers */
+	 
 	for (i = ACPI_PCCT_TYPE_GENERIC_SUBSPACE;
 	     i < ACPI_PCCT_TYPE_RESERVED; i++) {
 		proc[i].id = i;
@@ -619,17 +461,7 @@ static int __init acpi_pcc_probe(void)
 	return rc;
 }
 
-/**
- * pcc_mbox_probe - Called when we find a match for the
- *	PCCT platform device. This is purely used to represent
- *	the PCCT as a virtual device for registering with the
- *	generic Mailbox framework.
- *
- * @pdev: Pointer to platform device returned when a match
- *	is found.
- *
- *	Return: 0 for Success, else errno.
- */
+ 
 static int pcc_mbox_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -641,7 +473,7 @@ static int pcc_mbox_probe(struct platform_device *pdev)
 	acpi_status status = AE_OK;
 	int i, rc, count = pcc_chan_count;
 
-	/* Search for PCCT */
+	 
 	status = acpi_get_table(ACPI_SIG_PCCT, 0, &pcct_tbl);
 
 	if (ACPI_FAILURE(status) || !pcct_tbl)
@@ -666,7 +498,7 @@ static int pcc_mbox_probe(struct platform_device *pdev)
 		goto err;
 	}
 
-	/* Point to the first PCC subspace entry */
+	 
 	pcct_entry = (struct acpi_subtable_header *) (
 		(unsigned long) pcct_tbl + sizeof(struct acpi_table_pcct));
 
@@ -736,7 +568,7 @@ static int __init pcc_init(void)
 	if (acpi_disabled)
 		return -ENODEV;
 
-	/* Check if PCC support is available. */
+	 
 	ret = acpi_pcc_probe();
 
 	if (ret) {
@@ -756,9 +588,5 @@ static int __init pcc_init(void)
 	return 0;
 }
 
-/*
- * Make PCC init postcore so that users of this mailbox
- * such as the ACPI Processor driver have it available
- * at their init.
- */
+ 
 postcore_initcall(pcc_init);

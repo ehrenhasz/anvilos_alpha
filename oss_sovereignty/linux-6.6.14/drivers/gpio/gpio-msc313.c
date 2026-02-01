@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2020 Daniel Palmer<daniel@thingy.jp> */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/kernel.h>
@@ -20,19 +20,16 @@
 #define MSC313_GPIO_OUT BIT(4)
 #define MSC313_GPIO_OEN BIT(5)
 
-/*
- * These bits need to be saved to correctly restore the
- * gpio state when resuming from suspend to memory.
- */
+ 
 #define MSC313_GPIO_BITSTOSAVE (MSC313_GPIO_OUT | MSC313_GPIO_OEN)
 
-/* pad names for fuart, same for all SoCs so far */
+ 
 #define MSC313_PINNAME_FUART_RX		"fuart_rx"
 #define MSC313_PINNAME_FUART_TX		"fuart_tx"
 #define MSC313_PINNAME_FUART_CTS	"fuart_cts"
 #define MSC313_PINNAME_FUART_RTS	"fuart_rts"
 
-/* pad names for sr, mercury5 is different */
+ 
 #define MSC313_PINNAME_SR_IO2		"sr_io2"
 #define MSC313_PINNAME_SR_IO3		"sr_io3"
 #define MSC313_PINNAME_SR_IO4		"sr_io4"
@@ -50,7 +47,7 @@
 #define MSC313_PINNAME_SR_IO16		"sr_io16"
 #define MSC313_PINNAME_SR_IO17		"sr_io17"
 
-/* pad names for sd, same for all SoCs so far */
+ 
 #define MSC313_PINNAME_SD_CLK		"sd_clk"
 #define MSC313_PINNAME_SD_CMD		"sd_cmd"
 #define MSC313_PINNAME_SD_D0		"sd_d0"
@@ -58,11 +55,11 @@
 #define MSC313_PINNAME_SD_D2		"sd_d2"
 #define MSC313_PINNAME_SD_D3		"sd_d3"
 
-/* pad names for i2c1, same for all SoCs so for */
+ 
 #define MSC313_PINNAME_I2C1_SCL		"i2c1_scl"
 #define MSC313_PINNAME_I2C1_SCA		"i2c1_sda"
 
-/* pad names for spi0, same for all SoCs so far */
+ 
 #define MSC313_PINNAME_SPI0_CZ		"spi0_cz"
 #define MSC313_PINNAME_SPI0_CK		"spi0_ck"
 #define MSC313_PINNAME_SPI0_DI		"spi0_di"
@@ -221,11 +218,7 @@ static const unsigned int msc313_offsets[] = {
 
 MSC313_GPIO_CHIPDATA(msc313);
 
-/*
- * Unlike the msc313(e) the ssd20xd have a bunch of pins
- * that are actually called gpio probably because they
- * have no dedicated function.
- */
+ 
 #define SSD20XD_PINNAME_GPIO0		"gpio0"
 #define SSD20XD_PINNAME_GPIO1		"gpio1"
 #define SSD20XD_PINNAME_GPIO2		"gpio2"
@@ -294,7 +287,7 @@ MSC313_GPIO_CHIPDATA(msc313);
 			     SSD20XD_GPIO_OFF_GPIO86, \
 			     SSD20XD_GPIO_OFF_GPIO90
 
-/* "ttl" pins lcd interface pins */
+ 
 #define SSD20XD_PINNAME_TTL0	"ttl0"
 #define SSD20XD_PINNAME_TTL1	"ttl1"
 #define SSD20XD_PINNAME_TTL2	"ttl2"
@@ -411,7 +404,7 @@ MSC313_GPIO_CHIPDATA(msc313);
 			    SSD20XD_TTL_OFFSET_TTL26, \
 			    SSD20XD_TTL_OFFSET_TTL27
 
-/* On the ssd20xd the two normal uarts have dedicated pins */
+ 
 #define SSD20XD_PINNAME_UART0_RX	"uart0_rx"
 #define SSD20XD_PINNAME_UART0_TX	"uart0_tx"
 
@@ -440,10 +433,7 @@ MSC313_GPIO_CHIPDATA(msc313);
 	SSD20XD_OFF_UART1_RX, \
 	SSD20XD_OFF_UART1_TX
 
-/*
- * ssd20x has the same pin names but different ordering
- * of the registers that control the gpio.
- */
+ 
 #define SSD20XD_OFF_SD_D0	0x140
 #define SSD20XD_OFF_SD_D1	0x144
 #define SSD20XD_OFF_SD_D2	0x148
@@ -547,10 +537,7 @@ static void msc313_gpio_irq_unmask(struct irq_data *d)
 	irq_chip_unmask_parent(d);
 }
 
-/*
- * The interrupt handling happens in the parent interrupt controller,
- * we don't do anything here.
- */
+ 
 static const struct irq_chip msc313_gpio_irqchip = {
 	.name = "GPIO",
 	.irq_eoi = irq_chip_eoi_parent,
@@ -562,11 +549,7 @@ static const struct irq_chip msc313_gpio_irqchip = {
 	GPIOCHIP_IRQ_RESOURCE_HELPERS,
 };
 
-/*
- * The parent interrupt controller needs the GIC interrupt type set to GIC_SPI
- * so we need to provide the fwspec. Essentially gpiochip_populate_parent_fwspec_twocell
- * that puts GIC_SPI into the first cell.
- */
+ 
 static int msc313_gpio_populate_parent_fwspec(struct gpio_chip *gc,
 					      union gpio_irq_fwspec *gfwspec,
 					      unsigned int parent_hwirq,
@@ -592,11 +575,7 @@ static int msc313e_gpio_child_to_parent_hwirq(struct gpio_chip *chip,
 	struct msc313_gpio *priv = gpiochip_get_data(chip);
 	unsigned int offset = priv->gpio_data->offsets[child];
 
-	/*
-	 * only the spi0 pins have interrupts on the parent
-	 * on all of the known chips and so far they are all
-	 * mapped to the same place
-	 */
+	 
 	if (offset >= OFF_SPI0_CZ && offset <= OFF_SPI0_DO) {
 		*parent_type = child_type;
 		*parent = ((offset - OFF_SPI0_CZ) >> 2) + 28;
@@ -686,11 +665,7 @@ static const struct of_device_id msc313_gpio_of_match[] = {
 	{ }
 };
 
-/*
- * The GPIO controller loses the state of the registers when the
- * SoC goes into suspend to memory mode so we need to save some
- * of the register bits before suspending and put it back when resuming
- */
+ 
 static int __maybe_unused msc313_gpio_suspend(struct device *dev)
 {
 	struct msc313_gpio *gpio = dev_get_drvdata(dev);

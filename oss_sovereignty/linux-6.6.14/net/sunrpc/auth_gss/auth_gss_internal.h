@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause
-/*
- * linux/net/sunrpc/auth_gss/auth_gss_internal.h
- *
- * Internal definitions for RPCSEC_GSS client authentication
- *
- * Copyright (c) 2000 The Regents of the University of Michigan.
- * All rights reserved.
- *
- */
+
+ 
 #include <linux/err.h>
 #include <linux/string.h>
 #include <linux/sunrpc/xdr.h>

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright (C) 2020 Red Hat, Inc.
- *
- * Authors:
- * Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <drm/drm_privacy_screen_machine.h>
@@ -36,12 +31,12 @@ static bool __init detect_thinkpad_privacy_screen(void)
 	if (acpi_disabled)
 		return false;
 
-	/* Get embedded-controller handle */
+	 
 	status = acpi_get_devices("PNP0C09", acpi_set_handle, NULL, &ec_handle);
 	if (ACPI_FAILURE(status) || !ec_handle)
 		return false;
 
-	/* And call the privacy-screen get-status method */
+	 
 	status = acpi_evaluate_integer(ec_handle, "HKEY.GSSS", &args, &output);
 	if (ACPI_FAILURE(status))
 		return false;
@@ -91,7 +86,7 @@ void __init drm_privacy_screen_lookup_init(void)
 		pr_info("Found '%s' privacy-screen provider\n",
 			arch_init_data[i].lookup.provider);
 
-		/* Make a copy because arch_init_data is __initconst */
+		 
 		arch_lookup = arch_init_data[i].lookup;
 		drm_privacy_screen_lookup_add(&arch_lookup);
 		break;
@@ -103,4 +98,4 @@ void drm_privacy_screen_lookup_exit(void)
 	if (arch_lookup.provider)
 		drm_privacy_screen_lookup_remove(&arch_lookup);
 }
-#endif /* ifdef CONFIG_X86 */
+#endif  

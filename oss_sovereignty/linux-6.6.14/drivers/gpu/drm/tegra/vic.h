@@ -1,17 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2015, NVIDIA Corporation.
- */
+ 
+ 
 
 #ifndef TEGRA_VIC_H
 #define TEGRA_VIC_H
 
-/* VIC methods */
+ 
 
 #define VIC_SET_FCE_UCODE_SIZE			0x0000071C
 #define VIC_SET_FCE_UCODE_OFFSET		0x0000072C
 
-/* VIC registers */
+ 
 
 #define VIC_THI_STREAMID0	0x00000030
 #define VIC_THI_STREAMID1	0x00000034
@@ -27,10 +25,10 @@
 #define  TRANSCFG_SID_PHY	1
 #define  TRANSCFG_SID_FALCON	2
 
-/* Firmware offsets */
+ 
 
 #define VIC_UCODE_FCE_HEADER_OFFSET		(6*4)
 #define VIC_UCODE_FCE_DATA_OFFSET		(7*4)
 #define FCE_UCODE_SIZE_OFFSET			(2*4)
 
-#endif /* TEGRA_VIC_H */
+#endif  

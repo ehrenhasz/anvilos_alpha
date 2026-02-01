@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- * Filename:  target_core_transport.c
- *
- * This file contains the Generic Target Engine Core.
- *
- * (c) Copyright 2002-2013 Datera, Inc.
- *
- * Nicholas A. Bellinger <nab@kernel.org>
- *
- ******************************************************************************/
+
+ 
 
 #include <linux/net.h>
 #include <linux/delay.h>
@@ -173,13 +164,11 @@ void release_se_kmem_caches(void)
 	kmem_cache_destroy(t10_alua_lba_map_mem_cache);
 }
 
-/* This code ensures unique mib indexes are handed out. */
+ 
 static DEFINE_SPINLOCK(scsi_mib_index_lock);
 static u32 scsi_mib_index[SCSI_INDEX_TYPE_MAX];
 
-/*
- * Allocate a new row index for the entry type specified
- */
+ 
 u32 scsi_get_new_index(scsi_index_t type)
 {
 	u32 new_index;
@@ -256,10 +245,7 @@ EXPORT_SYMBOL_GPL(target_alloc_cmd_counter);
 
 void target_free_cmd_counter(struct target_cmd_counter *cmd_cnt)
 {
-	/*
-	 * Drivers like loop do not call target_stop_session during session
-	 * shutdown so we have to drop the ref taken at init time here.
-	 */
+	 
 	if (!atomic_read(&cmd_cnt->stopped))
 		percpu_ref_put(&cmd_cnt->refcnt);
 
@@ -268,12 +254,7 @@ void target_free_cmd_counter(struct target_cmd_counter *cmd_cnt)
 }
 EXPORT_SYMBOL_GPL(target_free_cmd_counter);
 
-/**
- * transport_init_session - initialize a session object
- * @se_sess: Session object pointer.
- *
- * The caller must have zero-initialized @se_sess before calling this function.
- */
+ 
 void transport_init_session(struct se_session *se_sess)
 {
 	INIT_LIST_HEAD(&se_sess->sess_list);
@@ -282,10 +263,7 @@ void transport_init_session(struct se_session *se_sess)
 }
 EXPORT_SYMBOL(transport_init_session);
 
-/**
- * transport_alloc_session - allocate a session object and initialize it
- * @sup_prot_ops: bitmask that defines which T10-PI modes are supported.
- */
+ 
 struct se_session *transport_alloc_session(enum target_prot_op sup_prot_ops)
 {
 	struct se_session *se_sess;
@@ -303,13 +281,7 @@ struct se_session *transport_alloc_session(enum target_prot_op sup_prot_ops)
 }
 EXPORT_SYMBOL(transport_alloc_session);
 
-/**
- * transport_alloc_session_tags - allocate target driver private data
- * @se_sess:  Session pointer.
- * @tag_num:  Maximum number of in-flight commands between initiator and target.
- * @tag_size: Size in bytes of the private data a target driver associates with
- *	      each command.
- */
+ 
 int transport_alloc_session_tags(struct se_session *se_sess,
 			         unsigned int tag_num, unsigned int tag_size)
 {
@@ -336,13 +308,7 @@ int transport_alloc_session_tags(struct se_session *se_sess,
 }
 EXPORT_SYMBOL(transport_alloc_session_tags);
 
-/**
- * transport_init_session_tags - allocate a session and target driver private data
- * @tag_num:  Maximum number of in-flight commands between initiator and target.
- * @tag_size: Size in bytes of the private data a target driver associates with
- *	      each command.
- * @sup_prot_ops: bitmask that defines which T10-PI modes are supported.
- */
+ 
 static struct se_session *
 transport_init_session_tags(unsigned int tag_num, unsigned int tag_size,
 			    enum target_prot_op sup_prot_ops)
@@ -374,9 +340,7 @@ transport_init_session_tags(unsigned int tag_num, unsigned int tag_size,
 	return se_sess;
 }
 
-/*
- * Called with spin_lock_irqsave(&struct se_portal_group->session_lock called.
- */
+ 
 void __transport_register_session(
 	struct se_portal_group *se_tpg,
 	struct se_node_acl *se_nacl,
@@ -389,32 +353,15 @@ void __transport_register_session(
 
 	se_sess->se_tpg = se_tpg;
 	se_sess->fabric_sess_ptr = fabric_sess_ptr;
-	/*
-	 * Used by struct se_node_acl's under ConfigFS to locate active se_session-t
-	 *
-	 * Only set for struct se_session's that will actually be moving I/O.
-	 * eg: *NOT* discovery sessions.
-	 */
+	 
 	if (se_nacl) {
-		/*
-		 *
-		 * Determine if fabric allows for T10-PI feature bits exposed to
-		 * initiators for device backends with !dev->dev_attrib.pi_prot_type.
-		 *
-		 * If so, then always save prot_type on a per se_node_acl node
-		 * basis and re-instate the previous sess_prot_type to avoid
-		 * disabling PI from below any previously initiator side
-		 * registered LUNs.
-		 */
+		 
 		if (se_nacl->saved_prot_type)
 			se_sess->sess_prot_type = se_nacl->saved_prot_type;
 		else if (tfo->tpg_check_prot_fabric_only)
 			se_sess->sess_prot_type = se_nacl->saved_prot_type =
 					tfo->tpg_check_prot_fabric_only(se_tpg);
-		/*
-		 * If the fabric module supports an ISID based TransportID,
-		 * save this value in binary from the fabric I_T Nexus now.
-		 */
+		 
 		if (se_tpg->se_tpg_tfo->sess_get_initiator_sid != NULL) {
 			memset(&buf[0], 0, PR_REG_ISID_LEN);
 			se_tpg->se_tpg_tfo->sess_get_initiator_sid(se_sess,
@@ -423,10 +370,7 @@ void __transport_register_session(
 		}
 
 		spin_lock_irqsave(&se_nacl->nacl_sess_lock, flags);
-		/*
-		 * The se_nacl->nacl_sess pointer will be set to the
-		 * last active I_T Nexus for each struct se_node_acl.
-		 */
+		 
 		se_nacl->nacl_sess = se_sess;
 
 		list_add_tail(&se_sess->sess_acl_list,
@@ -469,10 +413,7 @@ target_setup_session(struct se_portal_group *tpg,
 	cmd_cnt = target_alloc_cmd_counter();
 	if (!cmd_cnt)
 		return ERR_PTR(-ENOMEM);
-	/*
-	 * If the fabric driver is using percpu-ida based pre allocation
-	 * of I/O descriptor tags, go ahead and perform that setup now..
-	 */
+	 
 	if (tag_num != 0)
 		sess = transport_init_session_tags(tag_num, tag_size, prot_op);
 	else
@@ -490,10 +431,7 @@ target_setup_session(struct se_portal_group *tpg,
 		rc = -EACCES;
 		goto free_sess;
 	}
-	/*
-	 * Go ahead and perform any remaining fabric setup that is
-	 * required before transport_register_session().
-	 */
+	 
 	if (callback != NULL) {
 		rc = callback(tpg, sess, private);
 		if (rc)
@@ -529,7 +467,7 @@ ssize_t target_show_dynamic_sessions(struct se_portal_group *se_tpg, char *page)
 
 		len += snprintf(page + len, PAGE_SIZE - len, "%s\n",
 				se_sess->se_node_acl->initiatorname);
-		len += 1; /* Include NULL terminator */
+		len += 1;  
 	}
 	spin_unlock_bh(&se_tpg->session_lock);
 
@@ -567,19 +505,13 @@ void transport_deregister_session_configfs(struct se_session *se_sess)
 {
 	struct se_node_acl *se_nacl;
 	unsigned long flags;
-	/*
-	 * Used by struct se_node_acl's under ConfigFS to locate active struct se_session
-	 */
+	 
 	se_nacl = se_sess->se_node_acl;
 	if (se_nacl) {
 		spin_lock_irqsave(&se_nacl->nacl_sess_lock, flags);
 		if (!list_empty(&se_sess->sess_acl_list))
 			list_del_init(&se_sess->sess_acl_list);
-		/*
-		 * If the session list is empty, then clear the pointer.
-		 * Otherwise, set the struct se_session pointer from the tail
-		 * element of the per struct se_node_acl active session list.
-		 */
+		 
 		if (list_empty(&se_nacl->acl_sess_list))
 			se_nacl->nacl_sess = NULL;
 		else {
@@ -596,10 +528,7 @@ void transport_free_session(struct se_session *se_sess)
 {
 	struct se_node_acl *se_nacl = se_sess->se_node_acl;
 
-	/*
-	 * Drop the se_node_acl->nacl_kref obtained from within
-	 * core_tpg_get_initiator_node_acl().
-	 */
+	 
 	if (se_nacl) {
 		struct se_portal_group *se_tpg = se_nacl->se_tpg;
 		const struct target_core_fabric_ops *se_tfo = se_tpg->se_tpg_tfo;
@@ -607,11 +536,7 @@ void transport_free_session(struct se_session *se_sess)
 
 		se_sess->se_node_acl = NULL;
 
-		/*
-		 * Also determine if we need to drop the extra ->cmd_kref if
-		 * it had been previously dynamically generated, and
-		 * the endpoint is not caching dynamic ACLs.
-		 */
+		 
 		mutex_lock(&se_tpg->acl_node_mutex);
 		if (se_nacl->dynamic_node_acl &&
 		    !se_tfo->tpg_check_demo_mode_cache(se_tpg)) {
@@ -665,22 +590,12 @@ void transport_deregister_session(struct se_session *se_sess)
 	se_sess->fabric_sess_ptr = NULL;
 	spin_unlock_irqrestore(&se_tpg->session_lock, flags);
 
-	/*
-	 * Since the session is being removed, release SPC-2
-	 * reservations held by the session that is disappearing.
-	 */
+	 
 	target_for_each_device(target_release_res, se_sess);
 
 	pr_debug("TARGET_CORE[%s]: Deregistered fabric_sess\n",
 		se_tpg->se_tpg_tfo->fabric_name);
-	/*
-	 * If last kref is dropping now for an explicit NodeACL, awake sleeping
-	 * ->acl_free_comp caller to wakeup configfs se_node_acl->acl_group
-	 * removal context from within transport_free_session() code.
-	 *
-	 * For dynamic ACL, target_put_nacl() uses target_complete_nacl()
-	 * to release all remaining generate_node_acl=1 created ACL resources.
-	 */
+	 
 
 	transport_free_session(se_sess);
 }
@@ -724,22 +639,13 @@ static void target_remove_from_tmr_list(struct se_cmd *cmd)
 		spin_unlock_irqrestore(&dev->se_tmr_lock, flags);
 	}
 }
-/*
- * This function is called by the target core after the target core has
- * finished processing a SCSI command or SCSI TMF. Both the regular command
- * processing code and the code for aborting commands can call this
- * function. CMD_T_STOP is set if and only if another thread is waiting
- * inside transport_wait_for_tasks() for t_transport_stop_comp.
- */
+ 
 static int transport_cmd_check_stop_to_fabric(struct se_cmd *cmd)
 {
 	unsigned long flags;
 
 	spin_lock_irqsave(&cmd->t_state_lock, flags);
-	/*
-	 * Determine if frontend context caller is requesting the stopping of
-	 * this command for frontend exceptions.
-	 */
+	 
 	if (cmd->transport_state & CMD_T_STOP) {
 		pr_debug("%s:%d CMD_T_STOP for ITT: 0x%08llx\n",
 			__func__, __LINE__, cmd->tag);
@@ -752,13 +658,7 @@ static int transport_cmd_check_stop_to_fabric(struct se_cmd *cmd)
 	cmd->transport_state &= ~CMD_T_ACTIVE;
 	spin_unlock_irqrestore(&cmd->t_state_lock, flags);
 
-	/*
-	 * Some fabric modules like tcm_loop can release their internally
-	 * allocated I/O reference and struct se_cmd now.
-	 *
-	 * Fabric modules are expected to return '1' here if the se_cmd being
-	 * passed is released at this point, or zero if not being released.
-	 */
+	 
 	return cmd->se_tfo->check_stop_free(cmd);
 }
 
@@ -775,9 +675,7 @@ static void transport_lun_remove_cmd(struct se_cmd *cmd)
 	if (cmpxchg(&cmd->lun_ref_active, true, false))
 		percpu_ref_put(&lun->lun_ref);
 
-	/*
-	 * Clear struct se_cmd->se_lun before the handoff to FE.
-	 */
+	 
 	cmd->se_lun = NULL;
 }
 
@@ -788,10 +686,7 @@ static void target_complete_failure_work(struct work_struct *work)
 	transport_generic_request_failure(cmd, cmd->sense_reason);
 }
 
-/*
- * Used when asking transport to copy Sense Data from the underlying
- * Linux/SCSI struct scsi_cmnd
- */
+ 
 static unsigned char *transport_get_sense_buffer(struct se_cmd *cmd)
 {
 	struct se_device *dev = cmd->se_dev;
@@ -854,18 +749,11 @@ static void target_handle_abort(struct se_cmd *cmd)
 			cmd->se_tfo->queue_tm_rsp(cmd);
 		}
 	} else {
-		/*
-		 * Allow the fabric driver to unmap any resources before
-		 * releasing the descriptor via TFO->release_cmd().
-		 */
+		 
 		cmd->se_tfo->aborted_task(cmd);
 		if (ack_kref)
 			WARN_ON_ONCE(target_put_sess_cmd(cmd) != 0);
-		/*
-		 * To do: establish a unit attention condition on the I_T
-		 * nexus associated with cmd. See also the paragraph "Aborting
-		 * commands" in SAM.
-		 */
+		 
 	}
 
 	WARN_ON_ONCE(kref_read(&cmd->cmd_kref) == 0);
@@ -902,7 +790,7 @@ static bool target_cmd_interrupted(struct se_cmd *cmd)
 	return false;
 }
 
-/* May be called from interrupt context so must not sleep. */
+ 
 void target_complete_cmd_with_sense(struct se_cmd *cmd, u8 scsi_status,
 				    sense_reason_t sense_reason)
 {
@@ -993,9 +881,7 @@ static void target_add_to_state_list(struct se_cmd *cmd)
 	spin_unlock_irqrestore(&dev->queues[cmd->cpuid].lock, flags);
 }
 
-/*
- * Handle QUEUE_FULL / -EAGAIN and -ENOMEM status
- */
+ 
 static void transport_write_pending_qf(struct se_cmd *cmd);
 static void transport_complete_qf(struct se_cmd *cmd);
 
@@ -1120,11 +1006,7 @@ void transport_dump_vpd_proto_id(
 void
 transport_set_vpd_proto_id(struct t10_vpd *vpd, unsigned char *page_83)
 {
-	/*
-	 * Check if the Protocol Identifier Valid (PIV) bit is set..
-	 *
-	 * from spc3r23.pdf section 7.5.1
-	 */
+	 
 	 if (page_83[1] & 0x80) {
 		vpd->protocol_identifier = (page_83[0] & 0xf0);
 		vpd->protocol_identifier_set = 1;
@@ -1171,11 +1053,7 @@ int transport_dump_vpd_assoc(
 
 int transport_set_vpd_assoc(struct t10_vpd *vpd, unsigned char *page_83)
 {
-	/*
-	 * The VPD identification association..
-	 *
-	 * from spc3r23.pdf Section 7.6.3.1 Table 297
-	 */
+	 
 	vpd->association = (page_83[1] & 0x30);
 	return transport_dump_vpd_assoc(vpd, NULL, 0);
 }
@@ -1232,11 +1110,7 @@ int transport_dump_vpd_ident_type(
 
 int transport_set_vpd_ident_type(struct t10_vpd *vpd, unsigned char *page_83)
 {
-	/*
-	 * The VPD identifier type..
-	 *
-	 * from spc3r23.pdf Section 7.6.3.1 Table 298
-	 */
+	 
 	vpd->device_identifier_type = (page_83[1] & 0x0f);
 	return transport_dump_vpd_ident_type(vpd, NULL, 0);
 }
@@ -1253,17 +1127,17 @@ int transport_dump_vpd_ident(
 	memset(buf, 0, VPD_TMP_BUF_SIZE);
 
 	switch (vpd->device_identifier_code_set) {
-	case 0x01: /* Binary */
+	case 0x01:  
 		snprintf(buf, sizeof(buf),
 			"T10 VPD Binary Device Identifier: %s\n",
 			&vpd->device_identifier[0]);
 		break;
-	case 0x02: /* ASCII */
+	case 0x02:  
 		snprintf(buf, sizeof(buf),
 			"T10 VPD ASCII Device Identifier: %s\n",
 			&vpd->device_identifier[0]);
 		break;
-	case 0x03: /* UTF-8 */
+	case 0x03:  
 		snprintf(buf, sizeof(buf),
 			"T10 VPD UTF-8 Device Identifier: %s\n",
 			&vpd->device_identifier[0]);
@@ -1287,16 +1161,12 @@ int
 transport_set_vpd_ident(struct t10_vpd *vpd, unsigned char *page_83)
 {
 	static const char hex_str[] = "0123456789abcdef";
-	int j = 0, i = 4; /* offset to start of the identifier */
+	int j = 0, i = 4;  
 
-	/*
-	 * The VPD Code Set (encoding)
-	 *
-	 * from spc3r23.pdf Section 7.6.3.1 Table 296
-	 */
+	 
 	vpd->device_identifier_code_set = (page_83[0] & 0x0f);
 	switch (vpd->device_identifier_code_set) {
-	case 0x01: /* Binary */
+	case 0x01:  
 		vpd->device_identifier[j++] =
 				hex_str[vpd->device_identifier_type];
 		while (i < (4 + page_83[3])) {
@@ -1307,8 +1177,8 @@ transport_set_vpd_ident(struct t10_vpd *vpd, unsigned char *page_83)
 			i++;
 		}
 		break;
-	case 0x02: /* ASCII */
-	case 0x03: /* UTF-8 */
+	case 0x02:  
+	case 0x03:  
 		while (i < (4 + page_83[3]))
 			vpd->device_identifier[j++] = page_83[i++];
 		break;
@@ -1328,25 +1198,10 @@ target_check_max_data_sg_nents(struct se_cmd *cmd, struct se_device *dev,
 
 	if (!cmd->se_tfo->max_data_sg_nents)
 		return TCM_NO_SENSE;
-	/*
-	 * Check if fabric enforced maximum SGL entries per I/O descriptor
-	 * exceeds se_cmd->data_length.  If true, set SCF_UNDERFLOW_BIT +
-	 * residual_count and reduce original cmd->data_length to maximum
-	 * length based on single PAGE_SIZE entry scatter-lists.
-	 */
+	 
 	mtl = (cmd->se_tfo->max_data_sg_nents * PAGE_SIZE);
 	if (cmd->data_length > mtl) {
-		/*
-		 * If an existing CDB overflow is present, calculate new residual
-		 * based on CDB size minus fabric maximum transfer length.
-		 *
-		 * If an existing CDB underflow is present, calculate new residual
-		 * based on original cmd->data_length minus fabric maximum transfer
-		 * length.
-		 *
-		 * Otherwise, set the underflow residual based on cmd->data_length
-		 * minus fabric maximum transfer length.
-		 */
+		 
 		if (cmd->se_cmd_flags & SCF_OVERFLOW_BIT) {
 			cmd->residual_count = (size - mtl);
 		} else if (cmd->se_cmd_flags & SCF_UNDERFLOW_BIT) {
@@ -1357,10 +1212,7 @@ target_check_max_data_sg_nents(struct se_cmd *cmd, struct se_device *dev,
 			cmd->residual_count = (cmd->data_length - mtl);
 		}
 		cmd->data_length = mtl;
-		/*
-		 * Reset sbc_check_prot() calculated protection payload
-		 * length based upon the new smaller MTL.
-		 */
+		 
 		if (cmd->prot_length) {
 			u32 sectors = (mtl / dev->dev_attrib.block_size);
 			cmd->prot_length = dev->prot_length * sectors;
@@ -1369,19 +1221,7 @@ target_check_max_data_sg_nents(struct se_cmd *cmd, struct se_device *dev,
 	return TCM_NO_SENSE;
 }
 
-/**
- * target_cmd_size_check - Check whether there will be a residual.
- * @cmd: SCSI command.
- * @size: Data buffer size derived from CDB. The data buffer size provided by
- *   the SCSI transport driver is available in @cmd->data_length.
- *
- * Compare the data buffer size from the CDB with the data buffer limit from the transport
- * header. Set @cmd->residual_count and SCF_OVERFLOW_BIT or SCF_UNDERFLOW_BIT if necessary.
- *
- * Note: target drivers set @cmd->data_length by calling __target_init_cmd().
- *
- * Return: TCM_NO_SENSE
- */
+ 
 sense_reason_t
 target_cmd_size_check(struct se_cmd *cmd, unsigned int size)
 {
@@ -1394,22 +1234,14 @@ target_cmd_size_check(struct se_cmd *cmd, unsigned int size)
 			" %u does not match SCSI CDB Length: %u for SAM Opcode:"
 			" 0x%02x\n", cmd->se_tfo->fabric_name,
 				cmd->data_length, size, cmd->t_task_cdb[0]);
-		/*
-		 * For READ command for the overflow case keep the existing
-		 * fabric provided ->data_length. Otherwise for the underflow
-		 * case, reset ->data_length to the smaller SCSI expected data
-		 * transfer length.
-		 */
+		 
 		if (size > cmd->data_length) {
 			cmd->se_cmd_flags |= SCF_OVERFLOW_BIT;
 			cmd->residual_count = (size - cmd->data_length);
 		} else {
 			cmd->se_cmd_flags |= SCF_UNDERFLOW_BIT;
 			cmd->residual_count = (cmd->data_length - size);
-			/*
-			 * Do not truncate ->data_length for WRITE command to
-			 * dump all payload
-			 */
+			 
 			if (cmd->data_direction == DMA_FROM_DEVICE) {
 				cmd->data_length = size;
 			}
@@ -1421,12 +1253,7 @@ target_cmd_size_check(struct se_cmd *cmd, unsigned int size)
 						   " for WRITE data CDB\n");
 				return TCM_INVALID_FIELD_IN_COMMAND_IU;
 			}
-			/*
-			 * Some fabric drivers like iscsi-target still expect to
-			 * always reject overflow writes.  Reject this case until
-			 * full fabric driver level support for overflow writes
-			 * is introduced tree-wide.
-			 */
+			 
 			if (size > cmd->data_length) {
 				pr_err_ratelimited("Rejecting overflow for"
 						   " WRITE control CDB\n");
@@ -1439,12 +1266,7 @@ target_cmd_size_check(struct se_cmd *cmd, unsigned int size)
 
 }
 
-/*
- * Used by fabric modules containing a local struct se_cmd within their
- * fabric dependent per I/O descriptor.
- *
- * Preserves the value of @cmd->tag.
- */
+ 
 void __target_init_cmd(struct se_cmd *cmd,
 		       const struct target_core_fabric_ops *tfo,
 		       struct se_session *se_sess, u32 data_length,
@@ -1484,10 +1306,7 @@ transport_check_alloc_task_attr(struct se_cmd *cmd)
 {
 	struct se_device *dev = cmd->se_dev;
 
-	/*
-	 * Check if SAM Task Attribute emulation is enabled for this
-	 * struct se_device storage object
-	 */
+	 
 	if (dev->transport_flags & TRANSPORT_FLAG_PASSTHROUGH)
 		return 0;
 
@@ -1505,10 +1324,7 @@ target_cmd_init_cdb(struct se_cmd *cmd, unsigned char *cdb, gfp_t gfp)
 {
 	sense_reason_t ret;
 
-	/*
-	 * Ensure that the received CDB is less than the max (252 + 8) bytes
-	 * for VARIABLE_LENGTH_CMD
-	 */
+	 
 	if (scsi_command_size(cdb) > SCSI_MAX_VARLEN_CDB_SIZE) {
 		pr_err("Received SCSI CDB with command_size: %d that"
 			" exceeds SCSI_MAX_VARLEN_CDB_SIZE: %d\n",
@@ -1516,11 +1332,7 @@ target_cmd_init_cdb(struct se_cmd *cmd, unsigned char *cdb, gfp_t gfp)
 		ret = TCM_INVALID_CDB_FIELD;
 		goto err;
 	}
-	/*
-	 * If the received CDB is larger than TCM_MAX_COMMAND_SIZE,
-	 * allocate the additional extended CDB buffer now..  Otherwise
-	 * setup the pointer from __t_task_cdb to t_task_cdb.
-	 */
+	 
 	if (scsi_command_size(cdb) > sizeof(cmd->__t_task_cdb)) {
 		cmd->t_task_cdb = kzalloc(scsi_command_size(cdb), gfp);
 		if (!cmd->t_task_cdb) {
@@ -1532,19 +1344,14 @@ target_cmd_init_cdb(struct se_cmd *cmd, unsigned char *cdb, gfp_t gfp)
 			goto err;
 		}
 	}
-	/*
-	 * Copy the original CDB into cmd->
-	 */
+	 
 	memcpy(cmd->t_task_cdb, cdb, scsi_command_size(cdb));
 
 	trace_target_sequencer_start(cmd);
 	return 0;
 
 err:
-	/*
-	 * Copy the CDB here to allow trace_target_cmd_complete() to
-	 * print the cdb to the trace buffers.
-	 */
+	 
 	memcpy(cmd->t_task_cdb, cdb, min(scsi_command_size(cdb),
 					 (unsigned int)TCM_MAX_COMMAND_SIZE));
 	return ret;
@@ -1576,10 +1383,7 @@ target_cmd_parse_cdb(struct se_cmd *cmd)
 }
 EXPORT_SYMBOL(target_cmd_parse_cdb);
 
-/*
- * Used by fabric module frontends to queue tasks directly.
- * May only be used from process context.
- */
+ 
 int transport_handle_cdb_direct(
 	struct se_cmd *cmd)
 {
@@ -1593,22 +1397,11 @@ int transport_handle_cdb_direct(
 		return -EINVAL;
 	}
 
-	/*
-	 * Set TRANSPORT_NEW_CMD state and CMD_T_ACTIVE to ensure that
-	 * outstanding descriptors are handled correctly during shutdown via
-	 * transport_wait_for_tasks()
-	 *
-	 * Also, we don't take cmd->t_state_lock here as we only expect
-	 * this to be called for initial descriptor submission.
-	 */
+	 
 	cmd->t_state = TRANSPORT_NEW_CMD;
 	cmd->transport_state |= CMD_T_ACTIVE;
 
-	/*
-	 * transport_generic_new_cmd() is already handling QUEUE_FULL,
-	 * so follow TRANSPORT_NEW_CMD processing thread context usage
-	 * and call transport_generic_request_failure() if necessary..
-	 */
+	 
 	ret = transport_generic_new_cmd(cmd);
 	if (ret)
 		transport_generic_request_failure(cmd, ret);
@@ -1623,11 +1416,7 @@ transport_generic_map_mem_to_cmd(struct se_cmd *cmd, struct scatterlist *sgl,
 	if (!sgl || !sgl_count)
 		return 0;
 
-	/*
-	 * Reject SCSI data overflow with map_mem_to_cmd() as incoming
-	 * scatterlists already have been set to follow what the fabric
-	 * passes for the original expected data transfer length.
-	 */
+	 
 	if (cmd->se_cmd_flags & SCF_OVERFLOW_BIT) {
 		pr_warn("Rejecting SCSI DATA overflow for fabric using"
 			" SCF_PASSTHROUGH_SG_TO_MEM_NOALLOC\n");
@@ -1643,27 +1432,7 @@ transport_generic_map_mem_to_cmd(struct se_cmd *cmd, struct scatterlist *sgl,
 	return 0;
 }
 
-/**
- * target_init_cmd - initialize se_cmd
- * @se_cmd: command descriptor to init
- * @se_sess: associated se_sess for endpoint
- * @sense: pointer to SCSI sense buffer
- * @unpacked_lun: unpacked LUN to reference for struct se_lun
- * @data_length: fabric expected data transfer length
- * @task_attr: SAM task attribute
- * @data_dir: DMA data direction
- * @flags: flags for command submission from target_sc_flags_tables
- *
- * Task tags are supported if the caller has set @se_cmd->tag.
- *
- * Returns:
- *	- less than zero to signal active I/O shutdown failure.
- *	- zero on success.
- *
- * If the fabric driver calls target_stop_session, then it must check the
- * return code and handle failures. This will never fail for other drivers,
- * and the return code can be ignored.
- */
+ 
 int target_init_cmd(struct se_cmd *se_cmd, struct se_session *se_sess,
 		    unsigned char *sense, u64 unpacked_lun,
 		    u32 data_length, int task_attr, int data_dir, int flags)
@@ -1676,51 +1445,23 @@ int target_init_cmd(struct se_cmd *se_cmd, struct se_session *se_sess,
 
 	if (flags & TARGET_SCF_USE_CPUID)
 		se_cmd->se_cmd_flags |= SCF_USE_CPUID;
-	/*
-	 * Signal bidirectional data payloads to target-core
-	 */
+	 
 	if (flags & TARGET_SCF_BIDI_OP)
 		se_cmd->se_cmd_flags |= SCF_BIDI;
 
 	if (flags & TARGET_SCF_UNKNOWN_SIZE)
 		se_cmd->unknown_data_length = 1;
-	/*
-	 * Initialize se_cmd for target operation.  From this point
-	 * exceptions are handled by sending exception status via
-	 * target_core_fabric_ops->queue_status() callback
-	 */
+	 
 	__target_init_cmd(se_cmd, se_tpg->se_tpg_tfo, se_sess, data_length,
 			  data_dir, task_attr, sense, unpacked_lun,
 			  se_sess->cmd_cnt);
 
-	/*
-	 * Obtain struct se_cmd->cmd_kref reference. A second kref_get here is
-	 * necessary for fabrics using TARGET_SCF_ACK_KREF that expect a second
-	 * kref_put() to happen during fabric packet acknowledgement.
-	 */
+	 
 	return target_get_sess_cmd(se_cmd, flags & TARGET_SCF_ACK_KREF);
 }
 EXPORT_SYMBOL_GPL(target_init_cmd);
 
-/**
- * target_submit_prep - prepare cmd for submission
- * @se_cmd: command descriptor to prep
- * @cdb: pointer to SCSI CDB
- * @sgl: struct scatterlist memory for unidirectional mapping
- * @sgl_count: scatterlist count for unidirectional mapping
- * @sgl_bidi: struct scatterlist memory for bidirectional READ mapping
- * @sgl_bidi_count: scatterlist count for bidirectional READ mapping
- * @sgl_prot: struct scatterlist memory protection information
- * @sgl_prot_count: scatterlist count for protection information
- * @gfp: gfp allocation type
- *
- * Returns:
- *	- less than zero to signal failure.
- *	- zero on success.
- *
- * If failure is returned, lio will the callers queue_status to complete
- * the cmd.
- */
+ 
 int target_submit_prep(struct se_cmd *se_cmd, unsigned char *cdb,
 		       struct scatterlist *sgl, u32 sgl_count,
 		       struct scatterlist *sgl_bidi, u32 sgl_bidi_count,
@@ -1733,9 +1474,7 @@ int target_submit_prep(struct se_cmd *se_cmd, unsigned char *cdb,
 	if (rc)
 		goto send_cc_direct;
 
-	/*
-	 * Locate se_lun pointer and attach it to struct se_cmd
-	 */
+	 
 	rc = transport_lookup_cmd_lun(se_cmd);
 	if (rc)
 		goto send_cc_direct;
@@ -1744,21 +1483,14 @@ int target_submit_prep(struct se_cmd *se_cmd, unsigned char *cdb,
 	if (rc != 0)
 		goto generic_fail;
 
-	/*
-	 * Save pointers for SGLs containing protection information,
-	 * if present.
-	 */
+	 
 	if (sgl_prot_count) {
 		se_cmd->t_prot_sg = sgl_prot;
 		se_cmd->t_prot_nents = sgl_prot_count;
 		se_cmd->se_cmd_flags |= SCF_PASSTHROUGH_PROT_SG_TO_MEM_NOALLOC;
 	}
 
-	/*
-	 * When a non zero sgl_count has been passed perform SGL passthrough
-	 * mapping for pre-allocated fabric memory instead of having target
-	 * core perform an internal SGL allocation..
-	 */
+	 
 	if (sgl_count != 0) {
 		BUG_ON(!sgl);
 
@@ -1781,13 +1513,7 @@ generic_fail:
 }
 EXPORT_SYMBOL_GPL(target_submit_prep);
 
-/**
- * target_submit - perform final initialization and submit cmd to LIO core
- * @se_cmd: command descriptor to submit
- *
- * target_submit_prep must have been called on the cmd, and this must be
- * called from process context.
- */
+ 
 void target_submit(struct se_cmd *se_cmd)
 {
 	struct scatterlist *sgl = se_cmd->t_data_sg;
@@ -1797,14 +1523,7 @@ void target_submit(struct se_cmd *se_cmd)
 
 	if (se_cmd->t_data_nents != 0) {
 		BUG_ON(!sgl);
-		/*
-		 * A work-around for tcm_loop as some userspace code via
-		 * scsi-generic do not memset their associated read buffers,
-		 * so go ahead and do that here for type non-data CDBs.  Also
-		 * note that this is currently guaranteed to be a single SGL
-		 * for this case by target core in target_setup_cmd_from_cdb()
-		 * -> transport_generic_cmd_sequencer().
-		 */
+		 
 		if (!(se_cmd->se_cmd_flags & SCF_SCSI_DATA_CDB) &&
 		     se_cmd->data_direction == DMA_FROM_DEVICE) {
 			if (sgl)
@@ -1818,41 +1537,14 @@ void target_submit(struct se_cmd *se_cmd)
 
 	}
 
-	/*
-	 * Check if we need to delay processing because of ALUA
-	 * Active/NonOptimized primary access state..
-	 */
+	 
 	core_alua_check_nonop_delay(se_cmd);
 
 	transport_handle_cdb_direct(se_cmd);
 }
 EXPORT_SYMBOL_GPL(target_submit);
 
-/**
- * target_submit_cmd - lookup unpacked lun and submit uninitialized se_cmd
- *
- * @se_cmd: command descriptor to submit
- * @se_sess: associated se_sess for endpoint
- * @cdb: pointer to SCSI CDB
- * @sense: pointer to SCSI sense buffer
- * @unpacked_lun: unpacked LUN to reference for struct se_lun
- * @data_length: fabric expected data transfer length
- * @task_attr: SAM task attribute
- * @data_dir: DMA data direction
- * @flags: flags for command submission from target_sc_flags_tables
- *
- * Task tags are supported if the caller has set @se_cmd->tag.
- *
- * This may only be called from process context, and also currently
- * assumes internal allocation of fabric payload buffer by target-core.
- *
- * It also assumes interal target core SGL memory allocation.
- *
- * This function must only be used by drivers that do their own
- * sync during shutdown and does not use target_stop_session. If there
- * is a failure this function will call into the fabric driver's
- * queue_status with a CHECK_CONDITION.
- */
+ 
 void target_submit_cmd(struct se_cmd *se_cmd, struct se_session *se_sess,
 		unsigned char *cdb, unsigned char *sense, u64 unpacked_lun,
 		u32 data_length, int task_attr, int data_dir, int flags)
@@ -1886,11 +1578,7 @@ static struct se_dev_plug *target_plug_device(struct se_device *se_dev)
 		return NULL;
 
 	se_plug->se_dev = se_dev;
-	/*
-	 * We have a ref to the lun at this point, but the cmds could
-	 * complete before we unplug, so grab a ref to the se_device so we
-	 * can call back into the backend.
-	 */
+	 
 	config_group_get(&se_dev->dev_group);
 	return se_plug;
 }
@@ -1913,7 +1601,7 @@ void target_queued_submit_work(struct work_struct *work)
 
 	cmd_list = llist_del_all(&sq->cmd_list);
 	if (!cmd_list)
-		/* Previous call took what we were queued to submit */
+		 
 		return;
 
 	cmd_list = llist_reverse_order(cmd_list);
@@ -1930,10 +1618,7 @@ void target_queued_submit_work(struct work_struct *work)
 		target_unplug_device(se_plug);
 }
 
-/**
- * target_queue_submission - queue the cmd to run on the LIO workqueue
- * @se_cmd: command descriptor to submit
- */
+ 
 void target_queue_submission(struct se_cmd *se_cmd)
 {
 	struct se_device *se_dev = se_cmd->se_dev;
@@ -1957,22 +1642,7 @@ static void target_complete_tmr_failure(struct work_struct *work)
 	transport_cmd_check_stop_to_fabric(se_cmd);
 }
 
-/**
- * target_submit_tmr - lookup unpacked lun and submit uninitialized se_cmd
- *                     for TMR CDBs
- *
- * @se_cmd: command descriptor to submit
- * @se_sess: associated se_sess for endpoint
- * @sense: pointer to SCSI sense buffer
- * @unpacked_lun: unpacked LUN to reference for struct se_lun
- * @fabric_tmr_ptr: fabric context for TMR req
- * @tm_type: Type of TM request
- * @gfp: gfp type for caller
- * @tag: referenced task tag for TMR_ABORT_TASK
- * @flags: submit cmd flags
- *
- * Callable from all contexts.
- **/
+ 
 
 int target_submit_tmr(struct se_cmd *se_cmd, struct se_session *se_sess,
 		unsigned char *sense, u64 unpacked_lun,
@@ -1988,10 +1658,7 @@ int target_submit_tmr(struct se_cmd *se_cmd, struct se_session *se_sess,
 	__target_init_cmd(se_cmd, se_tpg->se_tpg_tfo, se_sess,
 			  0, DMA_NONE, TCM_SIMPLE_TAG, sense, unpacked_lun,
 			  se_sess->cmd_cnt);
-	/*
-	 * FIXME: Currently expect caller to handle se_cmd->se_tmr_req
-	 * allocation failure.
-	 */
+	 
 	ret = core_tmr_alloc_req(se_cmd, fabric_tmr_ptr, tm_type, gfp);
 	if (ret < 0)
 		return -ENOMEM;
@@ -1999,7 +1666,7 @@ int target_submit_tmr(struct se_cmd *se_cmd, struct se_session *se_sess,
 	if (tm_type == TMR_ABORT_TASK)
 		se_cmd->se_tmr_req->ref_task_tag = tag;
 
-	/* See target_submit_cmd for commentary */
+	 
 	ret = target_get_sess_cmd(se_cmd, flags & TARGET_SCF_ACK_KREF);
 	if (ret) {
 		core_tmr_release_req(se_cmd->se_tmr_req);
@@ -2013,10 +1680,7 @@ int target_submit_tmr(struct se_cmd *se_cmd, struct se_session *se_sess,
 	transport_generic_handle_tmr(se_cmd);
 	return 0;
 
-	/*
-	 * For callback during failure handling, push this work off
-	 * to process context with TMR_LUN_DOES_NOT_EXIST status.
-	 */
+	 
 failure:
 	INIT_WORK(&se_cmd->work, target_complete_tmr_failure);
 	schedule_work(&se_cmd->work);
@@ -2024,9 +1688,7 @@ failure:
 }
 EXPORT_SYMBOL(target_submit_tmr);
 
-/*
- * Handle SAM-esque emulation for generic transport request failures.
- */
+ 
 void transport_generic_request_failure(struct se_cmd *cmd,
 		sense_reason_t sense_reason)
 {
@@ -2036,9 +1698,7 @@ void transport_generic_request_failure(struct se_cmd *cmd,
 		 sense_reason);
 	target_show_cmd("-----[ ", cmd);
 
-	/*
-	 * For SAM Task Attribute emulation for failed struct se_cmd
-	 */
+	 
 	transport_complete_task_attr(cmd);
 
 	if (cmd->transport_complete_callback)
@@ -2083,20 +1743,9 @@ void transport_generic_request_failure(struct se_cmd *cmd,
 		cmd->scsi_status = SAM_STAT_BUSY;
 		goto queue_status;
 	case TCM_RESERVATION_CONFLICT:
-		/*
-		 * No SENSE Data payload for this case, set SCSI Status
-		 * and queue the response to $FABRIC_MOD.
-		 *
-		 * Uses linux/include/scsi/scsi.h SAM status codes defs
-		 */
+		 
 		cmd->scsi_status = SAM_STAT_RESERVATION_CONFLICT;
-		/*
-		 * For UA Interlock Code 11b, a RESERVATION CONFLICT will
-		 * establish a UNIT ATTENTION with PREVIOUS RESERVATION
-		 * CONFLICT STATUS.
-		 *
-		 * See spc4r17, section 7.4.6 Control Mode Page, Table 349
-		 */
+		 
 		if (cmd->se_sess &&
 		    cmd->se_dev->dev_attrib.emulate_ua_intlck_ctrl
 					== TARGET_UA_INTLCK_CTRL_ESTABLISH_UA) {
@@ -2141,12 +1790,7 @@ void __target_execute_cmd(struct se_cmd *cmd, bool do_checks)
 		goto err;
 	}
 	if (do_checks) {
-		/*
-		 * Check for an existing UNIT ATTENTION condition after
-		 * target_handle_task_attr() has done SAM task attr
-		 * checking, and possibly have already defered execution
-		 * out to target_restart_delayed_cmds() context.
-		 */
+		 
 		ret = target_scsi3_ua_check(cmd);
 		if (ret)
 			goto err;
@@ -2176,11 +1820,7 @@ err:
 static int target_write_prot_action(struct se_cmd *cmd)
 {
 	u32 sectors;
-	/*
-	 * Perform WRITE_INSERT of PI using software emulation when backend
-	 * device has PI enabled, if the transport has not already generated
-	 * PI using hardware WRITE_INSERT offload.
-	 */
+	 
 	switch (cmd->prot_op) {
 	case TARGET_PROT_DOUT_INSERT:
 		if (!(cmd->se_sess->sup_prot_ops & TARGET_PROT_DOUT_INSERT))
@@ -2217,10 +1857,7 @@ static bool target_handle_task_attr(struct se_cmd *cmd)
 
 	cmd->se_cmd_flags |= SCF_TASK_ATTR_SET;
 
-	/*
-	 * Check for the existence of HEAD_OF_QUEUE, and if true return 1
-	 * to allow the passed struct se_cmd list of tasks to the front of the list.
-	 */
+	 
 	switch (cmd->sam_task_attr) {
 	case TCM_HEAD_TAG:
 		atomic_inc_mb(&dev->non_ordered);
@@ -2234,9 +1871,7 @@ static bool target_handle_task_attr(struct se_cmd *cmd)
 			 cmd->t_task_cdb[0]);
 		break;
 	default:
-		/*
-		 * For SIMPLE and UNTAGGED Task Attribute commands
-		 */
+		 
 		atomic_inc_mb(&dev->non_ordered);
 
 		if (atomic_read(&dev->delayed_cmd_count) == 0)
@@ -2246,10 +1881,7 @@ static bool target_handle_task_attr(struct se_cmd *cmd)
 
 	if (cmd->sam_task_attr != TCM_ORDERED_TAG) {
 		atomic_inc_mb(&dev->delayed_cmd_count);
-		/*
-		 * We will account for this when we dequeue from the delayed
-		 * list.
-		 */
+		 
 		atomic_dec_mb(&dev->non_ordered);
 	}
 
@@ -2263,23 +1895,14 @@ static bool target_handle_task_attr(struct se_cmd *cmd)
 
 	pr_debug("Added CDB: 0x%02x Task Attr: 0x%02x to delayed CMD listn",
 		cmd->t_task_cdb[0], cmd->sam_task_attr);
-	/*
-	 * We may have no non ordered cmds when this function started or we
-	 * could have raced with the last simple/head cmd completing, so kick
-	 * the delayed handler here.
-	 */
+	 
 	schedule_work(&dev->delayed_cmd_work);
 	return true;
 }
 
 void target_execute_cmd(struct se_cmd *cmd)
 {
-	/*
-	 * Determine if frontend context caller is requesting the stopping of
-	 * this command for frontend exceptions.
-	 *
-	 * If the received CDB has already been aborted stop processing it here.
-	 */
+	 
 	if (target_cmd_interrupted(cmd))
 		return;
 
@@ -2298,10 +1921,7 @@ void target_execute_cmd(struct se_cmd *cmd)
 }
 EXPORT_SYMBOL(target_execute_cmd);
 
-/*
- * Process all commands up to the last received ORDERED task attribute which
- * requires another blocking boundary
- */
+ 
 void target_do_delayed_work(struct work_struct *work)
 {
 	struct se_device *dev = container_of(work, struct se_device,
@@ -2318,12 +1938,7 @@ void target_do_delayed_work(struct work_struct *work)
 				 struct se_cmd, se_delayed_node);
 
 		if (cmd->sam_task_attr == TCM_ORDERED_TAG) {
-			/*
-			 * Check if we started with:
-			 * [ordered] [simple] [ordered]
-			 * and we are now at the last ordered so we have to wait
-			 * for the simple cmd.
-			 */
+			 
 			if (atomic_read(&dev->non_ordered) > 0)
 				break;
 
@@ -2346,10 +1961,7 @@ void target_do_delayed_work(struct work_struct *work)
 	spin_unlock(&dev->delayed_cmd_lock);
 }
 
-/*
- * Called from I/O completion to determine which dormant/delayed
- * and ordered cmds need to have their tasks added to the execution queue.
- */
+ 
 static void transport_complete_task_attr(struct se_cmd *cmd)
 {
 	struct se_device *dev = cmd->se_dev;
@@ -2389,15 +2001,7 @@ static void transport_complete_qf(struct se_cmd *cmd)
 	int ret = 0;
 
 	transport_complete_task_attr(cmd);
-	/*
-	 * If a fabric driver ->write_pending() or ->queue_data_in() callback
-	 * has returned neither -ENOMEM or -EAGAIN, assume it's fatal and
-	 * the same callbacks should not be retried.  Return CHECK_CONDITION
-	 * if a scsi_status is not already set.
-	 *
-	 * If a fabric driver ->queue_status() has returned non zero, always
-	 * keep retrying no matter what..
-	 */
+	 
 	if (cmd->t_state == TRANSPORT_COMPLETE_QF_ERR) {
 		if (cmd->scsi_status)
 			goto queue_status;
@@ -2406,22 +2010,14 @@ static void transport_complete_qf(struct se_cmd *cmd)
 		goto queue_status;
 	}
 
-	/*
-	 * Check if we need to send a sense buffer from
-	 * the struct se_cmd in question. We do NOT want
-	 * to take this path of the IO has been marked as
-	 * needing to be treated like a "normal read". This
-	 * is the case if it's a tape read, and either the
-	 * FM, EOM, or ILI bits are set, but there is no
-	 * sense data.
-	 */
+	 
 	if (!(cmd->se_cmd_flags & SCF_TREAT_READ_AS_NORMAL) &&
 	    cmd->se_cmd_flags & SCF_TRANSPORT_TASK_SENSE)
 		goto queue_status;
 
 	switch (cmd->data_direction) {
 	case DMA_FROM_DEVICE:
-		/* queue status if not treating this as a normal read */
+		 
 		if (cmd->scsi_status &&
 		    !(cmd->se_cmd_flags & SCF_TREAT_READ_AS_NORMAL))
 			goto queue_status;
@@ -2455,14 +2051,7 @@ queue_status:
 static void transport_handle_queue_full(struct se_cmd *cmd, struct se_device *dev,
 					int err, bool write_pending)
 {
-	/*
-	 * -EAGAIN or -ENOMEM signals retry of ->write_pending() and/or
-	 * ->queue_data_in() callbacks from new process context.
-	 *
-	 * Otherwise for other errors, transport_complete_qf() will send
-	 * CHECK_CONDITION via ->queue_status() instead of attempting to
-	 * retry associated fabric driver data-transfer callbacks.
-	 */
+	 
 	if (err == -EAGAIN || err == -ENOMEM) {
 		cmd->t_state = (write_pending) ? TRANSPORT_COMPLETE_QF_WP :
 						 TRANSPORT_COMPLETE_QF_OK;
@@ -2512,29 +2101,14 @@ static void target_complete_ok_work(struct work_struct *work)
 	struct se_cmd *cmd = container_of(work, struct se_cmd, work);
 	int ret;
 
-	/*
-	 * Check if we need to move delayed/dormant tasks from cmds on the
-	 * delayed execution list after a HEAD_OF_QUEUE or ORDERED Task
-	 * Attribute.
-	 */
+	 
 	transport_complete_task_attr(cmd);
 
-	/*
-	 * Check to schedule QUEUE_FULL work, or execute an existing
-	 * cmd->transport_qf_callback()
-	 */
+	 
 	if (atomic_read(&cmd->se_dev->dev_qf_count) != 0)
 		schedule_work(&cmd->se_dev->qf_work_queue);
 
-	/*
-	 * Check if we need to send a sense buffer from
-	 * the struct se_cmd in question. We do NOT want
-	 * to take this path of the IO has been marked as
-	 * needing to be treated like a "normal read". This
-	 * is the case if it's a tape read, and either the
-	 * FM, EOM, or ILI bits are set, but there is no
-	 * sense data.
-	 */
+	 
 	if (!(cmd->se_cmd_flags & SCF_TREAT_READ_AS_NORMAL) &&
 	    cmd->se_cmd_flags & SCF_TRANSPORT_TASK_SENSE) {
 		WARN_ON(!cmd->scsi_status);
@@ -2547,10 +2121,7 @@ static void target_complete_ok_work(struct work_struct *work)
 		transport_cmd_check_stop_to_fabric(cmd);
 		return;
 	}
-	/*
-	 * Check for a callback, used by amongst other things
-	 * XDWRITE_READ_10 and COMPARE_AND_WRITE emulation.
-	 */
+	 
 	if (cmd->transport_complete_callback) {
 		sense_reason_t rc;
 		bool caw = (cmd->se_cmd_flags & SCF_COMPARE_AND_WRITE);
@@ -2578,27 +2149,14 @@ static void target_complete_ok_work(struct work_struct *work)
 queue_rsp:
 	switch (cmd->data_direction) {
 	case DMA_FROM_DEVICE:
-		/*
-		 * if this is a READ-type IO, but SCSI status
-		 * is set, then skip returning data and just
-		 * return the status -- unless this IO is marked
-		 * as needing to be treated as a normal read,
-		 * in which case we want to go ahead and return
-		 * the data. This happens, for example, for tape
-		 * reads with the FM, EOM, or ILI bits set, with
-		 * no sense data.
-		 */
+		 
 		if (cmd->scsi_status &&
 		    !(cmd->se_cmd_flags & SCF_TREAT_READ_AS_NORMAL))
 			goto queue_status;
 
 		atomic_long_add(cmd->data_length,
 				&cmd->se_lun->lun_stats.tx_data_octets);
-		/*
-		 * Perform READ_STRIP of PI using software emulation when
-		 * backend had PI enabled, if the transport will not be
-		 * performing hardware READ_STRIP offload.
-		 */
+		 
 		if (target_read_prot_action(cmd)) {
 			ret = transport_send_check_condition_and_sense(cmd,
 						cmd->pi_err, 0);
@@ -2618,9 +2176,7 @@ queue_rsp:
 	case DMA_TO_DEVICE:
 		atomic_long_add(cmd->data_length,
 				&cmd->se_lun->lun_stats.rx_data_octets);
-		/*
-		 * Check if we need to send READ payload for BIDI-COMMAND
-		 */
+		 
 		if (cmd->se_cmd_flags & SCF_BIDI) {
 			atomic_long_add(cmd->data_length,
 					&cmd->se_lun->lun_stats.tx_data_octets);
@@ -2660,10 +2216,7 @@ EXPORT_SYMBOL(target_free_sgl);
 
 static inline void transport_reset_sgl_orig(struct se_cmd *cmd)
 {
-	/*
-	 * Check for saved t_data_sg that may be used for COMPARE_AND_WRITE
-	 * emulation, and free + reset pointers if necessary..
-	 */
+	 
 	if (!cmd->t_data_sg_orig)
 		return;
 
@@ -2683,10 +2236,7 @@ static inline void transport_free_pages(struct se_cmd *cmd)
 	}
 
 	if (cmd->se_cmd_flags & SCF_PASSTHROUGH_SG_TO_MEM_NOALLOC) {
-		/*
-		 * Release special case READ buffer payload required for
-		 * SG_TO_MEM_NOALLOC to function with COMPARE_AND_WRITE
-		 */
+		 
 		if (cmd->se_cmd_flags & SCF_COMPARE_AND_WRITE) {
 			target_free_sgl(cmd->t_bidi_data_sg,
 					   cmd->t_bidi_data_nents);
@@ -2713,11 +2263,7 @@ void *transport_kmap_data_sg(struct se_cmd *cmd)
 	struct page **pages;
 	int i;
 
-	/*
-	 * We need to take into account a possible offset here for fabrics like
-	 * tcm_loop who may be using a contig buffer from the SCSI midlayer for
-	 * control CDBs passed as SGLs via transport_generic_map_mem_to_cmd()
-	 */
+	 
 	if (!cmd->t_data_nents)
 		return NULL;
 
@@ -2725,12 +2271,12 @@ void *transport_kmap_data_sg(struct se_cmd *cmd)
 	if (cmd->t_data_nents == 1)
 		return kmap(sg_page(sg)) + sg->offset;
 
-	/* >1 page. use vmap */
+	 
 	pages = kmalloc_array(cmd->t_data_nents, sizeof(*pages), GFP_KERNEL);
 	if (!pages)
 		return NULL;
 
-	/* convert sg[] to pages[] */
+	 
 	for_each_sg(cmd->t_data_sg, sg, cmd->t_data_nents, i) {
 		pages[i] = sg_page(sg);
 	}
@@ -2769,11 +2315,7 @@ target_alloc_sgl(struct scatterlist **sgl, unsigned int *nents, u32 length,
 }
 EXPORT_SYMBOL(target_alloc_sgl);
 
-/*
- * Allocate any required resources to execute the command.  For writes we
- * might not have the payload yet, so notify the fabric via a call to
- * ->write_pending instead. Otherwise place it on the execution queue.
- */
+ 
 sense_reason_t
 transport_generic_new_cmd(struct se_cmd *cmd)
 {
@@ -2789,11 +2331,7 @@ transport_generic_new_cmd(struct se_cmd *cmd)
 			return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
 	}
 
-	/*
-	 * Determine if the TCM fabric module has already allocated physical
-	 * memory, and is directly calling transport_generic_map_mem_to_cmd()
-	 * beforehand.
-	 */
+	 
 	if (!(cmd->se_cmd_flags & SCF_PASSTHROUGH_SG_TO_MEM_NOALLOC) &&
 	    cmd->data_length) {
 
@@ -2820,10 +2358,7 @@ transport_generic_new_cmd(struct se_cmd *cmd)
 			return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
 	} else if ((cmd->se_cmd_flags & SCF_COMPARE_AND_WRITE) &&
 		    cmd->data_length) {
-		/*
-		 * Special case for COMPARE_AND_WRITE with fabrics
-		 * using SCF_PASSTHROUGH_SG_TO_MEM_NOALLOC.
-		 */
+		 
 		u32 caw_length = cmd->t_task_nolb *
 				 cmd->se_dev->dev_attrib.block_size;
 
@@ -2833,11 +2368,7 @@ transport_generic_new_cmd(struct se_cmd *cmd)
 		if (ret < 0)
 			return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
 	}
-	/*
-	 * If this command is not a write we can execute it right here,
-	 * for write buffers we need to notify the fabric driver first
-	 * and let it call back once the write buffers are ready.
-	 */
+	 
 	target_add_to_state_list(cmd);
 	if (cmd->data_direction != DMA_TO_DEVICE || cmd->data_length == 0) {
 		target_execute_cmd(cmd);
@@ -2846,10 +2377,7 @@ transport_generic_new_cmd(struct se_cmd *cmd)
 
 	spin_lock_irqsave(&cmd->t_state_lock, flags);
 	cmd->t_state = TRANSPORT_WRITE_PENDING;
-	/*
-	 * Determine if frontend context caller is requesting the stopping of
-	 * this command for frontend exceptions.
-	 */
+	 
 	if (cmd->transport_state & CMD_T_STOP &&
 	    !cmd->se_tfo->write_pending_must_be_called) {
 		pr_debug("%s:%d CMD_T_STOP for ITT: 0x%08llx\n",
@@ -2914,10 +2442,7 @@ static void target_wait_free_cmd(struct se_cmd *cmd, bool *aborted, bool *tas)
 	spin_unlock_irqrestore(&cmd->t_state_lock, flags);
 }
 
-/*
- * Call target_put_sess_cmd() and wait until target_release_cmd_kref(@cmd) has
- * finished.
- */
+ 
 void target_put_cmd_and_wait(struct se_cmd *cmd)
 {
 	DECLARE_COMPLETION_ONSTACK(compl);
@@ -2928,29 +2453,7 @@ void target_put_cmd_and_wait(struct se_cmd *cmd)
 	wait_for_completion(&compl);
 }
 
-/*
- * This function is called by frontend drivers after processing of a command
- * has finished.
- *
- * The protocol for ensuring that either the regular frontend command
- * processing flow or target_handle_abort() code drops one reference is as
- * follows:
- * - Calling .queue_data_in(), .queue_status() or queue_tm_rsp() will cause
- *   the frontend driver to call this function synchronously or asynchronously.
- *   That will cause one reference to be dropped.
- * - During regular command processing the target core sets CMD_T_COMPLETE
- *   before invoking one of the .queue_*() functions.
- * - The code that aborts commands skips commands and TMFs for which
- *   CMD_T_COMPLETE has been set.
- * - CMD_T_ABORTED is set atomically after the CMD_T_COMPLETE check for
- *   commands that will be aborted.
- * - If the CMD_T_ABORTED flag is set but CMD_T_TAS has not been set
- *   transport_generic_free_cmd() skips its call to target_put_sess_cmd().
- * - For aborted commands for which CMD_T_TAS has been set .queue_status() will
- *   be called and will drop a reference.
- * - For aborted commands for which CMD_T_TAS has not been set .aborted_task()
- *   will be called. target_handle_abort() will drop the final reference.
- */
+ 
 int transport_generic_free_cmd(struct se_cmd *cmd, int wait_for_tasks)
 {
 	DECLARE_COMPLETION_ONSTACK(compl);
@@ -2961,11 +2464,7 @@ int transport_generic_free_cmd(struct se_cmd *cmd, int wait_for_tasks)
 		target_wait_free_cmd(cmd, &aborted, &tas);
 
 	if (cmd->se_cmd_flags & SCF_SE_LUN_CMD) {
-		/*
-		 * Handle WRITE failure case where transport_generic_new_cmd()
-		 * has already added se_cmd to state_list, but fabric has
-		 * failed command before I/O submission.
-		 */
+		 
 		if (cmd->state_active)
 			target_remove_from_state_list(cmd);
 
@@ -2984,29 +2483,18 @@ int transport_generic_free_cmd(struct se_cmd *cmd, int wait_for_tasks)
 }
 EXPORT_SYMBOL(transport_generic_free_cmd);
 
-/**
- * target_get_sess_cmd - Verify the session is accepting cmds and take ref
- * @se_cmd:	command descriptor to add
- * @ack_kref:	Signal that fabric will perform an ack target_put_sess_cmd()
- */
+ 
 int target_get_sess_cmd(struct se_cmd *se_cmd, bool ack_kref)
 {
 	int ret = 0;
 
-	/*
-	 * Add a second kref if the fabric caller is expecting to handle
-	 * fabric acknowledgement that requires two target_put_sess_cmd()
-	 * invocations before se_cmd descriptor release.
-	 */
+	 
 	if (ack_kref) {
 		kref_get(&se_cmd->cmd_kref);
 		se_cmd->se_cmd_flags |= SCF_ACK_KREF;
 	}
 
-	/*
-	 * Users like xcopy do not use counters since they never do a stop
-	 * and wait.
-	 */
+	 
 	if (se_cmd->cmd_cnt) {
 		if (!percpu_ref_tryget_live(&se_cmd->cmd_cnt->refcnt))
 			ret = -ESHUTDOWN;
@@ -3046,13 +2534,7 @@ static void target_release_cmd_kref(struct kref *kref)
 		percpu_ref_put(&cmd_cnt->refcnt);
 }
 
-/**
- * target_put_sess_cmd - decrease the command reference count
- * @se_cmd:	command to drop a reference from
- *
- * Returns 1 if and only if this target_put_sess_cmd() call caused the
- * refcount to drop to zero. Returns zero otherwise.
- */
+ 
 int target_put_sess_cmd(struct se_cmd *se_cmd)
 {
 	return kref_put(&se_cmd->cmd_kref, target_release_cmd_kref);
@@ -3098,10 +2580,7 @@ static void target_append_str(char **str, const char *txt)
 	kfree(prev);
 }
 
-/*
- * Convert a transport state bitmask into a string. The caller is
- * responsible for freeing the returned pointer.
- */
+ 
 static char *target_ts_to_str(u32 ts)
 {
 	char *str = NULL;
@@ -3170,10 +2649,7 @@ static void target_stop_cmd_counter_confirm(struct percpu_ref *ref)
 	complete_all(&cmd_cnt->stop_done);
 }
 
-/**
- * target_stop_cmd_counter - Stop new IO from being added to the counter.
- * @cmd_cnt: counter to stop
- */
+ 
 void target_stop_cmd_counter(struct target_cmd_counter *cmd_cnt)
 {
 	pr_debug("Stopping command counter.\n");
@@ -3183,20 +2659,14 @@ void target_stop_cmd_counter(struct target_cmd_counter *cmd_cnt)
 }
 EXPORT_SYMBOL_GPL(target_stop_cmd_counter);
 
-/**
- * target_stop_session - Stop new IO from being queued on the session.
- * @se_sess: session to stop
- */
+ 
 void target_stop_session(struct se_session *se_sess)
 {
 	target_stop_cmd_counter(se_sess->cmd_cnt);
 }
 EXPORT_SYMBOL(target_stop_session);
 
-/**
- * target_wait_for_cmds - Wait for outstanding cmds.
- * @cmd_cnt: counter to wait for active I/O for.
- */
+ 
 void target_wait_for_cmds(struct target_cmd_counter *cmd_cnt)
 {
 	int ret;
@@ -3215,20 +2685,14 @@ void target_wait_for_cmds(struct target_cmd_counter *cmd_cnt)
 }
 EXPORT_SYMBOL_GPL(target_wait_for_cmds);
 
-/**
- * target_wait_for_sess_cmds - Wait for outstanding commands
- * @se_sess: session to wait for active I/O
- */
+ 
 void target_wait_for_sess_cmds(struct se_session *se_sess)
 {
 	target_wait_for_cmds(se_sess->cmd_cnt);
 }
 EXPORT_SYMBOL(target_wait_for_sess_cmds);
 
-/*
- * Prevent that new percpu_ref_tryget_live() calls succeed and wait until
- * all references to the LUN have been released. Called during LUN shutdown.
- */
+ 
 void transport_clear_lun_ref(struct se_lun *lun)
 {
 	percpu_ref_kill(&lun->lun_ref);
@@ -3285,10 +2749,7 @@ __transport_wait_for_tasks(struct se_cmd *cmd, bool fabric_stop,
 	return true;
 }
 
-/**
- * transport_wait_for_tasks - set CMD_T_STOP and wait for t_transport_stop_comp
- * @cmd: command to wait on
- */
+ 
 bool transport_wait_for_tasks(struct se_cmd *cmd)
 {
 	unsigned long flags;
@@ -3315,147 +2776,133 @@ static const struct sense_detail sense_detail_table[] = {
 	},
 	[TCM_NON_EXISTENT_LUN] = {
 		.key = ILLEGAL_REQUEST,
-		.asc = 0x25 /* LOGICAL UNIT NOT SUPPORTED */
+		.asc = 0x25  
 	},
 	[TCM_UNSUPPORTED_SCSI_OPCODE] = {
 		.key = ILLEGAL_REQUEST,
-		.asc = 0x20, /* INVALID COMMAND OPERATION CODE */
+		.asc = 0x20,  
 	},
 	[TCM_SECTOR_COUNT_TOO_MANY] = {
 		.key = ILLEGAL_REQUEST,
-		.asc = 0x20, /* INVALID COMMAND OPERATION CODE */
+		.asc = 0x20,  
 	},
 	[TCM_UNKNOWN_MODE_PAGE] = {
 		.key = ILLEGAL_REQUEST,
-		.asc = 0x24, /* INVALID FIELD IN CDB */
+		.asc = 0x24,  
 	},
 	[TCM_CHECK_CONDITION_ABORT_CMD] = {
 		.key = ABORTED_COMMAND,
-		.asc = 0x29, /* BUS DEVICE RESET FUNCTION OCCURRED */
+		.asc = 0x29,  
 		.ascq = 0x03,
 	},
 	[TCM_INCORRECT_AMOUNT_OF_DATA] = {
 		.key = ABORTED_COMMAND,
-		.asc = 0x0c, /* WRITE ERROR */
-		.ascq = 0x0d, /* NOT ENOUGH UNSOLICITED DATA */
+		.asc = 0x0c,  
+		.ascq = 0x0d,  
 	},
 	[TCM_INVALID_CDB_FIELD] = {
 		.key = ILLEGAL_REQUEST,
-		.asc = 0x24, /* INVALID FIELD IN CDB */
+		.asc = 0x24,  
 	},
 	[TCM_INVALID_PARAMETER_LIST] = {
 		.key = ILLEGAL_REQUEST,
-		.asc = 0x26, /* INVALID FIELD IN PARAMETER LIST */
+		.asc = 0x26,  
 	},
 	[TCM_TOO_MANY_TARGET_DESCS] = {
 		.key = ILLEGAL_REQUEST,
 		.asc = 0x26,
-		.ascq = 0x06, /* TOO MANY TARGET DESCRIPTORS */
+		.ascq = 0x06,  
 	},
 	[TCM_UNSUPPORTED_TARGET_DESC_TYPE_CODE] = {
 		.key = ILLEGAL_REQUEST,
 		.asc = 0x26,
-		.ascq = 0x07, /* UNSUPPORTED TARGET DESCRIPTOR TYPE CODE */
+		.ascq = 0x07,  
 	},
 	[TCM_TOO_MANY_SEGMENT_DESCS] = {
 		.key = ILLEGAL_REQUEST,
 		.asc = 0x26,
-		.ascq = 0x08, /* TOO MANY SEGMENT DESCRIPTORS */
+		.ascq = 0x08,  
 	},
 	[TCM_UNSUPPORTED_SEGMENT_DESC_TYPE_CODE] = {
 		.key = ILLEGAL_REQUEST,
 		.asc = 0x26,
-		.ascq = 0x09, /* UNSUPPORTED SEGMENT DESCRIPTOR TYPE CODE */
+		.ascq = 0x09,  
 	},
 	[TCM_PARAMETER_LIST_LENGTH_ERROR] = {
 		.key = ILLEGAL_REQUEST,
-		.asc = 0x1a, /* PARAMETER LIST LENGTH ERROR */
+		.asc = 0x1a,  
 	},
 	[TCM_UNEXPECTED_UNSOLICITED_DATA] = {
 		.key = ILLEGAL_REQUEST,
-		.asc = 0x0c, /* WRITE ERROR */
-		.ascq = 0x0c, /* UNEXPECTED_UNSOLICITED_DATA */
+		.asc = 0x0c,  
+		.ascq = 0x0c,  
 	},
 	[TCM_SERVICE_CRC_ERROR] = {
 		.key = ABORTED_COMMAND,
-		.asc = 0x47, /* PROTOCOL SERVICE CRC ERROR */
-		.ascq = 0x05, /* N/A */
+		.asc = 0x47,  
+		.ascq = 0x05,  
 	},
 	[TCM_SNACK_REJECTED] = {
 		.key = ABORTED_COMMAND,
-		.asc = 0x11, /* READ ERROR */
-		.ascq = 0x13, /* FAILED RETRANSMISSION REQUEST */
+		.asc = 0x11,  
+		.ascq = 0x13,  
 	},
 	[TCM_WRITE_PROTECTED] = {
 		.key = DATA_PROTECT,
-		.asc = 0x27, /* WRITE PROTECTED */
+		.asc = 0x27,  
 	},
 	[TCM_ADDRESS_OUT_OF_RANGE] = {
 		.key = ILLEGAL_REQUEST,
-		.asc = 0x21, /* LOGICAL BLOCK ADDRESS OUT OF RANGE */
+		.asc = 0x21,  
 	},
 	[TCM_CHECK_CONDITION_UNIT_ATTENTION] = {
 		.key = UNIT_ATTENTION,
 	},
 	[TCM_MISCOMPARE_VERIFY] = {
 		.key = MISCOMPARE,
-		.asc = 0x1d, /* MISCOMPARE DURING VERIFY OPERATION */
+		.asc = 0x1d,  
 		.ascq = 0x00,
 		.add_sense_info = true,
 	},
 	[TCM_LOGICAL_BLOCK_GUARD_CHECK_FAILED] = {
 		.key = ABORTED_COMMAND,
 		.asc = 0x10,
-		.ascq = 0x01, /* LOGICAL BLOCK GUARD CHECK FAILED */
+		.ascq = 0x01,  
 		.add_sense_info = true,
 	},
 	[TCM_LOGICAL_BLOCK_APP_TAG_CHECK_FAILED] = {
 		.key = ABORTED_COMMAND,
 		.asc = 0x10,
-		.ascq = 0x02, /* LOGICAL BLOCK APPLICATION TAG CHECK FAILED */
+		.ascq = 0x02,  
 		.add_sense_info = true,
 	},
 	[TCM_LOGICAL_BLOCK_REF_TAG_CHECK_FAILED] = {
 		.key = ABORTED_COMMAND,
 		.asc = 0x10,
-		.ascq = 0x03, /* LOGICAL BLOCK REFERENCE TAG CHECK FAILED */
+		.ascq = 0x03,  
 		.add_sense_info = true,
 	},
 	[TCM_COPY_TARGET_DEVICE_NOT_REACHABLE] = {
 		.key = COPY_ABORTED,
 		.asc = 0x0d,
-		.ascq = 0x02, /* COPY TARGET DEVICE NOT REACHABLE */
+		.ascq = 0x02,  
 
 	},
 	[TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE] = {
-		/*
-		 * Returning ILLEGAL REQUEST would cause immediate IO errors on
-		 * Solaris initiators.  Returning NOT READY instead means the
-		 * operations will be retried a finite number of times and we
-		 * can survive intermittent errors.
-		 */
+		 
 		.key = NOT_READY,
-		.asc = 0x08, /* LOGICAL UNIT COMMUNICATION FAILURE */
+		.asc = 0x08,  
 	},
 	[TCM_INSUFFICIENT_REGISTRATION_RESOURCES] = {
-		/*
-		 * From spc4r22 section5.7.7,5.7.8
-		 * If a PERSISTENT RESERVE OUT command with a REGISTER service action
-		 * or a REGISTER AND IGNORE EXISTING KEY service action or
-		 * REGISTER AND MOVE service actionis attempted,
-		 * but there are insufficient device server resources to complete the
-		 * operation, then the command shall be terminated with CHECK CONDITION
-		 * status, with the sense key set to ILLEGAL REQUEST,and the additonal
-		 * sense code set to INSUFFICIENT REGISTRATION RESOURCES.
-		 */
+		 
 		.key = ILLEGAL_REQUEST,
 		.asc = 0x55,
-		.ascq = 0x04, /* INSUFFICIENT REGISTRATION RESOURCES */
+		.ascq = 0x04,  
 	},
 	[TCM_INVALID_FIELD_IN_COMMAND_IU] = {
 		.key = ILLEGAL_REQUEST,
 		.asc = 0x0e,
-		.ascq = 0x03, /* INVALID FIELD IN COMMAND INFORMATION UNIT */
+		.ascq = 0x03,  
 	},
 	[TCM_ALUA_TG_PT_STANDBY] = {
 		.key = NOT_READY,
@@ -3479,17 +2926,7 @@ static const struct sense_detail sense_detail_table[] = {
 	},
 };
 
-/**
- * translate_sense_reason - translate a sense reason into T10 key, asc and ascq
- * @cmd: SCSI command in which the resulting sense buffer or SCSI status will
- *   be stored.
- * @reason: LIO sense reason code. If this argument has the value
- *   TCM_CHECK_CONDITION_UNIT_ATTENTION, try to dequeue a unit attention. If
- *   dequeuing a unit attention fails due to multiple commands being processed
- *   concurrently, set the command status to BUSY.
- *
- * Return: 0 upon success or -EINVAL if the sense buffer is too small.
- */
+ 
 static void translate_sense_reason(struct se_cmd *cmd, sense_reason_t reason)
 {
 	const struct sense_detail *sd;
@@ -3551,12 +2988,7 @@ transport_send_check_condition_and_sense(struct se_cmd *cmd,
 }
 EXPORT_SYMBOL(transport_send_check_condition_and_sense);
 
-/**
- * target_send_busy - Send SCSI BUSY status back to the initiator
- * @cmd: SCSI command for which to send a BUSY reply.
- *
- * Note: Only call this function if target_submit_cmd*() failed.
- */
+ 
 int target_send_busy(struct se_cmd *cmd)
 {
 	WARN_ON_ONCE(cmd->se_cmd_flags & SCF_SCSI_TMR_CDB);

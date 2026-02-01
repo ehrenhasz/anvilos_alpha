@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Holt Integrated Circuits HI-8435 threshold detector driver
- *
- * Copyright (C) 2015 Zodiac Inflight Innovations
- * Copyright (C) 2015 Cogent Embedded, Inc.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/iio/events.h>
@@ -21,7 +16,7 @@
 
 #define DRV_NAME "hi8435"
 
-/* Register offsets for HI-8435 */
+ 
 #define HI8435_CTRL_REG		0x02
 #define HI8435_PSEN_REG		0x04
 #define HI8435_TMDATA_REG	0x1E
@@ -36,7 +31,7 @@
 #define HI8435_WRITE_OPCODE	0x00
 #define HI8435_READ_OPCODE	0x80
 
-/* CTRL register bits */
+ 
 #define HI8435_CTRL_TEST	0x01
 #define HI8435_CTRL_SRST	0x02
 
@@ -44,11 +39,11 @@ struct hi8435_priv {
 	struct spi_device *spi;
 	struct mutex lock;
 
-	unsigned long event_scan_mask; /* soft mask/unmask channels events */
+	unsigned long event_scan_mask;  
 	unsigned int event_prev_val;
 
-	unsigned threshold_lo[2]; /* GND-Open and Supply-Open thresholds */
-	unsigned threshold_hi[2]; /* GND-Open and Supply-Open thresholds */
+	unsigned threshold_lo[2];  
+	unsigned threshold_hi[2];  
 	u8 reg_buffer[3] __aligned(IIO_DMA_MINALIGN);
 };
 
@@ -170,7 +165,7 @@ static int hi8435_read_event_value(struct iio_dev *idev,
 	if (ret < 0)
 		return ret;
 
-	/* Supply-Open or GND-Open sensing mode */
+	 
 	mode = !!(psen & BIT(chan->channel / 8));
 
 	ret = hi8435_readw(priv, mode ? HI8435_SOCENHYS_REG :
@@ -202,7 +197,7 @@ static int hi8435_write_event_value(struct iio_dev *idev,
 	if (ret < 0)
 		return ret;
 
-	/* Supply-Open or GND-Open sensing mode */
+	 
 	mode = !!(psen & BIT(chan->channel / 8));
 
 	ret = hi8435_readw(priv, mode ? HI8435_SOCENHYS_REG :
@@ -211,7 +206,7 @@ static int hi8435_write_event_value(struct iio_dev *idev,
 		return ret;
 
 	if (dir == IIO_EV_DIR_FALLING) {
-		/* falling threshold range 2..21V, hysteresis minimum 2V */
+		 
 		if (val < 2 || val > 21 || (val + 2) > priv->threshold_hi[mode])
 			return -EINVAL;
 
@@ -220,11 +215,11 @@ static int hi8435_write_event_value(struct iio_dev *idev,
 
 		priv->threshold_lo[mode] = val;
 
-		/* hysteresis must not be odd */
+		 
 		if ((priv->threshold_hi[mode] - priv->threshold_lo[mode]) % 2)
 			priv->threshold_hi[mode]--;
 	} else if (dir == IIO_EV_DIR_RISING) {
-		/* rising threshold range 3..22V, hysteresis minimum 2V */
+		 
 		if (val < 3 || val > 22 || val < (priv->threshold_lo[mode] + 2))
 			return -EINVAL;
 
@@ -233,12 +228,12 @@ static int hi8435_write_event_value(struct iio_dev *idev,
 
 		priv->threshold_hi[mode] = val;
 
-		/* hysteresis must not be odd */
+		 
 		if ((priv->threshold_hi[mode] - priv->threshold_lo[mode]) % 2)
 			priv->threshold_lo[mode]++;
 	}
 
-	/* program thresholds */
+	 
 	mutex_lock(&priv->lock);
 
 	ret = hi8435_readw(priv, mode ? HI8435_SOCENHYS_REG :
@@ -248,10 +243,10 @@ static int hi8435_write_event_value(struct iio_dev *idev,
 		return ret;
 	}
 
-	/* hysteresis */
+	 
 	reg = priv->threshold_hi[mode] - priv->threshold_lo[mode];
 	reg <<= 8;
-	/* threshold center */
+	 
 	reg |= (priv->threshold_hi[mode] + priv->threshold_lo[mode]);
 
 	ret = hi8435_writew(priv, mode ? HI8435_SOCENHYS_REG :
@@ -475,7 +470,7 @@ static int hi8435_probe(struct spi_device *spi)
 
 	reset_gpio = devm_gpiod_get(&spi->dev, NULL, GPIOD_OUT_LOW);
 	if (IS_ERR(reset_gpio)) {
-		/* chip s/w reset if h/w reset failed */
+		 
 		hi8435_writeb(priv, HI8435_CTRL_REG, HI8435_CTRL_SRST);
 		hi8435_writeb(priv, HI8435_CTRL_REG, 0);
 	} else {
@@ -491,19 +486,9 @@ static int hi8435_probe(struct spi_device *spi)
 	idev->channels		= hi8435_channels;
 	idev->num_channels	= ARRAY_SIZE(hi8435_channels);
 
-	/* unmask all events */
+	 
 	priv->event_scan_mask = ~(0);
-	/*
-	 * There is a restriction in the chip - the hysteresis can not be odd.
-	 * If the hysteresis is set to odd value then chip gets into lock state
-	 * and not functional anymore.
-	 * After chip reset the thresholds are in undefined state, so we need to
-	 * initialize thresholds to some initial values and then prevent
-	 * userspace setting odd hysteresis.
-	 *
-	 * Set threshold low voltage to 2V, threshold high voltage to 4V
-	 * for both GND-Open and Supply-Open sensing modes.
-	 */
+	 
 	priv->threshold_lo[0] = priv->threshold_lo[1] = 2;
 	priv->threshold_hi[0] = priv->threshold_hi[1] = 4;
 	hi8435_writew(priv, HI8435_GOCENHYS_REG, 0x206);

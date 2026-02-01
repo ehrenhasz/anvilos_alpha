@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Copyright (c) 2018 Synopsys, Inc. and/or its affiliates.
- * stmmac XGMAC support.
- */
+
+ 
 
 #include <linux/iopoll.h>
 #include "stmmac.h"
@@ -12,7 +9,7 @@ static int dwxgmac2_dma_reset(void __iomem *ioaddr)
 {
 	u32 value = readl(ioaddr + XGMAC_DMA_MODE);
 
-	/* DMA SW reset */
+	 
 	writel(value | XGMAC_SWR, ioaddr + XGMAC_DMA_MODE);
 
 	return readl_poll_timeout(ioaddr + XGMAC_DMA_MODE, value,
@@ -172,24 +169,17 @@ static void dwxgmac2_dma_rx_mode(struct stmmac_priv *priv, void __iomem *ioaddr,
 
 		value |= XGMAC_EHFC;
 
-		/* Set Threshold for Activating Flow Control to min 2 frames,
-		 * i.e. 1500 * 2 = 3000 bytes.
-		 *
-		 * Set Threshold for Deactivating Flow Control to min 1 frame,
-		 * i.e. 1500 bytes.
-		 */
+		 
 		switch (fifosz) {
 		case 4096:
-			/* This violates the above formula because of FIFO size
-			 * limit therefore overflow may occur in spite of this.
-			 */
-			rfd = 0x03; /* Full-2.5K */
-			rfa = 0x01; /* Full-1.5K */
+			 
+			rfd = 0x03;  
+			rfa = 0x01;  
 			break;
 
 		default:
-			rfd = 0x07; /* Full-4.5K */
-			rfa = 0x04; /* Full-3K */
+			rfd = 0x07;  
+			rfa = 0x04;  
 			break;
 		}
 
@@ -204,7 +194,7 @@ static void dwxgmac2_dma_rx_mode(struct stmmac_priv *priv, void __iomem *ioaddr,
 
 	writel(value, ioaddr + XGMAC_MTL_RXQ_OPMODE(channel));
 
-	/* Enable MTL RX overflow */
+	 
 	value = readl(ioaddr + XGMAC_MTL_QINTEN(channel));
 	writel(value | XGMAC_RXOIE, ioaddr + XGMAC_MTL_QINTEN(channel));
 }
@@ -237,7 +227,7 @@ static void dwxgmac2_dma_tx_mode(struct stmmac_priv *priv, void __iomem *ioaddr,
 			value |= 0x7 << XGMAC_TTC_SHIFT;
 	}
 
-	/* Use static TC to Queue mapping */
+	 
 	value |= (channel << XGMAC_Q2TCMAP_SHIFT) & XGMAC_Q2TCMAP;
 
 	value &= ~XGMAC_TXQEN;
@@ -348,7 +338,7 @@ static int dwxgmac2_dma_interrupt(struct stmmac_priv *priv,
 	else if (dir == DMA_DIR_TX)
 		intr_status &= XGMAC_DMA_STATUS_MSK_TX;
 
-	/* ABNORMAL interrupts */
+	 
 	if (unlikely(intr_status & XGMAC_AIS)) {
 		if (unlikely(intr_status & XGMAC_RBU)) {
 			x->rx_buf_unav_irq++;
@@ -364,7 +354,7 @@ static int dwxgmac2_dma_interrupt(struct stmmac_priv *priv,
 		}
 	}
 
-	/* TX/RX NORMAL interrupts */
+	 
 	if (likely(intr_status & XGMAC_NIS)) {
 		if (likely(intr_status & XGMAC_RI)) {
 			u64_stats_update_begin(&rxq_stats->syncp);
@@ -380,7 +370,7 @@ static int dwxgmac2_dma_interrupt(struct stmmac_priv *priv,
 		}
 	}
 
-	/* Clear interrupts */
+	 
 	writel(intr_en & intr_status, ioaddr + XGMAC_DMA_CH_STATUS(chan));
 
 	return ret;
@@ -391,7 +381,7 @@ static int dwxgmac2_get_hw_feature(void __iomem *ioaddr,
 {
 	u32 hw_cap;
 
-	/* MAC HW feature 0 */
+	 
 	hw_cap = readl(ioaddr + XGMAC_HW_FEATURE0);
 	dma_cap->edma = (hw_cap & XGMAC_HWFEAT_EDMA) >> 31;
 	dma_cap->ediffc = (hw_cap & XGMAC_HWFEAT_EDIFFC) >> 30;
@@ -414,14 +404,10 @@ static int dwxgmac2_get_hw_feature(void __iomem *ioaddr,
 	dma_cap->half_duplex = (hw_cap & XGMAC_HWFEAT_HDSEL) >> 3;
 	dma_cap->mbps_1000 = (hw_cap & XGMAC_HWFEAT_GMIISEL) >> 1;
 
-	/* MAC HW feature 1 */
+	 
 	hw_cap = readl(ioaddr + XGMAC_HW_FEATURE1);
 	dma_cap->l3l4fnum = (hw_cap & XGMAC_HWFEAT_L3L4FNUM) >> 27;
-	/* If L3L4FNUM < 8, then the number of L3L4 filters supported by
-	 * XGMAC is equal to L3L4FNUM. From L3L4FNUM >= 8 the number of
-	 * L3L4 filters goes on like 8, 16, 32, ... Current maximum of
-	 * L3L4FNUM = 10.
-	 */
+	 
 	if (dma_cap->l3l4fnum >= 8 && dma_cap->l3l4fnum <= 10)
 		dma_cap->l3l4fnum = 8 << (dma_cap->l3l4fnum - 8);
 	else if (dma_cap->l3l4fnum > 10)
@@ -460,7 +446,7 @@ static int dwxgmac2_get_hw_feature(void __iomem *ioaddr,
 	dma_cap->rx_fifo_size =
 		128 << ((hw_cap & XGMAC_HWFEAT_RXFIFOSIZE) >> 0);
 
-	/* MAC HW feature 2 */
+	 
 	hw_cap = readl(ioaddr + XGMAC_HW_FEATURE2);
 	dma_cap->aux_snapshot_n = (hw_cap & XGMAC_HWFEAT_AUXSNAPNUM) >> 28;
 	dma_cap->pps_out_num = (hw_cap & XGMAC_HWFEAT_PPSOUTNUM) >> 24;
@@ -473,7 +459,7 @@ static int dwxgmac2_get_hw_feature(void __iomem *ioaddr,
 	dma_cap->number_rx_queues =
 		((hw_cap & XGMAC_HWFEAT_RXQCNT) >> 0) + 1;
 
-	/* MAC HW feature 3 */
+	 
 	hw_cap = readl(ioaddr + XGMAC_HW_FEATURE3);
 	dma_cap->tbs_ch_num = ((hw_cap & XGMAC_HWFEAT_TBSCH) >> 28) + 1;
 	dma_cap->tbssel = (hw_cap & XGMAC_HWFEAT_TBSSEL) >> 27;
@@ -493,7 +479,7 @@ static int dwxgmac2_get_hw_feature(void __iomem *ioaddr,
 	dma_cap->frpsel = (hw_cap & XGMAC_HWFEAT_FRPSEL) >> 3;
 	dma_cap->nrvf_num = (hw_cap & XGMAC_HWFEAT_NRVF) >> 0;
 
-	/* MAC HW feature 4 */
+	 
 	hw_cap = readl(ioaddr + XGMAC_HW_FEATURE4);
 	dma_cap->asp |= (hw_cap & XGMAC_HWFEAT_EASP) >> 2;
 	dma_cap->pcsel = (hw_cap & XGMAC_HWFEAT_PCSEL) >> 0;
@@ -579,7 +565,7 @@ static void dwxgmac2_enable_sph(struct stmmac_priv *priv, void __iomem *ioaddr,
 	u32 value = readl(ioaddr + XGMAC_RX_CONFIG);
 
 	value &= ~XGMAC_CONFIG_HDSMS;
-	value |= XGMAC_CONFIG_HDSMS_256; /* Segment max 256 bytes */
+	value |= XGMAC_CONFIG_HDSMS_256;  
 	writel(value, ioaddr + XGMAC_RX_CONFIG);
 
 	value = readl(ioaddr + XGMAC_DMA_CH_CONTROL(chan));

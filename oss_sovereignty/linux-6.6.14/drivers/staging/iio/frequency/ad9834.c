@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AD9833/AD9834/AD9837/AD9838 SPI DDS driver
- *
- * Copyright 2010-2011 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -25,7 +21,7 @@
 
 #include "ad9834.h"
 
-/* Registers */
+ 
 
 #define AD9834_REG_CMD		0
 #define AD9834_REG_FREQ0	BIT(14)
@@ -33,7 +29,7 @@
 #define AD9834_REG_PHASE0	(BIT(15) | BIT(14))
 #define AD9834_REG_PHASE1	(BIT(15) | BIT(14) | BIT(13))
 
-/* Command Control Bits */
+ 
 
 #define AD9834_B28		BIT(13)
 #define AD9834_HLB		BIT(12)
@@ -53,20 +49,7 @@
 
 #define RES_MASK(bits)	(BIT(bits) - 1)
 
-/**
- * struct ad9834_state - driver instance specific data
- * @spi:		spi_device
- * @mclk:		external master clock
- * @control:		cached control word
- * @devid:		device id
- * @xfer:		default spi transfer
- * @msg:		default spi message
- * @freq_xfer:		tuning word spi transfer
- * @freq_msg:		tuning word spi message
- * @lock:		protect sensor state
- * @data:		spi transmit buffer
- * @freq_data:		tuning word spi transmit buffer
- */
+ 
 
 struct ad9834_state {
 	struct spi_device		*spi;
@@ -77,19 +60,14 @@ struct ad9834_state {
 	struct spi_message		msg;
 	struct spi_transfer		freq_xfer[2];
 	struct spi_message		freq_msg;
-	struct mutex                    lock;   /* protect sensor state */
+	struct mutex                    lock;    
 
-	/*
-	 * DMA (thus cache coherency maintenance) requires the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 	__be16				data __aligned(IIO_DMA_MINALIGN);
 	__be16				freq_data[2];
 };
 
-/*
- * ad9834_supported_device_ids:
- */
+ 
 
 enum ad9834_supported_device_ids {
 	ID_AD9833,
@@ -165,7 +143,7 @@ static ssize_t ad9834_write(struct device *dev,
 		break;
 	case AD9834_OPBITEN:
 		if (st->control & AD9834_MODE) {
-			ret = -EINVAL;  /* AD9843 reserved mode */
+			ret = -EINVAL;   
 			break;
 		}
 
@@ -240,7 +218,7 @@ static ssize_t ad9834_store_wavetype(struct device *dev,
 				st->control &= ~AD9834_OPBITEN;
 				st->control |= AD9834_MODE;
 			} else if (st->control & AD9834_OPBITEN) {
-				ret = -EINVAL;	/* AD9843 reserved mode */
+				ret = -EINVAL;	 
 			} else {
 				st->control |= AD9834_MODE;
 			}
@@ -317,19 +295,17 @@ ssize_t ad9834_show_out1_wavetype_available(struct device *dev,
 static IIO_DEVICE_ATTR(out_altvoltage0_out1_wavetype_available, 0444,
 		       ad9834_show_out1_wavetype_available, NULL, 0);
 
-/*
- * see dds.h for further information
- */
+ 
 
 static IIO_DEV_ATTR_FREQ(0, 0, 0200, NULL, ad9834_write, AD9834_REG_FREQ0);
 static IIO_DEV_ATTR_FREQ(0, 1, 0200, NULL, ad9834_write, AD9834_REG_FREQ1);
 static IIO_DEV_ATTR_FREQSYMBOL(0, 0200, NULL, ad9834_write, AD9834_FSEL);
-static IIO_CONST_ATTR_FREQ_SCALE(0, "1"); /* 1Hz */
+static IIO_CONST_ATTR_FREQ_SCALE(0, "1");  
 
 static IIO_DEV_ATTR_PHASE(0, 0, 0200, NULL, ad9834_write, AD9834_REG_PHASE0);
 static IIO_DEV_ATTR_PHASE(0, 1, 0200, NULL, ad9834_write, AD9834_REG_PHASE1);
 static IIO_DEV_ATTR_PHASESYMBOL(0, 0200, NULL, ad9834_write, AD9834_PSEL);
-static IIO_CONST_ATTR_PHASE_SCALE(0, "0.0015339808"); /* 2PI/2^12 rad*/
+static IIO_CONST_ATTR_PHASE_SCALE(0, "0.0015339808");  
 
 static IIO_DEV_ATTR_PINCONTROL_EN(0, 0200, NULL, ad9834_write, AD9834_PIN_SW);
 static IIO_DEV_ATTR_OUT_ENABLE(0, 0200, NULL, ad9834_write, AD9834_RESET);
@@ -459,7 +435,7 @@ static int ad9834_probe(struct spi_device *spi)
 	}
 	indio_dev->modes = INDIO_DIRECT_MODE;
 
-	/* Setup default messages */
+	 
 
 	st->xfer.tx_buf = &st->data;
 	st->xfer.len = 2;

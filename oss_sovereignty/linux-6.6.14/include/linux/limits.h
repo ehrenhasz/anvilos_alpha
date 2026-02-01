@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_LIMITS_H
 #define _LINUX_LIMITS_H
 
@@ -26,4 +26,4 @@
 #define S64_MAX		((s64)(U64_MAX >> 1))
 #define S64_MIN		((s64)(-S64_MAX - 1))
 
-#endif /* _LINUX_LIMITS_H */
+#endif  

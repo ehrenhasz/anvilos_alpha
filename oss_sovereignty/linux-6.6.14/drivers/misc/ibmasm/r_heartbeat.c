@@ -1,23 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
 
-/*
- *
- * Copyright (C) IBM Corporation, 2004
- *
- * Author: Max Asböck <amax@us.ibm.com>
- */
+
+ 
 
 #include <linux/sched/signal.h>
 #include "ibmasm.h"
 #include "dot_command.h"
 
-/*
- * Reverse Heartbeat, i.e. heartbeats sent from the driver to the
- * service processor.
- * These heartbeats are initiated by user level programs.
- */
+ 
 
-/* the reverse heartbeat dot command */
+ 
 #pragma pack(1)
 static struct {
 	struct dot_command_header	header;
@@ -39,12 +30,7 @@ void ibmasm_init_reverse_heartbeat(struct service_processor *sp, struct reverse_
 	rhb->stopped = 0;
 }
 
-/*
- * start_reverse_heartbeat
- * Loop forever, sending a reverse heartbeat dot command to the service
- * processor, then sleeping. The loop comes to an end if the service
- * processor fails to respond 3 times or we were interrupted.
- */
+ 
 int ibmasm_start_reverse_heartbeat(struct service_processor *sp, struct reverse_heartbeat *rhb)
 {
 	struct command *cmd;

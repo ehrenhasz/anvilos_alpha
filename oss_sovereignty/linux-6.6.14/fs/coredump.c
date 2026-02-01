@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/slab.h>
 #include <linux/file.h>
 #include <linux/fdtable.h>
@@ -76,7 +76,7 @@ static int expand_corename(struct core_name *cn, int size)
 	if (!corename)
 		return -ENOMEM;
 
-	if (size > core_name_size) /* racy but harmless */
+	if (size > core_name_size)  
 		core_name_size = size;
 
 	cn->size = size;
@@ -132,21 +132,13 @@ int cn_esc_printf(struct core_name *cn, const char *fmt, ...)
 	va_end(arg);
 
 	if (ret == 0) {
-		/*
-		 * Ensure that this coredump name component can't cause the
-		 * resulting corefile path to consist of a ".." or ".".
-		 */
+		 
 		if ((cn->used - cur == 1 && cn->corename[cur] == '.') ||
 				(cn->used - cur == 2 && cn->corename[cur] == '.'
 				&& cn->corename[cur+1] == '.'))
 			cn->corename[cur] = '!';
 
-		/*
-		 * Empty names are fishy and could be used to create a "//" in a
-		 * corefile name, causing the coredump to happen one directory
-		 * level too high. Enforce that all components of the core
-		 * pattern are at least one character long.
-		 */
+		 
 		if (cn->used == cur)
 			ret = cn_printf(cn, "!");
 	}
@@ -194,10 +186,7 @@ put_exe_file:
 	return ret;
 }
 
-/* format_corename will inspect the pattern parameter, and output a
- * name into corename, which must have space for at least
- * CORENAME_MAX_SIZE bytes plus one byte for the zero terminator.
- */
+ 
 static int format_corename(struct core_name *cn, struct coredump_params *cprm,
 			   size_t **argv, int *argc)
 {
@@ -225,13 +214,9 @@ static int format_corename(struct core_name *cn, struct coredump_params *cprm,
 			return -ENOMEM;
 	}
 
-	/* Repeat as long as we have more pattern to process and more output
-	   space */
+	 
 	while (*pat_ptr) {
-		/*
-		 * Split on spaces before doing template expansion so that
-		 * %e and %E don't get split if they have spaces in them
-		 */
+		 
 		if (ispipe) {
 			if (isspace(*pat_ptr)) {
 				if (cn->used != 0)
@@ -250,20 +235,20 @@ static int format_corename(struct core_name *cn, struct coredump_params *cprm,
 			err = cn_printf(cn, "%c", *pat_ptr++);
 		} else {
 			switch (*++pat_ptr) {
-			/* single % at the end, drop that */
+			 
 			case 0:
 				goto out;
-			/* Double percent, output one percent */
+			 
 			case '%':
 				err = cn_printf(cn, "%c", '%');
 				break;
-			/* pid */
+			 
 			case 'p':
 				pid_in_pattern = 1;
 				err = cn_printf(cn, "%d",
 					      task_tgid_vnr(current));
 				break;
-			/* global pid */
+			 
 			case 'P':
 				err = cn_printf(cn, "%d",
 					      task_tgid_nr(current));
@@ -276,13 +261,13 @@ static int format_corename(struct core_name *cn, struct coredump_params *cprm,
 				err = cn_printf(cn, "%d",
 					      task_pid_nr(current));
 				break;
-			/* uid */
+			 
 			case 'u':
 				err = cn_printf(cn, "%u",
 						from_kuid(&init_user_ns,
 							  cred->uid));
 				break;
-			/* gid */
+			 
 			case 'g':
 				err = cn_printf(cn, "%u",
 						from_kgid(&init_user_ns,
@@ -292,12 +277,12 @@ static int format_corename(struct core_name *cn, struct coredump_params *cprm,
 				err = cn_printf(cn, "%d",
 					__get_dumpable(cprm->mm_flags));
 				break;
-			/* signal that caused the coredump */
+			 
 			case 's':
 				err = cn_printf(cn, "%d",
 						cprm->siginfo->si_signo);
 				break;
-			/* UNIX time of coredump */
+			 
 			case 't': {
 				time64_t time;
 
@@ -305,30 +290,30 @@ static int format_corename(struct core_name *cn, struct coredump_params *cprm,
 				err = cn_printf(cn, "%lld", time);
 				break;
 			}
-			/* hostname */
+			 
 			case 'h':
 				down_read(&uts_sem);
 				err = cn_esc_printf(cn, "%s",
 					      utsname()->nodename);
 				up_read(&uts_sem);
 				break;
-			/* executable, could be changed by prctl PR_SET_NAME etc */
+			 
 			case 'e':
 				err = cn_esc_printf(cn, "%s", current->comm);
 				break;
-			/* file name of executable */
+			 
 			case 'f':
 				err = cn_print_exe_file(cn, true);
 				break;
 			case 'E':
 				err = cn_print_exe_file(cn, false);
 				break;
-			/* core limit size */
+			 
 			case 'c':
 				err = cn_printf(cn, "%lu",
 					      rlimit(RLIMIT_CORE));
 				break;
-			/* CPU the task ran on */
+			 
 			case 'C':
 				err = cn_printf(cn, "%d", cprm->cpu);
 				break;
@@ -343,11 +328,7 @@ static int format_corename(struct core_name *cn, struct coredump_params *cprm,
 	}
 
 out:
-	/* Backward compatibility with core_uses_pid:
-	 *
-	 * If core_pattern does not include a %p (as is the default)
-	 * and core_uses_pid is set, then .%pid will be appended to
-	 * the filename. Do not do this for piped commands. */
+	 
 	if (!ispipe && !pid_in_pattern && core_uses_pid) {
 		err = cn_printf(cn, ".%d", task_tgid_vnr(current));
 		if (err)
@@ -361,7 +342,7 @@ static int zap_process(struct task_struct *start, int exit_code)
 	struct task_struct *t;
 	int nr = 0;
 
-	/* Allow SIGKILL, see prepare_signal() */
+	 
 	start->signal->flags = SIGNAL_GROUP_EXIT;
 	start->signal->group_exit_code = exit_code;
 	start->signal->group_stop_count = 0;
@@ -371,7 +352,7 @@ static int zap_process(struct task_struct *start, int exit_code)
 		if (t != current && !(t->flags & PF_POSTCOREDUMP)) {
 			sigaddset(&t->pending.signal, SIGKILL);
 			signal_wake_up(t, 1);
-			/* The vhost_worker does not particpate in coredumps */
+			 
 			if ((t->flags & (PF_USER_WORKER | PF_IO_WORKER)) != PF_USER_WORKER)
 				nr++;
 		}
@@ -413,11 +394,7 @@ static int coredump_wait(int exit_code, struct core_state *core_state)
 
 		wait_for_completion_state(&core_state->startup,
 					  TASK_UNINTERRUPTIBLE|TASK_FREEZABLE);
-		/*
-		 * Wait for all the threads to become inactive, so that
-		 * all the thread context (extended register state, like
-		 * fpu etc) gets copied to the memory.
-		 */
+		 
 		ptr = core_state->dumper.next;
 		while (ptr != NULL) {
 			wait_task_inactive(ptr->task, TASK_ANY);
@@ -443,10 +420,7 @@ static void coredump_finish(bool core_dumped)
 	while ((curr = next) != NULL) {
 		next = curr->next;
 		task = curr->task;
-		/*
-		 * see coredump_task_exit(), curr->task must not see
-		 * ->task == NULL before we read ->next.
-		 */
+		 
 		smp_mb();
 		curr->task = NULL;
 		wake_up_process(task);
@@ -455,12 +429,7 @@ static void coredump_finish(bool core_dumped)
 
 static bool dump_interrupted(void)
 {
-	/*
-	 * SIGKILL or freezing() interrupt the coredumping. Perhaps we
-	 * can do try_to_freeze() and check __fatal_signal_pending(),
-	 * but then we need to teach dump_write() to restart and clear
-	 * TIF_SIGPENDING.
-	 */
+	 
 	return fatal_signal_pending(current) || freezing(current);
 }
 
@@ -475,10 +444,7 @@ static void wait_for_dump_helpers(struct file *file)
 	kill_fasync(&pipe->fasync_readers, SIGIO, POLL_IN);
 	pipe_unlock(pipe);
 
-	/*
-	 * We actually want wait_event_freezable() but then we need
-	 * to clear TIF_SIGPENDING and improve dump_interrupted().
-	 */
+	 
 	wait_event_interruptible(pipe->rd_wait, pipe->readers == 1);
 
 	pipe_lock(pipe);
@@ -487,17 +453,7 @@ static void wait_for_dump_helpers(struct file *file)
 	pipe_unlock(pipe);
 }
 
-/*
- * umh_pipe_setup
- * helper function to customize the process used
- * to collect the core in userspace.  Specifically
- * it sets up a pipe and installs it as fd 0 (stdin)
- * for the process.  Returns 0 on success, or
- * PTR_ERR on failure.
- * Note that it also sets the core limit to 1.  This
- * is a special value that we use to trap recursive
- * core dumps
- */
+ 
 static int umh_pipe_setup(struct subprocess_info *info, struct cred *new)
 {
 	struct file *files[2];
@@ -510,7 +466,7 @@ static int umh_pipe_setup(struct subprocess_info *info, struct cred *new)
 
 	err = replace_fd(0, files[0], 0);
 	fput(files[0]);
-	/* and disallow core files too */
+	 
 	current->signal->rlim[RLIMIT_CORE] = (struct rlimit){1, 1};
 
 	return err;
@@ -528,18 +484,14 @@ void do_coredump(const kernel_siginfo_t *siginfo)
 	int ispipe;
 	size_t *argv = NULL;
 	int argc = 0;
-	/* require nonrelative corefile path and be extra careful */
+	 
 	bool need_suid_safe = false;
 	bool core_dumped = false;
 	static atomic_t core_dump_count = ATOMIC_INIT(0);
 	struct coredump_params cprm = {
 		.siginfo = siginfo,
 		.limit = rlimit(RLIMIT_CORE),
-		/*
-		 * We must use the same mm->flags while dumping core to avoid
-		 * inconsistency of bit flags, since this flag is not protected
-		 * by any locks.
-		 */
+		 
 		.mm_flags = mm->flags,
 		.vma_meta = NULL,
 		.cpu = raw_smp_processor_id(),
@@ -556,15 +508,10 @@ void do_coredump(const kernel_siginfo_t *siginfo)
 	cred = prepare_creds();
 	if (!cred)
 		goto fail;
-	/*
-	 * We cannot trust fsuid as being the "true" uid of the process
-	 * nor do we know its entire history. We only know it was tainted
-	 * so we dump it as root in mode 2, and only into a controlled
-	 * environment (pipe handler or fully qualified path).
-	 */
+	 
 	if (__get_dumpable(cprm.mm_flags) == SUID_DUMP_ROOT) {
-		/* Setuid core dump mode */
-		cred->fsuid = GLOBAL_ROOT_UID;	/* Dump root private */
+		 
+		cred->fsuid = GLOBAL_ROOT_UID;	 
 		need_suid_safe = true;
 	}
 
@@ -589,21 +536,7 @@ void do_coredump(const kernel_siginfo_t *siginfo)
 		}
 
 		if (cprm.limit == 1) {
-			/* See umh_pipe_setup() which sets RLIMIT_CORE = 1.
-			 *
-			 * Normally core limits are irrelevant to pipes, since
-			 * we're not writing to the file system, but we use
-			 * cprm.limit of 1 here as a special value, this is a
-			 * consistent way to catch recursive crashes.
-			 * We can still crash if the core_pattern binary sets
-			 * RLIM_CORE = !1, but it runs as root, and can do
-			 * lots of stupid things.
-			 *
-			 * Note that we use task_tgid_vnr here to grab the pid
-			 * of the process group leader.  That way we get the
-			 * right pid if a thread in a multi-threaded
-			 * core_pattern process dies.
-			 */
+			 
 			printk(KERN_WARNING
 				"Process %d(%s) has RLIMIT_CORE set to 1\n",
 				task_tgid_vnr(current), current->comm);
@@ -662,37 +595,15 @@ void do_coredump(const kernel_siginfo_t *siginfo)
 			goto fail_unlock;
 		}
 
-		/*
-		 * Unlink the file if it exists unless this is a SUID
-		 * binary - in that case, we're running around with root
-		 * privs and don't want to unlink another user's coredump.
-		 */
+		 
 		if (!need_suid_safe) {
-			/*
-			 * If it doesn't exist, that's fine. If there's some
-			 * other problem, we'll catch it at the filp_open().
-			 */
+			 
 			do_unlinkat(AT_FDCWD, getname_kernel(cn.corename));
 		}
 
-		/*
-		 * There is a race between unlinking and creating the
-		 * file, but if that causes an EEXIST here, that's
-		 * fine - another process raced with us while creating
-		 * the corefile, and the other process won. To userspace,
-		 * what matters is that at least one of the two processes
-		 * writes its coredump successfully, not which one.
-		 */
+		 
 		if (need_suid_safe) {
-			/*
-			 * Using user namespaces, normal user tasks can change
-			 * their current->fs->root to point to arbitrary
-			 * directories. Since the intention of the "only dump
-			 * with a fully qualified path" rule is to control where
-			 * coredumps may be placed using root privileges,
-			 * current->fs->root must not be used. Instead, use the
-			 * root directory of init_task.
-			 */
+			 
 			struct path root;
 
 			task_lock(&init_task);
@@ -712,18 +623,10 @@ void do_coredump(const kernel_siginfo_t *siginfo)
 			goto close_fail;
 		if (d_unhashed(cprm.file->f_path.dentry))
 			goto close_fail;
-		/*
-		 * AK: actually i see no reason to not allow this for named
-		 * pipes etc, but keep the previous behaviour for now.
-		 */
+		 
 		if (!S_ISREG(inode->i_mode))
 			goto close_fail;
-		/*
-		 * Don't dump core if the filesystem changed owner or mode
-		 * of the file during file creation. This is an issue when
-		 * a process dumps core while its cwd is e.g. on a vfat
-		 * filesystem.
-		 */
+		 
 		idmap = file_mnt_idmap(cprm.file);
 		if (!vfsuid_eq_kuid(i_uid_into_vfsuid(idmap, inode),
 				    current_fsuid())) {
@@ -743,16 +646,13 @@ void do_coredump(const kernel_siginfo_t *siginfo)
 			goto close_fail;
 	}
 
-	/* get us an unshared descriptor table; almost always a no-op */
-	/* The cell spufs coredump code reads the file descriptor tables */
+	 
+	 
 	retval = unshare_files();
 	if (retval)
 		goto close_fail;
 	if (!dump_interrupted()) {
-		/*
-		 * umh disabled with CONFIG_STATIC_USERMODEHELPER_PATH="" would
-		 * have this set to NULL.
-		 */
+		 
 		if (!cprm.file) {
 			pr_info("Core dump to |%s disabled\n", cn.corename);
 			goto close_fail;
@@ -762,12 +662,7 @@ void do_coredump(const kernel_siginfo_t *siginfo)
 
 		file_start_write(cprm.file);
 		core_dumped = binfmt->core_dump(&cprm);
-		/*
-		 * Ensures that file size is big enough to contain the current
-		 * file postion. This prevents gdb from complaining about
-		 * a truncated file if the last "write" to the file was
-		 * dump_skip.
-		 */
+		 
 		if (cprm.to_skip) {
 			cprm.to_skip--;
 			dump_emit(&cprm, "", 1);
@@ -794,11 +689,7 @@ fail:
 	return;
 }
 
-/*
- * Core dumping helper functions.  These are the only things you should
- * do on a core-file: use only these functions to write out all the
- * necessary info.
- */
+ 
 static int __dump_emit(struct coredump_params *cprm, const void *addr, int nr)
 {
 	struct file *file = cprm->file;
@@ -903,13 +794,7 @@ int dump_user_range(struct coredump_params *cprm, unsigned long start,
 	for (addr = start; addr < start + len; addr += PAGE_SIZE) {
 		struct page *page;
 
-		/*
-		 * To avoid having to allocate page tables for virtual address
-		 * ranges that have never been used yet, and also to make it
-		 * easy to generate sparse core files, use a helper that returns
-		 * NULL when encountering an empty page table entry that would
-		 * otherwise have been filled with the zero page.
-		 */
+		 
 		page = get_dump_page(addr);
 		if (page) {
 			int stop = !dump_emit_page(cprm, page);
@@ -990,33 +875,20 @@ static int __init init_fs_coredump_sysctls(void)
 	return 0;
 }
 fs_initcall(init_fs_coredump_sysctls);
-#endif /* CONFIG_SYSCTL */
+#endif  
 
-/*
- * The purpose of always_dump_vma() is to make sure that special kernel mappings
- * that are useful for post-mortem analysis are included in every core dump.
- * In that way we ensure that the core dump is fully interpretable later
- * without matching up the same kernel and hardware config to see what PC values
- * meant. These special mappings include - vDSO, vsyscall, and other
- * architecture specific mappings
- */
+ 
 static bool always_dump_vma(struct vm_area_struct *vma)
 {
-	/* Any vsyscall mappings? */
+	 
 	if (vma == get_gate_vma(vma->vm_mm))
 		return true;
 
-	/*
-	 * Assume that all vmas with a .name op should always be dumped.
-	 * If this changes, a new vm_ops field can easily be added.
-	 */
+	 
 	if (vma->vm_ops && vma->vm_ops->name && vma->vm_ops->name(vma))
 		return true;
 
-	/*
-	 * arch_vma_name() returns non-NULL for special architecture mappings,
-	 * such as vDSO sections.
-	 */
+	 
 	if (arch_vma_name(vma))
 		return true;
 
@@ -1025,22 +897,20 @@ static bool always_dump_vma(struct vm_area_struct *vma)
 
 #define DUMP_SIZE_MAYBE_ELFHDR_PLACEHOLDER 1
 
-/*
- * Decide how much of @vma's contents should be included in a core dump.
- */
+ 
 static unsigned long vma_dump_size(struct vm_area_struct *vma,
 				   unsigned long mm_flags)
 {
 #define FILTER(type)	(mm_flags & (1UL << MMF_DUMP_##type))
 
-	/* always dump the vdso and vsyscall sections */
+	 
 	if (always_dump_vma(vma))
 		goto whole;
 
 	if (vma->vm_flags & VM_DONTDUMP)
 		return 0;
 
-	/* support for DAX */
+	 
 	if (vma_is_dax(vma)) {
 		if ((vma->vm_flags & VM_SHARED) && FILTER(DAX_SHARED))
 			goto whole;
@@ -1049,7 +919,7 @@ static unsigned long vma_dump_size(struct vm_area_struct *vma,
 		return 0;
 	}
 
-	/* Hugetlb memory check */
+	 
 	if (is_vm_hugetlb_page(vma)) {
 		if ((vma->vm_flags & VM_SHARED) && FILTER(HUGETLB_SHARED))
 			goto whole;
@@ -1058,11 +928,11 @@ static unsigned long vma_dump_size(struct vm_area_struct *vma,
 		return 0;
 	}
 
-	/* Do not dump I/O mapped devices or special mappings */
+	 
 	if (vma->vm_flags & VM_IO)
 		return 0;
 
-	/* By default, dump shared memory if mapped from an anonymous file. */
+	 
 	if (vma->vm_flags & VM_SHARED) {
 		if (file_inode(vma->vm_file)->i_nlink == 0 ?
 		    FILTER(ANON_SHARED) : FILTER(MAPPED_SHARED))
@@ -1070,7 +940,7 @@ static unsigned long vma_dump_size(struct vm_area_struct *vma,
 		return 0;
 	}
 
-	/* Dump segments that have been written to.  */
+	 
 	if ((!IS_ENABLED(CONFIG_MMU) || vma->anon_vma) && FILTER(ANON_PRIVATE))
 		goto whole;
 	if (vma->vm_file == NULL)
@@ -1079,23 +949,13 @@ static unsigned long vma_dump_size(struct vm_area_struct *vma,
 	if (FILTER(MAPPED_PRIVATE))
 		goto whole;
 
-	/*
-	 * If this is the beginning of an executable file mapping,
-	 * dump the first page to aid in determining what was mapped here.
-	 */
+	 
 	if (FILTER(ELF_HEADERS) &&
 	    vma->vm_pgoff == 0 && (vma->vm_flags & VM_READ)) {
 		if ((READ_ONCE(file_inode(vma->vm_file)->i_mode) & 0111) != 0)
 			return PAGE_SIZE;
 
-		/*
-		 * ELF libraries aren't always executable.
-		 * We'll want to check whether the mapping starts with the ELF
-		 * magic, but not now - we're holding the mmap lock,
-		 * so copy_from_user() doesn't work here.
-		 * Use a placeholder instead, and fix it up later in
-		 * dump_vma_snapshot().
-		 */
+		 
 		return DUMP_SIZE_MAYBE_ELFHDR_PLACEHOLDER;
 	}
 
@@ -1107,10 +967,7 @@ whole:
 	return vma->vm_end - vma->vm_start;
 }
 
-/*
- * Helper function for iterating across a vma list.  It ensures that the caller
- * will visit `gate_vma' prior to terminating the search.
- */
+ 
 static struct vm_area_struct *coredump_next_vma(struct vma_iterator *vmi,
 				       struct vm_area_struct *vma,
 				       struct vm_area_struct *gate_vma)
@@ -1138,10 +995,7 @@ static void free_vma_snapshot(struct coredump_params *cprm)
 	}
 }
 
-/*
- * Under the mmap_lock, take a snapshot of relevant information about the task's
- * VMAs.
- */
+ 
 static bool dump_vma_snapshot(struct coredump_params *cprm)
 {
 	struct vm_area_struct *gate_vma, *vma = NULL;
@@ -1149,11 +1003,7 @@ static bool dump_vma_snapshot(struct coredump_params *cprm)
 	VMA_ITERATOR(vmi, mm, 0);
 	int i = 0;
 
-	/*
-	 * Once the stack expansion code is fixed to not change VMA bounds
-	 * under mmap_lock in read mode, this can be changed to take the
-	 * mmap_lock in read mode.
-	 */
+	 
 	if (mmap_write_lock_killable(mm))
 		return false;
 

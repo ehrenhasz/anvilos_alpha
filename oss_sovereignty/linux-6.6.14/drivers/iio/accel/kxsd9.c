@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * kxsd9.c	simple support for the Kionix KXSD9 3D
- *		accelerometer.
- *
- * Copyright (c) 2008-2009 Jonathan Cameron <jic23@kernel.org>
- *
- * The i2c interface is very similar, so shouldn't be a problem once
- * I have a suitable wire made up.
- *
- * TODO:	Support the motion detector
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -57,18 +47,11 @@
 
 #define KXSD9_CTRL_B_CLK_HLD	BIT(7)
 #define KXSD9_CTRL_B_ENABLE	BIT(6)
-#define KXSD9_CTRL_B_ST		BIT(5) /* Self-test */
+#define KXSD9_CTRL_B_ST		BIT(5)  
 
 #define KXSD9_REG_CTRL_A	0x0e
 
-/**
- * struct kxsd9_state - device related storage
- * @dev: pointer to the parent device
- * @map: regmap to the device
- * @orientation: mounting matrix, flipped axis etc
- * @regs: regulators for this device, VDD and IOVDD
- * @scale: the current scaling setting
- */
+ 
 struct kxsd9_state {
 	struct device *dev;
 	struct regmap *map;
@@ -82,14 +65,12 @@ struct kxsd9_state {
 #define KXSD9_SCALE_6G "0.035934"
 #define KXSD9_SCALE_8G "0.047853"
 
-/* reverse order */
+ 
 static const int kxsd9_micro_scales[4] = { 47853, 35934, 23927, 11978 };
 
 #define KXSD9_ZERO_G_OFFSET -2048
 
-/*
- * Regulator names
- */
+ 
 static const char kxsd9_reg_vdd[] = "vdd";
 static const char kxsd9_reg_iovdd[] = "iovdd";
 
@@ -114,7 +95,7 @@ static int kxsd9_write_scale(struct iio_dev *indio_dev, int micro)
 	if (ret < 0)
 		goto error_ret;
 
-	/* Cached scale when the sensor is powered down */
+	 
 	st->scale = i;
 
 error_ret:
@@ -144,7 +125,7 @@ static int kxsd9_write_raw(struct iio_dev *indio_dev,
 	pm_runtime_get_sync(st->dev);
 
 	if (mask == IIO_CHAN_INFO_SCALE) {
-		/* Check no integer component */
+		 
 		if (val)
 			return -EINVAL;
 		ret = kxsd9_write_scale(indio_dev, val2);
@@ -175,13 +156,13 @@ static int kxsd9_read_raw(struct iio_dev *indio_dev,
 		if (ret)
 			goto error_ret;
 		nval = be16_to_cpu(raw_val);
-		/* Only 12 bits are valid */
+		 
 		nval >>= 4;
 		*val = nval;
 		ret = IIO_VAL_INT;
 		break;
 	case IIO_CHAN_INFO_OFFSET:
-		/* This has a bias of -2048 */
+		 
 		*val = KXSD9_ZERO_G_OFFSET;
 		ret = IIO_VAL_INT;
 		break;
@@ -209,10 +190,7 @@ static irqreturn_t kxsd9_trigger_handler(int irq, void *p)
 	const struct iio_poll_func *pf = p;
 	struct iio_dev *indio_dev = pf->indio_dev;
 	struct kxsd9_state *st = iio_priv(indio_dev);
-	/*
-	 * Ensure correct positioning and alignment of timestamp.
-	 * No need to zero initialize as all elements written.
-	 */
+	 
 	struct {
 		__be16 chan[4];
 		s64 ts __aligned(8);
@@ -324,24 +302,21 @@ static int kxsd9_power_up(struct kxsd9_state *st)
 {
 	int ret;
 
-	/* Enable the regulators */
+	 
 	ret = regulator_bulk_enable(ARRAY_SIZE(st->regs), st->regs);
 	if (ret) {
 		dev_err(st->dev, "Cannot enable regulators\n");
 		return ret;
 	}
 
-	/* Power up */
+	 
 	ret = regmap_write(st->map,
 			   KXSD9_REG_CTRL_B,
 			   KXSD9_CTRL_B_ENABLE);
 	if (ret)
 		return ret;
 
-	/*
-	 * Set 1000Hz LPF, 2g fullscale, motion wakeup threshold 1g,
-	 * latched wakeup
-	 */
+	 
 	ret = regmap_write(st->map,
 			   KXSD9_REG_CTRL_C,
 			   KXSD9_CTRL_C_LP_1000HZ |
@@ -351,10 +326,7 @@ static int kxsd9_power_up(struct kxsd9_state *st)
 	if (ret)
 		return ret;
 
-	/*
-	 * Power-up time depends on the LPF setting, but typ 15.9 ms, let's
-	 * set 20 ms to allow for some slack.
-	 */
+	 
 	msleep(20);
 
 	return 0;
@@ -364,12 +336,7 @@ static int kxsd9_power_down(struct kxsd9_state *st)
 {
 	int ret;
 
-	/*
-	 * Set into low power mode - since there may be more users of the
-	 * regulators this is the first step of the power saving: it will
-	 * make sure we conserve power even if there are others users on the
-	 * regulators.
-	 */
+	 
 	ret = regmap_update_bits(st->map,
 				 KXSD9_REG_CTRL_B,
 				 KXSD9_CTRL_B_ENABLE,
@@ -377,7 +344,7 @@ static int kxsd9_power_down(struct kxsd9_state *st)
 	if (ret)
 		return ret;
 
-	/* Disable the regulators */
+	 
 	ret = regulator_bulk_disable(ARRAY_SIZE(st->regs), st->regs);
 	if (ret) {
 		dev_err(st->dev, "Cannot disable regulators\n");
@@ -393,7 +360,7 @@ static const struct iio_info kxsd9_info = {
 	.attrs = &kxsd9_attribute_group,
 };
 
-/* Four channels apart from timestamp, scan mask = 0x0f */
+ 
 static const unsigned long kxsd9_scan_masks[] = { 0xf, 0 };
 
 int kxsd9_common_probe(struct device *dev,
@@ -419,12 +386,12 @@ int kxsd9_common_probe(struct device *dev,
 	indio_dev->modes = INDIO_DIRECT_MODE;
 	indio_dev->available_scan_masks = kxsd9_scan_masks;
 
-	/* Read the mounting matrix, if present */
+	 
 	ret = iio_read_mount_matrix(dev, &st->orientation);
 	if (ret)
 		return ret;
 
-	/* Fetch and turn on regulators */
+	 
 	st->regs[0].supply = kxsd9_reg_vdd;
 	st->regs[1].supply = kxsd9_reg_iovdd;
 	ret = devm_regulator_bulk_get(dev,
@@ -434,7 +401,7 @@ int kxsd9_common_probe(struct device *dev,
 		dev_err(dev, "Cannot get regulators\n");
 		return ret;
 	}
-	/* Default scaling */
+	 
 	st->scale = KXSD9_CTRL_C_FS_2G;
 
 	kxsd9_power_up(st);
@@ -454,15 +421,11 @@ int kxsd9_common_probe(struct device *dev,
 
 	dev_set_drvdata(dev, indio_dev);
 
-	/* Enable runtime PM */
+	 
 	pm_runtime_get_noresume(dev);
 	pm_runtime_set_active(dev);
 	pm_runtime_enable(dev);
-	/*
-	 * Set autosuspend to two orders of magnitude larger than the
-	 * start-up time. 20ms start-up time means 2000ms autosuspend,
-	 * i.e. 2 seconds.
-	 */
+	 
 	pm_runtime_set_autosuspend_delay(dev, 2000);
 	pm_runtime_use_autosuspend(dev);
 	pm_runtime_put(dev);

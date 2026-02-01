@@ -1,14 +1,4 @@
-/* Write the contents of the <certfile> into kernel symbol system_extra_cert
- *
- * Copyright (C) IBM Corporation, 2015
- *
- * Author: Mehmet Kayaalp <mkayaalp@linux.vnet.ibm.com>
- *
- * This software may be used and distributed according to the terms
- * of the GNU General Public License, incorporated herein by reference.
- *
- * Usage: insert-sys-cert [-s <System.map> -b <vmlinux> -c <certfile>
- */
+ 
 
 #define _GNU_SOURCE
 #include <stdio.h>
@@ -385,7 +375,7 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	/* If the existing cert is the same, don't overwrite */
+	 
 	if (cert_size == *used &&
 	    strncmp(cert_sym.content, cert, cert_size) == 0) {
 		warn("Certificate was already inserted.\n");

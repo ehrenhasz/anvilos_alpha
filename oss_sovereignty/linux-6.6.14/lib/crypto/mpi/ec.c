@@ -1,22 +1,4 @@
-/* ec.c -  Elliptic Curve functions
- * Copyright (C) 2007 Free Software Foundation, Inc.
- * Copyright (C) 2013 g10 Code GmbH
- *
- * This file is part of Libgcrypt.
- *
- * Libgcrypt is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * Libgcrypt is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program; if not, see <http://www.gnu.org/licenses/>.
- */
+ 
 
 #include "mpi-internal.h"
 #include "longlong.h"
@@ -30,15 +12,12 @@
 #define DIM(v) (sizeof(v)/sizeof((v)[0]))
 
 
-/* Create a new point option.  NBITS gives the size in bits of one
- * coordinate; it is only used to pre-allocate some resources and
- * might also be passed as 0 to use a default value.
- */
+ 
 MPI_POINT mpi_point_new(unsigned int nbits)
 {
 	MPI_POINT p;
 
-	(void)nbits;  /* Currently not used.  */
+	(void)nbits;   
 
 	p = kmalloc(sizeof(*p), GFP_KERNEL);
 	if (p)
@@ -47,7 +26,7 @@ MPI_POINT mpi_point_new(unsigned int nbits)
 }
 EXPORT_SYMBOL_GPL(mpi_point_new);
 
-/* Release the point object P.  P may be NULL. */
+ 
 void mpi_point_release(MPI_POINT p)
 {
 	if (p) {
@@ -57,9 +36,7 @@ void mpi_point_release(MPI_POINT p)
 }
 EXPORT_SYMBOL_GPL(mpi_point_release);
 
-/* Initialize the fields of a point object.  gcry_mpi_point_free_parts
- * may be used to release the fields.
- */
+ 
 void mpi_point_init(MPI_POINT p)
 {
 	p->x = mpi_new(0);
@@ -68,7 +45,7 @@ void mpi_point_init(MPI_POINT p)
 }
 EXPORT_SYMBOL_GPL(mpi_point_init);
 
-/* Release the parts of a point object. */
+ 
 void mpi_point_free_parts(MPI_POINT p)
 {
 	mpi_free(p->x); p->x = NULL;
@@ -77,7 +54,7 @@ void mpi_point_free_parts(MPI_POINT p)
 }
 EXPORT_SYMBOL_GPL(mpi_point_free_parts);
 
-/* Set the value from S into D.  */
+ 
 static void point_set(MPI_POINT d, MPI_POINT s)
 {
 	mpi_set(d->x, s->x);
@@ -110,7 +87,7 @@ static void point_swap_cond(MPI_POINT d, MPI_POINT s, unsigned long swap,
 }
 
 
-/* W = W mod P.  */
+ 
 static void ec_mod(MPI w, struct mpi_ec_ctx *ec)
 {
 	if (ec->t.p_barrett)
@@ -130,7 +107,7 @@ static void ec_subm(MPI w, MPI u, MPI v, struct mpi_ec_ctx *ec)
 	mpi_sub(w, u, v);
 	while (w->sign)
 		mpi_add(w, w, ec->p);
-	/*ec_mod(w, ec);*/
+	 
 }
 
 static void ec_mulm(MPI w, MPI u, MPI v, struct mpi_ec_ctx *ctx)
@@ -139,7 +116,7 @@ static void ec_mulm(MPI w, MPI u, MPI v, struct mpi_ec_ctx *ctx)
 	ec_mod(w, ctx);
 }
 
-/* W = 2 * U mod P.  */
+ 
 static void ec_mul2(MPI w, MPI u, struct mpi_ec_ctx *ctx)
 {
 	mpi_lshift(w, u, 1);
@@ -150,24 +127,18 @@ static void ec_powm(MPI w, const MPI b, const MPI e,
 		struct mpi_ec_ctx *ctx)
 {
 	mpi_powm(w, b, e, ctx->p);
-	/* mpi_abs(w); */
+	 
 }
 
-/* Shortcut for
- * ec_powm(B, B, mpi_const(MPI_C_TWO), ctx);
- * for easier optimization.
- */
+ 
 static void ec_pow2(MPI w, const MPI b, struct mpi_ec_ctx *ctx)
 {
-	/* Using mpi_mul is slightly faster (at least on amd64).  */
-	/* mpi_powm(w, b, mpi_const(MPI_C_TWO), ctx->p); */
+	 
+	 
 	ec_mulm(w, b, b, ctx);
 }
 
-/* Shortcut for
- * ec_powm(B, B, mpi_const(MPI_C_THREE), ctx);
- * for easier optimization.
- */
+ 
 static void ec_pow3(MPI w, const MPI b, struct mpi_ec_ctx *ctx)
 {
 	mpi_powm(w, b, mpi_const(MPI_C_THREE), ctx->p);
@@ -192,7 +163,7 @@ static void mpih_set_cond(mpi_ptr_t wp, mpi_ptr_t up,
 	}
 }
 
-/* Routines for 2^255 - 19.  */
+ 
 
 #define LIMB_SIZE_25519 ((256+BITS_PER_MPI_LIMB-1)/BITS_PER_MPI_LIMB)
 
@@ -298,7 +269,7 @@ static void ec_pow2_25519(MPI w, const MPI b, struct mpi_ec_ctx *ctx)
 	ec_mulm_25519(w, b, b, ctx);
 }
 
-/* Routines for 2^448 - 2^224 - 1.  */
+ 
 
 #define LIMB_SIZE_448 ((448+BITS_PER_MPI_LIMB-1)/BITS_PER_MPI_LIMB)
 #define LIMB_SIZE_HALF_448 ((LIMB_SIZE_448+1)/2)
@@ -453,7 +424,7 @@ static void ec_pow2_448(MPI w, const MPI b, struct mpi_ec_ctx *ctx)
 struct field_table {
 	const char *p;
 
-	/* computation routines for the field.  */
+	 
 	void (*addm)(MPI w, MPI u, MPI v, struct mpi_ec_ctx *ctx);
 	void (*subm)(MPI w, MPI u, MPI v, struct mpi_ec_ctx *ctx);
 	void (*mulm)(MPI w, MPI u, MPI v, struct mpi_ec_ctx *ctx);
@@ -482,14 +453,14 @@ static const struct field_table field_table[] = {
 	{ NULL, NULL, NULL, NULL, NULL, NULL },
 };
 
-/* Force recomputation of all helper variables.  */
+ 
 static void mpi_ec_get_reset(struct mpi_ec_ctx *ec)
 {
 	ec->t.valid.a_is_pminus3 = 0;
 	ec->t.valid.two_inv_p = 0;
 }
 
-/* Accessor for helper variable.  */
+ 
 static int ec_get_a_is_pminus3(struct mpi_ec_ctx *ec)
 {
 	MPI tmp;
@@ -505,7 +476,7 @@ static int ec_get_a_is_pminus3(struct mpi_ec_ctx *ec)
 	return ec->t.a_is_pminus3;
 }
 
-/* Accessor for helper variable.  */
+ 
 static MPI ec_get_two_inv_p(struct mpi_ec_ctx *ec)
 {
 	if (!ec->t.valid.two_inv_p) {
@@ -557,21 +528,18 @@ static void mpi_ec_coefficient_normalize(MPI a, MPI p)
 	}
 }
 
-/* This function initialized a context for elliptic curve based on the
- * field GF(p).  P is the prime specifying this field, A is the first
- * coefficient.  CTX is expected to be zeroized.
- */
+ 
 void mpi_ec_init(struct mpi_ec_ctx *ctx, enum gcry_mpi_ec_models model,
 			enum ecc_dialects dialect,
 			int flags, MPI p, MPI a, MPI b)
 {
 	int i;
-	static int use_barrett = -1 /* TODO: 1 or -1 */;
+	static int use_barrett = -1  ;
 
 	mpi_ec_coefficient_normalize(a, p);
 	mpi_ec_coefficient_normalize(b, p);
 
-	/* Fixme: Do we want to check some constraints? e.g.  a < p  */
+	 
 
 	ctx->model = model;
 	ctx->dialect = dialect;
@@ -602,7 +570,7 @@ void mpi_ec_init(struct mpi_ec_ctx *ctx, enum gcry_mpi_ec_models model,
 				ctx->t.scratch[j] = mpi_scanval(bad_points_table[i][j]);
 		}
 	} else {
-		/* Allocate scratch variables.  */
+		 
 		for (i = 0; i < DIM(ctx->t.scratch); i++)
 			ctx->t.scratch[i] = mpi_alloc_like(ctx->p);
 	}
@@ -651,18 +619,18 @@ void mpi_ec_deinit(struct mpi_ec_ctx *ctx)
 
 	mpi_barrett_free(ctx->t.p_barrett);
 
-	/* Domain parameter.  */
+	 
 	mpi_free(ctx->p);
 	mpi_free(ctx->a);
 	mpi_free(ctx->b);
 	mpi_point_release(ctx->G);
 	mpi_free(ctx->n);
 
-	/* The key.  */
+	 
 	mpi_point_release(ctx->Q);
 	mpi_free(ctx->d);
 
-	/* Private data of ec.c.  */
+	 
 	mpi_free(ctx->t.two_inv_p);
 
 	for (i = 0; i < DIM(ctx->t.scratch); i++)
@@ -670,32 +638,28 @@ void mpi_ec_deinit(struct mpi_ec_ctx *ctx)
 }
 EXPORT_SYMBOL_GPL(mpi_ec_deinit);
 
-/* Compute the affine coordinates from the projective coordinates in
- * POINT.  Set them into X and Y.  If one coordinate is not required,
- * X or Y may be passed as NULL.  CTX is the usual context. Returns: 0
- * on success or !0 if POINT is at infinity.
- */
+ 
 int mpi_ec_get_affine(MPI x, MPI y, MPI_POINT point, struct mpi_ec_ctx *ctx)
 {
 	if (!mpi_cmp_ui(point->z, 0))
 		return -1;
 
 	switch (ctx->model) {
-	case MPI_EC_WEIERSTRASS: /* Using Jacobian coordinates.  */
+	case MPI_EC_WEIERSTRASS:  
 		{
 			MPI z1, z2, z3;
 
 			z1 = mpi_new(0);
 			z2 = mpi_new(0);
-			ec_invm(z1, point->z, ctx);  /* z1 = z^(-1) mod p  */
-			ec_mulm(z2, z1, z1, ctx);    /* z2 = z^(-2) mod p  */
+			ec_invm(z1, point->z, ctx);   
+			ec_mulm(z2, z1, z1, ctx);     
 
 			if (x)
 				ec_mulm(x, point->x, z2, ctx);
 
 			if (y) {
 				z3 = mpi_new(0);
-				ec_mulm(z3, z2, z1, ctx);      /* z3 = z^(-3) mod p */
+				ec_mulm(z3, z2, z1, ctx);       
 				ec_mulm(y, point->y, z3, ctx);
 				mpi_free(z3);
 			}
@@ -749,7 +713,7 @@ int mpi_ec_get_affine(MPI x, MPI y, MPI_POINT point, struct mpi_ec_ctx *ctx)
 }
 EXPORT_SYMBOL_GPL(mpi_ec_get_affine);
 
-/*  RESULT = 2 * POINT  (Weierstrass version). */
+ 
 static void dup_point_weierstrass(MPI_POINT result,
 		MPI_POINT point, struct mpi_ec_ctx *ctx)
 {
@@ -764,53 +728,53 @@ static void dup_point_weierstrass(MPI_POINT result,
 #define l3 (ctx->t.scratch[5])
 
 	if (!mpi_cmp_ui(point->y, 0) || !mpi_cmp_ui(point->z, 0)) {
-		/* P_y == 0 || P_z == 0 => [1:1:0] */
+		 
 		mpi_set_ui(x3, 1);
 		mpi_set_ui(y3, 1);
 		mpi_set_ui(z3, 0);
 	} else {
 		if (ec_get_a_is_pminus3(ctx)) {
-			/* Use the faster case.  */
-			/* L1 = 3(X - Z^2)(X + Z^2) */
-			/*                          T1: used for Z^2. */
-			/*                          T2: used for the right term. */
+			 
+			 
+			 
+			 
 			ec_pow2(t1, point->z, ctx);
 			ec_subm(l1, point->x, t1, ctx);
 			ec_mulm(l1, l1, mpi_const(MPI_C_THREE), ctx);
 			ec_addm(t2, point->x, t1, ctx);
 			ec_mulm(l1, l1, t2, ctx);
 		} else {
-			/* Standard case. */
-			/* L1 = 3X^2 + aZ^4 */
-			/*                          T1: used for aZ^4. */
+			 
+			 
+			 
 			ec_pow2(l1, point->x, ctx);
 			ec_mulm(l1, l1, mpi_const(MPI_C_THREE), ctx);
 			ec_powm(t1, point->z, mpi_const(MPI_C_FOUR), ctx);
 			ec_mulm(t1, t1, ctx->a, ctx);
 			ec_addm(l1, l1, t1, ctx);
 		}
-		/* Z3 = 2YZ */
+		 
 		ec_mulm(z3, point->y, point->z, ctx);
 		ec_mul2(z3, z3, ctx);
 
-		/* L2 = 4XY^2 */
-		/*                              T2: used for Y2; required later. */
+		 
+		 
 		ec_pow2(t2, point->y, ctx);
 		ec_mulm(l2, t2, point->x, ctx);
 		ec_mulm(l2, l2, mpi_const(MPI_C_FOUR), ctx);
 
-		/* X3 = L1^2 - 2L2 */
-		/*                              T1: used for L2^2. */
+		 
+		 
 		ec_pow2(x3, l1, ctx);
 		ec_mul2(t1, l2, ctx);
 		ec_subm(x3, x3, t1, ctx);
 
-		/* L3 = 8Y^4 */
-		/*                              T2: taken from above. */
+		 
+		 
 		ec_pow2(t2, t2, ctx);
 		ec_mulm(l3, t2, mpi_const(MPI_C_EIGHT), ctx);
 
-		/* Y3 = L1(L2 - X3) - L3 */
+		 
 		ec_subm(y3, l2, x3, ctx);
 		ec_mulm(y3, y3, l1, ctx);
 		ec_subm(y3, y3, l3, ctx);
@@ -827,7 +791,7 @@ static void dup_point_weierstrass(MPI_POINT result,
 #undef l3
 }
 
-/*  RESULT = 2 * POINT  (Montgomery version). */
+ 
 static void dup_point_montgomery(MPI_POINT result,
 				MPI_POINT point, struct mpi_ec_ctx *ctx)
 {
@@ -838,7 +802,7 @@ static void dup_point_montgomery(MPI_POINT result,
 			"mpi_ec_dup_point", "Montgomery");
 }
 
-/*  RESULT = 2 * POINT  (Twisted Edwards version). */
+ 
 static void dup_point_edwards(MPI_POINT result,
 		MPI_POINT point, struct mpi_ec_ctx *ctx)
 {
@@ -856,43 +820,43 @@ static void dup_point_edwards(MPI_POINT result,
 #define H (ctx->t.scratch[5])
 #define J (ctx->t.scratch[6])
 
-	/* Compute: (X_3 : Y_3 : Z_3) = 2( X_1 : Y_1 : Z_1 ) */
+	 
 
-	/* B = (X_1 + Y_1)^2  */
+	 
 	ctx->addm(B, X1, Y1, ctx);
 	ctx->pow2(B, B, ctx);
 
-	/* C = X_1^2 */
-	/* D = Y_1^2 */
+	 
+	 
 	ctx->pow2(C, X1, ctx);
 	ctx->pow2(D, Y1, ctx);
 
-	/* E = aC */
+	 
 	if (ctx->dialect == ECC_DIALECT_ED25519)
 		ctx->subm(E, ctx->p, C, ctx);
 	else
 		ctx->mulm(E, ctx->a, C, ctx);
 
-	/* F = E + D */
+	 
 	ctx->addm(F, E, D, ctx);
 
-	/* H = Z_1^2 */
+	 
 	ctx->pow2(H, Z1, ctx);
 
-	/* J = F - 2H */
+	 
 	ctx->mul2(J, H, ctx);
 	ctx->subm(J, F, J, ctx);
 
-	/* X_3 = (B - C - D) · J */
+	 
 	ctx->subm(X3, B, C, ctx);
 	ctx->subm(X3, X3, D, ctx);
 	ctx->mulm(X3, X3, J, ctx);
 
-	/* Y_3 = F · (E - D) */
+	 
 	ctx->subm(Y3, E, D, ctx);
 	ctx->mulm(Y3, Y3, F, ctx);
 
-	/* Z_3 = F · J */
+	 
 	ctx->mulm(Z3, F, J, ctx);
 
 #undef X1
@@ -910,7 +874,7 @@ static void dup_point_edwards(MPI_POINT result,
 #undef J
 }
 
-/*  RESULT = 2 * POINT  */
+ 
 static void
 mpi_ec_dup_point(MPI_POINT result, MPI_POINT point, struct mpi_ec_ctx *ctx)
 {
@@ -927,7 +891,7 @@ mpi_ec_dup_point(MPI_POINT result, MPI_POINT point, struct mpi_ec_ctx *ctx)
 	}
 }
 
-/* RESULT = P1 + P2  (Weierstrass version).*/
+ 
 static void add_points_weierstrass(MPI_POINT result,
 		MPI_POINT p1, MPI_POINT p2,
 		struct mpi_ec_ctx *ctx)
@@ -954,15 +918,15 @@ static void add_points_weierstrass(MPI_POINT result,
 #define t2 (ctx->t.scratch[10])
 
 	if ((!mpi_cmp(x1, x2)) && (!mpi_cmp(y1, y2)) && (!mpi_cmp(z1, z2))) {
-		/* Same point; need to call the duplicate function.  */
+		 
 		mpi_ec_dup_point(result, p1, ctx);
 	} else if (!mpi_cmp_ui(z1, 0)) {
-		/* P1 is at infinity.  */
+		 
 		mpi_set(x3, p2->x);
 		mpi_set(y3, p2->y);
 		mpi_set(z3, p2->z);
 	} else if (!mpi_cmp_ui(z2, 0)) {
-		/* P2 is at infinity.  */
+		 
 		mpi_set(x3, p1->x);
 		mpi_set(y3, p1->y);
 		mpi_set(z3, p1->z);
@@ -970,8 +934,8 @@ static void add_points_weierstrass(MPI_POINT result,
 		int z1_is_one = !mpi_cmp_ui(z1, 1);
 		int z2_is_one = !mpi_cmp_ui(z2, 1);
 
-		/* l1 = x1 z2^2  */
-		/* l2 = x2 z1^2  */
+		 
+		 
 		if (z2_is_one)
 			mpi_set(l1, x1);
 		else {
@@ -984,46 +948,46 @@ static void add_points_weierstrass(MPI_POINT result,
 			ec_pow2(l2, z1, ctx);
 			ec_mulm(l2, l2, x2, ctx);
 		}
-		/* l3 = l1 - l2 */
+		 
 		ec_subm(l3, l1, l2, ctx);
-		/* l4 = y1 z2^3  */
+		 
 		ec_powm(l4, z2, mpi_const(MPI_C_THREE), ctx);
 		ec_mulm(l4, l4, y1, ctx);
-		/* l5 = y2 z1^3  */
+		 
 		ec_powm(l5, z1, mpi_const(MPI_C_THREE), ctx);
 		ec_mulm(l5, l5, y2, ctx);
-		/* l6 = l4 - l5  */
+		 
 		ec_subm(l6, l4, l5, ctx);
 
 		if (!mpi_cmp_ui(l3, 0)) {
 			if (!mpi_cmp_ui(l6, 0)) {
-				/* P1 and P2 are the same - use duplicate function. */
+				 
 				mpi_ec_dup_point(result, p1, ctx);
 			} else {
-				/* P1 is the inverse of P2.  */
+				 
 				mpi_set_ui(x3, 1);
 				mpi_set_ui(y3, 1);
 				mpi_set_ui(z3, 0);
 			}
 		} else {
-			/* l7 = l1 + l2  */
+			 
 			ec_addm(l7, l1, l2, ctx);
-			/* l8 = l4 + l5  */
+			 
 			ec_addm(l8, l4, l5, ctx);
-			/* z3 = z1 z2 l3  */
+			 
 			ec_mulm(z3, z1, z2, ctx);
 			ec_mulm(z3, z3, l3, ctx);
-			/* x3 = l6^2 - l7 l3^2  */
+			 
 			ec_pow2(t1, l6, ctx);
 			ec_pow2(t2, l3, ctx);
 			ec_mulm(t2, t2, l7, ctx);
 			ec_subm(x3, t1, t2, ctx);
-			/* l9 = l7 l3^2 - 2 x3  */
+			 
 			ec_mul2(t1, x3, ctx);
 			ec_subm(l9, t2, t1, ctx);
-			/* y3 = (l9 l6 - l8 l3^3)/2  */
+			 
 			ec_mulm(l9, l9, l6, ctx);
-			ec_powm(t1, l3, mpi_const(MPI_C_THREE), ctx); /* fixme: Use saved value*/
+			ec_powm(t1, l3, mpi_const(MPI_C_THREE), ctx);  
 			ec_mulm(t1, t1, l8, ctx);
 			ec_subm(y3, l9, t1, ctx);
 			ec_mulm(y3, y3, ec_get_two_inv_p(ctx), ctx);
@@ -1052,7 +1016,7 @@ static void add_points_weierstrass(MPI_POINT result,
 #undef t2
 }
 
-/* RESULT = P1 + P2  (Montgomery version).*/
+ 
 static void add_points_montgomery(MPI_POINT result,
 		MPI_POINT p1, MPI_POINT p2,
 		struct mpi_ec_ctx *ctx)
@@ -1065,7 +1029,7 @@ static void add_points_montgomery(MPI_POINT result,
 			"mpi_ec_add_points", "Montgomery");
 }
 
-/* RESULT = P1 + P2  (Twisted Edwards version).*/
+ 
 static void add_points_edwards(MPI_POINT result,
 		MPI_POINT p1, MPI_POINT p2,
 		struct mpi_ec_ctx *ctx)
@@ -1090,31 +1054,31 @@ static void add_points_edwards(MPI_POINT result,
 
 	point_resize(result, ctx);
 
-	/* Compute: (X_3 : Y_3 : Z_3) = (X_1 : Y_1 : Z_1) + (X_2 : Y_2 : Z_3) */
+	 
 
-	/* A = Z1 · Z2 */
+	 
 	ctx->mulm(A, Z1, Z2, ctx);
 
-	/* B = A^2 */
+	 
 	ctx->pow2(B, A, ctx);
 
-	/* C = X1 · X2 */
+	 
 	ctx->mulm(C, X1, X2, ctx);
 
-	/* D = Y1 · Y2 */
+	 
 	ctx->mulm(D, Y1, Y2, ctx);
 
-	/* E = d · C · D */
+	 
 	ctx->mulm(E, ctx->b, C, ctx);
 	ctx->mulm(E, E, D, ctx);
 
-	/* F = B - E */
+	 
 	ctx->subm(F, B, E, ctx);
 
-	/* G = B + E */
+	 
 	ctx->addm(G, B, E, ctx);
 
-	/* X_3 = A · F · ((X_1 + Y_1) · (X_2 + Y_2) - C - D) */
+	 
 	ctx->addm(tmp, X1, Y1, ctx);
 	ctx->addm(X3, X2, Y2, ctx);
 	ctx->mulm(X3, X3, tmp, ctx);
@@ -1123,7 +1087,7 @@ static void add_points_edwards(MPI_POINT result,
 	ctx->mulm(X3, X3, F, ctx);
 	ctx->mulm(X3, X3, A, ctx);
 
-	/* Y_3 = A · G · (D - aC) */
+	 
 	if (ctx->dialect == ECC_DIALECT_ED25519) {
 		ctx->addm(Y3, D, C, ctx);
 	} else {
@@ -1133,7 +1097,7 @@ static void add_points_edwards(MPI_POINT result,
 	ctx->mulm(Y3, Y3, G, ctx);
 	ctx->mulm(Y3, Y3, A, ctx);
 
-	/* Z_3 = F · G */
+	 
 	ctx->mulm(Z3, F, G, ctx);
 
 
@@ -1156,10 +1120,7 @@ static void add_points_edwards(MPI_POINT result,
 #undef tmp
 }
 
-/* Compute a step of Montgomery Ladder (only use X and Z in the point).
- * Inputs:  P1, P2, and x-coordinate of DIF = P1 - P1.
- * Outputs: PRD = 2 * P1 and  SUM = P1 + P2.
- */
+ 
 static void montgomery_ladder(MPI_POINT prd, MPI_POINT sum,
 		MPI_POINT p1, MPI_POINT p2, MPI dif_x,
 		struct mpi_ec_ctx *ctx)
@@ -1178,13 +1139,13 @@ static void montgomery_ladder(MPI_POINT prd, MPI_POINT sum,
 	ctx->subm(p1->z, p1->x, p1->z, ctx);
 	ctx->pow2(sum->x, sum->x, ctx);
 	ctx->pow2(sum->z, p2->z, ctx);
-	ctx->mulm(prd->z, p1->z, ctx->a, ctx); /* CTX->A: (a-2)/4 */
+	ctx->mulm(prd->z, p1->z, ctx->a, ctx);  
 	ctx->mulm(sum->z, sum->z, dif_x, ctx);
 	ctx->addm(prd->z, p1->x, prd->z, ctx);
 	ctx->mulm(prd->z, prd->z, p1->z, ctx);
 }
 
-/* RESULT = P1 + P2 */
+ 
 void mpi_ec_add_points(MPI_POINT result,
 		MPI_POINT p1, MPI_POINT p2,
 		struct mpi_ec_ctx *ctx)
@@ -1203,10 +1164,7 @@ void mpi_ec_add_points(MPI_POINT result,
 }
 EXPORT_SYMBOL_GPL(mpi_ec_add_points);
 
-/* Scalar point multiplication - the main function for ECC.  If takes
- * an integer SCALAR and a POINT as well as the usual context CTX.
- * RESULT will be set to the resulting point.
- */
+ 
 void mpi_ec_mul_point(MPI_POINT result,
 			MPI scalar, MPI_POINT point,
 			struct mpi_ec_ctx *ctx)
@@ -1216,13 +1174,7 @@ void mpi_ec_mul_point(MPI_POINT result,
 	struct gcry_mpi_point p1, p2, p1inv;
 
 	if (ctx->model == MPI_EC_EDWARDS) {
-		/* Simple left to right binary method.  Algorithm 3.27 from
-		 * {author={Hankerson, Darrel and Menezes, Alfred J. and Vanstone, Scott},
-		 *  title = {Guide to Elliptic Curve Cryptography},
-		 *  year = {2003}, isbn = {038795273X},
-		 *  url = {http://www.cacr.math.uwaterloo.ca/ecc/},
-		 *  publisher = {Springer-Verlag New York, Inc.}}
-		 */
+		 
 		unsigned int nbits;
 		int j;
 
@@ -1253,10 +1205,7 @@ void mpi_ec_mul_point(MPI_POINT result,
 		unsigned long sw;
 		mpi_size_t rsize;
 
-		/* Compute scalar point multiplication with Montgomery Ladder.
-		 * Note that we don't use Y-coordinate in the points at all.
-		 * RESULT->Y will be filled by zero.
-		 */
+		 
 
 		nbits = mpi_get_nbits(scalar);
 		point_init(&p1);
@@ -1346,13 +1295,10 @@ void mpi_ec_mul_point(MPI_POINT result,
 	}
 	z1 = mpi_copy(mpi_const(MPI_C_ONE));
 
-	mpi_mul(h, k, mpi_const(MPI_C_THREE)); /* h = 3k */
+	mpi_mul(h, k, mpi_const(MPI_C_THREE));  
 	loops = mpi_get_nbits(h);
 	if (loops < 2) {
-		/* If SCALAR is zero, the above mpi_mul sets H to zero and thus
-		 * LOOPs will be zero.  To avoid an underflow of I in the main
-		 * loop we set LOOP to 2 and the result to (0,0,0).
-		 */
+		 
 		loops = 2;
 		mpi_clear(result->x);
 		mpi_clear(result->y);
@@ -1370,7 +1316,7 @@ void mpi_ec_mul_point(MPI_POINT result,
 	point_init(&p2);
 	point_init(&p1inv);
 
-	/* Invert point: y = p - y mod p  */
+	 
 	point_set(&p1inv, &p1);
 	ec_subm(p1inv.y, ctx->p, p1inv.y, ctx);
 
@@ -1394,7 +1340,7 @@ void mpi_ec_mul_point(MPI_POINT result,
 }
 EXPORT_SYMBOL_GPL(mpi_ec_mul_point);
 
-/* Return true if POINT is on the curve described by CTX.  */
+ 
 int mpi_ec_curve_point(MPI_POINT point, struct mpi_ec_ctx *ctx)
 {
 	int res = 0;
@@ -1404,9 +1350,7 @@ int mpi_ec_curve_point(MPI_POINT point, struct mpi_ec_ctx *ctx)
 	y = mpi_new(0);
 	w = mpi_new(0);
 
-	/* Check that the point is in range.  This needs to be done here and
-	 * not after conversion to affine coordinates.
-	 */
+	 
 	if (mpi_cmpabs(point->x, ctx->p) >= 0)
 		goto leave;
 	if (mpi_cmpabs(point->y, ctx->p) >= 0)
@@ -1424,7 +1368,7 @@ int mpi_ec_curve_point(MPI_POINT point, struct mpi_ec_ctx *ctx)
 
 			xxx = mpi_new(0);
 
-			/* y^2 == x^3 + a·x + b */
+			 
 			ec_pow2(y, y, ctx);
 
 			ec_pow3(xxx, x, ctx);
@@ -1442,15 +1386,13 @@ int mpi_ec_curve_point(MPI_POINT point, struct mpi_ec_ctx *ctx)
 	case MPI_EC_MONTGOMERY:
 		{
 #define xx y
-			/* With Montgomery curve, only X-coordinate is valid. */
+			 
 			if (mpi_ec_get_affine(x, NULL, point, ctx))
 				goto leave;
 
-			/* The equation is: b * y^2 == x^3 + a · x^2 + x */
-			/* We check if right hand is quadratic residue or not by
-			 * Euler's criterion.
-			 */
-			/* CTX->A has (a-2)/4 and CTX->B has b^-1 */
+			 
+			 
+			 
 			ec_mulm(w, ctx->a, mpi_const(MPI_C_FOUR), ctx);
 			ec_addm(w, w, mpi_const(MPI_C_TWO), ctx);
 			ec_mulm(w, w, x, ctx);
@@ -1460,7 +1402,7 @@ int mpi_ec_curve_point(MPI_POINT point, struct mpi_ec_ctx *ctx)
 			ec_mulm(w, w, x, ctx);
 			ec_mulm(w, w, ctx->b, ctx);
 #undef xx
-			/* Compute Euler's criterion: w^(p-1)/2 */
+			 
 #define p_minus1 y
 			ec_subm(p_minus1, ctx->p, mpi_const(MPI_C_ONE), ctx);
 			mpi_rshift(p_minus1, p_minus1, 1);
@@ -1479,7 +1421,7 @@ int mpi_ec_curve_point(MPI_POINT point, struct mpi_ec_ctx *ctx)
 			mpi_resize(w, ctx->p->nlimbs);
 			w->nlimbs = ctx->p->nlimbs;
 
-			/* a · x^2 + y^2 - 1 - b · x^2 · y^2 == 0 */
+			 
 			ctx->pow2(x, x, ctx);
 			ctx->pow2(y, y, ctx);
 			if (ctx->dialect == ECC_DIALECT_ED25519)

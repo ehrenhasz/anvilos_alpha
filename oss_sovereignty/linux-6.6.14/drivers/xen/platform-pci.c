@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/******************************************************************************
- * platform-pci.c
- *
- * Xen platform PCI device driver
- *
- * Authors: ssmith@xensource.com and stefano.stabellini@eu.citrix.com
- *
- * Copyright (c) 2005, Intel Corporation.
- * Copyright (c) 2007, XenSource Inc.
- * Copyright (c) 2010, Citrix
- */
+
+ 
 
 
 #include <linux/interrupt.h>
@@ -49,11 +39,11 @@ static uint64_t get_callback_via(struct pci_dev *pdev)
 
 	irq = pdev->irq;
 	if (irq < 16)
-		return irq; /* ISA IRQ */
+		return irq;  
 
 	pin = pdev->pin;
 
-	/* We don't know the GSI. Specify the PCI INTx line instead. */
+	 
 	return ((uint64_t)HVM_PARAM_CALLBACK_TYPE_PCI_INTX <<
 			  HVM_CALLBACK_VIA_TYPE_SHIFT) |
 		((uint64_t)pci_domain_nr(pdev->bus) << 32) |
@@ -132,11 +122,7 @@ static int platform_pci_probe(struct pci_dev *pdev,
 			dev_warn(&pdev->dev, "request_irq failed err=%d\n", ret);
 			goto out;
 		}
-		/*
-		 * It doesn't strictly *have* to run on CPU0 but it sure
-		 * as hell better process the event channel ports delivered
-		 * to CPU0.
-		 */
+		 
 		irq_set_affinity(pdev->irq, cpumask_of(0));
 
 		callback_via = get_callback_via(pdev);

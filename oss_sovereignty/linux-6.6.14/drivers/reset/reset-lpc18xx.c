@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Reset driver for NXP LPC18xx/43xx Reset Generation Unit (RGU).
- *
- * Copyright (C) 2015 Joachim Eastwood <manabian@gmail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -16,7 +12,7 @@
 #include <linux/reset-controller.h>
 #include <linux/spinlock.h>
 
-/* LPC18xx RGU registers */
+ 
 #define LPC18XX_RGU_CTRL0		0x100
 #define LPC18XX_RGU_CTRL1		0x104
 #define LPC18XX_RGU_ACTIVE_STATUS0	0x150
@@ -24,7 +20,7 @@
 
 #define LPC18XX_RGU_RESETS_PER_REG	32
 
-/* Internal reset outputs */
+ 
 #define LPC18XX_RGU_CORE_RST	0
 #define LPC43XX_RGU_M0SUB_RST	12
 #define LPC43XX_RGU_M0APP_RST	56
@@ -55,14 +51,7 @@ static int lpc18xx_rgu_restart(struct notifier_block *nb, unsigned long mode,
 	return NOTIFY_DONE;
 }
 
-/*
- * The LPC18xx RGU has mostly self-deasserting resets except for the
- * two reset lines going to the internal Cortex-M0 cores.
- *
- * To prevent the M0 core resets from accidentally getting deasserted
- * status register must be check and bits in control register set to
- * preserve the state.
- */
+ 
 static int lpc18xx_rgu_setclear_reset(struct reset_controller_dev *rcdev,
 				      unsigned long id, bool set)
 {
@@ -99,7 +88,7 @@ static int lpc18xx_rgu_deassert(struct reset_controller_dev *rcdev,
 	return lpc18xx_rgu_setclear_reset(rcdev, id, false);
 }
 
-/* Only M0 cores require explicit reset deassert */
+ 
 static int lpc18xx_rgu_reset(struct reset_controller_dev *rcdev,
 			     unsigned long id)
 {

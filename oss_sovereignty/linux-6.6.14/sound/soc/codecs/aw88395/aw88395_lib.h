@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// aw88395_lib.h  -- ACF bin parsing and check library file for aw88395
-//
-// Copyright (c) 2022-2023 AWINIC Technology CO., LTD
-//
-// Author: Bruce zhao <zhaolei@awinic.com>
-//
+
+
+
+
+
+
+
+
 
 #ifndef __AW88395_LIB_H__
 #define __AW88395_LIB_H__

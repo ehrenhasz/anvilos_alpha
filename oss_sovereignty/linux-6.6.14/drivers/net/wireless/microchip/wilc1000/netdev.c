@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2012 - 2018 Microchip Technology Inc., and its subsidiaries.
- * All rights reserved.
- */
+
+ 
 
 #include <linux/irq.h>
 #include <linux/kthread.h>
@@ -16,7 +13,7 @@
 #define WILC_MULTICAST_TABLE_SIZE	8
 #define WILC_MAX_FW_VERSION_STR_SIZE	50
 
-/* latest API version supported */
+ 
 #define WILC1000_API_VER		1
 
 #define WILC1000_FW_PREFIX		"atmel/wilc1000_wifi_firmware-"
@@ -72,7 +69,7 @@ static void deinit_irq(struct net_device *dev)
 	struct wilc_vif *vif = netdev_priv(dev);
 	struct wilc *wilc = vif->wilc;
 
-	/* Deinitialize IRQ */
+	 
 	if (wilc->dev_irq_num)
 		free_irq(wilc->dev_irq_num, wilc);
 }
@@ -614,7 +611,7 @@ static int wilc_mac_open(struct net_device *ndev)
 	}
 
 	mgmt_regs.interface_stypes = vif->mgmt_reg_stypes;
-	/* so we detect a change */
+	 
 	vif->mgmt_reg_stypes = 0;
 	wilc_update_mgmt_frame_registrations(vif->ndev->ieee80211_ptr->wiphy,
 					     vif->ndev->ieee80211_ptr,
@@ -650,7 +647,7 @@ static int wilc_set_mac_addr(struct net_device *dev, void *p)
 		return 0;
 	}
 
-	/* Verify MAC Address is not already in use: */
+	 
 
 	srcu_idx = srcu_read_lock(&wilc->srcu);
 	list_for_each_entry_rcu(tmp_vif, &wilc->vif_list, list) {

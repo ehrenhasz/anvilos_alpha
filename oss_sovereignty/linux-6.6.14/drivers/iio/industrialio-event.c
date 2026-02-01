@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Industrial I/O event handling
- *
- * Copyright (c) 2008 Jonathan Cameron
- *
- * Based on elements of hwmon and input subsystems.
- */
+
+ 
 
 #include <linux/anon_inodes.h>
 #include <linux/device.h>
@@ -23,16 +18,7 @@
 #include <linux/iio/sysfs.h>
 #include <linux/iio/events.h>
 
-/**
- * struct iio_event_interface - chrdev interface for an event line
- * @wait:		wait queue to allow blocking reads of events
- * @det_events:		list of detected events
- * @dev_attr_list:	list of event interface sysfs attribute
- * @flags:		file operations related flags including busy flag.
- * @group:		event interface sysfs attribute group
- * @read_lock:		lock to protect kfifo read operations
- * @ioctl_handler:	handler for event ioctl() calls
- */
+ 
 struct iio_event_interface {
 	wait_queue_head_t	wait;
 	DECLARE_KFIFO(det_events, struct iio_event_data, 16);
@@ -49,20 +35,7 @@ bool iio_event_enabled(const struct iio_event_interface *ev_int)
 	return !!test_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
 }
 
-/**
- * iio_push_event() - try to add event to the list for userspace reading
- * @indio_dev:		IIO device structure
- * @ev_code:		What event
- * @timestamp:		When the event occurred
- *
- * Note: The caller must make sure that this function is not running
- * concurrently for the same indio_dev more than once.
- *
- * This function may be safely used as soon as a valid reference to iio_dev has
- * been obtained via iio_device_alloc(), but any events that are submitted
- * before iio_device_register() has successfully completed will be silently
- * discarded.
- **/
+ 
 int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp)
 {
 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
@@ -73,7 +46,7 @@ int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp)
 	if (!ev_int)
 		return 0;
 
-	/* Does anyone care? */
+	 
 	if (iio_event_enabled(ev_int)) {
 
 		ev.id = ev_code;
@@ -88,14 +61,7 @@ int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp)
 }
 EXPORT_SYMBOL(iio_push_event);
 
-/**
- * iio_event_poll() - poll the event queue to find out if it has data
- * @filep:	File structure pointer to identify the device
- * @wait:	Poll table pointer to add the wait queue on
- *
- * Return: (EPOLLIN | EPOLLRDNORM) if data is available for reading
- *	   or a negative error code on failure
- */
+ 
 static __poll_t iio_event_poll(struct file *filep,
 			     struct poll_table_struct *wait)
 {
@@ -154,12 +120,7 @@ static ssize_t iio_event_chrdev_read(struct file *filep,
 		if (ret)
 			return ret;
 
-		/*
-		 * If we couldn't read anything from the fifo (a different
-		 * thread might have been faster) we either return -EAGAIN if
-		 * the file descriptor is non-blocking, otherwise we go back to
-		 * sleep and wait for more data to arrive.
-		 */
+		 
 		if (copied == 0 && (filep->f_flags & O_NONBLOCK))
 			return -EAGAIN;
 
@@ -457,7 +418,7 @@ static inline int __iio_add_event_config_attrs(struct iio_dev *indio_dev)
 {
 	int j, ret, attrcount = 0;
 
-	/* Dynamically created from the channels array */
+	 
 	for (j = 0; j < indio_dev->num_channels; j++) {
 		ret = iio_device_add_event_sysfs(indio_dev,
 						 &indio_dev->channels[j]);
@@ -552,7 +513,7 @@ int iio_device_register_eventset(struct iio_dev *indio_dev)
 		       indio_dev->info->event_attrs->attrs,
 		       sizeof(ev_int->group.attrs[0]) * attrcount_orig);
 	attrn = attrcount_orig;
-	/* Add all elements from the list. */
+	 
 	list_for_each_entry(p, &ev_int->dev_attr_list, l)
 		ev_int->group.attrs[attrn++] = &p->dev_attr.attr;
 
@@ -575,13 +536,7 @@ error_free_setup_event_lines:
 	return ret;
 }
 
-/**
- * iio_device_wakeup_eventset - Wakes up the event waitqueue
- * @indio_dev: The IIO device
- *
- * Wakes up the event waitqueue used for poll() and blocking read().
- * Should usually be called when the device is unregistered.
- */
+ 
 void iio_device_wakeup_eventset(struct iio_dev *indio_dev)
 {
 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);

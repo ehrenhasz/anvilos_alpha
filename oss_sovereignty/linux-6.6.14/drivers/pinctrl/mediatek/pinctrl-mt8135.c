@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: Hongzhou.Yang <hongzhou.yang@mediatek.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/platform_device.h>
@@ -45,13 +42,13 @@ struct mtk_spec_pull_set {
 	}
 
 static const struct mtk_drv_group_desc mt8135_drv_grp[] =  {
-	/* E8E4E2 2/4/6/8/10/12/14/16 */
+	 
 	MTK_DRV_GRP(2, 16, 0, 2, 2),
-	/* E8E4  4/8/12/16 */
+	 
 	MTK_DRV_GRP(4, 16, 1, 2, 4),
-	/* E4E2  2/4/6/8 */
+	 
 	MTK_DRV_GRP(2, 8, 0, 1, 2),
-	/* E16E8E4 4/8/12/16/20/24/28/32 */
+	 
 	MTK_DRV_GRP(4, 32, 0, 2, 4)
 };
 

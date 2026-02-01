@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * serial_ir.c
- *
- * serial_ir - Device driver that records pulse- and pause-lengths
- *	       (space-lengths) between DDCD event on a serial port.
- *
- * Copyright (C) 1996,97 Ralph Metzler <rjkm@thp.uni-koeln.de>
- * Copyright (C) 1998 Trent Piepho <xyzzy@u.washington.edu>
- * Copyright (C) 1998 Ben Pfaff <blp@gnu.org>
- * Copyright (C) 1999 Christoph Bartelmus <lirc@bartelmus.de>
- * Copyright (C) 2007 Andrei Tanas <andrei@tanas.ca> (suspend/resume support)
- * Copyright (C) 2016 Sean Young <sean@mess.org> (port to rc-core)
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -44,7 +32,7 @@ struct serial_ir_hw {
 #define IR_ANIMAX	3
 #define IR_IGOR		4
 
-/* module parameters */
+ 
 static int type;
 static int io;
 static int irq;
@@ -52,10 +40,10 @@ static ulong iommap;
 static int ioshift;
 static bool softcarrier = true;
 static bool share_irq;
-static int sense = -1;	/* -1 = auto, 0 = active high, 1 = active low */
-static bool txsense;	/* 0 = active high, 1 = active low */
+static int sense = -1;	 
+static bool txsense;	 
 
-/* forward declarations */
+ 
 static void send_pulse_irdeo(unsigned int length, ktime_t edge);
 static void send_space_irdeo(void);
 #ifdef CONFIG_IR_SERIAL_TRANSMITTER
@@ -137,21 +125,21 @@ struct serial_ir {
 
 static struct serial_ir serial_ir;
 
-/* fetch serial input packet (1 byte) from register offset */
+ 
 static u8 sinp(int offset)
 {
 	if (iommap)
-		/* the register is memory-mapped */
+		 
 		offset <<= ioshift;
 
 	return inb(io + offset);
 }
 
-/* write serial output packet (1 byte) of value to register offset */
+ 
 static void soutp(int offset, u8 value)
 {
 	if (iommap)
-		/* the register is memory-mapped */
+		 
 		offset <<= ioshift;
 
 	outb(value, io + offset);
@@ -180,7 +168,7 @@ static void send_pulse_irdeo(unsigned int length, ktime_t target)
 	unsigned char output;
 	unsigned char chunk, shifted;
 
-	/* how many bits have to be sent ? */
+	 
 	rawbits = length * 1152 / 10000;
 	if (serial_ir.duty_cycle > 50)
 		chunk = 3;
@@ -214,14 +202,11 @@ static void send_space_irdeo(void)
 static void send_pulse_homebrew_softcarrier(unsigned int length, ktime_t edge)
 {
 	ktime_t now, target = ktime_add_us(edge, length);
-	/*
-	 * delta should never exceed 4 seconds and on m68k
-	 * ndelay(s64) does not compile; so use s32 rather than s64.
-	 */
+	 
 	s32 delta;
 	unsigned int pulse, space;
 
-	/* Ensure the dividend fits into 32 bit */
+	 
 	pulse = DIV_ROUND_CLOSEST(serial_ir.duty_cycle * (NSEC_PER_SEC / 100),
 				  serial_ir.carrier);
 	space = DIV_ROUND_CLOSEST((100 - serial_ir.duty_cycle) *
@@ -263,7 +248,7 @@ static void send_space_homebrew(void)
 
 static void frbwrite(unsigned int l, bool is_pulse)
 {
-	/* simple noise filter */
+	 
 	static unsigned int ptr, pulse, space;
 	struct ir_raw_event ev = {};
 
@@ -326,7 +311,7 @@ static irqreturn_t serial_ir_irq_handler(int i, void *blah)
 	static int last_dcd = -1;
 
 	if ((sinp(UART_IIR) & UART_IIR_NO_INT)) {
-		/* not our interrupt */
+		 
 		return IRQ_NONE;
 	}
 
@@ -340,16 +325,12 @@ static irqreturn_t serial_ir_irq_handler(int i, void *blah)
 		}
 		if ((status & hardware[type].signal_pin_change) &&
 		    sense != -1) {
-			/* get current time */
+			 
 			kt = ktime_get();
 
-			/*
-			 * The driver needs to know if your receiver is
-			 * active high or active low, or the space/pulse
-			 * sense could be inverted.
-			 */
+			 
 
-			/* calc time since last interrupt in nanoseconds */
+			 
 			dcd = (status & hardware[type].signal_pin) ? 1 : 0;
 
 			if (dcd == last_dcd) {
@@ -362,17 +343,14 @@ static irqreturn_t serial_ir_irq_handler(int i, void *blah)
 
 			delkt = ktime_sub(kt, serial_ir.lastkt);
 			if (ktime_compare(delkt, ktime_set(15, 0)) > 0) {
-				data = IR_MAX_DURATION; /* really long time */
+				data = IR_MAX_DURATION;  
 				if (!(dcd ^ sense)) {
-					/* sanity check */
+					 
 					dev_err(&serial_ir.pdev->dev,
 						"dcd unexpected: %d %d %lldns %lldns\n",
 						dcd, sense, ktime_to_ns(kt),
 						ktime_to_ns(serial_ir.lastkt));
-					/*
-					 * detecting pulse while this
-					 * MUST be a space!
-					 */
+					 
 					sense = sense ? 0 : 1;
 				}
 			} else {
@@ -382,7 +360,7 @@ static irqreturn_t serial_ir_irq_handler(int i, void *blah)
 			serial_ir.lastkt = kt;
 			last_dcd = dcd;
 		}
-	} while (!(sinp(UART_IIR) & UART_IIR_NO_INT)); /* still pending ? */
+	} while (!(sinp(UART_IIR) & UART_IIR_NO_INT));  
 
 	mod_timer(&serial_ir.timeout_timer,
 		  jiffies + usecs_to_jiffies(serial_ir.rcdev->timeout));
@@ -396,10 +374,7 @@ static int hardware_init_port(void)
 {
 	u8 scratch, scratch2, scratch3;
 
-	/*
-	 * This is a simple port existence test, borrowed from the autoconfig
-	 * function in drivers/tty/serial/8250/8250_port.c
-	 */
+	 
 	scratch = sinp(UART_IER);
 	soutp(UART_IER, 0);
 #ifdef __i386__
@@ -413,28 +388,28 @@ static int hardware_init_port(void)
 	scratch3 = sinp(UART_IER) & 0x0f;
 	soutp(UART_IER, scratch);
 	if (scratch2 != 0 || scratch3 != 0x0f) {
-		/* we fail, there's nothing here */
+		 
 		pr_err("port existence test failed, cannot continue\n");
 		return -ENODEV;
 	}
 
-	/* Set DLAB 0. */
+	 
 	soutp(UART_LCR, sinp(UART_LCR) & (~UART_LCR_DLAB));
 
-	/* First of all, disable all interrupts */
+	 
 	soutp(UART_IER, sinp(UART_IER) &
 	      (~(UART_IER_MSI | UART_IER_RLSI | UART_IER_THRI | UART_IER_RDI)));
 
-	/* Clear registers. */
+	 
 	sinp(UART_LSR);
 	sinp(UART_RX);
 	sinp(UART_IIR);
 	sinp(UART_MSR);
 
-	/* Set line for power source */
+	 
 	off();
 
-	/* Clear registers again to be sure. */
+	 
 	sinp(UART_LSR);
 	sinp(UART_RX);
 	sinp(UART_IIR);
@@ -443,17 +418,17 @@ static int hardware_init_port(void)
 	switch (type) {
 	case IR_IRDEO:
 	case IR_IRDEO_REMOTE:
-		/* setup port to 7N1 @ 115200 Baud */
-		/* 7N1+start = 9 bits at 115200 ~ 3 bits at 38kHz */
+		 
+		 
 
-		/* Set DLAB 1. */
+		 
 		soutp(UART_LCR, sinp(UART_LCR) | UART_LCR_DLAB);
-		/* Set divisor to 1 => 115200 Baud */
+		 
 		soutp(UART_DLM, 0);
 		soutp(UART_DLL, 1);
-		/* Set DLAB 0 +  7N1 */
+		 
 		soutp(UART_LCR, UART_LCR_WLEN7);
-		/* THR interrupt already disabled at this point */
+		 
 		break;
 	default:
 		break;
@@ -472,7 +447,7 @@ static void serial_ir_timeout(struct timer_list *unused)
 	ir_raw_event_handle(serial_ir.rcdev);
 }
 
-/* Needed by serial_ir_probe() */
+ 
 static int serial_ir_tx(struct rc_dev *dev, unsigned int *txbuf,
 			unsigned int count);
 static int serial_ir_tx_duty_cycle(struct rc_dev *dev, u32 cycle);
@@ -545,7 +520,7 @@ static int serial_ir_probe(struct platform_device *dev)
 		return result;
 	}
 
-	/* Reserve io region. */
+	 
 	if ((iommap &&
 	     (devm_request_mem_region(&dev->dev, iommap, 8UL << ioshift,
 				      KBUILD_MODNAME) == NULL)) ||
@@ -563,19 +538,16 @@ static int serial_ir_probe(struct platform_device *dev)
 	if (result < 0)
 		return result;
 
-	/* Initialize pulse/space widths */
+	 
 	serial_ir.duty_cycle = 50;
 	serial_ir.carrier = 38000;
 
-	/* If pin is high, then this must be an active low receiver. */
+	 
 	if (sense == -1) {
-		/* wait 1/2 sec for the power supply */
+		 
 		msleep(500);
 
-		/*
-		 * probe 9 times every 0.04s, collect "votes" for
-		 * active high/low
-		 */
+		 
 		nlow = 0;
 		nhigh = 0;
 		for (i = 0; i < 9; i++) {
@@ -601,12 +573,12 @@ static int serial_ir_open(struct rc_dev *rcdev)
 {
 	unsigned long flags;
 
-	/* initialize timestamp */
+	 
 	serial_ir.lastkt = ktime_get();
 
 	spin_lock_irqsave(&hardware[type].lock, flags);
 
-	/* Set DLAB 0. */
+	 
 	soutp(UART_LCR, sinp(UART_LCR) & (~UART_LCR_DLAB));
 
 	soutp(UART_IER, sinp(UART_IER) | UART_IER_MSI);
@@ -622,10 +594,10 @@ static void serial_ir_close(struct rc_dev *rcdev)
 
 	spin_lock_irqsave(&hardware[type].lock, flags);
 
-	/* Set DLAB 0. */
+	 
 	soutp(UART_LCR, sinp(UART_LCR) & (~UART_LCR_DLAB));
 
-	/* First of all, disable all interrupts */
+	 
 	soutp(UART_IER, sinp(UART_IER) &
 	      (~(UART_IER_MSI | UART_IER_RLSI | UART_IER_THRI | UART_IER_RDI)));
 	spin_unlock_irqrestore(&hardware[type].lock, flags);
@@ -641,7 +613,7 @@ static int serial_ir_tx(struct rc_dev *dev, unsigned int *txbuf,
 
 	spin_lock_irqsave(&hardware[type].lock, flags);
 	if (type == IR_IRDEO) {
-		/* DTR, RTS down */
+		 
 		on();
 	}
 
@@ -685,14 +657,14 @@ static int serial_ir_tx_carrier(struct rc_dev *dev, u32 carrier)
 static int serial_ir_suspend(struct platform_device *dev,
 			     pm_message_t state)
 {
-	/* Set DLAB 0. */
+	 
 	soutp(UART_LCR, sinp(UART_LCR) & (~UART_LCR_DLAB));
 
-	/* Disable all interrupts */
+	 
 	soutp(UART_IER, sinp(UART_IER) &
 	      (~(UART_IER_MSI | UART_IER_RLSI | UART_IER_THRI | UART_IER_RDI)));
 
-	/* Clear registers. */
+	 
 	sinp(UART_LSR);
 	sinp(UART_RX);
 	sinp(UART_IIR);
@@ -711,7 +683,7 @@ static int serial_ir_resume(struct platform_device *dev)
 		return result;
 
 	spin_lock_irqsave(&hardware[type].lock, flags);
-	/* Enable Interrupt */
+	 
 	serial_ir.lastkt = ktime_get();
 	soutp(UART_IER, sinp(UART_IER) | UART_IER_MSI);
 	off();
@@ -771,7 +743,7 @@ static int __init serial_ir_init_module(void)
 	case IR_IRDEO_REMOTE:
 	case IR_ANIMAX:
 	case IR_IGOR:
-		/* if nothing specified, use ttyS0/com1 and irq 4 */
+		 
 		io = io ? io : 0x3f8;
 		irq = irq ? irq : 4;
 		break;
@@ -788,7 +760,7 @@ static int __init serial_ir_init_module(void)
 		}
 	}
 
-	/* make sure sense is either -1, 0, or 1 */
+	 
 	if (sense != -1)
 		sense = !!sense;
 
@@ -814,15 +786,11 @@ MODULE_PARM_DESC(type, "Hardware type (0 = home-brew, 1 = IRdeo, 2 = IRdeo Remot
 module_param_hw(io, int, ioport, 0444);
 MODULE_PARM_DESC(io, "I/O address base (0x3f8 or 0x2f8)");
 
-/* some architectures (e.g. intel xscale) have memory mapped registers */
+ 
 module_param_hw(iommap, ulong, other, 0444);
 MODULE_PARM_DESC(iommap, "physical base for memory mapped I/O (0 = no memory mapped io)");
 
-/*
- * some architectures (e.g. intel xscale) align the 8bit serial registers
- * on 32bit word boundaries.
- * See linux-kernel/drivers/tty/serial/8250/8250.c serial_in()/out()
- */
+ 
 module_param_hw(ioshift, int, other, 0444);
 MODULE_PARM_DESC(ioshift, "shift I/O register offset (0 = no shift)");
 

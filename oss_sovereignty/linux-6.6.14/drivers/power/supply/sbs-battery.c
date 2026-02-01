@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Gas Gauge driver for SBS Compliant Batteries
- *
- * Copyright (c) 2010, NVIDIA Corporation.
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/delay.h>
@@ -63,7 +59,7 @@ enum {
 
 #define REG_ADDR_MANUFACTURE_DATE	0x1B
 
-/* Battery Mode defines */
+ 
 #define BATTERY_MODE_OFFSET		0x03
 #define BATTERY_MODE_CAPACITY_MASK	BIT(15)
 enum sbs_capacity_mode {
@@ -72,17 +68,17 @@ enum sbs_capacity_mode {
 };
 #define BATTERY_MODE_CHARGER_MASK	(1<<14)
 
-/* manufacturer access defines */
+ 
 #define MANUFACTURER_ACCESS_STATUS	0x0006
 #define MANUFACTURER_ACCESS_SLEEP	0x0011
 
-/* battery status value bits */
+ 
 #define BATTERY_INITIALIZED		0x80
 #define BATTERY_DISCHARGING		0x40
 #define BATTERY_FULL_CHARGED		0x20
 #define BATTERY_FULL_DISCHARGED		0x10
 
-/* min_value and max_value are only valid for numerical data */
+ 
 #define SBS_DATA(_psp, _addr, _min_value, _max_value) { \
 	.psp = _psp, \
 	.addr = _addr, \
@@ -146,7 +142,7 @@ static const struct chip_data {
 		SBS_DATA(POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN, 0x19, 0, 65535),
 	[REG_SERIAL_NUMBER] =
 		SBS_DATA(POWER_SUPPLY_PROP_SERIAL_NUMBER, 0x1C, 0, 65535),
-	/* Properties of type `const char *' */
+	 
 	[REG_MANUFACTURER] =
 		SBS_DATA(POWER_SUPPLY_PROP_MANUFACTURER, 0x20, 0, 65535),
 	[REG_MODEL_NAME] =
@@ -185,12 +181,12 @@ static const enum power_supply_property sbs_properties[] = {
 	POWER_SUPPLY_PROP_MANUFACTURE_YEAR,
 	POWER_SUPPLY_PROP_MANUFACTURE_MONTH,
 	POWER_SUPPLY_PROP_MANUFACTURE_DAY,
-	/* Properties of type `const char *' */
+	 
 	POWER_SUPPLY_PROP_MANUFACTURER,
 	POWER_SUPPLY_PROP_MODEL_NAME
 };
 
-/* Supports special manufacturer commands from TI BQ20Z65 and BQ20Z75 IC. */
+ 
 #define SBS_FLAGS_TI_BQ20ZX5		BIT(0)
 
 static const enum power_supply_property string_properties[] = {
@@ -275,23 +271,19 @@ static int sbs_update_presence(struct sbs_info *chip, bool is_present)
 
 	if (!is_present) {
 		chip->is_present = false;
-		/* Disable PEC when no device is present */
+		 
 		client->flags &= ~I2C_CLIENT_PEC;
 		sbs_invalidate_cached_props(chip);
 		return 0;
 	}
 
-	/* Check if device supports packet error checking and use it */
+	 
 	while (retries > 0) {
 		ret = i2c_smbus_read_word_data(client, REG_ADDR_SPEC_INFO);
 		if (ret >= 0)
 			break;
 
-		/*
-		 * Some batteries trigger the detection pin before the
-		 * I2C bus is properly connected. This works around the
-		 * issue.
-		 */
+		 
 		msleep(100);
 
 		retries--;
@@ -300,7 +292,7 @@ static int sbs_update_presence(struct sbs_info *chip, bool is_present)
 	if (ret < 0) {
 		dev_dbg(&client->dev, "failed to read spec info: %d\n", ret);
 
-		/* fallback to old behaviour */
+		 
 		client->flags &= ~I2C_CLIENT_PEC;
 		chip->is_present = true;
 
@@ -367,14 +359,14 @@ static int sbs_read_string_data_fallback(struct i2c_client *client, u8 address, 
 	dev_warn_once(&client->dev, "I2C adapter does not support I2C_FUNC_SMBUS_READ_BLOCK_DATA.\n"
 				    "Fallback method does not support PEC.\n");
 
-	/* Adapter needs to support these two functions */
+	 
 	if (!i2c_check_functionality(client->adapter,
 				     I2C_FUNC_SMBUS_BYTE_DATA |
 				     I2C_FUNC_SMBUS_I2C_BLOCK)){
 		return -ENODEV;
 	}
 
-	/* Get the length of block data */
+	 
 	while (retries_length > 0) {
 		ret = i2c_smbus_read_byte_data(client, address);
 		if (ret >= 0)
@@ -389,7 +381,7 @@ static int sbs_read_string_data_fallback(struct i2c_client *client, u8 address, 
 		return ret;
 	}
 
-	/* block_length does not include NULL terminator */
+	 
 	block_length = ret;
 	if (block_length > I2C_SMBUS_BLOCK_MAX) {
 		dev_err(&client->dev,
@@ -398,7 +390,7 @@ static int sbs_read_string_data_fallback(struct i2c_client *client, u8 address, 
 		return -EINVAL;
 	}
 
-	/* Get the block data */
+	 
 	while (retries_block > 0) {
 		ret = i2c_smbus_read_i2c_block_data(
 				client, address,
@@ -415,7 +407,7 @@ static int sbs_read_string_data_fallback(struct i2c_client *client, u8 address, 
 		return ret;
 	}
 
-	/* block_buffer[0] == block_length */
+	 
 	memcpy(values, block_buffer + 1, block_length);
 	values[block_length] = '\0';
 
@@ -449,7 +441,7 @@ static int sbs_read_string_data(struct i2c_client *client, u8 address, char *val
 		return ret;
 	}
 
-	/* add string termination */
+	 
 	values[ret] = '\0';
 	return ret;
 }
@@ -488,12 +480,12 @@ static int sbs_status_correct(struct i2c_client *client, int *intval)
 
 	ret = (s16)ret;
 
-	/* Not drawing current -> not charging (i.e. idle) */
+	 
 	if (*intval != POWER_SUPPLY_STATUS_FULL && ret == 0)
 		*intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
 
 	if (*intval == POWER_SUPPLY_STATUS_FULL) {
-		/* Drawing or providing current when full */
+		 
 		if (ret > 0)
 			*intval = POWER_SUPPLY_STATUS_CHARGING;
 		else if (ret < 0)
@@ -520,22 +512,19 @@ static int sbs_get_ti_battery_presence_and_health(
 {
 	s32 ret;
 
-	/*
-	 * Write to ManufacturerAccess with ManufacturerAccess command
-	 * and then read the status.
-	 */
+	 
 	ret = sbs_write_word_data(client, sbs_data[REG_MANUFACTURER_DATA].addr,
 				  MANUFACTURER_ACCESS_STATUS);
 	if (ret < 0) {
 		if (psp == POWER_SUPPLY_PROP_PRESENT)
-			val->intval = 0; /* battery removed */
+			val->intval = 0;  
 		return ret;
 	}
 
 	ret = sbs_read_word_data(client, sbs_data[REG_MANUFACTURER_DATA].addr);
 	if (ret < 0) {
 		if (psp == POWER_SUPPLY_PROP_PRESENT)
-			val->intval = 0; /* battery removed */
+			val->intval = 0;  
 		return ret;
 	}
 
@@ -545,14 +534,12 @@ static int sbs_get_ti_battery_presence_and_health(
 		return 0;
 	}
 
-	/* Mask the upper nibble of 2nd byte and
-	 * lower byte of response then
-	 * shift the result by 8 to get status*/
+	 
 	ret &= 0x0F00;
 	ret >>= 8;
 	if (psp == POWER_SUPPLY_PROP_PRESENT) {
 		if (ret == 0x0F)
-			/* battery removed */
+			 
 			val->intval = 0;
 		else
 			val->intval = 1;
@@ -582,10 +569,10 @@ static int sbs_get_battery_presence_and_health(
 	if (chip->flags & SBS_FLAGS_TI_BQ20ZX5)
 		return sbs_get_ti_battery_presence_and_health(client, psp, val);
 
-	/* Dummy command; if it succeeds, battery is present. */
+	 
 	ret = sbs_read_word_data(client, sbs_data[REG_STATUS].addr);
 
-	if (ret < 0) { /* battery not present*/
+	if (ret < 0) {  
 		if (psp == POWER_SUPPLY_PROP_PRESENT) {
 			val->intval = 0;
 			return 0;
@@ -594,12 +581,12 @@ static int sbs_get_battery_presence_and_health(
 	}
 
 	if (psp == POWER_SUPPLY_PROP_PRESENT)
-		val->intval = 1; /* battery present */
-	else { /* POWER_SUPPLY_PROP_HEALTH */
+		val->intval = 1;  
+	else {  
 		if (sbs_bat_needs_calibration(client)) {
 			val->intval = POWER_SUPPLY_HEALTH_CALIBRATION_REQUIRED;
 		} else {
-			/* SBS spec doesn't have a general health command. */
+			 
 			val->intval = POWER_SUPPLY_HEALTH_UNKNOWN;
 		}
 	}
@@ -618,7 +605,7 @@ static int sbs_get_battery_property(struct i2c_client *client,
 	if (ret < 0)
 		return ret;
 
-	/* returned values are 16 bit */
+	 
 	if (sbs_data[reg_offset].min_value < 0)
 		ret = (s16)ret;
 
@@ -663,9 +650,7 @@ static int sbs_get_battery_property(struct i2c_client *client,
 		if (psp == POWER_SUPPLY_PROP_STATUS)
 			val->intval = POWER_SUPPLY_STATUS_UNKNOWN;
 		else if (psp == POWER_SUPPLY_PROP_CAPACITY)
-			/* sbs spec says that this can be >100 %
-			 * even if max value is 100 %
-			 */
+			 
 			val->intval = min(ret, 100);
 		else
 			val->intval = 0;
@@ -726,9 +711,7 @@ static void  sbs_unit_adjustment(struct i2c_client *client,
 	case POWER_SUPPLY_PROP_ENERGY_NOW:
 	case POWER_SUPPLY_PROP_ENERGY_FULL:
 	case POWER_SUPPLY_PROP_ENERGY_FULL_DESIGN:
-		/* sbs provides energy in units of 10mWh.
-		 * Convert to µWh
-		 */
+		 
 		val->intval *= BATTERY_MODE_CAP_MULT_WATT;
 		break;
 
@@ -746,18 +729,14 @@ static void  sbs_unit_adjustment(struct i2c_client *client,
 		break;
 
 	case POWER_SUPPLY_PROP_TEMP:
-		/* sbs provides battery temperature in 0.1K
-		 * so convert it to 0.1°C
-		 */
+		 
 		val->intval -= TEMP_KELVIN_TO_CELSIUS;
 		break;
 
 	case POWER_SUPPLY_PROP_TIME_TO_EMPTY_NOW:
 	case POWER_SUPPLY_PROP_TIME_TO_EMPTY_AVG:
 	case POWER_SUPPLY_PROP_TIME_TO_FULL_AVG:
-		/* sbs provides time to empty and time to full in minutes.
-		 * Convert to seconds
-		 */
+		 
 		val->intval *= TIME_UNIT_CONVERSION;
 		break;
 
@@ -929,7 +908,7 @@ static int sbs_get_property(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_HEALTH:
 		ret = sbs_get_battery_presence_and_health(client, psp, val);
 
-		/* this can only be true if no gpio is used */
+		 
 		if (psp == POWER_SUPPLY_PROP_PRESENT)
 			return 0;
 		break;
@@ -939,7 +918,7 @@ static int sbs_get_property(struct power_supply *psy,
 		if (ret < 0)
 			break;
 
-		goto done; /* don't trigger power_supply_changed()! */
+		goto done;  
 
 	case POWER_SUPPLY_PROP_ENERGY_NOW:
 	case POWER_SUPPLY_PROP_ENERGY_FULL:
@@ -951,10 +930,7 @@ static int sbs_get_property(struct power_supply *psy,
 		if (ret < 0)
 			break;
 
-		/* sbs_get_battery_capacity() will change the battery mode
-		 * temporarily to read the requested attribute. Ensure we stay
-		 * in the desired mode for the duration of the attribute read.
-		 */
+		 
 		mutex_lock(&chip->mode_lock);
 		ret = sbs_get_battery_capacity(client, ret, psp, val);
 		mutex_unlock(&chip->mode_lock);
@@ -1022,13 +998,13 @@ static int sbs_get_property(struct power_supply *psy,
 
 done:
 	if (!ret) {
-		/* Convert units to match requirements for power supply class */
+		 
 		sbs_unit_adjustment(client, psp, val);
 		dev_dbg(&client->dev,
 			"%s: property = %d, value = %x\n", __func__,
 			psp, val->intval);
 	} else if (!chip->is_present)  {
-		/* battery not present, so return NODATA for properties */
+		 
 		ret = -ENODATA;
 	}
 	return ret;
@@ -1062,7 +1038,7 @@ static void sbs_external_power_changed(struct power_supply *psy)
 {
 	struct sbs_info *chip = power_supply_get_drvdata(psy);
 
-	/* cancel outstanding work */
+	 
 	cancel_delayed_work_sync(&chip->work);
 
 	schedule_delayed_work(&chip->work, HZ);
@@ -1077,7 +1053,7 @@ static void sbs_delayed_work(struct work_struct *work)
 	chip = container_of(work, struct sbs_info, work.work);
 
 	ret = sbs_read_word_data(chip->client, sbs_data[REG_STATUS].addr);
-	/* if the read failed, give up on this work */
+	 
 	if (ret < 0) {
 		chip->poll_time = 0;
 		return;
@@ -1143,9 +1119,7 @@ static int sbs_probe(struct i2c_client *client)
 	sbs_invalidate_cached_props(chip);
 	mutex_init(&chip->mode_lock);
 
-	/* use pdata if available, fall back to DT properties,
-	 * or hardcoded defaults if not
-	 */
+	 
 	rc = device_property_read_u32(&client->dev, "sbs,i2c-retry-count",
 				      &chip->i2c_retry_count);
 	if (rc)
@@ -1191,10 +1165,7 @@ static int sbs_probe(struct i2c_client *client)
 	}
 
 skip_gpio:
-	/*
-	 * Before we register, we might need to make sure we can actually talk
-	 * to the battery.
-	 */
+	 
 	if (!(force_load || chip->gpio_detect)) {
 		union power_supply_propval val;
 
@@ -1234,7 +1205,7 @@ static int sbs_suspend(struct device *dev)
 		cancel_delayed_work_sync(&chip->work);
 
 	if (chip->flags & SBS_FLAGS_TI_BQ20ZX5) {
-		/* Write to manufacturer access with sleep command. */
+		 
 		ret = sbs_write_word_data(client,
 					  sbs_data[REG_MANUFACTURER_DATA].addr,
 					  MANUFACTURER_ACCESS_SLEEP);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Toshiba Visconti Ethernet Support
- *
- * (C) Copyright 2020 TOSHIBA CORPORATION
- * (C) Copyright 2020 Toshiba Electronic Devices & Storage Corporation
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -51,7 +47,7 @@ struct visconti_eth {
 	u32 phy_intf_sel;
 	struct clk *phy_ref_clk;
 	struct device *dev;
-	spinlock_t lock; /* lock to protect register update */
+	spinlock_t lock;  
 };
 
 static void visconti_eth_fix_mac_speed(void *priv, unsigned int speed, unsigned int mode)
@@ -63,7 +59,7 @@ static void visconti_eth_fix_mac_speed(void *priv, unsigned int speed, unsigned 
 
 	spin_lock_irqsave(&dwmac->lock, flags);
 
-	/* adjust link */
+	 
 	val = readl(dwmac->reg + MAC_CTRL_REG);
 	val &= ~(GMAC_CONFIG_PS | GMAC_CONFIG_FES);
 
@@ -87,7 +83,7 @@ static void visconti_eth_fix_mac_speed(void *priv, unsigned int speed, unsigned 
 		val |= GMAC_CONFIG_PS;
 		break;
 	default:
-		/* No bit control */
+		 
 		netdev_err(netdev, "Unsupported speed request (%d)", speed);
 		spin_unlock_irqrestore(&dwmac->lock, flags);
 		return;
@@ -95,13 +91,13 @@ static void visconti_eth_fix_mac_speed(void *priv, unsigned int speed, unsigned 
 
 	writel(val, dwmac->reg + MAC_CTRL_REG);
 
-	/* Stop internal clock */
+	 
 	val = readl(dwmac->reg + REG_ETHER_CLOCK_SEL);
 	val &= ~(ETHER_CLK_SEL_RMII_CLK_EN | ETHER_CLK_SEL_RX_TX_CLK_EN);
 	val |= ETHER_CLK_SEL_TX_O_E_N_IN;
 	writel(val, dwmac->reg + REG_ETHER_CLOCK_SEL);
 
-	/* Set Clock-Mux, Start clock, Set TX_O direction */
+	 
 	switch (dwmac->phy_intf_sel) {
 	case ETHER_CONFIG_INTF_RGMII:
 		val = clk_sel_val | ETHER_CLK_SEL_RX_CLK_EXT_SEL_RXC;
@@ -165,14 +161,14 @@ static int visconti_eth_init_hw(struct platform_device *pdev, struct plat_stmmac
 	reg_val = dwmac->phy_intf_sel;
 	writel(reg_val, dwmac->reg + REG_ETHER_CONTROL);
 
-	/* Enable TX/RX clock */
+	 
 	clk_sel_val = ETHER_CLK_SEL_FREQ_SEL_125M;
 	writel(clk_sel_val, dwmac->reg + REG_ETHER_CLOCK_SEL);
 
 	writel((clk_sel_val | ETHER_CLK_SEL_RMII_CLK_EN | ETHER_CLK_SEL_RX_TX_CLK_EN),
 	       dwmac->reg + REG_ETHER_CLOCK_SEL);
 
-	/* release internal-reset */
+	 
 	reg_val |= ETHER_ETH_CONTROL_RESET;
 	writel(reg_val, dwmac->reg + REG_ETHER_CONTROL);
 

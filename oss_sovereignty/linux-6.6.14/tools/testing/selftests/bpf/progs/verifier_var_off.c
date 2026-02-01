@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Converted from tools/testing/selftests/bpf/verifier/var_off.c */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -18,15 +18,13 @@ __failure __msg("variable ctx access var_off=(0x0; 0x4)")
 __naked void variable_offset_ctx_access(void)
 {
 	asm volatile ("					\
-	/* Get an unknown value */			\
+	 			\
 	r2 = *(u32*)(r1 + 0);				\
-	/* Make it small and 4-byte aligned */		\
+	 		\
 	r2 &= 4;					\
-	/* add it to skb.  We now have either &skb->len or\
-	 * &skb->pkt_type, but we don't know which	\
-	 */						\
+	 						\
 	r1 += r2;					\
-	/* dereference it */				\
+	 				\
 	r0 = *(u32*)(r1 + 0);				\
 	exit;						\
 "	::: __clobber_all);
@@ -40,19 +38,17 @@ __retval(0)
 __naked void stack_read_priv_vs_unpriv(void)
 {
 	asm volatile ("					\
-	/* Fill the top 8 bytes of the stack */		\
+	 		\
 	r0 = 0;						\
 	*(u64*)(r10 - 8) = r0;				\
-	/* Get an unknown value */			\
+	 			\
 	r2 = *(u32*)(r1 + 0);				\
-	/* Make it small and 4-byte aligned */		\
+	 		\
 	r2 &= 4;					\
 	r2 -= 8;					\
-	/* add it to fp.  We now have either fp-4 or fp-8, but\
-	 * we don't know which				\
-	 */						\
+	 						\
 	r2 += r10;					\
-	/* dereference it for a stack read */		\
+	 		\
 	r0 = *(u32*)(r2 + 0);				\
 	r0 = 0;						\
 	exit;						\
@@ -66,16 +62,14 @@ __failure_unpriv __msg_unpriv("R2 variable stack access prohibited for !root")
 __naked void variable_offset_stack_read_uninitialized(void)
 {
 	asm volatile ("					\
-	/* Get an unknown value */			\
+	 			\
 	r2 = *(u32*)(r1 + 0);				\
-	/* Make it small and 4-byte aligned */		\
+	 		\
 	r2 &= 4;					\
 	r2 -= 8;					\
-	/* add it to fp.  We now have either fp-4 or fp-8, but\
-	 * we don't know which				\
-	 */						\
+	 						\
 	r2 += r10;					\
-	/* dereference it for a stack read */		\
+	 		\
 	r0 = *(u32*)(r2 + 0);				\
 	r0 = 0;						\
 	exit;						\
@@ -97,16 +91,14 @@ __retval(0)
 __naked void stack_write_priv_vs_unpriv(void)
 {
 	asm volatile ("                               \
-	/* Get an unknown value */                    \
+	                     \
 	r2 = *(u32*)(r1 + 0);                         \
-	/* Make it small and 8-byte aligned */        \
+	         \
 	r2 &= 8;                                      \
 	r2 -= 16;                                     \
-	/* Add it to fp. We now have either fp-8 or   \
-	 * fp-16, but we don't know which             \
-	 */                                           \
+	                                            \
 	r2 += r10;                                    \
-	/* Dereference it for a stack write */        \
+	         \
 	r0 = 0;                                       \
 	*(u64*)(r2 + 0) = r0;                         \
 	exit;                                         \
@@ -135,19 +127,17 @@ __retval(0)
 __naked void stack_write_followed_by_read(void)
 {
 	asm volatile ("					\
-	/* Get an unknown value */			\
+	 			\
 	r2 = *(u32*)(r1 + 0);				\
-	/* Make it small and 8-byte aligned */		\
+	 		\
 	r2 &= 8;					\
 	r2 -= 16;					\
-	/* Add it to fp.  We now have either fp-8 or fp-16, but\
-	 * we don't know which				\
-	 */						\
+	 						\
 	r2 += r10;					\
-	/* Dereference it for a stack write */		\
+	 		\
 	r0 = 0;						\
 	*(u64*)(r2 + 0) = r0;				\
-	/* Now read from the address we just wrote. */ \
+	  \
 	r3 = *(u64*)(r2 + 0);				\
 	r0 = 0;						\
 	exit;						\
@@ -171,29 +161,25 @@ __msg_unpriv("R2 variable stack access prohibited for !root")
 __naked void stack_write_clobbers_spilled_regs(void)
 {
 	asm volatile ("					\
-	/* Dummy instruction; needed because we need to patch the next one\
-	 * and we can't patch the first instruction.	\
-	 */						\
+	 						\
 	r6 = 0;						\
-	/* Make R0 a map ptr */				\
+	 				\
 	r0 = %[map_hash_8b] ll;				\
-	/* Get an unknown value */			\
+	 			\
 	r2 = *(u32*)(r1 + 0);				\
-	/* Make it small and 8-byte aligned */		\
+	 		\
 	r2 &= 8;					\
 	r2 -= 16;					\
-	/* Add it to fp. We now have either fp-8 or fp-16, but\
-	 * we don't know which.				\
-	 */						\
+	 						\
 	r2 += r10;					\
-	/* Spill R0(map ptr) into stack */		\
+	 		\
 	*(u64*)(r10 - 8) = r0;				\
-	/* Dereference the unknown value for a stack write */\
+	 \
 	r0 = 0;						\
 	*(u64*)(r2 + 0) = r0;				\
-	/* Fill the register back into R2 */		\
+	 		\
 	r2 = *(u64*)(r10 - 8);				\
-	/* Try to dereference R2 for a memory load */	\
+	 	\
 	r0 = *(u64*)(r2 + 8);				\
 	exit;						\
 "	:
@@ -209,22 +195,20 @@ __naked void variable_offset_stack_access_unbounded(void)
 	asm volatile ("					\
 	r2 = 6;						\
 	r3 = 28;					\
-	/* Fill the top 16 bytes of the stack. */	\
+	 	\
 	r4 = 0;						\
 	*(u64*)(r10 - 16) = r4;				\
 	r4 = 0;						\
 	*(u64*)(r10 - 8) = r4;				\
-	/* Get an unknown value. */			\
+	 			\
 	r4 = *(u64*)(r1 + %[bpf_sock_ops_bytes_received]);\
-	/* Check the lower bound but don't check the upper one. */\
+	 \
 	if r4 s< 0 goto l0_%=;				\
-	/* Point the lower bound to initialized stack. Offset is now in range\
-	 * from fp-16 to fp+0x7fffffffffffffef, i.e. max value is unbounded.\
-	 */						\
+	 						\
 	r4 -= 16;					\
 	r4 += r10;					\
 	r5 = 8;						\
-	/* Dereference it indirectly. */		\
+	 		\
 	call %[bpf_getsockopt];				\
 l0_%=:	r0 = 0;						\
 	exit;						\
@@ -240,19 +224,17 @@ __failure __msg("invalid variable-offset indirect access to stack R2")
 __naked void access_max_out_of_bound(void)
 {
 	asm volatile ("					\
-	/* Fill the top 8 bytes of the stack */		\
+	 		\
 	r2 = 0;						\
 	*(u64*)(r10 - 8) = r2;				\
-	/* Get an unknown value */			\
+	 			\
 	r2 = *(u32*)(r1 + 0);				\
-	/* Make it small and 4-byte aligned */		\
+	 		\
 	r2 &= 4;					\
 	r2 -= 8;					\
-	/* add it to fp.  We now have either fp-4 or fp-8, but\
-	 * we don't know which				\
-	 */						\
+	 						\
 	r2 += r10;					\
-	/* dereference it indirectly */			\
+	 			\
 	r1 = %[map_hash_8b] ll;				\
 	call %[bpf_map_lookup_elem];			\
 	r0 = 0;						\
@@ -269,19 +251,17 @@ __failure __msg("invalid variable-offset indirect access to stack R2")
 __naked void access_min_out_of_bound(void)
 {
 	asm volatile ("					\
-	/* Fill the top 8 bytes of the stack */		\
+	 		\
 	r2 = 0;						\
 	*(u64*)(r10 - 8) = r2;				\
-	/* Get an unknown value */			\
+	 			\
 	r2 = *(u32*)(r1 + 0);				\
-	/* Make it small and 4-byte aligned */		\
+	 		\
 	r2 &= 4;					\
 	r2 -= 516;					\
-	/* add it to fp.  We now have either fp-516 or fp-512, but\
-	 * we don't know which				\
-	 */						\
+	 						\
 	r2 += r10;					\
-	/* dereference it indirectly */			\
+	 			\
 	r1 = %[map_hash_8b] ll;				\
 	call %[bpf_map_lookup_elem];			\
 	r0 = 0;						\
@@ -299,19 +279,17 @@ __failure_unpriv __msg_unpriv("R2 variable stack access prohibited for !root")
 __naked void access_min_off_min_initialized(void)
 {
 	asm volatile ("					\
-	/* Fill only the top 8 bytes of the stack. */	\
+	 	\
 	r2 = 0;						\
 	*(u64*)(r10 - 8) = r2;				\
-	/* Get an unknown value */			\
+	 			\
 	r2 = *(u32*)(r1 + 0);				\
-	/* Make it small and 4-byte aligned. */		\
+	 		\
 	r2 &= 4;					\
 	r2 -= 16;					\
-	/* Add it to fp.  We now have either fp-12 or fp-16, but we don't know\
-	 * which. fp-16 size 8 is partially uninitialized stack.\
-	 */						\
+	 						\
 	r2 += r10;					\
-	/* Dereference it indirectly. */		\
+	 		\
 	r1 = %[map_hash_8b] ll;				\
 	call %[bpf_map_lookup_elem];			\
 	r0 = 0;						\
@@ -330,21 +308,19 @@ __retval(0)
 __naked void stack_access_priv_vs_unpriv(void)
 {
 	asm volatile ("					\
-	/* Fill the top 16 bytes of the stack. */	\
+	 	\
 	r2 = 0;						\
 	*(u64*)(r10 - 16) = r2;				\
 	r2 = 0;						\
 	*(u64*)(r10 - 8) = r2;				\
-	/* Get an unknown value. */			\
+	 			\
 	r2 = *(u32*)(r1 + 0);				\
-	/* Make it small and 4-byte aligned. */		\
+	 		\
 	r2 &= 4;					\
 	r2 -= 16;					\
-	/* Add it to fp.  We now have either fp-12 or fp-16, we don't know\
-	 * which, but either way it points to initialized stack.\
-	 */						\
+	 						\
 	r2 += r10;					\
-	/* Dereference it indirectly. */		\
+	 		\
 	r1 = %[map_hash_8b] ll;				\
 	call %[bpf_map_lookup_elem];			\
 	r0 = 0;						\
@@ -361,21 +337,19 @@ __success __retval(0)
 __naked void variable_offset_stack_access_ok(void)
 {
 	asm volatile ("					\
-	/* Fill the top 16 bytes of the stack. */	\
+	 	\
 	r2 = 0;						\
 	*(u64*)(r10 - 16) = r2;				\
 	r2 = 0;						\
 	*(u64*)(r10 - 8) = r2;				\
-	/* Get an unknown value. */			\
+	 			\
 	r2 = *(u32*)(r1 + 0);				\
-	/* Make it small and 4-byte aligned. */		\
+	 		\
 	r2 &= 4;					\
 	r2 -= 16;					\
-	/* Add it to fp.  We now have either fp-12 or fp-16, we don't know\
-	 * which, but either way it points to initialized stack.\
-	 */						\
+	 						\
 	r2 += r10;					\
-	/* Dereference it indirectly. */		\
+	 		\
 	r1 = %[map_hash_8b] ll;				\
 	call %[bpf_map_lookup_elem];			\
 	r0 = 0;						\

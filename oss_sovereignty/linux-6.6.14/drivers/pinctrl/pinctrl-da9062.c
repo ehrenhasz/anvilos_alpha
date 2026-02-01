@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Dialog DA9062 pinctrl and GPIO driver.
- * Based on DA9055 GPIO driver.
- *
- * TODO:
- *   - add pinmux and pinctrl support (gpio alternate mode)
- *
- * Documents:
- * [1] https://www.dialog-semiconductor.com/sites/default/files/da9062_datasheet_3v6.pdf
- *
- * Copyright (C) 2019 Pengutronix, Marco Felsch <kernel@pengutronix.de>
- */
+
+ 
 #include <linux/bits.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -22,18 +11,15 @@
 #include <linux/mfd/da9062/core.h>
 #include <linux/mfd/da9062/registers.h>
 
-/*
- * We need this get the gpio_desc from a <gpio_chip,offset> tuple to decide if
- * the gpio is active low without a vendor specific dt-binding.
- */
+ 
 #include "../gpio/gpiolib.h"
 
 #define DA9062_TYPE(offset)		(4 * (offset % 2))
 #define DA9062_PIN_SHIFT(offset)	(4 * (offset % 2))
-#define DA9062_PIN_ALTERNATE		0x00 /* gpio alternate mode */
-#define DA9062_PIN_GPI			0x01 /* gpio in */
-#define DA9062_PIN_GPO_OD		0x02 /* gpio out open-drain */
-#define DA9062_PIN_GPO_PP		0x03 /* gpio out push-pull */
+#define DA9062_PIN_ALTERNATE		0x00  
+#define DA9062_PIN_GPI			0x01  
+#define DA9062_PIN_GPO_OD		0x02  
+#define DA9062_PIN_GPO_PP		0x03  
 #define DA9062_GPIO_NUM			5
 
 struct da9062_pctl {
@@ -152,13 +138,7 @@ static int da9062_gpio_direction_input(struct gpio_chip *gc,
 	if (ret)
 		return ret;
 
-	/*
-	 * If the gpio is active low we should set it in hw too. No worries
-	 * about gpio_get() because we read and return the gpio-level. So the
-	 * gpiolib active_low handling is still correct.
-	 *
-	 * 0 - active low, 1 - active high
-	 */
+	 
 	gpi_type = !gpiod_is_active_low(desc);
 
 	return regmap_update_bits(regmap, DA9062AA_GPIO_0_1 + (offset >> 1),
@@ -189,13 +169,7 @@ static int da9062_gpio_set_config(struct gpio_chip *gc, unsigned int offset,
 	struct regmap *regmap = pctl->da9062->regmap;
 	int gpio_mode;
 
-	/*
-	 * We need to meet the following restrictions [1, Figure 18]:
-	 * - PIN_CONFIG_BIAS_PULL_DOWN -> only allowed if the pin is used as
-	 *				  gpio input
-	 * - PIN_CONFIG_BIAS_PULL_UP   -> only allowed if the pin is used as
-	 *				  gpio output open-drain.
-	 */
+	 
 
 	switch (pinconf_to_config_param(config)) {
 	case PIN_CONFIG_BIAS_DISABLE:
@@ -273,10 +247,7 @@ static int da9062_pctl_probe(struct platform_device *pdev)
 	for (i = 0; i < ARRAY_SIZE(pctl->pin_config); i++)
 		pctl->pin_config[i] = DA9062_PIN_GPO_PP;
 
-	/*
-	 * Currently the driver handles only the GPIO support. The
-	 * pinctrl/pinmux support can be added later if needed.
-	 */
+	 
 	pctl->gc = reference_gc;
 	pctl->gc.label = dev_name(&pdev->dev);
 	pctl->gc.parent = &pdev->dev;

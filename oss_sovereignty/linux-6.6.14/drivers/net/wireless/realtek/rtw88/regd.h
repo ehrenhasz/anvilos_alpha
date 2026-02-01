@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+ 
+ 
 
 #ifndef __RTW_REGD_H_
 #define __RTW_REGD_H_
@@ -60,7 +59,7 @@ enum country_code_type {
 	COUNTRY_CODE_TELEC_NETGEAR = 12,
 	COUNTRY_CODE_WORLD_WIDE_13_5G_ALL = 13,
 
-	/* new channel plan above this */
+	 
 	COUNTRY_CODE_MAX
 };
 

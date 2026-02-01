@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
 
-/*
- * Xen para-virtual sound device
- *
- * Copyright (C) 2016-2018 EPAM Systems Inc.
- *
- * Author: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>
- */
+
+ 
 
 #include <xen/xenbus.h>
 
@@ -15,7 +9,7 @@
 #include "xen_snd_front.h"
 #include "xen_snd_front_cfg.h"
 
-/* Maximum number of supported streams. */
+ 
 #define VSND_MAX_STREAM		8
 
 struct cfg_hw_sample_rate {
@@ -245,7 +239,7 @@ static void cfg_read_pcm_hw(const char *path,
 	size_t buf_sz;
 	unsigned int len;
 
-	/* Inherit parent's PCM HW and read overrides from XenStore. */
+	 
 	if (parent_pcm_hw)
 		*pcm_hw = *parent_pcm_hw;
 	else
@@ -275,7 +269,7 @@ static void cfg_read_pcm_hw(const char *path,
 	if (buf_sz)
 		pcm_hw->buffer_bytes_max = buf_sz;
 
-	/* Update configuration to match new values. */
+	 
 	if (pcm_hw->channels_min > pcm_hw->channels_max)
 		pcm_hw->channels_min = pcm_hw->channels_max;
 
@@ -363,14 +357,10 @@ static int cfg_stream(struct xen_snd_front_info *front_info,
 		goto fail;
 	}
 
-	/* Get next stream index. */
+	 
 	stream->index = (*stream_cnt)++;
 	stream->xenstore_path = stream_path;
-	/*
-	 * Check XenStore if PCM HW configuration exists for this stream
-	 * and update if so, e.g. we inherit all values from device's PCM HW,
-	 * but can still override some of the values for the stream.
-	 */
+	 
 	cfg_read_pcm_hw(stream->xenstore_path,
 			&pcm_instance->pcm_hw, &stream->pcm_hw);
 	ret = 0;
@@ -404,14 +394,10 @@ static int cfg_device(struct xen_snd_front_info *front_info,
 
 	pcm_instance->device_id = node_index;
 
-	/*
-	 * Check XenStore if PCM HW configuration exists for this device
-	 * and update if so, e.g. we inherit all values from card's PCM HW,
-	 * but can still override some of the values for the device.
-	 */
+	 
 	cfg_read_pcm_hw(device_path, parent_pcm_hw, &pcm_instance->pcm_hw);
 
-	/* Find out how many streams were configured in Xen store. */
+	 
 	num_streams = 0;
 	do {
 		snprintf(node, sizeof(node), "%d", num_streams);
@@ -423,7 +409,7 @@ static int cfg_device(struct xen_snd_front_info *front_info,
 
 	pcm_instance->num_streams_pb = 0;
 	pcm_instance->num_streams_cap = 0;
-	/* Get number of playback and capture streams. */
+	 
 	for (i = 0; i < num_streams; i++) {
 		ret = cfg_get_stream_type(device_path, i, &num_pb, &num_cap);
 		if (ret < 0)
@@ -497,7 +483,7 @@ int xen_snd_front_cfg_card(struct xen_snd_front_info *front_info,
 		return -ENODEV;
 	}
 
-	/* Start from default PCM HW configuration for the card. */
+	 
 	cfg_read_pcm_hw(xb_dev->nodename, NULL, &cfg->pcm_hw);
 
 	cfg->pcm_instances =

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * cxd2099.c: Driver for the Sony CXD2099AR Common Interface Controller
- *
- * Copyright (C) 2010-2013 Digital Devices GmbH
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/kernel.h>
@@ -44,7 +40,7 @@ struct cxd {
 	int    amem_read;
 
 	int    cammode;
-	struct mutex lock; /* device access lock */
+	struct mutex lock;  
 
 	u8     rbuf[1028];
 	u8     wbuf[1028];
@@ -184,10 +180,10 @@ static void set_mode(struct cxd *ci, int mode)
 		return;
 
 	switch (mode) {
-	case 0x00: /* IO mem */
+	case 0x00:  
 		write_regm(ci, 0x06, 0x00, 0x07);
 		break;
-	case 0x01: /* ATT mem */
+	case 0x01:  
 		write_regm(ci, 0x06, 0x02, 0x07);
 		break;
 	default:
@@ -259,9 +255,7 @@ static int init(struct cxd *ci)
 		if (status < 0)
 			break;
 
-		/* TOSTRT = 8, Mode B (gated clock), falling Edge,
-		 * Serial, POL=HIGH, MSB
-		 */
+		 
 		status = write_reg(ci, 0x0A, 0xA7);
 		if (status < 0)
 			break;
@@ -287,7 +281,7 @@ static int init(struct cxd *ci)
 			break;
 
 		if (ci->cfg.clock_mode == 2) {
-			/* bitrate*2^13/ 72000 */
+			 
 			u32 reg = ((ci->cfg.bitrate << 13) + 71999) / 72000;
 
 			if (ci->cfg.polarity) {
@@ -310,7 +304,7 @@ static int init(struct cxd *ci)
 				break;
 		} else if (ci->cfg.clock_mode == 1) {
 			if (ci->cfg.polarity) {
-				status = write_reg(ci, 0x09, 0x6f); /* D */
+				status = write_reg(ci, 0x09, 0x6f);  
 				if (status < 0)
 					break;
 			} else {
@@ -329,7 +323,7 @@ static int init(struct cxd *ci)
 				break;
 		} else {
 			if (ci->cfg.polarity) {
-				status = write_reg(ci, 0x09, 0x4f); /* C */
+				status = write_reg(ci, 0x09, 0x4f);  
 				if (status < 0)
 					break;
 			} else {
@@ -361,7 +355,7 @@ static int init(struct cxd *ci)
 		if (status < 0)
 			break;
 
-		/* Put TS in bypass */
+		 
 		status = write_regm(ci, 0x09, 0x08, 0x08);
 		if (status < 0)
 			break;
@@ -465,8 +459,8 @@ static int slot_shutdown(struct dvb_ca_en50221 *ca, int slot)
 	msleep(300);
 
 	write_regm(ci, 0x09, 0x08, 0x08);
-	write_regm(ci, 0x20, 0x80, 0x80); /* Reset CAM Mode */
-	write_regm(ci, 0x06, 0x07, 0x07); /* Clear IO Mode */
+	write_regm(ci, 0x20, 0x80, 0x80);  
+	write_regm(ci, 0x06, 0x07, 0x07);  
 
 	ci->mode = -1;
 	ci->write_busy = 0;
@@ -559,7 +553,7 @@ static int read_data(struct dvb_ca_en50221 *ca, int slot, u8 *ebuf, int ecount)
 	read_reg(ci, 0x10, &lsb);
 	len = ((u16)msb << 8) | lsb;
 	if (len > ecount || len < 2) {
-		/* read it anyway or cxd may hang */
+		 
 		read_block(ci, 0x12, ci->rbuf, len);
 		mutex_unlock(&ci->lock);
 		return -EIO;

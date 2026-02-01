@@ -1,20 +1,4 @@
-/* Test of nl_langinfo replacement.
-   Copyright (C) 2009-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2009.  */
+ 
 
 #include <config.h>
 
@@ -30,9 +14,7 @@ SIGNATURE_CHECK (nl_langinfo, char *, (nl_item));
 #include "c-strcase.h"
 #include "macros.h"
 
-/* For GCC >= 4.3, silence the warnings
-     "comparison of unsigned expression >= 0 is always true"
-   in this file.  */
+ 
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3)
 # pragma GCC diagnostic ignored "-Wtype-limits"
 #endif
@@ -41,25 +23,21 @@ int
 main (int argc, char *argv[])
 {
   int pass = atoi (argv[1]);
-  /* pass    locale
-      0        C
-      1        traditional French locale
-      2        French UTF-8 locale
-   */
+   
 
   setlocale (LC_ALL, "");
 
-  /* nl_langinfo items of the LC_CTYPE category */
+   
   ASSERT (strlen (nl_langinfo (CODESET)) > 0);
   if (pass == 2)
     {
       const char *codeset = nl_langinfo (CODESET);
       ASSERT (c_strcasecmp (codeset, "UTF-8") == 0 || c_strcasecmp (codeset, "UTF8") == 0);
     }
-  /* nl_langinfo items of the LC_NUMERIC category */
+   
   ASSERT (strlen (nl_langinfo (RADIXCHAR)) > 0);
   ASSERT (strlen (nl_langinfo (THOUSEP)) >= 0);
-  /* nl_langinfo items of the LC_TIME category */
+   
   ASSERT (strlen (nl_langinfo (D_T_FMT)) > 0);
   ASSERT (strlen (nl_langinfo (D_FMT)) > 0);
   ASSERT (strlen (nl_langinfo (T_FMT)) > 0);
@@ -104,8 +82,7 @@ main (int argc, char *argv[])
   ASSERT (strlen (nl_langinfo (ALTMON_10)) > 0);
   ASSERT (strlen (nl_langinfo (ALTMON_11)) > 0);
   ASSERT (strlen (nl_langinfo (ALTMON_12)) > 0);
-  /* In the tested locales, alternate month names and month names ought to be
-     the same.  */
+   
   ASSERT (strcmp (nl_langinfo (ALTMON_1), nl_langinfo (MON_1)) == 0);
   ASSERT (strcmp (nl_langinfo (ALTMON_2), nl_langinfo (MON_2)) == 0);
   ASSERT (strcmp (nl_langinfo (ALTMON_3), nl_langinfo (MON_3)) == 0);
@@ -135,7 +112,7 @@ main (int argc, char *argv[])
   ASSERT (strlen (nl_langinfo (ERA_D_T_FMT)) >= 0);
   ASSERT (strlen (nl_langinfo (ERA_T_FMT)) >= 0);
   ASSERT (nl_langinfo (ALT_DIGITS) != NULL);
-  /* nl_langinfo items of the LC_MONETARY category */
+   
   {
     const char *currency = nl_langinfo (CRNCYSTR);
     ASSERT (strlen (currency) >= 0);
@@ -144,7 +121,7 @@ main (int argc, char *argv[])
       ASSERT (strlen (currency) >= 1);
 #endif
   }
-  /* nl_langinfo items of the LC_MESSAGES category */
+   
   ASSERT (strlen (nl_langinfo (YESEXPR)) > 0);
   ASSERT (strlen (nl_langinfo (NOEXPR)) > 0);
 

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * via-cputemp.c - Driver for VIA CPU core temperature monitoring
- * Copyright (C) 2009 VIA Technologies, Inc.
- *
- * based on existing coretemp.c, which is
- *
- * Copyright (C) 2007 Rudolf Marek <r.marek@assembler.cz>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -30,9 +23,7 @@
 
 enum { SHOW_TEMP, SHOW_LABEL, SHOW_NAME };
 
-/*
- * Functions declaration
- */
+ 
 
 struct via_cputemp_data {
 	struct device *hwmon_dev;
@@ -43,9 +34,7 @@ struct via_cputemp_data {
 	u32 msr_vid;
 };
 
-/*
- * Sysfs stuff
- */
+ 
 
 static ssize_t name_show(struct device *dev, struct device_attribute *devattr,
 			 char *buf)
@@ -56,7 +45,7 @@ static ssize_t name_show(struct device *dev, struct device_attribute *devattr,
 
 	if (attr->index == SHOW_NAME)
 		ret = sprintf(buf, "%s\n", data->name);
-	else	/* show label */
+	else	 
 		ret = sprintf(buf, "Core %d\n", data->id);
 	return ret;
 }
@@ -104,7 +93,7 @@ static const struct attribute_group via_cputemp_group = {
 	.attrs = via_cputemp_attributes,
 };
 
-/* Optional attributes */
+ 
 static DEVICE_ATTR_RO(cpu0_vid);
 
 static int via_cputemp_probe(struct platform_device *pdev)
@@ -127,14 +116,14 @@ static int via_cputemp_probe(struct platform_device *pdev)
 	} else {
 		switch (c->x86_model) {
 		case 0xA:
-			/* C7 A */
+			 
 		case 0xD:
-			/* C7 D */
+			 
 			data->msr_temp = 0x1169;
 			data->msr_vid = 0x198;
 			break;
 		case 0xF:
-			/* Nano */
+			 
 			data->msr_temp = 0x1423;
 			break;
 		default:
@@ -142,7 +131,7 @@ static int via_cputemp_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* test if we can access the TEMPERATURE MSR */
+	 
 	err = rdmsr_safe_on_cpu(data->id, data->msr_temp, &eax, &edx);
 	if (err) {
 		dev_err(&pdev->dev,

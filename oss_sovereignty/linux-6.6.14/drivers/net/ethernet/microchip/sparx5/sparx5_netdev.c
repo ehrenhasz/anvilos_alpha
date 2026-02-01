@@ -1,26 +1,19 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Microchip Sparx5 Switch driver
- *
- * Copyright (c) 2021 Microchip Technology Inc. and its subsidiaries.
- */
+
+ 
 
 #include "sparx5_main_regs.h"
 #include "sparx5_main.h"
 #include "sparx5_port.h"
 #include "sparx5_tc.h"
 
-/* The IFH bit position of the first VSTAX bit. This is because the
- * VSTAX bit positions in Data sheet is starting from zero.
- */
+ 
 #define VSTAX 73
 
 #define ifh_encode_bitfield(ifh, value, pos, _width)			\
 	({								\
 		u32 width = (_width);					\
 									\
-		/* Max width is 5 bytes - 40 bits. In worst case this will
-		 * spread over 6 bytes - 48 bits
-		 */							\
+		 							\
 		compiletime_assert(width <= 40,				\
 				   "Unsupported width, must be <= 40");	\
 		__ifh_encode_bitfield((ifh), (value), (pos), width);	\
@@ -29,49 +22,49 @@
 static void __ifh_encode_bitfield(void *ifh, u64 value, u32 pos, u32 width)
 {
 	u8 *ifh_hdr = ifh;
-	/* Calculate the Start IFH byte position of this IFH bit position */
+	 
 	u32 byte = (35 - (pos / 8));
-	/* Calculate the Start bit position in the Start IFH byte */
+	 
 	u32 bit  = (pos % 8);
 	u64 encode = GENMASK_ULL(bit + width - 1, bit) & (value << bit);
 
-	/* The b0-b7 goes into the start IFH byte */
+	 
 	if (encode & 0xFF)
 		ifh_hdr[byte] |= (u8)((encode & 0xFF));
-	/* The b8-b15 goes into the next IFH byte */
+	 
 	if (encode & 0xFF00)
 		ifh_hdr[byte - 1] |= (u8)((encode & 0xFF00) >> 8);
-	/* The b16-b23 goes into the next IFH byte */
+	 
 	if (encode & 0xFF0000)
 		ifh_hdr[byte - 2] |= (u8)((encode & 0xFF0000) >> 16);
-	/* The b24-b31 goes into the next IFH byte */
+	 
 	if (encode & 0xFF000000)
 		ifh_hdr[byte - 3] |= (u8)((encode & 0xFF000000) >> 24);
-	/* The b32-b39 goes into the next IFH byte */
+	 
 	if (encode & 0xFF00000000)
 		ifh_hdr[byte - 4] |= (u8)((encode & 0xFF00000000) >> 32);
-	/* The b40-b47 goes into the next IFH byte */
+	 
 	if (encode & 0xFF0000000000)
 		ifh_hdr[byte - 5] |= (u8)((encode & 0xFF0000000000) >> 40);
 }
 
 void sparx5_set_port_ifh(void *ifh_hdr, u16 portno)
 {
-	/* VSTAX.RSV = 1. MSBit must be 1 */
+	 
 	ifh_encode_bitfield(ifh_hdr, 1, VSTAX + 79,  1);
-	/* VSTAX.INGR_DROP_MODE = Enable. Don't make head-of-line blocking */
+	 
 	ifh_encode_bitfield(ifh_hdr, 1, VSTAX + 55,  1);
-	/* MISC.CPU_MASK/DPORT = Destination port */
+	 
 	ifh_encode_bitfield(ifh_hdr, portno,   29, 8);
-	/* MISC.PIPELINE_PT */
+	 
 	ifh_encode_bitfield(ifh_hdr, 16,       37, 5);
-	/* MISC.PIPELINE_ACT */
+	 
 	ifh_encode_bitfield(ifh_hdr, 1,        42, 3);
-	/* FWD.SRC_PORT = CPU */
+	 
 	ifh_encode_bitfield(ifh_hdr, SPX5_PORT_CPU, 46, 7);
-	/* FWD.SFLOW_ID (disable SFlow sampling) */
+	 
 	ifh_encode_bitfield(ifh_hdr, 124,      57, 7);
-	/* FWD.UPDATE_FCS = Enable. Enforce update of FCS. */
+	 
 	ifh_encode_bitfield(ifh_hdr, 1,        67, 1);
 }
 
@@ -110,7 +103,7 @@ static int sparx5_port_open(struct net_device *ndev)
 	phylink_start(port->phylink);
 
 	if (!ndev->phydev) {
-		/* power up serdes */
+		 
 		port->conf.power_down = false;
 		if (port->conf.serdes_reset)
 			err = sparx5_serdes_set(port->sparx5, port, &port->conf);
@@ -143,7 +136,7 @@ static int sparx5_port_stop(struct net_device *ndev)
 	phylink_disconnect_phy(port->phylink);
 
 	if (!ndev->phydev) {
-		/* power down serdes */
+		 
 		port->conf.power_down = true;
 		if (port->conf.serdes_reset)
 			err = sparx5_serdes_set(port->sparx5, port, &port->conf);
@@ -186,13 +179,13 @@ static int sparx5_set_mac_address(struct net_device *dev, void *p)
 	if (!is_valid_ether_addr(addr->sa_data))
 		return -EADDRNOTAVAIL;
 
-	/* Remove current */
+	 
 	sparx5_mact_forget(sparx5, dev->dev_addr,  port->pvid);
 
-	/* Add new */
+	 
 	sparx5_mact_learn(sparx5, PGID_CPU, addr->sa_data, port->pvid);
 
-	/* Record the address */
+	 
 	eth_hw_addr_set(dev, addr->sa_data);
 
 	return 0;
@@ -312,7 +305,7 @@ void sparx5_destroy_netdevs(struct sparx5 *sparx5)
 	for (portno = 0; portno < SPX5_PORTS; portno++) {
 		port = sparx5->ports[portno];
 		if (port && port->phylink) {
-			/* Disconnect the phy */
+			 
 			rtnl_lock();
 			sparx5_port_stop(port->ndev);
 			phylink_disconnect_phy(port->phylink);

@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "nv40.h"
 #include "regs.h"
 
@@ -36,9 +14,7 @@ nv40_gr_units(struct nvkm_gr *gr)
 	return nvkm_rd32(gr->engine.subdev.device, 0x1540);
 }
 
-/*******************************************************************************
- * Graphics object classes
- ******************************************************************************/
+ 
 
 static int
 nv40_gr_object_bind(struct nvkm_object *object, struct nvkm_gpuobj *parent,
@@ -66,9 +42,7 @@ nv40_gr_object = {
 	.bind = nv40_gr_object_bind,
 };
 
-/*******************************************************************************
- * PGRAPH context
- ******************************************************************************/
+ 
 
 static int
 nv40_gr_chan_bind(struct nvkm_object *object, struct nvkm_gpuobj *parent,
@@ -165,9 +139,7 @@ nv40_gr_chan_new(struct nvkm_gr *base, struct nvkm_chan *fifoch,
 	return 0;
 }
 
-/*******************************************************************************
- * PGRAPH engine/subdev functions
- ******************************************************************************/
+ 
 
 static void
 nv40_gr_tile(struct nvkm_gr *base, int i, struct nvkm_fb_tile *tile)
@@ -291,12 +263,12 @@ nv40_gr_init(struct nvkm_gr *base)
 	int ret, i, j;
 	u32 vramsz;
 
-	/* generate and upload context program */
+	 
 	ret = nv40_grctx_init(device, &gr->size);
 	if (ret)
 		return ret;
 
-	/* No context present currently */
+	 
 	nvkm_wr32(device, NV40_PGRAPH_CTXCTL_CUR, 0x00000000);
 
 	nvkm_wr32(device, NV03_PGRAPH_INTR   , 0xFFFFFFFF);
@@ -334,8 +306,8 @@ nv40_gr_init(struct nvkm_gr *base)
 		nvkm_wr32(device, 0x4009bc, 0x0000014c);
 		break;
 	case 0x41:
-	case 0x42: /* pciid also 0x00Cx */
-	/* case 0x0120: XXX (pciid) */
+	case 0x42:  
+	 
 		nvkm_wr32(device, 0x400828, 0x007596ff);
 		nvkm_wr32(device, 0x40082c, 0x00000108);
 		break;
@@ -344,16 +316,16 @@ nv40_gr_init(struct nvkm_gr *base)
 		nvkm_wr32(device, 0x40082c, 0x00000108);
 		break;
 	case 0x44:
-	case 0x46: /* G72 */
+	case 0x46:  
 	case 0x4a:
-	case 0x4c: /* G7x-based C51 */
+	case 0x4c:  
 	case 0x4e:
 		nvkm_wr32(device, 0x400860, 0);
 		nvkm_wr32(device, 0x400864, 0);
 		break;
-	case 0x47: /* G70 */
-	case 0x49: /* G71 */
-	case 0x4b: /* G73 */
+	case 0x47:  
+	case 0x49:  
+	case 0x4b:  
 		nvkm_wr32(device, 0x400828, 0x07830610);
 		nvkm_wr32(device, 0x40082c, 0x0000016A);
 		break;
@@ -364,7 +336,7 @@ nv40_gr_init(struct nvkm_gr *base)
 	nvkm_wr32(device, 0x400b38, 0x2ffff800);
 	nvkm_wr32(device, 0x400b3c, 0x00006000);
 
-	/* Tiling related stuff. */
+	 
 	switch (device->chipset) {
 	case 0x44:
 	case 0x4a:
@@ -385,7 +357,7 @@ nv40_gr_init(struct nvkm_gr *base)
 		break;
 	}
 
-	/* begin RAM config */
+	 
 	vramsz = device->func->resource_size(device, 1) - 1;
 	switch (device->chipset) {
 	case 0x40:
@@ -449,22 +421,22 @@ nv40_gr = {
 	.units = nv40_gr_units,
 	.chan_new = nv40_gr_chan_new,
 	.sclass = {
-		{ -1, -1, 0x0012, &nv40_gr_object }, /* beta1 */
-		{ -1, -1, 0x0019, &nv40_gr_object }, /* clip */
-		{ -1, -1, 0x0030, &nv40_gr_object }, /* null */
-		{ -1, -1, 0x0039, &nv40_gr_object }, /* m2mf */
-		{ -1, -1, 0x0043, &nv40_gr_object }, /* rop */
-		{ -1, -1, 0x0044, &nv40_gr_object }, /* patt */
-		{ -1, -1, 0x004a, &nv40_gr_object }, /* gdi */
-		{ -1, -1, 0x0062, &nv40_gr_object }, /* surf2d */
-		{ -1, -1, 0x0072, &nv40_gr_object }, /* beta4 */
-		{ -1, -1, 0x0089, &nv40_gr_object }, /* sifm */
-		{ -1, -1, 0x008a, &nv40_gr_object }, /* ifc */
-		{ -1, -1, 0x009f, &nv40_gr_object }, /* imageblit */
-		{ -1, -1, 0x3062, &nv40_gr_object }, /* surf2d (nv40) */
-		{ -1, -1, 0x3089, &nv40_gr_object }, /* sifm (nv40) */
-		{ -1, -1, 0x309e, &nv40_gr_object }, /* swzsurf (nv40) */
-		{ -1, -1, 0x4097, &nv40_gr_object }, /* curie */
+		{ -1, -1, 0x0012, &nv40_gr_object },  
+		{ -1, -1, 0x0019, &nv40_gr_object },  
+		{ -1, -1, 0x0030, &nv40_gr_object },  
+		{ -1, -1, 0x0039, &nv40_gr_object },  
+		{ -1, -1, 0x0043, &nv40_gr_object },  
+		{ -1, -1, 0x0044, &nv40_gr_object },  
+		{ -1, -1, 0x004a, &nv40_gr_object },  
+		{ -1, -1, 0x0062, &nv40_gr_object },  
+		{ -1, -1, 0x0072, &nv40_gr_object },  
+		{ -1, -1, 0x0089, &nv40_gr_object },  
+		{ -1, -1, 0x008a, &nv40_gr_object },  
+		{ -1, -1, 0x009f, &nv40_gr_object },  
+		{ -1, -1, 0x3062, &nv40_gr_object },  
+		{ -1, -1, 0x3089, &nv40_gr_object },  
+		{ -1, -1, 0x309e, &nv40_gr_object },  
+		{ -1, -1, 0x4097, &nv40_gr_object },  
 		{}
 	}
 };

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  user_space.c - A simple user space Thermal events notifier
- *
- *  Copyright (C) 2012 Intel Corp
- *  Copyright (C) 2012 Durgadoss R <durgadoss.r@intel.com>
- *
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/thermal.h>
@@ -22,13 +13,7 @@ static int user_space_bind(struct thermal_zone_device *tz)
 	return 0;
 }
 
-/**
- * notify_user_space - Notifies user space about thermal events
- * @tz: thermal_zone_device
- * @trip: trip point index
- *
- * This function notifies the user space through UEvents.
- */
+ 
 static int notify_user_space(struct thermal_zone_device *tz, int trip)
 {
 	char *thermal_prop[5];

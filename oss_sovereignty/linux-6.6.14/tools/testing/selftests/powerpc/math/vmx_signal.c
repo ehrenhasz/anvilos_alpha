@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2015, Cyril Bur, IBM Corp.
- *
- * This test attempts to see if the VMX registers are correctly reported in a
- * signal context. Each worker just spins checking its VMX registers, at some
- * point a signal will interrupt it and C code will check the signal context
- * ensuring it is also the same.
- */
+
+ 
 
 #include <stdio.h>
 #include <unistd.h>
@@ -21,12 +14,9 @@
 
 #include "utils.h"
 
-/* Number of times each thread should receive the signal */
+ 
 #define ITERATIONS 10
-/*
- * Factor by which to multiply number of online CPUs for total number of
- * worker threads
- */
+ 
 #define THREAD_FACTOR 8
 
 __thread vector int varray[] = {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10,11,12},
@@ -46,16 +36,11 @@ void signal_vmx_sig(int sig, siginfo_t *info, void *context)
 	ucontext_t *uc = context;
 	mcontext_t *mc = &uc->uc_mcontext;
 
-	/* Only the non volatiles were loaded up */
+	 
 	for (i = 20; i < 32; i++) {
 		if (memcmp(mc->v_regs->vrregs[i], &varray[i - 20], 16)) {
 			int j;
-			/*
-			 * Shouldn't printf() in a signal handler, however, this is a
-			 * test and we've detected failure. Understanding what failed
-			 * is paramount. All that happens after this is tests exit with
-			 * failure.
-			 */
+			 
 			printf("VMX mismatch at reg %d!\n", i);
 			printf("Reg | Actual                  | Expected\n");
 			for (j = 20; j < 32; j++) {
@@ -96,7 +81,7 @@ int test_signal_vmx(void)
 	void *rc_p;
 	pthread_t *tids;
 
-	// vcmpequd used in vmx_asm.S is v2.07
+	
 	SKIP_IF(!have_hwcap2(PPC_FEATURE2_ARCH_2_07));
 
 	threads = sysconf(_SC_NPROCESSORS_ONLN) * THREAD_FACTOR;
@@ -133,10 +118,7 @@ int test_signal_vmx(void)
 	for (i = 0; i < threads; i++) {
 		pthread_join(tids[i], &rc_p);
 
-		/*
-		 * Harness will say the fail was here, look at why signal_vmx
-		 * returned
-		 */
+		 
 		if ((long) rc_p || bad_context)
 			printf("oops\n");
 		if (bad_context)

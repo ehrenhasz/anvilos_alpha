@@ -1,17 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Cavium, Inc.
- */
+
+ 
 
 #include "cptvf.h"
 #include "cptvf_algs.h"
 #include "request_manager.h"
 
-/**
- * get_free_pending_entry - get free entry from pending queue
- * @q: pending queue
- * @qlen: queue length
- */
+ 
 static struct pending_entry *get_free_pending_entry(struct pending_queue *q,
 						    int qlen)
 {
@@ -132,7 +126,7 @@ static inline int setup_sgio_list(struct cpt_vf *cptvf,
 		goto  scatter_gather_clean;
 	}
 
-	/* Setup gather (input) components */
+	 
 	g_sz_bytes = ((req->incnt + 3) / 4) * sizeof(struct sglist_component);
 	info->gather_components = kzalloc(g_sz_bytes, req->may_sleep ? GFP_KERNEL : GFP_ATOMIC);
 	if (!info->gather_components) {
@@ -149,7 +143,7 @@ static inline int setup_sgio_list(struct cpt_vf *cptvf,
 		goto  scatter_gather_clean;
 	}
 
-	/* Setup scatter (output) components */
+	 
 	s_sz_bytes = ((req->outcnt + 3) / 4) * sizeof(struct sglist_component);
 	info->scatter_components = kzalloc(s_sz_bytes, req->may_sleep ? GFP_KERNEL : GFP_ATOMIC);
 	if (!info->scatter_components) {
@@ -166,7 +160,7 @@ static inline int setup_sgio_list(struct cpt_vf *cptvf,
 		goto  scatter_gather_clean;
 	}
 
-	/* Create and initialize DPTR */
+	 
 	info->dlen = g_sz_bytes + s_sz_bytes + SG_LIST_HDR_SIZE;
 	info->in_buffer = kzalloc(info->dlen, req->may_sleep ? GFP_KERNEL : GFP_ATOMIC);
 	if (!info->in_buffer) {
@@ -194,7 +188,7 @@ static inline int setup_sgio_list(struct cpt_vf *cptvf,
 		goto  scatter_gather_clean;
 	}
 
-	/* Create and initialize RPTR */
+	 
 	info->out_buffer = kzalloc(COMPLETION_CODE_SIZE, req->may_sleep ? GFP_KERNEL : GFP_ATOMIC);
 	if (!info->out_buffer) {
 		ret = -ENOMEM;
@@ -238,7 +232,7 @@ static int send_cpt_command(struct cpt_vf *cptvf, union cpt_inst_s *cmd,
 
 	qinfo = &cptvf->cqinfo;
 	queue = &qinfo->queue[qno];
-	/* lock commad queue */
+	 
 	spin_lock(&queue->lock);
 	ent = &queue->qhead->head[queue->idx * qinfo->cmd_size];
 	memcpy(ent, (void *)cmd, qinfo->cmd_size);
@@ -254,10 +248,10 @@ static int send_cpt_command(struct cpt_vf *cptvf, union cpt_inst_s *cmd,
 		}
 		queue->idx = 0;
 	}
-	/* make sure all memory stores are done before ringing doorbell */
+	 
 	smp_wmb();
 	cptvf_write_vq_doorbell(cptvf, 1);
-	/* unlock command queue */
+	 
 	spin_unlock(&queue->lock);
 
 	return ret;
@@ -364,7 +358,7 @@ static inline void process_pending_queue(struct cpt_vf *cptvf,
 			spin_unlock_bh(&pqueue->lock);
 			break;
 		} else if (status->s.compcode == COMPLETION_CODE_INIT) {
-			/* check for timeout */
+			 
 			if (time_after_eq(jiffies,
 					  (info->time_in +
 					  (CPT_COMMAND_TIMEOUT * HZ)))) {
@@ -395,10 +389,7 @@ static inline void process_pending_queue(struct cpt_vf *cptvf,
 		spin_unlock_bh(&pqueue->lock);
 
 		do_post_process(info->cptvf, info);
-		/*
-		 * Calling callback after we find
-		 * that the request has been serviced
-		 */
+		 
 		pentry->callback(ccode, pentry->callback_arg);
 	}
 }
@@ -435,10 +426,7 @@ int process_request(struct cpt_vf *cptvf, struct cpt_request_info *req)
 	}
 
 	cpt_req->dlen = info->dlen;
-	/*
-	 * Get buffer for union cpt_res_s response
-	 * structure and its physical address
-	 */
+	 
 	info->completion_addr = kzalloc(sizeof(union cpt_res_s), req->may_sleep ? GFP_KERNEL : GFP_ATOMIC);
 	if (unlikely(!info->completion_addr)) {
 		dev_err(&pdev->dev, "Unable to allocate memory for completion_addr\n");
@@ -459,7 +447,7 @@ int process_request(struct cpt_vf *cptvf, struct cpt_request_info *req)
 		goto  request_cleanup;
 	}
 
-	/* Fill the VQ command */
+	 
 	vq_cmd.cmd.u64 = 0;
 	vq_cmd.cmd.s.opcode = cpu_to_be16(cpt_req->opcode.flags);
 	vq_cmd.cmd.s.param1 = cpu_to_be16(cpt_req->param1);
@@ -470,8 +458,8 @@ int process_request(struct cpt_vf *cptvf, struct cpt_request_info *req)
 	vq_cmd.rptr = info->rptr_baddr;
 	vq_cmd.cptr.u64 = 0;
 	vq_cmd.cptr.s.grp = group;
-	/* Get Pending Entry to submit command */
-	/* Always queue 0, because 1 queue per VF */
+	 
+	 
 	queue = 0;
 	pqueue = &cptvf->pqinfo.queue[queue];
 
@@ -505,12 +493,12 @@ get_pending_entry:
 	pentry->busy = true;
 	atomic64_inc(&pqueue->pending_count);
 
-	/* Send CPT command */
+	 
 	info->pentry = pentry;
 	info->time_in = jiffies;
 	info->req = req;
 
-	/* Create the CPT_INST_S type command for HW intrepretation */
+	 
 	cptinst.s.doneint = true;
 	cptinst.s.res_addr = (u64)info->comp_baddr;
 	cptinst.s.tag = 0;

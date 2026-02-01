@@ -1,27 +1,4 @@
-/*
- * Copyright 2013-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 #include "include/gpio_types.h"
@@ -43,14 +20,14 @@
 #define block HPD
 #define reg_num 0
 
-/* set field name */
+ 
 #define SF_HPD(reg_name, field_name, post_fix)\
 	.field_name = HPD0_ ## reg_name ## __ ## field_name ## post_fix
 
 #define BASE_INNER(seg) \
 	DCE_BASE__INST0_SEG ## seg
 
-/* compile time expand base address. */
+ 
 #define BASE(seg) \
 	BASE_INNER(seg)
 
@@ -88,7 +65,7 @@ static const struct hpd_sh_mask hpd_mask = {
 
 #include "../ddc_regs.h"
 
- /* set field name */
+  
 #define SF_DDC(reg_name, field_name, post_fix)\
 	.field_name = reg_name ## __ ## field_name ## post_fix
 
@@ -124,7 +101,7 @@ static const struct ddc_sh_mask ddc_mask = {
 
 #include "../generic_regs.h"
 
-/* set field name */
+ 
 #define SF_GENERIC(reg_name, field_name, post_fix)\
 	.field_name = reg_name ## __ ## field_name ## post_fix
 
@@ -194,7 +171,7 @@ static void define_hpd_registers(struct hw_gpio_pin *pin, uint32_t en)
 }
 
 
-/* function table */
+ 
 static const struct hw_factory_funcs funcs = {
 	.init_ddc_data = dal_hw_ddc_init,
 	.init_generic = dal_hw_generic_init,
@@ -206,18 +183,10 @@ static const struct hw_factory_funcs funcs = {
 	.define_ddc_registers = define_ddc_registers,
 	.define_generic_registers = define_generic_registers
 };
-/*
- * dal_hw_factory_dcn10_init
- *
- * @brief
- * Initialize HW factory function pointers and pin info
- *
- * @param
- * struct hw_factory *factory - [out] struct of function pointers
- */
+ 
 void dal_hw_factory_dcn10_init(struct hw_factory *factory)
 {
-	/*TODO check ASIC CAPs*/
+	 
 	factory->number_of_pins[GPIO_ID_DDC_DATA] = 8;
 	factory->number_of_pins[GPIO_ID_DDC_CLOCK] = 8;
 	factory->number_of_pins[GPIO_ID_GENERIC] = 7;

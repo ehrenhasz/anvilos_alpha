@@ -1,18 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Jyri Sarha <jsarha@ti.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
 
 #include "tidss_scale_coefs.h"
 
-/*
- * These are interpolated with a custom python script from DSS5
- * (drivers/gpu/drm/omapdrm/dss/dispc_coef.c) coefficients.
- */
+ 
 static const struct tidss_scale_coefs coef5_m32 = {
 	.c2 = { 28, 34, 40, 46, 52, 58, 64, 70, 0, 2, 4, 8, 12, 16, 20, 24, },
 	.c1 = { 132, 138, 144, 150, 156, 162, 168, 174, 76, 84, 92, 98, 104, 110, 116, 124, },
@@ -170,21 +164,13 @@ const struct tidss_scale_coefs *tidss_get_scale_coefs(struct device *dev,
 		{ 10, 10, &coef3_m10, &coef5_m10, "M10" },
 		{  9,  9, &coef3_m9, &coef5_m9, "M9" },
 		{  4,  8, &coef3_m8, &coef5_m8, "M8" },
-		/*
-		 * When upscaling more than two times, blockiness and outlines
-		 * around the image are observed when M8 tables are used. M11,
-		 * M16 and M19 tables are used to prevent this.
-		 */
+		 
 		{  3,  3, &coef3_m11, &coef5_m11, "M11" },
 		{  2,  2, &coef3_m16, &coef5_m16, "M16" },
 		{  0,  1, &coef3_m19, &coef5_m19, "M19" },
 	};
 
-	/*
-	 * inc is result of 0x200000 * in_size / out_size. This dividing
-	 * by 0x40000 scales it down to 8 * in_size / out_size. After
-	 * division the actual scaling factor is 8/inc.
-	 */
+	 
 	inc = firinc / 0x40000;
 	for (i = 0; i < ARRAY_SIZE(coefs); ++i) {
 		if (inc >= coefs[i].mmin && inc <= coefs[i].mmax) {

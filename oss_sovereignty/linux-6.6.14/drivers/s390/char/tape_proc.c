@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *    tape device driver for S/390 and zSeries tapes.
- *
- *  S390 and zSeries version
- *    Copyright IBM Corp. 2001
- *    Author(s): Carsten Otte <cotte@de.ibm.com>
- *		 Michael Holzheu <holzheu@de.ibm.com>
- *		 Tuan Ngo-Anh <ngoanh@de.ibm.com>
- *
- * PROCFS Functions
- */
+
+ 
 
 #define KMSG_COMPONENT "tape"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -30,12 +20,10 @@ static const char *tape_med_st_verbose[MS_SIZE] =
 	[MS_UNLOADED] = "UNLOADED"
 };
 
-/* our proc tapedevices entry */
+ 
 static struct proc_dir_entry *tape_proc_devices;
 
-/*
- * Show function for /proc/tapedevices
- */
+ 
 static int tape_proc_show(struct seq_file *m, void *v)
 {
 	struct tape_device *device;
@@ -105,9 +93,7 @@ static const struct seq_operations tape_proc_seq = {
 	.show		= tape_proc_show,
 };
 
-/*
- * Initialize procfs stuff on startup
- */
+ 
 void
 tape_proc_init(void)
 {
@@ -115,9 +101,7 @@ tape_proc_init(void)
 					    &tape_proc_seq);
 }
 
-/*
- * Cleanup all stuff registered to the procfs
- */
+ 
 void
 tape_proc_cleanup(void)
 {

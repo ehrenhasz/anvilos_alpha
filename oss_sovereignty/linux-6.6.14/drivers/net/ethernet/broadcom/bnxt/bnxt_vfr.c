@@ -1,11 +1,4 @@
-/* Broadcom NetXtreme-C/E network driver.
- *
- * Copyright (c) 2016-2017 Broadcom Limited
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- */
+ 
 #include <linux/pci.h>
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -98,7 +91,7 @@ static int bnxt_vf_rep_open(struct net_device *dev)
 	struct bnxt_vf_rep *vf_rep = netdev_priv(dev);
 	struct bnxt *bp = vf_rep->bp;
 
-	/* Enable link and TX only if the parent PF is open. */
+	 
 	if (netif_running(bp->dev)) {
 		netif_carrier_on(dev);
 		netif_tx_start_all_queues(dev);
@@ -230,9 +223,7 @@ static int bnxt_vf_rep_get_port_parent_id(struct net_device *dev,
 {
 	struct bnxt_vf_rep *vf_rep = netdev_priv(dev);
 
-	/* as only PORT_PARENT_ID is supported currently use common code
-	 * between PF and VF-rep for now.
-	 */
+	 
 	return bnxt_get_port_parent_id(vf_rep->bp->dev, ppid);
 }
 
@@ -255,11 +246,7 @@ bool bnxt_dev_is_vf_rep(struct net_device *dev)
 	return dev->netdev_ops == &bnxt_vf_rep_netdev_ops;
 }
 
-/* Called when the parent PF interface is closed:
- * As the mode transition from SWITCHDEV to LEGACY
- * happens under the rtnl_lock() this routine is safe
- * under the rtnl_lock()
- */
+ 
 void bnxt_vf_reps_close(struct bnxt *bp)
 {
 	struct bnxt_vf_rep *vf_rep;
@@ -276,11 +263,7 @@ void bnxt_vf_reps_close(struct bnxt *bp)
 	}
 }
 
-/* Called when the parent PF interface is opened (re-opened):
- * As the mode transition from SWITCHDEV to LEGACY
- * happen under the rtnl_lock() this routine is safe
- * under the rtnl_lock()
- */
+ 
 void bnxt_vf_reps_open(struct bnxt *bp)
 {
 	int i;
@@ -289,7 +272,7 @@ void bnxt_vf_reps_open(struct bnxt *bp)
 		return;
 
 	for (i = 0; i < pci_num_vf(bp->pdev); i++) {
-		/* Open the VF-Rep only if it is allocated in the FW */
+		 
 		if (bp->vf_reps[i]->tx_cfa_action != CFA_HANDLE_INVALID)
 			bnxt_vf_rep_open(bp->vf_reps[i]->dev);
 	}
@@ -321,9 +304,7 @@ static void __bnxt_vf_reps_destroy(struct bnxt *bp)
 		if (vf_rep) {
 			__bnxt_free_one_vf_rep(bp, vf_rep);
 			if (vf_rep->dev) {
-				/* if register_netdev failed, then netdev_ops
-				 * would have been set to NULL
-				 */
+				 
 				if (vf_rep->dev->netdev_ops)
 					unregister_netdev(vf_rep->dev);
 				free_netdev(vf_rep->dev);
@@ -345,39 +326,29 @@ void bnxt_vf_reps_destroy(struct bnxt *bp)
 	if (!bp->vf_reps)
 		return;
 
-	/* Ensure that parent PF's and VF-reps' RX/TX has been quiesced
-	 * before proceeding with VF-rep cleanup.
-	 */
+	 
 	rtnl_lock();
 	if (netif_running(bp->dev)) {
 		bnxt_close_nic(bp, false, false);
 		closed = true;
 	}
-	/* un-publish cfa_code_map so that RX path can't see it anymore */
+	 
 	kfree(bp->cfa_code_map);
 	bp->cfa_code_map = NULL;
 
 	if (closed) {
-		/* Temporarily set legacy mode to avoid re-opening
-		 * representors and restore switchdev mode after that.
-		 */
+		 
 		bp->eswitch_mode = DEVLINK_ESWITCH_MODE_LEGACY;
 		bnxt_open_nic(bp, false, false);
 		bp->eswitch_mode = DEVLINK_ESWITCH_MODE_SWITCHDEV;
 	}
 	rtnl_unlock();
 
-	/* Need to call vf_reps_destroy() outside of rntl_lock
-	 * as unregister_netdev takes rtnl_lock
-	 */
+	 
 	__bnxt_vf_reps_destroy(bp);
 }
 
-/* Free the VF-Reps in firmware, during firmware hot-reset processing.
- * Note that the VF-Rep netdevs are still active (not unregistered) during
- * this process. As the mode transition from SWITCHDEV to LEGACY happens
- * under the rtnl_lock() this routine is safe under the rtnl_lock().
- */
+ 
 void bnxt_vf_reps_free(struct bnxt *bp)
 {
 	u16 num_vfs = pci_num_vf(bp->pdev);
@@ -393,7 +364,7 @@ void bnxt_vf_reps_free(struct bnxt *bp)
 static int bnxt_alloc_vf_rep(struct bnxt *bp, struct bnxt_vf_rep *vf_rep,
 			     u16 *cfa_code_map)
 {
-	/* get cfa handles from FW */
+	 
 	if (hwrm_cfa_vfr_alloc(bp, vf_rep->vf_idx, &vf_rep->tx_cfa_action,
 			       &vf_rep->rx_cfa_code))
 		return -ENOLINK;
@@ -403,18 +374,14 @@ static int bnxt_alloc_vf_rep(struct bnxt *bp, struct bnxt_vf_rep *vf_rep,
 	if (!vf_rep->dst)
 		return -ENOMEM;
 
-	/* only cfa_action is needed to mux a packet while TXing */
+	 
 	vf_rep->dst->u.port_info.port_id = vf_rep->tx_cfa_action;
 	vf_rep->dst->u.port_info.lower_dev = bp->dev;
 
 	return 0;
 }
 
-/* Allocate the VF-Reps in firmware, during firmware hot-reset processing.
- * Note that the VF-Rep netdevs are still active (not unregistered) during
- * this process. As the mode transition from SWITCHDEV to LEGACY happens
- * under the rtnl_lock() this routine is safe under the rtnl_lock().
- */
+ 
 int bnxt_vf_reps_alloc(struct bnxt *bp)
 {
 	u16 *cfa_code_map = bp->cfa_code_map, num_vfs = pci_num_vf(bp->pdev);
@@ -447,9 +414,7 @@ err:
 	return rc;
 }
 
-/* Use the OUI of the PF's perm addr and report the same mac addr
- * for the same VF-rep each time
- */
+ 
 static void bnxt_vf_rep_eth_addr_gen(u8 *src_mac, u16 vf_idx, u8 *mac)
 {
 	u32 addr;
@@ -471,9 +436,7 @@ static void bnxt_vf_rep_netdev_init(struct bnxt *bp, struct bnxt_vf_rep *vf_rep,
 	SET_NETDEV_DEV(dev, &bp->pdev->dev);
 	dev->netdev_ops = &bnxt_vf_rep_netdev_ops;
 	dev->ethtool_ops = &bnxt_vf_rep_ethtool_ops;
-	/* Just inherit all the featues of the parent PF as the VF-R
-	 * uses the RX/TX rings of the parent PF
-	 */
+	 
 	dev->hw_features = pf_dev->hw_features;
 	dev->gso_partial_features = pf_dev->gso_partial_features;
 	dev->vlan_features = pf_dev->vlan_features;
@@ -482,7 +445,7 @@ static void bnxt_vf_rep_netdev_init(struct bnxt *bp, struct bnxt_vf_rep *vf_rep,
 	bnxt_vf_rep_eth_addr_gen(bp->pf.mac_addr, vf_rep->vf_idx,
 				 dev->perm_addr);
 	eth_hw_addr_set(dev, dev->perm_addr);
-	/* Set VF-Rep's max-mtu to the corresponding VF's max-mtu */
+	 
 	if (!bnxt_hwrm_vfr_qcfg(bp, vf_rep, &max_mtu))
 		dev->max_mtu = max_mtu;
 	dev->min_mtu = ETH_ZLEN;
@@ -502,7 +465,7 @@ int bnxt_vf_reps_create(struct bnxt *bp)
 	if (!bp->vf_reps)
 		return -ENOMEM;
 
-	/* storage for cfa_code to vf-idx mapping */
+	 
 	cfa_code_map = kmalloc_array(MAX_CFA_CODE, sizeof(*bp->cfa_code_map),
 				     GFP_KERNEL);
 	if (!cfa_code_map) {
@@ -533,13 +496,13 @@ int bnxt_vf_reps_create(struct bnxt *bp)
 		bnxt_vf_rep_netdev_init(bp, vf_rep, dev);
 		rc = register_netdev(dev);
 		if (rc) {
-			/* no need for unregister_netdev in cleanup */
+			 
 			dev->netdev_ops = NULL;
 			goto err;
 		}
 	}
 
-	/* publish cfa_code_map only after all VF-reps have been initialized */
+	 
 	bp->cfa_code_map = cfa_code_map;
 	netif_keep_dst(bp->dev);
 	return 0;
@@ -551,7 +514,7 @@ err:
 	return rc;
 }
 
-/* Devlink related routines */
+ 
 int bnxt_dl_eswitch_mode_get(struct devlink *devlink, u16 *mode)
 {
 	struct bnxt *bp = bnxt_get_bp_from_dl(devlink);
@@ -584,7 +547,7 @@ int bnxt_dl_eswitch_mode_set(struct devlink *devlink, u16 mode,
 			return -ENOTSUPP;
 		}
 
-		/* Create representors for existing VFs */
+		 
 		if (pci_num_vf(bp->pdev) > 0)
 			ret = bnxt_vf_reps_create(bp);
 		break;

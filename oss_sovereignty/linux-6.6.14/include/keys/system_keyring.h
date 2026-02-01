@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* System keyring containing trusted public keys.
- *
- * Copyright (C) 2013 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+ 
+ 
 
 #ifndef _KEYS_SYSTEM_KEYRING_H
 #define _KEYS_SYSTEM_KEYRING_H
@@ -11,9 +7,9 @@
 #include <linux/key.h>
 
 enum blacklist_hash_type {
-	/* TBSCertificate hash */
+	 
 	BLACKLIST_HASH_X509_TBS = 1,
-	/* Raw data hash */
+	 
 	BLACKLIST_HASH_BINARY = 2,
 };
 
@@ -119,7 +115,7 @@ static inline struct key *get_ima_blacklist_keyring(void)
 {
 	return NULL;
 }
-#endif /* CONFIG_IMA_BLACKLIST_KEYRING */
+#endif  
 
 #if defined(CONFIG_INTEGRITY_PLATFORM_KEYRING) && \
 	defined(CONFIG_SYSTEM_TRUSTED_KEYRING)
@@ -130,4 +126,4 @@ static inline void set_platform_trusted_keys(struct key *keyring)
 }
 #endif
 
-#endif /* _KEYS_SYSTEM_KEYRING_H */
+#endif  

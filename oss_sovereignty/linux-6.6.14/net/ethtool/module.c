@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/ethtool.h>
 
@@ -18,7 +18,7 @@ struct module_reply_data {
 #define MODULE_REPDATA(__reply_base) \
 	container_of(__reply_base, struct module_reply_data, base)
 
-/* MODULE_GET */
+ 
 
 const struct nla_policy ethnl_module_get_policy[ETHTOOL_A_MODULE_HEADER + 1] = {
 	[ETHTOOL_A_MODULE_HEADER] = NLA_POLICY_NESTED(ethnl_header_policy),
@@ -64,10 +64,10 @@ static int module_reply_size(const struct ethnl_req_info *req_base,
 	int len = 0;
 
 	if (data->power.policy)
-		len += nla_total_size(sizeof(u8));	/* _MODULE_POWER_MODE_POLICY */
+		len += nla_total_size(sizeof(u8));	 
 
 	if (data->power.mode)
-		len += nla_total_size(sizeof(u8));	/* _MODULE_POWER_MODE */
+		len += nla_total_size(sizeof(u8));	 
 
 	return len;
 }
@@ -90,7 +90,7 @@ static int module_fill_reply(struct sk_buff *skb,
 	return 0;
 }
 
-/* MODULE_SET */
+ 
 
 const struct nla_policy ethnl_module_set_policy[ETHTOOL_A_MODULE_POWER_MODE_POLICY + 1] = {
 	[ETHTOOL_A_MODULE_HEADER] = NLA_POLICY_NESTED(ethnl_header_policy),

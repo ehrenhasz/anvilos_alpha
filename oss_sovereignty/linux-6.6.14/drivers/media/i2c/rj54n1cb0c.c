@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for RJ54N1CB0C CMOS Image Sensor from Sharp
- *
- * Copyright (C) 2018, Jacopo Mondi <jacopo@jmondi.org>
- *
- * Copyright (C) 2009, Guennadi Liakhovetski <g.liakhovetski@gmx.de>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -95,10 +89,7 @@
 #define RESIZE_HOLD_SEL			(1 << 2)
 #define RESIZE_GO			(1 << 1)
 
-/*
- * When cropping, the camera automatically centers the cropped region, there
- * doesn't seem to be a way to specify an explicit location of the rectangle.
- */
+ 
 #define RJ54N1_COLUMN_SKIP		0
 #define RJ54N1_ROW_SKIP			0
 #define RJ54N1_MAX_WIDTH		1600
@@ -107,15 +98,15 @@
 #define PLL_L				2
 #define PLL_N				0x31
 
-/* I2C addresses: 0x50, 0x51, 0x60, 0x61 */
+ 
 
-/* RJ54N1CB0C has only one fixed colorspace per pixelcode */
+ 
 struct rj54n1_datafmt {
 	u32	code;
 	enum v4l2_colorspace		colorspace;
 };
 
-/* Find a data format by a pixel code in an array */
+ 
 static const struct rj54n1_datafmt *rj54n1_find_datafmt(
 	u32 code, const struct rj54n1_datafmt *fmt,
 	int n)
@@ -141,7 +132,7 @@ static const struct rj54n1_datafmt rj54n1_colour_fmts[] = {
 };
 
 struct rj54n1_clock_div {
-	u8 ratio_tg;	/* can be 0 or an odd number */
+	u8 ratio_tg;	 
 	u8 ratio_t;
 	u8 ratio_r;
 	u8 ratio_op;
@@ -156,12 +147,12 @@ struct rj54n1 {
 	struct gpio_desc *enable_gpio;
 	struct rj54n1_clock_div clk_div;
 	const struct rj54n1_datafmt *fmt;
-	struct v4l2_rect rect;	/* Sensor window */
+	struct v4l2_rect rect;	 
 	unsigned int tgclk_mhz;
 	bool auto_wb;
-	unsigned short width;	/* Output window */
+	unsigned short width;	 
 	unsigned short height;
-	unsigned short resize;	/* Sensor * 1024 / resize = Output */
+	unsigned short resize;	 
 	unsigned short scale;
 	u8 bank;
 };
@@ -413,13 +404,13 @@ static const struct rj54n1_reg_val bank_10[] = {
 	{0x10bf, 0x69}
 };
 
-/* Clock dividers - these are default register values, divider = register + 1 */
+ 
 static const struct rj54n1_clock_div clk_div = {
-	.ratio_tg	= 3 /* default: 5 */,
-	.ratio_t	= 4 /* default: 1 */,
-	.ratio_r	= 4 /* default: 0 */,
-	.ratio_op	= 1 /* default: 5 */,
-	.ratio_o	= 9 /* default: 0 */,
+	.ratio_tg	= 3  ,
+	.ratio_t	= 4  ,
+	.ratio_r	= 4  ,
+	.ratio_op	= 1  ,
+	.ratio_o	= 9  ,
 };
 
 static struct rj54n1 *to_rj54n1(const struct i2c_client *client)
@@ -432,7 +423,7 @@ static int reg_read(struct i2c_client *client, const u16 reg)
 	struct rj54n1 *rj54n1 = to_rj54n1(client);
 	int ret;
 
-	/* set bank */
+	 
 	if (rj54n1->bank != reg >> 8) {
 		dev_dbg(&client->dev, "[0x%x] = 0x%x\n", 0xff, reg >> 8);
 		ret = i2c_smbus_write_byte_data(client, 0xff, reg >> 8);
@@ -449,7 +440,7 @@ static int reg_write(struct i2c_client *client, const u16 reg,
 	struct rj54n1 *rj54n1 = to_rj54n1(client);
 	int ret;
 
-	/* set bank */
+	 
 	if (rj54n1->bank != reg >> 8) {
 		dev_dbg(&client->dev, "[0x%x] = 0x%x\n", 0xff, reg >> 8);
 		ret = i2c_smbus_write_byte_data(client, 0xff, reg >> 8);
@@ -502,7 +493,7 @@ static int rj54n1_s_stream(struct v4l2_subdev *sd, int enable)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 
-	/* Switch between preview and still shot modes */
+	 
 	return reg_set(client, RJ54N1_STILL_CONTROL, (!enable) << 7, 0x80);
 }
 
@@ -524,10 +515,7 @@ static int rj54n1_set_rect(struct i2c_client *client,
 	return ret;
 }
 
-/*
- * Some commands, specifically certain initialisation sequences, require
- * a commit operation.
- */
+ 
 static int rj54n1_commit(struct i2c_client *client)
 {
 	int ret = reg_write(client, RJ54N1_INIT_START, 1);
@@ -554,7 +542,7 @@ static int rj54n1_set_selection(struct v4l2_subdev *sd,
 	    sel->target != V4L2_SEL_TGT_CROP)
 		return -EINVAL;
 
-	/* arbitrary minimum width and height, edges unimportant */
+	 
 	v4l_bound_align_image(&input_w, 8, RJ54N1_MAX_WIDTH, 0,
 			      &input_h, 8, RJ54N1_MAX_HEIGHT, 0, 0);
 
@@ -625,11 +613,7 @@ static int rj54n1_get_fmt(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * The actual geometry configuration routine. It scales the input window into
- * the output one, updates the window sizes and returns an error or the resize
- * coefficient on success. Note: we only use the "Fixed Scaling" on this camera.
- */
+ 
 static int rj54n1_sensor_scale(struct v4l2_subdev *sd, s32 *in_w, s32 *in_h,
 			       s32 *out_w, s32 *out_h)
 {
@@ -641,12 +625,7 @@ static int rj54n1_sensor_scale(struct v4l2_subdev *sd, s32 *in_w, s32 *in_h,
 	unsigned int peak, peak_50, peak_60;
 	int ret;
 
-	/*
-	 * We have a problem with crops, where the window is larger than 512x384
-	 * and output window is larger than a half of the input one. In this
-	 * case we have to either reduce the input window to equal or below
-	 * 512x384 or the output window to equal or below 1/2 of the input.
-	 */
+	 
 	if (output_w > max(512U, input_w / 2)) {
 		if (2 * output_w > RJ54N1_MAX_WIDTH) {
 			input_w = RJ54N1_MAX_WIDTH;
@@ -671,7 +650,7 @@ static int rj54n1_sensor_scale(struct v4l2_subdev *sd, s32 *in_w, s32 *in_h,
 			input_h, output_h);
 	}
 
-	/* Idea: use the read mode for snapshots, handle separate geometries */
+	 
 	ret = rj54n1_set_rect(client, RJ54N1_X_OUTPUT_SIZE_S_L,
 			      RJ54N1_Y_OUTPUT_SIZE_S_L,
 			      RJ54N1_XY_OUTPUT_SIZE_S_H, output_w, output_h);
@@ -693,7 +672,7 @@ static int rj54n1_sensor_scale(struct v4l2_subdev *sd, s32 *in_w, s32 *in_h,
 		resize_x = (input_w * 1024 + output_w / 2) / output_w;
 		resize_y = (input_h * 1024 + output_h / 2) / output_h;
 
-		/* We want max(resize_x, resize_y), check if it still fits */
+		 
 		if (resize_x > resize_y &&
 		    (output_h * resize_x + 512) / 1024 > RJ54N1_MAX_HEIGHT)
 			resize = (RJ54N1_MAX_HEIGHT * 1024 + output_h / 2) /
@@ -705,7 +684,7 @@ static int rj54n1_sensor_scale(struct v4l2_subdev *sd, s32 *in_w, s32 *in_h,
 		else
 			resize = max(resize_x, resize_y);
 
-		/* Prohibited value ranges */
+		 
 		switch (resize) {
 		case 2040 ... 2047:
 			resize = 2039;
@@ -721,7 +700,7 @@ static int rj54n1_sensor_scale(struct v4l2_subdev *sd, s32 *in_w, s32 *in_h,
 		}
 	}
 
-	/* Set scaling */
+	 
 	ret = reg_write(client, RJ54N1_RESIZE_HOLD_L, resize & 0xff);
 	if (!ret)
 		ret = reg_write(client, RJ54N1_RESIZE_HOLD_H, resize >> 8);
@@ -729,18 +708,7 @@ static int rj54n1_sensor_scale(struct v4l2_subdev *sd, s32 *in_w, s32 *in_h,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Configure a skipping bitmask. The sensor will select a skipping value
-	 * among set bits automatically. This is very unclear in the datasheet
-	 * too. I was told, in this register one enables all skipping values,
-	 * that are required for a specific resize, and the camera selects
-	 * automatically, which ones to use. But it is unclear how to identify,
-	 * which cropping values are needed. Secondly, why don't we just set all
-	 * bits and let the camera choose? Would it increase processing time and
-	 * reduce the framerate? Using 0xfffc for INC_USE_SEL doesn't seem to
-	 * improve the image quality or stability for larger frames (see comment
-	 * above), but I didn't check the framerate.
-	 */
+	 
 	skip = min(resize / 1024, 15U);
 
 	inc_sel = 1 << skip;
@@ -755,7 +723,7 @@ static int rj54n1_sensor_scale(struct v4l2_subdev *sd, s32 *in_w, s32 *in_h,
 		ret = reg_write(client, RJ54N1_INC_USE_SEL_H, inc_sel >> 8);
 
 	if (!rj54n1->auto_wb) {
-		/* Auto white balance window */
+		 
 		wb_left	  = output_w / 16;
 		wb_right  = (3 * output_w / 4 - 3) / 4;
 		wb_top	  = output_h / 16;
@@ -775,7 +743,7 @@ static int rj54n1_sensor_scale(struct v4l2_subdev *sd, s32 *in_w, s32 *in_h,
 			ret = reg_write(client, RJ54N1_VCAPE_WB, wb_bottom);
 	}
 
-	/* Antiflicker */
+	 
 	peak = 12 * RJ54N1_MAX_WIDTH * (1 << 14) * resize / rj54n1->tgclk_mhz /
 		10000;
 	peak_50 = peak / 6;
@@ -791,7 +759,7 @@ static int rj54n1_sensor_scale(struct v4l2_subdev *sd, s32 *in_w, s32 *in_h,
 	if (!ret)
 		ret = reg_write(client, RJ54N1_PEAK_DIFF, peak / 150);
 
-	/* Start resizing */
+	 
 	if (!ret)
 		ret = reg_write(client, RJ54N1_RESIZE_CONTROL,
 				RESIZE_HOLD_SEL | RESIZE_GO | 1);
@@ -799,7 +767,7 @@ static int rj54n1_sensor_scale(struct v4l2_subdev *sd, s32 *in_w, s32 *in_h,
 	if (ret < 0)
 		return ret;
 
-	/* Constant taken from manufacturer's example */
+	 
 	msleep(230);
 
 	ret = reg_write(client, RJ54N1_RESIZE_CONTROL, RESIZE_HOLD_SEL | 1);
@@ -822,9 +790,9 @@ static int rj54n1_set_clock(struct i2c_client *client)
 	struct rj54n1 *rj54n1 = to_rj54n1(client);
 	int ret;
 
-	/* Enable external clock */
+	 
 	ret = reg_write(client, RJ54N1_RESET_STANDBY, E_EXCLK | SOFT_STDBY);
-	/* Leave stand-by. Note: use this when implementing suspend / resume */
+	 
 	if (!ret)
 		ret = reg_write(client, RJ54N1_RESET_STANDBY, E_EXCLK);
 
@@ -833,7 +801,7 @@ static int rj54n1_set_clock(struct i2c_client *client)
 	if (!ret)
 		ret = reg_write(client, RJ54N1_PLL_N, PLL_N);
 
-	/* TGCLK dividers */
+	 
 	if (!ret)
 		ret = reg_write(client, RJ54N1_RATIO_TG,
 				rj54n1->clk_div.ratio_tg);
@@ -844,15 +812,15 @@ static int rj54n1_set_clock(struct i2c_client *client)
 		ret = reg_write(client, RJ54N1_RATIO_R,
 				rj54n1->clk_div.ratio_r);
 
-	/* Enable TGCLK & RAMP */
+	 
 	if (!ret)
 		ret = reg_write(client, RJ54N1_RAMP_TGCLK_EN, 3);
 
-	/* Disable clock output */
+	 
 	if (!ret)
 		ret = reg_write(client, RJ54N1_OCLK_DSP, 0);
 
-	/* Set divisors */
+	 
 	if (!ret)
 		ret = reg_write(client, RJ54N1_RATIO_OP,
 				rj54n1->clk_div.ratio_op);
@@ -860,26 +828,26 @@ static int rj54n1_set_clock(struct i2c_client *client)
 		ret = reg_write(client, RJ54N1_RATIO_O,
 				rj54n1->clk_div.ratio_o);
 
-	/* Enable OCLK */
+	 
 	if (!ret)
 		ret = reg_write(client, RJ54N1_OCLK_SEL_EN, 1);
 
-	/* Use PLL for Timing Generator, write 2 to reserved bits */
+	 
 	if (!ret)
 		ret = reg_write(client, RJ54N1_TG_BYPASS, 2);
 
-	/* Take sensor out of reset */
+	 
 	if (!ret)
 		ret = reg_write(client, RJ54N1_RESET_STANDBY,
 				E_EXCLK | SEN_RSTX);
-	/* Enable PLL */
+	 
 	if (!ret)
 		ret = reg_write(client, RJ54N1_PLL_EN, 1);
 
-	/* Wait for PLL to stabilise */
+	 
 	msleep(10);
 
-	/* Enable clock to frequency divider */
+	 
 	if (!ret)
 		ret = reg_write(client, RJ54N1_CLK_RST, 1);
 
@@ -891,10 +859,10 @@ static int rj54n1_set_clock(struct i2c_client *client)
 		return -EIO;
 	}
 
-	/* Start the PLL */
+	 
 	ret = reg_set(client, RJ54N1_OCLK_DSP, 1, 1);
 
-	/* Enable OCLK */
+	 
 	if (!ret)
 		ret = reg_write(client, RJ54N1_OCLK_SEL_EN, 1);
 
@@ -911,35 +879,32 @@ static int rj54n1_reg_init(struct i2c_client *client)
 	if (!ret)
 		ret = reg_write_multiple(client, bank_10, ARRAY_SIZE(bank_10));
 
-	/* Set binning divisors */
+	 
 	if (!ret)
 		ret = reg_write(client, RJ54N1_SCALE_1_2_LEV, 3 | (7 << 4));
 	if (!ret)
 		ret = reg_write(client, RJ54N1_SCALE_4_LEV, 0xf);
 
-	/* Switch to fixed resize mode */
+	 
 	if (!ret)
 		ret = reg_write(client, RJ54N1_RESIZE_CONTROL,
 				RESIZE_HOLD_SEL | 1);
 
-	/* Set gain */
+	 
 	if (!ret)
 		ret = reg_write(client, RJ54N1_Y_GAIN, 0x84);
 
-	/*
-	 * Mirror the image back: default is upside down and left-to-right...
-	 * Set manual preview / still shot switching
-	 */
+	 
 	if (!ret)
 		ret = reg_write(client, RJ54N1_MIRROR_STILL_MODE, 0x27);
 
 	if (!ret)
 		ret = reg_write_multiple(client, bank_4, ARRAY_SIZE(bank_4));
 
-	/* Auto exposure area */
+	 
 	if (!ret)
 		ret = reg_write(client, RJ54N1_EXPOSURE_CONTROL, 0x80);
-	/* Check current auto WB config */
+	 
 	if (!ret)
 		ret = reg_read(client, RJ54N1_WB_SEL_WEIGHT_I);
 	if (ret >= 0) {
@@ -953,20 +918,20 @@ static int rj54n1_reg_init(struct i2c_client *client)
 		ret = reg_write(client, RJ54N1_RESET_STANDBY,
 				E_EXCLK | DSP_RSTX | SEN_RSTX);
 
-	/* Commit init */
+	 
 	if (!ret)
 		ret = rj54n1_commit(client);
 
-	/* Take DSP, TG, sensor out of reset */
+	 
 	if (!ret)
 		ret = reg_write(client, RJ54N1_RESET_STANDBY,
 				E_EXCLK | DSP_RSTX | TG_RSTX | SEN_RSTX);
 
-	/* Start register update? Same register as 0x?FE in many bank_* sets */
+	 
 	if (!ret)
 		ret = reg_write(client, RJ54N1_FWFLG, 2);
 
-	/* Constant taken from manufacturer's example */
+	 
 	msleep(700);
 
 	return ret;
@@ -1013,10 +978,7 @@ static int rj54n1_set_fmt(struct v4l2_subdev *sd,
 		return 0;
 	}
 
-	/*
-	 * Verify if the sensor has just been powered on. TODO: replace this
-	 * with proper PM, when a suitable API is available.
-	 */
+	 
 	ret = reg_read(client, RJ54N1_RESET_STANDBY);
 	if (ret < 0)
 		return ret;
@@ -1027,7 +989,7 @@ static int rj54n1_set_fmt(struct v4l2_subdev *sd,
 			return ret;
 	}
 
-	/* RA_SEL_UL is only relevant for raw modes, ignored otherwise. */
+	 
 	switch (mf->code) {
 	case MEDIA_BUS_FMT_YUYV8_2X8:
 		ret = reg_write(client, RJ54N1_OUT_SEL, 0);
@@ -1084,7 +1046,7 @@ static int rj54n1_set_fmt(struct v4l2_subdev *sd,
 		ret = -EINVAL;
 	}
 
-	/* Special case: a raw mode with 10 bits of data per clock tick */
+	 
 	if (!ret)
 		ret = reg_set(client, RJ54N1_OCLK_SEL_EN,
 			      (mf->code == MEDIA_BUS_FMT_SBGGR10_1X10) << 1, 2);
@@ -1092,7 +1054,7 @@ static int rj54n1_set_fmt(struct v4l2_subdev *sd,
 	if (ret < 0)
 		return ret;
 
-	/* Supported scales 1:1 >= scale > 1:16 */
+	 
 	max_w = mf->width * (16 * 1024 - 1) / 1024;
 	if (input_w > max_w)
 		input_w = max_w;
@@ -1132,7 +1094,7 @@ static int rj54n1_g_register(struct v4l2_subdev *sd,
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 
 	if (reg->reg < 0x400 || reg->reg > 0x1fff)
-		/* Registers > 0x0800 are only available from Sharp support */
+		 
 		return -EINVAL;
 
 	reg->size = 1;
@@ -1150,7 +1112,7 @@ static int rj54n1_s_register(struct v4l2_subdev *sd,
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 
 	if (reg->reg < 0x400 || reg->reg > 0x1fff)
-		/* Registers >= 0x0800 are only available from Sharp support */
+		 
 		return -EINVAL;
 
 	if (reg_write(client, reg->reg, reg->val) < 0)
@@ -1215,7 +1177,7 @@ static int rj54n1_s_ctrl(struct v4l2_ctrl *ctrl)
 			return -EIO;
 		return 0;
 	case V4L2_CID_AUTO_WHITE_BALANCE:
-		/* Auto WB area - whole image */
+		 
 		if (reg_set(client, RJ54N1_WB_SEL_WEIGHT_I, ctrl->val << 7,
 			    0x80) < 0)
 			return -EIO;
@@ -1256,10 +1218,7 @@ static const struct v4l2_subdev_ops rj54n1_subdev_ops = {
 	.pad	= &rj54n1_subdev_pad_ops,
 };
 
-/*
- * Interface active, can use i2c. If it fails, it can indeed mean, that
- * this wasn't our capture interface, so, we wait for the right one
- */
+ 
 static int rj54n1_video_probe(struct i2c_client *client,
 			      struct rj54n1_pdata *priv)
 {
@@ -1271,7 +1230,7 @@ static int rj54n1_video_probe(struct i2c_client *client,
 	if (ret < 0)
 		return ret;
 
-	/* Read out the chip version register */
+	 
 	data1 = reg_read(client, RJ54N1_DEV_CODE);
 	data2 = reg_read(client, RJ54N1_DEV_CODE2);
 
@@ -1282,7 +1241,7 @@ static int rj54n1_video_probe(struct i2c_client *client,
 		goto done;
 	}
 
-	/* Configure IOCTL polarity from the platform data: 0 or 1 << 7. */
+	 
 	ret = reg_write(client, RJ54N1_IOC, priv->ioctl_high << 7);
 	if (ret < 0)
 		goto done;

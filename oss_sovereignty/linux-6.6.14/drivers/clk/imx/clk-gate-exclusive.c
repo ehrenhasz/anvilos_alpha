@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2014 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -9,18 +7,7 @@
 #include <linux/slab.h>
 #include "clk.h"
 
-/**
- * struct clk_gate_exclusive - i.MX specific gate clock which is mutually
- * exclusive with other gate clocks
- *
- * @gate: the parent class
- * @exclusive_mask: mask of gate bits which are mutually exclusive to this
- *	gate clock
- *
- * The imx exclusive gate clock is a subclass of basic clk_gate
- * with an addtional mask to indicate which other gate bits in the same
- * register is mutually exclusive to this gate clock.
- */
+ 
 struct clk_gate_exclusive {
 	struct clk_gate gate;
 	u32 exclusive_mask;

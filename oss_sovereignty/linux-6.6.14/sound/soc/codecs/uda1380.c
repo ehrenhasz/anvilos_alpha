@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * uda1380.c - Philips UDA1380 ALSA SoC audio driver
- *
- * Copyright (c) 2007-2009 Philipp Zabel <philipp.zabel@gmail.com>
- *
- * Modified by Richard Purdie <richard@openedhand.com> to fit into SoC
- * codec model.
- *
- * Copyright (c) 2005 Giorgio Padrin <giorgio@mandarinlogiq.org>
- * Copyright 2005 Openedhand Ltd.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -29,7 +19,7 @@
 
 #include "uda1380.h"
 
-/* codec private data */
+ 
 struct uda1380_priv {
 	struct snd_soc_component *component;
 	unsigned int dac_clk;
@@ -38,9 +28,7 @@ struct uda1380_priv {
 	u16 *reg_cache;
 };
 
-/*
- * uda1380 register cache
- */
+ 
 static const u16 uda1380_reg[UDA1380_CACHEREGNUM] = {
 	0x0502, 0x0000, 0x0000, 0x3f3f,
 	0x0202, 0x0000, 0x0000, 0x0000,
@@ -55,9 +43,7 @@ static const u16 uda1380_reg[UDA1380_CACHEREGNUM] = {
 
 static unsigned long uda1380_cache_dirty;
 
-/*
- * read uda1380 register cache
- */
+ 
 static inline unsigned int uda1380_read_reg_cache(struct snd_soc_component *component,
 	unsigned int reg)
 {
@@ -71,9 +57,7 @@ static inline unsigned int uda1380_read_reg_cache(struct snd_soc_component *comp
 	return cache[reg];
 }
 
-/*
- * write uda1380 register cache
- */
+ 
 static inline void uda1380_write_reg_cache(struct snd_soc_component *component,
 	u16 reg, unsigned int value)
 {
@@ -87,29 +71,21 @@ static inline void uda1380_write_reg_cache(struct snd_soc_component *component,
 	cache[reg] = value;
 }
 
-/*
- * write to the UDA1380 register space
- */
+ 
 static int uda1380_write(struct snd_soc_component *component, unsigned int reg,
 	unsigned int value)
 {
 	struct uda1380_priv *uda1380 = snd_soc_component_get_drvdata(component);
 	u8 data[3];
 
-	/* data is
-	 *   data[0] is register offset
-	 *   data[1] is MS byte
-	 *   data[2] is LS byte
-	 */
+	 
 	data[0] = reg;
 	data[1] = (value & 0xff00) >> 8;
 	data[2] = value & 0x00ff;
 
 	uda1380_write_reg_cache(component, reg, value);
 
-	/* the interpolator & decimator regs must only be written when the
-	 * codec DAI is active.
-	 */
+	 
 	if (!snd_soc_component_active(component) && (reg >= UDA1380_MVOL))
 		return 0;
 	pr_debug("uda1380: hw write %x val %x\n", reg, value);
@@ -137,7 +113,7 @@ static void uda1380_sync_cache(struct snd_soc_component *component)
 	u8 data[3];
 	u16 *cache = uda1380->reg_cache;
 
-	/* Sync reg_cache with the hardware */
+	 
 	for (reg = 0; reg < UDA1380_MVOL; reg++) {
 		data[0] = reg;
 		data[1] = (cache[reg] & 0xff00) >> 8;
@@ -190,7 +166,7 @@ static void uda1380_flush_work(struct work_struct *work)
 
 }
 
-/* declarations of ALSA reg_elem_REAL controls */
+ 
 static const char *uda1380_deemp[] = {
 	"None",
 	"32kHz",
@@ -247,44 +223,33 @@ static const struct soc_enum uda1380_deemp_enum[] = {
 			uda1380_deemp),
 };
 static SOC_ENUM_SINGLE_DECL(uda1380_input_sel_enum,
-			    UDA1380_ADC, 2, uda1380_input_sel);		/* SEL_MIC, SEL_LNA */
+			    UDA1380_ADC, 2, uda1380_input_sel);		 
 static SOC_ENUM_SINGLE_DECL(uda1380_output_sel_enum,
-			    UDA1380_PM, 7, uda1380_output_sel);		/* R02_EN_AVC */
+			    UDA1380_PM, 7, uda1380_output_sel);		 
 static SOC_ENUM_SINGLE_DECL(uda1380_spf_enum,
-			    UDA1380_MODE, 14, uda1380_spf_mode);		/* M */
+			    UDA1380_MODE, 14, uda1380_spf_mode);		 
 static SOC_ENUM_SINGLE_DECL(uda1380_capture_sel_enum,
-			    UDA1380_IFACE, 6, uda1380_capture_sel);	/* SEL_SOURCE */
+			    UDA1380_IFACE, 6, uda1380_capture_sel);	 
 static SOC_ENUM_SINGLE_DECL(uda1380_sel_ns_enum,
-			    UDA1380_MIXER, 14, uda1380_sel_ns);		/* SEL_NS */
+			    UDA1380_MIXER, 14, uda1380_sel_ns);		 
 static SOC_ENUM_SINGLE_DECL(uda1380_mix_enum,
-			    UDA1380_MIXER, 12, uda1380_mix_control);	/* MIX, MIX_POS */
+			    UDA1380_MIXER, 12, uda1380_mix_control);	 
 static SOC_ENUM_SINGLE_DECL(uda1380_sdet_enum,
-			    UDA1380_MIXER, 4, uda1380_sdet_setting);	/* SD_VALUE */
+			    UDA1380_MIXER, 4, uda1380_sdet_setting);	 
 static SOC_ENUM_SINGLE_DECL(uda1380_os_enum,
-			    UDA1380_MIXER, 0, uda1380_os_setting);	/* OS */
+			    UDA1380_MIXER, 0, uda1380_os_setting);	 
 
-/*
- * from -48 dB in 1.5 dB steps (mute instead of -49.5 dB)
- */
+ 
 static DECLARE_TLV_DB_SCALE(amix_tlv, -4950, 150, 1);
 
-/*
- * from -78 dB in 1 dB steps (3 dB steps, really. LSB are ignored),
- * from -66 dB in 0.5 dB steps (2 dB steps, really) and
- * from -52 dB in 0.25 dB steps
- */
+ 
 static const DECLARE_TLV_DB_RANGE(mvol_tlv,
 	0, 15, TLV_DB_SCALE_ITEM(-8200, 100, 1),
 	16, 43, TLV_DB_SCALE_ITEM(-6600, 50, 0),
 	44, 252, TLV_DB_SCALE_ITEM(-5200, 25, 0)
 );
 
-/*
- * from -72 dB in 1.5 dB steps (6 dB steps really),
- * from -66 dB in 0.75 dB steps (3 dB steps really),
- * from -60 dB in 0.5 dB steps (2 dB steps really) and
- * from -46 dB in 0.25 dB steps
- */
+ 
 static const DECLARE_TLV_DB_RANGE(vc_tlv,
 	0, 7, TLV_DB_SCALE_ITEM(-7800, 150, 1),
 	8, 15, TLV_DB_SCALE_ITEM(-6600, 75, 0),
@@ -292,63 +257,62 @@ static const DECLARE_TLV_DB_RANGE(vc_tlv,
 	44, 228, TLV_DB_SCALE_ITEM(-4600, 25, 0)
 );
 
-/* from 0 to 6 dB in 2 dB steps if SPF mode != flat */
+ 
 static DECLARE_TLV_DB_SCALE(tr_tlv, 0, 200, 0);
 
-/* from 0 to 24 dB in 2 dB steps, if SPF mode == maximum, otherwise cuts
- * off at 18 dB max) */
+ 
 static DECLARE_TLV_DB_SCALE(bb_tlv, 0, 200, 0);
 
-/* from -63 to 24 dB in 0.5 dB steps (-128...48) */
+ 
 static DECLARE_TLV_DB_SCALE(dec_tlv, -6400, 50, 1);
 
-/* from 0 to 24 dB in 3 dB steps */
+ 
 static DECLARE_TLV_DB_SCALE(pga_tlv, 0, 300, 0);
 
-/* from 0 to 30 dB in 2 dB steps */
+ 
 static DECLARE_TLV_DB_SCALE(vga_tlv, 0, 200, 0);
 
 static const struct snd_kcontrol_new uda1380_snd_controls[] = {
-	SOC_DOUBLE_TLV("Analog Mixer Volume", UDA1380_AMIX, 0, 8, 44, 1, amix_tlv),	/* AVCR, AVCL */
-	SOC_DOUBLE_TLV("Master Playback Volume", UDA1380_MVOL, 0, 8, 252, 1, mvol_tlv),	/* MVCL, MVCR */
-	SOC_SINGLE_TLV("ADC Playback Volume", UDA1380_MIXVOL, 8, 228, 1, vc_tlv),	/* VC2 */
-	SOC_SINGLE_TLV("PCM Playback Volume", UDA1380_MIXVOL, 0, 228, 1, vc_tlv),	/* VC1 */
-	SOC_ENUM("Sound Processing Filter", uda1380_spf_enum),				/* M */
-	SOC_DOUBLE_TLV("Tone Control - Treble", UDA1380_MODE, 4, 12, 3, 0, tr_tlv), 	/* TRL, TRR */
-	SOC_DOUBLE_TLV("Tone Control - Bass", UDA1380_MODE, 0, 8, 15, 0, bb_tlv),	/* BBL, BBR */
-/**/	SOC_SINGLE("Master Playback Switch", UDA1380_DEEMP, 14, 1, 1),		/* MTM */
-	SOC_SINGLE("ADC Playback Switch", UDA1380_DEEMP, 11, 1, 1),		/* MT2 from decimation filter */
-	SOC_ENUM("ADC Playback De-emphasis", uda1380_deemp_enum[0]),		/* DE2 */
-	SOC_SINGLE("PCM Playback Switch", UDA1380_DEEMP, 3, 1, 1),		/* MT1, from digital data input */
-	SOC_ENUM("PCM Playback De-emphasis", uda1380_deemp_enum[1]),		/* DE1 */
-	SOC_SINGLE("DAC Polarity inverting Switch", UDA1380_MIXER, 15, 1, 0),	/* DA_POL_INV */
-	SOC_ENUM("Noise Shaper", uda1380_sel_ns_enum),				/* SEL_NS */
-	SOC_ENUM("Digital Mixer Signal Control", uda1380_mix_enum),		/* MIX_POS, MIX */
-	SOC_SINGLE("Silence Detector Switch", UDA1380_MIXER, 6, 1, 0),		/* SDET_ON */
-	SOC_ENUM("Silence Detector Setting", uda1380_sdet_enum),		/* SD_VALUE */
-	SOC_ENUM("Oversampling Input", uda1380_os_enum),			/* OS */
-	SOC_DOUBLE_S8_TLV("ADC Capture Volume", UDA1380_DEC, -128, 48, dec_tlv),	/* ML_DEC, MR_DEC */
-/**/	SOC_SINGLE("ADC Capture Switch", UDA1380_PGA, 15, 1, 1),		/* MT_ADC */
-	SOC_DOUBLE_TLV("Line Capture Volume", UDA1380_PGA, 0, 8, 8, 0, pga_tlv), /* PGA_GAINCTRLL, PGA_GAINCTRLR */
-	SOC_SINGLE("ADC Polarity inverting Switch", UDA1380_ADC, 12, 1, 0),	/* ADCPOL_INV */
-	SOC_SINGLE_TLV("Mic Capture Volume", UDA1380_ADC, 8, 15, 0, vga_tlv),	/* VGA_CTRL */
-	SOC_SINGLE("DC Filter Bypass Switch", UDA1380_ADC, 1, 1, 0),		/* SKIP_DCFIL (before decimator) */
-	SOC_SINGLE("DC Filter Enable Switch", UDA1380_ADC, 0, 1, 0),		/* EN_DCFIL (at output of decimator) */
-	SOC_SINGLE("AGC Timing", UDA1380_AGC, 8, 7, 0),			/* TODO: enum, see table 62 */
-	SOC_SINGLE("AGC Target level", UDA1380_AGC, 2, 3, 1),			/* AGC_LEVEL */
-	/* -5.5, -8, -11.5, -14 dBFS */
+	SOC_DOUBLE_TLV("Analog Mixer Volume", UDA1380_AMIX, 0, 8, 44, 1, amix_tlv),	 
+	SOC_DOUBLE_TLV("Master Playback Volume", UDA1380_MVOL, 0, 8, 252, 1, mvol_tlv),	 
+	SOC_SINGLE_TLV("ADC Playback Volume", UDA1380_MIXVOL, 8, 228, 1, vc_tlv),	 
+	SOC_SINGLE_TLV("PCM Playback Volume", UDA1380_MIXVOL, 0, 228, 1, vc_tlv),	 
+	SOC_ENUM("Sound Processing Filter", uda1380_spf_enum),				 
+	SOC_DOUBLE_TLV("Tone Control - Treble", UDA1380_MODE, 4, 12, 3, 0, tr_tlv), 	 
+	SOC_DOUBLE_TLV("Tone Control - Bass", UDA1380_MODE, 0, 8, 15, 0, bb_tlv),	 
+ 	SOC_SINGLE("Master Playback Switch", UDA1380_DEEMP, 14, 1, 1),		 
+	SOC_SINGLE("ADC Playback Switch", UDA1380_DEEMP, 11, 1, 1),		 
+	SOC_ENUM("ADC Playback De-emphasis", uda1380_deemp_enum[0]),		 
+	SOC_SINGLE("PCM Playback Switch", UDA1380_DEEMP, 3, 1, 1),		 
+	SOC_ENUM("PCM Playback De-emphasis", uda1380_deemp_enum[1]),		 
+	SOC_SINGLE("DAC Polarity inverting Switch", UDA1380_MIXER, 15, 1, 0),	 
+	SOC_ENUM("Noise Shaper", uda1380_sel_ns_enum),				 
+	SOC_ENUM("Digital Mixer Signal Control", uda1380_mix_enum),		 
+	SOC_SINGLE("Silence Detector Switch", UDA1380_MIXER, 6, 1, 0),		 
+	SOC_ENUM("Silence Detector Setting", uda1380_sdet_enum),		 
+	SOC_ENUM("Oversampling Input", uda1380_os_enum),			 
+	SOC_DOUBLE_S8_TLV("ADC Capture Volume", UDA1380_DEC, -128, 48, dec_tlv),	 
+ 	SOC_SINGLE("ADC Capture Switch", UDA1380_PGA, 15, 1, 1),		 
+	SOC_DOUBLE_TLV("Line Capture Volume", UDA1380_PGA, 0, 8, 8, 0, pga_tlv),  
+	SOC_SINGLE("ADC Polarity inverting Switch", UDA1380_ADC, 12, 1, 0),	 
+	SOC_SINGLE_TLV("Mic Capture Volume", UDA1380_ADC, 8, 15, 0, vga_tlv),	 
+	SOC_SINGLE("DC Filter Bypass Switch", UDA1380_ADC, 1, 1, 0),		 
+	SOC_SINGLE("DC Filter Enable Switch", UDA1380_ADC, 0, 1, 0),		 
+	SOC_SINGLE("AGC Timing", UDA1380_AGC, 8, 7, 0),			 
+	SOC_SINGLE("AGC Target level", UDA1380_AGC, 2, 3, 1),			 
+	 
 	SOC_SINGLE("AGC Switch", UDA1380_AGC, 0, 1, 0),
 };
 
-/* Input mux */
+ 
 static const struct snd_kcontrol_new uda1380_input_mux_control =
 	SOC_DAPM_ENUM("Route", uda1380_input_sel_enum);
 
-/* Output mux */
+ 
 static const struct snd_kcontrol_new uda1380_output_mux_control =
 	SOC_DAPM_ENUM("Route", uda1380_output_sel_enum);
 
-/* Capture mux */
+ 
 static const struct snd_kcontrol_new uda1380_capture_mux_control =
 	SOC_DAPM_ENUM("Route", uda1380_capture_sel_enum);
 
@@ -379,7 +343,7 @@ static const struct snd_soc_dapm_widget uda1380_dapm_widgets[] = {
 
 static const struct snd_soc_dapm_route uda1380_dapm_routes[] = {
 
-	/* output mux */
+	 
 	{"HeadPhone Driver", NULL, "Output Mux"},
 	{"VOUTR", NULL, "Output Mux"},
 	{"VOUTL", NULL, "Output Mux"},
@@ -391,24 +355,24 @@ static const struct snd_soc_dapm_route uda1380_dapm_routes[] = {
 	{"Output Mux", "DAC", "DAC"},
 	{"Output Mux", "Analog Mixer", "Analog Mixer"},
 
-	/* {"DAC", "Digital Mixer", "I2S" } */
+	 
 
-	/* headphone driver */
+	 
 	{"VOUTLHP", NULL, "HeadPhone Driver"},
 	{"VOUTRHP", NULL, "HeadPhone Driver"},
 
-	/* input mux */
+	 
 	{"Left ADC", NULL, "Input Mux"},
 	{"Input Mux", "Mic", "Mic LNA"},
 	{"Input Mux", "Mic + Line R", "Mic LNA"},
 	{"Input Mux", "Line L", "Left PGA"},
 	{"Input Mux", "Line", "Left PGA"},
 
-	/* right input */
+	 
 	{"Right ADC", "Mic + Line R", "Right PGA"},
 	{"Right ADC", "Line", "Right PGA"},
 
-	/* inputs */
+	 
 	{"Mic LNA", NULL, "VINM"},
 	{"Left PGA", NULL, "VINL"},
 	{"Right PGA", NULL, "VINR"},
@@ -420,7 +384,7 @@ static int uda1380_set_dai_fmt_both(struct snd_soc_dai *codec_dai,
 	struct snd_soc_component *component = codec_dai->component;
 	int iface;
 
-	/* set up DAI based upon fmt */
+	 
 	iface = uda1380_read_reg_cache(component, UDA1380_IFACE);
 	iface &= ~(R01_SFORI_MASK | R01_SIM | R01_SFORO_MASK);
 
@@ -435,7 +399,7 @@ static int uda1380_set_dai_fmt_both(struct snd_soc_dai *codec_dai,
 		iface |= R01_SFORI_MSB | R01_SFORO_MSB;
 	}
 
-	/* DATAI is consumer only */
+	 
 	if ((fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) != SND_SOC_DAIFMT_CBC_CFC)
 		return -EINVAL;
 
@@ -450,7 +414,7 @@ static int uda1380_set_dai_fmt_playback(struct snd_soc_dai *codec_dai,
 	struct snd_soc_component *component = codec_dai->component;
 	int iface;
 
-	/* set up DAI based upon fmt */
+	 
 	iface = uda1380_read_reg_cache(component, UDA1380_IFACE);
 	iface &= ~R01_SFORI_MASK;
 
@@ -465,7 +429,7 @@ static int uda1380_set_dai_fmt_playback(struct snd_soc_dai *codec_dai,
 		iface |= R01_SFORI_MSB;
 	}
 
-	/* DATAI is consumer only */
+	 
 	if ((fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) != SND_SOC_DAIFMT_CBC_CFC)
 		return -EINVAL;
 
@@ -480,7 +444,7 @@ static int uda1380_set_dai_fmt_capture(struct snd_soc_dai *codec_dai,
 	struct snd_soc_component *component = codec_dai->component;
 	int iface;
 
-	/* set up DAI based upon fmt */
+	 
 	iface = uda1380_read_reg_cache(component, UDA1380_IFACE);
 	iface &= ~(R01_SIM | R01_SFORO_MASK);
 
@@ -534,11 +498,11 @@ static int uda1380_pcm_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_component *component = dai->component;
 	u16 clk = uda1380_read_reg_cache(component, UDA1380_CLK);
 
-	/* set WSPLL power and divider if running from this clock */
+	 
 	if (clk & R00_DAC_CLK) {
 		int rate = params_rate(params);
 		u16 pm = uda1380_read_reg_cache(component, UDA1380_PM);
-		clk &= ~0x3; /* clear SEL_LOOP_DIV */
+		clk &= ~0x3;  
 		switch (rate) {
 		case 6250 ... 12500:
 			clk |= 0x0;
@@ -571,7 +535,7 @@ static void uda1380_pcm_shutdown(struct snd_pcm_substream *substream,
 	struct snd_soc_component *component = dai->component;
 	u16 clk = uda1380_read_reg_cache(component, UDA1380_CLK);
 
-	/* shut down WSPLL power if running from this clock */
+	 
 	if (clk & R00_DAC_CLK) {
 		u16 pm = uda1380_read_reg_cache(component, UDA1380_PM);
 		uda1380_write(component, UDA1380_PM, ~R02_PON_PLL & pm);
@@ -595,7 +559,7 @@ static int uda1380_set_bias_level(struct snd_soc_component *component,
 	switch (level) {
 	case SND_SOC_BIAS_ON:
 	case SND_SOC_BIAS_PREPARE:
-		/* ADC, DAC on */
+		 
 		uda1380_write(component, UDA1380_PM, R02_PON_BIAS | pm);
 		break;
 	case SND_SOC_BIAS_STANDBY:
@@ -616,9 +580,7 @@ static int uda1380_set_bias_level(struct snd_soc_component *component,
 
 		gpio_set_value(pdata->gpio_power, 0);
 
-		/* Mark mixer regs cache dirty to sync them with
-		 * codec regs on power on.
-		 */
+		 
 		for (reg = UDA1380_MVOL; reg < UDA1380_CACHEREGNUM; reg++)
 			set_bit(reg - 0x10, &uda1380_cache_dirty);
 	}
@@ -667,7 +629,7 @@ static struct snd_soc_dai_driver uda1380_dai[] = {
 		.formats = SNDRV_PCM_FMTBIT_S16_LE,},
 	.ops = &uda1380_dai_ops,
 },
-{ /* playback only - dual interface */
+{  
 	.name = "uda1380-hifi-playback",
 	.playback = {
 		.stream_name = "Playback",
@@ -678,7 +640,7 @@ static struct snd_soc_dai_driver uda1380_dai[] = {
 	},
 	.ops = &uda1380_dai_ops_playback,
 },
-{ /* capture only - dual interface*/
+{  
 	.name = "uda1380-hifi-capture",
 	.capture = {
 		.stream_name = "Capture",
@@ -707,7 +669,7 @@ static int uda1380_probe(struct snd_soc_component *component)
 
 	INIT_WORK(&uda1380->work, uda1380_flush_work);
 
-	/* set clock input */
+	 
 	switch (pdata->dac_clk) {
 	case UDA1380_DAC_CLK_SYSCLK:
 		uda1380_write_reg_cache(component, UDA1380_CLK, 0);

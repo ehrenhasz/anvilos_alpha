@@ -1,12 +1,4 @@
-/* Broadcom NetXtreme-C/E network driver.
- *
- * Copyright (c) 2014-2016 Broadcom Corporation
- * Copyright (c) 2016-2017 Broadcom Limited
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- */
+ 
 
 #include <linux/netdevice.h>
 #include <linux/types.h>
@@ -121,9 +113,7 @@ static int bnxt_hwrm_queue_cos2bw_cfg(struct bnxt *bp, struct ieee_ets *ets,
 			cos2bw.tsa =
 				QUEUE_COS2BW_QCFG_RESP_QUEUE_ID0_TSA_ASSIGN_ETS;
 			cos2bw.bw_weight = ets->tc_tx_bw[i];
-			/* older firmware requires min_bw to be set to the
-			 * same weight value in percent.
-			 */
+			 
 			cos2bw.min_bw =
 				cpu_to_le32((ets->tc_tx_bw[i] * 100) |
 					    BW_VALUE_UNIT_PERCENT1_100);
@@ -196,7 +186,7 @@ static int bnxt_queue_remap(struct bnxt *bp, unsigned int lltc_mask)
 	int max = bp->max_tc;
 	int i, j, rc;
 
-	/* Assign lossless TCs first */
+	 
 	for (i = 0, j = 0; i < max; ) {
 		if (lltc_mask & (1 << i)) {
 			if (BNXT_LLQ(bp->q_info[j].queue_profile)) {
@@ -374,7 +364,7 @@ static int bnxt_hwrm_set_dcbx_app(struct bnxt *bp, struct dcb_app *app,
 		}
 	}
 	if (add) {
-		/* append */
+		 
 		n++;
 		fw_app->protocol_id = cpu_to_be16(app->protocol);
 		fw_app->protocol_selector = app->selector;
@@ -383,7 +373,7 @@ static int bnxt_hwrm_set_dcbx_app(struct bnxt *bp, struct dcb_app *app,
 	} else {
 		size_t len = 0;
 
-		/* not found, nothing to delete */
+		 
 		if (n == i)
 			goto set_app_exit;
 
@@ -407,7 +397,7 @@ static int bnxt_hwrm_set_dcbx_app(struct bnxt *bp, struct dcb_app *app,
 	rc = hwrm_req_send(bp, set);
 
 set_app_exit:
-	hwrm_req_drop(bp, get); /* dropping get request and associated slice */
+	hwrm_req_drop(bp, get);  
 	return rc;
 }
 
@@ -537,7 +527,7 @@ static int bnxt_dcbnl_ieee_getets(struct net_device *dev, struct ieee_ets *ets)
 		if (rc)
 			goto error;
 
-		/* cache result */
+		 
 		bp->ieee_ets = my_ets;
 	}
 
@@ -569,7 +559,7 @@ static int bnxt_dcbnl_ieee_setets(struct net_device *dev, struct ieee_ets *ets)
 			my_ets = kzalloc(sizeof(*my_ets), GFP_KERNEL);
 			if (!my_ets)
 				return -ENOMEM;
-			/* initialize PRI2TC mappings to invalid value */
+			 
 			for (i = 0; i < IEEE_8021QAZ_MAX_TCS; i++)
 				my_ets->prio_tc[i] = IEEE_8021QAZ_MAX_TCS;
 			bp->ieee_ets = my_ets;
@@ -731,7 +721,7 @@ static u8 bnxt_dcbnl_setdcbx(struct net_device *dev, u8 mode)
 {
 	struct bnxt *bp = netdev_priv(dev);
 
-	/* All firmware DCBX settings are set in NVRAM */
+	 
 	if (bp->dcbx_cap & DCB_CAP_DCBX_LLD_MANAGED)
 		return 1;
 
@@ -739,7 +729,7 @@ static u8 bnxt_dcbnl_setdcbx(struct net_device *dev, u8 mode)
 		if (BNXT_VF(bp) || (bp->fw_cap & BNXT_FW_CAP_LLDP_AGENT))
 			return 1;
 
-		/* only support IEEE */
+		 
 		if ((mode & DCB_CAP_DCBX_VER_CEE) ||
 		    !(mode & DCB_CAP_DCBX_VER_IEEE))
 			return 1;

@@ -1,35 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * lib/ts_bm.c		Boyer-Moore text search implementation
- *
- * Authors:	Pablo Neira Ayuso <pablo@eurodev.net>
- *
- * ==========================================================================
- * 
- *   Implements Boyer-Moore string matching algorithm:
- *
- *   [1] A Fast String Searching Algorithm, R.S. Boyer and Moore.
- *       Communications of the Association for Computing Machinery, 
- *       20(10), 1977, pp. 762-772.
- *       https://www.cs.utexas.edu/users/moore/publications/fstrpos.pdf
- *
- *   [2] Handbook of Exact String Matching Algorithms, Thierry Lecroq, 2004
- *       http://www-igm.univ-mlv.fr/~lecroq/string/string.pdf
- *
- *   Note: Since Boyer-Moore (BM) performs searches for matchings from right 
- *   to left, it's still possible that a matching could be spread over 
- *   multiple blocks, in that case this algorithm won't find any coincidence.
- *   
- *   If you're willing to ensure that such thing won't ever happen, use the
- *   Knuth-Pratt-Morris (KMP) implementation instead. In conclusion, choose 
- *   the proper string search algorithm depending on your setting. 
- *
- *   Say you're using the textsearch infrastructure for filtering, NIDS or 
- *   any similar security focused purpose, then go KMP. Otherwise, if you 
- *   really care about performance, say you're classifying packets to apply
- *   Quality of Service (QoS) policies, and you don't mind about possible
- *   matchings spread over multiple fragments, then go BM.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -38,7 +8,7 @@
 #include <linux/ctype.h>
 #include <linux/textsearch.h>
 
-/* Alphabet size, use ASCII */
+ 
 #define ASIZE 256
 
 #if 0
@@ -96,14 +66,14 @@ static unsigned int bm_find(struct ts_config *conf, struct ts_state *state)
 			i = matchpat(&bm->pattern[bm->patlen-1], bm->patlen,
 				     &text[shift], icase);
 			if (i == bm->patlen) {
-				/* London calling... */
+				 
 				DEBUGP("found!\n");
 				return consumed + (shift-(bm->patlen-1));
 			}
 
 			bs = bm->bad_shift[text[shift-i]];
 
-			/* Now jumping to... */
+			 
 			shift = max_t(int, shift-i+bs, shift+bm->good_shift[i]);
 		}
 		consumed += text_len;
@@ -143,8 +113,7 @@ static void compute_prefix_tbl(struct ts_bm *bm, int flags)
 			    = bm->patlen - 1 - i;
 	}
 
-	/* Compute the good shift array, used to match reocurrences 
-	 * of a subpattern */
+	 
 	bm->good_shift[0] = 1;
 	for (i = 1; i < bm->patlen; i++)
 		bm->good_shift[i] = bm->patlen;

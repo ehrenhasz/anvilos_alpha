@@ -1,18 +1,9 @@
-/*
- * JFFS2 -- Journalling Flash File System, Version 2.
- *
- * Copyright © 2001-2007 Red Hat, Inc.
- *
- * Created by David Woodhouse <dwmw2@infradead.org>
- *
- * For licensing information, see the file 'LICENCE' in this directory.
- *
- */
+ 
 
 #ifndef __JFFS2_OS_LINUX_H__
 #define __JFFS2_OS_LINUX_H__
 
-/* JFFS2 uses Linux mode bits natively -- no need for conversion */
+ 
 #define os_to_jffs2_mode(x) (x)
 #define jffs2_to_os_mode(x) (x)
 
@@ -98,7 +89,7 @@ static inline void jffs2_init_inode_info(struct jffs2_inode_info *f)
 #define jffs2_ubivol_cleanup(c) do {} while (0)
 #define jffs2_dirty_trigger(c) do {} while (0)
 
-#else /* NAND and/or ECC'd NOR support present */
+#else  
 
 #define jffs2_is_writebuffered(c) (c->wbuf != NULL)
 
@@ -112,7 +103,7 @@ static inline void jffs2_init_inode_info(struct jffs2_inode_info *f)
 
 #define jffs2_wbuf_dirty(c) (!!(c)->wbuf_len)
 
-/* wbuf.c */
+ 
 int jffs2_flash_writev(struct jffs2_sb_info *c, const struct kvec *vecs, unsigned long count, loff_t to, size_t *retlen, uint32_t ino);
 int jffs2_flash_write(struct jffs2_sb_info *c, loff_t ofs, size_t len, size_t *retlen, const u_char *buf);
 int jffs2_flash_read(struct jffs2_sb_info *c, loff_t ofs, size_t len, size_t *retlen, u_char *buf);
@@ -139,31 +130,31 @@ int jffs2_nor_wbuf_flash_setup(struct jffs2_sb_info *c);
 void jffs2_nor_wbuf_flash_cleanup(struct jffs2_sb_info *c);
 void jffs2_dirty_trigger(struct jffs2_sb_info *c);
 
-#endif /* WRITEBUFFER */
+#endif  
 
-/* background.c */
+ 
 int jffs2_start_garbage_collect_thread(struct jffs2_sb_info *c);
 void jffs2_stop_garbage_collect_thread(struct jffs2_sb_info *c);
 void jffs2_garbage_collect_trigger(struct jffs2_sb_info *c);
 
-/* dir.c */
+ 
 extern const struct file_operations jffs2_dir_operations;
 extern const struct inode_operations jffs2_dir_inode_operations;
 
-/* file.c */
+ 
 extern const struct file_operations jffs2_file_operations;
 extern const struct inode_operations jffs2_file_inode_operations;
 extern const struct address_space_operations jffs2_file_address_operations;
 int jffs2_fsync(struct file *, loff_t, loff_t, int);
 int __jffs2_read_folio(struct file *file, struct folio *folio);
 
-/* ioctl.c */
+ 
 long jffs2_ioctl(struct file *, unsigned int, unsigned long);
 
-/* symlink.c */
+ 
 extern const struct inode_operations jffs2_symlink_inode_operations;
 
-/* fs.c */
+ 
 int jffs2_setattr (struct mnt_idmap *, struct dentry *, struct iattr *);
 int jffs2_do_setattr (struct inode *, struct iattr *);
 struct inode *jffs2_iget(struct super_block *, unsigned long);
@@ -186,12 +177,12 @@ unsigned char *jffs2_gc_fetch_page(struct jffs2_sb_info *c,
 void jffs2_flash_cleanup(struct jffs2_sb_info *c);
 
 
-/* writev.c */
+ 
 int jffs2_flash_direct_writev(struct jffs2_sb_info *c, const struct kvec *vecs,
 		       unsigned long count, loff_t to, size_t *retlen);
 int jffs2_flash_direct_write(struct jffs2_sb_info *c, loff_t ofs, size_t len,
 			size_t *retlen, const u_char *buf);
 
-#endif /* __JFFS2_OS_LINUX_H__ */
+#endif  
 
 

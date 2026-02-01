@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Secure Digital Host Controller Interface ACPI driver.
- *
- * Copyright (c) 2012, Intel Corporation.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/init.h>
@@ -209,11 +205,11 @@ static void sdhci_acpi_int_hw_reset(struct sdhci_host *host)
 	reg = sdhci_readb(host, SDHCI_POWER_CONTROL);
 	reg |= 0x10;
 	sdhci_writeb(host, reg, SDHCI_POWER_CONTROL);
-	/* For eMMC, minimum is 1us but give it 9us for good measure */
+	 
 	udelay(9);
 	reg &= ~0x10;
 	sdhci_writeb(host, reg, SDHCI_POWER_CONTROL);
-	/* For eMMC, minimum is 200us but give it 300us for good measure */
+	 
 	usleep_range(300, 1000);
 }
 
@@ -314,7 +310,7 @@ static int intel_probe_slot(struct platform_device *pdev, struct acpi_device *ad
 	if (acpi_dev_hid_uid_match(adev, "80860F14", "1") &&
 	    sdhci_readl(host, SDHCI_CAPABILITIES) == 0x446cc8b2 &&
 	    sdhci_readl(host, SDHCI_CAPABILITIES_1) == 0x00000807)
-		host->timeout_clk = 1000; /* 1000 kHz i.e. 1 MHz */
+		host->timeout_clk = 1000;  
 
 	if (acpi_dev_hid_uid_match(adev, "80865ACA", NULL))
 		host->mmc_host_ops.get_cd = bxt_get_cd;
@@ -465,7 +461,7 @@ struct amd_sdhci_host {
 	bool	dll_enabled;
 };
 
-/* AMD sdhci reset dll register. */
+ 
 #define SDHCI_AMD_RESET_DLL_REGISTER    0x908
 
 static int amd_select_drive_strength(struct mmc_card *card,
@@ -475,35 +471,14 @@ static int amd_select_drive_strength(struct mmc_card *card,
 	struct sdhci_host *host = mmc_priv(card->host);
 	u16 preset, preset_driver_strength;
 
-	/*
-	 * This method is only called by mmc_select_hs200 so we only need to
-	 * read from the HS200 (SDR104) preset register.
-	 *
-	 * Firmware that has "invalid/default" presets return a driver strength
-	 * of A. This matches the previously hard coded value.
-	 */
+	 
 	preset = sdhci_readw(host, SDHCI_PRESET_FOR_SDR104);
 	preset_driver_strength = FIELD_GET(SDHCI_PRESET_DRV_MASK, preset);
 
-	/*
-	 * We want the controller driver strength to match the card's driver
-	 * strength so they have similar rise/fall times.
-	 *
-	 * The controller driver strength set by this method is sticky for all
-	 * timings after this method is called. This unfortunately means that
-	 * while HS400 tuning is in progress we end up with mismatched driver
-	 * strengths between the controller and the card. HS400 tuning requires
-	 * switching from HS400->DDR52->HS->HS200->HS400. So the driver mismatch
-	 * happens while in DDR52 and HS modes. This has not been observed to
-	 * cause problems. Enabling presets would fix this issue.
-	 */
+	 
 	*host_driver_strength = preset_driver_strength;
 
-	/*
-	 * The resulting card driver strength is only set when switching the
-	 * card's timing to HS200 or HS400. The card will use the default driver
-	 * strength (B) for any other mode.
-	 */
+	 
 	return preset_driver_strength;
 }
 
@@ -512,7 +487,7 @@ static void sdhci_acpi_amd_hs400_dll(struct sdhci_host *host, bool enable)
 	struct sdhci_acpi_host *acpi_host = sdhci_priv(host);
 	struct amd_sdhci_host *amd_host = sdhci_acpi_priv(acpi_host);
 
-	/* AMD Platform requires dll setting */
+	 
 	sdhci_writel(host, 0x40003210, SDHCI_AMD_RESET_DLL_REGISTER);
 	usleep_range(10, 20);
 	if (enable)
@@ -521,19 +496,7 @@ static void sdhci_acpi_amd_hs400_dll(struct sdhci_host *host, bool enable)
 	amd_host->dll_enabled = enable;
 }
 
-/*
- * The initialization sequence for HS400 is:
- *     HS->HS200->Perform Tuning->HS->HS400
- *
- * The re-tuning sequence is:
- *     HS400->DDR52->HS->HS200->Perform Tuning->HS->HS400
- *
- * The AMD eMMC Controller can only use the tuned clock while in HS200 and HS400
- * mode. If we switch to a different mode, we need to disable the tuned clock.
- * If we have previously performed tuning and switch back to HS200 or
- * HS400, we can re-enable the tuned clock.
- *
- */
+ 
 static void amd_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 {
 	struct sdhci_host *host = mmc_priv(mmc);
@@ -556,7 +519,7 @@ static void amd_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 			sdhci_writew(host, val, SDHCI_HOST_CONTROL2);
 		}
 
-		/* DLL is only required for HS400 */
+		 
 		if (host->timing == MMC_TIMING_MMC_HS400 &&
 		    !amd_host->dll_enabled)
 			sdhci_acpi_amd_hs400_dll(host, true);
@@ -618,41 +581,7 @@ static int sdhci_acpi_emmc_amd_probe_slot(struct platform_device *pdev,
 	    (host->mmc->caps & MMC_CAP_1_8V_DDR))
 		host->mmc->caps2 = MMC_CAP2_HS400_1_8V;
 
-	/*
-	 * There are two types of presets out in the wild:
-	 * 1) Default/broken presets.
-	 *    These presets have two sets of problems:
-	 *    a) The clock divisor for SDR12, SDR25, and SDR50 is too small.
-	 *       This results in clock frequencies that are 2x higher than
-	 *       acceptable. i.e., SDR12 = 25 MHz, SDR25 = 50 MHz, SDR50 =
-	 *       100 MHz.x
-	 *    b) The HS200 and HS400 driver strengths don't match.
-	 *       By default, the SDR104 preset register has a driver strength of
-	 *       A, but the (internal) HS400 preset register has a driver
-	 *       strength of B. As part of initializing HS400, HS200 tuning
-	 *       needs to be performed. Having different driver strengths
-	 *       between tuning and operation is wrong. It results in different
-	 *       rise/fall times that lead to incorrect sampling.
-	 * 2) Firmware with properly initialized presets.
-	 *    These presets have proper clock divisors. i.e., SDR12 => 12MHz,
-	 *    SDR25 => 25 MHz, SDR50 => 50 MHz. Additionally the HS200 and
-	 *    HS400 preset driver strengths match.
-	 *
-	 *    Enabling presets for HS400 doesn't work for the following reasons:
-	 *    1) sdhci_set_ios has a hard coded list of timings that are used
-	 *       to determine if presets should be enabled.
-	 *    2) sdhci_get_preset_value is using a non-standard register to
-	 *       read out HS400 presets. The AMD controller doesn't support this
-	 *       non-standard register. In fact, it doesn't expose the HS400
-	 *       preset register anywhere in the SDHCI memory map. This results
-	 *       in reading a garbage value and using the wrong presets.
-	 *
-	 *       Since HS400 and HS200 presets must be identical, we could
-	 *       instead use the SDR104 preset register.
-	 *
-	 *    If the above issues are resolved we could remove this quirk for
-	 *    firmware that has valid presets (i.e., SDR12 <= 12 MHz).
-	 */
+	 
 	host->quirks2 |= SDHCI_QUIRK2_PRESET_VALUE_BROKEN;
 
 	host->mmc_host_ops.select_drive_strength = amd_select_drive_strength;
@@ -721,13 +650,7 @@ MODULE_DEVICE_TABLE(acpi, sdhci_acpi_ids);
 
 static const struct dmi_system_id sdhci_acpi_quirks[] = {
 	{
-		/*
-		 * The Lenovo Miix 320-10ICR has a bug in the _PS0 method of
-		 * the SHC1 ACPI device, this bug causes it to reprogram the
-		 * wrong LDO (DLDO3) to 1.8V if 1.8V modes are used and the
-		 * card is (runtime) suspended + resumed. DLDO3 is used for
-		 * the LCD and setting it to 1.8V causes the LCD to go black.
-		 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
 			DMI_MATCH(DMI_PRODUCT_VERSION, "Lenovo MIIX 320-10ICR"),
@@ -735,11 +658,7 @@ static const struct dmi_system_id sdhci_acpi_quirks[] = {
 		.driver_data = (void *)DMI_QUIRK_RESET_SD_SIGNAL_VOLT_ON_SUSP,
 	},
 	{
-		/*
-		 * The Acer Aspire Switch 10 (SW5-012) microSD slot always
-		 * reports the card being write-protected even though microSD
-		 * cards do not have a write-protect switch at all.
-		 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Aspire SW5-012"),
@@ -747,17 +666,14 @@ static const struct dmi_system_id sdhci_acpi_quirks[] = {
 		.driver_data = (void *)DMI_QUIRK_SD_NO_WRITE_PROTECT,
 	},
 	{
-		/*
-		 * The Toshiba WT8-B's microSD slot always reports the card being
-		 * write-protected.
-		 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "TOSHIBA"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "TOSHIBA ENCORE 2 WT8-B"),
 		},
 		.driver_data = (void *)DMI_QUIRK_SD_NO_WRITE_PROTECT,
 	},
-	{} /* Terminating entry */
+	{}  
 };
 
 static const struct sdhci_acpi_slot *sdhci_acpi_get_slot(struct acpi_device *adev)
@@ -795,7 +711,7 @@ static int sdhci_acpi_probe(struct platform_device *pdev)
 
 	slot = sdhci_acpi_get_slot(device);
 
-	/* Power on the SDHCI controller and its children */
+	 
 	acpi_device_fix_up_power_extended(device);
 
 	if (sdhci_acpi_byt_defer(dev))

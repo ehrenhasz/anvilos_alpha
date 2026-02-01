@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Public-key operation keyctls
- *
- * Copyright (C) 2016 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/err.h>
@@ -22,8 +18,8 @@ static void keyctl_pkey_params_free(struct kernel_pkey_params *params)
 
 enum {
 	Opt_err,
-	Opt_enc,		/* "enc=<encoding>" eg. "enc=oaep" */
-	Opt_hash,		/* "hash=<digest-name>" eg. "hash=sha1" */
+	Opt_enc,		 
+	Opt_hash,		 
 };
 
 static const match_table_t param_keys = {
@@ -32,9 +28,7 @@ static const match_table_t param_keys = {
 	{ Opt_err,	NULL }
 };
 
-/*
- * Parse the information string which consists of key=val pairs.
- */
+ 
 static int keyctl_pkey_params_parse(struct kernel_pkey_params *params)
 {
 	unsigned long token_mask = 0;
@@ -71,10 +65,7 @@ static int keyctl_pkey_params_parse(struct kernel_pkey_params *params)
 	return 0;
 }
 
-/*
- * Interpret parameters.  Callers must always call the free function
- * on params, even if an error is returned.
- */
+ 
 static int keyctl_pkey_params_get(key_serial_t id,
 				  const char __user *_info,
 				  struct kernel_pkey_params *params)
@@ -106,10 +97,7 @@ static int keyctl_pkey_params_get(key_serial_t id,
 	return 0;
 }
 
-/*
- * Get parameters from userspace.  Callers must always call the free function
- * on params, even if an error is returned.
- */
+ 
 static int keyctl_pkey_params_get_2(const struct keyctl_pkey_params __user *_params,
 				    const char __user *_info,
 				    int op,
@@ -159,13 +147,11 @@ static int keyctl_pkey_params_get_2(const struct keyctl_pkey_params __user *_par
 	}
 
 	params->in_len  = uparams.in_len;
-	params->out_len = uparams.out_len; /* Note: same as in2_len */
+	params->out_len = uparams.out_len;  
 	return 0;
 }
 
-/*
- * Query information about an asymmetric key.
- */
+ 
 long keyctl_pkey_query(key_serial_t id,
 		       const char __user *_info,
 		       struct keyctl_pkey_query __user *_res)
@@ -192,23 +178,7 @@ error:
 	return ret;
 }
 
-/*
- * Encrypt/decrypt/sign
- *
- * Encrypt data, decrypt data or sign data using a public key.
- *
- * _info is a string of supplementary information in key=val format.  For
- * instance, it might contain:
- *
- *	"enc=pkcs1 hash=sha256"
- *
- * where enc= specifies the encoding and hash= selects the OID to go in that
- * particular encoding if required.  If enc= isn't supplied, it's assumed that
- * the caller is supplying raw values.
- *
- * If successful, the amount of data written into the output buffer is
- * returned.
- */
+ 
 long keyctl_pkey_e_d_s(int op,
 		       const struct keyctl_pkey_params __user *_params,
 		       const char __user *_info,
@@ -268,23 +238,7 @@ error_params:
 	return ret;
 }
 
-/*
- * Verify a signature.
- *
- * Verify a public key signature using the given key, or if not given, search
- * for a matching key.
- *
- * _info is a string of supplementary information in key=val format.  For
- * instance, it might contain:
- *
- *	"enc=pkcs1 hash=sha256"
- *
- * where enc= specifies the signature blob encoding and hash= selects the OID
- * to go in that particular encoding.  If enc= isn't supplied, it's assumed
- * that the caller is supplying raw values.
- *
- * If successful, 0 is returned.
- */
+ 
 long keyctl_pkey_verify(const struct keyctl_pkey_params __user *_params,
 			const char __user *_info,
 			const void __user *_in,

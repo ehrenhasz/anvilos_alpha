@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020 BAIKAL ELECTRONICS, JSC
- *
- * Authors:
- *   Serge Semin <Sergey.Semin@baikalelectronics.ru>
- *
- * Baikal-T1 APB-bus driver
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -34,17 +27,7 @@
 #define APB_EHB_TIMEOUT_MIN		0x000003FFU
 #define APB_EHB_TIMEOUT_MAX		0xFFFFFFFFU
 
-/*
- * struct bt1_apb - Baikal-T1 APB EHB private data
- * @dev: Pointer to the device structure.
- * @regs: APB EHB registers map.
- * @res: No-device error injection memory region.
- * @irq: Errors IRQ number.
- * @rate: APB-bus reference clock rate.
- * @pclk: APB-reference clock.
- * @prst: APB domain reset line.
- * @count: Number of errors detected.
- */
+ 
 struct bt1_apb {
 	struct device *dev;
 
@@ -101,13 +84,7 @@ static irqreturn_t bt1_apb_isr(int irq, void *data)
 		atomic_inc_return(&apb->count),
 		addr);
 
-	/*
-	 * Print backtrace on each CPU. This might be pointless if the fault
-	 * has happened on the same CPU as the IRQ handler is executed or
-	 * the other core proceeded further execution despite the error.
-	 * But if it's not, by looking at the trace we would get straight to
-	 * the cause of the problem.
-	 */
+	 
 	trigger_all_cpu_backtrace();
 
 	regmap_update_bits(apb->regs, APB_EHB_ISR, APB_EHB_ISR_PENDING, 0);
@@ -252,7 +229,7 @@ static int bt1_apb_request_irq(struct bt1_apb *apb)
 		return ret;
 	}
 
-	/* Unmask IRQ and clear it' pending flag. */
+	 
 	regmap_update_bits(apb->regs, APB_EHB_ISR,
 			   APB_EHB_ISR_PENDING | APB_EHB_ISR_MASK,
 			   APB_EHB_ISR_MASK);
@@ -319,10 +296,7 @@ static ssize_t inject_error_store(struct device *dev,
 {
 	struct bt1_apb *apb = dev_get_drvdata(dev);
 
-	/*
-	 * Either dummy read from the unmapped address in the APB IO area
-	 * or manually set the IRQ status.
-	 */
+	 
 	if (sysfs_streq(data, "nodev"))
 		readl(apb->res);
 	else if (sysfs_streq(data, "irq"))

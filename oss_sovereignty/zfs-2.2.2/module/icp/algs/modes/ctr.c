@@ -1,27 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
+ 
+ 
 
 #include <sys/zfs_context.h>
 #include <modes/modes.h>
@@ -29,9 +7,7 @@
 #include <sys/crypto/impl.h>
 #include <sys/byteorder.h>
 
-/*
- * Encrypt and decrypt multiple blocks of data in counter mode.
- */
+ 
 int
 ctr_mode_contiguous_blocks(ctr_ctx_t *ctx, char *data, size_t length,
     crypto_data_t *out, size_t block_size,
@@ -51,7 +27,7 @@ ctr_mode_contiguous_blocks(ctr_ctx_t *ctx, char *data, size_t length,
 	uint64_t lower_counter, upper_counter;
 
 	if (length + ctx->ctr_remainder_len < block_size) {
-		/* accumulate bytes here and return */
+		 
 		memcpy((uint8_t *)ctx->ctr_remainder + ctx->ctr_remainder_len,
 		    datap,
 		    length);
@@ -63,7 +39,7 @@ ctr_mode_contiguous_blocks(ctr_ctx_t *ctx, char *data, size_t length,
 	crypto_init_ptrs(out, &iov_or_mp, &offset);
 
 	do {
-		/* Unprocessed data from last call. */
+		 
 		if (ctx->ctr_remainder_len > 0) {
 			need = block_size - ctx->ctr_remainder_len;
 
@@ -78,22 +54,20 @@ ctr_mode_contiguous_blocks(ctr_ctx_t *ctx, char *data, size_t length,
 			blockp = datap;
 		}
 
-		/* ctr_cb is the counter block */
+		 
 		cipher(ctx->ctr_keysched, (uint8_t *)ctx->ctr_cb,
 		    (uint8_t *)ctx->ctr_tmp);
 
 		lastp = (uint8_t *)ctx->ctr_tmp;
 
-		/*
-		 * Increment Counter.
-		 */
+		 
 		lower_counter = ntohll(ctx->ctr_cb[1] & ctx->ctr_lower_mask);
 		lower_counter = htonll(lower_counter + 1);
 		lower_counter &= ctx->ctr_lower_mask;
 		ctx->ctr_cb[1] = (ctx->ctr_cb[1] & ~(ctx->ctr_lower_mask)) |
 		    lower_counter;
 
-		/* wrap around */
+		 
 		if (lower_counter == 0) {
 			upper_counter =
 			    ntohll(ctx->ctr_cb[0] & ctx->ctr_upper_mask);
@@ -104,24 +78,22 @@ ctr_mode_contiguous_blocks(ctr_ctx_t *ctx, char *data, size_t length,
 			    upper_counter;
 		}
 
-		/*
-		 * XOR encrypted counter block with the current clear block.
-		 */
+		 
 		xor_block(blockp, lastp);
 
 		crypto_get_ptrs(out, &iov_or_mp, &offset, &out_data_1,
 		    &out_data_1_len, &out_data_2, block_size);
 
-		/* copy block to where it belongs */
+		 
 		memcpy(out_data_1, lastp, out_data_1_len);
 		if (out_data_2 != NULL) {
 			memcpy(out_data_2, lastp + out_data_1_len,
 			    block_size - out_data_1_len);
 		}
-		/* update offset */
+		 
 		out->cd_offset += block_size;
 
-		/* Update pointer to next block of data to be processed. */
+		 
 		if (ctx->ctr_remainder_len != 0) {
 			datap += need;
 			ctx->ctr_remainder_len = 0;
@@ -131,7 +103,7 @@ ctr_mode_contiguous_blocks(ctr_ctx_t *ctx, char *data, size_t length,
 
 		remainder = (size_t)&data[length] - (size_t)datap;
 
-		/* Incomplete last block. */
+		 
 		if (remainder > 0 && remainder < block_size) {
 			memcpy(ctx->ctr_remainder, datap, remainder);
 			ctx->ctr_remainder_len = remainder;
@@ -196,13 +168,13 @@ ctr_init_ctx(ctr_ctx_t *ctr_ctx, ulong_t count, uint8_t *cb,
 	if (count == 0 || count > 128) {
 		return (CRYPTO_MECHANISM_PARAM_INVALID);
 	}
-	/* upper 64 bits of the mask */
+	 
 	if (count >= 64) {
 		count -= 64;
 		upper_mask = (count == 64) ? UINT64_MAX : (1ULL << count) - 1;
 		lower_mask = UINT64_MAX;
 	} else {
-		/* now the lower 63 bits */
+		 
 		lower_mask = (1ULL << count) - 1;
 	}
 	ctr_ctx->ctr_lower_mask = htonll(lower_mask);

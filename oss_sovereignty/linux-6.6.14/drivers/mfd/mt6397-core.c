@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: Flora Fu, MediaTek
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/ioport.h>
@@ -149,7 +146,7 @@ static const struct mfd_cell mt6357_devs[] = {
 	},
 };
 
-/* MT6331 is always used in combination with MT6332 */
+ 
 static const struct mfd_cell mt6331_mt6332_devs[] = {
 	{
 		.name = "mt6331-rtc",
@@ -302,10 +299,7 @@ static int mt6397_probe(struct platform_device *pdev)
 
 	pmic->dev = &pdev->dev;
 
-	/*
-	 * mt6397 MFD is child device of soc pmic wrapper.
-	 * Regmap is set from its parent.
-	 */
+	 
 	pmic->regmap = dev_get_regmap(pdev->dev.parent, NULL);
 	if (!pmic->regmap)
 		return -ENODEV;
@@ -363,7 +357,7 @@ static const struct of_device_id mt6397_of_match[] = {
 		.compatible = "mediatek,mt6397",
 		.data = &mt6397_core,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, mt6397_of_match);

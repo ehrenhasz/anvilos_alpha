@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Cadence MHDP8546 DP bridge driver.
- *
- * Copyright (C) 2020 Cadence Design Systems, Inc.
- *
- */
+ 
+ 
 
 #ifndef CDNS_MHDP8546_HDCP_H
 #define CDNS_MHDP8546_HDCP_H
@@ -21,9 +16,9 @@
 	(((__sts__) & HDCP_PORT_STS_LAST_ERR_MASK) >> \
 	HDCP_PORT_STS_LAST_ERR_SHIFT)
 
-#define HDCP_CONFIG_1_4     BIT(0) /* use HDCP 1.4 only */
-#define HDCP_CONFIG_2_2     BIT(1) /* use HDCP 2.2 only */
-/* use All HDCP versions */
+#define HDCP_CONFIG_1_4     BIT(0)  
+#define HDCP_CONFIG_2_2     BIT(1)  
+ 
 #define HDCP_CONFIG_ALL     (BIT(0) | BIT(1))
 #define HDCP_CONFIG_NONE    0
 

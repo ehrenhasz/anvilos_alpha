@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <media/drv-intf/saa7146_vv.h>
 #include <linux/module.h>
 
-/****************************************************************************/
-/* resource management functions, shamelessly stolen from saa7134 driver */
+ 
+ 
 
 int saa7146_res_get(struct saa7146_dev *dev, unsigned int bit)
 {
@@ -14,18 +14,18 @@ int saa7146_res_get(struct saa7146_dev *dev, unsigned int bit)
 	if (vv->resources & bit) {
 		DEB_D("already allocated! want: 0x%02x, cur:0x%02x\n",
 		      bit, vv->resources);
-		/* have it already allocated */
+		 
 		return 1;
 	}
 
-	/* is it free? */
+	 
 	if (vv->resources & bit) {
 		DEB_D("locked! vv->resources:0x%02x, we want:0x%02x\n",
 		      vv->resources, bit);
-		/* no, someone else uses it */
+		 
 		return 0;
 	}
-	/* it's free, grab it */
+	 
 	vv->resources |= bit;
 	DEB_D("res: get 0x%02x, cur:0x%02x\n", bit, vv->resources);
 	return 1;
@@ -42,8 +42,8 @@ void saa7146_res_free(struct saa7146_dev *dev, unsigned int bits)
 }
 
 
-/********************************************************************************/
-/* common buffer functions */
+ 
+ 
 
 int saa7146_buffer_queue(struct saa7146_dev *dev,
 			 struct saa7146_dmaqueue *q,
@@ -78,7 +78,7 @@ void saa7146_buffer_finish(struct saa7146_dev *dev,
 	DEB_EE("dev:%p, dmaq:%p, state:%d\n", dev, q, state);
 	DEB_EE("q->curr:%p\n", q->curr);
 
-	/* finish current buffer */
+	 
 	if (!buf) {
 		DEB_D("aiii. no current buffer\n");
 		return;
@@ -110,7 +110,7 @@ void saa7146_buffer_next(struct saa7146_dev *dev,
 
 	assert_spin_locked(&dev->slock);
 	if (!list_empty(&q->queue)) {
-		/* activate next one from queue */
+		 
 		buf = list_entry(q->queue.next, struct saa7146_buf, list);
 		list_del(&buf->list);
 		if (!list_empty(&q->queue))
@@ -122,30 +122,22 @@ void saa7146_buffer_next(struct saa7146_dev *dev,
 	} else {
 		DEB_INT("no next buffer. stopping.\n");
 		if( 0 != vbi ) {
-			/* turn off video-dma3 */
+			 
 			saa7146_write(dev,MC1, MASK_20);
 		} else {
-			/* nothing to do -- just prevent next video-dma1 transfer
-			   by lowering the protection address */
+			 
 
-			// fixme: fix this for vflip != 0
+			 
 
 			saa7146_write(dev, PROT_ADDR1, 0);
 			saa7146_write(dev, MC2, (MASK_02|MASK_18));
 
-			/* write the address of the rps-program */
+			 
 			saa7146_write(dev, RPS_ADDR0, dev->d_rps0.dma_handle);
-			/* turn on rps */
+			 
 			saa7146_write(dev, MC1, (MASK_12 | MASK_28));
 
-/*
-			printk("vdma%d.base_even:     0x%08x\n", 1,saa7146_read(dev,BASE_EVEN1));
-			printk("vdma%d.base_odd:      0x%08x\n", 1,saa7146_read(dev,BASE_ODD1));
-			printk("vdma%d.prot_addr:     0x%08x\n", 1,saa7146_read(dev,PROT_ADDR1));
-			printk("vdma%d.base_page:     0x%08x\n", 1,saa7146_read(dev,BASE_PAGE1));
-			printk("vdma%d.pitch:         0x%08x\n", 1,saa7146_read(dev,PITCH1));
-			printk("vdma%d.num_line_byte: 0x%08x\n", 1,saa7146_read(dev,NUM_LINE_BYTE1));
-*/
+ 
 		}
 		del_timer(&q->timeout);
 	}
@@ -165,20 +157,15 @@ void saa7146_buffer_timeout(struct timer_list *t)
 		saa7146_buffer_finish(dev, q, VB2_BUF_STATE_ERROR);
 	}
 
-	/* we don't restart the transfer here like other drivers do. when
-	   a streaming capture is disabled, the timeout function will be
-	   called for the current buffer. if we activate the next buffer now,
-	   we mess up our capture logic. if a timeout occurs on another buffer,
-	   then something is seriously broken before, so no need to buffer the
-	   next capture IMHO... */
+	 
 
 	saa7146_buffer_next(dev, q, 0);
 
 	spin_unlock_irqrestore(&dev->slock,flags);
 }
 
-/********************************************************************************/
-/* file operations */
+ 
+ 
 
 static ssize_t fops_write(struct file *file, const char __user *data, size_t count, loff_t *ppos)
 {
@@ -279,15 +266,13 @@ int saa7146_vv_init(struct saa7146_dev* dev, struct saa7146_ext_vv *ext_vv)
 
 	DEB_EE("dev:%p\n", dev);
 
-	/* set default values for video parts of the saa7146 */
+	 
 	saa7146_write(dev, BCS_CTRL, 0x80400040);
 
-	/* enable video-port pins */
+	 
 	saa7146_write(dev, MC1, (MASK_10 | MASK_26));
 
-	/* save per-device extension data (one extension can
-	   handle different devices that might need different
-	   configuration data) */
+	 
 	dev->ext_vv_data = ext_vv;
 
 	saa7146_video_uops.init(dev,vv);
@@ -305,11 +290,11 @@ int saa7146_vv_init(struct saa7146_dev* dev, struct saa7146_ext_vv *ext_vv)
 
 	vbi = &vv->vbi_fmt;
 	vbi->sampling_rate	= 27000000;
-	vbi->offset		= 248; /* todo */
+	vbi->offset		= 248;  
 	vbi->samples_per_line	= 720 * 2;
 	vbi->sample_format	= V4L2_PIX_FMT_GREY;
 
-	/* fixme: this only works for PAL */
+	 
 	vbi->start[0] = 5;
 	vbi->count[0] = 16;
 	vbi->start[1] = 312;

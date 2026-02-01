@@ -1,18 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Kernel module for testing dynamic_debug
- *
- * Authors:
- *      Jim Cromie	<jim.cromie@gmail.com>
- */
+
+ 
 
 #define pr_fmt(fmt) "test_dd: " fmt
 
 #include <linux/module.h>
 
-/* run tests by reading or writing sysfs node: do_prints */
+ 
 
-static void do_prints(void); /* device under test */
+static void do_prints(void);  
 static int param_set_do_prints(const char *instr, const struct kernel_param *kp)
 {
 	do_prints();
@@ -29,16 +24,7 @@ static const struct kernel_param_ops param_ops_do_prints = {
 };
 module_param_cb(do_prints, &param_ops_do_prints, NULL, 0600);
 
-/*
- * Using the CLASSMAP api:
- * - classmaps must have corresponding enum
- * - enum symbols must match/correlate with class-name strings in the map.
- * - base must equal enum's 1st value
- * - multiple maps must set their base to share the 0-30 class_id space !!
- *   (build-bug-on tips welcome)
- * Additionally, here:
- * - tie together sysname, mapname, bitsname, flagsname
- */
+ 
 #define DD_SYS_WRAP(_model, _flags)					\
 	static unsigned long bits_##_model;				\
 	static struct ddebug_class_param _flags##_model = {		\
@@ -48,7 +34,7 @@ module_param_cb(do_prints, &param_ops_do_prints, NULL, 0600);
 	};								\
 	module_param_cb(_flags##_##_model, &param_ops_dyndbg_classes, &_flags##_model, 0600)
 
-/* numeric input, independent bits */
+ 
 enum cat_disjoint_bits {
 	D2_CORE = 0,
 	D2_DRIVER,
@@ -74,28 +60,28 @@ DECLARE_DYNDBG_CLASSMAP(map_disjoint_bits, DD_CLASS_TYPE_DISJOINT_BITS, 0,
 DD_SYS_WRAP(disjoint_bits, p);
 DD_SYS_WRAP(disjoint_bits, T);
 
-/* symbolic input, independent bits */
+ 
 enum cat_disjoint_names { LOW = 11, MID, HI };
 DECLARE_DYNDBG_CLASSMAP(map_disjoint_names, DD_CLASS_TYPE_DISJOINT_NAMES, 10,
 			"LOW", "MID", "HI");
 DD_SYS_WRAP(disjoint_names, p);
 DD_SYS_WRAP(disjoint_names, T);
 
-/* numeric verbosity, V2 > V1 related */
+ 
 enum cat_level_num { V0 = 14, V1, V2, V3, V4, V5, V6, V7 };
 DECLARE_DYNDBG_CLASSMAP(map_level_num, DD_CLASS_TYPE_LEVEL_NUM, 14,
 		       "V0", "V1", "V2", "V3", "V4", "V5", "V6", "V7");
 DD_SYS_WRAP(level_num, p);
 DD_SYS_WRAP(level_num, T);
 
-/* symbolic verbosity */
+ 
 enum cat_level_names { L0 = 22, L1, L2, L3, L4, L5, L6, L7 };
 DECLARE_DYNDBG_CLASSMAP(map_level_names, DD_CLASS_TYPE_LEVEL_NAMES, 22,
 			"L0", "L1", "L2", "L3", "L4", "L5", "L6", "L7");
 DD_SYS_WRAP(level_names, p);
 DD_SYS_WRAP(level_names, T);
 
-/* stand-in for all pr_debug etc */
+ 
 #define prdbg(SYM) __pr_debug_cls(SYM, #SYM " msg\n")
 
 static void do_cats(void)

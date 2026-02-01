@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
+
+ 
 
 #include <linux/circ_buf.h>
 #include <linux/highmem.h>
@@ -22,7 +20,7 @@
 #define IVPU_MMU_IDR5_REF_FPGA		0x00800075
 
 #define IVPU_MMU_CDTAB_ENT_SIZE		64
-#define IVPU_MMU_CDTAB_ENT_COUNT_LOG2	8 /* 256 entries */
+#define IVPU_MMU_CDTAB_ENT_COUNT_LOG2	8  
 #define IVPU_MMU_CDTAB_ENT_COUNT	((u32)1 << IVPU_MMU_CDTAB_ENT_COUNT_LOG2)
 
 #define IVPU_MMU_STREAM_ID0		0
@@ -33,7 +31,7 @@
 #define IVPU_MMU_STRTAB_CFG_LOG2SIZE	2
 #define IVPU_MMU_STRTAB_CFG		IVPU_MMU_STRTAB_CFG_LOG2SIZE
 
-#define IVPU_MMU_Q_COUNT_LOG2		4 /* 16 entries */
+#define IVPU_MMU_Q_COUNT_LOG2		4  
 #define IVPU_MMU_Q_COUNT		((u32)1 << IVPU_MMU_Q_COUNT_LOG2)
 #define IVPU_MMU_Q_WRAP_BIT		(IVPU_MMU_Q_COUNT << 1)
 #define IVPU_MMU_Q_WRAP_MASK		(IVPU_MMU_Q_WRAP_BIT - 1)
@@ -378,7 +376,7 @@ static int ivpu_mmu_structs_alloc(struct ivpu_device *vdev)
 
 static int ivpu_mmu_reg_write(struct ivpu_device *vdev, u32 reg, u32 val)
 {
-	u32 reg_ack = reg + 4; /* ACK register is 4B after base register */
+	u32 reg_ack = reg + 4;  
 	u32 val_ack;
 	int ret;
 
@@ -643,7 +641,7 @@ static int ivpu_mmu_cd_add(struct ivpu_device *vdev, u32 ssid, u64 cd_dma)
 		cd[2] = 0;
 		cd[3] = 0x0000000000007444;
 
-		/* For global context generate memory fault on VPU */
+		 
 		if (ssid == IVPU_GLOBAL_CONTEXT_MMU_SSID)
 			cd[0] |= IVPU_MMU_CD_0_A;
 	} else {
@@ -879,5 +877,5 @@ int ivpu_mmu_set_pgtable(struct ivpu_device *vdev, int ssid, struct ivpu_mmu_pgt
 
 void ivpu_mmu_clear_pgtable(struct ivpu_device *vdev, int ssid)
 {
-	ivpu_mmu_cd_add_user(vdev, ssid, 0); /* 0 will clear CD entry */
+	ivpu_mmu_cd_add_user(vdev, ssid, 0);  
 }

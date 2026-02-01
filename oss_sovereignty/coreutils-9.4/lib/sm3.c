@@ -1,31 +1,8 @@
-/* sm3.c - Functions to compute SM3 message digest of files or memory blocks
-   according to the specification GM/T 004-2012 Cryptographic Hash Algorithm
-   SM3, published by State Encryption Management Bureau, China.
-
-   SM3 cryptographic hash algorithm.
-   <http://www.sca.gov.cn/sca/xwdt/2010-12/17/content_1002389.shtml>
-
-   Copyright (C) 2017-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Jia Zhang <qianyue.zj@alibaba-inc.com>, 2017,
-   considerably copypasting from David Madore's sha256.c */
+ 
 
 #include <config.h>
 
-/* Specification.  */
+ 
 #if HAVE_OPENSSL_SM3
 # define GL_OPENSSL_INLINE _GL_EXTERN_INLINE
 #endif
@@ -53,16 +30,11 @@
 
 #if ! HAVE_OPENSSL_SM3
 
-/* This array contains the bytes used to pad the buffer to the next
-   64-byte boundary.  */
-static const unsigned char fillbuf[64] = { 0x80, 0 /* , 0, 0, ...  */ };
+ 
+static const unsigned char fillbuf[64] = { 0x80, 0   };
 
 
-/*
-  Takes a pointer to a 256 bit block of data (eight 32 bit ints) and
-  initializes it to the start constants of the SM3 algorithm.  This
-  must be called before using hash in the call to sm3_hash
-*/
+ 
 void
 sm3_init_ctx (struct sm3_ctx *ctx)
 {
@@ -79,17 +51,14 @@ sm3_init_ctx (struct sm3_ctx *ctx)
   ctx->buflen = 0;
 }
 
-/* Copy the value from v into the memory location pointed to by *cp,
-   If your architecture allows unaligned access this is equivalent to
-   * (uint32_t *) cp = v  */
+ 
 static void
 set_uint32 (char *cp, uint32_t v)
 {
   memcpy (cp, &v, sizeof v);
 }
 
-/* Put result from CTX in first 32 bytes following RESBUF.  The result
-   must be in little endian byte order.  */
+ 
 void *
 sm3_read_ctx (const struct sm3_ctx *ctx, void *resbuf)
 {
@@ -102,23 +71,20 @@ sm3_read_ctx (const struct sm3_ctx *ctx, void *resbuf)
   return resbuf;
 }
 
-/* Process the remaining bytes in the internal buffer and the usual
-   prolog according to the standard and write the result to RESBUF.  */
+ 
 static void
 sm3_conclude_ctx (struct sm3_ctx *ctx)
 {
-  /* Take yet unprocessed bytes into account.  */
+   
   size_t bytes = ctx->buflen;
   size_t size = (bytes < 56) ? 64 / 4 : 64 * 2 / 4;
 
-  /* Now count remaining bytes.  */
+   
   ctx->total[0] += bytes;
   if (ctx->total[0] < bytes)
     ++ctx->total[1];
 
-  /* Put the 64-bit file length in *bits* at the end of the buffer.
-     Use set_uint32 rather than a simple assignment, to avoid risk of
-     unaligned access.  */
+   
   set_uint32 ((char *) &ctx->buffer[size - 2],
               SWAP ((ctx->total[1] << 3) | (ctx->total[0] >> 29)));
   set_uint32 ((char *) &ctx->buffer[size - 1],
@@ -126,7 +92,7 @@ sm3_conclude_ctx (struct sm3_ctx *ctx)
 
   memcpy (&((char *) ctx->buffer)[bytes], fillbuf, (size - 2) * 4 - bytes);
 
-  /* Process last bytes.  */
+   
   sm3_process_block (ctx->buffer, size * 4, ctx);
 }
 
@@ -137,30 +103,26 @@ sm3_finish_ctx (struct sm3_ctx *ctx, void *resbuf)
   return sm3_read_ctx (ctx, resbuf);
 }
 
-/* Compute SM3 message digest for LEN bytes beginning at BUFFER.  The
-   result is always in little endian byte order, so that a byte-wise
-   output yields to the wanted ASCII representation of the message
-   digest.  */
+ 
 void *
 sm3_buffer (const char *buffer, size_t len, void *resblock)
 {
   struct sm3_ctx ctx;
 
-  /* Initialize the computation context.  */
+   
   sm3_init_ctx (&ctx);
 
-  /* Process whole buffer but last len % 64 bytes.  */
+   
   sm3_process_bytes (buffer, len, &ctx);
 
-  /* Put result in desired memory area.  */
+   
   return sm3_finish_ctx (&ctx, resblock);
 }
 
 void
 sm3_process_bytes (const void *buffer, size_t len, struct sm3_ctx *ctx)
 {
-  /* When we already have some bits in our internal buffer concatenate
-     both inputs first.  */
+   
   if (ctx->buflen != 0)
     {
       size_t left_over = ctx->buflen;
@@ -174,8 +136,7 @@ sm3_process_bytes (const void *buffer, size_t len, struct sm3_ctx *ctx)
           sm3_process_block (ctx->buffer, ctx->buflen & ~63, ctx);
 
           ctx->buflen &= 63;
-          /* The regions in the following copy operation cannot overlap,
-             because ctx->buflen < 64 ≤ (left_over + add) & ~63.  */
+           
           memcpy (ctx->buffer,
                   &((char *) ctx->buffer)[(left_over + add) & ~63],
                   ctx->buflen);
@@ -185,7 +146,7 @@ sm3_process_bytes (const void *buffer, size_t len, struct sm3_ctx *ctx)
       len -= add;
     }
 
-  /* Process available complete blocks.  */
+   
   if (len >= 64)
     {
 #if !(_STRING_ARCH_unaligned || _STRING_INLINE_unaligned)
@@ -206,7 +167,7 @@ sm3_process_bytes (const void *buffer, size_t len, struct sm3_ctx *ctx)
         }
     }
 
-  /* Move remaining bytes in internal buffer.  */
+   
   if (len > 0)
     {
       size_t left_over = ctx->buflen;
@@ -217,17 +178,16 @@ sm3_process_bytes (const void *buffer, size_t len, struct sm3_ctx *ctx)
         {
           sm3_process_block (ctx->buffer, 64, ctx);
           left_over -= 64;
-          /* The regions in the following copy operation cannot overlap,
-             because left_over ≤ 64.  */
+           
           memcpy (ctx->buffer, &ctx->buffer[16], left_over);
         }
       ctx->buflen = left_over;
     }
 }
 
-/* --- Code below is the primary difference between sha256.c and sm3.c --- */
+ 
 
-/* SM3 round constants */
+ 
 #define T(j) sm3_round_constants[j]
 static const uint32_t sm3_round_constants[64] = {
   0x79cc4519UL, 0xf3988a32UL, 0xe7311465UL, 0xce6228cbUL,
@@ -248,15 +208,13 @@ static const uint32_t sm3_round_constants[64] = {
   0xa7a879d8UL, 0x4f50f3b1UL, 0x9ea1e762UL, 0x3d43cec5UL,
 };
 
-/* Round functions.  */
+ 
 #define FF1(X,Y,Z) ( X ^ Y ^ Z )
 #define FF2(X,Y,Z) ( ( X & Y ) | ( X & Z ) | ( Y & Z ) )
 #define GG1(X,Y,Z) ( X ^ Y ^ Z )
 #define GG2(X,Y,Z) ( ( X & Y ) | ( ~X & Z ) )
 
-/* Process LEN bytes of BUFFER, accumulating context into CTX.
-   It is assumed that LEN % 64 == 0.
-   Most of this code comes from David Madore's sha256.c.  */
+ 
 
 void
 sm3_process_block (const void *buffer, size_t len, struct sm3_ctx *ctx)
@@ -275,9 +233,7 @@ sm3_process_block (const void *buffer, size_t len, struct sm3_ctx *ctx)
   uint32_t h = ctx->state[7];
   uint32_t lolen = len;
 
-  /* First increment the byte count.  GM/T 004-2012 specifies the possible
-     length of the file up to 2^64 bits.  Here we only compute the
-     number of bytes.  Do a double word increment.  */
+   
   ctx->total[0] += lolen;
   ctx->total[1] += (len >> 31 >> 1) + (ctx->total[0] < lolen);
 
@@ -407,9 +363,4 @@ sm3_process_block (const void *buffer, size_t len, struct sm3_ctx *ctx)
 
 #endif
 
-/*
- * Hey Emacs!
- * Local Variables:
- * coding: utf-8
- * End:
- */
+ 

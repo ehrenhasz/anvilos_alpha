@@ -1,12 +1,10 @@
-// SPDX-License-Identifier: Zlib
+
 #ifndef DFLTCC_UTIL_H
 #define DFLTCC_UTIL_H
 
 #include <linux/zutil.h>
 
-/*
- * C wrapper for the DEFLATE CONVERSION CALL instruction.
- */
+ 
 typedef enum {
     DFLTCC_CC_OK = 0,
     DFLTCC_CC_OP1_TOO_SHORT = 1,
@@ -100,4 +98,4 @@ static inline int dfltcc_are_params_ok(
 
 char *oesc_msg(char *buf, int oesc);
 
-#endif /* DFLTCC_UTIL_H */
+#endif  

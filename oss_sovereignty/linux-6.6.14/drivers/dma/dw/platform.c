@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Platform driver for the Synopsys DesignWare DMA Controller
- *
- * Copyright (C) 2007-2008 Atmel Corporation
- * Copyright (C) 2010-2011 ST Microelectronics
- * Copyright (C) 2013 Intel Corporation
- *
- * Some parts of this driver are derived from the original dw_dmac.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/device.h>
@@ -118,15 +110,7 @@ static void dw_shutdown(struct platform_device *pdev)
 	struct dw_dma_chip_pdata *data = platform_get_drvdata(pdev);
 	struct dw_dma_chip *chip = data->chip;
 
-	/*
-	 * We have to call do_dw_dma_disable() to stop any ongoing transfer. On
-	 * some platforms we can't do that since DMA device is powered off.
-	 * Moreover we have no possibility to check if the platform is affected
-	 * or not. That's why we call pm_runtime_get_sync() / pm_runtime_put()
-	 * unconditionally. On the other hand we can't use
-	 * pm_runtime_suspended() because runtime PM framework is not fully
-	 * used by the driver.
-	 */
+	 
 	pm_runtime_get_sync(chip->dev);
 	do_dw_dma_disable(chip);
 	pm_runtime_put_sync_suspend(chip->dev);
@@ -149,7 +133,7 @@ static const struct acpi_device_id dw_dma_acpi_id_table[] = {
 	{ "80862286", (kernel_ulong_t)&dw_dma_chip_pdata },
 	{ "808622C0", (kernel_ulong_t)&dw_dma_chip_pdata },
 
-	/* Elkhart Lake iDMA 32-bit (PSE DMA) */
+	 
 	{ "80864BB4", (kernel_ulong_t)&xbar_chip_pdata },
 	{ "80864BB5", (kernel_ulong_t)&xbar_chip_pdata },
 	{ "80864BB6", (kernel_ulong_t)&xbar_chip_pdata },
@@ -185,7 +169,7 @@ static int dw_resume_early(struct device *dev)
 	return do_dw_dma_enable(chip);
 }
 
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct dev_pm_ops dw_dev_pm_ops = {
 	SET_LATE_SYSTEM_SLEEP_PM_OPS(dw_suspend_late, dw_resume_early)

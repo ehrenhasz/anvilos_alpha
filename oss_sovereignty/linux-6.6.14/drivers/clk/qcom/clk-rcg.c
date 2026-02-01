@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -242,7 +240,7 @@ static int configure_bank(struct clk_dyn_rcg *rcg, const struct freq_tbl *f)
 		if (ret)
 			return ret;
 
-		/* Two NS registers means mode control is in NS register */
+		 
 		if (rcg->ns_reg[0] != rcg->ns_reg[1]) {
 			ns = mn_to_reg(mn, f->m, f->n, ns);
 			ret = regmap_write(rcg->clkr.regmap, ns_reg, ns);
@@ -315,13 +313,7 @@ static int clk_dyn_rcg_set_parent(struct clk_hw *hw, u8 index)
 	return configure_bank(rcg, &f);
 }
 
-/*
- * Calculate m/n:d rate
- *
- *          parent_rate     m
- *   rate = ----------- x  ---
- *            pre_div       n
- */
+ 
 static unsigned long
 calc_rate(unsigned long rate, u32 m, u32 n, u32 mode, u32 pre_div)
 {
@@ -352,7 +344,7 @@ clk_rcg_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
 		regmap_read(rcg->clkr.regmap, rcg->md_reg, &md);
 		m = md_to_m(mn, md);
 		n = ns_m_to_n(mn, ns, m);
-		/* MN counter mode is in hw.enable_reg sometimes */
+		 
 		if (rcg->clkr.enable_reg != rcg->ns_reg)
 			regmap_read(rcg->clkr.regmap, rcg->clkr.enable_reg, &mode);
 		else
@@ -384,7 +376,7 @@ clk_dyn_rcg_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
 		regmap_read(rcg->clkr.regmap, rcg->md_reg[bank], &md);
 		m = md_to_m(mn, md);
 		n = ns_m_to_n(mn, ns, m);
-		/* Two NS registers means mode control is in NS register */
+		 
 		if (rcg->ns_reg[0] != rcg->ns_reg[1])
 			reg = ns;
 		mode = reg_to_mnctr_mode(mn, reg);
@@ -492,7 +484,7 @@ static int __clk_rcg_set_rate(struct clk_rcg *rcg, const struct freq_tbl *f)
 		regmap_write(rcg->clkr.regmap, rcg->md_reg, md);
 
 		regmap_read(rcg->clkr.regmap, rcg->ns_reg, &ns);
-		/* MN counter mode is in hw.enable_reg sometimes */
+		 
 		if (rcg->clkr.enable_reg != rcg->ns_reg) {
 			regmap_read(rcg->clkr.regmap, rcg->clkr.enable_reg, &ctl);
 			ctl = mn_to_reg(mn, f->m, f->n, ctl);
@@ -587,7 +579,7 @@ static int clk_rcg_bypass2_set_rate(struct clk_hw *hw, unsigned long rate,
 static int clk_rcg_bypass2_set_rate_and_parent(struct clk_hw *hw,
 		unsigned long rate, unsigned long parent_rate, u8 index)
 {
-	/* Read the hardware to determine parent during set_rate */
+	 
 	return clk_rcg_bypass2_set_rate(hw, rate, parent_rate);
 }
 
@@ -651,10 +643,10 @@ static int clk_rcg_pixel_set_rate(struct clk_hw *hw, unsigned long rate,
 		}
 	}
 
-	/* bypass the pre divider */
+	 
 	f.pre_div = 1;
 
-	/* let us find appropriate m/n values for this */
+	 
 	for (; frac->num; frac++) {
 		request = (rate * frac->den) / frac->num;
 
@@ -743,17 +735,7 @@ static int clk_rcg_esc_set_rate_and_parent(struct clk_hw *hw,
 	return clk_rcg_esc_set_rate(hw, rate, parent_rate);
 }
 
-/*
- * This type of clock has a glitch-free mux that switches between the output of
- * the M/N counter and an always on clock source (XO). When clk_set_rate() is
- * called we need to make sure that we don't switch to the M/N counter if it
- * isn't clocking because the mux will get stuck and the clock will stop
- * outputting a clock. This can happen if the framework isn't aware that this
- * clock is on and so clk_set_rate() doesn't turn on the new parent. To fix
- * this we switch the mux in the enable/disable ops and reprogram the M/N
- * counter in the set_rate op. We also make sure to switch away from the M/N
- * counter in set_rate if software thinks the clock is off.
- */
+ 
 static int clk_rcg_lcc_set_rate(struct clk_hw *hw, unsigned long rate,
 				unsigned long parent_rate)
 {
@@ -766,10 +748,10 @@ static int clk_rcg_lcc_set_rate(struct clk_hw *hw, unsigned long rate,
 	if (!f)
 		return -EINVAL;
 
-	/* Switch to XO to avoid glitches */
+	 
 	regmap_update_bits(rcg->clkr.regmap, rcg->ns_reg, gfm, 0);
 	ret = __clk_rcg_set_rate(rcg, f);
-	/* Switch back to M/N if it's clocking */
+	 
 	if (__clk_is_enabled(hw->clk))
 		regmap_update_bits(rcg->clkr.regmap, rcg->ns_reg, gfm, gfm);
 
@@ -781,7 +763,7 @@ static int clk_rcg_lcc_enable(struct clk_hw *hw)
 	struct clk_rcg *rcg = to_clk_rcg(hw);
 	u32 gfm = BIT(10);
 
-	/* Use M/N */
+	 
 	return regmap_update_bits(rcg->clkr.regmap, rcg->ns_reg, gfm, gfm);
 }
 
@@ -790,7 +772,7 @@ static void clk_rcg_lcc_disable(struct clk_hw *hw)
 	struct clk_rcg *rcg = to_clk_rcg(hw);
 	u32 gfm = BIT(10);
 
-	/* Use XO */
+	 
 	regmap_update_bits(rcg->clkr.regmap, rcg->ns_reg, gfm, 0);
 }
 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #include <stdbool.h>
 #include <linux/limits.h>
 #include <sys/ptrace.h>
@@ -21,9 +21,7 @@
 #define debug(args...)
 #endif
 
-/*
- * Check if the cgroup is frozen by looking at the cgroup.events::frozen value.
- */
+ 
 static int cg_check_frozen(const char *cgroup, bool frozen)
 {
 	if (frozen) {
@@ -32,9 +30,7 @@ static int cg_check_frozen(const char *cgroup, bool frozen)
 			return -1;
 		}
 	} else {
-		/*
-		 * Check the cgroup.events::frozen value.
-		 */
+		 
 		if (cg_read_strstr(cgroup, "cgroup.events", "frozen 0") != 0) {
 			debug("Cgroup %s is frozen\n", cgroup);
 			return -1;
@@ -44,18 +40,13 @@ static int cg_check_frozen(const char *cgroup, bool frozen)
 	return 0;
 }
 
-/*
- * Freeze the given cgroup.
- */
+ 
 static int cg_freeze_nowait(const char *cgroup, bool freeze)
 {
 	return cg_write(cgroup, "cgroup.freeze", freeze ? "1" : "0");
 }
 
-/*
- * Attach a task to the given cgroup and wait for a cgroup frozen event.
- * All transient events (e.g. populated) are ignored.
- */
+ 
 static int cg_enter_and_wait_for_frozen(const char *cgroup, int pid,
 					bool frozen)
 {
@@ -85,11 +76,7 @@ out:
 	return ret;
 }
 
-/*
- * Freeze the given cgroup and wait for the inotify signal.
- * If there are no events in 10 seconds, treat this as an error.
- * Then check that the cgroup is in the desired state.
- */
+ 
 static int cg_freeze_wait(const char *cgroup, bool freeze)
 {
 	int fd, ret = -1;
@@ -114,10 +101,7 @@ out:
 	return ret;
 }
 
-/*
- * A simple process running in a sleep loop until being
- * re-parented.
- */
+ 
 static int child_fn(const char *cgroup, void *arg)
 {
 	int ppid = getppid();
@@ -128,11 +112,7 @@ static int child_fn(const char *cgroup, void *arg)
 	return getppid() == ppid;
 }
 
-/*
- * A simple test for the cgroup freezer: populated the cgroup with 100
- * running processes and freeze it. Then unfreeze it. Then it kills all
- * processes and destroys the cgroup.
- */
+ 
 static int test_cgfreezer_simple(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -170,21 +150,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * The test creates the following hierarchy:
- *       A
- *    / / \ \
- *   B  E  I K
- *  /\  |
- * C  D F
- *      |
- *      G
- *      |
- *      H
- *
- * with a process in C, H and 3 processes in K.
- * Then it tries to freeze and unfreeze the whole tree.
- */
+ 
 static int test_cgfreezer_tree(const char *root)
 {
 	char *cgroup[10] = {0};
@@ -241,46 +207,33 @@ static int test_cgfreezer_tree(const char *root)
 	cg_run_nowait(cgroup[9], child_fn, NULL);
 	cg_run_nowait(cgroup[9], child_fn, NULL);
 
-	/*
-	 * Wait until all child processes will enter
-	 * corresponding cgroups.
-	 */
+	 
 
 	if (cg_wait_for_proc_count(cgroup[2], 1) ||
 	    cg_wait_for_proc_count(cgroup[7], 1) ||
 	    cg_wait_for_proc_count(cgroup[9], 3))
 		goto cleanup;
 
-	/*
-	 * Freeze B.
-	 */
+	 
 	if (cg_freeze_wait(cgroup[1], true))
 		goto cleanup;
 
-	/*
-	 * Freeze F.
-	 */
+	 
 	if (cg_freeze_wait(cgroup[5], true))
 		goto cleanup;
 
-	/*
-	 * Freeze G.
-	 */
+	 
 	if (cg_freeze_wait(cgroup[6], true))
 		goto cleanup;
 
-	/*
-	 * Check that A and E are not frozen.
-	 */
+	 
 	if (cg_check_frozen(cgroup[0], false))
 		goto cleanup;
 
 	if (cg_check_frozen(cgroup[4], false))
 		goto cleanup;
 
-	/*
-	 * Freeze A. Check that A, B and E are frozen.
-	 */
+	 
 	if (cg_freeze_wait(cgroup[0], true))
 		goto cleanup;
 
@@ -290,9 +243,7 @@ static int test_cgfreezer_tree(const char *root)
 	if (cg_check_frozen(cgroup[4], true))
 		goto cleanup;
 
-	/*
-	 * Unfreeze B, F and G
-	 */
+	 
 	if (cg_freeze_nowait(cgroup[1], false))
 		goto cleanup;
 
@@ -302,18 +253,14 @@ static int test_cgfreezer_tree(const char *root)
 	if (cg_freeze_nowait(cgroup[6], false))
 		goto cleanup;
 
-	/*
-	 * Check that C and H are still frozen.
-	 */
+	 
 	if (cg_check_frozen(cgroup[2], true))
 		goto cleanup;
 
 	if (cg_check_frozen(cgroup[7], true))
 		goto cleanup;
 
-	/*
-	 * Unfreeze A. Check that A, C and K are not frozen.
-	 */
+	 
 	if (cg_freeze_wait(cgroup[0], false))
 		goto cleanup;
 
@@ -334,9 +281,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * A fork bomb emulator.
- */
+ 
 static int forkbomb_fn(const char *cgroup, void *arg)
 {
 	int ppid;
@@ -352,11 +297,7 @@ static int forkbomb_fn(const char *cgroup, void *arg)
 	return getppid() == ppid;
 }
 
-/*
- * The test runs a fork bomb in a cgroup and tries to freeze it.
- * Then it kills all processes and checks that cgroup isn't populated
- * anymore.
- */
+ 
 static int test_cgfreezer_forkbomb(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -391,11 +332,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * The test creates a cgroups and freezes it. Then it creates a child cgroup
- * and populates it with a task. After that it checks that the child cgroup
- * is frozen and the parent cgroup remains frozen too.
- */
+ 
 static int test_cgfreezer_mkdir(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -444,12 +381,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * The test creates two nested cgroups, freezes the parent
- * and removes the child. Then it checks that the parent cgroup
- * remains frozen and it's possible to create a new child
- * without unfreezing. The new child is frozen too.
- */
+ 
 static int test_cgfreezer_rmdir(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -496,15 +428,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * The test creates two cgroups: A and B, runs a process in A
- * and performs several migrations:
- * 1) A (running) -> B (frozen)
- * 2) B (frozen) -> A (running)
- * 3) A (frozen) -> B (frozen)
- *
- * On each step it checks the actual state of both cgroups.
- */
+ 
 static int test_cgfreezer_migrate(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -532,9 +456,7 @@ static int test_cgfreezer_migrate(const char *root)
 	if (cg_wait_for_proc_count(cgroup[0], 1))
 		goto cleanup;
 
-	/*
-	 * Migrate from A (running) to B (frozen)
-	 */
+	 
 	if (cg_freeze_wait(cgroup[1], true))
 		goto cleanup;
 
@@ -544,18 +466,14 @@ static int test_cgfreezer_migrate(const char *root)
 	if (cg_check_frozen(cgroup[0], false))
 		goto cleanup;
 
-	/*
-	 * Migrate from B (frozen) to A (running)
-	 */
+	 
 	if (cg_enter_and_wait_for_frozen(cgroup[0], pid, false))
 		goto cleanup;
 
 	if (cg_check_frozen(cgroup[1], true))
 		goto cleanup;
 
-	/*
-	 * Migrate from A (frozen) to B (frozen)
-	 */
+	 
 	if (cg_freeze_wait(cgroup[0], true))
 		goto cleanup;
 
@@ -577,9 +495,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * The test checks that ptrace works with a tracing process in a frozen cgroup.
- */
+ 
 static int test_cgfreezer_ptrace(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -612,10 +528,7 @@ static int test_cgfreezer_ptrace(const char *root)
 
 	waitpid(pid, NULL, 0);
 
-	/*
-	 * Cgroup has to remain frozen, however the test task
-	 * is in traced state.
-	 */
+	 
 	if (cg_check_frozen(cgroup, true))
 		goto cleanup;
 
@@ -637,9 +550,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * Check if the process is stopped.
- */
+ 
 static int proc_check_stopped(int pid)
 {
 	char buf[PAGE_SIZE];
@@ -659,9 +570,7 @@ static int proc_check_stopped(int pid)
 	return 0;
 }
 
-/*
- * Test that it's possible to freeze a cgroup with a stopped process.
- */
+ 
 static int test_cgfreezer_stopped(const char *root)
 {
 	int pid, ret = KSFT_FAIL;
@@ -703,9 +612,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * Test that it's possible to freeze a cgroup with a ptraced process.
- */
+ 
 static int test_cgfreezer_ptraced(const char *root)
 {
 	int pid, ret = KSFT_FAIL;
@@ -738,10 +645,7 @@ static int test_cgfreezer_ptraced(const char *root)
 	if (cg_freeze_wait(cgroup, true))
 		goto cleanup;
 
-	/*
-	 * cg_check_frozen(cgroup, true) will fail here,
-	 * because the task in in the TRACEd state.
-	 */
+	 
 	if (cg_freeze_wait(cgroup, false))
 		goto cleanup;
 
@@ -771,10 +675,7 @@ static int vfork_fn(const char *cgroup, void *arg)
 	return pid;
 }
 
-/*
- * Test that it's possible to freeze a cgroup with a process,
- * which called vfork() and is waiting for a child.
- */
+ 
 static int test_cgfreezer_vfork(const char *root)
 {
 	int ret = KSFT_FAIL;

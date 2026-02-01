@@ -1,27 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2011, Lawrence Livermore National Security, LLC.
- * Copyright (c) 2015 by Chunwei Chen. All rights reserved.
- */
+ 
+ 
 
 
 #ifdef CONFIG_COMPAT
@@ -45,10 +23,7 @@
 #include <linux/writeback.h>
 #endif
 
-/*
- * When using fallocate(2) to preallocate space, inflate the requested
- * capacity check by 10% to account for the required metadata blocks.
- */
+ 
 static unsigned int zfs_fallocate_reserve_percent = 110;
 
 static int
@@ -122,15 +97,10 @@ zpl_readdir(struct file *filp, void *dirent, filldir_t filldir)
 
 	return (error);
 }
-#endif /* !HAVE_VFS_ITERATE && !HAVE_VFS_ITERATE_SHARED */
+#endif  
 
 #if defined(HAVE_FSYNC_WITHOUT_DENTRY)
-/*
- * Linux 2.6.35 - 3.0 API,
- * As of 2.6.35 the dentry argument to the fops->fsync() hook was deemed
- * redundant.  The dentry is still accessible via filp->f_path.dentry,
- * and we are guaranteed that filp will never be NULL.
- */
+ 
 static int
 zpl_fsync(struct file *filp, int datasync)
 {
@@ -158,13 +128,7 @@ zpl_aio_fsync(struct kiocb *kiocb, int datasync)
 #endif
 
 #elif defined(HAVE_FSYNC_RANGE)
-/*
- * Linux 3.1 API,
- * As of 3.1 the responsibility to call filemap_write_and_wait_range() has
- * been pushed down in to the .fsync() vfs hook.  Additionally, the i_mutex
- * lock is no longer held by the caller, for zfs we don't require the lock
- * to be held so we don't acquire it.
- */
+ 
 static int
 zpl_fsync(struct file *filp, loff_t start, loff_t end, int datasync)
 {
@@ -175,25 +139,9 @@ zpl_fsync(struct file *filp, loff_t start, loff_t end, int datasync)
 	int error;
 	fstrans_cookie_t cookie;
 
-	/*
-	 * The variables z_sync_writes_cnt and z_async_writes_cnt work in
-	 * tandem so that sync writes can detect if there are any non-sync
-	 * writes going on and vice-versa. The "vice-versa" part to this logic
-	 * is located in zfs_putpage() where non-sync writes check if there are
-	 * any ongoing sync writes. If any sync and non-sync writes overlap,
-	 * we do a commit to complete the non-sync writes since the latter can
-	 * potentially take several seconds to complete and thus block sync
-	 * writes in the upcoming call to filemap_write_and_wait_range().
-	 */
+	 
 	atomic_inc_32(&zp->z_sync_writes_cnt);
-	/*
-	 * If the following check does not detect an overlapping non-sync write
-	 * (say because it's just about to start), then it is guaranteed that
-	 * the non-sync write will detect this sync write. This is because we
-	 * always increment z_sync_writes_cnt / z_async_writes_cnt before doing
-	 * the check on z_async_writes_cnt / z_sync_writes_cnt here and in
-	 * zfs_putpage() respectively.
-	 */
+	 
 	if (atomic_load_32(&zp->z_async_writes_cnt) > 0) {
 		if ((error = zpl_enter(zfsvfs, FTAG)) != 0) {
 			atomic_dec_32(&zp->z_sync_writes_cnt);
@@ -205,15 +153,7 @@ zpl_fsync(struct file *filp, loff_t start, loff_t end, int datasync)
 
 	error = filemap_write_and_wait_range(inode->i_mapping, start, end);
 
-	/*
-	 * The sync write is not complete yet but we decrement
-	 * z_sync_writes_cnt since zfs_fsync() increments and decrements
-	 * it internally. If a non-sync write starts just after the decrement
-	 * operation but before we call zfs_fsync(), it may not detect this
-	 * overlapping sync write but it does not matter since we have already
-	 * gone past filemap_write_and_wait_range() and we won't block due to
-	 * the non-sync write.
-	 */
+	 
 	atomic_dec_32(&zp->z_sync_writes_cnt);
 
 	if (error)
@@ -265,13 +205,7 @@ zfs_io_flags(struct kiocb *kiocb)
 	return (flags);
 }
 
-/*
- * If relatime is enabled, call file_accessed() if zfs_relatime_need_update()
- * is true.  This is needed since datasets with inherited "relatime" property
- * aren't necessarily mounted with the MNT_RELATIME flag (e.g. after
- * `zfs set relatime=...`), which is what relatime test in VFS by
- * relatime_need_update() is based on.
- */
+ 
 static inline void
 zpl_file_accessed(struct file *filp)
 {
@@ -287,13 +221,7 @@ zpl_file_accessed(struct file *filp)
 
 #if defined(HAVE_VFS_RW_ITERATE)
 
-/*
- * When HAVE_VFS_IOV_ITER is defined the iov_iter structure supports
- * iovecs, kvevs, bvecs and pipes, plus all the required interfaces to
- * manipulate the iov_iter are available.  In which case the full iov_iter
- * can be attached to the uio and correctly handled in the lower layers.
- * Otherwise, for older kernels extract the iovec and pass it instead.
- */
+ 
 static void
 zpl_uio_init(zfs_uio_t *uio, struct kiocb *kiocb, struct iov_iter *to,
     loff_t pos, ssize_t count, size_t skip)
@@ -399,7 +327,7 @@ zpl_iter_write(struct kiocb *kiocb, struct iov_iter *from)
 	return (wrote);
 }
 
-#else /* !HAVE_VFS_RW_ITERATE */
+#else  
 
 static ssize_t
 zpl_aio_read(struct kiocb *kiocb, const struct iovec *iov,
@@ -481,7 +409,7 @@ zpl_aio_write(struct kiocb *kiocb, const struct iovec *iov,
 
 	return (wrote);
 }
-#endif /* HAVE_VFS_RW_ITERATE */
+#endif  
 
 #if defined(HAVE_VFS_RW_ITERATE)
 static ssize_t
@@ -516,7 +444,7 @@ zpl_direct_IO(int rw, struct kiocb *kiocb, struct iov_iter *iter, loff_t pos)
 #error "Unknown direct IO interface"
 #endif
 
-#else /* HAVE_VFS_RW_ITERATE */
+#else  
 
 #if defined(HAVE_VFS_DIRECT_IO_IOVEC)
 static ssize_t
@@ -545,7 +473,7 @@ zpl_direct_IO(int rw, struct kiocb *kiocb, struct iov_iter *iter, loff_t pos)
 #error "Unknown direct IO interface"
 #endif
 
-#endif /* HAVE_VFS_RW_ITERATE */
+#endif  
 
 static loff_t
 zpl_llseek(struct file *filp, loff_t offset, int whence)
@@ -568,54 +496,12 @@ zpl_llseek(struct file *filp, loff_t offset, int whence)
 
 		return (error);
 	}
-#endif /* SEEK_HOLE && SEEK_DATA */
+#endif  
 
 	return (generic_file_llseek(filp, offset, whence));
 }
 
-/*
- * It's worth taking a moment to describe how mmap is implemented
- * for zfs because it differs considerably from other Linux filesystems.
- * However, this issue is handled the same way under OpenSolaris.
- *
- * The issue is that by design zfs bypasses the Linux page cache and
- * leaves all caching up to the ARC.  This has been shown to work
- * well for the common read(2)/write(2) case.  However, mmap(2)
- * is problem because it relies on being tightly integrated with the
- * page cache.  To handle this we cache mmap'ed files twice, once in
- * the ARC and a second time in the page cache.  The code is careful
- * to keep both copies synchronized.
- *
- * When a file with an mmap'ed region is written to using write(2)
- * both the data in the ARC and existing pages in the page cache
- * are updated.  For a read(2) data will be read first from the page
- * cache then the ARC if needed.  Neither a write(2) or read(2) will
- * will ever result in new pages being added to the page cache.
- *
- * New pages are added to the page cache only via .readpage() which
- * is called when the vfs needs to read a page off disk to back the
- * virtual memory region.  These pages may be modified without
- * notifying the ARC and will be written out periodically via
- * .writepage().  This will occur due to either a sync or the usual
- * page aging behavior.  Note because a read(2) of a mmap'ed file
- * will always check the page cache first even when the ARC is out
- * of date correct data will still be returned.
- *
- * While this implementation ensures correct behavior it does have
- * have some drawbacks.  The most obvious of which is that it
- * increases the required memory footprint when access mmap'ed
- * files.  It also adds additional complexity to the code keeping
- * both caches synchronized.
- *
- * Longer term it may be possible to cleanly resolve this wart by
- * mapping page cache pages directly on to the ARC buffers.  The
- * Linux address space operations are flexible enough to allow
- * selection of which pages back a particular index.  The trick
- * would be working out the details of which subsystem is in
- * charge, the ARC, the page cache, or both.  It may also prove
- * helpful to move the ARC buffers to a scatter-gather lists
- * rather than a vmalloc'ed region.
- */
+ 
 static int
 zpl_mmap(struct file *filp, struct vm_area_struct *vma)
 {
@@ -644,11 +530,7 @@ zpl_mmap(struct file *filp, struct vm_area_struct *vma)
 	return (error);
 }
 
-/*
- * Populate a page with data for the Linux page cache.  This function is
- * only used to support mmap(2).  There will be an identical copy of the
- * data in the ARC which is kept up to date via .write() and .writepage().
- */
+ 
 static inline int
 zpl_readpage_common(struct page *pp)
 {
@@ -685,12 +567,7 @@ zpl_readpage_filler(void *data, struct page *pp)
 	return (zpl_readpage_common(pp));
 }
 
-/*
- * Populate a set of pages with data for the Linux page cache.  This
- * function will only be called for read ahead and never for demand
- * paging.  For simplicity, the code relies on read_cache_pages() to
- * correctly lock each page for IO and call zpl_readpage().
- */
+ 
 #ifdef HAVE_VFS_READPAGES
 static int
 zpl_readpages(struct file *filp, struct address_space *mapping,
@@ -769,13 +646,7 @@ zpl_writepages(struct address_space *mapping, struct writeback_control *wbc)
 	zpl_exit(zfsvfs, FTAG);
 	sync_mode = wbc->sync_mode;
 
-	/*
-	 * We don't want to run write_cache_pages() in SYNC mode here, because
-	 * that would make putpage() wait for a single page to be committed to
-	 * disk every single time, resulting in atrocious performance. Instead
-	 * we run it once in non-SYNC mode so that the ZIL gets all the data,
-	 * and then we commit it all in one go.
-	 */
+	 
 	boolean_t for_sync = (sync_mode == WB_SYNC_ALL);
 	wbc->sync_mode = WB_SYNC_NONE;
 	result = zpl_write_cache_pages(mapping, wbc, &for_sync);
@@ -786,25 +657,14 @@ zpl_writepages(struct address_space *mapping, struct writeback_control *wbc)
 			zil_commit(zfsvfs->z_log, zp->z_id);
 		zpl_exit(zfsvfs, FTAG);
 
-		/*
-		 * We need to call write_cache_pages() again (we can't just
-		 * return after the commit) because the previous call in
-		 * non-SYNC mode does not guarantee that we got all the dirty
-		 * pages (see the implementation of write_cache_pages() for
-		 * details). That being said, this is a no-op in most cases.
-		 */
+		 
 		wbc->sync_mode = sync_mode;
 		result = zpl_write_cache_pages(mapping, wbc, &for_sync);
 	}
 	return (result);
 }
 
-/*
- * Write out dirty pages to the ARC, this function is only required to
- * support mmap(2).  Mapped pages may be dirtied by memory operations
- * which never call .write().  These dirty pages are kept in sync with
- * the ARC buffers via this hook.
- */
+ 
 static int
 zpl_writepage(struct page *pp, struct writeback_control *wbc)
 {
@@ -816,15 +676,7 @@ zpl_writepage(struct page *pp, struct writeback_control *wbc)
 	return (zpl_putpage(pp, wbc, &for_sync));
 }
 
-/*
- * The flag combination which matches the behavior of zfs_space() is
- * FALLOC_FL_KEEP_SIZE | FALLOC_FL_PUNCH_HOLE.  The FALLOC_FL_PUNCH_HOLE
- * flag was introduced in the 2.6.38 kernel.
- *
- * The original mode=0 (allocate space) behavior can be reasonably emulated
- * by checking if enough space exists and creating a sparse file, as real
- * persistent space reservation is not possible due to COW, snapshots, etc.
- */
+ 
 static long
 zpl_fallocate_common(struct inode *ip, int mode, loff_t offset, loff_t len)
 {
@@ -870,25 +722,18 @@ zpl_fallocate_common(struct inode *ip, int mode, loff_t offset, loff_t len)
 		unsigned int percent = zfs_fallocate_reserve_percent;
 		struct kstatfs statfs;
 
-		/* Legacy mode, disable fallocate compatibility. */
+		 
 		if (percent == 0) {
 			error = -EOPNOTSUPP;
 			goto out_unmark;
 		}
 
-		/*
-		 * Use zfs_statvfs() instead of dmu_objset_space() since it
-		 * also checks project quota limits, which are relevant here.
-		 */
+		 
 		error = zfs_statvfs(ip, &statfs);
 		if (error)
 			goto out_unmark;
 
-		/*
-		 * Shrink available space a bit to account for overhead/races.
-		 * We know the product previously fit into availbytes from
-		 * dmu_objset_space(), so the smaller product will also fit.
-		 */
+		 
 		if (len > statfs.f_bavail * (statfs.f_bsize * 100 / percent)) {
 			error = -ENOSPC;
 			goto out_unmark;
@@ -946,12 +791,7 @@ zpl_fadvise(struct file *filp, loff_t offset, loff_t len, int advice)
 		if (zn_has_cached_data(zp, offset, offset + len - 1))
 			error = generic_fadvise(filp, offset, len, advice);
 #endif
-		/*
-		 * Pass on the caller's size directly, but note that
-		 * dmu_prefetch_max will effectively cap it.  If there
-		 * really is a larger sequential access pattern, perhaps
-		 * dmu_zfetch will detect it.
-		 */
+		 
 		if (len == 0)
 			len = i_size_read(ip) - offset;
 
@@ -962,7 +802,7 @@ zpl_fadvise(struct file *filp, loff_t offset, loff_t len, int advice)
 	case POSIX_FADV_RANDOM:
 	case POSIX_FADV_DONTNEED:
 	case POSIX_FADV_NOREUSE:
-		/* ignored for now */
+		 
 		break;
 	default:
 		error = -EINVAL;
@@ -973,7 +813,7 @@ zpl_fadvise(struct file *filp, loff_t offset, loff_t len, int advice)
 
 	return (error);
 }
-#endif /* HAVE_FILE_FADVISE */
+#endif  
 
 #define	ZFS_FL_USER_VISIBLE	(FS_FL_USER_VISIBLE | ZFS_PROJINHERIT_FL)
 #define	ZFS_FL_USER_MODIFIABLE	(FS_FL_USER_MODIFIABLE | ZFS_PROJINHERIT_FL)
@@ -999,10 +839,7 @@ __zpl_ioctl_getflags(struct inode *ip)
 	return (ioctl_flags & ZFS_FL_USER_VISIBLE);
 }
 
-/*
- * Map zfs file z_pflags (xvattr_t) to linux file attributes. Only file
- * attributes common to both Linux and Solaris are mapped.
- */
+ 
 static int
 zpl_ioctl_getflags(struct file *filp, void __user *arg)
 {
@@ -1015,14 +852,7 @@ zpl_ioctl_getflags(struct file *filp, void __user *arg)
 	return (err);
 }
 
-/*
- * fchange() is a helper macro to detect if we have been asked to change a
- * flag. This is ugly, but the requirement that we do this is a consequence of
- * how the Linux file attribute interface was designed. Another consequence is
- * that concurrent modification of files suffers from a TOCTOU race. Neither
- * are things we can fix without modifying the kernel-userland interface, which
- * is outside of our jurisdiction.
- */
+ 
 
 #define	fchange(f0, f1, b0, b1) (!((f0) & (b0)) != !((f1) & (b1)))
 
@@ -1146,9 +976,7 @@ zpl_ioctl_setxattr(struct file *filp, void __user *arg)
 	return (err);
 }
 
-/*
- * Expose Additional File Level Attributes of ZFS.
- */
+ 
 static int
 zpl_ioctl_getdosflags(struct file *filp, void __user *arg)
 {
@@ -1205,9 +1033,7 @@ __zpl_ioctl_setdosflags(struct inode *ip, uint64_t ioctl_flags, xvattr_t *xva)
 	return (0);
 }
 
-/*
- * Set Additional File Level Attributes of ZFS.
- */
+ 
 static int
 zpl_ioctl_setdosflags(struct file *filp, void __user *arg)
 {
@@ -1282,7 +1108,7 @@ zpl_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	}
 	return (zpl_ioctl(filp, cmd, (unsigned long)compat_ptr(arg)));
 }
-#endif /* CONFIG_COMPAT */
+#endif  
 
 const struct address_space_operations zpl_address_space_operations = {
 #ifdef HAVE_VFS_READPAGES
@@ -1362,7 +1188,7 @@ const struct file_operations zpl_file_operations = {
 	.compat_ioctl	= zpl_compat_ioctl,
 #endif
 #ifdef HAVE_VFS_FILE_OPERATIONS_EXTEND
-	}, /* kabi_fops */
+	},  
 	.copy_file_range	= zpl_copy_file_range,
 	.clone_file_range	= zpl_clone_file_range,
 #endif
@@ -1385,7 +1211,7 @@ const struct file_operations zpl_dir_file_operations = {
 #endif
 };
 
-/* CSTYLED */
+ 
 module_param(zfs_fallocate_reserve_percent, uint, 0644);
 MODULE_PARM_DESC(zfs_fallocate_reserve_percent,
 	"Percentage of length to use for the available capacity check");

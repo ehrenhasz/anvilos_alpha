@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/******************************************************************************
-*******************************************************************************
-**
-**  Copyright (C) Sistina Software, Inc.  1997-2003  All rights reserved.
-**  Copyright (C) 2005-2008 Red Hat, Inc.  All rights reserved.
-**
-**
-*******************************************************************************
-******************************************************************************/
+
+ 
 
 #include "dlm_internal.h"
 #include "lockspace.h"
@@ -105,9 +97,7 @@ static void set_rcom_status(struct dlm_ls *ls, struct rcom_status *rs,
 	rs->rs_flags = cpu_to_le32(flags);
 }
 
-/* When replying to a status request, a node also sends back its
-   configuration values.  The requesting node then checks that the remote
-   node is configured the same way as itself. */
+ 
 
 static void set_rcom_config(struct dlm_ls *ls, struct rcom_config *rf,
 			    uint32_t num_slots)
@@ -158,16 +148,7 @@ static void disallow_sync_reply(struct dlm_ls *ls)
 	spin_unlock(&ls->ls_rcom_spin);
 }
 
-/*
- * low nodeid gathers one slot value at a time from each node.
- * it sets need_slots=0, and saves rf_our_slot returned from each
- * rcom_config.
- *
- * other nodes gather all slot values at once from the low nodeid.
- * they set need_slots=1, and ignore the rf_our_slot returned from each
- * rcom_config.  they use the rf_num_slots returned from the low
- * node's rcom_config.
- */
+ 
 
 int dlm_rcom_status(struct dlm_ls *ls, int nodeid, uint32_t status_flags,
 		    uint64_t seq)
@@ -208,7 +189,7 @@ retry:
 	rc = ls->ls_recover_buf;
 
 	if (rc->rc_result == cpu_to_le32(-ESRCH)) {
-		/* we pretend the remote lockspace exists with 0 status */
+		 
 		log_debug(ls, "remote node %d not ready", nodeid);
 		rc->rc_result = 0;
 		error = 0;
@@ -216,7 +197,7 @@ retry:
 		error = check_rcom_config(ls, rc, nodeid);
 	}
 
-	/* the caller looks at rc_result for the remote recovery status */
+	 
  out:
 	return error;
 }
@@ -386,7 +367,7 @@ static void receive_rcom_lookup(struct dlm_ls *ls,
 	int len = le16_to_cpu(rc_in->rc_header.h_length) -
 		sizeof(struct dlm_rcom);
 
-	/* Old code would send this special id to trigger a debug dump. */
+	 
 	if (rc_in->rc_id == cpu_to_le64(0xFFFFFFFF)) {
 		log_error(ls, "receive_rcom_lookup dump from %d", nodeid);
 		dlm_dump_rsb_name(ls, rc_in->rc_buf, len);
@@ -438,8 +419,7 @@ static void pack_rcom_lock(struct dlm_rsb *r, struct dlm_lkb *lkb,
 	rl->rl_namelen = cpu_to_le16(r->res_length);
 	memcpy(rl->rl_name, r->res_name, r->res_length);
 
-	/* FIXME: might we have an lvb without DLM_LKF_VALBLK set ?
-	   If so, receive_rcom_lock_args() won't take this copy. */
+	 
 
 	if (lkb->lkb_lvbptr)
 		memcpy(rl->rl_lvb, lkb->lkb_lvbptr, r->res_ls->ls_lvblen);
@@ -470,7 +450,7 @@ int dlm_send_rcom_lock(struct dlm_rsb *r, struct dlm_lkb *lkb, uint64_t seq)
 	return error;
 }
 
-/* needs at least dlm_rcom + rcom_lock */
+ 
 static void receive_rcom_lock(struct dlm_ls *ls, const struct dlm_rcom *rc_in,
 			      uint64_t seq)
 {
@@ -489,7 +469,7 @@ static void receive_rcom_lock(struct dlm_ls *ls, const struct dlm_rcom *rc_in,
 
 	memcpy(rc->rc_buf, rc_in->rc_buf, sizeof(struct rcom_lock));
 	rl = (struct rcom_lock *)rc->rc_buf;
-	/* set rl_remid and rl_result from dlm_recover_master_copy() */
+	 
 	rl->rl_remid = rl_remid;
 	rl->rl_result = rl_result;
 
@@ -499,8 +479,7 @@ static void receive_rcom_lock(struct dlm_ls *ls, const struct dlm_rcom *rc_in,
 	send_rcom(mh, rc);
 }
 
-/* If the lockspace doesn't exist then still send a status message
-   back; it's possible that it just doesn't have its global_id yet. */
+ 
 
 int dlm_send_ls_not_ready(int nodeid, const struct dlm_rcom *rc_in)
 {
@@ -535,50 +514,9 @@ int dlm_send_ls_not_ready(int nodeid, const struct dlm_rcom *rc_in)
 	return 0;
 }
 
-/*
- * Ignore messages for stage Y before we set
- * recover_status bit for stage X:
- *
- * recover_status = 0
- *
- * dlm_recover_members()
- * - send nothing
- * - recv nothing
- * - ignore NAMES, NAMES_REPLY
- * - ignore LOOKUP, LOOKUP_REPLY
- * - ignore LOCK, LOCK_REPLY
- *
- * recover_status |= NODES
- *
- * dlm_recover_members_wait()
- *
- * dlm_recover_directory()
- * - send NAMES
- * - recv NAMES_REPLY
- * - ignore LOOKUP, LOOKUP_REPLY
- * - ignore LOCK, LOCK_REPLY
- *
- * recover_status |= DIR
- *
- * dlm_recover_directory_wait()
- *
- * dlm_recover_masters()
- * - send LOOKUP
- * - recv LOOKUP_REPLY
- *
- * dlm_recover_locks()
- * - send LOCKS
- * - recv LOCKS_REPLY
- *
- * recover_status |= LOCKS
- *
- * dlm_recover_locks_wait()
- *
- * recover_status |= DONE
- */
+ 
 
-/* Called by dlm_recv; corresponds to dlm_receive_message() but special
-   recovery-only comms are sent through here. */
+ 
 
 void dlm_receive_rcom(struct dlm_ls *ls, const struct dlm_rcom *rc, int nodeid)
 {

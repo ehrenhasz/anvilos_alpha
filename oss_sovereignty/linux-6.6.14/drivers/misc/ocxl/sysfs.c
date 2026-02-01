@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright 2017 IBM Corp.
+
+
 #include <linux/sysfs.h>
 #include "ocxl_internal.h"
 
@@ -176,10 +176,7 @@ void ocxl_sysfs_unregister_afu(struct ocxl_file_info *info)
 {
 	int i;
 
-	/*
-	 * device_remove_bin_file is safe to call if the file is not added as
-	 * the files are removed by name, and early exit if not found
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(afu_attrs); i++)
 		device_remove_file(&info->dev, &afu_attrs[i]);
 	device_remove_bin_file(&info->dev, &info->attr_global_mmio);

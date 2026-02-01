@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <vmlinux.h>
 #include "xdp_metadata.h"
@@ -15,7 +15,7 @@ int freplace_rx(struct xdp_md *ctx)
 {
 	enum xdp_rss_hash_type type = 0;
 	u32 hash = 0;
-	/* Call _any_ metadata function to make sure we don't crash. */
+	 
 	bpf_xdp_metadata_rx_hash(ctx, &hash, &type);
 	called++;
 	return XDP_PASS;

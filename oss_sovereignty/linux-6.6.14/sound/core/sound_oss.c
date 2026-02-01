@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Advanced Linux Sound Architecture
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/export.h>
@@ -19,9 +16,7 @@
 static struct snd_minor *snd_oss_minors[SNDRV_OSS_MINORS];
 static DEFINE_MUTEX(sound_oss_mutex);
 
-/* NOTE: This function increments the refcount of the associated card like
- * snd_lookup_minor_data(); the caller must call snd_card_unref() appropriately
- */
+ 
 void *snd_lookup_oss_minor_data(unsigned int minor, int type)
 {
 	struct snd_minor *mreg;
@@ -94,7 +89,7 @@ int snd_register_oss_device(int type, struct snd_card *card, int dev,
 	struct device *carddev = snd_card_get_device_link(card);
 
 	if (card && card->number >= SNDRV_MINOR_OSS_DEVICES)
-		return 0; /* ignore silently */
+		return 0;  
 	if (minor < 0)
 		return minor;
 	preg = kmalloc(sizeof(struct snd_minor), GFP_KERNEL);
@@ -178,9 +173,7 @@ int snd_unregister_oss_device(int type, struct snd_card *card, int dev)
 	snd_oss_minors[minor] = NULL;
 	mutex_unlock(&sound_oss_mutex);
 
-	/* call unregister_sound_special() outside sound_oss_mutex;
-	 * otherwise may deadlock, as it can trigger the release of a card
-	 */
+	 
 	unregister_sound_special(minor);
 	if (track2 >= 0)
 		unregister_sound_special(track2);
@@ -190,9 +183,7 @@ int snd_unregister_oss_device(int type, struct snd_card *card, int dev)
 }
 EXPORT_SYMBOL(snd_unregister_oss_device);
 
-/*
- *  INFO PART
- */
+ 
 
 #ifdef CONFIG_SND_PROC_FS
 static const char *snd_oss_device_type_name(int type)
@@ -245,6 +236,6 @@ int __init snd_minor_info_oss_init(void)
 	if (!entry)
 		return -ENOMEM;
 	entry->c.text.read = snd_minor_info_oss_read;
-	return snd_info_register(entry); /* freed in error path */
+	return snd_info_register(entry);  
 }
-#endif /* CONFIG_SND_PROC_FS */
+#endif  

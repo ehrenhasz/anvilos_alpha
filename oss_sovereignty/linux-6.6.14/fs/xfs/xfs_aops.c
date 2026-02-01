@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2005 Silicon Graphics, Inc.
- * Copyright (c) 2016-2018 Christoph Hellwig.
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_shared.h"
 #include "xfs_format.h"
@@ -32,18 +28,14 @@ XFS_WPC(struct iomap_writepage_ctx *ctx)
 	return container_of(ctx, struct xfs_writepage_ctx, ctx);
 }
 
-/*
- * Fast and loose check if this write could update the on-disk inode size.
- */
+ 
 static inline bool xfs_ioend_is_append(struct iomap_ioend *ioend)
 {
 	return ioend->io_offset + ioend->io_size >
 		XFS_I(ioend->io_inode)->i_disk_size;
 }
 
-/*
- * Update on-disk file size now that data has been written to disk.
- */
+ 
 int
 xfs_setfilesize(
 	struct xfs_inode	*ip,
@@ -76,9 +68,7 @@ xfs_setfilesize(
 	return xfs_trans_commit(tp);
 }
 
-/*
- * IO write completion.
- */
+ 
 STATIC void
 xfs_end_ioend(
 	struct iomap_ioend	*ioend)
@@ -90,28 +80,16 @@ xfs_end_ioend(
 	unsigned int		nofs_flag;
 	int			error;
 
-	/*
-	 * We can allocate memory here while doing writeback on behalf of
-	 * memory reclaim.  To avoid memory allocation deadlocks set the
-	 * task-wide nofs context for the following operations.
-	 */
+	 
 	nofs_flag = memalloc_nofs_save();
 
-	/*
-	 * Just clean up the in-memory structures if the fs has been shut down.
-	 */
+	 
 	if (xfs_is_shutdown(mp)) {
 		error = -EIO;
 		goto done;
 	}
 
-	/*
-	 * Clean up all COW blocks and underlying data fork delalloc blocks on
-	 * I/O error. The delalloc punch is required because this ioend was
-	 * mapped to blocks in the COW fork and the associated pages are no
-	 * longer dirty. If we don't remove delalloc blocks here, they become
-	 * stale and can corrupt free space accounting on unmount.
-	 */
+	 
 	error = blk_status_to_errno(ioend->io_bio->bi_status);
 	if (unlikely(error)) {
 		if (ioend->io_flags & IOMAP_F_SHARED) {
@@ -122,9 +100,7 @@ xfs_end_ioend(
 		goto done;
 	}
 
-	/*
-	 * Success: commit the COW or unwritten blocks if needed.
-	 */
+	 
 	if (ioend->io_flags & IOMAP_F_SHARED)
 		error = xfs_reflink_end_cow(ip, offset, size);
 	else if (ioend->io_type == IOMAP_UNWRITTEN)
@@ -137,20 +113,7 @@ done:
 	memalloc_nofs_restore(nofs_flag);
 }
 
-/*
- * Finish all pending IO completions that require transactional modifications.
- *
- * We try to merge physical and logically contiguous ioends before completion to
- * minimise the number of transactions we need to perform during IO completion.
- * Both unwritten extent conversion and COW remapping need to iterate and modify
- * one physical extent at a time, so we gain nothing by merging physically
- * discontiguous extents here.
- *
- * The ioend chain length that we can be processing here is largely unbound in
- * length and we may have to perform significant amounts of work on each ioend
- * to complete it. Hence we have to be careful about holding the CPU for too
- * long in this loop.
- */
+ 
 void
 xfs_end_io(
 	struct work_struct	*work)
@@ -191,10 +154,7 @@ xfs_end_bio(
 	spin_unlock_irqrestore(&ip->i_ioend_lock, flags);
 }
 
-/*
- * Fast revalidation of the cached writeback mapping. Return true if the current
- * mapping is valid, false otherwise.
- */
+ 
 static bool
 xfs_imap_valid(
 	struct iomap_writepage_ctx	*wpc,
@@ -204,21 +164,11 @@ xfs_imap_valid(
 	if (offset < wpc->iomap.offset ||
 	    offset >= wpc->iomap.offset + wpc->iomap.length)
 		return false;
-	/*
-	 * If this is a COW mapping, it is sufficient to check that the mapping
-	 * covers the offset. Be careful to check this first because the caller
-	 * can revalidate a COW mapping without updating the data seqno.
-	 */
+	 
 	if (wpc->iomap.flags & IOMAP_F_SHARED)
 		return true;
 
-	/*
-	 * This is not a COW mapping. Check the sequence number of the data fork
-	 * because concurrent changes could have invalidated the extent. Check
-	 * the COW fork because concurrent changes since the last time we
-	 * checked (and found nothing at this offset) could have added
-	 * overlapping blocks.
-	 */
+	 
 	if (XFS_WPC(wpc)->data_seq != READ_ONCE(ip->i_df.if_seq)) {
 		trace_xfs_wb_data_iomap_invalid(ip, &wpc->iomap,
 				XFS_WPC(wpc)->data_seq, XFS_DATA_FORK);
@@ -233,14 +183,7 @@ xfs_imap_valid(
 	return true;
 }
 
-/*
- * Pass in a dellalloc extent and convert it to real extents, return the real
- * extent that maps offset_fsb in wpc->iomap.
- *
- * The current page is held locked so nothing could have removed the block
- * backing offset_fsb, although it could have moved from the COW to the data
- * fork by another thread.
- */
+ 
 static int
 xfs_convert_blocks(
 	struct iomap_writepage_ctx *wpc,
@@ -256,12 +199,7 @@ xfs_convert_blocks(
 	else
 		seq = &XFS_WPC(wpc)->data_seq;
 
-	/*
-	 * Attempt to allocate whatever delalloc extent currently backs offset
-	 * and put the result into wpc->iomap.  Allocate in a loop because it
-	 * may take several attempts to allocate real blocks for a contiguous
-	 * delalloc extent if free space is sufficiently fragmented.
-	 */
+	 
 	do {
 		error = xfs_bmapi_convert_delalloc(ip, whichfork, offset,
 				&wpc->iomap, seq);
@@ -295,40 +233,18 @@ xfs_map_blocks(
 
 	XFS_ERRORTAG_DELAY(mp, XFS_ERRTAG_WB_DELAY_MS);
 
-	/*
-	 * COW fork blocks can overlap data fork blocks even if the blocks
-	 * aren't shared.  COW I/O always takes precedent, so we must always
-	 * check for overlap on reflink inodes unless the mapping is already a
-	 * COW one, or the COW fork hasn't changed from the last time we looked
-	 * at it.
-	 *
-	 * It's safe to check the COW fork if_seq here without the ILOCK because
-	 * we've indirectly protected against concurrent updates: writeback has
-	 * the page locked, which prevents concurrent invalidations by reflink
-	 * and directio and prevents concurrent buffered writes to the same
-	 * page.  Changes to if_seq always happen under i_lock, which protects
-	 * against concurrent updates and provides a memory barrier on the way
-	 * out that ensures that we always see the current value.
-	 */
+	 
 	if (xfs_imap_valid(wpc, ip, offset))
 		return 0;
 
-	/*
-	 * If we don't have a valid map, now it's time to get a new one for this
-	 * offset.  This will convert delayed allocations (including COW ones)
-	 * into real extents.  If we return without a valid map, it means we
-	 * landed in a hole and we skip the block.
-	 */
+	 
 retry:
 	cow_fsb = NULLFILEOFF;
 	whichfork = XFS_DATA_FORK;
 	xfs_ilock(ip, XFS_ILOCK_SHARED);
 	ASSERT(!xfs_need_iread_extents(&ip->i_df));
 
-	/*
-	 * Check if this is offset is covered by a COW extents, and if yes use
-	 * it directly instead of looking up anything in the data fork.
-	 */
+	 
 	if (xfs_inode_has_cow_data(ip) &&
 	    xfs_iext_lookup_extent(ip, ip->i_cowfp, offset_fsb, &icur, &imap))
 		cow_fsb = imap.br_startoff;
@@ -340,26 +256,19 @@ retry:
 		goto allocate_blocks;
 	}
 
-	/*
-	 * No COW extent overlap. Revalidate now that we may have updated
-	 * ->cow_seq. If the data mapping is still valid, we're done.
-	 */
+	 
 	if (xfs_imap_valid(wpc, ip, offset)) {
 		xfs_iunlock(ip, XFS_ILOCK_SHARED);
 		return 0;
 	}
 
-	/*
-	 * If we don't have a valid map, now it's time to get a new one for this
-	 * offset.  This will convert delayed allocations (including COW ones)
-	 * into real extents.
-	 */
+	 
 	if (!xfs_iext_lookup_extent(ip, &ip->i_df, offset_fsb, &icur, &imap))
-		imap.br_startoff = end_fsb;	/* fake a hole past EOF */
+		imap.br_startoff = end_fsb;	 
 	XFS_WPC(wpc)->data_seq = READ_ONCE(ip->i_df.if_seq);
 	xfs_iunlock(ip, XFS_ILOCK_SHARED);
 
-	/* landed in a hole or beyond EOF? */
+	 
 	if (imap.br_startoff > offset_fsb) {
 		imap.br_blockcount = imap.br_startoff - offset_fsb;
 		imap.br_startoff = offset_fsb;
@@ -367,17 +276,12 @@ retry:
 		imap.br_state = XFS_EXT_NORM;
 	}
 
-	/*
-	 * Truncate to the next COW extent if there is one.  This is the only
-	 * opportunity to do this because we can skip COW fork lookups for the
-	 * subsequent blocks in the mapping; however, the requirement to treat
-	 * the COW range separately remains.
-	 */
+	 
 	if (cow_fsb != NULLFILEOFF &&
 	    cow_fsb < imap.br_startoff + imap.br_blockcount)
 		imap.br_blockcount = cow_fsb - imap.br_startoff;
 
-	/* got a delalloc extent? */
+	 
 	if (imap.br_startblock != HOLESTARTBLOCK &&
 	    isnullstartblock(imap.br_startblock))
 		goto allocate_blocks;
@@ -388,24 +292,14 @@ retry:
 allocate_blocks:
 	error = xfs_convert_blocks(wpc, ip, whichfork, offset);
 	if (error) {
-		/*
-		 * If we failed to find the extent in the COW fork we might have
-		 * raced with a COW to data fork conversion or truncate.
-		 * Restart the lookup to catch the extent in the data fork for
-		 * the former case, but prevent additional retries to avoid
-		 * looping forever for the latter case.
-		 */
+		 
 		if (error == -EAGAIN && whichfork == XFS_COW_FORK && !retries++)
 			goto retry;
 		ASSERT(error != -EAGAIN);
 		return error;
 	}
 
-	/*
-	 * Due to merging the return real extent might be larger than the
-	 * original delalloc one.  Trim the return extent to the next COW
-	 * boundary again to force a re-lookup.
-	 */
+	 
 	if (whichfork != XFS_COW_FORK && cow_fsb != NULLFILEOFF) {
 		loff_t		cow_offset = XFS_FSB_TO_B(mp, cow_fsb);
 
@@ -426,14 +320,10 @@ xfs_prepare_ioend(
 {
 	unsigned int		nofs_flag;
 
-	/*
-	 * We can allocate memory here while doing writeback on behalf of
-	 * memory reclaim.  To avoid memory allocation deadlocks set the
-	 * task-wide nofs context for the following operations.
-	 */
+	 
 	nofs_flag = memalloc_nofs_save();
 
-	/* Convert CoW extents to regular */
+	 
 	if (!status && (ioend->io_flags & IOMAP_F_SHARED)) {
 		status = xfs_reflink_convert_cow(XFS_I(ioend->io_inode),
 				ioend->io_offset, ioend->io_size);
@@ -441,26 +331,14 @@ xfs_prepare_ioend(
 
 	memalloc_nofs_restore(nofs_flag);
 
-	/* send ioends that might require a transaction to the completion wq */
+	 
 	if (xfs_ioend_is_append(ioend) || ioend->io_type == IOMAP_UNWRITTEN ||
 	    (ioend->io_flags & IOMAP_F_SHARED))
 		ioend->io_bio->bi_end_io = xfs_end_bio;
 	return status;
 }
 
-/*
- * If the folio has delalloc blocks on it, the caller is asking us to punch them
- * out. If we don't, we can leave a stale delalloc mapping covered by a clean
- * page that needs to be dirtied again before the delalloc mapping can be
- * converted. This stale delalloc mapping can trip up a later direct I/O read
- * operation on the same region.
- *
- * We prevent this by truncating away the delalloc regions on the folio. Because
- * they are delalloc, we can do this without needing a transaction. Indeed - if
- * we get ENOSPC errors, we have to be able to do this truncation without a
- * transaction as there is no space left for block reservation (typically why
- * we see a ENOSPC in writeback).
- */
+ 
 static void
 xfs_discard_folio(
 	struct folio		*folio,
@@ -477,11 +355,7 @@ xfs_discard_folio(
 		"page discard on page "PTR_FMT", inode 0x%llx, pos %llu.",
 			folio, ip->i_ino, pos);
 
-	/*
-	 * The end of the punch range is always the offset of the first
-	 * byte of the next folio. Hence the end offset is only dependent on the
-	 * folio itself and not the start offset that is passed in.
-	 */
+	 
 	error = xfs_bmap_punch_delalloc_range(ip, pos,
 				folio_pos(folio) + folio_size(folio));
 
@@ -502,10 +376,7 @@ xfs_vm_writepages(
 {
 	struct xfs_writepage_ctx wpc = { };
 
-	/*
-	 * Writing back data in a transaction context can result in recursive
-	 * transactions. This is bad, so issue a warning and get out of here.
-	 */
+	 
 	if (WARN_ON_ONCE(current->journal_info))
 		return 0;
 
@@ -534,15 +405,7 @@ xfs_vm_bmap(
 
 	trace_xfs_vm_bmap(ip);
 
-	/*
-	 * The swap code (ab-)uses ->bmap to get a block mapping and then
-	 * bypasses the file system for actual I/O.  We really can't allow
-	 * that on reflinks inodes, so we have to skip out here.  And yes,
-	 * 0 is the magic code for a bmap error.
-	 *
-	 * Since we don't pass back blockdev info, we can't return bmap
-	 * information for rt files either.
-	 */
+	 
 	if (xfs_is_cow_inode(ip) || XFS_IS_REALTIME_INODE(ip))
 		return 0;
 	return iomap_bmap(mapping, block, &xfs_read_iomap_ops);

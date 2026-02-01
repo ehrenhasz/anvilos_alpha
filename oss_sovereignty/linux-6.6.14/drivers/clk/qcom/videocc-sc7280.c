@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -27,7 +25,7 @@ static const struct pll_vco lucid_vco[] = {
 	{ 249600000, 2000000000, 0 },
 };
 
-/* 400MHz Configuration */
+ 
 static const struct alpha_pll_config video_pll0_config = {
 	.l = 0x14,
 	.alpha = 0xD555,

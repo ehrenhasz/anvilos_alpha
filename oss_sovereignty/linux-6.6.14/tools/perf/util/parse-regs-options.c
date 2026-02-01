@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -21,9 +21,7 @@ __parse_regs(const struct option *opt, const char *str, int unset, bool intr)
 	if (unset)
 		return 0;
 
-	/*
-	 * cannot set it twice
-	 */
+	 
 	if (*mode)
 		return -1;
 
@@ -32,9 +30,9 @@ __parse_regs(const struct option *opt, const char *str, int unset, bool intr)
 	else
 		mask = arch__user_reg_mask();
 
-	/* str may be NULL in case no arg is passed to -I */
+	 
 	if (str) {
-		/* because str is read-only */
+		 
 		s = os = strdup(str);
 		if (!s)
 			return -1;
@@ -53,7 +51,7 @@ __parse_regs(const struct option *opt, const char *str, int unset, bool intr)
 				}
 #endif
 				fputc('\n', stderr);
-				/* just printing available regs */
+				 
 				goto error;
 			}
 #ifdef HAVE_PERF_REGS_SUPPORT
@@ -78,7 +76,7 @@ __parse_regs(const struct option *opt, const char *str, int unset, bool intr)
 	}
 	ret = 0;
 
-	/* default to all possible regs */
+	 
 	if (*mode == 0)
 		*mode = mask;
 error:

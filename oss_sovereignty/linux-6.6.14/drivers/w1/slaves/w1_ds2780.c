@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * 1-Wire implementation for the ds2780 chip
- *
- * Copyright (C) 2010 Indesign, LLC
- *
- * Author: Clifton Barnes <cabarnes@indesign-llc.com>
- *
- * Based on w1-ds2760 driver
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

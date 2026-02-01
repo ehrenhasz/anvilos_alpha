@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel SOC Telemetry debugfs Driver: Currently supports APL
- * Copyright (c) 2015, Intel Corporation.
- * All Rights Reserved.
- *
- * This file provides the debugfs interfaces for telemetry.
- * /sys/kernel/debug/telemetry/pss_info: Shows Primary Control Sub-Sys Counters
- * /sys/kernel/debug/telemetry/ioss_info: Shows IO Sub-System Counters
- * /sys/kernel/debug/telemetry/soc_states: Shows SoC State
- * /sys/kernel/debug/telemetry/pss_trace_verbosity: Read and Change Tracing
- *				Verbosity via firmware
- * /sys/kernel/debug/telemetry/ioss_race_verbosity: Write and Change Tracing
- *				Verbosity via firmware
- */
+
+ 
 #include <linux/debugfs.h>
 #include <linux/device.h>
 #include <linux/mfd/intel_pmc_bxt.h>
@@ -28,7 +15,7 @@
 #define DRIVER_NAME			"telemetry_soc_debugfs"
 #define DRIVER_VERSION			"1.0.0"
 
-/* ApolloLake SoC Event-IDs */
+ 
 #define TELEM_APL_PSS_PSTATES_ID	0x2802
 #define TELEM_APL_PSS_IDLE_ID		0x2806
 #define TELEM_APL_PCS_IDLE_BLOCKED_ID	0x2C00
@@ -55,7 +42,7 @@
 #define BYTES_PER_LONG			8
 #define TELEM_APL_MASK_PCS_STATE	0xF
 
-/* Max events in bitmap to check for */
+ 
 #define TELEM_PSS_IDLE_EVTS		25
 #define TELEM_PSS_IDLE_BLOCKED_EVTS	20
 #define TELEM_PSS_S0IX_BLOCKED_EVTS	20
@@ -91,7 +78,7 @@ struct telemetry_susp_stats {
 	u64 deep_res;
 };
 
-/* Bitmap definitions for default counters in APL */
+ 
 struct telem_pss_idle_stateinfo {
 	const char *name;
 	u32 bit_pos;
@@ -237,7 +224,7 @@ struct telemetry_debugfs_conf {
 	struct telemetry_susp_stats suspend_stats;
 	struct dentry *telemetry_dbg_dir;
 
-	/* Bitmap Data */
+	 
 	struct telem_ioss_d0ix_stateinfo *ioss_d0ix_data;
 	struct telem_pss_idle_stateinfo *pss_idle_data;
 	struct telem_pcs_blkd_info *pcs_idle_blkd_data;
@@ -253,7 +240,7 @@ struct telemetry_debugfs_conf {
 	u8 ioss_d0ix_evts;
 	u8 ioss_pg_evts;
 
-	/* IDs */
+	 
 	u16  pss_ltr_blocking_id;
 	u16  pcs_idle_blkd_id;
 	u16  pcs_s0ix_blkd_id;
@@ -358,7 +345,7 @@ static int telem_pss_states_show(struct seq_file *s, void *unused)
 		seq_printf(s, "%-32s %llu\n",
 			   name[index], evtlog[index].telem_evtlog);
 
-		/* Fetch PSS IDLE State */
+		 
 		if (evtlog[index].telem_evtid == conf->pss_idle_id) {
 			pss_idle[conf->pss_idle_evts - 1] =
 			(evtlog[index].telem_evtlog >>
@@ -830,12 +817,7 @@ static int pm_suspend_exit_cb(void)
 		goto out;
 	}
 
-	/*
-	 * Due to some design limitations in the firmware, sometimes the
-	 * counters do not get updated by the time we reach here. As a
-	 * workaround, we try to see if this was a genuine case of sleep
-	 * failure or not by cross-checking from PMC GCR registers directly.
-	 */
+	 
 	if (suspend_shlw_ctr_exit == suspend_shlw_ctr_temp &&
 	    suspend_deep_ctr_exit == suspend_deep_ctr_temp) {
 		struct telemetry_plt_config *plt_config = telemetry_get_pltdata();
@@ -907,7 +889,7 @@ static int __init telemetry_debugfs_init(void)
 	int err;
 	struct dentry *dir;
 
-	/* Only APL supported for now */
+	 
 	id = x86_match_cpu(telemetry_debugfs_cpu_ids);
 	if (!id)
 		return -ENODEV;

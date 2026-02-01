@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *	mxuport.c - MOXA UPort series driver
- *
- *	Copyright (c) 2006 Moxa Technologies Co., Ltd.
- *	Copyright (c) 2013 Andrew Lunn <andrew@lunn.ch>
- *
- *	Supports the following Moxa USB to serial converters:
- *	 2 ports : UPort 1250, UPort 1250I
- *	 4 ports : UPort 1410, UPort 1450, UPort 1450I
- *	 8 ports : UPort 1610-8, UPort 1650-8
- *	16 ports : UPort 1610-16, UPort 1650-16
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -27,7 +16,7 @@
 #include <linux/usb/serial.h>
 #include <asm/unaligned.h>
 
-/* Definitions for the vendor ID and device ID */
+ 
 #define MX_USBSERIAL_VID	0x110A
 #define MX_UPORT1250_PID	0x1250
 #define MX_UPORT1251_PID	0x1251
@@ -39,78 +28,78 @@
 #define MX_UPORT1613_PID	0x1613
 #define MX_UPORT1653_PID	0x1653
 
-/* Definitions for USB info */
+ 
 #define HEADER_SIZE		4
 #define EVENT_LENGTH		8
 #define DOWN_BLOCK_SIZE		64
 
-/* Definitions for firmware info */
+ 
 #define VER_ADDR_1		0x20
 #define VER_ADDR_2		0x24
 #define VER_ADDR_3		0x28
 
-/* Definitions for USB vendor request */
+ 
 #define RQ_VENDOR_NONE			0x00
-#define RQ_VENDOR_SET_BAUD		0x01 /* Set baud rate */
-#define RQ_VENDOR_SET_LINE		0x02 /* Set line status */
-#define RQ_VENDOR_SET_CHARS		0x03 /* Set Xon/Xoff chars */
-#define RQ_VENDOR_SET_RTS		0x04 /* Set RTS */
-#define RQ_VENDOR_SET_DTR		0x05 /* Set DTR */
-#define RQ_VENDOR_SET_XONXOFF		0x06 /* Set auto Xon/Xoff */
-#define RQ_VENDOR_SET_RX_HOST_EN	0x07 /* Set RX host enable */
-#define RQ_VENDOR_SET_OPEN		0x08 /* Set open/close port */
-#define RQ_VENDOR_PURGE			0x09 /* Purge Rx/Tx buffer */
-#define RQ_VENDOR_SET_MCR		0x0A /* Set MCR register */
-#define RQ_VENDOR_SET_BREAK		0x0B /* Set Break signal */
+#define RQ_VENDOR_SET_BAUD		0x01  
+#define RQ_VENDOR_SET_LINE		0x02  
+#define RQ_VENDOR_SET_CHARS		0x03  
+#define RQ_VENDOR_SET_RTS		0x04  
+#define RQ_VENDOR_SET_DTR		0x05  
+#define RQ_VENDOR_SET_XONXOFF		0x06  
+#define RQ_VENDOR_SET_RX_HOST_EN	0x07  
+#define RQ_VENDOR_SET_OPEN		0x08  
+#define RQ_VENDOR_PURGE			0x09  
+#define RQ_VENDOR_SET_MCR		0x0A  
+#define RQ_VENDOR_SET_BREAK		0x0B  
 
-#define RQ_VENDOR_START_FW_DOWN		0x0C /* Start firmware download */
-#define RQ_VENDOR_STOP_FW_DOWN		0x0D /* Stop firmware download */
-#define RQ_VENDOR_QUERY_FW_READY	0x0E /* Query if new firmware ready */
+#define RQ_VENDOR_START_FW_DOWN		0x0C  
+#define RQ_VENDOR_STOP_FW_DOWN		0x0D  
+#define RQ_VENDOR_QUERY_FW_READY	0x0E  
 
-#define RQ_VENDOR_SET_FIFO_DISABLE	0x0F /* Set fifo disable */
-#define RQ_VENDOR_SET_INTERFACE		0x10 /* Set interface */
-#define RQ_VENDOR_SET_HIGH_PERFOR	0x11 /* Set hi-performance */
+#define RQ_VENDOR_SET_FIFO_DISABLE	0x0F  
+#define RQ_VENDOR_SET_INTERFACE		0x10  
+#define RQ_VENDOR_SET_HIGH_PERFOR	0x11  
 
-#define RQ_VENDOR_ERASE_BLOCK		0x12 /* Erase flash block */
-#define RQ_VENDOR_WRITE_PAGE		0x13 /* Write flash page */
-#define RQ_VENDOR_PREPARE_WRITE		0x14 /* Prepare write flash */
-#define RQ_VENDOR_CONFIRM_WRITE		0x15 /* Confirm write flash */
-#define RQ_VENDOR_LOCATE		0x16 /* Locate the device */
+#define RQ_VENDOR_ERASE_BLOCK		0x12  
+#define RQ_VENDOR_WRITE_PAGE		0x13  
+#define RQ_VENDOR_PREPARE_WRITE		0x14  
+#define RQ_VENDOR_CONFIRM_WRITE		0x15  
+#define RQ_VENDOR_LOCATE		0x16  
 
-#define RQ_VENDOR_START_ROM_DOWN	0x17 /* Start firmware download */
-#define RQ_VENDOR_ROM_DATA		0x18 /* Rom file data */
-#define RQ_VENDOR_STOP_ROM_DOWN		0x19 /* Stop firmware download */
-#define RQ_VENDOR_FW_DATA		0x20 /* Firmware data */
+#define RQ_VENDOR_START_ROM_DOWN	0x17  
+#define RQ_VENDOR_ROM_DATA		0x18  
+#define RQ_VENDOR_STOP_ROM_DOWN		0x19  
+#define RQ_VENDOR_FW_DATA		0x20  
 
-#define RQ_VENDOR_RESET_DEVICE		0x23 /* Try to reset the device */
+#define RQ_VENDOR_RESET_DEVICE		0x23  
 #define RQ_VENDOR_QUERY_FW_CONFIG	0x24
 
-#define RQ_VENDOR_GET_VERSION		0x81 /* Get firmware version */
-#define RQ_VENDOR_GET_PAGE		0x82 /* Read flash page */
-#define RQ_VENDOR_GET_ROM_PROC		0x83 /* Get ROM process state */
+#define RQ_VENDOR_GET_VERSION		0x81  
+#define RQ_VENDOR_GET_PAGE		0x82  
+#define RQ_VENDOR_GET_ROM_PROC		0x83  
 
-#define RQ_VENDOR_GET_INQUEUE		0x84 /* Data in input buffer */
-#define RQ_VENDOR_GET_OUTQUEUE		0x85 /* Data in output buffer */
+#define RQ_VENDOR_GET_INQUEUE		0x84  
+#define RQ_VENDOR_GET_OUTQUEUE		0x85  
 
-#define RQ_VENDOR_GET_MSR		0x86 /* Get modem status register */
+#define RQ_VENDOR_GET_MSR		0x86  
 
-/* Definitions for UPort event type */
-#define UPORT_EVENT_NONE		0 /* None */
-#define UPORT_EVENT_TXBUF_THRESHOLD	1 /* Tx buffer threshold */
-#define UPORT_EVENT_SEND_NEXT		2 /* Send next */
-#define UPORT_EVENT_MSR			3 /* Modem status */
-#define UPORT_EVENT_LSR			4 /* Line status */
-#define UPORT_EVENT_MCR			5 /* Modem control */
+ 
+#define UPORT_EVENT_NONE		0  
+#define UPORT_EVENT_TXBUF_THRESHOLD	1  
+#define UPORT_EVENT_SEND_NEXT		2  
+#define UPORT_EVENT_MSR			3  
+#define UPORT_EVENT_LSR			4  
+#define UPORT_EVENT_MCR			5  
 
-/* Definitions for serial event type */
-#define SERIAL_EV_CTS			0x0008	/* CTS changed state */
-#define SERIAL_EV_DSR			0x0010	/* DSR changed state */
-#define SERIAL_EV_RLSD			0x0020	/* RLSD changed state */
+ 
+#define SERIAL_EV_CTS			0x0008	 
+#define SERIAL_EV_DSR			0x0010	 
+#define SERIAL_EV_RLSD			0x0020	 
 
-/* Definitions for modem control event type */
-#define SERIAL_EV_XOFF			0x40	/* XOFF received */
+ 
+#define SERIAL_EV_XOFF			0x40	 
 
-/* Definitions for line control of communication */
+ 
 #define MX_WORDLENGTH_5			5
 #define MX_WORDLENGTH_6			6
 #define MX_WORDLENGTH_7			7
@@ -129,14 +118,14 @@
 #define MX_RTS_DISABLE			0x0
 #define MX_RTS_ENABLE			0x1
 #define MX_RTS_HW			0x2
-#define MX_RTS_NO_CHANGE		0x3 /* Flag, not valid register value*/
+#define MX_RTS_NO_CHANGE		0x3  
 
 #define MX_INT_RS232			0
 #define MX_INT_2W_RS485			1
 #define MX_INT_RS422			2
 #define MX_INT_4W_RS485			3
 
-/* Definitions for holding reason */
+ 
 #define MX_WAIT_FOR_CTS			0x0001
 #define MX_WAIT_FOR_DSR			0x0002
 #define MX_WAIT_FOR_DCD			0x0004
@@ -151,15 +140,15 @@
 #define MX_UPORT_8_PORT			BIT(2)
 #define MX_UPORT_16_PORT		BIT(3)
 
-/* This structure holds all of the local port information */
+ 
 struct mxuport_port {
-	u8 mcr_state;		/* Last MCR state */
-	u8 msr_state;		/* Last MSR state */
-	struct mutex mutex;	/* Protects mcr_state */
-	spinlock_t spinlock;	/* Protects msr_state */
+	u8 mcr_state;		 
+	u8 msr_state;		 
+	struct mutex mutex;	 
+	spinlock_t spinlock;	 
 };
 
-/* Table of devices that work with this driver */
+ 
 static const struct usb_device_id mxuport_idtable[] = {
 	{ USB_DEVICE(MX_USBSERIAL_VID, MX_UPORT1250_PID),
 	  .driver_info = MX_UPORT_2_PORT },
@@ -179,16 +168,12 @@ static const struct usb_device_id mxuport_idtable[] = {
 	  .driver_info = MX_UPORT_16_PORT },
 	{ USB_DEVICE(MX_USBSERIAL_VID, MX_UPORT1653_PID),
 	  .driver_info = MX_UPORT_16_PORT },
-	{}			/* Terminating entry */
+	{}			 
 };
 
 MODULE_DEVICE_TABLE(usb, mxuport_idtable);
 
-/*
- * Add a four byte header containing the port number and the number of
- * bytes of data in the message. Return the number of bytes in the
- * buffer.
- */
+ 
 static int mxuport_prepare_write_buffer(struct usb_serial_port *port,
 					void *dest, size_t size)
 {
@@ -208,7 +193,7 @@ static int mxuport_prepare_write_buffer(struct usb_serial_port *port,
 	return count + HEADER_SIZE;
 }
 
-/* Read the given buffer in from the control pipe. */
+ 
 static int mxuport_recv_ctrl_urb(struct usb_serial *serial,
 				 u8 request, u16 value, u16 index,
 				 u8 *data, size_t size)
@@ -239,7 +224,7 @@ static int mxuport_recv_ctrl_urb(struct usb_serial *serial,
 	return status;
 }
 
-/* Write the given buffer out to the control pipe.  */
+ 
 static int mxuport_send_ctrl_data_urb(struct usb_serial *serial,
 				      u8 request,
 				      u16 value, u16 index,
@@ -264,7 +249,7 @@ static int mxuport_send_ctrl_data_urb(struct usb_serial *serial,
 	return 0;
 }
 
-/* Send a vendor request without any data */
+ 
 static int mxuport_send_ctrl_urb(struct usb_serial *serial,
 				 u8 request, u16 value, u16 index)
 {
@@ -272,15 +257,7 @@ static int mxuport_send_ctrl_urb(struct usb_serial *serial,
 					  NULL, 0);
 }
 
-/*
- * mxuport_throttle - throttle function of driver
- *
- * This function is called by the tty driver when it wants to stop the
- * data being read from the port. Since all the data comes over one
- * bulk in endpoint, we cannot stop submitting urbs by setting
- * port->throttle. Instead tell the device to stop sending us data for
- * the port.
- */
+ 
 static void mxuport_throttle(struct tty_struct *tty)
 {
 	struct usb_serial_port *port = tty->driver_data;
@@ -292,13 +269,7 @@ static void mxuport_throttle(struct tty_struct *tty)
 			      0, port->port_number);
 }
 
-/*
- * mxuport_unthrottle - unthrottle function of driver
- *
- * This function is called by the tty driver when it wants to resume
- * the data being read from the port. Tell the device it can resume
- * sending us received data from the port.
- */
+ 
 static void mxuport_unthrottle(struct tty_struct *tty)
 {
 
@@ -311,10 +282,7 @@ static void mxuport_unthrottle(struct tty_struct *tty)
 			      1, port->port_number);
 }
 
-/*
- * Processes one chunk of data received for a port.  Mostly a copy of
- * usb_serial_generic_process_read_urb().
- */
+ 
 static void mxuport_process_read_urb_data(struct usb_serial_port *port,
 					  char *data, int size)
 {
@@ -342,7 +310,7 @@ static void mxuport_msr_event(struct usb_serial_port *port, u8 buf[4])
 	if (rcv_msr_event == 0)
 		return;
 
-	/* Update MSR status */
+	 
 	spin_lock_irqsave(&mxport->spinlock, flags);
 
 	dev_dbg(&port->dev, "%s - current MSR status = 0x%x\n",
@@ -419,10 +387,7 @@ static void mxuport_lsr_event(struct usb_serial_port *port, u8 buf[4])
 	}
 }
 
-/*
- * When something interesting happens, modem control lines XON/XOFF
- * etc, the device sends an event. Process these events.
- */
+ 
 static void mxuport_process_read_urb_event(struct usb_serial_port *port,
 					   u8 buf[4], u32 event)
 {
@@ -430,10 +395,7 @@ static void mxuport_process_read_urb_event(struct usb_serial_port *port,
 
 	switch (event) {
 	case UPORT_EVENT_SEND_NEXT:
-		/*
-		 * Sent as part of the flow control on device buffers.
-		 * Not currently used.
-		 */
+		 
 		break;
 	case UPORT_EVENT_MSR:
 		mxuport_msr_event(port, buf);
@@ -442,13 +404,7 @@ static void mxuport_process_read_urb_event(struct usb_serial_port *port,
 		mxuport_lsr_event(port, buf);
 		break;
 	case UPORT_EVENT_MCR:
-		/*
-		 * Event to indicate a change in XON/XOFF from the
-		 * peer.  Currently not used. We just continue
-		 * sending the device data and it will buffer it if
-		 * needed. This event could be used for flow control
-		 * between the host and the device.
-		 */
+		 
 		break;
 	default:
 		dev_dbg(&port->dev, "Unexpected event\n");
@@ -456,10 +412,7 @@ static void mxuport_process_read_urb_event(struct usb_serial_port *port,
 	}
 }
 
-/*
- * One URB can contain data for multiple ports. Demultiplex the data,
- * checking the port exists, is opened and the message is valid.
- */
+ 
 static void mxuport_process_read_urb_demux_data(struct urb *urb)
 {
 	struct usb_serial_port *port = urb->context;
@@ -503,10 +456,7 @@ static void mxuport_process_read_urb_demux_data(struct urb *urb)
 	}
 }
 
-/*
- * One URB can contain events for multiple ports. Demultiplex the event,
- * checking the port exists, and is opened.
- */
+ 
 static void mxuport_process_read_urb_demux_event(struct urb *urb)
 {
 	struct usb_serial_port *port = urb->context;
@@ -546,11 +496,7 @@ static void mxuport_process_read_urb_demux_event(struct urb *urb)
 	}
 }
 
-/*
- * This is called when we have received data on the bulk in
- * endpoint. Depending on which port it was received on, it can
- * contain serial data or events.
- */
+ 
 static void mxuport_process_read_urb(struct urb *urb)
 {
 	struct usb_serial_port *port = urb->context;
@@ -563,10 +509,7 @@ static void mxuport_process_read_urb(struct urb *urb)
 		mxuport_process_read_urb_demux_event(urb);
 }
 
-/*
- * Ask the device how many bytes it has queued to be sent out. If
- * there are none, return true.
- */
+ 
 static bool mxuport_tx_empty(struct usb_serial_port *port)
 {
 	struct usb_serial *serial = port->serial;
@@ -650,16 +593,10 @@ static int mxuport_set_rts(struct usb_serial_port *port, u8 state)
 		mcr_state |= UART_MCR_RTS;
 		break;
 	case MX_RTS_HW:
-		/*
-		 * Do not update mxport->mcr_state when doing hardware
-		 * flow control.
-		 */
+		 
 		break;
 	default:
-		/*
-		 * Should not happen, but somebody might try passing
-		 * MX_RTS_NO_CHANGE, which is not valid.
-		 */
+		 
 		err = -EINVAL;
 		goto out;
 	}
@@ -747,12 +684,12 @@ static int mxuport_tiocmget(struct tty_struct *tty)
 	spin_unlock_irqrestore(&mxport->spinlock, flags);
 	mutex_unlock(&mxport->mutex);
 
-	result = (((mcr & UART_MCR_DTR) ? TIOCM_DTR : 0) |	/* 0x002 */
-		  ((mcr & UART_MCR_RTS) ? TIOCM_RTS : 0) |	/* 0x004 */
-		  ((msr & UART_MSR_CTS) ? TIOCM_CTS : 0) |	/* 0x020 */
-		  ((msr & UART_MSR_DCD) ? TIOCM_CAR : 0) |	/* 0x040 */
-		  ((msr & UART_MSR_RI) ? TIOCM_RI : 0) |	/* 0x080 */
-		  ((msr & UART_MSR_DSR) ? TIOCM_DSR : 0));	/* 0x100 */
+	result = (((mcr & UART_MCR_DTR) ? TIOCM_DTR : 0) |	 
+		  ((mcr & UART_MCR_RTS) ? TIOCM_RTS : 0) |	 
+		  ((msr & UART_MSR_CTS) ? TIOCM_CTS : 0) |	 
+		  ((msr & UART_MSR_DCD) ? TIOCM_CAR : 0) |	 
+		  ((msr & UART_MSR_RI) ? TIOCM_RI : 0) |	 
+		  ((msr & UART_MSR_DSR) ? TIOCM_DSR : 0));	 
 
 	dev_dbg(&port->dev, "%s - 0x%04x\n", __func__, result);
 
@@ -775,7 +712,7 @@ static int mxuport_set_termios_flow(struct tty_struct *tty,
 	if (!buf)
 		return -ENOMEM;
 
-	/* S/W flow control settings */
+	 
 	if (I_IXOFF(tty) || I_IXON(tty)) {
 		enable = 1;
 		buf[0] = xon;
@@ -800,7 +737,7 @@ static int mxuport_set_termios_flow(struct tty_struct *tty,
 
 	rts = MX_RTS_NO_CHANGE;
 
-	/* H/W flow control settings */
+	 
 	if (!old_termios ||
 	    C_CRTSCTS(tty) != (old_termios->c_cflag & CRTSCTS)) {
 		if (C_CRTSCTS(tty))
@@ -811,7 +748,7 @@ static int mxuport_set_termios_flow(struct tty_struct *tty,
 
 	if (C_BAUD(tty)) {
 		if (old_termios && (old_termios->c_cflag & CBAUD) == B0) {
-			/* Raise DTR and RTS */
+			 
 			if (C_CRTSCTS(tty))
 				rts = MX_RTS_HW;
 			else
@@ -819,7 +756,7 @@ static int mxuport_set_termios_flow(struct tty_struct *tty,
 			mxuport_set_dtr(port, 1);
 		}
 	} else {
-		/* Drop DTR and RTS */
+		 
 		rts = MX_RTS_DISABLE;
 		mxuport_set_dtr(port, 0);
 	}
@@ -855,7 +792,7 @@ static void mxuport_set_termios(struct tty_struct *tty,
 	if (!buf)
 		return;
 
-	/* Set data bit of termios */
+	 
 	switch (C_CSIZE(tty)) {
 	case CS5:
 		data_bits = MX_WORDLENGTH_5;
@@ -872,7 +809,7 @@ static void mxuport_set_termios(struct tty_struct *tty,
 		break;
 	}
 
-	/* Set parity of termios */
+	 
 	if (C_PARENB(tty)) {
 		if (C_CMSPAR(tty)) {
 			if (C_PARODD(tty))
@@ -889,7 +826,7 @@ static void mxuport_set_termios(struct tty_struct *tty,
 		parity = MX_PARITY_NONE;
 	}
 
-	/* Set stop bit of termios */
+	 
 	if (C_CSTOPB(tty))
 		stop_bits = MX_STOP_BITS_2;
 	else
@@ -913,7 +850,7 @@ static void mxuport_set_termios(struct tty_struct *tty,
 	if (!baud)
 		baud = 9600;
 
-	/* Note: Little Endian */
+	 
 	put_unaligned_le32(baud, buf);
 
 	err = mxuport_send_ctrl_data_urb(serial, RQ_VENDOR_SET_BAUD,
@@ -931,10 +868,7 @@ out:
 	kfree(buf);
 }
 
-/*
- * Determine how many ports this device has dynamically.  It will be
- * called after the probe() callback is called, but before attach().
- */
+ 
 static int mxuport_calc_num_ports(struct usb_serial *serial,
 					struct usb_serial_endpoints *epds)
 {
@@ -956,10 +890,7 @@ static int mxuport_calc_num_ports(struct usb_serial *serial,
 		num_ports = 2;
 	}
 
-	/*
-	 * Setup bulk-out endpoint multiplexing. All ports share the same
-	 * bulk-out endpoint.
-	 */
+	 
 	BUILD_BUG_ON(ARRAY_SIZE(epds->bulk_out) < 16);
 
 	for (i = 1; i < num_ports; ++i)
@@ -970,7 +901,7 @@ static int mxuport_calc_num_ports(struct usb_serial *serial,
 	return num_ports;
 }
 
-/* Get the version of the firmware currently running. */
+ 
 static int mxuport_get_fw_version(struct usb_serial *serial, u32 *version)
 {
 	u8 *ver_buf;
@@ -980,7 +911,7 @@ static int mxuport_get_fw_version(struct usb_serial *serial, u32 *version)
 	if (!ver_buf)
 		return -ENOMEM;
 
-	/* Get firmware version from SDRAM */
+	 
 	err = mxuport_recv_ctrl_urb(serial, RQ_VENDOR_GET_VERSION, 0, 0,
 				    ver_buf, 4);
 	if (err != 4) {
@@ -995,7 +926,7 @@ out:
 	return err;
 }
 
-/* Given a firmware blob, download it to the device. */
+ 
 static int mxuport_download_fw(struct usb_serial *serial,
 			       const struct firmware *fw_p)
 {
@@ -1054,7 +985,7 @@ static int mxuport_probe(struct usb_serial *serial,
 	char buf[32];
 	int err;
 
-	/* Load our firmware */
+	 
 	err = mxuport_send_ctrl_urb(serial, RQ_VENDOR_QUERY_FW_CONFIG, 0, 0);
 	if (err) {
 		mxuport_send_ctrl_urb(serial, RQ_VENDOR_RESET_DEVICE, 0, 0);
@@ -1077,7 +1008,7 @@ static int mxuport_probe(struct usb_serial *serial,
 		dev_warn(&serial->interface->dev, "Firmware %s not found\n",
 			 buf);
 
-		/* Use the firmware already in the device */
+		 
 		err = 0;
 	} else {
 		local_ver = ((fw_p->data[VER_ADDR_1] << 16) |
@@ -1103,10 +1034,7 @@ static int mxuport_probe(struct usb_serial *serial,
 		 (version & 0xff00) >> 8,
 		 (version & 0xff));
 
-	/*
-	 * Contains the features of this hardware. Store away for
-	 * later use, eg, number of ports.
-	 */
+	 
 	usb_set_serial_data(serial, (void *)id->driver_info);
 out:
 	if (fw_p)
@@ -1129,22 +1057,22 @@ static int mxuport_port_probe(struct usb_serial_port *port)
 	mutex_init(&mxport->mutex);
 	spin_lock_init(&mxport->spinlock);
 
-	/* Set the port private data */
+	 
 	usb_set_serial_port_data(port, mxport);
 
-	/* Set FIFO (Enable) */
+	 
 	err = mxuport_send_ctrl_urb(serial, RQ_VENDOR_SET_FIFO_DISABLE,
 				    0, port->port_number);
 	if (err)
 		return err;
 
-	/* Set transmission mode (Hi-Performance) */
+	 
 	err = mxuport_send_ctrl_urb(serial, RQ_VENDOR_SET_HIGH_PERFOR,
 				    0, port->port_number);
 	if (err)
 		return err;
 
-	/* Set interface (RS-232) */
+	 
 	return mxuport_send_ctrl_urb(serial, RQ_VENDOR_SET_INTERFACE,
 				     MX_INT_RS232,
 				     port->port_number);
@@ -1156,13 +1084,7 @@ static int mxuport_attach(struct usb_serial *serial)
 	struct usb_serial_port *port1 = serial->port[1];
 	int err;
 
-	/*
-	 * All data from the ports is received on the first bulk in
-	 * endpoint, with a multiplex header. The second bulk in is
-	 * used for events.
-	 *
-	 * Start to read from the device.
-	 */
+	 
 	err = usb_serial_generic_submit_read_urbs(port0, GFP_KERNEL);
 	if (err)
 		return err;
@@ -1191,7 +1113,7 @@ static int mxuport_open(struct tty_struct *tty, struct usb_serial_port *port)
 	struct usb_serial *serial = port->serial;
 	int err;
 
-	/* Set receive host (enable) */
+	 
 	err = mxuport_send_ctrl_urb(serial, RQ_VENDOR_SET_RX_HOST_EN,
 				    1, port->port_number);
 	if (err)
@@ -1205,14 +1127,11 @@ static int mxuport_open(struct tty_struct *tty, struct usb_serial_port *port)
 		return err;
 	}
 
-	/* Initial port termios */
+	 
 	if (tty)
 		mxuport_set_termios(tty, port, NULL);
 
-	/*
-	 * TODO: use RQ_VENDOR_GET_MSR, once we know what it
-	 * returns.
-	 */
+	 
 	mxport->msr_state = 0;
 
 	return err;
@@ -1229,7 +1148,7 @@ static void mxuport_close(struct usb_serial_port *port)
 			      port->port_number);
 }
 
-/* Send a break to the port. */
+ 
 static int mxuport_break_ctl(struct tty_struct *tty, int break_state)
 {
 	struct usb_serial_port *port = tty->driver_data;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019 Intel Corporation.
- *
- * Authors:
- * Ramalingam C <ramalingam.c@intel.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -40,10 +35,7 @@ static u32 drm_hdcp_get_revoked_ksv_count(const u8 *buf, u32 vrls_length)
 		parsed_bytes += vrl_sz;
 	}
 
-	/*
-	 * When vrls are not valid, ksvs are not considered.
-	 * Hence SRM will be discarded.
-	 */
+	 
 	if (parsed_bytes != vrls_length)
 		ksv_count = 0;
 
@@ -109,7 +101,7 @@ static int drm_hdcp_parse_hdcp1_srm(const u8 *buf, size_t count,
 		return -EINVAL;
 	}
 
-	/* Length of the all vrls combined */
+	 
 	vrl_length -= (DRM_HDCP_1_4_VRL_LENGTH_SIZE +
 		       DRM_HDCP_1_4_DCP_SIG_SIZE);
 
@@ -172,7 +164,7 @@ static int drm_hdcp_parse_hdcp2_srm(const u8 *buf, size_t count,
 		return -EINVAL;
 	}
 
-	/* Length of the all vrls combined */
+	 
 	vrl_length -= (DRM_HDCP_2_VRL_LENGTH_SIZE +
 		       DRM_HDCP_2_DCP_SIG_SIZE);
 
@@ -255,31 +247,7 @@ exit:
 	return ret;
 }
 
-/**
- * drm_hdcp_check_ksvs_revoked - Check the revoked status of the IDs
- *
- * @drm_dev: drm_device for which HDCP revocation check is requested
- * @ksvs: List of KSVs (HDCP receiver IDs)
- * @ksv_count: KSV count passed in through @ksvs
- *
- * This function reads the HDCP System renewability Message(SRM Table)
- * from userspace as a firmware and parses it for the revoked HDCP
- * KSVs(Receiver IDs) detected by DCP LLC. Once the revoked KSVs are known,
- * revoked state of the KSVs in the list passed in by display drivers are
- * decided and response is sent.
- *
- * SRM should be presented in the name of "display_hdcp_srm.bin".
- *
- * Format of the SRM table, that userspace needs to write into the binary file,
- * is defined at:
- * 1. Renewability chapter on 55th page of HDCP 1.4 specification
- * https://www.digital-cp.com/sites/default/files/specifications/HDCP%20Specification%20Rev1_4_Secure.pdf
- * 2. Renewability chapter on 63rd page of HDCP 2.2 specification
- * https://www.digital-cp.com/sites/default/files/specifications/HDCP%20on%20HDMI%20Specification%20Rev2_2_Final1.pdf
- *
- * Returns:
- * Count of the revoked KSVs or -ve error number in case of the failure.
- */
+ 
 int drm_hdcp_check_ksvs_revoked(struct drm_device *drm_dev, u8 *ksvs,
 				u32 ksv_count)
 {
@@ -292,7 +260,7 @@ int drm_hdcp_check_ksvs_revoked(struct drm_device *drm_dev, u8 *ksvs,
 	if (ret)
 		return ret;
 
-	/* revoked_ksv_cnt will be zero when above function failed */
+	 
 	for (i = 0; i < revoked_ksv_cnt; i++)
 		for  (j = 0; j < ksv_count; j++)
 			if (!memcmp(&ksvs[j * DRM_HDCP_KSV_LEN],
@@ -322,36 +290,7 @@ static struct drm_prop_enum_list drm_hdcp_content_type_enum_list[] = {
 DRM_ENUM_NAME_FN(drm_get_hdcp_content_type_name,
 		 drm_hdcp_content_type_enum_list)
 
-/**
- * drm_connector_attach_content_protection_property - attach content protection
- * property
- *
- * @connector: connector to attach CP property on.
- * @hdcp_content_type: is HDCP Content Type property needed for connector
- *
- * This is used to add support for content protection on select connectors.
- * Content Protection is intentionally vague to allow for different underlying
- * technologies, however it is most implemented by HDCP.
- *
- * When hdcp_content_type is true enum property called HDCP Content Type is
- * created (if it is not already) and attached to the connector.
- *
- * This property is used for sending the protected content's stream type
- * from userspace to kernel on selected connectors. Protected content provider
- * will decide their type of their content and declare the same to kernel.
- *
- * Content type will be used during the HDCP 2.2 authentication.
- * Content type will be set to &drm_connector_state.hdcp_content_type.
- *
- * The content protection will be set to &drm_connector_state.content_protection
- *
- * When kernel triggered content protection state change like DESIRED->ENABLED
- * and ENABLED->DESIRED, will use drm_hdcp_update_content_protection() to update
- * the content protection state of a connector.
- *
- * Returns:
- * Zero on success, negative errno on failure.
- */
+ 
 int drm_connector_attach_content_protection_property(
 		struct drm_connector *connector, bool hdcp_content_type)
 {
@@ -390,20 +329,7 @@ int drm_connector_attach_content_protection_property(
 }
 EXPORT_SYMBOL(drm_connector_attach_content_protection_property);
 
-/**
- * drm_hdcp_update_content_protection - Updates the content protection state
- * of a connector
- *
- * @connector: drm_connector on which content protection state needs an update
- * @val: New state of the content protection property
- *
- * This function can be used by display drivers, to update the kernel triggered
- * content protection state changes of a drm_connector such as DESIRED->ENABLED
- * and ENABLED->DESIRED. No uevent for DESIRED->UNDESIRED or ENABLED->UNDESIRED,
- * as userspace is triggering such state change and kernel performs it without
- * fail.This function update the new state of the property into the connector's
- * state and generate an uevent to notify the userspace.
- */
+ 
 void drm_hdcp_update_content_protection(struct drm_connector *connector,
 					u64 val)
 {

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * serial.c -- USB gadget serial driver
- *
- * Copyright (C) 2003 Al Borchers (alborchers@steinerpoint.com)
- * Copyright (C) 2008 by David Brownell
- * Copyright (C) 2008 by Nokia Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/device.h>
@@ -17,7 +11,7 @@
 #include "u_serial.h"
 
 
-/* Defines */
+ 
 
 #define GS_VERSION_STR			"v2.4"
 #define GS_VERSION_NUM			0x2400
@@ -25,20 +19,16 @@
 #define GS_LONG_NAME			"Gadget Serial"
 #define GS_VERSION_NAME			GS_LONG_NAME " " GS_VERSION_STR
 
-/*-------------------------------------------------------------------------*/
+ 
 USB_GADGET_COMPOSITE_OPTIONS();
 
-/* Thanks to NetChip Technologies for donating this product ID.
-*
-* DO NOT REUSE THESE IDs with a protocol-incompatible driver!!  Ever!!
-* Instead:  allocate your own, using normal USB-IF procedures.
-*/
-#define GS_VENDOR_ID			0x0525	/* NetChip */
-#define GS_PRODUCT_ID			0xa4a6	/* Linux-USB Serial Gadget */
-#define GS_CDC_PRODUCT_ID		0xa4a7	/* ... as CDC-ACM */
-#define GS_CDC_OBEX_PRODUCT_ID		0xa4a9	/* ... as CDC-OBEX */
+ 
+#define GS_VENDOR_ID			0x0525	 
+#define GS_PRODUCT_ID			0xa4a6	 
+#define GS_CDC_PRODUCT_ID		0xa4a7	 
+#define GS_CDC_OBEX_PRODUCT_ID		0xa4a9	 
 
-/* string IDs are assigned dynamically */
+ 
 
 #define STRING_DESCRIPTION_IDX		USB_GADGET_FIRST_AVAIL_IDX
 
@@ -46,12 +36,12 @@ static struct usb_string strings_dev[] = {
 	[USB_GADGET_MANUFACTURER_IDX].s = "",
 	[USB_GADGET_PRODUCT_IDX].s = GS_VERSION_NAME,
 	[USB_GADGET_SERIAL_IDX].s = "",
-	[STRING_DESCRIPTION_IDX].s = NULL /* updated; f(use_acm) */,
-	{  } /* end of list */
+	[STRING_DESCRIPTION_IDX].s = NULL  ,
+	{  }  
 };
 
 static struct usb_gadget_strings stringtab_dev = {
-	.language	= 0x0409,	/* en-us */
+	.language	= 0x0409,	 
 	.strings	= strings_dev,
 };
 
@@ -63,24 +53,24 @@ static struct usb_gadget_strings *dev_strings[] = {
 static struct usb_device_descriptor device_desc = {
 	.bLength =		USB_DT_DEVICE_SIZE,
 	.bDescriptorType =	USB_DT_DEVICE,
-	/* .bcdUSB = DYNAMIC */
-	/* .bDeviceClass = f(use_acm) */
+	 
+	 
 	.bDeviceSubClass =	0,
 	.bDeviceProtocol =	0,
-	/* .bMaxPacketSize0 = f(hardware) */
+	 
 	.idVendor =		cpu_to_le16(GS_VENDOR_ID),
-	/* .idProduct =	f(use_acm) */
+	 
 	.bcdDevice = cpu_to_le16(GS_VERSION_NUM),
-	/* .iManufacturer = DYNAMIC */
-	/* .iProduct = DYNAMIC */
+	 
+	 
 	.bNumConfigurations =	1,
 };
 
 static const struct usb_descriptor_header *otg_desc[2];
 
-/*-------------------------------------------------------------------------*/
+ 
 
-/* Module */
+ 
 MODULE_DESCRIPTION(GS_VERSION_NAME);
 MODULE_AUTHOR("Al Borchers");
 MODULE_AUTHOR("David Brownell");
@@ -107,7 +97,7 @@ static int enable_set(const char *s, const struct kernel_param *kp)
 	bool do_enable;
 	int ret;
 
-	if (!s)	/* called for no-arg enable == default */
+	if (!s)	 
 		return 0;
 
 	ret = kstrtobool(s, &do_enable);
@@ -128,12 +118,12 @@ static const struct kernel_param_ops enable_ops = {
 
 module_param_cb(enable, &enable_ops, &enable, 0644);
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static struct usb_configuration serial_config_driver = {
-	/* .label = f(use_acm) */
-	/* .bConfigurationValue = f(use_acm) */
-	/* .iConfiguration = DYNAMIC */
+	 
+	 
+	 
 	.bmAttributes	= USB_CONFIG_ATT_SELFPOWER,
 };
 
@@ -192,9 +182,7 @@ static int gs_bind(struct usb_composite_dev *cdev)
 {
 	int			status;
 
-	/* Allocate string descriptor numbers ... note that string
-	 * contents can be overridden by the composite_dev glue.
-	 */
+	 
 
 	status = usb_string_ids_tab(cdev, strings_dev);
 	if (status < 0)
@@ -221,7 +209,7 @@ static int gs_bind(struct usb_composite_dev *cdev)
 		serial_config_driver.bmAttributes |= USB_CONFIG_ATT_WAKEUP;
 	}
 
-	/* register our configuration */
+	 
 	if (use_acm) {
 		status  = serial_register_ports(cdev, &serial_config_driver,
 				"acm");
@@ -274,7 +262,7 @@ static struct usb_composite_driver gserial_driver = {
 static int switch_gserial_enable(bool do_enable)
 {
 	if (!serial_config_driver.label)
-		/* gserial_init() was not called, yet */
+		 
 		return 0;
 
 	if (do_enable)
@@ -286,9 +274,7 @@ static int switch_gserial_enable(bool do_enable)
 
 static int __init gserial_init(void)
 {
-	/* We *could* export two configs; that'd be much cleaner...
-	 * but neither of these product IDs was defined that way.
-	 */
+	 
 	if (use_acm) {
 		serial_config_driver.label = "CDC ACM config";
 		serial_config_driver.bConfigurationValue = 2;

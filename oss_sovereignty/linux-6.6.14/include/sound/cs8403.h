@@ -1,12 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+ 
 #ifndef __SOUND_CS8403_H
 #define __SOUND_CS8403_H
 
-/*
- *  Routines for Cirrus Logic CS8403/CS8404A IEC958 (S/PDIF) Transmitter
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>,
- *		     Takashi Iwai <tiwai@suse.de>
- */
+ 
 
 #ifdef SND_CS8403
 
@@ -23,7 +19,7 @@
 
 SND_CS8403_DECL void SND_CS8403_DECODE(struct snd_aes_iec958 *diga, unsigned char bits)
 {
-	if (bits & 0x01) {	/* consumer */
+	if (bits & 0x01) {	 
 		if (!(bits & 0x02))
 			diga->status[0] |= IEC958_AES0_NONAUDIO;
 		if (!(bits & 0x08))
@@ -69,7 +65,7 @@ SND_CS8403_DECL unsigned char SND_CS8403_ENCODE(struct snd_aes_iec958 *diga)
 	unsigned char bits;
 
 	if (!(diga->status[0] & IEC958_AES0_PROFESSIONAL)) {
-		bits = 0x01;	/* consumer mode */
+		bits = 0x01;	 
 		if (diga->status[0] & IEC958_AES0_NONAUDIO)
 			bits &= ~0x02;
 		else
@@ -107,16 +103,16 @@ SND_CS8403_DECL unsigned char SND_CS8403_ENCODE(struct snd_aes_iec958 *diga)
 		case IEC958_AES3_CON_FS_32000: bits |= 0x04; break;
 		}
 	} else {
-		bits = 0x00;	/* professional mode */
+		bits = 0x00;	 
 		if (diga->status[0] & IEC958_AES0_NONAUDIO)
 			bits &= ~0x02;
 		else
 			bits |= 0x02;
-		/* CHECKME: I'm not sure about the bit order in val here */
+		 
 		switch (diga->status[0] & IEC958_AES0_PRO_FS) {
 		case IEC958_AES0_PRO_FS_32000:	bits |= 0x00; break;
-		case IEC958_AES0_PRO_FS_44100:	bits |= 0x10; break;	/* 44.1kHz */
-		case IEC958_AES0_PRO_FS_48000:	bits |= 0x08; break;	/* 48kHz */
+		case IEC958_AES0_PRO_FS_44100:	bits |= 0x10; break;	 
+		case IEC958_AES0_PRO_FS_48000:	bits |= 0x08; break;	 
 		default:
 		case IEC958_AES0_PRO_FS_NOTID: bits |= 0x18; break;
 		}
@@ -136,7 +132,7 @@ SND_CS8403_DECL unsigned char SND_CS8403_ENCODE(struct snd_aes_iec958 *diga)
 	return bits;
 }
 
-#endif /* SND_CS8403 */
+#endif  
 
 #ifdef SND_CS8404
 
@@ -153,7 +149,7 @@ SND_CS8403_DECL unsigned char SND_CS8403_ENCODE(struct snd_aes_iec958 *diga)
 
 SND_CS8404_DECL void SND_CS8404_DECODE(struct snd_aes_iec958 *diga, unsigned char bits)
 {
-	if (bits & 0x10) {	/* consumer */
+	if (bits & 0x10) {	 
 		if (!(bits & 0x20))
 			diga->status[0] |= IEC958_AES0_CON_NOT_COPYRIGHT;
 		if (!(bits & 0x40))
@@ -195,7 +191,7 @@ SND_CS8404_DECL unsigned char SND_CS8404_ENCODE(struct snd_aes_iec958 *diga)
 	unsigned char bits;
 
 	if (!(diga->status[0] & IEC958_AES0_PROFESSIONAL)) {
-		bits = 0x10;	/* consumer mode */
+		bits = 0x10;	 
 		if (!(diga->status[0] & IEC958_AES0_CON_NOT_COPYRIGHT))
 			bits |= 0x20;
 		if ((diga->status[0] & IEC958_AES0_CON_EMPHASIS) == IEC958_AES0_CON_EMPHASIS_NONE)
@@ -211,13 +207,13 @@ SND_CS8404_DECL unsigned char SND_CS8404_ENCODE(struct snd_aes_iec958 *diga)
 		case IEC958_AES3_CON_FS_32000: bits |= 0x02; break;
 		}
 	} else {
-		bits = 0x00;	/* professional mode */
+		bits = 0x00;	 
 		if (!(diga->status[0] & IEC958_AES0_NONAUDIO))
 			bits |= 0x04;
 		switch (diga->status[0] & IEC958_AES0_PRO_FS) {
 		case IEC958_AES0_PRO_FS_32000:	bits |= 0x00; break;
-		case IEC958_AES0_PRO_FS_44100:	bits |= 0x40; break;	/* 44.1kHz */
-		case IEC958_AES0_PRO_FS_48000:	bits |= 0x20; break;	/* 48kHz */
+		case IEC958_AES0_PRO_FS_44100:	bits |= 0x40; break;	 
+		case IEC958_AES0_PRO_FS_48000:	bits |= 0x20; break;	 
 		default:
 		case IEC958_AES0_PRO_FS_NOTID:	bits |= 0x00; break;
 		}
@@ -237,6 +233,6 @@ SND_CS8404_DECL unsigned char SND_CS8404_ENCODE(struct snd_aes_iec958 *diga)
 	return bits;
 }
 
-#endif /* SND_CS8404 */
+#endif  
 
-#endif /* __SOUND_CS8403_H */
+#endif  

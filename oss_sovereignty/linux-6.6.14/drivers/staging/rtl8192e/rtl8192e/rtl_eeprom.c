@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
- *
- * Based on the r8180 driver, which is:
- * Copyright 2004-2005 Andrea Merello <andrea.merello@gmail.com>, et al.
- *
- * Contact Information: wlanfae <wlanfae@realtek.com>
- */
+
+ 
 #include "rtl_core.h"
 #include "rtl_eeprom.h"
 
@@ -72,7 +65,7 @@ u32 rtl92e_eeprom_read(struct net_device *dev, u32 addr)
 		      (EPROM_CMD_PROGRAM << EPROM_CMD_OPERATING_MODE_SHIFT));
 	udelay(EPROM_DELAY);
 
-	/* EEPROM is configured as x16 */
+	 
 	if (priv->epromtype == EEPROM_93C56)
 		ret = _rtl92e_eeprom_xfer(dev, (addr & 0xFF) | (0x6 << 8), 11);
 	else

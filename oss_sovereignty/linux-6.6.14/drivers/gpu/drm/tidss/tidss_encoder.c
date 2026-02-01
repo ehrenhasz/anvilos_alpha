@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
+
+ 
 
 #include <linux/export.h>
 
@@ -101,7 +98,7 @@ int tidss_encoder_create(struct tidss_device *tidss,
 	enc = &t_enc->encoder;
 	enc->possible_crtcs = possible_crtcs;
 
-	/* Attaching first bridge to the encoder */
+	 
 	ret = drm_bridge_attach(enc, &t_enc->bridge, NULL,
 				DRM_BRIDGE_ATTACH_NO_CONNECTOR);
 	if (ret) {
@@ -109,7 +106,7 @@ int tidss_encoder_create(struct tidss_device *tidss,
 		return ret;
 	}
 
-	/* Initializing the connector at the end of bridge-chain */
+	 
 	connector = drm_bridge_connector_init(&tidss->ddev, enc);
 	if (IS_ERR(connector)) {
 		dev_err(tidss->dev, "bridge_connector create failed\n");

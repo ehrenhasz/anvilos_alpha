@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Google, Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -22,14 +20,7 @@
 
 #include "ram_internal.h"
 
-/**
- * struct persistent_ram_buffer - persistent circular RAM buffer
- *
- * @sig: Signature to indicate header (PERSISTENT_RAM_SIG xor PRZ-type value)
- * @start: First valid byte in the buffer.
- * @size: Number of valid bytes in the buffer.
- * @data: The contents of the buffer.
- */
+ 
 struct persistent_ram_buffer {
 	uint32_t    sig;
 	atomic_t    start;
@@ -37,7 +28,7 @@ struct persistent_ram_buffer {
 	uint8_t     data[];
 };
 
-#define PERSISTENT_RAM_SIG (0x43474244) /* DBGC */
+#define PERSISTENT_RAM_SIG (0x43474244)  
 
 static inline size_t buffer_size(struct persistent_ram_zone *prz)
 {
@@ -49,7 +40,7 @@ static inline size_t buffer_start(struct persistent_ram_zone *prz)
 	return atomic_read(&prz->buffer->start);
 }
 
-/* increase and wrap the start pointer, returning the old value */
+ 
 static size_t buffer_start_add(struct persistent_ram_zone *prz, size_t a)
 {
 	int old;
@@ -71,7 +62,7 @@ static size_t buffer_start_add(struct persistent_ram_zone *prz, size_t a)
 	return old;
 }
 
-/* increase the size counter until it hits the max size */
+ 
 static void buffer_size_add(struct persistent_ram_zone *prz, size_t a)
 {
 	size_t old;
@@ -100,7 +91,7 @@ static void notrace persistent_ram_encode_rs8(struct persistent_ram_zone *prz,
 {
 	int i;
 
-	/* Initialize the parity buffer */
+	 
 	memset(prz->ecc_info.par, 0,
 	       prz->ecc_info.ecc_size * sizeof(prz->ecc_info.par[0]));
 	encode_rs8(prz->rs_decoder, data, len, prz->ecc_info.par, 0);
@@ -217,10 +208,7 @@ static int persistent_ram_init_ecc(struct persistent_ram_zone *prz,
 	prz->par_header = prz->par_buffer +
 			  ecc_blocks * prz->ecc_info.ecc_size;
 
-	/*
-	 * first consecutive root is 0
-	 * primitive element to generate roots = 1
-	 */
+	 
 	prz->rs_decoder = init_rs(prz->ecc_info.symsize, prz->ecc_info.poly,
 				  0, 1, prz->ecc_info.ecc_size);
 	if (prz->rs_decoder == NULL) {
@@ -228,7 +216,7 @@ static int persistent_ram_init_ecc(struct persistent_ram_zone *prz,
 		return -EINVAL;
 	}
 
-	/* allocate workspace instead of using stack VLA */
+	 
 	prz->ecc_info.par = kmalloc_array(prz->ecc_info.ecc_size,
 					  sizeof(*prz->ecc_info.par),
 					  GFP_KERNEL);
@@ -439,18 +427,11 @@ static void *persistent_ram_vmap(phys_addr_t start, size_t size,
 		phys_addr_t addr = page_start + i * PAGE_SIZE;
 		pages[i] = pfn_to_page(addr >> PAGE_SHIFT);
 	}
-	/*
-	 * VM_IOREMAP used here to bypass this region during vread()
-	 * and kmap_atomic() (i.e. kcore) to avoid __va() failures.
-	 */
+	 
 	vaddr = vmap(pages, page_count, VM_MAP | VM_IOREMAP, prot);
 	kfree(pages);
 
-	/*
-	 * Since vmap() uses page granularity, we must add the offset
-	 * into the page here, to get the byte granularity address
-	 * into the mapping to represent the actual "start" location.
-	 */
+	 
 	return vaddr + offset_in_page(start);
 }
 
@@ -471,11 +452,7 @@ static void *persistent_ram_iomap(phys_addr_t start, size_t size,
 	else
 		va = ioremap_wc(start, size);
 
-	/*
-	 * Since request_mem_region() and ioremap() are byte-granularity
-	 * there is no need handle anything special like we do when the
-	 * vmap() case in persistent_ram_vmap() above.
-	 */
+	 
 	return va;
 }
 
@@ -540,7 +517,7 @@ static int persistent_ram_post_init(struct persistent_ram_zone *prz, u32 sig,
 		zap = true;
 	}
 
-	/* Reset missing, invalid, or single-use memory area. */
+	 
 	if (zap)
 		persistent_ram_zap(prz);
 
@@ -560,7 +537,7 @@ void persistent_ram_free(struct persistent_ram_zone **_prz)
 
 	if (prz->vaddr) {
 		if (pfn_valid(prz->paddr >> PAGE_SHIFT)) {
-			/* We must vunmap() at page-granularity. */
+			 
 			vunmap(prz->vaddr - offset_in_page(prz->paddr));
 		} else {
 			iounmap(prz->vaddr);
@@ -594,7 +571,7 @@ struct persistent_ram_zone *persistent_ram_new(phys_addr_t start, size_t size,
 		goto err;
 	}
 
-	/* Initialize general buffer state. */
+	 
 	raw_spin_lock_init(&prz->buffer_lock);
 	prz->flags = flags;
 	prz->label = kstrdup(label, GFP_KERNEL);

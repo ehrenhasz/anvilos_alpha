@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2018 Intel Corporation
- */
+ 
 
 #include <linux/random.h>
 
@@ -48,7 +44,7 @@ static void trash_stolen(struct drm_i915_private *i915)
 	unsigned long page;
 	u32 prng = 0x12345678;
 
-	/* XXX: fsck. needs some more thought... */
+	 
 	if (!i915_ggtt_has_aperture(ggtt))
 		return;
 
@@ -79,13 +75,7 @@ static void simulate_hibernate(struct drm_i915_private *i915)
 
 	wakeref = intel_runtime_pm_get(&i915->runtime_pm);
 
-	/*
-	 * As a final sting in the tail, invalidate stolen. Under a real S4,
-	 * stolen is lost and needs to be refilled on resume. However, under
-	 * CI we merely do S4-device testing (as full S4 is too unreliable
-	 * for automated testing across a cluster), so to simulate the effect
-	 * of stolen being trashed across S4, we trash it ourselves.
-	 */
+	 
 	trash_stolen(i915);
 
 	intel_runtime_pm_put(&i915->runtime_pm, wakeref);
@@ -124,10 +114,7 @@ static void igt_pm_resume(struct drm_i915_private *i915)
 {
 	intel_wakeref_t wakeref;
 
-	/*
-	 * Both suspend and hibernate follow the same wakeup path and assume
-	 * that runtime-pm just works.
-	 */
+	 
 	with_intel_runtime_pm(&i915->runtime_pm, wakeref) {
 		i915_ggtt_resume(to_gt(i915)->ggtt);
 		if (GRAPHICS_VER(i915) >= 8)
@@ -160,7 +147,7 @@ static int igt_gem_suspend(void *arg)
 
 	igt_pm_suspend(i915);
 
-	/* Here be dragons! Note that with S3RST any S3 may become S4! */
+	 
 	simulate_hibernate(i915);
 
 	igt_pm_resume(i915);
@@ -195,7 +182,7 @@ static int igt_gem_hibernate(void *arg)
 
 	igt_pm_hibernate(i915);
 
-	/* Here be dragons! */
+	 
 	simulate_hibernate(i915);
 
 	igt_pm_resume(i915);
@@ -225,7 +212,7 @@ static int igt_gem_ww_ctx(void *arg)
 
 	i915_gem_ww_ctx_init(&ww, true);
 retry:
-	/* Lock the objects, twice for good measure (-EALREADY handling) */
+	 
 	err = i915_gem_object_lock(obj, &ww);
 	if (!err)
 		err = i915_gem_object_lock_interruptible(obj, &ww);

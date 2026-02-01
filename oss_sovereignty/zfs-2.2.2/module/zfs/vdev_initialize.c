@@ -1,27 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2016, 2019 by Delphix. All rights reserved.
- */
+ 
 
 #include <sys/spa.h>
 #include <sys/spa_impl.h>
@@ -33,15 +12,13 @@
 #include <sys/dmu_tx.h>
 #include <sys/vdev_initialize.h>
 
-/*
- * Value that is written to disk during initialization.
- */
+ 
 static uint64_t zfs_initialize_value = 0xdeadbeefdeadbeeeULL;
 
-/* maximum number of I/Os outstanding per leaf vdev */
+ 
 static const int zfs_initialize_limit = 1;
 
-/* size of initializing writes; default 1MiB, see zfs_remove_max_segment */
+ 
 static uint64_t zfs_initialize_chunk_size = 1024 * 1024;
 
 static boolean_t
@@ -54,14 +31,7 @@ vdev_initialize_should_stop(vdev_t *vd)
 static void
 vdev_initialize_zap_update_sync(void *arg, dmu_tx_t *tx)
 {
-	/*
-	 * We pass in the guid instead of the vdev_t since the vdev may
-	 * have been freed prior to the sync task being processed. This
-	 * happens when a vdev is detached as we call spa_config_vdev_exit(),
-	 * stop the initializing thread, schedule the sync task, and free
-	 * the vdev. Later when the scheduled sync task is invoked, it would
-	 * find that the vdev has been freed.
-	 */
+	 
 	uint64_t guid = *(uint64_t *)arg;
 	uint64_t txg = dmu_tx_get_txg(tx);
 	kmem_free(arg, sizeof (uint64_t));
@@ -138,15 +108,11 @@ vdev_initialize_change_state(vdev_t *vd, vdev_initializing_state_t new_state)
 	if (new_state == vd->vdev_initialize_state)
 		return;
 
-	/*
-	 * Copy the vd's guid, this will be freed by the sync task.
-	 */
+	 
 	uint64_t *guid = kmem_zalloc(sizeof (uint64_t), KM_SLEEP);
 	*guid = vd->vdev_guid;
 
-	/*
-	 * If we're suspending, then preserving the original start time.
-	 */
+	 
 	if (vd->vdev_initialize_state != VDEV_INITIALIZE_SUSPENDED) {
 		vd->vdev_initialize_action_time = gethrestime_sec();
 	}
@@ -204,20 +170,12 @@ vdev_initialize_cb(zio_t *zio)
 	vdev_t *vd = zio->io_vd;
 	mutex_enter(&vd->vdev_initialize_io_lock);
 	if (zio->io_error == ENXIO && !vdev_writeable(vd)) {
-		/*
-		 * The I/O failed because the vdev was unavailable; roll the
-		 * last offset back. (This works because spa_sync waits on
-		 * spa_txg_zio before it runs sync tasks.)
-		 */
+		 
 		uint64_t *off =
 		    &vd->vdev_initialize_offset[zio->io_txg & TXG_MASK];
 		*off = MIN(*off, zio->io_offset);
 	} else {
-		/*
-		 * Since initializing is best-effort, we ignore I/O errors and
-		 * rely on vdev_probe to determine if the errors are more
-		 * critical.
-		 */
+		 
 		if (zio->io_error != 0)
 			vd->vdev_stat.vs_initialize_errors++;
 
@@ -231,13 +189,13 @@ vdev_initialize_cb(zio_t *zio)
 	spa_config_exit(vd->vdev_spa, SCL_STATE_ALL, vd);
 }
 
-/* Takes care of physical writing and limiting # of concurrent ZIOs. */
+ 
 static int
 vdev_initialize_write(vdev_t *vd, uint64_t start, uint64_t size, abd_t *data)
 {
 	spa_t *spa = vd->vdev_spa;
 
-	/* Limit inflight initializing I/Os */
+	 
 	mutex_enter(&vd->vdev_initialize_io_lock);
 	while (vd->vdev_initialize_inflight >= zfs_initialize_limit) {
 		cv_wait(&vd->vdev_initialize_io_cv,
@@ -257,15 +215,12 @@ vdev_initialize_write(vdev_t *vd, uint64_t start, uint64_t size, abd_t *data)
 		uint64_t *guid = kmem_zalloc(sizeof (uint64_t), KM_SLEEP);
 		*guid = vd->vdev_guid;
 
-		/* This is the first write of this txg. */
+		 
 		dsl_sync_task_nowait(spa_get_dsl(spa),
 		    vdev_initialize_zap_update_sync, guid, tx);
 	}
 
-	/*
-	 * We know the vdev struct will still be around since all
-	 * consumers of vdev_free must stop the initialization first.
-	 */
+	 
 	if (vdev_initialize_should_stop(vd)) {
 		mutex_enter(&vd->vdev_initialize_io_lock);
 		ASSERT3U(vd->vdev_initialize_inflight, >, 0);
@@ -282,18 +237,14 @@ vdev_initialize_write(vdev_t *vd, uint64_t start, uint64_t size, abd_t *data)
 	zio_nowait(zio_write_phys(spa->spa_txg_zio[txg & TXG_MASK], vd, start,
 	    size, data, ZIO_CHECKSUM_OFF, vdev_initialize_cb, NULL,
 	    ZIO_PRIORITY_INITIALIZING, ZIO_FLAG_CANFAIL, B_FALSE));
-	/* vdev_initialize_cb releases SCL_STATE_ALL */
+	 
 
 	dmu_tx_commit(tx);
 
 	return (0);
 }
 
-/*
- * Callback to fill each ABD chunk with zfs_initialize_value. len must be
- * divisible by sizeof (uint64_t), and buf must be 8-byte aligned. The ABD
- * allocation will guarantee these for us.
- */
+ 
 static int
 vdev_initialize_block_fill(void *buf, size_t len, void *unused)
 {
@@ -309,7 +260,7 @@ vdev_initialize_block_fill(void *buf, size_t len, void *unused)
 static abd_t *
 vdev_initialize_block_alloc(void)
 {
-	/* Allocate ABD for filler data */
+	 
 	abd_t *data = abd_alloc_for_io(zfs_initialize_chunk_size, B_FALSE);
 
 	ASSERT0(zfs_initialize_chunk_size % sizeof (uint64_t));
@@ -336,7 +287,7 @@ vdev_initialize_ranges(vdev_t *vd, abd_t *data)
 	    rs = zfs_btree_next(bt, &where, &where)) {
 		uint64_t size = rs_get_end(rs, rt) - rs_get_start(rs, rt);
 
-		/* Split range into legally-sized physical chunks */
+		 
 		uint64_t writes_required =
 		    ((size - 1) / zfs_initialize_chunk_size) + 1;
 
@@ -399,16 +350,12 @@ vdev_initialize_calculate_progress(vdev_t *vd)
 		    metaslab_allocated_space(msp)) /
 		    vdev_get_ndisks(vd->vdev_top);
 
-		/*
-		 * Convert the metaslab range to a physical range
-		 * on our vdev. We use this to determine if we are
-		 * in the middle of this metaslab range.
-		 */
+		 
 		range_seg64_t logical_rs, physical_rs, remain_rs;
 		logical_rs.rs_start = msp->ms_start;
 		logical_rs.rs_end = msp->ms_start + msp->ms_size;
 
-		/* Metaslab space after this offset has not been initialized */
+		 
 		vdev_xlate(vd, &logical_rs, &physical_rs, &remain_rs);
 		if (vd->vdev_initialize_last_offset <= physical_rs.rs_start) {
 			vd->vdev_initialize_bytes_est += ms_free;
@@ -416,7 +363,7 @@ vdev_initialize_calculate_progress(vdev_t *vd)
 			continue;
 		}
 
-		/* Metaslab space before this offset has been initialized */
+		 
 		uint64_t last_rs_end = physical_rs.rs_end;
 		if (!vdev_xlate_is_empty(&remain_rs)) {
 			vdev_xlate_walk(vd, &remain_rs,
@@ -430,11 +377,7 @@ vdev_initialize_calculate_progress(vdev_t *vd)
 			continue;
 		}
 
-		/*
-		 * If we get here, we're in the middle of initializing this
-		 * metaslab. Load it and walk the free tree for more accurate
-		 * progress estimation.
-		 */
+		 
 		VERIFY0(metaslab_load(msp));
 
 		zfs_btree_index_t where;
@@ -482,11 +425,11 @@ vdev_initialize_xlate_range_add(void *arg, range_seg64_t *physical_rs)
 {
 	vdev_t *vd = arg;
 
-	/* Only add segments that we have not visited yet */
+	 
 	if (physical_rs->rs_end <= vd->vdev_initialize_last_offset)
 		return;
 
-	/* Pick up where we left off mid-range. */
+	 
 	if (vd->vdev_initialize_last_offset > physical_rs->rs_start) {
 		zfs_dbgmsg("range write: vd %s changed (%llu, %llu) to "
 		    "(%llu, %llu)", vd->vdev_path,
@@ -505,10 +448,7 @@ vdev_initialize_xlate_range_add(void *arg, range_seg64_t *physical_rs)
 	    physical_rs->rs_end - physical_rs->rs_start);
 }
 
-/*
- * Convert the logical range into a physical range and add it to our
- * avl tree.
- */
+ 
 static void
 vdev_initialize_range_add(void *arg, uint64_t start, uint64_t size)
 {
@@ -545,10 +485,7 @@ vdev_initialize_thread(void *arg)
 		metaslab_t *msp = vd->vdev_top->vdev_ms[i];
 		boolean_t unload_when_done = B_FALSE;
 
-		/*
-		 * If we've expanded the top-level vdev or it's our
-		 * first pass, calculate our progress.
-		 */
+		 
 		if (vd->vdev_top->vdev_ms_count != ms_count) {
 			vdev_initialize_calculate_progress(vd);
 			ms_count = vd->vdev_top->vdev_ms_count;
@@ -599,13 +536,7 @@ vdev_initialize_thread(void *arg)
 	ASSERT(vd->vdev_initialize_thread != NULL ||
 	    vd->vdev_initialize_inflight == 0);
 
-	/*
-	 * Drop the vdev_initialize_lock while we sync out the
-	 * txg since it's possible that a device might be trying to
-	 * come online and must check to see if it needs to restart an
-	 * initialization. That thread will be holding the spa_config_lock
-	 * which would prevent the txg_wait_synced from completing.
-	 */
+	 
 	mutex_exit(&vd->vdev_initialize_lock);
 	txg_wait_synced(spa_get_dsl(spa), 0);
 	mutex_enter(&vd->vdev_initialize_lock);
@@ -617,10 +548,7 @@ vdev_initialize_thread(void *arg)
 	thread_exit();
 }
 
-/*
- * Initiates a device. Caller must hold vdev_initialize_lock.
- * Device must be a leaf and not already be initializing.
- */
+ 
 void
 vdev_initialize(vdev_t *vd)
 {
@@ -637,10 +565,7 @@ vdev_initialize(vdev_t *vd)
 	    vdev_initialize_thread, vd, 0, &p0, TS_RUN, maxclsyspri);
 }
 
-/*
- * Uninitializes a device. Caller must hold vdev_initialize_lock.
- * Device must be a leaf and not already be initializing.
- */
+ 
 void
 vdev_uninitialize(vdev_t *vd)
 {
@@ -655,9 +580,7 @@ vdev_uninitialize(vdev_t *vd)
 	vdev_initialize_change_state(vd, VDEV_INITIALIZE_NONE);
 }
 
-/*
- * Wait for the initialize thread to be terminated (cancelled or stopped).
- */
+ 
 static void
 vdev_initialize_stop_wait_impl(vdev_t *vd)
 {
@@ -670,9 +593,7 @@ vdev_initialize_stop_wait_impl(vdev_t *vd)
 	vd->vdev_initialize_exit_wanted = B_FALSE;
 }
 
-/*
- * Wait for vdev initialize threads which were either to cleanly exit.
- */
+ 
 void
 vdev_initialize_stop_wait(spa_t *spa, list_t *vd_list)
 {
@@ -688,15 +609,7 @@ vdev_initialize_stop_wait(spa_t *spa, list_t *vd_list)
 	}
 }
 
-/*
- * Stop initializing a device, with the resultant initializing state being
- * tgt_state.  For blocking behavior pass NULL for vd_list.  Otherwise, when
- * a list_t is provided the stopping vdev is inserted in to the list.  Callers
- * are then required to call vdev_initialize_stop_wait() to block for all the
- * initialization threads to exit.  The caller must hold vdev_initialize_lock
- * and must not be writing to the spa config, as the initializing thread may
- * try to enter the config as a reader before exiting.
- */
+ 
 void
 vdev_initialize_stop(vdev_t *vd, vdev_initializing_state_t tgt_state,
     list_t *vd_list)
@@ -706,10 +619,7 @@ vdev_initialize_stop(vdev_t *vd, vdev_initializing_state_t tgt_state,
 	ASSERT(vd->vdev_ops->vdev_op_leaf);
 	ASSERT(vdev_is_concrete(vd));
 
-	/*
-	 * Allow cancel requests to proceed even if the initialize thread
-	 * has stopped.
-	 */
+	 
 	if (vd->vdev_initialize_thread == NULL &&
 	    tgt_state != VDEV_INITIALIZE_CANCELED) {
 		return;
@@ -743,10 +653,7 @@ vdev_initialize_stop_all_impl(vdev_t *vd, vdev_initializing_state_t tgt_state,
 	}
 }
 
-/*
- * Convenience function to stop initializing of a vdev tree and set all
- * initialize thread pointers to NULL.
- */
+ 
 void
 vdev_initialize_stop_all(vdev_t *vd, vdev_initializing_state_t tgt_state)
 {
@@ -762,7 +669,7 @@ vdev_initialize_stop_all(vdev_t *vd, vdev_initializing_state_t tgt_state)
 	vdev_initialize_stop_wait(spa, &vd_list);
 
 	if (vd->vdev_spa->spa_sync_on) {
-		/* Make sure that our state has been synced to disk */
+		 
 		txg_wait_synced(spa_get_dsl(vd->vdev_spa), 0);
 	}
 
@@ -793,7 +700,7 @@ vdev_initialize_restart(vdev_t *vd)
 
 		if (vd->vdev_initialize_state == VDEV_INITIALIZE_SUSPENDED ||
 		    vd->vdev_offline) {
-			/* load progress for reporting, but don't resume */
+			 
 			VERIFY0(vdev_initialize_load(vd));
 		} else if (vd->vdev_initialize_state ==
 		    VDEV_INITIALIZE_ACTIVE && vdev_writeable(vd) &&

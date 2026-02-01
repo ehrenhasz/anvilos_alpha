@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*******************************************************************************
-  Copyright (C) 2007-2009  STMicroelectronics Ltd
 
-
-  Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-*******************************************************************************/
+ 
 
 #include <linux/io.h>
 #include <linux/iopoll.h>
@@ -18,7 +13,7 @@ int dwmac_dma_reset(void __iomem *ioaddr)
 {
 	u32 value = readl(ioaddr + DMA_BUS_MODE);
 
-	/* DMA SW reset */
+	 
 	value |= DMA_BUS_MODE_SFT_RESET;
 	writel(value, ioaddr + DMA_BUS_MODE);
 
@@ -27,7 +22,7 @@ int dwmac_dma_reset(void __iomem *ioaddr)
 				 10000, 200000);
 }
 
-/* CSR1 enables the transmit DMA to check for new descriptor */
+ 
 void dwmac_enable_dma_transmission(void __iomem *ioaddr)
 {
 	writel(1, ioaddr + DMA_XMT_POLL_DEMAND);
@@ -165,11 +160,11 @@ int dwmac_dma_interrupt(struct stmmac_priv *priv, void __iomem *ioaddr,
 	struct stmmac_rxq_stats *rxq_stats = &priv->xstats.rxq_stats[chan];
 	struct stmmac_txq_stats *txq_stats = &priv->xstats.txq_stats[chan];
 	int ret = 0;
-	/* read the status register (CSR5) */
+	 
 	u32 intr_status = readl(ioaddr + DMA_STATUS);
 
 #ifdef DWMAC_DMA_DEBUG
-	/* Enable it to monitor DMA rx/tx status in case of critical problems */
+	 
 	pr_debug("%s: [CSR5: 0x%08x]\n", __func__, intr_status);
 	show_tx_process_state(intr_status);
 	show_rx_process_state(intr_status);
@@ -180,7 +175,7 @@ int dwmac_dma_interrupt(struct stmmac_priv *priv, void __iomem *ioaddr,
 	else if (dir == DMA_DIR_TX)
 		intr_status &= DMA_STATUS_MSK_TX;
 
-	/* ABNORMAL interrupts */
+	 
 	if (unlikely(intr_status & DMA_STATUS_AIS)) {
 		if (unlikely(intr_status & DMA_STATUS_UNF)) {
 			ret = tx_hard_error_bump_tc;
@@ -209,11 +204,11 @@ int dwmac_dma_interrupt(struct stmmac_priv *priv, void __iomem *ioaddr,
 			ret = tx_hard_error;
 		}
 	}
-	/* TX/RX NORMAL interrupts */
+	 
 	if (likely(intr_status & DMA_STATUS_NIS)) {
 		if (likely(intr_status & DMA_STATUS_RI)) {
 			u32 value = readl(ioaddr + DMA_INTR_ENA);
-			/* to schedule NAPI on real RIE event. */
+			 
 			if (likely(value & DMA_INTR_ENA_RIE)) {
 				u64_stats_update_begin(&rxq_stats->syncp);
 				rxq_stats->rx_normal_irq_n++;
@@ -230,12 +225,12 @@ int dwmac_dma_interrupt(struct stmmac_priv *priv, void __iomem *ioaddr,
 		if (unlikely(intr_status & DMA_STATUS_ERI))
 			x->rx_early_irq++;
 	}
-	/* Optional hardware blocks, interrupts should be disabled */
+	 
 	if (unlikely(intr_status &
 		     (DMA_STATUS_GPI | DMA_STATUS_GMI | DMA_STATUS_GLI)))
 		pr_warn("%s: unexpected status %08x\n", __func__, intr_status);
 
-	/* Clear the interrupt by writing a logic 1 to the CSR5[15-0] */
+	 
 	writel((intr_status & 0x1ffff), ioaddr + DMA_STATUS);
 
 	return ret;
@@ -255,17 +250,14 @@ void stmmac_set_mac_addr(void __iomem *ioaddr, const u8 addr[6],
 	unsigned long data;
 
 	data = (addr[5] << 8) | addr[4];
-	/* For MAC Addr registers we have to set the Address Enable (AE)
-	 * bit that has no effect on the High Reg 0 where the bit 31 (MO)
-	 * is RO.
-	 */
+	 
 	writel(data | GMAC_HI_REG_AE, ioaddr + high);
 	data = (addr[3] << 24) | (addr[2] << 16) | (addr[1] << 8) | addr[0];
 	writel(data, ioaddr + low);
 }
 EXPORT_SYMBOL_GPL(stmmac_set_mac_addr);
 
-/* Enable disable MAC RX/TX */
+ 
 void stmmac_set_mac(void __iomem *ioaddr, bool enable)
 {
 	u32 old_val, value;
@@ -287,11 +279,11 @@ void stmmac_get_mac_addr(void __iomem *ioaddr, unsigned char *addr,
 {
 	unsigned int hi_addr, lo_addr;
 
-	/* Read the MAC address from the hardware */
+	 
 	hi_addr = readl(ioaddr + high);
 	lo_addr = readl(ioaddr + low);
 
-	/* Extract the MAC address from the high and low words */
+	 
 	addr[0] = lo_addr & 0xff;
 	addr[1] = (lo_addr >> 8) & 0xff;
 	addr[2] = (lo_addr >> 16) & 0xff;

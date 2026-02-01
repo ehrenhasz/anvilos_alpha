@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// ALSA SoC Texas Instruments TAS2770 20-W Digital Input Mono Class-D
-// Audio Amplifier with Speaker I/V Sense
-//
-// Copyright (C) 2016-2017 Texas Instruments Incorporated - https://www.ti.com/
-//	Author: Tracy Yi <tracy-yi@ti.com>
-//	Frank Shi <shifu0704@thundersoft.com>
+
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -435,7 +435,7 @@ static int tas2770_set_dai_tdm_slot(struct snd_soc_dai *dai,
 						    TAS2770_TDM_CFG_REG2_RXS_32BITS);
 		break;
 	case 0:
-		/* Do not change slot width */
+		 
 		ret = 0;
 		break;
 	default:
@@ -560,13 +560,13 @@ static const struct reg_default tas2770_reg_defaults[] = {
 static bool tas2770_volatile(struct device *dev, unsigned int reg)
 {
 	switch (reg) {
-	case TAS2770_PAGE: /* regmap implementation requires this */
-	case TAS2770_SW_RST: /* always clears after write */
-	case TAS2770_BO_PRV_REG0:/* has a self clearing bit */
+	case TAS2770_PAGE:  
+	case TAS2770_SW_RST:  
+	case TAS2770_BO_PRV_REG0: 
 	case TAS2770_LVE_INT_REG0:
 	case TAS2770_LVE_INT_REG1:
-	case TAS2770_LAT_INT_REG0:/* Sticky interrupt flags */
-	case TAS2770_LAT_INT_REG1:/* Sticky interrupt flags */
+	case TAS2770_LAT_INT_REG0: 
+	case TAS2770_LAT_INT_REG1: 
 	case TAS2770_VBAT_MSB:
 	case TAS2770_VBAT_LSB:
 	case TAS2770_TEMP_MSB:

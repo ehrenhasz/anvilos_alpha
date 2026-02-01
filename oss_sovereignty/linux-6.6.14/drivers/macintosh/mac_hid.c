@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/macintosh/mac_hid.c
- *
- * HID support stuff for Macintosh computers.
- *
- * Copyright (C) 2000 Franz Sirl.
- *
- * This file will soon be removed in favor of an uinput userspace tool.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/proc_fs.h>
@@ -19,8 +11,8 @@
 MODULE_LICENSE("GPL");
 
 static int mouse_emulate_buttons;
-static int mouse_button2_keycode = KEY_RIGHTCTRL;	/* right control key */
-static int mouse_button3_keycode = KEY_RIGHTALT;	/* right option key */
+static int mouse_button2_keycode = KEY_RIGHTCTRL;	 
+static int mouse_button3_keycode = KEY_RIGHTALT;	 
 
 static struct input_dev *mac_hid_emumouse_dev;
 
@@ -97,7 +89,7 @@ static int mac_hid_emumouse_connect(struct input_handler *handler,
 	struct input_handle *handle;
 	int error;
 
-	/* Don't bind to ourselves */
+	 
 	if (dev == mac_hid_emumouse_dev)
 		return -ENODEV;
 
@@ -204,7 +196,7 @@ static int mac_hid_toggle_emumouse(struct ctl_table *table, int write,
 			rc = -EINVAL;
 	}
 
-	/* Restore the old value in case of error */
+	 
 	if (rc)
 		*valp = old_val;
 
@@ -213,7 +205,7 @@ static int mac_hid_toggle_emumouse(struct ctl_table *table, int write,
 	return rc;
 }
 
-/* file(s) in /proc/sys/dev/mac_hid */
+ 
 static struct ctl_table mac_hid_files[] = {
 	{
 		.procname	= "mouse_button_emulation",

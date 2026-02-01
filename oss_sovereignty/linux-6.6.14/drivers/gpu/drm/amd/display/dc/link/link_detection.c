@@ -1,34 +1,6 @@
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
-/* FILE POLICY AND INTENDED USAGE:
- * This file manages link detection states and receiver states by using various
- * link protocols. It also provides helper functions to interpret certain
- * capabilities or status based on the states it manages or retrieve them
- * directly from connected receivers.
- */
+ 
 
 #include "link_dpms.h"
 #include "link_detection.h"
@@ -52,12 +24,7 @@
 #define LINK_INFO(...) \
 	DC_LOG_HW_HOTPLUG(  \
 		__VA_ARGS__)
-/*
- * Some receivers fail to train on first try and are good
- * on subsequent tries. 2 retries should be plenty. If we
- * don't have a successful training then we don't expect to
- * ever get one.
- */
+ 
 #define LINK_TRAINING_MAX_VERIFY_RETRY 2
 
 static const u8 DP_SINK_BRANCH_DEV_NAME_7580[] = "7580\x80u";
@@ -83,10 +50,7 @@ static enum ddc_transaction_type get_ddc_transaction_type(enum signal_type sink_
 		break;
 
 	case SIGNAL_TYPE_DISPLAY_PORT_MST:
-		/* MST does not use I2COverAux, but there is the
-		 * SPECIAL use case for "immediate dwnstrm device
-		 * access" (EPR#370830).
-		 */
+		 
 		transaction_type = DDC_TRANSACTION_TYPE_I2C_OVER_AUX;
 		break;
 
@@ -157,10 +121,7 @@ static enum signal_type get_basic_signal_type(struct graphics_object_id encoder,
 	return SIGNAL_TYPE_NONE;
 }
 
-/*
- * @brief
- * Detect output sink type
- */
+ 
 static enum signal_type link_detect_sink_signal_type(struct dc_link *link,
 					 enum dc_detect_reason reason)
 {
@@ -173,32 +134,22 @@ static enum signal_type link_detect_sink_signal_type(struct dc_link *link,
 		enc_id = link->link_enc->id;
 	result = get_basic_signal_type(enc_id, link->link_id);
 
-	/* Use basic signal type for link without physical connector. */
+	 
 	if (link->ep_type != DISPLAY_ENDPOINT_PHY)
 		return result;
 
-	/* Internal digital encoder will detect only dongles
-	 * that require digital signal
-	 */
+	 
 
-	/* Detection mechanism is different
-	 * for different native connectors.
-	 * LVDS connector supports only LVDS signal;
-	 * PCIE is a bus slot, the actual connector needs to be detected first;
-	 * eDP connector supports only eDP signal;
-	 * HDMI should check straps for audio
-	 */
+	 
 
-	/* PCIE detects the actual connector on add-on board */
+	 
 	if (link->link_id.id == CONNECTOR_ID_PCIE) {
-		/* ZAZTODO implement PCIE add-on card detection */
+		 
 	}
 
 	switch (link->link_id.id) {
 	case CONNECTOR_ID_HDMI_TYPE_A: {
-		/* check audio support:
-		 * if native HDMI is not supported, switch to DVI
-		 */
+		 
 		struct audio_support *aud_support =
 					&link->dc->res_pool->audio_support;
 
@@ -209,14 +160,9 @@ static enum signal_type link_detect_sink_signal_type(struct dc_link *link,
 	break;
 	case CONNECTOR_ID_DISPLAY_PORT:
 	case CONNECTOR_ID_USBC: {
-		/* DP HPD short pulse. Passive DP dongle will not
-		 * have short pulse
-		 */
+		 
 		if (reason != DETECT_REASON_HPDRX) {
-			/* Check whether DP signal detected: if not -
-			 * we assume signal is DVI; it could be corrected
-			 * to HDMI after dongle detection
-			 */
+			 
 			if (!dm_helpers_is_dp_sink_present(link))
 				result = SIGNAL_TYPE_DVI_SINGLE_LINK;
 		}
@@ -323,17 +269,17 @@ static void query_dp_dual_mode_adaptor(
 	int retry_count = 2;
 	struct dp_hdmi_dongle_signature_data *dongle_signature;
 
-	/* Assume we have no valid DP passive dongle connected */
+	 
 	*dongle = DISPLAY_DONGLE_NONE;
 	sink_cap->max_hdmi_pixel_clock = DP_ADAPTOR_HDMI_SAFE_MAX_TMDS_CLK;
 
-	/* Read DP-HDMI dongle I2c (no response interpreted as DP-DVI dongle)*/
+	 
 	if (!i2c_read(
 		ddc,
 		DP_HDMI_DONGLE_ADDRESS,
 		type2_dongle_buf,
 		sizeof(type2_dongle_buf))) {
-		/* Passive HDMI dongles can sometimes fail here without retrying*/
+		 
 		while (retry_count > 0) {
 			if (i2c_read(ddc,
 				DP_HDMI_DONGLE_ADDRESS,
@@ -353,7 +299,7 @@ static void query_dp_dual_mode_adaptor(
 		}
 	}
 
-	/* Check if Type 2 dongle.*/
+	 
 	if (type2_dongle_buf[DP_ADAPTOR_TYPE2_REG_ID] == DP_ADAPTOR_TYPE2_ID)
 		is_type2_dongle = true;
 
@@ -362,15 +308,14 @@ static void query_dp_dual_mode_adaptor(
 
 	is_valid_hdmi_signature = true;
 
-	/* Check EOT */
+	 
 	if (dongle_signature->eot != DP_HDMI_DONGLE_SIGNATURE_EOT) {
 		is_valid_hdmi_signature = false;
 	}
 
-	/* Check signature */
+	 
 	for (i = 0; i < sizeof(dongle_signature->id); ++i) {
-		/* If its not the right signature,
-		 * skip mismatch in subversion byte.*/
+		 
 		if (dongle_signature->id[i] !=
 			dp_hdmi_dongle_signature_str[i] && i != 3) {
 
@@ -415,7 +360,7 @@ static void query_dp_dual_mode_adaptor(
 
 			}
 
-			/* Multiply by 1000 to convert to kHz. */
+			 
 			sink_cap->max_hdmi_pixel_clock =
 				max_tmds_clk * 1000;
 		}
@@ -461,7 +406,7 @@ static void link_disconnect_sink(struct dc_link *link)
 	}
 
 	link->dpcd_sink_count = 0;
-	//link->dpcd_caps.dpcd_rev.raw = 0;
+	
 }
 
 static void link_disconnect_remap(struct dc_sink *prev_sink, struct dc_link *link)
@@ -519,17 +464,13 @@ static void read_current_link_settings_on_detect(struct dc_link *link)
 	int i;
 	union max_down_spread max_down_spread = {0};
 
-	// Read DPCD 00101h to find out the number of lanes currently set
+	
 	for (i = 0; i < read_dpcd_retry_cnt; i++) {
 		status = core_link_read_dpcd(link,
 					     DP_LANE_COUNT_SET,
 					     &lane_count_set.raw,
 					     sizeof(lane_count_set));
-		/* First DPCD read after VDD ON can fail if the particular board
-		 * does not have HPD pin wired correctly. So if DPCD read fails,
-		 * which it should never happen, retry a few times. Target worst
-		 * case scenario of 80 ms.
-		 */
+		 
 		if (status == DC_OK) {
 			link->cur_link_settings.lane_count =
 					lane_count_set.bits.LANE_COUNT_SET;
@@ -539,19 +480,17 @@ static void read_current_link_settings_on_detect(struct dc_link *link)
 		msleep(8);
 	}
 
-	// Read DPCD 00100h to find if standard link rates are set
+	
 	core_link_read_dpcd(link, DP_LINK_BW_SET,
 			    &link_bw_set, sizeof(link_bw_set));
 
 	if (link_bw_set == 0) {
 		if (link->connector_signal == SIGNAL_TYPE_EDP) {
-			/* If standard link rates are not being used,
-			 * Read DPCD 00115h to find the edp link rate set used
-			 */
+			 
 			core_link_read_dpcd(link, DP_LINK_RATE_SET,
 					    &link_rate_set, sizeof(link_rate_set));
 
-			// edp_supported_link_rates_count = 0 for DP
+			
 			if (link_rate_set < link->dpcd_caps.edp_supported_link_rates_count) {
 				link->cur_link_settings.link_rate =
 					link->dpcd_caps.edp_supported_link_rates[link_rate_set];
@@ -559,14 +498,14 @@ static void read_current_link_settings_on_detect(struct dc_link *link)
 				link->cur_link_settings.use_link_rate_set = true;
 			}
 		} else {
-			// Link Rate not found. Seamless boot may not work.
+			
 			ASSERT(false);
 		}
 	} else {
 		link->cur_link_settings.link_rate = link_bw_set;
 		link->cur_link_settings.use_link_rate_set = false;
 	}
-	// Read DPCD 00003h to find the max down spread.
+	
 	core_link_read_dpcd(link, DP_MAX_DOWNSPREAD,
 			    &max_down_spread.raw, sizeof(max_down_spread));
 	link->cur_link_settings.link_spread =
@@ -590,14 +529,14 @@ static bool detect_dp(struct dc_link *link,
 			return false;
 
 		if (is_dp_branch_device(link))
-			/* DP SST branch */
+			 
 			link->type = dc_connection_sst_branch;
 	} else {
 		if (link->dc->debug.disable_dp_plus_plus_wa &&
 				link->link_enc->features.flags.bits.IS_UHBR20_CAPABLE)
 			return false;
 
-		/* DP passive dongles */
+		 
 		sink_caps->signal = dp_passive_dongle_detection(link->ddc,
 								sink_caps,
 								audio_support);
@@ -624,10 +563,7 @@ static bool is_same_edid(struct dc_edid *old_edid, struct dc_edid *new_edid)
 static bool wait_for_entering_dp_alt_mode(struct dc_link *link)
 {
 
-	/**
-	 * something is terribly wrong if time out is > 200ms. (5Hz)
-	 * 500 microseconds * 400 tries us 200 ms
-	 **/
+	 
 	unsigned int sleep_time_in_microseconds = 500;
 	unsigned int tries_allowed = 400;
 	bool is_in_alt_mode;
@@ -638,11 +574,7 @@ static bool wait_for_entering_dp_alt_mode(struct dc_link *link)
 
 	DC_LOGGER_INIT(link->ctx->logger);
 
-	/**
-	 * this function will only exist if we are on dcn21 (is_in_alt_mode is a
-	 *  function pointer, so checking to see if it is equal to 0 is the same
-	 *  as checking to see if it is null
-	 **/
+	 
 	if (!link->link_enc->funcs->is_in_alt_mode)
 		return true;
 
@@ -656,7 +588,7 @@ static bool wait_for_entering_dp_alt_mode(struct dc_link *link)
 
 	for (tries_taken = 0; tries_taken < tries_allowed; tries_taken++) {
 		udelay(sleep_time_in_microseconds);
-		/* ask the link if alt mode is enabled, if so return ok */
+		 
 		if (link->link_enc->funcs->is_in_alt_mode(link->link_enc)) {
 			finish_timestamp = dm_get_timestamp(link->ctx);
 			time_taken_in_ns =
@@ -678,9 +610,7 @@ static bool wait_for_entering_dp_alt_mode(struct dc_link *link)
 
 static void apply_dpia_mst_dsc_always_on_wa(struct dc_link *link)
 {
-	/* Apply work around for tunneled MST on certain USB4 docks. Always use DSC if dock
-	 * reports DSC support.
-	 */
+	 
 	if (link->ep_type == DISPLAY_ENDPOINT_USB4_DPIA &&
 			link->type == dc_connection_mst_branch &&
 			link->dpcd_caps.branch_dev_id == DP_BRANCH_DEVICE_ID_90CC24 &&
@@ -692,7 +622,7 @@ static void apply_dpia_mst_dsc_always_on_wa(struct dc_link *link)
 
 static void revert_dpia_mst_dsc_always_on_wa(struct dc_link *link)
 {
-	/* Disable work around which keeps DSC on for tunneled MST on certain USB4 docks. */
+	 
 	if (link->ep_type == DISPLAY_ENDPOINT_USB4_DPIA)
 		link->wa_flags.dpia_mst_dsc_always_on = false;
 }
@@ -786,9 +716,7 @@ static void verify_link_capability_non_destructive(struct dc_link *link)
 	if (dc_is_dp_signal(link->local_sink->sink_signal)) {
 		if (dc_is_embedded_signal(link->local_sink->sink_signal) ||
 				link->ep_type == DISPLAY_ENDPOINT_USB4_DPIA)
-			/* TODO - should we check link encoder's max link caps here?
-			 * How do we know which link encoder to check from?
-			 */
+			 
 			link->verified_link_cap = link->reported_link_cap;
 		else
 			link->verified_link_cap = dp_get_max_link_cap(link);
@@ -836,13 +764,7 @@ static void verify_link_capability(struct dc_link *link, struct dc_sink *sink,
 		verify_link_capability_non_destructive(link);
 }
 
-/*
- * detect_link_and_local_sink() - Detect if a sink is attached to a given link
- *
- * link->local_sink is created or destroyed as needed.
- *
- * This does not create remote sinks.
- */
+ 
 static bool detect_link_and_local_sink(struct dc_link *link,
 				  enum dc_detect_reason reason)
 {
@@ -860,7 +782,7 @@ static bool detect_link_and_local_sink(struct dc_link *link,
 	struct dpcd_caps prev_dpcd_caps;
 	enum dc_connection_type new_connection_type = dc_connection_none;
 	enum dc_connection_type pre_connection_type = link->type;
-	const uint32_t post_oui_delay = 30; // 30ms
+	const uint32_t post_oui_delay = 30;  
 
 	DC_LOGGER_INIT(link->ctx->logger);
 
@@ -871,7 +793,7 @@ static bool detect_link_and_local_sink(struct dc_link *link,
 		link->connector_signal == SIGNAL_TYPE_EDP) &&
 		(!link->dc->config.allow_edp_hotplug_detection)) &&
 		link->local_sink) {
-		// need to re-write OUI and brightness in resume case
+		 
 		if (link->connector_signal == SIGNAL_TYPE_EDP &&
 			(link->dpcd_sink_ext_caps.bits.oled == 1)) {
 			dpcd_set_source_specific_data(link);
@@ -898,7 +820,7 @@ static bool detect_link_and_local_sink(struct dc_link *link,
 		link->type = new_connection_type;
 		link->link_state_valid = false;
 
-		/* From Disconnected-to-Connected. */
+		 
 		switch (link->connector_signal) {
 		case SIGNAL_TYPE_HDMI_TYPE_A: {
 			sink_caps.transaction_type = DDC_TRANSACTION_TYPE_I2C;
@@ -931,8 +853,7 @@ static bool detect_link_and_local_sink(struct dc_link *link,
 			detect_edp_sink_caps(link);
 			read_current_link_settings_on_detect(link);
 
-			/* Disable power sequence on MIPI panel + converter
-			 */
+			 
 			if (dc->config.enable_mipi_converter_optimization &&
 				dc_ctx->dce_version == DCN_VERSION_3_01 &&
 				link->dpcd_caps.sink_dev_id == DP_BRANCH_DEVICE_ID_0022B9 &&
@@ -951,11 +872,11 @@ static bool detect_link_and_local_sink(struct dc_link *link,
 
 		case SIGNAL_TYPE_DISPLAY_PORT: {
 
-			/* wa HPD high coming too early*/
+			 
 			if (link->ep_type == DISPLAY_ENDPOINT_PHY &&
 			    link->link_enc->features.flags.bits.DP_IS_USB_C == 1) {
 
-				/* if alt mode times out, return false */
+				 
 				if (!wait_for_entering_dp_alt_mode(link))
 					return false;
 			}
@@ -968,23 +889,23 @@ static bool detect_link_and_local_sink(struct dc_link *link,
 				return false;
 			}
 
-			/* Active SST downstream branch device unplug*/
+			 
 			if (link->type == dc_connection_sst_branch &&
 			    link->dpcd_caps.sink_count.bits.SINK_COUNT == 0) {
 				if (prev_sink)
-					/* Downstream unplug */
+					 
 					dc_sink_release(prev_sink);
 				return true;
 			}
 
-			/* disable audio for non DP to HDMI active sst converter */
+			 
 			if (link->type == dc_connection_sst_branch &&
 					is_dp_active_dongle(link) &&
 					(link->dpcd_caps.dongle_type !=
 							DISPLAY_DONGLE_DP_HDMI_CONVERTER))
 				converter_disable_audio = true;
 
-			/* limited link rate to HBR3 for DPIA until we implement USB4 V2 */
+			 
 			if (link->ep_type == DISPLAY_ENDPOINT_USB4_DPIA &&
 					link->reported_link_cap.link_rate > LINK_RATE_HIGH3)
 				link->reported_link_cap.link_rate = LINK_RATE_HIGH3;
@@ -997,7 +918,7 @@ static bool detect_link_and_local_sink(struct dc_link *link,
 			if (prev_sink)
 				dc_sink_release(prev_sink);
 			return false;
-		} /* switch() */
+		}  
 
 		if (link->dpcd_caps.sink_count.bits.SINK_COUNT)
 			link->dpcd_sink_count =
@@ -1025,7 +946,7 @@ static bool detect_link_and_local_sink(struct dc_link *link,
 		sink->link->dongle_max_pix_clk = sink_caps.max_hdmi_pixel_clock;
 		sink->converter_disable_audio = converter_disable_audio;
 
-		/* dc_sink_create returns a new reference */
+		 
 		link->local_sink = sink;
 
 		edid_status = dm_helpers_read_local_edid(link->ctx,
@@ -1040,14 +961,7 @@ static bool detect_link_and_local_sink(struct dc_link *link,
 			break;
 		case EDID_NO_RESPONSE:
 			DC_LOG_ERROR("No EDID read.\n");
-			/*
-			 * Abort detection for non-DP connectors if we have
-			 * no EDID
-			 *
-			 * DP needs to report as connected if HDP is high
-			 * even if we have no EDID in order to go to
-			 * fail-safe mode
-			 */
+			 
 			if (dc_is_hdmi_signal(link->connector_signal) ||
 			    dc_is_dvi_signal(link->connector_signal)) {
 				if (prev_sink)
@@ -1060,10 +974,7 @@ static bool detect_link_and_local_sink(struct dc_link *link,
 					link->dpcd_caps.dongle_type ==
 						DISPLAY_DONGLE_DP_VGA_CONVERTER &&
 					reason == DETECT_REASON_HPDRX) {
-				/* Abort detection for DP-VGA adapters when EDID
-				 * can't be read and detection reason is VGA-side
-				 * hotplug
-				 */
+				 
 				if (prev_sink)
 					dc_sink_release(prev_sink);
 				link_disconnect_sink(link);
@@ -1076,7 +987,7 @@ static bool detect_link_and_local_sink(struct dc_link *link,
 			break;
 		}
 
-		// Check if edid is the same
+		
 		if ((prev_sink) &&
 		    (edid_status == EDID_THE_SAME || edid_status == EDID_OK))
 			same_edid = is_same_edid(&prev_sink->dc_edid,
@@ -1094,13 +1005,10 @@ static bool detect_link_and_local_sink(struct dc_link *link,
 		if (link->connector_signal == SIGNAL_TYPE_DISPLAY_PORT &&
 		    sink_caps.transaction_type ==
 		    DDC_TRANSACTION_TYPE_I2C_OVER_AUX) {
-			/*
-			 * TODO debug why certain monitors don't like
-			 *  two link trainings
-			 */
+			 
 			query_hdcp_capability(sink->sink_signal, link);
 		} else {
-			// If edid is the same, then discard new sink and revert back to original sink
+			 
 			if (same_edid) {
 				link_disconnect_remap(prev_sink, link);
 				sink = prev_sink;
@@ -1109,7 +1017,7 @@ static bool detect_link_and_local_sink(struct dc_link *link,
 			query_hdcp_capability(sink->sink_signal, link);
 		}
 
-		/* HDMI-DVI Dongle */
+		 
 		if (sink->sink_signal == SIGNAL_TYPE_HDMI_TYPE_A &&
 		    !sink->edid_caps.edid_hdmi)
 			sink->sink_signal = SIGNAL_TYPE_DVI_SINGLE_LINK;
@@ -1117,7 +1025,7 @@ static bool detect_link_and_local_sink(struct dc_link *link,
 		if (link->local_sink && dc_is_dp_signal(sink_caps.signal))
 			dp_trace_init(link);
 
-		/* Connectivity log: detection */
+		 
 		for (i = 0; i < sink->dc_edid.length / DC_EDID_BLOCK_SIZE; i++) {
 			CONN_DATA_DETECT(link,
 					 &sink->dc_edid.raw_edid[i * DC_EDID_BLOCK_SIZE],
@@ -1159,15 +1067,15 @@ static bool detect_link_and_local_sink(struct dc_link *link,
 		}
 
 		if (link->connector_signal == SIGNAL_TYPE_EDP) {
-			// Init dc_panel_config by HW config
+			 
 			if (dc_ctx->dc->res_pool->funcs->get_panel_config_defaults)
 				dc_ctx->dc->res_pool->funcs->get_panel_config_defaults(&link->panel_config);
-			// Pickup base DM settings
+			 
 			dm_helpers_init_panel_settings(dc_ctx, &link->panel_config, sink);
-			// Override dc_panel_config if system has specific settings
+			 
 			dm_helpers_override_panel_settings(dc_ctx, &link->panel_config);
 
-			//sink only can use supported link rate table, we are foreced to enable it
+			 
 			if (link->reported_link_cap.link_rate == LINK_RATE_UNKNOWN)
 				link->panel_config.ilr.optimize_edp_link_rate = true;
 			if (edp_is_ilr_optimization_enabled(link))
@@ -1175,15 +1083,11 @@ static bool detect_link_and_local_sink(struct dc_link *link,
 		}
 
 	} else {
-		/* From Connected-to-Disconnected. */
+		 
 		link->type = dc_connection_none;
 		sink_caps.signal = SIGNAL_TYPE_NONE;
 		memset(&link->hdcp_caps, 0, sizeof(struct hdcp_caps));
-		/* When we unplug a passive DP-HDMI dongle connection, dongle_max_pix_clk
-		 *  is not cleared. If we emulate a DP signal on this connection, it thinks
-		 *  the dongle is still there and limits the number of modes we can emulate.
-		 *  Clear dongle_max_pix_clk on disconnect to fix this
-		 */
+		 
 		link->dongle_max_pix_clk = 0;
 
 		dc_link_clear_dprx_states(link);
@@ -1202,13 +1106,7 @@ static bool detect_link_and_local_sink(struct dc_link *link,
 	return true;
 }
 
-/*
- * link_detect_connection_type() - Determine if there is a sink connected
- *
- * @type: Returned connection type
- * Does not detect downstream devices, such as MST sinks
- * or display connected through active dongles
- */
+ 
 bool link_detect_connection_type(struct dc_link *link, enum dc_connection_type *type)
 {
 	uint32_t is_hpd_high = 0;
@@ -1219,13 +1117,13 @@ bool link_detect_connection_type(struct dc_link *link, enum dc_connection_type *
 	}
 
 	if (link->connector_signal == SIGNAL_TYPE_EDP) {
-		/*in case it is not on*/
+		 
 		if (!link->dc->config.edp_no_power_sequencing)
 			link->dc->hwss.edp_power_control(link, true);
 		link->dc->hwss.edp_wait_for_hpd_ready(link, true);
 	}
 
-	/* Link may not have physical HPD pin. */
+	 
 	if (link->ep_type != DISPLAY_ENDPOINT_PHY) {
 		if (link->is_hpd_pending || !dpia_query_hpd_status(link))
 			*type = dc_connection_none;
@@ -1241,11 +1139,11 @@ bool link_detect_connection_type(struct dc_link *link, enum dc_connection_type *
 
 	if (is_hpd_high) {
 		*type = dc_connection_single;
-		/* TODO: need to do the actual detection */
+		 
 	} else {
 		*type = dc_connection_none;
 		if (link->connector_signal == SIGNAL_TYPE_EDP) {
-			/* eDP is not connected, power down it */
+			 
 			if (!link->dc->config.edp_no_power_sequencing)
 				link->dc->hwss.edp_power_control(link, false);
 		}
@@ -1303,10 +1201,7 @@ bool link_is_hdcp14(struct dc_link *link, enum signal_type signal)
 	case SIGNAL_TYPE_DVI_SINGLE_LINK:
 	case SIGNAL_TYPE_DVI_DUAL_LINK:
 	case SIGNAL_TYPE_HDMI_TYPE_A:
-	/* HDMI doesn't tell us its HDCP(1.4) capability, so assume to always be capable,
-	 * we can poll for bksv but some displays have an issue with this. Since its so rare
-	 * for a display to not be 1.4 capable, this assumtion is ok
-	 */
+	 
 		ret = true;
 		break;
 	default:
@@ -1401,10 +1296,7 @@ struct dc_sink *link_add_remote_sink(
 			&dc_sink->dc_edid,
 			&dc_sink->edid_caps);
 
-	/*
-	 * Treat device as no EDID device if EDID
-	 * parsing fails
-	 */
+	 
 	if (edid_status != EDID_OK && edid_status != EDID_PARTIAL_VALID) {
 		dc_sink->dc_edid.length = 0;
 		dm_error("Bad EDID, status%d!\n", edid_status);
@@ -1431,7 +1323,7 @@ void link_remove_remote_sink(struct dc_link *link, struct dc_sink *sink)
 			dc_sink_release(sink);
 			link->remote_sinks[i] = NULL;
 
-			/* shrink array to remove empty place */
+			 
 			while (i < link->sink_count - 1) {
 				link->remote_sinks[i] = link->remote_sinks[i+1];
 				i++;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2018 Hisilicon Limited.
- */
+
+ 
 
 #include <linux/pci.h>
 #include <rdma/ib_umem.h>
@@ -272,12 +270,7 @@ static u32 proc_srq_sge(struct hns_roce_dev *dev, struct hns_roce_srq *hr_srq,
 	if (dev->pci_dev->revision >= PCI_REVISION_ID_HIP09)
 		return max_sge;
 
-	/* Reserve SGEs only for HIP08 in kernel; The userspace driver will
-	 * calculate number of max_sge with reserved SGEs when allocating wqe
-	 * buf, so there is no need to do this again in kernel. But the number
-	 * may exceed the capacity of SGEs recorded in the firmware, so the
-	 * kernel driver should just adapt the value accordingly.
-	 */
+	 
 	if (user)
 		max_sge = roundup_pow_of_two(max_sge + 1);
 	else

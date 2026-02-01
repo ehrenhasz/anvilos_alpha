@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- * handle saa7134 IR remotes via linux kernel input layer.
- */
+
+ 
 
 #include "saa7134.h"
 #include "saa7134-reg.h"
@@ -24,7 +21,7 @@ module_param(ir_debug, int, 0644);
 MODULE_PARM_DESC(ir_debug,"enable debug messages [IR]");
 
 static int pinnacle_remote;
-module_param(pinnacle_remote, int, 0644);    /* Choose Pinnacle PCTV remote */
+module_param(pinnacle_remote, int, 0644);     
 MODULE_PARM_DESC(pinnacle_remote, "Specify Pinnacle PCTV remote: 0=coloured, 1=grey (defaults to 0)");
 
 #define input_dbg(fmt, arg...) do { \
@@ -37,24 +34,24 @@ MODULE_PARM_DESC(pinnacle_remote, "Specify Pinnacle PCTV remote: 0=coloured, 1=g
 		       ## arg); \
 	} while (0)
 
-/* Helper function for raw decoding at GPIO16 or GPIO18 */
+ 
 static int saa7134_raw_decode_irq(struct saa7134_dev *dev);
 
-/* -------------------- GPIO generic keycode builder -------------------- */
+ 
 
 static int build_key(struct saa7134_dev *dev)
 {
 	struct saa7134_card_ir *ir = dev->remote;
 	u32 gpio, data;
 
-	/* here comes the additional handshake steps for some cards */
+	 
 	switch (dev->board) {
 	case SAA7134_BOARD_GOTVIEW_7135:
 		saa_setb(SAA7134_GPIO_GPSTATUS1, 0x80);
 		saa_clearb(SAA7134_GPIO_GPSTATUS1, 0x80);
 		break;
 	}
-	/* rising SAA7134_GPIO_GPRESCAN reads the status */
+	 
 	saa_clearb(SAA7134_GPIO_GPMODE3,SAA7134_GPIO_GPRESCAN);
 	saa_setb(SAA7134_GPIO_GPMODE3,SAA7134_GPIO_GPRESCAN);
 
@@ -88,7 +85,7 @@ static int build_key(struct saa7134_dev *dev)
 			rc_keyup(ir->dev);
 		}
 	}
-	else {	/* IRQ driven mode - handle key press and release in one go */
+	else {	 
 		if ((ir->mask_keydown  &&  (0 != (gpio & ir->mask_keydown))) ||
 		    (ir->mask_keyup    &&  (0 == (gpio & ir->mask_keyup)))) {
 			rc_keydown_notimeout(ir->dev, RC_PROTO_UNKNOWN, data,
@@ -100,7 +97,7 @@ static int build_key(struct saa7134_dev *dev)
 	return 0;
 }
 
-/* --------------------- Chip specific I2C key builders ----------------- */
+ 
 
 static int get_key_flydvb_trio(struct IR_i2c *ir, enum rc_proto *protocol,
 			       u32 *scancode, u8 *toggle)
@@ -109,7 +106,7 @@ static int get_key_flydvb_trio(struct IR_i2c *ir, enum rc_proto *protocol,
 	int attempt = 0;
 	unsigned char b;
 
-	/* We need this to access GPI Used by the saa_readl macro. */
+	 
 	struct saa7134_dev *dev = ir->c->adapter->algo_data;
 
 	if (dev == NULL) {
@@ -117,25 +114,22 @@ static int get_key_flydvb_trio(struct IR_i2c *ir, enum rc_proto *protocol,
 		return -EIO;
 	}
 
-	/* rising SAA7134_GPIGPRESCAN reads the status */
+	 
 	saa_clearb(SAA7134_GPIO_GPMODE3, SAA7134_GPIO_GPRESCAN);
 	saa_setb(SAA7134_GPIO_GPMODE3, SAA7134_GPIO_GPRESCAN);
 
 	gpio = saa_readl(SAA7134_GPIO_GPSTATUS0 >> 2);
 
 	if (0x40000 & ~gpio)
-		return 0; /* No button press */
+		return 0;  
 
-	/* poll IR chip */
-	/* weak up the IR chip */
+	 
+	 
 	b = 0;
 
 	while (1 != i2c_master_send(ir->c, &b, 1)) {
 		if ((attempt++) < 10) {
-			/*
-			 * wait a bit for next attempt -
-			 * I don't know how make it better
-			 */
+			 
 			msleep(10);
 			continue;
 		}
@@ -164,27 +158,26 @@ static int get_key_msi_tvanywhere_plus(struct IR_i2c *ir,
 	unsigned char b;
 	int gpio, rc;
 
-	/* <dev> is needed to access GPIO. Used by the saa_readl macro. */
+	 
 	struct saa7134_dev *dev = ir->c->adapter->algo_data;
 	if (dev == NULL) {
 		ir_dbg(ir, "get_key_msi_tvanywhere_plus: ir->c->adapter->algo_data is NULL!\n");
 		return -EIO;
 	}
 
-	/* rising SAA7134_GPIO_GPRESCAN reads the status */
+	 
 
 	saa_clearb(SAA7134_GPIO_GPMODE3, SAA7134_GPIO_GPRESCAN);
 	saa_setb(SAA7134_GPIO_GPMODE3, SAA7134_GPIO_GPRESCAN);
 
 	gpio = saa_readl(SAA7134_GPIO_GPSTATUS0 >> 2);
 
-	/* GPIO&0x40 is pulsed low when a button is pressed. Don't do
-	   I2C receive if gpio&0x40 is not low. */
+	 
 
 	if (gpio & 0x40)
-		return 0;       /* No button press */
+		return 0;        
 
-	/* GPIO says there is a button press. Get it. */
+	 
 
 	rc = i2c_master_recv(ir->c, &b, 1);
 	if (rc != 1) {
@@ -194,12 +187,12 @@ static int get_key_msi_tvanywhere_plus(struct IR_i2c *ir,
 		return -EIO;
 	}
 
-	/* No button press */
+	 
 
 	if (b == 0xff)
 		return 0;
 
-	/* Button pressed */
+	 
 
 	input_dbg("get_key_msi_tvanywhere_plus: Key = 0x%02X\n", b);
 	*protocol = RC_PROTO_UNKNOWN;
@@ -208,7 +201,7 @@ static int get_key_msi_tvanywhere_plus(struct IR_i2c *ir,
 	return 1;
 }
 
-/* copied and modified from get_key_msi_tvanywhere_plus() */
+ 
 static int get_key_kworld_pc150u(struct IR_i2c *ir, enum rc_proto *protocol,
 				 u32 *scancode, u8 *toggle)
 {
@@ -216,27 +209,26 @@ static int get_key_kworld_pc150u(struct IR_i2c *ir, enum rc_proto *protocol,
 	unsigned int gpio;
 	int rc;
 
-	/* <dev> is needed to access GPIO. Used by the saa_readl macro. */
+	 
 	struct saa7134_dev *dev = ir->c->adapter->algo_data;
 	if (dev == NULL) {
 		ir_dbg(ir, "get_key_kworld_pc150u: ir->c->adapter->algo_data is NULL!\n");
 		return -EIO;
 	}
 
-	/* rising SAA7134_GPIO_GPRESCAN reads the status */
+	 
 
 	saa_clearb(SAA7134_GPIO_GPMODE3, SAA7134_GPIO_GPRESCAN);
 	saa_setb(SAA7134_GPIO_GPMODE3, SAA7134_GPIO_GPRESCAN);
 
 	gpio = saa_readl(SAA7134_GPIO_GPSTATUS0 >> 2);
 
-	/* GPIO&0x100 is pulsed low when a button is pressed. Don't do
-	   I2C receive if gpio&0x100 is not low. */
+	 
 
 	if (gpio & 0x100)
-		return 0;       /* No button press */
+		return 0;        
 
-	/* GPIO says there is a button press. Get it. */
+	 
 
 	rc = i2c_master_recv(ir->c, &b, 1);
 	if (rc != 1) {
@@ -246,12 +238,12 @@ static int get_key_kworld_pc150u(struct IR_i2c *ir, enum rc_proto *protocol,
 		return -EIO;
 	}
 
-	/* No button press */
+	 
 
 	if (b == 0xff)
 		return 0;
 
-	/* Button pressed */
+	 
 
 	input_dbg("get_key_kworld_pc150u: Key = 0x%02X\n", b);
 	*protocol = RC_PROTO_UNKNOWN;
@@ -266,7 +258,7 @@ static int get_key_purpletv(struct IR_i2c *ir, enum rc_proto *protocol,
 	int rc;
 	unsigned char b;
 
-	/* poll IR chip */
+	 
 	rc = i2c_master_recv(ir->c, &b, 1);
 	if (rc != 1) {
 		ir_dbg(ir, "read error\n");
@@ -275,11 +267,11 @@ static int get_key_purpletv(struct IR_i2c *ir, enum rc_proto *protocol,
 		return -EIO;
 	}
 
-	/* no button press */
+	 
 	if (b==0)
 		return 0;
 
-	/* repeating */
+	 
 	if (b & 0x80)
 		return 1;
 
@@ -298,14 +290,14 @@ static int get_key_beholdm6xx(struct IR_i2c *ir, enum rc_proto *protocol,
 
 	struct saa7134_dev *dev = ir->c->adapter->algo_data;
 
-	/* rising SAA7134_GPIO_GPRESCAN reads the status */
+	 
 	saa_clearb(SAA7134_GPIO_GPMODE3, SAA7134_GPIO_GPRESCAN);
 	saa_setb(SAA7134_GPIO_GPMODE3, SAA7134_GPIO_GPRESCAN);
 
 	gpio = saa_readl(SAA7134_GPIO_GPSTATUS0 >> 2);
 
 	if (0x400000 & ~gpio)
-		return 0; /* No button press */
+		return 0;  
 
 	ir->c->addr = 0x5a >> 1;
 
@@ -326,9 +318,7 @@ static int get_key_beholdm6xx(struct IR_i2c *ir, enum rc_proto *protocol,
 	return 1;
 }
 
-/* Common (grey or coloured) pinnacle PCTV remote handling
- *
- */
+ 
 static int get_key_pinnacle(struct IR_i2c *ir, enum rc_proto *protocol,
 			    u32 *scancode, u8 *toggle, int parity_offset,
 			    int marker, int code_modulo)
@@ -337,7 +327,7 @@ static int get_key_pinnacle(struct IR_i2c *ir, enum rc_proto *protocol,
 	unsigned char b[4];
 	unsigned int start = 0,parity = 0,code = 0;
 
-	/* poll IR chip */
+	 
 	rc = i2c_master_recv(ir->c, b, 4);
 	if (rc != 4) {
 		ir_dbg(ir, "read error\n");
@@ -353,18 +343,17 @@ static int get_key_pinnacle(struct IR_i2c *ir, enum rc_proto *protocol,
 		}
 	}
 
-	/* Empty Request */
+	 
 	if (parity == 0)
 		return 0;
 
-	/* Repeating... */
+	 
 	if (ir->old == parity)
 		return 0;
 
 	ir->old = parity;
 
-	/* drop special codes when a key is held down a long time for the grey controller
-	   In this case, the second bit of the code is asserted */
+	 
 	if (marker == 0xfe && (code & 0x40))
 		return 0;
 
@@ -378,15 +367,7 @@ static int get_key_pinnacle(struct IR_i2c *ir, enum rc_proto *protocol,
 	return 1;
 }
 
-/* The grey pinnacle PCTV remote
- *
- *  There are one issue with this remote:
- *   - I2c packet does not change when the same key is pressed quickly. The workaround
- *     is to hold down each key for about half a second, so that another code is generated
- *     in the i2c packet, and the function can distinguish key presses.
- *
- * Sylvain Pasche <sylvain.pasche@gmail.com>
- */
+ 
 static int get_key_pinnacle_grey(struct IR_i2c *ir, enum rc_proto *protocol,
 				 u32 *scancode, u8 *toggle)
 {
@@ -395,18 +376,11 @@ static int get_key_pinnacle_grey(struct IR_i2c *ir, enum rc_proto *protocol,
 }
 
 
-/* The new pinnacle PCTV remote (with the colored buttons)
- *
- * Ricardo Cerqueira <v4l@cerqueira.org>
- */
+ 
 static int get_key_pinnacle_color(struct IR_i2c *ir, enum rc_proto *protocol,
 				  u32 *scancode, u8 *toggle)
 {
-	/* code_modulo parameter (0x88) is used to reduce code value to fit inside IR_KEYTAB_SIZE
-	 *
-	 * this is the only value that results in 42 unique
-	 * codes < 128
-	 */
+	 
 
 	return get_key_pinnacle(ir, protocol, scancode, toggle, 2, 0x80, 0x88);
 }
@@ -443,8 +417,7 @@ int saa7134_ir_open(struct rc_dev *rc)
 	struct saa7134_dev *dev = rc->priv;
 	struct saa7134_card_ir *ir = dev->remote;
 
-	/* Moved here from saa7134_input_init1() because the latter
-	 * is not called on device resume */
+	 
 	switch (dev->board) {
 	case SAA7134_BOARD_MD2819:
 	case SAA7134_BOARD_KWORLD_VSTREAM_XPERT:
@@ -459,18 +432,18 @@ int saa7134_ir_open(struct rc_dev *rc)
 	case SAA7134_BOARD_AVERMEDIA_GO_007_FM:
 	case SAA7134_BOARD_AVERMEDIA_M102:
 	case SAA7134_BOARD_AVERMEDIA_GO_007_FM_PLUS:
-		/* Without this we won't receive key up events */
+		 
 		saa_setb(SAA7134_GPIO_GPMODE0, 0x4);
 		saa_setb(SAA7134_GPIO_GPSTATUS0, 0x4);
 		break;
 	case SAA7134_BOARD_AVERMEDIA_777:
 	case SAA7134_BOARD_AVERMEDIA_A16AR:
-		/* Without this we won't receive key up events */
+		 
 		saa_setb(SAA7134_GPIO_GPMODE1, 0x1);
 		saa_setb(SAA7134_GPIO_GPSTATUS1, 0x1);
 		break;
 	case SAA7134_BOARD_AVERMEDIA_A16D:
-		/* Without this we won't receive key up events */
+		 
 		saa_setb(SAA7134_GPIO_GPMODE1, 0x1);
 		saa_setb(SAA7134_GPIO_GPSTATUS1, 0x1);
 		break;
@@ -518,7 +491,7 @@ int saa7134_input_init1(struct saa7134_dev *dev)
 	if (disable_ir)
 		return -ENODEV;
 
-	/* detect & configure */
+	 
 	switch (dev->board) {
 	case SAA7134_BOARD_FLYVIDEO2000:
 	case SAA7134_BOARD_FLYVIDEO3000:
@@ -541,14 +514,14 @@ int saa7134_input_init1(struct saa7134_dev *dev)
 		ir_codes     = RC_MAP_EZTV;
 		mask_keycode = 0x00017c;
 		mask_keyup   = 0x000002;
-		polling      = 50; // ms
+		polling      = 50; 
 		break;
 	case SAA7134_BOARD_KWORLD_XPERT:
 	case SAA7134_BOARD_AVACSSMARTTV:
 		ir_codes     = RC_MAP_PIXELVIEW;
 		mask_keycode = 0x00001F;
 		mask_keyup   = 0x000020;
-		polling      = 50; // ms
+		polling      = 50; 
 		break;
 	case SAA7134_BOARD_MD2819:
 	case SAA7134_BOARD_KWORLD_VSTREAM_XPERT:
@@ -566,12 +539,12 @@ int saa7134_input_init1(struct saa7134_dev *dev)
 		ir_codes     = RC_MAP_AVERMEDIA;
 		mask_keycode = 0x0007C8;
 		mask_keydown = 0x000010;
-		polling      = 50; // ms
-		/* GPIO stuff moved to saa7134_ir_open() */
+		polling      = 50; 
+		 
 		break;
 	case SAA7134_BOARD_AVERMEDIA_M135A:
 		ir_codes     = RC_MAP_AVERMEDIA_M135A;
-		mask_keydown = 0x0040000;	/* Enable GPIO18 line on both edges */
+		mask_keydown = 0x0040000;	 
 		mask_keyup   = 0x0040000;
 		mask_keycode = 0xffff;
 		raw_decode   = true;
@@ -588,28 +561,28 @@ int saa7134_input_init1(struct saa7134_dev *dev)
 		ir_codes     = RC_MAP_AVERMEDIA;
 		mask_keycode = 0x02F200;
 		mask_keydown = 0x000400;
-		polling      = 50; // ms
-		/* GPIO stuff moved to saa7134_ir_open() */
+		polling      = 50; 
+		 
 		break;
 	case SAA7134_BOARD_AVERMEDIA_A16D:
 		ir_codes     = RC_MAP_AVERMEDIA_A16D;
 		mask_keycode = 0x02F200;
 		mask_keydown = 0x000400;
-		polling      = 50; /* ms */
-		/* GPIO stuff moved to saa7134_ir_open() */
+		polling      = 50;  
+		 
 		break;
 	case SAA7134_BOARD_KWORLD_TERMINATOR:
 		ir_codes     = RC_MAP_PIXELVIEW;
 		mask_keycode = 0x00001f;
 		mask_keyup   = 0x000060;
-		polling      = 50; // ms
+		polling      = 50; 
 		break;
 	case SAA7134_BOARD_MANLI_MTV001:
 	case SAA7134_BOARD_MANLI_MTV002:
 		ir_codes     = RC_MAP_MANLI;
 		mask_keycode = 0x001f00;
 		mask_keyup   = 0x004000;
-		polling      = 50; /* ms */
+		polling      = 50;  
 		break;
 	case SAA7134_BOARD_BEHOLD_409FM:
 	case SAA7134_BOARD_BEHOLD_401:
@@ -629,26 +602,26 @@ int saa7134_input_init1(struct saa7134_dev *dev)
 		ir_codes     = RC_MAP_MANLI;
 		mask_keycode = 0x003f00;
 		mask_keyup   = 0x004000;
-		polling      = 50; /* ms */
+		polling      = 50;  
 		break;
 	case SAA7134_BOARD_BEHOLD_COLUMBUS_TVFM:
 		ir_codes     = RC_MAP_BEHOLD_COLUMBUS;
 		mask_keycode = 0x003f00;
 		mask_keyup   = 0x004000;
-		polling      = 50; // ms
+		polling      = 50; 
 		break;
 	case SAA7134_BOARD_SEDNA_PC_TV_CARDBUS:
 		ir_codes     = RC_MAP_PCTV_SEDNA;
 		mask_keycode = 0x001f00;
 		mask_keyup   = 0x004000;
-		polling      = 50; // ms
+		polling      = 50; 
 		break;
 	case SAA7134_BOARD_GOTVIEW_7135:
 		ir_codes     = RC_MAP_GOTVIEW7135;
 		mask_keycode = 0x0003CC;
 		mask_keydown = 0x000010;
-		polling	     = 5; /* ms */
-		/* GPIO stuff moved to saa7134_ir_open() */
+		polling	     = 5;  
+		 
 		break;
 	case SAA7134_BOARD_VIDEOMATE_TV_PVR:
 	case SAA7134_BOARD_VIDEOMATE_GOLD_PLUS:
@@ -656,13 +629,13 @@ int saa7134_input_init1(struct saa7134_dev *dev)
 		ir_codes     = RC_MAP_VIDEOMATE_TV_PVR;
 		mask_keycode = 0x00003F;
 		mask_keyup   = 0x400000;
-		polling      = 50; // ms
+		polling      = 50; 
 		break;
 	case SAA7134_BOARD_PROTEUS_2309:
 		ir_codes     = RC_MAP_PROTEUS_2309;
 		mask_keycode = 0x00007F;
 		mask_keyup   = 0x000080;
-		polling      = 50; // ms
+		polling      = 50; 
 		break;
 	case SAA7134_BOARD_VIDEOMATE_DVBT_300:
 	case SAA7134_BOARD_VIDEOMATE_DVBT_200:
@@ -681,7 +654,7 @@ int saa7134_input_init1(struct saa7134_dev *dev)
 	case SAA7134_BOARD_ASUSTeK_P7131_HYBRID_LNA:
 	case SAA7134_BOARD_ASUSTeK_P7131_ANALOG:
 		ir_codes     = RC_MAP_ASUS_PC39;
-		mask_keydown = 0x0040000;	/* Enable GPIO18 line on both edges */
+		mask_keydown = 0x0040000;	 
 		mask_keyup   = 0x0040000;
 		mask_keycode = 0xffff;
 		raw_decode   = true;
@@ -698,12 +671,12 @@ int saa7134_input_init1(struct saa7134_dev *dev)
 		ir_codes     = RC_MAP_ENCORE_ENLTV;
 		mask_keycode = 0x00007f;
 		mask_keyup   = 0x040000;
-		polling      = 50; // ms
+		polling      = 50; 
 		break;
 	case SAA7134_BOARD_ENCORE_ENLTV_FM53:
 	case SAA7134_BOARD_ENCORE_ENLTV_FM3:
 		ir_codes     = RC_MAP_ENCORE_ENLTV_FM53;
-		mask_keydown = 0x0040000;	/* Enable GPIO18 line on both edges */
+		mask_keydown = 0x0040000;	 
 		mask_keyup   = 0x0040000;
 		mask_keycode = 0xffff;
 		raw_decode   = true;
@@ -712,24 +685,24 @@ int saa7134_input_init1(struct saa7134_dev *dev)
 		ir_codes     = RC_MAP_ENCORE_ENLTV;
 		mask_keycode = 0x5f80000;
 		mask_keyup   = 0x8000000;
-		polling      = 50; //ms
+		polling      = 50; 
 		break;
 	case SAA7134_BOARD_GENIUS_TVGO_A11MCE:
 		ir_codes     = RC_MAP_GENIUS_TVGO_A11MCE;
 		mask_keycode = 0xff;
 		mask_keydown = 0xf00000;
-		polling = 50; /* ms */
+		polling = 50;  
 		break;
 	case SAA7134_BOARD_REAL_ANGEL_220:
 		ir_codes     = RC_MAP_REAL_AUDIO_220_32_KEYS;
 		mask_keycode = 0x3f00;
 		mask_keyup   = 0x4000;
-		polling = 50; /* ms */
+		polling = 50;  
 		break;
 	case SAA7134_BOARD_KWORLD_PLUS_TV_ANALOG:
 		ir_codes     = RC_MAP_KWORLD_PLUS_TV_ANALOG;
 		mask_keycode = 0x7f;
-		polling = 40; /* ms */
+		polling = 40;  
 		break;
 	case SAA7134_BOARD_VIDEOMATE_S350:
 		ir_codes     = RC_MAP_VIDEOMATE_S350;
@@ -740,7 +713,7 @@ int saa7134_input_init1(struct saa7134_dev *dev)
 		ir_codes     = RC_MAP_WINFAST;
 		mask_keycode = 0x5f00;
 		mask_keyup   = 0x020000;
-		polling      = 50; /* ms */
+		polling      = 50;  
 		break;
 	case SAA7134_BOARD_VIDEOMATE_M1F:
 		ir_codes     = RC_MAP_VIDEOMATE_K100;
@@ -750,14 +723,14 @@ int saa7134_input_init1(struct saa7134_dev *dev)
 	case SAA7134_BOARD_HAUPPAUGE_HVR1150:
 	case SAA7134_BOARD_HAUPPAUGE_HVR1120:
 		ir_codes     = RC_MAP_HAUPPAUGE;
-		mask_keydown = 0x0040000;	/* Enable GPIO18 line on both edges */
+		mask_keydown = 0x0040000;	 
 		mask_keyup   = 0x0040000;
 		mask_keycode = 0xffff;
 		raw_decode   = true;
 		break;
 	case SAA7134_BOARD_LEADTEK_WINFAST_TV2100_FM:
 		ir_codes     = RC_MAP_LEADTEK_Y04G0051;
-		mask_keydown = 0x0040000;	/* Enable GPIO18 line on both edges */
+		mask_keydown = 0x0040000;	 
 		mask_keyup   = 0x0040000;
 		mask_keycode = 0xffff;
 		raw_decode   = true;
@@ -778,14 +751,14 @@ int saa7134_input_init1(struct saa7134_dev *dev)
 	ir->dev = rc;
 	dev->remote = ir;
 
-	/* init hardware-specific stuff */
+	 
 	ir->mask_keycode = mask_keycode;
 	ir->mask_keydown = mask_keydown;
 	ir->mask_keyup   = mask_keyup;
 	ir->polling      = polling;
 	ir->raw_decode	 = raw_decode;
 
-	/* init input device */
+	 
 	snprintf(ir->phys, sizeof(ir->phys), "pci-%s/ir0",
 		 pci_name(dev->pci));
 
@@ -882,16 +855,10 @@ void saa7134_probe_i2c_ir(struct saa7134_dev *dev)
 		dev->init_data.name = "MSI TV@nywhere Plus";
 		dev->init_data.get_key = get_key_msi_tvanywhere_plus;
 		dev->init_data.ir_codes = RC_MAP_MSI_TVANYWHERE_PLUS;
-		/*
-		 * MSI TV@nyware Plus requires more frequent polling
-		 * otherwise it will miss some keypresses
-		 */
+		 
 		dev->init_data.polling_interval = 50;
 		info.addr = 0x30;
-		/* MSI TV@nywhere Plus controller doesn't seem to
-		   respond to probes unless we read something from
-		   an existing device. Weird...
-		   REVISIT: might no longer be needed */
+		 
 		rc = i2c_transfer(&dev->i2c_adap, &msg_msi, 1);
 		input_dbg("probe 0x%02x @ %s: %s\n",
 			msg_msi.addr, dev->i2c_adap.name,
@@ -901,33 +868,22 @@ void saa7134_probe_i2c_ir(struct saa7134_dev *dev)
 		dev->init_data.name = "SnaZio* TVPVR PRO";
 		dev->init_data.get_key = get_key_msi_tvanywhere_plus;
 		dev->init_data.ir_codes = RC_MAP_MSI_TVANYWHERE_PLUS;
-		/*
-		 * MSI TV@nyware Plus requires more frequent polling
-		 * otherwise it will miss some keypresses
-		 */
+		 
 		dev->init_data.polling_interval = 50;
 		info.addr = 0x30;
-		/*
-		 * MSI TV@nywhere Plus controller doesn't seem to
-		 *  respond to probes unless we read something from
-		 *  an existing device. Weird...
-		 * REVISIT: might no longer be needed
-		 */
+		 
 		rc = i2c_transfer(&dev->i2c_adap, &msg_msi, 1);
 		input_dbg("probe 0x%02x @ %s: %s\n",
 			msg_msi.addr, dev->i2c_adap.name,
 			(rc == 1) ? "yes" : "no");
 		break;
 	case SAA7134_BOARD_KWORLD_PC150U:
-		/* copied and modified from MSI TV@nywhere Plus */
+		 
 		dev->init_data.name = "Kworld PC150-U";
 		dev->init_data.get_key = get_key_kworld_pc150u;
 		dev->init_data.ir_codes = RC_MAP_KWORLD_PC150U;
 		info.addr = 0x30;
-		/* MSI TV@nywhere Plus controller doesn't seem to
-		   respond to probes unless we read something from
-		   an existing device. Weird...
-		   REVISIT: might no longer be needed */
+		 
 		rc = i2c_transfer(&dev->i2c_adap, &msg_msi, 1);
 		input_dbg("probe 0x%02x @ %s: %s\n",
 			msg_msi.addr, dev->i2c_adap.name,
@@ -990,7 +946,7 @@ static int saa7134_raw_decode_irq(struct saa7134_dev *dev)
 	struct saa7134_card_ir *ir = dev->remote;
 	int space;
 
-	/* Generate initial event */
+	 
 	saa_clearb(SAA7134_GPIO_GPMODE3, SAA7134_GPIO_GPRESCAN);
 	saa_setb(SAA7134_GPIO_GPMODE3, SAA7134_GPIO_GPRESCAN);
 	space = saa_readl(SAA7134_GPIO_GPSTATUS0 >> 2) & ir->mask_keydown;

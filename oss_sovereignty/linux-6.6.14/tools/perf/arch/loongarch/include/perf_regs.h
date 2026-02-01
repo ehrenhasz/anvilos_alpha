@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef ARCH_PERF_REGS_H
 #define ARCH_PERF_REGS_H
 
@@ -10,4 +10,4 @@
 
 #define PERF_REGS_MASK ((1ULL << PERF_REG_LOONGARCH_MAX) - 1)
 
-#endif /* ARCH_PERF_REGS_H */
+#endif  

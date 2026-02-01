@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Kontron PLD MFD core driver
- *
- * Copyright (c) 2010-2013 Kontron Europe GmbH
- * Author: Michael Brunner <michael.brunner@kontron.com>
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/mfd/core.h>
@@ -21,21 +16,17 @@ module_param_string(force_device_id, force_device_id,
 		    sizeof(force_device_id), 0);
 MODULE_PARM_DESC(force_device_id, "Override detected product");
 
-/*
- * Get hardware mutex to block firmware from accessing the pld.
- * It is possible for the firmware may hold the mutex for an extended length of
- * time. This function will block until access has been granted.
- */
+ 
 static void kempld_get_hardware_mutex(struct kempld_device_data *pld)
 {
-	/* The mutex bit will read 1 until access has been granted */
+	 
 	while (ioread8(pld->io_index) & KEMPLD_MUTEX_KEY)
 		usleep_range(1000, 3000);
 }
 
 static void kempld_release_hardware_mutex(struct kempld_device_data *pld)
 {
-	/* The harware mutex is released when 1 is written to the mutex bit. */
+	 
 	iowrite8(KEMPLD_MUTEX_KEY, pld->io_index);
 }
 
@@ -153,13 +144,7 @@ err:
 	return ret;
 }
 
-/**
- * kempld_read8 - read 8 bit register
- * @pld: kempld_device_data structure describing the PLD
- * @index: register index on the chip
- *
- * kempld_get_mutex must be called prior to calling this function.
- */
+ 
 u8 kempld_read8(struct kempld_device_data *pld, u8 index)
 {
 	iowrite8(index, pld->io_index);
@@ -167,14 +152,7 @@ u8 kempld_read8(struct kempld_device_data *pld, u8 index)
 }
 EXPORT_SYMBOL_GPL(kempld_read8);
 
-/**
- * kempld_write8 - write 8 bit register
- * @pld: kempld_device_data structure describing the PLD
- * @index: register index on the chip
- * @data: new register value
- *
- * kempld_get_mutex must be called prior to calling this function.
- */
+ 
 void kempld_write8(struct kempld_device_data *pld, u8 index, u8 data)
 {
 	iowrite8(index, pld->io_index);
@@ -182,27 +160,14 @@ void kempld_write8(struct kempld_device_data *pld, u8 index, u8 data)
 }
 EXPORT_SYMBOL_GPL(kempld_write8);
 
-/**
- * kempld_read16 - read 16 bit register
- * @pld: kempld_device_data structure describing the PLD
- * @index: register index on the chip
- *
- * kempld_get_mutex must be called prior to calling this function.
- */
+ 
 u16 kempld_read16(struct kempld_device_data *pld, u8 index)
 {
 	return kempld_read8(pld, index) | kempld_read8(pld, index + 1) << 8;
 }
 EXPORT_SYMBOL_GPL(kempld_read16);
 
-/**
- * kempld_write16 - write 16 bit register
- * @pld: kempld_device_data structure describing the PLD
- * @index: register index on the chip
- * @data: new register value
- *
- * kempld_get_mutex must be called prior to calling this function.
- */
+ 
 void kempld_write16(struct kempld_device_data *pld, u8 index, u16 data)
 {
 	kempld_write8(pld, index, (u8)data);
@@ -210,27 +175,14 @@ void kempld_write16(struct kempld_device_data *pld, u8 index, u16 data)
 }
 EXPORT_SYMBOL_GPL(kempld_write16);
 
-/**
- * kempld_read32 - read 32 bit register
- * @pld: kempld_device_data structure describing the PLD
- * @index: register index on the chip
- *
- * kempld_get_mutex must be called prior to calling this function.
- */
+ 
 u32 kempld_read32(struct kempld_device_data *pld, u8 index)
 {
 	return kempld_read16(pld, index) | kempld_read16(pld, index + 2) << 16;
 }
 EXPORT_SYMBOL_GPL(kempld_read32);
 
-/**
- * kempld_write32 - write 32 bit register
- * @pld: kempld_device_data structure describing the PLD
- * @index: register index on the chip
- * @data: new register value
- *
- * kempld_get_mutex must be called prior to calling this function.
- */
+ 
 void kempld_write32(struct kempld_device_data *pld, u8 index, u32 data)
 {
 	kempld_write16(pld, index, (u16)data);
@@ -238,10 +190,7 @@ void kempld_write32(struct kempld_device_data *pld, u8 index, u32 data)
 }
 EXPORT_SYMBOL_GPL(kempld_write32);
 
-/**
- * kempld_get_mutex - acquire PLD mutex
- * @pld: kempld_device_data structure describing the PLD
- */
+ 
 void kempld_get_mutex(struct kempld_device_data *pld)
 {
 	const struct kempld_platform_data *pdata = dev_get_platdata(pld->dev);
@@ -251,10 +200,7 @@ void kempld_get_mutex(struct kempld_device_data *pld)
 }
 EXPORT_SYMBOL_GPL(kempld_get_mutex);
 
-/**
- * kempld_release_mutex - release PLD mutex
- * @pld: kempld_device_data structure describing the PLD
- */
+ 
 void kempld_release_mutex(struct kempld_device_data *pld)
 {
 	const struct kempld_platform_data *pdata = dev_get_platdata(pld->dev);
@@ -264,14 +210,7 @@ void kempld_release_mutex(struct kempld_device_data *pld)
 }
 EXPORT_SYMBOL_GPL(kempld_release_mutex);
 
-/**
- * kempld_get_info - update device specific information
- * @pld: kempld_device_data structure describing the PLD
- *
- * This function calls the configured board specific kempld_get_info_XXXX
- * function which is responsible for gathering information about the specific
- * hardware. The information is then stored within the pld structure.
- */
+ 
 static int kempld_get_info(struct kempld_device_data *pld)
 {
 	int ret;
@@ -282,13 +221,7 @@ static int kempld_get_info(struct kempld_device_data *pld)
 	if (ret)
 		return ret;
 
-	/* The Kontron PLD firmware version string has the following format:
-	 * Pwxy.zzzz
-	 *   P:    Fixed
-	 *   w:    PLD number    - 1 hex digit
-	 *   x:    Major version - 1 alphanumerical digit (0-9A-V)
-	 *   y:    Minor version - 1 alphanumerical digit (0-9A-V)
-	 *   zzzz: Build number  - 4 zero padded hex digits */
+	 
 
 	if (pld->info.major < 10)
 		major = pld->info.major + '0';
@@ -308,13 +241,7 @@ static int kempld_get_info(struct kempld_device_data *pld)
 	return 0;
 }
 
-/*
- * kempld_register_cells - register cell drivers
- *
- * This function registers cell drivers for the detected hardware by calling
- * the configured kempld_register_cells_XXXX function which is responsible
- * to detect and register the needed cell drivers.
- */
+ 
 static int kempld_register_cells(struct kempld_device_data *pld)
 {
 	const struct kempld_platform_data *pdata = dev_get_platdata(pld->dev);
@@ -390,17 +317,17 @@ static int kempld_detect_device(struct kempld_device_data *pld)
 
 	mutex_lock(&pld->lock);
 
-	/* Check for empty IO space */
+	 
 	index_reg = ioread8(pld->io_index);
 	if (index_reg == 0xff && ioread8(pld->io_data) == 0xff) {
 		mutex_unlock(&pld->lock);
 		return -ENODEV;
 	}
 
-	/* Release hardware mutex if acquired */
+	 
 	if (!(index_reg & KEMPLD_MUTEX_KEY)) {
 		iowrite8(KEMPLD_MUTEX_KEY, pld->io_index);
-		/* PXT and COMe-cPC2 boards may require a second release */
+		 
 		iowrite8(KEMPLD_MUTEX_KEY, pld->io_index);
 	}
 
@@ -480,7 +407,7 @@ static int kempld_get_acpi_data(struct platform_device *pdev)
 {
 	return -ENODEV;
 }
-#endif /* CONFIG_ACPI */
+#endif  
 
 static int kempld_probe(struct platform_device *pdev)
 {
@@ -491,21 +418,12 @@ static int kempld_probe(struct platform_device *pdev)
 	int ret;
 
 	if (kempld_pdev == NULL) {
-		/*
-		 * No kempld_pdev device has been registered in kempld_init,
-		 * so we seem to be probing an ACPI platform device.
-		 */
+		 
 		ret = kempld_get_acpi_data(pdev);
 		if (ret)
 			return ret;
 	} else if (kempld_pdev != pdev) {
-		/*
-		 * The platform device we are probing is not the one we
-		 * registered in kempld_init using the DMI table, so this one
-		 * comes from ACPI.
-		 * As we can only probe one - abort here and use the DMI
-		 * based one instead.
-		 */
+		 
 		dev_notice(dev, "platform device exists - not using ACPI\n");
 		return -ENODEV;
 	}

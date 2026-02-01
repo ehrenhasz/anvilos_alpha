@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Ethtool support for Altera Triple-Speed Ethernet MAC driver
- * Copyright (C) 2008-2014 Altera Corporation. All rights reserved
- *
- * Contributors:
- *   Dalon Westergreen
- *   Thomas Chou
- *   Ian Abbott
- *   Yuriy Kozlov
- *   Tobias Klauser
- *   Andriy Smolskyy
- *   Roman Bulgakov
- *   Dmytro Mytarchuk
- *
- * Original driver contributed by SLS.
- * Major updates contributed by GlobalLogic
- */
+
+ 
 
 #include <linux/ethtool.h>
 #include <linux/kernel.h>
@@ -72,9 +57,7 @@ static void tse_get_drvinfo(struct net_device *dev,
 	sprintf(info->bus_info, "platform");
 }
 
-/* Fill in a buffer with the strings which correspond to the
- * stats
- */
+ 
 static void tse_gstrings(struct net_device *dev, u32 stringset, u8 *buf)
 {
 	memcpy(buf, stat_gstrings, TSE_STATS_LEN * ETH_GSTRING_LEN);
@@ -95,7 +78,7 @@ static void tse_fill_stats(struct net_device *dev, struct ethtool_stats *dummy,
 	buf[3] = csrrd32(priv->mac_dev,
 			 tse_csroffs(alignment_errors));
 
-	/* Extended aOctetsTransmittedOK counter */
+	 
 	ext = (u64) csrrd32(priv->mac_dev,
 			    tse_csroffs(msb_octets_transmitted_ok)) << 32;
 
@@ -103,7 +86,7 @@ static void tse_fill_stats(struct net_device *dev, struct ethtool_stats *dummy,
 		       tse_csroffs(octets_transmitted_ok));
 	buf[4] = ext;
 
-	/* Extended aOctetsReceivedOK counter */
+	 
 	ext = (u64) csrrd32(priv->mac_dev,
 			    tse_csroffs(msb_octets_received_ok)) << 32;
 
@@ -136,7 +119,7 @@ static void tse_fill_stats(struct net_device *dev, struct ethtool_stats *dummy,
 	buf[17] = csrrd32(priv->mac_dev,
 			  tse_csroffs(ether_stats_drop_events));
 
-	/* Extended etherStatsOctets counter */
+	 
 	ext = (u64) csrrd32(priv->mac_dev,
 			    tse_csroffs(msb_ether_stats_octets)) << 32;
 	ext |= csrrd32(priv->mac_dev,
@@ -203,17 +186,7 @@ static void tse_get_regs(struct net_device *dev, struct ethtool_regs *regs,
 	u32 *buf = regbuf;
 	int i;
 
-	/* Set version to a known value, so ethtool knows
-	 * how to do any special formatting of this data.
-	 * This version number will need to change if and
-	 * when this register table is changed.
-	 *
-	 * version[31:0] = 1: Dump the first 128 TSE Registers
-	 *      Upper bits are all 0 by default
-	 *
-	 * Upper 16-bits will indicate feature presence for
-	 * Ethtool register decoding in future version.
-	 */
+	 
 
 	regs->version = 1;
 

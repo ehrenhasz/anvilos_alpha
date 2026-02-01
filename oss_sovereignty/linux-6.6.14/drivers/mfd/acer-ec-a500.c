@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Acer Iconia Tab A500 Embedded Controller Driver
- *
- * Copyright 2020 GRATE-driver project
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -16,10 +12,7 @@
 #define A500_EC_I2C_ERR_TIMEOUT		500
 #define A500_EC_POWER_CMD_TIMEOUT	1000
 
-/*
- * Controller's firmware expects specific command opcodes to be used for the
- * corresponding registers. Unsupported commands are skipped by the firmware.
- */
+ 
 #define CMD_SHUTDOWN			0x0
 #define CMD_WARM_REBOOT			0x0
 #define CMD_COLD_REBOOT			0x1

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 
 #include <linux/string.h>
 
@@ -182,10 +180,7 @@ void intel_atomic_swap_global_state(struct intel_atomic_state *state)
 					    new_obj_state, i) {
 		drm_WARN_ON(&dev_priv->drm, obj->state != old_obj_state);
 
-		/*
-		 * If the new state wasn't modified (and properly
-		 * locked for write access) we throw it away.
-		 */
+		 
 		if (!new_obj_state->changed)
 			continue;
 

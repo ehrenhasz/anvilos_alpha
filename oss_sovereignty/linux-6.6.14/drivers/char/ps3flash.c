@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * PS3 FLASH ROM Storage Driver
- *
- * Copyright (C) 2007 Sony Computer Entertainment Inc.
- * Copyright 2007 Sony Corp.
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/miscdevice.h>
@@ -22,9 +17,9 @@
 
 
 struct ps3flash_private {
-	struct mutex mutex;	/* Bounce buffer mutex */
+	struct mutex mutex;	 
 	u64 chunk_sectors;
-	int tag;		/* Start sector of buffer, -1 if invalid */
+	int tag;		 
 	bool dirty;
 };
 
@@ -261,7 +256,7 @@ static ssize_t ps3flash_kernel_write(const void *buf, size_t count,
 	if (res < 0)
 		return res;
 
-	/* Make kernel writes synchronous */
+	 
 	wb = ps3flash_writeback(ps3flash_dev);
 	if (wb)
 		return wb;
@@ -349,7 +344,7 @@ static int ps3flash_probe(struct ps3_system_bus_device *_dev)
 		return -EINVAL;
 	}
 
-	/* use static buffer, kmalloc cannot allocate 256 KiB */
+	 
 	if (!ps3flash_bounce_buffer.address)
 		return -ENODEV;
 

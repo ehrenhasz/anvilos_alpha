@@ -1,27 +1,4 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "reg_helper.h"
 #include "core_types.h"
@@ -50,7 +27,7 @@ static void dccg32_trigger_dio_fifo_resync(
 
 	REG_GET(DENTIST_DISPCLK_CNTL, DENTIST_DISPCLK_RDIVIDER, &dispclk_rdivider_value);
 
-	/* Not valid for the WDIVIDER to be set to 0 */
+	 
 	if (dispclk_rdivider_value != 0)
 		REG_UPDATE(DENTIST_DISPCLK_CNTL, DENTIST_DISPCLK_WDIVIDER, dispclk_rdivider_value);
 }
@@ -107,8 +84,8 @@ static void dccg32_set_pixel_rate_div(
 
 	enum pixel_rate_div cur_k1 = PIXEL_RATE_DIV_NA, cur_k2 = PIXEL_RATE_DIV_NA;
 
-	// Don't program 0xF into the register field. Not valid since
-	// K1 / K2 field is only 1 / 2 bits wide
+	
+	
 	if (k1 == PIXEL_RATE_DIV_NA || k2 == PIXEL_RATE_DIV_NA) {
 		BREAK_TO_DEBUGGER();
 		return;
@@ -152,9 +129,9 @@ static void dccg32_set_dtbclk_p_src(
 {
 	struct dcn_dccg *dccg_dcn = TO_DCN_DCCG(dccg);
 
-	uint32_t p_src_sel = 0; /* selects dprefclk */
+	uint32_t p_src_sel = 0;  
 	if (src == DTBCLK0)
-		p_src_sel = 2;  /* selects dtbclk0 */
+		p_src_sel = 2;   
 
 	switch (otg_inst) {
 	case 0:
@@ -200,19 +177,19 @@ static void dccg32_set_dtbclk_p_src(
 
 }
 
-/* Controls the generation of pixel valid for OTG in (OTG -> HPO case) */
+ 
 static void dccg32_set_dtbclk_dto(
 		struct dccg *dccg,
 		const struct dtbclk_dto_params *params)
 {
 	struct dcn_dccg *dccg_dcn = TO_DCN_DCCG(dccg);
-	/* DTO Output Rate / Pixel Rate = 1/4 */
+	 
 	int req_dtbclk_khz = params->pixclk_khz / 4;
 
 	if (params->ref_dtbclk_khz && req_dtbclk_khz) {
 		uint32_t modulo, phase;
 
-		// phase / modulo = dtbclk / dtbclk ref
+		
 		modulo = params->ref_dtbclk_khz * 1000;
 		phase = req_dtbclk_khz * 1000;
 
@@ -226,13 +203,10 @@ static void dccg32_set_dtbclk_dto(
 				DTBCLKDTO_ENABLE_STATUS[params->otg_inst], 1,
 				1, 100);
 
-		/* program OTG_PIXEL_RATE_DIV for DIVK1 and DIVK2 fields */
+		 
 		dccg32_set_pixel_rate_div(dccg, params->otg_inst, PIXEL_RATE_DIV_BY_1, PIXEL_RATE_DIV_BY_1);
 
-		/* The recommended programming sequence to enable DTBCLK DTO to generate
-		 * valid pixel HPO DPSTREAM ENCODER, specifies that DTO source select should
-		 * be set only after DTO is enabled
-		 */
+		 
 		REG_UPDATE(OTG_PIXEL_RATE_CNTL[params->otg_inst],
 				PIPE_DTO_SRC_SEL[params->otg_inst], 2);
 	} else {
@@ -264,10 +238,7 @@ static void dccg32_get_dccg_ref_freq(struct dccg *dccg,
 		unsigned int xtalin_freq_inKhz,
 		unsigned int *dccg_ref_freq_inKhz)
 {
-	/*
-	 * Assume refclk is sourced from xtalin
-	 * expect 100MHz
-	 */
+	 
 	*dccg_ref_freq_inKhz = xtalin_freq_inKhz;
 	return;
 }
@@ -280,11 +251,11 @@ static void dccg32_set_dpstreamclk(
 {
 	struct dcn_dccg *dccg_dcn = TO_DCN_DCCG(dccg);
 
-	/* set the dtbclk_p source */
-	/* always program refclk as DTBCLK. No use-case expected to require DPREFCLK as refclk */
+	 
+	 
 	dccg32_set_dtbclk_p_src(dccg, DTBCLK0, otg_inst);
 
-	/* enabled to select one of the DTBCLKs for pipe */
+	 
 	switch (dp_hpo_inst) {
 	case 0:
 		REG_UPDATE_2(DPSTREAMCLK_CNTL,

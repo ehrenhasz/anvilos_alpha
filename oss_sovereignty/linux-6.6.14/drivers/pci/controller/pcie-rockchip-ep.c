@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Rockchip AXI PCIe endpoint controller driver
- *
- * Copyright (c) 2018 Rockchip, Inc.
- *
- * Author: Shawn Lin <shawn.lin@rock-chips.com>
- *         Simon Xue <xxm@rock-chips.com>
- */
+
+ 
 
 #include <linux/configfs.h>
 #include <linux/delay.h>
@@ -19,24 +12,7 @@
 
 #include "pcie-rockchip.h"
 
-/**
- * struct rockchip_pcie_ep - private data for PCIe endpoint controller driver
- * @rockchip: Rockchip PCIe controller
- * @epc: PCI EPC device
- * @max_regions: maximum number of regions supported by hardware
- * @ob_region_map: bitmask of mapped outbound regions
- * @ob_addr: base addresses in the AXI bus where the outbound regions start
- * @irq_phys_addr: base address on the AXI bus where the MSI/legacy IRQ
- *		   dedicated outbound regions is mapped.
- * @irq_cpu_addr: base address in the CPU space where a write access triggers
- *		  the sending of a memory write (MSI) / normal message (legacy
- *		  IRQ) TLP through the PCIe bus.
- * @irq_pci_addr: used to save the current mapping of the MSI/legacy IRQ
- *		  dedicated outbound region.
- * @irq_pci_fn: the latest PCI function that has updated the mapping of
- *		the MSI/legacy IRQ dedicated outbound region.
- * @irq_pending: bitmask of asserted legacy IRQs.
- */
+ 
 struct rockchip_pcie_ep {
 	struct rockchip_pcie	rockchip;
 	struct pci_epc		*epc;
@@ -78,7 +54,7 @@ static void rockchip_pcie_prog_ep_ob_atu(struct rockchip_pcie *rockchip, u8 fn,
 	addr1 = upper_32_bits(pci_addr);
 	desc0 = ROCKCHIP_PCIE_AT_OB_REGION_DESC0_DEVFN(fn) | AXI_WRAPPER_MEM_WRITE;
 
-	/* PCI bus address region */
+	 
 	rockchip_pcie_write(rockchip, addr0,
 			    ROCKCHIP_PCIE_AT_OB_REGION_PCI_ADDR0(r));
 	rockchip_pcie_write(rockchip, addr1,
@@ -96,7 +72,7 @@ static int rockchip_pcie_ep_write_header(struct pci_epc *epc, u8 fn, u8 vfn,
 	struct rockchip_pcie_ep *ep = epc_get_drvdata(epc);
 	struct rockchip_pcie *rockchip = &ep->rockchip;
 
-	/* All functions share the same vendor ID with function 0 */
+	 
 	if (fn == 0) {
 		u32 vid_regs = (hdr->vendorid & GENMASK(15, 0)) |
 			       (hdr->subsys_vendor_id & GENMASK(31, 16)) << 16;
@@ -139,15 +115,12 @@ static int rockchip_pcie_ep_set_bar(struct pci_epc *epc, u8 fn, u8 vfn,
 	u32 addr0, addr1, reg, cfg, b, aperture, ctrl;
 	u64 sz;
 
-	/* BAR size is 2^(aperture + 7) */
+	 
 	sz = max_t(size_t, epf_bar->size, MIN_EP_APERTURE);
 
-	/*
-	 * roundup_pow_of_two() returns an unsigned long, which is not suited
-	 * for 64bit values.
-	 */
+	 
 	sz = 1ULL << fls64(sz - 1);
-	aperture = ilog2(sz) - 7; /* 128B -> 0, 256B -> 1, 512B -> 2, ... */
+	aperture = ilog2(sz) - 7;  
 
 	if ((flags & PCI_BASE_ADDRESS_SPACE) == PCI_BASE_ADDRESS_SPACE_IO) {
 		ctrl = ROCKCHIP_PCIE_CORE_BAR_CFG_CTRL_IO_32BITS;
@@ -337,11 +310,7 @@ static int rockchip_pcie_ep_send_legacy_irq(struct rockchip_pcie_ep *ep, u8 fn,
 	if (cmd & PCI_COMMAND_INTX_DISABLE)
 		return -EINVAL;
 
-	/*
-	 * Should add some delay between toggling INTx per TRM vaguely saying
-	 * it depends on some cycles of the AHB bus clock to function it. So
-	 * add sufficient 1ms here.
-	 */
+	 
 	rockchip_pcie_ep_assert_intx(ep, fn, intx, true);
 	mdelay(1);
 	rockchip_pcie_ep_assert_intx(ep, fn, intx, false);
@@ -357,21 +326,21 @@ static int rockchip_pcie_ep_send_msi_irq(struct rockchip_pcie_ep *ep, u8 fn,
 	u64 pci_addr;
 	u32 r;
 
-	/* Check MSI enable bit */
+	 
 	flags = rockchip_pcie_read(&ep->rockchip,
 				   ROCKCHIP_PCIE_EP_FUNC_BASE(fn) +
 				   ROCKCHIP_PCIE_EP_MSI_CTRL_REG);
 	if (!(flags & ROCKCHIP_PCIE_EP_MSI_CTRL_ME))
 		return -EINVAL;
 
-	/* Get MSI numbers from MME */
+	 
 	mme = ((flags & ROCKCHIP_PCIE_EP_MSI_CTRL_MME_MASK) >>
 			ROCKCHIP_PCIE_EP_MSI_CTRL_MME_OFFSET);
 	msi_count = 1 << mme;
 	if (!interrupt_num || interrupt_num > msi_count)
 		return -EINVAL;
 
-	/* Set MSI private data */
+	 
 	data_mask = msi_count - 1;
 	data = rockchip_pcie_read(rockchip,
 				  ROCKCHIP_PCIE_EP_FUNC_BASE(fn) +
@@ -379,7 +348,7 @@ static int rockchip_pcie_ep_send_msi_irq(struct rockchip_pcie_ep *ep, u8 fn,
 				  PCI_MSI_DATA_64);
 	data = (data & ~data_mask) | ((interrupt_num - 1) & data_mask);
 
-	/* Get MSI PCI address */
+	 
 	pci_addr = rockchip_pcie_read(rockchip,
 				      ROCKCHIP_PCIE_EP_FUNC_BASE(fn) +
 				      ROCKCHIP_PCIE_EP_MSI_CTRL_REG +
@@ -390,7 +359,7 @@ static int rockchip_pcie_ep_send_msi_irq(struct rockchip_pcie_ep *ep, u8 fn,
 				       ROCKCHIP_PCIE_EP_MSI_CTRL_REG +
 				       PCI_MSI_ADDRESS_LO);
 
-	/* Set the outbound region if needed. */
+	 
 	if (unlikely(ep->irq_pci_addr != (pci_addr & PCIE_ADDR_MASK) ||
 		     ep->irq_pci_fn != fn)) {
 		r = rockchip_ob_region(ep->irq_phys_addr);
@@ -539,7 +508,7 @@ static int rockchip_pcie_ep_probe(struct platform_device *pdev)
 	if (err)
 		goto err_disable_clocks;
 
-	/* Establish the link automatically */
+	 
 	rockchip_pcie_write(rockchip, PCIE_CLIENT_LINK_TRAIN_ENABLE,
 			    PCIE_CLIENT_CONFIG);
 
@@ -552,7 +521,7 @@ static int rockchip_pcie_ep_probe(struct platform_device *pdev)
 		goto err_uninit_port;
 	}
 
-	/* Only enable function 0 by default */
+	 
 	rockchip_pcie_write(rockchip, BIT(0), PCIE_CORE_PHY_FUNC_CFG);
 
 	windows = devm_kcalloc(dev, ep->max_regions,
@@ -584,15 +553,7 @@ static int rockchip_pcie_ep_probe(struct platform_device *pdev)
 
 	ep->irq_pci_addr = ROCKCHIP_PCIE_EP_DUMMY_IRQ_ADDR;
 
-	/*
-	 * MSI-X is not supported but the controller still advertises the MSI-X
-	 * capability by default, which can lead to the Root Complex side
-	 * allocating MSI-X vectors which cannot be used. Avoid this by skipping
-	 * the MSI-X capability entry in the PCIe capabilities linked-list: get
-	 * the next pointer from the MSI-X entry and set that in the MSI
-	 * capability entry (which is the previous entry). This way the MSI-X
-	 * entry is skipped (left out of the linked-list) and not advertised.
-	 */
+	 
 	cfg_msi = rockchip_pcie_read(rockchip, PCIE_EP_CONFIG_BASE +
 				     ROCKCHIP_PCIE_EP_MSI_CTRL_REG);
 

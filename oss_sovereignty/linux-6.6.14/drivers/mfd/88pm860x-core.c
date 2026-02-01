@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Base driver for Marvell 88PM8607
- *
- * Copyright (C) 2009 Marvell International Ltd.
- *
- * Author: Haojian Zhuang <haojian.zhuang@marvell.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -43,32 +37,32 @@ static const struct resource bk2_resources[] = {
 };
 
 static const struct resource led0_resources[] = {
-	/* RGB1 Red LED */
+	 
 	{0xd, 0xd, "control", IORESOURCE_REG, },
 	{0xc, 0xc, "blink",   IORESOURCE_REG, },
 };
 static const struct resource led1_resources[] = {
-	/* RGB1 Green LED */
+	 
 	{0xe, 0xe, "control", IORESOURCE_REG, },
 	{0xc, 0xc, "blink",   IORESOURCE_REG, },
 };
 static const struct resource led2_resources[] = {
-	/* RGB1 Blue LED */
+	 
 	{0xf, 0xf, "control", IORESOURCE_REG, },
 	{0xc, 0xc, "blink",   IORESOURCE_REG, },
 };
 static const struct resource led3_resources[] = {
-	/* RGB2 Red LED */
+	 
 	{0x9, 0x9, "control", IORESOURCE_REG, },
 	{0x8, 0x8, "blink",   IORESOURCE_REG, },
 };
 static const struct resource led4_resources[] = {
-	/* RGB2 Green LED */
+	 
 	{0xa, 0xa, "control", IORESOURCE_REG, },
 	{0x8, 0x8, "blink",   IORESOURCE_REG, },
 };
 static const struct resource led5_resources[] = {
-	/* RGB2 Blue LED */
+	 
 	{0xb, 0xb, "control", IORESOURCE_REG, },
 	{0x8, 0x8, "blink",   IORESOURCE_REG, },
 };
@@ -131,13 +125,13 @@ static struct resource onkey_resources[] = {
 };
 
 static struct resource codec_resources[] = {
-	/* Headset microphone insertion or removal */
+	 
 	{PM8607_IRQ_MICIN,   PM8607_IRQ_MICIN,   "micin",   IORESOURCE_IRQ,},
-	/* Hook-switch press or release */
+	 
 	{PM8607_IRQ_HOOK,    PM8607_IRQ_HOOK,    "hook",    IORESOURCE_IRQ,},
-	/* Headset insertion or removal */
+	 
 	{PM8607_IRQ_HEADSET, PM8607_IRQ_HEADSET, "headset", IORESOURCE_IRQ,},
-	/* Audio short */
+	 
 	{PM8607_IRQ_AUDIO_SHORT, PM8607_IRQ_AUDIO_SHORT, "audio-short",
 	 IORESOURCE_IRQ,},
 };
@@ -342,8 +336,8 @@ static struct mfd_cell rtc_devs[] = {
 struct pm860x_irq_data {
 	int	reg;
 	int	mask_reg;
-	int	enable;		/* enable or not */
-	int	offs;		/* bit offset in mask register */
+	int	enable;		 
+	int	offs;		 
 };
 
 static struct pm860x_irq_data pm860x_irqs[] = {
@@ -497,7 +491,7 @@ static void pm860x_irq_sync_unlock(struct irq_data *data)
 	int i;
 
 	i2c = (chip->id == CHIP_PM8607) ? chip->client : chip->companion;
-	/* Load cached value. In initial, all IRQs are masked */
+	 
 	for (i = 0; i < 3; i++)
 		mask[i] = cached[i];
 	for (i = 0; i < ARRAY_SIZE(pm860x_irqs); i++) {
@@ -520,7 +514,7 @@ static void pm860x_irq_sync_unlock(struct irq_data *data)
 			break;
 		}
 	}
-	/* update mask into registers */
+	 
 	for (i = 0; i < 3; i++) {
 		if (mask[i] != cached[i]) {
 			cached[i] = mask[i];
@@ -580,11 +574,7 @@ static int device_irq_init(struct pm860x_chip *chip,
 	data = 0;
 	chip->irq_mode = 0;
 	if (pdata && pdata->irq_mode) {
-		/*
-		 * irq_mode defines the way of clearing interrupt. If it's 1,
-		 * clear IRQ by write. Otherwise, clear it by read.
-		 * This control bit is valid from 88PM8607 B0 steping.
-		 */
+		 
 		data |= PM8607_B0_MISC1_INT_CLEAR;
 		chip->irq_mode = 1;
 	}
@@ -592,7 +582,7 @@ static int device_irq_init(struct pm860x_chip *chip,
 	if (ret < 0)
 		goto out;
 
-	/* mask all IRQs */
+	 
 	memset(status_buf, 0, INT_STATUS_NUM);
 	ret = pm860x_bulk_write(i2c, PM8607_INT_MASK_1,
 				INT_STATUS_NUM, status_buf);
@@ -600,12 +590,12 @@ static int device_irq_init(struct pm860x_chip *chip,
 		goto out;
 
 	if (chip->irq_mode) {
-		/* clear interrupt status by write */
+		 
 		memset(status_buf, 0xFF, INT_STATUS_NUM);
 		ret = pm860x_bulk_write(i2c, PM8607_INT_STATUS1,
 					INT_STATUS_NUM, status_buf);
 	} else {
-		/* clear interrupt status by read */
+		 
 		ret = pm860x_bulk_read(i2c, PM8607_INT_STATUS1,
 					INT_STATUS_NUM, status_buf);
 	}
@@ -661,21 +651,21 @@ int pm8606_osc_enable(struct pm860x_chip *chip, unsigned short client)
 			chip->osc_status);
 
 	mutex_lock(&chip->osc_lock);
-	/* Update voting status */
+	 
 	chip->osc_vote |= client;
-	/* If reference group is off - turn on*/
+	 
 	if (chip->osc_status != PM8606_REF_GP_OSC_ON) {
 		chip->osc_status = PM8606_REF_GP_OSC_UNKNOWN;
-		/* Enable Reference group Vsys */
+		 
 		if (pm860x_set_bits(i2c, PM8606_VSYS,
 				PM8606_VSYS_EN, PM8606_VSYS_EN))
 			goto out;
 
-		/*Enable Internal Oscillator */
+		 
 		if (pm860x_set_bits(i2c, PM8606_MISC,
 				PM8606_MISC_OSC_EN, PM8606_MISC_OSC_EN))
 			goto out;
-		/* Update status (only if writes succeed) */
+		 
 		chip->osc_status = PM8606_REF_GP_OSC_ON;
 	}
 	mutex_unlock(&chip->osc_lock);
@@ -702,19 +692,16 @@ int pm8606_osc_disable(struct pm860x_chip *chip, unsigned short client)
 			chip->osc_status);
 
 	mutex_lock(&chip->osc_lock);
-	/* Update voting status */
+	 
 	chip->osc_vote &= ~(client);
-	/*
-	 * If reference group is off and this is the last client to release
-	 * - turn off
-	 */
+	 
 	if ((chip->osc_status != PM8606_REF_GP_OSC_OFF) &&
 			(chip->osc_vote == REF_GP_NO_CLIENTS)) {
 		chip->osc_status = PM8606_REF_GP_OSC_UNKNOWN;
-		/* Disable Reference group Vsys */
+		 
 		if (pm860x_set_bits(i2c, PM8606_VSYS, PM8606_VSYS_EN, 0))
 			goto out;
-		/* Disable Internal Oscillator */
+		 
 		if (pm860x_set_bits(i2c, PM8606_MISC, PM8606_MISC_OSC_EN, 0))
 			goto out;
 		chip->osc_status = PM8606_REF_GP_OSC_OFF;
@@ -736,10 +723,10 @@ static void device_osc_init(struct i2c_client *i2c)
 	struct pm860x_chip *chip = i2c_get_clientdata(i2c);
 
 	mutex_init(&chip->osc_lock);
-	/* init portofino reference group voting and status */
-	/* Disable Reference group Vsys */
+	 
+	 
 	pm860x_set_bits(i2c, PM8606_VSYS, PM8606_VSYS_EN, 0);
-	/* Disable Internal Oscillator */
+	 
 	pm860x_set_bits(i2c, PM8606_MISC, PM8606_MISC_OSC_EN, 0);
 
 	chip->osc_vote = REF_GP_NO_CLIENTS;
@@ -1136,7 +1123,7 @@ static int pm860x_probe(struct i2c_client *client)
 	int ret;
 
 	if (node && !pdata) {
-		/* parse DT to get platform data */
+		 
 		pdata = devm_kzalloc(&client->dev,
 				     sizeof(struct pm860x_platform_data),
 				     GFP_KERNEL);
@@ -1167,13 +1154,7 @@ static int pm860x_probe(struct i2c_client *client)
 	i2c_set_clientdata(client, chip);
 	chip->dev = &client->dev;
 
-	/*
-	 * Both client and companion client shares same platform driver.
-	 * Driver distinguishes them by pdata->companion_addr.
-	 * pdata->companion_addr is only assigned if companion chip exists.
-	 * At the same time, the companion_addr shouldn't equal to client
-	 * address.
-	 */
+	 
 	if (pdata->companion_addr && (pdata->companion_addr != client->addr)) {
 		chip->companion_addr = pdata->companion_addr;
 		chip->companion = i2c_new_dummy_device(chip->client->adapter,

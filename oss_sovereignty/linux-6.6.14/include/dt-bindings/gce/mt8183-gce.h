@@ -1,20 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2019 MediaTek Inc.
- * Author: Bibby Hsieh <bibby.hsieh@mediatek.com>
- *
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_GCE_MT8183_H
 #define _DT_BINDINGS_GCE_MT8183_H
 
 #define CMDQ_NO_TIMEOUT		0xffffffff
 
-/* GCE HW thread priority */
+ 
 #define CMDQ_THR_PRIO_LOWEST	0
 #define CMDQ_THR_PRIO_HIGHEST	1
 
-/* GCE SUBSYS */
+ 
 #define SUBSYS_1300XXXX		0
 #define SUBSYS_1400XXXX		1
 #define SUBSYS_1401XXXX		2

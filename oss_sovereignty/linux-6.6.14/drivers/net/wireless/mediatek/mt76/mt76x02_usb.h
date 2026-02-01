@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- */
+ 
+ 
 
 #ifndef __MT76x02_USB_H
 #define __MT76x02_USB_H
@@ -22,4 +20,4 @@ int mt76x02u_tx_prepare_skb(struct mt76_dev *mdev, void *data,
 void mt76x02u_tx_complete_skb(struct mt76_dev *mdev, struct mt76_queue_entry *e);
 void mt76x02u_init_beacon_config(struct mt76x02_dev *dev);
 void mt76x02u_exit_beacon_config(struct mt76x02_dev *dev);
-#endif /* __MT76x02_USB_H */
+#endif  

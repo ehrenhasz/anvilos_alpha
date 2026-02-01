@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2019-2021 Marvell International Ltd. All rights reserved */
+
+ 
 
 #include <linux/rhashtable.h>
 
@@ -8,29 +8,12 @@
 #include "prestera_router_hw.h"
 #include "prestera_acl.h"
 
-/*                                Nexthop is pointed
- *                                to port (not rif)
- *                                +-------+
- *                              +>|nexthop|
- *                              | +-------+
- *                              |
- *            +--+        +-----++
- *   +------->|vr|<-+   +>|nh_grp|
- *   |        +--+  |   | +------+
- *   |              |   |
- * +-+-------+   +--+---+-+
- * |rif_entry|   |fib_node|
- * +---------+   +--------+
- *  Rif is        Fib - is exit point
- *  used as
- *  entry point
- *  for vr in hw
- */
+ 
 
 #define PRESTERA_NHGR_UNUSED (0)
 #define PRESTERA_NHGR_DROP (0xFFFFFFFF)
-/* Need to merge it with router_manager */
-#define PRESTERA_NH_ACTIVE_JIFFER_FILTER 3000 /* ms */
+ 
+#define PRESTERA_NH_ACTIVE_JIFFER_FILTER 3000  
 
 static const struct rhashtable_params __prestera_fib_ht_params = {
 	.key_offset  = offsetof(struct prestera_fib_node, key),
@@ -58,7 +41,7 @@ prestera_nexthop_group_util_hw_state(struct prestera_switch *sw,
 				     struct prestera_nexthop_group *nh_grp);
 static void prestera_fib_node_destroy_ht_cb(void *ptr, void *arg);
 
-/* TODO: move to router.h as macros */
+ 
 static bool prestera_nh_neigh_key_is_valid(struct prestera_nh_neigh_key *key)
 {
 	return memchr_inv(key, 0, sizeof(*key)) ? true : false;
@@ -182,7 +165,7 @@ static void prestera_vr_put(struct prestera_switch *sw, struct prestera_vr *vr)
 		__prestera_vr_destroy(sw, vr);
 }
 
-/* iface is overhead struct. vr_id also can be removed. */
+ 
 static int
 __prestera_rif_entry_key_copy(const struct prestera_rif_entry_key *in,
 			      struct prestera_rif_entry_key *out)
@@ -214,7 +197,7 @@ prestera_rif_entry_find(const struct prestera_switch *sw,
 			const struct prestera_rif_entry_key *k)
 {
 	struct prestera_rif_entry *rif_entry;
-	struct prestera_rif_entry_key lk; /* lookup key */
+	struct prestera_rif_entry_key lk;  
 
 	if (__prestera_rif_entry_key_copy(k, &lk))
 		return NULL;
@@ -265,7 +248,7 @@ prestera_rif_entry_create(struct prestera_switch *sw,
 
 	memcpy(&e->addr, addr, sizeof(e->addr));
 
-	/* HW */
+	 
 	memcpy(&iface, &e->key.iface, sizeof(iface));
 	iface.vr_id = e->vr->hw_vr_id;
 	err = prestera_hw_rif_create(sw, &iface, e->addr, &e->hw_id);
@@ -353,7 +336,7 @@ void prestera_nh_neigh_put(struct prestera_switch *sw,
 		__prestera_nh_neigh_destroy(sw, neigh);
 }
 
-/* Updates new prestera_neigh_info */
+ 
 int prestera_nh_neigh_set(struct prestera_switch *sw,
 			  struct prestera_nh_neigh *neigh)
 {
@@ -431,7 +414,7 @@ __prestera_nexthop_group_create(struct prestera_switch *sw,
 	if (err)
 		goto err_ht_insert;
 
-	/* reset cache for created group */
+	 
 	gid = nh_grp->grp_id;
 	sw->router->nhgrp_hw_state_cache[gid / 8] &= ~BIT(gid % 8);
 
@@ -514,7 +497,7 @@ static void prestera_nexthop_group_put(struct prestera_switch *sw,
 		__prestera_nexthop_group_destroy(sw, nh_grp);
 }
 
-/* Updates with new nh_neigh's info */
+ 
 static int prestera_nexthop_group_set(struct prestera_switch *sw,
 				      struct prestera_nexthop_group *nh_grp)
 {
@@ -543,11 +526,7 @@ prestera_nexthop_group_util_hw_state(struct prestera_switch *sw,
 	u32 gid = nh_grp->grp_id;
 	u8 *cache = sw->router->nhgrp_hw_state_cache;
 
-	/* Antijitter
-	 * Prevent situation, when we read state of nh_grp twice in short time,
-	 * and state bit is still cleared on second call. So just stuck active
-	 * state for PRESTERA_NH_ACTIVE_JIFFER_FILTER, after last occurred.
-	 */
+	 
 	if (!time_before(jiffies, sw->router->nhgrp_hw_cache_kick +
 			msecs_to_jiffies(PRESTERA_NH_ACTIVE_JIFFER_FILTER))) {
 		err = prestera_hw_nhgrp_blk_get(sw, cache, buf_size);

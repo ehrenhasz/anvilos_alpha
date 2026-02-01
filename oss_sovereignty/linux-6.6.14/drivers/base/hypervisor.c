@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * hypervisor.c - /sys/hypervisor subsystem.
- *
- * Copyright (C) IBM Corp. 2006
- * Copyright (C) 2007 Greg Kroah-Hartman <gregkh@suse.de>
- * Copyright (C) 2007 Novell Inc.
- */
+
+ 
 
 #include <linux/kobject.h>
 #include <linux/device.h>

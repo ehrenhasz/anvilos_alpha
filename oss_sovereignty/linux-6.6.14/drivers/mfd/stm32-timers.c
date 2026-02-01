@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics 2016
- * Author: Benjamin Gaignard <benjamin.gaignard@st.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/mfd/stm32-timers.h>
@@ -13,7 +10,7 @@
 
 #define STM32_TIMERS_MAX_REGISTERS	0x3fc
 
-/* DIER register DMA enable bits */
+ 
 static const u32 stm32_timers_dier_dmaen[STM32_TIMERS_MAX_DMAS] = {
 	TIM_DIER_CC1DE,
 	TIM_DIER_CC2DE,
@@ -35,18 +32,7 @@ static void stm32_timers_dma_done(void *p)
 		complete(&dma->completion);
 }
 
-/**
- * stm32_timers_dma_burst_read - Read from timers registers using DMA.
- *
- * Read from STM32 timers registers using DMA on a single event.
- * @dev: reference to stm32_timers MFD device
- * @buf: DMA'able destination buffer
- * @id: stm32_timers_dmas event identifier (ch[1..4], up, trig or com)
- * @reg: registers start offset for DMA to read from (like CCRx for capture)
- * @num_reg: number of registers to read upon each DMA request, starting @reg.
- * @bursts: number of bursts to read (e.g. like two for pwm period capture)
- * @tmo_ms: timeout (milliseconds)
- */
+ 
 int stm32_timers_dma_burst_read(struct device *dev, u32 *buf,
 				enum stm32_timers_dmas id, u32 reg,
 				unsigned int num_reg, unsigned int bursts,
@@ -65,7 +51,7 @@ int stm32_timers_dma_burst_read(struct device *dev, u32 *buf,
 	long err;
 	int ret;
 
-	/* Sanity check */
+	 
 	if (id < STM32_TIMERS_DMA_CH1 || id >= STM32_TIMERS_MAX_DMAS)
 		return -EINVAL;
 
@@ -77,7 +63,7 @@ int stm32_timers_dma_burst_read(struct device *dev, u32 *buf,
 		return -ENODEV;
 	mutex_lock(&dma->lock);
 
-	/* Select DMA channel in use */
+	 
 	dma->chan = dma->chans[id];
 	dma_buf = dma_map_single(dev, buf, len, DMA_FROM_DEVICE);
 	if (dma_mapping_error(dev, dma_buf)) {
@@ -85,7 +71,7 @@ int stm32_timers_dma_burst_read(struct device *dev, u32 *buf,
 		goto unlock;
 	}
 
-	/* Prepare DMA read from timer registers, using DMA burst mode */
+	 
 	memset(&config, 0, sizeof(config));
 	config.src_addr = (dma_addr_t)dma->phys_base + TIM_DMAR;
 	config.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
@@ -110,14 +96,14 @@ int stm32_timers_dma_burst_read(struct device *dev, u32 *buf,
 	reinit_completion(&dma->completion);
 	dma_async_issue_pending(dma->chan);
 
-	/* Setup and enable timer DMA burst mode */
+	 
 	dbl = FIELD_PREP(TIM_DCR_DBL, bursts - 1);
 	dba = FIELD_PREP(TIM_DCR_DBA, reg >> 2);
 	ret = regmap_write(regmap, TIM_DCR, dbl | dba);
 	if (ret)
 		goto dma_term;
 
-	/* Clear pending flags before enabling DMA request */
+	 
 	ret = regmap_write(regmap, TIM_SR, 0);
 	if (ret)
 		goto dcr_clr;
@@ -161,13 +147,10 @@ static void stm32_timers_get_arr_size(struct stm32_timers *ddata)
 {
 	u32 arr;
 
-	/* Backup ARR to restore it after getting the maximum value */
+	 
 	regmap_read(ddata->regmap, TIM_ARR, &arr);
 
-	/*
-	 * Only the available bits will be written so when readback
-	 * we get the maximum value of auto reload register
-	 */
+	 
 	regmap_write(ddata->regmap, TIM_ARR, ~0L);
 	regmap_read(ddata->regmap, TIM_ARR, &ddata->max_arr);
 	regmap_write(ddata->regmap, TIM_ARR, arr);
@@ -183,7 +166,7 @@ static int stm32_timers_dma_probe(struct device *dev,
 	init_completion(&ddata->dma.completion);
 	mutex_init(&ddata->dma.lock);
 
-	/* Optional DMA support: get valid DMA channel(s) or NULL */
+	 
 	for (i = STM32_TIMERS_DMA_CH1; i <= STM32_TIMERS_DMA_CH4; i++) {
 		snprintf(name, ARRAY_SIZE(name), "ch%1d", i + 1);
 		ddata->dma.chans[i] = dma_request_chan(dev, name);
@@ -194,7 +177,7 @@ static int stm32_timers_dma_probe(struct device *dev,
 
 	for (i = STM32_TIMERS_DMA_CH1; i < STM32_TIMERS_MAX_DMAS; i++) {
 		if (IS_ERR(ddata->dma.chans[i])) {
-			/* Save the first error code to return */
+			 
 			if (PTR_ERR(ddata->dma.chans[i]) != -ENODEV && !ret)
 				ret = PTR_ERR(ddata->dma.chans[i]);
 
@@ -231,7 +214,7 @@ static int stm32_timers_probe(struct platform_device *pdev)
 	if (IS_ERR(mmio))
 		return PTR_ERR(mmio);
 
-	/* Timer physical addr for DMA */
+	 
 	ddata->dma.phys_base = res->start;
 
 	ddata->regmap = devm_regmap_init_mmio_clk(dev, "int", mmio,
@@ -264,10 +247,7 @@ static int stm32_timers_remove(struct platform_device *pdev)
 {
 	struct stm32_timers *ddata = platform_get_drvdata(pdev);
 
-	/*
-	 * Don't use devm_ here: enfore of_platform_depopulate() happens before
-	 * DMA are released, to avoid race on DMA.
-	 */
+	 
 	of_platform_depopulate(&pdev->dev);
 	stm32_timers_dma_remove(&pdev->dev, ddata);
 
@@ -276,7 +256,7 @@ static int stm32_timers_remove(struct platform_device *pdev)
 
 static const struct of_device_id stm32_timers_of_match[] = {
 	{ .compatible = "st,stm32-timers", },
-	{ /* end node */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, stm32_timers_of_match);
 

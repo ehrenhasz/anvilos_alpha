@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Manuel Jander.
- *
- *  Based on the work of:
- *  Vojtech Pavlik
- *  Raymond Ingles
- *
- * Should you need to contact me, the author, you can do so either by
- * e-mail - mail your message to <vojtech@suse.cz>, or by paper mail:
- * Vojtech Pavlik, Ucitelska 1576, Prague 8, 182 00 Czech Republic
- *
- * Based 90% on Vojtech Pavlik pcigame driver.
- * Merged and modified by Manuel Jander, for the OpenVortex
- * driver. (email: mjander@embedded.cl).
- */
+
+ 
 
 #include <linux/time.h>
 #include <linux/delay.h>
@@ -25,7 +11,7 @@
 
 #if IS_REACHABLE(CONFIG_GAMEPORT)
 
-#define VORTEX_GAME_DWAIT	20	/* 20 ms */
+#define VORTEX_GAME_DWAIT	20	 
 
 static unsigned char vortex_game_read(struct gameport *gameport)
 {

@@ -1,27 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2004, 2010, Oracle and/or its affiliates. All rights reserved.
- */
+ 
 
 #include "libuutil_common.h"
 
@@ -41,28 +20,21 @@
 #define	TEXT_DOMAIN "SYS_TEST"
 #endif
 
-/*
- * All of the old code under !defined(PTHREAD_ONCE_KEY_NP)
- * is here to enable the building of a native version of
- * libuutil.so when the build machine has not yet been upgraded
- * to a version of libc that provides pthread_key_create_once_np().
- * It should all be deleted when solaris_nevada ships.
- * The code is not MT-safe in a relaxed memory model.
- */
+ 
 
 #if defined(PTHREAD_ONCE_KEY_NP)
 static pthread_key_t	uu_error_key = PTHREAD_ONCE_KEY_NP;
-#else	/* PTHREAD_ONCE_KEY_NP */
+#else	 
 static pthread_key_t	uu_error_key = 0;
 static pthread_mutex_t	uu_key_lock = PTHREAD_MUTEX_INITIALIZER;
-#endif	/* PTHREAD_ONCE_KEY_NP */
+#endif	 
 
 static int		uu_error_key_setup = 0;
 
 static pthread_mutex_t	uu_panic_lock = PTHREAD_MUTEX_INITIALIZER;
-/* LINTED static unused */
+ 
 static const char	*uu_panic_format;
-/* LINTED static unused */
+ 
 static va_list		uu_panic_args;
 static pthread_t	uu_panic_thread;
 
@@ -81,7 +53,7 @@ uu_set_error(uint_t code)
 		uu_error_key_setup = -1;
 	else
 		uu_error_key_setup = 1;
-#else	/* PTHREAD_ONCE_KEY_NP */
+#else	 
 	if (uu_error_key_setup == 0) {
 		(void) pthread_mutex_lock(&uu_key_lock);
 		if (uu_error_key_setup == 0) {
@@ -92,7 +64,7 @@ uu_set_error(uint_t code)
 		}
 		(void) pthread_mutex_unlock(&uu_key_lock);
 	}
-#endif	/* PTHREAD_ONCE_KEY_NP */
+#endif	 
 	if (uu_error_key_setup > 0)
 		(void) pthread_setspecific(uu_error_key,
 		    (void *)(uintptr_t)code);
@@ -104,13 +76,10 @@ uu_error(void)
 	if (_uu_main_thread)
 		return (_uu_main_error);
 
-	if (uu_error_key_setup < 0)	/* can't happen? */
+	if (uu_error_key_setup < 0)	 
 		return (UU_ERROR_UNKNOWN);
 
-	/*
-	 * Because UU_ERROR_NONE == 0, if uu_set_error() was
-	 * never called, then this will return UU_ERROR_NONE:
-	 */
+	 
 	return ((uint32_t)(uintptr_t)pthread_getspecific(uu_error_key));
 }
 

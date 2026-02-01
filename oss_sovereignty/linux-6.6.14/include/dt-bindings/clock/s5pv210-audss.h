@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014 Tomasz Figa <tomasz.figa@gmail.com>
- *
- * This header provides constants for Samsung audio subsystem
- * clock controller.
- *
- * The constants defined in this header are being used in dts
- * and s5pv210 audss driver.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLOCK_S5PV210_AUDSS_H
 #define _DT_BINDINGS_CLOCK_S5PV210_AUDSS_H

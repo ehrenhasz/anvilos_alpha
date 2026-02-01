@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2019 Solarflare Communications Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/netdevice.h>
 #include "net_driver.h"
@@ -25,10 +18,10 @@ struct efx_sw_stat_desc {
 		EFX_ETHTOOL_STAT_SOURCE_tx_queue
 	} source;
 	unsigned int offset;
-	u64 (*get_stat)(void *field); /* Reader function */
+	u64 (*get_stat)(void *field);  
 };
 
-/* Initialiser for a struct efx_sw_stat_desc with type-checking */
+ 
 #define EFX_ETHTOOL_STAT(stat_name, source_name, field, field_type, \
 				get_stat_function) {			\
 	.name = #stat_name,						\
@@ -163,7 +156,7 @@ int efx_siena_ethtool_set_pauseparam(struct net_device *net_dev,
 		goto out;
 	}
 
-	/* Hook for Falcon bug 11482 workaround */
+	 
 	if (efx->type->prepare_enable_fc_tx &&
 	    (wanted_fc & EFX_FC_TX) && !(efx->wanted_fc & EFX_FC_TX))
 		efx->type->prepare_enable_fc_tx(efx);
@@ -182,9 +175,7 @@ int efx_siena_ethtool_set_pauseparam(struct net_device *net_dev,
 		}
 	}
 
-	/* Reconfigure the MAC. The PHY *may* generate a link state change event
-	 * if the user just changed the advertised capabilities, but there's no
-	 * harm doing this twice */
+	 
 	efx_siena_mac_reconfigure(efx, false);
 
 out:
@@ -193,30 +184,18 @@ out:
 	return rc;
 }
 
-/**
- * efx_fill_test - fill in an individual self-test entry
- * @test_index:		Index of the test
- * @strings:		Ethtool strings, or %NULL
- * @data:		Ethtool test results, or %NULL
- * @test:		Pointer to test result (used only if data != %NULL)
- * @unit_format:	Unit name format (e.g. "chan\%d")
- * @unit_id:		Unit id (e.g. 0 for "chan0")
- * @test_format:	Test name format (e.g. "loopback.\%s.tx.sent")
- * @test_id:		Test id (e.g. "PHYXS" for "loopback.PHYXS.tx_sent")
- *
- * Fill in an individual self-test entry.
- */
+ 
 static void efx_fill_test(unsigned int test_index, u8 *strings, u64 *data,
 			  int *test, const char *unit_format, int unit_id,
 			  const char *test_format, const char *test_id)
 {
 	char unit_str[ETH_GSTRING_LEN], test_str[ETH_GSTRING_LEN];
 
-	/* Fill data value, if applicable */
+	 
 	if (data)
 		data[test_index] = *test;
 
-	/* Fill string, if applicable */
+	 
 	if (strings) {
 		if (strchr(unit_format, '%'))
 			snprintf(unit_str, sizeof(unit_str),
@@ -235,18 +214,7 @@ static void efx_fill_test(unsigned int test_index, u8 *strings, u64 *data,
 #define EFX_LOOPBACK_NAME(_mode, _counter)			\
 	"loopback.%s." _counter, STRING_TABLE_LOOKUP(_mode, efx_siena_loopback_mode)
 
-/**
- * efx_fill_loopback_test - fill in a block of loopback self-test entries
- * @efx:		Efx NIC
- * @lb_tests:		Efx loopback self-test results structure
- * @mode:		Loopback test mode
- * @test_index:		Starting index of the test
- * @strings:		Ethtool strings, or %NULL
- * @data:		Ethtool test results, or %NULL
- *
- * Fill in a block of loopback self-test entries.  Return new test
- * index.
- */
+ 
 static int efx_fill_loopback_test(struct efx_nic *efx,
 				  struct efx_loopback_self_tests *lb_tests,
 				  enum efx_loopback_mode mode,
@@ -279,19 +247,7 @@ static int efx_fill_loopback_test(struct efx_nic *efx,
 	return test_index;
 }
 
-/**
- * efx_ethtool_fill_self_tests - get self-test details
- * @efx:		Efx NIC
- * @tests:		Efx self-test results structure, or %NULL
- * @strings:		Ethtool strings, or %NULL
- * @data:		Ethtool test results, or %NULL
- *
- * Get self-test number of strings, strings, and/or test results.
- * Return number of strings (== number of test results).
- *
- * The reason for merging these three functions is to make sure that
- * they can never be inconsistent.
- */
+ 
 static int efx_ethtool_fill_self_tests(struct efx_nic *efx,
 				       struct efx_self_tests *tests,
 				       u8 *strings, u64 *data)
@@ -307,7 +263,7 @@ static int efx_ethtool_fill_self_tests(struct efx_nic *efx,
 	efx_fill_test(n++, strings, data, &tests->interrupt,
 		      "core", 0, "interrupt", NULL);
 
-	/* Event queues */
+	 
 	efx_for_each_channel(channel, efx) {
 		efx_fill_test(n++, strings, data,
 			      &tests->eventq_dma[channel->channel],
@@ -335,7 +291,7 @@ static int efx_ethtool_fill_self_tests(struct efx_nic *efx,
 		efx_fill_test(n++, strings, data, &tests->phy_ext[i], "phy", 0, name, NULL);
 	}
 
-	/* Loopback tests */
+	 
 	for (mode = LOOPBACK_NONE; mode <= LOOPBACK_TEST_MAX; mode++) {
 		if (!(efx->loopback_modes & (1 << mode)))
 			continue;
@@ -367,7 +323,7 @@ void efx_siena_ethtool_self_test(struct net_device *net_dev,
 	netif_info(efx, drv, efx->net_dev, "starting %sline testing\n",
 		   (test->flags & ETH_TEST_FL_OFFLINE) ? "off" : "on");
 
-	/* We need rx buffers and interrupts. */
+	 
 	already_up = (efx->net_dev->flags & IFF_UP);
 	if (!already_up) {
 		rc = dev_open(efx->net_dev, NULL);
@@ -478,7 +434,7 @@ void efx_siena_ethtool_get_strings(struct net_device *net_dev,
 		efx_ethtool_fill_self_tests(efx, NULL, strings, NULL);
 		break;
 	default:
-		/* No other string sets */
+		 
 		break;
 	}
 }
@@ -496,10 +452,10 @@ void efx_siena_ethtool_get_stats(struct net_device *net_dev,
 
 	spin_lock_bh(&efx->stats_lock);
 
-	/* Get NIC statistics */
+	 
 	data += efx->type->update_stats(efx, data, NULL);
 
-	/* Get software statistics */
+	 
 	for (i = 0; i < EFX_ETHTOOL_SW_STAT_COUNT; i++) {
 		stat = &efx_sw_stat_desc[i];
 		switch (stat->source) {
@@ -557,7 +513,7 @@ void efx_siena_ethtool_get_stats(struct net_device *net_dev,
 	efx_siena_ptp_update_stats(efx, data);
 }
 
-/* This must be called with rtnl_lock held. */
+ 
 int efx_siena_ethtool_get_link_ksettings(struct net_device *net_dev,
 					 struct ethtool_link_ksettings *cmd)
 {
@@ -568,7 +524,7 @@ int efx_siena_ethtool_get_link_ksettings(struct net_device *net_dev,
 	efx_siena_mcdi_phy_get_link_ksettings(efx, cmd);
 	mutex_unlock(&efx->mac_lock);
 
-	/* Both MACs support pause frames (bidirectional and respond-only) */
+	 
 	ethtool_link_ksettings_add_link_mode(cmd, supported, Pause);
 	ethtool_link_ksettings_add_link_mode(cmd, supported, Asym_Pause);
 
@@ -580,7 +536,7 @@ int efx_siena_ethtool_get_link_ksettings(struct net_device *net_dev,
 	return 0;
 }
 
-/* This must be called with rtnl_lock held. */
+ 
 int
 efx_siena_ethtool_set_link_ksettings(struct net_device *net_dev,
 				     const struct ethtool_link_ksettings *cmd)
@@ -588,7 +544,7 @@ efx_siena_ethtool_set_link_ksettings(struct net_device *net_dev,
 	struct efx_nic *efx = netdev_priv(net_dev);
 	int rc;
 
-	/* GMAC does not support 1000Mbps HD */
+	 
 	if ((cmd->base.speed == SPEED_1000) &&
 	    (cmd->base.duplex != DUPLEX_FULL)) {
 		netif_dbg(efx, drv, efx->net_dev,
@@ -628,7 +584,7 @@ int efx_siena_ethtool_set_fecparam(struct net_device *net_dev,
 	return rc;
 }
 
-/* MAC address mask including only I/G bit */
+ 
 static const u8 mac_addr_ig_mask[ETH_ALEN] __aligned(2) = {0x01, 0, 0, 0, 0, 0};
 
 #define IP4_ADDR_FULL_MASK	((__force __be32)~0)
@@ -788,7 +744,7 @@ static int efx_ethtool_get_class_rule(struct efx_nic *efx,
 			ip6_fill_mask(uip6_mask->ip6src);
 		}
 	} else {
-		/* The above should handle all filters that we insert */
+		 
 		WARN_ON(1);
 		return -EINVAL;
 	}
@@ -834,7 +790,7 @@ int efx_siena_ethtool_get_rxnfc(struct net_device *net_dev,
 		}
 
 		data = 0;
-		if (!efx_rss_active(ctx)) /* No RSS */
+		if (!efx_rss_active(ctx))  
 			goto out_setdata_unlock;
 
 		switch (info->flow_type & ~FLOW_RSS) {
@@ -933,16 +889,16 @@ static int efx_ethtool_set_class_rule(struct efx_nic *efx,
 	struct efx_filter_spec spec;
 	int rc;
 
-	/* Check that user wants us to choose the location */
+	 
 	if (rule->location != RX_CLS_LOC_ANY)
 		return -EINVAL;
 
-	/* Range-check ring_cookie */
+	 
 	if (rule->ring_cookie >= efx->n_rx_channels &&
 	    rule->ring_cookie != RX_CLS_FLOW_DISC)
 		return -EINVAL;
 
-	/* Check for unsupported extensions */
+	 
 	if ((rule->flow_type & FLOW_EXT) &&
 	    (rule->m_ext.vlan_etype || rule->m_ext.data[0] ||
 	     rule->m_ext.data[1]))
@@ -1190,7 +1146,7 @@ int efx_siena_ethtool_set_rxfh(struct net_device *net_dev, const u32 *indir,
 {
 	struct efx_nic *efx = netdev_priv(net_dev);
 
-	/* Hash function is Toeplitz, cannot be changed */
+	 
 	if (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_TOP)
 		return -EOPNOTSUPP;
 	if (!indir && !key)
@@ -1247,7 +1203,7 @@ int efx_siena_ethtool_set_rxfh_context(struct net_device *net_dev,
 
 	if (!efx->type->rx_push_rss_context_config)
 		return -EOPNOTSUPP;
-	/* Hash function is Toeplitz, cannot be changed */
+	 
 	if (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_TOP)
 		return -EOPNOTSUPP;
 
@@ -1255,7 +1211,7 @@ int efx_siena_ethtool_set_rxfh_context(struct net_device *net_dev,
 
 	if (*rss_context == ETH_RXFH_CONTEXT_ALLOC) {
 		if (delete) {
-			/* alloc + delete == Nothing to do */
+			 
 			rc = -EINVAL;
 			goto out_unlock;
 		}
@@ -1265,7 +1221,7 @@ int efx_siena_ethtool_set_rxfh_context(struct net_device *net_dev,
 			goto out_unlock;
 		}
 		ctx->context_id = EFX_MCDI_RSS_CONTEXT_INVALID;
-		/* Initialise indir table and key to defaults */
+		 
 		efx_siena_set_default_rx_indir_table(efx, ctx);
 		netdev_rss_key_fill(ctx->rx_hash_key, sizeof(ctx->rx_hash_key));
 		allocated = true;
@@ -1278,7 +1234,7 @@ int efx_siena_ethtool_set_rxfh_context(struct net_device *net_dev,
 	}
 
 	if (delete) {
-		/* delete this context */
+		 
 		rc = efx->type->rx_push_rss_context_config(efx, ctx, NULL, NULL);
 		if (!rc)
 			efx_siena_free_rss_context_entry(ctx);

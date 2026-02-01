@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2016 Facebook
- */
+
+ 
 #define _GNU_SOURCE
 #include <sched.h>
 #include <errno.h>
@@ -140,7 +139,7 @@ static int load_progs(char *filename)
 		return err;
 	}
 
-	/* load BPF program */
+	 
 	err = bpf_object__load(obj);
 	if (err < 0) {
 		fprintf(stderr, "ERROR: loading BPF object file failed\n");

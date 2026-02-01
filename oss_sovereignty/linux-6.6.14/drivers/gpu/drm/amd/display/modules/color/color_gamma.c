@@ -1,69 +1,29 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dc.h"
 #include "opp.h"
 #include "color_gamma.h"
 
-/* When calculating LUT values the first region and at least one subsequent
- * region are calculated with full precision. These defines are a demarcation
- * of where the second region starts and ends.
- * These are hardcoded values to avoid recalculating them in loops.
- */
+ 
 #define PRECISE_LUT_REGION_START 224
 #define PRECISE_LUT_REGION_END 239
 
 static struct hw_x_point coordinates_x[MAX_HW_POINTS + 2];
 
-// these are helpers for calculations to reduce stack usage
-// do not depend on these being preserved across calls
 
-/* Helper to optimize gamma calculation, only use in translate_from_linear, in
- * particular the dc_fixpt_pow function which is very expensive
- * The idea is that our regions for X points are exponential and currently they all use
- * the same number of points (NUM_PTS_IN_REGION) and in each region every point
- * is exactly 2x the one at the same index in the previous region. In other words
- * X[i] = 2 * X[i-NUM_PTS_IN_REGION] for i>=16
- * The other fact is that (2x)^gamma = 2^gamma * x^gamma
- * So we compute and save x^gamma for the first 16 regions, and for every next region
- * just multiply with 2^gamma which can be computed once, and save the result so we
- * recursively compute all the values.
- */
 
-/*
- * Regamma coefficients are used for both regamma and degamma. Degamma
- * coefficients are calculated in our formula using the regamma coefficients.
- */
-									 /*sRGB     709     2.2 2.4 P3*/
+
+ 
+
+ 
+									  
 static const int32_t numerator01[] = { 31308,   180000, 0,  0,  0};
 static const int32_t numerator02[] = { 12920,   4500,   0,  0,  0};
 static const int32_t numerator03[] = { 55,      99,     0,  0,  0};
 static const int32_t numerator04[] = { 55,      99,     0,  0,  0};
 static const int32_t numerator05[] = { 2400,    2222,   2200, 2400, 2600};
 
-/* one-time setup of X points */
+ 
 void setup_x_points_distribution(void)
 {
 	struct fixed31_32 region_size = dc_fixpt_from_int(128);
@@ -105,7 +65,7 @@ void log_x_points_distribution(struct dal_logger *logger)
 
 static void compute_pq(struct fixed31_32 in_x, struct fixed31_32 *out_y)
 {
-	/* consts for PQ gamma formula. */
+	 
 	const struct fixed31_32 m1 =
 		dc_fixpt_from_fraction(159301758, 1000000000);
 	const struct fixed31_32 m2 =
@@ -134,7 +94,7 @@ static void compute_pq(struct fixed31_32 in_x, struct fixed31_32 *out_y)
 
 static void compute_de_pq(struct fixed31_32 in_x, struct fixed31_32 *out_y)
 {
-	/* consts for dePQ gamma formula. */
+	 
 	const struct fixed31_32 m1 =
 		dc_fixpt_from_fraction(159301758, 1000000000);
 	const struct fixed31_32 m2 =
@@ -161,7 +121,7 @@ static void compute_de_pq(struct fixed31_32 in_x, struct fixed31_32 *out_y)
 	div = dc_fixpt_sub(c2, dc_fixpt_mul(c3, l_pow_m1));
 
 	base2 = dc_fixpt_div(base, div);
-	// avoid complex numbers
+	
 	if (dc_fixpt_lt(base2, dc_fixpt_zero))
 		base2 = dc_fixpt_sub(dc_fixpt_zero, base2);
 
@@ -171,7 +131,7 @@ static void compute_de_pq(struct fixed31_32 in_x, struct fixed31_32 *out_y)
 }
 
 
-/* de gamma, non-linear to linear */
+ 
 static void compute_hlg_eotf(struct fixed31_32 in_x,
 		struct fixed31_32 *out_y,
 		uint32_t sdr_white_level, uint32_t max_luminance_nits)
@@ -203,7 +163,7 @@ static void compute_hlg_eotf(struct fixed31_32 in_x,
 
 }
 
-/* re gamma, linear to non-linear */
+ 
 static void compute_hlg_oetf(struct fixed31_32 in_x, struct fixed31_32 *out_y,
 		uint32_t sdr_white_level, uint32_t max_luminance_nits)
 {
@@ -235,7 +195,7 @@ static void compute_hlg_oetf(struct fixed31_32 in_x, struct fixed31_32 *out_y,
 }
 
 
-/* one-time pre-compute PQ values - only for sdr_white_level 80 */
+ 
 void precompute_pq(void)
 {
 	int i;
@@ -246,7 +206,7 @@ void precompute_pq(void)
 
 	struct fixed31_32 *pq_table = mod_color_get_table(type_pq_table);
 
-	/* pow function has problems with arguments too small */
+	 
 	for (i = 0; i < 32; i++)
 		pq_table[i] = dc_fixpt_zero;
 
@@ -257,7 +217,7 @@ void precompute_pq(void)
 	}
 }
 
-/* one-time pre-compute dePQ values - only for max pixel value 125 FP16 */
+ 
 void precompute_de_pq(void)
 {
 	int i;
@@ -266,9 +226,7 @@ void precompute_de_pq(void)
 
 	struct fixed31_32 scaling_factor = dc_fixpt_from_int(125);
 	struct fixed31_32 *de_pq_table = mod_color_get_table(type_de_pq_table);
-	/* X points is 2^-25 to 2^7
-	 * De-gamma X is 2^-12 to 2^0 – we are skipping first -12-(-25) = 13 regions
-	 */
+	 
 	begin_index = 13 * NUM_PTS_IN_REGION;
 	end_index = begin_index + 12 * NUM_PTS_IN_REGION;
 
@@ -357,10 +315,7 @@ static struct fixed31_32 translate_from_linear_space(
 					dc_fixpt_recip(args->gamma));
 		}
 		scratch_1 = dc_fixpt_add(one, args->a3);
-		/* In the first region (first 16 points) and in the
-		 * region delimited by START/END we calculate with
-		 * full precision to avoid error accumulation.
-		 */
+		 
 		if ((cal_buffer->buffer_index >= PRECISE_LUT_REGION_START &&
 			cal_buffer->buffer_index <= PRECISE_LUT_REGION_END) ||
 			(cal_buffer->buffer_index < 16))
@@ -757,17 +712,13 @@ static void build_pq(struct pwl_float_data_ex *rgb_regamma,
 		mod_color_set_table_init_state(type_pq_table, true);
 	}
 
-	/* TODO: start index is from segment 2^-24, skipping first segment
-	 * due to x values too small for power calculations
-	 */
+	 
 	start_index = 32;
 	rgb += start_index;
 	coord_x += start_index;
 
 	for (i = start_index; i <= hw_points_num; i++) {
-		/* Multiply 0.008 as regamma is 0-1 and FP16 input is 0-125.
-		 * FP 1.0 = 80nits
-		 */
+		 
 		if (sdr_white_level == 80) {
 			output = pq_table[i];
 		} else {
@@ -775,7 +726,7 @@ static void build_pq(struct pwl_float_data_ex *rgb_regamma,
 			compute_pq(x, &output);
 		}
 
-		/* should really not happen? */
+		 
 		if (dc_fixpt_lt(output, dc_fixpt_zero))
 			output = dc_fixpt_zero;
 		else if (dc_fixpt_lt(dc_fixpt_one, output))
@@ -807,7 +758,7 @@ static void build_de_pq(struct pwl_float_data_ex *de_pq,
 
 	for (i = 0; i <= hw_points_num; i++) {
 		output = de_pq_table[i];
-		/* should really not happen? */
+		 
 		if (dc_fixpt_lt(output, dc_fixpt_zero))
 			output = dc_fixpt_zero;
 		else if (dc_fixpt_lt(scaling_factor, output))
@@ -839,11 +790,11 @@ static bool build_regamma(struct pwl_float_data_ex *rgb_regamma,
 		goto release;
 
 	memset(cal_buffer->buffer, 0, NUM_PTS_IN_REGION * sizeof(struct fixed31_32));
-	cal_buffer->buffer_index = 0; // see variable definition for more info
+	cal_buffer->buffer_index = 0; 
 
 	i = 0;
 	while (i <= hw_points_num) {
-		/* TODO use y vs r,g,b */
+		 
 		rgb->r = translate_from_linear_space_ex(
 			coord_x->x, coeff, 0, cal_buffer);
 		rgb->g = rgb->r;
@@ -881,7 +832,7 @@ static void hermite_spline_eetf(struct fixed31_32 input_x,
 	struct fixed31_32 temp2;
 	struct fixed31_32 a = dc_fixpt_from_fraction(15, 10);
 	struct fixed31_32 b = dc_fixpt_from_fraction(5, 10);
-	struct fixed31_32 epsilon = dc_fixpt_from_fraction(1, 1000000); // dc_fixpt_epsilon is a bit too small
+	struct fixed31_32 epsilon = dc_fixpt_from_fraction(1, 1000000); 
 
 	if (dc_fixpt_eq(max_content, dc_fixpt_zero)) {
 		*out_x = dc_fixpt_zero;
@@ -891,15 +842,15 @@ static void hermite_spline_eetf(struct fixed31_32 input_x,
 	compute_pq(input_x, &E1);
 	compute_pq(dc_fixpt_div(min_display, max_content), &min_lum_pq);
 	compute_pq(dc_fixpt_div(max_display, max_content), &max_lum_pq);
-	compute_pq(dc_fixpt_one, &max_content_pq); // always 1? DAL2 code is weird
-	a = dc_fixpt_div(dc_fixpt_add(dc_fixpt_one, b), max_content_pq); // (1+b)/maxContent
-	ks = dc_fixpt_sub(dc_fixpt_mul(a, max_lum_pq), b); // a * max_lum_pq - b
+	compute_pq(dc_fixpt_one, &max_content_pq); 
+	a = dc_fixpt_div(dc_fixpt_add(dc_fixpt_one, b), max_content_pq); 
+	ks = dc_fixpt_sub(dc_fixpt_mul(a, max_lum_pq), b); 
 
 	if (dc_fixpt_lt(E1, ks))
 		E2 = E1;
 	else if (dc_fixpt_le(ks, E1) && dc_fixpt_le(E1, dc_fixpt_one)) {
 		if (dc_fixpt_lt(epsilon, dc_fixpt_sub(dc_fixpt_one, ks)))
-			// t = (E1 - ks) / (1 - ks)
+			
 			t = dc_fixpt_div(dc_fixpt_sub(E1, ks),
 					dc_fixpt_sub(dc_fixpt_one, ks));
 		else
@@ -913,18 +864,18 @@ static void hermite_spline_eetf(struct fixed31_32 input_x,
 		temp1 = dc_fixpt_mul(two, t3);
 		temp2 = dc_fixpt_mul(three, t2);
 
-		// (2t^3 - 3t^2 + 1) * ks
+		
 		E2 = dc_fixpt_mul(ks, dc_fixpt_add(dc_fixpt_one,
 				dc_fixpt_sub(temp1, temp2)));
 
-		// (-2t^3 + 3t^2) * max_lum_pq
+		
 		E2 = dc_fixpt_add(E2, dc_fixpt_mul(max_lum_pq,
 				dc_fixpt_sub(temp2, temp1)));
 
 		temp1 = dc_fixpt_mul(two, t2);
 		temp2 = dc_fixpt_sub(dc_fixpt_one, ks);
 
-		// (t^3 - 2t^2 + t) * (1-ks)
+		
 		E2 = dc_fixpt_add(E2, dc_fixpt_mul(temp2,
 				dc_fixpt_add(t, dc_fixpt_sub(t3, temp1))));
 	} else
@@ -933,7 +884,7 @@ static void hermite_spline_eetf(struct fixed31_32 input_x,
 	temp1 = dc_fixpt_sub(dc_fixpt_one, E2);
 	temp2 = dc_fixpt_mul(temp1, temp1);
 	temp2 = dc_fixpt_mul(temp2, temp2);
-	// temp2 = (1-E2)^4
+	
 
 	E3 =  dc_fixpt_add(E2, dc_fixpt_mul(min_lum_pq, temp2));
 	compute_de_pq(E3, out_x);
@@ -974,26 +925,26 @@ static bool build_freesync_hdr(struct pwl_float_data_ex *rgb_regamma,
 	max_content = dc_fixpt_from_int(fs_params->max_content);
 	sdr_white_level = dc_fixpt_from_int(fs_params->sdr_white_level);
 
-	if (fs_params->min_display > 1000) // cap at 0.1 at the bottom
+	if (fs_params->min_display > 1000) 
 		min_display = dc_fixpt_from_fraction(1, 10);
-	if (fs_params->max_display < 100) // cap at 100 at the top
+	if (fs_params->max_display < 100) 
 		max_display = dc_fixpt_from_int(100);
 
-	// only max used, we don't adjust min luminance
+	
 	if (fs_params->max_content > fs_params->max_display)
 		use_eetf = true;
 	else
 		max_content = max_display;
 
 	if (!use_eetf)
-		cal_buffer->buffer_index = 0; // see var definition for more info
-	rgb += 32; // first 32 points have problems with fixed point, too small
+		cal_buffer->buffer_index = 0; 
+	rgb += 32; 
 	coord_x += 32;
 
 	for (i = 32; i <= hw_points_num; i++) {
 		if (!is_clipped) {
 			if (use_eetf) {
-				/* max content is equal 1 */
+				 
 				scaledX1 = dc_fixpt_div(coord_x->x,
 						dc_fixpt_div(max_content, sdr_white_level));
 				hermite_spline_eetf(scaledX1, max_display, min_display,
@@ -1008,27 +959,17 @@ static bool build_freesync_hdr(struct pwl_float_data_ex *rgb_regamma,
 				else
 					output = calculate_gamma22(scaledX, use_eetf, cal_buffer);
 
-				// Ensure output respects reasonable boundaries
+				
 				output = dc_fixpt_clamp(output, dc_fixpt_zero, dc_fixpt_one);
 
 				rgb->r = output;
 				rgb->g = output;
 				rgb->b = output;
 			} else {
-				/* Here clipping happens for the first time */
+				 
 				is_clipped = true;
 
-				/* The next few lines implement the equation
-				 * output = prev_out +
-				 * (coord_x->x - prev_coord_x->x) *
-				 * (1.0 - prev_out) /
-				 * (maxDisp/sdr_white_level - prevCoordX)
-				 *
-				 * This equation interpolates the first point
-				 * after max_display/80 so that the slope from
-				 * hw_x_before_max and hw_x_after_max is such
-				 * that we hit Y=1.0 at max_display/80.
-				 */
+				 
 
 				coordX_diff = dc_fixpt_sub(coord_x->x, prv_coord_x->x);
 				out_dist_max = dc_fixpt_sub(dc_fixpt_one, output);
@@ -1043,13 +984,7 @@ static bool build_freesync_hdr(struct pwl_float_data_ex *rgb_regamma,
 					)
 				);
 
-				/* Relaxing the maximum boundary to 1.07 (instead of 1.0)
-				 * because the last point in the curve must be such that
-				 * the maximum display pixel brightness interpolates to
-				 * exactly 1.0. The worst case scenario was calculated
-				 * around 1.057, so the limit of 1.07 leaves some safety
-				 * margin.
-				 */
+				 
 				output = dc_fixpt_clamp(output, dc_fixpt_zero,
 					dc_fixpt_from_fraction(107, 100));
 
@@ -1058,9 +993,7 @@ static bool build_freesync_hdr(struct pwl_float_data_ex *rgb_regamma,
 				rgb->b = output;
 			}
 		} else {
-			/* Every other clipping after the first
-			 * one is dealt with here
-			 */
+			 
 			rgb->r = clip;
 			rgb->g = clip;
 			rgb->b = clip;
@@ -1089,9 +1022,7 @@ static bool build_degamma(struct pwl_float_data_ex *curve,
 
 	i = 0;
 
-	/* X points is 2^-25 to 2^7
-	 * De-gamma X is 2^-12 to 2^0 – we are skipping first -12-(-25) = 13 regions
-	 */
+	 
 	begin_index = 13 * NUM_PTS_IN_REGION;
 	end_index = begin_index + 12 * NUM_PTS_IN_REGION;
 
@@ -1135,7 +1066,7 @@ static void build_hlg_degamma(struct pwl_float_data_ex *degamma,
 	const struct hw_x_point *coord_x = coordinate_x;
 
 	i = 0;
-	// check when i == 434
+	
 	while (i != hw_points_num + 1) {
 		compute_hlg_eotf(coord_x->x, &rgb->r, sdr_white_level, max_luminance_nits);
 		rgb->g = rgb->r;
@@ -1159,7 +1090,7 @@ static void build_hlg_regamma(struct pwl_float_data_ex *regamma,
 
 	i = 0;
 
-	// when i == 471
+	
 	while (i != hw_points_num + 1) {
 		compute_hlg_oetf(coord_x->x, &rgb->r, sdr_white_level, max_luminance_nits);
 		rgb->g = rgb->r;
@@ -1297,10 +1228,7 @@ static void scale_gamma_dx(struct pwl_float_data *pwl_rgb,
 				pwl_rgb[i-1].b, 2), pwl_rgb[i-2].b);
 }
 
-/* todo: all these scale_gamma functions are inherently the same but
- *  take different structures as params or different format for ramp
- *  values. We could probably implement it in a more generic fashion
- */
+ 
 static void scale_user_regamma_ramp(struct pwl_float_data *pwl_rgb,
 		const struct regamma_ramp *ramp,
 		struct dividers dividers)
@@ -1362,25 +1290,7 @@ static void scale_user_regamma_ramp(struct pwl_float_data *pwl_rgb,
 			dividers.divider3);
 }
 
-/*
- * RS3+ color transform DDI - 1D LUT adjustment is composed with regamma here
- * Input is evenly distributed in the output color space as specified in
- * SetTimings
- *
- * Interpolation details:
- * 1D LUT has 4096 values which give curve correction in 0-1 float range
- * for evenly spaced points in 0-1 range. lut1D[index] gives correction
- * for index/4095.
- * First we find index for which:
- *	index/4095 < regamma_y < (index+1)/4095 =>
- *	index < 4095*regamma_y < index + 1
- * norm_y = 4095*regamma_y, and index is just truncating to nearest integer
- * lut1 = lut1D[index], lut2 = lut1D[index+1]
- *
- * adjustedY is then linearly interpolating regamma Y between lut1 and lut2
- *
- * Custom degamma on Linux uses the same interpolation math, so is handled here
- */
+ 
 static void apply_lut_1d(
 		const struct dc_gamma *ramp,
 		uint32_t num_hw_points,
@@ -1403,7 +1313,7 @@ static void apply_lut_1d(
 	struct fixed31_32 delta_index;
 
 	if (ramp->type != GAMMA_CS_TFM_1D && ramp->type != GAMMA_CUSTOM)
-		return; // this is not expected
+		return; 
 
 	for (i = 0; i < num_hw_points; i++) {
 		for (color = 0; color < 3; color++) {
@@ -1425,11 +1335,7 @@ static void apply_lut_1d(
 			if (index <= max_lut_index)
 				index_next = (index == max_lut_index) ? index : index+1;
 			else {
-				/* Here we are dealing with the last point in the curve,
-				 * which in some cases might exceed the range given by
-				 * max_lut_index. So we interpolate the value using
-				 * max_lut_index and max_lut_index - 1.
-				 */
+				 
 				index = max_lut_index - 1;
 				index_next = max_lut_index;
 				index_f = penult_lut_index_f;
@@ -1446,7 +1352,7 @@ static void apply_lut_1d(
 				lut2 = ramp->entries.blue[index_next];
 			}
 
-			// we have everything now, so interpolate
+			
 			delta_lut = dc_fixpt_sub(lut2, lut1);
 			delta_index = dc_fixpt_sub(norm_y, index_f);
 
@@ -1466,7 +1372,7 @@ static void build_evenly_distributed_points(
 
 	uint32_t i = 0;
 
-	// This function should not gets called with 0 as a parameter
+	
 	ASSERT(numberof_points > 0);
 	p_last = p + numberof_points - 1;
 
@@ -1544,7 +1450,7 @@ static bool calculate_interpolated_hardware_curve(
 	i = 0;
 	max_entries += ramp->num_entries;
 
-	/* TODO: float point case */
+	 
 
 	while (i <= number_of_points) {
 		tf_pts->red[i] = calculate_mapped_value(
@@ -1561,25 +1467,7 @@ static bool calculate_interpolated_hardware_curve(
 	return true;
 }
 
-/* The "old" interpolation uses a complicated scheme to build an array of
- * coefficients while also using an array of 0-255 normalized to 0-1
- * Then there's another loop using both of the above + new scaled user ramp
- * and we concatenate them. It also searches for points of interpolation and
- * uses enums for positions.
- *
- * This function uses a different approach:
- * user ramp is always applied on X with 0/255, 1/255, 2/255, ..., 255/255
- * To find index for hwX , we notice the following:
- * i/255 <= hwX < (i+1)/255  <=> i <= 255*hwX < i+1
- * See apply_lut_1d which is the same principle, but on 4K entry 1D LUT
- *
- * Once the index is known, combined Y is simply:
- * user_ramp(index) + (hwX-index/255)*(user_ramp(index+1) - user_ramp(index)
- *
- * We should switch to this method in all cases, it's simpler and faster
- * ToDo one day - for now this only applies to ADL regamma to avoid regression
- * for regular use cases (sRGB and PQ)
- */
+ 
 static void interpolate_user_regamma(uint32_t hw_points_num,
 		struct pwl_float_data *rgb_user,
 		bool apply_degamma,
@@ -1602,7 +1490,7 @@ static void interpolate_user_regamma(uint32_t hw_points_num,
 	const struct fixed31_32 one = dc_fixpt_from_int(1);
 
 	i = 0;
-	/* fixed_pt library has problems handling too small values */
+	 
 	while (i != 32) {
 		tf_pts->red[i] = dc_fixpt_zero;
 		tf_pts->green[i] = dc_fixpt_zero;
@@ -1650,7 +1538,7 @@ static void interpolate_user_regamma(uint32_t hw_points_num,
 				lut2 = rgb_user[index_next].b;
 			}
 
-			// we have everything now, so interpolate
+			
 			delta_lut = dc_fixpt_sub(lut2, lut1);
 			delta_index = dc_fixpt_sub(norm_x, index_f);
 
@@ -1717,7 +1605,7 @@ static bool map_regamma_hw_to_x_user(
 	bool map_user_ramp,
 	bool do_clamping)
 {
-	/* setup to spare calculated ideal regamma values */
+	 
 
 	int i = 0;
 	struct hw_x_point *coords = coords_x;
@@ -1732,7 +1620,7 @@ static bool map_regamma_hw_to_x_user(
 			ramp, coeff128, rgb_user, coords, axis_x,
 			hw_points_num, tf_pts);
 	} else {
-		/* just copy current rgb_regamma into  tf_pts */
+		 
 		while (i <= hw_points_num) {
 			tf_pts->red[i] = regamma->r;
 			tf_pts->green[i] = regamma->g;
@@ -1744,7 +1632,7 @@ static bool map_regamma_hw_to_x_user(
 	}
 
 	if (do_clamping) {
-		/* this should be named differently, all it does is clamp to 0-1 */
+		 
 		build_new_custom_resulted_curve(hw_points_num, tf_pts);
 	}
 
@@ -1778,7 +1666,7 @@ bool calculate_user_regamma_coeff(struct dc_transfer_func *output_tf,
 	} while (i != 3);
 
 	i = 0;
-	/* fixed_pt library has problems handling too small values */
+	 
 	while (i != 32) {
 		output_tf->tf_pts.red[i] = dc_fixpt_zero;
 		output_tf->tf_pts.green[i] = dc_fixpt_zero;
@@ -1800,7 +1688,7 @@ bool calculate_user_regamma_coeff(struct dc_transfer_func *output_tf,
 	if (ramp && ramp->type == GAMMA_CS_TFM_1D)
 		apply_lut_1d(ramp, MAX_HW_POINTS, &output_tf->tf_pts);
 
-	// this function just clamps output to 0-1
+	
 	build_new_custom_resulted_curve(MAX_HW_POINTS, &output_tf->tf_pts);
 	output_tf->type = TF_TYPE_DISTRIBUTED_POINTS;
 
@@ -1851,7 +1739,7 @@ bool calculate_user_regamma_ramp(struct dc_transfer_func *output_tf,
 	interpolate_user_regamma(MAX_HW_POINTS, rgb_user,
 			regamma->flags.bits.applyDegamma, tf_pts);
 
-	// no custom HDR curves!
+	
 	tf_pts->end_exponent = 0;
 	tf_pts->x_point_at_y1_red = 1;
 	tf_pts->x_point_at_y1_green = 1;
@@ -1860,7 +1748,7 @@ bool calculate_user_regamma_ramp(struct dc_transfer_func *output_tf,
 	if (ramp && ramp->type == GAMMA_CS_TFM_1D)
 		apply_lut_1d(ramp, MAX_HW_POINTS, &output_tf->tf_pts);
 
-	// this function just clamps output to 0-1
+	
 	build_new_custom_resulted_curve(MAX_HW_POINTS, tf_pts);
 
 	ret = true;
@@ -1889,9 +1777,7 @@ bool mod_color_calculate_degamma_params(struct dc_color_caps *dc_caps,
 	if (input_tf->type == TF_TYPE_BYPASS)
 		return false;
 
-	/* we can use hardcoded curve for plain SRGB TF
-	 * If linear, it's bypass if no user ramp
-	 */
+	 
 	if (input_tf->type == TF_TYPE_PREDEFINED) {
 		if ((input_tf->tf == TRANSFER_FUNCTION_SRGB ||
 				input_tf->tf == TRANSFER_FUNCTION_LINEAR) &&
@@ -1909,7 +1795,7 @@ bool mod_color_calculate_degamma_params(struct dc_color_caps *dc_caps,
 					dc_caps->dpp.dgam_rom_caps.gamma2_2 == 1)
 				return true;
 
-			// HLG OOTF not accounted for
+			
 			if (input_tf->tf == TRANSFER_FUNCTION_HLG &&
 					dc_caps->dpp.dgam_rom_caps.hlg == 1)
 				return true;
@@ -1973,7 +1859,7 @@ bool mod_color_calculate_degamma_params(struct dc_color_caps *dc_caps,
 				coordinates_x,
 				80, 1000);
 	else if (tf == TRANSFER_FUNCTION_LINEAR) {
-		// just copy coordinates_x into curve
+		
 		i = 0;
 		while (i != MAX_HW_POINTS + 1) {
 			curve[i].r = coordinates_x[i].x;
@@ -1990,7 +1876,7 @@ bool mod_color_calculate_degamma_params(struct dc_color_caps *dc_caps,
 	tf_pts->x_point_at_y1_blue = 1;
 
 	if (input_tf->tf == TRANSFER_FUNCTION_PQ) {
-		/* just copy current rgb_regamma into  tf_pts */
+		 
 		struct pwl_float_data_ex *curvePt = curve;
 		int i = 0;
 
@@ -2002,7 +1888,7 @@ bool mod_color_calculate_degamma_params(struct dc_color_caps *dc_caps,
 			++i;
 		}
 	} else {
-		// clamps to 0-1
+		
 		map_regamma_hw_to_x_user(ramp, coeff, rgb_user,
 				coordinates_x, axis_x, curve,
 				MAX_HW_POINTS, tf_pts,
@@ -2088,11 +1974,11 @@ static bool calculate_curve(enum dc_transfer_func_predefined trans,
 
 		ret = true;
 	} else {
-		// trans == TRANSFER_FUNCTION_SRGB
-		// trans == TRANSFER_FUNCTION_BT709
-		// trans == TRANSFER_FUNCTION_GAMMA22
-		// trans == TRANSFER_FUNCTION_GAMMA24
-		// trans == TRANSFER_FUNCTION_GAMMA26
+		
+		
+		
+		
+		
 		points->end_exponent = 0;
 		points->x_point_at_y1_red = 1;
 		points->x_point_at_y1_green = 1;
@@ -2131,7 +2017,7 @@ bool mod_color_calculate_regamma_params(struct dc_transfer_func *output_tf,
 	if (output_tf->type == TF_TYPE_BYPASS)
 		return false;
 
-	/* we can use hardcoded curve for plain SRGB TF */
+	 
 	if (output_tf->type == TF_TYPE_PREDEFINED && can_rom_be_used == true &&
 			output_tf->tf == TRANSFER_FUNCTION_SRGB) {
 		if (ramp == NULL)

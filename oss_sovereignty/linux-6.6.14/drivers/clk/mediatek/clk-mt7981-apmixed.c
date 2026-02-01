@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2021 MediaTek Inc.
- * Author: Sam Shih <sam.shih@mediatek.com>
- * Author: Wenzhen Yu <wenzhen.yu@mediatek.com>
- * Author: Jianhui Zhao <zhaojh329@gmail.com>
- * Author: Daniel Golle <daniel@makrotopia.org>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/mod_devicetable.h>
@@ -62,7 +56,7 @@ static const struct mtk_pll_data plls[] = {
 
 static const struct of_device_id of_match_clk_mt7981_apmixed[] = {
 	{ .compatible = "mediatek,mt7981-apmixedsys", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt7981_apmixed);
 

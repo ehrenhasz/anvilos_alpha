@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2018 Chelsio Communications, Inc.
- *
- * Written by: Atul Gupta (atul.gupta@chelsio.com)
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/list.h>
@@ -54,10 +50,7 @@ static void __set_tcb_field(struct sock *sk, struct sk_buff *skb, u16 word,
 	set_wr_txq(skb, CPL_PRIORITY_CONTROL, csk->port_id);
 }
 
-/*
- * Send control message to HW, message go as immediate data and packet
- * is freed immediately.
- */
+ 
 static int chtls_set_tcb_field(struct sock *sk, u16 word, u64 mask, u64 val)
 {
 	struct cpl_set_tcb_field *req;
@@ -106,9 +99,7 @@ void chtls_set_tcb_field_rpl_skb(struct sock *sk, u16 word,
 	send_or_defer(sk, tcp_sk(sk), skb, through_l2t);
 }
 
-/*
- * Set one of the t_flags bits in the TCB.
- */
+ 
 int chtls_set_tcb_tflag(struct sock *sk, unsigned int bit_pos, int val)
 {
 	return chtls_set_tcb_field(sk, 1, 1ULL << bit_pos,
@@ -154,7 +145,7 @@ void chtls_set_quiesce_ctrl(struct sock *sk, int val)
 		kfree_skb(skb);
 }
 
-/* TLS Key bitmap processing */
+ 
 int chtls_init_kmap(struct chtls_dev *cdev, struct cxgb4_lld_info *lldi)
 {
 	unsigned int num_key_ctx, bsize;
@@ -262,9 +253,7 @@ static int chtls_key_info(struct chtls_sock *csk,
 	key_ctx_size = sizeof(struct _key_ctx) +
 		       roundup(keylen, 16) + AEAD_H_SIZE;
 
-	/* GCM mode of AES supports 128 and 256 bit encryption, so
-	 * prepare key context base on GCM cipher type
-	 */
+	 
 	switch (cipher_type) {
 	case TLS_CIPHER_AES_GCM_128: {
 		struct tls12_crypto_info_aes_gcm_128 *gcm_ctx_128 =
@@ -297,9 +286,7 @@ static int chtls_key_info(struct chtls_sock *csk,
 		return -EINVAL;
 	}
 
-	/* Calculate the H = CIPH(K, 0 repeated 16 times).
-	 * It will go in key context
-	 */
+	 
 	ret = aes_expandkey(&aes, key, keylen);
 	if (ret)
 		return ret;
@@ -309,7 +296,7 @@ static int chtls_key_info(struct chtls_sock *csk,
 	memzero_explicit(&aes, sizeof(aes));
 	csk->tlshws.keylen = key_ctx_size;
 
-	/* Copy the Key context */
+	 
 	if (optname == TLS_RX) {
 		int key_ctx;
 
@@ -327,7 +314,7 @@ static int chtls_key_info(struct chtls_sock *csk,
 	memcpy(kctx->salt, salt, salt_size);
 	memcpy(kctx->key, key_p, keylen);
 	memcpy(kctx->key + keylen, ghash_h, AEAD_H_SIZE);
-	/* erase key info from driver */
+	 
 	memset(key_p, 0, keylen);
 
 	return 0;
@@ -374,7 +361,7 @@ int chtls_setkey(struct chtls_sock *csk, u32 keylen,
 	wrlen = roundup(sizeof(*kwr), 16);
 	len = klen + wrlen;
 
-	/* Flush out-standing data before new key takes effect */
+	 
 	if (optname == TLS_TX) {
 		lock_sock(sk);
 		if (skb_queue_len(&csk->txq))
@@ -404,7 +391,7 @@ int chtls_setkey(struct chtls_sock *csk, u32 keylen,
 	kwr->wr.mfs = htons(TLS_MFS);
 	kwr->wr.reneg_to_write_rx = optname;
 
-	/* ulptx command */
+	 
 	kwr->req.cmd = cpu_to_be32(ULPTX_CMD_V(ULP_TX_MEM_WRITE) |
 			    T5_ULP_MEMIO_ORDER_V(1) |
 			    T5_ULP_MEMIO_IMM_V(1));
@@ -413,12 +400,12 @@ int chtls_setkey(struct chtls_sock *csk, u32 keylen,
 	kwr->req.dlen = cpu_to_be32(ULP_MEMIO_DATA_LEN_V(klen >> 5));
 	kwr->req.lock_addr = cpu_to_be32(ULP_MEMIO_ADDR_V(kaddr));
 
-	/* sub command */
+	 
 	kwr->sc_imm.cmd_more = cpu_to_be32(ULPTX_CMD_V(ULP_TX_SC_IMM));
 	kwr->sc_imm.len = cpu_to_be32(klen);
 
 	lock_sock(sk);
-	/* key info */
+	 
 	kctx = (struct _key_ctx *)(kwr + 1);
 	ret = chtls_key_info(csk, kctx, keylen, optname, cipher_type);
 	if (ret)
@@ -435,7 +422,7 @@ int chtls_setkey(struct chtls_sock *csk, u32 keylen,
 	skb = NULL;
 
 	chtls_set_scmd(csk);
-	/* Clear quiesce for Rx key */
+	 
 	if (optname == TLS_RX) {
 		ret = chtls_set_tcb_keyid(sk, keyid);
 		if (ret)

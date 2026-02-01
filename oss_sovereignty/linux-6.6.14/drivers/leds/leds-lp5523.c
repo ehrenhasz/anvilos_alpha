@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * lp5523.c - LP5523, LP55231 LED Driver
- *
- * Copyright (C) 2010 Nokia Corporation
- * Copyright (C) 2012 Texas Instruments
- *
- * Contact: Samu Onkalo <samu.p.onkalo@nokia.com>
- *          Milo(Woogyom) Kim <milo.kim@ti.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/firmware.h>
@@ -21,18 +13,11 @@
 
 #include "leds-lp55xx-common.h"
 
-#define LP5523_PROGRAM_LENGTH		32	/* bytes */
-/* Memory is used like this:
- * 0x00 engine 1 program
- * 0x10 engine 2 program
- * 0x20 engine 3 program
- * 0x30 engine 1 muxing info
- * 0x40 engine 2 muxing info
- * 0x50 engine 3 muxing info
- */
+#define LP5523_PROGRAM_LENGTH		32	 
+ 
 #define LP5523_MAX_LEDS			9
 
-/* Registers */
+ 
 #define LP5523_REG_ENABLE		0x00
 #define LP5523_REG_OP_MODE		0x01
 #define LP5523_REG_ENABLE_LEDS_MSB	0x04
@@ -52,7 +37,7 @@
 #define LP5523_REG_PROG_PAGE_SEL	0x4F
 #define LP5523_REG_PROG_MEM		0x50
 
-/* Bit description in registers */
+ 
 #define LP5523_ENABLE			0x40
 #define LP5523_AUTO_INC			0x40
 #define LP5523_PWR_SAVE			0x20
@@ -73,7 +58,7 @@
 #define LP5523_FADER_MAPPING_MASK	0xC0
 #define LP5523_FADER_MAPPING_SHIFT	6
 
-/* Memory Page Selection */
+ 
 #define LP5523_PAGE_ENG1		0
 #define LP5523_PAGE_ENG2		1
 #define LP5523_PAGE_ENG3		2
@@ -81,8 +66,8 @@
 #define LP5523_PAGE_MUX2		4
 #define LP5523_PAGE_MUX3		5
 
-/* Program Memory Operations */
-#define LP5523_MODE_ENG1_M		0x30	/* Operation Mode Register */
+ 
+#define LP5523_MODE_ENG1_M		0x30	 
 #define LP5523_MODE_ENG2_M		0x0C
 #define LP5523_MODE_ENG3_M		0x03
 #define LP5523_LOAD_ENG1		0x10
@@ -96,7 +81,7 @@
 #define LP5523_ENG3_IS_LOADING(mode)	\
 	((mode & LP5523_MODE_ENG3_M) == LP5523_LOAD_ENG3)
 
-#define LP5523_EXEC_ENG1_M		0x30	/* Enable Register */
+#define LP5523_EXEC_ENG1_M		0x30	 
 #define LP5523_EXEC_ENG2_M		0x0C
 #define LP5523_EXEC_ENG3_M		0x03
 #define LP5523_EXEC_M			0x3F
@@ -134,7 +119,7 @@ static int lp5523_post_init_device(struct lp55xx_chip *chip)
 	if (ret)
 		return ret;
 
-	/* Chip startup time is 500 us, 1 - 2 ms gives some margin */
+	 
 	usleep_range(1000, 2000);
 
 	val = LP5523_DEFAULT_CONFIG;
@@ -144,7 +129,7 @@ static int lp5523_post_init_device(struct lp55xx_chip *chip)
 	if (ret)
 		return ret;
 
-	/* turn on all leds */
+	 
 	ret = lp55xx_write(chip, LP5523_REG_ENABLE_LEDS_MSB, 0x01);
 	if (ret)
 		return ret;
@@ -224,17 +209,14 @@ static void lp5523_run_engine(struct lp55xx_chip *chip, bool start)
 	u8 mode;
 	u8 exec;
 
-	/* stop engine */
+	 
 	if (!start) {
 		lp5523_stop_engine(chip);
 		lp5523_turn_off_channels(chip);
 		return;
 	}
 
-	/*
-	 * To run the engine,
-	 * operation mode and enable register should updated at the same time
-	 */
+	 
 
 	ret = lp55xx_read(chip, LP5523_REG_OP_MODE, &mode);
 	if (ret)
@@ -244,7 +226,7 @@ static void lp5523_run_engine(struct lp55xx_chip *chip, bool start)
 	if (ret)
 		return;
 
-	/* change operation mode to RUN only when each engine is loading */
+	 
 	if (LP5523_ENG1_IS_LOADING(mode)) {
 		mode = (mode & ~LP5523_MODE_ENG1_M) | LP5523_RUN_ENG1;
 		exec = (exec & ~LP5523_EXEC_ENG1_M) | LP5523_RUN_ENG1;
@@ -272,14 +254,14 @@ static int lp5523_init_program_engine(struct lp55xx_chip *chip)
 	int j;
 	int ret;
 	u8 status;
-	/* one pattern per engine setting LED MUX start and stop addresses */
+	 
 	static const u8 pattern[][LP5523_PROGRAM_LENGTH] =  {
 		{ 0x9c, 0x30, 0x9c, 0xb0, 0x9d, 0x80, 0xd8, 0x00, 0},
 		{ 0x9c, 0x40, 0x9c, 0xc0, 0x9d, 0x80, 0xd8, 0x00, 0},
 		{ 0x9c, 0x50, 0x9c, 0xd0, 0x9d, 0x80, 0xd8, 0x00, 0},
 	};
 
-	/* hardcode 32 bytes of memory for each engine from program memory */
+	 
 	ret = lp55xx_write(chip, LP5523_REG_CH1_PROG_START, 0x00);
 	if (ret)
 		return ret;
@@ -292,7 +274,7 @@ static int lp5523_init_program_engine(struct lp55xx_chip *chip)
 	if (ret)
 		return ret;
 
-	/* write LED MUX address space for each engine */
+	 
 	for (i = LP55XX_ENGINE_1; i <= LP55XX_ENGINE_3; i++) {
 		chip->engine_idx = i;
 		lp5523_load_engine_and_select_page(chip);
@@ -307,7 +289,7 @@ static int lp5523_init_program_engine(struct lp55xx_chip *chip)
 
 	lp5523_run_engine(chip, true);
 
-	/* Let the programs run for couple of ms and check the engine status */
+	 
 	usleep_range(3000, 6000);
 	ret = lp55xx_read(chip, LP5523_REG_STATUS, &status);
 	if (ret)
@@ -338,7 +320,7 @@ static int lp5523_update_program_memory(struct lp55xx_chip *chip,
 	int i = 0;
 
 	while ((offset < size - 1) && (i < LP5523_PROGRAM_LENGTH)) {
-		/* separate sscanfs because length is working only for %s */
+		 
 		ret = sscanf(data + offset, "%2s%n ", c, &nrchars);
 		if (ret != 1)
 			goto err;
@@ -352,7 +334,7 @@ static int lp5523_update_program_memory(struct lp55xx_chip *chip,
 		i++;
 	}
 
-	/* Each instruction is 16bit long. Check that length is even */
+	 
 	if (i % 2)
 		goto err;
 
@@ -379,11 +361,7 @@ static void lp5523_firmware_loaded(struct lp55xx_chip *chip)
 		return;
 	}
 
-	/*
-	 * Program memory sequence
-	 *  1) set engine mode to "LOAD"
-	 *  2) write firmware data into program memory
-	 */
+	 
 
 	lp5523_load_engine_and_select_page(chip);
 	lp5523_update_program_memory(chip, fw->data, fw->size);
@@ -594,51 +572,51 @@ static ssize_t lp5523_selftest(struct device *dev,
 	if (ret < 0)
 		goto fail;
 
-	/* Check that ext clock is really in use if requested */
+	 
 	if (pdata->clock_mode == LP55XX_CLOCK_EXT) {
 		if  ((status & LP5523_EXT_CLK_USED) == 0)
 			goto fail;
 	}
 
-	/* Measure VDD (i.e. VBAT) first (channel 16 corresponds to VDD) */
+	 
 	lp55xx_write(chip, LP5523_REG_LED_TEST_CTRL, LP5523_EN_LEDTEST | 16);
-	usleep_range(3000, 6000); /* ADC conversion time is typically 2.7 ms */
+	usleep_range(3000, 6000);  
 	ret = lp55xx_read(chip, LP5523_REG_STATUS, &status);
 	if (ret < 0)
 		goto fail;
 
 	if (!(status & LP5523_LEDTEST_DONE))
-		usleep_range(3000, 6000); /* Was not ready. Wait little bit */
+		usleep_range(3000, 6000);  
 
 	ret = lp55xx_read(chip, LP5523_REG_LED_TEST_ADC, &vdd);
 	if (ret < 0)
 		goto fail;
 
-	vdd--;	/* There may be some fluctuation in measurement */
+	vdd--;	 
 
 	for (i = 0; i < pdata->num_channels; i++) {
-		/* Skip disabled channels */
+		 
 		if (pdata->led_config[i].led_current == 0)
 			continue;
 
-		/* Set default current */
+		 
 		lp55xx_write(chip, LP5523_REG_LED_CURRENT_BASE + led->chan_nr,
 			pdata->led_config[i].led_current);
 
 		lp55xx_write(chip, LP5523_REG_LED_PWM_BASE + led->chan_nr,
 			     0xff);
-		/* let current stabilize 2 - 4ms before measurements start */
+		 
 		usleep_range(2000, 4000);
 		lp55xx_write(chip, LP5523_REG_LED_TEST_CTRL,
 			     LP5523_EN_LEDTEST | led->chan_nr);
-		/* ADC conversion time is 2.7 ms typically */
+		 
 		usleep_range(3000, 6000);
 		ret = lp55xx_read(chip, LP5523_REG_STATUS, &status);
 		if (ret < 0)
 			goto fail;
 
 		if (!(status & LP5523_LEDTEST_DONE))
-			usleep_range(3000, 6000); /* Was not ready. Wait. */
+			usleep_range(3000, 6000);  
 
 		ret = lp55xx_read(chip, LP5523_REG_LED_TEST_ADC, &adc);
 		if (ret < 0)
@@ -651,7 +629,7 @@ static ssize_t lp5523_selftest(struct device *dev,
 		lp55xx_write(chip, LP5523_REG_LED_PWM_BASE + led->chan_nr,
 			     0x00);
 
-		/* Restore current */
+		 
 		lp55xx_write(chip, LP5523_REG_LED_CURRENT_BASE + led->chan_nr,
 			     led->led_current);
 		led++;
@@ -871,7 +849,7 @@ static const struct attribute_group lp5523_group = {
 	.attrs = lp5523_attributes,
 };
 
-/* Chip specific configurations */
+ 
 static struct lp55xx_device_config lp5523_cfg = {
 	.reset = {
 		.addr = LP5523_REG_RESET,

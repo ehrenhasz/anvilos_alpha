@@ -1,7 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright (c) 2020 MediaTek Inc.
- */
+ 
 
 #ifndef _DT_BINDINGS_POWER_MT8167_POWER_H
 #define _DT_BINDINGS_POWER_MT8167_POWER_H
@@ -14,4 +11,4 @@
 #define MT8167_POWER_DOMAIN_MFG_2D	5
 #define MT8167_POWER_DOMAIN_MFG		6
 
-#endif /* _DT_BINDINGS_POWER_MT8167_POWER_H */
+#endif  

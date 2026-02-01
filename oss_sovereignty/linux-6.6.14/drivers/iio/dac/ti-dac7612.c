@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * DAC7612 Dual, 12-Bit Serial input Digital-to-Analog Converter
- *
- * Copyright 2019 Qtechnology A/S
- * 2019 Ricardo Ribalda <ribalda@kernel.org>
- *
- * Licensed under the GPL-2.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/spi/spi.h>
@@ -22,18 +15,10 @@ struct dac7612 {
 	struct gpio_desc *loaddacs;
 	uint16_t cache[2];
 
-	/*
-	 * Lock to protect the state of the device from potential concurrent
-	 * write accesses from userspace. The write operation requires an
-	 * SPI write, then toggling of a GPIO, so the lock aims to protect
-	 * the sanity of the entire sequence of operation.
-	 */
+	 
 	struct mutex lock;
 
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 	uint8_t data[2] __aligned(IIO_DMA_MINALIGN);
 };
 
@@ -133,14 +118,7 @@ static int dac7612_probe(struct spi_device *spi)
 		return -ENOMEM;
 
 	priv = iio_priv(iio_dev);
-	/*
-	 * LOADDACS pin can be controlled by the driver or externally.
-	 * When controlled by the driver, the DAC value is updated after
-	 * every write.
-	 * When the driver does not control the PIN, the user or an external
-	 * event can change the value of all DACs by pulsing down the LOADDACs
-	 * pin.
-	 */
+	 
 	priv->loaddacs = devm_gpiod_get_optional(&spi->dev, "ti,loaddacs",
 						 GPIOD_OUT_LOW);
 	if (IS_ERR(priv->loaddacs))

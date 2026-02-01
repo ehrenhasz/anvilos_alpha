@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2020 MediaTek Inc. */
+
+ 
 
 #include <linux/devcoredump.h>
 #include <linux/etherdevice.h>
@@ -108,11 +108,7 @@ static void mt7921_mac_sta_poll(struct mt792x_dev *dev)
 						       rx_cur);
 		}
 
-		/* We don't support reading GI info from txs packets.
-		 * For accurate tx status reporting and AQL improvement,
-		 * we need to make sure that flags match so polling GI
-		 * from per-sta counters directly.
-		 */
+		 
 		rate = &msta->wcid.rate;
 		addr = mt7921_mac_wtbl_lmac_addr(idx,
 						 MT_WTBL_TXRX_CAP_RATE_OFFSET);
@@ -145,7 +141,7 @@ static void mt7921_mac_sta_poll(struct mt792x_dev *dev)
 				rate->flags &= ~RATE_INFO_FLAGS_SHORT_GI;
 		}
 
-		/* get signal strength of resp frames (CTS/BA/ACK) */
+		 
 		addr = mt7921_mac_wtbl_lmac_addr(idx, 30);
 		val = mt76_rr(dev, addr);
 
@@ -200,7 +196,7 @@ mt7921_mac_fill_rx(struct mt792x_dev *dev, struct sk_buff *skb)
 	if (hdr_trans && (rxd1 & MT_RXD1_NORMAL_CM))
 		return -EINVAL;
 
-	/* ICV error or CCMP/BIP/WPI MIC error */
+	 
 	if (rxd1 & MT_RXD1_NORMAL_ICV_ERR)
 		status->flag |= RX_FLAG_ONLY_MONITOR;
 
@@ -309,7 +305,7 @@ mt7921_mac_fill_rx(struct mt792x_dev *dev, struct sk_buff *skb)
 		if (!(rxd2 & MT_RXD2_NORMAL_NON_AMPDU)) {
 			status->flag |= RX_FLAG_AMPDU_DETAILS;
 
-			/* all subframes of an A-MPDU have the same timestamp */
+			 
 			if (phy->rx_ampdu_ts != status->timestamp) {
 				if (!++phy->ampdu_ref)
 					phy->ampdu_ref++;
@@ -324,7 +320,7 @@ mt7921_mac_fill_rx(struct mt792x_dev *dev, struct sk_buff *skb)
 			return -EINVAL;
 	}
 
-	/* RXD Group 3 - P-RXV */
+	 
 	if (rxd1 & MT_RXD1_NORMAL_GROUP_3) {
 		u32 v0, v1;
 		int ret;
@@ -351,9 +347,7 @@ mt7921_mac_fill_rx(struct mt792x_dev *dev, struct sk_buff *skb)
 				return -EINVAL;
 
 			rxv = rxd;
-			/* Monitor mode would use RCPI described in GROUP 5
-			 * instead.
-			 */
+			 
 			v1 = le32_to_cpu(rxv[0]);
 
 			rxd += 12;
@@ -497,7 +491,7 @@ static void mt7921_mac_tx_free(struct mt792x_dev *dev, void *data, int len)
 	bool wake = false;
 	u8 i, count;
 
-	/* clean DMA queues and unmap buffers first */
+	 
 	mt76_queue_tx_cleanup(dev, dev->mphy.q_tx[MT_TXQ_PSD], false);
 	mt76_queue_tx_cleanup(dev, dev->mphy.q_tx[MT_TXQ_BE], false);
 
@@ -509,9 +503,7 @@ static void mt7921_mac_tx_free(struct mt792x_dev *dev, void *data, int len)
 		u32 msdu, info = le32_to_cpu(tx_info[i]);
 		u8 stat;
 
-		/* 1'b1: new wcid pair.
-		 * 1'b0: msdu_id with the same 'wcid pair' as above.
-		 */
+		 
 		if (info & MT_TX_FREE_PAIR) {
 			struct mt792x_sta *msta;
 			u16 idx;
@@ -574,8 +566,8 @@ bool mt7921_rx_check(struct mt76_dev *mdev, void *data, int len)
 
 	switch (type) {
 	case PKT_TYPE_TXRX_NOTIFY:
-		/* PKT_TYPE_TXRX_NOTIFY can be received only by mmio devices */
-		mt7921_mac_tx_free(dev, data, len); /* mmio */
+		 
+		mt7921_mac_tx_free(dev, data, len);  
 		return false;
 	case PKT_TYPE_TXS:
 		for (rxd += 2; rxd + 8 <= end; rxd += 8)
@@ -604,7 +596,7 @@ void mt7921_queue_rx_skb(struct mt76_dev *mdev, enum mt76_rxq_id q,
 
 	switch (type) {
 	case PKT_TYPE_TXRX_NOTIFY:
-		/* PKT_TYPE_TXRX_NOTIFY can be received only by mmio devices */
+		 
 		mt7921_mac_tx_free(dev, skb->data, skb->len);
 		napi_consume_skb(skb, 1);
 		break;
@@ -653,7 +645,7 @@ mt7921_vif_connect_iter(void *priv, u8 *mac,
 	}
 }
 
-/* system error recovery */
+ 
 void mt7921_mac_reset_work(struct work_struct *work)
 {
 	struct mt792x_dev *dev = container_of(work, struct mt792x_dev,
@@ -746,7 +738,7 @@ void mt7921_coredump_work(struct work_struct *work)
 	mt792x_reset(&dev->mt76);
 }
 
-/* usb_sdio */
+ 
 static void
 mt7921_usb_sdio_write_txwi(struct mt792x_dev *dev, struct mt76_wcid *wcid,
 			   enum mt76_txq_id qid, struct ieee80211_sta *sta,
@@ -801,7 +793,7 @@ int mt7921_usb_sdio_tx_prepare_skb(struct mt76_dev *mdev, void *txwi_ptr,
 
 	err = mt76_skb_adjust_pad(skb, pad);
 	if (err)
-		/* Release pktid in case of error. */
+		 
 		idr_remove(&wcid->pktid, pktid);
 
 	return err;

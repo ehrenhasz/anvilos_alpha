@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022 Richtek Technology Corp.
- *
- * Author: ChiYuan Huang <cy_huang@richtek.com>
- *
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/delay.h>
@@ -102,10 +97,7 @@ static int rt6190_out_enable(struct regulator_dev *rdev)
 
 	pm_runtime_get_sync(data->dev);
 
-	/*
-	 * From off to on, vout config will restore to IC default.
-	 * Read vout configs before enable, and restore them after enable
-	 */
+	 
 	ret = regmap_raw_read(regmap, RT6190_REG_OUTV, out_cfg,
 			      sizeof(out_cfg));
 	if (ret)
@@ -138,7 +130,7 @@ static int rt6190_out_disable(struct regulator_dev *rdev)
 	if (ret)
 		return ret;
 
-	/* cleared cached alert event */
+	 
 	data->cached_alert_evt = 0;
 
 	pm_runtime_put(data->dev);
@@ -326,7 +318,7 @@ static irqreturn_t rt6190_irq_handler(int irq, void *devid)
 	if (ret)
 		return IRQ_NONE;
 
-	/* Write clear alert events */
+	 
 	ret = regmap_write(data->regmap, RT6190_REG_ALERT1, alert);
 	if (ret)
 		return IRQ_NONE;
@@ -349,25 +341,25 @@ static int rt6190_init_registers(struct regmap *regmap)
 {
 	int ret;
 
-	/* Enable_ADC = 1 */
+	 
 	ret = regmap_write(regmap, RT6190_REG_SET4, 0x82);
 	if (ret)
 		return ret;
 
-	/* Config default VOUT ratio to be higher */
+	 
 	ret = regmap_write(regmap, RT6190_REG_RATIO, 0x20);
 
-	/* Mask unused alert */
+	 
 	ret = regmap_write(regmap, RT6190_REG_MASK2, 0);
 	if (ret)
 		return ret;
 
-	/* OCP config */
+	 
 	ret = regmap_write(regmap, RT6190_REG_OCPEN, 0);
 	if (ret)
 		return ret;
 
-	/* Enable VBUSC ADC */
+	 
 	return regmap_write(regmap, RT6190_REG_VBUSC_ADC, 0x02);
 }
 

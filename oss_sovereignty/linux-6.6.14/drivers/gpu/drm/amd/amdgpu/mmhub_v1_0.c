@@ -1,25 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "amdgpu.h"
 #include "amdgpu_ras.h"
 #include "mmhub_v1_0.h"
@@ -87,22 +66,17 @@ static void mmhub_v1_0_init_system_aperture_regs(struct amdgpu_device *adev)
 	uint64_t value;
 	uint32_t tmp;
 
-	/* Program the AGP BAR */
+	 
 	WREG32_SOC15(MMHUB, 0, mmMC_VM_AGP_BASE, 0);
 	WREG32_SOC15(MMHUB, 0, mmMC_VM_AGP_BOT, adev->gmc.agp_start >> 24);
 	WREG32_SOC15(MMHUB, 0, mmMC_VM_AGP_TOP, adev->gmc.agp_end >> 24);
 
-	/* Program the system aperture low logical page number. */
+	 
 	WREG32_SOC15(MMHUB, 0, mmMC_VM_SYSTEM_APERTURE_LOW_ADDR,
 		     min(adev->gmc.fb_start, adev->gmc.agp_start) >> 18);
 
 	if (adev->apu_flags & AMD_APU_IS_RAVEN2)
-		/*
-		 * Raven2 has a HW issue that it is unable to use the vram which
-		 * is out of MC_VM_SYSTEM_APERTURE_HIGH_ADDR. So here is the
-		 * workaround that increase system aperture high address (add 1)
-		 * to get rid of the VM fault and hardware hang.
-		 */
+		 
 		WREG32_SOC15(MMHUB, 0, mmMC_VM_SYSTEM_APERTURE_HIGH_ADDR,
 			     max((adev->gmc.fb_end >> 18) + 0x1,
 				 adev->gmc.agp_end >> 18));
@@ -113,14 +87,14 @@ static void mmhub_v1_0_init_system_aperture_regs(struct amdgpu_device *adev)
 	if (amdgpu_sriov_vf(adev))
 		return;
 
-	/* Set default page address. */
+	 
 	value = amdgpu_gmc_vram_mc2pa(adev, adev->mem_scratch.gpu_addr);
 	WREG32_SOC15(MMHUB, 0, mmMC_VM_SYSTEM_APERTURE_DEFAULT_ADDR_LSB,
 		     (u32)(value >> 12));
 	WREG32_SOC15(MMHUB, 0, mmMC_VM_SYSTEM_APERTURE_DEFAULT_ADDR_MSB,
 		     (u32)(value >> 44));
 
-	/* Program "protection fault". */
+	 
 	WREG32_SOC15(MMHUB, 0, mmVM_L2_PROTECTION_FAULT_DEFAULT_ADDR_LO32,
 		     (u32)(adev->dummy_page_addr >> 12));
 	WREG32_SOC15(MMHUB, 0, mmVM_L2_PROTECTION_FAULT_DEFAULT_ADDR_HI32,
@@ -136,7 +110,7 @@ static void mmhub_v1_0_init_tlb_regs(struct amdgpu_device *adev)
 {
 	uint32_t tmp;
 
-	/* Setup TLB control */
+	 
 	tmp = RREG32_SOC15(MMHUB, 0, mmMC_VM_MX_L1_TLB_CNTL);
 
 	tmp = REG_SET_FIELD(tmp, MC_VM_MX_L1_TLB_CNTL, ENABLE_L1_TLB, 1);
@@ -146,7 +120,7 @@ static void mmhub_v1_0_init_tlb_regs(struct amdgpu_device *adev)
 	tmp = REG_SET_FIELD(tmp, MC_VM_MX_L1_TLB_CNTL,
 			    SYSTEM_APERTURE_UNMAPPED_ACCESS, 0);
 	tmp = REG_SET_FIELD(tmp, MC_VM_MX_L1_TLB_CNTL,
-			    MTYPE, MTYPE_UC);/* XXX for emulation. */
+			    MTYPE, MTYPE_UC); 
 	tmp = REG_SET_FIELD(tmp, MC_VM_MX_L1_TLB_CNTL, ATC_EN, 1);
 
 	WREG32_SOC15(MMHUB, 0, mmMC_VM_MX_L1_TLB_CNTL, tmp);
@@ -159,11 +133,11 @@ static void mmhub_v1_0_init_cache_regs(struct amdgpu_device *adev)
 	if (amdgpu_sriov_vf(adev))
 		return;
 
-	/* Setup L2 cache */
+	 
 	tmp = RREG32_SOC15(MMHUB, 0, mmVM_L2_CNTL);
 	tmp = REG_SET_FIELD(tmp, VM_L2_CNTL, ENABLE_L2_CACHE, 1);
 	tmp = REG_SET_FIELD(tmp, VM_L2_CNTL, ENABLE_L2_FRAGMENT_PROCESSING, 1);
-	/* XXX for emulation, Refer to closed source code.*/
+	 
 	tmp = REG_SET_FIELD(tmp, VM_L2_CNTL, L2_PDE0_CACHE_TAG_GENERATION_MODE,
 			    0);
 	tmp = REG_SET_FIELD(tmp, VM_L2_CNTL, PDE_FAULT_CLASSIFICATION, 0);
@@ -264,7 +238,7 @@ static void mmhub_v1_0_setup_vmid_config(struct amdgpu_device *adev)
 		tmp = REG_SET_FIELD(tmp, VM_CONTEXT1_CNTL,
 				    PAGE_TABLE_BLOCK_SIZE,
 				    block_size);
-		/* Send no-retry XNACK on fault to suppress VM fault storm. */
+		 
 		tmp = REG_SET_FIELD(tmp, VM_CONTEXT1_CNTL,
 				    RETRY_PERMISSION_OR_INVALID_PAGE_FAULT,
 				    !adev->gmc.noretry);
@@ -311,18 +285,14 @@ static void mmhub_v1_0_update_power_gating(struct amdgpu_device *adev,
 static int mmhub_v1_0_gart_enable(struct amdgpu_device *adev)
 {
 	if (amdgpu_sriov_vf(adev)) {
-		/*
-		 * MC_VM_FB_LOCATION_BASE/TOP is NULL for VF, becuase they are
-		 * VF copy registers so vbios post doesn't program them, for
-		 * SRIOV driver need to program them
-		 */
+		 
 		WREG32_SOC15(MMHUB, 0, mmMC_VM_FB_LOCATION_BASE,
 			     adev->gmc.vram_start >> 24);
 		WREG32_SOC15(MMHUB, 0, mmMC_VM_FB_LOCATION_TOP,
 			     adev->gmc.vram_end >> 24);
 	}
 
-	/* GART Enable. */
+	 
 	mmhub_v1_0_init_gart_aperture_regs(adev);
 	mmhub_v1_0_init_system_aperture_regs(adev);
 	mmhub_v1_0_init_tlb_regs(adev);
@@ -342,12 +312,12 @@ static void mmhub_v1_0_gart_disable(struct amdgpu_device *adev)
 	u32 tmp;
 	u32 i;
 
-	/* Disable all tables */
+	 
 	for (i = 0; i < AMDGPU_NUM_VMID; i++)
 		WREG32_SOC15_OFFSET(MMHUB, 0, mmVM_CONTEXT0_CNTL,
 				    i * hub->ctx_distance, 0);
 
-	/* Setup TLB control */
+	 
 	tmp = RREG32_SOC15(MMHUB, 0, mmMC_VM_MX_L1_TLB_CNTL);
 	tmp = REG_SET_FIELD(tmp, MC_VM_MX_L1_TLB_CNTL, ENABLE_L1_TLB, 0);
 	tmp = REG_SET_FIELD(tmp,
@@ -357,7 +327,7 @@ static void mmhub_v1_0_gart_disable(struct amdgpu_device *adev)
 	WREG32_SOC15(MMHUB, 0, mmMC_VM_MX_L1_TLB_CNTL, tmp);
 
 	if (!amdgpu_sriov_vf(adev)) {
-		/* Setup L2 cache */
+		 
 		tmp = RREG32_SOC15(MMHUB, 0, mmVM_L2_CNTL);
 		tmp = REG_SET_FIELD(tmp, VM_L2_CNTL, ENABLE_L2_CACHE, 0);
 		WREG32_SOC15(MMHUB, 0, mmVM_L2_CNTL, tmp);
@@ -365,12 +335,7 @@ static void mmhub_v1_0_gart_disable(struct amdgpu_device *adev)
 	}
 }
 
-/**
- * mmhub_v1_0_set_fault_enable_default - update GART/VM fault handling
- *
- * @adev: amdgpu_device pointer
- * @value: true redirects VM faults to the default page
- */
+ 
 static void mmhub_v1_0_set_fault_enable_default(struct amdgpu_device *adev, bool value)
 {
 	u32 tmp;
@@ -558,7 +523,7 @@ static void mmhub_v1_0_get_clockgating(struct amdgpu_device *adev, u64 *flags)
 
 	data1 = RREG32_SOC15(MMHUB, 0, mmDAGB0_CNTL_MISC2);
 
-	/* AMD_CG_SUPPORT_MC_MGCG */
+	 
 	if ((data & ATC_L2_MISC_CG__ENABLE_MASK) &&
 	    !(data1 & (DAGB0_CNTL_MISC2__DISABLE_WRREQ_CG_MASK |
 		       DAGB0_CNTL_MISC2__DISABLE_WRRET_CG_MASK |
@@ -568,7 +533,7 @@ static void mmhub_v1_0_get_clockgating(struct amdgpu_device *adev, u64 *flags)
 		       DAGB0_CNTL_MISC2__DISABLE_TLBRD_CG_MASK)))
 		*flags |= AMD_CG_SUPPORT_MC_MGCG;
 
-	/* AMD_CG_SUPPORT_MC_LS */
+	 
 	if (data & ATC_L2_MISC_CG__MEM_LS_ENABLE_MASK)
 		*flags |= AMD_CG_SUPPORT_MC_LS;
 }
@@ -768,7 +733,7 @@ static void mmhub_v1_0_reset_ras_error_count(struct amdgpu_device *adev)
 {
 	uint32_t i;
 
-	/* read back edc counter registers to reset the counters to 0 */
+	 
 	if (amdgpu_ras_is_supported(adev, AMDGPU_RAS_BLOCK__MMHUB)) {
 		for (i = 0; i < ARRAY_SIZE(mmhub_v1_0_edc_cnt_regs); i++)
 			RREG32(SOC15_REG_ENTRY_OFFSET(mmhub_v1_0_edc_cnt_regs[i]));

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * linux/sound/soc/hisilicon/hi6210-i2s.h
- *
- * Copyright (C) 2015 Linaro, Ltd
- * Author: Andy Green <andy.green@linaro.org>
- *
- * Note at least on 6220, S2 == BT, S1 == Digital FM Radio IF
- */
+ 
+ 
 
 #ifndef _HI6210_I2S_H
 #define _HI6210_I2S_H
@@ -247,9 +240,9 @@ enum hi6210_voice_dlink_src_mode {
 #define HII2S_ANTI_FREQ_JITTER_EN		0x84
 #define HII2S_CLK_SEL				0x88
 
-/* 0 = BT owns the i2s */
+ 
 #define HII2S_CLK_SEL__I2S_BT_FM_SEL					BIT(0)
-/* 0 = internal source, 1 = ext */
+ 
 #define HII2S_CLK_SEL__EXT_12_288MHZ_SEL				BIT(1)
 
 
@@ -257,9 +250,9 @@ enum hi6210_voice_dlink_src_mode {
 #define HII2S_THIRDMD_ULINK_CHANNEL		0xec
 #define HII2S_VOICE_DLINK_CHANNEL		0xf0
 
-/* shovel data in here for playback */
+ 
 #define HII2S_ST_DL_CHANNEL			0xf4
 #define HII2S_STEREO_UPLINK_CHANNEL		0xf8
 #define HII2S_VOICE_UPLINK_CHANNEL		0xfc
 
-#endif/* _HI6210_I2S_H */
+#endif 

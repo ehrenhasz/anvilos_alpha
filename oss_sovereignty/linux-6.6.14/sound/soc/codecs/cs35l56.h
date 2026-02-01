@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Driver for Cirrus Logic CS35L56 smart amp
- *
- * Copyright (C) 2023 Cirrus Logic, Inc. and
- *                    Cirrus Logic International Semiconductor Ltd.
- */
+ 
+ 
 
 #ifndef CS35L56_H
 #define CS35L56_H
@@ -31,7 +26,7 @@
 struct sdw_slave;
 
 struct cs35l56_private {
-	struct wm_adsp dsp; /* must be first member */
+	struct wm_adsp dsp;  
 	struct cs35l56_base base;
 	struct work_struct dsp_work;
 	struct workqueue_struct *dsp_wq;
@@ -67,4 +62,4 @@ int cs35l56_common_probe(struct cs35l56_private *cs35l56);
 int cs35l56_init(struct cs35l56_private *cs35l56);
 void cs35l56_remove(struct cs35l56_private *cs35l56);
 
-#endif /* ifndef CS35L56_H */
+#endif  

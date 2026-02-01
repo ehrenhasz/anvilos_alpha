@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/******************************************************************************
- *
- * Module Name: exconcat - Concatenate-type AML operators
- *
- * Copyright (C) 2000 - 2023, Intel Corp.
- *
- *****************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 #include "accommon.h"
@@ -15,33 +9,12 @@
 #define _COMPONENT          ACPI_EXECUTER
 ACPI_MODULE_NAME("exconcat")
 
-/* Local Prototypes */
+ 
 static acpi_status
 acpi_ex_convert_to_object_type_string(union acpi_operand_object *obj_desc,
 				      union acpi_operand_object **result_desc);
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ex_do_concatenate
- *
- * PARAMETERS:  operand0            - First source object
- *              operand1            - Second source object
- *              actual_return_desc  - Where to place the return object
- *              walk_state          - Current walk state
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Concatenate two objects with the ACPI-defined conversion
- *              rules as necessary.
- * NOTE:
- * Per the ACPI spec (up to 6.1), Concatenate only supports Integer,
- * String, and Buffer objects. However, we support all objects here
- * as an extension. This improves the usefulness of both Concatenate
- * and the Printf/Fprintf macros. The extension returns a string
- * describing the object type for the other objects.
- * 02/2016.
- *
- ******************************************************************************/
+ 
 
 acpi_status
 acpi_ex_do_concatenate(union acpi_operand_object *operand0,
@@ -60,7 +33,7 @@ acpi_ex_do_concatenate(union acpi_operand_object *operand0,
 
 	ACPI_FUNCTION_TRACE(ex_do_concatenate);
 
-	/* Operand 0 preprocessing */
+	 
 
 	switch (operand0->common.type) {
 	case ACPI_TYPE_INTEGER:
@@ -72,7 +45,7 @@ acpi_ex_do_concatenate(union acpi_operand_object *operand0,
 
 	default:
 
-		/* For all other types, get the "object type" string */
+		 
 
 		status =
 		    acpi_ex_convert_to_object_type_string(operand0,
@@ -85,7 +58,7 @@ acpi_ex_do_concatenate(union acpi_operand_object *operand0,
 		break;
 	}
 
-	/* Operand 1 preprocessing */
+	 
 
 	switch (operand1->common.type) {
 	case ACPI_TYPE_INTEGER:
@@ -97,7 +70,7 @@ acpi_ex_do_concatenate(union acpi_operand_object *operand0,
 
 	default:
 
-		/* For all other types, get the "object type" string */
+		 
 
 		status =
 		    acpi_ex_convert_to_object_type_string(operand1,
@@ -110,13 +83,7 @@ acpi_ex_do_concatenate(union acpi_operand_object *operand0,
 		break;
 	}
 
-	/*
-	 * Convert the second operand if necessary. The first operand (0)
-	 * determines the type of the second operand (1) (See the Data Types
-	 * section of the ACPI specification). Both object types are
-	 * guaranteed to be either Integer/String/Buffer by the operand
-	 * resolution mechanism.
-	 */
+	 
 	switch (operand0_type) {
 	case ACPI_TYPE_INTEGER:
 
@@ -138,7 +105,7 @@ acpi_ex_do_concatenate(union acpi_operand_object *operand0,
 		case ACPI_TYPE_STRING:
 		case ACPI_TYPE_BUFFER:
 
-			/* Other types have already been converted to string */
+			 
 
 			status =
 			    acpi_ex_convert_to_string(local_operand1,
@@ -164,7 +131,7 @@ acpi_ex_do_concatenate(union acpi_operand_object *operand0,
 		goto cleanup;
 	}
 
-	/* Take care with any newly created operand objects */
+	 
 
 	if ((local_operand1 != operand1) && (local_operand1 != temp_operand1)) {
 		acpi_ut_remove_reference(local_operand1);
@@ -172,22 +139,12 @@ acpi_ex_do_concatenate(union acpi_operand_object *operand0,
 
 	local_operand1 = temp_operand1;
 
-	/*
-	 * Both operands are now known to be the same object type
-	 * (Both are Integer, String, or Buffer), and we can now perform
-	 * the concatenation.
-	 *
-	 * There are three cases to handle, as per the ACPI spec:
-	 *
-	 * 1) Two Integers concatenated to produce a new Buffer
-	 * 2) Two Strings concatenated to produce a new String
-	 * 3) Two Buffers concatenated to produce a new Buffer
-	 */
+	 
 	switch (operand0_type) {
 	case ACPI_TYPE_INTEGER:
 
-		/* Result of two Integers is a Buffer */
-		/* Need enough buffer space for two integers */
+		 
+		 
 
 		return_desc = acpi_ut_create_buffer_object((acpi_size)
 							   ACPI_MUL_2
@@ -199,12 +156,12 @@ acpi_ex_do_concatenate(union acpi_operand_object *operand0,
 
 		buffer = (char *)return_desc->buffer.pointer;
 
-		/* Copy the first integer, LSB first */
+		 
 
 		memcpy(buffer, &operand0->integer.value,
 		       acpi_gbl_integer_byte_width);
 
-		/* Copy the second integer (LSB first) after the first */
+		 
 
 		memcpy(buffer + acpi_gbl_integer_byte_width,
 		       &local_operand1->integer.value,
@@ -213,7 +170,7 @@ acpi_ex_do_concatenate(union acpi_operand_object *operand0,
 
 	case ACPI_TYPE_STRING:
 
-		/* Result of two Strings is a String */
+		 
 
 		return_desc = acpi_ut_create_string_object(((acpi_size)
 							    local_operand0->
@@ -227,7 +184,7 @@ acpi_ex_do_concatenate(union acpi_operand_object *operand0,
 
 		buffer = return_desc->string.pointer;
 
-		/* Concatenate the strings */
+		 
 
 		strcpy(buffer, local_operand0->string.pointer);
 		strcat(buffer, local_operand1->string.pointer);
@@ -235,7 +192,7 @@ acpi_ex_do_concatenate(union acpi_operand_object *operand0,
 
 	case ACPI_TYPE_BUFFER:
 
-		/* Result of two Buffers is a Buffer */
+		 
 
 		return_desc = acpi_ut_create_buffer_object(((acpi_size)
 							    operand0->buffer.
@@ -249,7 +206,7 @@ acpi_ex_do_concatenate(union acpi_operand_object *operand0,
 
 		buffer = (char *)return_desc->buffer.pointer;
 
-		/* Concatenate the buffers */
+		 
 
 		memcpy(buffer, operand0->buffer.pointer,
 		       operand0->buffer.length);
@@ -260,7 +217,7 @@ acpi_ex_do_concatenate(union acpi_operand_object *operand0,
 
 	default:
 
-		/* Invalid object type, should not happen here */
+		 
 
 		ACPI_ERROR((AE_INFO, "Invalid object type: 0x%X",
 			    operand0->common.type));
@@ -282,20 +239,7 @@ cleanup:
 	return_ACPI_STATUS(status);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ex_convert_to_object_type_string
- *
- * PARAMETERS:  obj_desc            - Object to be converted
- *              return_desc         - Where to place the return object
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Convert an object of arbitrary type to a string object that
- *              contains the namestring for the object. Used for the
- *              concatenate operator.
- *
- ******************************************************************************/
+ 
 
 static acpi_status
 acpi_ex_convert_to_object_type_string(union acpi_operand_object *obj_desc,
@@ -306,7 +250,7 @@ acpi_ex_convert_to_object_type_string(union acpi_operand_object *obj_desc,
 
 	type_string = acpi_ut_get_type_name(obj_desc->common.type);
 
-	return_desc = acpi_ut_create_string_object(((acpi_size)strlen(type_string) + 9));	/* 9 For "[ Object]" */
+	return_desc = acpi_ut_create_string_object(((acpi_size)strlen(type_string) + 9));	 
 	if (!return_desc) {
 		return (AE_NO_MEMORY);
 	}
@@ -319,20 +263,7 @@ acpi_ex_convert_to_object_type_string(union acpi_operand_object *obj_desc,
 	return (AE_OK);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ex_concat_template
- *
- * PARAMETERS:  operand0            - First source object
- *              operand1            - Second source object
- *              actual_return_desc  - Where to place the return object
- *              walk_state          - Current walk state
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Concatenate two resource templates
- *
- ******************************************************************************/
+ 
 
 acpi_status
 acpi_ex_concat_template(union acpi_operand_object *operand0,
@@ -350,13 +281,9 @@ acpi_ex_concat_template(union acpi_operand_object *operand0,
 
 	ACPI_FUNCTION_TRACE(ex_concat_template);
 
-	/*
-	 * Find the end_tag descriptor in each resource template.
-	 * Note1: returned pointers point TO the end_tag, not past it.
-	 * Note2: zero-length buffers are allowed; treated like one end_tag
-	 */
+	 
 
-	/* Get the length of the first resource template */
+	 
 
 	status = acpi_ut_get_resource_end_tag(operand0, &end_tag);
 	if (ACPI_FAILURE(status)) {
@@ -365,7 +292,7 @@ acpi_ex_concat_template(union acpi_operand_object *operand0,
 
 	length0 = ACPI_PTR_DIFF(end_tag, operand0->buffer.pointer);
 
-	/* Get the length of the second resource template */
+	 
 
 	status = acpi_ut_get_resource_end_tag(operand1, &end_tag);
 	if (ACPI_FAILURE(status)) {
@@ -374,31 +301,28 @@ acpi_ex_concat_template(union acpi_operand_object *operand0,
 
 	length1 = ACPI_PTR_DIFF(end_tag, operand1->buffer.pointer);
 
-	/* Combine both lengths, minimum size will be 2 for end_tag */
+	 
 
 	new_length = length0 + length1 + sizeof(struct aml_resource_end_tag);
 
-	/* Create a new buffer object for the result (with one end_tag) */
+	 
 
 	return_desc = acpi_ut_create_buffer_object(new_length);
 	if (!return_desc) {
 		return_ACPI_STATUS(AE_NO_MEMORY);
 	}
 
-	/*
-	 * Copy the templates to the new buffer, 0 first, then 1 follows. One
-	 * end_tag descriptor is copied from Operand1.
-	 */
+	 
 	new_buf = return_desc->buffer.pointer;
 	memcpy(new_buf, operand0->buffer.pointer, length0);
 	memcpy(new_buf + length0, operand1->buffer.pointer, length1);
 
-	/* Insert end_tag and set the checksum to zero, means "ignore checksum" */
+	 
 
 	new_buf[new_length - 1] = 0;
 	new_buf[new_length - 2] = ACPI_RESOURCE_NAME_END_TAG | 1;
 
-	/* Return the completed resource template */
+	 
 
 	*actual_return_desc = return_desc;
 	return_ACPI_STATUS(AE_OK);

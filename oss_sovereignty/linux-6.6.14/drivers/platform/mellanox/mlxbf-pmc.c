@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only OR Linux-OpenIB
-/*
- * Mellanox BlueField Performance Monitoring Counters driver
- *
- * This driver provides a sysfs interface for monitoring
- * performance statistics in BlueField SoC.
- *
- * Copyright (c) 2020, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/arm-smccc.h>
@@ -78,33 +71,14 @@
 #define MLXBF_PMC_L3C_PERF_CNT_LOW_VAL GENMASK(31, 0)
 #define MLXBF_PMC_L3C_PERF_CNT_HIGH_VAL GENMASK(24, 0)
 
-/**
- * struct mlxbf_pmc_attribute - Structure to hold attribute and block info
- * for each sysfs entry
- * @dev_attr: Device attribute struct
- * @index: index to identify counter number within a block
- * @nr: block number to which the sysfs belongs
- */
+ 
 struct mlxbf_pmc_attribute {
 	struct device_attribute dev_attr;
 	int index;
 	int nr;
 };
 
-/**
- * struct mlxbf_pmc_block_info - Structure to hold info for each HW block
- *
- * @mmio_base: The VA at which the PMC block is mapped
- * @blk_size: Size of each mapped region
- * @counters: Number of counters in the block
- * @type: Type of counters in the block
- * @attr_counter: Attributes for "counter" sysfs files
- * @attr_event: Attributes for "event" sysfs files
- * @attr_event_list: Attributes for "event_list" sysfs files
- * @attr_enable: Attributes for "enable" sysfs files
- * @block_attr: All attributes needed for the block
- * @block_attr_grp: Attribute group for the block
- */
+ 
 struct mlxbf_pmc_block_info {
 	void __iomem *mmio_base;
 	size_t blk_size;
@@ -118,20 +92,7 @@ struct mlxbf_pmc_block_info {
 	struct attribute_group block_attr_grp;
 };
 
-/**
- * struct mlxbf_pmc_context - Structure to hold PMC context info
- *
- * @pdev: The kernel structure representing the device
- * @total_blocks: Total number of blocks
- * @tile_count: Number of tiles in the system
- * @hwmon_dev: Hwmon device for bfperf
- * @block_name: Block name
- * @block:  Block info
- * @groups:  Attribute groups from each block
- * @svc_sreg_support: Whether SMCs are used to access performance registers
- * @sreg_tbl_perf: Secure register access table number
- * @event_set: Event set to use
- */
+ 
 struct mlxbf_pmc_context {
 	struct platform_device *pdev;
 	uint32_t total_blocks;
@@ -145,11 +106,7 @@ struct mlxbf_pmc_context {
 	unsigned int event_set;
 };
 
-/**
- * struct mlxbf_pmc_events - Structure to hold supported events for each block
- * @evt_num: Event number used to program counters
- * @evt_name: Name of the event
- */
+ 
 struct mlxbf_pmc_events {
 	int evt_num;
 	char *evt_name;
@@ -431,10 +388,10 @@ static const struct mlxbf_pmc_events mlxbf_pmc_l3c_events[] = {
 
 static struct mlxbf_pmc_context *pmc;
 
-/* UUID used to probe ATF service. */
+ 
 static const char *mlxbf_pmc_svc_uuid_str = "89c036b4-e7d7-11e6-8797-001aca00bfc4";
 
-/* Calls an SMC to access a performance register */
+ 
 static int mlxbf_pmc_secure_read(void __iomem *addr, uint32_t command,
 				 uint64_t *result)
 {
@@ -461,7 +418,7 @@ static int mlxbf_pmc_secure_read(void __iomem *addr, uint32_t command,
 	return err;
 }
 
-/* Read from a performance counter */
+ 
 static int mlxbf_pmc_read(void __iomem *addr, uint32_t command,
 			  uint64_t *result)
 {
@@ -476,7 +433,7 @@ static int mlxbf_pmc_read(void __iomem *addr, uint32_t command,
 	return 0;
 }
 
-/* Convenience function for 32-bit reads */
+ 
 static int mlxbf_pmc_readl(void __iomem *addr, uint32_t *result)
 {
 	uint64_t read_out;
@@ -490,7 +447,7 @@ static int mlxbf_pmc_readl(void __iomem *addr, uint32_t *result)
 	return 0;
 }
 
-/* Calls an SMC to access a performance register */
+ 
 static int mlxbf_pmc_secure_write(void __iomem *addr, uint32_t command,
 				  uint64_t value)
 {
@@ -514,7 +471,7 @@ static int mlxbf_pmc_secure_write(void __iomem *addr, uint32_t command,
 	return err;
 }
 
-/* Write to a performance counter */
+ 
 static int mlxbf_pmc_write(void __iomem *addr, int command, uint64_t value)
 {
 	if (pmc->svc_sreg_support)
@@ -528,17 +485,17 @@ static int mlxbf_pmc_write(void __iomem *addr, int command, uint64_t value)
 	return 0;
 }
 
-/* Check if the register offset is within the mapped region for the block */
+ 
 static bool mlxbf_pmc_valid_range(int blk_num, uint32_t offset)
 {
 	if ((offset >= 0) && !(offset % MLXBF_PMC_REG_SIZE) &&
 	    (offset + MLXBF_PMC_REG_SIZE <= pmc->block[blk_num].blk_size))
-		return true; /* inside the mapped PMC space */
+		return true;  
 
 	return false;
 }
 
-/* Get the event list corresponding to a certain block */
+ 
 static const struct mlxbf_pmc_events *mlxbf_pmc_event_list(const char *blk,
 							   int *size)
 {
@@ -594,7 +551,7 @@ static const struct mlxbf_pmc_events *mlxbf_pmc_event_list(const char *blk,
 	return events;
 }
 
-/* Get the event number given the name */
+ 
 static int mlxbf_pmc_get_event_num(const char *blk, const char *evt)
 {
 	const struct mlxbf_pmc_events *events;
@@ -612,7 +569,7 @@ static int mlxbf_pmc_get_event_num(const char *blk, const char *evt)
 	return -ENODEV;
 }
 
-/* Get the event number given the name */
+ 
 static char *mlxbf_pmc_get_event_name(const char *blk, int evt)
 {
 	const struct mlxbf_pmc_events *events;
@@ -630,7 +587,7 @@ static char *mlxbf_pmc_get_event_name(const char *blk, int evt)
 	return NULL;
 }
 
-/* Method to enable/disable/reset l3cache counters */
+ 
 static int mlxbf_pmc_config_l3_counters(int blk_num, bool enable, bool reset)
 {
 	uint32_t perfcnt_cfg = 0;
@@ -645,7 +602,7 @@ static int mlxbf_pmc_config_l3_counters(int blk_num, bool enable, bool reset)
 			       MLXBF_PMC_WRITE_REG_32, perfcnt_cfg);
 }
 
-/* Method to handle l3cache counter programming */
+ 
 static int mlxbf_pmc_program_l3_counter(int blk_num, uint32_t cnt_num,
 					uint32_t evt)
 {
@@ -655,11 +612,11 @@ static int mlxbf_pmc_program_l3_counter(int blk_num, uint32_t cnt_num,
 	void __iomem *pmcaddr;
 	int ret;
 
-	/* Disable all counters before programming them */
+	 
 	if (mlxbf_pmc_config_l3_counters(blk_num, false, false))
 		return -EINVAL;
 
-	/* Select appropriate register information */
+	 
 	switch (cnt_num) {
 	case 0 ... 3:
 		pmcaddr = pmc->block[blk_num].mmio_base +
@@ -712,7 +669,7 @@ static int mlxbf_pmc_program_l3_counter(int blk_num, uint32_t cnt_num,
 	return mlxbf_pmc_write(pmcaddr, MLXBF_PMC_WRITE_REG_32, *wordaddr);
 }
 
-/* Method to program a counter to monitor an event */
+ 
 static int mlxbf_pmc_program_counter(int blk_num, uint32_t cnt_num,
 				     uint32_t evt, bool is_l3)
 {
@@ -724,7 +681,7 @@ static int mlxbf_pmc_program_counter(int blk_num, uint32_t cnt_num,
 	if (is_l3)
 		return mlxbf_pmc_program_l3_counter(blk_num, cnt_num, evt);
 
-	/* Configure the counter */
+	 
 	perfctl = FIELD_PREP(MLXBF_PMC_PERFCTL_EN0, 1);
 	perfctl |= FIELD_PREP(MLXBF_PMC_PERFCTL_EB0, 0);
 	perfctl |= FIELD_PREP(MLXBF_PMC_PERFCTL_ETRIG0, 1);
@@ -744,7 +701,7 @@ static int mlxbf_pmc_program_counter(int blk_num, uint32_t cnt_num,
 			    MLXBF_PMC_WRITE_REG_64, perfmon_cfg))
 		return -EFAULT;
 
-	/* Select the event */
+	 
 	perfevt = FIELD_PREP(MLXBF_PMC_PERFEVT_EVTSEL, evt);
 
 	perfmon_cfg = FIELD_PREP(MLXBF_PMC_PERFMON_CONFIG_WDATA, perfevt);
@@ -758,7 +715,7 @@ static int mlxbf_pmc_program_counter(int blk_num, uint32_t cnt_num,
 			    MLXBF_PMC_WRITE_REG_64, perfmon_cfg))
 		return -EFAULT;
 
-	/* Clear the accumulator */
+	 
 	perfmon_cfg = FIELD_PREP(MLXBF_PMC_PERFMON_CONFIG_ADDR,
 				 MLXBF_PMC_PERFACC0);
 	perfmon_cfg |= FIELD_PREP(MLXBF_PMC_PERFMON_CONFIG_STROBE, 1);
@@ -772,7 +729,7 @@ static int mlxbf_pmc_program_counter(int blk_num, uint32_t cnt_num,
 	return 0;
 }
 
-/* Method to handle l3 counter reads */
+ 
 static int mlxbf_pmc_read_l3_counter(int blk_num, uint32_t cnt_num,
 				     uint64_t *result)
 {
@@ -804,7 +761,7 @@ static int mlxbf_pmc_read_l3_counter(int blk_num, uint32_t cnt_num,
 	return 0;
 }
 
-/* Method to read the counter value */
+ 
 static int mlxbf_pmc_read_counter(int blk_num, uint32_t cnt_num, bool is_l3,
 				  uint64_t *result)
 {
@@ -822,7 +779,7 @@ static int mlxbf_pmc_read_counter(int blk_num, uint32_t cnt_num, bool is_l3,
 	perfval_offset = perfcfg_offset +
 			 pmc->block[blk_num].counters * MLXBF_PMC_REG_SIZE;
 
-	/* Set counter in "read" mode */
+	 
 	perfmon_cfg = FIELD_PREP(MLXBF_PMC_PERFMON_CONFIG_ADDR,
 				 MLXBF_PMC_PERFACC0);
 	perfmon_cfg |= FIELD_PREP(MLXBF_PMC_PERFMON_CONFIG_STROBE, 1);
@@ -834,12 +791,12 @@ static int mlxbf_pmc_read_counter(int blk_num, uint32_t cnt_num, bool is_l3,
 	if (status)
 		return status;
 
-	/* Get the counter value */
+	 
 	return mlxbf_pmc_read(pmc->block[blk_num].mmio_base + perfval_offset,
 			      MLXBF_PMC_READ_REG_64, result);
 }
 
-/* Method to read L3 block event */
+ 
 static int mlxbf_pmc_read_l3_event(int blk_num, uint32_t cnt_num,
 				   uint64_t *result)
 {
@@ -848,7 +805,7 @@ static int mlxbf_pmc_read_l3_event(int blk_num, uint32_t cnt_num,
 	void __iomem *pmcaddr;
 	uint64_t evt;
 
-	/* Select appropriate register information */
+	 
 	switch (cnt_num) {
 	case 0 ... 3:
 		pmcaddr = pmc->block[blk_num].mmio_base +
@@ -867,7 +824,7 @@ static int mlxbf_pmc_read_l3_event(int blk_num, uint32_t cnt_num,
 	if (mlxbf_pmc_readl(pmcaddr, wordaddr))
 		return -EINVAL;
 
-	/* Read from appropriate register field for the counter */
+	 
 	switch (cnt_num) {
 	case 0:
 		evt = FIELD_GET(MLXBF_PMC_L3C_PERF_CNT_SEL_CNT_0, perfcnt_sel);
@@ -893,7 +850,7 @@ static int mlxbf_pmc_read_l3_event(int blk_num, uint32_t cnt_num,
 	return 0;
 }
 
-/* Method to find the event currently being monitored by a counter */
+ 
 static int mlxbf_pmc_read_event(int blk_num, uint32_t cnt_num, bool is_l3,
 				uint64_t *result)
 {
@@ -910,7 +867,7 @@ static int mlxbf_pmc_read_event(int blk_num, uint32_t cnt_num, bool is_l3,
 	perfval_offset = perfcfg_offset +
 			 pmc->block[blk_num].counters * MLXBF_PMC_REG_SIZE;
 
-	/* Set counter in "read" mode */
+	 
 	perfmon_cfg = FIELD_PREP(MLXBF_PMC_PERFMON_CONFIG_ADDR,
 				 MLXBF_PMC_PERFEVT);
 	perfmon_cfg |= FIELD_PREP(MLXBF_PMC_PERFMON_CONFIG_STROBE, 1);
@@ -920,7 +877,7 @@ static int mlxbf_pmc_read_event(int blk_num, uint32_t cnt_num, bool is_l3,
 			    MLXBF_PMC_WRITE_REG_64, perfmon_cfg))
 		return -EFAULT;
 
-	/* Get the event number */
+	 
 	if (mlxbf_pmc_read(pmc->block[blk_num].mmio_base + perfval_offset,
 			   MLXBF_PMC_READ_REG_64, &perfevt))
 		return -EFAULT;
@@ -930,7 +887,7 @@ static int mlxbf_pmc_read_event(int blk_num, uint32_t cnt_num, bool is_l3,
 	return 0;
 }
 
-/* Method to read a register */
+ 
 static int mlxbf_pmc_read_reg(int blk_num, uint32_t offset, uint64_t *result)
 {
 	uint32_t ecc_out;
@@ -951,7 +908,7 @@ static int mlxbf_pmc_read_reg(int blk_num, uint32_t offset, uint64_t *result)
 	return -EINVAL;
 }
 
-/* Method to write to a register */
+ 
 static int mlxbf_pmc_write_reg(int blk_num, uint32_t offset, uint64_t data)
 {
 	if (strstr(pmc->block_name[blk_num], "ecc")) {
@@ -966,7 +923,7 @@ static int mlxbf_pmc_write_reg(int blk_num, uint32_t offset, uint64_t data)
 	return -EINVAL;
 }
 
-/* Show function for "counter" sysfs files */
+ 
 static ssize_t mlxbf_pmc_counter_show(struct device *dev,
 				      struct device_attribute *attr, char *buf)
 {
@@ -998,7 +955,7 @@ static ssize_t mlxbf_pmc_counter_show(struct device *dev,
 	return sysfs_emit(buf, "0x%llx\n", value);
 }
 
-/* Store function for "counter" sysfs files */
+ 
 static ssize_t mlxbf_pmc_counter_store(struct device *dev,
 				       struct device_attribute *attr,
 				       const char *buf, size_t count)
@@ -1016,11 +973,11 @@ static ssize_t mlxbf_pmc_counter_store(struct device *dev,
 	if (err < 0)
 		return err;
 
-	/* Allow non-zero writes only to the ecc regs */
+	 
 	if (!(strstr(pmc->block_name[blk_num], "ecc")) && data)
 		return -EINVAL;
 
-	/* Do not allow writes to the L3C regs */
+	 
 	if (strstr(pmc->block_name[blk_num], "l3cache"))
 		return -EINVAL;
 
@@ -1046,7 +1003,7 @@ static ssize_t mlxbf_pmc_counter_store(struct device *dev,
 	return count;
 }
 
-/* Show function for "event" sysfs files */
+ 
 static ssize_t mlxbf_pmc_event_show(struct device *dev,
 				    struct device_attribute *attr, char *buf)
 {
@@ -1074,7 +1031,7 @@ static ssize_t mlxbf_pmc_event_show(struct device *dev,
 	return sysfs_emit(buf, "0x%llx: %s\n", evt_num, evt_name);
 }
 
-/* Store function for "event" sysfs files */
+ 
 static ssize_t mlxbf_pmc_event_store(struct device *dev,
 				     struct device_attribute *attr,
 				     const char *buf, size_t count)
@@ -1108,7 +1065,7 @@ static ssize_t mlxbf_pmc_event_store(struct device *dev,
 	return count;
 }
 
-/* Show function for "event_list" sysfs files */
+ 
 static ssize_t mlxbf_pmc_event_list_show(struct device *dev,
 					 struct device_attribute *attr,
 					 char *buf)
@@ -1137,7 +1094,7 @@ static ssize_t mlxbf_pmc_event_list_show(struct device *dev,
 	return ret;
 }
 
-/* Show function for "enable" sysfs files - only for l3cache */
+ 
 static ssize_t mlxbf_pmc_enable_show(struct device *dev,
 				     struct device_attribute *attr, char *buf)
 {
@@ -1158,7 +1115,7 @@ static ssize_t mlxbf_pmc_enable_show(struct device *dev,
 	return sysfs_emit(buf, "%d\n", value);
 }
 
-/* Store function for "enable" sysfs files - only for l3cache */
+ 
 static ssize_t mlxbf_pmc_enable_store(struct device *dev,
 				      struct device_attribute *attr,
 				      const char *buf, size_t count)
@@ -1190,13 +1147,13 @@ static ssize_t mlxbf_pmc_enable_store(struct device *dev,
 	return count;
 }
 
-/* Populate attributes for blocks with counters to monitor performance */
+ 
 static int mlxbf_pmc_init_perftype_counter(struct device *dev, int blk_num)
 {
 	struct mlxbf_pmc_attribute *attr;
 	int i = 0, j = 0;
 
-	/* "event_list" sysfs to list events supported by the block */
+	 
 	attr = &pmc->block[blk_num].attr_event_list;
 	attr->dev_attr.attr.mode = 0444;
 	attr->dev_attr.show = mlxbf_pmc_event_list_show;
@@ -1207,7 +1164,7 @@ static int mlxbf_pmc_init_perftype_counter(struct device *dev, int blk_num)
 	pmc->block[blk_num].block_attr[i] = &attr->dev_attr.attr;
 	attr = NULL;
 
-	/* "enable" sysfs to start/stop the counters. Only in L3C blocks */
+	 
 	if (strstr(pmc->block_name[blk_num], "l3cache")) {
 		attr = &pmc->block[blk_num].attr_enable;
 		attr->dev_attr.attr.mode = 0644;
@@ -1234,7 +1191,7 @@ static int mlxbf_pmc_init_perftype_counter(struct device *dev, int blk_num)
 	if (!pmc->block[blk_num].attr_event)
 		return -ENOMEM;
 
-	/* "eventX" and "counterX" sysfs to program and read counter values */
+	 
 	for (j = 0; j < pmc->block[blk_num].counters; ++j) {
 		attr = &pmc->block[blk_num].attr_counter[j];
 		attr->dev_attr.attr.mode = 0644;
@@ -1266,7 +1223,7 @@ static int mlxbf_pmc_init_perftype_counter(struct device *dev, int blk_num)
 	return 0;
 }
 
-/* Populate attributes for blocks with registers to monitor performance */
+ 
 static int mlxbf_pmc_init_perftype_reg(struct device *dev, int blk_num)
 {
 	struct mlxbf_pmc_attribute *attr;
@@ -1301,12 +1258,12 @@ static int mlxbf_pmc_init_perftype_reg(struct device *dev, int blk_num)
 	return 0;
 }
 
-/* Helper to create the bfperf sysfs sub-directories and files */
+ 
 static int mlxbf_pmc_create_groups(struct device *dev, int blk_num)
 {
 	int err;
 
-	/* Populate attributes based on counter type */
+	 
 	if (pmc->block[blk_num].type == MLXBF_PMC_TYPE_COUNTER)
 		err = mlxbf_pmc_init_perftype_counter(dev, blk_num);
 	else if (pmc->block[blk_num].type == MLXBF_PMC_TYPE_REGISTER)
@@ -1317,7 +1274,7 @@ static int mlxbf_pmc_create_groups(struct device *dev, int blk_num)
 	if (err)
 		return err;
 
-	/* Add a new attribute_group for the block */
+	 
 	pmc->block[blk_num].block_attr_grp.attrs = pmc->block[blk_num].block_attr;
 	pmc->block[blk_num].block_attr_grp.name = devm_kasprintf(
 		dev, GFP_KERNEL, pmc->block_name[blk_num]);
@@ -1339,7 +1296,7 @@ static bool mlxbf_pmc_guid_match(const guid_t *guid,
 	return guid_equal(guid, &id);
 }
 
-/* Helper to map the Performance Counters from the varios blocks */
+ 
 static int mlxbf_pmc_map_counters(struct device *dev)
 {
 	uint64_t info[MLXBF_PMC_INFO_SZ];
@@ -1358,10 +1315,7 @@ static int mlxbf_pmc_map_counters(struct device *dev)
 		if (ret)
 			return ret;
 
-		/*
-		 * Do not remap if the proper SMC calls are supported,
-		 * since the SMC calls expect physical addresses.
-		 */
+		 
 		if (pmc->svc_sreg_support)
 			pmc->block[i].mmio_base = (void __iomem *)info[0];
 		else
@@ -1392,7 +1346,7 @@ static int mlxbf_pmc_probe(struct platform_device *pdev)
 	guid_t guid;
 	int ret;
 
-	/* Ensure we have the UUID we expect for this service. */
+	 
 	arm_smccc_smc(MLXBF_PMC_SIP_SVC_UID, 0, 0, 0, 0, 0, 0, 0, &res);
 	guid_parse(mlxbf_pmc_svc_uuid_str, &guid);
 	if (!mlxbf_pmc_guid_match(&guid, &res))
@@ -1402,20 +1356,13 @@ static int mlxbf_pmc_probe(struct platform_device *pdev)
 	if (!pmc)
 		return -ENOMEM;
 
-	/*
-	 * ACPI indicates whether we use SMCs to access registers or not.
-	 * If sreg_tbl_perf is not present, just assume we're not using SMCs.
-	 */
+	 
 	ret = device_property_read_u32(dev, "sec_reg_block",
 				       &pmc->sreg_tbl_perf);
 	if (ret) {
 		pmc->svc_sreg_support = false;
 	} else {
-		/*
-		 * Check service version to see if we actually do support the
-		 * needed SMCs. If we have the calls we need, mark support for
-		 * them in the pmc struct.
-		 */
+		 
 		arm_smccc_smc(MLXBF_PMC_SIP_SVC_VERSION, 0, 0, 0, 0, 0, 0, 0,
 			      &res);
 		if (res.a0 == MLXBF_PMC_SVC_REQ_MAJOR &&

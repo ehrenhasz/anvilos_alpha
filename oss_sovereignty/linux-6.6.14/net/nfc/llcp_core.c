@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2011  Intel Corporation. All rights reserved.
- * Copyright (C) 2014 Marvell International Ltd.
- */
+
+ 
 
 #define pr_fmt(fmt) "llcp: %s: " fmt, __func__
 
@@ -17,7 +14,7 @@
 static u8 llcp_magic[3] = {0x46, 0x66, 0x6d};
 
 static LIST_HEAD(llcp_devices);
-/* Protects llcp_devices list */
+ 
 static DEFINE_SPINLOCK(llcp_devices_lock);
 
 static void nfc_llcp_rx_skb(struct nfc_llcp_local *local, struct sk_buff *skb);
@@ -53,7 +50,7 @@ static void nfc_llcp_socket_purge(struct nfc_llcp_sock *sock)
 	if (local == NULL)
 		return;
 
-	/* Search for local pending SKBs that are related to this socket */
+	 
 	skb_queue_walk_safe(&local->tx_queue, s, tmp) {
 		if (s->sk != &sock->sk)
 			continue;
@@ -117,7 +114,7 @@ static void nfc_llcp_socket_release(struct nfc_llcp_local *local, bool device,
 
 	write_unlock(&local->sockets.lock);
 
-	/* If we still have a device, we keep the RAW sockets alive */
+	 
 	if (device == true)
 		return;
 
@@ -145,10 +142,7 @@ static void nfc_llcp_socket_release(struct nfc_llcp_local *local, bool device,
 
 static struct nfc_llcp_local *nfc_llcp_local_get(struct nfc_llcp_local *local)
 {
-	/* Since using nfc_llcp_local may result in usage of nfc_dev, whenever
-	 * we hold a reference to local, we also need to hold a reference to
-	 * the device to avoid UAF.
-	 */
+	 
 	if (!nfc_get_device(local->dev->idx))
 		return NULL;
 
@@ -327,7 +321,7 @@ static struct nfc_llcp_local *nfc_llcp_remove_local(struct nfc_dev *dev)
 
 static char *wks[] = {
 	NULL,
-	NULL, /* SDP */
+	NULL,  
 	"urn:nfc:sn:ip",
 	"urn:nfc:sn:obex",
 	"urn:nfc:sn:snep",
@@ -419,7 +413,7 @@ u8 nfc_llcp_get_sdp_ssap(struct nfc_llcp_local *local,
 		if (ssap > 0) {
 			pr_debug("WKS %d\n", ssap);
 
-			/* This is a WKS, let's check if it's free */
+			 
 			if (test_bit(ssap, &local->local_wks)) {
 				mutex_unlock(&local->sdp_lock);
 
@@ -432,10 +426,7 @@ u8 nfc_llcp_get_sdp_ssap(struct nfc_llcp_local *local,
 			return ssap;
 		}
 
-		/*
-		 * Check if there already is a non WKS socket bound
-		 * to this service name.
-		 */
+		 
 		if (nfc_llcp_sock_from_sn(local, sock->service_name,
 					  sock->service_name_len,
 					  false) != NULL) {
@@ -507,7 +498,7 @@ void nfc_llcp_put_ssap(struct nfc_llcp_local *local, u8 ssap)
 
 			clear_bit(local_ssap, sdp);
 
-			/* Find the listening sock and set it back to UNBOUND */
+			 
 			l_sock = nfc_llcp_sock_get(local, ssap, LLCP_SAP_SDP);
 			if (l_sock) {
 				l_sock->ssap = LLCP_SDP_UNBOUND;
@@ -882,18 +873,15 @@ static void nfc_llcp_recv_ui(struct nfc_llcp_local *local,
 
 	pr_debug("%d %d\n", dsap, ssap);
 
-	/* We're looking for a bound socket, not a client one */
+	 
 	llcp_sock = nfc_llcp_sock_get(local, dsap, LLCP_SAP_SDP);
 	if (llcp_sock == NULL || llcp_sock->sk.sk_type != SOCK_DGRAM)
 		return;
 
-	/* There is no sequence with UI frames */
+	 
 	skb_pull(skb, LLCP_HEADER_SIZE);
 	if (!sock_queue_rcv_skb(&llcp_sock->sk, skb)) {
-		/*
-		 * UI frames will be freed from the socket layer, so we
-		 * need to keep them alive until someone receives them.
-		 */
+		 
 		skb_get(skb);
 	} else {
 		pr_err("Receive queue is full\n");
@@ -1017,10 +1005,10 @@ static void nfc_llcp_recv_connect(struct nfc_llcp_local *local,
 
 	new_sk->sk_state = LLCP_CONNECTED;
 
-	/* Wake the listening processes */
+	 
 	parent->sk_data_ready(parent);
 
-	/* Send CC */
+	 
 	nfc_llcp_send_cc(new_sock);
 
 	release_sock(&sock->sk);
@@ -1029,7 +1017,7 @@ static void nfc_llcp_recv_connect(struct nfc_llcp_local *local,
 	return;
 
 fail:
-	/* Send DM */
+	 
 	nfc_llcp_send_dm(local, dsap, ssap, reason);
 }
 
@@ -1042,7 +1030,7 @@ int nfc_llcp_queue_i_frames(struct nfc_llcp_sock *sock)
 		 sock->remote_ready, skb_queue_len(&sock->tx_pending_queue),
 		 sock->remote_rw);
 
-	/* Try to queue some I frames for transmission */
+	 
 	while (sock->remote_ready &&
 	       skb_queue_len(&sock->tx_pending_queue) < sock->remote_rw) {
 		struct sk_buff *pdu;
@@ -1051,7 +1039,7 @@ int nfc_llcp_queue_i_frames(struct nfc_llcp_sock *sock)
 		if (pdu == NULL)
 			break;
 
-		/* Update N(S)/N(R) */
+		 
 		nfc_llcp_set_nrns(sock, pdu);
 
 		skb_queue_tail(&local->tx_queue, pdu);
@@ -1089,7 +1077,7 @@ static void nfc_llcp_recv_hdlc(struct nfc_llcp_local *local,
 		nfc_llcp_sock_put(llcp_sock);
 	}
 
-	/* Pass the payload upstream */
+	 
 	if (ptype == LLCP_PDU_I) {
 		pr_debug("I frame, queueing on %p\n", &llcp_sock->sk);
 
@@ -1100,24 +1088,21 @@ static void nfc_llcp_recv_hdlc(struct nfc_llcp_local *local,
 
 		skb_pull(skb, LLCP_HEADER_SIZE + LLCP_SEQUENCE_SIZE);
 		if (!sock_queue_rcv_skb(&llcp_sock->sk, skb)) {
-			/*
-			 * I frames will be freed from the socket layer, so we
-			 * need to keep them alive until someone receives them.
-			 */
+			 
 			skb_get(skb);
 		} else {
 			pr_err("Receive queue is full\n");
 		}
 	}
 
-	/* Remove skbs from the pending queue */
+	 
 	if (llcp_sock->send_ack_n != nr) {
 		struct sk_buff *s, *tmp;
 		u8 n;
 
 		llcp_sock->send_ack_n = nr;
 
-		/* Remove and free all skbs until ns == nr */
+		 
 		skb_queue_walk_safe(&llcp_sock->tx_pending_queue, s, tmp) {
 			n = nfc_llcp_ns(s);
 
@@ -1128,7 +1113,7 @@ static void nfc_llcp_recv_hdlc(struct nfc_llcp_local *local,
 				break;
 		}
 
-		/* Re-queue the remaining skbs for transmission */
+		 
 		skb_queue_reverse_walk_safe(&llcp_sock->tx_pending_queue,
 					    s, tmp) {
 			skb_unlink(s, &llcp_sock->tx_pending_queue);
@@ -1212,7 +1197,7 @@ static void nfc_llcp_recv_cc(struct nfc_llcp_local *local,
 
 	sk = &llcp_sock->sk;
 
-	/* Unlink from connecting and link to the client array */
+	 
 	nfc_llcp_sock_unlink(&local->connecting_sockets, sk);
 	nfc_llcp_sock_link(&local->sockets, sk);
 	llcp_sock->dsap = ssap;
@@ -1320,11 +1305,7 @@ static void nfc_llcp_recv_snl(struct nfc_llcp_local *local,
 				goto add_snl;
 			}
 
-			/*
-			 * We found a socket but its ssap has not been reserved
-			 * yet. We need to assign it for good and send a reply.
-			 * The ssap will be freed when the socket is closed.
-			 */
+			 
 			if (llcp_sock->ssap == LLCP_SDP_UNBOUND) {
 				atomic_t *client_count;
 
@@ -1580,7 +1561,7 @@ void nfc_llcp_mac_is_down(struct nfc_dev *dev)
 	local->remote_miu = LLCP_DEFAULT_MIU;
 	local->remote_lto = LLCP_DEFAULT_LTO;
 
-	/* Close and purge all existing sockets */
+	 
 	nfc_llcp_socket_release(local, true, 0);
 
 	nfc_llcp_local_put(local);
@@ -1621,10 +1602,7 @@ int nfc_llcp_register_device(struct nfc_dev *ndev)
 	if (local == NULL)
 		return -ENOMEM;
 
-	/* As we are going to initialize local's refcount, we need to get the
-	 * nfc_dev to avoid UAF, otherwise there is no point in continuing.
-	 * See nfc_llcp_local_get().
-	 */
+	 
 	local->dev = nfc_get_device(ndev->idx);
 	if (!local->dev) {
 		kfree(local);
@@ -1648,10 +1626,10 @@ int nfc_llcp_register_device(struct nfc_dev *ndev)
 	rwlock_init(&local->connecting_sockets.lock);
 	rwlock_init(&local->raw_sockets.lock);
 
-	local->lto = 150; /* 1500 ms */
+	local->lto = 150;  
 	local->rw = LLCP_MAX_RW;
 	local->miux = cpu_to_be16(LLCP_MAX_MIUX);
-	local->local_wks = 0x1; /* LLC Link Management */
+	local->local_wks = 0x1;  
 
 	nfc_llcp_build_gb(local);
 

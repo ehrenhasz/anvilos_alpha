@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2011 Sascha Hauer, Pengutronix <s.hauer@pengutronix.de>
- * Copyright (C) 2011 Richard Zhao, Linaro <richard.zhao@linaro.org>
- * Copyright (C) 2011-2012 Mike Turquette, Linaro Ltd <mturquette@linaro.org>
- *
- * Adjustable divider clock implementation
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/device.h>
@@ -16,15 +10,7 @@
 #include <linux/string.h>
 #include <linux/log2.h>
 
-/*
- * DOC: basic adjustable divider clock that cannot gate
- *
- * Traits of this clock:
- * prepare - clk_prepare only ensures that parents are prepared
- * enable - clk_enable only ensures that parents are enabled
- * rate - rate is adjustable.  clk->rate = ceiling(parent->rate / divisor)
- * parent - fixed parent.  No clk_set_parent support
- */
+ 
 
 static inline u32 clk_div_readl(struct clk_divider *divider)
 {
@@ -309,20 +295,13 @@ static int clk_divider_bestdiv(struct clk_hw *hw, struct clk_hw *parent,
 		return bestdiv;
 	}
 
-	/*
-	 * The maximum divider we can use without overflowing
-	 * unsigned long in rate * i below
-	 */
+	 
 	maxdiv = min(ULONG_MAX / rate, maxdiv);
 
 	for (i = _next_div(table, 0, flags); i <= maxdiv;
 					     i = _next_div(table, i, flags)) {
 		if (rate * i == parent_rate_saved) {
-			/*
-			 * It's the most ideal case if the requested rate can be
-			 * divided from parent clock without needing to change
-			 * parent rate, so return the divider immediately.
-			 */
+			 
 			*best_parent_rate = parent_rate_saved;
 			return i;
 		}
@@ -366,7 +345,7 @@ int divider_ro_determine_rate(struct clk_hw *hw, struct clk_rate_request *req,
 
 	div = _get_div(table, val, flags, width);
 
-	/* Even a read-only clock can propagate a rate change */
+	 
 	if (clk_hw_get_flags(hw) & CLK_SET_RATE_PARENT) {
 		if (!req->best_parent_hw)
 			return -EINVAL;
@@ -430,7 +409,7 @@ static long clk_divider_round_rate(struct clk_hw *hw, unsigned long rate,
 {
 	struct clk_divider *divider = to_clk_divider(hw);
 
-	/* if read only, just return current value */
+	 
 	if (divider->flags & CLK_DIVIDER_READ_ONLY) {
 		u32 val;
 
@@ -451,7 +430,7 @@ static int clk_divider_determine_rate(struct clk_hw *hw,
 {
 	struct clk_divider *divider = to_clk_divider(hw);
 
-	/* if read only, just return current value */
+	 
 	if (divider->flags & CLK_DIVIDER_READ_ONLY) {
 		u32 val;
 
@@ -553,7 +532,7 @@ struct clk_hw *__clk_hw_register_divider(struct device *dev,
 		}
 	}
 
-	/* allocate the divider */
+	 
 	div = kzalloc(sizeof(*div), GFP_KERNEL);
 	if (!div)
 		return ERR_PTR(-ENOMEM);
@@ -572,7 +551,7 @@ struct clk_hw *__clk_hw_register_divider(struct device *dev,
 	else
 		init.num_parents = 0;
 
-	/* struct clk_divider assignments */
+	 
 	div->reg = reg;
 	div->shift = shift;
 	div->width = width;
@@ -581,7 +560,7 @@ struct clk_hw *__clk_hw_register_divider(struct device *dev,
 	div->hw.init = &init;
 	div->table = table;
 
-	/* register the clock */
+	 
 	hw = &div->hw;
 	ret = clk_hw_register(dev, hw);
 	if (ret) {
@@ -593,20 +572,7 @@ struct clk_hw *__clk_hw_register_divider(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(__clk_hw_register_divider);
 
-/**
- * clk_register_divider_table - register a table based divider clock with
- * the clock framework
- * @dev: device registering this clock
- * @name: name of this clock
- * @parent_name: name of clock's parent
- * @flags: framework-specific flags
- * @reg: register address to adjust divider
- * @shift: number of bits to shift the bitfield
- * @width: width of the bitfield
- * @clk_divider_flags: divider-specific flags for this clock
- * @table: array of divider/value pairs ending with a div set to 0
- * @lock: shared register lock for this clock
- */
+ 
 struct clk *clk_register_divider_table(struct device *dev, const char *name,
 		const char *parent_name, unsigned long flags,
 		void __iomem *reg, u8 shift, u8 width,
@@ -640,10 +606,7 @@ void clk_unregister_divider(struct clk *clk)
 }
 EXPORT_SYMBOL_GPL(clk_unregister_divider);
 
-/**
- * clk_hw_unregister_divider - unregister a clk divider
- * @hw: hardware-specific clock data to unregister
- */
+ 
 void clk_hw_unregister_divider(struct clk_hw *hw)
 {
 	struct clk_divider *div;

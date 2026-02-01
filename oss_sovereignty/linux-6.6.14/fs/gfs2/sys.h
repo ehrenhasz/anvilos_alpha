@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
- */
+ 
+ 
 
 #ifndef __SYS_DOT_H__
 #define __SYS_DOT_H__
@@ -18,5 +15,5 @@ void gfs2_sys_uninit(void);
 
 int gfs2_recover_set(struct gfs2_sbd *sdp, unsigned jid);
 
-#endif /* __SYS_DOT_H__ */
+#endif  
 

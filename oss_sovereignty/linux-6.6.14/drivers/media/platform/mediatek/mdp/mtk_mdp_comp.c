@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016 MediaTek Inc.
- * Author: Ming Hsiu Tsai <minghsiu.tsai@mediatek.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -55,7 +52,7 @@ int mtk_mdp_comp_init(struct device *dev, struct device_node *node,
 			goto put_dev;
 		}
 
-		/* Only RDMA needs two clocks */
+		 
 		if (comp->type != MTK_MDP_RDMA)
 			break;
 	}

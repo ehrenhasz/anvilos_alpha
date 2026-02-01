@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2000-2002 Joakim Axelsson <gozem@linux.nu>
- *                         Patrick Schaaf <bof@bof.de>
- *                         Martin Josefsson <gandalf@wlug.westbo.se>
- * Copyright (C) 2003-2013 Jozsef Kadlecsik <kadlec@netfilter.org>
- */
 
-/* Kernel module which implements the set match and SET target
- * for netfilter/iptables.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/skbuff.h>
@@ -48,7 +42,7 @@ struct ip_set_adt_opt n = {				\
 	.ext.bytes_op = bo,				\
 }
 
-/* Revision 0 interface: backward compatible with netfilter/iptables */
+ 
 
 static bool
 set_match_v0(const struct sk_buff *skb, struct xt_action_param *par)
@@ -68,7 +62,7 @@ compat_flags(struct xt_set_info_v0 *info)
 {
 	u_int8_t i;
 
-	/* Fill out compatibility data according to enum ip_set_kopt */
+	 
 	info->u.compat.dim = IPSET_DIM_ZERO;
 	if (info->u.flags[0] & IPSET_MATCH_INV)
 		info->u.compat.flags |= IPSET_INV_MATCH;
@@ -98,7 +92,7 @@ set_match_v0_checkentry(const struct xt_mtchk_param *par)
 		return -ERANGE;
 	}
 
-	/* Fill out compatibility data */
+	 
 	compat_flags(&info->match_set);
 
 	return 0;
@@ -112,7 +106,7 @@ set_match_v0_destroy(const struct xt_mtdtor_param *par)
 	ip_set_nfnl_put(par->net, info->match_set.index);
 }
 
-/* Revision 1 match */
+ 
 
 static bool
 set_match_v1(const struct sk_buff *skb, struct xt_action_param *par)
@@ -160,7 +154,7 @@ set_match_v1_destroy(const struct xt_mtdtor_param *par)
 	ip_set_nfnl_put(par->net, info->match_set.index);
 }
 
-/* Revision 3 match */
+ 
 
 static bool
 set_match_v3(const struct sk_buff *skb, struct xt_action_param *par)
@@ -183,7 +177,7 @@ set_match_v3(const struct sk_buff *skb, struct xt_action_param *par)
 #define set_match_v3_checkentry	set_match_v1_checkentry
 #define set_match_v3_destroy	set_match_v1_destroy
 
-/* Revision 4 match */
+ 
 
 static bool
 set_match_v4(const struct sk_buff *skb, struct xt_action_param *par)
@@ -206,7 +200,7 @@ set_match_v4(const struct sk_buff *skb, struct xt_action_param *par)
 #define set_match_v4_checkentry	set_match_v1_checkentry
 #define set_match_v4_destroy	set_match_v1_destroy
 
-/* Revision 0 interface: backward compatible with netfilter/iptables */
+ 
 
 static unsigned int
 set_target_v0(struct sk_buff *skb, const struct xt_action_param *par)
@@ -263,7 +257,7 @@ set_target_v0_checkentry(const struct xt_tgchk_param *par)
 		return -ERANGE;
 	}
 
-	/* Fill out compatibility data */
+	 
 	compat_flags(&info->add_set);
 	compat_flags(&info->del_set);
 
@@ -281,7 +275,7 @@ set_target_v0_destroy(const struct xt_tgdtor_param *par)
 		ip_set_nfnl_put(par->net, info->del_set.index);
 }
 
-/* Revision 1 target */
+ 
 
 static unsigned int
 set_target_v1(struct sk_buff *skb, const struct xt_action_param *par)
@@ -352,7 +346,7 @@ set_target_v1_destroy(const struct xt_tgdtor_param *par)
 		ip_set_nfnl_put(par->net, info->del_set.index);
 }
 
-/* Revision 2 target */
+ 
 
 static unsigned int
 set_target_v2(struct sk_buff *skb, const struct xt_action_param *par)
@@ -366,7 +360,7 @@ set_target_v2(struct sk_buff *skb, const struct xt_action_param *par)
 		info->del_set.flags, 0, UINT_MAX,
 		0, 0, 0, 0);
 
-	/* Normalize to fit into jiffies */
+	 
 	if (add_opt.ext.timeout != IPSET_NO_TIMEOUT &&
 	    add_opt.ext.timeout > IPSET_MAX_TIMEOUT)
 		add_opt.ext.timeout = IPSET_MAX_TIMEOUT;
@@ -381,7 +375,7 @@ set_target_v2(struct sk_buff *skb, const struct xt_action_param *par)
 #define set_target_v2_checkentry	set_target_v1_checkentry
 #define set_target_v2_destroy		set_target_v1_destroy
 
-/* Revision 3 target */
+ 
 
 #define MOPT(opt, member)	((opt).ext.skbinfo.member)
 
@@ -401,7 +395,7 @@ set_target_v3(struct sk_buff *skb, const struct xt_action_param *par)
 		info->map_set.flags, 0, UINT_MAX,
 		0, 0, 0, 0);
 
-	/* Normalize to fit into jiffies */
+	 
 	if (add_opt.ext.timeout != IPSET_NO_TIMEOUT &&
 	    add_opt.ext.timeout > IPSET_MAX_TIMEOUT)
 		add_opt.ext.timeout = IPSET_MAX_TIMEOUT;
@@ -548,7 +542,7 @@ static struct xt_match set_matches[] __read_mostly = {
 		.destroy	= set_match_v1_destroy,
 		.me		= THIS_MODULE
 	},
-	/* --return-nomatch flag support */
+	 
 	{
 		.name		= "set",
 		.family		= NFPROTO_IPV4,
@@ -569,7 +563,7 @@ static struct xt_match set_matches[] __read_mostly = {
 		.destroy	= set_match_v1_destroy,
 		.me		= THIS_MODULE
 	},
-	/* counters support: update, match */
+	 
 	{
 		.name		= "set",
 		.family		= NFPROTO_IPV4,
@@ -590,7 +584,7 @@ static struct xt_match set_matches[] __read_mostly = {
 		.destroy	= set_match_v3_destroy,
 		.me		= THIS_MODULE
 	},
-	/* new revision for counters support: update, match */
+	 
 	{
 		.name		= "set",
 		.family		= NFPROTO_IPV4,
@@ -644,7 +638,7 @@ static struct xt_target set_targets[] __read_mostly = {
 		.destroy	= set_target_v1_destroy,
 		.me		= THIS_MODULE
 	},
-	/* --timeout and --exist flags support */
+	 
 	{
 		.name		= "SET",
 		.revision	= 2,
@@ -665,7 +659,7 @@ static struct xt_target set_targets[] __read_mostly = {
 		.destroy	= set_target_v2_destroy,
 		.me		= THIS_MODULE
 	},
-	/* --map-set support */
+	 
 	{
 		.name		= "SET",
 		.revision	= 3,

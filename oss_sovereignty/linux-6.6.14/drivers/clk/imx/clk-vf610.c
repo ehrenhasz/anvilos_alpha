@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2012-2013 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/of_address.h>
 #include <linux/bits.h>
@@ -68,7 +66,7 @@
 static void __iomem *anatop_base;
 static void __iomem *ccm_base;
 
-/* sources for multiplexer clocks, this is used multiple times */
+ 
 static const char *fast_sels[]	= { "firc", "fxosc", };
 static const char *slow_sels[]	= { "sirc_32k", "sxosc", };
 static const char *pll1_sels[]	= { "pll1_sys", "pll1_pfd1", "pll1_pfd2", "pll1_pfd3", "pll1_pfd4", };
@@ -93,7 +91,7 @@ static const char *esdhc_sels[]	= { "pll3_usb_otg", "pll3_pfd3", "pll1_pfd3", "p
 static const char *dcu_sels[]	= { "pll1_pfd2", "pll3_usb_otg", };
 static const char *gpu_sels[]	= { "pll2_pfd2", "pll3_pfd2", };
 static const char *vadc_sels[]	= { "pll6_video_div", "pll3_usb_otg_div", "pll3_usb_otg", };
-/* FTM counter clock source, not module clock */
+ 
 static const char *ftm_ext_sels[]	= {"sirc_128k", "sxosc", "fxosc_half", "audio_ext", };
 static const char *ftm_fix_sels[]	= { "sxosc", "ipg_bus", };
 
@@ -133,7 +131,7 @@ static struct clk * __init vf610_get_fixed_clock(
 {
 	struct clk *clk = of_clk_get_by_name(ccm_node, name);
 
-	/* Backward compatibility if device tree is missing clks assignments */
+	 
 	if (IS_ERR(clk))
 		clk = imx_obtain_fixed_clock(name, 0);
 	return clk;
@@ -191,7 +189,7 @@ static void __init vf610_clocks_init(struct device_node *ccm_node)
 	clk[VF610_CLK_AUDIO_EXT] = vf610_get_fixed_clock(ccm_node, "audio_ext");
 	clk[VF610_CLK_ENET_EXT] = vf610_get_fixed_clock(ccm_node, "enet_ext");
 
-	/* Clock source from external clock via LVDs PAD */
+	 
 	clk[VF610_CLK_ANACLK1] = vf610_get_fixed_clock(ccm_node, "anaclk1");
 
 	clk[VF610_CLK_FXOSC_HALF] = imx_clk_fixed_factor("fxosc_half", "fxosc", 1, 2);
@@ -232,7 +230,7 @@ static void __init vf610_clocks_init(struct device_node *ccm_node)
 	clk[VF610_PLL6_BYPASS] = imx_clk_mux_flags("pll6_bypass", PLL6_CTRL, 16, 1, pll6_bypass_sels, ARRAY_SIZE(pll6_bypass_sels), CLK_SET_RATE_PARENT);
 	clk[VF610_PLL7_BYPASS] = imx_clk_mux_flags("pll7_bypass", PLL7_CTRL, 16, 1, pll7_bypass_sels, ARRAY_SIZE(pll7_bypass_sels), CLK_SET_RATE_PARENT);
 
-	/* Do not bypass PLLs initially */
+	 
 	clk_set_parent(clk[VF610_PLL1_BYPASS], clk[VF610_CLK_PLL1]);
 	clk_set_parent(clk[VF610_PLL2_BYPASS], clk[VF610_CLK_PLL2]);
 	clk_set_parent(clk[VF610_PLL3_BYPASS], clk[VF610_CLK_PLL3]);
@@ -342,12 +340,7 @@ static void __init vf610_clocks_init(struct device_node *ccm_node)
 	clk[VF610_CLK_ESDHC1_DIV] = imx_clk_divider("esdhc1_div", "esdhc1_en", CCM_CSCDR2, 20, 4);
 	clk[VF610_CLK_ESDHC1] = imx_clk_gate2("eshc1", "esdhc1_div", CCM_CCGR7, CCM_CCGRx_CGn(2));
 
-	/*
-	 * ftm_ext_clk and ftm_fix_clk are FTM timer counter's
-	 * selectable clock sources, both use a common enable bit
-	 * in CCM_CSCDR1, selecting "dummy" clock as parent of
-	 * "ftm0_ext_fix" make it serve only for enable/disable.
-	 */
+	 
 	clk[VF610_CLK_FTM0_EXT_SEL] = imx_clk_mux("ftm0_ext_sel", CCM_CSCMR2, 6, 2, ftm_ext_sels, 4);
 	clk[VF610_CLK_FTM0_FIX_SEL] = imx_clk_mux("ftm0_fix_sel", CCM_CSCMR2, 14, 1, ftm_fix_sels, 2);
 	clk[VF610_CLK_FTM0_EXT_FIX_EN] = imx_clk_gate("ftm0_ext_fix_en", "dummy", CCM_CSCDR1, 25);
@@ -361,7 +354,7 @@ static void __init vf610_clocks_init(struct device_node *ccm_node)
 	clk[VF610_CLK_FTM3_FIX_SEL] = imx_clk_mux("ftm3_fix_sel", CCM_CSCMR2, 17, 1, ftm_fix_sels, 2);
 	clk[VF610_CLK_FTM3_EXT_FIX_EN] = imx_clk_gate("ftm3_ext_fix_en", "dummy", CCM_CSCDR1, 28);
 
-	/* ftm(n)_clk are FTM module operation clock */
+	 
 	clk[VF610_CLK_FTM0] = imx_clk_gate2("ftm0", "ipg_bus", CCM_CCGR1, CCM_CCGRx_CGn(8));
 	clk[VF610_CLK_FTM1] = imx_clk_gate2("ftm1", "ipg_bus", CCM_CCGR1, CCM_CCGRx_CGn(9));
 	clk[VF610_CLK_FTM2] = imx_clk_gate2("ftm2", "ipg_bus", CCM_CCGR7, CCM_CCGRx_CGn(8));
@@ -464,7 +457,7 @@ static void __init vf610_clocks_init(struct device_node *ccm_node)
 
 	register_syscore_ops(&vf610_clk_syscore_ops);
 
-	/* Add the clocks to provider list */
+	 
 	clk_data.clks = clk;
 	clk_data.clk_num = ARRAY_SIZE(clk);
 	of_clk_add_provider(np, of_clk_src_onecell_get, &clk_data);

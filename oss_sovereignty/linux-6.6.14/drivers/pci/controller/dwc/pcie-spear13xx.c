@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe host controller driver for ST Microelectronics SPEAr13xx SoCs
- *
- * SPEAr13xx PCIe Glue Layer Source Code
- *
- * Copyright (C) 2010-2014 ST Microelectronics
- * Pratyush Anand <pratyush.anand@gmail.com>
- * Mohit Kumar <mohit.kumar.dhaka@gmail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -29,39 +21,39 @@ struct spear13xx_pcie {
 };
 
 struct pcie_app_reg {
-	u32	app_ctrl_0;		/* cr0 */
-	u32	app_ctrl_1;		/* cr1 */
-	u32	app_status_0;		/* cr2 */
-	u32	app_status_1;		/* cr3 */
-	u32	msg_status;		/* cr4 */
-	u32	msg_payload;		/* cr5 */
-	u32	int_sts;		/* cr6 */
-	u32	int_clr;		/* cr7 */
-	u32	int_mask;		/* cr8 */
-	u32	mst_bmisc;		/* cr9 */
-	u32	phy_ctrl;		/* cr10 */
-	u32	phy_status;		/* cr11 */
-	u32	cxpl_debug_info_0;	/* cr12 */
-	u32	cxpl_debug_info_1;	/* cr13 */
-	u32	ven_msg_ctrl_0;		/* cr14 */
-	u32	ven_msg_ctrl_1;		/* cr15 */
-	u32	ven_msg_data_0;		/* cr16 */
-	u32	ven_msg_data_1;		/* cr17 */
-	u32	ven_msi_0;		/* cr18 */
-	u32	ven_msi_1;		/* cr19 */
-	u32	mst_rmisc;		/* cr20 */
+	u32	app_ctrl_0;		 
+	u32	app_ctrl_1;		 
+	u32	app_status_0;		 
+	u32	app_status_1;		 
+	u32	msg_status;		 
+	u32	msg_payload;		 
+	u32	int_sts;		 
+	u32	int_clr;		 
+	u32	int_mask;		 
+	u32	mst_bmisc;		 
+	u32	phy_ctrl;		 
+	u32	phy_status;		 
+	u32	cxpl_debug_info_0;	 
+	u32	cxpl_debug_info_1;	 
+	u32	ven_msg_ctrl_0;		 
+	u32	ven_msg_ctrl_1;		 
+	u32	ven_msg_data_0;		 
+	u32	ven_msg_data_1;		 
+	u32	ven_msi_0;		 
+	u32	ven_msi_1;		 
+	u32	mst_rmisc;		 
 };
 
-/* CR0 ID */
+ 
 #define APP_LTSSM_ENABLE_ID			3
 #define DEVICE_TYPE_RC				(4 << 25)
 #define MISCTRL_EN_ID				30
 #define REG_TRANSLATION_ENABLE			31
 
-/* CR3 ID */
+ 
 #define XMLH_LINK_UP				(1 << 6)
 
-/* CR6 */
+ 
 #define MSI_CTRL_INT				(1 << 26)
 
 #define to_spear13xx_pcie(x)	dev_get_drvdata((x)->dev)
@@ -71,7 +63,7 @@ static int spear13xx_pcie_start_link(struct dw_pcie *pci)
 	struct spear13xx_pcie *spear13xx_pcie = to_spear13xx_pcie(pci);
 	struct pcie_app_reg __iomem *app_reg = spear13xx_pcie->app_base;
 
-	/* enable ltssm */
+	 
 	writel(DEVICE_TYPE_RC | (1 << MISCTRL_EN_ID)
 			| (1 << APP_LTSSM_ENABLE_ID)
 			| ((u32)1 << REG_TRANSLATION_ENABLE),
@@ -104,7 +96,7 @@ static void spear13xx_pcie_enable_interrupts(struct spear13xx_pcie *spear13xx_pc
 {
 	struct pcie_app_reg __iomem *app_reg = spear13xx_pcie->app_base;
 
-	/* Enable MSI interrupt */
+	 
 	if (IS_ENABLED(CONFIG_PCI_MSI))
 		writel(readl(&app_reg->int_mask) |
 				MSI_CTRL_INT, &app_reg->int_mask);
@@ -130,11 +122,7 @@ static int spear13xx_pcie_host_init(struct dw_pcie_rp *pp)
 
 	spear13xx_pcie->app_base = pci->dbi_base + 0x2000;
 
-	/*
-	 * this controller support only 128 bytes read size, however its
-	 * default value in capability register is 512 bytes. So force
-	 * it to 128 here.
-	 */
+	 
 	val = dw_pcie_readw_dbi(pci, exp_cap_off + PCI_EXP_DEVCTL);
 	val &= ~PCI_EXP_DEVCTL_READRQ;
 	dw_pcie_writew_dbi(pci, exp_cap_off + PCI_EXP_DEVCTL, val);

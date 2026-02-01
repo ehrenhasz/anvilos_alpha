@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * motu-stream.c - a part of driver for MOTU FireWire series
- *
- * Copyright (c) 2015-2017 Takashi Sakamoto <o-takashi@sakamocchi.jp>
- */
+
+ 
 
 #include "motu.h"
 
@@ -65,7 +61,7 @@ static int begin_session(struct snd_motu *motu)
 	u32 data;
 	int err;
 
-	// Configure the unit to start isochronous communication.
+	
 	err = snd_motu_transaction_read(motu, ISOC_COMM_CONTROL_OFFSET, &reg,
 					sizeof(reg));
 	if (err < 0)
@@ -287,9 +283,9 @@ int snd_motu_stream_start_duplex(struct snd_motu *motu)
 		motu->cache.head = 0;
 		motu->cache.rx_cycle_count = UINT_MAX;
 
-		// NOTE: The device requires both of replay; the sequence of the number of data
-		// blocks per packet, and the sequence of source packet header per data block as
-		// presentation time.
+		
+		
+		
 		err = amdtp_domain_start(&motu->domain, 0, true, false);
 		if (err < 0)
 			goto stop_streams;
@@ -387,8 +383,8 @@ int snd_motu_stream_init_duplex(struct snd_motu *motu)
 	return err;
 }
 
-// This function should be called before starting streams or after stopping
-// streams.
+
+
 void snd_motu_stream_destroy_duplex(struct snd_motu *motu)
 {
 	amdtp_domain_destroy(&motu->domain);

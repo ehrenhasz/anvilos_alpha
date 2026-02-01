@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- */
+ 
+ 
 
 #ifndef __BCM47XX_SPROM_H
 #define __BCM47XX_SPROM_H
@@ -28,4 +27,4 @@ static inline int bcm47xx_sprom_register_fallbacks(void)
 };
 #endif
 
-#endif /* __BCM47XX_SPROM_H */
+#endif  

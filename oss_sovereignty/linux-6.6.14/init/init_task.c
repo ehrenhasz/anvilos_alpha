@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/init_task.h>
 #include <linux/export.h>
 #include <linux/mqueue.h>
@@ -57,10 +57,7 @@ unsigned long init_shadow_call_stack[SCS_SIZE / sizeof(long)]
 };
 #endif
 
-/*
- * Set up the first task table, touch at your own risk!. Base=0,
- * limit=0x1fffff (=2MB)
- */
+ 
 struct task_struct init_task
 #ifdef CONFIG_ARCH_TASK_STRUCT_ON_STACK
 	__init_task_data
@@ -130,7 +127,7 @@ struct task_struct init_task
 	.journal_info	= NULL,
 	INIT_CPU_TIMERS(init_task)
 	.pi_lock	= __RAW_SPIN_LOCK_UNLOCKED(init_task.pi_lock),
-	.timer_slack_ns = 50000, /* 50 usec default slack */
+	.timer_slack_ns = 50000,  
 	.thread_pid	= &init_struct_pid,
 	.thread_group	= LIST_HEAD_INIT(init_task.thread_group),
 	.thread_node	= LIST_HEAD_INIT(init_signals.thread_head),
@@ -190,7 +187,7 @@ struct task_struct init_task
 	.softirqs_enabled = 1,
 #endif
 #ifdef CONFIG_LOCKDEP
-	.lockdep_depth = 0, /* no locks held yet */
+	.lockdep_depth = 0,  
 	.curr_chain_key = INITIAL_CHAIN_KEY,
 	.lockdep_recursion = 0,
 #endif
@@ -213,10 +210,7 @@ struct task_struct init_task
 };
 EXPORT_SYMBOL(init_task);
 
-/*
- * Initial thread structure. Alignment of this is handled by a special
- * linker map entry.
- */
+ 
 #ifndef CONFIG_THREAD_INFO_IN_TASK
 struct thread_info init_thread_info __init_thread_info = INIT_THREAD_INFO(init_task);
 #endif

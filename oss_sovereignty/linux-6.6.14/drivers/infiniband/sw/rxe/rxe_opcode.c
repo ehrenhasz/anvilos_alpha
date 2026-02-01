@@ -1,16 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2016 Mellanox Technologies Ltd. All rights reserved.
- * Copyright (c) 2015 System Fabric Works, Inc. All rights reserved.
- */
+
+ 
 
 #include <rdma/ib_pack.h>
 #include "rxe_opcode.h"
 #include "rxe_hdr.h"
 
-/* useful information about work request opcodes and pkt opcodes in
- * table form
- */
+ 
 struct rxe_wr_opcode_info rxe_wr_opcode_info[] = {
 	[IB_WR_RDMA_WRITE]				= {
 		.name	= "IB_WR_RDMA_WRITE",
@@ -65,7 +60,7 @@ struct rxe_wr_opcode_info rxe_wr_opcode_info[] = {
 	[IB_WR_LSO]					= {
 		.name	= "IB_WR_LSO",
 		.mask	= {
-			/* not supported */
+			 
 		},
 	},
 	[IB_WR_SEND_WITH_INV]				= {
@@ -414,7 +409,7 @@ struct rxe_opcode_info rxe_opcode[RXE_NUM_OPCODE] = {
 		}
 	},
 
-	/* UC */
+	 
 	[IB_OPCODE_UC_SEND_FIRST]			= {
 		.name	= "IB_OPCODE_UC_SEND_FIRST",
 		.mask	= RXE_PAYLOAD_MASK | RXE_REQ_MASK | RXE_RWR_MASK |
@@ -557,7 +552,7 @@ struct rxe_opcode_info rxe_opcode[RXE_NUM_OPCODE] = {
 		}
 	},
 
-	/* RD */
+	 
 	[IB_OPCODE_RD_SEND_FIRST]			= {
 		.name	= "IB_OPCODE_RD_SEND_FIRST",
 		.mask	= RXE_RDETH_MASK | RXE_DETH_MASK | RXE_PAYLOAD_MASK |
@@ -941,7 +936,7 @@ struct rxe_opcode_info rxe_opcode[RXE_NUM_OPCODE] = {
 		}
 	},
 
-	/* UD */
+	 
 	[IB_OPCODE_UD_SEND_ONLY]			= {
 		.name	= "IB_OPCODE_UD_SEND_ONLY",
 		.mask	= RXE_DETH_MASK | RXE_PAYLOAD_MASK | RXE_REQ_MASK |

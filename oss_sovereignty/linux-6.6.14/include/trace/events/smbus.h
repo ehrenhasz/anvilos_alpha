@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* SMBUS message transfer tracepoints
- *
- * Copyright (C) 2013 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+ 
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM smbus
 
@@ -13,13 +9,9 @@
 #include <linux/i2c.h>
 #include <linux/tracepoint.h>
 
-/*
- * drivers/i2c/i2c-core-smbus.c
- */
+ 
 
-/*
- * i2c_smbus_xfer() write data or procedure call request
- */
+ 
 TRACE_EVENT_CONDITION(smbus_write,
 	TP_PROTO(const struct i2c_adapter *adap,
 		 u16 addr, unsigned short flags,
@@ -85,9 +77,7 @@ TRACE_EVENT_CONDITION(smbus_write,
 		  __entry->len, __entry->buf
 		  ));
 
-/*
- * i2c_smbus_xfer() read data request
- */
+ 
 TRACE_EVENT_CONDITION(smbus_read,
 	TP_PROTO(const struct i2c_adapter *adap,
 		 u16 addr, unsigned short flags,
@@ -127,9 +117,7 @@ TRACE_EVENT_CONDITION(smbus_read,
 				   { I2C_SMBUS_I2C_BLOCK_DATA,	"I2C_BLOCK_DATA" })
 		  ));
 
-/*
- * i2c_smbus_xfer() read data or procedure call reply
- */
+ 
 TRACE_EVENT_CONDITION(smbus_reply,
 	TP_PROTO(const struct i2c_adapter *adap,
 		 u16 addr, unsigned short flags,
@@ -193,9 +181,7 @@ TRACE_EVENT_CONDITION(smbus_reply,
 		  __entry->len, __entry->buf
 		  ));
 
-/*
- * i2c_smbus_xfer() result
- */
+ 
 TRACE_EVENT(smbus_result,
 	    TP_PROTO(const struct i2c_adapter *adap,
 		     u16 addr, unsigned short flags,
@@ -239,7 +225,7 @@ TRACE_EVENT(smbus_result,
 		      __entry->res
 		      ));
 
-#endif /* _TRACE_SMBUS_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

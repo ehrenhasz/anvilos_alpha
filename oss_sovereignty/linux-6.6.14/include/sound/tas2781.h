@@ -1,24 +1,24 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-//
-// ALSA SoC Texas Instruments TAS2781 Audio Smart Amplifier
-//
-// Copyright (C) 2022 - 2023 Texas Instruments Incorporated
-// https://www.ti.com
-//
-// The TAS2781 driver implements a flexible and configurable
-// algo coefficient setting for one, two, or even multiple
-// TAS2781 chips.
-//
-// Author: Shenghao Ding <shenghao-ding@ti.com>
-// Author: Kevin Lu <kevin-lu@ti.com>
-//
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #ifndef __TAS2781_H__
 #define __TAS2781_H__
 
 #include "tas2781-dsp.h"
 
-/* version number */
+ 
 #define TAS2781_DRV_VER			1
 #define SMARTAMP_MODULE_NAME		"tas2781"
 #define TAS2781_GLOBAL_ADDR	0x40
@@ -30,7 +30,7 @@
 	SNDRV_PCM_FMTBIT_S24_LE | \
 	SNDRV_PCM_FMTBIT_S32_LE)
 
-/*PAGE Control Register (available in page0 of each book) */
+ 
 #define TASDEVICE_PAGE_SELECT		0x00
 #define TASDEVICE_BOOKCTL_PAGE		0x00
 #define TASDEVICE_BOOKCTL_REG		127
@@ -41,14 +41,14 @@
 #define TASDEVICE_REG(book, page, reg)	(((book * 256 * 128) + \
 					(page * 128)) + reg)
 
-/*Software Reset */
+ 
 #define TAS2781_REG_SWRESET		TASDEVICE_REG(0x0, 0X0, 0x01)
 #define TAS2781_REG_SWRESET_RESET	BIT(0)
 
-/*I2C Checksum */
+ 
 #define TASDEVICE_I2CChecksum		TASDEVICE_REG(0x0, 0x0, 0x7E)
 
-/* Volume control */
+ 
 #define TAS2781_DVC_LVL			TASDEVICE_REG(0x0, 0x0, 0x1A)
 #define TAS2781_AMP_LEVEL		TASDEVICE_REG(0x0, 0x0, 0x03)
 #define TAS2781_AMP_LEVEL_MASK		GENMASK(5, 1)
@@ -161,4 +161,4 @@ int tasdevice_digital_putvol(struct tasdevice_priv *tas_priv,
 int tasdevice_digital_getvol(struct tasdevice_priv *tas_priv,
 	struct snd_ctl_elem_value *ucontrol, struct soc_mixer_control *mc);
 
-#endif /* __TAS2781_H__ */
+#endif  

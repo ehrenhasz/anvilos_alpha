@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "archinsn.h"
 #include "event.h"
 #include "machine.h"

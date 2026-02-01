@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2014 Chen-Yu Tsai
- *
- * Chen-Yu Tsai <wens@csie.org>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -73,7 +69,7 @@ static void __init sun8i_a23_mbus_setup(struct device_node *node)
 	mux->mask = SUN8I_MBUS_MUX_MASK;
 	mux->lock = &sun8i_a23_mbus_lock;
 
-	/* The MBUS clocks needs to be always enabled */
+	 
 	clk = clk_register_composite(NULL, clk_name, parents, num_parents,
 				     &mux->hw, &clk_mux_ops,
 				     &div->hw, &clk_divider_ops,
@@ -86,12 +82,12 @@ static void __init sun8i_a23_mbus_setup(struct device_node *node)
 	if (err)
 		goto err_unregister_clk;
 
-	kfree(parents); /* parents is deep copied */
+	kfree(parents);  
 
 	return;
 
 err_unregister_clk:
-	/* TODO: The composite clock stuff will leak a bit here. */
+	 
 	clk_unregister(clk);
 err_free_gate:
 	kfree(gate);

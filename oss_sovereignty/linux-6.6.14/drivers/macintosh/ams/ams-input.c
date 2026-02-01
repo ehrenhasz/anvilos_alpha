@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Apple Motion Sensor driver (joystick emulation)
- *
- * Copyright (C) 2005 Stelian Pop (stelian@popies.net)
- * Copyright (C) 2006 Michael Hanselmann (linux-kernel@hansmi.ch)
- */
+
+ 
 
 #include <linux/module.h>
 
@@ -46,7 +41,7 @@ static void ams_idev_poll(struct input_dev *idev)
 	mutex_unlock(&ams_info.lock);
 }
 
-/* Call with ams_info.lock held! */
+ 
 static int ams_input_enable(void)
 {
 	struct input_dev *input;

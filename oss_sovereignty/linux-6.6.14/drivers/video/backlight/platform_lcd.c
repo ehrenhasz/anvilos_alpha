@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* drivers/video/backlight/platform_lcd.c
- *
- * Copyright 2008 Simtec Electronics
- *	Ben Dooks <ben@simtec.co.uk>
- *
- * Generic platform-device LCD power control interface.
-*/
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>

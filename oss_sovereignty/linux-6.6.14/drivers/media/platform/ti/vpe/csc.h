@@ -1,15 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2013 Texas Instruments Inc.
- *
- * David Griego, <dagriego@biglakesoftware.com>
- * Dale Farnsworth, <dale@farnsworth.org>
- * Archit Taneja, <archit@ti.com>
- */
+ 
+ 
 #ifndef TI_CSC_H
 #define TI_CSC_H
 
-/* VPE color space converter regs */
+ 
 #define CSC_CSC00		0x00
 #define CSC_A0_MASK		0x1fff
 #define CSC_A0_SHIFT		0

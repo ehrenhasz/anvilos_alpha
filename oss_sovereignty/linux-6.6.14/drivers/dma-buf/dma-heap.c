@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Framework for userspace DMA-BUF allocations
- *
- * Copyright (C) 2011 Google, Inc.
- * Copyright (C) 2019 Linaro Ltd.
- */
+
+ 
 
 #include <linux/cdev.h>
 #include <linux/debugfs.h>
@@ -24,16 +19,7 @@
 
 #define NUM_HEAP_MINORS 128
 
-/**
- * struct dma_heap - represents a dmabuf heap in the system
- * @name:		used for debugging/device-node name
- * @ops:		ops struct for this heap
- * @heap_devt		heap device node
- * @list		list head connecting to list of heaps
- * @heap_cdev		heap char device
- *
- * Represents a heap of memory from which buffers can be made.
- */
+ 
 struct dma_heap {
 	const char *name;
 	const struct dma_heap_ops *ops;
@@ -56,10 +42,7 @@ static int dma_heap_buffer_alloc(struct dma_heap *heap, size_t len,
 	struct dma_buf *dmabuf;
 	int fd;
 
-	/*
-	 * Allocations from all heaps have to begin
-	 * and end on page boundaries.
-	 */
+	 
 	len = PAGE_ALIGN(len);
 	if (!len)
 		return -EINVAL;
@@ -71,7 +54,7 @@ static int dma_heap_buffer_alloc(struct dma_heap *heap, size_t len,
 	fd = dma_buf_fd(dmabuf, fd_flags);
 	if (fd < 0) {
 		dma_buf_put(dmabuf);
-		/* just return, as put will call release and that will free */
+		 
 	}
 	return fd;
 }
@@ -86,7 +69,7 @@ static int dma_heap_open(struct inode *inode, struct file *file)
 		return -ENODEV;
 	}
 
-	/* instance data as context */
+	 
 	file->private_data = heap;
 	nonseekable_open(inode, file);
 
@@ -137,10 +120,10 @@ static long dma_heap_ioctl(struct file *file, unsigned int ucmd,
 		return -EINVAL;
 
 	nr = array_index_nospec(nr, ARRAY_SIZE(dma_heap_ioctl_cmds));
-	/* Get the kernel ioctl cmd that matches */
+	 
 	kcmd = dma_heap_ioctl_cmds[nr];
 
-	/* Figure out the delta between user cmd size and kernel cmd size */
+	 
 	drv_size = _IOC_SIZE(kcmd);
 	out_size = _IOC_SIZE(ucmd);
 	in_size = out_size;
@@ -150,7 +133,7 @@ static long dma_heap_ioctl(struct file *file, unsigned int ucmd,
 		out_size = 0;
 	ksize = max(max(in_size, out_size), drv_size);
 
-	/* If necessary, allocate buffer for ioctl argument */
+	 
 	if (ksize > sizeof(stack_kdata)) {
 		kdata = kmalloc(ksize, GFP_KERNEL);
 		if (!kdata)
@@ -162,7 +145,7 @@ static long dma_heap_ioctl(struct file *file, unsigned int ucmd,
 		goto err;
 	}
 
-	/* zero out any difference between the kernel/user structure size */
+	 
 	if (ksize > in_size)
 		memset(kdata + in_size, 0, ksize - in_size);
 
@@ -192,25 +175,13 @@ static const struct file_operations dma_heap_fops = {
 #endif
 };
 
-/**
- * dma_heap_get_drvdata() - get per-subdriver data for the heap
- * @heap: DMA-Heap to retrieve private data for
- *
- * Returns:
- * The per-subdriver data for the heap.
- */
+ 
 void *dma_heap_get_drvdata(struct dma_heap *heap)
 {
 	return heap->priv;
 }
 
-/**
- * dma_heap_get_name() - get heap name
- * @heap: DMA-Heap to retrieve private data for
- *
- * Returns:
- * The char* for the heap name.
- */
+ 
 const char *dma_heap_get_name(struct dma_heap *heap)
 {
 	return heap->name;
@@ -241,7 +212,7 @@ struct dma_heap *dma_heap_add(const struct dma_heap_export_info *exp_info)
 	heap->ops = exp_info->ops;
 	heap->priv = exp_info->priv;
 
-	/* Find unused minor number */
+	 
 	ret = xa_alloc(&dma_heap_minors, &minor, heap,
 		       XA_LIMIT(0, NUM_HEAP_MINORS - 1), GFP_KERNEL);
 	if (ret < 0) {
@@ -250,7 +221,7 @@ struct dma_heap *dma_heap_add(const struct dma_heap_export_info *exp_info)
 		goto err0;
 	}
 
-	/* Create device */
+	 
 	heap->heap_devt = MKDEV(MAJOR(dma_heap_devt), minor);
 
 	cdev_init(&heap->heap_cdev, &dma_heap_fops);
@@ -273,7 +244,7 @@ struct dma_heap *dma_heap_add(const struct dma_heap_export_info *exp_info)
 	}
 
 	mutex_lock(&heap_list_lock);
-	/* check the name is unique */
+	 
 	list_for_each_entry(h, &heap_list, list) {
 		if (!strcmp(h->name, exp_info->name)) {
 			mutex_unlock(&heap_list_lock);
@@ -284,7 +255,7 @@ struct dma_heap *dma_heap_add(const struct dma_heap_export_info *exp_info)
 		}
 	}
 
-	/* Add heap to the list */
+	 
 	list_add(&heap->list, &heap_list);
 	mutex_unlock(&heap_list_lock);
 

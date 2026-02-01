@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vsock_test - vsock.ko test suite
- *
- * Copyright (C) 2017 Red Hat, Inc.
- *
- * Author: Stefan Hajnoczi <stefanha@redhat.com>
- */
+
+ 
 
 #include <getopt.h>
 #include <stdio.h>
@@ -75,7 +69,7 @@ static void test_stream_bind_only_client(const struct test_opts *opts)
 	int ret;
 	int fd;
 
-	/* Wait for the server to be ready */
+	 
 	control_expectln("BIND");
 
 	fd = socket(AF_VSOCK, SOCK_STREAM, 0);
@@ -96,7 +90,7 @@ static void test_stream_bind_only_client(const struct test_opts *opts)
 		exit(EXIT_FAILURE);
 	}
 
-	/* Notify the server that the client has finished */
+	 
 	control_writeln("DONE");
 
 	close(fd);
@@ -123,10 +117,10 @@ static void test_stream_bind_only_server(const struct test_opts *opts)
 		exit(EXIT_FAILURE);
 	}
 
-	/* Notify the client that the server is ready */
+	 
 	control_writeln("BIND");
 
-	/* Wait for the client to finish */
+	 
 	control_expectln("DONE");
 
 	close(fd);
@@ -156,9 +150,7 @@ static void test_stream_client_close_server(const struct test_opts *opts)
 		exit(EXIT_FAILURE);
 	}
 
-	/* Wait for the remote to close the connection, before check
-	 * -EPIPE error on send.
-	 */
+	 
 	vsock_wait_remote_close(fd);
 
 	send_byte(fd, -EPIPE, 0);
@@ -177,9 +169,7 @@ static void test_stream_server_close_client(const struct test_opts *opts)
 		exit(EXIT_FAILURE);
 	}
 
-	/* Wait for the remote to close the connection, before check
-	 * -EPIPE error on send.
-	 */
+	 
 	vsock_wait_remote_close(fd);
 
 	send_byte(fd, -EPIPE, 0);
@@ -202,9 +192,7 @@ static void test_stream_server_close_server(const struct test_opts *opts)
 	close(fd);
 }
 
-/* With the standard socket sizes, VMCI is able to support about 100
- * concurrent stream connections.
- */
+ 
 #define MULTICONN_NFDS 100
 
 static void test_stream_multiconn_client(const struct test_opts *opts)
@@ -314,7 +302,7 @@ static void test_msg_peek_server(const struct test_opts *opts,
 		exit(EXIT_FAILURE);
 	}
 
-	/* Peek from empty socket. */
+	 
 	res = recv(fd, buf_peek, sizeof(buf_peek), MSG_PEEK | MSG_DONTWAIT);
 	if (res != -1) {
 		fprintf(stderr, "expected recv(2) failure, got %zi\n", res);
@@ -328,7 +316,7 @@ static void test_msg_peek_server(const struct test_opts *opts,
 
 	control_writeln("SRVREADY");
 
-	/* Peek part of data. */
+	 
 	res = recv(fd, buf_half, sizeof(buf_half), MSG_PEEK);
 	if (res != sizeof(buf_half)) {
 		fprintf(stderr, "recv(2) + MSG_PEEK, expected %zu, got %zi\n",
@@ -336,7 +324,7 @@ static void test_msg_peek_server(const struct test_opts *opts,
 		exit(EXIT_FAILURE);
 	}
 
-	/* Peek whole data. */
+	 
 	res = recv(fd, buf_peek, sizeof(buf_peek), MSG_PEEK);
 	if (res != sizeof(buf_peek)) {
 		fprintf(stderr, "recv(2) + MSG_PEEK, expected %zu, got %zi\n",
@@ -344,17 +332,14 @@ static void test_msg_peek_server(const struct test_opts *opts,
 		exit(EXIT_FAILURE);
 	}
 
-	/* Compare partial and full peek. */
+	 
 	if (memcmp(buf_half, buf_peek, sizeof(buf_half))) {
 		fprintf(stderr, "Partial peek data mismatch\n");
 		exit(EXIT_FAILURE);
 	}
 
 	if (seqpacket) {
-		/* This type of socket supports MSG_TRUNC flag,
-		 * so check it with MSG_PEEK. We must get length
-		 * of the message.
-		 */
+		 
 		res = recv(fd, buf_half, sizeof(buf_half), MSG_PEEK |
 			   MSG_TRUNC);
 		if (res != sizeof(buf_peek)) {
@@ -372,7 +357,7 @@ static void test_msg_peek_server(const struct test_opts *opts,
 		exit(EXIT_FAILURE);
 	}
 
-	/* Compare full peek and normal read. */
+	 
 	if (memcmp(buf_peek, buf_normal, sizeof(buf_peek))) {
 		fprintf(stderr, "Full peek data mismatch\n");
 		exit(EXIT_FAILURE);
@@ -408,7 +393,7 @@ static void test_seqpacket_msg_bounds_client(const struct test_opts *opts)
 		exit(EXIT_FAILURE);
 	}
 
-	/* Wait, until receiver sets buffer size. */
+	 
 	control_expectln("SRVREADY");
 
 	curr_hash = 0;
@@ -422,7 +407,7 @@ static void test_seqpacket_msg_bounds_client(const struct test_opts *opts)
 		int flags;
 		void *buf;
 
-		/* Use "small" buffers and "big" buffers. */
+		 
 		if (i & 1)
 			buf_size = page_size +
 					(rand() % (max_msg_size - page_size));
@@ -437,7 +422,7 @@ static void test_seqpacket_msg_bounds_client(const struct test_opts *opts)
 		}
 
 		memset(buf, rand() & 0xff, buf_size);
-		/* Set at least one MSG_EOR + some random. */
+		 
 		if (i == (msg_count / 2) || (rand() & 1)) {
 			flags = MSG_EOR;
 			curr_hash++;
@@ -457,15 +442,7 @@ static void test_seqpacket_msg_bounds_client(const struct test_opts *opts)
 			exit(EXIT_FAILURE);
 		}
 
-		/*
-		 * Hash sum is computed at both client and server in
-		 * the same way:
-		 * H += hash('message data')
-		 * Such hash "controls" both data integrity and message
-		 * bounds. After data exchange, both sums are compared
-		 * using control socket, and if message bounds wasn't
-		 * broken - two values must be equal.
-		 */
+		 
 		curr_hash += hash_djb2(buf, buf_size);
 		free(buf);
 	}
@@ -504,9 +481,9 @@ static void test_seqpacket_msg_bounds_server(const struct test_opts *opts)
 		exit(EXIT_FAILURE);
 	}
 
-	/* Ready to receive data. */
+	 
 	control_writeln("SRVREADY");
-	/* Wait, until peer sends whole data. */
+	 
 	control_expectln("SENDDONE");
 	iov.iov_len = MAX_MSG_PAGES * getpagesize();
 	iov.iov_base = malloc(iov.iov_len);
@@ -618,7 +595,7 @@ static time_t current_nsec(void)
 }
 
 #define RCVTIMEO_TIMEOUT_SEC 1
-#define READ_OVERHEAD_NSEC 250000000 /* 0.25 sec */
+#define READ_OVERHEAD_NSEC 250000000  
 
 static void test_seqpacket_timeout_client(const struct test_opts *opts)
 {
@@ -809,14 +786,14 @@ static void test_seqpacket_invalid_rec_buffer_server(const struct test_opts *opt
 		exit(EXIT_FAILURE);
 	}
 
-	/* Setup first buffer. */
+	 
 	broken_buf = mmap(NULL, buf_size, prot, flags, -1, 0);
 	if (broken_buf == MAP_FAILED) {
 		perror("mmap for 'broken_buf'");
 		exit(EXIT_FAILURE);
 	}
 
-	/* Unmap "hole" in buffer. */
+	 
 	if (munmap(broken_buf + page_size, page_size)) {
 		perror("'broken_buf' setup");
 		exit(EXIT_FAILURE);
@@ -828,7 +805,7 @@ static void test_seqpacket_invalid_rec_buffer_server(const struct test_opts *opt
 		exit(EXIT_FAILURE);
 	}
 
-	/* Try to fill buffer with unmapped middle. */
+	 
 	res = read(fd, broken_buf, buf_size);
 	if (res != -1) {
 		fprintf(stderr,
@@ -842,7 +819,7 @@ static void test_seqpacket_invalid_rec_buffer_server(const struct test_opts *opt
 		exit(EXIT_FAILURE);
 	}
 
-	/* Try to fill valid buffer. */
+	 
 	res = read(fd, valid_buf, buf_size);
 	if (res < 0) {
 		perror("unexpected 'valid_buf' read(2) failure");
@@ -865,7 +842,7 @@ static void test_seqpacket_invalid_rec_buffer_server(const struct test_opts *opt
 		}
 	}
 
-	/* Unmap buffers. */
+	 
 	munmap(broken_buf, page_size);
 	munmap(broken_buf + page_size * 2, page_size);
 	munmap(valid_buf, buf_size);
@@ -885,18 +862,18 @@ static void test_stream_poll_rcvlowat_server(const struct test_opts *opts)
 		exit(EXIT_FAILURE);
 	}
 
-	/* Send 1 byte. */
+	 
 	send_byte(fd, 1, 0);
 
 	control_writeln("SRVSENT");
 
-	/* Wait until client is ready to receive rest of data. */
+	 
 	control_expectln("CLNSENT");
 
 	for (i = 0; i < RCVLOWAT_BUF_SIZE - 1; i++)
 		send_byte(fd, 1, 0);
 
-	/* Keep socket in active state. */
+	 
 	control_expectln("POLLDONE");
 
 	close(fd);
@@ -925,43 +902,41 @@ static void test_stream_poll_rcvlowat_client(const struct test_opts *opts)
 
 	control_expectln("SRVSENT");
 
-	/* At this point, server sent 1 byte. */
+	 
 	fds.fd = fd;
 	poll_flags = POLLIN | POLLRDNORM;
 	fds.events = poll_flags;
 
-	/* Try to wait for 1 sec. */
+	 
 	if (poll(&fds, 1, 1000) < 0) {
 		perror("poll");
 		exit(EXIT_FAILURE);
 	}
 
-	/* poll() must return nothing. */
+	 
 	if (fds.revents) {
 		fprintf(stderr, "Unexpected poll result %hx\n",
 			fds.revents);
 		exit(EXIT_FAILURE);
 	}
 
-	/* Tell server to send rest of data. */
+	 
 	control_writeln("CLNSENT");
 
-	/* Poll for data. */
+	 
 	if (poll(&fds, 1, 10000) < 0) {
 		perror("poll");
 		exit(EXIT_FAILURE);
 	}
 
-	/* Only these two bits are expected. */
+	 
 	if (fds.revents != poll_flags) {
 		fprintf(stderr, "Unexpected poll result %hx\n",
 			fds.revents);
 		exit(EXIT_FAILURE);
 	}
 
-	/* Use MSG_DONTWAIT, if call is going to wait, EAGAIN
-	 * will be returned.
-	 */
+	 
 	read_res = recv(fd, buf, sizeof(buf), MSG_DONTWAIT);
 	if (read_res != RCVLOWAT_BUF_SIZE) {
 		fprintf(stderr, "Unexpected recv result %zi\n",
@@ -994,7 +969,7 @@ static void test_inv_buf_client(const struct test_opts *opts, bool stream)
 
 	control_expectln("SENDDONE");
 
-	/* Use invalid buffer here. */
+	 
 	ret = recv(fd, NULL, sizeof(data), 0);
 	if (ret != -1) {
 		fprintf(stderr, "expected recv(2) failure, got %zi\n", ret);
@@ -1009,14 +984,14 @@ static void test_inv_buf_client(const struct test_opts *opts, bool stream)
 	ret = recv(fd, data, sizeof(data), MSG_DONTWAIT);
 
 	if (stream) {
-		/* For SOCK_STREAM we must continue reading. */
+		 
 		if (ret != sizeof(data)) {
 			fprintf(stderr, "expected recv(2) success, got %zi\n", ret);
 			exit(EXIT_FAILURE);
 		}
-		/* Don't check errno in case of success. */
+		 
 	} else {
-		/* For SOCK_SEQPACKET socket's queue must be empty. */
+		 
 		if (ret != -1) {
 			fprintf(stderr, "expected recv(2) failure, got %zi\n", ret);
 			exit(EXIT_FAILURE);
@@ -1096,7 +1071,7 @@ static void test_stream_virtio_skb_merge_client(const struct test_opts *opts)
 		exit(EXIT_FAILURE);
 	}
 
-	/* Send first skbuff. */
+	 
 	res = send(fd, HELLO_STR, strlen(HELLO_STR), 0);
 	if (res != strlen(HELLO_STR)) {
 		fprintf(stderr, "unexpected send(2) result %zi\n", res);
@@ -1104,10 +1079,10 @@ static void test_stream_virtio_skb_merge_client(const struct test_opts *opts)
 	}
 
 	control_writeln("SEND0");
-	/* Peer reads part of first skbuff. */
+	 
 	control_expectln("REPLY0");
 
-	/* Send second skbuff, it will be appended to the first. */
+	 
 	res = send(fd, WORLD_STR, strlen(WORLD_STR), 0);
 	if (res != strlen(WORLD_STR)) {
 		fprintf(stderr, "unexpected send(2) result %zi\n", res);
@@ -1115,7 +1090,7 @@ static void test_stream_virtio_skb_merge_client(const struct test_opts *opts)
 	}
 
 	control_writeln("SEND1");
-	/* Peer reads merged skbuff packet. */
+	 
 	control_expectln("REPLY1");
 
 	close(fd);
@@ -1135,7 +1110,7 @@ static void test_stream_virtio_skb_merge_server(const struct test_opts *opts)
 
 	control_expectln("SEND0");
 
-	/* Read skbuff partially. */
+	 
 	res = recv(fd, buf, 2, 0);
 	if (res != 2) {
 		fprintf(stderr, "expected recv(2) returns 2 bytes, got %zi\n", res);

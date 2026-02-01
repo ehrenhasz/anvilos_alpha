@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2017, Michael Neuling, IBM Corp.
- * Original: Breno Leitao <brenohl@br.ibm.com> &
- *           Gustavo Bueno Romero <gromero@br.ibm.com>
- * Edited: Michael Neuling
- *
- * Force VMX unavailable during a transaction and see if it corrupts
- * the checkpointed VMX register state after the abort.
- */
+
+ 
 
 #include <inttypes.h>
 #include <htmintrin.h>
@@ -29,29 +21,29 @@ void *worker(void *unused)
 	uint64_t texasr;
 
 	asm goto (
-		"li       3, 1;"  /* Stick non-zero value in VMX0 */
+		"li       3, 1;"   
 		"std      3, 0(%[vmx0_ptr]);"
 		"lvx      0, 0, %[vmx0_ptr];"
 
-		/* Wait here a bit so we get scheduled out 255 times */
+		 
 		"lis      3, 0x3fff;"
 		"1: ;"
 		"addi     3, 3, -1;"
 		"cmpdi    3, 0;"
 		"bne      1b;"
 
-		/* Kernel will hopefully turn VMX off now */
+		 
 
 		"tbegin. ;"
 		"beq      failure;"
 
-		/* Cause VMX unavail. Any VMX instruction */
+		 
 		"vaddcuw  0,0,0;"
 
 		"tend. ;"
 		"b        %l[success];"
 
-		/* Check VMX0 sanity after abort */
+		 
 		"failure: ;"
 		"lvx       1,  0, %[vmx0_ptr];"
 		"vcmpequb. 2,  0, 1;"
@@ -63,7 +55,7 @@ void *worker(void *unused)
 		: success, value_match, value_mismatch
 		);
 
-	/* HTM aborted and VMX0 is corrupted */
+	 
 value_mismatch:
 	texasr = __builtin_get_texasr();
 
@@ -75,13 +67,13 @@ value_mismatch:
 	passed = 0;
 	return NULL;
 
-	/* HTM aborted but VMX0 is correct */
+	 
 value_match:
-//	printf("!");
+
 	return NULL;
 
 success:
-//	printf(".");
+
 	return NULL;
 }
 

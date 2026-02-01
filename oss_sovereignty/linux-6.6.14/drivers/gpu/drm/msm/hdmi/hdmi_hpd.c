@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -18,21 +15,21 @@ static void msm_hdmi_phy_reset(struct hdmi *hdmi)
 	val = hdmi_read(hdmi, REG_HDMI_PHY_CTRL);
 
 	if (val & HDMI_PHY_CTRL_SW_RESET_LOW) {
-		/* pull low */
+		 
 		hdmi_write(hdmi, REG_HDMI_PHY_CTRL,
 				val & ~HDMI_PHY_CTRL_SW_RESET);
 	} else {
-		/* pull high */
+		 
 		hdmi_write(hdmi, REG_HDMI_PHY_CTRL,
 				val | HDMI_PHY_CTRL_SW_RESET);
 	}
 
 	if (val & HDMI_PHY_CTRL_SW_RESET_PLL_LOW) {
-		/* pull low */
+		 
 		hdmi_write(hdmi, REG_HDMI_PHY_CTRL,
 				val & ~HDMI_PHY_CTRL_SW_RESET_PLL);
 	} else {
-		/* pull high */
+		 
 		hdmi_write(hdmi, REG_HDMI_PHY_CTRL,
 				val | HDMI_PHY_CTRL_SW_RESET_PLL);
 	}
@@ -40,21 +37,21 @@ static void msm_hdmi_phy_reset(struct hdmi *hdmi)
 	msleep(100);
 
 	if (val & HDMI_PHY_CTRL_SW_RESET_LOW) {
-		/* pull high */
+		 
 		hdmi_write(hdmi, REG_HDMI_PHY_CTRL,
 				val | HDMI_PHY_CTRL_SW_RESET);
 	} else {
-		/* pull low */
+		 
 		hdmi_write(hdmi, REG_HDMI_PHY_CTRL,
 				val & ~HDMI_PHY_CTRL_SW_RESET);
 	}
 
 	if (val & HDMI_PHY_CTRL_SW_RESET_PLL_LOW) {
-		/* pull high */
+		 
 		hdmi_write(hdmi, REG_HDMI_PHY_CTRL,
 				val | HDMI_PHY_CTRL_SW_RESET_PLL);
 	} else {
-		/* pull low */
+		 
 		hdmi_write(hdmi, REG_HDMI_PHY_CTRL,
 				val & ~HDMI_PHY_CTRL_SW_RESET_PLL);
 	}
@@ -124,17 +121,17 @@ int msm_hdmi_hpd_enable(struct drm_bridge *bridge)
 
 	hdmi_write(hdmi, REG_HDMI_USEC_REFTIMER, 0x0001001b);
 
-	/* enable HPD events: */
+	 
 	hdmi_write(hdmi, REG_HDMI_HPD_INT_CTRL,
 			HDMI_HPD_INT_CTRL_INT_CONNECT |
 			HDMI_HPD_INT_CTRL_INT_EN);
 
-	/* set timeout to 4.1ms (max) for hardware debounce */
+	 
 	spin_lock_irqsave(&hdmi->reg_lock, flags);
 	hpd_ctrl = hdmi_read(hdmi, REG_HDMI_HPD_CTRL);
 	hpd_ctrl |= HDMI_HPD_CTRL_TIMEOUT(0x1fff);
 
-	/* Toggle HPD circuit to trigger HPD sense */
+	 
 	hdmi_write(hdmi, REG_HDMI_HPD_CTRL,
 			~HDMI_HPD_CTRL_ENABLE & hpd_ctrl);
 	hdmi_write(hdmi, REG_HDMI_HPD_CTRL,
@@ -154,7 +151,7 @@ void msm_hdmi_hpd_disable(struct hdmi_bridge *hdmi_bridge)
 	struct device *dev = &hdmi->pdev->dev;
 	int ret;
 
-	/* Disable HPD interrupt */
+	 
 	hdmi_write(hdmi, REG_HDMI_HPD_INT_CTRL, 0);
 
 	msm_hdmi_set_mode(hdmi, false);
@@ -177,7 +174,7 @@ void msm_hdmi_hpd_irq(struct drm_bridge *bridge)
 	struct hdmi *hdmi = hdmi_bridge->hdmi;
 	uint32_t hpd_int_status, hpd_int_ctrl;
 
-	/* Process HPD: */
+	 
 	hpd_int_status = hdmi_read(hdmi, REG_HDMI_HPD_INT_STATUS);
 	hpd_int_ctrl   = hdmi_read(hdmi, REG_HDMI_HPD_INT_CTRL);
 
@@ -185,13 +182,13 @@ void msm_hdmi_hpd_irq(struct drm_bridge *bridge)
 			(hpd_int_status & HDMI_HPD_INT_STATUS_INT)) {
 		bool detected = !!(hpd_int_status & HDMI_HPD_INT_STATUS_CABLE_DETECTED);
 
-		/* ack & disable (temporarily) HPD events: */
+		 
 		hdmi_write(hdmi, REG_HDMI_HPD_INT_CTRL,
 			HDMI_HPD_INT_CTRL_INT_ACK);
 
 		DBG("status=%04x, ctrl=%04x", hpd_int_status, hpd_int_ctrl);
 
-		/* detect disconnect if we are connected or visa versa: */
+		 
 		hpd_int_ctrl = HDMI_HPD_INT_CTRL_INT_EN;
 		if (!detected)
 			hpd_int_ctrl |= HDMI_HPD_INT_CTRL_INT_CONNECT;
@@ -233,10 +230,7 @@ enum drm_connector_status msm_hdmi_bridge_detect(
 	enum drm_connector_status stat_gpio, stat_reg;
 	int retry = 20;
 
-	/*
-	 * some platforms may not have hpd gpio. Rely only on the status
-	 * provided by REG_HDMI_HPD_INT_STATUS in this case.
-	 */
+	 
 	if (!hdmi->hpd_gpiod)
 		return detect_reg(hdmi);
 
@@ -250,10 +244,7 @@ enum drm_connector_status msm_hdmi_bridge_detect(
 		mdelay(10);
 	} while (--retry);
 
-	/* the status we get from reading gpio seems to be more reliable,
-	 * so trust that one the most if we didn't manage to get hdmi and
-	 * gpio status to agree:
-	 */
+	 
 	if (stat_gpio != stat_reg) {
 		DBG("HDMI_HPD_INT_STATUS tells us: %d", stat_reg);
 		DBG("hpd gpio tells us: %d", stat_gpio);

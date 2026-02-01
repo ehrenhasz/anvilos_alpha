@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2017 Mellanox Technologies. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the names of the copyright holders nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/pid.h>
@@ -46,9 +16,7 @@
 typedef int (*res_fill_func_t)(struct sk_buff*, bool,
 			       struct rdma_restrack_entry*, uint32_t);
 
-/*
- * Sort array elements by the netlink attribute name
- */
+ 
 static const struct nla_policy nldev_policy[RDMA_NLDEV_ATTR_MAX] = {
 	[RDMA_NLDEV_ATTR_CHARDEV]		= { .type = NLA_U64 },
 	[RDMA_NLDEV_ATTR_CHARDEV_ABI]		= { .type = NLA_U64 },
@@ -267,7 +235,7 @@ static int fill_dev_info(struct sk_buff *msg, struct ib_device *device)
 		return -EMSGSIZE;
 
 	ib_get_device_fw_str(device, fw);
-	/* Device without FW has strlen(fw) = 0 */
+	 
 	if (strlen(fw) && nla_put_string(msg, RDMA_NLDEV_ATTR_FW_VERSION, fw))
 		return -EMSGSIZE;
 
@@ -284,11 +252,7 @@ static int fill_dev_info(struct sk_buff *msg, struct ib_device *device)
 	if (nla_put_u8(msg, RDMA_NLDEV_ATTR_DEV_DIM, device->use_cq_dim))
 		return -EMSGSIZE;
 
-	/*
-	 * Link type is determined on first port and mlx4 device
-	 * which can potentially have two different link type for the same
-	 * IB device is considered as better to be avoided in the future,
-	 */
+	 
 	port = rdma_start_port(device);
 	if (rdma_cap_opa_mad(device, port))
 		ret = nla_put_string(msg, RDMA_NLDEV_ATTR_DEV_PROTOCOL, "opa");
@@ -430,10 +394,7 @@ static int fill_res_name_pid(struct sk_buff *msg,
 {
 	int err = 0;
 
-	/*
-	 * For user resources, user is should read /proc/PID/comm to get the
-	 * name of the task file.
-	 */
+	 
 	if (rdma_is_kernel_res(res)) {
 		err = nla_put_string(msg, RDMA_NLDEV_ATTR_RES_KERN_NAME,
 				     res->kern_name);
@@ -441,17 +402,9 @@ static int fill_res_name_pid(struct sk_buff *msg,
 		pid_t pid;
 
 		pid = task_pid_vnr(res->task);
-		/*
-		 * Task is dead and in zombie state.
-		 * There is no need to print PID anymore.
-		 */
+		 
 		if (pid)
-			/*
-			 * This part is racy, task can be killed and PID will
-			 * be zero right here but it is ok, next query won't
-			 * return PID. We don't promise real-time reflection
-			 * of SW objects.
-			 */
+			 
 			err = nla_put_u32(msg, RDMA_NLDEV_ATTR_RES_PID, pid);
 	}
 
@@ -511,7 +464,7 @@ static int fill_res_qp_entry(struct sk_buff *msg, bool has_cap_net_admin,
 	if (port && port != qp->port)
 		return -EAGAIN;
 
-	/* In create_qp() port is not set yet */
+	 
 	if (qp->port && nla_put_u32(msg, RDMA_NLDEV_ATTR_PORT_INDEX, qp->port))
 		return -EMSGSIZE;
 
@@ -607,7 +560,7 @@ static int fill_res_cq_entry(struct sk_buff *msg, bool has_cap_net_admin,
 			      atomic_read(&cq->usecnt), RDMA_NLDEV_ATTR_PAD))
 		return -EMSGSIZE;
 
-	/* Poll context is only valid for kernel CQs */
+	 
 	if (rdma_is_kernel_res(res) &&
 	    nla_put_u8(msg, RDMA_NLDEV_ATTR_RES_POLL_CTX, cq->poll_ctx))
 		return -EMSGSIZE;
@@ -783,7 +736,7 @@ static int fill_res_srq_qps(struct sk_buff *msg, struct ib_srq *srq)
 		}
 
 		if (qp->qp_num < prev)
-			/* qp_num should be ascending */
+			 
 			goto err_loop;
 
 		if (min_range == 0) {
@@ -1001,7 +954,7 @@ static int fill_res_counter_entry(struct sk_buff *msg, bool has_cap_net_admin,
 	if (port && port != counter->port)
 		return -EAGAIN;
 
-	/* Dump it even query failed */
+	 
 	rdma_counter_query_stats(counter);
 
 	if (nla_put_u32(msg, RDMA_NLDEV_ATTR_PORT_INDEX, counter->port) ||
@@ -1147,10 +1100,7 @@ out:	cb->args[0] = idx;
 
 static int nldev_get_dumpit(struct sk_buff *skb, struct netlink_callback *cb)
 {
-	/*
-	 * There is no need to take lock, because
-	 * we are relying on ib_core's locking.
-	 */
+	 
 	return ib_enum_all_devs(_nldev_get_dumpit, skb, cb);
 }
 
@@ -1235,16 +1185,7 @@ static int nldev_port_get_dumpit(struct sk_buff *skb,
 		return -EINVAL;
 
 	rdma_for_each_port (device, p) {
-		/*
-		 * The dumpit function returns all information from specific
-		 * index. This specific index is taken from the netlink
-		 * messages request sent by user and it is available
-		 * in cb->args[0].
-		 *
-		 * Usually, the user doesn't fill this field and it causes
-		 * to return everything.
-		 *
-		 */
+		 
 		if (idx < start) {
 			idx++;
 			continue;
@@ -1515,14 +1456,7 @@ static int res_get_common_dumpit(struct sk_buff *skb,
 
 	err = nlmsg_parse_deprecated(cb->nlh, 0, tb, RDMA_NLDEV_ATTR_MAX - 1,
 				     nldev_policy, NULL);
-	/*
-	 * Right now, we are expecting the device index to get res information,
-	 * but it is possible to extend this code to return all devices in
-	 * one shot by checking the existence of RDMA_NLDEV_ATTR_DEV_INDEX.
-	 * if it doesn't exist, we will iterate over all devices.
-	 *
-	 * But it is not needed for now.
-	 */
+	 
 	if (err || !tb[RDMA_NLDEV_ATTR_DEV_INDEX])
 		return -EINVAL;
 
@@ -1531,9 +1465,7 @@ static int res_get_common_dumpit(struct sk_buff *skb,
 	if (!device)
 		return -EINVAL;
 
-	/*
-	 * If no PORT_INDEX is supplied, we will return all QPs from that device
-	 */
+	 
 	if (tb[RDMA_NLDEV_ATTR_PORT_INDEX]) {
 		port = nla_get_u32(tb[RDMA_NLDEV_ATTR_PORT_INDEX]);
 		if (!rdma_is_port_valid(device, port)) {
@@ -1562,11 +1494,7 @@ static int res_get_common_dumpit(struct sk_buff *skb,
 
 	rt = &device->res[res_type];
 	xa_lock(&rt->xa);
-	/*
-	 * FIXME: if the skip ahead is something common this loop should
-	 * use xas_for_each & xas_pause to optimize, we can have a lot of
-	 * objects.
-	 */
+	 
 	xa_for_each(&rt->xa, id, res) {
 		if (idx < start || !rdma_restrack_get(res))
 			goto next;
@@ -1605,10 +1533,7 @@ msg_full:
 	nlmsg_end(skb, nlh);
 	cb->args[0] = idx;
 
-	/*
-	 * No more entries to fill, cancel the message and
-	 * return 0 to mark end of dumpit.
-	 */
+	 
 	if (!filled)
 		goto err;
 
@@ -1882,16 +1807,7 @@ static int nldev_sys_get_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
 		return err;
 	}
 
-	/*
-	 * Copy-on-fork is supported.
-	 * See commits:
-	 * 70e806e4e645 ("mm: Do early cow for pinned pages during fork() for ptes")
-	 * 4eae4efa2c29 ("hugetlb: do early cow when page pinned on src mm")
-	 * for more details. Don't backport this without them.
-	 *
-	 * Return value ignored on purpose, assume copy-on-fork is not
-	 * supported in case of failure.
-	 */
+	 
 	nla_put_u8(msg, RDMA_NLDEV_SYS_ATTR_COPY_ON_FORK, 1);
 
 	nlmsg_end(msg, nlh);
@@ -1911,7 +1827,7 @@ static int nldev_set_sys_set_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
 		return -EINVAL;
 
 	enable = nla_get_u8(tb[RDMA_NLDEV_SYS_ATTR_NETNS_MODE]);
-	/* Only 0 and 1 are supported */
+	 
 	if (enable > 1)
 		return -EINVAL;
 
@@ -1927,7 +1843,7 @@ static int nldev_stat_set_mode_doit(struct sk_buff *msg,
 	u32 mode, mask = 0, qpn, cntn = 0;
 	int ret;
 
-	/* Currently only counter for QP is supported */
+	 
 	if (!tb[RDMA_NLDEV_ATTR_STAT_RES] ||
 	    nla_get_u32(tb[RDMA_NLDEV_ATTR_STAT_RES]) != RDMA_NLDEV_ATTR_RES_QP)
 		return -EINVAL;

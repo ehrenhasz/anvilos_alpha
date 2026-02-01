@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Stas Sergeev <stsp@users.sourceforge.net>
- *
- * test sigaltstack(SS_ONSTACK | SS_AUTODISARM)
- * If that succeeds, then swapcontext() can be used inside sighandler safely.
- *
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <signal.h>
@@ -51,7 +45,7 @@ void my_usr1(int sig, siginfo_t *si, void *u)
 			sp >= (unsigned long)sstack + stack_size) {
 		ksft_exit_fail_msg("SP is not on sigaltstack\n");
 	}
-	/* put some data on stack. other sighandler will try to overwrite it */
+	 
 	aa = alloca(1024);
 	assert(aa);
 	p = (struct stk_data *)(aa + 512);
@@ -84,14 +78,14 @@ void my_usr2(int sig, siginfo_t *si, void *u)
 
 	ksft_print_msg("[RUN]\tsignal USR2\n");
 	aa = alloca(1024);
-	/* dont run valgrind on this */
-	/* try to find the data stored by previous sighandler */
+	 
+	 
 	p = memmem(aa, 1024, msg, strlen(msg));
 	if (p) {
 		ksft_test_result_fail("sigaltstack re-used\n");
-		/* corrupt the data */
+		 
 		strcpy(p->msg, msg2);
-		/* tell other sighandler that his data is corrupted */
+		 
 		p->flag = 0;
 	}
 }
@@ -109,7 +103,7 @@ int main(void)
 	stack_t stk;
 	int err;
 
-	/* Make sure more than the required minimum. */
+	 
 	stack_size = getauxval(AT_MINSIGSTKSZ) + SIGSTKSZ;
 	ksft_print_msg("[NOTE]\tthe stack size is %lu\n", stack_size);
 
@@ -151,12 +145,7 @@ int main(void)
 		if (errno == EINVAL) {
 			ksft_test_result_skip(
 				"[NOTE]\tThe running kernel doesn't support SS_AUTODISARM\n");
-			/*
-			 * If test cases for the !SS_AUTODISARM variant were
-			 * added, we could still run them.  We don't have any
-			 * test cases like that yet, so just exit and report
-			 * success.
-			 */
+			 
 			return 0;
 		} else {
 			ksft_exit_fail_msg(

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 
 #include <linux/log2.h>
 
@@ -37,11 +35,7 @@ static u64 gen8_pte_encode(dma_addr_t addr,
 	if (unlikely(flags & PTE_READ_ONLY))
 		pte &= ~GEN8_PAGE_RW;
 
-	/*
-	 * For pre-gen12 platforms pat_index is the same as enum
-	 * i915_cache_level, so the switch-case here is still valid.
-	 * See translation table defined by LEGACY_CACHELEVEL.
-	 */
+	 
 	switch (pat_index) {
 	case I915_CACHE_NONE:
 		pte |= PPAT_UNCACHED;
@@ -92,7 +86,7 @@ static void gen8_ppgtt_notify_vgt(struct i915_ppgtt *ppgtt, bool create)
 	int i;
 
 	if (create)
-		atomic_inc(px_used(ppgtt->pd)); /* never remove */
+		atomic_inc(px_used(ppgtt->pd));  
 	else
 		atomic_dec(px_used(ppgtt->pd));
 
@@ -126,14 +120,14 @@ static void gen8_ppgtt_notify_vgt(struct i915_ppgtt *ppgtt, bool create)
 			VGT_G2V_PPGTT_L3_PAGE_TABLE_DESTROY;
 	}
 
-	/* g2v_notify atomically (via hv trap) consumes the message packet. */
+	 
 	intel_uncore_write(uncore, vgtif_reg(g2v_notify), msg);
 
 	mutex_unlock(&i915->vgpu.lock);
 }
 
-/* Index shifts into the pagetable are offset by GEN8_PTE_SHIFT [12] */
-#define GEN8_PAGE_SIZE (SZ_4K) /* page and page-directory sizes are the same */
+ 
+#define GEN8_PAGE_SIZE (SZ_4K)  
 #define GEN8_PTE_SHIFT (ilog2(GEN8_PAGE_SIZE))
 #define GEN8_PDES (GEN8_PAGE_SIZE / sizeof(u64))
 #define gen8_pd_shift(lvl) ((lvl) * ilog2(GEN8_PDES))
@@ -331,7 +325,7 @@ static void __gen8_ppgtt_alloc(struct i915_address_space * const vm,
 	GEM_BUG_ON(!len || (idx + len - 1) >> gen8_pd_shift(1));
 
 	spin_lock(&pd->lock);
-	GEM_BUG_ON(!atomic_read(px_used(pd))); /* Must be pinned! */
+	GEM_BUG_ON(!atomic_read(px_used(pd)));  
 	do {
 		struct i915_page_table *pt = pd->entry[idx];
 
@@ -375,7 +369,7 @@ static void __gen8_ppgtt_alloc(struct i915_address_space * const vm,
 			    atomic_read(&pt->used));
 
 			atomic_add(count, &pt->used);
-			/* All other pdes may be simultaneously removed */
+			 
 			GEM_BUG_ON(atomic_read(&pt->used) > NALLOC * I915_PDES);
 			*start += count;
 		}
@@ -479,7 +473,7 @@ gen8_ppgtt_insert_pte(struct i915_ppgtt *ppgtt,
 
 		if (gen8_pd_index(++idx, 0) == 0) {
 			if (gen8_pd_index(idx, 1) == 0) {
-				/* Limited by sg length for 3lvl */
+				 
 				if (gen8_pd_index(idx, 2) == 0)
 					break;
 
@@ -538,15 +532,7 @@ xehpsdv_ppgtt_insert_huge(struct i915_address_space *vm,
 			page_size = I915_GTT_PAGE_SIZE;
 
 			if (vma_res->bi.page_sizes.sg & I915_GTT_PAGE_SIZE_64K) {
-				/*
-				 * Device local-memory on these platforms should
-				 * always use 64K pages or larger (including GTT
-				 * alignment), therefore if we know the whole
-				 * page-table needs to be filled we can always
-				 * safely use the compact-layout. Otherwise fall
-				 * back to the TLB hint with PS64. If this is
-				 * system memory we only bother with PS64.
-				 */
+				 
 				if ((encode & GEN12_PPGTT_PTE_LM) &&
 				    end - start >= SZ_2M && !index) {
 					index = __gen8_pte_index(start, 0) / 16;
@@ -685,12 +671,7 @@ static void gen8_ppgtt_insert_huge(struct i915_address_space *vm,
 
 		drm_clflush_virt_range(vaddr, PAGE_SIZE);
 
-		/*
-		 * Is it safe to mark the 2M block as 64K? -- Either we have
-		 * filled whole page-table with 64K entries, or filled part of
-		 * it and have reached the end of the sg table and we have
-		 * enough padding.
-		 */
+		 
 		if (maybe_64K != -1 &&
 		    (index == I915_PDES ||
 		     (i915_vm_has_scratch_64K(vm) &&
@@ -702,15 +683,7 @@ static void gen8_ppgtt_insert_huge(struct i915_address_space *vm,
 			drm_clflush_virt_range(vaddr, PAGE_SIZE);
 			page_size = I915_GTT_PAGE_SIZE_64K;
 
-			/*
-			 * We write all 4K page entries, even when using 64K
-			 * pages. In order to verify that the HW isn't cheating
-			 * by using the 4K PTE instead of the 64K PTE, we want
-			 * to remove all the surplus entries. If the HW skipped
-			 * the 64K PTE, it will read/write into the scratch page
-			 * instead - which we detect as missing results during
-			 * selftests.
-			 */
+			 
 			if (I915_SELFTEST_ONLY(vm->scrub_64K)) {
 				u16 i;
 
@@ -794,7 +767,7 @@ static void __xehpsdv_ppgtt_insert_entry_lm(struct i915_address_space *vm,
 	GEM_BUG_ON(!IS_ALIGNED(addr, SZ_64K));
 	GEM_BUG_ON(!IS_ALIGNED(offset, SZ_64K));
 
-	/* XXX: we don't strictly need to use this layout */
+	 
 
 	if (!pt->is_compact) {
 		vaddr = px_vaddr(pd);
@@ -825,10 +798,7 @@ static int gen8_init_scratch(struct i915_address_space *vm)
 	int ret;
 	int i;
 
-	/*
-	 * If everybody agrees to not to write into the scratch page,
-	 * we can reuse it for all vm, keeping contexts and processes separate.
-	 */
+	 
 	if (vm->has_read_only && vm->gt->vm && !i915_is_ggtt(vm->gt->vm)) {
 		struct i915_address_space *clone = vm->gt->vm;
 
@@ -910,7 +880,7 @@ static int gen8_preallocate_top_level_pdp(struct i915_ppgtt *ppgtt)
 
 		fill_px(pde, vm->scratch[1]->encode);
 		set_pd_entry(pd, idx, pde);
-		atomic_inc(px_used(pde)); /* keep pinned */
+		atomic_inc(px_used(pde));  
 	}
 	wmb();
 
@@ -942,7 +912,7 @@ gen8_alloc_top_pd(struct i915_address_space *vm)
 		goto err_pd;
 
 	fill_page_dma(px_base(pd), vm->scratch[vm->top]->encode, count);
-	atomic_inc(px_used(pd)); /* mark as pinned */
+	atomic_inc(px_used(pd));  
 	return pd;
 
 err_pd:
@@ -950,13 +920,7 @@ err_pd:
 	return ERR_PTR(err);
 }
 
-/*
- * GEN8 legacy ppgtt programming is accomplished through a max 4 PDP registers
- * with a net effect resembling a 2-level page table in normal x86 terms. Each
- * PDP represents 1GB of memory 4 * 512 * 512 * 4096 = 4GB legacy 32b address
- * space.
- *
- */
+ 
 struct i915_ppgtt *gen8_ppgtt_create(struct intel_gt *gt,
 				     unsigned long lmem_pt_obj_flags)
 {
@@ -972,14 +936,7 @@ struct i915_ppgtt *gen8_ppgtt_create(struct intel_gt *gt,
 	ppgtt->vm.top = i915_vm_is_4lvl(&ppgtt->vm) ? 3 : 2;
 	ppgtt->vm.pd_shift = ilog2(SZ_4K * SZ_4K / sizeof(gen8_pte_t));
 
-	/*
-	 * From bdw, there is hw support for read-only pages in the PPGTT.
-	 *
-	 * Gen11 has HSDES#:1807136187 unresolved. Disable ro support
-	 * for now.
-	 *
-	 * Gen12 has inherited the same read-only fault issue from gen11.
-	 */
+	 
 	ppgtt->vm.has_read_only = !IS_GRAPHICS_VER(gt->i915, 11, 12);
 
 	if (HAS_LMEM(gt->i915))
@@ -987,12 +944,7 @@ struct i915_ppgtt *gen8_ppgtt_create(struct intel_gt *gt,
 	else
 		ppgtt->vm.alloc_pt_dma = alloc_pt_dma;
 
-	/*
-	 * Using SMEM here instead of LMEM has the advantage of not reserving
-	 * high performance memory for a "never" used filler page. It also
-	 * removes the device access that would be required to initialise the
-	 * scratch page, reducing pressure on an even scarcer resource.
-	 */
+	 
 	ppgtt->vm.alloc_scratch_dma = alloc_pt_dma;
 
 	if (GRAPHICS_VER(gt->i915) >= 12)

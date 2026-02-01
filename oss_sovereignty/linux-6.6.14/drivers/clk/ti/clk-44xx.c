@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * OMAP4 Clock init
- *
- * Copyright (C) 2013 Texas Instruments, Inc.
- *
- * Tero Kristo (t-kristo@ti.com)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/list.h>
@@ -16,19 +10,10 @@
 
 #include "clock.h"
 
-/*
- * OMAP4 ABE DPLL default frequency. In OMAP4460 TRM version V, section
- * "3.6.3.2.3 CM1_ABE Clock Generator" states that the "DPLL_ABE_X2_CLK
- * must be set to 196.608 MHz" and hence, the DPLL locked frequency is
- * half of this value.
- */
+ 
 #define OMAP4_DPLL_ABE_DEFFREQ				98304000
 
-/*
- * OMAP4 USB DPLL default frequency. In OMAP4430 TRM version V, section
- * "3.6.3.9.5 DPLL_USB Preferred Settings" shows that the preferred
- * locked frequency for the USB DPLL is 960MHz.
- */
+ 
 #define OMAP4_DPLL_USB_DEFFREQ				960000000
 
 static const struct omap_clkctrl_reg_data omap4_mpuss_clkctrl_regs[] __initconst = {
@@ -711,11 +696,7 @@ const struct omap_clkctrl_data omap4_clkctrl_data[] __initconst = {
 
 static struct ti_dt_clk omap44xx_clks[] = {
 	DT_CLK(NULL, "timer_32k_ck", "sys_32k_ck"),
-	/*
-	 * XXX: All the clock aliases below are only needed for legacy
-	 * hwmod support. Once hwmod is removed, these can be removed
-	 * also.
-	 */
+	 
 	DT_CLK(NULL, "aess_fclk", "abe-clkctrl:0008:24"),
 	DT_CLK(NULL, "cm2_dm10_mux", "l4-per-clkctrl:0008:24"),
 	DT_CLK(NULL, "cm2_dm11_mux", "l4-per-clkctrl:0010:24"),
@@ -802,21 +783,13 @@ int __init omap4xxx_dt_clk_init(void)
 
 	ti_clk_add_aliases();
 
-	/*
-	 * Lock USB DPLL on OMAP4 devices so that the L3INIT power
-	 * domain can transition to retention state when not in use.
-	 */
+	 
 	usb_dpll = clk_get_sys(NULL, "dpll_usb_ck");
 	rc = clk_set_rate(usb_dpll, OMAP4_DPLL_USB_DEFFREQ);
 	if (rc)
 		pr_err("%s: failed to configure USB DPLL!\n", __func__);
 
-	/*
-	 * On OMAP4460 the ABE DPLL fails to turn on if in idle low-power
-	 * state when turning the ABE clock domain. Workaround this by
-	 * locking the ABE DPLL on boot.
-	 * Lock the ABE DPLL in any case to avoid issues with audio.
-	 */
+	 
 	abe_dpll_ref = clk_get_sys(NULL, "abe_dpll_refclk_mux_ck");
 	sys_32k_ck = clk_get_sys(NULL, "sys_32k_ck");
 	rc = clk_set_parent(abe_dpll_ref, sys_32k_ck);

@@ -1,21 +1,4 @@
-/* human.c -- print human readable file size
-
-   Copyright (C) 1996-2007, 2009-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Paul Eggert and Larry McVoy.  */
+ 
 
 #include <config.h>
 
@@ -30,35 +13,31 @@
 #include <error.h>
 #include <intprops.h>
 
-/* The maximum length of a suffix like "KiB".  */
+ 
 #define HUMAN_READABLE_SUFFIX_LENGTH_MAX 3
 
 static const char power_letter[] =
 {
-  0,    /* not used */
-  'K',  /* kibi ('k' for kilo is a special case) */
-  'M',  /* mega or mebi */
-  'G',  /* giga or gibi */
-  'T',  /* tera or tebi */
-  'P',  /* peta or pebi */
-  'E',  /* exa or exbi */
-  'Z',  /* zetta or 2**70 */
-  'Y',  /* yotta or 2**80 */
-  'R',  /* ronna or 2**90 */
-  'Q'   /* quetta or 2**100 */
+  0,     
+  'K',   
+  'M',   
+  'G',   
+  'T',   
+  'P',   
+  'E',   
+  'Z',   
+  'Y',   
+  'R',   
+  'Q'    
 };
 
 
-/* If INEXACT_STYLE is not human_round_to_nearest, and if easily
-   possible, adjust VALUE according to the style.  */
+ 
 
 static long double
 adjust_value (int inexact_style, long double value)
 {
-  /* Do not use the floorl or ceill functions, as that would mean
-     checking for their presence and possibly linking with the
-     standard math library, which is a porting pain.  So leave the
-     value alone if it is too large to easily round.  */
+   
   if (inexact_style != human_round_to_nearest && value < UINTMAX_MAX)
     {
       uintmax_t u = value;
@@ -68,14 +47,7 @@ adjust_value (int inexact_style, long double value)
   return value;
 }
 
-/* Group the digits of NUMBER according to the grouping rules of the
-   current locale.  NUMBER contains NUMBERLEN digits.  Modify the
-   bytes pointed to by NUMBER in place, subtracting 1 from NUMBER for
-   each byte inserted.  Return the starting address of the modified
-   number.
-
-   To group the digits, use GROUPING and THOUSANDS_SEP as in 'struct
-   lconv' from <locale.h>.  */
+ 
 
 static char *
 group_number (char *number, size_t numberlen,
@@ -86,8 +58,7 @@ group_number (char *number, size_t numberlen,
   size_t thousands_seplen = strlen (thousands_sep);
   size_t i = numberlen;
 
-  /* The maximum possible value for NUMBERLEN is the number of digits
-     in the square of the largest uintmax_t, so double the size needed.  */
+   
   char buf[2 * INT_STRLEN_BOUND (uintmax_t) + 1];
 
   memcpy (buf, number, numberlen);
@@ -117,39 +88,7 @@ group_number (char *number, size_t numberlen,
     }
 }
 
-/* Convert N to a human readable format in BUF, using the options OPTS.
-
-   N is expressed in units of FROM_BLOCK_SIZE.  FROM_BLOCK_SIZE must
-   be nonnegative.
-
-   Use units of TO_BLOCK_SIZE in the output number.  TO_BLOCK_SIZE
-   must be positive.
-
-   Use (OPTS & (human_round_to_nearest | human_floor | human_ceiling))
-   to determine whether to take the ceiling or floor of any result
-   that cannot be expressed exactly.
-
-   If (OPTS & human_group_digits), group the thousands digits
-   according to the locale, e.g., "1,000,000" in an American English
-   locale.
-
-   If (OPTS & human_autoscale), deduce the output block size
-   automatically; TO_BLOCK_SIZE must be 1 but it has no effect on the
-   output.  Use powers of 1024 if (OPTS & human_base_1024), and powers
-   of 1000 otherwise.  For example, assuming powers of 1024, 8500
-   would be converted to 8.3, 133456345 to 127, 56990456345 to 53, and
-   so on.  Numbers smaller than the power aren't modified.
-   human_autoscale is normally used together with human_SI.
-
-   If (OPTS & human_space_before_unit), use a space to separate the
-   number from any suffix that is appended as described below.
-
-   If (OPTS & human_SI), append an SI prefix indicating which power is
-   being used.  If in addition (OPTS & human_B), append "B" (if base
-   1000) or "iB" (if base 1024) to the SI prefix.  When ((OPTS &
-   human_SI) && ! (OPTS & human_autoscale)), TO_BLOCK_SIZE must be a
-   power of 1024 or of 1000, depending on (OPTS &
-   human_base_1024).  */
+ 
 
 char *
 human_readable (uintmax_t n, char *buf, int opts,
@@ -166,10 +105,7 @@ human_readable (uintmax_t n, char *buf, int opts,
   char *psuffix;
   char const *integerlim;
 
-  /* 0 means adjusted N == AMT.TENTHS;
-     1 means AMT.TENTHS < adjusted N < AMT.TENTHS + 0.05;
-     2 means adjusted N == AMT.TENTHS + 0.05;
-     3 means AMT.TENTHS + 0.05 < adjusted N < AMT.TENTHS + 0.1.  */
+   
   int rounding;
 
   char const *decimal_point = ".";
@@ -187,13 +123,11 @@ human_readable (uintmax_t n, char *buf, int opts,
   if (strlen (l->thousands_sep) <= MB_LEN_MAX)
     thousands_sep = l->thousands_sep;
 
-  /* Leave room for a trailing space and following suffix.  */
+   
   psuffix = buf + LONGEST_HUMAN_READABLE - 1 - HUMAN_READABLE_SUFFIX_LENGTH_MAX;
   p = psuffix;
 
-  /* Adjust AMT out of FROM_BLOCK_SIZE units and into TO_BLOCK_SIZE
-     units.  If this can be done exactly with integer arithmetic, do
-     not use floating point operations.  */
+   
   if (to_block_size <= from_block_size)
     {
       if (from_block_size % to_block_size == 0)
@@ -220,9 +154,7 @@ human_readable (uintmax_t n, char *buf, int opts,
     }
 
   {
-    /* Either the result cannot be computed easily using uintmax_t,
-       or from_block_size is zero.  Fall back on floating point.
-       FIXME: This can yield answers that are slightly off.  */
+     
 
     long double dto_block_size = to_block_size;
     long double damt = n * (from_block_size / dto_block_size);
@@ -272,10 +204,7 @@ human_readable (uintmax_t n, char *buf, int opts,
 
  use_integer_arithmetic:
   {
-    /* The computation can be done exactly, with integer arithmetic.
-
-       Use power of BASE notation if requested and if adjusted AMT is
-       large enough.  */
+     
 
     if (opts & human_autoscale)
       {
@@ -391,8 +320,7 @@ human_readable (uintmax_t n, char *buf, int opts,
 }
 
 
-/* The default block size used for output.  This number may change in
-   the future as disks get larger.  */
+ 
 #ifndef DEFAULT_BLOCK_SIZE
 # define DEFAULT_BLOCK_SIZE 1024
 #endif

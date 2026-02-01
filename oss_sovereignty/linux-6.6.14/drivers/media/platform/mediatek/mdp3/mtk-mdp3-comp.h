@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
- */
+ 
+ 
 
 #ifndef __MTK_MDP3_COMP_H__
 #define __MTK_MDP3_COMP_H__
@@ -65,43 +62,43 @@ do {								\
 } while (0)
 
 enum mtk_mdp_comp_id {
-	MDP_COMP_NONE = -1,	/* Invalid engine */
+	MDP_COMP_NONE = -1,	 
 
-	/* ISP */
+	 
 	MDP_COMP_WPEI = 0,
-	MDP_COMP_WPEO,		/* 1 */
-	MDP_COMP_WPEI2,		/* 2 */
-	MDP_COMP_WPEO2,		/* 3 */
-	MDP_COMP_ISP_IMGI,	/* 4 */
-	MDP_COMP_ISP_IMGO,	/* 5 */
-	MDP_COMP_ISP_IMG2O,	/* 6 */
+	MDP_COMP_WPEO,		 
+	MDP_COMP_WPEI2,		 
+	MDP_COMP_WPEO2,		 
+	MDP_COMP_ISP_IMGI,	 
+	MDP_COMP_ISP_IMGO,	 
+	MDP_COMP_ISP_IMG2O,	 
 
-	/* IPU */
-	MDP_COMP_IPUI,		/* 7 */
-	MDP_COMP_IPUO,		/* 8 */
+	 
+	MDP_COMP_IPUI,		 
+	MDP_COMP_IPUO,		 
 
-	/* MDP */
-	MDP_COMP_CAMIN,		/* 9 */
-	MDP_COMP_CAMIN2,	/* 10 */
-	MDP_COMP_RDMA0,		/* 11 */
-	MDP_COMP_AAL0,		/* 12 */
-	MDP_COMP_CCORR0,	/* 13 */
-	MDP_COMP_RSZ0,		/* 14 */
-	MDP_COMP_RSZ1,		/* 15 */
-	MDP_COMP_TDSHP0,	/* 16 */
-	MDP_COMP_COLOR0,	/* 17 */
-	MDP_COMP_PATH0_SOUT,	/* 18 */
-	MDP_COMP_PATH1_SOUT,	/* 19 */
-	MDP_COMP_WROT0,		/* 20 */
-	MDP_COMP_WDMA,		/* 21 */
+	 
+	MDP_COMP_CAMIN,		 
+	MDP_COMP_CAMIN2,	 
+	MDP_COMP_RDMA0,		 
+	MDP_COMP_AAL0,		 
+	MDP_COMP_CCORR0,	 
+	MDP_COMP_RSZ0,		 
+	MDP_COMP_RSZ1,		 
+	MDP_COMP_TDSHP0,	 
+	MDP_COMP_COLOR0,	 
+	MDP_COMP_PATH0_SOUT,	 
+	MDP_COMP_PATH1_SOUT,	 
+	MDP_COMP_WROT0,		 
+	MDP_COMP_WDMA,		 
 
-	/* Dummy Engine */
-	MDP_COMP_RDMA1,		/* 22 */
-	MDP_COMP_RSZ2,		/* 23 */
-	MDP_COMP_TDSHP1,	/* 24 */
-	MDP_COMP_WROT1,		/* 25 */
+	 
+	MDP_COMP_RDMA1,		 
+	MDP_COMP_RSZ2,		 
+	MDP_COMP_TDSHP1,	 
+	MDP_COMP_WROT1,		 
 
-	MDP_MAX_COMP_COUNT	/* ALWAYS keep at the end */
+	MDP_MAX_COMP_COUNT	 
 };
 
 enum mdp_comp_type {
@@ -121,10 +118,10 @@ enum mdp_comp_type {
 
 	MDP_COMP_TYPE_IMGI,
 	MDP_COMP_TYPE_WPEI,
-	MDP_COMP_TYPE_EXTO,	/* External path */
-	MDP_COMP_TYPE_DL_PATH,	/* Direct-link path */
+	MDP_COMP_TYPE_EXTO,	 
+	MDP_COMP_TYPE_DL_PATH,	 
 
-	MDP_COMP_TYPE_COUNT	/* ALWAYS keep at the end */
+	MDP_COMP_TYPE_COUNT	 
 };
 
 #define MDP_GCE_NO_EVENT (-1)
@@ -140,7 +137,7 @@ struct mdp_comp_match {
 	s32 inner_id;
 };
 
-/* Used to describe the item order in MDP property */
+ 
 struct mdp_comp_info {
 	u32 clk_num;
 	u32 clk_ofst;
@@ -203,4 +200,4 @@ int mdp_comp_ctx_config(struct mdp_dev *mdp, struct mdp_comp_ctx *ctx,
 			const struct img_compparam *param,
 			const struct img_ipi_frameparam *frame);
 
-#endif  /* __MTK_MDP3_COMP_H__ */
+#endif   

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/module.h>
 #include <linux/io.h>
@@ -32,29 +32,7 @@ static unsigned short ports[] = { 0x140, 0x150, 0x160, 0x170 };
 
 static unsigned short irqs[] = { 3, 5, 10, 11, 12, 14, 15, 0 };
 
-/* This driver works *ONLY* for Future Domain cards using the TMC-1800,
- * TMC-18C50, or TMC-18C30 chip.  This includes models TMC-1650, 1660, 1670,
- * and 1680. These are all 16-bit cards.
- * BIOS versions prior to 3.2 assigned SCSI ID 6 to SCSI adapter.
- *
- * The following BIOS signature signatures are for boards which do *NOT*
- * work with this driver (these TMC-8xx and TMC-9xx boards may work with the
- * Seagate driver):
- *
- * FUTURE DOMAIN CORP. (C) 1986-1988 V4.0I 03/16/88
- * FUTURE DOMAIN CORP. (C) 1986-1989 V5.0C2/14/89
- * FUTURE DOMAIN CORP. (C) 1986-1989 V6.0A7/28/89
- * FUTURE DOMAIN CORP. (C) 1986-1990 V6.0105/31/90
- * FUTURE DOMAIN CORP. (C) 1986-1990 V6.0209/18/90
- * FUTURE DOMAIN CORP. (C) 1986-1990 V7.009/18/90
- * FUTURE DOMAIN CORP. (C) 1992 V8.00.004/02/92
- *
- * (The cards which do *NOT* work are all 8-bit cards -- although some of
- * them have a 16-bit form-factor, the upper 8-bits are used only for IRQs
- * and are *NOT* used for data. You can tell the difference by following
- * the tracings on the circuit board -- if only the IRQ lines are involved,
- * you have a "8-bit" card, and should *NOT* use this driver.)
- */
+ 
 
 static struct signature {
 	const char *signature;
@@ -63,8 +41,8 @@ static struct signature {
 	int this_id;
 	int base_offset;
 } signatures[] = {
-/*          1         2         3         4         5         6 */
-/* 123456789012345678901234567890123456789012345678901234567890 */
+ 
+ 
 { "FUTURE DOMAIN CORP. (C) 1986-1990 1800-V2.07/28/89",	 5, 50,  6, 0x1fcc },
 { "FUTURE DOMAIN CORP. (C) 1986-1990 1800-V1.07/28/89",	 5, 50,  6, 0x1fcc },
 { "FUTURE DOMAIN CORP. (C) 1986-1990 1800-V2.07/28/89", 72, 50,  6, 0x1fa2 },
@@ -93,7 +71,7 @@ static int fdomain_isa_match(struct device *dev, unsigned int ndev)
 	static struct signature *saved_sig;
 	int this_id = 7;
 
-	if (ndev < ADDRESS_COUNT) {	/* scan supported ISA BIOS addresses */
+	if (ndev < ADDRESS_COUNT) {	 
 		p = ioremap(addresses[ndev], FDOMAIN_BIOS_SIZE);
 		if (!p)
 			return 0;
@@ -102,11 +80,11 @@ static int fdomain_isa_match(struct device *dev, unsigned int ndev)
 					    signatures[i].signature,
 					    signatures[i].length))
 				break;
-		if (i == SIGNATURE_COUNT)	/* no signature found */
+		if (i == SIGNATURE_COUNT)	 
 			goto fail_unmap;
 		sig = &signatures[i];
 		bios_base = addresses[ndev];
-		/* read I/O base from BIOS area */
+		 
 		if (sig->base_offset)
 			base = readb(p + sig->base_offset) +
 			      (readb(p + sig->base_offset + 1) << 8);
@@ -114,16 +92,16 @@ static int fdomain_isa_match(struct device *dev, unsigned int ndev)
 		if (base) {
 			dev_info(dev, "BIOS at 0x%lx specifies I/O base 0x%x\n",
 				 bios_base, base);
-		} else { /* no I/O base in BIOS area */
+		} else {  
 			dev_info(dev, "BIOS at 0x%lx\n", bios_base);
-			/* save BIOS signature for later use in port probing */
+			 
 			saved_sig = sig;
 			return 0;
 		}
-	} else	/* scan supported I/O ports */
+	} else	 
 		base = ports[ndev - ADDRESS_COUNT];
 
-	/* use saved BIOS signature if present */
+	 
 	if (!sig && saved_sig)
 		sig = saved_sig;
 
@@ -198,7 +176,7 @@ static int __init fdomain_isa_init(void)
 {
 	int isa_probe_count = ADDRESS_COUNT + PORT_COUNT;
 
-	if (io[0]) {	/* use module parameters if present */
+	if (io[0]) {	 
 		fdomain_isa_driver.match = fdomain_isa_param_match;
 		isa_probe_count = MAXBOARDS_PARAM;
 	}

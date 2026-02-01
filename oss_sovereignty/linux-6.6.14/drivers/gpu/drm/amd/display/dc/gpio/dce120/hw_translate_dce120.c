@@ -1,31 +1,6 @@
-/*
- * Copyright 2013-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
-/*
- * Pre-requisites: headers required by header of this unit
- */
+ 
 
 #include "hw_translate_dce120.h"
 
@@ -38,13 +13,12 @@
 #include "soc15_hw_ip.h"
 #include "vega10_ip_offset.h"
 
-/* begin *********************
- * macros to expend register list macro defined in HW object header file */
+ 
 
 #define BASE_INNER(seg) \
 	DCE_BASE__INST0_SEG ## seg
 
-/* compile time expand base address. */
+ 
 #define BASE(seg) \
 	BASE_INNER(seg)
 
@@ -55,8 +29,7 @@
 	BASE(mm ## block ## id ## _ ## reg_name ## _BASE_IDX) + \
 				mm ## block ## id ## _ ## reg_name
 
-/* macros to expend register list macro defined in HW object header file
- * end *********************/
+ 
 
 static bool offset_to_id(
 	uint32_t offset,
@@ -65,7 +38,7 @@ static bool offset_to_id(
 	uint32_t *en)
 {
 	switch (offset) {
-	/* GENERIC */
+	 
 	case REG(DC_GPIO_GENERIC_A):
 		*id = GPIO_ID_GENERIC;
 		switch (mask) {
@@ -95,7 +68,7 @@ static bool offset_to_id(
 			return false;
 		}
 	break;
-	/* HPD */
+	 
 	case REG(DC_GPIO_HPD_A):
 		*id = GPIO_ID_HPD;
 		switch (mask) {
@@ -122,7 +95,7 @@ static bool offset_to_id(
 			return false;
 		}
 	break;
-	/* SYNCA */
+	 
 	case REG(DC_GPIO_SYNCA_A):
 		*id = GPIO_ID_SYNC;
 		switch (mask) {
@@ -137,7 +110,7 @@ static bool offset_to_id(
 			return false;
 		}
 	break;
-	/* REG(DC_GPIO_GENLK_MASK */
+	 
 	case REG(DC_GPIO_GENLK_A):
 		*id = GPIO_ID_GSL;
 		switch (mask) {
@@ -158,10 +131,8 @@ static bool offset_to_id(
 			return false;
 		}
 	break;
-	/* DDC */
-	/* we don't care about the GPIO_ID for DDC
-	 * in DdcHandle it will use GPIO_ID_DDC_DATA/GPIO_ID_DDC_CLOCK
-	 * directly in the create method */
+	 
+	 
 	case REG(DC_GPIO_DDC1_A):
 		*en = GPIO_DDC_LINE_DDC1;
 		return true;
@@ -183,17 +154,17 @@ static bool offset_to_id(
 	case REG(DC_GPIO_DDCVGA_A):
 		*en = GPIO_DDC_LINE_DDC_VGA;
 		return true;
-	/* GPIO_I2CPAD */
+	 
 	case REG(DC_GPIO_I2CPAD_A):
 		*en = GPIO_DDC_LINE_I2C_PAD;
 		return true;
-	/* Not implemented */
+	 
 	case REG(DC_GPIO_PWRSEQ_A):
 	case REG(DC_GPIO_PAD_STRENGTH_1):
 	case REG(DC_GPIO_PAD_STRENGTH_2):
 	case REG(DC_GPIO_DEBUG):
 		return false;
-	/* UNEXPECTED */
+	 
 	default:
 		ASSERT_CRITICAL(false);
 		return false;
@@ -387,22 +358,13 @@ static bool id_to_offset(
 	return result;
 }
 
-/* function table */
+ 
 static const struct hw_translate_funcs funcs = {
 	.offset_to_id = offset_to_id,
 	.id_to_offset = id_to_offset,
 };
 
-/*
- * dal_hw_translate_dce120_init
- *
- * @brief
- * Initialize Hw translate function pointers.
- *
- * @param
- * struct hw_translate *tr - [out] struct of function pointers
- *
- */
+ 
 void dal_hw_translate_dce120_init(struct hw_translate *tr)
 {
 	tr->funcs = &funcs;

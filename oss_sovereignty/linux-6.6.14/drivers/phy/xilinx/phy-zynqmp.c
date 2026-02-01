@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * phy-zynqmp.c - PHY driver for Xilinx ZynqMP GT.
- *
- * Copyright (C) 2018-2020 Xilinx Inc.
- *
- * Author: Anurag Kumar Vulisha <anuragku@xilinx.com>
- * Author: Subbaraya Sundeep <sundeep.lkml@gmail.com>
- * Author: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- *
- * This driver is tested for USB, SGMII, SATA and Display Port currently.
- * PCIe should also work but that is experimental as of now.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -25,20 +14,18 @@
 
 #include <dt-bindings/phy/phy.h>
 
-/*
- * Lane Registers
- */
+ 
 
-/* TX De-emphasis parameters */
+ 
 #define L0_TX_ANA_TM_18			0x0048
 #define L0_TX_ANA_TM_118		0x01d8
 #define L0_TX_ANA_TM_118_FORCE_17_0	BIT(0)
 
-/* DN Resistor calibration code parameters */
+ 
 #define L0_TXPMA_ST_3			0x0b0c
 #define L0_DN_CALIB_CODE		0x3f
 
-/* PMA control parameters */
+ 
 #define L0_TXPMD_TM_45			0x0cb4
 #define L0_TXPMD_TM_48			0x0cc0
 #define L0_TXPMD_TM_45_OVER_DP_MAIN	BIT(0)
@@ -48,17 +35,17 @@
 #define L0_TXPMD_TM_45_OVER_DP_POST2	BIT(4)
 #define L0_TXPMD_TM_45_ENABLE_DP_POST2	BIT(5)
 
-/* PCS control parameters */
+ 
 #define L0_TM_DIG_6			0x106c
 #define L0_TM_DIS_DESCRAMBLE_DECODER	0x0f
 #define L0_TX_DIG_61			0x00f4
 #define L0_TM_DISABLE_SCRAMBLE_ENCODER	0x0f
 
-/* PLL Test Mode register parameters */
+ 
 #define L0_TM_PLL_DIG_37		0x2094
 #define L0_TM_COARSE_CODE_LIMIT		0x10
 
-/* PLL SSC step size offsets */
+ 
 #define L0_PLL_SS_STEPS_0_LSB		0x2368
 #define L0_PLL_SS_STEPS_1_MSB		0x236c
 #define L0_PLL_SS_STEP_SIZE_0_LSB	0x2370
@@ -67,7 +54,7 @@
 #define L0_PLL_SS_STEP_SIZE_3_MSB	0x237c
 #define L0_PLL_STATUS_READ_1		0x23e4
 
-/* SSC step size parameters */
+ 
 #define STEP_SIZE_0_MASK		0xff
 #define STEP_SIZE_1_MASK		0xff
 #define STEP_SIZE_2_MASK		0xff
@@ -78,11 +65,11 @@
 #define STEPS_0_MASK			0xff
 #define STEPS_1_MASK			0x07
 
-/* Reference clock selection parameters */
+ 
 #define L0_Ln_REF_CLK_SEL(n)		(0x2860 + (n) * 4)
 #define L0_REF_CLK_SEL_MASK		0x8f
 
-/* Calibration digital logic parameters */
+ 
 #define L3_TM_CALIB_DIG19		0xec4c
 #define L3_CALIB_DONE_STATUS		0xef14
 #define L3_TM_CALIB_DIG18		0xec48
@@ -96,16 +83,14 @@
 
 #define PHY_REG_OFFSET			0x4000
 
-/*
- * Global Registers
- */
+ 
 
-/* Refclk selection parameters */
+ 
 #define PLL_REF_SEL(n)			(0x10000 + (n) * 4)
 #define PLL_FREQ_MASK			0x1f
 #define PLL_STATUS_LOCKED		0x10
 
-/* Inter Connect Matrix parameters */
+ 
 #define ICM_CFG0			0x10010
 #define ICM_CFG1			0x10014
 #define ICM_CFG0_L0_MASK		0x07
@@ -114,7 +99,7 @@
 #define ICM_CFG2_L3_MASK		0x70
 #define ICM_CFG_SHIFT			4
 
-/* Inter Connect Matrix allowed protocols */
+ 
 #define ICM_PROTOCOL_PD			0x0
 #define ICM_PROTOCOL_PCIE		0x1
 #define ICM_PROTOCOL_SATA		0x2
@@ -122,13 +107,13 @@
 #define ICM_PROTOCOL_DP			0x4
 #define ICM_PROTOCOL_SGMII		0x5
 
-/* Test Mode common reset control  parameters */
+ 
 #define TM_CMN_RST			0x10018
 #define TM_CMN_RST_EN			0x1
 #define TM_CMN_RST_SET			0x2
 #define TM_CMN_RST_MASK			0x3
 
-/* Bus width parameters */
+ 
 #define TX_PROT_BUS_WIDTH		0x10040
 #define RX_PROT_BUS_WIDTH		0x10044
 #define PROT_BUS_WIDTH_10		0x0
@@ -137,43 +122,37 @@
 #define PROT_BUS_WIDTH_SHIFT(n)		((n) * 2)
 #define PROT_BUS_WIDTH_MASK(n)		GENMASK((n) * 2 + 1, (n) * 2)
 
-/* Number of GT lanes */
+ 
 #define NUM_LANES			4
 
-/* SIOU SATA control register */
+ 
 #define SATA_CONTROL_OFFSET		0x0100
 
-/* Total number of controllers */
+ 
 #define CONTROLLERS_PER_LANE		5
 
-/* Protocol Type parameters */
-#define XPSGTR_TYPE_USB0		0  /* USB controller 0 */
-#define XPSGTR_TYPE_USB1		1  /* USB controller 1 */
-#define XPSGTR_TYPE_SATA_0		2  /* SATA controller lane 0 */
-#define XPSGTR_TYPE_SATA_1		3  /* SATA controller lane 1 */
-#define XPSGTR_TYPE_PCIE_0		4  /* PCIe controller lane 0 */
-#define XPSGTR_TYPE_PCIE_1		5  /* PCIe controller lane 1 */
-#define XPSGTR_TYPE_PCIE_2		6  /* PCIe controller lane 2 */
-#define XPSGTR_TYPE_PCIE_3		7  /* PCIe controller lane 3 */
-#define XPSGTR_TYPE_DP_0		8  /* Display Port controller lane 0 */
-#define XPSGTR_TYPE_DP_1		9  /* Display Port controller lane 1 */
-#define XPSGTR_TYPE_SGMII0		10 /* Ethernet SGMII controller 0 */
-#define XPSGTR_TYPE_SGMII1		11 /* Ethernet SGMII controller 1 */
-#define XPSGTR_TYPE_SGMII2		12 /* Ethernet SGMII controller 2 */
-#define XPSGTR_TYPE_SGMII3		13 /* Ethernet SGMII controller 3 */
+ 
+#define XPSGTR_TYPE_USB0		0   
+#define XPSGTR_TYPE_USB1		1   
+#define XPSGTR_TYPE_SATA_0		2   
+#define XPSGTR_TYPE_SATA_1		3   
+#define XPSGTR_TYPE_PCIE_0		4   
+#define XPSGTR_TYPE_PCIE_1		5   
+#define XPSGTR_TYPE_PCIE_2		6   
+#define XPSGTR_TYPE_PCIE_3		7   
+#define XPSGTR_TYPE_DP_0		8   
+#define XPSGTR_TYPE_DP_1		9   
+#define XPSGTR_TYPE_SGMII0		10  
+#define XPSGTR_TYPE_SGMII1		11  
+#define XPSGTR_TYPE_SGMII2		12  
+#define XPSGTR_TYPE_SGMII3		13  
 
-/* Timeout values */
+ 
 #define TIMEOUT_US			1000
 
 struct xpsgtr_dev;
 
-/**
- * struct xpsgtr_ssc - structure to hold SSC settings for a lane
- * @refclk_rate: PLL reference clock frequency
- * @pll_ref_clk: value to be written to register for corresponding ref clk rate
- * @steps: number of steps of SSC (Spread Spectrum Clock)
- * @step_size: step size of each step
- */
+ 
 struct xpsgtr_ssc {
 	u32 refclk_rate;
 	u8  pll_ref_clk;
@@ -181,16 +160,7 @@ struct xpsgtr_ssc {
 	u32 step_size;
 };
 
-/**
- * struct xpsgtr_phy - representation of a lane
- * @phy: pointer to the kernel PHY device
- * @type: controller which uses this lane
- * @lane: lane number
- * @protocol: protocol in which the lane operates
- * @skip_phy_init: skip phy_init() if true
- * @dev: pointer to the xpsgtr_dev instance
- * @refclk: reference clock index
- */
+ 
 struct xpsgtr_phy {
 	struct phy *phy;
 	u8 type;
@@ -201,24 +171,12 @@ struct xpsgtr_phy {
 	unsigned int refclk;
 };
 
-/**
- * struct xpsgtr_dev - representation of a ZynMP GT device
- * @dev: pointer to device
- * @serdes: serdes base address
- * @siou: siou base address
- * @gtr_mutex: mutex for locking
- * @phys: PHY lanes
- * @refclk_sscs: spread spectrum settings for the reference clocks
- * @clk: reference clocks
- * @tx_term_fix: fix for GT issue
- * @saved_icm_cfg0: stored value of ICM CFG0 register
- * @saved_icm_cfg1: stored value of ICM CFG1 register
- */
+ 
 struct xpsgtr_dev {
 	struct device *dev;
 	void __iomem *serdes;
 	void __iomem *siou;
-	struct mutex gtr_mutex; /* mutex for locking */
+	struct mutex gtr_mutex;  
 	struct xpsgtr_phy phys[NUM_LANES];
 	const struct xpsgtr_ssc *refclk_sscs[NUM_LANES];
 	struct clk *clk[NUM_LANES];
@@ -227,11 +185,9 @@ struct xpsgtr_dev {
 	unsigned int saved_icm_cfg1;
 };
 
-/*
- * Configuration Data
- */
+ 
 
-/* lookup table to hold all settings needed for a ref clock frequency */
+ 
 static const struct xpsgtr_ssc ssc_lookup[] = {
 	{  19200000, 0x05,  608, 264020 },
 	{  20000000, 0x06,  634, 243454 },
@@ -248,9 +204,7 @@ static const struct xpsgtr_ssc ssc_lookup[] = {
 	{ 150000000, 0x11,  792, 187091 }
 };
 
-/*
- * I/O Accessors
- */
+ 
 
 static inline u32 xpsgtr_read(struct xpsgtr_dev *gtr_dev, u32 reg)
 {
@@ -298,11 +252,9 @@ static inline void xpsgtr_clr_set_phy(struct xpsgtr_phy *gtr_phy,
 	writel((readl(addr) & ~clr) | set, addr);
 }
 
-/*
- * Hardware Configuration
- */
+ 
 
-/* Wait for the PLL to lock (with a timeout). */
+ 
 static int xpsgtr_wait_pll_lock(struct phy *phy)
 {
 	struct xpsgtr_phy *gtr_phy = phy_get_drvdata(phy);
@@ -336,7 +288,7 @@ static int xpsgtr_wait_pll_lock(struct phy *phy)
 	return ret;
 }
 
-/* Configure PLL and spread-sprectrum clock. */
+ 
 static void xpsgtr_configure_pll(struct xpsgtr_phy *gtr_phy)
 {
 	const struct xpsgtr_ssc *ssc;
@@ -348,44 +300,44 @@ static void xpsgtr_configure_pll(struct xpsgtr_phy *gtr_phy)
 	xpsgtr_clr_set(gtr_phy->dev, PLL_REF_SEL(gtr_phy->lane),
 		       PLL_FREQ_MASK, ssc->pll_ref_clk);
 
-	/* Enable lane clock sharing, if required */
+	 
 	if (gtr_phy->refclk != gtr_phy->lane) {
-		/* Lane3 Ref Clock Selection Register */
+		 
 		xpsgtr_clr_set(gtr_phy->dev, L0_Ln_REF_CLK_SEL(gtr_phy->lane),
 			       L0_REF_CLK_SEL_MASK, 1 << gtr_phy->refclk);
 	}
 
-	/* SSC step size [7:0] */
+	 
 	xpsgtr_clr_set_phy(gtr_phy, L0_PLL_SS_STEP_SIZE_0_LSB,
 			   STEP_SIZE_0_MASK, step_size & STEP_SIZE_0_MASK);
 
-	/* SSC step size [15:8] */
+	 
 	step_size >>= STEP_SIZE_SHIFT;
 	xpsgtr_clr_set_phy(gtr_phy, L0_PLL_SS_STEP_SIZE_1,
 			   STEP_SIZE_1_MASK, step_size & STEP_SIZE_1_MASK);
 
-	/* SSC step size [23:16] */
+	 
 	step_size >>= STEP_SIZE_SHIFT;
 	xpsgtr_clr_set_phy(gtr_phy, L0_PLL_SS_STEP_SIZE_2,
 			   STEP_SIZE_2_MASK, step_size & STEP_SIZE_2_MASK);
 
-	/* SSC steps [7:0] */
+	 
 	xpsgtr_clr_set_phy(gtr_phy, L0_PLL_SS_STEPS_0_LSB,
 			   STEPS_0_MASK, ssc->steps & STEPS_0_MASK);
 
-	/* SSC steps [10:8] */
+	 
 	xpsgtr_clr_set_phy(gtr_phy, L0_PLL_SS_STEPS_1_MSB,
 			   STEPS_1_MASK,
 			   (ssc->steps >> STEP_SIZE_SHIFT) & STEPS_1_MASK);
 
-	/* SSC step size [24:25] */
+	 
 	step_size >>= STEP_SIZE_SHIFT;
 	xpsgtr_clr_set_phy(gtr_phy, L0_PLL_SS_STEP_SIZE_3_MSB,
 			   STEP_SIZE_3_MASK, (step_size & STEP_SIZE_3_MASK) |
 			   FORCE_STEP_SIZE | FORCE_STEPS);
 }
 
-/* Configure the lane protocol. */
+ 
 static void xpsgtr_lane_set_protocol(struct xpsgtr_phy *gtr_phy)
 {
 	struct xpsgtr_dev *gtr_dev = gtr_phy->dev;
@@ -407,19 +359,19 @@ static void xpsgtr_lane_set_protocol(struct xpsgtr_phy *gtr_phy)
 			       protocol << ICM_CFG_SHIFT);
 		break;
 	default:
-		/* We already checked 0 <= lane <= 3 */
+		 
 		break;
 	}
 }
 
-/* Bypass (de)scrambler and 8b/10b decoder and encoder. */
+ 
 static void xpsgtr_bypass_scrambler_8b10b(struct xpsgtr_phy *gtr_phy)
 {
 	xpsgtr_write_phy(gtr_phy, L0_TM_DIG_6, L0_TM_DIS_DESCRAMBLE_DECODER);
 	xpsgtr_write_phy(gtr_phy, L0_TX_DIG_61, L0_TM_DISABLE_SCRAMBLE_ENCODER);
 }
 
-/* DP-specific initialization. */
+ 
 static void xpsgtr_phy_init_dp(struct xpsgtr_phy *gtr_phy)
 {
 	xpsgtr_write_phy(gtr_phy, L0_TXPMD_TM_45,
@@ -432,7 +384,7 @@ static void xpsgtr_phy_init_dp(struct xpsgtr_phy *gtr_phy)
 			 L0_TX_ANA_TM_118_FORCE_17_0);
 }
 
-/* SATA-specific initialization. */
+ 
 static void xpsgtr_phy_init_sata(struct xpsgtr_phy *gtr_phy)
 {
 	struct xpsgtr_dev *gtr_dev = gtr_phy->dev;
@@ -442,21 +394,21 @@ static void xpsgtr_phy_init_sata(struct xpsgtr_phy *gtr_phy)
 	writel(gtr_phy->lane, gtr_dev->siou + SATA_CONTROL_OFFSET);
 }
 
-/* SGMII-specific initialization. */
+ 
 static void xpsgtr_phy_init_sgmii(struct xpsgtr_phy *gtr_phy)
 {
 	struct xpsgtr_dev *gtr_dev = gtr_phy->dev;
 	u32 mask = PROT_BUS_WIDTH_MASK(gtr_phy->lane);
 	u32 val = PROT_BUS_WIDTH_10 << PROT_BUS_WIDTH_SHIFT(gtr_phy->lane);
 
-	/* Set SGMII protocol TX and RX bus width to 10 bits. */
+	 
 	xpsgtr_clr_set(gtr_dev, TX_PROT_BUS_WIDTH, mask, val);
 	xpsgtr_clr_set(gtr_dev, RX_PROT_BUS_WIDTH, mask, val);
 
 	xpsgtr_bypass_scrambler_8b10b(gtr_phy);
 }
 
-/* Configure TX de-emphasis and margining for DP. */
+ 
 static void xpsgtr_phy_configure_dp(struct xpsgtr_phy *gtr_phy, unsigned int pre,
 				    unsigned int voltage)
 {
@@ -477,53 +429,37 @@ static void xpsgtr_phy_configure_dp(struct xpsgtr_phy *gtr_phy, unsigned int pre
 	xpsgtr_write_phy(gtr_phy, L0_TX_ANA_TM_18, pre_emphasis[pre][voltage]);
 }
 
-/*
- * PHY Operations
- */
+ 
 
 static bool xpsgtr_phy_init_required(struct xpsgtr_phy *gtr_phy)
 {
-	/*
-	 * As USB may save the snapshot of the states during hibernation, doing
-	 * phy_init() will put the USB controller into reset, resulting in the
-	 * losing of the saved snapshot. So try to avoid phy_init() for USB
-	 * except when gtr_phy->skip_phy_init is false (this happens when FPD is
-	 * shutdown during suspend or when gt lane is changed from current one)
-	 */
+	 
 	if (gtr_phy->protocol == ICM_PROTOCOL_USB && gtr_phy->skip_phy_init)
 		return false;
 	else
 		return true;
 }
 
-/*
- * There is a functional issue in the GT. The TX termination resistance can be
- * out of spec due to a issue in the calibration logic. This is the workaround
- * to fix it, required for XCZU9EG silicon.
- */
+ 
 static int xpsgtr_phy_tx_term_fix(struct xpsgtr_phy *gtr_phy)
 {
 	struct xpsgtr_dev *gtr_dev = gtr_phy->dev;
 	u32 timeout = TIMEOUT_US;
 	u32 nsw;
 
-	/* Enabling Test Mode control for CMN Rest */
+	 
 	xpsgtr_clr_set(gtr_dev, TM_CMN_RST, TM_CMN_RST_MASK, TM_CMN_RST_SET);
 
-	/* Set Test Mode reset */
+	 
 	xpsgtr_clr_set(gtr_dev, TM_CMN_RST, TM_CMN_RST_MASK, TM_CMN_RST_EN);
 
 	xpsgtr_write(gtr_dev, L3_TM_CALIB_DIG18, 0x00);
 	xpsgtr_write(gtr_dev, L3_TM_CALIB_DIG19, L3_TM_OVERRIDE_NSW_CODE);
 
-	/*
-	 * As a part of work around sequence for PMOS calibration fix,
-	 * we need to configure any lane ICM_CFG to valid protocol. This
-	 * will deassert the CMN_Resetn signal.
-	 */
+	 
 	xpsgtr_lane_set_protocol(gtr_phy);
 
-	/* Clear Test Mode reset */
+	 
 	xpsgtr_clr_set(gtr_dev, TM_CMN_RST, TM_CMN_RST_MASK, TM_CMN_RST_SET);
 
 	dev_dbg(gtr_dev->dev, "calibrating...\n");
@@ -544,21 +480,21 @@ static int xpsgtr_phy_tx_term_fix(struct xpsgtr_phy *gtr_phy)
 
 	dev_dbg(gtr_dev->dev, "calibration done\n");
 
-	/* Reading NMOS Register Code */
+	 
 	nsw = xpsgtr_read(gtr_dev, L0_TXPMA_ST_3) & L0_DN_CALIB_CODE;
 
-	/* Set Test Mode reset */
+	 
 	xpsgtr_clr_set(gtr_dev, TM_CMN_RST, TM_CMN_RST_MASK, TM_CMN_RST_EN);
 
-	/* Writing NMOS register values back [5:3] */
+	 
 	xpsgtr_write(gtr_dev, L3_TM_CALIB_DIG19, nsw >> L3_NSW_CALIB_SHIFT);
 
-	/* Writing NMOS register value [2:0] */
+	 
 	xpsgtr_write(gtr_dev, L3_TM_CALIB_DIG18,
 		     ((nsw & L3_TM_CALIB_DIG19_NSW) << L3_NSW_SHIFT) |
 		     (1 << L3_NSW_PIPE_SHIFT));
 
-	/* Clear Test Mode reset */
+	 
 	xpsgtr_clr_set(gtr_dev, TM_CMN_RST, TM_CMN_RST_MASK, TM_CMN_RST_SET);
 
 	return 0;
@@ -572,11 +508,11 @@ static int xpsgtr_phy_init(struct phy *phy)
 
 	mutex_lock(&gtr_dev->gtr_mutex);
 
-	/* Configure and enable the clock when peripheral phy_init call */
+	 
 	if (clk_prepare_enable(gtr_dev->clk[gtr_phy->lane]))
 		goto out;
 
-	/* Skip initialization if not required. */
+	 
 	if (!xpsgtr_phy_init_required(gtr_phy))
 		goto out;
 
@@ -588,13 +524,10 @@ static int xpsgtr_phy_init(struct phy *phy)
 		gtr_dev->tx_term_fix = false;
 	}
 
-	/* Enable coarse code saturation limiting logic. */
+	 
 	xpsgtr_write_phy(gtr_phy, L0_TM_PLL_DIG_37, L0_TM_COARSE_CODE_LIMIT);
 
-	/*
-	 * Configure the PLL, the lane protocol, and perform protocol-specific
-	 * initialization.
-	 */
+	 
 	xpsgtr_configure_pll(gtr_phy);
 	xpsgtr_lane_set_protocol(gtr_phy);
 
@@ -624,7 +557,7 @@ static int xpsgtr_phy_exit(struct phy *phy)
 
 	gtr_phy->skip_phy_init = false;
 
-	/* Ensure that disable clock only, which configure for lane */
+	 
 	clk_disable_unprepare(gtr_dev->clk[gtr_phy->lane]);
 
 	return 0;
@@ -635,14 +568,10 @@ static int xpsgtr_phy_power_on(struct phy *phy)
 	struct xpsgtr_phy *gtr_phy = phy_get_drvdata(phy);
 	int ret = 0;
 
-	/* Skip initialization if not required. */
+	 
 	if (!xpsgtr_phy_init_required(gtr_phy))
 		return ret;
-	/*
-	 * Wait for the PLL to lock. For DP, only wait on DP0 to avoid
-	 * cumulating waits for both lanes. The user is expected to initialize
-	 * lane 0 last.
-	 */
+	 
 	if (gtr_phy->protocol != ICM_PROTOCOL_DP ||
 	    gtr_phy->type == XPSGTR_TYPE_DP_0)
 		ret = xpsgtr_wait_pll_lock(phy);
@@ -670,11 +599,9 @@ static const struct phy_ops xpsgtr_phyops = {
 	.owner		= THIS_MODULE,
 };
 
-/*
- * OF Xlate Support
- */
+ 
 
-/* Set the lane type and protocol based on the PHY type and instance number. */
+ 
 static int xpsgtr_set_lane_type(struct xpsgtr_phy *gtr_phy, u8 phy_type,
 				unsigned int phy_instance)
 {
@@ -752,9 +679,7 @@ static int xpsgtr_set_lane_type(struct xpsgtr_phy *gtr_phy, u8 phy_type,
 	return 0;
 }
 
-/*
- * Valid combinations of controllers and lanes (Interconnect Matrix).
- */
+ 
 static const unsigned int icm_matrix[NUM_LANES][CONTROLLERS_PER_LANE] = {
 	{ XPSGTR_TYPE_PCIE_0, XPSGTR_TYPE_SATA_0, XPSGTR_TYPE_USB0,
 		XPSGTR_TYPE_DP_1, XPSGTR_TYPE_SGMII0 },
@@ -766,7 +691,7 @@ static const unsigned int icm_matrix[NUM_LANES][CONTROLLERS_PER_LANE] = {
 		XPSGTR_TYPE_DP_0, XPSGTR_TYPE_SGMII3 }
 };
 
-/* Translate OF phandle and args to PHY instance. */
+ 
 static struct phy *xpsgtr_xlate(struct device *dev,
 				struct of_phandle_args *args)
 {
@@ -784,10 +709,7 @@ static struct phy *xpsgtr_xlate(struct device *dev,
 		return ERR_PTR(-EINVAL);
 	}
 
-	/*
-	 * Get the PHY parameters from the OF arguments and derive the lane
-	 * type.
-	 */
+	 
 	phy_lane = args->args[0];
 	if (phy_lane >= ARRAY_SIZE(gtr_dev->phys)) {
 		dev_err(dev, "Invalid lane number %u\n", phy_lane);
@@ -813,10 +735,7 @@ static struct phy *xpsgtr_xlate(struct device *dev,
 
 	gtr_phy->refclk = refclk;
 
-	/*
-	 * Ensure that the Interconnect Matrix is obeyed, i.e a given lane type
-	 * is allowed to operate on the lane.
-	 */
+	 
 	for (i = 0; i < CONTROLLERS_PER_LANE; i++) {
 		if (icm_matrix[phy_lane][i] == gtr_phy->type)
 			return gtr_phy->phy;
@@ -825,15 +744,13 @@ static struct phy *xpsgtr_xlate(struct device *dev,
 	return ERR_PTR(-EINVAL);
 }
 
-/*
- * Power Management
- */
+ 
 
 static int xpsgtr_runtime_suspend(struct device *dev)
 {
 	struct xpsgtr_dev *gtr_dev = dev_get_drvdata(dev);
 
-	/* Save the snapshot ICM_CFG registers. */
+	 
 	gtr_dev->saved_icm_cfg0 = xpsgtr_read(gtr_dev, ICM_CFG0);
 	gtr_dev->saved_icm_cfg1 = xpsgtr_read(gtr_dev, ICM_CFG1);
 
@@ -850,18 +767,18 @@ static int xpsgtr_runtime_resume(struct device *dev)
 	icm_cfg0 = xpsgtr_read(gtr_dev, ICM_CFG0);
 	icm_cfg1 = xpsgtr_read(gtr_dev, ICM_CFG1);
 
-	/* Return if no GT lanes got configured before suspend. */
+	 
 	if (!gtr_dev->saved_icm_cfg0 && !gtr_dev->saved_icm_cfg1)
 		return 0;
 
-	/* Check if the ICM configurations changed after suspend. */
+	 
 	if (icm_cfg0 == gtr_dev->saved_icm_cfg0 &&
 	    icm_cfg1 == gtr_dev->saved_icm_cfg1)
 		skip_phy_init = true;
 	else
 		skip_phy_init = false;
 
-	/* Update the skip_phy_init for all gtr_phy instances. */
+	 
 	for (i = 0; i < ARRAY_SIZE(gtr_dev->phys); i++)
 		gtr_dev->phys[i].skip_phy_init = skip_phy_init;
 
@@ -870,9 +787,7 @@ static int xpsgtr_runtime_resume(struct device *dev)
 
 static DEFINE_RUNTIME_DEV_PM_OPS(xpsgtr_pm_ops, xpsgtr_runtime_suspend,
 				 xpsgtr_runtime_resume, NULL);
-/*
- * Probe & Platform Driver
- */
+ 
 
 static int xpsgtr_get_ref_clocks(struct xpsgtr_dev *gtr_dev)
 {
@@ -897,14 +812,11 @@ static int xpsgtr_get_ref_clocks(struct xpsgtr_dev *gtr_dev)
 
 		gtr_dev->clk[refclk] = clk;
 
-		/*
-		 * Get the spread spectrum (SSC) settings for the reference
-		 * clock rate.
-		 */
+		 
 		rate = clk_get_rate(clk);
 
 		for (i = 0 ; i < ARRAY_SIZE(ssc_lookup); i++) {
-			/* Allow an error of 100 ppm */
+			 
 			unsigned long error = ssc_lookup[i].refclk_rate / 10000;
 
 			if (abs(rate - ssc_lookup[i].refclk_rate) < error) {
@@ -945,7 +857,7 @@ static int xpsgtr_probe(struct platform_device *pdev)
 		gtr_dev->tx_term_fix =
 			of_property_read_bool(np, "xlnx,tx-termination-fix");
 
-	/* Acquire resources. */
+	 
 	gtr_dev->serdes = devm_platform_ioremap_resource_byname(pdev, "serdes");
 	if (IS_ERR(gtr_dev->serdes))
 		return PTR_ERR(gtr_dev->serdes);
@@ -958,7 +870,7 @@ static int xpsgtr_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Create PHYs. */
+	 
 	for (port = 0; port < ARRAY_SIZE(gtr_dev->phys); ++port) {
 		struct xpsgtr_phy *gtr_phy = &gtr_dev->phys[port];
 		struct phy *phy;
@@ -976,7 +888,7 @@ static int xpsgtr_probe(struct platform_device *pdev)
 		phy_set_drvdata(phy, gtr_phy);
 	}
 
-	/* Register the PHY provider. */
+	 
 	provider = devm_of_phy_provider_register(&pdev->dev, xpsgtr_xlate);
 	if (IS_ERR(provider)) {
 		dev_err(&pdev->dev, "registering provider failed\n");

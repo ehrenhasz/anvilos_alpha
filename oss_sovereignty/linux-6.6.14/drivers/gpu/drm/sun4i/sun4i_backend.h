@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2015 Free Electrons
- * Copyright (C) 2015 NextThing Co
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+ 
+ 
 
 #ifndef _SUN4I_BACKEND_H_
 #define _SUN4I_BACKEND_H_
@@ -179,7 +174,7 @@ struct sun4i_backend {
 	struct clk		*sat_clk;
 	struct reset_control	*sat_reset;
 
-	/* Protects against races in the frontend teardown */
+	 
 	spinlock_t		frontend_lock;
 	bool			frontend_teardown;
 
@@ -208,4 +203,4 @@ int sun4i_backend_update_layer_zpos(struct sun4i_backend *backend,
 void sun4i_backend_cleanup_layer(struct sun4i_backend *backend,
 				 int layer);
 
-#endif /* _SUN4I_BACKEND_H_ */
+#endif  

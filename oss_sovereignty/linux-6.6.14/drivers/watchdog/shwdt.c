@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * drivers/watchdog/shwdt.c
- *
- * Watchdog driver for integrated watchdog in the SuperH processors.
- *
- * Copyright (C) 2001 - 2012  Paul Mundt <lethal@linux-sh.org>
- *
- * 14-Dec-2001 Matt Domsch <Matt_Domsch@dell.com>
- *     Added nowayout module option to override CONFIG_WATCHDOG_NOWAYOUT
- *
- * 19-Apr-2002 Rob Radez <rob@osinvestor.com>
- *     Added expect close support, made emulated timeout runtime changeable
- *     general cleanups, add some ioctls
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -34,38 +21,12 @@
 
 #define DRV_NAME "sh-wdt"
 
-/*
- * Default clock division ratio is 5.25 msecs. For an additional table of
- * values, consult the asm-sh/watchdog.h. Overload this at module load
- * time.
- *
- * In order for this to work reliably we need to have HZ set to 1000 or
- * something quite higher than 100 (or we need a proper high-res timer
- * implementation that will deal with this properly), otherwise the 10ms
- * resolution of a jiffy is enough to trigger the overflow. For things like
- * the SH-4 and SH-5, this isn't necessarily that big of a problem, though
- * for the SH-2 and SH-3, this isn't recommended unless the WDT is absolutely
- * necssary.
- *
- * As a result of this timing problem, the only modes that are particularly
- * feasible are the 4096 and the 2048 divisors, which yield 5.25 and 2.62ms
- * overflow periods respectively.
- *
- * Also, since we can't really expect userspace to be responsive enough
- * before the overflow happens, we maintain two separate timers .. One in
- * the kernel for clearing out WOVF every 2ms or so (again, this depends on
- * HZ == 1000), and another for monitoring userspace writes to the WDT device.
- *
- * As such, we currently use a configurable heartbeat interval which defaults
- * to 30s. In this case, the userspace daemon is only responsible for periodic
- * writes to the device before the next heartbeat is scheduled. If the daemon
- * misses its deadline, the kernel timer will allow the WDT to overflow.
- */
+ 
 static int clock_division_ratio = WTCSR_CKS_4096;
 #define next_ping_period(cks)	(jiffies + msecs_to_jiffies(cks - 4))
 
-#define WATCHDOG_HEARTBEAT 30			/* 30 sec default heartbeat */
-static int heartbeat = WATCHDOG_HEARTBEAT;	/* in seconds */
+#define WATCHDOG_HEARTBEAT 30			 
+static int heartbeat = WATCHDOG_HEARTBEAT;	 
 static bool nowayout = WATCHDOG_NOWAYOUT;
 static unsigned long next_heartbeat;
 
@@ -98,14 +59,7 @@ static int sh_wdt_start(struct watchdog_device *wdt_dev)
 
 	sh_wdt_write_cnt(0);
 
-	/*
-	 * These processors have a bit of an inconsistent initialization
-	 * process.. starting with SH-3, RSTS was moved to WTCSR, and the
-	 * RSTCSR register was removed.
-	 *
-	 * On the SH-2 however, in addition with bits being in different
-	 * locations, we must deal with RSTCSR outright..
-	 */
+	 
 	csr = sh_wdt_read_csr();
 	csr |= WTCSR_TME;
 	csr &= ~WTCSR_RSTS;
@@ -160,7 +114,7 @@ static int sh_wdt_set_heartbeat(struct watchdog_device *wdt_dev, unsigned t)
 	struct sh_wdt *wdt = watchdog_get_drvdata(wdt_dev);
 	unsigned long flags;
 
-	if (unlikely(t < 1 || t > 3600)) /* arbitrary upper limit */
+	if (unlikely(t < 1 || t > 3600))  
 		return -EINVAL;
 
 	spin_lock_irqsave(&wdt->lock, flags);
@@ -218,10 +172,7 @@ static int sh_wdt_probe(struct platform_device *pdev)
 	struct sh_wdt *wdt;
 	int rc;
 
-	/*
-	 * As this driver only covers the global watchdog case, reject
-	 * any attempts to register per-CPU watchdogs.
-	 */
+	 
 	if (pdev->id != -1)
 		return -EINVAL;
 
@@ -233,10 +184,7 @@ static int sh_wdt_probe(struct platform_device *pdev)
 
 	wdt->clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(wdt->clk)) {
-		/*
-		 * Clock framework support is optional, continue on
-		 * anyways if we don't find a matching clock.
-		 */
+		 
 		wdt->clk = NULL;
 	}
 
@@ -252,7 +200,7 @@ static int sh_wdt_probe(struct platform_device *pdev)
 
 	rc = sh_wdt_set_heartbeat(&sh_wdt_dev, heartbeat);
 	if (unlikely(rc)) {
-		/* Default timeout if invalid */
+		 
 		sh_wdt_set_heartbeat(&sh_wdt_dev, WATCHDOG_HEARTBEAT);
 
 		dev_warn(&pdev->dev,

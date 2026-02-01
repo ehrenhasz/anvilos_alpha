@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Coral-P(A)/Lime I2C adapter driver
- *
- * (C) 2011 DENX Software Engineering, Anatolij Gustschin <agust@denx.de>
- */
+
+ 
 
 #include <linux/fb.h>
 #include <linux/i2c.h>

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Amlogic Meson6 SoCs timer handling.
- *
- * Copyright (C) 2014 Carlo Caione <carlo@caione.org>
- *
- * Based on code from Amlogic, Inc
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -167,7 +161,7 @@ static int __init meson6_timer_init(struct device_node *node)
 		return -EINVAL;
 	}
 
-	/* Set 1us for timer E */
+	 
 	val = readl(timer_base + MESON_ISA_TIMER_MUX);
 	val &= ~MESON_ISA_TIMER_MUX_TIMERE_INPUT_CLOCK_MASK;
 	val |= FIELD_PREP(MESON_ISA_TIMER_MUX_TIMERE_INPUT_CLOCK_MASK,
@@ -178,13 +172,13 @@ static int __init meson6_timer_init(struct device_node *node)
 	clocksource_mmio_init(timer_base + MESON_ISA_TIMERE, node->name,
 			      1000 * 1000, 300, 32, clocksource_mmio_readl_up);
 
-	/* Timer A base 1us */
+	 
 	val &= ~MESON_ISA_TIMER_MUX_TIMERA_INPUT_CLOCK_MASK;
 	val |= FIELD_PREP(MESON_ISA_TIMER_MUX_TIMERA_INPUT_CLOCK_MASK,
 			  MESON_ISA_TIMER_MUX_TIMERABCD_INPUT_CLOCK_1US);
 	writel(val, timer_base + MESON_ISA_TIMER_MUX);
 
-	/* Stop the timer A */
+	 
 	meson6_clkevt_time_stop();
 
 	ret = request_irq(irq, meson6_timer_interrupt,
@@ -202,7 +196,7 @@ static int __init meson6_timer_init(struct device_node *node)
 					1, 0xfffe);
 
 #ifdef CONFIG_ARM
-	/* Also use MESON_ISA_TIMERE for delays */
+	 
 	register_current_timer_delay(&meson6_delay_timer);
 #endif
 

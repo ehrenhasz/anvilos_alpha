@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Based on clk-super.c
- * Copyright (c) 2012, NVIDIA CORPORATION.  All rights reserved.
- *
- * Based on older tegra20-cpufreq driver by Colin Cross <ccross@google.com>
- * Copyright (C) 2010 Google, Inc.
- *
- * Author: Dmitry Osipenko <digetx@gmail.com>
- * Copyright (C) 2019 GRATE-DRIVER project
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk-provider.h>
@@ -53,7 +44,7 @@ static unsigned long cclk_super_recalc_rate(struct clk_hw *hw,
 	u32 val = readl_relaxed(super->reg);
 	unsigned int div2;
 
-	/* check whether thermal throttling is active */
+	 
 	if (val & TSENSOR_SLOWDOWN)
 		div2 = 1;
 	else
@@ -77,10 +68,7 @@ static int cclk_super_determine_rate(struct clk_hw *hw,
 	if (WARN_ON_ONCE(!pllp_hw || !pllx_hw))
 		return -EINVAL;
 
-	/*
-	 * Switch parent to PLLP for all CCLK rates that are suitable for PLLP.
-	 * PLLX will be disabled in this case, saving some power.
-	 */
+	 
 	pllp_rate = clk_hw_get_rate(pllp_hw);
 
 	if (rate <= pllp_rate) {
@@ -170,29 +158,7 @@ struct clk *tegra_clk_register_super_cclk(const char *name,
 		super->div_ops = &tegra_clk_frac_div_ops;
 	}
 
-	/*
-	 * Tegra30+ has the following CPUG clock topology:
-	 *
-	 *        +---+  +-------+  +-+            +-+                +-+
-	 * PLLP+->+   +->+DIVIDER+->+0|  +-------->+0|  ------------->+0|
-	 *        |   |  +-------+  | |  |  +---+  | |  |             | |
-	 * PLLC+->+MUX|             | +->+  | S |  | +->+             | +->+CPU
-	 *  ...   |   |             | |  |  | K |  | |  |  +-------+  | |
-	 * PLLX+->+-->+------------>+1|  +->+ I +->+1|  +->+ DIV2  +->+1|
-	 *        +---+             +++     | P |  +++     |SKIPPER|  +++
-	 *                           ^      | P |   ^      +-------+   ^
-	 *                           |      | E |   |                  |
-	 *                PLLX_SEL+--+      | R |   |       OVERHEAT+--+
-	 *                                  +---+   |
-	 *                                          |
-	 *                         SUPER_CDIV_ENB+--+
-	 *
-	 * Tegra20 is similar, but simpler. It doesn't have the divider and
-	 * thermal DIV2 skipper.
-	 *
-	 * At least for now we're not going to use clock-skipper, hence let's
-	 * ensure that it is disabled.
-	 */
+	 
 	val = readl_relaxed(reg + 4);
 	val &= ~SUPER_CDIV_ENB;
 	writel_relaxed(val, reg + 4);
@@ -216,10 +182,7 @@ int tegra_cclk_pre_pllx_rate_change(void)
 	else
 		cclk_on_pllx = false;
 
-	/*
-	 * CPU needs to be temporarily re-parented away from PLLX if PLLX
-	 * changes its rate. PLLP is a safe parent for CPU on all Tegra SoCs.
-	 */
+	 
 	if (cclk_on_pllx)
 		cclk_super_set_parent(&cclk_super->hw, PLLP_INDEX);
 

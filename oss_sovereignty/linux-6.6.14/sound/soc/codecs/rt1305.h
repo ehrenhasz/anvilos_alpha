@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * RT1305.h  --  RT1305 ALSA SoC amplifier component driver
- *
- * Copyright 2018 Realtek Semiconductor Corp.
- * Author: Shuming Fan <shumingf@realtek.com>
- */
+ 
+ 
 
 #ifndef _RT1305_H_
 #define _RT1305_H_
@@ -99,7 +94,7 @@
 #define RT1305_BIQUAD3_A2_R_15_0 0xfb
 #define RT1305_MAX_REG	                 0xff
 
-/* CLOCK-1 (0x04) */
+ 
 #define RT1305_SEL_PLL_SRC_2_MASK			(0x1 << 15)
 #define RT1305_SEL_PLL_SRC_2_SFT			15
 #define RT1305_SEL_PLL_SRC_2_MCLK			(0x0 << 15)
@@ -119,24 +114,24 @@
 #define RT1305_DIV_FS_SYS_MASK				(0x7 << 4)
 #define RT1305_DIV_FS_SYS_SFT				4
 
-/* PLL1M/N/K Code-1 (0x0c) */
+ 
 #define RT1305_PLL_1_M_SFT		12
 #define RT1305_PLL_1_M_BYPASS_MASK			(0x1 << 11)
 #define RT1305_PLL_1_M_BYPASS_SFT		11
 #define RT1305_PLL_1_M_BYPASS			(0x1 << 11)
 #define RT1305_PLL_1_N_MASK			(0x1ff << 0)
 
-/* DAC Setting (0x14) */
+ 
 #define RT1305_DVOL_MUTE_L_EN_SFT		15
 #define RT1305_DVOL_MUTE_R_EN_SFT		14
 
-/* I2S Setting-1 (0x2d) */
+ 
 #define RT1305_SEL_I2S_OUT_MODE_MASK		(0x1 << 15)
 #define RT1305_SEL_I2S_OUT_MODE_SFT			15
 #define RT1305_SEL_I2S_OUT_MODE_S			(0x0 << 15)
 #define RT1305_SEL_I2S_OUT_MODE_M			(0x1 << 15)
 
-/* I2S Setting-2 (0x2e) */
+ 
 #define RT1305_I2S_DF_SEL_MASK			(0x3 << 12)
 #define RT1305_I2S_DF_SEL_SFT			12
 #define RT1305_I2S_DF_SEL_I2S			(0x0 << 12)
@@ -154,7 +149,7 @@
 #define RT1305_I2S_BCLK_NORMAL		(0x0 << 9)
 #define RT1305_I2S_BCLK_INV			(0x1 << 9)
 
-/* Power Control-1 (0x3a) */
+ 
 #define RT1305_POW_PDB_JD_MASK				(0x1 << 12)
 #define RT1305_POW_PDB_JD				(0x1 << 12)
 #define RT1305_POW_PDB_JD_BIT			12
@@ -181,7 +176,7 @@
 #define RT1305_POW_VREF2				(0x1 << 1)
 #define RT1305_POW_VREF2_BIT			1
 
-/* Power Control-2 (0x3b) */
+ 
 #define RT1305_POW_DISC_VREF           (1 << 15)
 #define RT1305_POW_DISC_VREF_BIT       15
 #define RT1305_POW_FASTB_VREF          (1 << 14)
@@ -215,7 +210,7 @@
 #define RT1305_POR_AVDD2           (1 << 0)
 #define RT1305_POR_AVDD2_BIT           0
 
-/* Power Control-3 (0x3c) */
+ 
 #define RT1305_POW_VSENSE_RCH           (1 << 15)
 #define RT1305_POW_VSENSE_RCH_BIT        15
 #define RT1305_POW_VSENSE_LCH           (1 << 14)
@@ -241,25 +236,25 @@
 #define RT1305_POR_EFUSE           (1 << 4)
 #define RT1305_POR_EFUSE_BIT             4
 
-/* Clock Detect (0x3f) */
+ 
 #define RT1305_SEL_CLK_DET_SRC_MASK			(0x1 << 12)
 #define RT1305_SEL_CLK_DET_SRC_SFT			12
 #define RT1305_SEL_CLK_DET_SRC_MCLK			(0x0 << 12)
 #define RT1305_SEL_CLK_DET_SRC_BCLK			(0x1 << 12)
 
 
-/* System Clock Source */
+ 
 enum {
 	RT1305_FS_SYS_PRE_S_MCLK,
 	RT1305_FS_SYS_PRE_S_PLL1,
-	RT1305_FS_SYS_PRE_S_RCCLK,	/* 98.304M Hz */
+	RT1305_FS_SYS_PRE_S_RCCLK,	 
 };
 
-/* PLL Source 1/2 */
+ 
 enum {
 	RT1305_PLL1_S_BCLK,
 	RT1305_PLL2_S_MCLK,
-	RT1305_PLL2_S_RCCLK,	/* 98.304M Hz */
+	RT1305_PLL2_S_RCCLK,	 
 };
 
 enum {
@@ -267,7 +262,7 @@ enum {
 	RT1305_AIFS
 };
 
-#define R0_UPPER 0x2E8BA2 //5.5 ohm
-#define R0_LOWER 0x666666 //2.5 ohm
+#define R0_UPPER 0x2E8BA2 
+#define R0_LOWER 0x666666 
 
-#endif		/* end of _RT1305_H_ */
+#endif		 

@@ -1,30 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License, Version 1.0 only
- * (the "License").  You may not use this file except in compliance
- * with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2004 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- *
- * Copyright (c) 2016, Intel Corporation.
- */
+ 
+ 
 
 #include <assert.h>
 #include <stddef.h>
@@ -49,16 +24,9 @@
 #endif
 
 
-/*
- * SERD Engine Backend
- */
+ 
 
-/*
- * Compute the delta between events in nanoseconds.  To account for very old
- * events which are replayed, we must handle the case where time is negative.
- * We convert the hrtime_t's to unsigned 64-bit integers and then handle the
- * case where 'old' is greater than 'new' (i.e. high-res time has wrapped).
- */
+ 
 static hrtime_t
 fmd_event_delta(hrtime_t t1, hrtime_t t2)
 {
@@ -105,9 +73,7 @@ fmd_serd_eng_free(fmd_serd_eng_t *sgp)
 	free(sgp);
 }
 
-/*
- * sourced from fmd_string.c
- */
+ 
 static ulong_t
 fmd_strhash(const char *key)
 {
@@ -240,12 +206,7 @@ fmd_serd_eng_record(fmd_serd_eng_t *sgp, hrtime_t hrt)
 {
 	fmd_serd_elem_t *sep, *oep;
 
-	/*
-	 * If the fired flag is already set, return false and discard the
-	 * event.  This means that the caller will only see the engine "fire"
-	 * once until fmd_serd_eng_reset() is called.  The fmd_serd_eng_fired()
-	 * function can also be used in combination with fmd_serd_eng_record().
-	 */
+	 
 	if (sgp->sg_flags & FMD_SERD_FIRED) {
 		serd_log_msg("  SERD Engine: record %s already fired!",
 		    sgp->sg_name);
@@ -268,10 +229,7 @@ fmd_serd_eng_record(fmd_serd_eng_t *sgp, hrtime_t hrt)
 	serd_log_msg("  SERD Engine: recording %s of %d (%llu)",
 	    sgp->sg_name, (int)sgp->sg_count, (long long unsigned)hrt);
 
-	/*
-	 * Pick up the oldest element pointer for comparison to 'sep'.  We must
-	 * do this after adding 'sep' because 'oep' and 'sep' can be the same.
-	 */
+	 
 	oep = list_tail(&sgp->sg_list);
 
 	if (sgp->sg_count >= sgp->sg_n &&
@@ -316,7 +274,7 @@ fmd_serd_eng_gc(fmd_serd_eng_t *sgp)
 	hrtime_t hrt;
 
 	if (sgp->sg_count == 0 || (sgp->sg_flags & FMD_SERD_FIRED))
-		return; /* no garbage collection needed if empty or fired */
+		return;  
 
 	sep = list_head(&sgp->sg_list);
 	if (sep == NULL)
@@ -326,7 +284,7 @@ fmd_serd_eng_gc(fmd_serd_eng_t *sgp)
 
 	for (sep = list_head(&sgp->sg_list); sep != NULL; sep = nep) {
 		if (sep->se_hrt >= hrt)
-			break; /* sep and subsequent events are all within T */
+			break;  
 
 		nep = list_next(&sgp->sg_list, sep);
 		fmd_serd_eng_discard(sgp, sep);

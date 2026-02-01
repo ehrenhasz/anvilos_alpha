@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Sony ACX565AKM LCD Panel driver
- *
- * Copyright (C) 2010 Nokia Corporation
- *
- * Original Driver Author: Imre Deak <imre.deak@nokia.com>
- * Based on panel-generic.c by Tomi Valkeinen <tomi.valkeinen@nokia.com>
- * Adapted to new DSS2 framework: Roger Quadros <roger.quadros@nokia.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -69,10 +61,8 @@ struct panel_drv_data {
 	unsigned	has_bc:1;
 	unsigned	has_cabc:1;
 	unsigned	cabc_mode;
-	unsigned long	hw_guard_end;		/* next value of jiffies
-						   when we can issue the
-						   next sleep in/out command */
-	unsigned long	hw_guard_wait;		/* max guard time in jiffies */
+	unsigned long	hw_guard_end;		 
+	unsigned long	hw_guard_wait;		 
 
 	struct spi_device	*spi;
 	struct mutex		mutex;
@@ -121,11 +111,7 @@ static void acx565akm_transfer(struct panel_drv_data *ddata, int cmd,
 	x->len = 2;
 
 	if (rlen > 1 && wlen == 0) {
-		/*
-		 * Between the command and the response data there is a
-		 * dummy clock cycle. Add an extra bit after the command
-		 * word to account for this.
-		 */
+		 
 		x->bits_per_word = 10;
 		cmd <<= 1;
 	}
@@ -192,10 +178,7 @@ static void set_sleep_mode(struct panel_drv_data *ddata, int on)
 		cmd = MIPID_CMD_SLEEP_IN;
 	else
 		cmd = MIPID_CMD_SLEEP_OUT;
-	/*
-	 * We have to keep 120msec between sleep in/out commands.
-	 * (8.2.15, 8.2.16).
-	 */
+	 
 	hw_guard_wait(ddata);
 	acx565akm_cmd(ddata, cmd);
 	hw_guard_start(ddata, 120);
@@ -264,7 +247,7 @@ static int panel_detect(struct panel_drv_data *ddata)
 	return 0;
 }
 
-/*----------------------Backlight Control-------------------------*/
+ 
 
 static void enable_backlight_ctrl(struct panel_drv_data *ddata, int enable)
 {
@@ -403,10 +386,10 @@ static const struct backlight_ops acx565akm_bl_ops = {
 	.update_status  = acx565akm_bl_update_status_locked,
 };
 
-/*--------------------Auto Brightness control via Sysfs---------------------*/
+ 
 
 static const char * const cabc_modes[] = {
-	"off",		/* always used when CABC is not supported */
+	"off",		 
 	"ui",
 	"still-image",
 	"moving-image",
@@ -542,14 +525,10 @@ static int acx565akm_panel_power_on(struct omap_dss_device *dssdev)
 		return r;
 	}
 
-	/*FIXME tweak me */
+	 
 	msleep(50);
 
-	/*
-	 * Note that we appear to activate the reset line here. However
-	 * existing DTSes specified incorrect polarity for it (active high),
-	 * so in fact this deasserts the reset line.
-	 */
+	 
 	if (ddata->reset_gpio)
 		gpiod_set_value_cansleep(ddata->reset_gpio, 1);
 
@@ -558,20 +537,13 @@ static int acx565akm_panel_power_on(struct omap_dss_device *dssdev)
 		return 0;
 	}
 
-	/*
-	 * We have to meet all the following delay requirements:
-	 * 1. tRW: reset pulse width 10usec (7.12.1)
-	 * 2. tRT: reset cancel time 5msec (7.12.1)
-	 * 3. Providing PCLK,HS,VS signals for 2 frames = ~50msec worst
-	 *    case (7.6.2)
-	 * 4. 120msec before the sleep out command (7.12.1)
-	 */
+	 
 	msleep(120);
 
 	set_sleep_mode(ddata, 0);
 	ddata->enabled = 1;
 
-	/* 5msec between sleep out and the next command. (8.2.16) */
+	 
 	usleep_range(5000, 10000);
 	set_display_state(ddata, 1);
 	set_cabc_mode(ddata, ddata->cabc_mode);
@@ -592,19 +564,14 @@ static void acx565akm_panel_power_off(struct omap_dss_device *dssdev)
 	set_display_state(ddata, 0);
 	set_sleep_mode(ddata, 1);
 	ddata->enabled = 0;
-	/*
-	 * We have to provide PCLK,HS,VS signals for 2 frames (worst case
-	 * ~50msec) after sending the sleep in command and asserting the
-	 * reset signal. We probably could assert the reset w/o the delay
-	 * but we still delay to avoid possible artifacts. (7.6.1)
-	 */
+	 
 	msleep(50);
 
-	/* see comment in acx565akm_panel_power_on() */
+	 
 	if (ddata->reset_gpio)
 		gpiod_set_value_cansleep(ddata->reset_gpio, 0);
 
-	/* FIXME need to tweak this delay */
+	 
 	msleep(100);
 
 	in->ops.sdi->disable(in);
@@ -735,14 +702,11 @@ static int acx565akm_probe(struct spi_device *spi)
 	if (ddata->reset_gpio) {
 		gpiod_set_consumer_name(ddata->reset_gpio, "lcd reset");
 
-		/* release the reset line */
+		 
 		gpiod_set_value_cansleep(ddata->reset_gpio, 1);
 	}
 
-	/*
-	 * After reset we have to wait 5 msec before the first
-	 * command can be sent.
-	 */
+	 
 	usleep_range(5000, 10000);
 
 	ddata->enabled = panel_enabled(ddata);

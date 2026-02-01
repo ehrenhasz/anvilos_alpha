@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hardware monitoring driver for Maxim MAX6620
- *
- * Originally from L. Grunenberg.
- * (C) 2012 by L. Grunenberg <contact@lgrunenberg.de>
- *
- * Copyright (c) 2021 Dell Inc. or its subsidiaries. All Rights Reserved.
- *
- * based on code written by :
- * 2007 by Hans J. Koch <hjk@hansjkoch.de>
- * John Morris <john.morris@spirentcom.com>
- * Copyright (c) 2003 Spirent Communications
- * and Claus Gindhart <claus.gindhart@kontron.com>
- *
- * This module has only been tested with the MAX6620 chip.
- *
- * The datasheet was last seen at:
- *
- *        http://pdfserv.maxim-ic.com/en/ds/MAX6620.pdf
- *
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/err.h>
@@ -30,9 +10,7 @@
 #include <linux/module.h>
 #include <linux/slab.h>
 
-/*
- * MAX 6620 registers
- */
+ 
 
 #define MAX6620_REG_CONFIG	0x00
 #define MAX6620_REG_FAULT	0x01
@@ -61,9 +39,7 @@
 #define MAX6620_REG_DAC2	0x2C
 #define MAX6620_REG_DAC3	0x2E
 
-/*
- * Config register bits
- */
+ 
 
 #define MAX6620_CFG_RUN		BIT(7)
 #define MAX6620_CFG_POR		BIT(6)
@@ -76,9 +52,7 @@
 #define MAX6620_CFG_WD10	(BIT(2) | BIT(1))
 #define MAX6620_CFG_WD		BIT(0)
 
-/*
- * Failure status register bits
- */
+ 
 
 #define MAX6620_FAIL_TACH0	BIT(4)
 #define MAX6620_FAIL_TACH1	BIT(5)
@@ -89,10 +63,10 @@
 #define MAX6620_FAIL_MASK2	BIT(2)
 #define MAX6620_FAIL_MASK3	BIT(3)
 
-#define MAX6620_CLOCK_FREQ	8192 /* Clock frequency in Hz */
-#define MAX6620_PULSE_PER_REV	2 /* Tachometer pulses per revolution */
+#define MAX6620_CLOCK_FREQ	8192  
+#define MAX6620_PULSE_PER_REV	2  
 
-/* Minimum and maximum values of the FAN-RPM */
+ 
 #define FAN_RPM_MIN	240
 #define FAN_RPM_MAX	30000
 
@@ -124,17 +98,15 @@ static const u8 target_reg[] = {
 	MAX6620_REG_TAR3,
 };
 
-/*
- * Client data (each client gets its own)
- */
+ 
 
 struct max6620_data {
 	struct i2c_client *client;
 	struct mutex update_lock;
-	bool valid; /* false until following fields are valid */
-	unsigned long last_updated; /* in jiffies */
+	bool valid;  
+	unsigned long last_updated;  
 
-	/* register values */
+	 
 	u8 fancfg[4];
 	u8 fandyn[4];
 	u8 fault;
@@ -197,11 +169,7 @@ static int max6620_update_device(struct device *dev)
 			data->target[i] |= (ret >> 5) & 0x7;
 		}
 
-		/*
-		 * Alarms are cleared on read in case the condition that
-		 * caused the alarm is removed. Keep the value latched here
-		 * for providing the register through different alarm files.
-		 */
+		 
 		ret = i2c_smbus_read_byte_data(client, MAX6620_REG_FAULT);
 		if (ret < 0)
 			goto error;
@@ -264,7 +232,7 @@ max6620_read(struct device *dev, enum hwmon_sensor_types type, u32 attr,
 			mutex_lock(&data->update_lock);
 			*val = !!(data->fault & BIT(channel));
 
-			/* Setting TACH count to re-enable fan fault detection */
+			 
 			if (*val == 1) {
 				val1 = (data->target[channel] >> 3) & 0xff;
 				val2 = (data->target[channel] << 5) & 0xe0;
@@ -381,7 +349,7 @@ max6620_write(struct device *dev, enum hwmon_sensor_types type, u32 attr,
 			if (ret < 0)
 				break;
 
-			/* Setting TACH count re-enables fan fault detection */
+			 
 			data->fault &= ~BIT(channel);
 
 			break;
@@ -435,10 +403,7 @@ static int max6620_init_client(struct max6620_data *data)
 		return config;
 	}
 
-	/*
-	 * Set bit 4, disable other fans from going full speed on a fail
-	 * failure.
-	 */
+	 
 	err = i2c_smbus_write_byte_data(client, MAX6620_REG_CONFIG, config | 0x10);
 	if (err < 0) {
 		dev_err(&client->dev, "Config write error, aborting.\n");
@@ -451,13 +416,13 @@ static int max6620_init_client(struct max6620_data *data)
 			return reg;
 		data->fancfg[i] = reg;
 
-		/* Enable RPM mode */
+		 
 		data->fancfg[i] |= 0xa8;
 		err = i2c_smbus_write_byte_data(client, config_reg[i], data->fancfg[i]);
 		if (err < 0)
 			return err;
 
-		/* 2 counts (001) and Rate change 100 (0.125 secs) */
+		 
 		data->fandyn[i] = 0x30;
 		err = i2c_smbus_write_byte_data(client, dyn_reg[i], data->fandyn[i]);
 		if (err < 0)

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+ OR BSD-3-Clause
-/*
- * Copyright (c) Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under both the BSD-style license (found in the
- * LICENSE file in the root directory of this source tree) and the GPLv2 (found
- * in the COPYING file in the root directory of this source tree).
- * You may select, at your option, one of the above-listed licenses.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -119,7 +111,7 @@ zstd_cstream *zstd_init_cstream(const zstd_parameters *parameters,
 	if (cstream == NULL)
 		return NULL;
 
-	/* 0 means unknown in linux zstd API but means 0 in new zstd API */
+	 
 	if (pledged_src_size == 0)
 		pledged_src_size = ZSTD_CONTENTSIZE_UNKNOWN;
 

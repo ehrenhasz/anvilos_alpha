@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022 Schneider-Electric
- *
- * Clément Léger <clement.leger@bootlin.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/etherdevice.h>
@@ -113,10 +109,7 @@ static void a5psw_port_pattern_set(struct a5psw *a5psw, int port, int pattern,
 
 static void a5psw_port_mgmtfwd_set(struct a5psw *a5psw, int port, bool enable)
 {
-	/* Enable "management forward" pattern matching, this will forward
-	 * packets from this port only towards the management port and thus
-	 * isolate the port.
-	 */
+	 
 	a5psw_port_pattern_set(a5psw, port, A5PSW_PATTERN_MGMTFWD, enable);
 }
 
@@ -125,14 +118,7 @@ static void a5psw_port_tx_enable(struct a5psw *a5psw, int port, bool enable)
 	u32 mask = A5PSW_PORT_ENA_TX(port);
 	u32 reg = enable ? mask : 0;
 
-	/* Even though the port TX is disabled through TXENA bit in the
-	 * PORT_ENA register, it can still send BPDUs. This depends on the tag
-	 * configuration added when sending packets from the CPU port to the
-	 * switch port. Indeed, when using forced forwarding without filtering,
-	 * even disabled ports will be able to send packets that are tagged.
-	 * This allows to implement STP support when ports are in a state where
-	 * forwarding traffic should be stopped but BPDUs should still be sent.
-	 */
+	 
 	a5psw_reg_rmw(a5psw, A5PSW_PORT_ENA, mask, reg);
 }
 
@@ -226,9 +212,7 @@ static void a5psw_phylink_get_caps(struct dsa_switch *ds, int port,
 	config->mac_capabilities = MAC_1000FD;
 
 	if (dsa_is_cpu_port(ds, port)) {
-		/* GMII is used internally and GMAC2 is connected to the switch
-		 * using 1000Mbps Full-Duplex mode only (cf ethernet manual)
-		 */
+		 
 		__set_bit(PHY_INTERFACE_MODE_GMII, intf);
 	} else {
 		config->mac_capabilities |= MAC_100 | MAC_10;
@@ -351,7 +335,7 @@ static int a5psw_port_bridge_join(struct dsa_switch *ds, int port,
 {
 	struct a5psw *a5psw = ds->priv;
 
-	/* We only support 1 bridge device */
+	 
 	if (a5psw->br_dev && bridge.dev != a5psw->br_dev) {
 		NL_SET_ERR_MSG_MOD(extack,
 				   "Forwarding offload supported for a single bridge");
@@ -375,7 +359,7 @@ static void a5psw_port_bridge_leave(struct dsa_switch *ds, int port,
 
 	a5psw_port_set_standalone(a5psw, port, true);
 
-	/* No more ports bridged */
+	 
 	if (a5psw->bridged_ports == BIT(A5PSW_CPU_PORT))
 		a5psw->br_dev = NULL;
 }
@@ -399,13 +383,7 @@ a5psw_port_bridge_flags(struct dsa_switch *ds, int port,
 	struct a5psw *a5psw = ds->priv;
 	u32 val;
 
-	/* If a port is set as standalone, we do not want to be able to
-	 * configure flooding nor learning which would result in joining the
-	 * unique bridge. This can happen when a port leaves the bridge, in
-	 * which case the DSA core will try to "clear" all flags for the
-	 * standalone port (ie enable flooding, disable learning). In that case
-	 * do not fail but do not apply the flags.
-	 */
+	 
 	if (!(a5psw->bridged_ports & BIT(port)))
 		return 0;
 
@@ -509,7 +487,7 @@ static int a5psw_port_fdb_add(struct dsa_switch *ds, int port,
 
 	mutex_lock(&a5psw->lk_lock);
 
-	/* Set the value to be written in the lookup table */
+	 
 	ret = a5psw_lk_execute_lookup(a5psw, &lk_data, &entry);
 	if (ret)
 		goto lk_unlock;
@@ -517,7 +495,7 @@ static int a5psw_port_fdb_add(struct dsa_switch *ds, int port,
 	lk_data.hi = a5psw_reg_readl(a5psw, A5PSW_LK_DATA_HI);
 	if (!lk_data.entry.valid) {
 		inc_learncount = true;
-		/* port_mask set to 0x1f when entry is not valid, clear it */
+		 
 		lk_data.entry.port_mask = 0;
 		lk_data.entry.prio = 0;
 	}
@@ -565,17 +543,12 @@ static int a5psw_port_fdb_del(struct dsa_switch *ds, int port,
 
 	lk_data.hi = a5psw_reg_readl(a5psw, A5PSW_LK_DATA_HI);
 
-	/* Our hardware does not associate any VID to the FDB entries so this
-	 * means that if two entries were added for the same mac but for
-	 * different VID, then, on the deletion of the first one, we would also
-	 * delete the second one. Since there is unfortunately nothing we can do
-	 * about that, do not return an error...
-	 */
+	 
 	if (!lk_data.entry.valid)
 		goto lk_unlock;
 
 	lk_data.entry.port_mask &= ~BIT(port);
-	/* If there is no more port in the mask, clear the entry */
+	 
 	if (lk_data.entry.port_mask == 0)
 		clear = true;
 
@@ -591,7 +564,7 @@ static int a5psw_port_fdb_del(struct dsa_switch *ds, int port,
 	if (ret)
 		goto lk_unlock;
 
-	/* Decrement LEARNCOUNT */
+	 
 	if (clear) {
 		reg = A5PSW_LK_LEARNCOUNT_MODE_DEC;
 		a5psw_reg_writel(a5psw, A5PSW_LK_LEARNCOUNT, reg);
@@ -621,7 +594,7 @@ static int a5psw_port_fdb_dump(struct dsa_switch *ds, int port,
 			goto out_unlock;
 
 		lk_data.hi = a5psw_reg_readl(a5psw, A5PSW_LK_DATA_HI);
-		/* If entry is not valid or does not contain the port, skip */
+		 
 		if (!lk_data.entry.valid ||
 		    !(lk_data.entry.port_mask & BIT(port)))
 			continue;
@@ -648,11 +621,11 @@ static int a5psw_port_vlan_filtering(struct dsa_switch *ds, int port,
 	u32 val = vlan_filtering ? mask : 0;
 	struct a5psw *a5psw = ds->priv;
 
-	/* Disable/enable vlan tagging */
+	 
 	a5psw_reg_rmw(a5psw, A5PSW_VLAN_IN_MODE_ENA, BIT(port),
 		      vlan_filtering ? BIT(port) : 0);
 
-	/* Disable/enable vlan input filtering */
+	 
 	a5psw_reg_rmw(a5psw, A5PSW_VLAN_VERIFY, mask, val);
 
 	return 0;
@@ -663,7 +636,7 @@ static int a5psw_find_vlan_entry(struct a5psw *a5psw, u16 vid)
 	u32 vlan_res;
 	int i;
 
-	/* Find vlan for this port */
+	 
 	for (i = 0; i < A5PSW_VLAN_COUNT; i++) {
 		vlan_res = a5psw_reg_readl(a5psw, A5PSW_VLAN_RES(i));
 		if (FIELD_GET(A5PSW_VLAN_RES_VLANID, vlan_res) == vid)
@@ -678,7 +651,7 @@ static int a5psw_new_vlan_res_entry(struct a5psw *a5psw, u16 newvid)
 	u32 vlan_res;
 	int i;
 
-	/* Find a free VLAN entry */
+	 
 	for (i = 0; i < A5PSW_VLAN_COUNT; i++) {
 		vlan_res = a5psw_reg_readl(a5psw, A5PSW_VLAN_RES(i));
 		if (!(FIELD_GET(A5PSW_VLAN_RES_PORTMASK, vlan_res))) {
@@ -703,7 +676,7 @@ static void a5psw_port_vlan_tagged_cfg(struct a5psw *a5psw,
 	if (set)
 		val |= BIT(port);
 
-	/* Toggle tag mask read */
+	 
 	a5psw_reg_writel(a5psw, vlan_res_off, A5PSW_VLAN_RES_RD_TAGMASK);
 	reg = a5psw_reg_readl(a5psw, vlan_res_off);
 	a5psw_reg_writel(a5psw, vlan_res_off, A5PSW_VLAN_RES_RD_TAGMASK);
@@ -746,10 +719,7 @@ static int a5psw_port_vlan_add(struct dsa_switch *ds, int port,
 	if (tagged)
 		a5psw_port_vlan_tagged_cfg(a5psw, vlan_res_id, port, true);
 
-	/* Configure port to tag with corresponding VID, but do not enable it
-	 * yet: wait for vlan filtering to be enabled to enable vlan port
-	 * tagging
-	 */
+	 
 	if (pvid)
 		a5psw_reg_writel(a5psw, A5PSW_SYSTEM_TAGINFO(port), vid);
 
@@ -778,7 +748,7 @@ static u64 a5psw_read_stat(struct a5psw *a5psw, u32 offset, int port)
 	u32 reg_lo, reg_hi;
 
 	reg_lo = a5psw_reg_readl(a5psw, offset + A5PSW_PORT_OFFSET(port));
-	/* A5PSW_STATS_HIWORD is latched on stat read */
+	 
 	reg_hi = a5psw_reg_readl(a5psw, A5PSW_STATS_HIWORD);
 
 	return ((u64)reg_hi << 32) | reg_lo;
@@ -894,17 +864,13 @@ static void a5psw_vlan_setup(struct a5psw *a5psw, int port)
 {
 	u32 reg;
 
-	/* Enable TAG always mode for the port, this is actually controlled
-	 * by VLAN_IN_MODE_ENA field which will be used for PVID insertion
-	 */
+	 
 	reg = A5PSW_VLAN_IN_MODE_TAG_ALWAYS;
 	reg <<= A5PSW_VLAN_IN_MODE_PORT_SHIFT(port);
 	a5psw_reg_rmw(a5psw, A5PSW_VLAN_IN_MODE, A5PSW_VLAN_IN_MODE_PORT(port),
 		      reg);
 
-	/* Set transparent mode for output frame manipulation, this will depend
-	 * on the VLAN_RES configuration mode
-	 */
+	 
 	reg = A5PSW_VLAN_OUT_MODE_TRANSPARENT;
 	reg <<= A5PSW_VLAN_OUT_MODE_PORT_SHIFT(port);
 	a5psw_reg_rmw(a5psw, A5PSW_VLAN_OUT_MODE,
@@ -918,7 +884,7 @@ static int a5psw_setup(struct dsa_switch *ds)
 	struct dsa_port *dp;
 	u32 reg;
 
-	/* Validate that there is only 1 CPU port with index A5PSW_CPU_PORT */
+	 
 	dsa_switch_for_each_cpu_port(dp, ds) {
 		if (dp->index != A5PSW_CPU_PORT) {
 			dev_err(a5psw->dev, "Invalid CPU port\n");
@@ -926,20 +892,20 @@ static int a5psw_setup(struct dsa_switch *ds)
 		}
 	}
 
-	/* Configure management port */
+	 
 	reg = A5PSW_CPU_PORT | A5PSW_MGMT_CFG_ENABLE;
 	a5psw_reg_writel(a5psw, A5PSW_MGMT_CFG, reg);
 
-	/* Set pattern 0 to forward all frame to mgmt port */
+	 
 	a5psw_reg_writel(a5psw, A5PSW_PATTERN_CTRL(A5PSW_PATTERN_MGMTFWD),
 			 A5PSW_PATTERN_CTRL_MGMTFWD);
 
-	/* Enable port tagging */
+	 
 	reg = FIELD_PREP(A5PSW_MGMT_TAG_CFG_TAGFIELD, ETH_P_DSA_A5PSW);
 	reg |= A5PSW_MGMT_TAG_CFG_ENABLE | A5PSW_MGMT_TAG_CFG_ALL_FRAMES;
 	a5psw_reg_writel(a5psw, A5PSW_MGMT_TAG_CFG, reg);
 
-	/* Enable normal switch operation */
+	 
 	reg = A5PSW_LK_ADDR_CTRL_BLOCKING | A5PSW_LK_ADDR_CTRL_LEARNING |
 	      A5PSW_LK_ADDR_CTRL_AGEING | A5PSW_LK_ADDR_CTRL_ALLOW_MIGR |
 	      A5PSW_LK_ADDR_CTRL_CLEAR_TABLE;
@@ -953,36 +919,36 @@ static int a5psw_setup(struct dsa_switch *ds)
 		return ret;
 	}
 
-	/* Reset learn count to 0 */
+	 
 	reg = A5PSW_LK_LEARNCOUNT_MODE_SET;
 	a5psw_reg_writel(a5psw, A5PSW_LK_LEARNCOUNT, reg);
 
-	/* Clear VLAN resource table */
+	 
 	reg = A5PSW_VLAN_RES_WR_PORTMASK | A5PSW_VLAN_RES_WR_TAGMASK;
 	for (vlan = 0; vlan < A5PSW_VLAN_COUNT; vlan++)
 		a5psw_reg_writel(a5psw, A5PSW_VLAN_RES(vlan), reg);
 
-	/* Reset all ports */
+	 
 	dsa_switch_for_each_port(dp, ds) {
 		port = dp->index;
 
-		/* Reset the port */
+		 
 		a5psw_reg_writel(a5psw, A5PSW_CMD_CFG(port),
 				 A5PSW_CMD_CFG_SW_RESET);
 
-		/* Enable only CPU port */
+		 
 		a5psw_port_enable_set(a5psw, port, dsa_port_is_cpu(dp));
 
 		if (dsa_port_is_unused(dp))
 			continue;
 
-		/* Enable egress flooding and learning for CPU port */
+		 
 		if (dsa_port_is_cpu(dp)) {
 			a5psw_flooding_set_resolution(a5psw, port, true);
 			a5psw_port_learning_set(a5psw, port, true);
 		}
 
-		/* Enable standalone mode for user ports */
+		 
 		if (dsa_port_is_user(dp))
 			a5psw_port_set_standalone(a5psw, port, true);
 
@@ -1301,7 +1267,7 @@ static void a5psw_shutdown(struct platform_device *pdev)
 
 static const struct of_device_id a5psw_of_mtable[] = {
 	{ .compatible = "renesas,rzn1-a5psw", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, a5psw_of_mtable);
 

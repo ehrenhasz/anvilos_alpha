@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2005-2006 Fen Systems Ltd.
- * Copyright 2006-2013 Solarflare Communications Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mtd/mtd.h>
@@ -16,7 +12,7 @@
 #define to_efx_mtd_partition(mtd)				\
 	container_of(mtd, struct efx_mtd_partition, mtd)
 
-/* MTD interface */
+ 
 
 static int efx_mtd_erase(struct mtd_info *mtd, struct erase_info *erase)
 {
@@ -79,7 +75,7 @@ int efx_mtd_add(struct efx_nic *efx, struct efx_mtd_partition *parts,
 		if (mtd_device_register(&part->mtd, NULL, 0))
 			goto fail;
 
-		/* Add to list in order - efx_mtd_remove() depends on this */
+		 
 		list_add_tail(&part->node, &efx->mtd_list);
 	}
 
@@ -91,7 +87,7 @@ fail:
 						    i * sizeof_part);
 		efx_mtd_remove_partition(part);
 	}
-	/* Failure is unlikely here, but probably means we're out of memory */
+	 
 	return -ENOMEM;
 }
 

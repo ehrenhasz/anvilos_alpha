@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -37,11 +35,7 @@ static int visionox_rm69299_power_on(struct visionox_rm69299 *ctx)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Reset sequence of visionox panel requires the panel to be
-	 * out of reset for 10ms, followed by being held in reset
-	 * for 10ms and then out again
-	 */
+	 
 	gpiod_set_value(ctx->reset_gpio, 1);
 	usleep_range(10000, 20000);
 	gpiod_set_value(ctx->reset_gpio, 0);
@@ -70,7 +64,7 @@ static int visionox_rm69299_unprepare(struct drm_panel *panel)
 	if (ret < 0)
 		dev_err(ctx->panel.dev, "set_display_off cmd failed ret = %d\n", ret);
 
-	/* 120ms delay required here as per DCS spec */
+	 
 	msleep(120);
 
 	ret = mipi_dsi_dcs_write(ctx->dsi, MIPI_DCS_ENTER_SLEEP_MODE, NULL, 0);
@@ -128,7 +122,7 @@ static int visionox_rm69299_prepare(struct drm_panel *panel)
 		goto power_off;
 	}
 
-	/* Per DSI spec wait 120ms after sending exit sleep DCS command */
+	 
 	msleep(120);
 
 	ret = mipi_dsi_dcs_write(ctx->dsi, MIPI_DCS_SET_DISPLAY_ON, NULL, 0);
@@ -137,7 +131,7 @@ static int visionox_rm69299_prepare(struct drm_panel *panel)
 		goto power_off;
 	}
 
-	/* Per DSI spec wait 120ms after sending set_display_on DCS command */
+	 
 	msleep(120);
 
 	ctx->prepared = true;
@@ -268,7 +262,7 @@ static void visionox_rm69299_remove(struct mipi_dsi_device *dsi)
 
 static const struct of_device_id visionox_rm69299_of_match[] = {
 	{ .compatible = "visionox,rm69299-1080p-display", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, visionox_rm69299_of_match);
 

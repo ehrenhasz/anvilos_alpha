@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_DP_LINK_TRAINING_H__
 #define __INTEL_DP_LINK_TRAINING_H__
@@ -33,7 +31,7 @@ void
 intel_dp_dump_link_status(struct intel_dp *intel_dp, enum drm_dp_phy dp_phy,
 			  const u8 link_status[DP_LINK_STATUS_SIZE]);
 
-/* Get the TPSx symbol type of the value programmed to DP_TRAINING_PATTERN_SET */
+ 
 static inline u8 intel_dp_training_pattern_symbol(u8 pattern)
 {
 	return pattern & ~DP_LINK_SCRAMBLING_DISABLE;
@@ -41,4 +39,4 @@ static inline u8 intel_dp_training_pattern_symbol(u8 pattern)
 
 void intel_dp_128b132b_sdp_crc16(struct intel_dp *intel_dp,
 				 const struct intel_crtc_state *crtc_state);
-#endif /* __INTEL_DP_LINK_TRAINING_H__ */
+#endif  

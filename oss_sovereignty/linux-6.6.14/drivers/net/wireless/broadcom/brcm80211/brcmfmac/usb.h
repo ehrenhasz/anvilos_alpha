@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2011 Broadcom Corporation
- */
+
+ 
 #ifndef BRCMFMAC_USB_H
 #define BRCMFMAC_USB_H
 
@@ -28,10 +26,10 @@ struct brcmf_usbdev {
 	int ntxq, nrxq, rxsize;
 	u32 bus_mtu;
 	int devid;
-	int chiprev; /* chip revision number */
+	int chiprev;  
 };
 
-/* IO Request Block (IRB) */
+ 
 struct brcmf_usbreq {
 	struct list_head list;
 	struct brcmf_usbdev_info *devinfo;
@@ -39,4 +37,4 @@ struct brcmf_usbreq {
 	struct sk_buff  *skb;
 };
 
-#endif /* BRCMFMAC_USB_H */
+#endif  

@@ -3,7 +3,7 @@
 	.insns = {
 	BPF_DIRECT_PKT_R2,
 	BPF_LDX_MEM(BPF_DW, BPF_REG_7, BPF_REG_2, 0),
-	/* reg, high bits shouldn't be tested */
+	 
 	BPF_JMP32_IMM(BPF_JSET, BPF_REG_7, -2, 1),
 	BPF_JMP_IMM(BPF_JA, 0, 0, 1),
 	BPF_EXIT_INSN(),

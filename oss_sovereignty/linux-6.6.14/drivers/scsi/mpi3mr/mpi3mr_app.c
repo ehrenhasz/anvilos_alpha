@@ -1,25 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Broadcom MPI3 Storage Controllers
- *
- * Copyright (C) 2017-2023 Broadcom Inc.
- *  (mailto: mpi3mr-linuxdrv.pdl@broadcom.com)
- *
- */
+
+ 
 
 #include "mpi3mr.h"
 #include <linux/bsg-lib.h>
 #include <uapi/scsi/scsi_bsg_mpi3mr.h>
 
-/**
- * mpi3mr_bsg_pel_abort - sends PEL abort request
- * @mrioc: Adapter instance reference
- *
- * This function sends PEL abort request to the firmware through
- * admin request queue.
- *
- * Return: 0 on success, -1 on failure
- */
+ 
 static int mpi3mr_bsg_pel_abort(struct mpi3mr_ioc *mrioc)
 {
 	struct mpi3_pel_req_action_abort pel_abort_req;
@@ -100,16 +86,7 @@ out_unlock:
 	mutex_unlock(&mrioc->pel_abort_cmd.mutex);
 	return retval;
 }
-/**
- * mpi3mr_bsg_verify_adapter - verify adapter number is valid
- * @ioc_number: Adapter number
- *
- * This function returns the adapter instance pointer of given
- * adapter number. If adapter number does not match with the
- * driver's adapter list, driver returns NULL.
- *
- * Return: adapter instance reference
- */
+ 
 static struct mpi3mr_ioc *mpi3mr_bsg_verify_adapter(int ioc_number)
 {
 	struct mpi3mr_ioc *mrioc = NULL;
@@ -125,17 +102,7 @@ static struct mpi3mr_ioc *mpi3mr_bsg_verify_adapter(int ioc_number)
 	return NULL;
 }
 
-/**
- * mpi3mr_enable_logdata - Handler for log data enable
- * @mrioc: Adapter instance reference
- * @job: BSG job reference
- *
- * This function enables log data caching in the driver if not
- * already enabled and return the maximum number of log data
- * entries that can be cached in the driver.
- *
- * Return: 0 on success and proper error codes on failure
- */
+ 
 static long mpi3mr_enable_logdata(struct mpi3mr_ioc *mrioc,
 	struct bsg_job *job)
 {
@@ -165,15 +132,7 @@ static long mpi3mr_enable_logdata(struct mpi3mr_ioc *mrioc,
 
 	return -EINVAL;
 }
-/**
- * mpi3mr_get_logdata - Handler for get log data
- * @mrioc: Adapter instance reference
- * @job: BSG job pointer
- * This function copies the log data entries to the user buffer
- * when log caching is enabled in the driver.
- *
- * Return: 0 on success and proper error codes on failure
- */
+ 
 static long mpi3mr_get_logdata(struct mpi3mr_ioc *mrioc,
 	struct bsg_job *job)
 {
@@ -196,18 +155,7 @@ static long mpi3mr_get_logdata(struct mpi3mr_ioc *mrioc,
 	return -EINVAL;
 }
 
-/**
- * mpi3mr_bsg_pel_enable - Handler for PEL enable driver
- * @mrioc: Adapter instance reference
- * @job: BSG job pointer
- *
- * This function is the handler for PEL enable driver.
- * Validates the application given class and locale and if
- * requires aborts the existing PEL wait request and/or issues
- * new PEL wait request to the firmware and returns.
- *
- * Return: 0 on success and proper error codes on failure.
- */
+ 
 static long mpi3mr_bsg_pel_enable(struct mpi3mr_ioc *mrioc,
 				  struct bsg_job *job)
 {
@@ -293,19 +241,7 @@ static long mpi3mr_bsg_pel_enable(struct mpi3mr_ioc *mrioc,
 out:
 	return rval;
 }
-/**
- * mpi3mr_get_all_tgt_info - Get all target information
- * @mrioc: Adapter instance reference
- * @job: BSG job reference
- *
- * This function copies the driver managed target devices device
- * handle, persistent ID, bus ID and taret ID to the user
- * provided buffer for the specific controller. This function
- * also provides the number of devices managed by the driver for
- * the specific controller.
- *
- * Return: 0 on success and proper error codes on failure
- */
+ 
 static long mpi3mr_get_all_tgt_info(struct mpi3mr_ioc *mrioc,
 	struct bsg_job *job)
 {
@@ -372,17 +308,7 @@ static long mpi3mr_get_all_tgt_info(struct mpi3mr_ioc *mrioc,
 	kfree(alltgt_info);
 	return 0;
 }
-/**
- * mpi3mr_get_change_count - Get topology change count
- * @mrioc: Adapter instance reference
- * @job: BSG job reference
- *
- * This function copies the toplogy change count provided by the
- * driver in events and cached in the driver to the user
- * provided buffer for the specific controller.
- *
- * Return: 0 on success and proper error codes on failure
- */
+ 
 static long mpi3mr_get_change_count(struct mpi3mr_ioc *mrioc,
 	struct bsg_job *job)
 {
@@ -399,17 +325,7 @@ static long mpi3mr_get_change_count(struct mpi3mr_ioc *mrioc,
 	return -EINVAL;
 }
 
-/**
- * mpi3mr_bsg_adp_reset - Issue controller reset
- * @mrioc: Adapter instance reference
- * @job: BSG job reference
- *
- * This function identifies the user provided reset type and
- * issues approporiate reset to the controller and wait for that
- * to complete and reinitialize the controller and then returns
- *
- * Return: 0 on success and proper error codes on failure
- */
+ 
 static long mpi3mr_bsg_adp_reset(struct mpi3mr_ioc *mrioc,
 	struct bsg_job *job)
 {
@@ -452,16 +368,7 @@ out:
 	return rval;
 }
 
-/**
- * mpi3mr_bsg_populate_adpinfo - Get adapter info command handler
- * @mrioc: Adapter instance reference
- * @job: BSG job reference
- *
- * This function provides adapter information for the given
- * controller
- *
- * Return: 0 on success and proper error codes on failure
- */
+ 
 static long mpi3mr_bsg_populate_adpinfo(struct mpi3mr_ioc *mrioc,
 	struct bsg_job *job)
 {
@@ -502,16 +409,7 @@ static long mpi3mr_bsg_populate_adpinfo(struct mpi3mr_ioc *mrioc,
 	return -EINVAL;
 }
 
-/**
- * mpi3mr_bsg_process_drv_cmds - Driver Command handler
- * @job: BSG job reference
- *
- * This function is the top level handler for driver commands,
- * this does basic validation of the buffer and identifies the
- * opcode and switches to correct sub handler.
- *
- * Return: 0 on success and proper error codes on failure
- */
+ 
 static long mpi3mr_bsg_process_drv_cmds(struct bsg_job *job)
 {
 	long rval = -EINVAL;
@@ -563,21 +461,7 @@ static long mpi3mr_bsg_process_drv_cmds(struct bsg_job *job)
 	return rval;
 }
 
-/**
- * mpi3mr_bsg_build_sgl - SGL construction for MPI commands
- * @mpi_req: MPI request
- * @sgl_offset: offset to start sgl in the MPI request
- * @drv_bufs: DMA address of the buffers to be placed in sgl
- * @bufcnt: Number of DMA buffers
- * @is_rmc: Does the buffer list has management command buffer
- * @is_rmr: Does the buffer list has management response buffer
- * @num_datasges: Number of data buffers in the list
- *
- * This function places the DMA address of the given buffers in
- * proper format as SGEs in the given MPI request.
- *
- * Return: Nothing
- */
+ 
 static void mpi3mr_bsg_build_sgl(u8 *mpi_req, uint32_t sgl_offset,
 	struct mpi3mr_buf_map *drv_bufs, u8 bufcnt, u8 is_rmc,
 	u8 is_rmr, u8 num_datasges)
@@ -627,15 +511,7 @@ static void mpi3mr_bsg_build_sgl(u8 *mpi_req, uint32_t sgl_offset,
 	}
 }
 
-/**
- * mpi3mr_get_nvme_data_fmt - returns the NVMe data format
- * @nvme_encap_request: NVMe encapsulated MPI request
- *
- * This function returns the type of the data format specified
- * in user provided NVMe command in NVMe encapsulated request.
- *
- * Return: Data format of the NVMe command (PRP/SGL etc)
- */
+ 
 static unsigned int mpi3mr_get_nvme_data_fmt(
 	struct mpi3_nvme_encapsulated_request *nvme_encap_request)
 {
@@ -646,19 +522,7 @@ static unsigned int mpi3mr_get_nvme_data_fmt(
 
 }
 
-/**
- * mpi3mr_build_nvme_sgl - SGL constructor for NVME
- *				   encapsulated request
- * @mrioc: Adapter instance reference
- * @nvme_encap_request: NVMe encapsulated MPI request
- * @drv_bufs: DMA address of the buffers to be placed in sgl
- * @bufcnt: Number of DMA buffers
- *
- * This function places the DMA address of the given buffers in
- * proper format as SGEs in the given NVMe encapsulated request.
- *
- * Return: 0 on success, -1 on failure
- */
+ 
 static int mpi3mr_build_nvme_sgl(struct mpi3mr_ioc *mrioc,
 	struct mpi3_nvme_encapsulated_request *nvme_encap_request,
 	struct mpi3mr_buf_map *drv_bufs, u8 bufcnt)
@@ -673,10 +537,7 @@ static int mpi3mr_build_nvme_sgl(struct mpi3mr_ioc *mrioc,
 	u64 sgemod_val = ((u64)(mrioc->facts.sge_mod_value) <<
 			  mrioc->facts.sge_mod_shift) << 32;
 
-	/*
-	 * Not all commands require a data transfer. If no data, just return
-	 * without constructing any sgl.
-	 */
+	 
 	for (count = 0; count < bufcnt; count++, drv_buf_iter++) {
 		if (drv_buf_iter->data_dir == DMA_NONE)
 			continue;
@@ -704,20 +565,7 @@ static int mpi3mr_build_nvme_sgl(struct mpi3mr_ioc *mrioc,
 	return 0;
 }
 
-/**
- * mpi3mr_build_nvme_prp - PRP constructor for NVME
- *			       encapsulated request
- * @mrioc: Adapter instance reference
- * @nvme_encap_request: NVMe encapsulated MPI request
- * @drv_bufs: DMA address of the buffers to be placed in SGL
- * @bufcnt: Number of DMA buffers
- *
- * This function places the DMA address of the given buffers in
- * proper format as PRP entries in the given NVMe encapsulated
- * request.
- *
- * Return: 0 on success, -1 on failure
- */
+ 
 static int mpi3mr_build_nvme_prp(struct mpi3mr_ioc *mrioc,
 	struct mpi3_nvme_encapsulated_request *nvme_encap_request,
 	struct mpi3mr_buf_map *drv_bufs, u8 bufcnt)
@@ -756,10 +604,7 @@ static int mpi3mr_build_nvme_prp(struct mpi3mr_ioc *mrioc,
 	dev_pgsz = 1 << (tgtdev->dev_spec.pcie_inf.pgsz);
 	mpi3mr_tgtdev_put(tgtdev);
 
-	/*
-	 * Not all commands require a data transfer. If no data, just return
-	 * without constructing any PRP.
-	 */
+	 
 	for (count = 0; count < bufcnt; count++, drv_buf_iter++) {
 		if (drv_buf_iter->data_dir == DMA_NONE)
 			continue;
@@ -779,27 +624,17 @@ static int mpi3mr_build_nvme_prp(struct mpi3mr_ioc *mrioc,
 		return -1;
 	mrioc->prp_sz = dev_pgsz;
 
-	/*
-	 * Set pointers to PRP1 and PRP2, which are in the NVMe command.
-	 * PRP1 is located at a 24 byte offset from the start of the NVMe
-	 * command.  Then set the current PRP entry pointer to PRP1.
-	 */
+	 
 	prp1_entry = (__le64 *)((u8 *)(nvme_encap_request->command) +
 	    MPI3MR_NVME_CMD_PRP1_OFFSET);
 	prp2_entry = (__le64 *)((u8 *)(nvme_encap_request->command) +
 	    MPI3MR_NVME_CMD_PRP2_OFFSET);
 	prp_entry = prp1_entry;
-	/*
-	 * For the PRP entries, use the specially allocated buffer of
-	 * contiguous memory.
-	 */
+	 
 	prp_page = (__le64 *)mrioc->prp_list_virt;
 	prp_page_dma = mrioc->prp_list_dma;
 
-	/*
-	 * Check if we are within 1 entry of a page boundary we don't
-	 * want our first entry to be a PRP List entry.
-	 */
+	 
 	page_mask = dev_pgsz - 1;
 	page_mask_result = (uintptr_t)((u8 *)prp_page + prp_size) & page_mask;
 	if (!page_mask_result) {
@@ -808,14 +643,11 @@ static int mpi3mr_build_nvme_prp(struct mpi3mr_ioc *mrioc,
 		goto err_out;
 	}
 
-	/*
-	 * Set PRP physical pointer, which initially points to the current PRP
-	 * DMA memory page.
-	 */
+	 
 	prp_entry_dma = prp_page_dma;
 
 
-	/* Loop while the length is not zero. */
+	 
 	while (length) {
 		page_mask_result = (prp_entry_dma + prp_size) & page_mask;
 		if (!page_mask_result && (length >  dev_pgsz)) {
@@ -825,15 +657,12 @@ static int mpi3mr_build_nvme_prp(struct mpi3mr_ioc *mrioc,
 			goto err_out;
 		}
 
-		/* Need to handle if entry will be part of a page. */
+		 
 		offset = dma_addr & page_mask;
 		entry_len = dev_pgsz - offset;
 
 		if (prp_entry == prp1_entry) {
-			/*
-			 * Must fill in the first PRP pointer (PRP1) before
-			 * moving on.
-			 */
+			 
 			*prp1_entry = cpu_to_le64(dma_addr);
 			if (*prp1_entry & sgemod_mask) {
 				dprint_bsg_err(mrioc,
@@ -844,24 +673,12 @@ static int mpi3mr_build_nvme_prp(struct mpi3mr_ioc *mrioc,
 			*prp1_entry &= ~sgemod_mask;
 			*prp1_entry |= sgemod_val;
 
-			/*
-			 * Now point to the second PRP entry within the
-			 * command (PRP2).
-			 */
+			 
 			prp_entry = prp2_entry;
 		} else if (prp_entry == prp2_entry) {
-			/*
-			 * Should the PRP2 entry be a PRP List pointer or just
-			 * a regular PRP pointer?  If there is more than one
-			 * more page of data, must use a PRP List pointer.
-			 */
+			 
 			if (length > dev_pgsz) {
-				/*
-				 * PRP2 will contain a PRP List pointer because
-				 * more PRP's are needed with this command. The
-				 * list will start at the beginning of the
-				 * contiguous buffer.
-				 */
+				 
 				*prp2_entry = cpu_to_le64(prp_entry_dma);
 				if (*prp2_entry & sgemod_mask) {
 					dprint_bsg_err(mrioc,
@@ -872,17 +689,11 @@ static int mpi3mr_build_nvme_prp(struct mpi3mr_ioc *mrioc,
 				*prp2_entry &= ~sgemod_mask;
 				*prp2_entry |= sgemod_val;
 
-				/*
-				 * The next PRP Entry will be the start of the
-				 * first PRP List.
-				 */
+				 
 				prp_entry = prp_page;
 				continue;
 			} else {
-				/*
-				 * After this, the PRP Entries are complete.
-				 * This command uses 2 PRP's and no PRP list.
-				 */
+				 
 				*prp2_entry = cpu_to_le64(dma_addr);
 				if (*prp2_entry & sgemod_mask) {
 					dprint_bsg_err(mrioc,
@@ -894,13 +705,7 @@ static int mpi3mr_build_nvme_prp(struct mpi3mr_ioc *mrioc,
 				*prp2_entry |= sgemod_val;
 			}
 		} else {
-			/*
-			 * Put entry in list and bump the addresses.
-			 *
-			 * After PRP1 and PRP2 are filled in, this will fill in
-			 * all remaining PRP entries in a PRP List, one per
-			 * each time through the loop.
-			 */
+			 
 			*prp_entry = cpu_to_le64(dma_addr);
 			if (*prp_entry & sgemod_mask) {
 				dprint_bsg_err(mrioc,
@@ -914,13 +719,10 @@ static int mpi3mr_build_nvme_prp(struct mpi3mr_ioc *mrioc,
 			prp_entry_dma += prp_size;
 		}
 
-		/*
-		 * Bump the phys address of the command's data buffer by the
-		 * entry_len.
-		 */
+		 
 		dma_addr += entry_len;
 
-		/* decrement length accounting for last partial page. */
+		 
 		if (entry_len > length)
 			length = 0;
 		else
@@ -935,24 +737,7 @@ err_out:
 	}
 	return -1;
 }
-/**
- * mpi3mr_bsg_process_mpt_cmds - MPI Pass through BSG handler
- * @job: BSG job reference
- * @reply_payload_rcv_len: length of payload recvd
- *
- * This function is the top level handler for MPI Pass through
- * command, this does basic validation of the input data buffers,
- * identifies the given buffer types and MPI command, allocates
- * DMAable memory for user given buffers, construstcs SGL
- * properly and passes the command to the firmware.
- *
- * Once the MPI command is completed the driver copies the data
- * if any and reply, sense information to user provided buffers.
- * If the command is timed out then issues controller reset
- * prior to returning.
- *
- * Return: 0 on success and proper error codes on failure
- */
+ 
 
 static long mpi3mr_bsg_process_mpt_cmds(struct bsg_job *job, unsigned int *reply_payload_rcv_len)
 {
@@ -1421,19 +1206,7 @@ out:
 	return rval;
 }
 
-/**
- * mpi3mr_app_save_logdata - Save Log Data events
- * @mrioc: Adapter instance reference
- * @event_data: event data associated with log data event
- * @event_data_size: event data size to copy
- *
- * If log data event caching is enabled by the applicatiobns,
- * then this function saves the log data in the circular queue
- * and Sends async signal SIGIO to indicate there is an async
- * event from the firmware to the event monitoring applications.
- *
- * Return:Nothing
- */
+ 
 void mpi3mr_app_save_logdata(struct mpi3mr_ioc *mrioc, char *event_data,
 	u16 event_data_size)
 {
@@ -1453,14 +1226,7 @@ void mpi3mr_app_save_logdata(struct mpi3mr_ioc *mrioc, char *event_data,
 	atomic64_inc(&event_counter);
 }
 
-/**
- * mpi3mr_bsg_request - bsg request entry point
- * @job: BSG job reference
- *
- * This is driver's entry point for bsg requests
- *
- * Return: 0 on success and proper error codes on failure
- */
+ 
 static int mpi3mr_bsg_request(struct bsg_job *job)
 {
 	long rval = -EINVAL;
@@ -1486,15 +1252,7 @@ static int mpi3mr_bsg_request(struct bsg_job *job)
 	return 0;
 }
 
-/**
- * mpi3mr_bsg_exit - de-registration from bsg layer
- * @mrioc: Adapter instance reference
- *
- * This will be called during driver unload and all
- * bsg resources allocated during load will be freed.
- *
- * Return:Nothing
- */
+ 
 void mpi3mr_bsg_exit(struct mpi3mr_ioc *mrioc)
 {
 	struct device *bsg_dev = &mrioc->bsg_dev;
@@ -1508,28 +1266,13 @@ void mpi3mr_bsg_exit(struct mpi3mr_ioc *mrioc)
 	put_device(bsg_dev);
 }
 
-/**
- * mpi3mr_bsg_node_release -release bsg device node
- * @dev: bsg device node
- *
- * decrements bsg dev parent reference count
- *
- * Return:Nothing
- */
+ 
 static void mpi3mr_bsg_node_release(struct device *dev)
 {
 	put_device(dev->parent);
 }
 
-/**
- * mpi3mr_bsg_init -  registration with bsg layer
- * @mrioc: Adapter instance reference
- *
- * This will be called during driver load and it will
- * register driver with bsg layer
- *
- * Return:Nothing
- */
+ 
 void mpi3mr_bsg_init(struct mpi3mr_ioc *mrioc)
 {
 	struct device *bsg_dev = &mrioc->bsg_dev;
@@ -1565,14 +1308,7 @@ void mpi3mr_bsg_init(struct mpi3mr_ioc *mrioc)
 	return;
 }
 
-/**
- * version_fw_show - SysFS callback for firmware version read
- * @dev: class device
- * @attr: Device attributes
- * @buf: Buffer to copy
- *
- * Return: sysfs_emit() return after copying firmware version
- */
+ 
 static ssize_t
 version_fw_show(struct device *dev, struct device_attribute *attr,
 	char *buf)
@@ -1587,14 +1323,7 @@ version_fw_show(struct device *dev, struct device_attribute *attr,
 }
 static DEVICE_ATTR_RO(version_fw);
 
-/**
- * fw_queue_depth_show - SysFS callback for firmware max cmds
- * @dev: class device
- * @attr: Device attributes
- * @buf: Buffer to copy
- *
- * Return: sysfs_emit() return after copying firmware max commands
- */
+ 
 static ssize_t
 fw_queue_depth_show(struct device *dev, struct device_attribute *attr,
 			char *buf)
@@ -1606,14 +1335,7 @@ fw_queue_depth_show(struct device *dev, struct device_attribute *attr,
 }
 static DEVICE_ATTR_RO(fw_queue_depth);
 
-/**
- * op_req_q_count_show - SysFS callback for request queue count
- * @dev: class device
- * @attr: Device attributes
- * @buf: Buffer to copy
- *
- * Return: sysfs_emit() return after copying request queue count
- */
+ 
 static ssize_t
 op_req_q_count_show(struct device *dev, struct device_attribute *attr,
 			char *buf)
@@ -1625,14 +1347,7 @@ op_req_q_count_show(struct device *dev, struct device_attribute *attr,
 }
 static DEVICE_ATTR_RO(op_req_q_count);
 
-/**
- * reply_queue_count_show - SysFS callback for reply queue count
- * @dev: class device
- * @attr: Device attributes
- * @buf: Buffer to copy
- *
- * Return: sysfs_emit() return after copying reply queue count
- */
+ 
 static ssize_t
 reply_queue_count_show(struct device *dev, struct device_attribute *attr,
 			char *buf)
@@ -1645,18 +1360,7 @@ reply_queue_count_show(struct device *dev, struct device_attribute *attr,
 
 static DEVICE_ATTR_RO(reply_queue_count);
 
-/**
- * logging_level_show - Show controller debug level
- * @dev: class device
- * @attr: Device attributes
- * @buf: Buffer to copy
- *
- * A sysfs 'read/write' shost attribute, to show the current
- * debug log level used by the driver for the specific
- * controller.
- *
- * Return: sysfs_emit() return
- */
+ 
 static ssize_t
 logging_level_show(struct device *dev,
 	struct device_attribute *attr, char *buf)
@@ -1668,19 +1372,7 @@ logging_level_show(struct device *dev,
 	return sysfs_emit(buf, "%08xh\n", mrioc->logging_level);
 }
 
-/**
- * logging_level_store- Change controller debug level
- * @dev: class device
- * @attr: Device attributes
- * @buf: Buffer to copy
- * @count: size of the buffer
- *
- * A sysfs 'read/write' shost attribute, to change the current
- * debug log level used by the driver for the specific
- * controller.
- *
- * Return: strlen() return
- */
+ 
 static ssize_t
 logging_level_store(struct device *dev,
 	struct device_attribute *attr,
@@ -1699,14 +1391,7 @@ logging_level_store(struct device *dev,
 }
 static DEVICE_ATTR_RW(logging_level);
 
-/**
- * adp_state_show() - SysFS callback for adapter state show
- * @dev: class device
- * @attr: Device attributes
- * @buf: Buffer to copy
- *
- * Return: sysfs_emit() return after copying adapter state
- */
+ 
 static ssize_t
 adp_state_show(struct device *dev, struct device_attribute *attr,
 	char *buf)
@@ -1751,19 +1436,9 @@ const struct attribute_group *mpi3mr_host_groups[] = {
 };
 
 
-/*
- * SCSI Device attributes under sysfs
- */
+ 
 
-/**
- * sas_address_show - SysFS callback for dev SASaddress display
- * @dev: class device
- * @attr: Device attributes
- * @buf: Buffer to copy
- *
- * Return: sysfs_emit() return after copying SAS address of the
- * specific SAS/SATA end device.
- */
+ 
 static ssize_t
 sas_address_show(struct device *dev, struct device_attribute *attr,
 			char *buf)
@@ -1789,15 +1464,7 @@ sas_address_show(struct device *dev, struct device_attribute *attr,
 
 static DEVICE_ATTR_RO(sas_address);
 
-/**
- * device_handle_show - SysFS callback for device handle display
- * @dev: class device
- * @attr: Device attributes
- * @buf: Buffer to copy
- *
- * Return: sysfs_emit() return after copying firmware internal
- * device handle of the specific device.
- */
+ 
 static ssize_t
 device_handle_show(struct device *dev, struct device_attribute *attr,
 			char *buf)
@@ -1822,15 +1489,7 @@ device_handle_show(struct device *dev, struct device_attribute *attr,
 
 static DEVICE_ATTR_RO(device_handle);
 
-/**
- * persistent_id_show - SysFS callback for persisten ID display
- * @dev: class device
- * @attr: Device attributes
- * @buf: Buffer to copy
- *
- * Return: sysfs_emit() return after copying persistent ID of the
- * of the specific device.
- */
+ 
 static ssize_t
 persistent_id_show(struct device *dev, struct device_attribute *attr,
 			char *buf)

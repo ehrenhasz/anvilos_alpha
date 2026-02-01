@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 Pengutronix, Sascha Hauer <kernel@pengutronix.de>
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/init.h>
 #include <linux/io.h>
@@ -34,19 +32,19 @@
 #define SPM_DIS_PWR_CON			0x023c
 #define SPM_CONN_PWR_CON		0x0280
 #define SPM_VEN2_PWR_CON		0x0298
-#define SPM_AUDIO_PWR_CON		0x029c	/* MT8173, MT2712 */
-#define SPM_BDP_PWR_CON			0x029c	/* MT2701 */
+#define SPM_AUDIO_PWR_CON		0x029c	 
+#define SPM_BDP_PWR_CON			0x029c	 
 #define SPM_ETH_PWR_CON			0x02a0
 #define SPM_HIF_PWR_CON			0x02a4
 #define SPM_IFR_MSC_PWR_CON		0x02a8
 #define SPM_MFG_2D_PWR_CON		0x02c0
 #define SPM_MFG_ASYNC_PWR_CON		0x02c4
 #define SPM_USB_PWR_CON			0x02cc
-#define SPM_USB2_PWR_CON		0x02d4	/* MT2712 */
-#define SPM_ETHSYS_PWR_CON		0x02e0	/* MT7622 */
-#define SPM_HIF0_PWR_CON		0x02e4	/* MT7622 */
-#define SPM_HIF1_PWR_CON		0x02e8	/* MT7622 */
-#define SPM_WB_PWR_CON			0x02ec	/* MT7622 */
+#define SPM_USB2_PWR_CON		0x02d4	 
+#define SPM_ETHSYS_PWR_CON		0x02e0	 
+#define SPM_HIF0_PWR_CON		0x02e4	 
+#define SPM_HIF1_PWR_CON		0x02e8	 
+#define SPM_WB_PWR_CON			0x02ec	 
 
 #define SPM_PWR_STATUS			0x060c
 #define SPM_PWR_STATUS_2ND		0x0610
@@ -66,17 +64,17 @@
 #define PWR_STATUS_ETH			BIT(15)
 #define PWR_STATUS_HIF			BIT(16)
 #define PWR_STATUS_IFR_MSC		BIT(17)
-#define PWR_STATUS_USB2			BIT(19)	/* MT2712 */
+#define PWR_STATUS_USB2			BIT(19)	 
 #define PWR_STATUS_VENC_LT		BIT(20)
 #define PWR_STATUS_VENC			BIT(21)
-#define PWR_STATUS_MFG_2D		BIT(22)	/* MT8173 */
-#define PWR_STATUS_MFG_ASYNC		BIT(23)	/* MT8173 */
-#define PWR_STATUS_AUDIO		BIT(24)	/* MT8173, MT2712 */
-#define PWR_STATUS_USB			BIT(25)	/* MT8173, MT2712 */
-#define PWR_STATUS_ETHSYS		BIT(24)	/* MT7622 */
-#define PWR_STATUS_HIF0			BIT(25)	/* MT7622 */
-#define PWR_STATUS_HIF1			BIT(26)	/* MT7622 */
-#define PWR_STATUS_WB			BIT(27)	/* MT7622 */
+#define PWR_STATUS_MFG_2D		BIT(22)	 
+#define PWR_STATUS_MFG_ASYNC		BIT(23)	 
+#define PWR_STATUS_AUDIO		BIT(24)	 
+#define PWR_STATUS_USB			BIT(25)	 
+#define PWR_STATUS_ETHSYS		BIT(24)	 
+#define PWR_STATUS_HIF0			BIT(25)	 
+#define PWR_STATUS_HIF1			BIT(26)	 
+#define PWR_STATUS_WB			BIT(27)	 
 
 enum clk_id {
 	CLK_NONE,
@@ -108,17 +106,7 @@ static const char * const clk_names[] = {
 
 #define MAX_CLKS	3
 
-/**
- * struct scp_domain_data - scp domain data for power on/off flow
- * @name: The domain name.
- * @sta_mask: The mask for power on/off status bit.
- * @ctl_offs: The offset for main power control register.
- * @sram_pdn_bits: The mask for sram power control bits.
- * @sram_pdn_ack_bits: The mask for sram power control acked bits.
- * @bus_prot_mask: The mask for single step bus protection.
- * @clk_id: The basic clocks required by this power domain.
- * @caps: The flag for active wake-up action.
- */
+ 
 struct scp_domain_data {
 	const char *name;
 	u32 sta_mask;
@@ -178,10 +166,7 @@ static int scpsys_domain_is_on(struct scp_domain *scpd)
 	u32 status2 = readl(scp->base + scp->ctrl_reg.pwr_sta2nd_offs) &
 						scpd->data->sta_mask;
 
-	/*
-	 * A domain is on when both status bits are set. If only one is set
-	 * return an error. This happens while powering up a domain
-	 */
+	 
 
 	if (status && status2)
 		return true;
@@ -240,16 +225,12 @@ static int scpsys_sram_enable(struct scp_domain *scpd, void __iomem *ctl_addr)
 	val &= ~scpd->data->sram_pdn_bits;
 	writel(val, ctl_addr);
 
-	/* Either wait until SRAM_PDN_ACK all 0 or have a force wait */
+	 
 	if (MTK_SCPD_CAPS(scpd, MTK_SCPD_FWAIT_SRAM)) {
-		/*
-		 * Currently, MTK_SCPD_FWAIT_SRAM is necessary only for
-		 * MT7622_POWER_DOMAIN_WB and thus just a trivial setup
-		 * is applied here.
-		 */
+		 
 		usleep_range(12000, 12100);
 	} else {
-		/* Either wait until SRAM_PDN_ACK all 1 or 0 */
+		 
 		int ret = readl_poll_timeout(ctl_addr, tmp,
 				(tmp & pdn_ack) == 0,
 				MTK_POLL_DELAY_US, MTK_POLL_TIMEOUT);
@@ -270,7 +251,7 @@ static int scpsys_sram_disable(struct scp_domain *scpd, void __iomem *ctl_addr)
 	val |= scpd->data->sram_pdn_bits;
 	writel(val, ctl_addr);
 
-	/* Either wait until SRAM_PDN_ACK all 1 or 0 */
+	 
 	return readl_poll_timeout(ctl_addr, tmp,
 			(tmp & pdn_ack) == pdn_ack,
 			MTK_POLL_DELAY_US, MTK_POLL_TIMEOUT);
@@ -316,14 +297,14 @@ static int scpsys_power_on(struct generic_pm_domain *genpd)
 	if (ret)
 		goto err_clk;
 
-	/* subsys power on */
+	 
 	val = readl(ctl_addr);
 	val |= PWR_ON_BIT;
 	writel(val, ctl_addr);
 	val |= PWR_ON_2ND_BIT;
 	writel(val, ctl_addr);
 
-	/* wait until PWR_ACK = 1 */
+	 
 	ret = readx_poll_timeout(scpsys_domain_is_on, scpd, tmp, tmp > 0,
 				 MTK_POLL_DELAY_US, MTK_POLL_TIMEOUT);
 	if (ret < 0)
@@ -374,7 +355,7 @@ static int scpsys_power_off(struct generic_pm_domain *genpd)
 	if (ret < 0)
 		goto out;
 
-	/* subsys power off */
+	 
 	val = readl(ctl_addr);
 	val |= PWR_ISO_BIT;
 	writel(val, ctl_addr);
@@ -391,7 +372,7 @@ static int scpsys_power_off(struct generic_pm_domain *genpd)
 	val &= ~PWR_ON_2ND_BIT;
 	writel(val, ctl_addr);
 
-	/* wait until PWR_ACK = 0 */
+	 
 	ret = readx_poll_timeout(scpsys_domain_is_on, scpd, tmp, tmp == 0,
 				 MTK_POLL_DELAY_US, MTK_POLL_TIMEOUT);
 	if (ret < 0)
@@ -526,22 +507,13 @@ static void mtk_register_power_domains(struct platform_device *pdev,
 		struct generic_pm_domain *genpd = &scpd->genpd;
 		bool on;
 
-		/*
-		 * Initially turn on all domains to make the domains usable
-		 * with !CONFIG_PM and to get the hardware in sync with the
-		 * software.  The unused domains will be switched off during
-		 * late_init time.
-		 */
+		 
 		on = !WARN_ON(genpd->power_on(genpd) < 0);
 
 		pm_genpd_init(genpd, NULL, !on);
 	}
 
-	/*
-	 * We are not allowed to fail here since there is no way to unregister
-	 * a power domain. Once registered above we have to keep the domains
-	 * valid.
-	 */
+	 
 
 	pd_data = &scp->pd_data;
 
@@ -550,9 +522,7 @@ static void mtk_register_power_domains(struct platform_device *pdev,
 		dev_err(&pdev->dev, "Failed to add OF provider: %d\n", ret);
 }
 
-/*
- * MT2701 power domain support
- */
+ 
 
 static const struct scp_domain_data scp_domain_data_mt2701[] = {
 	[MT2701_POWER_DOMAIN_CONN] = {
@@ -635,9 +605,7 @@ static const struct scp_domain_data scp_domain_data_mt2701[] = {
 	},
 };
 
-/*
- * MT2712 power domain support
- */
+ 
 static const struct scp_domain_data scp_domain_data_mt2712[] = {
 	[MT2712_POWER_DOMAIN_MM] = {
 		.name = "mm",
@@ -750,9 +718,7 @@ static const struct scp_subdomain scp_subdomain_mt2712[] = {
 	{MT2712_POWER_DOMAIN_MFG_SC2, MT2712_POWER_DOMAIN_MFG_SC3},
 };
 
-/*
- * MT6797 power domain support
- */
+ 
 
 static const struct scp_domain_data scp_domain_data_mt6797[] = {
 	[MT6797_POWER_DOMAIN_VDEC] = {
@@ -824,9 +790,7 @@ static const struct scp_subdomain scp_subdomain_mt6797[] = {
 	{MT6797_POWER_DOMAIN_MM, MT6797_POWER_DOMAIN_MJC},
 };
 
-/*
- * MT7622 power domain support
- */
+ 
 
 static const struct scp_domain_data scp_domain_data_mt7622[] = {
 	[MT7622_POWER_DOMAIN_ETHSYS] = {
@@ -871,9 +835,7 @@ static const struct scp_domain_data scp_domain_data_mt7622[] = {
 	},
 };
 
-/*
- * MT7623A power domain support
- */
+ 
 
 static const struct scp_domain_data scp_domain_data_mt7623a[] = {
 	[MT7623A_POWER_DOMAIN_CONN] = {
@@ -912,9 +874,7 @@ static const struct scp_domain_data scp_domain_data_mt7623a[] = {
 	},
 };
 
-/*
- * MT8173 power domain support
- */
+ 
 
 static const struct scp_domain_data scp_domain_data_mt8173[] = {
 	[MT8173_POWER_DOMAIN_VDEC] = {
@@ -1077,9 +1037,7 @@ static const struct scp_soc_data mt8173_data = {
 	.bus_prot_reg_update = true,
 };
 
-/*
- * scpsys driver init
- */
+ 
 
 static const struct of_device_id of_scpsys_match_tbl[] = {
 	{
@@ -1101,7 +1059,7 @@ static const struct of_device_id of_scpsys_match_tbl[] = {
 		.compatible = "mediatek,mt8173-scpsys",
 		.data = &mt8173_data,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 

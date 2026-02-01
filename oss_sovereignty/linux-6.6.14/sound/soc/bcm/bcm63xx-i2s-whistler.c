@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-// linux/sound/bcm/bcm63xx-i2s-whistler.c
-// BCM63xx whistler i2s driver
-// Copyright (c) 2020 Broadcom Corporation
-// Author: Kevin-Ke Li <kevin-ke.li@broadcom.com>
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -103,11 +103,7 @@ static int bcm63xx_i2s_startup(struct snd_pcm_substream *substream,
 		regmap_write(regmap_i2s, I2S_TX_IRQ_IFF_THLD, 0);
 		regmap_write(regmap_i2s, I2S_TX_IRQ_OFF_THLD, 1);
 
-		/* TX and RX block each have an independent bit to indicate
-		 * if it is generating the clock for the I2S bus. The bus
-		 * clocks need to be generated from either the TX or RX block,
-		 * but not both
-		 */
+		 
 		regmap_read(regmap_i2s, I2S_RX_CFG_2, &slavemode);
 		if (slavemode & I2S_RX_SLAVE_MODE_MASK)
 			regmap_update_bits(regmap_i2s, I2S_TX_CFG_2,

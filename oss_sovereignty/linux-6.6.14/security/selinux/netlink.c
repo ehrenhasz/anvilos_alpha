@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Netlink event notifications for SELinux.
- *
- * Author: James Morris <jmorris@redhat.com>
- *
- * Copyright (C) 2004 Red Hat, Inc., James Morris <jmorris@redhat.com>
- */
+
+ 
 #include <linux/init.h>
 #include <linux/types.h>
 #include <linux/slab.h>

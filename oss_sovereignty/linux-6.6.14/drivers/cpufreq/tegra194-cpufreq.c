@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2020 - 2022, NVIDIA CORPORATION. All rights reserved
- */
+
+ 
 
 #include <linux/cpu.h>
 #include <linux/cpufreq.h>
@@ -20,7 +18,7 @@
 #include <soc/tegra/bpmp-abi.h>
 
 #define KHZ                     1000
-#define REF_CLK_MHZ             408 /* 408 MHz */
+#define REF_CLK_MHZ             408  
 #define US_DELAY                500
 #define CPUFREQ_TBL_STEP_HZ     (50 * KHZ * KHZ)
 #define MAX_CNT                 ~0U
@@ -36,8 +34,8 @@
 			(data->regs + (MMCRAB_CLUSTER_BASE(cl) + data->soc->actmon_cntr_base))
 #define CORE_ACTMON_CNTR_REG(data, cl, cpu)	(CLUSTER_ACTMON_BASE(data, cl) + CORE_OFFSET(cpu))
 
-/* cpufreq transisition latency */
-#define TEGRA_CPUFREQ_TRANSITION_LATENCY (300 * 1000) /* unit in nanoseconds */
+ 
+#define TEGRA_CPUFREQ_TRANSITION_LATENCY (300 * 1000)  
 
 struct tegra_cpu_ctr {
 	u32 cpu;
@@ -119,7 +117,7 @@ static int tegra234_get_cpu_ndiv(u32 cpu, u32 cpuid, u32 clusterid, u64 *ndiv)
 	void __iomem *freq_core_reg;
 	u64 mpidr_id;
 
-	/* use physical id to get address of per core frequency register */
+	 
 	mpidr_id = (clusterid * data->soc->maxcpus_per_cluster) + cpuid;
 	freq_core_reg = SCRATCH_FREQ_CORE_REG(data, mpidr_id);
 
@@ -138,7 +136,7 @@ static void tegra234_set_cpu_ndiv(struct cpufreq_policy *policy, u64 ndiv)
 	for_each_cpu_and(cpu, policy->cpus, cpu_online_mask) {
 		data->soc->ops->get_cpu_cluster_id(cpu, &cpuid, &clusterid);
 
-		/* use physical id to get address of per core frequency register */
+		 
 		mpidr_id = (clusterid * data->soc->maxcpus_per_cluster) + cpuid;
 		freq_core_reg = SCRATCH_FREQ_CORE_REG(data, mpidr_id);
 
@@ -146,13 +144,7 @@ static void tegra234_set_cpu_ndiv(struct cpufreq_policy *policy, u64 ndiv)
 	}
 }
 
-/*
- * This register provides access to two counter values with a single
- * 64-bit read. The counter values are used to determine the average
- * actual frequency a core has run at over a period of time.
- *     [63:32] PLLP counter: Counts at fixed frequency (408 MHz)
- *     [31:0] Core clock counter: Counts on every core clock cycle
- */
+ 
 static void tegra234_read_counters(struct tegra_cpu_ctr *c)
 {
 	struct tegra194_cpufreq_data *data = cpufreq_get_driver_data();
@@ -205,15 +197,7 @@ static void tegra194_get_cpu_cluster_id(u32 cpu, u32 *cpuid, u32 *clusterid)
 		*clusterid = MPIDR_AFFINITY_LEVEL(mpidr, 1);
 }
 
-/*
- * Read per-core Read-only system register NVFREQ_FEEDBACK_EL1.
- * The register provides frequency feedback information to
- * determine the average actual frequency a core has run at over
- * a period of time.
- *	[31:0] PLLP counter: Counts at fixed frequency (408 MHz)
- *	[63:32] Core clock counter: counts on every core clock cycle
- *			where the core is architecturally clocking
- */
+ 
 static u64 read_freq_feedback(void)
 {
 	u64 val = 0;
@@ -248,18 +232,7 @@ static void tegra_read_counters(struct work_struct *work)
 	struct read_counters_work *read_counters_work;
 	struct tegra_cpu_ctr *c;
 
-	/*
-	 * ref_clk_counter(32 bit counter) runs on constant clk,
-	 * pll_p(408MHz).
-	 * It will take = 2 ^ 32 / 408 MHz to overflow ref clk counter
-	 *              = 10526880 usec = 10.527 sec to overflow
-	 *
-	 * Like wise core_clk_counter(32 bit counter) runs on core clock.
-	 * It's synchronized to crab_clk (cpu_crab_clk) which runs at
-	 * freq of cluster. Assuming max cluster clock ~2000MHz,
-	 * It will take = 2 ^ 32 / 2000 MHz to overflow core clk counter
-	 *              = ~2.147 sec to overflow
-	 */
+	 
 	read_counters_work = container_of(work, struct read_counters_work,
 					  work);
 	c = &read_counters_work->c;
@@ -267,27 +240,7 @@ static void tegra_read_counters(struct work_struct *work)
 	data->soc->ops->read_counters(c);
 }
 
-/*
- * Return instantaneous cpu speed
- * Instantaneous freq is calculated as -
- * -Takes sample on every query of getting the freq.
- *	- Read core and ref clock counters;
- *	- Delay for X us
- *	- Read above cycle counters again
- *	- Calculates freq by subtracting current and previous counters
- *	  divided by the delay time or eqv. of ref_clk_counter in delta time
- *	- Return Kcycles/second, freq in KHz
- *
- *	delta time period = x sec
- *			  = delta ref_clk_counter / (408 * 10^6) sec
- *	freq in Hz = cycles/sec
- *		   = (delta cycles / x sec
- *		   = (delta cycles * 408 * 10^6) / delta ref_clk_counter
- *	in KHz	   = (delta cycles * 408 * 10^3) / delta ref_clk_counter
- *
- * @cpu - logical cpu whose freq to be updated
- * Returns freq in KHz on success, 0 if cpu is offline
- */
+ 
 static unsigned int tegra194_calculate_speed(u32 cpu)
 {
 	struct read_counters_work read_counters_work;
@@ -296,11 +249,7 @@ static unsigned int tegra194_calculate_speed(u32 cpu)
 	u32 delta_ccnt;
 	u32 rate_mhz;
 
-	/*
-	 * udelay() is required to reconstruct cpu frequency over an
-	 * observation window. Using workqueue to call udelay() with
-	 * interrupts enabled.
-	 */
+	 
 	read_counters_work.c.cpu = cpu;
 	INIT_WORK_ONSTACK(&read_counters_work.work, tegra_read_counters);
 	queue_work_on(cpu, read_counters_wq, &read_counters_work.work);
@@ -314,7 +263,7 @@ static unsigned int tegra194_calculate_speed(u32 cpu)
 	if (!delta_ccnt)
 		return 0;
 
-	/* ref clock is 32 bits */
+	 
 	if (c.refclk_cnt < c.last_refclk_cnt)
 		delta_refcnt = c.refclk_cnt + (MAX_CNT - c.last_refclk_cnt);
 	else
@@ -325,7 +274,7 @@ static unsigned int tegra194_calculate_speed(u32 cpu)
 	}
 	rate_mhz = ((unsigned long)(delta_ccnt * REF_CLK_MHZ)) / delta_refcnt;
 
-	return (rate_mhz * KHZ); /* in KHz */
+	return (rate_mhz * KHZ);  
 }
 
 static void tegra194_get_cpu_ndiv_sysreg(void *ndiv)
@@ -365,20 +314,15 @@ static unsigned int tegra194_get_speed(u32 cpu)
 
 	data->soc->ops->get_cpu_cluster_id(cpu, &cpuid, &clusterid);
 
-	/* reconstruct actual cpu freq using counters */
+	 
 	rate = tegra194_calculate_speed(cpu);
 
-	/* get last written ndiv value */
+	 
 	ret = data->soc->ops->get_cpu_ndiv(cpu, cpuid, clusterid, &ndiv);
 	if (WARN_ON_ONCE(ret))
 		return rate;
 
-	/*
-	 * If the reconstructed frequency has acceptable delta from
-	 * the last written value, then return freq corresponding
-	 * to the last written ndiv value from freq_table. This is
-	 * done to return consistent value.
-	 */
+	 
 	cpufreq_for_each_valid_entry(pos, data->bpmp_luts[clusterid]) {
 		if (pos->driver_data != ndiv)
 			continue;
@@ -413,7 +357,7 @@ static int tegra_cpufreq_init_cpufreq_table(struct cpufreq_policy *policy,
 		return -ENODEV;
 	}
 
-	/* Initialize OPP table mentioned in operating-points-v2 property in DT */
+	 
 	ret = dev_pm_opp_of_add_table_indexed(cpu_dev, 0);
 	if (!ret) {
 		max_opps = dev_pm_opp_get_opp_count(cpu_dev);
@@ -422,7 +366,7 @@ static int tegra_cpufreq_init_cpufreq_table(struct cpufreq_policy *policy,
 			return max_opps;
 		}
 
-		/* Disable all opps and cross-validate against LUT later */
+		 
 		for (rate = 0; ; rate++) {
 			opp = dev_pm_opp_find_freq_ceil(cpu_dev, &rate);
 			if (IS_ERR(opp))
@@ -441,10 +385,7 @@ static int tegra_cpufreq_init_cpufreq_table(struct cpufreq_policy *policy,
 	if (!freq_table)
 		return -ENOMEM;
 
-	/*
-	 * Cross check the frequencies from BPMP-FW LUT against the OPP's present in DT.
-	 * Enable only those DT OPP's which are present in LUT also.
-	 */
+	 
 	cpufreq_for_each_valid_entry(pos, bpmp_lut) {
 		opp = dev_pm_opp_find_freq_exact(cpu_dev, pos->frequency * KHZ, false);
 		if (IS_ERR(opp))
@@ -486,7 +427,7 @@ static int tegra194_cpufreq_init(struct cpufreq_policy *policy)
 		return -EINVAL;
 
 	start_cpu = rounddown(policy->cpu, maxcpus_per_cluster);
-	/* set same policy for all cpus in a cluster */
+	 
 	for (cpu = start_cpu; cpu < (start_cpu + maxcpus_per_cluster); cpu++) {
 		if (cpu_possible(cpu))
 			cpumask_set_cpu(cpu, policy->cpus);
@@ -512,16 +453,13 @@ static int tegra194_cpufreq_init(struct cpufreq_policy *policy)
 
 static int tegra194_cpufreq_online(struct cpufreq_policy *policy)
 {
-	/* We did light-weight tear down earlier, nothing to do here */
+	 
 	return 0;
 }
 
 static int tegra194_cpufreq_offline(struct cpufreq_policy *policy)
 {
-	/*
-	 * Preserve policy->driver_data and don't free resources on light-weight
-	 * tear down.
-	 */
+	 
 
 	return 0;
 }
@@ -542,11 +480,7 @@ static int tegra194_cpufreq_set_target(struct cpufreq_policy *policy,
 	struct cpufreq_frequency_table *tbl = policy->freq_table + index;
 	struct tegra194_cpufreq_data *data = cpufreq_get_driver_data();
 
-	/*
-	 * Each core writes frequency in per core register. Then both cores
-	 * in a cluster run at same frequency which is the maximum frequency
-	 * request out of the values requested by both cores in that cluster.
-	 */
+	 
 	data->soc->ops->set_cpu_ndiv(policy, (u64)tbl->driver_data);
 
 	if (data->icc_dram_bw_scaling)
@@ -613,16 +547,13 @@ tegra_cpufreq_bpmp_read_lut(struct platform_device *pdev, struct tegra_bpmp *bpm
 	if (err)
 		return ERR_PTR(err);
 	if (msg.rx.ret == -BPMP_EINVAL) {
-		/* Cluster not available */
+		 
 		return NULL;
 	}
 	if (msg.rx.ret)
 		return ERR_PTR(-EINVAL);
 
-	/*
-	 * Make sure frequency table step is a multiple of mdiv to match
-	 * vhint table granularity.
-	 */
+	 
 	freq_table_step_size = resp.mdiv *
 			DIV_ROUND_UP(CPUFREQ_TBL_STEP_HZ, resp.ref_clk_hz);
 
@@ -634,7 +565,7 @@ tegra_cpufreq_bpmp_read_lut(struct platform_device *pdev, struct tegra_bpmp *bpm
 	if (unlikely(delta_ndiv == 0)) {
 		num_freqs = 1;
 	} else {
-		/* We store both ndiv_min and ndiv_max hence the +1 */
+		 
 		num_freqs = delta_ndiv / freq_table_step_size + 1;
 	}
 
@@ -686,7 +617,7 @@ static int tegra194_cpufreq_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	if (soc->actmon_cntr_base) {
-		/* mmio registers are used for frequency request and re-construction */
+		 
 		data->regs = devm_platform_ioremap_resource(pdev, 0);
 		if (IS_ERR(data->regs))
 			return PTR_ERR(data->regs);
@@ -715,7 +646,7 @@ static int tegra194_cpufreq_probe(struct platform_device *pdev)
 
 	tegra194_cpufreq_driver.driver_data = data;
 
-	/* Check for optional OPPv2 and interconnect paths on CPU0 to enable ICC scaling */
+	 
 	cpu_dev = get_cpu_device(0);
 	if (!cpu_dev) {
 		err = -EPROBE_DEFER;
@@ -749,7 +680,7 @@ static const struct of_device_id tegra194_cpufreq_of_match[] = {
 	{ .compatible = "nvidia,tegra194-ccplex", .data = &tegra194_cpufreq_soc },
 	{ .compatible = "nvidia,tegra234-ccplex-cluster", .data = &tegra234_cpufreq_soc },
 	{ .compatible = "nvidia,tegra239-ccplex-cluster", .data = &tegra239_cpufreq_soc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, tegra194_cpufreq_of_match);
 

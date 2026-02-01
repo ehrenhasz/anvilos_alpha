@@ -1,9 +1,4 @@
-/* Copyright (c) 2016 Facebook
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- */
+ 
 #include "vmlinux.h"
 #include <linux/version.h>
 #include <bpf/bpf_helpers.h>
@@ -103,18 +98,18 @@ static inline int update_counts(void *ctx, u32 pid, u64 delta)
 }
 
 #if 1
-/* taken from /sys/kernel/tracing/events/sched/sched_switch/format */
+ 
 SEC("tracepoint/sched/sched_switch")
 int oncpu(struct trace_event_raw_sched_switch *ctx)
 {
-	/* record previous thread sleep time */
+	 
 	u32 pid = ctx->prev_pid;
 #else
 SEC("kprobe.multi/finish_task_switch*")
 int oncpu(struct pt_regs *ctx)
 {
 	struct task_struct *p = (void *)PT_REGS_PARM1_CORE(ctx);
-	/* record previous thread sleep time */
+	 
 	u32 pid = BPF_CORE_READ(p, pid);
 #endif
 	u64 delta, ts, *tsp;
@@ -122,11 +117,11 @@ int oncpu(struct pt_regs *ctx)
 	ts = bpf_ktime_get_ns();
 	bpf_map_update_elem(&start, &pid, &ts, BPF_ANY);
 
-	/* calculate current thread's delta time */
+	 
 	pid = bpf_get_current_pid_tgid();
 	tsp = bpf_map_lookup_elem(&start, &pid);
 	if (!tsp)
-		/* missed start or filtered */
+		 
 		return 0;
 
 	delta = bpf_ktime_get_ns() - *tsp;

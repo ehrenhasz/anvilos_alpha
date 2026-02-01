@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2016 Thomas Graf <tgraf@tgraf.ch>
- */
+
+ 
 
 #include <linux/filter.h>
 #include <linux/kernel.h>
@@ -40,9 +39,7 @@ static int run_lwt_bpf(struct sk_buff *skb, struct bpf_lwt_prog *lwt,
 {
 	int ret;
 
-	/* Migration disable and BH disable are needed to protect per-cpu
-	 * redirect_info between BPF prog and skb_do_redirect().
-	 */
+	 
 	migrate_disable();
 	local_bh_disable();
 	bpf_compute_data_pointers(skb);
@@ -240,11 +237,7 @@ static int bpf_lwt_xmit_reroute(struct sk_buff *skb)
 		goto err;
 	}
 
-	/* Although skb header was reserved in bpf_lwt_push_ip_encap(), it
-	 * was done for the previous dst, so we are doing it here again, in
-	 * case the new dst needs much more space. The call below is a noop
-	 * if there is enough header space in skb.
-	 */
+	 
 	err = skb_cow_head(skb, LL_RESERVED_SPACE(dst->dev));
 	if (unlikely(err))
 		goto err;
@@ -256,7 +249,7 @@ static int bpf_lwt_xmit_reroute(struct sk_buff *skb)
 	if (unlikely(err))
 		return net_xmit_errno(err);
 
-	/* ip[6]_finish_output2 understand LWTUNNEL_XMIT_DONE */
+	 
 	return LWTUNNEL_XMIT_DONE;
 
 err:
@@ -278,17 +271,12 @@ static int bpf_xmit(struct sk_buff *skb)
 		ret = run_lwt_bpf(skb, &bpf->xmit, dst, CAN_REDIRECT);
 		switch (ret) {
 		case BPF_OK:
-			/* If the header changed, e.g. via bpf_lwt_push_encap,
-			 * BPF_LWT_REROUTE below should have been used if the
-			 * protocol was also changed.
-			 */
+			 
 			if (skb->protocol != proto) {
 				kfree_skb(skb);
 				return -EINVAL;
 			}
-			/* If the header was expanded, headroom might be too
-			 * small for L2 header to come, expand as needed.
-			 */
+			 
 			ret = xmit_check_hhlen(skb, hh_len);
 			if (unlikely(ret))
 				return ret;
@@ -474,21 +462,18 @@ static int bpf_fill_encap_info(struct sk_buff *skb, struct lwtunnel_state *lwt)
 static int bpf_encap_nlsize(struct lwtunnel_state *lwtstate)
 {
 	int nest_len = nla_total_size(sizeof(struct nlattr)) +
-		       nla_total_size(MAX_PROG_NAME) + /* LWT_BPF_PROG_NAME */
+		       nla_total_size(MAX_PROG_NAME) +  
 		       0;
 
-	return nest_len + /* LWT_BPF_IN */
-	       nest_len + /* LWT_BPF_OUT */
-	       nest_len + /* LWT_BPF_XMIT */
+	return nest_len +  
+	       nest_len +  
+	       nest_len +  
 	       0;
 }
 
 static int bpf_lwt_prog_cmp(struct bpf_lwt_prog *a, struct bpf_lwt_prog *b)
 {
-	/* FIXME:
-	 * The LWT state is currently rebuilt for delete requests which
-	 * results in a new bpf_prog instance. Comparing names for now.
-	 */
+	 
 	if (!a->name && !b->name)
 		return 0;
 
@@ -538,10 +523,7 @@ static int handle_gso_encap(struct sk_buff *skb, bool ipv4, int encap_len)
 	void *next_hdr;
 	__u8 protocol;
 
-	/* SCTP and UDP_L4 gso need more nuanced handling than what
-	 * handle_gso_type() does above: skb_decrease_gso_size() is not enough.
-	 * So at the moment only TCP GSO packets are let through.
-	 */
+	 
 	if (!(skb_shinfo(skb)->gso_type & (SKB_GSO_TCPV4 | SKB_GSO_TCPV6)))
 		return -ENOTSUPP;
 
@@ -597,7 +579,7 @@ int bpf_lwt_push_ip_encap(struct sk_buff *skb, void *hdr, u32 len, bool ingress)
 	if (unlikely(len < sizeof(struct iphdr) || len > LWT_BPF_MAX_HEADROOM))
 		return -EINVAL;
 
-	/* validate protocol and length */
+	 
 	iph = (struct iphdr *)hdr;
 	if (iph->version == 4) {
 		ipv4 = true;
@@ -619,9 +601,9 @@ int bpf_lwt_push_ip_encap(struct sk_buff *skb, void *hdr, u32 len, bool ingress)
 	if (unlikely(err))
 		return err;
 
-	/* push the encap headers and fix pointers */
+	 
 	skb_reset_inner_headers(skb);
-	skb_reset_inner_mac_header(skb);  /* mac header is not yet set */
+	skb_reset_inner_mac_header(skb);   
 	skb_set_inner_protocol(skb, skb->protocol);
 	skb->encapsulation = 1;
 	skb_push(skb, len);

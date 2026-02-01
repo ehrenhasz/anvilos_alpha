@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2008-2009 Patrick McHardy <kaber@trash.net>
- *
- * Development of this code funded by Astaro AG (http://www.astaro.com/)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -474,7 +470,7 @@ static bool nft_bitwise_fast_reduce(struct nft_regs_track *track,
 const struct nft_expr_ops nft_bitwise_fast_ops = {
 	.type		= &nft_bitwise_type,
 	.size		= NFT_EXPR_SIZE(sizeof(struct nft_bitwise_fast_expr)),
-	.eval		= NULL, /* inlined */
+	.eval		= NULL,  
 	.init		= nft_bitwise_fast_init,
 	.dump		= nft_bitwise_fast_dump,
 	.reduce		= nft_bitwise_fast_reduce,

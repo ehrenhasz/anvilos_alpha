@@ -1,55 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2016 Freescale Semiconductor, Inc.
- * Copyright 2017-2018 NXP
- *	Dong Aisheng <aisheng.dong@nxp.com>
- *
- * Implementation of the SCU based Power Domains
- *
- * NOTE: a better implementation suggested by Ulf Hansson is using a
- * single global power domain and implement the ->attach|detach_dev()
- * callback for the genpd and use the regular of_genpd_add_provider_simple().
- * From within the ->attach_dev(), we could get the OF node for
- * the device that is being attached and then parse the power-domain
- * cell containing the "resource id" and store that in the per device
- * struct generic_pm_domain_data (we have void pointer there for
- * storing these kind of things).
- *
- * Additionally, we need to implement the ->stop() and ->start()
- * callbacks of genpd, which is where you "power on/off" devices,
- * rather than using the above ->power_on|off() callbacks.
- *
- * However, there're two known issues:
- * 1. The ->attach_dev() of power domain infrastructure still does
- *    not support multi domains case as the struct device *dev passed
- *    in is a virtual PD device, it does not help for parsing the real
- *    device resource id from device tree, so it's unware of which
- *    real sub power domain of device should be attached.
- *
- *    The framework needs some proper extension to support multi power
- *    domain cases.
- *
- *    Update: Genpd assigns the ->of_node for the virtual device before it
- *    invokes ->attach_dev() callback, hence parsing for device resources via
- *    DT should work fine.
- *
- * 2. It also breaks most of current drivers as the driver probe sequence
- *    behavior changed if removing ->power_on|off() callback and use
- *    ->start() and ->stop() instead. genpd_dev_pm_attach will only power
- *    up the domain and attach device, but will not call .start() which
- *    relies on device runtime pm. That means the device power is still
- *    not up before running driver probe function. For SCU enabled
- *    platforms, all device drivers accessing registers/clock without power
- *    domain enabled will trigger a HW access error. That means we need fix
- *    most drivers probe sequence with proper runtime pm.
- *
- *    Update: Runtime PM support isn't necessary. Instead, this can easily be
- *    fixed in drivers by adding a call to dev_pm_domain_start() during probe.
- *
- * In summary, the second part needs to be addressed via minor updates to the
- * relevant drivers, before the "single global power domain" model can be used.
- *
- */
+
+ 
 
 #include <dt-bindings/firmware/imx/rsrc.h>
 #include <linux/console.h>
@@ -65,7 +15,7 @@
 #include <linux/pm_domain.h>
 #include <linux/slab.h>
 
-/* SCU Power Mode Protocol definition */
+ 
 struct imx_sc_msg_req_set_resource_power_mode {
 	struct imx_sc_rpc_msg hdr;
 	u16 resource;
@@ -100,7 +50,7 @@ struct imx_sc_pd_range {
 	u32 rsrc;
 	u8 num;
 
-	/* add domain index */
+	 
 	bool postfix;
 	u8 start_from;
 };
@@ -112,7 +62,7 @@ struct imx_sc_pd_soc {
 
 static int imx_con_rsrc;
 
-/* Align with the IMX_SC_PM_PW_MODE_[OFF,STBY,LP,ON] macros */
+ 
 static const char * const imx_sc_pm_mode[] = {
 	"IMX_SC_PM_PW_MODE_OFF",
 	"IMX_SC_PM_PW_MODE_STBY",
@@ -121,7 +71,7 @@ static const char * const imx_sc_pm_mode[] = {
 };
 
 static const struct imx_sc_pd_range imx8qxp_scu_pd_ranges[] = {
-	/* LSIO SS */
+	 
 	{ "pwm", IMX_SC_R_PWM_0, 8, true, 0 },
 	{ "gpio", IMX_SC_R_GPIO_0, 8, true, 0 },
 	{ "gpt", IMX_SC_R_GPT_0, 5, true, 0 },
@@ -130,7 +80,7 @@ static const struct imx_sc_pd_range imx8qxp_scu_pd_ranges[] = {
 	{ "mu_a", IMX_SC_R_MU_0A, 14, true, 0 },
 	{ "mu_b", IMX_SC_R_MU_5B, 9, true, 5 },
 
-	/* CONN SS */
+	 
 	{ "usb", IMX_SC_R_USB_0, 2, true, 0 },
 	{ "usb0phy", IMX_SC_R_USB_0_PHY, 1, false, 0 },
 	{ "usb1phy", IMX_SC_R_USB_1_PHY, 1, false, 0},
@@ -141,7 +91,7 @@ static const struct imx_sc_pd_range imx8qxp_scu_pd_ranges[] = {
 	{ "nand", IMX_SC_R_NAND, 1, false, 0 },
 	{ "mlb", IMX_SC_R_MLB_0, 1, true, 0 },
 
-	/* AUDIO SS */
+	 
 	{ "audio-pll0", IMX_SC_R_AUDIO_PLL_0, 1, false, 0 },
 	{ "audio-pll1", IMX_SC_R_AUDIO_PLL_1, 1, false, 0 },
 	{ "audio-clk-0", IMX_SC_R_AUDIO_CLK_0, 1, false, 0 },
@@ -170,7 +120,7 @@ static const struct imx_sc_pd_range imx8qxp_scu_pd_ranges[] = {
 	{ "dsp", IMX_SC_R_DSP, 1, false, 0 },
 	{ "dsp-ram", IMX_SC_R_DSP_RAM, 1, false, 0 },
 
-	/* DMA SS */
+	 
 	{ "can", IMX_SC_R_CAN_0, 3, true, 0 },
 	{ "ftm", IMX_SC_R_FTM_0, 2, true, 0 },
 	{ "lpi2c", IMX_SC_R_I2C_0, 5, true, 0 },
@@ -183,7 +133,7 @@ static const struct imx_sc_pd_range imx8qxp_scu_pd_ranges[] = {
 	{ "lpspi", IMX_SC_R_SPI_0, 4, true, 0 },
 	{ "irqstr_dsp", IMX_SC_R_IRQSTR_DSP, 1, false, 0 },
 
-	/* VPU SS */
+	 
 	{ "vpu", IMX_SC_R_VPU, 1, false, 0 },
 	{ "vpu-pid", IMX_SC_R_VPU_PID0, 8, true, 0 },
 	{ "vpu-dec0", IMX_SC_R_VPU_DEC_0, 1, false, 0 },
@@ -193,12 +143,12 @@ static const struct imx_sc_pd_range imx8qxp_scu_pd_ranges[] = {
 	{ "vpu-mu1", IMX_SC_R_VPU_MU_1, 1, false, 0 },
 	{ "vpu-mu2", IMX_SC_R_VPU_MU_2, 1, false, 0 },
 
-	/* GPU SS */
+	 
 	{ "gpu0-pid", IMX_SC_R_GPU_0_PID0, 4, true, 0 },
 	{ "gpu1-pid", IMX_SC_R_GPU_1_PID0, 4, true, 0 },
 
 
-	/* HSIO SS */
+	 
 	{ "pcie-a", IMX_SC_R_PCIE_A, 1, false, 0 },
 	{ "serdes-0", IMX_SC_R_SERDES_0, 1, false, 0 },
 	{ "pcie-b", IMX_SC_R_PCIE_B, 1, false, 0 },
@@ -206,7 +156,7 @@ static const struct imx_sc_pd_range imx8qxp_scu_pd_ranges[] = {
 	{ "sata-0", IMX_SC_R_SATA_0, 1, false, 0 },
 	{ "hsio-gpio", IMX_SC_R_HSIO_GPIO, 1, false, 0 },
 
-	/* MIPI SS */
+	 
 	{ "mipi0", IMX_SC_R_MIPI_0, 1, false, 0 },
 	{ "mipi0-pwm0", IMX_SC_R_MIPI_0_PWM_0, 1, false, 0 },
 	{ "mipi0-i2c", IMX_SC_R_MIPI_0_I2C_0, 2, true, 0 },
@@ -215,7 +165,7 @@ static const struct imx_sc_pd_range imx8qxp_scu_pd_ranges[] = {
 	{ "mipi1-pwm0", IMX_SC_R_MIPI_1_PWM_0, 1, false, 0 },
 	{ "mipi1-i2c", IMX_SC_R_MIPI_1_I2C_0, 2, true, 0 },
 
-	/* LVDS SS */
+	 
 	{ "lvds0", IMX_SC_R_LVDS_0, 1, false, 0 },
 	{ "lvds0-pwm", IMX_SC_R_LVDS_0_PWM_0, 1, false, 0 },
 	{ "lvds0-lpi2c", IMX_SC_R_LVDS_0_I2C_0, 2, true, 0 },
@@ -228,7 +178,7 @@ static const struct imx_sc_pd_range imx8qxp_scu_pd_ranges[] = {
 	{ "mipi1-i2c", IMX_SC_R_MIPI_1_I2C_0, 2, 1 },
 	{ "lvds1", IMX_SC_R_LVDS_1, 1, 0 },
 
-	/* DC SS */
+	 
 	{ "dc0", IMX_SC_R_DC_0, 1, false, 0 },
 	{ "dc0-pll", IMX_SC_R_DC_0_PLL_0, 2, true, 0 },
 	{ "dc0-video", IMX_SC_R_DC_0_VIDEO0, 2, true, 0 },
@@ -237,37 +187,37 @@ static const struct imx_sc_pd_range imx8qxp_scu_pd_ranges[] = {
 	{ "dc1-pll", IMX_SC_R_DC_1_PLL_0, 2, true, 0 },
 	{ "dc1-video", IMX_SC_R_DC_1_VIDEO0, 2, true, 0 },
 
-	/* CM40 SS */
+	 
 	{ "cm40-i2c", IMX_SC_R_M4_0_I2C, 1, false, 0 },
 	{ "cm40-intmux", IMX_SC_R_M4_0_INTMUX, 1, false, 0 },
 	{ "cm40-pid", IMX_SC_R_M4_0_PID0, 5, true, 0},
 	{ "cm40-mu-a1", IMX_SC_R_M4_0_MU_1A, 1, false, 0},
 	{ "cm40-lpuart", IMX_SC_R_M4_0_UART, 1, false, 0},
 
-	/* CM41 SS */
+	 
 	{ "cm41-i2c", IMX_SC_R_M4_1_I2C, 1, false, 0 },
 	{ "cm41-intmux", IMX_SC_R_M4_1_INTMUX, 1, false, 0 },
 	{ "cm41-pid", IMX_SC_R_M4_1_PID0, 5, true, 0},
 	{ "cm41-mu-a1", IMX_SC_R_M4_1_MU_1A, 1, false, 0},
 	{ "cm41-lpuart", IMX_SC_R_M4_1_UART, 1, false, 0},
 
-	/* CM41 SS */
+	 
 	{ "cm41_i2c", IMX_SC_R_M4_1_I2C, 1, false, 0 },
 	{ "cm41_intmux", IMX_SC_R_M4_1_INTMUX, 1, false, 0 },
 
-	/* DB SS */
+	 
 	{ "perf", IMX_SC_R_PERF, 1, false, 0},
 
-	/* IMAGE SS */
+	 
 	{ "img-jpegdec-mp", IMX_SC_R_MJPEG_DEC_MP, 1, false, 0 },
 	{ "img-jpegdec-s0", IMX_SC_R_MJPEG_DEC_S0, 4, true, 0 },
 	{ "img-jpegenc-mp", IMX_SC_R_MJPEG_ENC_MP, 1, false, 0 },
 	{ "img-jpegenc-s0", IMX_SC_R_MJPEG_ENC_S0, 4, true, 0 },
 
-	/* SECO SS */
+	 
 	{ "seco_mu", IMX_SC_R_SECO_MU_2, 3, true, 2},
 
-	/* V2X SS */
+	 
 	{ "v2x_mu", IMX_SC_R_V2X_MU_0, 2, true, 0},
 	{ "v2x_mu", IMX_SC_R_V2X_MU_2, 1, true, 2},
 	{ "v2x_mu", IMX_SC_R_V2X_MU_3, 2, true, 3},
@@ -283,23 +233,23 @@ static const struct imx_sc_pd_range imx8qxp_scu_pd_ranges[] = {
 	{ "img-parallel-pwm0", IMX_SC_R_PI_0_PWM_0, 2, true, 0 },
 	{ "img-parallel-pll", IMX_SC_R_PI_0_PLL, 1, false, 0 },
 
-	/* HDMI TX SS */
+	 
 	{ "hdmi-tx", IMX_SC_R_HDMI, 1, false, 0},
 	{ "hdmi-tx-i2s", IMX_SC_R_HDMI_I2S, 1, false, 0},
 	{ "hdmi-tx-i2c0", IMX_SC_R_HDMI_I2C_0, 1, false, 0},
 	{ "hdmi-tx-pll0", IMX_SC_R_HDMI_PLL_0, 1, false, 0},
 	{ "hdmi-tx-pll1", IMX_SC_R_HDMI_PLL_1, 1, false, 0},
 
-	/* HDMI RX SS */
+	 
 	{ "hdmi-rx", IMX_SC_R_HDMI_RX, 1, false, 0},
 	{ "hdmi-rx-pwm", IMX_SC_R_HDMI_RX_PWM_0, 1, false, 0},
 	{ "hdmi-rx-i2c0", IMX_SC_R_HDMI_RX_I2C_0, 1, false, 0},
 	{ "hdmi-rx-bypass", IMX_SC_R_HDMI_RX_BYPASS, 1, false, 0},
 
-	/* SECURITY SS */
+	 
 	{ "sec-jr", IMX_SC_R_CAAM_JR2, 2, true, 2},
 
-	/* BOARD SS */
+	 
 	{ "board", IMX_SC_R_BOARD_R0, 8, true, 0},
 };
 
@@ -371,7 +321,7 @@ static int imx_sc_pd_power(struct generic_pm_domain *domain, bool power_on)
 	msg.resource = pd->rsrc;
 	msg.mode = power_on ? IMX_SC_PM_PW_MODE_ON : IMX_SC_PM_PW_MODE_LP;
 
-	/* keep uart console power on for no_console_suspend */
+	 
 	if (imx_con_rsrc == pd->rsrc && !console_suspend_enabled && !power_on)
 		return -EBUSY;
 
@@ -533,7 +483,7 @@ static int imx_sc_pd_probe(struct platform_device *pdev)
 static const struct of_device_id imx_sc_pd_match[] = {
 	{ .compatible = "fsl,imx8qxp-scu-pd", &imx8qxp_scu_pd},
 	{ .compatible = "fsl,scu-pd", &imx8qxp_scu_pd},
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver imx_sc_pd_driver = {

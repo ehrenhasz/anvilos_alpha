@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022 Davicom Semiconductor,Inc.
- * Davicom DM9051 SPI Fast Ethernet Linux driver
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
@@ -23,16 +20,7 @@
 
 #define DRVNAME_9051	"dm9051"
 
-/**
- * struct rx_ctl_mach - rx activities record
- * @status_err_counter: rx status error counter
- * @large_err_counter: rx get large packet length error counter
- * @rx_err_counter: receive packet error counter
- * @tx_err_counter: transmit packet error counter
- * @fifo_rst_counter: reset operation counter
- *
- * To keep track for the driver operation statistics
- */
+ 
 struct rx_ctl_mach {
 	u16				status_err_counter;
 	u16				large_err_counter;
@@ -41,60 +29,20 @@ struct rx_ctl_mach {
 	u16				fifo_rst_counter;
 };
 
-/**
- * struct dm9051_rxctrl - dm9051 driver rx control
- * @hash_table: Multicast hash-table data
- * @rcr_all: KS_RXCR1 register setting
- *
- * The settings needs to control the receive filtering
- * such as the multicast hash-filter and the receive register settings
- */
+ 
 struct dm9051_rxctrl {
 	u16				hash_table[4];
 	u8				rcr_all;
 };
 
-/**
- * struct dm9051_rxhdr - rx packet data header
- * @headbyte: lead byte equal to 0x01 notifies a valid packet
- * @status: status bits for the received packet
- * @rxlen: packet length
- *
- * The Rx packed, entered into the FIFO memory, start with these
- * four bytes which is the Rx header, followed by the ethernet
- * packet data and ends with an appended 4-byte CRC data.
- * Both Rx packet and CRC data are for check purpose and finally
- * are dropped by this driver
- */
+ 
 struct dm9051_rxhdr {
 	u8				headbyte;
 	u8				status;
 	__le16				rxlen;
 };
 
-/**
- * struct board_info - maintain the saved data
- * @spidev: spi device structure
- * @ndev: net device structure
- * @mdiobus: mii bus structure
- * @phydev: phy device structure
- * @txq: tx queue structure
- * @regmap_dm: regmap for register read/write
- * @regmap_dmbulk: extra regmap for bulk read/write
- * @rxctrl_work: Work queue for updating RX mode and multicast lists
- * @tx_work: Work queue for tx packets
- * @pause: ethtool pause parameter structure
- * @spi_lockm: between threads lock structure
- * @reg_mutex: regmap access lock structure
- * @bc: rx control statistics structure
- * @rxhdr: rx header structure
- * @rctl: rx control setting structure
- * @msg_enable: message level value
- * @imr_all: to store operating imr value for register DM9051_IMR
- * @lcr_all: to store operating rcr value for register DM9051_LMCR
- *
- * The saved data variables, keep up to date for retrieval back to use
- */
+ 
 struct board_info {
 	u32				msg_enable;
 	struct spi_device		*spidev;
@@ -139,18 +87,14 @@ static int dm9051_update_bits(struct board_info *db, unsigned int reg, unsigned 
 	return ret;
 }
 
-/* skb buffer exhausted, just discard the received data
- */
+ 
 static int dm9051_dumpblk(struct board_info *db, u8 reg, size_t count)
 {
 	struct net_device *ndev = db->ndev;
 	unsigned int rb;
 	int ret;
 
-	/* no skb buffer,
-	 * both reg and &rb must be noinc,
-	 * read once one byte via regmap_read
-	 */
+	 
 	do {
 		ret = regmap_read(db->regmap_dm, reg, &rb);
 		if (ret < 0) {
@@ -211,9 +155,7 @@ static int dm9051_read_mem(struct board_info *db, unsigned int reg, void *buff,
 	return ret;
 }
 
-/* waiting tx-end rather than tx-req
- * got faster
- */
+ 
 static int dm9051_nsr_poll(struct board_info *db)
 {
 	unsigned int mval;
@@ -275,7 +217,7 @@ static int dm9051_set_recv(struct board_info *db)
 	if (ret)
 		return ret;
 
-	return dm9051_set_reg(db, DM9051_RCR, db->rctl.rcr_all); /* enable rx */
+	return dm9051_set_reg(db, DM9051_RCR, db->rctl.rcr_all);  
 }
 
 static int dm9051_core_reset(struct board_info *db)
@@ -284,16 +226,16 @@ static int dm9051_core_reset(struct board_info *db)
 
 	db->bc.fifo_rst_counter++;
 
-	ret = regmap_write(db->regmap_dm, DM9051_NCR, NCR_RST); /* NCR reset */
+	ret = regmap_write(db->regmap_dm, DM9051_NCR, NCR_RST);  
 	if (ret)
 		return ret;
-	ret = regmap_write(db->regmap_dm, DM9051_MBNDRY, MBNDRY_BYTE); /* MemBound */
+	ret = regmap_write(db->regmap_dm, DM9051_MBNDRY, MBNDRY_BYTE);  
 	if (ret)
 		return ret;
-	ret = regmap_write(db->regmap_dm, DM9051_PPCR, PPCR_PAUSE_COUNT); /* Pause Count */
+	ret = regmap_write(db->regmap_dm, DM9051_PPCR, PPCR_PAUSE_COUNT);  
 	if (ret)
 		return ret;
-	ret = regmap_write(db->regmap_dm, DM9051_LMCR, db->lcr_all); /* LEDMode1 */
+	ret = regmap_write(db->regmap_dm, DM9051_LMCR, db->lcr_all);  
 	if (ret)
 		return ret;
 
@@ -314,17 +256,17 @@ static int dm9051_update_fcr(struct board_info *db)
 
 static int dm9051_disable_interrupt(struct board_info *db)
 {
-	return dm9051_set_reg(db, DM9051_IMR, IMR_PAR); /* disable int */
+	return dm9051_set_reg(db, DM9051_IMR, IMR_PAR);  
 }
 
 static int dm9051_enable_interrupt(struct board_info *db)
 {
-	return dm9051_set_reg(db, DM9051_IMR, db->imr_all); /* enable int */
+	return dm9051_set_reg(db, DM9051_IMR, db->imr_all);  
 }
 
 static int dm9051_stop_mrcmd(struct board_info *db)
 {
-	return dm9051_set_reg(db, DM9051_ISR, ISR_STOP_MRCMD); /* to stop mrcmd */
+	return dm9051_set_reg(db, DM9051_ISR, ISR_STOP_MRCMD);  
 }
 
 static int dm9051_clear_interrupt(struct board_info *db)
@@ -399,9 +341,7 @@ static int dm9051_phyread(void *context, unsigned int reg, unsigned int *val)
 	if (ret)
 		return ret;
 
-	/* this is a 4 bytes data, clear to zero since following regmap_bulk_read
-	 * only fill lower 2 bytes
-	 */
+	 
 	*val = 0;
 	return regmap_bulk_read(db->regmap_dmbulk, DM9051_EPDRL, val, 2);
 }
@@ -499,10 +439,7 @@ static struct regmap_config regconfigdmbulk = {
 
 static int dm9051_map_init(struct spi_device *spi, struct board_info *db)
 {
-	/* create two regmap instances,
-	 * split read/write and bulk_read/bulk_write to individual regmap
-	 * to resolve regmap execution confliction problem
-	 */
+	 
 	regconfigdm.lock_arg = db;
 	db->regmap_dm = devm_regmap_init_spi(db->spidev, &regconfigdm);
 	if (IS_ERR(db->regmap_dm))
@@ -534,8 +471,7 @@ static int dm9051_map_chipid(struct board_info *db)
 	return 0;
 }
 
-/* Read DM9051_PAR registers which is the mac address loaded from EEPROM while power-on
- */
+ 
 static int dm9051_map_etherdev_par(struct net_device *ndev, struct board_info *db)
 {
 	u8 addr[ETH_ALEN];
@@ -560,8 +496,7 @@ static int dm9051_map_etherdev_par(struct net_device *ndev, struct board_info *d
 	return 0;
 }
 
-/* ethtool-ops
- */
+ 
 static void dm9051_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
 {
 	strscpy(info->driver, DRVNAME_9051, sizeof(info->driver));
@@ -672,15 +607,12 @@ static int dm9051_all_start(struct board_info *db)
 {
 	int ret;
 
-	/* GPR power on of the internal phy
-	 */
+	 
 	ret = dm9051_set_reg(db, DM9051_GPR, 0);
 	if (ret)
 		return ret;
 
-	/* dm9051 chip registers could not be accessed within 1 ms
-	 * after GPR power on, delay 1 ms is essential
-	 */
+	 
 	msleep(1);
 
 	ret = dm9051_core_reset(db);
@@ -694,9 +626,7 @@ static int dm9051_all_stop(struct board_info *db)
 {
 	int ret;
 
-	/* GPR power off of the internal phy,
-	 * The internal phy still could be accessed after this GPR power off control
-	 */
+	 
 	ret = dm9051_set_reg(db, DM9051_GPR, GPR_PHY_OFF);
 	if (ret)
 		return ret;
@@ -704,8 +634,7 @@ static int dm9051_all_stop(struct board_info *db)
 	return dm9051_set_reg(db, DM9051_RCR, RCR_RX_DISABLE);
 }
 
-/* fifo reset while rx error found
- */
+ 
 static int dm9051_all_restart(struct board_info *db)
 {
 	struct net_device *ndev = db->ndev;
@@ -730,12 +659,7 @@ static int dm9051_all_restart(struct board_info *db)
 	return dm9051_set_fcr(db);
 }
 
-/* read packets from the fifo memory
- * return value,
- *  > 0 - read packet number, caller can repeat the rx operation
- *    0 - no error, caller need stop further rx operation
- *  -EBUSY - read data error, caller escape from rx operation
- */
+ 
 static int dm9051_loop_rx(struct board_info *db)
 {
 	struct net_device *ndev = db->ndev;
@@ -751,7 +675,7 @@ static int dm9051_loop_rx(struct board_info *db)
 			return ret;
 
 		if ((rxbyte & GENMASK(7, 0)) != DM9051_PKT_RDY)
-			break; /* exhaust-empty */
+			break;  
 
 		ret = dm9051_read_mem(db, DM_SPI_MRCMD, &db->rxhdr, DM_RXHDR_SIZE);
 		if (ret)
@@ -812,11 +736,7 @@ static int dm9051_loop_rx(struct board_info *db)
 	return scanrr;
 }
 
-/* transmit a packet,
- * return value,
- *   0 - succeed
- *  -ETIMEDOUT - timeout error
- */
+ 
 static int dm9051_single_tx(struct board_info *db, u8 *buff, unsigned int len)
 {
 	int ret;
@@ -884,18 +804,17 @@ static irqreturn_t dm9051_rx_threaded_irq(int irq, void *pw)
 		goto out_unlock;
 
 	do {
-		result = dm9051_loop_rx(db); /* threaded irq rx */
+		result = dm9051_loop_rx(db);  
 		if (result < 0)
 			goto out_unlock;
-		result_tx = dm9051_loop_tx(db); /* more tx better performance */
+		result_tx = dm9051_loop_tx(db);  
 		if (result_tx < 0)
 			goto out_unlock;
 	} while (result > 0);
 
 	dm9051_enable_interrupt(db);
 
-	/* To exit and has mutex unlock while rx or tx error
-	 */
+	 
 out_unlock:
 	mutex_unlock(&db->spi_lockm);
 
@@ -930,16 +849,12 @@ static void dm9051_rxctl_delay(struct work_struct *work)
 
 	dm9051_set_recv(db);
 
-	/* To has mutex unlock and return from this function if regmap function fail
-	 */
+	 
 out_unlock:
 	mutex_unlock(&db->spi_lockm);
 }
 
-/* Open network device
- * Called when the network device is marked active, such as a user executing
- * 'ifconfig up' on the device
- */
+ 
 static int dm9051_open(struct net_device *ndev)
 {
 	struct board_info *db = to_dm9051_board(ndev);
@@ -951,7 +866,7 @@ static int dm9051_open(struct net_device *ndev)
 	db->rctl.rcr_all = RCR_DIS_LONG | RCR_DIS_CRC | RCR_RXEN;
 	memset(db->rctl.hash_table, 0, sizeof(db->rctl.hash_table));
 
-	ndev->irq = spi->irq; /* by dts */
+	ndev->irq = spi->irq;  
 	ret = request_threaded_irq(spi->irq, NULL, dm9051_rx_threaded_irq,
 				   dm9051_irq_flag(db) | IRQF_ONESHOT,
 				   ndev->name, db);
@@ -963,7 +878,7 @@ static int dm9051_open(struct net_device *ndev)
 	phy_support_sym_pause(db->phydev);
 	phy_start(db->phydev);
 
-	/* flow control parameters init */
+	 
 	db->pause.rx_pause = true;
 	db->pause.tx_pause = true;
 	db->pause.autoneg = AUTONEG_DISABLE;
@@ -983,11 +898,7 @@ static int dm9051_open(struct net_device *ndev)
 	return 0;
 }
 
-/* Close network device
- * Called to close down a network device which has been active. Cancel any
- * work, shutdown the RX and TX process and then place the chip into a low
- * power state while it is not being used
- */
+ 
 static int dm9051_stop(struct net_device *ndev)
 {
 	struct board_info *db = to_dm9051_board(ndev);
@@ -1011,23 +922,21 @@ static int dm9051_stop(struct net_device *ndev)
 	return 0;
 }
 
-/* event: play a schedule starter in condition
- */
+ 
 static netdev_tx_t dm9051_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 {
 	struct board_info *db = to_dm9051_board(ndev);
 
 	skb_queue_tail(&db->txq, skb);
 	if (skb_queue_len(&db->txq) > DM9051_TX_QUE_HI_WATER)
-		netif_stop_queue(ndev); /* enforce limit queue size */
+		netif_stop_queue(ndev);  
 
 	schedule_work(&db->tx_work);
 
 	return NETDEV_TX_OK;
 }
 
-/* event: play with a schedule starter
- */
+ 
 static void dm9051_set_rx_mode(struct net_device *ndev)
 {
 	struct board_info *db = to_dm9051_board(ndev);
@@ -1038,7 +947,7 @@ static void dm9051_set_rx_mode(struct net_device *ndev)
 
 	memset(&rxctrl, 0, sizeof(rxctrl));
 
-	/* rx control */
+	 
 	if (ndev->flags & IFF_PROMISC) {
 		rcr |= RCR_PRMSC;
 		netdev_dbg(ndev, "set_multicast rcr |= RCR_PRMSC, rcr= %02x\n", rcr);
@@ -1051,19 +960,19 @@ static void dm9051_set_rx_mode(struct net_device *ndev)
 
 	rxctrl.rcr_all = rcr;
 
-	/* broadcast address */
+	 
 	rxctrl.hash_table[0] = 0;
 	rxctrl.hash_table[1] = 0;
 	rxctrl.hash_table[2] = 0;
 	rxctrl.hash_table[3] = 0x8000;
 
-	/* the multicast address in Hash Table : 64 bits */
+	 
 	netdev_for_each_mc_addr(ha, ndev) {
 		hash_val = ether_crc_le(ETH_ALEN, ha->addr) & GENMASK(5, 0);
 		rxctrl.hash_table[hash_val / 16] |= BIT(0) << (hash_val % 16);
 	}
 
-	/* schedule work to do the actual set of the data if needed */
+	 
 
 	if (memcmp(&db->rctl, &rxctrl, sizeof(rxctrl))) {
 		memcpy(&db->rctl, &rxctrl, sizeof(rxctrl));
@@ -1071,8 +980,7 @@ static void dm9051_set_rx_mode(struct net_device *ndev)
 	}
 }
 
-/* event: write into the mac registers and eeprom directly
- */
+ 
 static int dm9051_set_mac_address(struct net_device *ndev, void *p)
 {
 	struct board_info *db = to_dm9051_board(ndev);
@@ -1135,9 +1043,7 @@ static void dm9051_handle_link_change(struct net_device *ndev)
 
 	phy_print_status(db->phydev);
 
-	/* only write pause settings to mac. since mac and phy are integrated
-	 * together, such as link state, speed and duplex are sync already
-	 */
+	 
 	if (db->phydev->link) {
 		if (db->phydev->pause) {
 			db->pause.rx_pause = true;
@@ -1147,8 +1053,7 @@ static void dm9051_handle_link_change(struct net_device *ndev)
 	}
 }
 
-/* phy connect as poll mode
- */
+ 
 static int dm9051_phy_connect(struct board_info *db)
 {
 	char phy_id[MII_BUS_ID_SIZE + 3];

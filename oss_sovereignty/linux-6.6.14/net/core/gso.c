@@ -1,15 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 #include <linux/skbuff.h>
 #include <linux/sctp.h>
 #include <net/gso.h>
 #include <net/gro.h>
 
-/**
- *	skb_eth_gso_segment - segmentation handler for ethernet protocols.
- *	@skb: buffer to segment
- *	@features: features for the output path (see dev->features)
- *	@type: Ethernet Protocol ID
- */
+ 
 struct sk_buff *skb_eth_gso_segment(struct sk_buff *skb,
 				    netdev_features_t features, __be16 type)
 {
@@ -29,11 +24,7 @@ struct sk_buff *skb_eth_gso_segment(struct sk_buff *skb,
 }
 EXPORT_SYMBOL(skb_eth_gso_segment);
 
-/**
- *	skb_mac_gso_segment - mac layer segmentation handler.
- *	@skb: buffer to segment
- *	@features: features for the output path (see dev->features)
- */
+ 
 struct sk_buff *skb_mac_gso_segment(struct sk_buff *skb,
 				    netdev_features_t features)
 {
@@ -61,8 +52,7 @@ struct sk_buff *skb_mac_gso_segment(struct sk_buff *skb,
 	return segs;
 }
 EXPORT_SYMBOL(skb_mac_gso_segment);
-/* openvswitch calls this on rx path, so we need a different check.
- */
+ 
 static bool skb_needs_check(const struct sk_buff *skb, bool tx_path)
 {
 	if (tx_path)
@@ -72,19 +62,7 @@ static bool skb_needs_check(const struct sk_buff *skb, bool tx_path)
 	return skb->ip_summed == CHECKSUM_NONE;
 }
 
-/**
- *	__skb_gso_segment - Perform segmentation on skb.
- *	@skb: buffer to segment
- *	@features: features for the output path (see dev->features)
- *	@tx_path: whether it is called in TX path
- *
- *	This function segments the given skb and returns a list of segments.
- *
- *	It may return NULL if the skb requires no segmentation.  This is
- *	only possible when GSO is used for verifying header integrity.
- *
- *	Segmentation preserves SKB_GSO_CB_OFFSET bytes of previous skb cb.
- */
+ 
 struct sk_buff *__skb_gso_segment(struct sk_buff *skb,
 				  netdev_features_t features, bool tx_path)
 {
@@ -93,16 +71,13 @@ struct sk_buff *__skb_gso_segment(struct sk_buff *skb,
 	if (unlikely(skb_needs_check(skb, tx_path))) {
 		int err;
 
-		/* We're going to init ->check field in TCP or UDP header */
+		 
 		err = skb_cow_head(skb, 0);
 		if (err < 0)
 			return ERR_PTR(err);
 	}
 
-	/* Only report GSO partial support if it will enable us to
-	 * support segmentation on this frame without needing additional
-	 * work.
-	 */
+	 
 	if (features & NETIF_F_GSO_PARTIAL) {
 		netdev_features_t partial_features = NETIF_F_GSO_ROBUST;
 		struct net_device *dev = skb->dev;
@@ -130,16 +105,7 @@ struct sk_buff *__skb_gso_segment(struct sk_buff *skb,
 }
 EXPORT_SYMBOL(__skb_gso_segment);
 
-/**
- * skb_gso_transport_seglen - Return length of individual segments of a gso packet
- *
- * @skb: GSO skb
- *
- * skb_gso_transport_seglen is used to determine the real size of the
- * individual segments, including Layer4 headers (TCP/UDP).
- *
- * The MAC/L2 or network (IP, IPv6) headers are not accounted for.
- */
+ 
 static unsigned int skb_gso_transport_seglen(const struct sk_buff *skb)
 {
 	const struct skb_shared_info *shinfo = skb_shinfo(skb);
@@ -158,23 +124,11 @@ static unsigned int skb_gso_transport_seglen(const struct sk_buff *skb)
 	} else if (shinfo->gso_type & SKB_GSO_UDP_L4) {
 		thlen = sizeof(struct udphdr);
 	}
-	/* UFO sets gso_size to the size of the fragmentation
-	 * payload, i.e. the size of the L4 (UDP) header is already
-	 * accounted for.
-	 */
+	 
 	return thlen + shinfo->gso_size;
 }
 
-/**
- * skb_gso_network_seglen - Return length of individual segments of a gso packet
- *
- * @skb: GSO skb
- *
- * skb_gso_network_seglen is used to determine the real size of the
- * individual segments, including Layer3 (IP, IPv6) and L4 headers (TCP/UDP).
- *
- * The MAC/L2 header is not accounted for.
- */
+ 
 static unsigned int skb_gso_network_seglen(const struct sk_buff *skb)
 {
 	unsigned int hdr_len = skb_transport_header(skb) -
@@ -183,15 +137,7 @@ static unsigned int skb_gso_network_seglen(const struct sk_buff *skb)
 	return hdr_len + skb_gso_transport_seglen(skb);
 }
 
-/**
- * skb_gso_mac_seglen - Return length of individual segments of a gso packet
- *
- * @skb: GSO skb
- *
- * skb_gso_mac_seglen is used to determine the real size of the
- * individual segments, including MAC/L2, Layer3 (IP, IPv6) and L4
- * headers (TCP/UDP).
- */
+ 
 static unsigned int skb_gso_mac_seglen(const struct sk_buff *skb)
 {
 	unsigned int hdr_len = skb_transport_header(skb) - skb_mac_header(skb);
@@ -199,27 +145,7 @@ static unsigned int skb_gso_mac_seglen(const struct sk_buff *skb)
 	return hdr_len + skb_gso_transport_seglen(skb);
 }
 
-/**
- * skb_gso_size_check - check the skb size, considering GSO_BY_FRAGS
- *
- * There are a couple of instances where we have a GSO skb, and we
- * want to determine what size it would be after it is segmented.
- *
- * We might want to check:
- * -    L3+L4+payload size (e.g. IP forwarding)
- * - L2+L3+L4+payload size (e.g. sanity check before passing to driver)
- *
- * This is a helper to do that correctly considering GSO_BY_FRAGS.
- *
- * @skb: GSO skb
- *
- * @seg_len: The segmented length (from skb_gso_*_seglen). In the
- *           GSO_BY_FRAGS case this will be [header sizes + GSO_BY_FRAGS].
- *
- * @max_len: The maximum permissible length.
- *
- * Returns true if the segmented length <= max length.
- */
+ 
 static inline bool skb_gso_size_check(const struct sk_buff *skb,
 				      unsigned int seg_len,
 				      unsigned int max_len) {
@@ -229,7 +155,7 @@ static inline bool skb_gso_size_check(const struct sk_buff *skb,
 	if (shinfo->gso_size != GSO_BY_FRAGS)
 		return seg_len <= max_len;
 
-	/* Undo this so we can re-use header sizes */
+	 
 	seg_len -= GSO_BY_FRAGS;
 
 	skb_walk_frags(skb, iter) {
@@ -240,31 +166,14 @@ static inline bool skb_gso_size_check(const struct sk_buff *skb,
 	return true;
 }
 
-/**
- * skb_gso_validate_network_len - Will a split GSO skb fit into a given MTU?
- *
- * @skb: GSO skb
- * @mtu: MTU to validate against
- *
- * skb_gso_validate_network_len validates if a given skb will fit a
- * wanted MTU once split. It considers L3 headers, L4 headers, and the
- * payload.
- */
+ 
 bool skb_gso_validate_network_len(const struct sk_buff *skb, unsigned int mtu)
 {
 	return skb_gso_size_check(skb, skb_gso_network_seglen(skb), mtu);
 }
 EXPORT_SYMBOL_GPL(skb_gso_validate_network_len);
 
-/**
- * skb_gso_validate_mac_len - Will a split GSO skb fit in a given length?
- *
- * @skb: GSO skb
- * @len: length to validate against
- *
- * skb_gso_validate_mac_len validates if a given skb will fit a wanted
- * length once split, including L2, L3 and L4 headers and the payload.
- */
+ 
 bool skb_gso_validate_mac_len(const struct sk_buff *skb, unsigned int len)
 {
 	return skb_gso_size_check(skb, skb_gso_mac_seglen(skb), len);

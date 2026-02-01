@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * IBM RTAS driver interface to hvc_console.c
- *
- * (C) Copyright IBM Corporation 2001-2005
- * (C) Copyright Red Hat, Inc. 2005
- *
- * Author(s): Maximino Augilar <IBM STI Design Center>
- *	    : Ryan S. Arnold <rsa@us.ibm.com>
- *	    : Utz Bacher <utz.bacher@de.ibm.com>
- *	    : David Woodhouse <dwmw2@infradead.org>
- *
- *    inspired by drivers/char/hvc_console.c
- *    written by Anton Blanchard and Paul Mackerras
- */
+
+ 
 
 #include <linux/console.h>
 #include <linux/delay.h>
@@ -79,8 +66,7 @@ static int __init hvc_rtas_init(void)
 
 	BUG_ON(hvc_rtas_dev);
 
-	/* Allocate an hvc_struct for the console device we instantiated
-	 * earlier.  Save off hp so that we can return it on exit */
+	 
 	hp = hvc_alloc(hvc_rtas_cookie, 0, &hvc_rtas_get_put_ops, 16);
 	if (IS_ERR(hp))
 		return PTR_ERR(hp);
@@ -91,7 +77,7 @@ static int __init hvc_rtas_init(void)
 }
 device_initcall(hvc_rtas_init);
 
-/* This will happen prior to module init.  There is no tty at this time? */
+ 
 static int __init hvc_rtas_console_init(void)
 {
 	rtascons_put_char_token = rtas_token("put-term-char");

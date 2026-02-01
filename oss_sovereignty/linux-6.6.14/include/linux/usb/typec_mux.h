@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #ifndef __USB_TYPEC_MUX
 #define __USB_TYPEC_MUX
@@ -98,11 +98,11 @@ static inline void *typec_mux_get_drvdata(struct typec_mux_dev *mux)
 	return ERR_PTR(-EOPNOTSUPP);
 }
 
-#endif /* CONFIG_TYPEC */
+#endif  
 
 static inline struct typec_mux *typec_mux_get(struct device *dev)
 {
 	return fwnode_typec_mux_get(dev_fwnode(dev));
 }
 
-#endif /* __USB_TYPEC_MUX */
+#endif  

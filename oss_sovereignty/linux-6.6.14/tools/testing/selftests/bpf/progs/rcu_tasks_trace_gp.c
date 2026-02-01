@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <vmlinux.h>
 #include <bpf/bpf_tracing.h>
 #include <bpf/bpf_helpers.h>
@@ -22,7 +22,7 @@ int do_call_rcu_tasks_trace(void *ctx)
     v = bpf_task_storage_get(&task_ls_map, current, NULL, BPF_LOCAL_STORAGE_GET_F_CREATE);
     if (!v)
         return 1;
-    /* Invoke call_rcu_tasks_trace */
+     
     return bpf_task_storage_delete(&task_ls_map, current);
 }
 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022, Microsoft Corporation. All rights reserved.
- */
+
+ 
 
 #include "mana_ib.h"
 
@@ -58,7 +56,7 @@ struct ib_wq *mana_ib_create_wq(struct ib_pd *pd,
 		  "mana_ib_gd_create_dma_region ret %d gdma_region 0x%llx\n",
 		  err, wq->gdma_region);
 
-	/* WQ ID is returned at wq_create time, doesn't know the value yet */
+	 
 
 	return &wq->ibwq;
 
@@ -74,7 +72,7 @@ err_free_wq:
 int mana_ib_modify_wq(struct ib_wq *wq, struct ib_wq_attr *wq_attr,
 		      u32 wq_attr_mask, struct ib_udata *udata)
 {
-	/* modify_wq is not supported by this version of the driver */
+	 
 	return -EOPNOTSUPP;
 }
 
@@ -98,18 +96,12 @@ int mana_ib_create_rwq_ind_table(struct ib_rwq_ind_table *ib_rwq_ind_table,
 				 struct ib_rwq_ind_table_init_attr *init_attr,
 				 struct ib_udata *udata)
 {
-	/*
-	 * There is no additional data in ind_table to be maintained by this
-	 * driver, do nothing
-	 */
+	 
 	return 0;
 }
 
 int mana_ib_destroy_rwq_ind_table(struct ib_rwq_ind_table *ib_rwq_ind_tbl)
 {
-	/*
-	 * There is no additional data in ind_table to be maintained by this
-	 * driver, do nothing
-	 */
+	 
 	return 0;
 }

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Function Control Protocol (IEC 61883-1) helper functions
- *
- * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/firewire.h>
@@ -48,28 +44,28 @@ int avc_general_set_sig_fmt(struct fw_unit *unit, unsigned int rate,
 	if (buf == NULL)
 		return -ENOMEM;
 
-	buf[0] = 0x00;		/* AV/C CONTROL */
-	buf[1] = 0xff;		/* UNIT */
+	buf[0] = 0x00;		 
+	buf[1] = 0xff;		 
 	if (dir == AVC_GENERAL_PLUG_DIR_IN)
-		buf[2] = 0x19;	/* INPUT PLUG SIGNAL FORMAT */
+		buf[2] = 0x19;	 
 	else
-		buf[2] = 0x18;	/* OUTPUT PLUG SIGNAL FORMAT */
-	buf[3] = 0xff & pid;	/* plug id */
-	buf[4] = 0x90;		/* EOH_1, Form_1, FMT. AM824 */
-	buf[5] = 0x07 & sfc;	/* FDF-hi. AM824, frequency */
-	buf[6] = 0xff;		/* FDF-mid. AM824, SYT hi (not used)*/
-	buf[7] = 0xff;		/* FDF-low. AM824, SYT lo (not used) */
+		buf[2] = 0x18;	 
+	buf[3] = 0xff & pid;	 
+	buf[4] = 0x90;		 
+	buf[5] = 0x07 & sfc;	 
+	buf[6] = 0xff;		 
+	buf[7] = 0xff;		 
 
-	/* do transaction and check buf[1-5] are the same against command */
+	 
 	err = fcp_avc_transaction(unit, buf, 8, buf, 8,
 				  BIT(1) | BIT(2) | BIT(3) | BIT(4) | BIT(5));
 	if (err < 0)
 		;
 	else if (err < 8)
 		err = -EIO;
-	else if (buf[0] == 0x08) /* NOT IMPLEMENTED */
+	else if (buf[0] == 0x08)  
 		err = -ENOSYS;
-	else if (buf[0] == 0x0a) /* REJECTED */
+	else if (buf[0] == 0x0a)  
 		err = -EINVAL;
 	if (err < 0)
 		goto end;
@@ -93,38 +89,38 @@ int avc_general_get_sig_fmt(struct fw_unit *unit, unsigned int *rate,
 	if (buf == NULL)
 		return -ENOMEM;
 
-	buf[0] = 0x01;		/* AV/C STATUS */
-	buf[1] = 0xff;		/* Unit */
+	buf[0] = 0x01;		 
+	buf[1] = 0xff;		 
 	if (dir == AVC_GENERAL_PLUG_DIR_IN)
-		buf[2] = 0x19;	/* INPUT PLUG SIGNAL FORMAT */
+		buf[2] = 0x19;	 
 	else
-		buf[2] = 0x18;	/* OUTPUT PLUG SIGNAL FORMAT */
-	buf[3] = 0xff & pid;	/* plug id */
-	buf[4] = 0x90;		/* EOH_1, Form_1, FMT. AM824 */
-	buf[5] = 0xff;		/* FDF-hi. AM824, frequency */
-	buf[6] = 0xff;		/* FDF-mid. AM824, SYT hi (not used) */
-	buf[7] = 0xff;		/* FDF-low. AM824, SYT lo (not used) */
+		buf[2] = 0x18;	 
+	buf[3] = 0xff & pid;	 
+	buf[4] = 0x90;		 
+	buf[5] = 0xff;		 
+	buf[6] = 0xff;		 
+	buf[7] = 0xff;		 
 
-	/* do transaction and check buf[1-4] are the same against command */
+	 
 	err = fcp_avc_transaction(unit, buf, 8, buf, 8,
 				  BIT(1) | BIT(2) | BIT(3) | BIT(4));
 	if (err < 0)
 		;
 	else if (err < 8)
 		err = -EIO;
-	else if (buf[0] == 0x08) /* NOT IMPLEMENTED */
+	else if (buf[0] == 0x08)  
 		err = -ENOSYS;
-	else if (buf[0] == 0x0a) /* REJECTED */
+	else if (buf[0] == 0x0a)  
 		err = -EINVAL;
-	else if (buf[0] == 0x0b) /* IN TRANSITION */
+	else if (buf[0] == 0x0b)  
 		err = -EAGAIN;
 	if (err < 0)
 		goto end;
 
-	/* check sfc field and pick up rate */
+	 
 	sfc = 0x07 & buf[5];
 	if (sfc >= CIP_SFC_COUNT) {
-		err = -EAGAIN;	/* also in transition */
+		err = -EAGAIN;	 
 		goto end;
 	}
 
@@ -143,7 +139,7 @@ int avc_general_get_plug_info(struct fw_unit *unit, unsigned int subunit_type,
 	u8 *buf;
 	int err;
 
-	/* extended subunit in spec.4.2 is not supported */
+	 
 	if ((subunit_type == 0x1E) || (subunit_id == 5))
 		return -EINVAL;
 
@@ -151,10 +147,10 @@ int avc_general_get_plug_info(struct fw_unit *unit, unsigned int subunit_type,
 	if (buf == NULL)
 		return -ENOMEM;
 
-	buf[0] = 0x01;	/* AV/C STATUS */
-	/* UNIT or Subunit, Functionblock */
+	buf[0] = 0x01;	 
+	 
 	buf[1] = ((subunit_type & 0x1f) << 3) | (subunit_id & 0x7);
-	buf[2] = 0x02;	/* PLUG INFO */
+	buf[2] = 0x02;	 
 	buf[3] = 0xff & subfunction;
 
 	err = fcp_avc_transaction(unit, buf, 8, buf, 8, BIT(1) | BIT(2));
@@ -162,11 +158,11 @@ int avc_general_get_plug_info(struct fw_unit *unit, unsigned int subunit_type,
 		;
 	else if (err < 8)
 		err = -EIO;
-	else if (buf[0] == 0x08) /* NOT IMPLEMENTED */
+	else if (buf[0] == 0x08)  
 		err = -ENOSYS;
-	else if (buf[0] == 0x0a) /* REJECTED */
+	else if (buf[0] == 0x0a)  
 		err = -EINVAL;
-	else if (buf[0] == 0x0b) /* IN TRANSITION */
+	else if (buf[0] == 0x0b)  
 		err = -EAGAIN;
 	if (err < 0)
 		goto end;
@@ -204,28 +200,7 @@ struct fcp_transaction {
 	bool deferrable;
 };
 
-/**
- * fcp_avc_transaction - send an AV/C command and wait for its response
- * @unit: a unit on the target device
- * @command: a buffer containing the command frame; must be DMA-able
- * @command_size: the size of @command
- * @response: a buffer for the response frame
- * @response_size: the maximum size of @response
- * @response_match_bytes: a bitmap specifying the bytes used to detect the
- *                        correct response frame
- *
- * This function sends a FCP command frame to the target and waits for the
- * corresponding response frame to be returned.
- *
- * Because it is possible for multiple FCP transactions to be active at the
- * same time, the correct response frame is detected by the value of certain
- * bytes.  These bytes must be set in @response before calling this function,
- * and the corresponding bits must be set in @response_match_bytes.
- *
- * @command and @response can point to the same buffer.
- *
- * Returns the actual size of the response frame, or a negative error code.
- */
+ 
 int fcp_avc_transaction(struct fw_unit *unit,
 			const void *command, unsigned int command_size,
 			void *response, unsigned int response_size,
@@ -259,13 +234,7 @@ deferred:
 				   msecs_to_jiffies(FCP_TIMEOUT_MS));
 
 		if (t.state == STATE_DEFERRED) {
-			/*
-			 * 'AV/C General Specification' define no time limit
-			 * on command completion once an INTERIM response has
-			 * been sent. but we promise to finish this function
-			 * for a caller. Here we use FCP_TIMEOUT_MS for next
-			 * interval. This is not in the specification.
-			 */
+			 
 			t.state = STATE_PENDING;
 			goto deferred;
 		} else if (t.state == STATE_COMPLETE) {
@@ -288,14 +257,7 @@ deferred:
 }
 EXPORT_SYMBOL(fcp_avc_transaction);
 
-/**
- * fcp_bus_reset - inform the target handler about a bus reset
- * @unit: the unit that might be used by fcp_avc_transaction()
- *
- * This function must be called from the driver's .update handler to inform
- * the FCP transaction handler that a bus reset has happened.  Any pending FCP
- * transactions are retried.
- */
+ 
 void fcp_bus_reset(struct fw_unit *unit)
 {
 	struct fcp_transaction *t;
@@ -313,7 +275,7 @@ void fcp_bus_reset(struct fw_unit *unit)
 }
 EXPORT_SYMBOL(fcp_bus_reset);
 
-/* checks whether the response matches the masked bytes in response_buffer */
+ 
 static bool is_matching_response(struct fcp_transaction *transaction,
 				 const void *response, size_t length)
 {
@@ -352,7 +314,7 @@ static void fcp_response(struct fw_card *card, struct fw_request *request,
 		if (device->card != card ||
 		    device->generation != generation)
 			continue;
-		smp_rmb(); /* node_id vs. generation */
+		smp_rmb();  
 		if (device->node_id != source)
 			continue;
 

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2023, Intel Corporation. */
+ 
+ 
 
 #ifndef _ICE_ESWITCH_BR_H_
 #define _ICE_ESWITCH_BR_H_
@@ -105,10 +105,7 @@ struct ice_esw_br_vlan {
 
 static inline bool ice_eswitch_br_is_vid_valid(u16 vid)
 {
-	/* In trunk VLAN mode, for untagged traffic the bridge sends requests
-	 * to offload VLAN 1 with pvid and untagged flags set. Since these
-	 * flags are not supported, add a MAC filter instead.
-	 */
+	 
 	return vid > 1;
 }
 
@@ -117,4 +114,4 @@ ice_eswitch_br_offloads_deinit(struct ice_pf *pf);
 int
 ice_eswitch_br_offloads_init(struct ice_pf *pf);
 
-#endif /* _ICE_ESWITCH_BR_H_ */
+#endif  

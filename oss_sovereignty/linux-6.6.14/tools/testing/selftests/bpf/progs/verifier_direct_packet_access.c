@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Converted from tools/testing/selftests/bpf/verifier/direct_packet_access.c */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -748,49 +748,34 @@ __flag(BPF_F_TEST_STATE_FREQ)
 __naked void id_in_regsafe_bad_access(void)
 {
 	asm volatile ("					\
-	/* r9 = ctx */					\
+	 					\
 	r9 = r1;					\
-	/* r7 = ktime_get_ns() */			\
+	 			\
 	call %[bpf_ktime_get_ns];			\
 	r7 = r0;					\
-	/* r6 = ktime_get_ns() */			\
+	 			\
 	call %[bpf_ktime_get_ns];			\
 	r6 = r0;					\
-	/* r2 = ctx->data				\
-	 * r3 = ctx->data				\
-	 * r4 = ctx->data_end				\
-	 */						\
+	 						\
 	r2 = *(u32*)(r9 + %[__sk_buff_data]);		\
 	r3 = *(u32*)(r9 + %[__sk_buff_data]);		\
 	r4 = *(u32*)(r9 + %[__sk_buff_data_end]);	\
-	/* if r6 > 100 goto exit			\
-	 * if r7 > 100 goto exit			\
-	 */						\
+	 						\
 	if r6 > 100 goto l0_%=;				\
 	if r7 > 100 goto l0_%=;				\
-	/* r2 += r6              ; this forces assignment of ID to r2\
-	 * r2 += 1               ; get some fixed off for r2\
-	 * r3 += r7              ; this forces assignment of ID to r3\
-	 * r3 += 1               ; get some fixed off for r3\
-	 */						\
+	 						\
 	r2 += r6;					\
 	r2 += 1;					\
 	r3 += r7;					\
 	r3 += 1;					\
-	/* if r6 > r7 goto +1    ; no new information about the state is derived from\
-	 *                       ; this check, thus produced verifier states differ\
-	 *                       ; only in 'insn_idx'	\
-	 * r2 = r3               ; optionally share ID between r2 and r3\
-	 */						\
+	 						\
 	if r6 != r7 goto l1_%=;				\
 	r2 = r3;					\
-l1_%=:	/* if r3 > ctx->data_end goto exit */		\
+l1_%=:	 		\
 	if r3 > r4 goto l0_%=;				\
-	/* r5 = *(u8 *) (r2 - 1) ; access packet memory using r2,\
-	 *                       ; this is not always safe\
-	 */						\
+	 						\
 	r5 = *(u8*)(r2 - 1);				\
-l0_%=:	/* exit(0) */					\
+l0_%=:	 					\
 	r0 = 0;						\
 	exit;						\
 "	:

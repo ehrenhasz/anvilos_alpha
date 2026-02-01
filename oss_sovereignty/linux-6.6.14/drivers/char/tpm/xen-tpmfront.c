@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Implementation of the Xen vTPM device frontend
- *
- * Author:  Daniel De Graaf <dgdegra@tycho.nsa.gov>
- */
+
+ 
 #include <linux/errno.h>
 #include <linux/err.h>
 #include <linux/interrupt.h>
@@ -61,7 +57,7 @@ static int wait_for_tpm_stat(struct tpm_chip *chip, u8 mask,
 	u8 status;
 	bool canceled = false;
 
-	/* check current status */
+	 
 	status = chip->ops->status(chip);
 	if ((status & mask) == mask)
 		return 0;
@@ -106,7 +102,7 @@ static u8 vtpm_status(struct tpm_chip *chip)
 	case VTPM_STATE_FINISH:
 		return VTPM_STATUS_IDLE | VTPM_STATUS_RESULT;
 	case VTPM_STATE_SUBMIT:
-	case VTPM_STATE_CANCEL: /* cancel requested, not yet canceled */
+	case VTPM_STATE_CANCEL:  
 		return VTPM_STATUS_RUNNING;
 	default:
 		return 0;
@@ -146,7 +142,7 @@ static int vtpm_send(struct tpm_chip *chip, u8 *buf, size_t count)
 	if (offset + count > PAGE_SIZE)
 		return -EINVAL;
 
-	/* Wait for completion of any existing command or cancellation */
+	 
 	if (wait_for_tpm_stat(chip, VTPM_STATUS_IDLE, chip->timeout_c,
 			&priv->read_queue, true) < 0) {
 		vtpm_cancel(chip);
@@ -165,7 +161,7 @@ static int vtpm_send(struct tpm_chip *chip, u8 *buf, size_t count)
 
 	if (wait_for_tpm_stat(chip, VTPM_STATUS_IDLE, duration,
 			&priv->read_queue, true) < 0) {
-		/* got a signal or timeout, try to cancel */
+		 
 		vtpm_cancel(chip);
 		return -ETIME;
 	}
@@ -183,7 +179,7 @@ static int vtpm_recv(struct tpm_chip *chip, u8 *buf, size_t count)
 	if (shr->state == VTPM_STATE_IDLE)
 		return -ECANCELED;
 
-	/* In theory the wait at the end of _send makes this one unnecessary */
+	 
 	if (wait_for_tpm_stat(chip, VTPM_STATUS_RESULT, chip->timeout_c,
 			&priv->read_queue, true) < 0) {
 		vtpm_cancel(chip);
@@ -247,7 +243,7 @@ static int setup_chip(struct device *dev, struct tpm_private *priv)
 	return 0;
 }
 
-/* caller must clean up in case of errors */
+ 
 static int setup_ring(struct xenbus_device *dev, struct tpm_private *priv)
 {
 	struct xenbus_transaction xbt;
@@ -371,7 +367,7 @@ static void tpmfront_remove(struct xenbus_device *dev)
 
 static int tpmfront_resume(struct xenbus_device *dev)
 {
-	/* A suspend/resume/migrate will interrupt a vTPM anyway */
+	 
 	tpmfront_remove(dev);
 	return tpmfront_probe(dev, NULL);
 }

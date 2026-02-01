@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 Facebook */
+
+ 
 #include <test_progs.h>
 #include "fexit_test.lskel.h"
 #include "fexit_many_args.skel.h"
@@ -15,7 +15,7 @@ static int fexit_test_common(struct fexit_test_lskel *fexit_skel)
 	if (!ASSERT_OK(err, "fexit_attach"))
 		return err;
 
-	/* Check that already linked program can't be attached again. */
+	 
 	link_fd = fexit_test_lskel__test1__attach(fexit_skel);
 	if (!ASSERT_LT(link_fd, 0, "fexit_attach_link"))
 		return -1;
@@ -33,7 +33,7 @@ static int fexit_test_common(struct fexit_test_lskel *fexit_skel)
 
 	fexit_test_lskel__detach(fexit_skel);
 
-	/* zero results for re-attach test */
+	 
 	memset(fexit_skel->bss, 0, sizeof(*fexit_skel->bss));
 	return 0;
 }

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Test IPV6_FLOWINFO_MGR */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -20,12 +20,12 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-/* uapi/glibc weirdness may leave this undefined */
+ 
 #ifndef IPV6_FLOWLABEL_MGR
 #define IPV6_FLOWLABEL_MGR	32
 #endif
 
-/* from net/ipv6/ip6_flowlabel.c */
+ 
 #define FL_MIN_LINGER		6
 
 #define explain(x)							\
@@ -54,7 +54,7 @@ static int flowlabel_get(int fd, uint32_t label, uint8_t share, uint16_t flags)
 		.flr_share = share,
 	};
 
-	/* do not pass IPV6_ADDR_ANY or IPV6_ADDR_MAPPED */
+	 
 	req.flr_dst.s6_addr[0] = 0xfd;
 	req.flr_dst.s6_addr[15] = 0x1;
 

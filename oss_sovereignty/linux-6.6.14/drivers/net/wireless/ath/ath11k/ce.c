@@ -1,15 +1,12 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021, Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include "dp_rx.h"
 #include "debug.h"
 #include "hif.h"
 
 const struct ce_attr ath11k_host_ce_config_ipq8074[] = {
-	/* CE0: host->target HTC control and raw streams */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 16,
@@ -18,7 +15,7 @@ const struct ce_attr ath11k_host_ce_config_ipq8074[] = {
 		.send_cb = ath11k_htc_tx_completion_handler,
 	},
 
-	/* CE1: target->host HTT + HTC control */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 0,
@@ -27,7 +24,7 @@ const struct ce_attr ath11k_host_ce_config_ipq8074[] = {
 		.recv_cb = ath11k_htc_rx_completion_handler,
 	},
 
-	/* CE2: target->host WMI */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 0,
@@ -36,7 +33,7 @@ const struct ce_attr ath11k_host_ce_config_ipq8074[] = {
 		.recv_cb = ath11k_htc_rx_completion_handler,
 	},
 
-	/* CE3: host->target WMI (mac0) */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 32,
@@ -45,7 +42,7 @@ const struct ce_attr ath11k_host_ce_config_ipq8074[] = {
 		.send_cb = ath11k_htc_tx_completion_handler,
 	},
 
-	/* CE4: host->target HTT */
+	 
 	{
 		.flags = CE_ATTR_FLAGS | CE_ATTR_DIS_INTR,
 		.src_nentries = 2048,
@@ -53,7 +50,7 @@ const struct ce_attr ath11k_host_ce_config_ipq8074[] = {
 		.dest_nentries = 0,
 	},
 
-	/* CE5: target->host pktlog */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 0,
@@ -62,7 +59,7 @@ const struct ce_attr ath11k_host_ce_config_ipq8074[] = {
 		.recv_cb = ath11k_dp_htt_htc_t2h_msg_handler,
 	},
 
-	/* CE6: target autonomous hif_memcpy */
+	 
 	{
 		.flags = CE_ATTR_FLAGS | CE_ATTR_DIS_INTR,
 		.src_nentries = 0,
@@ -70,7 +67,7 @@ const struct ce_attr ath11k_host_ce_config_ipq8074[] = {
 		.dest_nentries = 0,
 	},
 
-	/* CE7: host->target WMI (mac1) */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 32,
@@ -79,7 +76,7 @@ const struct ce_attr ath11k_host_ce_config_ipq8074[] = {
 		.send_cb = ath11k_htc_tx_completion_handler,
 	},
 
-	/* CE8: target autonomous hif_memcpy */
+	 
 	{
 		.flags = CE_ATTR_FLAGS | CE_ATTR_DIS_INTR,
 		.src_nentries = 0,
@@ -87,7 +84,7 @@ const struct ce_attr ath11k_host_ce_config_ipq8074[] = {
 		.dest_nentries = 0,
 	},
 
-	/* CE9: host->target WMI (mac2) */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 32,
@@ -96,7 +93,7 @@ const struct ce_attr ath11k_host_ce_config_ipq8074[] = {
 		.send_cb = ath11k_htc_tx_completion_handler,
 	},
 
-	/* CE10: target->host HTT */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 0,
@@ -105,7 +102,7 @@ const struct ce_attr ath11k_host_ce_config_ipq8074[] = {
 		.recv_cb = ath11k_htc_rx_completion_handler,
 	},
 
-	/* CE11: Not used */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 0,
@@ -115,7 +112,7 @@ const struct ce_attr ath11k_host_ce_config_ipq8074[] = {
 };
 
 const struct ce_attr ath11k_host_ce_config_qca6390[] = {
-	/* CE0: host->target HTC control and raw streams */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 16,
@@ -123,7 +120,7 @@ const struct ce_attr ath11k_host_ce_config_qca6390[] = {
 		.dest_nentries = 0,
 	},
 
-	/* CE1: target->host HTT + HTC control */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 0,
@@ -132,7 +129,7 @@ const struct ce_attr ath11k_host_ce_config_qca6390[] = {
 		.recv_cb = ath11k_htc_rx_completion_handler,
 	},
 
-	/* CE2: target->host WMI */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 0,
@@ -141,7 +138,7 @@ const struct ce_attr ath11k_host_ce_config_qca6390[] = {
 		.recv_cb = ath11k_htc_rx_completion_handler,
 	},
 
-	/* CE3: host->target WMI (mac0) */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 32,
@@ -150,7 +147,7 @@ const struct ce_attr ath11k_host_ce_config_qca6390[] = {
 		.send_cb = ath11k_htc_tx_completion_handler,
 	},
 
-	/* CE4: host->target HTT */
+	 
 	{
 		.flags = CE_ATTR_FLAGS | CE_ATTR_DIS_INTR,
 		.src_nentries = 2048,
@@ -158,7 +155,7 @@ const struct ce_attr ath11k_host_ce_config_qca6390[] = {
 		.dest_nentries = 0,
 	},
 
-	/* CE5: target->host pktlog */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 0,
@@ -167,7 +164,7 @@ const struct ce_attr ath11k_host_ce_config_qca6390[] = {
 		.recv_cb = ath11k_dp_htt_htc_t2h_msg_handler,
 	},
 
-	/* CE6: target autonomous hif_memcpy */
+	 
 	{
 		.flags = CE_ATTR_FLAGS | CE_ATTR_DIS_INTR,
 		.src_nentries = 0,
@@ -175,7 +172,7 @@ const struct ce_attr ath11k_host_ce_config_qca6390[] = {
 		.dest_nentries = 0,
 	},
 
-	/* CE7: host->target WMI (mac1) */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 32,
@@ -184,7 +181,7 @@ const struct ce_attr ath11k_host_ce_config_qca6390[] = {
 		.send_cb = ath11k_htc_tx_completion_handler,
 	},
 
-	/* CE8: target autonomous hif_memcpy */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 0,
@@ -195,7 +192,7 @@ const struct ce_attr ath11k_host_ce_config_qca6390[] = {
 };
 
 const struct ce_attr ath11k_host_ce_config_qcn9074[] = {
-	/* CE0: host->target HTC control and raw streams */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 16,
@@ -203,7 +200,7 @@ const struct ce_attr ath11k_host_ce_config_qcn9074[] = {
 		.dest_nentries = 0,
 	},
 
-	/* CE1: target->host HTT + HTC control */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 0,
@@ -212,7 +209,7 @@ const struct ce_attr ath11k_host_ce_config_qcn9074[] = {
 		.recv_cb = ath11k_htc_rx_completion_handler,
 	},
 
-	/* CE2: target->host WMI */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 0,
@@ -221,7 +218,7 @@ const struct ce_attr ath11k_host_ce_config_qcn9074[] = {
 		.recv_cb = ath11k_htc_rx_completion_handler,
 	},
 
-	/* CE3: host->target WMI (mac0) */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 32,
@@ -230,7 +227,7 @@ const struct ce_attr ath11k_host_ce_config_qcn9074[] = {
 		.send_cb = ath11k_htc_tx_completion_handler,
 	},
 
-	/* CE4: host->target HTT */
+	 
 	{
 		.flags = CE_ATTR_FLAGS | CE_ATTR_DIS_INTR,
 		.src_nentries = 2048,
@@ -238,7 +235,7 @@ const struct ce_attr ath11k_host_ce_config_qcn9074[] = {
 		.dest_nentries = 0,
 	},
 
-	/* CE5: target->host pktlog */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 0,
@@ -250,7 +247,7 @@ const struct ce_attr ath11k_host_ce_config_qcn9074[] = {
 
 static bool ath11k_ce_need_shadow_fix(int ce_id)
 {
-	/* only ce4 needs shadow workaround */
+	 
 	if (ce_id == 4)
 		return true;
 	return false;
@@ -590,7 +587,7 @@ static int ath11k_ce_init_ring(struct ath11k_base *ab,
 		return -EINVAL;
 	}
 
-	/* TODO: Init other params needed by HAL to init the ring */
+	 
 
 	ret = ath11k_hal_srng_setup(ab, type, ce_id, 0, &params);
 	if (ret < 0) {
@@ -623,9 +620,7 @@ ath11k_ce_alloc_ring(struct ath11k_base *ab, int nentries, int desc_sz)
 	ce_ring->nentries = nentries;
 	ce_ring->nentries_mask = nentries - 1;
 
-	/* Legacy platforms that do not support cache
-	 * coherent DMA are unsupported
-	 */
+	 
 	ce_ring->base_addr_owner_space_unaligned =
 		dma_alloc_coherent(ab->dev,
 				   nentries * desc_sz + CE_DESC_RING_ALIGN,
@@ -720,10 +715,7 @@ int ath11k_ce_send(struct ath11k_base *ab, struct sk_buff *skb, u8 pipe_id,
 	u8 byte_swap_data = 0;
 	int num_used;
 
-	/* Check if some entries could be regained by handling tx completion if
-	 * the CE has interrupts disabled and the used entries is more than the
-	 * defined usage threshold.
-	 */
+	 
 	if (pipe->attr_flags & CE_ATTR_DIS_INTR) {
 		spin_lock_bh(&ab->ce.ce_lock);
 		write_index = pipe->src_ring->write_index;
@@ -847,18 +839,15 @@ void ath11k_ce_get_shadow_config(struct ath11k_base *ab,
 
 	ath11k_hal_srng_get_shadow_config(ab, shadow_cfg, shadow_cfg_len);
 
-	/* shadow is already configured */
+	 
 	if (*shadow_cfg_len)
 		return;
 
-	/* shadow isn't configured yet, configure now.
-	 * non-CE srngs are configured firstly, then
-	 * all CE srngs.
-	 */
+	 
 	ath11k_hal_srng_shadow_config(ab);
 	ath11k_ce_shadow_config(ab);
 
-	/* get the shadow configuration */
+	 
 	ath11k_hal_srng_get_shadow_config(ab, shadow_cfg, shadow_cfg_len);
 }
 EXPORT_SYMBOL(ath11k_ce_get_shadow_config);
@@ -874,10 +863,10 @@ void ath11k_ce_cleanup_pipes(struct ath11k_base *ab)
 		pipe = &ab->ce.ce_pipe[pipe_num];
 		ath11k_ce_rx_pipe_cleanup(pipe);
 
-		/* Cleanup any src CE's which have interrupts disabled */
+		 
 		ath11k_ce_poll_send_completed(ab, pipe_num);
 
-		/* NOTE: Should we also clean up tx buffer in all pipes? */
+		 
 	}
 }
 EXPORT_SYMBOL(ath11k_ce_cleanup_pipes);
@@ -928,7 +917,7 @@ int ath11k_ce_init_pipes(struct ath11k_base *ab)
 			if (ret) {
 				ath11k_warn(ab, "failed to init src ring: %d\n",
 					    ret);
-				/* Should we clear any partial init */
+				 
 				return ret;
 			}
 
@@ -942,7 +931,7 @@ int ath11k_ce_init_pipes(struct ath11k_base *ab)
 			if (ret) {
 				ath11k_warn(ab, "failed to init dest ring: %d\n",
 					    ret);
-				/* Should we clear any partial init */
+				 
 				return ret;
 			}
 
@@ -959,7 +948,7 @@ int ath11k_ce_init_pipes(struct ath11k_base *ab)
 			if (ret) {
 				ath11k_warn(ab, "failed to init dest status ing: %d\n",
 					    ret);
-				/* Should we clear any partial init */
+				 
 				return ret;
 			}
 
@@ -1042,7 +1031,7 @@ int ath11k_ce_alloc_pipes(struct ath11k_base *ab)
 
 		ret = ath11k_ce_alloc_pipe(ab, i);
 		if (ret) {
-			/* Free any partial successful allocation */
+			 
 			ath11k_ce_free_pipes(ab);
 			return ret;
 		}
@@ -1052,10 +1041,7 @@ int ath11k_ce_alloc_pipes(struct ath11k_base *ab)
 }
 EXPORT_SYMBOL(ath11k_ce_alloc_pipes);
 
-/* For Big Endian Host, Copy Engine byte_swap is enabled
- * When Copy Engine does byte_swap, need to byte swap again for the
- * Host to get/put buffer content in the correct byte order
- */
+ 
 void ath11k_ce_byte_swap(void *mem, u32 len)
 {
 	int i;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2014 Marvell Technology Group Ltd.
- *
- * Antoine Tenart <antoine.tenart@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -58,12 +54,12 @@ static int ci_hdrc_usb2_probe(struct platform_device *pdev)
 		ci_pdata = devm_kmalloc(dev, sizeof(*ci_pdata), GFP_KERNEL);
 		if (!ci_pdata)
 			return -ENOMEM;
-		*ci_pdata = ci_default_pdata;	/* struct copy */
+		*ci_pdata = ci_default_pdata;	 
 	}
 
 	match = of_match_device(ci_hdrc_usb2_of_match, &pdev->dev);
 	if (match && match->data) {
-		/* struct copy */
+		 
 		*ci_pdata = *(struct ci_hdrc_platform_data *)match->data;
 	}
 

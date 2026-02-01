@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <pthread.h>
 #include <sched.h>
@@ -9,10 +9,7 @@
 
 static int duration;
 
-/* AddressSanitizer sometimes crashes due to data dereference below, due to
- * this being mmap()'ed memory. Disable instrumentation with
- * no_sanitize_address attribute
- */
+ 
 __attribute__((no_sanitize_address))
 static void on_sample(void *ctx, int cpu, void *data, __u32 size)
 {
@@ -66,7 +63,7 @@ void serial_test_perf_buffer(void)
 		if (online[i])
 			nr_on_cpus++;
 
-	/* load program */
+	 
 	skel = test_perf_buffer__open_and_load();
 	if (CHECK(!skel, "skel_load", "skeleton open/load failed\n"))
 		goto out_close;
@@ -75,12 +72,12 @@ void serial_test_perf_buffer(void)
 	if (!ASSERT_OK(err, "my_pid_update"))
 		goto out_close;
 
-	/* attach probe */
+	 
 	err = test_perf_buffer__attach(skel);
 	if (CHECK(err, "attach_kprobe", "err %d\n", err))
 		goto out_close;
 
-	/* set up perf buffer */
+	 
 	pb = perf_buffer__new(bpf_map__fd(skel->maps.perf_buf_map), 1,
 			      on_sample, NULL, &cpu_seen, NULL);
 	if (!ASSERT_OK_PTR(pb, "perf_buf__new"))
@@ -89,7 +86,7 @@ void serial_test_perf_buffer(void)
 	CHECK(perf_buffer__epoll_fd(pb) < 0, "epoll_fd",
 	      "bad fd: %d\n", perf_buffer__epoll_fd(pb));
 
-	/* trigger kprobe on every CPU */
+	 
 	CPU_ZERO(&cpu_seen);
 	for (i = 0; i < nr_cpus; i++) {
 		if (i >= on_len || !online[i]) {
@@ -101,7 +98,7 @@ void serial_test_perf_buffer(void)
 			goto out_close;
 	}
 
-	/* read perf buffer */
+	 
 	err = perf_buffer__poll(pb, 100);
 	if (CHECK(err < 0, "perf_buffer__poll", "err %d\n", err))
 		goto out_free_pb;

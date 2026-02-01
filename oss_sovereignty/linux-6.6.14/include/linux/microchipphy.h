@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2015 Microchip Technology
- */
+ 
+ 
 
 #ifndef _MICROCHIPPHY_H
 #define _MICROCHIPPHY_H
@@ -47,21 +45,21 @@
 #define LAN88XX_EXT_PAGE_SPACE_1		(0x0001)
 #define LAN88XX_EXT_PAGE_SPACE_2		(0x0002)
 
-/* Extended Register Page 1 space */
+ 
 #define LAN88XX_EXT_MODE_CTRL			(0x13)
 #define LAN88XX_EXT_MODE_CTRL_MDIX_MASK_	(0x000C)
 #define LAN88XX_EXT_MODE_CTRL_AUTO_MDIX_	(0x0000)
 #define LAN88XX_EXT_MODE_CTRL_MDI_		(0x0008)
 #define LAN88XX_EXT_MODE_CTRL_MDI_X_		(0x000C)
 
-/* MMD 3 Registers */
+ 
 #define	LAN88XX_MMD3_CHIP_ID			(32877)
 #define	LAN88XX_MMD3_CHIP_REV			(32878)
 
-/* Registers specific to the LAN7800/LAN7850 embedded phy */
+ 
 #define LAN78XX_PHY_LED_MODE_SELECT		(0x1D)
 
-/* DSP registers */
+ 
 #define PHY_ARDENNES_MMD_DEV_3_PHY_CFG		(0x806A)
 #define PHY_ARDENNES_MMD_DEV_3_PHY_CFG_ZD_DLY_EN_	(0x2000)
 #define LAN88XX_EXT_PAGE_ACCESS_TR		(0x52B5)
@@ -69,4 +67,4 @@
 #define LAN88XX_EXT_PAGE_TR_LOW_DATA		17
 #define LAN88XX_EXT_PAGE_TR_HIGH_DATA		18
 
-#endif /* _MICROCHIPPHY_H */
+#endif  

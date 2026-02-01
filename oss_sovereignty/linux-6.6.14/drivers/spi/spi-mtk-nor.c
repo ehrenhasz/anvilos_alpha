@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Mediatek SPI NOR controller driver
-//
-// Copyright (C) 2020 Chuanhong Guo <gch981213@gmail.com>
+
+
+
+
+
 
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -88,13 +88,13 @@
 #define MTK_NOR_REG_DMA_END_DADR_HB	0x73c
 
 #define MTK_NOR_PRG_MAX_SIZE		6
-// Reading DMA src/dst addresses have to be 16-byte aligned
+
 #define MTK_NOR_DMA_ALIGN		16
 #define MTK_NOR_DMA_ALIGN_MASK		(MTK_NOR_DMA_ALIGN - 1)
-// and we allocate a bounce buffer if destination address isn't aligned.
+
 #define MTK_NOR_BOUNCE_BUF_SIZE		PAGE_SIZE
 
-// Buffered page program can do one 128-byte transfer
+
 #define MTK_NOR_PP_SIZE			128
 
 #define CLK_TO_US(sp, clkcnt)		DIV_ROUND_UP(clkcnt, sp->spi_freq / 1000000)
@@ -102,11 +102,7 @@
 struct mtk_nor_caps {
 	u8 dma_bits;
 
-	/* extra_dummy_bit is adding for the IP of new SoCs.
-	 * Some new SoCs modify the timing of fetching registers' values
-	 * and IDs of nor flash, they need a extra_dummy_bit which can add
-	 * more clock cycles for fetching data.
-	 */
+	 
 	u8 extra_dummy_bit;
 };
 
@@ -154,9 +150,9 @@ static inline int mtk_nor_cmd_exec(struct mtk_nor *sp, u32 cmd, ulong clk)
 static void mtk_nor_reset(struct mtk_nor *sp)
 {
 	mtk_nor_rmw(sp, MTK_NOR_REG_CG_DIS, 0, MTK_NOR_SFC_SW_RST);
-	mb(); /* flush previous writes */
+	mb();  
 	mtk_nor_rmw(sp, MTK_NOR_REG_CG_DIS, MTK_NOR_SFC_SW_RST, 0);
-	mb(); /* flush previous writes */
+	mb();  
 	writel(MTK_NOR_ENABLE_SF_CMD, sp->base + MTK_NOR_REG_WP);
 }
 
@@ -209,7 +205,7 @@ static bool mtk_nor_match_prg(const struct spi_mem_op *op)
 {
 	int tx_len, rx_len, prg_len, prg_left;
 
-	// prg mode is spi-only.
+	 
 	if ((op->cmd.buswidth > 1) || (op->addr.buswidth > 1) ||
 	    (op->dummy.buswidth > 1) || (op->data.buswidth > 1))
 		return false;
@@ -217,15 +213,15 @@ static bool mtk_nor_match_prg(const struct spi_mem_op *op)
 	tx_len = op->cmd.nbytes + op->addr.nbytes;
 
 	if (op->data.dir == SPI_MEM_DATA_OUT) {
-		// count dummy bytes only if we need to write data after it
+		 
 		tx_len += op->dummy.nbytes;
 
-		// leave at least one byte for data
+		 
 		if (tx_len > MTK_NOR_REG_PRGDATA_MAX)
 			return false;
 
-		// if there's no addr, meaning adjust_op_size is impossible,
-		// check data length as well.
+		 
+		
 		if ((!op->addr.nbytes) &&
 		    (tx_len + op->data.nbytes > MTK_NOR_REG_PRGDATA_MAX + 1))
 			return false;
@@ -283,7 +279,7 @@ static int mtk_nor_adjust_op_size(struct spi_mem *mem, struct spi_mem_op *op)
 	if ((op->addr.nbytes == 3) || (op->addr.nbytes == 4)) {
 		if ((op->data.dir == SPI_MEM_DATA_IN) &&
 		    mtk_nor_match_read(op)) {
-			// limit size to prevent timeout calculation overflow
+			
 			if (op->data.nbytes > 0x400000)
 				op->data.nbytes = 0x400000;
 
@@ -525,7 +521,7 @@ static int mtk_nor_spi_mem_prg(struct mtk_nor *sp, const struct spi_mem_op *op)
 
 	tx_len = op->cmd.nbytes + op->addr.nbytes;
 
-	// count dummy bytes only if we need to write data after it
+	
 	if (op->data.dir == SPI_MEM_DATA_OUT)
 		tx_len += op->dummy.nbytes + op->data.nbytes;
 	else if (op->data.dir == SPI_MEM_DATA_IN)
@@ -534,15 +530,15 @@ static int mtk_nor_spi_mem_prg(struct mtk_nor *sp, const struct spi_mem_op *op)
 	prg_len = op->cmd.nbytes + op->addr.nbytes + op->dummy.nbytes +
 		  op->data.nbytes;
 
-	// an invalid op may reach here if the caller calls exec_op without
-	// adjust_op_size. return -EINVAL instead of -ENOTSUPP so that
-	// spi-mem won't try this op again with generic spi transfers.
+	
+	
+	
 	if ((tx_len > MTK_NOR_REG_PRGDATA_MAX + 1) ||
 	    (rx_len > MTK_NOR_REG_SHIFT_MAX + 1) ||
 	    (prg_len > MTK_NOR_PRG_CNT_MAX / 8))
 		return -EINVAL;
 
-	// fill tx data
+	
 	for (i = op->cmd.nbytes; i > 0; i--, reg_offset--) {
 		reg = sp->base + MTK_NOR_REG_PRGDATA(reg_offset);
 		bufbyte = (op->cmd.opcode >> ((i - 1) * BITS_PER_BYTE)) & 0xff;
@@ -572,7 +568,7 @@ static int mtk_nor_spi_mem_prg(struct mtk_nor *sp, const struct spi_mem_op *op)
 		writeb(0, reg);
 	}
 
-	// trigger op
+	
 	if (rx_len)
 		writel(prg_len * BITS_PER_BYTE + sp->caps->extra_dummy_bit,
 		       sp->base + MTK_NOR_REG_PRG_CNT);
@@ -584,7 +580,7 @@ static int mtk_nor_spi_mem_prg(struct mtk_nor *sp, const struct spi_mem_op *op)
 	if (ret)
 		return ret;
 
-	// fetch read data
+	
 	reg_offset = 0;
 	if (op->data.dir == SPI_MEM_DATA_IN) {
 		for (i = op->data.nbytes - 1; i >= 0; i--, reg_offset++) {
@@ -624,7 +620,7 @@ static int mtk_nor_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
 		} else {
 			ret = mtk_nor_read_dma(sp, op);
 			if (unlikely(ret)) {
-				/* Handle rare bus glitch */
+				 
 				mtk_nor_reset(sp);
 				mtk_nor_setup_bus(sp, op);
 				return mtk_nor_read_dma(sp, op);
@@ -759,7 +755,7 @@ static irqreturn_t mtk_nor_irq_handler(int irq, void *data)
 
 	irq_status = readl(sp->base + MTK_NOR_REG_IRQ_STAT);
 	irq_enabled = readl(sp->base + MTK_NOR_REG_IRQ_EN);
-	// write status back to clear interrupt
+	
 	writel(irq_status, sp->base + MTK_NOR_REG_IRQ_STAT);
 
 	if (!(irq_status & irq_enabled))
@@ -803,7 +799,7 @@ static const struct of_device_id mtk_nor_match[] = {
 	{ .compatible = "mediatek,mt8173-nor", .data = &mtk_nor_caps_mt8173 },
 	{ .compatible = "mediatek,mt8186-nor", .data = &mtk_nor_caps_mt8186 },
 	{ .compatible = "mediatek,mt8192-nor", .data = &mtk_nor_caps_mt8192 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mtk_nor_match);
 

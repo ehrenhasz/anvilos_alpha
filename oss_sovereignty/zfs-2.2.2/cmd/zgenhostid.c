@@ -1,27 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2020, Georgy Yakovlev.  All rights reserved.
- */
+ 
 
 #include <errno.h>
 #include <fcntl.h>
@@ -56,9 +35,9 @@ usage(void)
 int
 main(int argc, char **argv)
 {
-	/* default file path, can be optionally set by user */
+	 
 	const char *path = "/etc/hostid";
-	/* holds converted user input or lrand48() generated value */
+	 
 	unsigned long input_i = 0;
 
 	int opt;
@@ -79,12 +58,12 @@ main(int argc, char **argv)
 
 	char *in_s = argv[optind];
 	if (in_s != NULL) {
-		/* increment pointer by 2 if string is 0x prefixed */
+		 
 		if (strncasecmp("0x", in_s, 2) == 0) {
 			in_s += 2;
 		}
 
-		/* need to be exactly 8 characters */
+		 
 		const char *hex = "0123456789abcdefABCDEF";
 		if (strlen(in_s) != 8 || strspn(in_s, hex) != 8) {
 			fprintf(stderr, "%s\n", strerror(ERANGE));
@@ -110,10 +89,7 @@ main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	/*
-	 * generate if not provided by user
-	 * also handle unlikely zero return from lrand48()
-	 */
+	 
 	while (input_i == 0) {
 		srand48(getpid() ^ time(NULL));
 		input_i = lrand48();
@@ -125,10 +101,7 @@ main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	/*
-	 * we need just 4 bytes in native endianness
-	 * not using sethostid() because it may be missing or just a stub
-	 */
+	 
 	uint32_t hostid = input_i;
 	int written = fwrite(&hostid, 1, 4, fp);
 	if (written != 4) {

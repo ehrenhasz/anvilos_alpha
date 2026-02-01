@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2021 Sunplus Inc.
-// Author: Li-hao Kuo <lhjeff911@gmail.com>
+
+
+
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -85,7 +85,7 @@ struct sp7021_spi_ctlr {
 	int s_irq;
 	struct clk *spi_clk;
 	struct reset_control *rstc;
-	// data xfer lock
+	
 	struct mutex buf_lock;
 	struct completion isr_done;
 	struct completion slave_isr;
@@ -247,7 +247,7 @@ static void sp7021_prep_transfer(struct spi_controller *ctlr, struct spi_device 
 	pspim->data_unit = SP7021_FIFO_DATA_LEN;
 }
 
-// preliminary set CS, CPOL, CPHA and LSB
+
 static int sp7021_spi_controller_prepare_message(struct spi_controller *ctlr,
 						 struct spi_message *msg)
 {

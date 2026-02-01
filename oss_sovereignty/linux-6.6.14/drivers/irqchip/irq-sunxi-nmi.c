@@ -1,12 +1,4 @@
-/*
- * Allwinner A20/A31 SoCs NMI IRQ chip driver.
- *
- * Carlo Caione <carlo.caione@gmail.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #define DRV_NAME	"sunxi-nmi"
 #define pr_fmt(fmt)	DRV_NAME ": " fmt
@@ -26,9 +18,7 @@
 
 #define SUNXI_NMI_IRQ_BIT	BIT(0)
 
-/*
- * For deprecated sun6i-a31-sc-nmi compatible.
- */
+ 
 #define SUN6I_NMI_CTRL		0x00
 #define SUN6I_NMI_PENDING	0x04
 #define SUN6I_NMI_ENABLE	0x34
@@ -202,10 +192,10 @@ static int __init sunxi_sc_nmi_irq_init(struct device_node *node,
 	gc->chip_types[1].regs.type		= reg_offs->ctrl;
 	gc->chip_types[1].handler		= handle_edge_irq;
 
-	/* Disable any active interrupts */
+	 
 	sunxi_sc_nmi_write(gc, reg_offs->enable, 0);
 
-	/* Clear any pending NMI interrupts */
+	 
 	sunxi_sc_nmi_write(gc, reg_offs->pend, SUNXI_NMI_IRQ_BIT);
 
 	irq_set_chained_handler_and_data(irq, sunxi_sc_nmi_handle_irq, domain);

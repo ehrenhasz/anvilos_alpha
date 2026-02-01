@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Meson8, Meson8b and Meson8m2 HDMI TX PHY.
- *
- * Copyright (C) 2021 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -16,12 +12,7 @@
 #include <linux/property.h>
 #include <linux/regmap.h>
 
-/*
- * Unfortunately there is no detailed documentation available for the
- * HHI_HDMI_PHY_CNTL0 register. CTL0 and CTL1 is all we know about.
- * Magic register values in the driver below are taken from the vendor
- * BSP / kernel.
- */
+ 
 #define HHI_HDMI_PHY_CNTL0				0x3a0
 	#define HHI_HDMI_PHY_CNTL0_HDMI_CTL1		GENMASK(31, 16)
 	#define HHI_HDMI_PHY_CNTL0_HDMI_CTL0		GENMASK(15, 0)
@@ -70,7 +61,7 @@ static int phy_meson8_hdmi_tx_power_on(struct phy *phy)
 
 	regmap_write(priv->hhi, HHI_HDMI_PHY_CNTL1, 0x0);
 
-	/* Reset three times, just like the vendor driver does */
+	 
 	for (i = 0; i < 3; i++) {
 		regmap_write(priv->hhi, HHI_HDMI_PHY_CNTL1,
 			     HHI_HDMI_PHY_CNTL1_CLOCK_ENABLE |
@@ -142,7 +133,7 @@ static int phy_meson8_hdmi_tx_probe(struct platform_device *pdev)
 
 static const struct of_device_id phy_meson8_hdmi_tx_of_match[] = {
 	{ .compatible = "amlogic,meson8-hdmi-tx-phy" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, phy_meson8_hdmi_tx_of_match);
 

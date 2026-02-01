@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* sound/soc/rockchip/rockchip_i2s.c
- *
- * ALSA SoC Audio Layer - Rockchip I2S Controller driver
- *
- * Copyright (c) 2014 Rockchip Electronics Co. Ltd.
- * Author: Jianqun <jay.xu@rock-chips.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mfd/syscon.h>
@@ -44,17 +38,13 @@ struct rk_i2s_dev {
 	bool has_capture;
 	bool has_playback;
 
-/*
- * Used to indicate the tx/rx status.
- * I2S controller hopes to start the tx and rx together,
- * also to stop them when they are both try to stop.
-*/
+ 
 	bool tx_start;
 	bool rx_start;
 	bool is_master_mode;
 	const struct rk_i2s_pins *pins;
 	unsigned int bclk_ratio;
-	spinlock_t lock; /* tx/rx lock */
+	spinlock_t lock;  
 	struct pinctrl *pinctrl;
 	struct pinctrl_state *bclk_on;
 	struct pinctrl_state *bclk_off;
@@ -249,7 +239,7 @@ static int rockchip_i2s_set_fmt(struct snd_soc_dai *cpu_dai,
 	mask = I2S_CKR_MSS_MASK;
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_BP_FP:
-		/* Set source clock in Master mode */
+		 
 		val = I2S_CKR_MSS_MASTER;
 		i2s->is_master_mode = true;
 		break;
@@ -304,10 +294,10 @@ static int rockchip_i2s_set_fmt(struct snd_soc_dai *cpu_dai,
 	case SND_SOC_DAIFMT_I2S:
 		val = I2S_TXCR_IBM_NORMAL;
 		break;
-	case SND_SOC_DAIFMT_DSP_A: /* PCM delay 1 bit mode */
+	case SND_SOC_DAIFMT_DSP_A:  
 		val = I2S_TXCR_TFS_PCM | I2S_TXCR_PBM_MODE(1);
 		break;
-	case SND_SOC_DAIFMT_DSP_B: /* PCM no delay mode */
+	case SND_SOC_DAIFMT_DSP_B:  
 		val = I2S_TXCR_TFS_PCM;
 		break;
 	default:
@@ -328,10 +318,10 @@ static int rockchip_i2s_set_fmt(struct snd_soc_dai *cpu_dai,
 	case SND_SOC_DAIFMT_I2S:
 		val = I2S_RXCR_IBM_NORMAL;
 		break;
-	case SND_SOC_DAIFMT_DSP_A: /* PCM delay 1 bit mode */
+	case SND_SOC_DAIFMT_DSP_A:  
 		val = I2S_RXCR_TFS_PCM | I2S_RXCR_PBM_MODE(1);
 		break;
-	case SND_SOC_DAIFMT_DSP_B: /* PCM no delay mode */
+	case SND_SOC_DAIFMT_DSP_B:  
 		val = I2S_RXCR_TFS_PCM;
 		break;
 	default:
@@ -759,7 +749,7 @@ static int rockchip_i2s_probe(struct platform_device *pdev)
 		i2s->pins = of_id->data;
 	}
 
-	/* try to prepare related clocks */
+	 
 	i2s->hclk = devm_clk_get(&pdev->dev, "i2s_hclk");
 	if (IS_ERR(i2s->hclk)) {
 		dev_err(&pdev->dev, "Can't retrieve i2s bus clock\n");

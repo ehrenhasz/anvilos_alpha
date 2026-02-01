@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HiSilicon SoC reset code
- *
- * Copyright (c) 2014 HiSilicon Ltd.
- * Copyright (c) 2014 Linaro Ltd.
- *
- * Author: Haojian Zhuang <haojian.zhuang@linaro.org>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>

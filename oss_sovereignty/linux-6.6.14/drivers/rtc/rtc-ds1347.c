@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* rtc-ds1347.c
- *
- * Driver for Dallas Semiconductor DS1347 Low Current, SPI Compatible
- * Real Time Clock
- *
- * Author : Raghavendra Chandra Ganiga <ravi23ganiga@gmail.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -16,7 +10,7 @@
 #include <linux/bcd.h>
 #include <linux/regmap.h>
 
-/* Registers in ds1347 rtc */
+ 
 
 #define DS1347_SECONDS_REG	0x01
 #define DS1347_MINUTES_REG	0x03
@@ -139,7 +133,7 @@ static int ds1347_probe(struct spi_device *spi)
 	config.max_register = 0x3F;
 	config.wr_table = &ds1347_access_table;
 
-	/* spi setup with ds1347 in mode 3 and bits per word as 8 */
+	 
 	spi->mode = SPI_MODE_3;
 	spi->bits_per_word = 8;
 	spi_setup(spi);
@@ -153,7 +147,7 @@ static int ds1347_probe(struct spi_device *spi)
 
 	spi_set_drvdata(spi, map);
 
-	/* Disable the write protect of rtc */
+	 
 	err = regmap_update_bits(map, DS1347_CONTROL_REG, DS1347_WP_BIT, 0);
 	if (err)
 		return err;

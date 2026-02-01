@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Broadcom BCM590xx regulator driver
- *
- * Copyright 2014 Linaro Limited
- * Author: Matt Porter <mporter@linaro.org>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -18,7 +13,7 @@
 #include <linux/regulator/of_regulator.h>
 #include <linux/slab.h>
 
-/* I2C slave 0 registers */
+ 
 #define BCM590XX_RFLDOPMCTRL1	0x60
 #define BCM590XX_IOSR1PMCTRL1	0x7a
 #define BCM590XX_IOSR2PMCTRL1	0x7c
@@ -30,7 +25,7 @@
 #define BCM590XX_RFLDOCTRL	0x96
 #define BCM590XX_CSRVOUT1	0xc0
 
-/* I2C slave 1 registers */
+ 
 #define BCM590XX_GPLDO5PMCTRL1	0x16
 #define BCM590XX_GPLDO6PMCTRL1	0x18
 #define BCM590XX_GPLDO1CTRL	0x1a
@@ -50,12 +45,9 @@
 #define BCM590XX_LDO_VSEL_MASK	GENMASK(5, 3)
 #define BCM590XX_SR_VSEL_MASK	GENMASK(5, 0)
 
-/*
- * RFLDO to VSR regulators are
- * accessed via I2C slave 0
- */
+ 
 
-/* LDO regulator IDs */
+ 
 #define BCM590XX_REG_RFLDO	0
 #define BCM590XX_REG_CAMLDO1	1
 #define BCM590XX_REG_CAMLDO2	2
@@ -70,7 +62,7 @@
 #define BCM590XX_REG_USBLDO	11
 #define BCM590XX_REG_VIBLDO	12
 
-/* DCDC regulator IDs */
+ 
 #define BCM590XX_REG_CSR	13
 #define BCM590XX_REG_IOSR1	14
 #define BCM590XX_REG_IOSR2	15
@@ -79,10 +71,7 @@
 #define BCM590XX_REG_SDSR2	18
 #define BCM590XX_REG_VSR	19
 
-/*
- * GPLDO1 to VBUS regulators are
- * accessed via I2C slave 1
- */
+ 
 
 #define BCM590XX_REG_GPLDO1	20
 #define BCM590XX_REG_GPLDO2	21
@@ -99,13 +88,13 @@
 	((n > BCM590XX_REG_VSR) && (n < BCM590XX_REG_VBUS))
 #define BCM590XX_REG_IS_VBUS(n)	(n == BCM590XX_REG_VBUS)
 
-/* LDO group A: supported voltages in microvolts */
+ 
 static const unsigned int ldo_a_table[] = {
 	1200000, 1800000, 2500000, 2700000, 2800000,
 	2900000, 3000000, 3300000,
 };
 
-/* LDO group C: supported voltages in microvolts */
+ 
 static const unsigned int ldo_c_table[] = {
 	3100000, 1800000, 2500000, 2700000, 2800000,
 	2900000, 3000000, 3300000,
@@ -115,14 +104,14 @@ static const unsigned int ldo_vbus[] = {
 	5000000,
 };
 
-/* DCDC group CSR: supported voltages in microvolts */
+ 
 static const struct linear_range dcdc_csr_ranges[] = {
 	REGULATOR_LINEAR_RANGE(860000, 2, 50, 10000),
 	REGULATOR_LINEAR_RANGE(1360000, 51, 55, 20000),
 	REGULATOR_LINEAR_RANGE(900000, 56, 63, 0),
 };
 
-/* DCDC group IOSR1: supported voltages in microvolts */
+ 
 static const struct linear_range dcdc_iosr1_ranges[] = {
 	REGULATOR_LINEAR_RANGE(860000, 2, 51, 10000),
 	REGULATOR_LINEAR_RANGE(1500000, 52, 52, 0),
@@ -130,7 +119,7 @@ static const struct linear_range dcdc_iosr1_ranges[] = {
 	REGULATOR_LINEAR_RANGE(900000, 54, 63, 0),
 };
 
-/* DCDC group SDSR1: supported voltages in microvolts */
+ 
 static const struct linear_range dcdc_sdsr1_ranges[] = {
 	REGULATOR_LINEAR_RANGE(860000, 2, 50, 10000),
 	REGULATOR_LINEAR_RANGE(1340000, 51, 51, 0),
@@ -299,7 +288,7 @@ static int bcm590xx_probe(struct platform_device *pdev)
 	info = bcm590xx_regs;
 
 	for (i = 0; i < BCM590XX_NUM_REGS; i++, info++) {
-		/* Register the regulators */
+		 
 		pmu->desc[i].name = info->name;
 		pmu->desc[i].of_match = of_match_ptr(info->name);
 		pmu->desc[i].regulators_node = of_match_ptr("regulators");

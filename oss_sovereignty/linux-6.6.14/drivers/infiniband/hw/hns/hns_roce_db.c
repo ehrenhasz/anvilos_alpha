@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause) */
-/*
- * Copyright (c) 2017 Hisilicon Limited.
- * Copyright (c) 2007, 2008 Mellanox Technologies. All rights reserved.
- */
+ 
+ 
 
 #include <rdma/ib_umem.h>
 #include "hns_roce_device.h"
@@ -141,7 +138,7 @@ int hns_roce_alloc_db(struct hns_roce_dev *hr_dev, struct hns_roce_db *db,
 
 	list_add(&pgdir->list, &hr_dev->pgdir_list);
 
-	/* This should never fail -- we just allocated an empty page: */
+	 
 	WARN_ON(hns_roce_alloc_db_from_pgdir(pgdir, db, order));
 
 out:

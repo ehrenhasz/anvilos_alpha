@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 - 2022 Beijing WangXun Technology Co., Ltd. */
+
+ 
 
 #include <linux/ethtool.h>
 #include <linux/iopoll.h>
@@ -36,7 +36,7 @@ static int ngbe_phy_read_reg_mdi_c22(struct mii_bus *bus, int phy_addr, int regn
 	int ret;
 
 	wr32(wx, NGBE_MDIO_CLAUSE_SELECT, 0xF);
-	/* setup and write the address cycle command */
+	 
 	command = WX_MSCA_RA(regnum) |
 		  WX_MSCA_PA(phy_addr) |
 		  WX_MSCA_DA(device_type);
@@ -46,7 +46,7 @@ static int ngbe_phy_read_reg_mdi_c22(struct mii_bus *bus, int phy_addr, int regn
 		  WX_MDIO_CLK(6);
 	wr32(wx, WX_MSCC, command);
 
-	/* wait to complete */
+	 
 	ret = read_poll_timeout(rd32, val, !(val & WX_MSCC_BUSY), 1000,
 				100000, false, wx, WX_MSCC);
 	if (ret) {
@@ -64,7 +64,7 @@ static int ngbe_phy_write_reg_mdi_c22(struct mii_bus *bus, int phy_addr, int reg
 	int ret;
 
 	wr32(wx, NGBE_MDIO_CLAUSE_SELECT, 0xF);
-	/* setup and write the address cycle command */
+	 
 	command = WX_MSCA_RA(regnum) |
 		  WX_MSCA_PA(phy_addr) |
 		  WX_MSCA_DA(device_type);
@@ -75,7 +75,7 @@ static int ngbe_phy_write_reg_mdi_c22(struct mii_bus *bus, int phy_addr, int reg
 		  WX_MDIO_CLK(6);
 	wr32(wx, WX_MSCC, command);
 
-	/* wait to complete */
+	 
 	ret = read_poll_timeout(rd32, val, !(val & WX_MSCC_BUSY), 1000,
 				100000, false, wx, WX_MSCC);
 	if (ret)
@@ -91,7 +91,7 @@ static int ngbe_phy_read_reg_mdi_c45(struct mii_bus *bus, int phy_addr, int devn
 	int ret;
 
 	wr32(wx, NGBE_MDIO_CLAUSE_SELECT, 0x0);
-	/* setup and write the address cycle command */
+	 
 	command = WX_MSCA_RA(regnum) |
 		  WX_MSCA_PA(phy_addr) |
 		  WX_MSCA_DA(devnum);
@@ -101,7 +101,7 @@ static int ngbe_phy_read_reg_mdi_c45(struct mii_bus *bus, int phy_addr, int devn
 		  WX_MDIO_CLK(6);
 	wr32(wx, WX_MSCC, command);
 
-	/* wait to complete */
+	 
 	ret = read_poll_timeout(rd32, val, !(val & WX_MSCC_BUSY), 1000,
 				100000, false, wx, WX_MSCC);
 	if (ret) {
@@ -120,7 +120,7 @@ static int ngbe_phy_write_reg_mdi_c45(struct mii_bus *bus, int phy_addr,
 	u16 val;
 
 	wr32(wx, NGBE_MDIO_CLAUSE_SELECT, 0x0);
-	/* setup and write the address cycle command */
+	 
 	command = WX_MSCA_RA(regnum) |
 		  WX_MSCA_PA(phy_addr) |
 		  WX_MSCA_DA(devnum);
@@ -131,7 +131,7 @@ static int ngbe_phy_write_reg_mdi_c45(struct mii_bus *bus, int phy_addr,
 		  WX_MDIO_CLK(6);
 	wr32(wx, WX_MSCC, command);
 
-	/* wait to complete */
+	 
 	ret = read_poll_timeout(rd32, val, !(val & WX_MSCC_BUSY), 1000,
 				100000, false, wx, WX_MSCC);
 	if (ret)
@@ -201,7 +201,7 @@ static void ngbe_handle_link_change(struct net_device *dev)
 		reg &= ~WX_MAC_TX_CFG_SPEED_MASK;
 		reg |= WX_MAC_TX_CFG_SPEED_1G | WX_MAC_TX_CFG_TE;
 		wr32(wx, WX_MAC_TX_CFG, reg);
-		/* Re configure MAC RX */
+		 
 		reg = rd32(wx, WX_MAC_RX_CFG);
 		wr32(wx, WX_MAC_RX_CFG, reg);
 		wr32(wx, WX_MAC_PKT_FLT, WX_MAC_PKT_FLT_PR);
@@ -239,7 +239,7 @@ static void ngbe_phy_fixup(struct wx *wx)
 	phydev->mac_managed_pm = true;
 	if (wx->mac_type != em_mac_type_mdi)
 		return;
-	/* disable EEE, internal phy does not support eee */
+	 
 	memset(&eee, 0, sizeof(eee));
 	phy_ethtool_set_eee(phydev, &eee);
 }

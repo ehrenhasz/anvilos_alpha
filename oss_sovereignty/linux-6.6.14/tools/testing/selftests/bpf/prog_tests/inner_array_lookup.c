@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <test_progs.h>
 
@@ -22,7 +22,7 @@ void test_inner_array_lookup(void)
 	map1_fd = bpf_map__fd(skel->maps.inner_map1);
 	bpf_map_update_elem(map1_fd, &key, &val, 0);
 
-	/* Probe should have set the element at index 3 to 2 */
+	 
 	bpf_map_lookup_elem(map1_fd, &key, &val);
 	ASSERT_EQ(val, 2, "value_is_2");
 

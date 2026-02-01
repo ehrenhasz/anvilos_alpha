@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Cryptographic API.
- *
- * Support for OMAP AES HW acceleration.
- *
- * Copyright (c) 2010 Nokia Corporation
- * Author: Dmitry Kasatkin <dmitry.kasatkin@nokia.com>
- * Copyright (c) 2011 Texas Instruments Incorporated
- */
+
+ 
 
 #define pr_fmt(fmt) "%20s: " fmt, __func__
 #define prn(num) pr_debug(#num "=%d\n", num)
@@ -37,7 +29,7 @@
 #include "omap-crypto.h"
 #include "omap-aes.h"
 
-/* keep registered devices data here */
+ 
 static LIST_HEAD(dev_list);
 static DEFINE_SPINLOCK(list_lock);
 
@@ -130,7 +122,7 @@ int omap_aes_write_ctrl(struct omap_aes_dev *dd)
 
 	key32 = dd->ctx->keylen / sizeof(u32);
 
-	/* RESET the key as previous HASH keys should not get affected*/
+	 
 	if (dd->flags & FLAGS_GCM)
 		for (i = 0; i < 0x40; i = i + 4)
 			omap_aes_write(dd, i, 0x0);
@@ -221,7 +213,7 @@ static void omap_aes_dma_out_callback(void *data)
 {
 	struct omap_aes_dev *dd = data;
 
-	/* dma_lch_out - completed */
+	 
 	tasklet_schedule(&dd->done_task);
 }
 
@@ -276,8 +268,7 @@ static int omap_aes_crypt_dma(struct omap_aes_dev *dd,
 		if (out_sg_len)
 			scatterwalk_start(&dd->out_walk, dd->out_sg);
 
-		/* Enable DATAIN interrupt and let it take
-		   care of the rest */
+		 
 		omap_aes_write(dd, AES_REG_IRQ_ENABLE(dd), 0x2);
 		return 0;
 	}
@@ -293,7 +284,7 @@ static int omap_aes_crypt_dma(struct omap_aes_dev *dd,
 	cfg.src_maxburst = DST_MAXBURST;
 	cfg.dst_maxburst = DST_MAXBURST;
 
-	/* IN */
+	 
 	ret = dmaengine_slave_config(dd->dma_lch_in, &cfg);
 	if (ret) {
 		dev_err(dd->dev, "can't configure IN dmaengine slave: %d\n",
@@ -309,11 +300,11 @@ static int omap_aes_crypt_dma(struct omap_aes_dev *dd,
 		return -EINVAL;
 	}
 
-	/* No callback necessary */
+	 
 	tx_in->callback_param = dd;
 	tx_in->callback = NULL;
 
-	/* OUT */
+	 
 	if (out_sg_len) {
 		ret = dmaengine_slave_config(dd->dma_lch_out, &cfg);
 		if (ret) {
@@ -351,7 +342,7 @@ static int omap_aes_crypt_dma(struct omap_aes_dev *dd,
 	if (out_sg_len)
 		dma_async_issue_pending(dd->dma_lch_out);
 
-	/* start DMA */
+	 
 	dd->pdata->trigger(dd, dd->total);
 
 	return 0;
@@ -433,7 +424,7 @@ static int omap_aes_prepare_req(struct skcipher_request *req,
 	int ret;
 	u16 flags;
 
-	/* assign new request to device */
+	 
 	dd->req = req;
 	dd->total = req->cryptlen;
 	dd->total_save = req->cryptlen;
@@ -517,7 +508,7 @@ static void omap_aes_done_task(unsigned long data)
 	omap_crypto_cleanup(dd->out_sg, dd->orig_out, 0, dd->total_save,
 			    FLAGS_OUT_DATA_ST_SHIFT, dd->flags);
 
-	/* Update IV output */
+	 
 	if (dd->flags & (FLAGS_CBC | FLAGS_CTR))
 		omap_aes_copy_ivout(dd, dd->req->iv);
 
@@ -565,7 +556,7 @@ static int omap_aes_crypt(struct skcipher_request *req, unsigned long mode)
 	return omap_aes_handle_queue(dd, req);
 }
 
-/* ********************** ALG API ************************************ */
+ 
 
 static int omap_aes_setkey(struct crypto_skcipher *tfm, const u8 *key,
 			   unsigned int keylen)
@@ -651,7 +642,7 @@ static void omap_aes_exit_tfm(struct crypto_skcipher *tfm)
 	ctx->fallback = NULL;
 }
 
-/* ********************** ALGS ************************************ */
+ 
 
 static struct skcipher_engine_alg algs_ecb_cbc[] = {
 {
@@ -892,11 +883,11 @@ static irqreturn_t omap_aes_irq(int irq, void *dev_id)
 			}
 		}
 
-		/* Clear IRQ status */
+		 
 		status &= ~AES_REG_IRQ_DATA_IN;
 		omap_aes_write(dd, AES_REG_IRQ_STATUS(dd), status);
 
-		/* Enable DATA_OUT interrupt */
+		 
 		omap_aes_write(dd, AES_REG_IRQ_ENABLE(dd), 0x4);
 
 	} else if (status & AES_REG_IRQ_DATA_OUT) {
@@ -926,15 +917,15 @@ static irqreturn_t omap_aes_irq(int irq, void *dev_id)
 
 		dd->total -= min_t(size_t, AES_BLOCK_SIZE, dd->total);
 
-		/* Clear IRQ status */
+		 
 		status &= ~AES_REG_IRQ_DATA_OUT;
 		omap_aes_write(dd, AES_REG_IRQ_STATUS(dd), status);
 
 		if (!dd->total)
-			/* All bytes read! */
+			 
 			tasklet_schedule(&dd->done_task);
 		else
-			/* Enable DATA_IN interrupt for next block */
+			 
 			omap_aes_write(dd, AES_REG_IRQ_ENABLE(dd), 0x2);
 	}
 
@@ -1000,7 +991,7 @@ static int omap_aes_get_res_pdev(struct omap_aes_dev *dd,
 	struct resource *r;
 	int err = 0;
 
-	/* Get the base address */
+	 
 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!r) {
 		dev_err(dev, "no MEM resource info\n");
@@ -1009,7 +1000,7 @@ static int omap_aes_get_res_pdev(struct omap_aes_dev *dd,
 	}
 	memcpy(res, r, sizeof(*res));
 
-	/* Only OMAP2/3 can be non-DT */
+	 
 	dd->pdata = &omap_aes_pdata_omap2;
 
 err:
@@ -1032,7 +1023,7 @@ static ssize_t fallback_store(struct device *dev, struct device_attribute *attr,
 	if (status)
 		return status;
 
-	/* HW accelerator only works with buffers > 9 */
+	 
 	if (value < 9) {
 		dev_err(dev, "minimum fallback size 9\n");
 		return -EINVAL;
@@ -1067,11 +1058,7 @@ static ssize_t queue_len_store(struct device *dev,
 	if (value < 1)
 		return -EINVAL;
 
-	/*
-	 * Changing the queue size in fly is safe, if size becomes smaller
-	 * than current size, it will just not accept new entries until
-	 * it has shrank enough.
-	 */
+	 
 	spin_lock_bh(&list_lock);
 	list_for_each_entry(dd, &dev_list, list) {
 		spin_lock_irqsave(&dd->lock, flags);
@@ -1179,7 +1166,7 @@ static int omap_aes_probe(struct platform_device *pdev)
 	list_add_tail(&dd->list, &dev_list);
 	spin_unlock_bh(&list_lock);
 
-	/* Initialize crypto engine */
+	 
 	dd->engine = crypto_engine_alloc_init(dev, 1);
 	if (!dd->engine) {
 		err = -ENOMEM;

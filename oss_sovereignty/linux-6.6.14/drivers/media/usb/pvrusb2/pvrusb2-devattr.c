@@ -1,21 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- *  Copyright (C) 2007 Mike Isely <isely@pobox.com>
- */
 
-/*
+ 
 
-This source file should encompass ALL per-device type information for the
-driver.  To define a new device, add elements to the pvr2_device_table and
-pvr2_device_desc structures.
-
-*/
+ 
 
 #include "pvrusb2-devattr.h"
 #include <linux/usb.h>
 #include <linux/module.h>
-/* This is needed in order to pull in tuner type ids... */
+ 
 #include <linux/i2c.h>
 #include <media/tuner.h>
 #ifdef CONFIG_VIDEO_PVRUSB2_DVB
@@ -33,8 +24,8 @@ pvr2_device_desc structures.
 #endif
 
 
-/*------------------------------------------------------------------------*/
-/* Hauppauge PVR-USB2 Model 29xxx */
+ 
+ 
 
 static const struct pvr2_device_client_desc pvr2_cli_29xxx[] = {
 	{ .module_id = PVR2_CLIENT_ID_SAA7115 },
@@ -67,8 +58,8 @@ static const struct pvr2_device_desc pvr2_device_29xxx = {
 
 
 
-/*------------------------------------------------------------------------*/
-/* Hauppauge PVR-USB2 Model 24xxx */
+ 
+ 
 
 static const struct pvr2_device_client_desc pvr2_cli_24xxx[] = {
 	{ .module_id = PVR2_CLIENT_ID_CX25840 },
@@ -103,8 +94,8 @@ static const struct pvr2_device_desc pvr2_device_24xxx = {
 
 
 
-/*------------------------------------------------------------------------*/
-/* GOTVIEW USB2.0 DVD2 */
+ 
+ 
 
 static const struct pvr2_device_client_desc pvr2_cli_gotview_2[] = {
 	{ .module_id = PVR2_CLIENT_ID_CX25840 },
@@ -128,10 +119,10 @@ static const struct pvr2_device_desc pvr2_device_gotview_2 = {
 
 
 
-/*------------------------------------------------------------------------*/
-/* GOTVIEW USB2.0 DVD Deluxe */
+ 
+ 
 
-/* (same module list as gotview_2) */
+ 
 
 static const struct pvr2_device_desc pvr2_device_gotview_2d = {
 		.description = "Gotview USB 2.0 DVD Deluxe",
@@ -148,8 +139,8 @@ static const struct pvr2_device_desc pvr2_device_gotview_2d = {
 
 
 
-/*------------------------------------------------------------------------*/
-/* Terratec Grabster AV400 */
+ 
+ 
 
 static const struct pvr2_device_client_desc pvr2_cli_av400[] = {
 	{ .module_id = PVR2_CLIENT_ID_CX25840 },
@@ -170,8 +161,8 @@ static const struct pvr2_device_desc pvr2_device_av400 = {
 
 
 
-/*------------------------------------------------------------------------*/
-/* OnAir Creator */
+ 
+ 
 
 #ifdef CONFIG_VIDEO_PVRUSB2_DVB
 static struct lgdt330x_config pvr2_lgdt3303_config = {
@@ -231,8 +222,8 @@ static const struct pvr2_device_desc pvr2_device_onair_creator = {
 
 
 
-/*------------------------------------------------------------------------*/
-/* OnAir USB 2.0 */
+ 
+ 
 
 #ifdef CONFIG_VIDEO_PVRUSB2_DVB
 static struct lgdt330x_config pvr2_lgdt3302_config = {
@@ -291,8 +282,8 @@ static const struct pvr2_device_desc pvr2_device_onair_usb2 = {
 
 
 
-/*------------------------------------------------------------------------*/
-/* Hauppauge PVR-USB2 Model 73xxx */
+ 
+ 
 
 #ifdef CONFIG_VIDEO_PVRUSB2_DVB
 static struct tda10048_config hauppauge_tda10048_config = {
@@ -389,8 +380,8 @@ static const struct pvr2_device_desc pvr2_device_73xxx = {
 
 
 
-/*------------------------------------------------------------------------*/
-/* Hauppauge PVR-USB2 Model 75xxx */
+ 
+ 
 
 #ifdef CONFIG_VIDEO_PVRUSB2_DVB
 static struct s5h1409_config pvr2_s5h1409_config = {
@@ -518,8 +509,8 @@ static const struct pvr2_device_desc pvr2_device_751xx = {
 #endif
 };
 
-/*------------------------------------------------------------------------*/
-/*    Hauppauge PVR-USB2 Model 160000 / 160111 -- HVR-1955 / HVR-1975     */
+ 
+ 
 
 #ifdef CONFIG_VIDEO_PVRUSB2_DVB
 static int pvr2_si2157_attach(struct pvr2_dvb_adapter *adap);
@@ -563,10 +554,10 @@ static int pvr2_si2168_attach(struct pvr2_dvb_adapter *adap)
 
 	si2168_config.fe = &adap->fe[1];
 	si2168_config.i2c_adapter = &adapter;
-	si2168_config.ts_mode = SI2168_TS_PARALLEL; /*2, 1-serial, 2-parallel.*/
-	si2168_config.ts_clock_gapped = 1; /*0-disabled, 1-enabled.*/
-	si2168_config.ts_clock_inv = 0; /*0-not-invert, 1-invert*/
-	si2168_config.spectral_inversion = 1; /*0-not-invert, 1-invert*/
+	si2168_config.ts_mode = SI2168_TS_PARALLEL;  
+	si2168_config.ts_clock_gapped = 1;  
+	si2168_config.ts_clock_inv = 0;  
+	si2168_config.spectral_inversion = 1;  
 
 	adap->i2c_client_demod[1] = dvb_module_probe("si2168", NULL,
 						     &adap->channel.hdw->i2c_adap,
@@ -594,7 +585,7 @@ static int pvr2_lgdt3306a_attach(struct pvr2_dvb_adapter *adap)
 	lgdt3306a_config.mpeg_mode = LGDT3306A_MPEG_PARALLEL;
 	lgdt3306a_config.tpclk_edge = LGDT3306A_TPCLK_FALLING_EDGE;
 	lgdt3306a_config.tpvalid_polarity = LGDT3306A_TP_VALID_LOW;
-	lgdt3306a_config.xtalMHz = 25; /* demod clock MHz; 24/25 supported */
+	lgdt3306a_config.xtalMHz = 25;  
 
 	adap->i2c_client_demod[0] = dvb_module_probe("lgdt3306a", NULL,
 						     &adap->channel.hdw->i2c_adap,
@@ -679,12 +670,12 @@ static const struct pvr2_device_desc pvr2_device_160111 = {
 #endif
 };
 
-/*------------------------------------------------------------------------*/
+ 
 
 struct usb_device_id pvr2_device_table[] = {
 	{ USB_DEVICE(0x2040, 0x2900),
 	  .driver_info = (kernel_ulong_t)&pvr2_device_29xxx},
-	{ USB_DEVICE(0x2040, 0x2950), /* Logically identical to 2900 */
+	{ USB_DEVICE(0x2040, 0x2950),  
 	  .driver_info = (kernel_ulong_t)&pvr2_device_29xxx},
 	{ USB_DEVICE(0x2040, 0x2400),
 	  .driver_info = (kernel_ulong_t)&pvr2_device_24xxx},

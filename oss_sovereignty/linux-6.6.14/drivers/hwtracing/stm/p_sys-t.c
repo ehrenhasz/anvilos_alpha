@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MIPI SyS-T framing protocol for STM devices.
- * Copyright (c) 2018, Intel Corporation.
- */
+
+ 
 
 #include <linux/configfs.h>
 #include <linux/module.h>
@@ -265,7 +262,7 @@ sys_t_clock_sync(struct stm_data *data, unsigned int m, unsigned int c)
 {
 	u32 header = CLOCK_SYNC_HEADER;
 	const unsigned char nil = 0;
-	u64 payload[2]; /* Clock value and frequency */
+	u64 payload[2];  
 	ssize_t sz;
 
 	sz = data->packet(data, m, c, STP_PACKET_DATA, STP_PACKET_TIMESTAMPED,
@@ -295,7 +292,7 @@ static ssize_t sys_t_write(struct stm_data *data, struct stm_output *output,
 	u8 uuid[UUID_SIZE];
 	ssize_t sz;
 
-	/* We require an existing policy node to proceed */
+	 
 	if (!op)
 		return -EINVAL;
 
@@ -310,25 +307,21 @@ static ssize_t sys_t_write(struct stm_data *data, struct stm_output *output,
 	if (sys_t_need_ts(op))
 		header |= MIPI_SYST_OPT_TS;
 
-	/*
-	 * STP framing rules for SyS-T frames:
-	 *   * the first packet of the SyS-T frame is timestamped;
-	 *   * the last packet is a FLAG.
-	 */
-	/* Message layout: HEADER / GUID / [LENGTH /][TIMESTAMP /] DATA */
-	/* HEADER */
+	 
+	 
+	 
 	sz = data->packet(data, m, c, STP_PACKET_DATA, STP_PACKET_TIMESTAMPED,
 			  4, (u8 *)&header);
 	if (sz <= 0)
 		return sz;
 
-	/* GUID */
+	 
 	export_uuid(uuid, &op->node.uuid);
 	sz = stm_data_write(data, m, c, false, uuid, sizeof(op->node.uuid));
 	if (sz <= 0)
 		return sz;
 
-	/* [LENGTH] */
+	 
 	if (op->node.do_len) {
 		u16 length = count;
 
@@ -338,7 +331,7 @@ static ssize_t sys_t_write(struct stm_data *data, struct stm_output *output,
 			return sz;
 	}
 
-	/* [TIMESTAMP] */
+	 
 	if (header & MIPI_SYST_OPT_TS) {
 		u64 ts = ktime_get_real_ns();
 
@@ -347,7 +340,7 @@ static ssize_t sys_t_write(struct stm_data *data, struct stm_output *output,
 			return sz;
 	}
 
-	/* DATA */
+	 
 	sz = stm_data_write(data, m, c, false, buf, count);
 	if (sz > 0)
 		data->packet(data, m, c, STP_PACKET_FLAG, 0, 0, &nil);

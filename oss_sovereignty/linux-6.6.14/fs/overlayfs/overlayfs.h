@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *
- * Copyright (C) 2011 Novell Inc.
- */
+ 
+ 
 
 #include <linux/kernel.h>
 #include <linux/uuid.h>
@@ -43,13 +40,13 @@ enum ovl_xattr {
 };
 
 enum ovl_inode_flag {
-	/* Pure upper dir that may contain non pure upper entries */
+	 
 	OVL_IMPURE,
-	/* Non-merge dir that may contain whiteout entries */
+	 
 	OVL_WHITEOUTS,
 	OVL_INDEX,
 	OVL_UPPERDATA,
-	/* Inode number will remain constant over copy up. */
+	 
 	OVL_CONST_INO,
 	OVL_HAS_DIGEST,
 	OVL_VERIFIED_DIGEST,
@@ -62,9 +59,9 @@ enum ovl_entry_flag {
 };
 
 enum {
-	OVL_REDIRECT_OFF,	/* "off" mode is never used. In effect	*/
-	OVL_REDIRECT_FOLLOW,	/* ...it translates to either "follow"	*/
-	OVL_REDIRECT_NOFOLLOW,	/* ...or "nofollow".			*/
+	OVL_REDIRECT_OFF,	 
+	OVL_REDIRECT_FOLLOW,	 
+	OVL_REDIRECT_NOFOLLOW,	 
 	OVL_REDIRECT_ON,
 };
 
@@ -87,19 +84,14 @@ enum {
 	OVL_VERITY_REQUIRE,
 };
 
-/*
- * The tuple (fh,uuid) is a universal unique identifier for a copy up origin,
- * where:
- * origin.fh	- exported file handle of the lower file
- * origin.uuid	- uuid of the lower filesystem
- */
+ 
 #define OVL_FH_VERSION	0
 #define OVL_FH_MAGIC	0xfb
 
-/* CPU byte order required for fid decoding:  */
+ 
 #define OVL_FH_FLAG_BIG_ENDIAN	(1 << 0)
 #define OVL_FH_FLAG_ANY_ENDIAN	(1 << 1)
-/* Is the real inode encoded in fid an upper inode? */
+ 
 #define OVL_FH_FLAG_PATH_UPPER	(1 << 2)
 
 #define OVL_FH_FLAG_ALL (OVL_FH_FLAG_BIG_ENDIAN | OVL_FH_FLAG_ANY_ENDIAN | \
@@ -113,25 +105,25 @@ enum {
 #error Endianness not defined
 #endif
 
-/* The type used to be returned by overlay exportfs for misaligned fid */
+ 
 #define OVL_FILEID_V0	0xfb
-/* The type returned by overlay exportfs for 32bit aligned fid */
+ 
 #define OVL_FILEID_V1	0xf8
 
-/* On-disk format for "origin" file handle */
+ 
 struct ovl_fb {
-	u8 version;	/* 0 */
-	u8 magic;	/* 0xfb */
-	u8 len;		/* size of this header + size of fid */
-	u8 flags;	/* OVL_FH_FLAG_* */
-	u8 type;	/* fid_type of fid */
-	uuid_t uuid;	/* uuid of filesystem */
-	u32 fid[];	/* file identifier should be 32bit aligned in-memory */
+	u8 version;	 
+	u8 magic;	 
+	u8 len;		 
+	u8 flags;	 
+	u8 type;	 
+	uuid_t uuid;	 
+	u32 fid[];	 
 } __packed;
 
-/* In-memory and on-wire format for overlay file handle */
+ 
 struct ovl_fh {
-	u8 padding[3];	/* make sure fb.fid is 32bit aligned */
+	u8 padding[3];	 
 	union {
 		struct ovl_fb fb;
 		DECLARE_FLEX_ARRAY(u8, buf);
@@ -143,13 +135,13 @@ struct ovl_fh {
 #define OVL_FH_FID_OFFSET	(OVL_FH_WIRE_OFFSET + \
 				 offsetof(struct ovl_fb, fid))
 
-/* On-disk format for "metacopy" xattr (if non-zero size) */
+ 
 struct ovl_metacopy {
-	u8 version;	/* 0 */
-	u8 len;         /* size of this header + used digest bytes */
+	u8 version;	 
+	u8 len;          
 	u8 flags;
-	u8 digest_algo;	/* FS_VERITY_HASH_ALG_* constant, 0 for no digest */
-	u8 digest[FS_VERITY_MAX_DIGEST_SIZE];  /* Only the used part on disk */
+	u8 digest_algo;	 
+	u8 digest[FS_VERITY_MAX_DIGEST_SIZE];   
 } __packed;
 
 #define OVL_METACOPY_MAX_SIZE (sizeof(struct ovl_metacopy))
@@ -169,18 +161,7 @@ static inline const char *ovl_xattr(struct ovl_fs *ofs, enum ovl_xattr ox)
 	return ovl_xattr_table[ox][ofs->config.userxattr];
 }
 
-/*
- * When changing ownership of an upper object map the intended ownership
- * according to the upper layer's idmapping. When an upper mount idmaps files
- * that are stored on-disk as owned by id 1001 to id 1000 this means stat on
- * this object will report it as being owned by id 1000 when calling stat via
- * the upper mount.
- * In order to change ownership of an object so stat reports id 1000 when
- * called on an idmapped upper mount the value written to disk - i.e., the
- * value stored in ia_*id - must 1001. The mount mapping helper will thus take
- * care to map 1000 to 1001.
- * The mnt idmapping helpers are nops if the upper layer isn't idmapped.
- */
+ 
 static inline int ovl_do_notify_change(struct ovl_fs *ofs,
 				       struct dentry *upperdentry,
 				       struct iattr *attr)
@@ -405,7 +386,7 @@ static inline int ovl_do_getattr(const struct path *path, struct kstat *stat,
 	return vfs_getattr(path, stat, request_mask, flags);
 }
 
-/* util.c */
+ 
 int ovl_want_write(struct dentry *dentry);
 void ovl_drop_write(struct dentry *dentry);
 struct dentry *ovl_workdir(struct dentry *dentry);
@@ -563,33 +544,26 @@ static inline bool ovl_has_fsid(struct ovl_fs *ofs)
 	       ofs->config.uuid == OVL_UUID_AUTO;
 }
 
-/*
- * With xino=auto, we do best effort to keep all inodes on same st_dev and
- * d_ino consistent with st_ino.
- * With xino=on, we do the same effort but we warn if we failed.
- */
+ 
 static inline bool ovl_xino_warn(struct ovl_fs *ofs)
 {
 	return ofs->config.xino == OVL_XINO_ON;
 }
 
-/*
- * To avoid regressions in existing setups with overlay lower offline changes,
- * we allow lower changes only if none of the new features are used.
- */
+ 
 static inline bool ovl_allow_offline_changes(struct ovl_fs *ofs)
 {
 	return (!ofs->config.index && !ofs->config.metacopy &&
 		!ovl_redirect_dir(ofs) && !ovl_xino_warn(ofs));
 }
 
-/* All layers on same fs? */
+ 
 static inline bool ovl_same_fs(struct ovl_fs *ofs)
 {
 	return ofs->xino_mode == 0;
 }
 
-/* All overlay inodes have same st_dev? */
+ 
 static inline bool ovl_same_dev(struct ovl_fs *ofs)
 {
 	return ofs->xino_mode >= 0;
@@ -616,7 +590,7 @@ static inline void ovl_inode_unlock(struct inode *inode)
 }
 
 
-/* namei.c */
+ 
 int ovl_check_fb_len(struct ovl_fb *fb, int fb_len);
 
 static inline int ovl_check_fh_len(struct ovl_fh *fh, int fh_len)
@@ -661,7 +635,7 @@ static inline int ovl_verify_upper(struct ovl_fs *ofs, struct dentry *index,
 	return ovl_verify_set_fh(ofs, index, OVL_XATTR_UPPER, upper, true, set);
 }
 
-/* readdir.c */
+ 
 extern const struct file_operations ovl_dir_operations;
 struct file *ovl_dir_real_file(const struct file *file, bool want_upper);
 int ovl_check_empty_dir(struct dentry *dentry, struct list_head *list);
@@ -674,19 +648,13 @@ int ovl_workdir_cleanup(struct ovl_fs *ofs, struct inode *dir,
 			struct vfsmount *mnt, struct dentry *dentry, int level);
 int ovl_indexdir_cleanup(struct ovl_fs *ofs);
 
-/*
- * Can we iterate real dir directly?
- *
- * Non-merge dir may contain whiteouts from a time it was a merge upper, before
- * lower dir was removed under it and possibly before it was rotated from upper
- * to lower layer.
- */
+ 
 static inline bool ovl_dir_is_real(struct inode *dir)
 {
 	return !ovl_test_flag(OVL_WHITEOUTS, dir);
 }
 
-/* inode.c */
+ 
 int ovl_set_nlink_upper(struct dentry *dentry);
 int ovl_set_nlink_lower(struct dentry *dentry);
 unsigned int ovl_get_nlink(struct ovl_fs *ofs, struct dentry *lowerdentry,
@@ -756,16 +724,12 @@ struct inode *ovl_get_inode(struct super_block *sb,
 			    struct ovl_inode_params *oip);
 void ovl_copyattr(struct inode *to);
 
-/* vfs inode flags copied from real to ovl inode */
+ 
 #define OVL_COPY_I_FLAGS_MASK	(S_SYNC | S_NOATIME | S_APPEND | S_IMMUTABLE)
-/* vfs inode flags read from overlay.protattr xattr to ovl inode */
+ 
 #define OVL_PROT_I_FLAGS_MASK	(S_APPEND | S_IMMUTABLE)
 
-/*
- * fileattr flags copied from lower to upper inode on copy up.
- * We cannot copy up immutable/append-only flags, because that would prevent
- * linking temp inode to upper dir, so we store them in xattr instead.
- */
+ 
 #define OVL_COPY_FS_FLAGS_MASK	(FS_SYNC_FL | FS_NOATIME_FL)
 #define OVL_COPY_FSX_FLAGS_MASK	(FS_XFLAG_SYNC | FS_XFLAG_NOATIME)
 #define OVL_PROT_FS_FLAGS_MASK  (FS_APPEND_FL | FS_IMMUTABLE_FL)
@@ -782,7 +746,7 @@ static inline void ovl_copyflags(struct inode *from, struct inode *to)
 	inode_set_flags(to, from->i_flags & mask, mask);
 }
 
-/* dir.c */
+ 
 extern const struct inode_operations ovl_dir_inode_operations;
 int ovl_cleanup_and_whiteout(struct ovl_fs *ofs, struct inode *dir,
 			     struct dentry *dentry);
@@ -805,7 +769,7 @@ struct dentry *ovl_lookup_temp(struct ovl_fs *ofs, struct dentry *workdir);
 struct dentry *ovl_create_temp(struct ovl_fs *ofs, struct dentry *workdir,
 			       struct ovl_cattr *attr);
 
-/* file.c */
+ 
 extern const struct file_operations ovl_file_operations;
 int __init ovl_aio_request_cache_init(void);
 void ovl_aio_request_cache_destroy(void);
@@ -815,7 +779,7 @@ int ovl_fileattr_get(struct dentry *dentry, struct fileattr *fa);
 int ovl_fileattr_set(struct mnt_idmap *idmap,
 		     struct dentry *dentry, struct fileattr *fa);
 
-/* copy_up.c */
+ 
 int ovl_copy_up(struct dentry *dentry);
 int ovl_copy_up_with_data(struct dentry *dentry);
 int ovl_maybe_copy_up(struct dentry *dentry, int flags);
@@ -826,14 +790,14 @@ struct ovl_fh *ovl_encode_real_fh(struct ovl_fs *ofs, struct dentry *real,
 int ovl_set_origin(struct ovl_fs *ofs, struct dentry *lower,
 		   struct dentry *upper);
 
-/* export.c */
+ 
 extern const struct export_operations ovl_export_operations;
 extern const struct export_operations ovl_export_fid_operations;
 
-/* super.c */
+ 
 int ovl_fill_super(struct super_block *sb, struct fs_context *fc);
 
-/* Will this overlay be forced to mount/remount ro? */
+ 
 static inline bool ovl_force_readonly(struct ovl_fs *ofs)
 {
 	return (!ovl_upper_mnt(ofs) || !ofs->workdir);

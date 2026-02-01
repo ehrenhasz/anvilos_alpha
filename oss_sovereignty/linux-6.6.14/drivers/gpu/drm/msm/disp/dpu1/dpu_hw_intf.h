@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022-2023 Qualcomm Innovation Center, Inc. All rights reserved.
- * Copyright (c) 2015-2018, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DPU_HW_INTF_H
 #define _DPU_HW_INTF_H
@@ -13,12 +10,12 @@
 
 struct dpu_hw_intf;
 
-/* intf timing settings */
+ 
 struct dpu_hw_intf_timing_params {
-	u32 width;		/* active width */
-	u32 height;		/* active height */
-	u32 xres;		/* Display panel width */
-	u32 yres;		/* Display panel height */
+	u32 width;		 
+	u32 height;		 
+	u32 xres;		 
+	u32 yres;		 
 
 	u32 h_back_porch;
 	u32 h_front_porch;
@@ -37,45 +34,22 @@ struct dpu_hw_intf_timing_params {
 
 struct dpu_hw_intf_prog_fetch {
 	u8 enable;
-	/* vsync counter for the front porch pixel line */
+	 
 	u32 fetch_start;
 };
 
 struct dpu_hw_intf_status {
-	u8 is_en;		/* interface timing engine is enabled or not */
-	u8 is_prog_fetch_en;	/* interface prog fetch counter is enabled or not */
-	u32 frame_count;	/* frame count since timing engine enabled */
-	u32 line_count;		/* current line count including blanking */
+	u8 is_en;		 
+	u8 is_prog_fetch_en;	 
+	u32 frame_count;	 
+	u32 line_count;		 
 };
 
 struct dpu_hw_intf_cmd_mode_cfg {
-	u8 data_compress;	/* enable data compress between dpu and dsi */
+	u8 data_compress;	 
 };
 
-/**
- * struct dpu_hw_intf_ops : Interface to the interface Hw driver functions
- *  Assumption is these functions will be called after clocks are enabled
- * @ setup_timing_gen : programs the timing engine
- * @ setup_prog_fetch : enables/disables the programmable fetch logic
- * @ enable_timing: enable/disable timing engine
- * @ get_status: returns if timing engine is enabled or not
- * @ get_line_count: reads current vertical line counter
- * @bind_pingpong_blk: enable/disable the connection with pingpong which will
- *                     feed pixels to this interface
- * @setup_misr: enable/disable MISR
- * @collect_misr: read MISR signature
- * @enable_tearcheck:           Enables vsync generation and sets up init value of read
- *                              pointer and programs the tear check configuration
- * @disable_tearcheck:          Disables tearcheck block
- * @connect_external_te:        Read, modify, write to either set or clear listening to external TE
- *                              Return: 1 if TE was originally connected, 0 if not, or -ERROR
- * @get_vsync_info:             Provides the programmed and current line_count
- * @setup_autorefresh:          Configure and enable the autorefresh config
- * @get_autorefresh:            Retrieve autorefresh config from hardware
- *                              Return: 0 on success, -ETIMEDOUT on timeout
- * @vsync_sel:                  Select vsync signal for tear-effect configuration
- * @program_intf_cmd_cfg:       Program the DPU to interface datapath for command mode
- */
+ 
 struct dpu_hw_intf_ops {
 	void (*setup_timing_gen)(struct dpu_hw_intf *intf,
 			const struct dpu_hw_intf_timing_params *p,
@@ -97,7 +71,7 @@ struct dpu_hw_intf_ops {
 	void (*setup_misr)(struct dpu_hw_intf *intf);
 	int (*collect_misr)(struct dpu_hw_intf *intf, u32 *misr_value);
 
-	// Tearcheck on INTF since DPU 5.0.0
+	
 
 	int (*enable_tearcheck)(struct dpu_hw_intf *intf, struct dpu_hw_tear_check *cfg);
 
@@ -107,9 +81,7 @@ struct dpu_hw_intf_ops {
 
 	void (*vsync_sel)(struct dpu_hw_intf *intf, u32 vsync_source);
 
-	/**
-	 * Disable autorefresh if enabled
-	 */
+	 
 	void (*disable_autorefresh)(struct dpu_hw_intf *intf, uint32_t encoder_id, u16 vdisplay);
 
 	void (*program_intf_cmd_cfg)(struct dpu_hw_intf *intf,
@@ -119,28 +91,19 @@ struct dpu_hw_intf_ops {
 struct dpu_hw_intf {
 	struct dpu_hw_blk_reg_map hw;
 
-	/* intf */
+	 
 	enum dpu_intf idx;
 	const struct dpu_intf_cfg *cap;
 
-	/* ops */
+	 
 	struct dpu_hw_intf_ops ops;
 };
 
-/**
- * dpu_hw_intf_init() - Initializes the INTF driver for the passed
- * interface catalog entry.
- * @cfg:  interface catalog entry for which driver object is required
- * @addr: mapped register io address of MDP
- * @mdss_rev: dpu core's major and minor versions
- */
+ 
 struct dpu_hw_intf *dpu_hw_intf_init(const struct dpu_intf_cfg *cfg,
 		void __iomem *addr, const struct dpu_mdss_version *mdss_rev);
 
-/**
- * dpu_hw_intf_destroy(): Destroys INTF driver context
- * @intf:   Pointer to INTF driver context
- */
+ 
 void dpu_hw_intf_destroy(struct dpu_hw_intf *intf);
 
-#endif /*_DPU_HW_INTF_H */
+#endif  

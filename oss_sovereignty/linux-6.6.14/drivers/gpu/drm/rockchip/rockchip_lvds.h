@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) Fuzhou Rockchip Electronics Co.Ltd
- * Author:
- *      Sandy Huang <hjc@rock-chips.com>
- *      Mark Yao <mark.yao@rock-chips.com>
- */
+ 
+ 
 
 #ifndef _ROCKCHIP_LVDS_
 #define _ROCKCHIP_LVDS_
@@ -75,7 +70,7 @@
 #define RK3288_LVDS_GRF_SOC_CON6		0x025C
 #define RK3288_LVDS_GRF_SOC_CON7		0x0260
 
-/* fbdiv value is split over 2 registers, with bit8 in reg2 */
+ 
 #define RK3288_LVDS_PLL_FBDIV_REG2(_fbd) \
 		(_fbd & BIT(8) ? RK3288_LVDS_CH0_REG2_PLL_FBDIV8 : 0)
 #define RK3288_LVDS_PLL_FBDIV_REG3(_fbd) \
@@ -120,4 +115,4 @@
 #define   PX30_LVDS_P2S_EN(val)			HIWORD_UPDATE(val,  6,  6)
 #define   PX30_LVDS_VOP_SEL(val)		HIWORD_UPDATE(val,  1,  1)
 
-#endif /* _ROCKCHIP_LVDS_ */
+#endif  

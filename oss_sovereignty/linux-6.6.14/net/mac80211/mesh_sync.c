@@ -1,43 +1,25 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2011-2012, Pavel Zubarev <pavel.zubarev@gmail.com>
- * Copyright 2011-2012, Marco Porsch <marco.porsch@s2005.tu-chemnitz.de>
- * Copyright 2011-2012, cozybit Inc.
- * Copyright (C) 2021 Intel Corporation
- */
+
+ 
 
 #include "ieee80211_i.h"
 #include "mesh.h"
 #include "driver-ops.h"
 
-/* This is not in the standard.  It represents a tolerable tsf drift below
- * which we do no TSF adjustment.
- */
+ 
 #define TOFFSET_MINIMUM_ADJUSTMENT 10
 
-/* This is not in the standard. It is a margin added to the
- * Toffset setpoint to mitigate TSF overcorrection
- * introduced by TSF adjustment latency.
- */
+ 
 #define TOFFSET_SET_MARGIN 20
 
-/* This is not in the standard.  It represents the maximum Toffset jump above
- * which we'll invalidate the Toffset setpoint and choose a new setpoint.  This
- * could be, for instance, in case a neighbor is restarted and its TSF counter
- * reset.
- */
-#define TOFFSET_MAXIMUM_ADJUSTMENT 800		/* 0.8 ms */
+ 
+#define TOFFSET_MAXIMUM_ADJUSTMENT 800		 
 
 struct sync_method {
 	u8 method;
 	struct ieee80211_mesh_sync_ops ops;
 };
 
-/**
- * mesh_peer_tbtt_adjusting - check if an mp is currently adjusting its TBTT
- *
- * @cfg: mesh config element from the mesh peer (or %NULL)
- */
+ 
 static bool mesh_peer_tbtt_adjusting(const struct ieee80211_meshconf_ie *cfg)
 {
 	return cfg &&
@@ -48,7 +30,7 @@ void mesh_sync_adjust_tsf(struct ieee80211_sub_if_data *sdata)
 {
 	struct ieee80211_local *local = sdata->local;
 	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
-	/* sdata->vif.bss_conf.beacon_int in 1024us units, 0.04% */
+	 
 	u64 beacon_int_fraction = sdata->vif.bss_conf.beacon_int * 1024 / 2500;
 	u64 tsf;
 	u64 tsfdelta;
@@ -90,16 +72,11 @@ mesh_sync_offset_rx_bcn_presp(struct ieee80211_sub_if_data *sdata, u16 stype,
 
 	WARN_ON(ifmsh->mesh_sp_id != IEEE80211_SYNC_METHOD_NEIGHBOR_OFFSET);
 
-	/* standard mentions only beacons */
+	 
 	if (stype != IEEE80211_STYPE_BEACON)
 		return;
 
-	/*
-	 * Get time when timestamp field was received.  If we don't
-	 * have rx timestamps, then use current tsf as an approximation.
-	 * drv_get_tsf() must be called before entering the rcu-read
-	 * section.
-	 */
+	 
 	if (ieee80211_have_rx_timestamp(rx_status))
 		t_r = ieee80211_calculate_rx_timestamp(local, rx_status,
 						       len + FCS_LEN, 24);
@@ -111,11 +88,7 @@ mesh_sync_offset_rx_bcn_presp(struct ieee80211_sub_if_data *sdata, u16 stype,
 	if (!sta)
 		goto no_sync;
 
-	/* check offset sync conditions (13.13.2.2.1)
-	 *
-	 * TODO also sync to
-	 * dot11MeshNbrOffsetMaxNeighbor non-peer non-MBSS neighbors
-	 */
+	 
 
 	if (mesh_peer_tbtt_adjusting(mesh_cfg)) {
 		msync_dbg(sdata, "STA %pM : is adjusting TBTT\n",
@@ -123,7 +96,7 @@ mesh_sync_offset_rx_bcn_presp(struct ieee80211_sub_if_data *sdata, u16 stype,
 		goto no_sync;
 	}
 
-	/* Timing offset calculation (see 13.13.2.2.2) */
+	 
 	t_t = le64_to_cpu(mgmt->u.beacon.timestamp);
 	sta->mesh->t_offset = t_t - t_r;
 
@@ -173,11 +146,7 @@ static void mesh_sync_offset_adjust_tsf(struct ieee80211_sub_if_data *sdata,
 	spin_lock_bh(&ifmsh->sync_offset_lock);
 
 	if (ifmsh->sync_offset_clockdrift_max > TOFFSET_MINIMUM_ADJUSTMENT) {
-		/* Since ajusting the tsf here would
-		 * require a possibly blocking call
-		 * to the driver tsf setter, we punt
-		 * the tsf adjustment to the mesh tasklet
-		 */
+		 
 		msync_dbg(sdata,
 			  "TSF : kicking off TSF adjustment with clockdrift_max=%lld\n",
 			  ifmsh->sync_offset_clockdrift_max);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Process version 3 NFS requests.
- *
- * Copyright (C) 1996, 1997, 1998 Olaf Kirch <okir@monad.swb.de>
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/ext2_fs.h>
@@ -18,28 +14,24 @@
 #define NFSDDBG_FACILITY		NFSDDBG_PROC
 
 static int	nfs3_ftypes[] = {
-	0,			/* NF3NON */
-	S_IFREG,		/* NF3REG */
-	S_IFDIR,		/* NF3DIR */
-	S_IFBLK,		/* NF3BLK */
-	S_IFCHR,		/* NF3CHR */
-	S_IFLNK,		/* NF3LNK */
-	S_IFSOCK,		/* NF3SOCK */
-	S_IFIFO,		/* NF3FIFO */
+	0,			 
+	S_IFREG,		 
+	S_IFDIR,		 
+	S_IFBLK,		 
+	S_IFCHR,		 
+	S_IFLNK,		 
+	S_IFSOCK,		 
+	S_IFIFO,		 
 };
 
-/*
- * NULL call.
- */
+ 
 static __be32
 nfsd3_proc_null(struct svc_rqst *rqstp)
 {
 	return rpc_success;
 }
 
-/*
- * Get a file's attributes
- */
+ 
 static __be32
 nfsd3_proc_getattr(struct svc_rqst *rqstp)
 {
@@ -60,9 +52,7 @@ out:
 	return rpc_success;
 }
 
-/*
- * Set a file's attributes
- */
+ 
 static __be32
 nfsd3_proc_setattr(struct svc_rqst *rqstp)
 {
@@ -81,9 +71,7 @@ nfsd3_proc_setattr(struct svc_rqst *rqstp)
 	return rpc_success;
 }
 
-/*
- * Look up a path name component
- */
+ 
 static __be32
 nfsd3_proc_lookup(struct svc_rqst *rqstp)
 {
@@ -104,9 +92,7 @@ nfsd3_proc_lookup(struct svc_rqst *rqstp)
 	return rpc_success;
 }
 
-/*
- * Check file access
- */
+ 
 static __be32
 nfsd3_proc_access(struct svc_rqst *rqstp)
 {
@@ -123,9 +109,7 @@ nfsd3_proc_access(struct svc_rqst *rqstp)
 	return rpc_success;
 }
 
-/*
- * Read a symlink.
- */
+ 
 static __be32
 nfsd3_proc_readlink(struct svc_rqst *rqstp)
 {
@@ -134,7 +118,7 @@ nfsd3_proc_readlink(struct svc_rqst *rqstp)
 
 	dprintk("nfsd: READLINK(3) %s\n", SVCFH_fmt(&argp->fh));
 
-	/* Read the symlink. */
+	 
 	fh_copy(&resp->fh, &argp->fh);
 	resp->len = NFS3_MAXPATHLEN;
 	resp->pages = rqstp->rq_next_page++;
@@ -143,9 +127,7 @@ nfsd3_proc_readlink(struct svc_rqst *rqstp)
 	return rpc_success;
 }
 
-/*
- * Read a portion of a file.
- */
+ 
 static __be32
 nfsd3_proc_read(struct svc_rqst *rqstp)
 {
@@ -166,10 +148,7 @@ nfsd3_proc_read(struct svc_rqst *rqstp)
 
 	resp->pages = rqstp->rq_next_page;
 
-	/* Obtain buffer pointer for payload.
-	 * 1 (status) + 22 (post_op_attr) + 1 (count) + 1 (eof)
-	 * + 1 (xdr opaque byte count) = 26
-	 */
+	 
 	resp->count = argp->count;
 	svc_reserve_auth(rqstp, ((1 + NFS3_POST_OP_ATTR_WORDS + 3)<<2) + resp->count +4);
 
@@ -179,9 +158,7 @@ nfsd3_proc_read(struct svc_rqst *rqstp)
 	return rpc_success;
 }
 
-/*
- * Write data to a file
- */
+ 
 static __be32
 nfsd3_proc_write(struct svc_rqst *rqstp)
 {
@@ -212,13 +189,7 @@ nfsd3_proc_write(struct svc_rqst *rqstp)
 	return rpc_success;
 }
 
-/*
- * Implement NFSv3's unchecked, guarded, and exclusive CREATE
- * semantics for regular files. Except for the created file,
- * this operation is stateless on the server.
- *
- * Upon return, caller must release @fhp and @resfhp.
- */
+ 
 static __be32
 nfsd3_create_file(struct svc_rqst *rqstp, struct svc_fh *fhp,
 		  struct svc_fh *resfhp, struct nfsd3_createargs *argp)
@@ -272,11 +243,7 @@ nfsd3_create_file(struct svc_rqst *rqstp, struct svc_fh *fhp,
 	if (argp->createmode == NFS3_CREATE_EXCLUSIVE) {
 		u32 *verifier = (u32 *)argp->verf;
 
-		/*
-		 * Solaris 7 gets confused (bugid 4218508) if these have
-		 * the high bit set, as do xfs filesystems without the
-		 * "bigtime" feature. So just clear the high bits.
-		 */
+		 
 		v_mtime = verifier[0] & 0x7fffffff;
 		v_atime = verifier[1] & 0x7fffffff;
 	}
@@ -317,7 +284,7 @@ nfsd3_create_file(struct svc_rqst *rqstp, struct svc_fh *fhp,
 	}
 	fh_fill_post_attrs(fhp);
 
-	/* A newly created file already has a file size of zero. */
+	 
 	if ((iap->ia_valid & ATTR_SIZE) && (iap->ia_size == 0))
 		iap->ia_valid &= ~ATTR_SIZE;
 	if (argp->createmode == NFS3_CREATE_EXCLUSIVE) {
@@ -359,9 +326,7 @@ nfsd3_proc_create(struct svc_rqst *rqstp)
 	return rpc_success;
 }
 
-/*
- * Make directory. This operation is not idempotent.
- */
+ 
 static __be32
 nfsd3_proc_mkdir(struct svc_rqst *rqstp)
 {
@@ -424,9 +389,7 @@ out:
 	return rpc_success;
 }
 
-/*
- * Make socket/fifo/device.
- */
+ 
 static __be32
 nfsd3_proc_mknod(struct svc_rqst *rqstp)
 {
@@ -465,9 +428,7 @@ out:
 	return rpc_success;
 }
 
-/*
- * Remove file/fifo/socket etc.
- */
+ 
 static __be32
 nfsd3_proc_remove(struct svc_rqst *rqstp)
 {
@@ -479,16 +440,14 @@ nfsd3_proc_remove(struct svc_rqst *rqstp)
 				argp->len,
 				argp->name);
 
-	/* Unlink. -S_IFDIR means file must not be a directory */
+	 
 	fh_copy(&resp->fh, &argp->fh);
 	resp->status = nfsd_unlink(rqstp, &resp->fh, -S_IFDIR,
 				   argp->name, argp->len);
 	return rpc_success;
 }
 
-/*
- * Remove a directory
- */
+ 
 static __be32
 nfsd3_proc_rmdir(struct svc_rqst *rqstp)
 {
@@ -559,7 +518,7 @@ static void nfsd3_init_dirlist_pages(struct svc_rqst *rqstp,
 
 	memset(buf, 0, sizeof(*buf));
 
-	/* Reserve room for the NULL ptr & eof flag (-2 words) */
+	 
 	buf->buflen = clamp(count, (u32)(XDR_UNIT * 2), sendbuf);
 	buf->buflen -= XDR_UNIT * 2;
 	buf->pages = rqstp->rq_next_page;
@@ -568,9 +527,7 @@ static void nfsd3_init_dirlist_pages(struct svc_rqst *rqstp,
 	xdr_init_encode_pages(xdr, buf, buf->pages,  NULL);
 }
 
-/*
- * Read a portion of a directory.
- */
+ 
 static __be32
 nfsd3_proc_readdir(struct svc_rqst *rqstp)
 {
@@ -594,16 +551,13 @@ nfsd3_proc_readdir(struct svc_rqst *rqstp)
 	memcpy(resp->verf, argp->verf, 8);
 	nfs3svc_encode_cookie3(resp, offset);
 
-	/* Recycle only pages that were part of the reply */
+	 
 	rqstp->rq_next_page = resp->xdr.page_ptr + 1;
 
 	return rpc_success;
 }
 
-/*
- * Read a portion of a directory, including file handles and attrs.
- * For now, we choose to ignore the dircount parameter.
- */
+ 
 static __be32
 nfsd3_proc_readdirplus(struct svc_rqst *rqstp)
 {
@@ -637,16 +591,14 @@ nfsd3_proc_readdirplus(struct svc_rqst *rqstp)
 	memcpy(resp->verf, argp->verf, 8);
 	nfs3svc_encode_cookie3(resp, offset);
 
-	/* Recycle only pages that were part of the reply */
+	 
 	rqstp->rq_next_page = resp->xdr.page_ptr + 1;
 
 out:
 	return rpc_success;
 }
 
-/*
- * Get file system stats
- */
+ 
 static __be32
 nfsd3_proc_fsstat(struct svc_rqst *rqstp)
 {
@@ -661,9 +613,7 @@ nfsd3_proc_fsstat(struct svc_rqst *rqstp)
 	return rpc_success;
 }
 
-/*
- * Get file system info
- */
+ 
 static __be32
 nfsd3_proc_fsinfo(struct svc_rqst *rqstp)
 {
@@ -687,13 +637,11 @@ nfsd3_proc_fsinfo(struct svc_rqst *rqstp)
 	resp->status = fh_verify(rqstp, &argp->fh, 0,
 				 NFSD_MAY_NOP | NFSD_MAY_BYPASS_GSS_ON_ROOT);
 
-	/* Check special features of the file system. May request
-	 * different read/write sizes for file systems known to have
-	 * problems with large blocks */
+	 
 	if (resp->status == nfs_ok) {
 		struct super_block *sb = argp->fh.fh_dentry->d_sb;
 
-		/* Note that we don't care for remote fs's here */
+		 
 		if (sb->s_magic == MSDOS_SUPER_MAGIC) {
 			resp->f_properties = NFS3_FSF_BILLYBOY;
 		}
@@ -704,9 +652,7 @@ nfsd3_proc_fsinfo(struct svc_rqst *rqstp)
 	return rpc_success;
 }
 
-/*
- * Get pathconf info for the specified file
- */
+ 
 static __be32
 nfsd3_proc_pathconf(struct svc_rqst *rqstp)
 {
@@ -716,9 +662,9 @@ nfsd3_proc_pathconf(struct svc_rqst *rqstp)
 	dprintk("nfsd: PATHCONF(3) %s\n",
 				SVCFH_fmt(&argp->fh));
 
-	/* Set default pathconf */
-	resp->p_link_max = 255;		/* at least */
-	resp->p_name_max = 255;		/* at least */
+	 
+	resp->p_link_max = 255;		 
+	resp->p_name_max = 255;		 
 	resp->p_no_trunc = 0;
 	resp->p_chown_restricted = 1;
 	resp->p_case_insensitive = 0;
@@ -729,7 +675,7 @@ nfsd3_proc_pathconf(struct svc_rqst *rqstp)
 	if (resp->status == nfs_ok) {
 		struct super_block *sb = argp->fh.fh_dentry->d_sb;
 
-		/* Note that we don't care for remote fs's here */
+		 
 		switch (sb->s_magic) {
 		case EXT2_SUPER_MAGIC:
 			resp->p_link_max = EXT2_LINK_MAX;
@@ -746,9 +692,7 @@ nfsd3_proc_pathconf(struct svc_rqst *rqstp)
 	return rpc_success;
 }
 
-/*
- * Commit a file (range) to stable storage.
- */
+ 
 static __be32
 nfsd3_proc_commit(struct svc_rqst *rqstp)
 {
@@ -774,10 +718,7 @@ out:
 }
 
 
-/*
- * NFSv3 Server procedures.
- * Only the results of non-idempotent operations are cached.
- */
+ 
 #define nfs3svc_encode_attrstatres	nfs3svc_encode_attrstat
 #define nfs3svc_encode_wccstatres	nfs3svc_encode_wccstat
 #define nfsd3_mkdirargs			nfsd3_createargs
@@ -787,11 +728,11 @@ out:
 #define nfsd3_wccstatres		nfsd3_attrstat
 #define nfsd3_createres			nfsd3_diropres
 
-#define ST 1		/* status*/
-#define FH 17		/* filehandle with length */
-#define AT 21		/* attributes */
-#define pAT (1+AT)	/* post attributes - conditional */
-#define WC (7+pAT)	/* WCC attributes */
+#define ST 1		 
+#define FH 17		 
+#define AT 21		 
+#define pAT (1+AT)	 
+#define WC (7+pAT)	 
 
 static const struct svc_procedure nfsd_procedures3[22] = {
 	[NFS3PROC_NULL] = {

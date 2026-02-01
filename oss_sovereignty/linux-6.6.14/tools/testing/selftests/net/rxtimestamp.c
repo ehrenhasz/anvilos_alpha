@@ -84,7 +84,7 @@ static struct test_case test_cases[] = {
 		{}
 	},
 	{
-		/* Loopback device does not support hw timestamps. */
+		 
 		{ .so_timestamping = SOF_TIMESTAMPING_RX_HARDWARE },
 		{}
 	},
@@ -295,7 +295,7 @@ bool run_test_case(struct socket_type *s, int test_num, char ip_version,
 		addr.addr4.sin_port = htons(port);
 		addr_size = sizeof(addr.addr4);
 		if (s->type == SOCK_RAW)
-			read_size += 20;  /* for IPv4 header */
+			read_size += 20;   
 	} else {
 		addr.addr6.sin6_family = AF_INET6;
 		addr.addr6.sin6_addr = in6addr_loopback;
@@ -332,7 +332,7 @@ bool run_test_case(struct socket_type *s, int test_num, char ip_version,
 	}
 
 	config_so_flags(rcv, test_cases[test_num].sockopt);
-	usleep(20000); /* setsockopt for SO_TIMESTAMPING is asynchronous */
+	usleep(20000);  
 	do_send(src);
 
 	failed = do_recv(rcv, read_size, test_cases[test_num].expected);

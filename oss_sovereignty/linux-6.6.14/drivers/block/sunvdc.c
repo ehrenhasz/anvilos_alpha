@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* sunvdc.c: Sun LDOM Virtual Disk Client.
- *
- * Copyright (C) 2007, 2008 David S. Miller <davem@davemloft.net>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -74,9 +71,7 @@ struct vdc_port {
 	struct delayed_work	ldc_reset_timer_work;
 	struct work_struct	ldc_reset_work;
 
-	/* The server fills these in for us in the disk attribute
-	 * ACK packet.
-	 */
+	 
 	u64			operations;
 	u32			vdisk_size;
 	u8			vdisk_type;
@@ -97,7 +92,7 @@ static inline struct vdc_port *to_vdc_port(struct vio_driver_state *vio)
 	return container_of(vio, struct vdc_port, vio);
 }
 
-/* Ordered from largest major to lowest */
+ 
 static struct vio_version vdc_versions[] = {
 	{ .major = 1, .minor = 2 },
 	{ .major = 1, .minor = 1 },
@@ -135,10 +130,7 @@ static int vdc_getgeo(struct block_device *bdev, struct hd_geometry *geo)
 	return 0;
 }
 
-/* Add ioctl/CDROM_GET_CAPABILITY to support cdrom_id in udev
- * when vdisk_mtype is VD_MEDIA_TYPE_CD or VD_MEDIA_TYPE_DVD.
- * Needed to be able to install inside an ldom from an iso image.
- */
+ 
 static int vdc_ioctl(struct block_device *bdev, blk_mode_t mode,
 		     unsigned command, unsigned long argument)
 {
@@ -180,10 +172,7 @@ static void vdc_blk_queue_start(struct vdc_port *port)
 {
 	struct vio_dring_state *dr = &port->vio.drings[VIO_DRIVER_TX_RING];
 
-	/* restart blk queue when ring is half emptied. also called after
-	 * handshake completes, so check for initial handshake before we've
-	 * allocated a disk.
-	 */
+	 
 	if (port->disk && vdc_tx_dring_avail(dr) * 100 / VDC_TX_RING_SIZE >= 50)
 		blk_mq_start_stopped_hw_queues(port->disk->queue, true);
 }
@@ -348,7 +337,7 @@ static int vdc_ack(struct vdc_port *port, void *msgbuf)
 
 static int vdc_nack(struct vdc_port *port, void *msgbuf)
 {
-	/* XXX Implement me XXX */
+	 
 	return 0;
 }
 
@@ -517,9 +506,7 @@ static int __send_request(struct request *req)
 	desc->size = len;
 	desc->ncookies = err;
 
-	/* This has to be a non-SMP write barrier because we are writing
-	 * to memory which is shared with the peer LDOM.
-	 */
+	 
 	wmb();
 	desc->hdr.state = VIO_DESC_READY;
 
@@ -547,9 +534,7 @@ static blk_status_t vdc_queue_rq(struct blk_mq_hw_ctx *hctx,
 
 	spin_lock_irqsave(&port->vio.lock, flags);
 
-	/*
-	 * Doing drain, just end the request in error
-	 */
+	 
 	if (unlikely(port->drain)) {
 		spin_unlock_irqrestore(&port->vio.lock, flags);
 		return BLK_STS_IOERR;
@@ -656,9 +641,7 @@ static int generic_request(struct vdc_port *port, u8 op, void *buf, int len)
 
 	dr = &port->vio.drings[VIO_DRIVER_TX_RING];
 
-	/* XXX If we want to use this code generically we have to
-	 * XXX handle TX ring exhaustion etc.
-	 */
+	 
 	desc = vio_dring_cur(dr);
 
 	err = ldc_map_single(port->vio.lp, req_buf, op_len,
@@ -683,9 +666,7 @@ static int generic_request(struct vdc_port *port, u8 op, void *buf, int len)
 	desc->size = op_len;
 	desc->ncookies = err;
 
-	/* This has to be a non-SMP write barrier because we are writing
-	 * to memory which is shared with the peer LDOM.
-	 */
+	 
 	wmb();
 	desc->hdr.state = VIO_DESC_READY;
 
@@ -792,16 +773,12 @@ static int probe_disk(struct vdc_port *port)
 	if (err)
 		return err;
 
-	/* Using version 1.2 means vdisk_phys_blksz should be set unless the
-	 * disk is reserved by another system.
-	 */
+	 
 	if (vdc_version_supported(port, 1, 2) && !port->vdisk_phys_blksz)
 		return -ENODEV;
 
 	if (vdc_version_supported(port, 1, 1)) {
-		/* vdisk_size should be set during the handshake, if it wasn't
-		 * then the underlying disk is reserved by another system
-		 */
+		 
 		if (port->vdisk_size == -1)
 			return -ENODEV;
 	} else {
@@ -835,7 +812,7 @@ static int probe_disk(struct vdc_port *port)
 	port->disk = g;
 	q = g->queue;
 
-	/* Each segment in a request is up to an aligned page in size. */
+	 
 	blk_queue_segment_boundary(q, PAGE_SIZE - 1);
 	blk_queue_max_segment_size(q, PAGE_SIZE);
 
@@ -927,24 +904,14 @@ static int vdc_device_probed(struct device *dev, void *arg)
 	if ((vdev->dev_no == port_data->dev_no) &&
 	    (!(strcmp((char *)&vdev->type, port_data->type))) &&
 		dev_get_drvdata(dev)) {
-		/* This device has already been configured
-		 * by vdc_port_probe()
-		 */
+		 
 		return 1;
 	} else {
 		return 0;
 	}
 }
 
-/* Determine whether the VIO device is part of an mpgroup
- * by locating all the virtual-device-port nodes associated
- * with the parent virtual-device node for the VIO device
- * and checking whether any of these nodes are vdc-ports
- * which have already been configured.
- *
- * Returns true if this device is part of an mpgroup and has
- * already been probed.
- */
+ 
 static bool vdc_port_mpgroup_check(struct vio_dev *vdev)
 {
 	struct vdc_check_port_data port_data;
@@ -982,7 +949,7 @@ static int vdc_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
 		goto err_out_release_mdesc;
 	}
 
-	/* Check if this device is part of an mpgroup */
+	 
 	if (vdc_port_mpgroup_check(vdev)) {
 		printk(KERN_WARNING
 			"VIO: Ignoring extra vdisk port %s",
@@ -1006,10 +973,7 @@ static int vdc_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
 			 VDCBLK_NAME "%c", 'a' + ((int)vdev->dev_no % 26));
 	port->vdisk_size = -1;
 
-	/* Actual wall time may be double due to do_generic_file_read() doing
-	 * a readahead I/O first, and once that fails it will try to read a
-	 * single page.
-	 */
+	 
 	ldc_timeout = mdesc_get_property(hp, vdev->mp, "vdc-timeout", NULL);
 	port->ldc_timeout = ldc_timeout ? *ldc_timeout : 0;
 	INIT_DELAYED_WORK(&port->ldc_reset_timer_work, vdc_ldc_reset_timer_work);
@@ -1037,9 +1001,7 @@ static int vdc_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
 	if (err)
 		goto err_out_free_tx_ring;
 
-	/* Note that the device driver_data is used to determine
-	 * whether the port has been probed.
-	 */
+	 
 	dev_set_drvdata(&vdev->dev, port);
 
 	mdesc_release(hp);
@@ -1113,10 +1075,7 @@ static void vdc_queue_drain(struct vdc_port *port)
 {
 	struct request_queue *q = port->disk->queue;
 
-	/*
-	 * Mark the queue as draining, then freeze/quiesce to ensure
-	 * that all existing requests are seen in ->queue_rq() and killed
-	 */
+	 
 	port->drain = 1;
 	spin_unlock_irq(&port->vio.lock);
 

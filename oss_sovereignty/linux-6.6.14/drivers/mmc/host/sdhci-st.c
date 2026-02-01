@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Support for SDHCI on STMicroelectronics SoCs
- *
- * Copyright (C) 2014 STMicroelectronics Ltd
- * Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
- * Contributors: Peter Griffin <peter.griffin@linaro.org>
- *
- * Based on sdhci-cns3xxx.c
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/of.h>
@@ -23,7 +15,7 @@ struct st_mmc_platform_data {
 	void __iomem *top_ioaddr;
 };
 
-/* MMCSS glue logic to setup the HC on some ST SoCs (e.g. STiH407 family) */
+ 
 
 #define ST_MMC_CCONFIG_REG_1		0x400
 #define ST_MMC_CCONFIG_TIMEOUT_CLK_UNIT	BIT(24)
@@ -79,7 +71,7 @@ struct st_mmc_platform_data {
 #define RETUNING_TIMER_CNT_MAX		0xf
 #define ST_MMC_CCONFIG_5_DEFAULT	0
 
-/* I/O configuration for Arasan IP */
+ 
 #define ST_MMC_GP_OUTPUT	0x450
 #define ST_MMC_GP_OUTPUT_CD	BIT(12)
 
@@ -87,10 +79,10 @@ struct st_mmc_platform_data {
 
 #define ST_TOP_MMC_DLY_FIX_OFF(x)	(x - 0x8)
 
-/* TOP config registers to manage static and dynamic delay */
+ 
 #define ST_TOP_MMC_TX_CLK_DLY			ST_TOP_MMC_DLY_FIX_OFF(0x8)
 #define ST_TOP_MMC_RX_CLK_DLY			ST_TOP_MMC_DLY_FIX_OFF(0xc)
-/* MMC delay control register */
+ 
 #define ST_TOP_MMC_DLY_CTRL			ST_TOP_MMC_DLY_FIX_OFF(0x18)
 #define ST_TOP_MMC_DLY_CTRL_DLL_BYPASS_CMD	BIT(0)
 #define ST_TOP_MMC_DLY_CTRL_DLL_BYPASS_PH_SEL	BIT(1)
@@ -99,12 +91,12 @@ struct st_mmc_platform_data {
 #define ST_TOP_MMC_DLY_CTRL_ATUNE_NOT_CFG_DLY	BIT(10)
 #define ST_TOP_MMC_START_DLL_LOCK		BIT(11)
 
-/* register to provide the phase-shift value for DLL */
+ 
 #define ST_TOP_MMC_TX_DLL_STEP_DLY		ST_TOP_MMC_DLY_FIX_OFF(0x1c)
 #define ST_TOP_MMC_RX_DLL_STEP_DLY		ST_TOP_MMC_DLY_FIX_OFF(0x20)
 #define ST_TOP_MMC_RX_CMD_STEP_DLY		ST_TOP_MMC_DLY_FIX_OFF(0x24)
 
-/* phase shift delay on the tx clk 2.188ns */
+ 
 #define ST_TOP_MMC_TX_DLL_STEP_DLY_VALID	0x6
 
 #define ST_TOP_MMC_DLY_MAX			0xf
@@ -114,10 +106,7 @@ struct st_mmc_platform_data {
 		 ST_TOP_MMC_DLY_CTRL_ATUNE_NOT_CFG_DLY | \
 		 ST_TOP_MMC_START_DLL_LOCK)
 
-/*
- * For clock speeds greater than 90MHz, we need to check that the
- * DLL procedure has finished before switching to ultra-speed modes.
- */
+ 
 #define	CLK_TO_CHECK_DLL_LOCK	90000000
 
 static inline void st_mmcss_set_static_delay(void __iomem *ioaddr)
@@ -130,15 +119,7 @@ static inline void st_mmcss_set_static_delay(void __iomem *ioaddr)
 			ioaddr + ST_TOP_MMC_TX_CLK_DLY);
 }
 
-/**
- * st_mmcss_cconfig: configure the Arasan HC inside the flashSS.
- * @np: dt device node.
- * @host: sdhci host
- * Description: this function is to configure the Arasan host controller.
- * On some ST SoCs, i.e. STiH407 family, the MMC devices inside a dedicated
- * flashSS sub-system which needs to be configured to be compliant to eMMC 4.5
- * or eMMC4.3.  This has to be done before registering the sdhci host.
- */
+ 
 static void st_mmcss_cconfig(struct device_node *np, struct sdhci_host *host)
 {
 	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
@@ -156,8 +137,7 @@ static void st_mmcss_cconfig(struct device_node *np, struct sdhci_host *host)
 	writel_relaxed(ST_MMC_CCONFIG_1_DEFAULT,
 			host->ioaddr + ST_MMC_CCONFIG_REG_1);
 
-	/* Set clock frequency, default to 50MHz if max-frequency is not
-	 * provided */
+	 
 
 	switch (mhost->f_max) {
 	case 200000000:
@@ -178,28 +158,25 @@ static void st_mmcss_cconfig(struct device_node *np, struct sdhci_host *host)
 	if (!mmc_card_is_removable(mhost))
 		cconf3 |= ST_MMC_CCONFIG_EMMC_SLOT_TYPE;
 	else
-		/* CARD _D ET_CTRL */
+		 
 		writel_relaxed(ST_MMC_GP_OUTPUT_CD,
 				host->ioaddr + ST_MMC_GP_OUTPUT);
 
 	if (mhost->caps & MMC_CAP_UHS_SDR50) {
-		/* use 1.8V */
+		 
 		cconf3 |= ST_MMC_CCONFIG_1P8_VOLT;
 		cconf4 |= ST_MMC_CCONFIG_SDR50;
-		/* Use tuning */
+		 
 		cconf5 |= ST_MMC_CCONFIG_TUNING_FOR_SDR50;
-		/* Max timeout for retuning */
+		 
 		cconf5 |= RETUNING_TIMER_CNT_MAX;
 	}
 
 	if (mhost->caps & MMC_CAP_UHS_SDR104) {
-		/*
-		 * SDR104 implies the HC can support HS200 mode, so
-		 * it's mandatory to use 1.8V
-		 */
+		 
 		cconf3 |= ST_MMC_CCONFIG_1P8_VOLT;
 		cconf4 |= ST_MMC_CCONFIG_SDR104;
-		/* Max timeout for retuning */
+		 
 		cconf5 |= RETUNING_TIMER_CNT_MAX;
 	}
 
@@ -226,7 +203,7 @@ static int st_mmcss_lock_dll(void __iomem *ioaddr)
 	unsigned long curr, value;
 	unsigned long finish = jiffies + HZ;
 
-	/* Checks if the DLL procedure is finished */
+	 
 	do {
 		curr = jiffies;
 		value = readl(ioaddr + ST_MMC_STATUS_R);
@@ -261,13 +238,10 @@ static void sdhci_st_set_uhs_signaling(struct sdhci_host *host,
 	u16 ctrl_2 = sdhci_readw(host, SDHCI_HOST_CONTROL2);
 	int ret = 0;
 
-	/* Select Bus Speed Mode for host */
+	 
 	ctrl_2 &= ~SDHCI_CTRL_UHS_MASK;
 	switch (uhs) {
-	/*
-	 * Set V18_EN -- UHS modes do not work without this.
-	 * does not change signaling voltage
-	 */
+	 
 
 	case MMC_TIMING_UHS_SDR12:
 		st_mmcss_set_static_delay(pdata->top_ioaddr);
@@ -311,7 +285,7 @@ static u32 sdhci_st_readl(struct sdhci_host *host, int reg)
 	switch (reg) {
 	case SDHCI_CAPABILITIES:
 		ret = readl_relaxed(host->ioaddr + reg);
-		/* Support 3.3V and 1.8V */
+		 
 		ret &= ~SDHCI_CAN_VDD_300;
 		break;
 	default:
@@ -356,7 +330,7 @@ static int sdhci_st_probe(struct platform_device *pdev)
 		return PTR_ERR(clk);
 	}
 
-	/* ICN clock isn't compulsory, but use it if it's provided. */
+	 
 	icnclk = devm_clk_get(&pdev->dev, "icn");
 	if (IS_ERR(icnclk))
 		icnclk = NULL;
@@ -395,7 +369,7 @@ static int sdhci_st_probe(struct platform_device *pdev)
 		goto err_icnclk;
 	}
 
-	/* Configure the FlashSS Top registers for setting eMMC TX/RX delay */
+	 
 	pdata->top_ioaddr = devm_platform_ioremap_resource_byname(pdev, "top-mmc-delay");
 	if (IS_ERR(pdata->top_ioaddr))
 		pdata->top_ioaddr = NULL;
@@ -403,7 +377,7 @@ static int sdhci_st_probe(struct platform_device *pdev)
 	pltfm_host->clk = clk;
 	pdata->icnclk = icnclk;
 
-	/* Configure the Arasan HC inside the flashSS */
+	 
 	st_mmcss_cconfig(np, host);
 
 	ret = sdhci_add_host(host);

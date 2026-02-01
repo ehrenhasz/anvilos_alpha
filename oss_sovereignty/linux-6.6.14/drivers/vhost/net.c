@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2009 Red Hat, Inc.
- * Author: Michael S. Tsirkin <mst@redhat.com>
- *
- * virtio-net server in host kernel.
- */
+
+ 
 
 #include <linux/compat.h>
 #include <linux/eventfd.h>
@@ -40,31 +36,24 @@ module_param(experimental_zcopytx, int, 0444);
 MODULE_PARM_DESC(experimental_zcopytx, "Enable Zero Copy TX;"
 		                       " 1 -Enable; 0 - Disable");
 
-/* Max number of bytes transferred before requeueing the job.
- * Using this limit prevents one virtqueue from starving others. */
+ 
 #define VHOST_NET_WEIGHT 0x80000
 
-/* Max number of packets transferred before requeueing the job.
- * Using this limit prevents one virtqueue from starving others with small
- * pkts.
- */
+ 
 #define VHOST_NET_PKT_WEIGHT 256
 
-/* MAX number of TX used buffers for outstanding zerocopy */
+ 
 #define VHOST_MAX_PEND 128
 #define VHOST_GOODCOPY_LEN 256
 
-/*
- * For transmit, used buffer len is unused; we override it to track buffer
- * status internally; used for zerocopy tx only.
- */
-/* Lower device DMA failed */
+ 
+ 
 #define VHOST_DMA_FAILED_LEN	((__force __virtio32)3)
-/* Lower device DMA done */
+ 
 #define VHOST_DMA_DONE_LEN	((__force __virtio32)2)
-/* Lower device DMA in progress */
+ 
 #define VHOST_DMA_IN_PROGRESS	((__force __virtio32)1)
-/* Buffer unused */
+ 
 #define VHOST_DMA_CLEAR_LEN	((__force __virtio32)0)
 
 #define VHOST_DMA_IS_DONE(len) ((__force u32)(len) >= (__force u32)VHOST_DMA_DONE_LEN)
@@ -88,11 +77,7 @@ enum {
 };
 
 struct vhost_net_ubuf_ref {
-	/* refcount follows semantics similar to kref:
-	 *  0: object is released
-	 *  1: no outstanding ubufs
-	 * >1: outstanding ubufs
-	 */
+	 
 	atomic_t refcount;
 	wait_queue_head_t wait;
 	struct vhost_virtqueue *vq;
@@ -109,23 +94,20 @@ struct vhost_net_virtqueue {
 	struct vhost_virtqueue vq;
 	size_t vhost_hlen;
 	size_t sock_hlen;
-	/* vhost zerocopy support fields below: */
-	/* last used idx for outstanding DMA zerocopy buffers */
+	 
+	 
 	int upend_idx;
-	/* For TX, first used idx for DMA done zerocopy buffers
-	 * For RX, number of batched heads
-	 */
+	 
 	int done_idx;
-	/* Number of XDP frames batched */
+	 
 	int batched_xdp;
-	/* an array of userspace buffers info */
+	 
 	struct ubuf_info_msgzc *ubuf_info;
-	/* Reference counting for outstanding ubufs.
-	 * Protected by vq mutex. Writers must also take device mutex. */
+	 
 	struct vhost_net_ubuf_ref *ubufs;
 	struct ptr_ring *rx_ring;
 	struct vhost_net_buf rxq;
-	/* Batched XDP buffs */
+	 
 	struct xdp_buff *xdp;
 };
 
@@ -133,17 +115,15 @@ struct vhost_net {
 	struct vhost_dev dev;
 	struct vhost_net_virtqueue vqs[VHOST_NET_VQ_MAX];
 	struct vhost_poll poll[VHOST_NET_VQ_MAX];
-	/* Number of TX recently submitted.
-	 * Protected by tx vq lock. */
+	 
 	unsigned tx_packets;
-	/* Number of times zerocopy TX recently failed.
-	 * Protected by tx vq lock. */
+	 
 	unsigned tx_zcopy_err;
-	/* Flush in progress. Protected by tx vq lock. */
+	 
 	bool tx_flush;
-	/* Private page frag */
+	 
 	struct page_frag page_frag;
-	/* Refcount bias of page frag */
+	 
 	int refcnt_bias;
 };
 
@@ -235,7 +215,7 @@ static struct vhost_net_ubuf_ref *
 vhost_net_ubuf_alloc(struct vhost_virtqueue *vq, bool zcopy)
 {
 	struct vhost_net_ubuf_ref *ubufs;
-	/* No zero copy backend? Nothing to count. */
+	 
 	if (!zcopy)
 		return NULL;
 	ubufs = kmalloc(sizeof(*ubufs), GFP_KERNEL);
@@ -333,9 +313,7 @@ static void vhost_net_tx_err(struct vhost_net *net)
 
 static bool vhost_net_tx_select_zcopy(struct vhost_net *net)
 {
-	/* TX flush waits for outstanding DMAs to be done.
-	 * Don't start new DMAs.
-	 */
+	 
 	return !net->tx_flush &&
 		net->tx_packets / 64 >= net->tx_zcopy_err;
 }
@@ -351,11 +329,7 @@ static bool vhost_sock_xdp(struct socket *sock)
 	return sock_flag(sock->sk, SOCK_XDP);
 }
 
-/* In case of DMA done not in order in lower device driver for some reason.
- * upend_idx is used to track end of used idx, done_idx is used to track head
- * of used idx. Once lower device DMA done contiguously, we will signal KVM
- * guest used idx.
- */
+ 
 static void vhost_zerocopy_signal_used(struct vhost_net *net,
 				       struct vhost_virtqueue *vq)
 {
@@ -392,18 +366,12 @@ static void vhost_zerocopy_callback(struct sk_buff *skb,
 
 	rcu_read_lock_bh();
 
-	/* set len to mark this desc buffers done DMA */
+	 
 	vq->heads[ubuf->desc].len = success ?
 		VHOST_DMA_DONE_LEN : VHOST_DMA_FAILED_LEN;
 	cnt = vhost_net_ubuf_put(ubufs);
 
-	/*
-	 * Trigger polling thread if guest stopped submitting new buffers:
-	 * in this case, the refcount after decrement will eventually reach 1.
-	 * We also trigger polling periodically after each 16 packets
-	 * (the value 16 here is more or less arbitrary, it's tuned to trigger
-	 * less than 10% of times).
-	 */
+	 
 	if (cnt <= 1 || !(cnt % 16))
 		vhost_poll_queue(&vq->poll);
 
@@ -480,10 +448,7 @@ static void vhost_tx_batch(struct vhost_net *net,
 	if (unlikely(err < 0)) {
 		vq_err(&nvq->vq, "Fail to batch sending packets\n");
 
-		/* free pages owned by XDP; since this is an unlikely error path,
-		 * keep it simple and avoid more complex bulk update for the
-		 * used pages
-		 */
+		 
 		for (i = 0; i < nvq->batched_xdp; ++i)
 			put_page(virt_to_head_page(nvq->xdp[i].data));
 		nvq->batched_xdp = 0;
@@ -529,10 +494,7 @@ static void vhost_net_busy_poll(struct vhost_net *net,
 	struct socket *sock;
 	struct vhost_virtqueue *vq = poll_rx ? tvq : rvq;
 
-	/* Try to hold the vq mutex of the paired virtqueue. We can't
-	 * use mutex_lock() here since we could not guarantee a
-	 * consistenet lock ordering.
-	 */
+	 
 	if (!mutex_trylock(&vq->mutex))
 		return;
 
@@ -563,7 +525,7 @@ static void vhost_net_busy_poll(struct vhost_net *net,
 
 	if (poll_rx || sock_has_rx_data(sock))
 		vhost_net_busy_poll_try_queue(net, vq);
-	else if (!poll_rx) /* On tx here, sock has no rx data. */
+	else if (!poll_rx)  
 		vhost_enable_notify(&net->dev, rvq);
 
 	mutex_unlock(&vq->mutex);
@@ -582,7 +544,7 @@ static int vhost_net_tx_get_vq_desc(struct vhost_net *net,
 				  out_num, in_num, NULL, NULL);
 
 	if (r == tvq->num && tvq->busyloop_timeout) {
-		/* Flush batched packets first */
+		 
 		if (!vhost_sock_zcopy(vhost_vq_get_backend(tvq)))
 			vhost_tx_batch(net, tnvq,
 				       vhost_vq_get_backend(tvq),
@@ -609,7 +571,7 @@ static bool vhost_exceeds_maxpend(struct vhost_net *net)
 static size_t init_iov_iter(struct vhost_virtqueue *vq, struct iov_iter *iter,
 			    size_t hdr_size, int out)
 {
-	/* Skip header. TODO: support TSO. */
+	 
 	size_t len = iov_length(vq->iov, out);
 
 	iov_iter_init(iter, ITER_SOURCE, vq->iov, out, len);
@@ -638,7 +600,7 @@ static int get_tx_bufs(struct vhost_net *net,
 		return -EFAULT;
 	}
 
-	/* Sanity check */
+	 
 	*len = init_iov_iter(vq, &msg->msg_iter, nvq->vhost_hlen, *out);
 	if (*len == 0) {
 		vq_err(vq, "Unexpected header len for TX: %zd expected %zd\n",
@@ -667,7 +629,7 @@ static bool vhost_net_page_frag_refill(struct vhost_net *net, unsigned int sz,
 	pfrag->offset = 0;
 	net->refcnt_bias = 0;
 	if (SKB_FRAG_PAGE_ORDER) {
-		/* Avoid direct reclaim but allow kswapd to wake */
+		 
 		pfrag->page = alloc_pages((gfp & ~__GFP_DIRECT_RECLAIM) |
 					  __GFP_COMP | __GFP_NOWARN |
 					  __GFP_NORETRY,
@@ -792,10 +754,10 @@ static void handle_tx_copy(struct vhost_net *net, struct socket *sock)
 
 		head = get_tx_bufs(net, nvq, &msg, &out, &in, &len,
 				   &busyloop_intr);
-		/* On error, stop handling until the next kick. */
+		 
 		if (unlikely(head < 0))
 			break;
-		/* Nothing new?  Wait for eventfd to tell us they refilled. */
+		 
 		if (head == vq->num) {
 			if (unlikely(busyloop_intr)) {
 				vhost_poll_queue(&vq->poll);
@@ -809,9 +771,7 @@ static void handle_tx_copy(struct vhost_net *net, struct socket *sock)
 
 		total_len += len;
 
-		/* For simplicity, TX batching is only enabled if
-		 * sndbuf is unlimited.
-		 */
+		 
 		if (sock_can_batch) {
 			err = vhost_net_build_xdp(nvq, &msg.msg_iter);
 			if (!err) {
@@ -823,10 +783,7 @@ static void handle_tx_copy(struct vhost_net *net, struct socket *sock)
 				break;
 			}
 
-			/* We can't build XDP buff, go for single
-			 * packet path but let's flush batched
-			 * packets.
-			 */
+			 
 			vhost_tx_batch(net, nvq, sock, &msg);
 			msg.msg_control = NULL;
 		} else {
@@ -880,16 +837,16 @@ static void handle_tx_zerocopy(struct vhost_net *net, struct socket *sock)
 	do {
 		bool busyloop_intr;
 
-		/* Release DMAs done buffers first */
+		 
 		vhost_zerocopy_signal_used(net, vq);
 
 		busyloop_intr = false;
 		head = get_tx_bufs(net, nvq, &msg, &out, &in, &len,
 				   &busyloop_intr);
-		/* On error, stop handling until the next kick. */
+		 
 		if (unlikely(head < 0))
 			break;
-		/* Nothing new?  Wait for eventfd to tell us they refilled. */
+		 
 		if (head == vq->num) {
 			if (unlikely(busyloop_intr)) {
 				vhost_poll_queue(&vq->poll);
@@ -904,7 +861,7 @@ static void handle_tx_zerocopy(struct vhost_net *net, struct socket *sock)
 			     && !vhost_exceeds_maxpend(net)
 			     && vhost_net_tx_select_zcopy(net);
 
-		/* use msg_control to pass vhost zerocopy ubuf info to skb */
+		 
 		if (zcopy_used) {
 			ubuf = nvq->ubuf_info + nvq->upend_idx;
 			vq->heads[nvq->upend_idx].id = cpu_to_vhost32(vq, head);
@@ -963,8 +920,7 @@ static void handle_tx_zerocopy(struct vhost_net *net, struct socket *sock)
 	} while (likely(!vhost_exceeds_weight(vq, ++sent_pkts, total_len)));
 }
 
-/* Expects to be always run from workqueue - which acts as
- * read-size critical section for our kind of RCU. */
+ 
 static void handle_tx(struct vhost_net *net)
 {
 	struct vhost_net_virtqueue *nvq = &net->vqs[VHOST_NET_VQ_TX];
@@ -1022,9 +978,9 @@ static int vhost_net_rx_peek_head_len(struct vhost_net *net, struct sock *sk,
 	int len = peek_head_len(rnvq, sk);
 
 	if (!len && rvq->busyloop_timeout) {
-		/* Flush batched heads first */
+		 
 		vhost_net_signal_used(rnvq);
-		/* Both tx vq and rx socket were polled here */
+		 
 		vhost_net_busy_poll(net, rvq, tvq, busyloop_intr, true);
 
 		len = peek_head_len(rnvq, sk);
@@ -1033,16 +989,7 @@ static int vhost_net_rx_peek_head_len(struct vhost_net *net, struct sock *sk,
 	return len;
 }
 
-/* This is a multi-buffer version of vhost_get_desc, that works if
- *	vq has read descriptors only.
- * @vq		- the relevant virtqueue
- * @datalen	- data length we'll be reading
- * @iovcount	- returned count of io vectors we fill
- * @log		- vhost log
- * @log_num	- log offset
- * @quota       - headcount quota, 1 for big buffer
- *	returns number of buffer heads allocated, negative on error
- */
+ 
 static int get_rx_bufs(struct vhost_virtqueue *vq,
 		       struct vring_used_elem *heads,
 		       int datalen,
@@ -1056,9 +1003,7 @@ static int get_rx_bufs(struct vhost_virtqueue *vq,
 	int headcount = 0;
 	unsigned d;
 	int r, nlogs = 0;
-	/* len is always initialized before use since we are always called with
-	 * datalen > 0.
-	 */
+	 
 	u32 len;
 
 	while (datalen > 0 && headcount < quota) {
@@ -1099,7 +1044,7 @@ static int get_rx_bufs(struct vhost_virtqueue *vq,
 	if (unlikely(log))
 		*log_num = nlogs;
 
-	/* Detect overrun */
+	 
 	if (unlikely(datalen > 0)) {
 		r = UIO_MAXIOV + 1;
 		goto err;
@@ -1110,8 +1055,7 @@ err:
 	return r;
 }
 
-/* Expects to be always run from workqueue - which acts as
- * read-size critical section for our kind of RCU. */
+ 
 static void handle_rx(struct vhost_net *net)
 {
 	struct vhost_net_virtqueue *nvq = &net->vqs[VHOST_NET_VQ_RX];
@@ -1121,7 +1065,7 @@ static void handle_rx(struct vhost_net *net)
 	struct msghdr msg = {
 		.msg_name = NULL,
 		.msg_namelen = 0,
-		.msg_control = NULL, /* FIXME: get and handle RX aux data. */
+		.msg_control = NULL,  
 		.msg_controllen = 0,
 		.msg_flags = MSG_DONTWAIT,
 	};
@@ -1168,27 +1112,25 @@ static void handle_rx(struct vhost_net *net)
 		headcount = get_rx_bufs(vq, vq->heads + nvq->done_idx,
 					vhost_len, &in, vq_log, &log,
 					likely(mergeable) ? UIO_MAXIOV : 1);
-		/* On error, stop handling until the next kick. */
+		 
 		if (unlikely(headcount < 0))
 			goto out;
-		/* OK, now we need to know about added descriptors. */
+		 
 		if (!headcount) {
 			if (unlikely(busyloop_intr)) {
 				vhost_poll_queue(&vq->poll);
 			} else if (unlikely(vhost_enable_notify(&net->dev, vq))) {
-				/* They have slipped one in as we were
-				 * doing that: check again. */
+				 
 				vhost_disable_notify(&net->dev, vq);
 				continue;
 			}
-			/* Nothing new?  Wait for eventfd to tell us
-			 * they refilled. */
+			 
 			goto out;
 		}
 		busyloop_intr = false;
 		if (nvq->rx_ring)
 			msg.msg_control = vhost_net_buf_consume(&nvq->rxq);
-		/* On overrun, truncate and discard */
+		 
 		if (unlikely(headcount > UIO_MAXIOV)) {
 			iov_iter_init(&msg.msg_iter, ITER_DEST, vq->iov, 1, 1);
 			err = sock->ops->recvmsg(sock, &msg,
@@ -1196,27 +1138,23 @@ static void handle_rx(struct vhost_net *net)
 			pr_debug("Discarded rx packet: len %zd\n", sock_len);
 			continue;
 		}
-		/* We don't need to be notified again. */
+		 
 		iov_iter_init(&msg.msg_iter, ITER_DEST, vq->iov, in, vhost_len);
 		fixup = msg.msg_iter;
 		if (unlikely((vhost_hlen))) {
-			/* We will supply the header ourselves
-			 * TODO: support TSO.
-			 */
+			 
 			iov_iter_advance(&msg.msg_iter, vhost_hlen);
 		}
 		err = sock->ops->recvmsg(sock, &msg,
 					 sock_len, MSG_DONTWAIT | MSG_TRUNC);
-		/* Userspace might have consumed the packet meanwhile:
-		 * it's not supposed to do this usually, but might be hard
-		 * to prevent. Discard data we got (if any) and keep going. */
+		 
 		if (unlikely(err != sock_len)) {
 			pr_debug("Discarded rx packet: "
 				 " len %d, expected %zd\n", err, sock_len);
 			vhost_discard_vq_desc(vq, headcount);
 			continue;
 		}
-		/* Supply virtio_net_hdr if VHOST_NET_F_VIRTIO_NET_HDR */
+		 
 		if (unlikely(vhost_hlen)) {
 			if (copy_to_iter(&hdr, sizeof(hdr),
 					 &fixup) != sizeof(hdr)) {
@@ -1225,12 +1163,10 @@ static void handle_rx(struct vhost_net *net)
 				goto out;
 			}
 		} else {
-			/* Header came from socket; we'll need to patch
-			 * ->num_buffers over if VIRTIO_NET_F_MRG_RXBUF
-			 */
+			 
 			iov_iter_advance(&fixup, sizeof(hdr));
 		}
-		/* TODO: Should check and handle checksum. */
+		 
 
 		num_buffers = cpu_to_vhost16(vq, headcount);
 		if (likely(mergeable) &&
@@ -1390,7 +1326,7 @@ static void vhost_net_flush(struct vhost_net *n)
 		mutex_lock(&n->vqs[VHOST_NET_VQ_TX].vq.mutex);
 		n->tx_flush = true;
 		mutex_unlock(&n->vqs[VHOST_NET_VQ_TX].vq.mutex);
-		/* Wait for all lower device DMAs done. */
+		 
 		vhost_net_ubuf_put_and_wait(n->vqs[VHOST_NET_VQ_TX].ubufs);
 		mutex_lock(&n->vqs[VHOST_NET_VQ_TX].vq.mutex);
 		n->tx_flush = false;
@@ -1414,10 +1350,9 @@ static int vhost_net_release(struct inode *inode, struct file *f)
 		sockfd_put(tx_sock);
 	if (rx_sock)
 		sockfd_put(rx_sock);
-	/* Make sure no callbacks are outstanding */
+	 
 	synchronize_rcu();
-	/* We do an extra flush before freeing memory,
-	 * since jobs can re-queue themselves. */
+	 
 	vhost_net_flush(n);
 	kfree(n->vqs[VHOST_NET_VQ_RX].rxq.queue);
 	kfree(n->vqs[VHOST_NET_VQ_TX].xdp);
@@ -1436,7 +1371,7 @@ static struct socket *get_raw_socket(int fd)
 	if (!sock)
 		return ERR_PTR(-ENOTSOCK);
 
-	/* Parameter checking */
+	 
 	if (sock->sk->sk_type != SOCK_RAW) {
 		r = -ESOCKTNOSUPPORT;
 		goto err;
@@ -1486,7 +1421,7 @@ static struct socket *get_socket(int fd)
 {
 	struct socket *sock;
 
-	/* special case to disable backend */
+	 
 	if (fd == -1)
 		return NULL;
 	sock = get_raw_socket(fd);
@@ -1522,7 +1457,7 @@ static long vhost_net_set_backend(struct vhost_net *n, unsigned index, int fd)
 	if (fd == -1)
 		vhost_clear_msg(&n->dev);
 
-	/* Verify that ring has been setup correctly. */
+	 
 	if (!vhost_vq_access_ok(vq)) {
 		r = -EFAULT;
 		goto err_vq;
@@ -1533,7 +1468,7 @@ static long vhost_net_set_backend(struct vhost_net *n, unsigned index, int fd)
 		goto err_vq;
 	}
 
-	/* start polling new socket */
+	 
 	oldsock = vhost_vq_get_backend(vq);
 	if (sock != oldsock) {
 		ubufs = vhost_net_ubuf_alloc(vq,
@@ -1639,11 +1574,11 @@ static int vhost_net_set_features(struct vhost_net *n, u64 features)
 			sizeof(struct virtio_net_hdr_mrg_rxbuf) :
 			sizeof(struct virtio_net_hdr);
 	if (features & (1 << VHOST_NET_F_VIRTIO_NET_HDR)) {
-		/* vhost provides vnet_hdr */
+		 
 		vhost_hlen = hdr_len;
 		sock_hlen = 0;
 	} else {
-		/* socket provides vnet_hdr */
+		 
 		vhost_hlen = 0;
 		sock_hlen = hdr_len;
 	}

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/vmalloc.h>
 #include "core.h"
@@ -18,7 +15,7 @@ void ath12k_info(struct ath12k_base *ab, const char *fmt, ...)
 	va_start(args, fmt);
 	vaf.va = &args;
 	dev_info(ab->dev, "%pV", &vaf);
-	/* TODO: Trace the log */
+	 
 	va_end(args);
 }
 
@@ -32,7 +29,7 @@ void ath12k_err(struct ath12k_base *ab, const char *fmt, ...)
 	va_start(args, fmt);
 	vaf.va = &args;
 	dev_err(ab->dev, "%pV", &vaf);
-	/* TODO: Trace the log */
+	 
 	va_end(args);
 }
 
@@ -46,7 +43,7 @@ void ath12k_warn(struct ath12k_base *ab, const char *fmt, ...)
 	va_start(args, fmt);
 	vaf.va = &args;
 	dev_warn_ratelimited(ab->dev, "%pV", &vaf);
-	/* TODO: Trace the log */
+	 
 	va_end(args);
 }
 
@@ -66,7 +63,7 @@ void __ath12k_dbg(struct ath12k_base *ab, enum ath12k_debug_mask mask,
 	if (ath12k_debug_mask & mask)
 		dev_dbg(ab->dev, "%pV", &vaf);
 
-	/* TODO: trace log */
+	 
 
 	va_end(args);
 }
@@ -99,4 +96,4 @@ void ath12k_dbg_dump(struct ath12k_base *ab,
 	}
 }
 
-#endif /* CONFIG_ATH12K_DEBUG */
+#endif  

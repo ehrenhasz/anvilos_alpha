@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright © 2020 - 2021 Intel Corporation
- */
 
-/**
- * DOC: MEI_PXP Client Driver
- *
- * The mei_pxp driver acts as a translation layer between PXP
- * protocol  implementer (I915) and ME FW by translating PXP
- * negotiation messages to ME FW command payloads and vice versa.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -22,13 +14,7 @@
 
 #include "mei_pxp.h"
 
-/**
- * mei_pxp_send_message() - Sends a PXP message to ME FW.
- * @dev: device corresponding to the mei_cl_device
- * @message: a message buffer to send
- * @size: size of the message
- * Return: 0 on Success, <0 on Failure
- */
+ 
 static int
 mei_pxp_send_message(struct device *dev, const void *message, size_t size)
 {
@@ -49,13 +35,7 @@ mei_pxp_send_message(struct device *dev, const void *message, size_t size)
 	return 0;
 }
 
-/**
- * mei_pxp_receive_message() - Receives a PXP message from ME FW.
- * @dev: device corresponding to the mei_cl_device
- * @buffer: a message buffer to contain the received message
- * @size: size of the buffer
- * Return: bytes sent on Success, <0 on Failure
- */
+ 
 static int
 mei_pxp_receive_message(struct device *dev, void *buffer, size_t size)
 {
@@ -76,19 +56,7 @@ mei_pxp_receive_message(struct device *dev, void *buffer, size_t size)
 	return byte;
 }
 
-/**
- * mei_pxp_gsc_command() - sends a gsc command, by sending
- * a sgl mei message to gsc and receiving reply from gsc
- *
- * @dev: device corresponding to the mei_cl_device
- * @client_id: client id to send the command to
- * @fence_id: fence id to send the command to
- * @sg_in: scatter gather list containing addresses for rx message buffer
- * @total_in_len: total length of data in 'in' sg, can be less than the sum of buffers sizes
- * @sg_out: scatter gather list containing addresses for tx message buffer
- *
- * Return: bytes sent on Success, <0 on Failure
- */
+ 
 static ssize_t mei_pxp_gsc_command(struct device *dev, u8 client_id, u32 fence_id,
 				   struct scatterlist *sg_in, size_t total_in_len,
 				   struct scatterlist *sg_out)
@@ -135,21 +103,7 @@ static const struct component_master_ops mei_component_master_ops = {
 	.unbind = mei_component_master_unbind,
 };
 
-/**
- * mei_pxp_component_match - compare function for matching mei pxp.
- *
- *    The function checks if the driver is i915, the subcomponent is PXP
- *    and the grand parent of pxp and the parent of i915 are the same
- *    PCH device.
- *
- * @dev: master device
- * @subcomponent: subcomponent to match (I915_COMPONENT_PXP)
- * @data: compare data (mei pxp device)
- *
- * Return:
- * * 1 - if components match
- * * 0 - otherwise
- */
+ 
 static int mei_pxp_component_match(struct device *dev, int subcomponent,
 				   void *data)
 {
@@ -163,15 +117,15 @@ static int mei_pxp_component_match(struct device *dev, int subcomponent,
 		return 0;
 
 	base = base->parent;
-	if (!base) /* mei device */
+	if (!base)  
 		return 0;
 
-	base = base->parent; /* pci device */
-	/* for dgfx */
+	base = base->parent;  
+	 
 	if (base && dev == base)
 		return 1;
 
-	/* for pch */
+	 
 	dev = dev->parent;
 	return (base && dev && dev == base);
 }
@@ -236,7 +190,7 @@ static void mei_pxp_remove(struct mei_cl_device *cldev)
 		dev_warn(&cldev->dev, "mei_cldev_disable() failed\n");
 }
 
-/* fbf6fcf1-96cf-4e2e-a6a6-1bab8cbe36b1 : PAVP GUID*/
+ 
 #define MEI_GUID_PXP UUID_LE(0xfbf6fcf1, 0x96cf, 0x4e2e, 0xA6, \
 			     0xa6, 0x1b, 0xab, 0x8c, 0xbe, 0x36, 0xb1)
 

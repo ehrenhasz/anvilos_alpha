@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/*
- * This file is provided under a dual BSD/GPLv2 license.  When using or
- * redistributing this file, you may do so under either license.
- *
- * Copyright(c) 2018 Intel Corporation. All rights reserved.
- *
- * Author: Liam Girdwood <liam.r.girdwood@linux.intel.com>
- */
+ 
+ 
 
 #ifndef __SOUND_SOC_SOF_IO_H
 #define __SOUND_SOC_SOF_IO_H
@@ -35,9 +28,9 @@ static inline void sof_ops_free(struct snd_sof_dev *sdev)
 		sdev->pdata->desc->ops_free(sdev);
 }
 
-/* Mandatory operations are verified during probing */
+ 
 
-/* init */
+ 
 static inline int snd_sof_probe(struct snd_sof_dev *sdev)
 {
 	return sof_ops(sdev)->probe(sdev);
@@ -59,12 +52,9 @@ static inline int snd_sof_shutdown(struct snd_sof_dev *sdev)
 	return 0;
 }
 
-/* control */
+ 
 
-/*
- * snd_sof_dsp_run returns the core mask of the cores that are available
- * after successful fw boot
- */
+ 
 static inline int snd_sof_dsp_run(struct snd_sof_dev *sdev)
 {
 	return sof_ops(sdev)->run(sdev);
@@ -86,7 +76,7 @@ static inline int snd_sof_dsp_reset(struct snd_sof_dev *sdev)
 	return 0;
 }
 
-/* dsp core get/put */
+ 
 static inline int snd_sof_dsp_core_get(struct snd_sof_dev *sdev, int core)
 {
 	if (core > sdev->num_cores - 1) {
@@ -98,21 +88,21 @@ static inline int snd_sof_dsp_core_get(struct snd_sof_dev *sdev, int core)
 	if (sof_ops(sdev)->core_get) {
 		int ret;
 
-		/* if current ref_count is > 0, increment it and return */
+		 
 		if (sdev->dsp_core_ref_count[core] > 0) {
 			sdev->dsp_core_ref_count[core]++;
 			return 0;
 		}
 
-		/* power up the core */
+		 
 		ret = sof_ops(sdev)->core_get(sdev, core);
 		if (ret < 0)
 			return ret;
 
-		/* increment ref_count */
+		 
 		sdev->dsp_core_ref_count[core]++;
 
-		/* and update enabled_cores_mask */
+		 
 		sdev->enabled_cores_mask |= BIT(core);
 
 		dev_dbg(sdev->dev, "Core %d powered up\n", core);
@@ -132,16 +122,16 @@ static inline int snd_sof_dsp_core_put(struct snd_sof_dev *sdev, int core)
 	if (sof_ops(sdev)->core_put) {
 		int ret;
 
-		/* decrement ref_count and return if it is > 0 */
+		 
 		if (--(sdev->dsp_core_ref_count[core]) > 0)
 			return 0;
 
-		/* power down the core */
+		 
 		ret = sof_ops(sdev)->core_put(sdev, core);
 		if (ret < 0)
 			return ret;
 
-		/* and update enabled_cores_mask */
+		 
 		sdev->enabled_cores_mask &= ~BIT(core);
 
 		dev_dbg(sdev->dev, "Core %d powered down\n", core);
@@ -150,7 +140,7 @@ static inline int snd_sof_dsp_core_put(struct snd_sof_dev *sdev, int core)
 	return 0;
 }
 
-/* pre/post fw load */
+ 
 static inline int snd_sof_dsp_pre_fw_run(struct snd_sof_dev *sdev)
 {
 	if (sof_ops(sdev)->pre_fw_run)
@@ -167,7 +157,7 @@ static inline int snd_sof_dsp_post_fw_run(struct snd_sof_dev *sdev)
 	return 0;
 }
 
-/* parse platform specific extended manifest */
+ 
 static inline int snd_sof_dsp_parse_platform_ext_manifest(struct snd_sof_dev *sdev,
 							  const struct sof_ext_man_elem_header *hdr)
 {
@@ -177,17 +167,9 @@ static inline int snd_sof_dsp_parse_platform_ext_manifest(struct snd_sof_dev *sd
 	return 0;
 }
 
-/* misc */
+ 
 
-/**
- * snd_sof_dsp_get_bar_index - Maps a section type with a BAR index
- *
- * @sdev: sof device
- * @type: section type as described by snd_sof_fw_blk_type
- *
- * Returns the corresponding BAR index (a positive integer) or -EINVAL
- * in case there is no mapping
- */
+ 
 static inline int snd_sof_dsp_get_bar_index(struct snd_sof_dev *sdev, u32 type)
 {
 	if (sof_ops(sdev)->get_bar_index)
@@ -214,7 +196,7 @@ static inline int snd_sof_dsp_get_window_offset(struct snd_sof_dev *sdev,
 	dev_err(sdev->dev, "error: %s not defined\n", __func__);
 	return -ENOTSUPP;
 }
-/* power management */
+ 
 static inline int snd_sof_dsp_resume(struct snd_sof_dev *sdev)
 {
 	if (sof_ops(sdev)->resume)
@@ -287,7 +269,7 @@ snd_sof_dsp_set_power_state(struct snd_sof_dev *sdev,
 	return ret;
 }
 
-/* debug */
+ 
 void snd_sof_dsp_dbg_dump(struct snd_sof_dev *sdev, const char *msg, u32 flags);
 
 static inline int snd_sof_debugfs_add_region_item(struct snd_sof_dev *sdev,
@@ -301,7 +283,7 @@ static inline int snd_sof_debugfs_add_region_item(struct snd_sof_dev *sdev,
 	return 0;
 }
 
-/* register IO */
+ 
 static inline void snd_sof_dsp_write8(struct snd_sof_dev *sdev, u32 bar,
 				      u32 offset, u8 value)
 {
@@ -367,7 +349,7 @@ static inline void snd_sof_dsp_update8(struct snd_sof_dev *sdev, u32 bar,
 	snd_sof_dsp_write8(sdev, bar, offset, reg);
 }
 
-/* block IO */
+ 
 static inline int snd_sof_dsp_block_read(struct snd_sof_dev *sdev,
 					 enum snd_sof_fw_blk_type blk_type,
 					 u32 offset, void *dest, size_t bytes)
@@ -382,7 +364,7 @@ static inline int snd_sof_dsp_block_write(struct snd_sof_dev *sdev,
 	return sof_ops(sdev)->block_write(sdev, blk_type, offset, src, bytes);
 }
 
-/* mailbox IO */
+ 
 static inline void snd_sof_dsp_mailbox_read(struct snd_sof_dev *sdev,
 					    u32 offset, void *dest, size_t bytes)
 {
@@ -397,14 +379,14 @@ static inline void snd_sof_dsp_mailbox_write(struct snd_sof_dev *sdev,
 		sof_ops(sdev)->mailbox_write(sdev, offset, src, bytes);
 }
 
-/* ipc */
+ 
 static inline int snd_sof_dsp_send_msg(struct snd_sof_dev *sdev,
 				       struct snd_sof_ipc_msg *msg)
 {
 	return sof_ops(sdev)->send_msg(sdev, msg);
 }
 
-/* host PCM ops */
+ 
 static inline int
 snd_sof_pcm_platform_open(struct snd_sof_dev *sdev,
 			  struct snd_pcm_substream *substream)
@@ -415,7 +397,7 @@ snd_sof_pcm_platform_open(struct snd_sof_dev *sdev,
 	return 0;
 }
 
-/* disconnect pcm substream to a host stream */
+ 
 static inline int
 snd_sof_pcm_platform_close(struct snd_sof_dev *sdev,
 			   struct snd_pcm_substream *substream)
@@ -426,7 +408,7 @@ snd_sof_pcm_platform_close(struct snd_sof_dev *sdev,
 	return 0;
 }
 
-/* host stream hw params */
+ 
 static inline int
 snd_sof_pcm_platform_hw_params(struct snd_sof_dev *sdev,
 			       struct snd_pcm_substream *substream,
@@ -440,7 +422,7 @@ snd_sof_pcm_platform_hw_params(struct snd_sof_dev *sdev,
 	return 0;
 }
 
-/* host stream hw free */
+ 
 static inline int
 snd_sof_pcm_platform_hw_free(struct snd_sof_dev *sdev,
 			     struct snd_pcm_substream *substream)
@@ -451,7 +433,7 @@ snd_sof_pcm_platform_hw_free(struct snd_sof_dev *sdev,
 	return 0;
 }
 
-/* host stream trigger */
+ 
 static inline int
 snd_sof_pcm_platform_trigger(struct snd_sof_dev *sdev,
 			     struct snd_pcm_substream *substream, int cmd)
@@ -462,7 +444,7 @@ snd_sof_pcm_platform_trigger(struct snd_sof_dev *sdev,
 	return 0;
 }
 
-/* Firmware loading */
+ 
 static inline int snd_sof_load_firmware(struct snd_sof_dev *sdev)
 {
 	dev_dbg(sdev->dev, "loading firmware\n");
@@ -470,14 +452,14 @@ static inline int snd_sof_load_firmware(struct snd_sof_dev *sdev)
 	return sof_ops(sdev)->load_firmware(sdev);
 }
 
-/* host DSP message data */
+ 
 static inline int snd_sof_ipc_msg_data(struct snd_sof_dev *sdev,
 				       struct snd_sof_pcm_stream *sps,
 				       void *p, size_t sz)
 {
 	return sof_ops(sdev)->ipc_msg_data(sdev, sps, p, sz);
 }
-/* host side configuration of the stream's data offset in stream mailbox area */
+ 
 static inline int
 snd_sof_set_stream_data_offset(struct snd_sof_dev *sdev,
 			       struct snd_sof_pcm_stream *sps,
@@ -490,7 +472,7 @@ snd_sof_set_stream_data_offset(struct snd_sof_dev *sdev,
 	return 0;
 }
 
-/* host stream pointer */
+ 
 static inline snd_pcm_uframes_t
 snd_sof_pcm_platform_pointer(struct snd_sof_dev *sdev,
 			     struct snd_pcm_substream *substream)
@@ -501,7 +483,7 @@ snd_sof_pcm_platform_pointer(struct snd_sof_dev *sdev,
 	return 0;
 }
 
-/* pcm ack */
+ 
 static inline int snd_sof_pcm_platform_ack(struct snd_sof_dev *sdev,
 					   struct snd_pcm_substream *substream)
 {
@@ -521,7 +503,7 @@ static inline u64 snd_sof_pcm_get_stream_position(struct snd_sof_dev *sdev,
 	return 0;
 }
 
-/* machine driver */
+ 
 static inline int
 snd_sof_machine_register(struct snd_sof_dev *sdev, void *pdata)
 {
@@ -555,24 +537,7 @@ snd_sof_set_mach_params(struct snd_soc_acpi_mach *mach,
 		sof_ops(sdev)->set_mach_params(mach, sdev);
 }
 
-/**
- * snd_sof_dsp_register_poll_timeout - Periodically poll an address
- * until a condition is met or a timeout occurs
- * @op: accessor function (takes @addr as its only argument)
- * @addr: Address to poll
- * @val: Variable to read the value into
- * @cond: Break condition (usually involving @val)
- * @sleep_us: Maximum time to sleep between reads in us (0
- *            tight-loops).  Should be less than ~20ms since usleep_range
- *            is used (see Documentation/timers/timers-howto.rst).
- * @timeout_us: Timeout in us, 0 means never timeout
- *
- * Returns 0 on success and -ETIMEDOUT upon a timeout. In either
- * case, the last read value at @addr is stored in @val. Must not
- * be called from atomic context if sleep_us or timeout_us are used.
- *
- * This is modelled after the readx_poll_timeout macros in linux/iopoll.h.
- */
+ 
 #define snd_sof_dsp_read_poll_timeout(sdev, bar, offset, val, cond, sleep_us, timeout_us) \
 ({ \
 	u64 __timeout_us = (timeout_us); \
@@ -601,7 +566,7 @@ snd_sof_set_mach_params(struct snd_soc_acpi_mach *mach,
 	(cond) ? 0 : -ETIMEDOUT; \
 })
 
-/* This is for registers bits with attribute RWC */
+ 
 bool snd_sof_pci_update_bits(struct snd_sof_dev *sdev, u32 offset,
 			     u32 mask, u32 value);
 

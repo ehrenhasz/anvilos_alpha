@@ -1,20 +1,6 @@
-/* GNU's uptime.
-   Copyright (C) 1992-2023 Free Software Foundation, Inc.
+ 
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Created by hacking who.c by Kaveh Ghazi ghazi@caip.rutgers.edu.  */
+ 
 
 #include <config.h>
 
@@ -29,7 +15,7 @@
 #include "readutmp.h"
 #include "fprintftime.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "uptime"
 
 #define AUTHORS \
@@ -43,8 +29,7 @@ print_uptime (idx_t n, struct gl_utmp const *utmp_buf)
   int status = EXIT_SUCCESS;
   time_t boot_time = 0;
 
-  /* Loop through all the utmp entries we just read and count up the valid
-     ones, also in the process possibly gleaning boottime. */
+   
   idx_t entries = 0;
   for (idx_t i = 0; i < n; i++)
     {
@@ -53,8 +38,7 @@ print_uptime (idx_t n, struct gl_utmp const *utmp_buf)
       if (UT_TYPE_BOOT_TIME (this))
         boot_time = this->ut_ts.tv_sec;
     }
-  /* The gnulib module 'readutmp' is supposed to provide a BOOT_TIME entry
-     on all platforms.  */
+   
   if (boot_time == 0)
     {
       error (0, errno, _("couldn't get boot time"));
@@ -63,10 +47,9 @@ print_uptime (idx_t n, struct gl_utmp const *utmp_buf)
 
   time_t time_now = time (nullptr);
   struct tm *tmn = time_now == (time_t) -1 ? nullptr : localtime (&time_now);
-  /* procps' version of uptime also prints the seconds field, but
-     previous versions of coreutils don't. */
+   
   if (tmn)
-    /* TRANSLATORS: This prints the current clock time. */
+     
     fprintftime (stdout, _(" %H:%M:%S  "), tmn, 0, 0);
   else
     {
@@ -118,9 +101,7 @@ print_uptime (idx_t n, struct gl_utmp const *utmp_buf)
   return status;
 }
 
-/* Display the system uptime and the number of users on the system,
-   according to utmp file FILENAME.  Use read_utmp OPTIONS to read the
-   utmp file.  */
+ 
 
 static _Noreturn void
 uptime (char const *filename, int options)

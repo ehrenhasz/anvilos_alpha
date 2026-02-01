@@ -1,25 +1,4 @@
-/*
- * Copyright 2013 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -50,7 +29,7 @@
 #define SCLK_MIN_DEEPSLEEP_FREQ     1350
 
 
-/* sizeof(ATOM_PPLIB_EXTENDEDHEADER) */
+ 
 #define SIZE_OF_ATOM_PPLIB_EXTENDEDHEADER_V2 12
 #define SIZE_OF_ATOM_PPLIB_EXTENDEDHEADER_V3 14
 #define SIZE_OF_ATOM_PPLIB_EXTENDEDHEADER_V4 16
@@ -2260,7 +2239,7 @@ static int si_populate_smc_tdp_limits(struct amdgpu_device *adev,
 		memset(smc_table, 0, sizeof(SISLANDS_SMC_STATETABLE));
 
 		ret = si_calculate_adjusted_tdp_limits(adev,
-						       false, /* ??? */
+						       false,  
 						       adev->pm.dpm.tdp_adjustment,
 						       &tdp_limit,
 						       &near_tdp_limit);
@@ -3050,7 +3029,7 @@ static int si_get_vce_clock_voltage(struct amdgpu_device *adev,
 		}
 	}
 
-	/* if no match return the highest voltage */
+	 
 	if (ret)
 		*voltage = table->entries[table->count - 1].v;
 
@@ -3063,7 +3042,7 @@ static bool si_dpm_vblank_too_short(void *handle)
 {
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 	u32 vblank_time = amdgpu_dpm_get_vblank_time(adev);
-	/* we never hit the non-gddr5 limit so disable it */
+	 
 	u32 switch_limit = adev->gmc.vram_type == AMDGPU_VRAM_TYPE_GDDR5 ? 450 : 0;
 
 	if (vblank_time < switch_limit)
@@ -3498,7 +3477,7 @@ static void si_apply_state_adjust_rules(struct amdgpu_device *adev,
 		}
 	}
 
-	/* limit clocks to max supported clocks based on voltage dependency tables */
+	 
 	btc_get_max_clock_from_voltage_dependency_table(&adev->pm.dpm.dyn_state.vddc_dependency_on_sclk,
 							&max_sclk_vddc);
 	btc_get_max_clock_from_voltage_dependency_table(&adev->pm.dpm.dyn_state.vddci_dependency_on_mclk,
@@ -3529,7 +3508,7 @@ static void si_apply_state_adjust_rules(struct amdgpu_device *adev,
 		}
 	}
 
-	/* XXX validate the min clocks required for display */
+	 
 
 	if (disable_mclk_switching) {
 		mclk  = ps->performance_levels[ps->performance_level_count - 1].mclk;
@@ -3554,7 +3533,7 @@ static void si_apply_state_adjust_rules(struct amdgpu_device *adev,
 			mclk = adev->pm.dpm.vce_states[adev->pm.dpm.vce_level].mclk;
 	}
 
-	/* adjusted low state */
+	 
 	ps->performance_levels[0].sclk = sclk;
 	ps->performance_levels[0].mclk = mclk;
 	ps->performance_levels[0].vddc = vddc;
@@ -4125,7 +4104,7 @@ static void si_program_ds_registers(struct amdgpu_device *adev)
 	struct evergreen_power_info *eg_pi = evergreen_get_pi(adev);
 	u32 tmp;
 
-	/* DEEP_SLEEP_CLK_SEL field should be 0x10 on tahiti A0 */
+	 
 	if (adev->asic_type == CHIP_TAHITI && adev->rev_id == 0x0)
 		tmp = 0x10;
 	else
@@ -4161,7 +4140,7 @@ static void si_program_display_gap(struct amdgpu_device *adev)
 
 	if ((adev->pm.dpm.new_active_crtc_count > 0) &&
 	    (!(adev->pm.dpm.new_active_crtcs & (1 << pipe)))) {
-		/* find the first active crtc */
+		 
 		for (i = 0; i < adev->mode_info.num_crtc; i++) {
 			if (adev->pm.dpm.new_active_crtcs & (1 << i))
 				break;
@@ -4176,10 +4155,7 @@ static void si_program_display_gap(struct amdgpu_device *adev)
 		WREG32(DCCG_DISP_SLOW_SELECT_REG, tmp);
 	}
 
-	/* Setting this to false forces the performance state to low if the crtcs are disabled.
-	 * This can be a problem on PowerXpress systems or if you want to use the card
-	 * for offscreen rendering or compute if there are no crtcs enabled.
-	 */
+	 
 	si_notify_smc_display_change(adev, adev->pm.dpm.new_active_crtc_count > 0);
 }
 
@@ -5115,7 +5091,7 @@ static int si_populate_ulv_state(struct amdgpu_device *adev,
 	struct evergreen_power_info *eg_pi = evergreen_get_pi(adev);
 	struct si_power_info *si_pi = si_get_pi(adev);
 	struct si_ulv_param *ulv = &si_pi->ulv;
-	u32 sclk_in_sr = 1350; /* ??? */
+	u32 sclk_in_sr = 1350;  
 	int ret;
 
 	ret = si_convert_power_level_to_smc(adev, &ulv->pl,
@@ -5638,7 +5614,7 @@ static bool si_is_state_ulv_compatible(struct amdgpu_device *adev,
 	if (state->performance_levels[0].mclk != ulv->pl.mclk)
 		return false;
 
-	/* XXX validate against display requirements! */
+	 
 
 	for (i = 0; i < adev->pm.dpm.dyn_state.vddc_dependency_on_dispclk.count; i++) {
 		if (adev->clock.current_dispclk <=
@@ -5679,7 +5655,7 @@ static int si_convert_power_state_to_smc(struct amdgpu_device *adev,
 	struct  si_ps *state = si_get_ps(amdgpu_state);
 	int i, ret;
 	u32 threshold;
-	u32 sclk_in_sr = 1350; /* ??? */
+	u32 sclk_in_sr = 1350;  
 
 	if (state->performance_level_count > SISLANDS_MAX_HARDWARE_POWERLEVELS)
 		return -EINVAL;
@@ -6647,12 +6623,12 @@ static int si_dpm_set_fan_control_mode(void *handle, u32 mode)
 		return -EINVAL;
 
 	if (mode) {
-		/* stop auto-manage */
+		 
 		if (adev->pm.dpm.fan.ucode_fan_control)
 			si_fan_ctrl_stop_smc_fan_control(adev);
 		si_fan_ctrl_set_static_mode(adev, mode);
 	} else {
-		/* restart auto-manage */
+		 
 		if (adev->pm.dpm.fan.ucode_fan_control)
 			si_thermal_start_smc_fan_control(adev);
 		else
@@ -6991,14 +6967,11 @@ static void si_set_vce_clock(struct amdgpu_device *adev,
 {
 	if ((old_rps->evclk != new_rps->evclk) ||
 	    (old_rps->ecclk != new_rps->ecclk)) {
-		/* Turn the clocks on when encoding, off otherwise */
+		 
 		if (new_rps->evclk || new_rps->ecclk) {
-			/* Place holder for future VCE1.0 porting to amdgpu
-			vce_v1_0_enable_mgcg(adev, false, false);*/
+			 
 		} else {
-			/* Place holder for future VCE1.0 porting to amdgpu
-			vce_v1_0_enable_mgcg(adev, true, false);
-			amdgpu_asic_set_vce_clocks(adev, new_rps->evclk, new_rps->ecclk);*/
+			 
 		}
 	}
 }
@@ -7186,7 +7159,7 @@ static void si_parse_pplib_clock_info(struct amdgpu_device *adev,
 					       si_pi->boot_pcie_gen,
 					       clock_info->si.ucPCIEGen);
 
-	/* patch up vddc if necessary */
+	 
 	ret = si_get_leakage_voltage_from_leakage_index(adev, pl->vddc,
 							&leakage_voltage);
 	if (ret == 0)
@@ -7200,7 +7173,7 @@ static void si_parse_pplib_clock_info(struct amdgpu_device *adev,
 
 	if ((rps->class2 & ATOM_PPLIB_CLASSIFICATION2_ULV) &&
 	    index == 0) {
-		/* XXX disable for A0 tahiti */
+		 
 		si_pi->ulv.supported = false;
 		si_pi->ulv.pl = *pl;
 		si_pi->ulv.one_pcie_lane_in_ulv = false;
@@ -7215,7 +7188,7 @@ static void si_parse_pplib_clock_info(struct amdgpu_device *adev,
 	if (pi->max_vddc_in_table < pl->vddc)
 		pi->max_vddc_in_table = pl->vddc;
 
-	/* patch up boot state */
+	 
 	if (rps->class & ATOM_PPLIB_CLASSIFICATION_BOOT) {
 		u16 vddc, vddci, mvdd;
 		amdgpu_atombios_get_default_voltages(adev, &vddc, &vddci, &mvdd);
@@ -7313,7 +7286,7 @@ static int si_parse_power_table(struct amdgpu_device *adev)
 		adev->pm.dpm.num_ps++;
 	}
 
-	/* fill in the vce power states */
+	 
 	for (i = 0; i < adev->pm.dpm.num_of_vce_states; i++) {
 		u32 sclk, mclk;
 		clock_array_index = adev->pm.dpm.vce_states[i].clk_idx;
@@ -7482,7 +7455,7 @@ static int si_dpm_init(struct amdgpu_device *adev)
 
 	si_initialize_powertune_defaults(adev);
 
-	/* make sure dc limits are valid */
+	 
 	if ((adev->pm.dpm.dyn_state.max_clock_voltage_on_dc.sclk == 0) ||
 	    (adev->pm.dpm.dyn_state.max_clock_voltage_on_dc.mclk == 0))
 		adev->pm.dpm.dyn_state.max_clock_voltage_on_dc =
@@ -7586,12 +7559,12 @@ static int si_dpm_process_interrupt(struct amdgpu_device *adev,
 		return -EINVAL;
 
 	switch (entry->src_id) {
-	case 230: /* thermal low to high */
+	case 230:  
 		DRM_DEBUG("IH: thermal low to high\n");
 		adev->pm.dpm.thermal.high_to_low = false;
 		queue_thermal = true;
 		break;
-	case 231: /* thermal high to low */
+	case 231:  
 		DRM_DEBUG("IH: thermal high to low\n");
 		adev->pm.dpm.thermal.high_to_low = true;
 		queue_thermal = true;
@@ -7611,15 +7584,7 @@ static int si_dpm_late_init(void *handle)
 	return 0;
 }
 
-/**
- * si_dpm_init_microcode - load ucode images from disk
- *
- * @adev: amdgpu_device pointer
- *
- * Use the firmware interface to load the ucode images into
- * the driver (not loaded into hw).
- * Returns 0 on success, error on failure.
- */
+ 
 static int si_dpm_init_microcode(struct amdgpu_device *adev)
 {
 	const char *chip_name;
@@ -7706,7 +7671,7 @@ static int si_dpm_sw_init(void *handle)
 	if (ret)
 		return ret;
 
-	/* default to balanced state */
+	 
 	adev->pm.dpm.state = POWER_STATE_TYPE_BALANCED;
 	adev->pm.dpm.user_state = POWER_STATE_TYPE_BALANCED;
 	adev->pm.dpm.forced_level = AMD_DPM_FORCED_LEVEL_AUTO;
@@ -7785,9 +7750,9 @@ static int si_dpm_suspend(void *handle)
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
 	if (adev->pm.dpm_enabled) {
-		/* disable dpm */
+		 
 		si_dpm_disable(adev);
-		/* reset the power state */
+		 
 		adev->pm.dpm.current_ps = adev->pm.dpm.requested_ps = adev->pm.dpm.boot_ps;
 	}
 	return 0;
@@ -7799,7 +7764,7 @@ static int si_dpm_resume(void *handle)
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
 	if (adev->pm.dpm_enabled) {
-		/* asic init will reset to the boot state */
+		 
 		si_dpm_setup_asic(adev);
 		ret = si_dpm_enable(adev);
 		if (ret)
@@ -7814,13 +7779,13 @@ static int si_dpm_resume(void *handle)
 
 static bool si_dpm_is_idle(void *handle)
 {
-	/* XXX */
+	 
 	return true;
 }
 
 static int si_dpm_wait_for_idle(void *handle)
 {
-	/* XXX */
+	 
 	return 0;
 }
 
@@ -7841,7 +7806,7 @@ static int si_dpm_set_powergating_state(void *handle,
 	return 0;
 }
 
-/* get temperature in millidegrees */
+ 
 static int si_dpm_get_temp(void *handle)
 {
 	u32 temp;
@@ -7967,7 +7932,7 @@ static int si_check_state_equal(void *handle,
 		}
 	}
 
-	/* If all performance levels are the same try to use the UVD clocks to break the tie.*/
+	 
 	*equal = ((cps->vclk == rps->vclk) && (cps->dclk == rps->dclk));
 	*equal &= ((cps->evclk == rps->evclk) && (cps->ecclk == rps->ecclk));
 
@@ -7986,7 +7951,7 @@ static int si_dpm_read_sensor(void *handle, int idx,
 		(RREG32(TARGET_AND_CURRENT_PROFILE_INDEX) & CURRENT_STATE_INDEX_MASK) >>
 		CURRENT_STATE_INDEX_SHIFT;
 
-	/* size must be at least 4 bytes for all sensors */
+	 
 	if (*size < 4)
 		return -EINVAL;
 

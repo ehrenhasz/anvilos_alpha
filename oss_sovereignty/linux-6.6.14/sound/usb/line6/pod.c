@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Line 6 Linux USB driver
- *
- * Copyright (C) 2004-2010 Markus Grabner (grabner@icg.tugraz.at)
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/wait.h>
@@ -18,22 +14,16 @@
 #include "driver.h"
 #include "playback.h"
 
-/*
-	Locate name in binary program dump
-*/
+ 
 #define	POD_NAME_OFFSET 0
 #define	POD_NAME_LENGTH 16
 
-/*
-	Other constants
-*/
+ 
 #define POD_CONTROL_SIZE 0x80
 #define POD_BUFSIZE_DUMPREQ 7
 #define POD_STARTUP_DELAY 1000
 
-/*
-	Stages of POD startup procedure
-*/
+ 
 enum {
 	POD_STARTUP_VERSIONREQ,
 	POD_STARTUP_SETUP,
@@ -51,22 +41,22 @@ enum {
 };
 
 struct usb_line6_pod {
-	/* Generic Line 6 USB data */
+	 
 	struct usb_line6 line6;
 
-	/* Instrument monitor level */
+	 
 	int monitor_level;
 
-	/* Current progress in startup procedure */
+	 
 	int startup_progress;
 
-	/* Serial number of device */
+	 
 	u32 serial_number;
 
-	/* Firmware version (x 100) */
+	 
 	int firmware_version;
 
-	/* Device ID */
+	 
 	int device_id;
 };
 
@@ -74,21 +64,21 @@ struct usb_line6_pod {
 
 #define POD_SYSEX_CODE 3
 
-/* *INDENT-OFF* */
+ 
 
 enum {
 	POD_SYSEX_SAVE      = 0x24,
 	POD_SYSEX_SYSTEM    = 0x56,
 	POD_SYSEX_SYSTEMREQ = 0x57,
-	/* POD_SYSEX_UPDATE    = 0x6c, */  /* software update! */
+	    
 	POD_SYSEX_STORE     = 0x71,
 	POD_SYSEX_FINISH    = 0x72,
 	POD_SYSEX_DUMPMEM   = 0x73,
 	POD_SYSEX_DUMP      = 0x74,
 	POD_SYSEX_DUMPREQ   = 0x75
 
-	/* dumps entire internal memory of PODxt Pro */
-	/* POD_SYSEX_DUMPMEM2  = 0x76 */
+	 
+	 
 };
 
 enum {
@@ -96,7 +86,7 @@ enum {
 	POD_SYSTEM_INVALID = 0x10000
 };
 
-/* *INDENT-ON* */
+ 
 
 enum {
 	POD_DUMP_MEMORY = 2
@@ -156,7 +146,7 @@ static struct line6_pcm_properties pod_pcm_properties = {
 	.rates = {
 			    .nrats = 1,
 			    .rats = &pod_ratden},
-	.bytes_per_channel = 3 /* SNDRV_PCM_FMTBIT_S24_3LE */
+	.bytes_per_channel = 3  
 };
 
 
@@ -171,9 +161,7 @@ static char *pod_alloc_sysex_buffer(struct usb_line6_pod *pod, int code,
 					size);
 }
 
-/*
-	Process a completely received message.
-*/
+ 
 static void line6_pod_process_message(struct usb_line6 *line6)
 {
 	struct usb_line6_pod *pod = line6_to_pod(line6);
@@ -190,7 +178,7 @@ static void line6_pod_process_message(struct usb_line6 *line6)
 		return;
 	}
 
-	/* Only look for sysex messages from this device */
+	 
 	if (buf[0] != (LINE6_SYSEX_BEGIN | LINE6_CHANNEL_DEVICE) &&
 	    buf[0] != (LINE6_SYSEX_BEGIN | LINE6_CHANNEL_UNKNOWN)) {
 		return;
@@ -205,9 +193,7 @@ static void line6_pod_process_message(struct usb_line6 *line6)
 	}
 }
 
-/*
-	Send system parameter (from integer).
-*/
+ 
 static int pod_set_system_param_int(struct usb_line6_pod *pod, int value,
 				    int code)
 {
@@ -227,9 +213,7 @@ static int pod_set_system_param_int(struct usb_line6_pod *pod, int value,
 	return 0;
 }
 
-/*
-	"read" request on "serial_number" special file.
-*/
+ 
 static ssize_t serial_number_show(struct device *dev,
 				  struct device_attribute *attr, char *buf)
 {
@@ -239,9 +223,7 @@ static ssize_t serial_number_show(struct device *dev,
 	return sysfs_emit(buf, "%u\n", pod->serial_number);
 }
 
-/*
-	"read" request on "firmware_version" special file.
-*/
+ 
 static ssize_t firmware_version_show(struct device *dev,
 				     struct device_attribute *attr, char *buf)
 {
@@ -252,9 +234,7 @@ static ssize_t firmware_version_show(struct device *dev,
 			  pod->firmware_version % 100);
 }
 
-/*
-	"read" request on "device_id" special file.
-*/
+ 
 static ssize_t device_id_show(struct device *dev,
 			      struct device_attribute *attr, char *buf)
 {
@@ -264,12 +244,7 @@ static ssize_t device_id_show(struct device *dev,
 	return sysfs_emit(buf, "%d\n", pod->device_id);
 }
 
-/*
-	POD startup procedure.
-	This is a sequence of functions with special requirements (e.g., must
-	not run immediately after initialization, must not run in interrupt
-	context). After the last one has finished, the device is ready to use.
-*/
+ 
 
 static void pod_startup(struct usb_line6 *line6)
 {
@@ -277,14 +252,14 @@ static void pod_startup(struct usb_line6 *line6)
 
 	switch (pod->startup_progress) {
 	case POD_STARTUP_VERSIONREQ:
-		/* request firmware version: */
+		 
 		line6_version_request_async(line6);
 		break;
 	case POD_STARTUP_SETUP:
-		/* serial number: */
+		 
 		line6_read_serial_number(&pod->line6, &pod->serial_number);
 
-		/* ALSA audio interface: */
+		 
 		if (snd_card_register(line6->card))
 			dev_err(line6->ifcdev, "Failed to register POD card.\n");
 		pod->startup_progress = POD_STARTUP_DONE;
@@ -294,7 +269,7 @@ static void pod_startup(struct usb_line6 *line6)
 	}
 }
 
-/* POD special files: */
+ 
 static DEVICE_ATTR_RO(device_id);
 static DEVICE_ATTR_RO(firmware_version);
 static DEVICE_ATTR_RO(serial_number);
@@ -311,7 +286,7 @@ static const struct attribute_group pod_dev_attr_group = {
 	.attrs = pod_dev_attrs,
 };
 
-/* control info callback */
+ 
 static int snd_pod_control_monitor_info(struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_info *uinfo)
 {
@@ -322,7 +297,7 @@ static int snd_pod_control_monitor_info(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-/* control get callback */
+ 
 static int snd_pod_control_monitor_get(struct snd_kcontrol *kcontrol,
 				       struct snd_ctl_elem_value *ucontrol)
 {
@@ -333,7 +308,7 @@ static int snd_pod_control_monitor_get(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-/* control put callback */
+ 
 static int snd_pod_control_monitor_put(struct snd_kcontrol *kcontrol,
 				       struct snd_ctl_elem_value *ucontrol)
 {
@@ -349,7 +324,7 @@ static int snd_pod_control_monitor_put(struct snd_kcontrol *kcontrol,
 	return 1;
 }
 
-/* control definition */
+ 
 static const struct snd_kcontrol_new pod_control_monitor = {
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "Monitor Playback Volume",
@@ -360,9 +335,7 @@ static const struct snd_kcontrol_new pod_control_monitor = {
 	.put = snd_pod_control_monitor_put
 };
 
-/*
-	 Try to init POD device.
-*/
+ 
 static int pod_init(struct usb_line6 *line6,
 		    const struct usb_device_id *id)
 {
@@ -372,32 +345,28 @@ static int pod_init(struct usb_line6 *line6,
 	line6->process_message = line6_pod_process_message;
 	line6->startup = pod_startup;
 
-	/* create sysfs entries: */
+	 
 	err = snd_card_add_dev_attr(line6->card, &pod_dev_attr_group);
 	if (err < 0)
 		return err;
 
-	/* initialize PCM subsystem: */
+	 
 	err = line6_init_pcm(line6, &pod_pcm_properties);
 	if (err < 0)
 		return err;
 
-	/* register monitor control: */
+	 
 	err = snd_ctl_add(line6->card,
 			  snd_ctl_new1(&pod_control_monitor, line6->line6pcm));
 	if (err < 0)
 		return err;
 
-	/*
-	   When the sound card is registered at this point, the PODxt Live
-	   displays "Invalid Code Error 07", so we do it later in the event
-	   handler.
-	 */
+	 
 
 	if (pod->line6.properties->capabilities & LINE6_CAP_CONTROL) {
 		pod->monitor_level = POD_SYSTEM_INVALID;
 
-		/* initiate startup procedure: */
+		 
 		schedule_delayed_work(&line6->startup_work,
 				      msecs_to_jiffies(POD_STARTUP_DELAY));
 	}
@@ -408,7 +377,7 @@ static int pod_init(struct usb_line6 *line6,
 #define LINE6_DEVICE(prod) USB_DEVICE(0x0e41, prod)
 #define LINE6_IF_NUM(prod, n) USB_DEVICE_INTERFACE_NUMBER(0x0e41, prod, n)
 
-/* table of devices that work with this driver */
+ 
 static const struct usb_device_id pod_id_table[] = {
 	{ LINE6_DEVICE(0x4250),    .driver_info = LINE6_BASSPODXT },
 	{ LINE6_DEVICE(0x4642),    .driver_info = LINE6_BASSPODXTLIVE },
@@ -470,7 +439,7 @@ static const struct line6_properties pod_properties_table[] = {
 		.altsetting = 0,
 		.ep_ctrl_r = 0x82,
 		.ep_ctrl_w = 0x02,
-		/* no audio channel */
+		 
 	},
 	[LINE6_PODXT] = {
 		.id = "PODxt",
@@ -513,9 +482,7 @@ static const struct line6_properties pod_properties_table[] = {
 	},
 };
 
-/*
-	Probe USB device.
-*/
+ 
 static int pod_probe(struct usb_interface *interface,
 		     const struct usb_device_id *id)
 {

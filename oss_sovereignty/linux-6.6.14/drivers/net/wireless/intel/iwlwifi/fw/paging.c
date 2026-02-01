@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2012-2014, 2018-2019, 2021 Intel Corporation
- * Copyright (C) 2013-2015 Intel Mobile Communications GmbH
- * Copyright (C) 2016-2017 Intel Deutschland GmbH
- */
+
+ 
 #include "iwl-drv.h"
 #include "runtime.h"
 #include "fw/api/commands.h"
@@ -47,7 +43,7 @@ static int iwl_alloc_fw_paging_mem(struct iwl_fw_runtime *fwrt,
 	if (fwrt->fw_paging_db[0].fw_paging_block)
 		return 0;
 
-	/* ensure BLOCK_2_EXP_SIZE is power of 2 of PAGING_BLOCK_SIZE */
+	 
 	BUILD_BUG_ON(BIT(BLOCK_2_EXP_SIZE) != PAGING_BLOCK_SIZE);
 
 	num_of_pages = image->paging_mem_size / FW_PAGING_SIZE;
@@ -62,16 +58,14 @@ static int iwl_alloc_fw_paging_mem(struct iwl_fw_runtime *fwrt,
 		     fwrt->num_of_paging_blk,
 		     fwrt->num_of_pages_in_last_blk);
 
-	/*
-	 * Allocate CSS and paging blocks in dram.
-	 */
+	 
 	for (blk_idx = 0; blk_idx < fwrt->num_of_paging_blk + 1; blk_idx++) {
-		/* For CSS allocate 4KB, for others PAGING_BLOCK_SIZE (32K) */
+		 
 		size = blk_idx ? PAGING_BLOCK_SIZE : FW_PAGING_SIZE;
 		order = get_order(size);
 		block = alloc_pages(GFP_KERNEL, order);
 		if (!block) {
-			/* free all the previous pages since we failed */
+			 
 			iwl_free_fw_paging(fwrt);
 			return -ENOMEM;
 		}
@@ -83,10 +77,7 @@ static int iwl_alloc_fw_paging_mem(struct iwl_fw_runtime *fwrt,
 				    PAGE_SIZE << order,
 				    DMA_BIDIRECTIONAL);
 		if (dma_mapping_error(fwrt->trans->dev, phys)) {
-			/*
-			 * free the previous pages and the current one
-			 * since we failed to map_page.
-			 */
+			 
 			iwl_free_fw_paging(fwrt);
 			return -ENOMEM;
 		}
@@ -111,17 +102,7 @@ static int iwl_fill_paging_mem(struct iwl_fw_runtime *fwrt,
 	int sec_idx, idx, ret;
 	u32 offset = 0;
 
-	/*
-	 * find where is the paging image start point:
-	 * if CPU2 exist and it's in paging format, then the image looks like:
-	 * CPU1 sections (2 or more)
-	 * CPU1_CPU2_SEPARATOR_SECTION delimiter - separate between CPU1 to CPU2
-	 * CPU2 sections (not paged)
-	 * PAGING_SEPARATOR_SECTION delimiter - separate between CPU2
-	 * non paged to CPU2 paging sec
-	 * CPU2 paging CSS
-	 * CPU2 paging image (including instruction and data)
-	 */
+	 
 	for (sec_idx = 0; sec_idx < image->num_sec; sec_idx++) {
 		if (image->sec[sec_idx].offset == PAGING_SEPARATOR_SECTION) {
 			sec_idx++;
@@ -129,17 +110,14 @@ static int iwl_fill_paging_mem(struct iwl_fw_runtime *fwrt,
 		}
 	}
 
-	/*
-	 * If paging is enabled there should be at least 2 more sections left
-	 * (one for CSS and one for Paging data)
-	 */
+	 
 	if (sec_idx >= image->num_sec - 1) {
 		IWL_ERR(fwrt, "Paging: Missing CSS and/or paging sections\n");
 		ret = -EINVAL;
 		goto err;
 	}
 
-	/* copy the CSS block to the dram */
+	 
 	IWL_DEBUG_FW(fwrt, "Paging: load paging CSS to FW, sec = %d\n",
 		     sec_idx);
 
@@ -164,20 +142,13 @@ static int iwl_fill_paging_mem(struct iwl_fw_runtime *fwrt,
 
 	sec_idx++;
 
-	/*
-	 * Copy the paging blocks to the dram.  The loop index starts
-	 * from 1 since the CSS block (index 0) was already copied to
-	 * dram.  We use num_of_paging_blk + 1 to account for that.
-	 */
+	 
 	for (idx = 1; idx < fwrt->num_of_paging_blk + 1; idx++) {
 		struct iwl_fw_paging *block = &fwrt->fw_paging_db[idx];
 		int remaining = image->sec[sec_idx].len - offset;
 		int len = block->fw_paging_size;
 
-		/*
-		 * For the last block, we copy all that is remaining,
-		 * for all other blocks, we copy fw_paging_size at a
-		 * time. */
+		 
 		if (idx == fwrt->num_of_paging_blk) {
 			len = remaining;
 			if (remaining !=
@@ -230,7 +201,7 @@ static int iwl_save_fw_paging(struct iwl_fw_runtime *fwrt,
 	return iwl_fill_paging_mem(fwrt, fw);
 }
 
-/* send paging cmd to FW in case CPU2 has paging image */
+ 
 static int iwl_send_paging_cmd(struct iwl_fw_runtime *fwrt,
 			       const struct fw_img *fw)
 {
@@ -249,7 +220,7 @@ static int iwl_send_paging_cmd(struct iwl_fw_runtime *fwrt,
 	};
 	int blk_idx;
 
-	/* loop for for all paging blocks + CSS block */
+	 
 	for (blk_idx = 0; blk_idx < fwrt->num_of_paging_blk + 1; blk_idx++) {
 		dma_addr_t addr = fwrt->fw_paging_db[blk_idx].fw_paging_phys;
 		__le32 phy_addr;
@@ -270,11 +241,7 @@ int iwl_init_paging(struct iwl_fw_runtime *fwrt, enum iwl_ucode_type type)
 	if (fwrt->trans->trans_cfg->gen2)
 		return 0;
 
-	/*
-	 * Configure and operate fw paging mechanism.
-	 * The driver configures the paging flow only once.
-	 * The CPU2 paging image is included in the IWL_UCODE_INIT image.
-	 */
+	 
 	if (!fw->paging_mem_size)
 		return 0;
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ADAV80X Audio Codec driver supporting ADAV801, ADAV803
- *
- * Copyright 2011 Analog Devices Inc.
- * Author: Yi Li <yi.li@analog.com>
- * Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -658,7 +652,7 @@ static int adav80x_set_pll(struct snd_soc_component *component, int pll_id,
 		freq_out /= 2;
 	}
 
-	/* freq_out = sample_rate * 256 */
+	 
 	switch (freq_out) {
 	case 8192000:
 		pll_ctrl2 |= ADAV80X_PLL_CTRL2_FS_32(pll_id);
@@ -719,7 +713,7 @@ static int adav80x_set_bias_level(struct snd_soc_component *component,
 	return 0;
 }
 
-/* Enforce the same sample rate on all audio interfaces */
+ 
 static int adav80x_dai_startup(struct snd_pcm_substream *substream,
 	struct snd_soc_dai *dai)
 {
@@ -805,13 +799,13 @@ static int adav80x_probe(struct snd_soc_component *component)
 	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(component);
 	struct adav80x *adav80x = snd_soc_component_get_drvdata(component);
 
-	/* Force PLLs on for SYSCLK output */
+	 
 	snd_soc_dapm_force_enable_pin(dapm, "PLL1");
 	snd_soc_dapm_force_enable_pin(dapm, "PLL2");
 
-	/* Power down S/PDIF receiver, since it is currently not supported */
+	 
 	regmap_write(adav80x->regmap, ADAV80X_PLL_OUTE, 0x20);
-	/* Disable DAC zero flag */
+	 
 	regmap_write(adav80x->regmap, ADAV80X_DAC_CTRL3, 0x6);
 
 	return 0;

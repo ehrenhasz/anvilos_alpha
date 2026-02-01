@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * STMicroelectronics accelerometers driver
- *
- * Copyright 2012-2013 STMicroelectronics Inc.
- *
- * Denis Ciocca <denis.ciocca@st.com>
- * v. 1.0.0
- */
+ 
+ 
 
 #ifndef ST_ACCEL_H
 #define ST_ACCEL_H
@@ -46,12 +39,12 @@
 int st_accel_allocate_ring(struct iio_dev *indio_dev);
 int st_accel_trig_set_state(struct iio_trigger *trig, bool state);
 #define ST_ACCEL_TRIGGER_SET_STATE (&st_accel_trig_set_state)
-#else /* CONFIG_IIO_BUFFER */
+#else  
 static inline int st_accel_allocate_ring(struct iio_dev *indio_dev)
 {
 	return 0;
 }
 #define ST_ACCEL_TRIGGER_SET_STATE NULL
-#endif /* CONFIG_IIO_BUFFER */
+#endif  
 
-#endif /* ST_ACCEL_H */
+#endif  

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Hisilicon Hibmc SoC drm driver
- *
- * Based on the bochs drm driver.
- *
- * Copyright (c) 2016 Huawei Limited.
- *
- * Author:
- *	Rongrong Zou <zourongrong@huawei.com>
- *	Rongrong Zou <zourongrong@gmail.com>
- *	Jianhua Li <lijianhua@huawei.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -125,9 +115,7 @@ static int hibmc_kms_init(struct hibmc_drm_private *priv)
 	return 0;
 }
 
-/*
- * It can operate in one of three modes: 0, 1 or Sleep.
- */
+ 
 void hibmc_set_power_mode(struct hibmc_drm_private *priv, u32 power_mode)
 {
 	u32 control_value = 0;
@@ -154,7 +142,7 @@ void hibmc_set_current_gate(struct hibmc_drm_private *priv, unsigned int gate)
 	u32 mode;
 	void __iomem   *mmio = priv->mmio;
 
-	/* Get current power mode. */
+	 
 	mode = (readl(mmio + HIBMC_POWER_MODE_CTRL) &
 		HIBMC_PW_MODE_CTL_MODE_MASK) >> HIBMC_PW_MODE_CTL_MODE_SHIFT;
 
@@ -178,10 +166,10 @@ static void hibmc_hw_config(struct hibmc_drm_private *priv)
 {
 	u32 reg;
 
-	/* On hardware reset, power mode 0 is default. */
+	 
 	hibmc_set_power_mode(priv, HIBMC_PW_MODE_CTL_MODE_MODE0);
 
-	/* Enable display power gate & LOCALMEM power gate*/
+	 
 	reg = readl(priv->mmio + HIBMC_CURRENT_GATE);
 	reg &= ~HIBMC_CURR_GATE_DISPLAY_MASK;
 	reg &= ~HIBMC_CURR_GATE_LOCALMEM_MASK;
@@ -190,12 +178,7 @@ static void hibmc_hw_config(struct hibmc_drm_private *priv)
 
 	hibmc_set_current_gate(priv, reg);
 
-	/*
-	 * Reset the memory controller. If the memory controller
-	 * is not reset in chip,the system might hang when sw accesses
-	 * the memory.The memory should be resetted after
-	 * changing the MXCLK.
-	 */
+	 
 	reg = readl(priv->mmio + HIBMC_MISC_CTRL);
 	reg &= ~HIBMC_MSCCTL_LOCALMEM_RESET_MASK;
 	reg |= HIBMC_MSCCTL_LOCALMEM_RESET(0);
@@ -281,14 +264,14 @@ static int hibmc_load(struct drm_device *dev)
 	if (ret) {
 		drm_warn(dev, "enabling MSI failed: %d\n", ret);
 	} else {
-		/* PCI devices require shared interrupts. */
+		 
 		ret = request_irq(pdev->irq, hibmc_interrupt, IRQF_SHARED,
 				  dev->driver->name, dev);
 		if (ret)
 			drm_warn(dev, "install irq failed: %d\n", ret);
 	}
 
-	/* reset all the states of crtc/plane/encoder/connector */
+	 
 	drm_mode_config_reset(dev);
 
 	return 0;

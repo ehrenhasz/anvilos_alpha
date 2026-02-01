@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Hyper-V stub IOMMU driver.
- *
- * Copyright (C) 2019, Microsoft, Inc.
- *
- * Author : Lan Tianyu <Tianyu.Lan@microsoft.com>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/interrupt.h>
@@ -26,11 +20,7 @@
 
 #ifdef CONFIG_IRQ_REMAP
 
-/*
- * According 82093AA IO-APIC spec , IO APIC has a 24-entry Interrupt
- * Redirection Table. Hyper-V exposes one single IO-APIC and so define
- * 24 IO APIC remmapping entries.
- */
+ 
 #define IOAPIC_REMAPPING_ENTRY 24
 
 static cpumask_t ioapic_max_cpumask = { CPU_BITS_NONE };
@@ -43,7 +33,7 @@ static int hyperv_ir_set_affinity(struct irq_data *data,
 	struct irq_cfg *cfg = irqd_cfg(data);
 	int ret;
 
-	/* Return error If new irq affinity is out of ioapic_max_cpumask. */
+	 
 	if (!cpumask_subset(mask, &ioapic_max_cpumask))
 		return -EINVAL;
 
@@ -85,10 +75,7 @@ static int hyperv_irq_remapping_alloc(struct irq_domain *domain,
 
 	irq_data->chip = &hyperv_ir_chip;
 
-	/*
-	 * Hypver-V IO APIC irq affinity should be in the scope of
-	 * ioapic_max_cpumask because no irq remapping support.
-	 */
+	 
 	irq_data_update_affinity(irq_data, &ioapic_max_cpumask);
 
 	return 0;
@@ -104,7 +91,7 @@ static int hyperv_irq_remapping_select(struct irq_domain *d,
 				       struct irq_fwspec *fwspec,
 				       enum irq_domain_bus_token bus_token)
 {
-	/* Claim the only I/O APIC emulated by Hyper-V */
+	 
 	return x86_fwspec_is_ioapic(fwspec);
 }
 
@@ -122,10 +109,7 @@ static int __init hyperv_prepare_irq_remapping(void)
 	const char *name;
 	const struct irq_domain_ops *ops;
 
-	/*
-	 * For a Hyper-V root partition, ms_hyperv_msi_ext_dest_id()
-	 * will always return false.
-	 */
+	 
 	if (!hypervisor_is_type(X86_HYPER_MS_HYPERV) ||
 	    x86_init.hyper.msi_ext_dest_id())
 		return -ENODEV;
@@ -152,18 +136,9 @@ static int __init hyperv_prepare_irq_remapping(void)
 	}
 
 	if (hv_root_partition)
-		return 0; /* The rest is only relevant to guests */
+		return 0;  
 
-	/*
-	 * Hyper-V doesn't provide irq remapping function for
-	 * IO-APIC and so IO-APIC only accepts 8-bit APIC ID.
-	 * Cpu's APIC ID is read from ACPI MADT table and APIC IDs
-	 * in the MADT table on Hyper-v are sorted monotonic increasingly.
-	 * APIC ID reflects cpu topology. There maybe some APIC ID
-	 * gaps when cpu number in a socket is not power of two. Prepare
-	 * max cpu affinity for IOAPIC irqs. Scan cpu 0-255 and set cpu
-	 * into ioapic_max_cpumask if its APIC ID is less than 256.
-	 */
+	 
 	for (i = min_t(unsigned int, num_possible_cpus() - 1, 255); i >= 0; i--)
 		if (cpu_physical_id(i) < 256)
 			cpumask_set_cpu(i, &ioapic_max_cpumask);
@@ -183,7 +158,7 @@ struct irq_remap_ops hyperv_irq_remap_ops = {
 	.enable			= hyperv_enable_irq_remapping,
 };
 
-/* IRQ remapping domain when Linux runs as the root partition */
+ 
 struct hyperv_root_ir_data {
 	u8 ioapic_id;
 	bool is_level;
@@ -220,7 +195,7 @@ hyperv_root_ir_compose_msi_msg(struct irq_data *irq_data, struct msi_msg *msg)
 			pr_debug("%s: unexpected unmap status %lld\n", __func__, status);
 
 		data->entry.ioapic_rte.as_uint64 = 0;
-		data->entry.source = 0; /* Invalid source */
+		data->entry.source = 0;  
 	}
 
 
@@ -234,7 +209,7 @@ hyperv_root_ir_compose_msi_msg(struct irq_data *irq_data, struct msi_msg *msg)
 
 	data->entry = entry;
 
-	/* Turn it into an IO_APIC_route_entry, and generate MSI MSG. */
+	 
 	e.w1 = entry.ioapic_rte.low_uint32;
 	e.w2 = entry.ioapic_rte.high_uint32;
 

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Implementation of the SID table type.
- *
- * Original author: Stephen Smalley, <stephen.smalley.work@gmail.com>
- * Author: Ondrej Mosnacek, <omosnacek@gmail.com>
- *
- * Copyright (C) 2018 Red Hat, Inc.
- */
+
+ 
 #include <linux/errno.h>
 #include <linux/kernel.h>
 #include <linux/list.h>
@@ -96,12 +89,7 @@ int sidtab_set_initial(struct sidtab *s, u32 sid, struct context *context)
 
 	hash = context_compute_hash(context);
 
-	/*
-	 * Multiple initial sids may map to the same context. Check that this
-	 * context is not already represented in the context_to_sid hashtable
-	 * to avoid duplicate entries and long linked lists upon hash
-	 * collision.
-	 */
+	 
 	if (!context_to_sid(s, context, hash)) {
 		isid->entry.sid = sid;
 		isid->entry.hash = hash;
@@ -184,15 +172,15 @@ static struct sidtab_entry *sidtab_do_lookup(struct sidtab *s, u32 index,
 	union sidtab_entry_inner *entry;
 	u32 level, capacity_shift, leaf_index = index / SIDTAB_LEAF_ENTRIES;
 
-	/* find the level of the subtree we need */
+	 
 	level = sidtab_level_from_count(index + 1);
 	capacity_shift = level * SIDTAB_INNER_SHIFT;
 
-	/* allocate roots if needed */
+	 
 	if (alloc && sidtab_alloc_roots(s, level) != 0)
 		return NULL;
 
-	/* lookup inside the subtree */
+	 
 	entry = &s->roots[level];
 	while (level != 0) {
 		capacity_shift -= SIDTAB_INNER_SHIFT;
@@ -221,7 +209,7 @@ static struct sidtab_entry *sidtab_do_lookup(struct sidtab *s, u32 index,
 
 static struct sidtab_entry *sidtab_lookup(struct sidtab *s, u32 index)
 {
-	/* read entries only after reading count */
+	 
 	u32 count = smp_load_acquire(&s->count);
 
 	if (index >= count)
@@ -275,7 +263,7 @@ int sidtab_context_to_sid(struct sidtab *s, struct context *context,
 	if (*sid)
 		return 0;
 
-	/* lock-free search failed: lock, re-search, and insert if not found */
+	 
 	spin_lock_irqsave(&s->lock, flags);
 
 	rc = 0;
@@ -284,22 +272,19 @@ int sidtab_context_to_sid(struct sidtab *s, struct context *context,
 		goto out_unlock;
 
 	if (unlikely(s->frozen)) {
-		/*
-		 * This sidtab is now frozen - tell the caller to abort and
-		 * get the new one.
-		 */
+		 
 		rc = -ESTALE;
 		goto out_unlock;
 	}
 
 	count = s->count;
 
-	/* bail out if we already reached max entries */
+	 
 	rc = -EOVERFLOW;
 	if (count >= SIDTAB_MAX)
 		goto out_unlock;
 
-	/* insert context into new entry */
+	 
 	rc = -ENOMEM;
 	dst = sidtab_do_lookup(s, count, 1);
 	if (!dst)
@@ -312,10 +297,7 @@ int sidtab_context_to_sid(struct sidtab *s, struct context *context,
 	if (rc)
 		goto out_unlock;
 
-	/*
-	 * if we are building a new sidtab, we need to convert the context
-	 * and insert it there as well
-	 */
+	 
 	convert = s->convert;
 	if (convert) {
 		struct sidtab *target = convert->target;
@@ -348,7 +330,7 @@ int sidtab_context_to_sid(struct sidtab *s, struct context *context,
 
 	*sid = index_to_sid(count);
 
-	/* write entries before updating count */
+	 
 	smp_store_release(&s->count, count + 1);
 	hash_add_rcu(s->context_to_sid, &dst->list, dst->hash);
 
@@ -428,7 +410,7 @@ int sidtab_convert(struct sidtab *s, struct sidtab_convert_params *params)
 
 	spin_lock_irqsave(&s->lock, flags);
 
-	/* concurrent policy loads are not allowed */
+	 
 	if (s->convert) {
 		spin_unlock_irqrestore(&s->lock, flags);
 		return -EBUSY;
@@ -437,41 +419,36 @@ int sidtab_convert(struct sidtab *s, struct sidtab_convert_params *params)
 	count = s->count;
 	level = sidtab_level_from_count(count);
 
-	/* allocate last leaf in the new sidtab (to avoid race with
-	 * live convert)
-	 */
+	 
 	rc = sidtab_do_lookup(params->target, count - 1, 1) ? 0 : -ENOMEM;
 	if (rc) {
 		spin_unlock_irqrestore(&s->lock, flags);
 		return rc;
 	}
 
-	/* set count in case no new entries are added during conversion */
+	 
 	params->target->count = count;
 
-	/* enable live convert of new entries */
+	 
 	s->convert = params;
 
-	/* we can safely convert the tree outside the lock */
+	 
 	spin_unlock_irqrestore(&s->lock, flags);
 
 	pr_info("SELinux:  Converting %u SID table entries...\n", count);
 
-	/* convert all entries not covered by live convert */
+	 
 	pos = 0;
 	rc = sidtab_convert_tree(&params->target->roots[level],
 				 &s->roots[level], &pos, count, level, params);
 	if (rc) {
-		/* we need to keep the old table - disable live convert */
+		 
 		spin_lock_irqsave(&s->lock, flags);
 		s->convert = NULL;
 		spin_unlock_irqrestore(&s->lock, flags);
 		return rc;
 	}
-	/*
-	 * The hashtable can also be modified in sidtab_context_to_sid()
-	 * so we must re-acquire the lock here.
-	 */
+	 
 	spin_lock_irqsave(&s->lock, flags);
 	sidtab_convert_hashtable(params->target, count);
 	spin_unlock_irqrestore(&s->lock, flags);
@@ -483,7 +460,7 @@ void sidtab_cancel_convert(struct sidtab *s)
 {
 	unsigned long flags;
 
-	/* cancelling policy load - disable live convert of sidtab */
+	 
 	spin_lock_irqsave(&s->lock, flags);
 	s->convert = NULL;
 	spin_unlock_irqrestore(&s->lock, flags);
@@ -546,11 +523,7 @@ void sidtab_destroy(struct sidtab *s)
 		--level;
 
 	sidtab_destroy_tree(s->roots[level], level);
-	/*
-	 * The context_to_sid hashtable's objects are all shared
-	 * with the isids array and context tree, and so don't need
-	 * to be cleaned up here.
-	 */
+	 
 }
 
 #if CONFIG_SECURITY_SELINUX_SID2STR_CACHE_SIZE > 0
@@ -561,7 +534,7 @@ void sidtab_sid2str_put(struct sidtab *s, struct sidtab_entry *entry,
 	struct sidtab_str_cache *cache, *victim = NULL;
 	unsigned long flags;
 
-	/* do not cache invalid contexts */
+	 
 	if (entry->context.len)
 		return;
 
@@ -570,7 +543,7 @@ void sidtab_sid2str_put(struct sidtab *s, struct sidtab_entry *entry,
 	cache = rcu_dereference_protected(entry->cache,
 					  lockdep_is_held(&s->cache_lock));
 	if (cache) {
-		/* entry in cache - just bump to the head of LRU list */
+		 
 		list_move(&cache->lru_member, &s->cache_lru_list);
 		goto out_unlock;
 	}
@@ -580,7 +553,7 @@ void sidtab_sid2str_put(struct sidtab *s, struct sidtab_entry *entry,
 		goto out_unlock;
 
 	if (s->cache_free_slots == 0) {
-		/* pop a cache entry from the tail and free it */
+		 
 		victim = container_of(s->cache_lru_list.prev,
 				      struct sidtab_str_cache, lru_member);
 		list_del(&victim->lru_member);
@@ -607,7 +580,7 @@ int sidtab_sid2str_get(struct sidtab *s, struct sidtab_entry *entry,
 	int rc = 0;
 
 	if (entry->context.len)
-		return -ENOENT; /* do not cache invalid contexts */
+		return -ENOENT;  
 
 	rcu_read_lock();
 
@@ -630,4 +603,4 @@ int sidtab_sid2str_get(struct sidtab *s, struct sidtab_entry *entry,
 	return rc;
 }
 
-#endif /* CONFIG_SECURITY_SELINUX_SID2STR_CACHE_SIZE > 0 */
+#endif  

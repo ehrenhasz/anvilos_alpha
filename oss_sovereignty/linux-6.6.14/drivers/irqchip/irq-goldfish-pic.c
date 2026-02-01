@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for MIPS Goldfish Programmable Interrupt Controller.
- *
- * Author: Miodrag Dinic <miodrag.dinic@mips.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -17,7 +13,7 @@
 
 #define GFPIC_NR_IRQS			32
 
-/* 8..39 Cascaded Goldfish PIC interrupts */
+ 
 #define GFPIC_IRQ_BASE			8
 
 #define GFPIC_REG_IRQ_PENDING		0x04
@@ -81,7 +77,7 @@ static int __init goldfish_pic_of_init(struct device_node *of_node,
 		goto out_unmap_irq;
 	}
 
-	/* Mask interrupts. */
+	 
 	writel(1, gfpic->base + GFPIC_REG_IRQ_DISABLE_ALL);
 
 	gc = irq_alloc_generic_chip("GFPIC", 1, GFPIC_IRQ_BASE, gfpic->base,

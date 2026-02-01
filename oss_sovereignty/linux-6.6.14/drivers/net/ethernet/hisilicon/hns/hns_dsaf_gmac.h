@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2014-2015 Hisilicon Limited.
- */
+ 
+ 
 
 #ifndef _HNS_GMAC_H
 #define _HNS_GMAC_H
@@ -18,7 +16,7 @@ enum hns_port_mode {
 	GMAC_10M_SGMII,
 	GMAC_100M_SGMII,
 	GMAC_1000M_SGMII,
-	GMAC_10000M_SGMII	/* 10GE */
+	GMAC_10000M_SGMII	 
 };
 
 enum hns_gmac_duplex_mdoe {
@@ -32,10 +30,10 @@ struct hns_gmac_port_mode_cfg {
 	u32 short_runts_thr;
 	u32 pad_enable;
 	u32 crc_add;
-	u32 an_enable;	/*auto-nego enable  */
+	u32 an_enable;	 
 	u32 runt_pkt_en;
 	u32 strip_pad_en;
 };
 
 #define ETH_GMAC_DUMP_NUM		96
-#endif				/* __HNS_GMAC_H__ */
+#endif				 

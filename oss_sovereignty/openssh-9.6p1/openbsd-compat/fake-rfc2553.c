@@ -1,39 +1,6 @@
-/*
- * Copyright (C) 2000-2003 Damien Miller.  All rights reserved.
- * Copyright (C) 1999 WIDE Project.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the project nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE PROJECT AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE PROJECT OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- */
+ 
 
-/*
- * Pseudo-implementation of RFC2553 name / address resolution functions
- *
- * But these functions are not implemented correctly. The minimum subset
- * is implemented for ssh use only. For example, this routine assumes
- * that ai_family is AF_INET. Don't use it for another purpose.
- */
+ 
 
 #include "includes.h"
 
@@ -80,7 +47,7 @@ int getnameinfo(const struct sockaddr *sa, size_t salen, char *host,
 	}
 	return (0);
 }
-#endif /* !HAVE_GETNAMEINFO */
+#endif  
 
 #ifndef HAVE_GAI_STRERROR
 #ifdef HAVE_CONST_GAI_STRERROR_PROTO
@@ -103,7 +70,7 @@ gai_strerror(int err)
 		return ("unknown/invalid error.");
 	}
 }
-#endif /* !HAVE_GAI_STRERROR */
+#endif  
 
 #ifndef HAVE_FREEADDRINFO
 void
@@ -117,7 +84,7 @@ freeaddrinfo(struct addrinfo *ai)
 		ai = next;
 	}
 }
-#endif /* !HAVE_FREEADDRINFO */
+#endif  
 
 #ifndef HAVE_GETADDRINFO
 static struct
@@ -132,14 +99,14 @@ addrinfo *malloc_ai(int port, u_long addr, const struct addrinfo *hints)
 	memset(ai, '\0', sizeof(*ai) + sizeof(struct sockaddr_in));
 
 	ai->ai_addr = (struct sockaddr *)(ai + 1);
-	/* XXX -- ssh doesn't use sa_len */
+	 
 	ai->ai_addrlen = sizeof(struct sockaddr_in);
 	ai->ai_addr->sa_family = ai->ai_family = AF_INET;
 
 	((struct sockaddr_in *)(ai)->ai_addr)->sin_port = port;
 	((struct sockaddr_in *)(ai)->ai_addr)->sin_addr.s_addr = addr;
 
-	/* XXX: the following is not generally correct, but does what we want */
+	 
 	if (hints->ai_socktype)
 		ai->ai_socktype = hints->ai_socktype;
 	else
@@ -202,7 +169,7 @@ getaddrinfo(const char *hostname, const char *servname,
 		return (0);
 	}
 
-	/* Don't try DNS if AI_NUMERICHOST is set */
+	 
 	if (hints && hints->ai_flags & AI_NUMERICHOST)
 		return (EAI_NONAME);
 
@@ -232,4 +199,4 @@ getaddrinfo(const char *hostname, const char *servname,
 
 	return (EAI_NODATA);
 }
-#endif /* !HAVE_GETADDRINFO */
+#endif  

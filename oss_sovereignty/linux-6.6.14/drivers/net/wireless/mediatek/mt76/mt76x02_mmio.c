@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- * Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/irq.h>
@@ -25,7 +22,7 @@ static void mt76x02_pre_tbtt_tasklet(struct tasklet_struct *t)
 
 	mt76x02_resync_beacon_timer(dev);
 
-	/* Prevent corrupt transmissions during update */
+	 
 	mt76_set(dev, MT_BCN_BYPASS_MASK, 0xffff);
 	dev->beacon_data_count = 0;
 
@@ -93,7 +90,7 @@ void mt76x02e_init_beacon_config(struct mt76x02_dev *dev)
 
 	dev->beacon_ops = &beacon_ops;
 
-	/* Fire a pre-TBTT interrupt 8 ms before TBTT */
+	 
 	mt76_rmw_field(dev, MT_INT_TIMER_CFG, MT_INT_TIMER_CFG_PRE_TBTT,
 		       8 << 4);
 	mt76_rmw_field(dev, MT_INT_TIMER_CFG, MT_INT_TIMER_CFG_GP_TIMER,
@@ -277,7 +274,7 @@ irqreturn_t mt76x02_irq_handler(int irq, void *dev_instance)
 	if (intr & MT_INT_PRE_TBTT)
 		tasklet_schedule(&dev->mt76.pre_tbtt_tasklet);
 
-	/* send buffered multicast frames now */
+	 
 	if (intr & MT_INT_TBTT) {
 		if (dev->mt76.csa_complete)
 			mt76_csa_finish(&dev->mt76);
@@ -453,7 +450,7 @@ static void mt76x02_watchdog_reset(struct mt76x02_dev *dev)
 
 	mt76x02_irq_disable(dev, mask);
 
-	/* perform device reset */
+	 
 	mt76_clear(dev, MT_TXOP_CTRL_CFG, MT_TXOP_ED_CCA_EN);
 	mt76_wr(dev, MT_MAC_SYS_CTRL, 0);
 	mt76_clear(dev, MT_WPDMA_GLO_CFG,
@@ -461,7 +458,7 @@ static void mt76x02_watchdog_reset(struct mt76x02_dev *dev)
 	usleep_range(5000, 10000);
 	mt76_wr(dev, MT_INT_SOURCE_CSR, 0xffffffff);
 
-	/* let fw reset DMA */
+	 
 	mt76_set(dev, 0x734, 0x3);
 
 	if (restart)

@@ -1,22 +1,4 @@
-/*
- * 88pm860x_onkey.c - Marvell 88PM860x ONKEY driver
- *
- * Copyright (C) 2009-2010 Marvell International Ltd.
- *      Haojian Zhuang <haojian.zhuang@marvell.com>
- *
- * This file is subject to the terms and conditions of the GNU General
- * Public License. See the file "COPYING" in the main directory of this
- * archive for more details.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -41,7 +23,7 @@ struct pm860x_onkey_info {
 	int			irq;
 };
 
-/* 88PM860x gives us an interrupt when ONKEY is held */
+ 
 static irqreturn_t pm860x_onkey_handler(int irq, void *data)
 {
 	struct pm860x_onkey_info *info = data;
@@ -52,7 +34,7 @@ static irqreturn_t pm860x_onkey_handler(int irq, void *data)
 	input_report_key(info->idev, KEY_POWER, ret);
 	input_sync(info->idev);
 
-	/* Enable 8-second long onkey detection */
+	 
 	pm860x_set_bits(info->i2c, PM8607_WAKEUP, 3, LONG_ONKEY_EN);
 	return IRQ_HANDLED;
 }

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #define _GNU_SOURCE
 #include <linux/limits.h>
@@ -68,13 +68,7 @@ static int alloc_and_touch_anon_noexit(const char *cgroup, void *arg)
 	return 0;
 }
 
-/*
- * Create a child process that allocates and touches 100MB, then waits to be
- * killed. Wait until the child is attached to the cgroup, kill all processes
- * in that cgroup and wait until "cgroup.procs" is empty. At this point try to
- * destroy the empty cgroup. The test helps detect race conditions between
- * dying processes leaving the cgroup and cgroup destruction path.
- */
+ 
 static int test_cgcore_destroy(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -97,14 +91,14 @@ static int test_cgcore_destroy(const char *root)
 		if (child_pid < 0)
 			goto cleanup;
 
-		/* wait for the child to enter cgroup */
+		 
 		if (cg_wait_for_proc_count(cg_test, 1))
 			goto cleanup;
 
 		if (cg_killall(cg_test))
 			goto cleanup;
 
-		/* wait for cgroup to be empty */
+		 
 		while (1) {
 			if (cg_read(cg_test, "cgroup.procs", buf, sizeof(buf)))
 				goto cleanup;
@@ -127,16 +121,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * A(0) - B(0) - C(1)
- *        \ D(0)
- *
- * A, B and C's "populated" fields would be 1 while D's 0.
- * test that after the one process in C is moved to root,
- * A,B and C's "populated" fields would flip to "0" and file
- * modified events will be generated on the
- * "cgroup.events" files of both cgroups.
- */
+ 
 static int test_cgcore_populated(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -196,7 +181,7 @@ static int test_cgcore_populated(const char *root)
 	if (cg_read_strcmp(cg_test_d, "cgroup.events", "populated 0\n"))
 		goto cleanup;
 
-	/* Test that we can directly clone into a new cgroup. */
+	 
 	cgroup_fd = dirfd_open_opath(cg_test_d);
 	if (cgroup_fd < 0)
 		goto cleanup;
@@ -226,7 +211,7 @@ static int test_cgcore_populated(const char *root)
 	if (cg_read_strcmp(cg_test_d, "cgroup.events", "populated 0\n"))
 		goto cleanup;
 
-	/* Remove cgroup. */
+	 
 	if (cg_test_d) {
 		cg_destroy(cg_test_d);
 		free(cg_test_d);
@@ -262,14 +247,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * A (domain threaded) - B (threaded) - C (domain)
- *
- * test that C can't be used until it is turned into a
- * threaded cgroup.  "cgroup.type" file will report "domain (invalid)" in
- * these cases. Operations which fail due to invalid topology use
- * EOPNOTSUPP as the errno.
- */
+ 
 static int test_cgcore_invalid_domain(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -328,10 +306,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * Test that when a child becomes threaded
- * the parent type becomes domain threaded.
- */
+ 
 static int test_cgcore_parent_becomes_threaded(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -367,10 +342,7 @@ cleanup:
 
 }
 
-/*
- * Test that there's no internal process constrain on threaded cgroups.
- * You can add threads/processes on a parent with a controller enabled.
- */
+ 
 static int test_cgcore_no_internal_process_constraint_on_threads(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -419,10 +391,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * Test that you can't enable a controller on a child if it's not enabled
- * on the parent.
- */
+ 
 static int test_cgcore_top_down_constraint_enable(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -454,10 +423,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * Test that you can't disable a controller on a parent
- * if it's enabled in a child.
- */
+ 
 static int test_cgcore_top_down_constraint_disable(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -495,10 +461,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * Test internal process constraint.
- * You can't add a pid to a domain parent if a controller is enabled.
- */
+ 
 static int test_cgcore_internal_process_constraint(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -541,10 +504,7 @@ static void *dummy_thread_fn(void *arg)
 	return (void *)(size_t)pause();
 }
 
-/*
- * Test threadgroup migration.
- * All threads of a process are migrated together.
- */
+ 
 static int test_cgcore_proc_migration(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -614,10 +574,7 @@ static void *migrating_thread_fn(void *arg)
 	return NULL;
 }
 
-/*
- * Test single thread migration.
- * Threaded cgroups allow successful migration of a thread.
- */
+ 
 static int test_cgcore_thread_migration(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -677,10 +634,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * cgroup migration permission check should be performed based on the
- * credentials at the time of open instead of write.
- */
+ 
 static int test_cgcore_lesser_euid_open(const char *root)
 {
 	const uid_t test_euid = TEST_UID;
@@ -759,14 +713,11 @@ static int lesser_ns_open_thread_fn(void *arg)
 	return 0;
 }
 
-/*
- * cgroup migration permission check should be performed based on the cgroup
- * namespace at the time of open instead of write.
- */
+ 
 static int test_cgcore_lesser_ns_open(const char *root)
 {
 	static char stack[65536];
-	const uid_t test_euid = 65534;	/* usually nobody, any !root is fine */
+	const uid_t test_euid = 65534;	 
 	int ret = KSFT_FAIL;
 	char *cg_test_a = NULL, *cg_test_b = NULL;
 	char *cg_test_a_procs = NULL, *cg_test_b_procs = NULL;

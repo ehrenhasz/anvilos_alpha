@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include <linux/debugfs.h>
 
@@ -32,7 +30,7 @@ int intel_gt_debugfs_reset_show(struct intel_gt *gt, u64 *val)
 
 void intel_gt_debugfs_reset_store(struct intel_gt *gt, u64 val)
 {
-	/* Flush any previous reset before applying for a new one */
+	 
 	wait_event(gt->reset.queue,
 		   !test_bit(I915_RESET_BACKOFF, &gt->reset.flags));
 
@@ -40,10 +38,7 @@ void intel_gt_debugfs_reset_store(struct intel_gt *gt, u64 val)
 			      "Manually reset engine mask to %llx", val);
 }
 
-/*
- * keep the interface clean where the first parameter
- * is a 'struct intel_gt *' instead of 'void *'
- */
+ 
 static int __intel_gt_debugfs_reset_show(void *data, u64 *val)
 {
 	return intel_gt_debugfs_reset_show(data, val);

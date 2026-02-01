@@ -1,29 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/**************************************************************************
- *
- * Copyright 2009-2023 VMware, Inc., Palo Alto, CA., USA
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- **************************************************************************/
+
+ 
 #include "vmwgfx_bo.h"
 #include "vmwgfx_drv.h"
 #include "vmwgfx_devcaps.h"
@@ -72,7 +48,7 @@ bool vmw_supports_3d(struct vmw_private *dev_priv)
 	if (hwversion < SVGA3D_HWVERSION_WS8_B1)
 		return false;
 
-	/* Legacy Display Unit does not support surfaces */
+	 
 	if (dev_priv->active_display_unit == vmw_du_legacy)
 		return false;
 
@@ -263,16 +239,7 @@ static int vmw_fifo_wait(struct vmw_private *dev_priv,
 	return ret;
 }
 
-/*
- * Reserve @bytes number of bytes in the fifo.
- *
- * This function will return NULL (error) on two conditions:
- *  If it timeouts waiting for fifo space, or if @bytes is larger than the
- *   available fifo space.
- *
- * Returns:
- *   Pointer to the fifo, or null on error (possible hardware hang).
- */
+ 
 static void *vmw_local_fifo_reserve(struct vmw_private *dev_priv,
 				    uint32_t bytes)
 {
@@ -477,12 +444,7 @@ void vmw_cmd_commit(struct vmw_private *dev_priv, uint32_t bytes)
 }
 
 
-/**
- * vmw_cmd_commit_flush - Commit fifo space and flush any buffered commands.
- *
- * @dev_priv: Pointer to device private structure.
- * @bytes: Number of bytes to commit.
- */
+ 
 void vmw_cmd_commit_flush(struct vmw_private *dev_priv, uint32_t bytes)
 {
 	if (dev_priv->cman)
@@ -491,13 +453,7 @@ void vmw_cmd_commit_flush(struct vmw_private *dev_priv, uint32_t bytes)
 		vmw_local_fifo_commit(dev_priv, bytes);
 }
 
-/**
- * vmw_cmd_flush - Flush any buffered commands and make sure command processing
- * starts.
- *
- * @dev_priv: Pointer to device private structure.
- * @interruptible: Whether to wait interruptible if function needs to sleep.
- */
+ 
 int vmw_cmd_flush(struct vmw_private *dev_priv, bool interruptible)
 {
 	might_sleep();
@@ -530,10 +486,7 @@ int vmw_cmd_send_fence(struct vmw_private *dev_priv, uint32_t *seqno)
 
 	if (!vmw_has_fences(dev_priv)) {
 
-		/*
-		 * Don't request hardware to send a fence. The
-		 * waiting code in vmwgfx_irq.c will emulate this.
-		 */
+		 
 
 		vmw_cmd_commit(dev_priv, 0);
 		return 0;
@@ -549,23 +502,11 @@ out_err:
 	return ret;
 }
 
-/**
- * vmw_cmd_emit_dummy_legacy_query - emits a dummy query to the fifo using
- * legacy query commands.
- *
- * @dev_priv: The device private structure.
- * @cid: The hardware context id used for the query.
- *
- * See the vmw_cmd_emit_dummy_query documentation.
- */
+ 
 static int vmw_cmd_emit_dummy_legacy_query(struct vmw_private *dev_priv,
 					    uint32_t cid)
 {
-	/*
-	 * A query wait without a preceding query end will
-	 * actually finish all queries for this cid
-	 * without writing to the query result structure.
-	 */
+	 
 
 	struct ttm_buffer_object *bo = &dev_priv->dummy_query_bo->tbo;
 	struct {
@@ -595,23 +536,11 @@ static int vmw_cmd_emit_dummy_legacy_query(struct vmw_private *dev_priv,
 	return 0;
 }
 
-/**
- * vmw_cmd_emit_dummy_gb_query - emits a dummy query to the fifo using
- * guest-backed resource query commands.
- *
- * @dev_priv: The device private structure.
- * @cid: The hardware context id used for the query.
- *
- * See the vmw_cmd_emit_dummy_query documentation.
- */
+ 
 static int vmw_cmd_emit_dummy_gb_query(struct vmw_private *dev_priv,
 				       uint32_t cid)
 {
-	/*
-	 * A query wait without a preceding query end will
-	 * actually finish all queries for this cid
-	 * without writing to the query result structure.
-	 */
+	 
 
 	struct ttm_buffer_object *bo = &dev_priv->dummy_query_bo->tbo;
 	struct {
@@ -637,24 +566,7 @@ static int vmw_cmd_emit_dummy_gb_query(struct vmw_private *dev_priv,
 }
 
 
-/**
- * vmw_cmd_emit_dummy_query - emits a dummy query to the fifo using
- * appropriate resource query commands.
- *
- * @dev_priv: The device private structure.
- * @cid: The hardware context id used for the query.
- *
- * This function is used to emit a dummy occlusion query with
- * no primitives rendered between query begin and query end.
- * It's used to provide a query barrier, in order to know that when
- * this query is finished, all preceding queries are also finished.
- *
- * A Query results structure should have been initialized at the start
- * of the dev_priv->dummy_query_bo buffer object. And that buffer object
- * must also be either reserved or pinned when this function is called.
- *
- * Returns -ENOMEM on failure to reserve fifo space.
- */
+ 
 int vmw_cmd_emit_dummy_query(struct vmw_private *dev_priv,
 			      uint32_t cid)
 {
@@ -665,14 +577,7 @@ int vmw_cmd_emit_dummy_query(struct vmw_private *dev_priv,
 }
 
 
-/**
- * vmw_cmd_supported - returns true if the given device supports
- * command queues.
- *
- * @vmw: The device private structure.
- *
- * Returns true if we can issue commands.
- */
+ 
 bool vmw_cmd_supported(struct vmw_private *vmw)
 {
 	bool has_cmdbufs =
@@ -681,8 +586,6 @@ bool vmw_cmd_supported(struct vmw_private *vmw)
 	if (vmw_is_svga_v3(vmw))
 		return (has_cmdbufs &&
 			(vmw->capabilities & SVGA_CAP_GBOBJECTS) != 0);
-	/*
-	 * We have FIFO cmd's
-	 */
+	 
 	return has_cmdbufs || vmw->fifo_mem != NULL;
 }

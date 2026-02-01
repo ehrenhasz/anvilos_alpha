@@ -1,45 +1,8 @@
-/****************************************************************************
- * Copyright 2018-2021,2022 Thomas E. Dickey                                *
- * Copyright 1998-2015,2016 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- *     and: Juergen Pfeifer                         2009                    *
- ****************************************************************************/
+ 
 
-/*
-**	lib_getch.c
-**
-**	The routine getch().
-**
-*/
+ 
 
 #define NEED_KEY_EVENT
 #include <curses.priv.h>
@@ -106,7 +69,7 @@ set_escdelay(int value)
     return code;
 }
 #endif
-#endif /* NCURSES_EXT_FUNCS */
+#endif  
 
 #if NCURSES_EXT_FUNCS
 NCURSES_EXPORT(int)
@@ -125,7 +88,7 @@ get_escdelay(void)
     return NCURSES_SP_NAME(get_escdelay) (CURRENT_SCREEN);
 }
 #endif
-#endif /* NCURSES_EXT_FUNCS */
+#endif  
 
 static int
 _nc_use_meta(WINDOW *win)
@@ -145,9 +108,7 @@ _nc_get_handle(int fd)
 # endif
 #endif
 
-/*
- * Check for mouse activity, returning nonzero if we find any.
- */
+ 
 static int
 check_mouse_activity(SCREEN *sp, int delay EVENTLIST_2nd(_nc_eventlist * evl))
 {
@@ -157,21 +118,21 @@ check_mouse_activity(SCREEN *sp, int delay EVENTLIST_2nd(_nc_eventlist * evl))
     TERMINAL_CONTROL_BLOCK *TCB = TCBOf(sp);
     rc = TCBOf(sp)->drv->td_testmouse(TCBOf(sp), delay EVENTLIST_2nd(evl));
 # if defined(EXP_WIN32_DRIVER)
-    /* if we emulate terminfo on console, we have to use the console routine */
+     
     if (IsTermInfoOnConsole(sp)) {
 	rc = _nc_console_testmouse(sp,
 				   _nc_console_handle(sp->_ifd),
 				   delay EVENTLIST_2nd(evl));
     } else
 # elif defined(_NC_WINDOWS)
-    /* if we emulate terminfo on console, we have to use the console routine */
+     
     if (IsTermInfoOnConsole(sp)) {
 	HANDLE fd = _nc_get_handle(sp->_ifd);
 	rc = _nc_mingw_testmouse(sp, fd, delay EVENTLIST_2nd(evl));
     } else
 # endif
 	rc = TCB->drv->td_testmouse(TCB, delay EVENTLIST_2nd(evl));
-#else /* !USE_TERM_DRIVER */
+#else  
 # if USE_SYSMOUSE
     if ((sp->_mouse_type == M_SYSMOUSE)
 	&& (sp->_sysmouse_head < sp->_sysmouse_tail)) {
@@ -200,7 +161,7 @@ check_mouse_activity(SCREEN *sp, int delay EVENTLIST_2nd(_nc_eventlist * evl))
 	}
 # endif
     }
-#endif /* USE_TERM_DRIVER */
+#endif  
     return rc;
 }
 
@@ -304,7 +265,7 @@ fifo_push(SCREEN *sp EVENTLIST_2nd(_nc_eventlist * evl))
 	sp->_extended_key = (ch == 0);
     } else
 #endif
-    {				/* Can block... */
+    {				 
 #if defined(USE_TERM_DRIVER)
 	int buf;
 # if defined(EXP_WIN32_DRIVER)
@@ -321,10 +282,10 @@ fifo_push(SCREEN *sp EVENTLIST_2nd(_nc_eventlist * evl))
 				       _nc_get_handle(sp->_ifd),
 				       &buf);
 	else
-# endif	/* EXP_WIN32_DRIVER */
+# endif	 
 	    n = CallDriver_1(sp, td_read, &buf);
 	ch = buf;
-#else /* !USE_TERM_DRIVER */
+#else  
 #if defined(EXP_WIN32_DRIVER)
 	int buf;
 #endif
@@ -341,7 +302,7 @@ fifo_push(SCREEN *sp EVENTLIST_2nd(_nc_eventlist * evl))
 #endif
 	_nc_set_read_thread(FALSE);
 	ch = c2;
-#endif /* USE_TERM_DRIVER */
+#endif  
     }
 
     if ((n == -1) || (n == 0)) {
@@ -393,7 +354,7 @@ recur_wrefresh(WINDOW *win)
     if (_nc_use_pthreads && !same_sp) {
 	SCREEN *save_SP;
 
-	/* temporarily switch to the window's screen to check/refresh */
+	 
 	_nc_lock_global(curses);
 	save_SP = CURRENT_SCREEN;
 	_nc_set_screen(sp);
@@ -419,7 +380,7 @@ recur_wgetnstr(WINDOW *win, char *buf)
 	if (_nc_use_pthreads && sp != CURRENT_SCREEN) {
 	    SCREEN *save_SP;
 
-	    /* temporarily switch to the window's screen to get cooked input */
+	     
 	    _nc_lock_global(curses);
 	    save_SP = CURRENT_SCREEN;
 	    _nc_set_screen(sp);
@@ -472,11 +433,7 @@ _nc_wgetch(WINDOW *win,
     event_delay = _nc_eventlist_timeout(evl);
 #endif
 
-    /*
-     * Handle cooked mode.  Grab a string from the screen,
-     * stuff its contents in the FIFO queue, and pop off
-     * the first character to return it.
-     */
+     
     if (head == -1 &&
 	!sp->_notty &&
 	!sp->_raw &&
@@ -486,7 +443,7 @@ _nc_wgetch(WINDOW *win,
 
 	TR(TRACE_IEVENT, ("filling queue in cooked mode"));
 
-	/* ungetch in reverse order */
+	 
 #ifdef NCURSES_WGETCH_EVENTS
 	rc = recur_wgetnstr(win, buf);
 	if (rc != KEY_EVENT && rc != ERR)
@@ -499,7 +456,7 @@ _nc_wgetch(WINDOW *win,
 	    safe_ungetch(sp, bufp[-1]);
 
 #ifdef NCURSES_WGETCH_EVENTS
-	/* Return it first */
+	 
 	if (rc == KEY_EVENT) {
 	    *result = rc;
 	} else
@@ -514,7 +471,7 @@ _nc_wgetch(WINDOW *win,
     recur_wrefresh(win);
 
     if (win->_notimeout || (win->_delay >= 0) || (sp->_cbreak > 1)) {
-	if (head == -1) {	/* fifo is empty */
+	if (head == -1) {	 
 	    int delay;
 
 	    TR(TRACE_IEVENT, ("timed delay in wgetch()"));
@@ -542,21 +499,11 @@ _nc_wgetch(WINDOW *win,
 		goto check_sigwinch;
 	    }
 	}
-	/* else go on to read data available */
+	 
     }
 
     if (win->_use_keypad) {
-	/*
-	 * This is tricky.  We only want to get special-key
-	 * events one at a time.  But we want to accumulate
-	 * mouse events until either (a) the mouse logic tells
-	 * us it has picked up a complete gesture, or (b)
-	 * there's a detectable time lapse after one.
-	 *
-	 * Note: if the mouse code starts failing to compose
-	 * press/release events into clicks, you should probably
-	 * increase the wait with mouseinterval().
-	 */
+	 
 	int runcount = 0;
 
 	do {
@@ -582,13 +529,13 @@ _nc_wgetch(WINDOW *win,
 #endif
 	if (runcount > 0 && ch != KEY_MOUSE) {
 #ifdef NCURSES_WGETCH_EVENTS
-	    /* mouse event sequence ended by an event, report event */
+	     
 	    if (ch == KEY_EVENT) {
-		safe_ungetch(sp, KEY_MOUSE);	/* FIXME This interrupts a gesture... */
+		safe_ungetch(sp, KEY_MOUSE);	 
 	    } else
 #endif
 	    {
-		/* mouse event sequence ended by keystroke, store keystroke */
+		 
 		safe_ungetch(sp, ch);
 		ch = KEY_MOUSE;
 	    }
@@ -604,13 +551,10 @@ _nc_wgetch(WINDOW *win,
 #if USE_SIZECHANGE
 	if (_nc_handle_sigwinch(sp)) {
 	    _nc_update_screensize(sp);
-	    /* resizeterm can push KEY_RESIZE */
+	     
 	    if (cooked_key_in_fifo()) {
 		*result = fifo_pull(sp);
-		/*
-		 * Get the ERR from queue -- it is from WINCH,
-		 * so we should take it out, the "error" is handled.
-		 */
+		 
 		if (fifo_peek(sp) == -1)
 		    fifo_pull(sp);
 		returnCode(*result >= KEY_MIN ? KEY_CODE_YES : OK);
@@ -620,41 +564,18 @@ _nc_wgetch(WINDOW *win,
 	returnCode(ERR);
     }
 
-    /*
-     * If echo() is in effect, display the printable version of the
-     * key on the screen.  Carriage return and backspace are treated
-     * specially by Solaris curses:
-     *
-     * If carriage return is defined as a function key in the
-     * terminfo, e.g., kent, then Solaris may return either ^J (or ^M
-     * if nonl() is set) or KEY_ENTER depending on the echo() mode.
-     * We echo before translating carriage return based on nonl(),
-     * since the visual result simply moves the cursor to column 0.
-     *
-     * Backspace is a different matter.  Solaris curses does not
-     * translate it to KEY_BACKSPACE if kbs=^H.  This does not depend
-     * on the stty modes, but appears to be a hardcoded special case.
-     * This is a difference from ncurses, which uses the terminfo entry.
-     * However, we provide the same visual result as Solaris, moving the
-     * cursor to the left.
-     */
+     
     if (sp->_echo && !IS_PAD(win)) {
 	chtype backup = (chtype) ((ch == KEY_BACKSPACE) ? '\b' : ch);
 	if (backup < KEY_MIN)
 	    wechochar(win, backup);
     }
 
-    /*
-     * Simulate ICRNL mode
-     */
+     
     if ((ch == '\r') && sp->_nl)
 	ch = '\n';
 
-    /* Strip 8th-bit if so desired.  We do this only for characters that
-     * are in the range 128-255, to provide compatibility with terminals
-     * that display only 7-bit characters.  Note that 'ch' may be a
-     * function key at this point, so we mustn't strip _those_.
-     */
+     
     if (!use_meta)
 	if ((ch < KEY_MIN) && (ch & 0x80))
 	    ch &= 0x7f;
@@ -699,20 +620,7 @@ wgetch(WINDOW *win)
     returnCode(code);
 }
 
-/*
-**      int
-**      kgetch()
-**
-**      Get an input character, but take care of keypad sequences, returning
-**      an appropriate code when one matches the input.  After each character
-**      is received, set an alarm call based on ESCDELAY.  If no more of the
-**      sequence is received by the time the alarm goes off, pass through
-**      the sequence gotten so far.
-**
-**	This function must be called when there are no cooked keys in queue.
-**	(that is head==-1 || peek==head)
-**
-*/
+ 
 
 static int
 kgetch(SCREEN *sp, bool forever EVENTLIST_2nd(_nc_eventlist * evl))
@@ -731,26 +639,23 @@ kgetch(SCREEN *sp, bool forever EVENTLIST_2nd(_nc_eventlist * evl))
 	} else if (!raw_key_in_fifo()) {
 	    ch = fifo_push(sp EVENTLIST_2nd(evl));
 	    if (ch == ERR) {
-		peek = head;	/* the keys stay uninterpreted */
+		peek = head;	 
 		return ERR;
 	    }
 #ifdef NCURSES_WGETCH_EVENTS
 	    else if (ch == KEY_EVENT) {
-		peek = head;	/* the keys stay uninterpreted */
-		return fifo_pull(sp);	/* Remove KEY_EVENT from the queue */
+		peek = head;	 
+		return fifo_pull(sp);	 
 	    }
 #endif
 	}
 
 	ch = fifo_peek(sp);
 	if (ch >= KEY_MIN) {
-	    /* If not first in queue, somebody put this key there on purpose in
-	     * emergency.  Consider it higher priority than the unfinished
-	     * keysequence we are parsing.
-	     */
+	     
 	    peek = head;
-	    /* assume the key is the last in fifo */
-	    t_dec();		/* remove the key */
+	     
+	    t_dec();		 
 	    return ch;
 	}
 
@@ -765,7 +670,7 @@ kgetch(SCREEN *sp, bool forever EVENTLIST_2nd(_nc_eventlist * evl))
 	TR(TRACE_IEVENT, ("ptr=%p, ch=%d, value=%d",
 			  (void *) ptr, ptr->ch, ptr->value));
 
-	if (ptr->value != 0) {	/* sequence terminated */
+	if (ptr->value != 0) {	 
 	    TR(TRACE_IEVENT, ("end of sequence"));
 	    if (peek == tail) {
 		fifo_clear(sp);
@@ -785,8 +690,8 @@ kgetch(SCREEN *sp, bool forever EVENTLIST_2nd(_nc_eventlist * evl))
 #ifdef NCURSES_WGETCH_EVENTS
 	    if (rc & TW_EVENT) {
 		TR(TRACE_IEVENT, ("interrupted by a user event"));
-		/* FIXME Should have preserved remainder timeleft for reuse... */
-		peek = head;	/* Restart interpreting later */
+		 
+		peek = head;	 
 		return KEY_EVENT;
 	    }
 #endif

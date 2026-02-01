@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2002-2004, Instant802 Networks, Inc.
- * Copyright (C) 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef WPA_H
 #define WPA_H
@@ -46,4 +43,4 @@ ieee80211_crypto_gcmp_encrypt(struct ieee80211_tx_data *tx);
 ieee80211_rx_result
 ieee80211_crypto_gcmp_decrypt(struct ieee80211_rx_data *rx);
 
-#endif /* WPA_H */
+#endif  

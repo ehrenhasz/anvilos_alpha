@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2018 Maxime Jourdan <mjourdan@baylibre.com>
- */
+
+ 
 
 #include <media/v4l2-mem2mem.h>
 #include <media/videobuf2-dma-contig.h>
@@ -26,7 +24,7 @@ const u16 vdec_hevc_parser_cmd[] = {
 	0x7C00
 };
 
-/* Configure decode head read mode */
+ 
 void codec_hevc_setup_decode_head(struct amvdec_session *sess, int is_10bit)
 {
 	struct amvdec_core *core = sess->core;
@@ -34,7 +32,7 @@ void codec_hevc_setup_decode_head(struct amvdec_session *sess, int is_10bit)
 	u32 head_size = amvdec_am21c_head_size(sess->width, sess->height);
 
 	if (!codec_hevc_use_fbc(sess->pixfmt_cap, is_10bit)) {
-		/* Enable 2-plane reference read mode */
+		 
 		amvdec_write_dos(core, HEVCD_MPP_DECOMP_CTL1, BIT(31));
 		return;
 	}
@@ -98,7 +96,7 @@ static void codec_hevc_setup_buffers_gxbb(struct amvdec_session *sess,
 	else
 		val = buf_y_paddr | ((idx * 2) << 8) | 1;
 
-	/* Fill the remaining unused slots with the last buffer's Y addr */
+	 
 	for (i = buf_num; i < MAX_REF_PIC_NUM; ++i)
 		amvdec_write_dos(core, HEVCD_MPP_ANC2AXI_TBL_CMD_ADDR, val);
 

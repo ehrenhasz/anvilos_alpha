@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * rt715.h -- RT715 ALSA SoC audio driver header
- *
- * Copyright(c) 2019 Realtek Semiconductor Corp.
- */
+ 
+ 
 
 #ifndef __RT715_H__
 #define __RT715_H__
@@ -26,7 +22,7 @@ struct rt715_priv {
 	unsigned int kctl_8ch_vol_ori[8];
 };
 
-/* NID */
+ 
 #define RT715_AUDIO_FUNCTION_GROUP			0x01
 #define RT715_MIC_ADC					0x07
 #define RT715_LINE_ADC					0x08
@@ -47,12 +43,12 @@ struct rt715_priv {
 #define RT715_MIX_ADC2					0x27
 #define RT715_INLINE_CMD				0x55
 
-/* Index (NID:20h) */
+ 
 #define RT715_VD_CLEAR_CTRL				0x01
 #define RT715_SDW_INPUT_SEL				0x39
 #define RT715_EXT_DMIC_CLK_CTRL2			0x54
 
-/* Verb */
+ 
 #define RT715_VERB_SET_CONNECT_SEL			0x3100
 #define RT715_VERB_GET_CONNECT_SEL			0xb100
 #define RT715_VERB_SET_EAPD_BTLENABLE			0x3c00
@@ -201,7 +197,7 @@ struct rt715_priv {
 #define RT715_SET_DMIC4_CONFIG_DEFAULT4\
 	(RT715_VERB_SET_CONFIG_DEFAULT4 | RT715_DMIC4)
 
-/* vendor register clear ctrl-1    (0x01)(NID:20h) */
+ 
 #define RT715_CLEAR_HIDDEN_REG (0x1 << 15)
 
 
@@ -224,4 +220,4 @@ int hda_to_sdw(unsigned int nid, unsigned int verb, unsigned int payload,
 	       unsigned int *sdw_addr_h, unsigned int *sdw_data_h,
 	       unsigned int *sdw_addr_l, unsigned int *sdw_data_l);
 int rt715_clock_config(struct device *dev);
-#endif /* __RT715_H__ */
+#endif  

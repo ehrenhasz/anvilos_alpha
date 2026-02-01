@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This is the driver for the GMAC on-chip Ethernet controller for ST SoCs.
- * DWC Ether MAC version 4.xx  has been used for  developing this code.
- *
- * This contains the functions to handle the dma.
- *
- * Copyright (C) 2015  STMicroelectronics Ltd
- *
- * Author: Alexandre Torgue <alexandre.torgue@st.com>
- */
+
+ 
 
 #include <linux/io.h>
 #include "dwmac4.h"
@@ -36,10 +27,7 @@ static void dwmac4_dma_axi(void __iomem *ioaddr, struct stmmac_axi *axi)
 	value |= (axi->axi_rd_osr_lmt & DMA_AXI_OSR_MAX) <<
 		 DMA_AXI_RD_OSR_LMT_SHIFT;
 
-	/* Depending on the UNDEF bit the Master AXI will perform any burst
-	 * length according to the BLEN programmed (by default all BLEN are
-	 * set).
-	 */
+	 
 	for (i = 0; i < AXI_BLEN; i++) {
 		switch (axi->axi_blen[i]) {
 		case 256:
@@ -102,7 +90,7 @@ static void dwmac4_dma_init_tx_chan(struct stmmac_priv *priv,
 	value = readl(ioaddr + DMA_CHAN_TX_CONTROL(dwmac4_addrs, chan));
 	value = value | (txpbl << DMA_BUS_MODE_PBL_SHIFT);
 
-	/* Enable OSP to get best performance */
+	 
 	value |= DMA_CONTROL_OSP;
 
 	writel(value, ioaddr + DMA_CHAN_TX_CONTROL(dwmac4_addrs, chan));
@@ -122,13 +110,13 @@ static void dwmac4_dma_init_channel(struct stmmac_priv *priv,
 	const struct dwmac4_addrs *dwmac4_addrs = priv->plat->dwmac4_addrs;
 	u32 value;
 
-	/* common channel control register config */
+	 
 	value = readl(ioaddr + DMA_CHAN_CONTROL(dwmac4_addrs, chan));
 	if (dma_cfg->pblx8)
 		value = value | DMA_BUS_MODE_PBL;
 	writel(value, ioaddr + DMA_CHAN_CONTROL(dwmac4_addrs, chan));
 
-	/* Mask interrupts by writing to CSR7 */
+	 
 	writel(DMA_CHAN_INTR_DEFAULT_MASK,
 	       ioaddr + DMA_CHAN_INTR_ENA(dwmac4_addrs, chan));
 }
@@ -140,14 +128,14 @@ static void dwmac410_dma_init_channel(struct stmmac_priv *priv,
 	const struct dwmac4_addrs *dwmac4_addrs = priv->plat->dwmac4_addrs;
 	u32 value;
 
-	/* common channel control register config */
+	 
 	value = readl(ioaddr + DMA_CHAN_CONTROL(dwmac4_addrs, chan));
 	if (dma_cfg->pblx8)
 		value = value | DMA_BUS_MODE_PBL;
 
 	writel(value, ioaddr + DMA_CHAN_CONTROL(dwmac4_addrs, chan));
 
-	/* Mask interrupts by writing to CSR7 */
+	 
 	writel(DMA_CHAN_INTR_DEFAULT_MASK_4_10,
 	       ioaddr + DMA_CHAN_INTR_ENA(dwmac4_addrs, chan));
 }
@@ -157,11 +145,11 @@ static void dwmac4_dma_init(void __iomem *ioaddr,
 {
 	u32 value = readl(ioaddr + DMA_SYS_BUS_MODE);
 
-	/* Set the Fixed burst mode */
+	 
 	if (dma_cfg->fixed_burst)
 		value |= DMA_SYS_BUS_FB;
 
-	/* Mixed Burst has no effect when fb is set */
+	 
 	if (dma_cfg->mixed_burst)
 		value |= DMA_SYS_BUS_MB;
 
@@ -194,9 +182,7 @@ static void _dwmac4_dump_dma_regs(struct stmmac_priv *priv,
 	const struct dwmac4_addrs *dwmac4_addrs = priv->plat->dwmac4_addrs;
 	const struct dwmac4_addrs *default_addrs = NULL;
 
-	/* Purposely save the registers in the "normal" layout, regardless of
-	 * platform modifications, to keep reg_space size constant
-	 */
+	 
 	reg_space[DMA_CHAN_CONTROL(default_addrs, channel) / 4] =
 		readl(ioaddr + DMA_CHAN_CONTROL(dwmac4_addrs, channel));
 	reg_space[DMA_CHAN_TX_CONTROL(default_addrs, channel) / 4] =
@@ -280,32 +266,23 @@ static void dwmac4_dma_rx_chan_op_mode(struct stmmac_priv *priv,
 	mtl_rx_op &= ~MTL_OP_MODE_RQS_MASK;
 	mtl_rx_op |= rqs << MTL_OP_MODE_RQS_SHIFT;
 
-	/* Enable flow control only if each channel gets 4 KiB or more FIFO and
-	 * only if channel is not an AVB channel.
-	 */
+	 
 	if ((fifosz >= 4096) && (qmode != MTL_QUEUE_AVB)) {
 		unsigned int rfd, rfa;
 
 		mtl_rx_op |= MTL_OP_MODE_EHFC;
 
-		/* Set Threshold for Activating Flow Control to min 2 frames,
-		 * i.e. 1500 * 2 = 3000 bytes.
-		 *
-		 * Set Threshold for Deactivating Flow Control to min 1 frame,
-		 * i.e. 1500 bytes.
-		 */
+		 
 		switch (fifosz) {
 		case 4096:
-			/* This violates the above formula because of FIFO size
-			 * limit therefore overflow may occur in spite of this.
-			 */
-			rfd = 0x03; /* Full-2.5K */
-			rfa = 0x01; /* Full-1.5K */
+			 
+			rfd = 0x03;  
+			rfa = 0x01;  
 			break;
 
 		default:
-			rfd = 0x07; /* Full-4.5K */
-			rfa = 0x04; /* Full-3K */
+			rfd = 0x07;  
+			rfa = 0x04;  
 			break;
 		}
 
@@ -330,13 +307,13 @@ static void dwmac4_dma_tx_chan_op_mode(struct stmmac_priv *priv,
 
 	if (mode == SF_DMA_MODE) {
 		pr_debug("GMAC: enable TX store and forward mode\n");
-		/* Transmit COE type 2 cannot be done in cut-through mode. */
+		 
 		mtl_tx_op |= MTL_OP_MODE_TSF;
 	} else {
 		pr_debug("GMAC: disabling TX SF (threshold %d)\n", mode);
 		mtl_tx_op &= ~MTL_OP_MODE_TSF;
 		mtl_tx_op &= MTL_OP_MODE_TTC_MASK;
-		/* Set the transmit threshold */
+		 
 		if (mode <= 32)
 			mtl_tx_op |= MTL_OP_MODE_TTC_32;
 		else if (mode <= 64)
@@ -354,15 +331,7 @@ static void dwmac4_dma_tx_chan_op_mode(struct stmmac_priv *priv,
 		else
 			mtl_tx_op |= MTL_OP_MODE_TTC_512;
 	}
-	/* For an IP with DWC_EQOS_NUM_TXQ == 1, the fields TXQEN and TQS are RO
-	 * with reset values: TXQEN on, TQS == DWC_EQOS_TXFIFO_SIZE.
-	 * For an IP with DWC_EQOS_NUM_TXQ > 1, the fields TXQEN and TQS are R/W
-	 * with reset values: TXQEN off, TQS 256 bytes.
-	 *
-	 * TXQEN must be written for multi-channel operation and TQS must
-	 * reflect the available fifo size per queue (total fifo size / number
-	 * of enabled queues).
-	 */
+	 
 	mtl_tx_op &= ~MTL_OP_MODE_TXQEN_MASK;
 	if (qmode != MTL_QUEUE_AVB)
 		mtl_tx_op |= MTL_OP_MODE_TXQEN;
@@ -379,7 +348,7 @@ static int dwmac4_get_hw_feature(void __iomem *ioaddr,
 {
 	u32 hw_cap = readl(ioaddr + GMAC_HW_FEATURE0);
 
-	/*  MAC HW feature0 */
+	 
 	dma_cap->mbps_10_100 = (hw_cap & GMAC_HW_FEAT_MIISEL);
 	dma_cap->mbps_1000 = (hw_cap & GMAC_HW_FEAT_GMIISEL) >> 1;
 	dma_cap->half_duplex = (hw_cap & GMAC_HW_FEAT_HDSEL) >> 2;
@@ -389,19 +358,19 @@ static int dwmac4_get_hw_feature(void __iomem *ioaddr,
 	dma_cap->sma_mdio = (hw_cap & GMAC_HW_FEAT_SMASEL) >> 5;
 	dma_cap->pmt_remote_wake_up = (hw_cap & GMAC_HW_FEAT_RWKSEL) >> 6;
 	dma_cap->pmt_magic_frame = (hw_cap & GMAC_HW_FEAT_MGKSEL) >> 7;
-	/* MMC */
+	 
 	dma_cap->rmon = (hw_cap & GMAC_HW_FEAT_MMCSEL) >> 8;
-	/* IEEE 1588-2008 */
+	 
 	dma_cap->atime_stamp = (hw_cap & GMAC_HW_FEAT_TSSEL) >> 12;
-	/* 802.3az - Energy-Efficient Ethernet (EEE) */
+	 
 	dma_cap->eee = (hw_cap & GMAC_HW_FEAT_EEESEL) >> 13;
-	/* TX and RX csum */
+	 
 	dma_cap->tx_coe = (hw_cap & GMAC_HW_FEAT_TXCOSEL) >> 14;
 	dma_cap->rx_coe =  (hw_cap & GMAC_HW_FEAT_RXCOESEL) >> 16;
 	dma_cap->vlins = (hw_cap & GMAC_HW_FEAT_SAVLANINS) >> 27;
 	dma_cap->arpoffsel = (hw_cap & GMAC_HW_FEAT_ARPOFFSEL) >> 9;
 
-	/* MAC HW feature1 */
+	 
 	hw_cap = readl(ioaddr + GMAC_HW_FEATURE1);
 	dma_cap->l3l4fnum = (hw_cap & GMAC_HW_FEAT_L3L4FNUM) >> 27;
 	dma_cap->hash_tb_sz = (hw_cap & GMAC_HW_HASH_TB_SZ) >> 24;
@@ -425,35 +394,33 @@ static int dwmac4_get_hw_feature(void __iomem *ioaddr,
 		break;
 	}
 
-	/* RX and TX FIFO sizes are encoded as log2(n / 128). Undo that by
-	 * shifting and store the sizes in bytes.
-	 */
+	 
 	dma_cap->tx_fifo_size = 128 << ((hw_cap & GMAC_HW_TXFIFOSIZE) >> 6);
 	dma_cap->rx_fifo_size = 128 << ((hw_cap & GMAC_HW_RXFIFOSIZE) >> 0);
-	/* MAC HW feature2 */
+	 
 	hw_cap = readl(ioaddr + GMAC_HW_FEATURE2);
-	/* TX and RX number of channels */
+	 
 	dma_cap->number_rx_channel =
 		((hw_cap & GMAC_HW_FEAT_RXCHCNT) >> 12) + 1;
 	dma_cap->number_tx_channel =
 		((hw_cap & GMAC_HW_FEAT_TXCHCNT) >> 18) + 1;
-	/* TX and RX number of queues */
+	 
 	dma_cap->number_rx_queues =
 		((hw_cap & GMAC_HW_FEAT_RXQCNT) >> 0) + 1;
 	dma_cap->number_tx_queues =
 		((hw_cap & GMAC_HW_FEAT_TXQCNT) >> 6) + 1;
-	/* PPS output */
+	 
 	dma_cap->pps_out_num = (hw_cap & GMAC_HW_FEAT_PPSOUTNUM) >> 24;
 
-	/* IEEE 1588-2002 */
+	 
 	dma_cap->time_stamp = 0;
-	/* Number of Auxiliary Snapshot Inputs */
+	 
 	dma_cap->aux_snapshot_n = (hw_cap & GMAC_HW_FEAT_AUXSNAPNUM) >> 28;
 
-	/* MAC HW feature3 */
+	 
 	hw_cap = readl(ioaddr + GMAC_HW_FEATURE3);
 
-	/* 5.10 Features */
+	 
 	dma_cap->asp = (hw_cap & GMAC_HW_FEAT_ASP) >> 28;
 	dma_cap->tbssel = (hw_cap & GMAC_HW_FEAT_TBSSEL) >> 27;
 	dma_cap->fpesel = (hw_cap & GMAC_HW_FEAT_FPESEL) >> 26;
@@ -468,7 +435,7 @@ static int dwmac4_get_hw_feature(void __iomem *ioaddr,
 	return 0;
 }
 
-/* Enable/disable TSO feature and set MSS */
+ 
 static void dwmac4_enable_tso(struct stmmac_priv *priv, void __iomem *ioaddr,
 			      bool en, u32 chan)
 {
@@ -476,12 +443,12 @@ static void dwmac4_enable_tso(struct stmmac_priv *priv, void __iomem *ioaddr,
 	u32 value;
 
 	if (en) {
-		/* enable TSO */
+		 
 		value = readl(ioaddr + DMA_CHAN_TX_CONTROL(dwmac4_addrs, chan));
 		writel(value | DMA_CONTROL_TSE,
 		       ioaddr + DMA_CHAN_TX_CONTROL(dwmac4_addrs, chan));
 	} else {
-		/* enable TSO */
+		 
 		value = readl(ioaddr + DMA_CHAN_TX_CONTROL(dwmac4_addrs, chan));
 		writel(value & ~DMA_CONTROL_TSE,
 		       ioaddr + DMA_CHAN_TX_CONTROL(dwmac4_addrs, chan));
@@ -523,7 +490,7 @@ static void dwmac4_enable_sph(struct stmmac_priv *priv, void __iomem *ioaddr,
 	u32 value = readl(ioaddr + GMAC_EXT_CONFIG);
 
 	value &= ~GMAC_CONFIG_HDSMS;
-	value |= GMAC_CONFIG_HDSMS_256; /* Segment max 256 bytes */
+	value |= GMAC_CONFIG_HDSMS_256;  
 	writel(value, ioaddr + GMAC_EXT_CONFIG);
 
 	value = readl(ioaddr + DMA_CHAN_CONTROL(dwmac4_addrs, chan));

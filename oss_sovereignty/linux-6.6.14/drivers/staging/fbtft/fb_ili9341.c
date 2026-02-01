@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * FB driver for the ILI9341 LCD display controller
- *
- * This display uses 9-bit SPI: Data/Command bit + 8 data bits
- * For platforms that doesn't support 9-bit, the driver is capable
- * of emulating this using 8-bit transfer.
- * This is done by transferring eight 9-bit words in 9 bytes.
- *
- * Copyright (C) 2013 Christian Vogelgsang
- * Based on adafruit22fb.c by Noralf Tronnes
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -30,32 +20,32 @@ static int init_display(struct fbtft_par *par)
 {
 	par->fbtftops.reset(par);
 
-	/* startup sequence for MI0283QT-9A */
+	 
 	write_reg(par, MIPI_DCS_SOFT_RESET);
 	mdelay(5);
 	write_reg(par, MIPI_DCS_SET_DISPLAY_OFF);
-	/* --------------------------------------------------------- */
+	 
 	write_reg(par, 0xCF, 0x00, 0x83, 0x30);
 	write_reg(par, 0xED, 0x64, 0x03, 0x12, 0x81);
 	write_reg(par, 0xE8, 0x85, 0x01, 0x79);
 	write_reg(par, 0xCB, 0x39, 0X2C, 0x00, 0x34, 0x02);
 	write_reg(par, 0xF7, 0x20);
 	write_reg(par, 0xEA, 0x00, 0x00);
-	/* ------------power control-------------------------------- */
+	 
 	write_reg(par, 0xC0, 0x26);
 	write_reg(par, 0xC1, 0x11);
-	/* ------------VCOM --------- */
+	 
 	write_reg(par, 0xC5, 0x35, 0x3E);
 	write_reg(par, 0xC7, 0xBE);
-	/* ------------memory access control------------------------ */
-	write_reg(par, MIPI_DCS_SET_PIXEL_FORMAT, 0x55); /* 16bit pixel */
-	/* ------------frame rate----------------------------------- */
+	 
+	write_reg(par, MIPI_DCS_SET_PIXEL_FORMAT, 0x55);  
+	 
 	write_reg(par, 0xB1, 0x00, 0x1B);
-	/* ------------Gamma---------------------------------------- */
-	/* write_reg(par, 0xF2, 0x08); */ /* Gamma Function Disable */
+	 
+	   
 	write_reg(par, MIPI_DCS_SET_GAMMA_CURVE, 0x01);
-	/* ------------display-------------------------------------- */
-	write_reg(par, 0xB7, 0x07); /* entry mode set */
+	 
+	write_reg(par, 0xB7, 0x07);  
 	write_reg(par, 0xB6, 0x0A, 0x82, 0x27, 0x00);
 	write_reg(par, MIPI_DCS_EXIT_SLEEP_MODE);
 	mdelay(100);
@@ -76,12 +66,12 @@ static void set_addr_win(struct fbtft_par *par, int xs, int ys, int xe, int ye)
 	write_reg(par, MIPI_DCS_WRITE_MEMORY_START);
 }
 
-#define MEM_Y   BIT(7) /* MY row address order */
-#define MEM_X   BIT(6) /* MX column address order */
-#define MEM_V   BIT(5) /* MV row / column exchange */
-#define MEM_L   BIT(4) /* ML vertical refresh order */
-#define MEM_H   BIT(2) /* MH horizontal refresh order */
-#define MEM_BGR (3) /* RGB-BGR Order */
+#define MEM_Y   BIT(7)  
+#define MEM_X   BIT(6)  
+#define MEM_V   BIT(5)  
+#define MEM_L   BIT(4)  
+#define MEM_H   BIT(2)  
+#define MEM_BGR (3)  
 static int set_var(struct fbtft_par *par)
 {
 	switch (par->info->var.rotate) {
@@ -106,11 +96,7 @@ static int set_var(struct fbtft_par *par)
 	return 0;
 }
 
-/*
- * Gamma string format:
- *  Positive: Par1 Par2 [...] Par15
- *  Negative: Par1 Par2 [...] Par15
- */
+ 
 #define CURVE(num, idx)  curves[(num) * par->gamma.num_values + (idx)]
 static int set_gamma(struct fbtft_par *par, u32 *curves)
 {

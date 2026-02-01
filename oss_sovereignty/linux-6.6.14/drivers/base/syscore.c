@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  syscore.c - Execution of system core operations.
- *
- *  Copyright (C) 2011 Rafael J. Wysocki <rjw@sisk.pl>, Novell Inc.
- */
+
+ 
 
 #include <linux/syscore_ops.h>
 #include <linux/mutex.h>
@@ -14,10 +10,7 @@
 static LIST_HEAD(syscore_ops_list);
 static DEFINE_MUTEX(syscore_ops_lock);
 
-/**
- * register_syscore_ops - Register a set of system core operations.
- * @ops: System core operations to register.
- */
+ 
 void register_syscore_ops(struct syscore_ops *ops)
 {
 	mutex_lock(&syscore_ops_lock);
@@ -26,10 +19,7 @@ void register_syscore_ops(struct syscore_ops *ops)
 }
 EXPORT_SYMBOL_GPL(register_syscore_ops);
 
-/**
- * unregister_syscore_ops - Unregister a set of system core operations.
- * @ops: System core operations to unregister.
- */
+ 
 void unregister_syscore_ops(struct syscore_ops *ops)
 {
 	mutex_lock(&syscore_ops_lock);
@@ -39,11 +29,7 @@ void unregister_syscore_ops(struct syscore_ops *ops)
 EXPORT_SYMBOL_GPL(unregister_syscore_ops);
 
 #ifdef CONFIG_PM_SLEEP
-/**
- * syscore_suspend - Execute all the registered system core suspend callbacks.
- *
- * This function is executed with one CPU on-line and disabled interrupts.
- */
+ 
 int syscore_suspend(void)
 {
 	struct syscore_ops *ops;
@@ -52,7 +38,7 @@ int syscore_suspend(void)
 	trace_suspend_resume(TPS("syscore_suspend"), 0, true);
 	pm_pr_dbg("Checking wakeup interrupts\n");
 
-	/* Return error code if there are any wakeup interrupts pending. */
+	 
 	if (pm_wakeup_pending())
 		return -EBUSY;
 
@@ -83,11 +69,7 @@ int syscore_suspend(void)
 }
 EXPORT_SYMBOL_GPL(syscore_suspend);
 
-/**
- * syscore_resume - Execute all the registered system core resume callbacks.
- *
- * This function is executed with one CPU on-line and disabled interrupts.
- */
+ 
 void syscore_resume(void)
 {
 	struct syscore_ops *ops;
@@ -106,11 +88,9 @@ void syscore_resume(void)
 	trace_suspend_resume(TPS("syscore_resume"), 0, false);
 }
 EXPORT_SYMBOL_GPL(syscore_resume);
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
-/**
- * syscore_shutdown - Execute all the registered system core shutdown callbacks.
- */
+ 
 void syscore_shutdown(void)
 {
 	struct syscore_ops *ops;

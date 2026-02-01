@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Ingenic SoCs pinctrl driver
- *
- * Copyright (c) 2017 Paul Cercueil <paul@crapouillou.net>
- * Copyright (c) 2017, 2019 Paul Boddie <paul@boddie.org.uk>
- * Copyright (c) 2019, 2020 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
- */
+
+ 
 
 #include <linux/compiler.h>
 #include <linux/gpio/driver.h>
@@ -2212,7 +2206,7 @@ static const struct regmap_range x1000_access_ranges[] = {
 	regmap_reg_range(0x700, 0x800 - 4),
 };
 
-/* shared with X1500 */
+ 
 static const struct regmap_access_table x1000_access_table = {
 	.yes_ranges = x1000_access_ranges,
 	.n_yes_ranges = ARRAY_SIZE(x1000_access_ranges),
@@ -3026,7 +3020,7 @@ static const struct regmap_range x2000_access_ranges[] = {
 	regmap_reg_range(0x700, 0x800 - 4),
 };
 
-/* shared with X2100 */
+ 
 static const struct regmap_access_table x2000_access_table = {
 	.yes_ranges = x2000_access_ranges,
 	.n_yes_ranges = ARRAY_SIZE(x2000_access_ranges),
@@ -3304,10 +3298,7 @@ static void ingenic_gpio_shadow_set_bit_load(struct ingenic_gpio_chip *jzgc)
 static void jz4730_gpio_set_bits(struct ingenic_gpio_chip *jzgc,
 		u8 reg_upper, u8 reg_lower, u8 offset, u8 value)
 {
-	/*
-	 * JZ4730 function and IRQ registers support two-bits-per-pin
-	 * definitions, split into two groups of 16.
-	 */
+	 
 	u8 reg = offset < JZ4730_PINS_PER_PAIRED_REG ? reg_lower : reg_upper;
 	unsigned int idx = offset % JZ4730_PINS_PER_PAIRED_REG;
 	unsigned int mask = GENMASK(1, 0) << idx * 2;
@@ -3460,10 +3451,7 @@ static void ingenic_gpio_irq_ack(struct irq_data *irqd)
 
 	if ((irqd_get_trigger_type(irqd) == IRQ_TYPE_EDGE_BOTH) &&
 	    !is_soc_or_above(jzgc->jzpc, ID_X2000)) {
-		/*
-		 * Switch to an interrupt for the opposite edge to the one that
-		 * triggered the interrupt being ACKed.
-		 */
+		 
 		high = ingenic_gpio_get_value(jzgc, irq);
 		if (high)
 			irq_set_type(jzgc, irq, IRQ_TYPE_LEVEL_LOW);
@@ -3500,11 +3488,7 @@ static int ingenic_gpio_irq_set_type(struct irq_data *irqd, unsigned int type)
 	}
 
 	if ((type == IRQ_TYPE_EDGE_BOTH) && !is_soc_or_above(jzgc->jzpc, ID_X2000)) {
-		/*
-		 * The hardware does not support interrupts on both edges. The
-		 * best we can do is to set up a single-edge interrupt and then
-		 * switch to the opposing edge when ACKing the interrupt.
-		 */
+		 
 		bool high = ingenic_gpio_get_value(jzgc, irq);
 
 		type = high ? IRQ_TYPE_LEVEL_LOW : IRQ_TYPE_LEVEL_HIGH;
@@ -3613,10 +3597,7 @@ static inline void ingenic_shadow_config_pin_load(struct ingenic_pinctrl *jzpc,
 static inline void jz4730_config_pin_function(struct ingenic_pinctrl *jzpc,
 		unsigned int pin, u8 reg_upper, u8 reg_lower, u8 value)
 {
-	/*
-	 * JZ4730 function and IRQ registers support two-bits-per-pin
-	 * definitions, split into two groups of 16.
-	 */
+	 
 	unsigned int idx = pin % JZ4730_PINS_PER_PAIRED_REG;
 	unsigned int mask = GENMASK(1, 0) << idx * 2;
 	unsigned int offt = pin / PINS_PER_GPIO_CHIP;
@@ -4067,7 +4048,7 @@ static int ingenic_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
 			break;
 
 		default:
-			/* unreachable */
+			 
 			break;
 		}
 	}
@@ -4090,7 +4071,7 @@ static int ingenic_pinconf_group_get(struct pinctrl_dev *pctldev,
 		if (ingenic_pinconf_get(pctldev, pins[i], config))
 			return -ENOTSUPP;
 
-		/* configs do not match between two pins */
+		 
 		if (i && (old != *config))
 			return -ENOTSUPP;
 
@@ -4179,10 +4160,7 @@ static int __init ingenic_gpio_probe(struct ingenic_pinctrl *jzpc,
 	if (!jzgc->gc.label)
 		return -ENOMEM;
 
-	/* DO NOT EXPAND THIS: FOR BACKWARD GPIO NUMBERSPACE COMPATIBIBILITY
-	 * ONLY: WORK TO TRANSITION CONSUMERS TO USE THE GPIO DESCRIPTOR API IN
-	 * <linux/gpio/consumer.h> INSTEAD.
-	 */
+	 
 	jzgc->gc.base = bank * 32;
 
 	jzgc->gc.ngpio = 32;
@@ -4272,7 +4250,7 @@ static int __init ingenic_pinctrl_probe(struct platform_device *pdev)
 	if (!pctl_desc)
 		return -ENOMEM;
 
-	/* fill in pinctrl_desc structure */
+	 
 	pctl_desc->name = dev_name(dev);
 	pctl_desc->owner = THIS_MODULE;
 	pctl_desc->pctlops = &ingenic_pctlops;
@@ -4408,7 +4386,7 @@ static const struct of_device_id ingenic_pinctrl_of_matches[] = {
 		.compatible = "ingenic,x2100-pinctrl",
 		.data = IF_ENABLED(CONFIG_MACH_X2100, &x2100_chip_info)
 	},
-	{ /* sentinel */ },
+	{   },
 };
 
 static struct platform_driver ingenic_pinctrl_driver = {

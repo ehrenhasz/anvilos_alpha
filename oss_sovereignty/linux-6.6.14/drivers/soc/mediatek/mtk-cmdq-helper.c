@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2018 MediaTek Inc.
+
+
+
 
 #include <linux/completion.h>
 #include <linux/errno.h>
@@ -155,14 +155,7 @@ static int cmdq_pkt_append_command(struct cmdq_pkt *pkt,
 	struct cmdq_instruction *cmd_ptr;
 
 	if (unlikely(pkt->cmd_buf_size + CMDQ_INST_SIZE > pkt->buf_size)) {
-		/*
-		 * In the case of allocated buffer size (pkt->buf_size) is used
-		 * up, the real required size (pkt->cmdq_buf_size) is still
-		 * increased, so that the user knows how much memory should be
-		 * ultimately allocated after appending all commands and
-		 * flushing the command packet. Therefor, the user can call
-		 * cmdq_pkt_create() again with the real required buffer size.
-		 */
+		 
 		pkt->cmd_buf_size += CMDQ_INST_SIZE;
 		WARN_ONCE(1, "%s: buffer size %u is too small !\n",
 			__func__, (u32)pkt->buf_size);
@@ -409,14 +402,14 @@ int cmdq_pkt_finalize(struct cmdq_pkt *pkt)
 	struct cmdq_instruction inst = { {0} };
 	int err;
 
-	/* insert EOC and generate IRQ for each command iteration */
+	 
 	inst.op = CMDQ_CODE_EOC;
 	inst.value = CMDQ_EOC_IRQ_EN;
 	err = cmdq_pkt_append_command(pkt, inst);
 	if (err < 0)
 		return err;
 
-	/* JUMP to end */
+	 
 	inst.op = CMDQ_CODE_JUMP;
 	inst.value = CMDQ_JUMP_PASS >>
 		cmdq_get_shift_pa(((struct cmdq_client *)pkt->cl)->chan);
@@ -434,7 +427,7 @@ int cmdq_pkt_flush_async(struct cmdq_pkt *pkt)
 	err = mbox_send_message(client->chan, pkt);
 	if (err < 0)
 		return err;
-	/* We can send next packet immediately, so just call txdone. */
+	 
 	mbox_client_txdone(client->chan, 0);
 
 	return 0;

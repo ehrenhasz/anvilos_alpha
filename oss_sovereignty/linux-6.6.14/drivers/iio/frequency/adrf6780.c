@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ADRF6780 driver
- *
- * Copyright 2021 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -19,7 +15,7 @@
 
 #include <asm/unaligned.h>
 
-/* ADRF6780 Register Map */
+ 
 #define ADRF6780_REG_CONTROL			0x00
 #define ADRF6780_REG_ALARM_READBACK		0x01
 #define ADRF6780_REG_ALARM_MASKS		0x02
@@ -29,20 +25,20 @@
 #define ADRF6780_REG_ADC_CONTROL		0x06
 #define ADRF6780_REG_ADC_OUTPUT			0x0C
 
-/* ADRF6780_REG_CONTROL Map */
+ 
 #define ADRF6780_PARITY_EN_MSK			BIT(15)
 #define ADRF6780_SOFT_RESET_MSK			BIT(14)
 #define ADRF6780_CHIP_ID_MSK			GENMASK(11, 4)
 #define ADRF6780_CHIP_ID			0xA
 #define ADRF6780_CHIP_REVISION_MSK		GENMASK(3, 0)
 
-/* ADRF6780_REG_ALARM_READBACK Map */
+ 
 #define ADRF6780_PARITY_ERROR_MSK		BIT(15)
 #define ADRF6780_TOO_FEW_ERRORS_MSK		BIT(14)
 #define ADRF6780_TOO_MANY_ERRORS_MSK		BIT(13)
 #define ADRF6780_ADDRESS_RANGE_ERROR_MSK	BIT(12)
 
-/* ADRF6780_REG_ENABLE Map */
+ 
 #define ADRF6780_VGA_BUFFER_EN_MSK		BIT(8)
 #define ADRF6780_DETECTOR_EN_MSK		BIT(7)
 #define ADRF6780_LO_BUFFER_EN_MSK		BIT(6)
@@ -53,28 +49,28 @@
 #define ADRF6780_LO_EN_MSK			BIT(1)
 #define ADRF6780_UC_BIAS_EN_MSK			BIT(0)
 
-/* ADRF6780_REG_LINEARIZE Map */
+ 
 #define ADRF6780_RDAC_LINEARIZE_MSK		GENMASK(7, 0)
 
-/* ADRF6780_REG_LO_PATH Map */
+ 
 #define ADRF6780_LO_SIDEBAND_MSK		BIT(10)
 #define ADRF6780_Q_PATH_PHASE_ACCURACY_MSK	GENMASK(7, 4)
 #define ADRF6780_I_PATH_PHASE_ACCURACY_MSK	GENMASK(3, 0)
 
-/* ADRF6780_REG_ADC_CONTROL Map */
+ 
 #define ADRF6780_VDET_OUTPUT_SELECT_MSK		BIT(3)
 #define ADRF6780_ADC_START_MSK			BIT(2)
 #define ADRF6780_ADC_EN_MSK			BIT(1)
 #define ADRF6780_ADC_CLOCK_EN_MSK		BIT(0)
 
-/* ADRF6780_REG_ADC_OUTPUT Map */
+ 
 #define ADRF6780_ADC_STATUS_MSK			BIT(8)
 #define ADRF6780_ADC_VALUE_MSK			GENMASK(7, 0)
 
 struct adrf6780_state {
 	struct spi_device	*spi;
 	struct clk		*clkin;
-	/* Protect against concurrent accesses to the device */
+	 
 	struct mutex		lock;
 	bool			vga_buff_en;
 	bool			lo_buff_en;
@@ -189,7 +185,7 @@ static int adrf6780_read_adc_raw(struct adrf6780_state *st, unsigned int *read_v
 	if (ret)
 		goto exit;
 
-	/* Recommended delay for the ADC to be ready*/
+	 
 	usleep_range(200, 250);
 
 	ret = __adrf6780_spi_read(st, ADRF6780_REG_ADC_OUTPUT, read_val);
@@ -374,7 +370,7 @@ static int adrf6780_init(struct adrf6780_state *st)
 	unsigned int chip_id, enable_reg, enable_reg_msk;
 	struct spi_device *spi = st->spi;
 
-	/* Perform a software reset */
+	 
 	ret = adrf6780_reset(st);
 	if (ret)
 		return ret;
@@ -443,7 +439,7 @@ static void adrf6780_properties_parse(struct adrf6780_state *st)
 
 static void adrf6780_powerdown(void *data)
 {
-	/* Disable all components in the Enable Register */
+	 
 	adrf6780_spi_write(data, ADRF6780_REG_ENABLE, 0x0);
 }
 

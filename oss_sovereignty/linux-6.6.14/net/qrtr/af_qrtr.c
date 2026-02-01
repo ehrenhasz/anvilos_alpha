@@ -1,12 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, Sony Mobile Communications Inc.
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/netlink.h>
 #include <linux/qrtr.h>
-#include <linux/termios.h>	/* For TIOCINQ/OUTQ */
+#include <linux/termios.h>	 
 #include <linux/spinlock.h>
 #include <linux/wait.h>
 
@@ -17,7 +14,7 @@
 #define QRTR_PROTO_VER_1 1
 #define QRTR_PROTO_VER_2 3
 
-/* auto-bind range */
+ 
 #define QRTR_MIN_EPH_SOCKET 0x4000
 #define QRTR_MAX_EPH_SOCKET 0x7fff
 #define QRTR_EPH_PORT_RANGE \
@@ -25,17 +22,7 @@
 
 #define QRTR_PORT_CTRL_LEGACY 0xffff
 
-/**
- * struct qrtr_hdr_v1 - (I|R)PCrouter packet header version 1
- * @version: protocol version
- * @type: packet type; one of QRTR_TYPE_*
- * @src_node_id: source node
- * @src_port_id: source port
- * @confirm_rx: boolean; whether a resume-tx packet should be send in reply
- * @size: length of packet, excluding this header
- * @dst_node_id: destination node
- * @dst_port_id: destination port
- */
+ 
 struct qrtr_hdr_v1 {
 	__le32 version;
 	__le32 type;
@@ -47,18 +34,7 @@ struct qrtr_hdr_v1 {
 	__le32 dst_port_id;
 } __packed;
 
-/**
- * struct qrtr_hdr_v2 - (I|R)PCrouter packet header later versions
- * @version: protocol version
- * @type: packet type; one of QRTR_TYPE_*
- * @flags: bitmask of QRTR_FLAGS_*
- * @optlen: length of optional header data
- * @size: length of packet, excluding this header and optlen
- * @src_node_id: source node
- * @src_port_id: source port
- * @dst_node_id: destination node
- * @dst_port_id: destination port
- */
+ 
 struct qrtr_hdr_v2 {
 	u8 version;
 	u8 type;
@@ -87,7 +63,7 @@ struct qrtr_cb {
 					sizeof(struct qrtr_hdr_v2))
 
 struct qrtr_sock {
-	/* WARNING: sk must be the first member */
+	 
 	struct sock sk;
 	struct sockaddr_qrtr us;
 	struct sockaddr_qrtr peer;
@@ -101,28 +77,18 @@ static inline struct qrtr_sock *qrtr_sk(struct sock *sk)
 
 static unsigned int qrtr_local_nid = 1;
 
-/* for node ids */
+ 
 static RADIX_TREE(qrtr_nodes, GFP_ATOMIC);
 static DEFINE_SPINLOCK(qrtr_nodes_lock);
-/* broadcast list */
+ 
 static LIST_HEAD(qrtr_all_nodes);
-/* lock for qrtr_all_nodes and node reference */
+ 
 static DEFINE_MUTEX(qrtr_node_lock);
 
-/* local port allocation management */
+ 
 static DEFINE_XARRAY_ALLOC(qrtr_ports);
 
-/**
- * struct qrtr_node - endpoint node
- * @ep_lock: lock for endpoint management and callbacks
- * @ep: endpoint
- * @ref: reference count for node
- * @nid: node id
- * @qrtr_tx_flow: tree of qrtr_tx_flow, keyed by node << 32 | port
- * @qrtr_tx_lock: lock for qrtr_tx_flow inserts
- * @rx_queue: receive queue
- * @item: list item for broadcast list
- */
+ 
 struct qrtr_node {
 	struct mutex ep_lock;
 	struct qrtr_endpoint *ep;
@@ -130,18 +96,13 @@ struct qrtr_node {
 	unsigned int nid;
 
 	struct radix_tree_root qrtr_tx_flow;
-	struct mutex qrtr_tx_lock; /* for qrtr_tx_flow */
+	struct mutex qrtr_tx_lock;  
 
 	struct sk_buff_head rx_queue;
 	struct list_head item;
 };
 
-/**
- * struct qrtr_tx_flow - tx flow control
- * @resume_tx: waiters for a resume tx from the remote
- * @pending: number of waiting senders
- * @tx_failed: indicates that a message with confirm_rx flag was lost
- */
+ 
 struct qrtr_tx_flow {
 	struct wait_queue_head resume_tx;
 	int pending;
@@ -160,11 +121,7 @@ static int qrtr_bcast_enqueue(struct qrtr_node *node, struct sk_buff *skb,
 static struct qrtr_sock *qrtr_port_lookup(int port);
 static void qrtr_port_put(struct qrtr_sock *ipc);
 
-/* Release node resources and free the node.
- *
- * Do not call directly, use qrtr_node_release.  To be used with
- * kref_put_mutex.  As such, the node mutex is expected to be locked on call.
- */
+ 
 static void __qrtr_node_release(struct kref *kref)
 {
 	struct qrtr_node *node = container_of(kref, struct qrtr_node, ref);
@@ -174,9 +131,7 @@ static void __qrtr_node_release(struct kref *kref)
 	void __rcu **slot;
 
 	spin_lock_irqsave(&qrtr_nodes_lock, flags);
-	/* If the node is a bridge for other nodes, there are possibly
-	 * multiple entries pointing to our released node, delete them all.
-	 */
+	 
 	radix_tree_for_each_slot(slot, &qrtr_nodes, &iter, 0) {
 		if (*slot == node)
 			radix_tree_iter_delete(&qrtr_nodes, &iter, slot);
@@ -188,7 +143,7 @@ static void __qrtr_node_release(struct kref *kref)
 
 	skb_queue_purge(&node->rx_queue);
 
-	/* Free tx flow counters */
+	 
 	radix_tree_for_each_slot(slot, &node->qrtr_tx_flow, &iter, 0) {
 		flow = *slot;
 		radix_tree_iter_delete(&node->qrtr_tx_flow, &iter, slot);
@@ -197,7 +152,7 @@ static void __qrtr_node_release(struct kref *kref)
 	kfree(node);
 }
 
-/* Increment reference to node. */
+ 
 static struct qrtr_node *qrtr_node_acquire(struct qrtr_node *node)
 {
 	if (node)
@@ -205,7 +160,7 @@ static struct qrtr_node *qrtr_node_acquire(struct qrtr_node *node)
 	return node;
 }
 
-/* Decrement reference to node and release as necessary. */
+ 
 static void qrtr_node_release(struct qrtr_node *node)
 {
 	if (!node)
@@ -213,11 +168,7 @@ static void qrtr_node_release(struct qrtr_node *node)
 	kref_put_mutex(&node->ref, __qrtr_node_release, &qrtr_node_lock);
 }
 
-/**
- * qrtr_tx_resume() - reset flow control counter
- * @node:	qrtr_node that the QRTR_TYPE_RESUME_TX packet arrived on
- * @skb:	resume_tx packet
- */
+ 
 static void qrtr_tx_resume(struct qrtr_node *node, struct sk_buff *skb)
 {
 	struct qrtr_ctrl_pkt *pkt = (struct qrtr_ctrl_pkt *)skb->data;
@@ -241,21 +192,7 @@ static void qrtr_tx_resume(struct qrtr_node *node, struct sk_buff *skb)
 	consume_skb(skb);
 }
 
-/**
- * qrtr_tx_wait() - flow control for outgoing packets
- * @node:	qrtr_node that the packet is to be send to
- * @dest_node:	node id of the destination
- * @dest_port:	port number of the destination
- * @type:	type of message
- *
- * The flow control scheme is based around the low and high "watermarks". When
- * the low watermark is passed the confirm_rx flag is set on the outgoing
- * message, which will trigger the remote to send a control message of the type
- * QRTR_TYPE_RESUME_TX to reset the counter. If the high watermark is hit
- * further transmision should be paused.
- *
- * Return: 1 if confirm_rx should be set, 0 otherwise or errno failure
- */
+ 
 static int qrtr_tx_wait(struct qrtr_node *node, int dest_node, int dest_port,
 			int type)
 {
@@ -264,7 +201,7 @@ static int qrtr_tx_wait(struct qrtr_node *node, int dest_node, int dest_port,
 	int confirm_rx = 0;
 	int ret;
 
-	/* Never set confirm_rx on non-data packets */
+	 
 	if (type != QRTR_TYPE_DATA)
 		return 0;
 
@@ -282,7 +219,7 @@ static int qrtr_tx_wait(struct qrtr_node *node, int dest_node, int dest_port,
 	}
 	mutex_unlock(&node->qrtr_tx_lock);
 
-	/* Set confirm_rx if we where unable to find and allocate a flow */
+	 
 	if (!flow)
 		return 1;
 
@@ -307,19 +244,7 @@ static int qrtr_tx_wait(struct qrtr_node *node, int dest_node, int dest_port,
 	return confirm_rx;
 }
 
-/**
- * qrtr_tx_flow_failed() - flag that tx of confirm_rx flagged messages failed
- * @node:	qrtr_node that the packet is to be send to
- * @dest_node:	node id of the destination
- * @dest_port:	port number of the destination
- *
- * Signal that the transmission of a message with confirm_rx flag failed. The
- * flow's "pending" counter will keep incrementing towards QRTR_TX_FLOW_HIGH,
- * at which point transmission would stall forever waiting for the resume TX
- * message associated with the dropped confirm_rx message.
- * Work around this by marking the flow as having a failed transmission and
- * cause the next transmission attempt to be sent with the confirm_rx.
- */
+ 
 static void qrtr_tx_flow_failed(struct qrtr_node *node, int dest_node,
 				int dest_port)
 {
@@ -336,7 +261,7 @@ static void qrtr_tx_flow_failed(struct qrtr_node *node, int dest_node,
 	}
 }
 
-/* Pass an outgoing packet socket buffer to the endpoint driver. */
+ 
 static int qrtr_node_enqueue(struct qrtr_node *node, struct sk_buff *skb,
 			     int type, struct sockaddr_qrtr *from,
 			     struct sockaddr_qrtr *to)
@@ -378,18 +303,14 @@ static int qrtr_node_enqueue(struct qrtr_node *node, struct sk_buff *skb,
 			kfree_skb(skb);
 		mutex_unlock(&node->ep_lock);
 	}
-	/* Need to ensure that a subsequent message carries the otherwise lost
-	 * confirm_rx flag if we dropped this one */
+	 
 	if (rc && confirm_rx)
 		qrtr_tx_flow_failed(node, to->sq_node, to->sq_port);
 
 	return rc;
 }
 
-/* Lookup node by id.
- *
- * callers must release with qrtr_node_release()
- */
+ 
 static struct qrtr_node *qrtr_node_lookup(unsigned int nid)
 {
 	struct qrtr_node *node;
@@ -405,11 +326,7 @@ static struct qrtr_node *qrtr_node_lookup(unsigned int nid)
 	return node;
 }
 
-/* Assign node id to node.
- *
- * This is mostly useful for automatic node id assignment, based on
- * the source id in the incoming packet.
- */
+ 
 static void qrtr_node_assign(struct qrtr_node *node, unsigned int nid)
 {
 	unsigned long flags;
@@ -424,14 +341,7 @@ static void qrtr_node_assign(struct qrtr_node *node, unsigned int nid)
 	spin_unlock_irqrestore(&qrtr_nodes_lock, flags);
 }
 
-/**
- * qrtr_endpoint_post() - post incoming data
- * @ep: endpoint handle
- * @data: data pointer
- * @len: size of data in bytes
- *
- * Return: 0 on success; negative error code on failure
- */
+ 
 int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
 {
 	struct qrtr_node *node = ep->node;
@@ -453,7 +363,7 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
 
 	cb = (struct qrtr_cb *)skb->cb;
 
-	/* Version field in v1 is little endian, so this works for both cases */
+	 
 	ver = *(u8*)data;
 
 	switch (ver) {
@@ -517,7 +427,7 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
 	qrtr_node_assign(node, cb->src_node);
 
 	if (cb->type == QRTR_TYPE_NEW_SERVER) {
-		/* Remote node endpoint can bridge other distant nodes */
+		 
 		const struct qrtr_ctrl_pkt *pkt;
 
 		pkt = data + hdrlen;
@@ -548,16 +458,7 @@ err:
 }
 EXPORT_SYMBOL_GPL(qrtr_endpoint_post);
 
-/**
- * qrtr_alloc_ctrl_packet() - allocate control packet skb
- * @pkt: reference to qrtr_ctrl_pkt pointer
- * @flags: the type of memory to allocate
- *
- * Returns newly allocated sk_buff, or NULL on failure
- *
- * This function allocates a sk_buff large enough to carry a qrtr_ctrl_pkt and
- * on success returns a reference to the control packet in @pkt.
- */
+ 
 static struct sk_buff *qrtr_alloc_ctrl_packet(struct qrtr_ctrl_pkt **pkt,
 					      gfp_t flags)
 {
@@ -574,14 +475,7 @@ static struct sk_buff *qrtr_alloc_ctrl_packet(struct qrtr_ctrl_pkt **pkt,
 	return skb;
 }
 
-/**
- * qrtr_endpoint_register() - register a new endpoint
- * @ep: endpoint to register
- * @nid: desired node id; may be QRTR_EP_NID_AUTO for auto-assignment
- * Return: 0 on success; negative error code on failure
- *
- * The specified endpoint must have the xmit function pointer set on call.
- */
+ 
 int qrtr_endpoint_register(struct qrtr_endpoint *ep, unsigned int nid)
 {
 	struct qrtr_node *node;
@@ -613,10 +507,7 @@ int qrtr_endpoint_register(struct qrtr_endpoint *ep, unsigned int nid)
 }
 EXPORT_SYMBOL_GPL(qrtr_endpoint_register);
 
-/**
- * qrtr_endpoint_unregister - unregister endpoint
- * @ep: endpoint to unregister
- */
+ 
 void qrtr_endpoint_unregister(struct qrtr_endpoint *ep)
 {
 	struct qrtr_node *node = ep->node;
@@ -633,7 +524,7 @@ void qrtr_endpoint_unregister(struct qrtr_endpoint *ep)
 	node->ep = NULL;
 	mutex_unlock(&node->ep_lock);
 
-	/* Notify the local controller about the event */
+	 
 	spin_lock_irqsave(&qrtr_nodes_lock, flags);
 	radix_tree_for_each_slot(slot, &qrtr_nodes, &iter, 0) {
 		if (*slot != node)
@@ -647,7 +538,7 @@ void qrtr_endpoint_unregister(struct qrtr_endpoint *ep)
 	}
 	spin_unlock_irqrestore(&qrtr_nodes_lock, flags);
 
-	/* Wake up any transmitters waiting for resume-tx from the node */
+	 
 	mutex_lock(&node->qrtr_tx_lock);
 	radix_tree_for_each_slot(slot, &node->qrtr_tx_flow, &iter, 0) {
 		flow = *slot;
@@ -660,10 +551,7 @@ void qrtr_endpoint_unregister(struct qrtr_endpoint *ep)
 }
 EXPORT_SYMBOL_GPL(qrtr_endpoint_unregister);
 
-/* Lookup socket by port.
- *
- * Callers must release with qrtr_port_put()
- */
+ 
 static struct qrtr_sock *qrtr_port_lookup(int port)
 {
 	struct qrtr_sock *ipc;
@@ -680,13 +568,13 @@ static struct qrtr_sock *qrtr_port_lookup(int port)
 	return ipc;
 }
 
-/* Release acquired socket. */
+ 
 static void qrtr_port_put(struct qrtr_sock *ipc)
 {
 	sock_put(&ipc->sk);
 }
 
-/* Remove port assignment. */
+ 
 static void qrtr_port_remove(struct qrtr_sock *ipc)
 {
 	struct qrtr_ctrl_pkt *pkt;
@@ -716,21 +604,11 @@ static void qrtr_port_remove(struct qrtr_sock *ipc)
 
 	xa_erase(&qrtr_ports, port);
 
-	/* Ensure that if qrtr_port_lookup() did enter the RCU read section we
-	 * wait for it to up increment the refcount */
+	 
 	synchronize_rcu();
 }
 
-/* Assign port number to socket.
- *
- * Specify port in the integer pointed to by port, and it will be adjusted
- * on return as necesssary.
- *
- * Port may be:
- *   0: Assign ephemeral port in [QRTR_MIN_EPH_SOCKET, QRTR_MAX_EPH_SOCKET]
- *   <QRTR_MIN_EPH_SOCKET: Specified; requires CAP_NET_ADMIN
- *   >QRTR_MIN_EPH_SOCKET: Specified; available to all
- */
+ 
 static int qrtr_port_assign(struct qrtr_sock *ipc, int *port)
 {
 	int rc;
@@ -756,7 +634,7 @@ static int qrtr_port_assign(struct qrtr_sock *ipc, int *port)
 	return 0;
 }
 
-/* Reset all non-control ports */
+ 
 static void qrtr_reset_ports(void)
 {
 	struct qrtr_sock *ipc;
@@ -772,10 +650,7 @@ static void qrtr_reset_ports(void)
 	rcu_read_unlock();
 }
 
-/* Bind socket to address.
- *
- * Socket should be locked upon call.
- */
+ 
 static int __qrtr_bind(struct socket *sock,
 		       const struct sockaddr_qrtr *addr, int zapped)
 {
@@ -784,7 +659,7 @@ static int __qrtr_bind(struct socket *sock,
 	int port;
 	int rc;
 
-	/* rebinding ok */
+	 
 	if (!zapped && addr->sq_port == ipc->us.sq_port)
 		return 0;
 
@@ -793,21 +668,21 @@ static int __qrtr_bind(struct socket *sock,
 	if (rc)
 		return rc;
 
-	/* unbind previous, if any */
+	 
 	if (!zapped)
 		qrtr_port_remove(ipc);
 	ipc->us.sq_port = port;
 
 	sock_reset_flag(sk, SOCK_ZAPPED);
 
-	/* Notify all open ports about the new controller */
+	 
 	if (port == QRTR_PORT_CTRL)
 		qrtr_reset_ports();
 
 	return 0;
 }
 
-/* Auto bind to an ephemeral port. */
+ 
 static int qrtr_autobind(struct socket *sock)
 {
 	struct sock *sk = sock->sk;
@@ -823,7 +698,7 @@ static int qrtr_autobind(struct socket *sock)
 	return __qrtr_bind(sock, &addr, 1);
 }
 
-/* Bind socket to specified sockaddr. */
+ 
 static int qrtr_bind(struct socket *sock, struct sockaddr *saddr, int len)
 {
 	DECLARE_SOCKADDR(struct sockaddr_qrtr *, addr, saddr);
@@ -844,7 +719,7 @@ static int qrtr_bind(struct socket *sock, struct sockaddr *saddr, int len)
 	return rc;
 }
 
-/* Queue packet to local peer socket. */
+ 
 static int qrtr_local_enqueue(struct qrtr_node *node, struct sk_buff *skb,
 			      int type, struct sockaddr_qrtr *from,
 			      struct sockaddr_qrtr *to)
@@ -853,7 +728,7 @@ static int qrtr_local_enqueue(struct qrtr_node *node, struct sk_buff *skb,
 	struct qrtr_cb *cb;
 
 	ipc = qrtr_port_lookup(to->sq_port);
-	if (!ipc || &ipc->sk == skb->sk) { /* do not send to self */
+	if (!ipc || &ipc->sk == skb->sk) {  
 		if (ipc)
 			qrtr_port_put(ipc);
 		kfree_skb(skb);
@@ -875,7 +750,7 @@ static int qrtr_local_enqueue(struct qrtr_node *node, struct sk_buff *skb,
 	return 0;
 }
 
-/* Queue packet for broadcast. */
+ 
 static int qrtr_bcast_enqueue(struct qrtr_node *node, struct sk_buff *skb,
 			      int type, struct sockaddr_qrtr *from,
 			      struct sockaddr_qrtr *to)
@@ -984,7 +859,7 @@ static int qrtr_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 			goto out_node;
 		}
 
-		/* control messages already require the type as 'command' */
+		 
 		skb_copy_bits(skb, 0, &qrtr_type, 4);
 	}
 
@@ -1063,9 +938,7 @@ static int qrtr_recvmsg(struct socket *sock, struct msghdr *msg,
 	rc = copied;
 
 	if (addr) {
-		/* There is an anonymous 2-byte hole after sq_family,
-		 * make sure to clear it.
-		 */
+		 
 		memset(addr, 0, sizeof(*addr));
 
 		addr->sq_family = AF_QIPCRTR;

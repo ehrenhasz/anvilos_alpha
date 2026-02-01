@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright 2019, 2020 Cloudflare */
+ 
+ 
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -12,10 +12,7 @@
 #include <linux/ipv6.h>
 #include <linux/udp.h>
 
-/* offsetof() is used in static asserts, and the libbpf-redefined CO-RE
- * friendly version breaks compilation for older clang versions <= 15
- * when invoked in a static assert.  Restore original here.
- */
+ 
 #ifdef offsetof
 #undef offsetof
 #define offsetof(type, member) __builtin_offsetof(type, member)
@@ -45,7 +42,7 @@ struct unigue {
 	uint8_t reserved;
 	uint8_t next_hop;
 	uint8_t hop_count;
-	// Next hops go here
+	
 } __attribute__((packed));
 
 typedef struct {

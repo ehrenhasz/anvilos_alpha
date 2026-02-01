@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * xor.c : Multiple Devices driver for Linux
- *
- * Copyright (C) 1996, 1997, 1998, 1999, 2000,
- * Ingo Molnar, Matti Aarnio, Jakub Jelinek, Richard Henderson.
- *
- * Dispatch optimized RAID-5 checksumming functions.
- */
+
+ 
 
 #define BH_TRACE 0
 #include <linux/module.h>
@@ -20,7 +13,7 @@
 #define XOR_SELECT_TEMPLATE(x) (x)
 #endif
 
-/* The xor routines to use.  */
+ 
 static struct xor_block_template *active_template;
 
 void
@@ -51,7 +44,7 @@ xor_blocks(unsigned int src_count, unsigned int bytes, void *dest, void **srcs)
 }
 EXPORT_SYMBOL(xor_blocks);
 
-/* Set of all registered templates.  */
+ 
 static struct xor_block_template *__initdata template_list;
 
 #ifndef MODULE
@@ -67,7 +60,7 @@ static int __init register_xor_blocks(void)
 
 	if (!active_template) {
 #define xor_speed	do_xor_register
-		// register all the templates and pick the first as the default
+		
 		XOR_TRY_TEMPLATES;
 #undef xor_speed
 		active_template = template_list;
@@ -95,7 +88,7 @@ do_xor_speed(struct xor_block_template *tmpl, void *b1, void *b2)
 	for (i = 0; i < 3; i++) {
 		start = ktime_get();
 		for (j = 0; j < REPS; j++) {
-			mb(); /* prevent loop optimization */
+			mb();  
 			tmpl->do_2(BENCH_SIZE, b1, b2);
 			mb();
 		}
@@ -106,7 +99,7 @@ do_xor_speed(struct xor_block_template *tmpl, void *b1, void *b2)
 
 	preempt_enable();
 
-	// bytes/ns == GB/s, multiply by 1000 to get MB/s [not MiB/s]
+	
 	if (!min)
 		min = 1;
 	speed = (1000 * REPS * BENCH_SIZE) / (unsigned int)ktime_to_ns(min);
@@ -137,10 +130,7 @@ calibrate_xor_blocks(void)
 	}
 	b2 = b1 + 2*PAGE_SIZE + BENCH_SIZE;
 
-	/*
-	 * If this arch/cpu has a short-circuited selection, don't loop through
-	 * all the possible functions, just test the best one
-	 */
+	 
 
 #define xor_speed(templ)	do_xor_speed((templ), b1, b2)
 
@@ -168,7 +158,7 @@ static __exit void xor_exit(void) { }
 MODULE_LICENSE("GPL");
 
 #ifndef MODULE
-/* when built-in xor.o must initialize before drivers/md/md.o */
+ 
 core_initcall(register_xor_blocks);
 #endif
 

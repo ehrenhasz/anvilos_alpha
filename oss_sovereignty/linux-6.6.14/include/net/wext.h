@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __NET_WEXT_H
 #define __NET_WEXT_H
 
@@ -58,4 +58,4 @@ int iw_handler_get_private(struct net_device *		dev,
 #endif
 
 
-#endif /* __NET_WEXT_H */
+#endif  

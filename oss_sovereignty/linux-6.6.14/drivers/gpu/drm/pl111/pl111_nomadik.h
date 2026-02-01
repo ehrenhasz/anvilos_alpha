@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #ifndef PL111_NOMADIK_H
 #define PL111_NOMADIK_H

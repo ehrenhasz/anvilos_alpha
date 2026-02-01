@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ISHTP DMA I/F functions
- *
- * Copyright (c) 2003-2016, Intel Corporation.
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/sched.h>
@@ -13,14 +9,7 @@
 #include "ishtp-dev.h"
 #include "client.h"
 
-/**
- * ishtp_cl_alloc_dma_buf() - Allocate DMA RX and TX buffer
- * @dev: ishtp device
- *
- * Allocate RX and TX DMA buffer once during bus setup.
- * It allocates 1MB, RX and TX DMA buffer, which are divided
- * into slots.
- */
+ 
 void	ishtp_cl_alloc_dma_buf(struct ishtp_device *dev)
 {
 	dma_addr_t	h;
@@ -31,7 +20,7 @@ void	ishtp_cl_alloc_dma_buf(struct ishtp_device *dev)
 	dev->ishtp_host_dma_tx_buf_size = 1024*1024;
 	dev->ishtp_host_dma_rx_buf_size = 1024*1024;
 
-	/* Allocate Tx buffer and init usage bitmap */
+	 
 	dev->ishtp_host_dma_tx_buf = dma_alloc_coherent(dev->devc,
 					dev->ishtp_host_dma_tx_buf_size,
 					&h, GFP_KERNEL);
@@ -46,7 +35,7 @@ void	ishtp_cl_alloc_dma_buf(struct ishtp_device *dev)
 					GFP_KERNEL);
 	spin_lock_init(&dev->ishtp_dma_tx_lock);
 
-	/* Allocate Rx buffer */
+	 
 	dev->ishtp_host_dma_rx_buf = dma_alloc_coherent(dev->devc,
 					dev->ishtp_host_dma_rx_buf_size,
 					 &h, GFP_KERNEL);
@@ -55,14 +44,7 @@ void	ishtp_cl_alloc_dma_buf(struct ishtp_device *dev)
 		dev->ishtp_host_dma_rx_buf_phys = h;
 }
 
-/**
- * ishtp_cl_free_dma_buf() - Free DMA RX and TX buffer
- * @dev: ishtp device
- *
- * Free DMA buffer when all clients are released. This is
- * only happens during error path in ISH built in driver
- * model
- */
+ 
 void	ishtp_cl_free_dma_buf(struct ishtp_device *dev)
 {
 	dma_addr_t	h;
@@ -85,22 +67,13 @@ void	ishtp_cl_free_dma_buf(struct ishtp_device *dev)
 	dev->ishtp_dma_tx_map = NULL;
 }
 
-/*
- * ishtp_cl_get_dma_send_buf() - Get a DMA memory slot
- * @dev:	ishtp device
- * @size:	Size of memory to get
- *
- * Find and return free address of "size" bytes in dma tx buffer.
- * the function will mark this address as "in-used" memory.
- *
- * Return: NULL when no free buffer else a buffer to copy
- */
+ 
 void *ishtp_cl_get_dma_send_buf(struct ishtp_device *dev,
 				uint32_t size)
 {
 	unsigned long	flags;
 	int i, j, free;
-	/* additional slot is needed if there is rem */
+	 
 	int required_slots = (size / DMA_SLOT_SIZE)
 		+ 1 * (size % DMA_SLOT_SIZE != 0);
 
@@ -119,7 +92,7 @@ void *ishtp_cl_get_dma_send_buf(struct ishtp_device *dev,
 				break;
 			}
 		if (free) {
-			/* mark memory as "caught" */
+			 
 			for (j = 0; j < required_slots; j++)
 				dev->ishtp_dma_tx_map[i+j] = 1;
 			spin_unlock_irqrestore(&dev->ishtp_dma_tx_lock, flags);
@@ -132,15 +105,7 @@ void *ishtp_cl_get_dma_send_buf(struct ishtp_device *dev,
 	return NULL;
 }
 
-/*
- * ishtp_cl_release_dma_acked_mem() - Release DMA memory slot
- * @dev:	ishtp device
- * @msg_addr:	message address of slot
- * @size:	Size of memory to get
- *
- * Release_dma_acked_mem - returnes the acked memory to free list.
- * (from msg_addr, size bytes long)
- */
+ 
 void ishtp_cl_release_dma_acked_mem(struct ishtp_device *dev,
 				    void *msg_addr,
 				    uint8_t size)
@@ -165,7 +130,7 @@ void ishtp_cl_release_dma_acked_mem(struct ishtp_device *dev,
 	for (j = 0; j < acked_slots; j++) {
 		if ((i + j) >= dev->ishtp_dma_num_slots ||
 					!dev->ishtp_dma_tx_map[i+j]) {
-			/* no such slot, or memory is already free */
+			 
 			spin_unlock_irqrestore(&dev->ishtp_dma_tx_lock, flags);
 			dev_err(dev->devc, "Bad DMA Tx ack address\n");
 			return;

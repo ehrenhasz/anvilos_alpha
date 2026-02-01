@@ -1,53 +1,9 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- *
- * Copyright (c) 2006-2010 Pawel Jakub Dawidek <pjd@FreeBSD.org>
- * All rights reserved.
- *
- * Portions Copyright 2010 Robert Milkowski
- *
- * Copyright 2011 Nexenta Systems, Inc.  All rights reserved.
- * Copyright (c) 2012, 2017 by Delphix. All rights reserved.
- * Copyright (c) 2013, Joyent, Inc. All rights reserved.
- * Copyright (c) 2014 Integros [integros.com]
- */
+ 
+ 
 
-/* Portions Copyright 2011 Martin Matuska <mm@FreeBSD.org> */
+ 
 
-/*
- * ZFS volume emulation driver.
- *
- * Makes a DMU object look like a volume of arbitrary size, up to 2^64 bytes.
- * Volumes are accessed through the symbolic links named:
- *
- * /dev/zvol/<pool_name>/<dataset_name>
- *
- * Volumes are persistent through reboot.  No user command needs to be
- * run before opening and using a device.
- *
- * On FreeBSD ZVOLs are simply GEOM providers like any other storage device
- * in the system. Except when they're simply character devices (volmode=dev).
- */
+ 
 
 #include <sys/types.h>
 #include <sys/param.h>
@@ -120,14 +76,14 @@ struct zvol_state_os {
 #define	zso_dev		_zso_state._zso_dev
 #define	zso_geom	_zso_state._zso_geom
 	union {
-		/* volmode=dev */
+		 
 		struct zvol_state_dev {
 			struct cdev *zsd_cdev;
 			uint64_t zsd_sync_cnt;
 			struct selinfo zsd_selinfo;
 		} _zso_dev;
 
-		/* volmode=geom */
+		 
 		struct zvol_state_geom {
 			struct g_provider *zsg_provider;
 			struct bio_queue_head zsg_queue;
@@ -148,17 +104,13 @@ static boolean_t zpool_on_zvol = B_FALSE;
 SYSCTL_INT(_vfs_zfs_vol, OID_AUTO, recursive, CTLFLAG_RWTUN, &zpool_on_zvol, 0,
 	"Allow zpools to use zvols as vdevs (DANGEROUS)");
 
-/*
- * Toggle unmap functionality.
- */
+ 
 boolean_t zvol_unmap_enabled = B_TRUE;
 
 SYSCTL_INT(_vfs_zfs_vol, OID_AUTO, unmap_enabled, CTLFLAG_RWTUN,
 	&zvol_unmap_enabled, 0, "Enable UNMAP functionality");
 
-/*
- * zvol maximum transfer in one DMU tx.
- */
+ 
 int zvol_maxphys = DMU_MAX_ACCESS / 2;
 
 static void zvol_ensure_zilog(zvol_state_t *zv);
@@ -210,11 +162,9 @@ static int zvol_geom_access(struct g_provider *pp, int acr, int acw, int ace);
 static void zvol_geom_worker(void *arg);
 static void zvol_geom_bio_start(struct bio *bp);
 static int zvol_geom_bio_getattr(struct bio *bp);
-/* static d_strategy_t	zvol_geom_bio_strategy; (declared elsewhere) */
+ 
 
-/*
- * GEOM mode implementation
- */
+ 
 
 static int
 zvol_geom_open(struct g_provider *pp, int flag, int count)
@@ -224,25 +174,13 @@ zvol_geom_open(struct g_provider *pp, int flag, int count)
 	boolean_t drop_suspend = B_FALSE;
 
 	if (!zpool_on_zvol && tsd_get(zfs_geom_probe_vdev_key) != NULL) {
-		/*
-		 * If zfs_geom_probe_vdev_key is set, that means that zfs is
-		 * attempting to probe geom providers while looking for a
-		 * replacement for a missing VDEV.  In this case, the
-		 * spa_namespace_lock will not be held, but it is still illegal
-		 * to use a zvol as a vdev.  Deadlocks can result if another
-		 * thread has spa_namespace_lock.
-		 */
+		 
 		return (SET_ERROR(EOPNOTSUPP));
 	}
 
 retry:
 	rw_enter(&zvol_state_lock, ZVOL_RW_READER);
-	/*
-	 * Obtain a copy of private under zvol_state_lock to make sure either
-	 * the result of zvol free code setting private to NULL is observed,
-	 * or the zv is protected from being freed because of the positive
-	 * zv_open_count.
-	 */
+	 
 	zv = pp->private;
 	if (zv == NULL) {
 		rw_exit(&zvol_state_lock);
@@ -258,18 +196,14 @@ retry:
 	}
 	ASSERT3S(zv->zv_volmode, ==, ZFS_VOLMODE_GEOM);
 
-	/*
-	 * Make sure zvol is not suspended during first open
-	 * (hold zv_suspend_lock) and respect proper lock acquisition
-	 * ordering - zv_suspend_lock before zv_state_lock.
-	 */
+	 
 	if (zv->zv_open_count == 0) {
 		drop_suspend = B_TRUE;
 		if (!rw_tryenter(&zv->zv_suspend_lock, ZVOL_RW_READER)) {
 			mutex_exit(&zv->zv_state_lock);
 			rw_enter(&zv->zv_suspend_lock, ZVOL_RW_READER);
 			mutex_enter(&zv->zv_state_lock);
-			/* Check to see if zv_suspend_lock is needed. */
+			 
 			if (zv->zv_open_count != 0) {
 				rw_exit(&zv->zv_suspend_lock);
 				drop_suspend = B_FALSE;
@@ -285,10 +219,7 @@ retry:
 
 		ASSERT(ZVOL_RW_READ_HELD(&zv->zv_suspend_lock));
 
-		/*
-		 * Take spa_namespace_lock to prevent lock inversion when
-		 * zvols from one pool are opened as vdevs in another.
-		 */
+		 
 		if (!mutex_owned(&spa_namespace_lock)) {
 			if (!mutex_tryenter(&spa_namespace_lock)) {
 				mutex_exit(&zv->zv_state_lock);
@@ -311,10 +242,7 @@ retry:
 
 	ASSERT(MUTEX_HELD(&zv->zv_state_lock));
 
-	/*
-	 * Check for a bad on-disk format version now since we
-	 * lied about owning the dataset readonly before.
-	 */
+	 
 	if ((flag & FWRITE) && ((zv->zv_flags & ZVOL_RDONLY) ||
 	    dmu_objset_incompatible_encryption_version(zv->zv_objset))) {
 		err = SET_ERROR(EROFS);
@@ -369,24 +297,17 @@ zvol_geom_close(struct g_provider *pp, int flag, int count)
 
 	ASSERT3S(zv->zv_volmode, ==, ZFS_VOLMODE_GEOM);
 
-	/*
-	 * If the open count is zero, this is a spurious close.
-	 * That indicates a bug in the kernel / DDI framework.
-	 */
+	 
 	ASSERT3U(zv->zv_open_count, >, 0);
 
-	/*
-	 * Make sure zvol is not suspended during last close
-	 * (hold zv_suspend_lock) and respect proper lock acquisition
-	 * ordering - zv_suspend_lock before zv_state_lock.
-	 */
+	 
 	new_open_count = zv->zv_open_count - count;
 	if (new_open_count == 0) {
 		if (!rw_tryenter(&zv->zv_suspend_lock, ZVOL_RW_READER)) {
 			mutex_exit(&zv->zv_state_lock);
 			rw_enter(&zv->zv_suspend_lock, ZVOL_RW_READER);
 			mutex_enter(&zv->zv_state_lock);
-			/* Check to see if zv_suspend_lock is needed. */
+			 
 			new_open_count = zv->zv_open_count - count;
 			if (new_open_count != 0) {
 				rw_exit(&zv->zv_suspend_lock);
@@ -400,9 +321,7 @@ zvol_geom_close(struct g_provider *pp, int flag, int count)
 
 	ASSERT(MUTEX_HELD(&zv->zv_state_lock));
 
-	/*
-	 * You may get multiple opens, but only one close.
-	 */
+	 
 	zv->zv_open_count = new_open_count;
 	if (zv->zv_open_count == 0) {
 		ASSERT(ZVOL_RW_READ_HELD(&zv->zv_suspend_lock));
@@ -471,10 +390,7 @@ zvol_geom_access(struct g_provider *pp, int acr, int acw, int ace)
 
 	g_topology_assert();
 
-	/*
-	 * To make it easier we expect either open or close, but not both
-	 * at the same time.
-	 */
+	 
 	KASSERT((acr >= 0 && acw >= 0 && ace >= 0) ||
 	    (acr <= 0 && acw <= 0 && ace <= 0),
 	    ("Unsupported access request to %s (acr=%d, acw=%d, ace=%d).",
@@ -486,14 +402,7 @@ zvol_geom_access(struct g_provider *pp, int acr, int acw, int ace)
 		return (pp->error);
 	}
 
-	/*
-	 * We don't pass FEXCL flag to zvol_geom_open()/zvol_geom_close() if
-	 * ace != 0, because GEOM already handles that and handles it a bit
-	 * differently. GEOM allows for multiple read/exclusive consumers and
-	 * ZFS allows only one exclusive consumer, no matter if it is reader or
-	 * writer. I like better the way GEOM works so I'll leave it for GEOM
-	 * to decide what to do.
-	 */
+	 
 
 	count = acr + acw + ace;
 	if (count == 0)
@@ -646,7 +555,7 @@ zvol_cdev_kqfilter(struct cdev *dev, struct knote *kn)
 	if (kn->kn_filter != EVFILT_VNODE)
 		return (EINVAL);
 
-	/* XXX: extend support for other NOTE_* events */
+	 
 	if (kn->kn_sfflags != NOTE_ATTRIB)
 		return (EINVAL);
 
@@ -721,10 +630,7 @@ zvol_geom_bio_strategy(struct bio *bp)
 	sync = !doread && !is_dumpified &&
 	    zv->zv_objset->os_sync == ZFS_SYNC_ALWAYS;
 
-	/*
-	 * There must be no buffer changes when doing a dmu_sync() because
-	 * we can't change the data whilst calculating the checksum.
-	 */
+	 
 	lr = zfs_rangelock_enter(&zv->zv_rangelock, off, resid,
 	    doread ? RL_READER : RL_WRITER);
 
@@ -760,7 +666,7 @@ zvol_geom_bio_strategy(struct bio *bp)
 			}
 		}
 		if (error) {
-			/* Convert checksum errors into IO errors. */
+			 
 			if (error == ECKSUM)
 				error = SET_ERROR(EIO);
 			break;
@@ -806,9 +712,7 @@ out:
 		biofinish(bp, NULL, error);
 }
 
-/*
- * Character device mode implementation
- */
+ 
 
 static int
 zvol_cdev_read(struct cdev *dev, struct uio *uio_s, int ioflag)
@@ -824,10 +728,7 @@ zvol_cdev_read(struct cdev *dev, struct uio *uio_s, int ioflag)
 	zv = dev->si_drv2;
 
 	volsize = zv->zv_volsize;
-	/*
-	 * uio_loffset == volsize isn't an error as
-	 * it's required for EOF processing.
-	 */
+	 
 	if (zfs_uio_resid(&uio) > 0 &&
 	    (zfs_uio_offset(&uio) < 0 || zfs_uio_offset(&uio) > volsize))
 		return (SET_ERROR(EIO));
@@ -839,13 +740,13 @@ zvol_cdev_read(struct cdev *dev, struct uio *uio_s, int ioflag)
 	while (zfs_uio_resid(&uio) > 0 && zfs_uio_offset(&uio) < volsize) {
 		uint64_t bytes = MIN(zfs_uio_resid(&uio), DMU_MAX_ACCESS >> 1);
 
-		/* Don't read past the end. */
+		 
 		if (bytes > volsize - zfs_uio_offset(&uio))
 			bytes = volsize - zfs_uio_offset(&uio);
 
 		error =  dmu_read_uio_dnode(zv->zv_dn, &uio, bytes);
 		if (error) {
-			/* Convert checksum errors into IO errors. */
+			 
 			if (error == ECKSUM)
 				error = SET_ERROR(EIO);
 			break;
@@ -893,7 +794,7 @@ zvol_cdev_write(struct cdev *dev, struct uio *uio_s, int ioflag)
 		uint64_t off = zfs_uio_offset(&uio);
 		dmu_tx_t *tx = dmu_tx_create(zv->zv_objset);
 
-		if (bytes > volsize - off)	/* Don't write past the end. */
+		if (bytes > volsize - off)	 
 			bytes = volsize - off;
 
 		dmu_tx_hold_write_by_dnode(tx, zv->zv_dn, off, bytes);
@@ -929,12 +830,7 @@ zvol_cdev_open(struct cdev *dev, int flags, int fmt, struct thread *td)
 
 retry:
 	rw_enter(&zvol_state_lock, ZVOL_RW_READER);
-	/*
-	 * Obtain a copy of si_drv2 under zvol_state_lock to make sure either
-	 * the result of zvol free code setting si_drv2 to NULL is observed,
-	 * or the zv is protected from being freed because of the positive
-	 * zv_open_count.
-	 */
+	 
 	zv = dev->si_drv2;
 	if (zv == NULL) {
 		rw_exit(&zvol_state_lock);
@@ -950,18 +846,14 @@ retry:
 	}
 	ASSERT3S(zv->zv_volmode, ==, ZFS_VOLMODE_DEV);
 
-	/*
-	 * Make sure zvol is not suspended during first open
-	 * (hold zv_suspend_lock) and respect proper lock acquisition
-	 * ordering - zv_suspend_lock before zv_state_lock.
-	 */
+	 
 	if (zv->zv_open_count == 0) {
 		drop_suspend = B_TRUE;
 		if (!rw_tryenter(&zv->zv_suspend_lock, ZVOL_RW_READER)) {
 			mutex_exit(&zv->zv_state_lock);
 			rw_enter(&zv->zv_suspend_lock, ZVOL_RW_READER);
 			mutex_enter(&zv->zv_state_lock);
-			/* Check to see if zv_suspend_lock is needed. */
+			 
 			if (zv->zv_open_count != 0) {
 				rw_exit(&zv->zv_suspend_lock);
 				drop_suspend = B_FALSE;
@@ -977,10 +869,7 @@ retry:
 
 		ASSERT(ZVOL_RW_READ_HELD(&zv->zv_suspend_lock));
 
-		/*
-		 * Take spa_namespace_lock to prevent lock inversion when
-		 * zvols from one pool are opened as vdevs in another.
-		 */
+		 
 		if (!mutex_owned(&spa_namespace_lock)) {
 			if (!mutex_tryenter(&spa_namespace_lock)) {
 				mutex_exit(&zv->zv_state_lock);
@@ -1059,22 +948,15 @@ zvol_cdev_close(struct cdev *dev, int flags, int fmt, struct thread *td)
 
 	ASSERT3S(zv->zv_volmode, ==, ZFS_VOLMODE_DEV);
 
-	/*
-	 * If the open count is zero, this is a spurious close.
-	 * That indicates a bug in the kernel / DDI framework.
-	 */
+	 
 	ASSERT3U(zv->zv_open_count, >, 0);
-	/*
-	 * Make sure zvol is not suspended during last close
-	 * (hold zv_suspend_lock) and respect proper lock acquisition
-	 * ordering - zv_suspend_lock before zv_state_lock.
-	 */
+	 
 	if (zv->zv_open_count == 1) {
 		if (!rw_tryenter(&zv->zv_suspend_lock, ZVOL_RW_READER)) {
 			mutex_exit(&zv->zv_state_lock);
 			rw_enter(&zv->zv_suspend_lock, ZVOL_RW_READER);
 			mutex_enter(&zv->zv_state_lock);
-			/* Check to see if zv_suspend_lock is needed. */
+			 
 			if (zv->zv_open_count != 1) {
 				rw_exit(&zv->zv_suspend_lock);
 				drop_suspend = B_FALSE;
@@ -1087,9 +969,7 @@ zvol_cdev_close(struct cdev *dev, int flags, int fmt, struct thread *td)
 
 	ASSERT(MUTEX_HELD(&zv->zv_state_lock));
 
-	/*
-	 * You may get multiple opens, but only one close.
-	 */
+	 
 	zv->zv_open_count--;
 	if (flags & O_SYNC) {
 		zsd = &zv->zv_zso->zso_dev;
@@ -1228,21 +1108,14 @@ zvol_cdev_ioctl(struct cdev *dev, ulong_t cmd, caddr_t data,
 	return (error);
 }
 
-/*
- * Misc. helpers
- */
+ 
 
 static void
 zvol_ensure_zilog(zvol_state_t *zv)
 {
 	ASSERT(ZVOL_RW_READ_HELD(&zv->zv_suspend_lock));
 
-	/*
-	 * Open a ZIL if this is the first time we have written to this
-	 * zvol. We protect zv->zv_zilog with zv_suspend_lock rather
-	 * than zv_state_lock so that we don't need to acquire an
-	 * additional lock in this path.
-	 */
+	 
 	if (zv->zv_zilog == NULL) {
 		if (!rw_tryupgrade(&zv->zv_suspend_lock)) {
 			rw_exit(&zv->zv_suspend_lock);
@@ -1252,7 +1125,7 @@ zvol_ensure_zilog(zvol_state_t *zv)
 			zv->zv_zilog = zil_open(zv->zv_objset,
 			    zvol_get_data, &zv->zv_kstat.dk_zil_sums);
 			zv->zv_flags |= ZVOL_WRITTEN_TO;
-			/* replay / destroy done in zvol_os_create_minor() */
+			 
 			VERIFY0(zv->zv_zilog->zl_header->zh_flags &
 			    ZIL_REPLAY_NEEDED);
 		}
@@ -1272,7 +1145,7 @@ zvol_os_rename_minor(zvol_state_t *zv, const char *newname)
 	ASSERT(RW_LOCK_HELD(&zvol_state_lock));
 	ASSERT(MUTEX_HELD(&zv->zv_state_lock));
 
-	/* Move to a new hashtable entry.  */
+	 
 	zv->zv_hash = zvol_name_hash(zv->zv_name);
 	hlist_del(&zv->zv_hlink);
 	hlist_add_head(&zv->zv_hlink, ZVOL_HT_HEAD(zv->zv_hash));
@@ -1309,7 +1182,7 @@ zvol_os_rename_minor(zvol_state_t *zv, const char *newname)
 			if (zv->zv_open_count > 0) {
 				zv->zv_flags &= ~ZVOL_EXCL;
 				zv->zv_open_count = 0;
-				/* XXX  need suspend lock but lock order */
+				 
 				zvol_last_close(zv);
 			}
 		}
@@ -1335,9 +1208,7 @@ zvol_os_rename_minor(zvol_state_t *zv, const char *newname)
 	strlcpy(zv->zv_name, newname, sizeof (zv->zv_name));
 }
 
-/*
- * Remove minor node for the specified volume.
- */
+ 
 void
 zvol_os_free(zvol_state_t *zv)
 {
@@ -1379,9 +1250,7 @@ zvol_os_free(zvol_state_t *zv)
 	zvol_minors--;
 }
 
-/*
- * Create a minor node (plus a whole lot more) for the specified volume.
- */
+ 
 int
 zvol_os_create_minor(const char *name)
 {
@@ -1405,7 +1274,7 @@ zvol_os_create_minor(const char *name)
 
 	doi = kmem_alloc(sizeof (dmu_object_info_t), KM_SLEEP);
 
-	/* Lie and say we're read-only. */
+	 
 	error = dmu_objset_own(name, DMU_OST_ZVOL, B_TRUE, B_TRUE, FTAG, &os);
 	if (error)
 		goto out_doi;
@@ -1424,9 +1293,7 @@ zvol_os_create_minor(const char *name)
 		volmode = zvol_volmode;
 	error = 0;
 
-	/*
-	 * zvol_alloc equivalent ...
-	 */
+	 
 	zv = kmem_zalloc(sizeof (*zv), KM_SLEEP);
 	zv->zv_hash = hash;
 	mutex_init(&zv->zv_state_lock, NULL, MUTEX_DEFAULT, NULL);
@@ -1504,7 +1371,7 @@ zvol_os_create_minor(const char *name)
 		zil_close(zv->zv_zilog);
 	zv->zv_zilog = NULL;
 
-	/* TODO: prefetch for geom tasting */
+	 
 
 	zv->zv_objset = NULL;
 out_dmu_objset_disown:
@@ -1535,7 +1402,7 @@ zvol_os_clear_private(zvol_state_t *zv)
 		struct zvol_state_geom *zsg = &zv->zv_zso->zso_geom;
 		struct g_provider *pp = zsg->zsg_provider;
 
-		if (pp->private == NULL) /* already cleared */
+		if (pp->private == NULL)  
 			return;
 
 		mtx_lock(&zsg->zsg_queue_mtx);
@@ -1571,11 +1438,7 @@ zvol_os_update_volsize(zvol_state_t *zv, uint64_t volsize)
 			return (SET_ERROR(ENXIO));
 		}
 
-		/*
-		 * Do not invoke resize event when initial size was zero.
-		 * ZVOL initializes the size on first open, this is not
-		 * real resizing.
-		 */
+		 
 		if (pp->mediasize == 0)
 			pp->mediasize = zv->zv_volsize;
 		else
@@ -1593,18 +1456,16 @@ zvol_os_update_volsize(zvol_state_t *zv, uint64_t volsize)
 void
 zvol_os_set_disk_ro(zvol_state_t *zv, int flags)
 {
-	// XXX? set_disk_ro(zv->zv_zso->zvo_disk, flags);
+	
 }
 
 void
 zvol_os_set_capacity(zvol_state_t *zv, uint64_t capacity)
 {
-	// XXX? set_capacity(zv->zv_zso->zvo_disk, capacity);
+	
 }
 
-/*
- * Public interfaces
- */
+ 
 
 int
 zvol_busy(void)

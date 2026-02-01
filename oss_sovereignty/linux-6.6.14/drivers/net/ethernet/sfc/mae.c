@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2019 Solarflare Communications Inc.
- * Copyright 2020-2022 Xilinx Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
- */
+
+ 
 
 #include <linux/rhashtable.h>
 #include "ef100_nic.h"
@@ -87,7 +79,7 @@ void efx_mae_mport_vf(struct efx_nic *efx __always_unused, u32 vf_id, u32 *out)
 	*out = EFX_DWORD_VAL(mport);
 }
 
-/* Constructs an mport selector from an mport ID, because they're not the same */
+ 
 void efx_mae_mport_mport(struct efx_nic *efx __always_unused, u32 mport_id, u32 *out)
 {
 	efx_dword_t mport;
@@ -98,7 +90,7 @@ void efx_mae_mport_mport(struct efx_nic *efx __always_unused, u32 mport_id, u32 
 	*out = EFX_DWORD_VAL(mport);
 }
 
-/* id is really only 24 bits wide */
+ 
 int efx_mae_fw_lookup_mport(struct efx_nic *efx, u32 selector, u32 *id)
 {
 	MCDI_DECLARE_BUF(outbuf, MC_CMD_MAE_MPORT_LOOKUP_OUT_LEN);
@@ -183,7 +175,7 @@ int efx_mae_stop_counters(struct efx_nic *efx, struct efx_rx_queue *rx_queue)
 		return rc;
 
 	netif_dbg(efx, drv, efx->net_dev, "Draining counters:\n");
-	/* Only process received generation counts */
+	 
 	for (i = 0; (i < (outlen / 4)) && (i < EFX_TC_COUNTER_TYPE_MAX); i++) {
 		efx->tc->flush_gen[i] = MCDI_ARRAY_DWORD(outbuf,
 							 MAE_COUNTERS_STREAM_STOP_V2_OUT_GENERATION_COUNT,
@@ -195,10 +187,7 @@ int efx_mae_stop_counters(struct efx_nic *efx, struct efx_rx_queue *rx_queue)
 
 	efx->tc->flush_counters = true;
 
-	/* Drain can take up to 2 seconds owing to FWRIVERHD-2884; whatever
-	 * timeout we use, that delay is added to unload on nonresponsive
-	 * hardware, so 2500ms seems like a reasonable compromise.
-	 */
+	 
 	if (!wait_event_timeout(efx->tc->flush_wq,
 				efx_mae_counters_flushed(efx->tc->flush_gen,
 							 efx->tc->seen_gen),
@@ -251,7 +240,7 @@ more:
 		rc = -EIO;
 		goto fail;
 	}
-	if (!offset) { /* first iteration: get metadata */
+	if (!offset) {  
 		desc->type = MCDI_WORD(outbuf, TABLE_DESCRIPTOR_OUT_TYPE);
 		desc->key_width = MCDI_WORD(outbuf, TABLE_DESCRIPTOR_OUT_KEY_WIDTH);
 		desc->resp_width = MCDI_WORD(outbuf, TABLE_DESCRIPTOR_OUT_RESP_WIDTH);
@@ -277,9 +266,7 @@ more:
 		if (!desc->resps)
 			goto fail;
 	}
-	/* FW could have returned more than the 16 field_descrs we
-	 * made room for in our outbuf
-	 */
+	 
 	outlen = min(outlen, sizeof(outbuf));
 	for (i = 0; i + offset < desc->n_keys + desc->n_resps; i++) {
 		struct efx_tc_table_field_fmt *field;
@@ -507,9 +494,7 @@ static int efx_mae_get_rule_fields(struct efx_nic *efx, u32 cmd,
 	size_t outlen;
 	int rc, i;
 
-	/* AR and OR caps MCDIs have identical layout, so we are using the
-	 * same code for both.
-	 */
+	 
 	BUILD_BUG_ON(MC_CMD_MAE_GET_AR_CAPS_OUT_LEN(MAE_NUM_FIELDS) <
 		     MC_CMD_MAE_GET_OR_CAPS_OUT_LEN(MAE_NUM_FIELDS));
 	BUILD_BUG_ON(MC_CMD_MAE_GET_AR_CAPS_IN_LEN);
@@ -525,9 +510,7 @@ static int efx_mae_get_rule_fields(struct efx_nic *efx, u32 cmd,
 	BUILD_BUG_ON(MC_CMD_MAE_GET_AR_CAPS_OUT_FIELD_FLAGS_OFST !=
 		     MC_CMD_MAE_GET_OR_CAPS_OUT_FIELD_FLAGS_OFST);
 	caps = _MCDI_DWORD(outbuf, MAE_GET_AR_CAPS_OUT_FIELD_FLAGS);
-	/* We're only interested in the support status enum, not any other
-	 * flags, so just extract that from each entry.
-	 */
+	 
 	for (i = 0; i < count; i++)
 		if (i * sizeof(*outbuf) + MC_CMD_MAE_GET_AR_CAPS_OUT_FIELD_FLAGS_OFST < outlen)
 			field_support[i] = EFX_DWORD_FIELD(caps[i], MAE_FIELD_FLAGS_SUPPORT_STATUS);
@@ -549,12 +532,7 @@ int efx_mae_get_caps(struct efx_nic *efx, struct mae_caps *caps)
 				       caps->outer_rule_fields);
 }
 
-/* Bit twiddling:
- * Prefix: 1...110...0
- *      ~: 0...001...1
- *    + 1: 0...010...0 is power of two
- * so (~x) & ((~x) + 1) == 0.  Converse holds also.
- */
+ 
 #define is_prefix_byte(_x)	!(((_x) ^ 0xff) & (((_x) ^ 0xff) + 1))
 
 enum mask_type { MASK_ONES, MASK_ZEROES, MASK_PREFIX, MASK_OTHER };
@@ -570,17 +548,17 @@ static const char *mask_type_name(enum mask_type typ)
 		return "prefix";
 	case MASK_OTHER:
 		return "arbitrary";
-	default: /* can't happen */
+	default:  
 		return "unknown";
 	}
 }
 
-/* Checks a (big-endian) bytestring is a bit prefix */
+ 
 static enum mask_type classify_mask(const u8 *mask, size_t len)
 {
-	bool zeroes = true; /* All bits seen so far are zeroes */
-	bool ones = true; /* All bits seen so far are ones */
-	bool prefix = true; /* Valid prefix so far */
+	bool zeroes = true;  
+	bool ones = true;  
+	bool prefix = true;  
 	size_t i;
 
 	for (i = 0; i < len; i++) {
@@ -631,7 +609,7 @@ static int efx_mae_match_check_cap_typ(u8 support, enum mask_type typ)
 	}
 }
 
-/* Validate field mask against hardware capabilities.  Captures caller's 'rc' */
+ 
 #define CHECK(_mcdi, _field)	({					       \
 	enum mask_type typ = classify_mask((const u8 *)&mask->_field,	       \
 					   sizeof(mask->_field));	       \
@@ -644,7 +622,7 @@ static int efx_mae_match_check_cap_typ(u8 support, enum mask_type typ)
 				       mask_type_name(typ), #_field);	       \
 	rc;								       \
 })
-/* Booleans need special handling */
+ 
 #define CHECK_BIT(_mcdi, _field)	({				       \
 	enum mask_type typ = mask->_field ? MASK_ONES : MASK_ZEROES;	       \
 									       \
@@ -666,7 +644,7 @@ int efx_mae_match_check_caps(struct efx_nic *efx,
 	enum mask_type ingress_port_mask_type;
 	int rc;
 
-	/* Check for _PREFIX assumes big-endian, so we need to convert */
+	 
 	ingress_port_mask_type = classify_mask((const u8 *)&ingress_port,
 					       sizeof(ingress_port));
 	rc = efx_mae_match_check_cap_typ(supported_fields[MAE_FIELD_INGRESS_PORT],
@@ -704,13 +682,7 @@ int efx_mae_match_check_caps(struct efx_nic *efx,
 	    CHECK(CT_DOMAIN, ct_zone) ||
 	    CHECK(RECIRC_ID, recirc_id))
 		return rc;
-	/* Matches on outer fields are done in a separate hardware table,
-	 * the Outer Rule table.  Thus the Action Rule merely does an
-	 * exact match on Outer Rule ID if any outer field matches are
-	 * present.  The exception is the VNI/VSID (enc_keyid), which is
-	 * available to the Action Rule match iff the Outer Rule matched
-	 * (and thus identified the encap protocol to use to extract it).
-	 */
+	 
 	if (efx_tc_match_is_encap(mask)) {
 		rc = efx_mae_match_check_cap_typ(
 				supported_fields[MAE_FIELD_OUTER_RULE_ID],
@@ -728,7 +700,7 @@ int efx_mae_match_check_caps(struct efx_nic *efx,
 	return 0;
 }
 
-/* Checks for match fields not supported in LHS Outer Rules */
+ 
 #define UNSUPPORTED(_field)	({					       \
 	enum mask_type typ = classify_mask((const u8 *)&mask->_field,	       \
 					   sizeof(mask->_field));	       \
@@ -747,10 +719,7 @@ int efx_mae_match_check_caps(struct efx_nic *efx,
 	rc;								       \
 })
 
-/* LHS rules are (normally) inserted in the Outer Rule table, which means
- * they use ENC_ fields in hardware to match regular (not enc_) fields from
- * &struct efx_tc_match_fields.
- */
+ 
 int efx_mae_match_check_caps_lhs(struct efx_nic *efx,
 				 const struct efx_tc_match_fields *mask,
 				 struct netlink_ext_ack *extack)
@@ -760,7 +729,7 @@ int efx_mae_match_check_caps_lhs(struct efx_nic *efx,
 	enum mask_type ingress_port_mask_type;
 	int rc;
 
-	/* Check for _PREFIX assumes big-endian, so we need to convert */
+	 
 	ingress_port_mask_type = classify_mask((const u8 *)&ingress_port,
 					       sizeof(ingress_port));
 	rc = efx_mae_match_check_cap_typ(supported_fields[MAE_FIELD_INGRESS_PORT],
@@ -795,14 +764,12 @@ int efx_mae_match_check_caps_lhs(struct efx_nic *efx,
 	    CHECK_BIT(TCP_SYN_FIN_RST, tcp_syn_fin_rst))
 		return rc;
 	if (efx_tc_match_is_encap(mask)) {
-		/* can't happen; disallowed for local rules, translated
-		 * for foreign rules.
-		 */
+		 
 		NL_SET_ERR_MSG_MOD(extack, "Unexpected encap match in LHS rule");
 		return -EOPNOTSUPP;
 	}
 	if (UNSUPPORTED(enc_keyid) ||
-	    /* Can't filter on conntrack in LHS rules */
+	     
 	    UNSUPPORTED_BIT(ct_state_trk) ||
 	    UNSUPPORTED_BIT(ct_state_est) ||
 	    UNSUPPORTED(ct_mark) ||
@@ -822,9 +789,7 @@ int efx_mae_match_check_caps_lhs(struct efx_nic *efx,
 				       "No support for field %s", #_mcdi);     \
 	rc;								       \
 })
-/* Checks that the fields needed for encap-rule matches are supported by the
- * MAE.  All the fields are exact-match, except possibly ENC_IP_TOS.
- */
+ 
 int efx_mae_check_encap_match_caps(struct efx_nic *efx, bool ipv6,
 				   u8 ip_tos_mask, __be16 udp_sport_mask,
 				   struct netlink_ext_ack *extack)
@@ -902,7 +867,7 @@ int efx_mae_allocate_counter(struct efx_nic *efx, struct efx_tc_counter *cnt)
 			  outbuf, sizeof(outbuf), &outlen);
 	if (rc)
 		return rc;
-	/* pcol says this can't happen, since count is 1 */
+	 
 	if (outlen < sizeof(outbuf))
 		return -EIO;
 	cnt->fw_id = MCDI_DWORD(outbuf, MAE_COUNTER_ALLOC_OUT_COUNTER_ID);
@@ -924,13 +889,10 @@ int efx_mae_free_counter(struct efx_nic *efx, struct efx_tc_counter *cnt)
 			  outbuf, sizeof(outbuf), &outlen);
 	if (rc)
 		return rc;
-	/* pcol says this can't happen, since count is 1 */
+	 
 	if (outlen < sizeof(outbuf))
 		return -EIO;
-	/* FW freed a different ID than we asked for, should also never happen.
-	 * Warn because it means we've now got a different idea to the FW of
-	 * what counters exist, which could cause mayhem later.
-	 */
+	 
 	if (WARN_ON(MCDI_DWORD(outbuf, MAE_COUNTER_FREE_OUT_FREED_COUNTER_ID) !=
 		    cnt->fw_id))
 		return -EIO;
@@ -964,7 +926,7 @@ int efx_mae_allocate_encap_md(struct efx_nic *efx,
 		return rc;
 	MCDI_SET_DWORD(inbuf, MAE_ENCAP_HEADER_ALLOC_IN_ENCAP_TYPE, rc);
 	inlen = MC_CMD_MAE_ENCAP_HEADER_ALLOC_IN_LEN(encap->encap_hdr_len);
-	if (WARN_ON(inlen > sizeof(inbuf))) /* can't happen */
+	if (WARN_ON(inlen > sizeof(inbuf)))  
 		return -EINVAL;
 	memcpy(MCDI_PTR(inbuf, MAE_ENCAP_HEADER_ALLOC_IN_HDR_DATA),
 	       encap->encap_hdr,
@@ -993,7 +955,7 @@ int efx_mae_update_encap_md(struct efx_nic *efx,
 	MCDI_SET_DWORD(inbuf, MAE_ENCAP_HEADER_UPDATE_IN_EH_ID,
 		       encap->fw_id);
 	inlen = MC_CMD_MAE_ENCAP_HEADER_UPDATE_IN_LEN(encap->encap_hdr_len);
-	if (WARN_ON(inlen > sizeof(inbuf))) /* can't happen */
+	if (WARN_ON(inlen > sizeof(inbuf)))  
 		return -EINVAL;
 	memcpy(MCDI_PTR(inbuf, MAE_ENCAP_HEADER_UPDATE_IN_HDR_DATA),
 	       encap->encap_hdr,
@@ -1019,15 +981,10 @@ int efx_mae_free_encap_md(struct efx_nic *efx,
 		return rc;
 	if (outlen < sizeof(outbuf))
 		return -EIO;
-	/* FW freed a different ID than we asked for, should also never happen.
-	 * Warn because it means we've now got a different idea to the FW of
-	 * what encap_mds exist, which could cause mayhem later.
-	 */
+	 
 	if (WARN_ON(MCDI_DWORD(outbuf, MAE_ENCAP_HEADER_FREE_OUT_FREED_EH_ID) != encap->fw_id))
 		return -EIO;
-	/* We're probably about to free @encap, but let's just make sure its
-	 * fw_id is blatted so that it won't look valid if it leaks out.
-	 */
+	 
 	encap->fw_id = MC_CMD_MAE_ENCAP_HEADER_ALLOC_OUT_ENCAP_HEADER_ID_NULL;
 	return 0;
 }
@@ -1062,7 +1019,7 @@ static bool efx_mae_asl_id(u32 id)
 	return !!(id & BIT(31));
 }
 
-/* mport handling */
+ 
 static const struct rhashtable_params efx_mae_mports_ht_params = {
 	.key_len	= sizeof(u32),
 	.key_offset	= offsetof(struct mae_mport_desc, mport_id),
@@ -1153,7 +1110,7 @@ int efx_mae_enumerate_mports(struct efx_nic *efx)
 		}
 		count = MCDI_DWORD(outbuf, MAE_MPORT_READ_JOURNAL_OUT_MPORT_DESC_COUNT);
 		if (!count)
-			continue; /* not break; we want to look at MORE flag */
+			continue;  
 		stride = MCDI_DWORD(outbuf, MAE_MPORT_READ_JOURNAL_OUT_SIZEOF_MPORT_DESC);
 		if (stride < MAE_MPORT_DESC_LEN) {
 			rc = -EIO;
@@ -1202,13 +1159,11 @@ int efx_mae_enumerate_mports(struct efx_nic *efx)
 							     MAE_MPORT_DESC_VNIC_FUNCTION_VF_IDX);
 				break;
 			default:
-				/* Unknown mport_type, just accept it */
+				 
 				break;
 			}
 			rc = efx_mae_process_mport(efx, d);
-			/* Any failure will be due to memory allocation faiure,
-			 * so there is no point to try subsequent entries.
-			 */
+			 
 			if (rc)
 				goto fail;
 		}
@@ -1219,16 +1174,7 @@ fail:
 	return rc;
 }
 
-/**
- * efx_mae_allocate_pedit_mac() - allocate pedit MAC address in HW.
- * @efx:	NIC we're installing a pedit MAC address on
- * @ped:	pedit MAC action to be installed
- *
- * Attempts to install @ped in HW and populates its id with an index of this
- * entry in the firmware MAC address table on success.
- *
- * Return: negative value on error, 0 in success.
- */
+ 
 int efx_mae_allocate_pedit_mac(struct efx_nic *efx,
 			       struct efx_tc_mac_pedit_action *ped)
 {
@@ -1251,14 +1197,7 @@ int efx_mae_allocate_pedit_mac(struct efx_nic *efx,
 	return 0;
 }
 
-/**
- * efx_mae_free_pedit_mac() - free pedit MAC address in HW.
- * @efx:	NIC we're installing a pedit MAC address on
- * @ped:	pedit MAC action that needs to be freed
- *
- * Frees @ped in HW, check that firmware did not free a different one and clears
- * the id (which denotes the index of the entry in the MAC address table).
- */
+ 
 void efx_mae_free_pedit_mac(struct efx_nic *efx,
 			    struct efx_tc_mac_pedit_action *ped)
 {
@@ -1272,15 +1211,10 @@ void efx_mae_free_pedit_mac(struct efx_nic *efx,
 			  sizeof(inbuf), outbuf, sizeof(outbuf), &outlen);
 	if (rc || outlen < sizeof(outbuf))
 		return;
-	/* FW freed a different ID than we asked for, should also never happen.
-	 * Warn because it means we've now got a different idea to the FW of
-	 * what MAC addresses exist, which could cause mayhem later.
-	 */
+	 
 	if (WARN_ON(MCDI_DWORD(outbuf, MAE_MAC_ADDR_FREE_OUT_FREED_MAC_ID) != ped->fw_id))
 		return;
-	/* We're probably about to free @ped, but let's just make sure its
-	 * fw_id is blatted so that it won't look valid if it leaks out.
-	 */
+	 
 	ped->fw_id = MC_CMD_MAE_MAC_ADDR_ALLOC_OUT_MAC_ID_NULL;
 }
 
@@ -1349,9 +1283,7 @@ int efx_mae_alloc_action_set(struct efx_nic *efx, struct efx_tc_action_set *act)
 	if (outlen < sizeof(outbuf))
 		return -EIO;
 	act->fw_id = MCDI_DWORD(outbuf, MAE_ACTION_SET_ALLOC_OUT_AS_ID);
-	/* We rely on the high bit of AS IDs always being clear.
-	 * The firmware API guarantees this, but let's check it ourselves.
-	 */
+	 
 	if (WARN_ON_ONCE(efx_mae_asl_id(act->fw_id))) {
 		efx_mae_free_action_set(efx, act->fw_id);
 		return -EIO;
@@ -1373,10 +1305,7 @@ int efx_mae_free_action_set(struct efx_nic *efx, u32 fw_id)
 		return rc;
 	if (outlen < sizeof(outbuf))
 		return -EIO;
-	/* FW freed a different ID than we asked for, should never happen.
-	 * Warn because it means we've now got a different idea to the FW of
-	 * what action-sets exist, which could cause mayhem later.
-	 */
+	 
 	if (WARN_ON(MCDI_DWORD(outbuf, MAE_ACTION_SET_FREE_OUT_FREED_AS_ID) != fw_id))
 		return -EIO;
 	return 0;
@@ -1396,15 +1325,13 @@ int efx_mae_alloc_action_set_list(struct efx_nic *efx,
 	if (i == 0)
 		return -EINVAL;
 	if (i == 1) {
-		/* Don't wrap an ASL around a single AS, just use the AS_ID
-		 * directly.  ASLs are a more limited resource.
-		 */
+		 
 		act = list_first_entry(&acts->list, struct efx_tc_action_set, list);
 		acts->fw_id = act->fw_id;
 		return 0;
 	}
 	if (i > MC_CMD_MAE_ACTION_SET_LIST_ALLOC_IN_AS_IDS_MAXNUM_MCDI2)
-		return -EOPNOTSUPP; /* Too many actions */
+		return -EOPNOTSUPP;  
 	inlen = MC_CMD_MAE_ACTION_SET_LIST_ALLOC_IN_LEN(i);
 	inbuf = kzalloc(inlen, GFP_KERNEL);
 	if (!inbuf)
@@ -1425,9 +1352,7 @@ int efx_mae_alloc_action_set_list(struct efx_nic *efx,
 		goto out_free;
 	}
 	acts->fw_id = MCDI_DWORD(outbuf, MAE_ACTION_SET_LIST_ALLOC_OUT_ASL_ID);
-	/* We rely on the high bit of ASL IDs always being set.
-	 * The firmware API guarantees this, but let's check it ourselves.
-	 */
+	 
 	if (WARN_ON_ONCE(!efx_mae_asl_id(acts->fw_id))) {
 		efx_mae_free_action_set_list(efx, acts);
 		rc = -EIO;
@@ -1445,9 +1370,7 @@ int efx_mae_free_action_set_list(struct efx_nic *efx,
 	size_t outlen;
 	int rc;
 
-	/* If this is just an AS_ID with no ASL wrapper, then there is
-	 * nothing for us to free.  (The AS will be freed later.)
-	 */
+	 
 	if (efx_mae_asl_id(acts->fw_id)) {
 		MCDI_SET_DWORD(inbuf, MAE_ACTION_SET_LIST_FREE_IN_ASL_ID,
 			       acts->fw_id);
@@ -1457,16 +1380,11 @@ int efx_mae_free_action_set_list(struct efx_nic *efx,
 			return rc;
 		if (outlen < sizeof(outbuf))
 			return -EIO;
-		/* FW freed a different ID than we asked for, should never happen.
-		 * Warn because it means we've now got a different idea to the FW of
-		 * what action-set-lists exist, which could cause mayhem later.
-		 */
+		 
 		if (WARN_ON(MCDI_DWORD(outbuf, MAE_ACTION_SET_LIST_FREE_OUT_FREED_ASL_ID) != acts->fw_id))
 			return -EIO;
 	}
-	/* We're probably about to free @acts, but let's just make sure its
-	 * fw_id is blatted so that it won't look valid if it leaks out.
-	 */
+	 
 	acts->fw_id = MC_CMD_MAE_ACTION_SET_LIST_ALLOC_OUT_ACTION_SET_LIST_ID_NULL;
 	return 0;
 }
@@ -1484,10 +1402,7 @@ int efx_mae_register_encap_match(struct efx_nic *efx,
 	if (rc < 0)
 		return rc;
 	match_crit = _MCDI_DWORD(inbuf, MAE_OUTER_RULE_INSERT_IN_FIELD_MATCH_CRITERIA);
-	/* The struct contains IP src and dst, and udp dport.
-	 * So we actually need to filter on IP src and dst, L4 dport, and
-	 * ipproto == udp.
-	 */
+	 
 	MCDI_SET_DWORD(inbuf, MAE_OUTER_RULE_INSERT_IN_ENCAP_TYPE, rc);
 #ifdef CONFIG_IPV6
 	if (encap->src_ip | encap->dst_ip) {
@@ -1557,15 +1472,10 @@ int efx_mae_unregister_encap_match(struct efx_nic *efx,
 		return rc;
 	if (outlen < sizeof(outbuf))
 		return -EIO;
-	/* FW freed a different ID than we asked for, should also never happen.
-	 * Warn because it means we've now got a different idea to the FW of
-	 * what encap_mds exist, which could cause mayhem later.
-	 */
+	 
 	if (WARN_ON(MCDI_DWORD(outbuf, MAE_OUTER_RULE_REMOVE_OUT_REMOVED_OR_ID) != encap->fw_id))
 		return -EIO;
-	/* We're probably about to free @encap, but let's just make sure its
-	 * fw_id is blatted so that it won't look valid if it leaks out.
-	 */
+	 
 	encap->fw_id = MC_CMD_MAE_OUTER_RULE_INSERT_OUT_OUTER_RULE_ID_NULL;
 	return 0;
 }
@@ -1656,11 +1566,7 @@ static int efx_mae_populate_lhs_match_criteria(MCDI_DECLARE_STRUCT_PTR(match_cri
 				match->value.l4_dport);
 	MCDI_STRUCT_SET_WORD_BE(match_crit, MAE_ENC_FIELD_PAIRS_ENC_L4_DPORT_BE_MASK,
 				match->mask.l4_dport);
-	/* No enc-keys in LHS rules.  Caps check should have caught this; any
-	 * enc-keys from an fLHS should have been translated to regular keys
-	 * and any EM should be a pseudo (we're an OR so can't have a direct
-	 * EM with another OR).
-	 */
+	 
 	if (WARN_ON_ONCE(match->encap && !match->encap->type))
 		return -EOPNOTSUPP;
 	if (WARN_ON_ONCE(match->mask.enc_src_ip))
@@ -1697,20 +1603,17 @@ static int efx_mae_insert_lhs_outer_rule(struct efx_nic *efx,
 	int rc;
 
 	MCDI_SET_DWORD(inbuf, MAE_OUTER_RULE_INSERT_IN_PRIO, prio);
-	/* match */
+	 
 	match_crit = _MCDI_DWORD(inbuf, MAE_OUTER_RULE_INSERT_IN_FIELD_MATCH_CRITERIA);
 	rc = efx_mae_populate_lhs_match_criteria(match_crit, &rule->match);
 	if (rc)
 		return rc;
 
-	/* action */
+	 
 	act = &rule->lhs_act;
 	MCDI_SET_DWORD(inbuf, MAE_OUTER_RULE_INSERT_IN_ENCAP_TYPE,
 		       MAE_MCDI_ENCAP_TYPE_NONE);
-	/* We always inhibit CT lookup on TCP_INTERESTING_FLAGS, since the
-	 * SW path needs to process the packet to update the conntrack tables
-	 * on connection establishment (SYN) or termination (FIN, RST).
-	 */
+	 
 	MCDI_POPULATE_DWORD_6(inbuf, MAE_OUTER_RULE_INSERT_IN_LOOKUP_CONTROL,
 			      MAE_OUTER_RULE_INSERT_IN_DO_CT, !!act->zone,
 			      MAE_OUTER_RULE_INSERT_IN_CT_TCP_FLAGS_INHIBIT, 1,
@@ -1755,15 +1658,10 @@ static int efx_mae_remove_lhs_outer_rule(struct efx_nic *efx,
 		return rc;
 	if (outlen < sizeof(outbuf))
 		return -EIO;
-	/* FW freed a different ID than we asked for, should also never happen.
-	 * Warn because it means we've now got a different idea to the FW of
-	 * what encap_mds exist, which could cause mayhem later.
-	 */
+	 
 	if (WARN_ON(MCDI_DWORD(outbuf, MAE_OUTER_RULE_REMOVE_OUT_REMOVED_OR_ID) != rule->fw_id))
 		return -EIO;
-	/* We're probably about to free @rule, but let's just make sure its
-	 * fw_id is blatted so that it won't look valid if it leaks out.
-	 */
+	 
 	rule->fw_id = MC_CMD_MAE_OUTER_RULE_INSERT_OUT_OUTER_RULE_ID_NULL;
 	return 0;
 }
@@ -1773,20 +1671,14 @@ int efx_mae_remove_lhs_rule(struct efx_nic *efx, struct efx_tc_lhs_rule *rule)
 	return efx_mae_remove_lhs_outer_rule(efx, rule);
 }
 
-/* Populating is done by taking each byte of @value in turn and storing
- * it in the appropriate bits of @row.  @value must be big-endian; we
- * convert it to little-endianness as we go.
- */
+ 
 static int efx_mae_table_populate(struct efx_tc_table_field_fmt field,
 				  __le32 *row, size_t row_bits,
 				  void *value, size_t value_size)
 {
 	unsigned int i;
 
-	/* For now only scheme 0 is supported for any field, so we check here
-	 * (rather than, say, in calling code, which knows the semantics and
-	 * could in principle encode for other schemes).
-	 */
+	 
 	if (field.scheme)
 		return -EOPNOTSUPP;
 	if (DIV_ROUND_UP(field.width, 8) != value_size)
@@ -1820,7 +1712,7 @@ static int efx_mae_table_populate_bool(struct efx_tc_table_field_fmt field,
 static int efx_mae_table_populate_ipv4(struct efx_tc_table_field_fmt field,
 				       __le32 *row, size_t row_bits, __be32 value)
 {
-	/* IPv4 is placed in the first 4 bytes of an IPv6-sized field */
+	 
 	struct in6_addr v = {};
 
 	if (field.width != 128)
@@ -1834,10 +1726,7 @@ static int efx_mae_table_populate_u24(struct efx_tc_table_field_fmt field,
 {
 	__be32 v = cpu_to_be32(value);
 
-	/* We adjust value_size here since just 3 bytes will be copied, and
-	 * the pointer to the value is set discarding the first byte which is
-	 * the most significant byte for a big-endian 4-bytes value.
-	 */
+	 
 	return efx_mae_table_populate(field, row, row_bits, ((void *)&v) + 1,
 				      sizeof(v) - 1);
 }
@@ -1918,11 +1807,11 @@ int efx_mae_insert_ct(struct efx_nic *efx, struct efx_tc_ct_entry *conn)
 	efx_dword_t *inbuf;
 	int rc = -ENOMEM;
 
-	/* Check table access is supported */
+	 
 	if (!efx->tc->meta_ct.hooked)
 		return -EOPNOTSUPP;
 
-	/* key/resp widths are in bits; convert to dwords for IN_LEN */
+	 
 	kw = DIV_ROUND_UP(efx->tc->meta_ct.desc.key_width, 32);
 	rw = DIV_ROUND_UP(efx->tc->meta_ct.desc.resp_width, 32);
 	BUILD_BUG_ON(sizeof(__le32) != MC_CMD_TABLE_INSERT_IN_DATA_LEN);
@@ -1947,7 +1836,7 @@ int efx_mae_insert_ct(struct efx_nic *efx, struct efx_tc_ct_entry *conn)
 	rc = TABLE_POPULATE_RESP_BOOL(resp, ct, dnat, conn->dnat);
 	if (rc)
 		goto out_free;
-	/* No support in hw for IPv6 NAT; field is only 32 bits */
+	 
 	if (!ipv6)
 		rc = TABLE_POPULATE_RESP(resp, ct, nat_ip, conn->nat_ip);
 	if (rc)
@@ -1965,7 +1854,7 @@ int efx_mae_insert_ct(struct efx_nic *efx, struct efx_tc_ct_entry *conn)
 	MCDI_SET_DWORD(inbuf, TABLE_INSERT_IN_TABLE_ID, TABLE_ID_CONNTRACK_TABLE);
 	MCDI_SET_WORD(inbuf, TABLE_INSERT_IN_KEY_WIDTH,
 		      efx->tc->meta_ct.desc.key_width);
-	/* MASK_WIDTH is zero as CT is a BCAM */
+	 
 	MCDI_SET_WORD(inbuf, TABLE_INSERT_IN_RESP_WIDTH,
 		      efx->tc->meta_ct.desc.resp_width);
 	memcpy(MCDI_PTR(inbuf, TABLE_INSERT_IN_DATA), key, kw * sizeof(__le32));
@@ -1990,11 +1879,11 @@ int efx_mae_remove_ct(struct efx_nic *efx, struct efx_tc_ct_entry *conn)
 	size_t inlen, kw;
 	int rc = -ENOMEM;
 
-	/* Check table access is supported */
+	 
 	if (!efx->tc->meta_ct.hooked)
 		return -EOPNOTSUPP;
 
-	/* key width is in bits; convert to dwords for IN_LEN */
+	 
 	kw = DIV_ROUND_UP(efx->tc->meta_ct.desc.key_width, 32);
 	BUILD_BUG_ON(sizeof(__le32) != MC_CMD_TABLE_DELETE_IN_DATA_LEN);
 	inlen = MC_CMD_TABLE_DELETE_IN_LEN(kw);
@@ -2015,8 +1904,8 @@ int efx_mae_remove_ct(struct efx_nic *efx, struct efx_tc_ct_entry *conn)
 	MCDI_SET_DWORD(inbuf, TABLE_DELETE_IN_TABLE_ID, TABLE_ID_CONNTRACK_TABLE);
 	MCDI_SET_WORD(inbuf, TABLE_DELETE_IN_KEY_WIDTH,
 		      efx->tc->meta_ct.desc.key_width);
-	/* MASK_WIDTH is zero as CT is a BCAM */
-	/* RESP_WIDTH is zero for DELETE */
+	 
+	 
 	memcpy(MCDI_PTR(inbuf, TABLE_DELETE_IN_DATA), key, kw * sizeof(__le32));
 
 	BUILD_BUG_ON(MC_CMD_TABLE_DELETE_OUT_LEN);
@@ -2145,13 +2034,13 @@ static int efx_mae_populate_match_criteria(MCDI_DECLARE_STRUCT_PTR(match_crit),
 				match->value.tcp_flags);
 	MCDI_STRUCT_SET_WORD_BE(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_TCP_FLAGS_BE_MASK,
 				match->mask.tcp_flags);
-	/* enc-keys are handled indirectly, through encap_match ID */
+	 
 	if (match->encap) {
 		MCDI_STRUCT_SET_DWORD(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_OUTER_RULE_ID,
 				      match->encap->fw_id);
 		MCDI_STRUCT_SET_DWORD(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_OUTER_RULE_ID_MASK,
 				      U32_MAX);
-		/* enc_keyid (VNI/VSID) is not part of the encap_match */
+		 
 		MCDI_STRUCT_SET_DWORD_BE(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_ENC_VNET_ID_BE,
 					 match->value.enc_keyid);
 		MCDI_STRUCT_SET_DWORD_BE(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_ENC_VNET_ID_BE_MASK,
@@ -2165,7 +2054,7 @@ static int efx_mae_populate_match_criteria(MCDI_DECLARE_STRUCT_PTR(match_crit),
 		   WARN_ON_ONCE(match->mask.enc_sport) ||
 		   WARN_ON_ONCE(match->mask.enc_dport) ||
 		   WARN_ON_ONCE(match->mask.enc_keyid)) {
-		/* No enc-keys should appear in a rule without an encap_match */
+		 
 		return -EOPNOTSUPP;
 	}
 	return 0;
@@ -2191,7 +2080,7 @@ int efx_mae_insert_rule(struct efx_nic *efx, const struct efx_tc_match *match,
 		MCDI_STRUCT_SET_DWORD(response, MAE_ACTION_RULE_RESPONSE_AS_ID,
 				      MC_CMD_MAE_ACTION_SET_ALLOC_OUT_ACTION_SET_ID_NULL);
 	} else {
-		/* We only had one AS, so we didn't wrap it in an ASL */
+		 
 		MCDI_STRUCT_SET_DWORD(response, MAE_ACTION_RULE_RESPONSE_ASL_ID,
 				      MC_CMD_MAE_ACTION_SET_LIST_ALLOC_OUT_ACTION_SET_LIST_ID_NULL);
 		MCDI_STRUCT_SET_DWORD(response, MAE_ACTION_RULE_RESPONSE_AS_ID, acts_id);
@@ -2225,7 +2114,7 @@ int efx_mae_update_rule(struct efx_nic *efx, u32 acts_id, u32 id)
 		MCDI_STRUCT_SET_DWORD(response, MAE_ACTION_RULE_RESPONSE_AS_ID,
 				      MC_CMD_MAE_ACTION_SET_ALLOC_OUT_ACTION_SET_ID_NULL);
 	} else {
-		/* We only had one AS, so we didn't wrap it in an ASL */
+		 
 		MCDI_STRUCT_SET_DWORD(response, MAE_ACTION_RULE_RESPONSE_ASL_ID,
 				      MC_CMD_MAE_ACTION_SET_LIST_ALLOC_OUT_ACTION_SET_LIST_ID_NULL);
 		MCDI_STRUCT_SET_DWORD(response, MAE_ACTION_RULE_RESPONSE_AS_ID, acts_id);
@@ -2248,10 +2137,7 @@ int efx_mae_delete_rule(struct efx_nic *efx, u32 id)
 		return rc;
 	if (outlen < sizeof(outbuf))
 		return -EIO;
-	/* FW freed a different ID than we asked for, should also never happen.
-	 * Warn because it means we've now got a different idea to the FW of
-	 * what rules exist, which could cause mayhem later.
-	 */
+	 
 	if (WARN_ON(MCDI_DWORD(outbuf, MAE_ACTION_RULE_DELETE_OUT_DELETED_AR_ID) != id))
 		return -EIO;
 	return 0;

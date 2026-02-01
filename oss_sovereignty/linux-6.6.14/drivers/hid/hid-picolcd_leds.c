@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/***************************************************************************
- *   Copyright (C) 2010-2012 by Bruno Prémont <bonbons@linux-vserver.org>  *
- *                                                                         *
- *   Based on Logitech G13 driver (v0.4)                                   *
- *     Copyright (C) 2009 by Rick L. Vinyard, Jr. <rvinyard@cs.nmsu.edu>   *
- *                                                                         *
- ***************************************************************************/
+
+ 
 
 #include <linux/hid.h>
 #include <linux/hid-debug.h>

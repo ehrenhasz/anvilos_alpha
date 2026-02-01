@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
+
+ 
 
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
@@ -17,7 +14,7 @@
 #include "tidss_drv.h"
 #include "tidss_plane.h"
 
-/* drm_plane_helper_funcs */
+ 
 
 static int tidss_plane_atomic_check(struct drm_plane *plane,
 				    struct drm_atomic_state *state)
@@ -36,11 +33,7 @@ static int tidss_plane_atomic_check(struct drm_plane *plane,
 	dev_dbg(ddev->dev, "%s\n", __func__);
 
 	if (!new_plane_state->crtc) {
-		/*
-		 * The visible field is not reset by the DRM core but only
-		 * updated by drm_atomic_helper_check_plane_state(), set it
-		 * manually.
-		 */
+		 
 		new_plane_state->visible = false;
 		return 0;
 	}
@@ -56,17 +49,7 @@ static int tidss_plane_atomic_check(struct drm_plane *plane,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * The HW is only able to start drawing at subpixel boundary
-	 * (the two first checks bellow). At the end of a row the HW
-	 * can only jump integer number of subpixels forward to the
-	 * beginning of the next row. So we can only show picture with
-	 * integer subpixel width (the third check). However, after
-	 * reaching the end of the drawn picture the drawing starts
-	 * again at the absolute memory address where top left corner
-	 * position of the drawn picture is (so there is no need to
-	 * check for odd height).
-	 */
+	 
 
 	finfo = drm_format_info(new_plane_state->fb->format->format);
 

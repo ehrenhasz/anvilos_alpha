@@ -1,79 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STRATO AG 2011.  All rights reserved.
- */
 
-/*
- * This module can be used to catch cases when the btrfs kernel
- * code executes write requests to the disk that bring the file
- * system in an inconsistent state. In such a state, a power-loss
- * or kernel panic event would cause that the data on disk is
- * lost or at least damaged.
- *
- * Code is added that examines all block write requests during
- * runtime (including writes of the super block). Three rules
- * are verified and an error is printed on violation of the
- * rules:
- * 1. It is not allowed to write a disk block which is
- *    currently referenced by the super block (either directly
- *    or indirectly).
- * 2. When a super block is written, it is verified that all
- *    referenced (directly or indirectly) blocks fulfill the
- *    following requirements:
- *    2a. All referenced blocks have either been present when
- *        the file system was mounted, (i.e., they have been
- *        referenced by the super block) or they have been
- *        written since then and the write completion callback
- *        was called and no write error was indicated and a
- *        FLUSH request to the device where these blocks are
- *        located was received and completed.
- *    2b. All referenced blocks need to have a generation
- *        number which is equal to the parent's number.
- *
- * One issue that was found using this module was that the log
- * tree on disk became temporarily corrupted because disk blocks
- * that had been in use for the log tree had been freed and
- * reused too early, while being referenced by the written super
- * block.
- *
- * The search term in the kernel log that can be used to filter
- * on the existence of detected integrity issues is
- * "btrfs: attempt".
- *
- * The integrity check is enabled via mount options. These
- * mount options are only supported if the integrity check
- * tool is compiled by defining BTRFS_FS_CHECK_INTEGRITY.
- *
- * Example #1, apply integrity checks to all metadata:
- * mount /dev/sdb1 /mnt -o check_int
- *
- * Example #2, apply integrity checks to all metadata and
- * to data extents:
- * mount /dev/sdb1 /mnt -o check_int_data
- *
- * Example #3, apply integrity checks to all metadata and dump
- * the tree that the super block references to kernel messages
- * each time after a super block was written:
- * mount /dev/sdb1 /mnt -o check_int,check_int_print_mask=263
- *
- * If the integrity check tool is included and activated in
- * the mount options, plenty of kernel memory is used, and
- * plenty of additional CPU cycles are spent. Enabling this
- * functionality is not intended for normal use. In most
- * cases, unless you are a btrfs developer who needs to verify
- * the integrity of (super)-block write requests, do not
- * enable the config option BTRFS_FS_CHECK_INTEGRITY to
- * include and compile the integrity check tool.
- *
- * Expect millions of lines of information in the kernel log with an
- * enabled check_int_print_mask. Therefore set LOG_BUF_SHIFT in the
- * kernel config to at least 26 (which is 64MB). Usually the value is
- * limited to 21 (which is 2MB) in init/Kconfig. The file needs to be
- * changed like this before LOG_BUF_SHIFT can be set to a high value:
- * config LOG_BUF_SHIFT
- *       int "Kernel log buffer size (16 => 64KB, 17 => 128KB)"
- *       range 12 30
- */
+ 
+
+ 
 
 #include <linux/sched.h>
 #include <linux/slab.h>
@@ -102,14 +30,10 @@
 #define BTRFSIC_BLOCK_LINK_MAGIC_NUMBER 0x11070807
 #define BTRFSIC_DEV2STATE_MAGIC_NUMBER 0x20111530
 #define BTRFSIC_BLOCK_STACK_FRAME_MAGIC_NUMBER 20111300
-#define BTRFSIC_TREE_DUMP_MAX_INDENT_LEVEL (200 - 6)	/* in characters,
-							 * excluding " [...]" */
+#define BTRFSIC_TREE_DUMP_MAX_INDENT_LEVEL (200 - 6)	 
 #define BTRFSIC_GENERATION_UNKNOWN ((u64)-1)
 
-/*
- * The definition of the bitmask fields for the print_mask.
- * They are specified with the mount option check_integrity_print_mask.
- */
+ 
 #define BTRFSIC_PRINT_MASK_SUPERBLOCK_WRITE			0x00000001
 #define BTRFSIC_PRINT_MASK_ROOT_CHUNK_LOG_TREE_LOCATION		0x00000002
 #define BTRFSIC_PRINT_MASK_TREE_AFTER_SB_WRITE			0x00000004
@@ -129,62 +53,48 @@ struct btrfsic_dev_state;
 struct btrfsic_state;
 
 struct btrfsic_block {
-	u32 magic_num;		/* only used for debug purposes */
-	unsigned int is_metadata:1;	/* if it is meta-data, not data-data */
-	unsigned int is_superblock:1;	/* if it is one of the superblocks */
-	unsigned int is_iodone:1;	/* if is done by lower subsystem */
-	unsigned int iodone_w_error:1;	/* error was indicated to endio */
-	unsigned int never_written:1;	/* block was added because it was
-					 * referenced, not because it was
-					 * written */
-	unsigned int mirror_num;	/* large enough to hold
-					 * BTRFS_SUPER_MIRROR_MAX */
+	u32 magic_num;		 
+	unsigned int is_metadata:1;	 
+	unsigned int is_superblock:1;	 
+	unsigned int is_iodone:1;	 
+	unsigned int iodone_w_error:1;	 
+	unsigned int never_written:1;	 
+	unsigned int mirror_num;	 
 	struct btrfsic_dev_state *dev_state;
-	u64 dev_bytenr;		/* key, physical byte num on disk */
-	u64 logical_bytenr;	/* logical byte num on disk */
+	u64 dev_bytenr;		 
+	u64 logical_bytenr;	 
 	u64 generation;
-	struct btrfs_disk_key disk_key;	/* extra info to print in case of
-					 * issues, will not always be correct */
-	struct list_head collision_resolving_node;	/* list node */
-	struct list_head all_blocks_node;	/* list node */
+	struct btrfs_disk_key disk_key;	 
+	struct list_head collision_resolving_node;	 
+	struct list_head all_blocks_node;	 
 
-	/* the following two lists contain block_link items */
-	struct list_head ref_to_list;	/* list */
-	struct list_head ref_from_list;	/* list */
+	 
+	struct list_head ref_to_list;	 
+	struct list_head ref_from_list;	 
 	struct btrfsic_block *next_in_same_bio;
 	void *orig_bio_private;
 	bio_end_io_t *orig_bio_end_io;
 	blk_opf_t submit_bio_bh_rw;
-	u64 flush_gen; /* only valid if !never_written */
+	u64 flush_gen;  
 };
 
-/*
- * Elements of this type are allocated dynamically and required because
- * each block object can refer to and can be ref from multiple blocks.
- * The key to lookup them in the hashtable is the dev_bytenr of
- * the block ref to plus the one from the block referred from.
- * The fact that they are searchable via a hashtable and that a
- * ref_cnt is maintained is not required for the btrfs integrity
- * check algorithm itself, it is only used to make the output more
- * beautiful in case that an error is detected (an error is defined
- * as a write operation to a block while that block is still referenced).
- */
+ 
 struct btrfsic_block_link {
-	u32 magic_num;		/* only used for debug purposes */
+	u32 magic_num;		 
 	u32 ref_cnt;
-	struct list_head node_ref_to;	/* list node */
-	struct list_head node_ref_from;	/* list node */
-	struct list_head collision_resolving_node;	/* list node */
+	struct list_head node_ref_to;	 
+	struct list_head node_ref_from;	 
+	struct list_head collision_resolving_node;	 
 	struct btrfsic_block *block_ref_to;
 	struct btrfsic_block *block_ref_from;
 	u64 parent_generation;
 };
 
 struct btrfsic_dev_state {
-	u32 magic_num;		/* only used for debug purposes */
+	u32 magic_num;		 
 	struct block_device *bdev;
 	struct btrfsic_state *state;
-	struct list_head collision_resolving_node;	/* list node */
+	struct list_head collision_resolving_node;	 
 	struct btrfsic_block dummy_block_for_bio_bh_flush;
 	u64 last_flush_gen;
 };
@@ -202,8 +112,8 @@ struct btrfsic_dev_state_hashtable {
 };
 
 struct btrfsic_block_data_ctx {
-	u64 start;		/* virtual bytenr */
-	u64 dev_bytenr;		/* physical bytenr on device */
+	u64 start;		 
+	u64 dev_bytenr;		 
 	u32 len;
 	struct btrfsic_dev_state *dev;
 	char **datav;
@@ -211,8 +121,7 @@ struct btrfsic_block_data_ctx {
 	void *mem_to_free;
 };
 
-/* This structure is used to implement recursion without occupying
- * any stack space, refer to btrfsic_process_metablock() */
+ 
 struct btrfsic_stack_frame {
 	u32 magic;
 	u32 nr;
@@ -229,7 +138,7 @@ struct btrfsic_stack_frame {
 	struct btrfsic_stack_frame *prev;
 };
 
-/* Some state per mounted filesystem */
+ 
 struct btrfsic_state {
 	u32 print_mask;
 	int include_extent_data;
@@ -713,7 +622,7 @@ static int btrfsic_process_superblock_dev_mirror(
 	struct address_space *mapping = superblock_bdev->bd_inode->i_mapping;
 	int ret = 0;
 
-	/* super block bytenr is always the unmapped device bytenr */
+	 
 	dev_bytenr = btrfs_sb_offset(superblock_mirror_num);
 	if (dev_bytenr + BTRFS_SUPER_INFO_SIZE > device->commit_total_bytes)
 		return -1;
@@ -743,7 +652,7 @@ static int btrfsic_process_superblock_dev_mirror(
 			ret = -1;
 			goto out;
 		}
-		/* for superblock, only the dev_bytenr makes sense */
+		 
 		superblock_tmp->dev_bytenr = dev_bytenr;
 		superblock_tmp->dev_state = dev_state;
 		superblock_tmp->logical_bytenr = dev_bytenr;
@@ -766,7 +675,7 @@ static int btrfsic_process_superblock_dev_mirror(
 					    &state->block_hashtable);
 	}
 
-	/* select the one with the highest generation field */
+	 
 	if (btrfs_super_generation(super_tmp) >
 	    state->max_superblock_generation ||
 	    0 == state->max_superblock_generation) {
@@ -1116,7 +1025,7 @@ one_stack_frame_backwards:
 	if (NULL != sf->prev) {
 		struct btrfsic_stack_frame *const prev = sf->prev;
 
-		/* the one for the initial block is freed in the caller */
+		 
 		btrfsic_release_block_ctx(sf->block_ctx);
 
 		if (sf->error) {
@@ -1515,7 +1424,7 @@ static void btrfsic_release_block_ctx(struct btrfsic_block_data_ctx *block_ctx)
 		BUG_ON(!block_ctx->pagev);
 		num_pages = (block_ctx->len + (u64)PAGE_SIZE - 1) >>
 			    PAGE_SHIFT;
-		/* Pages must be unmapped in reverse order */
+		 
 		while (num_pages > 0) {
 			num_pages--;
 			if (block_ctx->datav[num_pages])
@@ -1645,10 +1554,7 @@ static void btrfsic_dump_database(struct btrfsic_state *state)
 	}
 }
 
-/*
- * Test whether the disk block contains a tree block (leaf or node)
- * (note that this test fails for the super block)
- */
+ 
 static noinline_for_stack int btrfsic_test_for_metadata(
 		struct btrfsic_state *state,
 		char **datav, unsigned int num_pages)
@@ -1660,7 +1566,7 @@ static noinline_for_stack int btrfsic_test_for_metadata(
 	unsigned int i;
 
 	if (num_pages * PAGE_SIZE < state->metablock_size)
-		return 1; /* not metadata */
+		return 1;  
 	num_pages = state->metablock_size >> PAGE_SHIFT;
 	h = (struct btrfs_header *)datav[0];
 
@@ -1681,7 +1587,7 @@ static noinline_for_stack int btrfsic_test_for_metadata(
 	if (memcmp(csum, h->csum, fs_info->csum_size))
 		return 1;
 
-	return 0; /* is metadata */
+	return 0;  
 }
 
 static void btrfsic_process_written_block(struct btrfsic_dev_state *dev_state,
@@ -1812,17 +1718,12 @@ again:
 			       btrfs_stack_header_generation(
 				       (struct btrfs_header *)
 				       mapped_datav[0]));
-			/* it would not be safe to go on */
+			 
 			btrfsic_dump_tree(state);
 			goto continue_loop;
 		}
 
-		/*
-		 * Clear all references of this block. Do not free
-		 * the block itself even if is not referenced anymore
-		 * because it still carries valuable information
-		 * like whether it was ever written and IO completed.
-		 */
+		 
 		list_for_each_entry_safe(l, tmp, &block->ref_to_list,
 					 node_ref_to) {
 			if (state->print_mask & BTRFSIC_PRINT_MASK_VERBOSE)
@@ -1899,7 +1800,7 @@ again:
 					btrfsic_dump_tree_sub(state, block, 0);
 				}
 			} else {
-				block->mirror_num = 0;	/* unknown */
+				block->mirror_num = 0;	 
 				ret = btrfsic_process_metablock(
 						state,
 						block,
@@ -1911,16 +1812,11 @@ again:
 				       dev_bytenr);
 		} else {
 			block->is_metadata = 0;
-			block->mirror_num = 0;	/* unknown */
+			block->mirror_num = 0;	 
 			block->generation = BTRFSIC_GENERATION_UNKNOWN;
 			if (!state->include_extent_data
 			    && list_empty(&block->ref_from_list)) {
-				/*
-				 * disk block is overwritten with extent
-				 * data (not meta data) and we are configured
-				 * to not include extent data: take the
-				 * chance and free the block's memory
-				 */
+				 
 				btrfsic_block_hashtable_remove(block);
 				list_del(&block->all_blocks_node);
 				btrfsic_block_free(block);
@@ -1928,7 +1824,7 @@ again:
 		}
 		btrfsic_release_block_ctx(&block_ctx);
 	} else {
-		/* block has not been found in hash table */
+		 
 		u64 bytenr;
 
 		if (!is_metadata) {
@@ -1938,13 +1834,12 @@ again:
 			"written block (%pg/%llu/?) !found in hash table, D\n",
 				       dev_state->bdev, dev_bytenr);
 			if (!state->include_extent_data) {
-				/* ignore that written D block */
+				 
 				goto continue_loop;
 			}
 
-			/* this is getting ugly for the
-			 * include_extent_data case... */
-			bytenr = 0;	/* unknown */
+			 
+			bytenr = 0;	 
 		} else {
 			processed_len = state->metablock_size;
 			bytenr = btrfs_stack_header_bytenr(
@@ -1977,7 +1872,7 @@ again:
 		block->is_metadata = is_metadata;
 		block->never_written = 0;
 		block->iodone_w_error = 0;
-		block->mirror_num = 0;	/* unknown */
+		block->mirror_num = 0;	 
 		block->flush_gen = dev_state->last_flush_gen + 1;
 		block->submit_bio_bh_rw = submit_bio_bh_rw;
 		if (NULL != bio) {
@@ -2040,8 +1935,7 @@ static void btrfsic_bio_end_io(struct bio *bp)
 	struct btrfsic_block *block = bp->bi_private;
 	int iodone_w_error;
 
-	/* mutex is not held! This is not save if IO is not yet completed
-	 * on umount */
+	 
 	iodone_w_error = 0;
 	if (bp->bi_status)
 		iodone_w_error = 1;
@@ -2072,9 +1966,8 @@ static void btrfsic_bio_end_io(struct bio *bp)
 				       dev_state->last_flush_gen);
 		}
 		if (block->submit_bio_bh_rw & REQ_FUA)
-			block->flush_gen = 0; /* FUA completed means block is
-					       * on disk */
-		block->is_iodone = 1; /* for FLUSH, this releases the block */
+			block->flush_gen = 0;  
+		block->is_iodone = 1;  
 		block = next_block;
 	} while (NULL != block);
 
@@ -2224,29 +2117,14 @@ static int btrfsic_check_all_ref_blocks(struct btrfsic_state *state,
 	int ret = 0;
 
 	if (recursion_level >= 3 + BTRFS_MAX_LEVEL) {
-		/*
-		 * Note that this situation can happen and does not
-		 * indicate an error in regular cases. It happens
-		 * when disk blocks are freed and later reused.
-		 * The check-integrity module is not aware of any
-		 * block free operations, it just recognizes block
-		 * write operations. Therefore it keeps the linkage
-		 * information for a block until a block is
-		 * rewritten. This can temporarily cause incorrect
-		 * and even circular linkage information. This
-		 * causes no harm unless such blocks are referenced
-		 * by the most recent super block.
-		 */
+		 
 		if (state->print_mask & BTRFSIC_PRINT_MASK_VERBOSE)
 			pr_info("btrfsic: abort cyclic linkage (case 1).\n");
 
 		return ret;
 	}
 
-	/*
-	 * This algorithm is recursive because the amount of used stack
-	 * space is very small and the max recursion depth is limited.
-	 */
+	 
 	list_for_each_entry(l, &block->ref_to_list, node_ref_to) {
 		if (state->print_mask & BTRFSIC_PRINT_MASK_VERBOSE)
 			pr_info(
@@ -2334,17 +2212,14 @@ static int btrfsic_is_block_ref_by_superblock(
 	const struct btrfsic_block_link *l;
 
 	if (recursion_level >= 3 + BTRFS_MAX_LEVEL) {
-		/* refer to comment at "abort cyclic linkage (case 1)" */
+		 
 		if (state->print_mask & BTRFSIC_PRINT_MASK_VERBOSE)
 			pr_info("btrfsic: abort cyclic linkage (case 2).\n");
 
 		return 0;
 	}
 
-	/*
-	 * This algorithm is recursive because the amount of used stack space
-	 * is very small and the max recursion depth is limited.
-	 */
+	 
 	list_for_each_entry(l, &block->ref_from_list, node_ref_from) {
 		if (state->print_mask & BTRFSIC_PRINT_MASK_VERBOSE)
 			pr_info(
@@ -2434,15 +2309,9 @@ static void btrfsic_dump_tree_sub(const struct btrfsic_state *state,
 	static char buf[80];
 	int cursor_position;
 
-	/*
-	 * Should better fill an on-stack buffer with a complete line and
-	 * dump it at once when it is time to print a newline character.
-	 */
+	 
 
-	/*
-	 * This algorithm is recursive because the amount of used stack space
-	 * is very small and the max recursion depth is limited.
-	 */
+	 
 	indent_add = sprintf(buf, "%c-%llu(%pg/%llu/%u)",
 			     btrfsic_get_block_type(state, block),
 			     block->logical_bytenr, block->dev_state->bdev,
@@ -2713,10 +2582,7 @@ void btrfsic_check_bio(struct bio *bio)
 	if (!btrfsic_is_initialized)
 		return;
 
-	/*
-	 * We can be called before btrfsic_mount, so there might not be a
-	 * dev_state.
-	 */
+	 
 	dev_state = btrfsic_dev_state_lookup(bio->bi_bdev->bd_dev);
 	mutex_lock(&btrfsic_mutex);
 	if (dev_state) {
@@ -2836,11 +2702,7 @@ void btrfsic_unmount(struct btrfs_fs_devices *fs_devices)
 		return;
 	}
 
-	/*
-	 * Don't care about keeping the lists' state up to date,
-	 * just free all memory that was allocated dynamically.
-	 * Free the blocks and the block_links.
-	 */
+	 
 	list_for_each_entry_safe(b_all, tmp_all, &state->all_blocks_list,
 				 all_blocks_node) {
 		struct btrfsic_block_link *l, *tmp;

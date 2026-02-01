@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2020 Sean Anderson <seanga2@gmail.com>
- * Copyright (c) 2020 Western Digital Corporation or its affiliates.
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -24,10 +21,7 @@
 #include "pinconf.h"
 #include "pinctrl-utils.h"
 
-/*
- * The K210 only implements 8 drive levels, even though
- * there is register space for 16
- */
+ 
 #define K210_PC_DRIVE_MASK	GENMASK(11, 8)
 #define K210_PC_DRIVE_SHIFT	8
 #define K210_PC_DRIVE_0		(0 << K210_PC_DRIVE_SHIFT)
@@ -41,24 +35,21 @@
 #define K210_PC_DRIVE_MAX	7
 #define K210_PC_MODE_MASK	GENMASK(23, 12)
 
-/*
- * output enabled == PC_OE & (PC_OE_INV ^ FUNCTION_OE)
- * where FUNCTION_OE is a physical signal from the function.
- */
-#define K210_PC_OE		BIT(12) /* Output Enable */
-#define K210_PC_OE_INV		BIT(13) /* INVert Output Enable */
-#define K210_PC_DO_OE		BIT(14) /* set Data Out to Output Enable sig */
-#define K210_PC_DO_INV		BIT(15) /* INVert final Data Output */
-#define K210_PC_PU		BIT(16) /* Pull Up */
-#define K210_PC_PD		BIT(17) /* Pull Down */
-/* Strong pull up not implemented on K210 */
-#define K210_PC_SL		BIT(19) /* reduce SLew rate */
-/* Same semantics as OE above */
-#define K210_PC_IE		BIT(20) /* Input Enable */
-#define K210_PC_IE_INV		BIT(21) /* INVert Input Enable */
-#define K210_PC_DI_INV		BIT(22) /* INVert Data Input */
-#define K210_PC_ST		BIT(23) /* Schmitt Trigger */
-#define K210_PC_DI		BIT(31) /* raw Data Input */
+ 
+#define K210_PC_OE		BIT(12)  
+#define K210_PC_OE_INV		BIT(13)  
+#define K210_PC_DO_OE		BIT(14)  
+#define K210_PC_DO_INV		BIT(15)  
+#define K210_PC_PU		BIT(16)  
+#define K210_PC_PD		BIT(17)  
+ 
+#define K210_PC_SL		BIT(19)  
+ 
+#define K210_PC_IE		BIT(20)  
+#define K210_PC_IE_INV		BIT(21)  
+#define K210_PC_DI_INV		BIT(22)  
+#define K210_PC_ST		BIT(23)  
+#define K210_PC_DI		BIT(31)  
 
 #define K210_PC_BIAS_MASK	(K210_PC_PU & K210_PC_PD)
 
@@ -76,12 +67,7 @@
 #define K210_PG_DO		BIT(8)
 #define K210_PG_PIN		GENMASK(22, 16)
 
-/*
- * struct k210_fpioa: Kendryte K210 FPIOA memory mapped registers
- * @pins: 48 32-bits IO pin registers
- * @tie_en: 256 (one per function) input tie enable bits
- * @tie_val: 256 (one per function) input tie value bits
- */
+ 
 struct k210_fpioa {
 	u32 pins[48];
 	u32 tie_en[8];
@@ -124,15 +110,9 @@ static const struct pinctrl_pin_desc k210_pins[] = {
 
 #define K210_NPINS ARRAY_SIZE(k210_pins)
 
-/*
- * Pin groups: each of the 48 programmable pins is a group.
- * To this are added 8 power domain groups, which for the purposes of
- * the pin subsystem, contain no pins. The power domain groups only exist
- * to set the power level. The id should never be used (since there are
- * no pins 48-55).
- */
+ 
 static const char *const k210_group_names[] = {
-	/* The first 48 groups are for pins, one each */
+	 
 	K210_PIN_NAME(0),  K210_PIN_NAME(1),  K210_PIN_NAME(2),
 	K210_PIN_NAME(3),  K210_PIN_NAME(4),  K210_PIN_NAME(5),
 	K210_PIN_NAME(6),  K210_PIN_NAME(7),  K210_PIN_NAME(8),
@@ -185,9 +165,7 @@ static const u32 k210_pinconf_mode_id_to_mode[] = {
 
 #undef DEFAULT
 
-/*
- * Pin functions configuration information.
- */
+ 
 struct k210_pcf_info {
 	char name[15];
 	u8 mode_id;
@@ -466,9 +444,7 @@ static const struct pinconf_generic_params k210_pinconf_custom_params[] = {
 	{ "input-polarity-invert",  PIN_CONFIG_INPUT_INVERT, 1 },
 };
 
-/*
- * Max drive strength in uA.
- */
+ 
 static const int k210_pinconf_drive_strength[] = {
 	[0] = 11200,
 	[1] = 16800,
@@ -630,11 +606,11 @@ static int k210_pinconf_group_set(struct pinctrl_dev *pctldev,
 	u32 bit;
 	int i;
 
-	/* Pins should be configured with pinmux, not groups*/
+	 
 	if (selector < K210_NPINS)
 		return -EINVAL;
 
-	/* Otherwise it's a power domain */
+	 
 	for (i = 0; i < num_configs; i++) {
 		param = pinconf_to_config_param(configs[i]);
 		if (param != PIN_CONFIG_POWER_SOURCE)
@@ -695,7 +671,7 @@ static int k210_pinmux_get_function_groups(struct pinctrl_dev *pctldev,
 					   const char * const **groups,
 					   unsigned int * const num_groups)
 {
-	/* Any function can be mapped to any pin */
+	 
 	*groups = k210_group_names;
 	*num_groups = K210_NPINS;
 
@@ -706,7 +682,7 @@ static int k210_pinmux_set_mux(struct pinctrl_dev *pctldev,
 			       unsigned int function,
 			       unsigned int group)
 {
-	/* Can't mux power domains */
+	 
 	if (group >= K210_NPINS)
 		return -EINVAL;
 
@@ -779,7 +755,7 @@ static int k210_pinctrl_dt_subnode_to_map(struct pinctrl_dev *pctldev,
 
 	pinmux_groups = of_property_count_u32_elems(np, "pinmux");
 	if (pinmux_groups <= 0) {
-		/* Ignore this node */
+		 
 		return 0;
 	}
 
@@ -905,7 +881,7 @@ static void k210_fpioa_init_ties(struct k210_fpioa_data *pdata)
 
 	dev_dbg(pdata->dev, "Init pin ties\n");
 
-	/* Init pin functions input ties */
+	 
 	for (i = 0; i < ARRAY_SIZE(fpioa->tie_en); i++) {
 		val = 0;
 		for (j = 0; j < 32; j++) {
@@ -919,7 +895,7 @@ static void k210_fpioa_init_ties(struct k210_fpioa_data *pdata)
 			}
 		}
 
-		/* Set value before enable */
+		 
 		writel(val, &fpioa->tie_val[i]);
 		writel(val, &fpioa->tie_en[i]);
 	}
@@ -989,7 +965,7 @@ disable_clk:
 
 static const struct of_device_id k210_fpioa_dt_ids[] = {
 	{ .compatible = "canaan,k210-fpioa" },
-	{ /* sentinel */ },
+	{   },
 };
 
 static struct platform_driver k210_fpioa_driver = {

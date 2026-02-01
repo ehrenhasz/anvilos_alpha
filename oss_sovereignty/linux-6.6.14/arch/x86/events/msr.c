@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/perf_event.h>
 #include <linux/sysfs.h>
 #include <linux/nospec.h>
@@ -207,8 +207,8 @@ static int msr_event_init(struct perf_event *event)
 	if (event->attr.type != event->pmu->type)
 		return -ENOENT;
 
-	/* unsupported modes and filters */
-	if (event->attr.sample_period) /* no sampling */
+	 
+	if (event->attr.sample_period)  
 		return -EINVAL;
 
 	if (cfg >= PERF_MSR_EVENT_MAX)
@@ -243,7 +243,7 @@ static void msr_event_update(struct perf_event *event)
 	u64 prev, now;
 	s64 delta;
 
-	/* Careful, an NMI might modify the previous event value: */
+	 
 	prev = local64_read(&event->hw.prev_count);
 	do {
 		now = msr_read_counter(event);
@@ -254,7 +254,7 @@ static void msr_event_update(struct perf_event *event)
 		delta = sign_extend64(delta, 31);
 		local64_add(delta, &event->count);
 	} else if (unlikely(event->hw.event_base == MSR_IA32_THERM_STATUS)) {
-		/* If valid, extract digital readout, otherwise set to -1: */
+		 
 		now = now & (1ULL << 31) ? (now >> 16) & 0x3f :  -1;
 		local64_set(&event->count, now);
 	} else {

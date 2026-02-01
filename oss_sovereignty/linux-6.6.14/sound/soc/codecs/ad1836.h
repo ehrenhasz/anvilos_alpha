@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Audio Codec driver supporting:
- *  AD1835A, AD1836, AD1837A, AD1838A, AD1839A
- *
- * Copyright 2009-2011 Analog Devices Inc.
- */
+ 
+ 
 
 #ifndef __AD1836_H__
 #define __AD1836_H__
@@ -19,8 +14,7 @@
 
 #define AD1836_DAC_CTRL2               1
 
-/* These macros are one-based. So AD183X_MUTE_LEFT(1) will return the mute bit
- * for the first ADC/DAC */
+ 
 #define AD1836_MUTE_LEFT(x) (((x) * 2) - 2)
 #define AD1836_MUTE_RIGHT(x) (((x) * 2) - 1)
 

@@ -1,23 +1,4 @@
-/*
- * Copyright (C) 2019  Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #ifndef _gc_10_1_0_OFFSET_HEADER
 #define _gc_10_1_0_OFFSET_HEADER
 
@@ -26,8 +7,8 @@
 #define mmSQ_DEBUG_STS_GLOBAL2                                                                         0x10B0
 #define mmSQ_DEBUG_STS_GLOBAL2_BASE_IDX                                                                0
 
-// addressBlock: gc_sdma0_sdma0dec
-// base address: 0x4980
+
+
 #define mmSDMA0_DEC_START                                                                              0x0000
 #define mmSDMA0_DEC_START_BASE_IDX                                                                     0
 #define mmSDMA0_PG_CNTL                                                                                0x0016
@@ -1033,8 +1014,8 @@
 #define mmSDMA0_RLC7_MIDCMD_CNTL_BASE_IDX                                                              0
 
 
-// addressBlock: gc_sdma1_sdma1dec
-// base address: 0x6180
+
+
 #define mmSDMA1_DEC_START                                                                              0x0600
 #define mmSDMA1_DEC_START_BASE_IDX                                                                     0
 #define mmSDMA1_PG_CNTL                                                                                0x0616
@@ -2032,8 +2013,8 @@
 #define mmSDMA1_RLC7_MIDCMD_CNTL_BASE_IDX                                                              0
 
 
-// addressBlock: gc_grbmdec
-// base address: 0x8000
+
+
 #define mmGRBM_CNTL                                                                                    0x0da0
 #define mmGRBM_CNTL_BASE_IDX                                                                           0
 #define mmGRBM_SKEW_CNTL                                                                               0x0da1
@@ -2122,8 +2103,8 @@
 #define mmGRBM_SCRATCH_REG7_BASE_IDX                                                                   0
 
 
-// addressBlock: gc_cpdec
-// base address: 0x8200
+
+
 #define mmCP_CPC_STATUS                                                                                0x0e24
 #define mmCP_CPC_STATUS_BASE_IDX                                                                       0
 #define mmCP_CPC_BUSY_STAT                                                                             0x0e25
@@ -2270,8 +2251,8 @@
 #define mmCP_ROQ_DB_STAT_BASE_IDX                                                                      0
 
 
-// addressBlock: gc_padec
-// base address: 0x8800
+
+
 #define mmVGT_VTX_VECT_EJECT_REG                                                                       0x0fcc
 #define mmVGT_VTX_VECT_EJECT_REG_BASE_IDX                                                              0
 #define mmVGT_DMA_DATA_FIFO_DEPTH                                                                      0x0fcd
@@ -2422,8 +2403,8 @@
 #define mmPA_SC_TILE_STEERING_CREST_OVERRIDE_BASE_IDX                                                  0
 
 
-// addressBlock: gc_sqdec
-// base address: 0x8c00
+
+
 #define mmSQ_CONFIG                                                                                    0x10a0
 #define mmSQ_CONFIG_BASE_IDX                                                                           0
 #define mmSQC_CONFIG                                                                                   0x10a1
@@ -2574,8 +2555,8 @@
 #define mmSQC_MISC_CONFIG_BASE_IDX                                                                     0
 
 
-// addressBlock: gc_shsdec
-// base address: 0x9000
+
+
 #define mmSX_DEBUG_1                                                                                   0x11b8
 #define mmSX_DEBUG_1_BASE_IDX                                                                          0
 #define mmSPI_PS_MAX_WAVE_ID                                                                           0x11da
@@ -2726,8 +2707,8 @@
 #define mmSPI_P1_TRAP_SCREEN_GPR_MIN_BASE_IDX                                                          0
 
 
-// addressBlock: gc_tpdec
-// base address: 0x9400
+
+
 #define mmTD_CNTL                                                                                      0x12c5
 #define mmTD_CNTL_BASE_IDX                                                                             0
 #define mmTD_STATUS                                                                                    0x12c6
@@ -2754,8 +2735,8 @@
 #define mmTA_SCRATCH_BASE_IDX                                                                          0
 
 
-// addressBlock: gc_gdsdec
-// base address: 0x9700
+
+
 #define mmGDS_CONFIG                                                                                   0x1360
 #define mmGDS_CONFIG_BASE_IDX                                                                          0
 #define mmGDS_CNTL_STATUS                                                                              0x1361
@@ -2784,8 +2765,8 @@
 #define mmGDS_WD_GDS_CSB_BASE_IDX                                                                      0
 
 
-// addressBlock: gc_rbdec
-// base address: 0x9800
+
+
 #define mmDB_DEBUG                                                                                     0x13ac
 #define mmDB_DEBUG_BASE_IDX                                                                            0
 #define mmDB_DEBUG2                                                                                    0x13ad
@@ -2984,8 +2965,8 @@
 #define mmGC_USER_RB_BACKEND_DISABLE_BASE_IDX                                                          0
 
 
-// addressBlock: gc_gceadec2
-// base address: 0x9c00
+
+
 #define mmGCEA_SDP_VCD_RESERVE1                                                                        0x14a0
 #define mmGCEA_SDP_VCD_RESERVE1_BASE_IDX                                                               0
 #define mmGCEA_SDP_REQ_CNTL                                                                            0x14a1
@@ -3034,8 +3015,8 @@
 #define mmGCEA_MISC2_BASE_IDX                                                                          0
 
 
-// addressBlock: gc_spipdec2
-// base address: 0x9c80
+
+
 #define mmSPI_PQEV_CTRL                                                                                0x14c0
 #define mmSPI_PQEV_CTRL_BASE_IDX                                                                       0
 #define mmSPI_SYS_COMPUTE                                                                              0x14c1
@@ -3044,8 +3025,8 @@
 #define mmSPI_SYS_WIF_CNTL_BASE_IDX                                                                    0
 
 
-// addressBlock: gc_gceadec3
-// base address: 0x9dc0
+
+
 #define mmGCEA_DRAM_BANK_ARB                                                                           0x1510
 #define mmGCEA_DRAM_BANK_ARB_BASE_IDX                                                                  0
 #define mmGCEA_DRAM_BANK_ARB_RFSH                                                                      0x1511
@@ -3070,8 +3051,8 @@
 #define mmGCEA_SDP_ENABLE_BASE_IDX                                                                     0
 
 
-// addressBlock: gc_rmi_rmidec
-// base address: 0x9e00
+
+
 #define mmRMI_GENERAL_CNTL                                                                             0x1520
 #define mmRMI_GENERAL_CNTL_BASE_IDX                                                                    0
 #define mmRMI_GENERAL_CNTL1                                                                            0x1521
@@ -3134,8 +3115,8 @@
 #define mmGC_USER_RMI_REDUNDANCY_BASE_IDX                                                              0
 
 
-// addressBlock: gc_pmmdec
-// base address: 0x9f80
+
+
 #define mmPMM_GENERAL_CNTL                                                                             0x1580
 #define mmPMM_GENERAL_CNTL_BASE_IDX                                                                    0
 #define mmGCR_PIO_CNTL                                                                                 0x1581
@@ -3152,8 +3133,8 @@
 #define mmGCR_SPARE_BASE_IDX                                                                           0
 
 
-// addressBlock: gc_utcl1dec
-// base address: 0x9fa0
+
+
 #define mmUTCL1_CTRL                                                                                   0x1588
 #define mmUTCL1_CTRL_BASE_IDX                                                                          0
 #define mmUTCL1_ALOG                                                                                   0x1589
@@ -3164,8 +3145,8 @@
 #define mmGCRD_SA_TARGETS_DISABLE_BASE_IDX                                                             0
 
 
-// addressBlock: gc_gcatcl2dec
-// base address: 0xa000
+
+
 #define mmGC_ATC_L2_CNTL                                                                               0x15a0
 #define mmGC_ATC_L2_CNTL_BASE_IDX                                                                      0
 #define mmGC_ATC_L2_CNTL2                                                                              0x15a1
@@ -3192,8 +3173,8 @@
 #define mmGC_ATC_L2_SDPPORT_CTRL_BASE_IDX                                                              0
 
 
-// addressBlock: gc_gcvml2pfdec
-// base address: 0xa100
+
+
 #define mmGCVM_L2_CNTL                                                                                 0x15e0
 #define mmGCVM_L2_CNTL_BASE_IDX                                                                        0
 #define mmGCVM_L2_CNTL2                                                                                0x15e1
@@ -3266,8 +3247,8 @@
 #define mmGCVML2_WALKER_MICRO_THROTTLE_FETCH_LIMIT_BASE_IDX                                            0
 
 
-// addressBlock: gc_gcvml2vcdec
-// base address: 0xa200
+
+
 #define mmGCVM_CONTEXT0_CNTL                                                                           0x1620
 #define mmGCVM_CONTEXT0_CNTL_BASE_IDX                                                                  0
 #define mmGCVM_CONTEXT1_CNTL                                                                           0x1621
@@ -3676,8 +3657,8 @@
 #define mmGCVM_CONTEXT15_PAGE_TABLE_END_ADDR_HI32_BASE_IDX                                             0
 
 
-// addressBlock: gc_gcvmsharedpfdec
-// base address: 0xa590
+
+
 #define mmGCMC_VM_NB_MMIOBASE                                                                          0x1704
 #define mmGCMC_VM_NB_MMIOBASE_BASE_IDX                                                                 0
 #define mmGCMC_VM_NB_MMIOLIMIT                                                                         0x1705
@@ -3720,8 +3701,8 @@
 #define mmGCMC_SHARED_VIRT_RESET_REQ2_BASE_IDX                                                         0
 
 
-// addressBlock: gc_gcvmsharedvcdec
-// base address: 0xa600
+
+
 #define mmGCMC_VM_FB_LOCATION_BASE                                                                     0x1720
 #define mmGCMC_VM_FB_LOCATION_BASE_BASE_IDX                                                            0
 #define mmGCMC_VM_FB_LOCATION_TOP                                                                      0x1721
@@ -3740,8 +3721,8 @@
 #define mmGCMC_VM_MX_L1_TLB_CNTL_BASE_IDX                                                              0
 
 
-// addressBlock: gc_gceadec
-// base address: 0xa800
+
+
 #define mmGCEA_DRAM_RD_CLI2GRP_MAP0                                                                    0x17a0
 #define mmGCEA_DRAM_RD_CLI2GRP_MAP0_BASE_IDX                                                           0
 #define mmGCEA_DRAM_RD_CLI2GRP_MAP1                                                                    0x17a1
@@ -4002,8 +3983,8 @@
 #define mmGCEA_SDP_VCD_RESERVE0_BASE_IDX                                                               0
 
 
-// addressBlock: gc_tcdec
-// base address: 0xac00
+
+
 #define mmTCP_INVALIDATE                                                                               0x18a0
 #define mmTCP_INVALIDATE_BASE_IDX                                                                      0
 #define mmTCP_STATUS                                                                                   0x18a1
@@ -4024,8 +4005,8 @@
 #define mmTCI_CNTL_2_BASE_IDX                                                                          0
 
 
-// addressBlock: gc_shdec
-// base address: 0xb000
+
+
 #define mmSPI_SHADER_PGM_RSRC4_PS                                                                      0x19a1
 #define mmSPI_SHADER_PGM_RSRC4_PS_BASE_IDX                                                             0
 #define mmSPI_SHADER_PGM_CHKSUM_PS                                                                     0x19a6
@@ -4680,8 +4661,8 @@
 #define mmCOMPUTE_NOWHERE_BASE_IDX                                                                     0
 
 
-// addressBlock: gc_cppdec
-// base address: 0xc080
+
+
 #define mmCP_EOPQ_WAIT_TIME                                                                            0x1dd5
 #define mmCP_EOPQ_WAIT_TIME_BASE_IDX                                                                   0
 #define mmCP_CPC_MGCG_SYNC_CNTL                                                                        0x1dd6
@@ -5166,8 +5147,8 @@
 #define mmCP_CPC_GFX_CNTL_BASE_IDX                                                                     0
 
 
-// addressBlock: gc_spipdec
-// base address: 0xc700
+
+
 #define mmSPI_ARB_PRIORITY                                                                             0x1f60
 #define mmSPI_ARB_PRIORITY_BASE_IDX                                                                    0
 #define mmSPI_ARB_CYCLES_0                                                                             0x1f61
@@ -5284,8 +5265,8 @@
 #define mmSPI_SHADER_RSRC_LIMIT_CTRL_BASE_IDX                                                          0
 
 
-// addressBlock: gc_cpphqddec
-// base address: 0xc800
+
+
 #define mmCP_HPD_MES_ROQ_OFFSETS                                                                       0x1fa4
 #define mmCP_HPD_MES_ROQ_OFFSETS_BASE_IDX                                                              0
 #define mmCP_HPD_ROQ_OFFSETS                                                                           0x1fa4
@@ -5432,8 +5413,8 @@
 #define mmCP_HQD_DEQUEUE_STATUS_BASE_IDX                                                               0
 
 
-// addressBlock: gc_didtdec
-// base address: 0xca00
+
+
 #define mmDIDT_IND_INDEX                                                                               0x2020
 #define mmDIDT_IND_INDEX_BASE_IDX                                                                      0
 #define mmDIDT_IND_DATA                                                                                0x2021
@@ -5442,8 +5423,8 @@
 #define mmDIDT_INDEX_AUTO_INCR_EN_BASE_IDX                                                             0
 
 
-// addressBlock: gc_gccacdec
-// base address: 0xca10
+
+
 #define mmGC_CAC_CTRL_1                                                                                0x2024
 #define mmGC_CAC_CTRL_1_BASE_IDX                                                                       0
 #define mmGC_CAC_CTRL_2                                                                                0x2025
@@ -5494,8 +5475,8 @@
 #define mmSE_CAC_IND_DATA_BASE_IDX                                                                     0
 
 
-// addressBlock: gc_tcpdec
-// base address: 0xca80
+
+
 #define mmTCP_WATCH0_ADDR_H                                                                            0x2040
 #define mmTCP_WATCH0_ADDR_H_BASE_IDX                                                                   0
 #define mmTCP_WATCH0_ADDR_L                                                                            0x2041
@@ -5536,8 +5517,8 @@
 #define mmTCP_PERFCOUNTER_FILTER2_BASE_IDX                                                             0
 
 
-// addressBlock: gc_gdspdec
-// base address: 0xcc00
+
+
 #define mmGDS_VMID0_BASE                                                                               0x20a0
 #define mmGDS_VMID0_BASE_BASE_IDX                                                                      0
 #define mmGDS_VMID0_SIZE                                                                               0x20a1
@@ -5722,8 +5703,8 @@
 #define mmGDS_GS_CTXSW_CNT3_BASE_IDX                                                                   0
 
 
-// addressBlock: gc_gfxdec0
-// base address: 0x28000
+
+
 #define mmDB_RENDER_CONTROL                                                                            0x0000
 #define mmDB_RENDER_CONTROL_BASE_IDX                                                                   1
 #define mmDB_COUNT_CONTROL                                                                             0x0001
@@ -7006,8 +6987,8 @@
 #define mmCB_COLOR7_ATTRIB3_BASE_IDX                                                                   1
 
 
-// addressBlock: gc_gfxudec
-// base address: 0x30000
+
+
 #define mmCP_EOP_DONE_ADDR_LO                                                                          0x2000
 #define mmCP_EOP_DONE_ADDR_LO_BASE_IDX                                                                 1
 #define mmCP_EOP_DONE_ADDR_HI                                                                          0x2001
@@ -7662,8 +7643,8 @@
 #define mmSPI_WAVE_LIMIT_CNTL_REMAP_BASE_IDX                                                           1
 
 
-// addressBlock: gc_cprs64dec
-// base address: 0x32000
+
+
 #define mmCP_MES_PRGRM_CNTR_START                                                                      0x2800
 #define mmCP_MES_PRGRM_CNTR_START_BASE_IDX                                                             1
 #define mmCP_MES_INTR_ROUTINE_START                                                                    0x2801
@@ -7858,8 +7839,8 @@
 #define mmCP_MES_PERFCOUNT_CNTL_BASE_IDX                                                               1
 
 
-// addressBlock: gc_gusdec
-// base address: 0x33000
+
+
 #define mmGUS_IO_RD_COMBINE_FLUSH                                                                      0x2c00
 #define mmGUS_IO_RD_COMBINE_FLUSH_BASE_IDX                                                             1
 #define mmGUS_IO_WR_COMBINE_FLUSH                                                                      0x2c01
@@ -8080,8 +8061,8 @@
 #define mmGUS_WRRSP_FIFO_CNTL_BASE_IDX                                                                 1
 
 
-// addressBlock: gc_gl1dec
-// base address: 0x33400
+
+
 #define mmGL1_ARB_CTRL                                                                                 0x2d00
 #define mmGL1_ARB_CTRL_BASE_IDX                                                                        1
 #define mmGL1_DRAM_BURST_MASK                                                                          0x2d02
@@ -8098,8 +8079,8 @@
 #define mmGL1C_STATUS_BASE_IDX                                                                         1
 
 
-// addressBlock: gc_chdec
-// base address: 0x33600
+
+
 #define mmCH_ARB_CTRL                                                                                  0x2d80
 #define mmCH_ARB_CTRL_BASE_IDX                                                                         1
 #define mmCH_DRAM_BURST_MASK                                                                           0x2d82
@@ -8122,8 +8103,8 @@
 #define mmCHCG_STATUS_BASE_IDX                                                                         1
 
 
-// addressBlock: gc_gl2dec
-// base address: 0x33800
+
+
 #define mmGL2C_CTRL                                                                                    0x2e00
 #define mmGL2C_CTRL_BASE_IDX                                                                           1
 #define mmGL2C_CTRL2                                                                                   0x2e01
@@ -8180,8 +8161,8 @@
 #define mmGL2_PIPE_STEER_1_BASE_IDX                                                                    1
 
 
-// addressBlock: gc_perfddec
-// base address: 0x34000
+
+
 #define mmCPG_PERFCOUNTER1_LO                                                                          0x3000
 #define mmCPG_PERFCOUNTER1_LO_BASE_IDX                                                                 1
 #define mmCPG_PERFCOUNTER1_HI                                                                          0x3001
@@ -8710,24 +8691,24 @@
 #define mmGUS_PERFCOUNTER2_HI_BASE_IDX                                                                 1
 
 
-// addressBlock: gc_gcatcl2pfcntrdec
-// base address: 0x35380
+
+
 #define mmGC_ATC_L2_PERFCOUNTER_LO                                                                     0x34e0
 #define mmGC_ATC_L2_PERFCOUNTER_LO_BASE_IDX                                                            1
 #define mmGC_ATC_L2_PERFCOUNTER_HI                                                                     0x34e1
 #define mmGC_ATC_L2_PERFCOUNTER_HI_BASE_IDX                                                            1
 
 
-// addressBlock: gc_gcvml2prdec
-// base address: 0x353a0
+
+
 #define mmGCMC_VM_L2_PERFCOUNTER_LO                                                                    0x34e8
 #define mmGCMC_VM_L2_PERFCOUNTER_LO_BASE_IDX                                                           1
 #define mmGCMC_VM_L2_PERFCOUNTER_HI                                                                    0x34e9
 #define mmGCMC_VM_L2_PERFCOUNTER_HI_BASE_IDX                                                           1
 
 
-// addressBlock: gc_gcvml2perfddec
-// base address: 0x353e0
+
+
 #define mmGCVML2_PERFCOUNTER2_0_LO                                                                     0x34f8
 #define mmGCVML2_PERFCOUNTER2_0_LO_BASE_IDX                                                            1
 #define mmGCVML2_PERFCOUNTER2_1_LO                                                                     0x34f9
@@ -8738,16 +8719,16 @@
 #define mmGCVML2_PERFCOUNTER2_1_HI_BASE_IDX                                                            1
 
 
-// addressBlock: gc_gcatcl2perfddec
-// base address: 0x353f0
+
+
 #define mmGC_ATC_L2_PERFCOUNTER2_LO                                                                    0x34fc
 #define mmGC_ATC_L2_PERFCOUNTER2_LO_BASE_IDX                                                           1
 #define mmGC_ATC_L2_PERFCOUNTER2_HI                                                                    0x34fd
 #define mmGC_ATC_L2_PERFCOUNTER2_HI_BASE_IDX                                                           1
 
 
-// addressBlock: gc_perfsdec
-// base address: 0x36000
+
+
 #define mmCPG_PERFCOUNTER1_SELECT                                                                      0x3800
 #define mmCPG_PERFCOUNTER1_SELECT_BASE_IDX                                                             1
 #define mmCPG_PERFCOUNTER0_SELECT1                                                                     0x3801
@@ -9226,8 +9207,8 @@
 #define mmGUS_PERFCOUNTER2_MODE_BASE_IDX                                                               1
 
 
-// addressBlock: gc_gcatcl2pfcntldec
-// base address: 0x37480
+
+
 #define mmGC_ATC_L2_PERFCOUNTER0_CFG                                                                   0x3d20
 #define mmGC_ATC_L2_PERFCOUNTER0_CFG_BASE_IDX                                                          1
 #define mmGC_ATC_L2_PERFCOUNTER1_CFG                                                                   0x3d21
@@ -9236,8 +9217,8 @@
 #define mmGC_ATC_L2_PERFCOUNTER_RSLT_CNTL_BASE_IDX                                                     1
 
 
-// addressBlock: gc_gcvml2pldec
-// base address: 0x374b0
+
+
 #define mmGCMC_VM_L2_PERFCOUNTER0_CFG                                                                  0x3d2c
 #define mmGCMC_VM_L2_PERFCOUNTER0_CFG_BASE_IDX                                                         1
 #define mmGCMC_VM_L2_PERFCOUNTER1_CFG                                                                  0x3d2d
@@ -9258,8 +9239,8 @@
 #define mmGCMC_VM_L2_PERFCOUNTER_RSLT_CNTL_BASE_IDX                                                    1
 
 
-// addressBlock: gc_gcvml2perfsdec
-// base address: 0x374f0
+
+
 #define mmGCVML2_PERFCOUNTER2_0_SELECT                                                                 0x3d3c
 #define mmGCVML2_PERFCOUNTER2_0_SELECT_BASE_IDX                                                        1
 #define mmGCVML2_PERFCOUNTER2_1_SELECT                                                                 0x3d3d
@@ -9274,8 +9255,8 @@
 #define mmGCVML2_PERFCOUNTER2_1_MODE_BASE_IDX                                                          1
 
 
-// addressBlock: gc_gcatcl2perfsdec
-// base address: 0x37530
+
+
 #define mmGC_ATC_L2_PERFCOUNTER2_SELECT                                                                0x3d4c
 #define mmGC_ATC_L2_PERFCOUNTER2_SELECT_BASE_IDX                                                       1
 #define mmGC_ATC_L2_PERFCOUNTER2_SELECT1                                                               0x3d4d
@@ -9284,8 +9265,8 @@
 #define mmGC_ATC_L2_PERFCOUNTER2_MODE_BASE_IDX                                                         1
 
 
-// addressBlock: gc_rlcdec
-// base address: 0x3b000
+
+
 #define mmRLC_CNTL                                                                                     0x4c00
 #define mmRLC_CNTL_BASE_IDX                                                                            1
 #define mmRLC_F32_UCODE_VERSION                                                                        0x4c03
@@ -9730,8 +9711,8 @@
 #define mmRLC_CPAXI_DOORBELL_MON_DATA_MSB_BASE_IDX                                                     1
 
 
-// addressBlock: gc_rlcrdec
-// base address: 0x3b800
+
+
 #define mmRLC_SPP_CAM_ADDR                                                                             0x4e00
 #define mmRLC_SPP_CAM_ADDR_BASE_IDX                                                                    1
 #define mmRLC_SPP_CAM_DATA                                                                             0x4e01
@@ -9746,8 +9727,8 @@
 #define mmRLC_PACE_SCRATCH_DATA_BASE_IDX                                                               1
 
 
-// addressBlock: gc_rlcsdec
-// base address: 0x3b980
+
+
 #define mmRLC_RLCS_DEC_START                                                                           0x4e60
 #define mmRLC_RLCS_DEC_START_BASE_IDX                                                                  1
 #define mmRLC_RLCS_DEC_DUMP_ADDR                                                                       0x4e61
@@ -9890,8 +9871,8 @@
 #define mmRLC_RLCS_DEC_END_BASE_IDX                                                                    1
 
 
-// addressBlock: gc_pwrdec
-// base address: 0x3c000
+
+
 #define mmCGTS_SA0_QUAD0_SM_CTRL_REG                                                                   0x5000
 #define mmCGTS_SA0_QUAD0_SM_CTRL_REG_BASE_IDX                                                          1
 #define mmCGTS_SA0_QUAD0_CLK_MONITOR_DELAY_REG                                                         0x5001
@@ -10226,8 +10207,8 @@
 #define mmCGTT_PH_CLK_CTRL3_BASE_IDX                                                                   1
 
 
-// addressBlock: gc_hypdec
-// base address: 0x3e000
+
+
 #define mmCP_PFP_UCODE_ADDR                                                                            0x5814
 #define mmCP_PFP_UCODE_ADDR_BASE_IDX                                                                   1
 #define mmCP_PFP_UCODE_DATA                                                                            0x5815
@@ -10488,8 +10469,8 @@
 #define mmRLC_GTS_OFFSET_MSB_BASE_IDX                                                                  1
 
 
-// addressBlock: gc_sdma0_sdma0hypdec
-// base address: 0x3e200
+
+
 #define mmSDMA0_UCODE_ADDR                                                                             0x5880
 #define mmSDMA0_UCODE_ADDR_BASE_IDX                                                                    1
 #define mmSDMA0_UCODE_DATA                                                                             0x5881
@@ -10518,8 +10499,8 @@
 #define mmSDMA0_VM_CNTL_BASE_IDX                                                                       1
 
 
-// addressBlock: gc_sdma1_sdma1hypdec
-// base address: 0x3e280
+
+
 #define mmSDMA1_UCODE_ADDR                                                                             0x58a0
 #define mmSDMA1_UCODE_ADDR_BASE_IDX                                                                    1
 #define mmSDMA1_UCODE_DATA                                                                             0x58a1
@@ -10548,8 +10529,8 @@
 #define mmSDMA1_VM_CNTL_BASE_IDX                                                                       1
 
 
-// addressBlock: gc_gcvmsharedhvdec
-// base address: 0x3ea00
+
+
 #define mmGCMC_VM_FB_SIZE_OFFSET_VF0                                                                   0x5a80
 #define mmGCMC_VM_FB_SIZE_OFFSET_VF0_BASE_IDX                                                          1
 #define mmGCMC_VM_FB_SIZE_OFFSET_VF1                                                                   0x5a81
@@ -10740,8 +10721,8 @@
 #define mmGCMC_SHARED_ACTIVE_FCN_ID_BASE_IDX                                                           1
 
 
-// addressBlock: gccacind
-// base address: 0x0
+
+
 #define ixPCC_STALL_PATTERN_CTRL                                                                       0x0000
 #define ixPWRBRK_STALL_PATTERN_CTRL                                                                    0x0001
 #define ixPCC_STALL_PATTERN_1_2                                                                        0x0006
@@ -10996,16 +10977,16 @@
 #define ixHW_LUT_UPDATE_STATUS                                                                         0x016a
 
 
-// addressBlock: secacind
-// base address: 0x0
+
+
 #define ixSE_CAC_ID                                                                                    0x0000
 #define ixSE_CAC_CNTL                                                                                  0x0001
 #define ixSE_CAC_OVR_SEL                                                                               0x0002
 #define ixSE_CAC_OVR_VAL                                                                               0x0003
 
 
-// addressBlock: spmglbind
-// base address: 0x0
+
+
 #define ixGLB_CPG_SAMPLEDELAY                                                                          0x0000
 #define ixGLB_CPC_SAMPLEDELAY                                                                          0x0001
 #define ixGLB_CPF_SAMPLEDELAY                                                                          0x0002
@@ -11062,8 +11043,8 @@
 #define ixGLB_CHC3_SAMPLEDELAY                                                                         0x0035
 
 
-// addressBlock: spmind
-// base address: 0x0
+
+
 #define ixSE_SPI_SAMPLEDELAY                                                                           0x0000
 #define ixSE_SQG_SAMPLEDELAY                                                                           0x0001
 #define ixSE_CBR_SAMPLEDELAY                                                                           0x0002
@@ -11170,8 +11151,8 @@
 #define ixSE_SA1WGP11TCP1_SAMPLEDELAY                                                                  0x0067
 
 
-// addressBlock: sqind
-// base address: 0x0
+
+
 #define ixSQ_DEBUG_STS_LOCAL                                                                           0x0008
 #define ixSQ_WAVE_MODE                                                                                 0x0101
 #define ixSQ_WAVE_STATUS                                                                               0x0102
@@ -11218,8 +11199,8 @@
 #define ixSQ_INTERRUPT_WORD_WAVE                                                                       0x20c0
 
 
-// addressBlock: didtind
-// base address: 0x0
+
+
 #define ixDIDT_SQ_CTRL0                                                                                0x0000
 #define ixDIDT_SQ_CTRL1                                                                                0x0001
 #define ixDIDT_SQ_CTRL2                                                                                0x0002

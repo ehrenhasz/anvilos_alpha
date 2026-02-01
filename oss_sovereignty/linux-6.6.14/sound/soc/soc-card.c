@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// soc-card.c
-//
-// Copyright (C) 2019 Renesas Electronics Corp.
-// Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-//
+
+
+
+
+
+
+
 #include <sound/soc.h>
 #include <sound/jack.h>
 
@@ -54,21 +54,7 @@ static int jack_new(struct snd_soc_card *card, const char *id, int type,
 	return snd_jack_new(card->snd_card, id, type, &jack->jack, initial_kctl, false);
 }
 
-/**
- * snd_soc_card_jack_new - Create a new jack without pins
- * @card:  ASoC card
- * @id:    an identifying string for this jack
- * @type:  a bitmask of enum snd_jack_type values that can be detected by
- *         this jack
- * @jack:  structure to use for the jack
- *
- * Creates a new jack object without pins. If adding pins later,
- * snd_soc_card_jack_new_pins() should be used instead with 0 as num_pins
- * argument.
- *
- * Returns zero if successful, or a negative error code on failure.
- * On success jack will be initialised.
- */
+ 
 int snd_soc_card_jack_new(struct snd_soc_card *card, const char *id, int type,
 			  struct snd_soc_jack *jack)
 {
@@ -76,22 +62,7 @@ int snd_soc_card_jack_new(struct snd_soc_card *card, const char *id, int type,
 }
 EXPORT_SYMBOL_GPL(snd_soc_card_jack_new);
 
-/**
- * snd_soc_card_jack_new_pins - Create a new jack with pins
- * @card:  ASoC card
- * @id:    an identifying string for this jack
- * @type:  a bitmask of enum snd_jack_type values that can be detected by
- *         this jack
- * @jack:  structure to use for the jack
- * @pins:  Array of jack pins to be added to the jack or NULL
- * @num_pins: Number of elements in the @pins array
- *
- * Creates a new jack object with pins. If not adding pins,
- * snd_soc_card_jack_new() should be used instead.
- *
- * Returns zero if successful, or a negative error code on failure.
- * On success jack will be initialised.
- */
+ 
 int snd_soc_card_jack_new_pins(struct snd_soc_card *card, const char *id,
 			       int type, struct snd_soc_jack *jack,
 			       struct snd_soc_jack_pin *pins,
@@ -158,15 +129,7 @@ int snd_soc_card_probe(struct snd_soc_card *card)
 		if (ret < 0)
 			return soc_card_ret(card, ret);
 
-		/*
-		 * It has "card->probe" and "card->late_probe" callbacks.
-		 * So, set "probed" flag here, because it needs to care
-		 * about "late_probe".
-		 *
-		 * see
-		 *	snd_soc_bind_card()
-		 *	snd_soc_card_late_probe()
-		 */
+		 
 		card->probed = 1;
 	}
 
@@ -182,16 +145,7 @@ int snd_soc_card_late_probe(struct snd_soc_card *card)
 			return soc_card_ret(card, ret);
 	}
 
-	/*
-	 * It has "card->probe" and "card->late_probe" callbacks,
-	 * and "late_probe" callback is called after "probe".
-	 * This means, we can set "card->probed" flag afer "late_probe"
-	 * for all cases.
-	 *
-	 * see
-	 *	snd_soc_bind_card()
-	 *	snd_soc_card_probe()
-	 */
+	 
 	card->probed = 1;
 
 	return 0;

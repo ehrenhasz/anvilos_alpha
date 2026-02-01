@@ -1,27 +1,4 @@
-/*
-   BlueZ - Bluetooth protocol stack for Linux
-   Copyright (C) 2000-2001 Qualcomm Incorporated
-   Copyright 2023 NXP
-
-   Written 2000,2001 by Maxim Krasnyansky <maxk@qualcomm.com>
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License version 2 as
-   published by the Free Software Foundation;
-
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS.
-   IN NO EVENT SHALL THE COPYRIGHT HOLDER(S) AND AUTHOR(S) BE LIABLE FOR ANY
-   CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES
-   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
-   ALL LIABILITY, INCLUDING LIABILITY FOR INFRINGEMENT OF ANY PATENTS,
-   COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS, RELATING TO USE OF THIS
-   SOFTWARE IS DISCLAIMED.
-*/
+ 
 
 #ifndef __HCI_H
 #define __HCI_H
@@ -39,7 +16,7 @@
 
 #define HCI_MAX_CPB_DATA_SIZE	252
 
-/* HCI dev events */
+ 
 #define HCI_DEV_REG			1
 #define HCI_DEV_UNREG			2
 #define HCI_DEV_UP			3
@@ -50,7 +27,7 @@
 #define HCI_DEV_CLOSE			8
 #define HCI_DEV_SETUP			9
 
-/* HCI notify events */
+ 
 #define HCI_NOTIFY_CONN_ADD		1
 #define HCI_NOTIFY_CONN_DEL		2
 #define HCI_NOTIFY_VOICE_SETTING	3
@@ -58,7 +35,7 @@
 #define HCI_NOTIFY_ENABLE_SCO_TRANSP	5
 #define HCI_NOTIFY_DISABLE_SCO		6
 
-/* HCI bus types */
+ 
 #define HCI_VIRTUAL	0
 #define HCI_USB		1
 #define HCI_PCCARD	2
@@ -71,18 +48,18 @@
 #define HCI_SMD		9
 #define HCI_VIRTIO	10
 
-/* HCI controller types */
+ 
 #define HCI_PRIMARY	0x00
 #define HCI_AMP		0x01
 
-/* First BR/EDR Controller shall have ID = 0 */
+ 
 #define AMP_ID_BREDR	0x00
 
-/* AMP controller types */
+ 
 #define AMP_TYPE_BREDR	0x00
 #define AMP_TYPE_80211	0x01
 
-/* AMP controller status */
+ 
 #define AMP_STATUS_POWERED_DOWN			0x00
 #define AMP_STATUS_BLUETOOTH_ONLY		0x01
 #define AMP_STATUS_NO_CAPACITY			0x02
@@ -91,248 +68,88 @@
 #define AMP_STATUS_HIGH_CAPACITY		0x05
 #define AMP_STATUS_FULL_CAPACITY		0x06
 
-/* HCI device quirks */
+ 
 enum {
-	/* When this quirk is set, the HCI Reset command is send when
-	 * closing the transport instead of when opening it.
-	 *
-	 * This quirk must be set before hci_register_dev is called.
-	 */
+	 
 	HCI_QUIRK_RESET_ON_CLOSE,
 
-	/* When this quirk is set, the device is turned into a raw-only
-	 * device and it will stay in unconfigured state.
-	 *
-	 * This quirk must be set before hci_register_dev is called.
-	 */
+	 
 	HCI_QUIRK_RAW_DEVICE,
 
-	/* When this quirk is set, the buffer sizes reported by
-	 * HCI Read Buffer Size command are corrected if invalid.
-	 *
-	 * This quirk must be set before hci_register_dev is called.
-	 */
+	 
 	HCI_QUIRK_FIXUP_BUFFER_SIZE,
 
-	/* When this quirk is set, then a controller that does not
-	 * indicate support for Inquiry Result with RSSI is assumed to
-	 * support it anyway. Some early Bluetooth 1.2 controllers had
-	 * wrongly configured local features that will require forcing
-	 * them to enable this mode. Getting RSSI information with the
-	 * inquiry responses is preferred since it allows for a better
-	 * user experience.
-	 *
-	 * This quirk must be set before hci_register_dev is called.
-	 */
+	 
 	HCI_QUIRK_FIXUP_INQUIRY_MODE,
 
-	/* When this quirk is set, then the HCI Read Local Supported
-	 * Commands command is not supported. In general Bluetooth 1.2
-	 * and later controllers should support this command. However
-	 * some controllers indicate Bluetooth 1.2 support, but do
-	 * not support this command.
-	 *
-	 * This quirk must be set before hci_register_dev is called.
-	 */
+	 
 	HCI_QUIRK_BROKEN_LOCAL_COMMANDS,
 
-	/* When this quirk is set, then no stored link key handling
-	 * is performed. This is mainly due to the fact that the
-	 * HCI Delete Stored Link Key command is advertised, but
-	 * not supported.
-	 *
-	 * This quirk must be set before hci_register_dev is called.
-	 */
+	 
 	HCI_QUIRK_BROKEN_STORED_LINK_KEY,
 
-	/* When this quirk is set, an external configuration step
-	 * is required and will be indicated with the controller
-	 * configuration.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
+	 
 	HCI_QUIRK_EXTERNAL_CONFIG,
 
-	/* When this quirk is set, the public Bluetooth address
-	 * initially reported by HCI Read BD Address command
-	 * is considered invalid. Controller configuration is
-	 * required before this device can be used.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
+	 
 	HCI_QUIRK_INVALID_BDADDR,
 
-	/* When this quirk is set, the public Bluetooth address
-	 * initially reported by HCI Read BD Address command
-	 * is considered invalid. The public BD Address can be
-	 * specified in the fwnode property 'local-bd-address'.
-	 * If this property does not exist or is invalid controller
-	 * configuration is required before this device can be used.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
+	 
 	HCI_QUIRK_USE_BDADDR_PROPERTY,
 
-	/* When this quirk is set, the duplicate filtering during
-	 * scanning is based on Bluetooth devices addresses. To allow
-	 * RSSI based updates, restart scanning if needed.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
+	 
 	HCI_QUIRK_STRICT_DUPLICATE_FILTER,
 
-	/* When this quirk is set, LE scan and BR/EDR inquiry is done
-	 * simultaneously, otherwise it's interleaved.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
+	 
 	HCI_QUIRK_SIMULTANEOUS_DISCOVERY,
 
-	/* When this quirk is set, the enabling of diagnostic mode is
-	 * not persistent over HCI Reset. Every time the controller
-	 * is brought up it needs to be reprogrammed.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
+	 
 	HCI_QUIRK_NON_PERSISTENT_DIAG,
 
-	/* When this quirk is set, setup() would be run after every
-	 * open() and not just after the first open().
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 *
-	 */
+	 
 	HCI_QUIRK_NON_PERSISTENT_SETUP,
 
-	/* When this quirk is set, wide band speech is supported by
-	 * the driver since no reliable mechanism exist to report
-	 * this from the hardware, a driver flag is use to convey
-	 * this support
-	 *
-	 * This quirk must be set before hci_register_dev is called.
-	 */
+	 
 	HCI_QUIRK_WIDEBAND_SPEECH_SUPPORTED,
 
-	/* When this quirk is set, the controller has validated that
-	 * LE states reported through the HCI_LE_READ_SUPPORTED_STATES are
-	 * valid.  This mechanism is necessary as many controllers have
-	 * been seen has having trouble initiating a connectable
-	 * advertisement despite the state combination being reported as
-	 * supported.
-	 */
+	 
 	HCI_QUIRK_VALID_LE_STATES,
 
-	/* When this quirk is set, then erroneous data reporting
-	 * is ignored. This is mainly due to the fact that the HCI
-	 * Read Default Erroneous Data Reporting command is advertised,
-	 * but not supported; these controllers often reply with unknown
-	 * command and tend to lock up randomly. Needing a hard reset.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
+	 
 	HCI_QUIRK_BROKEN_ERR_DATA_REPORTING,
 
-	/*
-	 * When this quirk is set, then the hci_suspend_notifier is not
-	 * registered. This is intended for devices which drop completely
-	 * from the bus on system-suspend and which will show up as a new
-	 * HCI after resume.
-	 */
+	 
 	HCI_QUIRK_NO_SUSPEND_NOTIFIER,
 
-	/*
-	 * When this quirk is set, LE tx power is not queried on startup
-	 * and the min/max tx power values default to HCI_TX_POWER_INVALID.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
+	 
 	HCI_QUIRK_BROKEN_READ_TRANSMIT_POWER,
 
-	/* When this quirk is set, HCI_OP_SET_EVENT_FLT requests with
-	 * HCI_FLT_CLEAR_ALL are ignored and event filtering is
-	 * completely avoided. A subset of the CSR controller
-	 * clones struggle with this and instantly lock up.
-	 *
-	 * Note that devices using this must (separately) disable
-	 * runtime suspend, because event filtering takes place there.
-	 */
+	 
 	HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL,
 
-	/*
-	 * When this quirk is set, disables the use of
-	 * HCI_OP_ENHANCED_SETUP_SYNC_CONN command to setup SCO connections.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
+	 
 	HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN,
 
-	/*
-	 * When this quirk is set, the HCI_OP_LE_SET_EXT_SCAN_ENABLE command is
-	 * disabled. This is required for some Broadcom controllers which
-	 * erroneously claim to support extended scanning.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
+	 
 	HCI_QUIRK_BROKEN_EXT_SCAN,
 
-	/*
-	 * When this quirk is set, the HCI_OP_GET_MWS_TRANSPORT_CONFIG command is
-	 * disabled. This is required for some Broadcom controllers which
-	 * erroneously claim to support MWS Transport Layer Configuration.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
+	 
 	HCI_QUIRK_BROKEN_MWS_TRANSPORT_CONFIG,
 
-	/* When this quirk is set, max_page for local extended features
-	 * is set to 1, even if controller reports higher number. Some
-	 * controllers (e.g. RTL8723CS) report more pages, but they
-	 * don't actually support features declared there.
-	 */
+	 
 	HCI_QUIRK_BROKEN_LOCAL_EXT_FEATURES_PAGE_2,
 
-	/*
-	 * When this quirk is set, the HCI_OP_LE_SET_RPA_TIMEOUT command is
-	 * skipped during initialization. This is required for the Actions
-	 * Semiconductor ATS2851 based controllers, which erroneously claims
-	 * to support it.
-	 */
+	 
 	HCI_QUIRK_BROKEN_SET_RPA_TIMEOUT,
 
-	/* When this quirk is set, MSFT extension monitor tracking by
-	 * address filter is supported. Since tracking quantity of each
-	 * pattern is limited, this feature supports tracking multiple
-	 * devices concurrently if controller supports multiple
-	 * address filters.
-	 *
-	 * This quirk must be set before hci_register_dev is called.
-	 */
+	 
 	HCI_QUIRK_USE_MSFT_EXT_ADDRESS_FILTER,
 
-	/*
-	 * When this quirk is set, LE Coded PHY shall not be used. This is
-	 * required for some Intel controllers which erroneously claim to
-	 * support it but it causes problems with extended scanning.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
+	 
 	HCI_QUIRK_BROKEN_LE_CODED,
 };
 
-/* HCI device flags */
+ 
 enum {
 	HCI_UP,
 	HCI_INIT,
@@ -349,7 +166,7 @@ enum {
 	HCI_RESET,
 };
 
-/* HCI socket flags */
+ 
 enum {
 	HCI_SOCK_TRUSTED,
 	HCI_MGMT_INDEX_EVENTS,
@@ -364,10 +181,7 @@ enum {
 	HCI_MGMT_EXP_FEATURE_EVENTS,
 };
 
-/*
- * BR/EDR and/or LE controller flags: the flags defined here should represent
- * states from the controller.
- */
+ 
 enum {
 	HCI_SETUP,
 	HCI_CONFIG,
@@ -429,19 +243,19 @@ enum {
 	__HCI_NUM_FLAGS,
 };
 
-/* HCI timeouts */
-#define HCI_DISCONN_TIMEOUT	msecs_to_jiffies(2000)	/* 2 seconds */
-#define HCI_PAIRING_TIMEOUT	msecs_to_jiffies(60000)	/* 60 seconds */
-#define HCI_INIT_TIMEOUT	msecs_to_jiffies(10000)	/* 10 seconds */
-#define HCI_CMD_TIMEOUT		msecs_to_jiffies(2000)	/* 2 seconds */
-#define HCI_NCMD_TIMEOUT	msecs_to_jiffies(4000)	/* 4 seconds */
-#define HCI_ACL_TX_TIMEOUT	msecs_to_jiffies(45000)	/* 45 seconds */
-#define HCI_AUTO_OFF_TIMEOUT	msecs_to_jiffies(2000)	/* 2 seconds */
-#define HCI_POWER_OFF_TIMEOUT	msecs_to_jiffies(5000)	/* 5 seconds */
-#define HCI_LE_CONN_TIMEOUT	msecs_to_jiffies(20000)	/* 20 seconds */
-#define HCI_LE_AUTOCONN_TIMEOUT	msecs_to_jiffies(4000)	/* 4 seconds */
+ 
+#define HCI_DISCONN_TIMEOUT	msecs_to_jiffies(2000)	 
+#define HCI_PAIRING_TIMEOUT	msecs_to_jiffies(60000)	 
+#define HCI_INIT_TIMEOUT	msecs_to_jiffies(10000)	 
+#define HCI_CMD_TIMEOUT		msecs_to_jiffies(2000)	 
+#define HCI_NCMD_TIMEOUT	msecs_to_jiffies(4000)	 
+#define HCI_ACL_TX_TIMEOUT	msecs_to_jiffies(45000)	 
+#define HCI_AUTO_OFF_TIMEOUT	msecs_to_jiffies(2000)	 
+#define HCI_POWER_OFF_TIMEOUT	msecs_to_jiffies(5000)	 
+#define HCI_LE_CONN_TIMEOUT	msecs_to_jiffies(20000)	 
+#define HCI_LE_AUTOCONN_TIMEOUT	msecs_to_jiffies(4000)	 
 
-/* HCI data types */
+ 
 #define HCI_COMMAND_PKT		0x01
 #define HCI_ACLDATA_PKT		0x02
 #define HCI_SCODATA_PKT		0x03
@@ -450,7 +264,7 @@ enum {
 #define HCI_DIAG_PKT		0xf0
 #define HCI_VENDOR_PKT		0xff
 
-/* HCI packet types */
+ 
 #define HCI_DM1		0x0008
 #define HCI_DM3		0x0400
 #define HCI_DM5		0x4000
@@ -458,7 +272,7 @@ enum {
 #define HCI_DH3		0x0800
 #define HCI_DH5		0x8000
 
-/* HCI packet types inverted masks */
+ 
 #define HCI_2DH1	0x0002
 #define HCI_3DH1	0x0004
 #define HCI_2DH3	0x0100
@@ -473,7 +287,7 @@ enum {
 #define SCO_PTYPE_MASK	(HCI_HV1 | HCI_HV2 | HCI_HV3)
 #define ACL_PTYPE_MASK	(~SCO_PTYPE_MASK)
 
-/* eSCO packet types */
+ 
 #define ESCO_HV1	0x0001
 #define ESCO_HV2	0x0002
 #define ESCO_HV3	0x0004
@@ -488,7 +302,7 @@ enum {
 #define SCO_ESCO_MASK  (ESCO_HV1 | ESCO_HV2 | ESCO_HV3)
 #define EDR_ESCO_MASK  (ESCO_2EV3 | ESCO_3EV3 | ESCO_2EV5 | ESCO_3EV5)
 
-/* ACL flags */
+ 
 #define ACL_START_NO_FLUSH	0x00
 #define ACL_CONT		0x01
 #define ACL_START		0x02
@@ -496,26 +310,26 @@ enum {
 #define ACL_ACTIVE_BCAST	0x04
 #define ACL_PICO_BCAST		0x08
 
-/* ISO PB flags */
+ 
 #define ISO_START		0x00
 #define ISO_CONT		0x01
 #define ISO_SINGLE		0x02
 #define ISO_END			0x03
 
-/* ISO TS flags */
+ 
 #define ISO_TS			0x01
 
-/* Baseband links */
+ 
 #define SCO_LINK	0x00
 #define ACL_LINK	0x01
 #define ESCO_LINK	0x02
-/* Low Energy links do not have defined link type. Use invented one */
+ 
 #define LE_LINK		0x80
 #define AMP_LINK	0x81
 #define ISO_LINK	0x82
 #define INVALID_LINK	0xff
 
-/* LMP features */
+ 
 #define LMP_3SLOT	0x01
 #define LMP_5SLOT	0x02
 #define LMP_ENCRYPT	0x04
@@ -567,7 +381,7 @@ enum {
 #define LMP_INQ_TX_PWR	0x02
 #define LMP_EXTFEATURES	0x80
 
-/* Extended LMP features */
+ 
 #define LMP_CPB_CENTRAL		0x01
 #define LMP_CPB_PERIPHERAL	0x02
 #define LMP_SYNC_TRAIN		0x04
@@ -576,13 +390,13 @@ enum {
 #define LMP_SC		0x01
 #define LMP_PING	0x02
 
-/* Host features */
+ 
 #define LMP_HOST_SSP		0x01
 #define LMP_HOST_LE		0x02
 #define LMP_HOST_LE_BREDR	0x04
 #define LMP_HOST_SC		0x08
 
-/* LE features */
+ 
 #define HCI_LE_ENCRYPTION		0x01
 #define HCI_LE_CONN_PARAM_REQ_PROC	0x02
 #define HCI_LE_PERIPHERAL_FEATURES	0x08
@@ -600,19 +414,19 @@ enum {
 #define HCI_LE_ISO_BROADCASTER		0x40
 #define HCI_LE_ISO_SYNC_RECEIVER	0x80
 
-/* Connection modes */
+ 
 #define HCI_CM_ACTIVE	0x0000
 #define HCI_CM_HOLD	0x0001
 #define HCI_CM_SNIFF	0x0002
 #define HCI_CM_PARK	0x0003
 
-/* Link policies */
+ 
 #define HCI_LP_RSWITCH	0x0001
 #define HCI_LP_HOLD	0x0002
 #define HCI_LP_SNIFF	0x0004
 #define HCI_LP_PARK	0x0008
 
-/* Link modes */
+ 
 #define HCI_LM_ACCEPT	0x8000
 #define HCI_LM_MASTER	0x0001
 #define HCI_LM_AUTH	0x0002
@@ -622,7 +436,7 @@ enum {
 #define HCI_LM_SECURE	0x0020
 #define HCI_LM_FIPS	0x0040
 
-/* Authentication types */
+ 
 #define HCI_AT_NO_BONDING		0x00
 #define HCI_AT_NO_BONDING_MITM		0x01
 #define HCI_AT_DEDICATED_BONDING	0x02
@@ -630,13 +444,13 @@ enum {
 #define HCI_AT_GENERAL_BONDING		0x04
 #define HCI_AT_GENERAL_BONDING_MITM	0x05
 
-/* I/O capabilities */
+ 
 #define HCI_IO_DISPLAY_ONLY	0x00
 #define HCI_IO_DISPLAY_YESNO	0x01
 #define HCI_IO_KEYBOARD_ONLY	0x02
 #define HCI_IO_NO_INPUT_OUTPUT	0x03
 
-/* Link Key types */
+ 
 #define HCI_LK_COMBINATION		0x00
 #define HCI_LK_LOCAL_UNIT		0x01
 #define HCI_LK_REMOTE_UNIT		0x02
@@ -647,7 +461,7 @@ enum {
 #define HCI_LK_UNAUTH_COMBINATION_P256	0x07
 #define HCI_LK_AUTH_COMBINATION_P256	0x08
 
-/* ---- HCI Error Codes ---- */
+ 
 #define HCI_ERROR_UNKNOWN_CONN_ID	0x02
 #define HCI_ERROR_AUTH_FAILURE		0x05
 #define HCI_ERROR_PIN_OR_KEY_MISSING	0x06
@@ -666,11 +480,11 @@ enum {
 #define HCI_ERROR_ADVERTISING_TIMEOUT	0x3c
 #define HCI_ERROR_CANCELLED_BY_HOST	0x44
 
-/* Flow control modes */
+ 
 #define HCI_FLOW_CTL_MODE_PACKET_BASED	0x00
 #define HCI_FLOW_CTL_MODE_BLOCK_BASED	0x01
 
-/* The core spec defines 127 as the "not available" value */
+ 
 #define HCI_TX_POWER_INVALID	127
 #define HCI_RSSI_INVALID	127
 
@@ -679,38 +493,38 @@ enum {
 #define HCI_ROLE_MASTER		0x00
 #define HCI_ROLE_SLAVE		0x01
 
-/* Extended Inquiry Response field types */
-#define EIR_FLAGS		0x01 /* flags */
-#define EIR_UUID16_SOME		0x02 /* 16-bit UUID, more available */
-#define EIR_UUID16_ALL		0x03 /* 16-bit UUID, all listed */
-#define EIR_UUID32_SOME		0x04 /* 32-bit UUID, more available */
-#define EIR_UUID32_ALL		0x05 /* 32-bit UUID, all listed */
-#define EIR_UUID128_SOME	0x06 /* 128-bit UUID, more available */
-#define EIR_UUID128_ALL		0x07 /* 128-bit UUID, all listed */
-#define EIR_NAME_SHORT		0x08 /* shortened local name */
-#define EIR_NAME_COMPLETE	0x09 /* complete local name */
-#define EIR_TX_POWER		0x0A /* transmit power level */
-#define EIR_CLASS_OF_DEV	0x0D /* Class of Device */
-#define EIR_SSP_HASH_C192	0x0E /* Simple Pairing Hash C-192 */
-#define EIR_SSP_RAND_R192	0x0F /* Simple Pairing Randomizer R-192 */
-#define EIR_DEVICE_ID		0x10 /* device ID */
-#define EIR_APPEARANCE		0x19 /* Device appearance */
-#define EIR_SERVICE_DATA	0x16 /* Service Data */
-#define EIR_LE_BDADDR		0x1B /* LE Bluetooth device address */
-#define EIR_LE_ROLE		0x1C /* LE role */
-#define EIR_SSP_HASH_C256	0x1D /* Simple Pairing Hash C-256 */
-#define EIR_SSP_RAND_R256	0x1E /* Simple Pairing Rand R-256 */
-#define EIR_LE_SC_CONFIRM	0x22 /* LE SC Confirmation Value */
-#define EIR_LE_SC_RANDOM	0x23 /* LE SC Random Value */
+ 
+#define EIR_FLAGS		0x01  
+#define EIR_UUID16_SOME		0x02  
+#define EIR_UUID16_ALL		0x03  
+#define EIR_UUID32_SOME		0x04  
+#define EIR_UUID32_ALL		0x05  
+#define EIR_UUID128_SOME	0x06  
+#define EIR_UUID128_ALL		0x07  
+#define EIR_NAME_SHORT		0x08  
+#define EIR_NAME_COMPLETE	0x09  
+#define EIR_TX_POWER		0x0A  
+#define EIR_CLASS_OF_DEV	0x0D  
+#define EIR_SSP_HASH_C192	0x0E  
+#define EIR_SSP_RAND_R192	0x0F  
+#define EIR_DEVICE_ID		0x10  
+#define EIR_APPEARANCE		0x19  
+#define EIR_SERVICE_DATA	0x16  
+#define EIR_LE_BDADDR		0x1B  
+#define EIR_LE_ROLE		0x1C  
+#define EIR_SSP_HASH_C256	0x1D  
+#define EIR_SSP_RAND_R256	0x1E  
+#define EIR_LE_SC_CONFIRM	0x22  
+#define EIR_LE_SC_RANDOM	0x23  
 
-/* Low Energy Advertising Flags */
-#define LE_AD_LIMITED		0x01 /* Limited Discoverable */
-#define LE_AD_GENERAL		0x02 /* General Discoverable */
-#define LE_AD_NO_BREDR		0x04 /* BR/EDR not supported */
-#define LE_AD_SIM_LE_BREDR_CTRL	0x08 /* Simultaneous LE & BR/EDR Controller */
-#define LE_AD_SIM_LE_BREDR_HOST	0x10 /* Simultaneous LE & BR/EDR Host */
+ 
+#define LE_AD_LIMITED		0x01  
+#define LE_AD_GENERAL		0x02  
+#define LE_AD_NO_BREDR		0x04  
+#define LE_AD_SIM_LE_BREDR_CTRL	0x08  
+#define LE_AD_SIM_LE_BREDR_HOST	0x10  
 
-/* -----  HCI Commands ---- */
+ 
 #define HCI_OP_NOP			0x0000
 
 #define HCI_OP_INQUIRY			0x0401
@@ -1126,17 +940,17 @@ struct hci_cp_set_event_filter {
 	} __packed	addr_conn_flt;
 } __packed;
 
-/* Filter types */
+ 
 #define HCI_FLT_CLEAR_ALL	0x00
 #define HCI_FLT_INQ_RESULT	0x01
 #define HCI_FLT_CONN_SETUP	0x02
 
-/* CONN_SETUP Condition types */
+ 
 #define HCI_CONN_SETUP_ALLOW_ALL	0x00
 #define HCI_CONN_SETUP_ALLOW_CLASS	0x01
 #define HCI_CONN_SETUP_ALLOW_BDADDR	0x02
 
-/* CONN_SETUP Conditions */
+ 
 #define HCI_CONN_SETUP_AUTO_OFF		0x01
 #define HCI_CONN_SETUP_AUTO_ON		0x02
 #define HCI_CONN_SETUP_AUTO_ON_WITH_RS	0x03
@@ -1459,9 +1273,9 @@ struct hci_std_codecs {
 } __packed;
 
 struct hci_vnd_codec {
-	/* company id */
+	 
 	__le16	cid;
-	/* vendor codec id */
+	 
 	__le16	vid;
 } __packed;
 
@@ -2228,7 +2042,7 @@ struct hci_cp_le_set_host_feature {
 	__u8     bit_value;
 } __packed;
 
-/* ---- HCI Events ---- */
+ 
 struct hci_ev_status {
 	__u8    status;
 } __packed;
@@ -2627,7 +2441,7 @@ struct hci_ev_le_conn_complete {
 	__u8     clk_accurancy;
 } __packed;
 
-/* Advertising report event types */
+ 
 #define LE_ADV_IND		0x00
 #define LE_ADV_DIRECT_IND	0x01
 #define LE_ADV_SCAN_IND		0x02
@@ -2635,7 +2449,7 @@ struct hci_ev_le_conn_complete {
 #define LE_ADV_SCAN_RSP		0x04
 #define LE_ADV_INVALID		0x05
 
-/* Legacy event types in extended adv report */
+ 
 #define LE_LEGACY_ADV_IND		0x0013
 #define LE_LEGACY_ADV_DIRECT_IND 	0x0015
 #define LE_LEGACY_ADV_SCAN_IND		0x0012
@@ -2643,7 +2457,7 @@ struct hci_ev_le_conn_complete {
 #define LE_LEGACY_SCAN_RSP_ADV		0x001b
 #define LE_LEGACY_SCAN_RSP_ADV_SCAN	0x001a
 
-/* Extended Advertising event types */
+ 
 #define LE_EXT_ADV_NON_CONN_IND		0x0000
 #define LE_EXT_ADV_CONN_IND		0x0001
 #define LE_EXT_ADV_SCAN_IND		0x0002
@@ -2882,7 +2696,7 @@ struct hci_evt_le_big_info_adv_report {
 
 #define HCI_EV_VENDOR			0xff
 
-/* Internal events generated by Bluetooth stack */
+ 
 #define HCI_EV_STACK_INTERNAL	0xfd
 struct hci_ev_stack_internal {
 	__u16    type;
@@ -2903,7 +2717,7 @@ struct hci_ev_si_security {
 	__u8     incoming;
 } __packed;
 
-/* ---- HCI Packet structures ---- */
+ 
 #define HCI_COMMAND_HDR_SIZE 3
 #define HCI_EVENT_HDR_SIZE   2
 #define HCI_ACL_HDR_SIZE     4
@@ -2911,7 +2725,7 @@ struct hci_ev_si_security {
 #define HCI_ISO_HDR_SIZE     4
 
 struct hci_command_hdr {
-	__le16	opcode;		/* OCF & OGF */
+	__le16	opcode;		 
 	__u8	plen;
 } __packed;
 
@@ -2921,7 +2735,7 @@ struct hci_event_hdr {
 } __packed;
 
 struct hci_acl_hdr {
-	__le16	handle;		/* Handle & Flags(PB, BC) */
+	__le16	handle;		 
 	__le16	dlen;
 } __packed;
 
@@ -2936,7 +2750,7 @@ struct hci_iso_hdr {
 	__u8	data[];
 } __packed;
 
-/* ISO data packet status flags */
+ 
 #define HCI_ISO_STATUS_VALID	0x00
 #define HCI_ISO_STATUS_INVALID	0x01
 #define HCI_ISO_STATUS_NOP	0x02
@@ -2969,30 +2783,30 @@ static inline struct hci_sco_hdr *hci_sco_hdr(const struct sk_buff *skb)
 	return (struct hci_sco_hdr *) skb->data;
 }
 
-/* Command opcode pack/unpack */
+ 
 #define hci_opcode_pack(ogf, ocf)	((__u16) ((ocf & 0x03ff)|(ogf << 10)))
 #define hci_opcode_ogf(op)		(op >> 10)
 #define hci_opcode_ocf(op)		(op & 0x03ff)
 
-/* ACL handle and flags pack/unpack */
+ 
 #define hci_handle_pack(h, f)	((__u16) ((h & 0x0fff)|(f << 12)))
 #define hci_handle(h)		(h & 0x0fff)
 #define hci_flags(h)		(h >> 12)
 
-/* ISO handle and flags pack/unpack */
+ 
 #define hci_iso_flags_pb(f)		(f & 0x0003)
 #define hci_iso_flags_ts(f)		((f >> 2) & 0x0001)
 #define hci_iso_flags_pack(pb, ts)	((pb & 0x03) | ((ts & 0x01) << 2))
 
-/* ISO data length and flags pack/unpack */
+ 
 #define hci_iso_data_len_pack(h, f)	((__u16) ((h) | ((f) << 14)))
 #define hci_iso_data_len(h)		((h) & 0x3fff)
 #define hci_iso_data_flags(h)		((h) >> 14)
 
-/* codec transport types */
+ 
 #define HCI_TRANSPORT_SCO_ESCO	0x01
 
-/* le24 support */
+ 
 static inline void hci_cpu_to_le24(__u32 val, __u8 dst[3])
 {
 	dst[0] = val & 0xff;
@@ -3000,4 +2814,4 @@ static inline void hci_cpu_to_le24(__u32 val, __u8 dst[3])
 	dst[2] = (val & 0xff0000) >> 16;
 }
 
-#endif /* __HCI_H */
+#endif  

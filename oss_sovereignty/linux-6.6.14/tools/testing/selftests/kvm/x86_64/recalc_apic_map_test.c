@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Test edge cases and race conditions in kvm_recalculate_apic_map().
- */
+
+ 
 
 #include <sys/ioctl.h>
 #include <pthread.h>
@@ -12,7 +10,7 @@
 #include "kvm_util.h"
 #include "apic.h"
 
-#define TIMEOUT		5	/* seconds */
+#define TIMEOUT		5	 
 
 #define LAPIC_DISABLED	0
 #define LAPIC_X2APIC	(MSR_IA32_APICBASE_ENABLE | X2APIC_ENABLE)
@@ -24,7 +22,7 @@ static void *race(void *arg)
 	struct kvm_vcpu *vcpu = arg;
 
 	while (1) {
-		/* Trigger kvm_recalculate_apic_map(). */
+		 
 		vcpu_ioctl(vcpu, KVM_SET_LAPIC, &lapic);
 		pthread_testcancel();
 	}
@@ -43,17 +41,10 @@ int main(void)
 
 	kvm_static_assert(KVM_MAX_VCPUS > MAX_XAPIC_ID);
 
-	/*
-	 * Create the max number of vCPUs supported by selftests so that KVM
-	 * has decent amount of work to do when recalculating the map, i.e. to
-	 * make the problematic window large enough to hit.
-	 */
+	 
 	vm = vm_create_with_vcpus(KVM_MAX_VCPUS, NULL, vcpus);
 
-	/*
-	 * Enable x2APIC on all vCPUs so that KVM doesn't bail from the recalc
-	 * due to vCPUs having aliased xAPIC IDs (truncated to 8 bits).
-	 */
+	 
 	for (i = 0; i < KVM_MAX_VCPUS; i++)
 		vcpu_set_msr(vcpus[i], MSR_IA32_APICBASE, LAPIC_X2APIC);
 

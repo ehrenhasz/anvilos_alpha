@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel MID platform PM support
- *
- * Copyright (C) 2016, Intel Corporation
- *
- * Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/pci.h>
@@ -33,10 +27,7 @@ pci_power_t mid_pci_get_power_state(struct pci_dev *pdev)
 	return intel_mid_pci_get_power_state(pdev);
 }
 
-/*
- * This table should be in sync with the one in
- * arch/x86/platform/intel-mid/pwr.c.
- */
+ 
 static const struct x86_cpu_id lpss_cpu_ids[] = {
 	X86_MATCH_INTEL_FAM6_MODEL(ATOM_SALTWELL_MID, NULL),
 	X86_MATCH_INTEL_FAM6_MODEL(ATOM_SILVERMONT_MID, NULL),

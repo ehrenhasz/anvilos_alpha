@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ioctl32.c: Conversion between 32bit and 64bit native ioctls.
- *	Separated from fs stuff by Arnd Bergmann <arnd@arndb.de>
- *
- * Copyright (C) 1997-2000  Jakub Jelinek  (jakub@redhat.com)
- * Copyright (C) 1998  Eddie C. Dost  (ecd@skynet.be)
- * Copyright (C) 2001,2002  Andi Kleen, SuSE Labs
- * Copyright (C) 2003       Pavel Machek (pavel@ucw.cz)
- * Copyright (C) 2005       Philippe De Muyter (phdm@macqel.be)
- * Copyright (C) 2008       Hans Verkuil <hverkuil@xs4all.nl>
- *
- * These routines maintain argument size conversion between 32bit and 64bit
- * ioctls.
- */
+
+ 
 
 #include <linux/compat.h>
 #include <linux/module.h>
@@ -23,28 +10,15 @@
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-ioctl.h>
 
-/*
- * Per-ioctl data copy handlers.
- *
- * Those come in pairs, with a get_v4l2_foo() and a put_v4l2_foo() routine,
- * where "v4l2_foo" is the name of the V4L2 struct.
- *
- * They basically get two __user pointers, one with a 32-bits struct that
- * came from the userspace call and a 64-bits struct, also allocated as
- * userspace, but filled internally by do_video_ioctl().
- *
- * For ioctls that have pointers inside it, the functions will also
- * receive an ancillary buffer with extra space, used to pass extra
- * data to the routine.
- */
+ 
 
 struct v4l2_window32 {
 	struct v4l2_rect        w;
-	__u32			field;	/* enum v4l2_field */
+	__u32			field;	 
 	__u32			chromakey;
-	compat_caddr_t		clips; /* always NULL */
-	__u32			clipcount; /* always 0 */
-	compat_caddr_t		bitmap; /* always NULL */
+	compat_caddr_t		clips;  
+	__u32			clipcount;  
+	compat_caddr_t		bitmap;  
 	__u8                    global_alpha;
 };
 
@@ -92,7 +66,7 @@ static int put_v4l2_window32(struct v4l2_window *p64,
 }
 
 struct v4l2_format32 {
-	__u32	type;	/* enum v4l2_buf_type */
+	__u32	type;	 
 	union {
 		struct v4l2_pix_format	pix;
 		struct v4l2_pix_format_mplane	pix_mp;
@@ -101,27 +75,15 @@ struct v4l2_format32 {
 		struct v4l2_sliced_vbi_format	sliced;
 		struct v4l2_sdr_format	sdr;
 		struct v4l2_meta_format	meta;
-		__u8	raw_data[200];        /* user-defined */
+		__u8	raw_data[200];         
 	} fmt;
 };
 
-/**
- * struct v4l2_create_buffers32 - VIDIOC_CREATE_BUFS32 argument
- * @index:	on return, index of the first created buffer
- * @count:	entry: number of requested buffers,
- *		return: number of created buffers
- * @memory:	buffer memory type
- * @format:	frame format, for which buffers are requested
- * @capabilities: capabilities of this buffer type.
- * @flags:	additional buffer management attributes (ignored unless the
- *		queue has V4L2_BUF_CAP_SUPPORTS_MMAP_CACHE_HINTS capability and
- *		configured for MMAP streaming I/O).
- * @reserved:	future extensions
- */
+ 
 struct v4l2_create_buffers32 {
 	__u32			index;
 	__u32			count;
-	__u32			memory;	/* enum v4l2_memory */
+	__u32			memory;	 
 	struct v4l2_format32	format;
 	__u32			capabilities;
 	__u32			flags;
@@ -230,7 +192,7 @@ struct v4l2_standard32 {
 	__u32		     index;
 	compat_u64	     id;
 	__u8		     name[24];
-	struct v4l2_fract    frameperiod; /* Frames, not fields */
+	struct v4l2_fract    frameperiod;  
 	__u32		     framelines;
 	__u32		     reserved[4];
 };
@@ -238,7 +200,7 @@ struct v4l2_standard32 {
 static int get_v4l2_standard32(struct v4l2_standard *p64,
 			       struct v4l2_standard32 __user *p32)
 {
-	/* other fields are not set by the user, nor used by the driver */
+	 
 	return get_user(p64->index, &p32->index);
 }
 
@@ -268,16 +230,13 @@ struct v4l2_plane32 {
 	__u32			reserved[11];
 };
 
-/*
- * This is correct for all architectures including i386, but not x32,
- * which has different alignment requirements for timestamp
- */
+ 
 struct v4l2_buffer32 {
 	__u32			index;
-	__u32			type;	/* enum v4l2_buf_type */
+	__u32			type;	 
 	__u32			bytesused;
 	__u32			flags;
-	__u32			field;	/* enum v4l2_field */
+	__u32			field;	 
 	struct {
 		compat_s64	tv_sec;
 		compat_s64	tv_usec;
@@ -285,8 +244,8 @@ struct v4l2_buffer32 {
 	struct v4l2_timecode	timecode;
 	__u32			sequence;
 
-	/* memory location */
-	__u32			memory;	/* enum v4l2_memory */
+	 
+	__u32			memory;	 
 	union {
 		__u32           offset;
 		compat_long_t   userptr;
@@ -301,16 +260,16 @@ struct v4l2_buffer32 {
 #ifdef CONFIG_COMPAT_32BIT_TIME
 struct v4l2_buffer32_time32 {
 	__u32			index;
-	__u32			type;	/* enum v4l2_buf_type */
+	__u32			type;	 
 	__u32			bytesused;
 	__u32			flags;
-	__u32			field;	/* enum v4l2_field */
+	__u32			field;	 
 	struct old_timeval32	timestamp;
 	struct v4l2_timecode	timecode;
 	__u32			sequence;
 
-	/* memory location */
-	__u32			memory;	/* enum v4l2_memory */
+	 
+	__u32			memory;	 
 	union {
 		__u32           offset;
 		compat_long_t   userptr;
@@ -609,21 +568,18 @@ static int put_v4l2_framebuffer32(struct v4l2_framebuffer *p64,
 }
 
 struct v4l2_input32 {
-	__u32	     index;		/*  Which input */
-	__u8	     name[32];		/*  Label */
-	__u32	     type;		/*  Type of input */
-	__u32	     audioset;		/*  Associated audios (bitfield) */
-	__u32        tuner;             /*  Associated tuner */
+	__u32	     index;		 
+	__u8	     name[32];		 
+	__u32	     type;		 
+	__u32	     audioset;		 
+	__u32        tuner;              
 	compat_u64   std;
 	__u32	     status;
 	__u32	     capabilities;
 	__u32	     reserved[3];
 };
 
-/*
- * The 64-bit v4l2_input struct has extra padding at the end of the struct.
- * Otherwise it is identical to the 32-bit version.
- */
+ 
 static inline int get_v4l2_input32(struct v4l2_input *p64,
 				   struct v4l2_input32 __user *p32)
 {
@@ -646,7 +602,7 @@ struct v4l2_ext_controls32 {
 	__u32 error_idx;
 	__s32 request_fd;
 	__u32 reserved[1];
-	compat_caddr_t controls; /* actually struct v4l2_ext_control32 * */
+	compat_caddr_t controls;  
 };
 
 struct v4l2_ext_control32 {
@@ -656,11 +612,11 @@ struct v4l2_ext_control32 {
 	union {
 		__s32 value;
 		__s64 value64;
-		compat_caddr_t string; /* actually char * */
+		compat_caddr_t string;  
 	};
 } __attribute__ ((packed));
 
-/* Return true if this control is a pointer type. */
+ 
 static inline bool ctrl_is_pointer(struct file *file, u32 id)
 {
 	struct video_device *vdev = video_devdata(file);
@@ -732,10 +688,7 @@ static int put_v4l2_ext_controls32(struct v4l2_ext_controls *p64,
 }
 
 #ifdef CONFIG_X86_64
-/*
- * x86 is the only compat architecture with different struct alignment
- * between 32-bit and 64-bit tasks.
- */
+ 
 struct v4l2_event32 {
 	__u32				type;
 	union {
@@ -828,13 +781,7 @@ static int put_v4l2_edid32(struct v4l2_edid *p64,
 	return 0;
 }
 
-/*
- * List of ioctls that require 32-bits/64-bits conversion
- *
- * The V4L2 ioctls that aren't listed there don't have pointer arguments
- * and the struct size is identical for both 32 and 64 bits versions, so
- * they don't need translations.
- */
+ 
 
 #define VIDIOC_G_FMT32		_IOWR('V',  4, struct v4l2_format32)
 #define VIDIOC_S_FMT32		_IOWR('V',  5, struct v4l2_format32)
@@ -1137,12 +1084,7 @@ int v4l2_compat_put_array_args(struct file *file, void __user *user_ptr,
 
 		for (n = 0; n < ecs64->count; n++) {
 			unsigned int size = sizeof(*ec32);
-			/*
-			 * Do not modify the pointer when copying a pointer
-			 * control.  The contents of the pointer was changed,
-			 * not the pointer itself.
-			 * The structures are otherwise compatible.
-			 */
+			 
 			if (ctrl_is_pointer(file, ec64->id))
 				size -= sizeof(ec32->value64);
 
@@ -1163,20 +1105,7 @@ int v4l2_compat_put_array_args(struct file *file, void __user *user_ptr,
 	return err;
 }
 
-/**
- * v4l2_compat_ioctl32() - Handles a compat32 ioctl call
- *
- * @file: pointer to &struct file with the file handler
- * @cmd: ioctl to be called
- * @arg: arguments passed from/to the ioctl handler
- *
- * This function is meant to be used as .compat_ioctl fops at v4l2-dev.c
- * in order to deal with 32-bit calls on a 64-bits Kernel.
- *
- * This function calls do_video_ioctl() for non-private V4L2 ioctls.
- * If the function is a private one it calls vdev->fops->compat_ioctl32
- * instead.
- */
+ 
 long v4l2_compat_ioctl32(struct file *file, unsigned int cmd, unsigned long arg)
 {
 	struct video_device *vdev = video_devdata(file);

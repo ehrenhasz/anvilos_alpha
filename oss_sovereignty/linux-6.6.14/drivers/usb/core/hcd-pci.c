@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * (C) Copyright David Brownell 2000-2002
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -20,12 +18,9 @@
 #include "usb.h"
 
 
-/* PCI-based HCs are common, but plenty of non-PCI HCs are used too */
+ 
 
-/*
- * Coordinate handoffs between EHCI and companion controllers
- * during EHCI probing and system resume.
- */
+ 
 
 static DECLARE_RWSEM(companions_rwsem);
 
@@ -41,7 +36,7 @@ static inline int is_ohci_or_uhci(struct pci_dev *pdev)
 typedef void (*companion_fn)(struct pci_dev *pdev, struct usb_hcd *hcd,
 		struct pci_dev *companion, struct usb_hcd *companion_hcd);
 
-/* Iterate over PCI devices in the same slot as pdev and call fn for each */
+ 
 static void for_each_companion(struct pci_dev *pdev, struct usb_hcd *hcd,
 		companion_fn fn)
 {
@@ -49,21 +44,14 @@ static void for_each_companion(struct pci_dev *pdev, struct usb_hcd *hcd,
 	struct usb_hcd		*companion_hcd;
 	unsigned int		slot = PCI_SLOT(pdev->devfn);
 
-	/*
-	 * Iterate through other PCI functions in the same slot.
-	 * If the function's drvdata isn't set then it isn't bound to
-	 * a USB host controller driver, so skip it.
-	 */
+	 
 	companion = NULL;
 	for_each_pci_dev(companion) {
 		if (companion->bus != pdev->bus ||
 				PCI_SLOT(companion->devfn) != slot)
 			continue;
 
-		/*
-		 * Companion device should be either UHCI,OHCI or EHCI host
-		 * controller, otherwise skip.
-		 */
+		 
 		if (companion->class != CL_UHCI && companion->class != CL_OHCI &&
 				companion->class != CL_EHCI)
 			continue;
@@ -75,12 +63,7 @@ static void for_each_companion(struct pci_dev *pdev, struct usb_hcd *hcd,
 	}
 }
 
-/*
- * We're about to add an EHCI controller, which will unceremoniously grab
- * all the port connections away from its companions.  To prevent annoying
- * error messages, lock the companion's root hub and gracefully unconfigure
- * it beforehand.  Leave it locked until the EHCI controller is all set.
- */
+ 
 static void ehci_pre_add(struct pci_dev *pdev, struct usb_hcd *hcd,
 		struct pci_dev *companion, struct usb_hcd *companion_hcd)
 {
@@ -93,18 +76,14 @@ static void ehci_pre_add(struct pci_dev *pdev, struct usb_hcd *hcd,
 	}
 }
 
-/*
- * Adding the EHCI controller has either succeeded or failed.  Set the
- * companion pointer accordingly, and in either case, reconfigure and
- * unlock the root hub.
- */
+ 
 static void ehci_post_add(struct pci_dev *pdev, struct usb_hcd *hcd,
 		struct pci_dev *companion, struct usb_hcd *companion_hcd)
 {
 	struct usb_device *udev;
 
 	if (is_ohci_or_uhci(companion)) {
-		if (dev_get_drvdata(&pdev->dev)) {	/* Succeeded */
+		if (dev_get_drvdata(&pdev->dev)) {	 
 			dev_dbg(&pdev->dev, "HS companion for %s\n",
 					dev_name(&companion->dev));
 			companion_hcd->self.hs_companion = &hcd->self;
@@ -115,10 +94,7 @@ static void ehci_post_add(struct pci_dev *pdev, struct usb_hcd *hcd,
 	}
 }
 
-/*
- * We just added a non-EHCI controller.  Find the EHCI controller to
- * which it is a companion, and store a pointer to the bus structure.
- */
+ 
 static void non_ehci_add(struct pci_dev *pdev, struct usb_hcd *hcd,
 		struct pci_dev *companion, struct usb_hcd *companion_hcd)
 {
@@ -129,7 +105,7 @@ static void non_ehci_add(struct pci_dev *pdev, struct usb_hcd *hcd,
 	}
 }
 
-/* We are removing an EHCI controller.  Clear the companions' pointers. */
+ 
 static void ehci_remove(struct pci_dev *pdev, struct usb_hcd *hcd,
 		struct pci_dev *companion, struct usb_hcd *companion_hcd)
 {
@@ -139,7 +115,7 @@ static void ehci_remove(struct pci_dev *pdev, struct usb_hcd *hcd,
 
 #ifdef	CONFIG_PM
 
-/* An EHCI controller must wait for its companions before resuming. */
+ 
 static void ehci_wait_for_companions(struct pci_dev *pdev, struct usb_hcd *hcd,
 		struct pci_dev *companion, struct usb_hcd *companion_hcd)
 {
@@ -147,28 +123,14 @@ static void ehci_wait_for_companions(struct pci_dev *pdev, struct usb_hcd *hcd,
 		device_pm_wait_for_dev(&pdev->dev, &companion->dev);
 }
 
-#endif	/* CONFIG_PM */
+#endif	 
 
-/*-------------------------------------------------------------------------*/
+ 
 
-/* configure so an HC device and id are always provided */
-/* always called with process context; sleeping is OK */
+ 
+ 
 
-/**
- * usb_hcd_pci_probe - initialize PCI-based HCDs
- * @dev: USB Host Controller being probed
- * @driver: USB HC driver handle
- *
- * Context: task context, might sleep
- *
- * Allocates basic PCI resources for this USB host controller, and
- * then invokes the start() method for the HCD associated with it
- * through the hotplug entry's driver_data.
- *
- * Store this function in the HCD's struct pci_driver as probe().
- *
- * Return: 0 if successful.
- */
+ 
 int usb_hcd_pci_probe(struct pci_dev *dev, const struct hc_driver *driver)
 {
 	struct usb_hcd		*hcd;
@@ -184,10 +146,7 @@ int usb_hcd_pci_probe(struct pci_dev *dev, const struct hc_driver *driver)
 	if (pci_enable_device(dev) < 0)
 		return -ENODEV;
 
-	/*
-	 * The xHCI driver has its own irq management
-	 * make sure irq setup is not touched for xhci in generic hcd code
-	 */
+	 
 	if ((driver->flags & HCD_MASK) < HCD_USB3) {
 		retval = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_LEGACY | PCI_IRQ_MSI);
 		if (retval < 0) {
@@ -210,7 +169,7 @@ int usb_hcd_pci_probe(struct pci_dev *dev, const struct hc_driver *driver)
 			driver->flags & (HCD_USB11 | HCD_USB3)) ? 1 : 0;
 
 	if (driver->flags & HCD_MEMORY) {
-		/* EHCI, OHCI */
+		 
 		hcd->rsrc_start = pci_resource_start(dev, 0);
 		hcd->rsrc_len = pci_resource_len(dev, 0);
 		if (!devm_request_mem_region(&dev->dev, hcd->rsrc_start,
@@ -228,7 +187,7 @@ int usb_hcd_pci_probe(struct pci_dev *dev, const struct hc_driver *driver)
 		}
 
 	} else {
-		/* UHCI */
+		 
 		int	region;
 
 		for (region = 0; region < PCI_STD_NUM_BARS; region++) {
@@ -251,7 +210,7 @@ int usb_hcd_pci_probe(struct pci_dev *dev, const struct hc_driver *driver)
 
 	pci_set_master(dev);
 
-	/* Note: dev_set_drvdata must be called while holding the rwsem */
+	 
 	if (dev->class == CL_EHCI) {
 		down_write(&companions_rwsem);
 		dev_set_drvdata(&dev->dev, hcd);
@@ -293,21 +252,10 @@ disable_pci:
 EXPORT_SYMBOL_GPL(usb_hcd_pci_probe);
 
 
-/* may be called without controller electrically present */
-/* may be called with controller, bus, and devices active */
+ 
+ 
 
-/**
- * usb_hcd_pci_remove - shutdown processing for PCI-based HCDs
- * @dev: USB Host Controller being removed
- *
- * Context: task context, might sleep
- *
- * Reverses the effect of usb_hcd_pci_probe(), first invoking
- * the HCD's stop() method.  It is always called from a thread
- * context, normally "rmmod", "apmd", or something similar.
- *
- * Store this function in the HCD's struct pci_driver as remove().
- */
+ 
 void usb_hcd_pci_remove(struct pci_dev *dev)
 {
 	struct usb_hcd		*hcd;
@@ -322,15 +270,12 @@ void usb_hcd_pci_remove(struct pci_dev *dev)
 	if (pci_dev_run_wake(dev))
 		pm_runtime_get_noresume(&dev->dev);
 
-	/* Fake an interrupt request in order to give the driver a chance
-	 * to test whether the controller hardware has been removed (e.g.,
-	 * cardbus physical eject).
-	 */
+	 
 	local_irq_disable();
 	usb_hcd_irq(0, hcd);
 	local_irq_enable();
 
-	/* Note: dev_set_drvdata must be called while holding the rwsem */
+	 
 	if (dev->class == CL_EHCI) {
 		down_write(&companions_rwsem);
 		for_each_companion(dev, hcd, ehci_remove);
@@ -338,7 +283,7 @@ void usb_hcd_pci_remove(struct pci_dev *dev)
 		dev_set_drvdata(&dev->dev, NULL);
 		up_write(&companions_rwsem);
 	} else {
-		/* Not EHCI; just clear the companion pointer */
+		 
 		down_read(&companions_rwsem);
 		hcd->self.hs_companion = NULL;
 		usb_remove_hcd(hcd);
@@ -352,10 +297,7 @@ void usb_hcd_pci_remove(struct pci_dev *dev)
 }
 EXPORT_SYMBOL_GPL(usb_hcd_pci_remove);
 
-/**
- * usb_hcd_pci_shutdown - shutdown host controller
- * @dev: USB Host Controller being shutdown
- */
+ 
 void usb_hcd_pci_shutdown(struct pci_dev *dev)
 {
 	struct usb_hcd		*hcd;
@@ -379,7 +321,7 @@ EXPORT_SYMBOL_GPL(usb_hcd_pci_shutdown);
 #ifdef	CONFIG_PPC_PMAC
 static void powermac_set_asic(struct pci_dev *pci_dev, int enable)
 {
-	/* Enanble or disable ASIC clocks for USB */
+	 
 	if (machine_is(powermac)) {
 		struct device_node	*of_node;
 
@@ -395,7 +337,7 @@ static void powermac_set_asic(struct pci_dev *pci_dev, int enable)
 static inline void powermac_set_asic(struct pci_dev *pci_dev, int enable)
 {}
 
-#endif	/* CONFIG_PPC_PMAC */
+#endif	 
 
 static int check_root_hub_suspended(struct device *dev)
 {
@@ -424,19 +366,13 @@ static int suspend_common(struct device *dev, pm_message_t msg)
 
 	do_wakeup = PMSG_IS_AUTO(msg) ? true : device_may_wakeup(dev);
 
-	/* Root hub suspend should have stopped all downstream traffic,
-	 * and all bus master traffic.  And done so for both the interface
-	 * and the stub usb_device (which we check here).  But maybe it
-	 * didn't; writing sysfs power/state files ignores such rules...
-	 */
+	 
 	retval = check_root_hub_suspended(dev);
 	if (retval)
 		return retval;
 
 	if (hcd->driver->pci_suspend && !HCD_DEAD(hcd)) {
-		/* Optimization: Don't suspend if a root-hub wakeup is
-		 * pending and it would cause the HCD to wake up anyway.
-		 */
+		 
 		if (do_wakeup && HCD_WAKEUP_PENDING(hcd))
 			return -EBUSY;
 		if (do_wakeup && hcd->shared_hcd &&
@@ -445,7 +381,7 @@ static int suspend_common(struct device *dev, pm_message_t msg)
 		retval = hcd->driver->pci_suspend(hcd, do_wakeup);
 		suspend_report_result(dev, hcd->driver->pci_suspend, retval);
 
-		/* Check again in case wakeup raced with pci_suspend */
+		 
 		if ((retval == 0 && do_wakeup && HCD_WAKEUP_PENDING(hcd)) ||
 				(retval == 0 && do_wakeup && hcd->shared_hcd &&
 				 HCD_WAKEUP_PENDING(hcd->shared_hcd))) {
@@ -457,18 +393,11 @@ static int suspend_common(struct device *dev, pm_message_t msg)
 			return retval;
 	}
 
-	/* If MSI-X is enabled, the driver will have synchronized all vectors
-	 * in pci_suspend(). If MSI or legacy PCI is enabled, that will be
-	 * synchronized here.
-	 */
+	 
 	if (!hcd->msix_enabled)
 		synchronize_irq(pci_irq_vector(pci_dev, 0));
 
-	/* Downstream ports from this root hub should already be quiesced, so
-	 * there will be no DMA activity.  Now we can shut down the upstream
-	 * link (except maybe for PME# resume signaling).  We'll enter a
-	 * low power state during suspend_noirq, if the hardware allows.
-	 */
+	 
 	pci_disable_device(pci_dev);
 	return retval;
 }
@@ -496,11 +425,7 @@ static int resume_common(struct device *dev, pm_message_t msg)
 
 	if (hcd->driver->pci_resume && !HCD_DEAD(hcd)) {
 
-		/*
-		 * Only EHCI controllers have to wait for their companions.
-		 * No locking is needed because PCI controller drivers do not
-		 * get unbound during system resume.
-		 */
+		 
 		if (pci_dev->class == CL_EHCI && msg.event != PM_EVENT_AUTO_RESUME)
 			for_each_companion(pci_dev, hcd,
 					ehci_wait_for_companions);
@@ -533,19 +458,14 @@ static int hcd_pci_suspend_noirq(struct device *dev)
 
 	pci_save_state(pci_dev);
 
-	/* If the root hub is dead rather than suspended, disallow remote
-	 * wakeup.  usb_hc_died() should ensure that both hosts are marked as
-	 * dying, so we only need to check the primary roothub.
-	 */
+	 
 	if (HCD_DEAD(hcd))
 		device_set_wakeup_enable(dev, 0);
 	dev_dbg(dev, "wakeup: %d\n", device_may_wakeup(dev));
 
-	/* Possibly enable remote wakeup,
-	 * choose the appropriate low-power state, and go to that state.
-	 */
+	 
 	retval = pci_prepare_to_sleep(pci_dev);
-	if (retval == -EIO) {		/* Low-power not supported */
+	if (retval == -EIO) {		 
 		dev_dbg(dev, "--> PCI D0 legacy\n");
 		retval = 0;
 	} else if (retval == 0) {
@@ -596,7 +516,7 @@ static int hcd_pci_restore(struct device *dev)
 #define hcd_pci_resume		NULL
 #define hcd_pci_restore		NULL
 
-#endif	/* CONFIG_PM_SLEEP */
+#endif	 
 
 static int hcd_pci_runtime_suspend(struct device *dev)
 {
@@ -638,4 +558,4 @@ const struct dev_pm_ops usb_hcd_pci_pm_ops = {
 };
 EXPORT_SYMBOL_GPL(usb_hcd_pci_pm_ops);
 
-#endif	/* CONFIG_PM */
+#endif	 

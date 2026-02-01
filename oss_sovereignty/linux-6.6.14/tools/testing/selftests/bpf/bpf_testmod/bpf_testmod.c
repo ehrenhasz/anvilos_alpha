@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include <linux/btf.h>
 #include <linux/btf_ids.h>
 #include <linux/error-injection.h>
@@ -175,15 +175,11 @@ bpf_testmod_test_btf_type_tag_percpu_2(struct bpf_testmod_btf_type_tag_3 *arg) {
 
 noinline int bpf_testmod_loop_test(int n)
 {
-	/* Make sum volatile, so smart compilers, such as clang, will not
-	 * optimize the code by removing the loop.
-	 */
+	 
 	volatile int sum = 0;
 	int i;
 
-	/* the primary goal of this test is to test LBR. Create a lot of
-	 * branches in the function, so we can catch it easily.
-	 */
+	 
 	for (i = 0; i < n; i++)
 		sum += i;
 	return sum;
@@ -194,13 +190,13 @@ __weak noinline struct file *bpf_testmod_return_ptr(int arg)
 	static struct file f = {};
 
 	switch (arg) {
-	case 1: return (void *)EINVAL;		/* user addr */
-	case 2: return (void *)0xcafe4a11;	/* user addr */
-	case 3: return (void *)-EINVAL;		/* canonical, but invalid */
-	case 4: return (void *)(1ull << 60);	/* non-canonical and invalid */
-	case 5: return (void *)~(1ull << 30);	/* trigger extable */
-	case 6: return &f;			/* valid addr */
-	case 7: return (void *)((long)&f | 1);	/* kernel tricks */
+	case 1: return (void *)EINVAL;		 
+	case 2: return (void *)0xcafe4a11;	 
+	case 3: return (void *)-EINVAL;		 
+	case 4: return (void *)(1ull << 60);	 
+	case 5: return (void *)~(1ull << 30);	 
+	case 6: return &f;			 
+	case 7: return (void *)((long)&f | 1);	 
 	default: return NULL;
 	}
 }
@@ -275,13 +271,11 @@ bpf_testmod_test_read(struct file *file, struct kobject *kobj,
 		kfree(struct_arg3);
 	}
 
-	/* This is always true. Use the check to make sure the compiler
-	 * doesn't remove bpf_testmod_loop_test.
-	 */
+	 
 	if (bpf_testmod_loop_test(101) > 100)
 		trace_bpf_testmod_test_read(current, &ctx);
 
-	/* Magic number to enable writable tp */
+	 
 	if (len == 64) {
 		struct bpf_testmod_test_writable_ctx writable = {
 			.val = 1024,
@@ -302,7 +296,7 @@ bpf_testmod_test_read(struct file *file, struct kobject *kobj,
 
 	bpf_testmod_fentry_ok = 1;
 out:
-	return -EIO; /* always fail */
+	return -EIO;  
 }
 EXPORT_SYMBOL(bpf_testmod_test_read);
 ALLOW_ERROR_INJECTION(bpf_testmod_test_read, ERRNO);
@@ -320,7 +314,7 @@ bpf_testmod_test_write(struct file *file, struct kobject *kobj,
 
 	trace_bpf_testmod_test_write_bare(current, &ctx);
 
-	return -EIO; /* always fail */
+	return -EIO;  
 }
 EXPORT_SYMBOL(bpf_testmod_test_write);
 ALLOW_ERROR_INJECTION(bpf_testmod_test_write, ERRNO);
@@ -367,9 +361,7 @@ __bpf_kfunc struct sock *bpf_kfunc_call_test3(struct sock *sk)
 
 __bpf_kfunc long noinline bpf_kfunc_call_test4(signed char a, short b, int c, long d)
 {
-	/* Provoke the compiler to assume that the caller has sign-extended a,
-	 * b and c on platforms where this is required (e.g. s390x).
-	 */
+	 
 	return (long)a + (long)b + (long)c + d;
 }
 
@@ -424,11 +416,7 @@ __bpf_kfunc int *bpf_kfunc_call_test_get_rdonly_mem(struct prog_test_ref_kfunc *
 	return __bpf_kfunc_call_test_get_mem(p, rdonly_buf_size);
 }
 
-/* the next 2 ones can't be really used for testing expect to ensure
- * that the verifier rejects the call.
- * Acquire functions must return struct pointers, so these ones are
- * failing.
- */
+ 
 __bpf_kfunc int *bpf_kfunc_call_test_acq_rdonly_mem(struct prog_test_ref_kfunc *p,
 						    const int rdonly_buf_size)
 {
@@ -477,7 +465,7 @@ __bpf_kfunc void bpf_kfunc_call_test_mem_len_fail2(u64 *mem, int len)
 
 __bpf_kfunc void bpf_kfunc_call_test_ref(struct prog_test_ref_kfunc *p)
 {
-	/* p != NULL, but p->cnt could be 0 */
+	 
 }
 
 __bpf_kfunc void bpf_kfunc_call_test_destructive(void)

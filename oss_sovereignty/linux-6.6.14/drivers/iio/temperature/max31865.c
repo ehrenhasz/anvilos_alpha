@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * Copyright (c) Linumiz 2021
- *
- * max31865.c - Maxim MAX31865 RTD-to-Digital Converter sensor driver
- *
- * Author: Navin Sankar Velliangiri <navin@linumiz.com>
- */
+
+ 
 
 #include <linux/ctype.h>
 #include <linux/delay.h>
@@ -20,11 +14,7 @@
 #include <linux/spi/spi.h>
 #include <asm/unaligned.h>
 
-/*
- * The MSB of the register value determines whether the following byte will
- * be written or read. If it is 0, read will follow and if it is 1, write
- * will follow.
- */
+ 
 #define MAX31865_RD_WR_BIT			BIT(7)
 
 #define MAX31865_CFG_VBIAS			BIT(7)
@@ -33,7 +23,7 @@
 #define MAX31865_FAULT_STATUS_CLEAR		BIT(1)
 #define MAX31865_FILTER_50HZ			BIT(0)
 
-/* The MAX31865 registers */
+ 
 #define MAX31865_CFG_REG			0x00
 #define MAX31865_RTD_MSB			0x01
 #define MAX31865_FAULT_STATUS			0x07
@@ -43,7 +33,7 @@
 static const char max31865_show_samp_freq[] = "50 60";
 
 static const struct iio_chan_spec max31865_channels[] = {
-	{	/* RTD Temperature */
+	{	 
 		.type = IIO_TEMP,
 		.info_mask_separate =
 			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE)
@@ -109,12 +99,12 @@ static int max31865_rtd_read(struct max31865_data *data, int *val)
 	u8 reg;
 	int ret;
 
-	/* Enable BIAS to start the conversion */
+	 
 	ret = enable_bias(data);
 	if (ret)
 		return ret;
 
-	/* wait 10.5ms before initiating the conversion */
+	 
 	msleep(11);
 
 	ret = max31865_read(data, MAX31865_CFG_REG, 1);
@@ -131,10 +121,10 @@ static int max31865_rtd_read(struct max31865_data *data, int *val)
 		return ret;
 
 	if (data->filter_50hz) {
-		/* 50Hz filter mode requires 62.5ms to complete */
+		 
 		msleep(63);
 	} else {
-		/* 60Hz filter mode requires 52ms to complete */
+		 
 		msleep(52);
 	}
 
@@ -163,9 +153,9 @@ static int max31865_read_raw(struct iio_dev *indio_dev,
 			return ret;
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SCALE:
-		/* Temp. Data resolution is 0.03125 degree centigrade */
+		 
 		*val = 31;
-		*val2 = 250000; /* 1000 * 0.03125 */
+		*val2 = 250000;  
 		return IIO_VAL_INT_PLUS_MICRO;
 	default:
 		return -EINVAL;
@@ -184,11 +174,11 @@ static int max31865_init(struct max31865_data *data)
 	cfg = data->buf[0];
 
 	if (data->three_wire)
-		/* 3-wire RTD connection */
+		 
 		cfg |= MAX31865_3WIRE_RTD;
 
 	if (data->filter_50hz)
-		/* 50Hz noise rejection filter */
+		 
 		cfg |= MAX31865_FILTER_50HZ;
 
 	data->buf[0] = MAX31865_CFG_REG | MAX31865_RD_WR_BIT;
@@ -308,10 +298,10 @@ static int max31865_probe(struct spi_device *spi)
 	indio_dev->num_channels = ARRAY_SIZE(max31865_channels);
 
 	if (device_property_read_bool(&spi->dev, "maxim,3-wire")) {
-		/* select 3 wire */
+		 
 		data->three_wire = 1;
 	} else {
-		/* select 2 or 4 wire */
+		 
 		data->three_wire = 0;
 	}
 

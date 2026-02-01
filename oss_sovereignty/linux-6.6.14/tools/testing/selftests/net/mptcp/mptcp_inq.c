@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define _GNU_SOURCE
 
@@ -114,7 +114,7 @@ static int sock_listen_mptcp(const char * const listenaddr,
 			perror("setsockopt");
 
 		if (bind(sock, a->ai_addr, a->ai_addrlen) == 0)
-			break; /* success */
+			break;  
 
 		perror("bind");
 		close(sock);
@@ -151,7 +151,7 @@ static int sock_connect_mptcp(const char * const remoteaddr,
 			continue;
 
 		if (connect(sock, a->ai_addr, a->ai_addrlen) == 0)
-			break; /* success */
+			break;  
 
 		die_perror("connect");
 	}
@@ -199,7 +199,7 @@ static void parse_opts(int argc, char **argv)
 	}
 }
 
-/* wait up to timeout milliseconds */
+ 
 static void wait_for_ack(int fd, int timeout, size_t total)
 {
 	int i;
@@ -223,9 +223,9 @@ static void wait_for_ack(int fd, int timeout, size_t total)
 		if (queued == 0)
 			return;
 
-		/* wait for peer to ack rx of all data */
+		 
 		req.tv_sec = 0;
-		req.tv_nsec = 1 * 1000 * 1000ul; /* 1ms */
+		req.tv_nsec = 1 * 1000 * 1000ul;  
 		nanosleep(&req, NULL);
 	}
 
@@ -250,7 +250,7 @@ static void connect_one_server(int fd, int unixfd)
 
 	buf[i] = '\n';
 
-	/* un-block server */
+	 
 	ret = read(unixfd, buf2, 4);
 	assert(ret == 4);
 
@@ -289,9 +289,7 @@ static void connect_one_server(int fd, int unixfd)
 			die_perror("write");
 		total -= ret;
 
-		/* we don't have to care about buf content, only
-		 * number of total bytes sent
-		 */
+		 
 	}
 
 	ret = read(unixfd, buf2, 4);
@@ -369,7 +367,7 @@ static void process_one_client(int fd, int unixfd)
 		nanosleep(&req, NULL);
 	}
 
-	/* read one byte, expect cmsg to return expected - 1 */
+	 
 	ret = recvmsg(fd, &msg, 0);
 	if (ret < 0)
 		die_perror("recvmsg");
@@ -386,21 +384,21 @@ static void process_one_client(int fd, int unixfd)
 	if (ret < 0)
 		die_perror("recvmsg");
 
-	/* should have gotten exact remainder of all pending data */
+	 
 	assert(ret == (ssize_t)tcp_inq);
 
-	/* should be 0, all drained */
+	 
 	get_tcp_inq(&msg, &tcp_inq);
 	assert(tcp_inq == 0);
 
-	/* request a large swath of data. */
+	 
 	ret = write(unixfd, "huge", 4);
 	assert(ret == 4);
 
 	ret = read(unixfd, &expect_len, sizeof(expect_len));
 	assert(ret == (ssize_t)sizeof(expect_len));
 
-	/* peer should send us a few mb of data */
+	 
 	if (expect_len <= sizeof(buf))
 		xerror("expect len %zu too small\n", expect_len);
 
@@ -425,7 +423,7 @@ static void process_one_client(int fd, int unixfd)
 	ret = write(unixfd, "shut", 4);
 	assert(ret == 4);
 
-	/* wait for hangup. Should have received one more byte of data. */
+	 
 	ret = read(unixfd, tmp, sizeof(tmp));
 	assert(ret == 6);
 	assert(strncmp(tmp, "closed", 6) == 0);
@@ -440,7 +438,7 @@ static void process_one_client(int fd, int unixfd)
 
 	get_tcp_inq(&msg, &tcp_inq);
 
-	/* tcp_inq should be 1 due to received fin. */
+	 
 	assert(tcp_inq == 1);
 
 	iov.iov_len = 1;
@@ -448,7 +446,7 @@ static void process_one_client(int fd, int unixfd)
 	if (ret < 0)
 		die_perror("recvmsg");
 
-	/* expect EOF */
+	 
 	assert(ret == 0);
 	get_tcp_inq(&msg, &tcp_inq);
 	assert(tcp_inq == 1);
@@ -576,7 +574,7 @@ int main(int argc, char *argv[])
 
 	close(unixfds[1]);
 
-	/* wait until server bound a socket */
+	 
 	e1 = read(unixfds[0], &e1, 4);
 	assert(e1 == 4);
 

@@ -1,32 +1,5 @@
-/**************************************************************************
- *
- * Copyright (c) 2006-2009 VMware, Inc., Palo Alto, CA., USA
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- **************************************************************************/
-/*
- * Authors: Thomas Hellstrom <thellstrom-at-vmware-dot-com>
- */
+ 
+ 
 
 #ifndef _TTM_BO_API_H_
 #define _TTM_BO_API_H_
@@ -38,7 +11,7 @@
 
 #include "ttm_device.h"
 
-/* Default number of pre-faulted pages in the TTM fault handler */
+ 
 #define TTM_BO_VM_NUM_PREFAULT 16
 
 struct iosys_map;
@@ -51,69 +24,27 @@ struct ttm_resource;
 struct ttm_resource_manager;
 struct ttm_tt;
 
-/**
- * enum ttm_bo_type
- *
- * @ttm_bo_type_device:	These are 'normal' buffers that can
- * be mmapped by user space. Each of these bos occupy a slot in the
- * device address space, that can be used for normal vm operations.
- *
- * @ttm_bo_type_kernel: These buffers are like ttm_bo_type_device buffers,
- * but they cannot be accessed from user-space. For kernel-only use.
- *
- * @ttm_bo_type_sg: Buffer made from dmabuf sg table shared with another
- * driver.
- */
+ 
 enum ttm_bo_type {
 	ttm_bo_type_device,
 	ttm_bo_type_kernel,
 	ttm_bo_type_sg
 };
 
-/**
- * struct ttm_buffer_object
- *
- * @base: drm_gem_object superclass data.
- * @bdev: Pointer to the buffer object device structure.
- * @type: The bo type.
- * @page_alignment: Page alignment.
- * @destroy: Destruction function. If NULL, kfree is used.
- * @kref: Reference count of this buffer object. When this refcount reaches
- * zero, the object is destroyed or put on the delayed delete list.
- * @resource: structure describing current placement.
- * @ttm: TTM structure holding system pages.
- * @deleted: True if the object is only a zombie and already deleted.
- *
- * Base class for TTM buffer object, that deals with data placement and CPU
- * mappings. GPU mappings are really up to the driver, but for simpler GPUs
- * the driver can usually use the placement offset @offset directly as the
- * GPU virtual address. For drivers implementing multiple
- * GPU memory manager contexts, the driver should manage the address space
- * in these contexts separately and use these objects to get the correct
- * placement and caching for these GPU maps. This makes it possible to use
- * these objects for even quite elaborate memory management schemes.
- * The destroy member, the API visibility of this object makes it possible
- * to derive driver specific types.
- */
+ 
 struct ttm_buffer_object {
 	struct drm_gem_object base;
 
-	/*
-	 * Members constant at init.
-	 */
+	 
 	struct ttm_device *bdev;
 	enum ttm_bo_type type;
 	uint32_t page_alignment;
 	void (*destroy) (struct ttm_buffer_object *);
 
-	/*
-	* Members not needing protection.
-	*/
+	 
 	struct kref kref;
 
-	/*
-	 * Members protected by the bo::resv::reserved lock.
-	 */
+	 
 	struct ttm_resource *resource;
 	struct ttm_tt *ttm;
 	bool deleted;
@@ -121,32 +52,14 @@ struct ttm_buffer_object {
 	unsigned priority;
 	unsigned pin_count;
 
-	/**
-	 * @delayed_delete: Work item used when we can't delete the BO
-	 * immediately
-	 */
+	 
 	struct work_struct delayed_delete;
 
-	/**
-	 * Special members that are protected by the reserve lock
-	 * and the bo::lock when written to. Can be read with
-	 * either of these locks held.
-	 */
+	 
 	struct sg_table *sg;
 };
 
-/**
- * struct ttm_bo_kmap_obj
- *
- * @virtual: The current kernel virtual address.
- * @page: The page when kmap'ing a single page.
- * @bo_kmap_type: Type of bo_kmap.
- *
- * Object describing a kernel mapping. Since a TTM bo may be located
- * in various memory types with various caching policies, the
- * mapping can either be an ioremap, a vmap, a kmap or part of a
- * premapped region.
- */
+ 
 #define TTM_BO_MAP_IOMEM_MASK 0x80
 struct ttm_bo_kmap_obj {
 	void *virtual;
@@ -160,21 +73,7 @@ struct ttm_bo_kmap_obj {
 	struct ttm_buffer_object *bo;
 };
 
-/**
- * struct ttm_operation_ctx
- *
- * @interruptible: Sleep interruptible if sleeping.
- * @no_wait_gpu: Return immediately if the GPU is busy.
- * @gfp_retry_mayfail: Set the __GFP_RETRY_MAYFAIL when allocation pages.
- * @allow_res_evict: Allow eviction of reserved BOs. Can be used when multiple
- * BOs share the same reservation object.
- * @force_alloc: Don't check the memory account during suspend or CPU page
- * faults. Should only be used by TTM internally.
- * @resv: Reservation object to allow reserved evictions with.
- *
- * Context for TTM operations like changing buffer placement or general memory
- * allocation.
- */
+ 
 struct ttm_operation_ctx {
 	bool interruptible;
 	bool no_wait_gpu;
@@ -185,26 +84,13 @@ struct ttm_operation_ctx {
 	uint64_t bytes_moved;
 };
 
-/**
- * ttm_bo_get - reference a struct ttm_buffer_object
- *
- * @bo: The buffer object.
- */
+ 
 static inline void ttm_bo_get(struct ttm_buffer_object *bo)
 {
 	kref_get(&bo->kref);
 }
 
-/**
- * ttm_bo_get_unless_zero - reference a struct ttm_buffer_object unless
- * its refcount has already reached zero.
- * @bo: The buffer object.
- *
- * Used to reference a TTM buffer object in lookups where the object is removed
- * from the lookup structure during the destructor and for RCU lookups.
- *
- * Returns: @bo if the referencing was successful, NULL otherwise.
- */
+ 
 static inline __must_check struct ttm_buffer_object *
 ttm_bo_get_unless_zero(struct ttm_buffer_object *bo)
 {
@@ -213,28 +99,7 @@ ttm_bo_get_unless_zero(struct ttm_buffer_object *bo)
 	return bo;
 }
 
-/**
- * ttm_bo_reserve:
- *
- * @bo: A pointer to a struct ttm_buffer_object.
- * @interruptible: Sleep interruptible if waiting.
- * @no_wait: Don't sleep while trying to reserve, rather return -EBUSY.
- * @ticket: ticket used to acquire the ww_mutex.
- *
- * Locks a buffer object for validation. (Or prevents other processes from
- * locking it for validation), while taking a number of measures to prevent
- * deadlocks.
- *
- * Returns:
- * -EDEADLK: The reservation may cause a deadlock.
- * Release all buffer reservations, wait for @bo to become unreserved and
- * try again.
- * -ERESTARTSYS: A wait for the buffer to become unreserved was interrupted by
- * a signal. Release all buffer reservations and return to user-space.
- * -EBUSY: The function needed to sleep, but @no_wait was true
- * -EALREADY: Bo already reserved using @ticket. This error code will only
- * be returned if @use_ticket is set to true.
- */
+ 
 static inline int ttm_bo_reserve(struct ttm_buffer_object *bo,
 				 bool interruptible, bool no_wait,
 				 struct ww_acquire_ctx *ticket)
@@ -260,16 +125,7 @@ static inline int ttm_bo_reserve(struct ttm_buffer_object *bo,
 	return ret;
 }
 
-/**
- * ttm_bo_reserve_slowpath:
- * @bo: A pointer to a struct ttm_buffer_object.
- * @interruptible: Sleep interruptible if waiting.
- * @sequence: Set (@bo)->sequence to this value after lock
- *
- * This is called after ttm_bo_reserve returns -EAGAIN and we backed off
- * from all our other reservations. Because there are no other reservations
- * held by us, this function cannot deadlock any more.
- */
+ 
 static inline int ttm_bo_reserve_slowpath(struct ttm_buffer_object *bo,
 					  bool interruptible,
 					  struct ww_acquire_ctx *ticket)
@@ -302,13 +158,7 @@ static inline void ttm_bo_assign_mem(struct ttm_buffer_object *bo,
 	bo->resource = new_mem;
 }
 
-/**
- * ttm_bo_move_null = assign memory for a buffer object.
- * @bo: The bo to assign the memory to
- * @new_mem: The memory to be assigned.
- *
- * Assign the memory from new_mem to the memory of the buffer object bo.
- */
+ 
 static inline void ttm_bo_move_null(struct ttm_buffer_object *bo,
 				    struct ttm_resource *new_mem)
 {
@@ -316,30 +166,14 @@ static inline void ttm_bo_move_null(struct ttm_buffer_object *bo,
 	ttm_bo_assign_mem(bo, new_mem);
 }
 
-/**
- * ttm_bo_unreserve
- *
- * @bo: A pointer to a struct ttm_buffer_object.
- *
- * Unreserve a previous reservation of @bo.
- */
+ 
 static inline void ttm_bo_unreserve(struct ttm_buffer_object *bo)
 {
 	ttm_bo_move_to_lru_tail_unlocked(bo);
 	dma_resv_unlock(bo->base.resv);
 }
 
-/**
- * ttm_kmap_obj_virtual
- *
- * @map: A struct ttm_bo_kmap_obj returned from ttm_bo_kmap.
- * @is_iomem: Pointer to an integer that on return indicates 1 if the
- * virtual map is io memory, 0 if normal memory.
- *
- * Returns the virtual address of a buffer object area mapped by ttm_bo_kmap.
- * If *is_iomem is 1 on return, the virtual address points to an io memory area,
- * that should strictly be accessed by the iowriteXX() and similar functions.
- */
+ 
 static inline void *ttm_kmap_obj_virtual(struct ttm_bo_kmap_obj *map,
 					 bool *is_iomem)
 {
@@ -400,9 +234,7 @@ int ttm_bo_mem_space(struct ttm_buffer_object *bo,
 		     struct ttm_operation_ctx *ctx);
 
 void ttm_bo_unmap_virtual(struct ttm_buffer_object *bo);
-/*
- * ttm_bo_util.c
- */
+ 
 int ttm_mem_io_reserve(struct ttm_device *bdev,
 		       struct ttm_resource *mem);
 void ttm_mem_io_free(struct ttm_device *bdev,

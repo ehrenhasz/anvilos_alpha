@@ -1,7 +1,4 @@
-/*
- * SPDX-License-Identifier: GPL-2.0
- * Copyright (c) 2018, The Linux Foundation
- */
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -11,43 +8,20 @@
 #include "dsi.xml.h"
 #include "dsi_phy_7nm.xml.h"
 
-/*
- * DSI PLL 7nm - clock diagram (eg: DSI0): TODO: updated CPHY diagram
- *
- *           dsi0_pll_out_div_clk  dsi0_pll_bit_clk
- *                              |                |
- *                              |                |
- *                 +---------+  |  +----------+  |  +----+
- *  dsi0vco_clk ---| out_div |--o--| divl_3_0 |--o--| /8 |-- dsi0_phy_pll_out_byteclk
- *                 +---------+  |  +----------+  |  +----+
- *                              |                |
- *                              |                |         dsi0_pll_by_2_bit_clk
- *                              |                |          |
- *                              |                |  +----+  |  |\  dsi0_pclk_mux
- *                              |                |--| /2 |--o--| \   |
- *                              |                |  +----+     |  \  |  +---------+
- *                              |                --------------|  |--o--| div_7_4 |-- dsi0_phy_pll_out_dsiclk
- *                              |------------------------------|  /     +---------+
- *                              |          +-----+             | /
- *                              -----------| /4? |--o----------|/
- *                                         +-----+  |           |
- *                                                  |           |dsiclk_sel
- *                                                  |
- *                                                  dsi0_pll_post_out_div_clk
- */
+ 
 
 #define VCO_REF_CLK_RATE		19200000
 #define FRAC_BITS 18
 
-/* Hardware is pre V4.1 */
+ 
 #define DSI_PHY_7NM_QUIRK_PRE_V4_1	BIT(0)
-/* Hardware is V4.1 */
+ 
 #define DSI_PHY_7NM_QUIRK_V4_1		BIT(1)
-/* Hardware is V4.2 */
+ 
 #define DSI_PHY_7NM_QUIRK_V4_2		BIT(2)
-/* Hardware is V4.3 */
+ 
 #define DSI_PHY_7NM_QUIRK_V4_3		BIT(3)
-/* Hardware is V5.2 */
+ 
 #define DSI_PHY_7NM_QUIRK_V5_2		BIT(4)
 
 struct dsi_pll_config {
@@ -57,7 +31,7 @@ struct dsi_pll_config {
 	u32 ssc_offset;
 	u32 ssc_adj_per;
 
-	/* out */
+	 
 	u32 decimal_div_start;
 	u32 frac_div_start;
 	u32 pll_clock_inverters;
@@ -80,7 +54,7 @@ struct dsi_pll_7nm {
 
 	u64 vco_current_rate;
 
-	/* protects REG_DSI_7nm_PHY_CMN_CLK_CFG0 register */
+	 
 	spinlock_t postdiv_lock;
 
 	struct pll_7nm_cached_state cached_state;
@@ -90,10 +64,7 @@ struct dsi_pll_7nm {
 
 #define to_pll_7nm(x)	container_of(x, struct dsi_pll_7nm, clk_hw)
 
-/*
- * Global list of private DSI PLL struct pointers. We need this for bonded DSI
- * mode, where the master PLL's clk_ops needs access the slave's private data
- */
+ 
 static struct dsi_pll_7nm *pll_7nm_list[DSI_MAX];
 
 static void dsi_pll_setup_config(struct dsi_pll_config *config)
@@ -102,7 +73,7 @@ static void dsi_pll_setup_config(struct dsi_pll_config *config)
 	config->ssc_offset = 4800;
 	config->ssc_adj_per = 2;
 
-	/* TODO: ssc enable */
+	 
 	config->enable_ssc = false;
 	config->ssc_center = 0;
 }
@@ -319,7 +290,7 @@ static int dsi_pll_7nm_vco_set_rate(struct clk_hw *hw, unsigned long rate,
 
 	dsi_pll_ssc_commit(pll_7nm, &config);
 
-	/* flush, ensure all register writes are done*/
+	 
 	wmb();
 
 	return 0;
@@ -384,15 +355,11 @@ static void dsi_pll_enable_global_clk(struct dsi_pll_7nm *pll)
 
 static void dsi_pll_phy_dig_reset(struct dsi_pll_7nm *pll)
 {
-	/*
-	 * Reset the PHY digital domain. This would be needed when
-	 * coming out of a CX or analog rail power collapse while
-	 * ensuring that the pads maintain LP00 or LP11 state
-	 */
+	 
 	dsi_phy_write(pll->phy->base + REG_DSI_7nm_PHY_CMN_GLBL_DIGTOP_SPARE4, BIT(0));
-	wmb(); /* Ensure that the reset is deasserted */
+	wmb();  
 	dsi_phy_write(pll->phy->base + REG_DSI_7nm_PHY_CMN_GLBL_DIGTOP_SPARE4, 0x0);
-	wmb(); /* Ensure that the reset is deasserted */
+	wmb();  
 }
 
 static int dsi_pll_7nm_vco_prepare(struct clk_hw *hw)
@@ -404,16 +371,13 @@ static int dsi_pll_7nm_vco_prepare(struct clk_hw *hw)
 	if (pll_7nm->slave)
 		dsi_pll_enable_pll_bias(pll_7nm->slave);
 
-	/* Start PLL */
+	 
 	dsi_phy_write(pll_7nm->phy->base + REG_DSI_7nm_PHY_CMN_PLL_CNTRL, 0x01);
 
-	/*
-	 * ensure all PLL configurations are written prior to checking
-	 * for PLL lock.
-	 */
+	 
 	wmb();
 
-	/* Check for PLL lock */
+	 
 	rc = dsi_pll_7nm_lock_status(pll_7nm);
 	if (rc) {
 		pr_err("PLL(%d) lock failed\n", pll_7nm->phy->id);
@@ -422,11 +386,7 @@ static int dsi_pll_7nm_vco_prepare(struct clk_hw *hw)
 
 	pll_7nm->phy->pll_on = true;
 
-	/*
-	 * assert power on reset for PHY digital in case the PLL is
-	 * enabled after CX of analog domain power collapse. This needs
-	 * to be done before enabling the global clk.
-	 */
+	 
 	dsi_pll_phy_dig_reset(pll_7nm);
 	if (pll_7nm->slave)
 		dsi_pll_phy_dig_reset(pll_7nm->slave);
@@ -449,11 +409,7 @@ static void dsi_pll_7nm_vco_unprepare(struct clk_hw *hw)
 {
 	struct dsi_pll_7nm *pll_7nm = to_pll_7nm(hw);
 
-	/*
-	 * To avoid any stray glitches while abruptly powering down the PLL
-	 * make sure to gate the clock using the clock enable bit before
-	 * powering down the PLL
-	 */
+	 
 	dsi_pll_disable_global_clk(pll_7nm);
 	dsi_phy_write(pll_7nm->phy->base + REG_DSI_7nm_PHY_CMN_PLL_CNTRL, 0);
 	dsi_pll_disable_sub(pll_7nm);
@@ -461,7 +417,7 @@ static void dsi_pll_7nm_vco_unprepare(struct clk_hw *hw)
 		dsi_pll_disable_global_clk(pll_7nm->slave);
 		dsi_pll_disable_sub(pll_7nm->slave);
 	}
-	/* flush, ensure all register writes are done */
+	 
 	wmb();
 	pll_7nm->phy->pll_on = false;
 }
@@ -487,10 +443,7 @@ static unsigned long dsi_pll_7nm_vco_recalc_rate(struct clk_hw *hw,
 	frac |= ((dsi_phy_read(base + REG_DSI_7nm_PHY_PLL_FRAC_DIV_START_HIGH_1) &
 		  0x3) << 16);
 
-	/*
-	 * TODO:
-	 *	1. Assumes prescaler is disabled
-	 */
+	 
 	multiplier = 1 << FRAC_BITS;
 	pll_freq = dec * (ref_clk * 2);
 	tmp64 = (ref_clk * 2 * frac);
@@ -526,9 +479,7 @@ static const struct clk_ops clk_ops_dsi_pll_7nm_vco = {
 	.unprepare = dsi_pll_7nm_vco_unprepare,
 };
 
-/*
- * PLL Callbacks
- */
+ 
 
 static void dsi_7nm_pll_save_state(struct msm_dsi_phy *phy)
 {
@@ -592,7 +543,7 @@ static int dsi_7nm_set_usecase(struct msm_dsi_phy *phy)
 {
 	struct dsi_pll_7nm *pll_7nm = to_pll_7nm(phy->vco_hw);
 	void __iomem *base = phy->base;
-	u32 data = 0x0;	/* internal PLL */
+	u32 data = 0x0;	 
 
 	DBG("DSI PLL%d", pll_7nm->phy->id);
 
@@ -603,24 +554,19 @@ static int dsi_7nm_set_usecase(struct msm_dsi_phy *phy)
 		pll_7nm->slave = pll_7nm_list[(pll_7nm->phy->id + 1) % DSI_MAX];
 		break;
 	case MSM_DSI_PHY_SLAVE:
-		data = 0x1; /* external PLL */
+		data = 0x1;  
 		break;
 	default:
 		return -EINVAL;
 	}
 
-	/* set PLL src */
+	 
 	dsi_phy_write(base + REG_DSI_7nm_PHY_CMN_CLK_CFG1, (data << 2));
 
 	return 0;
 }
 
-/*
- * The post dividers and mux clocks are created using the standard divider and
- * mux API. Unlike the 14nm PHY, the slave PLL doesn't need its dividers/mux
- * state to follow the master PLL's divider/mux state. Therefore, we don't
- * require special clock ops that also configure the slave PLL registers
- */
+ 
 static int pll_7nm_register(struct dsi_pll_7nm *pll_7nm, struct clk_hw **provided_clocks)
 {
 	char clk_name[32];
@@ -661,7 +607,7 @@ static int pll_7nm_register(struct dsi_pll_7nm *pll_7nm, struct clk_hw **provide
 
 	snprintf(clk_name, sizeof(clk_name), "dsi%d_pll_bit_clk", pll_7nm->phy->id);
 
-	/* BIT CLK: DIV_CTRL_3_0 */
+	 
 	pll_bit = devm_clk_hw_register_divider_parent_hw(dev, clk_name,
 			pll_out_div, CLK_SET_RATE_PARENT,
 			pll_7nm->phy->base + REG_DSI_7nm_PHY_CMN_CLK_CFG0,
@@ -673,7 +619,7 @@ static int pll_7nm_register(struct dsi_pll_7nm *pll_7nm, struct clk_hw **provide
 
 	snprintf(clk_name, sizeof(clk_name), "dsi%d_phy_pll_out_byteclk", pll_7nm->phy->id);
 
-	/* DSI Byte clock = VCO_CLK / OUT_DIV / BIT_DIV / 8 */
+	 
 	hw = devm_clk_hw_register_fixed_factor_parent_hw(dev, clk_name,
 			pll_bit, CLK_SET_RATE_PARENT, 1,
 			pll_7nm->phy->cphy_mode ? 7 : 8);
@@ -706,9 +652,7 @@ static int pll_7nm_register(struct dsi_pll_7nm *pll_7nm, struct clk_hw **provide
 		goto fail;
 	}
 
-	/* in CPHY mode, pclk_mux will always have post_out_div as parent
-	 * don't register a pclk_mux clock and just use post_out_div instead
-	 */
+	 
 	if (pll_7nm->phy->cphy_mode) {
 		u32 data;
 
@@ -736,7 +680,7 @@ static int pll_7nm_register(struct dsi_pll_7nm *pll_7nm, struct clk_hw **provide
 
 	snprintf(clk_name, sizeof(clk_name), "dsi%d_phy_pll_out_dsiclk", pll_7nm->phy->id);
 
-	/* PIX CLK DIV : DIV_CTRL_7_4*/
+	 
 	hw = devm_clk_hw_register_divider_parent_hw(dev, clk_name,
 			phy_pll_out_dsi_parent, 0,
 			pll_7nm->phy->base + REG_DSI_7nm_PHY_CMN_CLK_CFG0,
@@ -781,7 +725,7 @@ static int dsi_pll_7nm_init(struct msm_dsi_phy *phy)
 
 	phy->vco_hw = &pll_7nm->clk_hw;
 
-	/* TODO: Remove this when we have proper display handover support */
+	 
 	msm_dsi_phy_pll_save_state(phy);
 
 	return 0;
@@ -793,7 +737,7 @@ static int dsi_phy_hw_v4_0_is_pll_on(struct msm_dsi_phy *phy)
 	u32 data = 0;
 
 	data = dsi_phy_read(base + REG_DSI_7nm_PHY_CMN_PLL_CNTRL);
-	mb(); /* make sure read happened */
+	mb();  
 
 	return (data & BIT(0));
 }
@@ -801,12 +745,9 @@ static int dsi_phy_hw_v4_0_is_pll_on(struct msm_dsi_phy *phy)
 static void dsi_phy_hw_v4_0_config_lpcdrx(struct msm_dsi_phy *phy, bool enable)
 {
 	void __iomem *lane_base = phy->lane_base;
-	int phy_lane_0 = 0;	/* TODO: Support all lane swap configs */
+	int phy_lane_0 = 0;	 
 
-	/*
-	 * LPRX and CDRX need to enabled only for physical data lane
-	 * corresponding to the logical data lane 0
-	 */
+	 
 	if (enable)
 		dsi_phy_write(lane_base +
 			      REG_DSI_7nm_PHY_LN_LPRX_CTRL(phy_lane_0), 0x3);
@@ -826,20 +767,16 @@ static void dsi_phy_hw_v4_0_lane_settings(struct msm_dsi_phy *phy)
 	if (!(phy->cfg->quirks & DSI_PHY_7NM_QUIRK_PRE_V4_1))
 		tx_dctrl = tx_dctrl_1;
 
-	/* Strength ctrl settings */
+	 
 	for (i = 0; i < 5; i++) {
-		/*
-		 * Disable LPRX and CDRX for all lanes. And later on, it will
-		 * be only enabled for the physical data lane corresponding
-		 * to the logical data lane 0
-		 */
+		 
 		dsi_phy_write(lane_base + REG_DSI_7nm_PHY_LN_LPRX_CTRL(i), 0);
 		dsi_phy_write(lane_base + REG_DSI_7nm_PHY_LN_PIN_SWAP(i), 0x0);
 	}
 
 	dsi_phy_hw_v4_0_config_lpcdrx(phy, true);
 
-	/* other settings */
+	 
 	for (i = 0; i < 5; i++) {
 		dsi_phy_write(lane_base + REG_DSI_7nm_PHY_LN_CFG0(i), 0x0);
 		dsi_phy_write(lane_base + REG_DSI_7nm_PHY_LN_CFG1(i), 0x0);
@@ -879,14 +816,14 @@ static int dsi_7nm_phy_enable(struct msm_dsi_phy *phy,
 	if (dsi_phy_hw_v4_0_is_pll_on(phy))
 		pr_warn("PLL turned on before configuring PHY\n");
 
-	/* Request for REFGEN READY */
+	 
 	if ((phy->cfg->quirks & DSI_PHY_7NM_QUIRK_V4_3) ||
 	    (phy->cfg->quirks & DSI_PHY_7NM_QUIRK_V5_2)) {
 		dsi_phy_write(phy->base + REG_DSI_7nm_PHY_CMN_GLBL_DIGTOP_SPARE10, 0x1);
 		udelay(500);
 	}
 
-	/* wait for REFGEN READY */
+	 
 	ret = readl_poll_timeout_atomic(base + REG_DSI_7nm_PHY_CMN_PHY_STATUS,
 					status, (status & BIT(0)),
 					delay_us, timeout_us);
@@ -895,9 +832,9 @@ static int dsi_7nm_phy_enable(struct msm_dsi_phy *phy,
 		return -EINVAL;
 	}
 
-	/* TODO: CPHY enable path (this is for DPHY only) */
+	 
 
-	/* Alter PHY configurations if data rate less than 1.5GHZ*/
+	 
 	less_than_1500_mhz = (clk_req->bitclk_rate <= 1500000000);
 
 	glbl_str_swi_cal_sel_ctrl = 0x00;
@@ -965,29 +902,29 @@ static int dsi_7nm_phy_enable(struct msm_dsi_phy *phy,
 		glbl_rescode_bot_ctrl = 0x3c;
 	}
 
-	/* de-assert digital and pll power down */
+	 
 	data = BIT(6) | BIT(5);
 	dsi_phy_write(base + REG_DSI_7nm_PHY_CMN_CTRL_0, data);
 
-	/* Assert PLL core reset */
+	 
 	dsi_phy_write(base + REG_DSI_7nm_PHY_CMN_PLL_CNTRL, 0x00);
 
-	/* turn off resync FIFO */
+	 
 	dsi_phy_write(base + REG_DSI_7nm_PHY_CMN_RBUF_CTRL, 0x00);
 
-	/* program CMN_CTRL_4 for minor_ver 2 chipsets*/
+	 
 	if ((phy->cfg->quirks & DSI_PHY_7NM_QUIRK_V5_2) ||
 	    (dsi_phy_read(base + REG_DSI_7nm_PHY_CMN_REVISION_ID0) & (0xf0)) == 0x20)
 		dsi_phy_write(base + REG_DSI_7nm_PHY_CMN_CTRL_4, 0x04);
 
-	/* Configure PHY lane swap (TODO: we need to calculate this) */
+	 
 	dsi_phy_write(base + REG_DSI_7nm_PHY_CMN_LANE_CFG0, 0x21);
 	dsi_phy_write(base + REG_DSI_7nm_PHY_CMN_LANE_CFG1, 0x84);
 
 	if (phy->cphy_mode)
 		dsi_phy_write(base + REG_DSI_7nm_PHY_CMN_GLBL_CTRL, BIT(6));
 
-	/* Enable LDO */
+	 
 	dsi_phy_write(base + REG_DSI_7nm_PHY_CMN_VREG_CTRL_0, vreg_ctrl_0);
 	dsi_phy_write(base + REG_DSI_7nm_PHY_CMN_VREG_CTRL_1, vreg_ctrl_1);
 
@@ -1006,12 +943,12 @@ static int dsi_7nm_phy_enable(struct msm_dsi_phy *phy,
 		      glbl_rescode_bot_ctrl);
 	dsi_phy_write(base + REG_DSI_7nm_PHY_CMN_GLBL_LPTX_STR_CTRL, 0x55);
 
-	/* Remove power down from all blocks */
+	 
 	dsi_phy_write(base + REG_DSI_7nm_PHY_CMN_CTRL_0, 0x7f);
 
 	dsi_phy_write(base + REG_DSI_7nm_PHY_CMN_LANE_CTRL0, lane_ctrl0);
 
-	/* Select full-rate mode */
+	 
 	if (!phy->cphy_mode)
 		dsi_phy_write(base + REG_DSI_7nm_PHY_CMN_CTRL_2, 0x40);
 
@@ -1022,7 +959,7 @@ static int dsi_7nm_phy_enable(struct msm_dsi_phy *phy,
 		return ret;
 	}
 
-	/* DSI PHY timings */
+	 
 	if (phy->cphy_mode) {
 		dsi_phy_write(base + REG_DSI_7nm_PHY_CMN_TIMING_CTRL_0, 0x00);
 		dsi_phy_write(base + REG_DSI_7nm_PHY_CMN_TIMING_CTRL_4, timing->hs_exit);
@@ -1054,7 +991,7 @@ static int dsi_7nm_phy_enable(struct msm_dsi_phy *phy,
 			      timing->shared_timings.clk_post);
 	}
 
-	/* DSI lane settings */
+	 
 	dsi_phy_hw_v4_0_lane_settings(phy);
 
 	DBG("DSI%d PHY enabled", phy->id);
@@ -1089,25 +1026,25 @@ static void dsi_7nm_phy_disable(struct msm_dsi_phy *phy)
 
 	dsi_phy_hw_v4_0_config_lpcdrx(phy, false);
 
-	/* Turn off REFGEN Vote */
+	 
 	if ((phy->cfg->quirks & DSI_PHY_7NM_QUIRK_V4_3) ||
 	    (phy->cfg->quirks & DSI_PHY_7NM_QUIRK_V5_2)) {
 		dsi_phy_write(base + REG_DSI_7nm_PHY_CMN_GLBL_DIGTOP_SPARE10, 0x0);
 		wmb();
-		/* Delay to ensure HW removes vote before PHY shut down */
+		 
 		udelay(2);
 	}
 
 	data = dsi_phy_read(base + REG_DSI_7nm_PHY_CMN_CTRL_0);
 
-	/* disable all lanes */
+	 
 	data &= ~0x1F;
 	dsi_phy_write(base + REG_DSI_7nm_PHY_CMN_CTRL_0, data);
 	dsi_phy_write(base + REG_DSI_7nm_PHY_CMN_LANE_CTRL0, 0);
 
-	/* Turn off all PHY blocks */
+	 
 	dsi_phy_write(base + REG_DSI_7nm_PHY_CMN_CTRL_0, 0x00);
-	/* make sure phy is turned off */
+	 
 	wmb();
 
 	DBG("DSI%d PHY disabled", phy->id);

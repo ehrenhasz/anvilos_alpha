@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Parse a Microsoft Individual Code Signing blob
- *
- * Copyright (C) 2014 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define pr_fmt(fmt) "MSCODE: "fmt
 #include <linux/kernel.h>
@@ -14,9 +10,7 @@
 #include "verify_pefile.h"
 #include "mscode.asn1.h"
 
-/*
- * Parse a Microsoft Individual Code Signing blob
- */
+ 
 int mscode_parse(void *_ctx, const void *content_data, size_t data_len,
 		 size_t asn1hdrlen)
 {
@@ -30,9 +24,7 @@ int mscode_parse(void *_ctx, const void *content_data, size_t data_len,
 	return asn1_ber_decoder(&mscode_decoder, ctx, content_data, data_len);
 }
 
-/*
- * Check the content type OID
- */
+ 
 int mscode_note_content_type(void *context, size_t hdrlen,
 			     unsigned char tag,
 			     const void *value, size_t vlen)
@@ -48,11 +40,7 @@ int mscode_note_content_type(void *context, size_t hdrlen,
 		return -EBADMSG;
 	}
 
-	/*
-	 * pesign utility had a bug where it was putting
-	 * OID_msIndividualSPKeyPurpose instead of OID_msPeImageDataObjId
-	 * So allow both OIDs.
-	 */
+	 
 	if (oid != OID_msPeImageDataObjId &&
 	    oid != OID_msIndividualSPKeyPurpose) {
 		pr_err("Unexpected content type OID %u\n", oid);
@@ -62,9 +50,7 @@ int mscode_note_content_type(void *context, size_t hdrlen,
 	return 0;
 }
 
-/*
- * Note the digest algorithm OID
- */
+ 
 int mscode_note_digest_algo(void *context, size_t hdrlen,
 			    unsigned char tag,
 			    const void *value, size_t vlen)
@@ -110,9 +96,7 @@ int mscode_note_digest_algo(void *context, size_t hdrlen,
 	return 0;
 }
 
-/*
- * Note the digest we're guaranteeing with this certificate
- */
+ 
 int mscode_note_digest(void *context, size_t hdrlen,
 		       unsigned char tag,
 		       const void *value, size_t vlen)

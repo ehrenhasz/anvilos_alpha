@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 MediaTek Inc.
- * Author: James Liao <jamesjj.liao@mediatek.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/module.h>

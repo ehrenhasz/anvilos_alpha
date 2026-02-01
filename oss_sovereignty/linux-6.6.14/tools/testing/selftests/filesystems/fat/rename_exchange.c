@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Program that atomically exchanges two paths using
- * the renameat2() system call RENAME_EXCHANGE flag.
- *
- * Copyright 2022 Red Hat Inc.
- * Author: Javier Martinez Canillas <javierm@redhat.com>
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <fcntl.h>

@@ -1,33 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * CMOS/NV-RAM driver for Linux
- *
- * Copyright (C) 1997 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
- * idea by and with help from Richard Jelinek <rj@suse.de>
- * Portions copyright (c) 2001,2002 Sun Microsystems (thockin@sun.com)
- *
- * This driver allows you to access the contents of the non-volatile memory in
- * the mc146818rtc.h real-time clock. This chip is built into all PCs and into
- * many Atari machines. In the former it's called "CMOS-RAM", in the latter
- * "NVRAM" (NV stands for non-volatile).
- *
- * The data are supplied as a (seekable) character device, /dev/nvram. The
- * size of this file is dependent on the controller.  The usual size is 114,
- * the number of freely available bytes in the memory (i.e., not used by the
- * RTC itself).
- *
- * Checksums over the NVRAM contents are managed by this driver. In case of a
- * bad checksum, reads and writes return -EIO. The checksum can be initialized
- * to a sane state either by ioctl(NVRAM_INIT) (clear whole NVRAM) or
- * ioctl(NVRAM_SETCKS) (doesn't change contents, just makes checksum valid
- * again; use with care!)
- *
- * 	1.1	Cesar Barros: SMP locking fixes
- * 		added changelog
- * 	1.2	Erik Gilling: Cobalt Networks support
- * 		Tim Hockin: general cleanup, Cobalt support
- * 	1.3	Wim Van Sebroeck: convert PRINT_PROC to seq_file
- */
+
+ 
 
 #define NVRAM_VERSION	"1.3"
 
@@ -55,31 +27,18 @@
 
 static DEFINE_MUTEX(nvram_mutex);
 static DEFINE_SPINLOCK(nvram_state_lock);
-static int nvram_open_cnt;	/* #times opened */
-static int nvram_open_mode;	/* special open modes */
+static int nvram_open_cnt;	 
+static int nvram_open_mode;	 
 static ssize_t nvram_size;
-#define NVRAM_WRITE		1 /* opened for writing (exclusive) */
-#define NVRAM_EXCL		2 /* opened with O_EXCL */
+#define NVRAM_WRITE		1  
+#define NVRAM_EXCL		2  
 
 #ifdef CONFIG_X86
-/*
- * These functions are provided to be called internally or by other parts of
- * the kernel. It's up to the caller to ensure correct checksum before reading
- * or after writing (needs to be done only once).
- *
- * It is worth noting that these functions all access bytes of general
- * purpose memory in the NVRAM - that is to say, they all add the
- * NVRAM_FIRST_BYTE offset.  Pass them offsets into NVRAM as if you did not
- * know about the RTC cruft.
- */
+ 
 
 #define NVRAM_BYTES		(128 - NVRAM_FIRST_BYTE)
 
-/* Note that *all* calls to CMOS_READ and CMOS_WRITE must be done with
- * rtc_lock held. Due to the index-port/data-port design of the RTC, we
- * don't want two different things trying to get to it at once. (e.g. the
- * periodic 11 min sync from kernel/time/ntp.c vs. this driver.)
- */
+ 
 
 static unsigned char __nvram_read_byte(int i)
 {
@@ -97,7 +56,7 @@ static unsigned char pc_nvram_read_byte(int i)
 	return c;
 }
 
-/* This races nicely with trying to read with checksum checking (nvram_read) */
+ 
 static void __nvram_write_byte(unsigned char c, int i)
 {
 	CMOS_WRITE(c, NVRAM_FIRST_BYTE + i);
@@ -112,7 +71,7 @@ static void pc_nvram_write_byte(unsigned char c, int i)
 	spin_unlock_irqrestore(&rtc_lock, flags);
 }
 
-/* On PCs, the checksum is built only over bytes 2..31 */
+ 
 #define PC_CKS_RANGE_START	2
 #define PC_CKS_RANGE_END	31
 #define PC_CKS_LOC		32
@@ -213,11 +172,9 @@ const struct nvram_ops arch_nvram_ops = {
 	.initialize     = pc_nvram_initialize,
 };
 EXPORT_SYMBOL(arch_nvram_ops);
-#endif /* CONFIG_X86 */
+#endif  
 
-/*
- * The are the file operation function for user access to /dev/nvram
- */
+ 
 
 static loff_t nvram_misc_llseek(struct file *file, loff_t offset, int origin)
 {
@@ -320,7 +277,7 @@ static long nvram_misc_ioctl(struct file *file, unsigned int cmd,
 #endif
 #elif defined(CONFIG_X86) || defined(CONFIG_M68K)
 	case NVRAM_INIT:
-		/* initialize NVRAM contents and checksum */
+		 
 		if (!capable(CAP_SYS_ADMIN))
 			return -EACCES;
 
@@ -331,8 +288,7 @@ static long nvram_misc_ioctl(struct file *file, unsigned int cmd,
 		}
 		break;
 	case NVRAM_SETCKS:
-		/* just set checksum, contents unchanged (maybe useful after
-		 * checksum garbaged somehow...) */
+		 
 		if (!capable(CAP_SYS_ADMIN))
 			return -EACCES;
 
@@ -342,7 +298,7 @@ static long nvram_misc_ioctl(struct file *file, unsigned int cmd,
 			mutex_unlock(&nvram_mutex);
 		}
 		break;
-#endif /* CONFIG_X86 || CONFIG_M68K */
+#endif  
 	}
 	return ret;
 }
@@ -351,7 +307,7 @@ static int nvram_misc_open(struct inode *inode, struct file *file)
 {
 	spin_lock(&nvram_state_lock);
 
-	/* Prevent multiple readers/writers if desired. */
+	 
 	if ((nvram_open_cnt && (file->f_flags & O_EXCL)) ||
 	    (nvram_open_mode & NVRAM_EXCL)) {
 		spin_unlock(&nvram_state_lock);
@@ -359,7 +315,7 @@ static int nvram_misc_open(struct inode *inode, struct file *file)
 	}
 
 #if defined(CONFIG_X86) || defined(CONFIG_M68K)
-	/* Prevent multiple writers if the set_checksum ioctl is implemented. */
+	 
 	if ((arch_nvram_ops.set_checksum != NULL) &&
 	    (file->f_mode & FMODE_WRITE) && (nvram_open_mode & NVRAM_WRITE)) {
 		spin_unlock(&nvram_state_lock);
@@ -384,7 +340,7 @@ static int nvram_misc_release(struct inode *inode, struct file *file)
 
 	nvram_open_cnt--;
 
-	/* if only one instance is open, clear the EXCL bit */
+	 
 	if (nvram_open_mode & NVRAM_EXCL)
 		nvram_open_mode &= ~NVRAM_EXCL;
 	if (file->f_mode & FMODE_WRITE)
@@ -485,7 +441,7 @@ static int nvram_proc_read(struct seq_file *seq, void *offset)
 
 	return 0;
 }
-#endif /* CONFIG_X86 && CONFIG_PROC_FS */
+#endif  
 
 static const struct file_operations nvram_misc_fops = {
 	.owner		= THIS_MODULE,

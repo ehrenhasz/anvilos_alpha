@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2018 Spreadtrum Communications Inc.
+
+
 
 #include <linux/clk.h>
 #include <linux/dmaengine.h>
@@ -47,7 +47,7 @@
 #define SPRD_SPI_STS8			0x70
 #define SPRD_SPI_STS9			0x74
 
-/* Bits & mask definition for register CTL0 */
+ 
 #define SPRD_SPI_SCK_REV		BIT(13)
 #define SPRD_SPI_NG_TX			BIT(1)
 #define SPRD_SPI_NG_RX			BIT(0)
@@ -55,73 +55,73 @@
 #define SPRD_SPI_CSN_MASK		GENMASK(11, 8)
 #define SPRD_SPI_CS0_VALID		BIT(8)
 
-/* Bits & mask definition for register SPI_INT_EN */
+ 
 #define SPRD_SPI_TX_END_INT_EN		BIT(8)
 #define SPRD_SPI_RX_END_INT_EN		BIT(9)
 
-/* Bits & mask definition for register SPI_INT_RAW_STS */
+ 
 #define SPRD_SPI_TX_END_RAW		BIT(8)
 #define SPRD_SPI_RX_END_RAW		BIT(9)
 
-/* Bits & mask definition for register SPI_INT_CLR */
+ 
 #define SPRD_SPI_TX_END_CLR		BIT(8)
 #define SPRD_SPI_RX_END_CLR		BIT(9)
 
-/* Bits & mask definition for register INT_MASK_STS */
+ 
 #define SPRD_SPI_MASK_RX_END		BIT(9)
 #define SPRD_SPI_MASK_TX_END		BIT(8)
 
-/* Bits & mask definition for register STS2 */
+ 
 #define SPRD_SPI_TX_BUSY		BIT(8)
 
-/* Bits & mask definition for register CTL1 */
+ 
 #define SPRD_SPI_RX_MODE		BIT(12)
 #define SPRD_SPI_TX_MODE		BIT(13)
 #define SPRD_SPI_RTX_MD_MASK		GENMASK(13, 12)
 
-/* Bits & mask definition for register CTL2 */
+ 
 #define SPRD_SPI_DMA_EN			BIT(6)
 
-/* Bits & mask definition for register CTL4 */
+ 
 #define SPRD_SPI_START_RX		BIT(9)
 #define SPRD_SPI_ONLY_RECV_MASK		GENMASK(8, 0)
 
-/* Bits & mask definition for register SPI_INT_CLR */
+ 
 #define SPRD_SPI_RX_END_INT_CLR		BIT(9)
 #define SPRD_SPI_TX_END_INT_CLR		BIT(8)
 
-/* Bits & mask definition for register SPI_INT_RAW */
+ 
 #define SPRD_SPI_RX_END_IRQ		BIT(9)
 #define SPRD_SPI_TX_END_IRQ		BIT(8)
 
-/* Bits & mask definition for register CTL12 */
+ 
 #define SPRD_SPI_SW_RX_REQ		BIT(0)
 #define SPRD_SPI_SW_TX_REQ		BIT(1)
 
-/* Bits & mask definition for register CTL7 */
+ 
 #define SPRD_SPI_DATA_LINE2_EN		BIT(15)
 #define SPRD_SPI_MODE_MASK		GENMASK(5, 3)
 #define SPRD_SPI_MODE_OFFSET		3
 #define SPRD_SPI_3WIRE_MODE		4
 #define SPRD_SPI_4WIRE_MODE		0
 
-/* Bits & mask definition for register CTL8 */
+ 
 #define SPRD_SPI_TX_MAX_LEN_MASK	GENMASK(19, 0)
 #define SPRD_SPI_TX_LEN_H_MASK		GENMASK(3, 0)
 #define SPRD_SPI_TX_LEN_H_OFFSET	16
 
-/* Bits & mask definition for register CTL9 */
+ 
 #define SPRD_SPI_TX_LEN_L_MASK		GENMASK(15, 0)
 
-/* Bits & mask definition for register CTL10 */
+ 
 #define SPRD_SPI_RX_MAX_LEN_MASK	GENMASK(19, 0)
 #define SPRD_SPI_RX_LEN_H_MASK		GENMASK(3, 0)
 #define SPRD_SPI_RX_LEN_H_OFFSET	16
 
-/* Bits & mask definition for register CTL11 */
+ 
 #define SPRD_SPI_RX_LEN_L_MASK		GENMASK(15, 0)
 
-/* Default & maximum word delay cycles */
+ 
 #define SPRD_SPI_MIN_DELAY_CYCLE	14
 #define SPRD_SPI_MAX_DELAY_CYCLE	130
 
@@ -172,17 +172,11 @@ struct sprd_spi {
 static u32 sprd_spi_transfer_max_timeout(struct sprd_spi *ss,
 					 struct spi_transfer *t)
 {
-	/*
-	 * The time spent on transmission of the full FIFO data is the maximum
-	 * SPI transmission time.
-	 */
+	 
 	u32 size = t->bits_per_word * SPRD_SPI_FIFO_SIZE;
 	u32 bit_time_us = DIV_ROUND_UP(USEC_PER_SEC, ss->hw_speed_hz);
 	u32 total_time_us = size * bit_time_us;
-	/*
-	 * There is an interval between data and the data in our SPI hardware,
-	 * so the total transmission time need add the interval time.
-	 */
+	 
 	u32 interval_cycle = SPRD_SPI_FIFO_SIZE * ss->word_delay;
 	u32 interval_time_us = DIV_ROUND_UP(interval_cycle * USEC_PER_SEC,
 					    ss->src_clk);
@@ -255,7 +249,7 @@ static void sprd_spi_set_transfer_bits(struct sprd_spi *ss, u32 bits)
 {
 	u32 val = readl_relaxed(ss->base + SPRD_SPI_CTL0);
 
-	/* Set the valid bits for every transaction */
+	 
 	val &= ~(SPRD_SPI_CHNL_LEN_MASK << SPRD_SPI_CHNL_LEN);
 	val |= bits << SPRD_SPI_CHNL_LEN;
 	writel_relaxed(val, ss->base + SPRD_SPI_CTL0);
@@ -294,7 +288,7 @@ static void sprd_spi_chipselect(struct spi_device *sdev, bool cs)
 	u32 val;
 
 	val = readl_relaxed(ss->base + SPRD_SPI_CTL0);
-	/*  The SPI controller will pull down CS pin if cs is 0 */
+	 
 	if (!cs) {
 		val &= ~SPRD_SPI_CS0_VALID;
 		writel_relaxed(val, ss->base + SPRD_SPI_CTL0);
@@ -308,17 +302,17 @@ static int sprd_spi_write_only_receive(struct sprd_spi *ss, u32 len)
 {
 	u32 val;
 
-	/* Clear the start receive bit and reset receive data number */
+	 
 	val = readl_relaxed(ss->base + SPRD_SPI_CTL4);
 	val &= ~(SPRD_SPI_START_RX | SPRD_SPI_ONLY_RECV_MASK);
 	writel_relaxed(val, ss->base + SPRD_SPI_CTL4);
 
-	/* Set the receive data length */
+	 
 	val = readl_relaxed(ss->base + SPRD_SPI_CTL4);
 	val |= len & SPRD_SPI_ONLY_RECV_MASK;
 	writel_relaxed(val, ss->base + SPRD_SPI_CTL4);
 
-	/* Trigger to receive data */
+	 
 	val = readl_relaxed(ss->base + SPRD_SPI_CTL4);
 	val |= SPRD_SPI_START_RX;
 	writel_relaxed(val, ss->base + SPRD_SPI_CTL4);
@@ -411,10 +405,7 @@ static int sprd_spi_txrx_bufs(struct spi_device *sdev, struct spi_transfer *t)
 			sprd_spi_set_tx_length(ss, len);
 			write_size += ss->write_bufs(ss, len);
 
-			/*
-			 * For our 3 wires mode or dual TX line mode, we need
-			 * to request the controller to transfer.
-			 */
+			 
 			if (ss->hw_mode & SPI_3WIRE || ss->hw_mode & SPI_TX_DUAL)
 				sprd_spi_tx_req(ss);
 
@@ -422,10 +413,7 @@ static int sprd_spi_txrx_bufs(struct spi_device *sdev, struct spi_transfer *t)
 		} else {
 			sprd_spi_set_rx_length(ss, len);
 
-			/*
-			 * For our 3 wires mode or dual TX line mode, we need
-			 * to request the controller to read.
-			 */
+			 
 			if (ss->hw_mode & SPI_3WIRE || ss->hw_mode & SPI_TX_DUAL)
 				sprd_spi_rx_req(ss);
 			else
@@ -457,10 +445,10 @@ static void sprd_spi_irq_enable(struct sprd_spi *ss)
 {
 	u32 val;
 
-	/* Clear interrupt status before enabling interrupt. */
+	 
 	writel_relaxed(SPRD_SPI_TX_END_CLR | SPRD_SPI_RX_END_CLR,
 		ss->base + SPRD_SPI_INT_CLR);
-	/* Enable SPI interrupt only in DMA mode. */
+	 
 	val = readl_relaxed(ss->base + SPRD_SPI_INT_EN);
 	writel_relaxed(val | SPRD_SPI_TX_END_INT_EN |
 		       SPRD_SPI_RX_END_INT_EN,
@@ -588,19 +576,13 @@ static int sprd_spi_dma_txrx_bufs(struct spi_device *sdev,
 		write_size = sprd_spi_dma_tx_config(ss, t);
 		sprd_spi_set_tx_length(ss, trans_len);
 
-		/*
-		 * For our 3 wires mode or dual TX line mode, we need
-		 * to request the controller to transfer.
-		 */
+		 
 		if (ss->hw_mode & SPI_3WIRE || ss->hw_mode & SPI_TX_DUAL)
 			sprd_spi_tx_req(ss);
 	} else {
 		sprd_spi_set_rx_length(ss, trans_len);
 
-		/*
-		 * For our 3 wires mode or dual TX line mode, we need
-		 * to request the controller to read.
-		 */
+		 
 		if (ss->hw_mode & SPI_3WIRE || ss->hw_mode & SPI_TX_DUAL)
 			sprd_spi_rx_req(ss);
 		else
@@ -614,13 +596,7 @@ static int sprd_spi_dma_txrx_bufs(struct spi_device *sdev,
 	}
 
 	if (ss->trans_mode & SPRD_SPI_RX_MODE) {
-		/*
-		 * Set up the DMA receive data length, which must be an
-		 * integral multiple of fragment length. But when the length
-		 * of received data is less than fragment length, DMA can be
-		 * configured to receive data according to the actual length
-		 * of received data.
-		 */
+		 
 		ss->dma.rx_len = t->len > ss->dma.fragmens_len ?
 			(t->len - t->len % ss->dma.fragmens_len) :
 			 t->len;
@@ -650,13 +626,10 @@ trans_complete:
 
 static void sprd_spi_set_speed(struct sprd_spi *ss, u32 speed_hz)
 {
-	/*
-	 * From SPI datasheet, the prescale calculation formula:
-	 * prescale = SPI source clock / (2 * SPI_freq) - 1;
-	 */
+	 
 	u32 clk_div = DIV_ROUND_UP(ss->src_clk, speed_hz << 1) - 1;
 
-	/* Save the real hardware speed */
+	 
 	ss->hw_speed_hz = (ss->src_clk >> 1) / (clk_div + 1);
 	writel_relaxed(clk_div, ss->base + SPRD_SPI_CLKD);
 }
@@ -672,27 +645,23 @@ static int sprd_spi_init_hw(struct sprd_spi *ss, struct spi_transfer *t)
 
 	val = readl_relaxed(ss->base + SPRD_SPI_CTL0);
 	val &= ~(SPRD_SPI_SCK_REV | SPRD_SPI_NG_TX | SPRD_SPI_NG_RX);
-	/* Set default chip selection, clock phase and clock polarity */
+	 
 	val |= ss->hw_mode & SPI_CPHA ? SPRD_SPI_NG_RX : SPRD_SPI_NG_TX;
 	val |= ss->hw_mode & SPI_CPOL ? SPRD_SPI_SCK_REV : 0;
 	writel_relaxed(val, ss->base + SPRD_SPI_CTL0);
 
-	/*
-	 * Set the intervals of two SPI frames, and the inteval calculation
-	 * formula as below per datasheet:
-	 * interval time (source clock cycles) = interval * 4 + 10.
-	 */
+	 
 	word_delay = clamp_t(u16, d->value, SPRD_SPI_MIN_DELAY_CYCLE,
 			     SPRD_SPI_MAX_DELAY_CYCLE);
 	interval = DIV_ROUND_UP(word_delay - 10, 4);
 	ss->word_delay = interval * 4 + 10;
 	writel_relaxed(interval, ss->base + SPRD_SPI_CTL5);
 
-	/* Reset SPI fifo */
+	 
 	writel_relaxed(1, ss->base + SPRD_SPI_FIFO_RST);
 	writel_relaxed(0, ss->base + SPRD_SPI_FIFO_RST);
 
-	/* Set SPI work mode */
+	 
 	val = readl_relaxed(ss->base + SPRD_SPI_CTL7);
 	val &= ~SPRD_SPI_MODE_MASK;
 
@@ -728,7 +697,7 @@ static int sprd_spi_setup_transfer(struct spi_device *sdev,
 	if (ret)
 		return ret;
 
-	/* Set tansfer speed and valid bits */
+	 
 	sprd_spi_set_speed(ss, t->speed_hz);
 	sprd_spi_set_transfer_bits(ss, bits_per_word);
 
@@ -763,7 +732,7 @@ static int sprd_spi_setup_transfer(struct spi_device *sdev,
 		return -EINVAL;
 	}
 
-	/* Set transfer read or write mode */
+	 
 	val = readl_relaxed(ss->base + SPRD_SPI_CTL1);
 	val &= ~SPRD_SPI_RTX_MD_MASK;
 	if (t->tx_buf)
@@ -775,10 +744,7 @@ static int sprd_spi_setup_transfer(struct spi_device *sdev,
 
 	ss->trans_mode = mode;
 
-	/*
-	 * If in only receive mode, we need to trigger the SPI controller to
-	 * receive data automatically.
-	 */
+	 
 	if (ss->trans_mode == SPRD_SPI_RX_MODE)
 		ss->write_bufs = sprd_spi_write_only_receive;
 
@@ -1061,7 +1027,7 @@ static const struct dev_pm_ops sprd_spi_pm_ops = {
 
 static const struct of_device_id sprd_spi_of_match[] = {
 	{ .compatible = "sprd,sc9860-spi", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, sprd_spi_of_match);
 

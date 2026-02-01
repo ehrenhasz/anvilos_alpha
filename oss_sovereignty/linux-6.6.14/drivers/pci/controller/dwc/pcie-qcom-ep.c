@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Qualcomm PCIe Endpoint controller driver
- *
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- * Author: Siddartha Mohanadoss <smohanad@codeaurora.org
- *
- * Copyright (c) 2021, Linaro Ltd.
- * Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/debugfs.h>
@@ -25,7 +17,7 @@
 
 #include "pcie-designware.h"
 
-/* PARF registers */
+ 
 #define PARF_SYS_CTRL				0x00
 #define PARF_DB_CTRL				0x10
 #define PARF_PM_CTRL				0x20
@@ -57,7 +49,7 @@
 #define PARF_DEVICE_TYPE			0x1000
 #define PARF_BDF_TO_SID_CFG			0x2c00
 
-/* PARF_INT_ALL_{STATUS/CLEAR/MASK} register fields */
+ 
 #define PARF_INT_ALL_LINK_DOWN			BIT(1)
 #define PARF_INT_ALL_BME			BIT(2)
 #define PARF_INT_ALL_PM_TURNOFF			BIT(3)
@@ -77,64 +69,64 @@
 #define PARF_INT_ALL_PLS_PME			BIT(17)
 #define PARF_INT_ALL_EDMA			BIT(22)
 
-/* PARF_BDF_TO_SID_CFG register fields */
+ 
 #define PARF_BDF_TO_SID_BYPASS			BIT(0)
 
-/* PARF_DEBUG_INT_EN register fields */
+ 
 #define PARF_DEBUG_INT_PM_DSTATE_CHANGE		BIT(1)
 #define PARF_DEBUG_INT_CFG_BUS_MASTER_EN	BIT(2)
 #define PARF_DEBUG_INT_RADM_PM_TURNOFF		BIT(3)
 
-/* PARF_DEVICE_TYPE register fields */
+ 
 #define PARF_DEVICE_TYPE_EP			0x0
 
-/* PARF_PM_CTRL register fields */
+ 
 #define PARF_PM_CTRL_REQ_EXIT_L1		BIT(1)
 #define PARF_PM_CTRL_READY_ENTR_L23		BIT(2)
 #define PARF_PM_CTRL_REQ_NOT_ENTR_L1		BIT(5)
 
-/* PARF_MHI_CLOCK_RESET_CTRL fields */
+ 
 #define PARF_MSTR_AXI_CLK_EN			BIT(1)
 
-/* PARF_AXI_MSTR_RD_HALT_NO_WRITES register fields */
+ 
 #define PARF_AXI_MSTR_RD_HALT_NO_WRITE_EN	BIT(0)
 
-/* PARF_AXI_MSTR_WR_ADDR_HALT register fields */
+ 
 #define PARF_AXI_MSTR_WR_ADDR_HALT_EN		BIT(31)
 
-/* PARF_Q2A_FLUSH register fields */
+ 
 #define PARF_Q2A_FLUSH_EN			BIT(16)
 
-/* PARF_SYS_CTRL register fields */
+ 
 #define PARF_SYS_CTRL_AUX_PWR_DET		BIT(4)
 #define PARF_SYS_CTRL_CORE_CLK_CGC_DIS		BIT(6)
 #define PARF_SYS_CTRL_MSTR_ACLK_CGC_DIS		BIT(10)
 #define PARF_SYS_CTRL_SLV_DBI_WAKE_DISABLE	BIT(11)
 
-/* PARF_DB_CTRL register fields */
+ 
 #define PARF_DB_CTRL_INSR_DBNCR_BLOCK		BIT(0)
 #define PARF_DB_CTRL_RMVL_DBNCR_BLOCK		BIT(1)
 #define PARF_DB_CTRL_DBI_WKP_BLOCK		BIT(4)
 #define PARF_DB_CTRL_SLV_WKP_BLOCK		BIT(5)
 #define PARF_DB_CTRL_MST_WKP_BLOCK		BIT(6)
 
-/* PARF_CFG_BITS register fields */
+ 
 #define PARF_CFG_BITS_REQ_EXIT_L1SS_MSI_LTR_EN	BIT(1)
 
-/* ELBI registers */
+ 
 #define ELBI_SYS_STTS				0x08
 #define ELBI_CS2_ENABLE				0xa4
 
-/* DBI registers */
+ 
 #define DBI_CON_STATUS				0x44
 
-/* DBI register fields */
+ 
 #define DBI_CON_STATUS_POWER_STATE_MASK		GENMASK(1, 0)
 
 #define XMLH_LINK_UP				0x400
 #define CORE_RESET_TIME_US_MIN			1000
 #define CORE_RESET_TIME_US_MAX			1005
-#define WAKE_DELAY_US				2000 /* 2 ms */
+#define WAKE_DELAY_US				2000  
 
 #define PCIE_GEN1_BW_MBPS			250
 #define PCIE_GEN2_BW_MBPS			500
@@ -150,28 +142,7 @@ enum qcom_pcie_ep_link_status {
 	QCOM_PCIE_EP_LINK_DOWN,
 };
 
-/**
- * struct qcom_pcie_ep - Qualcomm PCIe Endpoint Controller
- * @pci: Designware PCIe controller struct
- * @parf: Qualcomm PCIe specific PARF register base
- * @elbi: Designware PCIe specific ELBI register base
- * @mmio: MMIO register base
- * @perst_map: PERST regmap
- * @mmio_res: MMIO region resource
- * @core_reset: PCIe Endpoint core reset
- * @reset: PERST# GPIO
- * @wake: WAKE# GPIO
- * @phy: PHY controller block
- * @debugfs: PCIe Endpoint Debugfs directory
- * @icc_mem: Handle to an interconnect path between PCIe and MEM
- * @clks: PCIe clocks
- * @num_clks: PCIe clocks count
- * @perst_en: Flag for PERST enable
- * @perst_sep_en: Flag for PERST separation enable
- * @link_status: PCIe Link status
- * @global_irq: Qualcomm PCIe specific Global IRQ
- * @perst_irq: PERST# IRQ
- */
+ 
 struct qcom_pcie_ep {
 	struct dw_pcie pci;
 
@@ -225,11 +196,7 @@ static int qcom_pcie_ep_core_reset(struct qcom_pcie_ep *pcie_ep)
 	return 0;
 }
 
-/*
- * Delatch PERST_EN and PERST_SEPARATION_ENABLE with TCSR to avoid
- * device reset during host reboot and hibernation. The driver is
- * expected to handle this situation.
- */
+ 
 static void qcom_pcie_ep_configure_tcsr(struct qcom_pcie_ep *pcie_ep)
 {
 	if (pcie_ep->perst_map) {
@@ -344,13 +311,7 @@ static int qcom_pcie_enable_resources(struct qcom_pcie_ep *pcie_ep)
 	if (ret)
 		goto err_phy_exit;
 
-	/*
-	 * Some Qualcomm platforms require interconnect bandwidth constraints
-	 * to be set before enabling interconnect clocks.
-	 *
-	 * Set an initial peak bandwidth corresponding to single-lane Gen 1
-	 * for the pcie-mem path.
-	 */
+	 
 	ret = icc_set_bw(pcie_ep->icc_mem, 0, MBps_to_icc(PCIE_GEN1_BW_MBPS));
 	if (ret) {
 		dev_err(pci->dev, "failed to set interconnect bandwidth: %d\n",
@@ -391,54 +352,49 @@ static int qcom_pcie_perst_deassert(struct dw_pcie *pci)
 		return ret;
 	}
 
-	/* Assert WAKE# to RC to indicate device is ready */
+	 
 	gpiod_set_value_cansleep(pcie_ep->wake, 1);
 	usleep_range(WAKE_DELAY_US, WAKE_DELAY_US + 500);
 	gpiod_set_value_cansleep(pcie_ep->wake, 0);
 
 	qcom_pcie_ep_configure_tcsr(pcie_ep);
 
-	/* Disable BDF to SID mapping */
+	 
 	val = readl_relaxed(pcie_ep->parf + PARF_BDF_TO_SID_CFG);
 	val |= PARF_BDF_TO_SID_BYPASS;
 	writel_relaxed(val, pcie_ep->parf + PARF_BDF_TO_SID_CFG);
 
-	/* Enable debug IRQ */
+	 
 	val = readl_relaxed(pcie_ep->parf + PARF_DEBUG_INT_EN);
 	val |= PARF_DEBUG_INT_RADM_PM_TURNOFF |
 	       PARF_DEBUG_INT_CFG_BUS_MASTER_EN |
 	       PARF_DEBUG_INT_PM_DSTATE_CHANGE;
 	writel_relaxed(val, pcie_ep->parf + PARF_DEBUG_INT_EN);
 
-	/* Configure PCIe to endpoint mode */
+	 
 	writel_relaxed(PARF_DEVICE_TYPE_EP, pcie_ep->parf + PARF_DEVICE_TYPE);
 
-	/* Allow entering L1 state */
+	 
 	val = readl_relaxed(pcie_ep->parf + PARF_PM_CTRL);
 	val &= ~PARF_PM_CTRL_REQ_NOT_ENTR_L1;
 	writel_relaxed(val, pcie_ep->parf + PARF_PM_CTRL);
 
-	/* Read halts write */
+	 
 	val = readl_relaxed(pcie_ep->parf + PARF_AXI_MSTR_RD_HALT_NO_WRITES);
 	val &= ~PARF_AXI_MSTR_RD_HALT_NO_WRITE_EN;
 	writel_relaxed(val, pcie_ep->parf + PARF_AXI_MSTR_RD_HALT_NO_WRITES);
 
-	/* Write after write halt */
+	 
 	val = readl_relaxed(pcie_ep->parf + PARF_AXI_MSTR_WR_ADDR_HALT);
 	val |= PARF_AXI_MSTR_WR_ADDR_HALT_EN;
 	writel_relaxed(val, pcie_ep->parf + PARF_AXI_MSTR_WR_ADDR_HALT);
 
-	/* Q2A flush disable */
+	 
 	val = readl_relaxed(pcie_ep->parf + PARF_Q2A_FLUSH);
 	val &= ~PARF_Q2A_FLUSH_EN;
 	writel_relaxed(val, pcie_ep->parf + PARF_Q2A_FLUSH);
 
-	/*
-	 * Disable Master AXI clock during idle.  Do not allow DBI access
-	 * to take the core out of L1.  Disable core clock gating that
-	 * gates PIPE clock from propagating to core clock.  Report to the
-	 * host that Vaux is present.
-	 */
+	 
 	val = readl_relaxed(pcie_ep->parf + PARF_SYS_CTRL);
 	val &= ~PARF_SYS_CTRL_MSTR_ACLK_CGC_DIS;
 	val |= PARF_SYS_CTRL_SLV_DBI_WAKE_DISABLE |
@@ -446,28 +402,28 @@ static int qcom_pcie_perst_deassert(struct dw_pcie *pci)
 	       PARF_SYS_CTRL_AUX_PWR_DET;
 	writel_relaxed(val, pcie_ep->parf + PARF_SYS_CTRL);
 
-	/* Disable the debouncers */
+	 
 	val = readl_relaxed(pcie_ep->parf + PARF_DB_CTRL);
 	val |= PARF_DB_CTRL_INSR_DBNCR_BLOCK | PARF_DB_CTRL_RMVL_DBNCR_BLOCK |
 	       PARF_DB_CTRL_DBI_WKP_BLOCK | PARF_DB_CTRL_SLV_WKP_BLOCK |
 	       PARF_DB_CTRL_MST_WKP_BLOCK;
 	writel_relaxed(val, pcie_ep->parf + PARF_DB_CTRL);
 
-	/* Request to exit from L1SS for MSI and LTR MSG */
+	 
 	val = readl_relaxed(pcie_ep->parf + PARF_CFG_BITS);
 	val |= PARF_CFG_BITS_REQ_EXIT_L1SS_MSI_LTR_EN;
 	writel_relaxed(val, pcie_ep->parf + PARF_CFG_BITS);
 
 	dw_pcie_dbi_ro_wr_en(pci);
 
-	/* Set the L0s Exit Latency to 2us-4us = 0x6 */
+	 
 	offset = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);
 	val = dw_pcie_readl_dbi(pci, offset + PCI_EXP_LNKCAP);
 	val &= ~PCI_EXP_LNKCAP_L0SEL;
 	val |= FIELD_PREP(PCI_EXP_LNKCAP_L0SEL, 0x6);
 	dw_pcie_writel_dbi(pci, offset + PCI_EXP_LNKCAP, val);
 
-	/* Set the L1 Exit Latency to be 32us-64 us = 0x6 */
+	 
 	offset = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);
 	val = dw_pcie_readl_dbi(pci, offset + PCI_EXP_LNKCAP);
 	val &= ~PCI_EXP_LNKCAP_L1EL;
@@ -488,22 +444,19 @@ static int qcom_pcie_perst_deassert(struct dw_pcie *pci)
 		goto err_disable_resources;
 	}
 
-	/*
-	 * The physical address of the MMIO region which is exposed as the BAR
-	 * should be written to MHI BASE registers.
-	 */
+	 
 	writel_relaxed(pcie_ep->mmio_res->start,
 		       pcie_ep->parf + PARF_MHI_BASE_ADDR_LOWER);
 	writel_relaxed(0, pcie_ep->parf + PARF_MHI_BASE_ADDR_UPPER);
 
-	/* Gate Master AXI clock to MHI bus during L1SS */
+	 
 	val = readl_relaxed(pcie_ep->parf + PARF_MHI_CLOCK_RESET_CTRL);
 	val &= ~PARF_MSTR_AXI_CLK_EN;
 	writel_relaxed(val, pcie_ep->parf + PARF_MHI_CLOCK_RESET_CTRL);
 
 	dw_pcie_ep_init_notify(&pcie_ep->pci.ep);
 
-	/* Enable LTSSM */
+	 
 	val = readl_relaxed(pcie_ep->parf + PARF_LTSSM);
 	val |= BIT(8);
 	writel_relaxed(val, pcie_ep->parf + PARF_LTSSM);
@@ -530,7 +483,7 @@ static void qcom_pcie_perst_assert(struct dw_pcie *pci)
 	pcie_ep->link_status = QCOM_PCIE_EP_LINK_DISABLED;
 }
 
-/* Common DWC controller ops */
+ 
 static const struct dw_pcie_ops pci_ops = {
 	.link_up = qcom_pcie_dw_link_up,
 	.start_link = qcom_pcie_dw_start_link,
@@ -642,7 +595,7 @@ static int qcom_pcie_ep_get_resources(struct platform_device *pdev,
 	return ret;
 }
 
-/* TODO: Notify clients about PCIe state change */
+ 
 static irqreturn_t qcom_pcie_ep_global_irq_thread(int irq, void *data)
 {
 	struct qcom_pcie_ep *pcie_ep = data;

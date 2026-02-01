@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/list.h>
 #include <linux/jhash.h>
@@ -176,7 +174,7 @@ static struct ksmbd_share_config *share_config_request(struct unicode_map *um,
 			if (ret) {
 				ksmbd_debug(SMB, "failed to access '%s'\n",
 					    share->path);
-				/* Avoid put_path() */
+				 
 				kfree(share->path);
 				share->path = NULL;
 			}

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/hfsplus/catalog.c
- *
- * Copyright (C) 2001
- * Brad Boyer (flar@allandria.com)
- * (C) 2003 Ardis Technologies <roman@ardistech.com>
- *
- * Handling of catalog records
- */
+
+ 
 
 
 #include "hfsplus_fs.h"
@@ -39,7 +31,7 @@ int hfsplus_cat_bin_cmp_key(const hfsplus_btree_key *k1,
 	return hfsplus_strcmp(&k1->cat.name, &k2->cat.name);
 }
 
-/* Generates key for catalog file/folders record. */
+ 
 int hfsplus_cat_build_key(struct super_block *sb,
 		hfsplus_btree_key *key, u32 parent, const struct qstr *str)
 {
@@ -56,7 +48,7 @@ int hfsplus_cat_build_key(struct super_block *sb,
 	return 0;
 }
 
-/* Generates key for catalog thread record. */
+ 
 void hfsplus_cat_build_key_with_cnid(struct super_block *sb,
 			hfsplus_btree_key *key, u32 parent)
 {
@@ -123,7 +115,7 @@ static int hfsplus_cat_build_record(hfsplus_cat_entry *entry,
 			folder->access_date = hfsp_now2mt();
 		hfsplus_cat_set_perms(inode, &folder->permissions);
 		if (inode == sbi->hidden_dir)
-			/* invisible and namelocked */
+			 
 			folder->user_info.frFlags = cpu_to_be16(0x5000);
 		return sizeof(*folder);
 	} else {
@@ -190,7 +182,7 @@ static int hfsplus_fill_cat_thread(struct super_block *sb,
 	return 10 + be16_to_cpu(entry->thread.nodeName.length) * 2;
 }
 
-/* Try to get a catalog entry for given catalog id */
+ 
 int hfsplus_find_cat(struct super_block *sb, u32 cnid,
 		     struct hfs_find_data *fd)
 {
@@ -225,10 +217,7 @@ static void hfsplus_subfolders_inc(struct inode *dir)
 	struct hfsplus_sb_info *sbi = HFSPLUS_SB(dir->i_sb);
 
 	if (test_bit(HFSPLUS_SB_HFSX, &sbi->flags)) {
-		/*
-		 * Increment subfolder count. Note, the value is only meaningful
-		 * for folders with HFSPLUS_HAS_FOLDER_COUNT flag set.
-		 */
+		 
 		HFSPLUS_I(dir)->subfolders++;
 	}
 }
@@ -238,13 +227,7 @@ static void hfsplus_subfolders_dec(struct inode *dir)
 	struct hfsplus_sb_info *sbi = HFSPLUS_SB(dir->i_sb);
 
 	if (test_bit(HFSPLUS_SB_HFSX, &sbi->flags)) {
-		/*
-		 * Decrement subfolder count. Note, the value is only meaningful
-		 * for folders with HFSPLUS_HAS_FOLDER_COUNT flag set.
-		 *
-		 * Check for zero. Some subfolders may have been created
-		 * by an implementation ignorant of this counter.
-		 */
+		 
 		if (HFSPLUS_I(dir)->subfolders)
 			HFSPLUS_I(dir)->subfolders--;
 	}
@@ -265,10 +248,7 @@ int hfsplus_create_cat(u32 cnid, struct inode *dir,
 	if (err)
 		return err;
 
-	/*
-	 * Fail early and avoid ENOSPC during the btree operations. We may
-	 * have to split the root node at most once.
-	 */
+	 
 	err = hfs_bmap_reserve(fd.tree, 2 * fd.tree->depth);
 	if (err)
 		goto err2;
@@ -300,7 +280,7 @@ int hfsplus_create_cat(u32 cnid, struct inode *dir,
 	entry_size = hfsplus_cat_build_record(&entry, cnid, inode);
 	err = hfs_brec_find(&fd, hfs_find_rec_by_key);
 	if (err != -ENOENT) {
-		/* panic? */
+		 
 		if (!err)
 			err = -EEXIST;
 		goto err1;
@@ -341,10 +321,7 @@ int hfsplus_delete_cat(u32 cnid, struct inode *dir, const struct qstr *str)
 	if (err)
 		return err;
 
-	/*
-	 * Fail early and avoid ENOSPC during the btree operations. We may
-	 * have to split the root node at most once.
-	 */
+	 
 	err = hfs_bmap_reserve(fd.tree, 2 * (int)fd.tree->depth - 2);
 	if (err)
 		goto out;
@@ -391,7 +368,7 @@ int hfsplus_delete_cat(u32 cnid, struct inode *dir, const struct qstr *str)
 		hfsplus_free_fork(sb, cnid, &fork, HFSPLUS_TYPE_RSRC);
 	}
 
-	/* we only need to take spinlock for exclusion with ->release() */
+	 
 	spin_lock(&HFSPLUS_I(dir)->open_dir_lock);
 	list_for_each(pos, &HFSPLUS_I(dir)->open_dir_list) {
 		struct hfsplus_readdir_data *rd =
@@ -449,15 +426,12 @@ int hfsplus_rename_cat(u32 cnid,
 		return err;
 	dst_fd = src_fd;
 
-	/*
-	 * Fail early and avoid ENOSPC during the btree operations. We may
-	 * have to split the root node at most twice.
-	 */
+	 
 	err = hfs_bmap_reserve(src_fd.tree, 4 * (int)src_fd.tree->depth - 1);
 	if (err)
 		goto out;
 
-	/* find the old dir entry and read the data */
+	 
 	err = hfsplus_cat_build_key(sb, src_fd.search_key,
 			src_dir->i_ino, src_name);
 	if (unlikely(err))
@@ -475,7 +449,7 @@ int hfsplus_rename_cat(u32 cnid,
 				src_fd.entrylength);
 	type = be16_to_cpu(entry.type);
 
-	/* create new dir entry with the data from the old entry */
+	 
 	err = hfsplus_cat_build_key(sb, dst_fd.search_key,
 			dst_dir->i_ino, dst_name);
 	if (unlikely(err))
@@ -496,7 +470,7 @@ int hfsplus_rename_cat(u32 cnid,
 		hfsplus_subfolders_inc(dst_dir);
 	dst_dir->i_mtime = inode_set_ctime_current(dst_dir);
 
-	/* finally remove the old entry */
+	 
 	err = hfsplus_cat_build_key(sb, src_fd.search_key,
 			src_dir->i_ino, src_name);
 	if (unlikely(err))
@@ -513,7 +487,7 @@ int hfsplus_rename_cat(u32 cnid,
 		hfsplus_subfolders_dec(src_dir);
 	src_dir->i_mtime = inode_set_ctime_current(src_dir);
 
-	/* remove old thread entry */
+	 
 	hfsplus_cat_build_key_with_cnid(sb, src_fd.search_key, cnid);
 	err = hfs_brec_find(&src_fd, hfs_find_rec_by_key);
 	if (err)
@@ -523,7 +497,7 @@ int hfsplus_rename_cat(u32 cnid,
 	if (err)
 		goto out;
 
-	/* create new thread entry */
+	 
 	hfsplus_cat_build_key_with_cnid(sb, dst_fd.search_key, cnid);
 	entry_size = hfsplus_fill_cat_thread(sb, &entry, type,
 		dst_dir->i_ino, dst_name);

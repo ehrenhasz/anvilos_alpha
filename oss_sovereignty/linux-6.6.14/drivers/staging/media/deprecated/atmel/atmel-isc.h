@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Microchip Image Sensor Controller (ISC) driver header file
- *
- * Copyright (C) 2016-2019 Microchip Technology, Inc.
- *
- * Author: Songjun Wu
- * Author: Eugen Hristev <eugen.hristev@microchip.com>
- *
- */
+ 
+ 
 #ifndef _ATMEL_ISC_H_
 
 #include <linux/clk-provider.h>
@@ -28,7 +20,7 @@ struct isc_clk {
 	struct clk_hw   hw;
 	struct clk      *clk;
 	struct regmap   *regmap;
-	spinlock_t	lock;	/* serialize access to clock registers */
+	spinlock_t	lock;	 
 	u8		id;
 	u8		parent_id;
 	u32		div;
@@ -53,17 +45,7 @@ struct isc_subdev_entity {
 	struct list_head list;
 };
 
-/*
- * struct isc_format - ISC media bus format information
-			This structure represents the interface between the ISC
-			and the sensor. It's the input format received by
-			the ISC.
- * @fourcc:		Fourcc code for this format
- * @mbus_code:		V4L2 media bus format code.
- * @cfa_baycfg:		If this format is RAW BAYER, indicate the type of bayer.
-			this is either BGBG, RGRG, etc.
- * @pfe_cfg0_bps:	Number of hardware data lines connected to the ISC
- */
+ 
 
 struct isc_format {
 	u32	fourcc;
@@ -74,7 +56,7 @@ struct isc_format {
 	u32	pfe_cfg0_bps;
 };
 
-/* Pipeline bitmap */
+ 
 #define DPC_DPCENABLE	BIT(0)
 #define DPC_GDCENABLE	BIT(1)
 #define DPC_BLCENABLE	BIT(2)
@@ -93,23 +75,7 @@ struct isc_format {
 
 #define GAM_ENABLES	(GAM_RENABLE | GAM_GENABLE | GAM_BENABLE | GAM_ENABLE)
 
-/*
- * struct fmt_config - ISC format configuration and internal pipeline
-			This structure represents the internal configuration
-			of the ISC.
-			It also holds the format that ISC will present to v4l2.
- * @sd_format:		Pointer to an isc_format struct that holds the sensor
-			configuration.
- * @fourcc:		Fourcc code for this format.
- * @bpp:		Bytes per pixel in the current format.
- * @bpp_v4l2:		Bytes per pixel in the current format, for v4l2.
-			This differs from 'bpp' in the sense that in planar
-			formats, it refers only to the first plane.
- * @rlp_cfg_mode:	Configuration of the RLP (rounding, limiting packaging)
- * @dcfg_imode:		Configuration of the input of the DMA module
- * @dctrl_dview:	Configuration of the output of the DMA module
- * @bits_pipeline:	Configuration of the pipeline, which modules are enabled
- */
+ 
 struct fmt_config {
 	struct isc_format	*sd_format;
 
@@ -144,7 +110,7 @@ struct isc_ctrls {
 #define ISC_WB_ONETIME	2
 	u8 awb;
 
-	/* one for each component : GR, R, GB, B */
+	 
 	u32 gain[HIST_BAYER];
 	s32 offset[HIST_BAYER];
 
@@ -159,18 +125,7 @@ struct isc_ctrls {
 
 #define ISC_PIPE_LINE_NODE_NUM	15
 
-/*
- * struct isc_reg_offsets - ISC device register offsets
- * @csc:		Offset for the CSC register
- * @cbc:		Offset for the CBC register
- * @sub422:		Offset for the SUB422 register
- * @sub420:		Offset for the SUB420 register
- * @rlp:		Offset for the RLP register
- * @his:		Offset for the HIS related registers
- * @dma:		Offset for the DMA related registers
- * @version:		Offset for the version register
- * @his_entry:		Offset for the HIS entries registers
- */
+ 
 struct isc_reg_offsets {
 	u32 csc;
 	u32 cbc;
@@ -183,83 +138,7 @@ struct isc_reg_offsets {
 	u32 his_entry;
 };
 
-/*
- * struct isc_device - ISC device driver data/config struct
- * @regmap:		Register map
- * @hclock:		Hclock clock input (refer datasheet)
- * @ispck:		iscpck clock (refer datasheet)
- * @isc_clks:		ISC clocks
- * @ispck_required:	ISC requires ISP Clock initialization
- * @dcfg:		DMA master configuration, architecture dependent
- *
- * @dev:		Registered device driver
- * @v4l2_dev:		v4l2 registered device
- * @video_dev:		registered video device
- *
- * @vb2_vidq:		video buffer 2 video queue
- * @dma_queue_lock:	lock to serialize the dma buffer queue
- * @dma_queue:		the queue for dma buffers
- * @cur_frm:		current isc frame/buffer
- * @sequence:		current frame number
- * @stop:		true if isc is not streaming, false if streaming
- * @comp:		completion reference that signals frame completion
- *
- * @fmt:		current v42l format
- * @user_formats:	list of formats that are supported and agreed with sd
- * @num_user_formats:	how many formats are in user_formats
- *
- * @config:		current ISC format configuration
- * @try_config:		the current ISC try format , not yet activated
- *
- * @ctrls:		holds information about ISC controls
- * @do_wb_ctrl:		control regarding the DO_WHITE_BALANCE button
- * @awb_work:		workqueue reference for autowhitebalance histogram
- *			analysis
- *
- * @lock:		lock for serializing userspace file operations
- *			with ISC operations
- * @awb_mutex:		serialize access to streaming status from awb work queue
- * @awb_lock:		lock for serializing awb work queue operations
- *			with DMA/buffer operations
- *
- * @pipeline:		configuration of the ISC pipeline
- *
- * @current_subdev:	current subdevice: the sensor
- * @subdev_entities:	list of subdevice entitites
- *
- * @gamma_table:	pointer to the table with gamma values, has
- *			gamma_max sets of GAMMA_ENTRIES entries each
- * @gamma_max:		maximum number of sets of inside the gamma_table
- *
- * @max_width:		maximum frame width, dependent on the internal RAM
- * @max_height:		maximum frame height, dependent on the internal RAM
- *
- * @config_dpc:		pointer to a function that initializes product
- *			specific DPC module
- * @config_csc:		pointer to a function that initializes product
- *			specific CSC module
- * @config_cbc:		pointer to a function that initializes product
- *			specific CBC module
- * @config_cc:		pointer to a function that initializes product
- *			specific CC module
- * @config_gam:		pointer to a function that initializes product
- *			specific GAMMA module
- * @config_rlp:		pointer to a function that initializes product
- *			specific RLP module
- * @config_ctrls:	pointer to a functoin that initializes product
- *			specific v4l2 controls.
- *
- * @adapt_pipeline:	pointer to a function that adapts the pipeline bits
- *			to the product specific pipeline
- *
- * @offsets:		struct holding the product specific register offsets
- * @controller_formats:	pointer to the array of possible formats that the
- *			controller can output
- * @formats_list:	pointer to the array of possible formats that can
- *			be used as an input to the controller
- * @controller_formats_size:	size of controller_formats array
- * @formats_list_size:	size of formats_list array
- */
+ 
 struct isc_device {
 	struct regmap		*regmap;
 	struct clk		*hclock;
@@ -322,7 +201,7 @@ struct isc_device {
 	};
 
 #define GAMMA_ENTRIES	64
-	/* pointer to the defined gamma table */
+	 
 	const u32	(*gamma_table)[GAMMA_ENTRIES];
 	u32		gamma_max;
 

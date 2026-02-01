@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * PTP 1588 clock support
- *
- * Copyright (C) 2010 OMICRON electronics GmbH
- */
+
+ 
 #include <linux/idr.h>
 #include <linux/device.h>
 #include <linux/err.h>
@@ -26,13 +22,13 @@
 
 struct class *ptp_class;
 
-/* private globals */
+ 
 
 static dev_t ptp_devt;
 
 static DEFINE_IDA(ptp_clocks_map);
 
-/* time stamp event queue operations */
+ 
 
 static inline int queue_free(struct timestamp_event_queue *q)
 {
@@ -56,7 +52,7 @@ static void enqueue_external_timestamp(struct timestamp_event_queue *queue,
 	dst->t.sec = seconds;
 	dst->t.nsec = remainder;
 
-	/* Both WRITE_ONCE() are paired with READ_ONCE() in queue_cnt() */
+	 
 	if (!queue_free(queue))
 		WRITE_ONCE(queue->head, (queue->head + 1) % PTP_MAX_TIMESTAMPS);
 
@@ -65,7 +61,7 @@ static void enqueue_external_timestamp(struct timestamp_event_queue *queue,
 	spin_unlock_irqrestore(&queue->lock, flags);
 }
 
-/* posix clock implementation */
+ 
 
 static int ptp_clock_getres(struct posix_clock *pc, struct timespec64 *tp)
 {
@@ -201,7 +197,7 @@ static void ptp_aux_kworker(struct kthread_work *work)
 		kthread_queue_delayed_work(ptp->kworker, &ptp->aux_work, delay);
 }
 
-/* public interface */
+ 
 
 struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
 				     struct device *parent)
@@ -213,7 +209,7 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
 	if (info->n_alarm > PTP_MAX_ALARMS)
 		return ERR_PTR(-EINVAL);
 
-	/* Initialize a clock structure. */
+	 
 	err = -ENOMEM;
 	ptp = kzalloc(sizeof(struct ptp_clock), GFP_KERNEL);
 	if (ptp == NULL)
@@ -240,7 +236,7 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
 		if (!ptp->info->getcycles64 && ptp->info->getcyclesx64)
 			ptp->info->getcycles64 = ptp_getcycles64;
 	} else {
-		/* Free running cycle counter not supported, use time. */
+		 
 		ptp->info->getcycles64 = ptp_getcycles64;
 
 		if (ptp->info->gettimex64)
@@ -260,7 +256,7 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
 		}
 	}
 
-	/* PTP virtual clock is being registered under physical clock */
+	 
 	if (parent && parent->class && parent->class->name &&
 	    strcmp(parent->class->name, "ptp") == 0)
 		ptp->is_virtual_clock = true;
@@ -280,7 +276,7 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
 	if (err)
 		goto no_pin_groups;
 
-	/* Register a new PPS source. */
+	 
 	if (info->pps) {
 		struct pps_source_info pps;
 		memset(&pps, 0, sizeof(pps));
@@ -296,7 +292,7 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
 		ptp->pps_source->lookup_cookie = ptp;
 	}
 
-	/* Initialize a new device of our class in our clock structure. */
+	 
 	device_initialize(&ptp->dev);
 	ptp->dev.devt = ptp->devid;
 	ptp->dev.class = ptp_class;
@@ -306,7 +302,7 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
 	dev_set_drvdata(&ptp->dev, ptp);
 	dev_set_name(&ptp->dev, "ptp%d", ptp->index);
 
-	/* Create a posix clock and link it to the device. */
+	 
 	err = posix_clock_register(&ptp->clock, &ptp->dev);
 	if (err) {
 		if (ptp->pps_source)
@@ -364,7 +360,7 @@ int ptp_clock_unregister(struct ptp_clock *ptp)
 		kthread_destroy_worker(ptp->kworker);
 	}
 
-	/* Release the clock's resources. */
+	 
 	if (ptp->pps_source)
 		pps_unregister_source(ptp->pps_source);
 
@@ -452,7 +448,7 @@ void ptp_cancel_worker_sync(struct ptp_clock *ptp)
 }
 EXPORT_SYMBOL(ptp_cancel_worker_sync);
 
-/* module operations */
+ 
 
 static void __exit ptp_exit(void)
 {

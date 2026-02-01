@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Freescale GPMI NAND Flash Driver
- *
- * Copyright 2008-2011 Freescale Semiconductor, Inc.
- * Copyright 2008 Embedded Alley Solutions, Inc.
- */
+ 
+ 
 #ifndef __GPMI_NAND_BCH_REGS_H
 #define __GPMI_NAND_BCH_REGS_H
 

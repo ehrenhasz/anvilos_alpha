@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) Fuzhou Rockchip Electronics Co.Ltd
- * Author:Mark Yao <mark.yao@rock-chips.com>
- */
+ 
+ 
 
 #ifndef _ROCKCHIP_DRM_GEM_H
 #define _ROCKCHIP_DRM_GEM_H
@@ -15,10 +12,10 @@ struct rockchip_gem_object {
 
 	void *kvaddr;
 	dma_addr_t dma_addr;
-	/* Used when IOMMU is disabled */
+	 
 	unsigned long dma_attrs;
 
-	/* Used when IOMMU is enabled */
+	 
 	struct drm_mm_node mm;
 	unsigned long num_pages;
 	struct page **pages;
@@ -44,4 +41,4 @@ void rockchip_gem_free_object(struct drm_gem_object *obj);
 int rockchip_gem_dumb_create(struct drm_file *file_priv,
 			     struct drm_device *dev,
 			     struct drm_mode_create_dumb *args);
-#endif /* _ROCKCHIP_DRM_GEM_H */
+#endif  

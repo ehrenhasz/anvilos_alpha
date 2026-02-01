@@ -1,65 +1,4 @@
-/* Test suite for exclude.
-   Copyright (C) 2009-2023 Free Software Foundation, Inc.
-   This file is part of the GNUlib Library.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <string.h>
-#include <fnmatch.h>
-
-#include "exclude.h"
-#include "error.h"
-#include "argmatch.h"
-
-#ifndef FNM_CASEFOLD
-# define FNM_CASEFOLD 0
-#endif
-#ifndef FNM_LEADING_DIR
-# define FNM_LEADING_DIR 0
-#endif
-
-char const * const exclude_keywords[] = {
-  "noescape",
-  "pathname",
-  "period",
-  "leading_dir",
-  "casefold",
-  "anchored",
-  "include",
-  "wildcards",
-  NULL
-};
-
-int exclude_flags[] = {
-  FNM_NOESCAPE,
-  FNM_PATHNAME,
-  FNM_PERIOD,
-  FNM_LEADING_DIR,
-  FNM_CASEFOLD,
-  EXCLUDE_ANCHORED,
-  EXCLUDE_INCLUDE,
-  EXCLUDE_WILDCARDS
-};
-
-ARGMATCH_VERIFY (exclude_keywords, exclude_flags);
-
-/* Some packages define ARGMATCH_DIE and ARGMATCH_DIE_DECL in <config.h>, and
-   thus must link with a definition of that function.  Provide it here.  */
+ 
 #ifdef ARGMATCH_DIE_DECL
 
 _Noreturn ARGMATCH_DIE_DECL;
@@ -101,12 +40,11 @@ main (int argc, char **argv)
           else
             exclude_options |= flag;
 
-          /* Skip this test if invoked with -leading-dir on a system that
-             lacks support for FNM_LEADING_DIR. */
+           
           if (strcmp (s, "leading_dir") == 0 && FNM_LEADING_DIR == 0)
             exit (77);
 
-          /* Likewise for -casefold and FNM_CASEFOLD.  */
+           
           if (strcmp (s, "casefold") == 0 && FNM_CASEFOLD == 0)
             exit (77);
         }

@@ -1,31 +1,8 @@
-/*
- * Copyright 2020 Mauro Rossi <issor.oruam@gmail.com>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 
-/* include DCE6 register header files */
+ 
 #include "dce/dce_6_0_d.h"
 #include "dce/dce_6_0_sh_mask.h"
 
@@ -39,7 +16,7 @@
 #include "timing_generator.h"
 
 enum black_color_format {
-	BLACK_COLOR_FORMAT_RGB_FULLRANGE = 0,	/* used as index in array */
+	BLACK_COLOR_FORMAT_RGB_FULLRANGE = 0,	 
 	BLACK_COLOR_FORMAT_RGB_LIMITED,
 	BLACK_COLOR_FORMAT_YUV_TV,
 	BLACK_COLOR_FORMAT_YUV_CV,
@@ -128,12 +105,11 @@ static void dce60_timing_generator_enable_advanced_request(
 	struct dce110_timing_generator *tg110 = DCE110TG_FROM_TG(tg);
 	uint32_t addr = CRTC_REG(mmCRTC_START_LINE_CONTROL);
 	uint32_t value = dm_read_reg(tg->ctx, addr);
-	/* DCE6 has CRTC_PREFETCH_EN bit in CRTC_CONTROL register */
+	 
 	uint32_t addr2 = CRTC_REG(mmCRTC_CONTROL);
 	uint32_t value2 = dm_read_reg(tg->ctx, addr2);
 
-	/* DCE6 does not support CRTC_LEGACY_REQUESTOR_EN bit
-	   so here is not possible to set bit based on enable argument */
+	 
 
 	if ((timing->v_sync_width + timing->v_front_porch) <= 3) {
 		set_reg_field_value(
@@ -192,11 +168,11 @@ static bool dce60_is_tg_enabled(struct timing_generator *tg)
 static bool dce60_configure_crc(struct timing_generator *tg,
 				const struct crc_params *params)
 {
-	/* Cannot configure crc on a CRTC that is disabled */
+	 
 	if (!dce60_is_tg_enabled(tg))
 		return false;
 
-	/* DCE6 has no CRTC_CRC_CNTL register, nothing to do */
+	 
 
 	return true;
 }
@@ -233,7 +209,7 @@ static const struct timing_generator_funcs dce60_tg_funcs = {
 		.set_test_pattern = dce110_timing_generator_set_test_pattern,
 		.arm_vert_intr = dce110_arm_vert_intr,
 
-		/* DCE6.0 overrides */
+		 
 		.enable_advanced_request =
 				dce60_timing_generator_enable_advanced_request,
 		.configure_crc = dce60_configure_crc,

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * GPIO interface for Winbond Super I/O chips
- * Currently, only W83627UHG (Nuvoton NCT6627UD) is supported.
- *
- * Author: Maciej S. Szmigiero <mail@maciej.szmigiero.name>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -21,7 +16,7 @@
 #define WB_SIO_EXT_ENTER_KEY		0x87
 #define WB_SIO_EXT_EXIT_KEY		0xaa
 
-/* global chip registers */
+ 
 
 #define WB_SIO_REG_LOGICAL		0x07
 
@@ -62,22 +57,22 @@
 #define WB_SIO_REG_G1MF_FS_GPIO1	2
 #define WB_SIO_REG_G1MF_FS_UARTB	3
 
-/* not an actual device number, just a value meaning 'no device' */
+ 
 #define WB_SIO_DEV_NONE		0xff
 
-/* registers with offsets >= 0x30 are specific for a particular device */
+ 
 
-/* UART B logical device */
+ 
 #define WB_SIO_DEV_UARTB		0x03
 #define WB_SIO_UARTB_REG_ENABLE	0x30
 #define WB_SIO_UARTB_ENABLE_ON		0
 
-/* UART C logical device */
+ 
 #define WB_SIO_DEV_UARTC		0x06
 #define WB_SIO_UARTC_REG_ENABLE	0x30
 #define WB_SIO_UARTC_ENABLE_ON		0
 
-/* GPIO3, GPIO4 logical device */
+ 
 #define WB_SIO_DEV_GPIO34		0x07
 #define WB_SIO_GPIO34_REG_ENABLE	0x30
 #define WB_SIO_GPIO34_ENABLE_3		0
@@ -89,7 +84,7 @@
 #define WB_SIO_GPIO34_REG_DATA4	0xe5
 #define WB_SIO_GPIO34_REG_INV4		0xe6
 
-/* WDTO, PLED, GPIO5, GPIO6 logical device */
+ 
 #define WB_SIO_DEV_WDGPIO56		0x08
 #define WB_SIO_WDGPIO56_REG_ENABLE	0x30
 #define WB_SIO_WDGPIO56_ENABLE_5	1
@@ -101,7 +96,7 @@
 #define WB_SIO_WDGPIO56_REG_DATA6	0xe5
 #define WB_SIO_WDGPIO56_REG_INV6	0xe6
 
-/* GPIO1, GPIO2, SUSLED logical device */
+ 
 #define WB_SIO_DEV_GPIO12		0x09
 #define WB_SIO_GPIO12_REG_ENABLE	0x30
 #define WB_SIO_GPIO12_ENABLE_1		0
@@ -113,20 +108,17 @@
 #define WB_SIO_GPIO12_REG_DATA2	0xe5
 #define WB_SIO_GPIO12_REG_INV2		0xe6
 
-/* UART D logical device */
+ 
 #define WB_SIO_DEV_UARTD		0x0d
 #define WB_SIO_UARTD_REG_ENABLE	0x30
 #define WB_SIO_UARTD_ENABLE_ON		0
 
-/* UART E logical device */
+ 
 #define WB_SIO_DEV_UARTE		0x0e
 #define WB_SIO_UARTE_REG_ENABLE	0x30
 #define WB_SIO_UARTE_ENABLE_ON		0
 
-/*
- * for a description what a particular field of this struct means please see
- * a description of the relevant module parameter at the bottom of this file
- */
+ 
 struct winbond_gpio_params {
 	unsigned long base;
 	unsigned long gpios;
@@ -144,10 +136,7 @@ static int winbond_sio_enter(unsigned long base)
 	if (!request_muxed_region(base, 2, WB_GPIO_DRIVER_NAME))
 		return -EBUSY;
 
-	/*
-	 * datasheet says two successive writes of the "key" value are needed
-	 * in order for chip to enter the "Extended Function Mode"
-	 */
+	 
 	outb(WB_SIO_EXT_ENTER_KEY, base);
 	outb(WB_SIO_EXT_ENTER_KEY, base);
 
@@ -202,18 +191,7 @@ static bool winbond_sio_reg_btest(unsigned long base, u8 reg, u8 bit)
 	return winbond_sio_reg_read(base, reg) & BIT(bit);
 }
 
-/**
- * struct winbond_gpio_port_conflict - possibly conflicting device information
- * @name:	device name (NULL means no conflicting device defined)
- * @dev:	Super I/O logical device number where the testreg register
- *		is located (or WB_SIO_DEV_NONE - don't select any
- *		logical device)
- * @testreg:	register number where the testbit bit is located
- * @testbit:	index of a bit to check whether an actual conflict exists
- * @warnonly:	if set then a conflict isn't fatal (just warn about it),
- *		otherwise disable the particular GPIO port if a conflict
- *		is detected
- */
+ 
 struct winbond_gpio_port_conflict {
 	const char *name;
 	u8 dev;
@@ -222,20 +200,7 @@ struct winbond_gpio_port_conflict {
 	bool warnonly;
 };
 
-/**
- * struct winbond_gpio_info - information about a particular GPIO port (device)
- * @dev:		Super I/O logical device number of the registers
- *			specified below
- * @enablereg:		port enable bit register number
- * @enablebit:		index of a port enable bit
- * @outputreg:		output driver mode bit register number
- * @outputppbit:	index of a push-pull output driver mode bit
- * @ioreg:		data direction register number
- * @invreg:		pin data inversion register number
- * @datareg:		pin data register number
- * @conflict:		description of a device that possibly conflicts with
- *			this port
- */
+ 
 struct winbond_gpio_info {
 	u8 dev;
 	u8 enablereg;
@@ -249,7 +214,7 @@ struct winbond_gpio_info {
 };
 
 static const struct winbond_gpio_info winbond_gpio_infos[6] = {
-	{ /* 0 */
+	{  
 		.dev = WB_SIO_DEV_GPIO12,
 		.enablereg = WB_SIO_GPIO12_REG_ENABLE,
 		.enablebit = WB_SIO_GPIO12_ENABLE_1,
@@ -266,7 +231,7 @@ static const struct winbond_gpio_info winbond_gpio_infos[6] = {
 			.warnonly = true
 		}
 	},
-	{ /* 1 */
+	{  
 		.dev = WB_SIO_DEV_GPIO12,
 		.enablereg = WB_SIO_GPIO12_REG_ENABLE,
 		.enablebit = WB_SIO_GPIO12_ENABLE_2,
@@ -275,9 +240,9 @@ static const struct winbond_gpio_info winbond_gpio_infos[6] = {
 		.ioreg = WB_SIO_GPIO12_REG_IO2,
 		.invreg = WB_SIO_GPIO12_REG_INV2,
 		.datareg = WB_SIO_GPIO12_REG_DATA2
-		/* special conflict handling so doesn't use conflict data */
+		 
 	},
-	{ /* 2 */
+	{  
 		.dev = WB_SIO_DEV_GPIO34,
 		.enablereg = WB_SIO_GPIO34_REG_ENABLE,
 		.enablebit = WB_SIO_GPIO34_ENABLE_3,
@@ -294,7 +259,7 @@ static const struct winbond_gpio_info winbond_gpio_infos[6] = {
 			.warnonly = true
 		}
 	},
-	{ /* 3 */
+	{  
 		.dev = WB_SIO_DEV_GPIO34,
 		.enablereg = WB_SIO_GPIO34_REG_ENABLE,
 		.enablebit = WB_SIO_GPIO34_ENABLE_4,
@@ -311,7 +276,7 @@ static const struct winbond_gpio_info winbond_gpio_infos[6] = {
 			.warnonly = true
 		}
 	},
-	{ /* 4 */
+	{  
 		.dev = WB_SIO_DEV_WDGPIO56,
 		.enablereg = WB_SIO_WDGPIO56_REG_ENABLE,
 		.enablebit = WB_SIO_WDGPIO56_ENABLE_5,
@@ -328,7 +293,7 @@ static const struct winbond_gpio_info winbond_gpio_infos[6] = {
 			.warnonly = true
 		}
 	},
-	{ /* 5 */
+	{  
 		.dev = WB_SIO_DEV_WDGPIO56,
 		.enablereg = WB_SIO_WDGPIO56_REG_ENABLE,
 		.enablebit = WB_SIO_WDGPIO56_ENABLE_6,
@@ -347,7 +312,7 @@ static const struct winbond_gpio_info winbond_gpio_infos[6] = {
 	}
 };
 
-/* returns whether changing a pin is allowed */
+ 
 static bool winbond_gpio_get_info(unsigned int *gpio_num,
 				  const struct winbond_gpio_info **info)
 {
@@ -363,11 +328,7 @@ static bool winbond_gpio_get_info(unsigned int *gpio_num,
 
 	*info = &winbond_gpio_infos[i];
 
-	/*
-	 * GPIO2 (the second port) shares some pins with a basic PC
-	 * functionality, which is very likely controlled by the firmware.
-	 * Don't allow changing these pins by default.
-	 */
+	 
 	if (i == 1) {
 		if (*gpio_num == 0 && !params.pledgpio)
 			allow_changing = false;
@@ -524,7 +485,7 @@ static bool winbond_gpio_configure_port(unsigned long base, unsigned int idx)
 	const struct winbond_gpio_info *info = &winbond_gpio_infos[idx];
 	const struct winbond_gpio_port_conflict *conflict = &info->conflict;
 
-	/* is there a possible conflicting device defined? */
+	 
 	if (conflict->name != NULL) {
 		if (conflict->dev != WB_SIO_DEV_NONE)
 			winbond_sio_select_logical(base, conflict->dev);
@@ -542,7 +503,7 @@ static bool winbond_gpio_configure_port(unsigned long base, unsigned int idx)
 		}
 	}
 
-	/* GPIO1 and GPIO2 need some (additional) special handling */
+	 
 	if (idx == 0)
 		winbond_gpio_configure_port0_pins(base);
 	else if (idx == 1)
@@ -630,10 +591,7 @@ static int winbond_gpio_imatch(struct device *dev, unsigned int id)
 	if (params.base != 0)
 		return winbond_gpio_check_chip(params.base) == 0;
 
-	/*
-	 * if the 'base' module parameter is unset probe two chip default
-	 * I/O port bases
-	 */
+	 
 	params.base = WB_SIO_BASE;
 	ret = winbond_gpio_check_chip(params.base);
 	if (ret == 0)
@@ -663,17 +621,10 @@ static int winbond_gpio_iprobe(struct device *dev, unsigned int id)
 	if (ret)
 		return ret;
 
-	/*
-	 * Add 8 gpios for every GPIO port that was enabled in gpios
-	 * module parameter (that wasn't disabled earlier in
-	 * winbond_gpio_configure() & co. due to, for example, a pin conflict).
-	 */
+	 
 	winbond_gpio_chip.ngpio = hweight_long(params.gpios) * 8;
 
-	/*
-	 * GPIO6 port has only 5 pins, so if it is enabled we have to adjust
-	 * the total count appropriately
-	 */
+	 
 	if (params.gpios & BIT(5))
 		winbond_gpio_chip.ngpio -= (8 - 5);
 
@@ -696,16 +647,12 @@ module_param_named(base, params.base, ulong, 0444);
 MODULE_PARM_DESC(base,
 		 "I/O port base (when unset - probe chip default ones)");
 
-/* This parameter sets which GPIO devices (ports) we enable */
+ 
 module_param_named(gpios, params.gpios, ulong, 0444);
 MODULE_PARM_DESC(gpios,
 		 "bitmask of GPIO ports to enable (bit 0 - GPIO1, bit 1 - GPIO2, etc.");
 
-/*
- * These two parameters below set how we configure GPIO ports output drivers.
- * It can't be a one bitmask since we need three values per port: push-pull,
- * open-drain and keep as-is (this is the default).
- */
+ 
 module_param_named(ppgpios, params.ppgpios, ulong, 0444);
 MODULE_PARM_DESC(ppgpios,
 		 "bitmask of GPIO ports to set to push-pull mode (bit 0 - GPIO1, bit 1 - GPIO2, etc.");
@@ -714,12 +661,7 @@ module_param_named(odgpios, params.odgpios, ulong, 0444);
 MODULE_PARM_DESC(odgpios,
 		 "bitmask of GPIO ports to set to open drain mode (bit 0 - GPIO1, bit 1 - GPIO2, etc.");
 
-/*
- * GPIO2.0 and GPIO2.1 control a basic PC functionality that we
- * don't allow tinkering with by default (it is very likely that the
- * firmware owns these pins).
- * These two parameters below allow overriding these prohibitions.
- */
+ 
 module_param_named(pledgpio, params.pledgpio, bool, 0644);
 MODULE_PARM_DESC(pledgpio,
 		 "enable changing value of GPIO2.0 bit (Power LED), default no.");

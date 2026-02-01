@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * OpenFirmware helpers for memory drivers
- *
- * Copyright (C) 2012 Texas Instruments, Inc.
- * Copyright (C) 2020 Krzysztof Kozlowski <krzk@kernel.org>
- */
+ 
+ 
 
 #ifndef __LINUX_MEMORY_OF_REG_H
 #define __LINUX_MEMORY_OF_REG_H
@@ -55,6 +50,6 @@ static inline const struct lpddr2_info
 {
 	return NULL;
 }
-#endif /* CONFIG_OF && CONFIG_DDR */
+#endif  
 
-#endif /* __LINUX_MEMORY_OF_REG_ */
+#endif  

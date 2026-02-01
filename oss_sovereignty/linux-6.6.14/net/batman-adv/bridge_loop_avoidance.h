@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) B.A.T.M.A.N. contributors:
- *
- * Simon Wunderlich
- */
+ 
+ 
 
 #ifndef _NET_BATMAN_ADV_BLA_H_
 #define _NET_BATMAN_ADV_BLA_H_
@@ -16,14 +13,7 @@
 #include <linux/stddef.h>
 #include <linux/types.h>
 
-/**
- * batadv_bla_is_loopdetect_mac() - check if the mac address is from a loop
- *  detect frame sent by bridge loop avoidance
- * @mac: mac address to check
- *
- * Return: true if the it looks like a loop detect frame
- * (mac starts with BA:BE), false otherwise
- */
+ 
 static inline bool batadv_bla_is_loopdetect_mac(const uint8_t *mac)
 {
 	if (mac[0] == 0xba && mac[1] == 0xbe)
@@ -57,7 +47,7 @@ bool batadv_bla_check_claim(struct batadv_priv *bat_priv, u8 *addr,
 			    unsigned short vid);
 #endif
 #define BATADV_BLA_CRC_INIT	0
-#else /* ifdef CONFIG_BATMAN_ADV_BLA */
+#else  
 
 static inline bool batadv_bla_rx(struct batadv_priv *bat_priv,
 				 struct sk_buff *skb, unsigned short vid,
@@ -127,6 +117,6 @@ bool batadv_bla_check_claim(struct batadv_priv *bat_priv, u8 *addr,
 	return true;
 }
 
-#endif /* ifdef CONFIG_BATMAN_ADV_BLA */
+#endif  
 
-#endif /* ifndef _NET_BATMAN_ADV_BLA_H_ */
+#endif  

@@ -1,9 +1,5 @@
-/* 	$OpenBSD: test_parse.c,v 1.2 2021/12/14 21:25:27 deraadt Exp $ */
-/*
- * Regress test for misc user/host/URI parsing functions.
- *
- * Placed in the public domain.
- */
+ 
+ 
 
 #include "includes.h"
 

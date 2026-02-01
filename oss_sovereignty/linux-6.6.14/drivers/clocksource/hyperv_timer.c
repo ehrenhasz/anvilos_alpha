@@ -1,15 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Clocksource driver for the synthetic counter and timers
- * provided by the Hyper-V hypervisor to guest VMs, as described
- * in the Hyper-V Top Level Functional Spec (TLFS). This driver
- * is instruction set architecture independent.
- *
- * Copyright (C) 2019, Microsoft, Inc.
- *
- * Author:  Michael Kelley <mikelley@microsoft.com>
- */
+
+ 
 
 #include <linux/percpu.h>
 #include <linux/cpumask.h>
@@ -29,32 +20,14 @@
 static struct clock_event_device __percpu *hv_clock_event;
 static u64 hv_sched_clock_offset __ro_after_init;
 
-/*
- * If false, we're using the old mechanism for stimer0 interrupts
- * where it sends a VMbus message when it expires. The old
- * mechanism is used when running on older versions of Hyper-V
- * that don't support Direct Mode. While Hyper-V provides
- * four stimer's per CPU, Linux uses only stimer0.
- *
- * Because Direct Mode does not require processing a VMbus
- * message, stimer interrupts can be enabled earlier in the
- * process of booting a CPU, and consistent with when timer
- * interrupts are enabled for other clocksource drivers.
- * However, for legacy versions of Hyper-V when Direct Mode
- * is not enabled, setting up stimer interrupts must be
- * delayed until VMbus is initialized and can process the
- * interrupt message.
- */
+ 
 static bool direct_mode_enabled;
 
 static int stimer0_irq = -1;
 static int stimer0_message_sint;
 static __maybe_unused DEFINE_PER_CPU(long, stimer0_evt);
 
-/*
- * Common code for stimer0 interrupts coming via Direct Mode or
- * as a VMbus message.
- */
+ 
 void hv_stimer0_isr(void)
 {
 	struct clock_event_device *ce;
@@ -64,10 +37,7 @@ void hv_stimer0_isr(void)
 }
 EXPORT_SYMBOL_GPL(hv_stimer0_isr);
 
-/*
- * stimer0 interrupt handler for architectures that support
- * per-cpu interrupts, which also implies Direct Mode.
- */
+ 
 static irqreturn_t __maybe_unused hv_stimer0_percpu_isr(int irq, void *dev_id)
 {
 	hv_stimer0_isr();
@@ -103,19 +73,13 @@ static int hv_ce_set_oneshot(struct clock_event_device *evt)
 	timer_cfg.enable = 1;
 	timer_cfg.auto_enable = 1;
 	if (direct_mode_enabled) {
-		/*
-		 * When it expires, the timer will directly interrupt
-		 * on the specified hardware vector/IRQ.
-		 */
+		 
 		timer_cfg.direct_mode = 1;
 		timer_cfg.apic_vector = HYPERV_STIMER0_VECTOR;
 		if (stimer0_irq >= 0)
 			enable_percpu_irq(stimer0_irq, IRQ_TYPE_NONE);
 	} else {
-		/*
-		 * When it expires, the timer will generate a VMbus message,
-		 * to be handled by the normal VMbus interrupt handler.
-		 */
+		 
 		timer_cfg.direct_mode = 0;
 		timer_cfg.sintx = stimer0_message_sint;
 	}
@@ -123,9 +87,7 @@ static int hv_ce_set_oneshot(struct clock_event_device *evt)
 	return 0;
 }
 
-/*
- * hv_stimer_init - Per-cpu initialization of the clockevent
- */
+ 
 static int hv_stimer_init(unsigned int cpu)
 {
 	struct clock_event_device *ce;
@@ -149,9 +111,7 @@ static int hv_stimer_init(unsigned int cpu)
 	return 0;
 }
 
-/*
- * hv_stimer_cleanup - Per-cpu cleanup of the clockevent
- */
+ 
 int hv_stimer_cleanup(unsigned int cpu)
 {
 	struct clock_event_device *ce;
@@ -159,20 +119,7 @@ int hv_stimer_cleanup(unsigned int cpu)
 	if (!hv_clock_event)
 		return 0;
 
-	/*
-	 * In the legacy case where Direct Mode is not enabled
-	 * (which can only be on x86/64), stimer cleanup happens
-	 * relatively early in the CPU offlining process. We
-	 * must unbind the stimer-based clockevent device so
-	 * that the LAPIC timer can take over until clockevents
-	 * are no longer needed in the offlining process. Note
-	 * that clockevents_unbind_device() eventually calls
-	 * hv_ce_shutdown().
-	 *
-	 * The unbind should not be done when Direct Mode is
-	 * enabled because we may be on an architecture where
-	 * there are no other clockevent devices to fallback to.
-	 */
+	 
 	ce = per_cpu_ptr(hv_clock_event, cpu);
 	if (direct_mode_enabled)
 		hv_ce_shutdown(ce);
@@ -183,11 +130,7 @@ int hv_stimer_cleanup(unsigned int cpu)
 }
 EXPORT_SYMBOL_GPL(hv_stimer_cleanup);
 
-/*
- * These placeholders are overridden by arch specific code on
- * architectures that need special setup of the stimer0 IRQ because
- * they don't support per-cpu IRQs (such as x86/x64).
- */
+ 
 void __weak hv_setup_stimer0_handler(void (*handler)(void))
 {
 };
@@ -197,7 +140,7 @@ void __weak hv_remove_stimer0_handler(void)
 };
 
 #ifdef CONFIG_ACPI
-/* Called only on architectures with per-cpu IRQs (i.e., not x86/x64) */
+ 
 static int hv_setup_stimer0_irq(void)
 {
 	int ret;
@@ -242,16 +185,12 @@ static void hv_remove_stimer0_irq(void)
 }
 #endif
 
-/* hv_stimer_alloc - Global initialization of the clockevent and stimer0 */
+ 
 int hv_stimer_alloc(bool have_percpu_irqs)
 {
 	int ret;
 
-	/*
-	 * Synthetic timers are always available except on old versions of
-	 * Hyper-V on x86.  In that case, return as error as Linux will use a
-	 * clockevent based on emulated LAPIC timer hardware.
-	 */
+	 
 	if (!(ms_hyperv.features & HV_MSR_SYNTIMER_AVAILABLE))
 		return -EINVAL;
 
@@ -262,10 +201,7 @@ int hv_stimer_alloc(bool have_percpu_irqs)
 	direct_mode_enabled = ms_hyperv.misc_features &
 			HV_STIMER_DIRECT_MODE_AVAILABLE;
 
-	/*
-	 * If Direct Mode isn't enabled, the remainder of the initialization
-	 * is done later by hv_stimer_legacy_init()
-	 */
+	 
 	if (!direct_mode_enabled)
 		return 0;
 
@@ -277,11 +213,7 @@ int hv_stimer_alloc(bool have_percpu_irqs)
 		hv_setup_stimer0_handler(hv_stimer0_isr);
 	}
 
-	/*
-	 * Since we are in Direct Mode, stimer initialization
-	 * can be done now with a CPUHP value in the same range
-	 * as other clockevent devices.
-	 */
+	 
 	ret = cpuhp_setup_state(CPUHP_AP_HYPERV_TIMER_STARTING,
 			"clockevents/hyperv/stimer:starting",
 			hv_stimer_init, hv_stimer_cleanup);
@@ -298,35 +230,19 @@ free_clock_event:
 }
 EXPORT_SYMBOL_GPL(hv_stimer_alloc);
 
-/*
- * hv_stimer_legacy_init -- Called from the VMbus driver to handle
- * the case when Direct Mode is not enabled, and the stimer
- * must be initialized late in the CPU onlining process.
- *
- */
+ 
 void hv_stimer_legacy_init(unsigned int cpu, int sint)
 {
 	if (direct_mode_enabled)
 		return;
 
-	/*
-	 * This function gets called by each vCPU, so setting the
-	 * global stimer_message_sint value each time is conceptually
-	 * not ideal, but the value passed in is always the same and
-	 * it avoids introducing yet another interface into this
-	 * clocksource driver just to set the sint in the legacy case.
-	 */
+	 
 	stimer0_message_sint = sint;
 	(void)hv_stimer_init(cpu);
 }
 EXPORT_SYMBOL_GPL(hv_stimer_legacy_init);
 
-/*
- * hv_stimer_legacy_cleanup -- Called from the VMbus driver to
- * handle the case when Direct Mode is not enabled, and the
- * stimer must be cleaned up early in the CPU offlining
- * process.
- */
+ 
 void hv_stimer_legacy_cleanup(unsigned int cpu)
 {
 	if (direct_mode_enabled)
@@ -335,18 +251,12 @@ void hv_stimer_legacy_cleanup(unsigned int cpu)
 }
 EXPORT_SYMBOL_GPL(hv_stimer_legacy_cleanup);
 
-/*
- * Do a global cleanup of clockevents for the cases of kexec and
- * vmbus exit
- */
+ 
 void hv_stimer_global_cleanup(void)
 {
 	int	cpu;
 
-	/*
-	 * hv_stime_legacy_cleanup() will stop the stimer if Direct
-	 * Mode is not enabled, and fallback to the LAPIC timer.
-	 */
+	 
 	for_each_present_cpu(cpu) {
 		hv_stimer_legacy_cleanup(cpu);
 	}
@@ -367,25 +277,11 @@ EXPORT_SYMBOL_GPL(hv_stimer_global_cleanup);
 
 static __always_inline u64 read_hv_clock_msr(void)
 {
-	/*
-	 * Read the partition counter to get the current tick count. This count
-	 * is set to 0 when the partition is created and is incremented in 100
-	 * nanosecond units.
-	 *
-	 * Use hv_raw_get_register() because this function is used from
-	 * noinstr. Notable; while HV_REGISTER_TIME_REF_COUNT is a synthetic
-	 * register it doesn't need the GHCB path.
-	 */
+	 
 	return hv_raw_get_register(HV_REGISTER_TIME_REF_COUNT);
 }
 
-/*
- * Code and definitions for the Hyper-V clocksources.  Two
- * clocksources are defined: one that reads the Hyper-V defined MSR, and
- * the other that uses the TSC reference page feature as defined in the
- * TLFS.  The MSR version is for compatibility with old versions of
- * Hyper-V and 32-bit x86.  The TSC reference page version is preferred.
- */
+ 
 
 static union {
 	struct ms_hyperv_tsc_page page;
@@ -411,12 +307,7 @@ static __always_inline u64 read_hv_clock_tsc(void)
 {
 	u64 cur_tsc, time;
 
-	/*
-	 * The Hyper-V Top-Level Function Spec (TLFS), section Timers,
-	 * subsection Refererence Counter, guarantees that the TSC and MSR
-	 * times are in sync and monotonic. Therefore we can fall back
-	 * to the MSR in case the TSC page indicates unavailability.
-	 */
+	 
 	if (!hv_read_tsc_page_tsc(tsc_page, &cur_tsc, &time))
 		time = read_hv_clock_msr();
 
@@ -438,7 +329,7 @@ static void suspend_hv_clock_tsc(struct clocksource *arg)
 {
 	union hv_reference_tsc_msr tsc_msr;
 
-	/* Disable the TSC page */
+	 
 	tsc_msr.as_uint64 = hv_get_register(HV_REGISTER_REFERENCE_TSC);
 	tsc_msr.enable = 0;
 	hv_set_register(HV_REGISTER_REFERENCE_TSC, tsc_msr.as_uint64);
@@ -449,7 +340,7 @@ static void resume_hv_clock_tsc(struct clocksource *arg)
 {
 	union hv_reference_tsc_msr tsc_msr;
 
-	/* Re-enable the TSC page */
+	 
 	tsc_msr.as_uint64 = hv_get_register(HV_REGISTER_REFERENCE_TSC);
 	tsc_msr.enable = 1;
 	tsc_msr.pfn = tsc_pfn;
@@ -493,42 +384,28 @@ static struct clocksource hyperv_cs_msr = {
 	.flags	= CLOCK_SOURCE_IS_CONTINUOUS,
 };
 
-/*
- * Reference to pv_ops must be inline so objtool
- * detection of noinstr violations can work correctly.
- */
+ 
 #ifdef CONFIG_GENERIC_SCHED_CLOCK
 static __always_inline void hv_setup_sched_clock(void *sched_clock)
 {
-	/*
-	 * We're on an architecture with generic sched clock (not x86/x64).
-	 * The Hyper-V sched clock read function returns nanoseconds, not
-	 * the normal 100ns units of the Hyper-V synthetic clock.
-	 */
+	 
 	sched_clock_register(sched_clock, 64, NSEC_PER_SEC);
 }
 #elif defined CONFIG_PARAVIRT
 static __always_inline void hv_setup_sched_clock(void *sched_clock)
 {
-	/* We're on x86/x64 *and* using PV ops */
+	 
 	paravirt_set_sched_clock(sched_clock);
 }
-#else /* !CONFIG_GENERIC_SCHED_CLOCK && !CONFIG_PARAVIRT */
+#else  
 static __always_inline void hv_setup_sched_clock(void *sched_clock) {}
-#endif /* CONFIG_GENERIC_SCHED_CLOCK */
+#endif  
 
 static void __init hv_init_tsc_clocksource(void)
 {
 	union hv_reference_tsc_msr tsc_msr;
 
-	/*
-	 * If Hyper-V offers TSC_INVARIANT, then the virtualized TSC correctly
-	 * handles frequency and offset changes due to live migration,
-	 * pause/resume, and other VM management operations.  So lower the
-	 * Hyper-V Reference TSC rating, causing the generic TSC to be used.
-	 * TSC_INVARIANT is not offered on ARM64, so the Hyper-V Reference
-	 * TSC will be preferred over the virtualized ARM64 arch counter.
-	 */
+	 
 	if (ms_hyperv.features & HV_ACCESS_TSC_INVARIANT) {
 		hyperv_cs_tsc.rating = 250;
 		hyperv_cs_msr.rating = 245;
@@ -539,22 +416,7 @@ static void __init hv_init_tsc_clocksource(void)
 
 	hv_read_reference_counter = read_hv_clock_tsc;
 
-	/*
-	 * TSC page mapping works differently in root compared to guest.
-	 * - In guest partition the guest PFN has to be passed to the
-	 *   hypervisor.
-	 * - In root partition it's other way around: it has to map the PFN
-	 *   provided by the hypervisor.
-	 *   But it can't be mapped right here as it's too early and MMU isn't
-	 *   ready yet. So, we only set the enable bit here and will remap the
-	 *   page later in hv_remap_tsc_clocksource().
-	 *
-	 * It worth mentioning, that TSC clocksource read function
-	 * (read_hv_clock_tsc) has a MSR-based fallback mechanism, used when
-	 * TSC page is zeroed (which is the case until the PFN is remapped) and
-	 * thus TSC clocksource will work even without the real TSC page
-	 * mapped.
-	 */
+	 
 	tsc_msr.as_uint64 = hv_get_register(HV_REGISTER_REFERENCE_TSC);
 	if (hv_root_partition)
 		tsc_pfn = tsc_msr.pfn;
@@ -566,12 +428,7 @@ static void __init hv_init_tsc_clocksource(void)
 
 	clocksource_register_hz(&hyperv_cs_tsc, NSEC_PER_SEC/100);
 
-	/*
-	 * If TSC is invariant, then let it stay as the sched clock since it
-	 * will be faster than reading the TSC page. But if not invariant, use
-	 * the TSC page so that live migrations across hosts with different
-	 * frequencies is handled correctly.
-	 */
+	 
 	if (!(ms_hyperv.features & HV_ACCESS_TSC_INVARIANT)) {
 		hv_sched_clock_offset = hv_read_reference_counter();
 		hv_setup_sched_clock(read_hv_sched_clock_tsc);
@@ -580,16 +437,7 @@ static void __init hv_init_tsc_clocksource(void)
 
 void __init hv_init_clocksource(void)
 {
-	/*
-	 * Try to set up the TSC page clocksource, then the MSR clocksource.
-	 * At least one of these will always be available except on very old
-	 * versions of Hyper-V on x86.  In that case we won't have a Hyper-V
-	 * clocksource, but Linux will still run with a clocksource based
-	 * on the emulated PIT or LAPIC timer.
-	 *
-	 * Never use the MSR clocksource as sched clock.  It's too slow.
-	 * Better to use the native sched clock as the fallback.
-	 */
+	 
 	hv_init_tsc_clocksource();
 
 	if (ms_hyperv.features & HV_MSR_TIME_REF_COUNT_AVAILABLE)

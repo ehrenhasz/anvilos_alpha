@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
 
-/*
- * Xen para-virtual sound device
- *
- * Copyright (C) 2016-2018 EPAM Systems Inc.
- *
- * Author: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>
- */
+
+ 
 
 #include <xen/events.h>
 #include <xen/grant_table.h>
@@ -32,14 +26,10 @@ static irqreturn_t evtchnl_interrupt_req(int irq, void *dev_id)
 
 again:
 	rp = channel->u.req.ring.sring->rsp_prod;
-	/* Ensure we see queued responses up to rp. */
+	 
 	rmb();
 
-	/*
-	 * Assume that the backend is trusted to always write sane values
-	 * to the ring counters, so no overflow checks on frontend side
-	 * are required.
-	 */
+	 
 	for (i = channel->u.req.ring.rsp_cons; i != rp; i++) {
 		resp = RING_GET_RESPONSE(&channel->u.req.ring, i);
 		if (resp->id != channel->evt_id)
@@ -96,16 +86,12 @@ static irqreturn_t evtchnl_interrupt_evt(int irq, void *dev_id)
 	mutex_lock(&channel->ring_io_lock);
 
 	prod = page->in_prod;
-	/* Ensure we see ring contents up to prod. */
+	 
 	virt_rmb();
 	if (prod == page->in_cons)
 		goto out;
 
-	/*
-	 * Assume that the backend is trusted to always write sane values
-	 * to the ring counters, so no overflow checks on frontend side
-	 * are required.
-	 */
+	 
 	for (cons = page->in_cons; cons != prod; cons++) {
 		struct xensnd_evt *event;
 
@@ -122,7 +108,7 @@ static irqreturn_t evtchnl_interrupt_evt(int irq, void *dev_id)
 	}
 
 	page->in_cons = cons;
-	/* Ensure ring contents. */
+	 
 	virt_wmb();
 
 out:
@@ -155,7 +141,7 @@ static void evtchnl_free(struct xen_snd_front_info *front_info,
 
 	channel->state = EVTCHNL_STATE_DISCONNECTED;
 	if (channel->type == EVTCHNL_TYPE_REQ) {
-		/* Release all who still waits for response if any. */
+		 
 		channel->u.req.resp_status = -EIO;
 		complete_all(&channel->u.req.completion);
 	}
@@ -166,7 +152,7 @@ static void evtchnl_free(struct xen_snd_front_info *front_info,
 	if (channel->port)
 		xenbus_free_evtchn(front_info->xb_dev, channel->port);
 
-	/* End access and free the page. */
+	 
 	xenbus_teardown_ring(&page, 1, &channel->gref);
 
 	memset(channel, 0, sizeof(*channel));
@@ -276,7 +262,7 @@ int xen_snd_front_evtchnl_create_all(struct xen_snd_front_info *front_info,
 	if (!front_info->evt_pairs)
 		return -ENOMEM;
 
-	/* Iterate over devices and their streams and create event channels. */
+	 
 	for (d = 0; d < cfg->num_pcm_instances; d++) {
 		struct xen_front_cfg_pcm_instance *pcm_instance;
 		int s, index;
@@ -340,14 +326,14 @@ static int evtchnl_publish(struct xenbus_transaction xbt,
 	struct xenbus_device *xb_dev = channel->front_info->xb_dev;
 	int ret;
 
-	/* Write control channel ring reference. */
+	 
 	ret = xenbus_printf(xbt, path, node_ring, "%u", channel->gref);
 	if (ret < 0) {
 		dev_err(&xb_dev->dev, "Error writing ring-ref: %d\n", ret);
 		return ret;
 	}
 
-	/* Write event channel ring reference. */
+	 
 	ret = xenbus_printf(xbt, path, node_chnl, "%u", channel->port);
 	if (ret < 0) {
 		dev_err(&xb_dev->dev, "Error writing event channel: %d\n", ret);

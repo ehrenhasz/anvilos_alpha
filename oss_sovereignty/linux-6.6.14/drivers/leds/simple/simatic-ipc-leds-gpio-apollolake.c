@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Siemens SIMATIC IPC driver for GPIO based LEDs
- *
- * Copyright (c) Siemens AG, 2023
- *
- * Author:
- *  Henning Schild <henning.schild@siemens.com>
- */
+
+ 
 
 #include <linux/gpio/machine.h>
 #include <linux/gpio/consumer.h>
@@ -26,16 +19,16 @@ static struct gpiod_lookup_table simatic_ipc_led_gpio_table = {
 		GPIO_LOOKUP_IDX("apollolake-pinctrl.0", 58, NULL, 3, GPIO_ACTIVE_LOW),
 		GPIO_LOOKUP_IDX("apollolake-pinctrl.0", 60, NULL, 4, GPIO_ACTIVE_LOW),
 		GPIO_LOOKUP_IDX("apollolake-pinctrl.0", 51, NULL, 5, GPIO_ACTIVE_LOW),
-		{} /* Terminating entry */
+		{}  
 	},
 };
 
 static struct gpiod_lookup_table simatic_ipc_led_gpio_table_extra = {
-	.dev_id = NULL, /* Filled during initialization */
+	.dev_id = NULL,  
 	.table = {
 		GPIO_LOOKUP_IDX("apollolake-pinctrl.0", 56, NULL, 6, GPIO_ACTIVE_LOW),
 		GPIO_LOOKUP_IDX("apollolake-pinctrl.0", 59, NULL, 7, GPIO_ACTIVE_HIGH),
-		{} /* Terminating entry */
+		{}  
 	},
 };
 

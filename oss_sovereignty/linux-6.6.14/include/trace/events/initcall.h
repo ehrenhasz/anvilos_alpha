@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM initcall
 
@@ -31,10 +31,7 @@ TRACE_EVENT(initcall_start,
 	TP_ARGS(func),
 
 	TP_STRUCT__entry(
-		/*
-		 * Use field_struct to avoid is_signed_type()
-		 * comparison of a function pointer
-		 */
+		 
 		__field_struct(initcall_t, func)
 	),
 
@@ -52,10 +49,7 @@ TRACE_EVENT(initcall_finish,
 	TP_ARGS(func, ret),
 
 	TP_STRUCT__entry(
-		/*
-		 * Use field_struct to avoid is_signed_type()
-		 * comparison of a function pointer
-		 */
+		 
 		__field_struct(initcall_t,	func)
 		__field(int,			ret)
 	),
@@ -68,7 +62,7 @@ TRACE_EVENT(initcall_finish,
 	TP_printk("func=%pS ret=%d", __entry->func, __entry->ret)
 );
 
-#endif /* if !defined(_TRACE_GPIO_H) || defined(TRACE_HEADER_MULTI_READ) */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

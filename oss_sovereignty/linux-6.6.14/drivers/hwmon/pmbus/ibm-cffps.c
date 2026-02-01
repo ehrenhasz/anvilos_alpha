@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2017 IBM Corp.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -35,7 +33,7 @@
 #define CFFPS_CCIN_VERSION_2			 0x2e
 #define CFFPS_CCIN_VERSION_3			 0x51
 
-/* STATUS_MFR_SPECIFIC bits */
+ 
 #define CFFPS_MFR_FAN_FAULT			BIT(0)
 #define CFFPS_MFR_THERMAL_FAULT			BIT(1)
 #define CFFPS_MFR_OV_FAULT			BIT(2)
@@ -106,10 +104,7 @@ static ssize_t ibm_cffps_debugfs_read_input_history(struct file *file, char __us
 			return rc;
 		}
 
-		/*
-		 * Use a raw i2c transfer, since we need more bytes
-		 * than Linux I2C supports through smbus xfr (only 32).
-		 */
+		 
 		rc = i2c_transfer(psu->client->adapter, msg, 2);
 		pmbus_unlock(psu->client);
 		if (rc < 0)
@@ -272,13 +267,10 @@ static int ibm_cffps_read_byte_data(struct i2c_client *client, int page,
 		mfr = pmbus_read_byte_data(client, page,
 					   PMBUS_STATUS_MFR_SPECIFIC);
 		if (mfr < 0)
-			/*
-			 * Return the status register instead of an error,
-			 * since we successfully read status.
-			 */
+			 
 			return rc;
 
-		/* Add MFR_SPECIFIC bits to the standard pmbus status regs. */
+		 
 		if (reg == PMBUS_STATUS_FAN_12) {
 			if (mfr & CFFPS_MFR_FAN_FAULT)
 				rc |= PB_FAN_FAN1_FAULT;
@@ -319,10 +311,7 @@ static int ibm_cffps_read_word_data(struct i2c_client *client, int page,
 		mfr = pmbus_read_byte_data(client, page,
 					   PMBUS_STATUS_MFR_SPECIFIC);
 		if (mfr < 0)
-			/*
-			 * Return the status register instead of an error,
-			 * since we successfully read status.
-			 */
+			 
 			return rc;
 
 		if (mfr & CFFPS_MFR_PS_KILL)
@@ -533,7 +522,7 @@ static int ibm_cffps_probe(struct i2c_client *client)
 			break;
 		}
 
-		/* Set the client name to include the version number. */
+		 
 		snprintf(client->name, I2C_NAME_SIZE, "cffps%d", vs + 1);
 	}
 
@@ -542,10 +531,7 @@ static int ibm_cffps_probe(struct i2c_client *client)
 	if (rc)
 		return rc;
 
-	/*
-	 * Don't fail the probe if there isn't enough memory for leds and
-	 * debugfs.
-	 */
+	 
 	psu = devm_kzalloc(&client->dev, sizeof(*psu), GFP_KERNEL);
 	if (!psu)
 		return 0;
@@ -555,7 +541,7 @@ static int ibm_cffps_probe(struct i2c_client *client)
 
 	ibm_cffps_create_led_class(psu);
 
-	/* Don't fail the probe if we can't create debugfs */
+	 
 	debugfs = pmbus_get_debugfs_dir(client);
 	if (!debugfs)
 		return 0;
@@ -577,7 +563,7 @@ static int ibm_cffps_probe(struct i2c_client *client)
 			    &psu->debugfs_entries[CFFPS_DEBUGFS_ON_OFF_CONFIG],
 			    &ibm_cffps_fops);
 
-	/* For compatibility with users of the old naming scheme. */
+	 
 	debugfs_create_symlink(client->name, debugfs, ".");
 
 	return 0;

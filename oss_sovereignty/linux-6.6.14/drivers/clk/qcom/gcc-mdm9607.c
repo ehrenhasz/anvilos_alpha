@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, Konrad Dybcio <konrad.dybcio@somainline.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -121,7 +119,7 @@ static struct clk_alpha_pll gpll2_early = {
 	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_DEFAULT],
 	.clkr = {
 		.enable_reg = 0x45000,
-		.enable_mask = BIT(3), /* Yeah, apparently it's not 2 */
+		.enable_mask = BIT(3),  
 		.hw.init = &(struct clk_init_data)
 		{
 			.name = "gpll2_early",
@@ -1601,7 +1599,7 @@ static int gcc_mdm9607_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/* Vote for GPLL0 to turn on. Needed by acpuclock. */
+	 
 	regmap_update_bits(regmap, 0x45000, BIT(0), BIT(0));
 
 	return qcom_cc_really_probe(pdev, &gcc_mdm9607_desc, regmap);

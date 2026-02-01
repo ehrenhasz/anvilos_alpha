@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
@@ -36,7 +36,7 @@ struct {
 long important_hits;
 long hits;
 
-/* set from user-space */
+ 
 const volatile unsigned int use_hashmap;
 const volatile unsigned int hashmap_num_keys;
 const volatile unsigned int num_maps;

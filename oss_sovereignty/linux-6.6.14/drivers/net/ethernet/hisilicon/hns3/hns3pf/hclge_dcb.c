@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright (c) 2016-2017 Hisilicon Limited.
+
+
 
 #include "hclge_main.h"
 #include "hclge_dcb.h"
@@ -27,11 +27,7 @@ static int hclge_ieee_ets_to_tm_info(struct hclge_dev *hdev,
 				ets->tc_tx_bw[i];
 			break;
 		default:
-			/* Hardware only supports SP (strict priority)
-			 * or ETS (enhanced transmission selection)
-			 * algorithms, if we receive some other value
-			 * from dcbnl, then throw an error.
-			 */
+			 
 			return -EINVAL;
 		}
 	}
@@ -65,7 +61,7 @@ static void hclge_tm_info_to_ieee_ets(struct hclge_dev *hdev,
 	}
 }
 
-/* IEEE std */
+ 
 static int hclge_ieee_getets(struct hnae3_handle *h, struct ieee_ets *ets)
 {
 	struct hclge_vport *vport = hclge_get_vport(h);
@@ -121,7 +117,7 @@ static u8 hclge_ets_tc_changed(struct hclge_dev *hdev, struct ieee_ets *ets,
 			max_tc_id = ets->prio_tc[i];
 	}
 
-	/* return max tc number, max tc id need to plus 1 */
+	 
 	return max_tc_id + 1;
 }
 
@@ -148,9 +144,7 @@ static int hclge_ets_sch_mode_validate(struct hclge_dev *hdev,
 				return -EINVAL;
 			}
 
-			/* The hardware will switch to sp mode if bandwidth is
-			 * 0, so limit ets bandwidth must be greater than 0.
-			 */
+			 
 			if (!ets->tc_tx_bw[i]) {
 				dev_err(&hdev->pdev->dev,
 					"tc%u ets bw cannot be 0\n", i);
@@ -371,11 +365,7 @@ static int hclge_ieee_setpfc(struct hnae3_handle *h, struct ieee_pfc *pfc)
 	if (ret)
 		return ret;
 
-	/* No matter whether the following operations are performed
-	 * successfully or not, disabling the tm flush and notify
-	 * the network status to up are necessary.
-	 * Do not return immediately.
-	 */
+	 
 	ret = hclge_buffer_alloc(hdev);
 	if (ret)
 		last_bad_ret = ret;
@@ -478,7 +468,7 @@ static int hclge_ieee_delapp(struct hnae3_handle *h, struct dcb_app *app)
 	return ret;
 }
 
-/* DCBX configuration */
+ 
 static u8 hclge_getdcbx(struct hnae3_handle *h)
 {
 	struct hclge_vport *vport = hclge_get_vport(h);
@@ -498,7 +488,7 @@ static u8 hclge_setdcbx(struct hnae3_handle *h, u8 mode)
 
 	netif_dbg(h, drv, netdev, "set dcbx: mode=%u\n", mode);
 
-	/* No support for LLD_MANAGED modes or CEE */
+	 
 	if ((mode & DCB_CAP_DCBX_LLD_MANAGED) ||
 	    (mode & DCB_CAP_DCBX_VER_CEE) ||
 	    !(mode & DCB_CAP_DCBX_HOST))
@@ -590,7 +580,7 @@ static int hclge_config_tc(struct hclge_dev *hdev,
 	return hclge_map_update(hdev);
 }
 
-/* Set up TC for hardware offloaded mqprio in channel mode */
+ 
 static int hclge_setup_tc(struct hnae3_handle *h,
 			  struct tc_mqprio_qopt_offload *mqprio_qopt)
 {
@@ -601,10 +591,7 @@ static int hclge_setup_tc(struct hnae3_handle *h,
 	u8 tc = mqprio_qopt->qopt.num_tc;
 	int ret;
 
-	/* if client unregistered, it's not allowed to change
-	 * mqprio configuration, which may cause uninit ring
-	 * fail.
-	 */
+	 
 	if (!test_bit(HCLGE_STATE_NIC_REGISTERED, &hdev->state))
 		return -EBUSY;
 
@@ -639,7 +626,7 @@ err_out:
 			 "failed to destroy mqprio, will active after reset, ret = %d\n",
 			 ret);
 	} else {
-		/* roll-back */
+		 
 		memcpy(&kinfo->tc_info, &old_tc_info, sizeof(old_tc_info));
 		if (hclge_config_tc(hdev, &kinfo->tc_info))
 			dev_err(&hdev->pdev->dev,
@@ -667,9 +654,7 @@ void hclge_dcb_ops_set(struct hclge_dev *hdev)
 	struct hclge_vport *vport = hdev->vport;
 	struct hnae3_knic_private_info *kinfo;
 
-	/* Hdev does not support DCB or vport is
-	 * not a pf, then dcb_ops is not set.
-	 */
+	 
 	if (!hnae3_dev_dcb_supported(hdev) ||
 	    vport->vport_id != 0)
 		return;

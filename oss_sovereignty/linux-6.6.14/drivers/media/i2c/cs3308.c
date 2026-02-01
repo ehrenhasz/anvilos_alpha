@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cirrus Logic cs3308 8-Channel Analog Volume Control
- *
- * Copyright (C) 2010 Devin Heitmueller <dheitmueller@kernellabs.com>
- * Copyright (C) 2012 Steven Toth <stoth@kernellabs.com>
- *
- * Derived from cs5345.c Copyright (C) 2007 Hans Verkuil
- */
+
+ 
 
 
 #include <linux/module.h>
@@ -49,7 +42,7 @@ static int cs3308_s_register(struct v4l2_subdev *sd, const struct v4l2_dbg_regis
 }
 #endif
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static const struct v4l2_subdev_core_ops cs3308_core_ops = {
 #ifdef CONFIG_VIDEO_ADV_DEBUG
@@ -62,14 +55,14 @@ static const struct v4l2_subdev_ops cs3308_ops = {
 	.core = &cs3308_core_ops,
 };
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static int cs3308_probe(struct i2c_client *client)
 {
 	struct v4l2_subdev *sd;
 	unsigned i;
 
-	/* Check if the adapter supports the needed features */
+	 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -EIO;
 
@@ -85,18 +78,18 @@ static int cs3308_probe(struct i2c_client *client)
 
 	v4l2_i2c_subdev_init(sd, client, &cs3308_ops);
 
-	/* Set some reasonable defaults */
-	cs3308_write(sd, 0x0d, 0x00); /* Power up all channels */
-	cs3308_write(sd, 0x0e, 0x00); /* Master Power */
-	cs3308_write(sd, 0x0b, 0x00); /* Device Configuration */
-	/* Set volume for each channel */
+	 
+	cs3308_write(sd, 0x0d, 0x00);  
+	cs3308_write(sd, 0x0e, 0x00);  
+	cs3308_write(sd, 0x0b, 0x00);  
+	 
 	for (i = 1; i <= 8; i++)
 		cs3308_write(sd, i, 0xd2);
-	cs3308_write(sd, 0x0a, 0x00); /* Unmute all channels */
+	cs3308_write(sd, 0x0a, 0x00);  
 	return 0;
 }
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static void cs3308_remove(struct i2c_client *client)
 {
@@ -106,7 +99,7 @@ static void cs3308_remove(struct i2c_client *client)
 	kfree(sd);
 }
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static const struct i2c_device_id cs3308_id[] = {
 	{ "cs3308", 0 },

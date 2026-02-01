@@ -1,19 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
 
-  Broadcom B43 wireless driver
-  RFKILL support
-
-  Copyright (c) 2007 Michael Buesch <m@bues.ch>
-
-
-*/
+ 
 
 #include "radio.h"
 #include "b43legacy.h"
 
 
-/* Returns TRUE, if the radio is enabled in hardware. */
+ 
 bool b43legacy_is_hw_radio_enabled(struct b43legacy_wldev *dev)
 {
 	if (dev->dev->id.revision >= 3) {
@@ -21,11 +13,7 @@ bool b43legacy_is_hw_radio_enabled(struct b43legacy_wldev *dev)
 		      & B43legacy_MMIO_RADIO_HWENABLED_HI_MASK))
 			return true;
 	} else {
-		/* To prevent CPU fault on PPC, do not read a register
-		 * unless the interface is started; however, on resume
-		 * for hibernation, this routine is entered early. When
-		 * that happens, unconditionally return TRUE.
-		 */
+		 
 		if (b43legacy_status(dev) < B43legacy_STAT_STARTED)
 			return true;
 		if (b43legacy_read16(dev, B43legacy_MMIO_RADIO_HWENABLED_LO)
@@ -35,7 +23,7 @@ bool b43legacy_is_hw_radio_enabled(struct b43legacy_wldev *dev)
 	return false;
 }
 
-/* The poll callback for the hardware button. */
+ 
 void b43legacy_rfkill_poll(struct ieee80211_hw *hw)
 {
 	struct b43legacy_wl *wl = hw_to_b43legacy_wl(hw);

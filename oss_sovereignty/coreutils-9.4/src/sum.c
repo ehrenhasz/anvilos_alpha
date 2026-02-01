@@ -1,22 +1,6 @@
-/* sum -- checksum and count the blocks in a file
-   Copyright (C) 1986-2023 Free Software Foundation, Inc.
+ 
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Like BSD sum or SysV sum -r, except like SysV sum if -s option is given. */
-
-/* Written by Kayvan Aghaiepour and David MacKenzie. */
+ 
 
 #include <config.h>
 
@@ -33,28 +17,27 @@
 # define SWAP(n) bswap_16 (n)
 #endif
 
-/* Calculate the checksum and the size in bytes of stream STREAM.
-   Return -1 on error, 0 on success.  */
+ 
 
 int
 bsd_sum_stream (FILE *stream, void *resstream, uintmax_t *length)
 {
   int ret = -1;
   size_t sum, n;
-  int checksum = 0;	/* The checksum mod 2^16. */
-  uintmax_t total_bytes = 0;	/* The number of bytes. */
+  int checksum = 0;	 
+  uintmax_t total_bytes = 0;	 
   static const size_t buffer_length = 32768;
   uint8_t *buffer = malloc (buffer_length);
 
   if (! buffer)
     return -1;
 
-  /* Process file */
+   
   while (true)
   {
     sum = 0;
 
-    /* Read block */
+     
     while (true)
     {
       n = fread (buffer + sum, 1, buffer_length - sum, stream);
@@ -78,7 +61,7 @@ bsd_sum_stream (FILE *stream, void *resstream, uintmax_t *length)
       {
         checksum = (checksum >> 1) + ((checksum & 1) << 15);
         checksum += buffer[i];
-        checksum &= 0xffff;	/* Keep it within bounds. */
+        checksum &= 0xffff;	 
       }
     if (total_bytes + sum < total_bytes)
       {
@@ -94,7 +77,7 @@ final_process:;
     {
       checksum = (checksum >> 1) + ((checksum & 1) << 15);
       checksum += buffer[i];
-      checksum &= 0xffff;	/* Keep it within bounds. */
+      checksum &= 0xffff;	 
     }
   if (total_bytes + sum < total_bytes)
     {
@@ -111,8 +94,7 @@ cleanup_buffer:
   return ret;
 }
 
-/* Calculate the checksum and the size in bytes of stream STREAM.
-   Return -1 on error, 0 on success.  */
+ 
 
 int
 sysv_sum_stream (FILE *stream, void *resstream, uintmax_t *length)
@@ -126,15 +108,15 @@ sysv_sum_stream (FILE *stream, void *resstream, uintmax_t *length)
   if (! buffer)
     return -1;
 
-  /* The sum of all the input bytes, modulo (UINT_MAX + 1).  */
+   
   unsigned int s = 0;
 
-  /* Process file */
+   
   while (true)
   {
     sum = 0;
 
-    /* Read block */
+     
     while (true)
     {
       n = fread (buffer + sum, 1, buffer_length - sum, stream);
@@ -186,8 +168,7 @@ cleanup_buffer:
   return ret;
 }
 
-/* Print the checksum and size (in 1024 byte blocks) to stdout.
-   If ARGS is true, also print the FILE name.  */
+ 
 
 void
 output_bsd (char const *file, int binary_file, void const *digest,
@@ -196,7 +177,7 @@ output_bsd (char const *file, int binary_file, void const *digest,
 {
   if (raw)
     {
-      /* Output in network byte order (big endian).  */
+       
       uint16_t out_int = *(int *)digest;
       out_int = SWAP (out_int);
       fwrite (&out_int, 1, 16/8, stdout);
@@ -211,8 +192,7 @@ output_bsd (char const *file, int binary_file, void const *digest,
   putchar (delim);
 }
 
-/* Print the checksum and size (in 512 byte blocks) to stdout.
-   If ARGS is true, also print the FILE name.  */
+ 
 
 void
 output_sysv (char const *file, int binary_file, void const *digest,
@@ -221,7 +201,7 @@ output_sysv (char const *file, int binary_file, void const *digest,
 {
   if (raw)
     {
-      /* Output in network byte order (big endian).  */
+       
       uint16_t out_int = *(int *)digest;
       out_int = SWAP (out_int);
       fwrite (&out_int, 1, 16/8, stdout);

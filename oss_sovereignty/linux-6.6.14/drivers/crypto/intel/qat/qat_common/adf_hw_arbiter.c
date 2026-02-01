@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2014 - 2020 Intel Corporation */
+
+ 
 #include "adf_accel_devices.h"
 #include "adf_common_drv.h"
 #include "adf_transport_internal.h"
@@ -30,12 +30,11 @@ int adf_init_arb(struct adf_accel_dev *accel_dev)
 	arb_off = info.arb_offset;
 	wt_off = info.wt2sam_offset;
 
-	/* Service arb configured for 32 bytes responses and
-	 * ring flow control check enabled. */
+	 
 	for (arb = 0; arb < ADF_ARB_NUM; arb++)
 		WRITE_CSR_ARB_SARCONFIG(csr, arb_off, arb, arb_cfg);
 
-	/* Map worker threads to service arbiters */
+	 
 	thd_2_arb_cfg = hw_data->get_arb_mapping(accel_dev);
 
 	for_each_set_bit(i, &ae_mask, hw_data->num_engines)
@@ -55,12 +54,7 @@ void adf_update_ring_arb(struct adf_etr_ring_data *ring)
 	u32 arben, arben_tx, arben_rx;
 	u32 rx_ring_mask;
 
-	/*
-	 * Enable arbitration on a ring only if the TX half of the ring mask
-	 * matches the RX part. This results in writes to CSR on both TX and
-	 * RX update - only one is necessary, but both are done for
-	 * simplicity.
-	 */
+	 
 	rx_ring_mask = tx_ring_mask << shift;
 	arben_tx = (ring->bank->ring_mask & tx_ring_mask) >> 0;
 	arben_rx = (ring->bank->ring_mask & rx_ring_mask) >> shift;
@@ -90,15 +84,15 @@ void adf_exit_arb(struct adf_accel_dev *accel_dev)
 
 	hw_data->get_arb_info(&info);
 
-	/* Reset arbiter configuration */
+	 
 	for (i = 0; i < ADF_ARB_NUM; i++)
 		WRITE_CSR_ARB_SARCONFIG(csr, arb_off, i, 0);
 
-	/* Unmap worker threads to service arbiters */
+	 
 	for (i = 0; i < hw_data->num_engines; i++)
 		WRITE_CSR_ARB_WT2SAM(csr, arb_off, wt_off, i, 0);
 
-	/* Disable arbitration on all rings */
+	 
 	for (i = 0; i < GET_MAX_BANKS(accel_dev); i++)
 		csr_ops->write_csr_ring_srv_arb_en(csr, i, 0);
 }

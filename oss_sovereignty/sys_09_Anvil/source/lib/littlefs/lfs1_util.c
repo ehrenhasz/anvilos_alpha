@@ -1,16 +1,11 @@
-/*
- * lfs1 util functions
- *
- * Copyright (c) 2017, Arm Limited. All rights reserved.
- * SPDX-License-Identifier: BSD-3-Clause
- */
+ 
 #include "lfs1_util.h"
 
-// Only compile if user does not provide custom config
+
 #ifndef LFS1_CONFIG
 
 
-// Software CRC implementation with small lookup table
+
 void lfs1_crc(uint32_t *restrict crc, const void *buffer, size_t size) {
     static const uint32_t rtable[16] = {
         0x00000000, 0x1db71064, 0x3b6e20c8, 0x26d930ac,

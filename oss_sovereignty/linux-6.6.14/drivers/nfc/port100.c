@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Sony NFC Port-100 Series driver
- * Copyright (c) 2013, Intel Corporation.
- *
- * Partly based/Inspired by Stephen Tiedemann's nfcpy
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/usb.h>
@@ -26,21 +21,17 @@
 #define PORT100_CAPABILITIES (NFC_DIGITAL_DRV_CAPS_IN_CRC | \
 			      NFC_DIGITAL_DRV_CAPS_TG_CRC)
 
-/* Standard port100 frame definitions */
+ 
 #define PORT100_FRAME_HEADER_LEN (sizeof(struct port100_frame) \
-				  + 2) /* data[0] CC, data[1] SCC */
-#define PORT100_FRAME_TAIL_LEN 2 /* data[len] DCS, data[len + 1] postamble*/
+				  + 2)  
+#define PORT100_FRAME_TAIL_LEN 2  
 
 #define PORT100_COMM_RF_HEAD_MAX_LEN (sizeof(struct port100_tg_comm_rf_cmd))
 
-/*
- * Max extended frame payload len, excluding CC and SCC
- * which are already in PORT100_FRAME_HEADER_LEN.
- */
+ 
 #define PORT100_FRAME_MAX_PAYLOAD_LEN 1001
 
-#define PORT100_FRAME_ACK_SIZE 6 /* Preamble (1), SoPC (2), ACK Code (2),
-				    Postamble (1) */
+#define PORT100_FRAME_ACK_SIZE 6  
 static u8 ack_frame[PORT100_FRAME_ACK_SIZE] = {
 	0x00, 0x00, 0xff, 0x00, 0xff, 0x00
 };
@@ -48,18 +39,18 @@ static u8 ack_frame[PORT100_FRAME_ACK_SIZE] = {
 #define PORT100_FRAME_CHECKSUM(f) (f->data[le16_to_cpu(f->datalen)])
 #define PORT100_FRAME_POSTAMBLE(f) (f->data[le16_to_cpu(f->datalen) + 1])
 
-/* start of frame */
+ 
 #define PORT100_FRAME_SOF	0x00FF
 #define PORT100_FRAME_EXT	0xFFFF
 #define PORT100_FRAME_ACK	0x00FF
 
-/* Port-100 command: in or out */
-#define PORT100_FRAME_DIRECTION(f) (f->data[0]) /* CC */
+ 
+#define PORT100_FRAME_DIRECTION(f) (f->data[0])  
 #define PORT100_FRAME_DIR_OUT 0xD6
 #define PORT100_FRAME_DIR_IN  0xD7
 
-/* Port-100 sub-command */
-#define PORT100_FRAME_CMD(f) (f->data[1]) /* SCC */
+ 
+#define PORT100_FRAME_CMD(f) (f->data[1])  
 
 #define PORT100_CMD_GET_FIRMWARE_VERSION 0x20
 #define PORT100_CMD_GET_COMMAND_TYPE     0x28
@@ -94,15 +85,7 @@ struct port100;
 typedef void (*port100_send_async_complete_t)(struct port100 *dev, void *arg,
 					      struct sk_buff *resp);
 
-/*
- * Setting sets structure for in_set_rf command
- *
- * @in_*_set_number: Represent the entry indexes in the port-100 RF Base Table.
- *              This table contains multiple RF setting sets required for RF
- *              communication.
- *
- * @in_*_comm_type: Theses fields set the communication type to be used.
- */
+ 
 struct port100_in_rf_setting {
 	u8 in_send_set_number;
 	u8 in_send_comm_type;
@@ -140,21 +123,11 @@ static const struct port100_in_rf_setting in_rf_settings[] = {
 		.in_recv_set_number = 15,
 		.in_recv_comm_type  = PORT100_COMM_TYPE_IN_106B,
 	},
-	/* Ensures the array has NFC_DIGITAL_RF_TECH_LAST elements */
+	 
 	[NFC_DIGITAL_RF_TECH_LAST] = { 0 },
 };
 
-/**
- * struct port100_tg_rf_setting - Setting sets structure for tg_set_rf command
- *
- * @tg_set_number: Represents the entry index in the port-100 RF Base Table.
- *                 This table contains multiple RF setting sets required for RF
- *                 communication. this field is used for both send and receive
- *                 settings.
- *
- * @tg_comm_type: Sets the communication type to be used to send and receive
- *                data.
- */
+ 
 struct port100_tg_rf_setting {
 	u8 tg_set_number;
 	u8 tg_comm_type;
@@ -177,7 +150,7 @@ static const struct port100_tg_rf_setting tg_rf_settings[] = {
 		.tg_set_number = 8,
 		.tg_comm_type = PORT100_COMM_TYPE_TG_424F,
 	},
-	/* Ensures the array has NFC_DIGITAL_RF_TECH_LAST elements */
+	 
 	[NFC_DIGITAL_RF_TECH_LAST] = { 0 },
 
 };
@@ -286,7 +259,7 @@ in_protocols[][PORT100_IN_MAX_NUM_PROTOCOLS + 1] = {
 		{ PORT100_IN_PROT_END,                     0 },
 	},
 	[NFC_DIGITAL_FRAMING_NFCA_T1T] = {
-		/* nfc_digital_framing_nfca_short */
+		 
 		{ PORT100_IN_PROT_ADD_CRC,          2 },
 		{ PORT100_IN_PROT_CHECK_CRC,        2 },
 		{ PORT100_IN_PROT_VALID_BIT_NUMBER, 8 },
@@ -294,17 +267,17 @@ in_protocols[][PORT100_IN_MAX_NUM_PROTOCOLS + 1] = {
 		{ PORT100_IN_PROT_END,              0 },
 	},
 	[NFC_DIGITAL_FRAMING_NFCA_T2T] = {
-		/* nfc_digital_framing_nfca_standard */
+		 
 		{ PORT100_IN_PROT_ADD_CRC,   1 },
 		{ PORT100_IN_PROT_CHECK_CRC, 0 },
 		{ PORT100_IN_PROT_END,       0 },
 	},
 	[NFC_DIGITAL_FRAMING_NFCA_T4T] = {
-		/* nfc_digital_framing_nfca_standard_with_crc_a */
+		 
 		{ PORT100_IN_PROT_END,       0 },
 	},
 	[NFC_DIGITAL_FRAMING_NFCA_NFC_DEP] = {
-		/* nfc_digital_framing_nfca_standard */
+		 
 		{ PORT100_IN_PROT_END, 0 },
 	},
 	[NFC_DIGITAL_FRAMING_NFCF] = {
@@ -330,11 +303,11 @@ in_protocols[][PORT100_IN_MAX_NUM_PROTOCOLS + 1] = {
 		{ PORT100_IN_PROT_END,                     0 },
 	},
 	[NFC_DIGITAL_FRAMING_NFCF_T3T] = {
-		/* nfc_digital_framing_nfcf */
+		 
 		{ PORT100_IN_PROT_END, 0 },
 	},
 	[NFC_DIGITAL_FRAMING_NFCF_NFC_DEP] = {
-		/* nfc_digital_framing_nfcf */
+		 
 		{ PORT100_IN_PROT_INITIAL_GUARD_TIME,     18 },
 		{ PORT100_IN_PROT_ADD_CRC,                 1 },
 		{ PORT100_IN_PROT_CHECK_CRC,               1 },
@@ -382,10 +355,10 @@ in_protocols[][PORT100_IN_MAX_NUM_PROTOCOLS + 1] = {
 		{ PORT100_IN_PROT_END,                     0 },
 	},
 	[NFC_DIGITAL_FRAMING_NFCB_T4T] = {
-		/* nfc_digital_framing_nfcb */
+		 
 		{ PORT100_IN_PROT_END,                     0 },
 	},
-	/* Ensures the array has NFC_DIGITAL_FRAMING_LAST elements */
+	 
 	[NFC_DIGITAL_FRAMING_LAST] = {
 		{ PORT100_IN_PROT_END, 0 },
 	},
@@ -430,7 +403,7 @@ tg_protocols[][PORT100_TG_MAX_NUM_PROTOCOLS + 1] = {
 		{ PORT100_TG_PROT_RF_OFF, 1 },
 		{ PORT100_TG_PROT_END,    0 },
 	},
-	/* Ensures the array has NFC_DIGITAL_FRAMING_LAST elements */
+	 
 	[NFC_DIGITAL_FRAMING_LAST] = {
 		{ PORT100_TG_PROT_END,    0 },
 	},
@@ -448,19 +421,14 @@ struct port100 {
 	struct urb *out_urb;
 	struct urb *in_urb;
 
-	/* This mutex protects the out_urb and avoids to submit a new command
-	 * through port100_send_frame_async() while the previous one is being
-	 * canceled through port100_abort_cmd().
-	 */
+	 
 	struct mutex out_urb_lock;
 
 	struct work_struct cmd_complete_work;
 
 	u8 cmd_type;
 
-	/* The digital stack serializes commands to be sent. There is no need
-	 * for any queuing/locking mechanism at driver level.
-	 */
+	 
 	struct port100_cmd *cmd;
 
 	bool cmd_cancel;
@@ -519,13 +487,13 @@ struct port100_tg_comm_rf_res {
 	u8 data[];
 } __packed;
 
-/* The rule: value + checksum = 0 */
+ 
 static inline u8 port100_checksum(u16 value)
 {
 	return ~(((u8 *)&value)[0] + ((u8 *)&value)[1]) + 1;
 }
 
-/* The rule: sum(data elements) + checksum = 0 */
+ 
 static u8 port100_data_checksum(const u8 *data, int datalen)
 {
 	u8 sum = 0;
@@ -621,7 +589,7 @@ static void port100_recv_response(struct urb *urb)
 
 	switch (urb->status) {
 	case 0:
-		break; /* success */
+		break;  
 	case -ECONNRESET:
 	case -ENOENT:
 		nfc_dbg(&dev->interface->dev,
@@ -675,7 +643,7 @@ static void port100_recv_ack(struct urb *urb)
 
 	switch (urb->status) {
 	case 0:
-		break; /* success */
+		break;  
 	case -ECONNRESET:
 	case -ENOENT:
 		nfc_dbg(&dev->interface->dev,
@@ -723,13 +691,7 @@ static int port100_send_ack(struct port100 *dev)
 
 	mutex_lock(&dev->out_urb_lock);
 
-	/*
-	 * If prior cancel is in-flight (dev->cmd_cancel == true), we
-	 * can skip to send cancel. Then this will wait the prior
-	 * cancel, or merged into the next cancel rarely if next
-	 * cancel was started before waiting done. In any case, this
-	 * will be waked up soon or later.
-	 */
+	 
 	if (!dev->cmd_cancel) {
 		reinit_completion(&dev->cmd_cancel_done);
 
@@ -739,11 +701,7 @@ static int port100_send_ack(struct port100 *dev)
 		dev->out_urb->transfer_buffer_length = sizeof(ack_frame);
 		rc = usb_submit_urb(dev->out_urb, GFP_KERNEL);
 
-		/*
-		 * Set the cmd_cancel flag only if the URB has been
-		 * successfully submitted. It will be reset by the out
-		 * URB completion callback port100_send_complete().
-		 */
+		 
 		dev->cmd_cancel = !rc;
 	}
 
@@ -763,9 +721,7 @@ static int port100_send_frame_async(struct port100 *dev,
 
 	mutex_lock(&dev->out_urb_lock);
 
-	/* A command cancel frame as been sent through dev->out_urb. Don't try
-	 * to submit a new one.
-	 */
+	 
 	if (dev->cmd_cancel) {
 		rc = -EAGAIN;
 		goto exit;
@@ -797,7 +753,7 @@ exit:
 static void port100_build_cmd_frame(struct port100 *dev, u8 cmd_code,
 				    struct sk_buff *skb)
 {
-	/* payload is already there, just update datalen */
+	 
 	int payload_len = skb->len;
 
 	skb_push(skb, PORT100_FRAME_HEADER_LEN);
@@ -939,7 +895,7 @@ static void port100_send_complete(struct urb *urb)
 
 	switch (urb->status) {
 	case 0:
-		break; /* success */
+		break;  
 	case -ECONNRESET:
 	case -ENOENT:
 		nfc_dbg(&dev->interface->dev,
@@ -956,10 +912,10 @@ static void port100_abort_cmd(struct nfc_digital_dev *ddev)
 {
 	struct port100 *dev = nfc_digital_get_drvdata(ddev);
 
-	/* An ack will cancel the last issued command */
+	 
 	port100_send_ack(dev);
 
-	/* cancel the urb request */
+	 
 	usb_kill_urb(dev->in_urb);
 }
 
@@ -1055,7 +1011,7 @@ static int port100_switch_rf(struct nfc_digital_dev *ddev, bool on)
 
 	skb_put_u8(skb, on ? 1 : 0);
 
-	/* Cancel the last command if the device is being switched off */
+	 
 	if (!on)
 		port100_abort_cmd(ddev);
 
@@ -1188,7 +1144,7 @@ static void port100_in_comm_rf_complete(struct port100 *dev, void *arg,
 		goto error;
 	}
 
-	/* Remove collision bits byte */
+	 
 	skb_pull(resp, 1);
 
 	goto exit;
@@ -1551,9 +1507,7 @@ static int port100_probe(struct usb_interface *interface,
 	init_completion(&dev->cmd_cancel_done);
 	INIT_WORK(&dev->cmd_complete_work, port100_wq_cmd_complete);
 
-	/* The first thing to do with the Port-100 is to set the command type
-	 * to be used. If supported we use command type 1. 0 otherwise.
-	 */
+	 
 	cmd_type_mask = port100_get_command_type_mask(dev);
 	if (!cmd_type_mask) {
 		nfc_err(&interface->dev,

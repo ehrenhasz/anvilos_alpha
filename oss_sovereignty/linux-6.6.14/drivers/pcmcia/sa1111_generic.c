@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/drivers/pcmcia/sa1111_generic.c
- *
- * We implement the generic parts of a SA1111 PCMCIA driver.  This
- * basically means we handle everything except controlling the
- * power.  Power is machine specific...
- */
+
+ 
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/ioport.h>
@@ -23,9 +17,7 @@
 
 #include "sa1111_generic.h"
 
-/*
- * These are offsets from the above base.
- */
+ 
 #define PCCR	0x0000
 #define PCSSR	0x0004
 #define PCSR	0x0008
@@ -205,9 +197,7 @@ static int pcmcia_probe(struct sa1111_dev *dev)
 
 	base = dev->mapbase;
 
-	/*
-	 * Initialise the suspend state.
-	 */
+	 
 	writel_relaxed(PCSSR_S0_SLEEP | PCSSR_S1_SLEEP, base + PCSSR);
 	writel_relaxed(PCCR_S0_FLT | PCCR_S1_FLT, base + PCCR);
 

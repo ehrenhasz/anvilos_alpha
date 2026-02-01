@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright IBM Corp. 1999,2012
- *
- * Author(s): Martin Peschke <mpeschke@de.ibm.com>
- *	      Martin Schwidefsky <schwidefsky@de.ibm.com>
- */
+ 
+ 
 
 #ifndef __SCLP_H__
 #define __SCLP_H__
@@ -15,7 +10,7 @@
 #include <asm/sclp.h>
 #include <asm/ebcdic.h>
 
-/* maximum number of pages concerning our own memory management */
+ 
 #define MAX_KMEM_PAGES (sizeof(unsigned long) << 3)
 #define SCLP_CONSOLE_PAGES	6
 
@@ -95,13 +90,8 @@ struct init_sccb {
 	struct sccb_header header;
 	u16 _reserved;
 	u16 mask_length;
-	u8 masks[4 * 1021];	/* variable length */
-	/*
-	 * u8 receive_mask[mask_length];
-	 * u8 send_mask[mask_length];
-	 * u8 sclp_receive_mask[mask_length];
-	 * u8 sclp_send_mask[mask_length];
-	 */
+	u8 masks[4 * 1021];	 
+	 
 } __attribute__((packed));
 
 #define SCLP_MASK_SIZE_COMPAT 4
@@ -148,53 +138,50 @@ struct read_cpu_info_sccb {
 	u16	offset_configured;
 	u16	nr_standby;
 	u16	offset_standby;
-	/*
-	 * Without ext sccb, struct size is PAGE_SIZE.
-	 * With ext sccb, struct size is EXT_SCCB_READ_CPU.
-	 */
+	 
 	u8	reserved[];
 } __attribute__((packed, aligned(PAGE_SIZE)));
 
 struct read_info_sccb {
-	struct	sccb_header header;	/* 0-7 */
-	u16	rnmax;			/* 8-9 */
-	u8	rnsize;			/* 10 */
-	u8	_pad_11[16 - 11];	/* 11-15 */
-	u16	ncpurl;			/* 16-17 */
-	u16	cpuoff;			/* 18-19 */
-	u8	_pad_20[24 - 20];	/* 20-23 */
-	u8	loadparm[8];		/* 24-31 */
-	u8	_pad_32[42 - 32];	/* 32-41 */
-	u8	fac42;			/* 42 */
-	u8	fac43;			/* 43 */
-	u8	_pad_44[48 - 44];	/* 44-47 */
-	u64	facilities;		/* 48-55 */
-	u8	_pad_56[66 - 56];	/* 56-65 */
-	u8	fac66;			/* 66 */
-	u8	_pad_67[76 - 67];	/* 67-83 */
-	u32	ibc;			/* 76-79 */
-	u8	_pad80[84 - 80];	/* 80-83 */
-	u8	fac84;			/* 84 */
-	u8	fac85;			/* 85 */
-	u8	_pad_86[91 - 86];	/* 86-90 */
-	u8	fac91;			/* 91 */
-	u8	_pad_92[98 - 92];	/* 92-97 */
-	u8	fac98;			/* 98 */
-	u8	hamaxpow;		/* 99 */
-	u32	rnsize2;		/* 100-103 */
-	u64	rnmax2;			/* 104-111 */
-	u32	hsa_size;		/* 112-115 */
-	u8	fac116;			/* 116 */
-	u8	fac117;			/* 117 */
-	u8	fac118;			/* 118 */
-	u8	fac119;			/* 119 */
-	u16	hcpua;			/* 120-121 */
-	u8	_pad_122[124 - 122];	/* 122-123 */
-	u32	hmfai;			/* 124-127 */
-	u8	_pad_128[134 - 128];	/* 128-133 */
-	u8	byte_134;			/* 134 */
-	u8	cpudirq;		/* 135 */
-	u16	cbl;			/* 136-137 */
+	struct	sccb_header header;	 
+	u16	rnmax;			 
+	u8	rnsize;			 
+	u8	_pad_11[16 - 11];	 
+	u16	ncpurl;			 
+	u16	cpuoff;			 
+	u8	_pad_20[24 - 20];	 
+	u8	loadparm[8];		 
+	u8	_pad_32[42 - 32];	 
+	u8	fac42;			 
+	u8	fac43;			 
+	u8	_pad_44[48 - 44];	 
+	u64	facilities;		 
+	u8	_pad_56[66 - 56];	 
+	u8	fac66;			 
+	u8	_pad_67[76 - 67];	 
+	u32	ibc;			 
+	u8	_pad80[84 - 80];	 
+	u8	fac84;			 
+	u8	fac85;			 
+	u8	_pad_86[91 - 86];	 
+	u8	fac91;			 
+	u8	_pad_92[98 - 92];	 
+	u8	fac98;			 
+	u8	hamaxpow;		 
+	u32	rnsize2;		 
+	u64	rnmax2;			 
+	u32	hsa_size;		 
+	u8	fac116;			 
+	u8	fac117;			 
+	u8	fac118;			 
+	u8	fac119;			 
+	u16	hcpua;			 
+	u8	_pad_122[124 - 122];	 
+	u32	hmfai;			 
+	u8	_pad_128[134 - 128];	 
+	u8	byte_134;			 
+	u8	cpudirq;		 
+	u16	cbl;			 
 	u8	_pad_138[EXT_SCCB_READ_SCP - 138];
 } __packed __aligned(PAGE_SIZE);
 
@@ -245,49 +232,47 @@ struct evbuf_header {
 } __attribute__((packed));
 
 struct sclp_req {
-	struct list_head list;		/* list_head for request queueing. */
-	sclp_cmdw_t command;		/* sclp command to execute */
-	void	*sccb;			/* pointer to the sccb to execute */
-	char	status;			/* status of this request */
-	int     start_count;		/* number of SVCs done for this req */
-	/* Callback that is called after reaching final status. */
+	struct list_head list;		 
+	sclp_cmdw_t command;		 
+	void	*sccb;			 
+	char	status;			 
+	int     start_count;		 
+	 
 	void (*callback)(struct sclp_req *, void *data);
 	void *callback_data;
-	int queue_timeout;		/* request queue timeout (sec), set by
-					   caller of sclp_add_request(), if
-					   needed */
-	/* Internal fields */
-	unsigned long queue_expires;	/* request queue timeout (jiffies) */
+	int queue_timeout;		 
+	 
+	unsigned long queue_expires;	 
 };
 
-#define SCLP_REQ_FILLED	  0x00	/* request is ready to be processed */
-#define SCLP_REQ_QUEUED	  0x01	/* request is queued to be processed */
-#define SCLP_REQ_RUNNING  0x02	/* request is currently running */
-#define SCLP_REQ_DONE	  0x03	/* request is completed successfully */
-#define SCLP_REQ_FAILED	  0x05	/* request is finally failed */
-#define SCLP_REQ_QUEUED_TIMEOUT 0x06	/* request on queue timed out */
+#define SCLP_REQ_FILLED	  0x00	 
+#define SCLP_REQ_QUEUED	  0x01	 
+#define SCLP_REQ_RUNNING  0x02	 
+#define SCLP_REQ_DONE	  0x03	 
+#define SCLP_REQ_FAILED	  0x05	 
+#define SCLP_REQ_QUEUED_TIMEOUT 0x06	 
 
-#define SCLP_QUEUE_INTERVAL 5	/* timeout interval for request queue */
+#define SCLP_QUEUE_INTERVAL 5	 
 
-/* function pointers that a high level driver has to use for registration */
-/* of some routines it wants to be called from the low level driver */
+ 
+ 
 struct sclp_register {
 	struct list_head list;
-	/* User wants to receive: */
+	 
 	sccb_mask_t receive_mask;
-	/* User wants to send: */
+	 
 	sccb_mask_t send_mask;
-	/* H/W can receive: */
+	 
 	sccb_mask_t sclp_receive_mask;
-	/* H/W can send: */
+	 
 	sccb_mask_t sclp_send_mask;
-	/* called if event type availability changes */
+	 
 	void (*state_change_fn)(struct sclp_register *);
-	/* called for events in cp_receive_mask/sclp_receive_mask */
+	 
 	void (*receiver_fn)(struct evbuf_header *);
 };
 
-/* externals from sclp.c */
+ 
 int sclp_add_request(struct sclp_req *req);
 void sclp_sync_wait(void);
 int sclp_register(struct sclp_register *reg);
@@ -320,15 +305,15 @@ int sclp_early_set_event_mask(struct init_sccb *sccb,
 			      sccb_mask_t send_mask);
 struct read_info_sccb * __init sclp_early_get_info(void);
 
-/* useful inlines */
+ 
 
-/* Perform service call. Return 0 on success, non-zero otherwise. */
+ 
 static inline int sclp_service_call(sclp_cmdw_t command, void *sccb)
 {
-	int cc = 4; /* Initialize for program check handling */
+	int cc = 4;  
 
 	asm volatile(
-		"0:	.insn	rre,0xb2200000,%1,%2\n"	 /* servc %1,%2 */
+		"0:	.insn	rre,0xb2200000,%1,%2\n"	  
 		"1:	ipm	%0\n"
 		"	srl	%0,28\n"
 		"2:\n"
@@ -345,22 +330,22 @@ static inline int sclp_service_call(sclp_cmdw_t command, void *sccb)
 	return 0;
 }
 
-/* VM uses EBCDIC 037, LPAR+native(SE+HMC) use EBCDIC 500 */
-/* translate single character from ASCII to EBCDIC */
+ 
+ 
 static inline unsigned char
 sclp_ascebc(unsigned char ch)
 {
 	return (MACHINE_IS_VM) ? _ascebc[ch] : _ascebc_500[ch];
 }
 
-/* translate string from EBCDIC to ASCII */
+ 
 static inline void
 sclp_ebcasc_str(char *str, int nr)
 {
 	(MACHINE_IS_VM) ? EBCASC(str, nr) : EBCASC_500(str, nr);
 }
 
-/* translate string from ASCII to EBCDIC */
+ 
 static inline void
 sclp_ascebc_str(char *str, int nr)
 {
@@ -389,4 +374,4 @@ sclp_find_gds_subvector(void *start, void *end, u8 key)
 	return NULL;
 }
 
-#endif	 /* __SCLP_H__ */
+#endif	  

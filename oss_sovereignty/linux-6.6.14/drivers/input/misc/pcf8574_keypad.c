@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for a keypad w/16 buttons connected to a PCF8574 I2C I/O expander
- *
- * Copyright 2005-2008 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/input.h>

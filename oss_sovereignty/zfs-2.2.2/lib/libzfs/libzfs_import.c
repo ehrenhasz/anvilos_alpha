@@ -1,30 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2015 Nexenta Systems, Inc. All rights reserved.
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2018 by Delphix. All rights reserved.
- * Copyright 2015 RackTop Systems.
- * Copyright (c) 2016, Intel Corporation.
- */
+ 
+ 
 
 #include <errno.h>
 #include <libintl.h>
@@ -40,9 +15,7 @@
 #include <libzutil.h>
 #include <sys/arc_impl.h>
 
-/*
- * Returns true if the named pool matches the given GUID.
- */
+ 
 static int
 pool_active(libzfs_handle_t *hdl, const char *name, uint64_t guid,
     boolean_t *isactive)
@@ -115,9 +88,7 @@ const pool_config_ops_t libzfs_config_ops = {
 	.pco_pool_active = pool_active_libzfs,
 };
 
-/*
- * Return the offset of the given label.
- */
+ 
 static uint64_t
 label_offset(uint64_t size, int l)
 {
@@ -126,11 +97,7 @@ label_offset(uint64_t size, int l)
 	    0 : size - VDEV_LABELS * sizeof (vdev_label_t)));
 }
 
-/*
- * Given a file descriptor, clear (zero) the label information.  This function
- * is used in the appliance stack as part of the ZFS sysevent module and
- * to implement the "zpool labelclear" command.
- */
+ 
 int
 zpool_clear_label(int fd)
 {
@@ -163,21 +130,21 @@ zpool_clear_label(int fd)
 			continue;
 		}
 
-		/* Skip labels which do not have a valid guid. */
+		 
 		if (nvlist_lookup_uint64(config, ZPOOL_CONFIG_GUID,
 		    &guid) != 0 || guid == 0) {
 			nvlist_free(config);
 			continue;
 		}
 
-		/* Skip labels which are not in a known valid state. */
+		 
 		if (nvlist_lookup_uint64(config, ZPOOL_CONFIG_POOL_STATE,
 		    &state) != 0 || state > POOL_STATE_L2CACHE) {
 			nvlist_free(config);
 			continue;
 		}
 
-		/* If the device is a cache device clear the header. */
+		 
 		if (!clear_l2arc_header) {
 			if (nvlist_lookup_uint64(config,
 			    ZPOOL_CONFIG_POOL_STATE, &l2cache) == 0 &&
@@ -188,12 +155,7 @@ zpool_clear_label(int fd)
 
 		nvlist_free(config);
 
-		/*
-		 * A valid label was found, overwrite this label's nvlist
-		 * and uberblocks with zeros on disk.  This is done to prevent
-		 * system utilities, like blkid, from incorrectly detecting a
-		 * partial label.  The leading pad space is left untouched.
-		 */
+		 
 		memset(label, 0, sizeof (vdev_label_t));
 		size_t label_size = sizeof (vdev_label_t) - (2 * VDEV_PAD_SIZE);
 
@@ -270,11 +232,7 @@ find_aux(zpool_handle_t *zhp, void *data)
 	return (0);
 }
 
-/*
- * Determines if the pool is in use.  If so, it returns true and the state of
- * the pool as well as the name of the pool.  Name string is allocated and
- * must be freed by the caller.
- */
+ 
 int
 zpool_in_use(libzfs_handle_t *hdl, int fd, pool_state_t *state, char **namestr,
     boolean_t *inuse)
@@ -309,21 +267,13 @@ zpool_in_use(libzfs_handle_t *hdl, int fd, pool_state_t *state, char **namestr,
 
 	switch (stateval) {
 	case POOL_STATE_EXPORTED:
-		/*
-		 * A pool with an exported state may in fact be imported
-		 * read-only, so check the in-core state to see if it's
-		 * active and imported read-only.  If it is, set
-		 * its state to active.
-		 */
+		 
 		if (pool_active(hdl, name, guid, &isactive) == 0 && isactive &&
 		    (zhp = zpool_open_canfail(hdl, name)) != NULL) {
 			if (zpool_get_prop_int(zhp, ZPOOL_PROP_READONLY, NULL))
 				stateval = POOL_STATE_ACTIVE;
 
-			/*
-			 * All we needed the zpool handle for is the
-			 * readonly prop check.
-			 */
+			 
 			zpool_close(zhp);
 		}
 
@@ -331,25 +281,14 @@ zpool_in_use(libzfs_handle_t *hdl, int fd, pool_state_t *state, char **namestr,
 		break;
 
 	case POOL_STATE_ACTIVE:
-		/*
-		 * For an active pool, we have to determine if it's really part
-		 * of a currently active pool (in which case the pool will exist
-		 * and the guid will be the same), or whether it's part of an
-		 * active pool that was disconnected without being explicitly
-		 * exported.
-		 */
+		 
 		if (pool_active(hdl, name, guid, &isactive) != 0) {
 			nvlist_free(config);
 			return (-1);
 		}
 
 		if (isactive) {
-			/*
-			 * Because the device may have been removed while
-			 * offlined, we only report it as active if the vdev is
-			 * still present in the config.  Otherwise, pretend like
-			 * it's not in use.
-			 */
+			 
 			if ((zhp = zpool_open_canfail(hdl, name)) != NULL &&
 			    (pool_config = zpool_get_config(zhp, NULL))
 			    != NULL) {
@@ -360,14 +299,7 @@ zpool_in_use(libzfs_handle_t *hdl, int fd, pool_state_t *state, char **namestr,
 				ret = B_FALSE;
 			}
 
-			/*
-			 * If this is an active spare within another pool, we
-			 * treat it like an unused hot spare.  This allows the
-			 * user to create a pool with a hot spare that currently
-			 * in use within another pool.  Since we return B_TRUE,
-			 * libdiskmgt will continue to prevent generic consumers
-			 * from using the device.
-			 */
+			 
 			if (ret && nvlist_lookup_uint64(config,
 			    ZPOOL_CONFIG_IS_SPARE, &isspare) == 0 && isspare)
 				stateval = POOL_STATE_SPARE;
@@ -381,18 +313,7 @@ zpool_in_use(libzfs_handle_t *hdl, int fd, pool_state_t *state, char **namestr,
 		break;
 
 	case POOL_STATE_SPARE:
-		/*
-		 * For a hot spare, it can be either definitively in use, or
-		 * potentially active.  To determine if it's in use, we iterate
-		 * over all pools in the system and search for one with a spare
-		 * with a matching guid.
-		 *
-		 * Due to the shared nature of spares, we don't actually report
-		 * the potentially active case as in use.  This means the user
-		 * can freely create pools on the hot spares of exported pools,
-		 * but to do otherwise makes the resulting code complicated, and
-		 * we end up having to deal with this case anyway.
-		 */
+		 
 		cb.cb_zhp = NULL;
 		cb.cb_guid = vdev_guid;
 		cb.cb_type = ZPOOL_CONFIG_SPARES;
@@ -406,9 +327,7 @@ zpool_in_use(libzfs_handle_t *hdl, int fd, pool_state_t *state, char **namestr,
 
 	case POOL_STATE_L2CACHE:
 
-		/*
-		 * Check if any pool is currently using this l2cache device.
-		 */
+		 
 		cb.cb_zhp = NULL;
 		cb.cb_guid = vdev_guid;
 		cb.cb_type = ZPOOL_CONFIG_L2CACHE;

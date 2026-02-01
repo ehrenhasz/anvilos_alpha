@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) 2001-2005 Edouard TISSERANT   <edouard.tisserant@wanadoo.fr>
- *  Copyright (c) 2004-2005 Stephane VOLTZ      <svoltz@numericable.fr>
- *
- *  USB Acecad "Acecad Flair" tablet support
- *
- *  Changelog:
- *      v3.2 - Added sysfs support
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -44,12 +36,12 @@ static void usb_acecad_irq(struct urb *urb)
 
 	switch (urb->status) {
 	case 0:
-		/* success */
+		 
 		break;
 	case -ECONNRESET:
 	case -ENOENT:
 	case -ESHUTDOWN:
-		/* this urb is terminated, clean up */
+		 
 		dev_dbg(&intf->dev, "%s - urb shutting down with status: %d\n",
 			__func__, urb->status);
 		return;
@@ -65,7 +57,7 @@ static void usb_acecad_irq(struct urb *urb)
 	if (prox) {
 		int x = data[1] | (data[2] << 8);
 		int y = data[3] | (data[4] << 8);
-		/* Pressure should compute the same way for flair and 302 */
+		 
 		int pressure = data[5] | (data[6] << 8);
 		int touch = data[0] & 0x01;
 		int stylus = (data[0] & 0x10) >> 4;
@@ -78,7 +70,7 @@ static void usb_acecad_irq(struct urb *urb)
 		input_report_key(dev, BTN_STYLUS2, stylus2);
 	}
 
-	/* event termination */
+	 
 	input_sync(dev);
 
 resubmit:

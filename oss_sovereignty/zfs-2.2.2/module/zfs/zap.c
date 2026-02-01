@@ -1,43 +1,7 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2018 by Delphix. All rights reserved.
- * Copyright (c) 2014 Spectra Logic Corporation, All rights reserved.
- */
+ 
+ 
 
-/*
- * This file contains the top half of the zfs directory structure
- * implementation. The bottom half is in zap_leaf.c.
- *
- * The zdir is an extendable hash data structure. There is a table of
- * pointers to buckets (zap_t->zd_data->zd_leafs). The buckets are
- * each a constant size and hold a variable number of directory entries.
- * The buckets (aka "leaf nodes") are implemented in zap_leaf.c.
- *
- * The pointer table holds a power of 2 number of pointers.
- * (1<<zap_t->zd_data->zd_phys->zd_prefix_len).  The bucket pointed to
- * by the pointer at index i in the table holds entries whose hash value
- * has a zd_prefix_len - bit prefix
- */
+ 
 
 #include <sys/spa.h>
 #include <sys/dmu.h>
@@ -48,37 +12,10 @@
 #include <sys/zap_impl.h>
 #include <sys/zap_leaf.h>
 
-/*
- * If zap_iterate_prefetch is set, we will prefetch the entire ZAP object
- * (all leaf blocks) when we start iterating over it.
- *
- * For zap_cursor_init(), the callers all intend to iterate through all the
- * entries.  There are a few cases where an error (typically i/o error) could
- * cause it to bail out early.
- *
- * For zap_cursor_init_serialized(), there are callers that do the iteration
- * outside of ZFS.  Typically they would iterate over everything, but we
- * don't have control of that.  E.g. zfs_ioc_snapshot_list_next(),
- * zcp_snapshots_iter(), and other iterators over things in the MOS - these
- * are called by /sbin/zfs and channel programs.  The other example is
- * zfs_readdir() which iterates over directory entries for the getdents()
- * syscall.  /sbin/ls iterates to the end (unless it receives a signal), but
- * userland doesn't have to.
- *
- * Given that the ZAP entries aren't returned in a specific order, the only
- * legitimate use cases for partial iteration would be:
- *
- * 1. Pagination: e.g. you only want to display 100 entries at a time, so you
- *    get the first 100 and then wait for the user to hit "next page", which
- *    they may never do).
- *
- * 2. You want to know if there are more than X entries, without relying on
- *    the zfs-specific implementation of the directory's st_size (which is
- *    the number of entries).
- */
+ 
 static int zap_iterate_prefetch = B_TRUE;
 
-int fzap_default_block_shift = 14; /* 16k blocksize */
+int fzap_default_block_shift = 14;  
 
 static uint64_t zap_allocate_blocks(zap_t *zap, int nblocks);
 
@@ -90,7 +27,7 @@ fzap_byteswap(void *vbuf, size_t size)
 	if (block_type == ZBT_LEAF || block_type == BSWAP_64(ZBT_LEAF))
 		zap_leaf_byteswap(vbuf, size);
 	else {
-		/* it's a ptrtbl block */
+		 
 		byteswap_uint64_array(vbuf, size);
 	}
 }
@@ -108,30 +45,25 @@ fzap_upgrade(zap_t *zap, dmu_tx_t *tx, zap_flags_t flags)
 	zap->zap_f.zap_block_shift = highbit64(zap->zap_dbuf->db_size) - 1;
 
 	zap_phys_t *zp = zap_f_phys(zap);
-	/*
-	 * explicitly zero it since it might be coming from an
-	 * initialized microzap
-	 */
+	 
 	memset(zap->zap_dbuf->db_data, 0, zap->zap_dbuf->db_size);
 	zp->zap_block_type = ZBT_HEADER;
 	zp->zap_magic = ZAP_MAGIC;
 
 	zp->zap_ptrtbl.zt_shift = ZAP_EMBEDDED_PTRTBL_SHIFT(zap);
 
-	zp->zap_freeblk = 2;		/* block 1 will be the first leaf */
+	zp->zap_freeblk = 2;		 
 	zp->zap_num_leafs = 1;
 	zp->zap_num_entries = 0;
 	zp->zap_salt = zap->zap_salt;
 	zp->zap_normflags = zap->zap_normflags;
 	zp->zap_flags = flags;
 
-	/* block 1 will be the first leaf */
+	 
 	for (int i = 0; i < (1<<zp->zap_ptrtbl.zt_shift); i++)
 		ZAP_EMBEDDED_PTRTBL_ENT(zap, i) = 1;
 
-	/*
-	 * set up block 1 - the first leaf
-	 */
+	 
 	dmu_buf_t *db;
 	VERIFY0(dmu_buf_hold(zap->zap_objset, zap->zap_object,
 	    1<<FZAP_BLOCK_SHIFT(zap), FTAG, &db, DMU_READ_NO_PREFETCH));
@@ -158,9 +90,7 @@ zap_tryupgradedir(zap_t *zap, dmu_tx_t *tx)
 	return (0);
 }
 
-/*
- * Generic routines for dealing with the pointer & cookie tables.
- */
+ 
 
 static int
 zap_table_grow(zap_t *zap, zap_table_phys_t *tbl,
@@ -170,7 +100,7 @@ zap_table_grow(zap_t *zap, zap_table_phys_t *tbl,
 	uint64_t newblk;
 	int bs = FZAP_BLOCK_SHIFT(zap);
 	int hepb = 1<<(bs-4);
-	/* hepb = half the number of entries in a block */
+	 
 
 	ASSERT(RW_WRITE_HELD(&zap->zap_rwlock));
 	ASSERT(tbl->zt_blk != 0);
@@ -187,9 +117,7 @@ zap_table_grow(zap_t *zap, zap_table_phys_t *tbl,
 		    ZIO_PRIORITY_SYNC_READ);
 	}
 
-	/*
-	 * Copy the ptrtbl from the old to new location.
-	 */
+	 
 
 	uint64_t b = tbl->zt_blks_copied;
 	dmu_buf_t *db_old;
@@ -198,7 +126,7 @@ zap_table_grow(zap_t *zap, zap_table_phys_t *tbl,
 	if (err != 0)
 		return (err);
 
-	/* first half of entries in old[b] go to new[2*b+0] */
+	 
 	dmu_buf_t *db_new;
 	VERIFY0(dmu_buf_hold(zap->zap_objset, zap->zap_object,
 	    (newblk + 2*b+0) << bs, FTAG, &db_new, DMU_READ_NO_PREFETCH));
@@ -206,7 +134,7 @@ zap_table_grow(zap_t *zap, zap_table_phys_t *tbl,
 	transfer_func(db_old->db_data, db_new->db_data, hepb);
 	dmu_buf_rele(db_new, FTAG);
 
-	/* second half of entries in old[b] go to new[2*b+1] */
+	 
 	VERIFY0(dmu_buf_hold(zap->zap_objset, zap->zap_object,
 	    (newblk + 2*b+1) << bs, FTAG, &db_new, DMU_READ_NO_PREFETCH));
 	dmu_buf_will_dirty(db_new, tx);
@@ -296,11 +224,7 @@ zap_table_load(zap_t *zap, zap_table_phys_t *tbl, uint64_t idx, uint64_t *valp)
 	uint64_t blk = idx >> (bs-3);
 	uint64_t off = idx & ((1<<(bs-3))-1);
 
-	/*
-	 * Note: this is equivalent to dmu_buf_hold(), but we use
-	 * _dnode_enter / _by_dnode because it's faster because we don't
-	 * have to hold the dnode.
-	 */
+	 
 	dnode_t *dn = dmu_buf_dnode_enter(zap->zap_dbuf);
 	dmu_buf_t *db;
 	int err = dmu_buf_hold_by_dnode(dn,
@@ -312,11 +236,7 @@ zap_table_load(zap_t *zap, zap_table_phys_t *tbl, uint64_t idx, uint64_t *valp)
 	dmu_buf_rele(db, FTAG);
 
 	if (tbl->zt_nextblk != 0) {
-		/*
-		 * read the nextblk for the sake of i/o error checking,
-		 * so that zap_table_load() will catch errors for
-		 * zap_table_store.
-		 */
+		 
 		blk = (idx*2) >> (bs-3);
 
 		dn = dmu_buf_dnode_enter(zap->zap_dbuf);
@@ -330,9 +250,7 @@ zap_table_load(zap_t *zap, zap_table_phys_t *tbl, uint64_t idx, uint64_t *valp)
 	return (err);
 }
 
-/*
- * Routines for growing the ptrtbl.
- */
+ 
 
 static void
 zap_ptrtbl_transfer(const uint64_t *src, uint64_t *dst, int n)
@@ -347,21 +265,12 @@ zap_ptrtbl_transfer(const uint64_t *src, uint64_t *dst, int n)
 static int
 zap_grow_ptrtbl(zap_t *zap, dmu_tx_t *tx)
 {
-	/*
-	 * The pointer table should never use more hash bits than we
-	 * have (otherwise we'd be using useless zero bits to index it).
-	 * If we are within 2 bits of running out, stop growing, since
-	 * this is already an aberrant condition.
-	 */
+	 
 	if (zap_f_phys(zap)->zap_ptrtbl.zt_shift >= zap_hashbits(zap) - 2)
 		return (SET_ERROR(ENOSPC));
 
 	if (zap_f_phys(zap)->zap_ptrtbl.zt_numblks == 0) {
-		/*
-		 * We are outgrowing the "embedded" ptrtbl (the one
-		 * stored in the header block).  Give it its own entire
-		 * block, which will double the size of the ptrtbl.
-		 */
+		 
 		ASSERT3U(zap_f_phys(zap)->zap_ptrtbl.zt_shift, ==,
 		    ZAP_EMBEDDED_PTRTBL_SHIFT(zap));
 		ASSERT0(zap_f_phys(zap)->zap_ptrtbl.zt_blk);
@@ -451,15 +360,13 @@ int
 fzap_count(zap_t *zap, uint64_t *count)
 {
 	ASSERT(!zap->zap_ismicro);
-	mutex_enter(&zap->zap_f.zap_num_entries_mtx); /* unnecessary */
+	mutex_enter(&zap->zap_f.zap_num_entries_mtx);  
 	*count = zap_f_phys(zap)->zap_num_entries;
 	mutex_exit(&zap->zap_f.zap_num_entries_mtx);
 	return (0);
 }
 
-/*
- * Routines for obtaining zap_leaf_t's
- */
+ 
 
 void
 zap_put_leaf(zap_leaf_t *l)
@@ -485,29 +392,22 @@ zap_open_leaf(uint64_t blkid, dmu_buf_t *db)
 
 	rw_exit(&l->l_rwlock);
 	if (winner != NULL) {
-		/* someone else set it first */
+		 
 		zap_leaf_evict_sync(&l->l_dbu);
 		l = winner;
 	}
 
-	/*
-	 * lhr_pad was previously used for the next leaf in the leaf
-	 * chain.  There should be no chained leafs (as we have removed
-	 * support for them).
-	 */
+	 
 	ASSERT0(zap_leaf_phys(l)->l_hdr.lh_pad1);
 
-	/*
-	 * There should be more hash entries than there can be
-	 * chunks to put in the hash table
-	 */
+	 
 	ASSERT3U(ZAP_LEAF_HASH_NUMENTRIES(l), >, ZAP_LEAF_NUMCHUNKS(l) / 3);
 
-	/* The chunks should begin at the end of the hash table */
+	 
 	ASSERT3P(&ZAP_LEAF_CHUNK(l, 0), ==, (zap_leaf_chunk_t *)
 	    &zap_leaf_phys(l)->l_hash[ZAP_LEAF_HASH_NUMENTRIES(l)]);
 
-	/* The chunks should end at the end of the block */
+	 
 	ASSERT3U((uintptr_t)&ZAP_LEAF_CHUNK(l, ZAP_LEAF_NUMCHUNKS(l)) -
 	    (uintptr_t)zap_leaf_phys(l), ==, l->l_dbuf->db_size);
 
@@ -522,13 +422,7 @@ zap_get_leaf_byblk(zap_t *zap, uint64_t blkid, dmu_tx_t *tx, krw_t lt,
 
 	ASSERT(RW_LOCK_HELD(&zap->zap_rwlock));
 
-	/*
-	 * If system crashed just after dmu_free_long_range in zfs_rmnode, we
-	 * would be left with an empty xattr dir in delete queue. blkid=0
-	 * would be passed in when doing zfs_purgedir. If that's the case we
-	 * should just return immediately. The underlying objects should
-	 * already be freed, so this should be perfectly fine.
-	 */
+	 
 	if (blkid == 0)
 		return (SET_ERROR(ENOENT));
 
@@ -551,10 +445,7 @@ zap_get_leaf_byblk(zap_t *zap, uint64_t blkid, dmu_tx_t *tx, krw_t lt,
 		l = zap_open_leaf(blkid, db);
 
 	rw_enter(&l->l_rwlock, lt);
-	/*
-	 * Must lock before dirtying, otherwise zap_leaf_phys(l) could change,
-	 * causing ASSERT below to fail.
-	 */
+	 
 	if (lt == RW_WRITER)
 		dmu_buf_will_dirty(db, tx);
 	ASSERT3U(l->l_blkid, ==, blkid);
@@ -605,7 +496,7 @@ zap_deref_leaf(zap_t *zap, uint64_t h, dmu_tx_t *tx, krw_t lt, zap_leaf_t **lp)
 	ASSERT(zap->zap_dbuf == NULL ||
 	    zap_f_phys(zap) == zap->zap_dbuf->db_data);
 
-	/* Reality check for corrupt zap objects (leaf or header). */
+	 
 	if ((zap_f_phys(zap)->zap_block_type != ZBT_LEAF &&
 	    zap_f_phys(zap)->zap_block_type != ZBT_HEADER) ||
 	    zap_f_phys(zap)->zap_magic != ZAP_MAGIC) {
@@ -641,7 +532,7 @@ zap_expand_leaf(zap_name_t *zn, zap_leaf_t *l,
 
 	if (zap_tryupgradedir(zap, tx) == 0 ||
 	    old_prefix_len == zap_f_phys(zap)->zap_ptrtbl.zt_shift) {
-		/* We failed to upgrade, or need to grow the pointer table */
+		 
 		objset_t *os = zap->zap_objset;
 		uint64_t object = zap->zap_object;
 
@@ -666,7 +557,7 @@ zap_expand_leaf(zap_name_t *zn, zap_leaf_t *l,
 			return (err);
 
 		if (zap_leaf_phys(l)->l_hdr.lh_prefix_len != old_prefix_len) {
-			/* it split while our locks were down */
+			 
 			*lp = l;
 			return (0);
 		}
@@ -681,7 +572,7 @@ zap_expand_leaf(zap_name_t *zn, zap_leaf_t *l,
 	uint64_t sibling =
 	    (ZAP_HASH_IDX(hash, old_prefix_len + 1) | 1) << prefix_diff;
 
-	/* check for i/o errors before doing zap_leaf_split */
+	 
 	for (int i = 0; i < (1ULL << prefix_diff); i++) {
 		uint64_t blk;
 		err = zap_idx_to_blk(zap, sibling + i, &blk);
@@ -693,16 +584,16 @@ zap_expand_leaf(zap_name_t *zn, zap_leaf_t *l,
 	zap_leaf_t *nl = zap_create_leaf(zap, tx);
 	zap_leaf_split(l, nl, zap->zap_normflags != 0);
 
-	/* set sibling pointers */
+	 
 	for (int i = 0; i < (1ULL << prefix_diff); i++) {
 		err = zap_set_idx_to_blk(zap, sibling + i, nl->l_blkid, tx);
-		ASSERT0(err); /* we checked for i/o errors above */
+		ASSERT0(err);  
 	}
 
 	ASSERT3U(zap_leaf_phys(l)->l_hdr.lh_prefix_len, >, 0);
 
 	if (hash & (1ULL << (64 - zap_leaf_phys(l)->l_hdr.lh_prefix_len))) {
-		/* we want the sibling */
+		 
 		zap_put_leaf(l);
 		*lp = nl;
 	} else {
@@ -725,10 +616,7 @@ zap_put_leaf_maybe_grow_ptrtbl(zap_name_t *zn, zap_leaf_t *l,
 	zap_put_leaf(l);
 
 	if (leaffull || zap_f_phys(zap)->zap_ptrtbl.zt_nextblk) {
-		/*
-		 * We are in the middle of growing the pointer table, or
-		 * this leaf will soon make us grow it.
-		 */
+		 
 		if (zap_tryupgradedir(zap, tx) == 0) {
 			objset_t *os = zap->zap_objset;
 			uint64_t zapobj = zap->zap_object;
@@ -741,7 +629,7 @@ zap_put_leaf_maybe_grow_ptrtbl(zap_name_t *zn, zap_leaf_t *l,
 				return;
 		}
 
-		/* could have finished growing while our locks were down */
+		 
 		if (zap_f_phys(zap)->zap_ptrtbl.zt_shift == shift)
 			(void) zap_grow_ptrtbl(zap, tx);
 	}
@@ -758,7 +646,7 @@ fzap_checkname(zap_name_t *zn)
 static int
 fzap_checksize(uint64_t integer_size, uint64_t num_integers)
 {
-	/* Only integer sizes supported by C */
+	 
 	switch (integer_size) {
 	case 1:
 	case 2:
@@ -784,9 +672,7 @@ fzap_check(zap_name_t *zn, uint64_t integer_size, uint64_t num_integers)
 	return (fzap_checksize(integer_size, num_integers));
 }
 
-/*
- * Routines for manipulating attributes.
- */
+ 
 int
 fzap_lookup(zap_name_t *zn,
     uint64_t integer_size, uint64_t num_integers, void *buf,
@@ -854,15 +740,11 @@ retry:
 		zap_increment_num_entries(zap, 1, tx);
 	} else if (err == EAGAIN) {
 		err = zap_expand_leaf(zn, l, tag, tx, &l);
-		zap = zn->zn_zap;	/* zap_expand_leaf() may change zap */
+		zap = zn->zn_zap;	 
 		if (err == 0) {
 			goto retry;
 		} else if (err == ENOSPC) {
-			/*
-			 * If we failed to expand the leaf, then bailout
-			 * as there is no point trying
-			 * zap_put_leaf_maybe_grow_ptrtbl().
-			 */
+			 
 			return (err);
 		}
 	}
@@ -921,7 +803,7 @@ retry:
 
 	if (err == EAGAIN) {
 		err = zap_expand_leaf(zn, l, tag, tx, &l);
-		zap = zn->zn_zap;	/* zap_expand_leaf() may change zap */
+		zap = zn->zn_zap;	 
 		if (err == 0)
 			goto retry;
 	}
@@ -989,9 +871,7 @@ fzap_prefetch(zap_name_t *zn)
 	    ZIO_PRIORITY_SYNC_READ);
 }
 
-/*
- * Helper functions for consumers.
- */
+ 
 
 uint64_t
 zap_create_link(objset_t *os, dmu_object_type_t ot, uint64_t parent_obj,
@@ -1204,9 +1084,7 @@ zap_increment_int(objset_t *os, uint64_t obj, uint64_t key, int64_t delta,
 	return (zap_increment(os, obj, name, delta, tx));
 }
 
-/*
- * Routines for iterating over the attributes.
- */
+ 
 
 int
 fzap_cursor_retrieve(zap_t *zap, zap_cursor_t *zc, zap_attribute_t *za)
@@ -1215,17 +1093,10 @@ fzap_cursor_retrieve(zap_t *zap, zap_cursor_t *zc, zap_attribute_t *za)
 	zap_entry_handle_t zeh;
 	zap_leaf_t *l;
 
-	/* retrieve the next entry at or after zc_hash/zc_cd */
-	/* if no entry, return ENOENT */
+	 
+	 
 
-	/*
-	 * If we are reading from the beginning, we're almost certain to
-	 * iterate over the entire ZAP object.  If there are multiple leaf
-	 * blocks (freeblk > 2), prefetch the whole object (up to
-	 * dmu_prefetch_max bytes), so that we read the leaf blocks
-	 * concurrently. (Unless noprefetch was requested via
-	 * zap_cursor_init_noprefetch()).
-	 */
+	 
 	if (zc->zc_hash == 0 && zap_iterate_prefetch &&
 	    zc->zc_prefetch && zap_f_phys(zap)->zap_freeblk > 2) {
 		dmu_prefetch(zc->zc_objset, zc->zc_zapobj, 0, 0,
@@ -1304,11 +1175,7 @@ zap_stats_ptrtbl(zap_t *zap, uint64_t *tbl, int len, zap_stats_t *zs)
 {
 	uint64_t lastblk = 0;
 
-	/*
-	 * NB: if a leaf has more pointers than an entire ptrtbl block
-	 * can hold, then it'll be accounted for more than once, since
-	 * we won't have lastblk.
-	 */
+	 
 	for (int i = 0; i < len; i++) {
 		zap_leaf_t *l;
 
@@ -1330,9 +1197,7 @@ fzap_get_stats(zap_t *zap, zap_stats_t *zs)
 	int bs = FZAP_BLOCK_SHIFT(zap);
 	zs->zs_blocksize = 1ULL << bs;
 
-	/*
-	 * Set zap_phys_t fields
-	 */
+	 
 	zs->zs_num_leafs = zap_f_phys(zap)->zap_num_leafs;
 	zs->zs_num_entries = zap_f_phys(zap)->zap_num_entries;
 	zs->zs_num_blocks = zap_f_phys(zap)->zap_freeblk;
@@ -1340,9 +1205,7 @@ fzap_get_stats(zap_t *zap, zap_stats_t *zs)
 	zs->zs_magic = zap_f_phys(zap)->zap_magic;
 	zs->zs_salt = zap_f_phys(zap)->zap_salt;
 
-	/*
-	 * Set zap_ptrtbl fields
-	 */
+	 
 	zs->zs_ptrtbl_len = 1ULL << zap_f_phys(zap)->zap_ptrtbl.zt_shift;
 	zs->zs_ptrtbl_nextblk = zap_f_phys(zap)->zap_ptrtbl.zt_nextblk;
 	zs->zs_ptrtbl_blks_copied =
@@ -1352,7 +1215,7 @@ fzap_get_stats(zap_t *zap, zap_stats_t *zs)
 	zs->zs_ptrtbl_zt_shift = zap_f_phys(zap)->zap_ptrtbl.zt_shift;
 
 	if (zap_f_phys(zap)->zap_ptrtbl.zt_numblks == 0) {
-		/* the ptrtbl is entirely in the header block. */
+		 
 		zap_stats_ptrtbl(zap, &ZAP_EMBEDDED_PTRTBL_ENT(zap, 0),
 		    1 << ZAP_EMBEDDED_PTRTBL_SHIFT(zap), zs);
 	} else {
@@ -1378,6 +1241,6 @@ fzap_get_stats(zap_t *zap, zap_stats_t *zs)
 	}
 }
 
-/* CSTYLED */
+ 
 ZFS_MODULE_PARAM(zfs, , zap_iterate_prefetch, INT, ZMOD_RW,
 	"When iterating ZAP object, prefetch it");

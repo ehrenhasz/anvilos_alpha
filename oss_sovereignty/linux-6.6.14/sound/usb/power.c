@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *   UAC3 Power Domain state management functions
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/usb.h>

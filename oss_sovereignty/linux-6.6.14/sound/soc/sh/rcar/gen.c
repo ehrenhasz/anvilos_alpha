@@ -1,31 +1,23 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Renesas R-Car Gen1 SRU/SSI support
-//
-// Copyright (C) 2013 Renesas Solutions Corp.
-// Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
 
-/*
- * #define DEBUG
- *
- * you can also add below in
- * ${LINUX}/drivers/base/regmap/regmap.c
- * for regmap debug
- *
- * #define LOG_DEVICE "xxxx.rcar_sound"
- */
+
+
+
+
+
+
+ 
 
 #include "rsnd.h"
 
 struct rsnd_gen {
 	struct rsnd_gen_ops *ops;
 
-	/* RSND_BASE_MAX base */
+	 
 	void __iomem *base[RSND_BASE_MAX];
 	phys_addr_t res[RSND_BASE_MAX];
 	struct regmap *regmap[RSND_BASE_MAX];
 
-	/* RSND_REG_MAX base */
+	 
 	struct regmap_field *regs[REG_MAX];
 	const char *reg_name[REG_MAX];
 };
@@ -47,17 +39,15 @@ struct rsnd_regmap_field_conf {
 	.id_offset = _id_offset,		\
 	.reg_name = n,				\
 }
-/* single address mapping */
+ 
 #define RSND_GEN_S_REG(id, offset)	\
 	RSND_REG_SET(id, offset, 0, #id)
 
-/* multi address mapping */
+ 
 #define RSND_GEN_M_REG(id, offset, _id_offset)	\
 	RSND_REG_SET(id, offset, _id_offset, #id)
 
-/*
- *		basic function
- */
+ 
 static int rsnd_is_accessible_reg(struct rsnd_priv *priv,
 				  struct rsnd_gen *gen, enum rsnd_reg reg)
 {
@@ -190,7 +180,7 @@ static int _rsnd_gen_regmap_init(struct rsnd_priv *priv,
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/* RSND_BASE_MAX base */
+	 
 	gen->base[reg_id] = base;
 	gen->regmap[reg_id] = regmap;
 	gen->res[reg_id] = res->start;
@@ -207,7 +197,7 @@ static int _rsnd_gen_regmap_init(struct rsnd_priv *priv,
 		if (IS_ERR(regs))
 			return PTR_ERR(regs);
 
-		/* RSND_REG_MAX base */
+		 
 		gen->regs[conf[i].idx] = regs;
 		gen->reg_name[conf[i].idx] = conf[i].reg_name;
 	}
@@ -215,9 +205,7 @@ static int _rsnd_gen_regmap_init(struct rsnd_priv *priv,
 	return 0;
 }
 
-/*
- *		Gen4
- */
+ 
 static int rsnd_gen4_probe(struct rsnd_priv *priv)
 {
 	static const struct rsnd_regmap_field_conf conf_ssiu[] = {
@@ -283,9 +271,7 @@ static int rsnd_gen4_probe(struct rsnd_priv *priv)
 	return ret_adg | ret_ssiu | ret_ssi | ret_sdmc;
 }
 
-/*
- *		Gen2
- */
+ 
 static int rsnd_gen2_probe(struct rsnd_priv *priv)
 {
 	static const struct rsnd_regmap_field_conf conf_ssiu[] = {
@@ -312,7 +298,7 @@ static int rsnd_gen2_probe(struct rsnd_priv *priv)
 		RSND_GEN_S_REG(HDMI0_SEL,	0x9e0),
 		RSND_GEN_S_REG(HDMI1_SEL,	0x9e4),
 
-		/* FIXME: it needs SSI_MODE2/3 in the future */
+		 
 		RSND_GEN_M_REG(SSI_BUSIF0_MODE,		0x0,	0x80),
 		RSND_GEN_M_REG(SSI_BUSIF0_ADINR,	0x4,	0x80),
 		RSND_GEN_M_REG(SSI_BUSIF0_DALIGN,	0x8,	0x80),
@@ -499,9 +485,7 @@ static int rsnd_gen2_probe(struct rsnd_priv *priv)
 	return 0;
 }
 
-/*
- *		Gen1
- */
+ 
 
 static int rsnd_gen1_probe(struct rsnd_priv *priv)
 {
@@ -531,9 +515,7 @@ static int rsnd_gen1_probe(struct rsnd_priv *priv)
 	return 0;
 }
 
-/*
- *		Gen
- */
+ 
 int rsnd_gen_probe(struct rsnd_priv *priv)
 {
 	struct device *dev = rsnd_priv_to_dev(priv);

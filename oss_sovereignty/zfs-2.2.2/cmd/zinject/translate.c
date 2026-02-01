@@ -1,27 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2006, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2020 by Delphix. All rights reserved.
- */
+ 
+ 
 
 #include <libzfs.h>
 
@@ -74,12 +52,7 @@ compress_slashes(const char *src, char *dest)
 	*dest = '\0';
 }
 
-/*
- * Given a full path to a file, translate into a dataset name and a relative
- * path within the dataset.  'dataset' must be at least MAXNAMELEN characters,
- * and 'relpath' must be at least MAXPATHLEN characters.  We also pass a stat64
- * buffer, which we need later to get the object ID.
- */
+ 
 static int
 parse_pathname(const char *inpath, char *dataset, char *relpath,
     struct stat64 *statbuf)
@@ -125,10 +98,7 @@ parse_pathname(const char *inpath, char *dataset, char *relpath,
 	return (0);
 }
 
-/*
- * Convert from a dataset to a objset id. Note that
- * we grab the object number from the inode number.
- */
+ 
 static int
 object_from_path(const char *dataset, uint64_t object, zinject_record_t *record)
 {
@@ -145,28 +115,20 @@ object_from_path(const char *dataset, uint64_t object, zinject_record_t *record)
 	return (0);
 }
 
-/*
- * Initialize the range based on the type, level, and range given.
- */
+ 
 static int
 initialize_range(err_type_t type, int level, char *range,
     zinject_record_t *record)
 {
-	/*
-	 * Determine the numeric range from the string.
-	 */
+	 
 	if (range == NULL) {
-		/*
-		 * If range is unspecified, set the range to [0,-1], which
-		 * indicates that the whole object should be treated as an
-		 * error.
-		 */
+		 
 		record->zi_start = 0;
 		record->zi_end = -1ULL;
 	} else {
 		char *end;
 
-		/* XXX add support for suffixes */
+		 
 		record->zi_start = strtoull(range, &end, 10);
 
 
@@ -191,12 +153,7 @@ initialize_range(err_type_t type, int level, char *range,
 		break;
 
 	case TYPE_DNODE:
-		/*
-		 * If this is a request to inject faults into the dnode, then we
-		 * must translate the current (objset,object) pair into an
-		 * offset within the metadnode for the objset.  Specifying any
-		 * kind of range with type 'dnode' is illegal.
-		 */
+		 
 		if (range != NULL) {
 			(void) fprintf(stderr, "range cannot be specified when "
 			    "type is 'dnode'\n");
@@ -228,9 +185,7 @@ translate_record(err_type_t type, const char *object, const char *range,
 	ziprintf("translating: %s\n", object);
 
 	if (MOS_TYPE(type)) {
-		/*
-		 * MOS objects are treated specially.
-		 */
+		 
 		switch (type) {
 		default:
 			break;
@@ -262,27 +217,21 @@ translate_record(err_type_t type, const char *object, const char *range,
 		return (0);
 	}
 
-	/*
-	 * Convert a full path into a (dataset, file) pair.
-	 */
+	 
 	if (parse_pathname(object, dataset, path, &statbuf) != 0)
 		goto err;
 
 	ziprintf("   dataset: %s\n", dataset);
 	ziprintf("      path: %s\n", path);
 
-	/*
-	 * Convert (dataset, file) into (objset, object)
-	 */
+	 
 	if (object_from_path(dataset, statbuf.st_ino, record) != 0)
 		goto err;
 
 	ziprintf("raw objset: %llu\n", record->zi_objset);
 	ziprintf("raw object: %llu\n", record->zi_object);
 
-	/*
-	 * For the given object, initialize the range in bytes
-	 */
+	 
 	if (initialize_range(type, level, (char *)range, record) != 0)
 		goto err;
 
@@ -295,9 +244,7 @@ translate_record(err_type_t type, const char *object, const char *range,
 		ziprintf("     range: [%llu, %llu]\n", record->zi_start,
 		    record->zi_end);
 
-	/*
-	 * Copy the pool name
-	 */
+	 
 	(void) strlcpy(poolname, dataset, MAXNAMELEN);
 	if ((slash = strchr(poolname, '/')) != NULL)
 		*slash = '\0';
@@ -311,10 +258,7 @@ err:
 int
 translate_raw(const char *str, zinject_record_t *record)
 {
-	/*
-	 * A raw bookmark of the form objset:object:level:blkid, where each
-	 * number is a hexadecimal value.
-	 */
+	 
 	if (sscanf(str, "%llx:%llx:%x:%llx", (u_longlong_t *)&record->zi_objset,
 	    (u_longlong_t *)&record->zi_object, &record->zi_level,
 	    (u_longlong_t *)&record->zi_start) != 4) {
@@ -337,10 +281,7 @@ translate_device(const char *pool, const char *device, err_type_t label_type,
 	nvlist_t *tgt;
 	boolean_t isspare, iscache;
 
-	/*
-	 * Given a device name or GUID, create an appropriate injection record
-	 * with zi_guid set.
-	 */
+	 
 	if ((zhp = zpool_open(g_zfs, pool)) == NULL)
 		return (-1);
 
@@ -359,12 +300,7 @@ translate_device(const char *pool, const char *device, err_type_t label_type,
 		    &record->zi_guid) == 0);
 	}
 
-	/*
-	 * Device faults can take on three different forms:
-	 * 1). delayed or hanging I/O
-	 * 2). zfs label faults
-	 * 3). generic disk faults
-	 */
+	 
 	if (record->zi_timer != 0) {
 		record->zi_cmd = ZINJECT_DELAY_IO;
 	} else if (label_type != TYPE_INVAL) {

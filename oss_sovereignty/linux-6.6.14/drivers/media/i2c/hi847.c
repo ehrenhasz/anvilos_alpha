@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2022 Intel Corporation.
+
+
 
 #include <asm/unaligned.h>
 #include <linux/acpi.h>
@@ -33,7 +33,7 @@
 #define HI847_REG_MODE_TG_ENABLE	0x0100
 #define HI847_REG_MODE_TG_DISABLE	0x0000
 
-/* vertical-timings from sensor */
+ 
 #define HI847_REG_FLL			0x020E
 #define HI847_FLL_30FPS			0x0B51
 #define HI847_FLL_30FPS_MIN		0x0B51
@@ -41,22 +41,22 @@
 #define HI847_FLL_60FPS_MIN		0x05A9
 #define HI847_FLL_MAX			0x7fff
 
-/* horizontal-timings from sensor */
+ 
 #define HI847_REG_LLP			0x0206
 
-/* Exposure controls from sensor */
+ 
 #define HI847_REG_EXPOSURE		0x020A
 #define HI847_EXPOSURE_MIN		4
 #define HI847_EXPOSURE_MAX_MARGIN	4
 #define HI847_EXPOSURE_STEP		1
 
-/* Analog gain controls from sensor */
+ 
 #define HI847_REG_ANALOG_GAIN		0x0212
 #define HI847_ANAL_GAIN_MIN		0
 #define HI847_ANAL_GAIN_MAX		240
 #define HI847_ANAL_GAIN_STEP		1
 
-/* Digital gain controls from sensor */
+ 
 #define HI847_REG_MWB_GR_GAIN		0x0214
 #define HI847_REG_MWB_GB_GAIN		0x0216
 #define HI847_REG_MWB_R_GAIN		0x0218
@@ -66,12 +66,12 @@
 #define HI847_DGTL_GAIN_STEP		1
 #define HI847_DGTL_GAIN_DEFAULT		512
 
-/* Test Pattern Control */
+ 
 #define HI847_REG_ISP			0X0B04
 #define HI847_REG_ISP_TPG_EN		0x0001
 #define HI847_REG_TEST_PATTERN		0x0C0A
 
-/* Flip Mirror Controls from sensor */
+ 
 #define HI847_REG_MIRROR_FLIP	0x0202
 
 #define HI847_REG_FORMAT_X	0x0F04
@@ -97,31 +97,31 @@ struct hi847_link_freq_config {
 };
 
 struct hi847_mode {
-	/* Frame width in pixels */
+	 
 	u32 width;
 
-	/* Frame height in pixels */
+	 
 	u32 height;
 
-	/* Horizontal timining size */
+	 
 	u32 llp;
 
-	/* Default vertical timining size */
+	 
 	u32 fll_def;
 
-	/* Min vertical timining size */
+	 
 	u32 fll_min;
 
-	/* Link frequency needed for this resolution */
+	 
 	u32 link_freq_index;
 
-	/* Sensor register settings for this resolution */
+	 
 	const struct hi847_reg_list reg_list;
 };
 
 #define to_hi847(_sd) container_of(_sd, struct hi847, sd)
 
-//SENSOR_INITIALIZATION
+
 static const struct hi847_reg mipi_data_rate_lane_4[] = {
 	{0x0790, 0x0100},
 	{0x2000, 0x0000},
@@ -2170,7 +2170,7 @@ struct hi847 {
 	struct media_pad pad;
 	struct v4l2_ctrl_handler ctrl_handler;
 
-	/* V4L2 Controls */
+	 
 	struct v4l2_ctrl *link_freq;
 	struct v4l2_ctrl *pixel_rate;
 	struct v4l2_ctrl *vblank;
@@ -2179,13 +2179,13 @@ struct hi847 {
 	struct v4l2_ctrl *vflip;
 	struct v4l2_ctrl *hflip;
 
-	/* Current mode */
+	 
 	const struct hi847_mode *cur_mode;
 
-	/* To serialize asynchronus callbacks */
+	 
 	struct mutex mutex;
 
-	/* Streaming on/off */
+	 
 	bool streaming;
 };
 
@@ -2321,7 +2321,7 @@ static int hi847_grbg_shift(struct hi847 *hi847)
 	int ret;
 	int hflip, vflip;
 
-	/* regs shift for full size */
+	 
 	static const u32 FORMAT_X_SHIFT_1[2][2] = {
 		{ 0x0008, 0x0007, },
 		{ 0x0008, 0x0007, },
@@ -2332,7 +2332,7 @@ static int hi847_grbg_shift(struct hi847 *hi847)
 		{ 0x0001, 0x0001, },
 	};
 
-	/* regs shift for binning size */
+	 
 	static const u32 FORMAT_X_SHIFT_2[2][2] = {
 		{ 0x0004, 0x0003, },
 		{ 0x0004, 0x0003, },
@@ -2415,9 +2415,9 @@ static int hi847_set_ctrl(struct v4l2_ctrl *ctrl)
 	s64 exposure_max;
 	int ret = 0;
 
-	/* Propagate change of current control to all related controls */
+	 
 	if (ctrl->id == V4L2_CID_VBLANK) {
-		/* Update max exposure while meeting expected vblanking */
+		 
 		exposure_max = hi847->cur_mode->height + ctrl->val -
 			       HI847_EXPOSURE_MAX_MARGIN;
 		__v4l2_ctrl_modify_range(hi847->exposure,
@@ -2426,7 +2426,7 @@ static int hi847_set_ctrl(struct v4l2_ctrl *ctrl)
 					 exposure_max);
 	}
 
-	/* V4L2 controls values will be applied only when power is already up */
+	 
 	if (!pm_runtime_get_if_in_use(&client->dev))
 		return 0;
 
@@ -2446,7 +2446,7 @@ static int hi847_set_ctrl(struct v4l2_ctrl *ctrl)
 		break;
 
 	case V4L2_CID_VBLANK:
-		/* Update FLL that meets expected vertical blanking */
+		 
 		ret = hi847_write_reg(hi847, HI847_REG_FLL,
 				      HI847_REG_VALUE_16BIT,
 				      hi847->cur_mode->height + ctrl->val);
@@ -2711,7 +2711,7 @@ static int hi847_set_format(struct v4l2_subdev *sd,
 		__v4l2_ctrl_s_ctrl_int64(hi847->pixel_rate,
 					 to_pixel_rate(mode->link_freq_index));
 
-		/* Update limits and set FPS to default */
+		 
 		vblank_def = mode->fll_def - mode->height;
 		__v4l2_ctrl_modify_range(hi847->vblank,
 					 mode->fll_min - mode->height,

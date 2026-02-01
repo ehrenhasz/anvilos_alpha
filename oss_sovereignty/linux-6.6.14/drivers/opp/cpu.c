@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Generic OPP helper interface for CPU device
- *
- * Copyright (C) 2009-2014 Texas Instruments Incorporated.
- *	Nishanth Menon
- *	Romit Dasgupta
- *	Kevin Hilman
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -21,25 +14,7 @@
 
 #ifdef CONFIG_CPU_FREQ
 
-/**
- * dev_pm_opp_init_cpufreq_table() - create a cpufreq table for a device
- * @dev:	device for which we do this operation
- * @opp_table:	Cpufreq table returned back to caller
- *
- * Generate a cpufreq table for a provided device- this assumes that the
- * opp table is already initialized and ready for usage.
- *
- * This function allocates required memory for the cpufreq table. It is
- * expected that the caller does the required maintenance such as freeing
- * the table as required.
- *
- * Returns -EINVAL for bad pointers, -ENODEV if the device is not found, -ENOMEM
- * if no memory available for the operation (table is not populated), returns 0
- * if successful and table is populated.
- *
- * WARNING: It is  important for the callers to ensure refreshing their copy of
- * the table if any of the mentioned functions have been invoked in the interim.
- */
+ 
 int dev_pm_opp_init_cpufreq_table(struct device *dev,
 				  struct cpufreq_frequency_table **opp_table)
 {
@@ -57,7 +32,7 @@ int dev_pm_opp_init_cpufreq_table(struct device *dev,
 		return -ENOMEM;
 
 	for (i = 0, rate = 0; i < max_opps; i++, rate++) {
-		/* find next rate */
+		 
 		opp = dev_pm_opp_find_freq_ceil(dev, &rate);
 		if (IS_ERR(opp)) {
 			ret = PTR_ERR(opp);
@@ -66,7 +41,7 @@ int dev_pm_opp_init_cpufreq_table(struct device *dev,
 		freq_table[i].driver_data = i;
 		freq_table[i].frequency = rate / 1000;
 
-		/* Is Boost/turbo opp ? */
+		 
 		if (dev_pm_opp_is_turbo(opp))
 			freq_table[i].flags = CPUFREQ_BOOST_FREQ;
 
@@ -86,13 +61,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(dev_pm_opp_init_cpufreq_table);
 
-/**
- * dev_pm_opp_free_cpufreq_table() - free the cpufreq table
- * @dev:	device for which we do this operation
- * @opp_table:	table to free
- *
- * Free up the table allocated by dev_pm_opp_init_cpufreq_table
- */
+ 
 void dev_pm_opp_free_cpufreq_table(struct device *dev,
 				   struct cpufreq_frequency_table **opp_table)
 {
@@ -103,7 +72,7 @@ void dev_pm_opp_free_cpufreq_table(struct device *dev,
 	*opp_table = NULL;
 }
 EXPORT_SYMBOL_GPL(dev_pm_opp_free_cpufreq_table);
-#endif	/* CONFIG_CPU_FREQ */
+#endif	 
 
 void _dev_pm_opp_cpumask_remove_table(const struct cpumask *cpumask,
 				      int last_cpu)
@@ -128,30 +97,14 @@ void _dev_pm_opp_cpumask_remove_table(const struct cpumask *cpumask,
 	}
 }
 
-/**
- * dev_pm_opp_cpumask_remove_table() - Removes OPP table for @cpumask
- * @cpumask:	cpumask for which OPP table needs to be removed
- *
- * This removes the OPP tables for CPUs present in the @cpumask.
- * This should be used to remove all the OPPs entries associated with
- * the cpus in @cpumask.
- */
+ 
 void dev_pm_opp_cpumask_remove_table(const struct cpumask *cpumask)
 {
 	_dev_pm_opp_cpumask_remove_table(cpumask, -1);
 }
 EXPORT_SYMBOL_GPL(dev_pm_opp_cpumask_remove_table);
 
-/**
- * dev_pm_opp_set_sharing_cpus() - Mark OPP table as shared by few CPUs
- * @cpu_dev:	CPU device for which we do this operation
- * @cpumask:	cpumask of the CPUs which share the OPP table with @cpu_dev
- *
- * This marks OPP table of the @cpu_dev as shared by the CPUs present in
- * @cpumask.
- *
- * Returns -ENODEV if OPP table isn't already present.
- */
+ 
 int dev_pm_opp_set_sharing_cpus(struct device *cpu_dev,
 				const struct cpumask *cpumask)
 {
@@ -182,7 +135,7 @@ int dev_pm_opp_set_sharing_cpus(struct device *cpu_dev,
 			continue;
 		}
 
-		/* Mark opp-table as multiple CPUs are sharing it now */
+		 
 		opp_table->shared_opp = OPP_TABLE_ACCESS_SHARED;
 	}
 
@@ -192,16 +145,7 @@ int dev_pm_opp_set_sharing_cpus(struct device *cpu_dev,
 }
 EXPORT_SYMBOL_GPL(dev_pm_opp_set_sharing_cpus);
 
-/**
- * dev_pm_opp_get_sharing_cpus() - Get cpumask of CPUs sharing OPPs with @cpu_dev
- * @cpu_dev:	CPU device for which we do this operation
- * @cpumask:	cpumask to update with information of sharing CPUs
- *
- * This updates the @cpumask with CPUs that are sharing OPPs with @cpu_dev.
- *
- * Returns -ENODEV if OPP table isn't already present and -EINVAL if the OPP
- * table's status is access-unknown.
- */
+ 
 int dev_pm_opp_get_sharing_cpus(struct device *cpu_dev, struct cpumask *cpumask)
 {
 	struct opp_device *opp_dev;

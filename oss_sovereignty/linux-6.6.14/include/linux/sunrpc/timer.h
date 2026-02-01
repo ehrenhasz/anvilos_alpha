@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  linux/include/linux/sunrpc/timer.h
- *
- *  Declarations for the RPC transport timer.
- *
- *  Copyright (C) 2002 Trond Myklebust <trond.myklebust@fys.uio.no>
- */
+ 
+ 
 
 #ifndef _LINUX_SUNRPC_TIMER_H
 #define _LINUX_SUNRPC_TIMER_H
@@ -13,10 +7,10 @@
 #include <linux/atomic.h>
 
 struct rpc_rtt {
-	unsigned long timeo;	/* default timeout value */
-	unsigned long srtt[5];	/* smoothed round trip time << 3 */
-	unsigned long sdrtt[5];	/* smoothed medium deviation of RTT */
-	int ntimeouts[5];	/* Number of timeouts for the last request */
+	unsigned long timeo;	 
+	unsigned long srtt[5];	 
+	unsigned long sdrtt[5];	 
+	int ntimeouts[5];	 
 };
 
 
@@ -47,4 +41,4 @@ static inline int rpc_ntimeo(struct rpc_rtt *rt, int timer)
 	return rt->ntimeouts[timer-1];
 }
 
-#endif /* _LINUX_SUNRPC_TIMER_H */
+#endif  

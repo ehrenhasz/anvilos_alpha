@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2013 Emilio López
- *
- * Emilio López <emilio@elopez.com.ar>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -14,18 +10,13 @@
 
 #include "clk-factors.h"
 
-/*
- * sun4i_a10_get_mod0_factors() - calculates m, n factors for MOD0-style clocks
- * MOD0 rate is calculated as follows
- * rate = (parent_rate >> p) / (m + 1);
- */
+ 
 
 static void sun4i_a10_get_mod0_factors(struct factors_request *req)
 {
 	u8 div, calcm, calcp;
 
-	/* These clocks can only divide, so we will never be able to achieve
-	 * frequencies higher than the parent frequency */
+	 
 	if (req->rate > req->parent_rate)
 		req->rate = req->parent_rate;
 
@@ -47,7 +38,7 @@ static void sun4i_a10_get_mod0_factors(struct factors_request *req)
 	req->p = calcp;
 }
 
-/* user manual says "n" but it's really "p" */
+ 
 static const struct clk_factors_config sun4i_a10_mod0_config = {
 	.mshift = 0,
 	.mwidth = 4,
@@ -71,11 +62,7 @@ static void __init sun4i_a10_mod0_setup(struct device_node *node)
 
 	reg = of_iomap(node, 0);
 	if (!reg) {
-		/*
-		 * This happens with mod0 clk nodes instantiated through
-		 * mfd, as those do not have their resources assigned at
-		 * CLK_OF_DECLARE time yet, so do not print an error.
-		 */
+		 
 		return;
 	}
 
@@ -104,7 +91,7 @@ static int sun4i_a10_mod0_clk_probe(struct platform_device *pdev)
 
 static const struct of_device_id sun4i_a10_mod0_clk_dt_ids[] = {
 	{ .compatible = "allwinner,sun4i-a10-mod0-clk" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver sun4i_a10_mod0_clk_driver = {
@@ -152,7 +139,7 @@ static void __init sun5i_a13_mbus_setup(struct device_node *node)
 		return;
 	}
 
-	/* The MBUS clocks needs to be always enabled */
+	 
 	sunxi_factors_register_critical(node, &sun4i_a10_mod0_data,
 					&sun5i_a13_mbus_lock, reg);
 }
@@ -182,27 +169,27 @@ static int mmc_get_phase(struct clk_hw *hw)
 	if (!delay)
 		return 180;
 
-	/* Get the main MMC clock */
+	 
 	mmc = clk_get_parent(clk);
 	if (!mmc)
 		return -EINVAL;
 
-	/* And its rate */
+	 
 	mmc_rate = clk_get_rate(mmc);
 	if (!mmc_rate)
 		return -EINVAL;
 
-	/* Now, get the MMC parent (most likely some PLL) */
+	 
 	mmc_parent = clk_get_parent(mmc);
 	if (!mmc_parent)
 		return -EINVAL;
 
-	/* And its rate */
+	 
 	mmc_parent_rate = clk_get_rate(mmc_parent);
 	if (!mmc_parent_rate)
 		return -EINVAL;
 
-	/* Get MMC clock divider */
+	 
 	mmc_div = mmc_parent_rate / mmc_rate;
 
 	step = DIV_ROUND_CLOSEST(360, mmc_div);
@@ -218,22 +205,22 @@ static int mmc_set_phase(struct clk_hw *hw, int degrees)
 	u32 value;
 	u8 delay;
 
-	/* Get the main MMC clock */
+	 
 	mmc = clk_get_parent(clk);
 	if (!mmc)
 		return -EINVAL;
 
-	/* And its rate */
+	 
 	mmc_rate = clk_get_rate(mmc);
 	if (!mmc_rate)
 		return -EINVAL;
 
-	/* Now, get the MMC parent (most likely some PLL) */
+	 
 	mmc_parent = clk_get_parent(mmc);
 	if (!mmc_parent)
 		return -EINVAL;
 
-	/* And its rate */
+	 
 	mmc_parent_rate = clk_get_rate(mmc_parent);
 	if (!mmc_parent_rate)
 		return -EINVAL;
@@ -241,22 +228,10 @@ static int mmc_set_phase(struct clk_hw *hw, int degrees)
 	if (degrees != 180) {
 		u16 step, mmc_div;
 
-		/* Get MMC clock divider */
+		 
 		mmc_div = mmc_parent_rate / mmc_rate;
 
-		/*
-		 * We can only outphase the clocks by multiple of the
-		 * PLL's period.
-		 *
-		 * Since the MMC clock in only a divider, and the
-		 * formula to get the outphasing in degrees is deg =
-		 * 360 * delta / period
-		 *
-		 * If we simplify this formula, we can see that the
-		 * only thing that we're concerned about is the number
-		 * of period we want to outphase our clock from, and
-		 * the divider set by the MMC clock.
-		 */
+		 
 		step = DIV_ROUND_CLOSEST(360, mmc_div);
 		delay = DIV_ROUND_CLOSEST(degrees, step);
 	} else {
@@ -278,13 +253,7 @@ static const struct clk_ops mmc_clk_ops = {
 	.set_phase	= mmc_set_phase,
 };
 
-/*
- * sunxi_mmc_setup - Common setup function for mmc module clocks
- *
- * The only difference between module clocks on different platforms is the
- * width of the mux register bits and the valid values, which are passed in
- * through struct factors_data. The phase clocks parts are identical.
- */
+ 
 static void __init sunxi_mmc_setup(struct device_node *node,
 				   const struct factors_data *data,
 				   spinlock_t *lock)

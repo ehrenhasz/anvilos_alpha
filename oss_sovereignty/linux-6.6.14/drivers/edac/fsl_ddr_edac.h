@@ -1,26 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Freescale Memory Controller kernel module
- *
- * Support  Power-based SoCs including MPC85xx, MPC86xx, MPC83xx and
- * ARM-based Layerscape SoCs including LS2xxx and LS1021A. Originally
- * split out from mpc85xx_edac EDAC driver.
- *
- * Author: Dave Jiang <djiang@mvista.com>
- *
- * 2006-2007 (c) MontaVista Software, Inc.
- */
+ 
+ 
 #ifndef _FSL_DDR_EDAC_H_
 #define _FSL_DDR_EDAC_H_
 
 #define fsl_mc_printk(mci, level, fmt, arg...) \
 	edac_mc_chipset_printk(mci, level, "FSL_DDR", fmt, ##arg)
 
-/*
- * DRAM error defines
- */
+ 
 
-/* DDR_SDRAM_CFG */
+ 
 #define FSL_MC_DDR_SDRAM_CFG	0x0110
 #define FSL_MC_CS_BNDS_0		0x0000
 #define FSL_MC_CS_BNDS_OFS		0x0008
@@ -49,21 +37,21 @@
 #define DSC_SDTYPE_MASK		0x07000000
 #define DSC_X32_EN	0x00000020
 
-/* Err_Int_En */
-#define DDR_EIE_MSEE	0x1	/* memory select */
-#define DDR_EIE_SBEE	0x4	/* single-bit ECC error */
-#define DDR_EIE_MBEE	0x8	/* multi-bit ECC error */
+ 
+#define DDR_EIE_MSEE	0x1	 
+#define DDR_EIE_SBEE	0x4	 
+#define DDR_EIE_MBEE	0x8	 
 
-/* Err_Detect */
-#define DDR_EDE_MSE		0x1	/* memory select */
-#define DDR_EDE_SBE		0x4	/* single-bit ECC error */
-#define DDR_EDE_MBE		0x8	/* multi-bit ECC error */
-#define DDR_EDE_MME		0x80000000	/* multiple memory errors */
+ 
+#define DDR_EDE_MSE		0x1	 
+#define DDR_EDE_SBE		0x4	 
+#define DDR_EDE_MBE		0x8	 
+#define DDR_EDE_MME		0x80000000	 
 
-/* Err_Disable */
-#define DDR_EDI_MSED	0x1	/* memory select disable */
-#define	DDR_EDI_SBED	0x4	/* single-bit ECC error disable */
-#define	DDR_EDI_MBED	0x8	/* multi-bit ECC error disable */
+ 
+#define DDR_EDI_MSED	0x1	 
+#define	DDR_EDI_SBED	0x4	 
+#define	DDR_EDI_MBED	0x8	 
 
 struct fsl_mc_pdata {
 	char *name;

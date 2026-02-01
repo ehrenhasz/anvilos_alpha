@@ -1,30 +1,4 @@
-/*
- * Copyright 2008 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- * Copyright 2009 Jerome Glisse.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- *          Jerome Glisse
- */
+ 
 #include <linux/kernel.h>
 
 #include "radeon.h"
@@ -36,11 +10,11 @@
 static int r600_nomm;
 
 struct r600_cs_track {
-	/* configuration we mirror so that we use same code btw kms/ums */
+	 
 	u32			group_size;
 	u32			nbanks;
 	u32			npipes;
-	/* value we track */
+	 
 	u32			sq_config;
 	u32			log_nsamples;
 	u32			nsamples;
@@ -55,15 +29,15 @@ struct r600_cs_track {
 	u32			cb_color_mask[8];
 	u32			cb_color_info[8];
 	u32			cb_color_view[8];
-	u32			cb_color_size_idx[8]; /* unused */
+	u32			cb_color_size_idx[8];  
 	u32			cb_target_mask;
-	u32			cb_shader_mask;  /* unused */
+	u32			cb_shader_mask;   
 	bool			is_resolve;
 	u32			cb_color_size[8];
 	u32			vgt_strmout_en;
 	u32			vgt_strmout_buffer_en;
 	struct radeon_bo	*vgt_strmout_bo[4];
-	u64			vgt_strmout_bo_mc[4]; /* unused */
+	u64			vgt_strmout_bo_mc[4];  
 	u32			vgt_strmout_bo_offset[4];
 	u32			vgt_strmout_size[4];
 	u32			db_depth_control;
@@ -101,13 +75,13 @@ struct gpu_formats {
 };
 
 static const struct gpu_formats color_formats_table[] = {
-	/* 8 bit */
+	 
 	FMT_8_BIT(V_038004_COLOR_8, 1),
 	FMT_8_BIT(V_038004_COLOR_4_4, 1),
 	FMT_8_BIT(V_038004_COLOR_3_3_2, 1),
 	FMT_8_BIT(V_038004_FMT_1, 0),
 
-	/* 16-bit */
+	 
 	FMT_16_BIT(V_038004_COLOR_16, 1),
 	FMT_16_BIT(V_038004_COLOR_16_FLOAT, 1),
 	FMT_16_BIT(V_038004_COLOR_8_8, 1),
@@ -117,10 +91,10 @@ static const struct gpu_formats color_formats_table[] = {
 	FMT_16_BIT(V_038004_COLOR_4_4_4_4, 1),
 	FMT_16_BIT(V_038004_COLOR_5_5_5_1, 1),
 
-	/* 24-bit */
+	 
 	FMT_24_BIT(V_038004_FMT_8_8_8),
 
-	/* 32-bit */
+	 
 	FMT_32_BIT(V_038004_COLOR_32, 1),
 	FMT_32_BIT(V_038004_COLOR_32_FLOAT, 1),
 	FMT_32_BIT(V_038004_COLOR_16_16, 1),
@@ -140,11 +114,11 @@ static const struct gpu_formats color_formats_table[] = {
 	FMT_32_BIT(V_038004_FMT_32_AS_8, 0),
 	FMT_32_BIT(V_038004_FMT_32_AS_8_8, 0),
 
-	/* 48-bit */
+	 
 	FMT_48_BIT(V_038004_FMT_16_16_16),
 	FMT_48_BIT(V_038004_FMT_16_16_16_FLOAT),
 
-	/* 64-bit */
+	 
 	FMT_64_BIT(V_038004_COLOR_X24_8_32_FLOAT, 1),
 	FMT_64_BIT(V_038004_COLOR_32_32, 1),
 	FMT_64_BIT(V_038004_COLOR_32_32_FLOAT, 1),
@@ -154,23 +128,23 @@ static const struct gpu_formats color_formats_table[] = {
 	FMT_96_BIT(V_038004_FMT_32_32_32),
 	FMT_96_BIT(V_038004_FMT_32_32_32_FLOAT),
 
-	/* 128-bit */
+	 
 	FMT_128_BIT(V_038004_COLOR_32_32_32_32, 1),
 	FMT_128_BIT(V_038004_COLOR_32_32_32_32_FLOAT, 1),
 
 	[V_038004_FMT_GB_GR] = { 2, 1, 4, 0 },
 	[V_038004_FMT_BG_RG] = { 2, 1, 4, 0 },
 
-	/* block compressed formats */
+	 
 	[V_038004_FMT_BC1] = { 4, 4, 8, 0 },
 	[V_038004_FMT_BC2] = { 4, 4, 16, 0 },
 	[V_038004_FMT_BC3] = { 4, 4, 16, 0 },
 	[V_038004_FMT_BC4] = { 4, 4, 8, 0 },
 	[V_038004_FMT_BC5] = { 4, 4, 16, 0},
-	[V_038004_FMT_BC6] = { 4, 4, 16, 0, CHIP_CEDAR}, /* Evergreen-only */
-	[V_038004_FMT_BC7] = { 4, 4, 16, 0, CHIP_CEDAR}, /* Evergreen-only */
+	[V_038004_FMT_BC6] = { 4, 4, 16, 0, CHIP_CEDAR},  
+	[V_038004_FMT_BC7] = { 4, 4, 16, 0, CHIP_CEDAR},  
 
-	/* The other Evergreen formats */
+	 
 	[V_038004_FMT_32_AS_32_32_32_32] = { 1, 1, 4, 0, CHIP_CEDAR},
 };
 
@@ -244,7 +218,7 @@ struct array_mode_checker {
 	u32 blocksize;
 };
 
-/* returns alignment in pixels for pitch/height/depth and bytes for base */
+ 
 static int r600_get_array_mode_alignment(struct array_mode_checker *values,
 						u32 *pitch_align,
 						u32 *height_align,
@@ -260,9 +234,9 @@ static int r600_get_array_mode_alignment(struct array_mode_checker *values,
 
 	switch (values->array_mode) {
 	case ARRAY_LINEAR_GENERAL:
-		/* technically tile_width/_height for pitch/height */
-		*pitch_align = 1; /* tile_width */
-		*height_align = 1; /* tile_height */
+		 
+		*pitch_align = 1;  
+		*height_align = 1;  
 		*depth_align = 1;
 		*base_align = 1;
 		break;
@@ -300,7 +274,7 @@ static void r600_cs_track_init(struct r600_cs_track *track)
 {
 	int i;
 
-	/* assume DX9 mode */
+	 
 	track->sq_config = DX9_CONSTS;
 	for (i = 0; i < 8; i++) {
 		track->cb_color_base_last[i] = 0;
@@ -325,7 +299,7 @@ static void r600_cs_track_init(struct r600_cs_track *track)
 	track->cb_dirty = true;
 	track->db_bo = NULL;
 	track->db_bo_mc = 0xFFFFFFFF;
-	/* assume the biggest format and that htile is enabled */
+	 
 	track->db_depth_info = 7 | (1 << 25);
 	track->db_depth_view = 0xFFFFC000;
 	track->db_depth_size = 0xFFFFFFFF;
@@ -356,7 +330,7 @@ static int r600_cs_track_validate_cb(struct radeon_cs_parser *p, int i)
 	volatile u32 *ib = p->ib.ptr;
 	unsigned array_mode;
 	u32 format;
-	/* When resolve is used, the second colorbuffer has always 1 sample. */
+	 
 	unsigned nsamples = track->is_resolve && i == 1 ? 1 : track->nsamples;
 
 	format = G_0280A0_FORMAT(track->cb_color_info[i]);
@@ -366,7 +340,7 @@ static int r600_cs_track_validate_cb(struct radeon_cs_parser *p, int i)
 			i, track->cb_color_info[i]);
 		return -EINVAL;
 	}
-	/* pitch in pixels */
+	 
 	pitch = (G_028060_PITCH_TILE_MAX(track->cb_color_size[i]) + 1) * 8;
 	slice_tile_max = G_028060_SLICE_TILE_MAX(track->cb_color_size[i]) + 1;
 	slice_tile_max *= 64;
@@ -395,7 +369,7 @@ static int r600_cs_track_validate_cb(struct radeon_cs_parser *p, int i)
 	case V_0280A0_ARRAY_LINEAR_ALIGNED:
 		break;
 	case V_0280A0_ARRAY_1D_TILED_THIN1:
-		/* avoid breaking userspace */
+		 
 		if (height > 7)
 			height &= ~0x7;
 		break;
@@ -424,7 +398,7 @@ static int r600_cs_track_validate_cb(struct radeon_cs_parser *p, int i)
 		return -EINVAL;
 	}
 
-	/* check offset */
+	 
 	tmp = r600_fmt_get_nblocksy(format, height) * r600_fmt_get_nblocksx(format, pitch) *
 	      r600_fmt_get_blocksize(format) * nsamples;
 	switch (array_mode) {
@@ -440,12 +414,9 @@ static int r600_cs_track_validate_cb(struct radeon_cs_parser *p, int i)
 	}
 	if ((tmp + track->cb_color_bo_offset[i]) > radeon_bo_size(track->cb_color_bo[i])) {
 		if (array_mode == V_0280A0_ARRAY_LINEAR_GENERAL) {
-			/* the initial DDX does bad things with the CB size occasionally */
-			/* it rounds up height too far for slice tile max but the BO is smaller */
-			/* r600c,g also seem to flush at bad times in some apps resulting in
-			 * bogus values here. So for linear just allow anything to avoid breaking
-			 * broken userspace.
-			 */
+			 
+			 
+			 
 		} else {
 			dev_warn(p->dev, "%s offset[%d] %d %llu %d %lu too big (%d %d) (%d %d %d)\n",
 				 __func__, i, array_mode,
@@ -457,7 +428,7 @@ static int r600_cs_track_validate_cb(struct radeon_cs_parser *p, int i)
 			return -EINVAL;
 		}
 	}
-	/* limit max tile */
+	 
 	tmp = (height * pitch) >> 6;
 	if (tmp < slice_tile_max)
 		slice_tile_max = tmp;
@@ -465,15 +436,14 @@ static int r600_cs_track_validate_cb(struct radeon_cs_parser *p, int i)
 		S_028060_SLICE_TILE_MAX(slice_tile_max - 1);
 	ib[track->cb_color_size_idx[i]] = tmp;
 
-	/* FMASK/CMASK */
+	 
 	switch (G_0280A0_TILE_MODE(track->cb_color_info[i])) {
 	case V_0280A0_TILE_DISABLE:
 		break;
 	case V_0280A0_FRAG_ENABLE:
 		if (track->nsamples > 1) {
 			uint32_t tile_max = G_028100_FMASK_TILE_MAX(track->cb_color_mask[i]);
-			/* the tile size is 8x8, but the size is in units of bits.
-			 * for bytes, do just * 8. */
+			 
 			uint32_t bytes = track->nsamples * track->log_nsamples * 8 * (tile_max + 1);
 
 			if (bytes + track->cb_color_frag_offset[i] >
@@ -490,8 +460,7 @@ static int r600_cs_track_validate_cb(struct radeon_cs_parser *p, int i)
 	case V_0280A0_CLEAR_ENABLE:
 	{
 		uint32_t block_max = G_028100_CMASK_BLOCK_MAX(track->cb_color_mask[i]);
-		/* One block = 128x128 pixels, one 8x8 tile has 4 bits..
-		 * (128*128) / (8*8) / 2 = 128 bytes per block. */
+		 
 		uint32_t bytes = (block_max + 1) * 128;
 
 		if (bytes + track->cb_color_tile_offset[i] >
@@ -562,7 +531,7 @@ static int r600_cs_track_validate_db(struct radeon_cs_parser *p)
 		}
 		ib[track->db_depth_size_idx] = S_028000_SLICE_TILE_MAX(tmp - 1) | (track->db_depth_size & 0x3FF);
 	} else {
-		/* pitch in pixels */
+		 
 		pitch = (G_028000_PITCH_TILE_MAX(track->db_depth_size) + 1) * 8;
 		slice_tile_max = G_028000_SLICE_TILE_MAX(track->db_depth_size) + 1;
 		slice_tile_max *= 64;
@@ -586,7 +555,7 @@ static int r600_cs_track_validate_db(struct radeon_cs_parser *p)
 		}
 		switch (array_mode) {
 		case V_028010_ARRAY_1D_TILED_THIN1:
-			/* don't break userspace */
+			 
 			height &= ~0x7;
 			break;
 		case V_028010_ARRAY_2D_TILED_THIN1:
@@ -626,7 +595,7 @@ static int r600_cs_track_validate_db(struct radeon_cs_parser *p)
 		}
 	}
 
-	/* hyperz */
+	 
 	if (G_028010_TILE_SURFACE_ENABLE(track->db_depth_info)) {
 		unsigned long size;
 		unsigned nbx, nby;
@@ -645,33 +614,31 @@ static int r600_cs_track_validate_db(struct radeon_cs_parser *p)
 		nbx = pitch;
 		nby = height;
 		if (G_028D24_LINEAR(track->htile_surface)) {
-			/* nbx must be 16 htiles aligned == 16 * 8 pixel aligned */
+			 
 			nbx = round_up(nbx, 16 * 8);
-			/* nby is npipes htiles aligned == npipes * 8 pixel aligned */
+			 
 			nby = round_up(nby, track->npipes * 8);
 		} else {
-			/* always assume 8x8 htile */
-			/* align is htile align * 8, htile align vary according to
-			 * number of pipe and tile width and nby
-			 */
+			 
+			 
 			switch (track->npipes) {
 			case 8:
-				/* HTILE_WIDTH = 8 & HTILE_HEIGHT = 8*/
+				 
 				nbx = round_up(nbx, 64 * 8);
 				nby = round_up(nby, 64 * 8);
 				break;
 			case 4:
-				/* HTILE_WIDTH = 8 & HTILE_HEIGHT = 8*/
+				 
 				nbx = round_up(nbx, 64 * 8);
 				nby = round_up(nby, 32 * 8);
 				break;
 			case 2:
-				/* HTILE_WIDTH = 8 & HTILE_HEIGHT = 8*/
+				 
 				nbx = round_up(nbx, 32 * 8);
 				nby = round_up(nby, 32 * 8);
 				break;
 			case 1:
-				/* HTILE_WIDTH = 8 & HTILE_HEIGHT = 8*/
+				 
 				nbx = round_up(nbx, 32 * 8);
 				nby = round_up(nby, 16 * 8);
 				break;
@@ -681,10 +648,10 @@ static int r600_cs_track_validate_db(struct radeon_cs_parser *p)
 				return -EINVAL;
 			}
 		}
-		/* compute number of htile */
+		 
 		nbx = nbx >> 3;
 		nby = nby >> 3;
-		/* size must be aligned on npipes * 2K boundary */
+		 
 		size = roundup(nbx * nby * 4, track->npipes * (2 << 10));
 		size += track->htile_offset;
 
@@ -706,11 +673,11 @@ static int r600_cs_track_check(struct radeon_cs_parser *p)
 	u32 tmp;
 	int r, i;
 
-	/* on legacy kernel we don't perform advanced check */
+	 
 	if (p->rdev == NULL)
 		return 0;
 
-	/* check streamout */
+	 
 	if (track->streamout_dirty && track->vgt_strmout_en) {
 		for (i = 0; i < 4; i++) {
 			if (track->vgt_strmout_buffer_en & (1 << i)) {
@@ -735,13 +702,11 @@ static int r600_cs_track_check(struct radeon_cs_parser *p)
 	if (track->sx_misc_kill_all_prims)
 		return 0;
 
-	/* check that we have a cb for each enabled target, we don't check
-	 * shader_mask because it seems mesa isn't always setting it :(
-	 */
+	 
 	if (track->cb_dirty) {
 		tmp = track->cb_target_mask;
 
-		/* We must check both colorbuffers for RESOLVE. */
+		 
 		if (track->is_resolve) {
 			tmp |= 0xff;
 		}
@@ -751,13 +716,13 @@ static int r600_cs_track_check(struct radeon_cs_parser *p)
 
 			if (format != V_0280A0_COLOR_INVALID &&
 			    (tmp >> (i * 4)) & 0xF) {
-				/* at least one component is enabled */
+				 
 				if (track->cb_color_bo[i] == NULL) {
 					dev_warn(p->dev, "%s:%d mask 0x%08X | 0x%08X no cb for %d\n",
 						__func__, __LINE__, track->cb_target_mask, track->cb_shader_mask, i);
 					return -EINVAL;
 				}
-				/* perform rewrite of CB_COLOR[0-7]_SIZE */
+				 
 				r = r600_cs_track_validate_cb(p, i);
 				if (r)
 					return r;
@@ -766,7 +731,7 @@ static int r600_cs_track_check(struct radeon_cs_parser *p)
 		track->cb_dirty = false;
 	}
 
-	/* Check depth buffer */
+	 
 	if (track->db_dirty &&
 	    G_028010_FORMAT(track->db_depth_info) != V_028010_DEPTH_INVALID &&
 	    (G_028800_STENCIL_ENABLE(track->db_depth_control) ||
@@ -779,15 +744,7 @@ static int r600_cs_track_check(struct radeon_cs_parser *p)
 	return 0;
 }
 
-/**
- * r600_cs_packet_parse_vline() - parse userspace VLINE packet
- * @p:		parser structure holding parsing context.
- *
- * This is an R600-specific function for parsing VLINE packets.
- * Real work is done by r600_cs_common_vline_parse function.
- * Here we just set up ASIC-specific register table and call
- * the common implementation function.
- */
+ 
 static int r600_cs_packet_parse_vline(struct radeon_cs_parser *p)
 {
 	static uint32_t vline_start_end[2] = {AVIVO_D1MODE_VLINE_START_END,
@@ -798,27 +755,7 @@ static int r600_cs_packet_parse_vline(struct radeon_cs_parser *p)
 	return r600_cs_common_vline_parse(p, vline_start_end, vline_status);
 }
 
-/**
- * r600_cs_common_vline_parse() - common vline parser
- * @p:			parser structure holding parsing context.
- * @vline_start_end:    table of vline_start_end registers
- * @vline_status:       table of vline_status registers
- *
- * Userspace sends a special sequence for VLINE waits.
- * PACKET0 - VLINE_START_END + value
- * PACKET3 - WAIT_REG_MEM poll vline status reg
- * RELOC (P3) - crtc_id in reloc.
- *
- * This function parses this and relocates the VLINE START END
- * and WAIT_REG_MEM packets to the correct crtc.
- * It also detects a switched off crtc and nulls out the
- * wait in that case. This function is common for all ASICs that
- * are R600 and newer. The parsing algorithm is the same, and only
- * differs in which registers are used.
- *
- * Caller is the ASIC-specific function which passes the parser
- * context and ASIC-specific register table
- */
+ 
 int r600_cs_common_vline_parse(struct radeon_cs_parser *p,
 			       uint32_t *vline_start_end,
 			       uint32_t *vline_status)
@@ -833,12 +770,12 @@ int r600_cs_common_vline_parse(struct radeon_cs_parser *p,
 
 	ib = p->ib.ptr;
 
-	/* parse the WAIT_REG_MEM */
+	 
 	r = radeon_cs_packet_parse(p, &wait_reg_mem, p->idx);
 	if (r)
 		return r;
 
-	/* check its a WAIT_REG_MEM */
+	 
 	if (wait_reg_mem.type != RADEON_PACKET_TYPE3 ||
 	    wait_reg_mem.opcode != PACKET3_WAIT_REG_MEM) {
 		DRM_ERROR("vline wait missing WAIT_REG_MEM segment\n");
@@ -846,17 +783,17 @@ int r600_cs_common_vline_parse(struct radeon_cs_parser *p,
 	}
 
 	wait_reg_mem_info = radeon_get_ib_value(p, wait_reg_mem.idx + 1);
-	/* bit 4 is reg (0) or mem (1) */
+	 
 	if (wait_reg_mem_info & 0x10) {
 		DRM_ERROR("vline WAIT_REG_MEM waiting on MEM instead of REG\n");
 		return -EINVAL;
 	}
-	/* bit 8 is me (0) or pfp (1) */
+	 
 	if (wait_reg_mem_info & 0x100) {
 		DRM_ERROR("vline WAIT_REG_MEM waiting on PFP instead of ME\n");
 		return -EINVAL;
 	}
-	/* waiting for value to be equal */
+	 
 	if ((wait_reg_mem_info & 0x7) != 0x3) {
 		DRM_ERROR("vline WAIT_REG_MEM function not equal\n");
 		return -EINVAL;
@@ -871,7 +808,7 @@ int r600_cs_common_vline_parse(struct radeon_cs_parser *p,
 		return -EINVAL;
 	}
 
-	/* jump over the NOP */
+	 
 	r = radeon_cs_packet_parse(p, &p3reloc, p->idx + wait_reg_mem.count + 2);
 	if (r)
 		return r;
@@ -893,7 +830,7 @@ int r600_cs_common_vline_parse(struct radeon_cs_parser *p,
 	crtc_id = radeon_crtc->crtc_id;
 
 	if (!crtc->enabled) {
-		/* CRTC isn't enabled - we need to nop out the WAIT_REG_MEM */
+		 
 		ib[h_idx + 2] = PACKET2(0);
 		ib[h_idx + 3] = PACKET2(0);
 		ib[h_idx + 4] = PACKET2(0);
@@ -953,16 +890,7 @@ static int r600_cs_parse_packet0(struct radeon_cs_parser *p,
 	return 0;
 }
 
-/**
- * r600_cs_check_reg() - check if register is authorized or not
- * @p: parser structure holding parsing context
- * @reg: register we are testing
- * @idx: index into the cs buffer
- *
- * This function will test against r600_reg_safe_bm and return 0
- * if register is safe. If register is not flag as safe this function
- * will test it against a list of register needing special handling.
- */
+ 
 static int r600_cs_check_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 {
 	struct r600_cs_track *track = (struct r600_cs_track *)p->track;
@@ -980,10 +908,7 @@ static int r600_cs_check_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 		return 0;
 	ib = p->ib.ptr;
 	switch (reg) {
-	/* force following reg to 0 in an attempt to disable out buffer
-	 * which will need us to better understand how it works to perform
-	 * security check on it (Jerome)
-	 */
+	 
 	case R_0288A8_SQ_ESGS_RING_ITEMSIZE:
 	case R_008C44_SQ_ESGS_RING_SIZE:
 	case R_0288B0_SQ_ESTMP_RING_ITEMSIZE:
@@ -1001,9 +926,8 @@ static int r600_cs_check_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 	case R_0288B8_SQ_VSTMP_RING_ITEMSIZE:
 	case R_008C64_SQ_VSTMP_RING_SIZE:
 	case R_0288C8_SQ_GS_VERT_ITEMSIZE:
-		/* get value to populate the IB don't remove */
-		/*tmp =radeon_get_ib_value(p, idx);
-		  ib[idx] = 0;*/
+		 
+		 
 		break;
 	case SQ_ESGS_RING_BASE:
 	case SQ_GSVS_RING_BASE:
@@ -1089,7 +1013,7 @@ static int r600_cs_check_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 	case VGT_STRMOUT_BUFFER_SIZE_2:
 	case VGT_STRMOUT_BUFFER_SIZE_3:
 		tmp = (reg - VGT_STRMOUT_BUFFER_SIZE_0) / 16;
-		/* size in register is DWs, convert to bytes */
+		 
 		track->vgt_strmout_size[tmp] = radeon_get_ib_value(p, idx) * 4;
 		track->streamout_dirty = true;
 		break;
@@ -1175,15 +1099,7 @@ static int r600_cs_check_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 		track->cb_color_size_idx[tmp] = idx;
 		track->cb_dirty = true;
 		break;
-		/* This register were added late, there is userspace
-		 * which does provide relocation for those but set
-		 * 0 offset. In order to avoid breaking old userspace
-		 * we detect this and set address to point to last
-		 * CB_COLOR0_BASE, note that if userspace doesn't set
-		 * CB_COLOR0_BASE before this register we will report
-		 * error. Old userspace always set CB_COLOR0_BASE
-		 * before any of this.
-		 */
+		 
 	case R_0280E0_CB_COLOR0_FRAG:
 	case R_0280E4_CB_COLOR1_FRAG:
 	case R_0280E8_CB_COLOR2_FRAG:
@@ -1309,7 +1225,7 @@ static int r600_cs_check_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 		break;
 	case DB_HTILE_SURFACE:
 		track->htile_surface = radeon_get_ib_value(p, idx);
-		/* force 8x8 htile width and height */
+		 
 		ib[idx] |= 3;
 		track->db_dirty = true;
 		break;
@@ -1453,19 +1369,7 @@ static void r600_texture_size(unsigned nfaces, unsigned blevel, unsigned llevel,
 		*mipmap_size -= *l0_size;
 }
 
-/**
- * r600_check_texture_resource() - check if register is authorized or not
- * @p: parser structure holding parsing context
- * @idx: index into the cs buffer
- * @texture: texture's bo structure
- * @mipmap: mipmap's bo structure
- * @base_offset: base offset (used for error checking)
- * @mip_offset: mip offset (used for error checking)
- * @tiling_flags: tiling flags
- *
- * This function will check that the resource has valid field and that
- * the texture and mipmap bo object are big enough to cover this resource.
- */
+ 
 static int r600_check_texture_resource(struct radeon_cs_parser *p,  u32 idx,
 					      struct radeon_bo *texture,
 					      struct radeon_bo *mipmap,
@@ -1483,11 +1387,11 @@ static int r600_check_texture_resource(struct radeon_cs_parser *p,  u32 idx,
 	u32 format;
 	bool is_array;
 
-	/* on legacy kernel we don't perform advanced check */
+	 
 	if (p->rdev == NULL)
 		return 0;
 
-	/* convert to bytes */
+	 
 	base_offset <<= 8;
 	mip_offset <<= 8;
 
@@ -1511,7 +1415,7 @@ static int r600_check_texture_resource(struct radeon_cs_parser *p,  u32 idx,
 	format = G_038004_DATA_FORMAT(word1);
 	blevel = G_038010_BASE_LEVEL(word4);
 	llevel = G_038014_LAST_LEVEL(word5);
-	/* pitch in texels */
+	 
 	array_check.array_mode = G_038000_TILE_MODE(word0);
 	array_check.group_size = track->group_size;
 	array_check.nbanks = track->nbanks;
@@ -1559,7 +1463,7 @@ static int r600_check_texture_resource(struct radeon_cs_parser *p,  u32 idx,
 		return -EINVAL;
 	}
 
-	/* XXX check height as well... */
+	 
 
 	if (!IS_ALIGNED(pitch, pitch_align)) {
 		dev_warn(p->dev, "%s:%d tex pitch (%d, 0x%x, %d) invalid\n",
@@ -1590,7 +1494,7 @@ static int r600_check_texture_resource(struct radeon_cs_parser *p,  u32 idx,
 	r600_texture_size(nfaces, blevel, llevel, w0, h0, d0, array_check.nsamples, format,
 			  pitch_align, height_align, base_align,
 			  &l0_size, &mipmap_size);
-	/* using get ib will give us the offset into the texture bo */
+	 
 	if ((l0_size + word2) > radeon_bo_size(texture)) {
 		dev_warn(p->dev, "texture bo too small ((%d %d) (%d %d) %d %d %d -> %d have %ld)\n",
 			 w0, h0, pitch_align, height_align,
@@ -1599,10 +1503,9 @@ static int r600_check_texture_resource(struct radeon_cs_parser *p,  u32 idx,
 		dev_warn(p->dev, "alignments %d %d %d %lld\n", pitch, pitch_align, height_align, base_align);
 		return -EINVAL;
 	}
-	/* using get ib will give us the offset into the mipmap bo */
+	 
 	if ((mipmap_size + word3) > radeon_bo_size(mipmap)) {
-		/*dev_warn(p->dev, "mipmap bo too small (%d %d %d %d %d %d -> %d have %ld)\n",
-		  w0, h0, format, blevel, nlevels, word3, mipmap_size, radeon_bo_size(texture));*/
+		 
 	}
 	return 0;
 }
@@ -1655,7 +1558,7 @@ static int r600_packet3_check(struct radeon_cs_parser *p,
 		tmp = radeon_get_ib_value(p, idx + 1);
 		pred_op = (tmp >> 16) & 0x7;
 
-		/* for the clear predicate operation */
+		 
 		if (pred_op == 0)
 			return 0;
 
@@ -1753,7 +1656,7 @@ static int r600_packet3_check(struct radeon_cs_parser *p,
 			DRM_ERROR("bad WAIT_REG_MEM\n");
 			return -EINVAL;
 		}
-		/* bit 4 is reg (0) or mem (1) */
+		 
 		if (idx_value & 0x10) {
 			uint64_t offset;
 
@@ -1785,7 +1688,7 @@ static int r600_packet3_check(struct radeon_cs_parser *p,
 		command = radeon_get_ib_value(p, idx+4);
 		size = command & 0x1fffff;
 		if (command & PACKET3_CP_DMA_CMD_SAS) {
-			/* src address space is register */
+			 
 			DRM_ERROR("CP DMA SAS not supported\n");
 			return -EINVAL;
 		} else {
@@ -1793,7 +1696,7 @@ static int r600_packet3_check(struct radeon_cs_parser *p,
 				DRM_ERROR("CP DMA SAIC only supported for registers\n");
 				return -EINVAL;
 			}
-			/* src address space is memory */
+			 
 			r = radeon_cs_packet_next_reloc(p, &reloc, r600_nomm);
 			if (r) {
 				DRM_ERROR("bad CP DMA SRC\n");
@@ -1815,11 +1718,11 @@ static int r600_packet3_check(struct radeon_cs_parser *p,
 			ib[idx+1] = (ib[idx+1] & 0xffffff00) | (upper_32_bits(offset) & 0xff);
 		}
 		if (command & PACKET3_CP_DMA_CMD_DAS) {
-			/* dst address space is register */
+			 
 			DRM_ERROR("CP DMA DAS not supported\n");
 			return -EINVAL;
 		} else {
-			/* dst address space is memory */
+			 
 			if (command & PACKET3_CP_DMA_CMD_DAIC) {
 				DRM_ERROR("CP DMA DAIC only supported for registers\n");
 				return -EINVAL;
@@ -1851,7 +1754,7 @@ static int r600_packet3_check(struct radeon_cs_parser *p,
 			DRM_ERROR("bad SURFACE_SYNC\n");
 			return -EINVAL;
 		}
-		/* 0xffffffff/0x0 is flush all cache flag */
+		 
 		if (radeon_get_ib_value(p, idx + 1) != 0xffffffff ||
 		    radeon_get_ib_value(p, idx + 2) != 0) {
 			r = radeon_cs_packet_next_reloc(p, &reloc, r600_nomm);
@@ -1956,7 +1859,7 @@ static int r600_packet3_check(struct radeon_cs_parser *p,
 
 			switch (G__SQ_VTX_CONSTANT_TYPE(radeon_get_ib_value(p, idx+(i*7)+6+1))) {
 			case SQ_TEX_VTX_VALID_TEXTURE:
-				/* tex base */
+				 
 				r = radeon_cs_packet_next_reloc(p, &reloc, r600_nomm);
 				if (r) {
 					DRM_ERROR("bad SET_RESOURCE\n");
@@ -1970,7 +1873,7 @@ static int r600_packet3_check(struct radeon_cs_parser *p,
 						ib[idx+1+(i*7)+0] |= S_038000_TILE_MODE(V_038000_ARRAY_1D_TILED_THIN1);
 				}
 				texture = reloc->robj;
-				/* tex mip base */
+				 
 				r = radeon_cs_packet_next_reloc(p, &reloc, r600_nomm);
 				if (r) {
 					DRM_ERROR("bad SET_RESOURCE\n");
@@ -1991,7 +1894,7 @@ static int r600_packet3_check(struct radeon_cs_parser *p,
 			case SQ_TEX_VTX_VALID_BUFFER:
 			{
 				uint64_t offset64;
-				/* vtx base */
+				 
 				r = radeon_cs_packet_next_reloc(p, &reloc, r600_nomm);
 				if (r) {
 					DRM_ERROR("bad SET_RESOURCE\n");
@@ -2000,7 +1903,7 @@ static int r600_packet3_check(struct radeon_cs_parser *p,
 				offset = radeon_get_ib_value(p, idx+1+(i*7)+0);
 				size = radeon_get_ib_value(p, idx+1+(i*7)+1) + 1;
 				if (p->rdev && (size + offset) > radeon_bo_size(reloc->robj)) {
-					/* force size to size of the buffer */
+					 
 					dev_warn(p->dev, "vbo resource seems too big (%d) for the bo (%ld)\n",
 						 size + offset, radeon_bo_size(reloc->robj));
 					ib[idx+1+(i*7)+1] = radeon_bo_size(reloc->robj) - offset;
@@ -2077,7 +1980,7 @@ static int r600_packet3_check(struct radeon_cs_parser *p,
 		}
 		break;
 	case PACKET3_STRMOUT_BASE_UPDATE:
-		/* RS780 and RS880 also need this */
+		 
 		if (p->family < CHIP_RS780) {
 			DRM_ERROR("STRMOUT_BASE_UPDATE only supported on 7xx\n");
 			return -EINVAL;
@@ -2134,7 +2037,7 @@ static int r600_packet3_check(struct radeon_cs_parser *p,
 			DRM_ERROR("bad STRMOUT_BUFFER_UPDATE (invalid count)\n");
 			return -EINVAL;
 		}
-		/* Updating memory at DST_ADDRESS. */
+		 
 		if (idx_value & 0x1) {
 			u64 offset;
 			r = radeon_cs_packet_next_reloc(p, &reloc, r600_nomm);
@@ -2153,7 +2056,7 @@ static int r600_packet3_check(struct radeon_cs_parser *p,
 			ib[idx+1] = offset;
 			ib[idx+2] = upper_32_bits(offset) & 0xff;
 		}
-		/* Reading data from SRC_ADDRESS. */
+		 
 		if (((idx_value >> 1) & 0x3) == 2) {
 			u64 offset;
 			r = radeon_cs_packet_next_reloc(p, &reloc, r600_nomm);
@@ -2209,7 +2112,7 @@ static int r600_packet3_check(struct radeon_cs_parser *p,
 		}
 		if (idx_value & 0x1) {
 			u64 offset;
-			/* SRC is memory. */
+			 
 			r = radeon_cs_packet_next_reloc(p, &reloc, r600_nomm);
 			if (r) {
 				DRM_ERROR("bad COPY_DW (missing src reloc)\n");
@@ -2226,14 +2129,14 @@ static int r600_packet3_check(struct radeon_cs_parser *p,
 			ib[idx+1] = offset;
 			ib[idx+2] = upper_32_bits(offset) & 0xff;
 		} else {
-			/* SRC is a reg. */
+			 
 			reg = radeon_get_ib_value(p, idx+1) << 2;
 			if (!r600_is_safe_reg(p, reg, idx+1))
 				return -EINVAL;
 		}
 		if (idx_value & 0x2) {
 			u64 offset;
-			/* DST is memory. */
+			 
 			r = radeon_cs_packet_next_reloc(p, &reloc, r600_nomm);
 			if (r) {
 				DRM_ERROR("bad COPY_DW (missing dst reloc)\n");
@@ -2250,7 +2153,7 @@ static int r600_packet3_check(struct radeon_cs_parser *p,
 			ib[idx+3] = offset;
 			ib[idx+4] = upper_32_bits(offset) & 0xff;
 		} else {
-			/* DST is a reg. */
+			 
 			reg = radeon_get_ib_value(p, idx+3) << 2;
 			if (!r600_is_safe_reg(p, reg, idx+3))
 				return -EINVAL;
@@ -2272,7 +2175,7 @@ int r600_cs_parse(struct radeon_cs_parser *p)
 	int r;
 
 	if (p->track == NULL) {
-		/* initialize tracker, we are in kms */
+		 
 		track = kzalloc(sizeof(*track), GFP_KERNEL);
 		if (track == NULL)
 			return -ENOMEM;
@@ -2328,17 +2231,8 @@ int r600_cs_parse(struct radeon_cs_parser *p)
 	return 0;
 }
 
-/*
- *  DMA
- */
-/**
- * r600_dma_cs_next_reloc() - parse next reloc
- * @p:		parser structure holding parsing context.
- * @cs_reloc:		reloc information
- *
- * Return the next reloc, do bo validation and compute
- * GPU offset using the provided start.
- **/
+ 
+ 
 int r600_dma_cs_next_reloc(struct radeon_cs_parser *p,
 			   struct radeon_bo_list **cs_reloc)
 {
@@ -2364,15 +2258,7 @@ int r600_dma_cs_next_reloc(struct radeon_cs_parser *p,
 #define GET_DMA_COUNT(h) ((h) & 0x0000ffff)
 #define GET_DMA_T(h) (((h) & 0x00800000) >> 23)
 
-/**
- * r600_dma_cs_parse() - parse the DMA IB
- * @p:		parser structure holding parsing context.
- *
- * Parses the DMA IB from the CS ioctl and updates
- * the GPU addresses based on the reloc information and
- * checks for errors. (R6xx-R7xx)
- * Returns 0 for success and an error on failure.
- **/
+ 
 int r600_dma_cs_parse(struct radeon_cs_parser *p)
 {
 	struct radeon_cs_chunk *ib_chunk = p->chunk_ib;
@@ -2435,9 +2321,9 @@ int r600_dma_cs_parse(struct radeon_cs_parser *p)
 			}
 			if (tiled) {
 				idx_value = radeon_get_ib_value(p, idx + 2);
-				/* detile bit */
+				 
 				if (idx_value & (1 << 31)) {
-					/* tiled src, linear dst */
+					 
 					src_offset = radeon_get_ib_value(p, idx+1);
 					src_offset <<= 8;
 					ib[idx+1] += (u32)(src_reloc->gpu_offset >> 8);
@@ -2447,7 +2333,7 @@ int r600_dma_cs_parse(struct radeon_cs_parser *p)
 					ib[idx+5] += (u32)(dst_reloc->gpu_offset & 0xfffffffc);
 					ib[idx+6] += upper_32_bits(dst_reloc->gpu_offset) & 0xff;
 				} else {
-					/* linear src, tiled dst */
+					 
 					src_offset = radeon_get_ib_value(p, idx+5);
 					src_offset |= ((u64)(radeon_get_ib_value(p, idx+6) & 0xff)) << 32;
 					ib[idx+5] += (u32)(src_reloc->gpu_offset & 0xfffffffc);

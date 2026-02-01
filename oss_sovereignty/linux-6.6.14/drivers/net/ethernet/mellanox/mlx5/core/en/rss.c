@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES.
+
+
 
 #include "rss.h"
 
@@ -367,9 +367,7 @@ u32 mlx5e_rss_get_tirn(struct mlx5e_rss *rss, enum mlx5_traffic_types tt,
 	return mlx5e_tir_get_tirn(tir);
 }
 
-/* Fill the "tirn" output parameter.
- * Create the requested TIR if it's its first usage.
- */
+ 
 int mlx5e_rss_obtain_tirn(struct mlx5e_rss *rss,
 			  enum mlx5_traffic_types tt,
 			  const struct mlx5e_packet_merge_param *init_pkt_merge_param,
@@ -378,7 +376,7 @@ int mlx5e_rss_obtain_tirn(struct mlx5e_rss *rss,
 	struct mlx5e_tir *tir;
 
 	tir = rss_get_tir(rss, tt, inner);
-	if (!tir) { /* TIR doesn't exist, create one */
+	if (!tir) {  
 		int err;
 
 		err = mlx5e_rss_create_tir(rss, tt, init_pkt_merge_param, inner);
@@ -584,9 +582,7 @@ int mlx5e_rss_set_hash_fields(struct mlx5e_rss *rss, enum mlx5_traffic_types tt,
 
 	err = mlx5e_rss_update_tir(rss, tt, true);
 	if (err) {
-		/* Partial update happened. Try to revert - it may fail too, but
-		 * there is nothing more we can do.
-		 */
+		 
 		rss->rx_hash_fields[tt] = old_rx_hash_fields;
 		mlx5e_rss_warn(rss->mdev,
 			       "Failed to update RSS hash fields of inner indirect TIR for traffic type %d: err = %d\n",

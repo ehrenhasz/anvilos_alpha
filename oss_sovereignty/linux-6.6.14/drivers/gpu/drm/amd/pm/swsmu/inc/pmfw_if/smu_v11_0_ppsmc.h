@@ -1,38 +1,17 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef SMU_V11_0_PPSMC_H
 #define SMU_V11_0_PPSMC_H
 
-// SMU Response Codes:
+
 #define PPSMC_Result_OK                    0x1
 #define PPSMC_Result_Failed                0xFF
 #define PPSMC_Result_UnknownCmd            0xFE
 #define PPSMC_Result_CmdRejectedPrereq     0xFD
 #define PPSMC_Result_CmdRejectedBusy       0xFC
 
-// Message Definitions:
-// BASIC
+
+
 #define PPSMC_MSG_TestMessage                    0x1
 #define PPSMC_MSG_GetSmuVersion                  0x2
 #define PPSMC_MSG_GetDriverIfVersion             0x3
@@ -57,12 +36,12 @@
 #define PPSMC_MSG_SetSystemVirtualDramAddrHigh   0x16
 #define PPSMC_MSG_SetSystemVirtualDramAddrLow    0x17
 
-//BACO/BAMACO/BOMACO
+
 #define PPSMC_MSG_EnterBaco                      0x18
 #define PPSMC_MSG_ExitBaco                       0x19
 #define PPSMC_MSG_ArmD3						            	 0x46
 
-//DPM
+
 #define PPSMC_MSG_SetSoftMinByFreq               0x1A
 #define PPSMC_MSG_SetSoftMaxByFreq               0x1B
 #define PPSMC_MSG_SetHardMinByFreq               0x1C
@@ -79,36 +58,36 @@
 #define PPSMC_MSG_SetVideoFps                    0x27
 #define PPSMC_MSG_GetDcModeMaxDpmFreq            0x28
 
-//Power Gating
+
 #define PPSMC_MSG_AllowGfxOff                    0x29
 #define PPSMC_MSG_DisallowGfxOff                 0x2A
 #define PPSMC_MSG_PowerUpVcn					           0x2B
 #define PPSMC_MSG_PowerDownVcn					         0x2C	
 #define PPSMC_MSG_PowerUpJpeg                    0x2D
 #define PPSMC_MSG_PowerDownJpeg					         0x2E
-//reserve 0x29 to 0x30 for PG harvesting TBD
 
-//Resets
+
+
 #define PPSMC_MSG_PrepareMp1ForUnload            0x32
 #define PPSMC_MSG_PrepareMp1ForReset             0x33
 #define PPSMC_MSG_PrepareMp1ForShutdown          0x34
 
-//ACDC Power Source
+
 #define PPSMC_MSG_SetPptLimit                    0x35
 #define PPSMC_MSG_GetPptLimit                    0x36
 #define PPSMC_MSG_ReenableAcDcInterrupt          0x37
 #define PPSMC_MSG_NotifyPowerSource              0x38
 
-//BTC
+
 #define PPSMC_MSG_RunBtc                         0x3A
 
-//Debug
+
 #define PPSMC_MSG_DramLogSetDramAddrHigh         0x3B
 #define PPSMC_MSG_DramLogSetDramAddrLow          0x3C
 #define PPSMC_MSG_DramLogSetDramSize             0x3D
 #define PPSMC_MSG_GetDebugData                   0x3E
 
-//Others
+
 #define PPSMC_MSG_ConfigureGfxDidt               0x3F
 #define PPSMC_MSG_NumOfDisplays                  0x40
 
@@ -135,7 +114,7 @@
 typedef uint32_t PPSMC_Result;
 typedef uint32_t PPSMC_Msg;
 
-//for use with PPSMC_MSG_GetVoltageByDpmOverdrive
+
 #define PPSMC_GET_AVFS_CURVE 0
 #define PPSMC_GET_OVERDRIVE_CURVE 1
 #endif

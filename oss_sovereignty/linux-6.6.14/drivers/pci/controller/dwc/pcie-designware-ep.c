@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Synopsys DesignWare PCIe Endpoint controller driver
- *
- * Copyright (C) 2017 Texas Instruments
- * Author: Kishon Vijay Abraham I <kishon@ti.com>
- */
+
+ 
 
 #include <linux/of.h>
 #include <linux/platform_device.h>
@@ -510,7 +505,7 @@ int dw_pcie_ep_raise_msi_irq(struct dw_pcie_ep *ep, u8 func_no,
 
 	func_offset = dw_pcie_ep_func_select(ep, func_no);
 
-	/* Raise MSI per the PCI Local Bus Specification Revision 3.0, 6.8.1. */
+	 
 	reg = ep_func->msi_cap + func_offset + PCI_MSI_FLAGS;
 	msg_ctrl = dw_pcie_readw_dbi(pci, reg);
 	has_upper = !!(msg_ctrl & PCI_MSI_FLAGS_64BIT);
@@ -674,10 +669,7 @@ int dw_pcie_ep_init_complete(struct dw_pcie_ep *ep)
 			dw_pcie_writel_dbi(pci, offset + PCI_REBAR_CAP, 0x0);
 	}
 
-	/*
-	 * PTM responder capability can be disabled only after disabling
-	 * PTM root capability.
-	 */
+	 
 	if (ptm_cap_base) {
 		dw_pcie_dbi_ro_wr_en(pci);
 		reg = dw_pcie_readl_dbi(pci, ptm_cap_base + PCI_PTM_CAP);

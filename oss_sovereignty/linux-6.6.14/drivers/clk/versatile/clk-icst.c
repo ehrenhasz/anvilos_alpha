@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the ICST307 VCO clock found in the ARM Reference designs.
- * We wrap the custom interface from <asm/hardware/icst.h> into the generic
- * clock framework.
- *
- * Copyright (C) 2012-2015 Linus Walleij
- *
- * TODO: when all ARM reference designs are migrated to generic clocks, the
- * ICST clock code from the ARM tree should probably be merged into this
- * file.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/export.h>
@@ -22,7 +12,7 @@
 #include "icst.h"
 #include "clk-icst.h"
 
-/* Magic unlocking token used on all Versatile boards */
+ 
 #define VERSATILE_LOCK_VAL	0xA05F
 
 #define VERSATILE_AUX_OSC_BITS 0x7FFFF
@@ -33,16 +23,7 @@
 
 #define INTEGRATOR_AP_PCI_25_33_MHZ BIT(8)
 
-/**
- * struct clk_icst - ICST VCO clock wrapper
- * @hw: corresponding clock hardware entry
- * @map: register map
- * @vcoreg_off: VCO register address
- * @lockreg_off: VCO lock register address
- * @params: parameters for this ICST instance
- * @rate: current rate
- * @ctype: the type of control register for the ICST
- */
+ 
 struct clk_icst {
 	struct clk_hw hw;
 	struct regmap *map;
@@ -55,11 +36,7 @@ struct clk_icst {
 
 #define to_icst(_hw) container_of(_hw, struct clk_icst, hw)
 
-/**
- * vco_get() - get ICST VCO settings from a certain ICST
- * @icst: the ICST clock to get
- * @vco: the VCO struct to return the value in
- */
+ 
 static int vco_get(struct clk_icst *icst, struct icst_vco *vco)
 {
 	u32 val;
@@ -69,14 +46,7 @@ static int vco_get(struct clk_icst *icst, struct icst_vco *vco)
 	if (ret)
 		return ret;
 
-	/*
-	 * The Integrator/AP core clock can only access the low eight
-	 * bits of the v PLL divider. Bit 8 is tied low and always zero,
-	 * r is hardwired to 22 and output divider s is hardwired to 1
-	 * (divide by 2) according to the document
-	 * "Integrator CM926EJ-S, CM946E-S, CM966E-S, CM1026EJ-S and
-	 * CM1136JF-S User Guide" ARM DUI 0138E, page 3-13 thru 3-14.
-	 */
+	 
 	if (icst->ctype == ICST_INTEGRATOR_AP_CM) {
 		vco->v = val & INTEGRATOR_AP_CM_BITS;
 		vco->r = 22;
@@ -84,14 +54,7 @@ static int vco_get(struct clk_icst *icst, struct icst_vco *vco)
 		return 0;
 	}
 
-	/*
-	 * The Integrator/AP system clock on the base board can only
-	 * access the low eight bits of the v PLL divider. Bit 8 is tied low
-	 * and always zero, r is hardwired to 46, and the output divider is
-	 * hardwired to 3 (divide by 4) according to the document
-	 * "Integrator AP ASIC Development Motherboard" ARM DUI 0098B,
-	 * page 3-16.
-	 */
+	 
 	if (icst->ctype == ICST_INTEGRATOR_AP_SYS) {
 		vco->v = val & INTEGRATOR_AP_SYS_BITS;
 		vco->r = 46;
@@ -99,14 +62,7 @@ static int vco_get(struct clk_icst *icst, struct icst_vco *vco)
 		return 0;
 	}
 
-	/*
-	 * The Integrator/AP PCI clock is using an odd pattern to create
-	 * the child clock, basically a single bit called DIVX/Y is used
-	 * to select between two different hardwired values: setting the
-	 * bit to 0 yields v = 17, r = 22 and OD = 1, whereas setting the
-	 * bit to 1 yields v = 14, r = 14 and OD = 1 giving the frequencies
-	 * 33 or 25 MHz respectively.
-	 */
+	 
 	if (icst->ctype == ICST_INTEGRATOR_AP_PCI) {
 		bool divxy = !!(val & INTEGRATOR_AP_PCI_25_33_MHZ);
 
@@ -116,14 +72,7 @@ static int vco_get(struct clk_icst *icst, struct icst_vco *vco)
 		return 0;
 	}
 
-	/*
-	 * The Integrator/CP core clock can access the low eight bits
-	 * of the v PLL divider. Bit 8 is tied low and always zero,
-	 * r is hardwired to 22 and the output divider s is accessible
-	 * in bits 8 thru 10 according to the document
-	 * "Integrator/CM940T, CM920T, CM740T, and CM720T User Guide"
-	 * ARM DUI 0157A, page 3-20 thru 3-23 and 4-10.
-	 */
+	 
 	if (icst->ctype == ICST_INTEGRATOR_CP_CM_CORE) {
 		vco->v = val & 0xFF;
 		vco->r = 22;
@@ -144,18 +93,14 @@ static int vco_get(struct clk_icst *icst, struct icst_vco *vco)
 	return 0;
 }
 
-/**
- * vco_set() - commit changes to an ICST VCO
- * @icst: the ICST clock to set
- * @vco: the VCO struct to set the changes from
- */
+ 
 static int vco_set(struct clk_icst *icst, struct icst_vco vco)
 {
 	u32 mask;
 	u32 val;
 	int ret;
 
-	/* Mask the bits used by the VCO */
+	 
 	switch (icst->ctype) {
 	case ICST_INTEGRATOR_AP_CM:
 		mask = INTEGRATOR_AP_CM_BITS;
@@ -178,7 +123,7 @@ static int vco_set(struct clk_icst *icst, struct icst_vco vco)
 			pr_err("ICST error: tried to use RDW != 22\n");
 		break;
 	case ICST_INTEGRATOR_CP_CM_CORE:
-		mask = INTEGRATOR_CP_CM_CORE_BITS; /* Uses 12 bits */
+		mask = INTEGRATOR_CP_CM_CORE_BITS;  
 		val = (vco.v & 0xFF) | vco.s << 8;
 		if (vco.v & 0x100)
 			pr_err("ICST error: tried to set bit 8 of VDW\n");
@@ -186,7 +131,7 @@ static int vco_set(struct clk_icst *icst, struct icst_vco vco)
 			pr_err("ICST error: tried to use RDW != 22\n");
 		break;
 	case ICST_INTEGRATOR_CP_CM_MEM:
-		mask = INTEGRATOR_CP_CM_MEM_BITS; /* Uses 12 bits */
+		mask = INTEGRATOR_CP_CM_MEM_BITS;  
 		val = ((vco.v & 0xFF) << 12) | (vco.s << 20);
 		if (vco.v & 0x100)
 			pr_err("ICST error: tried to set bit 8 of VDW\n");
@@ -194,7 +139,7 @@ static int vco_set(struct clk_icst *icst, struct icst_vco vco)
 			pr_err("ICST error: tried to use RDW != 22\n");
 		break;
 	default:
-		/* Regular auxilary oscillator */
+		 
 		mask = VERSATILE_AUX_OSC_BITS;
 		val = vco.v | (vco.r << 9) | (vco.s << 16);
 		break;
@@ -202,14 +147,14 @@ static int vco_set(struct clk_icst *icst, struct icst_vco vco)
 
 	pr_debug("ICST: new val = 0x%08x\n", val);
 
-	/* This magic unlocks the VCO so it can be controlled */
+	 
 	ret = regmap_write(icst->map, icst->lockreg_off, VERSATILE_LOCK_VAL);
 	if (ret)
 		return ret;
 	ret = regmap_update_bits(icst->map, icst->vcoreg_off, mask, val);
 	if (ret)
 		return ret;
-	/* This locks the VCO again */
+	 
 	ret = regmap_write(icst->map, icst->lockreg_off, 0);
 	if (ret)
 		return ret;
@@ -246,7 +191,7 @@ static long icst_round_rate(struct clk_hw *hw, unsigned long rate,
 			return 12000000;
 		if (rate >= 160000000)
 			return 160000000;
-		/* Slam to closest megahertz */
+		 
 		return DIV_ROUND_CLOSEST(rate, 1000000) * 1000000;
 	}
 
@@ -255,28 +200,25 @@ static long icst_round_rate(struct clk_hw *hw, unsigned long rate,
 			return 6000000;
 		if (rate >= 66000000)
 			return 66000000;
-		/* Slam to closest 0.5 megahertz */
+		 
 		return DIV_ROUND_CLOSEST(rate, 500000) * 500000;
 	}
 
 	if (icst->ctype == ICST_INTEGRATOR_AP_SYS) {
-		/* Divides between 3 and 50 MHz in steps of 0.25 MHz */
+		 
 		if (rate <= 3000000)
 			return 3000000;
 		if (rate >= 50000000)
 			return 5000000;
-		/* Slam to closest 0.25 MHz */
+		 
 		return DIV_ROUND_CLOSEST(rate, 250000) * 250000;
 	}
 
 	if (icst->ctype == ICST_INTEGRATOR_AP_PCI) {
-		/*
-		 * If we're below or less than halfway from 25 to 33 MHz
-		 * select 25 MHz
-		 */
+		 
 		if (rate <= 25000000 || rate < 29000000)
 			return 25000000;
-		/* Else just return the default frequency */
+		 
 		return 33000000;
 	}
 
@@ -291,7 +233,7 @@ static int icst_set_rate(struct clk_hw *hw, unsigned long rate,
 	struct icst_vco vco;
 
 	if (icst->ctype == ICST_INTEGRATOR_AP_PCI) {
-		/* This clock is especially primitive */
+		 
 		unsigned int val;
 		int ret;
 
@@ -313,7 +255,7 @@ static int icst_set_rate(struct clk_hw *hw, unsigned long rate,
 					 val);
 		if (ret)
 			return ret;
-		/* This locks the VCO again */
+		 
 		ret = regmap_write(icst->map, icst->lockreg_off, 0);
 		if (ret)
 			return ret;
@@ -401,11 +343,7 @@ struct clk *icst_clk_register(struct device *dev,
 EXPORT_SYMBOL_GPL(icst_clk_register);
 
 #ifdef CONFIG_OF
-/*
- * In a device tree, an memory-mapped ICST clock appear as a child
- * of a syscon node. Assume this and probe it only as a child of a
- * syscon.
- */
+ 
 
 static const struct icst_params icst525_params = {
 	.vco_max	= ICST525_VCO_MAX_5V,
@@ -429,22 +367,15 @@ static const struct icst_params icst307_params = {
 	.idx2s		= icst307_idx2s,
 };
 
-/*
- * The core modules on the Integrator/AP and Integrator/CP have
- * especially crippled ICST525 control.
- */
+ 
 static const struct icst_params icst525_apcp_cm_params = {
 	.vco_max	= ICST525_VCO_MAX_5V,
 	.vco_min	= ICST525_VCO_MIN,
-	/* Minimum 12 MHz, VDW = 4 */
+	 
 	.vd_min		= 12,
-	/*
-	 * Maximum 160 MHz, VDW = 152 for all core modules, but
-	 * CM926EJ-S, CM1026EJ-S and CM1136JF-S can actually
-	 * go to 200 MHz (max VDW = 192).
-	 */
+	 
 	.vd_max		= 192,
-	/* r is hardcoded to 22 and this is the actual divisor, +2 */
+	 
 	.rd_min		= 24,
 	.rd_max		= 24,
 	.s2div		= icst525_s2div,
@@ -454,11 +385,11 @@ static const struct icst_params icst525_apcp_cm_params = {
 static const struct icst_params icst525_ap_sys_params = {
 	.vco_max	= ICST525_VCO_MAX_5V,
 	.vco_min	= ICST525_VCO_MIN,
-	/* Minimum 3 MHz, VDW = 4 */
+	 
 	.vd_min		= 3,
-	/* Maximum 50 MHz, VDW = 192 */
+	 
 	.vd_max		= 50,
-	/* r is hardcoded to 46 and this is the actual divisor, +2 */
+	 
 	.rd_min		= 48,
 	.rd_max		= 48,
 	.s2div		= icst525_s2div,
@@ -468,11 +399,11 @@ static const struct icst_params icst525_ap_sys_params = {
 static const struct icst_params icst525_ap_pci_params = {
 	.vco_max	= ICST525_VCO_MAX_5V,
 	.vco_min	= ICST525_VCO_MIN,
-	/* Minimum 25 MHz */
+	 
 	.vd_min		= 25,
-	/* Maximum 33 MHz */
+	 
 	.vd_max		= 33,
-	/* r is hardcoded to 14 or 22 and this is the actual divisors +2 */
+	 
 	.rd_min		= 16,
 	.rd_max		= 24,
 	.s2div		= icst525_s2div,
@@ -489,7 +420,7 @@ static void __init of_syscon_icst_setup(struct device_node *np)
 	struct clk *regclk;
 	enum icst_control_type ctype;
 
-	/* We do not release this reference, we are using it perpetually */
+	 
 	parent = of_get_parent(np);
 	if (!parent) {
 		pr_err("no parent node for syscon ICST clock\n");
@@ -537,7 +468,7 @@ static void __init of_syscon_icst_setup(struct device_node *np)
 		return;
 	}
 
-	/* Parent clock name is not the same as node parent */
+	 
 	parent_name = of_clk_get_parent_name(np, 0);
 	name = kasprintf(GFP_KERNEL, "%pOFP", np);
 

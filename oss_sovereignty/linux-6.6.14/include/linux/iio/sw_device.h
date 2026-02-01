@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Industrial I/O software device interface
- *
- * Copyright (c) 2016 Intel Corporation
- */
+ 
+ 
 
 #ifndef __IIO_SW_DEVICE
 #define __IIO_SW_DEVICE
@@ -64,4 +60,4 @@ void iio_swd_group_init_type_name(struct iio_sw_device *d,
 #endif
 }
 
-#endif /* __IIO_SW_DEVICE */
+#endif  

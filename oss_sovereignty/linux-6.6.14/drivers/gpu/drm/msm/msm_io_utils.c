@@ -1,18 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016-2018, 2020-2021 The Linux Foundation. All rights reserved.
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <linux/interconnect.h>
 #include <linux/io.h>
 
 #include "msm_drv.h"
 
-/*
- * Util/helpers:
- */
+ 
 
 struct clk *msm_clk_bulk_get_clock(struct clk_bulk_data *bulk, int count,
 		const char *name)
@@ -137,13 +131,7 @@ struct icc_path *msm_icc_get(struct device *dev, const char *name)
 	if (path)
 		return path;
 
-	/*
-	 * If there are no interconnects attached to the corresponding device
-	 * node, of_icc_get() will return NULL.
-	 *
-	 * If the MDP5/DPU device node doesn't have interconnects, lookup the
-	 * path in the parent (MDSS) device.
-	 */
+	 
 	return of_icc_get(mdss_dev, name);
 
 }

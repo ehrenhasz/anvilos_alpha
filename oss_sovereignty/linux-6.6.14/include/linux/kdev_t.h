@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_KDEV_T_H
 #define _LINUX_KDEV_T_H
 
@@ -20,7 +20,7 @@
 		buffer;							\
 	})
 
-/* acceptable for old filesystems */
+ 
 static __always_inline bool old_valid_dev(dev_t dev)
 {
 	return MAJOR(dev) < 256 && MINOR(dev) < 256;

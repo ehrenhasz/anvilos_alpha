@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2018 - 2021, 2023 Intel Corporation
- */
+ 
+ 
 #include <net/cfg80211.h>
 #include "core.h"
 #include "nl80211.h"
@@ -14,27 +12,27 @@ static int pmsr_parse_ftm(struct cfg80211_registered_device *rdev,
 {
 	const struct cfg80211_pmsr_capabilities *capa = rdev->wiphy.pmsr_capa;
 	struct nlattr *tb[NL80211_PMSR_FTM_REQ_ATTR_MAX + 1];
-	u32 preamble = NL80211_PREAMBLE_DMG; /* only optional in DMG */
+	u32 preamble = NL80211_PREAMBLE_DMG;  
 
-	/* validate existing data */
+	 
 	if (!(rdev->wiphy.pmsr_capa->ftm.bandwidths & BIT(out->chandef.width))) {
 		NL_SET_ERR_MSG(info->extack, "FTM: unsupported bandwidth");
 		return -EINVAL;
 	}
 
-	/* no validation needed - was already done via nested policy */
+	 
 	nla_parse_nested_deprecated(tb, NL80211_PMSR_FTM_REQ_ATTR_MAX, ftmreq,
 				    NULL, NULL);
 
 	if (tb[NL80211_PMSR_FTM_REQ_ATTR_PREAMBLE])
 		preamble = nla_get_u32(tb[NL80211_PMSR_FTM_REQ_ATTR_PREAMBLE]);
 
-	/* set up values - struct is 0-initialized */
+	 
 	out->ftm.requested = true;
 
 	switch (out->chandef.chan->band) {
 	case NL80211_BAND_60GHZ:
-		/* optional */
+		 
 		break;
 	default:
 		if (!tb[NL80211_PMSR_FTM_REQ_ATTR_PREAMBLE]) {
@@ -191,7 +189,7 @@ static int pmsr_parse_peer(struct cfg80211_registered_device *rdev,
 	struct nlattr *treq;
 	int err, rem;
 
-	/* no validation needed - was already done via nested policy */
+	 
 	nla_parse_nested_deprecated(tb, NL80211_PMSR_PEER_ATTR_MAX, peer,
 				    NULL, NULL);
 
@@ -205,7 +203,7 @@ static int pmsr_parse_peer(struct cfg80211_registered_device *rdev,
 
 	memcpy(out->addr, nla_data(tb[NL80211_PMSR_PEER_ATTR_ADDR]), ETH_ALEN);
 
-	/* reuse info->attrs */
+	 
 	memset(info->attrs, 0, sizeof(*info->attrs) * (NL80211_ATTR_MAX + 1));
 	err = nla_parse_nested_deprecated(info->attrs, NL80211_ATTR_MAX,
 					  tb[NL80211_PMSR_PEER_ATTR_CHAN],
@@ -217,7 +215,7 @@ static int pmsr_parse_peer(struct cfg80211_registered_device *rdev,
 	if (err)
 		return err;
 
-	/* no validation needed - was already done via nested policy */
+	 
 	nla_parse_nested_deprecated(req, NL80211_PMSR_REQ_ATTR_MAX,
 				    tb[NL80211_PMSR_PEER_ATTR_REQ], NULL,
 				    NULL);
@@ -316,7 +314,7 @@ int nl80211_pmsr_start(struct sk_buff *skb, struct genl_info *info)
 
 	idx = 0;
 	nla_for_each_nested(peer, peers, rem) {
-		/* NB: this reuses info->attrs, but we no longer need it */
+		 
 		err = pmsr_parse_peer(rdev, peer, &req->peers[idx], info);
 		if (err)
 			goto out_err;
@@ -374,11 +372,7 @@ free_msg:
 	nlmsg_free(msg);
 free_request:
 	spin_lock_bh(&wdev->pmsr_lock);
-	/*
-	 * cfg80211_pmsr_process_abort() may have already moved this request
-	 * to the free list, and will free it later. In this case, don't free
-	 * it here.
-	 */
+	 
 	list_for_each_entry_safe(tmp, prev, &wdev->pmsr_list, list) {
 		if (tmp == req) {
 			list_del(&req->list);
@@ -558,11 +552,7 @@ void cfg80211_pmsr_report(struct wireless_dev *wdev,
 	trace_cfg80211_pmsr_report(wdev->wiphy, wdev, req->cookie,
 				   result->addr);
 
-	/*
-	 * Currently, only variable items are LCI and civic location,
-	 * both of which are reasonably short so we don't need to
-	 * worry about them here for the allocation.
-	 */
+	 
 	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, gfp);
 	if (!msg)
 		return;

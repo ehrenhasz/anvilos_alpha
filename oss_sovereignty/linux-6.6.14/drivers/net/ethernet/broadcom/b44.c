@@ -1,15 +1,4 @@
-/* b44.c: Broadcom 44xx/47xx Fast Ethernet device driver.
- *
- * Copyright (C) 2002 David S. Miller (davem@redhat.com)
- * Copyright (C) 2004 Pekka Pietikainen (pp@ee.oulu.fi)
- * Copyright (C) 2004 Florian Schirmer (jolt@tuxbox.org)
- * Copyright (C) 2006 Felix Fietkau (nbd@openwrt.org)
- * Copyright (C) 2006 Broadcom Corporation.
- * Copyright (C) 2007 Michael Buesch <m@bues.ch>
- * Copyright (C) 2013 Hauke Mehrtens <hauke@hauke-m.de>
- *
- * Distribute under GPL.
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -52,12 +41,10 @@
 	 NETIF_MSG_RX_ERR	| \
 	 NETIF_MSG_TX_ERR)
 
-/* length of time before we decide the hardware is borked,
- * and dev->tx_timeout() should be called to fix the problem
- */
+ 
 #define B44_TX_TIMEOUT			(5 * HZ)
 
-/* hardware minimum and maximum for a single frame's data payload */
+ 
 #define B44_MIN_MTU			ETH_ZLEN
 #define B44_MAX_MTU			ETH_DATA_LEN
 
@@ -81,10 +68,10 @@
 #define RX_PKT_OFFSET		(RX_HEADER_LEN + 2)
 #define RX_PKT_BUF_SZ		(1536 + RX_PKT_OFFSET)
 
-/* minimum number of free TX descriptors required to wake up TX process */
+ 
 #define B44_TX_WAKEUP_THRESH		(B44_TX_RING_SIZE / 4)
 
-/* b44 internal pattern match filter info */
+ 
 #define B44_PATTERN_BASE	0x400
 #define B44_PATTERN_SIZE	0x80
 #define B44_PMASK_BASE		0x600
@@ -97,7 +84,7 @@ MODULE_AUTHOR("Felix Fietkau, Florian Schirmer, Pekka Pietikainen, David S. Mill
 MODULE_DESCRIPTION(DRV_DESCRIPTION);
 MODULE_LICENSE("GPL");
 
-static int b44_debug = -1;	/* -1 == use B44_DEF_MSG_ENABLE as value */
+static int b44_debug = -1;	 
 module_param(b44_debug, int, 0);
 MODULE_PARM_DESC(b44_debug, "B44 bitmapped debugging message enable value");
 
@@ -107,7 +94,7 @@ static const struct pci_device_id b44_pci_tbl[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, PCI_DEVICE_ID_BCM4401) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, PCI_DEVICE_ID_BCM4401B0) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, PCI_DEVICE_ID_BCM4401B1) },
-	{ 0 } /* terminate list with empty entry */
+	{ 0 }  
 };
 MODULE_DEVICE_TABLE(pci, b44_pci_tbl);
 
@@ -115,7 +102,7 @@ static struct pci_driver b44_pci_driver = {
 	.name		= DRV_MODULE_NAME,
 	.id_table	= b44_pci_tbl,
 };
-#endif /* CONFIG_B44_PCI */
+#endif  
 
 static const struct ssb_device_id b44_ssb_tbl[] = {
 	SSB_DEVICE(SSB_VENDOR_BROADCOM, SSB_DEV_ETHERNET, SSB_ANY_REV),
@@ -224,7 +211,7 @@ static void b44_disable_ints(struct b44 *bp)
 {
 	__b44_disable_ints(bp);
 
-	/* Flush posted writes. */
+	 
 	br32(bp, B44_IMASK);
 }
 
@@ -277,7 +264,7 @@ static inline int b44_writephy(struct b44 *bp, int reg, u32 val)
 	return __b44_writephy(bp, bp->phy_addr, reg, val);
 }
 
-/* miilib interface */
+ 
 static int b44_mdio_read_mii(struct net_device *dev, int phy_id, int location)
 {
 	u32 val;
@@ -361,11 +348,7 @@ static void b44_set_flow_ctrl(struct b44 *bp, u32 local, u32 remote)
 {
 	u32 pause_enab = 0;
 
-	/* The driver supports only rx pause by default because
-	   the b44 mac tx pause mechanism generates excessive
-	   pause frames.
-	   Use ethtool to turn on b44 tx pause if necessary.
-	 */
+	 
 	if ((local & ADVERTISE_PAUSE_CAP) &&
 	    (local & ADVERTISE_PAUSE_ASYM)){
 		if ((remote & LPA_PAUSE_ASYM) &&
@@ -384,11 +367,7 @@ static void b44_wap54g10_workaround(struct b44 *bp)
 	u32 val;
 	int err;
 
-	/*
-	 * workaround for bad hardware design in Linksys WAP54G v1.0
-	 * see https://dev.openwrt.org/ticket/146
-	 * check and reset bit "isolate"
-	 */
+	 
 	if (bcm47xx_nvram_getenv("boardnum", buf, sizeof(buf)) < 0)
 		return;
 	if (simple_strtoul(buf, NULL, 0) == 2) {
@@ -465,10 +444,7 @@ static int b44_setup_phy(struct b44 *bp)
 		if ((err = b44_writephy(bp, MII_BMCR, bmcr)) != 0)
 			goto out;
 
-		/* Since we will not be negotiating there is no safe way
-		 * to determine if the link partner supports flow control
-		 * or not.  So just disable it completely in this case.
-		 */
+		 
 		b44_set_flow_ctrl(bp, 0, 0);
 	}
 
@@ -557,11 +533,11 @@ static void b44_check_phy(struct b44 *bp)
 			    !b44_readphy(bp, MII_LPA, &remote_adv))
 				b44_set_flow_ctrl(bp, local_adv, remote_adv);
 
-			/* Link now up */
+			 
 			netif_carrier_on(bp->dev);
 			b44_link_report(bp);
 		} else if (netif_carrier_ok(bp->dev) && !(bmsr & BMSR_LSTATUS)) {
-			/* Link now down */
+			 
 			netif_carrier_off(bp->dev);
 			b44_link_report(bp);
 		}
@@ -596,7 +572,7 @@ static void b44_tx(struct b44 *bp)
 	cur  = br32(bp, B44_DMATX_STAT) & DMATX_STAT_CDMASK;
 	cur /= sizeof(struct dma_desc);
 
-	/* XXX needs updating when NETIF_F_SG is supported */
+	 
 	for (cons = bp->tx_cons; cons != cur; cons = NEXT_TX(cons)) {
 		struct ring_info *rp = &bp->tx_buffers[cons];
 		struct sk_buff *skb = rp->skb;
@@ -624,11 +600,7 @@ static void b44_tx(struct b44 *bp)
 	bw32(bp, B44_GPTIMER, 0);
 }
 
-/* Works like this.  This chip writes a 'struct rx_header" 30 bytes
- * before the DMA address you give it.  So we allocate 30 more bytes
- * for the RX buffer, DMA map all of it, skb_reserve the 30 bytes, then
- * point the chip at 30 bytes past where the rx_header will go.
- */
+ 
 static int b44_alloc_rx_skb(struct b44 *bp, int src_idx, u32 dest_idx_unmasked)
 {
 	struct dma_desc *dp;
@@ -652,11 +624,10 @@ static int b44_alloc_rx_skb(struct b44 *bp, int src_idx, u32 dest_idx_unmasked)
 				 RX_PKT_BUF_SZ,
 				 DMA_FROM_DEVICE);
 
-	/* Hardware bug work-around, the chip is unable to do PCI DMA
-	   to/from anything above 1GB :-( */
+	 
 	if (dma_mapping_error(bp->sdev->dma_dev, mapping) ||
 		mapping + RX_PKT_BUF_SZ > DMA_BIT_MASK(30)) {
-		/* Sigh... */
+		 
 		if (!dma_mapping_error(bp->sdev->dma_dev, mapping))
 			dma_unmap_single(bp->sdev->dma_dev, mapping,
 					     RX_PKT_BUF_SZ, DMA_FROM_DEVICE);
@@ -793,7 +764,7 @@ static int b44_rx(struct b44 *bp, int budget)
 				goto drop_it;
 		}
 
-		/* Omit CRC. */
+		 
 		len -= 4;
 
 		if (!bp->force_copybreak && len > RX_COPY_THRESHOLD) {
@@ -803,7 +774,7 @@ static int b44_rx(struct b44 *bp, int budget)
 				goto drop_it;
 			dma_unmap_single(bp->sdev->dma_dev, map,
 					 skb_size, DMA_FROM_DEVICE);
-			/* Leave out rx_header */
+			 
 			skb_put(skb, len + RX_PKT_OFFSET);
 			skb_pull(skb, RX_PKT_OFFSET);
 		} else {
@@ -815,7 +786,7 @@ static int b44_rx(struct b44 *bp, int budget)
 				goto drop_it_no_recycle;
 
 			skb_put(copy_skb, len);
-			/* DMA sync done above, copy just the actual packet */
+			 
 			skb_copy_from_linear_data_offset(skb, RX_PKT_OFFSET,
 							 copy_skb->data, len);
 			skb = copy_skb;
@@ -846,14 +817,14 @@ static int b44_poll(struct napi_struct *napi, int budget)
 	spin_lock_irqsave(&bp->lock, flags);
 
 	if (bp->istat & (ISTAT_TX | ISTAT_TO)) {
-		/* spin_lock(&bp->tx_lock); */
+		 
 		b44_tx(bp);
-		/* spin_unlock(&bp->tx_lock); */
+		 
 	}
-	if (bp->istat & ISTAT_RFO) {	/* fast recovery, in ~20msec */
+	if (bp->istat & ISTAT_RFO) {	 
 		bp->istat &= ~ISTAT_RFO;
 		b44_disable_ints(bp);
-		ssb_device_enable(bp->sdev, 0); /* resets ISTAT_RFO */
+		ssb_device_enable(bp->sdev, 0);  
 		b44_init_rings(bp);
 		b44_init_hw(bp, B44_FULL_RESET_SKIP_PHY);
 		netif_wake_queue(bp->dev);
@@ -895,10 +866,7 @@ static irqreturn_t b44_interrupt(int irq, void *dev_id)
 	istat = br32(bp, B44_ISTAT);
 	imask = br32(bp, B44_IMASK);
 
-	/* The interrupt mask register controls which interrupt bits
-	 * will actually raise an interrupt to the CPU when set by hw/firmware,
-	 * but doesn't mask off the bits.
-	 */
+	 
 	istat &= imask;
 	if (istat) {
 		handled = 1;
@@ -909,9 +877,7 @@ static irqreturn_t b44_interrupt(int irq, void *dev_id)
 		}
 
 		if (napi_schedule_prep(&bp->napi)) {
-			/* NOTE: These writes are posted by the readback of
-			 *       the ISTAT register below.
-			 */
+			 
 			bp->istat = istat;
 			__b44_disable_ints(bp);
 			__napi_schedule(&bp->napi);
@@ -955,7 +921,7 @@ static netdev_tx_t b44_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	len = skb->len;
 	spin_lock_irqsave(&bp->lock, flags);
 
-	/* This is a hard error, log it. */
+	 
 	if (unlikely(TX_BUFFS_AVAIL(bp) < 1)) {
 		netif_stop_queue(dev);
 		netdev_err(dev, "BUG! Tx Ring full when queue awake!\n");
@@ -966,7 +932,7 @@ static netdev_tx_t b44_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	if (dma_mapping_error(bp->sdev->dma_dev, mapping) || mapping + len > DMA_BIT_MASK(30)) {
 		struct sk_buff *bounce_skb;
 
-		/* Chip can't handle DMA to/from >1GB, use bounce buffer */
+		 
 		if (!dma_mapping_error(bp->sdev->dma_dev, mapping))
 			dma_unmap_single(bp->sdev->dma_dev, mapping, len,
 					     DMA_TO_DEVICE);
@@ -1039,9 +1005,7 @@ static int b44_change_mtu(struct net_device *dev, int new_mtu)
 	struct b44 *bp = netdev_priv(dev);
 
 	if (!netif_running(dev)) {
-		/* We'll just catch it later when the
-		 * device is up'd.
-		 */
+		 
 		dev->mtu = new_mtu;
 		return 0;
 	}
@@ -1058,13 +1022,7 @@ static int b44_change_mtu(struct net_device *dev, int new_mtu)
 	return 0;
 }
 
-/* Free up pending packets in all rx/tx rings.
- *
- * The chip has been shut down and the driver detached from
- * the networking, so no interrupts or new tx packets will
- * end up in the driver.  bp->lock is not held and we are not
- * in an interrupt context and thus may sleep.
- */
+ 
 static void b44_free_rings(struct b44 *bp)
 {
 	struct ring_info *rp;
@@ -1081,7 +1039,7 @@ static void b44_free_rings(struct b44 *bp)
 		rp->skb = NULL;
 	}
 
-	/* XXX needs changes once NETIF_F_SG is set... */
+	 
 	for (i = 0; i < B44_TX_RING_SIZE; i++) {
 		rp = &bp->tx_buffers[i];
 
@@ -1094,12 +1052,7 @@ static void b44_free_rings(struct b44 *bp)
 	}
 }
 
-/* Initialize tx/rx rings for packet processing.
- *
- * The chip has been shut down and the driver detached from
- * the networking, so no interrupts or new tx packets will
- * end up in the driver.
- */
+ 
 static void b44_init_rings(struct b44 *bp)
 {
 	int i;
@@ -1123,10 +1076,7 @@ static void b44_init_rings(struct b44 *bp)
 	}
 }
 
-/*
- * Must not be invoked with interrupt sources disabled and
- * the hardware shutdown down.
- */
+ 
 static void b44_free_consistent(struct b44 *bp)
 {
 	kfree(bp->rx_buffers);
@@ -1157,10 +1107,7 @@ static void b44_free_consistent(struct b44 *bp)
 	}
 }
 
-/*
- * Must not be invoked with interrupt sources disabled and
- * the hardware shutdown down.  Can sleep.
- */
+ 
 static int b44_alloc_consistent(struct b44 *bp, gfp_t gfp)
 {
 	int size;
@@ -1179,9 +1126,7 @@ static int b44_alloc_consistent(struct b44 *bp, gfp_t gfp)
 	bp->rx_ring = dma_alloc_coherent(bp->sdev->dma_dev, size,
 					 &bp->rx_ring_dma, gfp);
 	if (!bp->rx_ring) {
-		/* Allocation may have failed due to dma_alloc_coherent
-		   insisting on use of GFP_DMA, which is more restrictive
-		   than necessary...  */
+		 
 		struct dma_desc *rx_ring;
 		dma_addr_t rx_ring_dma;
 
@@ -1207,9 +1152,7 @@ static int b44_alloc_consistent(struct b44 *bp, gfp_t gfp)
 	bp->tx_ring = dma_alloc_coherent(bp->sdev->dma_dev, size,
 					 &bp->tx_ring_dma, gfp);
 	if (!bp->tx_ring) {
-		/* Allocation may have failed due to ssb_dma_alloc_consistent
-		   insisting on use of GFP_DMA, which is more restrictive
-		   than necessary...  */
+		 
 		struct dma_desc *tx_ring;
 		dma_addr_t tx_ring_dma;
 
@@ -1239,7 +1182,7 @@ out_err:
 	return -ENOMEM;
 }
 
-/* bp->lock is held. */
+ 
 static void b44_clear_stats(struct b44 *bp)
 {
 	unsigned long reg;
@@ -1251,7 +1194,7 @@ static void b44_clear_stats(struct b44 *bp)
 		br32(bp, reg);
 }
 
-/* bp->lock is held. */
+ 
 static void b44_chip_reset(struct b44 *bp, int reset_kind)
 {
 	struct ssb_device *sdev = bp->sdev;
@@ -1278,10 +1221,7 @@ static void b44_chip_reset(struct b44 *bp, int reset_kind)
 
 	b44_clear_stats(bp);
 
-	/*
-	 * Don't enable PHY if we are doing a partial reset
-	 * we are probably going to power down
-	 */
+	 
 	if (reset_kind == B44_CHIP_RESET_PARTIAL)
 		return;
 
@@ -1298,7 +1238,7 @@ static void b44_chip_reset(struct b44 *bp, int reset_kind)
 		break;
 	case SSB_BUSTYPE_PCMCIA:
 	case SSB_BUSTYPE_SDIO:
-		WARN_ON(1); /* A device with this bus does not exist. */
+		WARN_ON(1);  
 		break;
 	}
 
@@ -1320,24 +1260,23 @@ static void b44_chip_reset(struct b44 *bp, int reset_kind)
 	}
 }
 
-/* bp->lock is held. */
+ 
 static void b44_halt(struct b44 *bp)
 {
 	b44_disable_ints(bp);
-	/* reset PHY */
+	 
 	b44_phy_reset(bp);
-	/* power down PHY */
+	 
 	netdev_info(bp->dev, "powering down PHY\n");
 	bw32(bp, B44_MAC_CTRL, MAC_CTRL_PHY_PDOWN);
-	/* now reset the chip, but without enabling the MAC&PHY
-	 * part of it. This has to be done _after_ we shut down the PHY */
+	 
 	if (bp->flags & B44_FLAG_EXTERNAL_PHY)
 		b44_chip_reset(bp, B44_CHIP_RESET_FULL);
 	else
 		b44_chip_reset(bp, B44_CHIP_RESET_PARTIAL);
 }
 
-/* bp->lock is held. */
+ 
 static void __b44_set_mac_addr(struct b44 *bp)
 {
 	bw32(bp, B44_CAM_CTRL, 0);
@@ -1375,9 +1314,7 @@ static int b44_set_mac_addr(struct net_device *dev, void *p)
 	return 0;
 }
 
-/* Called at device open time to get the chip ready for
- * packet processing.  Invoked with bp->lock held.
- */
+ 
 static void __b44_set_rx_mode(struct net_device *);
 static void b44_init_hw(struct b44 *bp, int reset_kind)
 {
@@ -1389,18 +1326,18 @@ static void b44_init_hw(struct b44 *bp, int reset_kind)
 		b44_setup_phy(bp);
 	}
 
-	/* Enable CRC32, set proper LED modes and power on PHY */
+	 
 	bw32(bp, B44_MAC_CTRL, MAC_CTRL_CRC32_ENAB | MAC_CTRL_PHY_LEDCTRL);
 	bw32(bp, B44_RCV_LAZY, (1 << RCV_LAZY_FC_SHIFT));
 
-	/* This sets the MAC address too.  */
+	 
 	__b44_set_rx_mode(bp->dev);
 
-	/* MTU + eth header + possible VLAN tag + struct rx_header */
+	 
 	bw32(bp, B44_RXMAXLEN, bp->dev->mtu + ETH_HLEN + 8 + RX_HEADER_LEN);
 	bw32(bp, B44_TXMAXLEN, bp->dev->mtu + ETH_HLEN + 8 + RX_HEADER_LEN);
 
-	bw32(bp, B44_TX_WMARK, 56); /* XXX magic */
+	bw32(bp, B44_TX_WMARK, 56);  
 	if (reset_kind == B44_PARTIAL_RESET) {
 		bw32(bp, B44_DMARX_CTRL, (DMARX_CTRL_ENABLE |
 				      (RX_PKT_OFFSET << DMARX_CTRL_ROSHIFT)));
@@ -1463,10 +1400,7 @@ out:
 }
 
 #ifdef CONFIG_NET_POLL_CONTROLLER
-/*
- * Polling receive - used by netconsole and other diagnostic tools
- * to allow network i/o with interrupts disabled.
- */
+ 
 static void b44_poll_controller(struct net_device *dev)
 {
 	disable_irq(dev->irq);
@@ -1516,9 +1450,7 @@ static int b44_magic_pattern(const u8 *macaddr, u8 *ppattern, u8 *pmask,
 	return len - 1;
 }
 
-/* Setup magic packet patterns in the b44 WOL
- * pattern matching filter.
- */
+ 
 static void b44_setup_pseudo_magicp(struct b44 *bp)
 {
 
@@ -1531,7 +1463,7 @@ static void b44_setup_pseudo_magicp(struct b44 *bp)
 	if (!pwol_pattern)
 		return;
 
-	/* Ipv4 magic packet pattern - pattern 0.*/
+	 
 	memset(pwol_mask, 0, B44_PMASK_SIZE);
 	plen0 = b44_magic_pattern(bp->dev->dev_addr, pwol_pattern, pwol_mask,
 				  B44_ETHIPV4UDP_HLEN);
@@ -1539,7 +1471,7 @@ static void b44_setup_pseudo_magicp(struct b44 *bp)
 	bwfilter_table(bp, pwol_pattern, B44_PATTERN_SIZE, B44_PATTERN_BASE);
 	bwfilter_table(bp, pwol_mask, B44_PMASK_SIZE, B44_PMASK_BASE);
 
-	/* Raw ethernet II magic packet pattern - pattern 1 */
+	 
 	memset(pwol_pattern, 0, B44_PATTERN_SIZE);
 	memset(pwol_mask, 0, B44_PMASK_SIZE);
 	plen1 = b44_magic_pattern(bp->dev->dev_addr, pwol_pattern, pwol_mask,
@@ -1550,7 +1482,7 @@ static void b44_setup_pseudo_magicp(struct b44 *bp)
 	bwfilter_table(bp, pwol_mask, B44_PMASK_SIZE,
 		       B44_PMASK_BASE + B44_PMASK_SIZE);
 
-	/* Ipv6 magic packet pattern - pattern 2 */
+	 
 	memset(pwol_pattern, 0, B44_PATTERN_SIZE);
 	memset(pwol_mask, 0, B44_PMASK_SIZE);
 	plen2 = b44_magic_pattern(bp->dev->dev_addr, pwol_pattern, pwol_mask,
@@ -1563,11 +1495,11 @@ static void b44_setup_pseudo_magicp(struct b44 *bp)
 
 	kfree(pwol_pattern);
 
-	/* set these pattern's lengths: one less than each real length */
+	 
 	val = plen0 | (plen1 << 8) | (plen2 << 16) | WKUP_LEN_ENABLE_THREE;
 	bw32(bp, B44_WKUP_LEN, val);
 
-	/* enable wakeup pattern matching */
+	 
 	val = br32(bp, B44_DEVCTRL);
 	bw32(bp, B44_DEVCTRL, val | DEVCTRL_PFE);
 
@@ -1586,7 +1518,7 @@ static void b44_setup_wol_pci(struct b44 *bp)
 }
 #else
 static inline void b44_setup_wol_pci(struct b44 *bp) { }
-#endif /* CONFIG_B44_PCI */
+#endif  
 
 static void b44_setup_wol(struct b44 *bp)
 {
@@ -1660,7 +1592,7 @@ static void b44_get_stats64(struct net_device *dev,
 	do {
 		start = u64_stats_fetch_begin(&hwstat->syncp);
 
-		/* Convert HW stats into rtnl_link_stats64 stats. */
+		 
 		nstat->rx_packets = hwstat->rx_pkts;
 		nstat->tx_packets = hwstat->tx_pkts;
 		nstat->rx_bytes   = hwstat->rx_octets;
@@ -1689,7 +1621,7 @@ static void b44_get_stats64(struct net_device *dev,
 
 		nstat->tx_aborted_errors = hwstat->tx_underruns;
 #if 0
-		/* Carrier lost counter seems to be broken for some devices */
+		 
 		nstat->tx_carrier_errors = hwstat->tx_carrier_lost;
 #endif
 	} while (u64_stats_fetch_retry(&hwstat->syncp, start));
@@ -1778,7 +1710,7 @@ static void b44_get_drvinfo (struct net_device *dev, struct ethtool_drvinfo *inf
 		break;
 	case SSB_BUSTYPE_PCMCIA:
 	case SSB_BUSTYPE_SDIO:
-		WARN_ON(1); /* A device with this bus does not exist. */
+		WARN_ON(1);  
 		break;
 	}
 }
@@ -1881,7 +1813,7 @@ static int b44_set_link_ksettings(struct net_device *dev,
 	ethtool_convert_link_mode_to_legacy_u32(&advertising,
 						cmd->link_modes.advertising);
 
-	/* We do not support gigabit. */
+	 
 	if (cmd->base.autoneg == AUTONEG_ENABLE) {
 		if (advertising &
 		    (ADVERTISED_1000baseT_Half |
@@ -1946,7 +1878,7 @@ static void b44_get_ringparam(struct net_device *dev,
 	ering->rx_max_pending = B44_RX_RING_SIZE - 1;
 	ering->rx_pending = bp->rx_pending;
 
-	/* XXX ethtool lacks a tx_max_pending, oops... */
+	 
 }
 
 static int b44_set_ringparam(struct net_device *dev,
@@ -2148,9 +2080,7 @@ static int b44_get_invariants(struct b44 *bp)
 		addr = sdev->bus->sprom.et0mac;
 		bp->phy_addr = sdev->bus->sprom.et0phyaddr;
 	}
-	/* Some ROMs have buggy PHY addresses with the high
-	 * bits set (sign extension?). Truncate them to a
-	 * valid PHY address. */
+	 
 	bp->phy_addr &= 0x1F;
 
 	eth_hw_addr_set(bp->dev, addr);
@@ -2162,9 +2092,7 @@ static int b44_get_invariants(struct b44 *bp)
 
 	bp->imask = IMASK_DEF;
 
-	/* XXX - really required?
-	   bp->flags |= B44_FLAG_BUGGY_TXPTR;
-	*/
+	 
 
 	if (bp->sdev->id.revision >= 7)
 		bp->flags |= B44_FLAG_B0_ANDLATER;
@@ -2201,7 +2129,7 @@ static void b44_adjust_link(struct net_device *dev)
 		bp->old_link = phydev->link;
 	}
 
-	/* reflect duplex change */
+	 
 	if (phydev->link) {
 		if ((phydev->duplex == DUPLEX_HALF) &&
 		    (bp->flags & B44_FLAG_FULL_DUPLEX)) {
@@ -2282,7 +2210,7 @@ static int b44_register_phy_one(struct b44 *bp)
 		goto err_out_mdiobus_unregister;
 	}
 
-	/* mask with MAC supported features */
+	 
 	linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT_Half_BIT, mask);
 	linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT_Full_BIT, mask);
 	linkmode_set_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, mask);
@@ -2334,7 +2262,7 @@ static int b44_init_one(struct ssb_device *sdev,
 
 	SET_NETDEV_DEV(dev, sdev->dev);
 
-	/* No interesting netdevice features in this card... */
+	 
 	dev->features |= 0;
 
 	bp = netdev_priv(dev);
@@ -2392,11 +2320,11 @@ static int b44_init_one(struct ssb_device *sdev,
 	bp->mii_if.phy_id_mask = 0x1f;
 	bp->mii_if.reg_num_mask = 0x1f;
 
-	/* By default, advertise all speed/duplex settings. */
+	 
 	bp->flags |= (B44_FLAG_ADV_10HALF | B44_FLAG_ADV_10FULL |
 		      B44_FLAG_ADV_100HALF | B44_FLAG_ADV_100FULL);
 
-	/* By default, auto-negotiate PAUSE. */
+	 
 	bp->flags |= B44_FLAG_PAUSE_AUTO;
 
 	err = register_netdev(dev);
@@ -2409,12 +2337,10 @@ static int b44_init_one(struct ssb_device *sdev,
 
 	ssb_set_drvdata(sdev, dev);
 
-	/* Chip reset provides power to the b44 MAC & PCI cores, which
-	 * is necessary for MAC register access.
-	 */
+	 
 	b44_chip_reset(bp, B44_CHIP_RESET_FULL);
 
-	/* do a phy reset to test if there is an active phy */
+	 
 	err = b44_phy_reset(bp);
 	if (err < 0) {
 		dev_err(sdev->dev, "phy reset failed\n");
@@ -2513,11 +2439,7 @@ static int b44_resume(struct ssb_device *sdev)
 	b44_init_hw(bp, B44_FULL_RESET);
 	spin_unlock_irq(&bp->lock);
 
-	/*
-	 * As a shared interrupt, the handler can be called immediately. To be
-	 * able to check the interrupt status the hardware must already be
-	 * powered back on (b44_init_hw).
-	 */
+	 
 	rc = request_irq(dev->irq, b44_interrupt, IRQF_SHARED, dev->name, dev);
 	if (rc) {
 		netdev_err(dev, "request_irq failed\n");
@@ -2568,7 +2490,7 @@ static int __init b44_init(void)
 	unsigned int dma_desc_align_size = dma_get_cache_alignment();
 	int err;
 
-	/* Setup paramaters for syncing RX/TX DMA descriptors */
+	 
 	dma_desc_sync_size = max_t(unsigned int, dma_desc_align_size, sizeof(struct dma_desc));
 
 	err = b44_pci_init();

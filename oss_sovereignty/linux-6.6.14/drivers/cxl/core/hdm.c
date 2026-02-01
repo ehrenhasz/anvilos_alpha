@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2022 Intel Corporation. All rights reserved. */
+
+ 
 #include <linux/seq_file.h>
 #include <linux/device.h>
 #include <linux/delay.h>
@@ -7,14 +7,7 @@
 #include "cxlmem.h"
 #include "core.h"
 
-/**
- * DOC: cxl core hdm
- *
- * Compute Express Link Host Managed Device Memory, starting with the
- * CXL 2.0 specification, is managed by an array of HDM Decoder register
- * instances per CXL port and per CXL endpoint. Define common helpers
- * for enumerating these registers and capabilities.
- */
+ 
 
 DECLARE_RWSEM(cxl_dpa_rwsem);
 
@@ -39,13 +32,7 @@ static int add_hdm_decoder(struct cxl_port *port, struct cxl_decoder *cxld,
 	return 0;
 }
 
-/*
- * Per the CXL specification (8.2.5.12 CXL HDM Decoder Capability Structure)
- * single ported host-bridges need not publish a decoder capability when a
- * passthrough decode can be assumed, i.e. all transactions that the uport sees
- * are claimed and passed to the single dport. Disable the range until the first
- * CXL region is enumerated / activated.
- */
+ 
 int devm_cxl_add_passthrough_decoder(struct cxl_port *port)
 {
 	struct cxl_switch_decoder *cxlsd;
@@ -94,7 +81,7 @@ static int map_hdm_decoder_regs(struct cxl_port *port, void __iomem *crb,
 	cxl_probe_component_regs(&port->dev, crb, &map.component_map);
 	if (!map.component_map.hdm_decoder.valid) {
 		dev_dbg(&port->dev, "HDM decoder registers not implemented\n");
-		/* unique error code to indicate no HDM decoder capability */
+		 
 		return -ENODEV;
 	}
 
@@ -117,17 +104,11 @@ static bool should_emulate_decoders(struct cxl_endpoint_dvsec_info *info)
 	if (!hdm)
 		return true;
 
-	/*
-	 * If HDM decoders are present and the driver is in control of
-	 * Mem_Enable skip DVSEC based emulation
-	 */
+	 
 	if (!info->mem_enabled)
 		return false;
 
-	/*
-	 * If any decoders are committed already, there should not be any
-	 * emulated DVSEC decoders.
-	 */
+	 
 	for (i = 0; i < cxlhdm->decoder_count; i++) {
 		ctrl = readl(hdm + CXL_HDM_DECODER0_CTRL_OFFSET(i));
 		dev_dbg(&info->port->dev,
@@ -145,11 +126,7 @@ static bool should_emulate_decoders(struct cxl_endpoint_dvsec_info *info)
 	return true;
 }
 
-/**
- * devm_cxl_setup_hdm - map HDM decoder component registers
- * @port: cxl_port to map
- * @info: cached DVSEC range register info
- */
+ 
 struct cxl_hdm *devm_cxl_setup_hdm(struct cxl_port *port,
 				   struct cxl_endpoint_dvsec_info *info)
 {
@@ -184,10 +161,7 @@ struct cxl_hdm *devm_cxl_setup_hdm(struct cxl_port *port,
 		return ERR_PTR(-ENXIO);
 	}
 
-	/*
-	 * Now that the hdm capability is parsed, decide if range
-	 * register emulation is needed and fixup cxlhdm accordingly.
-	 */
+	 
 	if (should_emulate_decoders(info)) {
 		dev_dbg(dev, "Fallback map %d range register%s\n", info->ranges,
 			info->ranges > 1 ? "s" : "");
@@ -220,10 +194,7 @@ void cxl_dpa_debug(struct seq_file *file, struct cxl_dev_state *cxlds)
 }
 EXPORT_SYMBOL_NS_GPL(cxl_dpa_debug, CXL);
 
-/*
- * Must be called in a context that synchronizes against this decoder's
- * port ->remove() callback (like an endpoint decoder sysfs attribute)
- */
+ 
 static void __cxl_dpa_release(struct cxl_endpoint_decoder *cxled)
 {
 	struct cxl_memdev *cxlmd = cxled_to_memdev(cxled);
@@ -234,7 +205,7 @@ static void __cxl_dpa_release(struct cxl_endpoint_decoder *cxled)
 
 	lockdep_assert_held_write(&cxl_dpa_rwsem);
 
-	/* save @skip_start, before @res is released */
+	 
 	skip_start = res->start - cxled->skip;
 	__release_region(&cxlds->dpa_res, res->start, resource_size(res));
 	if (cxled->skip)
@@ -252,10 +223,7 @@ static void cxl_dpa_release(void *cxled)
 	up_write(&cxl_dpa_rwsem);
 }
 
-/*
- * Must be called from context that will not race port device
- * unregistration, like decoder sysfs attribute methods
- */
+ 
 static void devm_cxl_dpa_release(struct cxl_endpoint_decoder *cxled)
 {
 	struct cxl_port *port = cxled_to_port(cxled);
@@ -290,12 +258,7 @@ static int __cxl_dpa_reserve(struct cxl_endpoint_decoder *cxled,
 	}
 
 	if (port->hdm_end + 1 != cxled->cxld.id) {
-		/*
-		 * Assumes alloc and commit order is always in hardware instance
-		 * order per expectations from 8.2.5.12.20 Committing Decoder
-		 * Programming that enforce decoder[m] committed before
-		 * decoder[m+1] commit start.
-		 */
+		 
 		dev_dbg(dev, "decoder%d.%d: expected decoder%d.%d\n", port->id,
 			cxled->cxld.id, port->id, port->hdm_end + 1);
 		return -EBUSY;
@@ -438,10 +401,7 @@ int cxl_dpa_set_mode(struct cxl_endpoint_decoder *cxled,
 		goto out;
 	}
 
-	/*
-	 * Only allow modes that are supported by the current partition
-	 * configuration
-	 */
+	 
 	if (mode == CXL_DECODER_PMEM && !resource_size(&cxlds->pmem_res)) {
 		dev_dbg(dev, "no available pmem capacity\n");
 		rc = -ENXIO;
@@ -511,10 +471,7 @@ int cxl_dpa_alloc(struct cxl_endpoint_decoder *cxled, unsigned long long size)
 		avail = cxlds->pmem_res.end - start + 1;
 		skip_start = free_ram_start;
 
-		/*
-		 * If some pmem is already allocated, then that allocation
-		 * already handled the skip.
-		 */
+		 
 		if (cxlds->pmem_res.child &&
 		    skip_start == cxlds->pmem_res.child->start)
 			skip_end = skip_start - 1;
@@ -550,10 +507,7 @@ static void cxld_set_interleave(struct cxl_decoder *cxld, u32 *ctrl)
 	u16 eig;
 	u8 eiw;
 
-	/*
-	 * Input validation ensures these warns never fire, but otherwise
-	 * suppress unititalized variable usage warnings.
-	 */
+	 
 	if (WARN_ONCE(ways_to_eiw(cxld->interleave_ways, &eiw),
 		      "invalid interleave_ways: %d\n", cxld->interleave_ways))
 		return;
@@ -596,11 +550,7 @@ static void cxlsd_set_targets(struct cxl_switch_decoder *cxlsd, u64 *tgt)
 		*tgt |= FIELD_PREP(GENMASK_ULL(63, 56), t[7]->port_id);
 }
 
-/*
- * Per CXL 2.0 8.2.5.12.20 Committing Decoder Programming, hardware must set
- * committed or error within 10ms, but just be generous with 20ms to account for
- * clock skew and other marginal behavior
- */
+ 
 #define COMMIT_TIMEOUT_MS 20
 static int cxld_await_commit(void __iomem *hdm, int id)
 {
@@ -642,10 +592,7 @@ static int cxl_decoder_commit(struct cxl_decoder *cxld)
 		return -EBUSY;
 	}
 
-	/*
-	 * For endpoint decoders hosted on CXL memory devices that
-	 * support the sanitize operation, make sure sanitize is not in-flight.
-	 */
+	 
 	if (is_endpoint_decoder(&cxld->dev)) {
 		struct cxl_endpoint_decoder *cxled =
 			to_cxl_endpoint_decoder(&cxld->dev);
@@ -662,7 +609,7 @@ static int cxl_decoder_commit(struct cxl_decoder *cxld)
 	}
 
 	down_read(&cxl_dpa_rwsem);
-	/* common decoder settings */
+	 
 	ctrl = readl(hdm + CXL_HDM_DECODER0_CTRL_OFFSET(cxld->id));
 	cxld_set_interleave(cxld, &ctrl);
 	cxld_set_type(cxld, &ctrl);
@@ -742,7 +689,7 @@ static int cxl_decoder_reset(struct cxl_decoder *cxld)
 	port->commit_end--;
 	cxld->flags &= ~CXL_DECODER_F_ENABLE;
 
-	/* Userspace is now responsible for reconfiguring this decoder */
+	 
 	if (is_endpoint_decoder(&cxld->dev)) {
 		struct cxl_endpoint_decoder *cxled;
 
@@ -774,10 +721,7 @@ static int cxl_setup_hdm_decoder_from_dvsec(
 	cxld->reset = NULL;
 	cxld->hpa_range = info->dvsec_range[which];
 
-	/*
-	 * Set the emulated decoder as locked pending additional support to
-	 * change the range registers at run time.
-	 */
+	 
 	cxld->flags |= CXL_DECODER_F_ENABLE | CXL_DECODER_F_LOCK;
 	port->commit_end = cxld->id;
 
@@ -839,7 +783,7 @@ static int init_hdm_decoder(struct cxl_port *port, struct cxl_decoder *cxld,
 		.end = base + size - 1,
 	};
 
-	/* decoders are enabled if committed */
+	 
 	if (committed) {
 		cxld->flags |= CXL_DECODER_F_ENABLE;
 		if (ctrl & CXL_HDM_DECODER0_CTRL_LOCK)
@@ -869,16 +813,13 @@ static int init_hdm_decoder(struct cxl_port *port, struct cxl_decoder *cxld,
 			struct cxl_memdev *cxlmd = cxled_to_memdev(cxled);
 			struct cxl_dev_state *cxlds = cxlmd->cxlds;
 
-			/*
-			 * Default by devtype until a device arrives that needs
-			 * more precision.
-			 */
+			 
 			if (cxlds->type == CXL_DEVTYPE_CLASSMEM)
 				cxld->target_type = CXL_DECODER_HOSTONLYMEM;
 			else
 				cxld->target_type = CXL_DECODER_DEVMEM;
 		} else {
-			/* To be overridden by region type at commit time */
+			 
 			cxld->target_type = CXL_DECODER_HOSTONLYMEM;
 		}
 
@@ -952,29 +893,19 @@ static void cxl_settle_decoders(struct cxl_hdm *cxlhdm)
 	if (!hdm)
 		return;
 
-	/*
-	 * Since the register resource was recently claimed via request_region()
-	 * be careful about trusting the "not-committed" status until the commit
-	 * timeout has elapsed.  The commit timeout is 10ms (CXL 2.0
-	 * 8.2.5.12.20), but double it to be tolerant of any clock skew between
-	 * host and target.
-	 */
+	 
 	for (i = 0, committed = 0; i < cxlhdm->decoder_count; i++) {
 		ctrl = readl(hdm + CXL_HDM_DECODER0_CTRL_OFFSET(i));
 		if (ctrl & CXL_HDM_DECODER0_CTRL_COMMITTED)
 			committed++;
 	}
 
-	/* ensure that future checks of committed can be trusted */
+	 
 	if (committed != cxlhdm->decoder_count)
 		msleep(20);
 }
 
-/**
- * devm_cxl_enumerate_decoders - add decoder objects per HDM register set
- * @cxlhdm: Structure to populate with HDM capabilities
- * @info: cached DVSEC range register info
- */
+ 
 int devm_cxl_enumerate_decoders(struct cxl_hdm *cxlhdm,
 				struct cxl_endpoint_dvsec_info *info)
 {

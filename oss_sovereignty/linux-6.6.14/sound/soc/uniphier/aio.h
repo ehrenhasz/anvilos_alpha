@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Socionext UniPhier AIO ALSA driver.
- *
- * Copyright (c) 2016-2018 Socionext Inc.
- */
+ 
+ 
 
 #ifndef SND_UNIPHIER_AIO_H__
 #define SND_UNIPHIER_AIO_H__
@@ -40,7 +36,7 @@ enum IEC61937_PC {
 	IEC61937_PC_AAC   = 0x0007,
 };
 
-/* IEC61937 Repetition period of data-burst in IEC60958 frames */
+ 
 #define IEC61937_FRM_STR_AC3       1536
 #define IEC61937_FRM_STR_MPA       1152
 #define IEC61937_FRM_STR_MP3       1152
@@ -49,7 +45,7 @@ enum IEC61937_PC {
 #define IEC61937_FRM_STR_DTS3      2048
 #define IEC61937_FRM_STR_AAC       1024
 
-/* IEC61937 Repetition period of Pause data-burst in IEC60958 frames */
+ 
 #define IEC61937_FRM_PAU_AC3       3
 #define IEC61937_FRM_PAU_MPA       32
 #define IEC61937_FRM_PAU_MP3       32
@@ -58,7 +54,7 @@ enum IEC61937_PC {
 #define IEC61937_FRM_PAU_DTS3      3
 #define IEC61937_FRM_PAU_AAC       32
 
-/* IEC61937 Pa and Pb */
+ 
 #define IEC61937_HEADER_SIGN       0x1f4e72f8
 
 #define AUD_HW_PCMIN1    0
@@ -130,9 +126,9 @@ enum IEC61937_PC {
 #define AUD_PLLDIV_1_1    2
 #define AUD_PLLDIV_2_3    3
 
-#define AUD_VOL_INIT         0x4000 /* +0dB */
-#define AUD_VOL_MAX          0xffff /* +6dB */
-#define AUD_VOL_FADE_TIME    20 /* 20ms */
+#define AUD_VOL_INIT         0x4000  
+#define AUD_VOL_MAX          0xffff  
+#define AUD_VOL_FADE_TIME    20  
 
 #define AUD_RING_SIZE            (128 * 1024)
 
@@ -141,55 +137,16 @@ enum IEC61937_PC {
 #define AUD_MIN_FRAGMENT_SIZE    (4 * 1024)
 #define AUD_MAX_FRAGMENT_SIZE    (16 * 1024)
 
-/* max 5 slots, 10 channels, 2 channel in 1 slot */
+ 
 #define AUD_MAX_SLOTSEL    5
 
-/*
- * This is a selector for virtual register map of AIO.
- *
- * map:  Specify the index of virtual register map.
- * hw :  Specify the ID of real register map, selector uses this value.
- *       A meaning of this value depends specification of SoC.
- */
+ 
 struct uniphier_aio_selector {
 	int map;
 	int hw;
 };
 
-/**
- * 'SoftWare MAPping' setting of UniPhier AIO registers.
- *
- * We have to setup 'virtual' register maps to access 'real' registers of AIO.
- * This feature is legacy and meaningless but AIO needs this to work.
- *
- * Each hardware blocks have own virtual register maps as following:
- *
- * Address Virtual                      Real
- * ------- ---------                    ---------------
- * 0x12000 DMAC map0 --> [selector] --> DMAC hardware 3
- * 0x12080 DMAC map1 --> [selector] --> DMAC hardware 1
- * ...
- * 0x42000 Port map0 --> [selector] --> Port hardware 1
- * 0x42400 Port map1 --> [selector] --> Port hardware 2
- * ...
- *
- * ch   : Input or output channel of DMAC
- * rb   : Ring buffer
- * iport: PCM input port
- * iif  : Input interface
- * oport: PCM output port
- * oif  : Output interface
- * och  : Output channel of DMAC for sampling rate converter
- *
- * These are examples for sound data paths:
- *
- * For caputure device:
- *   (outer of AIO) -> iport -> iif -> ch -> rb -> (CPU)
- * For playback device:
- *   (CPU) -> rb -> ch -> oif -> oport -> (outer of AIO)
- * For sampling rate converter device:
- *   (CPU) -> rb -> ch -> oif -> (HW SRC) -> iif -> och -> orb -> (CPU)
- */
+ 
 struct uniphier_aio_swmap {
 	int type;
 	int dir;
@@ -222,25 +179,25 @@ struct uniphier_aio_chip_spec {
 	struct snd_soc_dai_driver *dais;
 	int num_dais;
 
-	/* DMA access mode, this is workaround for DMA hungup */
+	 
 	int addr_ext;
 };
 
 struct uniphier_aio_sub {
 	struct uniphier_aio *aio;
 
-	/* Guard sub->rd_offs and wr_offs from IRQ handler. */
+	 
 	spinlock_t lock;
 
 	const struct uniphier_aio_swmap *swm;
 	const struct uniphier_aio_spec *spec;
 
-	/* For PCM audio */
+	 
 	struct snd_pcm_substream *substream;
 	struct snd_pcm_hw_params params;
 	int vol;
 
-	/* For compress audio */
+	 
 	struct snd_compr_stream *cstream;
 	struct snd_compr_params cparams;
 	unsigned char *compr_area;
@@ -250,7 +207,7 @@ struct uniphier_aio_sub {
 	enum IEC61937_PC iec_pc;
 	bool iec_header;
 
-	/* Both PCM and compress audio */
+	 
 	bool use_mmap;
 	int setting;
 	int running;
@@ -269,13 +226,13 @@ struct uniphier_aio {
 	struct uniphier_aio_sub sub[2];
 
 	unsigned int fmt;
-	/* Set one of AUD_CLK_X */
+	 
 	int clk_in;
 	int clk_out;
-	/* Set one of AUD_PLL_X */
+	 
 	int pll_in;
 	int pll_out;
-	/* Set one of AUD_PLLDIV_X */
+	 
 	int plldiv;
 };
 
@@ -351,4 +308,4 @@ void aiodma_rb_sync(struct uniphier_aio_sub *sub, u64 start, u64 size,
 bool aiodma_rb_is_irq(struct uniphier_aio_sub *sub);
 void aiodma_rb_clear_irq(struct uniphier_aio_sub *sub);
 
-#endif /* SND_UNIPHIER_AIO_H__ */
+#endif  

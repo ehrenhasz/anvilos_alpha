@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2014 Linaro Ltd.
- * Copyright (c) 2014 HiSilicon Limited.
- *
- * Now only support 7 bit address.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -16,7 +11,7 @@
 #include <linux/platform_device.h>
 #include <linux/pm_runtime.h>
 
-/* Register Map */
+ 
 #define HIX5I2C_CTRL		0x00
 #define HIX5I2C_COM		0x04
 #define HIX5I2C_ICR		0x08
@@ -26,7 +21,7 @@
 #define HIX5I2C_TXR		0x18
 #define HIX5I2C_RXR		0x1c
 
-/* I2C_CTRL_REG */
+ 
 #define I2C_ENABLE		BIT(8)
 #define I2C_UNMASK_TOTAL	BIT(7)
 #define I2C_UNMASK_START	BIT(6)
@@ -38,14 +33,14 @@
 #define I2C_UNMASK_OVER		BIT(0)
 #define I2C_UNMASK_ALL		(I2C_UNMASK_ACK | I2C_UNMASK_OVER)
 
-/* I2C_COM_REG */
+ 
 #define I2C_NO_ACK		BIT(4)
 #define I2C_START		BIT(3)
 #define I2C_READ		BIT(2)
 #define I2C_WRITE		BIT(1)
 #define I2C_STOP		BIT(0)
 
-/* I2C_ICR_REG */
+ 
 #define I2C_CLEAR_START		BIT(6)
 #define I2C_CLEAR_END		BIT(5)
 #define I2C_CLEAR_SEND		BIT(4)
@@ -58,7 +53,7 @@
 				I2C_CLEAR_ACK | I2C_CLEAR_ARBITRATE | \
 				I2C_CLEAR_OVER)
 
-/* I2C_SR_REG */
+ 
 #define I2C_BUSY		BIT(7)
 #define I2C_START_INTR		BIT(6)
 #define I2C_END_INTR		BIT(5)
@@ -86,7 +81,7 @@ struct hix5hd2_i2c_priv {
 	void __iomem *regs;
 	struct clk *clk;
 	struct device *dev;
-	spinlock_t lock;	/* IRQ synchronization */
+	spinlock_t lock;	 
 	int err;
 	unsigned int freq;
 	enum hix5hd2_i2c_state state;
@@ -122,7 +117,7 @@ static void hix5hd2_i2c_drv_setrate(struct hix5hd2_i2c_priv *priv)
 	u32 rate, val;
 	u32 scl, sysclock;
 
-	/* close all i2c interrupt */
+	 
 	val = readl_relaxed(priv->regs + HIX5I2C_CTRL);
 	writel_relaxed(val & (~I2C_UNMASK_TOTAL), priv->regs + HIX5I2C_CTRL);
 
@@ -132,7 +127,7 @@ static void hix5hd2_i2c_drv_setrate(struct hix5hd2_i2c_priv *priv)
 	writel_relaxed(scl, priv->regs + HIX5I2C_SCL_H);
 	writel_relaxed(scl, priv->regs + HIX5I2C_SCL_L);
 
-	/* restore original interrupt*/
+	 
 	writel_relaxed(val, priv->regs + HIX5I2C_CTRL);
 
 	dev_dbg(priv->dev, "%s: sysclock=%d, rate=%d, scl=%d\n",
@@ -160,7 +155,7 @@ static int hix5hd2_i2c_wait_bus_idle(struct hix5hd2_i2c_priv *priv)
 	unsigned long stop_time;
 	u32 int_status;
 
-	/* wait for 100 milli seconds for the bus to be idle */
+	 
 	stop_time = jiffies + msecs_to_jiffies(100);
 	do {
 		int_status = hix5hd2_i2c_clr_pend_irq(priv);
@@ -197,10 +192,10 @@ static void hix5hd2_rw_handle_stop(struct hix5hd2_i2c_priv *priv)
 static void hix5hd2_read_handle(struct hix5hd2_i2c_priv *priv)
 {
 	if (priv->msg_len == 1) {
-		/* the last byte don't need send ACK */
+		 
 		writel_relaxed(I2C_READ | I2C_NO_ACK, priv->regs + HIX5I2C_COM);
 	} else if (priv->msg_len > 1) {
-		/* if i2c master receive data will send ACK */
+		 
 		writel_relaxed(I2C_READ, priv->regs + HIX5I2C_COM);
 	} else {
 		hix5hd2_rw_handle_stop(priv);
@@ -250,15 +245,15 @@ static irqreturn_t hix5hd2_i2c_irq(int irqno, void *dev_id)
 
 	int_status = hix5hd2_i2c_clr_pend_irq(priv);
 
-	/* handle error */
+	 
 	if (int_status & I2C_ARBITRATE_INTR) {
-		/* bus error */
+		 
 		dev_dbg(priv->dev, "ARB bus loss\n");
 		priv->err = -EAGAIN;
 		priv->state = HIX5I2C_STAT_RW_ERR;
 		goto stop;
 	} else if (int_status & I2C_ACK_INTR) {
-		/* ack error */
+		 
 		dev_dbg(priv->dev, "No ACK from device\n");
 		priv->err = -ENXIO;
 		priv->state = HIX5I2C_STAT_RW_ERR;
@@ -338,10 +333,7 @@ static int hix5hd2_i2c_xfer_msg(struct hix5hd2_i2c_priv *priv,
 	}
 	ret = priv->state;
 
-	/*
-	 * If this is the last message to be transfered (stop == 1)
-	 * Then check if the bus can be brought back to idle.
-	 */
+	 
 	if (priv->state == HIX5I2C_STAT_RW_SUCCESS && stop)
 		ret = hix5hd2_i2c_wait_bus_idle(priv);
 
@@ -400,7 +392,7 @@ static int hix5hd2_i2c_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	if (of_property_read_u32(np, "clock-frequency", &freq)) {
-		/* use 100k as default value */
+		 
 		priv->freq = I2C_MAX_STANDARD_MODE_FREQ;
 	} else {
 		if (freq > I2C_MAX_FAST_MODE_FREQ) {

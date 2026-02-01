@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * isl6271a-regulator.c
- *
- * Support for Intersil ISL6271A voltage regulator
- *
- * Copyright (C) 2010 Marek Vasut <marek.vasut@gmail.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -20,7 +14,7 @@
 #define	ISL6271A_VOLTAGE_MAX	1600000
 #define	ISL6271A_VOLTAGE_STEP	50000
 
-/* PMIC details */
+ 
 struct isl_pmic {
 	struct i2c_client	*client;
 	struct mutex		mtx;

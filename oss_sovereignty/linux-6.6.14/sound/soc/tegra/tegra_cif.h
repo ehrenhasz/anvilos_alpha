@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tegra_cif.h - TEGRA Audio CIF Programming
- *
- * Copyright (c) 2020 NVIDIA CORPORATION.  All rights reserved.
- *
- */
+ 
+ 
 
 #ifndef __TEGRA_CIF_H__
 #define __TEGRA_CIF_H__
@@ -22,7 +17,7 @@
 #define TEGRA_ACIF_CTRL_TRUNCATE_SHIFT		1
 #define TEGRA_ACIF_CTRL_MONO_CONV_SHIFT		0
 
-/* AUDIO/CLIENT_BITS values */
+ 
 #define TEGRA_ACIF_BITS_8			1
 #define TEGRA_ACIF_BITS_16			3
 #define TEGRA_ACIF_BITS_24			5

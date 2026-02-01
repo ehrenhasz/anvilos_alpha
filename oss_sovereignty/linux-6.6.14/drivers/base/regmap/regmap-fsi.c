@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Register map access API - FSI support
-//
-// Copyright 2022 IBM Corp
-//
-// Author: Eddie James <eajames@linux.ibm.com>
+
+
+
+
+
+
+
 
 #include <linux/fsi.h>
 #include <linux/module.h>

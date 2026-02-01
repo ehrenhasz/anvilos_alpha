@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// max77686.c - Regulator driver for the Maxim 77686
-//
-// Copyright (C) 2012 Samsung Electronics
-// Chiwoong Byun <woong.byun@samsung.com>
-// Jonghwa Lee <jonghwa3.lee@samsung.com>
-//
-// This driver is based on max8997.c
+
+
+
+
+
+
+
+
+
 
 #include <linux/kernel.h>
 #include <linux/bug.h>
@@ -26,32 +26,22 @@
 #define MAX77686_LDO_LOW_UVSTEP	25000
 #define MAX77686_BUCK_MINUV	750000
 #define MAX77686_BUCK_UVSTEP	50000
-#define MAX77686_BUCK_ENABLE_TIME	40		/* us */
-#define MAX77686_DVS_ENABLE_TIME	22		/* us */
-#define MAX77686_RAMP_DELAY	100000			/* uV/us */
-#define MAX77686_DVS_RAMP_DELAY	27500			/* uV/us */
+#define MAX77686_BUCK_ENABLE_TIME	40		 
+#define MAX77686_DVS_ENABLE_TIME	22		 
+#define MAX77686_RAMP_DELAY	100000			 
+#define MAX77686_DVS_RAMP_DELAY	27500			 
 #define MAX77686_DVS_MINUV	600000
 #define MAX77686_DVS_UVSTEP	12500
 
-/*
- * Value for configuring buck[89] and LDO{20,21,22} as GPIO control.
- * It is the same as 'off' for other regulators.
- */
+ 
 #define MAX77686_GPIO_CONTROL		0x0
-/*
- * Values used for configuring LDOs and bucks.
- * Forcing low power mode: LDO1, 3-5, 9, 13, 17-26
- */
+ 
 #define MAX77686_LDO_LOWPOWER		0x1
-/*
- * On/off controlled by PWRREQ:
- *  - LDO2, 6-8, 10-12, 14-16
- *  - buck[1234]
- */
+ 
 #define MAX77686_OFF_PWRREQ		0x1
-/* Low power mode controlled by PWRREQ: All LDOs */
+ 
 #define MAX77686_LDO_LOWPOWER_PWRREQ	0x2
-/* Forcing low power mode: buck[234] */
+ 
 #define MAX77686_BUCK_LOWPOWER		0x2
 #define MAX77686_NORMAL			0x3
 
@@ -71,7 +61,7 @@ struct max77686_data {
 	struct device *dev;
 	DECLARE_BITMAP(gpio_enabled, MAX77686_REGULATORS);
 
-	/* Array indexed by regulator id */
+	 
 	unsigned int opmode[MAX77686_REGULATORS];
 };
 
@@ -84,17 +74,12 @@ static unsigned int max77686_get_opmode_shift(int id)
 	case MAX77686_BUCK2 ... MAX77686_BUCK4:
 		return MAX77686_OPMODE_BUCK234_SHIFT;
 	default:
-		/* all LDOs */
+		 
 		return MAX77686_OPMODE_SHIFT;
 	}
 }
 
-/*
- * When regulator is configured for GPIO control then it
- * replaces "normal" mode. Any change from low power mode to normal
- * should actually change to GPIO control.
- * Map normal mode to proper value for such regulators.
- */
+ 
 static unsigned int max77686_map_normal_mode(struct max77686_data *max77686,
 					     int id)
 {
@@ -109,7 +94,7 @@ static unsigned int max77686_map_normal_mode(struct max77686_data *max77686,
 	return MAX77686_NORMAL;
 }
 
-/* Some BUCKs and LDOs supports Normal[ON/OFF] mode during suspend */
+ 
 static int max77686_set_suspend_disable(struct regulator_dev *rdev)
 {
 	unsigned int val, shift;
@@ -128,7 +113,7 @@ static int max77686_set_suspend_disable(struct regulator_dev *rdev)
 	return 0;
 }
 
-/* Some LDOs supports [LPM/Normal]ON mode during suspend state */
+ 
 static int max77686_set_suspend_mode(struct regulator_dev *rdev,
 				     unsigned int mode)
 {
@@ -136,15 +121,15 @@ static int max77686_set_suspend_mode(struct regulator_dev *rdev,
 	unsigned int val;
 	int ret, id = rdev_get_id(rdev);
 
-	/* BUCK[5-9] doesn't support this feature */
+	 
 	if (id >= MAX77686_BUCK5)
 		return 0;
 
 	switch (mode) {
-	case REGULATOR_MODE_IDLE:			/* ON in LP Mode */
+	case REGULATOR_MODE_IDLE:			 
 		val = MAX77686_LDO_LOWPOWER_PWRREQ;
 		break;
-	case REGULATOR_MODE_NORMAL:			/* ON in Normal Mode */
+	case REGULATOR_MODE_NORMAL:			 
 		val = max77686_map_normal_mode(max77686, id);
 		break;
 	default:
@@ -163,7 +148,7 @@ static int max77686_set_suspend_mode(struct regulator_dev *rdev,
 	return 0;
 }
 
-/* Some LDOs supports LPM-ON/OFF/Normal-ON mode during suspend state */
+ 
 static int max77686_ldo_set_suspend_mode(struct regulator_dev *rdev,
 				     unsigned int mode)
 {
@@ -172,13 +157,13 @@ static int max77686_ldo_set_suspend_mode(struct regulator_dev *rdev,
 	int ret, id = rdev_get_id(rdev);
 
 	switch (mode) {
-	case REGULATOR_MODE_STANDBY:			/* switch off */
+	case REGULATOR_MODE_STANDBY:			 
 		val = MAX77686_OFF_PWRREQ;
 		break;
-	case REGULATOR_MODE_IDLE:			/* ON in LP Mode */
+	case REGULATOR_MODE_IDLE:			 
 		val = MAX77686_LDO_LOWPOWER_PWRREQ;
 		break;
-	case REGULATOR_MODE_NORMAL:			/* ON in Normal Mode */
+	case REGULATOR_MODE_NORMAL:			 
 		val = max77686_map_normal_mode(max77686, id);
 		break;
 	default:

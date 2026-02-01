@@ -1,20 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * IBM Power Virtual Ethernet Device Driver
- *
- * Copyright (C) IBM Corporation, 2003, 2010
- *
- * Authors: Dave Larson <larson1@us.ibm.com>
- *	    Santiago Leon <santil@linux.vnet.ibm.com>
- *	    Brian King <brking@linux.vnet.ibm.com>
- *	    Robert Jennings <rcj@linux.vnet.ibm.com>
- *	    Anton Blanchard <anton@au.ibm.com>
- */
+ 
+ 
 
 #ifndef _IBMVETH_H
 #define _IBMVETH_H
 
-/* constants for H_MULTICAST_CTRL */
+ 
 #define IbmVethMcastReceptionModifyBit     0x80000UL
 #define IbmVethMcastReceptionEnableBit     0x20000UL
 #define IbmVethMcastFilterModifyBit        0x40000UL
@@ -36,7 +26,7 @@
 #define IBMVETH_ILLAN_IPV4_TCP_CSUM		0x0000000000000002UL
 #define IBMVETH_ILLAN_ACTIVE_TRUNK		0x0000000000000001UL
 
-/* hcall macros */
+ 
 #define h_register_logical_lan(ua, buflst, rxq, fltlst, mac) \
   plpar_hcall_norets(H_REGISTER_LOGICAL_LAN, ua, buflst, rxq, fltlst, mac)
 
@@ -46,9 +36,7 @@
 #define h_add_logical_lan_buffer(ua, buf) \
   plpar_hcall_norets(H_ADD_LOGICAL_LAN_BUFFER, ua, buf)
 
-/* FW allows us to send 6 descriptors but we only use one so mark
- * the other 5 as unused (0)
- */
+ 
 static inline long h_send_logical_lan(unsigned long unit_address,
 		unsigned long desc, unsigned long corellator_in,
 		unsigned long *corellator_out, unsigned long mss,
@@ -91,8 +79,8 @@ static inline long h_illan_attributes(unsigned long unit_address,
   plpar_hcall_norets(H_CHANGE_LOGICAL_LAN_MAC, ua, mac)
 
 #define IBMVETH_NUM_BUFF_POOLS 5
-#define IBMVETH_IO_ENTITLEMENT_DEFAULT 4243456 /* MTU of 1500 needs 4.2Mb */
-#define IBMVETH_BUFF_OH 22 /* Overhead: 14 ethernet header + 8 opaque handle */
+#define IBMVETH_IO_ENTITLEMENT_DEFAULT 4243456  
+#define IBMVETH_BUFF_OH 22  
 #define IBMVETH_MIN_MTU 68
 #define IBMVETH_MAX_POOL_COUNT 4096
 #define IBMVETH_BUFF_LIST_SIZE 4096
@@ -154,7 +142,7 @@ struct ibmveth_adapter {
     u64 fw_ipv6_csum_support;
     u64 fw_ipv4_csum_support;
     u64 fw_large_send_support;
-    /* adapter specific stats */
+     
     u64 replenish_task_cycles;
     u64 replenish_no_mem;
     u64 replenish_add_buff_failure;
@@ -165,18 +153,12 @@ struct ibmveth_adapter {
     u64 tx_send_failed;
     u64 tx_large_packets;
     u64 rx_large_packets;
-    /* Ethtool settings */
+     
 	u8 duplex;
 	u32 speed;
 };
 
-/*
- * We pass struct ibmveth_buf_desc_fields to the hypervisor in registers,
- * so we don't need to byteswap the two elements. However since we use
- * a union (ibmveth_buf_desc) to convert from the struct to a u64 we
- * do end up with endian specific ordering of the elements and that
- * needs correcting.
- */
+ 
 struct ibmveth_buf_desc_fields {
 #ifdef __BIG_ENDIAN
 	u32 flags_len;
@@ -209,8 +191,8 @@ struct ibmveth_rx_q_entry {
 #define IBMVETH_RXQ_OFF_MASK		0x0000FFFF
 
 	__be32 length;
-	/* correlator is only used by the OS, no need to byte swap */
+	 
 	u64 correlator;
 };
 
-#endif /* _IBMVETH_H */
+#endif  

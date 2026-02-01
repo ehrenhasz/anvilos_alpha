@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018 HiSilicon Technologies Co., Ltd.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/mfd/syscon.h>

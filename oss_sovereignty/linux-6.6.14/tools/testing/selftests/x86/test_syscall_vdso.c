@@ -1,13 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * 32-bit syscall ABI conformance test.
- *
- * Copyright (c) 2015 Denys Vlasenko
- */
-/*
- * Can be built statically:
- * gcc -Os -Wall -static -m32 test_syscall_vdso.c thunks_32.S
- */
+
+ 
+ 
 #undef _GNU_SOURCE
 #define _GNU_SOURCE 1
 #undef __USE_GNU
@@ -134,12 +127,9 @@ int check_regs64(void)
 
 	do {
 		if (*r64 == expected++)
-			continue; /* register did not change */
+			continue;  
 		if (syscall_addr != (long)&int80) {
-			/*
-			 * Non-INT80 syscall entrypoints are allowed to clobber R8+ regs:
-			 * either clear them to 0, or for R11, load EFLAGS.
-			 */
+			 
 			if (*r64 == 0)
 				continue;
 			if (num == 11) {
@@ -147,17 +137,7 @@ int check_regs64(void)
 				continue;
 			}
 		} else {
-			/*
-			 * INT80 syscall entrypoint can be used by
-			 * 64-bit programs too, unlike SYSCALL/SYSENTER.
-			 * Therefore it must preserve R12+
-			 * (they are callee-saved registers in 64-bit C ABI).
-			 *
-			 * Starting in Linux 4.17 (and any kernel that
-			 * backports the change), R8..11 are preserved.
-			 * Historically (and probably unintentionally), they
-			 * were clobbered or zeroed.
-			 */
+			 
 		}
 		printf("[FAIL]\tR%d has changed:%016llx\n", num, *r64);
 		err++;
@@ -195,34 +175,34 @@ void prep_args()
 	sigaddset(&sigmask, SIGUSR2);
 	sigaddset(&sigmask, SIGRTMAX);
 	sigmask_desc.sp = &sigmask;
-	sigmask_desc.sz = 8; /* bytes */
+	sigmask_desc.sz = 8;  
 }
 
 static void print_flags(const char *name, unsigned long r)
 {
 	static const char *bitarray[] = {
-	"\n" ,"c\n" ,/* Carry Flag */
-	"0 " ,"1 "  ,/* Bit 1 - always on */
-	""   ,"p "  ,/* Parity Flag */
+	"\n" ,"c\n" , 
+	"0 " ,"1 "  , 
+	""   ,"p "  , 
 	"0 " ,"3? " ,
-	""   ,"a "  ,/* Auxiliary carry Flag */
+	""   ,"a "  , 
 	"0 " ,"5? " ,
-	""   ,"z "  ,/* Zero Flag */
-	""   ,"s "  ,/* Sign Flag */
-	""   ,"t "  ,/* Trap Flag */
-	""   ,"i "  ,/* Interrupt Flag */
-	""   ,"d "  ,/* Direction Flag */
-	""   ,"o "  ,/* Overflow Flag */
-	"0 " ,"1 "  ,/* I/O Privilege Level (2 bits) */
-	"0"  ,"1"   ,/* I/O Privilege Level (2 bits) */
-	""   ,"n "  ,/* Nested Task */
+	""   ,"z "  , 
+	""   ,"s "  , 
+	""   ,"t "  , 
+	""   ,"i "  , 
+	""   ,"d "  , 
+	""   ,"o "  , 
+	"0 " ,"1 "  , 
+	"0"  ,"1"   , 
+	""   ,"n "  , 
 	"0 " ,"15? ",
-	""   ,"r "  ,/* Resume Flag */
-	""   ,"v "  ,/* Virtual Mode */
-	""   ,"ac " ,/* Alignment Check/Access Control */
-	""   ,"vif ",/* Virtual Interrupt Flag */
-	""   ,"vip ",/* Virtual Interrupt Pending */
-	""   ,"id " ,/* CPUID detection */
+	""   ,"r "  , 
+	""   ,"v "  , 
+	""   ,"ac " , 
+	""   ,"vif ", 
+	""   ,"vip ", 
+	""   ,"id " , 
 	NULL
 	};
 	const char **bitstr;
@@ -249,41 +229,41 @@ int run_syscall(void)
 
 	if (kernel_is_64bit)
 		call64_from_32(poison_regs64);
-	/*print_regs64();*/
+	 
 
 	asm("\n"
-	/* Try 6-arg syscall: pselect. It should return quickly */
+	 
 	"	push	%%ebp\n"
-	"	mov	$308, %%eax\n"     /* PSELECT */
-	"	mov	nfds, %%ebx\n"     /* ebx  arg1 */
-	"	mov	$rfds, %%ecx\n"    /* ecx  arg2 */
-	"	mov	$wfds, %%edx\n"    /* edx  arg3 */
-	"	mov	$efds, %%esi\n"    /* esi  arg4 */
-	"	mov	$timeout, %%edi\n" /* edi  arg5 */
-	"	mov	$sigmask_desc, %%ebp\n" /* %ebp arg6 */
-	"	push	$0x200ed7\n"      /* set almost all flags */
-	"	popf\n"		/* except TF, IOPL, NT, RF, VM, AC, VIF, VIP */
+	"	mov	$308, %%eax\n"      
+	"	mov	nfds, %%ebx\n"      
+	"	mov	$rfds, %%ecx\n"     
+	"	mov	$wfds, %%edx\n"     
+	"	mov	$efds, %%esi\n"     
+	"	mov	$timeout, %%edi\n"  
+	"	mov	$sigmask_desc, %%ebp\n"  
+	"	push	$0x200ed7\n"       
+	"	popf\n"		 
 	"	call	*syscall_addr\n"
-	/* Check that registers are not clobbered */
+	 
 	"	pushf\n"
 	"	pop	%%eax\n"
 	"	cld\n"
-	"	cmp	nfds, %%ebx\n"     /* ebx  arg1 */
+	"	cmp	nfds, %%ebx\n"      
 	"	mov	$1, %%ebx\n"
 	"	jne	1f\n"
-	"	cmp	$rfds, %%ecx\n"    /* ecx  arg2 */
+	"	cmp	$rfds, %%ecx\n"     
 	"	mov	$2, %%ebx\n"
 	"	jne	1f\n"
-	"	cmp	$wfds, %%edx\n"    /* edx  arg3 */
+	"	cmp	$wfds, %%edx\n"     
 	"	mov	$3, %%ebx\n"
 	"	jne	1f\n"
-	"	cmp	$efds, %%esi\n"    /* esi  arg4 */
+	"	cmp	$efds, %%esi\n"     
 	"	mov	$4, %%ebx\n"
 	"	jne	1f\n"
-	"	cmp	$timeout, %%edi\n" /* edi  arg5 */
+	"	cmp	$timeout, %%edi\n"  
 	"	mov	$5, %%ebx\n"
 	"	jne	1f\n"
-	"	cmpl	$sigmask_desc, %%ebp\n" /* %ebp arg6 */
+	"	cmpl	$sigmask_desc, %%ebp\n"  
 	"	mov	$6, %%ebx\n"
 	"	jne	1f\n"
 	"	mov	$0, %%ebx\n"
@@ -297,14 +277,10 @@ int run_syscall(void)
 	if (kernel_is_64bit) {
 		memset(&regs64, 0x77, sizeof(regs64));
 		call64_from_32(get_regs64);
-		/*print_regs64();*/
+		 
 	}
 
-	/*
-	 * On paravirt kernels, flags are not preserved across syscalls.
-	 * Thus, we do not consider it a bug if some are changed.
-	 * We just show ones which do.
-	 */
+	 
 	if ((0x200ed7 ^ flags) != 0) {
 		print_flags("[WARN]\tFlags before", 0x200ed7);
 		print_flags("[WARN]\tFlags  after", flags);
@@ -346,13 +322,13 @@ void ptrace_me()
 	if (pid < 0)
 		exit(1);
 	if (pid == 0) {
-		/* child */
+		 
 		if (ptrace(PTRACE_TRACEME, 0L, 0L, 0L) != 0)
 			exit(0);
 		raise(SIGSTOP);
 		return;
 	}
-	/* parent */
+	 
 	printf("[RUN]\tRunning tests under ptrace\n");
 	while (1) {
 		int status;
@@ -361,15 +337,10 @@ void ptrace_me()
 			exit(WEXITSTATUS(status));
 		if (WIFSIGNALED(status))
 			exit(WTERMSIG(status));
-		if (pid <= 0 || !WIFSTOPPED(status)) /* paranoia */
+		if (pid <= 0 || !WIFSTOPPED(status))  
 			exit(255);
-		/*
-		 * Note: we do not inject sig = WSTOPSIG(status).
-		 * We probably should, but careful: do not inject SIGTRAP
-		 * generated by syscall entry/exit stops.
-		 * That kills the child.
-		 */
-		ptrace(PTRACE_SYSCALL, pid, 0L, 0L /*sig*/);
+		 
+		ptrace(PTRACE_SYSCALL, pid, 0L, 0L  );
 	}
 }
 
@@ -386,9 +357,7 @@ int main(int argc, char **argv, char **envp)
 	if (!kernel_is_64bit)
 		printf("[NOTE]\tNot a 64-bit kernel, won't test R8..R15 leaks\n");
 
-	/* This only works for non-static builds:
-	 * syscall_addr = dlsym(dlopen("linux-gate.so.1", RTLD_NOW), "__kernel_vsyscall");
-	 */
+	 
 	syscall_addr = get_syscall(envp);
 
 	exitcode += run_syscall_twice();

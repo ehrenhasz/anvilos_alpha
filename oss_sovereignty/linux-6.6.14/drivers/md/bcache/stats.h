@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _BCACHE_STATS_H_
 #define _BCACHE_STATS_H_
 
@@ -59,4 +59,4 @@ void bch_mark_sectors_bypassed(struct cache_set *c,
 			       struct cached_dev *dc,
 			       int sectors);
 
-#endif /* _BCACHE_STATS_H_ */
+#endif  

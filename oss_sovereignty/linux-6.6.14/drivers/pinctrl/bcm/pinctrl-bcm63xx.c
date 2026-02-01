@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for BCM63xx GPIO unit (pinctrl + GPIO)
- *
- * Copyright (C) 2021 Álvaro Fernández Rojas <noltari@gmail.com>
- * Copyright (C) 2016 Jonas Gorski <jonas.gorski@gmail.com>
- */
+
+ 
 
 #include <linux/gpio/regmap.h>
 #include <linux/mfd/syscon.h>
@@ -39,7 +34,7 @@ static const struct of_device_id bcm63xx_gpio_of_match[] = {
 	{ .compatible = "brcm,bcm6362-gpio", },
 	{ .compatible = "brcm,bcm6368-gpio", },
 	{ .compatible = "brcm,bcm63268-gpio", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int bcm63xx_gpio_probe(struct device *dev, struct device_node *node,

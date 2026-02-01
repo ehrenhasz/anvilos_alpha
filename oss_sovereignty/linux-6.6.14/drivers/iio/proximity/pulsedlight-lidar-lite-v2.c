@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * pulsedlight-lidar-lite-v2.c - Support for PulsedLight LIDAR sensor
- *
- * Copyright (C) 2015, 2017-2018
- * Author: Matt Ranostay <matt.ranostay@konsulko.com>
- *
- * TODO: interrupt mode, and signal strength reporting
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -44,7 +37,7 @@ struct lidar_data {
 	int (*xfer)(struct lidar_data *data, u8 reg, u8 *val, int len);
 	int i2c_enabled;
 
-	/* Ensure timestamp is naturally aligned */
+	 
 	struct {
 		u16 chan;
 		s64 timestamp __aligned(8);
@@ -92,10 +85,7 @@ static int lidar_smbus_xfer(struct lidar_data *data, u8 reg, u8 *val, int len)
 	struct i2c_client *client = data->client;
 	int ret;
 
-	/*
-	 * Device needs a STOP condition between address write, and data read
-	 * so in turn i2c_smbus_read_byte_data cannot be used
-	 */
+	 
 
 	while (len--) {
 		ret = i2c_smbus_write_byte(client, reg++);
@@ -162,7 +152,7 @@ static int lidar_get_measurement(struct lidar_data *data, u16 *reg)
 	if (ret < 0)
 		return ret;
 
-	/* start sample */
+	 
 	ret = lidar_write_control(data, LIDAR_REG_CONTROL_ACQUIRE);
 	if (ret < 0) {
 		dev_err(&client->dev, "cannot send start measurement command");
@@ -177,14 +167,14 @@ static int lidar_get_measurement(struct lidar_data *data, u16 *reg)
 		if (ret < 0)
 			break;
 
-		/* return -EINVAL since laser is likely pointed out of range */
+		 
 		if (ret & LIDAR_REG_STATUS_INVALID) {
 			*reg = 0;
 			ret = -EINVAL;
 			break;
 		}
 
-		/* sample ready to read */
+		 
 		if (!(ret & LIDAR_REG_STATUS_READY)) {
 			ret = lidar_read_measurement(data, reg);
 			break;
@@ -349,7 +339,7 @@ static int lidar_pm_runtime_resume(struct device *dev)
 	struct lidar_data *data = iio_priv(indio_dev);
 	int ret = lidar_write_power(data, 0);
 
-	/* regulator and FPGA needs settling time */
+	 
 	usleep_range(15000, 20000);
 
 	return ret;

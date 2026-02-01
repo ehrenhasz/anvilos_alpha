@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2014 IBM Corp.
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/slab.h>
@@ -16,19 +14,7 @@
 
 #include "cxl.h"
 
-/*
- * Since we want to track memory mappings to be able to force-unmap
- * when the AFU is no longer reachable, we need an inode. For devices
- * opened through the cxl user API, this is not a problem, but a
- * userland process can also get a cxl fd through the cxl_get_fd()
- * API, which is used by the cxlflash driver.
- *
- * Therefore we implement our own simple pseudo-filesystem and inode
- * allocator. We don't use the anonymous inode, as we need the
- * meta-data associated with it (address_space) and it is shared by
- * other drivers/processes, so it could lead to cxl unmapping VMAs
- * from random processes.
- */
+ 
 
 #define CXL_PSEUDO_FS_MAGIC	0x1697697f
 
@@ -62,7 +48,7 @@ static struct file *cxl_getfile(const char *name,
 	struct inode *inode;
 	int rc;
 
-	/* strongly inspired by anon_inode_getfile() */
+	 
 
 	if (fops->owner && !try_module_get(fops->owner))
 		return ERR_PTR(-ENOENT);
@@ -114,7 +100,7 @@ struct cxl_context *cxl_dev_context_init(struct pci_dev *dev)
 
 	ctx->kernelapi = true;
 
-	/* Make it a slave context.  We can promote it later? */
+	 
 	rc = cxl_context_init(ctx, afu, false);
 	if (rc)
 		goto err_ctx;
@@ -192,9 +178,7 @@ int cxl_allocate_afu_irqs(struct cxl_context *ctx, int num)
 		return res;
 
 	if (!cpu_has_feature(CPU_FTR_HVMODE)) {
-		/* In a guest, the PSL interrupt is not multiplexed. It was
-		 * allocated above, and we need to set its handler
-		 */
+		 
 		hwirq = cxl_find_afu_irq(ctx, 0);
 		if (hwirq)
 			cxl_map_irq(ctx->afu->adapter, hwirq, cxl_ops->psl_interrupt, ctx, "psl");
@@ -233,9 +217,7 @@ int cxl_map_afu_irq(struct cxl_context *ctx, int num,
 {
 	irq_hw_number_t hwirq;
 
-	/*
-	 * Find interrupt we are to register.
-	 */
+	 
 	hwirq = cxl_find_afu_irq(ctx, num);
 	if (!hwirq)
 		return -ENOENT;
@@ -259,10 +241,7 @@ void cxl_unmap_afu_irq(struct cxl_context *ctx, int num, void *cookie)
 }
 EXPORT_SYMBOL_GPL(cxl_unmap_afu_irq);
 
-/*
- * Start a context
- * Code here similar to afu_ioctl_start_work().
- */
+ 
 int cxl_start_context(struct cxl_context *ctx, u64 wed,
 		      struct task_struct *task)
 {
@@ -273,12 +252,9 @@ int cxl_start_context(struct cxl_context *ctx, u64 wed,
 
 	mutex_lock(&ctx->status_mutex);
 	if (ctx->status == STARTED)
-		goto out; /* already started */
+		goto out;  
 
-	/*
-	 * Increment the mapped context count for adapter. This also checks
-	 * if adapter_context_lock is taken.
-	 */
+	 
 	rc = cxl_adapter_context_get(ctx->afu->adapter);
 	if (rc)
 		goto out;
@@ -287,27 +263,24 @@ int cxl_start_context(struct cxl_context *ctx, u64 wed,
 		ctx->pid = get_task_pid(task, PIDTYPE_PID);
 		kernel = false;
 
-		/* acquire a reference to the task's mm */
+		 
 		ctx->mm = get_task_mm(current);
 
-		/* ensure this mm_struct can't be freed */
+		 
 		cxl_context_mm_count_get(ctx);
 
 		if (ctx->mm) {
-			/* decrement the use count from above */
+			 
 			mmput(ctx->mm);
-			/* make TLBIs for this context global */
+			 
 			mm_context_add_copro(ctx->mm);
 		}
 	}
 
-	/*
-	 * Increment driver use count. Enables global TLBIs for hash
-	 * and callbacks to handle the segment table
-	 */
+	 
 	cxl_ctx_get();
 
-	/* See the comment in afu_ioctl_start_work() */
+	 
 	smp_mb();
 
 	if ((rc = cxl_ops->attach_process(ctx, kernel, wed, 0))) {
@@ -336,7 +309,7 @@ int cxl_process_element(struct cxl_context *ctx)
 }
 EXPORT_SYMBOL_GPL(cxl_process_element);
 
-/* Stop a context.  Returns 0 on success, otherwise -Errno */
+ 
 int cxl_stop_context(struct cxl_context *ctx)
 {
 	return __detach_context(ctx);
@@ -349,7 +322,7 @@ void cxl_set_master(struct cxl_context *ctx)
 }
 EXPORT_SYMBOL_GPL(cxl_set_master);
 
-/* wrappers around afu_* file ops which are EXPORTED */
+ 
 int cxl_fd_open(struct inode *inode, struct file *file)
 {
 	return afu_open(inode, file);
@@ -384,7 +357,7 @@ EXPORT_SYMBOL_GPL(cxl_fd_read);
 
 #define PATCH_FOPS(NAME) if (!fops->NAME) fops->NAME = afu_fops.NAME
 
-/* Get a struct file and fd for a context and attach the ops */
+ 
 struct file *cxl_get_fd(struct cxl_context *ctx, struct file_operations *fops,
 			int *fd)
 {
@@ -392,21 +365,19 @@ struct file *cxl_get_fd(struct cxl_context *ctx, struct file_operations *fops,
 	int rc, flags, fdtmp;
 	char *name = NULL;
 
-	/* only allow one per context */
+	 
 	if (ctx->mapping)
 		return ERR_PTR(-EEXIST);
 
 	flags = O_RDWR | O_CLOEXEC;
 
-	/* This code is similar to anon_inode_getfd() */
+	 
 	rc = get_unused_fd_flags(flags);
 	if (rc < 0)
 		return ERR_PTR(rc);
 	fdtmp = rc;
 
-	/*
-	 * Patch the file ops.  Needs to be careful that this is rentrant safe.
-	 */
+	 
 	if (fops) {
 		PATCH_FOPS(open);
 		PATCH_FOPS(poll);
@@ -415,7 +386,7 @@ struct file *cxl_get_fd(struct cxl_context *ctx, struct file_operations *fops,
 		PATCH_FOPS(unlocked_ioctl);
 		PATCH_FOPS(compat_ioctl);
 		PATCH_FOPS(mmap);
-	} else /* use default ops */
+	} else  
 		fops = (struct file_operations *)&afu_fops;
 
 	name = kasprintf(GFP_KERNEL, "cxl:%d", ctx->pe);
@@ -462,7 +433,7 @@ int cxl_start_work(struct cxl_context *ctx,
 {
 	int rc;
 
-	/* code taken from afu_ioctl_start_work */
+	 
 	if (!(work->flags & CXL_START_WORK_NUM_IRQS))
 		work->num_interrupts = ctx->afu->pp_irqs;
 	else if ((work->num_interrupts < ctx->afu->pp_irqs) ||

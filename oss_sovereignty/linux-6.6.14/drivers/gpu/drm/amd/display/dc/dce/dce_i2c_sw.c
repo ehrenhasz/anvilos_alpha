@@ -1,27 +1,4 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dce_i2c.h"
 #include "dce_i2c_sw.h"
@@ -101,7 +78,7 @@ static bool write_byte_sw(
 	int32_t shift = 7;
 	bool ack;
 
-	/* bits are transmitted serially, starting from MSB */
+	 
 
 	do {
 		udelay(clock_delay_div_4);
@@ -120,10 +97,7 @@ static bool write_byte_sw(
 		--shift;
 	} while (shift >= 0);
 
-	/* The display sends ACK by preventing the SDA from going high
-	 * after the SCL pulse we use to send our last data bit.
-	 * If the SDA goes high after that bit, it's a NACK
-	 */
+	 
 
 	udelay(clock_delay_div_4);
 
@@ -136,7 +110,7 @@ static bool write_byte_sw(
 	if (!wait_for_scl_high_sw(ctx, ddc_handle, clock_delay_div_4))
 		return false;
 
-	/* read ACK bit */
+	 
 
 	ack = !read_bit_from_ddc(ddc_handle, SDA);
 
@@ -160,9 +134,7 @@ static bool read_byte_sw(
 
 	uint8_t data = 0;
 
-	/* The data bits are read from MSB to LSB;
-	 * bit is read while SCL is high
-	 */
+	 
 
 	do {
 		write_bit_to_ddc(ddc_handle, SCL, true);
@@ -180,15 +152,13 @@ static bool read_byte_sw(
 		--shift;
 	} while (shift >= 0);
 
-	/* read only whole byte */
+	 
 
 	*byte = data;
 
 	udelay(clock_delay_div_4);
 
-	/* send the acknowledge bit:
-	 * SDA low means ACK, SDA high means NACK
-	 */
+	 
 
 	write_bit_to_ddc(ddc_handle, SDA, !more);
 
@@ -216,9 +186,7 @@ static bool stop_sync_sw(
 {
 	uint32_t retry = 0;
 
-	/* The I2C communications stop signal is:
-	 * the SDA going high from low, while the SCL is high.
-	 */
+	 
 
 	write_bit_to_ddc(ddc_handle, SCL, false);
 
@@ -300,9 +268,7 @@ static bool start_sync_sw(
 {
 	uint32_t retry = 0;
 
-	/* The I2C communications start signal is:
-	 * the SDA going low from high, while the SCL is high.
-	 */
+	 
 
 	write_bit_to_ddc(ddc_handle, SCL, true);
 
@@ -383,7 +349,7 @@ bool dce_i2c_engine_acquire_sw(
 		if (result)
 			break;
 
-		/* i2c_engine is busy by VBios, lets wait and retry */
+		 
 
 		udelay(10);
 
@@ -399,11 +365,11 @@ static void dce_i2c_sw_engine_submit_channel_request(struct dce_i2c_sw *engine,
 	struct ddc *ddc = engine->ddc;
 	uint16_t clock_delay_div_4 = engine->clock_delay >> 2;
 
-	/* send sync (start / repeated start) */
+	 
 
 	bool result = start_sync_sw(engine->ctx, ddc, clock_delay_div_4);
 
-	/* process payload */
+	 
 
 	if (result) {
 		switch (req->action) {
@@ -423,7 +389,7 @@ static void dce_i2c_sw_engine_submit_channel_request(struct dce_i2c_sw *engine,
 		}
 	}
 
-	/* send stop if not 'mot' or operation failed */
+	 
 
 	if (!result ||
 		(req->action == DCE_I2C_TRANSACTION_ACTION_I2C_WRITE) ||

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013 Samsung Electronics Co., Ltd.
- * Author: Tarek Dakhran <t.dakhran@samsung.com>
- *
- * Common Clock Framework support for Exynos5410 SoC.
-*/
+
+ 
 
 #include <dt-bindings/clock/exynos5410.h>
 
@@ -56,17 +51,17 @@
 #define SRC_KFC			0x28200
 #define DIV_KFC0		0x28500
 
-/* NOTE: Must be equal to the last clock ID increased by one */
+ 
 #define CLKS_NR			512
 
-/* list of PLLs */
+ 
 enum exynos5410_plls {
 	apll, cpll, epll, mpll,
 	bpll, kpll,
-	nr_plls                 /* number of PLLs */
+	nr_plls                  
 };
 
-/* list of all parent clocks */
+ 
 PNAME(apll_p)		= { "fin_pll", "fout_apll", };
 PNAME(bpll_p)		= { "fin_pll", "fout_bpll", };
 PNAME(cpll_p)		= { "fin_pll", "fout_cpll" };
@@ -266,7 +261,7 @@ static const struct samsung_cmu_info cmu __initconst = {
 	.nr_clk_ids	= CLKS_NR,
 };
 
-/* register exynos5410 clocks */
+ 
 static void __init exynos5410_clk_init(struct device_node *np)
 {
 	struct clk *xxti = of_clk_get(np, 0);

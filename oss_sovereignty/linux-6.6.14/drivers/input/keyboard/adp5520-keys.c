@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Keypad driver for Analog Devices ADP5520 MFD PMICs
- *
- * Copyright 2009 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -46,7 +42,7 @@ static int adp5520_keys_notifier(struct notifier_block *nb,
 		adp5520_read(dev->master, ADP5520_KP_INT_STAT_2, &reg_val_hi);
 
 		keymask = (reg_val_hi << 8) | reg_val_lo;
-		/* Read twice to clear */
+		 
 		adp5520_read(dev->master, ADP5520_KP_INT_STAT_1, &reg_val_lo);
 		adp5520_read(dev->master, ADP5520_KP_INT_STAT_2, &reg_val_hi);
 		keymask |= (reg_val_hi << 8) | reg_val_lo;
@@ -58,7 +54,7 @@ static int adp5520_keys_notifier(struct notifier_block *nb,
 		adp5520_read(dev->master, ADP5520_KR_INT_STAT_2, &reg_val_hi);
 
 		keymask = (reg_val_hi << 8) | reg_val_lo;
-		/* Read twice to clear */
+		 
 		adp5520_read(dev->master, ADP5520_KR_INT_STAT_1, &reg_val_lo);
 		adp5520_read(dev->master, ADP5520_KR_INT_STAT_2, &reg_val_hi);
 		keymask |= (reg_val_hi << 8) | reg_val_lo;
@@ -118,7 +114,7 @@ static int adp5520_keys_probe(struct platform_device *pdev)
 	memcpy(dev->keycode, pdata->keymap,
 		pdata->keymapsize * input->keycodesize);
 
-	/* setup input device */
+	 
 	__set_bit(EV_KEY, input->evbit);
 
 	if (pdata->repeat)

@@ -1,33 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * drivers/mmc/host/sdhci-of-hlwd.c
- *
- * Nintendo Wii Secure Digital Host Controller Interface.
- * Copyright (C) 2009 The GameCube Linux Team
- * Copyright (C) 2009 Albert Herranz
- *
- * Based on sdhci-of-esdhc.c
- *
- * Copyright (c) 2007 Freescale Semiconductor, Inc.
- * Copyright (c) 2009 MontaVista Software, Inc.
- *
- * Authors: Xiaobo Xie <X.Xie@freescale.com>
- *	    Anton Vorontsov <avorontsov@ru.mvista.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/module.h>
 #include <linux/mmc/host.h>
 #include "sdhci-pltfm.h"
 
-/*
- * Ops and quirks for the Nintendo Wii SDHCI controllers.
- */
+ 
 
-/*
- * We need a small delay after each write, or things go horribly wrong.
- */
-#define SDHCI_HLWD_WRITE_DELAY	5 /* usecs */
+ 
+#define SDHCI_HLWD_WRITE_DELAY	5  
 
 static void sdhci_hlwd_writel(struct sdhci_host *host, u32 val, int reg)
 {

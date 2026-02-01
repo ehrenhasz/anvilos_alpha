@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2017-2019 Mellanox Technologies. All rights reserved */
+
+ 
 
 #define pr_fmt(fmt) "mlxfw_mfa2: " fmt
 
@@ -14,66 +14,7 @@
 #include "mlxfw_mfa2_format.h"
 #include "mlxfw_mfa2_tlv_multi.h"
 
-/*               MFA2 FILE
- *  +----------------------------------+
- *  |        MFA2 finger print         |
- *  +----------------------------------+
- *  |   package descriptor multi_tlv   |
- *  | +------------------------------+ |     +-----------------+
- *  | |    package descriptor tlv    +-----> |num_devices=n    |
- *  | +------------------------------+ |     |num_components=m |
- *  +----------------------------------+     |CB offset        |
- *  |    device descriptor multi_tlv   |     |...              |
- *  | +------------------------------+ |     |                 |
- *  | |           PSID tlv           | |     +-----------------+
- *  | +------------------------------+ |
- *  | |     component index tlv      | |
- *  | +------------------------------+ |
- *  +----------------------------------+
- *  |  component descriptor multi_tlv  |
- *  | +------------------------------+ |     +-----------------+
- *  | |  component descriptor tlv    +-----> |Among others:    |
- *  | +------------------------------+ |     |CB offset=o      |
- *  +----------------------------------+     |comp index=i     |
- *  |                                  |     |...              |
- *  |                                  |     |                 |
- *  |                                  |     +-----------------+
- *  |        COMPONENT BLOCK (CB)      |
- *  |                                  |
- *  |                                  |
- *  |                                  |
- *  +----------------------------------+
- *
- * On the top level, an MFA2 file contains:
- *  - Fingerprint
- *  - Several multi_tlvs (TLVs of type MLXFW_MFA2_TLV_MULTI, as defined in
- *    mlxfw_mfa2_format.h)
- *  - Compresses content block
- *
- * The first multi_tlv
- * -------------------
- * The first multi TLV is treated as package descriptor, and expected to have a
- * first TLV child of type MLXFW_MFA2_TLV_PACKAGE_DESCRIPTOR which contains all
- * the global information needed to parse the file. Among others, it contains
- * the number of device descriptors and component descriptor following this
- * multi TLV.
- *
- * The device descriptor multi_tlv
- * -------------------------------
- * The multi TLVs following the package descriptor are treated as device
- * descriptor, and are expected to have the following children:
- *  - PSID TLV child of type MLXFW_MFA2_TLV_PSID containing that device PSID.
- *  - Component index of type MLXFW_MFA2_TLV_COMPONENT_PTR that contains that
- *    device component index.
- *
- * The component descriptor multi_tlv
- * ----------------------------------
- * The multi TLVs following the device descriptor multi TLVs are treated as
- * component descriptor, and are expected to have a first child of type
- * MLXFW_MFA2_TLV_COMPONENT_DESCRIPTOR that contains mostly the component index,
- * needed for the flash process and the offset to the binary within the
- * component block.
- */
+ 
 
 static const u8 mlxfw_mfa2_fingerprint[] = "MLNX.MFA2.XZ.00!";
 static const int mlxfw_mfa2_fingerprint_len =
@@ -98,7 +39,7 @@ mlxfw_mfa2_tlv_multi_validate(const struct mlxfw_mfa2_file *mfa2_file,
 	const struct mlxfw_mfa2_tlv *tlv;
 	u16 idx;
 
-	/* Check that all children are valid */
+	 
 	mlxfw_mfa2_tlv_multi_foreach(mfa2_file, tlv, idx, multi) {
 		if (!tlv) {
 			pr_err("Multi has invalid child");
@@ -132,7 +73,7 @@ mlxfw_mfa2_file_dev_validate(const struct mlxfw_mfa2_file *mfa2_file,
 	if (!mlxfw_mfa2_tlv_multi_validate(mfa2_file, multi))
 		return false;
 
-	/* Validate the device has PSID tlv */
+	 
 	tlv = mlxfw_mfa2_tlv_multi_child_find(mfa2_file, multi,
 					      MLXFW_MFA2_TLV_PSID, 0);
 	if (!tlv) {
@@ -149,7 +90,7 @@ mlxfw_mfa2_file_dev_validate(const struct mlxfw_mfa2_file *mfa2_file,
 	print_hex_dump_debug("  -- Device PSID ", DUMP_PREFIX_NONE, 16, 16,
 			     psid->psid, be16_to_cpu(tlv->len), true);
 
-	/* Validate the device has COMPONENT_PTR */
+	 
 	err = mlxfw_mfa2_tlv_multi_child_count(mfa2_file, multi,
 					       MLXFW_MFA2_TLV_COMPONENT_PTR,
 					       &cptr_count);
@@ -201,7 +142,7 @@ mlxfw_mfa2_file_comp_validate(const struct mlxfw_mfa2_file *mfa2_file,
 	if (!mlxfw_mfa2_tlv_multi_validate(mfa2_file, multi))
 		return false;
 
-	/* Check that component have COMPONENT_DESCRIPTOR as first child */
+	 
 	tlv = mlxfw_mfa2_tlv_multi_child(mfa2_file, multi);
 	if (!tlv) {
 		pr_err("Component descriptor %d multi TLV error\n", comp_idx);
@@ -229,7 +170,7 @@ static bool mlxfw_mfa2_file_validate(const struct mlxfw_mfa2_file *mfa2_file)
 
 	pr_debug("Validating file\n");
 
-	/* check that all the devices exist */
+	 
 	mlxfw_mfa2_tlv_foreach(mfa2_file, tlv, idx, mfa2_file->first_dev,
 			       mfa2_file->dev_count) {
 		if (!tlv) {
@@ -237,12 +178,12 @@ static bool mlxfw_mfa2_file_validate(const struct mlxfw_mfa2_file *mfa2_file)
 			return false;
 		}
 
-		/* Check each device */
+		 
 		if (!mlxfw_mfa2_file_dev_validate(mfa2_file, tlv, idx))
 			return false;
 	}
 
-	/* check that all the components exist */
+	 
 	mlxfw_mfa2_tlv_foreach(mfa2_file, tlv, idx, mfa2_file->first_component,
 			       mfa2_file->component_count) {
 		if (!tlv) {
@@ -250,7 +191,7 @@ static bool mlxfw_mfa2_file_validate(const struct mlxfw_mfa2_file *mfa2_file)
 			return false;
 		}
 
-		/* Check each component */
+		 
 		if (!mlxfw_mfa2_file_comp_validate(mfa2_file, tlv, idx))
 			return false;
 	}
@@ -336,7 +277,7 @@ mlxfw_mfa2_tlv_dev_get(const struct mlxfw_mfa2_file *mfa2_file,
 	const struct mlxfw_mfa2_tlv *tlv;
 	u32 idx;
 
-	/* for each device tlv */
+	 
 	mlxfw_mfa2_tlv_foreach(mfa2_file, dev_tlv, idx, mfa2_file->first_dev,
 			       mfa2_file->dev_count) {
 		if (!dev_tlv)
@@ -346,7 +287,7 @@ mlxfw_mfa2_tlv_dev_get(const struct mlxfw_mfa2_file *mfa2_file,
 		if (!dev_multi)
 			return NULL;
 
-		/* find psid child and compare */
+		 
 		tlv = mlxfw_mfa2_tlv_multi_child_find(mfa2_file, dev_multi,
 						      MLXFW_MFA2_TLV_PSID, 0);
 		if (!tlv)
@@ -440,7 +381,7 @@ static int mlxfw_mfa2_file_cb_offset_xz(const struct mlxfw_mfa2_file *mfa2_file,
 	dec_buf.in_pos = 0;
 	dec_buf.out = buf;
 
-	/* decode up to the offset */
+	 
 	do {
 		dec_buf.out_pos = 0;
 		dec_buf.out_size = min_t(size_t, size, off - curr_off);
@@ -458,7 +399,7 @@ static int mlxfw_mfa2_file_cb_offset_xz(const struct mlxfw_mfa2_file *mfa2_file,
 		curr_off += dec_buf.out_pos;
 	} while (curr_off != off);
 
-	/* decode the needed section */
+	 
 	dec_buf.out_pos = 0;
 	dec_buf.out_size = size;
 	err = mlxfw_mfa2_xz_dec_run(xz_dec, &dec_buf, &finished);

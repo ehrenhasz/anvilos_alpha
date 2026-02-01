@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  bytcht-da7213.c - ASoc Machine driver for Intel Baytrail and
- *             Cherrytrail-based platforms, with Dialog DA7213 codec
- *
- *  Copyright (C) 2017 Intel Corporation
- *  Author: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
- *
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/acpi.h>
@@ -43,11 +33,11 @@ static const struct snd_soc_dapm_route audio_map[] = {
 	{"AUXL", NULL, "Aux In"},
 	{"AUXR", NULL, "Aux In"},
 
-	/* Assume Mic1 is linked to Headset and Mic2 to on-board mic */
+	 
 	{"MIC1", NULL, "Headset Mic"},
 	{"MIC2", NULL, "Mic"},
 
-	/* SOC-codec link */
+	 
 	{"ssp2 Tx", NULL, "codec_out0"},
 	{"ssp2 Tx", NULL, "codec_out1"},
 	{"codec_in0", NULL, "ssp2 Rx"},
@@ -66,18 +56,14 @@ static int codec_fixup(struct snd_soc_pcm_runtime *rtd,
 	struct snd_interval *channels = hw_param_interval(params,
 						SNDRV_PCM_HW_PARAM_CHANNELS);
 
-	/* The DSP will convert the FE rate to 48k, stereo, 24bits */
+	 
 	rate->min = rate->max = 48000;
 	channels->min = channels->max = 2;
 
-	/* set SSP2 to 24-bit */
+	 
 	params_set_format(params, SNDRV_PCM_FORMAT_S24_LE);
 
-	/*
-	 * Default mode for SSP configuration is TDM 4 slot, override config
-	 * with explicit setting to I2S 2ch 24-bit. The word length is set with
-	 * dai_set_tdm_slot() since there is no other API exposed
-	 */
+	 
 	ret = snd_soc_dai_set_fmt(asoc_rtd_to_cpu(rtd, 0),
 				  SND_SOC_DAIFMT_I2S     |
 				  SND_SOC_DAIFMT_NB_NF   |
@@ -188,8 +174,8 @@ static struct snd_soc_dai_link dailink[] = {
 		.ops = &aif1_ops,
 		SND_SOC_DAILINK_REG(deepbuffer, dummy, platform),
 	},
-	/* CODEC<->CODEC link */
-	/* back ends */
+	 
+	 
 	{
 		.name = "SSP2-Codec",
 		.id = 0,
@@ -204,14 +190,14 @@ static struct snd_soc_dai_link dailink[] = {
 	},
 };
 
-/* use space before codec name to simplify card ID, and simplify driver name */
-#define SOF_CARD_NAME "bytcht da7213" /* card name will be 'sof-bytcht da7213' */
+ 
+#define SOF_CARD_NAME "bytcht da7213"  
 #define SOF_DRIVER_NAME "SOF"
 
 #define CARD_NAME "bytcht-da7213"
-#define DRIVER_NAME NULL /* card name will be used for driver name */
+#define DRIVER_NAME NULL  
 
-/* SoC card */
+ 
 static struct snd_soc_card bytcht_da7213_card = {
 	.name = CARD_NAME,
 	.driver_name = DRIVER_NAME,
@@ -243,7 +229,7 @@ static int bytcht_da7213_probe(struct platform_device *pdev)
 	card = &bytcht_da7213_card;
 	card->dev = &pdev->dev;
 
-	/* fix index of codec dai */
+	 
 	for (i = 0; i < ARRAY_SIZE(dailink); i++) {
 		if (!strcmp(dailink[i].codecs->name, "i2c-DLGS7213:00")) {
 			dai_index = i;
@@ -251,7 +237,7 @@ static int bytcht_da7213_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* fixup codec name based on HID */
+	 
 	adev = acpi_dev_get_first_match_dev(mach->id, NULL, -1);
 	if (adev) {
 		snprintf(codec_name, sizeof(codec_name),
@@ -260,7 +246,7 @@ static int bytcht_da7213_probe(struct platform_device *pdev)
 	}
 	acpi_dev_put(adev);
 
-	/* override platform name, if required */
+	 
 	platform_name = mach->mach_params.platform;
 
 	ret_val = snd_soc_fixup_dai_links_platform_name(card, platform_name);
@@ -269,7 +255,7 @@ static int bytcht_da7213_probe(struct platform_device *pdev)
 
 	sof_parent = snd_soc_acpi_sof_parent(&pdev->dev);
 
-	/* set card and driver name */
+	 
 	if (sof_parent) {
 		bytcht_da7213_card.name = SOF_CARD_NAME;
 		bytcht_da7213_card.driver_name = SOF_DRIVER_NAME;
@@ -278,7 +264,7 @@ static int bytcht_da7213_probe(struct platform_device *pdev)
 		bytcht_da7213_card.driver_name = DRIVER_NAME;
 	}
 
-	/* set pm ops */
+	 
 	if (sof_parent)
 		pdev->dev.driver->pm = &snd_soc_pm_ops;
 

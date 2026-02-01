@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * OMAP clockdomain support
- *
- * Copyright (C) 2013 Texas Instruments, Inc.
- *
- * Tero Kristo <t-kristo@ti.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -19,18 +13,7 @@
 #undef pr_fmt
 #define pr_fmt(fmt) "%s: " fmt, __func__
 
-/**
- * omap2_clkops_enable_clkdm - increment usecount on clkdm of @hw
- * @hw: struct clk_hw * of the clock being enabled
- *
- * Increment the usecount of the clockdomain of the clock pointed to
- * by @hw; if the usecount is 1, the clockdomain will be "enabled."
- * Only needed for clocks that don't use omap2_dflt_clk_enable() as
- * their enable function pointer.  Passes along the return value of
- * clkdm_clk_enable(), -EINVAL if @hw is not associated with a
- * clockdomain, or 0 if clock framework-based clockdomain control is
- * not implemented.
- */
+ 
 int omap2_clkops_enable_clkdm(struct clk_hw *hw)
 {
 	struct clk_hw_omap *clk;
@@ -57,15 +40,7 @@ int omap2_clkops_enable_clkdm(struct clk_hw *hw)
 	return ret;
 }
 
-/**
- * omap2_clkops_disable_clkdm - decrement usecount on clkdm of @hw
- * @hw: struct clk_hw * of the clock being disabled
- *
- * Decrement the usecount of the clockdomain of the clock pointed to
- * by @hw; if the usecount is 0, the clockdomain will be "disabled."
- * Only needed for clocks that don't use omap2_dflt_clk_disable() as their
- * disable function pointer.  No return value.
- */
+ 
 void omap2_clkops_disable_clkdm(struct clk_hw *hw)
 {
 	struct clk_hw_omap *clk;
@@ -87,14 +62,7 @@ void omap2_clkops_disable_clkdm(struct clk_hw *hw)
 	ti_clk_ll_ops->clkdm_clk_disable(clk->clkdm, hw->clk);
 }
 
-/**
- * omap2_init_clk_clkdm - look up a clockdomain name, store pointer in clk
- * @hw: Pointer to clk_hw_omap used to obtain OMAP clock struct ptr to use
- *
- * Convert a clockdomain name stored in a struct clk 'clk' into a
- * clockdomain pointer, and save it into the struct clk.  Intended to be
- * called during clk_register(). Returns 0 on success, -EERROR otherwise.
- */
+ 
 int omap2_init_clk_clkdm(struct clk_hw *hw)
 {
 	struct clk_hw_omap *clk = to_clk_hw_omap(hw);
@@ -154,15 +122,7 @@ static const struct of_device_id ti_clkdm_match_table[] __initconst = {
 	{ }
 };
 
-/**
- * ti_dt_clockdomains_setup - setup device tree clockdomains
- *
- * Initializes clockdomain nodes for a SoC. This parses through all the
- * nodes with compatible = "ti,clockdomain", and add the clockdomain
- * info for all the clocks listed under these. This function shall be
- * called after rest of the DT clock init has completed and all
- * clock nodes have been registered.
- */
+ 
 void __init ti_dt_clockdomains_setup(void)
 {
 	struct device_node *np;

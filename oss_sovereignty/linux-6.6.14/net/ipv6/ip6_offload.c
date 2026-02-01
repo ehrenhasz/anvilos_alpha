@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	IPV6 GSO/GRO offload support
- *	Linux INET6 implementation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/socket.h>
@@ -20,10 +17,7 @@
 
 #include "ip6_offload.h"
 
-/* All GRO functions are always builtin, except UDP over ipv6, which lays in
- * ipv6 module, as it depends on UDPv6 lookup function, so we need special care
- * when ipv6 is built as a module
- */
+ 
 #if IS_BUILTIN(CONFIG_IPV6)
 #define INDIRECT_CALL_L4(f, f2, f1, ...) INDIRECT_CALL_2(f, f2, f1, __VA_ARGS__)
 #else
@@ -160,9 +154,7 @@ out:
 	return segs;
 }
 
-/* Return the total length of all the extension hdrs, following the same
- * logic in ipv6_gso_pull_exthdrs() when parsing ext-hdrs.
- */
+ 
 static int ipv6_exthdrs_len(struct ipv6hdr *iph,
 			    const struct net_offload **opps)
 {
@@ -235,7 +227,7 @@ INDIRECT_CALLABLE_SCOPE struct sk_buff *ipv6_gro_receive(struct list_head *head,
 
 	list_for_each_entry(p, head, list) {
 		const struct ipv6hdr *iph2;
-		__be32 first_word; /* <Version:4><Traffic_Class:8><Flow_Label:20> */
+		__be32 first_word;  
 
 		if (!NAPI_GRO_CB(p)->same_flow)
 			continue;
@@ -243,12 +235,7 @@ INDIRECT_CALLABLE_SCOPE struct sk_buff *ipv6_gro_receive(struct list_head *head,
 		iph2 = (struct ipv6hdr *)(p->data + off);
 		first_word = *(__be32 *)iph ^ *(__be32 *)iph2;
 
-		/* All fields must match except length and Traffic Class.
-		 * XXX skbs on the gro_list have all been parsed and pulled
-		 * already so we don't need to compare nlen
-		 * (nlen != (sizeof(*iph2) + ipv6_exthdrs_len(iph2, &ops)))
-		 * memcmp() alone below is sufficient, right?
-		 */
+		 
 		 if ((first_word & htonl(0xF00FFFFF)) ||
 		     !ipv6_addr_equal(&iph->saddr, &iph2->saddr) ||
 		     !ipv6_addr_equal(&iph->daddr, &iph2->daddr) ||
@@ -262,14 +249,12 @@ not_same_flow:
 				   nlen - sizeof(struct ipv6hdr)))
 				goto not_same_flow;
 		}
-		/* flush if Traffic Class fields are different */
+		 
 		NAPI_GRO_CB(p)->flush |= !!((first_word & htonl(0x0FF00000)) |
 			(__force __be32)(iph->hop_limit ^ iph2->hop_limit));
 		NAPI_GRO_CB(p)->flush |= flush;
 
-		/* If the previous IP ID value was based on an atomic
-		 * datagram we can overwrite the value and ignore it.
-		 */
+		 
 		if (NAPI_GRO_CB(skb)->is_atomic)
 			NAPI_GRO_CB(p)->flush_id = 0;
 	}
@@ -291,7 +276,7 @@ out:
 static struct sk_buff *sit_ip6ip6_gro_receive(struct list_head *head,
 					      struct sk_buff *skb)
 {
-	/* Common GRO receive for SIT and IP6IP6 */
+	 
 
 	if (NAPI_GRO_CB(skb)->encap_mark) {
 		NAPI_GRO_CB(skb)->flush = 1;
@@ -306,7 +291,7 @@ static struct sk_buff *sit_ip6ip6_gro_receive(struct list_head *head,
 static struct sk_buff *ip4ip6_gro_receive(struct list_head *head,
 					  struct sk_buff *skb)
 {
-	/* Common GRO receive for SIT and IP6IP6 */
+	 
 
 	if (NAPI_GRO_CB(skb)->encap_mark) {
 		NAPI_GRO_CB(skb)->flush = 1;
@@ -335,7 +320,7 @@ INDIRECT_CALLABLE_SCOPE int ipv6_gro_complete(struct sk_buff *skb, int nhoff)
 		struct hop_jumbo_hdr *hop_jumbo;
 		int hoplen = sizeof(*hop_jumbo);
 
-		/* Move network header left */
+		 
 		memmove(skb_mac_header(skb) - hoplen, skb_mac_header(skb),
 			skb->transport_header - skb->mac_header);
 		skb->data -= hoplen;
@@ -345,7 +330,7 @@ INDIRECT_CALLABLE_SCOPE int ipv6_gro_complete(struct sk_buff *skb, int nhoff)
 		iph = (struct ipv6hdr *)(skb->data + nhoff);
 		hop_jumbo = (struct hop_jumbo_hdr *)(iph + 1);
 
-		/* Build hop-by-hop options */
+		 
 		hop_jumbo->nexthdr = iph->nexthdr;
 		hop_jumbo->hdrlen = 0;
 		hop_jumbo->tlv_type = IPV6_TLV_JUMBO;

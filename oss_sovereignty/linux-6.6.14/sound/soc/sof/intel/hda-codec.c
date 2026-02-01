@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2018 Intel Corporation. All rights reserved.
-//
-// Authors: Keyon Jie <yang.jie@linux.intel.com>
-//
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <sound/hdaudio_ext.h>
@@ -25,7 +25,7 @@ static int hda_codec_mask = -1;
 module_param_named(codec_mask, hda_codec_mask, int, 0444);
 MODULE_PARM_DESC(codec_mask, "SOF HDA codec mask for probing");
 
-/* load the legacy HDA codec driver */
+ 
 static int request_codec_module(struct hda_codec *codec)
 {
 #ifdef MODULE
@@ -48,7 +48,7 @@ static int request_codec_module(struct hda_codec *codec)
 		dev_dbg(&codec->core.dev, "loading codec module: %s\n", mod);
 		request_module(mod);
 	}
-#endif /* MODULE */
+#endif  
 	return device_attach(hda_codec_dev(codec));
 }
 
@@ -72,7 +72,7 @@ static int hda_codec_load_module(struct hda_codec *codec)
 	return ret;
 }
 
-/* enable controller wake up event for all codecs with jack connectors */
+ 
 void hda_codec_jack_wake_enable(struct snd_sof_dev *sdev, bool enable)
 {
 	struct hda_bus *hbus = sof_to_hbus(sdev);
@@ -94,7 +94,7 @@ void hda_codec_jack_wake_enable(struct snd_sof_dev *sdev, bool enable)
 }
 EXPORT_SYMBOL_NS_GPL(hda_codec_jack_wake_enable, SND_SOC_SOF_HDA_AUDIO_CODEC);
 
-/* check jack status after resuming from suspend mode */
+ 
 void hda_codec_jack_check(struct snd_sof_dev *sdev)
 {
 	struct hda_bus *hbus = sof_to_hbus(sdev);
@@ -105,10 +105,7 @@ void hda_codec_jack_check(struct snd_sof_dev *sdev)
 		return;
 
 	list_for_each_codec(codec, hbus)
-		/*
-		 * Wake up all jack-detecting codecs regardless whether an event
-		 * has been recorded in STATESTS
-		 */
+		 
 		if (codec->jacktbl.used)
 			pm_request_resume(&codec->core.dev);
 }
@@ -136,7 +133,7 @@ static struct hda_codec *hda_codec_device_init(struct hdac_bus *bus, int addr, i
 	return codec;
 }
 
-/* probe individual codec */
+ 
 static int hda_codec_probe(struct snd_sof_dev *sdev, int address)
 {
 	struct hdac_hda_priv *hda_priv;
@@ -187,10 +184,7 @@ static int hda_codec_probe(struct snd_sof_dev *sdev, int address)
 		codec->probe_id = 0;
 
 	ret = hda_codec_load_module(codec);
-	/*
-	 * handle ret==0 (no driver bound) as an error, but pass
-	 * other return codes without modification
-	 */
+	 
 	if (ret == 0)
 		ret = -ENOENT;
 
@@ -203,7 +197,7 @@ out:
 	return ret;
 }
 
-/* Codec initialization */
+ 
 void hda_codec_probe_bus(struct snd_sof_dev *sdev)
 {
 	struct hdac_bus *bus = sof_to_bus(sdev);
@@ -213,7 +207,7 @@ void hda_codec_probe_bus(struct snd_sof_dev *sdev)
 	    sof_debug_check_flag(SOF_DBG_FORCE_NOCODEC))
 		return;
 
-	/* probe codecs in avail slots */
+	 
 	for (i = 0; i < HDA_MAX_CODECS; i++) {
 
 		if (!(bus->codec_mask & (1 << i)))
@@ -250,10 +244,10 @@ void hda_codec_detect_mask(struct snd_sof_dev *sdev)
 	    sof_debug_check_flag(SOF_DBG_FORCE_NOCODEC))
 		return;
 
-	/* Accept unsolicited responses */
+	 
 	snd_hdac_chip_updatel(bus, GCTL, AZX_GCTL_UNSOL, AZX_GCTL_UNSOL);
 
-	/* detect codecs */
+	 
 	if (!bus->codec_mask) {
 		bus->codec_mask = snd_hdac_chip_readw(bus, STATESTS);
 		dev_dbg(bus->dev, "codec_mask = 0x%lx\n", bus->codec_mask);
@@ -275,7 +269,7 @@ void hda_codec_init_cmd_io(struct snd_sof_dev *sdev)
 	    sof_debug_check_flag(SOF_DBG_FORCE_NOCODEC))
 		return;
 
-	/* initialize the codec command I/O */
+	 
 	snd_hdac_bus_init_cmd_io(bus);
 }
 EXPORT_SYMBOL_NS_GPL(hda_codec_init_cmd_io, SND_SOC_SOF_HDA_AUDIO_CODEC);
@@ -288,7 +282,7 @@ void hda_codec_resume_cmd_io(struct snd_sof_dev *sdev)
 	    sof_debug_check_flag(SOF_DBG_FORCE_NOCODEC))
 		return;
 
-	/* set up CORB/RIRB buffers if was on before suspend */
+	 
 	if (bus->cmd_dma_state)
 		snd_hdac_bus_init_cmd_io(bus);
 }
@@ -302,7 +296,7 @@ void hda_codec_stop_cmd_io(struct snd_sof_dev *sdev)
 	    sof_debug_check_flag(SOF_DBG_FORCE_NOCODEC))
 		return;
 
-	/* initialize the codec command I/O */
+	 
 	snd_hdac_bus_stop_cmd_io(bus);
 }
 EXPORT_SYMBOL_NS_GPL(hda_codec_stop_cmd_io, SND_SOC_SOF_HDA_AUDIO_CODEC);
@@ -315,7 +309,7 @@ void hda_codec_suspend_cmd_io(struct snd_sof_dev *sdev)
 	    sof_debug_check_flag(SOF_DBG_FORCE_NOCODEC))
 		return;
 
-	/* stop the CORB/RIRB DMA if it is On */
+	 
 	if (bus->cmd_dma_state)
 		snd_hdac_bus_stop_cmd_io(bus);
 
@@ -330,7 +324,7 @@ void hda_codec_rirb_status_clear(struct snd_sof_dev *sdev)
 	    sof_debug_check_flag(SOF_DBG_FORCE_NOCODEC))
 		return;
 
-	/* clear rirb status */
+	 
 	snd_hdac_chip_writeb(bus, RIRBSTS, RIRB_INT_MASK);
 }
 EXPORT_SYMBOL_NS_GPL(hda_codec_rirb_status_clear, SND_SOC_SOF_HDA_AUDIO_CODEC);
@@ -358,11 +352,7 @@ bool hda_codec_check_rirb_status(struct snd_sof_dev *sdev)
 
 	rirb_status = snd_hdac_chip_readb(bus, RIRBSTS);
 	if (rirb_status & RIRB_INT_MASK) {
-		/*
-		 * Clearing the interrupt status here ensures
-		 * that no interrupt gets masked after the RIRB
-		 * wp is read in snd_hdac_bus_update_rirb.
-		 */
+		 
 		snd_hdac_chip_writeb(bus, RIRBSTS,
 				     RIRB_INT_MASK);
 		active = true;
@@ -381,12 +371,12 @@ void hda_codec_device_remove(struct snd_sof_dev *sdev)
 	    sof_debug_check_flag(SOF_DBG_FORCE_NOCODEC))
 		return;
 
-	/* codec removal, invoke bus_device_remove */
+	 
 	snd_hdac_ext_bus_device_remove(bus);
 }
 EXPORT_SYMBOL_NS_GPL(hda_codec_device_remove, SND_SOC_SOF_HDA_AUDIO_CODEC);
 
-#endif /* CONFIG_SND_SOC_SOF_HDA_AUDIO_CODEC */
+#endif  
 
 #if IS_ENABLED(CONFIG_SND_SOC_SOF_HDA_AUDIO_CODEC) && IS_ENABLED(CONFIG_SND_HDA_CODEC_HDMI)
 
@@ -414,12 +404,12 @@ int hda_codec_i915_init(struct snd_sof_dev *sdev)
 	    sof_debug_check_flag(SOF_DBG_FORCE_NOCODEC))
 		return 0;
 
-	/* i915 exposes a HDA codec for HDMI audio */
+	 
 	ret = snd_hdac_i915_init(bus);
 	if (ret < 0)
 		return ret;
 
-	/* codec_mask not yet known, power up for probe */
+	 
 	snd_hdac_display_power(bus, HDA_CODEC_IDX_CONTROLLER, true);
 
 	return 0;
@@ -437,7 +427,7 @@ int hda_codec_i915_exit(struct snd_sof_dev *sdev)
 	if (!bus->audio_component)
 		return 0;
 
-	/* power down unconditionally */
+	 
 	snd_hdac_display_power(bus, HDA_CODEC_IDX_CONTROLLER, false);
 
 	return snd_hdac_i915_exit(bus);

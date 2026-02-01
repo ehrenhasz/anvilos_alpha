@@ -1,28 +1,4 @@
-/*
- * Copyright 2007-8 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- */
+ 
 
 #include <linux/export.h>
 #include <linux/pci.h>
@@ -36,7 +12,7 @@
 #include "atombios_dp.h"
 #include "atombios_i2c.h"
 
-/* bit banging i2c */
+ 
 static int amdgpu_i2c_pre_xfer(struct i2c_adapter *i2c_adap)
 {
 	struct amdgpu_i2c_chan *i2c = i2c_get_adapdata(i2c_adap);
@@ -46,28 +22,28 @@ static int amdgpu_i2c_pre_xfer(struct i2c_adapter *i2c_adap)
 
 	mutex_lock(&i2c->mutex);
 
-	/* switch the pads to ddc mode */
+	 
 	if (rec->hw_capable) {
 		temp = RREG32(rec->mask_clk_reg);
 		temp &= ~(1 << 16);
 		WREG32(rec->mask_clk_reg, temp);
 	}
 
-	/* clear the output pin values */
+	 
 	temp = RREG32(rec->a_clk_reg) & ~rec->a_clk_mask;
 	WREG32(rec->a_clk_reg, temp);
 
 	temp = RREG32(rec->a_data_reg) & ~rec->a_data_mask;
 	WREG32(rec->a_data_reg, temp);
 
-	/* set the pins to input */
+	 
 	temp = RREG32(rec->en_clk_reg) & ~rec->en_clk_mask;
 	WREG32(rec->en_clk_reg, temp);
 
 	temp = RREG32(rec->en_data_reg) & ~rec->en_data_mask;
 	WREG32(rec->en_data_reg, temp);
 
-	/* mask the gpio pins for software use */
+	 
 	temp = RREG32(rec->mask_clk_reg) | rec->mask_clk_mask;
 	WREG32(rec->mask_clk_reg, temp);
 	temp = RREG32(rec->mask_clk_reg);
@@ -86,7 +62,7 @@ static void amdgpu_i2c_post_xfer(struct i2c_adapter *i2c_adap)
 	struct amdgpu_i2c_bus_rec *rec = &i2c->rec;
 	uint32_t temp;
 
-	/* unmask the gpio pins for software use */
+	 
 	temp = RREG32(rec->mask_clk_reg) & ~rec->mask_clk_mask;
 	WREG32(rec->mask_clk_reg, temp);
 	temp = RREG32(rec->mask_clk_reg);
@@ -105,7 +81,7 @@ static int amdgpu_i2c_get_clock(void *i2c_priv)
 	struct amdgpu_i2c_bus_rec *rec = &i2c->rec;
 	uint32_t val;
 
-	/* read the value off the pin */
+	 
 	val = RREG32(rec->y_clk_reg);
 	val &= rec->y_clk_mask;
 
@@ -120,7 +96,7 @@ static int amdgpu_i2c_get_data(void *i2c_priv)
 	struct amdgpu_i2c_bus_rec *rec = &i2c->rec;
 	uint32_t val;
 
-	/* read the value off the pin */
+	 
 	val = RREG32(rec->y_data_reg);
 	val &= rec->y_data_mask;
 
@@ -134,7 +110,7 @@ static void amdgpu_i2c_set_clock(void *i2c_priv, int clock)
 	struct amdgpu_i2c_bus_rec *rec = &i2c->rec;
 	uint32_t val;
 
-	/* set pin direction */
+	 
 	val = RREG32(rec->en_clk_reg) & ~rec->en_clk_mask;
 	val |= clock ? 0 : rec->en_clk_mask;
 	WREG32(rec->en_clk_reg, val);
@@ -147,7 +123,7 @@ static void amdgpu_i2c_set_data(void *i2c_priv, int data)
 	struct amdgpu_i2c_bus_rec *rec = &i2c->rec;
 	uint32_t val;
 
-	/* set pin direction */
+	 
 	val = RREG32(rec->en_data_reg) & ~rec->en_data_mask;
 	val |= data ? 0 : rec->en_data_mask;
 	WREG32(rec->en_data_reg, val);
@@ -165,7 +141,7 @@ struct amdgpu_i2c_chan *amdgpu_i2c_create(struct drm_device *dev,
 	struct amdgpu_i2c_chan *i2c;
 	int ret;
 
-	/* don't add the mm_i2c bus unless hw_i2c is enabled */
+	 
 	if (rec->mm_i2c && (amdgpu_hw_i2c == 0))
 		return NULL;
 
@@ -182,7 +158,7 @@ struct amdgpu_i2c_chan *amdgpu_i2c_create(struct drm_device *dev,
 	mutex_init(&i2c->mutex);
 	if (rec->hw_capable &&
 	    amdgpu_hw_i2c) {
-		/* hw i2c using atom */
+		 
 		snprintf(i2c->adapter.name, sizeof(i2c->adapter.name),
 			 "AMDGPU i2c hw bus %s", name);
 		i2c->adapter.algo = &amdgpu_atombios_i2c_algo;
@@ -190,7 +166,7 @@ struct amdgpu_i2c_chan *amdgpu_i2c_create(struct drm_device *dev,
 		if (ret)
 			goto out_free;
 	} else {
-		/* set the amdgpu bit adapter */
+		 
 		snprintf(i2c->adapter.name, sizeof(i2c->adapter.name),
 			 "AMDGPU i2c bit bus %s", name);
 		i2c->adapter.algo_data = &i2c->bit;
@@ -201,7 +177,7 @@ struct amdgpu_i2c_chan *amdgpu_i2c_create(struct drm_device *dev,
 		i2c->bit.getsda = amdgpu_i2c_get_data;
 		i2c->bit.getscl = amdgpu_i2c_get_clock;
 		i2c->bit.udelay = 10;
-		i2c->bit.timeout = usecs_to_jiffies(2200);	/* from VESA */
+		i2c->bit.timeout = usecs_to_jiffies(2200);	 
 		i2c->bit.data = i2c;
 		ret = i2c_bit_add_bus(&i2c->adapter);
 		if (ret) {
@@ -226,7 +202,7 @@ void amdgpu_i2c_destroy(struct amdgpu_i2c_chan *i2c)
 	kfree(i2c);
 }
 
-/* Add the default buses */
+ 
 void amdgpu_i2c_init(struct amdgpu_device *adev)
 {
 	if (amdgpu_hw_i2c)
@@ -235,7 +211,7 @@ void amdgpu_i2c_init(struct amdgpu_device *adev)
 	amdgpu_atombios_i2c_init(adev);
 }
 
-/* remove all the buses */
+ 
 void amdgpu_i2c_fini(struct amdgpu_device *adev)
 {
 	int i;
@@ -248,7 +224,7 @@ void amdgpu_i2c_fini(struct amdgpu_device *adev)
 	}
 }
 
-/* Add additional buses */
+ 
 void amdgpu_i2c_add(struct amdgpu_device *adev,
 		    const struct amdgpu_i2c_bus_rec *rec,
 		    const char *name)
@@ -264,7 +240,7 @@ void amdgpu_i2c_add(struct amdgpu_device *adev,
 	}
 }
 
-/* looks up bus based on id */
+ 
 struct amdgpu_i2c_chan *
 amdgpu_i2c_lookup(struct amdgpu_device *adev,
 		  const struct amdgpu_i2c_bus_rec *i2c_bus)
@@ -335,7 +311,7 @@ static void amdgpu_i2c_put_byte(struct amdgpu_i2c_chan *i2c_bus,
 			  addr, val);
 }
 
-/* ddc router switching */
+ 
 void
 amdgpu_i2c_router_select_ddc_port(const struct amdgpu_connector *amdgpu_connector)
 {
@@ -364,7 +340,7 @@ amdgpu_i2c_router_select_ddc_port(const struct amdgpu_connector *amdgpu_connecto
 			    0x1, val);
 }
 
-/* clock/data router switching */
+ 
 void
 amdgpu_i2c_router_select_cd_port(const struct amdgpu_connector *amdgpu_connector)
 {

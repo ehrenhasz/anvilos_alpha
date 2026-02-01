@@ -1,13 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Ptrace test for TAR, PPR, DSCR registers
- *
- * Copyright (C) 2015 Anshuman Khandual, IBM Corporation.
- */
+
+ 
 #include "ptrace.h"
 #include "ptrace-tar.h"
 
-/* Tracer and Tracee Shared Data */
+ 
 int shm_id;
 int *cptr;
 int *pptr;
@@ -27,7 +23,7 @@ void tar(void)
 
 	cptr[2] = 1;
 
-	/* Wait on parent */
+	 
 	while (!cptr[0])
 		asm volatile("" : : : "memory");
 
@@ -38,7 +34,7 @@ void tar(void)
 	printf("%-30s TAR: %lu PPR: %lx DSCR: %lu\n",
 			user_read, reg[0], reg[1], reg[2]);
 
-	/* Unblock the parent now */
+	 
 	cptr[1] = 1;
 	shmdt((int *)cptr);
 
@@ -78,7 +74,7 @@ int ptrace_tar(void)
 	pid_t pid;
 	int ret, status;
 
-	// TAR was added in v2.07
+	
 	SKIP_IF_MSG(!have_hwcap2(PPC_FEATURE2_ARCH_2_07), "TAR requires ISA 2.07 compatible hardware");
 
 	shm_id = shmget(IPC_PRIVATE, sizeof(int) * 3, 0777|IPC_CREAT);
@@ -106,10 +102,10 @@ int ptrace_tar(void)
 		if (ret)
 			return ret;
 
-		/* Unblock the child now */
+		 
 		pptr[0] = 1;
 
-		/* Wait on child */
+		 
 		while (!pptr[1])
 			asm volatile("" : : : "memory");
 

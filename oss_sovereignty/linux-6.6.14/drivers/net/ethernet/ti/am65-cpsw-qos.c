@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Texas Instruments K3 AM65 Ethernet QoS submodule
- * Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
- *
- * quality of service module includes:
- * Enhanced Scheduler Traffic (EST - P802.1Qbv/D2.2)
- */
+
+ 
 
 #include <linux/pm_runtime.h>
 #include <linux/time.h>
@@ -21,13 +16,13 @@
 #define AM65_CPSW_PN_REG_EST_CTL		0x060
 #define AM65_CPSW_PN_REG_PRI_CIR(pri)		(0x140 + 4 * (pri))
 
-/* AM65_CPSW_REG_CTL register fields */
+ 
 #define AM65_CPSW_CTL_EST_EN			BIT(18)
 
-/* AM65_CPSW_PN_REG_CTL register fields */
+ 
 #define AM65_CPSW_PN_CTL_EST_PORT_EN		BIT(17)
 
-/* AM65_CPSW_PN_REG_EST_CTL register fields */
+ 
 #define AM65_CPSW_PN_EST_ONEBUF			BIT(0)
 #define AM65_CPSW_PN_EST_BUFSEL			BIT(1)
 #define AM65_CPSW_PN_EST_TS_EN			BIT(2)
@@ -35,14 +30,14 @@
 #define AM65_CPSW_PN_EST_ONEPRI			BIT(4)
 #define AM65_CPSW_PN_EST_TS_PRI_MSK		GENMASK(7, 5)
 
-/* AM65_CPSW_PN_REG_FIFO_STATUS register fields */
+ 
 #define AM65_CPSW_PN_FST_TX_PRI_ACTIVE_MSK	GENMASK(7, 0)
 #define AM65_CPSW_PN_FST_TX_E_MAC_ALLOW_MSK	GENMASK(15, 8)
 #define AM65_CPSW_PN_FST_EST_CNT_ERR		BIT(16)
 #define AM65_CPSW_PN_FST_EST_ADD_ERR		BIT(17)
 #define AM65_CPSW_PN_FST_EST_BUFACT		BIT(18)
 
-/* EST FETCH COMMAND RAM */
+ 
 #define AM65_CPSW_FETCH_RAM_CMD_NUM		0x80
 #define AM65_CPSW_FETCH_CNT_MSK			GENMASK(21, 8)
 #define AM65_CPSW_FETCH_CNT_MAX			(AM65_CPSW_FETCH_CNT_MSK >> 8)
@@ -51,9 +46,9 @@
 #define AM65_CPSW_FETCH_ALLOW_MAX		AM65_CPSW_FETCH_ALLOW_MSK
 
 enum timer_act {
-	TACT_PROG,		/* need program timer */
-	TACT_NEED_STOP,		/* need stop first */
-	TACT_SKIP_PROG,		/* just buffer can be updated */
+	TACT_PROG,		 
+	TACT_NEED_STOP,		 
+	TACT_SKIP_PROG,		 
 };
 
 static int am65_cpsw_port_est_enabled(struct am65_cpsw_port *port)
@@ -89,7 +84,7 @@ static void am65_cpsw_port_est_enable(struct am65_cpsw_port *port, int enable)
 	writel(val, port->port_base + AM65_CPSW_PN_REG_CTL);
 }
 
-/* target new EST RAM buffer, actual toggle happens after cycle completion */
+ 
 static void am65_cpsw_port_est_assign_buf_num(struct net_device *ndev,
 					      int buf_num)
 {
@@ -105,15 +100,7 @@ static void am65_cpsw_port_est_assign_buf_num(struct net_device *ndev,
 	writel(val, port->port_base + AM65_CPSW_PN_REG_EST_CTL);
 }
 
-/* am65_cpsw_port_est_is_swapped() - Indicate if h/w is transitioned
- * admin -> oper or not
- *
- * Return true if already transitioned. i.e oper is equal to admin and buf
- * numbers match (est_oper->buf match with est_admin->buf).
- * false if before transition. i.e oper is not equal to admin, (i.e a
- * previous admin command is waiting to be transitioned to oper state
- * and est_oper->buf not match with est_oper->buf).
- */
+ 
 static int am65_cpsw_port_est_is_swapped(struct net_device *ndev, int *oper,
 					 int *admin)
 {
@@ -129,18 +116,7 @@ static int am65_cpsw_port_est_is_swapped(struct net_device *ndev, int *oper,
 	return *admin == *oper;
 }
 
-/* am65_cpsw_port_est_get_free_buf_num() - Get free buffer number for
- * Admin to program the new schedule.
- *
- * Logic as follows:-
- * If oper is same as admin, return the other buffer (!oper) as the admin
- * buffer.  If oper is not the same, driver let the current oper to continue
- * as it is in the process of transitioning from admin -> oper. So keep the
- * oper by selecting the same oper buffer by writing to EST_BUFSEL bit in
- * EST CTL register. In the second iteration they will match and code returns.
- * The actual buffer to write command is selected later before it is ready
- * to update the schedule.
- */
+ 
 static int am65_cpsw_port_est_get_free_buf_num(struct net_device *ndev)
 {
 	int oper, admin;
@@ -150,9 +126,7 @@ static int am65_cpsw_port_est_get_free_buf_num(struct net_device *ndev)
 		if (am65_cpsw_port_est_is_swapped(ndev, &oper, &admin))
 			return !oper;
 
-		/* admin is not set, so hinder transition as it's not allowed
-		 * to touch memory in-flight, by targeting same oper buf.
-		 */
+		 
 		am65_cpsw_port_est_assign_buf_num(ndev, oper);
 
 		dev_info(&ndev->dev,
@@ -185,7 +159,7 @@ static void am65_cpsw_port_est_get_buf_num(struct net_device *ndev,
 
 	est_new->buf = am65_cpsw_port_est_get_free_buf_num(ndev);
 
-	/* rolled buf num means changed buf while configuring */
+	 
 	if (port->qos.est_oper && port->qos.est_admin &&
 	    est_new->buf == port->qos.est_oper->buf)
 		am65_cpsw_admin_to_oper(ndev);
@@ -207,10 +181,7 @@ static void am65_cpsw_est_set(struct net_device *ndev, int enable)
 	am65_cpsw_est_enable(common, common_enable);
 }
 
-/* This update is supposed to be used in any routine before getting real state
- * of admin -> oper transition, particularly it's supposed to be used in some
- * generic routine for providing real state to Taprio Qdisc.
- */
+ 
 static void am65_cpsw_est_update_state(struct net_device *ndev)
 {
 	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
@@ -225,10 +196,7 @@ static void am65_cpsw_est_update_state(struct net_device *ndev)
 	am65_cpsw_admin_to_oper(ndev);
 }
 
-/* Fetch command count it's number of bytes in Gigabit mode or nibbles in
- * 10/100Mb mode. So, having speed and time in ns, recalculate ns to number of
- * bytes/nibbles that can be sent while transmission on given speed.
- */
+ 
 static int am65_est_cmd_ns_to_cnt(u64 ns, int link_speed)
 {
 	u64 temp;
@@ -252,7 +220,7 @@ static void __iomem *am65_cpsw_est_set_sched_cmds(void __iomem *addr,
 			cmd_fetch_cnt = AM65_CPSW_FETCH_CNT_MAX;
 		} else {
 			cmd_fetch_cnt = fetch_cnt;
-			/* fetch count can't be less than 16? */
+			 
 			if (cmd_fetch_cnt && cmd_fetch_cnt < 16)
 				cmd_fetch_cnt = 16;
 
@@ -353,14 +321,12 @@ static void am65_cpsw_est_set_sched_list(struct net_device *ndev,
 		all_fetch_allow |= fetch_allow;
 	}
 
-	/* end cmd, enabling non-timed queues for potential over cycle time */
+	 
 	if (ram_addr < max_ram_addr)
 		writel(~all_fetch_allow & AM65_CPSW_FETCH_ALLOW_MSK, ram_addr);
 }
 
-/*
- * Enable ESTf periodic output, set cycle start time and interval.
- */
+ 
 static int am65_cpsw_timer_set(struct net_device *ndev,
 			       struct am65_cpsw_est *est_new)
 {
@@ -401,14 +367,14 @@ static enum timer_act am65_cpsw_timer_act(struct net_device *ndev,
 	if (taprio_new->cycle_time != taprio_oper->cycle_time)
 		return TACT_NEED_STOP;
 
-	/* in order to avoid timer reset get base_time form oper taprio */
+	 
 	if (!taprio_new->base_time && taprio_oper)
 		taprio_new->base_time = taprio_oper->base_time;
 
 	if (taprio_new->base_time == taprio_oper->base_time)
 		return TACT_SKIP_PROG;
 
-	/* base times are cycle synchronized */
+	 
 	diff = taprio_new->base_time - taprio_oper->base_time;
 	diff = diff < 0 ? -diff : diff;
 	if (diff % taprio_new->cycle_time)
@@ -418,7 +384,7 @@ static enum timer_act am65_cpsw_timer_act(struct net_device *ndev,
 	if (taprio_new->base_time <= cur_time + taprio_new->cycle_time)
 		return TACT_SKIP_PROG;
 
-	/* TODO: Admin schedule at future time is not currently supported */
+	 
 	return TACT_NEED_STOP;
 }
 
@@ -847,7 +813,7 @@ am65_cpsw_qos_tx_p0_rate_apply(struct am65_cpsw_common *common,
 	ch_cir = am65_cpsw_qos_tx_rate_calc(rate_mbps, common->bus_freq);
 	writel(ch_cir, host->port_base + AM65_CPSW_PN_REG_PRI_CIR(tx_ch));
 
-	/* update rates for every port tx queues */
+	 
 	for (i = 0; i < common->port_num; i++) {
 		struct net_device *ndev = common->ports[i].ndev;
 
@@ -909,7 +875,7 @@ int am65_cpsw_qos_ndo_tx_p0_set_maxrate(struct net_device *ndev,
 	common->tx_ch_rate_msk = tx_ch_rate_msk_new;
 
 	if (!common->usage_count)
-		/* will be applied on next netif up */
+		 
 		goto exit_put;
 
 	am65_cpsw_qos_tx_p0_rate_apply(common, queue, rate_mbps);

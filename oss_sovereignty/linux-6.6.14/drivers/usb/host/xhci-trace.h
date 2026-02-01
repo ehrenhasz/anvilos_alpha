@@ -1,20 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * xHCI host controller driver
- *
- * Copyright (C) 2013 Xenia Ragiadakou
- *
- * Author: Xenia Ragiadakou
- * Email : burzalodowa@gmail.com
- */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM xhci-hcd
 
-/*
- * The TRACE_SYSTEM_VAR defaults to TRACE_SYSTEM, but must be a
- * legitimate C variable. It is not exported to user space.
- */
+ 
 #undef TRACE_SYSTEM_VAR
 #define TRACE_SYSTEM_VAR xhci_hcd
 
@@ -609,9 +599,9 @@ DEFINE_EVENT(xhci_dbc_log_request, xhci_dbc_giveback_request,
 	TP_PROTO(struct dbc_request *req),
 	TP_ARGS(req)
 );
-#endif /* __XHCI_TRACE_H */
+#endif  
 
-/* this part must be outside header guard */
+ 
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

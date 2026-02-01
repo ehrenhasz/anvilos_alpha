@@ -1,10 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef	AFFS_HARDBLOCKS_H
 #define	AFFS_HARDBLOCKS_H
 
 #include <linux/types.h>
 
-/* Just the needed definitions for the RDB of an Amiga HD. */
+ 
 
 struct RigidDiskBlock {
 	__be32	rdb_ID;
@@ -45,7 +45,7 @@ struct RigidDiskBlock {
 	__be32	rdb_Reserved5[10];
 };
 
-#define	IDNAME_RIGIDDISK	0x5244534B	/* "RDSK" */
+#define	IDNAME_RIGIDDISK	0x5244534B	 
 
 struct PartitionBlock {
 	__be32	pb_ID;
@@ -62,8 +62,8 @@ struct PartitionBlock {
 	__be32	pb_EReserved[15];
 };
 
-#define	IDNAME_PARTITION	0x50415254	/* "PART" */
+#define	IDNAME_PARTITION	0x50415254	 
 
 #define RDB_ALLOCATION_LIMIT	16
 
-#endif	/* AFFS_HARDBLOCKS_H */
+#endif	 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Memory mapped I/O tracing
- *
- * Copyright (C) 2008 Pekka Paalanen <pq@iki.fi>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/mmiotrace.h>
@@ -109,7 +105,7 @@ static void mmio_pipe_open(struct trace_iterator *iter)
 	iter->private = hiter;
 }
 
-/* XXX: This is not called when the pipe is closed! */
+ 
 static void mmio_close(struct trace_iterator *iter)
 {
 	struct header_iter *hiter = iter->private;
@@ -138,7 +134,7 @@ static ssize_t mmio_read(struct trace_iterator *iter, struct file *filp,
 
 	n = count_overruns(iter);
 	if (n) {
-		/* XXX: This is later than where events were lost. */
+		 
 		trace_seq_printf(s, "MARK 0.000000 Lost %lu events.\n", n);
 		if (!overrun_detected)
 			pr_warn("mmiotrace has lost events\n");
@@ -251,7 +247,7 @@ static enum print_line_t mmio_print_mark(struct trace_iterator *iter)
 	unsigned long usec_rem	= do_div(t, USEC_PER_SEC);
 	unsigned secs		= (unsigned long)t;
 
-	/* The trailing newline must be in the message. */
+	 
 	trace_seq_printf(s, "MARK %u.%06lu %s", secs, usec_rem, msg);
 
 	return trace_handle_return(s);
@@ -267,7 +263,7 @@ static enum print_line_t mmio_print_line(struct trace_iterator *iter)
 	case TRACE_PRINT:
 		return mmio_print_mark(iter);
 	default:
-		return TRACE_TYPE_HANDLED; /* ignore unknown entries */
+		return TRACE_TYPE_HANDLED;  
 	}
 }
 

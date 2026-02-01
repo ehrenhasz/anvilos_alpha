@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright © 2018-2020 Intel Corporation
- */
+
+ 
 
 #include <linux/clk.h>
 
@@ -31,12 +29,12 @@ static int kmb_crtc_enable_vblank(struct drm_crtc *crtc)
 	struct drm_device *dev = crtc->dev;
 	struct kmb_drm_private *kmb = to_kmb(dev);
 
-	/* Clear interrupt */
+	 
 	kmb_write_lcd(kmb, LCD_INT_CLEAR, LCD_INT_VERT_COMP);
-	/* Set which interval to generate vertical interrupt */
+	 
 	kmb_write_lcd(kmb, LCD_VSTATUS_COMPARE,
 		      LCD_VSTATUS_COMPARE_VSYNC);
-	/* Enable vertical interrupt */
+	 
 	kmb_set_bitmask_lcd(kmb, LCD_INT_ENABLE,
 			    LCD_INT_VERT_COMP);
 	return 0;
@@ -47,9 +45,9 @@ static void kmb_crtc_disable_vblank(struct drm_crtc *crtc)
 	struct drm_device *dev = crtc->dev;
 	struct kmb_drm_private *kmb = to_kmb(dev);
 
-	/* Clear interrupt */
+	 
 	kmb_write_lcd(kmb, LCD_INT_CLEAR, LCD_INT_VERT_COMP);
-	/* Disable vertical interrupt */
+	 
 	kmb_clr_bitmask_lcd(kmb, LCD_INT_ENABLE,
 			    LCD_INT_VERT_COMP);
 }
@@ -74,7 +72,7 @@ static void kmb_crtc_set_mode(struct drm_crtc *crtc,
 	struct kmb_drm_private *kmb = to_kmb(dev);
 	unsigned int val = 0;
 
-	/* Initialize mipi */
+	 
 	kmb_dsi_mode_set(kmb->kmb_dsi, m, kmb->sys_clk_mhz, old_state);
 	drm_info(dev,
 		 "vfp= %d vbp= %d vsync_len=%d hfp=%d hbp=%d hsync_len=%d\n",
@@ -109,10 +107,10 @@ static void kmb_crtc_set_mode(struct drm_crtc *crtc,
 	kmb_write_lcd(kmb, LCD_H_BACKPORCH, vm.hback_porch);
 	kmb_write_lcd(kmb, LCD_H_FRONTPORCH, vm.hfront_porch);
 	kmb_write_lcd(kmb, LCD_HSYNC_WIDTH, vm.hsync_len - 1);
-	/* This is hardcoded as 0 in the Myriadx code */
+	 
 	kmb_write_lcd(kmb, LCD_VSYNC_START, 0);
 	kmb_write_lcd(kmb, LCD_VSYNC_END, 0);
-	/* Back ground color */
+	 
 	kmb_write_lcd(kmb, LCD_BG_COLOUR_LS, 0x4);
 	if (m->flags == DRM_MODE_FLAG_INTERLACE) {
 		kmb_write_lcd(kmb,
@@ -123,7 +121,7 @@ static void kmb_crtc_set_mode(struct drm_crtc *crtc,
 			      LCD_V_FRONTPORCH_EVEN, vm.vfront_porch);
 		kmb_write_lcd(kmb, LCD_V_ACTIVEHEIGHT_EVEN,
 			      m->crtc_vdisplay - 1);
-		/* This is hardcoded as 10 in the Myriadx code */
+		 
 		kmb_write_lcd(kmb, LCD_VSYNC_START_EVEN, 10);
 		kmb_write_lcd(kmb, LCD_VSYNC_END_EVEN, 10);
 	}
@@ -148,7 +146,7 @@ static void kmb_crtc_atomic_disable(struct drm_crtc *crtc,
 	struct kmb_drm_private *kmb = crtc_to_kmb_priv(crtc);
 	struct drm_crtc_state *old_state = drm_atomic_get_old_crtc_state(state, crtc);
 
-	/* due to hw limitations, planes need to be off when crtc is off */
+	 
 	drm_atomic_helper_disable_planes_on_crtc(old_state, false);
 
 	drm_crtc_vblank_off(crtc);

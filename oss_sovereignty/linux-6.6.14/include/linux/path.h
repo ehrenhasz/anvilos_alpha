@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_PATH_H
 #define _LINUX_PATH_H
 
@@ -24,4 +24,4 @@ static inline void path_put_init(struct path *path)
 	*path = (struct path) { };
 }
 
-#endif  /* _LINUX_PATH_H */
+#endif   

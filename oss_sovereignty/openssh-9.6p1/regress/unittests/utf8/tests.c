@@ -1,10 +1,5 @@
-/*	$OpenBSD: tests.c,v 1.4 2017/02/19 00:11:29 djm Exp $ */
-/*
- * Regress test for the utf8.h *mprintf() API
- *
- * Written by Ingo Schwarze <schwarze@openbsd.org> in 2016
- * and placed in the public domain.
- */
+ 
+ 
 
 #include "includes.h"
 

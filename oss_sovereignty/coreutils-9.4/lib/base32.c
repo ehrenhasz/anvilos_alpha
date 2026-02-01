@@ -1,68 +1,28 @@
-/* base32.c -- Encode binary data using printable characters.
-   Copyright (C) 1999-2001, 2004-2006, 2009-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Adapted from Simon Josefsson's base64 code by Gijs van Tulder.
- *
- * See also RFC 4648 <https://www.ietf.org/rfc/rfc4648.txt>.
- *
- * Be careful with error checking.  Here is how you would typically
- * use these functions:
- *
- * bool ok = base32_decode_alloc (in, inlen, &out, &outlen);
- * if (!ok)
- *   FAIL: input was not valid base32
- * if (out == NULL)
- *   FAIL: memory allocation error
- * OK: data in OUT/OUTLEN
- *
- * idx_t outlen = base32_encode_alloc (in, inlen, &out);
- * if (out == NULL && outlen == 0 && inlen != 0)
- *   FAIL: input too long
- * if (out == NULL)
- *   FAIL: memory allocation error
- * OK: data in OUT/OUTLEN.
- *
- */
+ 
 
 #include <config.h>
 
-/* Get prototype. */
+ 
 #include "base32.h"
 
-/* Get imalloc. */
+ 
 #include <ialloc.h>
 
 #include <intprops.h>
 
-/* Get UCHAR_MAX. */
+ 
 #include <limits.h>
 
 #include <string.h>
 
-/* Convert 'char' to 'unsigned char' without casting.  */
+ 
 static unsigned char
 to_uchar (char ch)
 {
   return ch;
 }
 
-/* Base32 encode IN array of size INLEN into OUT array of size OUTLEN.
-   If OUTLEN is less than BASE32_LENGTH(INLEN), write as many bytes as
-   possible.  If OUTLEN is larger than BASE32_LENGTH(INLEN), also zero
-   terminate the output buffer. */
+ 
 void
 base32_encode (const char *restrict in, idx_t inlen,
                char *restrict out, idx_t outlen)
@@ -129,21 +89,11 @@ base32_encode (const char *restrict in, idx_t inlen,
     *out = '\0';
 }
 
-/* Allocate a buffer and store zero terminated base32 encoded data
-   from array IN of size INLEN, returning BASE32_LENGTH(INLEN), i.e.,
-   the length of the encoded data, excluding the terminating zero.  On
-   return, the OUT variable will hold a pointer to newly allocated
-   memory that must be deallocated by the caller.  If output string
-   length would overflow, 0 is returned and OUT is set to NULL.  If
-   memory allocation failed, OUT is set to NULL, and the return value
-   indicates length of the requested memory block, i.e.,
-   BASE32_LENGTH(inlen) + 1. */
+ 
 idx_t
 base32_encode_alloc (const char *in, idx_t inlen, char **out)
 {
-  /* Check for overflow in outlen computation.
-     Treat negative INLEN as overflow, for better compatibility with
-     pre-2021-08-27 API, which used size_t.  */
+   
   idx_t in_over_5 = inlen / 5 + (inlen % 5 != 0), outlen;
   if (! INT_MULTIPLY_OK (in_over_5, 8, &outlen) || inlen < 0)
     {
@@ -161,15 +111,7 @@ base32_encode_alloc (const char *in, idx_t inlen, char **out)
   return outlen - 1;
 }
 
-/* With this approach this file works independent of the charset used
-   (think EBCDIC).  However, it does assume that the characters in the
-   Base32 alphabet (A-Z2-7) are encoded in 0..255.  POSIX
-   1003.1-2001 require that char and unsigned char are 8-bit
-   quantities, though, taking care of that problem.  But this may be a
-   potential problem on non-POSIX C99 platforms.
-
-   IBM C V6 for AIX mishandles "#define B32(x) ...'x'...", so use "_"
-   as the formal parameter rather than "x".  */
+ 
 #define B32(_)                                  \
   ((_) == 'A' ? 0                               \
    : (_) == 'B' ? 1                             \
@@ -278,29 +220,21 @@ static const signed char b32[0x100] = {
 # define uchar_in_range(c) ((c) <= 255)
 #endif
 
-/* Return true if CH is a character from the Base32 alphabet, and
-   false otherwise.  Note that '=' is padding and not considered to be
-   part of the alphabet.  */
+ 
 bool
 isbase32 (char ch)
 {
   return uchar_in_range (to_uchar (ch)) && 0 <= b32[to_uchar (ch)];
 }
 
-/* Initialize decode-context buffer, CTX.  */
+ 
 void
 base32_decode_ctx_init (struct base32_decode_context *ctx)
 {
   ctx->i = 0;
 }
 
-/* If CTX->i is 0 or 8, there are eight or more bytes in [*IN..IN_END), and
-   none of those eight is a newline, then return *IN.  Otherwise, copy up to
-   4 - CTX->i non-newline bytes from that range into CTX->buf, starting at
-   index CTX->i and setting CTX->i to reflect the number of bytes copied,
-   and return CTX->buf.  In either case, advance *IN to point to the byte
-   after the last one processed, and set *N_NON_NEWLINE to the number of
-   verified non-newline bytes accessible through the returned pointer.  */
+ 
 static char *
 get_8 (struct base32_decode_context *ctx,
        char const *restrict *in, char const *restrict in_end,
@@ -314,7 +248,7 @@ get_8 (struct base32_decode_context *ctx,
       char const *t = *in;
       if (8 <= in_end - *in && memchr (t, '\n', 8) == NULL)
         {
-          /* This is the common case: no newline.  */
+           
           *in += 8;
           *n_non_newline = 8;
           return (char *) t;
@@ -322,7 +256,7 @@ get_8 (struct base32_decode_context *ctx,
     }
 
   {
-    /* Copy non-newline bytes into BUF.  */
+     
     char const *p = *in;
     while (p < in_end)
       {
@@ -349,12 +283,7 @@ get_8 (struct base32_decode_context *ctx,
     }                                           \
   while (false)
 
-/* Decode eight bytes of base32-encoded data, IN, of length INLEN
-   into the output buffer, *OUT, of size *OUTLEN bytes.  Return true if
-   decoding is successful, false otherwise.  If *OUTLEN is too small,
-   as many bytes as possible are written to *OUT.  On return, advance
-   *OUT to point to the byte after the last one written, and decrement
-   *OUTLEN to reflect the number of bytes remaining in *OUT.  */
+ 
 static bool
 decode_8 (char const *restrict in, idx_t inlen,
           char *restrict *outp, idx_t *outleft)
@@ -447,23 +376,7 @@ decode_8 (char const *restrict in, idx_t inlen,
   return true;
 }
 
-/* Decode base32-encoded input array IN of length INLEN to output array
-   OUT that can hold *OUTLEN bytes.  The input data may be interspersed
-   with newlines.  Return true if decoding was successful, i.e. if the
-   input was valid base32 data, false otherwise.  If *OUTLEN is too
-   small, as many bytes as possible will be written to OUT.  On return,
-   *OUTLEN holds the length of decoded bytes in OUT.  Note that as soon
-   as any non-alphabet, non-newline character is encountered, decoding
-   is stopped and false is returned.  If INLEN is zero, then process
-   only whatever data is stored in CTX.
-
-   Initially, CTX must have been initialized via base32_decode_ctx_init.
-   Subsequent calls to this function must reuse whatever state is recorded
-   in that buffer.  It is necessary for when a octuple of base32 input
-   bytes spans two input buffers.
-
-   If CTX is NULL then newlines are treated as garbage and the input
-   buffer is processed as a unit.  */
+ 
 
 bool
 base32_decode_ctx (struct base32_decode_context *ctx,
@@ -489,8 +402,7 @@ base32_decode_ctx (struct base32_decode_context *ctx,
         {
           while (true)
             {
-              /* Save a copy of outleft, in case we need to re-parse this
-                 block of four bytes.  */
+               
               outleft_save = outleft;
               if (!decode_8 (in, inlen, &out, &outleft))
                 break;
@@ -503,8 +415,7 @@ base32_decode_ctx (struct base32_decode_context *ctx,
       if (inlen == 0 && !flush_ctx)
         break;
 
-      /* Handle the common case of 72-byte wrapped lines.
-         This also handles any other multiple-of-8-byte wrapping.  */
+       
       if (inlen && *in == '\n' && ignore_newlines)
         {
           ++in;
@@ -512,7 +423,7 @@ base32_decode_ctx (struct base32_decode_context *ctx,
           continue;
         }
 
-      /* Restore OUT and OUTLEFT.  */
+       
       out -= outleft_save - outleft;
       outleft = outleft_save;
 
@@ -523,11 +434,9 @@ base32_decode_ctx (struct base32_decode_context *ctx,
         if (ignore_newlines)
           non_nl = get_8 (ctx, &in, in_end, &inlen);
         else
-          non_nl = in;  /* Might have nl in this case. */
+          non_nl = in;   
 
-        /* If the input is empty or consists solely of newlines (0 non-newlines),
-           then we're done.  Likewise if there are fewer than 8 bytes when not
-           flushing context and not treating newlines as garbage.  */
+         
         if (inlen == 0 || (inlen < 8 && !flush_ctx && ignore_newlines))
           {
             inlen = 0;
@@ -545,27 +454,13 @@ base32_decode_ctx (struct base32_decode_context *ctx,
   return inlen == 0;
 }
 
-/* Allocate an output buffer in *OUT, and decode the base32 encoded
-   data stored in IN of size INLEN to the *OUT buffer.  On return, the
-   size of the decoded data is stored in *OUTLEN.  OUTLEN may be NULL,
-   if the caller is not interested in the decoded length.  *OUT may be
-   NULL to indicate an out of memory error, in which case *OUTLEN
-   contains the size of the memory block needed.  The function returns
-   true on successful decoding and memory allocation errors.  (Use the
-   *OUT and *OUTLEN parameters to differentiate between successful
-   decoding and memory error.)  The function returns false if the
-   input was invalid, in which case *OUT is NULL and *OUTLEN is
-   undefined. */
+ 
 bool
 base32_decode_alloc_ctx (struct base32_decode_context *ctx,
                          const char *in, idx_t inlen, char **out,
                          idx_t *outlen)
 {
-  /* This may allocate a few bytes too many, depending on input,
-     but it's not worth the extra CPU time to compute the exact size.
-     The exact size is 5 * inlen / 8, minus one or more bytes if the
-     input is padded with one or more "=".
-     Shifting before multiplying avoids the possibility of overflow.  */
+   
   idx_t needlen = 5 * ((inlen >> 3) + 1);
 
   *out = imalloc (needlen);

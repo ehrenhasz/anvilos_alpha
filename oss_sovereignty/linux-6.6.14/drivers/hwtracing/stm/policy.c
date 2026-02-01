@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * System Trace Module (STM) master/channel allocation policy management
- * Copyright (c) 2014, Intel Corporation.
- *
- * A master/channel allocation policy allows mapping string identifiers to
- * master and channel ranges, where allocation can be done.
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -17,9 +11,7 @@
 #include <linux/stm.h>
 #include "stm.h"
 
-/*
- * STP Master/Channel allocation policy configfs layout.
- */
+ 
 
 struct stp_policy {
 	struct config_group	group;
@@ -33,7 +25,7 @@ struct stp_policy_node {
 	unsigned int		last_master;
 	unsigned int		first_channel;
 	unsigned int		last_channel;
-	/* this is the one that's exposed to the attributes */
+	 
 	unsigned char		priv[];
 };
 
@@ -111,7 +103,7 @@ stp_policy_node_masters_store(struct config_item *item, const char *page,
 	if (!stm)
 		goto unlock;
 
-	/* must be within [sw_start..sw_end], which is an inclusive range */
+	 
 	if (first > last || first < stm->data->sw_start ||
 	    last > stm->data->sw_end) {
 		ret = -ERANGE;
@@ -255,7 +247,7 @@ stp_policy_node_make(struct config_group *group, const char *name)
 
 	policy_node->policy = policy;
 
-	/* default values for the attributes */
+	 
 	policy_node->first_master = policy->stm->data->sw_start;
 	policy_node->last_master = policy->stm->data->sw_end;
 	policy_node->first_channel = 0;
@@ -282,9 +274,7 @@ static const struct config_item_type stp_policy_node_type = {
 	.ct_owner	= THIS_MODULE,
 };
 
-/*
- * Root group: policies.
- */
+ 
 static ssize_t stp_policy_device_show(struct config_item *item,
 				      char *page)
 {
@@ -327,11 +317,7 @@ void stp_policy_unbind(struct stp_policy *policy)
 {
 	struct stm_device *stm = policy->stm;
 
-	/*
-	 * stp_policy_release() will not call here if the policy is already
-	 * unbound; other users should not either, as no link exists between
-	 * this policy and anything else in that case
-	 */
+	 
 	if (WARN_ON_ONCE(!policy->stm))
 		return;
 
@@ -340,9 +326,7 @@ void stp_policy_unbind(struct stp_policy *policy)
 	stm->policy = NULL;
 	policy->stm = NULL;
 
-	/*
-	 * Drop the reference on the protocol driver and lose the link.
-	 */
+	 
 	stm_put_protocol(stm->pdrv);
 	stm->pdrv = NULL;
 	stm_put_device(stm);
@@ -353,7 +337,7 @@ static void stp_policy_release(struct config_item *item)
 	struct stp_policy *policy = to_stp_policy(item);
 	struct stm_device *stm = policy->stm;
 
-	/* a policy *can* be unbound and still exist in configfs tree */
+	 
 	if (!stm)
 		return;
 
@@ -393,13 +377,7 @@ stp_policy_make(struct config_group *group, const char *name)
 	if (!devname)
 		return ERR_PTR(-ENOMEM);
 
-	/*
-	 * node must look like <device_name>.<policy_name>, where
-	 * <device_name> is the name of an existing stm device; may
-	 *               contain dots;
-	 * <policy_name> is an arbitrary string; may not contain dots
-	 * <device_name>:<protocol_name>.<policy_name>
-	 */
+	 
 	p = strrchr(devname, '.');
 	if (!p) {
 		kfree(devname);
@@ -408,11 +386,7 @@ stp_policy_make(struct config_group *group, const char *name)
 
 	*p = '\0';
 
-	/*
-	 * look for ":<protocol_name>":
-	 *  + no protocol suffix: fall back to whatever is available;
-	 *  + unknown protocol: fail the whole thing
-	 */
+	 
 	proto = strrchr(devname, ':');
 	if (proto)
 		*proto++ = '\0';
@@ -455,10 +429,7 @@ unlock_policy:
 	mutex_unlock(&stm->policy_mutex);
 
 	if (IS_ERR(ret)) {
-		/*
-		 * pdrv and stm->pdrv at this point can be quite different,
-		 * and only one of them needs to be 'put'
-		 */
+		 
 		stm_put_protocol(pdrv);
 		stm_put_device(stm);
 	}
@@ -484,9 +455,7 @@ static struct configfs_subsystem stp_policy_subsys = {
 	},
 };
 
-/*
- * Lock the policy mutex from the outside
- */
+ 
 static struct stp_policy_node *
 __stp_policy_node_lookup(struct stp_policy *policy, char *s)
 {

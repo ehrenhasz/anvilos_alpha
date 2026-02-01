@@ -1,20 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IOMMU sysfs class support
- *
- * Copyright (C) 2014 Red Hat, Inc.  All rights reserved.
- *     Author: Alex Williamson <alex.williamson@redhat.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/iommu.h>
 #include <linux/init.h>
 #include <linux/slab.h>
 
-/*
- * We provide a common class "devices" group which initially has no attributes.
- * As devices are added to the IOMMU, we'll add links to the group.
- */
+ 
 static struct attribute *devices_attr[] = {
 	NULL,
 };
@@ -46,11 +38,7 @@ static int __init iommu_dev_init(void)
 }
 postcore_initcall(iommu_dev_init);
 
-/*
- * Init the struct device for the IOMMU. IOMMU specific attributes can
- * be provided as an attribute group, allowing a unique namespace per
- * IOMMU type.
- */
+ 
 int iommu_device_sysfs_add(struct iommu_device *iommu,
 			   struct device *parent,
 			   const struct attribute_group **groups,
@@ -97,12 +85,7 @@ void iommu_device_sysfs_remove(struct iommu_device *iommu)
 }
 EXPORT_SYMBOL_GPL(iommu_device_sysfs_remove);
 
-/*
- * IOMMU drivers can indicate a device is managed by a given IOMMU using
- * this interface.  A link to the device will be created in the "devices"
- * directory of the IOMMU device in sysfs and an "iommu" link will be
- * created under the linked device, pointing back at the IOMMU device.
- */
+ 
 int iommu_device_link(struct iommu_device *iommu, struct device *link)
 {
 	int ret;

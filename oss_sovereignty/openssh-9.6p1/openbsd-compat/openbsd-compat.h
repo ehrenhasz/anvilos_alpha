@@ -1,28 +1,4 @@
-/*
- * Copyright (c) 1999-2003 Damien Miller.  All rights reserved.
- * Copyright (c) 2003 Ben Lindstrom. All rights reserved.
- * Copyright (c) 2002 Tim Rice.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #ifndef _OPENBSD_COMPAT_H
 #define _OPENBSD_COMPAT_H
@@ -34,9 +10,9 @@
 
 #include <sys/socket.h>
 
-#include <stddef.h>  /* for wchar_t */
+#include <stddef.h>   
 
-/* OpenBSD function replacements */
+ 
 #include "base64.h"
 #include "sigact.h"
 #include "readpassphrase.h"
@@ -205,7 +181,7 @@ int writev(int, struct iovec *, int);
 # endif
 #endif
 
-/* Home grown routines */
+ 
 #include "bsd-signal.h"
 #include "bsd-misc.h"
 #include "bsd-setres_id.h"
@@ -219,7 +195,7 @@ int getpeereid(int , uid_t *, gid_t *);
 
 #ifndef HAVE_ARC4RANDOM
 uint32_t arc4random(void);
-#endif /* !HAVE_ARC4RANDOM */
+#endif  
 
 #ifndef HAVE_ARC4RANDOM_BUF
 void arc4random_buf(void *, size_t);
@@ -238,9 +214,9 @@ int asprintf(char **, const char *, ...);
 #endif
 
 #ifndef HAVE_OPENPTY
-# include <sys/ioctl.h>	/* for struct winsize */
+# include <sys/ioctl.h>	 
 int openpty(int *, int *, char *, struct termios *, struct winsize *);
-#endif /* HAVE_OPENPTY */
+#endif  
 
 #ifndef HAVE_SNPRINTF
 int snprintf(char *, size_t, SNPRINTF_CONST char *, ...);
@@ -262,14 +238,14 @@ unsigned long long strtoull(const char *, char **, int);
 long long strtonum(const char *, long long, long long, const char **);
 #endif
 
-/* multibyte character support */
+ 
 #ifndef HAVE_MBLEN
 # define mblen(x, y)	(1)
 #endif
 
 #ifndef HAVE_WCWIDTH
 # define wcwidth(x)	(((x) >= 0x20 && (x) <= 0x7e) ? 1 : -1)
-/* force our no-op nl_langinfo and mbtowc */
+ 
 # undef HAVE_NL_LANGINFO
 # undef HAVE_MBTOWC
 # undef HAVE_LANGINFO_H
@@ -287,11 +263,7 @@ int mbtowc(wchar_t *, const char*, size_t);
 # include <stdarg.h>
 #endif
 
-/*
- * Some platforms unconditionally undefine va_copy() so we define VA_COPY()
- * instead.  This is known to be the case on at least some configurations of
- * AIX with the xlc compiler.
- */
+ 
 #ifndef VA_COPY
 # ifdef HAVE_VA_COPY
 #  define VA_COPY(dest, src) va_copy(dest, src)
@@ -349,10 +321,10 @@ time_t timegm(struct tm *);
 char *xcrypt(const char *password, const char *salt);
 char *shadow_pw(struct passwd *pw);
 
-/* rfc2553 socket API replacements */
+ 
 #include "fake-rfc2553.h"
 
-/* Routines for a single OS platform */
+ 
 #include "bsd-cygwin_util.h"
 
 #include "port-aix.h"
@@ -362,20 +334,20 @@ char *shadow_pw(struct passwd *pw);
 #include "port-net.h"
 #include "port-uw.h"
 
-/* _FORTIFY_SOURCE breaks FD_ISSET(n)/FD_SET(n) for n > FD_SETSIZE. Avoid. */
+ 
 #if defined(HAVE_FEATURES_H) && defined(_FORTIFY_SOURCE)
 # include <features.h>
 # if defined(__GNU_LIBRARY__) && defined(__GLIBC_PREREQ)
 #  if __GLIBC_PREREQ(2, 15) && (_FORTIFY_SOURCE > 0)
-#   include <sys/socket.h>  /* Ensure include guard is defined */
+#   include <sys/socket.h>   
 #   undef FD_SET
 #   undef FD_ISSET
 #   define FD_SET(n, set)	kludge_FD_SET(n, set)
 #   define FD_ISSET(n, set)	kludge_FD_ISSET(n, set)
 void kludge_FD_SET(int, fd_set *);
 int kludge_FD_ISSET(int, fd_set *);
-#  endif /* __GLIBC_PREREQ(2, 15) && (_FORTIFY_SOURCE > 0) */
-# endif /* __GNU_LIBRARY__ && __GLIBC_PREREQ */
-#endif /* HAVE_FEATURES_H && _FORTIFY_SOURCE */
+#  endif  
+# endif  
+#endif  
 
-#endif /* _OPENBSD_COMPAT_H */
+#endif  

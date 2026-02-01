@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * K3 SA2UL crypto accelerator driver
- *
- * Copyright (C) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
- *
- * Authors:	Keerthy
- *		Vitaly Andrianov
- *		Tero Kristo
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -32,9 +24,9 @@
 
 #include "sa2ul.h"
 
-/* Byte offset for key in encryption security context */
+ 
 #define SC_ENC_KEY_OFFSET (1 + 27 + 4)
-/* Byte offset for Aux-1 in encryption security context */
+ 
 #define SC_ENC_AUX1_OFFSET (1 + 27 + 4 + 32)
 
 #define SA_CMDL_UPD_ENC         0x0001
@@ -61,14 +53,14 @@
 #define SA_BASIC_HASH		0x10
 
 #define SHA256_DIGEST_WORDS    8
-/* Make 32-bit word from 4 bytes */
+ 
 #define SA_MK_U32(b0, b1, b2, b3) (((b0) << 24) | ((b1) << 16) | \
 				   ((b2) << 8) | (b3))
 
-/* size of SCCTL structure in bytes */
+ 
 #define SA_SCCTL_SZ 16
 
-/* Max Authentication tag size */
+ 
 #define SA_MAX_AUTH_TAG_SZ 64
 
 enum sa_algo_id {
@@ -91,16 +83,7 @@ struct sa_match_data {
 
 static struct device *sa_k3_dev;
 
-/**
- * struct sa_cmdl_cfg - Command label configuration descriptor
- * @aalg: authentication algorithm ID
- * @enc_eng_id: Encryption Engine ID supported by the SA hardware
- * @auth_eng_id: Authentication Engine ID
- * @iv_size: Initialization Vector size
- * @akey: Authentication key
- * @akey_len: Authentication key length
- * @enc: True, if this is an encode request
- */
+ 
 struct sa_cmdl_cfg {
 	int aalg;
 	u8 enc_eng_id;
@@ -111,23 +94,7 @@ struct sa_cmdl_cfg {
 	bool enc;
 };
 
-/**
- * struct algo_data - Crypto algorithm specific data
- * @enc_eng: Encryption engine info structure
- * @auth_eng: Authentication engine info structure
- * @auth_ctrl: Authentication control word
- * @hash_size: Size of digest
- * @iv_idx: iv index in psdata
- * @iv_out_size: iv out size
- * @ealg_id: Encryption Algorithm ID
- * @aalg_id: Authentication algorithm ID
- * @mci_enc: Mode Control Instruction for Encryption algorithm
- * @mci_dec: Mode Control Instruction for Decryption
- * @inv_key: Whether the encryption algorithm demands key inversion
- * @ctx: Pointer to the algorithm context
- * @keyed_mac: Whether the authentication algorithm has key
- * @prep_iopad: Function pointer to generate intermediate ipad/opad
- */
+ 
 struct algo_data {
 	struct sa_eng_info enc_eng;
 	struct sa_eng_info auth_eng;
@@ -146,14 +113,9 @@ struct algo_data {
 			   u16 key_sz, __be32 *ipad, __be32 *opad);
 };
 
-/**
- * struct sa_alg_tmpl: A generic template encompassing crypto/aead algorithms
- * @type: Type of the crypto algorithm.
- * @alg: Union of crypto algorithm definitions.
- * @registered: Flag indicating if the crypto algorithm is already registered
- */
+ 
 struct sa_alg_tmpl {
-	u32 type;		/* CRYPTO_ALG_TYPE from <linux/crypto.h> */
+	u32 type;		 
 	union {
 		struct skcipher_alg skcipher;
 		struct ahash_alg ahash;
@@ -162,14 +124,7 @@ struct sa_alg_tmpl {
 	bool registered;
 };
 
-/**
- * struct sa_mapped_sg: scatterlist information for tx and rx
- * @mapped: Set to true if the @sgt is mapped
- * @dir: mapping direction used for @sgt
- * @split_sg: Set if the sg is split and needs to be freed up
- * @static_sg: Static scatterlist entry for overriding data
- * @sgt: scatterlist table for DMA API use
- */
+ 
 struct sa_mapped_sg {
 	bool mapped;
 	enum dma_data_direction dir;
@@ -177,16 +132,7 @@ struct sa_mapped_sg {
 	struct scatterlist *split_sg;
 	struct sg_table sgt;
 };
-/**
- * struct sa_rx_data: RX Packet miscellaneous data place holder
- * @req: crypto request data pointer
- * @ddev: pointer to the DMA device
- * @tx_in: dma_async_tx_descriptor pointer for rx channel
- * @mapped_sg: Information on tx (0) and rx (1) scatterlist DMA mapping
- * @enc: Flag indicating either encryption or decryption
- * @enc_iv_size: Initialisation vector size
- * @iv_idx: Initialisation vector index
- */
+ 
 struct sa_rx_data {
 	void *req;
 	struct device *ddev;
@@ -197,26 +143,7 @@ struct sa_rx_data {
 	u8 iv_idx;
 };
 
-/**
- * struct sa_req: SA request definition
- * @dev: device for the request
- * @size: total data to the xmitted via DMA
- * @enc_offset: offset of cipher data
- * @enc_size: data to be passed to cipher engine
- * @enc_iv: cipher IV
- * @auth_offset: offset of the authentication data
- * @auth_size: size of the authentication data
- * @auth_iv: authentication IV
- * @type: algorithm type for the request
- * @cmdl: command label pointer
- * @base: pointer to the base request
- * @ctx: pointer to the algorithm context data
- * @enc: true if this is an encode request
- * @src: source data
- * @dst: destination data
- * @callback: DMA callback for the request
- * @mdata_size: metadata size passed to DMA
- */
+ 
 struct sa_req {
 	struct device *dev;
 	u16 size;
@@ -237,10 +164,7 @@ struct sa_req {
 	u16 mdata_size;
 };
 
-/*
- * Mode Control Instructions for various Key lengths 128, 192, 256
- * For CBC (Cipher Block Chaining) mode for encryption
- */
+ 
 static u8 mci_cbc_enc_array[3][MODE_CONTROL_BYTES] = {
 	{	0x61, 0x00, 0x00, 0x18, 0x88, 0x0a, 0xaa, 0x4b, 0x7e, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -253,10 +177,7 @@ static u8 mci_cbc_enc_array[3][MODE_CONTROL_BYTES] = {
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	},
 };
 
-/*
- * Mode Control Instructions for various Key lengths 128, 192, 256
- * For CBC (Cipher Block Chaining) mode for decryption
- */
+ 
 static u8 mci_cbc_dec_array[3][MODE_CONTROL_BYTES] = {
 	{	0x71, 0x00, 0x00, 0x80, 0x8a, 0xca, 0x98, 0xf4, 0x40, 0xc0,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -269,10 +190,7 @@ static u8 mci_cbc_dec_array[3][MODE_CONTROL_BYTES] = {
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	},
 };
 
-/*
- * Mode Control Instructions for various Key lengths 128, 192, 256
- * For CBC (Cipher Block Chaining) mode for encryption
- */
+ 
 static u8 mci_cbc_enc_no_iv_array[3][MODE_CONTROL_BYTES] = {
 	{	0x21, 0x00, 0x00, 0x18, 0x88, 0x0a, 0xaa, 0x4b, 0x7e, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -285,10 +203,7 @@ static u8 mci_cbc_enc_no_iv_array[3][MODE_CONTROL_BYTES] = {
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	},
 };
 
-/*
- * Mode Control Instructions for various Key lengths 128, 192, 256
- * For CBC (Cipher Block Chaining) mode for decryption
- */
+ 
 static u8 mci_cbc_dec_no_iv_array[3][MODE_CONTROL_BYTES] = {
 	{	0x31, 0x00, 0x00, 0x80, 0x8a, 0xca, 0x98, 0xf4, 0x40, 0xc0,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -301,10 +216,7 @@ static u8 mci_cbc_dec_no_iv_array[3][MODE_CONTROL_BYTES] = {
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	},
 };
 
-/*
- * Mode Control Instructions for various Key lengths 128, 192, 256
- * For ECB (Electronic Code Book) mode for encryption
- */
+ 
 static u8 mci_ecb_enc_array[3][27] = {
 	{	0x21, 0x00, 0x00, 0x80, 0x8a, 0x04, 0xb7, 0x90, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -317,10 +229,7 @@ static u8 mci_ecb_enc_array[3][27] = {
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	},
 };
 
-/*
- * Mode Control Instructions for various Key lengths 128, 192, 256
- * For ECB (Electronic Code Book) mode for decryption
- */
+ 
 static u8 mci_ecb_dec_array[3][27] = {
 	{	0x31, 0x00, 0x00, 0x80, 0x8a, 0x04, 0xb7, 0x90, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -333,11 +242,7 @@ static u8 mci_ecb_dec_array[3][27] = {
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	},
 };
 
-/*
- * Mode Control Instructions for DES algorithm
- * For CBC (Cipher Block Chaining) mode and ECB mode
- * encryption and for decryption respectively
- */
+ 
 static u8 mci_cbc_3des_enc_array[MODE_CONTROL_BYTES] = {
 	0x60, 0x00, 0x00, 0x18, 0x88, 0x52, 0xaa, 0x4b, 0x7e, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -362,12 +267,7 @@ static u8 mci_ecb_3des_dec_array[MODE_CONTROL_BYTES] = {
 	0x00, 0x00, 0x00,
 };
 
-/*
- * Perform 16 byte or 128 bit swizzling
- * The SA2UL Expects the security context to
- * be in little Endian and the bus width is 128 bits or 16 bytes
- * Hence swap 16 bytes at a time from higher to lower address
- */
+ 
 static void sa_swiz_128(u8 *in, u16 len)
 {
 	u8 data[16];
@@ -380,7 +280,7 @@ static void sa_swiz_128(u8 *in, u16 len)
 	}
 }
 
-/* Prepare the ipad and opad from key as per SHA algorithm step 1*/
+ 
 static void prepare_kipad(u8 *k_ipad, const u8 *key, u16 key_sz)
 {
 	int i;
@@ -388,7 +288,7 @@ static void prepare_kipad(u8 *k_ipad, const u8 *key, u16 key_sz)
 	for (i = 0; i < key_sz; i++)
 		k_ipad[i] = key[i] ^ 0x36;
 
-	/* Instead of XOR with 0 */
+	 
 	for (; i < SHA1_BLOCK_SIZE; i++)
 		k_ipad[i] = 0x36;
 }
@@ -400,7 +300,7 @@ static void prepare_kopad(u8 *k_opad, const u8 *key, u16 key_sz)
 	for (i = 0; i < key_sz; i++)
 		k_opad[i] = key[i] ^ 0x5c;
 
-	/* Instead of XOR with 0 */
+	 
 	for (; i < SHA1_BLOCK_SIZE; i++)
 		k_opad[i] = 0x5c;
 }
@@ -462,7 +362,7 @@ static void sa_prepare_iopads(struct algo_data *data, const u8 *key,
 	memzero_explicit(&sha, sizeof(sha));
 }
 
-/* Derive the inverse key used in AES-CBC decryption operation */
+ 
 static inline int sa_aes_inv_key(u8 *inv_key, const u8 *key, u16 key_sz)
 {
 	struct crypto_aes_ctx ctx;
@@ -473,13 +373,13 @@ static inline int sa_aes_inv_key(u8 *inv_key, const u8 *key, u16 key_sz)
 		return -EINVAL;
 	}
 
-	/* work around to get the right inverse for AES_KEYSIZE_192 size keys */
+	 
 	if (key_sz == AES_KEYSIZE_192) {
 		ctx.key_enc[52] = ctx.key_enc[51] ^ ctx.key_enc[46];
 		ctx.key_enc[53] = ctx.key_enc[52] ^ ctx.key_enc[47];
 	}
 
-	/* Based crypto_aes_expand_key logic */
+	 
 	switch (key_sz) {
 	case AES_KEYSIZE_128:
 	case AES_KEYSIZE_192:
@@ -499,28 +399,28 @@ static inline int sa_aes_inv_key(u8 *inv_key, const u8 *key, u16 key_sz)
 	return 0;
 }
 
-/* Set Security context for the encryption engine */
+ 
 static int sa_set_sc_enc(struct algo_data *ad, const u8 *key, u16 key_sz,
 			 u8 enc, u8 *sc_buf)
 {
 	const u8 *mci = NULL;
 
-	/* Set Encryption mode selector to crypto processing */
+	 
 	sc_buf[0] = SA_CRYPTO_PROCESSING;
 
 	if (enc)
 		mci = ad->mci_enc;
 	else
 		mci = ad->mci_dec;
-	/* Set the mode control instructions in security context */
+	 
 	if (mci)
 		memcpy(&sc_buf[1], mci, MODE_CONTROL_BYTES);
 
-	/* For AES-CBC decryption get the inverse key */
+	 
 	if (ad->inv_key && !enc) {
 		if (sa_aes_inv_key(&sc_buf[SC_ENC_KEY_OFFSET], key, key_sz))
 			return -EINVAL;
-	/* For all other cases: key is used */
+	 
 	} else {
 		memcpy(&sc_buf[SC_ENC_KEY_OFFSET], key, key_sz);
 	}
@@ -528,24 +428,24 @@ static int sa_set_sc_enc(struct algo_data *ad, const u8 *key, u16 key_sz,
 	return 0;
 }
 
-/* Set Security context for the authentication engine */
+ 
 static void sa_set_sc_auth(struct algo_data *ad, const u8 *key, u16 key_sz,
 			   u8 *sc_buf)
 {
 	__be32 *ipad = (void *)(sc_buf + 32);
 	__be32 *opad = (void *)(sc_buf + 64);
 
-	/* Set Authentication mode selector to hash processing */
+	 
 	sc_buf[0] = SA_HASH_PROCESSING;
-	/* Auth SW ctrl word: bit[6]=1 (upload computed hash to TLR section) */
+	 
 	sc_buf[1] = SA_UPLOAD_HASH_TO_TLR;
 	sc_buf[1] |= ad->auth_ctrl;
 
-	/* Copy the keys or ipad/opad */
+	 
 	if (ad->keyed_mac)
 		ad->prep_iopad(ad, key, key_sz, ipad, opad);
 	else {
-		/* basic hash */
+		 
 		sc_buf[1] |= SA_BASIC_HASH;
 	}
 }
@@ -561,7 +461,7 @@ static inline void sa_copy_iv(__be32 *out, const u8 *iv, bool size16)
 	}
 }
 
-/* Format general command label */
+ 
 static int sa_format_cmdl_gen(struct sa_cmdl_cfg *cfg, u8 *cmdl,
 			      struct sa_cmdl_upd_info *upd_info)
 {
@@ -571,10 +471,10 @@ static int sa_format_cmdl_gen(struct sa_cmdl_cfg *cfg, u8 *cmdl,
 	u32 *word_ptr = (u32 *)cmdl;
 	int i;
 
-	/* Clear the command label */
+	 
 	memzero_explicit(cmdl, (SA_MAX_CMDL_WORDS * sizeof(u32)));
 
-	/* Iniialize the command update structure */
+	 
 	memzero_explicit(upd_info, sizeof(*upd_info));
 
 	if (cfg->enc_eng_id && cfg->auth_eng_id) {
@@ -594,10 +494,10 @@ static int sa_format_cmdl_gen(struct sa_cmdl_cfg *cfg, u8 *cmdl,
 		upd_info->flags |= SA_CMDL_UPD_ENC;
 		upd_info->enc_size.index = enc_offset >> 2;
 		upd_info->enc_offset.index = upd_info->enc_size.index + 1;
-		/* Encryption command label */
+		 
 		cmdl[enc_offset + SA_CMDL_OFFSET_NESC] = enc_next_eng;
 
-		/* Encryption modes requiring IV */
+		 
 		if (cfg->iv_size) {
 			upd_info->flags |= SA_CMDL_UPD_ENC_IV;
 			upd_info->enc_iv.index =
@@ -635,7 +535,7 @@ static int sa_format_cmdl_gen(struct sa_cmdl_cfg *cfg, u8 *cmdl,
 	return total;
 }
 
-/* Update Command label */
+ 
 static inline void sa_update_cmdl(struct sa_req *req, u32 *cmdl,
 				  struct sa_cmdl_upd_info *upd_info)
 {
@@ -683,7 +583,7 @@ static inline void sa_update_cmdl(struct sa_req *req, u32 *cmdl,
 	}
 }
 
-/* Format SWINFO words to be sent to SA */
+ 
 static
 void sa_set_swinfo(u8 eng_id, u16 sc_id, dma_addr_t sc_phys,
 		   u8 cmdl_present, u8 cmdl_offset, u8 flags,
@@ -702,7 +602,7 @@ void sa_set_swinfo(u8 eng_id, u16 sc_id, dma_addr_t sc_phys,
 	swinfo[2] |= FIELD_PREP(SA_SW2_EGRESS_LENGTH, hash_size);
 }
 
-/* Dump the security context */
+ 
 static void sa_dump_sc(u8 *buf, dma_addr_t dma_addr)
 {
 #ifdef DEBUG
@@ -746,7 +646,7 @@ int sa_init_sc(struct sa_ctx_info *ctx, const struct sa_match_data *match_data,
 		ad->hash_size = ad->iv_out_size;
 	}
 
-	/* SCCTL Owner info: 0=host, 1=CP_ACE */
+	 
 	sc_buf[SA_CTX_SCCTL_OWNER_OFFSET] = 0;
 	memcpy(&sc_buf[2], &sc_id, 2);
 	sc_buf[4] = 0x0;
@@ -754,22 +654,22 @@ int sa_init_sc(struct sa_ctx_info *ctx, const struct sa_match_data *match_data,
 	sc_buf[6] = match_data->priv;
 	sc_buf[7] = 0x0;
 
-	/* Prepare context for encryption engine */
+	 
 	if (ad->enc_eng.sc_size) {
 		if (sa_set_sc_enc(ad, enc_key, enc_key_sz, enc,
 				  &sc_buf[enc_sc_offset]))
 			return -EINVAL;
 	}
 
-	/* Prepare context for authentication engine */
+	 
 	if (ad->auth_eng.sc_size)
 		sa_set_sc_auth(ad, auth_key, auth_key_sz,
 			       &sc_buf[auth_sc_offset]);
 
-	/* Set the ownership of context to CP_ACE */
+	 
 	sc_buf[SA_CTX_SCCTL_OWNER_OFFSET] = 0x80;
 
-	/* swizzle the security context */
+	 
 	sa_swiz_128(sc_buf, SA_CTX_MAX_SZ);
 
 	sa_set_swinfo(first_engine, ctx->sc_id, ctx->sc_phys, 1, 0,
@@ -780,7 +680,7 @@ int sa_init_sc(struct sa_ctx_info *ctx, const struct sa_match_data *match_data,
 	return 0;
 }
 
-/* Free the per direction context memory */
+ 
 static void sa_free_ctx_info(struct sa_ctx_info *ctx,
 			     struct sa_crypto_data *data)
 {
@@ -909,7 +809,7 @@ static int sa_cipher_setkey(struct crypto_skcipher *tfm, const u8 *key,
 	if (ret)
 		return ret;
 
-	/* Setup Encryption Security Context & Command label template */
+	 
 	if (sa_init_sc(&ctx->enc, ctx->dev_data->match_data, key, keylen, NULL, 0,
 		       ad, 1, &ctx->enc.epib[1]))
 		goto badkey;
@@ -922,7 +822,7 @@ static int sa_cipher_setkey(struct crypto_skcipher *tfm, const u8 *key,
 
 	ctx->enc.cmdl_size = cmdl_len;
 
-	/* Setup Decryption Security Context & Command label template */
+	 
 	if (sa_init_sc(&ctx->dec, ctx->dev_data->match_data, key, keylen, NULL, 0,
 		       ad, 0, &ctx->dec.epib[1]))
 		goto badkey;
@@ -948,7 +848,7 @@ static int sa_aes_cbc_setkey(struct crypto_skcipher *tfm, const u8 *key,
 			     unsigned int keylen)
 {
 	struct algo_data ad = { 0 };
-	/* Convert the key size (16/24/32) to the key size index (0/1/2) */
+	 
 	int key_idx = (keylen >> 3) - 2;
 
 	if (key_idx >= 3)
@@ -968,7 +868,7 @@ static int sa_aes_ecb_setkey(struct crypto_skcipher *tfm, const u8 *key,
 			     unsigned int keylen)
 {
 	struct algo_data ad = { 0 };
-	/* Convert the key size (16/24/32) to the key size index (0/1/2) */
+	 
 	int key_idx = (keylen >> 3) - 2;
 
 	if (key_idx >= 3)
@@ -1111,14 +1011,7 @@ static int sa_run(struct sa_req *req)
 		dir_src = DMA_BIDIRECTIONAL;
 	}
 
-	/*
-	 * SA2UL has an interesting feature where the receive DMA channel
-	 * is selected based on the data passed to the engine. Within the
-	 * transition range, there is also a space where it is impossible
-	 * to determine where the data will end up, and this should be
-	 * avoided. This will be handled by the SW fallback mechanism by
-	 * the individual algorithm implementations.
-	 */
+	 
 	if (req->size >= 256)
 		dma_rx = pdata->dma_rx2;
 	else
@@ -1142,12 +1035,7 @@ static int sa_run(struct sa_req *req)
 
 	cmdl[sa_ctx->cmdl_size / sizeof(u32)] = req->type;
 
-	/*
-	 * Map the packets, first we check if the data fits into a single
-	 * sg entry and use that if possible. If it does not fit, we check
-	 * if we need to do sg_split to align the scatterlist data on the
-	 * actual data size being processed by the crypto engine.
-	 */
+	 
 	src = req->src;
 	sg_nents = sg_nents_for_len(src, req->size);
 
@@ -1267,10 +1155,7 @@ static int sa_run(struct sa_req *req)
 		goto err_cleanup;
 	}
 
-	/*
-	 * Prepare metadata for DMA engine. This essentially describes the
-	 * crypto algorithm to be used, data sizes, different keys etc.
-	 */
+	 
 	mdptr = (u32 *)dmaengine_desc_get_metadata_ptr(tx_out, &pl, &ml);
 
 	sa_prepare_tx_desc(mdptr, (sa_ctx->cmdl_size + (SA_PSDATA_CTX_WORDS *
@@ -1307,7 +1192,7 @@ static int sa_cipher_run(struct skcipher_request *req, u8 *iv, int enc)
 	if (req->cryptlen % alg->cra_blocksize)
 		return -EINVAL;
 
-	/* Use SW fallback if the data size is not supported */
+	 
 	if (req->cryptlen > SA_MAX_DATA_SZ ||
 	    (req->cryptlen >= SA_UNSAFE_DATA_SZ_MIN &&
 	     req->cryptlen <= SA_UNSAFE_DATA_SZ_MAX)) {
@@ -1469,7 +1354,7 @@ static int sa_sha_setup(struct sa_tfm_ctx *ctx, struct  algo_data *ad)
 	cfg.akey_len = 0;
 
 	ctx->dev_data = dev_get_drvdata(sa_k3_dev);
-	/* Setup Encryption Security Context & Command label template */
+	 
 	if (sa_init_sc(&ctx->enc, ctx->dev_data->match_data, NULL, 0, NULL, 0,
 		       ad, 0, &ctx->enc.epib[1]))
 		goto badkey;
@@ -1509,7 +1394,7 @@ static int sa_sha_cra_init_alg(struct crypto_tfm *tfm, const char *alg_base)
 				alg_base);
 			return PTR_ERR(ctx->shash);
 		}
-		/* for fallback */
+		 
 		ctx->fallback.ahash =
 			crypto_alloc_ahash(alg_base, 0,
 					   CRYPTO_ALG_NEED_FALLBACK);
@@ -1796,7 +1681,7 @@ static void sa_exit_tfm_aead(struct crypto_aead *tfm)
 	sa_free_ctx_info(&ctx->dec, data);
 }
 
-/* AEAD algorithm configuration interface function */
+ 
 static int sa_aead_setkey(struct crypto_aead *authenc,
 			  const u8 *key, unsigned int keylen,
 			  struct algo_data *ad)
@@ -1810,7 +1695,7 @@ static int sa_aead_setkey(struct crypto_aead *authenc,
 	if (crypto_authenc_extractkeys(&keys, key, keylen) != 0)
 		return -EINVAL;
 
-	/* Convert the key size (16/24/32) to the key size index (0/1/2) */
+	 
 	key_idx = (keys.enckeylen >> 3) - 2;
 	if (key_idx >= 3)
 		return -EINVAL;
@@ -1836,7 +1721,7 @@ static int sa_aead_setkey(struct crypto_aead *authenc,
 	cfg.akey = keys.authkey;
 	cfg.akey_len = keys.authkeylen;
 
-	/* Setup Encryption Security Context & Command label template */
+	 
 	if (sa_init_sc(&ctx->enc, ctx->dev_data->match_data, keys.enckey,
 		       keys.enckeylen, keys.authkey, keys.authkeylen,
 		       ad, 1, &ctx->enc.epib[1]))
@@ -1850,7 +1735,7 @@ static int sa_aead_setkey(struct crypto_aead *authenc,
 
 	ctx->enc.cmdl_size = cmdl_len;
 
-	/* Setup Decryption Security Context & Command label template */
+	 
 	if (sa_init_sc(&ctx->dec, ctx->dev_data->match_data, keys.enckey,
 		       keys.enckeylen, keys.authkey, keys.authkeylen,
 		       ad, 0, &ctx->dec.epib[1]))
@@ -1956,13 +1841,13 @@ static int sa_aead_run(struct aead_request *req, u8 *iv, int enc)
 	return sa_run(&sa_req);
 }
 
-/* AEAD algorithm encrypt interface function */
+ 
 static int sa_aead_encrypt(struct aead_request *req)
 {
 	return sa_aead_run(req, req->iv, 1);
 }
 
-/* AEAD algorithm decrypt interface function */
+ 
 static int sa_aead_decrypt(struct aead_request *req)
 {
 	return sa_aead_run(req, req->iv, 0);
@@ -2203,7 +2088,7 @@ static struct sa_alg_tmpl sa_algs[] = {
 	},
 };
 
-/* Register the algorithms in crypto framework */
+ 
 static void sa_register_algos(struct sa_crypto_data *dev_data)
 {
 	const struct sa_match_data *match_data = dev_data->match_data;
@@ -2213,7 +2098,7 @@ static void sa_register_algos(struct sa_crypto_data *dev_data)
 	int i, err;
 
 	for (i = 0; i < ARRAY_SIZE(sa_algs); i++) {
-		/* Skip unsupported algos */
+		 
 		if (!(match_data->supported_algos & BIT(i)))
 			continue;
 
@@ -2241,7 +2126,7 @@ static void sa_register_algos(struct sa_crypto_data *dev_data)
 	}
 }
 
-/* Unregister the algorithms in crypto framework */
+ 
 static void sa_unregister_algos(const struct device *dev)
 {
 	u32 type;
@@ -2265,7 +2150,7 @@ static void sa_unregister_algos(const struct device *dev)
 static int sa_init_mem(struct sa_crypto_data *dev_data)
 {
 	struct device *dev = &dev_data->pdev->dev;
-	/* Setup dma pool for security context buffers */
+	 
 	dev_data->sc_pool = dma_pool_create("keystone-sc", dev,
 					    SA_CTX_MAX_SZ, 64, 0);
 	if (!dev_data->sc_pool) {
@@ -2437,7 +2322,7 @@ static int sa_ul_probe(struct platform_device *pdev)
 	      SA_EEC_CPPI_PORT_IN_EN | SA_EEC_CPPI_PORT_OUT_EN |
 	      SA_EEC_TRNG_EN;
 	status = readl_relaxed(saul_base + SA_ENGINE_STATUS);
-	/* Only enable engines if all are not already enabled */
+	 
 	if (val & ~status)
 		writel_relaxed(val, saul_base + SA_ENGINE_ENABLE_CONTROL);
 

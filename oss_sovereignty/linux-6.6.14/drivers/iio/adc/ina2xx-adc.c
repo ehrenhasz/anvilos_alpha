@@ -1,24 +1,4 @@
-/*
- * INA2XX Current and Power Monitors
- *
- * Copyright 2015 Baylibre SAS.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * Based on linux/drivers/iio/adc/ad7291.c
- * Copyright 2010-2011 Analog Devices Inc.
- *
- * Based on linux/drivers/hwmon/ina2xx.c
- * Copyright 2012 Lothar Felten <l-felten@ti.com>
- *
- * Licensed under the GPL-2 or later.
- *
- * IIO driver for INA219-220-226-230-231
- *
- * Configurable 7-bit I2C slave address from 0x40 to 0x4F
- */
+ 
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -35,12 +15,12 @@
 
 #include <linux/platform_data/ina2xx.h>
 
-/* INA2XX registers definition */
+ 
 #define INA2XX_CONFIG                   0x00
-#define INA2XX_SHUNT_VOLTAGE            0x01	/* readonly */
-#define INA2XX_BUS_VOLTAGE              0x02	/* readonly */
-#define INA2XX_POWER                    0x03	/* readonly */
-#define INA2XX_CURRENT                  0x04	/* readonly */
+#define INA2XX_SHUNT_VOLTAGE            0x01	 
+#define INA2XX_BUS_VOLTAGE              0x02	 
+#define INA2XX_POWER                    0x03	 
+#define INA2XX_CURRENT                  0x04	 
 #define INA2XX_CALIBRATION              0x05
 
 #define INA226_MASK_ENABLE		0x06
@@ -48,53 +28,50 @@
 
 #define INA2XX_MAX_REGISTERS            8
 
-/* settings - depend on use case */
-#define INA219_CONFIG_DEFAULT           0x399F	/* PGA=1/8, BRNG=32V */
+ 
+#define INA219_CONFIG_DEFAULT           0x399F	 
 #define INA219_DEFAULT_IT		532
-#define INA219_DEFAULT_BRNG             1   /* 32V */
-#define INA219_DEFAULT_PGA              125 /* 1000/8 */
+#define INA219_DEFAULT_BRNG             1    
+#define INA219_DEFAULT_PGA              125  
 #define INA226_CONFIG_DEFAULT           0x4327
 #define INA226_DEFAULT_AVG              4
 #define INA226_DEFAULT_IT		1110
 
 #define INA2XX_RSHUNT_DEFAULT           10000
 
-/*
- * bit masks for reading the settings in the configuration register
- * FIXME: use regmap_fields.
- */
+ 
 #define INA2XX_MODE_MASK	GENMASK(3, 0)
 
-/* Gain for VShunt: 1/8 (default), 1/4, 1/2, 1 */
+ 
 #define INA219_PGA_MASK		GENMASK(12, 11)
 #define INA219_SHIFT_PGA(val)	((val) << 11)
 
-/* VBus range: 32V (default), 16V */
+ 
 #define INA219_BRNG_MASK	BIT(13)
 #define INA219_SHIFT_BRNG(val)	((val) << 13)
 
-/* Averaging for VBus/VShunt/Power */
+ 
 #define INA226_AVG_MASK		GENMASK(11, 9)
 #define INA226_SHIFT_AVG(val)	((val) << 9)
 
-/* Integration time for VBus */
+ 
 #define INA219_ITB_MASK		GENMASK(10, 7)
 #define INA219_SHIFT_ITB(val)	((val) << 7)
 #define INA226_ITB_MASK		GENMASK(8, 6)
 #define INA226_SHIFT_ITB(val)	((val) << 6)
 
-/* Integration time for VShunt */
+ 
 #define INA219_ITS_MASK		GENMASK(6, 3)
 #define INA219_SHIFT_ITS(val)	((val) << 3)
 #define INA226_ITS_MASK		GENMASK(5, 3)
 #define INA226_SHIFT_ITS(val)	((val) << 3)
 
-/* INA219 Bus voltage register, low bits are flags */
+ 
 #define INA219_OVF		BIT(0)
 #define INA219_CNVR		BIT(1)
 #define INA219_BUS_VOLTAGE_SHIFT	3
 
-/* Cosmetic macro giving the sampling period for a full P=UxI cycle */
+ 
 #define SAMPLING_PERIOD(c)	((c->int_time_vbus + c->int_time_vshunt) \
 				 * c->avg)
 
@@ -127,10 +104,10 @@ struct ina2xx_config {
 	const char *name;
 	u16 config_default;
 	int calibration_value;
-	int shunt_voltage_lsb;	/* nV */
-	int bus_voltage_shift;	/* position of lsb */
-	int bus_voltage_lsb;	/* uV */
-	/* fixed relation between current and power lsb, uW/uA */
+	int shunt_voltage_lsb;	 
+	int bus_voltage_shift;	 
+	int bus_voltage_lsb;	 
+	 
 	int power_lsb_factor;
 	enum ina2xx_ids chip_id;
 };
@@ -142,12 +119,12 @@ struct ina2xx_chip_info {
 	struct mutex state_lock;
 	unsigned int shunt_resistor_uohm;
 	int avg;
-	int int_time_vbus; /* Bus voltage integration time uS */
-	int int_time_vshunt; /* Shunt voltage integration time uS */
-	int range_vbus; /* Bus voltage maximum in V */
-	int pga_gain_vshunt; /* Shunt voltage PGA gain */
+	int int_time_vbus;  
+	int int_time_vshunt;  
+	int range_vbus;  
+	int pga_gain_vshunt;  
 	bool allow_async_readout;
-	/* data buffer needs space for channel data and timestamp */
+	 
 	struct {
 		u16 chan[4];
 		u64 ts __aligned(8);
@@ -215,10 +192,7 @@ static int ina2xx_read_raw(struct iio_dev *indio_dev,
 		return IIO_VAL_INT_PLUS_MICRO;
 
 	case IIO_CHAN_INFO_SAMP_FREQ:
-		/*
-		 * Sample freq is read only, it is a consequence of
-		 * 1/AVG*(CT_bus+CT_shunt).
-		 */
+		 
 		*val = DIV_ROUND_CLOSEST(1000000, SAMPLING_PERIOD(chip));
 
 		return IIO_VAL_INT;
@@ -226,33 +200,25 @@ static int ina2xx_read_raw(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_SCALE:
 		switch (chan->address) {
 		case INA2XX_SHUNT_VOLTAGE:
-			/* processed (mV) = raw * lsb(nV) / 1000000 */
+			 
 			*val = chip->config->shunt_voltage_lsb;
 			*val2 = 1000000;
 			return IIO_VAL_FRACTIONAL;
 
 		case INA2XX_BUS_VOLTAGE:
-			/* processed (mV) = raw * lsb (uV) / 1000 */
+			 
 			*val = chip->config->bus_voltage_lsb;
 			*val2 = 1000;
 			return IIO_VAL_FRACTIONAL;
 
 		case INA2XX_CURRENT:
-			/*
-			 * processed (mA) = raw * current_lsb (mA)
-			 * current_lsb (mA) = shunt_voltage_lsb (nV) /
-			 *                    shunt_resistor (uOhm)
-			 */
+			 
 			*val = chip->config->shunt_voltage_lsb;
 			*val2 = chip->shunt_resistor_uohm;
 			return IIO_VAL_FRACTIONAL;
 
 		case INA2XX_POWER:
-			/*
-			 * processed (mW) = raw * power_lsb (mW)
-			 * power_lsb (mW) = power_lsb_factor (mW/mA) *
-			 *                  current_lsb (mA)
-			 */
+			 
 			*val = chip->config->power_lsb_factor *
 			       chip->config->shunt_voltage_lsb;
 			*val2 = chip->shunt_resistor_uohm;
@@ -277,12 +243,7 @@ static int ina2xx_read_raw(struct iio_dev *indio_dev,
 	return -EINVAL;
 }
 
-/*
- * Available averaging rates for ina226. The indices correspond with
- * the bit values expected by the chip (according to the ina226 datasheet,
- * table 3 AVG bit settings, found at
- * https://www.ti.com/lit/ds/symlink/ina226.pdf.
- */
+ 
 static const int ina226_avg_tab[] = { 1, 4, 16, 64, 128, 256, 512, 1024 };
 
 static int ina226_set_average(struct ina2xx_chip_info *chip, unsigned int val,
@@ -304,7 +265,7 @@ static int ina226_set_average(struct ina2xx_chip_info *chip, unsigned int val,
 	return 0;
 }
 
-/* Conversion times in uS */
+ 
 static const int ina226_conv_time_tab[] = { 140, 204, 332, 588, 1100,
 					    2116, 4156, 8244 };
 
@@ -346,7 +307,7 @@ static int ina226_set_int_time_vshunt(struct ina2xx_chip_info *chip,
 	return 0;
 }
 
-/* Conversion times in uS. */
+ 
 static const int ina219_conv_time_tab_subsample[] = { 84, 148, 276, 532 };
 static const int ina219_conv_time_tab_average[] = { 532, 1060, 2130, 4260,
 						    8510, 17020, 34050, 68100};
@@ -562,13 +523,7 @@ static ssize_t ina2xx_allow_async_readout_store(struct device *dev,
 	return len;
 }
 
-/*
- * Calibration register is set to the best value, which eliminates
- * truncation errors on calculating current register in hardware.
- * According to datasheet (INA 226: eq. 3, INA219: eq. 4) the best values
- * are 2048 for ina226 and 4096 for ina219. They are hardcoded as
- * calibration_value.
- */
+ 
 static int ina2xx_set_calibration(struct ina2xx_chip_info *chip)
 {
 	return regmap_write(chip->regmap, INA2XX_CALIBRATION,
@@ -648,10 +603,7 @@ static ssize_t ina2xx_shunt_resistor_store(struct device *dev,
 	} \
 }
 
-/*
- * Sampling Freq is a consequence of the integration times of
- * the Voltage channels.
- */
+ 
 #define INA219_CHAN_VOLTAGE(_index, _address, _shift) { \
 	.type = IIO_VOLTAGE, \
 	.address = (_address), \
@@ -716,17 +668,7 @@ static int ina2xx_conversion_ready(struct iio_dev *indio_dev)
 	int ret;
 	unsigned int alert;
 
-	/*
-	 * Because the timer thread and the chip conversion clock
-	 * are asynchronous, the period difference will eventually
-	 * result in reading V[k-1] again, or skip V[k] at time Tk.
-	 * In order to resync the timer with the conversion process
-	 * we check the ConVersionReadyFlag.
-	 * On hardware that supports using the ALERT pin to toggle a
-	 * GPIO a triggered buffer could be used instead.
-	 * For now, we do an extra read of the MASK_ENABLE register (INA226)
-	 * resp. the BUS_VOLTAGE register (INA219).
-	 */
+	 
 	if (chip->config->chip_id == ina226) {
 		ret = regmap_read(chip->regmap,
 				  INA226_MASK_ENABLE, &alert);
@@ -751,10 +693,7 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
 
 	time = iio_get_time_ns(indio_dev);
 
-	/*
-	 * Single register reads: bulk_read will not work with ina226/219
-	 * as there is no auto-increment of the register pointer.
-	 */
+	 
 	for_each_set_bit(bit, indio_dev->active_scan_mask,
 			 indio_dev->masklength) {
 		unsigned int val;
@@ -781,10 +720,7 @@ static int ina2xx_capture_thread(void *data)
 	struct timespec64 next, now, delta;
 	s64 delay_us;
 
-	/*
-	 * Poll a bit faster than the chip internal Fs, in case
-	 * we wish to sync with the conversion ready flag.
-	 */
+	 
 	if (!chip->allow_async_readout)
 		sampling_us -= 200;
 
@@ -796,10 +732,7 @@ static int ina2xx_capture_thread(void *data)
 			if (ret < 0)
 				return ret;
 
-			/*
-			 * If the conversion was not yet finished,
-			 * reset the reference timestamp.
-			 */
+			 
 			if (ret == 0)
 				ktime_get_ts64(&next);
 			else
@@ -812,12 +745,7 @@ static int ina2xx_capture_thread(void *data)
 
 		ktime_get_ts64(&now);
 
-		/*
-		 * Advance the timestamp for the next poll by one sampling
-		 * interval, and sleep for the remainder (next - now)
-		 * In case "next" has already passed, the interval is added
-		 * multiple times, i.e. samples are dropped.
-		 */
+		 
 		do {
 			timespec64_add_ns(&next, 1000 * sampling_us);
 			delta = timespec64_sub(next, now);
@@ -885,7 +813,7 @@ static int ina2xx_debug_reg(struct iio_dev *indio_dev,
 	return regmap_read(chip->regmap, reg, readval);
 }
 
-/* Possible integration times for vshunt and vbus */
+ 
 static IIO_CONST_ATTR_NAMED(ina219_integration_time_available,
 			    integration_time_available,
 			    "0.000084 0.000148 0.000276 0.000532 0.001060 0.002130 0.004260 0.008510 0.017020 0.034050 0.068100");
@@ -939,7 +867,7 @@ static const struct iio_info ina226_info = {
 	.debugfs_reg_access = ina2xx_debug_reg,
 };
 
-/* Initialize the configuration and calibration registers. */
+ 
 static int ina2xx_init(struct ina2xx_chip_info *chip, unsigned int config)
 {
 	int ret = regmap_write(chip->regmap, INA2XX_CONFIG, config);
@@ -964,7 +892,7 @@ static int ina2xx_probe(struct i2c_client *client)
 
 	chip = iio_priv(indio_dev);
 
-	/* This is only used for device removal purposes. */
+	 
 	i2c_set_clientdata(client, indio_dev);
 
 	chip->regmap = devm_regmap_init_i2c(client, &ina2xx_regmap_config);
@@ -996,7 +924,7 @@ static int ina2xx_probe(struct i2c_client *client)
 	if (ret)
 		return ret;
 
-	/* Patch the current config register with default. */
+	 
 	val = chip->config->config_default;
 
 	if (type == ina226) {
@@ -1045,7 +973,7 @@ static void ina2xx_remove(struct i2c_client *client)
 
 	iio_device_unregister(indio_dev);
 
-	/* Powerdown */
+	 
 	ret = regmap_update_bits(chip->regmap, INA2XX_CONFIG,
 				 INA2XX_MODE_MASK, 0);
 	if (ret)

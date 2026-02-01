@@ -1,15 +1,15 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2019-2021 Intel Corporation. All rights reserved.
-//
-// Author: Cezary Rojewski <cezary.rojewski@intel.com>
-// Converted to SOF client:
-//  Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-//  Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-//
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <sound/hdaudio_ext.h>
@@ -79,7 +79,7 @@ static int hda_probes_compr_set_params(struct sof_client_dev *cdev,
 	int bps, ret;
 
 	dmab = cstream->runtime->dma_buffer_p;
-	/* compr params do not store bit depth, default to S32_LE */
+	 
 	bps = snd_pcm_format_physical_width(SNDRV_PCM_FORMAT_S32_LE);
 	if (bps < 0)
 		return bps;
@@ -125,7 +125,7 @@ static int hda_probes_compr_pointer(struct sof_client_dev *cdev,
 	return 0;
 }
 
-/* SOF client implementation */
+ 
 static const struct sof_probes_host_ops hda_probes_ops = {
 	.startup = hda_probes_compr_startup,
 	.shutdown = hda_probes_compr_shutdown,

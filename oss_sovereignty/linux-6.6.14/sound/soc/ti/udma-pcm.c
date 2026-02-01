@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2020 Texas Instruments Incorporated - https://www.ti.com
- *  Author: Peter Ujfalusi <peter.ujfalusi@ti.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <sound/core.h>

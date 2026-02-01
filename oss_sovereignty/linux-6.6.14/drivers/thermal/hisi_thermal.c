@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HiSilicon thermal sensor driver
- *
- * Copyright (c) 2014-2015 HiSilicon Limited.
- * Copyright (c) 2014-2015 Linaro Limited.
- *
- * Xinwei Kong <kong.kongxinwei@hisilicon.com>
- * Leo Yan <leo.yan@linaro.org>
- */
+
+ 
 
 #include <linux/cpufreq.h>
 #include <linux/delay.h>
@@ -81,24 +73,7 @@ struct hisi_thermal_data {
 	int nr_sensors;
 };
 
-/*
- * The temperature computation on the tsensor is as follow:
- *	Unit: millidegree Celsius
- *	Step: 200/255 (0.7843)
- *	Temperature base: -60°C
- *
- * The register is programmed in temperature steps, every step is 785
- * millidegree and begins at -60 000 m°C
- *
- * The temperature from the steps:
- *
- *	Temp = TempBase + (steps x 785)
- *
- * and the steps from the temperature:
- *
- *	steps = (Temp - TempBase) / 785
- *
- */
+ 
 static inline int hi6220_thermal_step_to_temp(int step)
 {
 	return HI6220_TEMP_BASE + (step * HI6220_TEMP_STEP);
@@ -109,14 +84,7 @@ static inline int hi6220_thermal_temp_to_step(int temp)
 	return DIV_ROUND_UP(temp - HI6220_TEMP_BASE, HI6220_TEMP_STEP);
 }
 
-/*
- * for Hi3660,
- *	Step: 189/922 (0.205)
- *	Temperature base: -63.780°C
- *
- * The register is programmed in temperature steps, every step is 205
- * millidegree and begins at -63 780 m°C
- */
+ 
 static inline int hi3660_thermal_step_to_temp(int step)
 {
 	return HI3660_TEMP_BASE + step * HI3660_TEMP_STEP;
@@ -127,37 +95,7 @@ static inline int hi3660_thermal_temp_to_step(int temp)
 	return DIV_ROUND_UP(temp - HI3660_TEMP_BASE, HI3660_TEMP_STEP);
 }
 
-/*
- * The lag register contains 5 bits encoding the temperature in steps.
- *
- * Each time the temperature crosses the threshold boundary, an
- * interrupt is raised. It could be when the temperature is going
- * above the threshold or below. However, if the temperature is
- * fluctuating around this value due to the load, we can receive
- * several interrupts which may not desired.
- *
- * We can setup a temperature representing the delta between the
- * threshold and the current temperature when the temperature is
- * decreasing.
- *
- * For instance: the lag register is 5°C, the threshold is 65°C, when
- * the temperature reaches 65°C an interrupt is raised and when the
- * temperature decrease to 65°C - 5°C another interrupt is raised.
- *
- * A very short lag can lead to an interrupt storm, a long lag
- * increase the latency to react to the temperature changes.  In our
- * case, that is not really a problem as we are polling the
- * temperature.
- *
- * [0:4] : lag register
- *
- * The temperature is coded in steps, cf. HI6220_TEMP_STEP.
- *
- * Min : 0x00 :  0.0 °C
- * Max : 0x1F : 24.3 °C
- *
- * The 'value' parameter is in milliCelsius.
- */
+ 
 static inline void hi6220_thermal_set_lag(void __iomem *addr, int value)
 {
 	writel(DIV_ROUND_UP(value, HI6220_TEMP_STEP) & 0x1F,
@@ -200,15 +138,7 @@ static inline int hi6220_thermal_get_temperature(void __iomem *addr)
 	return hi6220_thermal_step_to_temp(readl(addr + HI6220_TEMP0_VALUE));
 }
 
-/*
- * [0:6] lag register
- *
- * The temperature is coded in steps, cf. HI3660_TEMP_STEP.
- *
- * Min : 0x00 :  0.0 °C
- * Max : 0x7F : 26.0 °C
- *
- */
+ 
 static inline void hi3660_thermal_set_lag(void __iomem *addr,
 					  int id, int value)
 {
@@ -239,32 +169,14 @@ static inline int hi3660_thermal_get_temperature(void __iomem *addr, int id)
 	return hi3660_thermal_step_to_temp(readl(addr + HI3660_TEMP(id)));
 }
 
-/*
- * Temperature configuration register - Sensor selection
- *
- * Bits [19:12]
- *
- * 0x0: local sensor (default)
- * 0x1: remote sensor 1 (ACPU cluster 1)
- * 0x2: remote sensor 2 (ACPU cluster 0)
- * 0x3: remote sensor 3 (G3D)
- */
+ 
 static inline void hi6220_thermal_sensor_select(void __iomem *addr, int sensor)
 {
 	writel((readl(addr + HI6220_TEMP0_CFG) & ~HI6220_TEMP0_CFG_SS_MSK) |
 	       (sensor << 12), addr + HI6220_TEMP0_CFG);
 }
 
-/*
- * Temperature configuration register - Hdak conversion polling interval
- *
- * Bits [5:4]
- *
- * 0x0 :   0.768 ms
- * 0x1 :   6.144 ms
- * 0x2 :  49.152 ms
- * 0x3 : 393.216 ms
- */
+ 
 static inline void hi6220_thermal_hdak_set(void __iomem *addr, int value)
 {
 	writel((readl(addr + HI6220_TEMP0_CFG) & ~HI6220_TEMP0_CFG_HDAK_MSK) |
@@ -305,7 +217,7 @@ static int hi6220_thermal_disable_sensor(struct hisi_thermal_sensor *sensor)
 {
 	struct hisi_thermal_data *data = sensor->data;
 
-	/* disable sensor module */
+	 
 	hi6220_thermal_enable(data->regs, 0);
 	hi6220_thermal_alarm_enable(data->regs, 0);
 	hi6220_thermal_reset_enable(data->regs, 0);
@@ -319,7 +231,7 @@ static int hi3660_thermal_disable_sensor(struct hisi_thermal_sensor *sensor)
 {
 	struct hisi_thermal_data *data = sensor->data;
 
-	/* disable sensor module */
+	 
 	hi3660_thermal_alarm_enable(data->regs, sensor->id, 0);
 	return 0;
 }
@@ -329,30 +241,30 @@ static int hi6220_thermal_enable_sensor(struct hisi_thermal_sensor *sensor)
 	struct hisi_thermal_data *data = sensor->data;
 	int ret;
 
-	/* enable clock for tsensor */
+	 
 	ret = clk_prepare_enable(data->clk);
 	if (ret)
 		return ret;
 
-	/* disable module firstly */
+	 
 	hi6220_thermal_reset_enable(data->regs, 0);
 	hi6220_thermal_enable(data->regs, 0);
 
-	/* select sensor id */
+	 
 	hi6220_thermal_sensor_select(data->regs, sensor->id);
 
-	/* setting the hdak time */
+	 
 	hi6220_thermal_hdak_set(data->regs, 0);
 
-	/* setting lag value between current temp and the threshold */
+	 
 	hi6220_thermal_set_lag(data->regs, HI6220_TEMP_LAG);
 
-	/* enable for interrupt */
+	 
 	hi6220_thermal_alarm_set(data->regs, sensor->thres_temp);
 
 	hi6220_thermal_reset_set(data->regs, HI6220_TEMP_RESET);
 
-	/* enable module */
+	 
 	hi6220_thermal_reset_enable(data->regs, 1);
 	hi6220_thermal_enable(data->regs, 1);
 
@@ -367,17 +279,17 @@ static int hi3660_thermal_enable_sensor(struct hisi_thermal_sensor *sensor)
 	unsigned int value;
 	struct hisi_thermal_data *data = sensor->data;
 
-	/* disable interrupt */
+	 
 	hi3660_thermal_alarm_enable(data->regs, sensor->id, 0);
 
-	/* setting lag value between current temp and the threshold */
+	 
 	hi3660_thermal_set_lag(data->regs, sensor->id, HI3660_TEMP_LAG);
 
-	/* set interrupt threshold */
+	 
 	value = hi3660_thermal_temp_to_step(sensor->thres_temp);
 	hi3660_thermal_alarm_set(data->regs, sensor->id, value);
 
-	/* enable interrupt */
+	 
 	hi3660_thermal_alarm_clear(data->regs, sensor->id, 1);
 	hi3660_thermal_alarm_enable(data->regs, sensor->id, 1);
 
@@ -525,7 +437,7 @@ static const struct of_device_id of_hisi_thermal_match[] = {
 		.compatible = "hisilicon,hi3660-tsensor",
 		.data = &hi3660_ops,
 	},
-	{ /* end */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_hisi_thermal_match);
 

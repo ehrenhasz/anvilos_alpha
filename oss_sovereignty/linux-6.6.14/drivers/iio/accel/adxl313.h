@@ -1,16 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * ADXL313 3-Axis Digital Accelerometer
- *
- * Copyright (c) 2021 Lucas Stankus <lucas.p.stankus@gmail.com>
- */
+ 
+ 
 
 #ifndef _ADXL313_H_
 #define _ADXL313_H_
 
 #include <linux/iio/iio.h>
 
-/* ADXL313 register definitions */
+ 
 #define ADXL313_REG_DEVID0		0x00
 #define ADXL313_REG_DEVID1		0x01
 #define ADXL313_REG_PARTID		0x02
@@ -63,7 +59,7 @@ enum adxl313_device_type {
 struct adxl313_data {
 	struct regmap	*regmap;
 	const struct adxl313_chip_info *chip_info;
-	struct mutex	lock; /* lock to protect transf_buf */
+	struct mutex	lock;  
 	__le16		transf_buf __aligned(IIO_DMA_MINALIGN);
 };
 
@@ -82,4 +78,4 @@ int adxl313_core_probe(struct device *dev,
 		       struct regmap *regmap,
 		       const struct adxl313_chip_info *chip_info,
 		       int (*setup)(struct device *, struct regmap *));
-#endif /* _ADXL313_H_ */
+#endif  

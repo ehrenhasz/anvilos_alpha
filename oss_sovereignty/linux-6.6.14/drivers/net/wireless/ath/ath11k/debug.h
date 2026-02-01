@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef _ATH11K_DEBUG_H_
 #define _ATH11K_DEBUG_H_
@@ -65,9 +62,7 @@ static inline const char *ath11k_dbg_str(enum ath11k_debug_mask mask)
 	case ATH11K_DBG_CE:
 		return "ce";
 
-	/* no default handler to allow compiler to check that the
-	 * enum is fully handled
-	 */
+	 
 	}
 
 	return "<?>";
@@ -87,7 +82,7 @@ void ath11k_dbg_dump(struct ath11k_base *ab,
 		     enum ath11k_debug_mask mask,
 		     const char *msg, const char *prefix,
 		     const void *buf, size_t len);
-#else /* CONFIG_ATH11K_DEBUG */
+#else  
 static inline int __ath11k_dbg(struct ath11k_base *ab,
 			       enum ath11k_debug_mask dbg_mask,
 			       const char *fmt, ...)
@@ -101,7 +96,7 @@ static inline void ath11k_dbg_dump(struct ath11k_base *ab,
 				   const void *buf, size_t len)
 {
 }
-#endif /* CONFIG_ATH11K_DEBUG */
+#endif  
 
 #define ath11k_dbg(ar, dbg_mask, fmt, ...)			\
 do {								\
@@ -110,4 +105,4 @@ do {								\
 		__ath11k_dbg(ar, dbg_mask, fmt, ##__VA_ARGS__);	\
 } while (0)
 
-#endif /* _ATH11K_DEBUG_H_ */
+#endif  

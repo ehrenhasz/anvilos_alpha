@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright 2015-2020 Amazon.com, Inc. or its affiliates. All rights reserved.
- */
+
+ 
 
 #include "ena_eth_com.h"
 
@@ -25,9 +23,7 @@ static struct ena_eth_io_rx_cdesc_base *ena_com_get_next_rx_cdesc(
 	if (desc_phase != expected_phase)
 		return NULL;
 
-	/* Make sure we read the rest of the descriptor after the phase bit
-	 * has been read
-	 */
+	 
 	dma_rmb();
 
 	return cdesc;
@@ -69,18 +65,16 @@ static int ena_com_write_bounce_buffer_to_dev(struct ena_com_io_sq *io_sq,
 			   io_sq->qid, io_sq->entries_in_tx_burst_left);
 	}
 
-	/* Make sure everything was written into the bounce buffer before
-	 * writing the bounce buffer to the device
-	 */
+	 
 	wmb();
 
-	/* The line is completed. Copy it to dev */
+	 
 	__iowrite64_copy(io_sq->desc_addr.pbuf_dev_addr + dst_offset,
 			 bounce_buffer, (llq_info->desc_list_entry_size) / 8);
 
 	io_sq->tail++;
 
-	/* Switch phase bit in case of wrap around */
+	 
 	if (unlikely((io_sq->tail & (io_sq->q_depth - 1)) == 0))
 		io_sq->phase ^= 1;
 
@@ -150,7 +144,7 @@ static int ena_com_close_bounce_buffer(struct ena_com_io_sq *io_sq)
 	if (unlikely(io_sq->mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_HOST))
 		return 0;
 
-	/* bounce buffer was used, so write it and get a new one */
+	 
 	if (likely(pkt_ctrl->idx)) {
 		rc = ena_com_write_bounce_buffer_to_dev(io_sq,
 							pkt_ctrl->curr_bounce_buf);
@@ -217,7 +211,7 @@ static int ena_com_sq_update_tail(struct ena_com_io_sq *io_sq)
 
 	io_sq->tail++;
 
-	/* Switch phase bit in case of wrap around */
+	 
 	if (unlikely((io_sq->tail & (io_sq->q_depth - 1)) == 0))
 		io_sq->phase ^= 1;
 
@@ -287,16 +281,16 @@ static int ena_com_create_meta(struct ena_com_io_sq *io_sq,
 
 	meta_desc->len_ctrl |= ENA_ETH_IO_TX_META_DESC_EXT_VALID_MASK;
 
-	/* bits 0-9 of the mss */
+	 
 	meta_desc->word2 |= ((u32)ena_meta->mss <<
 		ENA_ETH_IO_TX_META_DESC_MSS_LO_SHIFT) &
 		ENA_ETH_IO_TX_META_DESC_MSS_LO_MASK;
-	/* bits 10-13 of the mss */
+	 
 	meta_desc->len_ctrl |= ((ena_meta->mss >> 10) <<
 		ENA_ETH_IO_TX_META_DESC_MSS_HI_SHIFT) &
 		ENA_ETH_IO_TX_META_DESC_MSS_HI_MASK;
 
-	/* Extended meta desc */
+	 
 	meta_desc->len_ctrl |= ENA_ETH_IO_TX_META_DESC_ETH_META_TYPE_MASK;
 	meta_desc->len_ctrl |= ((u32)io_sq->phase <<
 		ENA_ETH_IO_TX_META_DESC_PHASE_SHIFT) &
@@ -324,9 +318,7 @@ static int ena_com_create_and_store_tx_meta_desc(struct ena_com_io_sq *io_sq,
 {
 	struct ena_com_tx_meta *ena_meta = &ena_tx_ctx->ena_meta;
 
-	/* When disable meta caching is set, don't bother to save the meta and
-	 * compare it to the stored version, just create the meta
-	 */
+	 
 	if (io_sq->disable_meta_caching) {
 		*have_meta = true;
 		return ena_com_create_meta(io_sq, ena_meta);
@@ -334,7 +326,7 @@ static int ena_com_create_and_store_tx_meta_desc(struct ena_com_io_sq *io_sq,
 
 	if (ena_com_meta_desc_changed(io_sq, ena_tx_ctx)) {
 		*have_meta = true;
-		/* Cache the meta desc */
+		 
 		memcpy(&io_sq->cached_tx_meta, ena_meta,
 		       sizeof(struct ena_com_tx_meta));
 		return ena_com_create_meta(io_sq, ena_meta);
@@ -374,9 +366,9 @@ static void ena_com_rx_set_flags(struct ena_com_io_cq *io_cq,
 		   ena_rx_ctx->hash, ena_rx_ctx->frag, cdesc->status);
 }
 
-/*****************************************************************************/
-/*****************************     API      **********************************/
-/*****************************************************************************/
+ 
+ 
+ 
 
 int ena_com_prepare_tx(struct ena_com_io_sq *io_sq,
 		       struct ena_com_tx_ctx *ena_tx_ctx,
@@ -394,7 +386,7 @@ int ena_com_prepare_tx(struct ena_com_io_sq *io_sq,
 
 	WARN(io_sq->direction != ENA_COM_IO_QUEUE_DIRECTION_TX, "wrong Q type");
 
-	/* num_bufs +1 for potential meta desc */
+	 
 	if (unlikely(!ena_com_sq_have_enough_space(io_sq, num_bufs + 1))) {
 		netdev_dbg(ena_com_io_sq_to_ena_dev(io_sq)->net_device,
 			   "Not enough space in the tx queue\n");
@@ -426,7 +418,7 @@ int ena_com_prepare_tx(struct ena_com_io_sq *io_sq,
 		return rc;
 	}
 
-	/* If the caller doesn't want to send packets */
+	 
 	if (unlikely(!num_bufs && !header_len)) {
 		rc = ena_com_close_bounce_buffer(io_sq);
 		if (rc)
@@ -441,7 +433,7 @@ int ena_com_prepare_tx(struct ena_com_io_sq *io_sq,
 		return -EFAULT;
 	memset(desc, 0x0, sizeof(struct ena_eth_io_tx_desc));
 
-	/* Set first desc when we don't have meta descriptor */
+	 
 	if (!have_meta)
 		desc->len_ctrl |= ENA_ETH_IO_TX_DESC_FIRST_MASK;
 
@@ -453,7 +445,7 @@ int ena_com_prepare_tx(struct ena_com_io_sq *io_sq,
 
 	desc->len_ctrl |= ENA_ETH_IO_TX_DESC_COMP_REQ_MASK;
 
-	/* Bits 0-9 */
+	 
 	desc->meta_ctrl |= ((u32)ena_tx_ctx->req_id <<
 		ENA_ETH_IO_TX_DESC_REQ_ID_LO_SHIFT) &
 		ENA_ETH_IO_TX_DESC_REQ_ID_LO_MASK;
@@ -462,7 +454,7 @@ int ena_com_prepare_tx(struct ena_com_io_sq *io_sq,
 		ENA_ETH_IO_TX_DESC_DF_SHIFT) &
 		ENA_ETH_IO_TX_DESC_DF_MASK;
 
-	/* Bits 10-15 */
+	 
 	desc->len_ctrl |= ((ena_tx_ctx->req_id >> 10) <<
 		ENA_ETH_IO_TX_DESC_REQ_ID_HI_SHIFT) &
 		ENA_ETH_IO_TX_DESC_REQ_ID_HI_MASK;
@@ -488,7 +480,7 @@ int ena_com_prepare_tx(struct ena_com_io_sq *io_sq,
 	}
 
 	for (i = 0; i < num_bufs; i++) {
-		/* The first desc share the same desc as the header */
+		 
 		if (likely(i != 0)) {
 			rc = ena_com_sq_update_tail(io_sq);
 			if (unlikely(rc)) {
@@ -520,7 +512,7 @@ int ena_com_prepare_tx(struct ena_com_io_sq *io_sq,
 		ena_bufs++;
 	}
 
-	/* set the last desc indicator */
+	 
 	desc->len_ctrl |= ENA_ETH_IO_TX_DESC_LAST_MASK;
 
 	rc = ena_com_sq_update_tail(io_sq);
@@ -582,14 +574,14 @@ int ena_com_rx_pkt(struct ena_com_io_cq *io_cq,
 
 	} while (1);
 
-	/* Update SQ head ptr */
+	 
 	io_sq->next_to_comp += nb_hw_desc;
 
 	netdev_dbg(ena_com_io_cq_to_ena_dev(io_cq)->net_device,
 		   "[%s][QID#%d] Updating SQ head to: %d\n", __func__,
 		   io_sq->qid, io_sq->next_to_comp);
 
-	/* Get rx flags from the last pkt */
+	 
 	ena_com_rx_set_flags(io_cq, ena_rx_ctx, cdesc);
 
 	ena_rx_ctx->descs = nb_hw_desc;

@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the  BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		IPv4 Forwarding Information Base: policy rules.
- *
- * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
- *		Thomas Graf <tgraf@suug.ch>
- *
- * Fixes:
- *		Rani Assaf	:	local_rule cannot be deleted
- *		Marc Boucher	:	routing by fwmark
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -87,7 +74,7 @@ int __fib_lookup(struct net *net, struct flowi4 *flp,
 	};
 	int err;
 
-	/* update flow if oif or iif point to device enslaved to l3mdev */
+	 
 	l3mdev_update_flow(net, flowi4_to_flowi(flp));
 
 	err = fib_rules_lookup(net->ipv4.rules_ops, flowi4_to_flowi(flp), 0, &arg);
@@ -154,15 +141,11 @@ INDIRECT_CALLABLE_SCOPE bool fib4_rule_suppress(struct fib_rule *rule,
 		dev = nhc->nhc_dev;
 	}
 
-	/* do not accept result if the route does
-	 * not meet the required prefix length
-	 */
+	 
 	if (result->prefixlen <= rule->suppress_prefixlen)
 		goto suppress_route;
 
-	/* do not accept result if the route uses a device
-	 * belonging to a forbidden interface group
-	 */
+	 
 	if (rule->suppress_ifgroup != -1 && dev && dev->group == rule->suppress_ifgroup)
 		goto suppress_route;
 
@@ -231,14 +214,14 @@ static int fib4_rule_configure(struct fib_rule *rule, struct sk_buff *skb,
 			       "Invalid dsfield (tos): ECN bits must be 0");
 		goto errout;
 	}
-	/* IPv4 currently doesn't handle high order DSCP bits correctly */
+	 
 	if (frh->tos & ~IPTOS_TOS_MASK) {
 		NL_SET_ERR_MSG(extack, "Invalid tos");
 		goto errout;
 	}
 	rule4->dscp = inet_dsfield_to_dscp(frh->tos);
 
-	/* split local/main if they are not already split */
+	 
 	err = fib_unmerge(net);
 	if (err)
 		goto errout;
@@ -291,7 +274,7 @@ static int fib4_rule_delete(struct fib_rule *rule)
 	struct net *net = rule->fr_net;
 	int err;
 
-	/* split local/main if they are not already split */
+	 
 	err = fib_unmerge(net);
 	if (err)
 		goto errout;
@@ -364,9 +347,9 @@ nla_put_failure:
 
 static size_t fib4_rule_nlmsg_payload(struct fib_rule *rule)
 {
-	return nla_total_size(4) /* dst */
-	       + nla_total_size(4) /* src */
-	       + nla_total_size(4); /* flow */
+	return nla_total_size(4)  
+	       + nla_total_size(4)  
+	       + nla_total_size(4);  
 }
 
 static void fib4_rule_flush_cache(struct fib_rules_ops *ops)
@@ -425,7 +408,7 @@ int __net_init fib4_rules_init(struct net *net)
 	return 0;
 
 fail:
-	/* also cleans all rules already added */
+	 
 	fib_rules_unregister(ops);
 	return err;
 }

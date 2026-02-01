@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * soc-apci-intel-rpl-match.c - tables and support for RPL ACPI enumeration.
- *
- * Copyright (c) 2022 Intel Corporation.
- */
+
+ 
 
 #include <sound/soc-acpi.h>
 #include <sound/soc-acpi-intel-match.h>
@@ -67,7 +63,7 @@ static const struct snd_soc_acpi_adr_device rt711_sdca_2_adr[] = {
 
 static const struct snd_soc_acpi_adr_device rt1316_1_group1_adr[] = {
 	{
-		.adr = 0x000131025D131601ull, /* unique ID is set for some reason */
+		.adr = 0x000131025D131601ull,  
 		.num_endpoints = 1,
 		.endpoints = &spk_l_endpoint,
 		.name_prefix = "rt1316-1"
@@ -412,7 +408,7 @@ struct snd_soc_acpi_mach snd_soc_acpi_intel_rpl_machines[] = {
 	{
 		.comp_ids = &rpl_essx_83x6,
 		.drv_name = "sof-essx8336",
-		.sof_tplg_filename = "sof-rpl-es83x6", /* the tplg suffix is added at run time */
+		.sof_tplg_filename = "sof-rpl-es83x6",  
 		.tplg_quirk_mask = SND_SOC_ACPI_TPLG_INTEL_SSP_NUMBER |
 					SND_SOC_ACPI_TPLG_INTEL_SSP_MSB |
 					SND_SOC_ACPI_TPLG_INTEL_DMIC_NUMBER,
@@ -426,64 +422,64 @@ struct snd_soc_acpi_mach snd_soc_acpi_intel_rpl_machines[] = {
 };
 EXPORT_SYMBOL_GPL(snd_soc_acpi_intel_rpl_machines);
 
-/* this table is used when there is no I2S codec present */
+ 
 struct snd_soc_acpi_mach snd_soc_acpi_intel_rpl_sdw_machines[] = {
 	{
-		.link_mask = 0xF, /* 4 active links required */
+		.link_mask = 0xF,  
 		.links = rpl_sdca_3_in_1,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-rpl-rt711-l0-rt1316-l13-rt714-l2.tplg",
 	},
 	{
-		.link_mask = 0xF, /* 4 active links required */
+		.link_mask = 0xF,  
 		.links = rpl_sdw_rt711_link2_rt1316_link01_rt714_link3,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-rpl-rt711-l2-rt1316-l01-rt714-l3.tplg",
 	},
 	{
-		.link_mask = 0xF, /* 4 active links required */
+		.link_mask = 0xF,  
 		.links = rpl_sdw_rt711_link0_rt1316_link12_rt714_link3,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-rpl-rt711-l0-rt1316-l12-rt714-l3.tplg",
 	},
 	{
-		.link_mask = 0xF, /* 4 active links required */
+		.link_mask = 0xF,  
 		.links = rpl_sdw_rt711_link0_rt1318_link12_rt714_link3,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-rpl-rt711-l0-rt1318-l12-rt714-l3.tplg",
 	},
 	{
-		.link_mask = 0x7, /* rt711 on link0 & two rt1318s on link1 and link2 */
+		.link_mask = 0x7,  
 		.links = rpl_sdw_rt711_link0_rt1318_link12,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-rpl-rt711-l0-rt1318-l12.tplg",
 	},
 	{
-		.link_mask = 0x7, /* rt714 on link0 & two rt1316s on link1 and link2 */
+		.link_mask = 0x7,  
 		.links = rpl_sdw_rt1316_link12_rt714_link0,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-rpl-rt1316-l12-rt714-l0.tplg",
 	},
 	{
-		.link_mask = 0x7, /* rt711 on link2 & two rt1316s on link0 and link1 */
+		.link_mask = 0x7,  
 		.links = rpl_sdw_rt711_link2_rt1316_link01,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-rpl-rt711-l2-rt1316-l01.tplg",
 	},
 	{
-		.link_mask = 0x1, /* link0 required */
+		.link_mask = 0x1,  
 		.links = rpl_rvp,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-rpl-rt711-l0.tplg",
 	},
 	{
-		.link_mask = 0x1, /* link0 required */
+		.link_mask = 0x1,  
 		.links = rpl_sdca_rvp,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-rpl-rt711-l0.tplg",
 	},
 	{
-		.link_mask = 0x4, /* link2 required */
+		.link_mask = 0x4,  
 		.links = rplp_crb,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-rpl-rt711-l2.tplg",

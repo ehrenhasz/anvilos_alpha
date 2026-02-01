@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Verification of builtin signatures
- *
- * Copyright 2019 Google LLC
- */
 
-/*
- * This file implements verification of fs-verity builtin signatures.  Please
- * take great care before using this feature.  It is not the only way to do
- * signatures with fs-verity, and the alternatives (such as userspace signature
- * verification, and IMA appraisal) can be much better.  For details about the
- * limitations of this feature, see Documentation/filesystems/fsverity.rst.
- */
+ 
+
+ 
 
 #include "fsverity_private.h"
 
@@ -20,31 +10,13 @@
 #include <linux/slab.h>
 #include <linux/verification.h>
 
-/*
- * /proc/sys/fs/verity/require_signatures
- * If 1, all verity files must have a valid builtin signature.
- */
+ 
 int fsverity_require_signatures;
 
-/*
- * Keyring that contains the trusted X.509 certificates.
- *
- * Only root (kuid=0) can modify this.  Also, root may use
- * keyctl_restrict_keyring() to prevent any more additions.
- */
+ 
 static struct key *fsverity_keyring;
 
-/**
- * fsverity_verify_signature() - check a verity file's signature
- * @vi: the file's fsverity_info
- * @signature: the file's built-in signature
- * @sig_size: size of signature in bytes, or 0 if no signature
- *
- * If the file includes a signature of its fs-verity file digest, verify it
- * against the certificates in the fs-verity keyring.
- *
- * Return: 0 on success (signature valid or not required); -errno on failure
- */
+ 
 int fsverity_verify_signature(const struct fsverity_info *vi,
 			      const u8 *signature, size_t sig_size)
 {
@@ -63,16 +35,7 @@ int fsverity_verify_signature(const struct fsverity_info *vi,
 	}
 
 	if (fsverity_keyring->keys.nr_leaves_on_tree == 0) {
-		/*
-		 * The ".fs-verity" keyring is empty, due to builtin signatures
-		 * being supported by the kernel but not actually being used.
-		 * In this case, verify_pkcs7_signature() would always return an
-		 * error, usually ENOKEY.  It could also be EBADMSG if the
-		 * PKCS#7 is malformed, but that isn't very important to
-		 * distinguish.  So, just skip to ENOKEY to avoid the attack
-		 * surface of the PKCS#7 parser, which would otherwise be
-		 * reachable by any task able to execute FS_IOC_ENABLE_VERITY.
-		 */
+		 
 		fsverity_err(inode,
 			     "fs-verity keyring is empty, rejecting signed file!");
 		return -ENOKEY;

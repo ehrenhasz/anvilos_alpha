@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Greybus Host Device
- *
- * Copyright 2014-2015 Google Inc.
- * Copyright 2014-2015 Linaro Ltd.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -68,7 +63,7 @@ void gb_hd_cport_release_reserved(struct gb_host_device *hd, u16 cport_id)
 }
 EXPORT_SYMBOL_GPL(gb_hd_cport_release_reserved);
 
-/* Locking: Caller guarantees serialisation */
+ 
 int gb_hd_cport_allocate(struct gb_host_device *hd, int cport_id,
 			 unsigned long flags)
 {
@@ -92,7 +87,7 @@ int gb_hd_cport_allocate(struct gb_host_device *hd, int cport_id,
 	return ida_simple_get(id_map, ida_start, ida_end, GFP_KERNEL);
 }
 
-/* Locking: Caller guarantees serialisation */
+ 
 void gb_hd_cport_release(struct gb_host_device *hd, u16 cport_id)
 {
 	if (hd->driver->cport_release) {
@@ -129,10 +124,7 @@ struct gb_host_device *gb_hd_create(struct gb_hd_driver *driver,
 	struct gb_host_device *hd;
 	int ret;
 
-	/*
-	 * Validate that the driver implements all of the callbacks
-	 * so that we don't have to every time we make them.
-	 */
+	 
 	if ((!driver->message_send) || (!driver->message_cancel)) {
 		dev_err(parent, "mandatory hd-callbacks missing\n");
 		return ERR_PTR(-EINVAL);
@@ -148,10 +140,7 @@ struct gb_host_device *gb_hd_create(struct gb_hd_driver *driver,
 		return ERR_PTR(-EINVAL);
 	}
 
-	/*
-	 * Make sure to never allocate messages larger than what the Greybus
-	 * protocol supports.
-	 */
+	 
 	if (buffer_size_max > GB_OPERATION_MESSAGE_SIZE_MAX) {
 		dev_warn(parent, "limiting buffer size to %u\n",
 			 GB_OPERATION_MESSAGE_SIZE_MAX);
@@ -221,10 +210,7 @@ void gb_hd_del(struct gb_host_device *hd)
 {
 	trace_gb_hd_del(hd);
 
-	/*
-	 * Tear down the svc and flush any on-going hotplug processing before
-	 * removing the remaining interfaces.
-	 */
+	 
 	gb_svc_del(hd->svc);
 
 	device_del(&hd->dev);

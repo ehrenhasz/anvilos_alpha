@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// ALSA SoC Audio driver for CS47L92 codec
-//
-// Copyright (C) 2016-2019 Cirrus Logic, Inc. and
-//                         Cirrus Logic International Semiconductor Ltd.
-//
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -83,13 +83,13 @@ static int cs47l92_put_demux(struct snd_kcontrol *kcontrol,
 	if (ret != 0)
 		dev_warn(madera->dev, "Failed to read outputs: %d\n", ret);
 
-	/* EP_SEL should not be modified while HPOUT3 or 4 is enabled */
+	 
 	ret = regmap_update_bits(madera->regmap, MADERA_OUTPUT_ENABLES_1,
 				 MADERA_OUT3L_ENA | MADERA_OUT3R_ENA, 0);
 	if (ret)
 		dev_warn(madera->dev, "Failed to disable outputs: %d\n", ret);
 
-	usleep_range(2000, 3000); /* wait for wseq to complete */
+	usleep_range(2000, 3000);  
 
 	ret = regmap_update_bits(madera->regmap, MADERA_OUTPUT_ENABLES_1,
 				 MADERA_EP_SEL, ep_sel);
@@ -109,11 +109,11 @@ static int cs47l92_put_demux(struct snd_kcontrol *kcontrol,
 	if (ret) {
 		dev_warn(madera->dev, "Failed to restore outputs: %d\n", ret);
 	} else {
-		/* wait for wseq */
+		 
 		if (cur & (MADERA_OUT3L_ENA | MADERA_OUT3R_ENA))
-			msleep(34); /* enable delay */
+			msleep(34);  
 		else
-			usleep_range(2000, 3000); /* disable delay */
+			usleep_range(2000, 3000);  
 	}
 
 end:
@@ -901,10 +901,7 @@ SND_SOC_DAPM_PGA("SPD1TX2", MADERA_SPD1_TX_CONTROL,
 SND_SOC_DAPM_OUT_DRV("SPD1", MADERA_SPD1_TX_CONTROL,
 		     MADERA_SPD1_ENA_SHIFT, 0, NULL, 0),
 
-/*
- * mux_in widgets : arranged in the order of sources
- * specified in MADERA_MIXER_INPUT_ROUTES
- */
+ 
 
 SND_SOC_DAPM_PGA("Noise Generator", MADERA_COMFORT_NOISE_GENERATOR,
 		 MADERA_NOISE_GEN_ENA_SHIFT, 0, NULL, 0),
@@ -1067,7 +1064,7 @@ SND_SOC_DAPM_PGA("ISRC2INT2", MADERA_ISRC_2_CTRL_3,
 
 WM_ADSP2("DSP1", 0, cs47l92_adsp_power_ev),
 
-/* end of ordered widget list */
+ 
 
 SND_SOC_DAPM_PGA("DFC1", MADERA_DFC1_CTRL, MADERA_DFC1_ENA_SHIFT, 0, NULL, 0),
 SND_SOC_DAPM_PGA("DFC2", MADERA_DFC2_CTRL, MADERA_DFC1_ENA_SHIFT, 0, NULL, 0),
@@ -1270,7 +1267,7 @@ SND_SOC_DAPM_OUTPUT("MICSUPP"),
 	{ name, "DFC8", "DFC8" }
 
 static const struct snd_soc_dapm_route cs47l92_dapm_routes[] = {
-	/* Internal clock domains */
+	 
 	{ "EQ1", NULL, "FXCLK" },
 	{ "EQ2", NULL, "FXCLK" },
 	{ "EQ3", NULL, "FXCLK" },
@@ -1978,7 +1975,7 @@ static int cs47l92_probe(struct platform_device *pdev)
 
 	BUILD_BUG_ON(ARRAY_SIZE(cs47l92_dai) > MADERA_MAX_DAI);
 
-	/* quick exit if Madera irqchip driver hasn't completed probe */
+	 
 	if (!madera->irq_dev) {
 		dev_dbg(&pdev->dev, "irqchip driver not ready\n");
 		return -EPROBE_DEFER;
@@ -2039,7 +2036,7 @@ static int cs47l92_probe(struct platform_device *pdev)
 	for (i = 0; i < ARRAY_SIZE(cs47l92_dai); i++)
 		madera_init_dai(&cs47l92->core, i);
 
-	/* Latch volume update bits */
+	 
 	for (i = 0; i < ARRAY_SIZE(cs47l92_digital_vu); i++)
 		regmap_update_bits(madera->regmap, cs47l92_digital_vu[i],
 				   CS47L92_DIG_VU, CS47L92_DIG_VU);

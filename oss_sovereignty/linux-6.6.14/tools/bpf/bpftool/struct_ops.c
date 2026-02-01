@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2020 Facebook */
+
+ 
 
 #include <errno.h>
 #include <stdio.h>
@@ -74,7 +74,7 @@ static __s32 get_map_info_type_id(void)
 	}
 	map_info_type = btf__type_by_id(kern_btf, map_info_type_id);
 
-	/* Ensure map_info_alloc() has at least what the bpftool needs */
+	 
 	map_info_alloc_len = map_info_type->size;
 	if (map_info_alloc_len < sizeof(struct bpf_map_info))
 		map_info_alloc_len = sizeof(struct bpf_map_info);
@@ -82,21 +82,7 @@ static __s32 get_map_info_type_id(void)
 	return map_info_type_id;
 }
 
-/* If the subcmd needs to print out the bpf_map_info,
- * it should always call map_info_alloc to allocate
- * a bpf_map_info object instead of allocating it
- * on the stack.
- *
- * map_info_alloc() will take the running kernel's btf
- * into account.  i.e. it will consider the
- * sizeof(struct bpf_map_info) of the running kernel.
- *
- * It will enable the "struct_ops" cmd to print the latest
- * "struct bpf_map_info".
- *
- * [ Recall that "struct_ops" requires the kernel's btf to
- *   be available ]
- */
+ 
 static struct bpf_map_info *map_info_alloc(__u32 *alloc_len)
 {
 	struct bpf_map_info *info;
@@ -113,20 +99,7 @@ static struct bpf_map_info *map_info_alloc(__u32 *alloc_len)
 	return info;
 }
 
-/* It iterates all struct_ops maps of the system.
- * It returns the fd in "*res_fd" and map_info in "*info".
- * In the very first iteration, info->id should be 0.
- * An optional map "*name" filter can be specified.
- * The filter can be made more flexible in the future.
- * e.g. filter by kernel-struct-ops-name, regex-name, glob-name, ...etc.
- *
- * Return value:
- *     1: A struct_ops map found.  It is returned in "*res_fd" and "*info".
- *	  The caller can continue to call get_next in the future.
- *     0: No struct_ops map is returned.
- *        All struct_ops map has been found.
- *    -1: Error and the caller should abort the iteration.
- */
+ 
 static int get_next_struct_ops_map(const char *name, int *res_fd,
 				   struct bpf_map_info *info, __u32 info_len)
 {
@@ -175,14 +148,11 @@ static int cmd_retval(const struct res *res, bool must_have_one_map)
 	return 0;
 }
 
-/* "data" is the work_func private storage */
+ 
 typedef int (*work_func)(int fd, const struct bpf_map_info *info, void *data,
 			 struct json_writer *wtr);
 
-/* Find all struct_ops map in the system.
- * Filter out by "name" (if specified).
- * Then call "func(fd, info, data, wtr)" on each struct_ops map found.
- */
+ 
 static struct res do_search(const char *name, work_func func, void *data,
 			    struct json_writer *wtr)
 {
@@ -213,19 +183,10 @@ static struct res do_search(const char *name, work_func func, void *data,
 		res.nr_errs++;
 
 	if (!wtr && name && !res.nr_errs && !res.nr_maps)
-		/* It is not printing empty [].
-		 * Thus, needs to specifically say nothing found
-		 * for "name" here.
-		 */
+		 
 		p_err("no struct_ops found for %s", name);
 	else if (!wtr && json_output && !res.nr_errs)
-		/* The "func()" above is not writing any json (i.e. !wtr
-		 * test here).
-		 *
-		 * However, "-j" is enabled and there is no errs here,
-		 * so call json_null() as the current convention of
-		 * other cmds.
-		 */
+		 
 		jsonw_null(json_wtr);
 
 	free(info);
@@ -279,13 +240,7 @@ static struct res do_one_id(const char *id_str, work_func func, void *data,
 	if (func(fd, info, data, wtr))
 		res.nr_errs++;
 	else if (!wtr && json_output)
-		/* The "func()" above is not writing any json (i.e. !wtr
-		 * test here).
-		 *
-		 * However, "-j" is enabled and there is no errs here,
-		 * so call json_null() as the current convention of
-		 * other cmds.
-		 */
+		 
 		jsonw_null(json_wtr);
 
 done:
@@ -357,13 +312,11 @@ static int __do_dump(int fd, const struct bpf_map_info *info, void *data,
 	int zero = 0;
 	void *value;
 
-	/* note: d->jw == wtr */
+	 
 
 	kern_btf = d->btf;
 
-	/* The kernel supporting BPF_MAP_TYPE_STRUCT_OPS must have
-	 * btf_vmlinux_value_type_id.
-	 */
+	 
 	struct_ops_type = btf__type_by_id(kern_btf,
 					  info->btf_vmlinux_value_type_id);
 	struct_ops_name = btf__name_by_offset(kern_btf,
@@ -515,7 +468,7 @@ static int do_register(int argc, char **argv)
 	}
 
 	if (verifier_logs)
-		/* log_level1 + log_level2 + stats, but not stable UAPI */
+		 
 		open_opts.kernel_log_level = 1 + 2 + 4;
 
 	obj = bpf_object__open_file(file, &open_opts);
@@ -544,9 +497,7 @@ static int do_register(int argc, char **argv)
 
 		if (bpf_map_get_info_by_fd(bpf_map__fd(map), &info,
 					   &info_len)) {
-			/* Not p_err.  The struct_ops was attached
-			 * successfully.
-			 */
+			 
 			p_info("Registered %s but can't find id: %s",
 			       bpf_map__name(map), strerror(errno));
 			goto clean_link;

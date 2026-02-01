@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AD7904/AD7914/AD7923/AD7924/AD7908/AD7918/AD7928 SPI ADC driver
- *
- * Copyright 2011 Analog Devices Inc (from AD7923 Driver)
- * Copyright 2012 CS Systemes d'Information
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -24,26 +19,26 @@
 #include <linux/iio/trigger_consumer.h>
 #include <linux/iio/triggered_buffer.h>
 
-#define AD7923_WRITE_CR		BIT(11)		/* write control register */
-#define AD7923_RANGE		BIT(1)		/* range to REFin */
-#define AD7923_CODING		BIT(0)		/* coding is straight binary */
-#define AD7923_PM_MODE_AS	(1)		/* auto shutdown */
-#define AD7923_PM_MODE_FS	(2)		/* full shutdown */
-#define AD7923_PM_MODE_OPS	(3)		/* normal operation */
-#define AD7923_SEQUENCE_OFF	(0)		/* no sequence fonction */
-#define AD7923_SEQUENCE_PROTECT	(2)		/* no interrupt write cycle */
-#define AD7923_SEQUENCE_ON	(3)		/* continuous sequence */
+#define AD7923_WRITE_CR		BIT(11)		 
+#define AD7923_RANGE		BIT(1)		 
+#define AD7923_CODING		BIT(0)		 
+#define AD7923_PM_MODE_AS	(1)		 
+#define AD7923_PM_MODE_FS	(2)		 
+#define AD7923_PM_MODE_OPS	(3)		 
+#define AD7923_SEQUENCE_OFF	(0)		 
+#define AD7923_SEQUENCE_PROTECT	(2)		 
+#define AD7923_SEQUENCE_ON	(3)		 
 
 
-#define AD7923_PM_MODE_WRITE(mode)	((mode) << 4)	 /* write mode */
-#define AD7923_CHANNEL_WRITE(channel)	((channel) << 6) /* write channel */
+#define AD7923_PM_MODE_WRITE(mode)	((mode) << 4)	  
+#define AD7923_CHANNEL_WRITE(channel)	((channel) << 6)  
 #define AD7923_SEQUENCE_WRITE(sequence)	((((sequence) & 1) << 3) \
 					+ (((sequence) & 2) << 9))
-						/* write sequence fonction */
-/* left shift for CR : bit 11 transmit in first */
+						 
+ 
 #define AD7923_SHIFT_REGISTER	4
 
-/* val = value, dec = left shift, bits = number of bits of the mask */
+ 
 #define EXTRACT(val, dec, bits)		(((val) >> (dec)) & ((1 << (bits)) - 1))
 
 struct ad7923_state {
@@ -57,12 +52,7 @@ struct ad7923_state {
 
 	unsigned int			settings;
 
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache lines.
-	 * Ensure rx_buf can be directly used in iio_push_to_buffers_with_timetamp
-	 * Length = 8 channels + 4 extra for 8 byte timestamp
-	 */
+	 
 	__be16				rx_buf[12] __aligned(IIO_DMA_MINALIGN);
 	__be16				tx_buf[4];
 };
@@ -155,9 +145,7 @@ static const struct ad7923_chip_info ad7923_chip_info[] = {
 	},
 };
 
-/*
- * ad7923_update_scan_mode() setup the spi transfer buffer for the new scan mask
- */
+ 
 static int ad7923_update_scan_mode(struct iio_dev *indio_dev,
 				   const unsigned long *active_scan_mask)
 {
@@ -165,10 +153,7 @@ static int ad7923_update_scan_mode(struct iio_dev *indio_dev,
 	int i, cmd, len;
 
 	len = 0;
-	/*
-	 * For this driver the last channel is always the software timestamp so
-	 * skip that one.
-	 */
+	 
 	for_each_set_bit(i, active_scan_mask, indio_dev->num_channels - 1) {
 		cmd = AD7923_WRITE_CR | AD7923_CHANNEL_WRITE(i) |
 			AD7923_SEQUENCE_WRITE(AD7923_SEQUENCE_OFF) |
@@ -176,7 +161,7 @@ static int ad7923_update_scan_mode(struct iio_dev *indio_dev,
 		cmd <<= AD7923_SHIFT_REGISTER;
 		st->tx_buf[len++] = cpu_to_be16(cmd);
 	}
-	/* build spi ring message */
+	 
 	st->ring_xfer[0].tx_buf = &st->tx_buf[0];
 	st->ring_xfer[0].len = len;
 	st->ring_xfer[0].cs_change = 1;
@@ -190,7 +175,7 @@ static int ad7923_update_scan_mode(struct iio_dev *indio_dev,
 		st->ring_xfer[i + 1].cs_change = 1;
 		spi_message_add_tail(&st->ring_xfer[i + 1], &st->ring_msg);
 	}
-	/* make sure last transfer cs_change is not set */
+	 
 	st->ring_xfer[i + 1].cs_change = 0;
 
 	return 0;
@@ -328,7 +313,7 @@ static int ad7923_probe(struct spi_device *spi)
 	indio_dev->num_channels = info->num_channels;
 	indio_dev->info = &ad7923_info;
 
-	/* Setup default message */
+	 
 
 	st->scan_single_xfer[0].tx_buf = &st->tx_buf[0];
 	st->scan_single_xfer[0].len = 2;

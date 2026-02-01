@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdlib.h>
 #include <assert.h>
 #include <stdio.h>
@@ -110,9 +110,7 @@ void item_check_absent(struct radix_tree_root *root, unsigned long index)
 	assert(item == NULL);
 }
 
-/*
- * Scan only the passed (start, start+nr] for present items
- */
+ 
 void item_gang_check_present(struct radix_tree_root *root,
 			unsigned long start, unsigned long nr,
 			int chunk, int hop)
@@ -137,9 +135,7 @@ void item_gang_check_present(struct radix_tree_root *root,
 	}
 }
 
-/*
- * Scan the entire tree, only expecting present items (start, start+nr]
- */
+ 
 void item_full_scan(struct radix_tree_root *root, unsigned long start,
 			unsigned long nr, int chunk)
 {
@@ -149,17 +145,17 @@ void item_full_scan(struct radix_tree_root *root, unsigned long start,
 	int nfound;
 	int i;
 
-//	printf("%s(0x%08lx, 0x%08lx, %d)\n", __FUNCTION__, start, nr, chunk);
+
 
 	while ((nfound = radix_tree_gang_lookup(root, (void **)items, into,
 					chunk))) {
-//		printf("At 0x%08lx, nfound=%d\n", into, nfound);
+
 		for (i = 0; i < nfound; i++) {
 			assert(items[i]->index == this_index);
 			this_index++;
 		}
-//		printf("Found 0x%08lx->0x%08lx\n",
-//			items[0]->index, items[nfound-1]->index);
+
+
 		into = this_index;
 	}
 	if (chunk)
@@ -169,7 +165,7 @@ void item_full_scan(struct radix_tree_root *root, unsigned long start,
 	assert(nfound == 0);
 }
 
-/* Use the same pattern as tag_pages_for_writeback() in mm/page-writeback.c */
+ 
 int tag_tagged_items(struct xarray *xa, unsigned long start, unsigned long end,
 		unsigned batch, xa_mark_t iftag, xa_mark_t thentag)
 {
@@ -205,7 +201,7 @@ static int verify_node(struct radix_tree_node *slot, unsigned int tag,
 
 	slot = entry_to_node(slot);
 
-	/* Verify consistency at this level */
+	 
 	for (i = 0; i < RADIX_TREE_TAG_LONGS; i++) {
 		if (slot->tags[tag][i]) {
 			anyset = 1;
@@ -225,7 +221,7 @@ static int verify_node(struct radix_tree_node *slot, unsigned int tag,
 	}
 	assert(tagged == anyset);
 
-	/* Go for next level */
+	 
 	if (slot->shift > 0) {
 		for (i = 0; i < RADIX_TREE_MAP_SIZE; i++)
 			if (slot->slots[i])

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 #ifndef __WEXT_COMPAT
 #define __WEXT_COMPAT
 
@@ -9,7 +9,7 @@
 #define EXPORT_WEXT_HANDLER(h) EXPORT_SYMBOL_GPL(h)
 #else
 #define EXPORT_WEXT_HANDLER(h)
-#endif /* CONFIG_CFG80211_WEXT_EXPORT */
+#endif  
 
 int cfg80211_ibss_wext_siwfreq(struct net_device *dev,
 			       struct iw_request_info *info,
@@ -61,4 +61,4 @@ int cfg80211_wext_freq(struct iw_freq *freq);
 
 
 extern const struct iw_handler_def cfg80211_wext_handler;
-#endif /* __WEXT_COMPAT */
+#endif  

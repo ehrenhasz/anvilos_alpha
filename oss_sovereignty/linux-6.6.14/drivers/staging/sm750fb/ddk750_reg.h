@@ -1,8 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef DDK750_REG_H__
 #define DDK750_REG_H__
 
-/* New register for SM750LE */
+ 
 #define DE_STATE1                                        0x100054
 #define DE_STATE1_DE_ABORT                               BIT(0)
 
@@ -632,7 +632,7 @@
 #define PANEL_CURRENT_LINE                            0x080034
 #define PANEL_CURRENT_LINE_LINE_MASK                  0x7ff
 
-/* Video Control */
+ 
 
 #define VIDEO_DISPLAY_CTRL                              0x080040
 #define VIDEO_DISPLAY_CTRL_LINE_BUFFER                  BIT(18)
@@ -703,7 +703,7 @@
 #define VIDEO_FB_1_LAST_ADDRESS_EXT                   BIT(27)
 #define VIDEO_FB_1_LAST_ADDRESS_ADDRESS_MASK          0x3ffffff
 
-/* Video Alpha Control */
+ 
 
 #define VIDEO_ALPHA_DISPLAY_CTRL                        0x080080
 #define VIDEO_ALPHA_DISPLAY_CTRL_SELECT                 BIT(28)
@@ -840,7 +840,7 @@
 #define VIDEO_ALPHA_COLOR_LOOKUP_EF_E_GREEN_MASK      (0x3f << 5)
 #define VIDEO_ALPHA_COLOR_LOOKUP_EF_E_BLUE_MASK       0x1f
 
-/* Panel Cursor Control */
+ 
 
 #define PANEL_HWC_ADDRESS                             0x0800F0
 #define PANEL_HWC_ADDRESS_ENABLE                      BIT(31)
@@ -860,7 +860,7 @@
 #define PANEL_HWC_COLOR_3                             0x0800FC
 #define PANEL_HWC_COLOR_3_RGB565_MASK                 0xffff
 
-/* Old Definitions +++ */
+ 
 #define PANEL_HWC_COLOR_01                            0x0800F8
 #define PANEL_HWC_COLOR_01_1_RED_MASK                 (0x1f << 27)
 #define PANEL_HWC_COLOR_01_1_GREEN_MASK               (0x3f << 21)
@@ -873,9 +873,9 @@
 #define PANEL_HWC_COLOR_2_RED_MASK                    (0x1f << 11)
 #define PANEL_HWC_COLOR_2_GREEN_MASK                  (0x3f << 5)
 #define PANEL_HWC_COLOR_2_BLUE_MASK                   0x1f
-/* Old Definitions --- */
+ 
 
-/* Alpha Control */
+ 
 
 #define ALPHA_DISPLAY_CTRL                            0x080100
 #define ALPHA_DISPLAY_CTRL_SELECT                     BIT(28)
@@ -993,12 +993,12 @@
 #define ALPHA_COLOR_LOOKUP_EF_E_GREEN_MASK            (0x3f << 5)
 #define ALPHA_COLOR_LOOKUP_EF_E_BLUE_MASK             0x1f
 
-/* CRT Graphics Control */
+ 
 
 #define CRT_DISPLAY_CTRL                              0x080200
 #define CRT_DISPLAY_CTRL_RESERVED_MASK                0xfb008200
 
-/* SM750LE definition */
+ 
 #define CRT_DISPLAY_CTRL_DPMS_SHIFT                   30
 #define CRT_DISPLAY_CTRL_DPMS_MASK                    (0x3 << 30)
 #define CRT_DISPLAY_CTRL_DPMS_0                       (0x0 << 30)
@@ -1016,7 +1016,7 @@
 #define CRT_DISPLAY_CTRL_CLK_RESERVED                 (0x7 << 27)
 #define CRT_DISPLAY_CTRL_SHIFT_VGA_DAC                BIT(26)
 
-/* SM750LE definition */
+ 
 #define CRT_DISPLAY_CTRL_CRTSELECT                    BIT(25)
 #define CRT_DISPLAY_CTRL_RGBBIT                       BIT(24)
 
@@ -1099,7 +1099,7 @@
 #define CRT_SCALE_HORIZONTAL_MODE                     BIT(15)
 #define CRT_SCALE_HORIZONTAL_SCALE_MASK               0xfff
 
-/* CRT Cursor Control */
+ 
 
 #define CRT_HWC_ADDRESS                               0x080230
 #define CRT_HWC_ADDRESS_ENABLE                        BIT(31)
@@ -1119,7 +1119,7 @@
 #define CRT_HWC_COLOR_3                               0x08023C
 #define CRT_HWC_COLOR_3_RGB565_MASK                   0xffff
 
-/* This vertical expansion below start at 0x080240 ~ 0x080264 */
+ 
 #define CRT_VERTICAL_EXPANSION                        0x080240
 #ifndef VALIDATION_CHIP
     #define CRT_VERTICAL_CENTERING_VALUE_MASK         (0xff << 24)
@@ -1128,7 +1128,7 @@
 #define CRT_VERTICAL_EXPANSION_LINE_BUFFER_MASK       (0xf << 12)
 #define CRT_VERTICAL_EXPANSION_SCALE_FACTOR_MASK      0xfff
 
-/* This horizontal expansion below start at 0x080268 ~ 0x08027C */
+ 
 #define CRT_HORIZONTAL_EXPANSION                      0x080268
 #ifndef VALIDATION_CHIP
     #define CRT_HORIZONTAL_CENTERING_VALUE_MASK       (0xff << 24)
@@ -1137,7 +1137,7 @@
 #define CRT_HORIZONTAL_EXPANSION_SCALE_FACTOR_MASK    0xfff
 
 #ifndef VALIDATION_CHIP
-    /* Auto Centering */
+     
     #define CRT_AUTO_CENTERING_TL                     0x080280
     #define CRT_AUTO_CENTERING_TL_TOP_MASK            (0x7ff << 16)
     #define CRT_AUTO_CENTERING_TL_LEFT_MASK           0x7ff
@@ -1148,17 +1148,17 @@
     #define CRT_AUTO_CENTERING_BR_RIGHT_MASK          0x7ff
 #endif
 
-/* sm750le new register to control panel output */
+ 
 #define DISPLAY_CONTROL_750LE			      0x80288
-/* Palette RAM */
+ 
 
-/* Panel Palette register starts at 0x080400 ~ 0x0807FC */
+ 
 #define PANEL_PALETTE_RAM                             0x080400
 
-/* Panel Palette register starts at 0x080C00 ~ 0x080FFC */
+ 
 #define CRT_PALETTE_RAM                               0x080C00
 
-/* Color Space Conversion registers. */
+ 
 
 #define CSC_Y_SOURCE_BASE                               0x1000C8
 #define CSC_Y_SOURCE_BASE_EXT                           BIT(27)
@@ -1351,7 +1351,7 @@
 #define ZV0_CAPTURE_LINE_COMP                           0x090020
 #define ZV0_CAPTURE_LINE_COMP_LC_MASK                   0x7ff
 
-/* ZV1 */
+ 
 
 #define ZV1_CAPTURE_CTRL                                0x098000
 #define ZV1_CAPTURE_CTRL_FIELD_INPUT                    BIT(27)
@@ -1440,7 +1440,7 @@
 #define DMA_ABORT_INTERRUPT_INT_1                       BIT(1)
 #define DMA_ABORT_INTERRUPT_INT_0                       BIT(0)
 
-/* Default i2c CLK and Data GPIO. These are the default i2c pins */
+ 
 #define DEFAULT_I2C_SCL                     30
 #define DEFAULT_I2C_SDA                     31
 

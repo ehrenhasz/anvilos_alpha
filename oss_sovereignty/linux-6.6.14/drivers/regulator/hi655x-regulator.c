@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Device driver for regulators in Hi655x IC
-//
-// Copyright (c) 2016 HiSilicon Ltd.
-//
-// Authors:
-// Chen Feng <puck.chen@hisilicon.com>
-// Fei  Wang <w.f@huawei.com>
+
+
+
+
+
+
+
+
+
 
 #include <linux/bitops.h>
 #include <linux/device.h>
@@ -27,7 +27,7 @@ struct hi655x_regulator {
 	struct regulator_desc rdesc;
 };
 
-/* LDO7 & LDO10 */
+ 
 static const unsigned int ldo7_voltages[] = {
 	1800000, 1850000, 2850000, 2900000,
 	3000000, 3100000, 3200000, 3300000,

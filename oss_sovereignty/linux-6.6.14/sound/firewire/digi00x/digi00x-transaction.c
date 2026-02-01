@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * digi00x-transaction.c - a part of driver for Digidesign Digi 002/003 family
- *
- * Copyright (c) 2014-2015 Takashi Sakamoto
- */
+
+ 
 
 #include <sound/asound.h>
 #include "digi00x.h"
@@ -39,7 +35,7 @@ int snd_dg00x_transaction_reregister(struct snd_dg00x *dg00x)
 	struct fw_device *device = fw_parent_device(dg00x->unit);
 	__be32 data[2];
 
-	/* Unknown. 4bytes. */
+	 
 	data[0] = cpu_to_be32((device->card->node_id << 16) |
 			      (dg00x->async_handler.offset >> 32));
 	data[1] = cpu_to_be32(dg00x->async_handler.offset);

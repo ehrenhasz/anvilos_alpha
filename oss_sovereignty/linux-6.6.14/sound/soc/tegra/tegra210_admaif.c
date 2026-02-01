@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// tegra210_admaif.c - Tegra ADMAIF driver
-//
-// Copyright (c) 2020 NVIDIA CORPORATION.  All rights reserved.
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -370,20 +370,20 @@ static int tegra_admaif_stop(struct snd_soc_dai *dai, int direction)
 		return -EINVAL;
 	}
 
-	/* Disable TX/RX channel */
+	 
 	regmap_update_bits(admaif->regmap, enable_reg, mask, ~enable);
 
-	/* Wait until ADMAIF TX/RX status is disabled */
+	 
 	err = regmap_read_poll_timeout_atomic(admaif->regmap, status_reg, val,
 					      !(val & enable), 10, 10000);
 	if (err < 0)
 		dev_warn(dai->dev, "timeout: failed to disable ADMAIF%d_%s\n",
 			 dai->id + 1, dir_name);
 
-	/* SW reset */
+	 
 	regmap_update_bits(admaif->regmap, reset_reg, SW_RESET_MASK, SW_RESET);
 
-	/* Wait till SW reset is complete */
+	 
 	err = regmap_read_poll_timeout_atomic(admaif->regmap, reset_reg, val,
 					      !(val & SW_RESET_MASK & SW_RESET),
 					      10, 10000);
@@ -619,10 +619,7 @@ static const char * const tegra_admaif_mono_conv_text[] = {
 	"Zero", "Copy",
 };
 
-/*
- * Below macro is added to avoid looping over all ADMAIFx controls related
- * to mono/stereo conversions in get()/put() callbacks.
- */
+ 
 #define NV_SOC_ENUM_EXT(xname, xreg, xhandler_get, xhandler_put, xenum_text)   \
 {									       \
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,				       \

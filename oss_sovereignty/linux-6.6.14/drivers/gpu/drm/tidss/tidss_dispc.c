@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2016-2018 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Jyri Sarha <jsarha@ti.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -62,10 +59,7 @@ const struct dispc_features dispc_k2g_feats = {
 		[DISPC_VP_DPI] = 150000,
 	},
 
-	/*
-	 * XXX According TRM the RGB input buffer width up to 2560 should
-	 *     work on 3 taps, but in practice it only works up to 1280.
-	 */
+	 
 	.scaling = {
 		.in_width_max_5tap_rgb = 1280,
 		.in_width_max_3tap_rgb = 1280,
@@ -74,13 +68,7 @@ const struct dispc_features dispc_k2g_feats = {
 		.upscale_limit = 16,
 		.downscale_limit_5tap = 4,
 		.downscale_limit_3tap = 2,
-		/*
-		 * The max supported pixel inc value is 255. The value
-		 * of pixel inc is calculated like this: 1+(xinc-1)*bpp.
-		 * The maximum bpp of all formats supported by the HW
-		 * is 8. So the maximum supported xinc value is 32,
-		 * because 1+(32-1)*8 < 255 < 1+(33-1)*4.
-		 */
+		 
 		.xinc_max = 32,
 	},
 
@@ -150,13 +138,7 @@ const struct dispc_features dispc_am65x_feats = {
 		.upscale_limit = 16,
 		.downscale_limit_5tap = 4,
 		.downscale_limit_3tap = 2,
-		/*
-		 * The max supported pixel inc value is 255. The value
-		 * of pixel inc is calculated like this: 1+(xinc-1)*bpp.
-		 * The maximum bpp of all formats supported by the HW
-		 * is 8. So the maximum supported xinc value is 32,
-		 * because 1+(32-1)*8 < 255 < 1+(33-1)*4.
-		 */
+		 
 		.xinc_max = 32,
 	},
 
@@ -179,7 +161,7 @@ const struct dispc_features dispc_am65x_feats = {
 	},
 
 	.num_planes = 2,
-	/* note: vid is plane_id 0 and vidl1 is plane_id 1 */
+	 
 	.vid_name = { "vid", "vidl1" },
 	.vid_lite = { false, true, },
 	.vid_order = { 1, 0 },
@@ -239,13 +221,7 @@ const struct dispc_features dispc_j721e_feats = {
 		.upscale_limit = 16,
 		.downscale_limit_5tap = 4,
 		.downscale_limit_3tap = 2,
-		/*
-		 * The max supported pixel inc value is 255. The value
-		 * of pixel inc is calculated like this: 1+(xinc-1)*bpp.
-		 * The maximum bpp of all formats supported by the HW
-		 * is 8. So the maximum supported xinc value is 32,
-		 * because 1+(32-1)*8 < 255 < 1+(33-1)*4.
-		 */
+		 
 		.xinc_max = 32,
 	},
 
@@ -258,7 +234,7 @@ const struct dispc_features dispc_j721e_feats = {
 	.vp_name = { "vp1", "vp2", "vp3", "vp4" },
 	.ovr_name = { "ovr1", "ovr2", "ovr3", "ovr4" },
 	.vpclk_name = { "vp1", "vp2", "vp3", "vp4" },
-	/* Currently hard coded VP routing (see dispc_initial_config()) */
+	 
 	.vp_bus_type =	{ DISPC_VP_INTERNAL, DISPC_VP_DPI,
 			  DISPC_VP_INTERNAL, DISPC_VP_DPI, },
 	.vp_feat = { .color = {
@@ -287,13 +263,7 @@ const struct dispc_features dispc_am625_feats = {
 		.upscale_limit = 16,
 		.downscale_limit_5tap = 4,
 		.downscale_limit_3tap = 2,
-		/*
-		 * The max supported pixel inc value is 255. The value
-		 * of pixel inc is calculated like this: 1+(xinc-1)*bpp.
-		 * The maximum bpp of all formats supported by the HW
-		 * is 8. So the maximum supported xinc value is 32,
-		 * because 1+(32-1)*8 < 255 < 1+(33-1)*4.
-		 */
+		 
 		.xinc_max = 32,
 	},
 
@@ -316,7 +286,7 @@ const struct dispc_features dispc_am625_feats = {
 	},
 
 	.num_planes = 2,
-	/* note: vid is plane_id 0 and vidl1 is plane_id 1 */
+	 
 	.vid_name = { "vid", "vidl1" },
 	.vid_lite = { false, true, },
 	.vid_order = { 1, 0 },
@@ -412,10 +382,7 @@ static u32 dispc_vp_read(struct dispc_device *dispc, u32 hw_videoport, u16 reg)
 	return ioread32(base + reg);
 }
 
-/*
- * TRM gives bitfields as start:end, where start is the higher bit
- * number. For example 7:0
- */
+ 
 
 static u32 FLD_MASK(u32 start, u32 end)
 {
@@ -619,7 +586,7 @@ dispc_irq_t dispc_k2g_read_and_clear_irqstatus(struct dispc_device *dispc)
 {
 	dispc_irq_t stat = 0;
 
-	/* always clear the top level irqstatus */
+	 
 	dispc_write(dispc, DISPC_IRQSTATUS,
 		    dispc_read(dispc, DISPC_IRQSTATUS));
 
@@ -646,7 +613,7 @@ void dispc_k2g_set_irqenable(struct dispc_device *dispc, dispc_irq_t mask)
 {
 	dispc_irq_t old_mask = dispc_k2g_read_irqenable(dispc);
 
-	/* clear the irqstatus for newly enabled irqs */
+	 
 	dispc_k2g_clear_irqstatus(dispc, (mask ^ old_mask) & mask);
 
 	dispc_k2g_vp_set_irqenable(dispc, 0, mask);
@@ -654,7 +621,7 @@ void dispc_k2g_set_irqenable(struct dispc_device *dispc, dispc_irq_t mask)
 
 	dispc_write(dispc, DISPC_IRQENABLE_SET, (1 << 0) | (1 << 7));
 
-	/* flush posted write */
+	 
 	dispc_k2g_read_irqenable(dispc);
 }
 
@@ -745,7 +712,7 @@ void dispc_k3_clear_irqstatus(struct dispc_device *dispc, dispc_irq_t clearmask)
 
 	dispc_write(dispc, DISPC_IRQSTATUS, top_clear);
 
-	/* Flush posted writes */
+	 
 	dispc_read(dispc, DISPC_IRQSTATUS);
 }
 
@@ -789,23 +756,23 @@ static void dispc_k3_set_irqenable(struct dispc_device *dispc,
 
 	old_mask = dispc_k3_read_irqenable(dispc);
 
-	/* clear the irqstatus for newly enabled irqs */
+	 
 	dispc_k3_clear_irqstatus(dispc, (old_mask ^ mask) & mask);
 
 	for (i = 0; i < dispc->feat->num_vps; ++i) {
 		dispc_k3_vp_set_irqenable(dispc, i, mask);
 		if (mask & DSS_IRQ_VP_MASK(i))
-			main_enable |= BIT(i);		/* VP IRQ */
+			main_enable |= BIT(i);		 
 		else
-			main_disable |= BIT(i);		/* VP IRQ */
+			main_disable |= BIT(i);		 
 	}
 
 	for (i = 0; i < dispc->feat->num_planes; ++i) {
 		dispc_k3_vid_set_irqenable(dispc, i, mask);
 		if (mask & DSS_IRQ_PLANE_MASK(i))
-			main_enable |= BIT(i + 4);	/* VID IRQ */
+			main_enable |= BIT(i + 4);	 
 		else
-			main_disable |= BIT(i + 4);	/* VID IRQ */
+			main_disable |= BIT(i + 4);	 
 	}
 
 	if (main_enable)
@@ -814,7 +781,7 @@ static void dispc_k3_set_irqenable(struct dispc_device *dispc,
 	if (main_disable)
 		dispc_write(dispc, DISPC_IRQENABLE_CLR, main_disable);
 
-	/* Flush posted writes */
+	 
 	dispc_read(dispc, DISPC_IRQENABLE_SET);
 }
 
@@ -962,24 +929,21 @@ static void dispc_enable_oldi(struct dispc_device *dispc, u32 hw_videoport,
 	u32 oldi_reset_bit = BIT(5 + hw_videoport);
 	int count = 0;
 
-	/*
-	 * For the moment DUALMODESYNC, MASTERSLAVE, MODE, and SRC
-	 * bits of DISPC_VP_DSS_OLDI_CFG are set statically to 0.
-	 */
+	 
 
 	if (fmt->data_width == 24)
-		oldi_cfg |= BIT(8); /* MSB */
+		oldi_cfg |= BIT(8);  
 	else if (fmt->data_width != 18)
 		dev_warn(dispc->dev, "%s: %d port width not supported\n",
 			 __func__, fmt->data_width);
 
-	oldi_cfg |= BIT(7); /* DEPOL */
+	oldi_cfg |= BIT(7);  
 
 	oldi_cfg = FLD_MOD(oldi_cfg, fmt->oldi_mode_reg_val, 3, 1);
 
-	oldi_cfg |= BIT(12); /* SOFTRST */
+	oldi_cfg |= BIT(12);  
 
-	oldi_cfg |= BIT(0); /* ENABLE */
+	oldi_cfg |= BIT(0);  
 
 	dispc_vp_write(dispc, hw_videoport, DISPC_VP_DSS_OLDI_CFG, oldi_cfg);
 
@@ -1054,15 +1018,15 @@ void dispc_vp_enable(struct dispc_device *dispc, u32 hw_videoport,
 
 	ipc = !!(tstate->bus_flags & DRM_BUS_FLAG_PIXDATA_DRIVE_NEGEDGE);
 
-	/* always use the 'rf' setting */
+	 
 	onoff = true;
 
 	rf = !!(tstate->bus_flags & DRM_BUS_FLAG_SYNC_DRIVE_POSEDGE);
 
-	/* always use aligned syncs */
+	 
 	align = true;
 
-	/* always use DE_HIGH for OLDI */
+	 
 	if (dispc->feat->vp_bus_type[hw_videoport] == DISPC_VP_OLDI)
 		ieo = false;
 
@@ -1117,7 +1081,7 @@ static u16 c8_to_c12(u8 c8, enum c8_to_c12_mode mode)
 
 	switch (mode) {
 	case C8_TO_C12_REPLICATE:
-		/* Copy c8 4 MSB to 4 LSB for full scale c12 */
+		 
 		c12 |= c8 >> 4;
 		break;
 	case C8_TO_C12_MAX:
@@ -1187,18 +1151,11 @@ enum drm_mode_status dispc_vp_mode_valid(struct dispc_device *dispc,
 	if (mode->vdisplay > 4096)
 		return MODE_BAD;
 
-	/* TODO: add interlace support */
+	 
 	if (mode->flags & DRM_MODE_FLAG_INTERLACE)
 		return MODE_NO_INTERLACE;
 
-	/*
-	 * Enforce the output width is divisible by 2. Actually this
-	 * is only needed in following cases:
-	 * - YUV output selected (BT656, BT1120)
-	 * - Dithering enabled
-	 * - TDM with TDMCycleFormat == 3
-	 * But for simplicity we enforce that always.
-	 */
+	 
 	if ((mode->hdisplay % 2) != 0)
 		return MODE_BAD_HVALUE;
 
@@ -1250,10 +1207,7 @@ void dispc_vp_disable_clk(struct dispc_device *dispc, u32 hw_videoport)
 	clk_disable_unprepare(dispc->vp_clk[hw_videoport]);
 }
 
-/*
- * Calculate the percentage difference between the requested pixel clock rate
- * and the effective rate resulting from calculating the clock divider value.
- */
+ 
 static
 unsigned int dispc_pclk_diff(unsigned long rate, unsigned long real_rate)
 {
@@ -1288,12 +1242,12 @@ int dispc_vp_set_clk_rate(struct dispc_device *dispc, u32 hw_videoport,
 	return 0;
 }
 
-/* OVR */
+ 
 static void dispc_k2g_ovr_set_plane(struct dispc_device *dispc,
 				    u32 hw_plane, u32 hw_videoport,
 				    u32 x, u32 y, u32 layer)
 {
-	/* On k2g there is only one plane and no need for ovr */
+	 
 	dispc_vid_write(dispc, hw_plane, DISPC_VID_K2G_POSITION,
 			x | (y << 16));
 }
@@ -1355,7 +1309,7 @@ void dispc_ovr_enable_layer(struct dispc_device *dispc,
 			!!enable, 0, 0);
 }
 
-/* CSC */
+ 
 enum csc_ctm {
 	CSC_RR, CSC_RG, CSC_RB,
 	CSC_GR, CSC_GG, CSC_GB,
@@ -1441,7 +1395,7 @@ static void dispc_k2g_vid_write_csc(struct dispc_device *dispc, u32 hw_plane,
 		DISPC_VID_CSC_COEF(0), DISPC_VID_CSC_COEF(1),
 		DISPC_VID_CSC_COEF(2), DISPC_VID_CSC_COEF(3),
 		DISPC_VID_CSC_COEF(4), DISPC_VID_CSC_COEF(5),
-		DISPC_VID_CSC_COEF(6), /* K2G has no post offset support */
+		DISPC_VID_CSC_COEF(6),  
 	};
 	u32 regval[DISPC_CSC_REGVAL_LEN];
 	unsigned int i;
@@ -1476,49 +1430,49 @@ static void dispc_k3_vid_write_csc(struct dispc_device *dispc, u32 hw_plane,
 				regval[i]);
 }
 
-/* YUV -> RGB, ITU-R BT.601, full range */
+ 
 static const struct dispc_csc_coef csc_yuv2rgb_bt601_full = {
 	dispc_csc_yuv2rgb_regval,
-	{ 256,   0,  358,	/* ry, rcb, rcr |1.000  0.000  1.402|*/
-	  256, -88, -182,	/* gy, gcb, gcr |1.000 -0.344 -0.714|*/
-	  256, 452,    0, },	/* by, bcb, bcr |1.000  1.772  0.000|*/
-	{    0, -2048, -2048, },	/* full range */
+	{ 256,   0,  358,	 
+	  256, -88, -182,	 
+	  256, 452,    0, },	 
+	{    0, -2048, -2048, },	 
 	{    0,     0,     0, },
 	CLIP_FULL_RANGE,
 	"BT.601 Full",
 };
 
-/* YUV -> RGB, ITU-R BT.601, limited range */
+ 
 static const struct dispc_csc_coef csc_yuv2rgb_bt601_lim = {
 	dispc_csc_yuv2rgb_regval,
-	{ 298,    0,  409,	/* ry, rcb, rcr |1.164  0.000  1.596|*/
-	  298, -100, -208,	/* gy, gcb, gcr |1.164 -0.392 -0.813|*/
-	  298,  516,    0, },	/* by, bcb, bcr |1.164  2.017  0.000|*/
-	{ -256, -2048, -2048, },	/* limited range */
+	{ 298,    0,  409,	 
+	  298, -100, -208,	 
+	  298,  516,    0, },	 
+	{ -256, -2048, -2048, },	 
 	{    0,     0,     0, },
 	CLIP_FULL_RANGE,
 	"BT.601 Limited",
 };
 
-/* YUV -> RGB, ITU-R BT.709, full range */
+ 
 static const struct dispc_csc_coef csc_yuv2rgb_bt709_full = {
 	dispc_csc_yuv2rgb_regval,
-	{ 256,	  0,  402,	/* ry, rcb, rcr |1.000	0.000  1.570|*/
-	  256,  -48, -120,	/* gy, gcb, gcr |1.000 -0.187 -0.467|*/
-	  256,  475,    0, },	/* by, bcb, bcr |1.000	1.856  0.000|*/
-	{    0, -2048, -2048, },	/* full range */
+	{ 256,	  0,  402,	 
+	  256,  -48, -120,	 
+	  256,  475,    0, },	 
+	{    0, -2048, -2048, },	 
 	{    0,     0,     0, },
 	CLIP_FULL_RANGE,
 	"BT.709 Full",
 };
 
-/* YUV -> RGB, ITU-R BT.709, limited range */
+ 
 static const struct dispc_csc_coef csc_yuv2rgb_bt709_lim = {
 	dispc_csc_yuv2rgb_regval,
-	{ 298,    0,  459,	/* ry, rcb, rcr |1.164  0.000  1.793|*/
-	  298,  -55, -136,	/* gy, gcb, gcr |1.164 -0.213 -0.533|*/
-	  298,  541,    0, },	/* by, bcb, bcr |1.164  2.112  0.000|*/
-	{ -256, -2048, -2048, },	/* limited range */
+	{ 298,    0,  459,	 
+	  298,  -55, -136,	 
+	  298,  541,    0, },	 
+	{ -256, -2048, -2048, },	 
 	{    0,     0,     0, },
 	CLIP_FULL_RANGE,
 	"BT.709 Limited",
@@ -1578,7 +1532,7 @@ static void dispc_vid_csc_enable(struct dispc_device *dispc, u32 hw_plane,
 	VID_REG_FLD_MOD(dispc, hw_plane, DISPC_VID_ATTRIBUTES, !!enable, 9, 9);
 }
 
-/* SCALER */
+ 
 
 static u32 dispc_calc_fir_inc(u32 in, u32 out)
 {
@@ -1697,7 +1651,7 @@ static int dispc_vid_calc_scaling(struct dispc_device *dispc,
 		}
 	}
 
-	/* Skip the rest if no scaling is used */
+	 
 	if ((!sp->scale_x && !sp->scale_y) || lite_plane)
 		return 0;
 
@@ -1751,11 +1705,7 @@ static int dispc_vid_calc_scaling(struct dispc_device *dispc,
 			return -EINVAL;
 		}
 
-		/*
-		 * We need even line length for YUV formats. Decimation
-		 * can lead to odd length, so we need to make it even
-		 * again.
-		 */
+		 
 		if (dispc_fourcc_is_yuv(fourcc))
 			sp->in_w &= ~1;
 
@@ -1830,19 +1780,19 @@ static void dispc_vid_set_scaling(struct dispc_device *dispc,
 				  struct dispc_scaling_params *sp,
 				  u32 fourcc)
 {
-	/* HORIZONTAL RESIZE ENABLE */
+	 
 	VID_REG_FLD_MOD(dispc, hw_plane, DISPC_VID_ATTRIBUTES,
 			sp->scale_x, 7, 7);
 
-	/* VERTICAL RESIZE ENABLE */
+	 
 	VID_REG_FLD_MOD(dispc, hw_plane, DISPC_VID_ATTRIBUTES,
 			sp->scale_y, 8, 8);
 
-	/* Skip the rest if no scaling is used */
+	 
 	if (!sp->scale_x && !sp->scale_y)
 		return;
 
-	/* VERTICAL 5-TAPS  */
+	 
 	VID_REG_FLD_MOD(dispc, hw_plane, DISPC_VID_ATTRIBUTES,
 			sp->five_taps, 21, 21);
 
@@ -1877,7 +1827,7 @@ static void dispc_vid_set_scaling(struct dispc_device *dispc,
 	}
 }
 
-/* OTHER */
+ 
 
 static const struct {
 	u32 fourcc;
@@ -2058,7 +2008,7 @@ void dispc_plane_setup(struct dispc_device *dispc, u32 hw_plane,
 	dispc_vid_write(dispc, hw_plane, DISPC_VID_PICTURE_SIZE,
 			(scale.in_w - 1) | ((scale.in_h - 1) << 16));
 
-	/* For YUV422 format we use the macropixel size for pixel inc */
+	 
 	if (fourcc == DRM_FORMAT_YUYV || fourcc == DRM_FORMAT_UYVY)
 		dispc_vid_write(dispc, hw_plane, DISPC_VID_PIXEL_INC,
 				pixinc(scale.xinc, cpp * 2));
@@ -2099,7 +2049,7 @@ void dispc_plane_setup(struct dispc_device *dispc, u32 hw_plane,
 		dispc_vid_set_scaling(dispc, hw_plane, &scale, fourcc);
 	}
 
-	/* enable YUV->RGB color conversion */
+	 
 	if (dispc_fourcc_is_yuv(fourcc)) {
 		dispc_vid_csc_setup(dispc, hw_plane, state);
 		dispc_vid_csc_enable(dispc, hw_plane, true);
@@ -2148,9 +2098,9 @@ static void dispc_k2g_plane_init(struct dispc_device *dispc)
 
 	dev_dbg(dispc->dev, "%s()\n", __func__);
 
-	/* MFLAG_CTRL = ENABLED */
+	 
 	REG_FLD_MOD(dispc, DISPC_GLOBAL_MFLAG_ATTRIBUTE, 2, 1, 0);
-	/* MFLAG_START = MFLAGNORMALSTARTMODE */
+	 
 	REG_FLD_MOD(dispc, DISPC_GLOBAL_MFLAG_ATTRIBUTE, 0, 6, 6);
 
 	for (hw_plane = 0; hw_plane < dispc->feat->num_planes; hw_plane++) {
@@ -2182,11 +2132,7 @@ static void dispc_k2g_plane_init(struct dispc_device *dispc)
 
 		dispc_vid_write(dispc, hw_plane, DISPC_VID_PRELOAD, preload);
 
-		/*
-		 * Prefetch up to fifo high-threshold value to minimize the
-		 * possibility of underflows. Note that this means the PRELOAD
-		 * register is ignored.
-		 */
+		 
 		VID_REG_FLD_MOD(dispc, hw_plane, DISPC_VID_ATTRIBUTES, 1,
 				19, 19);
 	}
@@ -2203,9 +2149,9 @@ static void dispc_k3_plane_init(struct dispc_device *dispc)
 	REG_FLD_MOD(dispc, DSS_CBA_CFG, cba_lo_pri, 2, 0);
 	REG_FLD_MOD(dispc, DSS_CBA_CFG, cba_hi_pri, 5, 3);
 
-	/* MFLAG_CTRL = ENABLED */
+	 
 	REG_FLD_MOD(dispc, DISPC_GLOBAL_MFLAG_ATTRIBUTE, 2, 1, 0);
-	/* MFLAG_START = MFLAGNORMALSTARTMODE */
+	 
 	REG_FLD_MOD(dispc, DISPC_GLOBAL_MFLAG_ATTRIBUTE, 0, 6, 6);
 
 	for (hw_plane = 0; hw_plane < dispc->feat->num_planes; hw_plane++) {
@@ -2237,7 +2183,7 @@ static void dispc_k3_plane_init(struct dispc_device *dispc)
 
 		dispc_vid_write(dispc, hw_plane, DISPC_VID_PRELOAD, preload);
 
-		/* Prefech up to PRELOAD value */
+		 
 		VID_REG_FLD_MOD(dispc, hw_plane, DISPC_VID_ATTRIBUTES, 0,
 				19, 19);
 	}
@@ -2265,7 +2211,7 @@ static void dispc_vp_init(struct dispc_device *dispc)
 
 	dev_dbg(dispc->dev, "%s()\n", __func__);
 
-	/* Enable the gamma Shadow bit-field for all VPs*/
+	 
 	for (i = 0; i < dispc->feat->num_vps; i++)
 		VP_REG_FLD_MOD(dispc, i, DISPC_VP_CONFIG, 1, 2, 2);
 }
@@ -2275,11 +2221,11 @@ static void dispc_initial_config(struct dispc_device *dispc)
 	dispc_plane_init(dispc);
 	dispc_vp_init(dispc);
 
-	/* Note: Hardcoded DPI routing on J721E for now */
+	 
 	if (dispc->feat->subrev == DISPC_J721E) {
 		dispc_write(dispc, DISPC_CONNECTIONS,
-			    FLD_VAL(2, 3, 0) |		/* VP1 to DPI0 */
-			    FLD_VAL(8, 7, 4)		/* VP3 to DPI1 */
+			    FLD_VAL(2, 3, 0) |		 
+			    FLD_VAL(8, 7, 4)		 
 			);
 	}
 }
@@ -2473,7 +2419,7 @@ static void dispc_k2g_vp_write_csc(struct dispc_device *dispc, u32 hw_videoport,
 {
 	static const u16 dispc_vp_cpr_coef_reg[] = {
 		DISPC_VP_CSC_COEF0, DISPC_VP_CSC_COEF1, DISPC_VP_CSC_COEF2,
-		/* K2G CPR is packed to three registers. */
+		 
 	};
 	u32 regval[DISPC_CSC_REGVAL_LEN];
 	unsigned int i;
@@ -2693,7 +2639,7 @@ static void dispc_init_errata(struct dispc_device *dispc)
 {
 	static const struct soc_device_attribute am65x_sr10_soc_devices[] = {
 		{ .family = "AM65X", .revision = "SR1.0" },
-		{ /* sentinel */ }
+		{   }
 	};
 
 	if (soc_device_match(am65x_sr10_soc_devices)) {
@@ -2707,13 +2653,13 @@ static int dispc_softreset(struct dispc_device *dispc)
 	u32 val;
 	int ret = 0;
 
-	/* K2G display controller does not support soft reset */
+	 
 	if (dispc->feat->subrev == DISPC_K2G)
 		return 0;
 
-	/* Soft reset */
+	 
 	REG_FLD_MOD(dispc, DSS_SYSCONFIG, 1, 1, 1);
-	/* Wait for reset to complete */
+	 
 	ret = readl_poll_timeout(dispc->base_common + DSS_SYSSTATUS,
 				 val, val & 1, 100, 5000);
 	if (ret) {

@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// OWL S900 SoC clock driver
-//
-// Copyright (c) 2014 Actions Semi Inc.
-// Author: David Liu <liuwei@actions-semi.com>
-//
-// Copyright (c) 2018 Linaro Ltd.
-// Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+
+
+
+
+
+
+
+
+
 
 #include <linux/clk-provider.h>
 #include <linux/platform_device.h>
@@ -73,15 +73,15 @@
 
 static struct clk_pll_table clk_audio_pll_table[] = {
 	{ 0, 45158400 }, { 1, 49152000 },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct clk_pll_table clk_edp_pll_table[] = {
 	{ 0, 810000000 }, { 1, 135000000 }, { 2, 270000000 },
-	{ /* sentinel */ }
+	{   }
 };
 
-/* pll clocks */
+ 
 static OWL_PLL_NO_PARENT(core_pll_clk, "core_pll_clk", CMU_COREPLL, 24000000, 9, 0, 8, 5, 107, NULL, CLK_IGNORE_UNUSED);
 static OWL_PLL_NO_PARENT(dev_pll_clk, "dev_pll_clk", CMU_DEVPLL, 6000000, 8, 0, 8, 20, 180, NULL, CLK_IGNORE_UNUSED);
 static OWL_PLL_NO_PARENT(ddr_pll_clk, "ddr_pll_clk", CMU_DDRPLL, 24000000, 8, 0, 8, 5, 45, NULL, CLK_IGNORE_UNUSED);
@@ -110,7 +110,7 @@ static const char *vce_clk_mux_p[] = { "dev_clk", "display_pll_clk", "assist_pll
 static const char *i2s_clk_mux_p[] = { "audio_pll_clk", };
 static const char *edp_clk_mux_p[] = { "assist_pll_clk", "display_pll_clk", };
 
-/* mux clocks */
+ 
 static OWL_MUX(cpu_clk, "cpu_clk", cpu_clk_mux_p, CMU_BUSCLK, 0, 2, CLK_SET_RATE_PARENT);
 static OWL_MUX(dev_clk, "dev_clk", dev_clk_p, CMU_DEVPLL, 12, 1, CLK_SET_RATE_PARENT);
 static OWL_MUX(noc_clk_mux, "noc_clk_mux", noc_clk_mux_p, CMU_BUSCLK, 7, 1, CLK_SET_RATE_PARENT);
@@ -120,44 +120,44 @@ static struct clk_div_table nand_div_table[] = {
 	{ 4, 8 }, { 5, 10 }, { 6, 12 }, { 7, 14 },
 	{ 8, 16 }, { 9, 18 }, { 10, 20 }, { 11, 22 },
 	{ 12, 24 }, { 13, 26 }, { 14, 28 }, { 15, 30 },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct clk_div_table apb_div_table[] = {
 	{ 1, 2 }, { 2, 3 }, { 3, 4 },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct clk_div_table eth_mac_div_table[] = {
 	{ 0, 2 }, { 1, 4 },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct clk_div_table rmii_ref_div_table[] = {
 	{ 0, 4 },	  { 1, 10 },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct clk_div_table usb3_mac_div_table[] = {
 	{ 1, 2 }, { 2, 3 }, { 3, 4 },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct clk_div_table i2s_div_table[] = {
 	{ 0, 1 }, { 1, 2 }, { 2, 3 }, { 3, 4 },
 	{ 4, 6 }, { 5, 8 }, { 6, 12 }, { 7, 16 },
 	{ 8, 24 },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct clk_div_table hdmia_div_table[] = {
 	{ 0, 1 }, { 1, 2 }, { 2, 3 }, { 3, 4 },
 	{ 4, 6 }, { 5, 8 }, { 6, 12 }, { 7, 16 },
 	{ 8, 24 },
-	{ /* sentinel */ }
+	{   }
 };
 
-/* divider clocks */
+ 
 static OWL_DIVIDER(noc_clk_div, "noc_clk_div", "noc_clk", CMU_BUSCLK, 19, 1, NULL, 0, 0);
 static OWL_DIVIDER(ahb_clk, "ahb_clk", "noc_clk_div", CMU_BUSCLK, 4, 1, NULL, 0, 0);
 static OWL_DIVIDER(apb_clk, "apb_clk", "ahb_clk", CMU_BUSCLK, 8, 2, apb_div_table, 0, 0);
@@ -165,7 +165,7 @@ static OWL_DIVIDER(usb3_mac_clk, "usb3_mac_clk", "assist_pll_clk", CMU_ASSISTPLL
 static OWL_DIVIDER(rmii_ref_clk, "rmii_ref_clk", "assist_pll_clk", CMU_ASSISTPLL, 8, 1, rmii_ref_div_table, 0, 0);
 
 static struct clk_factor_table sd_factor_table[] = {
-	/* bit0 ~ 4 */
+	 
 	{ 0, 1, 1 }, { 1, 1, 2 }, { 2, 1, 3 }, { 3, 1, 4 },
 	{ 4, 1, 5 }, { 5, 1, 6 }, { 6, 1, 7 }, { 7, 1, 8 },
 	{ 8, 1, 9 }, { 9, 1, 10 }, { 10, 1, 11 }, { 11, 1, 12 },
@@ -175,7 +175,7 @@ static struct clk_factor_table sd_factor_table[] = {
 	{ 24, 1, 25 }, { 25, 1, 26 }, { 26, 1, 27 }, { 27, 1, 28 },
 	{ 28, 1, 29 }, { 29, 1, 30 }, { 30, 1, 31 }, { 31, 1, 32 },
 
-	/* bit8: /128 */
+	 
 	{ 256, 1, 1 * 128 }, { 257, 1, 2 * 128 }, { 258, 1, 3 * 128 }, { 259, 1, 4 * 128 },
 	{ 260, 1, 5 * 128 }, { 261, 1, 6 * 128 }, { 262, 1, 7 * 128 }, { 263, 1, 8 * 128 },
 	{ 264, 1, 9 * 128 }, { 265, 1, 10 * 128 }, { 266, 1, 11 * 128 }, { 267, 1, 12 * 128 },
@@ -185,33 +185,33 @@ static struct clk_factor_table sd_factor_table[] = {
 	{ 280, 1, 25 * 128 }, { 281, 1, 26 * 128 }, { 282, 1, 27 * 128 }, { 283, 1, 28 * 128 },
 	{ 284, 1, 29 * 128 }, { 285, 1, 30 * 128 }, { 286, 1, 31 * 128 }, { 287, 1, 32 * 128 },
 
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct clk_factor_table dmm_factor_table[] = {
 	{ 0, 1, 1 }, { 1, 2, 3 }, { 2, 1, 2 }, { 3, 1, 3 },
 	{ 4, 1, 4 },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct clk_factor_table noc_factor_table[] = {
 	{ 0, 1, 1 },   { 1, 2, 3 }, { 2, 1, 2 }, { 3, 1, 3 }, { 4, 1, 4 },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct clk_factor_table bisp_factor_table[] = {
 	{ 0, 1, 1 }, { 1, 2, 3 }, { 2, 1, 2 }, { 3, 2, 5 },
 	{ 4, 1, 3 }, { 5, 1, 4 }, { 6, 1, 6 }, { 7, 1, 8 },
-	{ /* sentinel */ }
+	{   }
 };
 
-/* factor clocks */
+ 
 static OWL_FACTOR(noc_clk, "noc_clk", "noc_clk_mux", CMU_BUSCLK, 16, 3, noc_factor_table, 0, 0);
 static OWL_FACTOR(de_clk1, "de_clk1", "de_clk", CMU_DECLK, 0, 3, bisp_factor_table, 0, 0);
 static OWL_FACTOR(de_clk2, "de_clk2", "de_clk", CMU_DECLK, 4, 3, bisp_factor_table, 0, 0);
 static OWL_FACTOR(de_clk3, "de_clk3", "de_clk", CMU_DECLK, 8, 3, bisp_factor_table, 0, 0);
 
-/* gate clocks */
+ 
 static OWL_GATE(gpio_clk, "gpio_clk", "apb_clk", CMU_DEVCLKEN0, 18, 0, 0);
 static OWL_GATE_NO_PARENT(gpu_clk, "gpu_clk", CMU_DEVCLKEN0, 30, 0, 0);
 static OWL_GATE(dmac_clk, "dmac_clk", "noc_clk_div", CMU_DEVCLKEN0, 1, 0, 0);
@@ -236,7 +236,7 @@ static OWL_GATE(spi1_clk, "spi1_clk", "ahb_clk", CMU_DEVCLKEN1, 11, 0, CLK_IGNOR
 static OWL_GATE(spi2_clk, "spi2_clk", "ahb_clk", CMU_DEVCLKEN1, 12, 0, CLK_IGNORE_UNUSED);
 static OWL_GATE(spi3_clk, "spi3_clk", "ahb_clk", CMU_DEVCLKEN1, 13, 0, CLK_IGNORE_UNUSED);
 
-/* composite clocks */
+ 
 static OWL_COMP_FACTOR(bisp_clk, "bisp_clk", bisp_clk_mux_p,
 			OWL_MUX_HW(CMU_BISPCLK, 4, 1),
 			OWL_GATE_HW(CMU_DEVCLKEN0, 14, 0),
@@ -376,13 +376,7 @@ static OWL_COMP_DIV_FIXED(pwm1_clk, "pwm1_clk", "hosc",
 			OWL_GATE_HW(CMU_DEVCLKEN1, 24, 0),
 			OWL_DIVIDER_HW(CMU_PWM1CLK, 0, 6, 0, NULL),
 			0);
-/*
- * pwm2 may be for backlight, do not gate it
- * even it is "unused", because it may be
- * enabled at boot stage, and in kernel, driver
- * has no effective method to know the real status,
- * so, the best way is keeping it as what it was.
- */
+ 
 static OWL_COMP_DIV_FIXED(pwm2_clk, "pwm2_clk", "hosc",
 			OWL_GATE_HW(CMU_DEVCLKEN1, 25, 0),
 			OWL_DIVIDER_HW(CMU_PWM2CLK, 0, 6, 0, NULL),
@@ -762,10 +756,7 @@ static int s900_clk_probe(struct platform_device *pdev)
 	desc = &s900_clk_desc;
 	owl_clk_regmap_init(pdev, desc);
 
-	/*
-	 * FIXME: Reset controller registration should be moved to
-	 * common code, once all SoCs of Owl family supports it.
-	 */
+	 
 	reset = devm_kzalloc(&pdev->dev, sizeof(*reset), GFP_KERNEL);
 	if (!reset)
 		return -ENOMEM;
@@ -785,7 +776,7 @@ static int s900_clk_probe(struct platform_device *pdev)
 
 static const struct of_device_id s900_clk_of_match[] = {
 	{ .compatible = "actions,s900-cmu", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver s900_clk_driver = {

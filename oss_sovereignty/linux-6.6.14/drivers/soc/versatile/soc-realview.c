@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Linaro Ltd.
- *
- * Author: Linus Walleij <linus.walleij@linaro.org>
- */
+
+ 
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/slab.h>
@@ -13,7 +9,7 @@
 #include <linux/regmap.h>
 #include <linux/of.h>
 
-/* System ID in syscon */
+ 
 #define REALVIEW_SYS_ID_OFFSET 0x00
 
 static const struct of_device_id realview_soc_of_match[] = {
@@ -118,7 +114,7 @@ static int realview_soc_probe(struct platform_device *pdev)
 	dev_info(&pdev->dev, "RealView Syscon Core ID: 0x%08x, HBI-%03x\n",
 		 realview_coreid,
 		 ((realview_coreid >> 16) & 0xfff));
-	/* FIXME: add attributes for SoC to sysfs */
+	 
 	return 0;
 }
 

@@ -1,14 +1,12 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/* Copyright 2020 NXP
- * Lynx PCS MDIO helpers
- */
+
+ 
 
 #include <linux/mdio.h>
 #include <linux/phylink.h>
 #include <linux/pcs-lynx.h>
 #include <linux/property.h>
 
-#define SGMII_CLOCK_PERIOD_NS		8 /* PCS is clocked at 125 MHz */
+#define SGMII_CLOCK_PERIOD_NS		8  
 #define LINK_TIMER_VAL(ns)		((u32)((ns) / SGMII_CLOCK_PERIOD_NS))
 
 #define LINK_TIMER_LO			0x12
@@ -133,7 +131,7 @@ static int lynx_pcs_config_giga(struct mdio_device *pcs,
 	if (interface == PHY_INTERFACE_MODE_1000BASEX) {
 		if_mode = 0;
 	} else {
-		/* SGMII and QSGMII */
+		 
 		if_mode = IF_MODE_SGMII_EN;
 		if (neg_mode == PHYLINK_PCS_NEG_INBAND_ENABLED)
 			if_mode |= IF_MODE_USE_SGMII_AN;
@@ -161,7 +159,7 @@ static int lynx_pcs_config_usxgmii(struct mdio_device *pcs,
 		return -EOPNOTSUPP;
 	}
 
-	/* Configure device ability for the USXGMII Replicator */
+	 
 	return mdiobus_c45_write(bus, addr, MDIO_MMD_VEND2, MII_ADVERTISE,
 				 MDIO_USXGMII_10G | MDIO_USXGMII_LINK |
 				 MDIO_USXGMII_FULL_DUPLEX |
@@ -191,7 +189,7 @@ static int lynx_pcs_config(struct phylink_pcs *pcs, unsigned int neg_mode,
 		return lynx_pcs_config_usxgmii(lynx->mdio, advertising,
 					       neg_mode);
 	case PHY_INTERFACE_MODE_10GBASER:
-		/* Nothing to do here for 10GBASER */
+		 
 		break;
 	default:
 		return -EOPNOTSUPP;
@@ -213,9 +211,7 @@ static void lynx_pcs_link_up_sgmii(struct mdio_device *pcs,
 {
 	u16 if_mode = 0, sgmii_speed;
 
-	/* The PCS needs to be configured manually only
-	 * when not operating on in-band mode
-	 */
+	 
 	if (neg_mode == PHYLINK_PCS_NEG_INBAND_ENABLED)
 		return;
 
@@ -233,7 +229,7 @@ static void lynx_pcs_link_up_sgmii(struct mdio_device *pcs,
 		sgmii_speed = SGMII_SPEED_10;
 		break;
 	case SPEED_UNKNOWN:
-		/* Silently don't do anything */
+		 
 		return;
 	default:
 		dev_err(&pcs->dev, "Invalid PCS speed %d\n", speed);
@@ -246,22 +242,7 @@ static void lynx_pcs_link_up_sgmii(struct mdio_device *pcs,
 		       if_mode);
 }
 
-/* 2500Base-X is SerDes protocol 7 on Felix and 6 on ENETC. It is a SerDes lane
- * clocked at 3.125 GHz which encodes symbols with 8b/10b and does not have
- * auto-negotiation of any link parameters. Electrically it is compatible with
- * a single lane of XAUI.
- * The hardware reference manual wants to call this mode SGMII, but it isn't
- * really, since the fundamental features of SGMII:
- * - Downgrading the link speed by duplicating symbols
- * - Auto-negotiation
- * are not there.
- * The speed is configured at 1000 in the IF_MODE because the clock frequency
- * is actually given by a PLL configured in the Reset Configuration Word (RCW).
- * Since there is no difference between fixed speed SGMII w/o AN and 802.3z w/o
- * AN, we call this PHY interface type 2500Base-X. In case a PHY negotiates a
- * lower link speed on line side, the system-side interface remains fixed at
- * 2500 Mbps and we do rate adaptation through pause frames.
- */
+ 
 static void lynx_pcs_link_up_2500basex(struct mdio_device *pcs,
 				       unsigned int neg_mode,
 				       int speed, int duplex)
@@ -297,9 +278,7 @@ static void lynx_pcs_link_up(struct phylink_pcs *pcs, unsigned int neg_mode,
 		lynx_pcs_link_up_2500basex(lynx->mdio, neg_mode, speed, duplex);
 		break;
 	case PHY_INTERFACE_MODE_USXGMII:
-		/* At the moment, only in-band AN is supported for USXGMII
-		 * so nothing to do in link_up
-		 */
+		 
 		break;
 	default:
 		break;
@@ -341,28 +320,14 @@ struct phylink_pcs *lynx_pcs_create_mdiodev(struct mii_bus *bus, int addr)
 
 	pcs = lynx_pcs_create(mdio);
 
-	/* lynx_create() has taken a refcount on the mdiodev if it was
-	 * successful. If lynx_create() fails, this will free the mdio
-	 * device here. In any case, we don't need to hold our reference
-	 * anymore, and putting it here will allow mdio_device_put() in
-	 * lynx_destroy() to automatically free the mdio device.
-	 */
+	 
 	mdio_device_put(mdio);
 
 	return pcs;
 }
 EXPORT_SYMBOL(lynx_pcs_create_mdiodev);
 
-/*
- * lynx_pcs_create_fwnode() creates a lynx PCS instance from the fwnode
- * device indicated by node.
- *
- * Returns:
- *  -ENODEV if the fwnode is marked unavailable
- *  -EPROBE_DEFER if we fail to find the device
- *  -ENOMEM if we fail to allocate memory
- *  pointer to a phylink_pcs on success
- */
+ 
 struct phylink_pcs *lynx_pcs_create_fwnode(struct fwnode_handle *node)
 {
 	struct mdio_device *mdio;
@@ -377,12 +342,7 @@ struct phylink_pcs *lynx_pcs_create_fwnode(struct fwnode_handle *node)
 
 	pcs = lynx_pcs_create(mdio);
 
-	/* lynx_create() has taken a refcount on the mdiodev if it was
-	 * successful. If lynx_create() fails, this will free the mdio
-	 * device here. In any case, we don't need to hold our reference
-	 * anymore, and putting it here will allow mdio_device_put() in
-	 * lynx_destroy() to automatically free the mdio device.
-	 */
+	 
 	mdio_device_put(mdio);
 
 	return pcs;

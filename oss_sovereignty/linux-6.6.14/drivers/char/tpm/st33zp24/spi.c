@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * STMicroelectronics TPM SPI Linux driver for TPM ST33ZP24
- * Copyright (C) 2009 - 2016 STMicroelectronics
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/spi/spi.h>
@@ -35,18 +32,7 @@
 #define ST33ZP24_CMDRDY_SET_WHEN_PROCESSING_HASH_END	0x90
 #define ST33ZP24_DUMMY_BYTES				0x00
 
-/*
- * TPM command can be up to 2048 byte, A TPM response can be up to
- * 1024 byte.
- * Between command and response, there are latency byte (up to 15
- * usually on st33zp24 2 are enough).
- *
- * Overall when sending a command and expecting an answer we need if
- * worst case:
- * 2048 (for the TPM command) + 1024 (for the TPM answer).  We need
- * some latency byte before the answer is available (max 15).
- * We have 2048 + 1024 + 15.
- */
+ 
 #define ST33ZP24_SPI_BUFFER_SIZE (ST33ZP24_BUFSIZE + (ST33ZP24_BUFSIZE / 2) +\
 				  MAX_SPI_LATENCY)
 
@@ -84,15 +70,7 @@ static int st33zp24_status_to_errno(u8 code)
 	return code;
 }
 
-/*
- * st33zp24_spi_send
- * Send byte to the TIS register according to the ST33ZP24 SPI protocol.
- * @param: phy_id, the phy description
- * @param: tpm_register, the tpm tis register where the data should be written
- * @param: tpm_data, the tpm_data to write inside the tpm_register
- * @param: tpm_size, The length of the data
- * @return: should be zero if success else a negative error code.
- */
+ 
 static int st33zp24_spi_send(void *phy_id, u8 tpm_register, u8 *tpm_data,
 			     int tpm_size)
 {
@@ -104,7 +82,7 @@ static int st33zp24_spi_send(void *phy_id, u8 tpm_register, u8 *tpm_data,
 		.rx_buf = phy->rx_buf,
 	};
 
-	/* Pre-Header */
+	 
 	phy->tx_buf[total_length++] = TPM_WRITE_DIRECTION | LOCALITY0;
 	phy->tx_buf[total_length++] = tpm_register;
 
@@ -125,17 +103,9 @@ static int st33zp24_spi_send(void *phy_id, u8 tpm_register, u8 *tpm_data,
 		ret = phy->rx_buf[total_length + phy->latency - 1];
 
 	return st33zp24_status_to_errno(ret);
-} /* st33zp24_spi_send() */
+}  
 
-/*
- * st33zp24_spi_read8_recv
- * Recv byte from the TIS register according to the ST33ZP24 SPI protocol.
- * @param: phy_id, the phy description
- * @param: tpm_register, the tpm tis register where the data should be read
- * @param: tpm_data, the TPM response
- * @param: tpm_size, tpm TPM response size to read.
- * @return: should be zero if success else a negative error code.
- */
+ 
 static int st33zp24_spi_read8_reg(void *phy_id, u8 tpm_register, u8 *tpm_data,
 				  int tpm_size)
 {
@@ -147,7 +117,7 @@ static int st33zp24_spi_read8_reg(void *phy_id, u8 tpm_register, u8 *tpm_data,
 		.rx_buf = phy->rx_buf,
 	};
 
-	/* Pre-Header */
+	 
 	phy->tx_buf[total_length++] = LOCALITY0;
 	phy->tx_buf[total_length++] = tpm_register;
 
@@ -156,7 +126,7 @@ static int st33zp24_spi_read8_reg(void *phy_id, u8 tpm_register, u8 *tpm_data,
 
 	spi_xfer.len = total_length + phy->latency + tpm_size;
 
-	/* header + status byte + size of the data + status byte */
+	 
 	ret = spi_sync_transfer(dev, &spi_xfer, 1);
 	if (tpm_size > 0 && ret == 0) {
 		ret = phy->rx_buf[total_length + phy->latency - 1];
@@ -166,17 +136,9 @@ static int st33zp24_spi_read8_reg(void *phy_id, u8 tpm_register, u8 *tpm_data,
 	}
 
 	return ret;
-} /* st33zp24_spi_read8_reg() */
+}  
 
-/*
- * st33zp24_spi_recv
- * Recv byte from the TIS register according to the ST33ZP24 SPI protocol.
- * @param: phy_id, the phy description
- * @param: tpm_register, the tpm tis register where the data should be read
- * @param: tpm_data, the TPM response
- * @param: tpm_size, tpm TPM response size to read.
- * @return: number of byte read successfully: should be one if success.
- */
+ 
 static int st33zp24_spi_recv(void *phy_id, u8 tpm_register, u8 *tpm_data,
 			     int tpm_size)
 {
@@ -186,7 +148,7 @@ static int st33zp24_spi_recv(void *phy_id, u8 tpm_register, u8 *tpm_data,
 	if (!st33zp24_status_to_errno(ret))
 		return tpm_size;
 	return ret;
-} /* st33zp24_spi_recv() */
+}  
 
 static int st33zp24_spi_evaluate_latency(void *phy_id)
 {
@@ -206,19 +168,14 @@ static int st33zp24_spi_evaluate_latency(void *phy_id)
 		return -ENODEV;
 
 	return latency - 1;
-} /* evaluate_latency() */
+}  
 
 static const struct st33zp24_phy_ops spi_phy_ops = {
 	.send = st33zp24_spi_send,
 	.recv = st33zp24_spi_recv,
 };
 
-/*
- * st33zp24_spi_probe initialize the TPM device
- * @param: dev, the spi_device description (TPM SPI description).
- * @return: 0 in case of success.
- *	 or a negative value describing the error.
- */
+ 
 static int st33zp24_spi_probe(struct spi_device *dev)
 {
 	struct st33zp24_spi_phy *phy;
@@ -237,11 +194,7 @@ static int st33zp24_spi_probe(struct spi_device *dev)
 	return st33zp24_probe(phy, &spi_phy_ops, &dev->dev, dev->irq);
 }
 
-/*
- * st33zp24_spi_remove remove the TPM device
- * @param: client, the spi_device description (TPM SPI description).
- * @return: 0 in case of success.
- */
+ 
 static void st33zp24_spi_remove(struct spi_device *dev)
 {
 	struct tpm_chip *chip = spi_get_drvdata(dev);

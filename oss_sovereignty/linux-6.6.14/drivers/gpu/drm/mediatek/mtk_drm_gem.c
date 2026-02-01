@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 MediaTek Inc.
- */
+
+ 
 
 #include <linux/dma-buf.h>
 
@@ -108,7 +106,7 @@ void mtk_drm_gem_free_object(struct drm_gem_object *obj)
 		dma_free_attrs(priv->dma_dev, obj->size, mtk_gem->cookie,
 			       mtk_gem->dma_addr, mtk_gem->dma_attrs);
 
-	/* release file pointer to gem object. */
+	 
 	drm_gem_object_release(obj);
 
 	kfree(mtk_gem);
@@ -122,11 +120,7 @@ int mtk_drm_gem_dumb_create(struct drm_file *file_priv, struct drm_device *dev,
 
 	args->pitch = DIV_ROUND_UP(args->width * args->bpp, 8);
 
-	/*
-	 * Multiply 2 variables of different types,
-	 * for example: args->size = args->spacing * args->height;
-	 * may cause coverity issue with unintentional overflow.
-	 */
+	 
 	args->size = args->pitch;
 	args->size *= args->height;
 
@@ -134,15 +128,12 @@ int mtk_drm_gem_dumb_create(struct drm_file *file_priv, struct drm_device *dev,
 	if (IS_ERR(mtk_gem))
 		return PTR_ERR(mtk_gem);
 
-	/*
-	 * allocate a id of idr table where the obj is registered
-	 * and handle has the id what user can see.
-	 */
+	 
 	ret = drm_gem_handle_create(file_priv, &mtk_gem->base, &args->handle);
 	if (ret)
 		goto err_handle_create;
 
-	/* drop reference from allocate - handle holds it now. */
+	 
 	drm_gem_object_put(&mtk_gem->base);
 
 	return 0;
@@ -160,16 +151,10 @@ static int mtk_drm_gem_object_mmap(struct drm_gem_object *obj,
 	struct mtk_drm_gem_obj *mtk_gem = to_mtk_gem_obj(obj);
 	struct mtk_drm_private *priv = obj->dev->dev_private;
 
-	/*
-	 * Set vm_pgoff (used as a fake buffer offset by DRM) to 0 and map the
-	 * whole buffer from the start.
-	 */
+	 
 	vma->vm_pgoff = 0;
 
-	/*
-	 * dma_alloc_attrs() allocated a struct page table for mtk_gem, so clear
-	 * VM_PFNMAP flag that was set by drm_gem_mmap_obj()/drm_gem_mmap().
-	 */
+	 
 	vm_flags_set(vma, VM_IO | VM_DONTEXPAND | VM_DONTDUMP);
 	vma->vm_page_prot = pgprot_writecombine(vm_get_page_prot(vma->vm_flags));
 	vma->vm_page_prot = pgprot_decrypted(vma->vm_page_prot);
@@ -180,12 +165,7 @@ static int mtk_drm_gem_object_mmap(struct drm_gem_object *obj,
 	return ret;
 }
 
-/*
- * Allocate a sg_table for this GEM object.
- * Note: Both the table's contents, and the sg_table itself must be freed by
- *       the caller.
- * Returns a pointer to the newly allocated sg_table, or an ERR_PTR() error.
- */
+ 
 struct sg_table *mtk_gem_prime_get_sg_table(struct drm_gem_object *obj)
 {
 	struct mtk_drm_gem_obj *mtk_gem = to_mtk_gem_obj(obj);
@@ -214,7 +194,7 @@ struct drm_gem_object *mtk_gem_prime_import_sg_table(struct drm_device *dev,
 {
 	struct mtk_drm_gem_obj *mtk_gem;
 
-	/* check if the entries in the sg_table are contiguous */
+	 
 	if (drm_prime_get_contiguous_size(sg) < attach->dmabuf->size) {
 		DRM_ERROR("sg_table is not contiguous");
 		return ERR_PTR(-EINVAL);

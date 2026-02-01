@@ -1,15 +1,4 @@
-/*
- * Copyright IBM Corp.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2.1 of the GNU Lesser General Public License
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- */
+ 
 
 #include <assert.h>
 #include <errno.h>
@@ -99,10 +88,7 @@ static int run_test(void *addr, unsigned long size)
 	map = malloc(pages * 4);
 	assert(map);
 
-	/*
-	 * for each page, mark subpage i % 16 read only and subpage
-	 * (i + 3) % 16 inaccessible
-	 */
+	 
 	for (i = 0; i < pages; i++) {
 		map[i] = (0x40000000 >> (((i + 1) * 2) % 32)) |
 			(0xc0000000 >> (((i + 3) * 2) % 32));

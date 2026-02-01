@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * (C) Copyright Linaro, Ltd. 2018
- * (C) Copyright Arm Holdings.  2017
- * (C) Copyright David Gibson <dwg@au1.ibm.com>, IBM Corporation.  2005.
- */
+
+ 
 
 #include <stdlib.h>
 #include <yaml.h>
@@ -100,7 +96,7 @@ static void yaml_propval_string(yaml_emitter_t *emitter, char *str, int len)
 
 	assert(str[len-1] == '\0');
 
-	/* Make sure the entire string is in the lower 7-bit ascii range */
+	 
 	for (i = 0; i < len; i++)
 		assert(isascii(str[i]));
 
@@ -117,13 +113,13 @@ static void yaml_propval(yaml_emitter_t *emitter, struct property *prop)
 	struct marker *m = prop->val.markers;
 	struct marker *markers = prop->val.markers;
 
-	/* Emit the property name */
+	 
 	yaml_scalar_event_initialize(&event, NULL,
 		(yaml_char_t *)YAML_STR_TAG, (yaml_char_t*)prop->name,
 		strlen(prop->name), 1, 1, YAML_PLAIN_SCALAR_STYLE);
 	yaml_emitter_emit_or_die(emitter, &event);
 
-	/* Boolean properties are easiest to deal with. Length is zero, so just emit 'true' */
+	 
 	if (len == 0) {
 		yaml_scalar_event_initialize(&event, NULL,
 			(yaml_char_t *)YAML_BOOL_TAG,
@@ -191,7 +187,7 @@ static void yaml_tree(struct node *tree, yaml_emitter_t *emitter)
 	for_each_property(tree, prop)
 		yaml_propval(emitter, prop);
 
-	/* Loop over all the children, emitting them into the map */
+	 
 	for_each_child(tree, child) {
 		yaml_scalar_event_initialize(&event, NULL,
 			(yaml_char_t *)YAML_STR_TAG, (yaml_char_t*)child->name,

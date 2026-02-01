@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Simple memory allocator for on-board SRAM
- *
- * Maintainer : Sylvain Munaut <tnt@246tNt.com>
- *
- * Copyright (C) 2005 Sylvain Munaut <tnt@246tNt.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/kernel.h>
@@ -23,16 +17,15 @@
 #include <linux/fsl/bestcomm/sram.h>
 
 
-/* Struct keeping our 'state' */
+ 
 struct bcom_sram *bcom_sram = NULL;
-EXPORT_SYMBOL_GPL(bcom_sram);	/* needed for inline functions */
+EXPORT_SYMBOL_GPL(bcom_sram);	 
 
 
-/* ======================================================================== */
-/* Public API                                                               */
-/* ======================================================================== */
-/* DO NOT USE in interrupts, if needed in irq handler, we should use the
-   _irqsave version of the spin_locks */
+ 
+ 
+ 
+ 
 
 int bcom_sram_init(struct device_node *sram_node, char *owner)
 {
@@ -41,7 +34,7 @@ int bcom_sram_init(struct device_node *sram_node, char *owner)
 	struct resource res;
 	unsigned int psize;
 
-	/* Create our state struct */
+	 
 	if (bcom_sram) {
 		printk(KERN_ERR "%s: bcom_sram_init: "
 			"Already initialized !\n", owner);
@@ -55,7 +48,7 @@ int bcom_sram_init(struct device_node *sram_node, char *owner)
 		return -ENOMEM;
 	}
 
-	/* Get address and size of the sram */
+	 
 	rv = of_address_to_resource(sram_node, 0, &res);
 	if (rv) {
 		printk(KERN_ERR "%s: bcom_sram_init: "
@@ -66,7 +59,7 @@ int bcom_sram_init(struct device_node *sram_node, char *owner)
 	bcom_sram->base_phys = res.start;
 	bcom_sram->size = resource_size(&res);
 
-	/* Request region */
+	 
 	if (!request_mem_region(res.start, resource_size(&res), owner)) {
 		printk(KERN_ERR "%s: bcom_sram_init: "
 			"Couldn't request region !\n", owner);
@@ -74,8 +67,8 @@ int bcom_sram_init(struct device_node *sram_node, char *owner)
 		goto error_free;
 	}
 
-	/* Map SRAM */
-		/* sram is not really __iomem */
+	 
+		 
 	bcom_sram->base_virt = (void *)ioremap(res.start, resource_size(&res));
 
 	if (!bcom_sram->base_virt) {
@@ -86,12 +79,12 @@ int bcom_sram_init(struct device_node *sram_node, char *owner)
 		goto error_release;
 	}
 
-	/* Create an rheap (defaults to 32 bits word alignment) */
+	 
 	bcom_sram->rh = rh_create(4);
 
-	/* Attach the free zones */
+	 
 #if 0
-	/* Currently disabled ... for future use only */
+	 
 	reg_addr_p = of_get_property(sram_node, "available", &psize);
 #else
 	regaddr_p = NULL;
@@ -99,10 +92,10 @@ int bcom_sram_init(struct device_node *sram_node, char *owner)
 #endif
 
 	if (!regaddr_p || !psize) {
-		/* Attach the whole zone */
+		 
 		rh_attach_region(bcom_sram->rh, 0, bcom_sram->size);
 	} else {
-		/* Attach each zone independently */
+		 
 		while (psize >= 2 * sizeof(u32)) {
 			phys_addr_t zbase = of_translate_address(sram_node, regaddr_p);
 			rh_attach_region(bcom_sram->rh, zbase - bcom_sram->base_phys, regaddr_p[1]);
@@ -111,7 +104,7 @@ int bcom_sram_init(struct device_node *sram_node, char *owner)
 		}
 	}
 
-	/* Init our spinlock */
+	 
 	spin_lock_init(&bcom_sram->lock);
 
 	return 0;
@@ -128,7 +121,7 @@ EXPORT_SYMBOL_GPL(bcom_sram_init);
 
 void bcom_sram_cleanup(void)
 {
-	/* Free resources */
+	 
 	if (bcom_sram) {
 		rh_destroy(bcom_sram->rh);
 		iounmap((void __iomem *)bcom_sram->base_virt);

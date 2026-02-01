@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * ispccdc.h
- *
- * TI OMAP3 ISP - CCDC module
- *
- * Copyright (C) 2009-2010 Nokia Corporation
- * Copyright (C) 2009 Texas Instruments, Inc.
- *
- * Contacts: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- *	     Sakari Ailus <sakari.ailus@iki.fi>
- */
+ 
+ 
 
 #ifndef OMAP3_ISP_CCDC_H
 #define OMAP3_ISP_CCDC_H
@@ -58,18 +48,16 @@ struct ispccdc_lsc_config_req {
 	} table;
 };
 
-/*
- * ispccdc_lsc - CCDC LSC parameters
- */
+ 
 struct ispccdc_lsc {
 	enum ispccdc_lsc_state state;
 	struct work_struct table_work;
 
-	/* LSC queue of configurations */
+	 
 	spinlock_t req_lock;
-	struct ispccdc_lsc_config_req *request;	/* requested configuration */
-	struct ispccdc_lsc_config_req *active;	/* active configuration */
-	struct list_head free_queue;	/* configurations for freeing */
+	struct ispccdc_lsc_config_req *request;	 
+	struct ispccdc_lsc_config_req *active;	 
+	struct list_head free_queue;	 
 };
 
 #define CCDC_STOP_NOT_REQUESTED		0x00
@@ -84,7 +72,7 @@ struct ispccdc_lsc {
 #define CCDC_EVENT_VD0			0x20
 #define CCDC_EVENT_LSC_DONE		0x40
 
-/* Sink and source CCDC pads */
+ 
 #define CCDC_PAD_SINK			0
 #define CCDC_PAD_SOURCE_OF		1
 #define CCDC_PAD_SOURCE_VP		2
@@ -94,36 +82,7 @@ struct ispccdc_lsc {
 #define CCDC_FIELD_BOTTOM		2
 #define CCDC_FIELD_BOTH			3
 
-/*
- * struct isp_ccdc_device - Structure for the CCDC module to store its own
- *			    information
- * @subdev: V4L2 subdevice
- * @pads: Sink and source media entity pads
- * @formats: Active video formats
- * @crop: Active crop rectangle on the OF source pad
- * @input: Active input
- * @output: Active outputs
- * @video_out: Output video node
- * @alaw: A-law compression enabled (1) or disabled (0)
- * @lpf: Low pass filter enabled (1) or disabled (0)
- * @obclamp: Optical-black clamp enabled (1) or disabled (0)
- * @fpc_en: Faulty pixels correction enabled (1) or disabled (0)
- * @blcomp: Black level compensation configuration
- * @clamp: Optical-black or digital clamp configuration
- * @fpc: Faulty pixels correction configuration
- * @lsc: Lens shading compensation configuration
- * @update: Bitmask of controls to update during the next interrupt
- * @shadow_update: Controls update in progress by userspace
- * @bt656: Whether the input interface uses BT.656 synchronization
- * @fields: The fields (CCDC_FIELD_*) stored in the current buffer
- * @underrun: A buffer underrun occurred and a new buffer has been queued
- * @state: Streaming state
- * @lock: Serializes shadow_update with interrupt handler
- * @wait: Wait queue used to stop the module
- * @stopping: Stopping state
- * @running: Is the CCDC hardware running
- * @ioctl_lock: Serializes ioctl calls and LSC requests freeing
- */
+ 
 struct isp_ccdc_device {
 	struct v4l2_subdev subdev;
 	struct media_pad pads[CCDC_PADS_NUM];
@@ -171,4 +130,4 @@ void omap3isp_ccdc_restore_context(struct isp_device *isp);
 void omap3isp_ccdc_max_rate(struct isp_ccdc_device *ccdc,
 	unsigned int *max_rate);
 
-#endif	/* OMAP3_ISP_CCDC_H */
+#endif	 

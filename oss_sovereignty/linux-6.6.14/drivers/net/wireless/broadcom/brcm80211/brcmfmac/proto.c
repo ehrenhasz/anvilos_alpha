@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2013 Broadcom Corporation
- */
+
+ 
 
 
  #include <linux/types.h>

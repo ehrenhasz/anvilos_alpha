@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * TI TPS6591x GPIO driver
- *
- * Copyright 2010 Texas Instruments Inc.
- *
- * Author: Graeme Gregory <gg@slimlogic.co.uk>
- * Author: Jorge Eduardo Candelaria <jedu@slimlogic.co.uk>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -56,7 +49,7 @@ static int tps65910_gpio_output(struct gpio_chip *gc, unsigned offset,
 	struct tps65910_gpio *tps65910_gpio = gpiochip_get_data(gc);
 	struct tps65910 *tps65910 = tps65910_gpio->tps65910;
 
-	/* Set the initial value */
+	 
 	tps65910_gpio_set(gc, offset, value);
 
 	return regmap_set_bits(tps65910->regmap, TPS65910_GPIO0 + offset,
@@ -152,7 +145,7 @@ static int tps65910_gpio_probe(struct platform_device *pdev)
 	if (!pdata)
 		goto skip_init;
 
-	/* Configure sleep control for gpios if provided */
+	 
 	for (i = 0; i < tps65910_gpio->gpio_chip.ngpio; ++i) {
 		if (!pdata->en_gpio_sleep[i])
 			continue;

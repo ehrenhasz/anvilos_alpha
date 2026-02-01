@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AppArmor security module
- *
- * This file contains AppArmor security identifier (secid) manipulation fns
- *
- * Copyright 2009-2017 Canonical Ltd.
- *
- * AppArmor allocates a unique secid for every label used. If a label
- * is replaced it receives the secid of the label it is replacing.
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/err.h>
@@ -23,27 +14,16 @@
 #include "include/label.h"
 #include "include/policy_ns.h"
 
-/*
- * secids - do not pin labels with a refcount. They rely on the label
- * properly updating/freeing them
- */
+ 
 #define AA_FIRST_SECID 2
 
 static DEFINE_XARRAY_FLAGS(aa_secids, XA_FLAGS_LOCK_IRQ | XA_FLAGS_TRACK_FREE);
 
 int apparmor_display_secid_mode;
 
-/*
- * TODO: allow policy to reserve a secid range?
- * TODO: add secid pinning
- * TODO: use secid_update in label replace
- */
+ 
 
-/**
- * aa_secid_update - update a secid mapping to a new label
- * @secid: secid to update
- * @label: label the secid will now map to
- */
+ 
 void aa_secid_update(u32 secid, struct aa_label *label)
 {
 	unsigned long flags;
@@ -53,9 +33,7 @@ void aa_secid_update(u32 secid, struct aa_label *label)
 	xa_unlock_irqrestore(&aa_secids, flags);
 }
 
-/*
- * see label for inverse aa_label_to_secid
- */
+ 
 struct aa_label *aa_secid_to_label(u32 secid)
 {
 	return xa_load(&aa_secids, secid);
@@ -63,7 +41,7 @@ struct aa_label *aa_secid_to_label(u32 secid)
 
 int apparmor_secid_to_secctx(u32 secid, char **secdata, u32 *seclen)
 {
-	/* TODO: cache secctx and ref count so we don't have to recreate */
+	 
 	struct aa_label *label = aa_secid_to_label(secid);
 	int flags = FLAG_VIEW_SUBNS | FLAG_HIDDEN_UNCONFINED | FLAG_ABS_ROOT;
 	int len;
@@ -108,14 +86,7 @@ void apparmor_release_secctx(char *secdata, u32 seclen)
 	kfree(secdata);
 }
 
-/**
- * aa_alloc_secid - allocate a new secid for a profile
- * @label: the label to allocate a secid for
- * @gfp: memory allocation flags
- *
- * Returns: 0 with @label->secid initialized
- *          <0 returns error with @label->secid set to AA_SECID_INVALID
- */
+ 
 int aa_alloc_secid(struct aa_label *label, gfp_t gfp)
 {
 	unsigned long flags;
@@ -134,10 +105,7 @@ int aa_alloc_secid(struct aa_label *label, gfp_t gfp)
 	return 0;
 }
 
-/**
- * aa_free_secid - free a secid
- * @secid: secid to free
- */
+ 
 void aa_free_secid(u32 secid)
 {
 	unsigned long flags;

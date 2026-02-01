@@ -1,16 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- * This file contains the iSCSI Target specific utility functions.
- *
- * (c) Copyright 2007-2013 Datera, Inc.
- *
- * Author: Nicholas A. Bellinger <nab@linux-iscsi.org>
- *
- ******************************************************************************/
+
+ 
 
 #include <linux/list.h>
 #include <linux/sched/signal.h>
-#include <net/ipv6.h>         /* ipv6_addr_equal() */
+#include <net/ipv6.h>          
 #include <scsi/scsi_tcq.h>
 #include <scsi/iscsi_proto.h>
 #include <target/target_core_base.h>
@@ -148,10 +141,7 @@ static int iscsit_wait_for_tag(struct se_session *se_sess, int state, int *cpup)
 	return tag;
 }
 
-/*
- * May be called from software interrupt (timer) context for allocating
- * iSCSI NopINs.
- */
+ 
 struct iscsit_cmd *iscsit_allocate_cmd(struct iscsit_conn *conn, int state)
 {
 	struct iscsit_cmd *cmd;
@@ -243,12 +233,7 @@ static inline int iscsit_check_received_cmdsn(struct iscsit_session *sess, u32 c
 	u32 max_cmdsn;
 	int ret;
 
-	/*
-	 * This is the proper method of checking received CmdSN against
-	 * ExpCmdSN and MaxCmdSN values, as well as accounting for out
-	 * or order CmdSNs due to multiple connection sessions and/or
-	 * CRC failures.
-	 */
+	 
 	max_cmdsn = atomic_read(&sess->max_cmd_sn);
 	if (iscsi_sna_gt(cmdsn, max_cmdsn)) {
 		pr_err("Received CmdSN: 0x%08x is greater than"
@@ -278,10 +263,7 @@ static inline int iscsit_check_received_cmdsn(struct iscsit_session *sess, u32 c
 	return ret;
 }
 
-/*
- * Commands may be received out of order if MC/S is in use.
- * Ensure they are executed in CmdSN order.
- */
+ 
 int iscsit_sequence_cmd(struct iscsit_conn *conn, struct iscsit_cmd *cmd,
 			unsigned char *buf, __be32 cmdsn)
 {
@@ -316,11 +298,7 @@ int iscsit_sequence_cmd(struct iscsit_conn *conn, struct iscsit_cmd *cmd,
 	default:
 		cmd->i_state = ISTATE_REMOVE;
 		iscsit_add_cmd_to_immediate_queue(cmd, conn, cmd->i_state);
-		/*
-		 * Existing callers for iscsit_sequence_cmd() will silently
-		 * ignore commands with CMDSN_LOWER_THAN_EXP, so force this
-		 * return for CMDSN_MAXCMDSN_OVERRUN as well..
-		 */
+		 
 		ret = CMDSN_LOWER_THAN_EXP;
 		break;
 	}
@@ -453,10 +431,7 @@ int iscsit_find_cmd_for_recovery(
 {
 	struct iscsit_cmd *cmd = NULL;
 	struct iscsi_conn_recovery *cr;
-	/*
-	 * Scan through the inactive connection recovery list's command list.
-	 * If init_task_tag matches the command is still alligent.
-	 */
+	 
 	spin_lock(&sess->cr_i_lock);
 	list_for_each_entry(cr, &sess->cr_inactive_list, cr_list) {
 		spin_lock(&cr->conn_recovery_cmd_lock);
@@ -473,10 +448,7 @@ int iscsit_find_cmd_for_recovery(
 		spin_unlock(&cr->conn_recovery_cmd_lock);
 	}
 	spin_unlock(&sess->cr_i_lock);
-	/*
-	 * Scan through the active connection recovery list's command list.
-	 * If init_task_tag matches the command is ready to be reassigned.
-	 */
+	 
 	spin_lock(&sess->cr_a_lock);
 	list_for_each_entry(cr, &sess->cr_active_list, cr_list) {
 		spin_lock(&cr->conn_recovery_cmd_lock);
@@ -999,9 +971,7 @@ void __iscsit_start_nopin_timer(struct iscsit_conn *conn)
 
 	lockdep_assert_held(&conn->nopin_timer_lock);
 
-	/*
-	* NOPIN timeout is disabled.
-	 */
+	 
 	if (!na->nopin_timeout)
 		return;
 
@@ -1075,7 +1045,7 @@ int iscsit_set_login_timer_kworker(struct iscsit_conn *conn, struct task_struct 
 
 	spin_lock_bh(&conn->login_timer_lock);
 	if (login->login_failed) {
-		/* The timer has already expired */
+		 
 		ret = -1;
 	} else {
 		conn->login_kworker = kthr;
@@ -1154,10 +1124,7 @@ send_hdr:
 	}
 
 	data_len = cmd->tx_size - tx_hdr_size - cmd->padding;
-	/*
-	 * Set iov_off used by padding and data digest tx_data() calls below
-	 * in order to determine proper offset into cmd->iov_data[]
-	 */
+	 
 	if (conn->conn_ops->DataDigest) {
 		data_len -= ISCSI_CRC_LEN;
 		if (cmd->padding)
@@ -1167,9 +1134,7 @@ send_hdr:
 	} else {
 		iov_off = (cmd->iov_data_count - 1);
 	}
-	/*
-	 * Perform sendpage() for each page in the scatterlist
-	 */
+	 
 	while (data_len) {
 		u32 space = (sg->length - offset);
 		u32 sub_len = min_t(u32, data_len, space);
@@ -1225,14 +1190,7 @@ send_datacrc:
 	return 0;
 }
 
-/*
- *      This function is used for mainly sending a ISCSI_TARG_LOGIN_RSP PDU
- *      back to the Initiator when an expection condition occurs with the
- *      errors set in status_class and status_detail.
- *
- *      Parameters:     iSCSI Connection, Status Class, Status Detail.
- *      Returns:        0 on success, -1 on error.
- */
+ 
 int iscsit_tx_login_rsp(struct iscsit_conn *conn, u8 status_class, u8 status_detail)
 {
 	struct iscsi_login_rsp *hdr;
@@ -1370,7 +1328,7 @@ void iscsit_collect_login_stats(
 		ls->last_fail_type = ISCSI_LOGIN_FAIL_OTHER;
 	}
 
-	/* Save initiator name, ip address and time, if it is a failed login */
+	 
 	if (status_class != ISCSI_STATUS_CLS_SUCCESS) {
 		if (conn->param_list)
 			intrname = iscsi_find_param_from_key(INITIATORNAME,

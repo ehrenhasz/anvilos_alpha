@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * A virtual v4l2-mem2mem example device.
- *
- * This is a virtual device driver for testing mem-to-mem vb2 framework.
- * It simulates a device that uses memory buffers for both source and
- * destination, processes the data and issues an "irq" (simulated by a delayed
- * workqueue).
- * The device is capable of multi-instance, multi-buffer-per-transaction
- * operation (via the mem2mem framework).
- *
- * Copyright (c) 2009-2010 Samsung Electronics Co., Ltd.
- * Pawel Osciak, <pawel@osciak.com>
- * Marek Szyprowski, <m.szyprowski@samsung.com>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/delay.h>
 #include <linux/fs.h>
@@ -37,8 +24,8 @@ static unsigned int debug;
 module_param(debug, uint, 0644);
 MODULE_PARM_DESC(debug, "debug level");
 
-/* Default transaction time in msec */
-static unsigned int default_transtime = 40; /* Max 25 fps */
+ 
+static unsigned int default_transtime = 40;  
 module_param(default_transtime, uint, 0644);
 MODULE_PARM_DESC(default_transtime, "default transaction time in ms");
 
@@ -47,26 +34,26 @@ MODULE_PARM_DESC(default_transtime, "default transaction time in ms");
 #define MAX_W 640
 #define MAX_H 480
 
-/* Pixel alignment for non-bayer formats */
+ 
 #define WIDTH_ALIGN 2
 #define HEIGHT_ALIGN 1
 
-/* Pixel alignment for bayer formats */
+ 
 #define BAYER_WIDTH_ALIGN  2
 #define BAYER_HEIGHT_ALIGN 2
 
-/* Flags that indicate a format can be used for capture/output */
+ 
 #define MEM2MEM_CAPTURE	BIT(0)
 #define MEM2MEM_OUTPUT	BIT(1)
 
 #define MEM2MEM_NAME		"vim2m"
 
-/* Per queue */
+ 
 #define MEM2MEM_DEF_NUM_BUFS	VIDEO_MAX_FRAME
-/* In bytes, per queue */
+ 
 #define MEM2MEM_VID_MEM_LIMIT	(16 * 1024 * 1024)
 
-/* Flags that indicate processing mode */
+ 
 #define MEM2MEM_HFLIP	BIT(0)
 #define MEM2MEM_VFLIP	BIT(1)
 
@@ -84,17 +71,17 @@ static struct platform_device vim2m_pdev = {
 struct vim2m_fmt {
 	u32	fourcc;
 	int	depth;
-	/* Types the format can be used for */
+	 
 	u32     types;
 };
 
 static struct vim2m_fmt formats[] = {
 	{
-		.fourcc	= V4L2_PIX_FMT_RGB565,  /* rrrrrggg gggbbbbb */
+		.fourcc	= V4L2_PIX_FMT_RGB565,   
 		.depth	= 16,
 		.types  = MEM2MEM_CAPTURE | MEM2MEM_OUTPUT,
 	}, {
-		.fourcc	= V4L2_PIX_FMT_RGB565X, /* gggbbbbb rrrrrggg */
+		.fourcc	= V4L2_PIX_FMT_RGB565X,  
 		.depth	= 16,
 		.types  = MEM2MEM_CAPTURE | MEM2MEM_OUTPUT,
 	}, {
@@ -130,7 +117,7 @@ static struct vim2m_fmt formats[] = {
 
 #define NUM_FORMATS ARRAY_SIZE(formats)
 
-/* Per-queue, driver-specific private data */
+ 
 struct vim2m_q_data {
 	unsigned int		width;
 	unsigned int		height;
@@ -201,21 +188,21 @@ struct vim2m_ctx {
 
 	struct v4l2_ctrl_handler hdl;
 
-	/* Processed buffers in this transaction */
+	 
 	u8			num_processed;
 
-	/* Transaction length (i.e. how many buffers per transaction) */
+	 
 	u32			translen;
-	/* Transaction time (i.e. simulated processing time) in milliseconds */
+	 
 	u32			transtime;
 
 	struct mutex		vb_mutex;
 	struct delayed_work	work_run;
 
-	/* Abort requested by m2m */
+	 
 	int			aborting;
 
-	/* Processing mode */
+	 
 	int			mode;
 
 	enum v4l2_colorspace	colorspace;
@@ -223,7 +210,7 @@ struct vim2m_ctx {
 	enum v4l2_xfer_func	xfer_func;
 	enum v4l2_quantization	quant;
 
-	/* Source and destination queue data */
+	 
 	struct vim2m_q_data   q_data[2];
 };
 
@@ -287,14 +274,14 @@ static void copy_two_pixels(struct vim2m_q_data *q_data_in,
 	u8 _r[2], _g[2], _b[2], *r, *g, *b;
 	int i;
 
-	/* Step 1: read two consecutive pixels from src pointer */
+	 
 
 	r = _r;
 	g = _g;
 	b = _b;
 
 	switch (in->fourcc) {
-	case V4L2_PIX_FMT_RGB565: /* rrrrrggg gggbbbbb */
+	case V4L2_PIX_FMT_RGB565:  
 		for (i = 0; i < 2; i++) {
 			u16 pix = le16_to_cpu(*(__le16 *)(src[i]));
 
@@ -303,7 +290,7 @@ static void copy_two_pixels(struct vim2m_q_data *q_data_in,
 			*b++ = (u8)((pix & 0x1f) << 3) | 0x07;
 		}
 		break;
-	case V4L2_PIX_FMT_RGB565X: /* gggbbbbb rrrrrggg */
+	case V4L2_PIX_FMT_RGB565X:  
 		for (i = 0; i < 2; i++) {
 			u16 pix = be16_to_cpu(*(__be16 *)(src[i]));
 
@@ -329,14 +316,14 @@ static void copy_two_pixels(struct vim2m_q_data *q_data_in,
 		break;
 	}
 
-	/* Step 2: store two consecutive points, reversing them if needed */
+	 
 
 	r = _r;
 	g = _g;
 	b = _b;
 
 	switch (out->fourcc) {
-	case V4L2_PIX_FMT_RGB565: /* rrrrrggg gggbbbbb */
+	case V4L2_PIX_FMT_RGB565:  
 		for (i = 0; i < 2; i++) {
 			u16 pix;
 			__le16 *dst_pix = (__le16 *)*dst;
@@ -349,7 +336,7 @@ static void copy_two_pixels(struct vim2m_q_data *q_data_in,
 			*dst += 2;
 		}
 		return;
-	case V4L2_PIX_FMT_RGB565X: /* gggbbbbb rrrrrggg */
+	case V4L2_PIX_FMT_RGB565X:  
 		for (i = 0; i < 2; i++) {
 			u16 pix;
 			__be16 *dst_pix = (__be16 *)*dst;
@@ -457,7 +444,7 @@ static int device_process(struct vim2m_ctx *ctx,
 	if (!q_data_out)
 		return 0;
 
-	/* As we're doing scaling, use the output dimensions here */
+	 
 	height = q_data_out->height;
 	width = q_data_out->width;
 
@@ -484,10 +471,7 @@ static int device_process(struct vim2m_ctx *ctx,
 	}
 	y_out = 0;
 
-	/*
-	 * When format and resolution are identical,
-	 * we can use a faster copy logic
-	 */
+	 
 	if (q_data_in->fmt->fourcc == q_data_out->fmt->fourcc &&
 	    q_data_in->width == q_data_out->width &&
 	    q_data_in->height == q_data_out->height) {
@@ -504,9 +488,9 @@ static int device_process(struct vim2m_ctx *ctx,
 		return 0;
 	}
 
-	/* Slower algorithm with format conversion, hflip, vflip and scaler */
+	 
 
-	/* To speed scaler up, use Bresenham for X dimension */
+	 
 	x_int = q_data_in->width / q_data_out->width;
 	x_fract = q_data_in->width % q_data_out->width;
 
@@ -537,7 +521,7 @@ static int device_process(struct vim2m_ctx *ctx,
 					p_in_x, &p_out, y_out,
 					ctx->mode & MEM2MEM_HFLIP);
 
-			/* Calculate the next p_in_x0 */
+			 
 			x_offset += x_int;
 			x_err += x_fract;
 			if (x_err > width) {
@@ -555,13 +539,9 @@ static int device_process(struct vim2m_ctx *ctx,
 	return 0;
 }
 
-/*
- * mem2mem callbacks
- */
+ 
 
-/*
- * job_ready() - check whether an instance is ready to be scheduled to run
- */
+ 
 static int job_ready(void *priv)
 {
 	struct vim2m_ctx *ctx = priv;
@@ -579,16 +559,11 @@ static void job_abort(void *priv)
 {
 	struct vim2m_ctx *ctx = priv;
 
-	/* Will cancel the transaction in the next interrupt handler */
+	 
 	ctx->aborting = 1;
 }
 
-/* device_run() - prepares and starts the device
- *
- * This simulates all the immediate preparations required before starting
- * a device. This will be called by the framework when it decides to schedule
- * a particular instance.
- */
+ 
 static void device_run(void *priv)
 {
 	struct vim2m_ctx *ctx = priv;
@@ -597,17 +572,17 @@ static void device_run(void *priv)
 	src_buf = v4l2_m2m_next_src_buf(ctx->fh.m2m_ctx);
 	dst_buf = v4l2_m2m_next_dst_buf(ctx->fh.m2m_ctx);
 
-	/* Apply request controls if any */
+	 
 	v4l2_ctrl_request_setup(src_buf->vb2_buf.req_obj.req,
 				&ctx->hdl);
 
 	device_process(ctx, src_buf, dst_buf);
 
-	/* Complete request controls if any */
+	 
 	v4l2_ctrl_request_complete(src_buf->vb2_buf.req_obj.req,
 				   &ctx->hdl);
 
-	/* Run delayed work, which simulates a hardware irq  */
+	 
 	schedule_delayed_work(&ctx->work_run, msecs_to_jiffies(ctx->transtime));
 }
 
@@ -639,9 +614,7 @@ static void device_work(struct work_struct *w)
 	}
 }
 
-/*
- * video ioctls
- */
+ 
 static int vidioc_querycap(struct file *file, void *priv,
 			   struct v4l2_capability *cap)
 {
@@ -661,25 +634,22 @@ static int enum_fmt(struct v4l2_fmtdesc *f, u32 type)
 
 	for (i = 0; i < NUM_FORMATS; ++i) {
 		if (formats[i].types & type) {
-			/* index-th format of type type found ? */
+			 
 			if (num == f->index)
 				break;
-			/*
-			 * Correct type but haven't reached our index yet,
-			 * just increment per-type index
-			 */
+			 
 			++num;
 		}
 	}
 
 	if (i < NUM_FORMATS) {
-		/* Format found */
+		 
 		fmt = &formats[i];
 		f->pixelformat = fmt->fourcc;
 		return 0;
 	}
 
-	/* Format not found */
+	 
 	return -EINVAL;
 }
 
@@ -758,10 +728,7 @@ static int vidioc_g_fmt_vid_cap(struct file *file, void *priv,
 static int vidioc_try_fmt(struct v4l2_format *f, struct vim2m_fmt *fmt)
 {
 	int walign, halign;
-	/*
-	 * V4L2 specification specifies the driver corrects the
-	 * format struct if any of the dimensions is unsupported
-	 */
+	 
 	if (f->fmt.pix.height < MIN_H)
 		f->fmt.pix.height = MIN_H;
 	else if (f->fmt.pix.height > MAX_H)
@@ -969,9 +936,7 @@ static const struct v4l2_ioctl_ops vim2m_ioctl_ops = {
 	.vidioc_unsubscribe_event = v4l2_event_unsubscribe,
 };
 
-/*
- * Queue operations
- */
+ 
 
 static int vim2m_queue_setup(struct vb2_queue *vq,
 			     unsigned int *nbuffers,
@@ -1158,9 +1123,7 @@ static const struct v4l2_ctrl_config vim2m_ctrl_trans_num_bufs = {
 	.step = 1,
 };
 
-/*
- * File operations
- */
+ 
 static int vim2m_open(struct file *file)
 {
 	struct vim2m_dev *dev = video_drvdata(file);
@@ -1367,7 +1330,7 @@ error_m2m_mc:
 #endif
 error_v4l2:
 	video_unregister_device(&dev->vfd);
-	/* vim2m_device_release called by video_unregister_device to release various objects */
+	 
 	return ret;
 error_m2m:
 	v4l2_m2m_release(dev->m2m_dev);

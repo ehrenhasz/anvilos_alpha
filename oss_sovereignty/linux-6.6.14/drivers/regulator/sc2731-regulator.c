@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2017 Spreadtrum Communications Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -10,15 +8,11 @@
 #include <linux/regulator/driver.h>
 #include <linux/regulator/of_regulator.h>
 
-/*
- * SC2731 regulator lock register
- */
+ 
 #define SC2731_PWR_WR_PROT		0xf0c
 #define SC2731_WR_UNLOCK_VALUE		0x6e7f
 
-/*
- * SC2731 enable register
- */
+ 
 #define SC2731_POWER_PD_SW		0xc28
 #define SC2731_LDO_CAMA0_PD		0xcfc
 #define SC2731_LDO_CAMA1_PD		0xd04
@@ -35,9 +29,7 @@
 #define SC2731_LDO_CAMIO_PD		0xd94
 #define SC2731_LDO_SRAM_PD		0xd78
 
-/*
- * SC2731 enable mask
- */
+ 
 #define SC2731_DCDC_CPU0_PD_MASK	BIT(4)
 #define SC2731_DCDC_CPU1_PD_MASK	BIT(3)
 #define SC2731_DCDC_RF_PD_MASK		BIT(11)
@@ -56,9 +48,7 @@
 #define SC2731_LDO_CAMIO_PD_MASK	BIT(0)
 #define SC2731_LDO_SRAM_PD_MASK		BIT(0)
 
-/*
- * SC2731 vsel register
- */
+ 
 #define SC2731_DCDC_CPU0_VOL		0xc54
 #define SC2731_DCDC_CPU1_VOL		0xc64
 #define SC2731_DCDC_RF_VOL		0xcb8
@@ -77,9 +67,7 @@
 #define SC2731_LDO_CAMIO_VOL		0xd98
 #define SC2731_LDO_SRAM_VOL		0xdB0
 
-/*
- * SC2731 vsel register mask
- */
+ 
 #define SC2731_DCDC_CPU0_VOL_MASK	GENMASK(8, 0)
 #define SC2731_DCDC_CPU1_VOL_MASK	GENMASK(8, 0)
 #define SC2731_DCDC_RF_VOL_MASK		GENMASK(8, 0)

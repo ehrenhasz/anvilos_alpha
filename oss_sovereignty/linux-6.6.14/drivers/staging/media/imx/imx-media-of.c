@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Media driver for Freescale i.MX5/6 SOC
- *
- * Open Firmware parsing.
- *
- * Copyright (c) 2016 Mentor Graphics Inc.
- */
+
+ 
 #include <linux/of_platform.h>
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-device.h>
@@ -28,7 +22,7 @@ static int imx_media_of_add_csi(struct imx_media_dev *imxmd,
 		return -ENODEV;
 	}
 
-	/* add CSI fwnode to async notifier */
+	 
 	asd = v4l2_async_nf_add_fwnode(&imxmd->notifier,
 				       of_fwnode_handle(csi_np),
 				       struct v4l2_async_connection);
@@ -55,13 +49,13 @@ int imx_media_add_of_subdevs(struct imx_media_dev *imxmd,
 
 		ret = imx_media_of_add_csi(imxmd, csi_np);
 		if (ret) {
-			/* unavailable or already added is not an error */
+			 
 			if (ret == -ENODEV || ret == -EEXIST) {
 				of_node_put(csi_np);
 				continue;
 			}
 
-			/* other error, can't continue */
+			 
 			goto err_out;
 		}
 	}

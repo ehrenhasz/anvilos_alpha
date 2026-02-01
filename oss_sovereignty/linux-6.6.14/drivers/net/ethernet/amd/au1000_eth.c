@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Alchemy Au1x00 ethernet driver
- *
- * Copyright 2001-2003, 2006 MontaVista Software Inc.
- * Copyright 2002 TimeSys Corp.
- * Added ethtool/mii-tool support,
- * Copyright 2004 Matt Porter <mporter@kernel.crashing.org>
- * Update: 2004 Bjoern Riemer, riemer@fokus.fraunhofer.de
- * or riemer@riemer-nt.de: fixed the link beat detection with
- * ioctls (SIOCGMIIPHY)
- * Copyright 2006 Herbert Valerio Riedel <hvr@gnu.org>
- *  converted to use linux-2.6.x's PHY framework
- *
- * Author: MontaVista Software, Inc.
- *		ppopov@mvista.com or source@mvista.com
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/capability.h>
@@ -70,7 +54,7 @@ MODULE_AUTHOR(DRV_AUTHOR);
 MODULE_DESCRIPTION(DRV_DESC);
 MODULE_LICENSE("GPL");
 
-/* AU1000 MAC registers and bits */
+ 
 #define MAC_CONTROL		0x0
 #  define MAC_RX_ENABLE		(1 << 2)
 #  define MAC_TX_ENABLE		(1 << 3)
@@ -112,7 +96,7 @@ MODULE_LICENSE("GPL");
 #define MAC_VLAN1_TAG		0x20
 #define MAC_VLAN2_TAG		0x24
 
-/* Ethernet Controller Enable */
+ 
 #  define MAC_EN_CLOCK_ENABLE	(1 << 0)
 #  define MAC_EN_RESET0		(1 << 1)
 #  define MAC_EN_TOSS		(0 << 2)
@@ -121,8 +105,8 @@ MODULE_LICENSE("GPL");
 #  define MAC_EN_RESET2		(1 << 5)
 #  define MAC_DMA_RESET		(1 << 6)
 
-/* Ethernet Controller DMA Channels */
-/* offsets from MAC_TX_RING_ADDR address */
+ 
+ 
 #define MAC_TX_BUFF0_STATUS	0x0
 #  define TX_FRAME_ABORTED	(1 << 0)
 #  define TX_JAB_TIMEOUT	(1 << 1)
@@ -151,7 +135,7 @@ MODULE_LICENSE("GPL");
 #define MAC_TX_BUFF3_ADDR	0x34
 #define MAC_TX_BUFF3_LEN	0x38
 
-/* offsets from MAC_RX_RING_ADDR */
+ 
 #define MAC_RX_BUFF0_STATUS	0x0
 #  define RX_FRAME_LEN_MASK	0x3fff
 #  define RX_WDOG_TIMER		(1 << 14)
@@ -188,59 +172,13 @@ MODULE_LICENSE("GPL");
 #define MAC_RX_BUFF3_STATUS	0x30
 #define MAC_RX_BUFF3_ADDR	0x34
 
-/*
- * Theory of operation
- *
- * The Au1000 MACs use a simple rx and tx descriptor ring scheme.
- * There are four receive and four transmit descriptors.  These
- * descriptors are not in memory; rather, they are just a set of
- * hardware registers.
- *
- * Since the Au1000 has a coherent data cache, the receive and
- * transmit buffers are allocated from the KSEG0 segment. The
- * hardware registers, however, are still mapped at KSEG1 to
- * make sure there's no out-of-order writes, and that all writes
- * complete immediately.
- */
+ 
 
-/*
- * board-specific configurations
- *
- * PHY detection algorithm
- *
- * If phy_static_config is undefined, the PHY setup is
- * autodetected:
- *
- * mii_probe() first searches the current MAC's MII bus for a PHY,
- * selecting the first (or last, if phy_search_highest_addr is
- * defined) PHY address not already claimed by another netdev.
- *
- * If nothing was found that way when searching for the 2nd ethernet
- * controller's PHY and phy1_search_mac0 is defined, then
- * the first MII bus is searched as well for an unclaimed PHY; this is
- * needed in case of a dual-PHY accessible only through the MAC0's MII
- * bus.
- *
- * Finally, if no PHY is found, then the corresponding ethernet
- * controller is not registered to the network subsystem.
- */
+ 
 
-/* autodetection defaults: phy1_search_mac0 */
+ 
 
-/* static PHY setup
- *
- * most boards PHY setup should be detectable properly with the
- * autodetection algorithm in mii_probe(), but in some cases (e.g. if
- * you have a switch attached, or want to use the PHY's interrupt
- * notification capabilities) you can provide a static PHY
- * configuration here
- *
- * IRQs may only be set, if a PHY address was configured
- * If a PHY address is given, also a bus id is required to be set
- *
- * ps: make sure the used irqs are configured properly in the board
- * specific irq-map
- */
+ 
 static void au1000_enable_mac(struct net_device *dev, int force_reset)
 {
 	unsigned long flags;
@@ -250,11 +188,11 @@ static void au1000_enable_mac(struct net_device *dev, int force_reset)
 
 	if (force_reset || (!aup->mac_enabled)) {
 		writel(MAC_EN_CLOCK_ENABLE, aup->enable);
-		wmb(); /* drain writebuffer */
+		wmb();  
 		mdelay(2);
 		writel((MAC_EN_RESET0 | MAC_EN_RESET1 | MAC_EN_RESET2
 				| MAC_EN_CLOCK_ENABLE), aup->enable);
-		wmb(); /* drain writebuffer */
+		wmb();  
 		mdelay(2);
 
 		aup->mac_enabled = 1;
@@ -263,9 +201,7 @@ static void au1000_enable_mac(struct net_device *dev, int force_reset)
 	spin_unlock_irqrestore(&aup->lock, flags);
 }
 
-/*
- * MII operations
- */
+ 
 static int au1000_mdio_read(struct net_device *dev, int phy_addr, int reg)
 {
 	struct au1000_private *aup = netdev_priv(dev);
@@ -326,9 +262,7 @@ static int au1000_mdiobus_read(struct mii_bus *bus, int phy_addr, int regnum)
 {
 	struct net_device *const dev = bus->priv;
 
-	/* make sure the MAC associated with this
-	 * mii_bus is enabled
-	 */
+	 
 	au1000_enable_mac(dev, 0);
 
 	return au1000_mdio_read(dev, phy_addr, regnum);
@@ -339,9 +273,7 @@ static int au1000_mdiobus_write(struct mii_bus *bus, int phy_addr, int regnum,
 {
 	struct net_device *const dev = bus->priv;
 
-	/* make sure the MAC associated with this
-	 * mii_bus is enabled
-	 */
+	 
 	au1000_enable_mac(dev, 0);
 
 	au1000_mdio_write(dev, phy_addr, regnum, value);
@@ -352,9 +284,7 @@ static int au1000_mdiobus_reset(struct mii_bus *bus)
 {
 	struct net_device *const dev = bus->priv;
 
-	/* make sure the MAC associated with this
-	 * mii_bus is enabled
-	 */
+	 
 	au1000_enable_mac(dev, 0);
 
 	return 0;
@@ -370,7 +300,7 @@ static void au1000_hard_stop(struct net_device *dev)
 	reg = readl(&aup->mac->control);
 	reg &= ~(MAC_RX_ENABLE | MAC_TX_ENABLE);
 	writel(reg, &aup->mac->control);
-	wmb(); /* drain writebuffer */
+	wmb();  
 	mdelay(10);
 }
 
@@ -384,7 +314,7 @@ static void au1000_enable_rx_tx(struct net_device *dev)
 	reg = readl(&aup->mac->control);
 	reg |= (MAC_RX_ENABLE | MAC_TX_ENABLE);
 	writel(reg, &aup->mac->control);
-	wmb(); /* drain writebuffer */
+	wmb();  
 	mdelay(10);
 }
 
@@ -403,7 +333,7 @@ au1000_adjust_link(struct net_device *dev)
 	spin_lock_irqsave(&aup->lock, flags);
 
 	if (phydev->link && (aup->old_speed != phydev->speed)) {
-		/* speed changed */
+		 
 
 		switch (phydev->speed) {
 		case SPEED_10:
@@ -421,9 +351,9 @@ au1000_adjust_link(struct net_device *dev)
 	}
 
 	if (phydev->link && (aup->old_duplex != phydev->duplex)) {
-		/* duplex mode changed */
+		 
 
-		/* switching duplex mode requires to disable rx and tx! */
+		 
 		au1000_hard_stop(dev);
 
 		reg = readl(&aup->mac->control);
@@ -435,7 +365,7 @@ au1000_adjust_link(struct net_device *dev)
 			reg |= MAC_DISABLE_RX_OWN;
 		}
 		writel(reg, &aup->mac->control);
-		wmb(); /* drain writebuffer */
+		wmb();  
 		mdelay(1);
 
 		au1000_enable_rx_tx(dev);
@@ -445,10 +375,10 @@ au1000_adjust_link(struct net_device *dev)
 	}
 
 	if (phydev->link != aup->old_link) {
-		/* link state changed */
+		 
 
 		if (!phydev->link) {
-			/* link went down */
+			 
 			aup->old_speed = 0;
 			aup->old_duplex = -1;
 		}
@@ -485,27 +415,23 @@ static int au1000_mii_probe(struct net_device *dev)
 		return 0;
 	}
 
-	/* find the first (lowest address) PHY
-	 * on the current MAC's MII bus
-	 */
+	 
 	for (phy_addr = 0; phy_addr < PHY_MAX_ADDR; phy_addr++)
 		if (mdiobus_get_phy(aup->mii_bus, phy_addr)) {
 			phydev = mdiobus_get_phy(aup->mii_bus, phy_addr);
 			if (!aup->phy_search_highest_addr)
-				/* break out with first one found */
+				 
 				break;
 		}
 
 	if (aup->phy1_search_mac0) {
-		/* try harder to find a PHY */
+		 
 		if (!phydev && (aup->mac_id == 1)) {
-			/* no PHY found, maybe we have a dual PHY? */
+			 
 			dev_info(&dev->dev, ": no PHY found on MAC1, "
 				"let's see if it's attached to MAC0...\n");
 
-			/* find the first (lowest address) non-attached
-			 * PHY on the MAC0 MII bus
-			 */
+			 
 			for (phy_addr = 0; phy_addr < PHY_MAX_ADDR; phy_addr++) {
 				struct phy_device *const tmp_phydev =
 					mdiobus_get_phy(aup->mii_bus,
@@ -514,16 +440,16 @@ static int au1000_mii_probe(struct net_device *dev)
 				if (aup->mac_id == 1)
 					break;
 
-				/* no PHY here... */
+				 
 				if (!tmp_phydev)
 					continue;
 
-				/* already claimed by MAC0 */
+				 
 				if (tmp_phydev->attached_dev)
 					continue;
 
 				phydev = tmp_phydev;
-				break; /* found it */
+				break;  
 			}
 		}
 	}
@@ -533,7 +459,7 @@ static int au1000_mii_probe(struct net_device *dev)
 		return -1;
 	}
 
-	/* now we are supposed to have a proper phydev, to attach to... */
+	 
 	BUG_ON(phydev->attached_dev);
 
 	phydev = phy_connect(dev, phydev_name(phydev),
@@ -555,11 +481,7 @@ static int au1000_mii_probe(struct net_device *dev)
 	return 0;
 }
 
-/*
- * Buffer allocation/deallocation routines. The buffer descriptor returned
- * has the virtual and dma address of a buffer suitable for
- * both, receive and transmit operations.
- */
+ 
 static struct db_dest *au1000_GetFreeDB(struct au1000_private *aup)
 {
 	struct db_dest *pDB;
@@ -587,19 +509,19 @@ static void au1000_reset_mac_unlocked(struct net_device *dev)
 	au1000_hard_stop(dev);
 
 	writel(MAC_EN_CLOCK_ENABLE, aup->enable);
-	wmb(); /* drain writebuffer */
+	wmb();  
 	mdelay(2);
 	writel(0, aup->enable);
-	wmb(); /* drain writebuffer */
+	wmb();  
 	mdelay(2);
 
 	aup->tx_full = 0;
 	for (i = 0; i < NUM_RX_DMA; i++) {
-		/* reset control bits */
+		 
 		aup->rx_dma_ring[i]->buff_stat &= ~0xf;
 	}
 	for (i = 0; i < NUM_TX_DMA; i++) {
-		/* reset control bits */
+		 
 		aup->tx_dma_ring[i]->buff_stat &= ~0xf;
 	}
 
@@ -622,11 +544,7 @@ static void au1000_reset_mac(struct net_device *dev)
 	spin_unlock_irqrestore(&aup->lock, flags);
 }
 
-/*
- * Setup the receive and transmit "rings".  These pointers are the addresses
- * of the rx and tx MAC DMA registers so they are fixed by the hardware --
- * these are not descriptors sitting in memory.
- */
+ 
 static void
 au1000_setup_hw_rings(struct au1000_private *aup, void __iomem *tx_base)
 {
@@ -642,9 +560,7 @@ au1000_setup_hw_rings(struct au1000_private *aup, void __iomem *tx_base)
 	}
 }
 
-/*
- * ethtool operations
- */
+ 
 static void
 au1000_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
 {
@@ -676,15 +592,7 @@ static const struct ethtool_ops au1000_ethtool_ops = {
 	.set_link_ksettings = phy_ethtool_set_link_ksettings,
 };
 
-/*
- * Initialize the interface.
- *
- * When the device powers up, the clocks are disabled and the
- * mac is in reset state.  When the interface is closed, we
- * do the same -- reset the device and disable the clocks to
- * conserve power. Thus, whenever au1000_init() is called,
- * the device should already be in reset state.
- */
+ 
 static int au1000_init(struct net_device *dev)
 {
 	struct au1000_private *aup = netdev_priv(dev);
@@ -694,7 +602,7 @@ static int au1000_init(struct net_device *dev)
 
 	netif_dbg(aup, hw, dev, "au1000_init\n");
 
-	/* bring the device out of reset */
+	 
 	au1000_enable_mac(dev, 1);
 
 	spin_lock_irqsave(&aup->lock, flags);
@@ -714,7 +622,7 @@ static int au1000_init(struct net_device *dev)
 	for (i = 0; i < NUM_RX_DMA; i++)
 		aup->rx_dma_ring[i]->buff_stat |= RX_DMA_ENABLE;
 
-	wmb(); /* drain writebuffer */
+	wmb();  
 
 	control = MAC_RX_ENABLE | MAC_TX_ENABLE;
 #ifndef CONFIG_CPU_LITTLE_ENDIAN
@@ -725,13 +633,13 @@ static int au1000_init(struct net_device *dev)
 			control |= MAC_FULL_DUPLEX;
 		else
 			control |= MAC_DISABLE_RX_OWN;
-	} else { /* PHY-less op, assume full-duplex */
+	} else {  
 		control |= MAC_FULL_DUPLEX;
 	}
 
 	writel(control, &aup->mac->control);
-	writel(0x8100, &aup->mac->vlan1_tag); /* activate vlan support */
-	wmb(); /* drain writebuffer */
+	writel(0x8100, &aup->mac->vlan1_tag);  
+	wmb();  
 
 	spin_unlock_irqrestore(&aup->lock, flags);
 	return 0;
@@ -760,9 +668,7 @@ static inline void au1000_update_rx_stats(struct net_device *dev, u32 status)
 
 }
 
-/*
- * Au1000 receive routine.
- */
+ 
 static int au1000_rx(struct net_device *dev)
 {
 	struct au1000_private *aup = netdev_priv(dev);
@@ -782,20 +688,20 @@ static int au1000_rx(struct net_device *dev)
 		au1000_update_rx_stats(dev, status);
 		if (!(status & RX_ERROR))  {
 
-			/* good frame */
+			 
 			frmlen = (status & RX_FRAME_LEN_MASK);
-			frmlen -= 4; /* Remove FCS */
+			frmlen -= 4;  
 			skb = netdev_alloc_skb(dev, frmlen + 2);
 			if (!skb) {
 				dev->stats.rx_dropped++;
 				continue;
 			}
-			skb_reserve(skb, 2);	/* 16 byte IP header align */
+			skb_reserve(skb, 2);	 
 			skb_copy_to_linear_data(skb,
 				(unsigned char *)pDB->vaddr, frmlen);
 			skb_put(skb, frmlen);
 			skb->protocol = eth_type_trans(skb, dev);
-			netif_rx(skb);	/* pass the packet to upper layers */
+			netif_rx(skb);	 
 		} else {
 			if (au1000_debug > 4) {
 				pr_err("rx_error(s):");
@@ -822,9 +728,9 @@ static int au1000_rx(struct net_device *dev)
 		}
 		prxd->buff_stat = lower_32_bits(pDB->dma_addr) | RX_DMA_ENABLE;
 		aup->rx_head = (aup->rx_head + 1) & (NUM_RX_DMA - 1);
-		wmb(); /* drain writebuffer */
+		wmb();  
 
-		/* next descriptor */
+		 
 		prxd = aup->rx_dma_ring[aup->rx_head];
 		buff_stat = prxd->buff_stat;
 	}
@@ -838,9 +744,7 @@ static void au1000_update_tx_stats(struct net_device *dev, u32 status)
 	if (status & TX_FRAME_ABORTED) {
 		if (!dev->phydev || (DUPLEX_FULL == dev->phydev->duplex)) {
 			if (status & (TX_JAB_TIMEOUT | TX_UNDERRUN)) {
-				/* any other tx errors are only valid
-				 * in half duplex mode
-				 */
+				 
 				ps->tx_errors++;
 				ps->tx_aborted_errors++;
 			}
@@ -853,11 +757,7 @@ static void au1000_update_tx_stats(struct net_device *dev, u32 status)
 	}
 }
 
-/*
- * Called from the interrupt service routine to acknowledge
- * the TX DONE bits.  This is a must if the irq is setup as
- * edge triggered.
- */
+ 
 static void au1000_tx_ack(struct net_device *dev)
 {
 	struct au1000_private *aup = netdev_priv(dev);
@@ -869,7 +769,7 @@ static void au1000_tx_ack(struct net_device *dev)
 		au1000_update_tx_stats(dev, ptxd->status);
 		ptxd->buff_stat &= ~TX_T_DONE;
 		ptxd->len = 0;
-		wmb(); /* drain writebuffer */
+		wmb();  
 
 		aup->tx_tail = (aup->tx_tail + 1) & (NUM_TX_DMA - 1);
 		ptxd = aup->tx_dma_ring[aup->tx_tail];
@@ -881,14 +781,12 @@ static void au1000_tx_ack(struct net_device *dev)
 	}
 }
 
-/*
- * Au1000 interrupt service routine.
- */
+ 
 static irqreturn_t au1000_interrupt(int irq, void *dev_id)
 {
 	struct net_device *dev = dev_id;
 
-	/* Handle RX interrupts first to minimize chance of overrun */
+	 
 
 	au1000_rx(dev);
 	au1000_tx_ack(dev);
@@ -940,19 +838,17 @@ static int au1000_close(struct net_device *dev)
 
 	au1000_reset_mac_unlocked(dev);
 
-	/* stop the device */
+	 
 	netif_stop_queue(dev);
 
-	/* disable the interrupt */
+	 
 	free_irq(dev->irq, dev);
 	spin_unlock_irqrestore(&aup->lock, flags);
 
 	return 0;
 }
 
-/*
- * Au1000 transmit routine.
- */
+ 
 static netdev_tx_t au1000_tx(struct sk_buff *skb, struct net_device *dev)
 {
 	struct au1000_private *aup = netdev_priv(dev);
@@ -969,7 +865,7 @@ static netdev_tx_t au1000_tx(struct sk_buff *skb, struct net_device *dev)
 	ptxd = aup->tx_dma_ring[aup->tx_head];
 	buff_stat = ptxd->buff_stat;
 	if (buff_stat & TX_DMA_ENABLE) {
-		/* We've wrapped around and the transmitter is still busy */
+		 
 		netif_stop_queue(dev);
 		aup->tx_full = 1;
 		return NETDEV_TX_BUSY;
@@ -997,22 +893,19 @@ static netdev_tx_t au1000_tx(struct sk_buff *skb, struct net_device *dev)
 	ps->tx_bytes += ptxd->len;
 
 	ptxd->buff_stat = lower_32_bits(pDB->dma_addr) | TX_DMA_ENABLE;
-	wmb(); /* drain writebuffer */
+	wmb();  
 	dev_kfree_skb(skb);
 	aup->tx_head = (aup->tx_head + 1) & (NUM_TX_DMA - 1);
 	return NETDEV_TX_OK;
 }
 
-/*
- * The Tx ring has been full longer than the watchdog timeout
- * value. The transmitter must be hung?
- */
+ 
 static void au1000_tx_timeout(struct net_device *dev, unsigned int txqueue)
 {
 	netdev_err(dev, "au1000_tx_timeout: dev=%p\n", dev);
 	au1000_reset_mac(dev);
 	au1000_init(dev);
-	netif_trans_update(dev); /* prevent tx timeout */
+	netif_trans_update(dev);  
 	netif_wake_queue(dev);
 }
 
@@ -1023,7 +916,7 @@ static void au1000_multicast_list(struct net_device *dev)
 
 	netif_dbg(aup, drv, dev, "%s: flags=%x\n", __func__, dev->flags);
 	reg = readl(&aup->mac->control);
-	if (dev->flags & IFF_PROMISC) {			/* Set promiscuous. */
+	if (dev->flags & IFF_PROMISC) {			 
 		reg |= MAC_PROMISCUOUS;
 	} else if ((dev->flags & IFF_ALLMULTI)  ||
 			   netdev_mc_count(dev) > MULTICAST_FILTER_LIMIT) {
@@ -1032,7 +925,7 @@ static void au1000_multicast_list(struct net_device *dev)
 		netdev_info(dev, "Pass all multicast\n");
 	} else {
 		struct netdev_hw_addr *ha;
-		u32 mc_filter[2];	/* Multicast hash filter */
+		u32 mc_filter[2];	 
 
 		mc_filter[1] = mc_filter[0] = 0;
 		netdev_for_each_mc_addr(ha, dev)
@@ -1128,9 +1021,7 @@ static int au1000_probe(struct platform_device *pdev)
 	aup->msg_enable = (au1000_debug < 4 ?
 				AU1000_DEF_MSG_ENABLE : au1000_debug);
 
-	/* Allocate the data buffers
-	 * Snooping works fine with eth on all au1xxx
-	 */
+	 
 	aup->vaddr = dma_alloc_coherent(&pdev->dev, MAX_BUF_SIZE *
 					(NUM_TX_BUFFS + NUM_RX_BUFFS),
 					&aup->dma_addr, 0);
@@ -1140,7 +1031,7 @@ static int au1000_probe(struct platform_device *pdev)
 		goto err_vaddr;
 	}
 
-	/* aup->mac is the base address of the MAC's registers */
+	 
 	aup->mac = (struct mac_reg *)
 			ioremap(base->start, resource_size(base));
 	if (!aup->mac) {
@@ -1149,7 +1040,7 @@ static int au1000_probe(struct platform_device *pdev)
 		goto err_remap1;
 	}
 
-	/* Setup some variables for quick register address access */
+	 
 	aup->enable = (u32 *)ioremap(macen->start,
 						resource_size(macen));
 	if (!aup->enable) {
@@ -1180,7 +1071,7 @@ static int au1000_probe(struct platform_device *pdev)
 		if (is_valid_ether_addr(pd->mac)) {
 			eth_hw_addr_set(dev, pd->mac);
 		} else {
-			/* Set a random MAC since no valid provided by platform_data. */
+			 
 			eth_hw_addr_random(dev);
 		}
 
@@ -1213,7 +1104,7 @@ static int au1000_probe(struct platform_device *pdev)
 	snprintf(aup->mii_bus->id, MII_BUS_ID_SIZE, "%s-%x",
 		pdev->name, aup->mac_id);
 
-	/* if known, set corresponding PHY IRQs */
+	 
 	if (aup->phy_static_config)
 		if (aup->phy_irq && aup->phy_busid == aup->mac_id)
 			aup->mii_bus->irq[aup->phy_addr] = aup->phy_irq;
@@ -1229,7 +1120,7 @@ static int au1000_probe(struct platform_device *pdev)
 		goto err_out;
 
 	pDBfree = NULL;
-	/* setup the data buffer descriptors and attach a buffer to each one */
+	 
 	pDB = aup->db;
 	for (i = 0; i < (NUM_TX_BUFFS+NUM_RX_BUFFS); i++) {
 		pDB->pnext = pDBfree;
@@ -1266,10 +1157,7 @@ static int au1000_probe(struct platform_device *pdev)
 	dev->ethtool_ops = &au1000_ethtool_ops;
 	dev->watchdog_timeo = ETH_TX_TIMEOUT;
 
-	/*
-	 * The boot code uses the ethernet controller, so reset it to start
-	 * fresh.  au1000_init() expects that the device is in reset state.
-	 */
+	 
 	au1000_reset_mac(dev);
 
 	err = register_netdev(dev);
@@ -1287,9 +1175,7 @@ err_out:
 	if (aup->mii_bus)
 		mdiobus_unregister(aup->mii_bus);
 
-	/* here we should have a valid dev plus aup-> register addresses
-	 * so we can reset the mac properly.
-	 */
+	 
 	au1000_reset_mac(dev);
 
 	for (i = 0; i < NUM_RX_DMA; i++) {

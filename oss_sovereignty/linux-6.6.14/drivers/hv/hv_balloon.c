@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012, Microsoft Corporation.
- *
- * Author:
- *   K. Y. Srinivasan <kys@microsoft.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -34,26 +29,11 @@
 #define CREATE_TRACE_POINTS
 #include "hv_trace_balloon.h"
 
-/*
- * We begin with definitions supporting the Dynamic Memory protocol
- * with the host.
- *
- * Begin protocol definitions.
- */
+ 
 
 
 
-/*
- * Protocol versions. The low word is the minor version, the high word the major
- * version.
- *
- * History:
- * Initial version 1.0
- * Changed to 0.1 on 2009/03/25
- * Changes to 0.2 on 2009/05/14
- * Changes to 0.3 on 2009/12/03
- * Changed to 1.0 on 2011/04/05
- */
+ 
 
 #define DYNMEM_MAKE_VERSION(Major, Minor) ((__u32)(((Major) << 16) | (Minor)))
 #define DYNMEM_MAJOR_VERSION(Version) ((__u32)(Version) >> 16)
@@ -73,14 +53,10 @@ enum {
 
 
 
-/*
- * Message Types
- */
+ 
 
 enum dm_message_type {
-	/*
-	 * Version 0.3
-	 */
+	 
 	DM_ERROR			= 0,
 	DM_VERSION_REQUEST		= 1,
 	DM_VERSION_RESPONSE		= 2,
@@ -94,18 +70,13 @@ enum dm_message_type {
 	DM_MEM_HOT_ADD_REQUEST		= 10,
 	DM_MEM_HOT_ADD_RESPONSE		= 11,
 	DM_VERSION_03_MAX		= 11,
-	/*
-	 * Version 1.0.
-	 */
+	 
 	DM_INFO_MESSAGE			= 12,
 	DM_VERSION_1_MAX		= 12
 };
 
 
-/*
- * Structures defining the dynamic memory management
- * protocol.
- */
+ 
 
 union dm_version {
 	struct {
@@ -120,12 +91,7 @@ union dm_caps {
 	struct {
 		__u64 balloon:1;
 		__u64 hot_add:1;
-		/*
-		 * To support guests that may have alignment
-		 * limitations on hot-add, the guest can specify
-		 * its alignment requirements; a value of n
-		 * represents an alignment of 2^n in mega bytes.
-		 */
+		 
 		__u64 hot_add_alignment:4;
 		__u64 reservedz:58;
 	} cap_bits;
@@ -134,15 +100,9 @@ union dm_caps {
 
 union dm_mem_page_range {
 	struct  {
-		/*
-		 * The PFN number of the first page in the range.
-		 * 40 bits is the architectural limit of a PFN
-		 * number for AMD64.
-		 */
+		 
 		__u64 start_page:40;
-		/*
-		 * The number of pages in the range.
-		 */
+		 
 		__u64 page_cnt:24;
 	} finfo;
 	__u64  page_range;
@@ -150,13 +110,7 @@ union dm_mem_page_range {
 
 
 
-/*
- * The header for all dynamic memory messages:
- *
- * type: Type of the message.
- * size: Size of the message in bytes; including the header.
- * trans_id: The guest is responsible for manufacturing this ID.
- */
+ 
 
 struct dm_header {
 	__u16 type;
@@ -164,30 +118,17 @@ struct dm_header {
 	__u32 trans_id;
 } __packed;
 
-/*
- * A generic message format for dynamic memory.
- * Specific message formats are defined later in the file.
- */
+ 
 
 struct dm_message {
 	struct dm_header hdr;
-	__u8 data[]; /* enclosed message */
+	__u8 data[];  
 } __packed;
 
 
-/*
- * Specific message types supporting the dynamic memory protocol.
- */
+ 
 
-/*
- * Version negotiation message. Sent from the guest to the host.
- * The guest is free to try different versions until the host
- * accepts the version.
- *
- * dm_version: The protocol version requested.
- * is_last_attempt: If TRUE, this is the last version guest will request.
- * reservedz: Reserved field, set to zero.
- */
+ 
 
 struct dm_version_request {
 	struct dm_header hdr;
@@ -196,16 +137,7 @@ struct dm_version_request {
 	__u32 reservedz:31;
 } __packed;
 
-/*
- * Version response message; Host to Guest and indicates
- * if the host has accepted the version sent by the guest.
- *
- * is_accepted: If TRUE, host has accepted the version and the guest
- * should proceed to the next stage of the protocol. FALSE indicates that
- * guest should re-try with a different version.
- *
- * reservedz: Reserved field, set to zero.
- */
+ 
 
 struct dm_version_response {
 	struct dm_header hdr;
@@ -213,10 +145,7 @@ struct dm_version_response {
 	__u64 reservedz:63;
 } __packed;
 
-/*
- * Message reporting capabilities. This is sent from the guest to the
- * host.
- */
+ 
 
 struct dm_capabilities {
 	struct dm_header hdr;
@@ -225,15 +154,7 @@ struct dm_capabilities {
 	__u64 max_page_number;
 } __packed;
 
-/*
- * Response to the capabilities message. This is sent from the host to the
- * guest. This message notifies if the host has accepted the guest's
- * capabilities. If the host has not accepted, the guest must shutdown
- * the service.
- *
- * is_accepted: Indicates if the host has accepted guest's capabilities.
- * reservedz: Must be 0.
- */
+ 
 
 struct dm_capabilities_resp_msg {
 	struct dm_header hdr;
@@ -241,25 +162,7 @@ struct dm_capabilities_resp_msg {
 	__u64 reservedz:63;
 } __packed;
 
-/*
- * This message is used to report memory pressure from the guest.
- * This message is not part of any transaction and there is no
- * response to this message.
- *
- * num_avail: Available memory in pages.
- * num_committed: Committed memory in pages.
- * page_file_size: The accumulated size of all page files
- *		   in the system in pages.
- * zero_free: The number of zero and free pages.
- * page_file_writes: The writes to the page file in pages.
- * io_diff: An indicator of file cache efficiency or page file activity,
- *	    calculated as File Cache Page Fault Count - Page Read Count.
- *	    This value is in pages.
- *
- * Some of these metrics are Windows specific and fortunately
- * the algorithm on the host side that computes the guest memory
- * pressure only uses num_committed value.
- */
+ 
 
 struct dm_status {
 	struct dm_header hdr;
@@ -272,13 +175,7 @@ struct dm_status {
 } __packed;
 
 
-/*
- * Message to ask the guest to allocate memory - balloon up message.
- * This message is sent from the host to the guest. The guest may not be
- * able to allocate as much memory as requested.
- *
- * num_pages: number of pages to allocate.
- */
+ 
 
 struct dm_balloon {
 	struct dm_header hdr;
@@ -287,19 +184,7 @@ struct dm_balloon {
 } __packed;
 
 
-/*
- * Balloon response message; this message is sent from the guest
- * to the host in response to the balloon message.
- *
- * reservedz: Reserved; must be set to zero.
- * more_pages: If FALSE, this is the last message of the transaction.
- * if TRUE there will atleast one more message from the guest.
- *
- * range_count: The number of ranges in the range array.
- *
- * range_array: An array of page ranges returned to the host.
- *
- */
+ 
 
 struct dm_balloon_response {
 	struct dm_header hdr;
@@ -309,20 +194,7 @@ struct dm_balloon_response {
 	union dm_mem_page_range range_array[];
 } __packed;
 
-/*
- * Un-balloon message; this message is sent from the host
- * to the guest to give guest more memory.
- *
- * more_pages: If FALSE, this is the last message of the transaction.
- * if TRUE there will atleast one more message from the guest.
- *
- * reservedz: Reserved; must be set to zero.
- *
- * range_count: The number of ranges in the range array.
- *
- * range_array: An array of page ranges returned to the host.
- *
- */
+ 
 
 struct dm_unballoon_request {
 	struct dm_header hdr;
@@ -332,48 +204,21 @@ struct dm_unballoon_request {
 	union dm_mem_page_range range_array[];
 } __packed;
 
-/*
- * Un-balloon response message; this message is sent from the guest
- * to the host in response to an unballoon request.
- *
- */
+ 
 
 struct dm_unballoon_response {
 	struct dm_header hdr;
 } __packed;
 
 
-/*
- * Hot add request message. Message sent from the host to the guest.
- *
- * mem_range: Memory range to hot add.
- *
- */
+ 
 
 struct dm_hot_add {
 	struct dm_header hdr;
 	union dm_mem_page_range range;
 } __packed;
 
-/*
- * Hot add response message.
- * This message is sent by the guest to report the status of a hot add request.
- * If page_count is less than the requested page count, then the host should
- * assume all further hot add requests will fail, since this indicates that
- * the guest has hit an upper physical memory barrier.
- *
- * Hot adds may also fail due to low resources; in this case, the guest must
- * not complete this message until the hot add can succeed, and the host must
- * not send a new hot add request until the response is sent.
- * If VSC fails to hot add memory DYNMEM_NUMBER_OF_UNSUCCESSFUL_HOTADD_ATTEMPTS
- * times it fails the request.
- *
- *
- * page_count: number of pages that were successfully hot added.
- *
- * result: result of the operation 1: success, 0: failure.
- *
- */
+ 
 
 struct dm_hot_add_response {
 	struct dm_header hdr;
@@ -381,9 +226,7 @@ struct dm_hot_add_response {
 	__u32 result;
 } __packed;
 
-/*
- * Types of information sent from host to the guest.
- */
+ 
 
 enum dm_info_type {
 	INFO_TYPE_MAX_PAGE_CNT = 0,
@@ -391,23 +234,14 @@ enum dm_info_type {
 };
 
 
-/*
- * Header for the information message.
- */
+ 
 
 struct dm_info_header {
 	enum dm_info_type type;
 	__u32 data_size;
 } __packed;
 
-/*
- * This message is sent from the host to the guest to pass
- * some relevant information (win8 addition).
- *
- * reserved: no used.
- * info_size: size of the information blob.
- * info: information blob.
- */
+ 
 
 struct dm_info_msg {
 	struct dm_header hdr;
@@ -416,21 +250,9 @@ struct dm_info_msg {
 	__u8  info[];
 };
 
-/*
- * End protocol definitions.
- */
+ 
 
-/*
- * State to manage hot adding memory into the guest.
- * The range start_pfn : end_pfn specifies the range
- * that the host has asked us to hot add. The range
- * start_pfn : ha_end_pfn specifies the range that we have
- * currently hot added. We hot add in multiples of 128M
- * chunks; it is possible that we may not be able to bring
- * online all the pages in the region. The range
- * covered_start_pfn:covered_end_pfn defines the pages that can
- * be brough online.
- */
+ 
 
 struct hv_hotadd_state {
 	struct list_head list;
@@ -439,9 +261,7 @@ struct hv_hotadd_state {
 	unsigned long covered_end_pfn;
 	unsigned long ha_end_pfn;
 	unsigned long end_pfn;
-	/*
-	 * A list of gaps.
-	 */
+	 
 	struct list_head gap_list;
 };
 
@@ -465,17 +285,12 @@ struct hot_add_wrk {
 static bool allow_hibernation;
 static bool hot_add = true;
 static bool do_hot_add;
-/*
- * Delay reporting memory pressure by
- * the specified number of seconds.
- */
+ 
 static uint pressure_report_delay = 45;
 extern unsigned int page_reporting_order;
 #define HV_MAX_FAILURES	2
 
-/*
- * The last time we posted a pressure report to host.
- */
+ 
 static unsigned long last_post_time;
 
 static int hv_hypercall_multi_failure;
@@ -489,9 +304,7 @@ static atomic_t trans_id = ATOMIC_INIT(0);
 
 static int dm_ring_size = VMBUS_RING_SIZE(16 * 1024);
 
-/*
- * Driver specific state.
- */
+ 
 
 enum hv_dm_state {
 	DM_INITIALIZING = 0,
@@ -514,69 +327,40 @@ struct hv_dynmem_device {
 	struct completion host_event;
 	struct completion config_event;
 
-	/*
-	 * Number of pages we have currently ballooned out.
-	 */
+	 
 	unsigned int num_pages_ballooned;
 	unsigned int num_pages_onlined;
 	unsigned int num_pages_added;
 
-	/*
-	 * State to manage the ballooning (up) operation.
-	 */
+	 
 	struct balloon_state balloon_wrk;
 
-	/*
-	 * State to execute the "hot-add" operation.
-	 */
+	 
 	struct hot_add_wrk ha_wrk;
 
-	/*
-	 * This state tracks if the host has specified a hot-add
-	 * region.
-	 */
+	 
 	bool host_specified_ha_region;
 
-	/*
-	 * State to synchronize hot-add.
-	 */
+	 
 	struct completion  ol_waitevent;
-	/*
-	 * This thread handles hot-add
-	 * requests from the host as well as notifying
-	 * the host with regards to memory pressure in
-	 * the guest.
-	 */
+	 
 	struct task_struct *thread;
 
-	/*
-	 * Protects ha_region_list, num_pages_onlined counter and individual
-	 * regions from ha_region_list.
-	 */
+	 
 	spinlock_t ha_lock;
 
-	/*
-	 * A list of hot-add regions.
-	 */
+	 
 	struct list_head ha_region_list;
 
-	/*
-	 * We start with the highest version we can support
-	 * and downgrade based on the host; we save here the
-	 * next version to try.
-	 */
+	 
 	__u32 next_version;
 
-	/*
-	 * The negotiated version agreed by host.
-	 */
+	 
 	__u32 version;
 
 	struct page_reporting_dev_info pr_dev_info;
 
-	/*
-	 * Maximum number of pages that can be hot_add-ed
-	 */
+	 
 	__u64 max_dynamic_page_count;
 };
 
@@ -594,11 +378,11 @@ static inline bool has_pfn_is_backed(struct hv_hotadd_state *has,
 {
 	struct hv_hotadd_gap *gap;
 
-	/* The page is not backed. */
+	 
 	if ((pfn < has->covered_start_pfn) || (pfn >= has->covered_end_pfn))
 		return false;
 
-	/* Check for gaps. */
+	 
 	list_for_each_entry(gap, &has->gap_list, list) {
 		if ((pfn >= gap->start_pfn) && (pfn < gap->end_pfn))
 			return false;
@@ -615,10 +399,7 @@ static unsigned long hv_page_offline_check(unsigned long start_pfn,
 	bool found;
 
 	while (pfn < start_pfn + nr_pages) {
-		/*
-		 * Search for HAS which covers the pfn and when we find one
-		 * count how many consequitive PFNs are covered.
-		 */
+		 
 		found = false;
 		list_for_each_entry(has, &dm_device.ha_region_list, list) {
 			while ((pfn >= has->start_pfn) &&
@@ -631,11 +412,7 @@ static unsigned long hv_page_offline_check(unsigned long start_pfn,
 			}
 		}
 
-		/*
-		 * This PFN is not in any HAS (e.g. we're offlining a region
-		 * which was present at boot), no need to account for it. Go
-		 * to the next one.
-		 */
+		 
 		if (!found)
 			pfn++;
 	}
@@ -662,12 +439,7 @@ static int hv_memory_notifier(struct notifier_block *nb, unsigned long val,
 			if (pfn_count <= dm_device.num_pages_onlined) {
 				dm_device.num_pages_onlined -= pfn_count;
 			} else {
-				/*
-				 * We're offlining more pages than we
-				 * managed to online. This is
-				 * unexpected. In any case don't let
-				 * num_pages_onlined wrap around zero.
-				 */
+				 
 				WARN_ON_ONCE(1);
 				dm_device.num_pages_onlined = 0;
 			}
@@ -686,7 +458,7 @@ static struct notifier_block hv_memory_nb = {
 	.priority = 0
 };
 
-/* Check if the particular page is backed and can be onlined and online it. */
+ 
 static void hv_page_online_one(struct hv_hotadd_state *has, struct page *pg)
 {
 	if (!has_pfn_is_backed(has, page_to_pfn(pg))) {
@@ -697,7 +469,7 @@ static void hv_page_online_one(struct hv_hotadd_state *has, struct page *pg)
 	if (PageOffline(pg))
 		__ClearPageOffline(pg);
 
-	/* This frame is currently backed; online the page. */
+	 
 	generic_online_page(pg, 0);
 
 	lockdep_assert_held(&dm_device.ha_lock);
@@ -750,13 +522,7 @@ static void hv_mem_hot_add(unsigned long start, unsigned long size,
 		if (ret) {
 			pr_err("hot_add memory failed error is %d\n", ret);
 			if (ret == -EEXIST) {
-				/*
-				 * This error indicates that the error
-				 * is not a transient failure. This is the
-				 * case where the guest's physical address map
-				 * precludes hot adding memory. Stop all further
-				 * memory hot-add.
-				 */
+				 
 				do_hot_add = false;
 			}
 			scoped_guard(spinlock_irqsave, &dm_device.ha_lock) {
@@ -766,14 +532,7 @@ static void hv_mem_hot_add(unsigned long start, unsigned long size,
 			break;
 		}
 
-		/*
-		 * Wait for memory to get onlined. If the kernel onlined the
-		 * memory when adding it, this will return directly. Otherwise,
-		 * it will wait for user space to online the memory. This helps
-		 * to avoid adding memory faster than it is getting onlined. As
-		 * adding succeeded, it is ok to proceed even if the memory was
-		 * not onlined in time.
-		 */
+		 
 		wait_for_completion_timeout(&dm_device.ol_waitevent, 5 * HZ);
 		post_status(&dm_device);
 	}
@@ -786,7 +545,7 @@ static void hv_online_page(struct page *pg, unsigned int order)
 
 	guard(spinlock_irqsave)(&dm_device.ha_lock);
 	list_for_each_entry(has, &dm_device.ha_region_list, list) {
-		/* The page belongs to a different HAS. */
+		 
 		if ((pfn < has->start_pfn) ||
 				(pfn + (1UL << order) > has->end_pfn))
 			continue;
@@ -805,17 +564,11 @@ static int pfn_covered(unsigned long start_pfn, unsigned long pfn_cnt)
 
 	guard(spinlock_irqsave)(&dm_device.ha_lock);
 	list_for_each_entry(has, &dm_device.ha_region_list, list) {
-		/*
-		 * If the pfn range we are dealing with is not in the current
-		 * "hot add block", move on.
-		 */
+		 
 		if (start_pfn < has->start_pfn || start_pfn >= has->end_pfn)
 			continue;
 
-		/*
-		 * If the current start pfn is not where the covered_end
-		 * is, create a gap and update covered_end_pfn.
-		 */
+		 
 		if (has->covered_end_pfn != start_pfn) {
 			gap = kzalloc(sizeof(struct hv_hotadd_gap), GFP_ATOMIC);
 			if (!gap) {
@@ -831,15 +584,10 @@ static int pfn_covered(unsigned long start_pfn, unsigned long pfn_cnt)
 			has->covered_end_pfn = start_pfn;
 		}
 
-		/*
-		 * If the current hot add-request extends beyond
-		 * our current limit; extend it.
-		 */
+		 
 		if ((start_pfn + pfn_cnt) > has->end_pfn) {
 			residual = (start_pfn + pfn_cnt - has->end_pfn);
-			/*
-			 * Extend the region by multiples of HA_CHUNK.
-			 */
+			 
 			new_inc = (residual / HA_CHUNK) * HA_CHUNK;
 			if (residual % HA_CHUNK)
 				new_inc += HA_CHUNK;
@@ -870,35 +618,21 @@ static unsigned long handle_pg_range(unsigned long pg_start,
 
 	spin_lock_irqsave(&dm_device.ha_lock, flags);
 	list_for_each_entry(has, &dm_device.ha_region_list, list) {
-		/*
-		 * If the pfn range we are dealing with is not in the current
-		 * "hot add block", move on.
-		 */
+		 
 		if (start_pfn < has->start_pfn || start_pfn >= has->end_pfn)
 			continue;
 
 		old_covered_state = has->covered_end_pfn;
 
 		if (start_pfn < has->ha_end_pfn) {
-			/*
-			 * This is the case where we are backing pages
-			 * in an already hot added region. Bring
-			 * these pages online first.
-			 */
+			 
 			pgs_ol = has->ha_end_pfn - start_pfn;
 			if (pgs_ol > pfn_cnt)
 				pgs_ol = pfn_cnt;
 
 			has->covered_end_pfn +=  pgs_ol;
 			pfn_cnt -= pgs_ol;
-			/*
-			 * Check if the corresponding memory block is already
-			 * online. It is possible to observe struct pages still
-			 * being uninitialized here so check section instead.
-			 * In case the section is online we need to bring the
-			 * rest of pfns (which were not backed previously)
-			 * online too.
-			 */
+			 
 			if (start_pfn > has->start_pfn &&
 			    online_section_nr(pfn_to_section_nr(start_pfn)))
 				hv_bring_pgs_online(has, start_pfn, pgs_ol);
@@ -906,13 +640,7 @@ static unsigned long handle_pg_range(unsigned long pg_start,
 		}
 
 		if ((has->ha_end_pfn < has->end_pfn) && (pfn_cnt > 0)) {
-			/*
-			 * We have some residual hot add range
-			 * that needs to be hot added; hot add
-			 * it now. Hot add a multiple of
-			 * HA_CHUNK that fully covers the pages
-			 * we have.
-			 */
+			 
 			size = (has->end_pfn - has->ha_end_pfn);
 			if (pfn_cnt <= size) {
 				size = ((pfn_cnt / HA_CHUNK) * HA_CHUNK);
@@ -925,10 +653,7 @@ static unsigned long handle_pg_range(unsigned long pg_start,
 			hv_mem_hot_add(has->ha_end_pfn, size, pfn_cnt, has);
 			spin_lock_irqsave(&dm_device.ha_lock, flags);
 		}
-		/*
-		 * If we managed to online any pages that were given to us,
-		 * we declare success.
-		 */
+		 
 		res = has->covered_end_pfn - old_covered_state;
 		break;
 	}
@@ -957,9 +682,7 @@ static unsigned long process_hot_add(unsigned long pg_start,
 			goto do_pg_range;
 	}
 
-	/*
-	 * If the host has specified a hot-add range; deal with it first.
-	 */
+	 
 
 	if (rg_size != 0) {
 		ha_region = kzalloc(sizeof(struct hv_hotadd_state), GFP_KERNEL);
@@ -981,10 +704,7 @@ static unsigned long process_hot_add(unsigned long pg_start,
 	}
 
 do_pg_range:
-	/*
-	 * Process the page range specified; bringing them
-	 * online if possible.
-	 */
+	 
 	return handle_pg_range(pg_start, pfn_cnt);
 }
 
@@ -1014,13 +734,7 @@ static void hot_add_req(struct work_struct *dummy)
 		unsigned long region_size;
 		unsigned long region_start;
 
-		/*
-		 * The host has not specified the hot-add region.
-		 * Based on the hot-add page range being specified,
-		 * compute a hot-add region that can cover the pages
-		 * that need to be hot-added while ensuring the alignment
-		 * and size requirements of Linux as it relates to hot-add.
-		 */
+		 
 		region_size = (pfn_cnt / HA_CHUNK) * HA_CHUNK;
 		if (pfn_cnt % HA_CHUNK)
 			region_size += HA_CHUNK;
@@ -1037,22 +751,7 @@ static void hot_add_req(struct work_struct *dummy)
 
 	dm->num_pages_added += resp.page_count;
 #endif
-	/*
-	 * The result field of the response structure has the
-	 * following semantics:
-	 *
-	 * 1. If all or some pages hot-added: Guest should return success.
-	 *
-	 * 2. If no pages could be hot-added:
-	 *
-	 * If the guest returns success, then the host
-	 * will not attempt any further hot-add operations. This
-	 * signifies a permanent failure.
-	 *
-	 * If the guest returns failure, then this failure will be
-	 * treated as a transient failure and the host may retry the
-	 * hot-add operation after some delay.
-	 */
+	 
 	if (resp.page_count > 0)
 		resp.result = 1;
 	else if (!do_hot_add)
@@ -1102,17 +801,7 @@ static unsigned long compute_balloon_floor(void)
 	unsigned long min_pages;
 	unsigned long nr_pages = totalram_pages();
 #define MB2PAGES(mb) ((mb) << (20 - PAGE_SHIFT))
-	/* Simple continuous piecewiese linear function:
-	 *  max MiB -> min MiB  gradient
-	 *       0         0
-	 *      16        16
-	 *      32        24
-	 *     128        72    (1/2)
-	 *     512       168    (1/4)
-	 *    2048       360    (1/8)
-	 *    8192       744    (1/16)
-	 *   32768      1512	(1/32)
-	 */
+	 
 	if (nr_pages < MB2PAGES(128))
 		min_pages = MB2PAGES(8) + (nr_pages >> 1);
 	else if (nr_pages < MB2PAGES(512))
@@ -1127,9 +816,7 @@ static unsigned long compute_balloon_floor(void)
 	return min_pages;
 }
 
-/*
- * Compute total committed memory pages
- */
+ 
 
 static unsigned long get_pages_committed(struct hv_dynmem_device *dm)
 {
@@ -1140,15 +827,7 @@ static unsigned long get_pages_committed(struct hv_dynmem_device *dm)
 		compute_balloon_floor();
 }
 
-/*
- * Post our status as it relates memory pressure to the
- * host. Host expects the guests to post this status
- * periodically at 1 second intervals.
- *
- * The metrics specified in this protocol are very Windows
- * specific and so we cook up numbers here to convey our memory
- * pressure.
- */
+ 
 
 static void post_status(struct hv_dynmem_device *dm)
 {
@@ -1170,16 +849,7 @@ static void post_status(struct hv_dynmem_device *dm)
 	status.hdr.size = sizeof(struct dm_status);
 	status.hdr.trans_id = atomic_inc_return(&trans_id);
 
-	/*
-	 * The host expects the guest to report free and committed memory.
-	 * Furthermore, the host expects the pressure information to include
-	 * the ballooned out pages. For a given amount of memory that we are
-	 * managing we need to compute a floor below which we should not
-	 * balloon. Compute this and add it to the pressure report.
-	 * We also need to report all offline pages (num_pages_added -
-	 * num_pages_onlined) as committed to the host, otherwise it can try
-	 * asking us to balloon them out.
-	 */
+	 
 	num_pages_avail = si_mem_available();
 	num_pages_committed = get_pages_committed(dm);
 
@@ -1187,22 +857,15 @@ static void post_status(struct hv_dynmem_device *dm)
 			     vm_memory_committed(), dm->num_pages_ballooned,
 			     dm->num_pages_added, dm->num_pages_onlined);
 
-	/* Convert numbers of pages into numbers of HV_HYP_PAGEs. */
+	 
 	status.num_avail = num_pages_avail * NR_HV_HYP_PAGES_IN_PAGE;
 	status.num_committed = num_pages_committed * NR_HV_HYP_PAGES_IN_PAGE;
 
-	/*
-	 * If our transaction ID is no longer current, just don't
-	 * send the status. This can happen if we were interrupted
-	 * after we picked our transaction ID.
-	 */
+	 
 	if (status.hdr.trans_id != atomic_read(&trans_id))
 		return;
 
-	/*
-	 * If the last post time that we sampled has changed,
-	 * we have raced, don't post the status.
-	 */
+	 
 	if (last_post != last_post_time)
 		return;
 
@@ -1246,10 +909,7 @@ static unsigned int alloc_balloon_pages(struct hv_dynmem_device *dm,
 			HV_HYP_PAGE_SIZE)
 			return i * alloc_unit;
 
-		/*
-		 * We execute this code in a thread context. Furthermore,
-		 * we don't want the kernel to try too hard.
-		 */
+		 
 		pg = alloc_pages(GFP_HIGHUSER | __GFP_NORETRY |
 				__GFP_NOMEMALLOC | __GFP_NOWARN,
 				get_order(alloc_unit << PAGE_SHIFT));
@@ -1259,15 +919,12 @@ static unsigned int alloc_balloon_pages(struct hv_dynmem_device *dm,
 
 		dm->num_pages_ballooned += alloc_unit;
 
-		/*
-		 * If we allocatted 2M pages; split them so we
-		 * can free them in any order we get.
-		 */
+		 
 
 		if (alloc_unit != 1)
 			split_page(pg, get_order(alloc_unit << PAGE_SHIFT));
 
-		/* mark all pages offline */
+		 
 		for (j = 0; j < alloc_unit; j++) {
 			__SetPageOffline(pg + j);
 			adjust_managed_page_count(pg + j, -1);
@@ -1296,16 +953,13 @@ static void balloon_up(struct work_struct *dummy)
 	long avail_pages;
 	unsigned long floor;
 
-	/*
-	 * We will attempt 2M allocations. However, if we fail to
-	 * allocate 2M chunks, we will go back to PAGE_SIZE allocations.
-	 */
+	 
 	alloc_unit = PAGES_IN_2M;
 
 	avail_pages = si_mem_available();
 	floor = compute_balloon_floor();
 
-	/* Refuse to balloon below the floor. */
+	 
 	if (avail_pages < num_pages || avail_pages - num_pages < floor) {
 		pr_info("Balloon request will be partially fulfilled. %s\n",
 			avail_pages < num_pages ? "Not enough memory." :
@@ -1339,11 +993,7 @@ static void balloon_up(struct work_struct *dummy)
 			dm_device.state = DM_INITIALIZED;
 		}
 
-		/*
-		 * We are pushing a lot of data through the channel;
-		 * deal with transient failures caused because of the
-		 * lack of space in the ring buffer.
-		 */
+		 
 
 		do {
 			bl_resp->hdr.trans_id = atomic_inc_return(&trans_id);
@@ -1359,9 +1009,7 @@ static void balloon_up(struct work_struct *dummy)
 		} while (ret == -EAGAIN);
 
 		if (ret) {
-			/*
-			 * Free up the memory we allocatted.
-			 */
+			 
 			pr_err("Balloon response failed\n");
 
 			for (i = 0; i < bl_resp->range_count; i++)
@@ -1416,22 +1064,14 @@ static int dm_thread_func(void *dm_dev)
 	while (!kthread_should_stop()) {
 		wait_for_completion_interruptible_timeout(
 						&dm_device.config_event, 1*HZ);
-		/*
-		 * The host expects us to post information on the memory
-		 * pressure every second.
-		 */
+		 
 		reinit_completion(&dm_device.config_event);
 		post_status(dm);
-		/*
-		 * disable free page reporting if multiple hypercall
-		 * failure flag set. It is not done in the page_reporting
-		 * callback context as that causes a deadlock between
-		 * page_reporting_process() and page_reporting_unregister()
-		 */
+		 
 		if (hv_hypercall_multi_failure >= HV_MAX_FAILURES) {
 			pr_err("Multiple failures in cold memory discard hypercall, disabling page reporting\n");
 			disable_page_reporting();
-			/* Reset the flag after disabling reporting */
+			 
 			hv_hypercall_multi_failure = 0;
 		}
 	}
@@ -1447,21 +1087,11 @@ static void version_resp(struct hv_dynmem_device *dm,
 	int ret;
 
 	if (vresp->is_accepted) {
-		/*
-		 * We are done; wakeup the
-		 * context waiting for version
-		 * negotiation.
-		 */
+		 
 		complete(&dm->host_event);
 		return;
 	}
-	/*
-	 * If there are more versions to try, continue
-	 * with negotiations; if not
-	 * shutdown the service since we are not able
-	 * to negotiate a suitable version number
-	 * with the host.
-	 */
+	 
 	if (dm->next_version == 0)
 		goto version_error;
 
@@ -1472,10 +1102,7 @@ static void version_resp(struct hv_dynmem_device *dm,
 	version_req.version.version = dm->next_version;
 	dm->version = version_req.version.version;
 
-	/*
-	 * Set the next version to try in case current version fails.
-	 * Win7 protocol ought to be the last one to try.
-	 */
+	 
 	switch (version_req.version.version) {
 	case DYNMEM_PROTOCOL_VERSION_WIN8:
 		dm->next_version = DYNMEM_PROTOCOL_VERSION_WIN7;
@@ -1574,20 +1201,13 @@ static void balloon_onchannelcallback(void *context)
 			dm->state = DM_HOT_ADD;
 			ha_msg = (struct dm_hot_add *)recv_buffer;
 			if (ha_msg->hdr.size == sizeof(struct dm_hot_add)) {
-				/*
-				 * This is a normal hot-add request specifying
-				 * hot-add memory.
-				 */
+				 
 				dm->host_specified_ha_region = false;
 				ha_pg_range = &ha_msg->range;
 				dm->ha_wrk.ha_page_range = *ha_pg_range;
 				dm->ha_wrk.ha_region_range.page_range = 0;
 			} else {
-				/*
-				 * Host is specifying that we first hot-add
-				 * a region and then partially populate this
-				 * region.
-				 */
+				 
 				dm->host_specified_ha_region = true;
 				ha_pg_range = &ha_msg->range;
 				ha_region = &ha_pg_range[1];
@@ -1638,16 +1258,9 @@ static int hv_free_page_report(struct page_reporting_dev_info *pr_dev_info,
 		range = &hint->ranges[i];
 		range->address_space = 0;
 		order = get_order(sg->length);
-		/*
-		 * Hyper-V expects the additional_pages field in the units
-		 * of one of these 3 sizes, 4Kbytes, 2Mbytes or 1Gbytes.
-		 * This is dictated by the values of the fields page.largesize
-		 * and page_size.
-		 * This code however, only uses 4Kbytes and 2Mbytes units
-		 * and not 1Gbytes unit.
-		 */
+		 
 
-		/* page reporting for pages 2MB or higher */
+		 
 		if (order >= HV_LARGE_REPORTING_ORDER ) {
 			range->page.largepage = 1;
 			range->page_size = HV_GPA_PAGE_RANGE_PAGE_SIZE_2MB;
@@ -1656,7 +1269,7 @@ static int hv_free_page_report(struct page_reporting_dev_info *pr_dev_info,
 			range->page.additional_pages =
 				(sg->length / HV_LARGE_REPORTING_LEN) - 1;
 		} else {
-			/* Page reporting for pages below 2MB */
+			 
 			range->page.basepfn = page_to_hvpfn(sg_page(sg));
 			range->page.largepage = false;
 			range->page.additional_pages =
@@ -1701,10 +1314,7 @@ static void enable_page_reporting(void)
 
 	BUILD_BUG_ON(PAGE_REPORTING_CAPACITY > HV_MEMORY_HINT_MAX_GPA_PAGE_RANGES);
 	dm_device.pr_dev_info.report = hv_free_page_report;
-	/*
-	 * We let the page_reporting_order parameter decide the order
-	 * in the page_reporting code
-	 */
+	 
 	dm_device.pr_dev_info.order = 0;
 	ret = page_reporting_register(&dm_device.pr_dev_info);
 	if (ret < 0) {
@@ -1726,11 +1336,7 @@ static void disable_page_reporting(void)
 
 static int ballooning_enabled(void)
 {
-	/*
-	 * Disable ballooning if the page size is not 4k (HV_HYP_PAGE_SIZE),
-	 * since currently it's unclear to us whether an unballoon request can
-	 * make sure all page ranges are guest page size aligned.
-	 */
+	 
 	if (PAGE_SIZE != HV_HYP_PAGE_SIZE) {
 		pr_info("Ballooning disabled because page size is not 4096 bytes\n");
 		return 0;
@@ -1741,13 +1347,7 @@ static int ballooning_enabled(void)
 
 static int hot_add_enabled(void)
 {
-	/*
-	 * Disable hot add on ARM64, because we currently rely on
-	 * memory_add_physaddr_to_nid() to get a node id of a hot add range,
-	 * however ARM64's memory_add_physaddr_to_nid() always return 0 and
-	 * DM_MEM_HOT_ADD_REQUEST doesn't have the NUMA node information for
-	 * add_memory().
-	 */
+	 
 	if (IS_ENABLED(CONFIG_ARM64)) {
 		pr_info("Memory hot add disabled on ARM64\n");
 		return 0;
@@ -1763,11 +1363,7 @@ static int balloon_connect_vsp(struct hv_device *dev)
 	unsigned long t;
 	int ret;
 
-	/*
-	 * max_pkt_size should be large enough for one vmbus packet header plus
-	 * our receive buffer size. Hyper-V sends messages up to
-	 * HV_HYP_PAGE_SIZE bytes long on balloon channel.
-	 */
+	 
 	dev->channel->max_pkt_size = HV_HYP_PAGE_SIZE * 2;
 
 	ret = vmbus_open(dev->channel, dm_ring_size, dm_ring_size, NULL, 0,
@@ -1775,12 +1371,7 @@ static int balloon_connect_vsp(struct hv_device *dev)
 	if (ret)
 		return ret;
 
-	/*
-	 * Initiate the hand shake with the host and negotiate
-	 * a version that the host can support. We start with the
-	 * highest version number and go down if the host cannot
-	 * support it.
-	 */
+	 
 	memset(&version_req, 0, sizeof(struct dm_version_request));
 	version_req.hdr.type = DM_VERSION_REQUEST;
 	version_req.hdr.size = sizeof(struct dm_version_request);
@@ -1801,10 +1392,7 @@ static int balloon_connect_vsp(struct hv_device *dev)
 		goto out;
 	}
 
-	/*
-	 * If we could not negotiate a compatible version with the host
-	 * fail the probe function.
-	 */
+	 
 	if (dm_device.state == DM_INIT_ERROR) {
 		ret = -EPROTO;
 		goto out;
@@ -1814,33 +1402,20 @@ static int balloon_connect_vsp(struct hv_device *dev)
 		DYNMEM_MAJOR_VERSION(dm_device.version),
 		DYNMEM_MINOR_VERSION(dm_device.version));
 
-	/*
-	 * Now submit our capabilities to the host.
-	 */
+	 
 	memset(&cap_msg, 0, sizeof(struct dm_capabilities));
 	cap_msg.hdr.type = DM_CAPABILITIES_REPORT;
 	cap_msg.hdr.size = sizeof(struct dm_capabilities);
 	cap_msg.hdr.trans_id = atomic_inc_return(&trans_id);
 
-	/*
-	 * When hibernation (i.e. virtual ACPI S4 state) is enabled, the host
-	 * currently still requires the bits to be set, so we have to add code
-	 * to fail the host's hot-add and balloon up/down requests, if any.
-	 */
+	 
 	cap_msg.caps.cap_bits.balloon = ballooning_enabled();
 	cap_msg.caps.cap_bits.hot_add = hot_add_enabled();
 
-	/*
-	 * Specify our alignment requirements as it relates
-	 * memory hot-add. Specify 128MB alignment.
-	 */
+	 
 	cap_msg.caps.cap_bits.hot_add_alignment = 7;
 
-	/*
-	 * Currently the host does not use these
-	 * values and we set them to what is done in the
-	 * Windows driver.
-	 */
+	 
 	cap_msg.min_page_cnt = 0;
 	cap_msg.max_page_number = -1;
 
@@ -1856,10 +1431,7 @@ static int balloon_connect_vsp(struct hv_device *dev)
 		goto out;
 	}
 
-	/*
-	 * If the host does not like our capabilities,
-	 * fail the probe function.
-	 */
+	 
 	if (dm_device.state == DM_INIT_ERROR) {
 		ret = -EPROTO;
 		goto out;
@@ -1871,20 +1443,10 @@ out:
 	return ret;
 }
 
-/*
- * DEBUGFS Interface
- */
+ 
 #ifdef CONFIG_DEBUG_FS
 
-/**
- * hv_balloon_debug_show - shows statistics of balloon operations.
- * @f: pointer to the &struct seq_file.
- * @offset: ignored.
- *
- * Provides the statistics that can be accessed in hv-balloon in the debugfs.
- *
- * Return: zero on success or an error code.
- */
+ 
 static int hv_balloon_debug_show(struct seq_file *f, void *offset)
 {
 	struct hv_dynmem_device *dm = f->private;
@@ -1928,16 +1490,16 @@ static int hv_balloon_debug_show(struct seq_file *f, void *offset)
 	}
 	seq_printf(f, " (%s)\n", sname);
 
-	/* HV Page Size */
+	 
 	seq_printf(f, "%-22s: %ld\n", "page_size", HV_HYP_PAGE_SIZE);
 
-	/* Pages added with hot_add */
+	 
 	seq_printf(f, "%-22s: %u\n", "pages_added", dm->num_pages_added);
 
-	/* pages that are "onlined"/used from pages_added */
+	 
 	seq_printf(f, "%-22s: %u\n", "pages_onlined", dm->num_pages_onlined);
 
-	/* pages we have given back to host */
+	 
 	seq_printf(f, "%-22s: %u\n", "pages_ballooned", dm->num_pages_ballooned);
 
 	seq_printf(f, "%-22s: %lu\n", "total_pages_committed",
@@ -1972,7 +1534,7 @@ static inline void hv_balloon_debugfs_exit(struct hv_dynmem_device *b)
 {
 }
 
-#endif	/* CONFIG_DEBUG_FS */
+#endif	 
 
 static int balloon_probe(struct hv_device *dev,
 			 const struct hv_vmbus_device_id *dev_id)
@@ -2054,11 +1616,7 @@ static void balloon_remove(struct hv_device *dev)
 
 	kthread_stop(dm->thread);
 
-	/*
-	 * This is to handle the case when balloon_resume()
-	 * call has failed and some cleanup has been done as
-	 * a part of the error handling.
-	 */
+	 
 	if (dm_device.state != DM_INIT_ERROR) {
 		disable_page_reporting();
 		vmbus_close(dev->channel);
@@ -2134,8 +1692,8 @@ out:
 }
 
 static const struct hv_vmbus_device_id id_table[] = {
-	/* Dynamic Memory Class ID */
-	/* 525074DC-8985-46e2-8057-A307DC18A502 */
+	 
+	 
 	{ HV_DM_GUID, },
 	{ },
 };

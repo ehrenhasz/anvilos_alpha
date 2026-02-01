@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Common/core components for the Surface System Aggregator Module (SSAM) HID
- * transport driver. Provides support for integrated HID devices on Microsoft
- * Surface models.
- *
- * Copyright (C) 2019-2021 Maximilian Luz <luzmaximilian@gmail.com>
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/hid.h>
@@ -19,14 +13,11 @@
 #include "surface_hid_core.h"
 
 
-/* -- Utility functions. ---------------------------------------------------- */
+ 
 
 static bool surface_hid_is_hot_removed(struct surface_hid_device *shid)
 {
-	/*
-	 * Non-ssam client devices, i.e. platform client devices, cannot be
-	 * hot-removed.
-	 */
+	 
 	if (!is_ssam_device(shid->dev))
 		return false;
 
@@ -34,7 +25,7 @@ static bool surface_hid_is_hot_removed(struct surface_hid_device *shid)
 }
 
 
-/* -- Device descriptor access. --------------------------------------------- */
+ 
 
 static int surface_hid_load_hid_descriptor(struct surface_hid_device *shid)
 {
@@ -97,7 +88,7 @@ static int surface_hid_load_device_attributes(struct surface_hid_device *shid)
 }
 
 
-/* -- Transport driver (common). -------------------------------------------- */
+ 
 
 static int surface_hid_start(struct hid_device *hid)
 {
@@ -111,15 +102,10 @@ static void surface_hid_stop(struct hid_device *hid)
 	struct surface_hid_device *shid = hid->driver_data;
 	bool hot_removed;
 
-	/*
-	 * Communication may fail for devices that have been hot-removed. This
-	 * also includes unregistration of HID events, so we need to check this
-	 * here. Only if the device has not been marked as hot-removed, we can
-	 * safely disable events.
-	 */
+	 
 	hot_removed = surface_hid_is_hot_removed(shid);
 
-	/* Note: This call will log errors for us, so ignore them here. */
+	 
 	__ssam_notifier_unregister(shid->ctrl, &shid->notif, !hot_removed);
 }
 
@@ -184,7 +170,7 @@ static const struct hid_ll_driver surface_hid_ll_driver = {
 };
 
 
-/* -- Common device setup. -------------------------------------------------- */
+ 
 
 int surface_hid_device_add(struct surface_hid_device *shid)
 {
@@ -232,7 +218,7 @@ void surface_hid_device_destroy(struct surface_hid_device *shid)
 EXPORT_SYMBOL_GPL(surface_hid_device_destroy);
 
 
-/* -- PM ops. --------------------------------------------------------------- */
+ 
 
 #ifdef CONFIG_PM_SLEEP
 
@@ -281,12 +267,12 @@ const struct dev_pm_ops surface_hid_pm_ops = {
 };
 EXPORT_SYMBOL_GPL(surface_hid_pm_ops);
 
-#else /* CONFIG_PM_SLEEP */
+#else  
 
 const struct dev_pm_ops surface_hid_pm_ops = { };
 EXPORT_SYMBOL_GPL(surface_hid_pm_ops);
 
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 MODULE_AUTHOR("Maximilian Luz <luzmaximilian@gmail.com>");
 MODULE_DESCRIPTION("HID transport driver core for Surface System Aggregator Module");

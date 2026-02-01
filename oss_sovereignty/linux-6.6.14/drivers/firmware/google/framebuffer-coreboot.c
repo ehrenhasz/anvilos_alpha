@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * framebuffer-coreboot.c
- *
- * Memory based framebuffer accessed through coreboot table.
- *
- * Copyright 2012-2013 David Herrmann <dh.herrmann@gmail.com>
- * Copyright 2017 Google Inc.
- * Copyright 2017 Samuel Holland <samuel@sholland.org>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>

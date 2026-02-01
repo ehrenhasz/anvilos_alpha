@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (C) 2020 Felix Fietkau <nbd@nbd.name>
- */
+
+ 
 
 #include <linux/if_ether.h>
 #include <linux/rhashtable.h>
@@ -412,7 +410,7 @@ mtk_flow_offload_replace(struct mtk_eth *eth, struct flow_cls_offload *f,
 			err = mtk_flow_mangle_ipv4(act, &data);
 			break;
 		case FLOW_ACT_MANGLE_HDR_TYPE_ETH:
-			/* handled earlier */
+			 
 			break;
 		default:
 			return -EOPNOTSUPP;

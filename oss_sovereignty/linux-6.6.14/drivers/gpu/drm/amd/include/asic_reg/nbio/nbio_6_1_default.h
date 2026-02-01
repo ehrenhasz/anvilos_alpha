@@ -1,28 +1,9 @@
-/*
- * Copyright (C) 2017  Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #ifndef _nbio_6_1_DEFAULT_HEADER
 #define _nbio_6_1_DEFAULT_HEADER
 
 
-// addressBlock: nbio_pcie_pswuscfg0_cfgdecp
+
 #define cfgPSWUSCFG0_VENDOR_ID_DEFAULT                                            0x00000000
 #define cfgPSWUSCFG0_DEVICE_ID_DEFAULT                                            0x00000000
 #define cfgPSWUSCFG0_COMMAND_DEFAULT                                              0x00000000
@@ -170,7 +151,7 @@
 #define cfgPCIE_ESM_CAP_7_DEFAULT                                                 0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_bifcfgdecp
+
 #define cfgBIF_CFG_DEV0_EPF0_0_VENDOR_ID_DEFAULT                                  0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_0_DEVICE_ID_DEFAULT                                  0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_0_COMMAND_DEFAULT                                    0x00000000
@@ -424,7 +405,7 @@
 #define cfgBIF_CFG_DEV0_EPF0_0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_GFXSCH_DW8_DEFAULT 0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf1_bifcfgdecp
+
 #define cfgBIF_CFG_DEV0_EPF1_0_VENDOR_ID_DEFAULT                                  0x00000000
 #define cfgBIF_CFG_DEV0_EPF1_0_DEVICE_ID_DEFAULT                                  0x00000000
 #define cfgBIF_CFG_DEV0_EPF1_0_COMMAND_DEFAULT                                    0x00000000
@@ -678,7 +659,7 @@
 #define cfgBIF_CFG_DEV0_EPF1_0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_GFXSCH_DW8_DEFAULT 0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_swds_bifcfgdecp
+
 #define cfgBIF_CFG_DEV0_SWDS0_VENDOR_ID_DEFAULT                                   0x00000000
 #define cfgBIF_CFG_DEV0_SWDS0_DEVICE_ID_DEFAULT                                   0x00000000
 #define cfgBIF_CFG_DEV0_SWDS0_COMMAND_DEFAULT                                     0x00000000
@@ -792,7 +773,7 @@
 #define cfgBIF_CFG_DEV0_SWDS0_PCIE_ACS_CNTL_DEFAULT                               0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf0_bifcfgdecp
+
 #define cfgBIF_CFG_DEV0_EPF0_VF0_0_VENDOR_ID_DEFAULT                              0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF0_0_DEVICE_ID_DEFAULT                              0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF0_0_COMMAND_DEFAULT                                0x00000000
@@ -874,7 +855,7 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF0_0_PCIE_ARI_CNTL_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf1_bifcfgdecp
+
 #define cfgBIF_CFG_DEV0_EPF0_VF1_0_VENDOR_ID_DEFAULT                              0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF1_0_DEVICE_ID_DEFAULT                              0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF1_0_COMMAND_DEFAULT                                0x00000000
@@ -956,7 +937,7 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF1_0_PCIE_ARI_CNTL_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf2_bifcfgdecp
+
 #define cfgBIF_CFG_DEV0_EPF0_VF2_0_VENDOR_ID_DEFAULT                              0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF2_0_DEVICE_ID_DEFAULT                              0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF2_0_COMMAND_DEFAULT                                0x00000000
@@ -1038,7 +1019,7 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF2_0_PCIE_ARI_CNTL_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf3_bifcfgdecp
+
 #define cfgBIF_CFG_DEV0_EPF0_VF3_0_VENDOR_ID_DEFAULT                              0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF3_0_DEVICE_ID_DEFAULT                              0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF3_0_COMMAND_DEFAULT                                0x00000000
@@ -1120,7 +1101,7 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF3_0_PCIE_ARI_CNTL_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf4_bifcfgdecp
+
 #define cfgBIF_CFG_DEV0_EPF0_VF4_0_VENDOR_ID_DEFAULT                              0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF4_0_DEVICE_ID_DEFAULT                              0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF4_0_COMMAND_DEFAULT                                0x00000000
@@ -1202,7 +1183,7 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF4_0_PCIE_ARI_CNTL_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf5_bifcfgdecp
+
 #define cfgBIF_CFG_DEV0_EPF0_VF5_0_VENDOR_ID_DEFAULT                              0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF5_0_DEVICE_ID_DEFAULT                              0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF5_0_COMMAND_DEFAULT                                0x00000000
@@ -1284,7 +1265,7 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF5_0_PCIE_ARI_CNTL_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf6_bifcfgdecp
+
 #define cfgBIF_CFG_DEV0_EPF0_VF6_0_VENDOR_ID_DEFAULT                              0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF6_0_DEVICE_ID_DEFAULT                              0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF6_0_COMMAND_DEFAULT                                0x00000000
@@ -1366,7 +1347,7 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF6_0_PCIE_ARI_CNTL_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf7_bifcfgdecp
+
 #define cfgBIF_CFG_DEV0_EPF0_VF7_0_VENDOR_ID_DEFAULT                              0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF7_0_DEVICE_ID_DEFAULT                              0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF7_0_COMMAND_DEFAULT                                0x00000000
@@ -1448,7 +1429,7 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF7_0_PCIE_ARI_CNTL_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf8_bifcfgdecp
+
 #define cfgBIF_CFG_DEV0_EPF0_VF8_0_VENDOR_ID_DEFAULT                              0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF8_0_DEVICE_ID_DEFAULT                              0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF8_0_COMMAND_DEFAULT                                0x00000000
@@ -1530,7 +1511,7 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF8_0_PCIE_ARI_CNTL_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf9_bifcfgdecp
+
 #define cfgBIF_CFG_DEV0_EPF0_VF9_0_VENDOR_ID_DEFAULT                              0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF9_0_DEVICE_ID_DEFAULT                              0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF9_0_COMMAND_DEFAULT                                0x00000000
@@ -1612,7 +1593,7 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF9_0_PCIE_ARI_CNTL_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf10_bifcfgdecp
+
 #define cfgBIF_CFG_DEV0_EPF0_VF10_0_VENDOR_ID_DEFAULT                             0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF10_0_DEVICE_ID_DEFAULT                             0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF10_0_COMMAND_DEFAULT                               0x00000000
@@ -1694,7 +1675,7 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF10_0_PCIE_ARI_CNTL_DEFAULT                         0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf11_bifcfgdecp
+
 #define cfgBIF_CFG_DEV0_EPF0_VF11_0_VENDOR_ID_DEFAULT                             0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF11_0_DEVICE_ID_DEFAULT                             0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF11_0_COMMAND_DEFAULT                               0x00000000
@@ -1776,7 +1757,7 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF11_0_PCIE_ARI_CNTL_DEFAULT                         0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf12_bifcfgdecp
+
 #define cfgBIF_CFG_DEV0_EPF0_VF12_0_VENDOR_ID_DEFAULT                             0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF12_0_DEVICE_ID_DEFAULT                             0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF12_0_COMMAND_DEFAULT                               0x00000000
@@ -1858,7 +1839,7 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF12_0_PCIE_ARI_CNTL_DEFAULT                         0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf13_bifcfgdecp
+
 #define cfgBIF_CFG_DEV0_EPF0_VF13_0_VENDOR_ID_DEFAULT                             0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF13_0_DEVICE_ID_DEFAULT                             0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF13_0_COMMAND_DEFAULT                               0x00000000
@@ -1940,7 +1921,7 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF13_0_PCIE_ARI_CNTL_DEFAULT                         0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf14_bifcfgdecp
+
 #define cfgBIF_CFG_DEV0_EPF0_VF14_0_VENDOR_ID_DEFAULT                             0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF14_0_DEVICE_ID_DEFAULT                             0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF14_0_COMMAND_DEFAULT                               0x00000000
@@ -2022,7 +2003,7 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF14_0_PCIE_ARI_CNTL_DEFAULT                         0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf15_bifcfgdecp
+
 #define cfgBIF_CFG_DEV0_EPF0_VF15_0_VENDOR_ID_DEFAULT                             0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF15_0_DEVICE_ID_DEFAULT                             0x00000000
 #define cfgBIF_CFG_DEV0_EPF0_VF15_0_COMMAND_DEFAULT                               0x00000000
@@ -2104,13 +2085,13 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF15_0_PCIE_ARI_CNTL_DEFAULT                         0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_pf_SYSPFVFDEC[0..767]
+
 #define mmMM_INDEX_DEFAULT                                                       0x00000000
 #define mmMM_DATA_DEFAULT                                                        0x00000000
 #define mmMM_INDEX_HI_DEFAULT                                                    0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_pf_SYSDEC[0..767]
+
 #define mmSYSHUB_INDEX_OVLP_DEFAULT                                              0x00000000
 #define mmSYSHUB_DATA_OVLP_DEFAULT                                               0x00000000
 #define mmPCIE_INDEX_DEFAULT                                                     0x00000000
@@ -2162,16 +2143,16 @@
 #define mmGFX_MMIOREG_CAM_PROGRAMMABLE_CPL_DEFAULT                               0x00000000
 
 
-// addressBlock: nbio_nbif_syshub_mmreg_ind_syshubdec[32..39]
+
 #define mmSYSHUB_INDEX_DEFAULT                                                   0x00000000
 #define mmSYSHUB_DATA_DEFAULT                                                    0x00000000
 
 
-// addressBlock: nbio_nbif_rcc_strap_BIFDEC1[13440..14975]
+
 #define mmRCC_DEV0_EPF0_STRAP0_DEFAULT                                           0x30000000
 
 
-// addressBlock: nbio_nbif_rcc_ep_dev0_BIFDEC1[13440..14975]
+
 #define mmEP_PCIE_SCRATCH_DEFAULT                                                0x00000000
 #define mmEP_PCIE_CNTL_DEFAULT                                                   0x00000100
 #define mmEP_PCIE_INT_CNTL_DEFAULT                                               0x00000000
@@ -2208,7 +2189,7 @@
 #define mmEP_PCIE_LC_SPEED_CNTL_DEFAULT                                          0x00000000
 
 
-// addressBlock: nbio_nbif_rcc_dwn_dev0_BIFDEC1[13440..14975]
+
 #define mmDN_PCIE_RESERVED_DEFAULT                                               0x00000000
 #define mmDN_PCIE_SCRATCH_DEFAULT                                                0x00000000
 #define mmDN_PCIE_CNTL_DEFAULT                                                   0x00000000
@@ -2218,7 +2199,7 @@
 #define mmDN_PCIE_CFG_CNTL_DEFAULT                                               0x00000000
 
 
-// addressBlock: nbio_nbif_rcc_dwnp_dev0_BIFDEC1[13440..14975]
+
 #define mmPCIE_ERR_CNTL_DEFAULT                                                  0x00000500
 #define mmPCIE_RX_CNTL_DEFAULT                                                   0x00000000
 #define mmPCIE_LC_SPEED_CNTL_DEFAULT                                             0x00000000
@@ -2227,7 +2208,7 @@
 #define mmLTR_MSG_INFO_FROM_EP_DEFAULT                                           0x00000000
 
 
-// addressBlock: nbio_nbif_rcc_pf_0_BIFPFVFDEC1[13440..14975]
+
 #define mmRCC_PF_0_0_RCC_ERR_LOG_DEFAULT                                         0x00000000
 #define mmRCC_PF_0_0_RCC_DOORBELL_APER_EN_DEFAULT                                0x00000000
 #define mmRCC_PF_0_0_RCC_CONFIG_MEMSIZE_DEFAULT                                  0x00000000
@@ -2235,7 +2216,7 @@
 #define mmRCC_PF_0_0_RCC_IOV_FUNC_IDENTIFIER_DEFAULT                             0x00000000
 
 
-// addressBlock: nbio_nbif_rcc_pf_0_BIFDEC1[13440..14975]
+
 #define mmRCC_ERR_INT_CNTL_DEFAULT                                               0x00000000
 #define mmRCC_BACO_CNTL_MISC_DEFAULT                                             0x00000000
 #define mmRCC_RESET_EN_DEFAULT                                                   0x00008000
@@ -2270,7 +2251,7 @@
 #define mmRCC_MH_ARB_CNTL_DEFAULT                                                0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_pf_BIFDEC1[13440..14975]
+
 #define mmBIF_MM_INDACCESS_CNTL_DEFAULT                                          0x00000000
 #define mmBUS_CNTL_DEFAULT                                                       0x00000000
 #define mmBIF_SCRATCH0_DEFAULT                                                   0x00000000
@@ -2339,7 +2320,7 @@
 #define mmBIF_CLKREQB_PAD_CNTL_DEFAULT                                           0x00600100
 
 
-// addressBlock: nbio_nbif_bif_bx_pf_BIFPFVFDEC1
+
 #define mmBIF_BX_PF0_BIF_BME_STATUS_DEFAULT                                      0x00000000
 #define mmBIF_BX_PF0_BIF_ATOMIC_ERR_LOG_DEFAULT                                  0x00000000
 #define mmBIF_BX_PF0_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_DEFAULT                0x00000000
@@ -2363,7 +2344,7 @@
 #define mmBIF_BX_PF0_BIF_VMHV_MAILBOX_DEFAULT                                    0x00000000
 
 
-// addressBlock: nbio_nbif_gdc_GDCDEC[14976..15487]
+
 #define mmNGDC_SDP_PORT_CTRL_DEFAULT                                             0x0000000f
 #define mmSHUB_REGS_IF_CTL_DEFAULT                                               0x00000000
 #define mmNGDC_RESERVED_0_DEFAULT                                                0x00000000
@@ -2377,7 +2358,7 @@
 #define mmS2A_MISC_CNTL_DEFAULT                                                  0x00000000
 
 
-// addressBlock: nbio_nbif_rcc_pf_0_BIFDEC2
+
 #define mmRCC_PF_0_GFXMSIX_VECT0_ADDR_LO_DEFAULT                                 0x00000000
 #define mmRCC_PF_0_GFXMSIX_VECT0_ADDR_HI_DEFAULT                                 0x00000000
 #define mmRCC_PF_0_GFXMSIX_VECT0_MSG_DATA_DEFAULT                                0x00000000
@@ -2393,7 +2374,7 @@
 #define mmRCC_PF_0_GFXMSIX_PBA_DEFAULT                                           0x00000000
 
 
-// addressBlock: nbio_nbif_gdc_GDCDEC
+
 #define smnGDC1_NGDC_SDP_PORT_CTRL_DEFAULT                                        0x0000000f
 #define smnGDC1_SHUB_REGS_IF_CTL_DEFAULT                                          0x00000000
 #define smnGDC1_NGDC_RESERVED_0_DEFAULT                                           0x00000000
@@ -2407,7 +2388,7 @@
 #define smnGDC1_S2A_MISC_CNTL_DEFAULT                                             0x00000000
 
 
-// addressBlock: nbio_nbif_syshub_mmreg_direct_syshubdirect
+
 #define smnSYSHUB_MMREG_DIRECT_SYSHUB_DS_CTRL_SOCCLK_DEFAULT                      0x00000000
 #define smnSYSHUB_MMREG_DIRECT_SYSHUB_DS_CTRL2_SOCCLK_DEFAULT                     0x00000100
 #define smnSYSHUB_MMREG_DIRECT_SYSHUB_BGEN_ENHANCEMENT_BYPASS_EN_SOCCLK_DEFAULT   0x00000000
@@ -2469,7 +2450,7 @@
 #define smnSYSHUB_MMREG_DIRECT_NIC400_2_AMIB_0_FN_MOD_BM_ISS_DEFAULT              0x00000000
 
 
-// addressBlock: nbio_nbif_nbif_sion_SIONDEC
+
 #define smnSION_CL0_RdRsp_BurstTarget_REG0_DEFAULT                                0x00000000
 #define smnSION_CL0_RdRsp_BurstTarget_REG1_DEFAULT                                0x00000000
 #define smnSION_CL0_RdRsp_TimeSlot_REG0_DEFAULT                                   0x00000000
@@ -2594,7 +2575,7 @@
 #define smnSION_CNTL_REG1_DEFAULT                                                 0x00000000
 
 
-// addressBlock: nbio_nbif_gdc_rst_GDCRST_DEC
+
 #define smnSHUB_PF_FLR_RST_DEFAULT                                                0x00000000
 #define smnSHUB_GFX_DRV_VPU_RST_DEFAULT                                           0x00000000
 #define smnSHUB_LINK_RESET_DEFAULT                                                0x00000000
@@ -2605,7 +2586,7 @@
 #define smnSHUB_RST_MISC_TRL_DEFAULT                                              0x00100001
 
 
-// addressBlock: nbio_nbif_gdc_ras_gdc_ras_regblk
+
 #define smnGDC_RAS_LEAF0_CTRL_DEFAULT                                             0x00000000
 #define smnGDC_RAS_LEAF1_CTRL_DEFAULT                                             0x00000000
 #define smnGDC_RAS_LEAF2_CTRL_DEFAULT                                             0x00000000
@@ -2614,7 +2595,7 @@
 #define smnGDC_RAS_LEAF5_CTRL_DEFAULT                                             0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_swds_bifcfgdecp
+
 #define smnBIF_CFG_DEV0_SWDS1_VENDOR_ID_DEFAULT                                   0x00000000
 #define smnBIF_CFG_DEV0_SWDS1_DEVICE_ID_DEFAULT                                   0x00000000
 #define smnBIF_CFG_DEV0_SWDS1_COMMAND_DEFAULT                                     0x00000000
@@ -2728,13 +2709,13 @@
 #define smnBIF_CFG_DEV0_SWDS1_PCIE_ACS_CNTL_DEFAULT                               0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_pf_SYSPFVFDEC
+
 #define smnBIF_BX_PF3_MM_INDEX_DEFAULT                                            0x00000000
 #define smnBIF_BX_PF3_MM_DATA_DEFAULT                                             0x00000000
 #define smnBIF_BX_PF3_MM_INDEX_HI_DEFAULT                                         0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_pf_SYSDEC
+
 #define smnBIF_BX_PF1_SYSHUB_INDEX_OVLP_DEFAULT                                   0x00000000
 #define smnBIF_BX_PF1_SYSHUB_DATA_OVLP_DEFAULT                                    0x00000000
 #define smnBIF_BX_PF1_PCIE_INDEX_DEFAULT                                          0x00000000
@@ -2786,11 +2767,11 @@
 #define smnBIF_BX_PF1_GFX_MMIOREG_CAM_PROGRAMMABLE_CPL_DEFAULT                    0x00000000
 
 
-// addressBlock: nbio_nbif_rcc_strap_BIFDEC1
+
 #define smnRCC_STRAP1_RCC_DEV0_EPF0_STRAP0_DEFAULT                                0x30000000
 
 
-// addressBlock: nbio_nbif_rcc_pf_0_BIFPFVFDEC1
+
 #define smnRCC_PF_0_1_RCC_ERR_LOG_DEFAULT                                         0x00000000
 #define smnRCC_PF_0_1_RCC_DOORBELL_APER_EN_DEFAULT                                0x00000000
 #define smnRCC_PF_0_1_RCC_CONFIG_MEMSIZE_DEFAULT                                  0x00000000
@@ -2798,7 +2779,7 @@
 #define smnRCC_PF_0_1_RCC_IOV_FUNC_IDENTIFIER_DEFAULT                             0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_pf_BIFDEC1
+
 #define smnBIF_BX_PF1_BIF_MM_INDACCESS_CNTL_DEFAULT                               0x00000000
 #define smnBIF_BX_PF1_BUS_CNTL_DEFAULT                                            0x00000000
 #define smnBIF_BX_PF1_BIF_SCRATCH0_DEFAULT                                        0x00000000
@@ -2867,7 +2848,7 @@
 #define smnBIF_BX_PF1_BIF_CLKREQB_PAD_CNTL_DEFAULT                                0x00600100
 
 
-// addressBlock: nbio_nbif_bif_bx_pf_BIFPFVFDEC1
+
 #define smnBIF_BX_PF1_BIF_BME_STATUS_DEFAULT                                      0x00000000
 #define smnBIF_BX_PF1_BIF_ATOMIC_ERR_LOG_DEFAULT                                  0x00000000
 #define smnBIF_BX_PF1_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_DEFAULT                0x00000000
@@ -2891,7 +2872,7 @@
 #define smnBIF_BX_PF1_BIF_VMHV_MAILBOX_DEFAULT                                    0x00000000
 
 
-// addressBlock: nbio_nbif_rcc_shadow_reg_shadowdec
+
 #define smnSHADOW_COMMAND_DEFAULT                                                 0x00000000
 #define smnSHADOW_BASE_ADDR_1_DEFAULT                                             0x00000000
 #define smnSHADOW_BASE_ADDR_2_DEFAULT                                             0x00000000
@@ -2907,7 +2888,7 @@
 #define smnSUC_DATA_DEFAULT                                                       0x00000000
 
 
-// addressBlock: nbio_nbif_rcc_ep_dev0_RCCPORTDEC
+
 #define smnRCC_EP_DEV0_1_EP_PCIE_SCRATCH_DEFAULT                                  0x00000000
 #define smnRCC_EP_DEV0_1_EP_PCIE_CNTL_DEFAULT                                     0x00000100
 #define smnRCC_EP_DEV0_1_EP_PCIE_INT_CNTL_DEFAULT                                 0x00000000
@@ -2936,7 +2917,7 @@
 #define smnRCC_EP_DEV0_1_EP_PCIE_LC_SPEED_CNTL_DEFAULT                            0x00000000
 
 
-// addressBlock: nbio_nbif_rcc_dwn_dev0_RCCPORTDEC
+
 #define smnRCC_DWN_DEV0_1_DN_PCIE_RESERVED_DEFAULT                                0x00000000
 #define smnRCC_DWN_DEV0_1_DN_PCIE_SCRATCH_DEFAULT                                 0x00000000
 #define smnRCC_DWN_DEV0_1_DN_PCIE_CNTL_DEFAULT                                    0x00000000
@@ -2946,7 +2927,7 @@
 #define smnRCC_DWN_DEV0_1_DN_PCIE_CFG_CNTL_DEFAULT                                0x00000000
 
 
-// addressBlock: nbio_nbif_rcc_dwnp_dev0_RCCPORTDEC
+
 #define smnRCC_DWNP_DEV0_1_PCIE_ERR_CNTL_DEFAULT                                  0x00000500
 #define smnRCC_DWNP_DEV0_1_PCIE_RX_CNTL_DEFAULT                                   0x00000000
 #define smnRCC_DWNP_DEV0_1_PCIE_LC_SPEED_CNTL_DEFAULT                             0x00000000
@@ -2955,16 +2936,16 @@
 #define smnRCC_DWNP_DEV0_1_LTR_MSG_INFO_FROM_EP_DEFAULT                           0x00000000
 
 
-// addressBlock: nbio_nbif_rcc_strap_rcc_strap_internal
+
 #define smnRCC_STRAP2_RCC_DEV0_EPF0_STRAP0_DEFAULT                                0x30000000
 
 
-// addressBlock: nbio_nbif_bif_bx_pf_SUMDEC
+
 #define smnSUM_INDEX_DEFAULT                                                      0x00000000
 #define smnSUM_DATA_DEFAULT                                                       0x00000000
 
 
-// addressBlock: nbio_nbif_bif_misc_bif_misc_regblk
+
 #define smnMISC_SCRATCH_DEFAULT                                                   0x00000000
 #define smnINTR_LINE_POLARITY_DEFAULT                                             0x00000000
 #define smnINTR_LINE_ENABLE_DEFAULT                                               0x00000000
@@ -3015,7 +2996,7 @@
 #define smnBIF_GMI_WRR_WEIGHT_DEFAULT                                             0x00040404
 
 
-// addressBlock: nbio_nbif_rcc_pfc_amdgfx_RCCPFCDEC
+
 #define smnRCC_PFC_AMDGFX_RCC_PFC_LTR_CNTL_DEFAULT                                0x00000000
 #define smnRCC_PFC_AMDGFX_RCC_PFC_PME_RESTORE_DEFAULT                             0x00000000
 #define smnRCC_PFC_AMDGFX_RCC_PFC_STICKY_RESTORE_0_DEFAULT                        0x00000000
@@ -3027,7 +3008,7 @@
 #define smnRCC_PFC_AMDGFX_RCC_PFC_AUXPWR_CNTL_DEFAULT                             0x00000000
 
 
-// addressBlock: nbio_nbif_rcc_pfc_amdgfxaz_RCCPFCDEC
+
 #define smnRCC_PFC_AMDGFXAZ_RCC_PFC_LTR_CNTL_DEFAULT                              0x00000000
 #define smnRCC_PFC_AMDGFXAZ_RCC_PFC_PME_RESTORE_DEFAULT                           0x00000000
 #define smnRCC_PFC_AMDGFXAZ_RCC_PFC_STICKY_RESTORE_0_DEFAULT                      0x00000000
@@ -3039,7 +3020,7 @@
 #define smnRCC_PFC_AMDGFXAZ_RCC_PFC_AUXPWR_CNTL_DEFAULT                           0x00000000
 
 
-// addressBlock: nbio_nbif_bif_rst_bif_rst_regblk
+
 #define smnHARD_RST_CTRL_DEFAULT                                                  0xb0000055
 #define smnRSMU_SOFT_RST_CTRL_DEFAULT                                             0x90000000
 #define smnSELF_SOFT_RST_DEFAULT                                                  0x00000000
@@ -3089,7 +3070,7 @@
 #define smnBIF_PORT0_DSTATE_VALUE_DEFAULT                                         0x00000000
 
 
-// addressBlock: nbio_nbif_bif_ras_bif_ras_regblk
+
 #define smnBIF_RAS_LEAF0_CTRL_DEFAULT                                             0x00000000
 #define smnBIF_RAS_LEAF1_CTRL_DEFAULT                                             0x00000000
 #define smnBIF_RAS_LEAF2_CTRL_DEFAULT                                             0x00000000
@@ -3098,7 +3079,7 @@
 #define smnBIF_RAS_VWR_FROM_IOHUB_DEFAULT                                         0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_bifcfgdecp
+
 #define smnBIF_CFG_DEV0_EPF0_1_VENDOR_ID_DEFAULT                                  0x00000000
 #define smnBIF_CFG_DEV0_EPF0_1_DEVICE_ID_DEFAULT                                  0x00000000
 #define smnBIF_CFG_DEV0_EPF0_1_COMMAND_DEFAULT                                    0x00000000
@@ -3352,7 +3333,7 @@
 #define smnBIF_CFG_DEV0_EPF0_1_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_GFXSCH_DW8_DEFAULT 0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf1_bifcfgdecp
+
 #define smnBIF_CFG_DEV0_EPF1_1_VENDOR_ID_DEFAULT                                  0x00000000
 #define smnBIF_CFG_DEV0_EPF1_1_DEVICE_ID_DEFAULT                                  0x00000000
 #define smnBIF_CFG_DEV0_EPF1_1_COMMAND_DEFAULT                                    0x00000000
@@ -3606,7 +3587,7 @@
 #define smnBIF_CFG_DEV0_EPF1_1_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_GFXSCH_DW8_DEFAULT 0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf0_bifcfgdecp
+
 #define smnBIF_CFG_DEV0_EPF0_VF0_1_VENDOR_ID_DEFAULT                              0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF0_1_DEVICE_ID_DEFAULT                              0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF0_1_COMMAND_DEFAULT                                0x00000000
@@ -3688,7 +3669,7 @@
 #define smnBIF_CFG_DEV0_EPF0_VF0_1_PCIE_ARI_CNTL_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf1_bifcfgdecp
+
 #define smnBIF_CFG_DEV0_EPF0_VF1_1_VENDOR_ID_DEFAULT                              0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF1_1_DEVICE_ID_DEFAULT                              0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF1_1_COMMAND_DEFAULT                                0x00000000
@@ -3770,7 +3751,7 @@
 #define smnBIF_CFG_DEV0_EPF0_VF1_1_PCIE_ARI_CNTL_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf2_bifcfgdecp
+
 #define smnBIF_CFG_DEV0_EPF0_VF2_1_VENDOR_ID_DEFAULT                              0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF2_1_DEVICE_ID_DEFAULT                              0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF2_1_COMMAND_DEFAULT                                0x00000000
@@ -3852,7 +3833,7 @@
 #define smnBIF_CFG_DEV0_EPF0_VF2_1_PCIE_ARI_CNTL_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf3_bifcfgdecp
+
 #define smnBIF_CFG_DEV0_EPF0_VF3_1_VENDOR_ID_DEFAULT                              0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF3_1_DEVICE_ID_DEFAULT                              0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF3_1_COMMAND_DEFAULT                                0x00000000
@@ -3934,7 +3915,7 @@
 #define smnBIF_CFG_DEV0_EPF0_VF3_1_PCIE_ARI_CNTL_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf4_bifcfgdecp
+
 #define smnBIF_CFG_DEV0_EPF0_VF4_1_VENDOR_ID_DEFAULT                              0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF4_1_DEVICE_ID_DEFAULT                              0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF4_1_COMMAND_DEFAULT                                0x00000000
@@ -4016,7 +3997,7 @@
 #define smnBIF_CFG_DEV0_EPF0_VF4_1_PCIE_ARI_CNTL_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf5_bifcfgdecp
+
 #define smnBIF_CFG_DEV0_EPF0_VF5_1_VENDOR_ID_DEFAULT                              0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF5_1_DEVICE_ID_DEFAULT                              0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF5_1_COMMAND_DEFAULT                                0x00000000
@@ -4098,7 +4079,7 @@
 #define smnBIF_CFG_DEV0_EPF0_VF5_1_PCIE_ARI_CNTL_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf6_bifcfgdecp
+
 #define smnBIF_CFG_DEV0_EPF0_VF6_1_VENDOR_ID_DEFAULT                              0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF6_1_DEVICE_ID_DEFAULT                              0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF6_1_COMMAND_DEFAULT                                0x00000000
@@ -4180,7 +4161,7 @@
 #define smnBIF_CFG_DEV0_EPF0_VF6_1_PCIE_ARI_CNTL_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf7_bifcfgdecp
+
 #define smnBIF_CFG_DEV0_EPF0_VF7_1_VENDOR_ID_DEFAULT                              0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF7_1_DEVICE_ID_DEFAULT                              0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF7_1_COMMAND_DEFAULT                                0x00000000
@@ -4262,7 +4243,7 @@
 #define smnBIF_CFG_DEV0_EPF0_VF7_1_PCIE_ARI_CNTL_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf8_bifcfgdecp
+
 #define smnBIF_CFG_DEV0_EPF0_VF8_1_VENDOR_ID_DEFAULT                              0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF8_1_DEVICE_ID_DEFAULT                              0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF8_1_COMMAND_DEFAULT                                0x00000000
@@ -4344,7 +4325,7 @@
 #define smnBIF_CFG_DEV0_EPF0_VF8_1_PCIE_ARI_CNTL_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf9_bifcfgdecp
+
 #define smnBIF_CFG_DEV0_EPF0_VF9_1_VENDOR_ID_DEFAULT                              0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF9_1_DEVICE_ID_DEFAULT                              0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF9_1_COMMAND_DEFAULT                                0x00000000
@@ -4426,7 +4407,7 @@
 #define smnBIF_CFG_DEV0_EPF0_VF9_1_PCIE_ARI_CNTL_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf10_bifcfgdecp
+
 #define smnBIF_CFG_DEV0_EPF0_VF10_1_VENDOR_ID_DEFAULT                             0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF10_1_DEVICE_ID_DEFAULT                             0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF10_1_COMMAND_DEFAULT                               0x00000000
@@ -4508,7 +4489,7 @@
 #define smnBIF_CFG_DEV0_EPF0_VF10_1_PCIE_ARI_CNTL_DEFAULT                         0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf11_bifcfgdecp
+
 #define smnBIF_CFG_DEV0_EPF0_VF11_1_VENDOR_ID_DEFAULT                             0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF11_1_DEVICE_ID_DEFAULT                             0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF11_1_COMMAND_DEFAULT                               0x00000000
@@ -4590,7 +4571,7 @@
 #define smnBIF_CFG_DEV0_EPF0_VF11_1_PCIE_ARI_CNTL_DEFAULT                         0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf12_bifcfgdecp
+
 #define smnBIF_CFG_DEV0_EPF0_VF12_1_VENDOR_ID_DEFAULT                             0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF12_1_DEVICE_ID_DEFAULT                             0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF12_1_COMMAND_DEFAULT                               0x00000000
@@ -4672,7 +4653,7 @@
 #define smnBIF_CFG_DEV0_EPF0_VF12_1_PCIE_ARI_CNTL_DEFAULT                         0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf13_bifcfgdecp
+
 #define smnBIF_CFG_DEV0_EPF0_VF13_1_VENDOR_ID_DEFAULT                             0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF13_1_DEVICE_ID_DEFAULT                             0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF13_1_COMMAND_DEFAULT                               0x00000000
@@ -4754,7 +4735,7 @@
 #define smnBIF_CFG_DEV0_EPF0_VF13_1_PCIE_ARI_CNTL_DEFAULT                         0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf14_bifcfgdecp
+
 #define smnBIF_CFG_DEV0_EPF0_VF14_1_VENDOR_ID_DEFAULT                             0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF14_1_DEVICE_ID_DEFAULT                             0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF14_1_COMMAND_DEFAULT                               0x00000000
@@ -4836,7 +4817,7 @@
 #define smnBIF_CFG_DEV0_EPF0_VF14_1_PCIE_ARI_CNTL_DEFAULT                         0x00000000
 
 
-// addressBlock: nbio_nbif_bif_cfg_dev0_epf0_vf15_bifcfgdecp
+
 #define smnBIF_CFG_DEV0_EPF0_VF15_1_VENDOR_ID_DEFAULT                             0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF15_1_DEVICE_ID_DEFAULT                             0x00000000
 #define smnBIF_CFG_DEV0_EPF0_VF15_1_COMMAND_DEFAULT                               0x00000000
@@ -4918,7 +4899,7 @@
 #define smnBIF_CFG_DEV0_EPF0_VF15_1_PCIE_ARI_CNTL_DEFAULT                         0x00000000
 
 
-// addressBlock: nbio_nbif_pciemsix_amdgfx_MSIXTDEC
+
 #define smnPCIEMSIX_VECT0_ADDR_LO_DEFAULT                                         0x00000000
 #define smnPCIEMSIX_VECT0_ADDR_HI_DEFAULT                                         0x00000000
 #define smnPCIEMSIX_VECT0_MSG_DATA_DEFAULT                                        0x00000000
@@ -5049,11 +5030,11 @@
 #define smnPCIEMSIX_VECT31_CONTROL_DEFAULT                                        0x00000000
 
 
-// addressBlock: nbio_nbif_pciemsix_amdgfx_MSIXPDEC
+
 #define smnPCIEMSIX_PBA_DEFAULT                                                   0x00000000
 
 
-// addressBlock: nbio_pcie_pswusp0_pciedir_p
+
 #define smnPCIEP_RESERVED_DEFAULT                                                 0x00000000
 #define smnPCIEP_SCRATCH_DEFAULT                                                  0x00000000
 #define smnPCIEP_PORT_CNTL_DEFAULT                                                0x00010009
@@ -5123,7 +5104,7 @@
 #define smnPCIEP_BCH_ECC_CNTL_DEFAULT                                             0x00000100
 
 
-// addressBlock: nbio_pcie_pciedir
+
 #define smnPCIE_RESERVED_DEFAULT                                                  0x00000000
 #define smnPCIE_SCRATCH_DEFAULT                                                   0x00000000
 #define smnPCIE_RX_NUM_NAK_DEFAULT                                                0x00000000
@@ -5251,7 +5232,7 @@
 #define smnSMU_PCIE_FENCED2_REG_DEFAULT                                           0x00000000
 
 
-// addressBlock: nbio_pipe_pcs_dwc_e12mp_phy_x4_ns0_dwc_e12mp_phy_x4_ns_UP16_dwc_e12mp_phy_x4_ns_UP16_mem_map
+
 #define smnDWC_E12MP_PHY_X4_NS_X4_0_SUP_DIG_IDCODE_LO_DEFAULT                     0x000074cd
 #define smnDWC_E12MP_PHY_X4_NS_X4_0_SUP_DIG_IDCODE_HI_DEFAULT                     0x00000733
 #define smnDWC_E12MP_PHY_X4_NS_X4_0_SUP_DIG_REFCLK_OVRD_IN_DEFAULT                0x00000070
@@ -9325,7 +9306,7 @@
 #define smnDWC_E12MP_PHY_X4_NS_X4_0_RAWLANEX_DIG_RX_CTL_ADAPT_CONT_STATUS_DEFAULT 0x00000000
 
 
-// addressBlock: nbio_pipe_pcs_lcu_pcie_pcs_prime_phyx4_pcs_prime_dir
+
 #define smnDXIO_HWDID_DEFAULT                                                     0x00102000
 #define smnDXIO_LINKAGE_LANEGRP_DEFAULT                                           0x00000000
 #define smnDXIO_LINKAGE_KPDMX_DEFAULT                                             0x00000000
@@ -9362,7 +9343,7 @@
 #define smnPCS_PIPE_PER_LANE_SOFT_RESET_DEFAULT                                   0x00000000
 
 
-// addressBlock: nbio_lcu_kpfifo_kpfifo0_kpfifo_dir
+
 #define smnKPFIFO0_PRI_TX_FIFO_HSCID_DEFAULT                                      0x00000000
 #define smnKPFIFO0_PRI_TX_FIFO_CONTROL_LANE_0_DEFAULT                             0x00000000
 #define smnKPFIFO0_PRI_TX_FIFO_CONTROL_LANE_1_DEFAULT                             0x00000000
@@ -9371,7 +9352,7 @@
 #define smnKPFIFO0_PCS_PMA_SOFT_RESET_DEFAULT                                     0x00000000
 
 
-// addressBlock: nbio_lcu_kpnp_kpnp0_kpnp_dir
+
 #define smnKPNP_SNPS0_KPNP_HWSCVER_DEFAULT                                        0x00000000
 #define smnKPNP_SNPS0_KPNP_PHY_INFO_DEFAULT                                       0x00000000
 #define smnKPNP_SNPS0_KPNP_LANE_ID_DEFAULT                                        0x00000000
@@ -9385,7 +9366,7 @@
 #define smnKPNP_SNPS0_REG_RST_CTRL_DEFAULT                                        0x00000001
 
 
-// addressBlock: nbio_pipe_pcs_pcs_core0_dir
+
 #define smnPCS_PCIEX16_IP_IDENTITY_DEFAULT                                        0x00000000
 #define smnPCS_PCIEX16_GLOBAL_CONTROL0_DEFAULT                                    0x03f50001
 #define smnPCS_PCIEX16_GLOBAL_CONTROL1_DEFAULT                                    0x00000000
@@ -9423,7 +9404,7 @@
 #define smnPCS_PCIEX16_GLOBAL_CONTROL17_DEFAULT                                   0x00000000
 
 
-// addressBlock: nbio_pipe_pcs_pcs_pciex16_gaskt_pcs_pciex16_gaskt_dir
+
 #define smnPCS_GLOBAL_CONTROL17_DEFAULT                                           0x00000003
 #define smnPCS_GLOBAL_CONTROL18_DEFAULT                                           0x00000000
 #define smnPCS_GLOBAL_CONTROL19_DEFAULT                                           0x0017b919
@@ -9505,7 +9486,7 @@
 #define smnPCS_LANE15_COEFF3_DEFAULT                                              0xd02c1d00
 
 
-// addressBlock: nbio_pipe_pcs_dwc_e12mp_phy_x4_ns1_dwc_e12mp_phy_x4_ns_UP16_dwc_e12mp_phy_x4_ns_UP16_mem_map
+
 #define smnDWC_E12MP_PHY_X4_NS_X4_1_SUP_DIG_IDCODE_LO_DEFAULT                     0x000074cd
 #define smnDWC_E12MP_PHY_X4_NS_X4_1_SUP_DIG_IDCODE_HI_DEFAULT                     0x00000733
 #define smnDWC_E12MP_PHY_X4_NS_X4_1_SUP_DIG_REFCLK_OVRD_IN_DEFAULT                0x00000070
@@ -13579,7 +13560,7 @@
 #define smnDWC_E12MP_PHY_X4_NS_X4_1_RAWLANEX_DIG_RX_CTL_ADAPT_CONT_STATUS_DEFAULT 0x00000000
 
 
-// addressBlock: nbio_lcu_kpfifo_kpfifo1_kpfifo_dir
+
 #define smnKPFIFO1_PRI_TX_FIFO_HSCID_DEFAULT                                      0x00000000
 #define smnKPFIFO1_PRI_TX_FIFO_CONTROL_LANE_0_DEFAULT                             0x00000000
 #define smnKPFIFO1_PRI_TX_FIFO_CONTROL_LANE_1_DEFAULT                             0x00000000
@@ -13588,7 +13569,7 @@
 #define smnKPFIFO1_PCS_PMA_SOFT_RESET_DEFAULT                                     0x00000000
 
 
-// addressBlock: nbio_lcu_kpnp_kpnp1_kpnp_dir
+
 #define smnKPNP_SNPS1_KPNP_HWSCVER_DEFAULT                                        0x00000000
 #define smnKPNP_SNPS1_KPNP_PHY_INFO_DEFAULT                                       0x00000000
 #define smnKPNP_SNPS1_KPNP_LANE_ID_DEFAULT                                        0x00000000
@@ -13602,7 +13583,7 @@
 #define smnKPNP_SNPS1_REG_RST_CTRL_DEFAULT                                        0x00000001
 
 
-// addressBlock: nbio_pipe_pcs_dwc_e12mp_phy_x4_ns2_dwc_e12mp_phy_x4_ns_UP16_dwc_e12mp_phy_x4_ns_UP16_mem_map
+
 #define smnDWC_E12MP_PHY_X4_NS_X4_2_SUP_DIG_IDCODE_LO_DEFAULT                     0x000074cd
 #define smnDWC_E12MP_PHY_X4_NS_X4_2_SUP_DIG_IDCODE_HI_DEFAULT                     0x00000733
 #define smnDWC_E12MP_PHY_X4_NS_X4_2_SUP_DIG_REFCLK_OVRD_IN_DEFAULT                0x00000070
@@ -17676,7 +17657,7 @@
 #define smnDWC_E12MP_PHY_X4_NS_X4_2_RAWLANEX_DIG_RX_CTL_ADAPT_CONT_STATUS_DEFAULT 0x00000000
 
 
-// addressBlock: nbio_lcu_kpfifo_kpfifo2_kpfifo_dir
+
 #define smnKPFIFO2_PRI_TX_FIFO_HSCID_DEFAULT                                      0x00000000
 #define smnKPFIFO2_PRI_TX_FIFO_CONTROL_LANE_0_DEFAULT                             0x00000000
 #define smnKPFIFO2_PRI_TX_FIFO_CONTROL_LANE_1_DEFAULT                             0x00000000
@@ -17685,7 +17666,7 @@
 #define smnKPFIFO2_PCS_PMA_SOFT_RESET_DEFAULT                                     0x00000000
 
 
-// addressBlock: nbio_lcu_kpnp_kpnp2_kpnp_dir
+
 #define smnKPNP_SNPS2_KPNP_HWSCVER_DEFAULT                                        0x00000000
 #define smnKPNP_SNPS2_KPNP_PHY_INFO_DEFAULT                                       0x00000000
 #define smnKPNP_SNPS2_KPNP_LANE_ID_DEFAULT                                        0x00000000
@@ -17699,7 +17680,7 @@
 #define smnKPNP_SNPS2_REG_RST_CTRL_DEFAULT                                        0x00000001
 
 
-// addressBlock: nbio_pipe_pcs_dwc_e12mp_phy_x4_ns3_dwc_e12mp_phy_x4_ns_UP16_dwc_e12mp_phy_x4_ns_UP16_mem_map
+
 #define smnDWC_E12MP_PHY_X4_NS_X4_3_SUP_DIG_IDCODE_LO_DEFAULT                     0x000074cd
 #define smnDWC_E12MP_PHY_X4_NS_X4_3_SUP_DIG_IDCODE_HI_DEFAULT                     0x00000733
 #define smnDWC_E12MP_PHY_X4_NS_X4_3_SUP_DIG_REFCLK_OVRD_IN_DEFAULT                0x00000070
@@ -21773,7 +21754,7 @@
 #define smnDWC_E12MP_PHY_X4_NS_X4_3_RAWLANEX_DIG_RX_CTL_ADAPT_CONT_STATUS_DEFAULT 0x00000000
 
 
-// addressBlock: nbio_lcu_kpfifo_kpfifo3_kpfifo_dir
+
 #define smnKPFIFO3_PRI_TX_FIFO_HSCID_DEFAULT                                      0x00000000
 #define smnKPFIFO3_PRI_TX_FIFO_CONTROL_LANE_0_DEFAULT                             0x00000000
 #define smnKPFIFO3_PRI_TX_FIFO_CONTROL_LANE_1_DEFAULT                             0x00000000
@@ -21782,7 +21763,7 @@
 #define smnKPFIFO3_PCS_PMA_SOFT_RESET_DEFAULT                                     0x00000000
 
 
-// addressBlock: nbio_lcu_kpnp_kpnp3_kpnp_dir
+
 #define smnKPNP_SNPS3_KPNP_HWSCVER_DEFAULT                                        0x00000000
 #define smnKPNP_SNPS3_KPNP_PHY_INFO_DEFAULT                                       0x00000000
 #define smnKPNP_SNPS3_KPNP_LANE_ID_DEFAULT                                        0x00000000
@@ -21796,13 +21777,13 @@
 #define smnKPNP_SNPS3_REG_RST_CTRL_DEFAULT                                        0x00000001
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf0_SYSPFVFDEC
+
 #define mmBIF_BX_DEV0_EPF0_VF0_MM_INDEX_DEFAULT                                  0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF0_MM_DATA_DEFAULT                                   0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF0_MM_INDEX_HI_DEFAULT                               0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf0_BIFPFVFDEC1
+
 #define mmBIF_BX_DEV0_EPF0_VF0_BIF_BME_STATUS_DEFAULT                            0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF0_BIF_ATOMIC_ERR_LOG_DEFAULT                        0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF0_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_DEFAULT      0x00000000
@@ -21826,13 +21807,13 @@
 #define mmBIF_BX_DEV0_EPF0_VF0_BIF_VMHV_MAILBOX_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf1_SYSPFVFDEC
+
 #define mmBIF_BX_DEV0_EPF0_VF1_MM_INDEX_DEFAULT                                  0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF1_MM_DATA_DEFAULT                                   0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF1_MM_INDEX_HI_DEFAULT                               0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf1_BIFPFVFDEC1
+
 #define mmBIF_BX_DEV0_EPF0_VF1_BIF_BME_STATUS_DEFAULT                            0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF1_BIF_ATOMIC_ERR_LOG_DEFAULT                        0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF1_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_DEFAULT      0x00000000
@@ -21856,13 +21837,13 @@
 #define mmBIF_BX_DEV0_EPF0_VF1_BIF_VMHV_MAILBOX_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf2_SYSPFVFDEC
+
 #define mmBIF_BX_DEV0_EPF0_VF2_MM_INDEX_DEFAULT                                  0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF2_MM_DATA_DEFAULT                                   0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF2_MM_INDEX_HI_DEFAULT                               0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf2_BIFPFVFDEC1
+
 #define mmBIF_BX_DEV0_EPF0_VF2_BIF_BME_STATUS_DEFAULT                            0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF2_BIF_ATOMIC_ERR_LOG_DEFAULT                        0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF2_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_DEFAULT      0x00000000
@@ -21886,13 +21867,13 @@
 #define mmBIF_BX_DEV0_EPF0_VF2_BIF_VMHV_MAILBOX_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf3_SYSPFVFDEC
+
 #define mmBIF_BX_DEV0_EPF0_VF3_MM_INDEX_DEFAULT                                  0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF3_MM_DATA_DEFAULT                                   0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF3_MM_INDEX_HI_DEFAULT                               0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf3_BIFPFVFDEC1
+
 #define mmBIF_BX_DEV0_EPF0_VF3_BIF_BME_STATUS_DEFAULT                            0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF3_BIF_ATOMIC_ERR_LOG_DEFAULT                        0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF3_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_DEFAULT      0x00000000
@@ -21916,13 +21897,13 @@
 #define mmBIF_BX_DEV0_EPF0_VF3_BIF_VMHV_MAILBOX_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf4_SYSPFVFDEC
+
 #define mmBIF_BX_DEV0_EPF0_VF4_MM_INDEX_DEFAULT                                  0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF4_MM_DATA_DEFAULT                                   0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF4_MM_INDEX_HI_DEFAULT                               0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf4_BIFPFVFDEC1
+
 #define mmBIF_BX_DEV0_EPF0_VF4_BIF_BME_STATUS_DEFAULT                            0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF4_BIF_ATOMIC_ERR_LOG_DEFAULT                        0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF4_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_DEFAULT      0x00000000
@@ -21946,13 +21927,13 @@
 #define mmBIF_BX_DEV0_EPF0_VF4_BIF_VMHV_MAILBOX_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf5_SYSPFVFDEC
+
 #define mmBIF_BX_DEV0_EPF0_VF5_MM_INDEX_DEFAULT                                  0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF5_MM_DATA_DEFAULT                                   0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF5_MM_INDEX_HI_DEFAULT                               0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf5_BIFPFVFDEC1
+
 #define mmBIF_BX_DEV0_EPF0_VF5_BIF_BME_STATUS_DEFAULT                            0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF5_BIF_ATOMIC_ERR_LOG_DEFAULT                        0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF5_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_DEFAULT      0x00000000
@@ -21976,13 +21957,13 @@
 #define mmBIF_BX_DEV0_EPF0_VF5_BIF_VMHV_MAILBOX_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf6_SYSPFVFDEC
+
 #define mmBIF_BX_DEV0_EPF0_VF6_MM_INDEX_DEFAULT                                  0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF6_MM_DATA_DEFAULT                                   0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF6_MM_INDEX_HI_DEFAULT                               0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf6_BIFPFVFDEC1
+
 #define mmBIF_BX_DEV0_EPF0_VF6_BIF_BME_STATUS_DEFAULT                            0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF6_BIF_ATOMIC_ERR_LOG_DEFAULT                        0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF6_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_DEFAULT      0x00000000
@@ -22006,13 +21987,13 @@
 #define mmBIF_BX_DEV0_EPF0_VF6_BIF_VMHV_MAILBOX_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf7_SYSPFVFDEC
+
 #define mmBIF_BX_DEV0_EPF0_VF7_MM_INDEX_DEFAULT                                  0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF7_MM_DATA_DEFAULT                                   0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF7_MM_INDEX_HI_DEFAULT                               0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf7_BIFPFVFDEC1
+
 #define mmBIF_BX_DEV0_EPF0_VF7_BIF_BME_STATUS_DEFAULT                            0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF7_BIF_ATOMIC_ERR_LOG_DEFAULT                        0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF7_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_DEFAULT      0x00000000
@@ -22036,13 +22017,13 @@
 #define mmBIF_BX_DEV0_EPF0_VF7_BIF_VMHV_MAILBOX_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf8_SYSPFVFDEC
+
 #define mmBIF_BX_DEV0_EPF0_VF8_MM_INDEX_DEFAULT                                  0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF8_MM_DATA_DEFAULT                                   0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF8_MM_INDEX_HI_DEFAULT                               0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf8_BIFPFVFDEC1
+
 #define mmBIF_BX_DEV0_EPF0_VF8_BIF_BME_STATUS_DEFAULT                            0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF8_BIF_ATOMIC_ERR_LOG_DEFAULT                        0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF8_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_DEFAULT      0x00000000
@@ -22066,13 +22047,13 @@
 #define mmBIF_BX_DEV0_EPF0_VF8_BIF_VMHV_MAILBOX_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf9_SYSPFVFDEC
+
 #define mmBIF_BX_DEV0_EPF0_VF9_MM_INDEX_DEFAULT                                  0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF9_MM_DATA_DEFAULT                                   0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF9_MM_INDEX_HI_DEFAULT                               0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf9_BIFPFVFDEC1
+
 #define mmBIF_BX_DEV0_EPF0_VF9_BIF_BME_STATUS_DEFAULT                            0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF9_BIF_ATOMIC_ERR_LOG_DEFAULT                        0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF9_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_DEFAULT      0x00000000
@@ -22096,13 +22077,13 @@
 #define mmBIF_BX_DEV0_EPF0_VF9_BIF_VMHV_MAILBOX_DEFAULT                          0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf10_SYSPFVFDEC
+
 #define mmBIF_BX_DEV0_EPF0_VF10_MM_INDEX_DEFAULT                                 0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF10_MM_DATA_DEFAULT                                  0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF10_MM_INDEX_HI_DEFAULT                              0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf10_BIFPFVFDEC1
+
 #define mmBIF_BX_DEV0_EPF0_VF10_BIF_BME_STATUS_DEFAULT                           0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF10_BIF_ATOMIC_ERR_LOG_DEFAULT                       0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF10_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_DEFAULT     0x00000000
@@ -22126,13 +22107,13 @@
 #define mmBIF_BX_DEV0_EPF0_VF10_BIF_VMHV_MAILBOX_DEFAULT                         0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf11_SYSPFVFDEC
+
 #define mmBIF_BX_DEV0_EPF0_VF11_MM_INDEX_DEFAULT                                 0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF11_MM_DATA_DEFAULT                                  0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF11_MM_INDEX_HI_DEFAULT                              0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf11_BIFPFVFDEC1
+
 #define mmBIF_BX_DEV0_EPF0_VF11_BIF_BME_STATUS_DEFAULT                           0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF11_BIF_ATOMIC_ERR_LOG_DEFAULT                       0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF11_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_DEFAULT     0x00000000
@@ -22156,13 +22137,13 @@
 #define mmBIF_BX_DEV0_EPF0_VF11_BIF_VMHV_MAILBOX_DEFAULT                         0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf12_SYSPFVFDEC
+
 #define mmBIF_BX_DEV0_EPF0_VF12_MM_INDEX_DEFAULT                                 0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF12_MM_DATA_DEFAULT                                  0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF12_MM_INDEX_HI_DEFAULT                              0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf12_BIFPFVFDEC1
+
 #define mmBIF_BX_DEV0_EPF0_VF12_BIF_BME_STATUS_DEFAULT                           0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF12_BIF_ATOMIC_ERR_LOG_DEFAULT                       0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF12_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_DEFAULT     0x00000000
@@ -22186,13 +22167,13 @@
 #define mmBIF_BX_DEV0_EPF0_VF12_BIF_VMHV_MAILBOX_DEFAULT                         0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf13_SYSPFVFDEC
+
 #define mmBIF_BX_DEV0_EPF0_VF13_MM_INDEX_DEFAULT                                 0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF13_MM_DATA_DEFAULT                                  0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF13_MM_INDEX_HI_DEFAULT                              0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf13_BIFPFVFDEC1
+
 #define mmBIF_BX_DEV0_EPF0_VF13_BIF_BME_STATUS_DEFAULT                           0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF13_BIF_ATOMIC_ERR_LOG_DEFAULT                       0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF13_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_DEFAULT     0x00000000
@@ -22216,13 +22197,13 @@
 #define mmBIF_BX_DEV0_EPF0_VF13_BIF_VMHV_MAILBOX_DEFAULT                         0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf14_SYSPFVFDEC
+
 #define mmBIF_BX_DEV0_EPF0_VF14_MM_INDEX_DEFAULT                                 0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF14_MM_DATA_DEFAULT                                  0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF14_MM_INDEX_HI_DEFAULT                              0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf14_BIFPFVFDEC1
+
 #define mmBIF_BX_DEV0_EPF0_VF14_BIF_BME_STATUS_DEFAULT                           0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF14_BIF_ATOMIC_ERR_LOG_DEFAULT                       0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF14_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_DEFAULT     0x00000000
@@ -22246,13 +22227,13 @@
 #define mmBIF_BX_DEV0_EPF0_VF14_BIF_VMHV_MAILBOX_DEFAULT                         0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf15_SYSPFVFDEC
+
 #define mmBIF_BX_DEV0_EPF0_VF15_MM_INDEX_DEFAULT                                 0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF15_MM_DATA_DEFAULT                                  0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF15_MM_INDEX_HI_DEFAULT                              0x00000000
 
 
-// addressBlock: nbio_nbif_bif_bx_dev0_epf0_vf15_BIFPFVFDEC1
+
 #define mmBIF_BX_DEV0_EPF0_VF15_BIF_BME_STATUS_DEFAULT                           0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF15_BIF_ATOMIC_ERR_LOG_DEFAULT                       0x00000000
 #define mmBIF_BX_DEV0_EPF0_VF15_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_DEFAULT     0x00000000
@@ -22276,7 +22257,7 @@
 #define mmBIF_BX_DEV0_EPF0_VF15_BIF_VMHV_MAILBOX_DEFAULT                         0x00000000
 
 
-// addressBlock: syshub_mmreg_ind_syshubind
+
 #define ixSYSHUB_MMREG_IND_SYSHUB_DS_CTRL_SOCCLK_DEFAULT                         0x00000000
 #define ixSYSHUB_MMREG_IND_SYSHUB_DS_CTRL2_SOCCLK_DEFAULT                        0x00000100
 #define ixSYSHUB_MMREG_IND_SYSHUB_BGEN_ENHANCEMENT_BYPASS_EN_SOCCLK_DEFAULT      0x00000000

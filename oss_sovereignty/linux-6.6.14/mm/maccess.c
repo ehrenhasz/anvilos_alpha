@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Access kernel or user memory without faulting.
- */
+
+ 
 #include <linux/export.h>
 #include <linux/mm.h>
 #include <linux/uaccess.h>
@@ -102,15 +100,7 @@ Efault:
 	return -EFAULT;
 }
 
-/**
- * copy_from_user_nofault(): safely attempt to read from a user-space location
- * @dst: pointer to the buffer that shall take the data
- * @src: address to read from. This must be a user address.
- * @size: size of the data chunk
- *
- * Safely read from user address @src to the buffer at @dst. If a kernel fault
- * happens, handle that and return -EFAULT.
- */
+ 
 long copy_from_user_nofault(void *dst, const void __user *src, size_t size)
 {
 	long ret = -EFAULT;
@@ -131,15 +121,7 @@ long copy_from_user_nofault(void *dst, const void __user *src, size_t size)
 }
 EXPORT_SYMBOL_GPL(copy_from_user_nofault);
 
-/**
- * copy_to_user_nofault(): safely attempt to write to a user-space location
- * @dst: address to write to
- * @src: pointer to the data that shall be written
- * @size: size of the data chunk
- *
- * Safely write to address @dst from the buffer at @src.  If a kernel fault
- * happens, handle that and return -EFAULT.
- */
+ 
 long copy_to_user_nofault(void __user *dst, const void *src, size_t size)
 {
 	long ret = -EFAULT;
@@ -156,24 +138,7 @@ long copy_to_user_nofault(void __user *dst, const void *src, size_t size)
 }
 EXPORT_SYMBOL_GPL(copy_to_user_nofault);
 
-/**
- * strncpy_from_user_nofault: - Copy a NUL terminated string from unsafe user
- *				address.
- * @dst:   Destination address, in kernel space.  This buffer must be at
- *         least @count bytes long.
- * @unsafe_addr: Unsafe user address.
- * @count: Maximum number of bytes to copy, including the trailing NUL.
- *
- * Copies a NUL-terminated string from unsafe user address to kernel buffer.
- *
- * On success, returns the length of the string INCLUDING the trailing NUL.
- *
- * If access fails, returns -EFAULT (some data may have been copied
- * and the trailing NUL added).
- *
- * If @count is smaller than the length of the string, copies @count-1 bytes,
- * sets the last byte of @dst buffer to NUL and returns @count.
- */
+ 
 long strncpy_from_user_nofault(char *dst, const void __user *unsafe_addr,
 			      long count)
 {
@@ -196,22 +161,7 @@ long strncpy_from_user_nofault(char *dst, const void __user *unsafe_addr,
 	return ret;
 }
 
-/**
- * strnlen_user_nofault: - Get the size of a user string INCLUDING final NUL.
- * @unsafe_addr: The string to measure.
- * @count: Maximum count (including NUL)
- *
- * Get the size of a NUL-terminated string in user space without pagefault.
- *
- * Returns the size of the string INCLUDING the terminating NUL.
- *
- * If the string is too long, returns a number larger than @count. User
- * has to check the return value against "> count".
- * On exception (or invalid count), returns 0.
- *
- * Unlike strnlen_user, this can be used from IRQ handler etc. because
- * it disables pagefaults.
- */
+ 
 long strnlen_user_nofault(const void __user *unsafe_addr, long count)
 {
 	int ret;

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_PRIVRING_H__
 #define __NVKM_PRIVRING_H__
 #include <core/subdev.h>

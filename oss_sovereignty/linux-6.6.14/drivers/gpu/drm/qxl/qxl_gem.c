@@ -1,27 +1,4 @@
-/*
- * Copyright 2013 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alon Levy
- */
+ 
 
 #include <drm/drm.h>
 
@@ -52,7 +29,7 @@ int qxl_gem_object_create(struct qxl_device *qdev, int size,
 	int r;
 
 	*obj = NULL;
-	/* At least align on page size */
+	 
 	if (alignment < PAGE_SIZE)
 		alignment = PAGE_SIZE;
 	r = qxl_bo_create(qdev, size, kernel, false, initial_domain, 0, surf, &qbo);
@@ -72,12 +49,7 @@ int qxl_gem_object_create(struct qxl_device *qdev, int size,
 	return 0;
 }
 
-/*
- * If the caller passed a valid gobj pointer, it is responsible to call
- * drm_gem_object_put() when it no longer needs to acess the object.
- *
- * If gobj is NULL, it is handled internally.
- */
+ 
 int qxl_gem_object_create_with_handle(struct qxl_device *qdev,
 				      struct drm_file *file_priv,
 				      u32 domain,
@@ -104,7 +76,7 @@ int qxl_gem_object_create_with_handle(struct qxl_device *qdev,
 	if (gobj)
 		*gobj = local_gobj;
 	else
-		/* drop reference from allocate - handle holds it now */
+		 
 		drm_gem_object_put(local_gobj);
 
 	return 0;

@@ -1,15 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- */
+ 
+ 
 
 #if !defined(__EFCT_DRIVER_H__)
 #define __EFCT_DRIVER_H__
 
-/***************************************************************************
- * OS specific includes
- */
+ 
 #include <linux/module.h>
 #include <linux/debugfs.h>
 #include <linux/firmware.h>
@@ -22,21 +17,16 @@
 #define EFCT_DRIVER_NAME			"efct"
 #define EFCT_DRIVER_VERSION			"1.0.0.0"
 
-/* EFCT_DEFAULT_FILTER-
- * MRQ filter to segregate the IO flow.
- */
+ 
 #define EFCT_DEFAULT_FILTER			"0x01ff22ff,0,0,0"
 
-/* EFCT_OS_MAX_ISR_TIME_MSEC -
- * maximum time driver code should spend in an interrupt
- * or kernel thread context without yielding
- */
+ 
 #define EFCT_OS_MAX_ISR_TIME_MSEC		1000
 
 #define EFCT_FC_MAX_SGL				64
 #define EFCT_FC_DIF_SEED			0
 
-/* Watermark */
+ 
 #define EFCT_WATERMARK_HIGH_PCT			90
 #define EFCT_WATERMARK_LOW_PCT			80
 #define EFCT_IO_WATERMARK_PER_INITIATOR		8
@@ -80,14 +70,10 @@ struct efct {
 	char				*filter_def;
 	int				topology;
 
-	/* Look up for target node */
+	 
 	struct xarray			lookup;
 
-	/*
-	 * Target IO timer value:
-	 * Zero: target command timeout disabled.
-	 * Non-zero: Timeout value, in seconds, for target commands
-	 */
+	 
 	u32				target_io_timer_sec;
 
 	int				speed;
@@ -105,4 +91,4 @@ struct efct_fw_write_result {
 
 extern struct list_head			efct_devices;
 
-#endif /* __EFCT_DRIVER_H__ */
+#endif  

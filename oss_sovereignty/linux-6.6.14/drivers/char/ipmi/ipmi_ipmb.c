@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Driver to talk to a remote management controller on IPMB.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/errno.h>
@@ -33,7 +31,7 @@ static unsigned int max_retries = 1;
 module_param(max_retries, uint, 0644);
 MODULE_PARM_DESC(max_retries, "Max resends of a command before timing out.");
 
-/* Add room for the two slave addresses, two checksums, and rqSeq. */
+ 
 #define IPMB_MAX_MSG_LEN (IPMI_MAX_MSG_LENGTH + 5)
 
 struct ipmi_ipmb_dev {
@@ -54,7 +52,7 @@ struct ipmi_ipmb_dev {
 	struct ipmi_smi_msg *next_msg;
 	struct ipmi_smi_msg *working_msg;
 
-	/* Transmit thread. */
+	 
 	struct task_struct *thread;
 	struct semaphore wake_thread;
 	struct semaphore got_rsp;
@@ -77,14 +75,14 @@ static bool valid_ipmb(struct ipmi_ipmb_dev *iidev)
 	if (iidev->overrun)
 		return false;
 
-	/* Minimum message size. */
+	 
 	if (iidev->rcvlen < 7)
 		return false;
 
-	/* Is it a response? */
+	 
 	netfn = msg[1] >> 2;
 	if (netfn & 1) {
-		/* Response messages have an added completion code. */
+		 
 		if (iidev->rcvlen < 8)
 			return false;
 	}
@@ -112,11 +110,11 @@ static void ipmi_ipmb_check_msg_done(struct ipmi_ipmb_dev *iidev)
 	is_cmd = ((msg[1] >> 2) & 1) == 0;
 
 	if (is_cmd) {
-		/* Ignore commands until we are up. */
+		 
 		if (!iidev->ready)
 			goto done;
 
-		/* It's a command, allocate a message for it. */
+		 
 		imsg = ipmi_alloc_smi_msg();
 		if (!imsg)
 			goto done;
@@ -128,12 +126,7 @@ static void ipmi_ipmb_check_msg_done(struct ipmi_ipmb_dev *iidev)
 			u8 seq = msg[4] >> 2;
 			bool xmit_rsp = (iidev->working_msg->data[0] >> 2) & 1;
 
-			/*
-			 * Responses should carry the sequence we sent
-			 * them with.  If it's a transmitted response,
-			 * ignore it.  And if the message hasn't been
-			 * transmitted, ignore it.
-			 */
+			 
 			if (!xmit_rsp && seq == iidev->curr_seq) {
 				iidev->curr_seq = (iidev->curr_seq + 1) & 0x3f;
 
@@ -148,19 +141,13 @@ static void ipmi_ipmb_check_msg_done(struct ipmi_ipmb_dev *iidev)
 		goto done;
 
 	if (imsg->type == IPMI_SMI_MSG_TYPE_IPMB_DIRECT) {
-		imsg->rsp[0] = msg[1]; /* NetFn/LUN */
-		/*
-		 * Keep the source address, rqSeq.  Drop the trailing
-		 * checksum.
-		 */
+		imsg->rsp[0] = msg[1];  
+		 
 		memcpy(imsg->rsp + 1, msg + 3, iidev->rcvlen - 4);
 		imsg->rsp_size = iidev->rcvlen - 3;
 	} else {
-		imsg->rsp[0] = msg[1]; /* NetFn/LUN */
-		/*
-		 * Skip the source address, rqSeq.  Drop the trailing
-		 * checksum.
-		 */
+		imsg->rsp[0] = msg[1];  
+		 
 		memcpy(imsg->rsp + 1, msg + 5, iidev->rcvlen - 6);
 		imsg->rsp_size = iidev->rcvlen - 5;
 	}
@@ -173,11 +160,7 @@ done:
 	iidev->rcvlen = 0;
 }
 
-/*
- * The IPMB protocol only supports i2c writes so there is no need to
- * support I2C_SLAVE_READ* events, except to know if the other end has
- * issued a read without going to stop mode.
- */
+ 
 static int ipmi_ipmb_slave_cb(struct i2c_client *client,
 			      enum i2c_slave_event event, u8 *val)
 {
@@ -186,10 +169,7 @@ static int ipmi_ipmb_slave_cb(struct i2c_client *client,
 	switch (event) {
 	case I2C_SLAVE_WRITE_REQUESTED:
 		ipmi_ipmb_check_msg_done(iidev);
-		/*
-		 * First byte is the slave address, to ease the checksum
-		 * calculation.
-		 */
+		 
 		iidev->rcvmsg[0] = client->addr << 1;
 		iidev->rcvlen = 1;
 		break;
@@ -217,12 +197,7 @@ static void ipmi_ipmb_send_response(struct ipmi_ipmb_dev *iidev,
 				    struct ipmi_smi_msg *msg, u8 cc)
 {
 	if ((msg->data[0] >> 2) & 1) {
-		/*
-		 * It's a response being sent, we need to return a
-		 * response to the response.  Fake a send msg command
-		 * response with channel 0.  This will always be ipmb
-		 * direct.
-		 */
+		 
 		msg->data[0] = (IPMI_NETFN_APP_REQUEST | 1) << 2;
 		msg->data[3] = IPMI_SEND_MSG_CMD;
 		msg->data[4] = cc;
@@ -260,11 +235,11 @@ static void ipmi_ipmb_format_for_xmit(struct ipmi_ipmb_dev *iidev,
 	}
 	iidev->xmitmsg[3] = iidev->slave->addr << 1;
 	if (((msg->data[0] >> 2) & 1) == 0)
-		/* If it's a command, put in our own sequence number. */
+		 
 		iidev->xmitmsg[4] = ((iidev->xmitmsg[4] & 0x03) |
 				     (iidev->curr_seq << 2));
 
-	/* Now add on the final checksums. */
+	 
 	iidev->xmitmsg[2] = ipmb_checksum(iidev->xmitmsg, 2);
 	iidev->xmitmsg[iidev->xmitlen] =
 		ipmb_checksum(iidev->xmitmsg + 3, iidev->xmitlen - 3);
@@ -282,7 +257,7 @@ static int ipmi_ipmb_thread(void *data)
 		unsigned long flags;
 		unsigned int retries = 0;
 
-		/* Wait for a message to send */
+		 
 		ret = down_interruptible(&iidev->wake_thread);
 		if (iidev->stopping)
 			break;
@@ -312,16 +287,13 @@ retry:
 		i2c_msg.flags = 0;
 		i2c_msg.buf = iidev->xmitmsg + 1;
 
-		/* Rely on i2c_transfer for a barrier. */
+		 
 		iidev->working_msg = msg;
 
 		ret = i2c_transfer(iidev->client->adapter, &i2c_msg, 1);
 
 		if ((msg->data[0] >> 2) & 1) {
-			/*
-			 * It's a response, nothing will be returned
-			 * by the other end.
-			 */
+			 
 
 			iidev->working_msg = NULL;
 			ipmi_ipmb_send_response(iidev, msg,
@@ -334,27 +306,18 @@ retry:
 			continue;
 		}
 
-		/* A command was sent, wait for its response. */
+		 
 		ret = down_timeout(&iidev->got_rsp,
 				   msecs_to_jiffies(iidev->retry_time_ms));
 
-		/*
-		 * Grab the message if we can.  If the handler hasn't
-		 * already handled it, the message will still be there.
-		 */
+		 
 		spin_lock_irqsave(&iidev->lock, flags);
 		msg = iidev->working_msg;
 		iidev->working_msg = NULL;
 		spin_unlock_irqrestore(&iidev->lock, flags);
 
 		if (!msg && ret) {
-			/*
-			 * If working_msg is not set and we timed out,
-			 * that means the message grabbed by
-			 * check_msg_done before we could grab it
-			 * here.  Wait again for check_msg_done to up
-			 * the semaphore.
-			 */
+			 
 			down(&iidev->got_rsp);
 		} else if (msg && ++retries <= iidev->max_retries) {
 			spin_lock_irqsave(&iidev->lock, flags);
@@ -368,7 +331,7 @@ retry:
 	}
 
 	if (iidev->next_msg)
-		/* Return an unspecified error. */
+		 
 		ipmi_ipmb_send_response(iidev, iidev->next_msg, 0xff);
 
 	return 0;
@@ -421,7 +384,7 @@ static void ipmi_ipmb_sender(void *send_info,
 
 static void ipmi_ipmb_request_events(void *send_info)
 {
-	/* We don't fetch events here. */
+	 
 }
 
 static void ipmi_ipmb_cleanup(struct ipmi_ipmb_dev *iidev)
@@ -460,7 +423,7 @@ static int ipmi_ipmb_probe(struct i2c_client *client)
 	if (of_property_read_u8(dev->of_node, "bmcaddr", &iidev->bmcaddr) != 0)
 		iidev->bmcaddr = bmcaddr;
 	if (iidev->bmcaddr == 0 || iidev->bmcaddr & 1) {
-		/* Can't have the write bit set. */
+		 
 		dev_notice(&client->dev,
 			   "Invalid bmc address value %2.2x\n", iidev->bmcaddr);
 		return -EINVAL;

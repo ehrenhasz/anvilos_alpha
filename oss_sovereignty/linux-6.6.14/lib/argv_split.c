@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Helper function for splitting a string into an argv-like array.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/ctype.h>
@@ -26,12 +24,7 @@ static int count_argc(const char *str)
 	return count;
 }
 
-/**
- * argv_free - free an argv
- * @argv: the argument vector to be freed
- *
- * Frees an argv and the strings it points to.
- */
+ 
 void argv_free(char **argv)
 {
 	argv--;
@@ -40,23 +33,7 @@ void argv_free(char **argv)
 }
 EXPORT_SYMBOL(argv_free);
 
-/**
- * argv_split - split a string at whitespace, returning an argv
- * @gfp: the GFP mask used to allocate memory
- * @str: the string to be split
- * @argcp: returned argument count
- *
- * Returns: an array of pointers to strings which are split out from
- * @str.  This is performed by strictly splitting on white-space; no
- * quote processing is performed.  Multiple whitespace characters are
- * considered to be a single argument separator.  The returned array
- * is always NULL-terminated.  Returns NULL on memory allocation
- * failure.
- *
- * The source string at `str' may be undergoing concurrent alteration via
- * userspace sysctl activity (at least).  The argv_split() implementation
- * attempts to handle this gracefully by taking a local copy to work on.
- */
+ 
 char **argv_split(gfp_t gfp, const char *str, int *argcp)
 {
 	char *argv_str;

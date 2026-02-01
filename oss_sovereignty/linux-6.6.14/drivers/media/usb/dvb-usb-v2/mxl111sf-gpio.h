@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  mxl111sf-gpio.h - driver for the MaxLinear MXL111SF
- *
- *  Copyright (C) 2010-2014 Michael Krufky <mkrufky@linuxtv.org>
- */
+ 
+ 
 
 #ifndef _DVB_USB_MXL111SF_GPIO_H_
 #define _DVB_USB_MXL111SF_GPIO_H_
@@ -34,4 +30,4 @@ enum mxl111sf_mux_config {
 int mxl111sf_config_pin_mux_modes(struct mxl111sf_state *state,
 				  enum mxl111sf_mux_config pin_mux_config);
 
-#endif /* _DVB_USB_MXL111SF_GPIO_H_ */
+#endif  

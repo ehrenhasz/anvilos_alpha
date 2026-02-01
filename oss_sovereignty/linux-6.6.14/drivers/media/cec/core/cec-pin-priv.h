@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * cec-pin-priv.h - internal cec-pin header
- *
- * Copyright 2017 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+ 
+ 
 
 #ifndef LINUX_CEC_PIN_PRIV_H
 #define LINUX_CEC_PIN_PRIV_H
@@ -24,107 +20,104 @@
 	} while (0)
 
 enum cec_pin_state {
-	/* CEC is off */
+	 
 	CEC_ST_OFF,
-	/* CEC is idle, waiting for Rx or Tx */
+	 
 	CEC_ST_IDLE,
 
-	/* Tx states */
+	 
 
-	/* Pending Tx, waiting for Signal Free Time to expire */
+	 
 	CEC_ST_TX_WAIT,
-	/* Low-drive was detected, wait for bus to go high */
+	 
 	CEC_ST_TX_WAIT_FOR_HIGH,
-	/* Drive CEC low for the start bit */
+	 
 	CEC_ST_TX_START_BIT_LOW,
-	/* Drive CEC high for the start bit */
+	 
 	CEC_ST_TX_START_BIT_HIGH,
-	/* Generate a start bit period that is too short */
+	 
 	CEC_ST_TX_START_BIT_HIGH_SHORT,
-	/* Generate a start bit period that is too long */
+	 
 	CEC_ST_TX_START_BIT_HIGH_LONG,
-	/* Drive CEC low for the start bit using the custom timing */
+	 
 	CEC_ST_TX_START_BIT_LOW_CUSTOM,
-	/* Drive CEC high for the start bit using the custom timing */
+	 
 	CEC_ST_TX_START_BIT_HIGH_CUSTOM,
-	/* Drive CEC low for the 0 bit */
+	 
 	CEC_ST_TX_DATA_BIT_0_LOW,
-	/* Drive CEC high for the 0 bit */
+	 
 	CEC_ST_TX_DATA_BIT_0_HIGH,
-	/* Generate a bit period that is too short */
+	 
 	CEC_ST_TX_DATA_BIT_0_HIGH_SHORT,
-	/* Generate a bit period that is too long */
+	 
 	CEC_ST_TX_DATA_BIT_0_HIGH_LONG,
-	/* Drive CEC low for the 1 bit */
+	 
 	CEC_ST_TX_DATA_BIT_1_LOW,
-	/* Drive CEC high for the 1 bit */
+	 
 	CEC_ST_TX_DATA_BIT_1_HIGH,
-	/* Generate a bit period that is too short */
+	 
 	CEC_ST_TX_DATA_BIT_1_HIGH_SHORT,
-	/* Generate a bit period that is too long */
+	 
 	CEC_ST_TX_DATA_BIT_1_HIGH_LONG,
-	/*
-	 * Wait for start of sample time to check for Ack bit or first
-	 * four initiator bits to check for Arbitration Lost.
-	 */
+	 
 	CEC_ST_TX_DATA_BIT_1_HIGH_PRE_SAMPLE,
-	/* Wait for end of bit period after sampling */
+	 
 	CEC_ST_TX_DATA_BIT_1_HIGH_POST_SAMPLE,
-	/* Generate a bit period that is too short */
+	 
 	CEC_ST_TX_DATA_BIT_1_HIGH_POST_SAMPLE_SHORT,
-	/* Generate a bit period that is too long */
+	 
 	CEC_ST_TX_DATA_BIT_1_HIGH_POST_SAMPLE_LONG,
-	/* Drive CEC low for a data bit using the custom timing */
+	 
 	CEC_ST_TX_DATA_BIT_LOW_CUSTOM,
-	/* Drive CEC high for a data bit using the custom timing */
+	 
 	CEC_ST_TX_DATA_BIT_HIGH_CUSTOM,
-	/* Drive CEC low for a standalone pulse using the custom timing */
+	 
 	CEC_ST_TX_PULSE_LOW_CUSTOM,
-	/* Drive CEC high for a standalone pulse using the custom timing */
+	 
 	CEC_ST_TX_PULSE_HIGH_CUSTOM,
-	/* Start low drive */
+	 
 	CEC_ST_TX_LOW_DRIVE,
 
-	/* Rx states */
+	 
 
-	/* Start bit low detected */
+	 
 	CEC_ST_RX_START_BIT_LOW,
-	/* Start bit high detected */
+	 
 	CEC_ST_RX_START_BIT_HIGH,
-	/* Wait for bit sample time */
+	 
 	CEC_ST_RX_DATA_SAMPLE,
-	/* Wait for earliest end of bit period after sampling */
+	 
 	CEC_ST_RX_DATA_POST_SAMPLE,
-	/* Wait for CEC to go low (i.e. end of bit period) */
+	 
 	CEC_ST_RX_DATA_WAIT_FOR_LOW,
-	/* Drive CEC low to send 0 Ack bit */
+	 
 	CEC_ST_RX_ACK_LOW,
-	/* End of 0 Ack time, wait for earliest end of bit period */
+	 
 	CEC_ST_RX_ACK_LOW_POST,
-	/* Wait for CEC to go high (i.e. end of bit period */
+	 
 	CEC_ST_RX_ACK_HIGH_POST,
-	/* Wait for earliest end of bit period and end of message */
+	 
 	CEC_ST_RX_ACK_FINISH,
-	/* Start low drive */
+	 
 	CEC_ST_RX_LOW_DRIVE,
 
-	/* Monitor pin using interrupts */
+	 
 	CEC_ST_RX_IRQ,
 
-	/* Total number of pin states */
+	 
 	CEC_PIN_STATES
 };
 
-/* Error Injection */
+ 
 
-/* Error injection modes */
+ 
 #define CEC_ERROR_INJ_MODE_OFF				0
 #define CEC_ERROR_INJ_MODE_ONCE				1
 #define CEC_ERROR_INJ_MODE_ALWAYS			2
 #define CEC_ERROR_INJ_MODE_TOGGLE			3
 #define CEC_ERROR_INJ_MODE_MASK				3ULL
 
-/* Receive error injection options */
+ 
 #define CEC_ERROR_INJ_RX_NACK_OFFSET			0
 #define CEC_ERROR_INJ_RX_LOW_DRIVE_OFFSET		2
 #define CEC_ERROR_INJ_RX_ADD_BYTE_OFFSET		4
@@ -132,7 +125,7 @@ enum cec_pin_state {
 #define CEC_ERROR_INJ_RX_ARB_LOST_OFFSET		8
 #define CEC_ERROR_INJ_RX_MASK				0xffffULL
 
-/* Transmit error injection options */
+ 
 #define CEC_ERROR_INJ_TX_NO_EOM_OFFSET			16
 #define CEC_ERROR_INJ_TX_EARLY_EOM_OFFSET		18
 #define CEC_ERROR_INJ_TX_SHORT_BIT_OFFSET		20
@@ -158,10 +151,10 @@ enum cec_pin_state {
 #define CEC_ERROR_INJ_TX_LOW_DRIVE_ARG_IDX		7
 #define CEC_ERROR_INJ_NUM_ARGS				8
 
-/* Special CEC op values */
+ 
 #define CEC_ERROR_INJ_OP_ANY				0x00000100
 
-/* The default for the low/high time of the custom pulse */
+ 
 #define CEC_TIM_CUSTOM_DEFAULT				1000
 
 #define CEC_NUM_PIN_EVENTS				128

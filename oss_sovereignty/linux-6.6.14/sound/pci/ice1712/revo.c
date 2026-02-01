@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   ALSA driver for ICEnsemble ICE1712 (Envy24)
- *
- *   Lowlevel functions for M-Audio Audiophile 192, Revolution 7.1 and 5.1
- *
- *	Copyright (c) 2003 Takashi Iwai <tiwai@suse.de>
- */      
+
+       
 
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -17,7 +11,7 @@
 #include "envy24ht.h"
 #include "revo.h"
 
-/* a non-standard I2C device for revo51 */
+ 
 struct revo51_spec {
 	struct snd_i2c_device *dev;
 	struct snd_pt2258 *pt2258;
@@ -26,25 +20,23 @@ struct revo51_spec {
 
 static void revo_i2s_mclk_changed(struct snd_ice1712 *ice)
 {
-	/* assert PRST# to converters; MT05 bit 7 */
+	 
 	outb(inb(ICEMT1724(ice, AC97_CMD)) | 0x80, ICEMT1724(ice, AC97_CMD));
 	mdelay(5);
-	/* deassert PRST# */
+	 
 	outb(inb(ICEMT1724(ice, AC97_CMD)) & ~0x80, ICEMT1724(ice, AC97_CMD));
 }
 
-/*
- * change the rate of Envy24HT, AK4355 and AK4381
- */
+ 
 static void revo_set_rate_val(struct snd_akm4xxx *ak, unsigned int rate)
 {
 	unsigned char old, tmp, dfs;
 	int reg, shift;
 
-	if (rate == 0)	/* no hint - S/PDIF input is master, simply return */
+	if (rate == 0)	 
 		return;
 
-	/* adjust DFS on codecs */
+	 
 	if (rate > 96000)
 		dfs = 2;
 	else if (rate > 48000)
@@ -64,19 +56,17 @@ static void revo_set_rate_val(struct snd_akm4xxx *ak, unsigned int rate)
 	if (old == dfs)
 		return;
 
-	/* reset DFS */
+	 
 	snd_akm4xxx_reset(ak, 1);
 	tmp = snd_akm4xxx_get(ak, 0, reg);
 	tmp &= ~(0x03 << shift);
 	tmp |= dfs << shift;
-	/* snd_akm4xxx_write(ak, 0, reg, tmp); */
-	snd_akm4xxx_set(ak, 0, reg, tmp); /* value is written in reset(0) */
+	 
+	snd_akm4xxx_set(ak, 0, reg, tmp);  
 	snd_akm4xxx_reset(ak, 0);
 }
 
-/*
- * I2C access to the PT2258 volume controller on GPIO 6/7 (Revolution 5.1)
- */
+ 
 
 static void revo_i2c_start(struct snd_i2c_bus *bus)
 {
@@ -97,9 +87,9 @@ static void revo_i2c_direction(struct snd_i2c_bus *bus, int clock, int data)
 
 	val = 0;
 	if (clock)
-		val |= VT1724_REVO_I2C_CLOCK;	/* write SCL */
+		val |= VT1724_REVO_I2C_CLOCK;	 
 	if (data)
-		val |= VT1724_REVO_I2C_DATA;	/* write SDA */
+		val |= VT1724_REVO_I2C_DATA;	 
 	mask = VT1724_REVO_I2C_CLOCK | VT1724_REVO_I2C_DATA;
 	ice->gpio.direction &= ~mask;
 	ice->gpio.direction |= val;
@@ -152,7 +142,7 @@ static int revo51_i2c_init(struct snd_ice1712 *ice,
 		return -ENOMEM;
 	ice->spec = spec;
 
-	/* create the I2C bus */
+	 
 	err = snd_i2c_bus_create(ice->card, "ICE1724 GPIO6", NULL, &ice->i2c);
 	if (err < 0)
 		return err;
@@ -160,7 +150,7 @@ static int revo51_i2c_init(struct snd_ice1712 *ice,
 	ice->i2c->private_data = ice;
 	ice->i2c->hw_ops.bit = &revo51_bit_ops;
 
-	/* create the I2C device */
+	 
 	err = snd_i2c_device_create(ice->i2c, "PT2258", 0x40, &spec->dev);
 	if (err < 0)
 		return err;
@@ -175,9 +165,7 @@ static int revo51_i2c_init(struct snd_ice1712 *ice,
 	return 0;
 }
 
-/*
- * initialize the chips on M-Audio Revolution cards
- */
+ 
 
 #define AK_DAC(xname,xch) { .name = xname, .num_channels = xch }
 
@@ -185,7 +173,7 @@ static const struct snd_akm4xxx_dac_channel revo71_front[] = {
 	{
 		.name = "PCM Playback Volume",
 		.num_channels = 2,
-		/* front channels DAC supports muting */
+		 
 		.switch_name = "PCM Playback Switch",
 	},
 };
@@ -238,7 +226,7 @@ static const struct snd_ak4xxx_private akm_revo_front_priv = {
 	.cs_mask = VT1724_REVO_CS0 | VT1724_REVO_CS1 | VT1724_REVO_CS2,
 	.cs_addr = VT1724_REVO_CS0 | VT1724_REVO_CS2,
 	.cs_none = VT1724_REVO_CS0 | VT1724_REVO_CS1 | VT1724_REVO_CS2,
-	.add_flags = VT1724_REVO_CCLK, /* high at init */
+	.add_flags = VT1724_REVO_CCLK,  
 	.mask_flags = 0,
 };
 
@@ -260,7 +248,7 @@ static const struct snd_ak4xxx_private akm_revo_surround_priv = {
 	.cs_mask = VT1724_REVO_CS0 | VT1724_REVO_CS1 | VT1724_REVO_CS2,
 	.cs_addr = VT1724_REVO_CS0 | VT1724_REVO_CS1,
 	.cs_none = VT1724_REVO_CS0 | VT1724_REVO_CS1 | VT1724_REVO_CS2,
-	.add_flags = VT1724_REVO_CCLK, /* high at init */
+	.add_flags = VT1724_REVO_CCLK,  
 	.mask_flags = 0,
 };
 
@@ -281,7 +269,7 @@ static const struct snd_ak4xxx_private akm_revo51_priv = {
 	.cs_mask = VT1724_REVO_CS0 | VT1724_REVO_CS1,
 	.cs_addr = VT1724_REVO_CS1,
 	.cs_none = VT1724_REVO_CS0 | VT1724_REVO_CS1,
-	.add_flags = VT1724_REVO_CCLK, /* high at init */
+	.add_flags = VT1724_REVO_CCLK,  
 	.mask_flags = 0,
 };
 
@@ -299,13 +287,13 @@ static const struct snd_ak4xxx_private akm_revo51_adc_priv = {
 	.cs_mask = VT1724_REVO_CS0 | VT1724_REVO_CS1,
 	.cs_addr = VT1724_REVO_CS0,
 	.cs_none = VT1724_REVO_CS0 | VT1724_REVO_CS1,
-	.add_flags = VT1724_REVO_CCLK, /* high at init */
+	.add_flags = VT1724_REVO_CCLK,  
 	.mask_flags = 0,
 };
 
 static struct snd_pt2258 ptc_revo51_volume;
 
-/* AK4358 for AP192 DAC, AK5385A for ADC */
+ 
 static void ap192_set_rate_val(struct snd_akm4xxx *ak, unsigned int rate)
 {
 	struct snd_ice1712 *ice = ak->private_data[0];
@@ -313,9 +301,9 @@ static void ap192_set_rate_val(struct snd_akm4xxx *ak, unsigned int rate)
 
 	revo_set_rate_val(ak, rate);
 
-	/* reset CKS */
+	 
 	snd_ice1712_gpio_write_bits(ice, 1 << 8, rate > 96000 ? 1 << 8 : 0);
-	/* reset DFS pins of AK5385A for ADC, too */
+	 
 	if (rate > 96000)
 		dfs = 2;
 	else if (rate > 48000)
@@ -323,7 +311,7 @@ static void ap192_set_rate_val(struct snd_akm4xxx *ak, unsigned int rate)
 	else
 		dfs = 0;
 	snd_ice1712_gpio_write_bits(ice, 3 << 9, dfs << 9);
-	/* reset ADC */
+	 
 	snd_ice1712_gpio_write_bits(ice, 1 << 11, 0);
 	snd_ice1712_gpio_write_bits(ice, 1 << 11, 1 << 11);
 }
@@ -349,34 +337,30 @@ static const struct snd_ak4xxx_private akm_ap192_priv = {
 	.cs_mask = VT1724_REVO_CS0 | VT1724_REVO_CS3,
 	.cs_addr = VT1724_REVO_CS3,
 	.cs_none = VT1724_REVO_CS0 | VT1724_REVO_CS3,
-	.add_flags = VT1724_REVO_CCLK, /* high at init */
+	.add_flags = VT1724_REVO_CCLK,  
 	.mask_flags = 0,
 };
 
-/* AK4114 support on Audiophile 192 */
-/* CDTO (pin 32) -- GPIO2 pin 52
- * CDTI (pin 33) -- GPIO3 pin 53 (shared with AK4358)
- * CCLK (pin 34) -- GPIO1 pin 51 (shared with AK4358)
- * CSN  (pin 35) -- GPIO7 pin 59
- */
+ 
+ 
 #define AK4114_ADDR	0x00
 
 static void write_data(struct snd_ice1712 *ice, unsigned int gpio,
 		       unsigned int data, int idx)
 {
 	for (; idx >= 0; idx--) {
-		/* drop clock */
+		 
 		gpio &= ~VT1724_REVO_CCLK;
 		snd_ice1712_gpio_write(ice, gpio);
 		udelay(1);
-		/* set data */
+		 
 		if (data & (1 << idx))
 			gpio |= VT1724_REVO_CDOUT;
 		else
 			gpio &= ~VT1724_REVO_CDOUT;
 		snd_ice1712_gpio_write(ice, gpio);
 		udelay(1);
-		/* raise clock */
+		 
 		gpio |= VT1724_REVO_CCLK;
 		snd_ice1712_gpio_write(ice, gpio);
 		udelay(1);
@@ -389,15 +373,15 @@ static unsigned char read_data(struct snd_ice1712 *ice, unsigned int gpio,
 	unsigned char data = 0;
 
 	for (; idx >= 0; idx--) {
-		/* drop clock */
+		 
 		gpio &= ~VT1724_REVO_CCLK;
 		snd_ice1712_gpio_write(ice, gpio);
 		udelay(1);
-		/* read data */
+		 
 		if (snd_ice1712_gpio_read(ice) & VT1724_REVO_CDIN)
 			data |= (1 << idx);
 		udelay(1);
-		/* raise clock */
+		 
 		gpio |= VT1724_REVO_CCLK;
 		snd_ice1712_gpio_write(ice, gpio);
 		udelay(1);
@@ -411,7 +395,7 @@ static unsigned int ap192_4wire_start(struct snd_ice1712 *ice)
 
 	snd_ice1712_save_gpio_status(ice);
 	tmp = snd_ice1712_gpio_read(ice);
-	tmp |= VT1724_REVO_CCLK; /* high at init */
+	tmp |= VT1724_REVO_CCLK;  
 	tmp |= VT1724_REVO_CS0;
 	tmp &= ~VT1724_REVO_CS3;
 	snd_ice1712_gpio_write(ice, tmp);
@@ -482,8 +466,7 @@ static int ap192_ak4114_init(struct snd_ice1712 *ice)
 				 ice, &spec->ak4114);
 	if (err < 0)
 		return err;
-	/* AK4114 in Revo cannot detect external rate correctly.
-	 * No reason to stop capture stream due to incorrect checks */
+	 
 	spec->ak4114->check_flags = AK4114_CHECK_NO_RATE;
 
 	return 0;
@@ -494,7 +477,7 @@ static int revo_init(struct snd_ice1712 *ice)
 	struct snd_akm4xxx *ak;
 	int err;
 
-	/* determine I2C, DACs and ADCs */
+	 
 	switch (ice->eeprom.subvendor) {
 	case VT1724_SUBDEVICE_REVOLUTION71:
 		ice->num_total_dacs = 8;
@@ -514,7 +497,7 @@ static int revo_init(struct snd_ice1712 *ice)
 		return -EINVAL;
 	}
 
-	/* second stage of initialization, analog parts and others */
+	 
 	ak = ice->akm = kcalloc(2, sizeof(struct snd_akm4xxx), GFP_KERNEL);
 	if (! ak)
 		return -ENOMEM;
@@ -529,7 +512,7 @@ static int revo_init(struct snd_ice1712 *ice)
 						&akm_revo_surround_priv, ice);
 		if (err < 0)
 			return err;
-		/* unmute all codecs */
+		 
 		snd_ice1712_gpio_write_bits(ice, VT1724_REVO_MUTE,
 						VT1724_REVO_MUTE);
 		break;
@@ -546,7 +529,7 @@ static int revo_init(struct snd_ice1712 *ice)
 		err = revo51_i2c_init(ice, &ptc_revo51_volume);
 		if (err < 0)
 			return err;
-		/* unmute all codecs */
+		 
 		snd_ice1712_gpio_write_bits(ice, VT1724_REVO_MUTE,
 					    VT1724_REVO_MUTE);
 		break;
@@ -560,7 +543,7 @@ static int revo_init(struct snd_ice1712 *ice)
 		if (err < 0)
 			return err;
 		
-		/* unmute all codecs */
+		 
 		snd_ice1712_gpio_write_bits(ice, VT1724_REVO_MUTE,
 					    VT1724_REVO_MUTE);
 		break;
@@ -594,7 +577,7 @@ static int revo_add_controls(struct snd_ice1712 *ice)
 		err = snd_ice1712_akm4xxx_build_controls(ice);
 		if (err < 0)
 			return err;
-		/* only capture SPDIF over AK4114 */
+		 
 		err = snd_ak4114_build(spec->ak4114, NULL,
 		   ice->pcm->streams[SNDRV_PCM_STREAM_CAPTURE].substream);
 		if (err < 0)
@@ -604,7 +587,7 @@ static int revo_add_controls(struct snd_ice1712 *ice)
 	return 0;
 }
 
-/* entry point */
+ 
 struct snd_ice1712_card_info snd_vt1724_revo_cards[] = {
 	{
 		.subvendor = VT1724_SUBDEVICE_REVOLUTION71,
@@ -627,5 +610,5 @@ struct snd_ice1712_card_info snd_vt1724_revo_cards[] = {
 		.chip_init = revo_init,
 		.build_controls = revo_add_controls,
 	},
-	{ } /* terminator */
+	{ }  
 };

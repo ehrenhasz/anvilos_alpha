@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * CPU-agnostic AMD IO page table v2 allocator.
- *
- * Copyright (C) 2022, 2023 Advanced Micro Devices, Inc.
- * Author: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
- * Author: Vasant Hegde <vasant.hegde@amd.com>
- */
+
+ 
 
 #define pr_fmt(fmt)	"AMD-Vi: " fmt
 #define dev_fmt(fmt)	pr_fmt(fmt)
@@ -19,15 +13,15 @@
 #include "amd_iommu_types.h"
 #include "amd_iommu.h"
 
-#define IOMMU_PAGE_PRESENT	BIT_ULL(0)	/* Is present */
-#define IOMMU_PAGE_RW		BIT_ULL(1)	/* Writeable */
-#define IOMMU_PAGE_USER		BIT_ULL(2)	/* Userspace addressable */
-#define IOMMU_PAGE_PWT		BIT_ULL(3)	/* Page write through */
-#define IOMMU_PAGE_PCD		BIT_ULL(4)	/* Page cache disabled */
-#define IOMMU_PAGE_ACCESS	BIT_ULL(5)	/* Was accessed (updated by IOMMU) */
-#define IOMMU_PAGE_DIRTY	BIT_ULL(6)	/* Was written to (updated by IOMMU) */
-#define IOMMU_PAGE_PSE		BIT_ULL(7)	/* Page Size Extensions */
-#define IOMMU_PAGE_NX		BIT_ULL(63)	/* No execute */
+#define IOMMU_PAGE_PRESENT	BIT_ULL(0)	 
+#define IOMMU_PAGE_RW		BIT_ULL(1)	 
+#define IOMMU_PAGE_USER		BIT_ULL(2)	 
+#define IOMMU_PAGE_PWT		BIT_ULL(3)	 
+#define IOMMU_PAGE_PCD		BIT_ULL(4)	 
+#define IOMMU_PAGE_ACCESS	BIT_ULL(5)	 
+#define IOMMU_PAGE_DIRTY	BIT_ULL(6)	 
+#define IOMMU_PAGE_PSE		BIT_ULL(7)	 
+#define IOMMU_PAGE_NX		BIT_ULL(63)	 
 
 #define MAX_PTRS_PER_PAGE	512
 
@@ -71,7 +65,7 @@ static u64 set_pte_attr(u64 paddr, u64 pg_size, int prot)
 	if (prot & IOMMU_PROT_IW)
 		pte |= IOMMU_PAGE_RW;
 
-	/* Large page */
+	 
 	if (pg_size == IOMMU_PAGE_SIZE_1G || pg_size == IOMMU_PAGE_SIZE_2M)
 		pte |= IOMMU_PAGE_PSE;
 
@@ -110,17 +104,14 @@ static void free_pgtable(u64 *pt, int level)
 	int i;
 
 	for (i = 0; i < MAX_PTRS_PER_PAGE; i++) {
-		/* PTE present? */
+		 
 		if (!IOMMU_PTE_PRESENT(pt[i]))
 			continue;
 
 		if (is_large_pte(pt[i]))
 			continue;
 
-		/*
-		 * Free the next level. No need to look at l1 tables here since
-		 * they can only contain leaf PTEs; just free them directly.
-		 */
+		 
 		p = get_pgtable_pte(pt[i]);
 		if (level > 2)
 			free_pgtable(p, level - 1);
@@ -131,7 +122,7 @@ static void free_pgtable(u64 *pt, int level)
 	free_pgtable_page(pt);
 }
 
-/* Allocate page table */
+ 
 static u64 *v2_alloc_pte(int nid, u64 *pgd, unsigned long iova,
 			 unsigned long pg_size, gfp_t gfp, bool *updated)
 {
@@ -149,7 +140,7 @@ static u64 *v2_alloc_pte(int nid, u64 *pgd, unsigned long iova,
 		__pte = *pte;
 
 		if (IOMMU_PTE_PRESENT(__pte) && is_large_pte(__pte)) {
-			/* Unmap large pte */
+			 
 			cmpxchg64(pte, *pte, 0ULL);
 			*updated = true;
 			continue;
@@ -161,7 +152,7 @@ static u64 *v2_alloc_pte(int nid, u64 *pgd, unsigned long iova,
 				return NULL;
 
 			__npte = set_pgtable_attr(page);
-			/* pte could have been changed somewhere. */
+			 
 			if (cmpxchg64(pte, __pte, __npte) != __pte)
 				free_pgtable_page(page);
 			else if (IOMMU_PTE_PRESENT(__pte))
@@ -175,7 +166,7 @@ static u64 *v2_alloc_pte(int nid, u64 *pgd, unsigned long iova,
 		pte = &pte[PM_LEVEL_INDEX(level, iova)];
 	}
 
-	/* Tear down existing pte entries */
+	 
 	if (IOMMU_PTE_PRESENT(*pte)) {
 		u64 *__pte;
 
@@ -191,10 +182,7 @@ static u64 *v2_alloc_pte(int nid, u64 *pgd, unsigned long iova,
 	return pte;
 }
 
-/*
- * This function checks if there is a PTE for a given dma address.
- * If there is one, it returns the pointer to it.
- */
+ 
 static u64 *fetch_pte(struct amd_io_pgtable *pgtable,
 		      unsigned long iova, unsigned long *page_size)
 {
@@ -203,26 +191,26 @@ static u64 *fetch_pte(struct amd_io_pgtable *pgtable,
 
 	level = get_pgtable_level() - 1;
 	pte = &pgtable->pgd[PM_LEVEL_INDEX(level, iova)];
-	/* Default page size is 4K */
+	 
 	*page_size = PAGE_SIZE;
 
 	while (level) {
-		/* Not present */
+		 
 		if (!IOMMU_PTE_PRESENT(*pte))
 			return NULL;
 
-		/* Walk to the next level */
+		 
 		pte = get_pgtable_pte(*pte);
 		pte = &pte[PM_LEVEL_INDEX(level - 1, iova)];
 
-		/* Large page */
+		 
 		if (is_large_pte(*pte)) {
 			if (level == PAGE_MODE_3_LEVEL)
 				*page_size = IOMMU_PAGE_SIZE_1G;
 			else if (level == PAGE_MODE_2_LEVEL)
 				*page_size = IOMMU_PAGE_SIZE_2M;
 			else
-				return NULL;	/* Wrongly set PSE bit in PTE */
+				return NULL;	 
 
 			break;
 		}
@@ -330,9 +318,7 @@ static phys_addr_t iommu_v2_iova_to_phys(struct io_pgtable_ops *ops, unsigned lo
 	return (__pte & ~offset_mask) | (iova & offset_mask);
 }
 
-/*
- * ----------------------------------------------------
- */
+ 
 static void v2_tlb_flush_all(void *cookie)
 {
 }
@@ -363,13 +349,10 @@ static void v2_free_pgtable(struct io_pgtable *iop)
 	if (!(pdom->flags & PD_IOMMUV2_MASK))
 		return;
 
-	/*
-	 * Make changes visible to IOMMUs. No need to clear gcr3 entry
-	 * as gcr3 table is already freed.
-	 */
+	 
 	amd_iommu_domain_update(pdom);
 
-	/* Free page table */
+	 
 	free_pgtable(pgtable->pgd, get_pgtable_level());
 }
 

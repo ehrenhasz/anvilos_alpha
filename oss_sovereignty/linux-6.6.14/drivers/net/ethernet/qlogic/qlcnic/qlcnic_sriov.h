@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * QLogic qlcnic NIC Driver
- * Copyright (c) 2009-2013 QLogic Corporation
- */
+ 
+ 
 
 #ifndef _QLCNIC_83XX_SRIOV_H_
 #define _QLCNIC_83XX_SRIOV_H_
@@ -56,7 +53,7 @@ enum qlcnic_bc_commands {
 #define QLC_BC_CMD 1
 
 struct qlcnic_trans_list {
-	/* Lock for manipulating list */
+	 
 	spinlock_t		lock;
 	struct list_head	wait_list;
 	int			count;
@@ -144,7 +141,7 @@ struct qlcnic_vf_info {
 	struct completion		ch_free_cmpl;
 	struct work_struct		trans_work;
 	struct work_struct		flr_work;
-	/* It synchronizes commands sent from VF */
+	 
 	struct mutex			send_cmd_lock;
 	struct qlcnic_bc_trans		*send_cmd;
 	struct qlcnic_bc_trans		*flr_trans;
@@ -152,7 +149,7 @@ struct qlcnic_vf_info {
 	struct qlcnic_trans_list	rcv_pend;
 	struct qlcnic_adapter		*adapter;
 	struct qlcnic_vport		*vp;
-	spinlock_t			vlan_list_lock;	/* Lock for VLAN list */
+	spinlock_t			vlan_list_lock;	 
 };
 
 struct qlcnic_async_cmd {
@@ -168,7 +165,7 @@ struct qlcnic_back_channel {
 	struct qlcnic_adapter	*adapter;
 	struct list_head	async_cmd_list;
 	struct work_struct	vf_async_work;
-	spinlock_t		queue_lock; /* async_cmd_list queue lock */
+	spinlock_t		queue_lock;  
 };
 
 struct qlcnic_sriov {

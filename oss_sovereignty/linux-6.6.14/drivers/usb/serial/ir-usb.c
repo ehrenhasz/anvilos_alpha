@@ -1,24 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * USB IR Dongle driver
- *
- *	Copyright (C) 2001-2002	Greg Kroah-Hartman (greg@kroah.com)
- *	Copyright (C) 2002	Gary Brubaker (xavyer@ix.netcom.com)
- *	Copyright (C) 2010	Johan Hovold (jhovold@gmail.com)
- *
- * This driver allows a USB IrDA device to be used as a "dumb" serial device.
- * This can be useful if you do not have access to a full IrDA stack on the
- * other side of the connection.  If you do have an IrDA stack on both devices,
- * please use the usb-irda driver, as it contains the proper error checking and
- * other goodness of a full IrDA stack.
- *
- * Portions of this driver were taken from drivers/net/irda/irda-usb.c, which
- * was written by Roman Weissgaerber <weissg@vienna.at>, Dag Brattli
- * <dag@brattli.net>, and Jean Tourrilhes <jt@hpl.hp.com>
- *
- * See Documentation/usb/usb-serial.rst for more information on using this
- * driver
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -37,11 +18,10 @@
 #define DRIVER_AUTHOR "Greg Kroah-Hartman <greg@kroah.com>, Johan Hovold <jhovold@gmail.com>"
 #define DRIVER_DESC "USB IR Dongle driver"
 
-/* if overridden by the user, then use their value for the size of the read and
- * write urbs */
+ 
 static int buffer_size;
 
-/* if overridden by the user, then use the specified number of XBOFs */
+ 
 static int xbof = -1;
 
 static int  ir_startup (struct usb_serial *serial);
@@ -54,17 +34,17 @@ static void ir_set_termios(struct tty_struct *tty,
 			   struct usb_serial_port *port,
 			   const struct ktermios *old_termios);
 
-/* Not that this lot means you can only have one per system */
+ 
 static u8 ir_baud;
 static u8 ir_xbof;
 static u8 ir_add_bof;
 
 static const struct usb_device_id ir_id_table[] = {
-	{ USB_DEVICE(0x050f, 0x0180) },		/* KC Technology, KC-180 */
-	{ USB_DEVICE(0x08e9, 0x0100) },		/* XTNDAccess */
-	{ USB_DEVICE(0x09c4, 0x0011) },		/* ACTiSys ACT-IR2000U */
+	{ USB_DEVICE(0x050f, 0x0180) },		 
+	{ USB_DEVICE(0x08e9, 0x0100) },		 
+	{ USB_DEVICE(0x09c4, 0x0011) },		 
 	{ USB_INTERFACE_INFO(USB_CLASS_APP_SPEC, USB_SUBCLASS_IRDA, 0) },
-	{ }					/* Terminating entry */
+	{ }					 
 };
 
 MODULE_DEVICE_TABLE(usb, ir_id_table);
@@ -108,18 +88,8 @@ static inline void irda_usb_dump_class_desc(struct usb_serial *serial,
 	dev_dbg(dev, "bMaxUnicastList=%x\n", desc->bMaxUnicastList);
 }
 
-/*------------------------------------------------------------------*/
-/*
- * Function irda_usb_find_class_desc(dev, ifnum)
- *
- *    Returns instance of IrDA class descriptor, or NULL if not found
- *
- * The class descriptor is some extra info that IrDA USB devices will
- * offer to us, describing their IrDA characteristics. We will use that in
- * irda_usb_init_qos()
- *
- * Based on the same function in drivers/net/irda/irda-usb.c
- */
+ 
+ 
 static struct usb_irda_cs_descriptor *
 irda_usb_find_class_desc(struct usb_serial *serial, unsigned int ifnum)
 {
@@ -161,7 +131,7 @@ static u8 ir_xbof_change(u8 xbof)
 {
 	u8 result;
 
-	/* reference irda-usb.c */
+	 
 	switch (xbof) {
 	case 48:
 		result = 0x10;
@@ -281,13 +251,7 @@ static int ir_write(struct tty_struct *tty, struct usb_serial_port *port,
 	if (!urb)
 		return 0;
 
-	/*
-	 * The first byte of the packet we send to the device contains an
-	 * outbound header which indicates an additional number of BOFs and
-	 * a baud rate change.
-	 *
-	 * See section 5.4.2.2 of the USB IrDA spec.
-	 */
+	 
 	*(u8 *)urb->transfer_buffer = ir_xbof | ir_baud;
 
 	memcpy(urb->transfer_buffer + 1, buf, count);
@@ -361,11 +325,7 @@ static void ir_process_read_urb(struct urb *urb)
 
 	if (!urb->actual_length)
 		return;
-	/*
-	 * The first byte of the packet we get from the device
-	 * contains a busy indicator and baud rate change.
-	 * See section 5.4.1.2 of the USB IrDA spec.
-	 */
+	 
 	if (*data & 0x0f)
 		ir_baud = *data & 0x0f;
 
@@ -389,11 +349,7 @@ static void ir_set_termios(struct tty_struct *tty,
 
 	baud = tty_get_baud_rate(tty);
 
-	/*
-	 * FIXME, we should compare the baud request against the
-	 * capability stated in the IR header that we got in the
-	 * startup function.
-	 */
+	 
 
 	switch (baud) {
 	case 2400:
@@ -433,13 +389,11 @@ static void ir_set_termios(struct tty_struct *tty,
 	else
 		ir_xbof = ir_xbof_change(xbof) ;
 
-	/* Only speed changes are supported */
+	 
 	tty_termios_copy_hw(&tty->termios, old_termios);
 	tty_encode_baud_rate(tty, baud, baud);
 
-	/*
-	 * send the baud change out on an "empty" data packet
-	 */
+	 
 	transfer_buffer = kmalloc(1, GFP_KERNEL);
 	if (!transfer_buffer)
 		return;

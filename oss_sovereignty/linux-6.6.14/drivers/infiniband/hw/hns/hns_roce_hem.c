@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2016 Hisilicon Limited.
- * Copyright (c) 2007, 2008 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include "hns_roce_device.h"
 #include "hns_roce_hem.h"
@@ -42,7 +11,7 @@ struct hns_roce_hem_index {
 	u64 buf;
 	u64 l0;
 	u64 l1;
-	u32 inited; /* indicate which index is available */
+	u32 inited;  
 };
 
 bool hns_roce_check_whether_mhop(struct hns_roce_dev *hr_dev, u32 type)
@@ -215,10 +184,7 @@ int hns_roce_calc_hem_mhop(struct hns_roce_dev *hr_dev,
 	if (!obj)
 		return 0;
 
-	/*
-	 * QPC/MTPT/CQC/SRQC/SCCC alloc hem for buffer pages.
-	 * MTT/CQE alloc hem for bt pages.
-	 */
+	 
 	bt_num = hns_roce_get_bt_num(table->type, mhop->hop_num);
 	chunk_ba_num = mhop->bt_chunk_size / BA_BYTE_LEN;
 	chunk_size = table->type < HEM_TYPE_MTT ? mhop->buf_chunk_size :
@@ -287,10 +253,7 @@ static struct hns_roce_hem *hns_roce_alloc_hem(struct hns_roce_dev *hr_dev,
 		while (1 << order > npages)
 			--order;
 
-		/*
-		 * Alloc memory one time. If failed, don't alloc small block
-		 * memory, directly return fail.
-		 */
+		 
 		mem = &chunk->mem[chunk->npages];
 		buf = dma_alloc_coherent(hr_dev->dev, PAGE_SIZE << order,
 				&sg_dma_address(mem), gfp_mask);
@@ -421,7 +384,7 @@ static int alloc_mhop_hem(struct hns_roce_dev *hr_dev,
 	u32 size;
 	int ret;
 
-	/* alloc L1 BA's chunk */
+	 
 	if ((check_whether_bt_num_3(table->type, mhop->hop_num) ||
 	     check_whether_bt_num_2(table->type, mhop->hop_num)) &&
 	     !table->bt_l0[index->l0]) {
@@ -435,7 +398,7 @@ static int alloc_mhop_hem(struct hns_roce_dev *hr_dev,
 		index->inited |= HEM_INDEX_L0;
 	}
 
-	/* alloc L2 BA's chunk */
+	 
 	if (check_whether_bt_num_3(table->type, mhop->hop_num) &&
 	    !table->bt_l1[index->l1])  {
 		table->bt_l1[index->l1] = dma_alloc_coherent(dev, bt_size,
@@ -450,10 +413,7 @@ static int alloc_mhop_hem(struct hns_roce_dev *hr_dev,
 					       table->bt_l1_dma_addr[index->l1];
 	}
 
-	/*
-	 * alloc buffer space chunk for QPC/MTPT/CQC/SRQC/SCCC.
-	 * alloc bt space chunk for MTT/CQE.
-	 */
+	 
 	size = table->type < HEM_TYPE_MTT ? mhop->buf_chunk_size : bt_size;
 	flag = GFP_KERNEL | __GFP_NOWARN;
 	table->hem[index->buf] = hns_roce_alloc_hem(hr_dev, size >> PAGE_SHIFT,
@@ -547,7 +507,7 @@ static int hns_roce_table_mhop_get(struct hns_roce_dev *hr_dev,
 		goto out;
 	}
 
-	/* set HEM base address to hardware */
+	 
 	if (table->type < HEM_TYPE_MTT) {
 		ret = set_mhop_hem(hr_dev, table, obj, &mhop, &index);
 		if (ret) {
@@ -594,7 +554,7 @@ int hns_roce_table_get(struct hns_roce_dev *hr_dev,
 		goto out;
 	}
 
-	/* Set HEM base address(128K/page, pa) to Hardware */
+	 
 	ret = hr_dev->hw->set_hem(hr_dev, table, obj, HEM_HOP_STEP_DIRECT);
 	if (ret) {
 		hns_roce_free_hem(hr_dev, table->hem[i]);
@@ -745,11 +705,11 @@ void *hns_roce_table_find(struct hns_roce_dev *hr_dev,
 		idx_offset = obj % obj_per_chunk;
 		dma_offset = offset = idx_offset * table->obj_size;
 	} else {
-		u32 seg_size = 64; /* 8 bytes per BA and 8 BA per segment */
+		u32 seg_size = 64;  
 
 		if (hns_roce_calc_hem_mhop(hr_dev, table, &mhop_obj, &mhop))
 			goto out;
-		/* mtt mhop */
+		 
 		i = mhop.l0_idx;
 		j = mhop.l1_idx;
 		if (mhop.hop_num == 2)
@@ -979,16 +939,16 @@ void hns_roce_cleanup_hem(struct hns_roce_dev *hr_dev)
 }
 
 struct hns_roce_hem_item {
-	struct list_head list; /* link all hems in the same bt level */
-	struct list_head sibling; /* link all hems in last hop for mtt */
+	struct list_head list;  
+	struct list_head sibling;  
 	void *addr;
 	dma_addr_t dma_addr;
-	size_t count; /* max ba numbers */
-	int start; /* start buf offset in this hem */
-	int end; /* end buf offset in this hem */
+	size_t count;  
+	int start;  
+	int end;  
 };
 
-/* All HEM items are linked in a tree structure */
+ 
 struct hns_roce_hem_head {
 	struct list_head branch[HNS_ROCE_MAX_BT_REGION];
 	struct list_head root;
@@ -1049,7 +1009,7 @@ static void hem_list_link_bt(struct hns_roce_dev *hr_dev, void *base_addr,
 	*(u64 *)(base_addr) = table_addr;
 }
 
-/* assign L0 table address to hem from root bt */
+ 
 static void hem_list_assign_bt(struct hns_roce_dev *hr_dev,
 			       struct hns_roce_hem_item *hem, void *cpu_addr,
 			       u64 phy_addr)
@@ -1082,22 +1042,11 @@ static struct hns_roce_hem_item *hem_list_search_item(struct list_head *ba_list,
 
 static bool hem_list_is_bottom_bt(int hopnum, int bt_level)
 {
-	/*
-	 * hopnum    base address table levels
-	 * 0		L0(buf)
-	 * 1		L0 -> buf
-	 * 2		L0 -> L1 -> buf
-	 * 3		L0 -> L1 -> L2 -> buf
-	 */
+	 
 	return bt_level >= (hopnum ? hopnum - 1 : hopnum);
 }
 
-/*
- * calc base address entries num
- * @hopnum: num of mutihop addressing
- * @bt_level: base address table level
- * @unit: ba entries per bt page
- */
+ 
 static u32 hem_list_calc_ba_range(int hopnum, int bt_level, int unit)
 {
 	u32 step;
@@ -1106,17 +1055,7 @@ static u32 hem_list_calc_ba_range(int hopnum, int bt_level, int unit)
 
 	if (hopnum <= bt_level)
 		return 0;
-	/*
-	 * hopnum  bt_level   range
-	 * 1	      0       unit
-	 * ------------
-	 * 2	      0       unit * unit
-	 * 2	      1       unit
-	 * ------------
-	 * 3	      0       unit * unit * unit
-	 * 3	      1       unit * unit
-	 * 3	      2       unit
-	 */
+	 
 	step = 1;
 	max = hopnum - bt_level;
 	for (i = 0; i < max; i++)
@@ -1125,12 +1064,7 @@ static u32 hem_list_calc_ba_range(int hopnum, int bt_level, int unit)
 	return step;
 }
 
-/*
- * calc the root ba entries which could cover all regions
- * @regions: buf region array
- * @region_cnt: array size of @regions
- * @unit: ba entries per bt page
- */
+ 
 int hns_roce_hem_list_calc_root_ba(const struct hns_roce_buf_region *regions,
 				   int region_cnt, int unit)
 {
@@ -1189,7 +1123,7 @@ static int hem_list_alloc_mid_bt(struct hns_roce_dev *hr_dev,
 	for (level = 0; level < hopnum; level++)
 		INIT_LIST_HEAD(&temp_list[level]);
 
-	/* config L1 bt to last bt and link them to corresponding parent */
+	 
 	for (level = 1; level < hopnum; level++) {
 		cur = hem_list_search_item(&mid_bt[level], offset);
 		if (cur) {
@@ -1216,7 +1150,7 @@ static int hem_list_alloc_mid_bt(struct hns_roce_dev *hr_dev,
 		if (hem_list_is_bottom_bt(hopnum, level))
 			list_add(&cur->sibling, &temp_list[0]);
 
-		/* link bt to parent bt */
+		 
 		if (level > 1) {
 			pre = hem_ptrs[level - 1];
 			step = (cur->start - pre->start) / step * BA_BYTE_LEN;
@@ -1255,7 +1189,7 @@ alloc_root_hem(struct hns_roce_dev *hr_dev, int unit, int *max_ba_num,
 		return ERR_PTR(-ENOBUFS);
 
 	offset = regions[0].offset;
-	/* indicate to last region */
+	 
 	r = &regions[region_cnt - 1];
 	hem = hem_list_alloc_item(hr_dev, offset, r->offset + r->count - 1,
 				  ba_num, true);
@@ -1299,7 +1233,7 @@ static int setup_middle_bt(struct hns_roce_dev *hr_dev, void *cpu_base,
 	if (step < 1)
 		return -EINVAL;
 
-	/* if exist mid bt, link L1 to L0 */
+	 
 	list_for_each_entry_safe(hem, temp_hem, branch_head, list) {
 		offset = (hem->start - r->offset) / step * BA_BYTE_LEN;
 		hem_list_link_bt(hr_dev, cpu_base + offset, hem->dma_addr);
@@ -1332,13 +1266,11 @@ setup_root_hem(struct hns_roce_dev *hr_dev, struct hns_roce_hem_list *hem_list,
 		if (!r->count)
 			continue;
 
-		/* all regions's mid[x][0] shared the root_bt's trunk */
+		 
 		cpu_base = root_hem->addr + total * BA_BYTE_LEN;
 		phy_base = root_hem->dma_addr + total * BA_BYTE_LEN;
 
-		/* if hopnum is 0 or 1, cut a new fake hem from the root bt
-		 * which's address share to all regions.
-		 */
+		 
 		if (hem_list_is_bottom_bt(r->hopnum, 0))
 			ret = alloc_fake_root_bt(hr_dev, cpu_base, phy_base, r,
 						 &head->branch[i], &head->leaf);
@@ -1381,7 +1313,7 @@ static int hem_list_alloc_root_bt(struct hns_roce_dev *hr_dev,
 	if (IS_ERR(root_hem))
 		return PTR_ERR(root_hem);
 
-	/* List head for storing all allocated HEM items */
+	 
 	INIT_LIST_HEAD(&head.root);
 	INIT_LIST_HEAD(&head.leaf);
 	for (i = 0; i < region_cnt; i++)
@@ -1401,7 +1333,7 @@ static int hem_list_alloc_root_bt(struct hns_roce_dev *hr_dev,
 	return ret;
 }
 
-/* construct the base address table and link them by address hop config */
+ 
 int hns_roce_hem_list_request(struct hns_roce_dev *hr_dev,
 			      struct hns_roce_hem_list *hem_list,
 			      const struct hns_roce_buf_region *regions,

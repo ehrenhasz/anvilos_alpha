@@ -1,16 +1,4 @@
-/*
- * drivers/media/radio/si4713-i2c.h
- *
- * Property and commands definitions for Si4713 radio transmitter chip.
- *
- * Copyright (c) 2008 Instituto Nokia de Tecnologia - INdT
- * Contact: Eduardo Valentin <eduardo.valentin@nokia.com>
- *
- * This file is licensed under the terms of the GNU General Public License
- * version 2. This program is licensed "as is" without any warranty of any
- * kind, whether express or implied.
- *
- */
+ 
 
 #ifndef SI4713_I2C_H
 #define SI4713_I2C_H
@@ -24,16 +12,14 @@
 
 #define SI4713_PRODUCT_NUMBER		0x0D
 
-/* Command Timeouts */
+ 
 #define DEFAULT_TIMEOUT			500
 #define TIMEOUT_SET_PROPERTY		20
 #define TIMEOUT_TX_TUNE_POWER		30000
 #define TIMEOUT_TX_TUNE			110000
 #define TIMEOUT_POWER_UP		200000
 
-/*
- * Command and its arguments definitions
- */
+ 
 #define SI4713_PWUP_CTSIEN		(1<<7)
 #define SI4713_PWUP_GPO2OEN		(1<<6)
 #define SI4713_PWUP_PATCH		(1<<5)
@@ -109,18 +95,14 @@
 #define SI4713_CMD_GPO_CTL		0x80
 #define SI4713_CMD_GPO_SET		0x81
 
-/*
- * Bits from status response
- */
+ 
 #define SI4713_CTS			(1<<7)
 #define SI4713_ERR			(1<<6)
 #define SI4713_RDS_INT			(1<<2)
 #define SI4713_ASQ_INT			(1<<1)
 #define SI4713_STC_INT			(1<<0)
 
-/*
- * Property definitions
- */
+ 
 #define SI4713_GPO_IEN			0x0001
 #define SI4713_DIG_INPUT_FORMAT		0x0101
 #define SI4713_DIG_INPUT_SAMPLE_RATE	0x0103
@@ -167,17 +149,10 @@
 #define MAX_RDS_PTY			31
 #define MAX_RDS_DEVIATION		90000
 
-/*
- * PSNAME is known to be defined as 8 character sized (RDS Spec).
- * However, there is receivers which scroll PSNAME 8xN sized.
- */
+ 
 #define MAX_RDS_PS_NAME			96
 
-/*
- * MAX_RDS_RADIO_TEXT is known to be defined as 32 (2A group) or 64 (2B group)
- * character sized (RDS Spec).
- * However, there is receivers which scroll them as well.
- */
+ 
 #define MAX_RDS_RADIO_TEXT		384
 
 #define MAX_LIMITER_RELEASE_TIME	102390
@@ -192,19 +167,14 @@
 #define MIN_ACOMP_THRESHOLD		(-40)
 #define MAX_ACOMP_GAIN			20
 
-/*
- * si4713_device - private data
- */
+ 
 struct si4713_device {
-	/* v4l2_subdev and i2c reference (v4l2_subdev priv data) */
+	 
 	struct v4l2_subdev sd;
 	struct v4l2_ctrl_handler ctrl_handler;
-	/* private data structures */
-	struct { /* si4713 control cluster */
-		/* This is one big cluster since the mute control
-		 * powers off the device and after unmuting again all
-		 * controls need to be set at once. The only way of doing
-		 * that is by making it one big cluster. */
+	 
+	struct {  
+		 
 		struct v4l2_ctrl *mute;
 		struct v4l2_ctrl *rds_ps_name;
 		struct v4l2_ctrl *rds_radio_text;
@@ -251,4 +221,4 @@ struct si4713_device {
 struct radio_si4713_platform_data {
 	struct i2c_client *subdev;
 };
-#endif /* ifndef SI4713_I2C_H */
+#endif  

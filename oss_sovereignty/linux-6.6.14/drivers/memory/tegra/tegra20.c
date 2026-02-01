@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -54,7 +52,7 @@
 
 #define MC_STAT_SAMPLE_TIME_USEC		16000
 
-/* we store collected statistics as a fixed point values */
+ 
 #define MC_FX_FRAC_SCALE			100
 
 static DEFINE_MUTEX(tegra20_mc_stat_lock);
@@ -363,23 +361,14 @@ static const struct tegra_mc_reset_ops tegra20_mc_reset_ops = {
 
 static int tegra20_mc_icc_set(struct icc_node *src, struct icc_node *dst)
 {
-	/*
-	 * It should be possible to tune arbitration knobs here, but the
-	 * default values are known to work well on all devices. Hence
-	 * nothing to do here so far.
-	 */
+	 
 	return 0;
 }
 
 static int tegra20_mc_icc_aggreate(struct icc_node *node, u32 tag, u32 avg_bw,
 				   u32 peak_bw, u32 *agg_avg, u32 *agg_peak)
 {
-	/*
-	 * ISO clients need to reserve extra bandwidth up-front because
-	 * there could be high bandwidth pressure during initial filling
-	 * of the client's FIFO buffers.  Secondly, we need to take into
-	 * account impurities of the memory subsystem.
-	 */
+	 
 	if (tag & TEGRA_MC_ICC_TAG_ISO)
 		peak_bw = tegra_mc_scale_percents(peak_bw, 300);
 
@@ -407,7 +396,7 @@ tegra20_mc_of_icc_xlate_extended(struct of_phandle_args *spec, void *data)
 
 		ndata->node = node;
 
-		/* these clients are isochronous by default */
+		 
 		if (strstarts(node->name, "display") ||
 		    strstarts(node->name, "vi"))
 			ndata->tag = TEGRA_MC_ICC_TAG_ISO;
@@ -454,10 +443,7 @@ static void tegra20_mc_stat_gather(struct tegra20_mc_stat *stat)
 	control_0 = tegra20_mc_stat_gather_control(&stat->gather0);
 	control_1 = tegra20_mc_stat_gather_control(&stat->gather1);
 
-	/*
-	 * Reset statistic gathers state, select statistics collection mode
-	 * and set clocks counter saturation limit to maximum.
-	 */
+	 
 	mc_writel(mc, 0x00000000, MC_STAT_CONTROL);
 	mc_writel(mc,  control_0, MC_STAT_EMC_CONTROL_0);
 	mc_writel(mc,  control_1, MC_STAT_EMC_CONTROL_1);
@@ -514,7 +500,7 @@ static void tegra20_mc_collect_stats(const struct tegra_mc *mc,
 	const struct tegra_mc_client *client0, *client1;
 	unsigned int i;
 
-	/* collect memory controller utilization percent for each client */
+	 
 	for (i = 0; i < mc->soc->num_clients; i += 2) {
 		client0 = &mc->soc->clients[i];
 		client1 = &mc->soc->clients[i + 1];
@@ -530,7 +516,7 @@ static void tegra20_mc_collect_stats(const struct tegra_mc *mc,
 				       &stats[i + 1].events);
 	}
 
-	/* collect more info from active clients */
+	 
 	for (i = 0; i < mc->soc->num_clients; i++) {
 		unsigned int clienta, clientb = mc->soc->num_clients;
 
@@ -631,47 +617,25 @@ static int tegra20_mc_stats_show(struct seq_file *s, void *unused)
 	for (i = 0; i < mc->soc->num_clients; i++) {
 		seq_printf(s, "%-14s  ", mc->soc->clients[i].name);
 
-		/* An event is generated when client performs R/W request. */
+		 
 		tegra20_mc_printf_percents(s,  "%-9s", stats[i].events);
 
-		/*
-		 * An event is generated based on the timeout (TM) signal
-		 * accompanying a request for arbitration.
-		 */
+		 
 		tegra20_mc_printf_percents(s, "%-10s", stats[i].arb_timeout);
 
-		/*
-		 * An event is generated based on the high-priority (HP) signal
-		 * accompanying a request for arbitration.
-		 */
+		 
 		tegra20_mc_printf_percents(s, "%-16s", stats[i].arb_high_prio);
 
-		/*
-		 * An event is generated based on the bandwidth (BW) signal
-		 * accompanying a request for arbitration.
-		 */
+		 
 		tegra20_mc_printf_percents(s, "%-16s", stats[i].arb_bandwidth);
 
-		/*
-		 * An event is generated when the memory controller switches
-		 * between making a read request to making a write request.
-		 */
+		 
 		tegra20_mc_printf_percents(s, "%-12s", stats[i].rd_wr_change);
 
-		/*
-		 * An even generated when the chosen client has wins arbitration
-		 * when it was also the winner at the previous request.  If a
-		 * client makes N requests in a row that are honored, SUCCESSIVE
-		 * will be counted (N-1) times.  Large values for this event
-		 * imply that if we were patient enough, all of those requests
-		 * could have been coalesced.
-		 */
+		 
 		tegra20_mc_printf_percents(s, "%-13s", stats[i].successive);
 
-		/*
-		 * An event is generated when the memory controller detects a
-		 * page miss for the current request.
-		 */
+		 
 		tegra20_mc_printf_percents(s, "%-12s\n", stats[i].page_miss);
 	}
 
@@ -720,7 +684,7 @@ static irqreturn_t tegra20_mc_handle_irq(int irq, void *data)
 	unsigned long status;
 	unsigned int bit;
 
-	/* mask all interrupts to avoid flooding */
+	 
 	status = mc_readl(mc, MC_INTSTATUS) & mc->soc->intmask;
 	if (!status)
 		return IRQ_NONE;
@@ -781,7 +745,7 @@ static irqreturn_t tegra20_mc_handle_irq(int irq, void *data)
 				    desc);
 	}
 
-	/* clear interrupts */
+	 
 	mc_writel(mc, status, MC_INTSTATUS);
 
 	return IRQ_HANDLED;

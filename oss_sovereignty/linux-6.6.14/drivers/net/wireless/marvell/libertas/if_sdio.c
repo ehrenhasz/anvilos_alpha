@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  linux/drivers/net/wireless/libertas/if_sdio.c
- *
- *  Copyright 2007-2008 Pierre Ossman
- *
- * Inspired by if_cs.c, Copyright 2007 Holger Schurig
- *
- * This hardware has more or less no CMD53 support, so all registers
- * must be accessed using sdio_readb()/sdio_writeb().
- *
- * Transfers must be in one transaction or the firmware goes bonkers.
- * This means that the transfer must either be small enough to do a
- * byte based transfer or it must be padded to a multiple of the
- * current block size.
- *
- * As SDIO is still new to the kernel, it is unfortunately common with
- * bugs in the host controllers related to that. One such bug is that
- * controllers cannot do transfers that aren't a multiple of 4 bytes.
- * If you don't have time to fix the host controller driver, you can
- * work around the problem by modifying if_sdio_host_to_card() and
- * if_sdio_card_to_host() to pad the data.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -46,19 +25,7 @@
 
 static void if_sdio_interrupt(struct sdio_func *func);
 
-/* The if_sdio_remove() callback function is called when
- * user removes this module from kernel space or ejects
- * the card from the slot. The driver handles these 2 cases
- * differently for SD8688 combo chip.
- * If the user is removing the module, the FUNC_SHUTDOWN
- * command for SD8688 is sent to the firmware.
- * If the card is removed, there is no need to send this command.
- *
- * The variable 'user_rmmod' is used to distinguish these two
- * scenarios. This flag is initialized as FALSE in case the card
- * is removed, and will be set to TRUE for module removal when
- * module_exit function is called.
- */
+ 
 static u8 user_rmmod;
 
 static const struct sdio_device_id if_sdio_ids[] = {
@@ -66,7 +33,7 @@ static const struct sdio_device_id if_sdio_ids[] = {
 			SDIO_DEVICE_ID_MARVELL_LIBERTAS) },
 	{ SDIO_DEVICE(SDIO_VENDOR_ID_MARVELL,
 			SDIO_DEVICE_ID_MARVELL_8688_WLAN) },
-	{ /* end: all zeroes */				},
+	{  				},
 };
 
 MODULE_DEVICE_TABLE(sdio, if_sdio_ids);
@@ -131,16 +98,11 @@ struct if_sdio_card {
 static void if_sdio_finish_power_on(struct if_sdio_card *card);
 static int if_sdio_power_off(struct if_sdio_card *card);
 
-/********************************************************************/
-/* I/O                                                              */
-/********************************************************************/
+ 
+ 
+ 
 
-/*
- *  For SD8385/SD8686, this function reads firmware status after
- *  the image is downloaded, or reads RX packet length when
- *  interrupt (with IF_SDIO_H_INT_UPLD bit set) is received.
- *  For SD8688, this function reads firmware status only.
- */
+ 
 static u16 if_sdio_read_scratch(struct if_sdio_card *card, int *err)
 {
 	int ret;
@@ -184,12 +146,12 @@ static u16 if_sdio_read_rx_len(struct if_sdio_card *card, int *err)
 		rx_len = if_sdio_read_scratch(card, &ret);
 		break;
 	case MODEL_8688:
-	default: /* for newer chipsets */
+	default:  
 		rx_len = sdio_readb(card->func, IF_SDIO_RX_LEN, &ret);
 		if (!ret)
 			rx_len <<= card->rx_unit;
 		else
-			rx_len = 0xffff;	/* invalid length */
+			rx_len = 0xffff;	 
 
 		break;
 	}
@@ -273,7 +235,7 @@ static int if_sdio_handle_event(struct if_sdio_card *card,
 		if (ret)
 			goto out;
 
-		/* right shift 3 bits to get the event id */
+		 
 		event >>= 3;
 	} else {
 		if (size < 4) {
@@ -335,11 +297,7 @@ static int if_sdio_card_to_host(struct if_sdio_card *card)
 	if (ret)
 		goto out;
 
-	/*
-	 * The transfer must be in one transaction or the firmware
-	 * goes suicidal. There's no way to guarantee that for all
-	 * controllers, but we can at least try.
-	 */
+	 
 	chunk = sdio_align_size(card->func, size);
 
 	ret = sdio_readsb(card->func, card->buffer, card->ioport, chunk);
@@ -431,9 +389,9 @@ static void if_sdio_host_to_card_worker(struct work_struct *work)
 	}
 }
 
-/********************************************************************/
-/* Firmware                                                         */
-/********************************************************************/
+ 
+ 
+ 
 
 #define FW_DL_READY_STATUS (IF_SDIO_IO_RDY | IF_SDIO_DL_RDY)
 
@@ -467,18 +425,14 @@ static int if_sdio_prog_helper(struct if_sdio_card *card,
 		if (ret)
 			goto release;
 
-		/* On some platforms (like Davinci) the chip needs more time
-		 * between helper blocks.
-		 */
+		 
 		mdelay(2);
 
 		chunk_size = min_t(size_t, size, 60);
 
 		*((__le32*)chunk_buffer) = cpu_to_le32(chunk_size);
 		memcpy(chunk_buffer + 4, firmware, chunk_size);
-/*
-		lbs_deb_sdio("sending %d bytes chunk\n", chunk_size);
-*/
+ 
 		ret = sdio_writesb(card->func, card->ioport,
 				chunk_buffer, 64);
 		if (ret)
@@ -488,7 +442,7 @@ static int if_sdio_prog_helper(struct if_sdio_card *card,
 		size -= chunk_size;
 	}
 
-	/* an empty block marks the end of the transfer */
+	 
 	memset(chunk_buffer, 0, 4);
 	ret = sdio_writesb(card->func, card->ioport, chunk_buffer, 64);
 	if (ret)
@@ -496,7 +450,7 @@ static int if_sdio_prog_helper(struct if_sdio_card *card,
 
 	lbs_deb_sdio("waiting for helper to boot...\n");
 
-	/* wait for the helper to boot by looking at the size register */
+	 
 	timeout = jiffies + HZ;
 	while (1) {
 		u16 req_size;
@@ -575,13 +529,7 @@ static int if_sdio_prog_real(struct if_sdio_card *card,
 			if (ret)
 				goto release;
 
-			/*
-			 * For SD8688 wait until the length is not 0, 1 or 2
-			 * before downloading the first FW block,
-			 * since BOOT code writes the register to indicate the
-			 * helper/FW download winner,
-			 * the value could be 1 or 2 (Func1 or Func2).
-			 */
+			 
 			if ((size != fw->size) || (req_size > 2))
 				break;
 			if (time_after(jiffies, timeout)) {
@@ -591,9 +539,7 @@ static int if_sdio_prog_real(struct if_sdio_card *card,
 			mdelay(1);
 		}
 
-/*
-		lbs_deb_sdio("firmware wants %d bytes\n", (int)req_size);
-*/
+ 
 		if (req_size == 0) {
 			lbs_deb_sdio("firmware helper gave up early\n");
 			ret = -EIO;
@@ -613,10 +559,7 @@ static int if_sdio_prog_real(struct if_sdio_card *card,
 			chunk_size = min_t(size_t, req_size, 512);
 
 			memcpy(chunk_buffer, firmware, chunk_size);
-/*
-			lbs_deb_sdio("sending %d bytes (%d bytes) chunk\n",
-				chunk_size, (chunk_size + 31) / 32 * 32);
-*/
+ 
 			ret = sdio_writesb(card->func, card->ioport,
 				chunk_buffer, roundup(chunk_size, 32));
 			if (ret)
@@ -632,7 +575,7 @@ static int if_sdio_prog_real(struct if_sdio_card *card,
 
 	lbs_deb_sdio("waiting for firmware to boot...\n");
 
-	/* wait for the firmware to boot */
+	 
 	timeout = jiffies + HZ;
 	while (1) {
 		u16 scratch;
@@ -695,9 +638,7 @@ static int if_sdio_prog_firmware(struct if_sdio_card *card)
 	int ret;
 	u16 scratch;
 
-	/*
-	 * Disable interrupts
-	 */
+	 
 	sdio_claim_host(card->func);
 	sdio_writeb(card->func, 0x00, IF_SDIO_H_INT_MASK, &ret);
 	sdio_release_host(card->func);
@@ -713,16 +654,7 @@ static int if_sdio_prog_firmware(struct if_sdio_card *card)
 		goto out;
 
 
-	/*
-	 * The manual clearly describes that FEDC is the right code to use
-	 * to detect firmware presence, but for SD8686 it is not that simple.
-	 * Scratch is also used to store the RX packet length, so we lose
-	 * the FEDC value early on. So we use a non-zero check in order
-	 * to validate firmware presence.
-	 * Additionally, the SD8686 in the Gumstix always has the high scratch
-	 * bit set, even when the firmware is not loaded. So we have to
-	 * exclude that from the test.
-	 */
+	 
 	if (scratch == IF_SDIO_FIRMWARE_OK) {
 		lbs_deb_sdio("firmware already loaded\n");
 		if_sdio_finish_power_on(card);
@@ -740,11 +672,11 @@ out:
 	return ret;
 }
 
-/********************************************************************/
-/* Power management                                                 */
-/********************************************************************/
+ 
+ 
+ 
 
-/* Finish power on sequence (after firmware is loaded) */
+ 
 static void if_sdio_finish_power_on(struct if_sdio_card *card)
 {
 	struct sdio_func *func = card->func;
@@ -754,48 +686,29 @@ static void if_sdio_finish_power_on(struct if_sdio_card *card)
 	sdio_claim_host(func);
 	sdio_set_block_size(card->func, IF_SDIO_BLOCK_SIZE);
 
-	/*
-	 * Get rx_unit if the chip is SD8688 or newer.
-	 * SD8385 & SD8686 do not have rx_unit.
-	 */
+	 
 	if ((card->model != MODEL_8385)
 			&& (card->model != MODEL_8686))
 		card->rx_unit = if_sdio_read_rx_unit(card);
 	else
 		card->rx_unit = 0;
 
-	/*
-	 * Set up the interrupt handler late.
-	 *
-	 * If we set it up earlier, the (buggy) hardware generates a spurious
-	 * interrupt, even before the interrupt has been enabled, with
-	 * CCCR_INTx = 0.
-	 *
-	 * We register the interrupt handler late so that we can handle any
-	 * spurious interrupts, and also to avoid generation of that known
-	 * spurious interrupt in the first place.
-	 */
+	 
 	ret = sdio_claim_irq(func, if_sdio_interrupt);
 	if (ret)
 		goto release;
 
-	/*
-	 * Enable interrupts now that everything is set up
-	 */
+	 
 	sdio_writeb(func, 0x0f, IF_SDIO_H_INT_MASK, &ret);
 	if (ret)
 		goto release_irq;
 
 	sdio_release_host(func);
 
-	/* Set fw_ready before queuing any commands so that
-	 * lbs_thread won't block from sending them to firmware.
-	 */
+	 
 	priv->fw_ready = 1;
 
-	/*
-	 * FUNC_INIT is required for SD8688 WLAN/BT multiple functions
-	 */
+	 
 	if (card->model == MODEL_8688) {
 		struct cmd_header cmd;
 
@@ -814,8 +727,7 @@ static void if_sdio_finish_power_on(struct if_sdio_card *card)
 		if_sdio_power_off(card);
 		if (ret == 0) {
 			card->started = true;
-			/* Tell PM core that we don't need the card to be
-			 * powered now */
+			 
 			pm_runtime_put(&func->dev);
 		}
 	}
@@ -840,9 +752,7 @@ static int if_sdio_power_on(struct if_sdio_card *card)
 	if (ret)
 		goto release;
 
-	/* For 1-bit transfers to the 8686 model, we need to enable the
-	 * interrupt flag in the CCCR register. Set the MMC_QUIRK_LENIENT_FN0
-	 * bit to allow access to non-vendor registers. */
+	 
 	if ((card->model == MODEL_8686) &&
 	    (host->caps & MMC_CAP_SDIO_IRQ) &&
 	    (host->ios.bus_width == MMC_BUS_WIDTH_1)) {
@@ -902,9 +812,9 @@ static int if_sdio_power_off(struct if_sdio_card *card)
 }
 
 
-/*******************************************************************/
-/* Libertas callbacks                                              */
-/*******************************************************************/
+ 
+ 
+ 
 
 static int if_sdio_host_to_card(struct lbs_private *priv,
 		u8 type, u8 *buf, u16 nb)
@@ -922,11 +832,7 @@ static int if_sdio_host_to_card(struct lbs_private *priv,
 		goto out;
 	}
 
-	/*
-	 * The transfer must be in one transaction or the firmware
-	 * goes suicidal. There's no way to guarantee that for all
-	 * controllers, but we can at least try.
-	 */
+	 
 	size = sdio_align_size(card->func, nb + 4);
 
 	packet = kzalloc(sizeof(struct if_sdio_packet) + size,
@@ -938,9 +844,7 @@ static int if_sdio_host_to_card(struct lbs_private *priv,
 
 	packet->nb = size;
 
-	/*
-	 * SDIO specific header.
-	 */
+	 
 	packet->buffer[0] = (nb + 4) & 0xff;
 	packet->buffer[1] = ((nb + 4) >> 8) & 0xff;
 	packet->buffer[2] = type;
@@ -1036,15 +940,7 @@ static void if_sdio_reset_card_worker(struct work_struct *work)
 	name = card->priv->dev->name;
 	dev = &card->func->dev;
 
-	/*
-	 * The actual reset operation must be run outside of lbs_thread. This
-	 * is because mmc_remove_host() will cause the device to be instantly
-	 * destroyed, and the libertas driver then needs to end lbs_thread,
-	 * leading to a deadlock.
-	 *
-	 * We run it in a workqueue totally independent from the if_sdio_card
-	 * instance for that reason.
-	 */
+	 
 
 	dev_info(dev, "resetting card %s...", name);
 	mmc_remove_host(reset_host);
@@ -1070,7 +966,7 @@ static int if_sdio_power_save(struct lbs_private *priv)
 
 	ret = if_sdio_power_off(card);
 
-	/* Let runtime PM know the card is powered off */
+	 
 	pm_runtime_put_sync(&card->func->dev);
 
 	return ret;
@@ -1081,7 +977,7 @@ static int if_sdio_power_restore(struct lbs_private *priv)
 	struct if_sdio_card *card = priv->card;
 	int r;
 
-	/* Make sure the card will not be powered off by runtime PM */
+	 
 	pm_runtime_get_sync(&card->func->dev);
 
 	r = if_sdio_power_on(card);
@@ -1093,9 +989,9 @@ static int if_sdio_power_restore(struct lbs_private *priv)
 }
 
 
-/*******************************************************************/
-/* SDIO callbacks                                                  */
-/*******************************************************************/
+ 
+ 
+ 
 
 static void if_sdio_interrupt(struct sdio_func *func)
 {
@@ -1115,10 +1011,7 @@ static void if_sdio_interrupt(struct sdio_func *func)
 	if (ret)
 		return;
 
-	/*
-	 * Ignore the define name, this really means the card has
-	 * successfully received the command.
-	 */
+	 
 	card->priv->is_activity_detected = 1;
 	if (cause & IF_SDIO_H_INT_DNLD)
 		lbs_host_to_card_done(card->priv);
@@ -1173,7 +1066,7 @@ static int if_sdio_probe(struct sdio_func *func,
 		card->scratch_reg = IF_SDIO_SCRATCH;
 		break;
 	case MODEL_8688:
-	default: /* for newer chipsets */
+	default:  
 		card->scratch_reg = IF_SDIO_FW_STATUS;
 		break;
 	}
@@ -1191,7 +1084,7 @@ static int if_sdio_probe(struct sdio_func *func,
 	INIT_WORK(&card->packet_worker, if_sdio_host_to_card_worker);
 	init_waitqueue_head(&card->pwron_waitq);
 
-	/* Check if we support this card */
+	 
 	for (i = 0; i < ARRAY_SIZE(fw_table); i++) {
 		if (card->model == fw_table[i].model)
 			break;
@@ -1257,14 +1150,11 @@ static void if_sdio_remove(struct sdio_func *func)
 
 	card = sdio_get_drvdata(func);
 
-	/* Undo decrement done above in if_sdio_probe */
+	 
 	pm_runtime_get_noresume(&func->dev);
 
 	if (user_rmmod && (card->model == MODEL_8688)) {
-		/*
-		 * FUNC_SHUTDOWN is required for SD8688 WLAN/BT
-		 * multiple functions
-		 */
+		 
 		struct cmd_header cmd;
 
 		memset(&cmd, 0, sizeof(cmd));
@@ -1301,8 +1191,7 @@ static int if_sdio_suspend(struct device *dev)
 	mmc_pm_flag_t flags = sdio_get_host_pm_caps(func);
 	priv->power_up_on_resume = false;
 
-	/* If we're powered off anyway, just let the mmc layer remove the
-	 * card. */
+	 
 	if (!lbs_iface_active(priv)) {
 		if (priv->fw_ready) {
 			priv->power_up_on_resume = true;
@@ -1315,9 +1204,7 @@ static int if_sdio_suspend(struct device *dev)
 	dev_info(dev, "%s: suspend: PM flags = 0x%x\n",
 		 sdio_func_id(func), flags);
 
-	/* If we aren't being asked to wake on anything, we should bail out
-	 * and let the SD stack power down the card.
-	 */
+	 
 	if (priv->wol_criteria == EHS_REMOVE_WAKEUP) {
 		dev_info(dev, "Suspend without wake params -- powering down card\n");
 		if (priv->fw_ready) {
@@ -1382,9 +1269,9 @@ static struct sdio_driver if_sdio_driver = {
 	},
 };
 
-/*******************************************************************/
-/* Module functions                                                */
-/*******************************************************************/
+ 
+ 
+ 
 
 static int __init if_sdio_init_module(void)
 {
@@ -1395,7 +1282,7 @@ static int __init if_sdio_init_module(void)
 
 	ret = sdio_register_driver(&if_sdio_driver);
 
-	/* Clear the flag in case user removes the card. */
+	 
 	user_rmmod = 0;
 
 	return ret;
@@ -1403,7 +1290,7 @@ static int __init if_sdio_init_module(void)
 
 static void __exit if_sdio_exit_module(void)
 {
-	/* Set the flag as user is removing this module. */
+	 
 	user_rmmod = 1;
 
 	sdio_unregister_driver(&if_sdio_driver);

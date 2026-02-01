@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2012 Russell King
- */
+ 
+ 
 #ifndef ARMADA_FB_H
 #define ARMADA_FB_H
 

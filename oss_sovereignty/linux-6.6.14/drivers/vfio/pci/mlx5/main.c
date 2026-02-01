@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/eventfd.h>
@@ -21,7 +19,7 @@
 
 #include "cmd.h"
 
-/* Device specification max LOAD size */
+ 
 #define MAX_LOAD_SIZE (BIT_ULL(__mlx5_bit_sz(load_vhca_state_in, size)) - 1)
 
 static struct mlx5vf_pci_core_device *mlx5vf_drvdata(struct pci_dev *pdev)
@@ -40,7 +38,7 @@ mlx5vf_get_migration_page(struct mlx5_vhca_data_buffer *buf,
 	struct scatterlist *sg;
 	unsigned int i;
 
-	/* All accesses are sequential */
+	 
 	if (offset < buf->last_offset || !buf->last_offset_sg) {
 		buf->last_offset = 0;
 		buf->last_offset_sg = buf->table.sgt.sgl;
@@ -93,7 +91,7 @@ int mlx5vf_add_migration_pages(struct mlx5_vhca_data_buffer *buf,
 		if (ret)
 			goto err;
 		buf->allocated_length += filled * PAGE_SIZE;
-		/* clean input for another bulk allocation */
+		 
 		memset(page_list, 0, filled * sizeof(*page_list));
 		to_fill = min_t(unsigned int, to_alloc,
 				PAGE_SIZE / sizeof(*page_list));
@@ -147,10 +145,7 @@ mlx5vf_get_data_buff_from_pos(struct mlx5_vf_migration_file *migf, loff_t pos,
 		goto end;
 	}
 
-	/*
-	 * As we use a stream based FD we may expect having the data always
-	 * on first chunk
-	 */
+	 
 	migf->state = MLX5_MIGF_STATE_ERROR;
 
 end:
@@ -239,7 +234,7 @@ static ssize_t mlx5vf_save_read(struct file *filp, char __user *buf, size_t len,
 							 &end_of_data);
 		if (first_loop_call) {
 			first_loop_call = false;
-			/* Temporary end of file as part of PRE_COPY */
+			 
 			if (end_of_data && (migf->state == MLX5_MIGF_STATE_PRE_COPY ||
 				migf->state == MLX5_MIGF_STATE_PRE_COPY_ERROR)) {
 				done = -ENOMSG;
@@ -294,10 +289,7 @@ static __poll_t mlx5vf_save_poll(struct file *filp,
 	return pollflags;
 }
 
-/*
- * FD is exposed and user can use it after receiving an error.
- * Mark migf in error, and wake the user.
- */
+ 
 static void mlx5vf_mark_err(struct mlx5_vf_migration_file *migf)
 {
 	migf->state = MLX5_MIGF_STATE_ERROR;
@@ -354,7 +346,7 @@ static int mlx5vf_prep_stop_copy(struct mlx5_vf_migration_file *migf,
 	size_t inc_state_size;
 	int ret;
 
-	/* let's be ready for stop_copy size that might grow by 10 percents */
+	 
 	if (check_add_overflow(state_size, state_size / 10, &inc_state_size))
 		inc_state_size = state_size;
 
@@ -416,17 +408,9 @@ static long mlx5vf_precopy_ioctl(struct file *filp, unsigned int cmd,
 		goto err_state_unlock;
 	}
 
-	/*
-	 * We can't issue a SAVE command when the device is suspended, so as
-	 * part of VFIO_DEVICE_STATE_PRE_COPY_P2P no reason to query for extra
-	 * bytes that can't be read.
-	 */
+	 
 	if (mvdev->mig_state == VFIO_DEVICE_STATE_PRE_COPY) {
-		/*
-		 * Once the query returns it's guaranteed that there is no
-		 * active SAVE command.
-		 * As so, the other code below is safe with the proper locks.
-		 */
+		 
 		ret = mlx5vf_cmd_query_vhca_migration_state(mvdev, &inc_length,
 							    MLX5VF_QUERY_INC);
 		if (ret)
@@ -454,10 +438,7 @@ static long mlx5vf_precopy_ioctl(struct file *filp, unsigned int cmd,
 	}
 
 	mutex_unlock(&migf->lock);
-	/*
-	 * We finished transferring the current state and the device has a
-	 * dirty state, save a new state to be ready for.
-	 */
+	 
 	buf = mlx5vf_get_data_buffer(migf, inc_length, DMA_FROM_DEVICE);
 	if (IS_ERR(buf)) {
 		ret = PTR_ERR(buf);
@@ -510,7 +491,7 @@ static int mlx5vf_pci_save_device_inc_data(struct mlx5vf_pci_core_device *mvdev)
 	if (ret)
 		goto err;
 
-	/* Checking whether we have a matching pre-allocated buffer that can fit */
+	 
 	if (migf->buf && migf->buf->allocated_length >= length) {
 		buf = migf->buf;
 		migf->buf = NULL;
@@ -563,11 +544,7 @@ mlx5vf_pci_save_device_data(struct mlx5vf_pci_core_device *mvdev, bool track)
 	mutex_init(&migf->lock);
 	init_waitqueue_head(&migf->poll_wait);
 	init_completion(&migf->save_comp);
-	/*
-	 * save_comp is being used as a binary semaphore built from
-	 * a completion. A normal mutex cannot be used because the lock is
-	 * passed between kernel threads and lockdep can't model this.
-	 */
+	 
 	complete(&migf->save_comp);
 	mlx5_cmd_init_async_ctx(mvdev->mdev, &migf->async_ctx);
 	INIT_WORK(&migf->async_data.work, mlx5vf_mig_file_cleanup_cb);
@@ -735,7 +712,7 @@ mlx5vf_resume_read_header_data(struct mlx5_vf_migration_file *migf,
 			break;
 		}
 		default:
-			/* Optional tag */
+			 
 			break;
 		}
 
@@ -803,7 +780,7 @@ mlx5vf_resume_read_header(struct mlx5_vf_migration_file *migf,
 				ret = -EOPNOTSUPP;
 				goto end;
 			}
-			/* We may read and skip this optional record data */
+			 
 			migf->load_state = MLX5_VF_LOAD_STATE_PREP_HEADER_DATA;
 		}
 
@@ -919,9 +896,9 @@ static ssize_t mlx5vf_resume_write(struct file *filp, const char __user *buf,
 				goto out_unlock;
 			migf->load_state = MLX5_VF_LOAD_STATE_READ_HEADER;
 
-			/* prep header buf for next image */
+			 
 			vhca_buf_header->length = 0;
-			/* prep data buf for next image */
+			 
 			vhca_buf->length = 0;
 
 			break;
@@ -986,7 +963,7 @@ mlx5vf_pci_resume_device_data(struct mlx5vf_pci_core_device *mvdev)
 		migf->buf_header = buf;
 		migf->load_state = MLX5_VF_LOAD_STATE_READ_HEADER;
 	} else {
-		/* Initial state will be to read the image */
+		 
 		migf->load_state = MLX5_VF_LOAD_STATE_READ_IMAGE_NO_HEADER;
 	}
 
@@ -1130,17 +1107,12 @@ mlx5vf_pci_step_device_state_locked(struct mlx5vf_pci_core_device *mvdev,
 		return ret ? ERR_PTR(ret) : NULL;
 	}
 
-	/*
-	 * vfio_mig_get_next_state() does not use arcs other than the above
-	 */
+	 
 	WARN_ON(true);
 	return ERR_PTR(-EINVAL);
 }
 
-/*
- * This function is called in all state_mutex unlock cases to
- * handle a 'deferred_reset' if exists.
- */
+ 
 void mlx5vf_state_mutex_unlock(struct mlx5vf_pci_core_device *mvdev)
 {
 again:
@@ -1224,13 +1196,7 @@ static void mlx5vf_pci_aer_reset_done(struct pci_dev *pdev)
 	if (!mvdev->migrate_cap)
 		return;
 
-	/*
-	 * As the higher VFIO layers are holding locks across reset and using
-	 * those same locks with the mm_lock we need to prevent ABBA deadlock
-	 * with the state_mutex and mm_lock.
-	 * In case the state_mutex was taken already we defer the cleanup work
-	 * to the unlock flow of the other running context.
-	 */
+	 
 	spin_lock(&mvdev->reset_lock);
 	mvdev->deferred_reset = true;
 	if (!mutex_trylock(&mvdev->state_mutex)) {
@@ -1354,7 +1320,7 @@ static void mlx5vf_pci_remove(struct pci_dev *pdev)
 }
 
 static const struct pci_device_id mlx5vf_pci_table[] = {
-	{ PCI_DRIVER_OVERRIDE_DEVICE_VFIO(PCI_VENDOR_ID_MELLANOX, 0x101e) }, /* ConnectX Family mlx5Gen Virtual Function */
+	{ PCI_DRIVER_OVERRIDE_DEVICE_VFIO(PCI_VENDOR_ID_MELLANOX, 0x101e) },  
 	{}
 };
 

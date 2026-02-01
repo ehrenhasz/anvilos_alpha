@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * POWER Dynamic Execution Control Facility (DEXCR)
- *
- * This header file contains helper functions and macros
- * required for all the DEXCR related test cases.
- */
+ 
+ 
 #ifndef _SELFTESTS_POWERPC_DEXCR_DEXCR_H
 #define _SELFTESTS_POWERPC_DEXCR_DEXCR_H
 
@@ -31,9 +26,9 @@ bool dexcr_exists(void);
 bool hashchk_triggers(void);
 
 enum dexcr_source {
-	DEXCR,		/* Userspace DEXCR value */
-	HDEXCR,		/* Hypervisor enforced DEXCR value */
-	EFFECTIVE,	/* Bitwise OR of UDEXCR and ENFORCED DEXCR bits */
+	DEXCR,		 
+	HDEXCR,		 
+	EFFECTIVE,	 
 };
 
 unsigned int get_dexcr(enum dexcr_source source);
@@ -46,4 +41,4 @@ void hashchk(unsigned long lr, void *sp);
 
 void do_bad_hashchk(void);
 
-#endif  /* _SELFTESTS_POWERPC_DEXCR_DEXCR_H */
+#endif   

@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2014 Redpine Signals Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -25,14 +11,7 @@
 #include "rsi_hal.h"
 #include "rsi_usb.h"
 
-u32 rsi_zone_enabled = /* INFO_ZONE |
-			INIT_ZONE |
-			MGMT_TX_ZONE |
-			MGMT_RX_ZONE |
-			DATA_TX_ZONE |
-			DATA_RX_ZONE |
-			FSM_ZONE |
-			ISR_ZONE | */
+u32 rsi_zone_enabled =  
 			ERR_ZONE |
 			0;
 EXPORT_SYMBOL_GPL(rsi_zone_enabled);
@@ -45,13 +24,7 @@ static struct rsi_proto_ops g_proto_ops = {
 };
 #endif
 
-/**
- * rsi_dbg() - This function outputs informational messages.
- * @zone: Zone of interest for output message.
- * @fmt: printf-style format for output message.
- *
- * Return: none
- */
+ 
 void rsi_dbg(u32 zone, const char *fmt, ...)
 {
 	struct va_format vaf;
@@ -108,15 +81,7 @@ void rsi_print_version(struct rsi_common *common)
 	rsi_dbg(ERR_ZONE, "================================================\n");
 }
 
-/**
- * rsi_prepare_skb() - This function prepares the skb.
- * @common: Pointer to the driver private structure.
- * @buffer: Pointer to the packet data.
- * @pkt_len: Length of the packet.
- * @extended_desc: Extended descriptor.
- *
- * Return: Successfully skb.
- */
+ 
 static struct sk_buff *rsi_prepare_skb(struct rsi_common *common,
 				       u8 *buffer,
 				       u32 pkt_len,
@@ -146,14 +111,7 @@ static struct sk_buff *rsi_prepare_skb(struct rsi_common *common,
 	return skb;
 }
 
-/**
- * rsi_read_pkt() - This function reads frames from the card.
- * @common: Pointer to the driver private structure.
- * @rx_pkt: Received pkt.
- * @rcv_pkt_len: Received pkt length. In case of USB it is 0.
- *
- * Return: 0 on success, -1 on failure.
- */
+ 
 int rsi_read_pkt(struct rsi_common *common, u8 *rx_pkt, s32 rcv_pkt_len)
 {
 	u8 *frame_desc = NULL, extended_desc = 0;
@@ -176,7 +134,7 @@ int rsi_read_pkt(struct rsi_common *common, u8 *rx_pkt, s32 rcv_pkt_len)
 		queueno = rsi_get_queueno(frame_desc, offset);
 		length = rsi_get_length(frame_desc, offset);
 
-		/* Extended descriptor is valid for WLAN queues only */
+		 
 		if (queueno == RSI_WIFI_DATA_Q || queueno == RSI_WIFI_MGMT_Q)
 			extended_desc = rsi_get_extended_desc(frame_desc,
 							      offset);
@@ -243,13 +201,7 @@ fail:
 }
 EXPORT_SYMBOL_GPL(rsi_read_pkt);
 
-/**
- * rsi_tx_scheduler_thread() - This function is a kernel thread to send the
- *			       packets to the device.
- * @common: Pointer to the driver private structure.
- *
- * Return: None.
- */
+ 
 static void rsi_tx_scheduler_thread(struct rsi_common *common)
 {
 	struct rsi_hw *adapter = common->priv;
@@ -292,12 +244,7 @@ void rsi_attach_bt(struct rsi_common *common)
 #endif
 }
 
-/**
- * rsi_91x_init() - This function initializes os interface operations.
- * @oper_mode: One of DEV_OPMODE_*.
- *
- * Return: Pointer to the adapter structure on success, NULL on failure .
- */
+ 
 struct rsi_hw *rsi_91x_init(u16 oper_mode)
 {
 	struct rsi_hw *adapter = NULL;
@@ -344,7 +291,7 @@ struct rsi_hw *rsi_91x_init(u16 oper_mode)
 	adapter->device_model = RSI_DEV_9113;
 	common->oper_mode = oper_mode;
 
-	/* Determine coex mode */
+	 
 	switch (common->oper_mode) {
 	case DEV_OPMODE_STA_BT_DUAL:
 	case DEV_OPMODE_STA_BT:
@@ -389,12 +336,7 @@ err:
 }
 EXPORT_SYMBOL_GPL(rsi_91x_init);
 
-/**
- * rsi_91x_deinit() - This function de-intializes os intf operations.
- * @adapter: Pointer to the adapter structure.
- *
- * Return: None.
- */
+ 
 void rsi_91x_deinit(struct rsi_hw *adapter)
 {
 	struct rsi_common *common = adapter->priv;
@@ -425,28 +367,14 @@ void rsi_91x_deinit(struct rsi_hw *adapter)
 }
 EXPORT_SYMBOL_GPL(rsi_91x_deinit);
 
-/**
- * rsi_91x_hal_module_init() - This function is invoked when the module is
- *			       loaded into the kernel.
- *			       It registers the client driver.
- * @void: Void.
- *
- * Return: 0 on success, -1 on failure.
- */
+ 
 static int rsi_91x_hal_module_init(void)
 {
 	rsi_dbg(INIT_ZONE, "%s: Module init called\n", __func__);
 	return 0;
 }
 
-/**
- * rsi_91x_hal_module_exit() - This function is called at the time of
- *			       removing/unloading the module.
- *			       It unregisters the client driver.
- * @void: Void.
- *
- * Return: None.
- */
+ 
 static void rsi_91x_hal_module_exit(void)
 {
 	rsi_dbg(INIT_ZONE, "%s: Module exit called\n", __func__);

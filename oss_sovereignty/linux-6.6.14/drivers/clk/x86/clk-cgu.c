@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020-2022 MaxLinear, Inc.
- * Copyright (C) 2020 Intel Corporation.
- * Zhu Yixin <yzhu@maxlinear.com>
- * Rahul Tanwar <rtanwar@maxlinear.com>
- */
+
+ 
 #include <linux/clk-provider.h>
 #include <linux/device.h>
 #include <linux/of.h>
@@ -358,15 +353,7 @@ int lgm_clk_register_branches(struct lgm_clk_provider *ctx,
 			if (list->gate_flags & GATE_CLK_HW) {
 				hw = lgm_clk_register_gate(ctx, list);
 			} else {
-				/*
-				 * GATE_CLKs can be controlled either from
-				 * CGU clk driver i.e. this driver or directly
-				 * from power management driver/daemon. It is
-				 * dependent on the power policy/profile requirements
-				 * of the end product. To override control of gate
-				 * clks from this driver, provide NULL for this index
-				 * of gate clk provider.
-				 */
+				 
 				hw = NULL;
 			}
 			break;
@@ -497,7 +484,7 @@ lgm_clk_ddiv_round_rate(struct clk_hw *hw, unsigned long rate,
 
 	div = DIV_ROUND_CLOSEST_ULL((u64)*prate, rate);
 
-	/* if predivide bit is enabled, modify div by factor of 2.5 */
+	 
 	if (lgm_get_clk_val(ddiv->membase, ddiv->reg, ddiv->shift2, 1)) {
 		div = div * 2;
 		div = DIV_ROUND_CLOSEST_ULL((u64)div, 5);
@@ -514,7 +501,7 @@ lgm_clk_ddiv_round_rate(struct clk_hw *hw, unsigned long rate,
 	do_div(rate64, ddiv1);
 	do_div(rate64, ddiv2);
 
-	/* if predivide bit is enabled, modify rounded rate by factor of 2.5 */
+	 
 	if (lgm_get_clk_val(ddiv->membase, ddiv->reg, ddiv->shift2, 1)) {
 		rate64 = rate64 * 2;
 		rate64 = DIV_ROUND_CLOSEST_ULL(rate64, 5);

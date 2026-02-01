@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/types.h>
 #include <linux/string.h>
 #include <linux/zalloc.h>
@@ -48,10 +48,7 @@ int perf_event__synthesize_extra_kmaps(struct perf_tool *tool,
 
 		event->mmap.header.type = PERF_RECORD_MMAP;
 
-		/*
-		 * kernel uses 0 for user space maps, see kernel/perf_event.c
-		 * __perf_event_mmap
-		 */
+		 
 		if (machine__is_host(machine))
 			event->header.misc = PERF_RECORD_MISC_KERNEL;
 		else

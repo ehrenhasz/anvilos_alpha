@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/******************************************************************************
- *
- * Module Name: dsinit - Object initialization namespace walk
- *
- * Copyright (C) 2000 - 2023, Intel Corp.
- *
- *****************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 #include "accommon.h"
@@ -17,30 +11,12 @@
 #define _COMPONENT          ACPI_DISPATCHER
 ACPI_MODULE_NAME("dsinit")
 
-/* Local prototypes */
+ 
 static acpi_status
 acpi_ds_init_one_object(acpi_handle obj_handle,
 			u32 level, void *context, void **return_value);
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ds_init_one_object
- *
- * PARAMETERS:  obj_handle      - Node for the object
- *              level           - Current nesting level
- *              context         - Points to a init info struct
- *              return_value    - Not used
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Callback from acpi_walk_namespace. Invoked for every object
- *              within the namespace.
- *
- *              Currently, the only objects that require initialization are:
- *              1) Methods
- *              2) Operation Regions
- *
- ******************************************************************************/
+ 
 
 static acpi_status
 acpi_ds_init_one_object(acpi_handle obj_handle,
@@ -55,17 +31,14 @@ acpi_ds_init_one_object(acpi_handle obj_handle,
 
 	ACPI_FUNCTION_ENTRY();
 
-	/*
-	 * We are only interested in NS nodes owned by the table that
-	 * was just loaded
-	 */
+	 
 	if (node->owner_id != info->owner_id) {
 		return (AE_OK);
 	}
 
 	info->object_count++;
 
-	/* And even then, we are only interested in a few object types */
+	 
 
 	switch (acpi_ns_get_type(obj_handle)) {
 	case ACPI_TYPE_REGION:
@@ -82,21 +55,14 @@ acpi_ds_init_one_object(acpi_handle obj_handle,
 		break;
 
 	case ACPI_TYPE_METHOD:
-		/*
-		 * Auto-serialization support. We will examine each method that is
-		 * not_serialized to determine if it creates any Named objects. If
-		 * it does, it will be marked serialized to prevent problems if
-		 * the method is entered by two or more threads and an attempt is
-		 * made to create the same named object twice -- which results in
-		 * an AE_ALREADY_EXISTS exception and method abort.
-		 */
+		 
 		info->method_count++;
 		obj_desc = acpi_ns_get_attached_object(node);
 		if (!obj_desc) {
 			break;
 		}
 
-		/* Ignore if already serialized */
+		 
 
 		if (obj_desc->method.info_flags & ACPI_METHOD_SERIALIZED) {
 			info->serial_method_count++;
@@ -105,13 +71,13 @@ acpi_ds_init_one_object(acpi_handle obj_handle,
 
 		if (acpi_gbl_auto_serialize_methods) {
 
-			/* Parse/scan method and serialize it if necessary */
+			 
 
 			acpi_ds_auto_serialize_method(node, obj_desc);
 			if (obj_desc->method.
 			    info_flags & ACPI_METHOD_SERIALIZED) {
 
-				/* Method was just converted to Serialized */
+				 
 
 				info->serial_method_count++;
 				info->serialized_method_count++;
@@ -132,26 +98,11 @@ acpi_ds_init_one_object(acpi_handle obj_handle,
 		break;
 	}
 
-	/*
-	 * We ignore errors from above, and always return OK, since
-	 * we don't want to abort the walk on a single error.
-	 */
+	 
 	return (AE_OK);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ds_initialize_objects
- *
- * PARAMETERS:  table_desc      - Descriptor for parent ACPI table
- *              start_node      - Root of subtree to be initialized.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Walk the namespace starting at "StartNode" and perform any
- *              necessary initialization on the objects found therein
- *
- ******************************************************************************/
+ 
 
 acpi_status
 acpi_ds_initialize_objects(u32 table_index,
@@ -172,19 +123,16 @@ acpi_ds_initialize_objects(u32 table_index,
 	ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH,
 			  "**** Starting initialization of namespace objects ****\n"));
 
-	/* Set all init info to zero */
+	 
 
 	memset(&info, 0, sizeof(struct acpi_init_walk_info));
 
 	info.owner_id = owner_id;
 	info.table_index = table_index;
 
-	/* Walk entire namespace from the supplied root */
+	 
 
-	/*
-	 * We don't use acpi_walk_namespace since we do not want to acquire
-	 * the namespace reader lock.
-	 */
+	 
 	status =
 	    acpi_ns_walk_namespace(ACPI_TYPE_ANY, start_node, ACPI_UINT32_MAX,
 				   ACPI_NS_WALK_NO_UNLOCK,
@@ -198,14 +146,14 @@ acpi_ds_initialize_objects(u32 table_index,
 		return_ACPI_STATUS(status);
 	}
 
-	/* DSDT is always the first AML table */
+	 
 
 	if (ACPI_COMPARE_NAMESEG(table->signature, ACPI_SIG_DSDT)) {
 		ACPI_DEBUG_PRINT_RAW((ACPI_DB_INIT,
 				      "\nACPI table initialization:\n"));
 	}
 
-	/* Summary of objects initialized */
+	 
 
 	ACPI_DEBUG_PRINT_RAW((ACPI_DB_INIT,
 			      "Table [%4.4s: %-8.8s] (id %.2X) - %4u Objects with %3u Devices, "

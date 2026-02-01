@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * OMAP OTG controller driver
- *
- * Based on code from tahvo-usb.c and isp1301_omap.c drivers.
- *
- * Copyright (C) 2005-2006 Nokia Corporation
- * Copyright (C) 2004 Texas Instruments
- * Copyright (C) 2004 David Brownell
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/err.h>
@@ -50,13 +42,13 @@ static void omap_otg_ctrl(struct otg_device *otg_dev, u32 outputs)
 static void omap_otg_set_mode(struct otg_device *otg_dev)
 {
 	if (!otg_dev->id && otg_dev->vbus)
-		/* Set B-session valid. */
+		 
 		omap_otg_ctrl(otg_dev, OMAP_OTG_ID | OMAP_OTG_BSESSVLD);
 	else if (otg_dev->vbus)
-		/* Set A-session valid. */
+		 
 		omap_otg_ctrl(otg_dev, OMAP_OTG_ASESSVLD);
 	else if (!otg_dev->id)
-		/* Set B-session end to indicate no VBUS. */
+		 
 		omap_otg_ctrl(otg_dev, OMAP_OTG_ID | OMAP_OTG_BSESSEND);
 }
 

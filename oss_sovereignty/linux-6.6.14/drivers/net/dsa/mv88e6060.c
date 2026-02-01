@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * net/dsa/mv88e6060.c - Driver for Marvell 88e6060 switch chips
- * Copyright (c) 2008-2009 Marvell Semiconductor
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/etherdevice.h>
@@ -55,7 +52,7 @@ static int mv88e6060_switch_reset(struct mv88e6060_priv *priv)
 	int ret;
 	unsigned long timeout;
 
-	/* Set all ports to the disabled state. */
+	 
 	for (i = 0; i < MV88E6060_PORTS; i++) {
 		ret = reg_read(priv, REG_PORT(i), PORT_CONTROL);
 		if (ret < 0)
@@ -66,17 +63,17 @@ static int mv88e6060_switch_reset(struct mv88e6060_priv *priv)
 			return ret;
 	}
 
-	/* Wait for transmit queues to drain. */
+	 
 	usleep_range(2000, 4000);
 
-	/* Reset the switch. */
+	 
 	ret = reg_write(priv, REG_GLOBAL, GLOBAL_ATU_CONTROL,
 			GLOBAL_ATU_CONTROL_SWRESET |
 			GLOBAL_ATU_CONTROL_LEARNDIS);
 	if (ret)
 		return ret;
 
-	/* Wait up to one second for reset to complete. */
+	 
 	timeout = jiffies + 1 * HZ;
 	while (time_before(jiffies, timeout)) {
 		ret = reg_read(priv, REG_GLOBAL, GLOBAL_STATUS);
@@ -98,17 +95,13 @@ static int mv88e6060_setup_global(struct mv88e6060_priv *priv)
 {
 	int ret;
 
-	/* Disable discarding of frames with excessive collisions,
-	 * set the maximum frame size to 1536 bytes, and mask all
-	 * interrupt sources.
-	 */
+	 
 	ret = reg_write(priv, REG_GLOBAL, GLOBAL_CONTROL,
 			GLOBAL_CONTROL_MAX_FRAME_1536);
 	if (ret)
 		return ret;
 
-	/* Disable automatic address learning.
-	 */
+	 
 	return reg_write(priv, REG_GLOBAL, GLOBAL_ATU_CONTROL,
 			 GLOBAL_ATU_CONTROL_LEARNDIS);
 }
@@ -121,11 +114,7 @@ static int mv88e6060_setup_port(struct mv88e6060_priv *priv, int p)
 	if (dsa_is_unused_port(priv->ds, p))
 		return 0;
 
-	/* Do not force flow control, disable Ingress and Egress
-	 * Header tagging, disable VLAN tunneling, and set the port
-	 * state to Forwarding.  Additionally, if this is the CPU
-	 * port, enable Ingress and Egress Trailer tagging mode.
-	 */
+	 
 	ret = reg_write(priv, addr, PORT_CONTROL,
 			dsa_is_cpu_port(priv->ds, p) ?
 			PORT_CONTROL_TRAILER |
@@ -135,11 +124,7 @@ static int mv88e6060_setup_port(struct mv88e6060_priv *priv, int p)
 	if (ret)
 		return ret;
 
-	/* Port based VLAN map: give each port its own address
-	 * database, allow the CPU port to talk to each of the 'real'
-	 * ports, and allow each of the 'real' ports to only talk to
-	 * the CPU port.
-	 */
+	 
 	ret = reg_write(priv, addr, PORT_VLAN_MAP,
 			((p & 0xf) << PORT_VLAN_MAP_DBNUM_SHIFT) |
 			(dsa_is_cpu_port(priv->ds, p) ?
@@ -148,11 +133,7 @@ static int mv88e6060_setup_port(struct mv88e6060_priv *priv, int p)
 	if (ret)
 		return ret;
 
-	/* Port Association Vector: when learning source addresses
-	 * of packets, add the address to the address database using
-	 * a port bitmap that has only the bit for this port set and
-	 * the other bits clear.
-	 */
+	 
 	return reg_write(priv, addr, PORT_ASSOC_VECTOR, BIT(p));
 }
 
@@ -166,9 +147,7 @@ static int mv88e6060_setup_addr(struct mv88e6060_priv *priv)
 
 	val = addr[0] << 8 | addr[1];
 
-	/* The multicast bit is always transmitted as a zero, so the switch uses
-	 * bit 8 for "DiffAddr", where 0 means all ports transmit the same SA.
-	 */
+	 
 	val &= 0xfeff;
 
 	ret = reg_write(priv, REG_GLOBAL, GLOBAL_MAC_01, val);
@@ -196,7 +175,7 @@ static int mv88e6060_setup(struct dsa_switch *ds)
 	if (ret < 0)
 		return ret;
 
-	/* @@@ initialise atu */
+	 
 
 	ret = mv88e6060_setup_global(priv);
 	if (ret < 0)
@@ -263,10 +242,7 @@ static void mv88e6060_phylink_get_caps(struct dsa_switch *ds, int port,
 		return;
 	}
 
-	/* If the port is configured in SNI mode (acts as a 10Mbps PHY),
-	 * it should have phy-mode = "sni", but that doesn't yet exist, so
-	 * forcibly fail validation until the need arises to introduce it.
-	 */
+	 
 	if (!(ret & PORT_STATUS_PORTMODE)) {
 		dev_warn(ds->dev, "port %d: SNI mode not supported\n", port);
 		return;
@@ -275,18 +251,16 @@ static void mv88e6060_phylink_get_caps(struct dsa_switch *ds, int port,
 	config->mac_capabilities = MAC_100 | MAC_10 | MAC_SYM_PAUSE;
 
 	if (port >= 4) {
-		/* Ports 4 and 5 can support MII, REVMII and REVRMII modes */
+		 
 		__set_bit(PHY_INTERFACE_MODE_MII, interfaces);
 		__set_bit(PHY_INTERFACE_MODE_REVMII, interfaces);
 		__set_bit(PHY_INTERFACE_MODE_REVRMII, interfaces);
 	}
 	if (port <= 4) {
-		/* Ports 0 to 3 have internal PHYs, and port 4 can optionally
-		 * use an internal PHY.
-		 */
-		/* Internal PHY */
+		 
+		 
 		__set_bit(PHY_INTERFACE_MODE_INTERNAL, interfaces);
-		/* Default phylib interface mode */
+		 
 		__set_bit(PHY_INTERFACE_MODE_GMII, interfaces);
 	}
 }
@@ -360,7 +334,7 @@ static const struct of_device_id mv88e6060_of_match[] = {
 	{
 		.compatible = "marvell,mv88e6060",
 	},
-	{ /* sentinel */ },
+	{   },
 };
 
 static struct mdio_driver mv88e6060_driver = {

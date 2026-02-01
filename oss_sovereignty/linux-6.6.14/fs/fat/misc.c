@@ -1,23 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/fs/fat/misc.c
- *
- *  Written 1992,1993 by Werner Almesberger
- *  22/11/2000 - Fixed fat_date_unix2dos for dates earlier than 01/01/1980
- *		 and date_dos2unix for date==0 by Igor Zhbanov(bsg@uniyar.ac.ru)
- */
+
+ 
 
 #include "fat.h"
 #include <linux/iversion.h>
 
-/*
- * fat_fs_error reports a file system problem that might indicate fa data
- * corruption/inconsistency. Depending on 'errors' mount option the
- * panic() is called, or error message is printed FAT and nothing is done,
- * or filesystem is remounted read-only (default behavior).
- * In case the file system is remounted read-only, it can be made writable
- * again by remounting it.
- */
+ 
 void __fat_fs_error(struct super_block *sb, int report, const char *fmt, ...)
 {
 	struct fat_mount_options *opts = &MSDOS_SB(sb)->options;
@@ -41,16 +28,7 @@ void __fat_fs_error(struct super_block *sb, int report, const char *fmt, ...)
 }
 EXPORT_SYMBOL_GPL(__fat_fs_error);
 
-/**
- * _fat_msg() - Print a preformatted FAT message based on a superblock.
- * @sb: A pointer to a &struct super_block
- * @level: A Kernel printk level constant
- * @fmt: The printf-style format string to print.
- *
- * Everything that is not fat_fs_error() should be fat_msg().
- *
- * fat_msg() wraps _fat_msg() for printk indexing.
- */
+ 
 void _fat_msg(struct super_block *sb, const char *level, const char *fmt, ...)
 {
 	struct va_format vaf;
@@ -63,8 +41,8 @@ void _fat_msg(struct super_block *sb, const char *level, const char *fmt, ...)
 	va_end(args);
 }
 
-/* Flushes the number of free clusters on FAT32 */
-/* XXX: Need to write one per FSINFO block.  Currently only writes 1 */
+ 
+ 
 int fat_clusters_flush(struct super_block *sb)
 {
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
@@ -81,7 +59,7 @@ int fat_clusters_flush(struct super_block *sb)
 	}
 
 	fsinfo = (struct fat_boot_fsinfo *)bh->b_data;
-	/* Sanity check */
+	 
 	if (!IS_FSINFO(fsinfo)) {
 		fat_msg(sb, KERN_ERR, "Invalid FSINFO signature: "
 		       "0x%08x, 0x%08x (sector = %lu)",
@@ -100,20 +78,14 @@ int fat_clusters_flush(struct super_block *sb)
 	return 0;
 }
 
-/*
- * fat_chain_add() adds a new cluster to the chain of clusters represented
- * by inode.
- */
+ 
 int fat_chain_add(struct inode *inode, int new_dclus, int nr_cluster)
 {
 	struct super_block *sb = inode->i_sb;
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
 	int ret, new_fclus, last;
 
-	/*
-	 * We must locate the last cluster of the file to add this new
-	 * one (new_dclus) to the end of the link list (the FAT).
-	 */
+	 
 	last = new_fclus = 0;
 	if (MSDOS_I(inode)->i_start) {
 		int fclus, dclus;
@@ -125,7 +97,7 @@ int fat_chain_add(struct inode *inode, int new_dclus, int nr_cluster)
 		last = dclus;
 	}
 
-	/* add new one to the last of the cluster chain */
+	 
 	if (last) {
 		struct fat_entry fatent;
 
@@ -138,18 +110,12 @@ int fat_chain_add(struct inode *inode, int new_dclus, int nr_cluster)
 		}
 		if (ret < 0)
 			return ret;
-		/*
-		 * FIXME:Although we can add this cache, fat_cache_add() is
-		 * assuming to be called after linear search with fat_cache_id.
-		 */
-//		fat_cache_add(inode, new_fclus, new_dclus);
+		 
+
 	} else {
 		MSDOS_I(inode)->i_start = new_dclus;
 		MSDOS_I(inode)->i_logstart = new_dclus;
-		/*
-		 * Since generic_write_sync() synchronizes regular files later,
-		 * we sync here only directories.
-		 */
+		 
 		if (S_ISDIR(inode->i_mode) && IS_DIRSYNC(inode)) {
 			ret = fat_sync_inode(inode);
 			if (ret)
@@ -168,28 +134,19 @@ int fat_chain_add(struct inode *inode, int new_dclus, int nr_cluster)
 	return 0;
 }
 
-/*
- * The epoch of FAT timestamp is 1980.
- *     :  bits :     value
- * date:  0 -  4: day	(1 -  31)
- * date:  5 -  8: month	(1 -  12)
- * date:  9 - 15: year	(0 - 127) from 1980
- * time:  0 -  4: sec	(0 -  29) 2sec counts
- * time:  5 - 10: min	(0 -  59)
- * time: 11 - 15: hour	(0 -  23)
- */
+ 
 #define SECS_PER_MIN	60
 #define SECS_PER_HOUR	(60 * 60)
 #define SECS_PER_DAY	(SECS_PER_HOUR * 24)
-/* days between 1.1.70 and 1.1.80 (2 leap days) */
+ 
 #define DAYS_DELTA	(365 * 10 + 2)
-/* 120 (2100 - 1980) isn't leap year */
+ 
 #define YEAR_2100	120
 #define IS_LEAP_YEAR(y)	(!((y) & 3) && (y) != YEAR_2100)
 
-/* Linear day numbers of the respective 1sts in non-leap years. */
+ 
 static long days_in_year[] = {
-	/* Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec */
+	 
 	0,   0,  31,  59,  90, 120, 151, 181, 212, 243, 273, 304, 334, 0, 0, 0,
 };
 
@@ -200,7 +157,7 @@ static inline int fat_tz_offset(const struct msdos_sb_info *sbi)
 	       sys_tz.tz_minuteswest) * SECS_PER_MIN;
 }
 
-/* Convert a FAT time/date pair to a UNIX date (seconds since 1 1 70). */
+ 
 void fat_time_fat2unix(struct msdos_sb_info *sbi, struct timespec64 *ts,
 		       __le16 __time, __le16 __date, u8 time_cs)
 {
@@ -213,7 +170,7 @@ void fat_time_fat2unix(struct msdos_sb_info *sbi, struct timespec64 *ts,
 	day   = max(1, date & 0x1f) - 1;
 
 	leap_day = (year + 3) / 4;
-	if (year > YEAR_2100)		/* 2100 isn't leap year */
+	if (year > YEAR_2100)		 
 		leap_day--;
 	if (IS_LEAP_YEAR(year) && month > 2)
 		leap_day++;
@@ -236,17 +193,17 @@ void fat_time_fat2unix(struct msdos_sb_info *sbi, struct timespec64 *ts,
 	}
 }
 
-/* Export fat_time_fat2unix() for the fat_test KUnit tests. */
+ 
 EXPORT_SYMBOL_GPL(fat_time_fat2unix);
 
-/* Convert linear UNIX date to a FAT time/date pair. */
+ 
 void fat_time_unix2fat(struct msdos_sb_info *sbi, struct timespec64 *ts,
 		       __le16 *time, __le16 *date, u8 *time_cs)
 {
 	struct tm tm;
 	time64_to_tm(ts->tv_sec, -fat_tz_offset(sbi), &tm);
 
-	/*  FAT can only support year between 1980 to 2107 */
+	 
 	if (tm.tm_year < 1980 - 1900) {
 		*time = 0;
 		*date = cpu_to_le16((0 << 9) | (1 << 5) | 1);
@@ -262,11 +219,11 @@ void fat_time_unix2fat(struct msdos_sb_info *sbi, struct timespec64 *ts,
 		return;
 	}
 
-	/* from 1900 -> from 1980 */
+	 
 	tm.tm_year -= 80;
-	/* 0~11 -> 1~12 */
+	 
 	tm.tm_mon++;
-	/* 0~59 -> 0~29(2sec counts) */
+	 
 	tm.tm_sec >>= 1;
 
 	*time = cpu_to_le16(tm.tm_hour << 11 | tm.tm_min << 5 | tm.tm_sec);
@@ -281,36 +238,29 @@ static inline struct timespec64 fat_timespec64_trunc_2secs(struct timespec64 ts)
 	return (struct timespec64){ ts.tv_sec & ~1ULL, 0 };
 }
 
-/*
- * truncate atime to 24 hour granularity (00:00:00 in local timezone)
- */
+ 
 struct timespec64 fat_truncate_atime(const struct msdos_sb_info *sbi,
 				     const struct timespec64 *ts)
 {
-	/* to localtime */
+	 
 	time64_t seconds = ts->tv_sec - fat_tz_offset(sbi);
 	s32 remainder;
 
 	div_s64_rem(seconds, SECS_PER_DAY, &remainder);
-	/* to day boundary, and back to unix time */
+	 
 	seconds = seconds + fat_tz_offset(sbi) - remainder;
 
 	return (struct timespec64){ seconds, 0 };
 }
 
-/*
- * truncate mtime to 2 second granularity
- */
+ 
 struct timespec64 fat_truncate_mtime(const struct msdos_sb_info *sbi,
 				     const struct timespec64 *ts)
 {
 	return fat_timespec64_trunc_2secs(*ts);
 }
 
-/*
- * truncate the various times with appropriate granularity:
- *   all times in root node are always 0
- */
+ 
 int fat_truncate_time(struct inode *inode, struct timespec64 *now, int flags)
 {
 	struct msdos_sb_info *sbi = MSDOS_SB(inode->i_sb);
@@ -326,11 +276,7 @@ int fat_truncate_time(struct inode *inode, struct timespec64 *now, int flags)
 
 	if (flags & S_ATIME)
 		inode->i_atime = fat_truncate_atime(sbi, now);
-	/*
-	 * ctime and mtime share the same on-disk field, and should be
-	 * identical in memory. all mtime updates will be applied to ctime,
-	 * but ctime updates are ignored.
-	 */
+	 
 	if (flags & S_MTIME)
 		inode->i_mtime = inode_set_ctime_to_ts(inode,
 						       fat_truncate_mtime(sbi, now));

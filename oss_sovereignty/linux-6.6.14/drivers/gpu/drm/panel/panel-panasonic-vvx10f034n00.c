@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Red Hat
- * Copyright (C) 2015 Sony Mobile Communications Inc.
- * Author: Werner Johansson <werner.johansson@sonymobile.com>
- *
- * Based on AUO panel driver by Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -19,11 +13,7 @@
 #include <drm/drm_mipi_dsi.h>
 #include <drm/drm_panel.h>
 
-/*
- * When power is turned off to this panel a minimum off time of 500ms has to be
- * observed before powering back on as there's no external reset pin. Keep
- * track of earliest wakeup time and delay subsequent prepare call accordingly
- */
+ 
 #define MIN_POFF_MS (500)
 
 struct wuxga_nt_panel {
@@ -88,13 +78,10 @@ static int wuxga_nt_panel_prepare(struct drm_panel *panel)
 	if (wuxga_nt->prepared)
 		return 0;
 
-	/*
-	 * If the user re-enabled the panel before the required off-time then
-	 * we need to wait the remaining period before re-enabling regulator
-	 */
+	 
 	enablewait = ktime_ms_delta(wuxga_nt->earliest_wake, ktime_get_real());
 
-	/* Sanity check, this should never happen */
+	 
 	if (enablewait > MIN_POFF_MS)
 		enablewait = MIN_POFF_MS;
 
@@ -105,10 +92,7 @@ static int wuxga_nt_panel_prepare(struct drm_panel *panel)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * A minimum delay of 250ms is required after power-up until commands
-	 * can be sent
-	 */
+	 
 	msleep(250);
 
 	ret = wuxga_nt_panel_on(wuxga_nt);

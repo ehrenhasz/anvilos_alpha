@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) Fuzhou Rockchip Electronics Co.Ltd
- * Author:Mark Yao <mark.yao@rock-chips.com>
- */
+ 
+ 
 
 #ifndef _ROCKCHIP_DRM_VOP2_H
 #define _ROCKCHIP_DRM_VOP2_H
@@ -17,13 +14,11 @@
 #define WIN_FEATURE_AFBDC		BIT(0)
 #define WIN_FEATURE_CLUSTER		BIT(1)
 
-/*
- *  the delay number of a window in different mode.
- */
+ 
 enum win_dly_mode {
-	VOP2_DLY_MODE_DEFAULT,   /**< default mode */
-	VOP2_DLY_MODE_HISO_S,    /** HDR in SDR out mode, as a SDR window */
-	VOP2_DLY_MODE_HIHO_H,    /** HDR in HDR out mode, as a HDR window */
+	VOP2_DLY_MODE_DEFAULT,    
+	VOP2_DLY_MODE_HISO_S,     
+	VOP2_DLY_MODE_HIHO_H,     
 	VOP2_DLY_MODE_MAX,
 };
 
@@ -61,7 +56,7 @@ enum vop2_win_regs {
 	VOP2_WIN_COLOR_KEY_EN,
 	VOP2_WIN_DITHER_UP,
 
-	/* scale regs */
+	 
 	VOP2_WIN_SCALE_YRGB_X,
 	VOP2_WIN_SCALE_YRGB_Y,
 	VOP2_WIN_SCALE_CBCR_X,
@@ -80,12 +75,12 @@ enum vop2_win_regs {
 	VOP2_WIN_VSD_YRGB_GT4,
 	VOP2_WIN_BIC_COE_SEL,
 
-	/* cluster regs */
+	 
 	VOP2_WIN_CLUSTER_ENABLE,
 	VOP2_WIN_AFBC_ENABLE,
 	VOP2_WIN_CLUSTER_LB_MODE,
 
-	/* afbc regs */
+	 
 	VOP2_WIN_AFBC_FORMAT,
 	VOP2_WIN_AFBC_RB_SWAP,
 	VOP2_WIN_AFBC_UV_SWAP,
@@ -116,9 +111,7 @@ struct vop2_win_data {
 	const uint64_t *format_modifiers;
 	const unsigned int supported_rotations;
 
-	/**
-	 * @layer_sel_id: defined by register OVERLAY_LAYER_SEL of VOP2
-	 */
+	 
 	unsigned int layer_sel_id;
 	uint64_t feature;
 
@@ -151,7 +144,7 @@ struct vop2_data {
 	unsigned int soc_id;
 };
 
-/* interrupt define */
+ 
 #define FS_NEW_INTR			BIT(4)
 #define ADDR_SAME_INTR			BIT(5)
 #define LINE_FLAG1_INTR			BIT(6)
@@ -169,9 +162,7 @@ struct vop2_data {
 #define WB_YRGB_FIFO_FULL_INTR		BIT(18)
 #define WB_COMPLETE_INTR		BIT(19)
 
-/*
- * display output interface supported by rockchip lcdc
- */
+ 
 #define ROCKCHIP_OUT_MODE_P888		0
 #define ROCKCHIP_OUT_MODE_BT1120	0
 #define ROCKCHIP_OUT_MODE_P666		1
@@ -180,7 +171,7 @@ struct vop2_data {
 #define ROCKCHIP_OUT_MODE_S888		8
 #define ROCKCHIP_OUT_MODE_S888_DUMMY	12
 #define ROCKCHIP_OUT_MODE_YUV420	14
-/* for use special outface */
+ 
 #define ROCKCHIP_OUT_MODE_AAAA		15
 
 enum vop_csc_format {
@@ -209,7 +200,7 @@ enum dst_factor_mode {
 };
 
 #define RK3568_GRF_VO_CON1			0x0364
-/* System registers definition */
+ 
 #define RK3568_REG_CFG_DONE			0x000
 #define RK3568_VERSION_INFO			0x004
 #define RK3568_SYS_AUTO_GATING_CTRL		0x008
@@ -236,7 +227,7 @@ enum dst_factor_mode {
 #define RK3568_VP_INT_STATUS(vp)		(0xA8 + (vp) * 0x10)
 #define RK3568_VP_INT_RAW_STATUS(vp)		(0xAC + (vp) * 0x10)
 
-/* Video Port registers definition */
+ 
 #define RK3568_VP_DSP_CTRL			0x00
 #define RK3568_VP_MIPI_CTRL			0x04
 #define RK3568_VP_COLOR_BAR_CTRL		0x08
@@ -260,7 +251,7 @@ enum dst_factor_mode {
 #define RK3568_VP_BCSH_H			0x68
 #define RK3568_VP_BCSH_COLOR_BAR		0x6C
 
-/* Overlay registers definition    */
+ 
 #define RK3568_OVL_CTRL				0x600
 #define RK3568_OVL_LAYER_SEL			0x604
 #define RK3568_OVL_PORT_SEL			0x608
@@ -280,7 +271,7 @@ enum dst_factor_mode {
 #define RK3568_CLUSTER_DLY_NUM			0x6F0
 #define RK3568_SMART_DLY_NUM			0x6F8
 
-/* Cluster register definition, offset relative to window base */
+ 
 #define RK3568_CLUSTER_WIN_CTRL0		0x00
 #define RK3568_CLUSTER_WIN_CTRL1		0x04
 #define RK3568_CLUSTER_WIN_YRGB_MST		0x10
@@ -302,7 +293,7 @@ enum dst_factor_mode {
 
 #define RK3568_CLUSTER_CTRL			0x100
 
-/* (E)smart register definition, offset relative to window base */
+ 
 #define RK3568_SMART_CTRL0			0x00
 #define RK3568_SMART_CTRL1			0x04
 #define RK3568_SMART_REGION0_CTRL		0x10
@@ -351,7 +342,7 @@ enum dst_factor_mode {
 #define RK3568_SMART_REGION3_SCL_OFFSET		0xCC
 #define RK3568_SMART_COLOR_KEY_CTRL		0xD0
 
-/* HDR register definition */
+ 
 #define RK3568_HDR_LUT_CTRL			0x2000
 #define RK3568_HDR_LUT_MST			0x2004
 #define RK3568_SDR2HDR_CTRL			0x2010
@@ -469,4 +460,4 @@ enum vop2_layer_phy_id {
 
 extern const struct component_ops vop2_component_ops;
 
-#endif /* _ROCKCHIP_DRM_VOP2_H */
+#endif  

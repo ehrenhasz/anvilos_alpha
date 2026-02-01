@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Raydium RM67191 MIPI-DSI panel driver
- *
- * Copyright 2019 NXP
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -21,24 +17,21 @@
 #include <drm/drm_mipi_dsi.h>
 #include <drm/drm_panel.h>
 
-/* Panel specific color-format bits */
+ 
 #define COL_FMT_16BPP 0x55
 #define COL_FMT_18BPP 0x66
 #define COL_FMT_24BPP 0x77
 
-/* Write Manufacture Command Set Control */
+ 
 #define WRMAUCCTR 0xFE
 
-/* Manufacturer Command Set pages (CMD2) */
+ 
 struct cmd_set_entry {
 	u8 cmd;
 	u8 param;
 };
 
-/*
- * There is no description in the Reference Manual about these commands.
- * We received them from vendor, so just use them as is.
- */
+ 
 static const struct cmd_set_entry manufacturer_cmd_set[] = {
 	{0xFE, 0x0B},
 	{0x28, 0x40},
@@ -258,7 +251,7 @@ static int color_format_from_dsi_format(enum mipi_dsi_pixel_format format)
 	case MIPI_DSI_FMT_RGB888:
 		return COL_FMT_24BPP;
 	default:
-		return COL_FMT_24BPP; /* for backward compatibility */
+		return COL_FMT_24BPP;  
 	}
 };
 
@@ -294,11 +287,7 @@ static int rad_panel_unprepare(struct drm_panel *panel)
 	if (!rad->prepared)
 		return 0;
 
-	/*
-	 * Right after asserting the reset, we need to release it, so that the
-	 * touch driver can have an active connection with the touch controller
-	 * even after the display is turned off.
-	 */
+	 
 	if (rad->reset) {
 		gpiod_set_value_cansleep(rad->reset, 1);
 		usleep_range(15000, 17000);
@@ -333,12 +322,12 @@ static int rad_panel_enable(struct drm_panel *panel)
 		goto fail;
 	}
 
-	/* Select User Command Set table (CMD1) */
+	 
 	ret = mipi_dsi_generic_write(dsi, (u8[]){ WRMAUCCTR, 0x00 }, 2);
 	if (ret < 0)
 		goto fail;
 
-	/* Software reset */
+	 
 	ret = mipi_dsi_dcs_soft_reset(dsi);
 	if (ret < 0) {
 		dev_err(dev, "Failed to do Software Reset (%d)\n", ret);
@@ -347,32 +336,32 @@ static int rad_panel_enable(struct drm_panel *panel)
 
 	usleep_range(15000, 17000);
 
-	/* Set DSI mode */
+	 
 	ret = mipi_dsi_generic_write(dsi, (u8[]){ 0xC2, 0x0B }, 2);
 	if (ret < 0) {
 		dev_err(dev, "Failed to set DSI mode (%d)\n", ret);
 		goto fail;
 	}
-	/* Set tear ON */
+	 
 	ret = mipi_dsi_dcs_set_tear_on(dsi, MIPI_DSI_DCS_TEAR_MODE_VBLANK);
 	if (ret < 0) {
 		dev_err(dev, "Failed to set tear ON (%d)\n", ret);
 		goto fail;
 	}
-	/* Set tear scanline */
+	 
 	ret = mipi_dsi_dcs_set_tear_scanline(dsi, 0x380);
 	if (ret < 0) {
 		dev_err(dev, "Failed to set tear scanline (%d)\n", ret);
 		goto fail;
 	}
-	/* Set pixel format */
+	 
 	ret = mipi_dsi_dcs_set_pixel_format(dsi, color_format);
 	dev_dbg(dev, "Interface color format set to 0x%x\n", color_format);
 	if (ret < 0) {
 		dev_err(dev, "Failed to set pixel format (%d)\n", ret);
 		goto fail;
 	}
-	/* Exit sleep mode */
+	 
 	ret = mipi_dsi_dcs_exit_sleep_mode(dsi);
 	if (ret < 0) {
 		dev_err(dev, "Failed to exit sleep mode (%d)\n", ret);
@@ -559,14 +548,14 @@ static int rad_panel_probe(struct mipi_dsi_device *dsi)
 	if (!ret) {
 		switch (video_mode) {
 		case 0:
-			/* burst mode */
+			 
 			dsi->mode_flags |= MIPI_DSI_MODE_VIDEO_BURST;
 			break;
 		case 1:
-			/* non-burst mode with sync event */
+			 
 			break;
 		case 2:
-			/* non-burst mode with sync pulse */
+			 
 			dsi->mode_flags |= MIPI_DSI_MODE_VIDEO_SYNC_PULSE;
 			break;
 		default:
@@ -639,7 +628,7 @@ static void rad_panel_shutdown(struct mipi_dsi_device *dsi)
 
 static const struct of_device_id rad_of_match[] = {
 	{ .compatible = "raydium,rm67191", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, rad_of_match);
 

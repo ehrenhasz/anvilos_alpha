@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sysfs.c - ACPI sysfs interface to userspace.
- */
+
+ 
 
 #define pr_fmt(fmt) "ACPI: " fmt
 
@@ -15,15 +13,7 @@
 #include "internal.h"
 
 #ifdef CONFIG_ACPI_DEBUG
-/*
- * ACPI debug sysfs I/F, including:
- * /sys/modules/acpi/parameters/debug_layer
- * /sys/modules/acpi/parameters/debug_level
- * /sys/modules/acpi/parameters/trace_method_name
- * /sys/modules/acpi/parameters/trace_state
- * /sys/modules/acpi/parameters/trace_debug_layer
- * /sys/modules/acpi/parameters/trace_debug_level
- */
+ 
 
 struct acpi_dlayer {
 	const char *name;
@@ -168,18 +158,14 @@ static int param_set_trace_method_name(const char *val,
 		return -ENOSPC;
 	}
 
-	/*
-	 * It's not safe to update acpi_gbl_trace_method_name without
-	 * having the tracer stopped, so we save the original tracer
-	 * state and disable it.
-	 */
+	 
 	saved_flags = acpi_gbl_trace_flags;
 	(void)acpi_debug_trace(NULL,
 			       acpi_gbl_trace_dbg_level,
 			       acpi_gbl_trace_dbg_layer,
 			       0);
 
-	/* This is a hack.  We can't kmalloc in early boot. */
+	 
 	if (is_abs_path)
 		strcpy(trace_method_name, val);
 	else {
@@ -187,7 +173,7 @@ static int param_set_trace_method_name(const char *val,
 		strcpy(trace_method_name+1, val);
 	}
 
-	/* Restore the original tracer state */
+	 
 	(void)acpi_debug_trace(trace_method_name,
 			       acpi_gbl_trace_dbg_level,
 			       acpi_gbl_trace_dbg_layer,
@@ -222,7 +208,7 @@ static int param_set_trace_state(const char *val,
 	const char *method = trace_method_name;
 	u32 flags = 0;
 
-/* So "xxx-once" comparison should go prior than "xxx" comparison */
+ 
 #define acpi_compare_param(val, key)	\
 	strncmp((val), (key), sizeof(key) - 1)
 
@@ -266,17 +252,17 @@ static int param_get_trace_state(char *buffer, const struct kernel_param *kp)
 
 module_param_call(trace_state, param_set_trace_state, param_get_trace_state,
 		  NULL, 0644);
-#endif /* CONFIG_ACPI_DEBUG */
+#endif  
 
 
-/* /sys/modules/acpi/parameters/aml_debug_output */
+ 
 
 module_param_named(aml_debug_output, acpi_gbl_enable_aml_debug_object,
 		   byte, 0644);
 MODULE_PARM_DESC(aml_debug_output,
 		 "To enable/disable the ACPI Debug Object output.");
 
-/* /sys/module/acpi/parameters/acpica_version */
+ 
 static int param_get_acpica_version(char *buffer,
 				    const struct kernel_param *kp)
 {
@@ -289,12 +275,7 @@ static int param_get_acpica_version(char *buffer,
 
 module_param_call(acpica_version, NULL, param_get_acpica_version, NULL, 0444);
 
-/*
- * ACPI table sysfs I/F:
- * /sys/firmware/acpi/tables/
- * /sys/firmware/acpi/tables/data/
- * /sys/firmware/acpi/tables/dynamic/
- */
+ 
 
 static LIST_HEAD(acpi_table_attr_list);
 static struct kobject *tables_kobj;
@@ -303,7 +284,7 @@ static struct kobject *dynamic_tables_kobj;
 static struct kobject *hotplug_kobj;
 
 #define ACPI_MAX_TABLE_INSTANCES	999
-#define ACPI_INST_SIZE			4 /* including trailing 0 */
+#define ACPI_INST_SIZE			4  
 
 struct acpi_table_attr {
 	struct bin_attribute attr;
@@ -399,11 +380,7 @@ acpi_status acpi_sysfs_table_handler(u32 event, void *table, void *context)
 	case ACPI_TABLE_EVENT_LOAD:
 	case ACPI_TABLE_EVENT_UNLOAD:
 	case ACPI_TABLE_EVENT_UNINSTALL:
-		/*
-		 * we do not need to do anything right now
-		 * because the table is not deleted from the
-		 * global table list when unloading it.
-		 */
+		 
 		break;
 	default:
 		return AE_BAD_PARAMETER;
@@ -559,18 +536,15 @@ err:
 	return -ENOMEM;
 }
 
-/*
- * Detailed ACPI IRQ counters:
- * /sys/firmware/acpi/interrupts/
- */
+ 
 
 u32 acpi_irq_handled;
 u32 acpi_irq_not_handled;
 
 #define COUNT_GPE 0
-#define COUNT_SCI 1		/* acpi_irq_handled */
-#define COUNT_SCI_NOT 2		/* acpi_irq_not_handled */
-#define COUNT_ERROR 3		/* other */
+#define COUNT_SCI 1		 
+#define COUNT_SCI_NOT 2		 
+#define COUNT_ERROR 3		 
 #define NUM_COUNTERS_EXTRA 4
 
 struct event_counter {
@@ -689,7 +663,7 @@ static ssize_t counter_show(struct kobject *kobj,
 	    acpi_gpe_count;
 	size = sprintf(buf, "%8u", all_counters[index].count);
 
-	/* "gpe_all" or "sci" */
+	 
 	if (index >= num_gpes + ACPI_NUM_FIXED_EVENTS)
 		goto end;
 
@@ -724,11 +698,7 @@ end:
 	return result ? result : size;
 }
 
-/*
- * counter_set() sets the specified counter.
- * setting the total "sci" file to any value clears all counters.
- * enable/disable/clear a gpe/fixed event in user space.
- */
+ 
 static ssize_t counter_set(struct kobject *kobj,
 			   struct kobj_attribute *attr, const char *buf,
 			   size_t size)
@@ -749,7 +719,7 @@ static ssize_t counter_set(struct kobject *kobj,
 		goto end;
 	}
 
-	/* show the event status for both GPEs and Fixed Events */
+	 
 	result = get_status(index, &status, &handle);
 	if (result)
 		goto end;
@@ -801,23 +771,7 @@ end:
 	return result ? result : size;
 }
 
-/*
- * A Quirk Mechanism for GPE Flooding Prevention:
- *
- * Quirks may be needed to prevent GPE flooding on a specific GPE. The
- * flooding typically cannot be detected and automatically prevented by
- * ACPI_GPE_DISPATCH_NONE check because there is a _Lxx/_Exx prepared in
- * the AML tables. This normally indicates a feature gap in Linux, thus
- * instead of providing endless quirk tables, we provide a boot parameter
- * for those who want this quirk. For example, if the users want to prevent
- * the GPE flooding for GPE 00, they need to specify the following boot
- * parameter:
- *   acpi_mask_gpe=0x00
- * Note, the parameter can be a list (see bitmap_parselist() for the details).
- * The masking status can be modified by the following runtime controlling
- * interface:
- *   echo unmask > /sys/firmware/acpi/interrupts/gpe00
- */
+ 
 #define ACPI_MASKABLE_GPE_MAX	0x100
 static DECLARE_BITMAP(acpi_masked_gpes_map, ACPI_MASKABLE_GPE_MAX) __initdata;
 

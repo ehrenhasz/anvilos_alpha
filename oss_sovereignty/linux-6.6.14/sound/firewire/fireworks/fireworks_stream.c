@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * fireworks_stream.c - a part of driver for Fireworks based devices
- *
- * Copyright (c) 2013-2014 Takashi Sakamoto
- */
+
+ 
 #include "./fireworks.h"
 
 #define READY_TIMEOUT_MS	1000
@@ -37,24 +33,24 @@ static int init_stream(struct snd_efw *efw, struct amdtp_stream *stream)
 	}
 
 	if (stream == &efw->tx_stream) {
-		// Fireworks transmits NODATA packets with TAG0.
+		
 		efw->tx_stream.flags |= CIP_EMPTY_WITH_TAG0;
-		// Fireworks has its own meaning for dbc.
+		
 		efw->tx_stream.flags |= CIP_DBC_IS_END_EVENT;
-		// Fireworks reset dbc at bus reset.
+		
 		efw->tx_stream.flags |= CIP_SKIP_DBC_ZERO_CHECK;
-		// But Recent firmwares starts packets with non-zero dbc.
-		// Driver version 5.7.6 installs firmware version 5.7.3.
+		
+		
 		if (efw->is_fireworks3 &&
 		    (efw->firmware_version == 0x5070000 ||
 		     efw->firmware_version == 0x5070300 ||
 		     efw->firmware_version == 0x5080000))
 			efw->tx_stream.flags |= CIP_UNALIGHED_DBC;
-		// AudioFire9 always reports wrong dbs. Onyx 1200F with the latest firmware (v4.6.0)
-		// also report wrong dbs at 88.2 kHz or greater.
+		
+		
 		if (efw->is_af9 || efw->firmware_version == 0x4060000)
 			efw->tx_stream.flags |= CIP_WRONG_DBS;
-		// Firmware version 5.5 reports fixed interval for dbc.
+		
 		if (efw->firmware_version == 0x5050000)
 			efw->tx_stream.ctx_data.tx.dbc_interval = 8;
 	}
@@ -73,12 +69,12 @@ static int start_stream(struct snd_efw *efw, struct amdtp_stream *stream,
 	else
 		conn = &efw->in_conn;
 
-	// Establish connection via CMP.
+	
 	err = cmp_connection_establish(conn);
 	if (err < 0)
 		return err;
 
-	// Start amdtp stream.
+	
 	err = amdtp_domain_add_stream(&efw->domain, stream,
 				      conn->resources.channel, conn->speed);
 	if (err < 0) {
@@ -89,8 +85,8 @@ static int start_stream(struct snd_efw *efw, struct amdtp_stream *stream,
 	return 0;
 }
 
-// This function should be called before starting the stream or after stopping
-// the streams.
+
+
 static void destroy_stream(struct snd_efw *efw, struct amdtp_stream *stream)
 {
 	amdtp_stream_destroy(stream);
@@ -146,7 +142,7 @@ int snd_efw_stream_init_duplex(struct snd_efw *efw)
 		return err;
 	}
 
-	// set IEC61883 compliant mode (actually not fully compliant...).
+	
 	err = snd_efw_command_set_tx_mode(efw, SND_EFW_TRANSPORT_MODE_IEC61883);
 	if (err < 0) {
 		destroy_stream(efw, &efw->tx_stream);
@@ -189,13 +185,13 @@ int snd_efw_stream_reserve_duplex(struct snd_efw *efw, unsigned int rate,
 	unsigned int curr_rate;
 	int err;
 
-	// Considering JACK/FFADO streaming:
-	// TODO: This can be removed hwdep functionality becomes popular.
+	
+	
 	err = check_connection_used_by_others(efw, &efw->rx_stream);
 	if (err < 0)
 		return err;
 
-	// stop streams if rate is different.
+	
 	err = snd_efw_command_get_sampling_rate(efw, &curr_rate);
 	if (err < 0)
 		return err;
@@ -249,7 +245,7 @@ int snd_efw_stream_start_duplex(struct snd_efw *efw)
 	unsigned int rate;
 	int err = 0;
 
-	// Need no substreams.
+	
 	if (efw->substreams_counter == 0)
 		return -EIO;
 
@@ -267,8 +263,8 @@ int snd_efw_stream_start_duplex(struct snd_efw *efw)
 	if (!amdtp_stream_running(&efw->rx_stream)) {
 		unsigned int tx_init_skip_cycles;
 
-		// Audiofire 2/4 skip an isochronous cycle several thousands after starting
-		// packet transmission.
+		
+		
 		if (efw->is_fireworks3 && !efw->is_af9)
 			tx_init_skip_cycles = 6000;
 		else
@@ -282,9 +278,9 @@ int snd_efw_stream_start_duplex(struct snd_efw *efw)
 		if (err < 0)
 			goto error;
 
-		// NOTE: The device ignores presentation time expressed by the value of syt field
-		// of CIP header in received packets. The sequence of the number of data blocks per
-		// packet is important for media clock recovery.
+		
+		
+		
 		err = amdtp_domain_start(&efw->domain, tx_init_skip_cycles, true, false);
 		if (err < 0)
 			goto error;
@@ -349,13 +345,13 @@ int snd_efw_stream_lock_try(struct snd_efw *efw)
 
 	spin_lock_irq(&efw->lock);
 
-	/* user land lock this */
+	 
 	if (efw->dev_lock_count < 0) {
 		err = -EBUSY;
 		goto end;
 	}
 
-	/* this is the first time */
+	 
 	if (efw->dev_lock_count++ == 0)
 		snd_efw_stream_lock_changed(efw);
 	err = 0;

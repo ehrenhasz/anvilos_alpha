@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* MCP23S08 I2C GPIO driver */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/mod_devicetable.h>
@@ -83,7 +83,7 @@ static const struct of_device_id mcp23s08_i2c_of_match[] = {
 		.compatible = "microchip,mcp23018",
 		.data = (void *) MCP_TYPE_018,
 	},
-/* NOTE: The use of the mcp prefix is deprecated and will be removed. */
+ 
 	{
 		.compatible = "mcp,mcp23008",
 		.data = (void *) MCP_TYPE_008,
@@ -110,10 +110,7 @@ static int __init mcp23s08_i2c_init(void)
 	return i2c_add_driver(&mcp230xx_driver);
 }
 
-/*
- * Register after I²C postcore initcall and before
- * subsys initcalls that may rely on these GPIOs.
- */
+ 
 subsys_initcall(mcp23s08_i2c_init);
 
 static void mcp23s08_i2c_exit(void)

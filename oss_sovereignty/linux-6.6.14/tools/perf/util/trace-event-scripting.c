@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * trace-event-scripting.  Scripting engine common and initialization code.
- *
- * Copyright (C) 2009-2010 Tom Zanussi <tzanussi@gmail.com>
- */
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>

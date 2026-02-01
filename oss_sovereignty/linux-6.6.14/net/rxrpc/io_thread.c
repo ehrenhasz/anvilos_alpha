@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* RxRPC packet reception
- *
- * Copyright (C) 2007, 2016, 2022 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -13,16 +9,7 @@ static int rxrpc_input_packet_on_conn(struct rxrpc_connection *conn,
 				      struct sockaddr_rxrpc *peer_srx,
 				      struct sk_buff *skb);
 
-/*
- * handle data received on the local endpoint
- * - may be called in interrupt context
- *
- * [!] Note that as this is called from the encap_rcv hook, the socket is not
- * held locked by the caller and nothing prevents sk_user_data on the UDP from
- * being cleared in the middle of processing this function.
- *
- * Called with the RCU read lock held from the IP layer via UDP.
- */
+ 
 int rxrpc_encap_rcv(struct sock *udp_sk, struct sk_buff *skb)
 {
 	struct sk_buff_head *rx_queue;
@@ -51,9 +38,7 @@ int rxrpc_encap_rcv(struct sock *udp_sk, struct sk_buff *skb)
 	return 0;
 }
 
-/*
- * Handle an error received on the local endpoint.
- */
+ 
 void rxrpc_error_report(struct sock *sk)
 {
 	struct rxrpc_local *local;
@@ -76,9 +61,7 @@ void rxrpc_error_report(struct sock *sk)
 	rcu_read_unlock();
 }
 
-/*
- * Directly produce an abort from a packet.
- */
+ 
 bool rxrpc_direct_abort(struct sk_buff *skb, enum rxrpc_abort_reason why,
 			s32 abort_code, int err)
 {
@@ -98,9 +81,7 @@ static bool rxrpc_bad_message(struct sk_buff *skb, enum rxrpc_abort_reason why)
 
 #define just_discard true
 
-/*
- * Process event packets targeted at a local endpoint.
- */
+ 
 static bool rxrpc_input_version(struct rxrpc_local *local, struct sk_buff *skb)
 {
 	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
@@ -117,15 +98,13 @@ static bool rxrpc_input_version(struct rxrpc_local *local, struct sk_buff *skb)
 	return true;
 }
 
-/*
- * Extract the wire header from a packet and translate the byte order.
- */
+ 
 static bool rxrpc_extract_header(struct rxrpc_skb_priv *sp,
 				 struct sk_buff *skb)
 {
 	struct rxrpc_wire_header whdr;
 
-	/* dig out the RxRPC connection details */
+	 
 	if (skb_copy_bits(skb, 0, &whdr, sizeof(whdr)) < 0)
 		return rxrpc_bad_message(skb, rxrpc_badmsg_short_hdr);
 
@@ -144,9 +123,7 @@ static bool rxrpc_extract_header(struct rxrpc_skb_priv *sp,
 	return true;
 }
 
-/*
- * Extract the abort code from an ABORT packet and stash it in skb->priority.
- */
+ 
 static bool rxrpc_extract_abort(struct sk_buff *skb)
 {
 	__be32 wtmp;
@@ -158,9 +135,7 @@ static bool rxrpc_extract_abort(struct sk_buff *skb)
 	return true;
 }
 
-/*
- * Process packets received on the local endpoint
- */
+ 
 static bool rxrpc_input_packet(struct rxrpc_local *local, struct sk_buff **_skb)
 {
 	struct rxrpc_connection *conn;
@@ -174,7 +149,7 @@ static bool rxrpc_input_packet(struct rxrpc_local *local, struct sk_buff **_skb)
 
 	sp = rxrpc_skb(skb);
 
-	/* dig out the RxRPC connection details */
+	 
 	if (!rxrpc_extract_header(sp, skb))
 		return just_discard;
 
@@ -205,7 +180,7 @@ static bool rxrpc_input_packet(struct rxrpc_local *local, struct sk_buff **_skb)
 		break;
 	case RXRPC_PACKET_TYPE_ABORT:
 		if (!rxrpc_extract_abort(skb))
-			return just_discard; /* Just discard if malformed */
+			return just_discard;  
 		break;
 
 	case RXRPC_PACKET_TYPE_DATA:
@@ -214,9 +189,7 @@ static bool rxrpc_input_packet(struct rxrpc_local *local, struct sk_buff **_skb)
 		if (sp->hdr.seq == 0)
 			return rxrpc_bad_message(skb, rxrpc_badmsg_zero_seq);
 
-		/* Unshare the packet so that it can be modified for in-place
-		 * decryption.
-		 */
+		 
 		if (sp->hdr.securityIndex != 0) {
 			skb = skb_unshare(skb, GFP_ATOMIC);
 			if (!skb) {
@@ -243,7 +216,7 @@ static bool rxrpc_input_packet(struct rxrpc_local *local, struct sk_buff **_skb)
 			return just_discard;
 		break;
 
-		/* Packet types 9-11 should just be ignored. */
+		 
 	case RXRPC_PACKET_TYPE_PARAMS:
 	case RXRPC_PACKET_TYPE_10:
 	case RXRPC_PACKET_TYPE_11:
@@ -257,7 +230,7 @@ static bool rxrpc_input_packet(struct rxrpc_local *local, struct sk_buff **_skb)
 		return rxrpc_bad_message(skb, rxrpc_badmsg_zero_service);
 
 	if (WARN_ON_ONCE(rxrpc_extract_addr_from_skb(&peer_srx, skb) < 0))
-		return just_discard; /* Unsupported address type. */
+		return just_discard;  
 
 	if (peer_srx.transport.family != local->srx.transport.family &&
 	    (peer_srx.transport.family == AF_INET &&
@@ -265,7 +238,7 @@ static bool rxrpc_input_packet(struct rxrpc_local *local, struct sk_buff **_skb)
 		pr_warn_ratelimited("AF_RXRPC: Protocol mismatch %u not %u\n",
 				    peer_srx.transport.family,
 				    local->srx.transport.family);
-		return just_discard; /* Wrong address type. */
+		return just_discard;  
 	}
 
 	if (rxrpc_to_client(sp)) {
@@ -281,10 +254,7 @@ static bool rxrpc_input_packet(struct rxrpc_local *local, struct sk_buff **_skb)
 		return ret;
 	}
 
-	/* We need to look up service connections by the full protocol
-	 * parameter set.  We look up the peer first as an intermediate step
-	 * and then the connection from the peer's tree.
-	 */
+	 
 	rcu_read_lock();
 
 	peer = rxrpc_lookup_peer_rcu(local, &peer_srx);
@@ -310,9 +280,7 @@ static bool rxrpc_input_packet(struct rxrpc_local *local, struct sk_buff **_skb)
 	return ret;
 }
 
-/*
- * Deal with a packet that's associated with an extant connection.
- */
+ 
 static int rxrpc_input_packet_on_conn(struct rxrpc_connection *conn,
 				      struct sockaddr_rxrpc *peer_srx,
 				      struct sk_buff *skb)
@@ -343,15 +311,15 @@ static int rxrpc_input_packet_on_conn(struct rxrpc_connection *conn,
 	if (after(sp->hdr.serial, conn->hi_serial))
 		conn->hi_serial = sp->hdr.serial;
 
-	/* It's a connection-level packet if the call number is 0. */
+	 
 	if (sp->hdr.callNumber == 0)
 		return rxrpc_input_conn_packet(conn, skb);
 
-	/* Call-bound packets are routed by connection channel. */
+	 
 	channel = sp->hdr.cid & RXRPC_CHANNELMASK;
 	chan = &conn->channels[channel];
 
-	/* Ignore really old calls */
+	 
 	if (sp->hdr.callNumber < chan->last_call)
 		return just_discard;
 
@@ -360,16 +328,12 @@ static int rxrpc_input_packet_on_conn(struct rxrpc_connection *conn,
 		    sp->hdr.type == RXRPC_PACKET_TYPE_ABORT)
 			return just_discard;
 
-		/* For the previous service call, if completed successfully, we
-		 * discard all further packets.
-		 */
+		 
 		if (rxrpc_conn_is_service(conn) &&
 		    chan->last_type == RXRPC_PACKET_TYPE_ACK)
 			return just_discard;
 
-		/* But otherwise we need to retransmit the final packet from
-		 * data cached in the connection record.
-		 */
+		 
 		if (sp->hdr.type == RXRPC_PACKET_TYPE_DATA)
 			trace_rxrpc_rx_data(chan->call_debug_id,
 					    sp->hdr.seq,
@@ -407,9 +371,7 @@ static int rxrpc_input_packet_on_conn(struct rxrpc_connection *conn,
 	return ret;
 }
 
-/*
- * I/O and event handling thread.
- */
+ 
 int rxrpc_io_thread(void *data)
 {
 	struct rxrpc_connection *conn;
@@ -431,7 +393,7 @@ int rxrpc_io_thread(void *data)
 	for (;;) {
 		rxrpc_inc_stat(local->rxnet, stat_io_loop);
 
-		/* Deal with connections that want immediate attention. */
+		 
 		conn = list_first_entry_or_null(&local->conn_attend_q,
 						struct rxrpc_connection,
 						attend_link);
@@ -449,7 +411,7 @@ int rxrpc_io_thread(void *data)
 				       &local->client_conn_flags))
 			rxrpc_discard_expired_client_conns(local);
 
-		/* Deal with calls that want immediate attention. */
+		 
 		if ((call = list_first_entry_or_null(&local->call_attend_q,
 						     struct rxrpc_call,
 						     attend_link))) {
@@ -466,7 +428,7 @@ int rxrpc_io_thread(void *data)
 		if (!list_empty(&local->new_client_calls))
 			rxrpc_connect_client_calls(local);
 
-		/* Process received packets and errors. */
+		 
 		if ((skb = __skb_dequeue(&rx_queue))) {
 			struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
 			switch (skb->mark) {
@@ -494,7 +456,7 @@ int rxrpc_io_thread(void *data)
 			continue;
 		}
 
-		/* Inject a delay into packets if requested. */
+		 
 #ifdef CONFIG_AF_RXRPC_INJECT_RX_DELAY
 		now = ktime_get_real();
 		while ((skb = skb_peek(&local->rx_delay_queue))) {

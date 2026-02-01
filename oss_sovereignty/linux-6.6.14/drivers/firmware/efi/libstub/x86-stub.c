@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/* -----------------------------------------------------------------------
- *
- *   Copyright 2011 Intel Corporation; author Matt Fleming
- *
- * ----------------------------------------------------------------------- */
+
+ 
 
 #include <linux/efi.h>
 #include <linux/pci.h>
@@ -46,13 +42,7 @@ preserve_pci_rom_image(efi_pci_io_protocol_t *pci, struct pci_setup_rom **__rom)
 	uint64_t romsize;
 	void *romimage;
 
-	/*
-	 * Some firmware images contain EFI function pointers at the place where
-	 * the romimage and romsize fields are supposed to be. Typically the EFI
-	 * code is mapped at high addresses, translating to an unrealistically
-	 * large romsize. The UEFI spec limits the size of option ROMs to 16
-	 * MiB so we reject any ROMs over 16 MiB in size to catch this.
-	 */
+	 
 	romimage = efi_table_attr(pci, romimage);
 	romsize = efi_table_attr(pci, romsize);
 	if (!romimage || !romsize || romsize > SZ_16M)
@@ -105,15 +95,7 @@ free_struct:
 	return status;
 }
 
-/*
- * There's no way to return an informative status from this function,
- * because any analysis (and printing of error messages) needs to be
- * done directly at the EFI function call-site.
- *
- * For example, EFI_INVALID_PARAMETER could indicate a bug or maybe we
- * just didn't find any PCI devices, but there's no way to tell outside
- * the context of the call.
- */
+ 
 static void setup_efi_pci(struct boot_params *params)
 {
 	efi_status_t status;
@@ -244,11 +226,7 @@ void efi_adjust_memory_range_protection(unsigned long start,
 	if (efi_dxe_table == NULL)
 		return;
 
-	/*
-	 * Don't modify memory region attributes, they are
-	 * already suitable, to lower the possibility to
-	 * encounter firmware bugs.
-	 */
+	 
 
 	for (end = start + size; start < end; start = next) {
 
@@ -259,10 +237,7 @@ void efi_adjust_memory_range_protection(unsigned long start,
 
 		next = desc.base_address + desc.length;
 
-		/*
-		 * Only system memory is suitable for trampoline/kernel image placement,
-		 * so only this type of memory needs its attributes to be modified.
-		 */
+		 
 
 		if (desc.gcd_memory_type != EfiGcdMemoryTypeSystemMemory ||
 		    (desc.attributes & (EFI_MEMORY_RO | EFI_MEMORY_XP)) == 0)
@@ -293,10 +268,7 @@ static void setup_unaccepted_memory(void)
 	if (!IS_ENABLED(CONFIG_UNACCEPTED_MEMORY))
 		return;
 
-	/*
-	 * Enable unaccepted memory before calling exit boot services in order
-	 * for the UEFI to not accept all memory on EBS.
-	 */
+	 
 	status = efi_bs_call(locate_protocol, &mem_acceptance_proto, NULL,
 			     (void **)&proto);
 	if (status != EFI_SUCCESS)
@@ -323,9 +295,7 @@ static void setup_quirks(struct boot_params *boot_params)
 		retrieve_apple_device_properties(boot_params);
 }
 
-/*
- * See if we have Universal Graphics Adapter (UGA) protocol
- */
+ 
 static efi_status_t
 setup_uga(struct screen_info *si, efi_guid_t *uga_proto, unsigned long size)
 {
@@ -368,10 +338,7 @@ setup_uga(struct screen_info *si, efi_guid_t *uga_proto, unsigned long size)
 			width = w;
 			height = h;
 
-			/*
-			 * Once we've found a UGA supporting PCIIO,
-			 * don't bother looking any further.
-			 */
+			 
 			if (pciio)
 				break;
 
@@ -382,7 +349,7 @@ setup_uga(struct screen_info *si, efi_guid_t *uga_proto, unsigned long size)
 	if (!width && !height)
 		goto free_handle;
 
-	/* EFI framebuffer */
+	 
 	si->orig_video_isVGA	= VIDEO_TYPE_EFI;
 
 	si->lfb_depth		= 32;
@@ -444,11 +411,7 @@ void __noreturn efi_stub_entry(efi_handle_t handle,
 			       efi_system_table_t *sys_table_arg,
 			       struct boot_params *boot_params);
 
-/*
- * Because the x86 boot code expects to be passed a boot_params we
- * need to create one ourselves (usually the bootloader would create
- * one for us).
- */
+ 
 efi_status_t __efiapi efi_pe_entry(efi_handle_t handle,
 				   efi_system_table_t *sys_table_arg)
 {
@@ -462,7 +425,7 @@ efi_status_t __efiapi efi_pe_entry(efi_handle_t handle,
 
 	efi_system_table = sys_table_arg;
 
-	/* Check if we were booted by the EFI firmware */
+	 
 	if (efi_system_table->hdr.signature != EFI_SYSTEM_TABLE_SIGNATURE)
 		efi_exit(handle, EFI_INVALID_PARAMETER);
 
@@ -485,21 +448,18 @@ efi_status_t __efiapi efi_pe_entry(efi_handle_t handle,
 
 	hdr = &boot_params->hdr;
 
-	/* Copy the setup header from the second sector to boot_params */
+	 
 	memcpy(&hdr->jump, image_base + 512,
 	       sizeof(struct setup_header) - offsetof(struct setup_header, jump));
 
-	/*
-	 * Fill out some of the header fields ourselves because the
-	 * EFI firmware loader doesn't load the first sector.
-	 */
+	 
 	hdr->root_flags	= 1;
 	hdr->vid_mode	= 0xffff;
 	hdr->boot_flag	= 0xAA55;
 
 	hdr->type_of_loader = 0x21;
 
-	/* Convert unicode cmdline to ascii */
+	 
 	cmdline_ptr = efi_convert_cmdline(image, &options_size);
 	if (!cmdline_ptr)
 		goto fail;
@@ -510,15 +470,11 @@ efi_status_t __efiapi efi_pe_entry(efi_handle_t handle,
 	hdr->ramdisk_image = 0;
 	hdr->ramdisk_size = 0;
 
-	/*
-	 * Disregard any setup data that was provided by the bootloader:
-	 * setup_data could be pointing anywhere, and we have no way of
-	 * authenticating or validating the payload.
-	 */
+	 
 	hdr->setup_data = 0;
 
 	efi_stub_entry(handle, sys_table_arg, boot_params);
-	/* not reached */
+	 
 
 fail:
 	efi_free(sizeof(struct boot_params), (unsigned long)boot_params);
@@ -618,7 +574,7 @@ setup_e820(struct boot_params *params, struct setup_data *e820ext, u32 e820ext_s
 			continue;
 		}
 
-		/* Merge adjacent mappings */
+		 
 		if (prev && prev->type == e820_type &&
 		    (prev->addr + prev->size) == d->phys_addr) {
 			prev->size += d->num_pages << 12;
@@ -632,7 +588,7 @@ setup_e820(struct boot_params *params, struct setup_data *e820ext, u32 e820ext_s
 			if (!e820ext || e820ext_size < need)
 				return EFI_BUFFER_TOO_SMALL;
 
-			/* boot_params map full, switch to e820 extended */
+			 
 			entry = (struct boot_e820_entry *)e820ext->data;
 		}
 
@@ -745,12 +701,12 @@ static efi_status_t exit_boot(struct boot_params *boot_params, void *handle)
 	if (status != EFI_SUCCESS)
 		return status;
 
-	/* Might as well exit boot services now */
+	 
 	status = efi_exit_boot_services(handle, &priv, exit_boot_func);
 	if (status != EFI_SUCCESS)
 		return status;
 
-	/* Historic? */
+	 
 	boot_params->alt_mem_k	= 32 * 1024;
 
 	status = setup_e820(boot_params, e820ext, e820ext_size);
@@ -777,10 +733,7 @@ static void efi_get_seed(void *seed, int size)
 {
 	efi_get_random_bytes(size, seed);
 
-	/*
-	 * This only updates seed[0] when running on 32-bit, but in that case,
-	 * seed[1] is not used anyway, as there is no virtual KASLR on 32-bit.
-	 */
+	 
 	*(unsigned long *)seed ^= kaslr_get_random_long("EFI");
 }
 
@@ -796,7 +749,7 @@ static efi_status_t efi_decompress_kernel(unsigned long *kernel_entry)
 	efi_status_t status;
 	u32 seed[2] = {};
 
-	/* determine the required size of the allocation */
+	 
 	alloc_size = ALIGN(max_t(unsigned long, output_len, kernel_total_size),
 			   MIN_KERNEL_ALIGN);
 
@@ -809,13 +762,7 @@ static efi_status_t efi_decompress_kernel(unsigned long *kernel_entry)
 		virt_addr += (range * seed[1]) >> 32;
 		virt_addr &= ~(CONFIG_PHYSICAL_ALIGN - 1);
 
-		/*
-		 * Older Dell systems with AMI UEFI firmware v2.0 may hang
-		 * while decompressing the kernel if physical address
-		 * randomization is enabled.
-		 *
-		 * https://bugzilla.kernel.org/show_bug.cgi?id=218173
-		 */
+		 
 		if (efi_system_table->hdr.revision <= EFI_2_00_SYSTEM_TABLE_REVISION &&
 		    !memcmp(efistub_fw_vendor(), ami, sizeof(ami))) {
 			efi_debug("AMI firmware v2.0 or older detected - disabling physical KASLR\n");
@@ -845,17 +792,13 @@ static efi_status_t efi_decompress_kernel(unsigned long *kernel_entry)
 static void __noreturn enter_kernel(unsigned long kernel_addr,
 				    struct boot_params *boot_params)
 {
-	/* enter decompressed kernel with boot_params pointer in RSI/ESI */
+	 
 	asm("jmp *%0"::"r"(kernel_addr), "S"(boot_params));
 
 	unreachable();
 }
 
-/*
- * On success, this routine will jump to the relocated image directly and never
- * return.  On failure, it will exit to the firmware via efi_exit() instead of
- * returning.
- */
+ 
 void __noreturn efi_stub_entry(efi_handle_t handle,
 			       efi_system_table_t *sys_table_arg,
 			       struct boot_params *boot_params)
@@ -869,7 +812,7 @@ void __noreturn efi_stub_entry(efi_handle_t handle,
 	boot_params_pointer = boot_params;
 
 	efi_system_table = sys_table_arg;
-	/* Check if we were booted by the EFI firmware */
+	 
 	if (efi_system_table->hdr.signature != EFI_SYSTEM_TABLE_SIGNATURE)
 		efi_exit(handle, EFI_INVALID_PARAMETER);
 
@@ -885,7 +828,7 @@ void __noreturn efi_stub_entry(efi_handle_t handle,
 		}
 	}
 
-	/* grab the memory attributes protocol if it exists */
+	 
 	efi_bs_call(locate_protocol, &guid, NULL, (void **)&memattr);
 
 	status = efi_setup_5level_paging();
@@ -917,15 +860,7 @@ void __noreturn efi_stub_entry(efi_handle_t handle,
 		goto fail;
 	}
 
-	/*
-	 * At this point, an initrd may already have been loaded by the
-	 * bootloader and passed via bootparams. We permit an initrd loaded
-	 * from the LINUX_EFI_INITRD_MEDIA_GUID device path to supersede it.
-	 *
-	 * If the device path is not present, any command-line initrd=
-	 * arguments will be processed only if image is not NULL, which will be
-	 * the case only if we were loaded via the PE entry point.
-	 */
+	 
 	status = efi_load_initrd(image, hdr->initrd_addr_max, ULONG_MAX,
 				 &initrd);
 	if (status != EFI_SUCCESS)
@@ -938,14 +873,11 @@ void __noreturn efi_stub_entry(efi_handle_t handle,
 	}
 
 
-	/*
-	 * If the boot loader gave us a value for secure_boot then we use that,
-	 * otherwise we ask the BIOS.
-	 */
+	 
 	if (boot_params->secure_boot == efi_secureboot_mode_unset)
 		boot_params->secure_boot = efi_get_secureboot();
 
-	/* Ask the firmware to clear memory on unclean shutdown */
+	 
 	efi_enable_reset_attack_mitigation();
 
 	efi_random_get_seed();
@@ -966,10 +898,7 @@ void __noreturn efi_stub_entry(efi_handle_t handle,
 		goto fail;
 	}
 
-	/*
-	 * Call the SEV init code while still running with the firmware's
-	 * GDT/IDT, so #VC exceptions will be handled by EFI.
-	 */
+	 
 	sev_enable(boot_params);
 
 	efi_5level_switch();

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_GPIO_PRIV_H__
 #define __NVKM_GPIO_PRIV_H__
 #define nvkm_gpio(p) container_of((p), struct nvkm_gpio, subdev)
@@ -7,24 +7,19 @@
 struct nvkm_gpio_func {
 	int lines;
 
-	/* read and ack pending interrupts, returning only data
-	 * for lines that have not been masked off, while still
-	 * performing the ack for anything that was pending.
-	 */
+	 
 	void (*intr_stat)(struct nvkm_gpio *, u32 *, u32 *);
 
-	/* mask on/off interrupts for hi/lo transitions on a
-	 * given set of gpio lines
-	 */
+	 
 	void (*intr_mask)(struct nvkm_gpio *, u32, u32, u32);
 
-	/* configure gpio direction and output value */
+	 
 	int  (*drive)(struct nvkm_gpio *, int line, int dir, int out);
 
-	/* sense current state of given gpio line */
+	 
 	int  (*sense)(struct nvkm_gpio *, int line);
 
-	/*XXX*/
+	 
 	void (*reset)(struct nvkm_gpio *, u8);
 };
 

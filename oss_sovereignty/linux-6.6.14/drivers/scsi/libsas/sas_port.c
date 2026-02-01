@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Serial Attached SCSI (SAS) Port class
- *
- * Copyright (C) 2005 Adaptec, Inc.  All rights reserved.
- * Copyright (C) 2005 Luben Tuikov <luben_tuikov@adaptec.com>
- */
+
+ 
 
 #include "sas_internal.h"
 
@@ -36,14 +31,11 @@ static void sas_resume_port(struct asd_sas_phy *phy)
 	if (port->suspended)
 		port->suspended = 0;
 	else {
-		/* we only need to handle "link returned" actions once */
+		 
 		return;
 	}
 
-	/* if the port came back:
-	 * 1/ presume every device came back
-	 * 2/ force the next revalidation to check all expander phys
-	 */
+	 
 	list_for_each_entry_safe(dev, n, &port->dev_list, dev_list_node) {
 		int i, rc;
 
@@ -94,13 +86,7 @@ static void sas_form_port_add_phy(struct asd_sas_port *port,
 	}
 }
 
-/**
- * sas_form_port - add this phy to a port
- * @phy: the phy of interest
- *
- * This function adds this phy to an existing port, thus creating a wide
- * port, or it creates a port and adds the phy to the port.
- */
+ 
 static void sas_form_port(struct asd_sas_phy *phy)
 {
 	int i;
@@ -118,7 +104,7 @@ static void sas_form_port(struct asd_sas_phy *phy)
 			phy->suspended = 0;
 			sas_resume_port(phy);
 
-			/* phy came back, try to cancel the timeout */
+			 
 			wake_up(&sas_ha->eh_wait_q);
 			return;
 		} else {
@@ -129,14 +115,14 @@ static void sas_form_port(struct asd_sas_phy *phy)
 		}
 	}
 
-	/* see if the phy should be part of a wide port */
+	 
 	spin_lock_irqsave(&sas_ha->phy_port_lock, flags);
 	for (i = 0; i < sas_ha->num_phys; i++) {
 		port = sas_ha->sas_port[i];
 		spin_lock(&port->phy_list_lock);
 		if (*(u64 *) port->sas_addr &&
 		    phy_is_wideport_member(port, phy) && port->num_phys > 0) {
-			/* wide port */
+			 
 			port_dev = port->port_dev;
 			sas_form_port_add_phy(port, phy, true);
 			spin_unlock(&port->phy_list_lock);
@@ -144,7 +130,7 @@ static void sas_form_port(struct asd_sas_phy *phy)
 		}
 		spin_unlock(&port->phy_list_lock);
 	}
-	/* The phy does not match any existing port, create a new one */
+	 
 	if (i == sas_ha->num_phys) {
 		for (i = 0; i < sas_ha->num_phys; i++) {
 			port = sas_ha->sas_port[i];
@@ -183,12 +169,12 @@ static void sas_form_port(struct asd_sas_phy *phy)
 	if (port_dev)
 		port_dev->pathways = port->num_phys;
 
-	/* Tell the LLDD about this port formation. */
+	 
 	if (si->dft->lldd_port_formed)
 		si->dft->lldd_port_formed(phy);
 
 	sas_discover_event(phy->port, DISCE_DISCOVER_DOMAIN);
-	/* Only insert a revalidate event after initial discovery */
+	 
 	if (port_dev && dev_is_expander(port_dev->dev_type)) {
 		struct expander_device *ex_dev = &port_dev->ex_dev;
 
@@ -198,14 +184,7 @@ static void sas_form_port(struct asd_sas_phy *phy)
 	flush_workqueue(sas_ha->disco_q);
 }
 
-/**
- * sas_deform_port - remove this phy from the port it belongs to
- * @phy: the phy of interest
- * @gone: whether or not the PHY is gone
- *
- * This is called when the physical link to the other phy has been
- * lost (on this phy), in Event thread context. We cannot delay here.
- */
+ 
 void sas_deform_port(struct asd_sas_phy *phy, int gone)
 {
 	struct sas_ha_struct *sas_ha = phy->ha;
@@ -216,7 +195,7 @@ void sas_deform_port(struct asd_sas_phy *phy, int gone)
 	unsigned long flags;
 
 	if (!port)
-		return;		  /* done by a phy event */
+		return;		   
 
 	dev = port->port_dev;
 	if (dev)
@@ -256,7 +235,7 @@ void sas_deform_port(struct asd_sas_phy *phy, int gone)
 	spin_unlock(&port->phy_list_lock);
 	spin_unlock_irqrestore(&sas_ha->phy_port_lock, flags);
 
-	/* Only insert revalidate event if the port still has members */
+	 
 	if (port->port && dev && dev_is_expander(dev->dev_type)) {
 		struct expander_device *ex_dev = &dev->ex_dev;
 
@@ -268,7 +247,7 @@ void sas_deform_port(struct asd_sas_phy *phy, int gone)
 	return;
 }
 
-/* ---------- SAS port events ---------- */
+ 
 
 void sas_porte_bytes_dmaed(struct work_struct *work)
 {
@@ -320,7 +299,7 @@ void sas_porte_hard_reset(struct work_struct *work)
 	sas_deform_port(phy, 1);
 }
 
-/* ---------- SAS port registration ---------- */
+ 
 
 static void sas_init_port(struct asd_sas_port *port,
 			  struct sas_ha_struct *sas_ha, int i)
@@ -342,7 +321,7 @@ int sas_register_ports(struct sas_ha_struct *sas_ha)
 {
 	int i;
 
-	/* initialize the ports and discovery */
+	 
 	for (i = 0; i < sas_ha->num_phys; i++) {
 		struct asd_sas_port *port = sas_ha->sas_port[i];
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/act_ipt.c		iptables target interface
- *
- *TODO: Add other tables. For now we only support the ipv4 table targets
- *
- * Copyright:	Jamal Hadi Salim (2002-13)
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -152,7 +146,7 @@ static int __tcf_ipt_init(struct net *net, unsigned int id, struct nlattr *nla,
 		}
 		ret = ACT_P_CREATED;
 	} else {
-		if (bind)/* dont override defaults */
+		if (bind) 
 			return 0;
 
 		if (!(flags & TCA_ACT_FLAGS_REPLACE)) {
@@ -173,7 +167,7 @@ static int __tcf_ipt_init(struct net *net, unsigned int id, struct nlattr *nla,
 	}
 
 	if (tb[TCA_IPT_TABLE]) {
-		/* mangle only for now */
+		 
 		if (nla_strcmp(tb[TCA_IPT_TABLE], "mangle"))
 			goto err1;
 	}
@@ -289,10 +283,7 @@ TC_INDIRECT_SCOPE int tcf_ipt_act(struct sk_buff *skb,
 	tcf_lastuse_update(&ipt->tcf_tm);
 	bstats_update(&ipt->tcf_bstats, skb);
 
-	/* yes, we have to worry about both in and out dev
-	 * worry later - danger - this API seems to have changed
-	 * from earlier kernels
-	 */
+	 
 	par.state    = &state;
 	par.target   = ipt->tcfi_t->u.kernel.target;
 	par.targinfo = ipt->tcfi_t->data;
@@ -335,10 +326,7 @@ static int tcf_ipt_dump(struct sk_buff *skb, struct tc_action *a, int bind,
 	struct tcf_t tm;
 	struct tc_cnt c;
 
-	/* for simple targets kernel size == user size
-	 * user name = target name
-	 * for foolproof you need to not assume this
-	 */
+	 
 
 	spin_lock_bh(&ipt->tcf_lock);
 	t = kmemdup(ipt->tcfi_t, ipt->tcfi_t->u.user.target_size, GFP_ATOMIC);

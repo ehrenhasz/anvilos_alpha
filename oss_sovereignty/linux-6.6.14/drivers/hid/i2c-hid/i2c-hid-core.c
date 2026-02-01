@@ -1,22 +1,4 @@
-/*
- * HID over I2C protocol implementation
- *
- * Copyright (c) 2012 Benjamin Tissoires <benjamin.tissoires@gmail.com>
- * Copyright (c) 2012 Ecole Nationale de l'Aviation Civile, France
- * Copyright (c) 2012 Red Hat, Inc
- *
- * This code is partly based on "USB HID support for Linux":
- *
- *  Copyright (c) 1999 Andreas Gal
- *  Copyright (c) 2000-2005 Vojtech Pavlik <vojtech@suse.cz>
- *  Copyright (c) 2005 Michael Haboustak <mike-@cinci.rr.com> for Concept2, Inc
- *  Copyright (c) 2007-2008 Oliver Neukum
- *  Copyright (c) 2006-2010 Jiri Kosina
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file COPYING in the main directory of this archive for
- * more details.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -43,7 +25,7 @@
 #include "../hid-ids.h"
 #include "i2c-hid.h"
 
-/* quirks to control the device */
+ 
 #define I2C_HID_QUIRK_SET_PWR_WAKEUP_DEV	BIT(0)
 #define I2C_HID_QUIRK_NO_IRQ_AFTER_RESET	BIT(1)
 #define I2C_HID_QUIRK_BOGUS_IRQ			BIT(4)
@@ -51,7 +33,7 @@
 #define I2C_HID_QUIRK_BAD_INPUT_SIZE		BIT(6)
 #define I2C_HID_QUIRK_NO_WAKEUP_AFTER_RESET	BIT(7)
 
-/* Command opcodes */
+ 
 #define I2C_HID_OPCODE_RESET			0x01
 #define I2C_HID_OPCODE_GET_REPORT		0x02
 #define I2C_HID_OPCODE_SET_REPORT		0x03
@@ -61,7 +43,7 @@
 #define I2C_HID_OPCODE_SET_PROTOCOL		0x07
 #define I2C_HID_OPCODE_SET_POWER		0x08
 
-/* flags */
+ 
 #define I2C_HID_STARTED		0
 #define I2C_HID_RESET_PENDING	1
 #define I2C_HID_READ_PENDING	2
@@ -88,23 +70,21 @@ struct i2c_hid_desc {
 	__le32 reserved;
 } __packed;
 
-/* The main device structure */
+ 
 struct i2c_hid {
-	struct i2c_client	*client;	/* i2c client */
-	struct hid_device	*hid;	/* pointer to corresponding HID dev */
-	struct i2c_hid_desc hdesc;		/* the HID Descriptor */
-	__le16			wHIDDescRegister; /* location of the i2c
-						   * register of the HID
-						   * descriptor. */
-	unsigned int		bufsize;	/* i2c buffer size */
-	u8			*inbuf;		/* Input buffer */
-	u8			*rawbuf;	/* Raw Input buffer */
-	u8			*cmdbuf;	/* Command buffer */
+	struct i2c_client	*client;	 
+	struct hid_device	*hid;	 
+	struct i2c_hid_desc hdesc;		 
+	__le16			wHIDDescRegister;  
+	unsigned int		bufsize;	 
+	u8			*inbuf;		 
+	u8			*rawbuf;	 
+	u8			*cmdbuf;	 
 
-	unsigned long		flags;		/* device flags */
-	unsigned long		quirks;		/* Various quirks */
+	unsigned long		flags;		 
+	unsigned long		quirks;		 
 
-	wait_queue_head_t	wait;		/* For waiting the interrupt */
+	wait_queue_head_t	wait;		 
 
 	struct mutex		reset_lock;
 
@@ -134,22 +114,14 @@ static const struct i2c_hid_quirks {
 		 I2C_HID_QUIRK_RESET_ON_RESUME },
 	{ USB_VENDOR_ID_ITE, I2C_DEVICE_ID_ITE_LENOVO_LEGION_Y720,
 		I2C_HID_QUIRK_BAD_INPUT_SIZE },
-	/*
-	 * Sending the wakeup after reset actually break ELAN touchscreen controller
-	 */
+	 
 	{ USB_VENDOR_ID_ELAN, HID_ANY_ID,
 		 I2C_HID_QUIRK_NO_WAKEUP_AFTER_RESET |
 		 I2C_HID_QUIRK_BOGUS_IRQ },
 	{ 0, 0 }
 };
 
-/*
- * i2c_hid_lookup_quirk: return any quirks associated with a I2C HID device
- * @idVendor: the 16-bit vendor ID
- * @idProduct: the 16-bit product ID
- *
- * Returns: a u32 quirks value.
- */
+ 
 static u32 i2c_hid_lookup_quirk(const u16 idVendor, const u16 idProduct)
 {
 	u32 quirks = 0;
@@ -240,26 +212,19 @@ static int i2c_hid_get_report(struct i2c_hid *ihid,
 
 	i2c_hid_dbg(ihid, "%s\n", __func__);
 
-	/* Command register goes first */
+	 
 	*(__le16 *)ihid->cmdbuf = ihid->hdesc.wCommandRegister;
 	length += sizeof(__le16);
-	/* Next is GET_REPORT command */
+	 
 	length += i2c_hid_encode_command(ihid->cmdbuf + length,
 					 I2C_HID_OPCODE_GET_REPORT,
 					 report_type, report_id);
-	/*
-	 * Device will send report data through data register. Because
-	 * command can be either 2 or 3 bytes destination for the data
-	 * register may be not aligned.
-	 */
+	 
 	put_unaligned_le16(le16_to_cpu(ihid->hdesc.wDataRegister),
 			   ihid->cmdbuf + length);
 	length += sizeof(__le16);
 
-	/*
-	 * In addition to report data device will supply data length
-	 * in the first 2 bytes of the response, so adjust .
-	 */
+	 
 	error = i2c_hid_xfer(ihid, ihid->cmdbuf, length,
 			     ihid->rawbuf, recv_len + sizeof(__le16));
 	if (error) {
@@ -268,10 +233,10 @@ static int i2c_hid_get_report(struct i2c_hid *ihid,
 		return error;
 	}
 
-	/* The buffer is sufficiently aligned */
+	 
 	ret_count = le16_to_cpup((__le16 *)ihid->rawbuf);
 
-	/* Check for empty report response */
+	 
 	if (ret_count <= sizeof(__le16))
 		return 0;
 
@@ -291,7 +256,7 @@ static int i2c_hid_get_report(struct i2c_hid *ihid,
 static size_t i2c_hid_format_report(u8 *buf, int report_id,
 				    const u8 *data, size_t size)
 {
-	size_t length = sizeof(__le16); /* reserve space to store size */
+	size_t length = sizeof(__le16);  
 
 	if (report_id)
 		buf[length++] = report_id;
@@ -299,21 +264,13 @@ static size_t i2c_hid_format_report(u8 *buf, int report_id,
 	memcpy(buf + length, data, size);
 	length += size;
 
-	/* Store overall size in the beginning of the buffer */
+	 
 	put_unaligned_le16(length, buf);
 
 	return length;
 }
 
-/**
- * i2c_hid_set_or_send_report: forward an incoming report to the device
- * @ihid: the i2c hid device
- * @report_type: 0x03 for HID_FEATURE_REPORT ; 0x02 for HID_OUTPUT_REPORT
- * @report_id: the report ID
- * @buf: the actual data to transfer, without the report ID
- * @data_len: size of buf
- * @do_set: true: use SET_REPORT HID command, false: send plain OUTPUT report
- */
+ 
 static int i2c_hid_set_or_send_report(struct i2c_hid *ihid,
 				      u8 report_type, u8 report_id,
 				      const u8 *buf, size_t data_len,
@@ -331,26 +288,19 @@ static int i2c_hid_set_or_send_report(struct i2c_hid *ihid,
 		return -ENOSYS;
 
 	if (do_set) {
-		/* Command register goes first */
+		 
 		*(__le16 *)ihid->cmdbuf = ihid->hdesc.wCommandRegister;
 		length += sizeof(__le16);
-		/* Next is SET_REPORT command */
+		 
 		length += i2c_hid_encode_command(ihid->cmdbuf + length,
 						 I2C_HID_OPCODE_SET_REPORT,
 						 report_type, report_id);
-		/*
-		 * Report data will go into the data register. Because
-		 * command can be either 2 or 3 bytes destination for
-		 * the data register may be not aligned.
-		*/
+		 
 		put_unaligned_le16(le16_to_cpu(ihid->hdesc.wDataRegister),
 				   ihid->cmdbuf + length);
 		length += sizeof(__le16);
 	} else {
-		/*
-		 * With simple "send report" all data goes into the output
-		 * register.
-		 */
+		 
 		*(__le16 *)ihid->cmdbuf = ihid->hdesc.wOutputRegister;
 		length += sizeof(__le16);
 	}
@@ -372,11 +322,11 @@ static int i2c_hid_set_power_command(struct i2c_hid *ihid, int power_state)
 {
 	size_t length;
 
-	/* SET_POWER uses command register */
+	 
 	*(__le16 *)ihid->cmdbuf = ihid->hdesc.wCommandRegister;
 	length = sizeof(__le16);
 
-	/* Now the command itself */
+	 
 	length += i2c_hid_encode_command(ihid->cmdbuf + length,
 					 I2C_HID_OPCODE_SET_POWER,
 					 0, power_state);
@@ -390,16 +340,12 @@ static int i2c_hid_set_power(struct i2c_hid *ihid, int power_state)
 
 	i2c_hid_dbg(ihid, "%s\n", __func__);
 
-	/*
-	 * Some devices require to send a command to wakeup before power on.
-	 * The call will get a return value (EREMOTEIO) but device will be
-	 * triggered and activated. After that, it goes like a normal device.
-	 */
+	 
 	if (power_state == I2C_HID_PWR_ON &&
 	    ihid->quirks & I2C_HID_QUIRK_SET_PWR_WAKEUP_DEV) {
 		ret = i2c_hid_set_power_command(ihid, I2C_HID_PWR_ON);
 
-		/* Device was already activated */
+		 
 		if (!ret)
 			goto set_pwr_exit;
 	}
@@ -411,15 +357,7 @@ static int i2c_hid_set_power(struct i2c_hid *ihid, int power_state)
 
 set_pwr_exit:
 
-	/*
-	 * The HID over I2C specification states that if a DEVICE needs time
-	 * after the PWR_ON request, it should utilise CLOCK stretching.
-	 * However, it has been observered that the Windows driver provides a
-	 * 1ms sleep between the PWR_ON and RESET requests.
-	 * According to Goodix Windows even waits 60 ms after (other?)
-	 * PWR_ON requests. Testing has confirmed that several devices
-	 * will not work properly without a delay after a PWR_ON request.
-	 */
+	 
 	if (!ret && power_state == I2C_HID_PWR_ON)
 		msleep(60);
 
@@ -433,10 +371,10 @@ static int i2c_hid_execute_reset(struct i2c_hid *ihid)
 
 	i2c_hid_dbg(ihid, "resetting...\n");
 
-	/* Prepare reset command. Command register goes first. */
+	 
 	*(__le16 *)ihid->cmdbuf = ihid->hdesc.wCommandRegister;
 	length += sizeof(__le16);
-	/* Next is RESET command itself */
+	 
 	length += i2c_hid_encode_command(ihid->cmdbuf + length,
 					 I2C_HID_OPCODE_RESET, 0, 0);
 
@@ -473,11 +411,7 @@ static int i2c_hid_hwreset(struct i2c_hid *ihid)
 
 	i2c_hid_dbg(ihid, "%s\n", __func__);
 
-	/*
-	 * This prevents sending feature reports while the device is
-	 * being reset. Otherwise we may lose the reset complete
-	 * interrupt.
-	 */
+	 
 	mutex_lock(&ihid->reset_lock);
 
 	ret = i2c_hid_set_power(ihid, I2C_HID_PWR_ON);
@@ -492,7 +426,7 @@ static int i2c_hid_hwreset(struct i2c_hid *ihid)
 		goto out_unlock;
 	}
 
-	/* At least some SIS devices need this after reset */
+	 
 	if (!(ihid->quirks & I2C_HID_QUIRK_NO_WAKEUP_AFTER_RESET))
 		ret = i2c_hid_set_power(ihid, I2C_HID_PWR_ON);
 
@@ -520,10 +454,10 @@ static void i2c_hid_get_input(struct i2c_hid *ihid)
 		return;
 	}
 
-	/* Receiving buffer is properly aligned */
+	 
 	ret_size = le16_to_cpup((__le16 *)ihid->inbuf);
 	if (!ret_size) {
-		/* host or device initiated RESET completed */
+		 
 		if (test_and_clear_bit(I2C_HID_RESET_PENDING, &ihid->flags))
 			wake_up(&ihid->wait);
 		return;
@@ -580,17 +514,14 @@ static int i2c_hid_get_report_length(struct hid_report *report)
 		report->device->report_enum[report->type].numbered + 2;
 }
 
-/*
- * Traverse the supplied list of reports and find the longest
- */
+ 
 static void i2c_hid_find_max_report(struct hid_device *hid, unsigned int type,
 		unsigned int *max)
 {
 	struct hid_report *report;
 	unsigned int size;
 
-	/* We should not rely on wMaxInputLength, as some devices may set it to
-	 * a wrong length. */
+	 
 	list_for_each_entry(report, &hid->report_enum[type].report_list, list) {
 		size = i2c_hid_get_report_length(report);
 		if (*max < size)
@@ -611,17 +542,14 @@ static void i2c_hid_free_buffers(struct i2c_hid *ihid)
 
 static int i2c_hid_alloc_buffers(struct i2c_hid *ihid, size_t report_size)
 {
-	/*
-	 * The worst case is computed from the set_report command with a
-	 * reportID > 15 and the maximum report length.
-	 */
-	int cmd_len = sizeof(__le16) +	/* command register */
-		      sizeof(u8) +	/* encoded report type/ID */
-		      sizeof(u8) +	/* opcode */
-		      sizeof(u8) +	/* optional 3rd byte report ID */
-		      sizeof(__le16) +	/* data register */
-		      sizeof(__le16) +	/* report data size */
-		      sizeof(u8) +	/* report ID if numbered report */
+	 
+	int cmd_len = sizeof(__le16) +	 
+		      sizeof(u8) +	 
+		      sizeof(u8) +	 
+		      sizeof(u8) +	 
+		      sizeof(__le16) +	 
+		      sizeof(__le16) +	 
+		      sizeof(u8) +	 
 		      report_size;
 
 	ihid->inbuf = kzalloc(report_size, GFP_KERNEL);
@@ -649,11 +577,7 @@ static int i2c_hid_get_raw_report(struct hid_device *hid,
 	if (report_type == HID_OUTPUT_REPORT)
 		return -EINVAL;
 
-	/*
-	 * In case of unnumbered reports the response from the device will
-	 * not have the report ID that the upper layers expect, so we need
-	 * to stash it the buffer ourselves and adjust the data size.
-	 */
+	 
 	if (!report_id) {
 		buf[0] = 0;
 		buf++;
@@ -683,19 +607,13 @@ static int i2c_hid_output_raw_report(struct hid_device *hid, u8 report_type,
 
 	mutex_lock(&ihid->reset_lock);
 
-	/*
-	 * Note that both numbered and unnumbered reports passed here
-	 * are supposed to have report ID stored in the 1st byte of the
-	 * buffer, so we strip it off unconditionally before passing payload
-	 * to i2c_hid_set_or_send_report which takes care of encoding
-	 * everything properly.
-	 */
+	 
 	ret = i2c_hid_set_or_send_report(ihid,
 				report_type == HID_FEATURE_REPORT ? 0x03 : 0x02,
 				report_id, buf + 1, count - 1, do_set);
 
 	if (ret >= 0)
-		ret++; /* add report_id to the number of transferred bytes */
+		ret++;  
 
 	mutex_unlock(&ihid->reset_lock);
 
@@ -882,7 +800,7 @@ static int i2c_hid_fetch_hid_descriptor(struct i2c_hid *ihid)
 	unsigned int dsize;
 	int error;
 
-	/* i2c hid fetch using a fixed descriptor size (30 bytes) */
+	 
 	if (i2c_hid_get_dmi_i2c_hid_desc_override(client->name)) {
 		i2c_hid_dbg(ihid, "Using a HID descriptor override\n");
 		ihid->hdesc =
@@ -901,10 +819,8 @@ static int i2c_hid_fetch_hid_descriptor(struct i2c_hid *ihid)
 		}
 	}
 
-	/* Validate the length of HID descriptor, the 4 first bytes:
-	 * bytes 0-1 -> length
-	 * bytes 2-3 -> bcdVersion (has to be 1.00) */
-	/* check bcdVersion == 1.0 */
+	 
+	 
 	if (le16_to_cpu(hdesc->bcdVersion) != 0x0100) {
 		dev_err(&ihid->client->dev,
 			"unexpected HID descriptor bcdVersion (0x%04hx)\n",
@@ -912,7 +828,7 @@ static int i2c_hid_fetch_hid_descriptor(struct i2c_hid *ihid)
 		return -ENODEV;
 	}
 
-	/* Descriptor length should be 30 bytes as per the specification */
+	 
 	dsize = le16_to_cpu(hdesc->wHIDDescLength);
 	if (dsize != sizeof(struct i2c_hid_desc)) {
 		dev_err(&ihid->client->dev,
@@ -957,7 +873,7 @@ static int i2c_hid_core_suspend(struct i2c_hid *ihid, bool force_poweroff)
 	if (ret < 0)
 		return ret;
 
-	/* Save some power */
+	 
 	i2c_hid_set_power(ihid, I2C_HID_PWR_SLEEP);
 
 	disable_irq(client->irq);
@@ -979,14 +895,7 @@ static int i2c_hid_core_resume(struct i2c_hid *ihid)
 
 	enable_irq(client->irq);
 
-	/* Instead of resetting device, simply powers the device on. This
-	 * solves "incomplete reports" on Raydium devices 2386:3118 and
-	 * 2386:4B33 and fixes various SIS touchscreens no longer sending
-	 * data after a suspend/resume.
-	 *
-	 * However some ALPS touchpads generate IRQ storm without reset, so
-	 * let's still reset them here.
-	 */
+	 
 	if (ihid->quirks & I2C_HID_QUIRK_RESET_ON_RESUME)
 		ret = i2c_hid_hwreset(ihid);
 	else
@@ -998,16 +907,14 @@ static int i2c_hid_core_resume(struct i2c_hid *ihid)
 	return hid_driver_reset_resume(hid);
 }
 
-/*
- * Check that the device exists and parse the HID descriptor.
- */
+ 
 static int __i2c_hid_core_probe(struct i2c_hid *ihid)
 {
 	struct i2c_client *client = ihid->client;
 	struct hid_device *hid = ihid->hid;
 	int ret;
 
-	/* Make sure there is something at this address */
+	 
 	ret = i2c_smbus_read_byte(client);
 	if (ret < 0) {
 		i2c_hid_dbg(ihid, "nothing at this address: %d\n", ret);
@@ -1087,11 +994,7 @@ static void ihid_core_panel_prepare_work(struct work_struct *work)
 	struct hid_device *hid = ihid->hid;
 	int ret;
 
-	/*
-	 * hid->version is set on the first power up. If it's still zero then
-	 * this is the first power on so we should perform initial power up
-	 * steps.
-	 */
+	 
 	if (!hid->version)
 		ret = i2c_hid_core_probe_panel_follower(ihid);
 	else
@@ -1102,15 +1005,7 @@ static void ihid_core_panel_prepare_work(struct work_struct *work)
 	else
 		WRITE_ONCE(ihid->prepare_work_finished, true);
 
-	/*
-	 * The work APIs provide a number of memory ordering guarantees
-	 * including one that says that memory writes before schedule_work()
-	 * are always visible to the work function, but they don't appear to
-	 * guarantee that a write that happened in the work is visible after
-	 * cancel_work_sync(). We'll add a write memory barrier here to match
-	 * with i2c_hid_core_panel_unpreparing() to ensure that our write to
-	 * prepare_work_finished is visible there.
-	 */
+	 
 	smp_wmb();
 }
 
@@ -1118,10 +1013,7 @@ static int i2c_hid_core_panel_prepared(struct drm_panel_follower *follower)
 {
 	struct i2c_hid *ihid = container_of(follower, struct i2c_hid, panel_follower);
 
-	/*
-	 * Powering on a touchscreen can be a slow process. Queue the work to
-	 * the system workqueue so we don't block the panel's power up.
-	 */
+	 
 	WRITE_ONCE(ihid->prepare_work_finished, false);
 	schedule_work(&ihid->panel_follower_prepare_work);
 
@@ -1134,7 +1026,7 @@ static int i2c_hid_core_panel_unpreparing(struct drm_panel_follower *follower)
 
 	cancel_work_sync(&ihid->panel_follower_prepare_work);
 
-	/* Match with ihid_core_panel_prepare_work() */
+	 
 	smp_rmb();
 	if (!READ_ONCE(ihid->prepare_work_finished))
 		return 0;
@@ -1154,11 +1046,7 @@ static int i2c_hid_core_register_panel_follower(struct i2c_hid *ihid)
 
 	ihid->panel_follower.funcs = &i2c_hid_core_panel_follower_funcs;
 
-	/*
-	 * If we're not in control of our own power up/power down then we can't
-	 * do the logic to manage wakeups. Give a warning if a user thought
-	 * that was possible then force the capability off.
-	 */
+	 
 	if (device_can_wakeup(dev)) {
 		dev_warn(dev, "Can't wakeup if following panel\n");
 		device_set_wakeup_capable(dev, false);
@@ -1208,9 +1096,7 @@ int i2c_hid_core_probe(struct i2c_client *client, struct i2chid_ops *ops,
 	mutex_init(&ihid->reset_lock);
 	INIT_WORK(&ihid->panel_follower_prepare_work, ihid_core_panel_prepare_work);
 
-	/* we need to allocate the command buffer without knowing the maximum
-	 * size of the reports. Let's use HID_MIN_BUFFER_SIZE, then we do the
-	 * real computation later. */
+	 
 	ret = i2c_hid_alloc_buffers(ihid, HID_MIN_BUFFER_SIZE);
 	if (ret < 0)
 		return ret;
@@ -1230,7 +1116,7 @@ int i2c_hid_core_probe(struct i2c_client *client, struct i2chid_ops *ops,
 	hid->bus = BUS_I2C;
 	hid->initial_quirks = quirks;
 
-	/* Power on and probe unless device is a panel follower. */
+	 
 	if (!ihid->is_panel_follower) {
 		ret = i2c_hid_core_power_up(ihid);
 		if (ret < 0)
@@ -1245,10 +1131,7 @@ int i2c_hid_core_probe(struct i2c_client *client, struct i2chid_ops *ops,
 	if (ret < 0)
 		goto err_power_down;
 
-	/*
-	 * If we're a panel follower, we'll register when the panel turns on;
-	 * otherwise we do it right away.
-	 */
+	 
 	if (ihid->is_panel_follower)
 		ret = i2c_hid_core_register_panel_follower(ihid);
 	else
@@ -1277,10 +1160,7 @@ void i2c_hid_core_remove(struct i2c_client *client)
 	struct i2c_hid *ihid = i2c_get_clientdata(client);
 	struct hid_device *hid;
 
-	/*
-	 * If we're a follower, the act of unfollowing will cause us to be
-	 * powered down. Otherwise we need to manually do it.
-	 */
+	 
 	if (ihid->is_panel_follower)
 		drm_panel_remove_follower(&ihid->panel_follower);
 	else

@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * rt1016.h  --  RT1016 ALSA SoC audio amplifier driver
- *
- * Copyright 2020 Realtek Semiconductor Corp.
- * Author: Oder Chiou <oder_chiou@realtek.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
+ 
+ 
 
 #ifndef __RT1016_H__
 #define __RT1016_H__
@@ -64,17 +55,17 @@
 #define RT1016_CLASSD_5		0xcc
 #define RT1016_PWR_CTRL		0xcf
 
-/* global definition */
+ 
 #define RT1016_L_VOL_MASK			(0xff << 8)
 #define RT1016_L_VOL_SFT			8
 #define RT1016_R_VOL_MASK			(0xff)
 #define RT1016_R_VOL_SFT			0
 
-/* 0x04 */
+ 
 #define RT1016_DA_MUTE_L_SFT			7
 #define RT1016_DA_MUTE_R_SFT			6
 
-/* 0x20 */
+ 
 #define RT1016_CLK_SYS_SEL_MASK			(0x1 << 15)
 #define RT1016_CLK_SYS_SEL_SFT			15
 #define RT1016_CLK_SYS_SEL_MCLK			(0x0 << 15)
@@ -84,13 +75,13 @@
 #define RT1016_PLL_SEL_MCLK			(0x0 << 13)
 #define RT1016_PLL_SEL_BCLK			(0x1 << 13)
 
-/* 0x21 */
+ 
 #define RT1016_FS_PD_MASK			(0x7 << 13)
 #define RT1016_FS_PD_SFT			13
 #define RT1016_OSR_PD_MASK			(0x3 << 10)
 #define RT1016_OSR_PD_SFT			10
 
-/* 0x22 */
+ 
 #define RT1016_PWR_DAC_FILTER			(0x1 << 11)
 #define RT1016_PWR_DAC_FILTER_BIT		11
 #define RT1016_PWR_DACMOD			(0x1 << 10)
@@ -110,13 +101,13 @@
 #define RT1016_PWR_CLK_SYS			(0x1 << 3)
 #define RT1016_PWR_CLK_SYS_BIT			3
 
-/* 0x23 */
+ 
 #define RT1016_PWR_LRCK_DET			(0x1 << 15)
 #define RT1016_PWR_LRCK_DET_BIT			15
 #define RT1016_PWR_BCLK_DET			(0x1 << 11)
 #define RT1016_PWR_BCLK_DET_BIT			11
 
-/* 0x40 */
+ 
 #define RT1016_I2S_BCLK_MS_MASK			(0x1 << 15)
 #define RT1016_I2S_BCLK_MS_SFT			15
 #define RT1016_I2S_BCLK_MS_32			(0x0 << 15)
@@ -144,19 +135,19 @@
 #define RT1016_I2S_DF_PCM_A			(0x2)
 #define RT1016_I2S_DF_PCM_B			(0x3)
 
-/* 0xa0 */
+ 
 #define RT1016_SIL_DET_EN			(0x1 << 15)
 #define RT1016_SIL_DET_EN_BIT			15
 
-/* 0xc2 */
+ 
 #define RT1016_CKGEN_DAC			(0x1 << 13)
 #define RT1016_CKGEN_DAC_BIT			13
 
-/* 0xc4 */
+ 
 #define RT1016_VCM_SLOW				(0x1 << 6)
 #define RT1016_VCM_SLOW_BIT			6
 
-/* 0xc5 */
+ 
 #define RT1016_PLL_M_MAX			0xf
 #define RT1016_PLL_M_MASK			(RT1016_PLL_M_MAX << 12)
 #define RT1016_PLL_M_SFT			12
@@ -166,7 +157,7 @@
 #define RT1016_PLL_N_MASK			(RT1016_PLL_N_MAX << 0)
 #define RT1016_PLL_N_SFT			0
 
-/* 0xc6 */
+ 
 #define RT1016_PLL2_EN				(0x1 << 15)
 #define RT1016_PLL2_EN_BIT			15
 #define RT1016_PLL_K_BP				(0x1 << 5)
@@ -175,7 +166,7 @@
 #define RT1016_PLL_K_MASK			(RT1016_PLL_K_MAX)
 #define RT1016_PLL_K_SFT			0
 
-/* 0xcf */
+ 
 #define RT1016_PWR_BG_1_2			(0x1 << 12)
 #define RT1016_PWR_BG_1_2_BIT			12
 #define RT1016_PWR_MBIAS_BG			(0x1 << 11)
@@ -199,13 +190,13 @@
 #define RT1016_PWR_MBIAS			(0x1 << 0)
 #define RT1016_PWR_MBIAS_BIT			0
 
-/* System Clock Source */
+ 
 enum {
 	RT1016_SCLK_S_MCLK,
 	RT1016_SCLK_S_PLL,
 };
 
-/* PLL1 Source */
+ 
 enum {
 	RT1016_PLL_S_MCLK,
 	RT1016_PLL_S_BCLK,
@@ -229,4 +220,4 @@ struct rt1016_priv {
 	int pll_out;
 };
 
-#endif /* __RT1016_H__ */
+#endif  

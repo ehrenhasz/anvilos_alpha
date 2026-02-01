@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_X86_MSR_H
 #define _ASM_X86_MSR_H
 
@@ -34,14 +34,9 @@ struct saved_msrs {
 	struct saved_msr *array;
 };
 
-/*
- * both i386 and x86_64 returns 64-bit value in edx:eax, but gcc's "A"
- * constraint has different meanings. For i386, "A" means exactly
- * edx:eax, while for x86_64 it doesn't mean rdx:rax or edx:eax. Instead,
- * it means rax *or* rdx.
- */
+ 
 #ifdef CONFIG_X86_64
-/* Using 64-bit values saves one instruction clearing the high half of low */
+ 
 #define DECLARE_ARGS(val, low, high)	unsigned long low, high
 #define EAX_EDX_VAL(val, low, high)	((low) | (high) << 32)
 #define EAX_EDX_RET(val, low, high)	"=a" (low), "=d" (high)
@@ -51,9 +46,7 @@ struct saved_msrs {
 #define EAX_EDX_RET(val, low, high)	"=A" (val)
 #endif
 
-/*
- * Be very careful with includes. This header is prone to include loops.
- */
+ 
 #include <asm/atomic.h>
 #include <linux/tracepoint-defs.h>
 
@@ -70,13 +63,7 @@ static inline void do_trace_read_msr(unsigned int msr, u64 val, int failed) {}
 static inline void do_trace_rdpmc(unsigned int msr, u64 val, int failed) {}
 #endif
 
-/*
- * __rdmsr() and __wrmsr() are the two primitives which are the bare minimum MSR
- * accessors and should not have any tracing or other functionality piggybacking
- * on them - those are *purely* for accessing MSRs and nothing more. So don't even
- * think of extending them - you will be slapped with a stinking trout or a frozen
- * shark will reach you, wherever you are! You've been warned.
- */
+ 
 static __always_inline unsigned long long __rdmsr(unsigned int msr)
 {
 	DECLARE_ARGS(val, low, high);
@@ -138,7 +125,7 @@ static inline unsigned long long native_read_msr_safe(unsigned int msr,
 	return EAX_EDX_VAL(val, low, high);
 }
 
-/* Can be uninlined because referenced by paravirt */
+ 
 static inline void notrace
 native_write_msr(unsigned int msr, u32 low, u32 high)
 {
@@ -148,7 +135,7 @@ native_write_msr(unsigned int msr, u32 low, u32 high)
 		do_trace_write_msr(msr, ((u64)high << 32 | low), 0);
 }
 
-/* Can be uninlined because referenced by paravirt */
+ 
 static inline int notrace
 native_write_msr_safe(unsigned int msr, u32 low, u32 high)
 {
@@ -168,15 +155,7 @@ native_write_msr_safe(unsigned int msr, u32 low, u32 high)
 extern int rdmsr_safe_regs(u32 regs[8]);
 extern int wrmsr_safe_regs(u32 regs[8]);
 
-/**
- * rdtsc() - returns the current TSC without ordering constraints
- *
- * rdtsc() returns the result of RDTSC as a 64-bit integer.  The
- * only ordering constraint it supplies is the ordering implied by
- * "asm volatile": it will put the RDTSC in the place you expect.  The
- * CPU can and will speculatively execute that RDTSC, though, so the
- * results can be non-monotonic if compared on different CPUs.
- */
+ 
 static __always_inline unsigned long long rdtsc(void)
 {
 	DECLARE_ARGS(val, low, high);
@@ -186,37 +165,17 @@ static __always_inline unsigned long long rdtsc(void)
 	return EAX_EDX_VAL(val, low, high);
 }
 
-/**
- * rdtsc_ordered() - read the current TSC in program order
- *
- * rdtsc_ordered() returns the result of RDTSC as a 64-bit integer.
- * It is ordered like a load to a global in-memory counter.  It should
- * be impossible to observe non-monotonic rdtsc_unordered() behavior
- * across multiple CPUs as long as the TSC is synced.
- */
+ 
 static __always_inline unsigned long long rdtsc_ordered(void)
 {
 	DECLARE_ARGS(val, low, high);
 
-	/*
-	 * The RDTSC instruction is not ordered relative to memory
-	 * access.  The Intel SDM and the AMD APM are both vague on this
-	 * point, but empirically an RDTSC instruction can be
-	 * speculatively executed before prior loads.  An RDTSC
-	 * immediately after an appropriate barrier appears to be
-	 * ordered as a normal load, that is, it provides the same
-	 * ordering guarantees as reading from a global memory location
-	 * that some other imaginary CPU is updating continuously with a
-	 * time stamp.
-	 *
-	 * Thus, use the preferred barrier on the respective CPU, aiming for
-	 * RDTSCP as the default.
-	 */
+	 
 	asm volatile(ALTERNATIVE_2("rdtsc",
 				   "lfence; rdtsc", X86_FEATURE_LFENCE_RDTSC,
 				   "rdtscp", X86_FEATURE_RDTSCP)
 			: EAX_EDX_RET(val, low, high)
-			/* RDTSCP clobbers ECX with MSR_TSC_AUX. */
+			 
 			:: "ecx");
 
 	return EAX_EDX_VAL(val, low, high);
@@ -236,11 +195,7 @@ static inline unsigned long long native_read_pmc(int counter)
 #include <asm/paravirt.h>
 #else
 #include <linux/errno.h>
-/*
- * Access to machine-specific registers (available on 586 and better only)
- * Note: the rd* operations modify the parameters directly (without using
- * pointer indirection), this allows gcc to optimize better
- */
+ 
 
 #define rdmsr(msr, low, high)					\
 do {								\
@@ -262,13 +217,13 @@ static inline void wrmsrl(unsigned int msr, u64 val)
 	native_write_msr(msr, (u32)(val & 0xffffffffULL), (u32)(val >> 32));
 }
 
-/* wrmsr with exception handling */
+ 
 static inline int wrmsr_safe(unsigned int msr, u32 low, u32 high)
 {
 	return native_write_msr_safe(msr, low, high);
 }
 
-/* rdmsr with exception handling */
+ 
 #define rdmsr_safe(msr, low, high)				\
 ({								\
 	int __err;						\
@@ -295,11 +250,9 @@ do {							\
 
 #define rdpmcl(counter, val) ((val) = native_read_pmc(counter))
 
-#endif	/* !CONFIG_PARAVIRT_XXL */
+#endif	 
 
-/*
- * 64-bit version of wrmsr_safe():
- */
+ 
 static inline int wrmsrl_safe(u32 msr, u64 val)
 {
 	return wrmsr_safe(msr, (u32)val,  (u32)(val >> 32));
@@ -323,7 +276,7 @@ int rdmsrl_safe_on_cpu(unsigned int cpu, u32 msr_no, u64 *q);
 int wrmsrl_safe_on_cpu(unsigned int cpu, u32 msr_no, u64 q);
 int rdmsr_safe_regs_on_cpu(unsigned int cpu, u32 regs[8]);
 int wrmsr_safe_regs_on_cpu(unsigned int cpu, u32 regs[8]);
-#else  /*  CONFIG_SMP  */
+#else   
 static inline int rdmsr_on_cpu(unsigned int cpu, u32 msr_no, u32 *l, u32 *h)
 {
 	rdmsr(msr_no, *l, *h);
@@ -379,6 +332,6 @@ static inline int wrmsr_safe_regs_on_cpu(unsigned int cpu, u32 regs[8])
 {
 	return wrmsr_safe_regs(regs);
 }
-#endif  /* CONFIG_SMP */
-#endif /* __ASSEMBLY__ */
-#endif /* _ASM_X86_MSR_H */
+#endif   
+#endif  
+#endif  

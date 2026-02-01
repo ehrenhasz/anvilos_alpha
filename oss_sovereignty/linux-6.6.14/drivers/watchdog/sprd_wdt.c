@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Spreadtrum watchdog driver
- * Copyright (C) 2017 Spreadtrum - http://www.spreadtrum.com
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -30,22 +27,22 @@
 #define SPRD_WDT_IRQ_LOAD_LOW		0x2c
 #define SPRD_WDT_IRQ_LOAD_HIGH		0x30
 
-/* WDT_CTRL */
+ 
 #define SPRD_WDT_INT_EN_BIT		BIT(0)
 #define SPRD_WDT_CNT_EN_BIT		BIT(1)
 #define SPRD_WDT_NEW_VER_EN		BIT(2)
 #define SPRD_WDT_RST_EN_BIT		BIT(3)
 
-/* WDT_INT_CLR */
+ 
 #define SPRD_WDT_INT_CLEAR_BIT		BIT(0)
 #define SPRD_WDT_RST_CLEAR_BIT		BIT(3)
 
-/* WDT_INT_RAW */
+ 
 #define SPRD_WDT_INT_RAW_BIT		BIT(0)
 #define SPRD_WDT_RST_RAW_BIT		BIT(3)
 #define SPRD_WDT_LD_BUSY_BIT		BIT(4)
 
-/* 1s equal to 32768 counter steps */
+ 
 #define SPRD_WDT_CNT_STEP		32768
 
 #define SPRD_WDT_UNLOCK_KEY		0xe551
@@ -109,12 +106,7 @@ static int sprd_wdt_load_value(struct sprd_wdt *wdt, u32 timeout,
 	u32 tmr_step = timeout * SPRD_WDT_CNT_STEP;
 	u32 prtmr_step = pretimeout * SPRD_WDT_CNT_STEP;
 
-	/*
-	 * Checking busy bit to make sure the previous loading operation is
-	 * done. According to the specification, the busy bit would be set
-	 * after a new loading operation and last 2 or 3 RTC clock
-	 * cycles (about 60us~92us).
-	 */
+	 
 	do {
 		val = readl_relaxed(wdt->base + SPRD_WDT_INT_RAW);
 		if (!(val & SPRD_WDT_LD_BUSY_BIT))

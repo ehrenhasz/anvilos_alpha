@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/ethtool.h>
 #include <linux/sfp.h>
@@ -158,12 +158,7 @@ static int eeprom_parse_request(struct ethnl_req_info *req_info, struct nlattr *
 	request->offset = nla_get_u32(tb[ETHTOOL_A_MODULE_EEPROM_OFFSET]);
 	request->length = nla_get_u32(tb[ETHTOOL_A_MODULE_EEPROM_LENGTH]);
 
-	/* The following set of conditions limit the API to only dump 1/2
-	 * EEPROM page without crossing low page boundary located at offset 128.
-	 * This means user may only request dumps of length limited to 128 from
-	 * either low 128 bytes or high 128 bytes.
-	 * For pages higher than 0 only high 128 bytes are accessible.
-	 */
+	 
 	request->page = nla_get_u8(tb[ETHTOOL_A_MODULE_EEPROM_PAGE]);
 	if (request->page && request->offset < ETH_MODULE_EEPROM_PAGE_LEN) {
 		NL_SET_ERR_MSG_ATTR(extack, tb[ETHTOOL_A_MODULE_EEPROM_PAGE],
@@ -193,7 +188,7 @@ static int eeprom_reply_size(const struct ethnl_req_info *req_base,
 {
 	const struct eeprom_req_info *request = MODULE_EEPROM_REQINFO(req_base);
 
-	return nla_total_size(sizeof(u8) * request->length); /* _EEPROM_DATA */
+	return nla_total_size(sizeof(u8) * request->length);  
 }
 
 static int eeprom_fill_reply(struct sk_buff *skb,

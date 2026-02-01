@@ -1,13 +1,4 @@
-/*
- * Sonics Silicon Backplane
- * Embedded systems support code
- *
- * Copyright 2005-2008, Broadcom Corporation
- * Copyright 2006-2008, Michael Buesch <m@bues.ch>
- * Copyright 2012, Hauke Mehrtens <hauke@hauke-m.de>
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #include "ssb_private.h"
 
@@ -193,7 +184,7 @@ static int gige_pci_init_callback(struct ssb_bus *bus, unsigned long data)
 
 	return -ENODEV;
 }
-#endif /* CONFIG_SSB_DRIVER_GIGE */
+#endif  
 
 int ssb_pcibios_plat_dev_init(struct pci_dev *dev)
 {
@@ -207,7 +198,7 @@ int ssb_pcibios_plat_dev_init(struct pci_dev *dev)
 	if (err >= 0)
 		return err;
 #endif
-	/* This is not a PCI device on any SSB device. */
+	 
 
 	return -ENODEV;
 }
@@ -235,14 +226,13 @@ static int gige_map_irq_callback(struct ssb_bus *bus, unsigned long data)
 
 	return -ENODEV;
 }
-#endif /* CONFIG_SSB_DRIVER_GIGE */
+#endif  
 
 int ssb_pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
 	int res;
 
-	/* Check if this PCI device is a device on a SSB bus or device
-	 * and return the IRQ number for it. */
+	 
 
 	res = ssb_pcicore_pcibios_map_irq(dev, slot, pin);
 	if (res >= 0)
@@ -252,7 +242,7 @@ int ssb_pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 	if (res >= 0)
 		return res;
 #endif
-	/* This is not a PCI device on any SSB device. */
+	 
 
 	return -ENODEV;
 }

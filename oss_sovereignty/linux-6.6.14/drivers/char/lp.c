@@ -1,116 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Generic parallel printer driver
- *
- * Copyright (C) 1992 by Jim Weigand and Linus Torvalds
- * Copyright (C) 1992,1993 by Michael K. Johnson
- * - Thanks much to Gunter Windau for pointing out to me where the error
- *   checking ought to be.
- * Copyright (C) 1993 by Nigel Gamble (added interrupt code)
- * Copyright (C) 1994 by Alan Cox (Modularised it)
- * LPCAREFUL, LPABORT, LPGETSTATUS added by Chris Metcalf, metcalf@lcs.mit.edu
- * Statistics and support for slow printers by Rob Janssen, rob@knoware.nl
- * "lp=" command line parameters added by Grant Guenther, grant@torque.net
- * lp_read (Status readback) support added by Carsten Gross,
- *                                             carsten@sol.wohnheim.uni-ulm.de
- * Support for parport by Philip Blundell <philb@gnu.org>
- * Parport sharing hacking by Andrea Arcangeli
- * Fixed kernel_(to/from)_user memory copy to check for errors
- * 				by Riccardo Facchetti <fizban@tin.it>
- * 22-JAN-1998  Added support for devfs  Richard Gooch <rgooch@atnf.csiro.au>
- * Redesigned interrupt handling for handle printers with buggy handshake
- *				by Andrea Arcangeli, 11 May 1998
- * Full efficient handling of printer with buggy irq handshake (now I have
- * understood the meaning of the strange handshake). This is done sending new
- * characters if the interrupt is just happened, even if the printer say to
- * be still BUSY. This is needed at least with Epson Stylus Color. To enable
- * the new TRUST_IRQ mode read the `LP OPTIMIZATION' section below...
- * Fixed the irq on the rising edge of the strobe case.
- * Obsoleted the CAREFUL flag since a printer that doesn' t work with
- * CAREFUL will block a bit after in lp_check_status().
- *				Andrea Arcangeli, 15 Oct 1998
- * Obsoleted and removed all the lowlevel stuff implemented in the last
- * month to use the IEEE1284 functions (that handle the _new_ compatibilty
- * mode fine).
- */
 
-/* This driver should, in theory, work with any parallel port that has an
- * appropriate low-level driver; all I/O is done through the parport
- * abstraction layer.
- *
- * If this driver is built into the kernel, you can configure it using the
- * kernel command-line.  For example:
- *
- *	lp=parport1,none,parport2	(bind lp0 to parport1, disable lp1 and
- *					 bind lp2 to parport2)
- *
- *	lp=auto				(assign lp devices to all ports that
- *				         have printers attached, as determined
- *					 by the IEEE-1284 autoprobe)
- *
- *	lp=reset			(reset the printer during
- *					 initialisation)
- *
- *	lp=off				(disable the printer driver entirely)
- *
- * If the driver is loaded as a module, similar functionality is available
- * using module parameters.  The equivalent of the above commands would be:
- *
- *	# insmod lp.o parport=1,none,2
- *
- *	# insmod lp.o parport=auto
- *
- *	# insmod lp.o reset=1
- */
+ 
 
-/* COMPATIBILITY WITH OLD KERNELS
- *
- * Under Linux 2.0 and previous versions, lp devices were bound to ports at
- * particular I/O addresses, as follows:
- *
- *	lp0		0x3bc
- *	lp1		0x378
- *	lp2		0x278
- *
- * The new driver, by default, binds lp devices to parport devices as it
- * finds them.  This means that if you only have one port, it will be bound
- * to lp0 regardless of its I/O address.  If you need the old behaviour, you
- * can force it using the parameters described above.
- */
+ 
 
-/*
- * The new interrupt handling code take care of the buggy handshake
- * of some HP and Epson printer:
- * ___
- * ACK    _______________    ___________
- *                       |__|
- * ____
- * BUSY   _________              _______
- *                 |____________|
- *
- * I discovered this using the printer scanner that you can find at:
- *
- *	ftp://e-mind.com/pub/linux/pscan/
- *
- *					11 May 98, Andrea Arcangeli
- *
- * My printer scanner run on an Epson Stylus Color show that such printer
- * generates the irq on the _rising_ edge of the STROBE. Now lp handle
- * this case fine too.
- *
- *					15 Oct 1998, Andrea Arcangeli
- *
- * The so called `buggy' handshake is really the well documented
- * compatibility mode IEEE1284 handshake. They changed the well known
- * Centronics handshake acking in the middle of busy expecting to not
- * break drivers or legacy application, while they broken linux lp
- * until I fixed it reverse engineering the protocol by hand some
- * month ago...
- *
- *                                     14 Dec 1998, Andrea Arcangeli
- *
- * Copyright (C) 2000 by Tim Waugh (added LPSETTIMEOUT ioctl)
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -137,7 +32,7 @@
 #include <asm/irq.h>
 #include <linux/uaccess.h>
 
-/* if you have more than 8 printers, remember to increase LP_NO */
+ 
 #define LP_NO 8
 
 static DEFINE_MUTEX(lp_mutex);
@@ -151,22 +46,22 @@ static const struct class lp_class = {
 
 #ifdef CONFIG_LP_CONSOLE
 static struct parport *console_registered;
-#endif /* CONFIG_LP_CONSOLE */
+#endif  
 
 #undef LP_DEBUG
 
-/* Bits used to manage claiming the parport device */
+ 
 #define LP_PREEMPT_REQUEST 1
 #define LP_PARPORT_CLAIMED 2
 
-/* --- low-level port access ----------------------------------- */
+ 
 
 #define r_dtr(x)	(parport_read_data(lp_table[(x)].dev->port))
 #define r_str(x)	(parport_read_status(lp_table[(x)].dev->port))
 #define w_ctr(x,y)	do { parport_write_control(lp_table[(x)].dev->port, (y)); } while (0)
 #define w_dtr(x,y)	do { parport_write_data(lp_table[(x)].dev->port, (y)); } while (0)
 
-/* Claim the parport or block trying unless we've already claimed it */
+ 
 static void lp_claim_parport_or_block(struct lp_struct *this_lp)
 {
 	if (!test_and_set_bit(LP_PARPORT_CLAIMED, &this_lp->bits)) {
@@ -174,7 +69,7 @@ static void lp_claim_parport_or_block(struct lp_struct *this_lp)
 	}
 }
 
-/* Claim the parport or block trying unless we've already claimed it */
+ 
 static void lp_release_parport(struct lp_struct *this_lp)
 {
 	if (test_and_clear_bit(LP_PARPORT_CLAIMED, &this_lp->bits)) {
@@ -192,10 +87,7 @@ static int lp_preempt(void *handle)
 }
 
 
-/*
- * Try to negotiate to a new mode; if unsuccessful negotiate to
- * compatibility mode.  Return the mode we ended up in.
- */
+ 
 static int lp_negotiate(struct parport *port, int mode)
 {
 	if (parport_negotiate(port, mode) != 0) {
@@ -244,7 +136,7 @@ static int lp_check_status(int minor)
 	unsigned int last = lp_table[minor].last_error;
 	unsigned char status = r_str(minor);
 	if ((status & LP_PERRORP) && !(LP_F(minor) & LP_CAREFUL))
-		/* No error. */
+		 
 		last = 0;
 	else if ((status & LP_POUTPA)) {
 		if (last != LP_POUTPA) {
@@ -265,8 +157,7 @@ static int lp_check_status(int minor)
 		}
 		error = -EIO;
 	} else {
-		last = 0; /* Come here if LP_CAREFUL is set and no
-			     errors are reported. */
+		last = 0;  
 	}
 
 	lp_table[minor].last_error = last;
@@ -281,7 +172,7 @@ static int lp_wait_ready(int minor, int nonblock)
 {
 	int error = 0;
 
-	/* If we're not in compatibility mode, we're ready now! */
+	 
 	if (lp_table[minor].current_mode != IEEE1284_MODE_COMPAT) {
 		return 0;
 	}
@@ -317,7 +208,7 @@ static ssize_t lp_write(struct file *file, const char __user *buf,
 	lp_table[minor].lastcall = jiffies;
 #endif
 
-	/* Need to copy the data from user-space. */
+	 
 	if (copy_size > LP_BUFFER_SIZE)
 		copy_size = LP_BUFFER_SIZE;
 
@@ -329,10 +220,9 @@ static ssize_t lp_write(struct file *file, const char __user *buf,
 		goto out_unlock;
 	}
 
-	/* Claim Parport or sleep until it becomes available
-	 */
+	 
 	lp_claim_parport_or_block(&lp_table[minor]);
-	/* Go to the proper mode. */
+	 
 	lp_table[minor].current_mode = lp_negotiate(port,
 						    lp_table[minor].best_mode);
 
@@ -342,7 +232,7 @@ static ssize_t lp_write(struct file *file, const char __user *buf,
 
 	if ((retv = lp_wait_ready(minor, nonblock)) == 0)
 	do {
-		/* Write the data. */
+		 
 		written = parport_write(port, kbuf, copy_size);
 		if (written > 0) {
 			copy_size -= written;
@@ -359,7 +249,7 @@ static ssize_t lp_write(struct file *file, const char __user *buf,
 		}
 
 		if (copy_size > 0) {
-			/* incomplete write -> check error ! */
+			 
 			int error;
 
 			parport_negotiate(lp_table[minor].dev->port,
@@ -415,7 +305,7 @@ out_unlock:
 
 #ifdef CONFIG_PARPORT_1284
 
-/* Status readback conforming to ieee1284 */
+ 
 static ssize_t lp_read(struct file *file, char __user *buf,
 		       size_t count, loff_t *ppos)
 {
@@ -457,7 +347,7 @@ static ssize_t lp_read(struct file *file, char __user *buf,
 			break;
 		}
 
-		/* Wait for data. */
+		 
 
 		if (lp_table[minor].dev->port->irq == PARPORT_IRQ_NONE) {
 			parport_negotiate(lp_table[minor].dev->port,
@@ -493,7 +383,7 @@ static ssize_t lp_read(struct file *file, char __user *buf,
 	return retval;
 }
 
-#endif /* IEEE 1284 support */
+#endif  
 
 static int lp_open(struct inode *inode, struct file *file)
 {
@@ -513,11 +403,7 @@ static int lp_open(struct inode *inode, struct file *file)
 		ret = -EBUSY;
 		goto out;
 	}
-	/* If ABORTOPEN is set and the printer is offline or out of paper,
-	   we may still want to open it to perform ioctl()s.  Therefore we
-	   have commandeered O_NONBLOCK, even though it is being used in
-	   a non-standard manner.  This is strictly a Linux hack, and
-	   should most likely only ever be used by the tunelp application. */
+	 
 	if ((LP_F(minor) & LP_ABORTOPEN) && !(file->f_flags & O_NONBLOCK)) {
 		int status;
 		lp_claim_parport_or_block(&lp_table[minor]);
@@ -546,7 +432,7 @@ static int lp_open(struct inode *inode, struct file *file)
 		ret = -ENOMEM;
 		goto out;
 	}
-	/* Determine if the peripheral supports ECP mode */
+	 
 	lp_claim_parport_or_block(&lp_table[minor]);
 	if ((lp_table[minor].dev->port->modes & PARPORT_MODE_ECP) &&
 	     !parport_negotiate(lp_table[minor].dev->port,
@@ -556,7 +442,7 @@ static int lp_open(struct inode *inode, struct file *file)
 	} else {
 		lp_table[minor].best_mode = IEEE1284_MODE_COMPAT;
 	}
-	/* Leave peripheral in compatibility mode */
+	 
 	parport_negotiate(lp_table[minor].dev->port, IEEE1284_MODE_COMPAT);
 	lp_release_parport(&lp_table[minor]);
 	lp_table[minor].current_mode = IEEE1284_MODE_COMPAT;
@@ -669,17 +555,11 @@ static int lp_set_timeout(unsigned int minor, s64 tv_sec, long tv_usec)
 {
 	long to_jiffies;
 
-	/* Convert to jiffies, place in lp_table */
+	 
 	if (tv_sec < 0 || tv_usec < 0)
 		return -EINVAL;
 
-	/*
-	 * we used to not check, so let's not make this fatal,
-	 * but deal with user space passing a 32-bit tv_nsec in
-	 * a 64-bit field, capping the timeout to 1 second
-	 * worth of microseconds, and capping the total at
-	 * MAX_JIFFY_OFFSET.
-	 */
+	 
 	if (tv_usec > 999999)
 		tv_usec = 999999;
 
@@ -714,7 +594,7 @@ static int lp_set_timeout64(unsigned int minor, void __user *arg)
 	if (copy_from_user(karg, arg, sizeof(karg)))
 		return -EFAULT;
 
-	/* sparc64 suseconds_t is 32-bit only */
+	 
 	if (IS_ENABLED(CONFIG_SPARC64) && !in_compat_syscall())
 		karg[1] >>= 32;
 
@@ -735,7 +615,7 @@ static long lp_ioctl(struct file *file, unsigned int cmd,
 			ret = lp_set_timeout32(minor, (void __user *)arg);
 			break;
 		}
-		fallthrough;	/* for 64-bit */
+		fallthrough;	 
 	case LPSETTIMEOUT_NEW:
 		ret = lp_set_timeout64(minor, (void __user *)arg);
 		break;
@@ -763,13 +643,13 @@ static long lp_compat_ioctl(struct file *file, unsigned int cmd,
 			ret = lp_set_timeout32(minor, (void __user *)arg);
 			break;
 		}
-		fallthrough;	/* for x32 mode */
+		fallthrough;	 
 	case LPSETTIMEOUT_NEW:
 		ret = lp_set_timeout64(minor, (void __user *)arg);
 		break;
 #ifdef LP_STATS
 	case LPGETSTATS:
-		/* FIXME: add an implementation if you set LP_STATS */
+		 
 		ret = -EINVAL;
 		break;
 #endif
@@ -798,18 +678,16 @@ static const struct file_operations lp_fops = {
 	.llseek		= noop_llseek,
 };
 
-/* --- support for console on the line printer ----------------- */
+ 
 
 #ifdef CONFIG_LP_CONSOLE
 
 #define CONSOLE_LP 0
 
-/* If the printer is out of paper, we can either lose the messages or
- * stall until the printer is happy again.  Define CONSOLE_LP_STRICT
- * non-zero to get the latter behaviour. */
+ 
 #define CONSOLE_LP_STRICT 1
 
-/* The console must be locked when we get here. */
+ 
 
 static void lp_console_write(struct console *co, const char *s,
 			     unsigned count)
@@ -819,16 +697,16 @@ static void lp_console_write(struct console *co, const char *s,
 	ssize_t written;
 
 	if (parport_claim(dev))
-		/* Nothing we can do. */
+		 
 		return;
 
 	parport_set_timeout(dev, 0);
 
-	/* Go to compatibility mode. */
+	 
 	parport_negotiate(port, IEEE1284_MODE_COMPAT);
 
 	do {
-		/* Write the data, converting LF->CRLF as we go. */
+		 
 		ssize_t canwrite = count;
 		char *lf = memchr(s, '\n', count);
 		if (lf)
@@ -849,7 +727,7 @@ static void lp_console_write(struct console *co, const char *s,
 			const char *crlf = "\r\n";
 			int i = 2;
 
-			/* Dodge the original '\n', and put '\r\n' instead. */
+			 
 			s++;
 			count--;
 			do {
@@ -871,9 +749,9 @@ static struct console lpcons = {
 	.flags		= CON_PRINTBUFFER,
 };
 
-#endif /* console on line printer */
+#endif  
 
-/* --- initialisation code ------------------------------------- */
+ 
 
 static int parport_nr[LP_NO] = { [0 ... LP_NO-1] = LP_PARPORT_UNSPEC };
 static char *parport[LP_NO];
@@ -890,7 +768,7 @@ static int __init lp_setup(char *str)
 
 	if (get_option(&str, &x)) {
 		if (x == 0) {
-			/* disable driver on "lp=" or "lp=0" */
+			 
 			parport_nr[0] = LP_PARPORT_OFF;
 		} else {
 			printk(KERN_WARNING "warning: 'lp=0x%x' is deprecated, ignored\n", x);
@@ -994,13 +872,13 @@ static void lp_detach(struct parport *port)
 {
 	int n;
 
-	/* Write this some day. */
+	 
 #ifdef CONFIG_LP_CONSOLE
 	if (console_registered == port) {
 		unregister_console(&lpcons);
 		console_registered = NULL;
 	}
-#endif /* CONFIG_LP_CONSOLE */
+#endif  
 
 	for (n = 0; n < LP_NO; n++) {
 		if (port_num[n] == port->number) {
@@ -1081,7 +959,7 @@ out_reg:
 static int __init lp_init_module(void)
 {
 	if (parport[0]) {
-		/* The user gave some parameters.  Let's see what they were.  */
+		 
 		if (!strncmp(parport[0], "auto", 4))
 			parport_nr[0] = LP_PARPORT_AUTO;
 		else {

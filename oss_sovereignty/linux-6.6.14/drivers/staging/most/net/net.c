@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * net.c - Networking component for Mostcore
- *
- * Copyright (C) 2015, Microchip Technology Germany II GmbH & Co. KG
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -68,8 +64,8 @@ struct net_dev_context {
 };
 
 static LIST_HEAD(net_devices);
-static DEFINE_MUTEX(probe_disc_mt); /* ch->linked = true, most_nd_open */
-static DEFINE_SPINLOCK(list_lock); /* list_head, ch->linked = false, dev_hold */
+static DEFINE_MUTEX(probe_disc_mt);  
+static DEFINE_SPINLOCK(list_lock);  
 static struct most_component comp;
 
 static int skb_to_mamac(const struct sk_buff *skb, struct mbo *mbo)
@@ -113,7 +109,7 @@ static int skb_to_mamac(const struct sk_buff *skb, struct mbo *mbo)
 	*buff++ = HB(payload_len + 6);
 	*buff++ = LB(payload_len + 6);
 
-	/* end of FPH here */
+	 
 
 	*buff++ = eth_type[0];
 	*buff++ = eth_type[1];
@@ -171,10 +167,7 @@ static int most_nd_set_mac_address(struct net_device *dev, void *p)
 		(dev->dev_addr[0] == 0 && dev->dev_addr[1] == 0 &&
 		 dev->dev_addr[2] == 0 && dev->dev_addr[3] == 0);
 
-	/*
-	 * Set default MTU for the given packet type.
-	 * It is still possible to change MTU using ip tools afterwards.
-	 */
+	 
 	dev->mtu = nd->is_mamac ? MAMAC_DATA_LEN : ETH_DATA_LEN;
 
 	return 0;
@@ -388,10 +381,7 @@ static int comp_disconnect_channel(struct most_interface *iface,
 		ch->linked = false;
 		spin_unlock_irqrestore(&list_lock, flags);
 
-		/*
-		 * do not call most_stop_channel() here, because channels are
-		 * going to be closed in ndo_stop() after unregister_netdev()
-		 */
+		 
 		unregister_netdev(nd->dev);
 	} else {
 		spin_lock_irqsave(&list_lock, flags);
@@ -472,14 +462,14 @@ static int comp_rx_data(struct mbo *mbo)
 	skb->dev = dev;
 
 	if (nd->is_mamac) {
-		/* dest */
+		 
 		ether_addr_copy(skb_put(skb, ETH_ALEN), dev->dev_addr);
 
-		/* src */
+		 
 		skb_put_data(skb, &zero, 4);
 		skb_put_data(skb, buf + 5, 2);
 
-		/* eth type */
+		 
 		skb_put_data(skb, buf + 10, 2);
 
 		buf += MDP_HDR_LEN;
@@ -537,12 +527,7 @@ static void __exit most_net_exit(void)
 	most_deregister_component(&comp);
 }
 
-/**
- * on_netinfo - callback for HDM to be informed about HW's MAC
- * @iface: most interface instance
- * @link_stat: link status
- * @mac_addr: MAC address
- */
+ 
 static void on_netinfo(struct most_interface *iface,
 		       unsigned char link_stat, unsigned char *mac_addr)
 {

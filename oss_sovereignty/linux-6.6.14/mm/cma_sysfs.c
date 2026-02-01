@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * CMA SysFS Interface
- *
- * Copyright (c) 2021 Minchan Kim <minchan@kernel.org>
- */
+
+ 
 
 #include <linux/cma.h>
 #include <linux/kernel.h>

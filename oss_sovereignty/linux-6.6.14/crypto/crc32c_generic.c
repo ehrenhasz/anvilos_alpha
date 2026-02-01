@@ -1,34 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cryptographic API.
- *
- * CRC32C chksum
- *
- *@Article{castagnoli-crc,
- * author =       { Guy Castagnoli and Stefan Braeuer and Martin Herrman},
- * title =        {{Optimization of Cyclic Redundancy-Check Codes with 24
- *                 and 32 Parity Bits}},
- * journal =      IEEE Transactions on Communication,
- * year =         {1993},
- * volume =       {41},
- * number =       {6},
- * pages =        {},
- * month =        {June},
- *}
- * Used by the iSCSI driver, possibly others, and derived from
- * the iscsi-crc.c module of the linux-iscsi driver at
- * http://linux-iscsi.sourceforge.net.
- *
- * Following the example of lib/crc32, this function is intended to be
- * flexible and useful for all users.  Modules that currently have their
- * own crc32c, but hopefully may be able to use this one are:
- *  net/sctp (please add all your doco to here if you change to
- *            use this one!)
- *  <endoflist>
- *
- * Copyright (c) 2004 Cisco Systems, Inc.
- * Copyright (c) 2008 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <crypto/internal/hash.h>
@@ -49,10 +20,7 @@ struct chksum_desc_ctx {
 	u32 crc;
 };
 
-/*
- * Steps through buffer one byte at a time, calculates reflected
- * crc using table.
- */
+ 
 
 static int chksum_init(struct shash_desc *desc)
 {
@@ -64,11 +32,7 @@ static int chksum_init(struct shash_desc *desc)
 	return 0;
 }
 
-/*
- * Setting the seed allows arbitrary accumulators and flexible XOR policy
- * If your algorithm starts with ~0, then XOR with ~0 before you set
- * the seed.
- */
+ 
 static int chksum_setkey(struct crypto_shash *tfm, const u8 *key,
 			 unsigned int keylen)
 {

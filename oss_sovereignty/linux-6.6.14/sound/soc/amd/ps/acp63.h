@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * AMD ALSA SoC PDM Driver
- *
- * Copyright (C) 2022, 2023 Advanced Micro Devices, Inc. All rights reserved.
- */
+ 
+ 
 
 #include <sound/acp63_chip_offset_byte.h>
 
@@ -50,54 +46,39 @@
 #define MAX_BUFFER (CAPTURE_MAX_PERIOD_SIZE * CAPTURE_MAX_NUM_PERIODS)
 #define MIN_BUFFER MAX_BUFFER
 
-/* time in ms for runtime suspend delay */
+ 
 #define ACP_SUSPEND_DELAY_MS	2000
 
 #define ACP_DMIC_DEV	2
 
-/* ACP63_PDM_MODE_DEVS corresponds to platform devices count for ACP PDM configuration */
+ 
 #define ACP63_PDM_MODE_DEVS		3
 
-/*
- * ACP63_SDW0_MODE_DEVS corresponds to platform devices count for
- * SW0 SoundWire manager instance configuration
- */
+ 
 #define ACP63_SDW0_MODE_DEVS		2
 
-/*
- * ACP63_SDW0_SDW1_MODE_DEVS corresponds to platform devices count for SW0 + SW1 SoundWire manager
- * instances configuration
- */
+ 
 #define ACP63_SDW0_SDW1_MODE_DEVS	3
 
-/*
- * ACP63_SDW0_PDM_MODE_DEVS corresponds to platform devices count for SW0 manager
- * instance + ACP PDM controller configuration
- */
+ 
 #define ACP63_SDW0_PDM_MODE_DEVS	4
 
-/*
- * ACP63_SDW0_SDW1_PDM_MODE_DEVS corresponds to platform devices count for
- * SW0 + SW1 SoundWire manager instances + ACP PDM controller configuration
- */
+ 
 #define ACP63_SDW0_SDW1_PDM_MODE_DEVS   5
 #define ACP63_DMIC_ADDR			2
 #define ACP63_SDW_ADDR			5
 #define AMD_SDW_MAX_MANAGERS		2
 
-/* time in ms for acp timeout */
+ 
 #define ACP_TIMEOUT		500
 
-/* ACP63_PDM_DEV_CONFIG corresponds to platform device configuration for ACP PDM controller */
+ 
 #define ACP63_PDM_DEV_CONFIG		BIT(0)
 
-/* ACP63_SDW_DEV_CONFIG corresponds to platform device configuration for SDW manager instances */
+ 
 #define ACP63_SDW_DEV_CONFIG		BIT(1)
 
-/*
- * ACP63_SDW_PDM_DEV_CONFIG corresponds to platform device configuration for ACP PDM + SoundWire
- * manager instance combination.
- */
+ 
 #define ACP63_SDW_PDM_DEV_CONFIG	GENMASK(1, 0)
 #define ACP_SDW0_STAT			BIT(21)
 #define ACP_SDW1_STAT			BIT(2)
@@ -117,27 +98,11 @@
 #define ACP63_SDW1_DMA_MAX_STREAMS	2
 #define ACP_P1_AUDIO_TX_THRESHOLD	6
 
-/*
- * Below entries describes SDW0 instance DMA stream id and DMA irq bit mapping
- * in ACP_EXTENAL_INTR_CNTL register.
- * Stream id		IRQ Bit
- * 0 (SDW0_AUDIO0_TX)	28
- * 1 (SDW0_AUDIO1_TX)	26
- * 2 (SDW0_AUDIO2_TX)	24
- * 3 (SDW0_AUDIO0_RX)	27
- * 4 (SDW0_AUDIO1_RX)	25
- * 5 (SDW0_AUDIO2_RX)	23
- */
+ 
 #define SDW0_DMA_TX_IRQ_MASK(i)	(ACP_AUDIO0_TX_THRESHOLD - (2 * (i)))
 #define SDW0_DMA_RX_IRQ_MASK(i)	(ACP_AUDIO0_RX_THRESHOLD - (2 * ((i) - 3)))
 
-/*
- * Below entries describes SDW1 instance DMA stream id and DMA irq bit mapping
- * in ACP_EXTENAL_INTR_CNTL1 register.
- * Stream id		IRQ Bit
- * 0 (SDW1_AUDIO1_TX)	6
- * 1 (SDW1_AUDIO1_RX)	5
- */
+ 
 #define SDW1_DMA_IRQ_MASK(i)	(ACP_P1_AUDIO_TX_THRESHOLD - (i))
 
 #define ACP_DELAY_US		5
@@ -216,7 +181,7 @@ struct pdm_dev_data {
 
 struct sdw_dma_dev_data {
 	void __iomem *acp_base;
-	struct mutex *acp_lock; /* used to protect acp common register access */
+	struct mutex *acp_lock;  
 	struct snd_pcm_substream *sdw0_dma_stream[ACP63_SDW0_DMA_MAX_STREAMS];
 	struct snd_pcm_substream *sdw1_dma_stream[ACP63_SDW1_DMA_MAX_STREAMS];
 };
@@ -249,31 +214,13 @@ struct sdw_dma_ring_buf_reg {
 	u32 pos_high_reg;
 };
 
-/**
- * struct acp63_dev_data - acp pci driver context
- * @acp63_base: acp mmio base
- * @res: resource
- * @pdev: array of child platform device node structures
- * @acp_lock: used to protect acp common registers
- * @sdw_fw_node: SoundWire controller fw node handle
- * @pdev_config: platform device configuration
- * @pdev_count: platform devices count
- * @pdm_dev_index: pdm platform device index
- * @sdw_manager_count: SoundWire manager instance count
- * @sdw0_dev_index: SoundWire Manager-0 platform device index
- * @sdw1_dev_index: SoundWire Manager-1 platform device index
- * @sdw_dma_dev_index: SoundWire DMA controller platform device index
- * @sdw0-dma_intr_stat: DMA interrupt status array for SoundWire manager-SW0 instance
- * @sdw_dma_intr_stat: DMA interrupt status array for SoundWire manager-SW1 instance
- * @acp_reset: flag set to true when bus reset is applied across all
- * the active SoundWire manager instances
- */
+ 
 
 struct acp63_dev_data {
 	void __iomem *acp63_base;
 	struct resource *res;
 	struct platform_device *pdev[ACP63_DEVS];
-	struct mutex acp_lock; /* protect shared registers */
+	struct mutex acp_lock;  
 	struct fwnode_handle *sdw_fw_node;
 	u16 pdev_config;
 	u16 pdev_count;

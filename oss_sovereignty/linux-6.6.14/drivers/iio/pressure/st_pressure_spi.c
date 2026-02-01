@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * STMicroelectronics pressures driver
- *
- * Copyright 2013 STMicroelectronics Inc.
- *
- * Denis Ciocca <denis.ciocca@st.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -17,11 +11,7 @@
 #include <linux/iio/common/st_sensors_spi.h>
 #include "st_pressure.h"
 
-/*
- * For new single-chip sensors use <device_name> as compatible string.
- * For old single-chip devices keep <device_name>-press to maintain
- * compatibility
- */
+ 
 static const struct of_device_id st_press_of_match[] = {
 	{
 		.compatible = "st,lps001wp-press",

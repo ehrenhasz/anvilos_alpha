@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas SDHI
- *
- * Copyright (C) 2015-19 Renesas Electronics Corporation
- * Copyright (C) 2016-19 Sang Engineering, Wolfram Sang
- * Copyright (C) 2016-17 Horms Solutions, Simon Horman
- * Copyright (C) 2009 Magnus Damm
- *
- * Based on "Compaq ASIC3 support":
- *
- * Copyright 2001 Compaq Computer Corporation.
- * Copyright 2004-2005 Phil Blundell
- * Copyright 2007-2008 OpenedHand Ltd.
- *
- * Authors: Phil Blundell <pb@handhelds.org>,
- *	    Samuel Ortiz <sameo@openedhand.com>
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -51,7 +34,7 @@
 
 #define SDHI_VER_GEN2_SDR50	0x490c
 #define SDHI_VER_RZ_A1		0x820b
-/* very old datasheets said 0x490c for SDR104, too. They are wrong! */
+ 
 #define SDHI_VER_GEN2_SDR104	0xcb0d
 #define SDHI_VER_GEN3_SD	0xcc10
 #define SDHI_VER_GEN3_SDMMC	0xcd10
@@ -62,10 +45,7 @@ static void renesas_sdhi_sdbuf_width(struct tmio_mmc_host *host, int width)
 {
 	u32 val;
 
-	/*
-	 * see also
-	 *	renesas_sdhi_of_data :: dma_buswidth
-	 */
+	 
 	switch (sd_ctrl_read16(host, CTL_VERSION)) {
 	case SDHI_VER_GEN2_SDR50:
 		val = (width == 32) ? HOST_MODE_GEN2_SDR50_WMODE : 0;
@@ -83,7 +63,7 @@ static void renesas_sdhi_sdbuf_width(struct tmio_mmc_host *host, int width)
 			val = HOST_MODE_GEN3_16BIT;
 		break;
 	default:
-		/* nothing to do */
+		 
 		return;
 	}
 
@@ -100,22 +80,14 @@ static int renesas_sdhi_clk_enable(struct tmio_mmc_host *host)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * The clock driver may not know what maximum frequency
-	 * actually works, so it should be set with the max-frequency
-	 * property which will already have been read to f_max.  If it
-	 * was missing, assume the current frequency is the maximum.
-	 */
+	 
 	if (!mmc->f_max)
 		mmc->f_max = clk_get_rate(priv->clk);
 
-	/*
-	 * Minimum frequency is the minimum input clock frequency
-	 * divided by our maximum divider.
-	 */
+	 
 	mmc->f_min = max(clk_round_rate(priv->clk, 1) / 512, 1L);
 
-	/* enable 16bit data access on SDBUF as default */
+	 
 	renesas_sdhi_sdbuf_width(host, 16);
 
 	return 0;
@@ -131,16 +103,12 @@ static unsigned int renesas_sdhi_clk_update(struct tmio_mmc_host *host,
 	unsigned int new_upper_limit;
 	int i;
 
-	/*
-	 * We simply return the current rate if a) we are not on a R-Car Gen2+
-	 * SoC (may work for others, but untested) or b) if the SCC needs its
-	 * clock during tuning, so we don't change the external clock setup.
-	 */
+	 
 	if (!(host->pdata->flags & TMIO_MMC_MIN_RCAR2) || mmc_doing_tune(host->mmc))
 		return clk_get_rate(priv->clk);
 
 	if (priv->clkh) {
-		/* HS400 with 4TAP needs different clock settings */
+		 
 		bool use_4tap = sdhi_has_quirk(priv, hs400_4taps);
 		bool need_slow_clkh = host->mmc->ios.timing == MMC_TIMING_MMC_HS400;
 		clkh_shift = use_4tap && need_slow_clkh ? 1 : 2;
@@ -149,23 +117,12 @@ static unsigned int renesas_sdhi_clk_update(struct tmio_mmc_host *host,
 
 	new_clock = wanted_clock << clkh_shift;
 
-	/*
-	 * We want the bus clock to be as close as possible to, but no
-	 * greater than, new_clock.  As we can divide by 1 << i for
-	 * any i in [0, 9] we want the input clock to be as close as
-	 * possible, but no greater than, new_clock << i.
-	 *
-	 * Add an upper limit of 1/1024 rate higher to the clock rate to fix
-	 * clk rate jumping to lower rate due to rounding error (eg: RZ/G2L has
-	 * 3 clk sources 533.333333 MHz, 400 MHz and 266.666666 MHz. The request
-	 * for 533.333333 MHz will selects a slower 400 MHz due to rounding
-	 * error (533333333 Hz / 4 * 4 = 533333332 Hz < 533333333 Hz)).
-	 */
+	 
 	for (i = min(9, ilog2(UINT_MAX / new_clock)); i >= 0; i--) {
 		freq = clk_round_rate(ref_clk, new_clock << i);
 		new_upper_limit = (new_clock << i) + ((new_clock << i) >> 10);
 		if (freq > new_upper_limit) {
-			/* Too fast; look for a slightly slower option */
+			 
 			freq = clk_round_rate(ref_clk, (new_clock << i) / 4 * 3);
 			if (freq > new_upper_limit)
 				continue;
@@ -203,16 +160,12 @@ static void renesas_sdhi_set_clock(struct tmio_mmc_host *host,
 	host->mmc->actual_clock = renesas_sdhi_clk_update(host, new_clock);
 	clock = host->mmc->actual_clock / 512;
 
-	/*
-	 * Add a margin of 1/1024 rate higher to the clock rate in order
-	 * to avoid clk variable setting a value of 0 due to the margin
-	 * provided for actual_clock in renesas_sdhi_clk_update().
-	 */
+	 
 	clk_margin = new_clock >> 10;
 	for (clk = 0x80000080; new_clock + clk_margin >= (clock << 1); clk >>= 1)
 		clock <<= 1;
 
-	/* 1/1 clock is option */
+	 
 	if ((host->pdata->flags & TMIO_MMC_CLK_ACTUAL) && ((clk >> 22) & 0x1)) {
 		if (!(host->mmc->ios.timing == MMC_TIMING_MMC_HS400))
 			clk |= 0xff;
@@ -228,7 +181,7 @@ static void renesas_sdhi_set_clock(struct tmio_mmc_host *host,
 		sd_ctrl_read16(host, CTL_SD_CARD_CLK_CTL));
 
 out:
-	/* HW engineers overrode docs: no sleep needed on R-Car2+ */
+	 
 	if (!(host->pdata->flags & TMIO_MMC_MIN_RCAR2))
 		usleep_range(10000, 11000);
 }
@@ -267,10 +220,7 @@ static int renesas_sdhi_start_signal_voltage_switch(struct mmc_host *mmc,
 		return -EINVAL;
 	}
 
-	/*
-	 * If anything is missing, assume signal voltage is fixed at
-	 * 3.3V and succeed/fail accordingly.
-	 */
+	 
 	if (IS_ERR(priv->pinctrl) || IS_ERR(pin_state))
 		return ios->signal_voltage ==
 			MMC_SIGNAL_VOLTAGE_330 ? 0 : -EINVAL;
@@ -282,7 +232,7 @@ static int renesas_sdhi_start_signal_voltage_switch(struct mmc_host *mmc,
 	return pinctrl_select_state(priv->pinctrl, pin_state);
 }
 
-/* SCC registers */
+ 
 #define SH_MOBILE_SDHI_SCC_DTCNTL	0x000
 #define SH_MOBILE_SDHI_SCC_TAPSET	0x002
 #define SH_MOBILE_SDHI_SCC_DT2FF	0x004
@@ -316,15 +266,15 @@ static int renesas_sdhi_start_signal_voltage_switch(struct mmc_host *mmc,
 #define SH_MOBILE_SDHI_SCC_TMPPORT2_HS400OSEL	BIT(4)
 #define SH_MOBILE_SDHI_SCC_TMPPORT2_HS400EN	BIT(31)
 
-/* Definitions for values the SH_MOBILE_SDHI_SCC_TMPPORT4 register */
+ 
 #define SH_MOBILE_SDHI_SCC_TMPPORT4_DLL_ACC_START	BIT(0)
 
-/* Definitions for values the SH_MOBILE_SDHI_SCC_TMPPORT5 register */
+ 
 #define SH_MOBILE_SDHI_SCC_TMPPORT5_DLL_RW_SEL_R	BIT(8)
 #define SH_MOBILE_SDHI_SCC_TMPPORT5_DLL_RW_SEL_W	(0 << 8)
 #define SH_MOBILE_SDHI_SCC_TMPPORT5_DLL_ADR_MASK	0x3F
 
-/* Definitions for values the SH_MOBILE_SDHI_SCC register */
+ 
 #define SH_MOBILE_SDHI_SCC_TMPPORT_DISABLE_WP_CODE	0xa5000000
 #define SH_MOBILE_SDHI_SCC_TMPPORT_CALIB_CODE_MASK	0x1f
 #define SH_MOBILE_SDHI_SCC_TMPPORT_MANUAL_MODE		BIT(7)
@@ -348,13 +298,13 @@ static unsigned int renesas_sdhi_init_tuning(struct tmio_mmc_host *host)
 
 	priv = host_to_priv(host);
 
-	/* Initialize SCC */
+	 
 	sd_ctrl_write32_as_16_and_16(host, CTL_STATUS, 0x0);
 
 	sd_ctrl_write16(host, CTL_SD_CARD_CLK_CTL, ~CLK_CTL_SCLKEN &
 			sd_ctrl_read16(host, CTL_SD_CARD_CLK_CTL));
 
-	/* set sampling clock selection range */
+	 
 	sd_scc_write32(host, priv, SH_MOBILE_SDHI_SCC_DTCNTL,
 		       SH_MOBILE_SDHI_SCC_DTCNTL_TAPEN |
 		       0x8 << SH_MOBILE_SDHI_SCC_DTCNTL_TAPNUM_SHIFT);
@@ -372,7 +322,7 @@ static unsigned int renesas_sdhi_init_tuning(struct tmio_mmc_host *host)
 	sd_ctrl_write16(host, CTL_SD_CARD_CLK_CTL, CLK_CTL_SCLKEN |
 			sd_ctrl_read16(host, CTL_SD_CARD_CLK_CTL));
 
-	/* Read TAPNUM */
+	 
 	return (sd_scc_read32(host, priv, SH_MOBILE_SDHI_SCC_DTCNTL) >>
 		SH_MOBILE_SDHI_SCC_DTCNTL_TAPNUM_SHIFT) &
 		SH_MOBILE_SDHI_SCC_DTCNTL_TAPNUM_MASK;
@@ -388,7 +338,7 @@ static void renesas_sdhi_hs400_complete(struct mmc_host *mmc)
 	sd_ctrl_write16(host, CTL_SD_CARD_CLK_CTL, ~CLK_CTL_SCLKEN &
 		sd_ctrl_read16(host, CTL_SD_CARD_CLK_CTL));
 
-	/* Set HS400 mode */
+	 
 	sd_ctrl_write16(host, CTL_SDIF_MODE, SDIF_MODE_HS400 |
 			sd_ctrl_read16(host, CTL_SDIF_MODE));
 
@@ -410,7 +360,7 @@ static void renesas_sdhi_hs400_complete(struct mmc_host *mmc)
 		       sd_scc_read32(host, priv,
 				     SH_MOBILE_SDHI_SCC_DTCNTL));
 
-	/* Avoid bad TAP */
+	 
 	if (bad_taps & BIT(priv->tap_set)) {
 		u32 new_tap = (priv->tap_set + 1) % priv->tap_num;
 
@@ -464,12 +414,12 @@ static void renesas_sdhi_disable_scc(struct mmc_host *mmc)
 static u32 sd_scc_tmpport_read32(struct tmio_mmc_host *host,
 				 struct renesas_sdhi *priv, u32 addr)
 {
-	/* read mode */
+	 
 	sd_scc_write32(host, priv, SH_MOBILE_SDHI_SCC_TMPPORT5,
 		       SH_MOBILE_SDHI_SCC_TMPPORT5_DLL_RW_SEL_R |
 		       (SH_MOBILE_SDHI_SCC_TMPPORT5_DLL_ADR_MASK & addr));
 
-	/* access start and stop */
+	 
 	sd_scc_write32(host, priv, SH_MOBILE_SDHI_SCC_TMPPORT4,
 		       SH_MOBILE_SDHI_SCC_TMPPORT4_DLL_ACC_START);
 	sd_scc_write32(host, priv, SH_MOBILE_SDHI_SCC_TMPPORT4, 0);
@@ -480,14 +430,14 @@ static u32 sd_scc_tmpport_read32(struct tmio_mmc_host *host,
 static void sd_scc_tmpport_write32(struct tmio_mmc_host *host,
 				   struct renesas_sdhi *priv, u32 addr, u32 val)
 {
-	/* write mode */
+	 
 	sd_scc_write32(host, priv, SH_MOBILE_SDHI_SCC_TMPPORT5,
 		       SH_MOBILE_SDHI_SCC_TMPPORT5_DLL_RW_SEL_W |
 		       (SH_MOBILE_SDHI_SCC_TMPPORT5_DLL_ADR_MASK & addr));
 
 	sd_scc_write32(host, priv, SH_MOBILE_SDHI_SCC_TMPPORT6, val);
 
-	/* access start and stop */
+	 
 	sd_scc_write32(host, priv, SH_MOBILE_SDHI_SCC_TMPPORT4,
 		       SH_MOBILE_SDHI_SCC_TMPPORT4_DLL_ACC_START);
 	sd_scc_write32(host, priv, SH_MOBILE_SDHI_SCC_TMPPORT4, 0);
@@ -498,10 +448,10 @@ static void renesas_sdhi_adjust_hs400_mode_enable(struct tmio_mmc_host *host)
 	struct renesas_sdhi *priv = host_to_priv(host);
 	u32 calib_code;
 
-	/* disable write protect */
+	 
 	sd_scc_tmpport_write32(host, priv, 0x00,
 			       SH_MOBILE_SDHI_SCC_TMPPORT_DISABLE_WP_CODE);
-	/* read calibration code and adjust */
+	 
 	calib_code = sd_scc_tmpport_read32(host, priv, 0x26);
 	calib_code &= SH_MOBILE_SDHI_SCC_TMPPORT_CALIB_CODE_MASK;
 
@@ -509,10 +459,10 @@ static void renesas_sdhi_adjust_hs400_mode_enable(struct tmio_mmc_host *host)
 			       SH_MOBILE_SDHI_SCC_TMPPORT_MANUAL_MODE |
 			       priv->adjust_hs400_calib_table[calib_code]);
 
-	/* set offset value to TMPPORT3, hardcoded to OFFSET0 (= 0x3) for now */
+	 
 	sd_scc_write32(host, priv, SH_MOBILE_SDHI_SCC_TMPPORT3, 0x3);
 
-	/* adjustment done, clear flag */
+	 
 	priv->needs_adjust_hs400 = false;
 }
 
@@ -520,12 +470,12 @@ static void renesas_sdhi_adjust_hs400_mode_disable(struct tmio_mmc_host *host)
 {
 	struct renesas_sdhi *priv = host_to_priv(host);
 
-	/* disable write protect */
+	 
 	sd_scc_tmpport_write32(host, priv, 0x00,
 			       SH_MOBILE_SDHI_SCC_TMPPORT_DISABLE_WP_CODE);
-	/* disable manual calibration */
+	 
 	sd_scc_tmpport_write32(host, priv, 0x22, 0);
-	/* clear offset value of TMPPORT3 */
+	 
 	sd_scc_write32(host, priv, SH_MOBILE_SDHI_SCC_TMPPORT3, 0);
 }
 
@@ -535,7 +485,7 @@ static void renesas_sdhi_reset_hs400_mode(struct tmio_mmc_host *host,
 	sd_ctrl_write16(host, CTL_SD_CARD_CLK_CTL, ~CLK_CTL_SCLKEN &
 			sd_ctrl_read16(host, CTL_SD_CARD_CLK_CTL));
 
-	/* Reset HS400 mode */
+	 
 	sd_ctrl_write16(host, CTL_SDIF_MODE, ~SDIF_MODE_HS400 &
 			sd_ctrl_read16(host, CTL_SDIF_MODE));
 
@@ -572,7 +522,7 @@ static void renesas_sdhi_scc_reset(struct tmio_mmc_host *host, struct renesas_sd
 		       sd_scc_read32(host, priv, SH_MOBILE_SDHI_SCC_RVSCNTL));
 }
 
-/* only populated for TMIO_MMC_MIN_RCAR2 */
+ 
 static void renesas_sdhi_reset(struct tmio_mmc_host *host, bool preserve)
 {
 	struct renesas_sdhi *priv = host_to_priv(host);
@@ -582,10 +532,10 @@ static void renesas_sdhi_reset(struct tmio_mmc_host *host, bool preserve)
 	if (!preserve) {
 		if (priv->rstc) {
 			reset_control_reset(priv->rstc);
-			/* Unknown why but without polling reset status, it will hang */
+			 
 			read_poll_timeout(reset_control_status, ret, ret == 0, 1, 100,
 					  false, priv->rstc);
-			/* At least SDHI_VER_GEN2_SDR50 needs manual release of reset */
+			 
 			sd_ctrl_write16(host, CTL_RESET_SD, 0x0001);
 			priv->needs_adjust_hs400 = false;
 			renesas_sdhi_set_clock(host, host->clk_cache);
@@ -621,11 +571,7 @@ static int renesas_sdhi_select_tuning(struct tmio_mmc_host *host)
 
 	sd_scc_write32(host, priv, SH_MOBILE_SDHI_SCC_RVSREQ, 0);
 
-	/*
-	 * When tuning CMD19 is issued twice for each tap, merge the
-	 * result requiring the tap to be good in both runs before
-	 * considering it for tuning selection.
-	 */
+	 
 	for (i = 0; i < taps_size; i++) {
 		int offset = priv->tap_num * (i < priv->tap_num ? 1 : -1);
 
@@ -636,10 +582,7 @@ static int renesas_sdhi_select_tuning(struct tmio_mmc_host *host)
 			clear_bit(i + offset, priv->smpcmp);
 	}
 
-	/*
-	 * If all TAP are OK, the sampling clock position is selected by
-	 * identifying the change point of data.
-	 */
+	 
 	if (bitmap_full(priv->taps, taps_size)) {
 		bitmap = priv->smpcmp;
 		min_tap_row = 1;
@@ -648,11 +591,7 @@ static int renesas_sdhi_select_tuning(struct tmio_mmc_host *host)
 		min_tap_row = SH_MOBILE_SDHI_MIN_TAP_ROW;
 	}
 
-	/*
-	 * Find the longest consecutive run of successful probes. If that
-	 * is at least SH_MOBILE_SDHI_MIN_TAP_ROW probes long then use the
-	 * center index as the tap, otherwise bail out.
-	 */
+	 
 	for_each_set_bitrange(rs, re, bitmap, taps_size) {
 		if (re - rs > tap_cnt) {
 			tap_end = re;
@@ -666,10 +605,10 @@ static int renesas_sdhi_select_tuning(struct tmio_mmc_host *host)
 	else
 		return -EIO;
 
-	/* Set SCC */
+	 
 	sd_scc_write32(host, priv, SH_MOBILE_SDHI_SCC_TAPSET, priv->tap_set);
 
-	/* Enable auto re-tuning */
+	 
 	sd_scc_write32(host, priv, SH_MOBILE_SDHI_SCC_RVSCNTL,
 		       SH_MOBILE_SDHI_SCC_RVSCNTL_RVSEN |
 		       sd_scc_read32(host, priv, SH_MOBILE_SDHI_SCC_RVSCNTL));
@@ -685,7 +624,7 @@ static int renesas_sdhi_execute_tuning(struct mmc_host *mmc, u32 opcode)
 
 	priv->tap_num = renesas_sdhi_init_tuning(host);
 	if (!priv->tap_num)
-		return 0; /* Tuning is not supported */
+		return 0;  
 
 	if (priv->tap_num * 2 >= sizeof(priv->taps) * BITS_PER_BYTE) {
 		dev_err(&host->pdev->dev,
@@ -696,11 +635,11 @@ static int renesas_sdhi_execute_tuning(struct mmc_host *mmc, u32 opcode)
 	bitmap_zero(priv->taps, priv->tap_num * 2);
 	bitmap_zero(priv->smpcmp, priv->tap_num * 2);
 
-	/* Issue CMD19 twice for each tap */
+	 
 	for (i = 0; i < 2 * priv->tap_num; i++) {
 		int cmd_error = 0;
 
-		/* Set sampling clock position */
+		 
 		sd_scc_write32(host, priv, SH_MOBILE_SDHI_SCC_TAPSET, i % priv->tap_num);
 
 		if (mmc_send_tuning(mmc, opcode, &cmd_error) == 0)
@@ -731,18 +670,15 @@ static bool renesas_sdhi_manual_correction(struct tmio_mmc_host *host, bool use_
 
 	sd_scc_write32(host, priv, SH_MOBILE_SDHI_SCC_RVSREQ, 0);
 
-	/* Change TAP position according to correction status */
+	 
 	if (sdhi_has_quirk(priv, manual_tap_correction) &&
 	    host->mmc->ios.timing == MMC_TIMING_MMC_HS400) {
 		u32 bad_taps = priv->quirks ? priv->quirks->hs400_bad_taps : 0;
-		/*
-		 * With HS400, the DAT signal is based on DS, not CLK.
-		 * Therefore, use only CMD status.
-		 */
+		 
 		u32 smpcmp = sd_scc_read32(host, priv, SH_MOBILE_SDHI_SCC_SMPCMP) &
 					   SH_MOBILE_SDHI_SCC_SMPCMP_CMD_ERR;
 		if (!smpcmp) {
-			return false;	/* no error in CMD signal */
+			return false;	 
 		} else if (smpcmp == SH_MOBILE_SDHI_SCC_SMPCMP_CMD_REQUP) {
 			new_tap++;
 			error_tap--;
@@ -750,19 +686,15 @@ static bool renesas_sdhi_manual_correction(struct tmio_mmc_host *host, bool use_
 			new_tap--;
 			error_tap++;
 		} else {
-			return true;	/* need retune */
+			return true;	 
 		}
 
-		/*
-		 * When new_tap is a bad tap, we cannot change. Then, we compare
-		 * with the HS200 tuning result. When smpcmp[error_tap] is OK,
-		 * we can at least retune.
-		 */
+		 
 		if (bad_taps & BIT(new_tap % priv->tap_num))
 			return test_bit(error_tap % priv->tap_num, priv->smpcmp);
 	} else {
 		if (val & SH_MOBILE_SDHI_SCC_RVSREQ_RVSERR)
-			return true;    /* need retune */
+			return true;     
 		else if (val & SH_MOBILE_SDHI_SCC_RVSREQ_REQTAPUP)
 			new_tap++;
 		else if (val & SH_MOBILE_SDHI_SCC_RVSREQ_REQTAPDOWN)
@@ -782,7 +714,7 @@ static bool renesas_sdhi_auto_correction(struct tmio_mmc_host *host)
 {
 	struct renesas_sdhi *priv = host_to_priv(host);
 
-	/* Check SCC error */
+	 
 	if (sd_scc_read32(host, priv, SH_MOBILE_SDHI_SCC_RVSREQ) &
 	    SH_MOBILE_SDHI_SCC_RVSREQ_RVSERR) {
 		sd_scc_write32(host, priv, SH_MOBILE_SDHI_SCC_RVSREQ, 0);
@@ -799,10 +731,7 @@ static bool renesas_sdhi_check_scc_error(struct tmio_mmc_host *host,
 	bool use_4tap = sdhi_has_quirk(priv, hs400_4taps);
 	bool ret = false;
 
-	/*
-	 * Skip checking SCC errors when running on 4 taps in HS400 mode as
-	 * any retuning would still result in the same 4 taps being used.
-	 */
+	 
 	if (!(host->mmc->ios.timing == MMC_TIMING_UHS_SDR104) &&
 	    !(host->mmc->ios.timing == MMC_TIMING_MMC_HS200) &&
 	    !(host->mmc->ios.timing == MMC_TIMING_MMC_HS400 && !use_4tap))
@@ -829,7 +758,7 @@ static bool renesas_sdhi_check_scc_error(struct tmio_mmc_host *host,
 static int renesas_sdhi_wait_idle(struct tmio_mmc_host *host, u32 bit)
 {
 	int timeout = 1000;
-	/* CBSY is set when busy, SCLKDIVEN is cleared when busy */
+	 
 	u32 wait_state = (bit == TMIO_STAT_CMD_BUSY ? TMIO_STAT_CMD_BUSY : 0);
 
 	while (--timeout && (sd_ctrl_read16_and_16_as_32(host, CTL_STATUS)
@@ -870,14 +799,7 @@ static int renesas_sdhi_write16_hook(struct tmio_mmc_host *host, int addr)
 static int renesas_sdhi_multi_io_quirk(struct mmc_card *card,
 				       unsigned int direction, int blk_size)
 {
-	/*
-	 * In Renesas controllers, when performing a
-	 * multiple block read of one or two blocks,
-	 * depending on the timing with which the
-	 * response register is read, the response
-	 * value may not be read properly.
-	 * Use single block read for this HW bug
-	 */
+	 
 	if ((direction == MMC_DATA_READ) &&
 	    blk_size == 2)
 		return 1;
@@ -894,7 +816,7 @@ static void renesas_sdhi_fixup_request(struct tmio_mmc_host *host, struct mmc_re
 }
 static void renesas_sdhi_enable_dma(struct tmio_mmc_host *host, bool enable)
 {
-	/* Iff regs are 8 byte apart, sdbuf is 64 bit. Otherwise always 32. */
+	 
 	int width = (host->bus_shift == 2) ? 64 : 32;
 
 	sd_ctrl_write16(host, CTL_DMA_ENABLE, enable ? DMA_ENABLE_DMASDRW : 0);
@@ -936,17 +858,7 @@ int renesas_sdhi_probe(struct platform_device *pdev,
 	if (IS_ERR(priv->clkh))
 		return dev_err_probe(&pdev->dev, PTR_ERR(priv->clkh), "cannot get clkh");
 
-	/*
-	 * Some controllers provide a 2nd clock just to run the internal card
-	 * detection logic. Unfortunately, the existing driver architecture does
-	 * not support a separation of clocks for runtime PM usage. When
-	 * native hotplug is used, the tmio driver assumes that the core
-	 * must continue to run for card detect to stay active, so we cannot
-	 * disable it.
-	 * Additionally, it is prohibited to supply a clock to the core but not
-	 * to the card detect circuit. That leaves us with if separate clocks
-	 * are presented, we must treat them both as virtually 1 clock.
-	 */
+	 
 	priv->clk_cd = devm_clk_get_optional(&pdev->dev, "cd");
 	if (IS_ERR(priv->clk_cd))
 		return dev_err_probe(&pdev->dev, PTR_ERR(priv->clk_cd), "cannot get cd clock");
@@ -977,7 +889,7 @@ int renesas_sdhi_probe(struct platform_device *pdev,
 		mmc_data->max_segs = of_data->max_segs;
 		dma_priv->dma_buswidth = of_data->dma_buswidth;
 		host->bus_shift = of_data->bus_shift;
-		/* Fallback for old DTs */
+		 
 		if (!priv->clkh && of_data->sdhi_flags & SDHI_FLAG_NEED_CLKH_FALLBACK)
 			priv->clkh = clk_get_parent(clk_get_parent(priv->clk));
 
@@ -993,13 +905,13 @@ int renesas_sdhi_probe(struct platform_device *pdev,
 	if (sdhi_has_quirk(priv, hs400_disabled))
 		host->mmc->caps2 &= ~(MMC_CAP2_HS400 | MMC_CAP2_HS400_ES);
 
-	/* For some SoC, we disable internal WP. GPIO may override this */
+	 
 	if (mmc_can_gpio_ro(host->mmc))
 		mmc_data->capabilities2 &= ~MMC_CAP2_NO_WRITE_PROTECT;
 
-	/* SDR speeds are only available on Gen2+ */
+	 
 	if (mmc_data->flags & TMIO_MMC_MIN_RCAR2) {
-		/* card_busy caused issues on r8a73a4 (pre-Gen2) CD-less SDHI */
+		 
 		host->ops.card_busy = renesas_sdhi_card_busy;
 		host->ops.start_signal_voltage_switch =
 			renesas_sdhi_start_signal_voltage_switch;
@@ -1010,8 +922,8 @@ int renesas_sdhi_probe(struct platform_device *pdev,
 		host->sdcard_irq_mask_all = TMIO_MASK_ALL;
 	}
 
-	/* Orginally registers were 16 bit apart, could be 32 or 64 nowadays */
-	if (!host->bus_shift && resource_size(res) > 0x100) /* old way to determine the shift */
+	 
+	if (!host->bus_shift && resource_size(res) > 0x100)  
 		host->bus_shift = 1;
 
 	if (mmd)
@@ -1022,24 +934,19 @@ int renesas_sdhi_probe(struct platform_device *pdev,
 
 	mmc_data->capabilities |= MMC_CAP_MMC_HIGHSPEED;
 
-	/*
-	 * All SDHI blocks support 2-byte and larger block sizes in 4-bit
-	 * bus width mode.
-	 */
+	 
 	mmc_data->flags |= TMIO_MMC_BLKSZ_2BYTES;
 
-	/*
-	 * All SDHI blocks support SDIO IRQ signalling.
-	 */
+	 
 	mmc_data->flags |= TMIO_MMC_SDIO_IRQ;
 
-	/* All SDHI have CMD12 control bit */
+	 
 	mmc_data->flags |= TMIO_MMC_HAVE_CMD12_CTRL;
 
-	/* All SDHI have SDIO status bits which must be 1 */
+	 
 	mmc_data->flags |= TMIO_MMC_SDIO_STATUS_SETBITS;
 
-	/* All SDHI support HW busy detection */
+	 
 	mmc_data->flags |= TMIO_MMC_USE_BUSY_TIMEOUT;
 
 	dev_pm_domain_start(&pdev->dev);
@@ -1049,11 +956,11 @@ int renesas_sdhi_probe(struct platform_device *pdev,
 		goto efree;
 
 	ver = sd_ctrl_read16(host, CTL_VERSION);
-	/* GEN2_SDR104 is first known SDHI to use 32bit block count */
+	 
 	if (ver < SDHI_VER_GEN2_SDR104 && mmc_data->max_blk_count > U16_MAX)
 		mmc_data->max_blk_count = U16_MAX;
 
-	/* One Gen2 SDHI incarnation does NOT have a CBSY bit */
+	 
 	if (ver == SDHI_VER_GEN2_SDR50)
 		mmc_data->flags &= ~TMIO_MMC_HAVE_CBSY;
 
@@ -1065,15 +972,15 @@ int renesas_sdhi_probe(struct platform_device *pdev,
 			quirks->hs400_calib_table + 1);
 	}
 
-	/* these have an EXTOP bit */
+	 
 	if (ver >= SDHI_VER_GEN3_SD)
 		host->get_timeout_cycles = renesas_sdhi_gen3_get_cycles;
 
-	/* Check for SCC so we can reset it if needed */
+	 
 	if (of_data && of_data->scc_offset && ver >= SDHI_VER_GEN2_SDR104)
 		priv->scc_ctl = host->ctl + of_data->scc_offset;
 
-	/* Enable tuning iff we have an SCC and a supported mode */
+	 
 	if (priv->scc_ctl && (host->mmc->caps & MMC_CAP_UHS_SDR104 ||
 	    host->mmc->caps2 & MMC_CAP2_HSX00_1_8V)) {
 		const struct renesas_sdhi_scc *taps = of_data->taps;
@@ -1110,7 +1017,7 @@ int renesas_sdhi_probe(struct platform_device *pdev,
 		goto eirq;
 	}
 
-	/* There must be at least one IRQ source */
+	 
 	if (!num_irqs) {
 		ret = -ENXIO;
 		goto eirq;

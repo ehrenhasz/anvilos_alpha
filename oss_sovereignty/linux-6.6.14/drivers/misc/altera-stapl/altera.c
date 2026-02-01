@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * altera.c
- *
- * altera FPGA driver
- *
- * Copyright (C) Altera Corporation 1998-2001
- * Copyright (C) 2010,2011 NetUP Inc.
- * Copyright (C) 2010,2011 Igor M. Liplianin <liplianin@netup.ru>
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/ctype.h>
@@ -116,7 +108,7 @@ struct altera_procinfo {
 	struct altera_procinfo	*next;
 };
 
-/* This function checks if enough parameters are available on the stack. */
+ 
 static int altera_check_stack(int stack_ptr, int count, int *status)
 {
 	if (stack_ptr < count) {
@@ -262,7 +254,7 @@ static int altera_execute(struct altera_state *astate,
 
 	dprintk("%s\n", __func__);
 
-	/* Read header information */
+	 
 	if (program_size > 52L) {
 		first_word    = get_unaligned_be32(&p[0]);
 		version = (first_word & 1L);
@@ -328,73 +320,60 @@ static int altera_execute(struct altera_state *astate,
 
 		attrs[i] = p[offset];
 
-		/*
-		 * use bit 7 of attribute byte to indicate that
-		 * this buffer was dynamically allocated
-		 * and should be freed later
-		 */
+		 
 		attrs[i] &= 0x7f;
 
 		var_size[i] = get_unaligned_be32(&p[offset + 7 + delta]);
 
-		/*
-		 * Attribute bits:
-		 * bit 0: 0 = read-only, 1 = read-write
-		 * bit 1: 0 = not compressed, 1 = compressed
-		 * bit 2: 0 = not initialized, 1 = initialized
-		 * bit 3: 0 = scalar, 1 = array
-		 * bit 4: 0 = Boolean, 1 = integer
-		 * bit 5: 0 = declared variable,
-		 *	1 = compiler created temporary variable
-		 */
+		 
 
 		if ((attrs[i] & 0x0c) == 0x04)
-			/* initialized scalar variable */
+			 
 			vars[i] = value;
 		else if ((attrs[i] & 0x1e) == 0x0e) {
-			/* initialized compressed Boolean array */
+			 
 			uncomp_size = get_unaligned_le32(&p[data_sect + value]);
 
-			/* allocate a buffer for the uncompressed data */
+			 
 			vars[i] = (long)kzalloc(uncomp_size, GFP_KERNEL);
 			if (vars[i] == 0L)
 				status = -ENOMEM;
 			else {
-				/* set flag so buffer will be freed later */
+				 
 				attrs[i] |= 0x80;
 
-				/* uncompress the data */
+				 
 				if (altera_shrink(&p[data_sect + value],
 						var_size[i],
 						(u8 *)vars[i],
 						uncomp_size,
 						version) != uncomp_size)
-					/* decompression failed */
+					 
 					status = -EIO;
 				else
 					var_size[i] = uncomp_size * 8L;
 
 			}
 		} else if ((attrs[i] & 0x1e) == 0x0c) {
-			/* initialized Boolean array */
+			 
 			vars[i] = value + data_sect + (long)p;
 		} else if ((attrs[i] & 0x1c) == 0x1c) {
-			/* initialized integer array */
+			 
 			vars[i] = value + data_sect;
 		} else if ((attrs[i] & 0x0c) == 0x08) {
-			/* uninitialized array */
+			 
 
-			/* flag attrs so that memory is freed */
+			 
 			attrs[i] |= 0x80;
 
 			if (var_size[i] > 0) {
 				u32 size;
 
 				if (attrs[i] & 0x10)
-					/* integer array */
+					 
 					size = (var_size[i] * sizeof(s32));
 				else
-					/* Boolean array */
+					 
 					size = ((var_size[i] + 7L) / 8L);
 
 				vars[i] = (long)kzalloc(size, GFP_KERNEL);
@@ -402,7 +381,7 @@ static int altera_execute(struct altera_state *astate,
 				if (vars[i] == 0) {
 					status = -ENOMEM;
 				} else {
-					/* zero out memory */
+					 
 					for (j = 0; j < size; ++j)
 						((u8 *)(vars[i]))[j] = 0;
 
@@ -424,10 +403,7 @@ exit_done:
 	pc = code_sect;
 	msg_buff[0] = '\0';
 
-	/*
-	 * For JBC version 2, we will execute the procedures corresponding to
-	 * the selected ACTION
-	 */
+	 
 	if (version > 0) {
 		if (aconf->action == NULL) {
 			status = -EINVAL;
@@ -459,27 +435,19 @@ exit_done:
 			i = current_proc;
 			while ((i != 0) || first_time) {
 				first_time = 0;
-				/* check procedure attribute byte */
+				 
 				proc_attributes[i] =
 						(p[proc_table +
 								(13 * i) + 8] &
 									0x03);
 
-				/*
-				 * BIT0 - OPTIONAL
-				 * BIT1 - RECOMMENDED
-				 * BIT6 - FORCED OFF
-				 * BIT7 - FORCED ON
-				 */
+				 
 
 				i = get_unaligned_be32(&p[proc_table +
 							(13 * i) + 4]);
 			}
 
-			/*
-			 * Set current_proc to the first procedure
-			 * to be executed
-			 */
+			 
 			i = current_proc;
 			while ((i != 0) &&
 				((proc_attributes[i] == 1) ||
@@ -498,7 +466,7 @@ exit_done:
 				if ((pc < code_sect) || (pc >= debug_sect))
 					status = -ERANGE;
 			} else
-				/* there are no procedures to execute! */
+				 
 				done = 1;
 
 		}
@@ -623,13 +591,7 @@ exit_done:
 			break;
 		case OP_RET:
 			if ((version > 0) && (stack_ptr == 0)) {
-				/*
-				 * We completed one of the main procedures
-				 * of an ACTION.
-				 * Find the next procedure
-				 * to be executed and jump to it.
-				 * If there are no more procedures, then EXIT.
-				 */
+				 
 				i = get_unaligned_be32(&p[proc_table +
 						(13 * current_proc) + 4]);
 				while ((i != 0) &&
@@ -639,9 +601,9 @@ exit_done:
 								(13 * i) + 4]);
 
 				if (i == 0) {
-					/* no procedures to execute! */
+					 
 					done = 1;
-					*exit_code = 0;	/* success */
+					*exit_code = 0;	 
 				} else {
 					current_proc = i;
 					pc = code_sect + get_unaligned_be32(
@@ -663,13 +625,7 @@ exit_done:
 
 			break;
 		case OP_CMPS:
-			/*
-			 * Array short compare
-			 * ...stack 0 is source 1 value
-			 * ...stack 1 is source 2 value
-			 * ...stack 2 is mask value
-			 * ...stack 3 is count
-			 */
+			 
 			if (altera_check_stack(stack_ptr, 4, &status)) {
 				s32 a = stack[--stack_ptr];
 				s32 b = stack[--stack_ptr];
@@ -688,28 +644,21 @@ exit_done:
 			}
 			break;
 		case OP_PINT:
-			/*
-			 * PRINT add integer
-			 * ...stack 0 is integer value
-			 */
+			 
 			if (!altera_check_stack(stack_ptr, 1, &status))
 				break;
 			sprintf(&msg_buff[strlen(msg_buff)],
 					"%ld", stack[--stack_ptr]);
 			break;
 		case OP_PRNT:
-			/* PRINT finish */
+			 
 			if (debug)
 				printk(msg_buff, "\n");
 
 			msg_buff[0] = '\0';
 			break;
 		case OP_DSS:
-			/*
-			 * DRSCAN short
-			 * ...stack 0 is scan data
-			 * ...stack 1 is count
-			 */
+			 
 			if (!altera_check_stack(stack_ptr, 2, &status))
 				break;
 			long_tmp = stack[--stack_ptr];
@@ -718,11 +667,7 @@ exit_done:
 			status = altera_drscan(astate, count, charbuf, 0);
 			break;
 		case OP_DSSC:
-			/*
-			 * DRSCAN short with capture
-			 * ...stack 0 is scan data
-			 * ...stack 1 is count
-			 */
+			 
 			if (!altera_check_stack(stack_ptr, 2, &status))
 				break;
 			long_tmp = stack[--stack_ptr];
@@ -733,11 +678,7 @@ exit_done:
 			stack[stack_ptr - 1] = get_unaligned_le32(&charbuf[0]);
 			break;
 		case OP_ISS:
-			/*
-			 * IRSCAN short
-			 * ...stack 0 is scan data
-			 * ...stack 1 is count
-			 */
+			 
 			if (!altera_check_stack(stack_ptr, 2, &status))
 				break;
 			long_tmp = stack[--stack_ptr];
@@ -746,11 +687,7 @@ exit_done:
 			status = altera_irscan(astate, count, charbuf, 0);
 			break;
 		case OP_ISSC:
-			/*
-			 * IRSCAN short with capture
-			 * ...stack 0 is scan data
-			 * ...stack 1 is count
-			 */
+			 
 			if (!altera_check_stack(stack_ptr, 2, &status))
 				break;
 			long_tmp = stack[--stack_ptr];
@@ -767,11 +704,7 @@ exit_done:
 			status = altera_set_dr_pre(&astate->js, count, 0, NULL);
 			break;
 		case OP_DPRL:
-			/*
-			 * DRPRE with literal data
-			 * ...stack 0 is count
-			 * ...stack 1 is literal data
-			 */
+			 
 			if (!altera_check_stack(stack_ptr, 2, &status))
 				break;
 			count = stack[--stack_ptr];
@@ -781,10 +714,7 @@ exit_done:
 						charbuf);
 			break;
 		case OP_DPO:
-			/*
-			 * DRPOST
-			 * ...stack 0 is count
-			 */
+			 
 			if (altera_check_stack(stack_ptr, 1, &status)) {
 				count = stack[--stack_ptr];
 				status = altera_set_dr_post(&astate->js, count,
@@ -792,11 +722,7 @@ exit_done:
 			}
 			break;
 		case OP_DPOL:
-			/*
-			 * DRPOST with literal data
-			 * ...stack 0 is count
-			 * ...stack 1 is literal data
-			 */
+			 
 			if (!altera_check_stack(stack_ptr, 2, &status))
 				break;
 			count = stack[--stack_ptr];
@@ -813,11 +739,7 @@ exit_done:
 			}
 			break;
 		case OP_IPRL:
-			/*
-			 * IRPRE with literal data
-			 * ...stack 0 is count
-			 * ...stack 1 is literal data
-			 */
+			 
 			if (altera_check_stack(stack_ptr, 2, &status)) {
 				count = stack[--stack_ptr];
 				long_tmp = stack[--stack_ptr];
@@ -827,10 +749,7 @@ exit_done:
 			}
 			break;
 		case OP_IPO:
-			/*
-			 * IRPOST
-			 * ...stack 0 is count
-			 */
+			 
 			if (altera_check_stack(stack_ptr, 1, &status)) {
 				count = stack[--stack_ptr];
 				status = altera_set_ir_post(&astate->js, count,
@@ -838,11 +757,7 @@ exit_done:
 			}
 			break;
 		case OP_IPOL:
-			/*
-			 * IRPOST with literal data
-			 * ...stack 0 is count
-			 * ...stack 1 is literal data
-			 */
+			 
 			if (!altera_check_stack(stack_ptr, 2, &status))
 				break;
 			count = stack[--stack_ptr];
@@ -857,11 +772,7 @@ exit_done:
 				count = strlen(msg_buff);
 				ch = (char) stack[--stack_ptr];
 				if ((ch < 1) || (ch > 127)) {
-					/*
-					 * character code out of range
-					 * instead of flagging an error,
-					 * force the value to 127
-					 */
+					 
 					ch = 127;
 				}
 				msg_buff[count] = ch;
@@ -895,61 +806,50 @@ exit_done:
 
 			break;
 		case OP_BCH0:
-			/*
-			 * Batch operation 0
-			 * SWP
-			 * SWPN 7
-			 * SWP
-			 * SWPN 6
-			 * DUPN 8
-			 * SWPN 2
-			 * SWP
-			 * DUPN 6
-			 * DUPN 6
-			 */
+			 
 
-			/* SWP  */
+			 
 			if (altera_check_stack(stack_ptr, 2, &status))
 				swap(stack[stack_ptr - 2], stack[stack_ptr - 1]);
 
-			/* SWPN 7 */
+			 
 			index = 7 + 1;
 			if (altera_check_stack(stack_ptr, index, &status))
 				swap(stack[stack_ptr - index], stack[stack_ptr - 1]);
 
-			/* SWP  */
+			 
 			if (altera_check_stack(stack_ptr, 2, &status))
 				swap(stack[stack_ptr - 2], stack[stack_ptr - 1]);
 
-			/* SWPN 6 */
+			 
 			index = 6 + 1;
 			if (altera_check_stack(stack_ptr, index, &status))
 				swap(stack[stack_ptr - index], stack[stack_ptr - 1]);
 
-			/* DUPN 8 */
+			 
 			index = 8 + 1;
 			if (altera_check_stack(stack_ptr, index, &status)) {
 				stack[stack_ptr] = stack[stack_ptr - index];
 				++stack_ptr;
 			}
 
-			/* SWPN 2 */
+			 
 			index = 2 + 1;
 			if (altera_check_stack(stack_ptr, index, &status))
 				swap(stack[stack_ptr - index], stack[stack_ptr - 1]);
 
-			/* SWP  */
+			 
 			if (altera_check_stack(stack_ptr, 2, &status))
 				swap(stack[stack_ptr - 2], stack[stack_ptr - 1]);
 
-			/* DUPN 6 */
+			 
 			index = 6 + 1;
 			if (altera_check_stack(stack_ptr, index, &status)) {
 				stack[stack_ptr] = stack[stack_ptr - index];
 				++stack_ptr;
 			}
 
-			/* DUPN 6 */
+			 
 			index = 6 + 1;
 			if (altera_check_stack(stack_ptr, index, &status)) {
 				stack[stack_ptr] = stack[stack_ptr - index];
@@ -977,13 +877,7 @@ exit_done:
 				status = -ERANGE;
 			break;
 		case OP_NEXT:
-			/*
-			 * Process FOR / NEXT loop
-			 * ...argument 0 is variable ID
-			 * ...stack 0 is step value
-			 * ...stack 1 is end value
-			 * ...stack 2 is top address
-			 */
+			 
 			if (altera_check_stack(stack_ptr, 3, &status)) {
 				s32 step = stack[stack_ptr - 1];
 				s32 end = stack[stack_ptr - 2];
@@ -1009,59 +903,37 @@ exit_done:
 			}
 			break;
 		case OP_PSTR:
-			/*
-			 * PRINT add string
-			 * ...argument 0 is string ID
-			 */
+			 
 			count = strlen(msg_buff);
 			strscpy(&msg_buff[count],
 				&p[str_table + args[0]],
 				ALTERA_MESSAGE_LENGTH - count);
 			break;
 		case OP_SINT:
-			/*
-			 * STATE intermediate state
-			 * ...argument 0 is state code
-			 */
+			 
 			status = altera_goto_jstate(astate, args[0]);
 			break;
 		case OP_ST:
-			/*
-			 * STATE final state
-			 * ...argument 0 is state code
-			 */
+			 
 			status = altera_goto_jstate(astate, args[0]);
 			break;
 		case OP_ISTP:
-			/*
-			 * IRSTOP state
-			 * ...argument 0 is state code
-			 */
+			 
 			status = altera_set_irstop(&astate->js, args[0]);
 			break;
 		case OP_DSTP:
-			/*
-			 * DRSTOP state
-			 * ...argument 0 is state code
-			 */
+			 
 			status = altera_set_drstop(&astate->js, args[0]);
 			break;
 
 		case OP_SWPN:
-			/*
-			 * Exchange top with Nth stack value
-			 * ...argument 0 is 0-based stack entry
-			 * to swap with top element
-			 */
+			 
 			index = (args[0]) + 1;
 			if (altera_check_stack(stack_ptr, index, &status))
 				swap(stack[stack_ptr - index], stack[stack_ptr - 1]);
 			break;
 		case OP_DUPN:
-			/*
-			 * Duplicate Nth stack value
-			 * ...argument 0 is 0-based stack entry to duplicate
-			 */
+			 
 			index = (args[0]) + 1;
 			if (altera_check_stack(stack_ptr, index, &status)) {
 				stack[stack_ptr] = stack[stack_ptr - index];
@@ -1069,33 +941,21 @@ exit_done:
 			}
 			break;
 		case OP_POPV:
-			/*
-			 * Pop stack into scalar variable
-			 * ...argument 0 is variable ID
-			 * ...stack 0 is value
-			 */
+			 
 			if (altera_check_stack(stack_ptr, 1, &status))
 				vars[args[0]] = stack[--stack_ptr];
 
 			break;
 		case OP_POPE:
-			/*
-			 * Pop stack into integer array element
-			 * ...argument 0 is variable ID
-			 * ...stack 0 is array index
-			 * ...stack 1 is value
-			 */
+			 
 			if (!altera_check_stack(stack_ptr, 2, &status))
 				break;
 			variable_id = args[0];
 
-			/*
-			 * If variable is read-only,
-			 * convert to writable array
-			 */
+			 
 			if ((version > 0) &&
 				((attrs[variable_id] & 0x9c) == 0x1c)) {
-				/* Allocate a writable buffer for this array */
+				 
 				count = var_size[variable_id];
 				long_tmp = vars[variable_id];
 				longptr_tmp = kcalloc(count, sizeof(long),
@@ -1107,58 +967,46 @@ exit_done:
 					break;
 				}
 
-				/* copy previous contents into buffer */
+				 
 				for (i = 0; i < count; ++i) {
 					longptr_tmp[i] =
 						get_unaligned_be32(&p[long_tmp]);
 					long_tmp += sizeof(long);
 				}
 
-				/*
-				 * set bit 7 - buffer was
-				 * dynamically allocated
-				 */
+				 
 				attrs[variable_id] |= 0x80;
 
-				/* clear bit 2 - variable is writable */
+				 
 				attrs[variable_id] &= ~0x04;
 				attrs[variable_id] |= 0x01;
 
 			}
 
-			/* check that variable is a writable integer array */
+			 
 			if ((attrs[variable_id] & 0x1c) != 0x18)
 				status = -ERANGE;
 			else {
 				longptr_tmp = (long *)vars[variable_id];
 
-				/* pop the array index */
+				 
 				index = stack[--stack_ptr];
 
-				/* pop the value and store it into the array */
+				 
 				longptr_tmp[index] = stack[--stack_ptr];
 			}
 
 			break;
 		case OP_POPA:
-			/*
-			 * Pop stack into Boolean array
-			 * ...argument 0 is variable ID
-			 * ...stack 0 is count
-			 * ...stack 1 is array index
-			 * ...stack 2 is value
-			 */
+			 
 			if (!altera_check_stack(stack_ptr, 3, &status))
 				break;
 			variable_id = args[0];
 
-			/*
-			 * If variable is read-only,
-			 * convert to writable array
-			 */
+			 
 			if ((version > 0) &&
 				((attrs[variable_id] & 0x9c) == 0x0c)) {
-				/* Allocate a writable buffer for this array */
+				 
 				long_tmp =
 					(var_size[variable_id] + 7L) >> 3L;
 				charptr_tmp2 = (u8 *)vars[variable_id];
@@ -1171,14 +1019,14 @@ exit_done:
 					break;
 				}
 
-				/* zero the buffer */
+				 
 				for (long_idx = 0L;
 					long_idx < long_tmp;
 					++long_idx) {
 					charptr_tmp[long_idx] = 0;
 				}
 
-				/* copy previous contents into buffer */
+				 
 				for (long_idx = 0L;
 					long_idx < var_size[variable_id];
 					++long_idx) {
@@ -1191,22 +1039,16 @@ exit_done:
 					}
 				}
 
-				/*
-				 * set bit 7 - buffer was
-				 * dynamically allocated
-				 */
+				 
 				attrs[variable_id] |= 0x80;
 
-				/* clear bit 2 - variable is writable */
+				 
 				attrs[variable_id] &= ~0x04;
 				attrs[variable_id] |= 0x01;
 
 			}
 
-			/*
-			 * check that variable is
-			 * a writable Boolean array
-			 */
+			 
 			if ((attrs[variable_id] & 0x1c) != 0x08) {
 				status = -ERANGE;
 				break;
@@ -1214,19 +1056,16 @@ exit_done:
 
 			charptr_tmp = (u8 *)vars[variable_id];
 
-			/* pop the count (number of bits to copy) */
+			 
 			long_count = stack[--stack_ptr];
 
-			/* pop the array index */
+			 
 			long_idx = stack[--stack_ptr];
 
 			reverse = 0;
 
 			if (version > 0) {
-				/*
-				 * stack 0 = array right index
-				 * stack 1 = array left index
-				 */
+				 
 
 				if (long_idx > long_count) {
 					reverse = 1;
@@ -1235,7 +1074,7 @@ exit_done:
 								long_count;
 					long_idx = long_tmp;
 
-					/* reverse POPA is not supported */
+					 
 					status = -ERANGE;
 					break;
 				} else
@@ -1244,7 +1083,7 @@ exit_done:
 
 			}
 
-			/* pop the data */
+			 
 			long_tmp = stack[--stack_ptr];
 
 			if (long_count < 1) {
@@ -1265,11 +1104,7 @@ exit_done:
 
 			break;
 		case OP_JMPZ:
-			/*
-			 * Pop stack and branch if zero
-			 * ...argument 0 is address
-			 * ...stack 0 is condition value
-			 */
+			 
 			if (altera_check_stack(stack_ptr, 1, &status)) {
 				if (stack[--stack_ptr] == 0) {
 					pc = args[0] + code_sect;
@@ -1281,24 +1116,14 @@ exit_done:
 			break;
 		case OP_DS:
 		case OP_IS:
-			/*
-			 * DRSCAN
-			 * IRSCAN
-			 * ...argument 0 is scan data variable ID
-			 * ...stack 0 is array index
-			 * ...stack 1 is count
-			 */
+			 
 			if (!altera_check_stack(stack_ptr, 2, &status))
 				break;
 			long_idx = stack[--stack_ptr];
 			long_count = stack[--stack_ptr];
 			reverse = 0;
 			if (version > 0) {
-				/*
-				 * stack 0 = array right index
-				 * stack 1 = array left index
-				 * stack 2 = count
-				 */
+				 
 				long_tmp = long_count;
 				long_count = stack[--stack_ptr];
 
@@ -1311,10 +1136,7 @@ exit_done:
 			charptr_tmp = (u8 *)vars[args[0]];
 
 			if (reverse) {
-				/*
-				 * allocate a buffer
-				 * and reverse the data order
-				 */
+				 
 				charptr_tmp2 = charptr_tmp;
 				charptr_tmp = kzalloc((long_count >> 3) + 1,
 								GFP_KERNEL);
@@ -1339,10 +1161,10 @@ exit_done:
 				}
 			}
 
-			if (opcode == 0x51) /* DS */
+			if (opcode == 0x51)  
 				status = altera_drscan(astate, long_count,
 						charptr_tmp, long_idx);
-			else /* IS */
+			else  
 				status = altera_irscan(astate, long_count,
 						charptr_tmp, long_idx);
 
@@ -1351,22 +1173,14 @@ exit_done:
 
 			break;
 		case OP_DPRA:
-			/*
-			 * DRPRE with array data
-			 * ...argument 0 is variable ID
-			 * ...stack 0 is array index
-			 * ...stack 1 is count
-			 */
+			 
 			if (!altera_check_stack(stack_ptr, 2, &status))
 				break;
 			index = stack[--stack_ptr];
 			count = stack[--stack_ptr];
 
 			if (version > 0)
-				/*
-				 * stack 0 = array right index
-				 * stack 1 = array left index
-				 */
+				 
 				count = 1 + count - index;
 
 			charptr_tmp = (u8 *)vars[args[0]];
@@ -1374,22 +1188,14 @@ exit_done:
 							charptr_tmp);
 			break;
 		case OP_DPOA:
-			/*
-			 * DRPOST with array data
-			 * ...argument 0 is variable ID
-			 * ...stack 0 is array index
-			 * ...stack 1 is count
-			 */
+			 
 			if (!altera_check_stack(stack_ptr, 2, &status))
 				break;
 			index = stack[--stack_ptr];
 			count = stack[--stack_ptr];
 
 			if (version > 0)
-				/*
-				 * stack 0 = array right index
-				 * stack 1 = array left index
-				 */
+				 
 				count = 1 + count - index;
 
 			charptr_tmp = (u8 *)vars[args[0]];
@@ -1397,22 +1203,14 @@ exit_done:
 							charptr_tmp);
 			break;
 		case OP_IPRA:
-			/*
-			 * IRPRE with array data
-			 * ...argument 0 is variable ID
-			 * ...stack 0 is array index
-			 * ...stack 1 is count
-			 */
+			 
 			if (!altera_check_stack(stack_ptr, 2, &status))
 				break;
 			index = stack[--stack_ptr];
 			count = stack[--stack_ptr];
 
 			if (version > 0)
-				/*
-				 * stack 0 = array right index
-				 * stack 1 = array left index
-				 */
+				 
 				count = 1 + count - index;
 
 			charptr_tmp = (u8 *)vars[args[0]];
@@ -1421,22 +1219,14 @@ exit_done:
 
 			break;
 		case OP_IPOA:
-			/*
-			 * IRPOST with array data
-			 * ...argument 0 is variable ID
-			 * ...stack 0 is array index
-			 * ...stack 1 is count
-			 */
+			 
 			if (!altera_check_stack(stack_ptr, 2, &status))
 				break;
 			index = stack[--stack_ptr];
 			count = stack[--stack_ptr];
 
 			if (version > 0)
-				/*
-				 * stack 0 = array right index
-				 * stack 1 = array left index
-				 */
+				 
 				count = 1 + count - index;
 
 			charptr_tmp = (u8 *)vars[args[0]];
@@ -1445,11 +1235,7 @@ exit_done:
 
 			break;
 		case OP_EXPT:
-			/*
-			 * EXPORT
-			 * ...argument 0 is string ID
-			 * ...stack 0 is integer expression
-			 */
+			 
 			if (altera_check_stack(stack_ptr, 1, &status)) {
 				name = &p[str_table + args[0]];
 				long_tmp = stack[--stack_ptr];
@@ -1457,23 +1243,19 @@ exit_done:
 			}
 			break;
 		case OP_PSHE:
-			/*
-			 * Push integer array element
-			 * ...argument 0 is variable ID
-			 * ...stack 0 is array index
-			 */
+			 
 			if (!altera_check_stack(stack_ptr, 1, &status))
 				break;
 			variable_id = args[0];
 			index = stack[stack_ptr - 1];
 
-			/* check variable type */
+			 
 			if ((attrs[variable_id] & 0x1f) == 0x19) {
-				/* writable integer array */
+				 
 				longptr_tmp = (long *)vars[variable_id];
 				stack[stack_ptr - 1] = longptr_tmp[index];
 			} else if ((attrs[variable_id] & 0x1f) == 0x1c) {
-				/* read-only integer array */
+				 
 				long_tmp = vars[variable_id] +
 						(index * sizeof(long));
 				stack[stack_ptr - 1] =
@@ -1483,17 +1265,12 @@ exit_done:
 
 			break;
 		case OP_PSHA:
-			/*
-			 * Push Boolean array
-			 * ...argument 0 is variable ID
-			 * ...stack 0 is count
-			 * ...stack 1 is array index
-			 */
+			 
 			if (!altera_check_stack(stack_ptr, 2, &status))
 				break;
 			variable_id = args[0];
 
-			/* check that variable is a Boolean array */
+			 
 			if ((attrs[variable_id] & 0x18) != 0x08) {
 				status = -ERANGE;
 				break;
@@ -1501,17 +1278,14 @@ exit_done:
 
 			charptr_tmp = (u8 *)vars[variable_id];
 
-			/* pop the count (number of bits to copy) */
+			 
 			count = stack[--stack_ptr];
 
-			/* pop the array index */
+			 
 			index = stack[stack_ptr - 1];
 
 			if (version > 0)
-				/*
-				 * stack 0 = array right index
-				 * stack 1 = array left index
-				 */
+				 
 				count = 1 + count - index;
 
 			if ((count < 1) || (count > 32)) {
@@ -1530,11 +1304,7 @@ exit_done:
 
 			break;
 		case OP_DYNA:
-			/*
-			 * Dynamically change size of array
-			 * ...argument 0 is variable ID
-			 * ...stack 0 is new size
-			 */
+			 
 			if (!altera_check_stack(stack_ptr, 1, &status))
 				break;
 			variable_id = args[0];
@@ -1544,25 +1314,19 @@ exit_done:
 				var_size[variable_id] = long_tmp;
 
 				if (attrs[variable_id] & 0x10)
-					/* allocate integer array */
+					 
 					long_tmp *= sizeof(long);
 				else
-					/* allocate Boolean array */
+					 
 					long_tmp = (long_tmp + 7) >> 3;
 
-				/*
-				 * If the buffer was previously allocated,
-				 * free it
-				 */
+				 
 				if (attrs[variable_id] & 0x80) {
 					kfree((void *)vars[variable_id]);
 					vars[variable_id] = 0;
 				}
 
-				/*
-				 * Allocate a new buffer
-				 * of the requested size
-				 */
+				 
 				vars[variable_id] = (long)
 					kzalloc(long_tmp, GFP_KERNEL);
 
@@ -1571,14 +1335,10 @@ exit_done:
 					break;
 				}
 
-				/*
-				 * Set the attribute bit to indicate that
-				 * this buffer was dynamically allocated and
-				 * should be freed later
-				 */
+				 
 				attrs[variable_id] |= 0x80;
 
-				/* zero out memory */
+				 
 				count = ((var_size[variable_id] + 7L) /
 									8L);
 				charptr_tmp = (u8 *)(vars[variable_id]);
@@ -1589,27 +1349,21 @@ exit_done:
 
 			break;
 		case OP_EXPV:
-			/*
-			 * Export Boolean array
-			 * ...argument 0 is string ID
-			 * ...stack 0 is variable ID
-			 * ...stack 1 is array right index
-			 * ...stack 2 is array left index
-			 */
+			 
 			if (!altera_check_stack(stack_ptr, 3, &status))
 				break;
 			if (version == 0) {
-				/* EXPV is not supported in JBC 1.0 */
+				 
 				bad_opcode = 1;
 				break;
 			}
 			name = &p[str_table + args[0]];
 			variable_id = stack[--stack_ptr];
-			long_idx = stack[--stack_ptr];/* right indx */
-			long_idx2 = stack[--stack_ptr];/* left indx */
+			long_idx = stack[--stack_ptr]; 
+			long_idx2 = stack[--stack_ptr]; 
 
 			if (long_idx > long_idx2) {
-				/* reverse indices not supported */
+				 
 				status = -ERANGE;
 				break;
 			}
@@ -1648,20 +1402,13 @@ exit_done:
 			altera_export_bool_array(name, charptr_tmp,
 							long_count);
 
-			/* free allocated buffer */
+			 
 			if ((long_idx & 7L) != 0)
 				kfree(charptr_tmp2);
 
 			break;
 		case OP_COPY: {
-			/*
-			 * Array copy
-			 * ...argument 0 is dest ID
-			 * ...argument 1 is source ID
-			 * ...stack 0 is count
-			 * ...stack 1 is dest index
-			 * ...stack 2 is source index
-			 */
+			 
 			s32 copy_count;
 			s32 copy_index;
 			s32 copy_index2;
@@ -1680,22 +1427,17 @@ exit_done:
 			reverse = 0;
 
 			if (version > 0) {
-				/*
-				 * stack 0 = source right index
-				 * stack 1 = source left index
-				 * stack 2 = destination right index
-				 * stack 3 = destination left index
-				 */
+				 
 				destleft = stack[--stack_ptr];
 
 				if (copy_count > copy_index) {
 					src_reverse = 1;
 					reverse = 1;
 					src_count = 1 + copy_count - copy_index;
-					/* copy_index = source start index */
+					 
 				} else {
 					src_count = 1 + copy_index - copy_count;
-					/* source start index */
+					 
 					copy_index = copy_count;
 				}
 
@@ -1703,7 +1445,7 @@ exit_done:
 					dest_reverse = 1;
 					reverse = !reverse;
 					dest_count = 1 + copy_index2 - destleft;
-					/* destination start index */
+					 
 					copy_index2 = destleft;
 				} else
 					dest_count = 1 + destleft - copy_index2;
@@ -1713,14 +1455,7 @@ exit_done:
 
 				if ((src_reverse || dest_reverse) &&
 					(src_count != dest_count))
-					/*
-					 * If either the source or destination
-					 * is reversed, we can't tolerate
-					 * a length mismatch, because we
-					 * "left justify" arrays when copying.
-					 * This won't work correctly
-					 * with reversed arrays.
-					 */
+					 
 					status = -ERANGE;
 
 			}
@@ -1729,14 +1464,11 @@ exit_done:
 			index = copy_index;
 			index2 = copy_index2;
 
-			/*
-			 * If destination is a read-only array,
-			 * allocate a buffer and convert it to a writable array
-			 */
+			 
 			variable_id = args[1];
 			if ((version > 0) &&
 				((attrs[variable_id] & 0x9c) == 0x0c)) {
-				/* Allocate a writable buffer for this array */
+				 
 				long_tmp =
 					(var_size[variable_id] + 7L) >> 3L;
 				charptr_tmp2 = (u8 *)vars[variable_id];
@@ -1749,12 +1481,12 @@ exit_done:
 					break;
 				}
 
-				/* zero the buffer */
+				 
 				for (long_idx = 0L; long_idx < long_tmp;
 								++long_idx)
 					charptr_tmp[long_idx] = 0;
 
-				/* copy previous contents into buffer */
+				 
 				for (long_idx = 0L;
 					long_idx < var_size[variable_id];
 								++long_idx) {
@@ -1767,11 +1499,10 @@ exit_done:
 
 				}
 
-				/*
-				set bit 7 - buffer was dynamically allocated */
+				 
 				attrs[variable_id] |= 0x80;
 
-				/* clear bit 2 - variable is writable */
+				 
 				attrs[variable_id] &= ~0x04;
 				attrs[variable_id] |= 0x01;
 			}
@@ -1779,7 +1510,7 @@ exit_done:
 			charptr_tmp = (u8 *)vars[args[1]];
 			charptr_tmp2 = (u8 *)vars[args[0]];
 
-			/* check if destination is a writable Boolean array */
+			 
 			if ((attrs[args[1]] & 0x1c) != 0x08) {
 				status = -ERANGE;
 				break;
@@ -1813,15 +1544,7 @@ exit_done:
 		}
 		case OP_DSC:
 		case OP_ISC: {
-			/*
-			 * DRSCAN with capture
-			 * IRSCAN with capture
-			 * ...argument 0 is scan data variable ID
-			 * ...argument 1 is capture variable ID
-			 * ...stack 0 is capture index
-			 * ...stack 1 is scan data index
-			 * ...stack 2 is count
-			 */
+			 
 			s32 scan_right, scan_left;
 			s32 capture_count = 0;
 			s32 scan_count = 0;
@@ -1835,13 +1558,7 @@ exit_done:
 			scan_index = stack[--stack_ptr];
 
 			if (version > 0) {
-				/*
-				 * stack 0 = capture right index
-				 * stack 1 = capture left index
-				 * stack 2 = scan right index
-				 * stack 3 = scan left index
-				 * stack 4 = count
-				 */
+				 
 				scan_right = stack[--stack_ptr];
 				scan_left = stack[--stack_ptr];
 				capture_count = 1 + scan_index - capture_index;
@@ -1850,14 +1567,11 @@ exit_done:
 			}
 
 			long_count = stack[--stack_ptr];
-			/*
-			 * If capture array is read-only, allocate a buffer
-			 * and convert it to a writable array
-			 */
+			 
 			variable_id = args[1];
 			if ((version > 0) &&
 				((attrs[variable_id] & 0x9c) == 0x0c)) {
-				/* Allocate a writable buffer for this array */
+				 
 				long_tmp =
 					(var_size[variable_id] + 7L) >> 3L;
 				charptr_tmp2 = (u8 *)vars[variable_id];
@@ -1870,12 +1584,12 @@ exit_done:
 					break;
 				}
 
-				/* zero the buffer */
+				 
 				for (long_idx = 0L; long_idx < long_tmp;
 								++long_idx)
 					charptr_tmp[long_idx] = 0;
 
-				/* copy previous contents into buffer */
+				 
 				for (long_idx = 0L;
 					long_idx < var_size[variable_id];
 								++long_idx) {
@@ -1888,13 +1602,10 @@ exit_done:
 
 				}
 
-				/*
-				 * set bit 7 - buffer was
-				 * dynamically allocated
-				 */
+				 
 				attrs[variable_id] |= 0x80;
 
-				/* clear bit 2 - variable is writable */
+				 
 				attrs[variable_id] &= ~0x04;
 				attrs[variable_id] |= 0x01;
 
@@ -1910,24 +1621,21 @@ exit_done:
 				break;
 			}
 
-			/*
-			 * check that capture array
-			 * is a writable Boolean array
-			 */
+			 
 			if ((attrs[args[1]] & 0x1c) != 0x08) {
 				status = -ERANGE;
 				break;
 			}
 
 			if (status == 0) {
-				if (opcode == 0x82) /* DSC */
+				if (opcode == 0x82)  
 					status = altera_swap_dr(astate,
 							long_count,
 							charptr_tmp,
 							scan_index,
 							charptr_tmp2,
 							capture_index);
-				else /* ISC */
+				else  
 					status = altera_swap_ir(astate,
 							long_count,
 							charptr_tmp,
@@ -1940,13 +1648,7 @@ exit_done:
 			break;
 		}
 		case OP_WAIT:
-			/*
-			 * WAIT
-			 * ...argument 0 is wait state
-			 * ...argument 1 is end state
-			 * ...stack 0 is cycles
-			 * ...stack 1 is microseconds
-			 */
+			 
 			if (!altera_check_stack(stack_ptr, 2, &status))
 				break;
 			long_tmp = stack[--stack_ptr];
@@ -1967,21 +1669,12 @@ exit_done:
 								args[1]);
 
 			if (version > 0) {
-				--stack_ptr; /* throw away MAX cycles */
-				--stack_ptr; /* throw away MAX microseconds */
+				--stack_ptr;  
+				--stack_ptr;  
 			}
 			break;
 		case OP_CMPA: {
-			/*
-			 * Array compare
-			 * ...argument 0 is source 1 ID
-			 * ...argument 1 is source 2 ID
-			 * ...argument 2 is mask ID
-			 * ...stack 0 is source 1 index
-			 * ...stack 1 is source 2 index
-			 * ...stack 2 is mask index
-			 * ...stack 3 is count
-			 */
+			 
 			s32 a, b;
 			u8 *source1 = (u8 *)vars[args[0]];
 			u8 *source2 = (u8 *)vars[args[1]];
@@ -1999,27 +1692,20 @@ exit_done:
 			long_count = stack[--stack_ptr];
 
 			if (version > 0) {
-				/*
-				 * stack 0 = source 1 right index
-				 * stack 1 = source 1 left index
-				 * stack 2 = source 2 right index
-				 * stack 3 = source 2 left index
-				 * stack 4 = mask right index
-				 * stack 5 = mask left index
-				 */
+				 
 				s32 mask_right = stack[--stack_ptr];
 				s32 mask_left = stack[--stack_ptr];
-				/* source 1 count */
+				 
 				a = 1 + index2 - index1;
-				/* source 2 count */
+				 
 				b = 1 + long_count - mask_index;
 				a = (a < b) ? a : b;
-				/* mask count */
+				 
 				b = 1 + mask_left - mask_right;
 				a = (a < b) ? a : b;
-				/* source 2 start index */
+				 
 				index2 = mask_index;
-				/* mask start index */
+				 
 				mask_index = mask_right;
 				long_count = a;
 			}
@@ -2041,7 +1727,7 @@ exit_done:
 							(1 << (index2 & 7))
 								? 1 : 0;
 
-						if (a != b) /* failure */
+						if (a != b)  
 							long_tmp = 0L;
 					}
 					++index1;
@@ -2055,7 +1741,7 @@ exit_done:
 			break;
 		}
 		default:
-			/* Unrecognized opcode -- ERROR! */
+			 
 			bad_opcode = 1;
 			break;
 		}
@@ -2074,7 +1760,7 @@ exit_done:
 
 	altera_free_buffers(astate);
 
-	/* Free all dynamically allocated arrays */
+	 
 	if ((attrs != NULL) && (vars != NULL))
 		for (i = 0; i < sym_count; ++i)
 			if (attrs[i] & 0x80)
@@ -2090,15 +1776,7 @@ exit_done:
 
 static int altera_get_note(u8 *p, s32 program_size, s32 *offset,
 			   char *key, char *value, int keylen, int vallen)
-/*
- * Gets key and value of NOTE fields in the JBC file.
- * Can be called in two modes:  if offset pointer is NULL,
- * then the function searches for note fields which match
- * the key string provided.  If offset is not NULL, then
- * the function finds the next note field of any key,
- * starting at the offset specified by the offset pointer.
- * Returns 0 for success, else appropriate error code
- */
+ 
 {
 	int status = -ENODATA;
 	u32 note_strings = 0L;
@@ -2111,7 +1789,7 @@ static int altera_get_note(u8 *p, s32 program_size, s32 *offset,
 	char *value_ptr;
 	int i;
 
-	/* Read header information */
+	 
 	if (program_size > 52L) {
 		first_word    = get_unaligned_be32(&p[0]);
 		version = (first_word & 1L);
@@ -2129,10 +1807,7 @@ static int altera_get_note(u8 *p, s32 program_size, s32 *offset,
 		return status;
 
 	if (offset == NULL) {
-		/*
-		 * We will search for the first note with a specific key,
-		 * and return only the value
-		 */
+		 
 		for (i = 0; (i < note_count) &&
 						(status != 0); ++i) {
 			key_ptr = &p[note_strings +
@@ -2151,10 +1826,7 @@ static int altera_get_note(u8 *p, s32 program_size, s32 *offset,
 			}
 		}
 	} else {
-		/*
-		 * We will search for the next note, regardless of the key,
-		 * and return both the value and the key
-		 */
+		 
 
 		i = *offset;
 
@@ -2310,7 +1982,7 @@ static int altera_get_act_info(u8 *p,
 
 	if (program_size <= 52L)
 		return status;
-	/* Read header information */
+	 
 	first_word = get_unaligned_be32(&p[0]);
 
 	if (first_word != 0x4A414D01L)
@@ -2352,7 +2024,7 @@ static int altera_get_act_info(u8 *p,
 			procptr->attrs = act_proc_attribute;
 			procptr->next = NULL;
 
-			/* add record to end of linked list */
+			 
 			if (*proc_list == NULL)
 				*proc_list = procptr;
 			else {

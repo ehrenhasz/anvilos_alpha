@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for IMX296 CMOS Image Sensor from Sony
- *
- * Copyright 2019 Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/gpio/consumer.h>
@@ -111,10 +107,7 @@
 #define IMX296_SENSOR_INFO_IMX296LL			0xca00
 #define IMX296_S_SHSA					IMX296_REG_16BIT(0x31ca)
 #define IMX296_S_SHSB					IMX296_REG_16BIT(0x31d2)
-/*
- * Registers 0x31c8 to 0x31cd, 0x31d0 to 0x31d5, 0x31e2, 0x31e3, 0x31ea and
- * 0x31eb are related to exposure mode but otherwise not documented.
- */
+ 
 
 #define IMX296_GAINCTRL					IMX296_REG_8BIT(0x3200)
 #define IMX296_GAINCTRL_WD_GAIN_MODE_NORMAL		0x01
@@ -271,13 +264,7 @@ static int imx296_power_on(struct imx296 *sensor)
 	if (ret < 0)
 		goto err_reset;
 
-	/*
-	 * The documentation doesn't explicitly say how much time is required
-	 * after providing a clock and before starting I2C communication. It
-	 * mentions a delay of 20µs in 4-wire mode, but tests showed that a
-	 * delay of 100µs resulted in I2C communication failures, while 500µs
-	 * seems to be enough. Be conservative.
-	 */
+	 
 	usleep_range(1000, 2000);
 
 	return 0;
@@ -296,9 +283,7 @@ static void imx296_power_off(struct imx296 *sensor)
 	regulator_bulk_disable(ARRAY_SIZE(sensor->supplies), sensor->supplies);
 }
 
-/* -----------------------------------------------------------------------------
- * Controls
- */
+ 
 
 static const char * const imx296_test_pattern_menu[] = {
 	"Disabled",
@@ -329,7 +314,7 @@ static int imx296_s_ctrl(struct v4l2_ctrl *ctrl)
 
 	switch (ctrl->id) {
 	case V4L2_CID_EXPOSURE:
-		/* Clamp the exposure value to VMAX. */
+		 
 		vmax = format->height + sensor->vblank->cur.val;
 		ctrl->val = min_t(int, ctrl->val, vmax);
 		imx296_write(sensor, IMX296_SHS1, vmax - ctrl->val, &ret);
@@ -401,12 +386,7 @@ static int imx296_ctrls_init(struct imx296 *sensor)
 			  V4L2_CID_ANALOGUE_GAIN, IMX296_GAIN_MIN,
 			  IMX296_GAIN_MAX, 1, IMX296_GAIN_MIN);
 
-	/*
-	 * Horizontal blanking is controlled through the HMAX register, which
-	 * contains a line length in INCK clock units. The INCK frequency is
-	 * fixed to 74.25 MHz. The HMAX value is currently fixed to 1100,
-	 * convert it to a number of pixels based on the nominal pixel rate.
-	 */
+	 
 	hblank = 1100 * 1188000000ULL / 10 / 74250000
 	       - IMX296_PIXEL_ARRAY_WIDTH;
 	sensor->hblank = v4l2_ctrl_new_std(&sensor->ctrls, &imx296_ctrl_ops,
@@ -419,13 +399,7 @@ static int imx296_ctrls_init(struct imx296 *sensor)
 					   V4L2_CID_VBLANK, 30,
 					   1048575 - IMX296_PIXEL_ARRAY_HEIGHT,
 					   1, 30);
-	/*
-	 * The sensor calculates the MIPI timings internally to achieve a bit
-	 * rate between 1122 and 1198 Mbps. The exact value is unfortunately not
-	 * reported, at least according to the documentation. Report a nominal
-	 * rate of 1188 Mbps as that is used by the datasheet in multiple
-	 * examples.
-	 */
+	 
 	v4l2_ctrl_new_std(&sensor->ctrls, NULL, V4L2_CID_PIXEL_RATE,
 			  1122000000 / 10, 1198000000 / 10, 1, 1188000000 / 10);
 	v4l2_ctrl_new_std_menu_items(&sensor->ctrls, &imx296_ctrl_ops,
@@ -448,15 +422,9 @@ static int imx296_ctrls_init(struct imx296 *sensor)
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 Subdev Operations
- */
+ 
 
-/*
- * This table is extracted from vendor data that is entirely undocumented. The
- * first register write is required to activate the CSI-2 output. The other
- * entries may or may not be optional?
- */
+ 
 static const struct {
 	unsigned int reg;
 	unsigned int value;
@@ -473,8 +441,8 @@ static const struct {
 	{ IMX296_REG_8BIT(0x3165), 0x00 },
 	{ IMX296_REG_8BIT(0x3169), 0x10 },
 	{ IMX296_REG_8BIT(0x316a), 0x02 },
-	{ IMX296_REG_8BIT(0x31c8), 0xf3 },	/* Exposure-related */
-	{ IMX296_REG_8BIT(0x31d0), 0xf4 },	/* Exposure-related */
+	{ IMX296_REG_8BIT(0x31c8), 0xf3 },	 
+	{ IMX296_REG_8BIT(0x31d0), 0xf4 },	 
 	{ IMX296_REG_8BIT(0x321a), 0x00 },
 	{ IMX296_REG_8BIT(0x3226), 0x02 },
 	{ IMX296_REG_8BIT(0x3256), 0x01 },
@@ -537,24 +505,7 @@ static int imx296_setup(struct imx296 *sensor, struct v4l2_subdev_state *state)
 		      IMX296_CTRL0D_WINMODE_FD_BINNING : 0),
 		     &ret);
 
-	/*
-	 * HMAX and VMAX configure horizontal and vertical blanking by
-	 * specifying the total line time and frame time respectively. The line
-	 * time is specified in operational clock units (which appears to be the
-	 * output of an internal PLL, fixed at 74.25 MHz regardless of the
-	 * exernal clock frequency), while the frame time is specified as a
-	 * number of lines.
-	 *
-	 * In the vertical direction the sensor outputs the following:
-	 *
-	 * - one line for the FS packet
-	 * - two lines of embedded data (DT 0x12)
-	 * - six null lines (DT 0x10)
-	 * - four lines of vertical effective optical black (DT 0x37)
-	 * - 8 to 1088 lines of active image data (RAW10, DT 0x2b)
-	 * - one line for the FE packet
-	 * - 16 or more lines of vertical blanking
-	 */
+	 
 	imx296_write(sensor, IMX296_HMAX, 1100, &ret);
 	imx296_write(sensor, IMX296_VMAX,
 		     format->height + sensor->vblank->cur.val, &ret);
@@ -620,11 +571,7 @@ static int imx296_s_stream(struct v4l2_subdev *sd, int enable)
 	if (ret < 0)
 		goto err_pm;
 
-	/*
-	 * Set streaming to true to ensure __v4l2_ctrl_handler_setup() will set
-	 * the controls. The flag is reset to false further down if an error
-	 * occurs.
-	 */
+	 
 	sensor->streaming = true;
 
 	ret = __v4l2_ctrl_handler_setup(&sensor->ctrls);
@@ -641,10 +588,7 @@ unlock:
 	return ret;
 
 err_pm:
-	/*
-	 * In case of error, turn the power off synchronously as the device
-	 * likely has no other chance to recover.
-	 */
+	 
 	pm_runtime_put_sync(sensor->dev);
 	sensor->streaming = false;
 
@@ -696,10 +640,7 @@ static int imx296_set_format(struct v4l2_subdev *sd,
 	crop = v4l2_subdev_get_pad_crop(sd, state, fmt->pad);
 	format = v4l2_subdev_get_pad_format(sd, state, fmt->pad);
 
-	/*
-	 * Binning is only allowed when cropping is disabled according to the
-	 * documentation. This should be double-checked.
-	 */
+	 
 	if (crop->width == IMX296_PIXEL_ARRAY_WIDTH &&
 	    crop->height == IMX296_PIXEL_ARRAY_HEIGHT) {
 		unsigned int width;
@@ -707,7 +648,7 @@ static int imx296_set_format(struct v4l2_subdev *sd,
 		unsigned int hratio;
 		unsigned int vratio;
 
-		/* Clamp the width and height to avoid dividing by zero. */
+		 
 		width = clamp_t(unsigned int, fmt->format.width,
 				crop->width / 2, crop->width);
 		height = clamp_t(unsigned int, fmt->format.height,
@@ -772,10 +713,7 @@ static int imx296_set_selection(struct v4l2_subdev *sd,
 	if (sel->target != V4L2_SEL_TGT_CROP)
 		return -EINVAL;
 
-	/*
-	 * Clamp the crop rectangle boundaries and align them to a multiple of 4
-	 * pixels to satisfy hardware requirements.
-	 */
+	 
 	rect.left = clamp(ALIGN(sel->r.left, 4), 0,
 			  IMX296_PIXEL_ARRAY_WIDTH - IMX296_FID0_ROIWH1_MIN);
 	rect.top = clamp(ALIGN(sel->r.top, 4), 0,
@@ -793,10 +731,7 @@ static int imx296_set_selection(struct v4l2_subdev *sd,
 	crop = v4l2_subdev_get_pad_crop(sd, state, sel->pad);
 
 	if (rect.width != crop->width || rect.height != crop->height) {
-		/*
-		 * Reset the output image size if the crop rectangle size has
-		 * been modified.
-		 */
+		 
 		format = v4l2_subdev_get_pad_format(sd, state, sel->pad);
 		format->width = rect.width;
 		format->height = rect.height;
@@ -881,9 +816,7 @@ static void imx296_subdev_cleanup(struct imx296 *sensor)
 	v4l2_ctrl_handler_free(&sensor->ctrls);
 }
 
-/* -----------------------------------------------------------------------------
- * Power management
- */
+ 
 
 static int __maybe_unused imx296_runtime_resume(struct device *dev)
 {
@@ -909,9 +842,7 @@ static const struct dev_pm_ops imx296_pm_ops = {
 	SET_RUNTIME_PM_OPS(imx296_runtime_suspend, imx296_runtime_resume, NULL)
 };
 
-/* -----------------------------------------------------------------------------
- * Probe & Remove
- */
+ 
 
 static int imx296_read_temperature(struct imx296 *sensor, int *temp)
 {
@@ -928,7 +859,7 @@ static int imx296_read_temperature(struct imx296 *sensor, int *temp)
 
 	tmdout &= IMX296_TMDOUT_MASK;
 
-	/* T(°C) = 246.312 - 0.304 * TMDOUT */;
+	 ;
 	*temp = 246312 - 304 * tmdout;
 
 	return imx296_write(sensor, IMX296_TMDCTRL, 0, NULL);
@@ -949,10 +880,7 @@ static int imx296_identify_model(struct imx296 *sensor)
 		return 0;
 	}
 
-	/*
-	 * While most registers can be read when the sensor is in standby, this
-	 * is not the case of the sensor info register :-(
-	 */
+	 
 	ret = imx296_write(sensor, IMX296_CTRL00, 0, NULL);
 	if (ret < 0) {
 		dev_err(sensor->dev,
@@ -973,10 +901,7 @@ static int imx296_identify_model(struct imx296 *sensor)
 	case 296:
 		sensor->mono = ret & IMX296_SENSOR_INFO_MONO;
 		break;
-	/*
-	 * The IMX297 seems to share features with the IMX296, it may be
-	 * possible to support it in the same driver.
-	 */
+	 
 	case 297:
 	default:
 		dev_err(sensor->dev, "invalid device model 0x%04x\n", ret);
@@ -1031,7 +956,7 @@ static int imx296_probe(struct i2c_client *client)
 
 	sensor->dev = &client->dev;
 
-	/* Acquire resources. */
+	 
 	for (i = 0; i < ARRAY_SIZE(sensor->supplies); ++i)
 		sensor->supplies[i].supply = imx296_supply_names[i];
 
@@ -1070,11 +995,7 @@ static int imx296_probe(struct i2c_client *client)
 	if (IS_ERR(sensor->regmap))
 		return PTR_ERR(sensor->regmap);
 
-	/*
-	 * Enable power management. The driver supports runtime PM, but needs to
-	 * work when runtime PM is disabled in the kernel. To that end, power
-	 * the sensor on manually here, identify it, and fully initialize it.
-	 */
+	 
 	ret = imx296_power_on(sensor);
 	if (ret < 0)
 		return ret;
@@ -1083,29 +1004,22 @@ static int imx296_probe(struct i2c_client *client)
 	if (ret < 0)
 		goto err_power;
 
-	/* Initialize the V4L2 subdev. */
+	 
 	ret = imx296_subdev_init(sensor);
 	if (ret < 0)
 		goto err_power;
 
-	/*
-	 * Enable runtime PM. As the device has been powered manually, mark it
-	 * as active, and increase the usage count without resuming the device.
-	 */
+	 
 	pm_runtime_set_active(sensor->dev);
 	pm_runtime_get_noresume(sensor->dev);
 	pm_runtime_enable(sensor->dev);
 
-	/* Register the V4L2 subdev. */
+	 
 	ret = v4l2_async_register_subdev(&sensor->subdev);
 	if (ret < 0)
 		goto err_pm;
 
-	/*
-	 * Finally, enable autosuspend and decrease the usage count. The device
-	 * will get suspended after the autosuspend delay, turning the power
-	 * off.
-	 */
+	 
 	pm_runtime_set_autosuspend_delay(sensor->dev, 1000);
 	pm_runtime_use_autosuspend(sensor->dev);
 	pm_runtime_put_autosuspend(sensor->dev);
@@ -1130,10 +1044,7 @@ static void imx296_remove(struct i2c_client *client)
 
 	imx296_subdev_cleanup(sensor);
 
-	/*
-	 * Disable runtime PM. In case runtime PM is disabled in the kernel,
-	 * make sure to turn power off manually.
-	 */
+	 
 	pm_runtime_disable(sensor->dev);
 	if (!pm_runtime_status_suspended(sensor->dev))
 		imx296_power_off(sensor);
@@ -1144,7 +1055,7 @@ static const struct of_device_id imx296_of_match[] = {
 	{ .compatible = "sony,imx296", .data = NULL },
 	{ .compatible = "sony,imx296ll", .data = (void *)IMX296_SENSOR_INFO_IMX296LL },
 	{ .compatible = "sony,imx296lq", .data = (void *)IMX296_SENSOR_INFO_IMX296LQ },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, imx296_of_match);
 

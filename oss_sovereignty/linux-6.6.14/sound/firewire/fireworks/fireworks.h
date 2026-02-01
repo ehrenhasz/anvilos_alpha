@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * fireworks.h - a part of driver for Fireworks based devices
- *
- * Copyright (c) 2009-2010 Clemens Ladisch
- * Copyright (c) 2013-2014 Takashi Sakamoto
- */
+ 
+ 
 #ifndef SOUND_FIREWORKS_H_INCLUDED
 #define SOUND_FIREWORKS_H_INCLUDED
 
@@ -40,20 +35,14 @@
 #define HWINFO_NAME_SIZE_BYTES		32
 #define HWINFO_MAX_CAPS_GROUPS		8
 
-/*
- * This should be greater than maximum bytes for EFW response content.
- * Currently response against command for isochronous channel mapping is
- * confirmed to be the maximum one. But for flexibility, use maximum data
- * payload for asynchronous primary packets at S100 (Cable base rate) in
- * IEEE Std 1394-1995.
- */
+ 
 #define SND_EFW_RESPONSE_MAXIMUM_BYTES	0x200U
 
 extern unsigned int snd_efw_resp_buf_size;
 extern bool snd_efw_resp_buf_debug;
 
 struct snd_efw_phys_grp {
-	u8 type;	/* see enum snd_efw_grp_type */
+	u8 type;	 
 	u8 count;
 } __packed;
 
@@ -65,11 +54,11 @@ struct snd_efw {
 	struct mutex mutex;
 	spinlock_t lock;
 
-	/* for transaction */
+	 
 	u32 seqnum;
 	bool resp_addr_changable;
 
-	/* for quirks */
+	 
 	bool is_af9;
 	bool is_fireworks3;
 	u32 firmware_version;
@@ -87,7 +76,7 @@ struct snd_efw {
 	struct cmp_connection in_conn;
 	unsigned int substreams_counter;
 
-	/* hardware metering parameters */
+	 
 	unsigned int phys_out;
 	unsigned int phys_in;
 	unsigned int phys_out_grp_count;
@@ -95,12 +84,12 @@ struct snd_efw {
 	struct snd_efw_phys_grp phys_out_grps[HWINFO_MAX_CAPS_GROUPS];
 	struct snd_efw_phys_grp phys_in_grps[HWINFO_MAX_CAPS_GROUPS];
 
-	/* for uapi */
+	 
 	int dev_lock_count;
 	bool dev_lock_changed;
 	wait_queue_head_t hwdep_wait;
 
-	/* response queue */
+	 
 	u8 *resp_buf;
 	u8 *pull_ptr;
 	u8 *push_ptr;
@@ -165,7 +154,7 @@ enum snd_efw_grp_type {
 	SND_EFW_CH_TYPE_DUMMY
 };
 struct snd_efw_phys_meters {
-	u32 status;	/* guitar state/midi signal/clock input detect */
+	u32 status;	 
 	u32 reserved0;
 	u32 reserved1;
 	u32 reserved2;
@@ -178,12 +167,12 @@ struct snd_efw_phys_meters {
 } __packed;
 enum snd_efw_clock_source {
 	SND_EFW_CLOCK_SOURCE_INTERNAL	= 0,
-	// Unused.
+	
 	SND_EFW_CLOCK_SOURCE_WORDCLOCK	= 2,
 	SND_EFW_CLOCK_SOURCE_SPDIF	= 3,
 	SND_EFW_CLOCK_SOURCE_ADAT_1	= 4,
 	SND_EFW_CLOCK_SOURCE_ADAT_2	= 5,
-	SND_EFW_CLOCK_SOURCE_CONTINUOUS	= 6	/* internal variable clock */
+	SND_EFW_CLOCK_SOURCE_CONTINUOUS	= 6	 
 };
 enum snd_efw_transport_mode {
 	SND_EFW_TRANSPORT_MODE_WINDOWS	= 0,

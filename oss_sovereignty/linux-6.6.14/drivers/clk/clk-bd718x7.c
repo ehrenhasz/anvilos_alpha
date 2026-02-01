@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2018 ROHM Semiconductors
+
+
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -12,17 +12,15 @@
 #include <linux/clkdev.h>
 #include <linux/regmap.h>
 
-/* clk control registers */
-/* BD71815 */
+ 
+ 
 #define BD71815_REG_OUT32K	0x1d
-/* BD71828 */
+ 
 #define BD71828_REG_OUT32K	0x4B
-/* BD71837 and BD71847 */
+ 
 #define BD718XX_REG_OUT32K	0x2E
 
-/*
- * BD71837, BD71847, and BD71828 all use bit [0] to clk output control
- */
+ 
 #define CLK_OUT_EN_MASK		BIT(0)
 
 

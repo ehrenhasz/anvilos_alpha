@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 NVIDIA Corporation
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/debugfs.h>
@@ -78,7 +76,7 @@ struct tegra_dsi {
 	unsigned int video_fifo_depth;
 	unsigned int host_fifo_depth;
 
-	/* for ganged-mode support */
+	 
 	struct tegra_dsi *master;
 	struct tegra_dsi *slave;
 };
@@ -271,9 +269,7 @@ static void tegra_dsi_early_unregister(struct drm_connector *connector)
 #define PKT_LP		(1 << 30)
 #define NUM_PKT_SEQ	12
 
-/*
- * non-burst mode with sync pulses
- */
+ 
 static const u32 pkt_seq_video_non_burst_sync_pulses[NUM_PKT_SEQ] = {
 	[ 0] = PKT_ID0(MIPI_DSI_V_SYNC_START) | PKT_LEN0(0) |
 	       PKT_ID1(MIPI_DSI_BLANKING_PACKET) | PKT_LEN1(1) |
@@ -309,9 +305,7 @@ static const u32 pkt_seq_video_non_burst_sync_pulses[NUM_PKT_SEQ] = {
 	       PKT_ID2(MIPI_DSI_BLANKING_PACKET) | PKT_LEN2(4),
 };
 
-/*
- * non-burst mode with sync events
- */
+ 
 static const u32 pkt_seq_video_non_burst_sync_events[NUM_PKT_SEQ] = {
 	[ 0] = PKT_ID0(MIPI_DSI_V_SYNC_START) | PKT_LEN0(0) |
 	       PKT_ID1(MIPI_DSI_END_OF_TRANSMISSION) | PKT_LEN1(7) |
@@ -483,7 +477,7 @@ static void tegra_dsi_configure(struct tegra_dsi *dsi, unsigned int pipe,
 	const u32 *pkt_seq;
 	u32 value;
 
-	/* XXX: pass in state into this function? */
+	 
 	if (dsi->master)
 		state = tegra_dsi_get_state(dsi->master);
 	else
@@ -521,7 +515,7 @@ static void tegra_dsi_configure(struct tegra_dsi *dsi, unsigned int pipe,
 
 	value &= ~DSI_CONTROL_TX_TRIG(3);
 
-	/* enable DCS commands for command mode */
+	 
 	if (dsi->flags & MIPI_DSI_MODE_VIDEO)
 		value &= ~DSI_CONTROL_DCS_ENABLE;
 	else
@@ -535,22 +529,22 @@ static void tegra_dsi_configure(struct tegra_dsi *dsi, unsigned int pipe,
 		tegra_dsi_writel(dsi, pkt_seq[i], DSI_PKT_SEQ_0_LO + i);
 
 	if (dsi->flags & MIPI_DSI_MODE_VIDEO) {
-		/* horizontal active pixels */
+		 
 		hact = mode->hdisplay * mul / div;
 
-		/* horizontal sync width */
+		 
 		hsw = (mode->hsync_end - mode->hsync_start) * mul / div;
 
-		/* horizontal back porch */
+		 
 		hbp = (mode->htotal - mode->hsync_end) * mul / div;
 
 		if ((dsi->flags & MIPI_DSI_MODE_VIDEO_SYNC_PULSE) == 0)
 			hbp += hsw;
 
-		/* horizontal front porch */
+		 
 		hfp = (mode->hsync_start - mode->hdisplay) * mul / div;
 
-		/* subtract packet overhead */
+		 
 		hsw -= 10;
 		hbp -= 14;
 		hfp -= 8;
@@ -560,20 +554,18 @@ static void tegra_dsi_configure(struct tegra_dsi *dsi, unsigned int pipe,
 		tegra_dsi_writel(dsi, hfp, DSI_PKT_LEN_4_5);
 		tegra_dsi_writel(dsi, 0x0f0f << 16, DSI_PKT_LEN_6_7);
 
-		/* set SOL delay (for non-burst mode only) */
+		 
 		tegra_dsi_writel(dsi, 8 * mul / div, DSI_SOL_DELAY);
 
-		/* TODO: implement ganged mode */
+		 
 	} else {
 		u16 bytes;
 
 		if (dsi->master || dsi->slave) {
-			/*
-			 * For ganged mode, assume symmetric left-right mode.
-			 */
+			 
 			bytes = 1 + (mode->hdisplay / 2) * mul / div;
 		} else {
-			/* 1 byte (DCS command) + pixel data */
+			 
 			bytes = 1 + mode->hdisplay * mul / div;
 		}
 
@@ -586,22 +578,22 @@ static void tegra_dsi_configure(struct tegra_dsi *dsi, unsigned int pipe,
 			MIPI_DCS_WRITE_MEMORY_CONTINUE;
 		tegra_dsi_writel(dsi, value, DSI_DCS_CMDS);
 
-		/* set SOL delay */
+		 
 		if (dsi->master || dsi->slave) {
 			unsigned long delay, bclk, bclk_ganged;
 			unsigned int lanes = state->lanes;
 
-			/* SOL to valid, valid to FIFO and FIFO write delay */
+			 
 			delay = 4 + 4 + 2;
 			delay = DIV_ROUND_UP(delay * mul, div * lanes);
-			/* FIFO read delay */
+			 
 			delay = delay + 6;
 
 			bclk = DIV_ROUND_UP(mode->htotal * mul, div * lanes);
 			bclk_ganged = DIV_ROUND_UP(bclk * lanes / 2, lanes);
 			value = bclk - bclk_ganged + delay + 20;
 		} else {
-			/* TODO: revisit for non-ganged mode */
+			 
 			value = 8 * mul / div;
 		}
 
@@ -611,10 +603,7 @@ static void tegra_dsi_configure(struct tegra_dsi *dsi, unsigned int pipe,
 	if (dsi->slave) {
 		tegra_dsi_configure(dsi->slave, pipe, mode);
 
-		/*
-		 * TODO: Support modes other than symmetrical left-right
-		 * split.
-		 */
+		 
 		tegra_dsi_ganged_enable(dsi, 0, mode->hdisplay / 2);
 		tegra_dsi_ganged_enable(dsi->slave, mode->hdisplay / 2,
 					mode->hdisplay / 2);
@@ -672,17 +661,14 @@ static int tegra_dsi_pad_calibrate(struct tegra_dsi *dsi)
 	u32 value;
 	int err;
 
-	/*
-	 * XXX Is this still needed? The module reset is deasserted right
-	 * before this function is called.
-	 */
+	 
 	tegra_dsi_writel(dsi, 0, DSI_PAD_CONTROL_0);
 	tegra_dsi_writel(dsi, 0, DSI_PAD_CONTROL_1);
 	tegra_dsi_writel(dsi, 0, DSI_PAD_CONTROL_2);
 	tegra_dsi_writel(dsi, 0, DSI_PAD_CONTROL_3);
 	tegra_dsi_writel(dsi, 0, DSI_PAD_CONTROL_4);
 
-	/* start calibration */
+	 
 	tegra_dsi_pad_enable(dsi);
 
 	value = DSI_PAD_SLEW_UP(0x7) | DSI_PAD_SLEW_DN(0x7) |
@@ -707,12 +693,12 @@ static void tegra_dsi_set_timeout(struct tegra_dsi *dsi, unsigned long bclk,
 	unsigned int timeout;
 	u32 value;
 
-	/* one frame high-speed transmission timeout */
+	 
 	timeout = (bclk / vrefresh) / 512;
 	value = DSI_TIMEOUT_LRX(0x2000) | DSI_TIMEOUT_HTX(timeout);
 	tegra_dsi_writel(dsi, value, DSI_TIMEOUT_0);
 
-	/* 2 ms peripheral timeout for panel */
+	 
 	timeout = 2 * bclk / 512 * 1000;
 	value = DSI_TIMEOUT_PR(timeout) | DSI_TIMEOUT_TA(0x2000);
 	tegra_dsi_writel(dsi, value, DSI_TIMEOUT_1);
@@ -851,10 +837,7 @@ static void tegra_dsi_encoder_disable(struct drm_encoder *encoder)
 
 	tegra_dsi_video_disable(dsi);
 
-	/*
-	 * The following accesses registers of the display controller, so make
-	 * sure it's only executed when the output is attached to one.
-	 */
+	 
 	if (dc) {
 		value = tegra_dc_readl(dc, DC_DISP_DISP_WIN_OPTIONS);
 		value &= ~DSI_ENABLE;
@@ -912,10 +895,7 @@ static void tegra_dsi_encoder_enable(struct drm_encoder *encoder)
 	u32 value;
 	int err;
 
-	/* If the bootloader enabled DSI it needs to be disabled
-	 * in order for the panel initialization commands to be
-	 * properly sent.
-	 */
+	 
 	value = tegra_dsi_readl(dsi, DSI_POWER_CONTROL);
 
 	if (value & DSI_POWER_CONTROL_ENABLE)
@@ -931,10 +911,7 @@ static void tegra_dsi_encoder_enable(struct drm_encoder *encoder)
 
 	tegra_dsi_set_timeout(dsi, state->bclk, state->vrefresh);
 
-	/*
-	 * The D-PHY timing fields are expressed in byte-clock cycles, so
-	 * multiply the period by 8.
-	 */
+	 
 	tegra_dsi_set_phy_timing(dsi, state->period * 8, &state->timing);
 
 	if (output->panel)
@@ -942,14 +919,14 @@ static void tegra_dsi_encoder_enable(struct drm_encoder *encoder)
 
 	tegra_dsi_configure(dsi, dc->pipe, mode);
 
-	/* enable display controller */
+	 
 	value = tegra_dc_readl(dc, DC_DISP_DISP_WIN_OPTIONS);
 	value |= DSI_ENABLE;
 	tegra_dc_writel(dc, value, DC_DISP_DISP_WIN_OPTIONS);
 
 	tegra_dc_commit(dc);
 
-	/* enable DSI controller */
+	 
 	tegra_dsi_enable(dsi);
 
 	if (output->panel)
@@ -983,7 +960,7 @@ tegra_dsi_encoder_atomic_check(struct drm_encoder *encoder,
 
 	state->vrefresh = drm_mode_vrefresh(&crtc_state->mode);
 
-	/* compute byte clock */
+	 
 	state->bclk = (state->pclk * state->mul) / (state->div * state->lanes);
 
 	DRM_DEBUG_KMS("mul: %u, div: %u, lanes: %u\n", state->mul, state->div,
@@ -992,9 +969,7 @@ tegra_dsi_encoder_atomic_check(struct drm_encoder *encoder,
 		      state->vrefresh);
 	DRM_DEBUG_KMS("bclk: %lu\n", state->bclk);
 
-	/*
-	 * Compute bit clock and round up to the next MHz.
-	 */
+	 
 	plld = DIV_ROUND_UP(state->bclk * 8, USEC_PER_SEC) * USEC_PER_SEC;
 	state->period = DIV_ROUND_CLOSEST(NSEC_PER_SEC, plld);
 
@@ -1008,23 +983,10 @@ tegra_dsi_encoder_atomic_check(struct drm_encoder *encoder,
 		return err;
 	}
 
-	/*
-	 * We divide the frequency by two here, but we make up for that by
-	 * setting the shift clock divider (further below) to half of the
-	 * correct value.
-	 */
+	 
 	plld /= 2;
 
-	/*
-	 * Derive pixel clock from bit clock using the shift clock divider.
-	 * Note that this is only half of what we would expect, but we need
-	 * that to make up for the fact that we divided the bit clock by a
-	 * factor of two above.
-	 *
-	 * It's not clear exactly why this is necessary, but the display is
-	 * not working properly otherwise. Perhaps the PLLs cannot generate
-	 * frequencies sufficiently high.
-	 */
+	 
 	scdiv = ((8 * state->mul) / (state->div * state->lanes)) - 2;
 
 	err = tegra_dc_state_setup_clock(dc, crtc_state, dsi->clk_parent,
@@ -1049,7 +1011,7 @@ static int tegra_dsi_init(struct host1x_client *client)
 	struct tegra_dsi *dsi = host1x_client_to_dsi(client);
 	int err;
 
-	/* Gangsters must not register their own outputs. */
+	 
 	if (!dsi->master) {
 		dsi->output.dev = client->dev;
 
@@ -1219,7 +1181,7 @@ static ssize_t tegra_dsi_read_response(struct tegra_dsi *dsi,
 	u16 errors;
 	u32 value;
 
-	/* read and parse packet header */
+	 
 	value = tegra_dsi_readl(dsi, DSI_RD_DATA);
 
 	switch (value & 0x3f) {
@@ -1344,11 +1306,11 @@ static ssize_t tegra_dsi_host_transfer(struct mipi_dsi_host *host,
 
 	header = packet.header;
 
-	/* maximum FIFO depth is 1920 words */
+	 
 	if (packet.size > dsi->video_fifo_depth * 4)
 		return -ENOSPC;
 
-	/* reset underflow/overflow flags */
+	 
 	value = tegra_dsi_readl(dsi, DSI_STATUS);
 	if (value & (DSI_STATUS_UNDERFLOW | DSI_STATUS_OVERFLOW)) {
 		value = DSI_HOST_CONTROL_FIFO_RESET;
@@ -1368,19 +1330,13 @@ static ssize_t tegra_dsi_host_transfer(struct mipi_dsi_host *host,
 	if ((msg->flags & MIPI_DSI_MSG_USE_LPM) == 0)
 		value |= DSI_HOST_CONTROL_HS;
 
-	/*
-	 * The host FIFO has a maximum of 64 words, so larger transmissions
-	 * need to use the video FIFO.
-	 */
+	 
 	if (packet.size > dsi->host_fifo_depth * 4)
 		value |= DSI_HOST_CONTROL_FIFO_SEL;
 
 	tegra_dsi_writel(dsi, value, DSI_HOST_CONTROL);
 
-	/*
-	 * For reads and messages with explicitly requested ACK, generate a
-	 * BTA sequence after the transmission of the packet.
-	 */
+	 
 	if ((msg->flags & MIPI_DSI_MSG_REQ_ACK) ||
 	    (msg->rx_buf && msg->rx_len > 0)) {
 		value = tegra_dsi_readl(dsi, DSI_HOST_CONTROL);
@@ -1391,11 +1347,11 @@ static ssize_t tegra_dsi_host_transfer(struct mipi_dsi_host *host,
 	value = DSI_CONTROL_LANES(0) | DSI_CONTROL_HOST_ENABLE;
 	tegra_dsi_writel(dsi, value, DSI_CONTROL);
 
-	/* write packet header, ECC is generated by hardware */
+	 
 	value = header[2] << 16 | header[1] << 8 | header[0];
 	tegra_dsi_writel(dsi, value, DSI_WR_DATA);
 
-	/* write payload (if any) */
+	 
 	if (packet.payload_length > 0)
 		tegra_dsi_writesl(dsi, DSI_WR_DATA, packet.payload,
 				  packet.payload_length);
@@ -1415,15 +1371,11 @@ static ssize_t tegra_dsi_host_transfer(struct mipi_dsi_host *host,
 		value = tegra_dsi_readl(dsi, DSI_RD_DATA);
 		switch (value) {
 		case 0x84:
-			/*
-			dev_dbg(dsi->dev, "ACK\n");
-			*/
+			 
 			break;
 
 		case 0x87:
-			/*
-			dev_dbg(dsi->dev, "ESCAPE\n");
-			*/
+			 
 			break;
 
 		default:
@@ -1438,18 +1390,12 @@ static ssize_t tegra_dsi_host_transfer(struct mipi_dsi_host *host,
 					"failed to parse response: %zd\n",
 					err);
 			else {
-				/*
-				 * For read commands, return the number of
-				 * bytes returned by the peripheral.
-				 */
+				 
 				count = err;
 			}
 		}
 	} else {
-		/*
-		 * For write commands, we have transmitted the 4-byte header
-		 * plus the variable-length payload.
-		 */
+		 
 		count = 4 + packet.payload_length;
 	}
 
@@ -1461,7 +1407,7 @@ static int tegra_dsi_ganged_setup(struct tegra_dsi *dsi)
 	struct clk *parent;
 	int err;
 
-	/* make sure both DSI controllers share the same PLL */
+	 
 	parent = clk_get_parent(dsi->slave->clk);
 	if (!parent)
 		return -EINVAL;
@@ -1496,10 +1442,7 @@ static int tegra_dsi_host_attach(struct mipi_dsi_host *host,
 		}
 	}
 
-	/*
-	 * Slaves don't have a panel associated with them, so they provide
-	 * merely the second channel.
-	 */
+	 
 	if (!dsi->master) {
 		struct tegra_output *output = &dsi->output;
 
@@ -1582,11 +1525,7 @@ static int tegra_dsi_probe(struct platform_device *pdev)
 
 	dsi->output.connector.polled = DRM_CONNECTOR_POLL_HPD;
 
-	/*
-	 * Assume these values by default. When a DSI peripheral driver
-	 * attaches to the DSI host, the parameters will be taken from
-	 * the attached device.
-	 */
+	 
 	dsi->flags = MIPI_DSI_MODE_VIDEO;
 	dsi->format = MIPI_DSI_FMT_RGB888;
 	dsi->lanes = 4;

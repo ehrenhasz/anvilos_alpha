@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * FDT Address translation based on u-boot fdt_support.c which in turn was
- * based on the kernel unflattened DT address translation code.
- *
- * (C) Copyright 2007
- * Gerald Van Baren, Custom IDEAS, vanbaren@cideas.com
- *
- * Copyright 2010-2011 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #define pr_fmt(fmt)	"OF: fdt: " fmt
 
@@ -17,12 +9,12 @@
 #include <linux/of_fdt.h>
 #include <linux/sizes.h>
 
-/* Max address size we deal with */
+ 
 #define OF_MAX_ADDR_CELLS	4
 #define OF_CHECK_COUNTS(na, ns)	((na) > 0 && (na) <= OF_MAX_ADDR_CELLS && \
 			(ns) > 0)
 
-/* Debug utility */
+ 
 #ifdef DEBUG
 static void __init of_dump_addr(const char *s, const __be32 *addr, int na)
 {
@@ -35,7 +27,7 @@ static void __init of_dump_addr(const char *s, const __be32 *addr, int na)
 static void __init of_dump_addr(const char *s, const __be32 *addr, int na) { }
 #endif
 
-/* Callbacks for bus specific translators */
+ 
 struct of_bus {
 	void		(*count_cells)(const void *blob, int parentoffset,
 				int *addrc, int *sizec);
@@ -44,7 +36,7 @@ struct of_bus {
 	int		(*translate)(__be32 *addr, u64 offset, int na);
 };
 
-/* Default translator (generic bus) */
+ 
 static void __init fdt_bus_default_count_cells(const void *blob, int parentoffset,
 					       int *addrc, int *sizec)
 {
@@ -96,9 +88,9 @@ static int __init fdt_bus_default_translate(__be32 *addr, u64 offset, int na)
 	return 0;
 }
 
-/* Array of bus specific translators */
+ 
 static const struct of_bus of_busses[] __initconst = {
-	/* Default */
+	 
 	{
 		.count_cells = fdt_bus_default_count_cells,
 		.map = fdt_bus_default_map,
@@ -128,7 +120,7 @@ static int __init fdt_translate_one(const void *blob, int parent,
 
 	pr_debug("walking ranges...\n");
 
-	/* Now walk through the ranges */
+	 
 	rlen /= 4;
 	rone = na + pna + ns;
 	for (; rlen >= rone; rlen -= rone, ranges += rone) {
@@ -146,20 +138,11 @@ static int __init fdt_translate_one(const void *blob, int parent,
 	of_dump_addr("parent translation for:", addr, pna);
 	pr_debug("with offset: %llx\n", offset);
 
-	/* Translate it into parent bus space */
+	 
 	return pbus->translate(addr, offset, pna);
 }
 
-/*
- * Translate an address from the device-tree into a CPU physical address,
- * this walks up the tree and applies the various bus mappings on the
- * way.
- *
- * Note: We consider that crossing any level with #size-cells == 0 to mean
- * that translation is impossible (that is we are not dealing with a value
- * that can be mapped to a cpu physical address). This is not really specified
- * that way, but this is traditionally the way IBM at least do things
- */
+ 
 static u64 __init fdt_translate_address(const void *blob, int node_offset)
 {
 	int parent, len;
@@ -179,13 +162,13 @@ static u64 __init fdt_translate_address(const void *blob, int node_offset)
 		goto bail;
 	}
 
-	/* Get parent & match bus type */
+	 
 	parent = fdt_parent_offset(blob, node_offset);
 	if (parent < 0)
 		goto bail;
 	bus = &of_busses[0];
 
-	/* Cound address cells & copy address locally */
+	 
 	bus->count_cells(blob, parent, &na, &ns);
 	if (!OF_CHECK_COUNTS(na, ns)) {
 		pr_err("Bad cell count for %s\n",
@@ -198,20 +181,20 @@ static u64 __init fdt_translate_address(const void *blob, int node_offset)
 		 na, ns, fdt_get_name(blob, parent, NULL));
 	of_dump_addr("translating address:", addr, na);
 
-	/* Translate */
+	 
 	for (;;) {
-		/* Switch to parent bus */
+		 
 		node_offset = parent;
 		parent = fdt_parent_offset(blob, node_offset);
 
-		/* If root, we have finished */
+		 
 		if (parent < 0) {
 			pr_debug("reached root node\n");
 			result = of_read_number(addr, na);
 			break;
 		}
 
-		/* Get new parent bus and counts */
+		 
 		pbus = &of_busses[0];
 		pbus->count_cells(blob, parent, &pna, &pns);
 		if (!OF_CHECK_COUNTS(pna, pns)) {
@@ -223,12 +206,12 @@ static u64 __init fdt_translate_address(const void *blob, int node_offset)
 		pr_debug("parent bus (na=%d, ns=%d) on %s\n",
 			 pna, pns, fdt_get_name(blob, parent, NULL));
 
-		/* Apply bus translation */
+		 
 		if (fdt_translate_one(blob, node_offset, bus, pbus,
 					addr, na, ns, pna, "ranges"))
 			break;
 
-		/* Complete the move up one level */
+		 
 		na = pna;
 		ns = pns;
 		bus = pbus;
@@ -239,10 +222,7 @@ static u64 __init fdt_translate_address(const void *blob, int node_offset)
 	return result;
 }
 
-/**
- * of_flat_dt_translate_address - translate DT addr into CPU phys addr
- * @node: node in the flat blob
- */
+ 
 u64 __init of_flat_dt_translate_address(unsigned long node)
 {
 	return fdt_translate_address(initial_boot_params, node);

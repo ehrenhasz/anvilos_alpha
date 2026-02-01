@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * lib_sw_fence.h - library routines for testing N:M synchronisation points
- *
- * Copyright (C) 2017 Intel Corporation
- */
+ 
+ 
 
 #ifndef _LIB_SW_FENCE_H_
 #define _LIB_SW_FENCE_H_
@@ -40,4 +36,4 @@ void timed_fence_fini(struct timed_fence *tf);
 struct i915_sw_fence *heap_fence_create(gfp_t gfp);
 void heap_fence_put(struct i915_sw_fence *fence);
 
-#endif /* _LIB_SW_FENCE_H_ */
+#endif  

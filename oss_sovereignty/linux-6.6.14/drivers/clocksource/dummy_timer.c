@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/drivers/clocksource/dummy_timer.c
- *
- *  Copyright (C) 2013 ARM Ltd.
- *  All Rights Reserved
- */
+
+ 
 #include <linux/clockchips.h>
 #include <linux/cpu.h>
 #include <linux/init.h>

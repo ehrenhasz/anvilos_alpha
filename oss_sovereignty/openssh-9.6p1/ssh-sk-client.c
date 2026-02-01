@@ -1,19 +1,5 @@
-/* $OpenBSD: ssh-sk-client.c,v 1.12 2022/01/14 03:34:00 djm Exp $ */
-/*
- * Copyright (c) 2019 Google LLC
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -41,7 +27,7 @@
 #include "ssh-sk.h"
 #include "misc.h"
 
-/* #define DEBUG_SK 1 */
+ 
 
 static int
 start_helper(int *fdp, pid_t *pidp, void (**osigchldp)(int))
@@ -68,7 +54,7 @@ start_helper(int *fdp, pid_t *pidp, void (**osigchldp)(int))
 	verbosity = "-vvv";
 #endif
 
-	/* Start helper */
+	 
 	if (socketpair(AF_UNIX, SOCK_STREAM, 0, pair) == -1) {
 		error("socketpair: %s", strerror(errno));
 		return SSH_ERR_SYSTEM_ERROR;
@@ -100,7 +86,7 @@ start_helper(int *fdp, pid_t *pidp, void (**osigchldp)(int))
 	}
 	close(pair[1]);
 
-	/* success */
+	 
 	debug3_f("started pid=%ld", (long)pid);
 	*fdp = pair[0];
 	*pidp = pid;
@@ -154,7 +140,7 @@ client_converse(struct sshbuf *msg, struct sshbuf **respp, u_int type)
 		r = SSH_ERR_ALLOC_FAIL;
 		goto out;
 	}
-	/* Request preamble: type, log_on_stderr, log_level */
+	 
 	ll = log_level_get();
 	if ((r = sshbuf_put_u32(req, type)) != 0 ||
 	    (r = sshbuf_put_u8(req, log_is_on_stderr() != 0)) != 0 ||
@@ -191,7 +177,7 @@ client_converse(struct sshbuf *msg, struct sshbuf **respp, u_int type)
 			goto out;
 		}
 		debug_f("helper returned error -%u", rerr);
-		/* OpenSSH error values are negative; encoded as -err on wire */
+		 
 		if (rerr == 0 || rerr >= INT_MAX)
 			r = SSH_ERR_INTERNAL_ERROR;
 		else
@@ -203,7 +189,7 @@ client_converse(struct sshbuf *msg, struct sshbuf **respp, u_int type)
 		r = SSH_ERR_INTERNAL_ERROR;
 		goto out;
 	}
-	/* success */
+	 
 	r = 0;
  out:
 	oerrno = errno;
@@ -254,7 +240,7 @@ sshsk_sign(const char *provider, struct sshkey *key,
 	if ((r = sshbuf_put_stringb(req, kbuf)) != 0 ||
 	    (r = sshbuf_put_cstring(req, provider)) != 0 ||
 	    (r = sshbuf_put_string(req, data, datalen)) != 0 ||
-	    (r = sshbuf_put_cstring(req, NULL)) != 0 || /* alg */
+	    (r = sshbuf_put_cstring(req, NULL)) != 0 ||  
 	    (r = sshbuf_put_u32(req, compat)) != 0 ||
 	    (r = sshbuf_put_cstring(req, pin)) != 0) {
 		error_fr(r, "compose");
@@ -274,7 +260,7 @@ sshsk_sign(const char *provider, struct sshkey *key,
 		r = SSH_ERR_INVALID_FORMAT;
 		goto out;
 	}
-	/* success */
+	 
 	r = 0;
  out:
 	oerrno = errno;
@@ -353,7 +339,7 @@ sshsk_enroll(int type, const char *provider_path, const char *device,
 		goto out;
 	}
 
-	/* success */
+	 
 	r = 0;
 	*keyp = key;
 	key = NULL;
@@ -425,7 +411,7 @@ sshsk_load_resident(const char *provider_path, const char *device,
 		goto out;
 
 	while (sshbuf_len(resp) != 0) {
-		/* key, comment, user_id */
+		 
 		if ((r = sshbuf_get_stringb(resp, kbuf)) != 0 ||
 		    (r = sshbuf_get_cstring(resp, NULL, NULL)) != 0 ||
 		    (r = sshbuf_get_string(resp, &userid, &userid_len)) != 0) {
@@ -460,7 +446,7 @@ sshsk_load_resident(const char *provider_path, const char *device,
 		srk = NULL;
 	}
 
-	/* success */
+	 
 	r = 0;
 	*srksp = srks;
 	*nsrksp = nsrks;

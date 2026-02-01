@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
- * All rights reserved.
- *
- * Purpose: handle WMAC/802.3/802.11 rx & tx functions
- *
- * Author: Lyndon Chen
- *
- * Date: May 20, 2003
- *
- * Functions:
- *      vnt_generate_tx_parameter - Generate tx dma required parameter.
- *      vnt_get_rsvtime- get frame reserved time
- *      vnt_fill_cts_head- fulfill CTS ctl header
- *
- * Revision History:
- *
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include "device.h"
@@ -27,10 +10,10 @@
 #include "usbpipe.h"
 
 static const u16 vnt_time_stampoff[2][MAX_RATE] = {
-	/* Long Preamble */
+	 
 	{384, 288, 226, 209, 54, 43, 37, 31, 28, 25, 24, 23},
 
-	/* Short Preamble */
+	 
 	{384, 192, 130, 113, 54, 43, 37, 31, 28, 25, 24, 23},
 };
 
@@ -38,18 +21,18 @@ static const u16 vnt_time_stampoff[2][MAX_RATE] = {
 #define DATADUR_A       11
 
 static const u8 vnt_phy_signal[] = {
-	0x00,	/* RATE_1M  */
-	0x01,	/* RATE_2M  */
-	0x02,	/* RATE_5M  */
-	0x03,	/* RATE_11M */
-	0x8b,	/* RATE_6M  */
-	0x8f,	/* RATE_9M  */
-	0x8a,	/* RATE_12M */
-	0x8e,	/* RATE_18M */
-	0x89,	/* RATE_24M */
-	0x8d,	/* RATE_36M */
-	0x88,	/* RATE_48M */
-	0x8c	/* RATE_54M */
+	0x00,	 
+	0x01,	 
+	0x02,	 
+	0x03,	 
+	0x8b,	 
+	0x8f,	 
+	0x8a,	 
+	0x8e,	 
+	0x89,	 
+	0x8d,	 
+	0x88,	 
+	0x8c	 
 };
 
 static struct vnt_usb_send_context
@@ -78,7 +61,7 @@ static struct vnt_usb_send_context
 	return NULL;
 }
 
-/* Get Length, Service, and Signal fields of Phy for Tx */
+ 
 static void vnt_get_phy_field(struct vnt_private *priv, u32 frame_length,
 			      u16 tx_rate, u8 pkt_type,
 			      struct vnt_phy_field *phy)
@@ -184,12 +167,12 @@ static void vnt_rxtx_datahead_g(struct vnt_usb_send_context *tx_context,
 	u32 frame_len = tx_context->frame_len;
 	u16 rate = tx_context->tx_rate;
 
-	/* Get SignalField,ServiceField,Length */
+	 
 	vnt_get_phy_field(priv, frame_len, rate, tx_context->pkt_type, &buf->a);
 	vnt_get_phy_field(priv, frame_len, priv->top_cck_basic_rate,
 			  PK_TYPE_11B, &buf->b);
 
-	/* Get Duration and TimeStamp */
+	 
 	buf->duration_a = hdr->duration_id;
 	buf->duration_b = hdr->duration_id;
 	buf->time_stamp_off_a = vnt_time_stamp_off(priv, rate);
@@ -206,11 +189,11 @@ static void vnt_rxtx_datahead_ab(struct vnt_usb_send_context *tx_context,
 	u32 frame_len = tx_context->frame_len;
 	u16 rate = tx_context->tx_rate;
 
-	/* Get SignalField,ServiceField,Length */
+	 
 	vnt_get_phy_field(priv, frame_len, rate,
 			  tx_context->pkt_type, &buf->ab);
 
-	/* Get Duration and TimeStampOff */
+	 
 	buf->duration = hdr->duration_id;
 	buf->time_stamp_off = vnt_time_stamp_off(priv, rate);
 }
@@ -272,12 +255,12 @@ static void vnt_fill_cts_head(struct vnt_usb_send_context *tx_context,
 	struct vnt_cts *buf = &head->cts_g;
 	u32 cts_frame_len = 14;
 
-	/* Get SignalField,ServiceField,Length */
+	 
 	vnt_get_phy_field(priv, cts_frame_len, priv->top_cck_basic_rate,
 			  PK_TYPE_11B, &buf->b);
-	/* Get CTSDuration_ba */
+	 
 	buf->duration_ba = vnt_get_cts_duration(tx_context);
-	/*Get CTS Frame body*/
+	 
 	buf->data.duration = buf->duration_ba;
 	buf->data.frame_control =
 		cpu_to_le16(IEEE80211_FTYPE_CTL | IEEE80211_STYPE_CTS);
@@ -287,7 +270,7 @@ static void vnt_fill_cts_head(struct vnt_usb_send_context *tx_context,
 	vnt_rxtx_datahead_g(tx_context, &buf->data_head);
 }
 
-/* returns true if mic_hdr is needed */
+ 
 static bool vnt_fill_txkey(struct vnt_tx_buffer *tx_buffer, struct sk_buff *skb)
 {
 	struct vnt_tx_fifo_head *fifo = &tx_buffer->fifo_head;
@@ -299,7 +282,7 @@ static bool vnt_fill_txkey(struct vnt_tx_buffer *tx_buffer, struct sk_buff *skb)
 	u16 payload_len = skb->len;
 	u8 *iv = ((u8 *)hdr + ieee80211_get_hdrlen_from_skb(skb));
 
-	/* strip header and icv len from payload */
+	 
 	payload_len -= ieee80211_get_hdrlen_from_skb(skb);
 	payload_len -= tx_key->icv_len;
 
@@ -477,7 +460,7 @@ static u16 vnt_get_hdr_size(struct ieee80211_tx_info *info)
 			size += sizeof(struct vnt_mic_hdr);
 	}
 
-	/* Get rrv_time header */
+	 
 	if (info->control.use_cts_prot) {
 		if (info->control.use_rts)
 			size += sizeof(struct vnt_rrv_time_rts);
@@ -552,7 +535,7 @@ int vnt_tx_packet(struct vnt_private *priv, struct sk_buff *skb)
 
 	tx_context->type = CONTEXT_DATA_PACKET;
 
-	/*Set fifo controls */
+	 
 	if (pkt_type == PK_TYPE_11A)
 		tx_buffer_head->fifo_ctl = 0;
 	else if (pkt_type == PK_TYPE_11B)
@@ -645,30 +628,30 @@ static int vnt_beacon_xmit(struct vnt_private *priv, struct sk_buff *skb)
 	if (priv->bb_type == BB_TYPE_11A) {
 		current_rate = RATE_6M;
 
-		/* Get SignalField,ServiceField,Length */
+		 
 		vnt_get_phy_field(priv, frame_size, current_rate,
 				  PK_TYPE_11A, &short_head->ab);
 
-		/* Get TimeStampOff */
+		 
 		short_head->time_stamp_off =
 				vnt_time_stamp_off(priv, current_rate);
 	} else {
 		current_rate = RATE_1M;
 		short_head->fifo_ctl |= cpu_to_le16(FIFOCTL_11B);
 
-		/* Get SignalField,ServiceField,Length */
+		 
 		vnt_get_phy_field(priv, frame_size, current_rate,
 				  PK_TYPE_11B, &short_head->ab);
 
-		/* Get TimeStampOff */
+		 
 		short_head->time_stamp_off =
 			vnt_time_stamp_off(priv, current_rate);
 	}
 
-	/* Get Duration */
+	 
 	short_head->duration = mgmt_hdr->duration;
 
-	/* time stamp always 0 */
+	 
 	mgmt_hdr->u.beacon.timestamp = 0;
 
 	info = IEEE80211_SKB_CB(skb);

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2017 Impinj, Inc
- * Author: Andrey Smirnov <andrew.smirnov@gmail.com>
- *
- * Based on the code of analogus driver:
- *
- * Copyright 2015-2017 Pengutronix, Lucas Stach <kernel@pengutronix.de>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/of.h>
@@ -198,12 +191,7 @@
 #define IMX8MP_MLMIX_PWRDNREQN			(BIT(7) | BIT(8))
 #define IMX8MP_AUDIOMIX_PWRDNREQN		(BIT(4) | BIT(15))
 
-/*
- * The PGC offset values in Reference Manual
- * (Rev. 1, 01/2018 and the older ones) GPC chapter's
- * GPC_PGC memory map are incorrect, below offset
- * values are from design RTL.
- */
+ 
 #define IMX7_PGC_MIPI			16
 #define IMX7_PGC_PCIE			17
 #define IMX7_PGC_USB_HSIC		20
@@ -337,24 +325,21 @@ static int imx_pgc_power_up(struct generic_pm_domain *genpd)
 
 	reset_control_assert(domain->reset);
 
-	/* Enable reset clocks for all devices in the domain */
+	 
 	ret = clk_bulk_prepare_enable(domain->num_clks, domain->clks);
 	if (ret) {
 		dev_err(domain->dev, "failed to enable reset clocks\n");
 		goto out_regulator_disable;
 	}
 
-	/* delays for reset to propagate */
+	 
 	udelay(5);
 
 	if (domain->bits.pxx) {
-		/* request the domain to power up */
+		 
 		regmap_update_bits(domain->regmap, domain->regs->pup,
 				   domain->bits.pxx, domain->bits.pxx);
-		/*
-		 * As per "5.5.9.4 Example Code 4" in IMX7DRM.pdf wait
-		 * for PUP_REQ/PDN_REQ bit to be cleared
-		 */
+		 
 		ret = regmap_read_poll_timeout(domain->regmap,
 					       domain->regs->pup, reg_val,
 					       !(reg_val & domain->bits.pxx),
@@ -364,38 +349,27 @@ static int imx_pgc_power_up(struct generic_pm_domain *genpd)
 			goto out_clk_disable;
 		}
 
-		/* disable power control */
+		 
 		for_each_set_bit(pgc, &domain->pgc, 32) {
 			regmap_clear_bits(domain->regmap, GPC_PGC_CTRL(pgc),
 					  GPC_PGC_CTRL_PCR);
 		}
 	}
 
-	/* delay for reset to propagate */
+	 
 	udelay(5);
 
 	reset_control_deassert(domain->reset);
 
-	/* request the ADB400 to power up */
+	 
 	if (domain->bits.hskreq) {
 		regmap_update_bits(domain->regmap, domain->regs->hsk,
 				   domain->bits.hskreq, domain->bits.hskreq);
 
-		/*
-		 * ret = regmap_read_poll_timeout(domain->regmap, domain->regs->hsk, reg_val,
-		 *				  (reg_val & domain->bits.hskack), 0,
-		 *				  USEC_PER_MSEC);
-		 * Technically we need the commented code to wait handshake. But that needs
-		 * the BLK-CTL module BUS clk-en bit being set.
-		 *
-		 * There is a separate BLK-CTL module and we will have such a driver for it,
-		 * that driver will set the BUS clk-en bit and handshake will be triggered
-		 * automatically there. Just add a delay and suppose the handshake finish
-		 * after that.
-		 */
+		 
 	}
 
-	/* Disable reset clocks for all devices in the domain */
+	 
 	if (!domain->keep_clocks)
 		clk_bulk_disable_unprepare(domain->num_clks, domain->clks);
 
@@ -418,7 +392,7 @@ static int imx_pgc_power_down(struct generic_pm_domain *genpd)
 	u32 reg_val, pgc;
 	int ret;
 
-	/* Enable reset clocks for all devices in the domain */
+	 
 	if (!domain->keep_clocks) {
 		ret = clk_bulk_prepare_enable(domain->num_clks, domain->clks);
 		if (ret) {
@@ -427,7 +401,7 @@ static int imx_pgc_power_down(struct generic_pm_domain *genpd)
 		}
 	}
 
-	/* request the ADB400 to power down */
+	 
 	if (domain->bits.hskreq) {
 		regmap_clear_bits(domain->regmap, domain->regs->hsk,
 				  domain->bits.hskreq);
@@ -443,19 +417,16 @@ static int imx_pgc_power_down(struct generic_pm_domain *genpd)
 	}
 
 	if (domain->bits.pxx) {
-		/* enable power control */
+		 
 		for_each_set_bit(pgc, &domain->pgc, 32) {
 			regmap_update_bits(domain->regmap, GPC_PGC_CTRL(pgc),
 					   GPC_PGC_CTRL_PCR, GPC_PGC_CTRL_PCR);
 		}
 
-		/* request the domain to power down */
+		 
 		regmap_update_bits(domain->regmap, domain->regs->pdn,
 				   domain->bits.pxx, domain->bits.pxx);
-		/*
-		 * As per "5.5.9.4 Example Code 4" in IMX7DRM.pdf wait
-		 * for PUP_REQ/PDN_REQ bit to be cleared
-		 */
+		 
 		ret = regmap_read_poll_timeout(domain->regmap,
 					       domain->regs->pdn, reg_val,
 					       !(reg_val & domain->bits.pxx),
@@ -466,7 +437,7 @@ static int imx_pgc_power_down(struct generic_pm_domain *genpd)
 		}
 	}
 
-	/* Disable reset clocks for all devices in the domain */
+	 
 	clk_bulk_disable_unprepare(domain->num_clks, domain->clks);
 
 	if (!IS_ERR(domain->regulator)) {
@@ -733,8 +704,8 @@ static const struct imx_pgc_domain imx8mm_pgc_domains[] = {
 			.name = "hsiomix",
 		},
 		.bits  = {
-			.pxx = 0, /* no power sequence control */
-			.map = 0, /* no power sequence control */
+			.pxx = 0,  
+			.map = 0,  
 			.hskreq = IMX8MM_HSIO_HSK_PWRDNREQN,
 			.hskack = IMX8MM_HSIO_HSK_PWRDNACKN,
 		},
@@ -1223,8 +1194,8 @@ static const struct imx_pgc_domain imx8mn_pgc_domains[] = {
 			.name = "hsiomix",
 		},
 		.bits  = {
-			.pxx = 0, /* no power sequence control */
-			.map = 0, /* no power sequence control */
+			.pxx = 0,  
+			.map = 0,  
 			.hskreq = IMX8MN_HSIO_HSK_PWRDNREQN,
 			.hskack = IMX8MN_HSIO_HSK_PWRDNACKN,
 		},
@@ -1394,12 +1365,7 @@ static int imx_pgc_domain_suspend(struct device *dev)
 {
 	int ret;
 
-	/*
-	 * This may look strange, but is done so the generic PM_SLEEP code
-	 * can power down our domain and more importantly power it up again
-	 * after resume, without tripping over our usage of runtime PM to
-	 * power up/down the nested domains.
-	 */
+	 
 	ret = pm_runtime_get_sync(dev);
 	if (ret < 0) {
 		pm_runtime_put_noidle(dev);

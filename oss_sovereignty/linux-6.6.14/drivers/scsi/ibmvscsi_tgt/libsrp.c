@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- * SCSI RDMA Protocol lib functions
- *
- * Copyright (C) 2006 FUJITA Tomonori <tomof@acm.org>
- * Copyright (C) 2016 Bryant G. Ly <bryantly@linux.vnet.ibm.com> IBM Corp.
- *
- ***********************************************************************/
+
+ 
 
 #define pr_fmt(fmt)	"libsrp: " fmt
 
@@ -288,10 +282,7 @@ static int data_out_desc_size(struct srp_cmd *cmd)
 	return size;
 }
 
-/*
- * TODO: this can be called multiple times for a single command if it
- * has very long data.
- */
+ 
 int srp_transfer_data(struct ibmvscsis_cmd *cmd, struct srp_cmd *srp_cmd,
 		      srp_rdma_t rdma_io, int dma_map, int ext_desc)
 {
@@ -376,11 +367,7 @@ int srp_get_desc_table(struct srp_cmd *srp_cmd, enum dma_data_direction *dir,
 	uint add_cdb_offset;
 	int rc;
 
-	/*
-	 * The pointer computations below will only be compiled correctly
-	 * if srp_cmd::add_data is declared as s8*, u8*, s8[] or u8[], so check
-	 * whether srp_cmd::add_data has been declared as a byte pointer.
-	 */
+	 
 	BUILD_BUG_ON(!__same_type(srp_cmd->add_data[0], (s8)0)
 		     && !__same_type(srp_cmd->add_data[0], (u8)0));
 

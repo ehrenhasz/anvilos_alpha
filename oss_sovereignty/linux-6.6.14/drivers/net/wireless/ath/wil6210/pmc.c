@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2012-2015,2017 Qualcomm Atheros, Inc.
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/errno.h>
@@ -29,13 +26,7 @@ void wil_pmc_init(struct wil6210_priv *wil)
 	mutex_init(&wil->pmc.lock);
 }
 
-/* Allocate the physical ring (p-ring) and the required
- * number of descriptors of required size.
- * Initialize the descriptors as required by pmc dma.
- * The descriptors' buffers dwords are initialized to hold
- * dword's serial number in the lsw and reserved value
- * PCM_DATA_INVALID_DW_VAL in the msw.
- */
+ 
 void wil_pmc_alloc(struct wil6210_priv *wil,
 		   int num_descriptors,
 		   int descriptor_size)
@@ -50,7 +41,7 @@ void wil_pmc_alloc(struct wil6210_priv *wil,
 	mutex_lock(&pmc->lock);
 
 	if (wil_is_pmc_allocated(pmc)) {
-		/* sanity check */
+		 
 		wil_err(wil, "ERROR pmc is already allocated\n");
 		goto no_release_err;
 	}
@@ -84,7 +75,7 @@ void wil_pmc_alloc(struct wil6210_priv *wil,
 	wil_dbg_misc(wil, "pmc_alloc: %d descriptors x %d bytes each\n",
 		     num_descriptors, descriptor_size);
 
-	/* allocate descriptors info list in pmc context*/
+	 
 	pmc->descriptors = kcalloc(num_descriptors,
 				  sizeof(struct desc_alloc_info),
 				  GFP_KERNEL);
@@ -96,19 +87,7 @@ void wil_pmc_alloc(struct wil6210_priv *wil,
 	wil_dbg_misc(wil, "pmc_alloc: allocated descriptors info list %p\n",
 		     pmc->descriptors);
 
-	/* Allocate pring buffer and descriptors.
-	 * vring->va should be aligned on its size rounded up to power of 2
-	 * This is granted by the dma_alloc_coherent.
-	 *
-	 * HW has limitation that all vrings addresses must share the same
-	 * upper 16 msb bits part of 48 bits address. To workaround that,
-	 * if we are using more than 32 bit addresses switch to 32 bit
-	 * allocation before allocating vring memory.
-	 *
-	 * There's no check for the return value of dma_set_mask_and_coherent,
-	 * since we assume if we were able to set the mask during
-	 * initialization in this system it will not fail if we set it again
-	 */
+	 
 	if (wil->dma_addr_size > 32)
 		dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32));
 
@@ -133,10 +112,7 @@ void wil_pmc_alloc(struct wil6210_priv *wil,
 		goto release_pmc_skb_list;
 	}
 
-	/* initially, all descriptors are SW owned
-	 * For Tx, Rx, and PMC, ownership bit is at the same location, thus
-	 * we can use any
-	 */
+	 
 	for (i = 0; i < num_descriptors; i++) {
 		struct vring_tx_desc *_d = &pmc->pring_va[i];
 		struct vring_tx_desc dd = {}, *d = &dd;
@@ -157,12 +133,12 @@ void wil_pmc_alloc(struct wil6210_priv *wil,
 			*p = PCM_DATA_INVALID_DW_VAL | j;
 		}
 
-		/* configure dma descriptor */
+		 
 		d->dma.addr.addr_low =
 			cpu_to_le32(lower_32_bits(pmc->descriptors[i].pa));
 		d->dma.addr.addr_high =
 			cpu_to_le16((u16)upper_32_bits(pmc->descriptors[i].pa));
-		d->dma.status = 0; /* 0 = HW_OWNED */
+		d->dma.status = 0;  
 		d->dma.length = cpu_to_le16(descriptor_size);
 		d->dma.d0 = BIT(9) | RX_DMA_D0_CMD_DMA_IT;
 		*_d = *d;
@@ -220,9 +196,7 @@ no_release_err:
 	mutex_unlock(&pmc->lock);
 }
 
-/* Traverse the p-ring and release all buffers.
- * At the end release the p-ring memory
- */
+ 
 void wil_pmc_free(struct wil6210_priv *wil, int send_pmc_cmd)
 {
 	struct pmc_ctx *pmc = &wil->pmc;
@@ -252,10 +226,7 @@ void wil_pmc_free(struct wil6210_priv *wil, int send_pmc_cmd)
 			wil_err(wil,
 				"WMI_PMC_CMD with RELEASE op failed, status %d",
 				pmc->last_cmd_status);
-			/* There's nothing we can do with this error.
-			 * Normally, it should never occur.
-			 * Continue to freeing all memory allocated for pmc.
-			 */
+			 
 		}
 	}
 
@@ -297,9 +268,7 @@ void wil_pmc_free(struct wil6210_priv *wil, int send_pmc_cmd)
 	mutex_unlock(&pmc->lock);
 }
 
-/* Status of the last operation requested via debugfs: alloc/free/read.
- * 0 - success or negative errno
- */
+ 
 int wil_pmc_last_cmd_status(struct wil6210_priv *wil)
 {
 	wil_dbg_misc(wil, "pmc_last_cmd_status: status %d\n",
@@ -308,9 +277,7 @@ int wil_pmc_last_cmd_status(struct wil6210_priv *wil)
 	return wil->pmc.last_cmd_status;
 }
 
-/* Read from required position up to the end of current descriptor,
- * depends on descriptor size configured during alloc request.
- */
+ 
 ssize_t wil_pmc_read(struct file *filp, char __user *buf, size_t count,
 		     loff_t *f_pos)
 {
@@ -354,7 +321,7 @@ ssize_t wil_pmc_read(struct file *filp, char __user *buf, size_t count,
 		     "pmc_read: read from pos %lld (descriptor %llu, offset %llu) %zu bytes\n",
 		     *f_pos, idx, offset, count);
 
-	/* if no errors, return the copied byte count */
+	 
 	retval = simple_read_from_buffer(buf,
 					 count,
 					 &offset,
@@ -386,19 +353,19 @@ loff_t wil_pmc_llseek(struct file *filp, loff_t off, int whence)
 	pmc_size = pmc->descriptor_size * pmc->num_descriptors;
 
 	switch (whence) {
-	case 0: /* SEEK_SET */
+	case 0:  
 		newpos = off;
 		break;
 
-	case 1: /* SEEK_CUR */
+	case 1:  
 		newpos = filp->f_pos + off;
 		break;
 
-	case 2: /* SEEK_END */
+	case 2:  
 		newpos = pmc_size;
 		break;
 
-	default: /* can't happen */
+	default:  
 		newpos = -EINVAL;
 		goto out;
 	}

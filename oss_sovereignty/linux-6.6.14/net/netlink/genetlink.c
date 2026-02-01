@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NETLINK      Generic Netlink Family
- *
- * 		Authors:	Jamal Hadi Salim
- * 				Thomas Graf <tgraf@suug.ch>
- *				Johannes Berg <johannes@sipsolutions.net>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -22,7 +16,7 @@
 #include <net/sock.h>
 #include <net/genetlink.h>
 
-static DEFINE_MUTEX(genl_mutex); /* serialization of message processing */
+static DEFINE_MUTEX(genl_mutex);  
 static DECLARE_RWSEM(cb_lock);
 
 atomic_t genl_sk_destructing_cnt = ATOMIC_INIT(0);
@@ -66,31 +60,14 @@ static void genl_op_unlock(const struct genl_family *family)
 
 static DEFINE_IDR(genl_fam_idr);
 
-/*
- * Bitmap of multicast groups that are currently in use.
- *
- * To avoid an allocation at boot of just one unsigned long,
- * declare it global instead.
- * Bit 0 is marked as already used since group 0 is invalid.
- * Bit 1 is marked as already used since the drop-monitor code
- * abuses the API and thinks it can statically use group 1.
- * That group will typically conflict with other groups that
- * any proper users use.
- * Bit 16 is marked as used since it's used for generic netlink
- * and the code no longer marks pre-reserved IDs as used.
- * Bit 17 is marked as already used since the VFS quota code
- * also abused this API and relied on family == group ID, we
- * cater to that by giving it a static family and group ID.
- * Bit 18 is marked as already used since the PMCRAID driver
- * did the same thing as the VFS quota code (maybe copied?)
- */
+ 
 static unsigned long mc_group_start = 0x3 | BIT(GENL_ID_CTRL) |
 				      BIT(GENL_ID_VFS_DQUOT) |
 				      BIT(GENL_ID_PMCRAID);
 static unsigned long *mc_groups = &mc_group_start;
 static unsigned long mc_groups_longs = 1;
 
-/* We need the last attribute with non-zero ID therefore a 2-entry array */
+ 
 static struct nla_policy genl_policy_reject_all[] = {
 	{ .type = NLA_REJECT },
 	{ .type = NLA_REJECT },
@@ -288,13 +265,13 @@ genl_cmd_full_to_split(struct genl_split_ops *op,
 	op->flags		= full->flags;
 	op->validate		= full->validate;
 
-	/* Make sure flags include the GENL_CMD_CAP_DO / GENL_CMD_CAP_DUMP */
+	 
 	op->flags		|= flags;
 
 	return 0;
 }
 
-/* Must make sure that op is initialized to 0 on failure */
+ 
 static int
 genl_get_cmd(u32 cmd, u8 flags, const struct genl_family *family,
 	     struct genl_split_ops *op)
@@ -305,7 +282,7 @@ genl_get_cmd(u32 cmd, u8 flags, const struct genl_family *family,
 	err = genl_get_cmd_full(cmd, family, &full);
 	if (err == -ENOENT)
 		err = genl_get_cmd_small(cmd, family, &full);
-	/* Found one of legacy forms */
+	 
 	if (err == 0)
 		return genl_cmd_full_to_split(op, family, &full, flags);
 
@@ -315,9 +292,7 @@ genl_get_cmd(u32 cmd, u8 flags, const struct genl_family *family,
 	return err;
 }
 
-/* For policy dumping only, get ops of both do and dump.
- * Fail if both are missing, genl_get_cmd() will zero-init in case of failure.
- */
+ 
 static int
 genl_get_cmd_both(u32 cmd, const struct genl_family *family,
 		  struct genl_split_ops *doit, struct genl_split_ops *dumpit)
@@ -358,7 +333,7 @@ static bool genl_op_iter_next(struct genl_op_iter *iter)
 	} else if (iter->entry_idx <
 		   family->n_ops + family->n_small_ops + family->n_split_ops) {
 		legacy_op = false;
-		/* updates entry_idx */
+		 
 		genl_op_from_split(iter);
 	} else {
 		return false;
@@ -473,7 +448,7 @@ static int genl_validate_assign_mc_groups(struct genl_family *family)
 			return -EINVAL;
 	}
 
-	/* special-case our own group and hacks */
+	 
 	if (family == &genl_ctrl) {
 		first_id = GENL_ID_CTRL;
 		BUG_ON(n_groups != 1);
@@ -495,7 +470,7 @@ static int genl_validate_assign_mc_groups(struct genl_family *family)
 
 	family->mcgrp_offset = first_id;
 
-	/* if still initializing, can't and don't need to realloc bitmaps */
+	 
 	if (!init_net.genl_sock)
 		return 0;
 
@@ -508,12 +483,7 @@ static int genl_validate_assign_mc_groups(struct genl_family *family)
 			err = __netlink_change_ngroups(net->genl_sock,
 					mc_groups_longs * BITS_PER_LONG);
 			if (err) {
-				/*
-				 * No need to roll back, can only fail if
-				 * memory allocation fails and then the
-				 * number of _possible_ groups has been
-				 * increased on some sockets which is ok.
-				 */
+				 
 				break;
 			}
 		}
@@ -604,7 +574,7 @@ static int genl_validate_ops(const struct genl_family *family)
 		if (genl_split_op_check(b))
 			return -EINVAL;
 
-		/* Check sort order */
+		 
 		if (a->cmd < b->cmd) {
 			continue;
 		} else if (a->cmd > b->cmd) {
@@ -630,18 +600,7 @@ static int genl_validate_ops(const struct genl_family *family)
 	return 0;
 }
 
-/**
- * genl_register_family - register a generic netlink family
- * @family: generic netlink family
- *
- * Registers the specified family after validating it first. Only one
- * family may be registered with the same family name or identifier.
- *
- * The family's ops, multicast groups and module pointer must already
- * be assigned.
- *
- * Return 0 on success or a negative error code.
- */
+ 
 int genl_register_family(struct genl_family *family)
 {
 	int err, i;
@@ -658,15 +617,9 @@ int genl_register_family(struct genl_family *family)
 		goto errout_locked;
 	}
 
-	/*
-	 * Sadly, a few cases need to be special-cased
-	 * due to them having previously abused the API
-	 * and having used their family ID also as their
-	 * multicast group ID, so we use reserved IDs
-	 * for both to be sure we can do that mapping.
-	 */
+	 
 	if (family == &genl_ctrl) {
-		/* and this needs to be special for initial family lookups */
+		 
 		start = end = GENL_ID_CTRL;
 	} else if (strcmp(family->name, "pmcraid") == 0) {
 		start = end = GENL_ID_PMCRAID;
@@ -687,7 +640,7 @@ int genl_register_family(struct genl_family *family)
 
 	genl_unlock_all();
 
-	/* send all events */
+	 
 	genl_ctrl_event(CTRL_CMD_NEWFAMILY, family, NULL, 0);
 	for (i = 0; i < family->n_mcgrps; i++)
 		genl_ctrl_event(CTRL_CMD_NEWMCAST_GRP, family,
@@ -703,14 +656,7 @@ errout_locked:
 }
 EXPORT_SYMBOL(genl_register_family);
 
-/**
- * genl_unregister_family - unregister generic netlink family
- * @family: generic netlink family
- *
- * Unregisters the specified family.
- *
- * Returns 0 on success or a negative error code.
- */
+ 
 int genl_unregister_family(const struct genl_family *family)
 {
 	genl_lock_all();
@@ -735,17 +681,7 @@ int genl_unregister_family(const struct genl_family *family)
 }
 EXPORT_SYMBOL(genl_unregister_family);
 
-/**
- * genlmsg_put - Add generic netlink header to netlink message
- * @skb: socket buffer holding the message
- * @portid: netlink portid the message is addressed to
- * @seq: sequence number (usually the one of the sender)
- * @family: generic netlink family
- * @flags: netlink message flags
- * @cmd: generic netlink command
- *
- * Returns pointer to user specific header
- */
+ 
 void *genlmsg_put(struct sk_buff *skb, u32 portid, u32 seq,
 		  const struct genl_family *family, int flags, u8 cmd)
 {
@@ -985,7 +921,7 @@ static int genl_header_check(const struct genl_family *family,
 {
 	u16 flags;
 
-	/* Only for commands added after we started validating */
+	 
 	if (hdr->cmd < family->resv_start_op)
 		return 0;
 
@@ -994,11 +930,9 @@ static int genl_header_check(const struct genl_family *family,
 		return -EINVAL;
 	}
 
-	/* Old netlink flags have pretty loose semantics, allow only the flags
-	 * consumed by the core where we can enforce the meaning.
-	 */
+	 
 	flags = nlh->nlmsg_flags;
-	if ((flags & NLM_F_DUMP) == NLM_F_DUMP) /* DUMP is 2 bits */
+	if ((flags & NLM_F_DUMP) == NLM_F_DUMP)  
 		flags &= ~NLM_F_DUMP;
 	if (flags & ~(NLM_F_REQUEST | NLM_F_ACK | NLM_F_ECHO)) {
 		NL_SET_ERR_MSG(extack,
@@ -1020,7 +954,7 @@ static int genl_family_rcv_msg(const struct genl_family *family,
 	int hdrlen;
 	u8 flags;
 
-	/* this family doesn't exist in this netns */
+	 
 	if (!family->netnsok && !net_eq(net, &init_net))
 		return -ENOENT;
 
@@ -1076,9 +1010,7 @@ static void genl_rcv(struct sk_buff *skb)
 	up_read(&cb_lock);
 }
 
-/**************************************************************************
- * Controller
- **************************************************************************/
+ 
 
 static struct genl_family genl_ctrl;
 
@@ -1315,7 +1247,7 @@ static int ctrl_getfamily(struct sk_buff *skb, struct genl_info *info)
 		return err;
 
 	if (!res->netnsok && !net_eq(genl_info_net(info), &init_net)) {
-		/* family doesn't exist here */
+		 
 		return -ENOENT;
 	}
 
@@ -1333,7 +1265,7 @@ static int genl_ctrl_event(int event, const struct genl_family *family,
 {
 	struct sk_buff *msg;
 
-	/* genl is still initialising */
+	 
 	if (!init_net.genl_sock)
 		return 0;
 
@@ -1514,7 +1446,7 @@ static int ctrl_dumppolicy_put_op(struct sk_buff *skb,
 	void *hdr;
 	int idx;
 
-	/* skip if we have nothing to show */
+	 
 	if (!doit->policy && !dumpit->policy)
 		return 0;
 
@@ -1573,7 +1505,7 @@ static int ctrl_dumppolicy(struct sk_buff *skb, struct netlink_callback *cb)
 			if (ctrl_dumppolicy_put_op(skb, cb, &doit, &dumpit))
 				return skb->len;
 
-			/* done with the per-op policy index list */
+			 
 			ctx->dump_map = 0;
 		}
 
@@ -1709,7 +1641,7 @@ static int __net_init genl_pernet_init(struct net *net)
 		.bind		= genl_bind,
 	};
 
-	/* we'll bump the group number right afterwards */
+	 
 	net->genl_sock = netlink_kernel_create(net, NETLINK_GENERIC, &cfg);
 
 	if (!net->genl_sock && net_eq(net, &init_net))

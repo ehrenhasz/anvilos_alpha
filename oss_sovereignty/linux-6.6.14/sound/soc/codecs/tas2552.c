@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tas2552.c - ALSA SoC Texas Instruments TAS2552 Mono Audio Amplifier
- *
- * Copyright (C) 2014 Texas Instruments Incorporated -  https://www.ti.com
- *
- * Author: Dan Murphy <dmurphy@ti.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/errno.h>
@@ -56,9 +50,9 @@ static const struct reg_default tas2552_reg_defs[] = {
 
 #define TAS2552_NUM_SUPPLIES	3
 static const char *tas2552_supply_names[TAS2552_NUM_SUPPLIES] = {
-	"vbat",		/* vbat voltage */
-	"iovdd",	/* I/O Voltage */
-	"avdd",		/* Analog DAC Voltage */
+	"vbat",		 
+	"iovdd",	 
+	"avdd",		 
 };
 
 struct tas2552_data {
@@ -101,7 +95,7 @@ static int tas2552_post_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-/* Input mux controls */
+ 
 static const char * const tas2552_input_texts[] = {
 	"Digital", "Analog" };
 static SOC_ENUM_SINGLE_DECL(tas2552_input_mux_enum, TAS2552_CFG_3, 7,
@@ -114,7 +108,7 @@ static const struct snd_soc_dapm_widget tas2552_dapm_widgets[] =
 {
 	SND_SOC_DAPM_INPUT("IN"),
 
-	/* MUX Controls */
+	 
 	SND_SOC_DAPM_MUX("Input selection", SND_SOC_NOPM, 0, 0,
 			 &tas2552_input_mux_control),
 
@@ -176,14 +170,11 @@ static int tas2552_setup_pll(struct snd_soc_component *component,
 		bypass_pll = true;
 
 	if (bypass_pll) {
-		/* By pass the PLL configuration */
+		 
 		snd_soc_component_update_bits(component, TAS2552_PLL_CTRL_2,
 				    TAS2552_PLL_BYPASS, TAS2552_PLL_BYPASS);
 	} else {
-		/* Fill in the PLL control registers for J & D
-		 * pll_clk = (.5 * pll_clkin * J.D) / 2^p
-		 * Need to fill in J and D here based on incoming freq
-		 */
+		 
 		unsigned int d, q, t;
 		u8 j;
 		u8 pll_sel = (tas2552->pll_clk_id << 3) & TAS2552_PLL_SRC_MASK;
@@ -218,14 +209,14 @@ recalc:
 
 		snd_soc_component_update_bits(component, TAS2552_PLL_CTRL_1,
 				    TAS2552_PLL_J_MASK, j);
-		/* Will clear the PLL_BYPASS bit */
+		 
 		snd_soc_component_write(component, TAS2552_PLL_CTRL_2,
 			      TAS2552_PLL_D_UPPER(d));
 		snd_soc_component_write(component, TAS2552_PLL_CTRL_3,
 			      TAS2552_PLL_D_LOWER(d));
 	}
 
-	/* Restore PLL status */
+	 
 	snd_soc_component_update_bits(component, TAS2552_CFG_2, TAS2552_PLL_ENABLE,
 			    pll_enable);
 
@@ -329,13 +320,13 @@ static int tas2552_prepare(struct snd_pcm_substream *substream,
 	struct tas2552_data *tas2552 = snd_soc_component_get_drvdata(component);
 	int delay = 0;
 
-	/* TDM slot selection only valid in DSP_A/_B mode */
+	 
 	if (tas2552->dai_fmt == SND_SOC_DAIFMT_DSP_A)
 		delay += (tas2552->tdm_delay + 1);
 	else if (tas2552->dai_fmt == SND_SOC_DAIFMT_DSP_B)
 		delay += tas2552->tdm_delay;
 
-	/* Configure data delay */
+	 
 	snd_soc_component_write(component, TAS2552_SER_CTRL_2, delay);
 
 	return 0;
@@ -401,7 +392,7 @@ static int tas2552_set_dai_sysclk(struct snd_soc_dai *dai, int clk_id,
 	case TAS2552_PLL_CLKIN_MCLK:
 	case TAS2552_PLL_CLKIN_IVCLKIN:
 		if (freq < 512000 || freq > 24576000) {
-			/* out of range PLL_CLKIN, fall back to use BCLK */
+			 
 			dev_warn(component->dev, "Out of range PLL_CLKIN: %u\n",
 				 freq);
 			clk_id = TAS2552_PLL_CLKIN_BCLK;
@@ -411,7 +402,7 @@ static int tas2552_set_dai_sysclk(struct snd_soc_dai *dai, int clk_id,
 	case TAS2552_PLL_CLKIN_BCLK:
 	case TAS2552_PLL_CLKIN_1_8_FIXED:
 		mask = TAS2552_PLL_SRC_MASK;
-		val = (clk_id << 3) & mask; /* bit 4:5 in the register */
+		val = (clk_id << 3) & mask;  
 		reg = TAS2552_CFG_1;
 		tas2552->pll_clk_id = clk_id;
 		tas2552->pll_clkin = freq;
@@ -421,7 +412,7 @@ static int tas2552_set_dai_sysclk(struct snd_soc_dai *dai, int clk_id,
 	case TAS2552_PDM_CLK_BCLK:
 	case TAS2552_PDM_CLK_MCLK:
 		mask = TAS2552_PDM_CLK_SEL_MASK;
-		val = (clk_id >> 1) & mask; /* bit 0:1 in the register */
+		val = (clk_id >> 1) & mask;  
 		reg = TAS2552_PDM_CFG;
 		tas2552->pdm_clk_id = clk_id;
 		tas2552->pdm_clk = freq;
@@ -449,7 +440,7 @@ static int tas2552_set_dai_tdm_slot(struct snd_soc_dai *dai,
 		return -EINVAL;
 	}
 
-	/* TDM based on DSP mode requires slots to be adjacent */
+	 
 	lsb = __ffs(tx_mask);
 	if ((lsb + 1) != __fls(tx_mask)) {
 		dev_err(component->dev, "Invalid mask, slots must be adjacent\n");
@@ -458,7 +449,7 @@ static int tas2552_set_dai_tdm_slot(struct snd_soc_dai *dai,
 
 	tas2552->tdm_delay = lsb * slot_width;
 
-	/* DOUT in high-impedance on inactive bit clocks */
+	 
 	snd_soc_component_update_bits(component, TAS2552_DOUT,
 			    TAS2552_SDOUT_TRISTATE, TAS2552_SDOUT_TRISTATE);
 
@@ -523,11 +514,11 @@ static const struct snd_soc_dai_ops tas2552_speaker_dai_ops = {
 	.no_capture_mute = 1,
 };
 
-/* Formats supported by TAS2552 driver. */
+ 
 #define TAS2552_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S20_3LE |\
 			 SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S32_LE)
 
-/* TAS2552 dai structure. */
+ 
 static struct snd_soc_dai_driver tas2552_dai[] = {
 	{
 		.name = "tas2552-amplifier",
@@ -542,9 +533,7 @@ static struct snd_soc_dai_driver tas2552_dai[] = {
 	},
 };
 
-/*
- * DAC digital volumes. From -7 to 24 dB in 1 dB steps
- */
+ 
 static DECLARE_TLV_DB_SCALE(dac_tlv, -700, 100, 0);
 
 static const char * const tas2552_din_source_select[] = {

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __NET_PKT_SCHED_H
 #define __NET_PKT_SCHED_H
 
@@ -30,27 +30,12 @@ static inline struct Qdisc *qdisc_from_priv(void *priv)
 	return container_of(priv, struct Qdisc, privdata);
 }
 
-/* 
-   Timer resolution MUST BE < 10% of min_schedulable_packet_size/bandwidth
-   
-   Normal IP packet size ~ 512byte, hence:
-
-   0.5Kbyte/1Mbyte/sec = 0.5msec, so that we need 50usec timer for
-   10Mbit ethernet.
-
-   10msec resolution -> <50Kbit/sec.
-   
-   The result: [34]86 is not good choice for QoS router :-(
-
-   The things are not so bad, because we may use artificial
-   clock evaluated by integration of network data flow
-   in the most critical places.
- */
+ 
 
 typedef u64	psched_time_t;
 typedef long	psched_tdiff_t;
 
-/* Avoid doing 64 bit divide */
+ 
 #define PSCHED_SHIFT			6
 #define PSCHED_TICKS2NS(x)		((s64)(x) << PSCHED_SHIFT)
 #define PSCHED_NS2TICKS(x)		((x) >> PSCHED_SHIFT)
@@ -129,9 +114,7 @@ static inline void qdisc_run(struct Qdisc *q)
 
 extern const struct nla_policy rtm_tca_policy[TCA_MAX + 1];
 
-/* Calculate maximal size of packet seen by hard_start_xmit
-   routine of this device.
- */
+ 
 static inline unsigned int psched_mtu(const struct net_device *dev)
 {
 	return READ_ONCE(dev->mtu) + dev->hard_header_len;
@@ -166,7 +149,7 @@ struct tc_mqprio_caps {
 };
 
 struct tc_mqprio_qopt_offload {
-	/* struct tc_mqprio_qopt must always be the first element */
+	 
 	struct tc_mqprio_qopt qopt;
 	struct netlink_ext_ack *extack;
 	u16 mode;
@@ -180,10 +163,7 @@ struct tc_mqprio_qopt_offload {
 struct tc_taprio_caps {
 	bool supports_queue_max_sdu:1;
 	bool gate_mask_per_txq:1;
-	/* Device expects lower TXQ numbers to have higher priority over higher
-	 * TXQs, regardless of their TC mapping. DO NOT USE FOR NEW DRIVERS,
-	 * INSTEAD ENFORCE A PROPER TC:TXQ MAPPING COMING FROM USER SPACE.
-	 */
+	 
 	bool broken_mqprio:1;
 };
 
@@ -194,15 +174,7 @@ enum tc_taprio_qopt_cmd {
 	TAPRIO_CMD_QUEUE_STATS,
 };
 
-/**
- * struct tc_taprio_qopt_stats - IEEE 802.1Qbv statistics
- * @window_drops: Frames that were dropped because they were too large to be
- *	transmitted in any of the allotted time windows (open gates) for their
- *	traffic class.
- * @tx_overruns: Frames still being transmitted by the MAC after the
- *	transmission gate associated with their traffic class has closed.
- *	Equivalent to `12.29.1.1.2 TransmissionOverrun` from 802.1Q-2018.
- */
+ 
 struct tc_taprio_qopt_stats {
 	u64 window_drops;
 	u64 tx_overruns;
@@ -214,9 +186,9 @@ struct tc_taprio_qopt_queue_stats {
 };
 
 struct tc_taprio_sched_entry {
-	u8 command; /* TC_TAPRIO_CMD_* */
+	u8 command;  
 
-	/* The gate_mask in the offloading side refers to traffic classes */
+	 
 	u32 gate_mask;
 	u32 interval;
 };
@@ -225,11 +197,11 @@ struct tc_taprio_qopt_offload {
 	enum tc_taprio_qopt_cmd cmd;
 
 	union {
-		/* TAPRIO_CMD_STATS */
+		 
 		struct tc_taprio_qopt_stats stats;
-		/* TAPRIO_CMD_QUEUE_STATS */
+		 
 		struct tc_taprio_qopt_queue_stats queue_stats;
-		/* TAPRIO_CMD_REPLACE */
+		 
 		struct {
 			struct tc_mqprio_qopt_offload mqprio;
 			struct netlink_ext_ack *extack;
@@ -246,14 +218,14 @@ struct tc_taprio_qopt_offload {
 
 #if IS_ENABLED(CONFIG_NET_SCH_TAPRIO)
 
-/* Reference counting */
+ 
 struct tc_taprio_qopt_offload *taprio_offload_get(struct tc_taprio_qopt_offload
 						  *offload);
 void taprio_offload_free(struct tc_taprio_qopt_offload *offload);
 
 #else
 
-/* Reference counting */
+ 
 static inline struct tc_taprio_qopt_offload *
 taprio_offload_get(struct tc_taprio_qopt_offload *offload)
 {
@@ -266,10 +238,7 @@ static inline void taprio_offload_free(struct tc_taprio_qopt_offload *offload)
 
 #endif
 
-/* Ensure skb_mstamp_ns, which might have been populated with the txtime, is
- * not mistaken for a software timestamp, because this will otherwise prevent
- * the dispatch of hardware timestamps to the socket.
- */
+ 
 static inline void skb_txtime_consumed(struct sk_buff *skb)
 {
 	skb->tstamp = ktime_set(0, 0);
@@ -282,7 +251,7 @@ struct tc_skb_cb {
 	u8 post_ct:1;
 	u8 post_ct_snat:1;
 	u8 post_ct_dnat:1;
-	u16 zone; /* Only valid if post_ct = true */
+	u16 zone;  
 };
 
 static inline struct tc_skb_cb *tc_skb_cb(const struct sk_buff *skb)

@@ -1,25 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "pp_debug.h"
 #include <linux/errno.h>
 #include "hwmgr.h"
@@ -80,7 +59,7 @@ int phm_enable_dynamic_state_management(struct pp_hwmgr *hwmgr)
 	PHM_FUNC_CHECK(hwmgr);
 	adev = hwmgr->adev;
 
-	/* Skip for suspend/resume case */
+	 
 	if (!hwmgr->pp_one_vf && smum_is_dpm_running(hwmgr)
 	    && !amdgpu_passthrough(adev) && adev->in_suspend
 		&& adev->asic_type != CHIP_RAVEN) {
@@ -223,12 +202,7 @@ int phm_register_irq_handlers(struct pp_hwmgr *hwmgr)
 	return 0;
 }
 
-/**
- * phm_start_thermal_controller - Initializes the thermal controller subsystem.
- *
- * @hwmgr:   the address of the powerplay hardware manager.
- * Exception PP_Result_Failed if any of the paramters is NULL, otherwise the return value from the dispatcher.
- */
+ 
 int phm_start_thermal_controller(struct pp_hwmgr *hwmgr)
 {
 	int ret = 0;
@@ -326,7 +300,7 @@ int phm_store_dal_configuration_data(struct pp_hwmgr *hwmgr,
 	if (hwmgr->hwmgr_func->store_cc6_data == NULL)
 		return -EINVAL;
 
-	/* TODO: pass other display configuration in the future */
+	 
 
 	if (hwmgr->hwmgr_func->store_cc6_data)
 		hwmgr->hwmgr_func->store_cc6_data(hwmgr,
@@ -373,15 +347,7 @@ int phm_get_performance_level(struct pp_hwmgr *hwmgr, const struct pp_hw_power_s
 }
 
 
-/**
- * phm_get_clock_info
- *
- * @hwmgr:  the address of the powerplay hardware manager.
- * @state: the address of the Power State structure.
- * @pclock_info: the address of PP_ClockInfo structure where the result will be returned.
- * @designation: PHM performance level designation
- * Exception PP_Result_Failed if any of the paramters is NULL, otherwise the return value from the back-end.
- */
+ 
 int phm_get_clock_info(struct pp_hwmgr *hwmgr, const struct pp_hw_power_state *state, struct pp_clock_info *pclock_info,
 			PHM_PerformanceLevelDesignation designation)
 {

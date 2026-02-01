@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Power supply driver for ChromeOS EC based Peripheral Device Charger.
- *
- * Copyright 2020 Google LLC.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/notifier.h>
@@ -284,11 +280,7 @@ static int cros_pchg_probe(struct platform_device *pdev)
 
 	ret = cros_pchg_port_count(charger);
 	if (ret <= 0) {
-		/*
-		 * This feature is enabled by the EC and the kernel driver is
-		 * included by default for CrOS devices. Don't need to be loud
-		 * since this error can be normal.
-		 */
+		 
 		dev_info(dev, "No peripheral charge ports (err:%d)\n", ret);
 		return -ENODEV;
 	}
@@ -355,10 +347,7 @@ static int __maybe_unused cros_pchg_resume(struct device *dev)
 {
 	struct charger_data *charger = dev_get_drvdata(dev);
 
-	/*
-	 * Sync all ports on resume in case reports from EC are lost during
-	 * the last suspend.
-	 */
+	 
 	cros_pchg_event(charger);
 
 	return 0;

@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2009-2015 Freescale Semiconductor, Inc. and others
- *
- * Description: MPC5125, VF610, MCF54418 and Kinetis K70 Nand driver.
- * Jason ported to M54418TWR and MVFA5 (VF610).
- * Authors: Stefan Agner <stefan.agner@toradex.com>
- *          Bill Pringlemeir <bpringlemeir@nbsps.com>
- *          Shaohui Xie <b21989@freescale.com>
- *          Jason Jin <Jason.jin@freescale.com>
- *
- * Based on original driver mpc5121_nfc.c.
- *
- * Limitations:
- * - Untested on MPC5125 and M54418.
- * - DMA and pipelining not used.
- * - 2K pages or less.
- * - HW ECC: Only 2K page with 64+ OOB.
- * - HW ECC: Only 24 and 32-bit error correction implemented.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/bitops.h>
@@ -36,7 +18,7 @@
 
 #define	DRV_NAME		"vf610_nfc"
 
-/* Register Offsets */
+ 
 #define NFC_FLASH_CMD1			0x3F00
 #define NFC_FLASH_CMD2			0x3F04
 #define NFC_COL_ADDR			0x3F08
@@ -49,14 +31,14 @@
 #define NFC_FLASH_CONFIG		0x3F30
 #define NFC_IRQ_STATUS			0x3F38
 
-/* Addresses for NFC MAIN RAM BUFFER areas */
+ 
 #define NFC_MAIN_AREA(n)		((n) *  0x1000)
 
 #define PAGE_2K				0x0800
 #define OOB_64				0x0040
 #define OOB_MAX				0x0100
 
-/* NFC_CMD2[CODE] controller cycle bit masks */
+ 
 #define COMMAND_CMD_BYTE1		BIT(14)
 #define COMMAND_CAR_BYTE1		BIT(13)
 #define COMMAND_CAR_BYTE2		BIT(12)
@@ -72,18 +54,18 @@
 #define COMMAND_READ_STATUS		BIT(3)
 #define COMMAND_READ_ID			BIT(2)
 
-/* NFC ECC mode define */
+ 
 #define ECC_BYPASS			0
 #define ECC_45_BYTE			6
 #define ECC_60_BYTE			7
 
-/*** Register Mask and bit definitions */
+ 
 
-/* NFC_FLASH_CMD1 Field */
+ 
 #define CMD_BYTE2_MASK				0xFF000000
 #define CMD_BYTE2_SHIFT				24
 
-/* NFC_FLASH_CM2 Field */
+ 
 #define CMD_BYTE1_MASK				0xFF000000
 #define CMD_BYTE1_SHIFT				24
 #define CMD_CODE_MASK				0x00FFFF00
@@ -92,12 +74,12 @@
 #define BUFNO_SHIFT				1
 #define START_BIT				BIT(0)
 
-/* NFC_COL_ADDR Field */
+ 
 #define COL_ADDR_MASK				0x0000FFFF
 #define COL_ADDR_SHIFT				0
 #define COL_ADDR(pos, val)			(((val) & 0xFF) << (8 * (pos)))
 
-/* NFC_ROW_ADDR Field */
+ 
 #define ROW_ADDR_MASK				0x00FFFFFF
 #define ROW_ADDR_SHIFT				0
 #define ROW_ADDR(pos, val)			(((val) & 0xFF) << (8 * (pos)))
@@ -107,10 +89,10 @@
 #define ROW_ADDR_CHIP_SEL_MASK			0x0F000000
 #define ROW_ADDR_CHIP_SEL_SHIFT			24
 
-/* NFC_FLASH_STATUS2 Field */
+ 
 #define STATUS_BYTE1_MASK			0x000000FF
 
-/* NFC_FLASH_CONFIG Field */
+ 
 #define CONFIG_ECC_SRAM_ADDR_MASK		0x7FC00000
 #define CONFIG_ECC_SRAM_ADDR_SHIFT		22
 #define CONFIG_ECC_SRAM_REQ_BIT			BIT(21)
@@ -125,18 +107,13 @@
 #define CONFIG_PAGE_CNT_MASK			0xF
 #define CONFIG_PAGE_CNT_SHIFT			0
 
-/* NFC_IRQ_STATUS Field */
+ 
 #define IDLE_IRQ_BIT				BIT(29)
 #define IDLE_EN_BIT				BIT(20)
 #define CMD_DONE_CLEAR_BIT			BIT(18)
 #define IDLE_CLEAR_BIT				BIT(17)
 
-/*
- * ECC status - seems to consume 8 bytes (double word). The documented
- * status byte is located in the lowest byte of the second word (which is
- * the 4th or 7th byte depending on endianness).
- * Calculate an offset to store the ECC status at the end of the buffer.
- */
+ 
 #define ECC_SRAM_ADDR		(PAGE_2K + OOB_MAX - 8)
 
 #define ECC_STATUS		0x4
@@ -153,14 +130,10 @@ struct vf610_nfc {
 	struct device *dev;
 	void __iomem *regs;
 	struct completion cmd_done;
-	/* Status and ID are in alternate locations. */
+	 
 	enum vf610_nfc_variant variant;
 	struct clk *clk;
-	/*
-	 * Indicate that user data is accessed (full page/oob). This is
-	 * useful to indicate the driver whether to swap byte endianness.
-	 * See comments in vf610_nfc_rd_from_sram/vf610_nfc_wr_to_sram.
-	 */
+	 
 	bool data_access;
 	u32 ecc_mode;
 };
@@ -206,25 +179,7 @@ static inline bool vf610_nfc_kernel_is_little_endian(void)
 #endif
 }
 
-/*
- * Read accessor for internal SRAM buffer
- * @dst: destination address in regular memory
- * @src: source address in SRAM buffer
- * @len: bytes to copy
- * @fix_endian: Fix endianness if required
- *
- * Use this accessor for the internal SRAM buffers. On the ARM
- * Freescale Vybrid SoC it's known that the driver can treat
- * the SRAM buffer as if it's memory. Other platform might need
- * to treat the buffers differently.
- *
- * The controller stores bytes from the NAND chip internally in big
- * endianness. On little endian platforms such as Vybrid this leads
- * to reversed byte order.
- * For performance reason (and earlier probably due to unawareness)
- * the driver avoids correcting endianness where it has control over
- * write and read side (e.g. page wise data access).
- */
+ 
 static inline void vf610_nfc_rd_from_sram(void *dst, const void __iomem *src,
 					  size_t len, bool fix_endian)
 {
@@ -241,25 +196,7 @@ static inline void vf610_nfc_rd_from_sram(void *dst, const void __iomem *src,
 	}
 }
 
-/*
- * Write accessor for internal SRAM buffer
- * @dst: destination address in SRAM buffer
- * @src: source address in regular memory
- * @len: bytes to copy
- * @fix_endian: Fix endianness if required
- *
- * Use this accessor for the internal SRAM buffers. On the ARM
- * Freescale Vybrid SoC it's known that the driver can treat
- * the SRAM buffer as if it's memory. Other platform might need
- * to treat the buffers differently.
- *
- * The controller stores bytes from the NAND chip internally in big
- * endianness. On little endian platforms such as Vybrid this leads
- * to reversed byte order.
- * For performance reason (and earlier probably due to unawareness)
- * the driver avoids correcting endianness where it has control over
- * write and read side (e.g. page wise data access).
- */
+ 
 static inline void vf610_nfc_wr_to_sram(void __iomem *dst, const void *src,
 					size_t len, bool fix_endian)
 {
@@ -277,7 +214,7 @@ static inline void vf610_nfc_wr_to_sram(void __iomem *dst, const void *src,
 	}
 }
 
-/* Clear flags for upcoming command */
+ 
 static inline void vf610_nfc_clear_status(struct vf610_nfc *nfc)
 {
 	u32 tmp = vf610_nfc_read(nfc, NFC_IRQ_STATUS);
@@ -290,13 +227,7 @@ static void vf610_nfc_done(struct vf610_nfc *nfc)
 {
 	unsigned long timeout = msecs_to_jiffies(100);
 
-	/*
-	 * Barrier is needed after this write. This write need
-	 * to be done before reading the next register the first
-	 * time.
-	 * vf610_nfc_set implicates such a barrier by using writel
-	 * to write to the register.
-	 */
+	 
 	vf610_nfc_set(nfc, NFC_IRQ_STATUS, IDLE_EN_BIT);
 	vf610_nfc_set(nfc, NFC_FLASH_CMD2, START_BIT);
 
@@ -363,12 +294,7 @@ static int vf610_nfc_cmd(struct nand_chip *chip,
 	u32 col = 0, row = 0, cmd1 = 0, cmd2 = 0, code = 0;
 	bool force8bit = false;
 
-	/*
-	 * Some ops are optional, but the hardware requires the operations
-	 * to be in this exact order.
-	 * The op parser enforces the order and makes sure that there isn't
-	 * a read and write element in a single operation.
-	 */
+	 
 	instr = vf610_get_next_instr(subop, &op_id);
 	if (!instr)
 		return -EINVAL;
@@ -402,10 +328,7 @@ static int vf610_nfc_cmd(struct nand_chip *chip,
 		offset = nand_subop_get_data_start_off(subop, op_id);
 		force8bit = instr->ctx.data.force_8bit;
 
-		/*
-		 * Don't fix endianness on page access for historical reasons.
-		 * See comment in vf610_nfc_wr_to_sram
-		 */
+		 
 		vf610_nfc_wr_to_sram(nfc->regs + NFC_MAIN_AREA(0) + offset,
 				     instr->ctx.data.buf.out + offset,
 				     trfr_sz, !nfc->data_access);
@@ -443,10 +366,7 @@ static int vf610_nfc_cmd(struct nand_chip *chip,
 	vf610_nfc_run(nfc, col, row, cmd1, cmd2, trfr_sz);
 
 	if (instr && instr->type == NAND_OP_DATA_IN_INSTR) {
-		/*
-		 * Don't fix endianness on page access for historical reasons.
-		 * See comment in vf610_nfc_rd_from_sram
-		 */
+		 
 		vf610_nfc_rd_from_sram(instr->ctx.data.buf.in + offset,
 				       nfc->regs + NFC_MAIN_AREA(0) + offset,
 				       trfr_sz, !nfc->data_access);
@@ -473,15 +393,13 @@ static const struct nand_op_parser vf610_nfc_op_parser = NAND_OP_PARSER(
 		NAND_OP_PARSER_PAT_DATA_IN_ELEM(true, PAGE_2K + OOB_MAX)),
 	);
 
-/*
- * This function supports Vybrid only (MPC5125 would have full RB and four CS)
- */
+ 
 static void vf610_nfc_select_target(struct nand_chip *chip, unsigned int cs)
 {
 	struct vf610_nfc *nfc = chip_to_nfc(chip);
 	u32 tmp;
 
-	/* Vybrid only (MPC5125 would have full RB and four CS) */
+	 
 	if (nfc->variant != NFC_VFC610)
 		return;
 
@@ -524,10 +442,7 @@ static inline int vf610_nfc_correct_data(struct nand_chip *chip, uint8_t *dat,
 	nand_read_oob_op(&nfc->chip, page, 0, oob, mtd->oobsize);
 	nfc->data_access = false;
 
-	/*
-	 * On an erased page, bit count (including OOB) should be zero or
-	 * at least less then half of the ECC strength.
-	 */
+	 
 	return nand_check_erased_ecc_chunk(dat, nfc->chip.ecc.size, oob,
 					   mtd->oobsize, NULL, 0,
 					   flips_threshold);
@@ -570,10 +485,7 @@ static int vf610_nfc_read_page(struct nand_chip *chip, uint8_t *buf,
 	vf610_nfc_run(nfc, 0, row, cmd1, cmd2, trfr_sz);
 	vf610_nfc_ecc_mode(nfc, ECC_BYPASS);
 
-	/*
-	 * Don't fix endianness on page access for historical reasons.
-	 * See comment in vf610_nfc_rd_from_sram
-	 */
+	 
 	vf610_nfc_rd_from_sram(buf, nfc->regs + NFC_MAIN_AREA(0),
 			       mtd->writesize, false);
 	if (oob_required)
@@ -613,10 +525,7 @@ static int vf610_nfc_write_page(struct nand_chip *chip, const uint8_t *buf,
 	cmd1 |= NAND_CMD_PAGEPROG << CMD_BYTE2_SHIFT;
 	code |= COMMAND_CMD_BYTE2 | COMMAND_WRITE_DATA;
 
-	/*
-	 * Don't fix endianness on page access for historical reasons.
-	 * See comment in vf610_nfc_wr_to_sram
-	 */
+	 
 	vf610_nfc_wr_to_sram(nfc->regs + NFC_MAIN_AREA(0), buf,
 			     mtd->writesize, false);
 
@@ -701,7 +610,7 @@ static int vf610_nfc_write_oob(struct nand_chip *chip, int page)
 
 static const struct of_device_id vf610_nfc_dt_ids[] = {
 	{ .compatible = "fsl,vf610-nfc", .data = (void *)NFC_VFC610 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, vf610_nfc_dt_ids);
 
@@ -715,7 +624,7 @@ static void vf610_nfc_preinit_controller(struct vf610_nfc *nfc)
 	vf610_nfc_set(nfc, NFC_FLASH_CONFIG, CONFIG_FAST_FLASH_BIT);
 	vf610_nfc_ecc_mode(nfc, ECC_BYPASS);
 
-	/* Disable virtual pages, only one elementary transfer unit */
+	 
 	vf610_nfc_set_field(nfc, NFC_FLASH_CONFIG, CONFIG_PAGE_CNT_MASK,
 			    CONFIG_PAGE_CNT_SHIFT, 1);
 }
@@ -728,13 +637,13 @@ static void vf610_nfc_init_controller(struct vf610_nfc *nfc)
 		vf610_nfc_clear(nfc, NFC_FLASH_CONFIG, CONFIG_16BIT);
 
 	if (nfc->chip.ecc.engine_type == NAND_ECC_ENGINE_TYPE_ON_HOST) {
-		/* Set ECC status offset in SRAM */
+		 
 		vf610_nfc_set_field(nfc, NFC_FLASH_CONFIG,
 				    CONFIG_ECC_SRAM_ADDR_MASK,
 				    CONFIG_ECC_SRAM_ADDR_SHIFT,
 				    ECC_SRAM_ADDR >> 3);
 
-		/* Enable ECC status in SRAM */
+		 
 		vf610_nfc_set(nfc, NFC_FLASH_CONFIG, CONFIG_ECC_SRAM_REQ_BIT);
 	}
 }
@@ -746,11 +655,11 @@ static int vf610_nfc_attach_chip(struct nand_chip *chip)
 
 	vf610_nfc_init_controller(nfc);
 
-	/* Bad block options. */
+	 
 	if (chip->bbt_options & NAND_BBT_USE_FLASH)
 		chip->bbt_options |= NAND_BBT_NO_OOB;
 
-	/* Single buffer only, max 256 OOB minus ECC status */
+	 
 	if (mtd->writesize + mtd->oobsize > PAGE_2K + OOB_MAX - 8) {
 		dev_err(nfc->dev, "Unsupported flash page size\n");
 		return -ENXIO;
@@ -769,11 +678,11 @@ static int vf610_nfc_attach_chip(struct nand_chip *chip)
 		return -ENXIO;
 	}
 
-	/* Only 64 byte ECC layouts known */
+	 
 	if (mtd->oobsize > 64)
 		mtd->oobsize = 64;
 
-	/* Use default large page ECC layout defined in NAND core */
+	 
 	mtd_set_ooblayout(mtd, nand_get_large_page_ooblayout());
 	if (chip->ecc.strength == 32) {
 		nfc->ecc_mode = ECC_60_BYTE;
@@ -881,14 +790,14 @@ static int vf610_nfc_probe(struct platform_device *pdev)
 	nfc->base.ops = &vf610_nfc_controller_ops;
 	chip->controller = &nfc->base;
 
-	/* Scan the NAND chip */
+	 
 	err = nand_scan(chip, 1);
 	if (err)
 		return err;
 
 	platform_set_drvdata(pdev, nfc);
 
-	/* Register device in MTD */
+	 
 	err = mtd_device_register(mtd, NULL, 0);
 	if (err)
 		goto err_cleanup_nand;

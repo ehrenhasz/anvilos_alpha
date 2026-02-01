@@ -1,29 +1,5 @@
-/* $OpenBSD: monitor.c,v 1.237 2023/08/16 16:14:11 djm Exp $ */
-/*
- * Copyright 2002 Niels Provos <provos@citi.umich.edu>
- * Copyright 2002 Markus Friedl <markus@openbsd.org>
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -101,16 +77,16 @@
 static Gssctxt *gsscontext = NULL;
 #endif
 
-/* Imports */
+ 
 extern ServerOptions options;
 extern u_int utmp_len;
 extern struct sshbuf *loginmsg;
-extern struct sshauthopt *auth_opts; /* XXX move to permanent ssh->authctxt? */
+extern struct sshauthopt *auth_opts;  
 
-/* State exported from the child */
+ 
 static struct sshbuf *child_state;
 
-/* Functions on the monitor that answer unprivileged requests */
+ 
 
 int mm_answer_moduli(struct ssh *, int, struct sshbuf *);
 int mm_answer_sign(struct ssh *, int, struct sshbuf *);
@@ -151,7 +127,7 @@ int mm_answer_audit_command(struct ssh *, int, struct sshbuf *);
 
 static Authctxt *authctxt;
 
-/* local state for key verify */
+ 
 static u_char *key_blob = NULL;
 static size_t key_bloblen = 0;
 static u_int key_blobtype = MM_NOKEY;
@@ -170,14 +146,14 @@ struct mon_table {
 	int (*f)(struct ssh *, int, struct sshbuf *);
 };
 
-#define MON_ISAUTH	0x0004	/* Required for Authentication */
-#define MON_AUTHDECIDE	0x0008	/* Decides Authentication */
-#define MON_ONCE	0x0010	/* Disable after calling */
-#define MON_ALOG	0x0020	/* Log auth attempt without authenticating */
+#define MON_ISAUTH	0x0004	 
+#define MON_AUTHDECIDE	0x0008	 
+#define MON_ONCE	0x0010	 
+#define MON_ALOG	0x0020	 
 
 #define MON_AUTH	(MON_ISAUTH|MON_AUTHDECIDE)
 
-#define MON_PERMIT	0x1000	/* Request is permitted */
+#define MON_PERMIT	0x1000	 
 
 static int monitor_read(struct ssh *, struct monitor *, struct mon_table *,
     struct mon_table **);
@@ -235,7 +211,7 @@ struct mon_table mon_dispatch_postauth20[] = {
 
 struct mon_table *mon_dispatch;
 
-/* Specifies if a certain message is allowed at the moment */
+ 
 static void
 monitor_permit(struct mon_table *ent, enum monitor_reqtype type, int permit)
 {
@@ -284,11 +260,11 @@ monitor_child_preauth(struct ssh *ssh, struct monitor *pmonitor)
 	authctxt->loginmsg = loginmsg;
 
 	mon_dispatch = mon_dispatch_proto20;
-	/* Permit requests for moduli and signatures */
+	 
 	monitor_permit(mon_dispatch, MONITOR_REQ_MODULI, 1);
 	monitor_permit(mon_dispatch, MONITOR_REQ_SIGN, 1);
 
-	/* The first few requests do not require asynchronous access */
+	 
 	while (!authenticated) {
 		partial = 0;
 		auth_method = "unknown";
@@ -298,7 +274,7 @@ monitor_child_preauth(struct ssh *ssh, struct monitor *pmonitor)
 		authenticated = (monitor_read(ssh, pmonitor,
 		    mon_dispatch, &ent) == 1);
 
-		/* Special handling for multiple required authentications */
+		 
 		if (options.num_auth_methods != 0) {
 			if (authenticated &&
 			    !auth2_update_methods_lists(authctxt,
@@ -317,7 +293,7 @@ monitor_child_preauth(struct ssh *ssh, struct monitor *pmonitor)
 			    !auth_root_allowed(ssh, auth_method))
 				authenticated = 0;
 #ifdef USE_PAM
-			/* PAM needs to perform account checks after auth */
+			 
 			if (options.use_pam && authenticated) {
 				struct sshbuf *m;
 
@@ -343,7 +319,7 @@ monitor_child_preauth(struct ssh *ssh, struct monitor *pmonitor)
 			}
 		}
 		if (authctxt->failures > options.max_authtries) {
-			/* Shouldn't happen */
+			 
 			fatal_f("privsep child made too many authentication "
 			    "attempts");
 		}
@@ -360,7 +336,7 @@ monitor_child_preauth(struct ssh *ssh, struct monitor *pmonitor)
 
 	mm_get_keystate(ssh, pmonitor);
 
-	/* Drain any buffered messages from the child */
+	 
 	while (pmonitor->m_log_recvfd != -1 && monitor_read_log(pmonitor) == 0)
 		;
 
@@ -399,7 +375,7 @@ monitor_child_postauth(struct ssh *ssh, struct monitor *pmonitor)
 
 	mon_dispatch = mon_dispatch_postauth20;
 
-	/* Permit requests for moduli and signatures */
+	 
 	monitor_permit(mon_dispatch, MONITOR_REQ_MODULI, 1);
 	monitor_permit(mon_dispatch, MONITOR_REQ_SIGN, 1);
 	monitor_permit(mon_dispatch, MONITOR_REQ_TERM, 1);
@@ -425,7 +401,7 @@ monitor_read_log(struct monitor *pmonitor)
 	if ((logmsg = sshbuf_new()) == NULL)
 		fatal_f("sshbuf_new");
 
-	/* Read length */
+	 
 	if ((r = sshbuf_reserve(logmsg, 4, &p)) != 0)
 		fatal_fr(r, "reserve len");
 	if (atomicio(read, pmonitor->m_log_recvfd, p, 4) != 4) {
@@ -443,7 +419,7 @@ monitor_read_log(struct monitor *pmonitor)
 	if (len <= 4 || len > 8192)
 		fatal_f("invalid log message length %u", len);
 
-	/* Read severity, message */
+	 
 	sshbuf_reset(logmsg);
 	if ((r = sshbuf_reserve(logmsg, len, &p)) != 0)
 		fatal_fr(r, "reserve msg");
@@ -454,7 +430,7 @@ monitor_read_log(struct monitor *pmonitor)
 	    (r = sshbuf_get_cstring(logmsg, &msg, NULL)) != 0)
 		fatal_fr(r, "parse");
 
-	/* Log it */
+	 
 	if (log_level_name(level) == NULL)
 		fatal_f("invalid log level %u (corrupted message?)", level);
 	sshlogdirect(level, forced, "%s [preauth]", msg);
@@ -486,15 +462,12 @@ monitor_read(struct ssh *ssh, struct monitor *pmonitor, struct mon_table *ent,
 			fatal_f("poll: %s", strerror(errno));
 		}
 		if (pfd[1].revents) {
-			/*
-			 * Drain all log messages before processing next
-			 * monitor request.
-			 */
+			 
 			monitor_read_log(pmonitor);
 			continue;
 		}
 		if (pfd[0].revents)
-			break;  /* Continues below */
+			break;   
 	}
 
 	if ((m = sshbuf_new()) == NULL)
@@ -518,7 +491,7 @@ monitor_read(struct ssh *ssh, struct monitor *pmonitor, struct mon_table *ent,
 		ret = (*ent->f)(ssh, pmonitor->m_sendfd, m);
 		sshbuf_free(m);
 
-		/* The child may use this request only once, disable it */
+		 
 		if (ent->flags & MON_ONCE) {
 			debug2_f("%d used once, disabling now", type);
 			ent->flags &= ~MON_PERMIT;
@@ -532,15 +505,15 @@ monitor_read(struct ssh *ssh, struct monitor *pmonitor, struct mon_table *ent,
 
 	fatal_f("unsupported request: %d", type);
 
-	/* NOTREACHED */
+	 
 	return (-1);
 }
 
-/* allowed key state */
+ 
 static int
 monitor_allowed_key(const u_char *blob, u_int bloblen)
 {
-	/* make sure key is allowed */
+	 
 	if (key_blob == NULL || key_bloblen != bloblen ||
 	    timingsafe_bcmp(key_blob, blob, key_bloblen))
 		return (0);
@@ -550,7 +523,7 @@ monitor_allowed_key(const u_char *blob, u_int bloblen)
 static void
 monitor_reset_key_state(void)
 {
-	/* reset state */
+	 
 	free(key_blob);
 	free(hostbased_cuser);
 	free(hostbased_chost);
@@ -578,7 +551,7 @@ mm_answer_moduli(struct ssh *ssh, int sock, struct sshbuf *m)
 		fatal_fr(r, "parse");
 
 	debug3_f("got parameters: %d %d %d", min, want, max);
-	/* We need to check here, too, in case the child got corrupted */
+	 
 	if (max < min || want < min || max < want)
 		fatal_f("bad parameters: %d %d %d", min, want, max);
 
@@ -590,7 +563,7 @@ mm_answer_moduli(struct ssh *ssh, int sock, struct sshbuf *m)
 			fatal_fr(r, "assemble empty");
 		return (0);
 	} else {
-		/* Send first bignum */
+		 
 		DH_get0_pqg(dh, &dh_p, NULL, &dh_g);
 		if ((r = sshbuf_put_u8(m, 1)) != 0 ||
 		    (r = sshbuf_put_bignum2(m, dh_p)) != 0 ||
@@ -607,7 +580,7 @@ mm_answer_moduli(struct ssh *ssh, int sock, struct sshbuf *m)
 int
 mm_answer_sign(struct ssh *ssh, int sock, struct sshbuf *m)
 {
-	extern int auth_sock;			/* XXX move to state struct? */
+	extern int auth_sock;			 
 	struct sshkey *key;
 	struct sshbuf *sigbuf = NULL;
 	u_char *p = NULL, *signature = NULL;
@@ -627,23 +600,10 @@ mm_answer_sign(struct ssh *ssh, int sock, struct sshbuf *m)
 	if (keyid > INT_MAX)
 		fatal_f("invalid key ID");
 
-	/*
-	 * Supported KEX types use SHA1 (20 bytes), SHA256 (32 bytes),
-	 * SHA384 (48 bytes) and SHA512 (64 bytes).
-	 *
-	 * Otherwise, verify the signature request is for a hostkey
-	 * proof.
-	 *
-	 * XXX perform similar check for KEX signature requests too?
-	 * it's not trivial, since what is signed is the hash, rather
-	 * than the full kex structure...
-	 */
+	 
 	if (datlen != 20 && datlen != 32 && datlen != 48 && datlen != 64) {
-		/*
-		 * Construct expected hostkey proof and compare it to what
-		 * the client sent us.
-		 */
-		if (session_id2_len == 0) /* hostkeys is never first */
+		 
+		if (session_id2_len == 0)  
 			fatal_f("bad data length: %zu", datlen);
 		if ((key = get_hostkey_public_by_index(keyid, ssh)) == NULL)
 			fatal_f("no hostkey for index %d", keyid);
@@ -662,7 +622,7 @@ mm_answer_sign(struct ssh *ssh, int sock, struct sshbuf *m)
 		is_proof = 1;
 	}
 
-	/* save session id, it will be passed on the first call */
+	 
 	if (session_id2_len == 0) {
 		session_id2_len = datlen;
 		session_id2 = xmalloc(session_id2_len);
@@ -694,7 +654,7 @@ mm_answer_sign(struct ssh *ssh, int sock, struct sshbuf *m)
 
 	mm_request_send(sock, MONITOR_ANS_SIGN, m);
 
-	/* Turn on permissions for getpwnam */
+	 
 	monitor_permit(mon_dispatch, MONITOR_REQ_PWNAM, 1);
 
 	return (0);
@@ -707,7 +667,7 @@ mm_answer_sign(struct ssh *ssh, int sock, struct sshbuf *m)
 			fatal_fr(r, "assemble %s", #id); \
 	} while (0)
 
-/* Retrieves the password entry and also checks if the user is permitted */
+ 
 int
 mm_answer_pwnamallow(struct ssh *ssh, int sock, struct sshbuf *m)
 {
@@ -740,7 +700,7 @@ mm_answer_pwnamallow(struct ssh *ssh, int sock, struct sshbuf *m)
 	authctxt->pw = pwent;
 	authctxt->valid = 1;
 
-	/* XXX send fake class/dir/shell, etc. */
+	 
 	if ((r = sshbuf_put_u8(m, 1)) != 0)
 		fatal_fr(r, "assemble ok");
 	PUTPW(m, pw_uid);
@@ -780,25 +740,21 @@ mm_answer_pwnamallow(struct ssh *ssh, int sock, struct sshbuf *m)
 				fatal_fr(r, "assemble %s", #x); \
 		} \
 	} while (0)
-	/* See comment in servconf.h */
+	 
 	COPY_MATCH_STRING_OPTS();
 #undef M_CP_STROPT
 #undef M_CP_STRARRAYOPT
 
-	/* Create valid auth method lists */
+	 
 	if (auth2_setup_methods_lists(authctxt) != 0) {
-		/*
-		 * The monitor will continue long enough to let the child
-		 * run to its packet_disconnect(), but it must not allow any
-		 * authentication to succeed.
-		 */
+		 
 		debug_f("no valid authentication method lists");
 	}
 
 	debug3_f("sending MONITOR_ANS_PWNAM: %d", allowed);
 	mm_request_send(sock, MONITOR_ANS_PWNAM, m);
 
-	/* Allow service/style information on the auth context */
+	 
 	monitor_permit(mon_dispatch, MONITOR_REQ_AUTHSERV, 1);
 	monitor_permit(mon_dispatch, MONITOR_REQ_AUTH2_READ_BANNER, 1);
 
@@ -845,12 +801,7 @@ mm_answer_authserv(struct ssh *ssh, int sock, struct sshbuf *m)
 	return (0);
 }
 
-/*
- * Check that the key type appears in the supplied pattern list, ignoring
- * mismatches in the signature algorithm. (Signature algorithm checks are
- * performed in the unprivileged authentication code).
- * Returns 1 on success, 0 otherwise.
- */
+ 
 static int
 key_base_type_match(const char *method, const struct sshkey *key,
     const char *list)
@@ -886,7 +837,7 @@ mm_answer_authpassword(struct ssh *ssh, int sock, struct sshbuf *m)
 		fatal_f("password authentication not enabled");
 	if ((r = sshbuf_get_cstring(m, &passwd, &plen)) != 0)
 		fatal_fr(r, "parse");
-	/* Only authenticate if the context is valid */
+	 
 	authenticated = options.password_authentication &&
 	    auth_password(ssh, passwd);
 	freezero(passwd, plen);
@@ -909,7 +860,7 @@ mm_answer_authpassword(struct ssh *ssh, int sock, struct sshbuf *m)
 	else
 		auth_method = "password";
 
-	/* Causes monitor loop to terminate if authenticated */
+	 
 	return (authenticated);
 }
 
@@ -1140,7 +1091,7 @@ mm_answer_pam_free_ctx(struct ssh *ssh, int sock, struct sshbuf *m)
 	sshpam_ctxt = sshpam_authok = NULL;
 	sshbuf_reset(m);
 	mm_request_send(sock, MONITOR_ANS_PAM_FREE_CTX, m);
-	/* Allow another attempt */
+	 
 	monitor_permit(mon_dispatch, MONITOR_REQ_PAM_INIT_CTX, 1);
 	auth_method = "keyboard-interactive";
 	auth_submethod = "pam";
@@ -1208,11 +1159,11 @@ mm_answer_keyallowed(struct ssh *ssh, int sock, struct sshbuf *m)
 
 	auth2_record_key(authctxt, 0, key);
 
-	/* clear temporarily storage (used by verify) */
+	 
 	monitor_reset_key_state();
 
 	if (allowed) {
-		/* Save temporarily for comparison in verify */
+		 
 		if ((r = sshkey_to_blob(key, &key_blob, &key_bloblen)) != 0)
 			fatal_fr(r, "sshkey_to_blob");
 		key_blobtype = type;
@@ -1220,7 +1171,7 @@ mm_answer_keyallowed(struct ssh *ssh, int sock, struct sshbuf *m)
 		hostbased_cuser = cuser;
 		hostbased_chost = chost;
 	} else {
-		/* Log failed attempt */
+		 
 		auth_log(ssh, 0, 0, auth_method, NULL);
 		free(cuser);
 		free(chost);
@@ -1287,7 +1238,7 @@ monitor_valid_userblob(struct ssh *ssh, const u_char *data, u_int datalen)
 	}
 	free(userstyle);
 	free(cp);
-	if ((r = sshbuf_skip_string(b)) != 0 ||	/* service */
+	if ((r = sshbuf_skip_string(b)) != 0 ||	 
 	    (r = sshbuf_get_cstring(b, &cp, NULL)) != 0)
 		fatal_fr(r, "parse method");
 	if (strcmp("publickey", cp) != 0) {
@@ -1301,19 +1252,15 @@ monitor_valid_userblob(struct ssh *ssh, const u_char *data, u_int datalen)
 		fatal_fr(r, "parse pktype");
 	if (type == 0)
 		fail++;
-	if ((r = sshbuf_skip_string(b)) != 0 ||	/* pkalg */
-	    (r = sshbuf_skip_string(b)) != 0 ||	/* pkblob */
+	if ((r = sshbuf_skip_string(b)) != 0 ||	 
+	    (r = sshbuf_skip_string(b)) != 0 ||	 
 	    (hostbound && (r = sshkey_froms(b, &hostkey)) != 0))
 		fatal_fr(r, "parse pk");
 	if (sshbuf_len(b) != 0)
 		fail++;
 	sshbuf_free(b);
 	if (hostkey != NULL) {
-		/*
-		 * Ensure this is actually one of our hostkeys; unfortunately
-		 * can't check ssh->kex->initial_hostkey directly at this point
-		 * as packet state has not yet been exported to monitor.
-		 */
+		 
 		if (get_hostkey_index(hostkey, 1, ssh) == -1)
 			fatal_f("hostbound hostkey does not match");
 		sshkey_free(hostkey);
@@ -1358,17 +1305,17 @@ monitor_valid_hostbasedblob(const u_char *data, u_int datalen,
 	}
 	free(userstyle);
 	free(cp);
-	if ((r = sshbuf_skip_string(b)) != 0 ||	/* service */
+	if ((r = sshbuf_skip_string(b)) != 0 ||	 
 	    (r = sshbuf_get_cstring(b, &cp, NULL)) != 0)
 		fatal_fr(r, "parse method");
 	if (strcmp(cp, "hostbased") != 0)
 		fail++;
 	free(cp);
-	if ((r = sshbuf_skip_string(b)) != 0 ||	/* pkalg */
-	    (r = sshbuf_skip_string(b)) != 0)	/* pkblob */
+	if ((r = sshbuf_skip_string(b)) != 0 ||	 
+	    (r = sshbuf_skip_string(b)) != 0)	 
 		fatal_fr(r, "parse pk");
 
-	/* verify client host, strip trailing dot if necessary */
+	 
 	if ((r = sshbuf_get_cstring(b, &cp, NULL)) != 0)
 		fatal_fr(r, "parse host");
 	if (((len = strlen(cp)) > 0) && cp[len - 1] == '.')
@@ -1377,7 +1324,7 @@ monitor_valid_hostbasedblob(const u_char *data, u_int datalen,
 		fail++;
 	free(cp);
 
-	/* verify client user */
+	 
 	if ((r = sshbuf_get_cstring(b, &cp, NULL)) != 0)
 		fatal_fr(r, "parse ruser");
 	if (strcmp(cp, cuser) != 0)
@@ -1411,13 +1358,13 @@ mm_answer_keyverify(struct ssh *ssh, int sock, struct sshbuf *m)
 	  !monitor_allowed_key(blob, bloblen))
 		fatal_f("bad key, not previously allowed");
 
-	/* Empty signature algorithm means NULL. */
+	 
 	if (*sigalg == '\0') {
 		free(sigalg);
 		sigalg = NULL;
 	}
 
-	/* XXX use sshkey_froms here; need to change key_blob, etc. */
+	 
 	if ((r = sshkey_from_blob(blob, bloblen, &key)) != 0)
 		fatal_fr(r, "parse key");
 
@@ -1487,7 +1434,7 @@ mm_answer_keyverify(struct ssh *ssh, int sock, struct sshbuf *m)
 
 	sshbuf_reset(m);
 
-	/* encode ret != 0 as positive integer, since we're sending u32 */
+	 
 	encoded_ret = (ret != 0);
 	if ((r = sshbuf_put_u32(m, encoded_ret)) != 0 ||
 	    (r = sshbuf_put_u8(m, sig_details != NULL)) != 0)
@@ -1513,10 +1460,7 @@ mm_record_login(struct ssh *ssh, Session *s, struct passwd *pw)
 	socklen_t fromlen;
 	struct sockaddr_storage from;
 
-	/*
-	 * Get IP address of client. If the connection is not a socket, let
-	 * the address be 0.0.0.0.
-	 */
+	 
 	memset(&from, 0, sizeof(from));
 	fromlen = sizeof(from);
 	if (ssh_packet_connection_is_on_socket(ssh)) {
@@ -1526,7 +1470,7 @@ mm_record_login(struct ssh *ssh, Session *s, struct passwd *pw)
 			cleanup_exit(255);
 		}
 	}
-	/* Record that there was a login on that tty from the remote host. */
+	 
 	record_login(s->pid, s->tty, pw->pw_name, pw->pw_uid,
 	    session_get_remote_name_or_ip(ssh, utmp_len, options.use_dns),
 	    (struct sockaddr *)&from, fromlen);
@@ -1568,16 +1512,16 @@ mm_answer_pty(struct ssh *ssh, int sock, struct sshbuf *m)
 	    (r = sshbuf_put_cstring(m, s->tty)) != 0)
 		fatal_fr(r, "assemble");
 
-	/* We need to trick ttyslot */
+	 
 	if (dup2(s->ttyfd, 0) == -1)
 		fatal_f("dup2");
 
 	mm_record_login(ssh, s, authctxt->pw);
 
-	/* Now we can close the file descriptor again */
+	 
 	close(0);
 
-	/* send messages generated by record_login */
+	 
 	if ((r = sshbuf_put_stringb(m, loginmsg)) != 0)
 		fatal_fr(r, "assemble loginmsg");
 	sshbuf_reset(loginmsg);
@@ -1588,16 +1532,16 @@ mm_answer_pty(struct ssh *ssh, int sock, struct sshbuf *m)
 	    mm_send_fd(sock, s->ttyfd) == -1)
 		fatal_f("send fds failed");
 
-	/* make sure nothing uses fd 0 */
+	 
 	if ((fd0 = open(_PATH_DEVNULL, O_RDONLY)) == -1)
 		fatal_f("open(/dev/null): %s", strerror(errno));
 	if (fd0 != 0)
 		error_f("fd0 %d != 0", fd0);
 
-	/* slave side of pty is not needed */
+	 
 	close(s->ttyfd);
 	s->ttyfd = s->ptyfd;
-	/* no need to dup() because nobody closes ptyfd */
+	 
 	s->ptymaster = s->ptyfd;
 
 	debug3_f("tty %s ptyfd %d", s->tty, s->ttyfd);
@@ -1639,7 +1583,7 @@ mm_answer_term(struct ssh *ssh, int sock, struct sshbuf *req)
 
 	debug3_f("tearing down sessions");
 
-	/* The child is terminating */
+	 
 	session_destroy_all(ssh, &mm_session_close);
 
 #ifdef USE_PAM
@@ -1653,12 +1597,12 @@ mm_answer_term(struct ssh *ssh, int sock, struct sshbuf *req)
 
 	res = WIFEXITED(status) ? WEXITSTATUS(status) : 1;
 
-	/* Terminate process */
+	 
 	exit(res);
 }
 
 #ifdef SSH_AUDIT_EVENTS
-/* Report that an audit event occurred */
+ 
 int
 mm_answer_audit_event(struct ssh *ssh, int socket, struct sshbuf *m)
 {
@@ -1697,12 +1641,12 @@ mm_answer_audit_command(struct ssh *ssh, int socket, struct sshbuf *m)
 	debug3("%s entering", __func__);
 	if ((r = sshbuf_get_cstring(m, &cmd, NULL)) != 0)
 		fatal("%s: buffer error: %s", __func__, ssh_err(r));
-	/* sanity check command, if so how? */
+	 
 	audit_run_command(cmd);
 	free(cmd);
 	return (0);
 }
-#endif /* SSH_AUDIT_EVENTS */
+#endif  
 
 void
 monitor_clear_keystate(struct ssh *ssh, struct monitor *pmonitor)
@@ -1733,7 +1677,7 @@ monitor_apply_keystate(struct ssh *ssh, struct monitor *pmonitor)
 	if (memcmp(sshbuf_ptr(ssh->kex->session_id), session_id2,
 	    session_id2_len) != 0)
 		fatal_f("session ID mismatch");
-	/* XXX set callbacks */
+	 
 #ifdef WITH_OPENSSL
 	kex->kex[KEX_DH_GRP1_SHA1] = kex_gen_server;
 	kex->kex[KEX_DH_GRP14_SHA1] = kex_gen_server;
@@ -1745,7 +1689,7 @@ monitor_apply_keystate(struct ssh *ssh, struct monitor *pmonitor)
 # ifdef OPENSSL_HAS_ECC
 	kex->kex[KEX_ECDH_SHA2] = kex_gen_server;
 # endif
-#endif /* WITH_OPENSSL */
+#endif  
 	kex->kex[KEX_C25519_SHA256] = kex_gen_server;
 	kex->kex[KEX_KEM_SNTRUP761X25519_SHA512] = kex_gen_server;
 	kex->load_host_public_key=&get_hostkey_public_by_type;
@@ -1754,7 +1698,7 @@ monitor_apply_keystate(struct ssh *ssh, struct monitor *pmonitor)
 	kex->sign = sshd_hostkey_sign;
 }
 
-/* This function requires careful sanity checking */
+ 
 
 void
 mm_get_keystate(struct ssh *ssh, struct monitor *pmonitor)
@@ -1769,7 +1713,7 @@ mm_get_keystate(struct ssh *ssh, struct monitor *pmonitor)
 }
 
 
-/* XXX */
+ 
 
 #define FD_CLOSEONEXEC(x) do { \
 	if (fcntl(x, F_SETFD, FD_CLOEXEC) == -1) \
@@ -1855,7 +1799,7 @@ mm_answer_gss_setup_ctx(struct ssh *ssh, int sock, struct sshbuf *m)
 
 	mm_request_send(sock, MONITOR_ANS_GSSSETUP, m);
 
-	/* Now we have a context, enable the step */
+	 
 	monitor_permit(mon_dispatch, MONITOR_REQ_GSSSTEP, 1);
 
 	return (0);
@@ -1867,7 +1811,7 @@ mm_answer_gss_accept_ctx(struct ssh *ssh, int sock, struct sshbuf *m)
 	gss_buffer_desc in;
 	gss_buffer_desc out = GSS_C_EMPTY_BUFFER;
 	OM_uint32 major, minor;
-	OM_uint32 flags = 0; /* GSI needs this */
+	OM_uint32 flags = 0;  
 	int r;
 
 	if (!options.gss_authentication)
@@ -1949,8 +1893,8 @@ mm_answer_gss_userok(struct ssh *ssh, int sock, struct sshbuf *m)
 	if ((displayname = ssh_gssapi_displayname()) != NULL)
 		auth2_record_info(authctxt, "%s", displayname);
 
-	/* Monitor loop will terminate if authenticated */
+	 
 	return (authenticated);
 }
-#endif /* GSSAPI */
+#endif  
 

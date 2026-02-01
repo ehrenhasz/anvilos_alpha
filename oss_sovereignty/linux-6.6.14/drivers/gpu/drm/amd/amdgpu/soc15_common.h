@@ -1,30 +1,9 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef __SOC15_COMMON_H__
 #define __SOC15_COMMON_H__
 
-/* GET_INST returns the physical instance corresponding to a logical instance */
+ 
 #define GET_INST(ip, inst) \
 	(adev->ip_map.logical_to_dev_inst ? \
 	adev->ip_map.logical_to_dev_inst(adev, ip##_HWIP, inst) : inst)
@@ -32,7 +11,7 @@
 	(adev->ip_map.logical_to_dev_mask ? \
 	adev->ip_map.logical_to_dev_mask(adev, ip##_HWIP, mask) : mask)
 
-/* Register Access Macros */
+ 
 #define SOC15_REG_OFFSET(ip, inst, reg)	(adev->reg_offset[ip##_HWIP][inst][reg##_BASE_IDX] + reg)
 #define SOC15_REG_OFFSET1(ip, inst, reg, offset) \
 	(adev->reg_offset[ip##_HWIP][inst][reg##_BASE_IDX] + (reg)+(offset))
@@ -134,11 +113,11 @@
 		}	\
 	} while (0)
 
-/* shadow the registers in the callback function */
+ 
 #define WREG32_SOC15_RLC_SHADOW(ip, inst, reg, value) \
 	__WREG32_SOC15_RLC__((adev->reg_offset[ip##_HWIP][inst][reg##_BASE_IDX] + reg), value, AMDGPU_REGS_RLC, GC_HWIP, inst)
 
-/* for GC only */
+ 
 #define RREG32_RLC(reg) \
 	__RREG32_SOC15_RLC__(reg, AMDGPU_REGS_RLC, GC_HWIP)
 
@@ -194,7 +173,7 @@
 #define RREG32_SOC15_OFFSET_RLC(ip, inst, reg, offset) \
 	__RREG32_SOC15_RLC__((adev->reg_offset[ip##_HWIP][inst][reg##_BASE_IDX] + reg) + offset, AMDGPU_REGS_RLC, ip##_HWIP, inst)
 
-/* inst equals to ext for some IPs */
+ 
 #define RREG32_SOC15_EXT(ip, inst, reg, ext) \
 	RREG32_PCIE_EXT((adev->reg_offset[ip##_HWIP][inst][reg##_BASE_IDX] + reg) * 4 \
 			+ adev->asic_funcs->encode_ext_smn_addressing(ext)) \

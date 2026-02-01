@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2018 Google Inc.
- * Author: Soheil Hassas Yeganeh (soheil@google.com)
- *
- * Simple example on how to use TCP_INQ and TCP_CM_INQ.
- */
+
+ 
 #define _GNU_SOURCE
 
 #include <error.h>
@@ -80,10 +75,7 @@ void *start_server(void *arg)
 			perror("send");
 		if (r != BUF_SIZE)
 			fprintf(stderr, "can only send %d bytes\n", r);
-		/* TCP_INQ can overestimate in-queue by one byte if we send
-		 * the FIN packet. Sleep for 1 second, so that the client
-		 * likely invoked recvmsg().
-		 */
+		 
 		sleep(1);
 		close(fd);
 	}

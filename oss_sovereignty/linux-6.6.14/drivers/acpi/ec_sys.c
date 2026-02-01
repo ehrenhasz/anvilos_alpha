@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ec_sys.c
- *
- * Copyright (C) 2010 SUSE Products GmbH/Novell
- * Author:
- *      Thomas Renninger <trenn@suse.de>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/acpi.h>
@@ -30,9 +24,7 @@ static struct dentry *acpi_ec_debugfs_dir;
 static ssize_t acpi_ec_read_io(struct file *f, char __user *buf,
 			       size_t count, loff_t *off)
 {
-	/* Use this if support reading/writing multiple ECs exists in ec.c:
-	 * struct acpi_ec *ec = ((struct seq_file *)f->private_data)->private;
-	 */
+	 
 	unsigned int size = EC_SPACE_SIZE;
 	loff_t init_off = *off;
 	int err = 0;
@@ -52,7 +44,7 @@ static ssize_t acpi_ec_read_io(struct file *f, char __user *buf,
 			return err;
 		if (put_user(byte_read, buf + *off - init_off)) {
 			if (*off - init_off)
-				return *off - init_off; /* partial read */
+				return *off - init_off;  
 			return -EFAULT;
 		}
 		*off += 1;
@@ -64,9 +56,7 @@ static ssize_t acpi_ec_read_io(struct file *f, char __user *buf,
 static ssize_t acpi_ec_write_io(struct file *f, const char __user *buf,
 				size_t count, loff_t *off)
 {
-	/* Use this if support reading/writing multiple ECs exists in ec.c:
-	 * struct acpi_ec *ec = ((struct seq_file *)f->private_data)->private;
-	 */
+	 
 
 	unsigned int size = count;
 	loff_t init_off = *off;
@@ -86,7 +76,7 @@ static ssize_t acpi_ec_write_io(struct file *f, const char __user *buf,
 		u8 byte_write;
 		if (get_user(byte_write, buf + *off - init_off)) {
 			if (*off - init_off)
-				return *off - init_off; /* partial write */
+				return *off - init_off;  
 			return -EFAULT;
 		}
 		err = ec_write(*off, byte_write);

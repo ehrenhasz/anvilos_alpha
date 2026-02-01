@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *   CIO inject interface
- *
- *    Copyright IBM Corp. 2021
- *    Author(s): Vineeth Vijayan <vneethv@linux.ibm.com>
- */
+
+ 
 
 #define KMSG_COMPONENT "cio"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -22,15 +17,7 @@ static DEFINE_SPINLOCK(crw_inject_lock);
 DEFINE_STATIC_KEY_FALSE(cio_inject_enabled);
 static struct crw *crw_inject_data;
 
-/**
- * crw_inject : Initiate the artificial CRW inject
- * @crw: The data which needs to be injected as new CRW.
- *
- * The CRW handler is called, which will use the provided artificial
- * data instead of the CRW from the underlying hardware.
- *
- * Return: 0 on success
- */
+ 
 static int crw_inject(struct crw *crw)
 {
 	int rc = 0;
@@ -56,14 +43,7 @@ static int crw_inject(struct crw *crw)
 	return rc;
 }
 
-/**
- * stcrw_get_injected: Copy the artificial CRW data to CRW struct.
- * @crw: The target CRW pointer.
- *
- * Retrieve an injected CRW data. Return 0 on success, 1 if no
- * injected-CRW is available. The function reproduces the return
- * code of the actual STCRW function.
- */
+ 
 int stcrw_get_injected(struct crw *crw)
 {
 	int rc = 1;
@@ -81,7 +61,7 @@ int stcrw_get_injected(struct crw *crw)
 	return rc;
 }
 
-/* The debugfs write handler for crw_inject nodes operation */
+ 
 static ssize_t crw_inject_write(struct file *file, const char __user *buf,
 				size_t lbuf, loff_t *ppos)
 {
@@ -124,7 +104,7 @@ static ssize_t crw_inject_write(struct file *file, const char __user *buf,
 	return lbuf;
 }
 
-/* Debugfs write handler for inject_enable node*/
+ 
 static ssize_t enable_inject_write(struct file *file, const char __user *buf,
 				   size_t lbuf, loff_t *ppos)
 {
@@ -159,7 +139,7 @@ static const struct file_operations cio_en_fops = {
 
 static int __init cio_inject_init(void)
 {
-	/* enable_inject node enables the static branching */
+	 
 	debugfs_create_file("enable_inject", 0200, cio_debugfs_dir,
 			    NULL, &cio_en_fops);
 

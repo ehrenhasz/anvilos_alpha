@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2021, Collabora
- *
- * Author: Benjamin Gaignard <benjamin.gaignard@collabora.com>
- */
+ 
+ 
 
 #ifndef HANTRO_G2_REGS_H_
 #define HANTRO_G2_REGS_H_

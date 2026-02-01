@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * APM X-Gene SoC Hardware Monitoring Driver
- *
- * Copyright (c) 2016, Applied Micro Circuits Corporation
- * Author: Loc Ho <lho@apm.com>
- *         Hoan Tran <hotran@apm.com>
- *
- * This driver provides the following features:
- *  - Retrieve CPU total power (uW)
- *  - Retrieve IO total power (uW)
- *  - Retrieve SoC temperature (milli-degree C) and alarm
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/dma-mapping.h>
 #include <linux/hwmon.h>
@@ -26,7 +15,7 @@
 
 #include <acpi/pcc.h>
 
-/* SLIMpro message defines */
+ 
 #define MSG_TYPE_DBG			0
 #define MSG_TYPE_ERR			7
 #define MSG_TYPE_PWRMGMT		9
@@ -57,16 +46,13 @@
 	(MSG_TYPE_SET(MSG_TYPE_PWRMGMT) | \
 	MSG_SUBTYPE_SET(hndl) | TPC_CMD_SET(cmd) | type)
 
-/* PCC defines */
+ 
 #define PCC_SIGNATURE_MASK		0x50424300
 #define PCCC_GENERATE_DB_INT		BIT(15)
 #define PCCS_CMD_COMPLETE		BIT(0)
 #define PCCS_SCI_DOORBEL		BIT(1)
 #define PCCS_PLATFORM_NOTIFICATION	BIT(3)
-/*
- * Arbitrary retries in case the remote processor is slow to respond
- * to PCC commands
- */
+ 
 #define PCC_NUM_RETRIES			500
 
 #define ASYNC_MSG_FIFO_SIZE		16
@@ -114,9 +100,7 @@ struct xgene_hwmon_dev {
 	u64			usecs_lat;
 };
 
-/*
- * This function tests and clears a bitmask then returns its old value
- */
+ 
 static u16 xgene_word_tst_and_clr(u16 *addr, u16 mask)
 {
 	u16 ret, val;
@@ -140,24 +124,24 @@ static int xgene_hwmon_pcc_rd(struct xgene_hwmon_dev *ctx, u32 *msg)
 	init_completion(&ctx->rd_complete);
 	ctx->resp_pending = true;
 
-	/* Write signature for subspace */
+	 
 	WRITE_ONCE(generic_comm_base->signature,
 		   cpu_to_le32(PCC_SIGNATURE_MASK | ctx->mbox_idx));
 
-	/* Write to the shared command region */
+	 
 	WRITE_ONCE(generic_comm_base->command,
 		   cpu_to_le16(MSG_TYPE(msg[0]) | PCCC_GENERATE_DB_INT));
 
-	/* Flip CMD COMPLETE bit */
+	 
 	val = le16_to_cpu(READ_ONCE(generic_comm_base->status));
 	val &= ~PCCS_CMD_COMPLETE;
 	WRITE_ONCE(generic_comm_base->status, cpu_to_le16(val));
 
-	/* Copy the message to the PCC comm space */
+	 
 	for (i = 0; i < sizeof(struct slimpro_resp_msg) / 4; i++)
 		WRITE_ONCE(ptr[i], cpu_to_le32(msg[i]));
 
-	/* Ring the doorbell */
+	 
 	rc = mbox_send_message(ctx->mbox_chan, msg);
 	if (rc < 0) {
 		dev_err(ctx->dev, "Mailbox send error %d\n", rc);
@@ -170,7 +154,7 @@ static int xgene_hwmon_pcc_rd(struct xgene_hwmon_dev *ctx, u32 *msg)
 		goto err;
 	}
 
-	/* Check for error message */
+	 
 	if (MSG_TYPE(ctx->sync_msg.msg) == MSG_TYPE_ERR) {
 		rc = -EINVAL;
 		goto err;
@@ -208,7 +192,7 @@ static int xgene_hwmon_rd(struct xgene_hwmon_dev *ctx, u32 *msg)
 		goto err;
 	}
 
-	/* Check for error message */
+	 
 	if (MSG_TYPE(ctx->sync_msg.msg) == MSG_TYPE_ERR) {
 		rc = -EINVAL;
 		goto err;
@@ -242,9 +226,7 @@ static int xgene_hwmon_reg_map_rd(struct xgene_hwmon_dev *ctx, u32 addr,
 	if (rc < 0)
 		return rc;
 
-	/*
-	 * Check if sensor data is valid.
-	 */
+	 
 	if (msg[1] & SENSOR_INVALID_DATA)
 		return -ENODATA;
 
@@ -313,9 +295,7 @@ static int xgene_hwmon_get_temp(struct xgene_hwmon_dev *ctx, u32 *val)
 	return xgene_hwmon_reg_map_rd(ctx, SOC_TEMP_REG, val);
 }
 
-/*
- * Sensor temperature/power functions
- */
+ 
 static ssize_t temp1_input_show(struct device *dev,
 				struct device_attribute *attr,
 				char *buf)
@@ -431,9 +411,7 @@ static void xgene_hwmon_process_pwrmsg(struct xgene_hwmon_dev *ctx,
 		xgene_hwmon_tpc_alarm(ctx, amsg);
 }
 
-/*
- * This function is called to process async work queue
- */
+ 
 static void xgene_hwmon_evt_work(struct work_struct *work)
 {
 	struct slimpro_resp_msg amsg;
@@ -444,10 +422,7 @@ static void xgene_hwmon_evt_work(struct work_struct *work)
 	while (kfifo_out_spinlocked(&ctx->async_msg_fifo, &amsg,
 				    sizeof(struct slimpro_resp_msg),
 				    &ctx->kfifo_lock)) {
-		/*
-		 * If PCC, send a consumer command to Platform to get info
-		 * If Slimpro Mailbox, get message from specific FIFO
-		 */
+		 
 		if (!acpi_disabled) {
 			ret = xgene_hwmon_get_notification_msg(ctx,
 							       (u32 *)&amsg);
@@ -463,7 +438,7 @@ static void xgene_hwmon_evt_work(struct work_struct *work)
 static int xgene_hwmon_rx_ready(struct xgene_hwmon_dev *ctx, void *msg)
 {
 	if (IS_ERR_OR_NULL(ctx->hwmon_dev) && !ctx->resp_pending) {
-		/* Enqueue to the FIFO */
+		 
 		kfifo_in_spinlocked(&ctx->async_msg_fifo, msg,
 				    sizeof(struct slimpro_resp_msg),
 				    &ctx->kfifo_lock);
@@ -473,32 +448,18 @@ static int xgene_hwmon_rx_ready(struct xgene_hwmon_dev *ctx, void *msg)
 	return 0;
 }
 
-/*
- * This function is called when the SLIMpro Mailbox received a message
- */
+ 
 static void xgene_hwmon_rx_cb(struct mbox_client *cl, void *msg)
 {
 	struct xgene_hwmon_dev *ctx = to_xgene_hwmon_dev(cl);
 
-	/*
-	 * While the driver registers with the mailbox framework, an interrupt
-	 * can be pending before the probe function completes its
-	 * initialization. If such condition occurs, just queue up the message
-	 * as the driver is not ready for servicing the callback.
-	 */
+	 
 	if (xgene_hwmon_rx_ready(ctx, msg) < 0)
 		return;
 
-	/*
-	 * Response message format:
-	 * msg[0] is the return code of the operation
-	 * msg[1] is the first parameter word
-	 * msg[2] is the second parameter word
-	 *
-	 * As message only supports dword size, just assign it.
-	 */
+	 
 
-	/* Check for sync query */
+	 
 	if (ctx->resp_pending &&
 	    ((MSG_TYPE(((u32 *)msg)[0]) == MSG_TYPE_ERR) ||
 	     (MSG_TYPE(((u32 *)msg)[0]) == MSG_TYPE_DBG &&
@@ -510,53 +471,39 @@ static void xgene_hwmon_rx_cb(struct mbox_client *cl, void *msg)
 		ctx->sync_msg.param1 = ((u32 *)msg)[1];
 		ctx->sync_msg.param2 = ((u32 *)msg)[2];
 
-		/* Operation waiting for response */
+		 
 		complete(&ctx->rd_complete);
 
 		return;
 	}
 
-	/* Enqueue to the FIFO */
+	 
 	kfifo_in_spinlocked(&ctx->async_msg_fifo, msg,
 			    sizeof(struct slimpro_resp_msg), &ctx->kfifo_lock);
-	/* Schedule the bottom handler */
+	 
 	schedule_work(&ctx->workq);
 }
 
-/*
- * This function is called when the PCC Mailbox received a message
- */
+ 
 static void xgene_hwmon_pcc_rx_cb(struct mbox_client *cl, void *msg)
 {
 	struct xgene_hwmon_dev *ctx = to_xgene_hwmon_dev(cl);
 	struct acpi_pcct_shared_memory *generic_comm_base = ctx->pcc_comm_addr;
 	struct slimpro_resp_msg amsg;
 
-	/*
-	 * While the driver registers with the mailbox framework, an interrupt
-	 * can be pending before the probe function completes its
-	 * initialization. If such condition occurs, just queue up the message
-	 * as the driver is not ready for servicing the callback.
-	 */
+	 
 	if (xgene_hwmon_rx_ready(ctx, &amsg) < 0)
 		return;
 
 	msg = generic_comm_base + 1;
-	/* Check if platform sends interrupt */
+	 
 	if (!xgene_word_tst_and_clr(&generic_comm_base->status,
 				    PCCS_SCI_DOORBEL))
 		return;
 
-	/*
-	 * Response message format:
-	 * msg[0] is the return code of the operation
-	 * msg[1] is the first parameter word
-	 * msg[2] is the second parameter word
-	 *
-	 * As message only supports dword size, just assign it.
-	 */
+	 
 
-	/* Check for sync query */
+	 
 	if (ctx->resp_pending &&
 	    ((MSG_TYPE(((u32 *)msg)[0]) == MSG_TYPE_ERR) ||
 	     (MSG_TYPE(((u32 *)msg)[0]) == MSG_TYPE_DBG &&
@@ -564,31 +511,26 @@ static void xgene_hwmon_pcc_rx_cb(struct mbox_client *cl, void *msg)
 	     (MSG_TYPE(((u32 *)msg)[0]) == MSG_TYPE_PWRMGMT &&
 	      MSG_SUBTYPE(((u32 *)msg)[0]) == PWRMGMT_SUBTYPE_TPC &&
 	      TPC_CMD(((u32 *)msg)[0]) == TPC_ALARM))) {
-		/* Check if platform completes command */
+		 
 		if (xgene_word_tst_and_clr(&generic_comm_base->status,
 					   PCCS_CMD_COMPLETE)) {
 			ctx->sync_msg.msg = ((u32 *)msg)[0];
 			ctx->sync_msg.param1 = ((u32 *)msg)[1];
 			ctx->sync_msg.param2 = ((u32 *)msg)[2];
 
-			/* Operation waiting for response */
+			 
 			complete(&ctx->rd_complete);
 
 			return;
 		}
 	}
 
-	/*
-	 * Platform notifies interrupt to OSPM.
-	 * OPSM schedules a consumer command to get this information
-	 * in a workqueue. Platform must wait until OSPM has issued
-	 * a consumer command that serves this notification.
-	 */
+	 
 
-	/* Enqueue to the FIFO */
+	 
 	kfifo_in_spinlocked(&ctx->async_msg_fifo, &amsg,
 			    sizeof(struct slimpro_resp_msg), &ctx->kfifo_lock);
-	/* Schedule the bottom handler */
+	 
 	schedule_work(&ctx->workq);
 }
 
@@ -637,7 +579,7 @@ static int xgene_hwmon_probe(struct platform_device *pdev)
 
 	INIT_WORK(&ctx->workq, xgene_hwmon_evt_work);
 
-	/* Request mailbox channel */
+	 
 	cl->dev = &pdev->dev;
 	cl->tx_done = xgene_hwmon_tx_done;
 	cl->tx_block = false;
@@ -691,10 +633,7 @@ static int xgene_hwmon_probe(struct platform_device *pdev)
 			goto out;
 		}
 
-		/*
-		 * This is the shared communication region
-		 * for the OS and Platform to communicate over.
-		 */
+		 
 		ctx->comm_base_addr = pcc_chan->shmem_base_addr;
 		if (ctx->comm_base_addr) {
 			if (version == XGENE_HWMON_V2)
@@ -719,11 +658,7 @@ static int xgene_hwmon_probe(struct platform_device *pdev)
 			goto out;
 		}
 
-		/*
-		 * pcc_chan->latency is just a Nominal value. In reality
-		 * the remote processor could be much slower to reply.
-		 * So add an arbitrary amount of wait on top of Nominal.
-		 */
+		 
 		ctx->usecs_lat = PCC_NUM_RETRIES * pcc_chan->latency;
 	}
 
@@ -737,9 +672,7 @@ static int xgene_hwmon_probe(struct platform_device *pdev)
 		goto out;
 	}
 
-	/*
-	 * Schedule the bottom handler if there is a pending message.
-	 */
+	 
 	schedule_work(&ctx->workq);
 
 	dev_info(&pdev->dev, "APM X-Gene SoC HW monitor driver registered\n");

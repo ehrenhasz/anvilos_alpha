@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2020 ROHM Semiconductors
- *
- * ROHM BD9576MUF and BD9573MUF Watchdog driver
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/gpio/consumer.h>
@@ -42,7 +38,7 @@ static int bd9576_wdt_ping(struct watchdog_device *wdd)
 {
 	struct bd9576_wdt_priv *priv = watchdog_get_drvdata(wdd);
 
-	/* Pulse */
+	 
 	gpiod_set_value_cansleep(priv->gpiod_ping, 1);
 	gpiod_set_value_cansleep(priv->gpiod_ping, 0);
 
@@ -83,7 +79,7 @@ static const struct watchdog_ops bd957x_wdt_ops = {
 	.ping		= bd9576_wdt_ping,
 };
 
-/* Unit is hundreds of uS */
+ 
 #define FASTNG_MIN 23
 
 static int find_closest_fast(int target, int *sel, int *val)
@@ -159,7 +155,7 @@ static int bd957x_set_wdt_mode(struct bd9576_wdt_priv *priv, int hw_margin,
 	int ret, fastng, slowng, type, reg, mask;
 	struct device *dev = priv->dev;
 
-	/* convert to 100uS */
+	 
 	hw_margin *= 10;
 	hw_margin_min *= 10;
 	if (hw_margin_min) {

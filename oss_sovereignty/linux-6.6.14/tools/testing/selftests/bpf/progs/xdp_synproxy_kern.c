@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1 OR BSD-2-Clause
-/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+ 
 
 #include "vmlinux.h"
 
@@ -77,9 +77,7 @@ struct {
 	__uint(max_entries, MAX_ALLOWED_PORTS);
 } allowed_ports SEC(".maps");
 
-/* Some symbols defined in net/netfilter/nf_conntrack_bpf.c are unavailable in
- * vmlinux.h if CONFIG_NF_CONNTRACK=m, so they are redefined locally.
- */
+ 
 
 struct bpf_ct_opts___local {
 	s32 netns_id;
@@ -157,7 +155,7 @@ static __always_inline __u16 csum_ipv6_magic(const struct in6_addr *saddr,
 	for (i = 0; i < 4; i++)
 		sum += (__u32)daddr->in6_u.u6_addr32[i];
 
-	/* Don't combine additions to avoid 32-bit overflow. */
+	 
 	sum += bpf_htonl(len);
 	sum += bpf_htonl(proto);
 
@@ -229,7 +227,7 @@ static int tscookie_tcpopt_parse(struct tcpopt_context *ctx)
 	case TCPOPT_TIMESTAMP:
 		if (opsize == TCPOLEN_TIMESTAMP && ctx->ptr + TCPOLEN_TIMESTAMP <= ctx->data_end) {
 			ctx->option_timestamp = true;
-			/* Client's tsval becomes our tsecr. */
+			 
 			*ctx->tsecr = get_unaligned((__be32 *)(ctx->ptr + 2));
 		}
 		break;
@@ -329,9 +327,7 @@ static __always_inline bool check_port_allowed(__u16 port)
 
 		if (!value)
 			break;
-		/* 0 is a terminator value. Check it first to avoid matching on
-		 * a forbidden port == 0 and returning true.
-		 */
+		 
 		if (*value == 0)
 			break;
 
@@ -383,16 +379,14 @@ static __always_inline int tcp_dissect(void *data, void *data_end,
 		if (hdr->ipv6->version != 6)
 			return XDP_DROP;
 
-		/* XXX: Extension headers are not supported and could circumvent
-		 * XDP SYN flood protection.
-		 */
+		 
 		if (hdr->ipv6->nexthdr != NEXTHDR_TCP)
 			return XDP_PASS;
 
 		hdr->tcp = (void *)hdr->ipv6 + sizeof(*hdr->ipv6);
 		break;
 	default:
-		/* XXX: VLANs will circumvent XDP SYN flood protection. */
+		 
 		return XDP_PASS;
 	}
 
@@ -416,9 +410,7 @@ static __always_inline int tcp_lookup(void *ctx, struct header_pointers *hdr, bo
 	__u32 tup_size;
 
 	if (hdr->ipv4) {
-		/* TCP doesn't normally use fragments, and XDP can't reassemble
-		 * them.
-		 */
+		 
 		if ((hdr->ipv4->frag_off & bpf_htons(IP_DF | IP_MF | IP_OFFSET)) != bpf_htons(IP_DF))
 			return XDP_DROP;
 
@@ -434,9 +426,7 @@ static __always_inline int tcp_lookup(void *ctx, struct header_pointers *hdr, bo
 		tup.ipv6.dport = hdr->tcp->dest;
 		tup_size = sizeof(tup.ipv6);
 	} else {
-		/* The verifier can't track that either ipv4 or ipv6 is not
-		 * NULL.
-		 */
+		 
 		return XDP_ABORTED;
 	}
 	if (xdp)
@@ -453,7 +443,7 @@ static __always_inline int tcp_lookup(void *ctx, struct header_pointers *hdr, bo
 		return XDP_ABORTED;
 	}
 
-	/* error == -ENOENT || !(status & IPS_CONFIRMED) */
+	 
 	return XDP_TX;
 }
 
@@ -498,13 +488,13 @@ static __always_inline void tcp_gen_synack(struct tcphdr *tcp_header,
 	tcp_flag_word(tcp_header) = TCP_FLAG_SYN | TCP_FLAG_ACK;
 	if (tsopt && (tsopt[0] & bpf_htonl(1 << 5)))
 		tcp_flag_word(tcp_header) |= TCP_FLAG_ECE;
-	tcp_header->doff = 5; /* doff is part of tcp_flag_word. */
+	tcp_header->doff = 5;  
 	swap(tcp_header->source, tcp_header->dest);
 	tcp_header->ack_seq = bpf_htonl(bpf_ntohl(tcp_header->seq) + 1);
 	tcp_header->seq = bpf_htonl(cookie);
 	tcp_header->window = 0;
 	tcp_header->urg_ptr = 0;
-	tcp_header->check = 0; /* Calculate checksum later. */
+	tcp_header->check = 0;  
 
 	tcp_options = (void *)(tcp_header + 1);
 	tcp_header->doff += tcp_mkoptions(tcp_options, tsopt, mss, wscale);
@@ -522,7 +512,7 @@ static __always_inline void tcpv4_gen_synack(struct header_pointers *hdr,
 	swap_eth_addr(hdr->eth->h_source, hdr->eth->h_dest);
 
 	swap(hdr->ipv4->saddr, hdr->ipv4->daddr);
-	hdr->ipv4->check = 0; /* Calculate checksum later. */
+	hdr->ipv4->check = 0;  
 	hdr->ipv4->tos = 0;
 	hdr->ipv4->id = 0;
 	hdr->ipv4->ttl = ttl;
@@ -560,67 +550,48 @@ static __always_inline int syncookie_handle_syn(struct header_pointers *hdr,
 						bool xdp)
 {
 	__u32 old_pkt_size, new_pkt_size;
-	/* Unlike clang 10, clang 11 and 12 generate code that doesn't pass the
-	 * BPF verifier if tsopt is not volatile. Volatile forces it to store
-	 * the pointer value and use it directly, otherwise tcp_mkoptions is
-	 * (mis)compiled like this:
-	 *   if (!tsopt)
-	 *       return buf - start;
-	 *   reg = stored_return_value_of_tscookie_init;
-	 *   if (reg)
-	 *       tsopt = tsopt_buf;
-	 *   else
-	 *       tsopt = NULL;
-	 *   ...
-	 *   *buf++ = tsopt[1];
-	 * It creates a dead branch where tsopt is assigned NULL, but the
-	 * verifier can't prove it's dead and blocks the program.
-	 */
+	 
 	__be32 * volatile tsopt = NULL;
 	__be32 tsopt_buf[2] = {};
 	__u16 ip_len;
 	__u32 cookie;
 	__s64 value;
 
-	/* Checksum is not yet verified, but both checksum failure and TCP
-	 * header checks return XDP_DROP, so the order doesn't matter.
-	 */
+	 
 	if (hdr->tcp->fin || hdr->tcp->rst)
 		return XDP_DROP;
 
-	/* Issue SYN cookies on allowed ports, drop SYN packets on blocked
-	 * ports.
-	 */
+	 
 	if (!check_port_allowed(bpf_ntohs(hdr->tcp->dest)))
 		return XDP_DROP;
 
 	if (hdr->ipv4) {
-		/* Check the IPv4 and TCP checksums before creating a SYNACK. */
+		 
 		value = bpf_csum_diff(0, 0, (void *)hdr->ipv4, hdr->ipv4->ihl * 4, 0);
 		if (value < 0)
 			return XDP_ABORTED;
 		if (csum_fold(value) != 0)
-			return XDP_DROP; /* Bad IPv4 checksum. */
+			return XDP_DROP;  
 
 		value = bpf_csum_diff(0, 0, (void *)hdr->tcp, hdr->tcp_len, 0);
 		if (value < 0)
 			return XDP_ABORTED;
 		if (csum_tcpudp_magic(hdr->ipv4->saddr, hdr->ipv4->daddr,
 				      hdr->tcp_len, IPPROTO_TCP, value) != 0)
-			return XDP_DROP; /* Bad TCP checksum. */
+			return XDP_DROP;  
 
 		ip_len = sizeof(*hdr->ipv4);
 
 		value = bpf_tcp_raw_gen_syncookie_ipv4(hdr->ipv4, hdr->tcp,
 						       hdr->tcp_len);
 	} else if (hdr->ipv6) {
-		/* Check the TCP checksum before creating a SYNACK. */
+		 
 		value = bpf_csum_diff(0, 0, (void *)hdr->tcp, hdr->tcp_len, 0);
 		if (value < 0)
 			return XDP_ABORTED;
 		if (csum_ipv6_magic(&hdr->ipv6->saddr, &hdr->ipv6->daddr,
 				    hdr->tcp_len, IPPROTO_TCP, value) != 0)
-			return XDP_DROP; /* Bad TCP checksum. */
+			return XDP_DROP;  
 
 		ip_len = sizeof(*hdr->ipv6);
 
@@ -638,10 +609,7 @@ static __always_inline int syncookie_handle_syn(struct header_pointers *hdr,
 			  &tsopt_buf[0], &tsopt_buf[1], data_end))
 		tsopt = tsopt_buf;
 
-	/* Check that there is enough space for a SYNACK. It also covers
-	 * the check that the destination of the __builtin_memmove below
-	 * doesn't overflow.
-	 */
+	 
 	if (data + sizeof(*hdr->eth) + ip_len + TCP_MAXLEN > data_end)
 		return XDP_ABORTED;
 
@@ -663,7 +631,7 @@ static __always_inline int syncookie_handle_syn(struct header_pointers *hdr,
 		return XDP_ABORTED;
 	}
 
-	/* Recalculate checksums. */
+	 
 	hdr->tcp->check = 0;
 	value = bpf_csum_diff(0, 0, (void *)hdr->tcp, hdr->tcp_len, 0);
 	if (value < 0)
@@ -690,7 +658,7 @@ static __always_inline int syncookie_handle_syn(struct header_pointers *hdr,
 		return XDP_ABORTED;
 	}
 
-	/* Set the new packet size. */
+	 
 	old_pkt_size = data_end - data;
 	new_pkt_size = sizeof(*hdr->eth) + ip_len + hdr->tcp->doff * 4;
 	if (xdp) {
@@ -738,21 +706,17 @@ static __always_inline int syncookie_part1(void *ctx, void *data, void *data_end
 	if (ret != XDP_TX)
 		return ret;
 
-	/* Packet is TCP and doesn't belong to an established connection. */
+	 
 
 	if ((hdr->tcp->syn ^ hdr->tcp->ack) != 1)
 		return XDP_DROP;
 
-	/* Grow the TCP header to TCP_MAXLEN to be able to pass any hdr->tcp_len
-	 * to bpf_tcp_raw_gen_syncookie_ipv{4,6} and pass the verifier.
-	 */
+	 
 	if (xdp) {
 		if (bpf_xdp_adjust_tail(ctx, TCP_MAXLEN - hdr->tcp_len))
 			return XDP_ABORTED;
 	} else {
-		/* Without volatile the verifier throws this error:
-		 * R9 32-bit pointer arithmetic prohibited
-		 */
+		 
 		volatile u64 old_len = data_end - data;
 
 		if (bpf_skb_change_tail(ctx, old_len + TCP_MAXLEN - hdr->tcp_len, 0))
@@ -768,9 +732,7 @@ static __always_inline int syncookie_part2(void *ctx, void *data, void *data_end
 	if (hdr->ipv4) {
 		hdr->eth = data;
 		hdr->ipv4 = (void *)hdr->eth + sizeof(*hdr->eth);
-		/* IPV4_MAXLEN is needed when calculating checksum.
-		 * At least sizeof(struct iphdr) is needed here to access ihl.
-		 */
+		 
 		if ((void *)hdr->ipv4 + IPV4_MAXLEN > data_end)
 			return XDP_ABORTED;
 		hdr->tcp = (void *)hdr->ipv4 + hdr->ipv4->ihl * 4;
@@ -785,9 +747,7 @@ static __always_inline int syncookie_part2(void *ctx, void *data, void *data_end
 	if ((void *)hdr->tcp + TCP_MAXLEN > data_end)
 		return XDP_ABORTED;
 
-	/* We run out of registers, tcp_len gets spilled to the stack, and the
-	 * verifier forgets its min and max values checked above in tcp_dissect.
-	 */
+	 
 	hdr->tcp_len = hdr->tcp->doff * 4;
 	if (hdr->tcp_len < sizeof(*hdr->tcp))
 		return XDP_ABORTED;

@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Elan Microelectronics touch panels with I2C interface
- *
- * Copyright (C) 2014 Elan Microelectronics Corporation.
- * Scott Liu <scott.liu@emc.com.tw>
- *
- * This code is partly based on hid-multitouch.c:
- *
- *  Copyright (c) 2010-2012 Stephane Chatty <chatty@enac.fr>
- *  Copyright (c) 2010-2012 Benjamin Tissoires <benjamin.tissoires@gmail.com>
- *  Copyright (c) 2010-2012 Ecole Nationale de l'Aviation Civile, France
- *
- * This code is partly based on i2c-hid.c:
- *
- * Copyright (c) 2012 Benjamin Tissoires <benjamin.tissoires@gmail.com>
- * Copyright (c) 2012 Ecole Nationale de l'Aviation Civile, France
- * Copyright (c) 2012 Red Hat, Inc
- */
+
+ 
 
 
 #include <linux/bits.h>
@@ -42,25 +25,25 @@
 #include <linux/uuid.h>
 #include <asm/unaligned.h>
 
-/* Device, Driver information */
+ 
 #define DEVICE_NAME	"elants_i2c"
 
-/* Convert from rows or columns into resolution */
+ 
 #define ELAN_TS_RESOLUTION(n, m)   (((n) - 1) * (m))
 
-/* FW header data */
+ 
 #define HEADER_SIZE		4
 #define FW_HDR_TYPE		0
 #define FW_HDR_COUNT		1
 #define FW_HDR_LENGTH		2
 
-/* Buffer mode Queue Header information */
+ 
 #define QUEUE_HEADER_SINGLE	0x62
 #define QUEUE_HEADER_NORMAL	0X63
 #define QUEUE_HEADER_WAIT	0x64
 #define QUEUE_HEADER_NORMAL2	0x66
 
-/* Command header definition */
+ 
 #define CMD_HEADER_WRITE	0x54
 #define CMD_HEADER_READ		0x53
 #define CMD_HEADER_6B_READ	0x5B
@@ -71,7 +54,7 @@
 #define CMD_HEADER_HELLO	0x55
 #define CMD_HEADER_REK		0x66
 
-/* FW position data */
+ 
 #define PACKET_SIZE_OLD		40
 #define PACKET_SIZE		55
 #define MAX_CONTACT_NUM		10
@@ -86,12 +69,12 @@
 
 #define HEADER_REPORT_10_FINGER	0x62
 
-/* Header (4 bytes) plus 3 full 10-finger packets */
+ 
 #define MAX_PACKET_SIZE		169
 
 #define BOOT_TIME_DELAY_MS	50
 
-/* FW read command, 0x53 0x?? 0x0, 0x01 */
+ 
 #define E_ELAN_INFO_FW_VER	0x00
 #define E_ELAN_INFO_BC_VER	0x10
 #define E_ELAN_INFO_X_RES	0x60
@@ -103,7 +86,7 @@
 #define E_INFO_PHY_SCAN		0xD7
 #define E_INFO_PHY_DRIVER	0xD8
 
-/* FW write command, 0x54 0x?? 0x0, 0x01 */
+ 
 #define E_POWER_STATE_SLEEP	0x50
 #define E_POWER_STATE_RESUME	0x58
 
@@ -112,13 +95,13 @@
 
 #define ELAN_FW_PAGESIZE	132
 
-/* calibration timeout definition */
+ 
 #define ELAN_CALI_TIMEOUT_MSEC	12000
 
 #define ELAN_POWERON_DELAY_USEC	5000
 #define ELAN_RESET_DELAY_MSEC	20
 
-/* FW boot code version */
+ 
 #define BC_VER_H_BYTE_FOR_EKTH3900x1_I2C        0x72
 #define BC_VER_H_BYTE_FOR_EKTH3900x2_I2C        0x82
 #define BC_VER_H_BYTE_FOR_EKTH3900x3_I2C        0x92
@@ -147,7 +130,7 @@ enum elants_iap_mode {
 	ELAN_IAP_RECOVERY,
 };
 
-/* struct elants_data - represents state of Elan touchscreen device */
+ 
 struct elants_data {
 	struct i2c_client *client;
 	struct input_dev *input;
@@ -163,7 +146,7 @@ struct elants_data {
 	u8 iap_version;
 	u16 hw_version;
 	u8 major_res;
-	unsigned int x_res;	/* resolution in units/mm */
+	unsigned int x_res;	 
 	unsigned int y_res;
 	unsigned int x_max;
 	unsigned int y_max;
@@ -175,7 +158,7 @@ struct elants_data {
 	enum elants_chip_id chip_id;
 	enum elants_iap_mode iap_mode;
 
-	/* Guards against concurrent access to the device via sysfs */
+	 
 	struct mutex sysfs_mutex;
 
 	u8 cmd_resp[HEADER_SIZE];
@@ -183,7 +166,7 @@ struct elants_data {
 
 	bool keep_power_in_suspend;
 
-	/* Must be last to be used for DMA operations */
+	 
 	u8 buf[MAX_PACKET_SIZE] ____cacheline_aligned;
 };
 
@@ -348,10 +331,7 @@ static int elants_i2c_sw_reset(struct i2c_client *client)
 		return error;
 	}
 
-	/*
-	 * We should wait at least 10 msec (but no more than 40) before
-	 * sending fastboot or IAP command to the device.
-	 */
+	 
 	msleep(30);
 
 	return 0;
@@ -472,7 +452,7 @@ static int elants_i2c_query_ts_info_ektf(struct elants_data *ts)
 		CMD_HEADER_READ, E_ELAN_INFO_Y_RES, 0x00, 0x00
 	};
 
-	/* Get X/Y size in mm */
+	 
 	error = elants_i2c_execute_command(client, get_xres_cmd,
 					   sizeof(get_xres_cmd),
 					   resp, sizeof(resp), 1,
@@ -496,7 +476,7 @@ static int elants_i2c_query_ts_info_ektf(struct elants_data *ts)
 	ts->phy_x = phy_x;
 	ts->phy_y = phy_y;
 
-	/* eKTF doesn't report max size, set it to default values */
+	 
 	ts->x_max = 2240 - 1;
 	ts->y_max = 1408 - 1;
 
@@ -522,7 +502,7 @@ static int elants_i2c_query_ts_info_ekth(struct elants_data *ts)
 		CMD_HEADER_READ, E_INFO_PHY_DRIVER, 0x00, 0x01
 	};
 
-	/* Get trace number */
+	 
 	error = elants_i2c_execute_command(client,
 					   get_resolution_cmd,
 					   sizeof(get_resolution_cmd),
@@ -534,10 +514,10 @@ static int elants_i2c_query_ts_info_ekth(struct elants_data *ts)
 	rows = resp[2] + resp[6] + resp[10];
 	cols = resp[3] + resp[7] + resp[11];
 
-	/* Get report resolution value of ABS_MT_TOUCH_MAJOR */
+	 
 	ts->major_res = resp[16];
 
-	/* Process mm_to_pixel information */
+	 
 	error = elants_i2c_execute_command(client,
 					   get_osr_cmd, sizeof(get_osr_cmd),
 					   resp, sizeof(resp), 1, "get osr");
@@ -573,7 +553,7 @@ static int elants_i2c_query_ts_info_ekth(struct elants_data *ts)
 			 "invalid trace number data: %d, %d, %d\n",
 			 rows, cols, osr);
 	} else {
-		/* translate trace number to TS resolution */
+		 
 		ts->x_max = ELAN_TS_RESOLUTION(rows, osr);
 		ts->x_res = DIV_ROUND_CLOSEST(ts->x_max, phy_x);
 		ts->y_max = ELAN_TS_RESOLUTION(cols, osr);
@@ -611,19 +591,19 @@ static int elants_i2c_initialize(struct elants_data *ts)
 	for (retry_cnt = 0; retry_cnt < MAX_RETRIES; retry_cnt++) {
 		error = elants_i2c_sw_reset(client);
 		if (error) {
-			/* Continue initializing if it's the last try */
+			 
 			if (retry_cnt < MAX_RETRIES - 1)
 				continue;
 		}
 
 		error = elants_i2c_fastboot(client);
 		if (error) {
-			/* Continue initializing if it's the last try */
+			 
 			if (retry_cnt < MAX_RETRIES - 1)
 				continue;
 		}
 
-		/* Wait for Hello packet */
+		 
 		msleep(BOOT_TIME_DELAY_MS);
 
 		error = elants_i2c_read(client, buf, sizeof(buf));
@@ -634,10 +614,7 @@ static int elants_i2c_initialize(struct elants_data *ts)
 			ts->iap_mode = ELAN_IAP_OPERATIONAL;
 			break;
 		} else if (!memcmp(buf, recov_packet, sizeof(recov_packet))) {
-			/*
-			 * Setting error code will mark device
-			 * in recovery mode below.
-			 */
+			 
 			error = -EIO;
 			break;
 		} else {
@@ -648,7 +625,7 @@ static int elants_i2c_initialize(struct elants_data *ts)
 		}
 	}
 
-	/* hw version is available even if device in recovery state */
+	 
 	error2 = elants_i2c_query_hw_version(ts);
 	if (!error2)
 		error2 = elants_i2c_query_bc_version(ts);
@@ -679,9 +656,7 @@ static int elants_i2c_initialize(struct elants_data *ts)
 	return 0;
 }
 
-/*
- * Firmware update interface.
- */
+ 
 
 static int elants_i2c_fw_write_page(struct i2c_client *client,
 				    const void *page)
@@ -728,7 +703,7 @@ static int elants_i2c_validate_remark_id(struct elants_data *ts,
 	u16 ts_remark_id = 0;
 	u16 fw_remark_id = 0;
 
-	/* Compare TS Remark ID and FW Remark ID */
+	 
 	error = elants_i2c_execute_command(client, cmd, sizeof(cmd),
 					   resp, sizeof(resp),
 					   1, "read Remark ID");
@@ -755,7 +730,7 @@ static bool elants_i2c_should_check_remark_id(struct elants_data *ts)
 	const u8 bootcode_version = ts->iap_version;
 	bool check;
 
-	/* I2C eKTH3900 and eKTH5312 are NOT support Remark ID */
+	 
 	if ((bootcode_version == BC_VER_H_BYTE_FOR_EKTH3900x1_I2C) ||
 	    (bootcode_version == BC_VER_H_BYTE_FOR_EKTH3900x2_I2C) ||
 	    (bootcode_version == BC_VER_H_BYTE_FOR_EKTH3900x3_I2C) ||
@@ -795,7 +770,7 @@ static int elants_i2c_do_update_firmware(struct i2c_client *client,
 	int error;
 	bool check_remark_id = elants_i2c_should_check_remark_id(ts);
 
-	/* Recovery mode detection! */
+	 
 	if (force) {
 		dev_dbg(&client->dev, "Recovery mode procedure\n");
 
@@ -812,10 +787,10 @@ static int elants_i2c_do_update_firmware(struct i2c_client *client,
 			return error;
 		}
 	} else {
-		/* Start IAP Procedure */
+		 
 		dev_dbg(&client->dev, "Normal IAP procedure\n");
 
-		/* Close idle mode */
+		 
 		error = elants_i2c_send(client, close_idle, sizeof(close_idle));
 		if (error)
 			dev_err(&client->dev, "Failed close idle: %d\n", error);
@@ -840,7 +815,7 @@ static int elants_i2c_do_update_firmware(struct i2c_client *client,
 
 	msleep(20);
 
-	/* check IAP state */
+	 
 	error = elants_i2c_read(client, buf, 4);
 	if (error) {
 		dev_err(&client->dev,
@@ -866,7 +841,7 @@ static int elants_i2c_do_update_firmware(struct i2c_client *client,
 		return error;
 	}
 
-	/* Clear the last page of Master */
+	 
 	error = elants_i2c_send(client, fw->data, ELAN_FW_PAGESIZE);
 	if (error) {
 		dev_err(&client->dev, "clearing of the last page failed: %d\n",
@@ -896,7 +871,7 @@ static int elants_i2c_do_update_firmware(struct i2c_client *client,
 		}
 	}
 
-	/* Old iap needs to wait 200ms for WDT and rest is for hello packets */
+	 
 	msleep(300);
 
 	dev_info(&client->dev, "firmware update completed\n");
@@ -963,9 +938,7 @@ out:
 	return error;
 }
 
-/*
- * Event reporting.
- */
+ 
 
 static void elants_i2c_mt_event(struct elants_data *ts, u8 *buf,
 				size_t packet_size)
@@ -983,7 +956,7 @@ static void elants_i2c_mt_event(struct elants_data *ts, u8 *buf,
 	dev_dbg(&ts->client->dev,
 		"n_fingers: %u, state: %04x\n",  n_fingers, finger_state);
 
-	/* Note: all fingers have the same tool type */
+	 
 	tool_type = buf[FW_POS_TOOL_TYPE] & BIT(0) ?
 			MT_TOOL_FINGER : MT_TOOL_PALM;
 
@@ -996,12 +969,7 @@ static void elants_i2c_mt_event(struct elants_data *ts, u8 *buf,
 			x = (((u16)pos[0] & 0xf0) << 4) | pos[1];
 			y = (((u16)pos[0] & 0x0f) << 8) | pos[2];
 
-			/*
-			 * eKTF3624 may have use "old" touch-report format,
-			 * depending on a device and TS firmware version.
-			 * For example, ASUS Transformer devices use the "old"
-			 * format, while ASUS Nexus 7 uses the "new" formant.
-			 */
+			 
 			if (packet_size == PACKET_SIZE_OLD &&
 			    ts->chip_id == EKTF3624) {
 				w = buf[FW_POS_WIDTH + i / 2];
@@ -1120,15 +1088,8 @@ static irqreturn_t elants_i2c_irq(int irq, void *_dev)
 					 ts->buf[FW_HDR_LENGTH]);
 			break;
 
-		case QUEUE_HEADER_NORMAL2: /* CMD_HEADER_REK */
-			/*
-			 * Depending on firmware version, eKTF3624 touchscreens
-			 * may utilize one of these opcodes for the touch events:
-			 * 0x63 (NORMAL) and 0x66 (NORMAL2).  The 0x63 is used by
-			 * older firmware version and differs from 0x66 such that
-			 * touch pressure value needs to be adjusted.  The 0x66
-			 * opcode of newer firmware is equal to 0x63 of eKTH3500.
-			 */
+		case QUEUE_HEADER_NORMAL2:  
+			 
 			if (ts->chip_id != EKTF3624)
 				break;
 
@@ -1175,9 +1136,7 @@ out:
 	return IRQ_HANDLED;
 }
 
-/*
- * sysfs interface
- */
+ 
 static ssize_t calibrate_store(struct device *dev,
 			       struct device_attribute *attr,
 			       const char *buf, size_t count)
@@ -1283,10 +1242,10 @@ static ssize_t elants_version_attribute_show(struct device *dev,
 
 	if (attr->field_size == 1) {
 		val = *field;
-		fmt_size = 2; /* 2 HEX digits */
+		fmt_size = 2;  
 	} else {
 		val = *(u16 *)field;
-		fmt_size = 4; /* 4 HEX digits */
+		fmt_size = 4;  
 	}
 
 	return sprintf(buf, "%0*x\n", fmt_size, val);
@@ -1322,10 +1281,7 @@ static int elants_i2c_power_on(struct elants_data *ts)
 {
 	int error;
 
-	/*
-	 * If we do not have reset gpio assume platform firmware
-	 * controls regulators and does power them on for us.
-	 */
+	 
 	if (IS_ERR_OR_NULL(ts->reset_gpio))
 		return 0;
 
@@ -1346,10 +1302,7 @@ static int elants_i2c_power_on(struct elants_data *ts)
 		return error;
 	}
 
-	/*
-	 * We need to wait a bit after powering on controller before
-	 * we are allowed to release reset GPIO.
-	 */
+	 
 	usleep_range(ELAN_POWERON_DELAY_USEC, ELAN_POWERON_DELAY_USEC + 100);
 
 	gpiod_set_value_cansleep(ts->reset_gpio, 0);
@@ -1364,10 +1317,7 @@ static void elants_i2c_power_off(void *_data)
 	struct elants_data *ts = _data;
 
 	if (!IS_ERR_OR_NULL(ts->reset_gpio)) {
-		/*
-		 * Activate reset gpio to prevent leakage through the
-		 * pin once we shut off power to the controller.
-		 */
+		 
 		gpiod_set_value_cansleep(ts->reset_gpio, 1);
 		regulator_disable(ts->vccio);
 		regulator_disable(ts->vcc33);
@@ -1415,7 +1365,7 @@ static int elants_i2c_probe(struct i2c_client *client)
 	unsigned long irqflags;
 	int error;
 
-	/* Don't bind to i2c-hid compatible devices, these are handled by the i2c-hid drv. */
+	 
 	if (elants_acpi_is_hid_device(&client->dev)) {
 		dev_warn(&client->dev, "This device appears to be an I2C-HID device, not binding\n");
 		return -ENODEV;
@@ -1476,7 +1426,7 @@ static int elants_i2c_probe(struct i2c_client *client)
 		return error;
 	}
 
-	/* Make sure there is something at this address */
+	 
 	if (i2c_smbus_xfer(client->adapter, client->addr, 0,
 			   I2C_SMBUS_READ, 0, I2C_SMBUS_BYTE, &dummy) < 0) {
 		dev_err(&client->dev, "nothing at this address\n");
@@ -1498,7 +1448,7 @@ static int elants_i2c_probe(struct i2c_client *client)
 	ts->input->name = "Elan Touchscreen";
 	ts->input->id.bustype = BUS_I2C;
 
-	/* Multitouch input params setup */
+	 
 
 	input_set_abs_params(ts->input, ABS_MT_POSITION_X, 0, ts->x_max, 0, 0);
 	input_set_abs_params(ts->input, ABS_MT_POSITION_Y, 0, ts->y_max, 0, 0);
@@ -1510,7 +1460,7 @@ static int elants_i2c_probe(struct i2c_client *client)
 	touchscreen_parse_properties(ts->input, true, &ts->prop);
 
 	if (ts->chip_id == EKTF3624 && ts->phy_x && ts->phy_y) {
-		/* calculate resolution from size */
+		 
 		ts->x_res = DIV_ROUND_CLOSEST(ts->prop.max_x, ts->phy_x);
 		ts->y_res = DIV_ROUND_CLOSEST(ts->prop.max_y, ts->phy_y);
 	}
@@ -1534,11 +1484,7 @@ static int elants_i2c_probe(struct i2c_client *client)
 		return error;
 	}
 
-	/*
-	 * Platform code (ACPI, DTS) should normally set up interrupt
-	 * for us, but in case it did not let's fall back to using falling
-	 * edge to be compatible with older Chromebooks.
-	 */
+	 
 	irqflags = irq_get_trigger_type(client->irq);
 	if (!irqflags)
 		irqflags = IRQF_TRIGGER_FALLING;
@@ -1572,17 +1518,14 @@ static int elants_i2c_suspend(struct device *dev)
 	int retry_cnt;
 	int error;
 
-	/* Command not support in IAP recovery mode */
+	 
 	if (ts->iap_mode != ELAN_IAP_OPERATIONAL)
 		return -EBUSY;
 
 	disable_irq(client->irq);
 
 	if (device_may_wakeup(dev)) {
-		/*
-		 * The device will automatically enter idle mode
-		 * that has reduced power consumption.
-		 */
+		 
 		return 0;
 	} else if (ts->keep_power_in_suspend) {
 		for (retry_cnt = 0; retry_cnt < MAX_RETRIES; retry_cnt++) {
@@ -1657,7 +1600,7 @@ MODULE_DEVICE_TABLE(acpi, elants_acpi_id);
 static const struct of_device_id elants_of_match[] = {
 	{ .compatible = "elan,ekth3500", .data = (void *)EKTH3500 },
 	{ .compatible = "elan,ektf3624", .data = (void *)EKTF3624 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, elants_of_match);
 #endif

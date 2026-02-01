@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NXP i.MX8MQ SoC series MIPI-CSI2 receiver driver
- *
- * Copyright (C) 2021 Purism SPC
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -40,9 +36,9 @@
 #define MIPI_CSI2_DEF_PIX_WIDTH			640
 #define MIPI_CSI2_DEF_PIX_HEIGHT		480
 
-/* Register map definition */
+ 
 
-/* i.MX8MQ CSI-2 controller CSR */
+ 
 #define CSI2RX_CFG_NUM_LANES			0x100
 #define CSI2RX_CFG_DISABLE_DATA_LANES		0x104
 #define CSI2RX_BIT_ERR				0x108
@@ -89,19 +85,7 @@ static const char * const imx8mq_mipi_csi_clk_id[CSI2_NUM_CLKS] = {
 #define	GPR_CSI2_1_CONT_CLK_MODE	BIT(8)
 #define	GPR_CSI2_1_S_PRG_RXHS_SETTLE(x)	(((x) & 0x3f) << 2)
 
-/*
- * The send level configures the number of entries that must accumulate in
- * the Pixel FIFO before the data will be transferred to the video output.
- * The exact value needed for this configuration is dependent on the rate at
- * which the sensor transfers data to the CSI-2 Controller and the user
- * video clock.
- *
- * The calculation is the classical rate-in rate-out type of problem: If the
- * video bandwidth is 10% faster than the incoming mipi data and the video
- * line length is 500 pixels, then the fifo should be allowed to fill
- * 10% of the line length or 50 pixels. If the gap data is ok, then the level
- * can be set to 16 and ignored.
- */
+ 
 #define CSI2RX_SEND_LEVEL			64
 
 struct csi_state {
@@ -118,7 +102,7 @@ struct csi_state {
 
 	struct v4l2_mbus_config_mipi_csi2 bus;
 
-	struct mutex lock; /* Protect state */
+	struct mutex lock;  
 	u32 state;
 
 	struct regmap *phy_gpr;
@@ -128,9 +112,7 @@ struct csi_state {
 	s32				icc_path_bw;
 };
 
-/* -----------------------------------------------------------------------------
- * Format helpers
- */
+ 
 
 struct csi2_pix_format {
 	u32 code;
@@ -138,7 +120,7 @@ struct csi2_pix_format {
 };
 
 static const struct csi2_pix_format imx8mq_mipi_csi_formats[] = {
-	/* RAW (Bayer and greyscale) formats. */
+	 
 	{
 		.code = MEDIA_BUS_FMT_SBGGR8_1X8,
 		.width = 8,
@@ -197,7 +179,7 @@ static const struct csi2_pix_format imx8mq_mipi_csi_formats[] = {
 		.code = MEDIA_BUS_FMT_SRGGB14_1X14,
 		.width = 14,
 	},
-	/* YUV formats */
+	 
 	{
 		.code = MEDIA_BUS_FMT_YUYV8_1X16,
 		.width = 16,
@@ -217,9 +199,7 @@ static const struct csi2_pix_format *find_csi2_format(u32 code)
 	return NULL;
 }
 
-/* -----------------------------------------------------------------------------
- * Hardware configuration
- */
+ 
 
 static inline void imx8mq_mipi_csi_write(struct csi_state *state, u32 reg, u32 val)
 {
@@ -230,11 +210,7 @@ static int imx8mq_mipi_csi_sw_reset(struct csi_state *state)
 {
 	int ret;
 
-	/*
-	 * these are most likely self-clearing reset bits. to make it
-	 * more clear, the reset-imx7 driver should implement the
-	 * .reset() operation.
-	 */
+	 
 	ret = reset_control_assert(state->rst);
 	if (ret < 0) {
 		dev_err(state->dev, "Failed to assert resets: %d\n", ret);
@@ -252,12 +228,7 @@ static void imx8mq_mipi_csi_set_params(struct csi_state *state)
 	imx8mq_mipi_csi_write(state, CSI2RX_CFG_DISABLE_DATA_LANES,
 			      (0xf << lanes) & 0xf);
 	imx8mq_mipi_csi_write(state, CSI2RX_IRQ_MASK, CSI2RX_IRQ_MASK_ALL);
-	/*
-	 * 0x180 bit 0 controls the Virtual Channel behaviour: when set the
-	 * interface ignores the Virtual Channel (VC) field in received packets;
-	 * when cleared it causes the interface to only accept packets whose VC
-	 * matches the value to which VC is set at offset 0x184.
-	 */
+	 
 	imx8mq_mipi_csi_write(state, CSI2RX_CFG_VID_VC_IGNORE, 1);
 	imx8mq_mipi_csi_write(state, CSI2RX_CFG_VID_P_FIFO_SEND_LEVEL,
 			      CSI2RX_SEND_LEVEL);
@@ -294,7 +265,7 @@ static int imx8mq_mipi_csi_calc_hs_settle(struct csi_state *state,
 	const struct v4l2_mbus_framefmt *fmt;
 	const struct csi2_pix_format *csi2_fmt;
 
-	/* Calculate the line rate from the pixel rate. */
+	 
 
 	fmt = v4l2_subdev_get_pad_format(&state->sd, sd_state, MIPI_CSI2_PAD_SINK);
 	csi2_fmt = find_csi2_format(fmt->code);
@@ -314,20 +285,7 @@ static int imx8mq_mipi_csi_calc_hs_settle(struct csi_state *state,
 		return -EINVAL;
 	}
 
-	/*
-	 * The D-PHY specification requires Ths-settle to be in the range
-	 * 85ns + 6*UI to 140ns + 10*UI, with the unit interval UI being half
-	 * the clock period.
-	 *
-	 * The Ths-settle value is expressed in the hardware as a multiple of
-	 * the Esc clock period:
-	 *
-	 * Ths-settle = (PRG_RXHS_SETTLE + 1) * Tperiod of RxClkInEsc
-	 *
-	 * Due to the one cycle inaccuracy introduced by rounding, the
-	 * documentation recommends picking a value away from the boundaries.
-	 * Let's pick the average.
-	 */
+	 
 	esc_clk_rate = clk_get_rate(state->clks[CSI2_CLK_ESC].clk);
 	if (!esc_clk_rate) {
 		dev_err(state->dev, "Could not get esc clock rate.\n");
@@ -381,9 +339,7 @@ static void imx8mq_mipi_csi_stop_stream(struct csi_state *state)
 	imx8mq_mipi_csi_write(state, CSI2RX_CFG_DISABLE_DATA_LANES, 0xf);
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 subdev operations
- */
+ 
 
 static struct csi_state *mipi_sd_to_csi2_state(struct v4l2_subdev *sdev)
 {
@@ -467,10 +423,7 @@ static int imx8mq_mipi_csi_enum_mbus_code(struct v4l2_subdev *sd,
 					  struct v4l2_subdev_state *sd_state,
 					  struct v4l2_subdev_mbus_code_enum *code)
 {
-	/*
-	 * We can't transcode in any way, the source format is identical
-	 * to the sink format.
-	 */
+	 
 	if (code->pad == MIPI_CSI2_PAD_SOURCE) {
 		struct v4l2_mbus_framefmt *fmt;
 
@@ -500,10 +453,7 @@ static int imx8mq_mipi_csi_set_fmt(struct v4l2_subdev *sd,
 	const struct csi2_pix_format *csi2_fmt;
 	struct v4l2_mbus_framefmt *fmt;
 
-	/*
-	 * The device can't transcode in any way, the source format can't be
-	 * modified.
-	 */
+	 
 	if (sdformat->pad == MIPI_CSI2_PAD_SOURCE)
 		return v4l2_subdev_get_fmt(sd, sd_state, sdformat);
 
@@ -522,7 +472,7 @@ static int imx8mq_mipi_csi_set_fmt(struct v4l2_subdev *sd,
 
 	sdformat->format = *fmt;
 
-	/* Propagate the format from sink to source. */
+	 
 	fmt = v4l2_subdev_get_pad_format(sd, sd_state, MIPI_CSI2_PAD_SOURCE);
 	*fmt = sdformat->format;
 
@@ -545,18 +495,14 @@ static const struct v4l2_subdev_ops imx8mq_mipi_csi_subdev_ops = {
 	.pad	= &imx8mq_mipi_csi_pad_ops,
 };
 
-/* -----------------------------------------------------------------------------
- * Media entity operations
- */
+ 
 
 static const struct media_entity_operations imx8mq_mipi_csi_entity_ops = {
 	.link_validate	= v4l2_subdev_link_validate,
 	.get_fwnode_pad = v4l2_subdev_get_fwnode_pad_1_to_1,
 };
 
-/* -----------------------------------------------------------------------------
- * Async subdev notifier
- */
+ 
 
 static struct csi_state *
 mipi_notifier_to_csi2_state(struct v4l2_async_notifier *n)
@@ -640,9 +586,7 @@ err_parse:
 	return ret;
 }
 
-/* -----------------------------------------------------------------------------
- * Suspend/resume
- */
+ 
 
 static void imx8mq_mipi_csi_pm_suspend(struct device *dev)
 {
@@ -749,9 +693,7 @@ static const struct dev_pm_ops imx8mq_mipi_csi_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(imx8mq_mipi_csi_suspend, imx8mq_mipi_csi_resume)
 };
 
-/* -----------------------------------------------------------------------------
- * Probe/remove & platform driver
- */
+ 
 
 static int imx8mq_mipi_csi_subdev_init(struct csi_state *state)
 {
@@ -801,7 +743,7 @@ static int imx8mq_mipi_csi_init_icc(struct platform_device *pdev)
 	struct v4l2_subdev *sd = dev_get_drvdata(&pdev->dev);
 	struct csi_state *state = mipi_sd_to_csi2_state(sd);
 
-	/* Optional interconnect request */
+	 
 	state->icc_path = of_icc_get(&pdev->dev, "dram");
 	if (IS_ERR_OR_NULL(state->icc_path))
 		return PTR_ERR_OR_ZERO(state->icc_path);
@@ -871,7 +813,7 @@ static int imx8mq_mipi_csi_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Acquire resources. */
+	 
 	state->regs = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(state->regs))
 		return PTR_ERR(state->regs);
@@ -892,7 +834,7 @@ static int imx8mq_mipi_csi_probe(struct platform_device *pdev)
 	if (ret)
 		goto mutex;
 
-	/* Enable runtime PM. */
+	 
 	pm_runtime_enable(dev);
 	if (!pm_runtime_enabled(dev)) {
 		ret = imx8mq_mipi_csi_runtime_resume(dev);
@@ -943,7 +885,7 @@ static void imx8mq_mipi_csi_remove(struct platform_device *pdev)
 
 static const struct of_device_id imx8mq_mipi_csi_of_match[] = {
 	{ .compatible = "fsl,imx8mq-mipi-csi2", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, imx8mq_mipi_csi_of_match);
 

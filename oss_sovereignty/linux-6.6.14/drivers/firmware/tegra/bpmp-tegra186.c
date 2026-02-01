@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018, NVIDIA CORPORATION.
- */
+
+ 
 
 #include <linux/genalloc.h>
 #include <linux/io.h>
@@ -148,10 +146,10 @@ static int tegra186_bpmp_channel_init(struct tegra_bpmp_channel *channel,
 
 static void tegra186_bpmp_channel_reset(struct tegra_bpmp_channel *channel)
 {
-	/* reset the channel state */
+	 
 	tegra_ivc_reset(channel->ivc);
 
-	/* sync the channel state with BPMP */
+	 
 	while (tegra_ivc_notified(channel->ivc))
 		;
 }
@@ -314,7 +312,7 @@ static void tegra186_bpmp_reset_channels(struct tegra_bpmp *bpmp)
 {
 	unsigned int i;
 
-	/* reset message channels */
+	 
 	tegra186_bpmp_channel_reset(bpmp->tx_channel);
 	tegra186_bpmp_channel_reset(bpmp->rx_channel);
 
@@ -338,7 +336,7 @@ static int tegra186_bpmp_init(struct tegra_bpmp *bpmp)
 	if (err < 0)
 		return err;
 
-	/* mbox registration */
+	 
 	priv->mbox.client.dev = bpmp->dev;
 	priv->mbox.client.rx_callback = mbox_handle_rx;
 	priv->mbox.client.tx_block = false;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2012 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/clk/mxs.h>
 #include <linux/clk.h>
@@ -45,27 +43,21 @@ static void __init clk_misc_init(void)
 {
 	u32 val;
 
-	/* Gate off cpu clock in WFI for power saving */
+	 
 	writel_relaxed(1 << BP_CPU_INTERRUPT_WAIT, CPU + SET);
 
-	/* Clear BYPASS for SAIF */
+	 
 	writel_relaxed(1 << BP_CLKSEQ_BYPASS_SAIF, CLKSEQ + CLR);
 
-	/* SAIF has to use frac div for functional operation */
+	 
 	val = readl_relaxed(SAIF);
 	val |= 1 << BP_SAIF_DIV_FRAC_EN;
 	writel_relaxed(val, SAIF);
 
-	/*
-	 * Source ssp clock from ref_io than ref_xtal,
-	 * as ref_xtal only provides 24 MHz as maximum.
-	 */
+	 
 	writel_relaxed(1 << BP_CLKSEQ_BYPASS_SSP, CLKSEQ + CLR);
 
-	/*
-	 * 480 MHz seems too high to be ssp clock source directly,
-	 * so set frac to get a 288 MHz ref_io.
-	 */
+	 
 	writel_relaxed(0x3f << BP_FRAC_IOFRAC, FRAC + CLR);
 	writel_relaxed(30 << BP_FRAC_IOFRAC, FRAC + SET);
 }

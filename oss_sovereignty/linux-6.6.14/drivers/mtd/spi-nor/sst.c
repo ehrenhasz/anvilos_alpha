@@ -1,14 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2005, Intec Automation Inc.
- * Copyright (C) 2014, Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/mtd/spi-nor.h>
 
 #include "core.h"
 
-/* SST flash_info mfr_flag. Used to specify SST byte programming. */
+ 
 #define SST_WRITE		BIT(0)
 
 #define SST26VF_CR_BPNV		BIT(3)
@@ -22,7 +19,7 @@ static int sst26vf_nor_unlock(struct spi_nor *nor, loff_t ofs, uint64_t len)
 {
 	int ret;
 
-	/* We only support unlocking the entire flash array. */
+	 
 	if (ofs != 0 || len != nor->params->size)
 		return -EINVAL;
 
@@ -61,7 +58,7 @@ static const struct spi_nor_fixups sst26vf_nor_fixups = {
 };
 
 static const struct flash_info sst_nor_parts[] = {
-	/* SST -- large erase sizes are "overlays", "sectors" are 4K */
+	 
 	{ "sst25vf040b", INFO(0xbf258d, 0, 64 * 1024,  8)
 		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_SWP_IS_VOLATILE)
 		NO_SFDP_FLAGS(SECT_4K)
@@ -142,11 +139,11 @@ static int sst_nor_write(struct mtd_info *mtd, loff_t to, size_t len,
 
 	nor->sst_write_second = false;
 
-	/* Start write from odd address. */
+	 
 	if (to % 2) {
 		nor->program_opcode = SPINOR_OP_BP;
 
-		/* write one byte. */
+		 
 		ret = spi_nor_write_data(nor, to, 1, buf);
 		if (ret < 0)
 			goto out;
@@ -159,11 +156,11 @@ static int sst_nor_write(struct mtd_info *mtd, loff_t to, size_t len,
 		actual++;
 	}
 
-	/* Write out most of the data here. */
+	 
 	for (; actual < len - 1; actual += 2) {
 		nor->program_opcode = SPINOR_OP_AAI_WP;
 
-		/* write two bytes. */
+		 
 		ret = spi_nor_write_data(nor, to, 2, buf + actual);
 		if (ret < 0)
 			goto out;
@@ -184,7 +181,7 @@ static int sst_nor_write(struct mtd_info *mtd, loff_t to, size_t len,
 	if (ret)
 		goto out;
 
-	/* Write out trailing byte if it exists. */
+	 
 	if (actual != len) {
 		ret = spi_nor_write_enable(nor);
 		if (ret)

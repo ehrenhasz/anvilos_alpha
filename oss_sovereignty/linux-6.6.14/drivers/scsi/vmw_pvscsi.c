@@ -1,23 +1,4 @@
-/*
- * Linux driver for VMware's para-virtualized SCSI HBA.
- *
- * Copyright (C) 2008-2014, VMware, Inc. All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; version 2 of the License and no later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, GOOD TITLE or
- * NON INFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -51,10 +32,7 @@ struct pvscsi_sg_list {
 };
 
 struct pvscsi_ctx {
-	/*
-	 * The index of the context in cmd_map serves as the context ID for a
-	 * 1-to-1 mapping completions back to requests.
-	 */
+	 
 	struct scsi_cmnd	*cmd;
 	struct pvscsi_sg_list	*sgl;
 	struct list_head	list;
@@ -99,7 +77,7 @@ struct pvscsi_adapter {
 };
 
 
-/* Command line parameters */
+ 
 static int pvscsi_ring_pages;
 static int pvscsi_msg_ring_pages = PVSCSI_DEFAULT_NUM_PAGES_MSG_RING;
 static int pvscsi_cmd_per_lun    = PVSCSI_DEFAULT_QUEUE_DEPTH;
@@ -187,11 +165,7 @@ static void pvscsi_release_context(struct pvscsi_adapter *adapter,
 	list_add(&ctx->list, &adapter->cmd_pool);
 }
 
-/*
- * Map a pvscsi_ctx struct to a context ID field value; we map to a simple
- * non-zero integer. ctx always points to an entry in cmd_map array, hence
- * the return value is always >=1.
- */
+ 
 static u64 pvscsi_map_context(const struct pvscsi_adapter *adapter,
 			      const struct pvscsi_ctx *ctx)
 {
@@ -340,10 +314,7 @@ static void pvscsi_create_sg(struct pvscsi_ctx *ctx,
 	}
 }
 
-/*
- * Map all data buffers for a command into PCI space and
- * setup the scatter/gather list if needed.
- */
+ 
 static int pvscsi_map_buffers(struct pvscsi_adapter *adapter,
 			      struct pvscsi_ctx *ctx, struct scsi_cmnd *cmd,
 			      struct PVSCSIRingReqDesc *e)
@@ -383,10 +354,7 @@ static int pvscsi_map_buffers(struct pvscsi_adapter *adapter,
 		} else
 			e->dataAddr = sg_dma_address(sg);
 	} else {
-		/*
-		 * In case there is no S/G list, scsi_sglist points
-		 * directly to the buffer.
-		 */
+		 
 		ctx->dataPA = dma_map_single(&adapter->dev->dev, sg, bufflen,
 					     cmd->sc_data_direction);
 		if (dma_mapping_error(&adapter->dev->dev, ctx->dataPA)) {
@@ -400,11 +368,7 @@ static int pvscsi_map_buffers(struct pvscsi_adapter *adapter,
 	return 0;
 }
 
-/*
- * The device incorrectly doesn't clear the first byte of the sense
- * buffer in some cases. We have to do it ourselves.
- * Otherwise we run into trouble when SWIOTLB is forced.
- */
+ 
 static void pvscsi_patch_sense(struct scsi_cmnd *cmd)
 {
 	if (cmd->sense_buffer)
@@ -536,10 +500,7 @@ static int pvscsi_change_queue_depth(struct scsi_device *sdev, int qdepth)
 	return scsi_change_queue_depth(sdev, qdepth);
 }
 
-/*
- * Pull a completion descriptor off and pass the completion back
- * to the SCSI mid layer.
- */
+ 
 static void pvscsi_complete_request(struct pvscsi_adapter *adapter,
 				    const struct PVSCSIRingCmpDesc *e)
 {
@@ -557,12 +518,7 @@ static void pvscsi_complete_request(struct pvscsi_adapter *adapter,
 		pvscsi_patch_sense(cmd);
 	pvscsi_release_context(adapter, ctx);
 	if (abort_cmp) {
-		/*
-		 * The command was requested to be aborted. Just signal that
-		 * the request completed and swallow the actual cmd completion
-		 * here. The abort handler will post a completion for this
-		 * command indicating that it got successfully aborted.
-		 */
+		 
 		complete(abort_cmp);
 		return;
 	}
@@ -582,14 +538,7 @@ static void pvscsi_complete_request(struct pvscsi_adapter *adapter,
 		case BTSTAT_SUCCESS:
 		case BTSTAT_LINKED_COMMAND_COMPLETED:
 		case BTSTAT_LINKED_COMMAND_COMPLETED_WITH_FLAG:
-			/*
-			 * Commands like INQUIRY may transfer less data than
-			 * requested by the initiator via bufflen. Set residual
-			 * count to make upper layer aware of the actual amount
-			 * of data returned. There are cases when controller
-			 * returns zero dataLen with non zero data - do not set
-			 * residual count in that case.
-			 */
+			 
 			if (e->dataLen && (e->dataLen < scsi_bufflen(cmd)))
 				scsi_set_resid(cmd, scsi_bufflen(cmd) - e->dataLen);
 			cmd->result = (DID_OK << 16);
@@ -597,13 +546,13 @@ static void pvscsi_complete_request(struct pvscsi_adapter *adapter,
 
 		case BTSTAT_DATARUN:
 		case BTSTAT_DATA_UNDERRUN:
-			/* Report residual data in underruns */
+			 
 			scsi_set_resid(cmd, scsi_bufflen(cmd) - e->dataLen);
 			cmd->result = (DID_ERROR << 16);
 			break;
 
 		case BTSTAT_SELTIMEO:
-			/* Our emulation returns this for non-connected devs */
+			 
 			cmd->result = (DID_BAD_TARGET << 16);
 			break;
 
@@ -649,13 +598,7 @@ static void pvscsi_complete_request(struct pvscsi_adapter *adapter,
 	scsi_done(cmd);
 }
 
-/*
- * barrier usage : Since the PVSCSI device is emulated, there could be cases
- * where we may want to serialize some accesses between the driver and the
- * emulation layer. We use compiler barriers instead of the more expensive
- * memory barriers because PVSCSI is only supported on X86 which has strong
- * memory access ordering.
- */
+ 
 static void pvscsi_process_completion_ring(struct pvscsi_adapter *adapter)
 {
 	struct PVSCSIRingsState *s = adapter->rings_state;
@@ -665,28 +608,16 @@ static void pvscsi_process_completion_ring(struct pvscsi_adapter *adapter)
 	while (s->cmpConsIdx != s->cmpProdIdx) {
 		struct PVSCSIRingCmpDesc *e = ring + (s->cmpConsIdx &
 						      MASK(cmp_entries));
-		/*
-		 * This barrier() ensures that *e is not dereferenced while
-		 * the device emulation still writes data into the slot.
-		 * Since the device emulation advances s->cmpProdIdx only after
-		 * updating the slot we want to check it first.
-		 */
+		 
 		barrier();
 		pvscsi_complete_request(adapter, e);
-		/*
-		 * This barrier() ensures that compiler doesn't reorder write
-		 * to s->cmpConsIdx before the read of (*e) inside
-		 * pvscsi_complete_request. Otherwise, device emulation may
-		 * overwrite *e before we had a chance to read it.
-		 */
+		 
 		barrier();
 		s->cmpConsIdx++;
 	}
 }
 
-/*
- * Translate a Linux SCSI request into a request ring entry.
- */
+ 
 static int pvscsi_queue_ring(struct pvscsi_adapter *adapter,
 			     struct pvscsi_ctx *ctx, struct scsi_cmnd *cmd)
 {
@@ -699,14 +630,7 @@ static int pvscsi_queue_ring(struct pvscsi_adapter *adapter,
 	sdev = cmd->device;
 	req_entries = s->reqNumEntriesLog2;
 
-	/*
-	 * If this condition holds, we might have room on the request ring, but
-	 * we might not have room on the completion ring for the response.
-	 * However, we have already ruled out this possibility - we would not
-	 * have successfully allocated a context if it were true, since we only
-	 * have one context per request entry.  Check for it anyway, since it
-	 * would be a serious bug.
-	 */
+	 
 	if (s->reqProdIdx - s->cmpConsIdx >= 1 << req_entries) {
 		scmd_printk(KERN_ERR, cmd, "vmw_pvscsi: "
 			    "ring full: reqProdIdx=%d cmpConsIdx=%d\n",
@@ -817,39 +741,27 @@ static int pvscsi_abort(struct scsi_cmnd *cmd)
 
 	spin_lock_irqsave(&adapter->hw_lock, flags);
 
-	/*
-	 * Poll the completion ring first - we might be trying to abort
-	 * a command that is waiting to be dispatched in the completion ring.
-	 */
+	 
 	pvscsi_process_completion_ring(adapter);
 
-	/*
-	 * If there is no context for the command, it either already succeeded
-	 * or else was never properly issued.  Not our problem.
-	 */
+	 
 	ctx = pvscsi_find_context(adapter, cmd);
 	if (!ctx) {
 		scmd_printk(KERN_DEBUG, cmd, "Failed to abort cmd %p\n", cmd);
 		goto out;
 	}
 
-	/*
-	 * Mark that the command has been requested to be aborted and issue
-	 * the abort.
-	 */
+	 
 	ctx->abort_cmp = &abort_cmp;
 
 	pvscsi_abort_cmd(adapter, ctx);
 	spin_unlock_irqrestore(&adapter->hw_lock, flags);
-	/* Wait for 2 secs for the completion. */
+	 
 	done = wait_for_completion_timeout(&abort_cmp, msecs_to_jiffies(2000));
 	spin_lock_irqsave(&adapter->hw_lock, flags);
 
 	if (!done) {
-		/*
-		 * Failed to abort the command, unmark the fact that it
-		 * was requested to be aborted.
-		 */
+		 
 		ctx->abort_cmp = NULL;
 		result = FAILED;
 		scmd_printk(KERN_DEBUG, cmd,
@@ -858,9 +770,7 @@ static int pvscsi_abort(struct scsi_cmnd *cmd)
 		goto out;
 	}
 
-	/*
-	 * Successfully aborted the command.
-	 */
+	 
 	cmd->result = (DID_ABORT << 16);
 	scsi_done(cmd);
 
@@ -869,12 +779,7 @@ out:
 	return result;
 }
 
-/*
- * Abort all outstanding requests.  This is only safe to use if the completion
- * ring will never be walked again or the device has been reset, because it
- * destroys the 1-1 mapping between context field passed to emulation and our
- * request structure.
- */
+ 
 static void pvscsi_reset_all(struct pvscsi_adapter *adapter)
 {
 	unsigned i;
@@ -911,31 +816,18 @@ static int pvscsi_host_reset(struct scsi_cmnd *cmd)
 		adapter->use_msg = false;
 		spin_unlock_irqrestore(&adapter->hw_lock, flags);
 
-		/*
-		 * Now that we know that the ISR won't add more work on the
-		 * workqueue we can safely flush any outstanding work.
-		 */
+		 
 		flush_workqueue(adapter->workqueue);
 		spin_lock_irqsave(&adapter->hw_lock, flags);
 	}
 
-	/*
-	 * We're going to tear down the entire ring structure and set it back
-	 * up, so stalling new requests until all completions are flushed and
-	 * the rings are back in place.
-	 */
+	 
 
 	pvscsi_process_request_ring(adapter);
 
 	ll_adapter_reset(adapter);
 
-	/*
-	 * Now process any completions.  Note we do this AFTER adapter reset,
-	 * which is strange, but stops races where completions get posted
-	 * between processing the ring and issuing the reset.  The backend will
-	 * not touch the ring memory after reset, so the immediately pre-reset
-	 * completion ring state is still valid.
-	 */
+	 
 	pvscsi_process_completion_ring(adapter);
 
 	pvscsi_reset_all(adapter);
@@ -956,12 +848,7 @@ static int pvscsi_bus_reset(struct scsi_cmnd *cmd)
 
 	scmd_printk(KERN_INFO, cmd, "SCSI Bus reset\n");
 
-	/*
-	 * We don't want to queue new requests for this bus after
-	 * flushing all pending requests to emulation, since new
-	 * requests could then sneak in during this bus reset phase,
-	 * so take the lock now.
-	 */
+	 
 	spin_lock_irqsave(&adapter->hw_lock, flags);
 
 	pvscsi_process_request_ring(adapter);
@@ -982,11 +869,7 @@ static int pvscsi_device_reset(struct scsi_cmnd *cmd)
 	scmd_printk(KERN_INFO, cmd, "SCSI device reset on scsi%u:%u\n",
 		    host->host_no, cmd->device->id);
 
-	/*
-	 * We don't want to queue new requests for this device after flushing
-	 * all pending requests to emulation, since new requests could then
-	 * sneak in during this device reset phase, so take the lock now.
-	 */
+	 
 	spin_lock_irqsave(&adapter->hw_lock, flags);
 
 	pvscsi_process_request_ring(adapter);
@@ -1250,19 +1133,7 @@ static void pvscsi_release_resources(struct pvscsi_adapter *adapter)
 				    adapter->msg_ring, adapter->msgRingPA);
 }
 
-/*
- * Allocate scatter gather lists.
- *
- * These are statically allocated.  Trying to be clever was not worth it.
- *
- * Dynamic allocation can fail, and we can't go deep into the memory
- * allocator, since we're a SCSI driver, and trying too hard to allocate
- * memory might generate disk I/O.  We also don't want to fail disk I/O
- * in that case because we can't get an allocation - the I/O could be
- * trying to swap out data to free memory.  Since that is pathological,
- * just use a statically allocated scatter list.
- *
- */
+ 
 static int pvscsi_allocate_sg(struct pvscsi_adapter *adapter)
 {
 	struct pvscsi_ctx *ctx;
@@ -1289,11 +1160,7 @@ static int pvscsi_allocate_sg(struct pvscsi_adapter *adapter)
 	return 0;
 }
 
-/*
- * Query the device, fetch the config info and return the
- * maximum number of targets on the adapter. In case of
- * failure due to any reason return default i.e. 16.
- */
+ 
 static u32 pvscsi_get_max_targets(struct pvscsi_adapter *adapter)
 {
 	struct PVSCSICmdDescConfigCmd cmd;
@@ -1312,17 +1179,13 @@ static u32 pvscsi_get_max_targets(struct pvscsi_adapter *adapter)
 	}
 	BUG_ON(configPagePA & ~PAGE_MASK);
 
-	/* Fetch config info from the device. */
+	 
 	cmd.configPageAddress = ((u64)PVSCSI_CONFIG_CONTROLLER_ADDRESS) << 32;
 	cmd.configPageNum = PVSCSI_CONFIG_PAGE_CONTROLLER;
 	cmd.cmpAddr = configPagePA;
 	cmd._pad = 0;
 
-	/*
-	 * Mark the completion page header with error values. If the device
-	 * completes the command successfully, it sets the status values to
-	 * indicate success.
-	 */
+	 
 	header = config_page;
 	header->hostStatus = BTSTAT_INVPARAM;
 	header->scsiStatus = SDSTAT_CHECK;
@@ -1368,11 +1231,7 @@ static int pvscsi_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		goto out_disable_device;
 	}
 
-	/*
-	 * Let's use a temp pvscsi_adapter struct until we find the number of
-	 * targets on the adapter, after that we will switch to the real
-	 * allocated struct.
-	 */
+	 
 	adapter = &adapter_temp;
 	memset(adapter, 0, sizeof(*adapter));
 	adapter->dev  = pdev;
@@ -1410,18 +1269,12 @@ static int pvscsi_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	pci_set_master(pdev);
 
-	/*
-	 * Ask the device for max number of targets before deciding the
-	 * default pvscsi_ring_pages value.
-	 */
+	 
 	max_id = pvscsi_get_max_targets(adapter);
 	printk(KERN_INFO "vmw_pvscsi: max_id: %u\n", max_id);
 
 	if (pvscsi_ring_pages == 0)
-		/*
-		 * Set the right default value. Up to 16 it is 8, above it is
-		 * max.
-		 */
+		 
 		pvscsi_ring_pages = (max_id > 16) ?
 			PVSCSI_SETUP_RINGS_MAX_NUM_PAGES :
 			PVSCSI_DEFAULT_NUM_PAGES_PER_RING;
@@ -1440,16 +1293,12 @@ static int pvscsi_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		goto out_release_resources_and_disable;
 	}
 
-	/*
-	 * Let's use the real pvscsi_adapter struct here onwards.
-	 */
+	 
 	adapter = shost_priv(host);
 	memset(adapter, 0, sizeof(*adapter));
 	adapter->dev  = pdev;
 	adapter->host = host;
-	/*
-	 * Copy back what we already have to the allocated adapter struct.
-	 */
+	 
 	adapter->rev = adapter_temp.rev;
 	adapter->mmioBase = adapter_temp.mmioBase;
 
@@ -1471,10 +1320,7 @@ static int pvscsi_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		goto out_release_resources;
 	}
 
-	/*
-	 * From this point on we should reset the adapter if anything goes
-	 * wrong.
-	 */
+	 
 	pvscsi_setup_all_rings(adapter);
 
 	adapter->cmd_map = kcalloc(adapter->req_depth,

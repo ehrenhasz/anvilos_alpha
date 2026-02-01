@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2010-2016, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include <linux/kernel.h>
 
@@ -21,7 +9,7 @@
 
 #ifndef __INLINE_DMA__
 #include "dma_private.h"
-#endif /* __INLINE_DMA__ */
+#endif  
 
 void dma_get_state(const dma_ID_t ID, dma_state_t *state)
 {
@@ -32,10 +20,10 @@ void dma_get_state(const dma_ID_t ID, dma_state_t *state)
 	assert(state);
 
 	tmp = dma_reg_load(ID, DMA_COMMAND_FSM_REG_IDX);
-	//reg  [3:0] : flags error [3], stall, run, idle [0]
-	//reg  [9:4] : command
-	//reg[14:10] : channel
-	//reg [23:15] : param
+	
+	
+	
+	
 	state->fsm_command_idle = tmp & 0x1;
 	state->fsm_command_run = tmp & 0x2;
 	state->fsm_command_stalling = tmp & 0x4;
@@ -43,35 +31,16 @@ void dma_get_state(const dma_ID_t ID, dma_state_t *state)
 	state->last_command_channel = (tmp >> 10 & 0x1F);
 	state->last_command_param =  (tmp >> 15 & 0x0F);
 	tmp = (tmp >> 4) & 0x3F;
-	/* state->last_command = (dma_commands_t)tmp; */
-	/* if the enumerator is made non-linear */
-	/* AM: the list below does not cover all the cases*/
-	/*  and these are not correct */
-	/* therefore for just dumpinmg this command*/
+	 
+	 
+	 
+	 
+	 
 	state->last_command = tmp;
 
-	/*
-		if (tmp == 0)
-			state->last_command = DMA_COMMAND_READ;
-		if (tmp == 1)
-			state->last_command = DMA_COMMAND_WRITE;
-		if (tmp == 2)
-			state->last_command = DMA_COMMAND_SET_CHANNEL;
-		if (tmp == 3)
-			state->last_command = DMA_COMMAND_SET_PARAM;
-		if (tmp == 4)
-			state->last_command = DMA_COMMAND_READ_SPECIFIC;
-		if (tmp == 5)
-			state->last_command = DMA_COMMAND_WRITE_SPECIFIC;
-		if (tmp == 8)
-			state->last_command = DMA_COMMAND_INIT;
-		if (tmp == 12)
-			state->last_command = DMA_COMMAND_INIT_SPECIFIC;
-		if (tmp == 15)
-			state->last_command = DMA_COMMAND_RST;
-	*/
+	 
 
-	/* No sub-fields, idx = 0 */
+	 
 	state->current_command = dma_reg_load(ID,
 					      DMA_CG_INFO_REG_IDX(0, _DMA_FSM_GROUP_CMD_IDX));
 	state->current_addr_a = dma_reg_load(ID,
@@ -88,7 +57,7 @@ void dma_get_state(const dma_ID_t ID, dma_state_t *state)
 	state->fsm_ctrl_stalling = tmp & 0x4;
 	state->fsm_ctrl_error = tmp & 0x8;
 	tmp = tmp >> 4;
-	/* state->fsm_ctrl_state = (dma_ctrl_states_t)tmp; */
+	 
 	if (tmp == 0)
 		state->fsm_ctrl_state = DMA_CTRL_STATE_IDLE;
 	if (tmp == 1)
@@ -185,7 +154,7 @@ void dma_get_state(const dma_ID_t ID, dma_state_t *state)
 			   DMA_CG_INFO_REG_IDX(
 			       _DMA_FSM_GROUP_FSM_REQ_STATE_IDX,
 			       _DMA_FSM_GROUP_FSM_REQ_IDX));
-	/* state->read_state = (dma_rw_states_t)tmp; */
+	 
 	if (tmp == 0)
 		state->read_state = DMA_RW_STATE_IDLE;
 	if (tmp == 1)
@@ -207,7 +176,7 @@ void dma_get_state(const dma_ID_t ID, dma_state_t *state)
 			   DMA_CG_INFO_REG_IDX(
 			       _DMA_FSM_GROUP_FSM_WR_STATE_IDX,
 			       _DMA_FSM_GROUP_FSM_WR_IDX));
-	/* state->write_state = (dma_rw_states_t)tmp; */
+	 
 	if (tmp == 0)
 		state->write_state = DMA_RW_STATE_IDLE;
 	if (tmp == 1)

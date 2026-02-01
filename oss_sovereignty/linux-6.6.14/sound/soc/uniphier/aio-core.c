@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Socionext UniPhier AIO ALSA common driver.
-//
-// Copyright (c) 2016-2018 Socionext Inc.
+
+
+
+
+
 
 #include <linux/bitfield.h>
 #include <linux/errno.h>
@@ -70,17 +70,7 @@ u64 aio_rb_space_to_end(struct uniphier_aio_sub *sub)
 	return rb_space_to_end(sub->wr_offs, sub->rd_offs, sub->compr_bytes);
 }
 
-/**
- * aio_iecout_set_enable - setup IEC output via SoC glue
- * @chip: the AIO chip pointer
- * @enable: false to stop the output, true to start
- *
- * Set enabled or disabled S/PDIF signal output to out of SoC via AOnIEC pins.
- * This function need to call at driver startup.
- *
- * The regmap of SoC glue is specified by 'socionext,syscon' optional property
- * of DT. This function has no effect if no property.
- */
+ 
 void aio_iecout_set_enable(struct uniphier_aio_chip *chip, bool enable)
 {
 	struct regmap *r = chip->regmap_sg;
@@ -91,17 +81,7 @@ void aio_iecout_set_enable(struct uniphier_aio_chip *chip, bool enable)
 	regmap_write(r, SG_AOUTEN, (enable) ? ~0 : 0);
 }
 
-/**
- * aio_chip_set_pll - set frequency to audio PLL
- * @chip: the AIO chip pointer
- * @pll_id: PLL
- * @freq: frequency in Hz, 0 is ignored
- *
- * Sets frequency of audio PLL. This function can be called anytime,
- * but it takes time till PLL is locked.
- *
- * Return: Zero if successful, otherwise a negative value on error.
- */
+ 
 int aio_chip_set_pll(struct uniphier_aio_chip *chip, int pll_id,
 		     unsigned int freq)
 {
@@ -110,7 +90,7 @@ int aio_chip_set_pll(struct uniphier_aio_chip *chip, int pll_id,
 	int shift;
 	u32 v;
 
-	/* Not change */
+	 
 	if (freq == 0)
 		return 0;
 
@@ -151,17 +131,7 @@ int aio_chip_set_pll(struct uniphier_aio_chip *chip, int pll_id,
 	return 0;
 }
 
-/**
- * aio_chip_init - initialize AIO whole settings
- * @chip: the AIO chip pointer
- *
- * Sets AIO fixed and whole device settings to AIO.
- * This function need to call once at driver startup.
- *
- * The register area that is changed by this function is shared by all
- * modules of AIO. But there is not race condition since this function
- * has always set the same initialize values.
- */
+ 
 void aio_chip_init(struct uniphier_aio_chip *chip)
 {
 	struct regmap *r = chip->regmap;
@@ -188,15 +158,7 @@ void aio_chip_init(struct uniphier_aio_chip *chip)
 				   CDA2D_TEST_DDR_MODE_EXTOFF1);
 }
 
-/**
- * aio_init - initialize AIO substream
- * @sub: the AIO substream pointer
- *
- * Sets fixed settings of each AIO substreams.
- * This function need to call once at substream startup.
- *
- * Return: Zero if successful, otherwise a negative value on error.
- */
+ 
 int aio_init(struct uniphier_aio_sub *sub)
 {
 	struct device *dev = &sub->aio->chip->pdev->dev;
@@ -241,12 +203,7 @@ int aio_init(struct uniphier_aio_sub *sub)
 	return 0;
 }
 
-/**
- * aio_port_reset - reset AIO port block
- * @sub: the AIO substream pointer
- *
- * Resets the digital signal input/output port block of AIO.
- */
+ 
 void aio_port_reset(struct uniphier_aio_sub *sub)
 {
 	struct regmap *r = sub->aio->chip->regmap;
@@ -264,16 +221,7 @@ void aio_port_reset(struct uniphier_aio_sub *sub)
 	}
 }
 
-/**
- * aio_port_set_ch - set channels of LPCM
- * @sub: the AIO substream pointer, PCM substream only
- *
- * Set suitable slot selecting to input/output port block of AIO.
- *
- * This function may return error if non-PCM substream.
- *
- * Return: Zero if successful, otherwise a negative value on error.
- */
+ 
 static int aio_port_set_ch(struct uniphier_aio_sub *sub)
 {
 	struct regmap *r = sub->aio->chip->regmap;
@@ -315,18 +263,7 @@ static int aio_port_set_ch(struct uniphier_aio_sub *sub)
 	return 0;
 }
 
-/**
- * aio_port_set_rate - set sampling rate of LPCM
- * @sub: the AIO substream pointer, PCM substream only
- * @rate: Sampling rate in Hz.
- *
- * Set suitable I2S format settings to input/output port block of AIO.
- * Parameter is specified by hw_params().
- *
- * This function may return error if non-PCM substream.
- *
- * Return: Zero if successful, otherwise a negative value on error.
- */
+ 
 static int aio_port_set_rate(struct uniphier_aio_sub *sub, int rate)
 {
 	struct regmap *r = sub->aio->chip->regmap;
@@ -434,18 +371,7 @@ static int aio_port_set_rate(struct uniphier_aio_sub *sub, int rate)
 	return 0;
 }
 
-/**
- * aio_port_set_fmt - set format of I2S data
- * @sub: the AIO substream pointer, PCM substream only
- * This parameter has no effect if substream is I2S or PCM.
- *
- * Set suitable I2S format settings to input/output port block of AIO.
- * Parameter is specified by set_fmt().
- *
- * This function may return error if non-PCM substream.
- *
- * Return: Zero if successful, otherwise a negative value on error.
- */
+ 
 static int aio_port_set_fmt(struct uniphier_aio_sub *sub)
 {
 	struct regmap *r = sub->aio->chip->regmap;
@@ -501,16 +427,7 @@ static int aio_port_set_fmt(struct uniphier_aio_sub *sub)
 	return 0;
 }
 
-/**
- * aio_port_set_clk - set clock and divider of AIO port block
- * @sub: the AIO substream pointer
- *
- * Set suitable PLL clock divider and relational settings to
- * input/output port block of AIO. Parameters are specified by
- * set_sysclk() and set_pll().
- *
- * Return: Zero if successful, otherwise a negative value on error.
- */
+ 
 static int aio_port_set_clk(struct uniphier_aio_sub *sub)
 {
 	struct uniphier_aio_chip *chip = sub->aio->chip;
@@ -598,18 +515,7 @@ static int aio_port_set_clk(struct uniphier_aio_sub *sub)
 	return 0;
 }
 
-/**
- * aio_port_set_param - set parameters of AIO port block
- * @sub: the AIO substream pointer
- * @pass_through: Zero if sound data is LPCM, otherwise if data is not LPCM.
- * This parameter has no effect if substream is I2S or PCM.
- * @params: hardware parameters of ALSA
- *
- * Set suitable setting to input/output port block of AIO to process the
- * specified in params.
- *
- * Return: Zero if successful, otherwise a negative value on error.
- */
+ 
 int aio_port_set_param(struct uniphier_aio_sub *sub, int pass_through,
 		       const struct snd_pcm_hw_params *params)
 {
@@ -665,13 +571,7 @@ int aio_port_set_param(struct uniphier_aio_sub *sub, int pass_through,
 	return 0;
 }
 
-/**
- * aio_port_set_enable - start or stop of AIO port block
- * @sub: the AIO substream pointer
- * @enable: zero to stop the block, otherwise to start
- *
- * Start or stop the signal input/output port block of AIO.
- */
+ 
 void aio_port_set_enable(struct uniphier_aio_sub *sub, int enable)
 {
 	struct regmap *r = sub->aio->chip->regmap;
@@ -714,12 +614,7 @@ void aio_port_set_enable(struct uniphier_aio_sub *sub, int enable)
 	}
 }
 
-/**
- * aio_port_get_volume - get volume of AIO port block
- * @sub: the AIO substream pointer
- *
- * Return: current volume, range is 0x0000 - 0xffff
- */
+ 
 int aio_port_get_volume(struct uniphier_aio_sub *sub)
 {
 	struct regmap *r = sub->aio->chip->regmap;
@@ -730,15 +625,7 @@ int aio_port_get_volume(struct uniphier_aio_sub *sub)
 	return FIELD_GET(OPORTMXTYVOLGAINSTATUS_CUR_MASK, v);
 }
 
-/**
- * aio_port_set_volume - set volume of AIO port block
- * @sub: the AIO substream pointer
- * @vol: target volume, range is 0x0000 - 0xffff.
- *
- * Change digital volume and perfome fade-out/fade-in effect for specified
- * output slot of port. Gained PCM value can calculate as the following:
- *   Gained = Original * vol / 0x4000
- */
+ 
 void aio_port_set_volume(struct uniphier_aio_sub *sub, int vol)
 {
 	struct regmap *r = sub->aio->chip->regmap;
@@ -772,17 +659,7 @@ void aio_port_set_volume(struct uniphier_aio_sub *sub, int vol)
 	regmap_write(r, AOUTFADECTR0, BIT(oport_map));
 }
 
-/**
- * aio_if_set_param - set parameters of AIO DMA I/F block
- * @sub: the AIO substream pointer
- * @pass_through: Zero if sound data is LPCM, otherwise if data is not LPCM.
- * This parameter has no effect if substream is I2S or PCM.
- *
- * Set suitable setting to DMA interface block of AIO to process the
- * specified in settings.
- *
- * Return: Zero if successful, otherwise a negative value on error.
- */
+ 
 int aio_if_set_param(struct uniphier_aio_sub *sub, int pass_through)
 {
 	struct regmap *r = sub->aio->chip->regmap;
@@ -823,16 +700,7 @@ int aio_if_set_param(struct uniphier_aio_sub *sub, int pass_through)
 	return 0;
 }
 
-/**
- * aio_oport_set_stream_type - set parameters of AIO playback port block
- * @sub: the AIO substream pointer
- * @pc: Pc type of IEC61937
- *
- * Set special setting to output port block of AIO to output the stream
- * via S/PDIF.
- *
- * Return: Zero if successful, otherwise a negative value on error.
- */
+ 
 int aio_oport_set_stream_type(struct uniphier_aio_sub *sub,
 			      enum IEC61937_PC pc)
 {
@@ -876,7 +744,7 @@ int aio_oport_set_stream_type(struct uniphier_aio_sub *sub,
 		pause |= OPORTMXPAUDAT_PAUSEPD_AAC;
 		break;
 	case IEC61937_PC_PAUSE:
-		/* Do nothing */
+		 
 		break;
 	}
 
@@ -886,14 +754,7 @@ int aio_oport_set_stream_type(struct uniphier_aio_sub *sub,
 	return 0;
 }
 
-/**
- * aio_src_reset - reset AIO SRC block
- * @sub: the AIO substream pointer
- *
- * Resets the digital signal input/output port with sampling rate converter
- * block of AIO.
- * This function has no effect if substream is not supported rate converter.
- */
+ 
 void aio_src_reset(struct uniphier_aio_sub *sub)
 {
 	struct regmap *r = sub->aio->chip->regmap;
@@ -905,17 +766,7 @@ void aio_src_reset(struct uniphier_aio_sub *sub)
 	regmap_write(r, AOUTSRCRSTCTR1, BIT(sub->swm->oport.map));
 }
 
-/**
- * aio_src_set_param - set parameters of AIO SRC block
- * @sub: the AIO substream pointer
- * @params: hardware parameters of ALSA
- *
- * Set suitable setting to input/output port with sampling rate converter
- * block of AIO to process the specified in params.
- * This function has no effect if substream is not supported rate converter.
- *
- * Return: Zero if successful, otherwise a negative value on error.
- */
+ 
 int aio_src_set_param(struct uniphier_aio_sub *sub,
 		      const struct snd_pcm_hw_params *params)
 {
@@ -1059,7 +910,7 @@ static u64 aiodma_rb_get_rp(struct uniphier_aio_sub *sub)
 
 	regmap_write(r, CDA2D_RDPTRLOAD,
 		     CDA2D_RDPTRLOAD_LSFLAG_STORE | BIT(sub->swm->rb.map));
-	/* Wait for setup */
+	 
 	for (i = 0; i < 6; i++)
 		regmap_read(r, CDA2D_RBMXRDPTR(sub->swm->rb.map), &pos_l);
 
@@ -1079,7 +930,7 @@ static void aiodma_rb_set_rp(struct uniphier_aio_sub *sub, u64 pos)
 	regmap_write(r, CDA2D_RBMXRDPTR(sub->swm->rb.map), (u32)pos);
 	regmap_write(r, CDA2D_RBMXRDPTRU(sub->swm->rb.map), (u32)(pos >> 32));
 	regmap_write(r, CDA2D_RDPTRLOAD, BIT(sub->swm->rb.map));
-	/* Wait for setup */
+	 
 	for (i = 0; i < 6; i++)
 		regmap_read(r, CDA2D_RBMXRDPTR(sub->swm->rb.map), &tmp);
 }
@@ -1092,7 +943,7 @@ static u64 aiodma_rb_get_wp(struct uniphier_aio_sub *sub)
 
 	regmap_write(r, CDA2D_WRPTRLOAD,
 		     CDA2D_WRPTRLOAD_LSFLAG_STORE | BIT(sub->swm->rb.map));
-	/* Wait for setup */
+	 
 	for (i = 0; i < 6; i++)
 		regmap_read(r, CDA2D_RBMXWRPTR(sub->swm->rb.map), &pos_l);
 
@@ -1114,7 +965,7 @@ static void aiodma_rb_set_wp(struct uniphier_aio_sub *sub, u64 pos)
 	regmap_write(r, CDA2D_RBMXWRPTRU(sub->swm->rb.map),
 		     upper_32_bits(pos));
 	regmap_write(r, CDA2D_WRPTRLOAD, BIT(sub->swm->rb.map));
-	/* Wait for setup */
+	 
 	for (i = 0; i < 6; i++)
 		regmap_read(r, CDA2D_RBMXWRPTR(sub->swm->rb.map), &tmp);
 }

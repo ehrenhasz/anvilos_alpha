@@ -1,14 +1,7 @@
-// SPDX-License-Identifier: GPL-1.0+
-/*
- * OHCI HCD (Host Controller Driver) for USB.
- *
- * (C) Copyright 1999 Roman Weissgaerber <weissg@vienna.at>
- * (C) Copyright 2000-2002 David Brownell <dbrownell@users.sourceforge.net>
- *
- * This file is licenced under the GPL.
- */
 
-/*-------------------------------------------------------------------------*/
+ 
+
+ 
 
 #define edstring(ed_type) ({ char *temp; \
 	switch (ed_type) { \
@@ -30,7 +23,7 @@
 		ohci_dbg(ohci,format, ## arg ); \
 	} while (0);
 
-/* Version for use where "next" is the address of a local variable */
+ 
 #define ohci_dbg_nosw(ohci, next, size, format, arg...) \
 	do { \
 		unsigned s_len; \
@@ -96,7 +89,7 @@ static const char *rh_state_string(struct ohci_hcd *ohci)
 	return "?";
 }
 
-// dump control and status registers
+
 static void
 ohci_dump_status (struct ohci_hcd *controller, char **next, unsigned *size)
 {
@@ -141,7 +134,7 @@ ohci_dump_status (struct ohci_hcd *controller, char **next, unsigned *size)
 	ohci_dump_intr_mask (controller, "intrenable",
 			ohci_readl (controller, &regs->intrenable),
 			next, size);
-	// intrdisable always same as intrenable
+	
 
 	maybe_print_eds (controller, "ed_periodcurrent",
 			ohci_readl (controller, &regs->ed_periodcurrent),
@@ -241,7 +234,7 @@ static void ohci_dump(struct ohci_hcd *controller)
 {
 	ohci_dbg (controller, "OHCI controller state\n");
 
-	// dumps some of the state we know about
+	
 	ohci_dump_status (controller, NULL, NULL);
 	if (controller->hcca)
 		ohci_dbg (controller,
@@ -279,7 +272,7 @@ static void ohci_dump_td (const struct ohci_hcd *ohci, const char *label,
 		default: pid = "(bad pid)"; break;
 		}
 		ohci_dbg (ohci, "     info %08x CC=%x %s DI=%d %s %s\n", tmp,
-			TD_CC_GET(tmp), /* EC, */ toggle,
+			TD_CC_GET(tmp),   toggle,
 			(tmp & TD_DI) >> 21, pid,
 			(tmp & TD_R) ? "R" : "");
 		cbp = hc32_to_cpup (ohci, &td->hwCBP);
@@ -307,7 +300,7 @@ static void ohci_dump_td (const struct ohci_hcd *ohci, const char *label,
 	}
 }
 
-/* caller MUST own hcd spinlock if verbose is set! */
+ 
 static void __maybe_unused
 ohci_dump_ed (const struct ohci_hcd *ohci, const char *label,
 		const struct ed *ed, int verbose)
@@ -322,7 +315,7 @@ ohci_dump_ed (const struct ohci_hcd *ohci, const char *label,
 	switch (tmp & (ED_IN|ED_OUT)) {
 	case ED_OUT: type = "-OUT"; break;
 	case ED_IN: type = "-IN"; break;
-	/* else from TDs ... control */
+	 
 	}
 	ohci_dbg (ohci,
 		"  info %08x MAX=%d%s%s%s%s EP=%d%s DEV=%d\n", tmp,
@@ -344,9 +337,7 @@ ohci_dump_ed (const struct ohci_hcd *ohci, const char *label,
 	if (verbose) {
 		struct list_head	*tmp;
 
-		/* use ed->td_list because HC concurrently modifies
-		 * hwNextTD as it accumulates ed_donelist.
-		 */
+		 
 		list_for_each (tmp, &ed->td_list) {
 			struct td		*td;
 			td = list_entry (tmp, struct td, td_list);
@@ -355,7 +346,7 @@ ohci_dump_ed (const struct ohci_hcd *ohci, const char *label,
 	}
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static int debug_async_open(struct inode *, struct file *);
 static int debug_periodic_open(struct inode *, struct file *);
@@ -389,10 +380,10 @@ static const struct file_operations debug_registers_fops = {
 static struct dentry *ohci_debug_root;
 
 struct debug_buffer {
-	ssize_t (*fill_func)(struct debug_buffer *);	/* fill method */
+	ssize_t (*fill_func)(struct debug_buffer *);	 
 	struct ohci_hcd *ohci;
-	struct mutex mutex;	/* protect filling of buffer */
-	size_t count;		/* number of characters filled into buffer */
+	struct mutex mutex;	 
+	size_t count;		 
 	char *page;
 };
 
@@ -404,11 +395,11 @@ show_list (struct ohci_hcd *ohci, char *buf, size_t count, struct ed *ed)
 	if (!ed)
 		return 0;
 
-	/* print first --> last */
+	 
 	while (ed->ed_prev)
 		ed = ed->ed_prev;
 
-	/* dump a snapshot of the bulk or control schedule */
+	 
 	while (ed) {
 		u32		info = hc32_to_cpu (ohci, ed->hwINFO);
 		u32		headp = hc32_to_cpu (ohci, ed->hwHeadP);
@@ -471,7 +462,7 @@ static ssize_t fill_async_buffer(struct debug_buffer *buf)
 	ohci = buf->ohci;
 	size = PAGE_SIZE;
 
-	/* display control and bulk lists together, for simplicity */
+	 
 	spin_lock_irqsave (&ohci->lock, flags);
 	temp = show_list(ohci, buf->page, size, ohci->ed_controltail);
 	temp += show_list(ohci, buf->page + temp, size - temp,
@@ -505,7 +496,7 @@ static ssize_t fill_periodic_buffer(struct debug_buffer *buf)
 	size -= temp;
 	next += temp;
 
-	/* dump a snapshot of the periodic schedule (and load) */
+	 
 	spin_lock_irqsave (&ohci->lock, flags);
 	for (i = 0; i < NUM_INTS; i++) {
 		ed = ohci->periodic[i];
@@ -526,13 +517,13 @@ static ssize_t fill_periodic_buffer(struct debug_buffer *buf)
 					break;
 			}
 
-			/* show more info the first time around */
+			 
 			if (temp == seen_count) {
 				u32	info = hc32_to_cpu (ohci, ed->hwINFO);
 				struct list_head	*entry;
 				unsigned		qlen = 0;
 
-				/* qlen measured here in TDs, not urbs */
+				 
 				list_for_each (entry, &ed->td_list)
 					qlen++;
 
@@ -560,7 +551,7 @@ static ssize_t fill_periodic_buffer(struct debug_buffer *buf)
 				ed = ed->ed_next;
 
 			} else {
-				/* we've seen it and what's after */
+				 
 				temp = 0;
 				ed = NULL;
 			}
@@ -596,7 +587,7 @@ static ssize_t fill_registers_buffer(struct debug_buffer *buf)
 
 	spin_lock_irqsave (&ohci->lock, flags);
 
-	/* dump driver info, then registers in spec order */
+	 
 
 	ohci_dbg_nosw(ohci, &next, &size,
 		"bus %s, device %s\n"
@@ -615,12 +606,12 @@ static ssize_t fill_registers_buffer(struct debug_buffer *buf)
 
 	ohci_dump_status(ohci, &next, &size);
 
-	/* hcca */
+	 
 	if (ohci->hcca)
 		ohci_dbg_nosw(ohci, &next, &size,
 			"hcca frame 0x%04x\n", ohci_frame_no(ohci));
 
-	/* other registers mostly affect frame timings */
+	 
 	rdata = ohci_readl (ohci, &regs->fminterval);
 	temp = scnprintf (next, size,
 			"fmintvl 0x%08x %sFSMPS=0x%04x FI=0x%04x\n",
@@ -653,7 +644,7 @@ static ssize_t fill_registers_buffer(struct debug_buffer *buf)
 	size -= temp;
 	next += temp;
 
-	/* roothub */
+	 
 	ohci_dump_roothub (ohci, 1, &next, &size);
 
 done:
@@ -781,5 +772,5 @@ static inline void remove_debug_files (struct ohci_hcd *ohci)
 	debugfs_remove_recursive(ohci->debug_dir);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 

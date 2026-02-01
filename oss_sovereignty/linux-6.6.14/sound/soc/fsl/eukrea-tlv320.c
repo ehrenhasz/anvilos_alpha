@@ -1,13 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// eukrea-tlv320.c  --  SoC audio for eukrea_cpuimxXX in I2S mode
-//
-// Copyright 2010 Eric Bénard, Eukréa Electromatique <eric@eukrea.com>
-//
-// based on sound/soc/s3c24xx/s3c24xx_simtec_tlv320aic23.c
-// which is Copyright 2009 Simtec Electronics
-// and on sound/soc/imx/phycore-ac97.c which is
-// Copyright 2009 Sascha Hauer, Pengutronix <s.hauer@pengutronix.de>
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/errno.h>
 #include <linux/module.h>
@@ -47,7 +47,7 @@ static int eukrea_tlv320_hw_params(struct snd_pcm_substream *substream,
 
 	ret = snd_soc_dai_set_sysclk(cpu_dai, IMX_SSP_SYS_CLK, 0,
 				SND_SOC_CLOCK_IN);
-	/* fsl_ssi lacks the set_sysclk ops */
+	 
 	if (ret && ret != -EINVAL) {
 		dev_err(cpu_dai->dev,
 			"Can't set the IMX_SSP_SYS_CLK CPU system clock.\n");
@@ -126,10 +126,7 @@ static int eukrea_tlv320_probe(struct platform_device *pdev)
 			goto err;
 		}
 
-		/*
-		 * The port numbering in the hardware manual starts at 1, while
-		 * the audmux API expects it starts at 0.
-		 */
+		 
 		int_port--;
 		ext_port--;
 
@@ -182,16 +179,12 @@ static int eukrea_tlv320_probe(struct platform_device *pdev)
 		of_node_put(tmp_np);
 	} else {
 		if (np) {
-			/* The eukrea,asoc-tlv320 driver was explicitly
-			 * requested (through the device tree).
-			 */
+			 
 			dev_err(&pdev->dev,
 				"Missing or invalid audmux DT node.\n");
 			return -ENODEV;
 		} else {
-			/* Return happy.
-			 * We might run on a totally different machine.
-			 */
+			 
 			return 0;
 		}
 	}
@@ -212,7 +205,7 @@ static void eukrea_tlv320_remove(struct platform_device *pdev)
 
 static const struct of_device_id imx_tlv320_dt_ids[] = {
 	{ .compatible = "eukrea,asoc-tlv320"},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx_tlv320_dt_ids);
 

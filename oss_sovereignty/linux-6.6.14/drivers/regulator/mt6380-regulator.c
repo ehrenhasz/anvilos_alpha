@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2017 MediaTek Inc.
-// Author: Chenglin Xu <chenglin.xu@mediatek.com>
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -12,7 +12,7 @@
 #include <linux/regulator/mt6380-regulator.h>
 #include <linux/regulator/of_regulator.h>
 
-/* PMIC Registers */
+ 
 #define MT6380_ALDO_CON_0                         0x0000
 #define MT6380_BTLDO_CON_0                        0x0004
 #define MT6380_COMP_CON_0                         0x0008
@@ -73,14 +73,7 @@
 #define MT6380_REGULATOR_MODE_AUTO	0
 #define MT6380_REGULATOR_MODE_FORCE_PWM	1
 
-/*
- * mt6380 regulators' information
- *
- * @desc: standard fields of regulator description
- * @vselon_reg: Register sections for hardware control mode of bucks
- * @modeset_reg: Register for controlling the buck/LDO control mode
- * @modeset_mask: Mask for controlling the buck/LDO control mode
- */
+ 
 struct mt6380_regulator_info {
 	struct regulator_desc desc;
 	u32 vselon_reg;
@@ -266,7 +259,7 @@ static const struct regulator_ops mt6380_volt_fixed_ops = {
 	.get_mode = mt6380_regulator_get_mode,
 };
 
-/* The array is indexed by id(MT6380_ID_XXX) */
+ 
 static struct mt6380_regulator_info mt6380_regulators[] = {
 	MT6380_BUCK("buck-vcore1", VCPU, 600000, 1393750, 6250,
 		    buck_volt_range1, MT6380_ANA_CTRL_3, MT6380_ANA_CTRL_1,
@@ -315,13 +308,13 @@ static int mt6380_regulator_probe(struct platform_device *pdev)
 
 static const struct platform_device_id mt6380_platform_ids[] = {
 	{"mt6380-regulator", 0},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(platform, mt6380_platform_ids);
 
 static const struct of_device_id  __maybe_unused mt6380_of_match[] = {
 	{ .compatible = "mediatek,mt6380-regulator", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, mt6380_of_match);
 

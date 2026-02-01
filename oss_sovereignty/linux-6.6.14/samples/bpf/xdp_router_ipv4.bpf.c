@@ -1,9 +1,4 @@
-/* Copyright (C) 2017 Cavium, Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License
- * as published by the Free Software Foundation.
- */
+ 
 
 #include "vmlinux.h"
 #include "xdp_sample.bpf.h"
@@ -21,7 +16,7 @@ struct trie_value {
 	__be32 gw;
 };
 
-/* Key for lpm_trie */
+ 
 union key_4 {
 	u32 b32[2];
 	u8 b8[8];
@@ -38,7 +33,7 @@ struct direct_map {
 	__be64 mac;
 };
 
-/* Map for trie implementation */
+ 
 struct {
 	__uint(type, BPF_MAP_TYPE_LPM_TRIE);
 	__uint(key_size, 8);
@@ -47,7 +42,7 @@ struct {
 	__uint(map_flags, BPF_F_NO_PREALLOC);
 } lpm_map SEC(".maps");
 
-/* Map for ARP table */
+ 
 struct {
 	__uint(type, BPF_MAP_TYPE_HASH);
 	__type(key, __be32);
@@ -55,7 +50,7 @@ struct {
 	__uint(max_entries, 50);
 } arp_table SEC(".maps");
 
-/* Map to keep the exact match entries in the route table */
+ 
 struct {
 	__uint(type, BPF_MAP_TYPE_HASH);
 	__type(key, __be32);
@@ -117,7 +112,7 @@ int xdp_router_ipv4_prog(struct xdp_md *ctx)
 
 		direct_entry = bpf_map_lookup_elem(&exact_match, &iph->daddr);
 
-		/* Check for exact match, this would give a faster lookup */
+		 
 		if (direct_entry && direct_entry->mac &&
 		    direct_entry->arp.mac) {
 			src_mac = &direct_entry->mac;
@@ -127,7 +122,7 @@ int xdp_router_ipv4_prog(struct xdp_md *ctx)
 			struct trie_value *prefix_value;
 			union key_4 key4;
 
-			/* Look up in the trie for lpm */
+			 
 			key4.b32[0] = 32;
 			key4.b8[4] = iph->daddr & 0xff;
 			key4.b8[5] = (iph->daddr >> 8) & 0xff;
@@ -151,10 +146,7 @@ int xdp_router_ipv4_prog(struct xdp_md *ctx)
 				dest_mac = bpf_map_lookup_elem(&arp_table,
 							       &prefix_value->gw);
 				if (!dest_mac) {
-					/* Forward the packet to the kernel in
-					 * order to trigger ARP discovery for
-					 * the default gw.
-					 */
+					 
 					if (rec)
 						NO_TEAR_INC(rec->xdp_pass);
 					return XDP_PASS;

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Converted from tools/testing/selftests/bpf/verifier/value_or_null.c */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -244,38 +244,32 @@ __naked void null_check_ids_in_regsafe(void)
 	asm volatile ("					\
 	r1 = 0;						\
 	*(u64*)(r10 - 8) = r1;				\
-	/* r9 = map_lookup_elem(...) */			\
+	 			\
 	r2 = r10;					\
 	r2 += -8;					\
 	r1 = %[map_hash_8b] ll;				\
 	call %[bpf_map_lookup_elem];			\
 	r9 = r0;					\
-	/* r8 = map_lookup_elem(...) */			\
+	 			\
 	r2 = r10;					\
 	r2 += -8;					\
 	r1 = %[map_hash_8b] ll;				\
 	call %[bpf_map_lookup_elem];			\
 	r8 = r0;					\
-	/* r7 = ktime_get_ns() */			\
+	 			\
 	call %[bpf_ktime_get_ns];			\
 	r7 = r0;					\
-	/* r6 = ktime_get_ns() */			\
+	 			\
 	call %[bpf_ktime_get_ns];			\
 	r6 = r0;					\
-	/* if r6 > r7 goto +1    ; no new information about the state is derived from\
-	 *                       ; this check, thus produced verifier states differ\
-	 *                       ; only in 'insn_idx'	\
-	 * r9 = r8               ; optionally share ID between r9 and r8\
-	 */						\
+	 						\
 	if r6 > r7 goto l0_%=;				\
 	r9 = r8;					\
-l0_%=:	/* if r9 == 0 goto <exit> */			\
+l0_%=:	 			\
 	if r9 == 0 goto l1_%=;				\
-	/* read map value via r8, this is not always	\
-	 * safe because r8 might be not equal to r9.	\
-	 */						\
+	 						\
 	r0 = *(u64*)(r8 + 0);				\
-l1_%=:	/* exit 0 */					\
+l1_%=:	 					\
 	r0 = 0;						\
 	exit;						\
 "	:

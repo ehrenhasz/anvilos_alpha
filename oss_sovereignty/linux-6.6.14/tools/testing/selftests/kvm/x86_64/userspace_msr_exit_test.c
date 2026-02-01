@@ -1,18 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020, Google LLC.
- *
- * Tests for exiting into userspace on registered MSRs
- */
 
-#define _GNU_SOURCE /* for program_invocation_short_name */
+ 
+
+#define _GNU_SOURCE  
 #include <sys/ioctl.h>
 
 #include "test_util.h"
 #include "kvm_util.h"
 #include "vmx.h"
 
-/* Forced emulation prefix, used to invoke the emulator unconditionally. */
+ 
 #define KVM_FEP "ud2; .byte 'k', 'v', 'm';"
 #define KVM_FEP_LENGTH 5
 static int fep_available = 1;
@@ -27,21 +23,21 @@ struct kvm_msr_filter filter_allow = {
 			.flags = KVM_MSR_FILTER_READ |
 				 KVM_MSR_FILTER_WRITE,
 			.nmsrs = 1,
-			/* Test an MSR the kernel knows about. */
+			 
 			.base = MSR_IA32_XSS,
 			.bitmap = (uint8_t*)&deny_bits,
 		}, {
 			.flags = KVM_MSR_FILTER_READ |
 				 KVM_MSR_FILTER_WRITE,
 			.nmsrs = 1,
-			/* Test an MSR the kernel doesn't know about. */
+			 
 			.base = MSR_IA32_FLUSH_CMD,
 			.bitmap = (uint8_t*)&deny_bits,
 		}, {
 			.flags = KVM_MSR_FILTER_READ |
 				 KVM_MSR_FILTER_WRITE,
 			.nmsrs = 1,
-			/* Test a fabricated MSR that no one knows about. */
+			 
 			.base = MSR_NON_EXISTENT,
 			.bitmap = (uint8_t*)&deny_bits,
 		},
@@ -144,10 +140,7 @@ struct kvm_msr_filter no_filter_deny = {
 	.flags = KVM_MSR_FILTER_DEFAULT_ALLOW,
 };
 
-/*
- * Note: Force test_rdmsr() to not be inlined to prevent the labels,
- * rdmsr_start and rdmsr_end, from being defined multiple times.
- */
+ 
 static noinline uint64_t test_rdmsr(uint32_t msr)
 {
 	uint32_t a, d;
@@ -160,10 +153,7 @@ static noinline uint64_t test_rdmsr(uint32_t msr)
 	return a | ((uint64_t) d << 32);
 }
 
-/*
- * Note: Force test_wrmsr() to not be inlined to prevent the labels,
- * wrmsr_start and wrmsr_end, from being defined multiple times.
- */
+ 
 static noinline void test_wrmsr(uint32_t msr, uint64_t value)
 {
 	uint32_t a = value;
@@ -178,10 +168,7 @@ static noinline void test_wrmsr(uint32_t msr, uint64_t value)
 extern char rdmsr_start, rdmsr_end;
 extern char wrmsr_start, wrmsr_end;
 
-/*
- * Note: Force test_em_rdmsr() to not be inlined to prevent the labels,
- * rdmsr_start and rdmsr_end, from being defined multiple times.
- */
+ 
 static noinline uint64_t test_em_rdmsr(uint32_t msr)
 {
 	uint32_t a, d;
@@ -194,10 +181,7 @@ static noinline uint64_t test_em_rdmsr(uint32_t msr)
 	return a | ((uint64_t) d << 32);
 }
 
-/*
- * Note: Force test_em_wrmsr() to not be inlined to prevent the labels,
- * wrmsr_start and wrmsr_end, from being defined multiple times.
- */
+ 
 static noinline void test_em_wrmsr(uint32_t msr, uint64_t value)
 {
 	uint32_t a = value;
@@ -216,12 +200,7 @@ static void guest_code_filter_allow(void)
 {
 	uint64_t data;
 
-	/*
-	 * Test userspace intercepting rdmsr / wrmsr for MSR_IA32_XSS.
-	 *
-	 * A GP is thrown if anything other than 0 is written to
-	 * MSR_IA32_XSS.
-	 */
+	 
 	data = test_rdmsr(MSR_IA32_XSS);
 	GUEST_ASSERT(data == 0);
 	GUEST_ASSERT(guest_exception_count == 0);
@@ -232,12 +211,7 @@ static void guest_code_filter_allow(void)
 	test_wrmsr(MSR_IA32_XSS, 1);
 	GUEST_ASSERT(guest_exception_count == 1);
 
-	/*
-	 * Test userspace intercepting rdmsr / wrmsr for MSR_IA32_FLUSH_CMD.
-	 *
-	 * A GP is thrown if MSR_IA32_FLUSH_CMD is read
-	 * from or if a value other than 1 is written to it.
-	 */
+	 
 	test_rdmsr(MSR_IA32_FLUSH_CMD);
 	GUEST_ASSERT(guest_exception_count == 1);
 
@@ -247,12 +221,7 @@ static void guest_code_filter_allow(void)
 	test_wrmsr(MSR_IA32_FLUSH_CMD, 1);
 	GUEST_ASSERT(guest_exception_count == 0);
 
-	/*
-	 * Test userspace intercepting rdmsr / wrmsr for MSR_NON_EXISTENT.
-	 *
-	 * Test that a fabricated MSR can pass through the kernel
-	 * and be handled in userspace.
-	 */
+	 
 	test_wrmsr(MSR_NON_EXISTENT, 2);
 	GUEST_ASSERT(guest_exception_count == 0);
 
@@ -260,20 +229,14 @@ static void guest_code_filter_allow(void)
 	GUEST_ASSERT(data == 2);
 	GUEST_ASSERT(guest_exception_count == 0);
 
-	/*
-	 * Test to see if the instruction emulator is available (ie: the module
-	 * parameter 'kvm.force_emulation_prefix=1' is set).  This instruction
-	 * will #UD if it isn't available.
-	 */
+	 
 	__asm__ __volatile__(KVM_FEP "nop");
 
 	if (fep_available) {
-		/* Let userspace know we aren't done. */
+		 
 		GUEST_SYNC(0);
 
-		/*
-		 * Now run the same tests with the instruction emulator.
-		 */
+		 
 		data = test_em_rdmsr(MSR_IA32_XSS);
 		GUEST_ASSERT(data == 0);
 		GUEST_ASSERT(guest_exception_count == 0);
@@ -301,11 +264,11 @@ static void guest_code_filter_allow(void)
 
 static void guest_msr_calls(bool trapped)
 {
-	/* This goes into the in-kernel emulation */
+	 
 	wrmsr(MSR_SYSCALL_MASK, 0);
 
 	if (trapped) {
-		/* This goes into user space emulation */
+		 
 		GUEST_ASSERT(rdmsr(MSR_SYSCALL_MASK) == MSR_SYSCALL_MASK);
 		GUEST_ASSERT(rdmsr(MSR_GS_BASE) == MSR_GS_BASE);
 	} else {
@@ -313,13 +276,13 @@ static void guest_msr_calls(bool trapped)
 		GUEST_ASSERT(rdmsr(MSR_GS_BASE) != MSR_GS_BASE);
 	}
 
-	/* If trapped == true, this goes into user space emulation */
+	 
 	wrmsr(MSR_IA32_POWER_CTL, 0x1234);
 
-	/* This goes into the in-kernel emulation */
+	 
 	rdmsr(MSR_IA32_POWER_CTL);
 
-	/* Invalid MSR, should always be handled by user space exit */
+	 
 	GUEST_ASSERT(rdmsr(0xdeadbeef) == 0xdeadbeef);
 	wrmsr(0xdeadbeef, 0x1234);
 }
@@ -328,10 +291,7 @@ static void guest_code_filter_deny(void)
 {
 	guest_msr_calls(true);
 
-	/*
-	 * Disable msr filtering, so that the kernel
-	 * handles everything in the next round
-	 */
+	 
 	GUEST_SYNC(0);
 
 	guest_msr_calls(false);
@@ -348,7 +308,7 @@ static void guest_code_permission_bitmap(void)
 	data = test_rdmsr(MSR_GS_BASE);
 	GUEST_ASSERT(data != MSR_GS_BASE);
 
-	/* Let userspace know to switch the filter */
+	 
 	GUEST_SYNC(0);
 
 	data = test_rdmsr(MSR_FS_BASE);
@@ -549,7 +509,7 @@ static void test_msr_filter_allow(void)
 
 	vm_install_exception_handler(vm, GP_VECTOR, guest_gp_handler);
 
-	/* Process guest code userspace exits. */
+	 
 	run_guest_then_process_rdmsr(vcpu, MSR_IA32_XSS);
 	run_guest_then_process_wrmsr(vcpu, MSR_IA32_XSS);
 	run_guest_then_process_wrmsr(vcpu, MSR_IA32_XSS);
@@ -568,7 +528,7 @@ static void test_msr_filter_allow(void)
 	if (process_ucall(vcpu) != UCALL_DONE) {
 		vm_install_exception_handler(vm, GP_VECTOR, guest_fep_gp_handler);
 
-		/* Process emulated rdmsr and wrmsr instructions. */
+		 
 		run_guest_then_process_rdmsr(vcpu, MSR_IA32_XSS);
 		run_guest_then_process_wrmsr(vcpu, MSR_IA32_XSS);
 		run_guest_then_process_wrmsr(vcpu, MSR_IA32_XSS);
@@ -580,7 +540,7 @@ static void test_msr_filter_allow(void)
 		run_guest_then_process_wrmsr(vcpu, MSR_NON_EXISTENT);
 		run_guest_then_process_rdmsr(vcpu, MSR_NON_EXISTENT);
 
-		/* Confirm the guest completed without issues. */
+		 
 		run_guest_then_process_ucall_done(vcpu);
 	} else {
 		printf("To run the instruction emulated tests set the module parameter 'kvm.force_emulation_prefix=1'\n");
@@ -628,7 +588,7 @@ static void handle_rdmsr(struct kvm_run *run)
 
 static void handle_wrmsr(struct kvm_run *run)
 {
-	/* ignore */
+	 
 	msr_writes++;
 
 	if (run->msr.index == MSR_IA32_POWER_CTL) {
@@ -785,7 +745,7 @@ static void run_msr_filter_flag_test(struct kvm_vm *vm)
 	}
 }
 
-/* Test that attempts to write to the unused bits in a flag fails. */
+ 
 static void test_user_exit_msr_flags(void)
 {
 	struct kvm_vcpu *vcpu;
@@ -793,10 +753,10 @@ static void test_user_exit_msr_flags(void)
 
 	vm = vm_create_with_one_vcpu(&vcpu, NULL);
 
-	/* Test flags for KVM_CAP_X86_USER_SPACE_MSR. */
+	 
 	run_user_space_msr_flag_test(vm);
 
-	/* Test flags and range flags for KVM_X86_SET_MSR_FILTER. */
+	 
 	run_msr_filter_flag_test(vm);
 
 	kvm_vm_free(vm);

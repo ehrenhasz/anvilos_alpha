@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015, Samsung Electronics Co., Ltd.
- *
- * Author: Marek Szyprowski <m.szyprowski@samsung.com>
- *
- * Simple eMMC hardware reset provider
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -70,11 +64,7 @@ static int mmc_pwrseq_emmc_probe(struct platform_device *pdev)
 		return PTR_ERR(pwrseq->reset_gpio);
 
 	if (!gpiod_cansleep(pwrseq->reset_gpio)) {
-		/*
-		 * register reset handler to ensure emmc reset also from
-		 * emergency_reboot(), priority 255 is the highest priority
-		 * so it will be executed before any system reboot handler.
-		 */
+		 
 		pwrseq->reset_nb.notifier_call = mmc_pwrseq_emmc_reset_nb;
 		pwrseq->reset_nb.priority = 255;
 		register_restart_handler(&pwrseq->reset_nb);
@@ -100,7 +90,7 @@ static void mmc_pwrseq_emmc_remove(struct platform_device *pdev)
 
 static const struct of_device_id mmc_pwrseq_emmc_of_match[] = {
 	{ .compatible = "mmc-pwrseq-emmc",},
-	{/* sentinel */},
+	{ },
 };
 
 MODULE_DEVICE_TABLE(of, mmc_pwrseq_emmc_of_match);

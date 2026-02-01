@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Arch specific cpu topology information
- *
- * Copyright (C) 2016, ARM Ltd.
- * Written by: Juri Lelli, ARM Ltd.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/cacheinfo.h>
@@ -44,12 +39,7 @@ static void update_scale_freq_invariant(bool status)
 	if (scale_freq_invariant == status)
 		return;
 
-	/*
-	 * Task scheduler behavior depends on frequency invariance support,
-	 * either cpufreq or counter driven. If the support status changes as
-	 * a result of counter initialisation and use, retrigger the build of
-	 * scheduling domains to ensure the information is propagated properly.
-	 */
+	 
 	if (topology_scale_freq_invariant() == status) {
 		scale_freq_invariant = status;
 		rebuild_sched_domains_energy();
@@ -62,10 +52,7 @@ void topology_set_scale_freq_source(struct scale_freq_data *data,
 	struct scale_freq_data *sfd;
 	int cpu;
 
-	/*
-	 * Avoid calling rebuild_sched_domains() unnecessarily if FIE is
-	 * supported by cpufreq.
-	 */
+	 
 	if (cpumask_empty(&scale_freq_counters_mask))
 		scale_freq_invariant = topology_scale_freq_invariant();
 
@@ -74,7 +61,7 @@ void topology_set_scale_freq_source(struct scale_freq_data *data,
 	for_each_cpu(cpu, cpus) {
 		sfd = rcu_dereference(*per_cpu_ptr(&sft_data, cpu));
 
-		/* Use ARCH provided counters whenever possible */
+		 
 		if (!sfd || sfd->source != SCALE_FREQ_SOURCE_ARCH) {
 			rcu_assign_pointer(per_cpu(sft_data, cpu), data);
 			cpumask_set_cpu(cpu, &scale_freq_counters_mask);
@@ -106,10 +93,7 @@ void topology_clear_scale_freq_source(enum scale_freq_source source,
 
 	rcu_read_unlock();
 
-	/*
-	 * Make sure all references to previous sft_data are dropped to avoid
-	 * use-after-free races.
-	 */
+	 
 	synchronize_rcu();
 
 	update_scale_freq_invariant(false);
@@ -136,11 +120,7 @@ void topology_set_freq_scale(const struct cpumask *cpus, unsigned long cur_freq,
 	if (WARN_ON_ONCE(!cur_freq || !max_freq))
 		return;
 
-	/*
-	 * If the use of counters for FIE is enabled, just return as we don't
-	 * want to update the scale factor with information from CPUFREQ.
-	 * Instead the scale factor will be updated from arch_scale_freq_tick.
-	 */
+	 
 	if (supports_scale_freq_counters(cpus))
 		return;
 
@@ -160,20 +140,7 @@ void topology_set_cpu_scale(unsigned int cpu, unsigned long capacity)
 
 DEFINE_PER_CPU(unsigned long, thermal_pressure);
 
-/**
- * topology_update_thermal_pressure() - Update thermal pressure for CPUs
- * @cpus        : The related CPUs for which capacity has been reduced
- * @capped_freq : The maximum allowed frequency that CPUs can run at
- *
- * Update the value of thermal pressure for all @cpus in the mask. The
- * cpumask should include all (online+offline) affected CPUs, to avoid
- * operating on stale data when hot-plug is used for some CPUs. The
- * @capped_freq reflects the currently allowed max CPUs frequency due to
- * thermal capping. It might be also a boost frequency value, which is bigger
- * than the internal 'freq_factor' max frequency. In such case the pressure
- * value should simply be removed, since this is an indication that there is
- * no thermal throttling. The @capped_freq must be provided in kHz.
- */
+ 
 void topology_update_thermal_pressure(const struct cpumask *cpus,
 				      unsigned long capped_freq)
 {
@@ -185,13 +152,10 @@ void topology_update_thermal_pressure(const struct cpumask *cpus,
 	max_capacity = arch_scale_cpu_capacity(cpu);
 	max_freq = per_cpu(freq_factor, cpu);
 
-	/* Convert to MHz scale which is used in 'freq_factor' */
+	 
 	capped_freq /= 1000;
 
-	/*
-	 * Handle properly the boost frequencies, which should simply clean
-	 * the thermal pressure value.
-	 */
+	 
 	if (max_freq <= capped_freq)
 		capacity = max_capacity;
 	else
@@ -246,10 +210,7 @@ int topology_update_cpu_topology(void)
 	return update_topology;
 }
 
-/*
- * Updating the sched_domains can't be done directly from cpufreq callbacks
- * due to locking, so queue the work for later.
- */
+ 
 static void update_topology_flags_workfn(struct work_struct *work)
 {
 	update_topology = 1;
@@ -320,12 +281,7 @@ bool __init topology_parse_cpu_capacity(struct device_node *cpu_node, int cpu)
 		pr_debug("cpu_capacity: %pOF cpu_capacity=%u (raw)\n",
 			cpu_node, raw_capacity[cpu]);
 
-		/*
-		 * Update freq_factor for calculating early boot cpu capacities.
-		 * For non-clk CPU DVFS mechanism, there's no way to get the
-		 * frequency value now, assuming they are running at the same
-		 * frequency (by keeping the initial freq_factor value).
-		 */
+		 
 		cpu_clk = of_clk_get(cpu_node, 0);
 		if (!PTR_ERR_OR_ZERO(cpu_clk)) {
 			per_cpu(freq_factor, cpu) =
@@ -432,10 +388,7 @@ static int __init register_cpufreq_notifier(void)
 {
 	int ret;
 
-	/*
-	 * On ACPI-based systems skip registering cpufreq notifier as cpufreq
-	 * information is not needed for cpu capacity initialization.
-	 */
+	 
 	if (!acpi_disabled || !raw_capacity)
 		return -EINVAL;
 
@@ -466,16 +419,7 @@ core_initcall(free_raw_capacity);
 #endif
 
 #if defined(CONFIG_ARM64) || defined(CONFIG_RISCV)
-/*
- * This function returns the logic cpu number of the node.
- * There are basically three kinds of return values:
- * (1) logic cpu number which is > 0.
- * (2) -ENODEV when the device tree(DT) node is valid and found in the DT but
- * there is no possible logical CPU in the kernel to match. This happens
- * when CONFIG_NR_CPUS is configure to be smaller than the number of
- * CPU nodes in DT. We need to just ignore this case.
- * (3) -1 if the node does not exist in the device tree
- */
+ 
 static int __init get_cpu_for_node(struct device_node *node)
 {
 	struct device_node *cpu_node;
@@ -555,11 +499,7 @@ static int __init parse_cluster(struct device_node *cluster, int package_id,
 	int core_id = 0;
 	int i, ret;
 
-	/*
-	 * First check for child clusters; we currently ignore any
-	 * information about the nesting of clusters and present the
-	 * scheduler with a flat list of them.
-	 */
+	 
 	i = 0;
 	do {
 		snprintf(name, sizeof(name), "cluster%d", i);
@@ -576,7 +516,7 @@ static int __init parse_cluster(struct device_node *cluster, int package_id,
 		i++;
 	} while (c);
 
-	/* Now check for cores */
+	 
 	i = 0;
 	do {
 		snprintf(name, sizeof(name), "core%d", i);
@@ -651,10 +591,7 @@ static int __init parse_dt_topology(void)
 		return 0;
 	}
 
-	/*
-	 * When topology is provided cpu-map is essentially a root
-	 * cluster with restricted subnodes.
-	 */
+	 
 	map = of_get_child_by_name(cn, "cpu-map");
 	if (!map)
 		goto out;
@@ -665,10 +602,7 @@ static int __init parse_dt_topology(void)
 
 	topology_normalize_cpu_scale();
 
-	/*
-	 * Check that all cores are in the topology; the SMP code will
-	 * only mark cores described in the DT as possible.
-	 */
+	 
 	for_each_possible_cpu(cpu)
 		if (cpu_topology[cpu].package_id < 0) {
 			ret = -EINVAL;
@@ -683,9 +617,7 @@ out:
 }
 #endif
 
-/*
- * cpu topology table
- */
+ 
 struct cpu_topology cpu_topology[NR_CPUS];
 EXPORT_SYMBOL_GPL(cpu_topology);
 
@@ -693,9 +625,9 @@ const struct cpumask *cpu_coregroup_mask(int cpu)
 {
 	const cpumask_t *core_mask = cpumask_of_node(cpu_to_node(cpu));
 
-	/* Find the smaller of NUMA, core or LLC siblings */
+	 
 	if (cpumask_subset(&cpu_topology[cpu].core_sibling, core_mask)) {
-		/* not numa in package, lets use the package siblings */
+		 
 		core_mask = &cpu_topology[cpu].core_sibling;
 	}
 
@@ -704,11 +636,7 @@ const struct cpumask *cpu_coregroup_mask(int cpu)
 			core_mask = &cpu_topology[cpu].llc_sibling;
 	}
 
-	/*
-	 * For systems with no shared cpu-side LLC but with clusters defined,
-	 * extend core_mask to cluster_siblings. The sched domain builder will
-	 * then remove MC as redundant with CLS if SCHED_CLUSTER is enabled.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_SCHED_CLUSTER) &&
 	    cpumask_subset(core_mask, &cpu_topology[cpu].cluster_sibling))
 		core_mask = &cpu_topology[cpu].cluster_sibling;
@@ -718,10 +646,7 @@ const struct cpumask *cpu_coregroup_mask(int cpu)
 
 const struct cpumask *cpu_clustergroup_mask(int cpu)
 {
-	/*
-	 * Forbid cpu_clustergroup_mask() to span more or the same CPUs as
-	 * cpu_coregroup_mask().
-	 */
+	 
 	if (cpumask_subset(cpu_coregroup_mask(cpu),
 			   &cpu_topology[cpu].cluster_sibling))
 		return topology_sibling_cpumask(cpu);
@@ -738,7 +663,7 @@ void update_siblings_masks(unsigned int cpuid)
 	if (ret && ret != -ENOENT)
 		pr_info("Early cacheinfo allocation failed, ret = %d\n", ret);
 
-	/* update core and thread sibling masks */
+	 
 	for_each_online_cpu(cpu) {
 		cpu_topo = &cpu_topology[cpu];
 
@@ -833,11 +758,7 @@ void __init init_cpu_topology(void)
 		ret = of_have_populated_dt() && parse_dt_topology();
 
 	if (ret) {
-		/*
-		 * Discard anything that was parsed if we hit an error so we
-		 * don't use partial information. But do not return yet to give
-		 * arch-specific early cache level detection a chance to run.
-		 */
+		 
 		reset_cpu_topology();
 	}
 

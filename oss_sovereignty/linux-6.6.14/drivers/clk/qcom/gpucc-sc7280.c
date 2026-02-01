@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -47,7 +45,7 @@ static struct clk_alpha_pll gpu_cc_pll0 = {
 	},
 };
 
-/* 500MHz Configuration */
+ 
 static const struct alpha_pll_config gpu_cc_pll1_config = {
 	.l = 0x1A,
 	.alpha = 0xAAA,
@@ -457,10 +455,7 @@ static int gpu_cc_sc7280_probe(struct platform_device *pdev)
 
 	clk_lucid_pll_configure(&gpu_cc_pll1, regmap, &gpu_cc_pll1_config);
 
-	/*
-	 * Keep the clocks always-ON
-	 * GPU_CC_CB_CLK, GPUCC_CX_GMU_CLK
-	 */
+	 
 	regmap_update_bits(regmap, 0x1170, BIT(0), BIT(0));
 	regmap_update_bits(regmap, 0x1098, BIT(0), BIT(0));
 	regmap_update_bits(regmap, 0x1098, BIT(13), BIT(13));

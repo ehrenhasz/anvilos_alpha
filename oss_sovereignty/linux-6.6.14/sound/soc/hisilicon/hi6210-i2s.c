@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/sound/soc/m8m/hi6210_i2s.c - I2S IP driver
- *
- * Copyright (C) 2015 Linaro, Ltd
- * Author: Andy Green <andy.green@linaro.org>
- *
- * This driver only deals with S2 interface (BT)
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -95,7 +88,7 @@ static int hi6210_i2s_startup(struct snd_pcm_substream *substream,
 	int ret, n;
 	u32 val;
 
-	/* deassert reset on ABB */
+	 
 	regmap_read(i2s->sysctrl, SC_PERIPH_RSTSTAT2, &val);
 	if (val & BIT(4))
 		regmap_write(i2s->sysctrl, SC_PERIPH_RSTDIS2, BIT(4));
@@ -113,23 +106,23 @@ static int hi6210_i2s_startup(struct snd_pcm_substream *substream,
 		goto err_unprepare_clk;
 	}
 
-	/* enable clock before frequency division */
+	 
 	regmap_write(i2s->sysctrl, SC_PERIPH_CLKEN12, BIT(9));
 
-	/* enable codec working clock / == "codec bus clock" */
+	 
 	regmap_write(i2s->sysctrl, SC_PERIPH_CLKEN1, BIT(5));
 
-	/* deassert reset on codec / interface clock / working clock */
+	 
 	regmap_write(i2s->sysctrl, SC_PERIPH_RSTEN1, BIT(5));
 	regmap_write(i2s->sysctrl, SC_PERIPH_RSTDIS1, BIT(5));
 
-	/* not interested in i2s irqs */
+	 
 	val = hi6210_read_reg(i2s, HII2S_CODEC_IRQ_MASK);
 	val |= 0x3f;
 	hi6210_write_reg(i2s, HII2S_CODEC_IRQ_MASK, val);
 
 
-	/* reset the stereo downlink fifo */
+	 
 	val = hi6210_read_reg(i2s, HII2S_APB_AFIFO_CFG_1);
 	val |= (BIT(5) | BIT(4));
 	hi6210_write_reg(i2s, HII2S_APB_AFIFO_CFG_1, val);
@@ -146,14 +139,14 @@ static int hi6210_i2s_startup(struct snd_pcm_substream *substream,
 	hi6210_write_reg(i2s, HII2S_SW_RST_N, val);
 
 	val = hi6210_read_reg(i2s, HII2S_MISC_CFG);
-	/* mux 11/12 = APB not i2s */
+	 
 	val &= ~HII2S_MISC_CFG__ST_DL_TEST_SEL;
-	/* BT R ch  0 = mixer op of DACR ch */
+	 
 	val &= ~HII2S_MISC_CFG__S2_DOUT_RIGHT_SEL;
 	val &= ~HII2S_MISC_CFG__S2_DOUT_TEST_SEL;
 
 	val |= HII2S_MISC_CFG__S2_DOUT_RIGHT_SEL;
-	/* BT L ch = 1 = mux 7 = "mixer output of DACL */
+	 
 	val |= HII2S_MISC_CFG__S2_DOUT_TEST_SEL;
 	hi6210_write_reg(i2s, HII2S_MISC_CFG, val);
 
@@ -188,12 +181,12 @@ static void hi6210_i2s_txctrl(struct snd_soc_dai *cpu_dai, int on)
 
 	spin_lock(&i2s->lock);
 	if (on) {
-		/* enable S2 TX */
+		 
 		val = hi6210_read_reg(i2s, HII2S_I2S_CFG);
 		val |= HII2S_I2S_CFG__S2_IF_TX_EN;
 		hi6210_write_reg(i2s, HII2S_I2S_CFG, val);
 	} else {
-		/* disable S2 TX */
+		 
 		val = hi6210_read_reg(i2s, HII2S_I2S_CFG);
 		val &= ~HII2S_I2S_CFG__S2_IF_TX_EN;
 		hi6210_write_reg(i2s, HII2S_I2S_CFG, val);
@@ -223,10 +216,7 @@ static int hi6210_i2s_set_fmt(struct snd_soc_dai *cpu_dai, unsigned int fmt)
 {
 	struct hi6210_i2s *i2s = dev_get_drvdata(cpu_dai->dev);
 
-	/*
-	 * We don't actually set the hardware until the hw_params
-	 * call, but we need to validate the user input here.
-	 */
+	 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_BC_FC:
 	case SND_SOC_DAIFMT_BP_FP:
@@ -416,7 +406,7 @@ static int hi6210_i2s_hw_params(struct snd_pcm_substream *substream,
 
 
 	val = hi6210_read_reg(i2s, HII2S_CLK_SEL);
-	val &= ~(HII2S_CLK_SEL__I2S_BT_FM_SEL | /* BT gets the I2S */
+	val &= ~(HII2S_CLK_SEL__I2S_BT_FM_SEL |  
 			HII2S_CLK_SEL__EXT_12_288MHZ_SEL);
 	hi6210_write_reg(i2s, HII2S_CLK_SEL, val);
 
@@ -440,7 +430,7 @@ static int hi6210_i2s_hw_params(struct snd_pcm_substream *substream,
 		break;
 	}
 
-	/* clear loopback, set signed type and word length */
+	 
 	val = hi6210_read_reg(i2s, HII2S_I2S_CFG);
 	val &= ~HII2S_I2S_CFG__S2_CODEC_DATA_FORMAT;
 	val &= ~(HII2S_I2S_CFG__S2_CODEC_IO_WORDLENGTH_MASK <<
@@ -455,7 +445,7 @@ static int hi6210_i2s_hw_params(struct snd_pcm_substream *substream,
 	if (!i2s->master)
 		return 0;
 
-	/* set DAC and related units to correct rate */
+	 
 	val = hi6210_read_reg(i2s, HII2S_FS_CFG);
 	val &= ~(HII2S_FS_CFG__FS_S2_MASK << HII2S_FS_CFG__FS_S2_SHIFT);
 	val &= ~(HII2S_FS_CFG__FS_DACLR_MASK << HII2S_FS_CFG__FS_DACLR_SHIFT);
@@ -592,7 +582,7 @@ static int hi6210_i2s_probe(struct platform_device *pdev)
 
 static const struct of_device_id hi6210_i2s_dt_ids[] = {
 	{ .compatible = "hisilicon,hi6210-i2s" },
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, hi6210_i2s_dt_ids);

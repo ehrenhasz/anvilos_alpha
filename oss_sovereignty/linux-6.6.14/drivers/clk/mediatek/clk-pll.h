@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: James Liao <jamesjj.liao@mediatek.com>
- */
+ 
+ 
 
 #ifndef __DRV_CLK_MTK_PLL_H
 #define __DRV_CLK_MTK_PLL_H
@@ -47,15 +44,10 @@ struct mtk_pll_data {
 	const struct mtk_pll_div_table *div_table;
 	const char *parent_name;
 	u32 en_reg;
-	u8 pll_en_bit; /* Assume 0, indicates BIT(0) by default */
+	u8 pll_en_bit;  
 };
 
-/*
- * MediaTek PLLs are configured through their pcw value. The pcw value describes
- * a divider in the PLL feedback loop which consists of 7 bits for the integer
- * part and the remaining bits (if present) for the fractional part. Also they
- * have a 3 bit power-of-two post divider.
- */
+ 
 
 struct mtk_clk_pll {
 	struct clk_hw	hw;
@@ -109,4 +101,4 @@ void mtk_clk_unregister_pll(struct clk_hw *hw);
 __iomem void *mtk_clk_pll_get_base(struct clk_hw *hw,
 				   const struct mtk_pll_data *data);
 
-#endif /* __DRV_CLK_MTK_PLL_H */
+#endif  

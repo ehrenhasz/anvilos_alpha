@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * R-Car Gen4 Clock Pulse Generator
- *
- * Copyright (C) 2021 Renesas Electronics Corp.
- *
- * Based on rcar-gen3-cpg.c
- *
- * Copyright (C) 2015-2018 Glider bvba
- * Copyright (C) 2019 Renesas Electronics Corp.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -28,12 +19,12 @@ static const struct rcar_gen4_cpg_pll_config *cpg_pll_config __initdata;
 static unsigned int cpg_clk_extalr __initdata;
 static u32 cpg_mode __initdata;
 
-#define CPG_PLLECR		0x0820	/* PLL Enable Control Register */
+#define CPG_PLLECR		0x0820	 
 
 #define CPG_PLLECR_PLLST(n)	BIT(8 + ((n) < 3 ? (n) - 1 : \
-					 (n) > 3 ? (n) + 1 : n)) /* PLLn Circuit Status */
+					 (n) > 3 ? (n) + 1 : n))  
 
-#define CPG_PLL1CR0		0x830	/* PLLn Control Registers */
+#define CPG_PLL1CR0		0x830	 
 #define CPG_PLL1CR1		0x8b0
 #define CPG_PLL2CR0		0x834
 #define CPG_PLL2CR1		0x8b8
@@ -45,19 +36,19 @@ static u32 cpg_mode __initdata;
 #define CPG_PLL6CR1		0x8d8
 
 #define CPG_PLLxCR0_KICK	BIT(31)
-#define CPG_PLLxCR0_NI		GENMASK(27, 20)	/* Integer mult. factor */
-#define CPG_PLLxCR0_SSMODE	GENMASK(18, 16)	/* PLL mode */
-#define CPG_PLLxCR0_SSMODE_FM	BIT(18)	/* Fractional Multiplication */
-#define CPG_PLLxCR0_SSMODE_DITH	BIT(17) /* Frequency Dithering */
-#define CPG_PLLxCR0_SSMODE_CENT	BIT(16)	/* Center (vs. Down) Spread Dithering */
-#define CPG_PLLxCR0_SSFREQ	GENMASK(14, 8)	/* SSCG Modulation Frequency */
-#define CPG_PLLxCR0_SSDEPT	GENMASK(6, 0)	/* SSCG Modulation Depth */
+#define CPG_PLLxCR0_NI		GENMASK(27, 20)	 
+#define CPG_PLLxCR0_SSMODE	GENMASK(18, 16)	 
+#define CPG_PLLxCR0_SSMODE_FM	BIT(18)	 
+#define CPG_PLLxCR0_SSMODE_DITH	BIT(17)  
+#define CPG_PLLxCR0_SSMODE_CENT	BIT(16)	 
+#define CPG_PLLxCR0_SSFREQ	GENMASK(14, 8)	 
+#define CPG_PLLxCR0_SSDEPT	GENMASK(6, 0)	 
 
-#define SSMODE_FM		BIT(2)	/* Fractional Multiplication */
-#define SSMODE_DITHER		BIT(1)	/* Frequency Dithering */
-#define SSMODE_CENTER		BIT(0)	/* Center (vs. Down) Spread Dithering */
+#define SSMODE_FM		BIT(2)	 
+#define SSMODE_DITHER		BIT(1)	 
+#define SSMODE_CENTER		BIT(0)	 
 
-/* PLL Clocks */
+ 
 struct cpg_pll_clk {
 	struct clk_hw hw;
 	void __iomem *pllcr0_reg;
@@ -113,21 +104,10 @@ static int cpg_pll_clk_set_rate(struct clk_hw *hw, unsigned long rate,
 	cpg_reg_modify(pll_clk->pllcr0_reg, CPG_PLLxCR0_NI,
 		       FIELD_PREP(CPG_PLLxCR0_NI, mult - 1));
 
-	/*
-	 * Set KICK bit in PLLxCR0 to update hardware setting and wait for
-	 * clock change completion.
-	 */
+	 
 	cpg_reg_modify(pll_clk->pllcr0_reg, 0, CPG_PLLxCR0_KICK);
 
-	/*
-	 * Note: There is no HW information about the worst case latency.
-	 *
-	 * Using experimental measurements, it seems that no more than
-	 * ~45 µs are needed, independently of the CPU rate.
-	 * Since this value might be dependent on external xtal rate, pll
-	 * rate or even the other emulation clocks rate, use 1000 as a
-	 * "super" safe value.
-	 */
+	 
 	return readl_poll_timeout(pll_clk->pllecr_reg, val,
 				  val & pll_clk->pllecr_pllst_mask, 0, 1000);
 }
@@ -164,7 +144,7 @@ static struct clk * __init cpg_pll_clk_register(const char *name,
 	pll_clk->pllecr_reg = base + CPG_PLLECR;
 	pll_clk->pllecr_pllst_mask = CPG_PLLECR_PLLST(index);
 
-	/* Disable Fractional Multiplication and Frequency Dithering */
+	 
 	writel(0, base + cr1_offset);
 	cpg_reg_modify(pll_clk->pllcr0_reg, CPG_PLLxCR0_SSMODE, 0);
 
@@ -174,9 +154,7 @@ static struct clk * __init cpg_pll_clk_register(const char *name,
 
 	return clk;
 }
-/*
- * Z0 Clock & Z1 Clock
- */
+ 
 #define CPG_FRQCRB			0x00000804
 #define CPG_FRQCRB_KICK			BIT(31)
 #define CPG_FRQCRC			0x00000808
@@ -185,7 +163,7 @@ struct cpg_z_clk {
 	struct clk_hw hw;
 	void __iomem *reg;
 	void __iomem *kick_reg;
-	unsigned long max_rate;		/* Maximum rate for normal mode */
+	unsigned long max_rate;		 
 	unsigned int fixed_div;
 	u32 mask;
 };
@@ -215,10 +193,10 @@ static int cpg_z_clk_determine_rate(struct clk_hw *hw,
 
 	rate = min(req->rate, req->max_rate);
 	if (rate <= zclk->max_rate) {
-		/* Set parent rate to initial value for normal modes */
+		 
 		prate = zclk->max_rate;
 	} else {
-		/* Set increased parent rate for boost modes */
+		 
 		prate = rate;
 	}
 	req->best_parent_rate = clk_hw_round_rate(clk_hw_get_parent(hw),
@@ -253,21 +231,10 @@ static int cpg_z_clk_set_rate(struct clk_hw *hw, unsigned long rate,
 
 	cpg_reg_modify(zclk->reg, zclk->mask, (32 - mult) << __ffs(zclk->mask));
 
-	/*
-	 * Set KICK bit in FRQCRB to update hardware setting and wait for
-	 * clock change completion.
-	 */
+	 
 	cpg_reg_modify(zclk->kick_reg, 0, CPG_FRQCRB_KICK);
 
-	/*
-	 * Note: There is no HW information about the worst case latency.
-	 *
-	 * Using experimental measurements, it seems that no more than
-	 * ~10 iterations are needed, independently of the CPU rate.
-	 * Since this value might be dependent on external xtal rate, pll1
-	 * rate or even the other emulation clocks rate, use 1000 as a
-	 * "super" safe value.
-	 */
+	 
 	for (i = 1000; i; i--) {
 		if (!(readl(zclk->kick_reg) & CPG_FRQCRB_KICK))
 			return 0;
@@ -308,7 +275,7 @@ static struct clk * __init cpg_z_clk_register(const char *name,
 	zclk->kick_reg = reg + CPG_FRQCRB;
 	zclk->hw.init = &init;
 	zclk->mask = GENMASK(offset + 4, offset);
-	zclk->fixed_div = div; /* PLLVCO x 1/div x SYS-CPU divider */
+	zclk->fixed_div = div;  
 
 	clk = clk_register(NULL, &zclk->hw);
 	if (IS_ERR(clk)) {
@@ -321,9 +288,7 @@ static struct clk * __init cpg_z_clk_register(const char *name,
 	return clk;
 }
 
-/*
- * RPC Clocks
- */
+ 
 static const struct clk_div_table cpg_rpcsrc_div_table[] = {
 	{ 0, 4 }, { 1, 6 }, { 2, 5 }, { 3, 6 }, { 0, 0 },
 };
@@ -338,7 +303,7 @@ struct clk * __init rcar_gen4_cpg_clk_register(struct device *dev,
 	unsigned int div = 1;
 	u32 value;
 
-	parent = clks[core->parent & 0xffff];	/* some types use high bits */
+	parent = clks[core->parent & 0xffff];	 
 	if (IS_ERR(parent))
 		return ERR_CAST(parent);
 
@@ -353,11 +318,7 @@ struct clk * __init rcar_gen4_cpg_clk_register(struct device *dev,
 		break;
 
 	case CLK_TYPE_GEN4_PLL2_VAR:
-		/*
-		 * PLL2 is implemented as a custom clock, to change the
-		 * multiplier when cpufreq changes between normal and boost
-		 * modes.
-		 */
+		 
 		return cpg_pll_clk_register(core->name, __clk_get_name(parent),
 					    base, CPG_PLL2CR0, CPG_PLL2CR1, 2);
 
@@ -408,10 +369,7 @@ struct clk * __init rcar_gen4_cpg_clk_register(struct device *dev,
 					   __clk_get_name(parent));
 
 	case CLK_TYPE_GEN4_MDSEL:
-		/*
-		 * Clock selectable between two parents and two fixed dividers
-		 * using a mode pin
-		 */
+		 
 		if (cpg_mode & BIT(core->offset)) {
 			div = core->div & 0xffff;
 		} else {
@@ -424,9 +382,7 @@ struct clk * __init rcar_gen4_cpg_clk_register(struct device *dev,
 		break;
 
 	case CLK_TYPE_GEN4_OSC:
-		/*
-		 * Clock combining OSC EXTAL predivider and a fixed divider
-		 */
+		 
 		div = cpg_pll_config->osc_prediv * core->div;
 		break;
 

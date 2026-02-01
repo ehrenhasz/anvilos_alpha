@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- */
+
+ 
 #include <linux/of.h>
 #include <linux/of_net.h>
 #include <linux/mtd/mtd.h>
@@ -87,7 +85,7 @@ static int mt76_get_of_epprom_from_mtd(struct mt76_dev *dev, void *eep, int offs
 		u8 *data = (u8 *)eep;
 		int i;
 
-		/* convert eeprom data in Little Endian */
+		 
 		for (i = 0; i < round_down(len, 2); i += 2)
 			put_unaligned_le16(get_unaligned_be16(&data[i]),
 					   &data[i]);

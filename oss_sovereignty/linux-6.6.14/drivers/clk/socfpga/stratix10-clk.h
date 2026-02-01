@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier:    GPL-2.0 */
-/*
- * Copyright (C) 2017, Intel Corporation
- */
+ 
+ 
 
 #ifndef	__STRATIX10_CLK_H
 #define	__STRATIX10_CLK_H
@@ -9,7 +7,7 @@
 struct stratix10_clock_data {
 	void __iomem		*base;
 
-	/* Must be last */
+	 
 	struct clk_hw_onecell_data	clk_data;
 };
 
@@ -89,4 +87,4 @@ struct clk_hw *s10_register_gate(const struct stratix10_gate_clock *clks,
 			      void __iomem *reg);
 struct clk_hw *agilex_register_gate(const struct stratix10_gate_clock *clks,
 			      void __iomem *reg);
-#endif	/* __STRATIX10_CLK_H */
+#endif	 

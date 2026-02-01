@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2013-2015, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/mlx5/driver.h>
 #include <linux/mlx5/eswitch.h>
@@ -38,7 +8,7 @@
 #include "devlink.h"
 #include "lag/lag.h"
 
-/* intf dev list mutex */
+ 
 static DEFINE_MUTEX(mlx5_intf_mutex);
 static DEFINE_IDA(mlx5_adev_ida);
 
@@ -366,9 +336,7 @@ int mlx5_attach_device(struct mlx5_core_dev *dev)
 		} else {
 			adev = &priv->adev[i]->adev;
 
-			/* Pay attention that this is not PCI driver that
-			 * mlx5_core_dev is connected, but auxiliary driver.
-			 */
+			 
 			if (!adev->dev.driver)
 				continue;
 			adrv = to_auxiliary_drv(adev->dev.driver);
@@ -410,7 +378,7 @@ void mlx5_detach_device(struct mlx5_core_dev *dev, bool suspend)
 		}
 
 		adev = &priv->adev[i]->adev;
-		/* Auxiliary driver was unbind manually through sysfs */
+		 
 		if (!adev->dev.driver)
 			goto skip_suspend;
 
@@ -478,9 +446,7 @@ static int add_drivers(struct mlx5_core_dev *dev)
 		if (IS_ERR(priv->adev[i])) {
 			mlx5_core_warn(dev, "Device[%d] (%s) failed to load\n",
 				       i, mlx5_adev_devices[i].suffix);
-			/* We continue to rescan drivers and leave to the caller
-			 * to make decision if to release everything or continue.
-			 */
+			 
 			ret = PTR_ERR(priv->adev[i]);
 			priv->adev[i] = NULL;
 		}
@@ -522,8 +488,7 @@ del_adev:
 	}
 }
 
-/* This function is used after mlx5_core_dev is reconfigured.
- */
+ 
 int mlx5_rescan_drivers_locked(struct mlx5_core_dev *dev)
 {
 	struct mlx5_priv *priv = &dev->priv;
@@ -610,7 +575,7 @@ static struct mlx5_core_dev *mlx5_get_next_dev(struct mlx5_core_dev *dev,
 	return pci_get_drvdata(to_pci_dev(next));
 }
 
-/* Must be called with intf_mutex held */
+ 
 struct mlx5_core_dev *mlx5_get_next_phys_dev_lag(struct mlx5_core_dev *dev)
 {
 	lockdep_assert_held(&mlx5_intf_mutex);

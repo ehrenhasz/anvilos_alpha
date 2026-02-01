@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Line 6 Linux USB driver
- *
- * Copyright (C) 2004-2010 Markus Grabner (grabner@icg.tugraz.at)
- */
+
+ 
 
 #include <linux/slab.h>
 #include <sound/core.h>
@@ -14,10 +10,7 @@
 #include "driver.h"
 #include "pcm.h"
 
-/*
-	Find a free URB and submit it.
-	must be called in line6pcm->in.lock context
-*/
+ 
 static int submit_audio_in_urb(struct snd_line6_pcm *line6pcm)
 {
 	int index;
@@ -61,10 +54,7 @@ static int submit_audio_in_urb(struct snd_line6_pcm *line6pcm)
 	return 0;
 }
 
-/*
-	Submit all currently available capture URBs.
-	must be called in line6pcm->in.lock context
-*/
+ 
 int line6_submit_audio_in_all_urbs(struct snd_line6_pcm *line6pcm)
 {
 	int ret = 0, i;
@@ -78,9 +68,7 @@ int line6_submit_audio_in_all_urbs(struct snd_line6_pcm *line6pcm)
 	return ret;
 }
 
-/*
-	Copy data into ALSA capture buffer.
-*/
+ 
 void line6_capture_copy(struct snd_line6_pcm *line6pcm, char *fbuf, int fsize)
 {
 	struct snd_pcm_substream *substream =
@@ -95,10 +83,7 @@ void line6_capture_copy(struct snd_line6_pcm *line6pcm, char *fbuf, int fsize)
 		return;
 
 	if (line6pcm->in.pos_done + frames > runtime->buffer_size) {
-		/*
-		   The transferred area goes over buffer boundary,
-		   copy two separate chunks.
-		 */
+		 
 		int len;
 
 		len = runtime->buffer_size - line6pcm->in.pos_done;
@@ -110,12 +95,12 @@ void line6_capture_copy(struct snd_line6_pcm *line6pcm, char *fbuf, int fsize)
 			memcpy(runtime->dma_area, fbuf + len * bytes_per_frame,
 			       (frames - len) * bytes_per_frame);
 		} else {
-			/* this is somewhat paranoid */
+			 
 			dev_err(line6pcm->line6->ifcdev,
 				"driver bug: len = %d\n", len);
 		}
 	} else {
-		/* copy single chunk */
+		 
 		memcpy(runtime->dma_area +
 		       line6pcm->in.pos_done * bytes_per_frame, fbuf, fsize);
 	}
@@ -139,9 +124,7 @@ void line6_capture_check_period(struct snd_line6_pcm *line6pcm, int length)
 	}
 }
 
-/*
- * Callback for completed capture URB.
- */
+ 
 static void audio_in_callback(struct urb *urb)
 {
 	int i, index, length = 0, shutdown = 0;
@@ -151,7 +134,7 @@ static void audio_in_callback(struct urb *urb)
 
 	line6pcm->in.last_frame = urb->start_frame;
 
-	/* find index of URB */
+	 
 	for (index = 0; index < line6pcm->line6->iso_buffers; ++index)
 		if (urb == line6pcm->in.urbs[index])
 			break;
@@ -181,12 +164,7 @@ static void audio_in_callback(struct urb *urb)
 
 		BUILD_BUG_ON_MSG(LINE6_ISO_PACKETS != 1,
 			"The following code assumes LINE6_ISO_PACKETS == 1");
-		/* TODO:
-		 * Also, if iso_buffers != 2, the prev frame is almost random at
-		 * playback side.
-		 * This needs to be redesigned. It should be "stable", but we may
-		 * experience sync problems on such high-speed configs.
-		 */
+		 
 
 		line6pcm->prev_fbuf = fbuf;
 		line6pcm->prev_fsize = fsize /
@@ -215,7 +193,7 @@ static void audio_in_callback(struct urb *urb)
 	spin_unlock_irqrestore(&line6pcm->in.lock, flags);
 }
 
-/* open capture callback */
+ 
 static int snd_line6_capture_open(struct snd_pcm_substream *substream)
 {
 	int err;
@@ -234,7 +212,7 @@ static int snd_line6_capture_open(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-/* close capture callback */
+ 
 static int snd_line6_capture_close(struct snd_pcm_substream *substream)
 {
 	struct snd_line6_pcm *line6pcm = snd_pcm_substream_chip(substream);
@@ -243,7 +221,7 @@ static int snd_line6_capture_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-/* capture operators */
+ 
 const struct snd_pcm_ops snd_line6_capture_ops = {
 	.open = snd_line6_capture_open,
 	.close = snd_line6_capture_close,
@@ -264,11 +242,11 @@ int line6_create_audio_in_urbs(struct snd_line6_pcm *line6pcm)
 	if (line6pcm->in.urbs == NULL)
 		return -ENOMEM;
 
-	/* create audio URBs and fill in constant values: */
+	 
 	for (i = 0; i < line6->iso_buffers; ++i) {
 		struct urb *urb;
 
-		/* URB for audio in: */
+		 
 		urb = line6pcm->in.urbs[i] =
 		    usb_alloc_urb(LINE6_ISO_PACKETS, GFP_KERNEL);
 

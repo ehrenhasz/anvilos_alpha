@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 Socionext Inc.
- *   Author: Masahiro Yamada <yamada.masahiro@socionext.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/init.h>
@@ -51,7 +48,7 @@ static int uniphier_clk_probe(struct platform_device *pdev)
 	if (WARN_ON(!data))
 		return -EINVAL;
 
-	parent = of_get_parent(dev->of_node); /* parent should be syscon node */
+	parent = of_get_parent(dev->of_node);  
 	regmap = syscon_node_to_regmap(parent);
 	of_node_put(parent);
 	if (IS_ERR(regmap)) {
@@ -70,7 +67,7 @@ static int uniphier_clk_probe(struct platform_device *pdev)
 
 	hw_data->num = clk_num;
 
-	/* avoid returning NULL for unused idx */
+	 
 	while (--clk_num >= 0)
 		hw_data->hws[clk_num] = ERR_PTR(-EINVAL);
 
@@ -91,7 +88,7 @@ static int uniphier_clk_probe(struct platform_device *pdev)
 }
 
 static const struct of_device_id uniphier_clk_match[] = {
-	/* System clock */
+	 
 	{
 		.compatible = "socionext,uniphier-ld4-clock",
 		.data = uniphier_ld4_sys_clk_data,
@@ -128,7 +125,7 @@ static const struct of_device_id uniphier_clk_match[] = {
 		.compatible = "socionext,uniphier-nx1-clock",
 		.data = uniphier_nx1_sys_clk_data,
 	},
-	/* Media I/O clock, SD clock */
+	 
 	{
 		.compatible = "socionext,uniphier-ld4-mio-clock",
 		.data = uniphier_ld4_mio_clk_data,
@@ -165,7 +162,7 @@ static const struct of_device_id uniphier_clk_match[] = {
 		.compatible = "socionext,uniphier-nx1-sd-clock",
 		.data = uniphier_pro5_sd_clk_data,
 	},
-	/* Peripheral clock */
+	 
 	{
 		.compatible = "socionext,uniphier-ld4-peri-clock",
 		.data = uniphier_ld4_peri_clk_data,
@@ -202,12 +199,12 @@ static const struct of_device_id uniphier_clk_match[] = {
 		.compatible = "socionext,uniphier-nx1-peri-clock",
 		.data = uniphier_pro4_peri_clk_data,
 	},
-	/* SoC-glue clock */
+	 
 	{
 		.compatible = "socionext,uniphier-pro4-sg-clock",
 		.data = uniphier_pro4_sg_clk_data,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver uniphier_clk_driver = {

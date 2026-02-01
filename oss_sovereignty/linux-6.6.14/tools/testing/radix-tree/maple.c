@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * maple_tree.c: Userspace testing for maple tree test-suite
- * Copyright (c) 2018-2022 Oracle Corporation
- * Author: Liam R. Howlett <Liam.Howlett@Oracle.com>
- *
- * Any tests that require internal knowledge of the tree or threads and other
- * difficult to handle in kernel tests.
- */
+
+ 
 
 #define CONFIG_DEBUG_MAPLE_TREE
 #define CONFIG_MAPLE_SEARCH
@@ -84,10 +77,7 @@ static void check_mas_alloc_node_count(struct ma_state *mas)
 	mas_destroy(mas);
 }
 
-/*
- * check_new_node() - Check the creation of new nodes and error path
- * verification.
- */
+ 
 static noinline void __init check_new_node(struct maple_tree *mt)
 {
 
@@ -100,14 +90,14 @@ static noinline void __init check_new_node(struct maple_tree *mt)
 
 	check_mas_alloc_node_count(&mas);
 
-	/* Try allocating 3 nodes */
+	 
 	mtree_lock(mt);
 	mt_set_non_kernel(0);
-	/* request 3 nodes to be allocated. */
+	 
 	mas_node_count(&mas, 3);
-	/* Allocation request of 3. */
+	 
 	MT_BUG_ON(mt, mas_alloc_req(&mas) != 3);
-	/* Allocate failed. */
+	 
 	MT_BUG_ON(mt, mas.node != MA_ERROR(-ENOMEM));
 	MT_BUG_ON(mt, !mas_nomem(&mas, GFP_KERNEL));
 
@@ -118,20 +108,20 @@ static noinline void __init check_new_node(struct maple_tree *mt)
 	MT_BUG_ON(mt, mas.alloc == NULL);
 	MT_BUG_ON(mt, mas.alloc->slot[0] == NULL);
 	mas_push_node(&mas, mn);
-	mas_nomem(&mas, GFP_KERNEL); /* free */
+	mas_nomem(&mas, GFP_KERNEL);  
 	mtree_unlock(mt);
 
 
-	/* Try allocating 1 node, then 2 more */
+	 
 	mtree_lock(mt);
-	/* Set allocation request to 1. */
+	 
 	mas_set_alloc_req(&mas, 1);
-	/* Check Allocation request of 1. */
+	 
 	MT_BUG_ON(mt, mas_alloc_req(&mas) != 1);
 	mas_set_err(&mas, -ENOMEM);
-	/* Validate allocation request. */
+	 
 	MT_BUG_ON(mt, !mas_nomem(&mas, GFP_KERNEL));
-	/* Eat the requested node. */
+	 
 	mn = mas_pop_node(&mas);
 	MT_BUG_ON(mt, not_empty(mn));
 	MT_BUG_ON(mt, mn == NULL);
@@ -143,31 +133,31 @@ static noinline void __init check_new_node(struct maple_tree *mt)
 	ma_free_rcu(mn);
 	mas.node = MAS_START;
 	mas_nomem(&mas, GFP_KERNEL);
-	/* Allocate 3 nodes, will fail. */
+	 
 	mas_node_count(&mas, 3);
-	/* Drop the lock and allocate 3 nodes. */
+	 
 	mas_nomem(&mas, GFP_KERNEL);
-	/* Ensure 3 are allocated. */
+	 
 	MT_BUG_ON(mt, mas_allocated(&mas) != 3);
-	/* Allocation request of 0. */
+	 
 	MT_BUG_ON(mt, mas_alloc_req(&mas) != 0);
 
 	MT_BUG_ON(mt, mas.alloc == NULL);
 	MT_BUG_ON(mt, mas.alloc->slot[0] == NULL);
 	MT_BUG_ON(mt, mas.alloc->slot[1] == NULL);
-	/* Ensure we counted 3. */
+	 
 	MT_BUG_ON(mt, mas_allocated(&mas) != 3);
-	/* Free. */
+	 
 	mas_nomem(&mas, GFP_KERNEL);
 
-	/* Set allocation request to 1. */
+	 
 	mas_set_alloc_req(&mas, 1);
 	MT_BUG_ON(mt, mas_alloc_req(&mas) != 1);
 	mas_set_err(&mas, -ENOMEM);
-	/* Validate allocation request. */
+	 
 	MT_BUG_ON(mt, !mas_nomem(&mas, GFP_KERNEL));
 	MT_BUG_ON(mt, mas_allocated(&mas) != 1);
-	/* Check the node is only one node. */
+	 
 	mn = mas_pop_node(&mas);
 	MT_BUG_ON(mt, not_empty(mn));
 	MT_BUG_ON(mt, mas_allocated(&mas) != 0);
@@ -179,7 +169,7 @@ static noinline void __init check_new_node(struct maple_tree *mt)
 	MT_BUG_ON(mt, mas_allocated(&mas) != 1);
 	MT_BUG_ON(mt, mas.alloc->node_count);
 
-	mas_set_alloc_req(&mas, 2); /* request 2 more. */
+	mas_set_alloc_req(&mas, 2);  
 	MT_BUG_ON(mt, mas_alloc_req(&mas) != 2);
 	mas_set_err(&mas, -ENOMEM);
 	MT_BUG_ON(mt, !mas_nomem(&mas, GFP_KERNEL));
@@ -197,12 +187,12 @@ static noinline void __init check_new_node(struct maple_tree *mt)
 	}
 
 	total = 64;
-	mas_set_alloc_req(&mas, total); /* request 2 more. */
+	mas_set_alloc_req(&mas, total);  
 	MT_BUG_ON(mt, mas_alloc_req(&mas) != total);
 	mas_set_err(&mas, -ENOMEM);
 	MT_BUG_ON(mt, !mas_nomem(&mas, GFP_KERNEL));
 	for (i = total; i > 0; i--) {
-		unsigned int e = 0; /* expected node_count */
+		unsigned int e = 0;  
 
 		if (!MAPLE_32BIT) {
 			if (i >= 35)
@@ -276,10 +266,10 @@ static noinline void __init check_new_node(struct maple_tree *mt)
 
 	}
 
-	/* Set allocation request. */
+	 
 	total = 500;
 	mas_node_count(&mas, total);
-	/* Drop the lock and allocate the nodes. */
+	 
 	mas_nomem(&mas, GFP_KERNEL);
 	MT_BUG_ON(mt, !mas.alloc);
 	i = 1;
@@ -291,18 +281,18 @@ static noinline void __init check_new_node(struct maple_tree *mt)
 			if (i == total)
 				break;
 		}
-		smn = smn->slot[0]; /* next. */
+		smn = smn->slot[0];  
 	}
 	MT_BUG_ON(mt, mas_allocated(&mas) != total);
-	mas_nomem(&mas, GFP_KERNEL); /* Free. */
+	mas_nomem(&mas, GFP_KERNEL);  
 
 	MT_BUG_ON(mt, mas_allocated(&mas) != 0);
 	for (i = 1; i < 128; i++) {
-		mas_node_count(&mas, i); /* Request */
-		mas_nomem(&mas, GFP_KERNEL); /* Fill request */
-		MT_BUG_ON(mt, mas_allocated(&mas) != i); /* check request filled */
-		for (j = i; j > 0; j--) { /*Free the requests */
-			mn = mas_pop_node(&mas); /* get the next node. */
+		mas_node_count(&mas, i);  
+		mas_nomem(&mas, GFP_KERNEL);  
+		MT_BUG_ON(mt, mas_allocated(&mas) != i);  
+		for (j = i; j > 0; j--) {  
+			mn = mas_pop_node(&mas);  
 			MT_BUG_ON(mt, mn == NULL);
 			MT_BUG_ON(mt, not_empty(mn));
 			mn->parent = ma_parent_ptr(mn);
@@ -313,11 +303,11 @@ static noinline void __init check_new_node(struct maple_tree *mt)
 
 	for (i = 1; i < MAPLE_NODE_MASK + 1; i++) {
 		MA_STATE(mas2, mt, 0, 0);
-		mas_node_count(&mas, i); /* Request */
-		mas_nomem(&mas, GFP_KERNEL); /* Fill request */
-		MT_BUG_ON(mt, mas_allocated(&mas) != i); /* check request filled */
-		for (j = 1; j <= i; j++) { /* Move the allocations to mas2 */
-			mn = mas_pop_node(&mas); /* get the next node. */
+		mas_node_count(&mas, i);  
+		mas_nomem(&mas, GFP_KERNEL);  
+		MT_BUG_ON(mt, mas_allocated(&mas) != i);  
+		for (j = 1; j <= i; j++) {  
+			mn = mas_pop_node(&mas);  
 			MT_BUG_ON(mt, mn == NULL);
 			MT_BUG_ON(mt, not_empty(mn));
 			mas_push_node(&mas2, mn);
@@ -326,9 +316,9 @@ static noinline void __init check_new_node(struct maple_tree *mt)
 		MT_BUG_ON(mt, mas_allocated(&mas) != 0);
 		MT_BUG_ON(mt, mas_allocated(&mas2) != i);
 
-		for (j = i; j > 0; j--) { /*Free the requests */
+		for (j = i; j > 0; j--) {  
 			MT_BUG_ON(mt, mas_allocated(&mas2) != j);
-			mn = mas_pop_node(&mas2); /* get the next node. */
+			mn = mas_pop_node(&mas2);  
 			MT_BUG_ON(mt, mn == NULL);
 			MT_BUG_ON(mt, not_empty(mn));
 			mn->parent = ma_parent_ptr(mn);
@@ -339,13 +329,13 @@ static noinline void __init check_new_node(struct maple_tree *mt)
 
 
 	MT_BUG_ON(mt, mas_allocated(&mas) != 0);
-	mas_node_count(&mas, MAPLE_ALLOC_SLOTS + 1); /* Request */
+	mas_node_count(&mas, MAPLE_ALLOC_SLOTS + 1);  
 	MT_BUG_ON(mt, mas.node != MA_ERROR(-ENOMEM));
 	MT_BUG_ON(mt, !mas_nomem(&mas, GFP_KERNEL));
 	MT_BUG_ON(mt, mas_allocated(&mas) != MAPLE_ALLOC_SLOTS + 1);
 	MT_BUG_ON(mt, mas.alloc->node_count != MAPLE_ALLOC_SLOTS);
 
-	mn = mas_pop_node(&mas); /* get the next node. */
+	mn = mas_pop_node(&mas);  
 	MT_BUG_ON(mt, mn == NULL);
 	MT_BUG_ON(mt, not_empty(mn));
 	MT_BUG_ON(mt, mas_allocated(&mas) != MAPLE_ALLOC_SLOTS);
@@ -355,8 +345,8 @@ static noinline void __init check_new_node(struct maple_tree *mt)
 	MT_BUG_ON(mt, mas_allocated(&mas) != MAPLE_ALLOC_SLOTS + 1);
 	MT_BUG_ON(mt, mas.alloc->node_count != MAPLE_ALLOC_SLOTS);
 
-	/* Check the limit of pop/push/pop */
-	mas_node_count(&mas, MAPLE_ALLOC_SLOTS + 2); /* Request */
+	 
+	mas_node_count(&mas, MAPLE_ALLOC_SLOTS + 2);  
 	MT_BUG_ON(mt, mas_alloc_req(&mas) != 1);
 	MT_BUG_ON(mt, mas.node != MA_ERROR(-ENOMEM));
 	MT_BUG_ON(mt, !mas_nomem(&mas, GFP_KERNEL));
@@ -385,73 +375,73 @@ static noinline void __init check_new_node(struct maple_tree *mt)
 
 	for (i = 3; i < MAPLE_NODE_MASK * 3; i++) {
 		mas.node = MA_ERROR(-ENOMEM);
-		mas_node_count(&mas, i); /* Request */
-		mas_nomem(&mas, GFP_KERNEL); /* Fill request */
-		mn = mas_pop_node(&mas); /* get the next node. */
-		mas_push_node(&mas, mn); /* put it back */
+		mas_node_count(&mas, i);  
+		mas_nomem(&mas, GFP_KERNEL);  
+		mn = mas_pop_node(&mas);  
+		mas_push_node(&mas, mn);  
 		mas_destroy(&mas);
 
 		mas.node = MA_ERROR(-ENOMEM);
-		mas_node_count(&mas, i); /* Request */
-		mas_nomem(&mas, GFP_KERNEL); /* Fill request */
-		mn = mas_pop_node(&mas); /* get the next node. */
-		mn2 = mas_pop_node(&mas); /* get the next node. */
-		mas_push_node(&mas, mn); /* put them back */
+		mas_node_count(&mas, i);  
+		mas_nomem(&mas, GFP_KERNEL);  
+		mn = mas_pop_node(&mas);  
+		mn2 = mas_pop_node(&mas);  
+		mas_push_node(&mas, mn);  
 		mas_push_node(&mas, mn2);
 		mas_destroy(&mas);
 
 		mas.node = MA_ERROR(-ENOMEM);
-		mas_node_count(&mas, i); /* Request */
-		mas_nomem(&mas, GFP_KERNEL); /* Fill request */
-		mn = mas_pop_node(&mas); /* get the next node. */
-		mn2 = mas_pop_node(&mas); /* get the next node. */
-		mn3 = mas_pop_node(&mas); /* get the next node. */
-		mas_push_node(&mas, mn); /* put them back */
+		mas_node_count(&mas, i);  
+		mas_nomem(&mas, GFP_KERNEL);  
+		mn = mas_pop_node(&mas);  
+		mn2 = mas_pop_node(&mas);  
+		mn3 = mas_pop_node(&mas);  
+		mas_push_node(&mas, mn);  
 		mas_push_node(&mas, mn2);
 		mas_push_node(&mas, mn3);
 		mas_destroy(&mas);
 
 		mas.node = MA_ERROR(-ENOMEM);
-		mas_node_count(&mas, i); /* Request */
-		mas_nomem(&mas, GFP_KERNEL); /* Fill request */
-		mn = mas_pop_node(&mas); /* get the next node. */
+		mas_node_count(&mas, i);  
+		mas_nomem(&mas, GFP_KERNEL);  
+		mn = mas_pop_node(&mas);  
 		mn->parent = ma_parent_ptr(mn);
 		ma_free_rcu(mn);
 		mas_destroy(&mas);
 
 		mas.node = MA_ERROR(-ENOMEM);
-		mas_node_count(&mas, i); /* Request */
-		mas_nomem(&mas, GFP_KERNEL); /* Fill request */
-		mn = mas_pop_node(&mas); /* get the next node. */
+		mas_node_count(&mas, i);  
+		mas_nomem(&mas, GFP_KERNEL);  
+		mn = mas_pop_node(&mas);  
 		mn->parent = ma_parent_ptr(mn);
 		ma_free_rcu(mn);
-		mn = mas_pop_node(&mas); /* get the next node. */
+		mn = mas_pop_node(&mas);  
 		mn->parent = ma_parent_ptr(mn);
 		ma_free_rcu(mn);
-		mn = mas_pop_node(&mas); /* get the next node. */
+		mn = mas_pop_node(&mas);  
 		mn->parent = ma_parent_ptr(mn);
 		ma_free_rcu(mn);
 		mas_destroy(&mas);
 	}
 
 	mas.node = MA_ERROR(-ENOMEM);
-	mas_node_count(&mas, 5); /* Request */
-	mas_nomem(&mas, GFP_KERNEL); /* Fill request */
+	mas_node_count(&mas, 5);  
+	mas_nomem(&mas, GFP_KERNEL);  
 	MT_BUG_ON(mt, mas_allocated(&mas) != 5);
 	mas.node = MA_ERROR(-ENOMEM);
-	mas_node_count(&mas, 10); /* Request */
-	mas_nomem(&mas, GFP_KERNEL); /* Fill request */
+	mas_node_count(&mas, 10);  
+	mas_nomem(&mas, GFP_KERNEL);  
 	mas.node = MAS_START;
 	MT_BUG_ON(mt, mas_allocated(&mas) != 10);
 	mas_destroy(&mas);
 
 	mas.node = MA_ERROR(-ENOMEM);
-	mas_node_count(&mas, MAPLE_ALLOC_SLOTS - 1); /* Request */
-	mas_nomem(&mas, GFP_KERNEL); /* Fill request */
+	mas_node_count(&mas, MAPLE_ALLOC_SLOTS - 1);  
+	mas_nomem(&mas, GFP_KERNEL);  
 	MT_BUG_ON(mt, mas_allocated(&mas) != MAPLE_ALLOC_SLOTS - 1);
 	mas.node = MA_ERROR(-ENOMEM);
-	mas_node_count(&mas, 10 + MAPLE_ALLOC_SLOTS - 1); /* Request */
-	mas_nomem(&mas, GFP_KERNEL); /* Fill request */
+	mas_node_count(&mas, 10 + MAPLE_ALLOC_SLOTS - 1);  
+	mas_nomem(&mas, GFP_KERNEL);  
 	mas.node = MAS_START;
 	MT_BUG_ON(mt, mas_allocated(&mas) != 10 + MAPLE_ALLOC_SLOTS - 1);
 	mas_destroy(&mas);
@@ -459,9 +449,7 @@ static noinline void __init check_new_node(struct maple_tree *mt)
 	mtree_unlock(mt);
 }
 
-/*
- * Check erasing including RCU.
- */
+ 
 static noinline void __init check_erase(struct maple_tree *mt, unsigned long index,
 		void *ptr)
 {
@@ -520,7 +508,7 @@ static noinline void __init check_erase_testset(struct maple_tree *mt)
 	for (int i = 0; i < 4; i++)
 		erase_check_load(mt, i);
 
-	/* Check erase and load without an allocation. */
+	 
 	erase_check_load(mt, 3);
 	erase_check_erase(mt, 1);
 	erase_check_load(mt, 0);
@@ -528,10 +516,7 @@ static noinline void __init check_erase_testset(struct maple_tree *mt)
 	for (int i = 2; i < 4; i++)
 		erase_check_load(mt, i);
 
-	/*
-	 * Set the newly erased node.  This will produce a different allocated
-	 * node to avoid busy slots.
-	 */
+	 
 	root_node = mt->ma_root;
 	erase_check_insert(mt, 1);
 
@@ -543,7 +528,7 @@ static noinline void __init check_erase_testset(struct maple_tree *mt)
 	check_load(mt, 5018, NULL);
 	erase_check_load(mt, 3);
 
-	erase_check_erase(mt, 2); /* erase 5017 to check append */
+	erase_check_erase(mt, 2);  
 	erase_check_load(mt, 0);
 	check_load(mt, 5016, NULL);
 	erase_check_load(mt, 1);
@@ -565,14 +550,14 @@ static noinline void __init check_erase_testset(struct maple_tree *mt)
 	erase_check_load(mt, 3);
 
 	mt_set_non_kernel(1);
-	erase_check_erase(mt, 2); /* erase 5017 to check append */
+	erase_check_erase(mt, 2);  
 	erase_check_load(mt, 0);
 	check_load(mt, 5016, NULL);
 	check_load(mt, set[2], NULL);
-	erase_check_erase(mt, 0); /* erase 5015 to check append */
+	erase_check_erase(mt, 0);  
 	check_load(mt, set[0], NULL);
 	check_load(mt, 5016, NULL);
-	erase_check_insert(mt, 4); /* 1000 < Should not split. */
+	erase_check_insert(mt, 4);  
 	check_load(mt, set[0], NULL);
 	check_load(mt, 5016, NULL);
 	erase_check_load(mt, 1);
@@ -588,11 +573,11 @@ static noinline void __init check_erase_testset(struct maple_tree *mt)
 	else
 		MT_BUG_ON(mt, root_node != mt->ma_root);
 
-	/* Should not have split. */
+	 
 	MT_BUG_ON(mt, !mte_is_leaf(mt->ma_root));
 
 
-	/* Coalesce testing */
+	 
 	erase_check_insert(mt, 0);
 	erase_check_insert(mt, 2);
 
@@ -602,14 +587,14 @@ static noinline void __init check_erase_testset(struct maple_tree *mt)
 			erase_check_load(mt, j);
 	}
 
-	erase_check_erase(mt, 14); /*6015 */
+	erase_check_erase(mt, 14);  
 	for (int i = 0; i < 25; i++) {
 		if (i == 14)
 			check_load(mt, set[i], NULL);
 		else
 			erase_check_load(mt, i);
 	}
-	erase_check_erase(mt, 16); /*7002 */
+	erase_check_erase(mt, 16);  
 	for (int i = 0; i < 25; i++) {
 		if (i == 16 || i == 14)
 			check_load(mt, set[i], NULL);
@@ -619,7 +604,7 @@ static noinline void __init check_erase_testset(struct maple_tree *mt)
 
 
 	mt_set_non_kernel(1);
-	erase_check_erase(mt, 13); /*6012 */
+	erase_check_erase(mt, 13);  
 	for (int i = 0; i < 25; i++) {
 		if (i == 16 || i == 14 || i == 13)
 			check_load(mt, set[i], NULL);
@@ -627,7 +612,7 @@ static noinline void __init check_erase_testset(struct maple_tree *mt)
 			erase_check_load(mt, i);
 	}
 
-	erase_check_erase(mt, 15); /*7003 */
+	erase_check_erase(mt, 15);  
 	for (int i = 0; i < 25; i++) {
 		if (i <= 16 && i >= 13)
 			check_load(mt, set[i], NULL);
@@ -636,7 +621,7 @@ static noinline void __init check_erase_testset(struct maple_tree *mt)
 	}
 
 	mt_set_non_kernel(2);
-	erase_check_erase(mt, 17); /*7008 *should* cause coalesce. */
+	erase_check_erase(mt, 17);  
 	for (int i = 0; i < 25; i++) {
 		if (i <= 17 && i >= 13)
 			check_load(mt, set[i], NULL);
@@ -644,7 +629,7 @@ static noinline void __init check_erase_testset(struct maple_tree *mt)
 			erase_check_load(mt, i);
 	}
 
-	erase_check_erase(mt, 18); /*7012 */
+	erase_check_erase(mt, 18);  
 	for (int i = 0; i < 25; i++) {
 		if (i <= 18 && i >= 13)
 			check_load(mt, set[i], NULL);
@@ -653,7 +638,7 @@ static noinline void __init check_erase_testset(struct maple_tree *mt)
 	}
 
 	mt_set_non_kernel(2);
-	erase_check_erase(mt, 19); /*7015 */
+	erase_check_erase(mt, 19);  
 	for (int i = 0; i < 25; i++) {
 		if (i <= 19 && i >= 13)
 			check_load(mt, set[i], NULL);
@@ -661,7 +646,7 @@ static noinline void __init check_erase_testset(struct maple_tree *mt)
 			erase_check_load(mt, i);
 	}
 
-	erase_check_erase(mt, 20); /*8003 */
+	erase_check_erase(mt, 20);  
 	for (int i = 0; i < 25; i++) {
 		if (i <= 20 && i >= 13)
 			check_load(mt, set[i], NULL);
@@ -669,7 +654,7 @@ static noinline void __init check_erase_testset(struct maple_tree *mt)
 			erase_check_load(mt, i);
 	}
 
-	erase_check_erase(mt, 21); /*8002 */
+	erase_check_erase(mt, 21);  
 	for (int i = 0; i < 25; i++) {
 		if (i <= 21 && i >= 13)
 			check_load(mt, set[i], NULL);
@@ -678,7 +663,7 @@ static noinline void __init check_erase_testset(struct maple_tree *mt)
 	}
 
 	mt_set_non_kernel(2);
-	erase_check_erase(mt, 22); /*8008 */
+	erase_check_erase(mt, 22);  
 	for (int i = 0; i < 25; i++) {
 		if (i <= 22 && i >= 13)
 			check_load(mt, set[i], NULL);
@@ -695,7 +680,7 @@ static noinline void __init check_erase_testset(struct maple_tree *mt)
 			erase_check_load(mt, i);
 	}
 
-	/* Shrinking tree test. */
+	 
 
 	for (int i = 13; i < ARRAY_SIZE(set); i++)
 		erase_check_insert(mt, i);
@@ -726,9 +711,9 @@ static noinline void __init check_erase_testset(struct maple_tree *mt)
 	rcu_unregister_thread();
 }
 
-/* End of erase testing */
+ 
 
-/* VM Generated Crashes - uses its own tree walk for verification */
+ 
 #define erase_check_store_range(mt, a, i, ptr) mtree_test_store_range(mt, \
 						a[(i)], a[(i + 1)], ptr)
 #define STORE 1
@@ -742,7 +727,7 @@ static noinline void __init check_erase_testset(struct maple_tree *mt)
 	)
 #define check_erase2_debug 0
 
-/* Calculate the overwritten entries. */
+ 
 int mas_ce2_over_count(struct ma_state *mas_start, struct ma_state *mas_end,
 		      void *s_entry, unsigned long s_min,
 		      void *e_entry, unsigned long e_max,
@@ -754,11 +739,11 @@ int mas_ce2_over_count(struct ma_state *mas_start, struct ma_state *mas_end,
 	struct ma_state tmp;
 
 
-	/* count slots */
+	 
 	memcpy(&tmp, mas_start, sizeof(tmp));
 	entry = mas_next(&tmp, mas_end->last);
 	while (entry) {
-		BUG_ON(retry > 50); /* stop infinite retry on testing. */
+		BUG_ON(retry > 50);  
 		if (xa_is_zero(s_entry)) {
 			retry++;
 			continue;
@@ -769,14 +754,14 @@ int mas_ce2_over_count(struct ma_state *mas_start, struct ma_state *mas_end,
 	}
 
 	if (null_entry) {
-		/* Check splitting end. */
+		 
 		if (e_entry && (e_max > mas_end->last))
 			count--;
 
-		/* check overwrite of entire start */
+		 
 		if (s_entry && (s_min == mas_start->index))
 			count++;
-	} else { /* !null_entry (store) */
+	} else {  
 		bool esplit = e_max > mas_end->last;
 		bool ssplit = s_min != mas_start->index;
 
@@ -803,16 +788,7 @@ int mas_ce2_over_count(struct ma_state *mas_start, struct ma_state *mas_end,
 	return count;
 }
 
-/*
- * mas_node_walk() - Walk a maple node to offset of the index.
- * @mas: The maple state
- * @type: The maple node type
- * @*range_min: Pointer to store the minimum range of the offset
- * @*range_max: Pointer to store the maximum range of the offset
- *
- * The offset will be stored in the maple state.
- *
- */
+ 
 static inline void mas_node_walk(struct ma_state *mas, struct maple_node *node,
 			 enum maple_type type, unsigned long *range_min,
 			 unsigned long *range_max)
@@ -873,18 +849,7 @@ offset_zero:
 	}
 }
 
-/*
- * mas_descend_walk(): Locates a value and sets the mas->node and slot
- * accordingly.  range_min and range_max are set to the range which the entry is
- * valid.
- * @mas: The maple state
- * @*range_min: A pointer to store the minimum of the range
- * @*range_max: A pointer to store the maximum of the range
- *
- * Check mas->node is still valid on return of any value.
- *
- * Return: true if pointing to a valid node and offset.  False otherwise.
- */
+ 
 static inline bool mas_descend_walk(struct ma_state *mas,
 			unsigned long *range_min, unsigned long *range_max)
 {
@@ -904,22 +869,13 @@ static inline bool mas_descend_walk(struct ma_state *mas,
 		if (unlikely(ma_is_leaf(type)))
 			return true;
 
-		/* Descend. */
+		 
 		mas->node = next;
 	}
 	return false;
 }
 
-/*
- * mas_tree_walk() - Walk to @mas->index and set the range values.
- * @mas: The maple state.
- * @*range_min: The minimum range to be set.
- * @*range_max: The maximum range to be set.
- *
- * Ranges are only valid if there is a valid entry at @mas->index.
- *
- * Return: True if a value exists, false otherwise.
- */
+ 
 static inline bool mas_tree_walk(struct ma_state *mas, unsigned long *range_min,
 				 unsigned long *range_max)
 {
@@ -1025,7 +981,7 @@ static noinline void __init check_erase2_testset(struct maple_tree *mt,
 		case STORE:
 			value = xa_mk_value(set[i + 1]);
 			if (mas_start.offset > mt_slot_count(mas_start.node)) {
-				entry_count++; /* appending an entry. */
+				entry_count++;  
 			} else if ((s_min == e_min) && (s_max == e_max)) {
 				if (!entry_count)
 					entry_count++;
@@ -1120,7 +1076,7 @@ static noinline void __init check_erase2_testset(struct maple_tree *mt,
 }
 
 
-/* These tests were pulled from KVM tree modifications which failed. */
+ 
 static noinline void __init check_erase2_sets(struct maple_tree *mt)
 {
 	void *entry;
@@ -4080,7 +4036,7 @@ STORE, 140060022747136, 140060022755327,
 STORE, 140060022755328, 140060022759423,
 STORE, 140727079788544, 140727079792639,
 STORE, 140727079776256, 140727079788543,
-/* this next one caused issues when lowering the efficiency */
+ 
 STORE, 47572772409344, 47572772417535,
 STORE, 47572772417536, 47572772425727,
 STORE, 47572772425728, 47572772532223,
@@ -9517,7 +9473,7 @@ STORE, 140732658565120, 140732658569215,
 STORE, 140732658552832, 140732658565119,
 	};
 
-	static const unsigned long set12[] = { /* contains 12 values. */
+	static const unsigned long set12[] = {  
 STORE, 140737488347136, 140737488351231,
 STORE, 140732658499584, 140737488351231,
 ERASE, 140732658499584, 140732658499584,
@@ -9541,21 +9497,21 @@ STORE, 140014592733184, 140014592741375,
 STORE, 140014592741376, 140014592745471,
 STORE, 140732658565120, 140732658569215,
 STORE, 140732658552832, 140732658565119,
-STORE, 140014592741375, 140014592741375, /* contrived */
-STORE, 140014592733184, 140014592741376, /* creates first entry retry. */
+STORE, 140014592741375, 140014592741375,  
+STORE, 140014592733184, 140014592741376,  
 	};
 	static const unsigned long set13[] = {
-STORE, 140373516247040, 140373516251135,/*: ffffa2e7b0e10d80 */
-STORE, 140373516251136, 140373516255231,/*: ffffa2e7b1195d80 */
-STORE, 140373516255232, 140373516443647,/*: ffffa2e7b0e109c0 */
-STORE, 140373516443648, 140373516587007,/*: ffffa2e7b05fecc0 */
-STORE, 140373516963840, 140373518647295,/*: ffffa2e7bfbdcc00 */
-STORE, 140373518647296, 140373518663679,/*: ffffa2e7bf5d59c0 */
-STORE, 140373518663680, 140373518684159,/*: deleted (257) */
-STORE, 140373518680064, 140373518684159,/*: ffffa2e7b0e1cb40 */
-STORE, 140373518684160, 140373518688254,/*: ffffa2e7b05fec00 */
-STORE, 140373518688256, 140373518692351,/*: ffffa2e7bfbdcd80 */
-STORE, 140373518692352, 140373518696447,/*: ffffa2e7b0749e40 */
+STORE, 140373516247040, 140373516251135, 
+STORE, 140373516251136, 140373516255231, 
+STORE, 140373516255232, 140373516443647, 
+STORE, 140373516443648, 140373516587007, 
+STORE, 140373516963840, 140373518647295, 
+STORE, 140373518647296, 140373518663679, 
+STORE, 140373518663680, 140373518684159, 
+STORE, 140373518680064, 140373518684159, 
+STORE, 140373518684160, 140373518688254, 
+STORE, 140373518688256, 140373518692351, 
+STORE, 140373518692352, 140373518696447, 
 	};
 	static const unsigned long set14[] = {
 STORE, 140737488347136, 140737488351231,
@@ -33859,14 +33815,7 @@ SNULL, 3197591552, 3199688703,
 SNULL, 3195494400, 3197591551,
 STORE, 3798999040, 3799101439,
 SNULL, 3798999040, 3799101439,
-/*
- * mmap: unmapped_area_topdown: ffff9a9f14ddaa80
- * Gap was found: mt 4041162752 gap_end 4041183232
- * mmap: window was 4052029440 - 4096 size 28672
- * mmap: mas.min 4041154560 max 4041191423 mas.last 4041191423
- * mmap: mas.index 4041162752 align mask 0 offset 0
- * mmap: rb_find_vma find on 4041162752 => ffff9a9f03d19678 (ffff9a9f03d19678)
- */
+ 
 	};
 
 	static const unsigned long set43[] = {
@@ -33996,7 +33945,7 @@ STORE, 140501948112896, 140501948116991,
 	rcu_barrier();
 	mtree_destroy(mt);
 
-	/* set16 was to find a bug on limit updating at slot 0. */
+	 
 	mt_set_non_kernel(99);
 	mas_reset(&mas);
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
@@ -34007,11 +33956,7 @@ STORE, 140501948112896, 140501948116991,
 	mt_set_non_kernel(0);
 	mtree_destroy(mt);
 
-	/*
-	 * set17 found a bug in walking backwards and not counting nulls at
-	 * the end.  This could cause a gap to be missed if the null had any
-	 * size.
-	 */
+	 
 	mt_set_non_kernel(99);
 	mas_reset(&mas);
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
@@ -34019,15 +33964,11 @@ STORE, 140501948112896, 140501948116991,
 	rcu_barrier();
 	mas_empty_area_rev(&mas, 4096, 139953197334528, 0x1000);
 	MT_BUG_ON(mt, mas.last != 139953197322239);
-/*	MT_BUG_ON(mt, mas.index != 139953197318144); */
+ 
 	mt_set_non_kernel(0);
 	mtree_destroy(mt);
 
-	/*
-	 * set18 found a bug in walking backwards and not setting the max from
-	 * the node, but using the parent node.  This was only an issue if the
-	 * next slot in the parent had what we needed.
-	 */
+	 
 	mt_set_non_kernel(99);
 	mas_reset(&mas);
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
@@ -34035,17 +33976,11 @@ STORE, 140501948112896, 140501948116991,
 	rcu_barrier();
 	mas_empty_area_rev(&mas, 4096, 140222972858368, 2215936);
 	MT_BUG_ON(mt, mas.last != 140222968475647);
-	/*MT_BUG_ON(mt, mas.index != 140222966259712); */
+	 
 	mt_set_non_kernel(0);
 	mtree_destroy(mt);
 
-	/*
-	 * set19 found 2 bugs in prev.
-	 * 1. If we hit root without finding anything, then there was an
-	 *    infinite loop.
-	 * 2. The first ascending wasn't using the correct slot which may have
-	 *    caused missed entries.
-	 */
+	 
 	mt_set_non_kernel(99);
 	mas_reset(&mas);
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
@@ -34059,10 +33994,7 @@ STORE, 140501948112896, 140501948116991,
 	mt_set_non_kernel(0);
 	mtree_destroy(mt);
 
-	/*
-	 * set20 found a bug in mas_may_move_gap due to the slot being
-	 * overwritten during the __mas_add operation and setting it to zero.
-	 */
+	 
 	mt_set_non_kernel(99);
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
 	check_erase2_testset(mt, set20, ARRAY_SIZE(set20));
@@ -34114,7 +34046,7 @@ STORE, 140501948112896, 140501948116991,
 	mt_validate(mt);
 	mtree_destroy(mt);
 
-	/* Split on NULL followed by delete - causes gap issues. */
+	 
 	mt_set_non_kernel(99);
 	mas_reset(&mas);
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
@@ -34126,7 +34058,7 @@ STORE, 140501948112896, 140501948116991,
 	mt_validate(mt);
 	mtree_destroy(mt);
 
-	/* Split on NULL followed by delete - causes gap issues. */
+	 
 	mt_set_non_kernel(99);
 	mas_reset(&mas);
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
@@ -34143,16 +34075,14 @@ STORE, 140501948112896, 140501948116991,
 	check_erase2_testset(mt, set28, ARRAY_SIZE(set28));
 	rcu_barrier();
 	mas_empty_area_rev(&mas, 4096, 139918413357056, 2097152);
-	/* Search for the size of gap then align it (offset 0) */
+	 
 	mas.index = (mas.last  + 1 - 2097152 - 0) & (~2093056);
 	MT_BUG_ON(mt, mas.index != 139918401601536);
 	mt_set_non_kernel(0);
 	mt_validate(mt);
 	mtree_destroy(mt);
 
-	/* This test found issues with retry moving rebalanced nodes so the
-	 * incorrect parent pivot was updated.
-	 */
+	 
 	mt_set_non_kernel(999);
 	mas_reset(&mas);
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
@@ -34162,10 +34092,7 @@ STORE, 140501948112896, 140501948116991,
 	mt_validate(mt);
 	mtree_destroy(mt);
 
-	/* This test found issues with deleting all entries in a node when
-	 * surrounded by entries in the next nodes, then deleting the entries
-	 * surrounding the node filled with deleted entries.
-	 */
+	 
 	mt_set_non_kernel(999);
 	mas_reset(&mas);
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
@@ -34175,10 +34102,7 @@ STORE, 140501948112896, 140501948116991,
 	mt_validate(mt);
 	mtree_destroy(mt);
 
-	/* This test found an issue with deleting all entries in a node that was
-	 * the end node and mas_gap incorrectly set next = curr, and curr = prev
-	 * then moved next to the left, losing data.
-	 */
+	 
 	mt_set_non_kernel(99);
 	mas_reset(&mas);
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
@@ -34197,17 +34121,9 @@ STORE, 140501948112896, 140501948116991,
 	mt_validate(mt);
 	mtree_destroy(mt);
 
-/*
- * mmap: empty_area_topdown: ffff88821c9cb600 Gap was found:
- *       mt 140582827569152 gap_end 140582869532672
- * mmap: window was 140583656296448 - 4096 size 134217728
- * mmap: mas.min 94133881868288 max 140582961786879 mas.last 140582961786879
- * mmap: mas.index 140582827569152 align mask 0 offset 0
- * mmap: rb_find_vma find on
- *	140582827569152 => ffff88821c5bad00 (ffff88821c5bad00)
- */
+ 
 
-	/* move gap failed due to an entirely empty node */
+	 
 	mt_set_non_kernel(99);
 	mas_reset(&mas);
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
@@ -34219,10 +34135,7 @@ STORE, 140501948112896, 140501948116991,
 	mt_validate(mt);
 	mtree_destroy(mt);
 
-	/*
-	 * Incorrect gap in tree caused by mas_prev not setting the limits
-	 * correctly while walking down.
-	 */
+	 
 	mt_set_non_kernel(99);
 	mas_reset(&mas);
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
@@ -34232,7 +34145,7 @@ STORE, 140501948112896, 140501948116991,
 	mt_validate(mt);
 	mtree_destroy(mt);
 
-	/* Empty leaf at the end of a parent caused incorrect gap. */
+	 
 	mt_set_non_kernel(99);
 	mas_reset(&mas);
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
@@ -34243,7 +34156,7 @@ STORE, 140501948112896, 140501948116991,
 	mtree_destroy(mt);
 
 	mt_set_non_kernel(99);
-	/* Empty leaf at the end of a parent caused incorrect gap. */
+	 
 	mas_reset(&mas);
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
 	check_erase2_testset(mt, set36, ARRAY_SIZE(set36));
@@ -34289,7 +34202,7 @@ STORE, 140501948112896, 140501948116991,
 	mt_validate(mt);
 	mtree_destroy(mt);
 
-	/* move gap failed due to an entirely empty node. */
+	 
 	mt_set_non_kernel(99);
 	mas_reset(&mas);
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
@@ -34301,7 +34214,7 @@ STORE, 140501948112896, 140501948116991,
 	mt_validate(mt);
 	mtree_destroy(mt);
 
-	/* gap calc off by one */
+	 
 	mt_set_non_kernel(99);
 	mas_reset(&mas);
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
@@ -34313,11 +34226,11 @@ STORE, 140501948112896, 140501948116991,
 }
 #endif
 
-/* End of VM testcases */
+ 
 
-/* RCU stress testing */
+ 
 
-/* RCU reader helper function */
+ 
 static void rcu_reader_register(struct rcu_test_struct2 *test)
 {
 	rcu_register_thread();
@@ -34338,7 +34251,7 @@ static void rcu_reader_setup(struct rcu_reader_struct *reader,
 	reader->add = (reader->mod + 3) % 10;
 	reader->next = (reader->mod + 4) % 10;
 }
-/* RCU reader in increasing index */
+ 
 static void *rcu_reader_fwd(void *ptr)
 
 {
@@ -34355,7 +34268,7 @@ static void *rcu_reader_fwd(void *ptr)
 
 	while (!test->stop) {
 		i = 0;
-		/* mas_for_each ?*/
+		 
 		rcu_read_lock();
 		mas_set(&mas, test->index[index]);
 		mas_for_each(&mas, entry, test->last[index + 9]) {
@@ -34369,7 +34282,7 @@ static void *rcu_reader_fwd(void *ptr)
 			if (i == reader->del) {
 				if (!deleted) {
 					alt_start = test->index[index + reader->flip];
-					/* delete occurred. */
+					 
 					if (mas.index == alt_start) {
 						uatomic_inc(&test->seen_deleted);
 						deleted = true;
@@ -34449,7 +34362,7 @@ static void *rcu_reader_fwd(void *ptr)
 	rcu_unregister_thread();
 	return NULL;
 }
-/* RCU reader in decreasing index */
+ 
 static void *rcu_reader_rev(void *ptr)
 {
 	struct rcu_reader_struct *reader = (struct rcu_reader_struct *)ptr;
@@ -34589,7 +34502,7 @@ static void rcu_stress_rev(struct maple_tree *mt, struct rcu_test_struct2 *test,
 	int i, j = 10000;
 	bool toggle = true;
 
-	test->start = true; /* Release the hounds! */
+	test->start = true;  
 	usleep(5);
 
 	while (j--) {
@@ -34599,7 +34512,7 @@ static void rcu_stress_rev(struct maple_tree *mt, struct rcu_test_struct2 *test,
 			unsigned long start, end;
 			struct rcu_reader_struct *this = &test_reader[i];
 
-			/* Mod offset */
+			 
 			if (j == 600) {
 				start = test->index[this->id + this->mod];
 				end = test->last[this->id + this->mod];
@@ -34609,7 +34522,7 @@ static void rcu_stress_rev(struct maple_tree *mt, struct rcu_test_struct2 *test,
 					  GFP_KERNEL);
 			}
 
-			/* Toggle */
+			 
 			if (!(j % 5)) {
 				start = test->index[this->id + this->flip];
 				end = test->last[this->id + this->flip];
@@ -34620,14 +34533,14 @@ static void rcu_stress_rev(struct maple_tree *mt, struct rcu_test_struct2 *test,
 					GFP_KERNEL);
 			}
 
-			/* delete */
+			 
 			if (j == 400) {
 				start = test->index[this->id + this->del];
 				end = test->last[this->id + this->del];
 				mtree_store_range(mt, start, end, NULL, GFP_KERNEL);
 			}
 
-			/* add */
+			 
 			if (j == 500) {
 				start = test->index[this->id + this->add];
 				end = test->last[this->id + this->add];
@@ -34636,7 +34549,7 @@ static void rcu_stress_rev(struct maple_tree *mt, struct rcu_test_struct2 *test,
 			}
 		}
 		usleep(test->pause);
-		/* If a test fails, don't flood the console */
+		 
 		if (test->stop)
 			break;
 	}
@@ -34648,7 +34561,7 @@ static void rcu_stress_fwd(struct maple_tree *mt, struct rcu_test_struct2 *test,
 	int j, i;
 	bool toggle = true;
 
-	test->start = true; /* Release the hounds! */
+	test->start = true;  
 	usleep(5);
 	for (j = 0; j < 10000; j++) {
 		toggle = !toggle;
@@ -34656,7 +34569,7 @@ static void rcu_stress_fwd(struct maple_tree *mt, struct rcu_test_struct2 *test,
 			unsigned long start, end;
 			struct rcu_reader_struct *this = &test_reader[i];
 
-			/* Mod offset */
+			 
 			if (j == 600) {
 				start = test->index[this->id + this->mod];
 				end = test->last[this->id + this->mod];
@@ -34666,7 +34579,7 @@ static void rcu_stress_fwd(struct maple_tree *mt, struct rcu_test_struct2 *test,
 					  GFP_KERNEL);
 			}
 
-			/* Toggle */
+			 
 			if (!(j % 5)) {
 				start = test->index[this->id + this->flip];
 				end = test->last[this->id + this->flip];
@@ -34677,14 +34590,14 @@ static void rcu_stress_fwd(struct maple_tree *mt, struct rcu_test_struct2 *test,
 					GFP_KERNEL);
 			}
 
-			/* delete */
+			 
 			if (j == 400) {
 				start = test->index[this->id + this->del];
 				end = test->last[this->id + this->del];
 				mtree_store_range(mt, start, end, NULL, GFP_KERNEL);
 			}
 
-			/* add */
+			 
 			if (j == 500) {
 				start = test->index[this->id + this->add];
 				end = test->last[this->id + this->add];
@@ -34693,23 +34606,13 @@ static void rcu_stress_fwd(struct maple_tree *mt, struct rcu_test_struct2 *test,
 			}
 		}
 		usleep(test->pause);
-		/* If a test fails, don't flood the console */
+		 
 		if (test->stop)
 			break;
 	}
 }
 
-/*
- * This is to check:
- * 1. Range that is not ever present
- * 2. Range that is always present
- * 3. Things being added but not removed.
- * 4. Things being removed but not added.
- * 5. Things are being added and removed, searches my succeed or fail
- *
- *  This sets up two readers for every 10 entries; one forward and one reverse
- *  reading.
- */
+ 
 static void rcu_stress(struct maple_tree *mt, bool forward)
 {
 	unsigned int count, i;
@@ -34719,7 +34622,7 @@ static void rcu_stress(struct maple_tree *mt, bool forward)
 	struct rcu_reader_struct test_reader[RCU_RANGE_COUNT / 5];
 	void *(*function)(void *);
 
-	/* Test setup */
+	 
 	test.mt = mt;
 	test.pause = 5;
 	test.seen_toggle = 0;
@@ -34735,7 +34638,7 @@ static void rcu_stress(struct maple_tree *mt, bool forward)
 		mtree_store_range(mt, seed, r,
 				  xa_mk_value(seed), GFP_KERNEL);
 
-		/* Record start and end of entry */
+		 
 		test.index[i] = seed;
 		test.last[i] = r;
 		seed = 1 + r + rand() % 10;
@@ -34763,7 +34666,7 @@ static void rcu_stress(struct maple_tree *mt, bool forward)
 		struct rcu_reader_struct *this = &test_reader[i];
 		int add = this->id + this->add;
 
-		/* Remove add entries from the tree for later addition */
+		 
 		mtree_store_range(mt, test.index[add], test.last[add],
 				  NULL, GFP_KERNEL);
 	}
@@ -34787,12 +34690,12 @@ static void rcu_stress(struct maple_tree *mt, bool forward)
 
 
 struct rcu_test_struct {
-	struct maple_tree *mt;		/* the maple tree */
-	int count;			/* Number of times to check value(s) */
-	unsigned long index;		/* The first index to check */
-	void *entry1;			/* The first entry value */
-	void *entry2;			/* The second entry value */
-	void *entry3;			/* The third entry value */
+	struct maple_tree *mt;		 
+	int count;			 
+	unsigned long index;		 
+	void *entry1;			 
+	void *entry2;			 
+	void *entry3;			 
 
 	bool update_2;
 	bool update_3;
@@ -34801,18 +34704,18 @@ struct rcu_test_struct {
 	unsigned int loop_sleep;
 	unsigned int val_sleep;
 
-	unsigned int failed;		/* failed detection for other threads */
-	unsigned int seen_entry2;	/* Number of threads that have seen the new value */
-	unsigned int seen_entry3;	/* Number of threads that have seen the new value */
-	unsigned int seen_both;		/* Number of threads that have seen both new values */
+	unsigned int failed;		 
+	unsigned int seen_entry2;	 
+	unsigned int seen_entry3;	 
+	unsigned int seen_both;		 
 	unsigned int seen_toggle;
 	unsigned int seen_added;
 	unsigned int seen_removed;
-	unsigned long last;		/* The end of the range to write. */
+	unsigned long last;		 
 
-	unsigned long removed;		/* The index of the removed entry */
-	unsigned long added;		/* The index of the removed entry */
-	unsigned long toggle;		/* The index of the removed entry */
+	unsigned long removed;		 
+	unsigned long added;		 
+	unsigned long toggle;		 
 };
 
 static inline
@@ -34845,12 +34748,7 @@ int eval_rcu_entry(struct rcu_test_struct *test, void *entry, bool *update_2,
 	return 1;
 }
 
-/*
- * rcu_val() - Read a given value in the tree test->count times using the
- * regular API
- *
- * @ptr: The pointer to the rcu_test_struct
- */
+ 
 static void *rcu_val(void *ptr)
 {
 	struct rcu_test_struct *test = (struct rcu_test_struct *)ptr;
@@ -34862,10 +34760,7 @@ static void *rcu_val(void *ptr)
 	rcu_register_thread();
 	while (count--) {
 		usleep(test->val_sleep);
-		/*
-		 * No locking required, regular API locking is handled in the
-		 * maple tree code
-		 */
+		 
 		entry = mtree_load(test->mt, test->index);
 		MT_BUG_ON(test->mt, eval_rcu_entry(test, entry, &update_2,
 						   &update_3));
@@ -34874,12 +34769,7 @@ static void *rcu_val(void *ptr)
 	return NULL;
 }
 
-/*
- * rcu_loop() - Loop over a section of the maple tree, checking for an expected
- * value using the advanced API
- *
- * @ptr - The pointer to the rcu_test_struct
- */
+ 
 static void *rcu_loop(void *ptr)
 {
 	struct rcu_test_struct *test = (struct rcu_test_struct *)ptr;
@@ -34891,18 +34781,15 @@ static void *rcu_loop(void *ptr)
 
 	rcu_register_thread();
 
-	/*
-	 * Loop through the test->range_start - test->range_end test->count
-	 * times
-	 */
+	 
 	while (count--) {
 		usleep(test->loop_sleep);
 		rcu_read_lock();
 		mas_for_each(&mas, entry, test->range_end) {
-			/* The expected value is based on the start range. */
+			 
 			expected = xa_mk_value(mas.index ? mas.index / 10 : 0);
 
-			/* Out of the interesting range */
+			 
 			if (mas.index < test->index || mas.index > test->last) {
 				if (entry != expected) {
 					printk("%lx - %lx = %p not %p\n",
@@ -34913,9 +34800,9 @@ static void *rcu_loop(void *ptr)
 			}
 
 			if (entry == expected)
-				continue; /* Not seen. */
+				continue;  
 
-			/* In the interesting range */
+			 
 			MT_BUG_ON(test->mt, eval_rcu_entry(test, entry,
 							   &update_2,
 							   &update_3));
@@ -34951,13 +34838,13 @@ void run_check_rcu(struct maple_tree *mt, struct rcu_test_struct *vals)
 		}
 	}
 
-	usleep(5); /* small yield to ensure all threads are at least started. */
+	usleep(5);  
 	mtree_store_range(mt, vals->index, vals->last, vals->entry2,
 			  GFP_KERNEL);
 	while (i--)
 		pthread_join(readers[i], NULL);
 
-	/* Make sure the test caught at least one update. */
+	 
 	MT_BUG_ON(mt, !vals->seen_entry2);
 }
 
@@ -34971,7 +34858,7 @@ static void *rcu_slot_store_reader(void *ptr)
 	rcu_read_lock();
 	while (!test->stop) {
 		mas_walk(&mas);
-		/* The length of growth to both sides must be equal. */
+		 
 		RCU_MT_BUG_ON(test, (test->index - mas.index) !=
 				    (mas.last - test->last));
 	}
@@ -35012,7 +34899,7 @@ static noinline void run_check_rcu_slot_store(struct maple_tree *mt)
 	usleep(5);
 
 	while (limit--) {
-		/* Step by step, expand the most middle range to both sides. */
+		 
 		mtree_store_range(mt, --start, ++end, xa_mk_value(100),
 				  GFP_KERNEL);
 	}
@@ -35049,7 +34936,7 @@ void run_check_rcu_slowread(struct maple_tree *mt, struct rcu_test_struct *vals)
 		}
 	}
 
-	usleep(5); /* small yield to ensure all threads are at least started. */
+	usleep(5);  
 
 	while (index <= vals->last) {
 		mtree_store(mt, index,
@@ -35062,7 +34949,7 @@ void run_check_rcu_slowread(struct maple_tree *mt, struct rcu_test_struct *vals)
 	while (i--)
 		pthread_join(readers[i], NULL);
 
-	/* Make sure the test caught at least one update. */
+	 
 	MT_BUG_ON(mt, !vals->seen_entry2);
 	MT_BUG_ON(mt, !vals->seen_entry3);
 	MT_BUG_ON(mt, !vals->seen_both);
@@ -35087,7 +34974,7 @@ static noinline void __init check_rcu_simulated(struct maple_tree *mt)
 	}
 	mas_unlock(&mas_writer);
 
-	/* Overwrite one entry with a new value. */
+	 
 	mas_set_range(&mas_writer, target, target + 5);
 	rcu_read_lock();
 	MT_BUG_ON(mt, mas_walk(&mas_reader) != xa_mk_value(target/10));
@@ -35097,14 +34984,14 @@ static noinline void __init check_rcu_simulated(struct maple_tree *mt)
 	MT_BUG_ON(mt, mas_walk(&mas_reader) != xa_mk_value(val));
 	rcu_read_unlock();
 
-	/* Restore value. */
+	 
 	mas_lock(&mas_writer);
 	mas_store_gfp(&mas_writer, xa_mk_value(target/10), GFP_KERNEL);
 	mas_unlock(&mas_writer);
 	mas_reset(&mas_reader);
 
 
-	/* Overwrite 1/2 the entry */
+	 
 	mas_set_range(&mas_writer, target, target + 2);
 	rcu_read_lock();
 	MT_BUG_ON(mt, mas_walk(&mas_reader) != xa_mk_value(target/10));
@@ -35115,13 +35002,13 @@ static noinline void __init check_rcu_simulated(struct maple_tree *mt)
 	rcu_read_unlock();
 
 
-	/* Restore value. */
+	 
 	mas_lock(&mas_writer);
 	mas_store_gfp(&mas_writer, xa_mk_value(target/10), GFP_KERNEL);
 	mas_unlock(&mas_writer);
 	mas_reset(&mas_reader);
 
-	/* Overwrite last 1/2 the entry */
+	 
 	mas_set_range(&mas_writer, target + 2, target + 5);
 	rcu_read_lock();
 	MT_BUG_ON(mt, mas_walk(&mas_reader) != xa_mk_value(target/10));
@@ -35132,13 +35019,13 @@ static noinline void __init check_rcu_simulated(struct maple_tree *mt)
 	rcu_read_unlock();
 
 
-	/* Restore value. */
+	 
 	mas_lock(&mas_writer);
 	mas_store_gfp(&mas_writer, xa_mk_value(target/10), GFP_KERNEL);
 	mas_unlock(&mas_writer);
 	mas_reset(&mas_reader);
 
-	/* Overwrite more than the entry */
+	 
 	mas_set_range(&mas_writer, target - 5, target + 15);
 	rcu_read_lock();
 	MT_BUG_ON(mt, mas_walk(&mas_reader) != xa_mk_value(target/10));
@@ -35148,13 +35035,13 @@ static noinline void __init check_rcu_simulated(struct maple_tree *mt)
 	MT_BUG_ON(mt, mas_walk(&mas_reader) != xa_mk_value(val));
 	rcu_read_unlock();
 
-	/* Restore value. */
+	 
 	mas_lock(&mas_writer);
 	mas_store_gfp(&mas_writer, xa_mk_value(target/10), GFP_KERNEL);
 	mas_unlock(&mas_writer);
 	mas_reset(&mas_reader);
 
-	/* Overwrite more than the node. */
+	 
 	mas_set_range(&mas_writer, target - 400, target + 400);
 	rcu_read_lock();
 	MT_BUG_ON(mt, mas_walk(&mas_reader) != xa_mk_value(target/10));
@@ -35164,13 +35051,13 @@ static noinline void __init check_rcu_simulated(struct maple_tree *mt)
 	MT_BUG_ON(mt, mas_walk(&mas_reader) != xa_mk_value(val));
 	rcu_read_unlock();
 
-	/* Restore value. */
+	 
 	mas_lock(&mas_writer);
 	mas_store_gfp(&mas_writer, xa_mk_value(target/10), GFP_KERNEL);
 	mas_unlock(&mas_writer);
 	mas_reset(&mas_reader);
 
-	/* Overwrite the tree */
+	 
 	mas_set_range(&mas_writer, 0, ULONG_MAX);
 	rcu_read_lock();
 	MT_BUG_ON(mt, mas_walk(&mas_reader) != xa_mk_value(target/10));
@@ -35180,7 +35067,7 @@ static noinline void __init check_rcu_simulated(struct maple_tree *mt)
 	MT_BUG_ON(mt, mas_walk(&mas_reader) != xa_mk_value(val));
 	rcu_read_unlock();
 
-	/* Clear out tree & recreate it */
+	 
 	mas_lock(&mas_writer);
 	mas_set_range(&mas_writer, 0, ULONG_MAX);
 	mas_store_gfp(&mas_writer, NULL, GFP_KERNEL);
@@ -35192,8 +35079,8 @@ static noinline void __init check_rcu_simulated(struct maple_tree *mt)
 	}
 	mas_unlock(&mas_writer);
 
-	/* next check */
-	/* Overwrite one entry with a new value. */
+	 
+	 
 	mas_reset(&mas_reader);
 	mas_set_range(&mas_writer, target, target + 5);
 	mas_set_range(&mas_reader, target, target);
@@ -35206,13 +35093,13 @@ static noinline void __init check_rcu_simulated(struct maple_tree *mt)
 	MT_BUG_ON(mt, mas_next(&mas_reader, ULONG_MAX) != xa_mk_value(val));
 	rcu_read_unlock();
 
-	/* Restore value. */
+	 
 	mas_lock(&mas_writer);
 	mas_store_gfp(&mas_writer, xa_mk_value(target/10), GFP_KERNEL);
 	mas_unlock(&mas_writer);
 
-	/* prev check */
-	/* Overwrite one entry with a new value. */
+	 
+	 
 	mas_reset(&mas_reader);
 	mas_set_range(&mas_writer, target, target + 5);
 	mas_set_range(&mas_reader, target, target);
@@ -35240,7 +35127,7 @@ static noinline void __init check_rcu_threaded(struct maple_tree *mt)
 	for (i = 0; i <= nr_entries; i++)
 		mtree_store_range(mt, i*10, i*10 + 5,
 				  xa_mk_value(i), GFP_KERNEL);
-	/* Store across several slots. */
+	 
 	vals.count = 1000;
 	vals.mt = mt;
 	vals.index = 8650;
@@ -35261,9 +35148,9 @@ static noinline void __init check_rcu_threaded(struct maple_tree *mt)
 		mtree_store_range(mt, i*10, i*10 + 5,
 				  xa_mk_value(i), GFP_KERNEL);
 
-	/* 4390-4395: value 439 (0x1b7) [0x36f] */
-	/* Store across several slots. */
-	/* Spanning store. */
+	 
+	 
+	 
 	vals.count = 10000;
 	vals.mt = mt;
 	vals.index = 4390;
@@ -35277,30 +35164,30 @@ static noinline void __init check_rcu_threaded(struct maple_tree *mt)
 	run_check_rcu(mt, &vals);
 	mtree_destroy(mt);
 
-	/* Check expanding range in RCU mode */
+	 
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
 	run_check_rcu_slot_store(mt);
 	mtree_destroy(mt);
 
-	/* Forward writer for rcu stress */
+	 
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
 	rcu_stress(mt, true);
 	mtree_destroy(mt);
 
-	/* Reverse writer for rcu stress */
+	 
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
 	rcu_stress(mt, false);
 	mtree_destroy(mt);
 
-	/* Slow reader test with spanning store. */
+	 
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
 	for (i = 0; i <= nr_entries; i++)
 		mtree_store_range(mt, i*10, i*10 + 5,
 				  xa_mk_value(i), GFP_KERNEL);
 
-	/* 4390-4395: value 439 (0x1b7) [0x36f] */
-	/* Store across several slots. */
-	/* Spanning store. */
+	 
+	 
+	 
 	vals.count = 15000;
 	vals.mt = mt;
 	vals.index = 4390;
@@ -35326,9 +35213,9 @@ static noinline void __init check_rcu_threaded(struct maple_tree *mt)
 	run_check_rcu_slowread(mt, &vals);
 	rcu_unregister_thread();
 }
-/* End of RCU stress testing */
+ 
 
-/* Check tree structure by depth first searching */
+ 
 static void mas_dfs_preorder(struct ma_state *mas)
 {
 
@@ -35407,7 +35294,7 @@ static void check_dfs_preorder(struct maple_tree *mt)
 		count++;
 		mas_dfs_preorder(&mas);
 	} while (!mas_is_none(&mas));
-	/*printk("count %lu\n", count); */
+	 
 	MT_BUG_ON(mt, count != e);
 	mtree_destroy(mt);
 
@@ -35419,7 +35306,7 @@ static void check_dfs_preorder(struct maple_tree *mt)
 		count++;
 		mas_dfs_preorder(&mas);
 	} while (!mas_is_none(&mas));
-	/*printk("count %lu\n", count); */
+	 
 	MT_BUG_ON(mt, count != e);
 	mtree_destroy(mt);
 
@@ -35435,16 +35322,12 @@ static void check_dfs_preorder(struct maple_tree *mt)
 	}
 	mas_destroy(&mas);
 	rcu_barrier();
-	/*
-	 * pr_info(" ->seq test of 0-%lu %luK in %d active (%d total)\n",
-	 *	max, mt_get_alloc_size()/1024, mt_nr_allocated(),
-	 *	mt_nr_tallocated());
-	 */
+	 
 
 }
-/* End of depth first search tests */
+ 
 
-/* Preallocation testing */
+ 
 static noinline void __init check_prealloc(struct maple_tree *mt)
 {
 	unsigned long i, max = 100;
@@ -35458,7 +35341,7 @@ static noinline void __init check_prealloc(struct maple_tree *mt)
 	for (i = 0; i <= max; i++)
 		mtree_test_store_range(mt, i * 10, i * 10 + 5, &i);
 
-	/* Spanning store */
+	 
 	mas_set_range(&mas, 470, 500);
 	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
 	allocated = mas_allocated(&mas);
@@ -35526,7 +35409,7 @@ static noinline void __init check_prealloc(struct maple_tree *mt)
 	mas_store_prealloc(&mas, ptr);
 	MT_BUG_ON(mt, mas_allocated(&mas) != 0);
 
-	/* Slot store does not need allocations */
+	 
 	mas_set_range(&mas, 6, 9);
 	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
 	allocated = mas_allocated(&mas);
@@ -35542,7 +35425,7 @@ static noinline void __init check_prealloc(struct maple_tree *mt)
 	mas_store_prealloc(&mas, ptr);
 	MT_BUG_ON(mt, mas_allocated(&mas) != 0);
 
-	/* Split */
+	 
 	mas_set_range(&mas, 54, 54);
 	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
 	allocated = mas_allocated(&mas);
@@ -35551,7 +35434,7 @@ static noinline void __init check_prealloc(struct maple_tree *mt)
 	mas_store_prealloc(&mas, ptr);
 	MT_BUG_ON(mt, mas_allocated(&mas) != 0);
 	mt_set_non_kernel(1);
-	/* Spanning store */
+	 
 	mas_set_range(&mas, 1, 100);
 	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL & GFP_NOWAIT) == 0);
 	allocated = mas_allocated(&mas);
@@ -35560,7 +35443,7 @@ static noinline void __init check_prealloc(struct maple_tree *mt)
 	mas_destroy(&mas);
 
 
-	/* Spanning store */
+	 
 	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
 	allocated = mas_allocated(&mas);
 	height = mas_mt_height(&mas);
@@ -35575,9 +35458,9 @@ static noinline void __init check_prealloc(struct maple_tree *mt)
 	height = mas_mt_height(&mas);
 	MT_BUG_ON(mt, allocated != 0);
 }
-/* End of preallocation testing */
+ 
 
-/* Spanning writes, writes that span nodes and layers of the tree */
+ 
 static noinline void __init check_spanning_write(struct maple_tree *mt)
 {
 	unsigned long i, max = 5000;
@@ -35597,7 +35480,7 @@ static noinline void __init check_spanning_write(struct maple_tree *mt)
 		mtree_test_store_range(mt, i * 10, i * 10 + 5, &i);
 
 	mtree_lock(mt);
-	mas_set_range(&mas, 9, 50006); /* Will expand to 0 - ULONG_MAX */
+	mas_set_range(&mas, 9, 50006);  
 	mas_store_gfp(&mas, NULL, GFP_KERNEL);
 	mas_set(&mas, 1205);
 	MT_BUG_ON(mt, mas_walk(&mas) != NULL);
@@ -35605,12 +35488,12 @@ static noinline void __init check_spanning_write(struct maple_tree *mt)
 	mt_validate(mt);
 	mtree_destroy(mt);
 
-	/* Test spanning store that requires a right cousin rebalance */
+	 
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
 	for (i = 0; i <= max; i++)
 		mtree_test_store_range(mt, i * 10, i * 10 + 5, &i);
 
-	mas_set_range(&mas, 0, 12900); /* Spans more than 2 levels */
+	mas_set_range(&mas, 0, 12900);  
 	mtree_lock(mt);
 	mas_store_gfp(&mas, NULL, GFP_KERNEL);
 	mas_set(&mas, 1205);
@@ -35618,7 +35501,7 @@ static noinline void __init check_spanning_write(struct maple_tree *mt)
 	mtree_unlock(mt);
 	mtree_destroy(mt);
 
-	/* Test non-alloc tree spanning store */
+	 
 	mt_init_flags(mt, 0);
 	for (i = 0; i <= max; i++)
 		mtree_test_store_range(mt, i * 10, i * 10 + 5, &i);
@@ -35631,7 +35514,7 @@ static noinline void __init check_spanning_write(struct maple_tree *mt)
 	mtree_unlock(mt);
 	mtree_destroy(mt);
 
-	/* Test spanning store that requires a right sibling rebalance */
+	 
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
 	for (i = 0; i <= max; i++)
 		mtree_test_store_range(mt, i * 10, i * 10 + 5, &i);
@@ -35644,7 +35527,7 @@ static noinline void __init check_spanning_write(struct maple_tree *mt)
 	mtree_unlock(mt);
 	mtree_destroy(mt);
 
-	/* Test spanning store that requires a left sibling rebalance */
+	 
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
 	for (i = 0; i <= max; i++)
 		mtree_test_store_range(mt, i * 10, i * 10 + 5, &i);
@@ -35657,7 +35540,7 @@ static noinline void __init check_spanning_write(struct maple_tree *mt)
 	mtree_unlock(mt);
 	mtree_destroy(mt);
 
-	/* Test spanning store that requires a left cousin rebalance */
+	 
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
 	for (i = 0; i <= max; i++)
 		mtree_test_store_range(mt, i * 10, i * 10 + 5, &i);
@@ -35670,10 +35553,7 @@ static noinline void __init check_spanning_write(struct maple_tree *mt)
 	mtree_unlock(mt);
 	mtree_destroy(mt);
 
-	/*
-	 * Test spanning store that requires a left cousin rebalance all the way
-	 * to root
-	 */
+	 
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
 	for (i = 0; i <= max; i++)
 		mtree_test_store_range(mt, i * 10, i * 10 + 5, &i);
@@ -35686,10 +35566,7 @@ static noinline void __init check_spanning_write(struct maple_tree *mt)
 	mtree_unlock(mt);
 	mtree_destroy(mt);
 
-	/*
-	 * Test spanning store that requires a right cousin rebalance all the
-	 * way to root
-	 */
+	 
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
 	for (i = 0; i <= max; i++)
 		mtree_test_store_range(mt, i * 10, i * 10 + 5, &i);
@@ -35701,7 +35578,7 @@ static noinline void __init check_spanning_write(struct maple_tree *mt)
 	mtree_unlock(mt);
 	mtree_destroy(mt);
 
-	/* Test spanning store ending at full node (depth 2)*/
+	 
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
 	for (i = 0; i <= max; i++)
 		mtree_test_store_range(mt, i * 10, i * 10 + 5, &i);
@@ -35714,7 +35591,7 @@ static noinline void __init check_spanning_write(struct maple_tree *mt)
 	mas_store_gfp(&mas, check_spanning_write, GFP_KERNEL);
 	mas_set(&mas, 47609);
 	mas_store_gfp(&mas, check_spanning_write, GFP_KERNEL);
-	/* Ensure the parent node is full */
+	 
 	mas_ascend(&mas);
 	MT_BUG_ON(mt, (mas_data_end(&mas)) != mt_slot_count(mas.node) - 1);
 	mas_set_range(&mas, 11516, 48940);
@@ -35722,7 +35599,7 @@ static noinline void __init check_spanning_write(struct maple_tree *mt)
 	mtree_unlock(mt);
 	mtree_destroy(mt);
 
-	/* Test spanning write with many levels of no siblings */
+	 
 	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
 	for (i = 0; i <= max; i++)
 		mtree_test_store_range(mt, i * 10, i * 10 + 5, &i);
@@ -35743,9 +35620,9 @@ static noinline void __init check_spanning_write(struct maple_tree *mt)
 	mas_store_gfp(&mas, NULL, GFP_KERNEL);
 	mtree_unlock(mt);
 }
-/* End of spanning write testing */
+ 
 
-/* Writes to a NULL area that are adjacent to other NULLs */
+ 
 static noinline void __init check_null_expand(struct maple_tree *mt)
 {
 	unsigned long i, max = 100;
@@ -35754,7 +35631,7 @@ static noinline void __init check_null_expand(struct maple_tree *mt)
 
 	for (i = 0; i <= max; i++)
 		mtree_test_store_range(mt, i * 10, i * 10 + 5, &i);
-	/* Test expanding null at start. */
+	 
 	mas_lock(&mas);
 	mas_walk(&mas);
 	data_end = mas_data_end(&mas);
@@ -35763,7 +35640,7 @@ static noinline void __init check_null_expand(struct maple_tree *mt)
 	MT_BUG_ON(mt, mtree_load(mt, 963) != NULL);
 	MT_BUG_ON(mt, data_end != mas_data_end(&mas));
 
-	/* Test expanding null at end. */
+	 
 	mas_set(&mas, 880);
 	mas_walk(&mas);
 	data_end = mas_data_end(&mas);
@@ -35775,7 +35652,7 @@ static noinline void __init check_null_expand(struct maple_tree *mt)
 	MT_BUG_ON(mt, data_end != mas_data_end(&mas));
 #endif
 
-	/* Test expanding null at start and end. */
+	 
 	mas_set(&mas, 890);
 	mas_walk(&mas);
 	data_end = mas_data_end(&mas);
@@ -35789,7 +35666,7 @@ static noinline void __init check_null_expand(struct maple_tree *mt)
 	MT_BUG_ON(mt, data_end - 2 != mas_data_end(&mas));
 #endif
 
-	/* Test expanding null across multiple slots. */
+	 
 	mas_set(&mas, 800);
 	mas_walk(&mas);
 	data_end = mas_data_end(&mas);
@@ -35804,40 +35681,33 @@ static noinline void __init check_null_expand(struct maple_tree *mt)
 #endif
 	mas_unlock(&mas);
 }
-/* End of NULL area expansions */
+ 
 
-/* Checking for no memory is best done outside the kernel */
+ 
 static noinline void __init check_nomem(struct maple_tree *mt)
 {
 	MA_STATE(ms, mt, 1, 1);
 
 	MT_BUG_ON(mt, !mtree_empty(mt));
-	/* Ensure no bypassing of allocation failures */
+	 
 	mt_set_non_kernel(0);
 
-	/* Storing something at 1 requires memory allocation */
+	 
 	MT_BUG_ON(mt, mtree_insert(mt, 1, &ms, GFP_ATOMIC) != -ENOMEM);
-	/* Storing something at 0 does not */
+	 
 	MT_BUG_ON(mt, mtree_insert(mt, 0, &ms, GFP_ATOMIC) != 0);
 
-	/*
-	 * Simulate two threads racing; the first one fails to allocate
-	 * memory to insert an entry at 1, then the second one succeeds
-	 * in allocating memory to insert an entry at 2.  The first one
-	 * then needs to free the node it allocated.  LeakSanitizer will
-	 * notice this, as will the 'nr_allocated' debugging aid in the
-	 * userspace test suite.
-	 */
+	 
 	mtree_lock(mt);
-	mas_store(&ms, &ms); /* insert 1 -> &ms, fails. */
+	mas_store(&ms, &ms);  
 	MT_BUG_ON(mt, ms.node != MA_ERROR(-ENOMEM));
-	mas_nomem(&ms, GFP_KERNEL); /* Node allocated in here. */
+	mas_nomem(&ms, GFP_KERNEL);  
 	MT_BUG_ON(mt, ms.node != MAS_START);
 	mtree_unlock(mt);
 	MT_BUG_ON(mt, mtree_insert(mt, 2, mt, GFP_KERNEL) != 0);
 	mtree_lock(mt);
-	mas_store(&ms, &ms); /* insert 1 -> &ms */
-	mas_nomem(&ms, GFP_KERNEL); /* Node allocated in here. */
+	mas_store(&ms, &ms);  
+	mas_nomem(&ms, GFP_KERNEL);  
 	mtree_unlock(mt);
 	mtree_destroy(mt);
 }
@@ -35882,7 +35752,7 @@ void farmer_tests(void)
 	node->parent = ma_parent_ptr(node);
 	ma_free_rcu(node);
 
-	/* Check things that will make lockdep angry */
+	 
 	mt_init_flags(&tree, MT_FLAGS_ALLOC_RANGE);
 	check_locky(&tree);
 	mtree_destroy(&tree);
@@ -35904,7 +35774,7 @@ void farmer_tests(void)
 	check_null_expand(&tree);
 	mtree_destroy(&tree);
 
-	/* RCU testing */
+	 
 	mt_init_flags(&tree, 0);
 	check_erase_testset(&tree);
 	mtree_destroy(&tree);
@@ -35925,14 +35795,14 @@ void farmer_tests(void)
 
 
 #if defined(CONFIG_64BIT)
-	/* Captures from VMs that found previous errors */
+	 
 	mt_init_flags(&tree, 0);
 	check_erase2_sets(&tree);
 	mtree_destroy(&tree);
 #endif
 
 
-	/* No memory handling */
+	 
 	check_nomem(&tree);
 }
 

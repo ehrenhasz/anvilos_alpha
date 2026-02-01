@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  sbs.c - ACPI Smart Battery System Driver ($Revision: 2.0 $)
- *
- *  Copyright (c) 2007 Alexey Starikovskiy <astarikovskiy@suse.de>
- *  Copyright (c) 2005-2007 Vladimir Lebedev <vladimir.p.lebedev@intel.com>
- *  Copyright (c) 2005 Rich Townsend <rhdt@bartol.udel.edu>
- */
+
+ 
 
 #define pr_fmt(fmt) "ACPI: " fmt
 
@@ -227,7 +221,7 @@ static int acpi_sbs_battery_get_property(struct power_supply *psy,
 				acpi_battery_scale(battery) * 1000;
 		break;
 	case POWER_SUPPLY_PROP_TEMP:
-		val->intval = battery->temp_now - 2730;	// dK -> dC
+		val->intval = battery->temp_now - 2730;	
 		break;
 	case POWER_SUPPLY_PROP_MODEL_NAME:
 		val->strval = battery->device_name;
@@ -290,14 +284,12 @@ static const struct power_supply_desc acpi_sbs_charger_desc = {
 	.get_property	= sbs_get_ac_property,
 };
 
-/* --------------------------------------------------------------------------
-                            Smart Battery System Management
-   -------------------------------------------------------------------------- */
+ 
 
 struct acpi_battery_reader {
-	u8 command;		/* command for battery */
-	u8 mode;		/* word or block? */
-	size_t offset;		/* offset inside struct acpi_sbs_battery */
+	u8 command;		 
+	u8 mode;		 
+	size_t offset;		 
 };
 
 static struct acpi_battery_reader info_readers[] = {
@@ -423,14 +415,7 @@ static int acpi_ac_get_present(struct acpi_sbs *sbs)
 	if (result)
 		return result;
 
-	/*
-	 * The spec requires that bit 4 always be 1. If it's not set, assume
-	 * that the implementation doesn't support an SBS charger.
-	 *
-	 * And on some MacBooks a status of 0xffff is always returned, no
-	 * matter whether the charger is plugged in or not, which is also
-	 * wrong, so ignore the SBS charger for those too.
-	 */
+	 
 	if (!((status >> 4) & 0x1) || status == 0xffff)
 		return -ENODEV;
 
@@ -468,9 +453,7 @@ static const struct device_attribute alarm_attr = {
 	.store = acpi_battery_alarm_store,
 };
 
-/* --------------------------------------------------------------------------
-                                 Driver Interface
-   -------------------------------------------------------------------------- */
+ 
 static int acpi_battery_read(struct acpi_battery *battery)
 {
 	int result, saved_present = battery->present;
@@ -486,7 +469,7 @@ static int acpi_battery_read(struct acpi_battery *battery)
 		if (!battery->present)
 			return 0;
 
-		/* Masking necessary for Smart Battery Selectors */
+		 
 		state = 0x0fff;
 		state |= 1 << (battery->id + 12);
 		acpi_smbus_write(battery->sbs->hc, SMBUS_WRITE_WORD,
@@ -514,7 +497,7 @@ static int acpi_battery_read(struct acpi_battery *battery)
 	return result;
 }
 
-/* Smart Battery */
+ 
 static int acpi_battery_add(struct acpi_sbs *sbs, int id)
 {
 	struct acpi_battery *battery = &sbs->battery[id];

@@ -1,29 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2002, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011 Gunnar Beutner
- * Copyright (c) 2018, 2022 by Delphix. All rights reserved.
- */
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -90,7 +67,7 @@ sa_is_shared(const char *mountpoint, enum sa_protocol protocol)
 void
 sa_commit_shares(enum sa_protocol protocol)
 {
-	/* CSTYLED */
+	 
 	VALIDATE_PROTOCOL(protocol, );
 
 	fstypes[protocol]->commit_shares();
@@ -99,7 +76,7 @@ sa_commit_shares(enum sa_protocol protocol)
 void
 sa_truncate_shares(enum sa_protocol protocol)
 {
-	/* CSTYLED */
+	 
 	VALIDATE_PROTOCOL(protocol, );
 
 	if (fstypes[protocol]->truncate_shares != NULL)
@@ -114,11 +91,7 @@ sa_validate_shareopts(const char *options, enum sa_protocol protocol)
 	return (fstypes[protocol]->validate_shareopts(options));
 }
 
-/*
- * sa_errorstr(err)
- *
- * convert an error value to an error string
- */
+ 
 const char *
 sa_errorstr(int err)
 {

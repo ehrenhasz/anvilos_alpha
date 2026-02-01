@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
- *
- * @File	ctmixer.c
- *
- * @Brief
- * This file contains the implementation of alsa mixer device functions.
- *
- * @Author	Liu Chun
- * @Date 	May 28 2008
- */
+
+ 
 
 
 #include "ctmixer.h"
@@ -32,7 +22,7 @@ enum CT_SUM_CTL {
 };
 
 enum CT_AMIXER_CTL {
-	/* volume control mixers */
+	 
 	AMIXER_MASTER_F,
 	AMIXER_MASTER_R,
 	AMIXER_MASTER_C,
@@ -55,12 +45,12 @@ enum CT_AMIXER_CTL {
 	AMIXER_LINEIN_C,
 	AMIXER_MIC_C,
 
-	/* this should always be the last one */
+	 
 	NUM_CT_AMIXERS
 };
 
 enum CTALSA_MIXER_CTL {
-	/* volume control mixers */
+	 
 	MIXER_MASTER_P,
 	MIXER_PCM_P,
 	MIXER_LINEIN_P,
@@ -77,7 +67,7 @@ enum CTALSA_MIXER_CTL {
 	MIXER_MIC_C,
 	MIXER_SPDIFI_C,
 
-	/* switch control mixers */
+	 
 	MIXER_PCM_C_S,
 	MIXER_LINEIN_C_S,
 	MIXER_MIC_C_S,
@@ -92,7 +82,7 @@ enum CTALSA_MIXER_CTL {
 	MIXER_IEC958_DEFAULT,
 	MIXER_IEC958_STREAM,
 
-	/* this should always be the last one */
+	 
 	NUM_CTALSA_MIXERS
 };
 
@@ -221,8 +211,8 @@ ct_mixer_recording_select(struct ct_mixer *mixer, enum CT_AMIXER_CTL type);
 static void
 ct_mixer_recording_unselect(struct ct_mixer *mixer, enum CT_AMIXER_CTL type);
 
-/* FIXME: this static looks like it would fail if more than one card was */
-/* installed. */
+ 
+ 
 static struct snd_kcontrol *kctls[2] = {NULL};
 
 static enum CT_AMIXER_CTL get_amixer_index(enum CTALSA_MIXER_CTL alsa_index)
@@ -280,9 +270,8 @@ set_switch_state(struct ct_mixer *mixer,
 		mixer->switch_state &= ~(0x1 << (type - SWH_MIXER_START));
 }
 
-#if 0 /* not used */
-/* Map integer value ranging from 0 to 65535 to 14-bit float value ranging
- * from 2^-6 to (1+1023/1024) */
+#if 0  
+ 
 static unsigned int uint16_to_float14(unsigned int x)
 {
 	unsigned int i;
@@ -294,7 +283,7 @@ static unsigned int uint16_to_float14(unsigned int x)
 	x /= 65535;
 	x += 16;
 
-	/* i <= 6 */
+	 
 	for (i = 0; !(x & 0x400); i++)
 		x <<= 1;
 
@@ -320,7 +309,7 @@ static unsigned int float14_to_uint16(unsigned int x)
 
 	return x;
 }
-#endif /* not used */
+#endif  
 
 #define VOL_SCALE	0x1c
 #define VOL_MAX		0x100
@@ -382,7 +371,7 @@ static int ct_alsa_mix_volume_put(struct snd_kcontrol *kcontrol,
 			amixer->ops->set_scale(amixer, val);
 			amixer->ops->commit_write(amixer);
 			change = 1;
-			/* Synchronize Master/PCM playback AMIXERs. */
+			 
 			if (AMIXER_MASTER_F == type || AMIXER_PCM_F == type) {
 				for (j = 1; j < 4; j++) {
 					amixer = mixer->
@@ -525,7 +514,7 @@ static void do_switch(struct ct_atc *atc, enum CTALSA_MIXER_CTL type, int state)
 	struct ct_mixer *mixer = atc->mixer;
 	struct capabilities cap = atc->capabilities(atc);
 
-	/* Do changes in mixer. */
+	 
 	if ((SWH_CAPTURE_START <= type) && (SWH_CAPTURE_END >= type)) {
 		if (state) {
 			ct_mixer_recording_select(mixer,
@@ -535,7 +524,7 @@ static void do_switch(struct ct_atc *atc, enum CTALSA_MIXER_CTL type, int state)
 						    get_amixer_index(type));
 		}
 	}
-	/* Do changes out of mixer. */
+	 
 	if (!cap.dedicated_mic &&
 	    (MIXER_LINEIN_C_S == type || MIXER_MIC_C_S == type)) {
 		if (state)
@@ -738,7 +727,7 @@ static int ct_mixer_kcontrols_create(struct ct_mixer *mixer)
 	struct capabilities cap = atc->capabilities(atc);
 	int err;
 
-	/* Create snd kcontrol instances on demand */
+	 
 	for (type = VOL_MIXER_START; type <= VOL_MIXER_END; type++) {
 		if (ct_kcontrol_init_table[type].ctl) {
 			vol_ctl.name = ct_kcontrol_init_table[type].name;
@@ -844,7 +833,7 @@ static int ct_mixer_get_resources(struct ct_mixer *mixer)
 	int err;
 	int i;
 
-	/* Allocate sum resources for mixer obj */
+	 
 	sum_mgr = (struct sum_mgr *)mixer->atc->rsc_mgrs[SUM];
 	sum_desc.msr = mixer->atc->msr;
 	for (i = 0; i < (NUM_CT_SUMS * CHN_NUM); i++) {
@@ -859,7 +848,7 @@ static int ct_mixer_get_resources(struct ct_mixer *mixer)
 	if (err)
 		goto error1;
 
-	/* Allocate amixer resources for mixer obj */
+	 
 	amixer_mgr = (struct amixer_mgr *)mixer->atc->rsc_mgrs[AMIXER];
 	am_desc.msr = mixer->atc->msr;
 	for (i = 0; i < (NUM_CT_AMIXERS * CHN_NUM); i++) {
@@ -901,7 +890,7 @@ static int ct_mixer_get_mem(struct ct_mixer **rmixer)
 	int err;
 
 	*rmixer = NULL;
-	/* Allocate mem for mixer obj */
+	 
 	mixer = kzalloc(sizeof(*mixer), GFP_KERNEL);
 	if (!mixer)
 		return -ENOMEM;
@@ -936,9 +925,9 @@ static int ct_mixer_topology_build(struct ct_mixer *mixer)
 	enum CT_AMIXER_CTL i, j;
 	enum CT_SUM_CTL k;
 
-	/* Build topology from destination to source */
+	 
 
-	/* Set up Master mixer */
+	 
 	for (i = AMIXER_MASTER_F, k = SUM_IN_F;
 					i <= AMIXER_MASTER_S; i++, k++) {
 		amix_d = mixer->amixers[i*CHN_NUM];
@@ -949,7 +938,7 @@ static int ct_mixer_topology_build(struct ct_mixer *mixer)
 		amix_d->ops->setup(amix_d, &sum->rsc, INIT_VOL, NULL);
 	}
 
-	/* Set up Wave-out mixer */
+	 
 	for (i = AMIXER_WAVE_F, j = AMIXER_MASTER_F;
 					i <= AMIXER_WAVE_S; i++, j++) {
 		amix_d = mixer->amixers[i*CHN_NUM];
@@ -960,7 +949,7 @@ static int ct_mixer_topology_build(struct ct_mixer *mixer)
 		amix_d->ops->setup(amix_d, &amix_s->rsc, INIT_VOL, NULL);
 	}
 
-	/* Set up S/PDIF-out mixer */
+	 
 	amix_d = mixer->amixers[AMIXER_SPDIFO*CHN_NUM];
 	amix_s = mixer->amixers[AMIXER_MASTER_F*CHN_NUM];
 	amix_d->ops->setup(amix_d, &amix_s->rsc, INIT_VOL, NULL);
@@ -968,7 +957,7 @@ static int ct_mixer_topology_build(struct ct_mixer *mixer)
 	amix_s = mixer->amixers[AMIXER_MASTER_F*CHN_NUM+1];
 	amix_d->ops->setup(amix_d, &amix_s->rsc, INIT_VOL, NULL);
 
-	/* Set up PCM-in mixer */
+	 
 	for (i = AMIXER_PCM_F, k = SUM_IN_F; i <= AMIXER_PCM_S; i++, k++) {
 		amix_d = mixer->amixers[i*CHN_NUM];
 		sum = mixer->sums[k*CHN_NUM];
@@ -978,7 +967,7 @@ static int ct_mixer_topology_build(struct ct_mixer *mixer)
 		amix_d->ops->setup(amix_d, NULL, INIT_VOL, sum);
 	}
 
-	/* Set up Line-in mixer */
+	 
 	amix_d = mixer->amixers[AMIXER_LINEIN*CHN_NUM];
 	sum = mixer->sums[SUM_IN_F*CHN_NUM];
 	amix_d->ops->setup(amix_d, NULL, INIT_VOL, sum);
@@ -986,7 +975,7 @@ static int ct_mixer_topology_build(struct ct_mixer *mixer)
 	sum = mixer->sums[SUM_IN_F*CHN_NUM+1];
 	amix_d->ops->setup(amix_d, NULL, INIT_VOL, sum);
 
-	/* Set up Mic-in mixer */
+	 
 	amix_d = mixer->amixers[AMIXER_MIC*CHN_NUM];
 	sum = mixer->sums[SUM_IN_F*CHN_NUM];
 	amix_d->ops->setup(amix_d, NULL, INIT_VOL, sum);
@@ -994,7 +983,7 @@ static int ct_mixer_topology_build(struct ct_mixer *mixer)
 	sum = mixer->sums[SUM_IN_F*CHN_NUM+1];
 	amix_d->ops->setup(amix_d, NULL, INIT_VOL, sum);
 
-	/* Set up S/PDIF-in mixer */
+	 
 	amix_d = mixer->amixers[AMIXER_SPDIFI*CHN_NUM];
 	sum = mixer->sums[SUM_IN_F*CHN_NUM];
 	amix_d->ops->setup(amix_d, NULL, INIT_VOL, sum);
@@ -1002,7 +991,7 @@ static int ct_mixer_topology_build(struct ct_mixer *mixer)
 	sum = mixer->sums[SUM_IN_F*CHN_NUM+1];
 	amix_d->ops->setup(amix_d, NULL, INIT_VOL, sum);
 
-	/* Set up Master recording mixer */
+	 
 	amix_d = mixer->amixers[AMIXER_MASTER_F_C*CHN_NUM];
 	sum = mixer->sums[SUM_IN_F_C*CHN_NUM];
 	amix_d->ops->setup(amix_d, &sum->rsc, INIT_VOL, NULL);
@@ -1010,7 +999,7 @@ static int ct_mixer_topology_build(struct ct_mixer *mixer)
 	sum = mixer->sums[SUM_IN_F_C*CHN_NUM+1];
 	amix_d->ops->setup(amix_d, &sum->rsc, INIT_VOL, NULL);
 
-	/* Set up PCM-in recording mixer */
+	 
 	amix_d = mixer->amixers[AMIXER_PCM_F_C*CHN_NUM];
 	sum = mixer->sums[SUM_IN_F_C*CHN_NUM];
 	amix_d->ops->setup(amix_d, NULL, INIT_VOL, sum);
@@ -1018,7 +1007,7 @@ static int ct_mixer_topology_build(struct ct_mixer *mixer)
 	sum = mixer->sums[SUM_IN_F_C*CHN_NUM+1];
 	amix_d->ops->setup(amix_d, NULL, INIT_VOL, sum);
 
-	/* Set up Line-in recording mixer */
+	 
 	amix_d = mixer->amixers[AMIXER_LINEIN_C*CHN_NUM];
 	sum = mixer->sums[SUM_IN_F_C*CHN_NUM];
 	amix_d->ops->setup(amix_d, NULL, INIT_VOL, sum);
@@ -1026,7 +1015,7 @@ static int ct_mixer_topology_build(struct ct_mixer *mixer)
 	sum = mixer->sums[SUM_IN_F_C*CHN_NUM+1];
 	amix_d->ops->setup(amix_d, NULL, INIT_VOL, sum);
 
-	/* Set up Mic-in recording mixer */
+	 
 	amix_d = mixer->amixers[AMIXER_MIC_C*CHN_NUM];
 	sum = mixer->sums[SUM_IN_F_C*CHN_NUM];
 	amix_d->ops->setup(amix_d, NULL, INIT_VOL, sum);
@@ -1034,7 +1023,7 @@ static int ct_mixer_topology_build(struct ct_mixer *mixer)
 	sum = mixer->sums[SUM_IN_F_C*CHN_NUM+1];
 	amix_d->ops->setup(amix_d, NULL, INIT_VOL, sum);
 
-	/* Set up S/PDIF-in recording mixer */
+	 
 	amix_d = mixer->amixers[AMIXER_SPDIFI_C*CHN_NUM];
 	sum = mixer->sums[SUM_IN_F_C*CHN_NUM];
 	amix_d->ops->setup(amix_d, NULL, INIT_VOL, sum);
@@ -1122,13 +1111,13 @@ static int mixer_resume(struct ct_mixer *mixer)
 	int i, state;
 	struct amixer *amixer;
 
-	/* resume topology and volume gain. */
+	 
 	for (i = 0; i < NUM_CT_AMIXERS*CHN_NUM; i++) {
 		amixer = mixer->amixers[i];
 		amixer->ops->commit_write(amixer);
 	}
 
-	/* resume switch state. */
+	 
 	for (i = SWH_MIXER_START; i <= SWH_MIXER_END; i++) {
 		state = get_switch_state(mixer, i);
 		do_switch(mixer->atc, i, state);
@@ -1146,7 +1135,7 @@ int ct_mixer_destroy(struct ct_mixer *mixer)
 	struct amixer *amixer;
 	int i = 0;
 
-	/* Release amixer resources */
+	 
 	for (i = 0; i < (NUM_CT_AMIXERS * CHN_NUM); i++) {
 		if (NULL != mixer->amixers[i]) {
 			amixer = mixer->amixers[i];
@@ -1154,13 +1143,13 @@ int ct_mixer_destroy(struct ct_mixer *mixer)
 		}
 	}
 
-	/* Release sum resources */
+	 
 	for (i = 0; i < (NUM_CT_SUMS * CHN_NUM); i++) {
 		if (NULL != mixer->sums[i])
 			sum_mgr->put_sum(sum_mgr, (struct sum *)mixer->sums[i]);
 	}
 
-	/* Release mem assigned to mixer object */
+	 
 	kfree(mixer->sums);
 	kfree(mixer->amixers);
 	kfree(mixer);
@@ -1175,14 +1164,14 @@ int ct_mixer_create(struct ct_atc *atc, struct ct_mixer **rmixer)
 
 	*rmixer = NULL;
 
-	/* Allocate mem for mixer obj */
+	 
 	err = ct_mixer_get_mem(&mixer);
 	if (err)
 		return err;
 
 	mixer->switch_state = 0;
 	mixer->atc = atc;
-	/* Set operations */
+	 
 	mixer->get_output_ports = mixer_get_output_ports;
 	mixer->set_input_left = mixer_set_input_left;
 	mixer->set_input_right = mixer_set_input_right;
@@ -1190,12 +1179,12 @@ int ct_mixer_create(struct ct_atc *atc, struct ct_mixer **rmixer)
 	mixer->resume = mixer_resume;
 #endif
 
-	/* Allocate chip resources for mixer obj */
+	 
 	err = ct_mixer_get_resources(mixer);
 	if (err)
 		goto error;
 
-	/* Build internal mixer topology */
+	 
 	ct_mixer_topology_build(mixer);
 
 	*rmixer = mixer;
@@ -1213,8 +1202,8 @@ int ct_alsa_mix_create(struct ct_atc *atc,
 {
 	int err;
 
-	/* Create snd kcontrol instances on demand */
-	/* vol_ctl.device = swh_ctl.device = device; */ /* better w/ device 0 */
+	 
+	   
 	err = ct_mixer_kcontrols_create((struct ct_mixer *)atc->mixer);
 	if (err)
 		return err;

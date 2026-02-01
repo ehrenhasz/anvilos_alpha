@@ -1,14 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-/*  Copyright(c) 2016-20 Intel Corporation. */
+
+ 
 
 #include <stddef.h>
 #include "defines.h"
 
-/*
- * Data buffer spanning two pages that will be placed first in .data
- * segment. Even if not used internally the second page is needed by
- * external test manipulating page permissions.
- */
+ 
 static uint8_t encl_buffer[8192] = { 1 };
 
 enum sgx_enclu_function {
@@ -24,11 +20,11 @@ static void do_encl_emodpe(void *_op)
 	secinfo.flags = op->flags;
 
 	asm volatile(".byte 0x0f, 0x01, 0xd7"
-				: /* no outputs */
+				:  
 				: "a" (EMODPE),
 				  "b" (&secinfo),
 				  "c" (op->epc_addr)
-				: "memory" /* read from secinfo pointer */);
+				: "memory"  );
 }
 
 static void do_encl_eaccept(void *_op)
@@ -44,7 +40,7 @@ static void do_encl_eaccept(void *_op)
 				: "a" (EACCEPT),
 				  "b" (&secinfo),
 				  "c" (op->epc_addr)
-				: "memory" /* read from secinfo pointer */);
+				: "memory"  );
 
 	op->ret = rax;
 }
@@ -75,17 +71,17 @@ static void do_encl_init_tcs_page(void *_op)
 	void *tcs = (void *)op->tcs_page;
 	uint32_t val_32;
 
-	memset(tcs, 0, 16);			/* STATE and FLAGS */
-	memcpy(tcs + 16, &op->ssa, 8);		/* OSSA */
-	memset(tcs + 24, 0, 4);			/* CSSA */
+	memset(tcs, 0, 16);			 
+	memcpy(tcs + 16, &op->ssa, 8);		 
+	memset(tcs + 24, 0, 4);			 
 	val_32 = 1;
-	memcpy(tcs + 28, &val_32, 4);		/* NSSA */
-	memcpy(tcs + 32, &op->entry, 8);	/* OENTRY */
-	memset(tcs + 40, 0, 24);		/* AEP, OFSBASE, OGSBASE */
+	memcpy(tcs + 28, &val_32, 4);		 
+	memcpy(tcs + 32, &op->entry, 8);	 
+	memset(tcs + 40, 0, 24);		 
 	val_32 = 0xFFFFFFFF;
-	memcpy(tcs + 64, &val_32, 4);		/* FSLIMIT */
-	memcpy(tcs + 68, &val_32, 4);		/* GSLIMIT */
-	memset(tcs + 72, 0, 4024);		/* Reserved */
+	memcpy(tcs + 64, &val_32, 4);		 
+	memcpy(tcs + 68, &val_32, 4);		 
+	memset(tcs + 72, 0, 4024);		 
 }
 
 static void do_encl_op_put_to_buf(void *op)

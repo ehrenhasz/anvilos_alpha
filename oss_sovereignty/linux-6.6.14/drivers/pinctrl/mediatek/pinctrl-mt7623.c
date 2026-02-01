@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * The MT7623 driver based on Linux generic pinctrl binding.
- *
- * Copyright (C) 2015 - 2018 MediaTek Inc.
- * Author: Biao Huang <biao.huang@mediatek.com>
- *	   Ryder Lee <ryder.lee@mediatek.com>
- *	   Sean Wang <sean.wang@mediatek.com>
- */
+
+ 
 
 #include "pinctrl-moore.h"
 
@@ -272,7 +265,7 @@ static const struct mtk_pin_field_calc mt7623_pin_tdsel_range[] = {
 };
 
 static const struct mtk_pin_field_calc mt7623_pin_pupd_range[] = {
-	/* MSDC0 */
+	 
 	PIN_FIELD16(111, 111, 0xd00, 0x10, 12, 1),
 	PIN_FIELD16(112, 112, 0xd00, 0x10, 8, 1),
 	PIN_FIELD16(113, 113, 0xd00, 0x10, 4, 1),
@@ -284,21 +277,21 @@ static const struct mtk_pin_field_calc mt7623_pin_pupd_range[] = {
 	PIN_FIELD16(119, 119, 0xcf0, 0x10, 8, 1),
 	PIN_FIELD16(120, 120, 0xcf0, 0x10, 4, 1),
 	PIN_FIELD16(121, 121, 0xcf0, 0x10, 0, 1),
-	/* MSDC1 */
+	 
 	PIN_FIELD16(105, 105, 0xd40, 0x10, 8, 1),
 	PIN_FIELD16(106, 106, 0xd30, 0x10, 8, 1),
 	PIN_FIELD16(107, 107, 0xd60, 0x10, 0, 1),
 	PIN_FIELD16(108, 108, 0xd60, 0x10, 10, 1),
 	PIN_FIELD16(109, 109, 0xd60, 0x10, 4, 1),
 	PIN_FIELD16(110, 110, 0xc60, 0x10, 12, 1),
-	/* MSDC1 */
+	 
 	PIN_FIELD16(85, 85, 0xda0, 0x10, 8, 1),
 	PIN_FIELD16(86, 86, 0xd90, 0x10, 8, 1),
 	PIN_FIELD16(87, 87, 0xdc0, 0x10, 0, 1),
 	PIN_FIELD16(88, 88, 0xdc0, 0x10, 10, 1),
 	PIN_FIELD16(89, 89, 0xdc0, 0x10, 4, 1),
 	PIN_FIELD16(90, 90, 0xdc0, 0x10, 12, 1),
-	/* MSDC0E */
+	 
 	PIN_FIELD16(249, 249, 0x140, 0x10, 0, 1),
 	PIN_FIELD16(250, 250, 0x130, 0x10, 12, 1),
 	PIN_FIELD16(251, 251, 0x130, 0x10, 8, 1),
@@ -314,7 +307,7 @@ static const struct mtk_pin_field_calc mt7623_pin_pupd_range[] = {
 };
 
 static const struct mtk_pin_field_calc mt7623_pin_r1_range[] = {
-	/* MSDC0 */
+	 
 	PIN_FIELD16(111, 111, 0xd00, 0x10, 13, 1),
 	PIN_FIELD16(112, 112, 0xd00, 0x10, 9, 1),
 	PIN_FIELD16(113, 113, 0xd00, 0x10, 5, 1),
@@ -326,21 +319,21 @@ static const struct mtk_pin_field_calc mt7623_pin_r1_range[] = {
 	PIN_FIELD16(119, 119, 0xcf0, 0x10, 9, 1),
 	PIN_FIELD16(120, 120, 0xcf0, 0x10, 5, 1),
 	PIN_FIELD16(121, 121, 0xcf0, 0x10, 1, 1),
-	/* MSDC1 */
+	 
 	PIN_FIELD16(105, 105, 0xd40, 0x10, 9, 1),
 	PIN_FIELD16(106, 106, 0xd30, 0x10, 9, 1),
 	PIN_FIELD16(107, 107, 0xd60, 0x10, 1, 1),
 	PIN_FIELD16(108, 108, 0xd60, 0x10, 9, 1),
 	PIN_FIELD16(109, 109, 0xd60, 0x10, 5, 1),
 	PIN_FIELD16(110, 110, 0xc60, 0x10, 13, 1),
-	/* MSDC2 */
+	 
 	PIN_FIELD16(85, 85, 0xda0, 0x10, 9, 1),
 	PIN_FIELD16(86, 86, 0xd90, 0x10, 9, 1),
 	PIN_FIELD16(87, 87, 0xdc0, 0x10, 1, 1),
 	PIN_FIELD16(88, 88, 0xdc0, 0x10, 9, 1),
 	PIN_FIELD16(89, 89, 0xdc0, 0x10, 5, 1),
 	PIN_FIELD16(90, 90, 0xdc0, 0x10, 13, 1),
-	/* MSDC0E */
+	 
 	PIN_FIELD16(249, 249, 0x140, 0x10, 1, 1),
 	PIN_FIELD16(250, 250, 0x130, 0x10, 13, 1),
 	PIN_FIELD16(251, 251, 0x130, 0x10, 9, 1),
@@ -356,7 +349,7 @@ static const struct mtk_pin_field_calc mt7623_pin_r1_range[] = {
 };
 
 static const struct mtk_pin_field_calc mt7623_pin_r0_range[] = {
-	/* MSDC0 */
+	 
 	PIN_FIELD16(111, 111, 0xd00, 0x10, 14, 1),
 	PIN_FIELD16(112, 112, 0xd00, 0x10, 10, 1),
 	PIN_FIELD16(113, 113, 0xd00, 0x10, 6, 1),
@@ -368,21 +361,21 @@ static const struct mtk_pin_field_calc mt7623_pin_r0_range[] = {
 	PIN_FIELD16(119, 119, 0xcf0, 0x10, 10, 1),
 	PIN_FIELD16(120, 120, 0xcf0, 0x10, 6, 1),
 	PIN_FIELD16(121, 121, 0xcf0, 0x10, 2, 1),
-	/* MSDC1 */
+	 
 	PIN_FIELD16(105, 105, 0xd40, 0x10, 10, 1),
 	PIN_FIELD16(106, 106, 0xd30, 0x10, 10, 1),
 	PIN_FIELD16(107, 107, 0xd60, 0x10, 2, 1),
 	PIN_FIELD16(108, 108, 0xd60, 0x10, 8, 1),
 	PIN_FIELD16(109, 109, 0xd60, 0x10, 6, 1),
 	PIN_FIELD16(110, 110, 0xc60, 0x10, 14, 1),
-	/* MSDC2 */
+	 
 	PIN_FIELD16(85, 85, 0xda0, 0x10, 10, 1),
 	PIN_FIELD16(86, 86, 0xd90, 0x10, 10, 1),
 	PIN_FIELD16(87, 87, 0xdc0, 0x10, 2, 1),
 	PIN_FIELD16(88, 88, 0xdc0, 0x10, 8, 1),
 	PIN_FIELD16(89, 89, 0xdc0, 0x10, 6, 1),
 	PIN_FIELD16(90, 90, 0xdc0, 0x10, 14, 1),
-	/* MSDC0E */
+	 
 	PIN_FIELD16(249, 249, 0x140, 0x10, 2, 1),
 	PIN_FIELD16(250, 250, 0x130, 0x10, 14, 1),
 	PIN_FIELD16(251, 251, 0x130, 0x10, 10, 1),
@@ -696,18 +689,15 @@ static const struct mtk_pin_desc mt7623_pins[] = {
 	MT7623_PIN(279, "USB3_RES_BOND", EINT_NA, DRV_GRP1),
 };
 
-/* List all groups consisting of these pins dedicated to the enablement of
- * certain hardware block and the corresponding mode for all of the pins.
- * The hardware probably has multiple combinations of these pinouts.
- */
+ 
 
-/* AUDIO EXT CLK */
+ 
 static int mt7623_aud_ext_clk0_pins[] = { 208, };
 static int mt7623_aud_ext_clk0_funcs[] = { 1, };
 static int mt7623_aud_ext_clk1_pins[] = { 209, };
 static int mt7623_aud_ext_clk1_funcs[] = { 1, };
 
-/* DISP PWM */
+ 
 static int mt7623_disp_pwm_0_pins[] = { 72, };
 static int mt7623_disp_pwm_0_funcs[] = { 5, };
 static int mt7623_disp_pwm_1_pins[] = { 203, };
@@ -715,28 +705,28 @@ static int mt7623_disp_pwm_1_funcs[] = { 2, };
 static int mt7623_disp_pwm_2_pins[] = { 208, };
 static int mt7623_disp_pwm_2_funcs[] = { 5, };
 
-/* ESW */
+ 
 static int mt7623_esw_int_pins[] = { 273, };
 static int mt7623_esw_int_funcs[] = { 1, };
 static int mt7623_esw_rst_pins[] = { 277, };
 static int mt7623_esw_rst_funcs[] = { 1, };
 
-/* EPHY */
+ 
 static int mt7623_ephy_pins[] = { 262, 263, 264, 265, 266, 267, 268,
 				  269, 270, 271, 272, 274, };
 static int mt7623_ephy_funcs[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, };
 
-/* EXT_SDIO */
+ 
 static int mt7623_ext_sdio_pins[] = { 236, 237, 238, 239, 240, 241, };
 static int mt7623_ext_sdio_funcs[] = { 1, 1, 1, 1, 1, 1, };
 
-/* HDMI RX */
+ 
 static int mt7623_hdmi_rx_pins[] = { 247, 248, };
 static int mt7623_hdmi_rx_funcs[] = { 1, 1 };
 static int mt7623_hdmi_rx_i2c_pins[] = { 244, 245, };
 static int mt7623_hdmi_rx_i2c_funcs[] = { 1, 1 };
 
-/* HDMI TX */
+ 
 static int mt7623_hdmi_cec_pins[] = { 122, };
 static int mt7623_hdmi_cec_funcs[] = { 1, };
 static int mt7623_hdmi_htplg_pins[] = { 123, };
@@ -744,7 +734,7 @@ static int mt7623_hdmi_htplg_funcs[] = { 1, };
 static int mt7623_hdmi_i2c_pins[] = { 124, 125, };
 static int mt7623_hdmi_i2c_funcs[] = { 1, 1 };
 
-/* I2C */
+ 
 static int mt7623_i2c0_pins[] = { 75, 76, };
 static int mt7623_i2c0_funcs[] = { 1, 1, };
 static int mt7623_i2c1_0_pins[] = { 57, 58, };
@@ -766,7 +756,7 @@ static int mt7623_i2c2_2_funcs[] = { 3, 3, };
 static int mt7623_i2c2_3_pins[] = { 122, 123, };
 static int mt7623_i2c2_3_funcs[] = { 4, 4, };
 
-/* I2S */
+ 
 static int mt7623_i2s0_pins[] = { 49, 72, 73, 74, 126, };
 static int mt7623_i2s0_funcs[] = { 1, 1, 1, 1, 1, };
 static int mt7623_i2s1_pins[] = { 33, 34, 35, 36, 37, };
@@ -792,11 +782,11 @@ static int mt7623_i2s4_funcs[] = { 1, 1, 1, 1, 1, };
 static int mt7623_i2s5_pins[] = { 16, 17, 30, 31, 32, };
 static int mt7623_i2s5_funcs[] = { 1, 1, 1, 1, 1, };
 
-/* IR */
+ 
 static int mt7623_ir_pins[] = { 46, };
 static int mt7623_ir_funcs[] = { 1, };
 
-/* LCD */
+ 
 static int mt7623_mipi_tx_pins[] = { 91, 92, 93, 94, 95, 96, 97, 98,
 				     99, 100, };
 static int mt7623_mipi_tx_funcs[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, };
@@ -805,11 +795,11 @@ static int mt7623_dsi_te_funcs[] = { 1, };
 static int mt7623_lcm_rst_pins[] = { 83, };
 static int mt7623_lcm_rst_funcs[] = { 1, };
 
-/* MDC/MDIO */
+ 
 static int mt7623_mdc_mdio_pins[] = { 275, 276, };
 static int mt7623_mdc_mdio_funcs[] = { 1, 1, };
 
-/* MSDC */
+ 
 static int mt7623_msdc0_pins[] = { 111, 112, 113, 114, 115, 116, 117, 118,
 				   119, 120, 121, };
 static int mt7623_msdc0_funcs[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, };
@@ -829,7 +819,7 @@ static int mt7623_msdc3_pins[] = { 249, 250, 251, 252, 253, 254, 255, 256,
 				   257, 258, 259, 260, };
 static int mt7623_msdc3_funcs[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, };
 
-/* NAND */
+ 
 static int mt7623_nandc_pins[] = { 43, 47, 48, 111, 112, 113, 114, 115,
 				   116, 117, 118, 119, 120, 121, };
 static int mt7623_nandc_funcs[] = { 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 4,
@@ -839,11 +829,11 @@ static int mt7623_nandc_ceb0_funcs[] = { 1, };
 static int mt7623_nandc_ceb1_pins[] = { 44, };
 static int mt7623_nandc_ceb1_funcs[] = { 1, };
 
-/* RTC */
+ 
 static int mt7623_rtc_pins[] = { 10, };
 static int mt7623_rtc_funcs[] = { 1, };
 
-/* OTG */
+ 
 static int mt7623_otg_iddig0_0_pins[] = { 29, };
 static int mt7623_otg_iddig0_0_funcs[] = { 1, };
 static int mt7623_otg_iddig0_1_pins[] = { 44, };
@@ -869,7 +859,7 @@ static int mt7623_otg_drv_vbus1_1_funcs[] = { 2, };
 static int mt7623_otg_drv_vbus1_2_pins[] = { 239, };
 static int mt7623_otg_drv_vbus1_2_funcs[] = { 2, };
 
-/* PCIE */
+ 
 static int mt7623_pcie0_0_perst_pins[] = { 208, };
 static int mt7623_pcie0_0_perst_funcs[] = { 3, };
 static int mt7623_pcie0_1_perst_pins[] = { 22, };
@@ -901,7 +891,7 @@ static int mt7623_pcie1_clkreq_funcs[] = { 6, };
 static int mt7623_pcie2_clkreq_pins[] = { 254, };
 static int mt7623_pcie2_clkreq_funcs[] = { 6, };
 
-/* the pcie_*_rev are only used for MT7623 */
+ 
 static int mt7623_pcie0_0_rev_perst_pins[] = { 208, };
 static int mt7623_pcie0_0_rev_perst_funcs[] = { 11, };
 static int mt7623_pcie0_1_rev_perst_pins[] = { 22, };
@@ -915,7 +905,7 @@ static int mt7623_pcie2_0_rev_perst_funcs[] = { 11, };
 static int mt7623_pcie2_1_rev_perst_pins[] = { 29, };
 static int mt7623_pcie2_1_rev_perst_funcs[] = { 14, };
 
-/* PCM */
+ 
 static int mt7623_pcm_clk_0_pins[] = { 18, };
 static int mt7623_pcm_clk_0_funcs[] = { 1, };
 static int mt7623_pcm_clk_1_pins[] = { 17, };
@@ -973,7 +963,7 @@ static int mt7623_pcm_tx_5_funcs[] = { 3, };
 static int mt7623_pcm_tx_6_pins[] = { 194, };
 static int mt7623_pcm_tx_6_funcs[] = { 3, };
 
-/* PWM */
+ 
 static int mt7623_pwm_ch1_0_pins[] = { 203, };
 static int mt7623_pwm_ch1_0_funcs[] = { 1, };
 static int mt7623_pwm_ch1_1_pins[] = { 208, };
@@ -1015,11 +1005,11 @@ static int mt7623_pwm_ch5_0_funcs[] = { 1, };
 static int mt7623_pwm_ch5_1_pins[] = { 125, };
 static int mt7623_pwm_ch5_1_funcs[] = { 5, };
 
-/* PWRAP */
+ 
 static int mt7623_pwrap_pins[] = { 0, 1, 2, 3, 4, 5, 6, };
 static int mt7623_pwrap_funcs[] = { 1, 1, 1, 1, 1, 1, 1, };
 
-/* SPDIF */
+ 
 static int mt7623_spdif_in0_0_pins[] = { 56, };
 static int mt7623_spdif_in0_0_funcs[] = { 3, };
 static int mt7623_spdif_in0_1_pins[] = { 201, };
@@ -1031,7 +1021,7 @@ static int mt7623_spdif_in1_1_funcs[] = { 1, };
 static int mt7623_spdif_out_pins[] = { 202, };
 static int mt7623_spdif_out_funcs[] = { 1, };
 
-/* SPI */
+ 
 static int mt7623_spi0_pins[] = { 53, 54, 55, 56, };
 static int mt7623_spi0_funcs[] = { 1, 1, 1, 1, };
 static int mt7623_spi1_pins[] = { 7, 199, 8, 9, };
@@ -1039,7 +1029,7 @@ static int mt7623_spi1_funcs[] = { 1, 1, 1, 1, };
 static int mt7623_spi2_pins[] = { 101, 104, 102, 103, };
 static int mt7623_spi2_funcs[] = { 1, 1, 1, 1, };
 
-/* UART */
+ 
 static int mt7623_uart0_0_txd_rxd_pins[] = { 79, 80, };
 static int mt7623_uart0_0_txd_rxd_funcs[] = { 1, 1, };
 static int mt7623_uart0_1_txd_rxd_pins[] = { 87, 88, };
@@ -1069,7 +1059,7 @@ static int mt7623_uart3_txd_rxd_funcs[] = { 2, 2, };
 static int mt7623_uart3_rts_cts_pins[] = { 26, 27, };
 static int mt7623_uart3_rts_cts_funcs[] = { 1, 1, };
 
-/* Watchdog */
+ 
 static int mt7623_watchdog_0_pins[] = { 11, };
 static int mt7623_watchdog_0_funcs[] = { 1, };
 static int mt7623_watchdog_1_pins[] = { 121, };
@@ -1238,9 +1228,7 @@ static const struct group_desc mt7623_groups[] = {
 	PINCTRL_PIN_GROUP("watchdog_1", mt7623_watchdog_1),
 };
 
-/* Joint those groups owning the same capability in user point of view which
- * allows that people tend to use through the device tree.
- */
+ 
 static const char *mt7623_aud_clk_groups[] = { "aud_ext_clk0",
 					       "aud_ext_clk1", };
 static const char *mt7623_disp_pwm_groups[] = { "disp_pwm_0", "disp_pwm_1",
@@ -1395,11 +1383,7 @@ static struct mtk_pin_soc mt7623_data = {
 	.adv_pull_set = mtk_pinconf_adv_pull_set,
 };
 
-/*
- * There are some specific pins have mux functions greater than 8,
- * and if we want to switch thees high modes we need to disable
- * bonding constraints firstly.
- */
+ 
 static void mt7623_bonding_disable(struct platform_device *pdev)
 {
 	struct mtk_pinctrl *hw = platform_get_drvdata(pdev);

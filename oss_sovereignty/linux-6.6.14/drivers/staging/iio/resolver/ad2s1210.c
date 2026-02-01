@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ad2s1210.c support for the ADI Resolver to Digital Converters: AD2S1210
- *
- * Copyright (c) 2010-2010 Analog Devices Inc.
- */
+
+ 
 #include <linux/types.h>
 #include <linux/mutex.h>
 #include <linux/device.h>
@@ -113,7 +109,7 @@ static inline void ad2s1210_set_mode(enum ad2s1210_mode mode,
 	st->mode = mode;
 }
 
-/* write 1 bytes (address or data) to the chip */
+ 
 static int ad2s1210_config_write(struct ad2s1210_state *st, u8 data)
 {
 	int ret;
@@ -127,7 +123,7 @@ static int ad2s1210_config_write(struct ad2s1210_state *st, u8 data)
 	return 0;
 }
 
-/* read value from one of the registers */
+ 
 static int ad2s1210_config_read(struct ad2s1210_state *st,
 				unsigned char address)
 {
@@ -382,7 +378,7 @@ error_ret:
 	return ret;
 }
 
-/* read the fault register since last sample */
+ 
 static ssize_t ad2s1210_show_fault(struct device *dev,
 				   struct device_attribute *attr, char *buf)
 {
@@ -406,7 +402,7 @@ static ssize_t ad2s1210_clear_fault(struct device *dev,
 
 	mutex_lock(&st->lock);
 	gpiod_set_value(st->gpios[AD2S1210_SAMPLE], 0);
-	/* delay (2 * tck + 20) nano seconds */
+	 
 	udelay(1);
 	gpiod_set_value(st->gpios[AD2S1210_SAMPLE], 1);
 	ret = ad2s1210_config_read(st, AD2S1210_REG_FAULT);
@@ -471,7 +467,7 @@ static int ad2s1210_read_raw(struct iio_dev *indio_dev,
 
 	mutex_lock(&st->lock);
 	gpiod_set_value(st->gpios[AD2S1210_SAMPLE], 0);
-	/* delay (6 * tck + 20) nano seconds */
+	 
 	udelay(1);
 
 	switch (chan->type) {
@@ -516,7 +512,7 @@ static int ad2s1210_read_raw(struct iio_dev *indio_dev,
 
 error_ret:
 	gpiod_set_value(st->gpios[AD2S1210_SAMPLE], 1);
-	/* delay (2 * tck + 20) nano seconds */
+	 
 	udelay(1);
 	mutex_unlock(&st->lock);
 	return ret;

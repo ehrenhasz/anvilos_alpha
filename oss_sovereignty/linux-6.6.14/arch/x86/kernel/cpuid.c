@@ -1,24 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* ----------------------------------------------------------------------- *
- *
- *   Copyright 2000-2008 H. Peter Anvin - All Rights Reserved
- *
- * ----------------------------------------------------------------------- */
 
-/*
- * x86 CPUID access device
- *
- * This device is accessed by lseek() to the appropriate CPUID level
- * and then read in chunks of 16 bytes.  A larger size means multiple
- * reads of consecutive levels.
- *
- * The lower 32 bits of the file position is used as the incoming %eax,
- * and the upper 32 bits of the file position as the incoming %ecx,
- * the latter intended for "counting" eax levels like eax=4.
- *
- * This driver uses /dev/cpu/%d/cpuid where %d is the minor number, and on
- * an SMP box will direct the access to CPU %d.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 
@@ -69,7 +52,7 @@ static ssize_t cpuid_read(struct file *file, char __user *buf,
 	int err = 0;
 
 	if (count % 16)
-		return -EINVAL;	/* Invalid chunk size */
+		return -EINVAL;	 
 
 	init_completion(&cmd.done);
 	for (; count; count -= 16) {
@@ -104,18 +87,16 @@ static int cpuid_open(struct inode *inode, struct file *file)
 
 	cpu = iminor(file_inode(file));
 	if (cpu >= nr_cpu_ids || !cpu_online(cpu))
-		return -ENXIO;	/* No such CPU */
+		return -ENXIO;	 
 
 	c = &cpu_data(cpu);
 	if (c->cpuid_level < 0)
-		return -EIO;	/* CPUID not supported */
+		return -EIO;	 
 
 	return 0;
 }
 
-/*
- * File operations we support
- */
+ 
 static const struct file_operations cpuid_fops = {
 	.owner = THIS_MODULE,
 	.llseek = no_seek_end_llseek,

@@ -1,53 +1,21 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This file is part of STM32 DFSDM driver
- *
- * Copyright (C) 2017, STMicroelectronics - All Rights Reserved
- * Author(s): Arnaud Pouliquen <arnaud.pouliquen@st.com>.
- */
+ 
+ 
 
 #ifndef MDF_STM32_DFSDM__H
 #define MDF_STM32_DFSDM__H
 
 #include <linux/bitfield.h>
 
-/*
- * STM32 DFSDM - global register map
- * __________________________________________________________
- * | Offset    |             Registers block                |
- * ----------------------------------------------------------
- * | 0x000     |      CHANNEL 0 + COMMON CHANNEL FIELDS     |
- * ----------------------------------------------------------
- * | 0x020     |                CHANNEL 1                   |
- * ----------------------------------------------------------
- * | ...       |                 .....                      |
- * ----------------------------------------------------------
- * | 0x20 x n  |                CHANNEL n                   |
- * ----------------------------------------------------------
- * | 0x100     |      FILTER  0 + COMMON FILTER FIELDs      |
- * ----------------------------------------------------------
- * | 0x200     |                FILTER  1                   |
- * ----------------------------------------------------------
- * |           |                 .....                      |
- * ----------------------------------------------------------
- * | 0x100 x m |                FILTER  m                   |
- * ----------------------------------------------------------
- * |           |                 .....                      |
- * ----------------------------------------------------------
- * | 0x7F0-7FC |         Identification registers           |
- * ----------------------------------------------------------
- */
+ 
 
-/*
- * Channels register definitions
- */
+ 
 #define DFSDM_CHCFGR1(y)  ((y) * 0x20 + 0x00)
 #define DFSDM_CHCFGR2(y)  ((y) * 0x20 + 0x04)
 #define DFSDM_AWSCDR(y)   ((y) * 0x20 + 0x08)
 #define DFSDM_CHWDATR(y)  ((y) * 0x20 + 0x0C)
 #define DFSDM_CHDATINR(y) ((y) * 0x20 + 0x10)
 
-/* CHCFGR1: Channel configuration register 1 */
+ 
 #define DFSDM_CHCFGR1_SITP_MASK     GENMASK(1, 0)
 #define DFSDM_CHCFGR1_SITP(v)       FIELD_PREP(DFSDM_CHCFGR1_SITP_MASK, v)
 #define DFSDM_CHCFGR1_SPICKSEL_MASK GENMASK(3, 2)
@@ -71,13 +39,13 @@
 #define DFSDM_CHCFGR1_DFSDMEN_MASK  BIT(31)
 #define DFSDM_CHCFGR1_DFSDMEN(v)    FIELD_PREP(DFSDM_CHCFGR1_DFSDMEN_MASK, v)
 
-/* CHCFGR2: Channel configuration register 2 */
+ 
 #define DFSDM_CHCFGR2_DTRBS_MASK    GENMASK(7, 3)
 #define DFSDM_CHCFGR2_DTRBS(v)      FIELD_PREP(DFSDM_CHCFGR2_DTRBS_MASK, v)
 #define DFSDM_CHCFGR2_OFFSET_MASK   GENMASK(31, 8)
 #define DFSDM_CHCFGR2_OFFSET(v)     FIELD_PREP(DFSDM_CHCFGR2_OFFSET_MASK, v)
 
-/* AWSCDR: Channel analog watchdog and short circuit detector */
+ 
 #define DFSDM_AWSCDR_SCDT_MASK    GENMASK(7, 0)
 #define DFSDM_AWSCDR_SCDT(v)      FIELD_PREP(DFSDM_AWSCDR_SCDT_MASK, v)
 #define DFSDM_AWSCDR_BKSCD_MASK   GENMASK(15, 12)
@@ -87,9 +55,7 @@
 #define DFSDM_AWSCDR_AWFORD_MASK  GENMASK(23, 22)
 #define DFSDM_AWSCDR_AWFORD(v)    FIELD_PREP(DFSDM_AWSCDR_AWFORD_MASK, v)
 
-/*
- * Filters register definitions
- */
+ 
 #define DFSDM_FILTER_BASE_ADR		0x100
 #define DFSDM_FILTER_REG_MASK		0x7F
 #define DFSDM_FILTER_X_BASE_ADR(x)	((x) * 0x80 + DFSDM_FILTER_BASE_ADR)
@@ -110,7 +76,7 @@
 #define DFSDM_EXMIN(x)   (DFSDM_FILTER_X_BASE_ADR(x)  + 0x34)
 #define DFSDM_CNVTIMR(x) (DFSDM_FILTER_X_BASE_ADR(x)  + 0x38)
 
-/* CR1 Control register 1 */
+ 
 #define DFSDM_CR1_DFEN_MASK	BIT(0)
 #define DFSDM_CR1_DFEN(v)	FIELD_PREP(DFSDM_CR1_DFEN_MASK, v)
 #define DFSDM_CR1_JSWSTART_MASK	BIT(1)
@@ -140,7 +106,7 @@
 #define DFSDM_CR1_AWFSEL_MASK	BIT(30)
 #define DFSDM_CR1_AWFSEL(v)	FIELD_PREP(DFSDM_CR1_AWFSEL_MASK, v)
 
-/* CR2: Control register 2 */
+ 
 #define DFSDM_CR2_IE_MASK	GENMASK(6, 0)
 #define DFSDM_CR2_IE(v)		FIELD_PREP(DFSDM_CR2_IE_MASK, v)
 #define DFSDM_CR2_JEOCIE_MASK	BIT(0)
@@ -162,7 +128,7 @@
 #define DFSDM_CR2_AWDCH_MASK	GENMASK(23, 16)
 #define DFSDM_CR2_AWDCH(v)	FIELD_PREP(DFSDM_CR2_AWDCH_MASK, v)
 
-/* ISR: Interrupt status register */
+ 
 #define DFSDM_ISR_JEOCF_MASK	BIT(0)
 #define DFSDM_ISR_JEOCF(v)	FIELD_PREP(DFSDM_ISR_JEOCF_MASK, v)
 #define DFSDM_ISR_REOCF_MASK	BIT(1)
@@ -182,7 +148,7 @@
 #define DFSDM_ISR_SCDF_MASK	GENMASK(31, 24)
 #define DFSDM_ISR_SCDF(v)	FIELD_PREP(DFSDM_ISR_SCDF_MASK, v)
 
-/* ICR: Interrupt flag clear register */
+ 
 #define DFSDM_ICR_CLRJOVRF_MASK	      BIT(2)
 #define DFSDM_ICR_CLRJOVRF(v)	      FIELD_PREP(DFSDM_ICR_CLRJOVRF_MASK, v)
 #define DFSDM_ICR_CLRROVRF_MASK	      BIT(3)
@@ -198,7 +164,7 @@
 #define DFSDM_ICR_CLRSCDF_CH(v, y)    \
 			       (((v) << (24 + (y))) & DFSDM_ICR_CLRSCDF_MASK(y))
 
-/* FCR: Filter control register */
+ 
 #define DFSDM_FCR_IOSR_MASK	GENMASK(7, 0)
 #define DFSDM_FCR_IOSR(v)	FIELD_PREP(DFSDM_FCR_IOSR_MASK, v)
 #define DFSDM_FCR_FOSR_MASK	GENMASK(25, 16)
@@ -206,74 +172,63 @@
 #define DFSDM_FCR_FORD_MASK	GENMASK(31, 29)
 #define DFSDM_FCR_FORD(v)	FIELD_PREP(DFSDM_FCR_FORD_MASK, v)
 
-/* RDATAR: Filter data register for regular channel */
+ 
 #define DFSDM_DATAR_CH_MASK	GENMASK(2, 0)
 #define DFSDM_DATAR_DATA_OFFSET 8
 #define DFSDM_DATAR_DATA_MASK	GENMASK(31, DFSDM_DATAR_DATA_OFFSET)
 
-/* AWLTR: Filter analog watchdog low threshold register */
+ 
 #define DFSDM_AWLTR_BKAWL_MASK	GENMASK(3, 0)
 #define DFSDM_AWLTR_BKAWL(v)	FIELD_PREP(DFSDM_AWLTR_BKAWL_MASK, v)
 #define DFSDM_AWLTR_AWLT_MASK	GENMASK(31, 8)
 #define DFSDM_AWLTR_AWLT(v)	FIELD_PREP(DFSDM_AWLTR_AWLT_MASK, v)
 
-/* AWHTR: Filter analog watchdog low threshold register */
+ 
 #define DFSDM_AWHTR_BKAWH_MASK	GENMASK(3, 0)
 #define DFSDM_AWHTR_BKAWH(v)	FIELD_PREP(DFSDM_AWHTR_BKAWH_MASK, v)
 #define DFSDM_AWHTR_AWHT_MASK	GENMASK(31, 8)
 #define DFSDM_AWHTR_AWHT(v)	FIELD_PREP(DFSDM_AWHTR_AWHT_MASK, v)
 
-/* AWSR: Filter watchdog status register */
+ 
 #define DFSDM_AWSR_AWLTF_MASK	GENMASK(7, 0)
 #define DFSDM_AWSR_AWLTF(v)	FIELD_PREP(DFSDM_AWSR_AWLTF_MASK, v)
 #define DFSDM_AWSR_AWHTF_MASK	GENMASK(15, 8)
 #define DFSDM_AWSR_AWHTF(v)	FIELD_PREP(DFSDM_AWSR_AWHTF_MASK, v)
 
-/* AWCFR: Filter watchdog status register */
+ 
 #define DFSDM_AWCFR_AWLTF_MASK	GENMASK(7, 0)
 #define DFSDM_AWCFR_AWLTF(v)	FIELD_PREP(DFSDM_AWCFR_AWLTF_MASK, v)
 #define DFSDM_AWCFR_AWHTF_MASK	GENMASK(15, 8)
 #define DFSDM_AWCFR_AWHTF(v)	FIELD_PREP(DFSDM_AWCFR_AWHTF_MASK, v)
 
-/*
- * Identification register definitions
- */
+ 
 #define DFSDM_HWCFGR		0x7F0
 #define DFSDM_VERR		0x7F4
 #define DFSDM_IPIDR		0x7F8
 #define DFSDM_SIDR		0x7FC
 
-/* HWCFGR: Hardware configuration register */
+ 
 #define DFSDM_HWCFGR_NBT_MASK	GENMASK(7, 0)
 #define DFSDM_HWCFGR_NBF_MASK	GENMASK(15, 8)
 
-/* VERR: Version register */
+ 
 #define DFSDM_VERR_MINREV_MASK	GENMASK(3, 0)
 #define DFSDM_VERR_MAJREV_MASK	GENMASK(7, 4)
 
 #define STM32MP15_IPIDR_NUMBER	0x00110031
 
-/* DFSDM filter order  */
+ 
 enum stm32_dfsdm_sinc_order {
-	DFSDM_FASTSINC_ORDER, /* FastSinc filter type */
-	DFSDM_SINC1_ORDER,    /* Sinc 1 filter type */
-	DFSDM_SINC2_ORDER,    /* Sinc 2 filter type */
-	DFSDM_SINC3_ORDER,    /* Sinc 3 filter type */
-	DFSDM_SINC4_ORDER,    /* Sinc 4 filter type (N.A. for watchdog) */
-	DFSDM_SINC5_ORDER,    /* Sinc 5 filter type (N.A. for watchdog) */
+	DFSDM_FASTSINC_ORDER,  
+	DFSDM_SINC1_ORDER,     
+	DFSDM_SINC2_ORDER,     
+	DFSDM_SINC3_ORDER,     
+	DFSDM_SINC4_ORDER,     
+	DFSDM_SINC5_ORDER,     
 	DFSDM_NB_SINC_ORDER,
 };
 
-/**
- * struct stm32_dfsdm_filter_osr - DFSDM filter settings linked to oversampling
- * @iosr: integrator oversampling
- * @fosr: filter oversampling
- * @rshift: output sample right shift (hardware shift)
- * @lshift: output sample left shift (software shift)
- * @res: output sample resolution
- * @bits: output sample resolution in bits
- * @max: output sample maximum positive value
- */
+ 
 struct stm32_dfsdm_filter_osr {
 	unsigned int iosr;
 	unsigned int fosr;
@@ -284,13 +239,7 @@ struct stm32_dfsdm_filter_osr {
 	s32 max;
 };
 
-/**
- * struct stm32_dfsdm_filter - structure relative to stm32 FDSDM filter
- * @ford: filter order
- * @flo: filter oversampling data table indexed by fast mode flag
- * @sync_mode: filter synchronized with filter 0
- * @fast: filter fast mode
- */
+ 
 struct stm32_dfsdm_filter {
 	enum stm32_dfsdm_sinc_order ford;
 	struct stm32_dfsdm_filter_osr flo[2];
@@ -298,13 +247,7 @@ struct stm32_dfsdm_filter {
 	unsigned int fast;
 };
 
-/**
- * struct stm32_dfsdm_channel - structure relative to stm32 FDSDM channel
- * @id: id of the channel
- * @type: interface type linked to stm32_dfsdm_chan_type
- * @src: interface type linked to stm32_dfsdm_chan_src
- * @alt_si: alternative serial input interface
- */
+ 
 struct stm32_dfsdm_channel {
 	unsigned int id;
 	unsigned int type;
@@ -312,17 +255,7 @@ struct stm32_dfsdm_channel {
 	unsigned int alt_si;
 };
 
-/**
- * struct stm32_dfsdm - stm32 FDSDM driver common data (for all instances)
- * @base:	control registers base cpu addr
- * @phys_base:	DFSDM IP register physical address
- * @regmap:	regmap for register read/write
- * @fl_list:	filter resources list
- * @num_fls:	number of filter resources available
- * @ch_list:	channel resources list
- * @num_chs:	number of channel resources available
- * @spi_master_freq: SPI clock out frequency
- */
+ 
 struct stm32_dfsdm {
 	void __iomem	*base;
 	phys_addr_t	phys_base;
@@ -334,7 +267,7 @@ struct stm32_dfsdm {
 	unsigned int spi_master_freq;
 };
 
-/* DFSDM channel serial spi clock source */
+ 
 enum stm32_dfsdm_spi_clk_src {
 	DFSDM_CHANNEL_SPI_CLOCK_EXTERNAL,
 	DFSDM_CHANNEL_SPI_CLOCK_INTERNAL,

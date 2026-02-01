@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <errno.h>
 #include <string.h>
 #include "../../../util/kvm-stat.h"
@@ -22,11 +22,7 @@ const char *kvm_exit_reason = "exit_reason";
 const char *kvm_entry_trace = "kvm:kvm_entry";
 const char *kvm_exit_trace = "kvm:kvm_exit";
 
-/*
- * For the mmio events, we treat:
- * the time of MMIO write: kvm_mmio(KVM_TRACE_MMIO_WRITE...) -> kvm_entry
- * the time of MMIO read: kvm_exit -> kvm_mmio(KVM_TRACE_MMIO_READ...).
- */
+ 
 static void mmio_event_get_key(struct evsel *evsel, struct perf_sample *sample,
 			       struct event_key *key)
 {
@@ -41,11 +37,11 @@ static void mmio_event_get_key(struct evsel *evsel, struct perf_sample *sample,
 static bool mmio_event_begin(struct evsel *evsel,
 			     struct perf_sample *sample, struct event_key *key)
 {
-	/* MMIO read begin event in kernel. */
+	 
 	if (kvm_exit_event(evsel))
 		return true;
 
-	/* MMIO write begin event in kernel. */
+	 
 	if (evsel__name_is(evsel, "kvm:kvm_mmio") &&
 	    evsel__intval(evsel, sample, "type") == KVM_TRACE_MMIO_WRITE) {
 		mmio_event_get_key(evsel, sample, key);
@@ -58,11 +54,11 @@ static bool mmio_event_begin(struct evsel *evsel,
 static bool mmio_event_end(struct evsel *evsel, struct perf_sample *sample,
 			   struct event_key *key)
 {
-	/* MMIO write end event in kernel. */
+	 
 	if (kvm_entry_event(evsel))
 		return true;
 
-	/* MMIO read end event in kernel.*/
+	 
 	if (evsel__name_is(evsel, "kvm:kvm_mmio") &&
 	    evsel__intval(evsel, sample, "type") == KVM_TRACE_MMIO_READ) {
 		mmio_event_get_key(evsel, sample, key);
@@ -88,7 +84,7 @@ static struct kvm_events_ops mmio_events = {
 	.name = "MMIO Access"
 };
 
- /* The time of emulation pio access is from kvm_pio to kvm_entry. */
+  
 static void ioport_event_get_key(struct evsel *evsel,
 				 struct perf_sample *sample,
 				 struct event_key *key)
@@ -132,7 +128,7 @@ static struct kvm_events_ops ioport_events = {
 	.name = "IO Port Access"
 };
 
- /* The time of emulation msr is from kvm_msr to kvm_entry. */
+  
 static void msr_event_get_key(struct evsel *evsel,
 				 struct perf_sample *sample,
 				 struct event_key *key)

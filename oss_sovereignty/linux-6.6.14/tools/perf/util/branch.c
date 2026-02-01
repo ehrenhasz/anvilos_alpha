@@ -45,11 +45,7 @@ const char *branch_new_type_name(int new_type)
 		"FAULT_ALGN",
 		"FAULT_DATA",
 		"FAULT_INST",
-/*
- * TODO: This switch should happen on 'session->header.env.arch'
- * instead, because an arm64 platform perf recording could be
- * opened for analysis on other platforms as well.
- */
+ 
 #ifdef __aarch64__
 		"ARM64_FIQ",
 		"ARM64_DEBUG_HALT",
@@ -89,7 +85,7 @@ const char *branch_type_name(int type)
 		"IRQ",
 		"SERROR",
 		"NO_TX",
-		"", // Needed for PERF_BR_EXTEND_ABI that ends up triggering some compiler warnings about NULL deref
+		"", 
 	};
 
 	if (type >= 0 && type < PERF_BR_MAX)

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Userspace block device - block device which IO is handled from userspace
- *
- * Take full use of io_uring passthrough command for communicating with
- * ublk userspace daemon(ublksrvd) for handling basic IO request.
- *
- * Copyright 2022 Ming Lei <ming.lei@redhat.com>
- *
- * (part of code stolen from loop.c)
- */
+
+ 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/sched.h>
@@ -48,7 +39,7 @@
 
 #define UBLK_MINORS		(1U << MINORBITS)
 
-/* All UBLK_F_* have to be included into UBLK_F_ALL */
+ 
 #define UBLK_F_ALL (UBLK_F_SUPPORT_ZERO_COPY \
 		| UBLK_F_URING_CMD_COMP_IN_TASK \
 		| UBLK_F_NEED_GET_DATA \
@@ -59,7 +50,7 @@
 		| UBLK_F_USER_COPY \
 		| UBLK_F_ZONED)
 
-/* All UBLK_PARAM_TYPE_* should be included here */
+ 
 #define UBLK_PARAM_TYPE_ALL                                \
 	(UBLK_PARAM_TYPE_BASIC | UBLK_PARAM_TYPE_DISCARD | \
 	 UBLK_PARAM_TYPE_DEVT | UBLK_PARAM_TYPE_ZONED)
@@ -77,46 +68,20 @@ struct ublk_uring_cmd_pdu {
 	struct ublk_queue *ubq;
 };
 
-/*
- * io command is active: sqe cmd is received, and its cqe isn't done
- *
- * If the flag is set, the io command is owned by ublk driver, and waited
- * for incoming blk-mq request from the ublk block device.
- *
- * If the flag is cleared, the io command will be completed, and owned by
- * ublk server.
- */
+ 
 #define UBLK_IO_FLAG_ACTIVE	0x01
 
-/*
- * IO command is completed via cqe, and it is being handled by ublksrv, and
- * not committed yet
- *
- * Basically exclusively with UBLK_IO_FLAG_ACTIVE, so can be served for
- * cross verification
- */
+ 
 #define UBLK_IO_FLAG_OWNED_BY_SRV 0x02
 
-/*
- * IO command is aborted, so this flag is set in case of
- * !UBLK_IO_FLAG_ACTIVE.
- *
- * After this flag is observed, any pending or new incoming request
- * associated with this io command will be failed immediately
- */
+ 
 #define UBLK_IO_FLAG_ABORTED 0x04
 
-/*
- * UBLK_IO_FLAG_NEED_GET_DATA is set because IO command requires
- * get data buffer address from ublksrv.
- *
- * Then, bio data could be copied into this data buffer for a WRITE request
- * after the IO command is issued again and UBLK_IO_FLAG_NEED_GET_DATA is unset.
- */
+ 
 #define UBLK_IO_FLAG_NEED_GET_DATA 0x08
 
 struct ublk_io {
-	/* userspace buffer address from io cmd */
+	 
 	__u64	addr;
 	unsigned int flags;
 	int res;
@@ -134,11 +99,11 @@ struct ublk_queue {
 
 	struct llist_head	io_cmds;
 
-	unsigned long io_addr;	/* mapped vm address */
+	unsigned long io_addr;	 
 	unsigned int max_io_sz;
 	bool force_abort;
 	bool timeout;
-	unsigned short nr_io_ready;	/* how many ios setup */
+	unsigned short nr_io_ready;	 
 	struct ublk_device *dev;
 	struct ublk_io ios[];
 };
@@ -175,16 +140,13 @@ struct ublk_device {
 	unsigned int		nr_queues_ready;
 	unsigned int		nr_privileged_daemon;
 
-	/*
-	 * Our ubq->daemon may be killed without any notification, so
-	 * monitor each queue's daemon periodically
-	 */
+	 
 	struct delayed_work	monitor_work;
 	struct work_struct	quiesce_work;
 	struct work_struct	stop_work;
 };
 
-/* header of ublk_params */
+ 
 struct ublk_params_header {
 	__u32	len;
 	__u32	types;
@@ -215,7 +177,7 @@ static int ublk_get_nr_zones(const struct ublk_device *ub)
 {
 	const struct ublk_param_basic *p = &ub->params.basic;
 
-	/* Zone size is a power of 2 */
+	 
 	return p->dev_sectors >> ilog2(p->chunk_sectors);
 }
 
@@ -263,7 +225,7 @@ static int ublk_dev_param_zoned_apply(struct ublk_device *ub)
 	return 0;
 }
 
-/* Based on virtblk_alloc_report_buffer */
+ 
 static void *ublk_alloc_report_buffer(struct ublk_device *ublk,
 				      unsigned int nr_zones, size_t *buflen)
 {
@@ -349,7 +311,7 @@ static int ublk_report_zones(struct gendisk *disk, sector_t sector,
 		for (unsigned int i = 0; i < zones_in_request; i++) {
 			struct blk_zone *zone = buffer + i;
 
-			/* A zero length zone means no more zones in this response */
+			 
 			if (!zone->len)
 				break;
 
@@ -409,7 +371,7 @@ static blk_status_t ublk_setup_iod_zoned(struct ublk_queue *ubq,
 			return BLK_STS_IOERR;
 		}
 	case REQ_OP_DRV_OUT:
-		/* We do not support drv_out */
+		 
 		return BLK_STS_NOTSUPP;
 	default:
 		return BLK_STS_IOERR;
@@ -460,18 +422,13 @@ static const struct class ublk_chr_class = {
 
 static DEFINE_IDR(ublk_index_idr);
 static DEFINE_SPINLOCK(ublk_idr_lock);
-static wait_queue_head_t ublk_idr_wq;	/* wait until one idr is freed */
+static wait_queue_head_t ublk_idr_wq;	 
 
 static DEFINE_MUTEX(ublk_ctl_mutex);
 
-/*
- * Max ublk devices allowed to add
- *
- * It can be extended to one per-user limit in future or even controlled
- * by cgroup.
- */
+ 
 static unsigned int ublks_max = 64;
-static unsigned int ublks_added;	/* protected by ublk_ctl_mutex */
+static unsigned int ublks_added;	 
 
 static struct miscdevice ublk_misc;
 
@@ -534,7 +491,7 @@ static void ublk_dev_param_discard_apply(struct ublk_device *ub)
 
 static int ublk_validate_params(const struct ublk_device *ub)
 {
-	/* basic param is the only one which must be set */
+	 
 	if (ub->params.types & UBLK_PARAM_TYPE_BASIC) {
 		const struct ublk_param_basic *p = &ub->params.basic;
 
@@ -555,7 +512,7 @@ static int ublk_validate_params(const struct ublk_device *ub)
 	if (ub->params.types & UBLK_PARAM_TYPE_DISCARD) {
 		const struct ublk_param_discard *p = &ub->params.discard;
 
-		/* So far, only support single segment discard */
+		 
 		if (p->max_discard_sectors && p->max_discard_segments != 1)
 			return -EINVAL;
 
@@ -563,7 +520,7 @@ static int ublk_validate_params(const struct ublk_device *ub)
 			return -EINVAL;
 	}
 
-	/* dev_t is read-only */
+	 
 	if (ub->params.types & UBLK_PARAM_TYPE_DEVT)
 		return -EINVAL;
 
@@ -598,10 +555,7 @@ static inline bool ublk_support_user_copy(const struct ublk_queue *ubq)
 
 static inline bool ublk_need_req_ref(const struct ublk_queue *ubq)
 {
-	/*
-	 * read()/write() is involved in user copy, so request reference
-	 * has to be grabbed
-	 */
+	 
 	return ublk_support_user_copy(ubq);
 }
 
@@ -732,15 +686,7 @@ static int ublk_open(struct gendisk *disk, blk_mode_t mode)
 	if (capable(CAP_SYS_ADMIN))
 		return 0;
 
-	/*
-	 * If it is one unprivileged device, only owner can open
-	 * the disk. Otherwise it could be one trap made by one
-	 * evil user who grants this disk's privileges to other
-	 * users deliberately.
-	 *
-	 * This way is reasonable too given anyone can create
-	 * unprivileged device, and no need other's grant.
-	 */
+	 
 	if (ub->dev_info.flags & UBLK_F_UNPRIVILEGED_DEV) {
 		unsigned int curr_uid, curr_gid;
 
@@ -769,7 +715,7 @@ struct ublk_io_iter {
 	struct bvec_iter iter;
 };
 
-/* return how many pages are copied */
+ 
 static void ublk_copy_io_pages(struct ublk_io_iter *data,
 		size_t total, size_t pg_off, int dir)
 {
@@ -791,7 +737,7 @@ static void ublk_copy_io_pages(struct ublk_io_iter *data,
 		kunmap_local(pg_buf);
 		kunmap_local(bv_buf);
 
-		/* advance page array */
+		 
 		pg_off += bytes;
 		if (pg_off == PAGE_SIZE) {
 			pg_idx += 1;
@@ -800,7 +746,7 @@ static void ublk_copy_io_pages(struct ublk_io_iter *data,
 
 		done += bytes;
 
-		/* advance bio */
+		 
 		bio_advance_iter_single(data->bio, &data->iter, bytes);
 		if (!data->iter.bi_size) {
 			data->bio = data->bio->bi_next;
@@ -828,10 +774,7 @@ static bool ublk_advance_io_iter(const struct request *req,
 	return false;
 }
 
-/*
- * Copy data between request pages and io_iter, and 'offset'
- * is the start point of linear offset of request.
- */
+ 
 static size_t ublk_copy_user_pages(const struct request *req,
 		unsigned offset, struct iov_iter *uiter, int dir)
 {
@@ -885,11 +828,7 @@ static int ublk_map_io(const struct ublk_queue *ubq, const struct request *req,
 	if (ublk_support_user_copy(ubq))
 		return rq_bytes;
 
-	/*
-	 * no zero copy, we delay copy WRITE request data into ublksrv
-	 * context and the big benefit is that pinning pages in current
-	 * context is pretty fast, see ublk_pin_user_pages
-	 */
+	 
 	if (ublk_need_map_req(req)) {
 		struct iov_iter iter;
 		struct iovec iov;
@@ -987,7 +926,7 @@ static blk_status_t ublk_setup_iod(struct ublk_queue *ubq, struct request *req)
 		return BLK_STS_IOERR;
 	}
 
-	/* need to translate since kernel may change */
+	 
 	iod->op_flags = ublk_op | ublk_req_build_flags(req);
 	iod->nr_sectors = blk_rq_sectors(req);
 	iod->start_sector = blk_rq_pos(req);
@@ -1007,7 +946,7 @@ static inline bool ubq_daemon_is_dying(struct ublk_queue *ubq)
 	return ubq->ubq_daemon->flags & PF_EXITING;
 }
 
-/* todo: handle partial completion */
+ 
 static inline void __ublk_complete_rq(struct request *req)
 {
 	struct ublk_queue *ubq = req->mq_hctx->driver_data;
@@ -1015,13 +954,13 @@ static inline void __ublk_complete_rq(struct request *req)
 	unsigned int unmapped_bytes;
 	blk_status_t res = BLK_STS_OK;
 
-	/* called from ublk_abort_queue() code path */
+	 
 	if (io->flags & UBLK_IO_FLAG_ABORTED) {
 		res = BLK_STS_IOERR;
 		goto exit;
 	}
 
-	/* failed read IO if nothing is read */
+	 
 	if (!io->res && req_op(req) == REQ_OP_READ)
 		io->res = -EIO;
 
@@ -1030,24 +969,15 @@ static inline void __ublk_complete_rq(struct request *req)
 		goto exit;
 	}
 
-	/*
-	 * FLUSH, DISCARD or WRITE_ZEROES usually won't return bytes returned, so end them
-	 * directly.
-	 *
-	 * Both the two needn't unmap.
-	 */
+	 
 	if (req_op(req) != REQ_OP_READ && req_op(req) != REQ_OP_WRITE &&
 	    req_op(req) != REQ_OP_DRV_IN)
 		goto exit;
 
-	/* for READ request, writing data in iod->addr to rq buffers */
+	 
 	unmapped_bytes = ublk_unmap_io(ubq, req, io);
 
-	/*
-	 * Extremely impossible since we got data filled in just before
-	 *
-	 * Re-read simply for this unlikely case.
-	 */
+	 
 	if (unlikely(unmapped_bytes < io->res))
 		io->res = unmapped_bytes;
 
@@ -1070,14 +1000,7 @@ static void ublk_complete_rq(struct kref *ref)
 	__ublk_complete_rq(req);
 }
 
-/*
- * Since __ublk_rq_task_work always fails requests immediately during
- * exiting, __ublk_fail_req() is only called from abort context during
- * exiting. So lock is unnecessary.
- *
- * Also aborting may not be started yet, keep in mind that one failed
- * request may be issued by block layer again.
- */
+ 
 static void __ublk_fail_req(struct ublk_queue *ubq, struct ublk_io *io,
 		struct request *req)
 {
@@ -1095,16 +1018,13 @@ static void __ublk_fail_req(struct ublk_queue *ubq, struct ublk_io *io,
 static void ubq_complete_io_cmd(struct ublk_io *io, int res,
 				unsigned issue_flags)
 {
-	/* mark this cmd owned by ublksrv */
+	 
 	io->flags |= UBLK_IO_FLAG_OWNED_BY_SRV;
 
-	/*
-	 * clear ACTIVE since we are done with this sqe/cmd slot
-	 * We can only accept io cmd in case of being not active.
-	 */
+	 
 	io->flags &= ~UBLK_IO_FLAG_ACTIVE;
 
-	/* tell ublksrv one io request is coming */
+	 
 	io_uring_cmd_done(io->cmd, res, 0, issue_flags);
 }
 
@@ -1113,7 +1033,7 @@ static void ubq_complete_io_cmd(struct ublk_io *io, int res,
 static inline void __ublk_abort_rq(struct ublk_queue *ubq,
 		struct request *rq)
 {
-	/* We cannot process this rq so just requeue it. */
+	 
 	if (ublk_queue_can_use_recovery(ubq))
 		blk_mq_requeue_request(rq, false);
 	else
@@ -1134,26 +1054,14 @@ static inline void __ublk_rq_task_work(struct request *req,
 			__func__, io->cmd->cmd_op, ubq->q_id, req->tag, io->flags,
 			ublk_get_iod(ubq, req->tag)->addr);
 
-	/*
-	 * Task is exiting if either:
-	 *
-	 * (1) current != ubq_daemon.
-	 * io_uring_cmd_complete_in_task() tries to run task_work
-	 * in a workqueue if ubq_daemon(cmd's task) is PF_EXITING.
-	 *
-	 * (2) current->flags & PF_EXITING.
-	 */
+	 
 	if (unlikely(current != ubq->ubq_daemon || current->flags & PF_EXITING)) {
 		__ublk_abort_rq(ubq, req);
 		return;
 	}
 
 	if (ublk_need_get_data(ubq) && ublk_need_map_req(req)) {
-		/*
-		 * We have not handled UBLK_IO_NEED_GET_DATA command yet,
-		 * so immepdately pass UBLK_IO_RES_NEED_GET_DATA to ublksrv
-		 * and notify it.
-		 */
+		 
 		if (!(io->flags & UBLK_IO_FLAG_NEED_GET_DATA)) {
 			io->flags |= UBLK_IO_FLAG_NEED_GET_DATA;
 			pr_devel("%s: need get data. op %d, qid %d tag %d io_flags %x\n",
@@ -1162,13 +1070,9 @@ static inline void __ublk_rq_task_work(struct request *req,
 			ubq_complete_io_cmd(io, UBLK_IO_RES_NEED_GET_DATA, issue_flags);
 			return;
 		}
-		/*
-		 * We have handled UBLK_IO_NEED_GET_DATA command,
-		 * so clear UBLK_IO_FLAG_NEED_GET_DATA now and just
-		 * do the copy work.
-		 */
+		 
 		io->flags &= ~UBLK_IO_FLAG_NEED_GET_DATA;
-		/* update iod->addr because ublksrv may have passed a new io buffer */
+		 
 		ublk_get_iod(ubq, req->tag)->addr = io->addr;
 		pr_devel("%s: update iod->addr: op %d, qid %d tag %d io_flags %x addr %llx\n",
 				__func__, io->cmd->cmd_op, ubq->q_id, req->tag, io->flags,
@@ -1177,15 +1081,9 @@ static inline void __ublk_rq_task_work(struct request *req,
 
 	mapped_bytes = ublk_map_io(ubq, req, io);
 
-	/* partially mapped, update io descriptor */
+	 
 	if (unlikely(mapped_bytes != blk_rq_bytes(req))) {
-		/*
-		 * Nothing mapped, retry until we succeed.
-		 *
-		 * We may never succeed in mapping any bytes here because
-		 * of OOM. TODO: reserve one buffer with single page pinned
-		 * for providing forward progress guarantee.
-		 */
+		 
 		if (unlikely(!mapped_bytes)) {
 			blk_mq_requeue_request(req, false);
 			blk_mq_delay_kick_requeue_list(req->q,
@@ -1238,18 +1136,7 @@ static void ublk_queue_cmd(struct ublk_queue *ubq, struct request *rq)
 		return;
 
 	io = &ubq->ios[rq->tag];
-	/*
-	 * If the check pass, we know that this is a re-issued request aborted
-	 * previously in monitor_work because the ubq_daemon(cmd's task) is
-	 * PF_EXITING. We cannot call io_uring_cmd_complete_in_task() anymore
-	 * because this ioucmd's io_uring context may be freed now if no inflight
-	 * ioucmd exists. Otherwise we may cause null-deref in ctx->fallback_work.
-	 *
-	 * Note: monitor_work sets UBLK_IO_FLAG_ABORTED and ends this request(releasing
-	 * the tag). Then the request is re-started(allocating the tag) and we are here.
-	 * Since releasing/allocating a tag implies smp_mb(), finding UBLK_IO_FLAG_ABORTED
-	 * guarantees that here is a re-issued request aborted previously.
-	 */
+	 
 	if (unlikely(io->flags & UBLK_IO_FLAG_ABORTED)) {
 		ublk_abort_io_cmds(ubq);
 	} else {
@@ -1284,20 +1171,12 @@ static blk_status_t ublk_queue_rq(struct blk_mq_hw_ctx *hctx,
 	struct request *rq = bd->rq;
 	blk_status_t res;
 
-	/* fill iod to slot in io cmd buffer */
+	 
 	res = ublk_setup_iod(ubq, rq);
 	if (unlikely(res != BLK_STS_OK))
 		return BLK_STS_IOERR;
 
-	/* With recovery feature enabled, force_abort is set in
-	 * ublk_stop_dev() before calling del_gendisk(). We have to
-	 * abort all requeued and new rqs here to let del_gendisk()
-	 * move on. Besides, we cannot not call io_uring_cmd_complete_in_task()
-	 * to avoid UAF on io_uring ctx.
-	 *
-	 * Note: force_abort is guaranteed to be seen because it is set
-	 * before request queue is unqiuesced.
-	 */
+	 
 	if (ublk_queue_can_use_recovery(ubq) && unlikely(ubq->force_abort))
 		return BLK_STS_IOERR;
 
@@ -1348,7 +1227,7 @@ static int ublk_ch_release(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-/* map pre-allocated per-queue cmd buffer to ublksrv daemon */
+ 
 static int ublk_ch_mmap(struct file *filp, struct vm_area_struct *vma)
 {
 	struct ublk_device *ub = filp->private_data;
@@ -1394,11 +1273,11 @@ static void ublk_commit_completion(struct ublk_device *ub,
 	struct ublk_io *io = &ubq->ios[tag];
 	struct request *req;
 
-	/* now this cmd slot is owned by nbd driver */
+	 
 	io->flags &= ~UBLK_IO_FLAG_OWNED_BY_SRV;
 	io->res = ub_cmd->result;
 
-	/* find the io request and complete */
+	 
 	req = blk_mq_tag_to_rq(ub->tag_set.tags[qid], tag);
 	if (WARN_ON_ONCE(unlikely(!req)))
 		return;
@@ -1410,11 +1289,7 @@ static void ublk_commit_completion(struct ublk_device *ub,
 		ublk_put_req_ref(ubq, req);
 }
 
-/*
- * When ->ubq_daemon is exiting, either new request is ended immediately,
- * or any queued io command is drained, so it is safe to abort queue
- * lockless
- */
+ 
 static void ublk_abort_queue(struct ublk_device *ub, struct ublk_queue *ubq)
 {
 	int i;
@@ -1428,10 +1303,7 @@ static void ublk_abort_queue(struct ublk_device *ub, struct ublk_queue *ubq)
 		if (!(io->flags & UBLK_IO_FLAG_ACTIVE)) {
 			struct request *rq;
 
-			/*
-			 * Either we fail the request or ublk_rq_task_work_fn
-			 * will do it
-			 */
+			 
 			rq = blk_mq_tag_to_rq(ub->tag_set.tags[ubq->q_id], i);
 			if (rq)
 				__ublk_fail_req(ubq, io, rq);
@@ -1455,18 +1327,12 @@ static void ublk_daemon_monitor_work(struct work_struct *work)
 			else
 				schedule_work(&ub->stop_work);
 
-			/* abort queue is for making forward progress */
+			 
 			ublk_abort_queue(ub, ubq);
 		}
 	}
 
-	/*
-	 * We can't schedule monitor work after ub's state is not UBLK_S_DEV_LIVE.
-	 * after ublk_remove() or __ublk_quiesce_dev() is started.
-	 *
-	 * No need ub->mutex, monitor work are canceled after state is marked
-	 * as not LIVE, so new state is observed reliably.
-	 */
+	 
 	if (ub->dev_info.state == UBLK_S_DEV_LIVE)
 		schedule_delayed_work(&ub->monitor_work,
 				UBLK_DAEMON_MONITOR_PERIOD);
@@ -1497,11 +1363,11 @@ static void ublk_cancel_queue(struct ublk_queue *ubq)
 						      ublk_cmd_cancel_cb);
 	}
 
-	/* all io commands are canceled */
+	 
 	ubq->nr_io_ready = 0;
 }
 
-/* Cancel all pending commands, must be called after del_gendisk() returns */
+ 
 static void ublk_cancel_dev(struct ublk_device *ub)
 {
 	int i;
@@ -1546,14 +1412,7 @@ static void __ublk_quiesce_dev(struct ublk_device *ub)
 	ublk_wait_tagset_rqs_idle(ub);
 	ub->dev_info.state = UBLK_S_DEV_QUIESCED;
 	ublk_cancel_dev(ub);
-	/* we are going to release task_struct of ubq_daemon and resets
-	 * ->ubq_daemon to NULL. So in monitor_work, check on ubq_daemon causes UAF.
-	 * Besides, monitor_work is not necessary in QUIESCED state since we have
-	 * already scheduled quiesce_work and quiesced all ubqs.
-	 *
-	 * Do not let monitor_work schedule itself if state it QUIESCED. And we cancel
-	 * it here and re-schedule it in END_USER_RECOVERY to avoid UAF.
-	 */
+	 
 	cancel_delayed_work_sync(&ub->monitor_work);
 }
 
@@ -1578,16 +1437,12 @@ static void ublk_unquiesce_dev(struct ublk_device *ub)
 			__func__, ub->dev_info.dev_id,
 			ub->dev_info.state == UBLK_S_DEV_LIVE ?
 			"LIVE" : "QUIESCED");
-	/* quiesce_work has run. We let requeued rqs be aborted
-	 * before running fallback_wq. "force_abort" must be seen
-	 * after request queue is unqiuesced. Then del_gendisk()
-	 * can move on.
-	 */
+	 
 	for (i = 0; i < ub->dev_info.nr_hw_queues; i++)
 		ublk_get_queue(ub, i)->force_abort = true;
 
 	blk_mq_unquiesce_queue(ub->ub_disk->queue);
-	/* We may have requeued some rqs in ublk_quiesce_queue() */
+	 
 	blk_mq_kick_requeue_list(ub->ub_disk->queue);
 }
 
@@ -1612,7 +1467,7 @@ static void ublk_stop_dev(struct ublk_device *ub)
 	cancel_delayed_work_sync(&ub->monitor_work);
 }
 
-/* device can only be started after all IOs are ready */
+ 
 static void ublk_mark_io_ready(struct ublk_device *ub, struct ublk_queue *ubq)
 {
 	mutex_lock(&ub->mutex);
@@ -1691,16 +1546,13 @@ static int __ublk_ch_uring_cmd(struct io_uring_cmd *cmd,
 
 	io = &ubq->ios[tag];
 
-	/* there is pending io cmd, something must be wrong */
+	 
 	if (io->flags & UBLK_IO_FLAG_ACTIVE) {
 		ret = -EBUSY;
 		goto out;
 	}
 
-	/*
-	 * ensure that the user issues UBLK_IO_NEED_GET_DATA
-	 * iff the driver have set the UBLK_IO_FLAG_NEED_GET_DATA.
-	 */
+	 
 	if ((!!(io->flags & UBLK_IO_FLAG_NEED_GET_DATA))
 			^ (_IOC_NR(cmd_op) == UBLK_IO_NEED_GET_DATA))
 		goto out;
@@ -1712,27 +1564,21 @@ static int __ublk_ch_uring_cmd(struct io_uring_cmd *cmd,
 	ret = -EINVAL;
 	switch (_IOC_NR(cmd_op)) {
 	case UBLK_IO_FETCH_REQ:
-		/* UBLK_IO_FETCH_REQ is only allowed before queue is setup */
+		 
 		if (ublk_queue_ready(ubq)) {
 			ret = -EBUSY;
 			goto out;
 		}
-		/*
-		 * The io is being handled by server, so COMMIT_RQ is expected
-		 * instead of FETCH_REQ
-		 */
+		 
 		if (io->flags & UBLK_IO_FLAG_OWNED_BY_SRV)
 			goto out;
 
 		if (!ublk_support_user_copy(ubq)) {
-			/*
-			 * FETCH_RQ has to provide IO buffer if NEED GET
-			 * DATA is not enabled
-			 */
+			 
 			if (!ub_cmd->addr && !ublk_need_get_data(ubq))
 				goto out;
 		} else if (ub_cmd->addr) {
-			/* User copy requires addr to be unset */
+			 
 			ret = -EINVAL;
 			goto out;
 		}
@@ -1747,18 +1593,12 @@ static int __ublk_ch_uring_cmd(struct io_uring_cmd *cmd,
 			goto out;
 
 		if (!ublk_support_user_copy(ubq)) {
-			/*
-			 * COMMIT_AND_FETCH_REQ has to provide IO buffer if
-			 * NEED GET DATA is not enabled or it is Read IO.
-			 */
+			 
 			if (!ub_cmd->addr && (!ublk_need_get_data(ubq) ||
 						req_op(req) == REQ_OP_READ))
 				goto out;
 		} else if (req_op(req) != REQ_OP_ZONE_APPEND && ub_cmd->addr) {
-			/*
-			 * User copy requires addr to be unset when command is
-			 * not zone append
-			 */
+			 
 			ret = -EINVAL;
 			goto out;
 		}
@@ -1816,10 +1656,7 @@ fail_put:
 
 static int ublk_ch_uring_cmd(struct io_uring_cmd *cmd, unsigned int issue_flags)
 {
-	/*
-	 * Not necessary for async retry, but let's keep it simple and always
-	 * copy the values to avoid any potential reuse.
-	 */
+	 
 	const struct ublksrv_io_cmd *ub_src = io_uring_sqe_cmd(cmd->sqe);
 	const struct ublksrv_io_cmd ub_cmd = {
 		.q_id = READ_ONCE(ub_src->q_id),
@@ -1834,12 +1671,12 @@ static int ublk_ch_uring_cmd(struct io_uring_cmd *cmd, unsigned int issue_flags)
 static inline bool ublk_check_ubuf_dir(const struct request *req,
 		int ubuf_dir)
 {
-	/* copy ubuf to request pages */
+	 
 	if ((req_op(req) == REQ_OP_READ || req_op(req) == REQ_OP_DRV_IN) &&
 	    ubuf_dir == ITER_SOURCE)
 		return true;
 
-	/* copy request pages to ubuf */
+	 
 	if ((req_op(req) == REQ_OP_WRITE ||
 	     req_op(req) == REQ_OP_ZONE_APPEND) &&
 	    ubuf_dir == ITER_DEST)
@@ -2020,7 +1857,7 @@ static int ublk_alloc_dev_number(struct ublk_device *ub, int idx)
 	int err;
 
 	spin_lock(&ublk_idr_lock);
-	/* allocate id, if @id >= 0, we're requesting that specific id */
+	 
 	if (i >= 0) {
 		err = idr_alloc(&ublk_index_idr, ub, i, i + 1, GFP_NOWAIT);
 		if (err == -ENOSPC)
@@ -2091,7 +1928,7 @@ static void ublk_stop_work_fn(struct work_struct *work)
 	ublk_stop_dev(ub);
 }
 
-/* align max io buffer size with PAGE_SIZE */
+ 
 static void ublk_align_max_io_size(struct ublk_device *ub)
 {
 	unsigned int max_io_bytes = ub->dev_info.max_io_buf_bytes;
@@ -2176,7 +2013,7 @@ static int ublk_ctrl_start_dev(struct ublk_device *ub, struct io_uring_cmd *cmd)
 	if (ret)
 		goto out_put_disk;
 
-	/* don't probe partitions if any one ubq daemon is un-trusted */
+	 
 	if (ub->nr_privileged_daemon != ub->nr_queues_ready)
 		set_bit(GD_SUPPRESS_PART_SCAN, &disk->state);
 
@@ -2284,19 +2121,12 @@ static int ublk_ctrl_add_dev(struct io_uring_cmd *cmd)
 	else if (!(info.flags & UBLK_F_UNPRIVILEGED_DEV))
 		return -EPERM;
 
-	/*
-	 * unprivileged device can't be trusted, but RECOVERY and
-	 * RECOVERY_REISSUE still may hang error handling, so can't
-	 * support recovery features for unprivileged ublk now
-	 *
-	 * TODO: provide forward progress for RECOVERY handler, so that
-	 * unprivileged device can benefit from it
-	 */
+	 
 	if (info.flags & UBLK_F_UNPRIVILEGED_DEV)
 		info.flags &= ~(UBLK_F_USER_RECOVERY_REISSUE |
 				UBLK_F_USER_RECOVERY);
 
-	/* the created device is always owned by current user */
+	 
 	ublk_store_owner_uid_gid(&info.owner_uid, &info.owner_gid);
 
 	if (header->dev_id != info.dev_id) {
@@ -2331,32 +2161,27 @@ static int ublk_ctrl_add_dev(struct io_uring_cmd *cmd)
 
 	memcpy(&ub->dev_info, &info, sizeof(info));
 
-	/* update device id */
+	 
 	ub->dev_info.dev_id = ub->ub_number;
 
-	/*
-	 * 64bit flags will be copied back to userspace as feature
-	 * negotiation result, so have to clear flags which driver
-	 * doesn't support yet, then userspace can get correct flags
-	 * (features) to handle.
-	 */
+	 
 	ub->dev_info.flags &= UBLK_F_ALL;
 
 	ub->dev_info.flags |= UBLK_F_CMD_IOCTL_ENCODE |
 		UBLK_F_URING_CMD_COMP_IN_TASK;
 
-	/* GET_DATA isn't needed any more with USER_COPY */
+	 
 	if (ublk_dev_is_user_copy(ub))
 		ub->dev_info.flags &= ~UBLK_F_NEED_GET_DATA;
 
-	/* Zoned storage support requires user copy feature */
+	 
 	if (ublk_dev_is_zoned(ub) &&
 	    (!IS_ENABLED(CONFIG_BLK_DEV_ZONED) || !ublk_dev_is_user_copy(ub))) {
 		ret = -EINVAL;
 		goto out_free_dev_number;
 	}
 
-	/* We are not ready to support zero copy */
+	 
 	ub->dev_info.flags &= ~UBLK_F_SUPPORT_ZERO_COPY;
 
 	ub->dev_info.nr_hw_queues = min_t(unsigned int,
@@ -2375,10 +2200,7 @@ static int ublk_ctrl_add_dev(struct io_uring_cmd *cmd)
 	if (copy_to_user(argp, &ub->dev_info, sizeof(info)))
 		goto out_free_tag_set;
 
-	/*
-	 * Add the char dev so that ublksrv daemon can be setup.
-	 * ublk_add_chdev() will cleanup everything if it fails.
-	 */
+	 
 	ret = ublk_add_chdev(ub);
 	goto out_unlock;
 
@@ -2422,25 +2244,12 @@ static int ublk_ctrl_del_dev(struct ublk_device **p_ub)
 		set_bit(UB_STATE_DELETED, &ub->state);
 	}
 
-	/* Mark the reference as consumed */
+	 
 	*p_ub = NULL;
 	ublk_put_device(ub);
 	mutex_unlock(&ublk_ctl_mutex);
 
-	/*
-	 * Wait until the idr is removed, then it can be reused after
-	 * DEL_DEV command is returned.
-	 *
-	 * If we returns because of user interrupt, future delete command
-	 * may come:
-	 *
-	 * - the device number isn't freed, this device won't or needn't
-	 *   be deleted again, since UB_STATE_DELETED is set, and device
-	 *   will be released after the last reference is dropped
-	 *
-	 * - the device number is freed already, we will not find this
-	 *   device via ublk_get_device_from_id()
-	 */
+	 
 	if (wait_event_interruptible(ublk_idr_wq, ublk_idr_freed(idx)))
 		return -EINTR;
 	return 0;
@@ -2479,7 +2288,7 @@ static int ublk_ctrl_get_dev_info(struct ublk_device *ub,
 	return 0;
 }
 
-/* TYPE_DEVT is readonly, so fill it up before returning to userspace */
+ 
 static void ublk_ctrl_fill_params_devt(struct ublk_device *ub)
 {
 	ub->params.devt.char_major = MAJOR(ub->cdev_dev.devt);
@@ -2546,14 +2355,14 @@ static int ublk_ctrl_set_params(struct ublk_device *ub,
 	if (ph.len > sizeof(struct ublk_params))
 		ph.len = sizeof(struct ublk_params);
 
-	/* parameters can only be changed when device isn't live */
+	 
 	mutex_lock(&ub->mutex);
 	if (ub->dev_info.state == UBLK_S_DEV_LIVE) {
 		ret = -EACCES;
 	} else if (copy_from_user(&ub->params, argp, ph.len)) {
 		ret = -EFAULT;
 	} else {
-		/* clear all we don't support yet */
+		 
 		ub->params.types &= UBLK_PARAM_TYPE_ALL;
 		ret = ublk_validate_params(ub);
 		if (ret)
@@ -2569,18 +2378,18 @@ static void ublk_queue_reinit(struct ublk_device *ub, struct ublk_queue *ubq)
 	int i;
 
 	WARN_ON_ONCE(!(ubq->ubq_daemon && ubq_daemon_is_dying(ubq)));
-	/* All old ioucmds have to be completed */
+	 
 	WARN_ON_ONCE(ubq->nr_io_ready);
-	/* old daemon is PF_EXITING, put it now */
+	 
 	put_task_struct(ubq->ubq_daemon);
-	/* We have to reset it to NULL, otherwise ub won't accept new FETCH_REQ */
+	 
 	ubq->ubq_daemon = NULL;
 	ubq->timeout = false;
 
 	for (i = 0; i < ubq->q_depth; i++) {
 		struct ublk_io *io = &ubq->ios[i];
 
-		/* forget everything now and be ready for new FETCH_REQ */
+		 
 		io->flags = 0;
 		io->cmd = NULL;
 		io->addr = 0;
@@ -2597,19 +2406,7 @@ static int ublk_ctrl_start_recovery(struct ublk_device *ub,
 	mutex_lock(&ub->mutex);
 	if (!ublk_can_use_recovery(ub))
 		goto out_unlock;
-	/*
-	 * START_RECOVERY is only allowd after:
-	 *
-	 * (1) UB_STATE_OPEN is not set, which means the dying process is exited
-	 *     and related io_uring ctx is freed so file struct of /dev/ublkcX is
-	 *     released.
-	 *
-	 * (2) UBLK_S_DEV_QUIESCED is set, which means the quiesce_work:
-	 *     (a)has quiesced request queue
-	 *     (b)has requeued every inflight rqs whose io_flags is ACTIVE
-	 *     (c)has requeued/aborted every inflight rqs whose io_flags is NOT ACTIVE
-	 *     (d)has completed/camceled all ioucmds owned by ther dying process
-	 */
+	 
 	if (test_bit(UB_STATE_OPEN, &ub->state) ||
 			ub->dev_info.state != UBLK_S_DEV_QUIESCED) {
 		ret = -EBUSY;
@@ -2618,7 +2415,7 @@ static int ublk_ctrl_start_recovery(struct ublk_device *ub,
 	pr_devel("%s: start recovery for dev id %d.\n", __func__, header->dev_id);
 	for (i = 0; i < ub->dev_info.nr_hw_queues; i++)
 		ublk_queue_reinit(ub, ublk_get_queue(ub, i));
-	/* set to NULL, otherwise new ubq_daemon cannot mmap the io_cmd_buf */
+	 
 	ub->mm = NULL;
 	ub->nr_queues_ready = 0;
 	ub->nr_privileged_daemon = 0;
@@ -2638,7 +2435,7 @@ static int ublk_ctrl_end_recovery(struct ublk_device *ub,
 
 	pr_devel("%s: Waiting for new ubq_daemons(nr: %d) are ready, dev id %d...\n",
 			__func__, ub->dev_info.nr_hw_queues, header->dev_id);
-	/* wait until new ubq_daemon sending all FETCH_REQ */
+	 
 	if (wait_for_completion_interruptible(&ub->completion))
 		return -EINTR;
 
@@ -2683,10 +2480,7 @@ static int ublk_ctrl_get_features(struct io_uring_cmd *cmd)
 	return 0;
 }
 
-/*
- * All control commands are sent via /dev/ublk-control, so we have to check
- * the destination device's permission
- */
+ 
 static int ublk_char_dev_permission(struct ublk_device *ub,
 		const char *dev_path, int mask)
 {
@@ -2726,22 +2520,12 @@ static int ublk_ctrl_uring_cmd_permission(struct ublk_device *ub,
 	if (!unprivileged) {
 		if (!capable(CAP_SYS_ADMIN))
 			return -EPERM;
-		/*
-		 * The new added command of UBLK_CMD_GET_DEV_INFO2 includes
-		 * char_dev_path in payload too, since userspace may not
-		 * know if the specified device is created as unprivileged
-		 * mode.
-		 */
+		 
 		if (_IOC_NR(cmd->cmd_op) != UBLK_CMD_GET_DEV_INFO2)
 			return 0;
 	}
 
-	/*
-	 * User has to provide the char device path for unprivileged ublk
-	 *
-	 * header->addr always points to the dev path buffer, and
-	 * header->dev_path_len records length of dev path buffer.
-	 */
+	 
 	if (!header->dev_path_len || header->dev_path_len > PATH_MAX)
 		return -EINVAL;
 

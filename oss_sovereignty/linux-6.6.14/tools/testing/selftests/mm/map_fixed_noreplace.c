@@ -1,11 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Test that MAP_FIXED_NOREPLACE works.
- *
- * Copyright 2018, Jann Horn <jannh@google.com>
- * Copyright 2018, Michael Ellerman, IBM Corporation.
- */
+
+ 
 
 #include <sys/mman.h>
 #include <errno.h>
@@ -48,7 +43,7 @@ int main(void)
 
 	page_size = sysconf(_SC_PAGE_SIZE);
 
-	//let's find a base addr that is free before we start the tests
+	
 	size = 5 * page_size;
 	base_addr = find_base_addr(size);
 	if (!base_addr) {
@@ -58,7 +53,7 @@ int main(void)
 
 	flags = MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED_NOREPLACE;
 
-	// Check we can map all the areas we need below
+	
 	errno = 0;
 	addr = base_addr;
 	size = 5 * page_size;
@@ -92,14 +87,7 @@ int main(void)
 		return 1;
 	}
 
-	/*
-	 * Exact same mapping again:
-	 *   base |  free  | new
-	 *     +1 | mapped | new
-	 *     +2 | mapped | new
-	 *     +3 | mapped | new
-	 *     +4 |  free  | new
-	 */
+	 
 	errno = 0;
 	addr = base_addr;
 	size = 5 * page_size;
@@ -112,15 +100,7 @@ int main(void)
 		return 1;
 	}
 
-	/*
-	 * Second mapping contained within first:
-	 *
-	 *   base |  free  |
-	 *     +1 | mapped |
-	 *     +2 | mapped | new
-	 *     +3 | mapped |
-	 *     +4 |  free  |
-	 */
+	 
 	errno = 0;
 	addr = base_addr + (2 * page_size);
 	size = page_size;
@@ -133,14 +113,7 @@ int main(void)
 		return 1;
 	}
 
-	/*
-	 * Overlap end of existing mapping:
-	 *   base |  free  |
-	 *     +1 | mapped |
-	 *     +2 | mapped |
-	 *     +3 | mapped | new
-	 *     +4 |  free  | new
-	 */
+	 
 	errno = 0;
 	addr = base_addr + (3 * page_size);
 	size = 2 * page_size;
@@ -153,14 +126,7 @@ int main(void)
 		return 1;
 	}
 
-	/*
-	 * Overlap start of existing mapping:
-	 *   base |  free  | new
-	 *     +1 | mapped | new
-	 *     +2 | mapped |
-	 *     +3 | mapped |
-	 *     +4 |  free  |
-	 */
+	 
 	errno = 0;
 	addr = base_addr;
 	size = 2 * page_size;
@@ -173,14 +139,7 @@ int main(void)
 		return 1;
 	}
 
-	/*
-	 * Adjacent to start of existing mapping:
-	 *   base |  free  | new
-	 *     +1 | mapped |
-	 *     +2 | mapped |
-	 *     +3 | mapped |
-	 *     +4 |  free  |
-	 */
+	 
 	errno = 0;
 	addr = base_addr;
 	size = page_size;
@@ -193,14 +152,7 @@ int main(void)
 		return 1;
 	}
 
-	/*
-	 * Adjacent to end of existing mapping:
-	 *   base |  free  |
-	 *     +1 | mapped |
-	 *     +2 | mapped |
-	 *     +3 | mapped |
-	 *     +4 |  free  |  new
-	 */
+	 
 	errno = 0;
 	addr = base_addr + (4 * page_size);
 	size = page_size;

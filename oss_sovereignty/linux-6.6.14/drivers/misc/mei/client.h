@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2003-2018, Intel Corporation. All rights reserved.
- * Intel Management Engine Interface (Intel MEI) Linux driver
- */
+ 
+ 
 
 #ifndef _MEI_CLIENT_H_
 #define _MEI_CLIENT_H_
@@ -13,9 +10,7 @@
 
 #include "mei_dev.h"
 
-/*
- * reference counting base function
- */
+ 
 void mei_me_cl_init(struct mei_me_client *me_cl);
 void mei_me_cl_put(struct mei_me_client *me_cl);
 struct mei_me_client *mei_me_cl_get(struct mei_me_client *me_cl);
@@ -33,98 +28,52 @@ void mei_me_cl_rm_by_uuid_id(struct mei_device *dev,
 			     const uuid_le *uuid, u8 id);
 void mei_me_cl_rm_all(struct mei_device *dev);
 
-/**
- * mei_me_cl_is_active - check whether me client is active in the fw
- *
- * @me_cl: me client
- *
- * Return: true if the me client is active in the firmware
- */
+ 
 static inline bool mei_me_cl_is_active(const struct mei_me_client *me_cl)
 {
 	return !list_empty_careful(&me_cl->list);
 }
 
-/**
- * mei_me_cl_uuid - return me client protocol name (uuid)
- *
- * @me_cl: me client
- *
- * Return: me client protocol name
- */
+ 
 static inline const uuid_le *mei_me_cl_uuid(const struct mei_me_client *me_cl)
 {
 	return &me_cl->props.protocol_name;
 }
 
-/**
- * mei_me_cl_ver - return me client protocol version
- *
- * @me_cl: me client
- *
- * Return: me client protocol version
- */
+ 
 static inline u8 mei_me_cl_ver(const struct mei_me_client *me_cl)
 {
 	return me_cl->props.protocol_version;
 }
 
-/**
- * mei_me_cl_max_conn - return me client max number of connections
- *
- * @me_cl: me client
- *
- * Return: me client max number of connections
- */
+ 
 static inline u8 mei_me_cl_max_conn(const struct mei_me_client *me_cl)
 {
 	return me_cl->props.max_number_of_connections;
 }
 
-/**
- * mei_me_cl_fixed - return me client fixed address, if any
- *
- * @me_cl: me client
- *
- * Return: me client fixed address
- */
+ 
 static inline u8 mei_me_cl_fixed(const struct mei_me_client *me_cl)
 {
 	return me_cl->props.fixed_address;
 }
 
-/**
- * mei_me_cl_vt - return me client vtag supported status
- *
- * @me_cl: me client
- *
- * Return: true if me client supports vt tagging
- */
+ 
 static inline bool mei_me_cl_vt(const struct mei_me_client *me_cl)
 {
 	return me_cl->props.vt_supported == 1;
 }
 
-/**
- * mei_me_cl_max_len - return me client max msg length
- *
- * @me_cl: me client
- *
- * Return: me client max msg length
- */
+ 
 static inline u32 mei_me_cl_max_len(const struct mei_me_client *me_cl)
 {
 	return me_cl->props.max_msg_length;
 }
 
-/*
- * MEI IO Functions
- */
+ 
 void mei_io_cb_free(struct mei_cl_cb *priv_cb);
 
-/*
- * MEI Host Client Functions
- */
+ 
 
 struct mei_cl *mei_cl_allocate(struct mei_device *dev);
 
@@ -149,90 +98,45 @@ int mei_cl_flush_queues(struct mei_cl *cl, const struct file *fp);
 struct mei_cl_vtag *mei_cl_vtag_alloc(struct file *fp, u8 vtag);
 const struct file *mei_cl_fp_by_vtag(const struct mei_cl *cl, u8 vtag);
 int mei_cl_vt_support_check(const struct mei_cl *cl);
-/*
- *  MEI input output function prototype
- */
+ 
 
-/**
- * mei_cl_is_connected - host client is connected
- *
- * @cl: host client
- *
- * Return: true if the host client is connected
- */
+ 
 static inline bool mei_cl_is_connected(const struct mei_cl *cl)
 {
 	return  cl->state == MEI_FILE_CONNECTED;
 }
 
-/**
- * mei_cl_me_id - me client id
- *
- * @cl: host client
- *
- * Return: me client id or 0 if client is not connected
- */
+ 
 static inline u8 mei_cl_me_id(const struct mei_cl *cl)
 {
 	return cl->me_cl ? cl->me_cl->client_id : 0;
 }
 
-/**
- * mei_cl_mtu - maximal message that client can send and receive
- *
- * @cl: host client
- *
- * Return: mtu or 0 if client is not connected
- */
+ 
 static inline size_t mei_cl_mtu(const struct mei_cl *cl)
 {
 	return cl->me_cl ? cl->me_cl->props.max_msg_length : 0;
 }
 
-/**
- * mei_cl_is_fixed_address - check whether the me client uses fixed address
- *
- * @cl: host client
- *
- * Return: true if the client is connected and it has fixed me address
- */
+ 
 static inline bool mei_cl_is_fixed_address(const struct mei_cl *cl)
 {
 	return cl->me_cl && cl->me_cl->props.fixed_address;
 }
 
-/**
- * mei_cl_is_single_recv_buf- check whether the me client
- *       uses single receiving buffer
- *
- * @cl: host client
- *
- * Return: true if single_recv_buf == 1; 0 otherwise
- */
+ 
 static inline bool mei_cl_is_single_recv_buf(const struct mei_cl *cl)
 {
 	return cl->me_cl->props.single_recv_buf;
 }
 
-/**
- * mei_cl_uuid -  client's uuid
- *
- * @cl: host client
- *
- * Return: return uuid of connected me client
- */
+ 
 static inline const uuid_le *mei_cl_uuid(const struct mei_cl *cl)
 {
 	return mei_me_cl_uuid(cl->me_cl);
 }
 
-/**
- * mei_cl_host_addr - client's host address
- *
- * @cl: host client
- *
- * Return: 0 for fixed address client, host address for dynamic client
- */
+ 
 static inline u8 mei_cl_host_addr(const struct mei_cl *cl)
 {
 	return  mei_cl_is_fixed_address(cl) ? 0 : cl->host_client_id;
@@ -285,4 +189,4 @@ int mei_cl_dma_unmap(struct mei_cl *cl, const struct file *fp);
 #define cl_err(dev, cl, format, arg...) \
 	dev_err((dev)->dev, MEI_CL_FMT format, MEI_CL_PRM(cl), ##arg)
 
-#endif /* _MEI_CLIENT_H_ */
+#endif  

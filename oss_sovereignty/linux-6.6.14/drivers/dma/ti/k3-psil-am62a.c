@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2022 Texas Instruments Incorporated - https://www.ti.com
- */
+
+ 
 
 #include <linux/kernel.h>
 
@@ -77,14 +75,14 @@
 		},					\
 	}
 
-/* PSI-L source thread IDs, used for RX (DMA_DEV_TO_MEM) */
+ 
 static struct psil_ep am62a_src_ep_map[] = {
-	/* SAUL */
+	 
 	PSIL_SAUL(0x7504, 20, 35, 8, 35, 0),
 	PSIL_SAUL(0x7505, 21, 35, 8, 36, 0),
 	PSIL_SAUL(0x7506, 22, 43, 8, 43, 0),
 	PSIL_SAUL(0x7507, 23, 43, 8, 44, 0),
-	/* PDMA_MAIN0 - SPI0-2 */
+	 
 	PSIL_PDMA_XY_PKT(0x4300),
 	PSIL_PDMA_XY_PKT(0x4301),
 	PSIL_PDMA_XY_PKT(0x4302),
@@ -97,7 +95,7 @@ static struct psil_ep am62a_src_ep_map[] = {
 	PSIL_PDMA_XY_PKT(0x4309),
 	PSIL_PDMA_XY_PKT(0x430a),
 	PSIL_PDMA_XY_PKT(0x430b),
-	/* PDMA_MAIN1 - UART0-6 */
+	 
 	PSIL_PDMA_XY_PKT(0x4400),
 	PSIL_PDMA_XY_PKT(0x4401),
 	PSIL_PDMA_XY_PKT(0x4402),
@@ -105,13 +103,13 @@ static struct psil_ep am62a_src_ep_map[] = {
 	PSIL_PDMA_XY_PKT(0x4404),
 	PSIL_PDMA_XY_PKT(0x4405),
 	PSIL_PDMA_XY_PKT(0x4406),
-	/* PDMA_MAIN2 - MCASP0-2 */
+	 
 	PSIL_PDMA_MCASP(0x4500),
 	PSIL_PDMA_MCASP(0x4501),
 	PSIL_PDMA_MCASP(0x4502),
-	/* CPSW3G */
+	 
 	PSIL_ETHERNET(0x4600, 19, 19, 16),
-	/* CSI2RX */
+	 
 	PSIL_CSI2RX(0x5000),
 	PSIL_CSI2RX(0x5001),
 	PSIL_CSI2RX(0x5002),
@@ -146,12 +144,12 @@ static struct psil_ep am62a_src_ep_map[] = {
 	PSIL_CSI2RX(0x501f),
 };
 
-/* PSI-L destination thread IDs, used for TX (DMA_MEM_TO_DEV) */
+ 
 static struct psil_ep am62a_dst_ep_map[] = {
-	/* SAUL */
+	 
 	PSIL_SAUL(0xf500, 27, 83, 8, 83, 1),
 	PSIL_SAUL(0xf501, 28, 91, 8, 91, 1),
-	/* PDMA_MAIN0 - SPI0-2 */
+	 
 	PSIL_PDMA_XY_PKT(0xc300),
 	PSIL_PDMA_XY_PKT(0xc301),
 	PSIL_PDMA_XY_PKT(0xc302),
@@ -164,7 +162,7 @@ static struct psil_ep am62a_dst_ep_map[] = {
 	PSIL_PDMA_XY_PKT(0xc309),
 	PSIL_PDMA_XY_PKT(0xc30a),
 	PSIL_PDMA_XY_PKT(0xc30b),
-	/* PDMA_MAIN1 - UART0-6 */
+	 
 	PSIL_PDMA_XY_PKT(0xc400),
 	PSIL_PDMA_XY_PKT(0xc401),
 	PSIL_PDMA_XY_PKT(0xc402),
@@ -172,11 +170,11 @@ static struct psil_ep am62a_dst_ep_map[] = {
 	PSIL_PDMA_XY_PKT(0xc404),
 	PSIL_PDMA_XY_PKT(0xc405),
 	PSIL_PDMA_XY_PKT(0xc406),
-	/* PDMA_MAIN2 - MCASP0-2 */
+	 
 	PSIL_PDMA_MCASP(0xc500),
 	PSIL_PDMA_MCASP(0xc501),
 	PSIL_PDMA_MCASP(0xc502),
-	/* CPSW3G */
+	 
 	PSIL_ETHERNET(0xc600, 19, 19, 8),
 	PSIL_ETHERNET(0xc601, 20, 27, 8),
 	PSIL_ETHERNET(0xc602, 21, 35, 8),

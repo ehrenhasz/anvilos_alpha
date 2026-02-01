@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel Tangier GPIO driver
- *
- * Copyright (c) 2016, 2021, 2023 Intel Corporation.
- *
- * Authors: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- *          Pandith N <pandith.n@intel.com>
- *          Raag Jadav <raag.jadav@intel.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/device.h>
@@ -27,28 +19,20 @@
 
 #include "gpio-tangier.h"
 
-#define GCCR		0x000	/* Controller configuration */
-#define GPLR		0x004	/* Pin level r/o */
-#define GPDR		0x01c	/* Pin direction */
-#define GPSR		0x034	/* Pin set w/o */
-#define GPCR		0x04c	/* Pin clear w/o */
-#define GRER		0x064	/* Rising edge detect */
-#define GFER		0x07c	/* Falling edge detect */
-#define GFBR		0x094	/* Glitch filter bypass */
-#define GIMR		0x0ac	/* Interrupt mask */
-#define GISR		0x0c4	/* Interrupt source */
-#define GITR		0x300	/* Input type */
-#define GLPR		0x318	/* Level input polarity */
+#define GCCR		0x000	 
+#define GPLR		0x004	 
+#define GPDR		0x01c	 
+#define GPSR		0x034	 
+#define GPCR		0x04c	 
+#define GRER		0x064	 
+#define GFER		0x07c	 
+#define GFBR		0x094	 
+#define GIMR		0x0ac	 
+#define GISR		0x0c4	 
+#define GITR		0x300	 
+#define GLPR		0x318	 
 
-/**
- * struct tng_gpio_context - Context to be saved during suspend-resume
- * @level: Pin level
- * @gpdr: Pin direction
- * @grer: Rising edge detect enable
- * @gfer: Falling edge detect enable
- * @gimr: Interrupt mask
- * @gwmr: Wake mask
- */
+ 
 struct tng_gpio_context {
 	u32 level;
 	u32 gpdr;
@@ -286,10 +270,7 @@ static int tng_irq_set_type(struct irq_data *d, unsigned int type)
 		value &= ~BIT(shift);
 	writel(value, gfer);
 
-	/*
-	 * To prevent glitches from triggering an unintended level interrupt,
-	 * configure GLPR register first and then configure GITR.
-	 */
+	 
 	value = readl(glpr);
 	if (type & IRQ_TYPE_LEVEL_LOW)
 		value |= BIT(shift);
@@ -329,7 +310,7 @@ static int tng_irq_set_wake(struct irq_data *d, unsigned int on)
 
 	raw_spin_lock_irqsave(&priv->lock, flags);
 
-	/* Clear the existing wake status */
+	 
 	writel(BIT(shift), gwsr);
 
 	value = readl(gwmr);
@@ -365,7 +346,7 @@ static void tng_irq_handler(struct irq_desc *desc)
 
 	chained_irq_enter(irqchip, desc);
 
-	/* Check GPIO controller to check which pin triggered the interrupt */
+	 
 	for (base = 0; base < priv->chip.ngpio; base += 32) {
 		void __iomem *gisr = gpio_reg(&priv->chip, base, GISR);
 		void __iomem *gimr = gpio_reg(&priv->chip, base, GIMR);
@@ -374,7 +355,7 @@ static void tng_irq_handler(struct irq_desc *desc)
 		pending = readl(gisr);
 		enabled = readl(gimr);
 
-		/* Only interrupts that are enabled */
+		 
 		pending &= enabled;
 
 		for_each_set_bit(gpio, &pending, 32)
@@ -391,11 +372,11 @@ static int tng_irq_init_hw(struct gpio_chip *chip)
 	unsigned int base;
 
 	for (base = 0; base < priv->chip.ngpio; base += 32) {
-		/* Clear the rising-edge detect register */
+		 
 		reg = gpio_reg(&priv->chip, base, GRER);
 		writel(0, reg);
 
-		/* Clear the falling-edge detect register */
+		 
 		reg = gpio_reg(&priv->chip, base, GFER);
 		writel(0, reg);
 	}
@@ -487,7 +468,7 @@ int tng_gpio_suspend(struct device *dev)
 	raw_spin_lock_irqsave(&priv->lock, flags);
 
 	for (base = 0; base < priv->chip.ngpio; base += 32, ctx++) {
-		/* GPLR is RO, values read will be restored using GPSR */
+		 
 		ctx->level = readl(gpio_reg(&priv->chip, base, GPLR));
 
 		ctx->gpdr = readl(gpio_reg(&priv->chip, base, GPDR));
@@ -514,7 +495,7 @@ int tng_gpio_resume(struct device *dev)
 	raw_spin_lock_irqsave(&priv->lock, flags);
 
 	for (base = 0; base < priv->chip.ngpio; base += 32, ctx++) {
-		/* GPLR is RO, values read will be restored using GPSR */
+		 
 		writel(ctx->level, gpio_reg(&priv->chip, base, GPSR));
 
 		writel(ctx->gpdr, gpio_reg(&priv->chip, base, GPDR));

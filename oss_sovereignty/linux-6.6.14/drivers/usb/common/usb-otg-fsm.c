@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * OTG Finite State Machine from OTG spec
- *
- * Copyright (C) 2007,2008 Freescale Semiconductor, Inc.
- *
- * Author:	Li Yang <LeoLi@freescale.com>
- *		Jerry Huang <Chang-Ming.Huang@freescale.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -25,7 +18,7 @@
 #define VDBG(stuff...)	do {} while (0)
 #endif
 
-/* Change USB protocol when there is a protocol change */
+ 
 static int otg_set_protocol(struct otg_fsm *fsm, int protocol)
 {
 	int ret = 0;
@@ -33,7 +26,7 @@ static int otg_set_protocol(struct otg_fsm *fsm, int protocol)
 	if (fsm->protocol != protocol) {
 		VDBG("Changing role fsm->protocol= %d; new protocol= %d\n",
 			fsm->protocol, protocol);
-		/* stop old protocol */
+		 
 		if (fsm->protocol == PROTO_HOST)
 			ret = otg_start_host(fsm, 0);
 		else if (fsm->protocol == PROTO_GADGET)
@@ -41,7 +34,7 @@ static int otg_set_protocol(struct otg_fsm *fsm, int protocol)
 		if (ret)
 			return ret;
 
-		/* start new protocol */
+		 
 		if (protocol == PROTO_HOST)
 			ret = otg_start_host(fsm, 1);
 		else if (protocol == PROTO_GADGET)
@@ -56,7 +49,7 @@ static int otg_set_protocol(struct otg_fsm *fsm, int protocol)
 	return 0;
 }
 
-/* Called when leaving a state.  Do state clean up jobs here */
+ 
 static void otg_leave_state(struct otg_fsm *fsm, enum usb_otg_state old_state)
 {
 	switch (old_state) {
@@ -137,7 +130,7 @@ static void otg_hnp_polling_work(struct work_struct *work)
 	}
 
 	*fsm->host_req_flag = 0;
-	/* Get host request flag from connected USB device */
+	 
 	retval = usb_control_msg(udev,
 				usb_rcvctrlpipe(udev, 0),
 				USB_REQ_GET_STATUS,
@@ -154,7 +147,7 @@ static void otg_hnp_polling_work(struct work_struct *work)
 
 	flag = *fsm->host_req_flag;
 	if (flag == 0) {
-		/* Continue HNP polling */
+		 
 		schedule_delayed_work(&fsm->hnp_polling_work,
 					msecs_to_jiffies(T_HOST_REQ_POLL));
 		return;
@@ -163,9 +156,9 @@ static void otg_hnp_polling_work(struct work_struct *work)
 		return;
 	}
 
-	/* Host request flag is set */
+	 
 	if (state == OTG_STATE_A_HOST) {
-		/* Set b_hnp_enable */
+		 
 		if (!fsm->otg->host->b_hnp_enable) {
 			retval = usb_control_msg(udev,
 					usb_sndctrlpipe(udev, 0),
@@ -186,10 +179,7 @@ static void otg_hnp_polling_work(struct work_struct *work)
 
 static void otg_start_hnp_polling(struct otg_fsm *fsm)
 {
-	/*
-	 * The memory of host_req_flag should be allocated by
-	 * controller driver, otherwise, hnp polling is not started.
-	 */
+	 
 	if (!fsm->host_req_flag)
 		return;
 
@@ -202,7 +192,7 @@ static void otg_start_hnp_polling(struct otg_fsm *fsm)
 					msecs_to_jiffies(T_HOST_REQ_POLL));
 }
 
-/* Called when entering a state */
+ 
 static int otg_set_state(struct otg_fsm *fsm, enum usb_otg_state new_state)
 {
 	if (fsm->otg->state == new_state)
@@ -215,10 +205,7 @@ static int otg_set_state(struct otg_fsm *fsm, enum usb_otg_state new_state)
 		otg_chrg_vbus(fsm, 0);
 		otg_loc_conn(fsm, 0);
 		otg_loc_sof(fsm, 0);
-		/*
-		 * Driver is responsible for starting ADP probing
-		 * if ADP sensing times out.
-		 */
+		 
 		otg_start_adp_sns(fsm);
 		otg_set_protocol(fsm, PROTO_UNDEF);
 		otg_add_timer(fsm, B_SE0_SRP);
@@ -279,10 +266,7 @@ static int otg_set_state(struct otg_fsm *fsm, enum usb_otg_state new_state)
 		otg_loc_conn(fsm, 0);
 		otg_loc_sof(fsm, 1);
 		otg_set_protocol(fsm, PROTO_HOST);
-		/*
-		 * When HNP is triggered while a_bus_req = 0, a_host will
-		 * suspend too fast to complete a_set_b_hnp_en
-		 */
+		 
 		if (!fsm->a_bus_req || fsm->a_suspend_req_inf)
 			otg_add_timer(fsm, A_WAIT_ENUM);
 		otg_start_hnp_polling(fsm);
@@ -324,7 +308,7 @@ static int otg_set_state(struct otg_fsm *fsm, enum usb_otg_state new_state)
 	return 0;
 }
 
-/* State change judgement */
+ 
 int otg_statemachine(struct otg_fsm *fsm)
 {
 	enum usb_otg_state state;
@@ -333,7 +317,7 @@ int otg_statemachine(struct otg_fsm *fsm)
 
 	state = fsm->otg->state;
 	fsm->state_changed = 0;
-	/* State machine state change judgement */
+	 
 
 	switch (state) {
 	case OTG_STATE_UNDEFINED:

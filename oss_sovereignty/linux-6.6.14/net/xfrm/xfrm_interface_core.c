@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *	XFRM virtual interface
- *
- *	Copyright (C) 2018 secunet Security Networks AG
- *
- *	Author:
- *	Steffen Klassert <steffen.klassert@secunet.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/capability.h>
@@ -56,7 +49,7 @@ static const struct net_device_ops xfrmi_netdev_ops;
 #define XFRMI_HASH_SIZE	BIT(XFRMI_HASH_BITS)
 
 struct xfrmi_net {
-	/* lists for storing interfaces in use */
+	 
 	struct xfrm_if __rcu *xfrmi[XFRMI_HASH_SIZE];
 	struct xfrm_if __rcu *collect_md_xfrmi;
 };
@@ -122,8 +115,8 @@ static int xfrmi_fill_encap_info(struct sk_buff *skb,
 
 static int xfrmi_encap_nlsize(struct lwtunnel_state *lwtstate)
 {
-	return nla_total_size(sizeof(u32)) + /* LWT_XFRM_IF_ID */
-		nla_total_size(sizeof(u32)); /* LWT_XFRM_LINK */
+	return nla_total_size(sizeof(u32)) +  
+		nla_total_size(sizeof(u32));  
 }
 
 static int xfrmi_encap_cmp(struct lwtunnel_state *a, struct lwtunnel_state *b)
@@ -904,11 +897,11 @@ static int xfrmi_changelink(struct net_device *dev, struct nlattr *tb[],
 static size_t xfrmi_get_size(const struct net_device *dev)
 {
 	return
-		/* IFLA_XFRM_LINK */
+		 
 		nla_total_size(4) +
-		/* IFLA_XFRM_IF_ID */
+		 
 		nla_total_size(4) +
-		/* IFLA_XFRM_COLLECT_METADATA */
+		 
 		nla_total_size(0) +
 		0;
 }

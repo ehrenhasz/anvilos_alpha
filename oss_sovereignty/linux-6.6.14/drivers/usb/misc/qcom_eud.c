@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015-2021, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/err.h>
@@ -101,7 +99,7 @@ static void usb_attach_detach(struct eud_chip *chip)
 {
 	u32 reg;
 
-	/* read ctl_out_1[4] to find USB attach or detach event */
+	 
 	reg = readl(chip->base + EUD_REG_CTL_OUT_1);
 	chip->usb_attached = reg & EUD_INT_SAFE_MODE;
 }
@@ -111,15 +109,12 @@ static void pet_eud(struct eud_chip *chip)
 	u32 reg;
 	int ret;
 
-	/* When the EUD_INT_PET_EUD in SW_ATTACH_DET is set, the cable has been
-	 * disconnected and we need to detach the pet to check if EUD is in safe
-	 * mode before attaching again.
-	 */
+	 
 	reg = readl(chip->base + EUD_REG_SW_ATTACH_DET);
 	if (reg & EUD_INT_PET_EUD) {
-		/* Detach & Attach pet for EUD */
+		 
 		writel(0, chip->base + EUD_REG_SW_ATTACH_DET);
-		/* Delay to make sure detach pet is done before attach pet */
+		 
 		ret = readl_poll_timeout(chip->base + EUD_REG_SW_ATTACH_DET,
 					reg, (reg == 0), 1, 100);
 		if (ret) {
@@ -127,7 +122,7 @@ static void pet_eud(struct eud_chip *chip)
 			return;
 		}
 	}
-	/* Attach pet for EUD */
+	 
 	writel(EUD_INT_PET_EUD, chip->base + EUD_REG_SW_ATTACH_DET);
 }
 
@@ -161,7 +156,7 @@ static irqreturn_t handle_eud_irq_thread(int irq, void *data)
 	if (ret)
 		dev_err(chip->dev, "failed to set role switch\n");
 
-	/* set and clear vbus_int_clr[0] to clear interrupt */
+	 
 	writel(BIT(0), chip->base + EUD_REG_VBUS_INT_CLR);
 	writel(0, chip->base + EUD_REG_VBUS_INT_CLR);
 

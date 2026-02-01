@@ -1,26 +1,4 @@
-/*
- * Copyright 2013 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "priv.h"
 #include "aux.h"
 #include "bus.h"
@@ -170,10 +148,7 @@ nvkm_i2c_preinit(struct nvkm_subdev *subdev)
 	struct nvkm_i2c_bus *bus;
 	struct nvkm_i2c_pad *pad;
 
-	/*
-	 * We init our i2c busses as early as possible, since they may be
-	 * needed by the vbios init scripts on some cards
-	 */
+	 
 	list_for_each_entry(pad, &i2c->pad, head)
 		nvkm_i2c_pad_init(pad);
 	list_for_each_entry(bus, &i2c->bus, head)
@@ -347,18 +322,18 @@ nvkm_i2c_new_(const struct nvkm_i2c_func *func, struct nvkm_device *device,
 		struct nvkm_i2c_bus *bus;
 		struct nvkm_i2c_pad *pad;
 
-		/* internal outputs handled by native i2c busses (above) */
+		 
 		if (!dcbE.location)
 			continue;
 
-		/* we need an i2c bus to talk to the external encoder */
+		 
 		bus = nvkm_i2c_bus_find(i2c, dcbE.i2c_index);
 		if (!bus) {
 			nvkm_debug(&i2c->subdev, "dcb %02x no bus\n", i);
 			continue;
 		}
 
-		/* ... and a driver for it */
+		 
 		while (drv->pad_new) {
 			if (drv->bios == dcbE.extdev)
 				break;
@@ -371,7 +346,7 @@ nvkm_i2c_new_(const struct nvkm_i2c_func *func, struct nvkm_device *device,
 			continue;
 		}
 
-		/* find/create an instance of the driver */
+		 
 		pad = nvkm_i2c_pad_find(i2c, NVKM_I2C_PAD_EXT(dcbE.extdev));
 		if (!pad) {
 			const int id = NVKM_I2C_PAD_EXT(dcbE.extdev);
@@ -384,7 +359,7 @@ nvkm_i2c_new_(const struct nvkm_i2c_func *func, struct nvkm_device *device,
 			}
 		}
 
-		/* create any i2c bus / aux channel required by the output */
+		 
 		if (pad->func->aux_new_6 && dcbE.type == DCB_OUTPUT_DP) {
 			const int id = NVKM_I2C_AUX_EXT(dcbE.extdev);
 			struct nvkm_i2c_aux *aux = NULL;

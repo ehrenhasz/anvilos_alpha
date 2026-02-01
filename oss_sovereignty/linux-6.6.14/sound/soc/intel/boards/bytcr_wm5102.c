@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  bytcr_wm5102.c - ASoc Machine driver for Intel Baytrail platforms with a
- *                   Wolfson Microelectronics WM5102 codec
- *
- *  Copyright (C) 2020 Hans de Goede <hdegoede@redhat.com>
- *  Loosely based on bytcr_rt5640.c which is:
- *  Copyright (C) 2014-2020 Intel Corp
- *  Author: Subhransu S. Prusty <subhransu.s.prusty@intel.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/clk.h>
@@ -28,8 +20,8 @@
 
 #define MCLK_FREQ		25000000
 
-#define WM5102_MAX_SYSCLK_4K	49152000 /* max sysclk for 4K family */
-#define WM5102_MAX_SYSCLK_11025	45158400 /* max sysclk for 11.025K family */
+#define WM5102_MAX_SYSCLK_4K	49152000  
+#define WM5102_MAX_SYSCLK_11025	45158400  
 
 struct byt_wm5102_private {
 	struct snd_soc_jack jack;
@@ -57,11 +49,11 @@ static int byt_wm5102_prepare_and_enable_pll1(struct snd_soc_dai *codec_dai, int
 		(WM5102_MAX_SYSCLK_11025 / rate);
 	int ret;
 
-	/* Reset FLL1 */
+	 
 	snd_soc_dai_set_pll(codec_dai, WM5102_FLL1_REFCLK, ARIZONA_FLL_SRC_NONE, 0, 0);
 	snd_soc_dai_set_pll(codec_dai, WM5102_FLL1, ARIZONA_FLL_SRC_NONE, 0, 0);
 
-	/* Configure the FLL1 PLL before selecting it */
+	 
 	ret = snd_soc_dai_set_pll(codec_dai, WM5102_FLL1, ARIZONA_CLK_SRC_MCLK1,
 				  MCLK_FREQ, rate * sr_mult);
 	if (ret) {
@@ -114,11 +106,7 @@ static int platform_clock_control(struct snd_soc_dapm_widget *w,
 			return ret;
 		}
 	} else {
-		/*
-		 * The WM5102 has a separate 32KHz clock for jack-detect
-		 * so we can disable the PLL, followed by disabling the
-		 * platform clock which is the source-clock for the PLL.
-		 */
+		 
 		snd_soc_dai_set_pll(codec_dai, WM5102_FLL1, ARIZONA_FLL_SRC_NONE, 0, 0);
 		clk_disable_unprepare(priv->mclk);
 	}
@@ -159,10 +147,7 @@ static const struct snd_soc_dapm_route byt_wm5102_audio_map[] = {
 	{"Internal Mic", NULL, "MICBIAS3"},
 	{"IN3L", NULL, "Internal Mic"},
 
-	/*
-	 * The Headset Mix uses MICBIAS1 or 2 depending on if a CTIA/OMTP Headset
-	 * is connected, as the MICBIAS is applied after the CTIA/OMTP cross-switch.
-	 */
+	 
 	{"Headset Mic", NULL, "MICBIAS1"},
 	{"Headset Mic", NULL, "MICBIAS2"},
 	{"IN1L", NULL, "Headset Mic"},
@@ -213,14 +198,7 @@ static int byt_wm5102_init(struct snd_soc_pcm_runtime *runtime)
 		return ret;
 	}
 
-	/*
-	 * The firmware might enable the clock at boot (this information
-	 * may or may not be reflected in the enable clock register).
-	 * To change the rate we must disable the clock first to cover these
-	 * cases. Due to common clock framework restrictions that do not allow
-	 * to disable a clock that has not been enabled, we need to enable
-	 * the clock first.
-	 */
+	 
 	ret = clk_prepare_enable(priv->mclk);
 	if (!ret)
 		clk_disable_unprepare(priv->mclk);
@@ -255,20 +233,16 @@ static int byt_wm5102_codec_fixup(struct snd_soc_pcm_runtime *rtd,
 							  SNDRV_PCM_HW_PARAM_CHANNELS);
 	int ret;
 
-	/* The DSP will convert the FE rate to 48k, stereo */
+	 
 	rate->min = 48000;
 	rate->max = 48000;
 	channels->min = 2;
 	channels->max = 2;
 
-	/* set SSP0 to 16-bit */
+	 
 	params_set_format(params, SNDRV_PCM_FORMAT_S16_LE);
 
-	/*
-	 * Default mode for SSP configuration is TDM 4 slot, override config
-	 * with explicit setting to I2S 2ch 16-bit. The word length is set with
-	 * dai_set_tdm_slot() since there is no other API exposed
-	 */
+	 
 	ret = snd_soc_dai_set_fmt(asoc_rtd_to_cpu(rtd, 0),
 				  SND_SOC_DAIFMT_I2S     |
 				  SND_SOC_DAIFMT_NB_NF   |
@@ -311,10 +285,7 @@ SND_SOC_DAILINK_DEF(ssp0_port,
 
 SND_SOC_DAILINK_DEF(ssp0_codec,
 	DAILINK_COMP_ARRAY(COMP_CODEC(
-	/*
-	 * Note there is no need to overwrite the codec-name as is done in
-	 * other bytcr machine drivers, because the codec is a MFD child-dev.
-	 */
+	 
 	"wm5102-codec",
 	"wm5102-aif1")));
 
@@ -342,16 +313,9 @@ static struct snd_soc_dai_link byt_wm5102_dais[] = {
 		.ops = &byt_wm5102_aif1_ops,
 		SND_SOC_DAILINK_REG(deepbuffer, dummy, platform),
 	},
-		/* back ends */
+		 
 	{
-		/*
-		 * This must be named SSP2-Codec even though this machine driver
-		 * always uses SSP0. Most machine drivers support both and dynamically
-		 * update the dailink to point to SSP0 or SSP2, while keeping the name
-		 * as "SSP2-Codec". The SOF tplg files hardcode the "SSP2-Codec" even
-		 * in the byt-foo-ssp0.tplg versions because the other machine-drivers
-		 * use "SSP2-Codec" even when SSP0 is used.
-		 */
+		 
 		.name = "SSP2-Codec",
 		.id = 0,
 		.no_pcm = 1,
@@ -365,14 +329,14 @@ static struct snd_soc_dai_link byt_wm5102_dais[] = {
 	},
 };
 
-/* use space before codec name to simplify card ID, and simplify driver name */
-#define SOF_CARD_NAME "bytcht wm5102" /* card name will be 'sof-bytcht wm5102' */
+ 
+#define SOF_CARD_NAME "bytcht wm5102"  
 #define SOF_DRIVER_NAME "SOF"
 
 #define CARD_NAME "bytcr-wm5102"
-#define DRIVER_NAME NULL /* card name will be used for driver name */
+#define DRIVER_NAME NULL  
 
-/* SoC card */
+ 
 static struct snd_soc_card byt_wm5102_card = {
 	.owner = THIS_MODULE,
 	.dai_link = byt_wm5102_dais,
@@ -400,17 +364,12 @@ static int snd_byt_wm5102_mc_probe(struct platform_device *pdev)
 	if (!priv)
 		return -ENOMEM;
 
-	/* Get MCLK */
+	 
 	priv->mclk = devm_clk_get(dev, "pmc_plt_clk_3");
 	if (IS_ERR(priv->mclk))
 		return dev_err_probe(dev, PTR_ERR(priv->mclk), "getting pmc_plt_clk_3\n");
 
-	/*
-	 * Get speaker VDD enable GPIO:
-	 * 1. Get codec-device-name
-	 * 2. Get codec-device
-	 * 3. Get GPIO from codec-device
-	 */
+	 
 	mach = dev->platform_data;
 	adev = acpi_dev_get_first_match_dev(mach->id, NULL, -1);
 	if (!adev) {
@@ -424,30 +383,27 @@ static int snd_byt_wm5102_mc_probe(struct platform_device *pdev)
 	if (!codec_dev)
 		return -EPROBE_DEFER;
 
-	/* Note no devm_ here since we call gpiod_get on codec_dev rather then dev */
+	 
 	priv->spkvdd_en_gpio = gpiod_get(codec_dev, "wlf,spkvdd-ena", GPIOD_OUT_LOW);
 	put_device(codec_dev);
 
 	if (IS_ERR(priv->spkvdd_en_gpio)) {
 		ret = PTR_ERR(priv->spkvdd_en_gpio);
-		/*
-		 * The spkvdd gpio-lookup is registered by: drivers/mfd/arizona-spi.c,
-		 * so -ENOENT means that arizona-spi hasn't probed yet.
-		 */
+		 
 		if (ret == -ENOENT)
 			ret = -EPROBE_DEFER;
 
 		return dev_err_probe(dev, ret, "getting spkvdd-GPIO\n");
 	}
 
-	/* override platform name, if required */
+	 
 	byt_wm5102_card.dev = dev;
 	platform_name = mach->mach_params.platform;
 	ret = snd_soc_fixup_dai_links_platform_name(&byt_wm5102_card, platform_name);
 	if (ret)
 		goto out_put_gpio;
 
-	/* set card and driver name and pm-ops */
+	 
 	sof_parent = snd_soc_acpi_sof_parent(dev);
 	if (sof_parent) {
 		byt_wm5102_card.name = SOF_CARD_NAME;

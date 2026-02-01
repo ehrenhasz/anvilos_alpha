@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _UAPI_NFNL_ACCT_H_
 #define _UAPI_NFNL_ACCT_H_
 
@@ -18,7 +18,7 @@ enum nfnl_acct_msg_types {
 enum nfnl_acct_flags {
 	NFACCT_F_QUOTA_PKTS	= (1 << 0),
 	NFACCT_F_QUOTA_BYTES	= (1 << 1),
-	NFACCT_F_OVERQUOTA	= (1 << 2), /* can't be set from userspace */
+	NFACCT_F_OVERQUOTA	= (1 << 2),  
 };
 
 enum nfnl_acct_type {
@@ -43,4 +43,4 @@ enum nfnl_attr_filter_type {
 };
 #define NFACCT_FILTER_MAX (__NFACCT_FILTER_MAX - 1)
 
-#endif /* _UAPI_NFNL_ACCT_H_ */
+#endif  

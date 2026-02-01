@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SafeSetID Linux Security Module
- *
- * Author: Micah Morton <mortonm@chromium.org>
- *
- * Copyright (C) 2018 The Chromium OS Authors.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2, as
- * published by the Free Software Foundation.
- *
- */
+
+ 
 
 #define pr_fmt(fmt) "SafeSetID: " fmt
 
@@ -21,14 +10,14 @@
 #include <linux/security.h>
 #include "lsm.h"
 
-/* Flag indicating whether initialization completed */
+ 
 int safesetid_initialized __initdata;
 
 struct setid_ruleset __rcu *safesetid_setuid_rules;
 struct setid_ruleset __rcu *safesetid_setgid_rules;
 
 
-/* Compute a decision for a transition from @src to @dst under @policy. */
+ 
 enum sid_policy_type _setid_policy_lookup(struct setid_ruleset *policy,
 		kid_t src, kid_t dst)
 {
@@ -53,16 +42,13 @@ enum sid_policy_type _setid_policy_lookup(struct setid_ruleset *policy,
 			result = SIDPOL_CONSTRAINED;
 		}
 	} else {
-		/* Should not reach here, report the ID as contrainsted */
+		 
 		result = SIDPOL_CONSTRAINED;
 	}
 	return result;
 }
 
-/*
- * Compute a decision for a transition from @src to @dst under the active
- * policy.
- */
+ 
 static enum sid_policy_type setid_policy_lookup(kid_t src, kid_t dst, enum setid_type new_type)
 {
 	enum sid_policy_type result = SIDPOL_DEFAULT;
@@ -73,7 +59,7 @@ static enum sid_policy_type setid_policy_lookup(kid_t src, kid_t dst, enum setid
 		pol = rcu_dereference(safesetid_setuid_rules);
 	else if (new_type == GID)
 		pol = rcu_dereference(safesetid_setgid_rules);
-	else { /* Should not reach here */
+	else {  
 		result = SIDPOL_CONSTRAINED;
 		rcu_read_unlock();
 		return result;
@@ -92,63 +78,44 @@ static int safesetid_security_capable(const struct cred *cred,
 				      int cap,
 				      unsigned int opts)
 {
-	/* We're only interested in CAP_SETUID and CAP_SETGID. */
+	 
 	if (cap != CAP_SETUID && cap != CAP_SETGID)
 		return 0;
 
-	/*
-	 * If CAP_SET{U/G}ID is currently used for a setid or setgroups syscall, we
-	 * want to let it go through here; the real security check happens later, in
-	 * the task_fix_set{u/g}id or task_fix_setgroups hooks.
-	 */
+	 
 	if ((opts & CAP_OPT_INSETID) != 0)
 		return 0;
 
 	switch (cap) {
 	case CAP_SETUID:
-		/*
-		* If no policy applies to this task, allow the use of CAP_SETUID for
-		* other purposes.
-		*/
+		 
 		if (setid_policy_lookup((kid_t){.uid = cred->uid}, INVALID_ID, UID) == SIDPOL_DEFAULT)
 			return 0;
-		/*
-		 * Reject use of CAP_SETUID for functionality other than calling
-		 * set*uid() (e.g. setting up userns uid mappings).
-		 */
+		 
 		pr_warn("Operation requires CAP_SETUID, which is not available to UID %u for operations besides approved set*uid transitions\n",
 			__kuid_val(cred->uid));
 		return -EPERM;
 	case CAP_SETGID:
-		/*
-		* If no policy applies to this task, allow the use of CAP_SETGID for
-		* other purposes.
-		*/
+		 
 		if (setid_policy_lookup((kid_t){.gid = cred->gid}, INVALID_ID, GID) == SIDPOL_DEFAULT)
 			return 0;
-		/*
-		 * Reject use of CAP_SETUID for functionality other than calling
-		 * set*gid() (e.g. setting up userns gid mappings).
-		 */
+		 
 		pr_warn("Operation requires CAP_SETGID, which is not available to GID %u for operations besides approved set*gid transitions\n",
 			__kgid_val(cred->gid));
 		return -EPERM;
 	default:
-		/* Error, the only capabilities were checking for is CAP_SETUID/GID */
+		 
 		return 0;
 	}
 	return 0;
 }
 
-/*
- * Check whether a caller with old credentials @old is allowed to switch to
- * credentials that contain @new_id.
- */
+ 
 static bool id_permitted_for_cred(const struct cred *old, kid_t new_id, enum setid_type new_type)
 {
 	bool permitted;
 
-	/* If our old creds already had this ID in it, it's fine. */
+	 
 	if (new_type == UID) {
 		if (uid_eq(new_id.uid, old->uid) || uid_eq(new_id.uid, old->euid) ||
 			uid_eq(new_id.uid, old->suid))
@@ -157,13 +124,10 @@ static bool id_permitted_for_cred(const struct cred *old, kid_t new_id, enum set
 		if (gid_eq(new_id.gid, old->gid) || gid_eq(new_id.gid, old->egid) ||
 			gid_eq(new_id.gid, old->sgid))
 			return true;
-	} else /* Error, new_type is an invalid type */
+	} else  
 		return false;
 
-	/*
-	 * Transitions to new UIDs require a check against the policy of the old
-	 * RUID.
-	 */
+	 
 	permitted =
 	    setid_policy_lookup((kid_t){.uid = old->uid}, new_id, new_type) != SIDPOL_CONSTRAINED;
 
@@ -176,23 +140,19 @@ static bool id_permitted_for_cred(const struct cred *old, kid_t new_id, enum set
 			pr_warn("GID transition ((%d,%d,%d) -> %d) blocked\n",
 				__kgid_val(old->gid), __kgid_val(old->egid),
 				__kgid_val(old->sgid), __kgid_val(new_id.gid));
-		} else /* Error, new_type is an invalid type */
+		} else  
 			return false;
 	}
 	return permitted;
 }
 
-/*
- * Check whether there is either an exception for user under old cred struct to
- * set*uid to user under new cred struct, or the UID transition is allowed (by
- * Linux set*uid rules) even without CAP_SETUID.
- */
+ 
 static int safesetid_task_fix_setuid(struct cred *new,
 				     const struct cred *old,
 				     int flags)
 {
 
-	/* Do nothing if there are no setuid restrictions for our old RUID. */
+	 
 	if (setid_policy_lookup((kid_t){.uid = old->uid}, INVALID_ID, UID) == SIDPOL_DEFAULT)
 		return 0;
 
@@ -202,11 +162,7 @@ static int safesetid_task_fix_setuid(struct cred *new,
 	    id_permitted_for_cred(old, (kid_t){.uid = new->fsuid}, UID))
 		return 0;
 
-	/*
-	 * Kill this process to avoid potential security vulnerabilities
-	 * that could arise from a missing allowlist entry preventing a
-	 * privileged process from dropping to a lesser-privileged one.
-	 */
+	 
 	force_sig(SIGKILL);
 	return -EACCES;
 }
@@ -216,7 +172,7 @@ static int safesetid_task_fix_setgid(struct cred *new,
 				     int flags)
 {
 
-	/* Do nothing if there are no setgid restrictions for our old RGID. */
+	 
 	if (setid_policy_lookup((kid_t){.gid = old->gid}, INVALID_ID, GID) == SIDPOL_DEFAULT)
 		return 0;
 
@@ -226,11 +182,7 @@ static int safesetid_task_fix_setgid(struct cred *new,
 	    id_permitted_for_cred(old, (kid_t){.gid = new->fsgid}, GID))
 		return 0;
 
-	/*
-	 * Kill this process to avoid potential security vulnerabilities
-	 * that could arise from a missing allowlist entry preventing a
-	 * privileged process from dropping to a lesser-privileged one.
-	 */
+	 
 	force_sig(SIGKILL);
 	return -EACCES;
 }
@@ -239,7 +191,7 @@ static int safesetid_task_fix_setgroups(struct cred *new, const struct cred *old
 {
 	int i;
 
-	/* Do nothing if there are no setgid restrictions for our old RGID. */
+	 
 	if (setid_policy_lookup((kid_t){.gid = old->gid}, INVALID_ID, GID) == SIDPOL_DEFAULT)
 		return 0;
 
@@ -247,11 +199,7 @@ static int safesetid_task_fix_setgroups(struct cred *new, const struct cred *old
 	for (i = 0; i < new->group_info->ngroups; i++) {
 		if (!id_permitted_for_cred(old, (kid_t){.gid = new->group_info->gid[i]}, GID)) {
 			put_group_info(new->group_info);
-			/*
-			 * Kill this process to avoid potential security vulnerabilities
-			 * that could arise from a missing allowlist entry preventing a
-			 * privileged process from dropping to a lesser-privileged one.
-			 */
+			 
 			force_sig(SIGKILL);
 			return -EACCES;
 		}
@@ -273,7 +221,7 @@ static int __init safesetid_security_init(void)
 	security_add_hooks(safesetid_security_hooks,
 			   ARRAY_SIZE(safesetid_security_hooks), "safesetid");
 
-	/* Report that SafeSetID successfully initialized */
+	 
 	safesetid_initialized = 1;
 
 	return 0;

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/hfsplus/options.c
- *
- * Copyright (C) 2001
- * Brad Boyer (flar@allandria.com)
- * (C) 2003 Ardis Technologies <roman@ardistech.com>
- *
- * Option parsing
- */
+
+ 
 
 #include <linux/string.h>
 #include <linux/kernel.h>
@@ -45,7 +37,7 @@ static const match_table_t tokens = {
 	{ opt_err, NULL }
 };
 
-/* Initialize an options object to reasonable defaults */
+ 
 void hfsplus_fill_defaults(struct hfsplus_sb_info *opts)
 {
 	if (!opts)
@@ -60,7 +52,7 @@ void hfsplus_fill_defaults(struct hfsplus_sb_info *opts)
 	opts->session = -1;
 }
 
-/* convert a "four byte character" to a 32 bit int with error checks */
+ 
 static inline int match_fourchar(substring_t *arg, u32 *result)
 {
 	if (arg->to - arg->from != 4)
@@ -95,8 +87,8 @@ int hfsplus_parse_options_remount(char *input, int *force)
 	return 1;
 }
 
-/* Parse options from mount. Returns 0 on failure */
-/* input is the options passed to mount() as a string */
+ 
+ 
 int hfsplus_parse_options(char *input, struct hfsplus_sb_info *sbi)
 {
 	char *p;
@@ -207,7 +199,7 @@ int hfsplus_parse_options(char *input, struct hfsplus_sb_info *sbi)
 
 done:
 	if (!sbi->nls) {
-		/* try utf8 first, as this is the old default behaviour */
+		 
 		sbi->nls = load_nls("utf8");
 		if (!sbi->nls)
 			sbi->nls = load_nls_default();

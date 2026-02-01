@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-// Copyright (c) 2016-2017 Hisilicon Limited.
+ 
+
 
 #ifndef __HCLGE_TM_H
 #define __HCLGE_TM_H
@@ -12,7 +12,7 @@ struct hclge_dev;
 struct hclge_vport;
 enum hclge_opcode_type;
 
-/* MAC Pause */
+ 
 #define HCLGE_TX_MAC_PAUSE_EN_MSK	BIT(0)
 #define HCLGE_RX_MAC_PAUSE_EN_MSK	BIT(1)
 
@@ -21,7 +21,7 @@ enum hclge_opcode_type;
 #define HCLGE_DEFAULT_PAUSE_TRANS_GAP	0x7F
 #define HCLGE_DEFAULT_PAUSE_TRANS_TIME	0xFFFF
 
-/* SP or DWRR */
+ 
 #define HCLGE_TM_TX_SCHD_DWRR_MSK	BIT(0)
 #define HCLGE_TM_TX_SCHD_SP_MSK		0xFE
 
@@ -119,7 +119,7 @@ enum hclge_shap_bucket {
 	HCLGE_TM_SHAP_P_BUCKET,
 };
 
-/* set bit HCLGE_TM_RATE_VLD to 1 means use 'rate' to config shaping */
+ 
 #define HCLGE_TM_RATE_VLD	0
 
 struct hclge_pri_shapping_cmd {
@@ -181,7 +181,7 @@ struct hclge_cfg_pause_param_cmd {
 	u8 rsvd;
 	__le16 pause_trans_time;
 	u8 rsvd1[6];
-	/* extra mac address to do double check for pause frame */
+	 
 	u8 mac_addr_extra[ETH_ALEN];
 	u16 rsvd2;
 };
@@ -198,9 +198,9 @@ struct hclge_port_shapping_cmd {
 };
 
 struct hclge_shaper_ir_para {
-	u8 ir_b; /* IR_B parameter of IR shaper */
-	u8 ir_u; /* IR_U parameter of IR shaper */
-	u8 ir_s; /* IR_S parameter of IR shaper */
+	u8 ir_b;  
+	u8 ir_u;  
+	u8 ir_s;  
 };
 
 struct hclge_tm_nodes_cmd {

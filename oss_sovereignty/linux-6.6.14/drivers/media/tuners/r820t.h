@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Elonics R820T silicon tuner driver
- *
- * Copyright (C) 2012 Antti Palosaari <crope@iki.fi>
- */
+ 
+ 
 
 #ifndef R820T_H
 #define R820T_H
@@ -20,7 +16,7 @@ enum r820t_chip {
 };
 
 struct r820t_config {
-	u8 i2c_addr;		/* 0x34 */
+	u8 i2c_addr;		 
 	u32 xtal;
 	enum r820t_chip rafael_chip;
 	unsigned max_i2c_msg_len;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Qualcomm SDX55 interconnect driver
- * Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
- *
- * Copyright (c) 2021, Linaro Ltd.
- *
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/interconnect.h>

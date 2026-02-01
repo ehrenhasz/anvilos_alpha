@@ -1,36 +1,4 @@
-/*
- * Copyright (c) 2004 Topspin Communications.  All rights reserved.
- * Copyright (c) 2005, 2006, 2007, 2008 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2006, 2007 Cisco Systems, Inc.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/errno.h>
 #include <linux/export.h>
@@ -289,7 +257,7 @@ static int mlx4_HW2SW_MPT(struct mlx4_dev *dev, struct mlx4_cmd_mailbox *mailbox
 			    MLX4_CMD_TIME_CLASS_B, MLX4_CMD_WRAPPED);
 }
 
-/* Must protect against concurrent access */
+ 
 int mlx4_mr_hw_get_mpt(struct mlx4_dev *dev, struct mlx4_mr *mmr,
 		       struct mlx4_mpt_entry ***mpt_entry)
 {
@@ -347,12 +315,12 @@ int mlx4_mr_hw_write_mpt(struct mlx4_dev *dev, struct mlx4_mr *mmr,
 	int err;
 
 	if (!mlx4_is_mfunc(dev)) {
-		/* Make sure any changes to this entry are flushed */
+		 
 		wmb();
 
 		*(u8 *)(*mpt_entry) = MLX4_MPT_STATUS_HW;
 
-		/* Make sure the new status is written */
+		 
 		wmb();
 
 		err = mlx4_SYNC_TPT(dev);
@@ -391,7 +359,7 @@ int mlx4_mr_hw_change_pd(struct mlx4_dev *dev, struct mlx4_mpt_entry *mpt_entry,
 			 u32 pdn)
 {
 	u32 pd_flags = be32_to_cpu(mpt_entry->pd_flags) & ~MLX4_MPT_PD_MASK;
-	/* The wrapper function will put the slave's id here */
+	 
 	if (mlx4_is_mfunc(dev))
 		pd_flags &= ~MLX4_MPT_PD_VF_MASK;
 
@@ -611,7 +579,7 @@ int mlx4_mr_rereg_mem_write(struct mlx4_dev *dev, struct mlx4_mr *mr,
 			mpt_entry->mtt_sz    = cpu_to_be32(1 << mr->mtt.order);
 	}
 	if (mr->mtt.order >= 0 && mr->mtt.page_shift == 0) {
-		/* fast register MR in free state */
+		 
 		mpt_entry->flags    |= cpu_to_be32(MLX4_MPT_FLAG_FREE);
 		mpt_entry->pd_flags |= cpu_to_be32(MLX4_MPT_PD_FLAG_FAST_REG |
 						   MLX4_MPT_PD_FLAG_RAE);
@@ -659,7 +627,7 @@ int mlx4_mr_enable(struct mlx4_dev *dev, struct mlx4_mr *mr)
 	}
 
 	if (mr->mtt.order >= 0 && mr->mtt.page_shift == 0) {
-		/* fast register MR in free state */
+		 
 		mpt_entry->flags    |= cpu_to_be32(MLX4_MPT_FLAG_FREE);
 		mpt_entry->pd_flags |= cpu_to_be32(MLX4_MPT_PD_FLAG_FAST_REG |
 						   MLX4_MPT_PD_FLAG_RAE);
@@ -723,7 +691,7 @@ int __mlx4_write_mtt(struct mlx4_dev *dev, struct mlx4_mtt *mtt,
 	int mtts_per_page;
 	int max_mtts_first_page;
 
-	/* compute how may mtts fit in the first page */
+	 
 	mtts_per_page = PAGE_SIZE / sizeof(u64);
 	max_mtts_first_page = mtts_per_page - (mtt->offset + start_index)
 			      % mtts_per_page;
@@ -852,9 +820,7 @@ int mlx4_mw_enable(struct mlx4_dev *dev, struct mlx4_mw *mw)
 	}
 	mpt_entry = mailbox->buf;
 
-	/* Note that the MLX4_MPT_FLAG_REGION bit in mpt_entry->flags is turned
-	 * off, thus creating a memory window and not a memory region.
-	 */
+	 
 	mpt_entry->key	       = cpu_to_be32(key_to_hw_index(mw->key));
 	mpt_entry->pd_flags    = cpu_to_be32(mw->pd);
 	if (mw->type == MLX4_MW_TYPE_2) {
@@ -910,8 +876,7 @@ int mlx4_init_mr_table(struct mlx4_dev *dev)
 	struct mlx4_mr_table *mr_table = &priv->mr_table;
 	int err;
 
-	/* Nothing to do for slaves - all MR handling is forwarded
-	* to the master */
+	 
 	if (mlx4_is_slave(dev))
 		return 0;
 

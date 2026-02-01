@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright © 2015 Broadcom Corporation
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/io.h>
@@ -79,17 +77,13 @@ static void iproc_nand_apb_access(struct brcmnand_soc *soc, bool prepare,
 
 	val = brcmnand_readl(mmio);
 
-	/*
-	 * In the case of BE or when dealing with NAND data, alway configure
-	 * the APB bus to LE mode before accessing the FIFO and back to BE mode
-	 * after the access is done
-	 */
+	 
 	if (IS_ENABLED(CONFIG_CPU_BIG_ENDIAN) || !is_param) {
 		if (prepare)
 			val |= IPROC_NAND_APB_LE_MODE;
 		else
 			val &= ~IPROC_NAND_APB_LE_MODE;
-	} else { /* when in LE accessing the parameter page, keep APB in BE */
+	} else {  
 		val &= ~IPROC_NAND_APB_LE_MODE;
 	}
 

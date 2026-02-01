@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2020 Intel Corporation
 
-/*
- *  sof_sdw_rt711_sdca - Helpers to handle RT711-SDCA from generic machine driver
- */
+
+
+ 
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -17,10 +15,7 @@
 #include <sound/jack.h>
 #include "sof_sdw_common.h"
 
-/*
- * Note this MUST be called before snd_soc_register_card(), so that the props
- * are in place before the codec component driver's probe function parses them.
- */
+ 
 static int rt_sdca_jack_add_codec_device_props(struct device *sdw_dev)
 {
 	struct property_entry props[MAX_NO_PROPS] = {};
@@ -183,10 +178,7 @@ int sof_sdw_rt_sdca_jack_init(struct snd_soc_card *card,
 	struct device *sdw_dev;
 	int ret;
 
-	/*
-	 * headset should be initialized once.
-	 * Do it with dai link for playback.
-	 */
+	 
 	if (!playback)
 		return 0;
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * TSC2004 touchscreen driver
- *
- * Copyright (C) 2015 QWERTY Embedded Design
- * Copyright (C) 2015 EMAC Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/input.h>
@@ -56,7 +51,7 @@ MODULE_DEVICE_TABLE(i2c, tsc2004_idtable);
 #ifdef CONFIG_OF
 static const struct of_device_id tsc2004_of_match[] = {
 	{ .compatible = "ti,tsc2004" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, tsc2004_of_match);
 #endif

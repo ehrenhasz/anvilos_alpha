@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -125,10 +123,7 @@ static int tegra_xusb_padctl_get_group_pins(struct pinctrl_dev *pinctrl,
 					    const unsigned **pins,
 					    unsigned *num_pins)
 {
-	/*
-	 * For the tegra-xusb pad controller groups are synonymous
-	 * with lanes/pins and there is always one lane/pin per group.
-	 */
+	 
 	*pins = &pinctrl->desc->pins[group].number;
 	*num_pins = 1;
 
@@ -341,7 +336,7 @@ static int tegra_xusb_padctl_pinconf_group_get(struct pinctrl_dev *pinctrl,
 
 	switch (param) {
 	case TEGRA_XUSB_PADCTL_IDDQ:
-		/* lanes with iddq == 0 don't support this parameter */
+		 
 		if (lane->iddq == 0)
 			return -EINVAL;
 
@@ -384,7 +379,7 @@ static int tegra_xusb_padctl_pinconf_group_set(struct pinctrl_dev *pinctrl,
 
 		switch (param) {
 		case TEGRA_XUSB_PADCTL_IDDQ:
-			/* lanes with iddq == 0 don't support this parameter */
+			 
 			if (lane->iddq == 0)
 				return -EINVAL;
 
@@ -868,7 +863,7 @@ static const struct of_device_id tegra_xusb_padctl_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, tegra_xusb_padctl_of_match);
 
-/* predeclare these in order to silence sparse */
+ 
 int tegra_xusb_padctl_legacy_probe(struct platform_device *pdev);
 int tegra_xusb_padctl_legacy_remove(struct platform_device *pdev);
 
@@ -887,12 +882,7 @@ int tegra_xusb_padctl_legacy_probe(struct platform_device *pdev)
 	mutex_init(&padctl->lock);
 	padctl->dev = &pdev->dev;
 
-	/*
-	 * Note that we can't replace this by of_device_get_match_data()
-	 * because we need the separate matching table for this legacy code on
-	 * Tegra124. of_device_get_match_data() would attempt to use the table
-	 * from the updated driver and fail.
-	 */
+	 
 	match = of_match_node(tegra_xusb_padctl_of_match, pdev->dev.of_node);
 	padctl->soc = match->data;
 

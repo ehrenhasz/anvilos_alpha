@@ -1,24 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "amdgpu.h"
 #include "amdgpu_amdkfd.h"
 #include "amdgpu_amdkfd_arcturus.h"
@@ -28,15 +8,7 @@
 #include "gc/gc_9_4_2_sh_mask.h"
 #include <uapi/linux/kfd_ioctl.h>
 
-/*
- * Returns TRAP_EN, EXCP_EN and EXCP_REPLACE.
- *
- * restore_dbg_registers is ignored here but is a general interface requirement
- * for devices that support GFXOFF and where the RLC save/restore list
- * does not support hw registers for debugging i.e. the driver has to manually
- * initialize the debug mode registers after it has disabled GFX off during the
- * debug session.
- */
+ 
 uint32_t kgd_aldebaran_enable_debug_trap(struct amdgpu_device *adev,
 					    bool restore_dbg_registers,
 					    uint32_t vmid)
@@ -50,7 +22,7 @@ uint32_t kgd_aldebaran_enable_debug_trap(struct amdgpu_device *adev,
 	return data;
 }
 
-/* returns TRAP_EN, EXCP_EN and EXCP_REPLACE. */
+ 
 static uint32_t kgd_aldebaran_disable_debug_trap(struct amdgpu_device *adev,
 						bool keep_trap_enabled,
 						uint32_t vmid)
@@ -85,7 +57,7 @@ static int kgd_aldebaran_validate_trap_override_request(struct amdgpu_device *ad
 	return 0;
 }
 
-/* returns TRAP_EN, EXCP_EN and EXCP_RPLACE. */
+ 
 static uint32_t kgd_aldebaran_set_wave_launch_trap_override(struct amdgpu_device *adev,
 					uint32_t vmid,
 					uint32_t trap_override,

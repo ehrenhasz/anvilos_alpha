@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ACPI support for platform bus type.
- *
- * Copyright (C) 2012, Intel Corporation
- * Authors: Mika Westerberg <mika.westerberg@linux.intel.com>
- *          Mathias Nyman <mathias.nyman@linux.intel.com>
- *          Rafael J. Wysocki <rafael.j.wysocki@intel.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bits.h>
@@ -20,16 +13,16 @@
 
 #include "internal.h"
 
-/* Exclude devices that have no _CRS resources provided */
+ 
 #define ACPI_ALLOW_WO_RESOURCES		BIT(0)
 
 static const struct acpi_device_id forbidden_id_list[] = {
-	{"ACPI0009", 0},	/* IOxAPIC */
-	{"ACPI000A", 0},	/* IOAPIC */
-	{"PNP0000",  0},	/* PIC */
-	{"PNP0100",  0},	/* Timer */
-	{"PNP0200",  0},	/* AT DMA Controller */
-	{ACPI_SMBUS_MS_HID,  ACPI_ALLOW_WO_RESOURCES},	/* ACPI SMBUS virtual device */
+	{"ACPI0009", 0},	 
+	{"ACPI000A", 0},	 
+	{"PNP0000",  0},	 
+	{"PNP0100",  0},	 
+	{"PNP0200",  0},	 
+	{ACPI_SMBUS_MS_HID,  ACPI_ALLOW_WO_RESOURCES},	 
 	{ }
 };
 
@@ -49,7 +42,7 @@ static int acpi_platform_device_remove_notify(struct notifier_block *nb,
 
 	switch (value) {
 	case ACPI_RECONFIG_DEVICE_ADD:
-		/* Nothing to do here */
+		 
 		break;
 	case ACPI_RECONFIG_DEVICE_REMOVE:
 		if (!acpi_device_enumerated(adev))
@@ -78,10 +71,7 @@ static void acpi_platform_fill_resource(struct acpi_device *adev,
 
 	*dest = *src;
 
-	/*
-	 * If the device has parent we need to take its resources into
-	 * account as well because this device might consume part of those.
-	 */
+	 
 	parent = acpi_get_first_physical_node(acpi_dev_parent(adev));
 	if (parent && dev_is_pci(parent))
 		dest->parent = pci_find_resource(to_pci_dev(parent), dest);
@@ -96,17 +86,7 @@ static unsigned int acpi_platform_resource_count(struct acpi_resource *ares, voi
 	return AE_CTRL_TERMINATE;
 }
 
-/**
- * acpi_create_platform_device - Create platform device for ACPI device node
- * @adev: ACPI device node to create a platform device for.
- * @properties: Optional collection of build-in properties.
- *
- * Check if the given @adev can be represented as a platform device and, if
- * that's the case, create and register a platform device, populate its common
- * resources and returns a pointer to it.  Otherwise, return %NULL.
- *
- * Name of the platform device will be the same as @adev's.
- */
+ 
 struct platform_device *acpi_create_platform_device(struct acpi_device *adev,
 						    const struct property_entry *properties)
 {
@@ -119,7 +99,7 @@ struct platform_device *acpi_create_platform_device(struct acpi_device *adev,
 	struct resource *resources = NULL;
 	int count;
 
-	/* If the ACPI node already has a physical device attached, skip it. */
+	 
 	if (adev->physical_node_count)
 		return NULL;
 
@@ -156,11 +136,7 @@ struct platform_device *acpi_create_platform_device(struct acpi_device *adev,
 	}
 
 	memset(&pdevinfo, 0, sizeof(pdevinfo));
-	/*
-	 * If the ACPI node has a parent and that parent has a physical device
-	 * attached to it, that physical device should be the parent of the
-	 * platform device we are about to create.
-	 */
+	 
 	pdevinfo.parent = parent ? acpi_get_first_physical_node(parent) : NULL;
 	pdevinfo.name = dev_name(&adev->dev);
 	pdevinfo.id = PLATFORM_DEVID_NONE;

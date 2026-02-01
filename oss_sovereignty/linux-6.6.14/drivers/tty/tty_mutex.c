@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/tty.h>
 #include <linux/module.h>
 #include <linux/kallsyms.h>
@@ -6,11 +6,9 @@
 #include <linux/sched.h>
 #include "tty.h"
 
-/* Legacy tty mutex glue */
+ 
 
-/*
- * Getting the big tty mutex.
- */
+ 
 
 void tty_lock(struct tty_struct *tty)
 {

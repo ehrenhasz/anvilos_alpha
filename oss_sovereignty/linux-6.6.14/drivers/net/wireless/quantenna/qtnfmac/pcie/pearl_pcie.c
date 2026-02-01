@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Copyright (c) 2018 Quantenna Communications */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/firmware.h>
@@ -44,8 +44,8 @@ struct qtnf_pearl_bda {
 	__le32 bda_rc_tx_bd_base;
 	__le32 bda_rc_tx_bd_num;
 	u8 bda_pcie_mac[QTN_ENET_ADDR_LENGTH];
-	struct qtnf_shm_ipc_region bda_shm_reg1 __aligned(4096); /* host TX */
-	struct qtnf_shm_ipc_region bda_shm_reg2 __aligned(4096); /* host RX */
+	struct qtnf_shm_ipc_region bda_shm_reg1 __aligned(4096);  
+	struct qtnf_shm_ipc_region bda_shm_reg2 __aligned(4096);  
 } __packed;
 
 struct qtnf_pearl_tx_bd {
@@ -76,7 +76,7 @@ struct qtnf_pearl_fw_hdr {
 struct qtnf_pcie_pearl_state {
 	struct qtnf_pcie_bus_priv base;
 
-	/* lock for irq configuration changes */
+	 
 	spinlock_t irq_lock;
 
 	struct qtnf_pearl_bda __iomem *bda;
@@ -243,7 +243,7 @@ static int pearl_alloc_bd_table(struct qtnf_pcie_pearl_state *ps)
 	if (!vaddr)
 		return -ENOMEM;
 
-	/* tx bd */
+	 
 
 	ps->bd_table_vaddr = vaddr;
 	ps->bd_table_paddr = paddr;
@@ -257,7 +257,7 @@ static int pearl_alloc_bd_table(struct qtnf_pcie_pearl_state *ps)
 	priv->tx_bd_r_index = 0;
 	priv->tx_bd_w_index = 0;
 
-	/* rx bd */
+	 
 
 	vaddr = ((struct qtnf_pearl_tx_bd *)vaddr) + priv->tx_bd_num;
 	paddr += priv->tx_bd_num * sizeof(struct qtnf_pearl_tx_bd);
@@ -302,14 +302,14 @@ static int pearl_skb2rbd_attach(struct qtnf_pcie_pearl_state *ps, u16 index)
 		return -ENOMEM;
 	}
 
-	/* keep rx skb paddrs in rx buffer descriptors for cleanup purposes */
+	 
 	rxbd->addr = cpu_to_le32(QTN_HOST_LO32(paddr));
 	rxbd->addr_h = cpu_to_le32(QTN_HOST_HI32(paddr));
 	rxbd->info = 0x0;
 
 	priv->rx_bd_w_index = index;
 
-	/* sync up all descriptor updates */
+	 
 	wmb();
 
 #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
@@ -340,7 +340,7 @@ static int pearl_alloc_rx_buffers(struct qtnf_pcie_pearl_state *ps)
 	return ret;
 }
 
-/* all rx/tx activity should have ceased before calling this function */
+ 
 static void qtnf_pearl_free_xfer_buffers(struct qtnf_pcie_pearl_state *ps)
 {
 	struct qtnf_pcie_bus_priv *priv = &ps->base;
@@ -350,7 +350,7 @@ static void qtnf_pearl_free_xfer_buffers(struct qtnf_pcie_pearl_state *ps)
 	dma_addr_t paddr;
 	int i;
 
-	/* free rx buffers */
+	 
 	for (i = 0; i < priv->rx_bd_num; i++) {
 		if (priv->rx_skb && priv->rx_skb[i]) {
 			rxbd = &ps->rx_bd_vbase[i];
@@ -364,7 +364,7 @@ static void qtnf_pearl_free_xfer_buffers(struct qtnf_pcie_pearl_state *ps)
 		}
 	}
 
-	/* free tx buffers */
+	 
 	for (i = 0; i < priv->tx_bd_num; i++) {
 		if (priv->tx_skb && priv->tx_skb[i]) {
 			txbd = &ps->tx_bd_vbase[i];
@@ -574,10 +574,10 @@ static int qtnf_pcie_skb_send(struct qtnf_bus *bus, struct sk_buff *skb)
 	info = (len & QTN_PCIE_TX_DESC_LEN_MASK) << QTN_PCIE_TX_DESC_LEN_SHIFT;
 	txbd->info = cpu_to_le32(info);
 
-	/* sync up all descriptor updates before passing them to EP */
+	 
 	dma_wmb();
 
-	/* write new TX descriptor to PCIE_RX_FIFO on EP */
+	 
 	txbd_paddr = ps->tx_bd_pbase + i * sizeof(struct qtnf_pearl_tx_bd);
 
 #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
@@ -676,7 +676,7 @@ static irqreturn_t qtnf_pcie_pearl_interrupt(int irq, void *data)
 	}
 
 irq_done:
-	/* H/W workaround: clean all bits, not only enabled */
+	 
 	qtnf_non_posted_write(~0U, PCIE_HDP_INT_STATUS(ps->pcie_reg_base));
 
 	if (!priv->msi_enabled)
@@ -777,7 +777,7 @@ static int qtnf_pcie_pearl_rx_poll(struct napi_struct *napi, int budget)
 
 		priv->rx_bd_r_index = r_idx;
 
-		/* repalce processed buffer by a new one */
+		 
 		w_idx = priv->rx_bd_w_index;
 		while (CIRC_SPACE(priv->rx_bd_w_index, priv->rx_bd_r_index,
 				  priv->rx_bd_num) > 0) {
@@ -837,10 +837,10 @@ static void qtnf_pearl_tx_use_meta_info_set(struct qtnf_bus *bus, bool use_meta)
 }
 
 static struct qtnf_bus_ops qtnf_pcie_pearl_bus_ops = {
-	/* control path methods */
+	 
 	.control_tx	= qtnf_pcie_control_tx,
 
-	/* data path methods */
+	 
 	.data_tx		= qtnf_pcie_data_tx,
 	.data_tx_timeout	= qtnf_pcie_data_tx_timeout,
 	.data_tx_use_meta_set	= qtnf_pearl_tx_use_meta_info_set,
@@ -1130,10 +1130,10 @@ static int qtnf_pcie_pearl_probe(struct qtnf_bus *bus, unsigned int tx_bd_size,
 		return ret;
 	}
 
-	/* init default irq settings */
+	 
 	qtnf_init_hdp_irqs(ps);
 
-	/* start with disabled irqs */
+	 
 	qtnf_disable_hdp_irqs(ps);
 
 	ret = devm_request_irq(&pdev->dev, pdev->irq,

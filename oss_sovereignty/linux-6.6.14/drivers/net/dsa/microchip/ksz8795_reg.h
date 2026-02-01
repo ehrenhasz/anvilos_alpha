@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Microchip KSZ8795 register definitions
- *
- * Copyright (c) 2017 Microchip Technology Inc.
- *	Tristram Ha <Tristram.Ha@microchip.com>
- */
+ 
+ 
 
 #ifndef __KSZ8795_REG_H
 #define __KSZ8795_REG_H
@@ -192,7 +187,7 @@
 #define REG_PORT_3_STATUS_0		0x38
 #define REG_PORT_4_STATUS_0		0x48
 
-/* For KSZ8765. */
+ 
 #define PORT_REMOTE_ASYM_PAUSE		BIT(5)
 #define PORT_REMOTE_SYM_PAUSE		BIT(4)
 #define PORT_REMOTE_100BTX_FD		BIT(3)
@@ -601,11 +596,11 @@
 #define REG_PORT_4_OUT_RATE_3		0xEE
 #define REG_PORT_5_OUT_RATE_3		0xFE
 
-/* 88x3 specific */
+ 
 
 #define REG_SW_INSERT_SRC_PVID		0xC2
 
-/* PME */
+ 
 
 #define SW_PME_OUTPUT_ENABLE		BIT(1)
 #define SW_PME_ACTIVE_HIGH		BIT(0)
@@ -614,7 +609,7 @@
 #define PORT_LINK_UP_DETECT		BIT(1)
 #define PORT_ENERGY_DETECT		BIT(0)
 
-/* ACL */
+ 
 
 #define ACL_FIRST_RULE_M		0xF
 
@@ -746,7 +741,7 @@
 #define PHY_POWER_SAVING_ENABLE		BIT(2)
 #define PHY_REMOTE_LOOPBACK		BIT(1)
 
-/* Chip resource */
+ 
 
 #define PRIO_QUEUES			4
 
@@ -754,7 +749,7 @@
 
 #define MIB_COUNTER_NUM		0x20
 
-/* Common names used by other drivers */
+ 
 
 #define P_BCAST_STORM_CTRL		REG_PORT_CTRL_0
 #define P_PRIO_CTRL			REG_PORT_CTRL_0
@@ -781,17 +776,11 @@
 
 #define IND_ACC_TABLE(table)		((table) << 8)
 
-/* */
+ 
 #define REG_IND_EEE_GLOB2_LO		0x34
 #define REG_IND_EEE_GLOB2_HI		0x35
 
-/**
- * MIB_COUNTER_VALUE			00-00000000-3FFFFFFF
- * MIB_TOTAL_BYTES			00-0000000F-FFFFFFFF
- * MIB_PACKET_DROPPED			00-00000000-0000FFFF
- * MIB_COUNTER_VALID			00-00000020-00000000
- * MIB_COUNTER_OVERFLOW			00-00000040-00000000
- */
+ 
 
 #define MIB_COUNTER_VALUE		0x3FFFFFFF
 

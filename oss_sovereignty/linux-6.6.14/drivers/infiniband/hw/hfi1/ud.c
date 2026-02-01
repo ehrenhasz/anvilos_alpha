@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
-/*
- * Copyright(c) 2015 - 2019 Intel Corporation.
- */
+
+ 
 
 #include <linux/net.h>
 #include <rdma/ib_smi.h>
@@ -12,22 +10,13 @@
 #include "trace_ibhdrs.h"
 #include "qp.h"
 
-/* We support only two types - 9B and 16B for now */
+ 
 static const hfi1_make_req hfi1_make_ud_req_tbl[2] = {
 	[HFI1_PKT_TYPE_9B] = &hfi1_make_ud_req_9B,
 	[HFI1_PKT_TYPE_16B] = &hfi1_make_ud_req_16B
 };
 
-/**
- * ud_loopback - handle send on loopback QPs
- * @sqp: the sending QP
- * @swqe: the send work request
- *
- * This is called from hfi1_make_ud_req() to forward a WQE addressed
- * to the same HFI.
- * Note that the receive interrupt handler may be calling hfi1_ud_rcv()
- * while this is being called.
- */
+ 
 static void ud_loopback(struct rvt_qp *sqp, struct rvt_swqe *swqe)
 {
 	struct hfi1_ibport *ibp = to_iport(sqp->ibqp.device, sqp->port_num);
@@ -85,24 +74,17 @@ static void ud_loopback(struct rvt_qp *sqp, struct rvt_swqe *swqe)
 		}
 	}
 
-	/*
-	 * Check that the qkey matches (except for QP0, see 9.6.1.4.1).
-	 * Qkeys with the high order bit set mean use the
-	 * qkey from the QP context instead of the WR (see 10.2.5).
-	 */
+	 
 	if (qp->ibqp.qp_num) {
 		u32 qkey;
 
 		qkey = (int)rvt_get_swqe_remote_qkey(swqe) < 0 ?
 			sqp->qkey : rvt_get_swqe_remote_qkey(swqe);
 		if (unlikely(qkey != qp->qkey))
-			goto drop; /* silently drop per IBTA spec */
+			goto drop;  
 	}
 
-	/*
-	 * A GRH is expected to precede the data even if not
-	 * present on the wire.
-	 */
+	 
 	length = swqe->length;
 	memset(&wc, 0, sizeof(wc));
 	wc.byte_len = length + sizeof(struct ib_grh);
@@ -114,9 +96,7 @@ static void ud_loopback(struct rvt_qp *sqp, struct rvt_swqe *swqe)
 
 	spin_lock_irqsave(&qp->r_lock, flags);
 
-	/*
-	 * Get the next work request entry to find where to put the data.
-	 */
+	 
 	if (qp->r_flags & RVT_R_REUSE_SGE) {
 		qp->r_flags &= ~RVT_R_REUSE_SGE;
 	} else {
@@ -133,7 +113,7 @@ static void ud_loopback(struct rvt_qp *sqp, struct rvt_swqe *swqe)
 			goto bail_unlock;
 		}
 	}
-	/* Silently drop packets which are too big. */
+	 
 	if (unlikely(wc.byte_len > qp->r_len)) {
 		qp->r_flags |= RVT_R_REUSE_SGE;
 		ibp->rvp.n_pkt_drops++;
@@ -144,21 +124,7 @@ static void ud_loopback(struct rvt_qp *sqp, struct rvt_swqe *swqe)
 		struct ib_grh grh;
 		struct ib_global_route grd = *(rdma_ah_read_grh(ah_attr));
 
-		/*
-		 * For loopback packets with extended LIDs, the
-		 * sgid_index in the GRH is 0 and the dgid is
-		 * OPA GID of the sender. While creating a response
-		 * to the loopback packet, IB core creates the new
-		 * sgid_index from the DGID and that will be the
-		 * OPA_GID_INDEX. The new dgid is from the sgid
-		 * index and that will be in the IB GID format.
-		 *
-		 * We now have a case where the sent packet had a
-		 * different sgid_index and dgid compared to the
-		 * one that was received in response.
-		 *
-		 * Fix this inconsistency.
-		 */
+		 
 		if (priv->hdr_type == HFI1_PKT_TYPE_16B) {
 			if (grd.sgid_index == 0)
 				grd.sgid_index = OPA_GID_INDEX;
@@ -206,13 +172,13 @@ static void ud_loopback(struct rvt_qp *sqp, struct rvt_swqe *swqe)
 	}
 	wc.slid = (ppd->lid | (rdma_ah_get_path_bits(ah_attr) &
 				   ((1 << ppd->lmc) - 1))) & U16_MAX;
-	/* Check for loopback when the port lid is not set */
+	 
 	if (wc.slid == 0 && sqp->ibqp.qp_type == IB_QPT_GSI)
 		wc.slid = be16_to_cpu(IB_LID_PERMISSIVE);
 	wc.sl = rdma_ah_get_sl(ah_attr);
 	wc.dlid_path_bits = rdma_ah_get_dlid(ah_attr) & ((1 << ppd->lmc) - 1);
 	wc.port_num = qp->port_num;
-	/* Signal completion event if the solicited bit is set. */
+	 
 	rvt_recv_cq(qp, &wc, swqe->wr.send_flags & IB_SEND_SOLICITED);
 	ibp->rvp.n_loop_pkts++;
 bail_unlock:
@@ -248,10 +214,7 @@ static void hfi1_make_bth_deth(struct rvt_qp *qp, struct rvt_swqe *wqe,
 	ohdr->bth[0] = cpu_to_be32(bth0);
 	ohdr->bth[1] = cpu_to_be32(rvt_get_swqe_remote_qpn(wqe));
 	ohdr->bth[2] = cpu_to_be32(mask_psn(wqe->psn));
-	/*
-	 * Qkeys with the high order bit set mean use the
-	 * qkey from the QP context instead of the WR (see 10.2.5).
-	 */
+	 
 	ohdr->u.ud.deth[0] =
 		cpu_to_be32((int)rvt_get_swqe_remote_qkey(wqe) < 0 ? qp->qkey :
 			    rvt_get_swqe_remote_qkey(wqe));
@@ -278,7 +241,7 @@ void hfi1_make_ud_req_9B(struct rvt_qp *qp, struct hfi1_pkt_state *ps,
 
 	extra_bytes = -wqe->length & 3;
 	nwords = ((wqe->length + extra_bytes) >> 2) + SIZE_OF_CRC;
-	/* header size in dwords LRH+BTH+DETH = (8+12+8)/4. */
+	 
 	ps->s_txreq->hdr_dwords = 7;
 	if (wqe->wr.opcode == IB_WR_SEND_WITH_IMM)
 		ps->s_txreq->hdr_dwords++;
@@ -299,7 +262,7 @@ void hfi1_make_ud_req_9B(struct rvt_qp *qp, struct hfi1_pkt_state *ps,
 	sc5 = ibp->sl_to_sc[rdma_ah_get_sl(ah_attr)];
 	lrh0 |= (rdma_ah_get_sl(ah_attr) & 0xf) << 4;
 	if (qp->ibqp.qp_type == IB_QPT_SMI) {
-		lrh0 |= 0xF000; /* Set VL (see ch. 13.5.3.1) */
+		lrh0 |= 0xF000;  
 		priv->s_sc = 0xf;
 	} else {
 		lrh0 |= (sc5 & 0xf) << 12;
@@ -323,7 +286,7 @@ void hfi1_make_ud_req_9B(struct rvt_qp *qp, struct hfi1_pkt_state *ps,
 	hfi1_make_bth_deth(qp, wqe, ohdr, &pkey, extra_bytes, false);
 	len = ps->s_txreq->hdr_dwords + nwords;
 
-	/* Setup the packet */
+	 
 	ps->s_txreq->phdr.hdr.hdr_type = HFI1_PKT_TYPE_9B;
 	hfi1_make_ib_hdr(&ps->s_txreq->phdr.hdr.ibh,
 			 lrh0, len, dlid, slid);
@@ -348,22 +311,19 @@ void hfi1_make_ud_req_16B(struct rvt_qp *qp, struct hfi1_pkt_state *ps,
 	ppd = ppd_from_ibp(ibp);
 	ah_attr = rvt_get_swqe_ah_attr(wqe);
 
-	/*
-	 * Build 16B Management Packet if either the destination
-	 * or source queue pair number is 0 or 1.
-	 */
+	 
 	if (dest_qp == 0 || src_qp == 0 || dest_qp == 1 || src_qp == 1) {
-		/* header size in dwords 16B LRH+L4_FM = (16+8)/4. */
+		 
 		ps->s_txreq->hdr_dwords = 6;
 		is_mgmt = true;
 	} else {
-		/* header size in dwords 16B LRH+BTH+DETH = (16+12+8)/4. */
+		 
 		ps->s_txreq->hdr_dwords = 9;
 		if (wqe->wr.opcode == IB_WR_SEND_WITH_IMM)
 			ps->s_txreq->hdr_dwords++;
 	}
 
-	/* SW provides space for CRC and LT for bypass packets. */
+	 
 	extra_bytes = hfi1_get_16b_padding((ps->s_txreq->hdr_dwords << 2),
 					   wqe->length);
 	nwords = ((wqe->length + extra_bytes + SIZE_OF_LT) >> 2) + SIZE_OF_CRC;
@@ -372,10 +332,7 @@ void hfi1_make_ud_req_16B(struct rvt_qp *qp, struct hfi1_pkt_state *ps,
 	    hfi1_check_mcast(rdma_ah_get_dlid(ah_attr))) {
 		struct ib_grh *grh;
 		struct ib_global_route *grd = rdma_ah_retrieve_grh(ah_attr);
-		/*
-		 * Ensure OPA GIDs are transformed to IB gids
-		 * before creating the GRH.
-		 */
+		 
 		if (grd->sgid_index == OPA_GID_INDEX) {
 			dd_dev_warn(ppd->dd, "Bad sgid_index. sgid_index: %d\n",
 				    grd->sgid_index);
@@ -414,24 +371,16 @@ void hfi1_make_ud_req_16B(struct rvt_qp *qp, struct hfi1_pkt_state *ps,
 	} else {
 		hfi1_make_bth_deth(qp, wqe, ohdr, &pkey, extra_bytes, true);
 	}
-	/* Convert dwords to flits */
+	 
 	len = (ps->s_txreq->hdr_dwords + nwords) >> 1;
 
-	/* Setup the packet */
+	 
 	ps->s_txreq->phdr.hdr.hdr_type = HFI1_PKT_TYPE_16B;
 	hfi1_make_16b_hdr(&ps->s_txreq->phdr.hdr.opah,
 			  slid, dlid, len, pkey, 0, 0, l4, priv->s_sc);
 }
 
-/**
- * hfi1_make_ud_req - construct a UD request packet
- * @qp: the QP
- * @ps: the current packet state
- *
- * Assume s_lock is held.
- *
- * Return 1 if constructed; otherwise, return 0.
- */
+ 
 int hfi1_make_ud_req(struct rvt_qp *qp, struct hfi1_pkt_state *ps)
 {
 	struct hfi1_qp_priv *priv = qp->priv;
@@ -449,10 +398,10 @@ int hfi1_make_ud_req(struct rvt_qp *qp, struct hfi1_pkt_state *ps)
 	if (!(ib_rvt_state_ops[qp->state] & RVT_PROCESS_NEXT_SEND_OK)) {
 		if (!(ib_rvt_state_ops[qp->state] & RVT_FLUSH_SEND))
 			goto bail;
-		/* We are in the error state, flush the work request. */
+		 
 		if (qp->s_last == READ_ONCE(qp->s_head))
 			goto bail;
-		/* If DMAs are in progress, we can't flush immediately. */
+		 
 		if (iowait_sdma_pending(&priv->s_iowait)) {
 			qp->s_flags |= RVT_S_WAIT_DMA;
 			goto bail;
@@ -462,7 +411,7 @@ int hfi1_make_ud_req(struct rvt_qp *qp, struct hfi1_pkt_state *ps)
 		goto done_free_tx;
 	}
 
-	/* see post_one_send() */
+	 
 	if (qp->s_cur == READ_ONCE(qp->s_head))
 		goto bail;
 
@@ -471,7 +420,7 @@ int hfi1_make_ud_req(struct rvt_qp *qp, struct hfi1_pkt_state *ps)
 	if (next_cur >= qp->s_size)
 		next_cur = 0;
 
-	/* Construct the header. */
+	 
 	ibp = to_iport(qp->ibqp.device, qp->port_num);
 	ppd = ppd_from_ibp(ibp);
 	ah_attr = rvt_get_swqe_ah_attr(wqe);
@@ -484,13 +433,7 @@ int hfi1_make_ud_req(struct rvt_qp *qp, struct hfi1_pkt_state *ps)
 			      ((lid == be32_to_cpu(OPA_LID_PERMISSIVE)) &&
 			       (qp->ibqp.qp_type == IB_QPT_GSI))))) {
 			unsigned long tflags = ps->flags;
-			/*
-			 * If DMAs are in progress, we can't generate
-			 * a completion for the loopback packet since
-			 * it would be out of order.
-			 * Instead of waiting, we could queue a
-			 * zero length descriptor so we get a callback.
-			 */
+			 
 			if (iowait_sdma_pending(&priv->s_iowait)) {
 				qp->s_flags |= RVT_S_WAIT_DMA;
 				goto bail;
@@ -516,13 +459,13 @@ int hfi1_make_ud_req(struct rvt_qp *qp, struct hfi1_pkt_state *ps)
 	qp->s_sge.num_sge = wqe->wr.num_sge;
 	qp->s_sge.total_len = wqe->length;
 
-	/* Make the appropriate header */
+	 
 	hfi1_make_ud_req_tbl[priv->hdr_type](qp, ps, qp->s_wqe);
 	priv->s_sde = qp_to_sdma_engine(qp, priv->s_sc);
 	ps->s_txreq->sde = priv->s_sde;
 	priv->s_sendcontext = qp_to_send_context(qp, priv->s_sc);
 	ps->s_txreq->psc = priv->s_sendcontext;
-	/* disarm any ahg */
+	 
 	priv->s_ahg->ahgcount = 0;
 	priv->s_ahg->ahgidx = 0;
 	priv->s_ahg->tx_flags = 0;
@@ -543,15 +486,7 @@ bail_no_tx:
 	return 0;
 }
 
-/*
- * Hardware can't check this so we do it here.
- *
- * This is a slightly different algorithm than the standard pkey check.  It
- * special cases the management keys and allows for 0x7fff and 0xffff to be in
- * the table at the same time.
- *
- * @returns the index found or -1 if not found
- */
+ 
 int hfi1_lookup_pkey_idx(struct hfi1_ibport *ibp, u16 pkey)
 {
 	struct hfi1_pportdata *ppd = ppd_from_ibp(ibp);
@@ -561,30 +496,28 @@ int hfi1_lookup_pkey_idx(struct hfi1_ibport *ibp, u16 pkey)
 		unsigned lim_idx = -1;
 
 		for (i = 0; i < ARRAY_SIZE(ppd->pkeys); ++i) {
-			/* here we look for an exact match */
+			 
 			if (ppd->pkeys[i] == pkey)
 				return i;
 			if (ppd->pkeys[i] == LIM_MGMT_P_KEY)
 				lim_idx = i;
 		}
 
-		/* did not find 0xffff return 0x7fff idx if found */
+		 
 		if (pkey == FULL_MGMT_P_KEY)
 			return lim_idx;
 
-		/* no match...  */
+		 
 		return -1;
 	}
 
-	pkey &= 0x7fff; /* remove limited/full membership bit */
+	pkey &= 0x7fff;  
 
 	for (i = 0; i < ARRAY_SIZE(ppd->pkeys); ++i)
 		if ((ppd->pkeys[i] & 0x7fff) == pkey)
 			return i;
 
-	/*
-	 * Should not get here, this means hardware failed to validate pkeys.
-	 */
+	 
 	return -1;
 }
 
@@ -604,7 +537,7 @@ void return_cnp_16B(struct hfi1_ibport *ibp, struct rvt_qp *qp,
 	u32 nwords;
 
 	hdr.hdr_type = HFI1_PKT_TYPE_16B;
-	/* Populate length */
+	 
 	nwords = ((hfi1_get_16b_padding(hwords << 2, 0) +
 		   SIZE_OF_LT) >> 2) + SIZE_OF_CRC;
 	if (old_grh) {
@@ -624,19 +557,19 @@ void return_cnp_16B(struct hfi1_ibport *ibp, struct rvt_qp *qp,
 		l4 = OPA_16B_L4_IB_LOCAL;
 	}
 
-	/* BIT 16 to 19 is TVER. Bit 20 to 22 is pad cnt */
+	 
 	bth0 = (IB_OPCODE_CNP << 24) | (1 << 16) |
 	       (hfi1_get_16b_padding(hwords << 2, 0) << 20);
 	ohdr->bth[0] = cpu_to_be32(bth0);
 
 	ohdr->bth[1] = cpu_to_be32(remote_qpn);
-	ohdr->bth[2] = 0; /* PSN 0 */
+	ohdr->bth[2] = 0;  
 
-	/* Convert dwords to flits */
+	 
 	len = (hwords + nwords) >> 1;
 	hfi1_make_16b_hdr(&hdr.opah, slid, dlid, len, pkey, 1, 0, l4, sc5);
 
-	plen = 2 /* PBC */ + hwords + nwords;
+	plen = 2   + hwords + nwords;
 	pbc_flags |= PBC_PACKET_BYPASS | PBC_INSERT_BYPASS_ICRC;
 	vl = sc_to_vlt(ppd->dd, sc5);
 	pbc = create_pbc(ppd, pbc_flags, qp->srate_mbps, vl, plen);
@@ -688,10 +621,10 @@ void return_cnp(struct hfi1_ibport *ibp, struct rvt_qp *qp, u32 remote_qpn,
 	ohdr->bth[0] = cpu_to_be32(bth0);
 
 	ohdr->bth[1] = cpu_to_be32(remote_qpn | (1 << IB_BECN_SHIFT));
-	ohdr->bth[2] = 0; /* PSN 0 */
+	ohdr->bth[2] = 0;  
 
 	hfi1_make_ib_hdr(&hdr.ibh, lrh0, hwords + SIZE_OF_CRC, dlid, slid);
-	plen = 2 /* PBC */ + hwords;
+	plen = 2   + hwords;
 	pbc_flags |= (ib_is_sc5(sc5) << PBC_DC_INFO_SHIFT);
 	vl = sc_to_vlt(ppd->dd, sc5);
 	pbc = create_pbc(ppd, pbc_flags, qp->srate_mbps, vl, plen);
@@ -705,70 +638,27 @@ void return_cnp(struct hfi1_ibport *ibp, struct rvt_qp *qp, u32 remote_qpn,
 	}
 }
 
-/*
- * opa_smp_check() - Do the regular pkey checking, and the additional
- * checks for SMPs specified in OPAv1 rev 1.0, 9/19/2016 update, section
- * 9.10.25 ("SMA Packet Checks").
- *
- * Note that:
- *   - Checks are done using the pkey directly from the packet's BTH,
- *     and specifically _not_ the pkey that we attach to the completion,
- *     which may be different.
- *   - These checks are specifically for "non-local" SMPs (i.e., SMPs
- *     which originated on another node). SMPs which are sent from, and
- *     destined to this node are checked in opa_local_smp_check().
- *
- * At the point where opa_smp_check() is called, we know:
- *   - destination QP is QP0
- *
- * opa_smp_check() returns 0 if all checks succeed, 1 otherwise.
- */
+ 
 static int opa_smp_check(struct hfi1_ibport *ibp, u16 pkey, u8 sc5,
 			 struct rvt_qp *qp, u16 slid, struct opa_smp *smp)
 {
 	struct hfi1_pportdata *ppd = ppd_from_ibp(ibp);
 
-	/*
-	 * I don't think it's possible for us to get here with sc != 0xf,
-	 * but check it to be certain.
-	 */
+	 
 	if (sc5 != 0xf)
 		return 1;
 
 	if (rcv_pkey_check(ppd, pkey, sc5, slid))
 		return 1;
 
-	/*
-	 * At this point we know (and so don't need to check again) that
-	 * the pkey is either LIM_MGMT_P_KEY, or FULL_MGMT_P_KEY
-	 * (see ingress_pkey_check).
-	 */
+	 
 	if (smp->mgmt_class != IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE &&
 	    smp->mgmt_class != IB_MGMT_CLASS_SUBN_LID_ROUTED) {
 		ingress_pkey_table_fail(ppd, pkey, slid);
 		return 1;
 	}
 
-	/*
-	 * SMPs fall into one of four (disjoint) categories:
-	 * SMA request, SMA response, SMA trap, or SMA trap repress.
-	 * Our response depends, in part, on which type of SMP we're
-	 * processing.
-	 *
-	 * If this is an SMA response, skip the check here.
-	 *
-	 * If this is an SMA request or SMA trap repress:
-	 *   - pkey != FULL_MGMT_P_KEY =>
-	 *       increment port recv constraint errors, drop MAD
-	 *
-	 * Otherwise:
-	 *    - accept if the port is running an SM
-	 *    - drop MAD if it's an SMA trap
-	 *    - pkey == FULL_MGMT_P_KEY =>
-	 *        reply with unsupported method
-	 *    - pkey != FULL_MGMT_P_KEY =>
-	 *	  increment port recv constraint errors, drop MAD
-	 */
+	 
 	switch (smp->method) {
 	case IB_MGMT_METHOD_GET_RESP:
 	case IB_MGMT_METHOD_REPORT_RESP:
@@ -797,14 +687,7 @@ static int opa_smp_check(struct hfi1_ibport *ibp, u16 pkey, u8 sc5,
 	return 0;
 }
 
-/**
- * hfi1_ud_rcv - receive an incoming UD packet
- * @packet: the packet structure
- *
- * This is called from qp_rcv() to process an incoming UD packet
- * for the given QP.
- * Called at interrupt level.
- */
+ 
 void hfi1_ud_rcv(struct hfi1_packet *packet)
 {
 	u32 hdrsize = packet->hlen;
@@ -854,30 +737,19 @@ void hfi1_ud_rcv(struct hfi1_packet *packet)
 	}
 
 	process_ecn(qp, packet);
-	/*
-	 * Get the number of bytes the message was padded by
-	 * and drop incomplete packets.
-	 */
+	 
 	if (unlikely(tlen < (hdrsize + extra_bytes)))
 		goto drop;
 
 	tlen -= hdrsize + extra_bytes;
 
-	/*
-	 * Check that the permissive LID is only used on QP0
-	 * and the QKEY matches (see 9.6.1.4.1 and 9.6.1.5.1).
-	 */
+	 
 	if (qp->ibqp.qp_num) {
 		if (unlikely(dlid_is_permissive || slid_is_permissive))
 			goto drop;
 		if (qp->ibqp.qp_num > 1) {
 			if (unlikely(rcv_pkey_check(ppd, pkey, sc5, slid))) {
-				/*
-				 * Traps will not be sent for packets dropped
-				 * by the HW. This is fine, as sending trap
-				 * for invalid pkeys is optional according to
-				 * IB spec (release 1.3, section 10.9.4)
-				 */
+				 
 				hfi1_bad_pkey(ibp,
 					      pkey, sl,
 					      src_qp, qp->ibqp.qp_num,
@@ -885,21 +757,21 @@ void hfi1_ud_rcv(struct hfi1_packet *packet)
 				return;
 			}
 		} else {
-			/* GSI packet */
+			 
 			mgmt_pkey_idx = hfi1_lookup_pkey_idx(ibp, pkey);
 			if (mgmt_pkey_idx < 0)
 				goto drop;
 		}
 		if (unlikely(l4 != OPA_16B_L4_FM &&
 			     ib_get_qkey(packet->ohdr) != qp->qkey))
-			return; /* Silent drop */
+			return;  
 
-		/* Drop invalid MAD packets (see 13.5.3.1). */
+		 
 		if (unlikely(qp->ibqp.qp_num == 1 &&
 			     (tlen > 2048 || (sc5 == 0xF))))
 			goto drop;
 	} else {
-		/* Received on QP0, and so by definition, this is an SMP */
+		 
 		struct opa_smp *smp = (struct opa_smp *)data;
 
 		if (opa_smp_check(ibp, pkey, sc5, qp, slid, smp))
@@ -911,7 +783,7 @@ void hfi1_ud_rcv(struct hfi1_packet *packet)
 		    smp->mgmt_class != IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE)
 			goto drop;
 
-		/* look up SMI pkey */
+		 
 		mgmt_pkey_idx = hfi1_lookup_pkey_idx(ibp, pkey);
 		if (mgmt_pkey_idx < 0)
 			goto drop;
@@ -928,15 +800,10 @@ void hfi1_ud_rcv(struct hfi1_packet *packet)
 		goto drop;
 	}
 
-	/*
-	 * A GRH is expected to precede the data even if not
-	 * present on the wire.
-	 */
+	 
 	wc.byte_len = tlen + sizeof(struct ib_grh);
 
-	/*
-	 * Get the next work request entry to find where to put the data.
-	 */
+	 
 	if (qp->r_flags & RVT_R_REUSE_SGE) {
 		qp->r_flags &= ~RVT_R_REUSE_SGE;
 	} else {
@@ -953,7 +820,7 @@ void hfi1_ud_rcv(struct hfi1_packet *packet)
 			return;
 		}
 	}
-	/* Silently drop packets which are too big. */
+	 
 	if (unlikely(wc.byte_len > qp->r_len)) {
 		qp->r_flags |= RVT_R_REUSE_SGE;
 		goto drop;
@@ -964,11 +831,7 @@ void hfi1_ud_rcv(struct hfi1_packet *packet)
 		wc.wc_flags |= IB_WC_GRH;
 	} else if (packet->etype == RHF_RCV_TYPE_BYPASS) {
 		struct ib_grh grh;
-		/*
-		 * Assuming we only created 16B on the send side
-		 * if we want to use large LIDs, since GRH was stripped
-		 * out when creating 16B, add back the GRH here.
-		 */
+		 
 		hfi1_make_ext_grh(packet, &grh, slid, dlid);
 		rvt_copy_sge(qp, &qp->r_sge, &grh,
 			     sizeof(struct ib_grh), true, false);
@@ -1008,13 +871,11 @@ void hfi1_ud_rcv(struct hfi1_packet *packet)
 	wc.slid = slid & U16_MAX;
 	wc.sl = sl_from_sc;
 
-	/*
-	 * Save the LMC lower bits if the destination LID is a unicast LID.
-	 */
+	 
 	wc.dlid_path_bits = hfi1_check_mcast(dlid) ? 0 :
 		dlid & ((1 << ppd_from_ibp(ibp)->lmc) - 1);
 	wc.port_num = qp->port_num;
-	/* Signal completion event if the solicited bit is set. */
+	 
 	rvt_recv_cq(qp, &wc, solicited);
 	return;
 

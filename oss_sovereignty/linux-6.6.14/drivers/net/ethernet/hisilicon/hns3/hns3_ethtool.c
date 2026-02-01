@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright (c) 2016-2017 Hisilicon Limited.
+
+
 
 #include <linux/etherdevice.h>
 #include <linux/string.h>
@@ -9,7 +9,7 @@
 #include "hns3_enet.h"
 #include "hns3_ethtool.h"
 
-/* tqp related stats */
+ 
 #define HNS3_TQP_STAT(_string, _member)	{			\
 	.stats_string = _string,				\
 	.stats_offset = offsetof(struct hns3_enet_ring, stats) +\
@@ -17,7 +17,7 @@
 }
 
 static const struct hns3_stats hns3_txq_stats[] = {
-	/* Tx per-queue statistics */
+	 
 	HNS3_TQP_STAT("dropped", sw_err_cnt),
 	HNS3_TQP_STAT("seg_pkt_cnt", seg_pkt_cnt),
 	HNS3_TQP_STAT("packets", tx_pkts),
@@ -45,7 +45,7 @@ static const struct hns3_stats hns3_txq_stats[] = {
 #define HNS3_TXQ_STATS_COUNT ARRAY_SIZE(hns3_txq_stats)
 
 static const struct hns3_stats hns3_rxq_stats[] = {
-	/* Rx per-queue statistics */
+	 
 	HNS3_TQP_STAT("dropped", sw_err_cnt),
 	HNS3_TQP_STAT("seg_pkt_cnt", seg_pkt_cnt),
 	HNS3_TQP_STAT("packets", rx_pkts),
@@ -74,7 +74,7 @@ static const struct hns3_stats hns3_rxq_stats[] = {
 #define HNS3_NIC_LB_TEST_PACKET_SIZE	128
 #define HNS3_NIC_LB_SETUP_USEC		10000
 
-/* Nic loopback test err  */
+ 
 #define HNS3_NIC_LB_TEST_NO_MEM_ERR	1
 #define HNS3_NIC_LB_TEST_TX_CNT_ERR	2
 #define HNS3_NIC_LB_TEST_RX_CNT_ERR	3
@@ -108,7 +108,7 @@ static int hns3_lp_setup(struct net_device *ndev, enum hnae3_loop loop, bool en)
 	if (en)
 		h->ae_algo->ops->set_promisc_mode(h, true, true);
 	else
-		/* recover promisc mode before loopback test */
+		 
 		hns3_request_update_promisc_mode(h);
 
 	return ret;
@@ -161,11 +161,7 @@ static void hns3_lp_setup_skb(struct sk_buff *skb)
 
 	memcpy(ethh->h_dest, ndev->dev_addr, ETH_ALEN);
 
-	/* The dst mac addr of loopback packet is the same as the host'
-	 * mac addr, the SSU component may loop back the packet to host
-	 * before the packet reaches mac or serdes, which will defect
-	 * the purpose of mac or serdes selftest.
-	 */
+	 
 	handle = hns3_get_handle(ndev);
 	ae_dev = pci_get_drvdata(handle->pdev);
 	if (ae_dev->dev_version < HNAE3_DEVICE_VERSION_V2)
@@ -192,7 +188,7 @@ static void hns3_lb_check_skb_data(struct hns3_enet_ring *ring,
 		if (packet[i] != (unsigned char)(i & 0xff))
 			break;
 
-	/* The packet is correctly received */
+	 
 	if (i == HNS3_NIC_LB_TEST_PACKET_SIZE)
 		tqp_vector->rx_group.total_packets++;
 	else
@@ -239,13 +235,7 @@ static void hns3_lb_clear_tx_ring(struct hns3_nic_priv *priv, u32 start_ringid,
 	}
 }
 
-/**
- * hns3_lp_run_test - run loopback test
- * @ndev: net device
- * @mode: loopback type
- *
- * Return: %0 for success or a NIC loopback test error code on failure
- */
+ 
 static int hns3_lp_run_test(struct net_device *ndev, enum hnae3_loop mode)
 {
 	struct hns3_nic_priv *priv = netdev_priv(ndev);
@@ -283,7 +273,7 @@ static int hns3_lp_run_test(struct net_device *ndev, enum hnae3_loop mode)
 		goto out;
 	}
 
-	/* Allow 200 milliseconds for packets to go from Tx to Rx */
+	 
 	msleep(200);
 
 	good_cnt = hns3_lb_check_rx_ring(priv, HNS3_NIC_LB_TEST_PKT_NUM);
@@ -334,16 +324,13 @@ static void hns3_selftest_prepare(struct net_device *ndev, bool if_running)
 		ndev->netdev_ops->ndo_stop(ndev);
 
 #if IS_ENABLED(CONFIG_VLAN_8021Q)
-	/* Disable the vlan filter for selftest does not support it */
+	 
 	if (h->ae_algo->ops->enable_vlan_filter &&
 	    ndev->features & NETIF_F_HW_VLAN_CTAG_FILTER)
 		h->ae_algo->ops->enable_vlan_filter(h, false);
 #endif
 
-	/* Tell firmware to stop mac autoneg before loopback test start,
-	 * otherwise loopback test may be failed when the port is still
-	 * negotiating.
-	 */
+	 
 	if (h->ae_algo->ops->halt_autoneg)
 		h->ae_algo->ops->halt_autoneg(h, true);
 
@@ -409,12 +396,7 @@ static void hns3_do_external_lb(struct net_device *ndev,
 	eth_test->flags |= ETH_TEST_FL_EXTERNAL_LB_DONE;
 }
 
-/**
- * hns3_self_test - self test
- * @ndev: net device
- * @eth_test: test cmd
- * @data: test result
- */
+ 
 static void hns3_self_test(struct net_device *ndev,
 			   struct ethtool_test *eth_test, u64 *data)
 {
@@ -436,9 +418,7 @@ static void hns3_self_test(struct net_device *ndev,
 
 	hns3_set_selftest_param(h, st_param);
 
-	/* external loopback test requires that the link is up and the duplex is
-	 * full, do external test first to reduce the whole test time
-	 */
+	 
 	if (eth_test->flags & ETH_TEST_FL_EXTERNAL_LB) {
 		hns3_external_lb_prepare(ndev, if_running);
 		hns3_do_external_lb(ndev, eth_test, data);
@@ -506,12 +486,12 @@ static void *hns3_update_strings(u8 *data, const struct hns3_stats *stats,
 		for (j = 0; j < stat_count; j++) {
 			data[ETH_GSTRING_LEN - 1] = '\0';
 
-			/* first, prepend the prefix string */
+			 
 			n1 = scnprintf(data, MAX_PREFIX_SIZE, "%s%u_",
 				       prefix, i);
 			size_left = (ETH_GSTRING_LEN - 1) - n1;
 
-			/* now, concatenate the stats string to it */
+			 
 			strncat(data, stats[j].stats_string, size_left);
 			data += ETH_GSTRING_LEN;
 		}
@@ -526,11 +506,11 @@ static u8 *hns3_get_strings_tqps(struct hnae3_handle *handle, u8 *data)
 	const char tx_prefix[] = "txq";
 	const char rx_prefix[] = "rxq";
 
-	/* get strings for Tx */
+	 
 	data = hns3_update_strings(data, hns3_txq_stats, HNS3_TXQ_STATS_COUNT,
 				   kinfo->num_tqps, tx_prefix);
 
-	/* get strings for Rx */
+	 
 	data = hns3_update_strings(data, hns3_rxq_stats, HNS3_RXQ_STATS_COUNT,
 				   kinfo->num_tqps, rx_prefix);
 
@@ -575,7 +555,7 @@ static u64 *hns3_get_stats_tqps(struct hnae3_handle *handle, u64 *data)
 	u8 *stat;
 	int i, j;
 
-	/* get stats for Tx */
+	 
 	for (i = 0; i < kinfo->num_tqps; i++) {
 		ring = &nic_priv->ring[i];
 		for (j = 0; j < HNS3_TXQ_STATS_COUNT; j++) {
@@ -584,7 +564,7 @@ static u64 *hns3_get_stats_tqps(struct hnae3_handle *handle, u64 *data)
 		}
 	}
 
-	/* get stats for Rx */
+	 
 	for (i = 0; i < kinfo->num_tqps; i++) {
 		ring = &nic_priv->ring[i + kinfo->num_tqps];
 		for (j = 0; j < HNS3_RXQ_STATS_COUNT; j++) {
@@ -596,11 +576,7 @@ static u64 *hns3_get_stats_tqps(struct hnae3_handle *handle, u64 *data)
 	return data;
 }
 
-/* hns3_get_stats - get detail statistics.
- * @netdev: net device
- * @stats: statistics info.
- * @data: statistics data.
- */
+ 
 static void hns3_get_stats(struct net_device *netdev,
 			   struct ethtool_stats *stats, u64 *data)
 {
@@ -619,10 +595,10 @@ static void hns3_get_stats(struct net_device *netdev,
 
 	h->ae_algo->ops->update_stats(h);
 
-	/* get per-queue stats */
+	 
 	p = hns3_get_stats_tqps(h, p);
 
-	/* get MAC & other misc hardware stats */
+	 
 	h->ae_algo->ops->get_stats(h, p);
 }
 
@@ -731,7 +707,7 @@ static void hns3_get_ksettings(struct hnae3_handle *h,
 {
 	const struct hnae3_ae_ops *ops = h->ae_algo->ops;
 
-	/* 1.auto_neg & speed & duplex from cmd */
+	 
 	if (ops->get_ksettings_an_result)
 		ops->get_ksettings_an_result(h,
 					     &cmd->base.autoneg,
@@ -739,13 +715,13 @@ static void hns3_get_ksettings(struct hnae3_handle *h,
 					     &cmd->base.duplex,
 					     &cmd->lanes);
 
-	/* 2.get link mode */
+	 
 	if (ops->get_link_mode)
 		ops->get_link_mode(h,
 				   cmd->link_modes.supported,
 				   cmd->link_modes.advertising);
 
-	/* 3.mdix_ctrl&mdix get from phy reg */
+	 
 	if (ops->get_mdix_mode)
 		ops->get_mdix_mode(h, &cmd->base.eth_tp_mdix_ctrl,
 				   &cmd->base.eth_tp_mdix);
@@ -802,7 +778,7 @@ static int hns3_get_link_ksettings(struct net_device *netdev,
 		return 0;
 	}
 
-	/* mdio_support */
+	 
 	cmd->base.mdio_support = ETH_MDIO_SUPPORTS_C22;
 
 	link_stat = hns3_get_link(netdev);
@@ -827,9 +803,7 @@ static int hns3_check_ksettings_param(const struct net_device *netdev,
 	u8 duplex;
 	int ret;
 
-	/* hw doesn't support use specified speed and duplex to negotiate,
-	 * unnecessary to check them when autoneg on.
-	 */
+	 
 	if (cmd->base.autoneg)
 		return 0;
 
@@ -869,7 +843,7 @@ static int hns3_set_link_ksettings(struct net_device *netdev,
 	const struct hnae3_ae_ops *ops = handle->ae_algo->ops;
 	int ret;
 
-	/* Chip don't support this mode. */
+	 
 	if (cmd->base.speed == SPEED_1000 && cmd->base.duplex == DUPLEX_HALF)
 		return -EINVAL;
 
@@ -882,7 +856,7 @@ static int hns3_set_link_ksettings(struct net_device *netdev,
 		  cmd->base.autoneg, cmd->base.speed, cmd->base.duplex,
 		  cmd->lanes);
 
-	/* Only support ksettings_set for netdev with phy attached for now */
+	 
 	if (netdev->phydev) {
 		if (cmd->base.speed == SPEED_1000 &&
 		    cmd->base.autoneg == AUTONEG_DISABLE)
@@ -907,9 +881,7 @@ static int hns3_set_link_ksettings(struct net_device *netdev,
 			return ret;
 	}
 
-	/* hw doesn't support use specified speed and duplex to negotiate,
-	 * ignore them when autoneg on.
-	 */
+	 
 	if (cmd->base.autoneg) {
 		netdev_info(netdev,
 			    "autoneg is on, ignore the speed and duplex\n");
@@ -1393,9 +1365,7 @@ static int hns3_check_gl_coalesce_para(struct net_device *netdev,
 		return -EINVAL;
 	}
 
-	/* device version above V3(include V3), GL uses 1us unit,
-	 * so the round down is not needed.
-	 */
+	 
 	if (ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V3)
 		return 0;
 
@@ -1657,7 +1627,7 @@ static void hns3_get_fec_stats(struct net_device *netdev,
 	ops->get_fec_stats(handle, fec_stats);
 }
 
-/* Translate local fec value into ethtool value. */
+ 
 static unsigned int loc_to_eth_fec(u8 loc_fec)
 {
 	u32 eth_fec = 0;
@@ -1676,7 +1646,7 @@ static unsigned int loc_to_eth_fec(u8 loc_fec)
 	return eth_fec;
 }
 
-/* Translate ethtool fec value into local value. */
+ 
 static unsigned int eth_to_loc_fec(unsigned int eth_fec)
 {
 	u32 loc_fec = 0;
@@ -1868,7 +1838,7 @@ static int hns3_get_tunable(struct net_device *netdev,
 
 	switch (tuna->id) {
 	case ETHTOOL_TX_COPYBREAK:
-		/* all the tx rings have the same tx_copybreak */
+		 
 		*(u32 *)data = priv->tx_copybreak;
 		break;
 	case ETHTOOL_RX_COPYBREAK:

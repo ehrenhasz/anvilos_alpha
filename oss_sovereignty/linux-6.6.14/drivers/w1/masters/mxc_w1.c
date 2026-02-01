@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2005-2008 Freescale Semiconductor, Inc. All Rights Reserved.
- * Copyright 2008 Luotao Fu, kernel@pengutronix.de
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -14,9 +11,7 @@
 
 #include <linux/w1.h>
 
-/*
- * MXC W1 Register offsets
- */
+ 
 #define MXC_W1_CONTROL		0x00
 # define MXC_W1_CONTROL_RDST	BIT(3)
 # define MXC_W1_CONTROL_WR(x)	BIT(5 - (x))
@@ -32,11 +27,7 @@ struct mxc_w1_device {
 	struct w1_bus_master bus_master;
 };
 
-/*
- * this is the low level routine to
- * reset the device on the One Wire interface
- * on the hardware
- */
+ 
 static u8 mxc_w1_ds2_reset_bus(void *data)
 {
 	struct mxc_w1_device *dev = data;
@@ -44,7 +35,7 @@ static u8 mxc_w1_ds2_reset_bus(void *data)
 
 	writeb(MXC_W1_CONTROL_RPP, dev->regs + MXC_W1_CONTROL);
 
-	/* Wait for reset sequence 511+512us, use 1500us for sure */
+	 
 	timeout = ktime_add_us(ktime_get(), 1500);
 
 	udelay(511 + 512);
@@ -52,7 +43,7 @@ static u8 mxc_w1_ds2_reset_bus(void *data)
 	do {
 		u8 ctrl = readb(dev->regs + MXC_W1_CONTROL);
 
-		/* PST bit is valid after the RPP bit is self-cleared */
+		 
 		if (!(ctrl & MXC_W1_CONTROL_RPP))
 			return !(ctrl & MXC_W1_CONTROL_PST);
 	} while (ktime_before(ktime_get(), timeout));
@@ -60,11 +51,7 @@ static u8 mxc_w1_ds2_reset_bus(void *data)
 	return 1;
 }
 
-/*
- * this is the low level routine to read/write a bit on the One Wire
- * interface on the hardware. It does write 0 if parameter bit is set
- * to 0, otherwise a write 1/read.
- */
+ 
 static u8 mxc_w1_ds2_touch_bit(void *data, u8 bit)
 {
 	struct mxc_w1_device *dev = data;
@@ -72,7 +59,7 @@ static u8 mxc_w1_ds2_touch_bit(void *data, u8 bit)
 
 	writeb(MXC_W1_CONTROL_WR(bit), dev->regs + MXC_W1_CONTROL);
 
-	/* Wait for read/write bit (60us, Max 120us), use 200us for sure */
+	 
 	timeout = ktime_add_us(ktime_get(), 200);
 
 	udelay(60);
@@ -80,7 +67,7 @@ static u8 mxc_w1_ds2_touch_bit(void *data, u8 bit)
 	do {
 		u8 ctrl = readb(dev->regs + MXC_W1_CONTROL);
 
-		/* RDST bit is valid after the WR1/RD bit is self-cleared */
+		 
 		if (!(ctrl & MXC_W1_CONTROL_WR(bit)))
 			return !!(ctrl & MXC_W1_CONTROL_RDST);
 	} while (ktime_before(ktime_get(), timeout));
@@ -125,7 +112,7 @@ static int mxc_w1_probe(struct platform_device *pdev)
 		goto out_disable_clk;
 	}
 
-	/* Software reset 1-Wire module */
+	 
 	writeb(MXC_W1_RESET_RST, mdev->regs + MXC_W1_RESET);
 	writeb(0, mdev->regs + MXC_W1_RESET);
 
@@ -148,9 +135,7 @@ out_disable_clk:
 	return err;
 }
 
-/*
- * disassociate the w1 device from the driver
- */
+ 
 static int mxc_w1_remove(struct platform_device *pdev)
 {
 	struct mxc_w1_device *mdev = platform_get_drvdata(pdev);
@@ -164,7 +149,7 @@ static int mxc_w1_remove(struct platform_device *pdev)
 
 static const struct of_device_id mxc_w1_dt_ids[] = {
 	{ .compatible = "fsl,imx21-owire" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mxc_w1_dt_ids);
 

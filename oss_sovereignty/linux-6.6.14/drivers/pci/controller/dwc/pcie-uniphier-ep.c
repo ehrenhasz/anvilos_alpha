@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe endpoint controller driver for UniPhier SoCs
- * Copyright 2018 Socionext Inc.
- * Author: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/bitfield.h>
@@ -19,7 +15,7 @@
 
 #include "pcie-designware.h"
 
-/* Link Glue registers */
+ 
 #define PCL_RSTCTRL0			0x0010
 #define PCL_RSTCTRL_AXI_REG		BIT(3)
 #define PCL_RSTCTRL_AXI_SLAVE		BIT(2)
@@ -66,7 +62,7 @@
 #define PCL_APP_PM0			0x8078
 #define PCL_SYS_AUX_PWR_DET		BIT(8)
 
-/* assertion time of INTx in usec */
+ 
 #define PCL_INTX_WIDTH_USEC		30
 
 struct uniphier_pcie_ep_priv {
@@ -117,17 +113,17 @@ static void uniphier_pcie_pro5_init_ep(struct uniphier_pcie_ep_priv *priv)
 {
 	u32 val;
 
-	/* set EP mode */
+	 
 	val = readl(priv->base + PCL_MODE);
 	val |= PCL_MODE_REGEN | PCL_MODE_REGVAL;
 	writel(val, priv->base + PCL_MODE);
 
-	/* clock request */
+	 
 	val = readl(priv->base + PCL_APP_CLK_CTRL);
 	val &= ~PCL_APP_CLK_REQ;
 	writel(val, priv->base + PCL_APP_CLK_CTRL);
 
-	/* deassert PIPE3 and AXI reset */
+	 
 	val = readl(priv->base + PCL_RSTCTRL0);
 	val |= PCL_RSTCTRL_AXI_REG | PCL_RSTCTRL_AXI_SLAVE
 		| PCL_RSTCTRL_AXI_MASTER | PCL_RSTCTRL_PIPE3;
@@ -142,17 +138,17 @@ static void uniphier_pcie_nx1_init_ep(struct uniphier_pcie_ep_priv *priv)
 {
 	u32 val;
 
-	/* set EP mode */
+	 
 	val = readl(priv->base + PCL_MODE);
 	val |= PCL_MODE_REGEN | PCL_MODE_REGVAL;
 	writel(val, priv->base + PCL_MODE);
 
-	/* use auxiliary power detection */
+	 
 	val = readl(priv->base + PCL_APP_PM0);
 	val |= PCL_SYS_AUX_PWR_DET;
 	writel(val, priv->base + PCL_APP_PM0);
 
-	/* assert PERST# */
+	 
 	val = readl(priv->base + PCL_PINCTRL0);
 	val &= ~(PCL_PERST_NOE_REGVAL | PCL_PERST_OUT_REGVAL
 		 | PCL_PERST_PLDN_REGVAL);
@@ -164,7 +160,7 @@ static void uniphier_pcie_nx1_init_ep(struct uniphier_pcie_ep_priv *priv)
 
 	usleep_range(100000, 200000);
 
-	/* deassert PERST# */
+	 
 	val = readl(priv->base + PCL_PINCTRL0);
 	val |= PCL_PERST_OUT_REGVAL | PCL_PERST_OUT_REGEN;
 	writel(val, priv->base + PCL_PINCTRL0);
@@ -175,7 +171,7 @@ static int uniphier_pcie_nx1_wait_ep(struct uniphier_pcie_ep_priv *priv)
 	u32 status;
 	int ret;
 
-	/* wait PIPE clock */
+	 
 	ret = readl_poll_timeout(priv->base + PCL_PIPEMON, status,
 				 status & PCL_PCLK_ALIVE, 100000, 1000000);
 	if (ret) {
@@ -218,19 +214,15 @@ static int uniphier_pcie_ep_raise_legacy_irq(struct dw_pcie_ep *ep)
 	struct uniphier_pcie_ep_priv *priv = to_uniphier_pcie(pci);
 	u32 val;
 
-	/*
-	 * This makes pulse signal to send INTx to the RC, so this should
-	 * be cleared as soon as possible. This sequence is covered with
-	 * mutex in pci_epc_raise_irq().
-	 */
-	/* assert INTx */
+	 
+	 
 	val = readl(priv->base + PCL_APP_INTX);
 	val |= PCL_APP_INTX_SYS_INT;
 	writel(val, priv->base + PCL_APP_INTX);
 
 	udelay(PCL_INTX_WIDTH_USEC);
 
-	/* deassert INTx */
+	 
 	val &= ~PCL_APP_INTX_SYS_INT;
 	writel(val, priv->base + PCL_APP_INTX);
 
@@ -439,7 +431,7 @@ static const struct of_device_id uniphier_pcie_ep_match[] = {
 		.compatible = "socionext,uniphier-nx1-pcie-ep",
 		.data = &uniphier_nx1_data,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 
 static struct platform_driver uniphier_pcie_ep_driver = {

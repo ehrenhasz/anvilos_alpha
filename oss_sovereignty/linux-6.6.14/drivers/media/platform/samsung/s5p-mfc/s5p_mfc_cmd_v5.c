@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * linux/drivers/media/platform/samsung/s5p-mfc/s5p_mfc_cmd_v5.c
- *
- * Copyright (C) 2011 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com/
- */
+
+ 
 
 #include "regs-mfc.h"
 #include "s5p_mfc_cmd.h"
@@ -12,7 +7,7 @@
 #include "s5p_mfc_debug.h"
 #include "s5p_mfc_cmd_v5.h"
 
-/* This function is used to send a command to the MFC */
+ 
 static int s5p_mfc_cmd_host2risc_v5(struct s5p_mfc_dev *dev, int cmd,
 				struct s5p_mfc_cmd_args *args)
 {
@@ -20,7 +15,7 @@ static int s5p_mfc_cmd_host2risc_v5(struct s5p_mfc_dev *dev, int cmd,
 	unsigned long timeout;
 
 	timeout = jiffies + msecs_to_jiffies(MFC_BW_TIMEOUT);
-	/* wait until host to risc command register becomes 'H2R_CMD_EMPTY' */
+	 
 	do {
 		if (time_after(jiffies, timeout)) {
 			mfc_err("Timeout while waiting for hardware\n");
@@ -32,12 +27,12 @@ static int s5p_mfc_cmd_host2risc_v5(struct s5p_mfc_dev *dev, int cmd,
 	mfc_write(dev, args->arg[1], S5P_FIMV_HOST2RISC_ARG2);
 	mfc_write(dev, args->arg[2], S5P_FIMV_HOST2RISC_ARG3);
 	mfc_write(dev, args->arg[3], S5P_FIMV_HOST2RISC_ARG4);
-	/* Issue the command */
+	 
 	mfc_write(dev, cmd, S5P_FIMV_HOST2RISC_CMD);
 	return 0;
 }
 
-/* Initialize the MFC */
+ 
 static int s5p_mfc_sys_init_cmd_v5(struct s5p_mfc_dev *dev)
 {
 	struct s5p_mfc_cmd_args h2r_args;
@@ -48,7 +43,7 @@ static int s5p_mfc_sys_init_cmd_v5(struct s5p_mfc_dev *dev)
 			&h2r_args);
 }
 
-/* Suspend the MFC hardware */
+ 
 static int s5p_mfc_sleep_cmd_v5(struct s5p_mfc_dev *dev)
 {
 	struct s5p_mfc_cmd_args h2r_args;
@@ -57,7 +52,7 @@ static int s5p_mfc_sleep_cmd_v5(struct s5p_mfc_dev *dev)
 	return s5p_mfc_cmd_host2risc_v5(dev, S5P_FIMV_H2R_CMD_SLEEP, &h2r_args);
 }
 
-/* Wake up the MFC hardware */
+ 
 static int s5p_mfc_wakeup_cmd_v5(struct s5p_mfc_dev *dev)
 {
 	struct s5p_mfc_cmd_args h2r_args;
@@ -74,7 +69,7 @@ static int s5p_mfc_open_inst_cmd_v5(struct s5p_mfc_ctx *ctx)
 	struct s5p_mfc_cmd_args h2r_args;
 	int ret;
 
-	/* Preparing decoding - getting instance number */
+	 
 	mfc_debug(2, "Getting instance number (codec: %d)\n", ctx->codec_mode);
 	dev->curr_ctx = ctx->num;
 	memset(&h2r_args, 0, sizeof(struct s5p_mfc_cmd_args));
@@ -109,7 +104,7 @@ static int s5p_mfc_open_inst_cmd_v5(struct s5p_mfc_ctx *ctx)
 	default:
 		h2r_args.arg[0] = S5P_FIMV_CODEC_NONE;
 	}
-	h2r_args.arg[1] = 0; /* no crc & no pixelcache */
+	h2r_args.arg[1] = 0;  
 	h2r_args.arg[2] = ctx->ctx.ofs;
 	h2r_args.arg[3] = ctx->ctx.size;
 	ret = s5p_mfc_cmd_host2risc_v5(dev, S5P_FIMV_H2R_CMD_OPEN_INSTANCE,
@@ -132,7 +127,7 @@ static int s5p_mfc_close_inst_cmd_v5(struct s5p_mfc_ctx *ctx)
 		ctx->state = MFCINST_ERROR;
 		return -EINVAL;
 	}
-	/* Closing decoding instance  */
+	 
 	mfc_debug(2, "Returning instance number %d\n", ctx->inst_no);
 	dev->curr_ctx = ctx->num;
 	memset(&h2r_args, 0, sizeof(struct s5p_mfc_cmd_args));
@@ -147,7 +142,7 @@ static int s5p_mfc_close_inst_cmd_v5(struct s5p_mfc_ctx *ctx)
 	return 0;
 }
 
-/* Initialize cmd function pointers for MFC v5 */
+ 
 static struct s5p_mfc_hw_cmds s5p_mfc_cmds_v5 = {
 	.cmd_host2risc = s5p_mfc_cmd_host2risc_v5,
 	.sys_init_cmd = s5p_mfc_sys_init_cmd_v5,

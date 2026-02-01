@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Multipath TCP
- *
- * Copyright (c) 2021, Red Hat.
- */
+
+ 
 
 #define pr_fmt(fmt) "MPTCP: " fmt
 
@@ -31,19 +28,7 @@ static u32 sockopt_seq_reset(const struct sock *sk)
 {
 	sock_owned_by_me(sk);
 
-	/* Highbits contain state.  Allows to distinguish sockopt_seq
-	 * of listener and established:
-	 * s0 = new_listener()
-	 * sockopt(s0) - seq is 1
-	 * s1 = accept(s0) - s1 inherits seq 1 if listener sk (s0)
-	 * sockopt(s0) - seq increments to 2 on s0
-	 * sockopt(s1) // seq increments to 2 on s1 (different option)
-	 * new ssk completes join, inherits options from s0 // seq 2
-	 * Needs sync from mptcp join logic, but ssk->seq == msk->seq
-	 *
-	 * Set High order bits to sk_state so ssk->seq == msk->seq test
-	 * will fail.
-	 */
+	 
 
 	return (u32)sk->sk_state << 24u;
 }
@@ -350,7 +335,7 @@ static int mptcp_setsockopt_sol_socket(struct mptcp_sock *msk, int optname,
 	case SO_BUSY_POLL:
 	case SO_PREFER_BUSY_POLL:
 	case SO_BUSY_POLL_BUDGET:
-		/* No need to copy: only relevant for msk */
+		 
 		return sock_setsockopt(sk->sk_socket, SOL_SOCKET, optname, optval, optlen);
 	case SO_NO_CHECK:
 	case SO_DONTROUTE:
@@ -366,22 +351,7 @@ static int mptcp_setsockopt_sol_socket(struct mptcp_sock *msk, int optname,
 		return 0;
 	}
 
-	/* SO_OOBINLINE is not supported, let's avoid the related mess
-	 * SO_ATTACH_FILTER, SO_ATTACH_BPF, SO_ATTACH_REUSEPORT_CBPF,
-	 * SO_DETACH_REUSEPORT_BPF, SO_DETACH_FILTER, SO_LOCK_FILTER,
-	 * we must be careful with subflows
-	 *
-	 * SO_ATTACH_REUSEPORT_EBPF is not supported, at it checks
-	 * explicitly the sk_protocol field
-	 *
-	 * SO_PEEK_OFF is unsupported, as it is for plain TCP
-	 * SO_MAX_PACING_RATE is unsupported, we must be careful with subflows
-	 * SO_CNX_ADVICE is currently unsupported, could possibly be relevant,
-	 * but likely needs careful design
-	 *
-	 * SO_ZEROCOPY is currently unsupported, TODO in sndmsg
-	 * SO_TXTIME is currently unsupported
-	 */
+	 
 
 	return -EOPNOTSUPP;
 }
@@ -437,11 +407,11 @@ static bool mptcp_supported_sockopt(int level, int optname)
 {
 	if (level == SOL_IP) {
 		switch (optname) {
-		/* should work fine */
+		 
 		case IP_FREEBIND:
 		case IP_TRANSPARENT:
 
-		/* the following are control cmsg related */
+		 
 		case IP_PKTINFO:
 		case IP_RECVTTL:
 		case IP_RECVTOS:
@@ -452,39 +422,32 @@ static bool mptcp_supported_sockopt(int level, int optname)
 		case IP_CHECKSUM:
 		case IP_RECVFRAGSIZE:
 
-		/* common stuff that need some love */
+		 
 		case IP_TOS:
 		case IP_TTL:
 		case IP_BIND_ADDRESS_NO_PORT:
 		case IP_MTU_DISCOVER:
 		case IP_RECVERR:
 
-		/* possibly less common may deserve some love */
+		 
 		case IP_MINTTL:
 
-		/* the following is apparently a no-op for plain TCP */
+		 
 		case IP_RECVERR_RFC4884:
 			return true;
 		}
 
-		/* IP_OPTIONS is not supported, needs subflow care */
-		/* IP_HDRINCL, IP_NODEFRAG are not supported, RAW specific */
-		/* IP_MULTICAST_TTL, IP_MULTICAST_LOOP, IP_UNICAST_IF,
-		 * IP_ADD_MEMBERSHIP, IP_ADD_SOURCE_MEMBERSHIP, IP_DROP_MEMBERSHIP,
-		 * IP_DROP_SOURCE_MEMBERSHIP, IP_BLOCK_SOURCE, IP_UNBLOCK_SOURCE,
-		 * MCAST_JOIN_GROUP, MCAST_LEAVE_GROUP MCAST_JOIN_SOURCE_GROUP,
-		 * MCAST_LEAVE_SOURCE_GROUP, MCAST_BLOCK_SOURCE, MCAST_UNBLOCK_SOURCE,
-		 * MCAST_MSFILTER, IP_MULTICAST_ALL are not supported, better not deal
-		 * with mcast stuff
-		 */
-		/* IP_IPSEC_POLICY, IP_XFRM_POLICY are nut supported, unrelated here */
+		 
+		 
+		 
+		 
 		return false;
 	}
 	if (level == SOL_IPV6) {
 		switch (optname) {
 		case IPV6_V6ONLY:
 
-		/* the following are control cmsg related */
+		 
 		case IPV6_RECVPKTINFO:
 		case IPV6_2292PKTINFO:
 		case IPV6_RECVHOPLIMIT:
@@ -501,7 +464,7 @@ static bool mptcp_supported_sockopt(int level, int optname)
 		case IPV6_RECVORIGDSTADDR:
 		case IPV6_RECVFRAGSIZE:
 
-		/* the following ones need some love but are quite common */
+		 
 		case IPV6_TCLASS:
 		case IPV6_TRANSPARENT:
 		case IPV6_FREEBIND:
@@ -517,35 +480,26 @@ static bool mptcp_supported_sockopt(int level, int optname)
 		case IPV6_DONTFRAG:
 		case IPV6_AUTOFLOWLABEL:
 
-		/* the following one is a no-op for plain TCP */
+		 
 		case IPV6_RECVERR_RFC4884:
 			return true;
 		}
 
-		/* IPV6_HOPOPTS, IPV6_RTHDRDSTOPTS, IPV6_RTHDR, IPV6_DSTOPTS are
-		 * not supported
-		 */
-		/* IPV6_MULTICAST_HOPS, IPV6_MULTICAST_LOOP, IPV6_UNICAST_IF,
-		 * IPV6_MULTICAST_IF, IPV6_ADDRFORM,
-		 * IPV6_ADD_MEMBERSHIP, IPV6_DROP_MEMBERSHIP, IPV6_JOIN_ANYCAST,
-		 * IPV6_LEAVE_ANYCAST, IPV6_MULTICAST_ALL, MCAST_JOIN_GROUP, MCAST_LEAVE_GROUP,
-		 * MCAST_JOIN_SOURCE_GROUP, MCAST_LEAVE_SOURCE_GROUP,
-		 * MCAST_BLOCK_SOURCE, MCAST_UNBLOCK_SOURCE, MCAST_MSFILTER
-		 * are not supported better not deal with mcast
-		 */
-		/* IPV6_ROUTER_ALERT, IPV6_ROUTER_ALERT_ISOLATE are not supported, since are evil */
+		 
+		 
+		 
 
-		/* IPV6_IPSEC_POLICY, IPV6_XFRM_POLICY are not supported */
-		/* IPV6_ADDR_PREFERENCES is not supported, we must be careful with subflows */
+		 
+		 
 		return false;
 	}
 	if (level == SOL_TCP) {
 		switch (optname) {
-		/* the following are no-op or should work just fine */
+		 
 		case TCP_THIN_DUPACK:
 		case TCP_DEFER_ACCEPT:
 
-		/* the following need some love */
+		 
 		case TCP_MAXSEG:
 		case TCP_NODELAY:
 		case TCP_THIN_LINEAR_TIMEOUTS:
@@ -571,11 +525,9 @@ static bool mptcp_supported_sockopt(int level, int optname)
 			return true;
 		}
 
-		/* TCP_MD5SIG, TCP_MD5SIG_EXT are not supported, MD5 is not compatible with MPTCP */
+		 
 
-		/* TCP_REPAIR, TCP_REPAIR_QUEUE, TCP_QUEUE_SEQ, TCP_REPAIR_OPTIONS,
-		 * TCP_REPAIR_WINDOW are not supported, better avoid this mess
-		 */
+		 
 	}
 	return false;
 }
@@ -770,7 +722,7 @@ static int mptcp_setsockopt_first_sf_only(struct mptcp_sock *msk, int level, int
 	struct sock *ssk;
 	int ret;
 
-	/* Limit to first subflow, before the connection establishment */
+	 
 	lock_sock(sk);
 	ssk = __mptcp_nmpc_sk(msk);
 	if (IS_ERR(ssk)) {
@@ -812,7 +764,7 @@ static int mptcp_setsockopt_sol_tcp(struct mptcp_sock *msk, int optname,
 	case TCP_NODELAY:
 		return mptcp_setsockopt_sol_tcp_nodelay(msk, optval, optlen);
 	case TCP_DEFER_ACCEPT:
-		/* See tcp.c: TCP_DEFER_ACCEPT does not fail */
+		 
 		mptcp_setsockopt_first_sf_only(msk, SOL_TCP, optname, optval, optlen);
 		return 0;
 	case TCP_FASTOPEN:
@@ -840,12 +792,7 @@ int mptcp_setsockopt(struct sock *sk, int level, int optname,
 	if (!mptcp_supported_sockopt(level, optname))
 		return -ENOPROTOOPT;
 
-	/* @@ the meaning of setsockopt() when the socket is connected and
-	 * there are multiple subflows is not yet defined. It is up to the
-	 * MPTCP-level socket to configure the subflows until the subflow
-	 * is in TCP fallback, when TCP socket options are passed through
-	 * to the one remaining subflow.
-	 */
+	 
 	lock_sock(sk);
 	ssk = __mptcp_tcp_fallback(msk);
 	release_sock(sk);
@@ -907,7 +854,7 @@ void mptcp_diag_fill_info(struct mptcp_sock *msk, struct mptcp_info *info)
 	if (inet_sk_state_load(sk) == TCP_LISTEN)
 		return;
 
-	/* The following limits only make sense for the in-kernel PM */
+	 
 	if (mptcp_pm_is_kernel(msk)) {
 		info->mptcpi_subflows_max =
 			mptcp_pm_get_subflows_max(msk);
@@ -993,9 +940,7 @@ static int mptcp_get_subflow_data(struct mptcp_subflow_data *sfd,
 	if (get_user(len, optlen))
 		return -EFAULT;
 
-	/* if mptcp_subflow_data size is changed, need to adjust
-	 * this function to deal with programs using old version.
-	 */
+	 
 	BUILD_BUG_ON(sizeof(*sfd) != MIN_INFO_OPTLEN_SIZE);
 
 	if (len < MIN_INFO_OPTLEN_SIZE)
@@ -1007,7 +952,7 @@ static int mptcp_get_subflow_data(struct mptcp_subflow_data *sfd,
 	if (copy_from_user(sfd, optval, copylen))
 		return -EFAULT;
 
-	/* size_subflow_data is u32, but len is signed */
+	 
 	if (sfd->size_subflow_data > INT_MAX ||
 	    sfd->size_user > INT_MAX)
 		return -EINVAL;
@@ -1226,9 +1171,7 @@ static int mptcp_getsockopt_full_info(struct mptcp_sock *msk, char __user *optva
 	if (len < 0)
 		return len;
 
-	/* don't bother filling the mptcp info if there is not enough
-	 * user-space-provided storage
-	 */
+	 
 	if (len > 0) {
 		mptcp_diag_fill_info(msk, &mfi.mptcp_info);
 		copylen += min_t(unsigned int, len, sizeof(struct mptcp_info));
@@ -1252,9 +1195,7 @@ static int mptcp_getsockopt_full_info(struct mptcp_sock *msk, char __user *optva
 		if (sfcount++ >= mfi.size_arrays_user)
 			continue;
 
-		/* fetch addr/tcp_info only if the user space buffers
-		 * are wide enough
-		 */
+		 
 		memset(&sfinfo, 0, sizeof(sfinfo));
 		sfinfo.id = subflow->subflow_id;
 		if (mfi.size_sfinfo_user >
@@ -1378,12 +1319,7 @@ int mptcp_getsockopt(struct sock *sk, int level, int optname,
 
 	pr_debug("msk=%p", msk);
 
-	/* @@ the meaning of setsockopt() when the socket is connected and
-	 * there are multiple subflows is not yet defined. It is up to the
-	 * MPTCP-level socket to configure the subflows until the subflow
-	 * is in TCP fallback, when socket options are passed through
-	 * to the one remaining subflow.
-	 */
+	 
 	lock_sock(sk);
 	ssk = __mptcp_tcp_fallback(msk);
 	release_sock(sk);

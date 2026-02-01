@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2021 Intel Corporation
- */
+
+ 
 #include "mvm.h"
 #include <linux/nl80211-vnd-intel.h>
 #include <net/netlink.h>
@@ -104,7 +102,7 @@ static const struct wiphy_vendor_command iwl_mvm_vendor_commands[] = {
 };
 
 enum iwl_mvm_vendor_events_idx {
-        /* 0x0 - 0x3 are deprecated */
+         
         IWL_MVM_VENDOR_EVENT_IDX_ROAMING_FORBIDDEN = 4,
         NUM_IWL_MVM_VENDOR_EVENT_IDX
 };

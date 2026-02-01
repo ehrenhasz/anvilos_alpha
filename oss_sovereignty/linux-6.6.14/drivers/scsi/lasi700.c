@@ -1,22 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
 
-/* PARISC LASI driver for the 53c700 chip
- *
- * Copyright (C) 2001 by James.Bottomley@HansenPartnership.com
-**-----------------------------------------------------------------------------
-**  
-**
-**-----------------------------------------------------------------------------
- */
 
-/*
- * Many thanks to Richard Hirst <rhirst@linuxcare.com> for patiently
- * debugging this driver on the parisc architecture and suggesting
- * many improvements and bug fixes.
- *
- * Thanks also go to Linuxcare Inc. for providing several PARISC
- * machines for me to debug the driver on.
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

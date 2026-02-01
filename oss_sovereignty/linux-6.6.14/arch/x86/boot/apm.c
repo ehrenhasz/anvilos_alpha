@@ -1,18 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* -*- linux-c -*- ------------------------------------------------------- *
- *
- *   Copyright (C) 1991, 1992 Linus Torvalds
- *   Copyright 2007 rPath, Inc. - All Rights Reserved
- *   Copyright 2009 Intel Corporation; author H. Peter Anvin
- *
- *   Original APM BIOS checking by Stephen Rothwell, May 1994
- *   (sfr@canb.auug.org.au)
- *
- * ----------------------------------------------------------------------- */
 
-/*
- * Get APM BIOS information
- */
+ 
+
+ 
 
 #include "boot.h"
 
@@ -20,25 +9,25 @@ int query_apm_bios(void)
 {
 	struct biosregs ireg, oreg;
 
-	/* APM BIOS installation check */
+	 
 	initregs(&ireg);
 	ireg.ah = 0x53;
 	intcall(0x15, &ireg, &oreg);
 
 	if (oreg.flags & X86_EFLAGS_CF)
-		return -1;		/* No APM BIOS */
+		return -1;		 
 
-	if (oreg.bx != 0x504d)		/* "PM" signature */
+	if (oreg.bx != 0x504d)		 
 		return -1;
 
-	if (!(oreg.cx & 0x02))		/* 32 bits supported? */
+	if (!(oreg.cx & 0x02))		 
 		return -1;
 
-	/* Disconnect first, just in case */
+	 
 	ireg.al = 0x04;
 	intcall(0x15, &ireg, NULL);
 
-	/* 32-bit connect */
+	 
 	ireg.al = 0x03;
 	intcall(0x15, &ireg, &oreg);
 
@@ -53,14 +42,13 @@ int query_apm_bios(void)
 	if (oreg.flags & X86_EFLAGS_CF)
 		return -1;
 
-	/* Redo the installation check as the 32-bit connect;
-	   some BIOSes return different flags this way... */
+	 
 
 	ireg.al = 0x00;
 	intcall(0x15, &ireg, &oreg);
 
 	if ((oreg.eflags & X86_EFLAGS_CF) || oreg.bx != 0x504d) {
-		/* Failure with 32-bit connect, try to disconnect and ignore */
+		 
 		ireg.al = 0x04;
 		intcall(0x15, &ireg, NULL);
 		return -1;

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * OpenFirmware regulator support routines
- *
- */
+ 
+ 
 
 #ifndef __LINUX_OF_REG_H
 #define __LINUX_OF_REG_H
@@ -41,6 +38,6 @@ static inline int of_regulator_match(struct device *dev,
 {
 	return 0;
 }
-#endif /* CONFIG_OF */
+#endif  
 
-#endif /* __LINUX_OF_REG_H */
+#endif  

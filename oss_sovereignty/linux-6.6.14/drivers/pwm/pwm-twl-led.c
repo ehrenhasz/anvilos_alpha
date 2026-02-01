@@ -1,29 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for TWL4030/6030 Pulse Width Modulator used as LED driver
- *
- * Copyright (C) 2012 Texas Instruments
- * Author: Peter Ujfalusi <peter.ujfalusi@ti.com>
- *
- * This driver is a complete rewrite of the former pwm-twl6030.c authorded by:
- * Hemanth V <hemanthv@ti.com>
- *
- * Reference manual for the twl6030 is available at:
- * https://www.ti.com/lit/ds/symlink/twl6030.pdf
- *
- * Limitations:
- * - The twl6030 hardware only supports two period lengths (128 clock ticks and
- *   64 clock ticks), the driver only uses 128 ticks
- * - The hardware doesn't support ON = 0, so the active part of a period doesn't
- *   start at its beginning.
- * - The hardware could support inverted polarity (with a similar limitation as
- *   for normal: the last clock tick is always inactive).
- * - The hardware emits a constant low output when disabled.
- * - A request for .duty_cycle = 0 results in an output wave with one active
- *   clock tick per period. This should better use the disabled state.
- * - The driver only implements setting the relative duty cycle.
- * - The driver doesn't implement .get_state().
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -32,18 +8,12 @@
 #include <linux/mfd/twl.h>
 #include <linux/slab.h>
 
-/*
- * This driver handles the PWM driven LED terminals of TWL4030 and TWL6030.
- * To generate the signal on TWL4030:
- *  - LEDA uses PWMA
- *  - LEDB uses PWMB
- * TWL6030 has one LED pin with dedicated LEDPWM
- */
+ 
 
 #define TWL4030_LED_MAX		0x7f
 #define TWL6030_LED_MAX		0xff
 
-/* Registers, bits and macro for TWL4030 */
+ 
 #define TWL4030_LEDEN_REG	0x00
 #define TWL4030_PWMA_REG	0x01
 
@@ -52,7 +22,7 @@
 #define TWL4030_LED_PINS	(TWL4030_LEDXON | TWL4030_LEDXPWM)
 #define TWL4030_LED_TOGGLE(led, x)	((x) << (led))
 
-/* Register, bits and macro for TWL6030 */
+ 
 #define TWL6030_LED_PWM_CTRL1	0xf4
 #define TWL6030_LED_PWM_CTRL2	0xf5
 
@@ -78,17 +48,7 @@ static int twl4030_pwmled_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	u8 pwm_config[2] = { 1, 0 };
 	int base, ret;
 
-	/*
-	 * To configure the duty period:
-	 * On-cycle is set to 1 (the minimum allowed value)
-	 * The off time of 0 is not configurable, so the mapping is:
-	 * 0 -> off cycle = 2,
-	 * 1 -> off cycle = 2,
-	 * 2 -> off cycle = 3,
-	 * 126 - > off cycle 127,
-	 * 127 - > off cycle 1
-	 * When on cycle == off cycle the PWM will be always on
-	 */
+	 
 	if (duty_cycle == 1)
 		duty_cycle = 2;
 	else if (duty_cycle > TWL4030_LED_MAX)
@@ -168,13 +128,7 @@ static int twl4030_pwmled_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 		return 0;
 	}
 
-	/*
-	 * We cannot skip calling ->config even if state->period ==
-	 * pwm->state.period && state->duty_cycle == pwm->state.duty_cycle
-	 * because we might have exited early in the last call to
-	 * pwm_apply_state because of !state->enabled and so the two values in
-	 * pwm->state might not be configured in hardware.
-	 */
+	 
 	ret = twl4030_pwmled_config(pwm->chip, pwm,
 				    state->duty_cycle, state->period);
 	if (ret)

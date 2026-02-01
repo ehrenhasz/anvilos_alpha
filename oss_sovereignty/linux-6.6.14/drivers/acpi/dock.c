@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  dock.c - ACPI dock station driver
- *
- *  Copyright (C) 2006, 2014, Intel Corp.
- *  Author: Kristen Carlson Accardi <kristen.c.accardi@intel.com>
- *          Rafael J. Wysocki <rafael.j.wysocki@intel.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/moduleparam.h>
@@ -58,16 +52,8 @@ enum dock_callback_type {
 	DOCK_CALL_UEVENT,
 };
 
-/*****************************************************************************
- *                         Dock Dependent device functions                   *
- *****************************************************************************/
-/**
- * add_dock_dependent_device - associate a device with the dock station
- * @ds: Dock station.
- * @adev: Dependent ACPI device object.
- *
- * Add the dependent device to the dock's dependent device list.
- */
+ 
+ 
 static int add_dock_dependent_device(struct dock_station *ds,
 				     struct acpi_device *adev)
 {
@@ -138,14 +124,7 @@ static struct dock_station *find_dock_station(acpi_handle handle)
 	return NULL;
 }
 
-/**
- * find_dock_dependent_device - get a device dependent on this dock
- * @ds: the dock station
- * @adev: ACPI device object to find.
- *
- * iterate over the dependent device list for this dock.  If the
- * dependent device matches the handle, return.
- */
+ 
 static struct dock_dependent_device *
 find_dock_dependent_device(struct dock_station *ds, struct acpi_device *adev)
 {
@@ -167,18 +146,9 @@ void register_dock_dependent_device(struct acpi_device *adev,
 		add_dock_dependent_device(ds, adev);
 }
 
-/*****************************************************************************
- *                         Dock functions                                    *
- *****************************************************************************/
+ 
 
-/**
- * is_dock_device - see if a device is on a dock station
- * @adev: ACPI device object to check.
- *
- * If this device is either the dock station itself,
- * or is a device dependent on the dock station, then it
- * is a dock device
- */
+ 
 int is_dock_device(struct acpi_device *adev)
 {
 	struct dock_station *dock_station;
@@ -197,13 +167,7 @@ int is_dock_device(struct acpi_device *adev)
 }
 EXPORT_SYMBOL_GPL(is_dock_device);
 
-/**
- * dock_present - see if the dock station is present.
- * @ds: the dock station
- *
- * execute the _STA method.  note that present does not
- * imply that we are docked.
- */
+ 
 static int dock_present(struct dock_station *ds)
 {
 	unsigned long long sta;
@@ -217,19 +181,12 @@ static int dock_present(struct dock_station *ds)
 	return 0;
 }
 
-/**
- * hot_remove_dock_devices - Remove dock station devices.
- * @ds: Dock station.
- */
+ 
 static void hot_remove_dock_devices(struct dock_station *ds)
 {
 	struct dock_dependent_device *dd;
 
-	/*
-	 * Walk the list in reverse order so that devices that have been added
-	 * last are removed first (in case there are some indirect dependencies
-	 * between them).
-	 */
+	 
 	list_for_each_entry_reverse(dd, &ds->dependent_devices, list)
 		dock_hotplug_event(dd, ACPI_NOTIFY_EJECT_REQUEST,
 				   DOCK_CALL_HANDLER);
@@ -238,34 +195,20 @@ static void hot_remove_dock_devices(struct dock_station *ds)
 		acpi_bus_trim(dd->adev);
 }
 
-/**
- * hotplug_dock_devices - Insert devices on a dock station.
- * @ds: the dock station
- * @event: either bus check or device check request
- *
- * Some devices on the dock station need to have drivers called
- * to perform hotplug operations after a dock event has occurred.
- * Traverse the list of dock devices that have registered a
- * hotplug handler, and call the handler.
- */
+ 
 static void hotplug_dock_devices(struct dock_station *ds, u32 event)
 {
 	struct dock_dependent_device *dd;
 
-	/* Call driver specific post-dock fixups. */
+	 
 	list_for_each_entry(dd, &ds->dependent_devices, list)
 		dock_hotplug_event(dd, event, DOCK_CALL_FIXUP);
 
-	/* Call driver specific hotplug functions. */
+	 
 	list_for_each_entry(dd, &ds->dependent_devices, list)
 		dock_hotplug_event(dd, event, DOCK_CALL_HANDLER);
 
-	/*
-	 * Check if all devices have been enumerated already.  If not, run
-	 * acpi_bus_scan() for them and that will cause scan handlers to be
-	 * attached to device objects or acpi_drivers to be stopped/started if
-	 * they are present.
-	 */
+	 
 	list_for_each_entry(dd, &ds->dependent_devices, list) {
 		struct acpi_device *adev = dd->adev;
 
@@ -290,10 +233,7 @@ static void dock_event(struct dock_station *ds, u32 event, int num)
 	else
 		sprintf(event_string, "EVENT=dock");
 
-	/*
-	 * Indicate that the status of the dock station has
-	 * changed.
-	 */
+	 
 	if (num == DOCK_EVENT)
 		kobject_uevent_env(&dev->kobj, KOBJ_CHANGE, envp);
 
@@ -304,13 +244,7 @@ static void dock_event(struct dock_station *ds, u32 event, int num)
 		kobject_uevent_env(&dev->kobj, KOBJ_CHANGE, envp);
 }
 
-/**
- * handle_dock - handle a dock event
- * @ds: the dock station
- * @dock: to dock, or undock - that is the question
- *
- * Execute the _DCK method in response to an acpi event
- */
+ 
 static void handle_dock(struct dock_station *ds, int dock)
 {
 	acpi_status status;
@@ -320,7 +254,7 @@ static void handle_dock(struct dock_station *ds, int dock)
 
 	acpi_handle_info(ds->handle, "%s\n", dock ? "docking" : "undocking");
 
-	/* _DCK method has one argument */
+	 
 	arg_list.count = 1;
 	arg_list.pointer = &arg;
 	arg.type = ACPI_TYPE_INTEGER;
@@ -362,14 +296,7 @@ static inline void complete_undock(struct dock_station *ds)
 	ds->flags &= ~(DOCK_UNDOCKING);
 }
 
-/**
- * dock_in_progress - see if we are in the middle of handling a dock event
- * @ds: the dock station
- *
- * Sometimes while docking, false dock events can be sent to the driver
- * because good connections aren't made or some other reason.  Ignore these
- * if we are in the middle of doing something.
- */
+ 
 static int dock_in_progress(struct dock_station *ds)
 {
 	if ((ds->flags & DOCK_DOCKING) ||
@@ -378,24 +305,13 @@ static int dock_in_progress(struct dock_station *ds)
 	return 0;
 }
 
-/**
- * handle_eject_request - handle an undock request checking for error conditions
- *
- * Check to make sure the dock device is still present, then undock and
- * hotremove all the devices that may need removing.
- */
+ 
 static int handle_eject_request(struct dock_station *ds, u32 event)
 {
 	if (dock_in_progress(ds))
 		return -EBUSY;
 
-	/*
-	 * here we need to generate the undock
-	 * event prior to actually doing the undock
-	 * so that the device struct still exists.
-	 * Also, even send the dock event if the
-	 * device is not present anymore
-	 */
+	 
 	dock_event(ds, event, UNDOCK_EVENT);
 
 	hot_remove_dock_devices(ds);
@@ -410,15 +326,7 @@ static int handle_eject_request(struct dock_station *ds, u32 event)
 	return 0;
 }
 
-/**
- * dock_notify - Handle ACPI dock notification.
- * @adev: Dock station's ACPI device object.
- * @event: Event code.
- *
- * If we are notified to dock, then check to see if the dock is
- * present and then dock.  Notify all drivers of the dock event,
- * and then hotplug and devices that may need hotplugging.
- */
+ 
 int dock_notify(struct acpi_device *adev, u32 event)
 {
 	acpi_handle handle = adev->handle;
@@ -428,23 +336,11 @@ int dock_notify(struct acpi_device *adev, u32 event)
 	if (!ds)
 		return -ENODEV;
 
-	/*
-	 * According to acpi spec 3.0a, if a DEVICE_CHECK notification
-	 * is sent and _DCK is present, it is assumed to mean an undock
-	 * request.
-	 */
+	 
 	if ((ds->flags & DOCK_IS_DOCK) && event == ACPI_NOTIFY_DEVICE_CHECK)
 		event = ACPI_NOTIFY_EJECT_REQUEST;
 
-	/*
-	 * dock station: BUS_CHECK - docked or surprise removal
-	 *		 DEVICE_CHECK - undocked
-	 * other device: BUS_CHECK/DEVICE_CHECK - added or surprise removal
-	 *
-	 * To simplify event handling, dock dependent device handler always
-	 * get ACPI_NOTIFY_BUS_CHECK/ACPI_NOTIFY_DEVICE_CHECK for add and
-	 * ACPI_NOTIFY_EJECT_REQUEST for removal
-	 */
+	 
 	switch (event) {
 	case ACPI_NOTIFY_BUS_CHECK:
 	case ACPI_NOTIFY_DEVICE_CHECK:
@@ -465,10 +361,10 @@ int dock_notify(struct acpi_device *adev, u32 event)
 		}
 		if (dock_present(ds) || dock_in_progress(ds))
 			break;
-		/* This is a surprise removal */
+		 
 		surprise_removal = 1;
 		event = ACPI_NOTIFY_EJECT_REQUEST;
-		/* Fall back */
+		 
 		fallthrough;
 	case ACPI_NOTIFY_EJECT_REQUEST:
 		begin_undock(ds);
@@ -482,9 +378,7 @@ int dock_notify(struct acpi_device *adev, u32 event)
 	return 0;
 }
 
-/*
- * show_docked - read method for "docked" file in sysfs
- */
+ 
 static ssize_t docked_show(struct device *dev,
 			   struct device_attribute *attr, char *buf)
 {
@@ -495,9 +389,7 @@ static ssize_t docked_show(struct device *dev,
 }
 static DEVICE_ATTR_RO(docked);
 
-/*
- * show_flags - read method for flags file in sysfs
- */
+ 
 static ssize_t flags_show(struct device *dev,
 			  struct device_attribute *attr, char *buf)
 {
@@ -508,9 +400,7 @@ static ssize_t flags_show(struct device *dev,
 }
 static DEVICE_ATTR_RO(flags);
 
-/*
- * write_undock - write method for "undock" file in sysfs
- */
+ 
 static ssize_t undock_store(struct device *dev, struct device_attribute *attr,
 			    const char *buf, size_t count)
 {
@@ -528,9 +418,7 @@ static ssize_t undock_store(struct device *dev, struct device_attribute *attr,
 }
 static DEVICE_ATTR_WO(undock);
 
-/*
- * show_dock_uid - read method for "uid" file in sysfs
- */
+ 
 static ssize_t uid_show(struct device *dev,
 			struct device_attribute *attr, char *buf)
 {
@@ -578,12 +466,7 @@ static const struct attribute_group dock_attribute_group = {
 	.attrs = dock_attributes
 };
 
-/**
- * acpi_dock_add - Add a new dock station
- * @adev: Dock station ACPI device object.
- *
- * allocated and initialize a new dock station device.
- */
+ 
 void acpi_dock_add(struct acpi_device *adev)
 {
 	struct dock_station *dock_station, ds = { NULL, };
@@ -611,7 +494,7 @@ void acpi_dock_add(struct acpi_device *adev)
 	INIT_LIST_HEAD(&dock_station->sibling);
 	INIT_LIST_HEAD(&dock_station->dependent_devices);
 
-	/* we want the dock device to send uevents */
+	 
 	dev_set_uevent_suppress(&dd->dev, 0);
 
 	if (acpi_dock_match(handle))
@@ -625,7 +508,7 @@ void acpi_dock_add(struct acpi_device *adev)
 	if (ret)
 		goto err_unregister;
 
-	/* add the dock station as a device dependent on itself */
+	 
 	ret = add_dock_dependent_device(dock_station, adev);
 	if (ret)
 		goto err_rmgroup;

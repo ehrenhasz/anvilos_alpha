@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Spreadtrum Communications Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/input.h>

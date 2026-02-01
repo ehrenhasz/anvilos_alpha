@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2019-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022, Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include "core.h"
 #include "pcic.h"
@@ -153,9 +150,7 @@ void ath11k_pcic_write32(struct ath11k_base *ab, u32 offset, u32 value)
 	int ret = 0;
 	bool wakeup_required;
 
-	/* for offset beyond BAR + 4K - 32, may
-	 * need to wakeup the device to access.
-	 */
+	 
 	wakeup_required = test_bit(ATH11K_FLAG_DEVICE_INIT_DONE, &ab->dev_flags) &&
 			  offset >= ATH11K_PCI_ACCESS_ALWAYS_OFF;
 	if (wakeup_required && ab->pci.ops->wakeup)
@@ -186,9 +181,7 @@ u32 ath11k_pcic_read32(struct ath11k_base *ab, u32 offset)
 	u32 val;
 	bool wakeup_required;
 
-	/* for offset beyond BAR + 4K - 32, may
-	 * need to wakeup the device to access.
-	 */
+	 
 	wakeup_required = test_bit(ATH11K_FLAG_DEVICE_INIT_DONE, &ab->dev_flags) &&
 			  offset >= ATH11K_PCI_ACCESS_ALWAYS_OFF;
 	if (wakeup_required && ab->pci.ops->wakeup)
@@ -210,9 +203,7 @@ int ath11k_pcic_read(struct ath11k_base *ab, void *buf, u32 start, u32 end)
 	u32 *data = buf;
 	u32 i;
 
-	/* for offset beyond BAR + 4K - 32, may
-	 * need to wakeup the device to access.
-	 */
+	 
 	wakeup_required = test_bit(ATH11K_FLAG_DEVICE_INIT_DONE, &ab->dev_flags) &&
 			  end >= ATH11K_PCI_ACCESS_ALWAYS_OFF;
 	if (wakeup_required && ab->pci.ops->wakeup) {
@@ -221,13 +212,7 @@ int ath11k_pcic_read(struct ath11k_base *ab, void *buf, u32 start, u32 end)
 			ath11k_warn(ab,
 				    "wakeup failed, data may be invalid: %d",
 				    ret);
-			/* Even though wakeup() failed, continue processing rather
-			 * than returning because some parts of the data may still
-			 * be valid and useful in some cases, e.g. could give us
-			 * some clues on firmware crash.
-			 * Mislead due to invalid data could be avoided because we
-			 * are aware of the wakeup failure.
-			 */
+			 
 		}
 	}
 
@@ -327,9 +312,7 @@ static void ath11k_pcic_ce_irq_enable(struct ath11k_base *ab, u16 ce_id)
 {
 	u32 irq_idx;
 
-	/* In case of one MSI vector, we handle irq enable/disable in a
-	 * uniform way since we only have one irq
-	 */
+	 
 	if (!test_bit(ATH11K_FLAG_MULTI_MSI_VECTORS, &ab->dev_flags))
 		return;
 
@@ -341,9 +324,7 @@ static void ath11k_pcic_ce_irq_disable(struct ath11k_base *ab, u16 ce_id)
 {
 	u32 irq_idx;
 
-	/* In case of one MSI vector, we handle irq enable/disable in a
-	 * uniform way since we only have one irq
-	 */
+	 
 	if (!test_bit(ATH11K_FLAG_MULTI_MSI_VECTORS, &ab->dev_flags))
 		return;
 
@@ -397,7 +378,7 @@ static irqreturn_t ath11k_pcic_ce_interrupt_handler(int irq, void *arg)
 	if (!test_bit(ATH11K_FLAG_CE_IRQ_ENABLED, &ab->dev_flags))
 		return IRQ_HANDLED;
 
-	/* last interrupt received for this CE */
+	 
 	ce_pipe->timestamp = jiffies;
 
 	disable_irq_nosync(ab->irq_num[irq_idx]);
@@ -412,9 +393,7 @@ static void ath11k_pcic_ext_grp_disable(struct ath11k_ext_irq_grp *irq_grp)
 	struct ath11k_base *ab = irq_grp->ab;
 	int i;
 
-	/* In case of one MSI vector, we handle irq enable/disable
-	 * in a uniform way since we only have one irq
-	 */
+	 
 	if (!test_bit(ATH11K_FLAG_MULTI_MSI_VECTORS, &ab->dev_flags))
 		return;
 
@@ -446,9 +425,7 @@ static void ath11k_pcic_ext_grp_enable(struct ath11k_ext_irq_grp *irq_grp)
 	struct ath11k_base *ab = irq_grp->ab;
 	int i;
 
-	/* In case of one MSI vector, we handle irq enable/disable in a
-	 * uniform way since we only have one irq
-	 */
+	 
 	if (!test_bit(ATH11K_FLAG_MULTI_MSI_VECTORS, &ab->dev_flags))
 		return;
 
@@ -528,7 +505,7 @@ static irqreturn_t ath11k_pcic_ext_interrupt_handler(int irq, void *arg)
 
 	ath11k_dbg(irq_grp->ab, ATH11K_DBG_PCI, "ext irq %d\n", irq);
 
-	/* last interrupt received for this group */
+	 
 	irq_grp->timestamp = jiffies;
 
 	for (i = 0; i < irq_grp->num_irq; i++)
@@ -632,7 +609,7 @@ int ath11k_pcic_config_irq(struct ath11k_base *ab)
 	if (!test_bit(ATH11K_FLAG_MULTI_MSI_VECTORS, &ab->dev_flags))
 		irq_flags |= IRQF_NOBALANCING;
 
-	/* Configure CE irqs */
+	 
 	for (i = 0, msi_data_idx = 0; i < ab->hw_params.ce_count; i++) {
 		if (ath11k_ce_get_attr_flags(ab, i) & CE_ATTR_DIS_INTR)
 			continue;
@@ -774,7 +751,7 @@ int ath11k_pcic_register_pci_ops(struct ath11k_base *ab,
 	if (!pci_ops)
 		return 0;
 
-	/* Return error if mandatory pci_ops callbacks are missing */
+	 
 	if (!pci_ops->get_msi_irq || !pci_ops->window_write32 ||
 	    !pci_ops->window_read32)
 		return -EINVAL;

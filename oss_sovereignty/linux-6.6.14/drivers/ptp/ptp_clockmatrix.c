@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * PTP hardware clock driver for the IDT ClockMatrix(TM) family of timing and
- * synchronization devices.
- *
- * Copyright (C) 2019 Integrated Device Technology, Inc., a Renesas Company.
- */
+
+ 
 #include <linux/firmware.h>
 #include <linux/platform_device.h>
 #include <linux/module.h>
@@ -28,10 +23,7 @@ MODULE_AUTHOR("IDT support-1588 <IDT-support-1588@lm.renesas.com>");
 MODULE_VERSION("1.0");
 MODULE_LICENSE("GPL");
 
-/*
- * The name of the firmware file to be loaded
- * over-rides any automatic selection
- */
+ 
 static char *firmware;
 module_param(firmware, charp, 0);
 
@@ -69,16 +61,11 @@ static int contains_full_configuration(struct idtcm *idtcm,
 	u8 loaddr;
 	s32 len;
 
-	/* 4 bytes skipped every 0x80 */
+	 
 	full_count = (scratch - GPIO_USER_CONTROL) -
 		     ((scratch >> 7) - (GPIO_USER_CONTROL >> 7)) * 4;
 
-	/* If the firmware contains 'full configuration' SM_RESET can be used
-	 * to ensure proper configuration.
-	 *
-	 * Full configuration is defined as the number of programmable
-	 * bytes within the configuration range minus page offset addr range.
-	 */
+	 
 	for (len = fw->size; len > 0; len -= sizeof(*rec)) {
 		regaddr = rec->hiaddr << 8;
 		regaddr |= rec->loaddr;
@@ -87,11 +74,11 @@ static int contains_full_configuration(struct idtcm *idtcm,
 
 		rec++;
 
-		/* Top (status registers) and bottom are read-only */
+		 
 		if (regaddr < GPIO_USER_CONTROL || regaddr >= scratch)
 			continue;
 
-		/* Page size 128, last 4 bytes of page skipped */
+		 
 		if ((loaddr > 0x7b && loaddr <= 0x7f) || loaddr > 0xfb)
 			continue;
 
@@ -112,7 +99,7 @@ static int char_array_to_timespec(u8 *buf,
 	if (count < TOD_BYTE_COUNT)
 		return 1;
 
-	/* Sub-nanoseconds are in buf[0]. */
+	 
 	nsec = buf[4];
 	for (i = 0; i < 3; i++) {
 		nsec <<= 8;
@@ -145,7 +132,7 @@ static int timespec_to_char_array(struct timespec64 const *ts,
 	nsec = ts->tv_nsec;
 	sec = ts->tv_sec;
 
-	/* Sub-nanoseconds are in buf[0]. */
+	 
 	buf[0] = 0;
 	for (i = 1; i < 5; i++) {
 		buf[i] = nsec & 0xff;
@@ -218,7 +205,7 @@ static int read_boot_status(struct idtcm *idtcm, u32 *status)
 static int wait_for_boot_status_ready(struct idtcm *idtcm)
 {
 	u32 status = 0;
-	u8 i = 30;	/* 30 * 100ms = 3s */
+	u8 i = 30;	 
 	int err;
 
 	do {
@@ -266,7 +253,7 @@ static int arm_tod_read_trig_sel_refclk(struct idtcm_channel *channel, u8 ref)
 
 static bool is_single_shot(u8 mask)
 {
-	/* Treat single bit ToD masks as continuous trigger */
+	 
 	return !(mask <= 8 && is_power_of_2(mask));
 }
 
@@ -283,14 +270,14 @@ static int idtcm_extts_enable(struct idtcm_channel *channel,
 	idtcm = channel->idtcm;
 	old_mask = idtcm->extts_mask;
 
-	/* Reject requests with unsupported flags */
+	 
 	if (rq->extts.flags & ~(PTP_ENABLE_FEATURE |
 				PTP_RISING_EDGE |
 				PTP_FALLING_EDGE |
 				PTP_STRICT_FLAGS))
 		return -EOPNOTSUPP;
 
-	/* Reject requests to enable time stamping on falling edge */
+	 
 	if ((rq->extts.flags & PTP_ENABLE_FEATURE) &&
 	    (rq->extts.flags & PTP_FALLING_EDGE))
 		return -EOPNOTSUPP;
@@ -299,8 +286,8 @@ static int idtcm_extts_enable(struct idtcm_channel *channel,
 		return -EINVAL;
 
 	if (on) {
-		/* Support triggering more than one TOD_0/1/2/3 by same pin */
-		/* Use the pin configured for the channel */
+		 
+		 
 		ref = ptp_find_pin(channel->ptp_clock, PTP_PF_EXTTS, channel->tod);
 
 		if (ref < 0) {
@@ -429,7 +416,7 @@ static int _idtcm_gettime(struct idtcm_channel *channel,
 	u8 trigger;
 	int err;
 
-	/* wait trigger to be 0 */
+	 
 	do {
 		if (timeout-- == 0)
 			return -EIO;
@@ -472,7 +459,7 @@ static int idtcm_extts_check_channel(struct idtcm *idtcm, u8 todn)
 	if (err)
 		return err;
 
-	/* Triggered - save timestamp */
+	 
 	event.type = PTP_CLOCK_EXTTS;
 	event.index = todn;
 	event.timestamp = timespec64_to_ns(&ts) - dco_delay;
@@ -552,7 +539,7 @@ static int _sync_pll_output(struct idtcm *idtcm,
 
 	val = SYNCTRL1_MASTER_SYNC_RST;
 
-	/* Place master sync in reset */
+	 
 	err = idtcm_write(idtcm, 0, sync_ctrl1, &val, sizeof(val));
 	if (err)
 		return err;
@@ -561,7 +548,7 @@ static int _sync_pll_output(struct idtcm *idtcm,
 	if (err)
 		return err;
 
-	/* Set sync trigger mask */
+	 
 	val |= SYNCTRL1_FBDIV_FRAME_SYNC_TRIG | SYNCTRL1_FBDIV_SYNC_TRIG;
 
 	if (qn)
@@ -574,7 +561,7 @@ static int _sync_pll_output(struct idtcm *idtcm,
 	if (err)
 		return err;
 
-	/* PLL5 can have OUT8 as second additional output. */
+	 
 	if (pll == 5 && qn_plus_1 != 0) {
 		err = idtcm_read(idtcm, 0, HW_Q8_CTRL_SPARE,
 				 &temp, sizeof(temp));
@@ -596,7 +583,7 @@ static int _sync_pll_output(struct idtcm *idtcm,
 			return err;
 	}
 
-	/* PLL6 can have OUT11 as second additional output. */
+	 
 	if (pll == 6 && qn_plus_1 != 0) {
 		err = idtcm_read(idtcm, 0, HW_Q11_CTRL_SPARE,
 				 &temp, sizeof(temp));
@@ -618,7 +605,7 @@ static int _sync_pll_output(struct idtcm *idtcm,
 			return err;
 	}
 
-	/* Place master sync out of reset */
+	 
 	val &= ~(SYNCTRL1_MASTER_SYNC_RST);
 	err = idtcm_write(idtcm, 0, sync_ctrl1, &val, sizeof(val));
 
@@ -660,7 +647,7 @@ static int idtcm_sync_pps_output(struct idtcm_channel *channel)
 		qn_plus_1 = 0;
 
 		if (pll < 4) {
-			/* First 4 pll has 2 outputs */
+			 
 			qn = output_mask & 0x1;
 			output_mask = output_mask >> 1;
 			qn_plus_1 = output_mask & 0x1;
@@ -713,7 +700,7 @@ static int _idtcm_set_dpll_hw_tod(struct idtcm_channel *channel,
 	struct timespec64 local_ts = *ts;
 	s64 total_overhead_ns;
 
-	/* Configure HW TOD write trigger. */
+	 
 	err = idtcm_read(idtcm, channel->hw_dpll_n, HW_DPLL_TOD_CTRL_1,
 			 &cmd, sizeof(cmd));
 	if (err)
@@ -738,7 +725,7 @@ static int _idtcm_set_dpll_hw_tod(struct idtcm_channel *channel,
 			return err;
 	}
 
-	/* ARM HW TOD write trigger. */
+	 
 	cmd &= ~(0x08);
 
 	err = idtcm_write(idtcm, channel->hw_dpll_n, HW_DPLL_TOD_CTRL_1,
@@ -746,7 +733,7 @@ static int _idtcm_set_dpll_hw_tod(struct idtcm_channel *channel,
 
 	if (wr_trig == HW_TOD_WR_TRIG_SEL_MSB) {
 		if (idtcm->calculate_overhead_flag) {
-			/* Assumption: I2C @ 400KHz */
+			 
 			ktime_t diff = ktime_sub(ktime_get_raw(),
 						 idtcm->start_time);
 			total_overhead_ns =  ktime_to_ns(diff)
@@ -790,7 +777,7 @@ static int _idtcm_set_dpll_scsr_tod(struct idtcm_channel *channel,
 	if (err)
 		return err;
 
-	/* Trigger the write operation. */
+	 
 	err = idtcm_read(idtcm, channel->tod_write, TOD_WRITE_CMD,
 			 &cmd, sizeof(cmd));
 	if (err)
@@ -806,9 +793,9 @@ static int _idtcm_set_dpll_scsr_tod(struct idtcm_channel *channel,
 	if (err)
 		return err;
 
-	/* Wait for the operation to complete. */
+	 
 	while (1) {
-		/* pps trigger takes up to 1 sec to complete */
+		 
 		if (wr_trig == SCSR_TOD_WR_TRIG_SEL_TODPPS)
 			msleep(50);
 
@@ -998,7 +985,7 @@ static int set_tod_write_overhead(struct idtcm_channel *channel)
 
 	char buf[TOD_BYTE_COUNT] = {0};
 
-	/* Set page offset */
+	 
 	idtcm_write(idtcm, channel->hw_dpll_n, HW_DPLL_TOD_OVR__0,
 		    buf, sizeof(buf));
 
@@ -1173,7 +1160,7 @@ static int set_pll_output_mask(struct idtcm *idtcm, u16 addr, u8 val)
 		SET_U16_MSB(idtcm->channel[3].output_mask, val);
 		break;
 	default:
-		err = -EFAULT; /* Bad address */;
+		err = -EFAULT;  ;
 		break;
 	}
 
@@ -1263,7 +1250,7 @@ static int idtcm_load_firmware(struct idtcm *idtcm,
 	u8 val;
 	u8 loaddr;
 
-	if (firmware) /* module parameter */
+	if (firmware)  
 		snprintf(fname, sizeof(fname), "%s", firmware);
 
 	dev_info(idtcm->dev, "requesting firmware '%s'", fname);
@@ -1302,11 +1289,11 @@ static int idtcm_load_firmware(struct idtcm *idtcm,
 		if (err != -EINVAL) {
 			err = 0;
 
-			/* Top (status registers) and bottom are read-only */
+			 
 			if (regaddr < GPIO_USER_CONTROL || regaddr >= scratch)
 				continue;
 
-			/* Page size 128, last 4 bytes of page skipped */
+			 
 			if ((loaddr > 0x7b && loaddr <= 0x7f) || loaddr > 0xfb)
 				continue;
 
@@ -1367,7 +1354,7 @@ static int idtcm_perout_enable(struct idtcm_channel *channel,
 		return err;
 	}
 
-	/* Align output to internal 1 PPS */
+	 
 	return _idtcm_settime(channel, &ts, SCSR_TOD_WR_TYPE_SEL_DELTA_PLUS);
 }
 
@@ -1540,14 +1527,14 @@ static long idtcm_work_handler(struct ptp_clock_info *ptp)
 
 	mutex_unlock(idtcm->lock);
 
-	/* Return a negative value here to not reschedule */
+	 
 	return -1;
 }
 
 static s32 phase_pull_in_scaled_ppm(s32 current_ppm, s32 phase_pull_in_ppb)
 {
-	/* ppb = scaled_ppm * 125 / 2^13 */
-	/* scaled_ppm = ppb * 2^13 / 125 */
+	 
+	 
 
 	s64 max_scaled_ppm = div_s64((s64)PHASE_PULL_IN_MAX_PPB << 13, 125);
 	s64 scaled_ppm = div_s64((s64)phase_pull_in_ppb << 13, 125);
@@ -1572,17 +1559,14 @@ static int do_phase_pull_in_sw(struct idtcm_channel *channel,
 	s32 ppb;
 	int err;
 
-	/* If the ToD correction is less than PHASE_PULL_IN_MIN_THRESHOLD_NS,
-	 * skip. The error introduced by the ToD adjustment procedure would
-	 * be bigger than the required ToD correction
-	 */
+	 
 	if (abs(delta_ns) < PHASE_PULL_IN_MIN_THRESHOLD_NS)
 		return 0;
 
 	if (max_ffo_ppb == 0)
 		max_ffo_ppb = PHASE_PULL_IN_MAX_PPB;
 
-	/* For most cases, keep phase pull-in duration 1 second */
+	 
 	ppb = delta_ns;
 	while (abs(ppb) > max_ffo_ppb) {
 		duration_ms *= 2;
@@ -1596,7 +1580,7 @@ static int do_phase_pull_in_sw(struct idtcm_channel *channel,
 	if (err)
 		return err;
 
-	/* schedule the worker to cancel phase pull-in */
+	 
 	ptp_schedule_worker(channel->ptp_clock,
 			    msecs_to_jiffies(duration_ms) - 1);
 
@@ -1689,27 +1673,15 @@ static int initialize_dco_operating_mode(struct idtcm_channel *channel)
 	return err;
 }
 
-/* PTP Hardware Clock interface */
+ 
 
-/*
- * Maximum absolute value for write phase offset in nanoseconds
- *
- * Destination signed register is 32-bit register in resolution of 50ps
- *
- * 0x7fffffff * 50 =  2147483647 * 50 = 107374182350 ps
- * Represent 107374182350 ps as 107374182 ns
- */
+ 
 static s32 idtcm_getmaxphase(struct ptp_clock_info *ptp __always_unused)
 {
 	return MAX_ABS_WRITE_PHASE_NANOSECONDS;
 }
 
-/*
- * Internal function for implementing support for write phase offset
- *
- * @channel:  channel
- * @delta_ns: delta in nanoseconds
- */
+ 
 static int _idtcm_adjphase(struct idtcm_channel *channel, s32 delta_ns)
 {
 	struct idtcm *idtcm = channel->idtcm;
@@ -1751,21 +1723,9 @@ static int _idtcm_adjfine(struct idtcm_channel *channel, long scaled_ppm)
 			return err;
 	}
 
-	/*
-	 * Frequency Control Word unit is: 1.11 * 10^-10 ppm
-	 *
-	 * adjfreq:
-	 *       ppb * 10^9
-	 * FCW = ----------
-	 *          111
-	 *
-	 * adjfine:
-	 *       ppm_16 * 5^12
-	 * FCW = -------------
-	 *         111 * 2^4
-	 */
+	 
 
-	/* 2 ^ -53 = 1.1102230246251565404236316680908e-16 */
+	 
 	fcw = scaled_ppm * 244140625ULL;
 
 	fcw = div_s64(fcw, 1776);
@@ -1941,7 +1901,7 @@ static int idtcm_enable(struct ptp_clock_info *ptp,
 	case PTP_CLK_REQ_PEROUT:
 		if (!on)
 			err = idtcm_perout_enable(channel, &rq->perout, false);
-		/* Only accept a 1-PPS aligned to the second. */
+		 
 		else if (rq->perout.start.nsec || rq->perout.period.sec != 1 ||
 			 rq->perout.period.nsec)
 			err = -ERANGE;
@@ -1972,9 +1932,7 @@ static int idtcm_enable_tod(struct idtcm_channel *channel)
 	u8 cfg;
 	int err;
 
-	/*
-	 * Start the TOD clock ticking.
-	 */
+	 
 	err = idtcm_read(idtcm, channel->tod_n, tod_cfg, &cfg, sizeof(cfg));
 	if (err)
 		return err;
@@ -2148,10 +2106,7 @@ static int configure_channel_pll(struct idtcm_channel *channel)
 	return err;
 }
 
-/*
- * Compensate for the PTP DCO input-to-output delay.
- * This delay is 18 FOD cycles.
- */
+ 
 static u32 idtcm_get_dco_delay(struct idtcm_channel *channel)
 {
 	struct idtcm *idtcm = channel->idtcm;
@@ -2190,7 +2145,7 @@ static int configure_channel_tod(struct idtcm_channel *channel, u32 index)
 {
 	enum fw_version fw_ver = channel->idtcm->fw_ver;
 
-	/* Set tod addresses */
+	 
 	switch (index) {
 	case 0:
 		channel->tod_read_primary = IDTCM_FW_REG(fw_ver, V520, TOD_READ_PRIMARY_0);
@@ -2241,12 +2196,12 @@ static int idtcm_enable_channel(struct idtcm *idtcm, u32 index)
 	channel->idtcm = idtcm;
 	channel->current_freq_scaled_ppm = 0;
 
-	/* Set pll addresses */
+	 
 	err = configure_channel_pll(channel);
 	if (err)
 		return err;
 
-	/* Set tod addresses */
+	 
 	err = configure_channel_tod(channel, index);
 	if (err)
 		return err;
@@ -2311,7 +2266,7 @@ static int idtcm_enable_extts_channel(struct idtcm *idtcm, u32 index)
 	channel = &idtcm->channel[index];
 	channel->idtcm = idtcm;
 
-	/* Set tod addresses */
+	 
 	err = configure_channel_tod(channel, index);
 	if (err)
 		return err;
@@ -2343,11 +2298,11 @@ static void idtcm_extts_check(struct work_struct *work)
 		err = idtcm_extts_check_channel(idtcm, i);
 
 		if (err == 0) {
-			/* trigger clears itself, so clear the mask */
+			 
 			if (idtcm->extts_single_shot) {
 				idtcm->extts_mask &= ~mask;
 			} else {
-				/* Re-arm */
+				 
 				channel = &idtcm->channel[i];
 				arm_tod_read_trig_sel_refclk(channel, channel->refn);
 			}

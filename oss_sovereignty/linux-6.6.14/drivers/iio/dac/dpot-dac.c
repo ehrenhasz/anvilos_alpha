@@ -1,30 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * IIO DAC emulation driver using a digital potentiometer
- *
- * Copyright (C) 2016 Axentia Technologies AB
- *
- * Author: Peter Rosin <peda@axentia.se>
- */
 
-/*
- * It is assumed that the dpot is used as a voltage divider between the
- * current dpot wiper setting and the maximum resistance of the dpot. The
- * divided voltage is provided by a vref regulator.
- *
- *                   .------.
- *    .-----------.  |      |
- *    | vref      |--'    .---.
- *    | regulator |--.    |   |
- *    '-----------'  |    | d |
- *                   |    | p |
- *                   |    | o |  wiper
- *                   |    | t |<---------+
- *                   |    |   |
- *                   |    '---'       dac output voltage
- *                   |      |
- *                   '------+------------+
- */
+ 
+
+ 
 
 #include <linux/err.h>
 #include <linux/iio/consumer.h>
@@ -72,13 +49,10 @@ static int dpot_dac_read_raw(struct iio_dev *indio_dev,
 			*val = tmp;
 			return ret;
 		case IIO_VAL_INT:
-			/*
-			 * Convert integer scale to fractional scale by
-			 * setting the denominator (val2) to one...
-			 */
+			 
 			*val2 = 1;
 			ret = IIO_VAL_FRACTIONAL;
-			/* ...and fall through. Say it again for GCC. */
+			 
 			fallthrough;
 		case IIO_VAL_FRACTIONAL:
 			*val *= regulator_get_voltage(dac->vref) / 1000;
@@ -239,7 +213,7 @@ static int dpot_dac_remove(struct platform_device *pdev)
 
 static const struct of_device_id dpot_dac_match[] = {
 	{ .compatible = "dpot-dac" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, dpot_dac_match);
 

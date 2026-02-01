@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018, Red Hat, Inc.
- *
- * Tests for SMM.
- */
-#define _GNU_SOURCE /* for program_invocation_short_name */
+
+ 
+#define _GNU_SOURCE  
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,16 +27,11 @@
 #define SYNC_PORT 0xe
 #define DONE 0xff
 
-/*
- * This is compiled as normal 64-bit code, however, SMI handler is executed
- * in real-address mode. To stay simple we're limiting ourselves to a mode
- * independent subset of asm here.
- * SMI handler always report back fixed stage SMRAM_STAGE.
- */
+ 
 uint8_t smi_handler[] = {
-	0xb0, SMRAM_STAGE,    /* mov $SMRAM_STAGE, %al */
-	0xe4, SYNC_PORT,      /* in $SYNC_PORT, %al */
-	0x0f, 0xaa,           /* rsm */
+	0xb0, SMRAM_STAGE,     
+	0xe4, SYNC_PORT,       
+	0x0f, 0xaa,            
 };
 
 static inline void sync_with_host(uint64_t phase)
@@ -107,7 +98,7 @@ static void guest_code(void *arg)
 			vmresume();
 		}
 
-		/* Stages 8-11 are eaten by SMM (SMRAM_STAGE reported instead) */
+		 
 		sync_with_host(12);
 	}
 
@@ -138,7 +129,7 @@ int main(int argc, char *argv[])
 
 	TEST_REQUIRE(kvm_has_cap(KVM_CAP_X86_SMM));
 
-	/* Create VM */
+	 
 	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
 
 	vm_userspace_mem_region_add(vm, VM_MEM_SRC_ANONYMOUS, SMRAM_GPA,
@@ -181,19 +172,13 @@ int main(int argc, char *argv[])
 			    "Unexpected stage: #%x, got %x",
 			    stage, stage_reported);
 
-		/*
-		 * Enter SMM during L2 execution and check that we correctly
-		 * return from it. Do not perform save/restore while in SMM yet.
-		 */
+		 
 		if (stage == 8) {
 			inject_smi(vcpu);
 			continue;
 		}
 
-		/*
-		 * Perform save/restore while the guest is in SMM triggered
-		 * during L2 execution.
-		 */
+		 
 		if (stage == 10)
 			inject_smi(vcpu);
 

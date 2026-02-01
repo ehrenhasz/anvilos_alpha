@@ -1,20 +1,4 @@
-/* 'ln' program to create links between files.
-   Copyright (C) 1986-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Mike Parker and David MacKenzie. */
+ 
 
 #include <config.h>
 #include <stdio.h>
@@ -36,56 +20,47 @@
 #include "yesno.h"
 #include "canonicalize.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "ln"
 
 #define AUTHORS \
   proper_name ("Mike Parker"), \
   proper_name ("David MacKenzie")
 
-/* FIXME: document */
+ 
 static enum backup_type backup_type;
 
-/* If true, make symbolic links; otherwise, make hard links.  */
+ 
 static bool symbolic_link;
 
-/* If true, make symbolic links relative  */
+ 
 static bool relative;
 
-/* If true, hard links are logical rather than physical.  */
+ 
 static bool logical = !!LINK_FOLLOWS_SYMLINKS;
 
-/* If true, ask the user before removing existing files.  */
+ 
 static bool interactive;
 
-/* If true, remove existing files unconditionally.  */
+ 
 static bool remove_existing_files;
 
-/* If true, list each file as it is moved. */
+ 
 static bool verbose;
 
-/* If true, allow the superuser to *attempt* to make hard links
-   to directories.  However, it appears that this option is not useful
-   in practice, since even the superuser is prohibited from hard-linking
-   directories on most existing systems (Solaris being an exception).  */
+ 
 static bool hard_dir_link;
 
-/* If true, watch out for creating or removing hard links to directories.  */
+ 
 static bool beware_hard_dir_link;
 
-/* If nonzero, and the specified destination is a symbolic link to a
-   directory, treat it just as if it were a directory.  Otherwise, the
-   command 'ln --force --no-dereference file symlink-to-dir' deletes
-   symlink-to-dir before creating the new link.  */
+ 
 static bool dereference_dest_dir_symlinks = true;
 
-/* This is a set of destination name/inode/dev triples for hard links
-   created by ln.  Use this data structure to avoid data loss via a
-   sequence of commands like this:
-   rm -rf a b c; mkdir a b c; touch a/f b/f; ln -f a/f b/f c && rm -r a b */
+ 
 static Hash_table *dest_set;
 
-/* Initial size of the dest_set hash table.  */
+ 
 enum { DEST_INFO_INITIAL_CAPACITY = 61 };
 
 static struct option const long_options[] =
@@ -108,8 +83,7 @@ static struct option const long_options[] =
   {nullptr, 0, nullptr, 0}
 };
 
-/* Return an errno value for a system call that returned STATUS.
-   This is zero if STATUS is zero, and is errno otherwise.  */
+ 
 
 static int
 errnoize (int status)
@@ -117,14 +91,12 @@ errnoize (int status)
   return status < 0 ? errno : 0;
 }
 
-/* Return FROM represented as relative to the dir of TARGET.
-   The result is malloced.  */
+ 
 
 static char *
 convert_abs_rel (char const *from, char const *target)
 {
-  /* Get dirname to generate paths relative to.  We don't resolve
-     the full TARGET as the last component could be an existing symlink.  */
+   
   char *targetdir = dir_name (target);
 
   char *realdest = canonicalize_filename_mode (targetdir, CAN_MISSING);
@@ -133,7 +105,7 @@ convert_abs_rel (char const *from, char const *target)
   char *relative_from = nullptr;
   if (realdest && realfrom)
     {
-      /* Write to a PATH_MAX buffer.  */
+       
       relative_from = xmalloc (PATH_MAX);
 
       if (!relpath (realfrom, realdest, relative_from, PATH_MAX))
@@ -150,11 +122,7 @@ convert_abs_rel (char const *from, char const *target)
   return relative_from ? relative_from : xstrdup (from);
 }
 
-/* Link SOURCE to DESTDIR_FD + DEST_BASE atomically.  DESTDIR_FD is
-   the directory containing DEST_BASE.  Return 0 if successful, a
-   positive errno value on failure, and -1 if an atomic link cannot be
-   done.  This handles the common case where the destination does not
-   already exist and -r is not specified.  */
+ 
 
 static int
 atomic_link (char const *source, int destdir_fd, char const *dest_base)
@@ -167,12 +135,7 @@ atomic_link (char const *source, int destdir_fd, char const *dest_base)
                               logical ? AT_SYMLINK_FOLLOW : 0)));
 }
 
-/* Link SOURCE to a directory entry under DESTDIR_FD named DEST_BASE.
-   DEST is the full name of the destination, useful for diagnostics.
-   LINK_ERRNO is zero if the link has already been made,
-   positive if attempting the link failed with errno == LINK_ERRNO,
-   -1 if no attempt has been made to create the link.
-   Return true if successful.  */
+ 
 
 static bool
 do_link (char const *source, int destdir_fd, char const *dest_base,
@@ -186,8 +149,7 @@ do_link (char const *source, int destdir_fd, char const *dest_base,
   if (link_errno < 0)
     link_errno = atomic_link (source, destdir_fd, dest_base);
 
-  /* Get SOURCE_STATS if later code will need it, if only for sharper
-     diagnostics.  */
+   
   if ((link_errno || dest_set) && !symbolic_link)
     {
       source_status = fstatat (AT_FDCWD, source, &source_stats, nofollow_flag);
@@ -232,8 +194,7 @@ do_link (char const *source, int destdir_fd, char const *dest_base,
             }
           else if (seen_file (dest_set, dest, &dest_stats))
             {
-              /* The current target was created as a hard link to another
-                 source file.  */
+               
               error (0, 0,
                      _("will not overwrite just-created %s with %s"),
                      quoteaf_n (0, dest), quoteaf_n (1, source));
@@ -241,21 +202,12 @@ do_link (char const *source, int destdir_fd, char const *dest_base,
             }
           else
             {
-              /* Beware removing DEST if it is the same directory entry as
-                 SOURCE, because in that case removing DEST can cause the
-                 subsequent link creation either to fail (for hard links), or
-                 to replace a non-symlink DEST with a self-loop (for symbolic
-                 links) which loses the contents of DEST.  So, when backing
-                 up, worry about creating hard links (since the backups cover
-                 the symlink case); otherwise, worry about about -f.  */
+               
               if (backup_type != no_backups
                   ? !symbolic_link
                   : remove_existing_files)
                 {
-                  /* Detect whether removing DEST would also remove SOURCE.
-                     If the file has only one link then both are surely the
-                     same directory entry.  Otherwise check whether they point
-                     to the same name in the same directory.  */
+                   
                   if (source_status != 0)
                     source_status = stat (source, &source_stats);
                   if (source_status == 0
@@ -308,22 +260,7 @@ do_link (char const *source, int destdir_fd, char const *dest_base,
             }
         }
 
-      /* If the attempt to create a link fails and we are removing or
-         backing up destinations, unlink the destination and try again.
-
-         On the surface, POSIX states that 'ln -f A B' unlinks B before trying
-         to link A to B.  But strictly following this has the counterintuitive
-         effect of losing the contents of B if A does not exist.  Fortunately,
-         POSIX 2008 clarified that an application is free to fail early if it
-         can prove that continuing onward cannot succeed, so we can try to
-         link A to B before blindly unlinking B, thus sometimes attempting to
-         link a second time during a successful 'ln -f A B'.
-
-         Try to unlink DEST even if we may have backed it up successfully.
-         In some unusual cases (when DEST and the backup are hard-links
-         that refer to the same file), rename succeeds and DEST remains.
-         If we didn't remove DEST in that case, the subsequent symlink or
-         link call would fail.  */
+       
       link_errno
         = (symbolic_link
            ? force_symlinkat (source, destdir_fd, dest_base,
@@ -331,15 +268,12 @@ do_link (char const *source, int destdir_fd, char const *dest_base,
            : force_linkat (AT_FDCWD, source, destdir_fd, dest_base,
                            logical ? AT_SYMLINK_FOLLOW : 0,
                            force, link_errno));
-      /* Until now, link_errno < 0 meant the link has not been tried.
-         From here on, link_errno < 0 means the link worked but
-         required removing the destination first.  */
+       
     }
 
   if (link_errno <= 0)
     {
-      /* Right after creating a hard link, do this: (note dest name and
-         source_stats, which are also the just-linked-destinations stats) */
+       
       if (! symbolic_link)
         record_file (dest_set, dest, &source_stats);
 
@@ -641,16 +575,12 @@ main (int argc, char **argv)
 
   if (target_directory)
     {
-      /* Create the data structure we'll use to record which hard links we
-         create.  Used to ensure that ln detects an obscure corner case that
-         might result in user data loss.  Create it only if needed.  */
+       
       if (2 <= n_files
           && remove_existing_files
-          /* Don't bother trying to protect symlinks, since ln clobbering
-             a just-created symlink won't ever lead to real data loss.  */
+           
           && ! symbolic_link
-          /* No destination hard link can be clobbered when making
-             numbered backups.  */
+           
           && backup_type != numbered_backups)
         {
           dest_set = hash_initialize (DEST_INFO_INITIAL_CAPACITY,

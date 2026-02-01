@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2021. Huawei Technologies Co., Ltd */
+
+ 
 #include <stdbool.h>
 #include <linux/types.h>
 #include <linux/bpf.h>
@@ -32,7 +32,7 @@ int do_strncmp(void *ctx)
 SEC("?tp/syscalls/sys_enter_nanosleep")
 int strncmp_bad_not_const_str_size(void *ctx)
 {
-	/* The value of string size is not const, so will fail */
+	 
 	cmp_ret = bpf_strncmp(str, no_const_str_size, target);
 	return 0;
 }
@@ -40,7 +40,7 @@ int strncmp_bad_not_const_str_size(void *ctx)
 SEC("?tp/syscalls/sys_enter_nanosleep")
 int strncmp_bad_writable_target(void *ctx)
 {
-	/* Compared target is not read-only, so will fail */
+	 
 	cmp_ret = bpf_strncmp(str, STRNCMP_STR_SZ, writable_target);
 	return 0;
 }
@@ -48,7 +48,7 @@ int strncmp_bad_writable_target(void *ctx)
 SEC("?tp/syscalls/sys_enter_nanosleep")
 int strncmp_bad_not_null_term_target(void *ctx)
 {
-	/* Compared target is not null-terminated, so will fail */
+	 
 	cmp_ret = bpf_strncmp(str, STRNCMP_STR_SZ, no_str_target);
 	return 0;
 }

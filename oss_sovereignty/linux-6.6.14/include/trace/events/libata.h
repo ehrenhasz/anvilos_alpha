@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM libata
 
@@ -744,7 +744,7 @@ DEFINE_EVENT(ata_sff_template, ata_sff_flush_pio_task,
 	     TP_PROTO(struct ata_port *ap),
 	     TP_ARGS(ap));
 
-#endif /*  _TRACE_LIBATA_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

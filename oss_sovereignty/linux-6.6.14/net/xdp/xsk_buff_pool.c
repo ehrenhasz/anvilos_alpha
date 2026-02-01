@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <net/xsk_buff_pool.h>
 #include <net/xdp_sock.h>
@@ -175,16 +175,13 @@ int xp_assign_dev(struct xsk_buff_pool *pool,
 
 	if (flags & XDP_USE_NEED_WAKEUP)
 		pool->uses_need_wakeup = true;
-	/* Tx needs to be explicitly woken up the first time.  Also
-	 * for supporting drivers that do not implement this
-	 * feature. They will always have to call sendto() or poll().
-	 */
+	 
 	pool->cached_need_wakeup = XDP_WAKEUP_TX;
 
 	dev_hold(netdev);
 
 	if (force_copy)
-		/* For copy-mode, we are done. */
+		 
 		return 0;
 
 	if ((netdev->xdp_features & NETDEV_XDP_ACT_ZC) != NETDEV_XDP_ACT_ZC) {
@@ -217,7 +214,7 @@ err_unreg_xsk:
 	xp_disable_drv_zc(pool);
 err_unreg_pool:
 	if (!force_zc)
-		err = 0; /* fallback to copy mode */
+		err = 0;  
 	if (err) {
 		xsk_clear_pool_at_qid(netdev, queue_id);
 		dev_put(netdev);
@@ -231,7 +228,7 @@ int xp_assign_dev_shared(struct xsk_buff_pool *pool, struct xdp_sock *umem_xs,
 	u16 flags;
 	struct xdp_umem *umem = umem_xs->umem;
 
-	/* One fill and completion ring required for each queue id. */
+	 
 	if (!pool->fq || !pool->cq)
 		return -EINVAL;
 
@@ -621,7 +618,7 @@ u32 xp_alloc_batch(struct xsk_buff_pool *pool, struct xdp_buff **xdp, u32 max)
 	if (unlikely(pool->dma_need_sync)) {
 		struct xdp_buff *buff;
 
-		/* Slow path */
+		 
 		buff = xp_alloc(pool);
 		if (buff)
 			*xdp = buff;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022 Richtek Technology Corp.
- *
- * Author: ChiYuan Huang <cy_huang@richtek.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/bitfield.h>
@@ -245,7 +241,7 @@ static int mt6370_probe(struct i2c_client *i2c)
 		return dev_err_probe(dev, PTR_ERR(usbc_i2c),
 				     "Failed to register USBC I2C client\n");
 
-	/* Assign I2C client for PMU and TypeC */
+	 
 	info->i2c[MT6370_PMU_I2C] = i2c;
 	info->i2c[MT6370_USBC_I2C] = usbc_i2c;
 

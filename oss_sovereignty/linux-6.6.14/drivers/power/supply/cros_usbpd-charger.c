@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Power supply driver for ChromeOS EC based USB PD Charger.
- *
- * Copyright (c) 2014 - 2018 Google, Inc
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_data/cros_ec_commands.h>
@@ -83,7 +79,7 @@ static enum power_supply_usb_type cros_usbpd_charger_usb_types[] = {
 	POWER_SUPPLY_USB_TYPE_APPLE_BRICK_ID
 };
 
-/* Input voltage/current limit in mV/mA. Default to none. */
+ 
 static u16 input_voltage_limit = EC_POWER_LIMIT_NONE;
 static u16 input_current_limit = EC_POWER_LIMIT_NONE;
 
@@ -235,11 +231,7 @@ static int cros_usbpd_charger_get_power_info(struct port_data *port)
 		port->psy_usb_type = POWER_SUPPLY_USB_TYPE_SDP;
 		break;
 	case USB_CHG_TYPE_NONE:
-		/*
-		 * For dual-role devices when we are a source, the firmware
-		 * reports the type as NONE. Report such chargers as type
-		 * USB_PD_DRP.
-		 */
+		 
 		if (resp.role == USB_PD_PORT_POWER_SOURCE && resp.dualrole)
 			port->psy_usb_type = POWER_SUPPLY_USB_TYPE_PD_DRP;
 		else
@@ -265,12 +257,7 @@ static int cros_usbpd_charger_get_power_info(struct port_data *port)
 			port->psy_usb_type = POWER_SUPPLY_USB_TYPE_PD;
 		break;
 	case USB_CHG_TYPE_UNKNOWN:
-		/*
-		 * While the EC is trying to determine the type of charger that
-		 * has been plugged in, it will report the charger type as
-		 * unknown. Additionally since the power capabilities are
-		 * unknown, report the max current and voltage as zero.
-		 */
+		 
 		port->psy_usb_type = POWER_SUPPLY_USB_TYPE_UNKNOWN;
 		port->psy_voltage_max_design = 0;
 		port->psy_current_max = 0;
@@ -291,12 +278,7 @@ static int cros_usbpd_charger_get_power_info(struct port_data *port)
 		resp.meas.voltage_now, resp.meas.current_max,
 		resp.meas.current_lim, resp.max_power);
 
-	/*
-	 * If power supply type or status changed, explicitly call
-	 * power_supply_changed. This results in udev event getting generated
-	 * and allows user mode apps to react quicker instead of waiting for
-	 * their next poll of power supply status.
-	 */
+	 
 	if (last_psy_usb_type != port->psy_usb_type ||
 	    last_psy_status != port->psy_status)
 		power_supply_changed(port->psy);
@@ -365,22 +347,10 @@ static int cros_usbpd_charger_get_prop(struct power_supply *psy,
 	struct device *dev = charger->dev;
 	int ret;
 
-	/* Only refresh ec_port_status for dynamic properties */
+	 
 	switch (psp) {
 	case POWER_SUPPLY_PROP_ONLINE:
-		/*
-		 * If mkbp_event_supported, then we can be assured that
-		 * the driver's state for the online property is consistent
-		 * with the hardware. However, if we aren't event driven,
-		 * the optimization before to skip an ec_port_status get
-		 * and only returned cached values of the online property will
-		 * cause a delay in detecting a cable attach until one of the
-		 * other properties are read.
-		 *
-		 * Allow an ec_port_status refresh for online property check
-		 * if we're not already online to check for plug events if
-		 * not mkbp_event_supported.
-		 */
+		 
 		if (ec_device->mkbp_event_supported || port->psy_online)
 			break;
 		fallthrough;
@@ -452,13 +422,13 @@ static int cros_usbpd_charger_set_prop(struct power_supply *psy,
 	u16 intval;
 	int ret;
 
-	/* U16_MAX in mV/mA is the maximum supported value */
+	 
 	if (val->intval >= U16_MAX * 1000)
 		return -EINVAL;
-	/* A negative number is used to clear the limit */
+	 
 	if (val->intval < 0)
 		intval = EC_POWER_LIMIT_NONE;
-	else	/* Convert from uA/uV to mA/mV */
+	else	 
 		intval = val->intval / 1000;
 
 	switch (psp) {
@@ -558,49 +528,29 @@ static int cros_usbpd_charger_probe(struct platform_device *pd)
 
 	platform_set_drvdata(pd, charger);
 
-	/*
-	 * We need to know the number of USB PD ports in order to know whether
-	 * there is a dedicated port. The dedicated port will always be
-	 * after the USB PD ports, and there should be only one.
-	 */
+	 
 	charger->num_usbpd_ports =
 		cros_usbpd_charger_get_usbpd_num_ports(charger);
 	if (charger->num_usbpd_ports <= 0) {
-		/*
-		 * This can happen on a system that doesn't support USB PD.
-		 * Log a message, but no need to warn.
-		 */
+		 
 		dev_info(dev, "No USB PD charging ports found\n");
 	}
 
 	charger->num_charger_ports = cros_usbpd_charger_get_num_ports(charger);
 	if (charger->num_charger_ports < 0) {
-		/*
-		 * This can happen on a system that doesn't support USB PD.
-		 * Log a message, but no need to warn.
-		 * Older ECs do not support the above command, in that case
-		 * let's set up the number of charger ports equal to the number
-		 * of USB PD ports
-		 */
+		 
 		dev_info(dev, "Could not get charger port count\n");
 		charger->num_charger_ports = charger->num_usbpd_ports;
 	}
 
 	if (charger->num_charger_ports <= 0) {
-		/*
-		 * This can happen on a system that doesn't support USB PD and
-		 * doesn't have a dedicated port.
-		 * Log a message, but no need to warn.
-		 */
+		 
 		dev_info(dev, "No charging ports found\n");
 		ret = -ENODEV;
 		goto fail_nowarn;
 	}
 
-	/*
-	 * Sanity checks on the number of ports:
-	 *  there should be at most 1 dedicated port
-	 */
+	 
 	if (charger->num_charger_ports < charger->num_usbpd_ports ||
 	    charger->num_charger_ports > (charger->num_usbpd_ports + 1)) {
 		dev_err(dev, "Unexpected number of charge port count\n");
@@ -666,7 +616,7 @@ static int cros_usbpd_charger_probe(struct platform_device *pd)
 		goto fail;
 	}
 
-	/* Get PD events from the EC */
+	 
 	charger->notifier.notifier_call = cros_usbpd_charger_ec_event;
 	ret = cros_usbpd_register_notify(&charger->notifier);
 	if (ret < 0) {

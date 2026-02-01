@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef _MTK_VCODEC_FW_H_
 #define _MTK_VCODEC_FW_H_
@@ -41,4 +41,4 @@ int mtk_vcodec_fw_ipi_send(struct mtk_vcodec_fw *fw, int id,
 			   void *buf, unsigned int len, unsigned int wait);
 int mtk_vcodec_fw_get_type(struct mtk_vcodec_fw *fw);
 
-#endif /* _MTK_VCODEC_FW_H_ */
+#endif  

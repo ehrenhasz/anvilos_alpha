@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics 2020
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -14,7 +12,7 @@
 #include <linux/regmap.h>
 #include <linux/reset.h>
 
-/* FMC2 Controller Registers */
+ 
 #define FMC2_BCR1			0x0
 #define FMC2_BTR1			0x4
 #define FMC2_BCR(x)			((x) * 0x8 + FMC2_BCR1)
@@ -23,11 +21,11 @@
 #define FMC2_BWTR1			0x104
 #define FMC2_BWTR(x)			((x) * 0x8 + FMC2_BWTR1)
 
-/* Register: FMC2_BCR1 */
+ 
 #define FMC2_BCR1_CCLKEN		BIT(20)
 #define FMC2_BCR1_FMC2EN		BIT(31)
 
-/* Register: FMC2_BCRx */
+ 
 #define FMC2_BCR_MBKEN			BIT(0)
 #define FMC2_BCR_MUXEN			BIT(1)
 #define FMC2_BCR_MTYP			GENMASK(3, 2)
@@ -44,7 +42,7 @@
 #define FMC2_BCR_CBURSTRW		BIT(19)
 #define FMC2_BCR_NBLSET			GENMASK(23, 22)
 
-/* Register: FMC2_BTRx/FMC2_BWTRx */
+ 
 #define FMC2_BXTR_ADDSET		GENMASK(3, 0)
 #define FMC2_BXTR_ADDHLD		GENMASK(7, 4)
 #define FMC2_BXTR_DATAST		GENMASK(15, 8)
@@ -54,7 +52,7 @@
 #define FMC2_BXTR_ACCMOD		GENMASK(29, 28)
 #define FMC2_BXTR_DATAHLD		GENMASK(31, 30)
 
-/* Register: FMC2_PCSCNTR */
+ 
 #define FMC2_PCSCNTR_CSCOUNT		GENMASK(15, 0)
 #define FMC2_PCSCNTR_CNTBEN(x)		BIT((x) + 16)
 
@@ -144,23 +142,7 @@ struct stm32_fmc2_ebi {
 	u32 pcscntr;
 };
 
-/*
- * struct stm32_fmc2_prop - STM32 FMC2 EBI property
- * @name: the device tree binding name of the property
- * @bprop: indicate that it is a boolean property
- * @mprop: indicate that it is a mandatory property
- * @reg_type: the register that have to be modified
- * @reg_mask: the bit that have to be modified in the selected register
- *            in case of it is a boolean property
- * @reset_val: the default value that have to be set in case the property
- *             has not been defined in the device tree
- * @check: this callback ckecks that the property is compliant with the
- *         transaction type selected
- * @calculate: this callback is called to calculate for exemple a timing
- *             set in nanoseconds in the device tree in clock cycles or in
- *             clock period
- * @set: this callback applies the values in the registers
- */
+ 
 struct stm32_fmc2_prop {
 	const char *name;
 	bool bprop;
@@ -375,110 +357,74 @@ static int stm32_fmc2_ebi_set_trans_type(struct stm32_fmc2_ebi *ebi,
 	switch (setup) {
 	case FMC2_ASYNC_MODE_1_SRAM:
 		bcr |= FIELD_PREP(FMC2_BCR_MTYP, FMC2_BCR_MTYP_SRAM);
-		/*
-		 * MUXEN = 0, MTYP = 0, FACCEN = 0, BURSTEN = 0, WAITEN = 0,
-		 * WREN = 1, EXTMOD = 0, CBURSTRW = 0, ACCMOD = 0
-		 */
+		 
 		break;
 	case FMC2_ASYNC_MODE_1_PSRAM:
-		/*
-		 * MUXEN = 0, MTYP = 1, FACCEN = 0, BURSTEN = 0, WAITEN = 0,
-		 * WREN = 1, EXTMOD = 0, CBURSTRW = 0, ACCMOD = 0
-		 */
+		 
 		bcr |= FIELD_PREP(FMC2_BCR_MTYP, FMC2_BCR_MTYP_PSRAM);
 		break;
 	case FMC2_ASYNC_MODE_A_SRAM:
-		/*
-		 * MUXEN = 0, MTYP = 0, FACCEN = 0, BURSTEN = 0, WAITEN = 0,
-		 * WREN = 1, EXTMOD = 1, CBURSTRW = 0, ACCMOD = 0
-		 */
+		 
 		bcr |= FIELD_PREP(FMC2_BCR_MTYP, FMC2_BCR_MTYP_SRAM);
 		bcr |= FMC2_BCR_EXTMOD;
 		btr |= FIELD_PREP(FMC2_BXTR_ACCMOD, FMC2_BXTR_EXTMOD_A);
 		bwtr |= FIELD_PREP(FMC2_BXTR_ACCMOD, FMC2_BXTR_EXTMOD_A);
 		break;
 	case FMC2_ASYNC_MODE_A_PSRAM:
-		/*
-		 * MUXEN = 0, MTYP = 1, FACCEN = 0, BURSTEN = 0, WAITEN = 0,
-		 * WREN = 1, EXTMOD = 1, CBURSTRW = 0, ACCMOD = 0
-		 */
+		 
 		bcr |= FIELD_PREP(FMC2_BCR_MTYP, FMC2_BCR_MTYP_PSRAM);
 		bcr |= FMC2_BCR_EXTMOD;
 		btr |= FIELD_PREP(FMC2_BXTR_ACCMOD, FMC2_BXTR_EXTMOD_A);
 		bwtr |= FIELD_PREP(FMC2_BXTR_ACCMOD, FMC2_BXTR_EXTMOD_A);
 		break;
 	case FMC2_ASYNC_MODE_2_NOR:
-		/*
-		 * MUXEN = 0, MTYP = 2, FACCEN = 1, BURSTEN = 0, WAITEN = 0,
-		 * WREN = 1, EXTMOD = 0, CBURSTRW = 0, ACCMOD = 0
-		 */
+		 
 		bcr |= FIELD_PREP(FMC2_BCR_MTYP, FMC2_BCR_MTYP_NOR);
 		bcr |= FMC2_BCR_FACCEN;
 		break;
 	case FMC2_ASYNC_MODE_B_NOR:
-		/*
-		 * MUXEN = 0, MTYP = 2, FACCEN = 1, BURSTEN = 0, WAITEN = 0,
-		 * WREN = 1, EXTMOD = 1, CBURSTRW = 0, ACCMOD = 1
-		 */
+		 
 		bcr |= FIELD_PREP(FMC2_BCR_MTYP, FMC2_BCR_MTYP_NOR);
 		bcr |= FMC2_BCR_FACCEN | FMC2_BCR_EXTMOD;
 		btr |= FIELD_PREP(FMC2_BXTR_ACCMOD, FMC2_BXTR_EXTMOD_B);
 		bwtr |= FIELD_PREP(FMC2_BXTR_ACCMOD, FMC2_BXTR_EXTMOD_B);
 		break;
 	case FMC2_ASYNC_MODE_C_NOR:
-		/*
-		 * MUXEN = 0, MTYP = 2, FACCEN = 1, BURSTEN = 0, WAITEN = 0,
-		 * WREN = 1, EXTMOD = 1, CBURSTRW = 0, ACCMOD = 2
-		 */
+		 
 		bcr |= FIELD_PREP(FMC2_BCR_MTYP, FMC2_BCR_MTYP_NOR);
 		bcr |= FMC2_BCR_FACCEN | FMC2_BCR_EXTMOD;
 		btr |= FIELD_PREP(FMC2_BXTR_ACCMOD, FMC2_BXTR_EXTMOD_C);
 		bwtr |= FIELD_PREP(FMC2_BXTR_ACCMOD, FMC2_BXTR_EXTMOD_C);
 		break;
 	case FMC2_ASYNC_MODE_D_NOR:
-		/*
-		 * MUXEN = 0, MTYP = 2, FACCEN = 1, BURSTEN = 0, WAITEN = 0,
-		 * WREN = 1, EXTMOD = 1, CBURSTRW = 0, ACCMOD = 3
-		 */
+		 
 		bcr |= FIELD_PREP(FMC2_BCR_MTYP, FMC2_BCR_MTYP_NOR);
 		bcr |= FMC2_BCR_FACCEN | FMC2_BCR_EXTMOD;
 		btr |= FIELD_PREP(FMC2_BXTR_ACCMOD, FMC2_BXTR_EXTMOD_D);
 		bwtr |= FIELD_PREP(FMC2_BXTR_ACCMOD, FMC2_BXTR_EXTMOD_D);
 		break;
 	case FMC2_SYNC_READ_SYNC_WRITE_PSRAM:
-		/*
-		 * MUXEN = 0, MTYP = 1, FACCEN = 0, BURSTEN = 1, WAITEN = 0,
-		 * WREN = 1, EXTMOD = 0, CBURSTRW = 1, ACCMOD = 0
-		 */
+		 
 		bcr |= FIELD_PREP(FMC2_BCR_MTYP, FMC2_BCR_MTYP_PSRAM);
 		bcr |= FMC2_BCR_BURSTEN | FMC2_BCR_CBURSTRW;
 		break;
 	case FMC2_SYNC_READ_ASYNC_WRITE_PSRAM:
-		/*
-		 * MUXEN = 0, MTYP = 1, FACCEN = 0, BURSTEN = 1, WAITEN = 0,
-		 * WREN = 1, EXTMOD = 0, CBURSTRW = 0, ACCMOD = 0
-		 */
+		 
 		bcr |= FIELD_PREP(FMC2_BCR_MTYP, FMC2_BCR_MTYP_PSRAM);
 		bcr |= FMC2_BCR_BURSTEN;
 		break;
 	case FMC2_SYNC_READ_SYNC_WRITE_NOR:
-		/*
-		 * MUXEN = 0, MTYP = 2, FACCEN = 1, BURSTEN = 1, WAITEN = 0,
-		 * WREN = 1, EXTMOD = 0, CBURSTRW = 1, ACCMOD = 0
-		 */
+		 
 		bcr |= FIELD_PREP(FMC2_BCR_MTYP, FMC2_BCR_MTYP_NOR);
 		bcr |= FMC2_BCR_FACCEN | FMC2_BCR_BURSTEN | FMC2_BCR_CBURSTRW;
 		break;
 	case FMC2_SYNC_READ_ASYNC_WRITE_NOR:
-		/*
-		 * MUXEN = 0, MTYP = 2, FACCEN = 1, BURSTEN = 1, WAITEN = 0,
-		 * WREN = 1, EXTMOD = 0, CBURSTRW = 0, ACCMOD = 0
-		 */
+		 
 		bcr |= FIELD_PREP(FMC2_BCR_MTYP, FMC2_BCR_MTYP_NOR);
 		bcr |= FMC2_BCR_FACCEN | FMC2_BCR_BURSTEN;
 		break;
 	default:
-		/* Type of transaction not supported */
+		 
 		return -EINVAL;
 	}
 
@@ -505,7 +451,7 @@ static int stm32_fmc2_ebi_set_buswidth(struct stm32_fmc2_ebi *ebi,
 		val = FIELD_PREP(FMC2_BCR_MWID, FMC2_BCR_MWID_16);
 		break;
 	default:
-		/* Buswidth not supported */
+		 
 		return -EINVAL;
 	}
 
@@ -537,7 +483,7 @@ static int stm32_fmc2_ebi_set_cpsize(struct stm32_fmc2_ebi *ebi,
 		val = FIELD_PREP(FMC2_BCR_CPSIZE, FMC2_BCR_CPSIZE_1024);
 		break;
 	default:
-		/* Cpsize not supported */
+		 
 		return -EINVAL;
 	}
 
@@ -699,7 +645,7 @@ static int stm32_fmc2_ebi_set_max_low_pulse(struct stm32_fmc2_ebi *ebi,
 
 	regmap_read(ebi->regmap, FMC2_PCSCNTR, &pcscntr);
 
-	/* Enable counter for the bank */
+	 
 	regmap_update_bits(ebi->regmap, FMC2_PCSCNTR,
 			   FMC2_PCSCNTR_CNTBEN(cs),
 			   FMC2_PCSCNTR_CNTBEN(cs));
@@ -707,7 +653,7 @@ static int stm32_fmc2_ebi_set_max_low_pulse(struct stm32_fmc2_ebi *ebi,
 	new_val = min_t(u32, setup - 1, FMC2_PCSCNTR_CSCOUNT_MAX);
 	old_val = FIELD_GET(FMC2_PCSCNTR_CSCOUNT, pcscntr);
 	if (old_val && new_val > old_val)
-		/* Keep current counter value */
+		 
 		return 0;
 
 	new_val = FIELD_PREP(FMC2_PCSCNTR_CSCOUNT, new_val);
@@ -718,7 +664,7 @@ static int stm32_fmc2_ebi_set_max_low_pulse(struct stm32_fmc2_ebi *ebi,
 }
 
 static const struct stm32_fmc2_prop stm32_fmc2_child_props[] = {
-	/* st,fmc2-ebi-cs-trans-type must be the first property */
+	 
 	{
 		.name = "st,fmc2-ebi-cs-transaction-type",
 		.mprop = true,
@@ -896,7 +842,7 @@ static int stm32_fmc2_ebi_parse_prop(struct stm32_fmc2_ebi *ebi,
 	}
 
 	if (prop->check && prop->check(ebi, prop, cs))
-		/* Skeep this property */
+		 
 		return 0;
 
 	if (prop->bprop) {
@@ -982,7 +928,7 @@ static void stm32_fmc2_ebi_disable_banks(struct stm32_fmc2_ebi *ebi)
 	}
 }
 
-/* NWAIT signal can not be connected to EBI controller and NAND controller */
+ 
 static bool stm32_fmc2_ebi_nwait_used_by_ctrls(struct stm32_fmc2_ebi *ebi)
 {
 	unsigned int cs;

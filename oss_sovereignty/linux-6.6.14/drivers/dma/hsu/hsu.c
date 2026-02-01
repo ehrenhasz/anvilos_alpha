@@ -1,20 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Core driver for the High Speed UART DMA
- *
- * Copyright (C) 2015 Intel Corporation
- * Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- *
- * Partially based on the bits found in drivers/tty/serial/mfd.c.
- */
 
-/*
- * DMA channel allocation:
- * 1. Even number chans are used for DMA Read (UART TX), odd chans for DMA
- *    Write (UART RX).
- * 2. 0/1 channel are assigned to port 0, 2/3 chan to port 1, 4/5 chan to
- *    port 3, and so on.
- */
+ 
+
+ 
 
 #include <linux/bits.h>
 #include <linux/delay.h>
@@ -63,7 +50,7 @@ static void hsu_dma_chan_start(struct hsu_dma_chan *hsuc)
 {
 	struct dma_slave_config *config = &hsuc->config;
 	struct hsu_dma_desc *desc = hsuc->desc;
-	u32 bsr = 0, mtsr = 0;	/* to shut the compiler up */
+	u32 bsr = 0, mtsr = 0;	 
 	u32 dcr = HSU_CH_DCR_CHSOE | HSU_CH_DCR_CHEI;
 	unsigned int i, count;
 
@@ -81,19 +68,19 @@ static void hsu_dma_chan_start(struct hsu_dma_chan *hsuc)
 	hsu_chan_writel(hsuc, HSU_CH_BSR, bsr);
 	hsu_chan_writel(hsuc, HSU_CH_MTSR, mtsr);
 
-	/* Set descriptors */
+	 
 	count = desc->nents - desc->active;
 	for (i = 0; i < count && i < HSU_DMA_CHAN_NR_DESC; i++) {
 		hsu_chan_writel(hsuc, HSU_CH_DxSAR(i), desc->sg[i].addr);
 		hsu_chan_writel(hsuc, HSU_CH_DxTSR(i), desc->sg[i].len);
 
-		/* Prepare value for DCR */
+		 
 		dcr |= HSU_CH_DCR_DESCA(i);
-		dcr |= HSU_CH_DCR_CHTOI(i);	/* timeout bit, see HSU Errata 1 */
+		dcr |= HSU_CH_DCR_CHTOI(i);	 
 
 		desc->active++;
 	}
-	/* Only for the last descriptor in the chain */
+	 
 	dcr |= HSU_CH_DCR_CHSOD(count - 1);
 	dcr |= HSU_CH_DCR_CHDI(count - 1);
 
@@ -117,7 +104,7 @@ static void hsu_dma_start_transfer(struct hsu_dma_chan *hsuc)
 {
 	struct virt_dma_desc *vdesc;
 
-	/* Get the next descriptor */
+	 
 	vdesc = vchan_next_desc(&hsuc->vchan);
 	if (!vdesc) {
 		hsuc->desc = NULL;
@@ -127,27 +114,11 @@ static void hsu_dma_start_transfer(struct hsu_dma_chan *hsuc)
 	list_del(&vdesc->node);
 	hsuc->desc = to_hsu_dma_desc(vdesc);
 
-	/* Start the channel with a new descriptor */
+	 
 	hsu_dma_start_channel(hsuc);
 }
 
-/*
- *      hsu_dma_get_status() - get DMA channel status
- *      @chip: HSUART DMA chip
- *      @nr: DMA channel number
- *      @status: pointer for DMA Channel Status Register value
- *
- *      Description:
- *      The function reads and clears the DMA Channel Status Register, checks
- *      if it was a timeout interrupt and returns a corresponding value.
- *
- *      Caller should provide a valid pointer for the DMA Channel Status
- *      Register value that will be returned in @status.
- *
- *      Return:
- *      1 for DMA timeout status, 0 for other DMA status, or error code for
- *      invalid parameters or no interrupt pending.
- */
+ 
 int hsu_dma_get_status(struct hsu_dma_chip *chip, unsigned short nr,
 		       u32 *status)
 {
@@ -155,36 +126,27 @@ int hsu_dma_get_status(struct hsu_dma_chip *chip, unsigned short nr,
 	unsigned long flags;
 	u32 sr;
 
-	/* Sanity check */
+	 
 	if (nr >= chip->hsu->nr_channels)
 		return -EINVAL;
 
 	hsuc = &chip->hsu->chan[nr];
 
-	/*
-	 * No matter what situation, need read clear the IRQ status
-	 * There is a bug, see Errata 5, HSD 2900918
-	 */
+	 
 	spin_lock_irqsave(&hsuc->vchan.lock, flags);
 	sr = hsu_chan_readl(hsuc, HSU_CH_SR);
 	spin_unlock_irqrestore(&hsuc->vchan.lock, flags);
 
-	/* Check if any interrupt is pending */
+	 
 	sr &= ~(HSU_CH_SR_DESCE_ANY | HSU_CH_SR_CDESC_ANY);
 	if (!sr)
 		return -EIO;
 
-	/* Timeout IRQ, need wait some time, see Errata 2 */
+	 
 	if (sr & HSU_CH_SR_DESCTO_ANY)
 		udelay(2);
 
-	/*
-	 * At this point, at least one of Descriptor Time Out, Channel Error
-	 * or Descriptor Done bits must be set. Clear the Descriptor Time Out
-	 * bits and if sr is still non-zero, it must be channel error or
-	 * descriptor done which are higher priority than timeout and handled
-	 * in hsu_dma_do_irq(). Else, it must be a timeout.
-	 */
+	 
 	sr &= ~HSU_CH_SR_DESCTO_ANY;
 
 	*status = sr;
@@ -193,20 +155,7 @@ int hsu_dma_get_status(struct hsu_dma_chip *chip, unsigned short nr,
 }
 EXPORT_SYMBOL_GPL(hsu_dma_get_status);
 
-/*
- *      hsu_dma_do_irq() - DMA interrupt handler
- *      @chip: HSUART DMA chip
- *      @nr: DMA channel number
- *      @status: Channel Status Register value
- *
- *      Description:
- *      This function handles Channel Error and Descriptor Done interrupts.
- *      This function should be called after determining that the DMA interrupt
- *      is not a normal timeout interrupt, ie. hsu_dma_get_status() returned 0.
- *
- *      Return:
- *      0 for invalid channel number, 1 otherwise.
- */
+ 
 int hsu_dma_do_irq(struct hsu_dma_chip *chip, unsigned short nr, u32 status)
 {
 	struct dma_chan_percpu *stat;
@@ -214,7 +163,7 @@ int hsu_dma_do_irq(struct hsu_dma_chip *chip, unsigned short nr, u32 status)
 	struct hsu_dma_desc *desc;
 	unsigned long flags;
 
-	/* Sanity check */
+	 
 	if (nr >= chip->hsu->nr_channels)
 		return 0;
 
@@ -289,7 +238,7 @@ static struct dma_async_tx_descriptor *hsu_dma_prep_slave_sg(
 
 	desc->nents = sg_len;
 	desc->direction = direction;
-	/* desc->active = 0 by kzalloc */
+	 
 	desc->status = DMA_IN_PROGRESS;
 
 	return vchan_tx_prep(&hsuc->vchan, &desc->vdesc, flags);
@@ -437,7 +386,7 @@ int hsu_dma_probe(struct hsu_dma_chip *chip)
 
 	chip->hsu = hsu;
 
-	/* Calculate nr_channels from the IO space length */
+	 
 	hsu->nr_channels = (chip->length - chip->offset) / HSU_DMA_CHAN_LENGTH;
 
 	hsu->chan = devm_kcalloc(chip->dev, hsu->nr_channels,

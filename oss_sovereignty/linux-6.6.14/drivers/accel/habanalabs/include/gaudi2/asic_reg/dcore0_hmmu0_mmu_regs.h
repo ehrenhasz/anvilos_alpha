@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+ 
 
 #ifndef ASIC_REG_DCORE0_HMMU0_MMU_REGS_H_
 #define ASIC_REG_DCORE0_HMMU0_MMU_REGS_H_
 
-/*
- *****************************************
- *   DCORE0_HMMU0_MMU
- *   (Prototype: MMU)
- *****************************************
- */
+ 
 
 #define mmDCORE0_HMMU0_MMU_MMU_ENABLE 0x408000C
 
@@ -234,4 +221,4 @@
 
 #define mmDCORE0_HMMU0_MMU_RAZWI_ADDR_MSB 0x4080324
 
-#endif /* ASIC_REG_DCORE0_HMMU0_MMU_REGS_H_ */
+#endif  

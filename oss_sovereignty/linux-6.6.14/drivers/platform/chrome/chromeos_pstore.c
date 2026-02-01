@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// Driver to instantiate Chromebook ramoops device.
-//
-// Copyright (C) 2013 Google, Inc.
+
+
+
+
 
 #include <linux/acpi.h>
 #include <linux/dmi.h>
@@ -11,32 +11,28 @@
 
 static const struct dmi_system_id chromeos_pstore_dmi_table[] __initconst = {
 	{
-		/*
-		 * Today all Chromebooks/boxes ship with Google_* as version and
-		 * coreboot as bios vendor. No other systems with this
-		 * combination are known to date.
-		 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_BIOS_VENDOR, "coreboot"),
 			DMI_MATCH(DMI_BIOS_VERSION, "Google_"),
 		},
 	},
 	{
-		/* x86-alex, the first Samsung Chromebook. */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "SAMSUNG ELECTRONICS CO., LTD."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Alex"),
 		},
 	},
 	{
-		/* x86-mario, the Cr-48 pilot device from Google. */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "IEC"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Mario"),
 		},
 	},
 	{
-		/* x86-zgb, the first Acer Chromebook. */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "ACER"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "ZGB"),
@@ -46,11 +42,7 @@ static const struct dmi_system_id chromeos_pstore_dmi_table[] __initconst = {
 };
 MODULE_DEVICE_TABLE(dmi, chromeos_pstore_dmi_table);
 
-/*
- * On x86 chromebooks/boxes, the firmware will keep the legacy VGA memory
- * range untouched across reboots, so we use that to store our pstore
- * contents for panic logs, etc.
- */
+ 
 static struct ramoops_platform_data chromeos_ramoops_data = {
 	.mem_size	= 0x100000,
 	.mem_address	= 0xf00000,
@@ -117,7 +109,7 @@ static int __init chromeos_pstore_init(void)
 {
 	bool acpi_dev_found;
 
-	/* First check ACPI for non-hardcoded values from firmware. */
+	 
 	acpi_dev_found = chromeos_check_acpi();
 
 	if (acpi_dev_found || dmi_check_system(chromeos_pstore_dmi_table))

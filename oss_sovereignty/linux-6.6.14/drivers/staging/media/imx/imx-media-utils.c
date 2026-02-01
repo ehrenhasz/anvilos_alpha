@@ -1,19 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * V4L2 Media Controller Driver for Freescale i.MX5/6 SOC
- *
- * Copyright (c) 2016 Mentor Graphics Inc.
- */
+
+ 
 #include <linux/module.h>
 #include "imx-media.h"
 
 #define IMX_BUS_FMTS(fmt...) ((const u32[]) {fmt, 0})
 
-/*
- * List of supported pixel formats for the subdevs.
- */
+ 
 static const struct imx_media_pixfmt pixel_formats[] = {
-	/*** YUV formats start here ***/
+	 
 	{
 		.fourcc	= V4L2_PIX_FMT_UYVY,
 		.codes  = IMX_BUS_FMTS(
@@ -62,7 +56,7 @@ static const struct imx_media_pixfmt pixel_formats[] = {
 		.bpp    = 32,
 		.ipufmt = true,
 	},
-	/*** RGB formats start here ***/
+	 
 	{
 		.fourcc	= V4L2_PIX_FMT_RGB565,
 		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_RGB565_2X8_LE),
@@ -105,7 +99,7 @@ static const struct imx_media_pixfmt pixel_formats[] = {
 		.cs     = IPUV3_COLORSPACE_RGB,
 		.bpp    = 32,
 	},
-	/*** raw bayer and grayscale formats start here ***/
+	 
 	{
 		.fourcc = V4L2_PIX_FMT_SBGGR8,
 		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SBGGR8_1X8),
@@ -199,13 +193,7 @@ static const struct imx_media_pixfmt pixel_formats[] = {
 	},
 };
 
-/*
- * Search in the pixel_formats[] array for an entry with the given fourcc
- * that matches the requested selection criteria and return it.
- *
- * @fourcc: Search for an entry with the given fourcc pixel format.
- * @fmt_sel: Allow entries only with the given selection criteria.
- */
+ 
 const struct imx_media_pixfmt *
 imx_media_find_pixel_format(u32 fourcc, enum imx_pixfmt_sel fmt_sel)
 {
@@ -233,13 +221,7 @@ imx_media_find_pixel_format(u32 fourcc, enum imx_pixfmt_sel fmt_sel)
 }
 EXPORT_SYMBOL_GPL(imx_media_find_pixel_format);
 
-/*
- * Search in the pixel_formats[] array for an entry with the given media
- * bus code that matches the requested selection criteria and return it.
- *
- * @code: Search for an entry with the given media-bus code.
- * @fmt_sel: Allow entries only with the given selection criteria.
- */
+ 
 const struct imx_media_pixfmt *
 imx_media_find_mbus_format(u32 code, enum imx_pixfmt_sel fmt_sel)
 {
@@ -273,19 +255,7 @@ imx_media_find_mbus_format(u32 code, enum imx_pixfmt_sel fmt_sel)
 }
 EXPORT_SYMBOL_GPL(imx_media_find_mbus_format);
 
-/*
- * Enumerate entries in the pixel_formats[] array that match the
- * requested selection criteria. Return the fourcc that matches the
- * selection criteria at the requested match index.
- *
- * @fourcc: The returned fourcc that matches the search criteria at
- *          the requested match index.
- * @index: The requested match index.
- * @fmt_sel: Include in the enumeration entries with the given selection
- *           criteria.
- * @code: If non-zero, only include in the enumeration entries matching this
- *	media bus code.
- */
+ 
 int imx_media_enum_pixel_formats(u32 *fourcc, u32 index,
 				 enum imx_pixfmt_sel fmt_sel, u32 code)
 {
@@ -308,10 +278,7 @@ int imx_media_enum_pixel_formats(u32 *fourcc, u32 index,
 		if (!(fmt_sel & sel))
 			continue;
 
-		/*
-		 * If a media bus code is specified, only consider formats that
-		 * match it.
-		 */
+		 
 		if (code) {
 			unsigned int j;
 
@@ -339,17 +306,7 @@ int imx_media_enum_pixel_formats(u32 *fourcc, u32 index,
 }
 EXPORT_SYMBOL_GPL(imx_media_enum_pixel_formats);
 
-/*
- * Enumerate entries in the pixel_formats[] array that match the
- * requested search criteria. Return the media-bus code that matches
- * the search criteria at the requested match index.
- *
- * @code: The returned media-bus code that matches the search criteria at
- *        the requested match index.
- * @index: The requested match index.
- * @fmt_sel: Include in the enumeration entries with the given selection
- *           criteria.
- */
+ 
 int imx_media_enum_mbus_formats(u32 *code, u32 index,
 				enum imx_pixfmt_sel fmt_sel)
 {
@@ -424,10 +381,7 @@ int imx_media_init_mbus_fmt(struct v4l2_mbus_framefmt *mbus,
 }
 EXPORT_SYMBOL_GPL(imx_media_init_mbus_fmt);
 
-/*
- * Initializes the TRY format to the ACTIVE format on all pads
- * of a subdev. Can be used as the .init_cfg pad operation.
- */
+ 
 int imx_media_init_cfg(struct v4l2_subdev *sd,
 		       struct v4l2_subdev_state *sd_state)
 {
@@ -453,17 +407,7 @@ int imx_media_init_cfg(struct v4l2_subdev *sd,
 }
 EXPORT_SYMBOL_GPL(imx_media_init_cfg);
 
-/*
- * Default the colorspace in tryfmt to SRGB if set to an unsupported
- * colorspace or not initialized. Then set the remaining colorimetry
- * parameters based on the colorspace if they are uninitialized.
- *
- * tryfmt->code must be set on entry.
- *
- * If this format is destined to be routed through the Image Converter,
- * Y`CbCr encoding must be fixed. The IC supports only BT.601 Y`CbCr
- * or Rec.709 Y`CbCr encoding.
- */
+ 
 void imx_media_try_colorimetry(struct v4l2_mbus_framefmt *tryfmt,
 			       bool ic_route)
 {
@@ -533,10 +477,7 @@ int imx_media_mbus_fmt_to_pix_fmt(struct v4l2_pix_format *pix,
 			return -EINVAL;
 	}
 
-	/*
-	 * TODO: the IPU currently does not support the AYUV32 format,
-	 * so until it does convert to a supported YUV format.
-	 */
+	 
 	if (cc->ipufmt && cc->cs == IPUV3_COLORSPACE_YUV) {
 		u32 code;
 
@@ -544,10 +485,10 @@ int imx_media_mbus_fmt_to_pix_fmt(struct v4l2_pix_format *pix,
 		cc = imx_media_find_mbus_format(code, PIXFMT_SEL_YUV);
 	}
 
-	/* Round up width for minimum burst size */
+	 
 	width = round_up(mbus->width, 8);
 
-	/* Round up stride for IDMAC line start address alignment */
+	 
 	if (cc->planar)
 		stride = round_up(width, 16);
 	else
@@ -598,7 +539,7 @@ int imx_media_alloc_dma_buf(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(imx_media_alloc_dma_buf);
 
-/* form a subdev name given a group id and ipu id */
+ 
 void imx_media_grp_id_to_sd_name(char *sd_name, int sz, u32 grp_id, int ipu_id)
 {
 	int id;
@@ -626,10 +567,7 @@ void imx_media_grp_id_to_sd_name(char *sd_name, int sz, u32 grp_id, int ipu_id)
 }
 EXPORT_SYMBOL_GPL(imx_media_grp_id_to_sd_name);
 
-/*
- * Adds a video device to the master video device list. This is called
- * when a video device is registered.
- */
+ 
 void imx_media_add_video_device(struct imx_media_dev *imxmd,
 				struct imx_media_video_dev *vdev)
 {
@@ -641,16 +579,7 @@ void imx_media_add_video_device(struct imx_media_dev *imxmd,
 }
 EXPORT_SYMBOL_GPL(imx_media_add_video_device);
 
-/*
- * Search upstream/downstream for a subdevice or video device pad in the
- * current pipeline, starting from start_entity. Returns the device's
- * source/sink pad that it was reached from. Must be called with
- * mdev->graph_mutex held.
- *
- * If grp_id != 0, finds a subdevice's pad of given grp_id.
- * Else If buftype != 0, finds a video device's pad of given buffer type.
- * Else, returns the nearest source/sink pad to start_entity.
- */
+ 
 struct media_pad *
 imx_media_pipeline_pad(struct media_entity *start_entity, u32 grp_id,
 		       enum v4l2_buf_type buftype, bool upstream)
@@ -699,10 +628,7 @@ imx_media_pipeline_pad(struct media_entity *start_entity, u32 grp_id,
 }
 EXPORT_SYMBOL_GPL(imx_media_pipeline_pad);
 
-/*
- * Search upstream/downstream for a subdev or video device in the current
- * pipeline. Must be called with mdev->graph_mutex held.
- */
+ 
 static struct media_entity *
 find_pipeline_entity(struct media_entity *start, u32 grp_id,
 		     enum v4l2_buf_type buftype, bool upstream)
@@ -726,11 +652,7 @@ find_pipeline_entity(struct media_entity *start, u32 grp_id,
 	return pad ? pad->entity : NULL;
 }
 
-/*
- * Find a subdev reached upstream from the given start entity in
- * the current pipeline.
- * Must be called with mdev->graph_mutex held.
- */
+ 
 struct v4l2_subdev *
 imx_media_pipeline_subdev(struct media_entity *start_entity, u32 grp_id,
 			  bool upstream)
@@ -745,9 +667,7 @@ imx_media_pipeline_subdev(struct media_entity *start_entity, u32 grp_id,
 }
 EXPORT_SYMBOL_GPL(imx_media_pipeline_subdev);
 
-/*
- * Turn current pipeline streaming on/off starting from entity.
- */
+ 
 int imx_media_pipeline_set_stream(struct imx_media_dev *imxmd,
 				  struct media_entity *entity,
 				  bool on)

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cryptographic API.
- *
- * Support for ATMEL DES/TDES HW acceleration.
- *
- * Copyright (c) 2012 Eukréa Electromatique - ATMEL
- * Author: Nicolas Royer <nicolas@eukrea.com>
- *
- * Some ideas are from omap-aes.c drivers.
- */
+
+ 
 
 
 #include <linux/kernel.h>
@@ -39,8 +30,8 @@
 
 #define ATMEL_TDES_PRIORITY	300
 
-/* TDES flags  */
-/* Reserve bits [17:16], [13:12], [2:0] for AES Mode Register */
+ 
+ 
 #define TDES_FLAGS_ENCRYPT	TDES_MR_CYPHER_ENC
 #define TDES_FLAGS_OPMODE_MASK	(TDES_MR_OPMOD_MASK | TDES_MR_CFBS_MASK)
 #define TDES_FLAGS_ECB		TDES_MR_OPMOD_ECB
@@ -201,7 +192,7 @@ static struct atmel_tdes_dev *atmel_tdes_dev_alloc(void)
 	struct atmel_tdes_dev *tdes_dd;
 
 	spin_lock_bh(&atmel_tdes.lock);
-	/* One TDES IP per SoC. */
+	 
 	tdes_dd = list_first_entry_or_null(&atmel_tdes.dev_list,
 					   struct atmel_tdes_dev, list);
 	spin_unlock_bh(&atmel_tdes.lock);
@@ -251,7 +242,7 @@ static void atmel_tdes_dma_callback(void *data)
 {
 	struct atmel_tdes_dev *dd = data;
 
-	/* dma_lch_out - completed */
+	 
 	tasklet_schedule(&dd->done_task);
 }
 
@@ -269,7 +260,7 @@ static int atmel_tdes_write_ctrl(struct atmel_tdes_dev *dd)
 		atmel_tdes_write(dd, TDES_PTCR,
 			TDES_PTCR_TXTDIS | TDES_PTCR_RXTDIS);
 
-	/* MR register must be set before IV registers */
+	 
 	if (dd->ctx->keylen > (DES_KEY_SIZE << 1)) {
 		valmr |= TDES_MR_KEYMOD_3KEY;
 		valmr |= TDES_MR_TDESMOD_TDES;
@@ -307,7 +298,7 @@ static int atmel_tdes_crypt_pdc_stop(struct atmel_tdes_dev *dd)
 		dma_sync_single_for_device(dd->dev, dd->dma_addr_out,
 					   dd->dma_size, DMA_FROM_DEVICE);
 
-		/* copy data */
+		 
 		count = atmel_tdes_sg_copy(&dd->out_sg, &dd->out_offset,
 				dd->buf_out, dd->buflen, dd->dma_size, 1);
 		if (count != dd->dma_size) {
@@ -333,7 +324,7 @@ static int atmel_tdes_buff_init(struct atmel_tdes_dev *dd)
 		goto err_alloc;
 	}
 
-	/* MAP here */
+	 
 	dd->dma_addr_in = dma_map_single(dd->dev, dd->buf_in,
 					dd->buflen, DMA_TO_DEVICE);
 	err = dma_mapping_error(dd->dev, dd->dma_addr_in);
@@ -406,10 +397,10 @@ static int atmel_tdes_crypt_pdc(struct atmel_tdes_dev *dd,
 	atmel_tdes_write(dd, TDES_RPR, dma_addr_out);
 	atmel_tdes_write(dd, TDES_RCR, len32);
 
-	/* Enable Interrupt */
+	 
 	atmel_tdes_write(dd, TDES_IER, TDES_INT_ENDRX);
 
-	/* Start DMA transfer */
+	 
 	atmel_tdes_write(dd, TDES_PTCR, TDES_PTCR_TXTEN | TDES_PTCR_RXTEN);
 
 	return 0;
@@ -492,7 +483,7 @@ static int atmel_tdes_crypt_start(struct atmel_tdes_dev *dd)
 	dma_addr_t addr_in, addr_out;
 
 	if ((!dd->in_offset) && (!dd->out_offset)) {
-		/* check for alignment */
+		 
 		in = IS_ALIGNED((u32)dd->in_sg->offset, sizeof(u32)) &&
 			IS_ALIGNED(dd->in_sg->length, dd->ctx->block_size);
 		out = IS_ALIGNED((u32)dd->out_sg->offset, sizeof(u32)) &&
@@ -529,7 +520,7 @@ static int atmel_tdes_crypt_start(struct atmel_tdes_dev *dd)
 		dd->flags |= TDES_FLAGS_FAST;
 
 	} else {
-		/* use cache buffers */
+		 
 		count = atmel_tdes_sg_copy(&dd->in_sg, &dd->in_offset,
 				dd->buf_in, dd->buflen, dd->total, 0);
 
@@ -618,7 +609,7 @@ static int atmel_tdes_handle_queue(struct atmel_tdes_dev *dd,
 
 	req = skcipher_request_cast(async_req);
 
-	/* assign new request to device */
+	 
 	dd->req = req;
 	dd->total = req->cryptlen;
 	dd->in_offset = 0;
@@ -636,7 +627,7 @@ static int atmel_tdes_handle_queue(struct atmel_tdes_dev *dd,
 	if (!err)
 		err = atmel_tdes_crypt_start(dd);
 	if (err) {
-		/* des_task will not finish it, so do it here */
+		 
 		atmel_tdes_finish_req(dd, err);
 		tasklet_schedule(&dd->queue_task);
 	}
@@ -658,7 +649,7 @@ static int atmel_tdes_crypt_dma_stop(struct atmel_tdes_dev *dd)
 			dma_sync_single_for_device(dd->dev, dd->dma_addr_out,
 				dd->dma_size, DMA_FROM_DEVICE);
 
-			/* copy data */
+			 
 			count = atmel_tdes_sg_copy(&dd->out_sg, &dd->out_offset,
 				dd->buf_out, dd->buflen, dd->dma_size, 1);
 			if (count != dd->dma_size) {
@@ -733,7 +724,7 @@ static int atmel_tdes_dma_init(struct atmel_tdes_dev *dd)
 {
 	int ret;
 
-	/* Try to grab 2 DMA channels */
+	 
 	dd->dma_lch_in.chan = dma_request_chan(dd->dev, "tx");
 	if (IS_ERR(dd->dma_lch_in.chan)) {
 		ret = PTR_ERR(dd->dma_lch_in.chan);
@@ -1063,7 +1054,7 @@ static void atmel_tdes_done_task(unsigned long data)
 		if (!err)
 			err = atmel_tdes_crypt_start(dd);
 		if (!err)
-			return; /* DMA started. Not fininishing. */
+			return;  
 	}
 
 	atmel_tdes_finish_req(dd, err);
@@ -1123,7 +1114,7 @@ static void atmel_tdes_get_cap(struct atmel_tdes_dev *dd)
 	dd->caps.has_dma = 0;
 	dd->caps.has_cfb_3keys = 0;
 
-	/* keep only major version number */
+	 
 	switch (dd->hw_version & 0xf00) {
 	case 0x800:
 	case 0x700:
@@ -1141,7 +1132,7 @@ static void atmel_tdes_get_cap(struct atmel_tdes_dev *dd)
 
 static const struct of_device_id atmel_tdes_dt_ids[] = {
 	{ .compatible = "atmel,at91sam9g46-tdes" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, atmel_tdes_dt_ids);
 
@@ -1177,7 +1168,7 @@ static int atmel_tdes_probe(struct platform_device *pdev)
 	}
 	tdes_dd->phys_base = tdes_res->start;
 
-	/* Get the IRQ */
+	 
 	tdes_dd->irq = platform_get_irq(pdev,  0);
 	if (tdes_dd->irq < 0) {
 		err = tdes_dd->irq;
@@ -1191,7 +1182,7 @@ static int atmel_tdes_probe(struct platform_device *pdev)
 		goto err_tasklet_kill;
 	}
 
-	/* Initializing the clock */
+	 
 	tdes_dd->iclk = devm_clk_get(&pdev->dev, "tdes_clk");
 	if (IS_ERR(tdes_dd->iclk)) {
 		dev_err(dev, "clock initialization failed.\n");

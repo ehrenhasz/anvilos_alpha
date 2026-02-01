@@ -1,25 +1,4 @@
-/*******************************************************************
- * This file is part of the Emulex Linux Device Driver for         *
- * Fibre Channel Host Bus Adapters.                                *
- * Copyright (C) 2017-2023 Broadcom. All Rights Reserved. The term *
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.     *
- * Copyright (C) 2004-2016 Emulex.  All rights reserved.           *
- * EMULEX and SLI are trademarks of Emulex.                        *
- * www.broadcom.com                                                *
- * Portions Copyright (C) 2004-2005 Christoph Hellwig              *
- *                                                                 *
- * This program is free software; you can redistribute it and/or   *
- * modify it under the terms of version 2 of the GNU General       *
- * Public License as published by the Free Software Foundation.    *
- * This program is distributed in the hope that it will be useful. *
- * ALL EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND          *
- * WARRANTIES, INCLUDING ANY IMPLIED WARRANTY OF MERCHANTABILITY,  *
- * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT, ARE      *
- * DISCLAIMED, EXCEPT TO THE EXTENT THAT SUCH DISCLAIMERS ARE HELD *
- * TO BE LEGALLY INVALID.  See the GNU General Public License for  *
- * more details, a copy of which can be found in the file COPYING  *
- * included with this package.                                     *
- *******************************************************************/
+ 
 
 #include <linux/blkdev.h>
 #include <linux/delay.h>
@@ -56,17 +35,14 @@ inline void lpfc_vport_set_state(struct lpfc_vport *vport,
 	struct fc_vport *fc_vport = vport->fc_vport;
 
 	if (fc_vport) {
-		/*
-		 * When the transport defines fc_vport_set state we will replace
-		 * this code with the following line
-		 */
-		/* fc_vport_set_state(fc_vport, new_state); */
+		 
+		 
 		if (new_state != FC_VPORT_INITIALIZING)
 			fc_vport->vport_last_state = fc_vport->vport_state;
 		fc_vport->vport_state = new_state;
 	}
 
-	/* for all the error states we will set the invternal state to FAILED */
+	 
 	switch (new_state) {
 	case FC_VPORT_NO_FABRIC_SUPP:
 	case FC_VPORT_NO_FABRIC_RSCS:
@@ -79,7 +55,7 @@ inline void lpfc_vport_set_state(struct lpfc_vport *vport,
 		vport->port_state = LPFC_VPORT_UNKNOWN;
 		break;
 	default:
-		/* do nothing */
+		 
 		break;
 	}
 }
@@ -90,7 +66,7 @@ lpfc_alloc_vpi(struct lpfc_hba *phba)
 	unsigned long vpi;
 
 	spin_lock_irq(&phba->hbalock);
-	/* Start at bit 1 because vpi zero is reserved for the physical port */
+	 
 	vpi = find_next_zero_bit(phba->vpi_bmask, (phba->max_vpi + 1), 1);
 	if (vpi > phba->max_vpi)
 		vpi = 0;
@@ -134,15 +110,7 @@ lpfc_vport_sparm(struct lpfc_hba *phba, struct lpfc_vport *vport)
 		return -ENOMEM;
 	}
 
-	/*
-	 * Wait for the read_sparams mailbox to complete.  Driver needs
-	 * this per vport to start the FDISC.  If the mailbox fails,
-	 * just cleanup and return an error unless the failure is a
-	 * mailbox timeout.  For MBX_TIMEOUT, allow the default
-	 * mbox completion handler to take care of the cleanup.  This
-	 * is safe as the mailbox command isn't one that triggers
-	 * another mailbox.
-	 */
+	 
 	pmb->vport = vport;
 	rc = lpfc_sli_issue_mbox_wait(phba, pmb, phba->fc_ratov * 2);
 	if (rc != MBX_SUCCESS) {
@@ -180,9 +148,7 @@ static int
 lpfc_valid_wwn_format(struct lpfc_hba *phba, struct lpfc_name *wwn,
 		      const char *name_type)
 {
-				/* ensure that IEEE format 1 addresses
-				 * contain zeros in bits 59-48
-				 */
+				 
 	if (!((wwn->u.wwn[0] >> 4) == 1 &&
 	      ((wwn->u.wwn[0] & 0xf) != 0 || (wwn->u.wwn[1] & 0xf) != 0)))
 		return 1;
@@ -208,7 +174,7 @@ lpfc_unique_wwpn(struct lpfc_hba *phba, struct lpfc_vport *new_vport)
 	list_for_each_entry(vport, &phba->port_list, listentry) {
 		if (vport == new_vport)
 			continue;
-		/* If they match, return not unique */
+		 
 		if (memcmp(&vport->fc_sparam.portName,
 			   &new_vport->fc_sparam.portName,
 			   sizeof(struct lpfc_name)) == 0) {
@@ -220,21 +186,7 @@ lpfc_unique_wwpn(struct lpfc_hba *phba, struct lpfc_vport *new_vport)
 	return 1;
 }
 
-/**
- * lpfc_discovery_wait - Wait for driver discovery to quiesce
- * @vport: The virtual port for which this call is being executed.
- *
- * This driver calls this routine specifically from lpfc_vport_delete
- * to enforce a synchronous execution of vport
- * delete relative to discovery activities.  The
- * lpfc_vport_delete routine should not return until it
- * can reasonably guarantee that discovery has quiesced.
- * Post FDISC LOGO, the driver must wait until its SAN teardown is
- * complete and all resources recovered before allowing
- * cleanup.
- *
- * This routine does not require any locks held.
- **/
+ 
 static void lpfc_discovery_wait(struct lpfc_vport *vport)
 {
 	struct lpfc_hba *phba = vport->phba;
@@ -245,11 +197,7 @@ static void lpfc_discovery_wait(struct lpfc_vport *vport)
 	wait_flags = FC_RSCN_MODE | FC_RSCN_DISCOVERY | FC_NLP_MORE |
 		     FC_RSCN_DEFERRED | FC_NDISC_ACTIVE | FC_DISC_TMO;
 
-	/*
-	 * The time constraint on this loop is a balance between the
-	 * fabric RA_TOV value and dev_loss tmo.  The driver's
-	 * devloss_tmo is 10 giving this loop a 3x multiplier minimally.
-	 */
+	 
 	wait_time_max = msecs_to_jiffies(((phba->fc_ratov * 3) + 3) * 1000);
 	wait_time_max += jiffies;
 	start_time = jiffies;
@@ -268,7 +216,7 @@ static void lpfc_discovery_wait(struct lpfc_vport *vport)
 					jiffies_to_msecs(jiffies - start_time));
 			msleep(1000);
 		} else {
-			/* Base case.  Wait variants satisfied.  Break out */
+			 
 			lpfc_printf_vlog(vport, KERN_INFO, LOG_VPORT,
 					 "1834 Vport discovery quiesced:"
 					 " state x%x fc_flags x%x"
@@ -310,7 +258,7 @@ lpfc_vport_create(struct fc_vport *fc_vport, bool disable)
 		goto error_out;
 	}
 
-	/* NPIV is not supported if HBA has NVME Target enabled */
+	 
 	if (phba->nvmet_support) {
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
 				"3189 Create VPORT failed: "
@@ -329,7 +277,7 @@ lpfc_vport_create(struct fc_vport *fc_vport, bool disable)
 		goto error_out;
 	}
 
-	/* Assign an unused board number */
+	 
 	if ((instance = lpfc_get_instance()) < 0) {
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
 				"1810 Create VPORT failed: Cannot get "
@@ -394,31 +342,28 @@ lpfc_vport_create(struct fc_vport *fc_vport, bool disable)
 		goto error_out;
 	}
 
-	/* Create binary sysfs attribute for vport */
+	 
 	lpfc_alloc_sysfs_attr(vport);
 
-	/* Set the DFT_LUN_Q_DEPTH accordingly */
+	 
 	vport->cfg_lun_queue_depth  = phba->pport->cfg_lun_queue_depth;
 
-	/* Only the physical port can support NVME for now */
+	 
 	vport->cfg_enable_fc4_type = LPFC_ENABLE_FCP;
 
 	*(struct lpfc_vport **)fc_vport->dd_data = vport;
 	vport->fc_vport = fc_vport;
 
-	/* At this point we are fully registered with SCSI Layer.  */
+	 
 	vport->load_flag |= FC_ALLOW_FDMI;
 	if (phba->cfg_enable_SmartSAN ||
 	    (phba->cfg_fdmi_on == LPFC_FDMI_SUPPORT)) {
-		/* Setup appropriate attribute masks */
+		 
 		vport->fdmi_hba_mask = phba->pport->fdmi_hba_mask;
 		vport->fdmi_port_mask = phba->pport->fdmi_port_mask;
 	}
 
-	/*
-	 * In SLI4, the vpi must be activated before it can be used
-	 * by the port.
-	 */
+	 
 	if ((phba->sli_rev == LPFC_SLI_REV4) &&
 	    (pport->fc_flag & FC_VFI_REGISTERED)) {
 		rc = lpfc_sli4_init_vpi(vport);
@@ -431,10 +376,7 @@ lpfc_vport_create(struct fc_vport *fc_vport, bool disable)
 			goto error_out;
 		}
 	} else if (phba->sli_rev == LPFC_SLI_REV4) {
-		/*
-		 * Driver cannot INIT_VPI now. Set the flags to
-		 * init_vpi when reg_vfi complete.
-		 */
+		 
 		vport->fc_flag |= FC_VPORT_NEEDS_INIT_VPI;
 		lpfc_vport_set_state(vport, FC_VPORT_LINKDOWN);
 		rc = VPORT_OK;
@@ -455,9 +397,7 @@ lpfc_vport_create(struct fc_vport *fc_vport, bool disable)
 		goto out;
 	}
 
-	/* Use the Physical nodes Fabric NDLP to determine if the link is
-	 * up and ready to FDISC.
-	 */
+	 
 	ndlp = lpfc_findnode_did(phba->pport, Fabric_DID);
 	if (ndlp &&
 	    ndlp->nlp_state == NLP_STE_UNMAPPED_NODE) {
@@ -507,13 +447,13 @@ lpfc_send_npiv_logo(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 
 		if (!(ndlp->save_flags & NLP_WAIT_FOR_LOGO))
 			goto logo_cmpl;
-		/* LOGO wait failed.  Correct status. */
+		 
 		rc = -EINTR;
 	} else {
 		rc = -EIO;
 	}
 
-	/* Error - clean up node flags. */
+	 
 	spin_lock_irq(&ndlp->lock);
 	ndlp->nlp_flag &= ~NLP_ISSUE_LOGO;
 	ndlp->save_flags &= ~NLP_WAIT_FOR_LOGO;
@@ -537,7 +477,7 @@ disable_vport(struct fc_vport *fc_vport)
 	struct lpfc_nodelist *ndlp = NULL;
 	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
 
-	/* Can't disable during an outstanding delete. */
+	 
 	if (vport->load_flag & FC_UNLOADING)
 		return 0;
 
@@ -551,10 +491,7 @@ disable_vport(struct fc_vport *fc_vport)
 	lpfc_stop_vport_timers(vport);
 	lpfc_unreg_all_rpis(vport);
 	lpfc_unreg_default_rpis(vport);
-	/*
-	 * Completion of unreg_vpi (lpfc_mbx_cmpl_unreg_vpi) does the
-	 * scsi_host_put() to release the vport.
-	 */
+	 
 	lpfc_mbx_unreg_vpi(vport);
 	if (phba->sli_rev == LPFC_SLI_REV4) {
 		spin_lock_irq(shost->host_lock);
@@ -593,9 +530,7 @@ enable_vport(struct fc_vport *fc_vport)
 	vport->fc_flag |= FC_VPORT_NEEDS_REG_VPI;
 	spin_unlock_irq(shost->host_lock);
 
-	/* Use the Physical nodes Fabric NDLP to determine if the link is
-	 * up and ready to FDISC.
-	 */
+	 
 	ndlp = lpfc_findnode_did(phba->pport, Fabric_DID);
 	if (ndlp && ndlp->nlp_state == NLP_STE_UNMAPPED_NODE) {
 		if (phba->link_flag & LS_NPIV_FAB_SUPPORTED) {
@@ -641,7 +576,7 @@ lpfc_vport_delete(struct fc_vport *fc_vport)
 		return VPORT_ERROR;
 	}
 
-	/* If the vport is a static vport fail the deletion. */
+	 
 	if ((vport->vport_flag & STATIC_VPORT) &&
 		!(phba->pport->load_flag & FC_UNLOADING)) {
 		lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
@@ -654,10 +589,7 @@ lpfc_vport_delete(struct fc_vport *fc_vport)
 	vport->load_flag |= FC_UNLOADING;
 	spin_unlock_irq(&phba->hbalock);
 
-	/*
-	 * If we are not unloading the driver then prevent the vport_delete
-	 * from happening until after this vport's discovery is finished.
-	 */
+	 
 	if (!(phba->pport->load_flag & FC_UNLOADING)) {
 		int check_count = 0;
 		while (check_count < ((phba->fc_ratov * 3) + 3) &&
@@ -671,23 +603,18 @@ lpfc_vport_delete(struct fc_vport *fc_vport)
 			return -EAGAIN;
 	}
 
-	/*
-	 * Take early refcount for outstanding I/O requests we schedule during
-	 * delete processing for unreg_vpi.  Always keep this before
-	 * scsi_remove_host() as we can no longer obtain a reference through
-	 * scsi_host_get() after scsi_host_remove as shost is set to SHOST_DEL.
-	 */
+	 
 	if (!scsi_host_get(shost))
 		return VPORT_INVAL;
 
 	lpfc_free_sysfs_attr(vport);
 	lpfc_debugfs_terminate(vport);
 
-	/* Remove FC host to break driver binding. */
+	 
 	fc_remove_host(shost);
 	scsi_remove_host(shost);
 
-	/* Send the DA_ID and Fabric LOGO to cleanup Nameserver entries. */
+	 
 	ndlp = lpfc_findnode_did(vport, Fabric_DID);
 	if (!ndlp)
 		goto skip_logo;
@@ -696,7 +623,7 @@ lpfc_vport_delete(struct fc_vport *fc_vport)
 	    phba->link_state >= LPFC_LINK_UP &&
 	    phba->fc_topology != LPFC_TOPOLOGY_LOOP) {
 		if (vport->cfg_enable_da_id) {
-			/* Send DA_ID and wait for a completion. */
+			 
 			rc = lpfc_ns_cmd(vport, SLI_CTNS_DA_ID, 0, 0);
 			if (rc) {
 				lpfc_printf_log(vport->phba, KERN_WARNING,
@@ -707,15 +634,11 @@ lpfc_vport_delete(struct fc_vport *fc_vport)
 			}
 		}
 
-		/*
-		 * If the vpi is not registered, then a valid FDISC doesn't
-		 * exist and there is no need for a ELS LOGO.  Just cleanup
-		 * the ndlp.
-		 */
+		 
 		if (!(vport->vpi_state & LPFC_VPI_REGISTERED))
 			goto skip_logo;
 
-		/* Issue a Fabric LOGO to cleanup fabric resources. */
+		 
 		ndlp = lpfc_findnode_did(vport, Fabric_DID);
 		if (!ndlp)
 			goto skip_logo;
@@ -732,17 +655,14 @@ skip_logo:
 
 	lpfc_cleanup(vport);
 
-	/* Remove scsi host now.  The nodes are cleaned up. */
+	 
 	lpfc_sli_host_down(vport);
 	lpfc_stop_vport_timers(vport);
 
 	if (!(phba->pport->load_flag & FC_UNLOADING)) {
 		lpfc_unreg_all_rpis(vport);
 		lpfc_unreg_default_rpis(vport);
-		/*
-		 * Completion of unreg_vpi (lpfc_mbx_cmpl_unreg_vpi)
-		 * does the scsi_host_put() to release the vport.
-		 */
+		 
 		if (!(vport->vpi_state & LPFC_VPI_REGISTERED) ||
 				lpfc_mbx_unreg_vpi(vport))
 			scsi_host_put(shost);

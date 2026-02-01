@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __PERF_SYMBOL
 #define __PERF_SYMBOL 1
 
@@ -26,10 +26,7 @@ struct maps;
 struct option;
 struct build_id;
 
-/*
- * libelf 0.8.x and earlier do not support ELF_C_READ_MMAP;
- * for newer versions we can use mmap to reduce memory usage:
- */
+ 
 #ifdef ELF_C_READ_MMAP
 # define PERF_ELF_C_READ_MMAP ELF_C_READ_MMAP
 #else
@@ -41,46 +38,38 @@ Elf_Scn *elf_section_by_name(Elf *elf, GElf_Ehdr *ep,
 			     GElf_Shdr *shp, const char *name, size_t *idx);
 #endif
 
-/**
- * A symtab entry. When allocated this may be preceded by an annotation (see
- * symbol__annotation) and/or a browser_index (see symbol__browser_index).
- */
+ 
 struct symbol {
 	struct rb_node	rb_node;
-	/** Range of symbol [start, end). */
+	 
 	u64		start;
 	u64		end;
-	/** Length of the string name. */
+	 
 	u16		namelen;
-	/** ELF symbol type as defined for st_info. E.g STT_OBJECT or STT_FUNC. */
+	 
 	u8		type:4;
-	/** ELF binding type as defined for st_info. E.g. STB_WEAK or STB_GLOBAL. */
+	 
 	u8		binding:4;
-	/** Set true for kernel symbols of idle routines. */
+	 
 	u8		idle:1;
-	/** Resolvable but tools ignore it (e.g. idle routines). */
+	 
 	u8		ignore:1;
-	/** Symbol for an inlined function. */
+	 
 	u8		inlined:1;
-	/** Has symbol__annotate2 been performed. */
+	 
 	u8		annotate2:1;
-	/** Symbol is an alias of an STT_GNU_IFUNC */
+	 
 	u8		ifunc_alias:1;
-	/** Architecture specific. Unused except on PPC where it holds st_other. */
+	 
 	u8		arch_sym;
-	/** The name of length namelen associated with the symbol. */
+	 
 	char		name[];
 };
 
 void symbol__delete(struct symbol *sym);
 void symbols__delete(struct rb_root_cached *symbols);
 
-/* symbols__for_each_entry - iterate over symbols (rb_root)
- *
- * @symbols: the rb_root of symbols
- * @pos: the 'struct symbol *' to use as a loop cursor
- * @nd: the 'struct rb_node *' to use as a temporary storage
- */
+ 
 #define symbols__for_each_entry(symbols, pos, nd)			\
 	for (nd = rb_first_cached(symbols);					\
 	     nd && (pos = rb_entry(nd, struct symbol, rb_node));	\
@@ -239,17 +228,17 @@ enum symbol_tag_include {
 int symbol__match_symbol_name(const char *namea, const char *nameb,
 			      enum symbol_tag_include includes);
 
-/* structure containing an SDT note's info */
+ 
 struct sdt_note {
-	char *name;			/* name of the note*/
-	char *provider;			/* provider name */
+	char *name;			 
+	char *provider;			 
 	char *args;
-	bool bit32;			/* whether the location is 32 bits? */
-	union {				/* location, base and semaphore addrs */
+	bool bit32;			 
+	union {				 
 		Elf64_Addr a64[3];
 		Elf32_Addr a32[3];
 	} addr;
-	struct list_head note_list;	/* SDT notes' list */
+	struct list_head note_list;	 
 };
 
 int get_sdt_note_list(struct list_head *head, const char *target);
@@ -283,4 +272,4 @@ static inline void __mem_info__zput(struct mem_info **mi)
 
 int symbol__validate_sym_arguments(void);
 
-#endif /* __PERF_SYMBOL */
+#endif  

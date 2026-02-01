@@ -1,48 +1,8 @@
-/****************************************************************************
- * Copyright 2018-2021,2022 Thomas E. Dickey                                *
- * Copyright 1998-2013,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- ****************************************************************************/
+ 
 
-/*
- * alloc_entry.c -- allocation functions for terminfo entries
- *
- *	_nc_copy_entry()
- *	_nc_init_entry()
- *	_nc_merge_entry()
- *	_nc_save_str()
- *	_nc_wrap_entry()
- *
- */
+ 
 
 #include <curses.priv.h>
 
@@ -53,12 +13,12 @@ MODULE_ID("$Id: alloc_entry.c,v 1.77 2022/10/15 19:37:33 tom Exp $")
 #define ABSENT_OFFSET    -1
 #define CANCELLED_OFFSET -2
 
-static char *stringbuf;		/* buffer for string capabilities */
-static size_t next_free;	/* next free character in stringbuf */
+static char *stringbuf;		 
+static size_t next_free;	 
 
 NCURSES_EXPORT(void)
 _nc_init_entry(ENTRY * const tp)
-/* initialize a terminal type data block */
+ 
 {
     DEBUG(2, (T_CALLED("_nc_init_entry(tp=%p)"), (void *) tp));
 
@@ -100,7 +60,7 @@ _nc_copy_entry(ENTRY * oldp)
     return (newp);
 }
 
-/* save a copy of string in the string buffer */
+ 
 NCURSES_EXPORT(char *)
 _nc_save_str(const char *string)
 {
@@ -115,10 +75,7 @@ _nc_save_str(const char *string)
 	len = strlen(string) + 1;
 
 	if (len == 1 && next_free != 0) {
-	    /*
-	     * Cheat a little by making an empty string point to the end of the
-	     * previous string.
-	     */
+	     
 	    if (next_free < MAX_ENTRY_SIZE) {
 		result = (stringbuf + next_free - 1);
 	    }
@@ -137,7 +94,7 @@ _nc_save_str(const char *string)
 
 NCURSES_EXPORT(void)
 _nc_wrap_entry(ENTRY * const ep, bool copy_strings)
-/* copy the string parts to allocated storage, preserving pointers to it */
+ 
 {
     int offsets[MAX_ENTRY_SIZE / sizeof(short)];
     int useoffsets[MAX_USES];
@@ -153,9 +110,9 @@ _nc_wrap_entry(ENTRY * const ep, bool copy_strings)
     nuses = ep->nuses;
     tp = &(ep->tterm);
     if (copy_strings) {
-	next_free = 0;		/* clear static storage */
+	next_free = 0;		 
 
-	/* copy term_names, Strings, uses */
+	 
 	tp->term_names = _nc_save_str(tp->term_names);
 	for_each_string(i, tp) {
 	    if (tp->Strings[i] != ABSENT_STRING &&
@@ -245,7 +202,7 @@ _nc_wrap_entry(ENTRY * const ep, bool copy_strings)
 
 NCURSES_EXPORT(void)
 _nc_merge_entry(ENTRY * const target, ENTRY * const source)
-/* merge capabilities from `from' entry into `to' entry */
+ 
 {
     TERMTYPE2 *to = &(target->tterm);
     TERMTYPE2 *from = &(source->tterm);
@@ -263,9 +220,7 @@ _nc_merge_entry(ENTRY * const target, ENTRY * const source)
     _nc_copy_termtype2(&copy, from);
     from = &copy;
     _nc_align_termtype(to, from);
-    /*
-     * compute the maximum size of the string-table.
-     */
+     
     str_size = strlen(to->term_names) + 1;
     for_each_string(i, from) {
 	if (VALID_STRING(from->Strings[i]))
@@ -275,11 +230,7 @@ _nc_merge_entry(ENTRY * const target, ENTRY * const source)
 	if (VALID_STRING(to->Strings[i]))
 	    str_size += strlen(to->Strings[i]) + 1;
     }
-    /* allocate a string-table large enough for both source/target, and
-     * copy all of the strings into that table.  In the merge, we will
-     * select from the original source/target lists to construct a new
-     * target list.
-     */
+     
     if (str_size != 0) {
 	char *str_copied;
 	if ((str_table = malloc(str_size)) == NULL)
@@ -306,9 +257,7 @@ _nc_merge_entry(ENTRY * const target, ENTRY * const source)
 	to->str_table = str_table;
 	free(from->str_table);
     }
-    /*
-     * Do the same for the extended-strings (i.e., lists of capabilities).
-     */
+     
     str_size = 0;
     for (i = 0; i < NUM_EXT_NAMES(from); ++i) {
 	if (VALID_STRING(from->ext_Names[i]))
@@ -318,11 +267,7 @@ _nc_merge_entry(ENTRY * const target, ENTRY * const source)
 	if (VALID_STRING(to->ext_Names[i]))
 	    str_size += strlen(to->ext_Names[i]) + 1;
     }
-    /* allocate a string-table large enough for both source/target, and
-     * copy all of the strings into that table.  In the merge, we will
-     * select from the original source/target lists to construct a new
-     * target list.
-     */
+     
     if (str_size != 0) {
 	char *str_copied;
 	if ((str_table = malloc(str_size)) == NULL)
@@ -369,11 +314,7 @@ _nc_merge_entry(ENTRY * const target, ENTRY * const source)
 	}
     }
 
-    /*
-     * Note: the copies of strings this makes don't have their own
-     * storage.  This is OK right now, but will be a problem if we
-     * we ever want to deallocate entries.
-     */
+     
     for_each_string(i, from) {
 	if (to->Strings[i] != CANCELLED_STRING) {
 	    char *mergestring = from->Strings[i];
@@ -385,7 +326,7 @@ _nc_merge_entry(ENTRY * const target, ENTRY * const source)
 	}
     }
 #if NCURSES_XNAMES
-    /* cleanup */
+     
     free(copy.Booleans);
     free(copy.Numbers);
     free(copy.Strings);

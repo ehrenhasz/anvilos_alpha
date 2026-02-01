@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Loongson ALSA SoC Platform (DMA) driver
-//
-// Copyright (C) 2023 Loongson Technology Corporation Limited
-// Author: Yingkun Meng <mengyingkun@loongson.cn>
-//
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/io-64-nonatomic-lo-hi.h>
@@ -16,31 +16,29 @@
 #include <sound/pcm_params.h>
 #include "loongson_i2s.h"
 
-/* DMA dma_order Register */
-#define DMA_ORDER_STOP          (1 << 4) /* DMA stop */
-#define DMA_ORDER_START         (1 << 3) /* DMA start */
-#define DMA_ORDER_ASK_VALID     (1 << 2) /* DMA ask valid flag */
-#define DMA_ORDER_AXI_UNCO      (1 << 1) /* Uncache access */
-#define DMA_ORDER_ADDR_64       (1 << 0) /* 64bits address support */
+ 
+#define DMA_ORDER_STOP          (1 << 4)  
+#define DMA_ORDER_START         (1 << 3)  
+#define DMA_ORDER_ASK_VALID     (1 << 2)  
+#define DMA_ORDER_AXI_UNCO      (1 << 1)  
+#define DMA_ORDER_ADDR_64       (1 << 0)  
 
-#define DMA_ORDER_ASK_MASK      (~0x1fUL) /* Ask addr mask */
-#define DMA_ORDER_CTRL_MASK     (0x0fUL)  /* Control mask  */
+#define DMA_ORDER_ASK_MASK      (~0x1fUL)  
+#define DMA_ORDER_CTRL_MASK     (0x0fUL)   
 
-/*
- * DMA registers descriptor.
- */
+ 
 struct loongson_dma_desc {
-	u32 order;		/* Next descriptor address register */
-	u32 saddr;		/* Source address register */
-	u32 daddr;		/* Device address register */
-	u32 length;		/* Total length register */
-	u32 step_length;	/* Memory stride register */
-	u32 step_times;		/* Repeat time register */
-	u32 cmd;		/* Command register */
-	u32 stats;		/* Status register */
-	u32 order_hi;		/* Next descriptor high address register */
-	u32 saddr_hi;		/* High source address register */
-	u32 res[6];		/* Reserved */
+	u32 order;		 
+	u32 saddr;		 
+	u32 daddr;		 
+	u32 length;		 
+	u32 step_length;	 
+	u32 step_times;		 
+	u32 cmd;		 
+	u32 stats;		 
+	u32 order_hi;		 
+	u32 saddr_hi;		 
+	u32 res[6];		 
 } __packed;
 
 struct loongson_runtime_data {
@@ -118,7 +116,7 @@ static int loongson_pcm_trigger(struct snd_soc_component *component,
 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
 		dma_desc_save(prtd);
 
-		/* dma stop */
+		 
 		val = readq(order_reg) | DMA_ORDER_STOP;
 		writeq(val, order_reg);
 		udelay(1000);
@@ -160,13 +158,13 @@ static int loongson_pcm_hw_params(struct snd_soc_component *component,
 	snd_pcm_set_runtime_buffer(substream, &substream->dma_buffer);
 	runtime->dma_bytes = buf_len;
 
-	/* initialize dma descriptor array */
+	 
 	mem_addr = runtime->dma_addr;
 	order_addr = prtd->dma_desc_arr_phy;
 	for (i = 0; i < num_periods; i++) {
 		desc = &prtd->dma_desc_arr[i];
 
-		/* next descriptor physical address */
+		 
 		order_addr += sizeof(*desc);
 		desc->order = lower_32_bits(order_addr | BIT(0));
 		desc->order_hi = upper_32_bits(order_addr);
@@ -189,7 +187,7 @@ static int loongson_pcm_hw_params(struct snd_soc_component *component,
 	desc->order = lower_32_bits(prtd->dma_desc_arr_phy | BIT(0));
 	desc->order_hi = upper_32_bits(prtd->dma_desc_arr_phy);
 
-	/* init position descriptor */
+	 
 	*prtd->dma_pos_desc = *prtd->dma_desc_arr;
 
 	return 0;
@@ -232,11 +230,7 @@ static int loongson_pcm_open(struct snd_soc_component *component,
 	struct loongson_dma_data *dma_data;
 	int ret;
 
-	/*
-	 * For mysterious reasons (and despite what the manual says)
-	 * playback samples are lost if the DMA count is not a multiple
-	 * of the DMA burst size.  Let's add a rule to enforce that.
-	 */
+	 
 	snd_pcm_hw_constraint_step(runtime, 0,
 				   SNDRV_PCM_HW_PARAM_PERIOD_BYTES, 128);
 	snd_pcm_hw_constraint_step(runtime, 0,

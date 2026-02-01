@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __ERR_H__
 #define __ERR_H__
 
@@ -15,4 +15,4 @@ static inline long PTR_ERR(const void *ptr)
 	return (long) ptr;
 }
 
-#endif /* __ERR_H__ */
+#endif  

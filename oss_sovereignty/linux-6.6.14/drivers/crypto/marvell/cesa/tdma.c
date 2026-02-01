@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Provide TDMA helper functions used by cipher and hash algorithm
- * implementations.
- *
- * Author: Boris Brezillon <boris.brezillon@free-electrons.com>
- * Author: Arnaud Ebalard <arno@natisbad.org>
- *
- * This work is based on an initial version written by
- * Sebastian Andrzej Siewior < sebastian at breakpoint dot cc >
- */
+
+ 
 
 #include "cesa.h"
 
@@ -106,12 +97,7 @@ void mv_cesa_tdma_chain(struct mv_cesa_engine *engine,
 		last->next = dreq->chain.first;
 		engine->chain.last = dreq->chain.last;
 
-		/*
-		 * Break the DMA chain if the CESA_TDMA_BREAK_CHAIN is set on
-		 * the last element of the current chain, or if the request
-		 * being queued needs the IV regs to be set before lauching
-		 * the request.
-		 */
+		 
 		if (!(last->flags & CESA_TDMA_BREAK_CHAIN) &&
 		    !(dreq->chain.first->flags & CESA_TDMA_SET_STATE))
 			last->next_dma = cpu_to_le32(dreq->chain.first->cur_dma);
@@ -138,21 +124,18 @@ int mv_cesa_tdma_process(struct mv_cesa_engine *engine, u32 status)
 			u32 current_status;
 
 			spin_lock_bh(&engine->lock);
-			/*
-			 * if req is NULL, this means we're processing the
-			 * request in engine->req.
-			 */
+			 
 			if (!req)
 				req = engine->req;
 			else
 				req = mv_cesa_dequeue_req_locked(engine,
 								 &backlog);
 
-			/* Re-chaining to the next request */
+			 
 			engine->chain.first = tdma->next;
 			tdma->next = NULL;
 
-			/* If this is the last request, clear the chain */
+			 
 			if (engine->chain.first == NULL)
 				engine->chain.last  = NULL;
 			spin_unlock_bh(&engine->lock);
@@ -175,10 +158,7 @@ int mv_cesa_tdma_process(struct mv_cesa_engine *engine, u32 status)
 			break;
 	}
 
-	/*
-	 * Save the last request in error to engine->req, so that the core
-	 * knows which request was faulty
-	 */
+	 
 	if (res) {
 		spin_lock_bh(&engine->lock);
 		engine->req = req;
@@ -221,11 +201,7 @@ int mv_cesa_dma_add_result_op(struct mv_cesa_tdma_chain *chain, dma_addr_t src,
 	if (IS_ERR(tdma))
 		return PTR_ERR(tdma);
 
-	/* We re-use an existing op_desc object to retrieve the context
-	 * and result instead of allocating a new one.
-	 * There is at least one object of this type in a CESA crypto
-	 * req, just pick the first one in the chain.
-	 */
+	 
 	for (op_desc = chain->first; op_desc; op_desc = op_desc->next) {
 		u32 type = op_desc->flags & CESA_TDMA_TYPE_MSK;
 

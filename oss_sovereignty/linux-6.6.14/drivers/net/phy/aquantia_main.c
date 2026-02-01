@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Aquantia PHY
- *
- * Author: Shaohui Xie <Shaohui.Xie@freescale.com>
- *
- * Copyright 2015 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -79,7 +73,7 @@
 #define MDIO_AN_RX_VEND_STAT3			0xe832
 #define MDIO_AN_RX_VEND_STAT3_AFR		BIT(0)
 
-/* MDIO_MMD_C22EXT */
+ 
 #define MDIO_C22EXT_STAT_SGMII_RX_GOOD_FRAMES		0xd292
 #define MDIO_C22EXT_STAT_SGMII_RX_BAD_FRAMES		0xd294
 #define MDIO_C22EXT_STAT_SGMII_RX_FALSE_CARRIER		0xd297
@@ -91,7 +85,7 @@
 #define MDIO_C22EXT_STAT_SGMII_TX_FRAME_ALIGN_ERR	0xd31a
 #define MDIO_C22EXT_STAT_SGMII_TX_RUNT_FRAMES		0xd31b
 
-/* Vendor specific 1, MDIO_MMD_VEND1 */
+ 
 #define VEND1_GLOBAL_FW_ID			0x0020
 #define VEND1_GLOBAL_FW_ID_MAJOR		GENMASK(15, 8)
 #define VEND1_GLOBAL_FW_ID_MINOR		GENMASK(7, 0)
@@ -99,14 +93,14 @@
 #define VEND1_GLOBAL_GEN_STAT2			0xc831
 #define VEND1_GLOBAL_GEN_STAT2_OP_IN_PROG	BIT(15)
 
-/* The following registers all have similar layouts; first the registers... */
+ 
 #define VEND1_GLOBAL_CFG_10M			0x0310
 #define VEND1_GLOBAL_CFG_100M			0x031b
 #define VEND1_GLOBAL_CFG_1G			0x031c
 #define VEND1_GLOBAL_CFG_2_5G			0x031d
 #define VEND1_GLOBAL_CFG_5G			0x031e
 #define VEND1_GLOBAL_CFG_10G			0x031f
-/* ...and now the fields */
+ 
 #define VEND1_GLOBAL_CFG_RATE_ADAPT		GENMASK(8, 7)
 #define VEND1_GLOBAL_CFG_RATE_ADAPT_NONE	0
 #define VEND1_GLOBAL_CFG_RATE_ADAPT_USX		1
@@ -146,9 +140,7 @@
 #define VEND1_GLOBAL_INT_VEND_MASK_GLOBAL2	BIT(1)
 #define VEND1_GLOBAL_INT_VEND_MASK_GLOBAL3	BIT(0)
 
-/* Sleep and timeout for checking if the Processor-Intensive
- * MDIO operation is finished
- */
+ 
 #define AQR107_OP_IN_PROG_SLEEP		1000
 #define AQR107_OP_IN_PROG_TIMEOUT	100000
 
@@ -249,9 +241,7 @@ static int aqr_config_aneg(struct phy_device *phydev)
 	if (ret > 0)
 		changed = true;
 
-	/* Clause 45 has no standardized support for 1000BaseT, therefore
-	 * use vendor registers for this mode.
-	 */
+	 
 	reg = 0;
 	if (linkmode_test_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT,
 			      phydev->advertising))
@@ -261,7 +251,7 @@ static int aqr_config_aneg(struct phy_device *phydev)
 			      phydev->advertising))
 		reg |= MDIO_AN_VEND_PROV_1000BASET_HALF;
 
-	/* Handle the case when the 2.5G and 5G speeds are not advertised */
+	 
 	if (linkmode_test_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT,
 			      phydev->advertising))
 		reg |= MDIO_AN_VEND_PROV_2500BASET_FULL;
@@ -289,7 +279,7 @@ static int aqr_config_intr(struct phy_device *phydev)
 	int err;
 
 	if (en) {
-		/* Clear any pending interrupts before enabling them */
+		 
 		err = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_TX_VEND_INT_STATUS2);
 		if (err < 0)
 			return err;
@@ -312,7 +302,7 @@ static int aqr_config_intr(struct phy_device *phydev)
 		return err;
 
 	if (!en) {
-		/* Clear any pending interrupts after we have disabled them */
+		 
 		err = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_TX_VEND_INT_STATUS2);
 		if (err < 0)
 			return err;
@@ -462,7 +452,7 @@ static int aqr107_read_status(struct phy_device *phydev)
 		break;
 	}
 
-	/* Read possibly downshifted rate from vendor register */
+	 
 	return aqr107_read_rate(phydev);
 }
 
@@ -521,13 +511,7 @@ static int aqr107_set_tunable(struct phy_device *phydev,
 	}
 }
 
-/* If we configure settings whilst firmware is still initializing the chip,
- * then these settings may be overwritten. Therefore make sure chip
- * initialization has completed. Use presence of the firmware ID as
- * indicator for initialization having completed.
- * The chip also provides a "reset completed" bit, but it's cleared after
- * read. Therefore function would time out if called again.
- */
+ 
 static int aqr107_wait_reset_complete(struct phy_device *phydev)
 {
 	int val;
@@ -564,7 +548,7 @@ static int aqr107_config_init(struct phy_device *phydev)
 {
 	int ret;
 
-	/* Check that the PHY interface type is compatible */
+	 
 	if (phydev->interface != PHY_INTERFACE_MODE_SGMII &&
 	    phydev->interface != PHY_INTERFACE_MODE_1000BASEKX &&
 	    phydev->interface != PHY_INTERFACE_MODE_2500BASEX &&
@@ -590,7 +574,7 @@ static int aqcs109_config_init(struct phy_device *phydev)
 {
 	int ret;
 
-	/* Check that the PHY interface type is compatible */
+	 
 	if (phydev->interface != PHY_INTERFACE_MODE_SGMII &&
 	    phydev->interface != PHY_INTERFACE_MODE_2500BASEX)
 		return -ENODEV;
@@ -599,10 +583,7 @@ static int aqcs109_config_init(struct phy_device *phydev)
 	if (!ret)
 		aqr107_chip_info(phydev);
 
-	/* AQCS109 belongs to a chip family partially supporting 10G and 5G.
-	 * PMA speed ability bits are the same for all members of the family,
-	 * AQCS109 however supports speeds up to 2.5G only.
-	 */
+	 
 	phy_set_max_speed(phydev, SPEED_2500);
 
 	return aqr107_set_downshift(phydev, MDIO_AN_VEND_PROV_DOWNSHIFT_DFLT);
@@ -618,7 +599,7 @@ static void aqr107_link_change_notify(struct phy_device *phydev)
 		return;
 
 	val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_RX_LP_STAT1);
-	/* call failed or link partner is no Aquantia PHY */
+	 
 	if (val < 0 || !(val & MDIO_AN_RX_LP_STAT1_AQ_PHY))
 		return;
 
@@ -657,11 +638,7 @@ static int aqr107_wait_processor_intensive_op(struct phy_device *phydev)
 {
 	int val, err;
 
-	/* The datasheet notes to wait at least 1ms after issuing a
-	 * processor intensive operation before checking.
-	 * We cannot use the 'sleep_before_read' parameter of read_poll_timeout
-	 * because that just determines the maximum time slept, not the minimum.
-	 */
+	 
 	usleep_range(1000, 5000);
 
 	err = phy_read_mmd_poll_timeout(phydev, MDIO_MMD_VEND1,

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/export.h>
 #include <linux/errno.h>
 #include <linux/gpio/consumer.h>
@@ -28,15 +28,7 @@ int fbtft_write_spi(struct fbtft_par *par, void *buf, size_t len)
 }
 EXPORT_SYMBOL(fbtft_write_spi);
 
-/**
- * fbtft_write_spi_emulate_9() - write SPI emulating 9-bit
- * @par: Driver data
- * @buf: Buffer to write
- * @len: Length of buffer (must be divisible by 8)
- *
- * When 9-bit SPI is not available, this function can be used to emulate that.
- * par->extra must hold a transformation buffer used for transfer.
- */
+ 
 int fbtft_write_spi_emulate_9(struct fbtft_par *par, void *buf, size_t len)
 {
 	u16 *src = buf;
@@ -123,10 +115,7 @@ int fbtft_read_spi(struct fbtft_par *par, void *buf, size_t len)
 }
 EXPORT_SYMBOL(fbtft_read_spi);
 
-/*
- * Optimized use of gpiolib is twice as fast as no optimization
- * only one driver can use the optimized version at a time
- */
+ 
 int fbtft_write_gpio8_wr(struct fbtft_par *par, void *buf, size_t len)
 {
 	u8 data;
@@ -141,13 +130,13 @@ int fbtft_write_gpio8_wr(struct fbtft_par *par, void *buf, size_t len)
 	while (len--) {
 		data = *(u8 *)buf;
 
-		/* Start writing by pulling down /WR */
+		 
 		gpiod_set_value(par->gpio.wr, 1);
 
-		/* Set data */
+		 
 #ifndef DO_NOT_OPTIMIZE_FBTFT_WRITE_GPIO
 		if (data == prev_data) {
-			gpiod_set_value(par->gpio.wr, 1); /* used as delay */
+			gpiod_set_value(par->gpio.wr, 1);  
 		} else {
 			for (i = 0; i < 8; i++) {
 				if ((data & 1) != (prev_data & 1))
@@ -164,7 +153,7 @@ int fbtft_write_gpio8_wr(struct fbtft_par *par, void *buf, size_t len)
 		}
 #endif
 
-		/* Pullup /WR */
+		 
 		gpiod_set_value(par->gpio.wr, 0);
 
 #ifndef DO_NOT_OPTIMIZE_FBTFT_WRITE_GPIO
@@ -191,13 +180,13 @@ int fbtft_write_gpio16_wr(struct fbtft_par *par, void *buf, size_t len)
 	while (len) {
 		data = *(u16 *)buf;
 
-		/* Start writing by pulling down /WR */
+		 
 		gpiod_set_value(par->gpio.wr, 1);
 
-		/* Set data */
+		 
 #ifndef DO_NOT_OPTIMIZE_FBTFT_WRITE_GPIO
 		if (data == prev_data) {
-			gpiod_set_value(par->gpio.wr, 1); /* used as delay */
+			gpiod_set_value(par->gpio.wr, 1);  
 		} else {
 			for (i = 0; i < 16; i++) {
 				if ((data & 1) != (prev_data & 1))
@@ -214,7 +203,7 @@ int fbtft_write_gpio16_wr(struct fbtft_par *par, void *buf, size_t len)
 		}
 #endif
 
-		/* Pullup /WR */
+		 
 		gpiod_set_value(par->gpio.wr, 0);
 
 #ifndef DO_NOT_OPTIMIZE_FBTFT_WRITE_GPIO

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Cadence CDNSP DRD Driver.
- *
- * Copyright (C) 2020 Cadence.
- *
- * Author: Pawel Laszczak <pawell@cadence.com>
- *
- */
+ 
+ 
 #ifndef __LINUX_CDNSP_DEBUG
 #define __LINUX_CDNSP_DEBUG
 
@@ -583,4 +576,4 @@ static inline const char *cdnsp_decode_ep_context(char *str, size_t size,
 	return str;
 }
 
-#endif /*__LINUX_CDNSP_DEBUG*/
+#endif  

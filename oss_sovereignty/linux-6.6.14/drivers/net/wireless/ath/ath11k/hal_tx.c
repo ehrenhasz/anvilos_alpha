@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include "hal_desc.h"
 #include "hal.h"
@@ -11,18 +8,7 @@
 
 #define DSCP_TID_MAP_TBL_ENTRY_SIZE 64
 
-/* dscp_tid_map - Default DSCP-TID mapping
- *
- * DSCP        TID
- * 000000      0
- * 001000      1
- * 010000      2
- * 011000      3
- * 100000      4
- * 101000      5
- * 110000      6
- * 111000      7
- */
+ 
 static const u8 dscp_tid_map[DSCP_TID_MAP_TBL_ENTRY_SIZE] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	1, 1, 1, 1, 1, 1, 1, 1,
@@ -91,7 +77,7 @@ void ath11k_hal_tx_set_dscp_tid_map(struct ath11k_base *ab, int id)
 
 	ctrl_reg_val = ath11k_hif_read32(ab, HAL_SEQ_WCSS_UMAC_TCL_REG +
 					 HAL_TCL1_RING_CMN_CTRL_REG);
-	/* Enable read/write access */
+	 
 	ctrl_reg_val |= HAL_TCL1_RING_CMN_CTRL_DSCP_TID_MAP_PROG_EN;
 	ath11k_hif_write32(ab, HAL_SEQ_WCSS_UMAC_TCL_REG +
 			   HAL_TCL1_RING_CMN_CTRL_REG, ctrl_reg_val);
@@ -99,9 +85,7 @@ void ath11k_hal_tx_set_dscp_tid_map(struct ath11k_base *ab, int id)
 	addr = HAL_SEQ_WCSS_UMAC_TCL_REG + HAL_TCL1_RING_DSCP_TID_MAP +
 	       (4 * id * (HAL_DSCP_TID_TBL_SIZE / 4));
 
-	/* Configure each DSCP-TID mapping in three bits there by configure
-	 * three bytes in an iteration.
-	 */
+	 
 	for (i = 0; i < DSCP_TID_MAP_TBL_ENTRY_SIZE; i += 8) {
 		value = FIELD_PREP(HAL_TCL1_RING_FIELD_DSCP_TID_MAP0,
 				   dscp_tid_map[i]) |
@@ -128,7 +112,7 @@ void ath11k_hal_tx_set_dscp_tid_map(struct ath11k_base *ab, int id)
 		addr += 4;
 	}
 
-	/* Disable read/write access */
+	 
 	ctrl_reg_val = ath11k_hif_read32(ab, HAL_SEQ_WCSS_UMAC_TCL_REG +
 					 HAL_TCL1_RING_CMN_CTRL_REG);
 	ctrl_reg_val &= ~HAL_TCL1_RING_CMN_CTRL_DSCP_TID_MAP_PROG_EN;

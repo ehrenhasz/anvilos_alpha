@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2021 MediaTek Inc. */
+
+ 
 
 #include <linux/iopoll.h>
 #include <linux/mmc/sdio_func.h>
@@ -62,7 +62,7 @@ int mt7921s_wfsys_reset(struct mt792x_dev *dev)
 
 	clear_bit(MT76_STATE_MCU_RUNNING, &dev->mphy.state);
 
-	/* activate mt7921s again */
+	 
 	mt7921s_mcu_drv_pmctrl(dev);
 	mt76_clear(dev, MT_CONN_STATUS, MT_WIFI_PATCH_DL_STATE);
 	mt7921s_mcu_fw_pmctrl(dev);

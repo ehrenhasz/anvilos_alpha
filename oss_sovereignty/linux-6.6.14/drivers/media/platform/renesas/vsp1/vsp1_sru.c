@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * vsp1_sru.c  --  R-Car VSP1 Super Resolution Unit
- *
- * Copyright (C) 2013 Renesas Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/gfp.h>
@@ -20,9 +14,7 @@
 #define SRU_MIN_SIZE				4U
 #define SRU_MAX_SIZE				8190U
 
-/* -----------------------------------------------------------------------------
- * Device Access
- */
+ 
 
 static inline void vsp1_sru_write(struct vsp1_sru *sru,
 				  struct vsp1_dl_body *dlb, u32 reg, u32 data)
@@ -30,9 +22,7 @@ static inline void vsp1_sru_write(struct vsp1_sru *sru,
 	vsp1_dl_body_write(dlb, reg, data);
 }
 
-/* -----------------------------------------------------------------------------
- * Controls
- */
+ 
 
 #define V4L2_CID_VSP1_SRU_INTENSITY		(V4L2_CID_USER_BASE | 0x1001)
 
@@ -101,9 +91,7 @@ static const struct v4l2_ctrl_config sru_intensity_control = {
 	.step = 1,
 };
 
-/* -----------------------------------------------------------------------------
- * V4L2 Subdevice Operations
- */
+ 
 
 static int sru_enum_mbus_code(struct v4l2_subdev *subdev,
 			      struct v4l2_subdev_state *sd_state,
@@ -174,7 +162,7 @@ static void sru_try_format(struct vsp1_sru *sru,
 
 	switch (pad) {
 	case SRU_PAD_SINK:
-		/* Default to YUV if the requested format is not supported. */
+		 
 		if (fmt->code != MEDIA_BUS_FMT_ARGB8888_1X32 &&
 		    fmt->code != MEDIA_BUS_FMT_AYUV8_1X32)
 			fmt->code = MEDIA_BUS_FMT_AYUV8_1X32;
@@ -184,18 +172,12 @@ static void sru_try_format(struct vsp1_sru *sru,
 		break;
 
 	case SRU_PAD_SOURCE:
-		/* The SRU can't perform format conversion. */
+		 
 		format = vsp1_entity_get_pad_format(&sru->entity, sd_state,
 						    SRU_PAD_SINK);
 		fmt->code = format->code;
 
-		/*
-		 * We can upscale by 2 in both direction, but not independently.
-		 * Compare the input and output rectangles areas (avoiding
-		 * integer overflows on the output): if the requested output
-		 * area is larger than 1.5^2 the input area upscale by two,
-		 * otherwise don't scale.
-		 */
+		 
 		input_area = format->width * format->height;
 		output_area = min(fmt->width, SRU_MAX_SIZE)
 			    * min(fmt->height, SRU_MAX_SIZE);
@@ -240,7 +222,7 @@ static int sru_set_format(struct v4l2_subdev *subdev,
 	*format = fmt->format;
 
 	if (fmt->pad == SRU_PAD_SINK) {
-		/* Propagate the format to the source pad. */
+		 
 		format = vsp1_entity_get_pad_format(&sru->entity, config,
 						    SRU_PAD_SOURCE);
 		*format = fmt->format;
@@ -265,9 +247,7 @@ static const struct v4l2_subdev_ops sru_ops = {
 	.pad    = &sru_pad_ops,
 };
 
-/* -----------------------------------------------------------------------------
- * VSP1 Entity Operations
- */
+ 
 
 static void sru_configure_stream(struct vsp1_entity *entity,
 				 struct vsp1_pipeline *pipe,
@@ -315,11 +295,7 @@ static unsigned int sru_max_width(struct vsp1_entity *entity,
 	output = vsp1_entity_get_pad_format(&sru->entity, sru->entity.config,
 					    SRU_PAD_SOURCE);
 
-	/*
-	 * The maximum input width of the SRU is 288 input pixels, but 32
-	 * pixels are reserved to support overlapping partition windows when
-	 * scaling.
-	 */
+	 
 	if (input->width != output->width)
 		return 512;
 	else
@@ -341,7 +317,7 @@ static void sru_partition(struct vsp1_entity *entity,
 	output = vsp1_entity_get_pad_format(&sru->entity, sru->entity.config,
 					    SRU_PAD_SOURCE);
 
-	/* Adapt if SRUx2 is enabled. */
+	 
 	if (input->width != output->width) {
 		window->width /= 2;
 		window->left /= 2;
@@ -356,9 +332,7 @@ static const struct vsp1_entity_operations sru_entity_ops = {
 	.partition = sru_partition,
 };
 
-/* -----------------------------------------------------------------------------
- * Initialization and Cleanup
- */
+ 
 
 struct vsp1_sru *vsp1_sru_create(struct vsp1_device *vsp1)
 {
@@ -377,7 +351,7 @@ struct vsp1_sru *vsp1_sru_create(struct vsp1_device *vsp1)
 	if (ret < 0)
 		return ERR_PTR(ret);
 
-	/* Initialize the control handler. */
+	 
 	v4l2_ctrl_handler_init(&sru->ctrls, 1);
 	v4l2_ctrl_new_custom(&sru->ctrls, &sru_intensity_control, NULL);
 

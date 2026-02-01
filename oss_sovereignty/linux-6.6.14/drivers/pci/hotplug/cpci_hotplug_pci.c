@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * CompactPCI Hot Plug Driver PCI functions
- *
- * Copyright (C) 2002,2005 by SOMA Networks, Inc.
- *
- * All rights reserved.
- *
- * Send feedback to <scottm@somanetworks.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -112,7 +104,7 @@ int cpci_check_and_clear_ins(struct slot *slot)
 				     &hs_csr))
 		return 0;
 	if (hs_csr & HS_CSR_INS) {
-		/* Clear INS (by setting it) */
+		 
 		if (pci_bus_write_config_word(slot->bus,
 					      slot->devfn,
 					      hs_cap + 2,
@@ -161,7 +153,7 @@ int cpci_clear_ext(struct slot *slot)
 				     &hs_csr))
 		return -ENODEV;
 	if (hs_csr & HS_CSR_EXT) {
-		/* Clear EXT (by setting it) */
+		 
 		if (pci_bus_write_config_word(slot->bus,
 					      slot->devfn,
 					      hs_cap + 2,
@@ -228,9 +220,7 @@ int cpci_led_off(struct slot *slot)
 }
 
 
-/*
- * Device configuration functions
- */
+ 
 
 int cpci_configure_slot(struct slot *slot)
 {
@@ -248,15 +238,12 @@ int cpci_configure_slot(struct slot *slot)
 		slot->dev = pci_get_slot(slot->bus, slot->devfn);
 	}
 
-	/* Still NULL? Well then scan for it! */
+	 
 	if (slot->dev == NULL) {
 		int n;
 		dbg("pci_dev still null");
 
-		/*
-		 * This will generate pci_dev structures for all functions, but
-		 * we will only call this case when lookup fails.
-		 */
+		 
 		n = pci_scan_slot(slot->bus, slot->devfn);
 		dbg("%s: pci_scan_slot returned %d", __func__, n);
 		slot->dev = pci_get_slot(slot->bus, slot->devfn);

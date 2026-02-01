@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #ifndef _XDP_SAMPLE_BPF_H
 #define _XDP_SAMPLE_BPF_H
 
@@ -47,20 +47,7 @@ static __always_inline void swap_src_dst_mac(void *data)
 	p[5] = dst[2];
 }
 
-/*
- * Note: including linux/compiler.h or linux/kernel.h for the macros below
- * conflicts with vmlinux.h include in BPF files, so we define them here.
- *
- * Following functions are taken from kernel sources and
- * break aliasing rules in their original form.
- *
- * While kernel is compiled with -fno-strict-aliasing,
- * perf uses -Wstrict-aliasing=3 which makes build fail
- * under gcc 4.4.
- *
- * Using extra __may_alias__ type to allow aliasing
- * in this case.
- */
+ 
 typedef __u8  __attribute__((__may_alias__))  __u8_alias_t;
 typedef __u16 __attribute__((__may_alias__)) __u16_alias_t;
 typedef __u32 __attribute__((__may_alias__)) __u32_alias_t;
@@ -110,9 +97,7 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
 	__u.__val;					\
 })
 
-/* Add a value using relaxed read and relaxed write. Less expensive than
- * fetch_add when there is no write concurrency.
- */
+ 
 #define NO_TEAR_ADD(x, val) WRITE_ONCE((x), READ_ONCE(x) + (val))
 #define NO_TEAR_INC(x) NO_TEAR_ADD((x), 1)
 

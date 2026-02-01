@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2016-2022 HabanaLabs, Ltd.
- * All Rights Reserved.
- */
+
+ 
 
 #define pr_fmt(fmt)	"habanalabs: " fmt
 
@@ -656,12 +653,7 @@ static int dev_mem_alloc_page_sizes_info(struct hl_fpriv *hpriv, struct hl_info_
 	if ((!max_size) || (!out))
 		return -EINVAL;
 
-	/*
-	 * Future ASICs that will support multiple DRAM page sizes will support only "powers of 2"
-	 * pages (unlike some of the ASICs before supporting multiple page sizes).
-	 * For this reason for all ASICs that not support multiple page size the function will
-	 * return an empty bitmask indicating that multiple page sizes is not supported.
-	 */
+	 
 	info.page_order_bitmask = hdev->asic_prop.dmmu.supported_pages_mask;
 
 	return copy_to_user(out, &info, min_t(size_t, max_size, sizeof(info))) ? -EFAULT : 0;
@@ -720,7 +712,7 @@ static int eventfd_register(struct hl_fpriv *hpriv, struct hl_info_args *args)
 {
 	int rc;
 
-	/* check if there is already a registered on that process */
+	 
 	mutex_lock(&hpriv->notifier_event.lock);
 	if (hpriv->notifier_event.eventfd) {
 		mutex_unlock(&hpriv->notifier_event.lock);
@@ -936,10 +928,7 @@ static int _hl_info_ioctl(struct hl_fpriv *hpriv, void *data,
 		return -EINVAL;
 	}
 
-	/*
-	 * Information is returned for the following opcodes even if the device
-	 * is disabled or in reset.
-	 */
+	 
 	switch (args->op) {
 	case HL_INFO_HW_IP_INFO:
 		return hw_ip_info(hdev, args);
@@ -1153,7 +1142,7 @@ static long _hl_ioctl(struct file *filep, unsigned int cmd, unsigned long arg,
 	u32 hl_size;
 	int retcode;
 
-	/* Do not trust userspace, use our own definition */
+	 
 	func = ioctl->func;
 
 	if (unlikely(!func)) {

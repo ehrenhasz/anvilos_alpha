@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/compat.h>
 #include <linux/errno.h>
 #include <linux/sched.h>
@@ -22,12 +22,10 @@
 #include <asm/elf.h>
 #include <asm/ia32.h>
 
-/*
- * Align a virtual address to avoid aliasing in the I$ on AMD F15h.
- */
+ 
 static unsigned long get_align_mask(void)
 {
-	/* handle 32- and 64-bit case with a single conditional */
+	 
 	if (va_align.flags < 0 || !(va_align.flags & (2 - mmap_is_ia32())))
 		return 0;
 
@@ -37,16 +35,7 @@ static unsigned long get_align_mask(void)
 	return va_align.mask;
 }
 
-/*
- * To avoid aliasing in the I$ on AMD F15h, the bits defined by the
- * va_align.bits, [12:upper_bit), are set to a random value instead of
- * zeroing them. This random value is computed once per boot. This form
- * of ASLR is known as "per-boot ASLR".
- *
- * To achieve this, the random value is added to the info.align_offset
- * value before calling vm_unmapped_area() or ORed directly to the
- * address.
- */
+ 
 static unsigned long get_align_bits(void)
 {
 	return va_align.bits & get_align_mask();
@@ -61,7 +50,7 @@ unsigned long align_vdso_addr(unsigned long addr)
 
 static int __init control_va_addr_alignment(char *str)
 {
-	/* guard against enabling this on other CPU families */
+	 
 	if (va_align.flags < 0)
 		return 1;
 
@@ -97,13 +86,7 @@ static void find_start_end(unsigned long addr, unsigned long flags,
 		unsigned long *begin, unsigned long *end)
 {
 	if (!in_32bit_syscall() && (flags & MAP_32BIT)) {
-		/* This is usually used needed to map code in small
-		   model, so it needs to be in the first 31bit. Limit
-		   it to that.  This means we need to move the
-		   unmapped base down for this case. This can give
-		   conflicts with the heap, but we assume that glibc
-		   malloc knows how to fall back to mmap. Give it 1GB
-		   of playground for now. -AK */
+		 
 		*begin = 0x40000000;
 		*end = 0x80000000;
 		if (current->flags & PF_RANDOMIZE) {
@@ -167,19 +150,19 @@ arch_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
 	unsigned long addr = addr0;
 	struct vm_unmapped_area_info info;
 
-	/* requested length too big for entire address space */
+	 
 	if (len > TASK_SIZE)
 		return -ENOMEM;
 
-	/* No address checking. See comment at mmap_address_hint_valid() */
+	 
 	if (flags & MAP_FIXED)
 		return addr;
 
-	/* for MAP_32BIT mappings we force the legacy mmap base */
+	 
 	if (!in_32bit_syscall() && (flags & MAP_32BIT))
 		goto bottomup;
 
-	/* requesting a specific address */
+	 
 	if (addr) {
 		addr &= PAGE_MASK;
 		if (!mmap_address_hint_valid(addr, len))
@@ -200,13 +183,7 @@ get_unmapped_area:
 
 	info.high_limit = get_mmap_base(0);
 
-	/*
-	 * If hint address is above DEFAULT_MAP_WINDOW, look for unmapped area
-	 * in the full address space.
-	 *
-	 * !in_32bit_syscall() check to avoid high addresses for x32
-	 * (and make it no op on native i386).
-	 */
+	 
 	if (addr > DEFAULT_MAP_WINDOW && !in_32bit_syscall())
 		info.high_limit += TASK_SIZE_MAX - DEFAULT_MAP_WINDOW;
 
@@ -222,11 +199,6 @@ get_unmapped_area:
 	VM_BUG_ON(addr != -ENOMEM);
 
 bottomup:
-	/*
-	 * A failed mmap() very likely causes application failure,
-	 * so fall back to the bottom-up function here. This scenario
-	 * can happen with large stack limits and large mmap()
-	 * allocations.
-	 */
+	 
 	return arch_get_unmapped_area(filp, addr0, len, pgoff, flags);
 }

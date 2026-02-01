@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+
+ 
 
 #include "main.h"
 #include "sec.h"
@@ -43,7 +42,7 @@ static void rtw_ops_wake_tx_queue(struct ieee80211_hw *hw,
 		list_add_tail(&rtwtxq->list, &rtwdev->txqs);
 	spin_unlock_bh(&rtwdev->txq_lock);
 
-	/* ensure to dequeue EAPOL (4/4) at the right time */
+	 
 	if (txq->ac == IEEE80211_AC_VO)
 		__rtw_tx_work(rtwdev);
 	else
@@ -76,7 +75,7 @@ static int rtw_ops_config(struct ieee80211_hw *hw, u32 changed)
 	struct rtw_dev *rtwdev = hw->priv;
 	int ret = 0;
 
-	/* let previous ips work finish to ensure we don't leave ips twice */
+	 
 	cancel_work_sync(&rtwdev->ips_work);
 
 	mutex_lock(&rtwdev->mutex);
@@ -312,7 +311,7 @@ static void rtw_ops_configure_filter(struct ieee80211_hw *hw,
 	mutex_unlock(&rtwdev->mutex);
 }
 
-/* Only have one group of EDCA parameters now */
+ 
 static const u32 ac_to_edca_param[IEEE80211_NUM_ACS] = {
 	[IEEE80211_AC_VO] = REG_EDCA_VO_PARAM,
 	[IEEE80211_AC_VI] = REG_EDCA_VI_PARAM,
@@ -341,7 +340,7 @@ static void __rtw_conf_tx(struct rtw_dev *rtwdev,
 	u8 ecw_max, ecw_min;
 	u8 aifs;
 
-	/* 2^ecw - 1 = cw; ecw = log2(cw + 1) */
+	 
 	ecw_max = ilog2(params->cw_max + 1);
 	ecw_min = ilog2(params->cw_min + 1);
 	aifs = rtw_aifsn_to_aifs(rtwdev, rtwvif, params->aifs);
@@ -389,9 +388,7 @@ static void rtw_ops_bss_info_changed(struct ieee80211_hw *hw,
 		} else {
 			rtw_leave_lps(rtwdev);
 			rtw_bf_disassoc(rtwdev, vif, conf);
-			/* Abort ongoing scan if cancel_scan isn't issued
-			 * when disconnected by peer
-			 */
+			 
 			if (test_bit(RTW_FLAG_SCANNING, rtwdev->flags))
 				rtw_hw_scan_abort(rtwdev);
 
@@ -567,7 +564,7 @@ static int rtw_ops_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 	case WLAN_CIPHER_SUITE_CCMP_256:
 	case WLAN_CIPHER_SUITE_GCMP:
 	case WLAN_CIPHER_SUITE_GCMP_256:
-		/* suppress error messages */
+		 
 		return -EOPNOTSUPP;
 	default:
 		return -ENOTSUPP;
@@ -580,7 +577,7 @@ static int rtw_ops_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 	if (key->flags & IEEE80211_KEY_FLAG_PAIRWISE) {
 		hw_key_idx = rtw_sec_get_free_cam(sec);
 	} else {
-		/* multiple interfaces? */
+		 
 		hw_key_idx = key->keyidx;
 	}
 
@@ -591,7 +588,7 @@ static int rtw_ops_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 
 	switch (cmd) {
 	case SET_KEY:
-		/* need sw generated IV */
+		 
 		key->flags |= IEEE80211_KEY_FLAG_GENERATE_IV;
 		key->hw_key_idx = hw_key_idx;
 		rtw_sec_write_cam(rtwdev, sec, sta, key,
@@ -604,7 +601,7 @@ static int rtw_ops_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 		break;
 	}
 
-	/* download new cam settings for PG to backup */
+	 
 	if (rtw_get_lps_deep_mode(rtwdev) == LPS_DEEP_MODE_PG)
 		rtw_fw_download_rsvd_page(rtwdev);
 
@@ -653,7 +650,7 @@ static bool rtw_ops_can_aggregate_in_amsdu(struct ieee80211_hw *hw,
 	struct rtw_dev *rtwdev = hw->priv;
 	struct rtw_hal *hal = &rtwdev->hal;
 
-	/* we don't want to enable TX AMSDU on 2.4G */
+	 
 	if (hal->current_band_type == RTW_BAND_2G)
 		return false;
 
@@ -745,7 +742,7 @@ static void rtw_ra_mask_info_update_iter(void *data, struct ieee80211_sta *sta)
 	if (si->vif != br_data->vif)
 		return;
 
-	/* free previous mask setting */
+	 
 	kfree(si->mask);
 	si->mask = kmemdup(br_data->mask, sizeof(struct cfg80211_bitrate_mask),
 			   GFP_ATOMIC);

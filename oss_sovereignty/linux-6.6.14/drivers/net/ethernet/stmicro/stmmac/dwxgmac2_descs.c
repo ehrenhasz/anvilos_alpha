@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Copyright (c) 2018 Synopsys, Inc. and/or its affiliates.
- * stmmac XGMAC support.
- */
+
+ 
 
 #include <linux/stmmac.h>
 #include "common.h"
@@ -79,7 +76,7 @@ static void dwxgmac2_enable_tx_timestamp(struct dma_desc *p)
 
 static int dwxgmac2_get_tx_timestamp_status(struct dma_desc *p)
 {
-	return 0; /* Not supported */
+	return 0;  
 }
 
 static inline void dwxgmac2_get_timestamp(void *desc, u32 ats, u64 *ts)
@@ -164,15 +161,12 @@ static void dwxgmac2_prepare_tx_desc(struct dma_desc *p, int is_fs, int len,
 	else
 		tdes3 &= ~XGMAC_TDES3_LD;
 
-	/* Finally set the OWN bit. Later the DMA will start! */
+	 
 	if (tx_own)
 		tdes3 |= XGMAC_TDES3_OWN;
 
 	if (is_fs && tx_own)
-		/* When the own bit, for the first frame, has to be set, all
-		 * descriptors for the same frame has to be set before, to
-		 * avoid race condition.
-		 */
+		 
 		dma_wmb();
 
 	p->des3 = cpu_to_le32(tdes3);
@@ -204,15 +198,12 @@ static void dwxgmac2_prepare_tso_tx_desc(struct dma_desc *p, int is_fs,
 	else
 		tdes3 &= ~XGMAC_TDES3_LD;
 
-	/* Finally set the OWN bit. Later the DMA will start! */
+	 
 	if (tx_own)
 		tdes3 |= XGMAC_TDES3_OWN;
 
 	if (is_fs && tx_own)
-		/* When the own bit, for the first frame, has to be set, all
-		 * descriptors for the same frame has to be set before, to
-		 * avoid race condition.
-		 */
+		 
 		dma_wmb();
 
 	p->des3 = cpu_to_le32(tdes3);
@@ -308,7 +299,7 @@ static void dwxgmac2_set_vlan_tag(struct dma_desc *p, u16 tag, u16 inner_tag,
 	p->des2 = 0;
 	p->des3 = 0;
 
-	/* Inner VLAN */
+	 
 	if (inner_type) {
 		u32 des = inner_tag << XGMAC_TDES2_IVT_SHIFT;
 
@@ -320,7 +311,7 @@ static void dwxgmac2_set_vlan_tag(struct dma_desc *p, u16 tag, u16 inner_tag,
 		p->des3 = cpu_to_le32(des | XGMAC_TDES3_IVLTV);
 	}
 
-	/* Outer VLAN */
+	 
 	p->des3 |= cpu_to_le32(tag & XGMAC_TDES3_VT);
 	p->des3 |= cpu_to_le32(XGMAC_TDES3_VLTV);
 

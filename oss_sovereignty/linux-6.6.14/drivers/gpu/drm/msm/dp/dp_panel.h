@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2012-2020, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DP_PANEL_H_
 #define _DP_PANEL_H_
@@ -39,7 +37,7 @@ struct dp_panel_psr {
 };
 
 struct dp_panel {
-	/* dpcd raw data */
+	 
 	u8 dpcd[DP_RECEIVER_CAP_SIZE + 1];
 	u8 ds_cap_info[DP_DOWNSTREAM_PORTS * DP_DOWNSTREAM_CAP_SIZE];
 	u32 ds_port_cnt;
@@ -73,12 +71,7 @@ int dp_panel_get_modes(struct dp_panel *dp_panel,
 void dp_panel_handle_sink_request(struct dp_panel *dp_panel);
 void dp_panel_tpg_config(struct dp_panel *dp_panel, bool enable);
 
-/**
- * is_link_rate_valid() - validates the link rate
- * @lane_rate: link rate requested by the sink
- *
- * Returns true if the requested link rate is supported.
- */
+ 
 static inline bool is_link_rate_valid(u32 bw_code)
 {
 	return (bw_code == DP_LINK_BW_1_62 ||
@@ -87,12 +80,7 @@ static inline bool is_link_rate_valid(u32 bw_code)
 		bw_code == DP_LINK_BW_8_1);
 }
 
-/**
- * dp_link_is_lane_count_valid() - validates the lane count
- * @lane_count: lane count requested by the sink
- *
- * Returns true if the requested lane count is supported.
- */
+ 
 static inline bool is_lane_count_valid(u32 lane_count)
 {
 	return (lane_count == 1 ||
@@ -102,4 +90,4 @@ static inline bool is_lane_count_valid(u32 lane_count)
 
 struct dp_panel *dp_panel_get(struct dp_panel_in *in);
 void dp_panel_put(struct dp_panel *dp_panel);
-#endif /* _DP_PANEL_H_ */
+#endif  

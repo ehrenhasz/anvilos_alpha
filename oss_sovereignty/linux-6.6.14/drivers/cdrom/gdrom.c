@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* GD ROM driver for the SEGA Dreamcast
- * copyright Adrian McMenamin, 2007
- * With thanks to Marcus Comstedt and Nathan Keynes
- * for work in reversing PIO and DMA
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -32,13 +28,13 @@
 #define GDROM_DEV_NAME "gdrom"
 #define GD_SESSION_OFFSET 150
 
-/* GD Rom commands */
+ 
 #define GDROM_COM_SOFTRESET 0x08
 #define GDROM_COM_EXECDIAG 0x90
 #define GDROM_COM_PACKET 0xA0
 #define GDROM_COM_IDDEV 0xA1
 
-/* GD Rom registers */
+ 
 #define GDROM_BASE_REG			0xA05F7000
 #define GDROM_ALTSTATUS_REG		(GDROM_BASE_REG + 0x18)
 #define GDROM_DATA_REG			(GDROM_BASE_REG + 0x80)
@@ -142,11 +138,11 @@ static bool gdrom_wait_clrbusy(void)
 static bool gdrom_wait_busy_sleeps(void)
 {
 	unsigned long timeout;
-	/* Wait to get busy first */
+	 
 	timeout = jiffies + GDROM_DEFAULT_TIMEOUT;
 	while (!gdrom_is_busy() && time_before(jiffies, timeout))
 		cpu_relax();
-	/* Now wait for busy to clear */
+	 
 	return gdrom_wait_clrbusy();
 }
 
@@ -154,9 +150,7 @@ static void gdrom_identifydevice(void *buf)
 {
 	int c;
 	short *data = buf;
-	/* If the device won't clear it has probably
-	* been hit by a serious failure - but we'll
-	* try to return a sense key even so */
+	 
 	if (!gdrom_wait_clrbusy()) {
 		gdrom_getsense(NULL);
 		return;
@@ -166,7 +160,7 @@ static void gdrom_identifydevice(void *buf)
 		gdrom_getsense(NULL);
 		return;
 	}
-	/* now read in the data */
+	 
 	for (c = 0; c < 40; c++)
 		data[c] = __raw_readw(GDROM_DATA_REG);
 }
@@ -176,16 +170,16 @@ static void gdrom_spicommand(void *spi_string, int buflen)
 	short *cmd = spi_string;
 	unsigned long timeout;
 
-	/* ensure IRQ_WAIT is set */
+	 
 	__raw_writeb(0x08, GDROM_ALTSTATUS_REG);
-	/* specify how many bytes we expect back */
+	 
 	__raw_writeb(buflen & 0xFF, GDROM_BCL_REG);
 	__raw_writeb((buflen >> 8) & 0xFF, GDROM_BCH_REG);
-	/* other parameters */
+	 
 	__raw_writeb(0, GDROM_INTSEC_REG);
 	__raw_writeb(0, GDROM_SECNUM_REG);
 	__raw_writeb(0, GDROM_ERROR_REG);
-	/* Wait until we can go */
+	 
 	if (!gdrom_wait_clrbusy()) {
 		gdrom_getsense(NULL);
 		return;
@@ -202,12 +196,7 @@ static void gdrom_spicommand(void *spi_string, int buflen)
 }
 
 
-/* gdrom_command_executediagnostic:
- * Used to probe for presence of working GDROM
- * Restarts GDROM device and then applies standard ATA 3
- * Execute Diagnostic Command: a return of '1' indicates device 0
- * present and device 1 absent
- */
+ 
 static char gdrom_execute_diagnostic(void)
 {
 	gdrom_hardreset(gd.cd_info);
@@ -219,11 +208,7 @@ static char gdrom_execute_diagnostic(void)
 	return __raw_readb(GDROM_ERROR_REG);
 }
 
-/*
- * Prepare disk command
- * byte 0 = 0x70
- * byte 1 = 0x1f
- */
+ 
 static int gdrom_preparedisk_cmd(void)
 {
 	struct packet_command *spin_command;
@@ -235,26 +220,20 @@ static int gdrom_preparedisk_cmd(void)
 	spin_command->buflen = 0;
 	gd.pending = 1;
 	gdrom_packetcommand(gd.cd_info, spin_command);
-	/* 60 second timeout */
+	 
 	wait_event_interruptible_timeout(command_queue, gd.pending == 0,
 		GDROM_DEFAULT_TIMEOUT);
 	gd.pending = 0;
 	kfree(spin_command);
 	if (gd.status & 0x01) {
-		/* log an error */
+		 
 		gdrom_getsense(NULL);
 		return -EIO;
 	}
 	return 0;
 }
 
-/*
- * Read TOC command
- * byte 0 = 0x14
- * byte 1 = session
- * byte 3 = sizeof TOC >> 8  ie upper byte
- * byte 4 = sizeof TOC & 0xff ie lower byte
- */
+ 
 static int gdrom_readtoc_cmd(struct gdromtoc *toc, int session)
 {
 	int tocsize;
@@ -293,7 +272,7 @@ cleanup_readtoc_final:
 	return err;
 }
 
-/* TOC helpers */
+ 
 static int get_entry_lba(int track)
 {
 	return (cpu_to_be32(track & 0xffffff00) - GD_SESSION_OFFSET);
@@ -317,9 +296,9 @@ static int gdrom_get_last_session(struct cdrom_device_info *cd_info,
 	if (!gd.toc)
 		return -ENOMEM;
 
-	/* Check if GD-ROM */
+	 
 	err = gdrom_readtoc_cmd(gd.toc, 1);
-	/* Not a GD-ROM so check if standard CD-ROM */
+	 
 	if (err) {
 		err = gdrom_readtoc_cmd(gd.toc, 0);
 		if (err) {
@@ -330,12 +309,12 @@ static int gdrom_get_last_session(struct cdrom_device_info *cd_info,
 
 	fentry = get_entry_track(gd.toc->first);
 	lentry = get_entry_track(gd.toc->last);
-	/* Find the first data track */
+	 
 	track = get_entry_track(gd.toc->last);
 	do {
 		data = gd.toc->entry[track - 1];
 		if (get_entry_q_ctrl(data))
-			break;	/* ie a real data track */
+			break;	 
 		track--;
 	} while (track >= fentry);
 
@@ -353,37 +332,37 @@ static int gdrom_get_last_session(struct cdrom_device_info *cd_info,
 
 static int gdrom_open(struct cdrom_device_info *cd_info, int purpose)
 {
-	/* spin up the disk */
+	 
 	return gdrom_preparedisk_cmd();
 }
 
-/* this function is required even if empty */
+ 
 static void gdrom_release(struct cdrom_device_info *cd_info)
 {
 }
 
 static int gdrom_drivestatus(struct cdrom_device_info *cd_info, int ignore)
 {
-	/* read the sense key */
+	 
 	char sense = __raw_readb(GDROM_ERROR_REG);
 	sense &= 0xF0;
 	if (sense == 0)
 		return CDS_DISC_OK;
 	if (sense == 0x20)
 		return CDS_DRIVE_NOT_READY;
-	/* default */
+	 
 	return CDS_NO_INFO;
 }
 
 static unsigned int gdrom_check_events(struct cdrom_device_info *cd_info,
 				       unsigned int clearing, int ignore)
 {
-	/* check the sense key */
+	 
 	return (__raw_readb(GDROM_ERROR_REG) & 0xF0) == 0x60 ?
 		DISK_EVENT_MEDIA_CHANGE : 0;
 }
 
-/* reset the G1 bus */
+ 
 static int gdrom_hardreset(struct cdrom_device_info *cd_info)
 {
 	int count;
@@ -393,8 +372,7 @@ static int gdrom_hardreset(struct cdrom_device_info *cd_info)
 	return 0;
 }
 
-/* keep the function looking like the universal
- * CD Rom specification  - returning int */
+ 
 static int gdrom_packetcommand(struct cdrom_device_info *cd_info,
 	struct packet_command *command)
 {
@@ -402,12 +380,7 @@ static int gdrom_packetcommand(struct cdrom_device_info *cd_info,
 	return 0;
 }
 
-/* Get Sense SPI command
- * From Marcus Comstedt
- * cmd = 0x13
- * cmd + 4 = length of returned buffer
- * Returns 5 16 bit words
- */
+ 
 static int gdrom_getsense(short *bufstring)
 {
 	struct packet_command *sense_command;
@@ -421,8 +394,7 @@ static int gdrom_getsense(short *bufstring)
 	sense_command->cmd[0] = 0x13;
 	sense_command->cmd[4] = 10;
 	sense_command->buflen = 10;
-	/* even if something is pending try to get
-	* the sense key if possible */
+	 
 	if (gd.pending && !gdrom_wait_clrbusy()) {
 		err = -EBUSY;
 		goto cleanup_sense_final;
@@ -443,7 +415,7 @@ static int gdrom_getsense(short *bufstring)
 		pr_info("%s\n", sense_texts[sense_key].text);
 	else
 		pr_err("Unknown sense key: %d\n", sense_key);
-	if (bufstring) /* return addional sense data */
+	if (bufstring)  
 		memcpy(bufstring, &sense[4], 2);
 	if (sense_key < 2)
 		err = 0;
@@ -557,16 +529,7 @@ static int gdrom_set_interrupt_handlers(void)
 	return err;
 }
 
-/* Implement DMA read using SPI command
- * 0 -> 0x30
- * 1 -> mode
- * 2 -> block >> 16
- * 3 -> block >> 8
- * 4 -> block
- * 8 -> sectors >> 16
- * 9 -> sectors >> 8
- * 10 -> sectors
- */
+ 
 static blk_status_t gdrom_readdisk_dma(struct request *req)
 {
 	int block, block_cnt;
@@ -593,32 +556,32 @@ static blk_status_t gdrom_readdisk_dma(struct request *req)
 	read_command->cmd[8] = (block_cnt >> 16) & 0xFF;
 	read_command->cmd[9] = (block_cnt >> 8) & 0xFF;
 	read_command->cmd[10] = block_cnt & 0xFF;
-	/* set for DMA */
+	 
 	__raw_writeb(1, GDROM_ERROR_REG);
-	/* other registers */
+	 
 	__raw_writeb(0, GDROM_SECNUM_REG);
 	__raw_writeb(0, GDROM_BCL_REG);
 	__raw_writeb(0, GDROM_BCH_REG);
 	__raw_writeb(0, GDROM_DSEL_REG);
 	__raw_writeb(0, GDROM_INTSEC_REG);
-	/* Wait for registers to reset after any previous activity */
+	 
 	timeout = jiffies + HZ / 2;
 	while (gdrom_is_busy() && time_before(jiffies, timeout))
 		cpu_relax();
 	__raw_writeb(GDROM_COM_PACKET, GDROM_STATUSCOMMAND_REG);
 	timeout = jiffies + HZ / 2;
-	/* Wait for packet command to finish */
+	 
 	while (gdrom_is_busy() && time_before(jiffies, timeout))
 		cpu_relax();
 	gd.pending = 1;
 	gd.transfer = 1;
 	outsw(GDROM_DATA_REG, &read_command->cmd, 6);
 	timeout = jiffies + HZ / 2;
-	/* Wait for any pending DMA to finish */
+	 
 	while (__raw_readb(GDROM_DMA_STATUS_REG) &&
 		time_before(jiffies, timeout))
 		cpu_relax();
-	/* start transfer */
+	 
 	__raw_writeb(1, GDROM_DMA_STATUS_REG);
 	wait_event_interruptible_timeout(request_queue,
 		gd.transfer == 0, GDROM_DEFAULT_TIMEOUT);
@@ -648,14 +611,14 @@ static blk_status_t gdrom_queue_rq(struct blk_mq_hw_ctx *hctx,
 	}
 }
 
-/* Print string identifying GD ROM device */
+ 
 static int gdrom_outputversion(void)
 {
 	struct gdrom_id *id;
 	char *model_name, *manuf_name, *firmw_ver;
 	int err = -ENOMEM;
 
-	/* query device ID */
+	 
 	id = kzalloc(sizeof(struct gdrom_id), GFP_KERNEL);
 	if (!id)
 		return err;
@@ -682,7 +645,7 @@ free_id:
 	return err;
 }
 
-/* set the default mode for DMA transfer */
+ 
 static int gdrom_init_dma_mode(void)
 {
 	__raw_writeb(0x13, GDROM_ERROR_REG);
@@ -692,15 +655,9 @@ static int gdrom_init_dma_mode(void)
 	__raw_writeb(0xEF, GDROM_STATUSCOMMAND_REG);
 	if (!gdrom_wait_busy_sleeps())
 		return -EBUSY;
-	/* Memory protection setting for GDROM DMA
-	* Bits 31 - 16 security: 0x8843
-	* Bits 15 and 7 reserved (0)
-	* Bits 14 - 8 start of transfer range in 1 MB blocks OR'ed with 0x80
-	* Bits 6 - 0 end of transfer range in 1 MB blocks OR'ed with 0x80
-	* (0x40 | 0x80) = start range at 0x0C000000
-	* (0x7F | 0x80) = end range at 0x0FFFFFFF */
+	 
 	__raw_writel(0x8843407F, GDROM_DMA_ACCESS_CTRL_REG);
-	__raw_writel(9, GDROM_DMA_WAIT_REG); /* DMA word setting */
+	__raw_writel(9, GDROM_DMA_WAIT_REG);  
 	return 0;
 }
 
@@ -725,9 +682,9 @@ static void probe_gdrom_setupdisk(void)
 static int probe_gdrom_setupqueue(void)
 {
 	blk_queue_logical_block_size(gd.gdrom_rq, GDROM_HARD_SECTOR);
-	/* using DMA so memory will need to be contiguous */
+	 
 	blk_queue_max_segments(gd.gdrom_rq, 1);
-	/* set a large max size to get most from DMA */
+	 
 	blk_queue_max_segment_size(gd.gdrom_rq, 0x40000);
 	gd.disk->queue = gd.gdrom_rq;
 	return gdrom_init_dma_mode();
@@ -737,35 +694,29 @@ static const struct blk_mq_ops gdrom_mq_ops = {
 	.queue_rq	= gdrom_queue_rq,
 };
 
-/*
- * register this as a block device and as compliant with the
- * universal CD Rom driver interface
- */
+ 
 static int probe_gdrom(struct platform_device *devptr)
 {
 	int err;
 
-	/*
-	 * Ensure our "one" device is initialized properly in case of previous
-	 * usages of it
-	 */
+	 
 	memset(&gd, 0, sizeof(gd));
 
-	/* Start the device */
+	 
 	if (gdrom_execute_diagnostic() != 1) {
 		pr_warn("ATA Probe for GDROM failed\n");
 		return -ENODEV;
 	}
-	/* Print out firmware ID */
+	 
 	if (gdrom_outputversion())
 		return -ENOMEM;
-	/* Register GDROM */
+	 
 	gdrom_major = register_blkdev(0, GDROM_DEV_NAME);
 	if (gdrom_major <= 0)
 		return gdrom_major;
 	pr_info("Registered with major number %d\n",
 		gdrom_major);
-	/* Specify basic properties of drive */
+	 
 	gd.cd_info = kzalloc(sizeof(struct cdrom_device_info), GFP_KERNEL);
 	if (!gd.cd_info) {
 		err = -ENOMEM;
@@ -791,7 +742,7 @@ static int probe_gdrom(struct platform_device *devptr)
 	}
 	gd.disk->fops = &gdrom_bdops;
 	gd.disk->events = DISK_EVENT_MEDIA_CHANGE;
-	/* latch on to the interrupt */
+	 
 	err = gdrom_set_interrupt_handlers();
 	if (err)
 		goto probe_fail_cleanup_disk;

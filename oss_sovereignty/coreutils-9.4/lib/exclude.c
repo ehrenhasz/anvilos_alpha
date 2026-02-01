@@ -1,25 +1,4 @@
-/* exclude.c -- exclude file names
-
-   Copyright (C) 1992-1994, 1997, 1999-2007, 2009-2023 Free Software
-   Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Paul Eggert <eggert@twinsun.com>
-   and Sergey Poznyakoff <gray@gnu.org>.
-   Thanks to Phil Proudman <phil@proudman51.freeserve.co.uk>
-   for improvement suggestions. */
+ 
 
 #include <config.h>
 
@@ -43,7 +22,7 @@
 # include "unlocked-io.h"
 #endif
 
-/* Non-GNU systems lack these options, so we don't need to check them.  */
+ 
 #ifndef FNM_CASEFOLD
 # define FNM_CASEFOLD 0
 #endif
@@ -60,15 +39,10 @@ static_assert (((EXCLUDE_ANCHORED | EXCLUDE_INCLUDE | EXCLUDE_WILDCARDS)
                == 0);
 
 
-/* Exclusion patterns are grouped into a singly-linked list of
-   "exclusion segments".  Each segment represents a set of patterns
-   that can be matches using the same algorithm.  Non-wildcard
-   patterns are kept in hash tables, to speed up searches.  Wildcard
-   patterns are stored as arrays of patterns. */
+ 
 
 
-/* An exclude pattern-options pair.  The options are fnmatch options
-   ORed with EXCLUDE_* options.  */
+ 
 
 struct patopts
   {
@@ -80,7 +54,7 @@ struct patopts
     } v;
   };
 
-/* An array of pattern-options pairs.  */
+ 
 
 struct exclude_pattern
   {
@@ -91,19 +65,19 @@ struct exclude_pattern
 
 enum exclude_type
   {
-    exclude_hash,                    /* a hash table of excluded names */
-    exclude_pattern                  /* an array of exclude patterns */
+    exclude_hash,                     
+    exclude_pattern                   
   };
 
 struct exclude_segment
   {
-    struct exclude_segment *next;    /* next segment in list */
-    enum exclude_type type;          /* type of this segment */
-    int options;                     /* common options for this segment */
+    struct exclude_segment *next;     
+    enum exclude_type type;           
+    int options;                      
     union
     {
-      Hash_table *table;             /* for type == exclude_hash */
-      struct exclude_pattern pat;    /* for type == exclude_pattern */
+      Hash_table *table;              
+      struct exclude_pattern pat;     
     } v;
   };
 
@@ -113,18 +87,14 @@ struct pattern_buffer
     char *base;
   };
 
-/* The exclude structure keeps a singly-linked list of exclude segments,
-   maintained in reverse order.  */
+ 
 struct exclude
   {
     struct exclude_segment *head;
     struct pattern_buffer *patbuf;
   };
 
-/* Register BUF in the pattern buffer list of EX.  ADD_FUNC (see
-   add_exclude_file and add_exclude_fp below) can use this function
-   if it modifies the pattern, to ensure the allocated memory will be
-   properly reclaimed upon calling free_exclude. */
+ 
 void
 exclude_add_pattern_buffer (struct exclude *ex, char *buf)
 {
@@ -134,8 +104,7 @@ exclude_add_pattern_buffer (struct exclude *ex, char *buf)
   ex->patbuf = pbuf;
 }
 
-/* Return true if STR has or may have wildcards, when matched with OPTIONS.
-   Return false if STR definitely does not have wildcards.  */
+ 
 bool
 fnmatch_pattern_has_wildcards (const char *str, int options)
 {
@@ -182,7 +151,7 @@ unescape_pattern (char *str)
   while ((*str++ = *q++));
 }
 
-/* Return a newly allocated and empty exclude list.  */
+ 
 
 struct exclude *
 new_exclude (void)
@@ -190,14 +159,14 @@ new_exclude (void)
   return xzalloc (sizeof *new_exclude ());
 }
 
-/* Calculate the hash of string.  */
+ 
 static size_t
 string_hasher (void const *data, size_t n_buckets)
 {
   return hash_string (data, n_buckets);
 }
 
-/* Ditto, for case-insensitive hashes */
+ 
 static size_t
 string_hasher_ci (void const *data, size_t n_buckets)
 {
@@ -221,22 +190,21 @@ string_hasher_ci (void const *data, size_t n_buckets)
   return value % n_buckets;
 }
 
-/* compare two strings for equality */
+ 
 static bool
 string_compare (void const *data1, void const *data2)
 {
   return strcmp (data1, data2) == 0;
 }
 
-/* compare two strings for equality, case-insensitive */
+ 
 static bool
 string_compare_ci (void const *data1, void const *data2)
 {
   return mbscasecmp (data1, data2) == 0;
 }
 
-/* Create new exclude segment of given TYPE and OPTIONS, and attach it
-   to the head of EX.  */
+ 
 static void
 new_exclude_segment (struct exclude *ex, enum exclude_type type, int options)
 {
@@ -264,7 +232,7 @@ new_exclude_segment (struct exclude *ex, enum exclude_type type, int options)
   ex->head = sp;
 }
 
-/* Free a single exclude segment */
+ 
 static void
 free_exclude_segment (struct exclude_segment *seg)
 {
@@ -284,7 +252,7 @@ free_exclude_segment (struct exclude_segment *seg)
   free (seg);
 }
 
-/* Free the storage associated with an exclude list.  */
+ 
 void
 free_exclude (struct exclude *ex)
 {
@@ -306,8 +274,7 @@ free_exclude (struct exclude *ex)
   free (ex);
 }
 
-/* Return zero if PATTERN matches F, obeying OPTIONS, except that
-   (unlike fnmatch) wildcards are disabled in PATTERN.  */
+ 
 
 static int
 fnmatch_no_wildcards (char const *pattern, char const *f, int options)
@@ -330,12 +297,7 @@ fnmatch_no_wildcards (char const *pattern, char const *f, int options)
     }
   else
     {
-      /* Walk through a copy of F, seeing whether P matches any prefix
-         of F.
-
-         FIXME: This is an O(N**2) algorithm; it should be O(N).
-         Also, the copy should not be necessary.  However, fixing this
-         will probably involve a change to the mbs* API.  */
+       
 
       char *fcopy = xstrdup (f);
       int r;
@@ -380,7 +342,7 @@ exclude_patopts (struct patopts const *opts, char const *f)
           : exclude_fnmatch (opts->v.pattern, f, options));
 }
 
-/* Return true if the exclude_pattern segment SEG matches F.  */
+ 
 
 static bool
 file_pattern_matches (struct exclude_segment const *seg, char const *f)
@@ -394,9 +356,7 @@ file_pattern_matches (struct exclude_segment const *seg, char const *f)
   return false;
 }
 
-/* Return true if the exclude_hash segment SEG matches F.
-   BUFFER is an auxiliary storage of the same length as F (with nul
-   terminator included) */
+ 
 static bool
 file_name_matches (struct exclude_segment const *seg, char const *f,
                    char *buffer)
@@ -406,7 +366,7 @@ file_name_matches (struct exclude_segment const *seg, char const *f,
 
   do
     {
-      /* initialize the pattern */
+       
       strcpy (buffer, f);
 
       while (true)
@@ -439,21 +399,19 @@ file_name_matches (struct exclude_segment const *seg, char const *f,
   return false;
 }
 
-/* Return true if EX excludes F.  */
+ 
 
 bool
 excluded_file_name (struct exclude const *ex, char const *f)
 {
-  /* If no patterns are given, the default is to include.  */
+   
   if (!ex->head)
     return false;
 
   bool invert = false;
   char *filename = nullptr;
 
-  /* Scan through the segments, reporting the status of the first match.
-     The segments are in reverse order, so this reports the status of
-     the last match in the original option list.  */
+   
   struct exclude_segment *seg;
   for (seg = ex->head; ; seg = seg->next)
     {
@@ -472,12 +430,7 @@ excluded_file_name (struct exclude const *ex, char const *f)
 
       if (! seg->next)
         {
-          /* If patterns are given but none match, the default is the
-             opposite of the last segment (i.e., the first in the
-             original option list).  For example, in the command
-             'grep -r --exclude="a*" --include="*b" pat dir', the
-             first option is --exclude so any file name matching
-             neither a* nor *b is included.  */
+           
           invert = true;
           break;
         }
@@ -487,7 +440,7 @@ excluded_file_name (struct exclude const *ex, char const *f)
   return invert ^ ! (seg->options & EXCLUDE_INCLUDE);
 }
 
-/* Append to EX the exclusion PATTERN with OPTIONS.  */
+ 
 
 void
 add_exclude (struct exclude *ex, char const *pattern, int options)
@@ -569,10 +522,7 @@ add_exclude (struct exclude *ex, char const *pattern, int options)
     }
 }
 
-/* Use ADD_FUNC to append to EX the patterns in FILE_NAME, each with
-   OPTIONS.  LINE_END terminates each pattern in the file.  If
-   LINE_END is a space character, ignore trailing spaces and empty
-   lines in FP.  Return -1 (setting errno) on failure, 0 on success.  */
+ 
 
 int
 add_exclude_fp (void (*add_func) (struct exclude *, char const *, int, void *),
@@ -608,12 +558,7 @@ add_exclude_fp (void (*add_func) (struct exclude *, char const *, int, void *),
 
         if (isspace ((unsigned char) line_end))
           {
-            /* Assume that no multi-byte character has a trailing byte
-               that satisfies isspace, and that nobody cares about
-               trailing white space containing non-single-byte characters.
-               If either assumption turns out to be false, presumably
-               the code should be changed to scan forward through the
-               entire pattern, one multi-byte character at a time.  */
+             
             for (; ; pattern_end--)
               if (pattern_end == pattern)
                 goto next_pattern;

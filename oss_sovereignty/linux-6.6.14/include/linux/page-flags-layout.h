@@ -1,17 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef PAGE_FLAGS_LAYOUT_H
 #define PAGE_FLAGS_LAYOUT_H
 
 #include <linux/numa.h>
 #include <generated/bounds.h>
 
-/*
- * When a memory allocation must conform to specific limitations (such
- * as being suitable for DMA) the caller will pass in hints to the
- * allocator in the gfp_mask, in the zone modifier bits.  These bits
- * are used to select a priority ordered list of memory zones which
- * match the requested limits. See gfp_zone() in include/linux/gfp.h
- */
+ 
 #if MAX_NR_ZONES < 2
 #define ZONES_SHIFT 0
 #elif MAX_NR_ZONES <= 2
@@ -34,21 +28,7 @@
 #endif
 
 #ifndef BUILD_VDSO32_64
-/*
- * page->flags layout:
- *
- * There are five possibilities for how page->flags get laid out.  The first
- * pair is for the normal case without sparsemem. The second pair is for
- * sparsemem when there is plenty of space for node and section information.
- * The last is when there is insufficient space in page->flags and a separate
- * lookup is necessary.
- *
- * No sparsemem or sparsemem vmemmap: |       NODE     | ZONE |             ... | FLAGS |
- *      " plus space for last_cpupid: |       NODE     | ZONE | LAST_CPUPID ... | FLAGS |
- * classic sparse with space for node:| SECTION | NODE | ZONE |             ... | FLAGS |
- *      " plus space for last_cpupid: | SECTION | NODE | ZONE | LAST_CPUPID ... | FLAGS |
- * classic sparse no space for node:  | SECTION |     ZONE    | ... | FLAGS |
- */
+ 
 #if defined(CONFIG_SPARSEMEM) && !defined(CONFIG_SPARSEMEM_VMEMMAP)
 #define SECTIONS_WIDTH		SECTIONS_SHIFT
 #else
@@ -64,10 +44,7 @@
 #define NODES_WIDTH		0
 #endif
 
-/*
- * Note that this #define MUST have a value so that it can be tested with
- * the IS_ENABLED() macro.
- */
+ 
 #if NODES_SHIFT != 0 && NODES_WIDTH == 0
 #define NODE_NOT_IN_PAGE_FLAGS	1
 #endif
@@ -106,10 +83,10 @@
 #error "Not enough bits in page flags"
 #endif
 
-/* see the comment on MAX_NR_TIERS */
+ 
 #define LRU_REFS_WIDTH	min(__LRU_REFS_WIDTH, BITS_PER_LONG - NR_PAGEFLAGS - \
 			    ZONES_WIDTH - LRU_GEN_WIDTH - SECTIONS_WIDTH - \
 			    NODES_WIDTH - KASAN_TAG_WIDTH - LAST_CPUPID_WIDTH)
 
 #endif
-#endif /* _LINUX_PAGE_FLAGS_LAYOUT */
+#endif  

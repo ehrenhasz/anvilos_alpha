@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, Sony Mobile Communications AB.
- * Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/hwspinlock.h>
 #include <linux/io.h>
@@ -16,116 +13,45 @@
 #include <linux/soc/qcom/smem.h>
 #include <linux/soc/qcom/socinfo.h>
 
-/*
- * The Qualcomm shared memory system is a allocate only heap structure that
- * consists of one of more memory areas that can be accessed by the processors
- * in the SoC.
- *
- * All systems contains a global heap, accessible by all processors in the SoC,
- * with a table of contents data structure (@smem_header) at the beginning of
- * the main shared memory block.
- *
- * The global header contains meta data for allocations as well as a fixed list
- * of 512 entries (@smem_global_entry) that can be initialized to reference
- * parts of the shared memory space.
- *
- *
- * In addition to this global heap a set of "private" heaps can be set up at
- * boot time with access restrictions so that only certain processor pairs can
- * access the data.
- *
- * These partitions are referenced from an optional partition table
- * (@smem_ptable), that is found 4kB from the end of the main smem region. The
- * partition table entries (@smem_ptable_entry) lists the involved processors
- * (or hosts) and their location in the main shared memory region.
- *
- * Each partition starts with a header (@smem_partition_header) that identifies
- * the partition and holds properties for the two internal memory regions. The
- * two regions are cached and non-cached memory respectively. Each region
- * contain a link list of allocation headers (@smem_private_entry) followed by
- * their data.
- *
- * Items in the non-cached region are allocated from the start of the partition
- * while items in the cached region are allocated from the end. The free area
- * is hence the region between the cached and non-cached offsets. The header of
- * cached items comes after the data.
- *
- * Version 12 (SMEM_GLOBAL_PART_VERSION) changes the item alloc/get procedure
- * for the global heap. A new global partition is created from the global heap
- * region with partition type (SMEM_GLOBAL_HOST) and the max smem item count is
- * set by the bootloader.
- *
- * To synchronize allocations in the shared memory heaps a remote spinlock must
- * be held - currently lock number 3 of the sfpb or tcsr is used for this on all
- * platforms.
- *
- */
+ 
 
-/*
- * The version member of the smem header contains an array of versions for the
- * various software components in the SoC. We verify that the boot loader
- * version is a valid version as a sanity check.
- */
+ 
 #define SMEM_MASTER_SBL_VERSION_INDEX	7
 #define SMEM_GLOBAL_HEAP_VERSION	11
 #define SMEM_GLOBAL_PART_VERSION	12
 
-/*
- * The first 8 items are only to be allocated by the boot loader while
- * initializing the heap.
- */
+ 
 #define SMEM_ITEM_LAST_FIXED	8
 
-/* Highest accepted item number, for both global and private heaps */
+ 
 #define SMEM_ITEM_COUNT		512
 
-/* Processor/host identifier for the application processor */
+ 
 #define SMEM_HOST_APPS		0
 
-/* Processor/host identifier for the global partition */
+ 
 #define SMEM_GLOBAL_HOST	0xfffe
 
-/* Max number of processors/hosts in a system */
+ 
 #define SMEM_HOST_COUNT		20
 
-/**
-  * struct smem_proc_comm - proc_comm communication struct (legacy)
-  * @command:	current command to be executed
-  * @status:	status of the currently requested command
-  * @params:	parameters to the command
-  */
+ 
 struct smem_proc_comm {
 	__le32 command;
 	__le32 status;
 	__le32 params[2];
 };
 
-/**
- * struct smem_global_entry - entry to reference smem items on the heap
- * @allocated:	boolean to indicate if this entry is used
- * @offset:	offset to the allocated space
- * @size:	size of the allocated space, 8 byte aligned
- * @aux_base:	base address for the memory region used by this unit, or 0 for
- *		the default region. bits 0,1 are reserved
- */
+ 
 struct smem_global_entry {
 	__le32 allocated;
 	__le32 offset;
 	__le32 size;
-	__le32 aux_base; /* bits 1:0 reserved */
+	__le32 aux_base;  
 };
 #define AUX_BASE_MASK		0xfffffffc
 
-/**
- * struct smem_header - header found in beginning of primary smem region
- * @proc_comm:		proc_comm communication interface (legacy)
- * @version:		array of versions for the various subsystems
- * @initialized:	boolean to indicate that smem is initialized
- * @free_offset:	index of the first unallocated byte in smem
- * @available:		number of bytes available for allocation
- * @reserved:		reserved field, must be 0
- * @toc:		array of references to items
- */
+ 
 struct smem_header {
 	struct smem_proc_comm proc_comm[4];
 	__le32 version[32];
@@ -136,16 +62,7 @@ struct smem_header {
 	struct smem_global_entry toc[SMEM_ITEM_COUNT];
 };
 
-/**
- * struct smem_ptable_entry - one entry in the @smem_ptable list
- * @offset:	offset, within the main shared memory region, of the partition
- * @size:	size of the partition
- * @flags:	flags for the partition (currently unused)
- * @host0:	first processor/host with access to this partition
- * @host1:	second processor/host with access to this partition
- * @cacheline:	alignment for "cached" entries
- * @reserved:	reserved entries for later use
- */
+ 
 struct smem_ptable_entry {
 	__le32 offset;
 	__le32 size;
@@ -156,14 +73,7 @@ struct smem_ptable_entry {
 	__le32 reserved[7];
 };
 
-/**
- * struct smem_ptable - partition table for the private partitions
- * @magic:	magic number, must be SMEM_PTABLE_MAGIC
- * @version:	version of the partition table
- * @num_entries: number of partitions in the table
- * @reserved:	for now reserved entries
- * @entry:	list of @smem_ptable_entry for the @num_entries partitions
- */
+ 
 struct smem_ptable {
 	u8 magic[4];
 	__le32 version;
@@ -172,20 +82,9 @@ struct smem_ptable {
 	struct smem_ptable_entry entry[];
 };
 
-static const u8 SMEM_PTABLE_MAGIC[] = { 0x24, 0x54, 0x4f, 0x43 }; /* "$TOC" */
+static const u8 SMEM_PTABLE_MAGIC[] = { 0x24, 0x54, 0x4f, 0x43 };  
 
-/**
- * struct smem_partition_header - header of the partitions
- * @magic:	magic number, must be SMEM_PART_MAGIC
- * @host0:	first processor/host with access to this partition
- * @host1:	second processor/host with access to this partition
- * @size:	size of the partition
- * @offset_free_uncached: offset to the first free byte of uncached memory in
- *		this partition
- * @offset_free_cached: offset to the first free byte of cached memory in this
- *		partition
- * @reserved:	for now reserved entries
- */
+ 
 struct smem_partition_header {
 	u8 magic[4];
 	__le16 host0;
@@ -196,13 +95,7 @@ struct smem_partition_header {
 	__le32 reserved[3];
 };
 
-/**
- * struct smem_partition - describes smem partition
- * @virt_base:	starting virtual address of partition
- * @phys_base:	starting physical address of partition
- * @cacheline:	alignment for "cached" entries
- * @size:	size of partition
- */
+ 
 struct smem_partition {
 	void __iomem *virt_base;
 	phys_addr_t phys_base;
@@ -212,33 +105,18 @@ struct smem_partition {
 
 static const u8 SMEM_PART_MAGIC[] = { 0x24, 0x50, 0x52, 0x54 };
 
-/**
- * struct smem_private_entry - header of each item in the private partition
- * @canary:	magic number, must be SMEM_PRIVATE_CANARY
- * @item:	identifying number of the smem item
- * @size:	size of the data, including padding bytes
- * @padding_data: number of bytes of padding of data
- * @padding_hdr: number of bytes of padding between the header and the data
- * @reserved:	for now reserved entry
- */
+ 
 struct smem_private_entry {
-	u16 canary; /* bytes are the same so no swapping needed */
+	u16 canary;  
 	__le16 item;
-	__le32 size; /* includes padding bytes */
+	__le32 size;  
 	__le16 padding_data;
 	__le16 padding_hdr;
 	__le32 reserved;
 };
 #define SMEM_PRIVATE_CANARY	0xa5a5
 
-/**
- * struct smem_info - smem region info located after the table of contents
- * @magic:	magic number, must be SMEM_INFO_MAGIC
- * @size:	size of the smem region
- * @base_addr:	base address of the smem region
- * @reserved:	for now reserved entry
- * @num_items:	highest accepted item number
- */
+ 
 struct smem_info {
 	u8 magic[4];
 	__le32 size;
@@ -247,32 +125,16 @@ struct smem_info {
 	__le16 num_items;
 };
 
-static const u8 SMEM_INFO_MAGIC[] = { 0x53, 0x49, 0x49, 0x49 }; /* SIII */
+static const u8 SMEM_INFO_MAGIC[] = { 0x53, 0x49, 0x49, 0x49 };  
 
-/**
- * struct smem_region - representation of a chunk of memory used for smem
- * @aux_base:	identifier of aux_mem base
- * @virt_base:	virtual base address of memory with this aux_mem identifier
- * @size:	size of the memory region
- */
+ 
 struct smem_region {
 	phys_addr_t aux_base;
 	void __iomem *virt_base;
 	size_t size;
 };
 
-/**
- * struct qcom_smem - device data for the smem device
- * @dev:	device pointer
- * @hwlock:	reference to a hwspinlock
- * @ptable: virtual base of partition table
- * @global_partition: describes for global partition when in use
- * @partitions: list of partitions of current processor/host
- * @item_count: max accepted item number
- * @socinfo:	platform device pointer
- * @num_regions: number of @regions
- * @regions:	list of the memory regions defining the shared memory
- */
+ 
 struct qcom_smem {
 	struct device *dev;
 
@@ -353,17 +215,13 @@ static void *cached_entry_to_item(struct smem_private_entry *e)
 	return p - le32_to_cpu(e->size);
 }
 
-/* Pointer to the one and only smem handle */
+ 
 static struct qcom_smem *__smem;
 
-/* Timeout (ms) for the trylock of remote spinlocks */
+ 
 #define HWSPINLOCK_TIMEOUT	1000
 
-/**
- * qcom_smem_is_available() - Check if SMEM is available
- *
- * Return: true if SMEM is available, false otherwise.
- */
+ 
 bool qcom_smem_is_available(void)
 {
 	return !!__smem;
@@ -403,7 +261,7 @@ static int qcom_smem_alloc_private(struct qcom_smem *smem,
 	if (WARN_ON((void *)hdr > p_end))
 		return -EINVAL;
 
-	/* Check that we don't grow into the cached region */
+	 
 	alloc_size = sizeof(*hdr) + ALIGN(size, 8);
 	if ((void *)hdr + alloc_size > cached) {
 		dev_err(smem->dev, "Out of memory\n");
@@ -416,11 +274,7 @@ static int qcom_smem_alloc_private(struct qcom_smem *smem,
 	hdr->padding_data = cpu_to_le16(le32_to_cpu(hdr->size) - size);
 	hdr->padding_hdr = 0;
 
-	/*
-	 * Ensure the header is written before we advance the free offset, so
-	 * that remote processors that does not take the remote spinlock still
-	 * gets a consistent view of the linked list.
-	 */
+	 
 	wmb();
 	le32_add_cpu(&phdr->offset_free_uncached, alloc_size);
 
@@ -451,11 +305,7 @@ static int qcom_smem_alloc_global(struct qcom_smem *smem,
 	entry->offset = header->free_offset;
 	entry->size = cpu_to_le32(size);
 
-	/*
-	 * Ensure the header is consistent before we mark the item allocated,
-	 * so that remote processors will get a consistent view of the item
-	 * even though they do not take the spinlock on read.
-	 */
+	 
 	wmb();
 	entry->allocated = cpu_to_le32(1);
 
@@ -465,15 +315,7 @@ static int qcom_smem_alloc_global(struct qcom_smem *smem,
 	return 0;
 }
 
-/**
- * qcom_smem_alloc() - allocate space for a smem item
- * @host:	remote processor id, or -1
- * @item:	smem item handle
- * @size:	number of bytes to be allocated
- *
- * Allocate space for a given smem item of size @size, given that the item is
- * not yet allocated.
- */
+ 
 int qcom_smem_alloc(unsigned host, unsigned item, size_t size)
 {
 	struct smem_partition *part;
@@ -598,7 +440,7 @@ static void *qcom_smem_get_private(struct qcom_smem *smem,
 	if (WARN_ON((void *)e > p_end))
 		return ERR_PTR(-EINVAL);
 
-	/* Item was not found in the uncached list, search the cached list */
+	 
 
 	e = phdr_to_first_cached_entry(phdr, part->cacheline);
 	end = phdr_to_last_cached_entry(phdr);
@@ -643,15 +485,7 @@ invalid_canary:
 	return ERR_PTR(-EINVAL);
 }
 
-/**
- * qcom_smem_get() - resolve ptr of size of a smem item
- * @host:	the remote processor, or -1
- * @item:	smem item handle
- * @size:	pointer to be filled out with size of the item
- *
- * Looks up smem item and returns pointer to it. Size of smem
- * item is returned in @size.
- */
+ 
 void *qcom_smem_get(unsigned host, unsigned item, size_t *size)
 {
 	struct smem_partition *part;
@@ -688,13 +522,7 @@ void *qcom_smem_get(unsigned host, unsigned item, size_t *size)
 }
 EXPORT_SYMBOL_GPL(qcom_smem_get);
 
-/**
- * qcom_smem_get_free_space() - retrieve amount of free space in a partition
- * @host:	the remote processor identifying a partition, or -1
- *
- * To be used by smem clients as a quick way to determine if any new
- * allocations has been made.
- */
+ 
 int qcom_smem_get_free_space(unsigned host)
 {
 	struct smem_partition *part;
@@ -738,13 +566,7 @@ static bool addr_in_range(void __iomem *base, size_t size, void *addr)
 	return base && ((void __iomem *)addr >= base && (void __iomem *)addr < base + size);
 }
 
-/**
- * qcom_smem_virt_to_phys() - return the physical address associated
- * with an smem item pointer (previously returned by qcom_smem_get()
- * @p:	the virtual address to convert
- *
- * Returns 0 if the pointer provided is not within any smem region.
- */
+ 
 phys_addr_t qcom_smem_virt_to_phys(void *p)
 {
 	struct smem_partition *part;
@@ -784,14 +606,7 @@ phys_addr_t qcom_smem_virt_to_phys(void *p)
 }
 EXPORT_SYMBOL_GPL(qcom_smem_virt_to_phys);
 
-/**
- * qcom_smem_get_soc_id() - return the SoC ID
- * @id:	On success, we return the SoC ID here.
- *
- * Look up SoC ID from HW/SW build ID and return it.
- *
- * Return: 0 on success, negative errno on failure.
- */
+ 
 int qcom_smem_get_soc_id(u32 *id)
 {
 	struct socinfo *info;
@@ -851,11 +666,7 @@ static u32 qcom_smem_get_item_count(struct qcom_smem *smem)
 	return le16_to_cpu(info->num_items);
 }
 
-/*
- * Validate the partition header for a partition whose partition
- * table entry is supplied.  Returns a pointer to its header if
- * valid, or a null pointer otherwise.
- */
+ 
 static struct smem_partition_header *
 qcom_smem_partition_header(struct qcom_smem *smem,
 		struct smem_ptable_entry *entry, u16 host0, u16 host1)
@@ -1012,10 +823,10 @@ static int qcom_smem_map_toc(struct qcom_smem *smem, struct smem_region *region)
 {
 	u32 ptable_start;
 
-	/* map starting 4K for smem header */
+	 
 	region->virt_base = devm_ioremap_wc(smem->dev, region->aux_base, SZ_4K);
 	ptable_start = region->aux_base + region->size - SZ_4K;
-	/* map last 4k for toc */
+	 
 	smem->ptable = devm_ioremap_wc(smem->dev, ptable_start, SZ_4K);
 
 	if (!region->virt_base || !smem->ptable)
@@ -1094,10 +905,7 @@ static int qcom_smem_probe(struct platform_device *pdev)
 		smem->regions[0].aux_base = rmem->base;
 		smem->regions[0].size = rmem->size;
 	} else {
-		/*
-		 * Fall back to the memory-region reference, if we're not a
-		 * reserved-memory node.
-		 */
+		 
 		ret = qcom_smem_resolve_mem(smem, "memory-region", &smem->regions[0]);
 		if (ret)
 			return ret;
@@ -1149,11 +957,7 @@ static int qcom_smem_probe(struct platform_device *pdev)
 	hwspin_unlock_irqrestore(smem->hwlock, &flags);
 
 	version = qcom_smem_get_sbl_version(smem);
-	/*
-	 * smem header mapping is required only in heap version scheme, so unmap
-	 * it here. It will be remapped in qcom_smem_map_global() when whole
-	 * partition is mapped again.
-	 */
+	 
 	devm_iounmap(smem->dev, smem->regions[0].virt_base);
 	switch (version >> 16) {
 	case SMEM_GLOBAL_PART_VERSION:

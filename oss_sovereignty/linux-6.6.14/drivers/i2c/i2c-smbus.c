@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * i2c-smbus.c - SMBus extensions to the I2C protocol
- *
- * Copyright (C) 2008 David Brownell
- * Copyright (C) 2010-2019 Jean Delvare <jdelvare@suse.de>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/dmi.h>
@@ -19,7 +14,7 @@
 
 struct i2c_smbus_alert {
 	struct work_struct	alert;
-	struct i2c_client	*ara;		/* Alert response address */
+	struct i2c_client	*ara;		 
 };
 
 struct alert_data {
@@ -28,7 +23,7 @@ struct alert_data {
 	unsigned int		data;
 };
 
-/* If this is the alerting device, notify its driver */
+ 
 static int smbus_do_alert(struct device *dev, void *addrp)
 {
 	struct i2c_client *client = i2c_verify_client(dev);
@@ -40,10 +35,7 @@ static int smbus_do_alert(struct device *dev, void *addrp)
 	if (client->flags & I2C_CLIENT_TEN)
 		return 0;
 
-	/*
-	 * Drivers should either disable alerts, or provide at least
-	 * a minimal handler.  Lock so the driver won't change.
-	 */
+	 
 	device_lock(dev);
 	if (client->dev.driver) {
 		driver = to_i2c_driver(client->dev.driver);
@@ -55,14 +47,11 @@ static int smbus_do_alert(struct device *dev, void *addrp)
 		dev_dbg(&client->dev, "alert with no driver\n");
 	device_unlock(dev);
 
-	/* Stop iterating after we find the device */
+	 
 	return -EBUSY;
 }
 
-/*
- * The alert IRQ handler needs to hand work off to a task which can issue
- * SMBus calls, because those sleeping calls can't be made in IRQ context.
- */
+ 
 static irqreturn_t smbus_alert(int irq, void *d)
 {
 	struct i2c_smbus_alert *alert = d;
@@ -74,14 +63,7 @@ static irqreturn_t smbus_alert(int irq, void *d)
 		s32 status;
 		struct alert_data data;
 
-		/*
-		 * Devices with pending alerts reply in address order, low
-		 * to high, because of slave transmit arbitration.  After
-		 * responding, an SMBus device stops asserting SMBALERT#.
-		 *
-		 * Note that SMBus 2.0 reserves 10-bit addresses for future
-		 * use.  We neither handle them, nor try to use PEC here.
-		 */
+		 
 		status = i2c_smbus_read_byte(ara);
 		if (status < 0)
 			break;
@@ -93,7 +75,7 @@ static irqreturn_t smbus_alert(int irq, void *d)
 		dev_dbg(&ara->dev, "SMBALERT# from dev 0x%02x, flag %d\n",
 			data.addr, data.data);
 
-		/* Notify driver for the device which issued the alert */
+		 
 		device_for_each_child(&ara->adapter->dev, &data,
 				      smbus_do_alert);
 	}
@@ -111,7 +93,7 @@ static void smbalert_work(struct work_struct *work)
 
 }
 
-/* Setup SMBALERT# infrastructure */
+ 
 static int smbalert_probe(struct i2c_client *ara)
 {
 	struct i2c_smbus_alert_setup *setup = dev_get_platdata(&ara->dev);
@@ -151,7 +133,7 @@ static int smbalert_probe(struct i2c_client *ara)
 	return 0;
 }
 
-/* IRQ and memory resources are managed so they are freed automatically */
+ 
 static void smbalert_remove(struct i2c_client *ara)
 {
 	struct i2c_smbus_alert *alert = i2c_get_clientdata(ara);
@@ -161,7 +143,7 @@ static void smbalert_remove(struct i2c_client *ara)
 
 static const struct i2c_device_id smbalert_ids[] = {
 	{ "smbus_alert", 0 },
-	{ /* LIST END */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, smbalert_ids);
 
@@ -174,18 +156,7 @@ static struct i2c_driver smbalert_driver = {
 	.id_table	= smbalert_ids,
 };
 
-/**
- * i2c_handle_smbus_alert - Handle an SMBus alert
- * @ara: the ARA client on the relevant adapter
- * Context: can't sleep
- *
- * Helper function to be called from an I2C bus driver's interrupt
- * handler. It will schedule the alert work, in turn calling the
- * corresponding I2C device driver's alert function.
- *
- * It is assumed that ara is a valid i2c client previously returned by
- * i2c_new_smbus_alert_device().
- */
+ 
 int i2c_handle_smbus_alert(struct i2c_client *ara)
 {
 	struct i2c_smbus_alert *alert = i2c_get_clientdata(ara);
@@ -210,10 +181,7 @@ static int i2c_slave_host_notify_cb(struct i2c_client *client,
 
 	switch (event) {
 	case I2C_SLAVE_WRITE_RECEIVED:
-		/* We only retrieve the first byte received (addr)
-		 * since there is currently no support to retrieve the data
-		 * parameter from the client.
-		 */
+		 
 		if (status->index == 0)
 			status->addr = *val;
 		if (status->index < U8_MAX)
@@ -236,19 +204,7 @@ static int i2c_slave_host_notify_cb(struct i2c_client *client,
 	return 0;
 }
 
-/**
- * i2c_new_slave_host_notify_device - get a client for SMBus host-notify support
- * @adapter: the target adapter
- * Context: can sleep
- *
- * Setup handling of the SMBus host-notify protocol on a given I2C bus segment.
- *
- * Handling is done by creating a device and its callback and handling data
- * received via the SMBus host-notify address (0x8)
- *
- * This returns the client, which should be ultimately freed using
- * i2c_free_slave_host_notify_device(); or an ERRPTR to indicate an error.
- */
+ 
 struct i2c_client *i2c_new_slave_host_notify_device(struct i2c_adapter *adapter)
 {
 	struct i2c_board_info host_notify_board_info = {
@@ -283,14 +239,7 @@ struct i2c_client *i2c_new_slave_host_notify_device(struct i2c_adapter *adapter)
 }
 EXPORT_SYMBOL_GPL(i2c_new_slave_host_notify_device);
 
-/**
- * i2c_free_slave_host_notify_device - free the client for SMBus host-notify
- * support
- * @client: the client to free
- * Context: can sleep
- *
- * Free the i2c_client allocated via i2c_new_slave_host_notify_device
- */
+ 
 void i2c_free_slave_host_notify_device(struct i2c_client *client)
 {
 	if (IS_ERR_OR_NULL(client))
@@ -303,14 +252,7 @@ void i2c_free_slave_host_notify_device(struct i2c_client *client)
 EXPORT_SYMBOL_GPL(i2c_free_slave_host_notify_device);
 #endif
 
-/*
- * SPD is not part of SMBus but we include it here for convenience as the
- * target systems are the same.
- * Restrictions to automatic SPD instantiation:
- *  - Only works if all filled slots have the same memory type
- *  - Only works for DDR2, DDR3 and DDR4 for now
- *  - Only works on systems with 1 to 4 memory slots
- */
+ 
 #if IS_ENABLED(CONFIG_DMI)
 void i2c_register_spd(struct i2c_adapter *adap)
 {
@@ -323,21 +265,21 @@ void i2c_register_spd(struct i2c_adapter *adap)
 	while ((handle = dmi_memdev_handle(slot_count)) != 0xffff) {
 		slot_count++;
 
-		/* Skip empty slots */
+		 
 		mem_size = dmi_memdev_size(handle);
 		if (!mem_size)
 			continue;
 
-		/* Skip undefined memory type */
+		 
 		mem_type = dmi_memdev_type(handle);
-		if (mem_type <= 0x02)		/* Invalid, Other, Unknown */
+		if (mem_type <= 0x02)		 
 			continue;
 
 		if (!common_mem_type) {
-			/* First filled slot */
+			 
 			common_mem_type = mem_type;
 		} else {
-			/* Check that all filled slots have the same type */
+			 
 			if (mem_type != common_mem_type) {
 				dev_warn(&adap->dev,
 					 "Different memory types mixed, not instantiating SPD\n");
@@ -347,7 +289,7 @@ void i2c_register_spd(struct i2c_adapter *adap)
 		dimm_count++;
 	}
 
-	/* No useful DMI data, bail out */
+	 
 	if (!dimm_count)
 		return;
 
@@ -360,21 +302,18 @@ void i2c_register_spd(struct i2c_adapter *adap)
 		return;
 	}
 
-	/*
-	 * Memory types could be found at section 7.18.2 (Memory Device — Type), table 78
-	 * https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.6.0.pdf
-	 */
+	 
 	switch (common_mem_type) {
-	case 0x12:	/* DDR */
-	case 0x13:	/* DDR2 */
-	case 0x18:	/* DDR3 */
-	case 0x1B:	/* LPDDR */
-	case 0x1C:	/* LPDDR2 */
-	case 0x1D:	/* LPDDR3 */
+	case 0x12:	 
+	case 0x13:	 
+	case 0x18:	 
+	case 0x1B:	 
+	case 0x1C:	 
+	case 0x1D:	 
 		name = "spd";
 		break;
-	case 0x1A:	/* DDR4 */
-	case 0x1E:	/* LPDDR4 */
+	case 0x1A:	 
+	case 0x1E:	 
 		name = "ee1004";
 		break;
 	default:
@@ -384,12 +323,7 @@ void i2c_register_spd(struct i2c_adapter *adap)
 		return;
 	}
 
-	/*
-	 * We don't know in which slots the memory modules are. We could
-	 * try to guess from the slot names, but that would be rather complex
-	 * and unreliable, so better probe all possible addresses until we
-	 * have found all memory modules.
-	 */
+	 
 	for (n = 0; n < slot_count && dimm_count; n++) {
 		struct i2c_board_info info;
 		unsigned short addr_list[2];

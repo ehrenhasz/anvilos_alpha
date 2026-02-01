@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* X.509 certificate parser
- *
- * Copyright (C) 2012 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define pr_fmt(fmt) "X.509: "fmt
 #include <linux/kernel.h>
@@ -17,30 +13,28 @@
 #include "x509_akid.asn1.h"
 
 struct x509_parse_context {
-	struct x509_certificate	*cert;		/* Certificate being constructed */
-	unsigned long	data;			/* Start of data */
-	const void	*key;			/* Key data */
-	size_t		key_size;		/* Size of key data */
-	const void	*params;		/* Key parameters */
-	size_t		params_size;		/* Size of key parameters */
-	enum OID	key_algo;		/* Algorithm used by the cert's key */
-	enum OID	last_oid;		/* Last OID encountered */
-	enum OID	sig_algo;		/* Algorithm used to sign the cert */
-	u8		o_size;			/* Size of organizationName (O) */
-	u8		cn_size;		/* Size of commonName (CN) */
-	u8		email_size;		/* Size of emailAddress */
-	u16		o_offset;		/* Offset of organizationName (O) */
-	u16		cn_offset;		/* Offset of commonName (CN) */
-	u16		email_offset;		/* Offset of emailAddress */
+	struct x509_certificate	*cert;		 
+	unsigned long	data;			 
+	const void	*key;			 
+	size_t		key_size;		 
+	const void	*params;		 
+	size_t		params_size;		 
+	enum OID	key_algo;		 
+	enum OID	last_oid;		 
+	enum OID	sig_algo;		 
+	u8		o_size;			 
+	u8		cn_size;		 
+	u8		email_size;		 
+	u16		o_offset;		 
+	u16		cn_offset;		 
+	u16		email_offset;		 
 	unsigned	raw_akid_size;
-	const void	*raw_akid;		/* Raw authorityKeyId in ASN.1 */
-	const void	*akid_raw_issuer;	/* Raw directoryName in authorityKeyId */
+	const void	*raw_akid;		 
+	const void	*akid_raw_issuer;	 
 	unsigned	akid_raw_issuer_size;
 };
 
-/*
- * Free an X.509 certificate
- */
+ 
 void x509_free_certificate(struct x509_certificate *cert)
 {
 	if (cert) {
@@ -55,9 +49,7 @@ void x509_free_certificate(struct x509_certificate *cert)
 }
 EXPORT_SYMBOL_GPL(x509_free_certificate);
 
-/*
- * Parse an X.509 certificate
- */
+ 
 struct x509_certificate *x509_cert_parse(const void *data, size_t datalen)
 {
 	struct x509_certificate *cert;
@@ -82,12 +74,12 @@ struct x509_certificate *x509_cert_parse(const void *data, size_t datalen)
 	ctx->cert = cert;
 	ctx->data = (unsigned long)data;
 
-	/* Attempt to decode the certificate */
+	 
 	ret = asn1_ber_decoder(&x509_decoder, ctx, data, datalen);
 	if (ret < 0)
 		goto error_decode;
 
-	/* Decode the AuthorityKeyIdentifier */
+	 
 	if (ctx->raw_akid) {
 		pr_devel("AKID: %u %*phN\n",
 			 ctx->raw_akid_size, ctx->raw_akid_size, ctx->raw_akid);
@@ -113,12 +105,12 @@ struct x509_certificate *x509_cert_parse(const void *data, size_t datalen)
 	cert->pub->paramlen = ctx->params_size;
 	cert->pub->algo = ctx->key_algo;
 
-	/* Grab the signature bits */
+	 
 	ret = x509_get_sig_params(cert);
 	if (ret < 0)
 		goto error_decode;
 
-	/* Generate cert issuer + serial number key ID */
+	 
 	kid = asymmetric_key_generate_id(cert->raw_serial,
 					 cert->raw_serial_size,
 					 cert->raw_issuer,
@@ -129,7 +121,7 @@ struct x509_certificate *x509_cert_parse(const void *data, size_t datalen)
 	}
 	cert->id = kid;
 
-	/* Detect self-signed certificates */
+	 
 	ret = x509_check_for_self_signed(cert);
 	if (ret < 0)
 		goto error_decode;
@@ -146,10 +138,7 @@ error_no_cert:
 }
 EXPORT_SYMBOL_GPL(x509_cert_parse);
 
-/*
- * Note an OID when we find one for later processing when we know how
- * to interpret it.
- */
+ 
 int x509_note_OID(void *context, size_t hdrlen,
 	     unsigned char tag,
 	     const void *value, size_t vlen)
@@ -166,10 +155,7 @@ int x509_note_OID(void *context, size_t hdrlen,
 	return 0;
 }
 
-/*
- * Save the position of the TBS data so that we can check the signature over it
- * later.
- */
+ 
 int x509_note_tbs_certificate(void *context, size_t hdrlen,
 			      unsigned char tag,
 			      const void *value, size_t vlen)
@@ -184,9 +170,7 @@ int x509_note_tbs_certificate(void *context, size_t hdrlen,
 	return 0;
 }
 
-/*
- * Record the algorithm that was used to sign this certificate.
- */
+ 
 int x509_note_sig_algo(void *context, size_t hdrlen, unsigned char tag,
 		       const void *value, size_t vlen)
 {
@@ -198,7 +182,7 @@ int x509_note_sig_algo(void *context, size_t hdrlen, unsigned char tag,
 	case OID_md2WithRSAEncryption:
 	case OID_md3WithRSAEncryption:
 	default:
-		return -ENOPKG; /* Unsupported combination */
+		return -ENOPKG;  
 
 	case OID_md4WithRSAEncryption:
 		ctx->cert->sig->hash_algo = "md4";
@@ -279,9 +263,7 @@ ecdsa:
 	return 0;
 }
 
-/*
- * Note the whereabouts and type of the signature.
- */
+ 
 int x509_note_signature(void *context, size_t hdrlen,
 			unsigned char tag,
 			const void *value, size_t vlen)
@@ -290,11 +272,7 @@ int x509_note_signature(void *context, size_t hdrlen,
 
 	pr_debug("Signature: alg=%u, size=%zu\n", ctx->last_oid, vlen);
 
-	/*
-	 * In X.509 certificates, the signature's algorithm is stored in two
-	 * places: inside the TBSCertificate (the data that is signed), and
-	 * alongside the signature.  These *must* match.
-	 */
+	 
 	if (ctx->last_oid != ctx->sig_algo) {
 		pr_warn("signatureAlgorithm (%u) differs from tbsCertificate.signature (%u)\n",
 			ctx->last_oid, ctx->sig_algo);
@@ -305,7 +283,7 @@ int x509_note_signature(void *context, size_t hdrlen,
 	    strcmp(ctx->cert->sig->pkey_algo, "ecrdsa") == 0 ||
 	    strcmp(ctx->cert->sig->pkey_algo, "sm2") == 0 ||
 	    strcmp(ctx->cert->sig->pkey_algo, "ecdsa") == 0) {
-		/* Discard the BIT STRING metadata */
+		 
 		if (vlen < 1 || *(const u8 *)value != 0)
 			return -EBADMSG;
 
@@ -318,9 +296,7 @@ int x509_note_signature(void *context, size_t hdrlen,
 	return 0;
 }
 
-/*
- * Note the certificate serial number
- */
+ 
 int x509_note_serial(void *context, size_t hdrlen,
 		     unsigned char tag,
 		     const void *value, size_t vlen)
@@ -331,9 +307,7 @@ int x509_note_serial(void *context, size_t hdrlen,
 	return 0;
 }
 
-/*
- * Note some of the name segments from which we'll fabricate a name.
- */
+ 
 int x509_extract_name_segment(void *context, size_t hdrlen,
 			      unsigned char tag,
 			      const void *value, size_t vlen)
@@ -360,9 +334,7 @@ int x509_extract_name_segment(void *context, size_t hdrlen,
 	return 0;
 }
 
-/*
- * Fabricate and save the issuer and subject names
- */
+ 
 static int x509_fabricate_name(struct x509_parse_context *ctx, size_t hdrlen,
 			       unsigned char tag,
 			       char **_name, size_t vlen)
@@ -374,7 +346,7 @@ static int x509_fabricate_name(struct x509_parse_context *ctx, size_t hdrlen,
 	if (*_name)
 		return -EINVAL;
 
-	/* Empty name string if no material */
+	 
 	if (!ctx->cn_size && !ctx->o_size && !ctx->email_size) {
 		buffer = kmalloc(1, GFP_KERNEL);
 		if (!buffer)
@@ -384,9 +356,7 @@ static int x509_fabricate_name(struct x509_parse_context *ctx, size_t hdrlen,
 	}
 
 	if (ctx->cn_size && ctx->o_size) {
-		/* Consider combining O and CN, but use only the CN if it is
-		 * prefixed by the O, or a significant portion thereof.
-		 */
+		 
 		namesize = ctx->cn_size;
 		name = data + ctx->cn_offset;
 		if (ctx->cn_size >= ctx->o_size &&
@@ -468,20 +438,14 @@ int x509_note_subject(void *context, size_t hdrlen,
 	return x509_fabricate_name(ctx, hdrlen, tag, &ctx->cert->subject, vlen);
 }
 
-/*
- * Extract the parameters for the public key
- */
+ 
 int x509_note_params(void *context, size_t hdrlen,
 		     unsigned char tag,
 		     const void *value, size_t vlen)
 {
 	struct x509_parse_context *ctx = context;
 
-	/*
-	 * AlgorithmIdentifier is used three times in the x509, we should skip
-	 * first and ignore third, using second one which is after subject and
-	 * before subjectPublicKey.
-	 */
+	 
 	if (!ctx->cert->raw_subject || ctx->key)
 		return 0;
 	ctx->params = value - hdrlen;
@@ -489,9 +453,7 @@ int x509_note_params(void *context, size_t hdrlen,
 	return 0;
 }
 
-/*
- * Extract the data for the public key algorithm
- */
+ 
 int x509_extract_key_data(void *context, size_t hdrlen,
 			  unsigned char tag,
 			  const void *value, size_t vlen)
@@ -536,7 +498,7 @@ int x509_extract_key_data(void *context, size_t hdrlen,
 		return -ENOPKG;
 	}
 
-	/* Discard the BIT STRING metadata */
+	 
 	if (vlen < 1 || *(const u8 *)value != 0)
 		return -EBADMSG;
 	ctx->key = value + 1;
@@ -544,12 +506,10 @@ int x509_extract_key_data(void *context, size_t hdrlen,
 	return 0;
 }
 
-/* The keyIdentifier in AuthorityKeyIdentifier SEQUENCE is tag(CONT,PRIM,0) */
+ 
 #define SEQ_TAG_KEYID (ASN1_CONT << 6)
 
-/*
- * Process certificate extensions that are used to qualify the certificate.
- */
+ 
 int x509_process_extension(void *context, size_t hdrlen,
 			   unsigned char tag,
 			   const void *value, size_t vlen)
@@ -561,7 +521,7 @@ int x509_process_extension(void *context, size_t hdrlen,
 	pr_debug("Extension: %u\n", ctx->last_oid);
 
 	if (ctx->last_oid == OID_subjectKeyIdentifier) {
-		/* Get hold of the key fingerprint */
+		 
 		if (ctx->cert->skid || vlen < 3)
 			return -EBADMSG;
 		if (v[0] != ASN1_OTS || v[1] != vlen - 2)
@@ -580,18 +540,7 @@ int x509_process_extension(void *context, size_t hdrlen,
 	}
 
 	if (ctx->last_oid == OID_keyUsage) {
-		/*
-		 * Get hold of the keyUsage bit string
-		 * v[1] is the encoding size
-		 *       (Expect either 0x02 or 0x03, making it 1 or 2 bytes)
-		 * v[2] is the number of unused bits in the bit string
-		 *       (If >= 3 keyCertSign is missing when v[1] = 0x02)
-		 * v[3] and possibly v[4] contain the bit string
-		 *
-		 * From RFC 5280 4.2.1.3:
-		 *   0x04 is where keyCertSign lands in this bit string
-		 *   0x80 is where digitalSignature lands in this bit string
-		 */
+		 
 		if (v[0] != ASN1_BTS)
 			return -EBADMSG;
 		if (vlen < 4)
@@ -608,23 +557,14 @@ int x509_process_extension(void *context, size_t hdrlen,
 	}
 
 	if (ctx->last_oid == OID_authorityKeyIdentifier) {
-		/* Get hold of the CA key fingerprint */
+		 
 		ctx->raw_akid = v;
 		ctx->raw_akid_size = vlen;
 		return 0;
 	}
 
 	if (ctx->last_oid == OID_basicConstraints) {
-		/*
-		 * Get hold of the basicConstraints
-		 * v[1] is the encoding size
-		 *	(Expect 0x2 or greater, making it 1 or more bytes)
-		 * v[2] is the encoding type
-		 *	(Expect an ASN1_BOOL for the CA)
-		 * v[3] is the contents of the ASN1_BOOL
-		 *      (Expect 1 if the CA is TRUE)
-		 * vlen should match the entire extension size
-		 */
+		 
 		if (v[0] != (ASN1_CONS_BIT | ASN1_SEQ))
 			return -EBADMSG;
 		if (vlen < 2)
@@ -639,24 +579,7 @@ int x509_process_extension(void *context, size_t hdrlen,
 	return 0;
 }
 
-/**
- * x509_decode_time - Decode an X.509 time ASN.1 object
- * @_t: The time to fill in
- * @hdrlen: The length of the object header
- * @tag: The object tag
- * @value: The object value
- * @vlen: The size of the object value
- *
- * Decode an ASN.1 universal time or generalised time field into a struct the
- * kernel can handle and check it for validity.  The time is decoded thus:
- *
- *	[RFC5280 §4.1.2.5]
- *	CAs conforming to this profile MUST always encode certificate validity
- *	dates through the year 2049 as UTCTime; certificate validity dates in
- *	2050 or later MUST be encoded as GeneralizedTime.  Conforming
- *	applications MUST be able to process validity dates that are encoded in
- *	either UTCTime or GeneralizedTime.
- */
+ 
 int x509_decode_time(time64_t *_t,  size_t hdrlen,
 		     unsigned char tag,
 		     const unsigned char *value, size_t vlen)
@@ -670,7 +593,7 @@ int x509_decode_time(time64_t *_t,  size_t hdrlen,
 #define DD2bin(P) ({ unsigned x = dec2bin(P[0]) * 10 + dec2bin(P[1]); P += 2; x; })
 
 	if (tag == ASN1_UNITIM) {
-		/* UTCTime: YYMMDDHHMMSSZ */
+		 
 		if (vlen != 13)
 			goto unsupported_time;
 		year = DD2bin(p);
@@ -679,7 +602,7 @@ int x509_decode_time(time64_t *_t,  size_t hdrlen,
 		else
 			year += 2000;
 	} else if (tag == ASN1_GENTIM) {
-		/* GenTime: YYYYMMDDHHMMSSZ */
+		 
 		if (vlen != 15)
 			goto unsupported_time;
 		year = DD2bin(p) * 100 + DD2bin(p);
@@ -715,9 +638,9 @@ int x509_decode_time(time64_t *_t,  size_t hdrlen,
 	}
 
 	if (day < 1 || day > mon_len ||
-	    hour > 24 || /* ISO 8601 permits 24:00:00 as midnight tomorrow */
+	    hour > 24 ||  
 	    min > 59 ||
-	    sec > 60) /* ISO 8601 permits leap seconds [X.680 46.3] */
+	    sec > 60)  
 		goto invalid_time;
 
 	*_t = mktime64(year, mon, day, hour, min, sec);
@@ -750,9 +673,7 @@ int x509_note_not_after(void *context, size_t hdrlen,
 	return x509_decode_time(&ctx->cert->valid_to, hdrlen, tag, value, vlen);
 }
 
-/*
- * Note a key identifier-based AuthorityKeyIdentifier
- */
+ 
 int x509_akid_note_kid(void *context, size_t hdrlen,
 		       unsigned char tag,
 		       const void *value, size_t vlen)
@@ -773,9 +694,7 @@ int x509_akid_note_kid(void *context, size_t hdrlen,
 	return 0;
 }
 
-/*
- * Note a directoryName in an AuthorityKeyIdentifier
- */
+ 
 int x509_akid_note_name(void *context, size_t hdrlen,
 			unsigned char tag,
 			const void *value, size_t vlen)
@@ -789,9 +708,7 @@ int x509_akid_note_name(void *context, size_t hdrlen,
 	return 0;
 }
 
-/*
- * Note a serial number in an AuthorityKeyIdentifier
- */
+ 
 int x509_akid_note_serial(void *context, size_t hdrlen,
 			  unsigned char tag,
 			  const void *value, size_t vlen)

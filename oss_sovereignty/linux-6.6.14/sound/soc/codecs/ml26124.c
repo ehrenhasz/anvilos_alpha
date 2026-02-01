@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011 LAPIS Semiconductor Co., Ltd.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -19,10 +17,10 @@
 #include <sound/tlv.h>
 #include "ml26124.h"
 
-#define DVOL_CTL_DVMUTE_ON		BIT(4)	/* Digital volume MUTE On */
-#define DVOL_CTL_DVMUTE_OFF		0	/* Digital volume MUTE Off */
+#define DVOL_CTL_DVMUTE_ON		BIT(4)	 
+#define DVOL_CTL_DVMUTE_OFF		0	 
 #define ML26124_SAI_NO_DELAY	BIT(1)
-#define ML26124_SAI_FRAME_SYNC	(BIT(5) | BIT(0)) /* For mono (Telecodec) */
+#define ML26124_SAI_FRAME_SYNC	(BIT(5) | BIT(0))  
 #define ML26134_CACHESIZE 212
 #define ML26124_VMID	BIT(1)
 #define ML26124_RATES (SNDRV_PCM_RATE_16000 | SNDRV_PCM_RATE_32000 |\
@@ -49,7 +47,7 @@ struct clk_coeff {
 	u8 plldiv;
 };
 
-/* ML26124 configuration */
+ 
 static const DECLARE_TLV_DB_SCALE(digital_tlv, -7150, 50, 0);
 
 static const DECLARE_TLV_DB_SCALE(alclvl, -2250, 150, 0);
@@ -119,7 +117,7 @@ static const struct snd_kcontrol_new ml26124_output_mixer_controls[] = {
 	SOC_DAPM_SINGLE("PGA Switch", ML26124_SPK_AMP_OUT, 5, 1, 0),
 };
 
-/* Input mux */
+ 
 static const char * const ml26124_input_select[] = {"Analog MIC SingleEnded in",
 				"Digital MIC in", "Analog MIC Differential in"};
 
@@ -155,7 +153,7 @@ static const struct snd_soc_dapm_widget ml26124_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route ml26124_intercon[] = {
-	/* Supply */
+	 
 	{"DAC", NULL, "MCLKEN"},
 	{"ADC", NULL, "MCLKEN"},
 	{"DAC", NULL, "PLLEN"},
@@ -163,23 +161,23 @@ static const struct snd_soc_dapm_route ml26124_intercon[] = {
 	{"DAC", NULL, "PLLOE"},
 	{"ADC", NULL, "PLLOE"},
 
-	/* output mixer */
+	 
 	{"Output Mixer", "DAC Switch", "DAC"},
 	{"Output Mixer", "Line in loopback Switch", "LIN"},
 
-	/* outputs */
+	 
 	{"LOUT", NULL, "Output Mixer"},
 	{"SPOUT", NULL, "Output Mixer"},
 	{"Line Out Enable", NULL, "LOUT"},
 
-	/* input */
+	 
 	{"ADC", NULL, "Input Mux"},
 	{"Input Mux", "Analog MIC SingleEnded in", "PGA"},
 	{"Input Mux", "Analog MIC Differential in", "PGA"},
 	{"PGA", NULL, "MIN"},
 };
 
-/* PLLOutputFreq(Hz) = InputMclkFreq(Hz) * PLLM / (PLLN * PLLDIV) */
+ 
 static const struct clk_coeff coeff_div[] = {
 	{12288000, 16000, 0xc, 0x0, 0x20, 0x0, 0x4},
 	{12288000, 32000, 0xc, 0x0, 0x20, 0x0, 0x4},
@@ -187,109 +185,109 @@ static const struct clk_coeff coeff_div[] = {
 };
 
 static const struct reg_default ml26124_reg[] = {
-	/* CLOCK control Register */
-	{0x00, 0x00 },	/* Sampling Rate */
-	{0x02, 0x00},	/* PLL NL */
-	{0x04, 0x00},	/* PLLNH */
-	{0x06, 0x00},	/* PLLML */
-	{0x08, 0x00},	/* MLLMH */
-	{0x0a, 0x00},	/* PLLDIV */
-	{0x0c, 0x00},	/* Clock Enable */
-	{0x0e, 0x00},	/* CLK Input/Output Control */
+	 
+	{0x00, 0x00 },	 
+	{0x02, 0x00},	 
+	{0x04, 0x00},	 
+	{0x06, 0x00},	 
+	{0x08, 0x00},	 
+	{0x0a, 0x00},	 
+	{0x0c, 0x00},	 
+	{0x0e, 0x00},	 
 
-	/* System Control Register */
-	{0x10, 0x00},	/* Software RESET */
-	{0x12, 0x00},	/* Record/Playback Run */
-	{0x14, 0x00},	/* Mic Input/Output control */
+	 
+	{0x10, 0x00},	 
+	{0x12, 0x00},	 
+	{0x14, 0x00},	 
 
-	/* Power Management Register */
-	{0x20, 0x00},	/* Reference Power Management */
-	{0x22, 0x00},	/* Input Power Management */
-	{0x24, 0x00},	/* DAC Power Management */
-	{0x26, 0x00},	/* SP-AMP Power Management */
-	{0x28, 0x00},	/* LINEOUT Power Management */
-	{0x2a, 0x00},	/* VIDEO Power Management */
-	{0x2e, 0x00},	/* AC-CMP Power Management */
+	 
+	{0x20, 0x00},	 
+	{0x22, 0x00},	 
+	{0x24, 0x00},	 
+	{0x26, 0x00},	 
+	{0x28, 0x00},	 
+	{0x2a, 0x00},	 
+	{0x2e, 0x00},	 
 
-	/* Analog reference Control Register */
-	{0x30, 0x04},	/* MICBIAS Voltage Control */
+	 
+	{0x30, 0x04},	 
 
-	/* Input/Output Amplifier Control Register */
-	{0x32, 0x10},	/* MIC Input Volume */
-	{0x38, 0x00},	/* Mic Boost Volume */
-	{0x3a, 0x33},	/* Speaker AMP Volume */
-	{0x48, 0x00},	/* AMP Volume Control Function Enable */
-	{0x4a, 0x00},	/* Amplifier Volume Fader Control */
+	 
+	{0x32, 0x10},	 
+	{0x38, 0x00},	 
+	{0x3a, 0x33},	 
+	{0x48, 0x00},	 
+	{0x4a, 0x00},	 
 
-	/* Analog Path Control Register */
-	{0x54, 0x00},	/* Speaker AMP Output Control */
-	{0x5a, 0x00},	/* Mic IF Control */
-	{0xe8, 0x01},	/* Mic Select Control */
+	 
+	{0x54, 0x00},	 
+	{0x5a, 0x00},	 
+	{0xe8, 0x01},	 
 
-	/* Audio Interface Control Register */
-	{0x60, 0x00},	/* SAI-Trans Control */
-	{0x62, 0x00},	/* SAI-Receive Control */
-	{0x64, 0x00},	/* SAI Mode select */
+	 
+	{0x60, 0x00},	 
+	{0x62, 0x00},	 
+	{0x64, 0x00},	 
 
-	/* DSP Control Register */
-	{0x66, 0x01},	/* Filter Func Enable */
-	{0x68, 0x00},	/* Volume Control Func Enable */
-	{0x6A, 0x00},	/* Mixer & Volume Control*/
-	{0x6C, 0xff},	/* Record Digital Volume */
-	{0x70, 0xff},	/* Playback Digital Volume */
-	{0x72, 0x10},	/* Digital Boost Volume */
-	{0x74, 0xe7},	/* EQ gain Band0 */
-	{0x76, 0xe7},	/* EQ gain Band1 */
-	{0x78, 0xe7},	/* EQ gain Band2 */
-	{0x7A, 0xe7},	/* EQ gain Band3 */
-	{0x7C, 0xe7},	/* EQ gain Band4 */
-	{0x7E, 0x00},	/* HPF2 CutOff*/
-	{0x80, 0x00},	/* EQ Band0 Coef0L */
-	{0x82, 0x00},	/* EQ Band0 Coef0H */
-	{0x84, 0x00},	/* EQ Band0 Coef0L */
-	{0x86, 0x00},	/* EQ Band0 Coef0H */
-	{0x88, 0x00},	/* EQ Band1 Coef0L */
-	{0x8A, 0x00},	/* EQ Band1 Coef0H */
-	{0x8C, 0x00},	/* EQ Band1 Coef0L */
-	{0x8E, 0x00},	/* EQ Band1 Coef0H */
-	{0x90, 0x00},	/* EQ Band2 Coef0L */
-	{0x92, 0x00},	/* EQ Band2 Coef0H */
-	{0x94, 0x00},	/* EQ Band2 Coef0L */
-	{0x96, 0x00},	/* EQ Band2 Coef0H */
-	{0x98, 0x00},	/* EQ Band3 Coef0L */
-	{0x9A, 0x00},	/* EQ Band3 Coef0H */
-	{0x9C, 0x00},	/* EQ Band3 Coef0L */
-	{0x9E, 0x00},	/* EQ Band3 Coef0H */
-	{0xA0, 0x00},	/* EQ Band4 Coef0L */
-	{0xA2, 0x00},	/* EQ Band4 Coef0H */
-	{0xA4, 0x00},	/* EQ Band4 Coef0L */
-	{0xA6, 0x00},	/* EQ Band4 Coef0H */
+	 
+	{0x66, 0x01},	 
+	{0x68, 0x00},	 
+	{0x6A, 0x00},	 
+	{0x6C, 0xff},	 
+	{0x70, 0xff},	 
+	{0x72, 0x10},	 
+	{0x74, 0xe7},	 
+	{0x76, 0xe7},	 
+	{0x78, 0xe7},	 
+	{0x7A, 0xe7},	 
+	{0x7C, 0xe7},	 
+	{0x7E, 0x00},	 
+	{0x80, 0x00},	 
+	{0x82, 0x00},	 
+	{0x84, 0x00},	 
+	{0x86, 0x00},	 
+	{0x88, 0x00},	 
+	{0x8A, 0x00},	 
+	{0x8C, 0x00},	 
+	{0x8E, 0x00},	 
+	{0x90, 0x00},	 
+	{0x92, 0x00},	 
+	{0x94, 0x00},	 
+	{0x96, 0x00},	 
+	{0x98, 0x00},	 
+	{0x9A, 0x00},	 
+	{0x9C, 0x00},	 
+	{0x9E, 0x00},	 
+	{0xA0, 0x00},	 
+	{0xA2, 0x00},	 
+	{0xA4, 0x00},	 
+	{0xA6, 0x00},	 
 
-	/* ALC Control Register */
-	{0xb0, 0x00},	/* ALC Mode */
-	{0xb2, 0x02},	/* ALC Attack Time */
-	{0xb4, 0x03},	/* ALC Decay Time */
-	{0xb6, 0x00},	/* ALC Hold Time */
-	{0xb8, 0x0b},	/* ALC Target Level */
-	{0xba, 0x70},	/* ALC Max/Min Gain */
-	{0xbc, 0x00},	/* Noise Gate Threshold */
-	{0xbe, 0x00},	/* ALC ZeroCross TimeOut */
+	 
+	{0xb0, 0x00},	 
+	{0xb2, 0x02},	 
+	{0xb4, 0x03},	 
+	{0xb6, 0x00},	 
+	{0xb8, 0x0b},	 
+	{0xba, 0x70},	 
+	{0xbc, 0x00},	 
+	{0xbe, 0x00},	 
 
-	/* Playback Limiter Control Register */
-	{0xc0, 0x04},	/* PL Attack Time */
-	{0xc2, 0x05},	/* PL Decay Time */
-	{0xc4, 0x0d},	/* PL Target Level */
-	{0xc6, 0x70},	/* PL Max/Min Gain */
-	{0xc8, 0x10},	/* Playback Boost Volume */
-	{0xca, 0x00},	/* PL ZeroCross TimeOut */
+	 
+	{0xc0, 0x04},	 
+	{0xc2, 0x05},	 
+	{0xc4, 0x0d},	 
+	{0xc6, 0x70},	 
+	{0xc8, 0x10},	 
+	{0xca, 0x00},	 
 
-	/* Video Amplifier Control Register */
-	{0xd0, 0x01},	/* VIDEO AMP Gain Control */
-	{0xd2, 0x01},	/* VIDEO AMP Setup 1 */
-	{0xd4, 0x01},	/* VIDEO AMP Control2 */
+	 
+	{0xd0, 0x01},	 
+	{0xd2, 0x01},	 
+	{0xd4, 0x01},	 
 };
 
-/* Get sampling rate value of sampling rate setting register (0x0) */
+ 
 static inline int get_srate(int rate)
 {
 	int srate;
@@ -414,7 +412,7 @@ static int ml26124_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	}
 	snd_soc_component_update_bits(component, ML26124_SAI_MODE_SEL, BIT(0), mode);
 
-	/* interface format */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		break;
@@ -422,7 +420,7 @@ static int ml26124_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	/* clock inversion */
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
 		break;
@@ -472,7 +470,7 @@ static int ml26124_set_bias_level(struct snd_soc_component *component,
 	case SND_SOC_BIAS_PREPARE:
 		break;
 	case SND_SOC_BIAS_STANDBY:
-		/* VMID ON */
+		 
 		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF) {
 			snd_soc_component_update_bits(component, ML26124_PW_REF_PW_MNG,
 					    ML26124_VMID, ML26124_VMID);
@@ -481,7 +479,7 @@ static int ml26124_set_bias_level(struct snd_soc_component *component,
 		}
 		break;
 	case SND_SOC_BIAS_OFF:
-		/* VMID OFF */
+		 
 		snd_soc_component_update_bits(component, ML26124_PW_REF_PW_MNG,
 				    ML26124_VMID, 0);
 		break;
@@ -517,7 +515,7 @@ static struct snd_soc_dai_driver ml26124_dai = {
 
 static int ml26124_probe(struct snd_soc_component *component)
 {
-	/* Software Reset */
+	 
 	snd_soc_component_update_bits(component, ML26124_SW_RST, 0x01, 1);
 	snd_soc_component_update_bits(component, ML26124_SW_RST, 0x01, 0);
 

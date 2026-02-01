@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Google */
+
+ 
 
 #include <test_progs.h>
 #include "test_autoattach.skel.h"
@@ -12,7 +12,7 @@ void test_autoattach(void)
 	if (!ASSERT_OK_PTR(skel, "skel_open_and_load"))
 		goto cleanup;
 
-	/* disable auto-attach for prog2 */
+	 
 	bpf_program__set_autoattach(skel->progs.prog2, false);
 	ASSERT_TRUE(bpf_program__autoattach(skel->progs.prog1), "autoattach_prog1");
 	ASSERT_FALSE(bpf_program__autoattach(skel->progs.prog2), "autoattach_prog2");

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Texas Instruments SoC Adaptive Body Bias(ABB) Regulator
- *
- * Copyright (C) 2011 Texas Instruments, Inc.
- * Mike Turquette <mturquette@ti.com>
- *
- * Copyright (C) 2012-2013 Texas Instruments, Inc.
- * Andrii Tseglytskyi <andrii.tseglytskyi@ti.com>
- * Nishanth Menon <nm@ti.com>
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -21,74 +12,34 @@
 #include <linux/regulator/machine.h>
 #include <linux/regulator/of_regulator.h>
 
-/*
- * ABB LDO operating states:
- * NOMINAL_OPP:	bypasses the ABB LDO
- * FAST_OPP:	sets ABB LDO to Forward Body-Bias
- * SLOW_OPP:	sets ABB LDO to Reverse Body-Bias
- */
+ 
 #define TI_ABB_NOMINAL_OPP	0
 #define TI_ABB_FAST_OPP		1
 #define TI_ABB_SLOW_OPP		3
 
-/**
- * struct ti_abb_info - ABB information per voltage setting
- * @opp_sel:	one of TI_ABB macro
- * @vset:	(optional) vset value that LDOVBB needs to be overridden with.
- *
- * Array of per voltage entries organized in the same order as regulator_desc's
- * volt_table list. (selector is used to index from this array)
- */
+ 
 struct ti_abb_info {
 	u32 opp_sel;
 	u32 vset;
 };
 
-/**
- * struct ti_abb_reg - Register description for ABB block
- * @setup_off:			setup register offset from base
- * @control_off:		control register offset from base
- * @sr2_wtcnt_value_mask:	setup register- sr2_wtcnt_value mask
- * @fbb_sel_mask:		setup register- FBB sel mask
- * @rbb_sel_mask:		setup register- RBB sel mask
- * @sr2_en_mask:		setup register- enable mask
- * @opp_change_mask:		control register - mask to trigger LDOVBB change
- * @opp_sel_mask:		control register - mask for mode to operate
- */
+ 
 struct ti_abb_reg {
 	u32 setup_off;
 	u32 control_off;
 
-	/* Setup register fields */
+	 
 	u32 sr2_wtcnt_value_mask;
 	u32 fbb_sel_mask;
 	u32 rbb_sel_mask;
 	u32 sr2_en_mask;
 
-	/* Control register fields */
+	 
 	u32 opp_change_mask;
 	u32 opp_sel_mask;
 };
 
-/**
- * struct ti_abb - ABB instance data
- * @rdesc:			regulator descriptor
- * @clk:			clock(usually sysclk) supplying ABB block
- * @base:			base address of ABB block
- * @setup_reg:			setup register of ABB block
- * @control_reg:		control register of ABB block
- * @int_base:			interrupt register base address
- * @efuse_base:			(optional) efuse base address for ABB modes
- * @ldo_base:			(optional) LDOVBB vset override base address
- * @regs:			pointer to struct ti_abb_reg for ABB block
- * @txdone_mask:		mask on int_base for tranxdone interrupt
- * @ldovbb_override_mask:	mask to ldo_base for overriding default LDO VBB
- *				vset with value from efuse
- * @ldovbb_vset_mask:		mask to ldo_base for providing the VSET override
- * @info:			array to per voltage ABB configuration
- * @current_info_idx:		current index to info
- * @settling_time:		SoC specific settling time for LDO VBB
- */
+ 
 struct ti_abb {
 	struct regulator_desc rdesc;
 	struct clk *clk;
@@ -110,14 +61,7 @@ struct ti_abb {
 	u32 settling_time;
 };
 
-/**
- * ti_abb_rmw() - handy wrapper to set specific register bits
- * @mask:	mask for register field
- * @value:	value shifted to mask location and written
- * @reg:	register address
- *
- * Return: final register value (may be unused)
- */
+ 
 static inline u32 ti_abb_rmw(u32 mask, u32 value, void __iomem *reg)
 {
 	u32 val;
@@ -130,33 +74,19 @@ static inline u32 ti_abb_rmw(u32 mask, u32 value, void __iomem *reg)
 	return val;
 }
 
-/**
- * ti_abb_check_txdone() - handy wrapper to check ABB tranxdone status
- * @abb:	pointer to the abb instance
- *
- * Return: true or false
- */
+ 
 static inline bool ti_abb_check_txdone(const struct ti_abb *abb)
 {
 	return !!(readl(abb->int_base) & abb->txdone_mask);
 }
 
-/**
- * ti_abb_clear_txdone() - handy wrapper to clear ABB tranxdone status
- * @abb:	pointer to the abb instance
- */
+ 
 static inline void ti_abb_clear_txdone(const struct ti_abb *abb)
 {
 	writel(abb->txdone_mask, abb->int_base);
 };
 
-/**
- * ti_abb_wait_txdone() - waits for ABB tranxdone event
- * @dev:	device
- * @abb:	pointer to the abb instance
- *
- * Return: 0 on success or -ETIMEDOUT if the event is not cleared on time.
- */
+ 
 static int ti_abb_wait_txdone(struct device *dev, struct ti_abb *abb)
 {
 	int timeout = 0;
@@ -175,13 +105,7 @@ static int ti_abb_wait_txdone(struct device *dev, struct ti_abb *abb)
 	return -ETIMEDOUT;
 }
 
-/**
- * ti_abb_clear_all_txdone() - clears ABB tranxdone event
- * @dev:	device
- * @abb:	pointer to the abb instance
- *
- * Return: 0 on success or -ETIMEDOUT if the event is not cleared on time.
- */
+ 
 static int ti_abb_clear_all_txdone(struct device *dev, const struct ti_abb *abb)
 {
 	int timeout = 0;
@@ -202,19 +126,14 @@ static int ti_abb_clear_all_txdone(struct device *dev, const struct ti_abb *abb)
 	return -ETIMEDOUT;
 }
 
-/**
- * ti_abb_program_ldovbb() - program LDOVBB register for override value
- * @dev:	device
- * @abb:	pointer to the abb instance
- * @info:	ABB info to program
- */
+ 
 static void ti_abb_program_ldovbb(struct device *dev, const struct ti_abb *abb,
 				  struct ti_abb_info *info)
 {
 	u32 val;
 
 	val = readl(abb->ldo_base);
-	/* clear up previous values */
+	 
 	val &= ~(abb->ldovbb_override_mask | abb->ldovbb_vset_mask);
 
 	switch (info->opp_sel) {
@@ -228,14 +147,7 @@ static void ti_abb_program_ldovbb(struct device *dev, const struct ti_abb *abb,
 	writel(val, abb->ldo_base);
 }
 
-/**
- * ti_abb_set_opp() - Setup ABB and LDO VBB for required bias
- * @rdev:	regulator device
- * @abb:	pointer to the abb instance
- * @info:	ABB info to program
- *
- * Return: 0 on success or appropriate error value when fails
- */
+ 
 static int ti_abb_set_opp(struct regulator_dev *rdev, struct ti_abb *abb,
 			  struct ti_abb_info *info)
 {
@@ -258,21 +170,17 @@ static int ti_abb_set_opp(struct regulator_dev *rdev, struct ti_abb *abb,
 		break;
 	}
 
-	/* program next state of ABB ldo */
+	 
 	ti_abb_rmw(regs->opp_sel_mask, info->opp_sel, abb->control_reg);
 
-	/*
-	 * program LDO VBB vset override if needed for !bypass mode
-	 * XXX: Do not switch sequence - for !bypass, LDO override reset *must*
-	 * be performed *before* switch to bias mode else VBB glitches.
-	 */
+	 
 	if (abb->ldo_base && info->opp_sel != TI_ABB_NOMINAL_OPP)
 		ti_abb_program_ldovbb(dev, abb, info);
 
-	/* Initiate ABB ldo change */
+	 
 	ti_abb_rmw(regs->opp_change_mask, 1, abb->control_reg);
 
-	/* Wait for ABB LDO to complete transition to new Bias setting */
+	 
 	ret = ti_abb_wait_txdone(dev, abb);
 	if (ret)
 		goto out;
@@ -281,11 +189,7 @@ static int ti_abb_set_opp(struct regulator_dev *rdev, struct ti_abb *abb,
 	if (ret)
 		goto out;
 
-	/*
-	 * Reset LDO VBB vset override bypass mode
-	 * XXX: Do not switch sequence - for bypass, LDO override reset *must*
-	 * be performed *after* switch to bypass else VBB glitches.
-	 */
+	 
 	if (abb->ldo_base && info->opp_sel == TI_ABB_NOMINAL_OPP)
 		ti_abb_program_ldovbb(dev, abb, info);
 
@@ -293,14 +197,7 @@ out:
 	return ret;
 }
 
-/**
- * ti_abb_set_voltage_sel() - regulator accessor function to set ABB LDO
- * @rdev:	regulator device
- * @sel:	selector to index into required ABB LDO settings (maps to
- *		regulator descriptor's volt_table)
- *
- * Return: 0 on success or appropriate error value when fails
- */
+ 
 static int ti_abb_set_voltage_sel(struct regulator_dev *rdev, unsigned int sel)
 {
 	const struct regulator_desc *desc = rdev->desc;
@@ -328,23 +225,18 @@ static int ti_abb_set_voltage_sel(struct regulator_dev *rdev, unsigned int sel)
 		return -EINVAL;
 	}
 
-	/* If we are in the same index as we were, nothing to do here! */
+	 
 	if (sel == abb->current_info_idx) {
 		dev_dbg(dev, "%s: Already at sel=%d\n", __func__, sel);
 		return ret;
 	}
 
 	info = &abb->info[sel];
-	/*
-	 * When Linux kernel is starting up, we aren't sure of the
-	 * Bias configuration that bootloader has configured.
-	 * So, we get to know the actual setting the first time
-	 * we are asked to transition.
-	 */
+	 
 	if (abb->current_info_idx == -EINVAL)
 		goto just_set_abb;
 
-	/* If data is exactly the same, then just update index, no change */
+	 
 	oinfo = &abb->info[abb->current_info_idx];
 	if (!memcmp(info, oinfo, sizeof(*info))) {
 		dev_dbg(dev, "%s: Same data new idx=%d, old idx=%d\n", __func__,
@@ -366,12 +258,7 @@ out:
 	return ret;
 }
 
-/**
- * ti_abb_get_voltage_sel() - Regulator accessor to get current ABB LDO setting
- * @rdev:	regulator device
- *
- * Return: 0 on success or appropriate error value when fails
- */
+ 
 static int ti_abb_get_voltage_sel(struct regulator_dev *rdev)
 {
 	const struct regulator_desc *desc = rdev->desc;
@@ -400,13 +287,7 @@ static int ti_abb_get_voltage_sel(struct regulator_dev *rdev)
 	return abb->current_info_idx;
 }
 
-/**
- * ti_abb_init_timings() - setup ABB clock timing for the current platform
- * @dev:	device
- * @abb:	pointer to the abb instance
- *
- * Return: 0 if timing is updated, else returns error result.
- */
+ 
 static int ti_abb_init_timings(struct device *dev, struct ti_abb *abb)
 {
 	u32 clock_cycles;
@@ -415,14 +296,14 @@ static int ti_abb_init_timings(struct device *dev, struct ti_abb *abb)
 	int ret;
 	char *pname = "ti,settling-time";
 
-	/* read device tree properties */
+	 
 	ret = of_property_read_u32(dev->of_node, pname, &abb->settling_time);
 	if (ret) {
 		dev_err(dev, "Unable to get property '%s'(%d)\n", pname, ret);
 		return ret;
 	}
 
-	/* ABB LDO cannot be settle in 0 time */
+	 
 	if (!abb->settling_time) {
 		dev_err(dev, "Invalid property:'%s' set as 0!\n", pname);
 		return -EINVAL;
@@ -434,7 +315,7 @@ static int ti_abb_init_timings(struct device *dev, struct ti_abb *abb)
 		dev_err(dev, "Unable to get property '%s'(%d)\n", pname, ret);
 		return ret;
 	}
-	/* ABB LDO cannot be settle in 0 clock cycles */
+	 
 	if (!clock_cycles) {
 		dev_err(dev, "Invalid property:'%s' set as 0!\n", pname);
 		return -EINVAL;
@@ -447,36 +328,15 @@ static int ti_abb_init_timings(struct device *dev, struct ti_abb *abb)
 		return ret;
 	}
 
-	/*
-	 * SR2_WTCNT_VALUE is the settling time for the ABB ldo after a
-	 * transition and must be programmed with the correct time at boot.
-	 * The value programmed into the register is the number of SYS_CLK
-	 * clock cycles that match a given wall time profiled for the ldo.
-	 * This value depends on:
-	 * settling time of ldo in micro-seconds (varies per OMAP family)
-	 * # of clock cycles per SYS_CLK period (varies per OMAP family)
-	 * the SYS_CLK frequency in MHz (varies per board)
-	 * The formula is:
-	 *
-	 *                      ldo settling time (in micro-seconds)
-	 * SR2_WTCNT_VALUE = ------------------------------------------
-	 *                   (# system clock cycles) * (sys_clk period)
-	 *
-	 * Put another way:
-	 *
-	 * SR2_WTCNT_VALUE = settling time / (# SYS_CLK cycles / SYS_CLK rate))
-	 *
-	 * To avoid dividing by zero multiply both "# clock cycles" and
-	 * "settling time" by 10 such that the final result is the one we want.
-	 */
+	 
 
-	/* Convert SYS_CLK rate to MHz & prevent divide by zero */
+	 
 	clk_rate = DIV_ROUND_CLOSEST(clk_get_rate(abb->clk), 1000000);
 
-	/* Calculate cycle rate */
+	 
 	cycle_rate = DIV_ROUND_CLOSEST(clock_cycles * 10, clk_rate);
 
-	/* Calculate SR2_WTCNT_VALUE */
+	 
 	sr2_wt_cnt_val = DIV_ROUND_CLOSEST(abb->settling_time * 10, cycle_rate);
 
 	dev_dbg(dev, "%s: Clk_rate=%ld, sr2_cnt=0x%08x\n", __func__,
@@ -487,14 +347,7 @@ static int ti_abb_init_timings(struct device *dev, struct ti_abb *abb)
 	return 0;
 }
 
-/**
- * ti_abb_init_table() - Initialize ABB table from device tree
- * @dev:	device
- * @abb:	pointer to the abb instance
- * @rinit_data:	regulator initdata
- *
- * Return: 0 on success or appropriate error value when fails
- */
+ 
 static int ti_abb_init_table(struct device *dev, struct ti_abb *abb,
 			     struct regulator_init_data *rinit_data)
 {
@@ -506,11 +359,7 @@ static int ti_abb_init_table(struct device *dev, struct ti_abb *abb,
 	int num_entries, min_uV = INT_MAX, max_uV = 0;
 	struct regulation_constraints *c = &rinit_data->constraints;
 
-	/*
-	 * Each abb_info is a set of n-tuple, where n is num_values, consisting
-	 * of voltage and a set of detection logic for ABB information for that
-	 * voltage to apply.
-	 */
+	 
 	num_entries = of_property_count_u32_elems(dev->of_node, pname);
 	if (num_entries < 0) {
 		dev_err(dev, "No '%s' property?\n", pname);
@@ -537,14 +386,14 @@ static int ti_abb_init_table(struct device *dev, struct ti_abb *abb,
 
 	abb->rdesc.n_voltages = num_entries;
 	abb->rdesc.volt_table = volt_table;
-	/* We do not know where the OPP voltage is at the moment */
+	 
 	abb->current_info_idx = -EINVAL;
 
 	for (i = 0; i < num_entries; i++, info++, volt_table++) {
 		u32 efuse_offset, rbb_mask, fbb_mask, vset_mask;
 		u32 efuse_val;
 
-		/* NOTE: num_values should equal to entries picked up here */
+		 
 		of_property_read_u32_index(dev->of_node, pname, i * num_values,
 					   volt_table);
 		of_property_read_u32_index(dev->of_node, pname,
@@ -563,14 +412,14 @@ static int ti_abb_init_table(struct device *dev, struct ti_abb *abb,
 			i, *volt_table, info->opp_sel, efuse_offset, rbb_mask,
 			fbb_mask, vset_mask);
 
-		/* Find min/max for voltage set */
+		 
 		if (min_uV > *volt_table)
 			min_uV = *volt_table;
 		if (max_uV < *volt_table)
 			max_uV = *volt_table;
 
 		if (!abb->efuse_base) {
-			/* Ignore invalid data, but warn to help cleanup */
+			 
 			if (efuse_offset || rbb_mask || fbb_mask || vset_mask)
 				dev_err(dev, "prop '%s': v=%d,bad efuse/mask\n",
 					pname, *volt_table);
@@ -579,7 +428,7 @@ static int ti_abb_init_table(struct device *dev, struct ti_abb *abb,
 
 		efuse_val = readl(abb->efuse_base + efuse_offset);
 
-		/* Use ABB recommendation from Efuse */
+		 
 		if (efuse_val & rbb_mask)
 			info->opp_sel = TI_ABB_SLOW_OPP;
 		else if (efuse_val & fbb_mask)
@@ -591,7 +440,7 @@ static int ti_abb_init_table(struct device *dev, struct ti_abb *abb,
 			"[%d]v=%d efusev=0x%x final ABB=%d\n",
 			i, *volt_table, efuse_val, info->opp_sel);
 
-		/* Use recommended Vset bits from Efuse */
+		 
 		if (!abb->ldo_base) {
 			if (vset_mask)
 				dev_err(dev, "prop'%s':v=%d vst=%x LDO base?\n",
@@ -605,7 +454,7 @@ check_abb:
 		case TI_ABB_NOMINAL_OPP:
 		case TI_ABB_FAST_OPP:
 		case TI_ABB_SLOW_OPP:
-			/* Valid values */
+			 
 			break;
 		default:
 			dev_err(dev, "%s:[%d]v=%d, ABB=%d is invalid! Abort!\n",
@@ -614,7 +463,7 @@ check_abb:
 		}
 	}
 
-	/* Setup the min/max voltage constraints from the supported list */
+	 
 	c->min_uV = min_uV;
 	c->max_uV = max_uV;
 
@@ -628,9 +477,9 @@ static const struct regulator_ops ti_abb_reg_ops = {
 	.get_voltage_sel = ti_abb_get_voltage_sel,
 };
 
-/* Default ABB block offsets, IF this changes in future, create new one */
+ 
 static const struct ti_abb_reg abb_regs_v1 = {
-	/* WARNING: registers are wrongly documented in TRM */
+	 
 	.setup_off		= 0x04,
 	.control_off		= 0x00,
 
@@ -675,16 +524,7 @@ static const struct of_device_id ti_abb_of_match[] = {
 
 MODULE_DEVICE_TABLE(of, ti_abb_of_match);
 
-/**
- * ti_abb_probe() - Initialize an ABB ldo instance
- * @pdev: ABB platform device
- *
- * Initializes an individual ABB LDO for required Body-Bias. ABB is used to
- * additional bias supply to SoC modules for power savings or mandatory stability
- * configuration at certain Operating Performance Points(OPPs).
- *
- * Return: 0 on success or appropriate error value when fails
- */
+ 
 static int ti_abb_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -701,7 +541,7 @@ static int ti_abb_probe(struct platform_device *pdev)
 
 	match = of_match_device(ti_abb_of_match, dev);
 	if (!match) {
-		/* We do not expect this to happen */
+		 
 		dev_err(dev, "%s: Unable to match device\n", __func__);
 		return -ENODEV;
 	}
@@ -715,7 +555,7 @@ static int ti_abb_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	abb->regs = match->data;
 
-	/* Map ABB resources */
+	 
 	if (abb->regs->setup_off || abb->regs->control_off) {
 		abb->base = devm_platform_ioremap_resource_byname(pdev, "base-address");
 		if (IS_ERR(abb->base))
@@ -738,7 +578,7 @@ static int ti_abb_probe(struct platform_device *pdev)
 	if (IS_ERR(abb->int_base))
 		return PTR_ERR(abb->int_base);
 
-	/* Map Optional resources */
+	 
 	pname = "efuse-address";
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, pname);
 	if (!res) {
@@ -747,10 +587,7 @@ static int ti_abb_probe(struct platform_device *pdev)
 		goto skip_opt;
 	}
 
-	/*
-	 * We may have shared efuse register offsets which are read-only
-	 * between domains
-	 */
+	 
 	abb->efuse_base = devm_ioremap(dev, res->start,
 					       resource_size(res));
 	if (!abb->efuse_base) {
@@ -769,7 +606,7 @@ static int ti_abb_probe(struct platform_device *pdev)
 	if (IS_ERR(abb->ldo_base))
 		return PTR_ERR(abb->ldo_base);
 
-	/* IF ldo_base is set, the following are mandatory */
+	 
 	pname = "ti,ldovbb-override-mask";
 	ret =
 	    of_property_read_u32(pdev->dev.of_node, pname,
@@ -818,12 +655,12 @@ skip_opt:
 		return -ENOMEM;
 	}
 
-	/* init ABB opp_sel table */
+	 
 	ret = ti_abb_init_table(dev, abb, initdata);
 	if (ret)
 		return ret;
 
-	/* init ABB timing */
+	 
 	ret = ti_abb_init_timings(dev, abb);
 	if (ret)
 		return ret;
@@ -853,7 +690,7 @@ skip_opt:
 	}
 	platform_set_drvdata(pdev, rdev);
 
-	/* Enable the ldo if not already done by bootloader */
+	 
 	ti_abb_rmw(abb->regs->sr2_en_mask, 1, abb->setup_reg);
 
 	return 0;

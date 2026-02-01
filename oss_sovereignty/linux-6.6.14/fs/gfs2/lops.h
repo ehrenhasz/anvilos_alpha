@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2008 Red Hat, Inc.  All rights reserved.
- */
+ 
+ 
 
 #ifndef __LOPS_DOT_H__
 #define __LOPS_DOT_H__
@@ -85,5 +82,5 @@ static inline void lops_after_scan(struct gfs2_jdesc *jd, int error,
 			gfs2_log_ops[x]->lo_after_scan(jd, error, pass);
 }
 
-#endif /* __LOPS_DOT_H__ */
+#endif  
 

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+ 
+ 
 
 #ifndef __MDP_KMS_H__
 #define __MDP_KMS_H__
@@ -28,11 +25,11 @@ struct mdp_kms {
 
 	const struct mdp_kms_funcs *funcs;
 
-	/* irq handling: */
+	 
 	bool in_irq;
-	struct list_head irq_list;    /* list of mdp4_irq */
-	uint32_t vblank_mask;         /* irq bits set for userspace vblank */
-	uint32_t cur_irq_mask;        /* current irq mask */
+	struct list_head irq_list;     
+	uint32_t vblank_mask;          
+	uint32_t cur_irq_mask;         
 };
 #define to_mdp_kms(x) container_of(x, struct mdp_kms, base)
 
@@ -49,16 +46,9 @@ static inline void mdp_kms_destroy(struct mdp_kms *mdp_kms)
 	msm_kms_destroy(&mdp_kms->base);
 }
 
-/*
- * irq helpers:
- */
+ 
 
-/* For transiently registering for different MDP irqs that various parts
- * of the KMS code need during setup/configuration.  These are not
- * necessarily the same as what drm_vblank_get/put() are requesting, and
- * the hysteresis in drm_vblank_put() is not necessarily desirable for
- * internal housekeeping related irq usage.
- */
+ 
 struct mdp_irq {
 	struct list_head node;
 	uint32_t irqmask;
@@ -73,9 +63,7 @@ void mdp_irq_register(struct mdp_kms *mdp_kms, struct mdp_irq *irq);
 void mdp_irq_unregister(struct mdp_kms *mdp_kms, struct mdp_irq *irq);
 void mdp_irq_update(struct mdp_kms *mdp_kms);
 
-/*
- * pixel format helpers:
- */
+ 
 
 struct mdp_format {
 	struct msm_format base;
@@ -94,13 +82,13 @@ struct mdp_format {
 uint32_t mdp_get_formats(uint32_t *formats, uint32_t max_formats, bool rgb_only);
 const struct msm_format *mdp_get_format(struct msm_kms *kms, uint32_t format, uint64_t modifier);
 
-/* MDP capabilities */
-#define MDP_CAP_SMP		BIT(0)	/* Shared Memory Pool                 */
-#define MDP_CAP_DSC		BIT(1)	/* VESA Display Stream Compression    */
-#define MDP_CAP_CDM		BIT(2)	/* Chroma Down Module (HDMI 2.0 YUV)  */
-#define MDP_CAP_SRC_SPLIT	BIT(3)	/* Source Split of SSPPs */
+ 
+#define MDP_CAP_SMP		BIT(0)	 
+#define MDP_CAP_DSC		BIT(1)	 
+#define MDP_CAP_CDM		BIT(2)	 
+#define MDP_CAP_SRC_SPLIT	BIT(3)	 
 
-/* MDP pipe capabilities */
+ 
 #define MDP_PIPE_CAP_HFLIP			BIT(0)
 #define MDP_PIPE_CAP_VFLIP			BIT(1)
 #define MDP_PIPE_CAP_SCALE			BIT(2)
@@ -109,7 +97,7 @@ const struct msm_format *mdp_get_format(struct msm_kms *kms, uint32_t format, ui
 #define MDP_PIPE_CAP_SW_PIX_EXT			BIT(5)
 #define MDP_PIPE_CAP_CURSOR			BIT(6)
 
-/* MDP layer mixer caps */
+ 
 #define MDP_LM_CAP_DISPLAY			BIT(0)
 #define MDP_LM_CAP_WB				BIT(1)
 #define MDP_LM_CAP_PAIR				BIT(2)
@@ -139,4 +127,4 @@ struct csc_cfg {
 
 struct csc_cfg *mdp_get_default_csc_cfg(enum csc_type);
 
-#endif /* __MDP_KMS_H__ */
+#endif  

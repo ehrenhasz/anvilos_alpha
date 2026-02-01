@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Atheros AR71XX/9XXX USB PHY driver
- *
- * Copyright (C) 2015-2018 Alban Bedel <albeu@free.fr>
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -13,9 +9,7 @@
 
 struct ath79_usb_phy {
 	struct reset_control *reset;
-	/* The suspend override logic is inverted, hence the no prefix
-	 * to make the code a bit easier to understand.
-	 */
+	 
 	struct reset_control *no_suspend_override;
 };
 

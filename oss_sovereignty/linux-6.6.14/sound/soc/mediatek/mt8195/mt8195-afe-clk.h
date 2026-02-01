@@ -1,19 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mt8195-afe-clk.h  --  Mediatek 8195 afe clock ctrl definition
- *
- * Copyright (c) 2021 MediaTek Inc.
- * Author: Bicycle Tsai <bicycle.tsai@mediatek.com>
- *         Trevor Wu <trevor.wu@mediatek.com>
- */
+ 
+ 
 
 #ifndef _MT8195_AFE_CLK_H_
 #define _MT8195_AFE_CLK_H_
 
 enum {
-	/* xtal */
+	 
 	MT8195_CLK_XTAL_26M,
-	/* divider */
+	 
 	MT8195_CLK_TOP_APLL1,
 	MT8195_CLK_TOP_APLL2,
 	MT8195_CLK_TOP_APLL12_DIV0,
@@ -21,7 +15,7 @@ enum {
 	MT8195_CLK_TOP_APLL12_DIV2,
 	MT8195_CLK_TOP_APLL12_DIV3,
 	MT8195_CLK_TOP_APLL12_DIV9,
-	/* mux */
+	 
 	MT8195_CLK_TOP_A1SYS_HP_SEL,
 	MT8195_CLK_TOP_AUD_INTBUS_SEL,
 	MT8195_CLK_TOP_AUDIO_H_SEL,
@@ -31,7 +25,7 @@ enum {
 	MT8195_CLK_TOP_I2SO2_M_SEL,
 	MT8195_CLK_TOP_I2SI1_M_SEL,
 	MT8195_CLK_TOP_I2SI2_M_SEL,
-	/* clock gate */
+	 
 	MT8195_CLK_INFRA_AO_AUDIO_26M_B,
 	MT8195_CLK_SCP_ADSP_AUDIODSP,
 	MT8195_CLK_AUD_AFE,

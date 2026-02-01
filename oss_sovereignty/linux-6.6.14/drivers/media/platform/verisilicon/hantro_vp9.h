@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Hantro VP9 codec driver
- *
- * Copyright (C) 2021 Collabora Ltd.
- */
+ 
+ 
 
 struct hantro_g2_mv_probs {
 	u8 joint[3];
@@ -26,7 +22,7 @@ struct hantro_g2_probs {
 	u8 tx32[2][3];
 	u8 y_mode_tail[4][1];
 	u8 y_mode[4][8];
-	u8 partition[2][16][4]; /* [keyframe][][], [inter][][] */
+	u8 partition[2][16][4];  
 	u8 uv_mode_tail[10][1];
 	u8 interp_filter[4][2];
 	u8 comp_mode[5];

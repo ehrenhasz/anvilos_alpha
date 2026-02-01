@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -3230,7 +3228,7 @@ static struct gdsc usb30_gdsc = {
 	.pd = {
 		.name = "usb30",
 	},
-	/* TODO: Change to OFF_ON when USB drivers get proper suspend support */
+	 
 	.pwrsts = PWRSTS_RET_ON,
 };
 
@@ -3614,10 +3612,7 @@ static int gcc_msm8996_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/*
-	 * Set the HMSS_AHB_CLK_SLEEP_ENA bit to allow the hmss_ahb_clk to be
-	 * turned off by hardware during certain apps low power modes.
-	 */
+	 
 	regmap_update_bits(regmap, 0x52008, BIT(21), BIT(21));
 
 	return qcom_cc_really_probe(pdev, &gcc_msm8996_desc, regmap);

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include <uapi/drm/i915_drm.h>
 
@@ -40,11 +38,7 @@ __i915_gem_object_create_region(struct intel_memory_region *mem,
 	resource_size_t default_page_size;
 	int err;
 
-	/*
-	 * NB: Our use of resource_size_t for the size stems from using struct
-	 * resource for the mem->region. We might need to revisit this in the
-	 * future.
-	 */
+	 
 
 	GEM_BUG_ON(flags & ~I915_BO_ALLOC_FLAGS);
 
@@ -60,7 +54,7 @@ __i915_gem_object_create_region(struct intel_memory_region *mem,
 	if (page_size)
 		default_page_size = page_size;
 
-	/* We should be able to fit a page within an sg entry */
+	 
 	GEM_BUG_ON(overflows_type(default_page_size, u32));
 	GEM_BUG_ON(!is_power_of_2_u64(default_page_size));
 	GEM_BUG_ON(default_page_size < PAGE_SIZE);
@@ -80,14 +74,7 @@ __i915_gem_object_create_region(struct intel_memory_region *mem,
 	if (!obj)
 		return ERR_PTR(-ENOMEM);
 
-	/*
-	 * Anything smaller than the min_page_size can't be freely inserted into
-	 * the GTT, due to alignemnt restrictions. For such special objects,
-	 * make sure we force memcpy based suspend-resume. In the future we can
-	 * revisit this, either by allowing special mis-aligned objects in the
-	 * migration path, or by mapping all of LMEM upfront using cheap 1G
-	 * GTT entries.
-	 */
+	 
 	if (default_page_size < mem->min_page_size)
 		flags |= I915_BO_ALLOC_PM_EARLY;
 
@@ -137,20 +124,7 @@ i915_gem_object_create_region_at(struct intel_memory_region *mem,
 					       flags | I915_BO_ALLOC_CONTIGUOUS);
 }
 
-/**
- * i915_gem_process_region - Iterate over all objects of a region using ops
- * to process and optionally skip objects
- * @mr: The memory region
- * @apply: ops and private data
- *
- * This function can be used to iterate over the regions object list,
- * checking whether to skip objects, and, if not, lock the objects and
- * process them using the supplied ops. Note that this function temporarily
- * removes objects from the region list while iterating, so that if run
- * concurrently with itself may not iterate over all objects.
- *
- * Return: 0 if successful, negative error code on failure.
- */
+ 
 int i915_gem_process_region(struct intel_memory_region *mr,
 			    struct i915_gem_apply_to_region *apply)
 {
@@ -159,10 +133,7 @@ int i915_gem_process_region(struct intel_memory_region *mr,
 	struct list_head still_in_list;
 	int ret = 0;
 
-	/*
-	 * In the future, a non-NULL apply->ww could mean the caller is
-	 * already in a locking transaction and provides its own context.
-	 */
+	 
 	GEM_WARN_ON(apply->ww);
 
 	INIT_LIST_HEAD(&still_in_list);
@@ -179,11 +150,7 @@ int i915_gem_process_region(struct intel_memory_region *mr,
 		if (!kref_get_unless_zero(&obj->base.refcount))
 			continue;
 
-		/*
-		 * Note: Someone else might be migrating the object at this
-		 * point. The object's region is not stable until we lock
-		 * the object.
-		 */
+		 
 		mutex_unlock(&mr->objects.lock);
 		apply->ww = &ww;
 		for_i915_gem_ww(&ww, ret, apply->interruptible) {
@@ -193,7 +160,7 @@ int i915_gem_process_region(struct intel_memory_region *mr,
 
 			if (obj->mm.region == mr)
 				ret = ops->process_obj(apply, obj);
-			/* Implicit object unlock */
+			 
 		}
 
 		i915_gem_object_put(obj);

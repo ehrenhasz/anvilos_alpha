@@ -1,27 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Check if we can migrate child sockets.
- *
- *   1. call listen() for 4 server sockets.
- *   2. call connect() for 25 client sockets.
- *   3. call listen() for 1 server socket. (migration target)
- *   4. update a map to migrate all child sockets
- *        to the last server socket (migrate_map[cookie] = 4)
- *   5. call shutdown() for first 4 server sockets
- *        and migrate the requests in the accept queue
- *        to the last server socket.
- *   6. call listen() for the second server socket.
- *   7. call shutdown() for the last server
- *        and migrate the requests in the accept queue
- *        to the second server socket.
- *   8. call listen() for the last server.
- *   9. call shutdown() for the second server
- *        and migrate the requests in the accept queue
- *        to the last server socket.
- *  10. call accept() for the last server socket.
- *
- * Author: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
- */
+
+ 
 
 #include <bpf/bpf.h>
 #include <bpf/libbpf.h>
@@ -40,7 +18,7 @@
 #define NR_CLIENTS (NR_SERVERS * 5)
 #define MIGRATED_TO (NR_SERVERS - 1)
 
-/* fastopenq->max_qlen and sk->sk_max_ack_backlog */
+ 
 #define QLEN (NR_CLIENTS * 5)
 
 #define MSG "Hello World\0"
@@ -168,9 +146,7 @@ static int setup_fastopen(char *buf, int size, int *saved_len, bool restore)
 		if (!ASSERT_OK(err, "lseek"))
 			goto close;
 
-		/* (TFO_CLIENT_ENABLE | TFO_SERVER_ENABLE |
-		 *  TFO_CLIENT_NO_COOKIE | TFO_SERVER_COOKIE_NOT_REQD)
-		 */
+		 
 		len = write(fd, "519", 3);
 		if (!ASSERT_EQ(len, 3, "write - setup"))
 			err = -1;
@@ -264,7 +240,7 @@ static int start_servers(struct migrate_reuseport_test_case *test_case,
 				return -1;
 		}
 
-		/* All requests will be tied to the first four listeners */
+		 
 		if (i != MIGRATED_TO) {
 			err = listen(test_case->servers[i], qlen);
 			if (!ASSERT_OK(err, "listen"))
@@ -286,9 +262,7 @@ static int start_clients(struct migrate_reuseport_test_case *test_case)
 		if (!ASSERT_NEQ(test_case->clients[i], -1, "socket"))
 			return -1;
 
-		/* The attached XDP program drops only the final ACK, so
-		 * clients will transition to TCP_ESTABLISHED immediately.
-		 */
+		 
 		err = settimeo(test_case->clients[i], 100);
 		if (!ASSERT_OK(err, "settimeo"))
 			return -1;
@@ -352,51 +326,33 @@ static int migrate_dance(struct migrate_reuseport_test_case *test_case)
 {
 	int i, err;
 
-	/* Migrate TCP_ESTABLISHED and TCP_SYN_RECV requests
-	 * to the last listener based on eBPF.
-	 */
+	 
 	for (i = 0; i < MIGRATED_TO; i++) {
 		err = shutdown(test_case->servers[i], SHUT_RDWR);
 		if (!ASSERT_OK(err, "shutdown"))
 			return -1;
 	}
 
-	/* No dance for TCP_NEW_SYN_RECV to migrate based on eBPF */
+	 
 	if (test_case->state == BPF_TCP_NEW_SYN_RECV)
 		return 0;
 
-	/* Note that we use the second listener instead of the
-	 * first one here.
-	 *
-	 * The fist listener is bind()ed with port 0 and,
-	 * SOCK_BINDPORT_LOCK is not set to sk_userlocks, so
-	 * calling listen() again will bind() the first listener
-	 * on a new ephemeral port and detach it from the existing
-	 * reuseport group.  (See: __inet_bind(), tcp_set_state())
-	 *
-	 * OTOH, the second one is bind()ed with a specific port,
-	 * and SOCK_BINDPORT_LOCK is set. Thus, re-listen() will
-	 * resurrect the listener on the existing reuseport group.
-	 */
+	 
 	err = listen(test_case->servers[1], QLEN);
 	if (!ASSERT_OK(err, "listen"))
 		return -1;
 
-	/* Migrate from the last listener to the second one.
-	 *
-	 * All listeners were detached out of the reuseport_map,
-	 * so migration will be done by kernel random pick from here.
-	 */
+	 
 	err = shutdown(test_case->servers[MIGRATED_TO], SHUT_RDWR);
 	if (!ASSERT_OK(err, "shutdown"))
 		return -1;
 
-	/* Back to the existing reuseport group */
+	 
 	err = listen(test_case->servers[MIGRATED_TO], QLEN);
 	if (!ASSERT_OK(err, "listen"))
 		return -1;
 
-	/* Migrate back to the last one from the second one */
+	 
 	err = shutdown(test_case->servers[1], SHUT_RDWR);
 	if (!ASSERT_OK(err, "shutdown"))
 		return -1;
@@ -480,15 +436,13 @@ static void run_test(struct migrate_reuseport_test_case *test_case,
 		goto close_servers;
 
 	if (test_case->drop_ack) {
-		/* Drop the final ACK of the 3-way handshake and stick the
-		 * in-flight requests on TCP_SYN_RECV or TCP_NEW_SYN_RECV.
-		 */
+		 
 		err = drop_ack(test_case, skel);
 		if (!ASSERT_OK(err, "drop_ack"))
 			goto close_servers;
 	}
 
-	/* Tie requests to the first four listeners */
+	 
 	err = start_clients(test_case);
 	if (!ASSERT_OK(err, "start_clients"))
 		goto close_clients;
@@ -501,22 +455,18 @@ static void run_test(struct migrate_reuseport_test_case *test_case,
 	if (!ASSERT_OK(err, "fill_maps"))
 		goto close_clients;
 
-	/* Migrate the requests in the accept queue only.
-	 * TCP_NEW_SYN_RECV requests are not migrated at this point.
-	 */
+	 
 	err = migrate_dance(test_case);
 	if (!ASSERT_OK(err, "migrate_dance"))
 		goto close_clients;
 
 	if (test_case->expire_synack_timer) {
-		/* Wait for SYN+ACK timers to expire so that
-		 * reqsk_timer_handler() migrates TCP_NEW_SYN_RECV requests.
-		 */
+		 
 		sleep(1);
 	}
 
 	if (test_case->link) {
-		/* Resume 3WHS and migrate TCP_NEW_SYN_RECV requests */
+		 
 		err = pass_ack(test_case);
 		if (!ASSERT_OK(err, "pass_ack"))
 			goto close_clients;

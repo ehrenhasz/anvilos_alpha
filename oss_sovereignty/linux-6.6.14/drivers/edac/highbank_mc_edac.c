@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2011-2012 Calxeda, Inc.
- */
+
+ 
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/ctype.h>
@@ -14,7 +12,7 @@
 
 #include "edac_module.h"
 
-/* DDR Ctrlr Error Registers */
+ 
 
 #define HB_DDR_ECC_ERR_BASE		0x128
 #define MW_DDR_ECC_ERR_BASE		0x1b4
@@ -33,7 +31,7 @@
 #define HB_DDR_ECC_OPT_FWC		0x100
 #define HB_DDR_ECC_OPT_XOR_SHIFT	16
 
-/* DDR Ctrlr Interrupt Registers */
+ 
 
 #define HB_DDR_ECC_INT_BASE		0x180
 #define MW_DDR_ECC_INT_BASE		0x218
@@ -57,7 +55,7 @@ static irqreturn_t highbank_mc_err_handler(int irq, void *dev_id)
 	struct hb_mc_drvdata *drvdata = mci->pvt_info;
 	u32 status, err_addr;
 
-	/* Read the interrupt status register */
+	 
 	status = readl(drvdata->mc_int_base + HB_DDR_ECC_INT_STATUS);
 
 	if (status & HB_DDR_ECC_INT_STAT_UE) {
@@ -79,7 +77,7 @@ static irqreturn_t highbank_mc_err_handler(int irq, void *dev_id)
 				     mci->ctl_name, "");
 	}
 
-	/* clear the error, clears the interrupt */
+	 
 	writel(status, drvdata->mc_int_base + HB_DDR_ECC_INT_ACK);
 	return IRQ_HANDLED;
 }
@@ -220,7 +218,7 @@ static int highbank_mc_probe(struct platform_device *pdev)
 	mci->dev_name = dev_name(&pdev->dev);
 	mci->scrub_mode = SCRUB_SW_SRC;
 
-	/* Only a single 4GB DIMM is supported */
+	 
 	dimm = *mci->dimms;
 	dimm->nr_pages = (~0UL >> PAGE_SHIFT) + 1;
 	dimm->grain = 8;

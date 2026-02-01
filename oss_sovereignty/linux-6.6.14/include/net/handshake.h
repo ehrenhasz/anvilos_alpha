@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Generic netlink HANDSHAKE service.
- *
- * Author: Chuck Lever <chuck.lever@oracle.com>
- *
- * Copyright (c) 2023, Oracle and/or its affiliates.
- */
+ 
+ 
 
 #ifndef _NET_HANDSHAKE_H
 #define _NET_HANDSHAKE_H
@@ -46,4 +40,4 @@ u8 tls_get_record_type(const struct sock *sk, const struct cmsghdr *msg);
 void tls_alert_recv(const struct sock *sk, const struct msghdr *msg,
 		    u8 *level, u8 *description);
 
-#endif /* _NET_HANDSHAKE_H */
+#endif  

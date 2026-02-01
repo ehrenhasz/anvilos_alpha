@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Omnivision OV2659 CMOS Image Sensor driver
- *
- * Copyright (C) 2015 Texas Instruments, Inc.
- *
- * Benoit Parrot <bparrot@ti.com>
- * Lad, Prabhakar <prabhakar.csengg@gmail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -25,9 +18,7 @@
 
 #define DRIVER_NAME "ov2659"
 
-/*
- * OV2659 register definitions
- */
+ 
 #define REG_SOFTWARE_STANDBY		0x0100
 #define REG_SOFTWARE_RESET		0x0103
 #define REG_IO_CTRL00			0x3000
@@ -160,7 +151,7 @@
 #define TEST_PATTERN_ENABLE		BIT(7)
 #define VERTICAL_COLOR_BAR_MASK		0x53
 
-#define REG_NULL			0x0000	/* Array end token */
+#define REG_NULL			0x0000	 
 
 #define OV265X_ID(_msb, _lsb)		((_msb) << 8 | (_lsb))
 #define OV2659_ID			0x2656
@@ -185,7 +176,7 @@ struct ov2659_pll_ctrl {
 
 struct ov2659_pixfmt {
 	u32 code;
-	/* Output format Register Value (REG_FORMAT_CTRL00) */
+	 
 	struct sensor_register *format_ctrl_regs;
 };
 
@@ -209,9 +200,9 @@ struct ov2659 {
 	struct sensor_register *format_ctrl_regs;
 	struct ov2659_pll_ctrl pll;
 	int streaming;
-	/* used to control the sensor PWDN pin */
+	 
 	struct gpio_desc *pwdn_gpio;
-	/* used to control the sensor RESETB pin */
+	 
 	struct gpio_desc *resetb_gpio;
 };
 
@@ -376,7 +367,7 @@ static const struct sensor_register ov2659_init_regs[] = {
 	{ REG_NULL, 0x00 },
 };
 
-/* 1280X720 720p */
+ 
 static struct sensor_register ov2659_720p[] = {
 	{ REG_TIMING_HS_H, 0x00 },
 	{ REG_TIMING_HS_L, 0xa0 },
@@ -411,7 +402,7 @@ static struct sensor_register ov2659_720p[] = {
 	{ REG_NULL, 0x00 },
 };
 
-/* 1600X1200 UXGA */
+ 
 static struct sensor_register ov2659_uxga[] = {
 	{ REG_TIMING_HS_H, 0x00 },
 	{ REG_TIMING_HS_L, 0x00 },
@@ -459,7 +450,7 @@ static struct sensor_register ov2659_uxga[] = {
 	{ REG_NULL, 0x00 },
 };
 
-/* 1280X1024 SXGA */
+ 
 static struct sensor_register ov2659_sxga[] = {
 	{ REG_TIMING_HS_H, 0x00 },
 	{ REG_TIMING_HS_L, 0x00 },
@@ -507,7 +498,7 @@ static struct sensor_register ov2659_sxga[] = {
 	{ REG_NULL, 0x00 },
 };
 
-/* 1024X768 SXGA */
+ 
 static struct sensor_register ov2659_xga[] = {
 	{ REG_TIMING_HS_H, 0x00 },
 	{ REG_TIMING_HS_L, 0x00 },
@@ -555,7 +546,7 @@ static struct sensor_register ov2659_xga[] = {
 	{ REG_NULL, 0x00 },
 };
 
-/* 800X600 SVGA */
+ 
 static struct sensor_register ov2659_svga[] = {
 	{ REG_TIMING_HS_H, 0x00 },
 	{ REG_TIMING_HS_L, 0x00 },
@@ -603,7 +594,7 @@ static struct sensor_register ov2659_svga[] = {
 	{ REG_NULL, 0x00 },
 };
 
-/* 640X480 VGA */
+ 
 static struct sensor_register ov2659_vga[] = {
 	{ REG_TIMING_HS_H, 0x00 },
 	{ REG_TIMING_HS_L, 0x00 },
@@ -651,7 +642,7 @@ static struct sensor_register ov2659_vga[] = {
 	{ REG_NULL, 0x00 },
 };
 
-/* 320X240 QVGA */
+ 
 static  struct sensor_register ov2659_qvga[] = {
 	{ REG_TIMING_HS_H, 0x00 },
 	{ REG_TIMING_HS_L, 0x00 },
@@ -736,37 +727,37 @@ static const struct pll_ctrl_reg ctrl1[] = {
 };
 
 static const struct ov2659_framesize ov2659_framesizes[] = {
-	{ /* QVGA */
+	{  
 		.width		= 320,
 		.height		= 240,
 		.regs		= ov2659_qvga,
 		.max_exp_lines	= 248,
-	}, { /* VGA */
+	}, {  
 		.width		= 640,
 		.height		= 480,
 		.regs		= ov2659_vga,
 		.max_exp_lines	= 498,
-	}, { /* SVGA */
+	}, {  
 		.width		= 800,
 		.height		= 600,
 		.regs		= ov2659_svga,
 		.max_exp_lines	= 498,
-	}, { /* XGA */
+	}, {  
 		.width		= 1024,
 		.height		= 768,
 		.regs		= ov2659_xga,
 		.max_exp_lines	= 498,
-	}, { /* 720P */
+	}, {  
 		.width		= 1280,
 		.height		= 720,
 		.regs		= ov2659_720p,
 		.max_exp_lines	= 498,
-	}, { /* SXGA */
+	}, {  
 		.width		= 1280,
 		.height		= 1024,
 		.regs		= ov2659_sxga,
 		.max_exp_lines	= 1048,
-	}, { /* UXGA */
+	}, {  
 		.width		= 1600,
 		.height		= 1200,
 		.regs		= ov2659_uxga,
@@ -774,25 +765,25 @@ static const struct ov2659_framesize ov2659_framesizes[] = {
 	},
 };
 
-/* YUV422 YUYV*/
+ 
 static struct sensor_register ov2659_format_yuyv[] = {
 	{ REG_FORMAT_CTRL00, 0x30 },
 	{ REG_NULL, 0x0 },
 };
 
-/* YUV422 UYVY  */
+ 
 static struct sensor_register ov2659_format_uyvy[] = {
 	{ REG_FORMAT_CTRL00, 0x32 },
 	{ REG_NULL, 0x0 },
 };
 
-/* Raw Bayer BGGR */
+ 
 static struct sensor_register ov2659_format_bggr[] = {
 	{ REG_FORMAT_CTRL00, 0x00 },
 	{ REG_NULL, 0x0 },
 };
 
-/* RGB565 */
+ 
 static struct sensor_register ov2659_format_rgb565[] = {
 	{ REG_FORMAT_CTRL00, 0x60 },
 	{ REG_NULL, 0x0 },
@@ -819,7 +810,7 @@ static inline struct ov2659 *to_ov2659(struct v4l2_subdev *sd)
 	return container_of(sd, struct ov2659, sd);
 }
 
-/* sensor register write */
+ 
 static int ov2659_write(struct i2c_client *client, u16 reg, u8 val)
 {
 	struct i2c_msg msg;
@@ -845,7 +836,7 @@ static int ov2659_write(struct i2c_client *client, u16 reg, u8 val)
 	return ret;
 }
 
-/* sensor register read */
+ 
 static int ov2659_read(struct i2c_client *client, u16 reg, u8 *val)
 {
 	struct i2c_msg msg[2];
@@ -975,9 +966,7 @@ static int ov2659_init(struct v4l2_subdev *sd, u32 val)
 	return ov2659_write_array(client, ov2659_init_regs);
 }
 
-/*
- * V4L2 subdev video and pad level operations
- */
+ 
 
 static int ov2659_enum_mbus_code(struct v4l2_subdev *sd,
 				 struct v4l2_subdev_state *sd_state,
@@ -1180,7 +1169,7 @@ static int ov2659_s_stream(struct v4l2_subdev *sd, int on)
 		goto unlock;
 
 	if (!on) {
-		/* Stop Streaming Sequence */
+		 
 		ov2659_set_streaming(ov2659, 0);
 		ov2659->streaming = on;
 		pm_runtime_put(&client->dev);
@@ -1237,7 +1226,7 @@ static int ov2659_s_ctrl(struct v4l2_ctrl *ctrl)
 			container_of(ctrl->handler, struct ov2659, ctrls);
 	struct i2c_client *client = ov2659->client;
 
-	/* V4L2 controls values will be applied only when power is already up */
+	 
 	if (!pm_runtime_get_if_in_use(&client->dev))
 		return 0;
 
@@ -1302,9 +1291,7 @@ static int ov2659_power_on(struct device *dev)
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 subdev internal operations
- */
+ 
 
 #ifdef CONFIG_VIDEO_V4L2_SUBDEV_API
 static int ov2659_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
@@ -1366,7 +1353,7 @@ static int ov2659_detect(struct v4l2_subdev *sd)
 	}
 	usleep_range(1000, 2000);
 
-	/* Check sensor revision */
+	 
 	ret = ov2659_read(client, REG_SC_CHIP_ID_H, &pid);
 	if (!ret)
 		ret = ov2659_read(client, REG_SC_CHIP_ID_L, &ver);
@@ -1456,13 +1443,13 @@ static int ov2659_probe(struct i2c_client *client)
 	    ov2659->xvclk_frequency > 27000000)
 		return -EINVAL;
 
-	/* Optional gpio don't fail if not present */
+	 
 	ov2659->pwdn_gpio = devm_gpiod_get_optional(&client->dev, "powerdown",
 						    GPIOD_OUT_LOW);
 	if (IS_ERR(ov2659->pwdn_gpio))
 		return PTR_ERR(ov2659->pwdn_gpio);
 
-	/* Optional gpio don't fail if not present */
+	 
 	ov2659->resetb_gpio = devm_gpiod_get_optional(&client->dev, "reset",
 						      GPIOD_OUT_HIGH);
 	if (IS_ERR(ov2659->resetb_gpio))
@@ -1521,7 +1508,7 @@ static int ov2659_probe(struct i2c_client *client)
 	if (ret < 0)
 		goto error;
 
-	/* Calculate the PLL register value needed */
+	 
 	ov2659_pll_calc_params(ov2659);
 
 	ret = v4l2_async_register_subdev(&ov2659->sd);
@@ -1566,14 +1553,14 @@ static const struct dev_pm_ops ov2659_pm_ops = {
 
 static const struct i2c_device_id ov2659_id[] = {
 	{ "ov2659", 0 },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(i2c, ov2659_id);
 
 #if IS_ENABLED(CONFIG_OF)
 static const struct of_device_id ov2659_of_match[] = {
 	{ .compatible = "ovti,ov2659", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, ov2659_of_match);
 #endif

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
-/*
- * Copyright(c) 2015, 2016 Intel Corporation.
- */
+
+ 
 
 #include <linux/firmware.h>
 
@@ -19,7 +17,7 @@ static int validate_scratch_checksum(struct hfi1_devdata *dd)
 	temp_scratch = read_csr(dd, ASIC_CFG_SCRATCH);
 	version = (temp_scratch & BITMAP_VERSION_SMASK) >> BITMAP_VERSION_SHIFT;
 
-	/* Prevent power on default of all zeroes from passing checksum */
+	 
 	if (!version) {
 		dd_dev_err(dd, "%s: Config bitmap uninitialized\n", __func__);
 		dd_dev_err(dd,
@@ -28,11 +26,7 @@ static int validate_scratch_checksum(struct hfi1_devdata *dd)
 		return 0;
 	}
 
-	/*
-	 * ASIC scratch 0 only contains the checksum and bitmap version as
-	 * fields of interest, both of which are handled separately from the
-	 * loop below, so skip it
-	 */
+	 
 	checksum += version;
 	for (i = 1; i < ASIC_NUM_SCRATCH; i++) {
 		temp_scratch = read_csr(dd, ASIC_CFG_SCRATCH + (8 * i));
@@ -121,7 +115,7 @@ void get_platform_config(struct hfi1_devdata *dd)
 						 (void **)&temp_platform_config,
 						 &esize);
 		if (!ret) {
-			/* success */
+			 
 			dd->platform_config.data = temp_platform_config;
 			dd->platform_config.size = esize;
 			return;
@@ -141,11 +135,7 @@ void get_platform_config(struct hfi1_devdata *dd)
 		return;
 	}
 
-	/*
-	 * Allocate separate memory block to store data and free firmware
-	 * structure. This allows free_platform_config to treat EPROM and
-	 * fallback configs in the same manner.
-	 */
+	 
 	dd->platform_config.data = kmemdup(platform_config_file->data,
 					   platform_config_file->size,
 					   GFP_KERNEL);
@@ -155,7 +145,7 @@ void get_platform_config(struct hfi1_devdata *dd)
 
 void free_platform_config(struct hfi1_devdata *dd)
 {
-	/* Release memory allocated for eprom or fallback file read. */
+	 
 	kfree(dd->platform_config.data);
 	dd->platform_config.data = NULL;
 }
@@ -182,7 +172,7 @@ int set_qsfp_tx(struct hfi1_pportdata *ppd, int on)
 
 	ret = qsfp_write(ppd, ppd->dd->hfi1_id, QSFP_TX_CTRL_BYTE_OFFS,
 			 &tx_ctrl_byte, 1);
-	/* we expected 1, so consider 0 an error */
+	 
 	if (ret == 0)
 		ret = -EIO;
 	else if (ret == 1)
@@ -274,7 +264,7 @@ static int set_qsfp_high_power(struct hfi1_pportdata *ppd)
 				return -EIO;
 		}
 
-		/* SFF 8679 rev 1.7 LPMode Deassert time */
+		 
 		msleep(300);
 	}
 	return 0;
@@ -292,11 +282,11 @@ static void apply_rx_cdr(struct hfi1_pportdata *ppd,
 	      (cache[QSFP_CDR_INFO_OFFS] & 0x40)))
 		return;
 
-	/* RX CDR present, bypass supported */
+	 
 	cable_power_class = get_qsfp_power_class(cache[QSFP_MOD_PWR_OFFS]);
 
 	if (cable_power_class <= QSFP_POWER_CLASS_3) {
-		/* Power class <= 3, ignore config & turn RX CDR on */
+		 
 		*cdr_ctrl_byte |= 0xF;
 		return;
 	}
@@ -318,7 +308,7 @@ static void apply_rx_cdr(struct hfi1_pportdata *ppd,
 		rx_preset_index, RX_PRESET_TABLE_QSFP_RX_CDR,
 		&rx_preset, 4);
 
-	/* Expand cdr setting to all 4 lanes */
+	 
 	rx_preset = (rx_preset | (rx_preset << 1) |
 			(rx_preset << 2) | (rx_preset << 3));
 
@@ -326,7 +316,7 @@ static void apply_rx_cdr(struct hfi1_pportdata *ppd,
 		*cdr_ctrl_byte |= rx_preset;
 	} else {
 		*cdr_ctrl_byte &= rx_preset;
-		/* Preserve current TX CDR status */
+		 
 		*cdr_ctrl_byte |= (cache[QSFP_CDR_CTRL_BYTE_OFFS] & 0xF0);
 	}
 }
@@ -343,11 +333,11 @@ static void apply_tx_cdr(struct hfi1_pportdata *ppd,
 	      (cache[QSFP_CDR_INFO_OFFS] & 0x80)))
 		return;
 
-	/* TX CDR present, bypass supported */
+	 
 	cable_power_class = get_qsfp_power_class(cache[QSFP_MOD_PWR_OFFS]);
 
 	if (cable_power_class <= QSFP_POWER_CLASS_3) {
-		/* Power class <= 3, ignore config & turn TX CDR on */
+		 
 		*cdr_ctrl_byte |= 0xF0;
 		return;
 	}
@@ -370,14 +360,14 @@ static void apply_tx_cdr(struct hfi1_pportdata *ppd,
 		tx_preset_index,
 		TX_PRESET_TABLE_QSFP_TX_CDR, &tx_preset, 4);
 
-	/* Expand cdr setting to all 4 lanes */
+	 
 	tx_preset = (tx_preset | (tx_preset << 1) |
 			(tx_preset << 2) | (tx_preset << 3));
 
 	if (tx_preset)
 		*cdr_ctrl_byte |= (tx_preset << 4);
 	else
-		/* Preserve current/determined RX CDR status */
+		 
 		*cdr_ctrl_byte &= ((tx_preset << 4) | 0xF);
 }
 
@@ -403,7 +393,7 @@ static void apply_tx_eq_auto(struct hfi1_pportdata *ppd)
 
 	if (!(cache[QSFP_EQ_INFO_OFFS] & 0x8))
 		return;
-	/* Disable adaptive TX EQ if present */
+	 
 	tx_eq = cache[(128 * 3) + 241];
 	tx_eq &= 0xF0;
 	qsfp_write(ppd, ppd->dd->hfi1_id, (256 * 3) + 241, &tx_eq, 1);
@@ -502,7 +492,7 @@ static void apply_eq_settings(struct hfi1_pportdata *ppd,
 {
 	u8 *cache = ppd->qsfp_info.cache;
 
-	/* no point going on w/o a page 3 */
+	 
 	if (cache[2] & 4) {
 		dd_dev_info(ppd->dd,
 			    "%s: Upper page 03 not present\n",
@@ -524,7 +514,7 @@ static void apply_rx_amplitude_settings(
 	u32 rx_preset;
 	u8 rx_amp = 0, i = 0, preferred = 0, *cache = ppd->qsfp_info.cache;
 
-	/* no point going on w/o a page 3 */
+	 
 	if (cache[2] & 4) {
 		dd_dev_info(ppd->dd,
 			    "%s: Upper page 03 not present\n",
@@ -569,10 +559,7 @@ static void apply_rx_amplitude_settings(
 		}
 	}
 
-	/*
-	 * Verify that preferred RX amplitude is not just a
-	 * fall through of the default
-	 */
+	 
 	if (!preferred && !(cache[(128 * 3) + 225] & 0x1)) {
 		dd_dev_info(ppd->dd, "No supported RX AMP, not applying\n");
 		return;
@@ -605,36 +592,27 @@ static void apply_tx_lanes(struct hfi1_pportdata *ppd, u8 field_id,
 	}
 }
 
-/*
- * Return a special SerDes setting for low power AOC cables.  The power class
- * threshold and setting being used were all found by empirical testing.
- *
- * Summary of the logic:
- *
- * if (QSFP and QSFP_TYPE == AOC and QSFP_POWER_CLASS < 4)
- *     return 0xe
- * return 0; // leave at default
- */
+ 
 static u8 aoc_low_power_setting(struct hfi1_pportdata *ppd)
 {
 	u8 *cache = ppd->qsfp_info.cache;
 	int power_class;
 
-	/* QSFP only */
+	 
 	if (ppd->port_type != PORT_TYPE_QSFP)
-		return 0; /* leave at default */
+		return 0;  
 
-	/* active optical cables only */
+	 
 	switch ((cache[QSFP_MOD_TECH_OFFS] & 0xF0) >> 4) {
 	case 0x0 ... 0x9: fallthrough;
 	case 0xC: fallthrough;
 	case 0xE:
-		/* active AOC */
+		 
 		power_class = get_qsfp_power_class(cache[QSFP_MOD_PWR_OFFS]);
 		if (power_class < QSFP_POWER_CLASS_4)
 			return 0xe;
 	}
-	return 0; /* leave at default */
+	return 0;  
 }
 
 static void apply_tunings(
@@ -646,7 +624,7 @@ static void apply_tunings(
 	u8 precur = 0, attn = 0, postcur = 0, external_device_config = 0;
 	u8 *cache = ppd->qsfp_info.cache;
 
-	/* Pass tuning method to 8051 */
+	 
 	read_8051_config(ppd->dd, LINK_TUNING_PARAMETERS, GENERAL_CONFIG,
 			 &config_data);
 	config_data &= ~(0xff << TUNING_METHOD_SHIFT);
@@ -657,12 +635,12 @@ static void apply_tunings(
 		dd_dev_err(ppd->dd, "%s: Failed to set tuning method\n",
 			   __func__);
 
-	/* Set same channel loss for both TX and RX */
+	 
 	config_data = 0 | (total_atten << 16) | (total_atten << 24);
 	apply_tx_lanes(ppd, CHANNEL_LOSS_SETTINGS, config_data,
 		       "Setting channel loss");
 
-	/* Inform 8051 of cable capabilities */
+	 
 	if (ppd->qsfp_info.cache_valid) {
 		external_device_config =
 			((cache[QSFP_MOD_PWR_OFFS] & 0x4) << 3) |
@@ -671,7 +649,7 @@ static void apply_tunings(
 			(cache[QSFP_EQ_INFO_OFFS] & 0x4);
 		ret = read_8051_config(ppd->dd, DC_HOST_COMM_SETTINGS,
 				       GENERAL_CONFIG, &config_data);
-		/* Clear, then set the external device config field */
+		 
 		config_data &= ~(u32)0xFF;
 		config_data |= external_device_config;
 		ret = load_8051_config(ppd->dd, DC_HOST_COMM_SETTINGS,
@@ -689,7 +667,7 @@ static void apply_tunings(
 		return;
 	}
 
-	/* Following for limiting active channels only */
+	 
 	get_platform_config_field(
 		ppd->dd, PLATFORM_CONFIG_TX_PRESET_TABLE, tx_preset_index,
 		TX_PRESET_TABLE_PRECUR, &tx_preset, 4);
@@ -705,15 +683,7 @@ static void apply_tunings(
 		tx_preset_index, TX_PRESET_TABLE_POSTCUR, &tx_preset, 4);
 	postcur = tx_preset;
 
-	/*
-	 * NOTES:
-	 * o The aoc_low_power_setting is applied to all lanes even
-	 *   though only lane 0's value is examined by the firmware.
-	 * o A lingering low power setting after a cable swap does
-	 *   not occur.  On cable unplug the 8051 is reset and
-	 *   restarted on cable insert.  This resets all settings to
-	 *   their default, erasing any previous low power setting.
-	 */
+	 
 	config_data = precur | (attn << 8) | (postcur << 16) |
 			(aoc_low_power_setting(ppd) << 24);
 
@@ -721,7 +691,7 @@ static void apply_tunings(
 		       "Applying TX settings");
 }
 
-/* Must be holding the QSFP i2c resource */
+ 
 static int tune_active_qsfp(struct hfi1_pportdata *ppd, u32 *ptr_tx_preset,
 			    u32 *ptr_rx_preset, u32 *ptr_total_atten)
 {
@@ -743,11 +713,7 @@ static int tune_active_qsfp(struct hfi1_pportdata *ppd, u32 *ptr_tx_preset,
 	if (ret)
 		return ret;
 
-	/*
-	 * We'll change the QSFP memory contents from here on out, thus we set a
-	 * flag here to remind ourselves to reset the QSFP module. This prevents
-	 * reuse of stale settings established in our previous pass through.
-	 */
+	 
 	if (ppd->qsfp_info.reset_needed) {
 		ret = reset_qsfp(ppd);
 		if (ret)
@@ -836,7 +802,7 @@ static int tune_qsfp(struct hfi1_pportdata *ppd,
 			 (lse & OPA_LINK_SPEED_12_5G))
 			cable_atten = cache[QSFP_CU_ATTEN_7G_OFFS];
 
-		/* Fallback to configured attenuation if cable memory is bad */
+		 
 		if (cable_atten == 0 || cable_atten > 36) {
 			ret = get_platform_config_field(
 				ppd->dd,
@@ -877,12 +843,7 @@ static int tune_qsfp(struct hfi1_pportdata *ppd,
 	return ret;
 }
 
-/*
- * This function communicates its success or failure via ppd->driver_link_ready
- * Thus, it depends on its association with start_link(...) which checks
- * driver_link_ready before proceeding with the link negotiation and
- * initialization process.
- */
+ 
 void tune_serdes(struct hfi1_pportdata *ppd)
 {
 	int ret = 0;
@@ -895,13 +856,13 @@ void tune_serdes(struct hfi1_pportdata *ppd)
 	rx_preset_index = OPA_INVALID_INDEX;
 	tx_preset_index = OPA_INVALID_INDEX;
 
-	/* the link defaults to enabled */
+	 
 	ppd->link_enabled = 1;
-	/* the driver link ready state defaults to not ready */
+	 
 	ppd->driver_link_ready = 0;
 	ppd->offline_disabled_reason = HFI1_ODR_MASK(OPA_LINKDOWN_REASON_NONE);
 
-	/* Skip the tuning for testing (loopback != none) and simulations */
+	 
 	if (loopback != LOOPBACK_NONE ||
 	    ppd->dd->icode == ICODE_FUNCTIONAL_SIMULATOR) {
 		ppd->driver_link_ready = 1;
@@ -931,7 +892,7 @@ void tune_serdes(struct hfi1_pportdata *ppd)
 			    __func__);
 		goto bail;
 	case PORT_TYPE_FIXED:
-		/* platform_atten, remote_atten pre-zeroed to catch error */
+		 
 		get_platform_config_field(
 			ppd->dd, PLATFORM_CONFIG_PORT_TABLE, 0,
 			PORT_TABLE_LOCAL_ATTEN_25G, &platform_atten, 4);
@@ -946,10 +907,7 @@ void tune_serdes(struct hfi1_pportdata *ppd)
 		break;
 	case PORT_TYPE_VARIABLE:
 		if (qsfp_mod_present(ppd)) {
-			/*
-			 * platform_atten, remote_atten pre-zeroed to
-			 * catch error
-			 */
+			 
 			get_platform_config_field(
 				ppd->dd, PLATFORM_CONFIG_PORT_TABLE, 0,
 				PORT_TABLE_LOCAL_ATTEN_25G,
@@ -988,10 +946,7 @@ void tune_serdes(struct hfi1_pportdata *ppd)
 						&tuning_method,
 						&total_atten);
 
-				/*
-				 * We may have modified the QSFP memory, so
-				 * update the cache to reflect the changes
-				 */
+				 
 				refresh_qsfp_cache(ppd, &ppd->qsfp_info);
 				limiting_active =
 						ppd->qsfp_info.limiting_active;
@@ -999,7 +954,7 @@ void tune_serdes(struct hfi1_pportdata *ppd)
 				dd_dev_err(dd,
 					   "%s: Reading QSFP memory failed\n",
 					   __func__);
-				ret = -EINVAL; /* a fail indication */
+				ret = -EINVAL;  
 			}
 			release_chip_resource(ppd->dd, qsfp_resource(ppd->dd));
 			if (ret)

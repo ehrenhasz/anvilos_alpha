@@ -1,31 +1,7 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
+ 
+ 
 
-/*
- * Copyright (c) 2012,2021 by Delphix. All rights reserved.
- */
+ 
 
 #include <sys/spa.h>
 #include <sys/spa_impl.h>
@@ -39,98 +15,19 @@
 #include <sys/fm/util.h>
 #include <sys/sysevent.h>
 
-/*
- * This general routine is responsible for generating all the different ZFS
- * ereports.  The payload is dependent on the class, and which arguments are
- * supplied to the function:
- *
- * 	EREPORT			POOL	VDEV	IO
- * 	block			X	X	X
- * 	data			X		X
- * 	device			X	X
- * 	pool			X
- *
- * If we are in a loading state, all errors are chained together by the same
- * SPA-wide ENA (Error Numeric Association).
- *
- * For isolated I/O requests, we get the ENA from the zio_t. The propagation
- * gets very complicated due to RAID-Z, gang blocks, and vdev caching.  We want
- * to chain together all ereports associated with a logical piece of data.  For
- * read I/Os, there  are basically three 'types' of I/O, which form a roughly
- * layered diagram:
- *
- * 	+---------------+
- * 	| Aggregate I/O |	No associated logical data or device
- * 	+---------------+
- *              |
- *              V
- * 	+---------------+	Reads associated with a piece of logical data.
- * 	|   Read I/O    |	This includes reads on behalf of RAID-Z,
- * 	+---------------+       mirrors, gang blocks, retries, etc.
- *              |
- *              V
- * 	+---------------+	Reads associated with a particular device, but
- * 	| Physical I/O  |	no logical data.  Issued as part of vdev caching
- * 	+---------------+	and I/O aggregation.
- *
- * Note that 'physical I/O' here is not the same terminology as used in the rest
- * of ZIO.  Typically, 'physical I/O' simply means that there is no attached
- * blockpointer.  But I/O with no associated block pointer can still be related
- * to a logical piece of data (i.e. RAID-Z requests).
- *
- * Purely physical I/O always have unique ENAs.  They are not related to a
- * particular piece of logical data, and therefore cannot be chained together.
- * We still generate an ereport, but the DE doesn't correlate it with any
- * logical piece of data.  When such an I/O fails, the delegated I/O requests
- * will issue a retry, which will trigger the 'real' ereport with the correct
- * ENA.
- *
- * We keep track of the ENA for a ZIO chain through the 'io_logical' member.
- * When a new logical I/O is issued, we set this to point to itself.  Child I/Os
- * then inherit this pointer, so that when it is first set subsequent failures
- * will use the same ENA.  For vdev cache fill and queue aggregation I/O,
- * this pointer is set to NULL, and no ereport will be generated (since it
- * doesn't actually correspond to any particular device or piece of data,
- * and the caller will always retry without caching or queueing anyway).
- *
- * For checksum errors, we want to include more information about the actual
- * error which occurs.  Accordingly, we build an ereport when the error is
- * noticed, but instead of sending it in immediately, we hang it off of the
- * io_cksum_report field of the logical IO.  When the logical IO completes
- * (successfully or not), zfs_ereport_finish_checksum() is called with the
- * good and bad versions of the buffer (if available), and we annotate the
- * ereport with information about the differences.
- */
+ 
 
 #ifdef _KERNEL
-/*
- * Duplicate ereport Detection
- *
- * Some ereports are retained momentarily for detecting duplicates.  These
- * are kept in a recent_events_node_t in both a time-ordered list and an AVL
- * tree of recent unique ereports.
- *
- * The lifespan of these recent ereports is bounded (15 mins) and a cleaner
- * task is used to purge stale entries.
- */
+ 
 static list_t recent_events_list;
 static avl_tree_t recent_events_tree;
 static kmutex_t recent_events_lock;
 static taskqid_t recent_events_cleaner_tqid;
 
-/*
- * Each node is about 128 bytes so 2,000 would consume 1/4 MiB.
- *
- * This setting can be changed dynamically and setting it to zero
- * disables duplicate detection.
- */
+ 
 static unsigned int zfs_zevent_retain_max = 2000;
 
-/*
- * The lifespan for a recent ereport entry. The default of 15 minutes is
- * intended to outlive the zfs diagnosis engine's threshold of 10 errors
- * over a period of 10 minutes.
- */
+ 
 static unsigned int zfs_zevent_retain_expire_secs = 900;
 
 typedef enum zfs_subclass {
@@ -140,7 +37,7 @@ typedef enum zfs_subclass {
 } zfs_subclass_t;
 
 typedef struct {
-	/* common criteria */
+	 
 	uint64_t	re_pool_guid;
 	uint64_t	re_vdev_guid;
 	int		re_io_error;
@@ -149,10 +46,10 @@ typedef struct {
 	zfs_subclass_t	re_subclass;
 	zio_priority_t	re_io_priority;
 
-	/* logical zio criteria (optional) */
+	 
 	zbookmark_phys_t re_io_bookmark;
 
-	/* internal state */
+	 
 	avl_node_t	re_tree_link;
 	list_node_t	re_list_link;
 	uint64_t	re_timestamp;
@@ -165,11 +62,7 @@ recent_events_compare(const void *a, const void *b)
 	const recent_events_node_t *node2 = b;
 	int cmp;
 
-	/*
-	 * The comparison order here is somewhat arbitrary.
-	 * What's important is that if every criteria matches, then it
-	 * is a duplicate (i.e. compare returns 0)
-	 */
+	 
 	if ((cmp = TREE_CMP(node1->re_subclass, node2->re_subclass)) != 0)
 		return (cmp);
 	if ((cmp = TREE_CMP(node1->re_pool_guid, node2->re_pool_guid)) != 0)
@@ -200,9 +93,7 @@ recent_events_compare(const void *a, const void *b)
 	return (0);
 }
 
-/*
- * workaround: vdev properties don't have inheritance
- */
+ 
 static uint64_t
 vdev_prop_get_inherited(vdev_t *vd, vdev_prop_t prop)
 {
@@ -238,31 +129,27 @@ vdev_prop_get_inherited(vdev_t *vd, vdev_prop_t prop)
 
 static void zfs_ereport_schedule_cleaner(void);
 
-/*
- * background task to clean stale recent event nodes.
- */
+ 
 static void
 zfs_ereport_cleaner(void *arg)
 {
 	recent_events_node_t *entry;
 	uint64_t now = gethrtime();
 
-	/*
-	 * purge expired entries
-	 */
+	 
 	mutex_enter(&recent_events_lock);
 	while ((entry = list_tail(&recent_events_list)) != NULL) {
 		uint64_t age = NSEC2SEC(now - entry->re_timestamp);
 		if (age <= zfs_zevent_retain_expire_secs)
 			break;
 
-		/* remove expired node */
+		 
 		avl_remove(&recent_events_tree, entry);
 		list_remove(&recent_events_list, entry);
 		kmem_free(entry, sizeof (*entry));
 	}
 
-	/* Restart the cleaner if more entries remain */
+	 
 	recent_events_cleaner_tqid = 0;
 	if (!list_is_empty(&recent_events_list))
 		zfs_ereport_schedule_cleaner();
@@ -282,9 +169,7 @@ zfs_ereport_schedule_cleaner(void)
 	    ddi_get_lbolt() + NSEC_TO_TICK(timeout));
 }
 
-/*
- * Clear entries for a given vdev or all vdevs in a pool when vdev == NULL
- */
+ 
 void
 zfs_ereport_clear(spa_t *spa, vdev_t *vd)
 {
@@ -318,15 +203,7 @@ zfs_ereport_clear(spa_t *spa, vdev_t *vd)
 	mutex_exit(&recent_events_lock);
 }
 
-/*
- * Check if an ereport would be a duplicate of one recently posted.
- *
- * An ereport is considered a duplicate if the set of criteria in
- * recent_events_node_t all match.
- *
- * Only FM_EREPORT_ZFS_IO, FM_EREPORT_ZFS_DATA, and FM_EREPORT_ZFS_CHECKSUM
- * are candidates for duplicate checking.
- */
+ 
 static boolean_t
 zfs_ereport_is_duplicate(const char *subclass, spa_t *spa, vdev_t *vd,
     const zbookmark_phys_t *zb, zio_t *zio, uint64_t offset, uint64_t size)
@@ -352,7 +229,7 @@ zfs_ereport_is_duplicate(const char *subclass, spa_t *spa, vdev_t *vd,
 	search.re_vdev_guid = vd->vdev_guid;
 	search.re_io_error = zio->io_error;
 	search.re_io_priority = zio->io_priority;
-	/* if size is supplied use it over what's in zio */
+	 
 	if (size) {
 		search.re_io_size = size;
 		search.re_io_offset = offset;
@@ -361,7 +238,7 @@ zfs_ereport_is_duplicate(const char *subclass, spa_t *spa, vdev_t *vd,
 		search.re_io_offset = zio->io_offset;
 	}
 
-	/* grab optional logical zio criteria */
+	 
 	if (zb != NULL) {
 		search.re_io_bookmark.zb_objset = zb->zb_objset;
 		search.re_io_bookmark.zb_object = zb->zb_object;
@@ -373,16 +250,12 @@ zfs_ereport_is_duplicate(const char *subclass, spa_t *spa, vdev_t *vd,
 
 	mutex_enter(&recent_events_lock);
 
-	/* check if we have seen this one recently */
+	 
 	entry = avl_find(&recent_events_tree, &search, NULL);
 	if (entry != NULL) {
 		uint64_t age = NSEC2SEC(now - entry->re_timestamp);
 
-		/*
-		 * There is still an active cleaner (since we're here).
-		 * Reset the last seen time for this duplicate entry
-		 * so that its lifespand gets extended.
-		 */
+		 
 		list_remove(&recent_events_list, entry);
 		list_insert_head(&recent_events_list, entry);
 		entry->re_timestamp = now;
@@ -394,7 +267,7 @@ zfs_ereport_is_duplicate(const char *subclass, spa_t *spa, vdev_t *vd,
 	}
 
 	if (avl_numnodes(&recent_events_tree) >= zfs_zevent_retain_max) {
-		/* recycle oldest node */
+		 
 		entry = list_tail(&recent_events_list);
 		ASSERT(entry != NULL);
 		list_remove(&recent_events_list, entry);
@@ -403,13 +276,13 @@ zfs_ereport_is_duplicate(const char *subclass, spa_t *spa, vdev_t *vd,
 		entry = kmem_alloc(sizeof (recent_events_node_t), KM_SLEEP);
 	}
 
-	/* record this as a recent ereport */
+	 
 	*entry = search;
 	avl_add(&recent_events_tree, entry);
 	list_insert_head(&recent_events_list, entry);
 	entry->re_timestamp = now;
 
-	/* Start a cleaner if not already scheduled */
+	 
 	if (recent_events_cleaner_tqid == 0)
 		zfs_ereport_schedule_cleaner();
 
@@ -427,20 +300,12 @@ zfs_zevent_post_cb(nvlist_t *nvl, nvlist_t *detector)
 		fm_nvlist_destroy(detector, FM_NVA_FREE);
 }
 
-/*
- * We want to rate limit ZIO delay, deadman, and checksum events so as to not
- * flood zevent consumers when a disk is acting up.
- *
- * Returns 1 if we're ratelimiting, 0 if not.
- */
+ 
 static int
 zfs_is_ratelimiting_event(const char *subclass, vdev_t *vd)
 {
 	int rc = 0;
-	/*
-	 * zfs_ratelimit() returns 1 if we're *not* ratelimiting and 0 if we
-	 * are.  Invert it to get our return value.
-	 */
+	 
 	if (strcmp(subclass, FM_EREPORT_ZFS_DELAY) == 0) {
 		rc = !zfs_ratelimit(&vd->vdev_delay_rl);
 	} else if (strcmp(subclass, FM_EREPORT_ZFS_DEADMAN) == 0) {
@@ -450,16 +315,14 @@ zfs_is_ratelimiting_event(const char *subclass, vdev_t *vd)
 	}
 
 	if (rc)	{
-		/* We're rate limiting */
+		 
 		fm_erpt_dropped_increment();
 	}
 
 	return (rc);
 }
 
-/*
- * Return B_TRUE if the event actually posted, B_FALSE if not.
- */
+ 
 static boolean_t
 zfs_ereport_start(nvlist_t **ereport_out, nvlist_t **detector_out,
     const char *subclass, spa_t *spa, vdev_t *vd, const zbookmark_phys_t *zb,
@@ -478,16 +341,10 @@ zfs_ereport_start(nvlist_t **ereport_out, nvlist_t **detector_out,
 		return (B_FALSE);
 	}
 
-	/*
-	 * Serialize ereport generation
-	 */
+	 
 	mutex_enter(&spa->spa_errlist_lock);
 
-	/*
-	 * Determine the ENA to use for this event.  If we are in a loading
-	 * state, use a SPA-wide ENA.  Otherwise, if we are in an I/O state, use
-	 * a root zio-wide ENA.  Otherwise, simply use a unique ENA.
-	 */
+	 
 	if (spa_load_state(spa) != SPA_LOAD_NONE) {
 		if (spa->spa_ena == 0)
 			spa->spa_ena = fm_ena_generate(0, FM_ENA_FMT1);
@@ -501,9 +358,7 @@ zfs_ereport_start(nvlist_t **ereport_out, nvlist_t **detector_out,
 		ena = fm_ena_generate(0, FM_ENA_FMT1);
 	}
 
-	/*
-	 * Construct the full class, detector, and other standard FMA fields.
-	 */
+	 
 	(void) snprintf(class, sizeof (class), "%s.%s",
 	    ZFS_ERROR_CLASS, subclass);
 
@@ -512,14 +367,9 @@ zfs_ereport_start(nvlist_t **ereport_out, nvlist_t **detector_out,
 
 	fm_ereport_set(ereport, FM_EREPORT_VERSION, class, ena, detector, NULL);
 
-	/*
-	 * Construct the per-ereport payload, depending on which parameters are
-	 * passed in.
-	 */
+	 
 
-	/*
-	 * Generic payload members common to all ereports.
-	 */
+	 
 	fm_payload_set(ereport,
 	    FM_EREPORT_PAYLOAD_ZFS_POOL, DATA_TYPE_STRING, spa_name(spa),
 	    FM_EREPORT_PAYLOAD_ZFS_POOL_GUID, DATA_TYPE_UINT64, spa_guid(spa),
@@ -633,9 +483,7 @@ zfs_ereport_start(nvlist_t **ereport_out, nvlist_t **detector_out,
 	}
 
 	if (zio != NULL) {
-		/*
-		 * Payload common to all I/Os.
-		 */
+		 
 		fm_payload_set(ereport, FM_EREPORT_PAYLOAD_ZFS_ZIO_ERR,
 		    DATA_TYPE_INT32, zio->io_error, NULL);
 		fm_payload_set(ereport, FM_EREPORT_PAYLOAD_ZFS_ZIO_FLAGS,
@@ -653,11 +501,7 @@ zfs_ereport_start(nvlist_t **ereport_out, nvlist_t **detector_out,
 		fm_payload_set(ereport, FM_EREPORT_PAYLOAD_ZFS_ZIO_PRIORITY,
 		    DATA_TYPE_UINT32, zio->io_priority, NULL);
 
-		/*
-		 * If the 'size' parameter is non-zero, it indicates this is a
-		 * RAID-Z or other I/O where the physical offset and length are
-		 * provided for us, instead of within the zio_t.
-		 */
+		 
 		if (vd != NULL) {
 			if (size)
 				fm_payload_set(ereport,
@@ -673,19 +517,13 @@ zfs_ereport_start(nvlist_t **ereport_out, nvlist_t **detector_out,
 				    DATA_TYPE_UINT64, zio->io_size, NULL);
 		}
 	} else if (vd != NULL) {
-		/*
-		 * If we have a vdev but no zio, this is a device fault, and the
-		 * 'stateoroffset' parameter indicates the previous state of the
-		 * vdev.
-		 */
+		 
 		fm_payload_set(ereport,
 		    FM_EREPORT_PAYLOAD_ZFS_PREV_STATE,
 		    DATA_TYPE_UINT64, stateoroffset, NULL);
 	}
 
-	/*
-	 * Payload for I/Os with corresponding logical information.
-	 */
+	 
 	if (zb != NULL && (zio == NULL || zio->io_logical != NULL)) {
 		fm_payload_set(ereport,
 		    FM_EREPORT_PAYLOAD_ZFS_ZIO_OBJSET,
@@ -698,9 +536,7 @@ zfs_ereport_start(nvlist_t **ereport_out, nvlist_t **detector_out,
 		    DATA_TYPE_UINT64, zb->zb_blkid, NULL);
 	}
 
-	/*
-	 * Payload for tuning the zed
-	 */
+	 
 	if (vd != NULL && strcmp(subclass, FM_EREPORT_ZFS_CHECKSUM) == 0) {
 		uint64_t cksum_n, cksum_t;
 
@@ -748,20 +584,17 @@ zfs_ereport_start(nvlist_t **ereport_out, nvlist_t **detector_out,
 	return (B_TRUE);
 }
 
-/* if it's <= 128 bytes, save the corruption directly */
+ 
 #define	ZFM_MAX_INLINE		(128 / sizeof (uint64_t))
 
 #define	MAX_RANGES		16
 
 typedef struct zfs_ecksum_info {
-	/* inline arrays of bits set and cleared. */
+	 
 	uint64_t zei_bits_set[ZFM_MAX_INLINE];
 	uint64_t zei_bits_cleared[ZFM_MAX_INLINE];
 
-	/*
-	 * for each range, the number of bits set and cleared.  The Hamming
-	 * distance between the good and bad buffers is the sum of them all.
-	 */
+	 
 	uint32_t zei_range_sets[MAX_RANGES];
 	uint32_t zei_range_clears[MAX_RANGES];
 
@@ -783,25 +616,16 @@ update_bad_bits(uint64_t value_arg, uint32_t *count)
 	size_t bits = 0;
 	uint64_t value = BE_64(value_arg);
 
-	/* We store the bits in big-endian (largest-first) order */
+	 
 	for (i = 0; i < 64; i++) {
 		if (value & (1ull << i))
 			++bits;
 	}
-	/* update the count of bits changed */
+	 
 	*count += bits;
 }
 
-/*
- * We've now filled up the range array, and need to increase "mingap" and
- * shrink the range list accordingly.  zei_mingap is always the smallest
- * distance between array entries, so we set the new_allowed_gap to be
- * one greater than that.  We then go through the list, joining together
- * any ranges which are closer than the new_allowed_gap.
- *
- * By construction, there will be at least one.  We also update zei_mingap
- * to the new smallest gap, to prepare for our next invocation.
- */
+ 
 static void
 zei_shrink_ranges(zfs_ecksum_info_t *eip)
 {
@@ -908,7 +732,7 @@ annotate_ecksum(nvlist_t *ereport, zio_bad_cksum_t *info,
 
 	zfs_ecksum_info_t *eip = kmem_zalloc(sizeof (*eip), KM_SLEEP);
 
-	/* don't do any annotation for injected checksum errors */
+	 
 	if (info != NULL && info->zbc_injected)
 		return (eip);
 
@@ -938,7 +762,7 @@ annotate_ecksum(nvlist_t *ereport, zio_bad_cksum_t *info,
 	good = (const uint64_t *) abd_borrow_buf_copy((abd_t *)goodabd, size);
 	bad = (const uint64_t *) abd_borrow_buf_copy((abd_t *)badabd, size);
 
-	/* build up the range list by comparing the two buffers. */
+	 
 	for (idx = 0; idx < nui64s; idx++) {
 		if (good[idx] == bad[idx]) {
 			if (start == -1)
@@ -956,15 +780,12 @@ annotate_ecksum(nvlist_t *ereport, zio_bad_cksum_t *info,
 	if (start != -1)
 		zei_add_range(eip, start, idx);
 
-	/* See if it will fit in our inline buffers */
+	 
 	inline_size = zei_range_total_size(eip);
 	if (inline_size > ZFM_MAX_INLINE)
 		no_inline = 1;
 
-	/*
-	 * If there is no change and we want to drop if the buffers are
-	 * identical, do so.
-	 */
+	 
 	if (inline_size == 0 && drop_if_identical) {
 		kmem_free(eip, sizeof (*eip));
 		abd_return_buf((abd_t *)goodabd, (void *)good, size);
@@ -972,11 +793,7 @@ annotate_ecksum(nvlist_t *ereport, zio_bad_cksum_t *info,
 		return (NULL);
 	}
 
-	/*
-	 * Now walk through the ranges, filling in the details of the
-	 * differences.  Also convert our uint64_t-array offsets to byte
-	 * offsets.
-	 */
+	 
 	for (range = 0; range < eip->zei_range_count; range++) {
 		size_t start = eip->zei_ranges[range].zr_start;
 		size_t end = eip->zei_ranges[range].zr_end;
@@ -984,9 +801,9 @@ annotate_ecksum(nvlist_t *ereport, zio_bad_cksum_t *info,
 		for (idx = start; idx < end; idx++) {
 			uint64_t set, cleared;
 
-			// bits set in bad, but not in good
+			 
 			set = ((~good[idx]) & bad[idx]);
-			// bits set in good, but not in bad
+			 
 			cleared = (good[idx] & (~bad[idx]));
 
 			if (!no_inline) {
@@ -1000,7 +817,7 @@ annotate_ecksum(nvlist_t *ereport, zio_bad_cksum_t *info,
 			update_bad_bits(cleared, &eip->zei_range_clears[range]);
 		}
 
-		/* convert to byte offsets */
+		 
 		eip->zei_ranges[range].zr_start	*= sizeof (uint64_t);
 		eip->zei_ranges[range].zr_end	*= sizeof (uint64_t);
 	}
@@ -1011,7 +828,7 @@ annotate_ecksum(nvlist_t *ereport, zio_bad_cksum_t *info,
 	eip->zei_allowed_mingap	*= sizeof (uint64_t);
 	inline_size		*= sizeof (uint64_t);
 
-	/* fill in ereport */
+	 
 	fm_payload_set(ereport,
 	    FM_EREPORT_PAYLOAD_ZFS_BAD_OFFSET_RANGES,
 	    DATA_TYPE_UINT32_ARRAY, 2 * eip->zei_range_count,
@@ -1044,57 +861,33 @@ zfs_ereport_clear(spa_t *spa, vdev_t *vd)
 }
 #endif
 
-/*
- * Make sure our event is still valid for the given zio/vdev/pool.  For example,
- * we don't want to keep logging events for a faulted or missing vdev.
- */
+ 
 boolean_t
 zfs_ereport_is_valid(const char *subclass, spa_t *spa, vdev_t *vd, zio_t *zio)
 {
 #ifdef _KERNEL
-	/*
-	 * If we are doing a spa_tryimport() or in recovery mode,
-	 * ignore errors.
-	 */
+	 
 	if (spa_load_state(spa) == SPA_LOAD_TRYIMPORT ||
 	    spa_load_state(spa) == SPA_LOAD_RECOVER)
 		return (B_FALSE);
 
-	/*
-	 * If we are in the middle of opening a pool, and the previous attempt
-	 * failed, don't bother logging any new ereports - we're just going to
-	 * get the same diagnosis anyway.
-	 */
+	 
 	if (spa_load_state(spa) != SPA_LOAD_NONE &&
 	    spa->spa_last_open_failed)
 		return (B_FALSE);
 
 	if (zio != NULL) {
-		/*
-		 * If this is not a read or write zio, ignore the error.  This
-		 * can occur if the DKIOCFLUSHWRITECACHE ioctl fails.
-		 */
+		 
 		if (zio->io_type != ZIO_TYPE_READ &&
 		    zio->io_type != ZIO_TYPE_WRITE)
 			return (B_FALSE);
 
 		if (vd != NULL) {
-			/*
-			 * If the vdev has already been marked as failing due
-			 * to a failed probe, then ignore any subsequent I/O
-			 * errors, as the DE will automatically fault the vdev
-			 * on the first such failure.  This also catches cases
-			 * where vdev_remove_wanted is set and the device has
-			 * not yet been asynchronously placed into the REMOVED
-			 * state.
-			 */
+			 
 			if (zio->io_vd == vd && !vdev_accessible(vd, zio))
 				return (B_FALSE);
 
-			/*
-			 * Ignore checksum errors for reads from DTL regions of
-			 * leaf vdevs.
-			 */
+			 
 			if (zio->io_type == ZIO_TYPE_READ &&
 			    zio->io_error == ECKSUM &&
 			    vd->vdev_ops->vdev_op_leaf &&
@@ -1103,16 +896,13 @@ zfs_ereport_is_valid(const char *subclass, spa_t *spa, vdev_t *vd, zio_t *zio)
 		}
 	}
 
-	/*
-	 * For probe failure, we want to avoid posting ereports if we've
-	 * already removed the device in the meantime.
-	 */
+	 
 	if (vd != NULL &&
 	    strcmp(subclass, FM_EREPORT_ZFS_PROBE_FAILURE) == 0 &&
 	    (vd->vdev_remove_wanted || vd->vdev_state == VDEV_STATE_REMOVED))
 		return (B_FALSE);
 
-	/* Ignore bogus delay events (like from ioctls or unqueued IOs) */
+	 
 	if ((strcmp(subclass, FM_EREPORT_ZFS_DELAY) == 0) &&
 	    (zio != NULL) && (!zio->io_timestamp)) {
 		return (B_FALSE);
@@ -1123,15 +913,7 @@ zfs_ereport_is_valid(const char *subclass, spa_t *spa, vdev_t *vd, zio_t *zio)
 	return (B_TRUE);
 }
 
-/*
- * Post an ereport for the given subclass
- *
- * Returns
- * - 0 if an event was posted
- * - EINVAL if there was a problem posting event
- * - EBUSY if the event was rate limited
- * - EALREADY if the event was already posted (duplicate)
- */
+ 
 int
 zfs_ereport_post(const char *subclass, spa_t *spa, vdev_t *vd,
     const zbookmark_phys_t *zb, zio_t *zio, uint64_t state)
@@ -1152,12 +934,12 @@ zfs_ereport_post(const char *subclass, spa_t *spa, vdev_t *vd,
 
 	if (!zfs_ereport_start(&ereport, &detector, subclass, spa, vd,
 	    zb, zio, state, 0))
-		return (SET_ERROR(EINVAL));	/* couldn't post event */
+		return (SET_ERROR(EINVAL));	 
 
 	if (ereport == NULL)
 		return (SET_ERROR(EINVAL));
 
-	/* Cleanup is handled by the callback function */
+	 
 	rc = zfs_zevent_post(ereport, detector, zfs_zevent_post_cb);
 #else
 	(void) subclass, (void) spa, (void) vd, (void) zb, (void) zio,
@@ -1166,15 +948,7 @@ zfs_ereport_post(const char *subclass, spa_t *spa, vdev_t *vd,
 	return (rc);
 }
 
-/*
- * Prepare a checksum ereport
- *
- * Returns
- * - 0 if an event was posted
- * - EINVAL if there was a problem posting event
- * - EBUSY if the event was rate limited
- * - EALREADY if the event was already posted (duplicate)
- */
+ 
 int
 zfs_ereport_start_checksum(spa_t *spa, vdev_t *vd, const zbookmark_phys_t *zb,
     struct zio *zio, uint64_t offset, uint64_t length, zio_bad_cksum_t *info)
@@ -1199,7 +973,7 @@ zfs_ereport_start_checksum(spa_t *spa, vdev_t *vd, const zbookmark_phys_t *zb,
 
 	zio_vsd_default_cksum_report(zio, report);
 
-	/* copy the checksum failure information if it was provided */
+	 
 	if (info != NULL) {
 		report->zcr_ckinfo = kmem_zalloc(sizeof (*info), KM_SLEEP);
 		memcpy(report->zcr_ckinfo, info, sizeof (*info));
@@ -1270,15 +1044,7 @@ zfs_ereport_free_checksum(zio_cksum_report_t *rpt)
 	kmem_free(rpt, sizeof (*rpt));
 }
 
-/*
- * Post a checksum ereport
- *
- * Returns
- * - 0 if an event was posted
- * - EINVAL if there was a problem posting event
- * - EBUSY if the event was rate limited
- * - EALREADY if the event was already posted (duplicate)
- */
+ 
 int
 zfs_ereport_post_checksum(spa_t *spa, vdev_t *vd, const zbookmark_phys_t *zb,
     struct zio *zio, uint64_t offset, uint64_t length,
@@ -1319,12 +1085,7 @@ zfs_ereport_post_checksum(spa_t *spa, vdev_t *vd, const zbookmark_phys_t *zb,
 	return (rc);
 }
 
-/*
- * The 'sysevent.fs.zfs.*' events are signals posted to notify user space of
- * change in the pool.  All sysevents are listed in sys/sysevent/eventdefs.h
- * and are designed to be consumed by the ZFS Event Daemon (ZED).  For
- * additional details refer to the zed(8) man page.
- */
+ 
 nvlist_t *
 zfs_event_create(spa_t *spa, vdev_t *vd, const char *type, const char *name,
     nvlist_t *aux)
@@ -1372,7 +1133,7 @@ zfs_event_create(spa_t *spa, vdev_t *vd, const char *type, const char *name,
 			    vd->vdev_enc_sysfs_path));
 	}
 
-	/* also copy any optional payload data */
+	 
 	if (aux) {
 		nvpair_t *elem = NULL;
 
@@ -1400,44 +1161,28 @@ zfs_post_common(spa_t *spa, vdev_t *vd, const char *type, const char *name,
 #endif
 }
 
-/*
- * The 'resource.fs.zfs.removed' event is an internal signal that the given vdev
- * has been removed from the system.  This will cause the DE to ignore any
- * recent I/O errors, inferring that they are due to the asynchronous device
- * removal.
- */
+ 
 void
 zfs_post_remove(spa_t *spa, vdev_t *vd)
 {
 	zfs_post_common(spa, vd, FM_RSRC_CLASS, FM_RESOURCE_REMOVED, NULL);
 }
 
-/*
- * The 'resource.fs.zfs.autoreplace' event is an internal signal that the pool
- * has the 'autoreplace' property set, and therefore any broken vdevs will be
- * handled by higher level logic, and no vdev fault should be generated.
- */
+ 
 void
 zfs_post_autoreplace(spa_t *spa, vdev_t *vd)
 {
 	zfs_post_common(spa, vd, FM_RSRC_CLASS, FM_RESOURCE_AUTOREPLACE, NULL);
 }
 
-/*
- * The 'resource.fs.zfs.statechange' event is an internal signal that the
- * given vdev has transitioned its state to DEGRADED or HEALTHY.  This will
- * cause the retire agent to repair any outstanding fault management cases
- * open because the device was not found (fault.fs.zfs.device).
- */
+ 
 void
 zfs_post_state_change(spa_t *spa, vdev_t *vd, uint64_t laststate)
 {
 #ifdef _KERNEL
 	nvlist_t *aux;
 
-	/*
-	 * Add optional supplemental keys to payload
-	 */
+	 
 	aux = fm_nvlist_create(NULL);
 	if (vd && aux) {
 		if (vd->vdev_physpath) {
@@ -1477,10 +1222,7 @@ zfs_ereport_init(void)
 	    re_tree_link));
 }
 
-/*
- * This 'early' fini needs to run before zfs_fini() which on Linux waits
- * for the system_delay_taskq to drain.
- */
+ 
 void
 zfs_ereport_taskq_fini(void)
 {
@@ -1518,19 +1260,7 @@ zfs_ereport_snapshot_post(const char *subclass, spa_t *spa, const char *name)
 	fm_nvlist_destroy(aux, FM_NVA_FREE);
 }
 
-/*
- * Post when a event when a zvol is created or removed
- *
- * This is currently only used by macOS, since it uses the event to create
- * symlinks between the volume name (mypool/myvol) and the actual /dev
- * device (/dev/disk3).  For example:
- *
- * /var/run/zfs/dsk/mypool/myvol -> /dev/disk3
- *
- * name: The full name of the zvol ("mypool/myvol")
- * dev_name: The full /dev name for the zvol ("/dev/disk3")
- * raw_name: The raw  /dev name for the zvol ("/dev/rdisk3")
- */
+ 
 void
 zfs_ereport_zvol_post(const char *subclass, const char *name,
     const char *dev_name, const char *raw_name)
@@ -1569,4 +1299,4 @@ ZFS_MODULE_PARAM(zfs_zevent, zfs_zevent_, retain_max, UINT, ZMOD_RW,
 	"Maximum recent zevents records to retain for duplicate checking");
 ZFS_MODULE_PARAM(zfs_zevent, zfs_zevent_, retain_expire_secs, UINT, ZMOD_RW,
 	"Expiration time for recent zevents records");
-#endif /* _KERNEL */
+#endif  

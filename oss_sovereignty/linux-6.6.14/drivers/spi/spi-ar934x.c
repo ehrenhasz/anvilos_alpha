@@ -1,13 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// SPI controller driver for Qualcomm Atheros AR934x/QCA95xx SoCs
-//
-// Copyright (C) 2020 Chuanhong Guo <gch981213@gmail.com>
-//
-// Based on spi-mt7621.c:
-// Copyright (C) 2011 Sergiy <piratfm@gmail.com>
-// Copyright (C) 2011-2013 Gabor Juhos <juhosg@openwrt.org>
-// Copyright (C) 2014-2015 Felix Fietkau <nbd@nbd.name>
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -191,9 +191,9 @@ static int ar934x_spi_probe(struct platform_device *pdev)
 		goto err_clk_disable;
 	}
 
-	/* disable flash mapping and expose spi controller registers */
+	 
 	iowrite32(AR934X_SPI_ENABLE, base + AR934X_SPI_REG_FS);
-	/* restore pins to default state: CSn=1 DO=CLK=0 */
+	 
 	iowrite32(AR934X_SPI_IOC_INITVAL, base + AR934X_SPI_REG_IOC);
 
 	ctlr->mode_bits = SPI_LSB_FIRST;

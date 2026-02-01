@@ -1,13 +1,4 @@
-/*
- * Driver for the ST Microelectronics SPEAr320 pinmux
- *
- * Copyright (C) 2012 ST Microelectronics
- * Viresh Kumar <vireshk@kernel.org>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -17,12 +8,12 @@
 
 #define DRIVER_NAME "spear320-pinmux"
 
-/* addresses */
+ 
 #define PMX_CONFIG_REG			0x0C
 #define MODE_CONFIG_REG			0x10
 #define MODE_EXT_CONFIG_REG		0x18
 
-/* modes */
+ 
 #define AUTO_NET_SMII_MODE	(1 << 0)
 #define AUTO_NET_MII_MODE	(1 << 1)
 #define AUTO_EXP_MODE		(1 << 2)
@@ -77,7 +68,7 @@ static struct spear_pmx_mode *spear320_pmx_modes[] = {
 	&pmx_mode_extended,
 };
 
-/* Extended mode registers and their offsets */
+ 
 #define EXT_CTRL_REG				0x0018
 	#define MII_MDIO_MASK			(1 << 4)
 	#define MII_MDIO_10_11_VAL		0
@@ -455,7 +446,7 @@ static struct spear_pmx_mode *spear320_pmx_modes[] = {
 	#define PMX_SDHCI_CD_PORT_12_VAL	0
 	#define PMX_SDHCI_CD_PORT_51_VAL	(0x1 << 29)
 
-/* Pad multiplexing for CLCD device */
+ 
 static const unsigned clcd_pins[] = { 69, 70, 71, 72, 73, 74, 75, 76, 77, 78,
 	79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96,
 	97 };
@@ -511,7 +502,7 @@ static struct spear_function clcd_function = {
 	.ngroups = ARRAY_SIZE(clcd_grps),
 };
 
-/* Pad multiplexing for EMI (Parallel NOR flash) device */
+ 
 static const unsigned emi_pins[] = { 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56,
 	57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74,
 	75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92,
@@ -594,7 +585,7 @@ static struct spear_function emi_function = {
 	.ngroups = ARRAY_SIZE(emi_grps),
 };
 
-/* Pad multiplexing for FSMC (NAND flash) device */
+ 
 static const unsigned fsmc_8bit_pins[] = { 52, 53, 54, 55, 56, 57, 58, 59, 60,
 	61, 62, 63, 64, 65, 66, 67, 68 };
 static struct spear_muxreg fsmc_8bit_muxreg[] = {
@@ -687,7 +678,7 @@ static struct spear_function fsmc_function = {
 	.ngroups = ARRAY_SIZE(fsmc_grps),
 };
 
-/* Pad multiplexing for SPP device */
+ 
 static const unsigned spp_pins[] = { 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79,
 	80, 81, 82, 83, 84, 85 };
 static struct spear_muxreg spp_muxreg[] = {
@@ -733,7 +724,7 @@ static struct spear_function spp_function = {
 	.ngroups = ARRAY_SIZE(spp_grps),
 };
 
-/* Pad multiplexing for SDHCI device */
+ 
 static const unsigned sdhci_led_pins[] = { 34 };
 static struct spear_muxreg sdhci_led_muxreg[] = {
 	{
@@ -847,7 +838,7 @@ static struct spear_muxreg sdhci_cd_51_muxreg[] = {
 
 static struct spear_modemux sdhci_modemux[][3] = {
 	{
-		/* select pin 12 for cd */
+		 
 		pmx_sdhci_common_modemux,
 		{
 			.modes = EXTENDED_MODE,
@@ -855,7 +846,7 @@ static struct spear_modemux sdhci_modemux[][3] = {
 			.nmuxregs = ARRAY_SIZE(sdhci_cd_12_muxreg),
 		},
 	}, {
-		/* select pin 51 for cd */
+		 
 		pmx_sdhci_common_modemux,
 		{
 			.modes = EXTENDED_MODE,
@@ -890,7 +881,7 @@ static struct spear_function sdhci_function = {
 	.ngroups = ARRAY_SIZE(sdhci_grps),
 };
 
-/* Pad multiplexing for I2S device */
+ 
 static const unsigned i2s_pins[] = { 35, 39, 40, 41, 42 };
 static struct spear_muxreg i2s_muxreg[] = {
 	{
@@ -943,7 +934,7 @@ static struct spear_function i2s_function = {
 	.ngroups = ARRAY_SIZE(i2s_grps),
 };
 
-/* Pad multiplexing for UART1 device */
+ 
 static const unsigned uart1_pins[] = { 28, 29 };
 static struct spear_muxreg uart1_muxreg[] = {
 	{
@@ -989,7 +980,7 @@ static struct spear_function uart1_function = {
 	.ngroups = ARRAY_SIZE(uart1_grps),
 };
 
-/* Pad multiplexing for UART1 Modem device */
+ 
 static const unsigned uart1_modem_2_to_7_pins[] = { 2, 3, 4, 5, 6, 7 };
 static const unsigned uart1_modem_31_to_36_pins[] = { 31, 32, 33, 34, 35, 36 };
 static const unsigned uart1_modem_34_to_45_pins[] = { 34, 35, 36, 43, 44, 45 };
@@ -1155,7 +1146,7 @@ static struct spear_function uart1_modem_function = {
 	.ngroups = ARRAY_SIZE(uart1_modem_grps),
 };
 
-/* Pad multiplexing for UART2 device */
+ 
 static const unsigned uart2_pins[] = { 0, 1 };
 static struct spear_muxreg uart2_muxreg[] = {
 	{
@@ -1201,7 +1192,7 @@ static struct spear_function uart2_function = {
 	.ngroups = ARRAY_SIZE(uart2_grps),
 };
 
-/* Pad multiplexing for uart3 device */
+ 
 static const unsigned uart3_pins[][2] = { { 8, 9 }, { 15, 16 }, { 41, 42 },
 	{ 52, 53 }, { 73, 74 }, { 94, 95 }, { 98, 99 } };
 
@@ -1303,49 +1294,49 @@ static struct spear_muxreg uart3_ext_98_99_muxreg[] = {
 
 static struct spear_modemux uart3_modemux[][1] = {
 	{
-		/* Select signals on pins 8_9 */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = uart3_ext_8_9_muxreg,
 			.nmuxregs = ARRAY_SIZE(uart3_ext_8_9_muxreg),
 		},
 	}, {
-		/* Select signals on pins 15_16 */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = uart3_ext_15_16_muxreg,
 			.nmuxregs = ARRAY_SIZE(uart3_ext_15_16_muxreg),
 		},
 	}, {
-		/* Select signals on pins 41_42 */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = uart3_ext_41_42_muxreg,
 			.nmuxregs = ARRAY_SIZE(uart3_ext_41_42_muxreg),
 		},
 	}, {
-		/* Select signals on pins 52_53 */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = uart3_ext_52_53_muxreg,
 			.nmuxregs = ARRAY_SIZE(uart3_ext_52_53_muxreg),
 		},
 	}, {
-		/* Select signals on pins 73_74 */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = uart3_ext_73_74_muxreg,
 			.nmuxregs = ARRAY_SIZE(uart3_ext_73_74_muxreg),
 		},
 	}, {
-		/* Select signals on pins 94_95 */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = uart3_ext_94_95_muxreg,
 			.nmuxregs = ARRAY_SIZE(uart3_ext_94_95_muxreg),
 		},
 	}, {
-		/* Select signals on pins 98_99 */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = uart3_ext_98_99_muxreg,
@@ -1410,7 +1401,7 @@ static struct spear_function uart3_function = {
 	.ngroups = ARRAY_SIZE(uart3_grps),
 };
 
-/* Pad multiplexing for uart4 device */
+ 
 static const unsigned uart4_pins[][2] = { { 6, 7 }, { 13, 14 }, { 39, 40 },
 	{ 71, 72 }, { 92, 93 }, { 100, 101 } };
 
@@ -1502,42 +1493,42 @@ static struct spear_muxreg uart4_ext_100_101_muxreg[] = {
 
 static struct spear_modemux uart4_modemux[][1] = {
 	{
-		/* Select signals on pins 6_7 */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = uart4_ext_6_7_muxreg,
 			.nmuxregs = ARRAY_SIZE(uart4_ext_6_7_muxreg),
 		},
 	}, {
-		/* Select signals on pins 13_14 */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = uart4_ext_13_14_muxreg,
 			.nmuxregs = ARRAY_SIZE(uart4_ext_13_14_muxreg),
 		},
 	}, {
-		/* Select signals on pins 39_40 */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = uart4_ext_39_40_muxreg,
 			.nmuxregs = ARRAY_SIZE(uart4_ext_39_40_muxreg),
 		},
 	}, {
-		/* Select signals on pins 71_72 */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = uart4_ext_71_72_muxreg,
 			.nmuxregs = ARRAY_SIZE(uart4_ext_71_72_muxreg),
 		},
 	}, {
-		/* Select signals on pins 92_93 */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = uart4_ext_92_93_muxreg,
 			.nmuxregs = ARRAY_SIZE(uart4_ext_92_93_muxreg),
 		},
 	}, {
-		/* Select signals on pins 100_101_ */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = uart4_ext_100_101_muxreg,
@@ -1596,7 +1587,7 @@ static struct spear_function uart4_function = {
 	.ngroups = ARRAY_SIZE(uart4_grps),
 };
 
-/* Pad multiplexing for uart5 device */
+ 
 static const unsigned uart5_pins[][2] = { { 4, 5 }, { 37, 38 }, { 69, 70 },
 	{ 90, 91 } };
 
@@ -1662,28 +1653,28 @@ static struct spear_muxreg uart5_ext_90_91_muxreg[] = {
 
 static struct spear_modemux uart5_modemux[][1] = {
 	{
-		/* Select signals on pins 4_5 */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = uart5_ext_4_5_muxreg,
 			.nmuxregs = ARRAY_SIZE(uart5_ext_4_5_muxreg),
 		},
 	}, {
-		/* Select signals on pins 37_38 */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = uart5_ext_37_38_muxreg,
 			.nmuxregs = ARRAY_SIZE(uart5_ext_37_38_muxreg),
 		},
 	}, {
-		/* Select signals on pins 69_70 */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = uart5_ext_69_70_muxreg,
 			.nmuxregs = ARRAY_SIZE(uart5_ext_69_70_muxreg),
 		},
 	}, {
-		/* Select signals on pins 90_91 */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = uart5_ext_90_91_muxreg,
@@ -1728,7 +1719,7 @@ static struct spear_function uart5_function = {
 	.ngroups = ARRAY_SIZE(uart5_grps),
 };
 
-/* Pad multiplexing for uart6 device */
+ 
 static const unsigned uart6_pins[][2] = { { 2, 3 }, { 88, 89 } };
 static struct spear_muxreg uart6_ext_2_3_muxreg[] = {
 	{
@@ -1760,14 +1751,14 @@ static struct spear_muxreg uart6_ext_88_89_muxreg[] = {
 
 static struct spear_modemux uart6_modemux[][1] = {
 	{
-		/* Select signals on pins 2_3 */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = uart6_ext_2_3_muxreg,
 			.nmuxregs = ARRAY_SIZE(uart6_ext_2_3_muxreg),
 		},
 	}, {
-		/* Select signals on pins 88_89 */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = uart6_ext_88_89_muxreg,
@@ -1799,7 +1790,7 @@ static struct spear_function uart6_function = {
 	.ngroups = ARRAY_SIZE(uart6_grps),
 };
 
-/* UART - RS485 pmx */
+ 
 static const unsigned rs485_pins[] = { 77, 78, 79 };
 static struct spear_muxreg rs485_muxreg[] = {
 	{
@@ -1832,7 +1823,7 @@ static struct spear_function rs485_function = {
 	.ngroups = ARRAY_SIZE(rs485_grps),
 };
 
-/* Pad multiplexing for Touchscreen device */
+ 
 static const unsigned touchscreen_pins[] = { 5, 36 };
 static struct spear_muxreg touchscreen_muxreg[] = {
 	{
@@ -1881,7 +1872,7 @@ static struct spear_function touchscreen_function = {
 	.ngroups = ARRAY_SIZE(touchscreen_grps),
 };
 
-/* Pad multiplexing for CAN device */
+ 
 static const unsigned can0_pins[] = { 32, 33 };
 static struct spear_muxreg can0_muxreg[] = {
 	{
@@ -1972,7 +1963,7 @@ static struct spear_function can1_function = {
 	.ngroups = ARRAY_SIZE(can1_grps),
 };
 
-/* Pad multiplexing for PWM0_1 device */
+ 
 static const unsigned pwm0_1_pins[][2] = { { 37, 38 }, { 14, 15 }, { 8, 9 },
 	{ 30, 31 }, { 42, 43 }, { 59, 60 }, { 88, 89 } };
 
@@ -2186,7 +2177,7 @@ static struct spear_function pwm0_1_function = {
 	.ngroups = ARRAY_SIZE(pwm0_1_grps),
 };
 
-/* Pad multiplexing for PWM2 device */
+ 
 static const unsigned pwm2_pins[][1] = { { 7 }, { 13 }, { 29 }, { 34 }, { 41 },
 	{ 58 }, { 87 } };
 static struct spear_muxreg pwm2_net_muxreg[] = {
@@ -2393,7 +2384,7 @@ static struct spear_function pwm2_function = {
 	.ngroups = ARRAY_SIZE(pwm2_grps),
 };
 
-/* Pad multiplexing for PWM3 device */
+ 
 static const unsigned pwm3_pins[][1] = { { 6 }, { 12 }, { 28 }, { 40 }, { 57 },
 	{ 86 } };
 static struct spear_muxreg pwm3_pin_6_muxreg[] = {
@@ -2566,7 +2557,7 @@ static struct spear_function pwm3_function = {
 	.ngroups = ARRAY_SIZE(pwm3_grps),
 };
 
-/* Pad multiplexing for SSP1 device */
+ 
 static const unsigned ssp1_pins[][2] = { { 17, 20 }, { 36, 39 }, { 48, 51 },
 	{ 65, 68 }, { 94, 97 } };
 static struct spear_muxreg ssp1_muxreg[] = {
@@ -2741,7 +2732,7 @@ static struct spear_function ssp1_function = {
 	.ngroups = ARRAY_SIZE(ssp1_grps),
 };
 
-/* Pad multiplexing for SSP2 device */
+ 
 static const unsigned ssp2_pins[][2] = { { 13, 16 }, { 32, 35 }, { 44, 47 },
 	{ 61, 64 }, { 90, 93 } };
 static struct spear_muxreg ssp2_muxreg[] = {
@@ -2908,7 +2899,7 @@ static struct spear_function ssp2_function = {
 	.ngroups = ARRAY_SIZE(ssp2_grps),
 };
 
-/* Pad multiplexing for cadence mii2 as mii device */
+ 
 static const unsigned mii2_pins[] = { 80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
 	90, 91, 92, 93, 94, 95, 96, 97 };
 static struct spear_muxreg mii2_muxreg[] = {
@@ -2958,7 +2949,7 @@ static struct spear_function mii2_function = {
 	.ngroups = ARRAY_SIZE(mii2_grps),
 };
 
-/* Pad multiplexing for cadence mii 1_2 as smii or rmii device */
+ 
 static const unsigned rmii0_1_pins[] = { 10, 11, 13, 14, 15, 16, 17, 18, 19, 20,
 	21, 22, 23, 24, 25, 26, 27 };
 static const unsigned smii0_1_pins[] = { 10, 11, 21, 22, 23, 24, 25, 26, 27 };
@@ -3015,7 +3006,7 @@ static struct spear_muxreg rmii0_1_ext_muxreg[] = {
 
 static struct spear_modemux mii0_1_modemux[][2] = {
 	{
-		/* configure as smii */
+		 
 		{
 			.modes = AUTO_NET_SMII_MODE | AUTO_EXP_MODE |
 				SMALL_PRINTERS_MODE | EXTENDED_MODE,
@@ -3027,7 +3018,7 @@ static struct spear_modemux mii0_1_modemux[][2] = {
 			.nmuxregs = ARRAY_SIZE(smii0_1_ext_muxreg),
 		},
 	}, {
-		/* configure as rmii */
+		 
 		{
 			.modes = AUTO_NET_SMII_MODE | AUTO_EXP_MODE |
 				SMALL_PRINTERS_MODE | EXTENDED_MODE,
@@ -3064,7 +3055,7 @@ static struct spear_function mii0_1_function = {
 	.ngroups = ARRAY_SIZE(mii0_1_grps),
 };
 
-/* Pad multiplexing for i2c1 device */
+ 
 static const unsigned i2c1_pins[][2] = { { 8, 9 }, { 98, 99 } };
 static struct spear_muxreg i2c1_ext_8_9_muxreg[] = {
 	{
@@ -3096,14 +3087,14 @@ static struct spear_muxreg i2c1_ext_98_99_muxreg[] = {
 
 static struct spear_modemux i2c1_modemux[][1] = {
 	{
-		/* Select signals on pins 8-9 */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = i2c1_ext_8_9_muxreg,
 			.nmuxregs = ARRAY_SIZE(i2c1_ext_8_9_muxreg),
 		},
 	}, {
-		/* Select signals on pins 98-99 */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = i2c1_ext_98_99_muxreg,
@@ -3135,7 +3126,7 @@ static struct spear_function i2c1_function = {
 	.ngroups = ARRAY_SIZE(i2c1_grps),
 };
 
-/* Pad multiplexing for i2c2 device */
+ 
 static const unsigned i2c2_pins[][2] = { { 0, 1 }, { 2, 3 }, { 19, 20 },
 	{ 75, 76 }, { 96, 97 } };
 static struct spear_muxreg i2c2_ext_0_1_muxreg[] = {
@@ -3216,35 +3207,35 @@ static struct spear_muxreg i2c2_ext_96_97_muxreg[] = {
 
 static struct spear_modemux i2c2_modemux[][1] = {
 	{
-		/* Select signals on pins 0_1 */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = i2c2_ext_0_1_muxreg,
 			.nmuxregs = ARRAY_SIZE(i2c2_ext_0_1_muxreg),
 		},
 	}, {
-		/* Select signals on pins 2_3 */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = i2c2_ext_2_3_muxreg,
 			.nmuxregs = ARRAY_SIZE(i2c2_ext_2_3_muxreg),
 		},
 	}, {
-		/* Select signals on pins 19_20 */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = i2c2_ext_19_20_muxreg,
 			.nmuxregs = ARRAY_SIZE(i2c2_ext_19_20_muxreg),
 		},
 	}, {
-		/* Select signals on pins 75_76 */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = i2c2_ext_75_76_muxreg,
 			.nmuxregs = ARRAY_SIZE(i2c2_ext_75_76_muxreg),
 		},
 	}, {
-		/* Select signals on pins 96_97 */
+		 
 		{
 			.modes = EXTENDED_MODE,
 			.muxregs = i2c2_ext_96_97_muxreg,
@@ -3295,7 +3286,7 @@ static struct spear_function i2c2_function = {
 	.ngroups = ARRAY_SIZE(i2c2_grps),
 };
 
-/* pingroups */
+ 
 static struct spear_pingroup *spear320_pingroups[] = {
 	SPEAR3XX_COMMON_PINGROUPS,
 	&clcd_pingroup,
@@ -3378,7 +3369,7 @@ static struct spear_pingroup *spear320_pingroups[] = {
 	&i2c2_pingroup[4],
 };
 
-/* functions */
+ 
 static struct spear_function *spear320_functions[] = {
 	SPEAR3XX_COMMON_FUNCTIONS,
 	&clcd_function,

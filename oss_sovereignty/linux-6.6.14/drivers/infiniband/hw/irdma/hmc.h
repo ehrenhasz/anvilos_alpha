@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB */
-/* Copyright (c) 2015 - 2020 Intel Corporation */
+ 
+ 
 #ifndef IRDMA_HMC_H
 #define IRDMA_HMC_H
 
@@ -39,7 +39,7 @@ enum irdma_hmc_rsrc_type {
 	IRDMA_HMC_IW_MD		 = 18,
 	IRDMA_HMC_IW_OOISC       = 19,
 	IRDMA_HMC_IW_OOISCFFL    = 20,
-	IRDMA_HMC_IW_MAX, /* Must be last entry */
+	IRDMA_HMC_IW_MAX,  
 };
 
 enum irdma_sd_entry_type {
@@ -166,4 +166,4 @@ int irdma_remove_pd_bp(struct irdma_sc_dev *dev,
 		       struct irdma_hmc_info *hmc_info, u32 idx);
 int irdma_prep_remove_sd_bp(struct irdma_hmc_info *hmc_info, u32 idx);
 int irdma_prep_remove_pd_page(struct irdma_hmc_info *hmc_info, u32 idx);
-#endif /* IRDMA_HMC_H */
+#endif  

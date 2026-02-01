@@ -1,11 +1,4 @@
-/*
- * hugetlbpage-backed filesystem.  Based on ramfs.
- *
- * Nadia Yvette Chambers, 2002
- *
- * Copyright (C) 2002 Linus Torvalds.
- * License: GPL
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -106,13 +99,7 @@ static inline void hugetlb_drop_vma_policy(struct vm_area_struct *vma)
 }
 #endif
 
-/*
- * Mask used when checking the page offset value passed in via system
- * calls.  This value will be converted to a loff_t which is signed.
- * Therefore, we want to check the upper PAGE_SHIFT + 1 bits of the
- * value.  The extra bit (- 1 in the shift value) is to take the sign
- * bit into account.
- */
+ 
 #define PGOFF_LOFFT_MAX \
 	(((1UL << (PAGE_SHIFT + 1)) - 1) <<  (BITS_PER_LONG - (PAGE_SHIFT + 1)))
 
@@ -124,14 +111,7 @@ static int hugetlbfs_file_mmap(struct file *file, struct vm_area_struct *vma)
 	int ret;
 	struct hstate *h = hstate_file(file);
 
-	/*
-	 * vma address alignment (but not the pgoff alignment) has
-	 * already been checked by prepare_hugepage_range.  If you add
-	 * any error returns here, do so after setting VM_HUGETLB, so
-	 * is_vm_hugetlb_page tests below unmap_region go the right
-	 * way when do_mmap unwinds (may be important on powerpc
-	 * and ia64).
-	 */
+	 
 	vm_flags_set(vma, VM_HUGETLB | VM_DONTEXPAND);
 	vma->vm_ops = &hugetlb_vm_ops;
 
@@ -139,24 +119,19 @@ static int hugetlbfs_file_mmap(struct file *file, struct vm_area_struct *vma)
 	if (ret)
 		return ret;
 
-	/*
-	 * page based offset in vm_pgoff could be sufficiently large to
-	 * overflow a loff_t when converted to byte offset.  This can
-	 * only happen on architectures where sizeof(loff_t) ==
-	 * sizeof(unsigned long).  So, only check in those instances.
-	 */
+	 
 	if (sizeof(unsigned long) == sizeof(loff_t)) {
 		if (vma->vm_pgoff & PGOFF_LOFFT_MAX)
 			return -EINVAL;
 	}
 
-	/* must be huge page aligned */
+	 
 	if (vma->vm_pgoff & (~huge_page_mask(h) >> PAGE_SHIFT))
 		return -EINVAL;
 
 	vma_len = (loff_t)(vma->vm_end - vma->vm_start);
 	len = vma_len + ((loff_t)vma->vm_pgoff << PAGE_SHIFT);
-	/* check for overflow */
+	 
 	if (len < vma_len)
 		return -EINVAL;
 
@@ -179,9 +154,7 @@ out:
 	return ret;
 }
 
-/*
- * Called under mmap_write_lock(mm).
- */
+ 
 
 static unsigned long
 hugetlb_get_unmapped_area_bottomup(struct file *file, unsigned long addr,
@@ -214,12 +187,7 @@ hugetlb_get_unmapped_area_topdown(struct file *file, unsigned long addr,
 	info.align_offset = 0;
 	addr = vm_unmapped_area(&info);
 
-	/*
-	 * A failed mmap() very likely causes application failure,
-	 * so fall back to the bottom-up function here. This scenario
-	 * can happen with large stack limits and large mmap()
-	 * allocations.
-	 */
+	 
 	if (unlikely(offset_in_page(addr))) {
 		VM_BUG_ON(addr != -ENOMEM);
 		info.flags = 0;
@@ -260,11 +228,7 @@ generic_hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
 			return addr;
 	}
 
-	/*
-	 * Use mm->get_unmapped_area value as a hint to use topdown routine.
-	 * If architectures have special needs, they should define their own
-	 * version of hugetlb_get_unmapped_area.
-	 */
+	 
 	if (mm->get_unmapped_area == arch_get_unmapped_area_topdown)
 		return hugetlb_get_unmapped_area_topdown(file, addr, len,
 				pgoff, flags);
@@ -282,26 +246,20 @@ hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
 }
 #endif
 
-/*
- * Someone wants to read @bytes from a HWPOISON hugetlb @page from @offset.
- * Returns the maximum number of bytes one can read without touching the 1st raw
- * HWPOISON subpage.
- *
- * The implementation borrows the iteration logic from copy_page_to_iter*.
- */
+ 
 static size_t adjust_range_hwpoison(struct page *page, size_t offset, size_t bytes)
 {
 	size_t n = 0;
 	size_t res = 0;
 
-	/* First subpage to start the loop. */
+	 
 	page = nth_page(page, offset / PAGE_SIZE);
 	offset %= PAGE_SIZE;
 	while (1) {
 		if (is_raw_hwpoison_page_in_hugepage(page))
 			break;
 
-		/* Safe to read n bytes without touching HWPOISON subpage. */
+		 
 		n = min(bytes, (size_t)PAGE_SIZE - offset);
 		res += n;
 		bytes -= n;
@@ -317,10 +275,7 @@ static size_t adjust_range_hwpoison(struct page *page, size_t offset, size_t byt
 	return res;
 }
 
-/*
- * Support for read() - Find the page attached to f_mapping and copy out the
- * data. This provides functionality similar to filemap_read().
- */
+ 
 static ssize_t hugetlbfs_read_iter(struct kiocb *iocb, struct iov_iter *to)
 {
 	struct file *file = iocb->ki_filp;
@@ -337,7 +292,7 @@ static ssize_t hugetlbfs_read_iter(struct kiocb *iocb, struct iov_iter *to)
 		struct page *page;
 		size_t nr, copied, want;
 
-		/* nr is the maximum number of bytes to copy from this page */
+		 
 		nr = huge_page_size(h);
 		isize = i_size_read(inode);
 		if (!isize)
@@ -352,13 +307,10 @@ static ssize_t hugetlbfs_read_iter(struct kiocb *iocb, struct iov_iter *to)
 		}
 		nr = nr - offset;
 
-		/* Find the page */
+		 
 		page = find_lock_page(mapping, index);
 		if (unlikely(page == NULL)) {
-			/*
-			 * We have a HOLE, zero out the user-buffer for the
-			 * length of the hole or request.
-			 */
+			 
 			copied = iov_iter_zero(nr, to);
 		} else {
 			unlock_page(page);
@@ -366,11 +318,7 @@ static ssize_t hugetlbfs_read_iter(struct kiocb *iocb, struct iov_iter *to)
 			if (!PageHWPoison(page))
 				want = nr;
 			else {
-				/*
-				 * Adjust how many bytes safe to read without
-				 * touching the 1st raw HWPOISON subpage after
-				 * offset.
-				 */
+				 
 				want = adjust_range_hwpoison(page, offset, nr);
 				if (want == 0) {
 					put_page(page);
@@ -379,9 +327,7 @@ static ssize_t hugetlbfs_read_iter(struct kiocb *iocb, struct iov_iter *to)
 				}
 			}
 
-			/*
-			 * We have the page, copy it to user space buffer.
-			 */
+			 
 			copied = copy_page_to_iter(page, offset, want, to);
 			put_page(page);
 		}
@@ -422,12 +368,7 @@ static void hugetlb_delete_from_page_cache(struct folio *folio)
 	filemap_remove_folio(folio);
 }
 
-/*
- * Called with i_mmap_rwsem held for inode based vma maps.  This makes
- * sure vma (and vm_mm) will not go away.  We also hold the hugetlb fault
- * mutex for the page in the mapping.  So, we can not race with page being
- * faulted into the vma.
- */
+ 
 static bool hugetlb_vma_maps_page(struct vm_area_struct *vma,
 				unsigned long addr, struct page *page)
 {
@@ -447,12 +388,7 @@ static bool hugetlb_vma_maps_page(struct vm_area_struct *vma,
 	return false;
 }
 
-/*
- * Can vma_offset_start/vma_offset_end overflow on 32-bit arches?
- * No, because the interval tree returns us only those vmas
- * which overlap the truncated area starting at pgoff,
- * and no vma on a 32-bit arch can span beyond the 4GB.
- */
+ 
 static unsigned long vma_offset_start(struct vm_area_struct *vma, pgoff_t start)
 {
 	unsigned long offset = 0;
@@ -476,10 +412,7 @@ static unsigned long vma_offset_end(struct vm_area_struct *vma, pgoff_t end)
 	return t_end;
 }
 
-/*
- * Called with hugetlb fault mutex held.  Therefore, no more mappings to
- * this folio can be created while executing the routine.
- */
+ 
 static void hugetlb_unmap_file_folio(struct hstate *h,
 					struct address_space *mapping,
 					struct folio *folio, pgoff_t index)
@@ -507,13 +440,7 @@ retry:
 
 		if (!hugetlb_vma_trylock_write(vma)) {
 			vma_lock = vma->vm_private_data;
-			/*
-			 * If we can not get vma lock, we need to drop
-			 * immap_sema and take locks in order.  First,
-			 * take a ref on the vma_lock structure so that
-			 * we can be guaranteed it will not go away when
-			 * dropping immap_sema.
-			 */
+			 
 			kref_get(&vma_lock->refs);
 			break;
 		}
@@ -526,30 +453,19 @@ retry:
 	i_mmap_unlock_write(mapping);
 
 	if (vma_lock) {
-		/*
-		 * Wait on vma_lock.  We know it is still valid as we have
-		 * a reference.  We must 'open code' vma locking as we do
-		 * not know if vma_lock is still attached to vma.
-		 */
+		 
 		down_write(&vma_lock->rw_sema);
 		i_mmap_lock_write(mapping);
 
 		vma = vma_lock->vma;
 		if (!vma) {
-			/*
-			 * If lock is no longer attached to vma, then just
-			 * unlock, drop our reference and retry looking for
-			 * other vmas.
-			 */
+			 
 			up_write(&vma_lock->rw_sema);
 			kref_put(&vma_lock->refs, hugetlb_vma_lock_release);
 			goto retry;
 		}
 
-		/*
-		 * vma_lock is still attached to vma.  Check to see if vma
-		 * still maps page and if so, unmap.
-		 */
+		 
 		v_start = vma_offset_start(vma, start);
 		v_end = vma_offset_end(vma, end);
 		if (hugetlb_vma_maps_page(vma, v_start, page))
@@ -569,11 +485,7 @@ hugetlb_vmdelete_list(struct rb_root_cached *root, pgoff_t start, pgoff_t end,
 {
 	struct vm_area_struct *vma;
 
-	/*
-	 * end == 0 indicates that the entire range after start should be
-	 * unmapped.  Note, end is exclusive, whereas the interval tree takes
-	 * an inclusive "last".
-	 */
+	 
 	vma_interval_tree_foreach(vma, root, start, end ? end - 1 : ULONG_MAX) {
 		unsigned long v_start;
 		unsigned long v_end;
@@ -586,19 +498,12 @@ hugetlb_vmdelete_list(struct rb_root_cached *root, pgoff_t start, pgoff_t end,
 
 		unmap_hugepage_range(vma, v_start, v_end, NULL, zap_flags);
 
-		/*
-		 * Note that vma lock only exists for shared/non-private
-		 * vmas.  Therefore, lock is not held when calling
-		 * unmap_hugepage_range for private vmas.
-		 */
+		 
 		hugetlb_vma_unlock_write(vma);
 	}
 }
 
-/*
- * Called with hugetlb fault mutex held.
- * Returns true if page was actually removed, false otherwise.
- */
+ 
 static bool remove_inode_single_folio(struct hstate *h, struct inode *inode,
 					struct address_space *mapping,
 					struct folio *folio, pgoff_t index,
@@ -606,23 +511,12 @@ static bool remove_inode_single_folio(struct hstate *h, struct inode *inode,
 {
 	bool ret = false;
 
-	/*
-	 * If folio is mapped, it was faulted in after being
-	 * unmapped in caller.  Unmap (again) while holding
-	 * the fault mutex.  The mutex will prevent faults
-	 * until we finish removing the folio.
-	 */
+	 
 	if (unlikely(folio_mapped(folio)))
 		hugetlb_unmap_file_folio(h, mapping, folio, index);
 
 	folio_lock(folio);
-	/*
-	 * We must remove the folio from page cache before removing
-	 * the region/ reserve map (hugetlb_unreserve_pages).  In
-	 * rare out of memory conditions, removal of the region/reserve
-	 * map could fail.  Correspondingly, the subpool and global
-	 * reserve usage count can need to be adjusted.
-	 */
+	 
 	VM_BUG_ON_FOLIO(folio_test_hugetlb_restore_reserve(folio), folio);
 	hugetlb_delete_from_page_cache(folio);
 	ret = true;
@@ -636,26 +530,7 @@ static bool remove_inode_single_folio(struct hstate *h, struct inode *inode,
 	return ret;
 }
 
-/*
- * remove_inode_hugepages handles two distinct cases: truncation and hole
- * punch.  There are subtle differences in operation for each case.
- *
- * truncation is indicated by end of range being LLONG_MAX
- *	In this case, we first scan the range and release found pages.
- *	After releasing pages, hugetlb_unreserve_pages cleans up region/reserve
- *	maps and global counts.  Page faults can race with truncation.
- *	During faults, hugetlb_no_page() checks i_size before page allocation,
- *	and again after obtaining page table lock.  It will 'back out'
- *	allocations in the truncated range.
- * hole punch is indicated if end is not LLONG_MAX
- *	In the hole punch case we scan the range and release found pages.
- *	Only when releasing a page is the associated region/reserve map
- *	deleted.  The region/reserve map for ranges without associated
- *	pages are not modified.  Page faults can race with hole punch.
- *	This is indicated if we find a mapped page.
- * Note: If the passed end of range value is beyond the end of file, but
- * not LLONG_MAX this routine still performs a hole punch operation.
- */
+ 
 static void remove_inode_hugepages(struct inode *inode, loff_t lstart,
 				   loff_t lend)
 {
@@ -679,9 +554,7 @@ static void remove_inode_hugepages(struct inode *inode, loff_t lstart,
 			hash = hugetlb_fault_mutex_hash(mapping, index);
 			mutex_lock(&hugetlb_fault_mutex_table[hash]);
 
-			/*
-			 * Remove folio that was part of folio_batch.
-			 */
+			 
 			if (remove_inode_single_folio(h, inode, mapping, folio,
 							index, truncate_op))
 				freed++;
@@ -702,14 +575,9 @@ static void hugetlbfs_evict_inode(struct inode *inode)
 
 	remove_inode_hugepages(inode, 0, LLONG_MAX);
 
-	/*
-	 * Get the resv_map from the address space embedded in the inode.
-	 * This is the address space which points to any resv_map allocated
-	 * at inode creation time.  If this is a device special inode,
-	 * i_mapping may not point to the original address space.
-	 */
+	 
 	resv_map = (struct resv_map *)(&inode->i_data)->private_data;
-	/* Only regular and link inodes have associated reserve maps */
+	 
 	if (resv_map)
 		resv_map_release(&resv_map->refs);
 	clear_inode(inode);
@@ -764,15 +632,13 @@ static long hugetlbfs_punch_hole(struct inode *inode, loff_t offset, loff_t len)
 	loff_t hpage_size = huge_page_size(h);
 	loff_t hole_start, hole_end;
 
-	/*
-	 * hole_start and hole_end indicate the full pages within the hole.
-	 */
+	 
 	hole_start = round_up(offset, hpage_size);
 	hole_end = round_down(offset + len, hpage_size);
 
 	inode_lock(inode);
 
-	/* protected by i_rwsem */
+	 
 	if (info->seals & (F_SEAL_WRITE | F_SEAL_FUTURE_WRITE)) {
 		inode_unlock(inode);
 		return -EPERM;
@@ -780,12 +646,12 @@ static long hugetlbfs_punch_hole(struct inode *inode, loff_t offset, loff_t len)
 
 	i_mmap_lock_write(mapping);
 
-	/* If range starts before first full page, zero partial page. */
+	 
 	if (offset < hole_start)
 		hugetlbfs_zero_partial_page(h, mapping,
 				offset, min(offset + len, hole_start));
 
-	/* Unmap users of full pages in the hole. */
+	 
 	if (hole_end > hole_start) {
 		if (!RB_EMPTY_ROOT(&mapping->i_mmap.rb_root))
 			hugetlb_vmdelete_list(&mapping->i_mmap,
@@ -793,14 +659,14 @@ static long hugetlbfs_punch_hole(struct inode *inode, loff_t offset, loff_t len)
 					      hole_end >> PAGE_SHIFT, 0);
 	}
 
-	/* If range extends beyond last full page, zero partial page. */
+	 
 	if ((offset + len) > hole_end && (offset + len) > hole_start)
 		hugetlbfs_zero_partial_page(h, mapping,
 				hole_end, offset + len);
 
 	i_mmap_unlock_write(mapping);
 
-	/* Remove full pages from the file. */
+	 
 	if (hole_end > hole_start)
 		remove_inode_hugepages(inode, hole_start, hole_end);
 
@@ -830,17 +696,13 @@ static long hugetlbfs_fallocate(struct file *file, int mode, loff_t offset,
 	if (mode & FALLOC_FL_PUNCH_HOLE)
 		return hugetlbfs_punch_hole(inode, offset, len);
 
-	/*
-	 * Default preallocate case.
-	 * For this range, start is rounded down and end is rounded up
-	 * as well as being converted to page offsets.
-	 */
+	 
 	start = offset >> hpage_shift;
 	end = (offset + len + hpage_size - 1) >> hpage_shift;
 
 	inode_lock(inode);
 
-	/* We need to check rlimit even when FALLOC_FL_KEEP_SIZE */
+	 
 	error = inode_newsize_ok(inode, offset + len);
 	if (error)
 		goto out;
@@ -850,42 +712,32 @@ static long hugetlbfs_fallocate(struct file *file, int mode, loff_t offset,
 		goto out;
 	}
 
-	/*
-	 * Initialize a pseudo vma as this is required by the huge page
-	 * allocation routines.  If NUMA is configured, use page index
-	 * as input to create an allocation policy.
-	 */
+	 
 	vma_init(&pseudo_vma, mm);
 	vm_flags_init(&pseudo_vma, VM_HUGETLB | VM_MAYSHARE | VM_SHARED);
 	pseudo_vma.vm_file = file;
 
 	for (index = start; index < end; index++) {
-		/*
-		 * This is supposed to be the vaddr where the page is being
-		 * faulted in, but we have no vaddr here.
-		 */
+		 
 		struct folio *folio;
 		unsigned long addr;
 
 		cond_resched();
 
-		/*
-		 * fallocate(2) manpage permits EINTR; we may have been
-		 * interrupted because we are using up too much memory.
-		 */
+		 
 		if (signal_pending(current)) {
 			error = -EINTR;
 			break;
 		}
 
-		/* addr is the offset within the file (zero based) */
+		 
 		addr = index * hpage_size;
 
-		/* mutex taken here, fault path and hole punch */
+		 
 		hash = hugetlb_fault_mutex_hash(mapping, index);
 		mutex_lock(&hugetlb_fault_mutex_table[hash]);
 
-		/* See if already present in mapping to avoid alloc/free */
+		 
 		folio = filemap_get_folio(mapping, index);
 		if (!IS_ERR(folio)) {
 			folio_put(folio);
@@ -893,14 +745,7 @@ static long hugetlbfs_fallocate(struct file *file, int mode, loff_t offset,
 			continue;
 		}
 
-		/*
-		 * Allocate folio without setting the avoid_reserve argument.
-		 * There certainly are no reserves associated with the
-		 * pseudo_vma.  However, there could be shared mappings with
-		 * reserves for the file at the inode level.  If we fallocate
-		 * folios in these areas, we need to consume the reserves
-		 * to keep reservation accounting consistent.
-		 */
+		 
 		hugetlb_set_vma_policy(&pseudo_vma, inode, index);
 		folio = alloc_hugetlb_folio(&pseudo_vma, addr, 0);
 		hugetlb_drop_vma_policy(&pseudo_vma);
@@ -922,10 +767,7 @@ static long hugetlbfs_fallocate(struct file *file, int mode, loff_t offset,
 		mutex_unlock(&hugetlb_fault_mutex_table[hash]);
 
 		folio_set_hugetlb_migratable(folio);
-		/*
-		 * folio_unlock because locked by hugetlb_add_to_page_cache()
-		 * folio_put() due to reference from alloc_hugetlb_folio()
-		 */
+		 
 		folio_unlock(folio);
 		folio_put(folio);
 	}
@@ -957,7 +799,7 @@ static int hugetlbfs_setattr(struct mnt_idmap *idmap,
 
 		if (newsize & ~huge_page_mask(h))
 			return -EINVAL;
-		/* protected by i_rwsem */
+		 
 		if ((newsize < oldsize && (info->seals & F_SEAL_SHRINK)) ||
 		    (newsize > oldsize && (info->seals & F_SEAL_GROW)))
 			return -EPERM;
@@ -983,19 +825,14 @@ static struct inode *hugetlbfs_get_root(struct super_block *sb,
 		inode->i_atime = inode->i_mtime = inode_set_ctime_current(inode);
 		inode->i_op = &hugetlbfs_dir_inode_operations;
 		inode->i_fop = &simple_dir_operations;
-		/* directory inodes start off with i_nlink == 2 (for "." entry) */
+		 
 		inc_nlink(inode);
 		lockdep_annotate_inode_mutex_key(inode);
 	}
 	return inode;
 }
 
-/*
- * Hugetlbfs is not reclaimable; therefore its i_mmap_rwsem will never
- * be taken from reclaim -- unlike regular filesystems. This needs an
- * annotation because huge_pmd_share() does an allocation under hugetlb's
- * i_mmap_rwsem.
- */
+ 
 static struct lock_class_key hugetlbfs_i_mmap_rwsem_key;
 
 static struct inode *hugetlbfs_get_inode(struct super_block *sb,
@@ -1005,10 +842,7 @@ static struct inode *hugetlbfs_get_inode(struct super_block *sb,
 	struct inode *inode;
 	struct resv_map *resv_map = NULL;
 
-	/*
-	 * Reserve maps are only needed for inodes that can have associated
-	 * page allocations.
-	 */
+	 
 	if (S_ISREG(mode) || S_ISLNK(mode)) {
 		resv_map = resv_map_alloc();
 		if (!resv_map)
@@ -1039,7 +873,7 @@ static struct inode *hugetlbfs_get_inode(struct super_block *sb,
 			inode->i_op = &hugetlbfs_dir_inode_operations;
 			inode->i_fop = &simple_dir_operations;
 
-			/* directory inodes start off with i_nlink == 2 (for "." entry) */
+			 
 			inc_nlink(inode);
 			break;
 		case S_IFLNK:
@@ -1056,9 +890,7 @@ static struct inode *hugetlbfs_get_inode(struct super_block *sb,
 	return inode;
 }
 
-/*
- * File creation. Allocate an inode, and we're done..
- */
+ 
 static int hugetlbfs_mknod(struct mnt_idmap *idmap, struct inode *dir,
 			   struct dentry *dentry, umode_t mode, dev_t dev)
 {
@@ -1069,7 +901,7 @@ static int hugetlbfs_mknod(struct mnt_idmap *idmap, struct inode *dir,
 		return -ENOSPC;
 	dir->i_mtime = inode_set_ctime_current(dir);
 	d_instantiate(dentry, inode);
-	dget(dentry);/* Extra count - pin the dentry in core */
+	dget(dentry); 
 	return 0;
 }
 
@@ -1160,9 +992,7 @@ static int hugetlbfs_error_remove_page(struct address_space *mapping,
 	return 0;
 }
 
-/*
- * Display the mount options in /proc/mounts.
- */
+ 
 static int hugetlbfs_show_options(struct seq_file *m, struct dentry *root)
 {
 	struct hugetlbfs_sb_info *sbinfo = HUGETLBFS_SB(root->d_sb);
@@ -1209,8 +1039,7 @@ static int hugetlbfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 	buf->f_bsize = huge_page_size(h);
 	if (sbinfo) {
 		spin_lock(&sbinfo->stat_lock);
-		/* If no limits set, just report 0 or -1 for max/free/used
-		 * blocks, like simple_statfs() */
+		 
 		if (sbinfo->spool) {
 			long free_pages;
 
@@ -1283,15 +1112,7 @@ static struct inode *hugetlbfs_alloc_inode(struct super_block *sb)
 		return NULL;
 	}
 
-	/*
-	 * Any time after allocation, hugetlbfs_destroy_inode can be called
-	 * for the inode.  mpol_free_shared_policy is unconditionally called
-	 * as part of hugetlbfs_destroy_inode.  So, initialize policy here
-	 * in case of a quick call to destroy.
-	 *
-	 * Note that the policy is initialized even if we are creating a
-	 * private inode.  This simplifies hugetlbfs_destroy_inode.
-	 */
+	 
 	mpol_shared_policy_init(&p->policy, NULL);
 
 	return &p->vfs_inode;
@@ -1361,11 +1182,7 @@ static const struct super_operations hugetlbfs_ops = {
 	.show_options	= hugetlbfs_show_options,
 };
 
-/*
- * Convert size option passed from command line to number of huge pages
- * in the pool specified by hstate.  Size option could be in bytes
- * (val_type == SIZE_STD) or percentage of the pool (val_type == SIZE_PERCENT).
- */
+ 
 static long
 hugetlbfs_size_to_hpages(struct hstate *h, unsigned long long size_opt,
 			 enum hugetlbfs_size_type val_type)
@@ -1383,9 +1200,7 @@ hugetlbfs_size_to_hpages(struct hstate *h, unsigned long long size_opt,
 	return size_opt;
 }
 
-/*
- * Parse one mount parameter.
- */
+ 
 static int hugetlbfs_parse_param(struct fs_context *fc, struct fs_parameter *param)
 {
 	struct hugetlbfs_fs_context *ctx = fc->fs_private;
@@ -1416,7 +1231,7 @@ static int hugetlbfs_parse_param(struct fs_context *fc, struct fs_parameter *par
 		return 0;
 
 	case Opt_size:
-		/* memparse() will accept a K/M/G without a digit */
+		 
 		if (!param->string || !isdigit(param->string[0]))
 			goto bad_val;
 		ctx->max_size_opt = memparse(param->string, &rest);
@@ -1426,7 +1241,7 @@ static int hugetlbfs_parse_param(struct fs_context *fc, struct fs_parameter *par
 		return 0;
 
 	case Opt_nr_inodes:
-		/* memparse() will accept a K/M/G without a digit */
+		 
 		if (!param->string || !isdigit(param->string[0]))
 			goto bad_val;
 		ctx->nr_inodes = memparse(param->string, &rest);
@@ -1442,7 +1257,7 @@ static int hugetlbfs_parse_param(struct fs_context *fc, struct fs_parameter *par
 		return 0;
 
 	case Opt_min_size:
-		/* memparse() will accept a K/M/G without a digit */
+		 
 		if (!param->string || !isdigit(param->string[0]))
 			goto bad_val;
 		ctx->min_size_opt = memparse(param->string, &rest);
@@ -1460,17 +1275,12 @@ bad_val:
 		      param->string, param->key);
 }
 
-/*
- * Validate the parsed options.
- */
+ 
 static int hugetlbfs_validate(struct fs_context *fc)
 {
 	struct hugetlbfs_fs_context *ctx = fc->fs_private;
 
-	/*
-	 * Use huge page pool size (in hstate) to convert the size
-	 * options to number of huge pages.  If NO_SIZE, -1 is returned.
-	 */
+	 
 	ctx->max_hpages = hugetlbfs_size_to_hpages(ctx->hstate,
 						   ctx->max_size_opt,
 						   ctx->max_val_type);
@@ -1478,9 +1288,7 @@ static int hugetlbfs_validate(struct fs_context *fc)
 						   ctx->min_size_opt,
 						   ctx->min_val_type);
 
-	/*
-	 * If max_size was specified, then min_size must be smaller
-	 */
+	 
 	if (ctx->max_val_type > NO_SIZE &&
 	    ctx->min_hpages > ctx->max_hpages) {
 		pr_err("Minimum size can not be greater than maximum size\n");
@@ -1509,11 +1317,7 @@ hugetlbfs_fill_super(struct super_block *sb, struct fs_context *fc)
 	sbinfo->gid		= ctx->gid;
 	sbinfo->mode		= ctx->mode;
 
-	/*
-	 * Allocate and initialize subpool if maximum or minimum size is
-	 * specified.  Any needed reservations (for minimum size) are taken
-	 * when the subpool is created.
-	 */
+	 
 	if (ctx->max_hpages != -1 || ctx->min_hpages != -1) {
 		sbinfo->spool = hugepage_new_subpool(ctx->hstate,
 						     ctx->max_hpages,
@@ -1528,10 +1332,7 @@ hugetlbfs_fill_super(struct super_block *sb, struct fs_context *fc)
 	sb->s_op = &hugetlbfs_ops;
 	sb->s_time_gran = 1;
 
-	/*
-	 * Due to the special and limited functionality of hugetlbfs, it does
-	 * not work well as a stacking filesystem.
-	 */
+	 
 	sb->s_stack_depth = FILESYSTEM_MAX_STACK_DEPTH;
 	sb->s_root = d_make_root(hugetlbfs_get_root(sb, ctx));
 	if (!sb->s_root)
@@ -1570,13 +1371,13 @@ static int hugetlbfs_init_fs_context(struct fs_context *fc)
 	if (!ctx)
 		return -ENOMEM;
 
-	ctx->max_hpages	= -1; /* No limit on size by default */
-	ctx->nr_inodes	= -1; /* No limit on number of inodes by default */
+	ctx->max_hpages	= -1;  
+	ctx->nr_inodes	= -1;  
 	ctx->uid	= current_fsuid();
 	ctx->gid	= current_fsgid();
 	ctx->mode	= 0755;
 	ctx->hstate	= &default_hstate;
-	ctx->min_hpages	= -1; /* No default minimum size */
+	ctx->min_hpages	= -1;  
 	ctx->max_val_type = NO_SIZE;
 	ctx->min_val_type = NO_SIZE;
 	fc->fs_private = ctx;
@@ -1609,10 +1410,7 @@ static int get_hstate_idx(int page_size_log)
 	return hstate_index(h);
 }
 
-/*
- * Note that size should be aligned to proper hugepage size in caller side,
- * otherwise hugetlb_reserve_pages reserves one less hugepages than intended.
- */
+ 
 struct file *hugetlb_file_setup(const char *name, size_t size,
 				vm_flags_t acctflag, int creat_flags,
 				int page_size_log)
@@ -1709,7 +1507,7 @@ static int __init init_hugetlbfs_fs(void)
 	if (error)
 		goto out_free;
 
-	/* default hstate mount is required */
+	 
 	mnt = mount_one_hugetlbfs(&default_hstate);
 	if (IS_ERR(mnt)) {
 		error = PTR_ERR(mnt);
@@ -1717,7 +1515,7 @@ static int __init init_hugetlbfs_fs(void)
 	}
 	hugetlbfs_vfsmount[default_hstate_idx] = mnt;
 
-	/* other hstates are optional */
+	 
 	i = 0;
 	for_each_hstate(h) {
 		if (i == default_hstate_idx) {

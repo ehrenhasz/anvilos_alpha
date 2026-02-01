@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _PERF_UI_H_
 #define _PERF_UI_H_ 1
 
@@ -34,4 +34,4 @@ int stdio__config_color(const struct option *opt, const char *mode, int unset);
 void pthread__block_sigwinch(void);
 void pthread__unblock_sigwinch(void);
 
-#endif /* _PERF_UI_H_ */
+#endif  

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Simple synchronous userspace interface to SPI devices
- *
- * Copyright (C) 2006 SWAPP
- *	Andrea Paterniani <a.paterniani@swapp-eng.it>
- * Copyright (C) 2007 David Brownell (simplification, cleanup)
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/ioctl.h>
@@ -27,38 +21,15 @@
 #include <linux/uaccess.h>
 
 
-/*
- * This supports access to SPI devices using normal userspace I/O calls.
- * Note that while traditional UNIX/POSIX I/O semantics are half duplex,
- * and often mask message boundaries, full SPI support requires full duplex
- * transfers.  There are several kinds of internal message boundaries to
- * handle chipselect management and other protocol options.
- *
- * SPI has a character major number assigned.  We allocate minor numbers
- * dynamically using a bitmask.  You must use hotplug tools, such as udev
- * (or mdev with busybox) to create and destroy the /dev/spidevB.C device
- * nodes, since there is no fixed association of minor numbers with any
- * particular SPI bus or device.
- */
-#define SPIDEV_MAJOR			153	/* assigned */
-#define N_SPI_MINORS			32	/* ... up to 256 */
+ 
+#define SPIDEV_MAJOR			153	 
+#define N_SPI_MINORS			32	 
 
 static DECLARE_BITMAP(minors, N_SPI_MINORS);
 
 static_assert(N_SPI_MINORS > 0 && N_SPI_MINORS <= 256);
 
-/* Bit masks for spi_device.mode management.  Note that incorrect
- * settings for some settings can cause *lots* of trouble for other
- * devices on a shared bus:
- *
- *  - CS_HIGH ... this device will be active when it shouldn't be
- *  - 3WIRE ... when active, it won't behave as it should
- *  - NO_CS ... there will be no explicit message boundaries; this
- *	is completely incompatible with the shared bus model
- *  - READY ... transfers may proceed when they shouldn't.
- *
- * REVISIT should changing those flags be privileged?
- */
+ 
 #define SPI_MODE_MASK		(SPI_MODE_X_MASK | SPI_CS_HIGH \
 				| SPI_LSB_FIRST | SPI_3WIRE | SPI_LOOP \
 				| SPI_NO_CS | SPI_READY | SPI_TX_DUAL \
@@ -73,7 +44,7 @@ struct spidev_data {
 	struct spi_device	*spi;
 	struct list_head	device_entry;
 
-	/* TX/RX buffers are NULL unless this device is open (users > 0) */
+	 
 	struct mutex		buf_lock;
 	unsigned		users;
 	u8			*tx_buffer;
@@ -88,7 +59,7 @@ static unsigned bufsiz = 4096;
 module_param(bufsiz, uint, S_IRUGO);
 MODULE_PARM_DESC(bufsiz, "data bytes in biggest supported SPI message");
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static ssize_t
 spidev_sync_unlocked(struct spi_device *spi, struct spi_message *message)
@@ -150,16 +121,16 @@ spidev_sync_read(struct spidev_data *spidev, size_t len)
 	return spidev_sync(spidev, &m);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
-/* Read-only message with current device setup */
+ 
 static ssize_t
 spidev_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
 {
 	struct spidev_data	*spidev;
 	ssize_t			status;
 
-	/* chipselect only toggles at start or end of operation */
+	 
 	if (count > bufsiz)
 		return -EMSGSIZE;
 
@@ -181,7 +152,7 @@ spidev_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
 	return status;
 }
 
-/* Write-only message with current device setup */
+ 
 static ssize_t
 spidev_write(struct file *filp, const char __user *buf,
 		size_t count, loff_t *f_pos)
@@ -190,7 +161,7 @@ spidev_write(struct file *filp, const char __user *buf,
 	ssize_t			status;
 	unsigned long		missing;
 
-	/* chipselect only toggles at start or end of operation */
+	 
 	if (count > bufsiz)
 		return -EMSGSIZE;
 
@@ -223,10 +194,7 @@ static int spidev_message(struct spidev_data *spidev,
 	if (k_xfers == NULL)
 		return -ENOMEM;
 
-	/* Construct spi_message, copying any tx data to bounce buffer.
-	 * We walk the array of user-provided transfers, using each one
-	 * to initialize a kernel version of the same transfer.
-	 */
+	 
 	tx_buf = spidev->tx_buffer;
 	rx_buf = spidev->rx_buffer;
 	total = 0;
@@ -235,26 +203,20 @@ static int spidev_message(struct spidev_data *spidev,
 	for (n = n_xfers, k_tmp = k_xfers, u_tmp = u_xfers;
 			n;
 			n--, k_tmp++, u_tmp++) {
-		/* Ensure that also following allocations from rx_buf/tx_buf will meet
-		 * DMA alignment requirements.
-		 */
+		 
 		unsigned int len_aligned = ALIGN(u_tmp->len, ARCH_DMA_MINALIGN);
 
 		k_tmp->len = u_tmp->len;
 
 		total += k_tmp->len;
-		/* Since the function returns the total length of transfers
-		 * on success, restrict the total to positive int values to
-		 * avoid the return value looking like an error.  Also check
-		 * each transfer length to avoid arithmetic overflow.
-		 */
+		 
 		if (total > INT_MAX || k_tmp->len > INT_MAX) {
 			status = -EMSGSIZE;
 			goto done;
 		}
 
 		if (u_tmp->rx_buf) {
-			/* this transfer needs space in RX bounce buffer */
+			 
 			rx_total += len_aligned;
 			if (rx_total > bufsiz) {
 				status = -EMSGSIZE;
@@ -264,7 +226,7 @@ static int spidev_message(struct spidev_data *spidev,
 			rx_buf += len_aligned;
 		}
 		if (u_tmp->tx_buf) {
-			/* this transfer needs space in TX bounce buffer */
+			 
 			tx_total += len_aligned;
 			if (tx_total > bufsiz) {
 				status = -EMSGSIZE;
@@ -308,7 +270,7 @@ static int spidev_message(struct spidev_data *spidev,
 	if (status < 0)
 		goto done;
 
-	/* copy any rx data out of bounce buffer */
+	 
 	for (n = n_xfers, k_tmp = k_xfers, u_tmp = u_xfers;
 			n;
 			n--, k_tmp++, u_tmp++) {
@@ -334,7 +296,7 @@ spidev_get_ioc_message(unsigned int cmd, struct spi_ioc_transfer __user *u_ioc,
 {
 	u32	tmp;
 
-	/* Check type, command number and direction */
+	 
 	if (_IOC_TYPE(cmd) != SPI_IOC_MAGIC
 			|| _IOC_NR(cmd) != _IOC_NR(SPI_IOC_MESSAGE(0))
 			|| _IOC_DIR(cmd) != _IOC_WRITE)
@@ -347,7 +309,7 @@ spidev_get_ioc_message(unsigned int cmd, struct spi_ioc_transfer __user *u_ioc,
 	if (*n_ioc == 0)
 		return NULL;
 
-	/* copy into scratch area */
+	 
 	return memdup_user(u_ioc, tmp);
 }
 
@@ -361,13 +323,11 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	unsigned		n_ioc;
 	struct spi_ioc_transfer	*ioc;
 
-	/* Check type and command number */
+	 
 	if (_IOC_TYPE(cmd) != SPI_IOC_MAGIC)
 		return -ENOTTY;
 
-	/* guard against device removal before, or while,
-	 * we issue this ioctl.
-	 */
+	 
 	spidev = filp->private_data;
 	mutex_lock(&spidev->spi_lock);
 	spi = spi_dev_get(spidev->spi);
@@ -376,16 +336,11 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		return -ESHUTDOWN;
 	}
 
-	/* use the buffer lock here for triple duty:
-	 *  - prevent I/O (from us) so calling spi_setup() is safe;
-	 *  - prevent concurrent SPI_IOC_WR_* from morphing
-	 *    data fields while SPI_IOC_RD_* reads them;
-	 *  - SPI_IOC_MESSAGE needs the buffer locked "normally".
-	 */
+	 
 	mutex_lock(&spidev->buf_lock);
 
 	switch (cmd) {
-	/* read requests */
+	 
 	case SPI_IOC_RD_MODE:
 	case SPI_IOC_RD_MODE32:
 		tmp = spi->mode;
@@ -416,7 +371,7 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		retval = put_user(spidev->speed_hz, (__u32 __user *)arg);
 		break;
 
-	/* write requests */
+	 
 	case SPI_IOC_WR_MODE:
 	case SPI_IOC_WR_MODE32:
 		if (cmd == SPI_IOC_WR_MODE)
@@ -499,8 +454,8 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		break;
 	}
 	default:
-		/* segmented and/or full-duplex I/O request */
-		/* Check message and copy into scratch area */
+		 
+		 
 		ioc = spidev_get_ioc_message(cmd,
 				(struct spi_ioc_transfer __user *)arg, &n_ioc);
 		if (IS_ERR(ioc)) {
@@ -508,9 +463,9 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 			break;
 		}
 		if (!ioc)
-			break;	/* n_ioc is also 0 */
+			break;	 
 
-		/* translate to spi_message, execute */
+		 
 		retval = spidev_message(spidev, ioc, n_ioc);
 		kfree(ioc);
 		break;
@@ -536,9 +491,7 @@ spidev_compat_ioc_message(struct file *filp, unsigned int cmd,
 
 	u_ioc = (struct spi_ioc_transfer __user *) compat_ptr(arg);
 
-	/* guard against device removal before, or while,
-	 * we issue this ioctl.
-	 */
+	 
 	spidev = filp->private_data;
 	mutex_lock(&spidev->spi_lock);
 	spi = spi_dev_get(spidev->spi);
@@ -547,25 +500,25 @@ spidev_compat_ioc_message(struct file *filp, unsigned int cmd,
 		return -ESHUTDOWN;
 	}
 
-	/* SPI_IOC_MESSAGE needs the buffer locked "normally" */
+	 
 	mutex_lock(&spidev->buf_lock);
 
-	/* Check message and copy into scratch area */
+	 
 	ioc = spidev_get_ioc_message(cmd, u_ioc, &n_ioc);
 	if (IS_ERR(ioc)) {
 		retval = PTR_ERR(ioc);
 		goto done;
 	}
 	if (!ioc)
-		goto done;	/* n_ioc is also 0 */
+		goto done;	 
 
-	/* Convert buffer pointers */
+	 
 	for (n = 0; n < n_ioc; n++) {
 		ioc[n].rx_buf = (uintptr_t) compat_ptr(ioc[n].rx_buf);
 		ioc[n].tx_buf = (uintptr_t) compat_ptr(ioc[n].tx_buf);
 	}
 
-	/* translate to spi_message, execute */
+	 
 	retval = spidev_message(spidev, ioc, n_ioc);
 	kfree(ioc);
 
@@ -588,7 +541,7 @@ spidev_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 }
 #else
 #define spidev_compat_ioctl NULL
-#endif /* CONFIG_COMPAT */
+#endif  
 
 static int spidev_open(struct inode *inode, struct file *filp)
 {
@@ -651,11 +604,11 @@ static int spidev_release(struct inode *inode, struct file *filp)
 	filp->private_data = NULL;
 
 	mutex_lock(&spidev->spi_lock);
-	/* ... after we unbound from the underlying device? */
+	 
 	dofree = (spidev->spi == NULL);
 	mutex_unlock(&spidev->spi_lock);
 
-	/* last close? */
+	 
 	spidev->users--;
 	if (!spidev->users) {
 
@@ -681,10 +634,7 @@ static int spidev_release(struct inode *inode, struct file *filp)
 
 static const struct file_operations spidev_fops = {
 	.owner =	THIS_MODULE,
-	/* REVISIT switch to aio primitives, so that userspace
-	 * gets more complete API coverage.  It'll simplify things
-	 * too, except for the locking.
-	 */
+	 
 	.write =	spidev_write,
 	.read =		spidev_read,
 	.unlocked_ioctl = spidev_ioctl,
@@ -694,12 +644,9 @@ static const struct file_operations spidev_fops = {
 	.llseek =	no_llseek,
 };
 
-/*-------------------------------------------------------------------------*/
+ 
 
-/* The main reason to have this class is to make mdev/udev create the
- * /dev/spidevB.C character device nodes exposing our userspace API.
- * It also simplifies memory management.
- */
+ 
 
 static struct class *spidev_class;
 
@@ -718,10 +665,7 @@ static const struct spi_device_id spidev_spi_ids[] = {
 };
 MODULE_DEVICE_TABLE(spi, spidev_spi_ids);
 
-/*
- * spidev should never be referenced in DT without a specific compatible string,
- * it is a Linux implementation thing rather than a description of the hardware.
- */
+ 
 static int spidev_of_check(struct device *dev)
 {
 	if (device_property_match_string(dev, "compatible", "spidev") < 0)
@@ -746,7 +690,7 @@ static const struct of_device_id spidev_dt_ids[] = {
 };
 MODULE_DEVICE_TABLE(of, spidev_dt_ids);
 
-/* Dummy SPI devices not to be used in production systems */
+ 
 static int spidev_acpi_check(struct device *dev)
 {
 	dev_warn(dev, "do not use this driver in production systems!\n");
@@ -754,12 +698,7 @@ static int spidev_acpi_check(struct device *dev)
 }
 
 static const struct acpi_device_id spidev_acpi_ids[] = {
-	/*
-	 * The ACPI SPT000* devices are only meant for development and
-	 * testing. Systems used in production should have a proper ACPI
-	 * description of the connected peripheral and they should also use
-	 * a proper driver instead of poking directly to the SPI bus.
-	 */
+	 
 	{ "SPT0001", (kernel_ulong_t)&spidev_acpi_check },
 	{ "SPT0002", (kernel_ulong_t)&spidev_acpi_check },
 	{ "SPT0003", (kernel_ulong_t)&spidev_acpi_check },
@@ -767,7 +706,7 @@ static const struct acpi_device_id spidev_acpi_ids[] = {
 };
 MODULE_DEVICE_TABLE(acpi, spidev_acpi_ids);
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static int spidev_probe(struct spi_device *spi)
 {
@@ -783,21 +722,19 @@ static int spidev_probe(struct spi_device *spi)
 			return status;
 	}
 
-	/* Allocate driver data */
+	 
 	spidev = kzalloc(sizeof(*spidev), GFP_KERNEL);
 	if (!spidev)
 		return -ENOMEM;
 
-	/* Initialize the driver data */
+	 
 	spidev->spi = spi;
 	mutex_init(&spidev->spi_lock);
 	mutex_init(&spidev->buf_lock);
 
 	INIT_LIST_HEAD(&spidev->device_entry);
 
-	/* If we can allocate a minor number, hook up this device.
-	 * Reusing minors is fine so long as udev or mdev is working.
-	 */
+	 
 	mutex_lock(&device_list_lock);
 	minor = find_first_zero_bit(minors, N_SPI_MINORS);
 	if (minor < N_SPI_MINORS) {
@@ -832,9 +769,9 @@ static void spidev_remove(struct spi_device *spi)
 {
 	struct spidev_data	*spidev = spi_get_drvdata(spi);
 
-	/* prevent new opens */
+	 
 	mutex_lock(&device_list_lock);
-	/* make sure ops on existing fds can abort cleanly */
+	 
 	mutex_lock(&spidev->spi_lock);
 	spidev->spi = NULL;
 	mutex_unlock(&spidev->spi_lock);
@@ -857,23 +794,16 @@ static struct spi_driver spidev_spi_driver = {
 	.remove =	spidev_remove,
 	.id_table =	spidev_spi_ids,
 
-	/* NOTE:  suspend/resume methods are not necessary here.
-	 * We don't do anything except pass the requests to/from
-	 * the underlying controller.  The refrigerator handles
-	 * most issues; the controller driver handles the rest.
-	 */
+	 
 };
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static int __init spidev_init(void)
 {
 	int status;
 
-	/* Claim our 256 reserved device numbers.  Then register a class
-	 * that will key udev/mdev to add/remove /dev nodes.  Last, register
-	 * the driver which manages those device numbers.
-	 */
+	 
 	status = register_chrdev(SPIDEV_MAJOR, "spi", &spidev_fops);
 	if (status < 0)
 		return status;

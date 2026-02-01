@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2022, Google LLC.
- *
- * Test for KVM_CAP_EXIT_ON_EMULATION_FAILURE.
- */
 
-#define _GNU_SOURCE /* for program_invocation_short_name */
+ 
+
+#define _GNU_SOURCE  
 
 #include "flds_emulation.h"
 
@@ -16,7 +12,7 @@
 
 static void guest_code(void)
 {
-	/* Execute flds with an MMIO address to force KVM to emulate it. */
+	 
 	flds(MMIO_GVA);
 	GUEST_DONE();
 }

@@ -1,35 +1,4 @@
-/*
- * Xen SCSI backend driver
- *
- * Copyright (c) 2008, FUJITSU Limited
- *
- * Based on the blkback driver code.
- * Adaption to kernel taget core infrastructure taken from vhost/scsi.c
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation; or, when distributed
- * separately from the Linux kernel or incorporated into other
- * software packages, subject to the following license:
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this source file (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy, modify,
- * merge, publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
+ 
 
 #define pr_fmt(fmt) "xen-pvscsi: " fmt
 
@@ -47,7 +16,7 @@
 
 #include <generated/utsrelease.h>
 
-#include <scsi/scsi_host.h> /* SG_ALL */
+#include <scsi/scsi_host.h>  
 
 #include <target/target_core_base.h>
 #include <target/target_core_fabric.h>
@@ -68,15 +37,15 @@
 #define VSCSI_NAMELEN	32
 
 struct ids_tuple {
-	unsigned int hst;		/* host    */
-	unsigned int chn;		/* channel */
-	unsigned int tgt;		/* target  */
-	unsigned int lun;		/* LUN     */
+	unsigned int hst;		 
+	unsigned int chn;		 
+	unsigned int tgt;		 
+	unsigned int lun;		 
 };
 
 struct v2p_entry {
-	struct ids_tuple v;		/* translate from */
-	struct scsiback_tpg *tpg;	/* translate to   */
+	struct ids_tuple v;		 
+	struct scsiback_tpg *tpg;	 
 	unsigned int lun;
 	struct kref kref;
 	struct list_head l;
@@ -101,14 +70,10 @@ struct vscsibk_info {
 	struct gnttab_page_cache free_pages;
 };
 
-/* theoretical maximum of grants for one request */
+ 
 #define VSCSI_MAX_GRANTS	(SG_ALL + VSCSIIF_SG_TABLESIZE)
 
-/*
- * VSCSI_GRANT_BATCH is the maximum number of grants to be processed in one
- * call to map/unmap grants. Don't choose it too large, as there are arrays
- * with VSCSI_GRANT_BATCH elements allocated on the stack.
- */
+ 
 #define VSCSI_GRANT_BATCH	16
 
 struct vscsibk_pend {
@@ -118,8 +83,8 @@ struct vscsibk_pend {
 	uint8_t cmd_len;
 
 	uint8_t sc_data_direction;
-	uint16_t n_sg;		/* real length of SG list */
-	uint16_t n_grants;	/* SG pages and potentially SG list */
+	uint16_t n_sg;		 
+	uint16_t n_grants;	 
 	uint32_t data_len;
 	uint32_t result;
 
@@ -140,41 +105,41 @@ struct vscsibk_pend {
 #define VSCSI_DEFAULT_SESSION_TAGS	128
 
 struct scsiback_nexus {
-	/* Pointer to TCM session for I_T Nexus */
+	 
 	struct se_session *tvn_se_sess;
 };
 
 struct scsiback_tport {
-	/* SCSI protocol the tport is providing */
+	 
 	u8 tport_proto_id;
-	/* Binary World Wide unique Port Name for pvscsi Target port */
+	 
 	u64 tport_wwpn;
-	/* ASCII formatted WWPN for pvscsi Target port */
+	 
 	char tport_name[VSCSI_NAMELEN];
-	/* Returned by scsiback_make_tport() */
+	 
 	struct se_wwn tport_wwn;
 };
 
 struct scsiback_tpg {
-	/* scsiback port target portal group tag for TCM */
+	 
 	u16 tport_tpgt;
-	/* track number of TPG Port/Lun Links wrt explicit I_T Nexus shutdown */
+	 
 	int tv_tpg_port_count;
-	/* xen-pvscsi references to tpg_nexus, protected by tv_tpg_mutex */
+	 
 	int tv_tpg_fe_count;
-	/* list for scsiback_list */
+	 
 	struct list_head tv_tpg_list;
-	/* Used to protect access for tpg_nexus */
+	 
 	struct mutex tv_tpg_mutex;
-	/* Pointer to the TCM pvscsi I_T Nexus for this TPG endpoint */
+	 
 	struct scsiback_nexus *tpg_nexus;
-	/* Pointer back to scsiback_tport */
+	 
 	struct scsiback_tport *tport;
-	/* Returned by scsiback_make_tpg() */
+	 
 	struct se_portal_group se_tpg;
-	/* alias used in xenstore */
+	 
 	char param_alias[VSCSI_NAMELEN];
-	/* list of info structures related to this target portal group */
+	 
 	struct list_head info_list;
 };
 
@@ -188,7 +153,7 @@ module_param_named(max_buffer_pages, scsiback_max_buffer_pages, int, 0644);
 MODULE_PARM_DESC(max_buffer_pages,
 "Maximum number of free pages to keep in backend buffer");
 
-/* Global spinlock to protect scsiback TPG list */
+ 
 static DEFINE_MUTEX(scsiback_mutex);
 static LIST_HEAD(scsiback_list);
 
@@ -410,11 +375,7 @@ static void scsiback_cmd_done(struct vscsibk_pend *pending_req)
 	scsiback_fast_flush_area(pending_req);
 	scsiback_do_resp_with_sense(sense_buffer, errors, resid, pending_req);
 	scsiback_put(info);
-	/*
-	 * Drop the extra KREF_ACK reference taken by target_submit_cmd_map_sgls()
-	 * ahead of scsiback_check_stop_free() ->  transport_generic_free_cmd()
-	 * final se_cmd->cmd_kref put.
-	 */
+	 
 	target_put_sess_cmd(&pending_req->se_cmd);
 }
 
@@ -542,7 +503,7 @@ static int scsiback_gnttab_data_map(struct vscsiif_request *ring_req,
 		}
 	}
 
-	/* free of (sgl) in fast_flush_area() */
+	 
 	pending_req->sgl = kmalloc_array(nr_segments,
 					sizeof(struct scatterlist), GFP_KERNEL);
 	if (!pending_req->sgl)
@@ -643,9 +604,7 @@ err:
 	scsiback_do_resp_with_sense(NULL, err, 0, pending_req);
 }
 
-/*
-  Perform virtual to physical translation
-*/
+ 
 static struct v2p_entry *scsiback_do_translation(struct vscsibk_info *info,
 			struct ids_tuple *v)
 {
@@ -703,7 +662,7 @@ static struct vscsibk_pend *prepare_pending_reqs(struct vscsibk_info *info,
 	struct v2p_entry *v2p;
 	struct ids_tuple vir;
 
-	/* request range check from frontend */
+	 
 	if ((ring_req->sc_data_direction != DMA_BIDIRECTIONAL) &&
 		(ring_req->sc_data_direction != DMA_TO_DEVICE) &&
 		(ring_req->sc_data_direction != DMA_FROM_DEVICE) &&
@@ -756,7 +715,7 @@ static int scsiback_do_cmd_fn(struct vscsibk_info *info,
 
 	rc = ring->req_cons;
 	rp = ring->sring->req_prod;
-	rmb();	/* guest system is accessing ring, too */
+	rmb();	 
 
 	if (RING_REQUEST_PROD_OVERFLOW(ring, rp)) {
 		rc = ring->rsp_prod_pvt;
@@ -815,7 +774,7 @@ static int scsiback_do_cmd_fn(struct vscsibk_info *info,
 			break;
 		}
 
-		/* Yield point for this unbounded loop. */
+		 
 		cond_resched();
 	}
 
@@ -834,7 +793,7 @@ static irqreturn_t scsiback_irq_fn(int irq, void *dev_id)
 	while ((rc = scsiback_do_cmd_fn(info, &eoi_flags)) > 0)
 		cond_resched();
 
-	/* In case of a ring error we keep the event channel masked. */
+	 
 	if (!rc)
 		xen_irq_lateeoi(irq, eoi_flags);
 
@@ -898,9 +857,7 @@ static int scsiback_map(struct vscsibk_info *info)
 	return scsiback_init_sring(info, ring_ref, evtchn);
 }
 
-/*
-  Check for a translation entry being present
-*/
+ 
 static struct v2p_entry *scsiback_chk_translation_entry(
 	struct vscsibk_info *info, struct ids_tuple *v)
 {
@@ -916,9 +873,7 @@ static struct v2p_entry *scsiback_chk_translation_entry(
 	return NULL;
 }
 
-/*
-  Add a new translation entry
-*/
+ 
 static int scsiback_add_translation_entry(struct vscsibk_info *info,
 					  char *phy, struct ids_tuple *v)
 {
@@ -982,14 +937,14 @@ static int scsiback_add_translation_entry(struct vscsibk_info *info,
 
 	spin_lock_irqsave(&info->v2p_lock, flags);
 
-	/* Check double assignment to identical virtual ID */
+	 
 	if (scsiback_chk_translation_entry(info, v)) {
 		pr_warn("Virtual ID is already used. Assignment was not performed.\n");
 		err = -EEXIST;
 		goto out;
 	}
 
-	/* Create a new translation entry and add to the list */
+	 
 	kref_init(&new->kref);
 	new->v = *v;
 	new->tpg = tpg;
@@ -1010,9 +965,7 @@ out_free:
 	return err;
 }
 
-/*
-  Delete the translation entry specified
-*/
+ 
 static int scsiback_del_translation_entry(struct vscsibk_info *info,
 					  struct ids_tuple *v)
 {
@@ -1020,7 +973,7 @@ static int scsiback_del_translation_entry(struct vscsibk_info *info,
 	unsigned long flags;
 
 	spin_lock_irqsave(&info->v2p_lock, flags);
-	/* Find out the translation entry specified */
+	 
 	entry = scsiback_chk_translation_entry(info, v);
 	if (entry)
 		list_del(&entry->l);
@@ -1088,13 +1041,13 @@ static void scsiback_do_1lun_hotplug(struct vscsibk_info *info, int op,
 	char state[64];
 	struct xenbus_device *dev = info->dev;
 
-	/* read status */
+	 
 	snprintf(state, sizeof(state), "vscsi-devs/%s/state", ent);
 	err = xenbus_scanf(XBT_NIL, dev->nodename, state, "%u", &device_state);
 	if (XENBUS_EXIST_ERR(err))
 		return;
 
-	/* physical SCSI device */
+	 
 	snprintf(str, sizeof(str), "vscsi-devs/%s/p-dev", ent);
 	val = xenbus_read(XBT_NIL, dev->nodename, str, NULL);
 	if (IS_ERR(val)) {
@@ -1108,7 +1061,7 @@ static void scsiback_do_1lun_hotplug(struct vscsibk_info *info, int op,
 	strscpy(phy, val, VSCSI_NAMELEN);
 	kfree(val);
 
-	/* virtual SCSI device */
+	 
 	snprintf(str, sizeof(str), "vscsi-devs/%s/v-dev", ent);
 	err = xenbus_scanf(XBT_NIL, dev->nodename, str, "%u:%u:%u:%u",
 			   &vir.hst, &vir.chn, &vir.tgt, &vir.lun);
@@ -1140,7 +1093,7 @@ static void scsiback_do_1lun_hotplug(struct vscsibk_info *info, int op,
 
 	case VSCSIBACK_OP_UPDATEDEV_STATE:
 		if (device_state == XenbusStateInitialised) {
-			/* modify vscsi-devs/dev-x/state */
+			 
 			if (xenbus_printf(XBT_NIL, dev->nodename, state,
 					  "%d", XenbusStateConnected)) {
 				pr_err("xenbus_printf error %s\n", str);
@@ -1150,7 +1103,7 @@ static void scsiback_do_1lun_hotplug(struct vscsibk_info *info, int op,
 			}
 		}
 		break;
-	/* When it is necessary, processing is added here. */
+	 
 	default:
 		break;
 	}
@@ -1210,7 +1163,7 @@ static void scsiback_frontend_changed(struct xenbus_device *dev,
 		xenbus_switch_state(dev, XenbusStateClosed);
 		if (xenbus_dev_is_online(dev))
 			break;
-		fallthrough;	/* if not online */
+		fallthrough;	 
 	case XenbusStateUnknown:
 		device_unregister(&dev->dev);
 		break;
@@ -1228,9 +1181,7 @@ static void scsiback_frontend_changed(struct xenbus_device *dev,
 	}
 }
 
-/*
-  Release the translation entry specfied
-*/
+ 
 static void scsiback_release_translation_entry(struct vscsibk_info *info)
 {
 	struct v2p_entry *entry, *tmp;
@@ -1356,10 +1307,7 @@ scsiback_make_tport(struct target_fabric_configfs *tf,
 		return ERR_PTR(-ENOMEM);
 
 	tport->tport_wwpn = wwpn;
-	/*
-	 * Determine the emulated Protocol Identifier and Target Port Name
-	 * based on the incoming configfs directory name.
-	 */
+	 
 	ptr = strstr(name, "naa.");
 	if (ptr) {
 		tport->tport_proto_id = SCSI_PROTOCOL_SAS;
@@ -1368,7 +1316,7 @@ scsiback_make_tport(struct target_fabric_configfs *tf,
 	ptr = strstr(name, "fc.");
 	if (ptr) {
 		tport->tport_proto_id = SCSI_PROTOCOL_FCP;
-		off = 3; /* Skip over "fc." */
+		off = 3;  
 		goto check_len;
 	}
 	ptr = strstr(name, "iqn.");
@@ -1419,7 +1367,7 @@ static void scsiback_release_cmd(struct se_cmd *se_cmd)
 
 static int scsiback_write_pending(struct se_cmd *se_cmd)
 {
-	/* Go ahead and process the write immediately */
+	 
 	target_execute_cmd(se_cmd);
 
 	return 0;
@@ -1589,9 +1537,7 @@ static int scsiback_drop_nexus(struct scsiback_tpg *tpg)
 		scsiback_dump_proto_id(tpg->tport),
 		tv_nexus->tvn_se_sess->se_node_acl->initiatorname);
 
-	/*
-	 * Release the SCSI I_T Nexus to the emulated xen-pvscsi Target Port
-	 */
+	 
 	target_remove_session(se_sess);
 	tpg->tpg_nexus = NULL;
 	mutex_unlock(&tpg->tv_tpg_mutex);
@@ -1630,18 +1576,12 @@ static ssize_t scsiback_tpg_nexus_store(struct config_item *item,
 	struct scsiback_tport *tport_wwn = tpg->tport;
 	unsigned char i_port[VSCSI_NAMELEN], *ptr, *port_ptr;
 	int ret;
-	/*
-	 * Shutdown the active I_T nexus if 'NULL' is passed.
-	 */
+	 
 	if (!strncmp(page, "NULL", 4)) {
 		ret = scsiback_drop_nexus(tpg);
 		return (!ret) ? count : ret;
 	}
-	/*
-	 * Otherwise make sure the passed virtual Initiator port WWN matches
-	 * the fabric protocol_id set in scsiback_make_tport(), and call
-	 * scsiback_make_nexus().
-	 */
+	 
 	if (strlen(page) >= VSCSI_NAMELEN) {
 		pr_err("Emulated NAA Sas Address: %s, exceeds max: %d\n",
 			page, VSCSI_NAMELEN);
@@ -1666,7 +1606,7 @@ static ssize_t scsiback_tpg_nexus_store(struct config_item *item,
 				i_port, scsiback_dump_proto_id(tport_wwn));
 			return -EINVAL;
 		}
-		port_ptr = &i_port[3]; /* Skip over "fc." */
+		port_ptr = &i_port[3];  
 		goto check_newline;
 	}
 	ptr = strstr(i_port, "iqn.");
@@ -1682,9 +1622,7 @@ static ssize_t scsiback_tpg_nexus_store(struct config_item *item,
 	pr_err("Unable to locate prefix for emulated Initiator Port: %s\n",
 		i_port);
 	return -EINVAL;
-	/*
-	 * Clear any trailing newline for the NAA WWN
-	 */
+	 
 check_newline:
 	if (i_port[strlen(i_port) - 1] == '\n')
 		i_port[strlen(i_port) - 1] = '\0';
@@ -1788,13 +1726,9 @@ static void scsiback_drop_tpg(struct se_portal_group *se_tpg)
 	mutex_lock(&scsiback_mutex);
 	list_del(&tpg->tv_tpg_list);
 	mutex_unlock(&scsiback_mutex);
-	/*
-	 * Release the virtual I_T Nexus for this xen-pvscsi TPG
-	 */
+	 
 	scsiback_drop_nexus(tpg);
-	/*
-	 * Deregister the se_tpg from TCM.
-	 */
+	 
 	core_tpg_deregister(se_tpg);
 	kfree(tpg);
 }
@@ -1819,9 +1753,7 @@ static const struct target_core_fabric_ops scsiback_ops = {
 	.queue_status			= scsiback_queue_status,
 	.queue_tm_rsp			= scsiback_queue_tm_rsp,
 	.aborted_task			= scsiback_aborted_task,
-	/*
-	 * Setup callers for generic logic in target_core_fabric_configfs.c
-	 */
+	 
 	.fabric_make_wwn		= scsiback_make_tport,
 	.fabric_drop_wwn		= scsiback_drop_tport,
 	.fabric_make_tpg		= scsiback_make_tpg,

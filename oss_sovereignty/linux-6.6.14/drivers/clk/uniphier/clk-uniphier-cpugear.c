@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 Socionext Inc.
- *   Author: Masahiro Yamada <yamada.masahiro@socionext.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/device.h>
@@ -10,9 +7,9 @@
 
 #include "clk-uniphier.h"
 
-#define UNIPHIER_CLK_CPUGEAR_STAT	0	/* status */
-#define UNIPHIER_CLK_CPUGEAR_SET	4	/* set */
-#define UNIPHIER_CLK_CPUGEAR_UPD	8	/* update */
+#define UNIPHIER_CLK_CPUGEAR_STAT	0	 
+#define UNIPHIER_CLK_CPUGEAR_SET	4	 
+#define UNIPHIER_CLK_CPUGEAR_UPD	8	 
 #define   UNIPHIER_CLK_CPUGEAR_UPD_BIT	BIT(0)
 
 struct uniphier_clk_cpugear {

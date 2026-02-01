@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright 2020 NXP
- */
+
+ 
 #include "sja1105.h"
 #include "sja1105_vl.h"
 
@@ -69,9 +68,7 @@ static int sja1105_setup_bcast_policer(struct sja1105_private *priv,
 
 	rule->port_mask |= BIT(port);
 
-	/* Make the broadcast policers of all ports attached to this block
-	 * point to the newly allocated policer
-	 */
+	 
 	for_each_set_bit(p, &rule->port_mask, SJA1105_MAX_NUM_PORTS) {
 		int bcast = (ds->num_ports * SJA1105_NUM_TC) + p;
 
@@ -82,7 +79,7 @@ static int sja1105_setup_bcast_policer(struct sja1105_private *priv,
 							  512, 1000000);
 	policing[rule->bcast_pol.sharindx].smax = burst;
 
-	/* TODO: support per-flow MTU */
+	 
 	policing[rule->bcast_pol.sharindx].maxlen = VLAN_ETH_FRAME_LEN +
 						    ETH_FCS_LEN;
 
@@ -141,9 +138,7 @@ static int sja1105_setup_tc_policer(struct sja1105_private *priv,
 
 	rule->port_mask |= BIT(port);
 
-	/* Make the policers for traffic class @tc of all ports attached to
-	 * this block point to the newly allocated policer
-	 */
+	 
 	for_each_set_bit(p, &rule->port_mask, SJA1105_MAX_NUM_PORTS) {
 		int index = (p * SJA1105_NUM_TC) + tc;
 
@@ -154,7 +149,7 @@ static int sja1105_setup_tc_policer(struct sja1105_private *priv,
 						       512, 1000000);
 	policing[rule->tc_pol.sharindx].smax = burst;
 
-	/* TODO: support per-flow MTU */
+	 
 	policing[rule->tc_pol.sharindx].maxlen = VLAN_ETH_FRAME_LEN +
 						 ETH_FCS_LEN;
 
@@ -435,9 +430,7 @@ int sja1105_cls_flower_add(struct dsa_switch *ds, int port,
 	}
 
 	if (vl_rule && !rc) {
-		/* Delay scheduling configuration until DESTPORTS has been
-		 * populated by all other actions.
-		 */
+		 
 		if (gate_rule) {
 			if (!routing_rule) {
 				NL_SET_ERR_MSG_MOD(extack,

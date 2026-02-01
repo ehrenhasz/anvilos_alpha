@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2019 Facebook */
+
+ 
 
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
@@ -56,7 +56,7 @@ static bool str_has_suffix(const char *str, const char *suffix)
 
 static void get_obj_name(char *name, const char *file)
 {
-	/* Using basename() GNU version which doesn't modify arg. */
+	 
 	strncpy(name, basename(file), MAX_OBJ_NAME_LEN - 1);
 	name[MAX_OBJ_NAME_LEN - 1] = '\0';
 	if (str_has_suffix(name, ".o"))
@@ -151,7 +151,7 @@ static int codegen_datasec_def(struct bpf_object *obj,
 		int need_off = sec_var->offset, align_off, align;
 		__u32 var_type_id = var->type;
 
-		/* static variables are not exposed through BPF skeleton */
+		 
 		if (btf_var(var)->linkage == BTF_VAR_STATIC)
 			continue;
 
@@ -167,18 +167,7 @@ static int codegen_datasec_def(struct bpf_object *obj,
 			      var_name, align);
 			return -EINVAL;
 		}
-		/* Assume 32-bit architectures when generating data section
-		 * struct memory layout. Given bpftool can't know which target
-		 * host architecture it's emitting skeleton for, we need to be
-		 * conservative and assume 32-bit one to ensure enough padding
-		 * bytes are generated for pointer and long types. This will
-		 * still work correctly for 64-bit architectures, because in
-		 * the worst case we'll generate unnecessary padding field,
-		 * which on 64-bit architectures is not strictly necessary and
-		 * would be handled by natural 8-byte alignment. But it still
-		 * will be a correct memory layout, based on recorded offsets
-		 * in BTF.
-		 */
+		 
 		if (align > 4)
 			align = 4;
 
@@ -189,10 +178,7 @@ static int codegen_datasec_def(struct bpf_object *obj,
 			pad_cnt++;
 		}
 
-		/* sanitize variable name, e.g., for static vars inside
-		 * a function, it's name is '<function name>.<variable name>',
-		 * which we'll turn into a '<function name>_<variable name>'
-		 */
+		 
 		var_ident[0] = '\0';
 		strncat(var_ident, var_name, sizeof(var_ident) - 1);
 		sanitize_identifier(var_ident);
@@ -256,19 +242,13 @@ static int codegen_datasecs(struct bpf_object *obj, const char *obj_name)
 		return -errno;
 
 	bpf_object__for_each_map(map, obj) {
-		/* only generate definitions for memory-mapped internal maps */
+		 
 		if (!is_internal_mmapable_map(map, map_ident, sizeof(map_ident)))
 			continue;
 
 		sec = find_type_for_map(btf, map_ident);
 
-		/* In some cases (e.g., sections like .rodata.cst16 containing
-		 * compiler allocated string constants only) there will be
-		 * special internal maps with no corresponding DATASEC BTF
-		 * type. In such case, generate empty structs for each such
-		 * map. It will still be memory-mapped and its contents
-		 * accessible from user-space through BPF skeleton.
-		 */
+		 
 		if (!sec) {
 			printf("	struct %s__%s {\n", obj_name, map_ident);
 			printf("	} *%s;\n", map_ident);
@@ -309,7 +289,7 @@ static int codegen_subskel_datasecs(struct bpf_object *obj, const char *obj_name
 		return -errno;
 
 	bpf_object__for_each_map(map, obj) {
-		/* only generate definitions for memory-mapped internal maps */
+		 
 		if (!is_internal_mmapable_map(map, map_ident, sizeof(map_ident)))
 			continue;
 
@@ -330,7 +310,7 @@ static int codegen_subskel_datasecs(struct bpf_object *obj, const char *obj_name
 			DECLARE_LIBBPF_OPTS(btf_dump_emit_type_decl_opts, opts,
 				.indent_level = 2,
 				.strip_mods = strip_mods,
-				/* we'll print the name separately */
+				 
 				.field_name = "",
 			);
 
@@ -338,22 +318,15 @@ static int codegen_subskel_datasecs(struct bpf_object *obj, const char *obj_name
 			var_name = btf__name_by_offset(btf, var->name_off);
 			var_type_id = var->type;
 
-			/* static variables are not exposed through BPF skeleton */
+			 
 			if (btf_var(var)->linkage == BTF_VAR_STATIC)
 				continue;
 
-			/* The datasec member has KIND_VAR but we want the
-			 * underlying type of the variable (e.g. KIND_INT).
-			 */
+			 
 			var = skip_mods_and_typedefs(btf, var->type, NULL);
 
 			printf("\t\t");
-			/* Func and array members require special handling.
-			 * Instead of producing `typename *var`, they produce
-			 * `typeof(typename) *var`. This allows us to keep a
-			 * similar syntax where the identifier is just prefixed
-			 * by *, allowing us to ignore C declaration minutiae.
-			 */
+			 
 			needs_typeof = btf_is_array(var) || btf_is_ptr_to_func_proto(btf, var);
 			if (needs_typeof)
 				printf("typeof(");
@@ -390,7 +363,7 @@ static void codegen(const char *template, ...)
 	src = template;
 	dst = s;
 
-	/* find out "baseline" indentation to skip */
+	 
 	while ((c = *src++)) {
 		if (c == '\t') {
 			skip_tabs++;
@@ -405,7 +378,7 @@ static void codegen(const char *template, ...)
 	}
 
 	while (*src) {
-		/* skip baseline indentation tabs */
+		 
 		for (n = skip_tabs; n > 0; n--, src++) {
 			if (*src != '\t') {
 				p_err("not enough tabs at pos %td in template '%s'",
@@ -414,7 +387,7 @@ static void codegen(const char *template, ...)
 				exit(-1);
 			}
 		}
-		/* trim trailing whitespace */
+		 
 		end = strchrnul(src, '\n');
 		for (n = end - src; n > 0 && isspace(src[n - 1]); n--)
 			;
@@ -426,7 +399,7 @@ static void codegen(const char *template, ...)
 	}
 	*dst++ = '\0';
 
-	/* print out using adjusted template */
+	 
 	va_start(args, template);
 	n = vprintf(s, args);
 	va_end(args);
@@ -463,7 +436,7 @@ static size_t bpf_map_mmap_sz(const struct bpf_map *map)
 	return map_sz;
 }
 
-/* Emit type size asserts for all top-level fields in memory-mapped internal maps. */
+ 
 static void codegen_asserts(struct bpf_object *obj, const char *obj_name)
 {
 	struct btf *btf = bpf_object__btf(obj);
@@ -806,7 +779,7 @@ static int gen_trace(struct bpf_object *obj, const char *obj_name, const char *h
 	codegen("\
 		\n\
 									    \n\
-		#endif /* %s */						    \n\
+		#endif  						    \n\
 		",
 		header_guard);
 	err = 0;
@@ -827,7 +800,7 @@ codegen_maps_skeleton(struct bpf_object *obj, size_t map_cnt, bool mmaped)
 	codegen("\
 		\n\
 									\n\
-			/* maps */				    \n\
+			 				    \n\
 			s->map_cnt = %zu;			    \n\
 			s->map_skel_sz = sizeof(*s->maps);	    \n\
 			s->maps = (struct bpf_map_skeleton *)calloc(s->map_cnt, s->map_skel_sz);\n\
@@ -871,7 +844,7 @@ codegen_progs_skeleton(struct bpf_object *obj, size_t prog_cnt, bool populate_li
 	codegen("\
 		\n\
 									\n\
-			/* programs */				    \n\
+			 				    \n\
 			s->prog_cnt = %zu;			    \n\
 			s->prog_skel_sz = sizeof(*s->progs);	    \n\
 			s->progs = (struct bpf_prog_skeleton *)calloc(s->prog_cnt, s->prog_skel_sz);\n\
@@ -1000,8 +973,8 @@ static int do_skeleton(int argc, char **argv)
 	if (use_loader) {
 		codegen("\
 		\n\
-		/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */   \n\
-		/* THIS FILE IS AUTOGENERATED BY BPFTOOL! */		    \n\
+		    \n\
+		 		    \n\
 		#ifndef %2$s						    \n\
 		#define %2$s						    \n\
 									    \n\
@@ -1015,9 +988,9 @@ static int do_skeleton(int argc, char **argv)
 	} else {
 		codegen("\
 		\n\
-		/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */   \n\
+		    \n\
 									    \n\
-		/* THIS FILE IS AUTOGENERATED BY BPFTOOL! */		    \n\
+		 		    \n\
 		#ifndef %2$s						    \n\
 		#define %2$s						    \n\
 									    \n\
@@ -1091,7 +1064,7 @@ static int do_skeleton(int argc, char **argv)
 			static inline void detach(struct %1$s *skel);	    \n\
 			static inline void destroy(struct %1$s *skel);	    \n\
 			static inline const void *elf_bytes(size_t *sz);    \n\
-		#endif /* __cplusplus */				    \n\
+		#endif  				    \n\
 		};							    \n\
 									    \n\
 		static void						    \n\
@@ -1244,7 +1217,7 @@ static int do_skeleton(int argc, char **argv)
 		void %1$s::detach(struct %1$s *skel) { %1$s__detach(skel); }		\n\
 		void %1$s::destroy(struct %1$s *skel) { %1$s__destroy(skel); }		\n\
 		const void *%1$s::elf_bytes(size_t *sz) { return %1$s__elf_bytes(sz); } \n\
-		#endif /* __cplusplus */				    \n\
+		#endif  				    \n\
 									    \n\
 		",
 		obj_name);
@@ -1254,7 +1227,7 @@ static int do_skeleton(int argc, char **argv)
 	codegen("\
 		\n\
 									    \n\
-		#endif /* %1$s */					    \n\
+		#endif  					    \n\
 		",
 		header_guard);
 	err = 0;
@@ -1411,9 +1384,9 @@ static int do_subskeleton(int argc, char **argv)
 	get_header_guard(header_guard, obj_name, "SUBSKEL_H");
 	codegen("\
 	\n\
-	/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */	    \n\
+	 	    \n\
 									    \n\
-	/* THIS FILE IS AUTOGENERATED! */				    \n\
+	 				    \n\
 	#ifndef %2$s							    \n\
 	#define %2$s							    \n\
 									    \n\
@@ -1456,7 +1429,7 @@ static int do_subskeleton(int argc, char **argv)
 		#ifdef __cplusplus					    \n\
 			static inline struct %1$s *open(const struct bpf_object *src);\n\
 			static inline void destroy(struct %1$s *skel);	    \n\
-		#endif /* __cplusplus */				    \n\
+		#endif  				    \n\
 		};							    \n\
 									    \n\
 		static inline void					    \n\
@@ -1491,7 +1464,7 @@ static int do_subskeleton(int argc, char **argv)
 			s->var_skel_sz = sizeof(*s->vars);		    \n\
 			obj->subskel = s;				    \n\
 									    \n\
-			/* vars */					    \n\
+			 					    \n\
 			s->var_cnt = %2$d;				    \n\
 			s->vars = (struct bpf_var_skeleton *)calloc(%2$d, sizeof(*s->vars));\n\
 			if (!s->vars) {					    \n\
@@ -1557,9 +1530,9 @@ static int do_subskeleton(int argc, char **argv)
 		#ifdef __cplusplus					    \n\
 		struct %1$s *%1$s::open(const struct bpf_object *src) { return %1$s__open(src); }\n\
 		void %1$s::destroy(struct %1$s *skel) { %1$s__destroy(skel); }\n\
-		#endif /* __cplusplus */				    \n\
+		#endif  				    \n\
 									    \n\
-		#endif /* %2$s */					    \n\
+		#endif  					    \n\
 		",
 		obj_name, header_guard);
 	err = 0;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   ALSA driver for ICEnsemble VT17xx
- *
- *   Lowlevel functions for WM8766 codec
- *
- *	Copyright (c) 2012 Ondrej Zary <linux@rainbow-software.org>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <sound/core.h>
@@ -13,7 +7,7 @@
 #include <sound/tlv.h>
 #include "wm8766.h"
 
-/* low-level access */
+ 
 
 static void snd_wm8766_write(struct snd_wm8766 *wm, u16 addr, u16 data)
 {
@@ -22,7 +16,7 @@ static void snd_wm8766_write(struct snd_wm8766 *wm, u16 addr, u16 data)
 	wm->ops.write(wm, addr, data);
 }
 
-/* mixer controls */
+ 
 
 static const DECLARE_TLV_DB_SCALE(wm8766_tlv, -12750, 50, 1);
 
@@ -132,7 +126,7 @@ static const struct snd_wm8766_ctl snd_wm8766_default_ctl[WM8766_CTL_COUNT] = {
 	},
 };
 
-/* exported functions */
+ 
 
 void snd_wm8766_init(struct snd_wm8766 *wm)
 {
@@ -146,9 +140,9 @@ void snd_wm8766_init(struct snd_wm8766 *wm)
 
 	memcpy(wm->ctl, snd_wm8766_default_ctl, sizeof(wm->ctl));
 
-	snd_wm8766_write(wm, WM8766_REG_RESET, 0x00); /* reset */
+	snd_wm8766_write(wm, WM8766_REG_RESET, 0x00);  
 	udelay(10);
-	/* load defaults */
+	 
 	for (i = 0; i < ARRAY_SIZE(default_values); i++)
 		snd_wm8766_write(wm, i, default_values[i]);
 }
@@ -172,11 +166,11 @@ void snd_wm8766_set_if(struct snd_wm8766 *wm, u16 dac)
 void snd_wm8766_volume_restore(struct snd_wm8766 *wm)
 {
 	u16 val = wm->regs[WM8766_REG_DACR1];
-	/* restore volume after MCLK stopped */
+	 
 	snd_wm8766_write(wm, WM8766_REG_DACR1, val | WM8766_VOL_UPDATE);
 }
 
-/* mixer callbacks */
+ 
 
 static int snd_wm8766_volume_info(struct snd_kcontrol *kcontrol,
 				   struct snd_ctl_elem_info *uinfo)
@@ -240,7 +234,7 @@ static int snd_wm8766_ctl_put(struct snd_kcontrol *kcontrol,
 	int n = kcontrol->private_value;
 	u16 val, regval1, regval2;
 
-	/* this also works for enum because value is a union */
+	 
 	regval1 = ucontrol->value.integer.value[0];
 	regval2 = ucontrol->value.integer.value[1];
 	if (wm->ctl[n].flags & WM8766_FLAG_INVERT) {
@@ -252,14 +246,14 @@ static int snd_wm8766_ctl_put(struct snd_kcontrol *kcontrol,
 	else {
 		val = wm->regs[wm->ctl[n].reg1] & ~wm->ctl[n].mask1;
 		val |= regval1 << __ffs(wm->ctl[n].mask1);
-		/* both stereo controls in one register */
+		 
 		if (wm->ctl[n].flags & WM8766_FLAG_STEREO &&
 				wm->ctl[n].reg1 == wm->ctl[n].reg2) {
 			val &= ~wm->ctl[n].mask2;
 			val |= regval2 << __ffs(wm->ctl[n].mask2);
 		}
 		snd_wm8766_write(wm, wm->ctl[n].reg1, val);
-		/* stereo controls in different registers */
+		 
 		if (wm->ctl[n].flags & WM8766_FLAG_STEREO &&
 				wm->ctl[n].reg1 != wm->ctl[n].reg2) {
 			val = wm->regs[wm->ctl[n].reg2] & ~wm->ctl[n].mask2;

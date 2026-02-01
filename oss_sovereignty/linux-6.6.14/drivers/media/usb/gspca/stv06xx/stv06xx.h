@@ -1,18 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2001 Jean-Fredric Clere, Nikolas Zimmermann, Georg Acher
- *		      Mark Cave-Ayland, Carlo E Prelz, Dick Streefland
- * Copyright (c) 2002, 2003 Tuukka Toivonen
- * Copyright (c) 2008 Erik Andrén
- *
- * P/N 861037:      Sensor HDCS1000        ASIC STV0600
- * P/N 861050-0010: Sensor HDCS1000        ASIC STV0600
- * P/N 861050-0020: Sensor Photobit PB100  ASIC STV0600-1 - QuickCam Express
- * P/N 861055:      Sensor ST VV6410       ASIC STV0610   - LEGO cam
- * P/N 861075-0040: Sensor HDCS1000        ASIC
- * P/N 961179-0700: Sensor ST VV6410       ASIC STV0602   - Dexxa WebCam USB
- * P/N 861040-0000: Sensor ST VV6410       ASIC STV0610   - QuickCam Web
- */
+ 
+ 
 
 #ifndef STV06XX_H_
 #define STV06XX_H_
@@ -28,7 +15,7 @@
 
 #define STV_REG23			0x0423
 
-/* Control registers of the STV0600 ASIC */
+ 
 #define STV_I2C_PARTNER			0x1420
 #define STV_I2C_VAL_REG_VAL_PAIRS_MIN1	0x1421
 #define STV_I2C_READ_WRITE_TOGGLE	0x1422
@@ -48,13 +35,13 @@
 #define STV_ISO_SIZE_L			0x15c1
 #define STV_ISO_SIZE_H			0x15c2
 
-/* Refers to the CIF 352x288 and QCIF 176x144 */
-/* 1: 288 lines, 2: 144 lines */
+ 
+ 
 #define STV_Y_CTRL			0x15c3
 
 #define STV_RESET                       0x1620
 
-/* 0xa: 352 columns, 0x6: 176 columns */
+ 
 #define STV_X_CTRL			0x1680
 
 #define STV06XX_URB_MSG_TIMEOUT		5000
@@ -69,26 +56,25 @@
 #define LED_ON				1
 #define LED_OFF				0
 
-/* STV06xx device descriptor */
+ 
 struct sd {
 	struct gspca_dev gspca_dev;
 
-	/* A pointer to the currently connected sensor */
+	 
 	const struct stv06xx_sensor *sensor;
 
-	/* Sensor private data */
+	 
 	void *sensor_priv;
 
-	/* The first 4 lines produced by the stv6422 are no good, this keeps
-	   track of how many bytes we still need to skip during a frame */
+	 
 	int to_skip;
 
-	/* Bridge / Camera type */
+	 
 	u8 bridge;
 	#define BRIDGE_STV600 0
 	#define BRIDGE_STV602 1
 	#define BRIDGE_STV610 2
-	#define BRIDGE_ST6422 3 /* With integrated sensor */
+	#define BRIDGE_ST6422 3  
 };
 
 int stv06xx_write_bridge(struct sd *sd, u16 address, u16 i2c_data);

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * PWM driver for Rockchip SoCs
- *
- * Copyright (C) 2014 Beniamino Galvani <b.galvani@gmail.com>
- * Copyright (C) 2014 ROCKCHIP, Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -110,11 +105,7 @@ static void rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 
 	clk_rate = clk_get_rate(pc->clk);
 
-	/*
-	 * Since period and duty cycle registers have a width of 32
-	 * bits, every possible input period can be obtained using the
-	 * default prescaler value for all practical clock rate values.
-	 */
+	 
 	div = clk_rate * state->period;
 	period = DIV_ROUND_CLOSEST_ULL(div,
 				       pc->data->prescaler * NSEC_PER_SEC);
@@ -122,10 +113,7 @@ static void rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	div = clk_rate * state->duty_cycle;
 	duty = DIV_ROUND_CLOSEST_ULL(div, pc->data->prescaler * NSEC_PER_SEC);
 
-	/*
-	 * Lock the period and duty of previous configuration, then
-	 * change the duty and period, that would not be effective.
-	 */
+	 
 	ctrl = readl_relaxed(pc->base + pc->data->regs.ctrl);
 	if (pc->data->supports_lock) {
 		ctrl |= PWM_LOCK_EN;
@@ -143,11 +131,7 @@ static void rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 			ctrl |= PWM_DUTY_POSITIVE | PWM_INACTIVE_NEGATIVE;
 	}
 
-	/*
-	 * Unlock and set polarity at the same time,
-	 * the configuration of duty, period and polarity
-	 * would be effective together at next period.
-	 */
+	 
 	if (pc->data->supports_lock)
 		ctrl &= ~PWM_LOCK_EN;
 
@@ -291,7 +275,7 @@ static const struct of_device_id rockchip_pwm_dt_ids[] = {
 	{ .compatible = "rockchip,rk3288-pwm", .data = &pwm_data_v2},
 	{ .compatible = "rockchip,vop-pwm", .data = &pwm_data_vop},
 	{ .compatible = "rockchip,rk3328-pwm", .data = &pwm_data_v3},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, rockchip_pwm_dt_ids);
 
@@ -360,7 +344,7 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
 		goto err_pclk;
 	}
 
-	/* Keep the PWM clk enabled if the PWM appears to be up and running. */
+	 
 	if (!enabled)
 		clk_disable(pc->clk);
 

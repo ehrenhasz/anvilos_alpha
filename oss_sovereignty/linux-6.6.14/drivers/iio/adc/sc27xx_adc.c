@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2018 Spreadtrum Communications Inc.
+
+
 
 #include <linux/hwspinlock.h>
 #include <linux/iio/iio.h>
@@ -12,7 +12,7 @@
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
 
-/* PMIC global registers definition */
+ 
 #define SC2730_MODULE_EN		0x1808
 #define SC2731_MODULE_EN		0xc08
 #define SC27XX_MODULE_ADC_EN		BIT(5)
@@ -22,7 +22,7 @@
 #define SC27XX_CLK_ADC_EN		BIT(5)
 #define SC27XX_CLK_ADC_CLK_EN		BIT(6)
 
-/* ADC controller registers definition */
+ 
 #define SC27XX_ADC_CTL			0x0
 #define SC27XX_ADC_CH_CFG		0x4
 #define SC27XX_ADC_DATA			0x4c
@@ -31,64 +31,61 @@
 #define SC27XX_ADC_INT_STS		0x58
 #define SC27XX_ADC_INT_RAW		0x5c
 
-/* Bits and mask definition for SC27XX_ADC_CTL register */
+ 
 #define SC27XX_ADC_EN			BIT(0)
 #define SC27XX_ADC_CHN_RUN		BIT(1)
 #define SC27XX_ADC_12BIT_MODE		BIT(2)
 #define SC27XX_ADC_RUN_NUM_MASK		GENMASK(7, 4)
 #define SC27XX_ADC_RUN_NUM_SHIFT	4
 
-/* Bits and mask definition for SC27XX_ADC_CH_CFG register */
+ 
 #define SC27XX_ADC_CHN_ID_MASK		GENMASK(4, 0)
 #define SC27XX_ADC_SCALE_MASK		GENMASK(10, 9)
 #define SC2721_ADC_SCALE_MASK		BIT(5)
 #define SC27XX_ADC_SCALE_SHIFT		9
 #define SC2721_ADC_SCALE_SHIFT		5
 
-/* Bits definitions for SC27XX_ADC_INT_EN registers */
+ 
 #define SC27XX_ADC_IRQ_EN		BIT(0)
 
-/* Bits definitions for SC27XX_ADC_INT_CLR registers */
+ 
 #define SC27XX_ADC_IRQ_CLR		BIT(0)
 
-/* Bits definitions for SC27XX_ADC_INT_RAW registers */
+ 
 #define SC27XX_ADC_IRQ_RAW		BIT(0)
 
-/* Mask definition for SC27XX_ADC_DATA register */
+ 
 #define SC27XX_ADC_DATA_MASK		GENMASK(11, 0)
 
-/* Timeout (ms) for the trylock of hardware spinlocks */
+ 
 #define SC27XX_ADC_HWLOCK_TIMEOUT	5000
 
-/* Timeout (us) for ADC data conversion according to ADC datasheet */
+ 
 #define SC27XX_ADC_RDY_TIMEOUT		1000000
 #define SC27XX_ADC_POLL_RAW_STATUS	500
 
-/* Maximum ADC channel number */
+ 
 #define SC27XX_ADC_CHANNEL_MAX		32
 
-/* ADC voltage ratio definition */
+ 
 #define SC27XX_VOLT_RATIO(n, d)		\
 	(((n) << SC27XX_RATIO_NUMERATOR_OFFSET) | (d))
 #define SC27XX_RATIO_NUMERATOR_OFFSET	16
 #define SC27XX_RATIO_DENOMINATOR_MASK	GENMASK(15, 0)
 
-/* ADC specific channel reference voltage 3.5V */
+ 
 #define SC27XX_ADC_REFVOL_VDD35		3500000
 
-/* ADC default channel reference voltage is 2.8V */
+ 
 #define SC27XX_ADC_REFVOL_VDD28		2800000
 
 struct sc27xx_adc_data {
 	struct device *dev;
 	struct regulator *volref;
 	struct regmap *regmap;
-	/* lock to protect against multiple access to the device */
+	 
 	struct mutex lock;
-	/*
-	 * One hardware spinlock to synchronize between the multiple
-	 * subsystems which will access the unique ADC controller.
-	 */
+	 
 	struct hwspinlock *hwlock;
 	int channel_scale[SC27XX_ADC_CHANNEL_MAX];
 	u32 base;
@@ -96,11 +93,7 @@ struct sc27xx_adc_data {
 	const struct sc27xx_adc_variant_data *var_data;
 };
 
-/*
- * Since different PMICs of SC27xx series can have different
- * address and ratio, we should save ratio config and base
- * in the device data structure.
- */
+ 
 struct sc27xx_adc_variant_data {
 	u32 module_en;
 	u32 clk_en;
@@ -120,12 +113,7 @@ struct sc27xx_adc_linear_graph {
 	int adc1;
 };
 
-/*
- * According to the datasheet, we can convert one ADC value to one voltage value
- * through 2 points in the linear graph. If the voltage is less than 1.2v, we
- * should use the small-scale graph, and if more than 1.2v, we should use the
- * big-scale graph.
- */
+ 
 static struct sc27xx_adc_linear_graph big_scale_graph = {
 	4200, 3310,
 	3600, 2832,
@@ -161,7 +149,7 @@ static int sc27xx_adc_get_calib_data(u32 calib_data, int calib_adc)
 	return ((calib_data & 0xff) + calib_adc - 128) * 4;
 }
 
-/* get the adc nvmem cell calibration data */
+ 
 static int adc_nvmem_cell_calib_data(struct sc27xx_adc_data *data, const char *cell_name)
 {
 	struct nvmem_cell *cell;
@@ -209,7 +197,7 @@ static int sc27xx_adc_scale_calibration(struct sc27xx_adc_data *data,
 
 	calib_data = adc_nvmem_cell_calib_data(data, cell_name);
 
-	/* Only need to calibrate the adc values in the linear graph. */
+	 
 	graph->adc0 = sc27xx_adc_get_calib_data(calib_data, calib_graph->adc0);
 	graph->adc1 = sc27xx_adc_get_calib_data(calib_data >> 8,
 						calib_graph->adc1);
@@ -404,9 +392,7 @@ static int sc2731_adc_get_ratio(int channel, int scale)
 	return SC27XX_VOLT_RATIO(1, 1);
 }
 
-/*
- * According to the datasheet set specific value on some channel.
- */
+ 
 static void sc2720_adc_scale_init(struct sc27xx_adc_data *data)
 {
 	int i;
@@ -465,10 +451,7 @@ static void sc2730_adc_scale_init(struct sc27xx_adc_data *data)
 static void sc2731_adc_scale_init(struct sc27xx_adc_data *data)
 {
 	int i;
-	/*
-	 * In the current software design, SC2731 support 2 scales,
-	 * channels 5 uses big scale, others use smale.
-	 */
+	 
 	for (i = 0; i < SC27XX_ADC_CHANNEL_MAX; i++) {
 		switch (i) {
 		case 5:
@@ -493,11 +476,7 @@ static int sc27xx_adc_read(struct sc27xx_adc_data *data, int channel,
 		return ret;
 	}
 
-	/*
-	 * According to the sc2721 chip data sheet, the reference voltage of
-	 * specific channel 30 and channel 31 in ADC module needs to be set from
-	 * the default 2.8v to 3.5v.
-	 */
+	 
 	if ((data->var_data->set_volref) && (channel == 30 || channel == 31)) {
 		ret = regulator_set_voltage(data->volref,
 					SC27XX_ADC_REFVOL_VDD35,
@@ -518,7 +497,7 @@ static int sc27xx_adc_read(struct sc27xx_adc_data *data, int channel,
 	if (ret)
 		goto disable_adc;
 
-	/* Configure the channel id and scale */
+	 
 	tmp = (scale << data->var_data->scale_shift) & data->var_data->scale_mask;
 	tmp |= channel & SC27XX_ADC_CHN_ID_MASK;
 	ret = regmap_update_bits(data->regmap, data->base + SC27XX_ADC_CH_CFG,
@@ -528,7 +507,7 @@ static int sc27xx_adc_read(struct sc27xx_adc_data *data, int channel,
 	if (ret)
 		goto disable_adc;
 
-	/* Select 12bit conversion mode, and only sample 1 time */
+	 
 	tmp = SC27XX_ADC_12BIT_MODE;
 	tmp |= (0 << SC27XX_ADC_RUN_NUM_SHIFT) & SC27XX_ADC_RUN_NUM_MASK;
 	ret = regmap_update_bits(data->regmap, data->base + SC27XX_ADC_CTL,
@@ -619,13 +598,7 @@ static int sc27xx_adc_convert_volt(struct sc27xx_adc_data *data, int channel,
 	struct u32_fract fract;
 	u32 volt;
 
-	/*
-	 * Convert ADC values to voltage values according to the linear graph,
-	 * and channel 5 and channel 1 has been calibrated, so we can just
-	 * return the voltage values calculated by the linear graph. But other
-	 * channels need be calculated to the real voltage values with the
-	 * voltage ratio.
-	 */
+	 
 	switch (channel) {
 	case 5:
 		return sc27xx_adc_to_volt(&big_scale_graph, raw_adc);
@@ -770,14 +743,14 @@ static int sc27xx_adc_enable(struct sc27xx_adc_data *data)
 	if (ret)
 		return ret;
 
-	/* Enable ADC work clock and controller clock */
+	 
 	ret = regmap_update_bits(data->regmap, data->var_data->clk_en,
 				 SC27XX_CLK_ADC_EN | SC27XX_CLK_ADC_CLK_EN,
 				 SC27XX_CLK_ADC_EN | SC27XX_CLK_ADC_CLK_EN);
 	if (ret)
 		goto disable_adc;
 
-	/* ADC channel scales' calibration from nvmem device */
+	 
 	ret = sc27xx_adc_scale_calibration(data, true);
 	if (ret)
 		goto disable_clk;
@@ -802,7 +775,7 @@ static void sc27xx_adc_disable(void *_data)
 {
 	struct sc27xx_adc_data *data = _data;
 
-	/* Disable ADC work clock and controller clock */
+	 
 	regmap_update_bits(data->regmap, data->var_data->clk_en,
 			   SC27XX_CLK_ADC_EN | SC27XX_CLK_ADC_CLK_EN, 0);
 

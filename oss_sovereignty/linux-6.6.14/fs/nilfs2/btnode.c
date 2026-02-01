@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * NILFS B-tree node cache
- *
- * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
- *
- * Originally written by Seiji Kihara.
- * Fully revised by Ryusuke Konishi for stabilization and simplification.
- *
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/buffer_head.h>
@@ -21,12 +13,7 @@
 #include "btnode.h"
 
 
-/**
- * nilfs_init_btnc_inode - initialize B-tree node cache inode
- * @btnc_inode: inode to be initialized
- *
- * nilfs_init_btnc_inode() sets up an inode for B-tree node cache.
- */
+ 
 void nilfs_init_btnc_inode(struct inode *btnc_inode)
 {
 	struct nilfs_inode_info *ii = NILFS_I(btnc_inode);
@@ -82,7 +69,7 @@ int nilfs_btnode_submit_block(struct address_space *btnc, __u64 blocknr,
 	if (unlikely(!bh))
 		return -ENOMEM;
 
-	err = -EEXIST; /* internal code */
+	err = -EEXIST;  
 	page = bh->b_page;
 
 	if (buffer_uptodate(bh) || buffer_dirty(bh))
@@ -93,7 +80,7 @@ int nilfs_btnode_submit_block(struct address_space *btnc, __u64 blocknr,
 		if (inode->i_ino != NILFS_DAT_INO) {
 			struct the_nilfs *nilfs = inode->i_sb->s_fs_info;
 
-			/* blocknr is a virtual block number */
+			 
 			err = nilfs_dat_translate(nilfs->ns_dat, blocknr,
 						  &pblocknr);
 			if (unlikely(err)) {
@@ -105,25 +92,25 @@ int nilfs_btnode_submit_block(struct address_space *btnc, __u64 blocknr,
 
 	if (opf & REQ_RAHEAD) {
 		if (pblocknr != *submit_ptr + 1 || !trylock_buffer(bh)) {
-			err = -EBUSY; /* internal code */
+			err = -EBUSY;  
 			brelse(bh);
 			goto out_locked;
 		}
-	} else { /* opf == REQ_OP_READ */
+	} else {  
 		lock_buffer(bh);
 	}
 	if (buffer_uptodate(bh)) {
 		unlock_buffer(bh);
-		err = -EEXIST; /* internal code */
+		err = -EEXIST;  
 		goto found;
 	}
 	set_buffer_mapped(bh);
 	bh->b_bdev = inode->i_sb->s_bdev;
-	bh->b_blocknr = pblocknr; /* set block address for read */
+	bh->b_blocknr = pblocknr;  
 	bh->b_end_io = end_buffer_read_sync;
 	get_bh(bh);
 	submit_bh(opf, bh);
-	bh->b_blocknr = blocknr; /* set back to the given block address */
+	bh->b_blocknr = blocknr;  
 	*submit_ptr = pblocknr;
 	err = 0;
 found:
@@ -135,13 +122,7 @@ out_locked:
 	return err;
 }
 
-/**
- * nilfs_btnode_delete - delete B-tree node buffer
- * @bh: buffer to be deleted
- *
- * nilfs_btnode_delete() invalidates the specified buffer and delete the page
- * including the buffer if the page gets unbusy.
- */
+ 
 void nilfs_btnode_delete(struct buffer_head *bh)
 {
 	struct address_space *mapping;
@@ -163,13 +144,7 @@ void nilfs_btnode_delete(struct buffer_head *bh)
 		invalidate_inode_pages2_range(mapping, index, index);
 }
 
-/**
- * nilfs_btnode_prepare_change_key
- *  prepare to move contents of the block for old key to one of new key.
- *  the old buffer will not be removed, but might be reused for new buffer.
- *  it might return -ENOMEM because of memory allocation errors,
- *  and might return -EIO because of disk read errors.
- */
+ 
 int nilfs_btnode_prepare_change_key(struct address_space *btnc,
 				    struct nilfs_btnode_chkey_ctxt *ctxt)
 {
@@ -188,7 +163,7 @@ int nilfs_btnode_prepare_change_key(struct address_space *btnc,
 		struct page *opage = obh->b_page;
 		lock_page(opage);
 retry:
-		/* BUG_ON(oldkey != obh->b_folio->index); */
+		 
 		if (unlikely(oldkey != opage->index))
 			NILFS_PAGE_BUG(opage,
 				       "invalid oldkey %lld (newkey=%lld)",
@@ -198,12 +173,7 @@ retry:
 		xa_lock_irq(&btnc->i_pages);
 		err = __xa_insert(&btnc->i_pages, newkey, opage, GFP_NOFS);
 		xa_unlock_irq(&btnc->i_pages);
-		/*
-		 * Note: page->index will not change to newkey until
-		 * nilfs_btnode_commit_change_key() will be called.
-		 * To protect the page in intermediate state, the page lock
-		 * is held.
-		 */
+		 
 		if (!err)
 			return 0;
 		else if (err != -EBUSY)
@@ -212,7 +182,7 @@ retry:
 		err = invalidate_inode_pages2_range(btnc, newkey, newkey);
 		if (!err)
 			goto retry;
-		/* fallback to copy mode */
+		 
 		unlock_page(opage);
 	}
 
@@ -229,10 +199,7 @@ retry:
 	return err;
 }
 
-/**
- * nilfs_btnode_commit_change_key
- *  commit the change_key operation prepared by prepare_change_key().
- */
+ 
 void nilfs_btnode_commit_change_key(struct address_space *btnc,
 				    struct nilfs_btnode_chkey_ctxt *ctxt)
 {
@@ -243,7 +210,7 @@ void nilfs_btnode_commit_change_key(struct address_space *btnc,
 	if (oldkey == newkey)
 		return;
 
-	if (nbh == NULL) {	/* blocksize == pagesize */
+	if (nbh == NULL) {	 
 		opage = obh->b_page;
 		if (unlikely(oldkey != opage->index))
 			NILFS_PAGE_BUG(opage,
@@ -265,14 +232,11 @@ void nilfs_btnode_commit_change_key(struct address_space *btnc,
 
 		nbh->b_blocknr = newkey;
 		ctxt->bh = nbh;
-		nilfs_btnode_delete(obh); /* will decrement bh->b_count */
+		nilfs_btnode_delete(obh);  
 	}
 }
 
-/**
- * nilfs_btnode_abort_change_key
- *  abort the change_key operation prepared by prepare_change_key().
- */
+ 
 void nilfs_btnode_abort_change_key(struct address_space *btnc,
 				   struct nilfs_btnode_chkey_ctxt *ctxt)
 {
@@ -282,17 +246,11 @@ void nilfs_btnode_abort_change_key(struct address_space *btnc,
 	if (oldkey == newkey)
 		return;
 
-	if (nbh == NULL) {	/* blocksize == pagesize */
+	if (nbh == NULL) {	 
 		xa_erase_irq(&btnc->i_pages, newkey);
 		unlock_page(ctxt->bh->b_page);
 	} else {
-		/*
-		 * When canceling a buffer that a prepare operation has
-		 * allocated to copy a node block to another location, use
-		 * nilfs_btnode_delete() to initialize and release the buffer
-		 * so that the buffer flags will not be in an inconsistent
-		 * state when it is reallocated.
-		 */
+		 
 		nilfs_btnode_delete(nbh);
 	}
 }

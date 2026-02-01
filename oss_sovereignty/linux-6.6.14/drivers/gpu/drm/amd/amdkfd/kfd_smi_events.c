@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright 2020-2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+
+ 
 
 #include <linux/poll.h>
 #include <linux/wait.h>
@@ -34,7 +14,7 @@ struct kfd_smi_client {
 	struct list_head list;
 	struct kfifo fifo;
 	wait_queue_head_t wait_queue;
-	/* events enabled */
+	 
 	uint64_t events;
 	struct kfd_node *dev;
 	spinlock_t lock;
@@ -90,9 +70,7 @@ static ssize_t kfd_smi_ev_read(struct file *filep, char __user *user,
 	if (!buf)
 		return -ENOMEM;
 
-	/* kfifo_to_user can sleep so we can't use spinlock protection around
-	 * it. Instead, we kfifo out as spinlocked then copy them to the user.
-	 */
+	 
 	spin_lock(&client->lock);
 	to_copy = kfifo_len(&client->fifo);
 	if (!to_copy) {
@@ -242,7 +220,7 @@ void kfd_smi_event_update_vmfault(struct kfd_node *dev, uint16_t pasid)
 
 	memset(&task_info, 0, sizeof(struct amdgpu_task_info));
 	amdgpu_vm_get_task_info(dev->adev, pasid, &task_info);
-	/* Report VM faults from user applications, not retry from kernel */
+	 
 	if (!task_info.pid)
 		return;
 

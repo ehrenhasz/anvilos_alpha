@@ -1,23 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+ 
 
 #ifndef ASIC_REG_PCIE_WRAP_REGS_H_
 #define ASIC_REG_PCIE_WRAP_REGS_H_
 
-/*
- *****************************************
- *   PCIE_WRAP (Prototype: PCIE_WRAP)
- *****************************************
- */
+ 
 
 #define mmPCIE_WRAP_PHY_RST_N                                        0xC01300
 
@@ -303,4 +291,4 @@
 
 #define mmPCIE_WRAP_E2E_CTRL                                         0xC01DF0
 
-#endif /* ASIC_REG_PCIE_WRAP_REGS_H_ */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Texas Instruments K3 AM65 Ethernet Switch SubSystem Driver ethtool ops
- *
- * Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
- *
- */
+
+ 
 
 #include <linux/net_tstamp.h>
 #include <linux/phylink.h>
@@ -29,30 +25,14 @@ enum {
 	AM65_CPSW_REGDUMP_MOD_LAST,
 };
 
-/**
- * struct am65_cpsw_regdump_hdr - regdump record header
- *
- * @module_id: CPSW module ID
- * @len: CPSW module registers space length in u32
- */
+ 
 
 struct am65_cpsw_regdump_hdr {
 	u32 module_id;
 	u32 len;
 };
 
-/**
- * struct am65_cpsw_regdump_item - regdump module description
- *
- * @hdr: CPSW module header
- * @start_ofs: CPSW module registers start addr
- * @end_ofs: CPSW module registers end addr
- *
- * Registers dump provided in the format:
- *  u32 : module ID
- *  u32 : dump length
- *  u32[..len]: registers values
- */
+ 
 struct am65_cpsw_regdump_item {
 	struct am65_cpsw_regdump_hdr hdr;
 	u32 start_ofs;
@@ -84,28 +64,28 @@ struct am65_cpsw_stats_regs {
 	u32	rx_good_frames;
 	u32	rx_broadcast_frames;
 	u32	rx_multicast_frames;
-	u32	rx_pause_frames;		/* slave */
+	u32	rx_pause_frames;		 
 	u32	rx_crc_errors;
-	u32	rx_align_code_errors;		/* slave */
+	u32	rx_align_code_errors;		 
 	u32	rx_oversized_frames;
-	u32	rx_jabber_frames;		/* slave */
+	u32	rx_jabber_frames;		 
 	u32	rx_undersized_frames;
-	u32	rx_fragments;			/* slave */
+	u32	rx_fragments;			 
 	u32	ale_drop;
 	u32	ale_overrun_drop;
 	u32	rx_octets;
 	u32	tx_good_frames;
 	u32	tx_broadcast_frames;
 	u32	tx_multicast_frames;
-	u32	tx_pause_frames;		/* slave */
-	u32	tx_deferred_frames;		/* slave */
-	u32	tx_collision_frames;		/* slave */
-	u32	tx_single_coll_frames;		/* slave */
-	u32	tx_mult_coll_frames;		/* slave */
-	u32	tx_excessive_collisions;	/* slave */
-	u32	tx_late_collisions;		/* slave */
-	u32	rx_ipg_error;			/* slave 10G only */
-	u32	tx_carrier_sense_errors;	/* slave */
+	u32	tx_pause_frames;		 
+	u32	tx_deferred_frames;		 
+	u32	tx_collision_frames;		 
+	u32	tx_single_coll_frames;		 
+	u32	tx_mult_coll_frames;		 
+	u32	tx_excessive_collisions;	 
+	u32	tx_late_collisions;		 
+	u32	rx_ipg_error;			 
+	u32	tx_carrier_sense_errors;	 
 	u32	tx_octets;
 	u32	tx_64B_frames;
 	u32	tx_65_to_127B_frames;
@@ -120,9 +100,9 @@ struct am65_cpsw_stats_regs {
 	u32	ale_rate_limit_drop;
 	u32	ale_vid_ingress_drop;
 	u32	ale_da_eq_sa_drop;
-	u32	ale_block_drop;			/* K3 */
-	u32	ale_secure_drop;		/* K3 */
-	u32	ale_auth_drop;			/* K3 */
+	u32	ale_block_drop;			 
+	u32	ale_secure_drop;		 
+	u32	ale_auth_drop;			 
 	u32	ale_unknown_ucast;
 	u32	ale_unknown_ucast_bytes;
 	u32	ale_unknown_mcast;
@@ -132,21 +112,21 @@ struct am65_cpsw_stats_regs {
 	u32	ale_pol_match;
 	u32	ale_pol_match_red;
 	u32	ale_pol_match_yellow;
-	u32	ale_mcast_sa_drop;		/* K3 */
-	u32	ale_dual_vlan_drop;		/* K3 */
-	u32	ale_len_err_drop;		/* K3 */
-	u32	ale_ip_next_hdr_drop;		/* K3 */
-	u32	ale_ipv4_frag_drop;		/* K3 */
+	u32	ale_mcast_sa_drop;		 
+	u32	ale_dual_vlan_drop;		 
+	u32	ale_len_err_drop;		 
+	u32	ale_ip_next_hdr_drop;		 
+	u32	ale_ipv4_frag_drop;		 
 	u32	__rsvd_1[24];
-	u32	iet_rx_assembly_err;		/* K3 slave */
-	u32	iet_rx_assembly_ok;		/* K3 slave */
-	u32	iet_rx_smd_err;			/* K3 slave */
-	u32	iet_rx_frag;			/* K3 slave */
-	u32	iet_tx_hold;			/* K3 slave */
-	u32	iet_tx_frag;			/* K3 slave */
+	u32	iet_rx_assembly_err;		 
+	u32	iet_rx_assembly_ok;		 
+	u32	iet_rx_smd_err;			 
+	u32	iet_rx_frag;			 
+	u32	iet_tx_hold;			 
+	u32	iet_tx_frag;			 
 	u32	__rsvd_2[9];
 	u32	tx_mem_protect_err;
-	/* following NU only */
+	 
 	u32	tx_pri0;
 	u32	tx_pri1;
 	u32	tx_pri2;
@@ -369,7 +349,7 @@ static const struct am65_cpsw_ethtool_stat am65_slave_stats[] = {
 	AM65_CPSW_STATS(, tx_pri7_drop_bcnt),
 };
 
-/* Ethtool priv_flags */
+ 
 static const char am65_cpsw_ethtool_priv_flags[][ETH_GSTRING_LEN] = {
 #define	AM65_CPSW_PRIV_P0_RX_PTYPE_RROBIN	BIT(0)
 	"p0-rx-ptype-rrobin",
@@ -440,9 +420,7 @@ static int am65_cpsw_set_channels(struct net_device *ndev,
 	if (!chs->rx_count || !chs->tx_count)
 		return -EINVAL;
 
-	/* Check if interface is up. Can change the num queues when
-	 * the interface is down.
-	 */
+	 
 	if (common->usage_count)
 		return -EBUSY;
 
@@ -459,7 +437,7 @@ am65_cpsw_get_ringparam(struct net_device *ndev,
 {
 	struct am65_cpsw_common *common = am65_ndev_to_common(ndev);
 
-	/* not supported */
+	 
 	ering->tx_pending = common->tx_chns[0].descs_num;
 	ering->rx_pending = common->rx_chns.descs_num;
 }
@@ -560,7 +538,7 @@ static void am65_cpsw_get_regs(struct net_device *ndev,
 	struct am65_cpsw_common *common = am65_ndev_to_common(ndev);
 	u32 ale_entries, i, j, pos, *reg = p;
 
-	/* update CPSW IP version */
+	 
 	regs->version = AM65_CPSW_REGDUMP_VER;
 	ale_entries = cpsw_ale_get_num_entries(common->ale);
 

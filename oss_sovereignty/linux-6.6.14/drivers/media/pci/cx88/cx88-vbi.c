@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- */
+
+ 
 
 #include "cx88.h"
 
@@ -18,7 +17,7 @@ MODULE_PARM_DESC(vbi_debug, "enable debug messages [vbi]");
 			__func__, ##arg);			\
 } while (0)
 
-/* ------------------------------------------------------------------ */
+ 
 
 int cx8800_vbi_fmt(struct file *file, void *priv,
 		   struct v4l2_format *f)
@@ -30,7 +29,7 @@ int cx8800_vbi_fmt(struct file *file, void *priv,
 	f->fmt.vbi.offset = 244;
 
 	if (dev->core->tvnorm & V4L2_STD_525_60) {
-		/* ntsc */
+		 
 		f->fmt.vbi.sampling_rate = 28636363;
 		f->fmt.vbi.start[0] = 10;
 		f->fmt.vbi.start[1] = 273;
@@ -38,7 +37,7 @@ int cx8800_vbi_fmt(struct file *file, void *priv,
 		f->fmt.vbi.count[1] = VBI_LINE_NTSC_COUNT;
 
 	} else if (dev->core->tvnorm & V4L2_STD_625_50) {
-		/* pal */
+		 
 		f->fmt.vbi.sampling_rate = 35468950;
 		f->fmt.vbi.start[0] = V4L2_VBI_ITU_625_F1_START + 5;
 		f->fmt.vbi.start[1] = V4L2_VBI_ITU_625_F2_START + 5;
@@ -54,26 +53,26 @@ static int cx8800_start_vbi_dma(struct cx8800_dev    *dev,
 {
 	struct cx88_core *core = dev->core;
 
-	/* setup fifo + format */
+	 
 	cx88_sram_channel_setup(dev->core, &cx88_sram_channels[SRAM_CH24],
 				VBI_LINE_LENGTH, buf->risc.dma);
 
-	cx_write(MO_VBOS_CONTROL, (1 << 18) |  /* comb filter delay fixup */
-				  (1 << 15) |  /* enable vbi capture */
+	cx_write(MO_VBOS_CONTROL, (1 << 18) |   
+				  (1 << 15) |   
 				  (1 << 11));
 
-	/* reset counter */
+	 
 	cx_write(MO_VBI_GPCNTRL, GP_COUNT_CONTROL_RESET);
 	q->count = 0;
 
-	/* enable irqs */
+	 
 	cx_set(MO_PCI_INTMSK, core->pci_irqmask | PCI_INT_VIDINT);
 	cx_set(MO_VID_INTMSK, 0x0f0088);
 
-	/* enable capture */
+	 
 	cx_set(VID_CAPTURE_CONTROL, 0x18);
 
-	/* start dma */
+	 
 	cx_set(MO_DEV_CNTRL2, (1 << 5));
 	cx_set(MO_VID_DMACNTRL, 0x88);
 
@@ -84,13 +83,13 @@ void cx8800_stop_vbi_dma(struct cx8800_dev *dev)
 {
 	struct cx88_core *core = dev->core;
 
-	/* stop dma */
+	 
 	cx_clear(MO_VID_DMACNTRL, 0x88);
 
-	/* disable capture */
+	 
 	cx_clear(VID_CAPTURE_CONTROL, 0x18);
 
-	/* disable irqs */
+	 
 	cx_clear(MO_PCI_INTMSK, PCI_INT_VIDINT);
 	cx_clear(MO_VID_INTMSK, 0x0f0088);
 }
@@ -110,7 +109,7 @@ int cx8800_restart_vbi_queue(struct cx8800_dev    *dev,
 	return 0;
 }
 
-/* ------------------------------------------------------------------ */
+ 
 
 static int queue_setup(struct vb2_queue *q,
 		       unsigned int *num_buffers, unsigned int *num_planes,
@@ -171,7 +170,7 @@ static void buffer_queue(struct vb2_buffer *vb)
 	struct cx88_buffer    *prev;
 	struct cx88_dmaqueue  *q    = &dev->vbiq;
 
-	/* add jump to start */
+	 
 	buf->risc.cpu[1] = cpu_to_le32(buf->risc.dma + 8);
 	buf->risc.jmp[0] = cpu_to_le32(RISC_JUMP | RISC_CNT_INC);
 	buf->risc.jmp[1] = cpu_to_le32(buf->risc.dma + 8);

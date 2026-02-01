@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// TI LM3692x LED chip family driver
-// Copyright (C) 2017-18 Texas Instruments Incorporated - https://www.ti.com/
+
+
+
 
 #include <linux/gpio/consumer.h>
 #include <linux/i2c.h>
@@ -39,7 +39,7 @@
 #define LM3692X_ENABLE_MASK	(LM3692X_DEVICE_EN | LM3692X_LED1_EN | \
 				 LM3692X_LED2_EN | LM36923_LED3_EN)
 
-/* Brightness Control Bits */
+ 
 #define LM3692X_BL_ADJ_POL	BIT(0)
 #define LM3692X_RAMP_RATE_125us	0x00
 #define LM3692X_RAMP_RATE_250us	BIT(1)
@@ -56,7 +56,7 @@
 #define LM3692X_BRHT_MODE_RAMP_MULTI (BIT(5) | BIT(6))
 #define LM3692X_MAP_MODE_EXP	BIT(7)
 
-/* PWM Register Bits */
+ 
 #define LM3692X_PWM_FILTER_100	BIT(0)
 #define LM3692X_PWM_FILTER_150	BIT(1)
 #define LM3692X_PWM_FILTER_200	(BIT(0) | BIT(1))
@@ -70,7 +70,7 @@
 #define LM3692X_PWM_SAMP_4MHZ	BIT(6)
 #define LM3692X_PWM_SAMP_24MHZ	BIT(7)
 
-/* Boost Control Bits */
+ 
 #define LM3692X_OCP_PROT_1A	BIT(0)
 #define LM3692X_OCP_PROT_1_25A	BIT(1)
 #define LM3692X_OCP_PROT_1_5A	(BIT(0) | BIT(1))
@@ -81,30 +81,20 @@
 #define LM3692X_BOOST_SW_1MHZ	BIT(5)
 #define LM3692X_BOOST_SW_NO_SHIFT	BIT(6)
 
-/* Fault Control Bits */
+ 
 #define LM3692X_FAULT_CTRL_OVP BIT(0)
 #define LM3692X_FAULT_CTRL_OCP BIT(1)
 #define LM3692X_FAULT_CTRL_TSD BIT(2)
 #define LM3692X_FAULT_CTRL_OPEN BIT(3)
 
-/* Fault Flag Bits */
+ 
 #define LM3692X_FAULT_FLAG_OVP BIT(0)
 #define LM3692X_FAULT_FLAG_OCP BIT(1)
 #define LM3692X_FAULT_FLAG_TSD BIT(2)
 #define LM3692X_FAULT_FLAG_SHRT BIT(3)
 #define LM3692X_FAULT_FLAG_OPEN BIT(4)
 
-/**
- * struct lm3692x_led
- * @lock: Lock for reading/writing the device
- * @client: Pointer to the I2C client
- * @led_dev: LED class device pointer
- * @regmap: Devices register map
- * @enable_gpio: VDDIO/EN gpio to enable communication interface
- * @regulator: LED supply regulator pointer
- * @led_enable: LED sync to be enabled
- * @model_id: Current device model ID enumerated
- */
+ 
 struct lm3692x_led {
 	struct mutex lock;
 	struct i2c_client *client;
@@ -154,9 +144,7 @@ static int lm3692x_fault_check(struct lm3692x_led *led)
 	if (read_buf)
 		dev_err(&led->client->dev, "Detected a fault 0x%X\n", read_buf);
 
-	/* The first read may clear the fault.  Check again to see if the fault
-	 * still exits and return that value.
-	 */
+	 
 	regmap_read(led->regmap, LM3692X_FAULT_FLAGS, &read_buf);
 	if (read_buf)
 		dev_err(&led->client->dev, "Second read of fault flags 0x%X\n",
@@ -196,19 +184,12 @@ static int lm3692x_leds_enable(struct lm3692x_led *led)
 	if (ret)
 		goto out;
 
-	/*
-	 * For glitch free operation, the following data should
-	 * only be written while LEDx enable bits are 0 and the device enable
-	 * bit is set to 1.
-	 * per Section 7.5.14 of the data sheet
-	 */
+	 
 	ret = regmap_write(led->regmap, LM3692X_EN, LM3692X_DEVICE_EN);
 	if (ret)
 		goto out;
 
-	/* Set the brightness to 0 so when enabled the LEDs do not come
-	 * on with full brightness.
-	 */
+	 
 	ret = regmap_write(led->regmap, LM3692X_BRT_MSB, 0);
 	if (ret)
 		goto out;
@@ -366,7 +347,7 @@ static enum led_brightness lm3692x_max_brightness(struct lm3692x_led *led,
 {
 	u32 max_code;
 
-	/* see p.12 of LM36922 data sheet for brightness formula */
+	 
 	max_code = ((max_cur * 1000) - 37806) / 12195;
 	if (max_code > 0x7FF)
 		max_code = 0x7FF;

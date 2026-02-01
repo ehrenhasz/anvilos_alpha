@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AMD Cryptographic Coprocessor (CCP) RSA crypto API support
- *
- * Copyright (C) 2017 Advanced Micro Devices, Inc.
- *
- * Author: Gary R Hook <gary.hook@amd.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/sched.h>
@@ -72,7 +66,7 @@ static int ccp_rsa_crypt(struct akcipher_request *req, bool encrypt)
 	INIT_LIST_HEAD(&rctx->cmd.entry);
 	rctx->cmd.engine = CCP_ENGINE_RSA;
 
-	rctx->cmd.u.rsa.key_size = ctx->u.rsa.key_len; /* in bits */
+	rctx->cmd.u.rsa.key_size = ctx->u.rsa.key_len;  
 	if (encrypt) {
 		rctx->cmd.u.rsa.exp = &ctx->u.rsa.e_sg;
 		rctx->cmd.u.rsa.exp_len = ctx->u.rsa.e_len;
@@ -103,7 +97,7 @@ static int ccp_rsa_decrypt(struct akcipher_request *req)
 
 static int ccp_check_key_length(unsigned int len)
 {
-	/* In bits */
+	 
 	if (len < 8 || len > 4096)
 		return -EINVAL;
 	return 0;
@@ -111,7 +105,7 @@ static int ccp_check_key_length(unsigned int len)
 
 static void ccp_rsa_free_key_bufs(struct ccp_ctx *ctx)
 {
-	/* Clean up old key data */
+	 
 	kfree_sensitive(ctx->u.rsa.e_buf);
 	ctx->u.rsa.e_buf = NULL;
 	ctx->u.rsa.e_len = 0;
@@ -133,7 +127,7 @@ static int ccp_rsa_setkey(struct crypto_akcipher *tfm, const void *key,
 	ccp_rsa_free_key_bufs(ctx);
 	memset(&raw_key, 0, sizeof(raw_key));
 
-	/* Code borrowed from crypto/rsa.c */
+	 
 	if (private)
 		ret = rsa_parse_priv_key(&raw_key, key, keylen);
 	else
@@ -147,7 +141,7 @@ static int ccp_rsa_setkey(struct crypto_akcipher *tfm, const void *key,
 		goto key_err;
 	sg_init_one(&ctx->u.rsa.n_sg, ctx->u.rsa.n_buf, ctx->u.rsa.n_len);
 
-	ctx->u.rsa.key_len = ctx->u.rsa.n_len << 3; /* convert to bits */
+	ctx->u.rsa.key_len = ctx->u.rsa.n_len << 3;  
 	if (ccp_check_key_length(ctx->u.rsa.key_len)) {
 		ret = -EINVAL;
 		goto key_err;
@@ -278,9 +272,7 @@ int ccp_register_rsa_algs(struct list_head *head)
 	int i, ret;
 	unsigned int ccpversion = ccp_version();
 
-	/* Register the RSA algorithm in standard mode
-	 * This works for CCP v3 and later
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(rsa_algs); i++) {
 		if (rsa_algs[i].version > ccpversion)
 			continue;

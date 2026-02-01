@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <errno.h>
 #include <fcntl.h>
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 		char *cargv[] = {"exec", now_str, NULL};
 		char *cenv[] = {NULL};
 
-		/* Check that a child process is in the new timens. */
+		 
 		for (i = 0; i < 2; i++) {
 			_gettime(CLOCK_MONOTONIC, &tst, i);
 			if (abs(tst.tv_sec - now.tv_sec - OFFSET) > 5)
@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 						now.tv_sec + OFFSET, tst.tv_sec);
 		}
 
-		/* Check for proper vvar offsets after execve. */
+		 
 		snprintf(now_str, sizeof(now_str), "%ld", now.tv_sec + OFFSET);
 		execve("/proc/self/exe", cargv, cenv);
 		return pr_perror("execve");

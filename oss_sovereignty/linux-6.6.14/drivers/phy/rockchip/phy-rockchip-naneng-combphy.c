@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Rockchip PIPE USB3.0 PCIE SATA Combo Phy driver
- *
- * Copyright (C) 2021 Rockchip Electronics Co., Ltd.
- */
+
+ 
 
 #include <dt-bindings/phy/phy.h>
 #include <linux/clk.h>
@@ -20,7 +16,7 @@
 #define REF_CLOCK_25MHz			(25 * HZ_PER_MHZ)
 #define REF_CLOCK_100MHz		(100 * HZ_PER_MHZ)
 
-/* COMBO PHY REG */
+ 
 #define PHYREG6				0x14
 #define PHYREG6_PLL_DIV_MASK		GENMASK(7, 6)
 #define PHYREG6_PLL_DIV_SHIFT		6
@@ -374,7 +370,7 @@ static int rk3568_combphy_cfg(struct rockchip_combphy_priv *priv)
 
 	switch (priv->type) {
 	case PHY_TYPE_PCIE:
-		/* Set SSC downward spread spectrum. */
+		 
 		rockchip_combphy_updatel(priv, PHYREG32_SSC_MASK,
 					 PHYREG32_SSC_DOWNWARD << PHYREG32_SSC_DIR_SHIFT,
 					 PHYREG32);
@@ -386,25 +382,25 @@ static int rk3568_combphy_cfg(struct rockchip_combphy_priv *priv)
 		break;
 
 	case PHY_TYPE_USB3:
-		/* Set SSC downward spread spectrum. */
+		 
 		rockchip_combphy_updatel(priv, PHYREG32_SSC_MASK,
 					 PHYREG32_SSC_DOWNWARD << PHYREG32_SSC_DIR_SHIFT,
 					 PHYREG32);
 
-		/* Enable adaptive CTLE for USB3.0 Rx. */
+		 
 		val = readl(priv->mmio + PHYREG15);
 		val |= PHYREG15_CTLE_EN;
 		writel(val, priv->mmio + PHYREG15);
 
-		/* Set PLL KVCO fine tuning signals. */
+		 
 		rockchip_combphy_updatel(priv, PHYREG33_PLL_KVCO_MASK,
 					 PHYREG33_PLL_KVCO_VALUE << PHYREG33_PLL_KVCO_SHIFT,
 					 PHYREG33);
 
-		/* Enable controlling random jitter. */
+		 
 		writel(PHYREG12_PLL_LPF_ADJ_VALUE, priv->mmio + PHYREG12);
 
-		/* Set PLL input clock divider 1/2. */
+		 
 		rockchip_combphy_updatel(priv, PHYREG6_PLL_DIV_MASK,
 					 PHYREG6_PLL_DIV_2 << PHYREG6_PLL_DIV_SHIFT,
 					 PHYREG6);
@@ -419,14 +415,11 @@ static int rk3568_combphy_cfg(struct rockchip_combphy_priv *priv)
 		break;
 
 	case PHY_TYPE_SATA:
-		/* Enable adaptive CTLE for SATA Rx. */
+		 
 		val = readl(priv->mmio + PHYREG15);
 		val |= PHYREG15_CTLE_EN;
 		writel(val, priv->mmio + PHYREG15);
-		/*
-		 * Set tx_rterm=50ohm and rx_rterm=44ohm for SATA.
-		 * 0: 60ohm, 8: 50ohm 15: 44ohm (by step abort 1ohm)
-		 */
+		 
 		val = PHYREG7_TX_RTERM_50OHM << PHYREG7_TX_RTERM_SHIFT;
 		val |= PHYREG7_RX_RTERM_44OHM << PHYREG7_RX_RTERM_SHIFT;
 		writel(val, priv->mmio + PHYREG7);
@@ -463,7 +456,7 @@ static int rk3568_combphy_cfg(struct rockchip_combphy_priv *priv)
 	switch (rate) {
 	case REF_CLOCK_24MHz:
 		if (priv->type == PHY_TYPE_USB3 || priv->type == PHY_TYPE_SATA) {
-			/* Set ssc_cnt[9:0]=0101111101 & 31.5KHz. */
+			 
 			val = PHYREG15_SSC_CNT_VALUE << PHYREG15_SSC_CNT_SHIFT;
 			rockchip_combphy_updatel(priv, PHYREG15_SSC_CNT_MASK,
 						 val, PHYREG15);
@@ -479,12 +472,12 @@ static int rk3568_combphy_cfg(struct rockchip_combphy_priv *priv)
 	case REF_CLOCK_100MHz:
 		rockchip_combphy_param_write(priv->phy_grf, &cfg->pipe_clk_100m, true);
 		if (priv->type == PHY_TYPE_PCIE) {
-			/* PLL KVCO  fine tuning. */
+			 
 			val = PHYREG33_PLL_KVCO_VALUE << PHYREG33_PLL_KVCO_SHIFT;
 			rockchip_combphy_updatel(priv, PHYREG33_PLL_KVCO_MASK,
 						 val, PHYREG33);
 
-			/* Enable controlling random jitter. */
+			 
 			writel(PHYREG12_PLL_LPF_ADJ_VALUE, priv->mmio + PHYREG12);
 
 			val = PHYREG6_PLL_DIV_2 << PHYREG6_PLL_DIV_SHIFT;
@@ -494,7 +487,7 @@ static int rk3568_combphy_cfg(struct rockchip_combphy_priv *priv)
 			writel(PHYREG18_PLL_LOOP, priv->mmio + PHYREG18);
 			writel(PHYREG11_SU_TRIM_0_7, priv->mmio + PHYREG11);
 		} else if (priv->type == PHY_TYPE_SATA) {
-			/* downward spread spectrum +500ppm */
+			 
 			val = PHYREG32_SSC_DOWNWARD << PHYREG32_SSC_DIR_SHIFT;
 			val |= PHYREG32_SSC_OFFSET_500PPM << PHYREG32_SSC_OFFSET_SHIFT;
 			rockchip_combphy_updatel(priv, PHYREG32_SSC_MASK, val, PHYREG32);
@@ -529,7 +522,7 @@ static int rk3568_combphy_cfg(struct rockchip_combphy_priv *priv)
 }
 
 static const struct rockchip_combphy_grfcfg rk3568_combphy_grfcfgs = {
-	/* pipe-phy-grf */
+	 
 	.pcie_mode_set		= { 0x0000, 5, 0, 0x00, 0x11 },
 	.usb_mode_set		= { 0x0000, 5, 0, 0x00, 0x04 },
 	.sgmii_mode_set		= { 0x0000, 5, 0, 0x00, 0x01 },
@@ -556,7 +549,7 @@ static const struct rockchip_combphy_grfcfg rk3568_combphy_grfcfgs = {
 	.con1_for_sata		= { 0x0004, 15, 0, 0x00, 0x0040 },
 	.con2_for_sata		= { 0x0008, 15, 0, 0x00, 0x80c3 },
 	.con3_for_sata		= { 0x000c, 15, 0, 0x00, 0x4407 },
-	/* pipe-grf */
+	 
 	.pipe_con0_for_sata	= { 0x0000, 15, 0, 0x00, 0x2220 },
 	.pipe_xpcs_phy_ready	= { 0x0040, 2, 2, 0x00, 0x01 },
 };
@@ -582,25 +575,25 @@ static int rk3588_combphy_cfg(struct rockchip_combphy_priv *priv)
 		rockchip_combphy_param_write(priv->pipe_grf, &cfg->pipe_pcie1l1_sel, true);
 		break;
 	case PHY_TYPE_USB3:
-		/* Set SSC downward spread spectrum */
+		 
 		rockchip_combphy_updatel(priv, PHYREG32_SSC_MASK,
 					 PHYREG32_SSC_DOWNWARD << PHYREG32_SSC_DIR_SHIFT,
 					 PHYREG32);
 
-		/* Enable adaptive CTLE for USB3.0 Rx. */
+		 
 		val = readl(priv->mmio + PHYREG15);
 		val |= PHYREG15_CTLE_EN;
 		writel(val, priv->mmio + PHYREG15);
 
-		/* Set PLL KVCO fine tuning signals. */
+		 
 		rockchip_combphy_updatel(priv, PHYREG33_PLL_KVCO_MASK,
 					 PHYREG33_PLL_KVCO_VALUE << PHYREG33_PLL_KVCO_SHIFT,
 					 PHYREG33);
 
-		/* Enable controlling random jitter. */
+		 
 		writel(PHYREG12_PLL_LPF_ADJ_VALUE, priv->mmio + PHYREG12);
 
-		/* Set PLL input clock divider 1/2. */
+		 
 		rockchip_combphy_updatel(priv, PHYREG6_PLL_DIV_MASK,
 					 PHYREG6_PLL_DIV_2 << PHYREG6_PLL_DIV_SHIFT,
 					 PHYREG6);
@@ -613,14 +606,11 @@ static int rk3588_combphy_cfg(struct rockchip_combphy_priv *priv)
 		rockchip_combphy_param_write(priv->phy_grf, &cfg->usb_mode_set, true);
 		break;
 	case PHY_TYPE_SATA:
-		/* Enable adaptive CTLE for SATA Rx. */
+		 
 		val = readl(priv->mmio + PHYREG15);
 		val |= PHYREG15_CTLE_EN;
 		writel(val, priv->mmio + PHYREG15);
-		/*
-		 * Set tx_rterm=50ohm and rx_rterm=44ohm for SATA.
-		 * 0: 60ohm, 8: 50ohm 15: 44ohm (by step abort 1ohm)
-		 */
+		 
 		val = PHYREG7_TX_RTERM_50OHM << PHYREG7_TX_RTERM_SHIFT;
 		val |= PHYREG7_RX_RTERM_44OHM << PHYREG7_RX_RTERM_SHIFT;
 		writel(val, priv->mmio + PHYREG7);
@@ -644,7 +634,7 @@ static int rk3588_combphy_cfg(struct rockchip_combphy_priv *priv)
 	switch (rate) {
 	case REF_CLOCK_24MHz:
 		if (priv->type == PHY_TYPE_USB3 || priv->type == PHY_TYPE_SATA) {
-			/* Set ssc_cnt[9:0]=0101111101 & 31.5KHz. */
+			 
 			val = PHYREG15_SSC_CNT_VALUE << PHYREG15_SSC_CNT_SHIFT;
 			rockchip_combphy_updatel(priv, PHYREG15_SSC_CNT_MASK,
 						 val, PHYREG15);
@@ -659,21 +649,21 @@ static int rk3588_combphy_cfg(struct rockchip_combphy_priv *priv)
 	case REF_CLOCK_100MHz:
 		rockchip_combphy_param_write(priv->phy_grf, &cfg->pipe_clk_100m, true);
 		if (priv->type == PHY_TYPE_PCIE) {
-			/* PLL KVCO fine tuning. */
+			 
 			val = 4 << PHYREG33_PLL_KVCO_SHIFT;
 			rockchip_combphy_updatel(priv, PHYREG33_PLL_KVCO_MASK,
 						 val, PHYREG33);
 
-			/* Enable controlling random jitter. */
+			 
 			writel(PHYREG12_PLL_LPF_ADJ_VALUE, priv->mmio + PHYREG12);
 
-			/* Set up rx_trim: PLL LPF C1 85pf R1 1.25kohm */
+			 
 			writel(PHYREG27_RX_TRIM_RK3588, priv->mmio + PHYREG27);
 
-			/* Set up su_trim:  */
+			 
 			writel(PHYREG11_SU_TRIM_0_7, priv->mmio + PHYREG11);
 		} else if (priv->type == PHY_TYPE_SATA) {
-			/* downward spread spectrum +500ppm */
+			 
 			val = PHYREG32_SSC_DOWNWARD << PHYREG32_SSC_DIR_SHIFT;
 			val |= PHYREG32_SSC_OFFSET_500PPM << PHYREG32_SSC_OFFSET_SHIFT;
 			rockchip_combphy_updatel(priv, PHYREG32_SSC_MASK, val, PHYREG32);
@@ -707,7 +697,7 @@ static int rk3588_combphy_cfg(struct rockchip_combphy_priv *priv)
 }
 
 static const struct rockchip_combphy_grfcfg rk3588_combphy_grfcfgs = {
-	/* pipe-phy-grf */
+	 
 	.pcie_mode_set		= { 0x0000, 5, 0, 0x00, 0x11 },
 	.usb_mode_set		= { 0x0000, 5, 0, 0x00, 0x04 },
 	.pipe_rxterm_set	= { 0x0000, 12, 12, 0x00, 0x01 },
@@ -728,7 +718,7 @@ static const struct rockchip_combphy_grfcfg rk3588_combphy_grfcfgs = {
 	.con1_for_sata		= { 0x0004, 15, 0, 0x00, 0x0000 },
 	.con2_for_sata		= { 0x0008, 15, 0, 0x00, 0x80c1 },
 	.con3_for_sata		= { 0x000c, 15, 0, 0x00, 0x0407 },
-	/* pipe-grf */
+	 
 	.pipe_con0_for_sata	= { 0x0000, 11, 5, 0x00, 0x22 },
 	.pipe_con1_for_sata	= { 0x0000, 2, 0, 0x00, 0x2 },
 	.pipe_pcie1l0_sel	= { 0x0100, 0, 0, 0x01, 0x0 },

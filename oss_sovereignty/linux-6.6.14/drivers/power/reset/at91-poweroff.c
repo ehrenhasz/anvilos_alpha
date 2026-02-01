@@ -1,14 +1,4 @@
-/*
- * Atmel AT91 SAM9 SoCs reset code
- *
- * Copyright (C) 2007 Atmel Corporation.
- * Copyright (C) 2011 Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
- * Copyright (C) 2014 Free Electrons
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -20,22 +10,22 @@
 
 #include <soc/at91/at91sam9_ddrsdr.h>
 
-#define AT91_SHDW_CR	0x00		/* Shut Down Control Register */
-#define AT91_SHDW_SHDW		BIT(0)			/* Shut Down command */
-#define AT91_SHDW_KEY		(0xa5 << 24)		/* KEY Password */
+#define AT91_SHDW_CR	0x00		 
+#define AT91_SHDW_SHDW		BIT(0)			 
+#define AT91_SHDW_KEY		(0xa5 << 24)		 
 
-#define AT91_SHDW_MR	0x04		/* Shut Down Mode Register */
-#define AT91_SHDW_WKMODE0	GENMASK(2, 0)		/* Wake-up 0 Mode Selection */
-#define AT91_SHDW_CPTWK0_MAX	0xf			/* Maximum Counter On Wake Up 0 */
-#define AT91_SHDW_CPTWK0	(AT91_SHDW_CPTWK0_MAX << 4) /* Counter On Wake Up 0 */
+#define AT91_SHDW_MR	0x04		 
+#define AT91_SHDW_WKMODE0	GENMASK(2, 0)		 
+#define AT91_SHDW_CPTWK0_MAX	0xf			 
+#define AT91_SHDW_CPTWK0	(AT91_SHDW_CPTWK0_MAX << 4)  
 #define AT91_SHDW_CPTWK0_(x)	((x) << 4)
-#define AT91_SHDW_RTTWKEN	BIT(16)			/* Real Time Timer Wake-up Enable */
-#define AT91_SHDW_RTCWKEN	BIT(17)			/* Real Time Clock Wake-up Enable */
+#define AT91_SHDW_RTTWKEN	BIT(16)			 
+#define AT91_SHDW_RTCWKEN	BIT(17)			 
 
-#define AT91_SHDW_SR	0x08		/* Shut Down Status Register */
-#define AT91_SHDW_WAKEUP0	BIT(0)			/* Wake-up 0 Status */
-#define AT91_SHDW_RTTWK		BIT(16)			/* Real-time Timer Wake-up */
-#define AT91_SHDW_RTCWK		BIT(17)			/* Real-time Clock Wake-up [SAM9RL] */
+#define AT91_SHDW_SR	0x08		 
+#define AT91_SHDW_WAKEUP0	BIT(0)			 
+#define AT91_SHDW_RTTWK		BIT(16)			 
+#define AT91_SHDW_RTCWK		BIT(17)			 
 
 enum wakeup_type {
 	AT91_SHDW_WKMODE0_NONE		= 0,
@@ -62,7 +52,7 @@ static void __init at91_wakeup_status(struct platform_device *pdev)
 	const char *reason;
 	u32 reg = readl(at91_shdwc.shdwc_base + AT91_SHDW_SR);
 
-	/* Simple power-on, just bail out */
+	 
 	if (!reg)
 		return;
 
@@ -79,17 +69,17 @@ static void __init at91_wakeup_status(struct platform_device *pdev)
 static void at91_poweroff(void)
 {
 	asm volatile(
-		/* Align to cache lines */
+		 
 		".balign 32\n\t"
 
-		/* Ensure AT91_SHDW_CR is in the TLB by reading it */
+		 
 		"	ldr	r6, [%2, #" __stringify(AT91_SHDW_CR) "]\n\t"
 
-		/* Power down SDRAM0 */
+		 
 		"	tst	%0, #0\n\t"
 		"	beq	1f\n\t"
 		"	str	%1, [%0, #" __stringify(AT91_DDRSDRC_LPR) "]\n\t"
-		/* Shutdown CPU */
+		 
 		"1:	str	%3, [%2, #" __stringify(AT91_SHDW_CR) "]\n\t"
 
 		"	b	.\n\t"
@@ -219,7 +209,7 @@ static const struct of_device_id at91_poweroff_of_match[] = {
 	{ .compatible = "atmel,at91sam9260-shdwc", },
 	{ .compatible = "atmel,at91sam9rl-shdwc", },
 	{ .compatible = "atmel,at91sam9x5-shdwc", },
-	{ /*sentinel*/ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, at91_poweroff_of_match);
 

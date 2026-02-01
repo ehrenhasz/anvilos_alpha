@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Transparent proxy support for Linux/iptables
- *
- * Copyright (C) 2007-2008 BalaBit IT Ltd.
- * Author: Krisztian Kovacs
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/skbuff.h>
@@ -26,25 +21,7 @@
 #include <net/netfilter/nf_socket.h>
 #include <linux/netfilter/xt_socket.h>
 
-/* "socket" match based redirection (no specific rule)
- * ===================================================
- *
- * There are connections with dynamic endpoints (e.g. FTP data
- * connection) that the user is unable to add explicit rules
- * for. These are taken care of by a generic "socket" rule. It is
- * assumed that the proxy application is trusted to open such
- * connections without explicit iptables rule (except of course the
- * generic 'socket' rule). In this case the following sockets are
- * matched in preference order:
- *
- *   - match: if there's a fully established connection matching the
- *     _packet_ tuple
- *
- *   - match: if there's a non-zero bound listener (possibly with a
- *     non-local address) We don't accept zero-bound listeners, since
- *     then local services could intercept traffic going through the
- *     box.
- */
+ 
 static bool
 socket_match(const struct sk_buff *skb, struct xt_action_param *par,
 	     const struct xt_socket_mtinfo1 *info)
@@ -62,16 +39,12 @@ socket_match(const struct sk_buff *skb, struct xt_action_param *par,
 		bool wildcard;
 		bool transparent = true;
 
-		/* Ignore sockets listening on INADDR_ANY,
-		 * unless XT_SOCKET_NOWILDCARD is set
-		 */
+		 
 		wildcard = (!(info->flags & XT_SOCKET_NOWILDCARD) &&
 			    sk_fullsock(sk) &&
 			    inet_sk(sk)->inet_rcv_saddr == 0);
 
-		/* Ignore non-transparent sockets,
-		 * if XT_SOCKET_TRANSPARENT is used
-		 */
+		 
 		if (info->flags & XT_SOCKET_TRANSPARENT)
 			transparent = inet_sk_transparent(sk);
 
@@ -123,16 +96,12 @@ socket_mt6_v1_v2_v3(const struct sk_buff *skb, struct xt_action_param *par)
 		bool wildcard;
 		bool transparent = true;
 
-		/* Ignore sockets listening on INADDR_ANY
-		 * unless XT_SOCKET_NOWILDCARD is set
-		 */
+		 
 		wildcard = (!(info->flags & XT_SOCKET_NOWILDCARD) &&
 			    sk_fullsock(sk) &&
 			    ipv6_addr_any(&sk->sk_v6_rcv_saddr));
 
-		/* Ignore non-transparent sockets,
-		 * if XT_SOCKET_TRANSPARENT is used
-		 */
+		 
 		if (info->flags & XT_SOCKET_TRANSPARENT)
 			transparent = inet_sk_transparent(sk);
 

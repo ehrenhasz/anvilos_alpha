@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * FXOS8700 - NXP IMU, I2C bits
- *
- * 7-bit I2C slave address determined by SA1 and SA0 logic level
- * inputs represented in the following table:
- *      SA1  |  SA0  |  Slave Address
- *      0    |  0    |  0x1E
- *      0    |  1    |  0x1D
- *      1    |  0    |  0x1C
- *      1    |  1    |  0x1F
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/i2c.h>
 #include <linux/module.h>

@@ -1,19 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2012 IBM Corporation
- *
- * Author: Ashley Lai <ashleydlai@gmail.com>
- *
- * Maintained by: <tpmdd-devel@lists.sourceforge.net>
- *
- * Device driver for TCG/TCPA TPM (trusted platform module).
- * Specifications at www.trustedcomputinggroup.org
- */
+ 
+ 
 
 #ifndef __TPM_IBMVTPM_H__
 #define __TPM_IBMVTPM_H__
 
-/* vTPM Message Format 1 */
+ 
 struct ibmvtpm_crq {
 	u8 valid;
 	u8 msg;
@@ -46,18 +37,18 @@ struct ibmvtpm_dev {
 
 #define CRQ_RES_BUF_SIZE	PAGE_SIZE
 
-/* Initialize CRQ */
-#define INIT_CRQ_CMD		0xC001000000000000LL /* Init cmd */
-#define INIT_CRQ_COMP_CMD	0xC002000000000000LL /* Init complete cmd */
-#define INIT_CRQ_RES		0x01	/* Init respond */
-#define INIT_CRQ_COMP_RES	0x02	/* Init complete respond */
-#define VALID_INIT_CRQ		0xC0	/* Valid command for init crq */
+ 
+#define INIT_CRQ_CMD		0xC001000000000000LL  
+#define INIT_CRQ_COMP_CMD	0xC002000000000000LL  
+#define INIT_CRQ_RES		0x01	 
+#define INIT_CRQ_COMP_RES	0x02	 
+#define VALID_INIT_CRQ		0xC0	 
 
-/* vTPM CRQ response is the message type | 0x80 */
+ 
 #define VTPM_MSG_RES		0x80
 #define IBMVTPM_VALID_CMD	0x80
 
-/* vTPM CRQ message types */
+ 
 #define VTPM_GET_VERSION			0x01
 #define VTPM_GET_VERSION_RES			(0x01 | VTPM_MSG_RES)
 

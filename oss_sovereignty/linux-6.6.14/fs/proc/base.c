@@ -1,52 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/proc/base.c
- *
- *  Copyright (C) 1991, 1992 Linus Torvalds
- *
- *  proc base directory handling functions
- *
- *  1999, Al Viro. Rewritten. Now it covers the whole per-process part.
- *  Instead of using magical inumbers to determine the kind of object
- *  we allocate and fill in-core inodes upon lookup. They don't even
- *  go into icache. We cache the reference to task_struct upon lookup too.
- *  Eventually it should become a filesystem in its own. We don't use the
- *  rest of procfs anymore.
- *
- *
- *  Changelog:
- *  17-Jan-2005
- *  Allan Bezerra
- *  Bruna Moreira <bruna.moreira@indt.org.br>
- *  Edjard Mota <edjard.mota@indt.org.br>
- *  Ilias Biris <ilias.biris@indt.org.br>
- *  Mauricio Lin <mauricio.lin@indt.org.br>
- *
- *  Embedded Linux Lab - 10LE Instituto Nokia de Tecnologia - INdT
- *
- *  A new process specific entry (smaps) included in /proc. It shows the
- *  size of rss for each memory area. The maps entry lacks information
- *  about physical memory size (rss) for each mapped file, i.e.,
- *  rss information for executables and library files.
- *  This additional information is useful for any tools that need to know
- *  about physical memory consumption for a process specific library.
- *
- *  Changelog:
- *  21-Feb-2005
- *  Embedded Linux Lab - 10LE Instituto Nokia de Tecnologia - INdT
- *  Pud inclusion in the page table walking.
- *
- *  ChangeLog:
- *  10-Mar-2005
- *  10LE Instituto Nokia de Tecnologia - INdT:
- *  A better way to walks through the page table as suggested by Hugh Dickins.
- *
- *  Simo Piiroinen <simo.piiroinen@nokia.com>:
- *  Smaps information related to shared, private, clean and dirty pages.
- *
- *  Paul Mundt <paul.mundt@nokia.com>:
- *  Overall revision about smaps.
- */
+
+ 
 
 #include <linux/uaccess.h>
 
@@ -103,15 +56,7 @@
 
 #include "../../lib/kstrtox.h"
 
-/* NOTE:
- *	Implementing inode permission operations in /proc is almost
- *	certainly an error.  Permission checks need to happen during
- *	each system call not at open time.  The reason is that most of
- *	what we wish to check for permissions in /proc varies at runtime.
- *
- *	The classic example of a problem is opening file descriptors
- *	in /proc for a task before it execs a suid executable.
- */
+ 
 
 static u8 nlink_tid __ro_after_init;
 static u8 nlink_tgid __ro_after_init;
@@ -151,10 +96,7 @@ struct pid_entry {
 		NULL, &proc_pid_attr_operations,	\
 		{ .lsm = LSM })
 
-/*
- * Count the number of hardlinks for the pid_entry table, excluding the .
- * and .. links.
- */
+ 
 static unsigned int __init pid_entry_nlink(const struct pid_entry *entries,
 	unsigned int n)
 {
@@ -212,10 +154,7 @@ static int proc_root_link(struct dentry *dentry, struct path *path)
 	return result;
 }
 
-/*
- * If the user used setproctitle(), we just get the string from
- * user space at arg_start, and limit it to a maximum of one page.
- */
+ 
 static ssize_t get_mm_proctitle(struct mm_struct *mm, char __user *buf,
 				size_t count, unsigned long pos,
 				unsigned long arg_start)
@@ -235,7 +174,7 @@ static ssize_t get_mm_proctitle(struct mm_struct *mm, char __user *buf,
 	if (got > 0) {
 		int len = strnlen(page, got);
 
-		/* Include the NUL character if it was found */
+		 
 		if (len < got)
 			len++;
 
@@ -260,7 +199,7 @@ static ssize_t get_mm_cmdline(struct mm_struct *mm, char __user *buf,
 	unsigned long pos, len;
 	char *page, c;
 
-	/* Check if process spawned far enough to have cmdline. */
+	 
 	if (!mm->env_end)
 		return 0;
 
@@ -274,16 +213,12 @@ static ssize_t get_mm_cmdline(struct mm_struct *mm, char __user *buf,
 	if (arg_start >= arg_end)
 		return 0;
 
-	/*
-	 * We allow setproctitle() to overwrite the argument
-	 * strings, and overflow past the original end. But
-	 * only when it overflows into the environment area.
-	 */
+	 
 	if (env_start != arg_end || env_end < env_start)
 		env_start = env_end = arg_end;
 	len = env_end - arg_start;
 
-	/* We're not going to care if "*ppos" has high bits set */
+	 
 	pos = *ppos;
 	if (pos >= len)
 		return 0;
@@ -292,20 +227,11 @@ static ssize_t get_mm_cmdline(struct mm_struct *mm, char __user *buf,
 	if (!count)
 		return 0;
 
-	/*
-	 * Magical special case: if the argv[] end byte is not
-	 * zero, the user has overwritten it with setproctitle(3).
-	 *
-	 * Possible future enhancement: do this only once when
-	 * pos is 0, and set a flag in the 'struct file'.
-	 */
+	 
 	if (access_remote_vm(mm, arg_end-1, &c, 1, FOLL_ANON) == 1 && c)
 		return get_mm_proctitle(mm, buf, count, pos, arg_start);
 
-	/*
-	 * For the non-setproctitle() case we limit things strictly
-	 * to the [arg_start, arg_end[ range.
-	 */
+	 
 	pos += arg_start;
 	if (pos < arg_start || pos >= arg_end)
 		return 0;
@@ -379,10 +305,7 @@ static const struct file_operations proc_pid_cmdline_ops = {
 };
 
 #ifdef CONFIG_KALLSYMS
-/*
- * Provides a wchan file via kallsyms in a proper one-value-per-file format.
- * Returns the resolved symbol.  If that fails, simply return the address.
- */
+ 
 static int proc_pid_wchan(struct seq_file *m, struct pid_namespace *ns,
 			  struct pid *pid, struct task_struct *task)
 {
@@ -402,7 +325,7 @@ print0:
 	seq_putc(m, '0');
 	return 0;
 }
-#endif /* CONFIG_KALLSYMS */
+#endif  
 
 static int lock_trace(struct task_struct *task)
 {
@@ -431,17 +354,7 @@ static int proc_pid_stack(struct seq_file *m, struct pid_namespace *ns,
 	unsigned long *entries;
 	int err;
 
-	/*
-	 * The ability to racily run the kernel stack unwinder on a running task
-	 * and then observe the unwinder output is scary; while it is useful for
-	 * debugging kernel issues, it can also allow an attacker to leak kernel
-	 * stack contents.
-	 * Doing this in a manner that is at least safe from races would require
-	 * some work to ensure that the remote task can not be scheduled; and
-	 * even then, this would still expose the unwinder as local attack
-	 * surface.
-	 * Therefore, this interface is restricted to root.
-	 */
+	 
 	if (!file_ns_capable(m->file, &init_user_ns, CAP_SYS_ADMIN))
 		return -EACCES;
 
@@ -470,9 +383,7 @@ static int proc_pid_stack(struct seq_file *m, struct pid_namespace *ns,
 #endif
 
 #ifdef CONFIG_SCHED_INFO
-/*
- * Provides /proc/PID/schedstat
- */
+ 
 static int proc_pid_schedstat(struct seq_file *m, struct pid_namespace *ns,
 			      struct pid *pid, struct task_struct *task)
 {
@@ -555,11 +466,7 @@ static int proc_oom_score(struct seq_file *m, struct pid_namespace *ns,
 	long badness;
 
 	badness = oom_badness(task, totalpages);
-	/*
-	 * Special case OOM_SCORE_ADJ_MIN for all others scale the
-	 * badness value into [0, 2000] range which we have been
-	 * exporting for a long time so userspace might depend on it.
-	 */
+	 
 	if (badness != LONG_MIN)
 		points = (1000 + badness * 1000 / (long)totalpages) * 2 / 3;
 
@@ -592,7 +499,7 @@ static const struct limit_names lnames[RLIM_NLIMITS] = {
 	[RLIMIT_RTTIME] = {"Max realtime timeout", "us"},
 };
 
-/* Display limits for a process */
+ 
 static int proc_pid_limits(struct seq_file *m, struct pid_namespace *ns,
 			   struct pid *pid, struct task_struct *task)
 {
@@ -606,9 +513,7 @@ static int proc_pid_limits(struct seq_file *m, struct pid_namespace *ns,
 	memcpy(rlim, task->signal->rlim, sizeof(struct rlimit) * RLIM_NLIMITS);
 	unlock_task_sighand(task, &flags);
 
-	/*
-	 * print the file header
-	 */
+	 
 	seq_puts(m, "Limit                     "
 		"Soft Limit           "
 		"Hard Limit           "
@@ -663,21 +568,18 @@ static int proc_pid_syscall(struct seq_file *m, struct pid_namespace *ns,
 
 	return 0;
 }
-#endif /* CONFIG_HAVE_ARCH_TRACEHOOK */
+#endif  
 
-/************************************************************************/
-/*                       Here the fs part begins                        */
-/************************************************************************/
+ 
+ 
+ 
 
-/* permission checks */
+ 
 static bool proc_fd_access_allowed(struct inode *inode)
 {
 	struct task_struct *task;
 	bool allowed = false;
-	/* Allow access to a task's file descriptors if it is us or we
-	 * may use ptrace attach to the process and find out that
-	 * information.
-	 */
+	 
 	task = get_proc_task(inode);
 	if (task) {
 		allowed = ptrace_may_access(task, PTRACE_MODE_READ_FSCREDS);
@@ -703,19 +605,12 @@ int proc_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 	return 0;
 }
 
-/*
- * May current process learn task's sched/cmdline info (for hide_pid_min=1)
- * or euid/egid (for hide_pid_min=2)?
- */
+ 
 static bool has_pid_permissions(struct proc_fs_info *fs_info,
 				 struct task_struct *task,
 				 enum proc_hidepid hide_pid_min)
 {
-	/*
-	 * If 'hidpid' mount option is set force a ptrace check,
-	 * we indicate that we are using a filesystem syscall
-	 * by passing PTRACE_MODE_READ_FSCREDS
-	 */
+	 
 	if (fs_info->hide_pid == HIDEPID_NOT_PTRACEABLE)
 		return ptrace_may_access(task, PTRACE_MODE_READ_FSCREDS);
 
@@ -742,12 +637,7 @@ static int proc_pid_permission(struct mnt_idmap *idmap,
 
 	if (!has_perms) {
 		if (fs_info->hide_pid == HIDEPID_INVISIBLE) {
-			/*
-			 * Let's make getdents(), stat(), and open()
-			 * consistent with each other.  If a process
-			 * may not stat() a file, it shouldn't be seen
-			 * in procfs at all.
-			 */
+			 
 			return -ENOENT;
 		}
 
@@ -803,9 +693,9 @@ struct mm_struct *proc_mem_open(struct inode *inode, unsigned int mode)
 		put_task_struct(task);
 
 		if (!IS_ERR_OR_NULL(mm)) {
-			/* ensure this mm_struct can't be freed */
+			 
 			mmgrab(mm);
-			/* but do not pin its memory */
+			 
 			mmput(mm);
 		}
 	}
@@ -828,7 +718,7 @@ static int mem_open(struct inode *inode, struct file *file)
 {
 	int ret = __mem_open(inode, file, PTRACE_MODE_ATTACH);
 
-	/* OK to pass negative loff_t, we can catch out-of-range */
+	 
 	file->f_mode |= FMODE_UNSIGNED_OFFSET;
 
 	return ret;
@@ -947,7 +837,7 @@ static ssize_t environ_read(struct file *file, char __user *buf,
 	struct mm_struct *mm = file->private_data;
 	unsigned long env_start, env_end;
 
-	/* Ensure the process spawned far enough to have an environment. */
+	 
 	if (!mm || !mm->env_end)
 		return 0;
 
@@ -1023,7 +913,7 @@ static ssize_t auxv_read(struct file *file, char __user *buf,
 		return 0;
 	do {
 		nwords += 2;
-	} while (mm->saved_auxv[nwords - 2] != 0); /* AT_NULL */
+	} while (mm->saved_auxv[nwords - 2] != 0);  
 	return simple_read_from_buffer(buf, count, ppos, mm->saved_auxv,
 				       nwords * sizeof(mm->saved_auxv[0]));
 }
@@ -1074,10 +964,7 @@ static int __set_oom_adj(struct file *file, int oom_adj, bool legacy)
 			err = -EACCES;
 			goto err_unlock;
 		}
-		/*
-		 * /proc/pid/oom_adj is provided for legacy purposes, ask users to use
-		 * /proc/pid/oom_score_adj instead.
-		 */
+		 
 		pr_warn_once("%s (%d): /proc/%d/oom_adj is deprecated, please use /proc/%d/oom_score_adj instead.\n",
 			  current->comm, task_pid_nr(current), task_pid_nr(task),
 			  task_pid_nr(task));
@@ -1089,11 +976,7 @@ static int __set_oom_adj(struct file *file, int oom_adj, bool legacy)
 		}
 	}
 
-	/*
-	 * Make sure we will check other processes sharing the mm if this is
-	 * not vfrok which wants its own oom_score_adj.
-	 * pin the mm so it doesn't go away and get reused after task_unlock
-	 */
+	 
 	if (!task->vfork_done) {
 		struct task_struct *p = find_lock_task_mm(task);
 
@@ -1119,7 +1002,7 @@ static int __set_oom_adj(struct file *file, int oom_adj, bool legacy)
 			if (same_thread_group(task, p))
 				continue;
 
-			/* do not touch kernel threads or the global init */
+			 
 			if (p->flags & PF_KTHREAD || is_global_init(p))
 				continue;
 
@@ -1140,16 +1023,7 @@ err_unlock:
 	return err;
 }
 
-/*
- * /proc/pid/oom_adj exists solely for backwards compatibility with previous
- * kernels.  The effective policy is defined by oom_score_adj, which has a
- * different scale: oom_adj grew exponentially and oom_score_adj grows linearly.
- * Values written to oom_adj are simply mapped linearly to oom_score_adj.
- * Processes that become oom disabled via oom_adj will still be oom disabled
- * with this implementation.
- *
- * oom_adj cannot be removed since existing userspace binaries use it.
- */
+ 
 static ssize_t oom_adj_write(struct file *file, const char __user *buf,
 			     size_t count, loff_t *ppos)
 {
@@ -1174,10 +1048,7 @@ static ssize_t oom_adj_write(struct file *file, const char __user *buf,
 		goto out;
 	}
 
-	/*
-	 * Scale /proc/pid/oom_score_adj appropriately ensuring that a maximum
-	 * value is always attainable.
-	 */
+	 
 	if (oom_adj == OOM_ADJUST_MAX)
 		oom_adj = OOM_SCORE_ADJ_MAX;
 	else
@@ -1272,7 +1143,7 @@ static ssize_t proc_loginuid_write(struct file * file, const char __user * buf,
 	kuid_t kloginuid;
 	int rv;
 
-	/* Don't let kthreads write their own loginuid */
+	 
 	if (current->flags & PF_KTHREAD)
 		return -EPERM;
 
@@ -1284,7 +1155,7 @@ static ssize_t proc_loginuid_write(struct file * file, const char __user * buf,
 	rcu_read_unlock();
 
 	if (*ppos != 0) {
-		/* No partial writes. */
+		 
 		return -EINVAL;
 	}
 
@@ -1292,7 +1163,7 @@ static ssize_t proc_loginuid_write(struct file * file, const char __user * buf,
 	if (rv < 0)
 		return rv;
 
-	/* is userspace tring to explicitly UNSET the loginuid? */
+	 
 	if (loginuid == AUDIT_UID_UNSET) {
 		kloginuid = INVALID_UID;
 	} else {
@@ -1433,9 +1304,7 @@ static const struct file_operations proc_fail_nth_operations = {
 
 
 #ifdef CONFIG_SCHED_DEBUG
-/*
- * Print out various scheduling related per-task fields:
- */
+ 
 static int sched_show(struct seq_file *m, void *v)
 {
 	struct inode *inode = m->private;
@@ -1485,9 +1354,7 @@ static const struct file_operations proc_pid_sched_operations = {
 #endif
 
 #ifdef CONFIG_SCHED_AUTOGROUP
-/*
- * Print out autogroup related information:
- */
+ 
 static int sched_autogroup_show(struct seq_file *m, void *v)
 {
 	struct inode *inode = m->private;
@@ -1557,7 +1424,7 @@ static const struct file_operations proc_pid_sched_autogroup_operations = {
 	.release	= single_release,
 };
 
-#endif /* CONFIG_SCHED_AUTOGROUP */
+#endif  
 
 #ifdef CONFIG_TIME_NS
 static int timens_offsets_show(struct seq_file *m, void *v)
@@ -1583,16 +1450,16 @@ static ssize_t timens_offsets_write(struct file *file, const char __user *buf,
 	struct task_struct *p;
 	int ret, noffsets;
 
-	/* Only allow < page size writes at the beginning of the file */
+	 
 	if ((*ppos != 0) || (count >= PAGE_SIZE))
 		return -EINVAL;
 
-	/* Slurp in the user data */
+	 
 	kbuf = memdup_user_nul(buf, count);
 	if (IS_ERR(kbuf))
 		return PTR_ERR(kbuf);
 
-	/* Parse the user data */
+	 
 	ret = -EINVAL;
 	noffsets = 0;
 	for (pos = kbuf; pos; pos = next_line) {
@@ -1600,7 +1467,7 @@ static ssize_t timens_offsets_write(struct file *file, const char __user *buf,
 		char clock[10];
 		int err;
 
-		/* Find the end of line and ensure we don't look past it */
+		 
 		next_line = strchr(pos, '\n');
 		if (next_line) {
 			*next_line = '\0';
@@ -1659,7 +1526,7 @@ static const struct file_operations proc_timens_offsets_operations = {
 	.llseek		= seq_lseek,
 	.release	= single_release,
 };
-#endif /* CONFIG_TIME_NS */
+#endif  
 
 static ssize_t comm_write(struct file *file, const char __user *buf,
 				size_t count, loff_t *offset)
@@ -1748,7 +1615,7 @@ static const char *proc_pid_get_link(struct dentry *dentry,
 	if (!dentry)
 		return ERR_PTR(-ECHILD);
 
-	/* Are we allowed to snoop on the tasks file descriptors? */
+	 
 	if (!proc_fd_access_allowed(inode))
 		goto out;
 
@@ -1791,7 +1658,7 @@ static int proc_pid_readlink(struct dentry * dentry, char __user * buffer, int b
 	struct inode *inode = d_inode(dentry);
 	struct path path;
 
-	/* Are we allowed to snoop on the tasks file descriptors? */
+	 
 	if (!proc_fd_access_allowed(inode))
 		goto out;
 
@@ -1812,14 +1679,12 @@ const struct inode_operations proc_pid_link_inode_operations = {
 };
 
 
-/* building an inode */
+ 
 
 void task_dump_owner(struct task_struct *task, umode_t mode,
 		     kuid_t *ruid, kgid_t *rgid)
 {
-	/* Depending on the state of dumpable compute who should own a
-	 * proc file for a task.
-	 */
+	 
 	const struct cred *cred;
 	kuid_t uid;
 	kgid_t gid;
@@ -1830,26 +1695,19 @@ void task_dump_owner(struct task_struct *task, umode_t mode,
 		return;
 	}
 
-	/* Default to the tasks effective ownership */
+	 
 	rcu_read_lock();
 	cred = __task_cred(task);
 	uid = cred->euid;
 	gid = cred->egid;
 	rcu_read_unlock();
 
-	/*
-	 * Before the /proc/pid/status file was created the only way to read
-	 * the effective uid of a /process was to stat /proc/pid.  Reading
-	 * /proc/pid/status is slow enough that procps and other packages
-	 * kept stating /proc/pid.  To keep the rules in /proc simple I have
-	 * made this apply to all per process world readable and executable
-	 * directories.
-	 */
+	 
 	if (mode != (S_IFDIR|S_IRUGO|S_IXUGO)) {
 		struct mm_struct *mm;
 		task_lock(task);
 		mm = task->mm;
-		/* Make non-dumpable tasks owned by some root */
+		 
 		if (mm) {
 			if (get_dumpable(mm) != SUID_DUMP_USER) {
 				struct user_namespace *user_ns = mm->user_ns;
@@ -1892,27 +1750,25 @@ struct inode *proc_pid_make_inode(struct super_block *sb,
 	struct proc_inode *ei;
 	struct pid *pid;
 
-	/* We need a new inode */
+	 
 
 	inode = new_inode(sb);
 	if (!inode)
 		goto out;
 
-	/* Common stuff */
+	 
 	ei = PROC_I(inode);
 	inode->i_mode = mode;
 	inode->i_ino = get_next_ino();
 	inode->i_mtime = inode->i_atime = inode_set_ctime_current(inode);
 	inode->i_op = &proc_def_inode_operations;
 
-	/*
-	 * grab the reference to task.
-	 */
+	 
 	pid = get_task_pid(task, PIDTYPE_PID);
 	if (!pid)
 		goto out_unlock;
 
-	/* Let the pid remember us for quick removal */
+	 
 	ei->pid = pid;
 
 	task_dump_owner(task, 0, &inode->i_uid, &inode->i_gid);
@@ -1926,18 +1782,7 @@ out_unlock:
 	return NULL;
 }
 
-/*
- * Generating an inode and adding it into @pid->inodes, so that task will
- * invalidate inode's dentry before being released.
- *
- * This helper is used for creating dir-type entries under '/proc' and
- * '/proc/<tgid>/task'. Other entries(eg. fd, stat) under '/proc/<tgid>'
- * can be released by invalidating '/proc/<tgid>' dentry.
- * In theory, dentries under '/proc/<tgid>/task' can also be released by
- * invalidating '/proc/<tgid>' dentry, we reserve it to handle single
- * thread exiting situation: Any one of threads should invalidate its
- * '/proc/<tgid>/task/<pid>' dentry before released.
- */
+ 
 static struct inode *proc_pid_make_base_inode(struct super_block *sb,
 				struct task_struct *task, umode_t mode)
 {
@@ -1949,7 +1794,7 @@ static struct inode *proc_pid_make_base_inode(struct super_block *sb,
 	if (!inode)
 		return NULL;
 
-	/* Let proc_flush_pid find this directory inode */
+	 
 	ei = PROC_I(inode);
 	pid = ei->pid;
 	spin_lock(&pid->lock);
@@ -1975,10 +1820,7 @@ int pid_getattr(struct mnt_idmap *idmap, const struct path *path,
 	if (task) {
 		if (!has_pid_permissions(fs_info, task, HIDEPID_INVISIBLE)) {
 			rcu_read_unlock();
-			/*
-			 * This doesn't prevent learning whether PID exists,
-			 * it only makes getattr() consistent with readdir().
-			 */
+			 
 			return -ENOENT;
 		}
 		task_dump_owner(task, inode->i_mode, &stat->uid, &stat->gid);
@@ -1987,11 +1829,9 @@ int pid_getattr(struct mnt_idmap *idmap, const struct path *path,
 	return 0;
 }
 
-/* dentry stuff */
+ 
 
-/*
- * Set <pid>/... inode ownership (can change due to setuid(), etc.)
- */
+ 
 void pid_update_inode(struct task_struct *task, struct inode *inode)
 {
 	task_dump_owner(task, inode->i_mode, &inode->i_uid, &inode->i_gid);
@@ -2000,11 +1840,7 @@ void pid_update_inode(struct task_struct *task, struct inode *inode)
 	security_task_to_inode(task, inode);
 }
 
-/*
- * Rewrite the inode's ownerships here because the owning task may have
- * performed a setuid(), etc.
- *
- */
+ 
 static int pid_revalidate(struct dentry *dentry, unsigned int flags)
 {
 	struct inode *inode;
@@ -2033,10 +1869,7 @@ static inline bool proc_inode_is_dead(struct inode *inode)
 
 int pid_delete_dentry(const struct dentry *dentry)
 {
-	/* Is the task we represent dead?
-	 * If so, then don't put the dentry on the lru list,
-	 * kill it immediately.
-	 */
+	 
 	return proc_inode_is_dead(d_inode(dentry));
 }
 
@@ -2046,20 +1879,9 @@ const struct dentry_operations pid_dentry_operations =
 	.d_delete	= pid_delete_dentry,
 };
 
-/* Lookups */
+ 
 
-/*
- * Fill a directory entry.
- *
- * If possible create the dcache entry and derive our inode number and
- * file type from dcache entry.
- *
- * Since all of the proc inode numbers are dynamically generated, the inode
- * numbers do not exist until the inode is cache.  This means creating
- * the dcache entry in readdir is necessary to keep the inode numbers
- * reported by readdir in sync with the inode numbers reported
- * by stat.
- */
+ 
 bool proc_fill_cache(struct file *file, struct dir_context *ctx,
 	const char *name, unsigned int len,
 	instantiate_t instantiate, struct task_struct *task, const void *ptr)
@@ -2096,10 +1918,7 @@ end_instantiate:
 	return dir_emit(ctx, name, len, ino, type);
 }
 
-/*
- * dname_to_vma_addr - maps a dentry name into two unsigned longs
- * which represent vma start and end addresses.
- */
+ 
 static int dname_to_vma_addr(struct dentry *dentry,
 			     unsigned long *start, unsigned long *end)
 {
@@ -2236,11 +2055,7 @@ struct map_files_info {
 	fmode_t		mode;
 };
 
-/*
- * Only allow CAP_SYS_ADMIN and CAP_CHECKPOINT_RESTORE to follow the links, due
- * to concerns about how the symlinks may be used to bypass permissions on
- * ancestor directories in the path to the file in question.
- */
+ 
 static const char *
 proc_map_files_get_link(struct dentry *dentry,
 			struct inode *inode,
@@ -2252,9 +2067,7 @@ proc_map_files_get_link(struct dentry *dentry,
 	return proc_pid_get_link(dentry, inode, done);
 }
 
-/*
- * Identical to proc_pid_link_inode_operations except for get_link()
- */
+ 
 static const struct inode_operations proc_map_files_link_inode_operations = {
 	.readlink	= proc_pid_readlink,
 	.get_link	= proc_map_files_get_link,
@@ -2379,15 +2192,7 @@ proc_map_files_readdir(struct file *file, struct dir_context *ctx)
 
 	nr_files = 0;
 
-	/*
-	 * We need two passes here:
-	 *
-	 *  1) Collect vmas of mapped files with mmap_lock taken
-	 *  2) Release mmap_lock and instantiate entries
-	 *
-	 * otherwise we get lockdep complained, since filldir()
-	 * routine might require mmap_lock taken in might_fault().
-	 */
+	 
 
 	pos = 2;
 	vma_iter_init(&vmi, mm, 0);
@@ -2413,7 +2218,7 @@ proc_map_files_readdir(struct file *file, struct dir_context *ctx)
 	mmput(mm);
 
 	for (i = 0; i < nr_files; i++) {
-		char buf[4 * sizeof(long) + 2];	/* max: %lx-%lx\0 */
+		char buf[4 * sizeof(long) + 2];	 
 		unsigned int len;
 
 		p = genradix_ptr(&fa, i);
@@ -2646,7 +2451,7 @@ static struct dentry *proc_pident_instantiate(struct dentry *dentry,
 
 	ei = PROC_I(inode);
 	if (S_ISDIR(inode->i_mode))
-		set_nlink(inode, 2);	/* Use getattr to fix if necessary */
+		set_nlink(inode, 2);	 
 	if (p->iop)
 		inode->i_op = p->iop;
 	if (p->fop)
@@ -2668,10 +2473,7 @@ static struct dentry *proc_pident_lookup(struct inode *dir,
 	if (!task)
 		goto out_no_task;
 
-	/*
-	 * Yes, it does not scale. And it should not. Don't add
-	 * new entries into /proc/<tgid>/ without very good reasons.
-	 */
+	 
 	for (; p < end; p++) {
 		if (p->len != dentry->d_name.len)
 			continue;
@@ -2748,7 +2550,7 @@ static ssize_t proc_pid_attr_write(struct file * file, const char __user * buf,
 	void *page;
 	int rv;
 
-	/* A task may only write when it was the opener. */
+	 
 	if (file->private_data != current->mm)
 		return -EPERM;
 
@@ -2758,12 +2560,12 @@ static ssize_t proc_pid_attr_write(struct file * file, const char __user * buf,
 		rcu_read_unlock();
 		return -ESRCH;
 	}
-	/* A task may only write its own attributes. */
+	 
 	if (current != task) {
 		rcu_read_unlock();
 		return -EACCES;
 	}
-	/* Prevent changes to overridden credentials. */
+	 
 	if (current_cred() != current_real_cred()) {
 		rcu_read_unlock();
 		return -EBUSY;
@@ -2773,7 +2575,7 @@ static ssize_t proc_pid_attr_write(struct file * file, const char __user * buf,
 	if (count > PAGE_SIZE)
 		count = PAGE_SIZE;
 
-	/* No partial writes. */
+	 
 	if (*ppos != 0)
 		return -EINVAL;
 
@@ -2783,7 +2585,7 @@ static ssize_t proc_pid_attr_write(struct file * file, const char __user * buf,
 		goto out;
 	}
 
-	/* Guard against adverse ptrace interaction */
+	 
 	rv = mutex_lock_interruptible(&current->signal->cred_guard_mutex);
 	if (rv < 0)
 		goto out_free;
@@ -3031,7 +2833,7 @@ static int proc_tgid_io_accounting(struct seq_file *m, struct pid_namespace *ns,
 {
 	return do_io_accounting(task, m, 1);
 }
-#endif /* CONFIG_TASK_IO_ACCOUNTING */
+#endif  
 
 #ifdef CONFIG_USER_NS
 static int proc_id_map_open(struct inode *inode, struct file *file,
@@ -3163,7 +2965,7 @@ static const struct file_operations proc_setgroups_operations = {
 	.llseek		= seq_lseek,
 	.release	= proc_setgroups_release,
 };
-#endif /* CONFIG_USER_NS */
+#endif  
 
 static int proc_pid_personality(struct seq_file *m, struct pid_namespace *ns,
 				struct pid *pid, struct task_struct *task)
@@ -3183,7 +2985,7 @@ static int proc_pid_patch_state(struct seq_file *m, struct pid_namespace *ns,
 	seq_printf(m, "%d\n", task->patch_state);
 	return 0;
 }
-#endif /* CONFIG_LIVEPATCH */
+#endif  
 
 #ifdef CONFIG_KSM
 static int proc_pid_ksm_merging_pages(struct seq_file *m, struct pid_namespace *ns,
@@ -3215,7 +3017,7 @@ static int proc_pid_ksm_stat(struct seq_file *m, struct pid_namespace *ns,
 
 	return 0;
 }
-#endif /* CONFIG_KSM */
+#endif  
 
 #ifdef CONFIG_STACKLEAK_METRICS
 static int proc_stack_depth(struct seq_file *m, struct pid_namespace *ns,
@@ -3230,11 +3032,9 @@ static int proc_stack_depth(struct seq_file *m, struct pid_namespace *ns,
 							prev_depth, depth);
 	return 0;
 }
-#endif /* CONFIG_STACKLEAK_METRICS */
+#endif  
 
-/*
- * Thread groups
- */
+ 
 static const struct file_operations proc_task_operations;
 static const struct inode_operations proc_task_inode_operations;
 
@@ -3388,24 +3188,7 @@ static const struct inode_operations proc_tgid_base_inode_operations = {
 	.permission	= proc_pid_permission,
 };
 
-/**
- * proc_flush_pid -  Remove dcache entries for @pid from the /proc dcache.
- * @pid: pid that should be flushed.
- *
- * This function walks a list of inodes (that belong to any proc
- * filesystem) that are attached to the pid and flushes them from
- * the dentry cache.
- *
- * It is safe and reasonable to cache /proc entries for a task until
- * that task exits.  After that they just clog up the dcache with
- * useless entries, possibly causing useful dcache entries to be
- * flushed instead.  This routine is provided to flush those useless
- * dcache entries when a process is reaped.
- *
- * NOTE: This routine is just an optimization so it does not guarantee
- *       that no dcache entries will exist after a process is reaped
- *       it just makes it very unlikely that any will persist.
- */
+ 
 
 void proc_flush_pid(struct pid *pid)
 {
@@ -3455,7 +3238,7 @@ struct dentry *proc_pid_lookup(struct dentry *dentry, unsigned int flags)
 	if (!task)
 		goto out;
 
-	/* Limit procfs to only ptraceable tasks */
+	 
 	if (fs_info->hide_pid == HIDEPID_NOT_PTRACEABLE) {
 		if (!has_pid_permissions(fs_info, task, HIDEPID_NO_ACCESS))
 			goto out_put_task;
@@ -3468,10 +3251,7 @@ out:
 	return result;
 }
 
-/*
- * Find the first task with tgid >= tgid
- *
- */
+ 
 struct tgid_iter {
 	unsigned int tgid;
 	struct task_struct *task;
@@ -3501,7 +3281,7 @@ retry:
 
 #define TGID_OFFSET (FIRST_PROCESS_ENTRY + 2)
 
-/* for the /proc/ directory itself, after non-process stuff has been done */
+ 
 int proc_pid_readdir(struct file *file, struct dir_context *ctx)
 {
 	struct tgid_iter iter;
@@ -3548,18 +3328,7 @@ int proc_pid_readdir(struct file *file, struct dir_context *ctx)
 	return 0;
 }
 
-/*
- * proc_tid_comm_permission is a special permission function exclusively
- * used for the node /proc/<pid>/task/<tid>/comm.
- * It bypasses generic permission checks in the case where a task of the same
- * task group attempts to access the node.
- * The rationale behind this is that glibc and bionic access this node for
- * cross thread naming (pthread_set/getname_np(!self)). However, if
- * PR_SET_DUMPABLE gets set to 0 this node among others becomes uid=0 gid=0,
- * which locks out the cross thread naming implementation.
- * This function makes sure that the node is always accessible for members of
- * same thread group.
- */
+ 
 static int proc_tid_comm_permission(struct mnt_idmap *idmap,
 				    struct inode *inode, int mask)
 {
@@ -3573,10 +3342,7 @@ static int proc_tid_comm_permission(struct mnt_idmap *idmap,
 	put_task_struct(task);
 
 	if (likely(is_same_tgroup && !(mask & MAY_EXEC))) {
-		/* This file (/proc/<pid>/task/<tid>/comm) can always be
-		 * read or written by the members of the corresponding
-		 * thread group.
-		 */
+		 
 		return 0;
 	}
 
@@ -3588,9 +3354,7 @@ static const struct inode_operations proc_tid_comm_inode_operations = {
 		.permission	= proc_tid_comm_permission,
 };
 
-/*
- * Tasks
- */
+ 
 static const struct pid_entry tid_base_stuff[] = {
 	DIR("fd",        S_IRUSR|S_IXUSR, proc_fd_inode_operations, proc_fd_operations),
 	DIR("fdinfo",    S_IRUGO|S_IXUGO, proc_fdinfo_inode_operations, proc_fdinfo_operations),
@@ -3775,25 +3539,14 @@ out_no_task:
 	return result;
 }
 
-/*
- * Find the first tid of a thread group to return to user space.
- *
- * Usually this is just the thread group leader, but if the users
- * buffer was too small or there was a seek into the middle of the
- * directory we have more work todo.
- *
- * In the case of a short read we start with find_task_by_pid.
- *
- * In the case of a seek we start with the leader and walk nr
- * threads past it.
- */
+ 
 static struct task_struct *first_tid(struct pid *pid, int tid, loff_t f_pos,
 					struct pid_namespace *ns)
 {
 	struct task_struct *pos, *task;
 	unsigned long nr = f_pos;
 
-	if (nr != f_pos)	/* 32bit overflow? */
+	if (nr != f_pos)	 
 		return NULL;
 
 	rcu_read_lock();
@@ -3801,20 +3554,18 @@ static struct task_struct *first_tid(struct pid *pid, int tid, loff_t f_pos,
 	if (!task)
 		goto fail;
 
-	/* Attempt to start with the tid of a thread */
+	 
 	if (tid && nr) {
 		pos = find_task_by_pid_ns(tid, ns);
 		if (pos && same_thread_group(pos, task))
 			goto found;
 	}
 
-	/* If nr exceeds the number of threads there is nothing todo */
+	 
 	if (nr >= get_nr_threads(task))
 		goto fail;
 
-	/* If we haven't found our starting place yet start
-	 * with the leader and walk nr threads forward.
-	 */
+	 
 	for_each_thread(task, pos) {
 		if (!nr--)
 			goto found;
@@ -3829,12 +3580,7 @@ out:
 	return pos;
 }
 
-/*
- * Find the next thread in the thread list.
- * Return NULL if there is an error or no next thread.
- *
- * The reference to the input task_struct is released.
- */
+ 
 static struct task_struct *next_tid(struct task_struct *start)
 {
 	struct task_struct *pos = NULL;
@@ -3851,7 +3597,7 @@ static struct task_struct *next_tid(struct task_struct *start)
 	return pos;
 }
 
-/* for the /proc/TGID/task/ directories */
+ 
 static int proc_task_readdir(struct file *file, struct dir_context *ctx)
 {
 	struct inode *inode = file_inode(file);
@@ -3865,9 +3611,7 @@ static int proc_task_readdir(struct file *file, struct dir_context *ctx)
 	if (!dir_emit_dots(file, ctx))
 		return 0;
 
-	/* f_version caches the tgid value that the last readdir call couldn't
-	 * return. lseek aka telldir automagically resets f_version to 0.
-	 */
+	 
 	ns = proc_pid_ns(inode->i_sb);
 	tid = (int)file->f_version;
 	file->f_version = 0;
@@ -3879,12 +3623,11 @@ static int proc_task_readdir(struct file *file, struct dir_context *ctx)
 
 		tid = task_pid_nr_ns(task, ns);
 		if (!tid)
-			continue;	/* The task has just exited. */
+			continue;	 
 		len = snprintf(name, sizeof(name), "%u", tid);
 		if (!proc_fill_cache(file, ctx, name, len,
 				proc_task_instantiate, task, NULL)) {
-			/* returning this tgid failed, save it as the first
-			 * pid for the next readir call */
+			 
 			file->f_version = (u64)tid;
 			put_task_struct(task);
 			break;

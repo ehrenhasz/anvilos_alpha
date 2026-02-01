@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// MediaTek ALSA SoC Audio DAI TDM Control
-//
-// Copyright (c) 2020 MediaTek Inc.
-// Author: Shane Chien <shane.chien@mediatek.com>
+
+
+
+
+
+
 
 #include <linux/regmap.h>
 #include <sound/pcm_params.h>
@@ -21,7 +21,7 @@ struct mtk_afe_tdm_priv {
 	int bck_invert;
 	int lck_invert;
 	int mclk_id;
-	int mclk_multiple; /* according to sample rate */
+	int mclk_multiple;  
 	int mclk_rate;
 	int mclk_apll;
 };
@@ -121,7 +121,7 @@ static unsigned int get_tdm_ch_per_sdata(unsigned int mode,
 		return 2;
 }
 
-/* interconnection */
+ 
 enum {
 	HDMI_CONN_CH0 = 0,
 	HDMI_CONN_CH1,
@@ -385,7 +385,7 @@ static int mtk_afe_tdm_apll_connect(struct snd_soc_dapm_widget *source,
 	struct mtk_afe_tdm_priv *tdm_priv = afe_priv->dai_priv[dai_id];
 	int cur_apll;
 
-	/* which apll */
+	 
 	cur_apll = mt8192_get_apll_by_name(afe, source->name);
 
 	return (tdm_priv->mclk_apll == cur_apll) ? 1 : 0;
@@ -481,7 +481,7 @@ static const struct snd_soc_dapm_route mtk_dai_tdm_routes[] = {
 	{"TDM_MCK", NULL, APLL2_W_NAME, mtk_afe_tdm_apll_connect},
 };
 
-/* dai ops */
+ 
 static int mtk_dai_tdm_cal_mclk(struct mtk_base_afe *afe,
 				struct mtk_afe_tdm_priv *tdm_priv,
 				int freq)
@@ -526,7 +526,7 @@ static int mtk_dai_tdm_hw_params(struct snd_pcm_substream *substream,
 	snd_pcm_format_t format = params_format(params);
 	unsigned int tdm_con = 0;
 
-	/* calculate mclk_rate, if not set explicitly */
+	 
 	if (!tdm_priv->mclk_rate) {
 		tdm_priv->mclk_rate = rate * tdm_priv->mclk_multiple;
 		mtk_dai_tdm_cal_mclk(afe,
@@ -534,7 +534,7 @@ static int mtk_dai_tdm_hw_params(struct snd_pcm_substream *substream,
 				     tdm_priv->mclk_rate);
 	}
 
-	/* calculate bck */
+	 
 	tdm_priv->bck_rate = rate *
 			     out_channels_per_sdata *
 			     snd_pcm_format_physical_width(format);
@@ -553,7 +553,7 @@ static int mtk_dai_tdm_hw_params(struct snd_pcm_substream *substream,
 	dev_dbg(afe->dev, "%s(), out_channels_per_sdata = %d\n",
 		__func__, out_channels_per_sdata);
 
-	/* set tdm */
+	 
 	if (tdm_priv->bck_invert)
 		regmap_update_bits(afe->regmap, AUDIO_TOP_CON3,
 				   BCK_INVERSE_MASK_SFT,
@@ -660,7 +660,7 @@ static int mtk_dai_tdm_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	/* DAI mode*/
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		tdm_priv->tdm_out_mode = TDM_OUT_I2S;
@@ -675,7 +675,7 @@ static int mtk_dai_tdm_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		tdm_priv->tdm_out_mode = TDM_OUT_I2S;
 	}
 
-	/* DAI clock inversion*/
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
 		tdm_priv->bck_invert = TDM_BCK_NON_INV;
@@ -705,7 +705,7 @@ static const struct snd_soc_dai_ops mtk_dai_tdm_ops = {
 	.set_fmt = mtk_dai_tdm_set_fmt,
 };
 
-/* dai driver */
+ 
 #define MTK_TDM_RATES (SNDRV_PCM_RATE_8000_48000 |\
 		       SNDRV_PCM_RATE_88200 |\
 		       SNDRV_PCM_RATE_96000 |\

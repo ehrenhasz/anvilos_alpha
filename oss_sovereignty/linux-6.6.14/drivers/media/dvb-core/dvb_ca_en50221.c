@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * dvb_ca.c: generic DVB functions for EN50221 CAM interfaces
- *
- * Copyright (C) 2004 Andrew de Quincey
- *
- * Parts of this file were based on sources as follows:
- *
- * Copyright (C) 2003 Ralph Metzler <rjkm@metzlerbros.de>
- *
- * based on code:
- *
- * Copyright (C) 1999-2002 Ralph  Metzler
- *                       & Marcus Metzler for convergence integrated media GmbH
- */
+
+ 
 
 #define pr_fmt(fmt) "dvb_ca_en50221: " fmt
 
@@ -54,18 +41,18 @@ MODULE_PARM_DESC(cam_debug, "enable verbose debug messages");
 #define CTRLIF_SIZE_LOW  2
 #define CTRLIF_SIZE_HIGH 3
 
-#define CMDREG_HC        1	/* Host control */
-#define CMDREG_SW        2	/* Size write */
-#define CMDREG_SR        4	/* Size read */
-#define CMDREG_RS        8	/* Reset interface */
-#define CMDREG_FRIE   0x40	/* Enable FR interrupt */
-#define CMDREG_DAIE   0x80	/* Enable DA interrupt */
+#define CMDREG_HC        1	 
+#define CMDREG_SW        2	 
+#define CMDREG_SR        4	 
+#define CMDREG_RS        8	 
+#define CMDREG_FRIE   0x40	 
+#define CMDREG_DAIE   0x80	 
 #define IRQEN (CMDREG_DAIE)
 
-#define STATUSREG_RE     1	/* read error */
-#define STATUSREG_WE     2	/* write error */
-#define STATUSREG_FR  0x40	/* module free */
-#define STATUSREG_DA  0x80	/* data available */
+#define STATUSREG_RE     1	 
+#define STATUSREG_WE     2	 
+#define STATUSREG_FR  0x40	 
+#define STATUSREG_DA  0x80	 
 
 #define DVB_CA_SLOTSTATE_NONE           0
 #define DVB_CA_SLOTSTATE_UNINITIALISED  1
@@ -76,86 +63,83 @@ MODULE_PARM_DESC(cam_debug, "enable verbose debug messages");
 #define DVB_CA_SLOTSTATE_WAITFR         6
 #define DVB_CA_SLOTSTATE_LINKINIT       7
 
-/* Information on a CA slot */
+ 
 struct dvb_ca_slot {
-	/* current state of the CAM */
+	 
 	int slot_state;
 
-	/* mutex used for serializing access to one CI slot */
+	 
 	struct mutex slot_lock;
 
-	/* Number of CAMCHANGES that have occurred since last processing */
+	 
 	atomic_t camchange_count;
 
-	/* Type of last CAMCHANGE */
+	 
 	int camchange_type;
 
-	/* base address of CAM config */
+	 
 	u32 config_base;
 
-	/* value to write into Config Control register */
+	 
 	u8 config_option;
 
-	/* if 1, the CAM supports DA IRQs */
+	 
 	u8 da_irq_supported:1;
 
-	/* size of the buffer to use when talking to the CAM */
+	 
 	int link_buf_size;
 
-	/* buffer for incoming packets */
+	 
 	struct dvb_ringbuffer rx_buffer;
 
-	/* timer used during various states of the slot */
+	 
 	unsigned long timeout;
 };
 
-/* Private CA-interface information */
+ 
 struct dvb_ca_private {
 	struct kref refcount;
 
-	/* pointer back to the public data structure */
+	 
 	struct dvb_ca_en50221 *pub;
 
-	/* the DVB device */
+	 
 	struct dvb_device *dvbdev;
 
-	/* Flags describing the interface (DVB_CA_FLAG_*) */
+	 
 	u32 flags;
 
-	/* number of slots supported by this CA interface */
+	 
 	unsigned int slot_count;
 
-	/* information on each slot */
+	 
 	struct dvb_ca_slot *slot_info;
 
-	/* wait queues for read() and write() operations */
+	 
 	wait_queue_head_t wait_queue;
 
-	/* PID of the monitoring thread */
+	 
 	struct task_struct *thread;
 
-	/* Flag indicating if the CA device is open */
+	 
 	unsigned int open:1;
 
-	/* Flag indicating the thread should wake up now */
+	 
 	unsigned int wakeup:1;
 
-	/* Delay the main thread should use */
+	 
 	unsigned long delay;
 
-	/*
-	 * Slot to start looking for data to read from in the next user-space
-	 * read operation
-	 */
+	 
 	int next_read_slot;
 
-	/* mutex serializing ioctls */
+	 
 	struct mutex ioctl_mutex;
 
-	/* A mutex used when a device is disconnected */
+	 
 	struct mutex remove_mutex;
 
-	/* Whether the device is disconnected */
+	 
 	int exit;
 };
 
@@ -195,15 +179,7 @@ static int dvb_ca_en50221_read_data(struct dvb_ca_private *ca, int slot,
 static int dvb_ca_en50221_write_data(struct dvb_ca_private *ca, int slot,
 				     u8 *ebuf, int ecount, int size_write_flag);
 
-/**
- * findstr - Safely find needle in haystack.
- *
- * @haystack: Buffer to look in.
- * @hlen: Number of bytes in haystack.
- * @needle: Buffer to find.
- * @nlen: Number of bytes in needle.
- * return: Pointer into haystack needle was found at, or NULL if not found.
- */
+ 
 static char *findstr(char *haystack, int hlen, char *needle, int nlen)
 {
 	int i;
@@ -219,12 +195,10 @@ static char *findstr(char *haystack, int hlen, char *needle, int nlen)
 	return NULL;
 }
 
-/* ************************************************************************** */
-/* EN50221 physical interface functions */
+ 
+ 
 
-/*
- * dvb_ca_en50221_check_camstatus - Check CAM status.
- */
+ 
 static int dvb_ca_en50221_check_camstatus(struct dvb_ca_private *ca, int slot)
 {
 	struct dvb_ca_slot *sl = &ca->slot_info[slot];
@@ -232,11 +206,11 @@ static int dvb_ca_en50221_check_camstatus(struct dvb_ca_private *ca, int slot)
 	int cam_present_now;
 	int cam_changed;
 
-	/* IRQ mode */
+	 
 	if (ca->flags & DVB_CA_EN50221_FLAG_IRQ_CAMCHANGE)
 		return (atomic_read(&sl->camchange_count) != 0);
 
-	/* poll mode */
+	 
 	slot_status = ca->pub->poll_slot_status(ca->pub, slot, ca->open);
 
 	cam_present_now = (slot_status & DVB_CA_EN50221_POLL_CAM_PRESENT) ? 1 : 0;
@@ -256,7 +230,7 @@ static int dvb_ca_en50221_check_camstatus(struct dvb_ca_private *ca, int slot)
 	} else {
 		if ((sl->slot_state == DVB_CA_SLOTSTATE_WAITREADY) &&
 		    (slot_status & DVB_CA_EN50221_POLL_CAM_READY)) {
-			/* move to validate state if reset is completed */
+			 
 			sl->slot_state = DVB_CA_SLOTSTATE_VALIDATE;
 		}
 	}
@@ -264,17 +238,7 @@ static int dvb_ca_en50221_check_camstatus(struct dvb_ca_private *ca, int slot)
 	return cam_changed;
 }
 
-/**
- * dvb_ca_en50221_wait_if_status - Wait for flags to become set on the STATUS
- *	 register on a CAM interface, checking for errors and timeout.
- *
- * @ca: CA instance.
- * @slot: Slot on interface.
- * @waitfor: Flags to wait for.
- * @timeout_hz: Timeout in milliseconds.
- *
- * return: 0 on success, nonzero on error.
- */
+ 
 static int dvb_ca_en50221_wait_if_status(struct dvb_ca_private *ca, int slot,
 					 u8 waitfor, int timeout_hz)
 {
@@ -283,46 +247,39 @@ static int dvb_ca_en50221_wait_if_status(struct dvb_ca_private *ca, int slot,
 
 	dprintk("%s\n", __func__);
 
-	/* loop until timeout elapsed */
+	 
 	start = jiffies;
 	timeout = jiffies + timeout_hz;
 	while (1) {
 		int res;
 
-		/* read the status and check for error */
+		 
 		res = ca->pub->read_cam_control(ca->pub, slot, CTRLIF_STATUS);
 		if (res < 0)
 			return -EIO;
 
-		/* if we got the flags, it was successful! */
+		 
 		if (res & waitfor) {
 			dprintk("%s succeeded timeout:%lu\n",
 				__func__, jiffies - start);
 			return 0;
 		}
 
-		/* check for timeout */
+		 
 		if (time_after(jiffies, timeout))
 			break;
 
-		/* wait for a bit */
+		 
 		usleep_range(1000, 1100);
 	}
 
 	dprintk("%s failed timeout:%lu\n", __func__, jiffies - start);
 
-	/* if we get here, we've timed out */
+	 
 	return -ETIMEDOUT;
 }
 
-/**
- * dvb_ca_en50221_link_init - Initialise the link layer connection to a CAM.
- *
- * @ca: CA instance.
- * @slot: Slot id.
- *
- * return: 0 on success, nonzero on failure.
- */
+ 
 static int dvb_ca_en50221_link_init(struct dvb_ca_private *ca, int slot)
 {
 	struct dvb_ca_slot *sl = &ca->slot_info[slot];
@@ -332,16 +289,13 @@ static int dvb_ca_en50221_link_init(struct dvb_ca_private *ca, int slot)
 
 	dprintk("%s\n", __func__);
 
-	/* we'll be determining these during this function */
+	 
 	sl->da_irq_supported = 0;
 
-	/*
-	 * set the host link buffer size temporarily. it will be overwritten
-	 * with the real negotiated size later.
-	 */
+	 
 	sl->link_buf_size = 2;
 
-	/* read the buffer size from the CAM */
+	 
 	ret = ca->pub->write_cam_control(ca->pub, slot, CTRLIF_COMMAND,
 					 IRQEN | CMDREG_SR);
 	if (ret)
@@ -356,10 +310,7 @@ static int dvb_ca_en50221_link_init(struct dvb_ca_private *ca, int slot)
 	if (ret)
 		return ret;
 
-	/*
-	 * store it, and choose the minimum of our buffer and the CAM's buffer
-	 * size
-	 */
+	 
 	buf_size = (buf[0] << 8) | buf[1];
 	if (buf_size > HOST_LINK_BUF_SIZE)
 		buf_size = HOST_LINK_BUF_SIZE;
@@ -368,7 +319,7 @@ static int dvb_ca_en50221_link_init(struct dvb_ca_private *ca, int slot)
 	buf[1] = buf_size & 0xff;
 	dprintk("Chosen link buffer size of %i\n", buf_size);
 
-	/* write the buffer size to the CAM */
+	 
 	ret = ca->pub->write_cam_control(ca->pub, slot, CTRLIF_COMMAND,
 					 IRQEN | CMDREG_SW);
 	if (ret)
@@ -383,22 +334,11 @@ static int dvb_ca_en50221_link_init(struct dvb_ca_private *ca, int slot)
 	if (ret)
 		return ret;
 
-	/* success */
+	 
 	return 0;
 }
 
-/**
- * dvb_ca_en50221_read_tuple - Read a tuple from attribute memory.
- *
- * @ca: CA instance.
- * @slot: Slot id.
- * @address: Address to read from. Updated.
- * @tuple_type: Tuple id byte. Updated.
- * @tuple_length: Tuple length. Updated.
- * @tuple: Dest buffer for tuple (must be 256 bytes). Updated.
- *
- * return: 0 on success, nonzero on error.
- */
+ 
 static int dvb_ca_en50221_read_tuple(struct dvb_ca_private *ca, int slot,
 				     int *address, int *tuple_type,
 				     int *tuple_length, u8 *tuple)
@@ -408,7 +348,7 @@ static int dvb_ca_en50221_read_tuple(struct dvb_ca_private *ca, int slot,
 	int _tuple_length;
 	int _address = *address;
 
-	/* grab the next tuple length and type */
+	 
 	_tuple_type = ca->pub->read_attribute_mem(ca->pub, slot, _address);
 	if (_tuple_type < 0)
 		return _tuple_type;
@@ -427,7 +367,7 @@ static int dvb_ca_en50221_read_tuple(struct dvb_ca_private *ca, int slot,
 
 	dprintk("TUPLE type:0x%x length:%i\n", _tuple_type, _tuple_length);
 
-	/* read in the whole tuple */
+	 
 	for (i = 0; i < _tuple_length; i++) {
 		tuple[i] = ca->pub->read_attribute_mem(ca->pub, slot,
 						       _address + (i * 2));
@@ -437,22 +377,14 @@ static int dvb_ca_en50221_read_tuple(struct dvb_ca_private *ca, int slot,
 	}
 	_address += (_tuple_length * 2);
 
-	/* success */
+	 
 	*tuple_type = _tuple_type;
 	*tuple_length = _tuple_length;
 	*address = _address;
 	return 0;
 }
 
-/**
- * dvb_ca_en50221_parse_attributes - Parse attribute memory of a CAM module,
- *	extracting Config register, and checking it is a DVB CAM module.
- *
- * @ca: CA instance.
- * @slot: Slot id.
- *
- * return: 0 on success, <0 on failure.
- */
+ 
 static int dvb_ca_en50221_parse_attributes(struct dvb_ca_private *ca, int slot)
 {
 	struct dvb_ca_slot *sl;
@@ -469,7 +401,7 @@ static int dvb_ca_en50221_parse_attributes(struct dvb_ca_private *ca, int slot)
 	u16 manfid = 0;
 	u16 devid = 0;
 
-	/* CISTPL_DEVICE_0A */
+	 
 	status = dvb_ca_en50221_read_tuple(ca, slot, &address, &tuple_type,
 					   &tuple_length, tuple);
 	if (status < 0)
@@ -477,7 +409,7 @@ static int dvb_ca_en50221_parse_attributes(struct dvb_ca_private *ca, int slot)
 	if (tuple_type != 0x1D)
 		return -EINVAL;
 
-	/* CISTPL_DEVICE_0C */
+	 
 	status = dvb_ca_en50221_read_tuple(ca, slot, &address, &tuple_type,
 					   &tuple_length, tuple);
 	if (status < 0)
@@ -485,7 +417,7 @@ static int dvb_ca_en50221_parse_attributes(struct dvb_ca_private *ca, int slot)
 	if (tuple_type != 0x1C)
 		return -EINVAL;
 
-	/* CISTPL_VERS_1 */
+	 
 	status = dvb_ca_en50221_read_tuple(ca, slot, &address, &tuple_type,
 					   &tuple_length, tuple);
 	if (status < 0)
@@ -493,7 +425,7 @@ static int dvb_ca_en50221_parse_attributes(struct dvb_ca_private *ca, int slot)
 	if (tuple_type != 0x15)
 		return -EINVAL;
 
-	/* CISTPL_MANFID */
+	 
 	status = dvb_ca_en50221_read_tuple(ca, slot, &address, &tuple_type,
 					   &tuple_length, tuple);
 	if (status < 0)
@@ -505,7 +437,7 @@ static int dvb_ca_en50221_parse_attributes(struct dvb_ca_private *ca, int slot)
 	manfid = (tuple[1] << 8) | tuple[0];
 	devid = (tuple[3] << 8) | tuple[2];
 
-	/* CISTPL_CONFIG */
+	 
 	status = dvb_ca_en50221_read_tuple(ca, slot, &address, &tuple_type,
 					   &tuple_length, tuple);
 	if (status < 0)
@@ -515,7 +447,7 @@ static int dvb_ca_en50221_parse_attributes(struct dvb_ca_private *ca, int slot)
 	if (tuple_length < 3)
 		return -EINVAL;
 
-	/* extract the configbase */
+	 
 	rasz = tuple[0] & 3;
 	if (tuple_length < (3 + rasz + 14))
 		return -EINVAL;
@@ -524,14 +456,14 @@ static int dvb_ca_en50221_parse_attributes(struct dvb_ca_private *ca, int slot)
 	for (i = 0; i < rasz + 1; i++)
 		sl->config_base |= (tuple[2 + i] << (8 * i));
 
-	/* check it contains the correct DVB string */
+	 
 	dvb_str = findstr((char *)tuple, tuple_length, "DVB_CI_V", 8);
 	if (!dvb_str)
 		return -EINVAL;
 	if (tuple_length < ((dvb_str - (char *)tuple) + 12))
 		return -EINVAL;
 
-	/* is it a version we support? */
+	 
 	if (strncmp(dvb_str + 8, "1.00", 4)) {
 		pr_err("dvb_ca adapter %d: Unsupported DVB CAM module version %c%c%c%c\n",
 		       ca->dvbdev->adapter->num, dvb_str[8], dvb_str[9],
@@ -539,7 +471,7 @@ static int dvb_ca_en50221_parse_attributes(struct dvb_ca_private *ca, int slot)
 		return -EINVAL;
 	}
 
-	/* process the CFTABLE_ENTRY tuples, and any after those */
+	 
 	while ((!end_chain) && (address < 0x1000)) {
 		status = dvb_ca_en50221_read_tuple(ca, slot, &address,
 						   &tuple_type, &tuple_length,
@@ -547,18 +479,18 @@ static int dvb_ca_en50221_parse_attributes(struct dvb_ca_private *ca, int slot)
 		if (status < 0)
 			return status;
 		switch (tuple_type) {
-		case 0x1B:	/* CISTPL_CFTABLE_ENTRY */
+		case 0x1B:	 
 			if (tuple_length < (2 + 11 + 17))
 				break;
 
-			/* if we've already parsed one, just use it */
+			 
 			if (got_cftableentry)
 				break;
 
-			/* get the config option */
+			 
 			sl->config_option = tuple[0] & 0x3f;
 
-			/* OK, check it contains the correct strings */
+			 
 			if (!findstr((char *)tuple, tuple_length,
 				     "DVB_HOST", 8) ||
 			    !findstr((char *)tuple, tuple_length,
@@ -568,14 +500,14 @@ static int dvb_ca_en50221_parse_attributes(struct dvb_ca_private *ca, int slot)
 			got_cftableentry = 1;
 			break;
 
-		case 0x14:	/* CISTPL_NO_LINK */
+		case 0x14:	 
 			break;
 
-		case 0xFF:	/* CISTPL_END */
+		case 0xFF:	 
 			end_chain = 1;
 			break;
 
-		default:	/* Unknown tuple type - just skip this tuple */
+		default:	 
 			dprintk("dvb_ca: Skipping unknown tuple type:0x%x length:0x%x\n",
 				tuple_type, tuple_length);
 			break;
@@ -588,16 +520,11 @@ static int dvb_ca_en50221_parse_attributes(struct dvb_ca_private *ca, int slot)
 	dprintk("Valid DVB CAM detected MANID:%x DEVID:%x CONFIGBASE:0x%x CONFIGOPTION:0x%x\n",
 		manfid, devid, sl->config_base, sl->config_option);
 
-	/* success! */
+	 
 	return 0;
 }
 
-/**
- * dvb_ca_en50221_set_configoption - Set CAM's configoption correctly.
- *
- * @ca: CA instance.
- * @slot: Slot containing the CAM.
- */
+ 
 static int dvb_ca_en50221_set_configoption(struct dvb_ca_private *ca, int slot)
 {
 	struct dvb_ca_slot *sl = &ca->slot_info[slot];
@@ -605,35 +532,21 @@ static int dvb_ca_en50221_set_configoption(struct dvb_ca_private *ca, int slot)
 
 	dprintk("%s\n", __func__);
 
-	/* set the config option */
+	 
 	ca->pub->write_attribute_mem(ca->pub, slot, sl->config_base,
 				     sl->config_option);
 
-	/* check it */
+	 
 	configoption = ca->pub->read_attribute_mem(ca->pub, slot,
 						   sl->config_base);
 	dprintk("Set configoption 0x%x, read configoption 0x%x\n",
 		sl->config_option, configoption & 0x3f);
 
-	/* fine! */
+	 
 	return 0;
 }
 
-/**
- * dvb_ca_en50221_read_data - This function talks to an EN50221 CAM control
- *	interface. It reads a buffer of data from the CAM. The data can either
- *	be stored in a supplied buffer, or automatically be added to the slot's
- *	rx_buffer.
- *
- * @ca: CA instance.
- * @slot: Slot to read from.
- * @ebuf: If non-NULL, the data will be written to this buffer. If NULL,
- *	  the data will be added into the buffering system as a normal
- *	  fragment.
- * @ecount: Size of ebuf. Ignored if ebuf is NULL.
- *
- * return: Number of bytes read, or < 0 on error
- */
+ 
 static int dvb_ca_en50221_read_data(struct dvb_ca_private *ca, int slot,
 				    u8 *ebuf, int ecount)
 {
@@ -645,7 +558,7 @@ static int dvb_ca_en50221_read_data(struct dvb_ca_private *ca, int slot,
 
 	dprintk("%s\n", __func__);
 
-	/* check if we have space for a link buf in the rx_buffer */
+	 
 	if (!ebuf) {
 		int buf_free;
 
@@ -675,18 +588,18 @@ static int dvb_ca_en50221_read_data(struct dvb_ca_private *ca, int slot,
 		if (status == 0)
 			goto exit;
 	} else {
-		/* check if there is data available */
+		 
 		status = ca->pub->read_cam_control(ca->pub, slot,
 						   CTRLIF_STATUS);
 		if (status < 0)
 			goto exit;
 		if (!(status & STATUSREG_DA)) {
-			/* no data */
+			 
 			status = 0;
 			goto exit;
 		}
 
-		/* read the amount of data */
+		 
 		status = ca->pub->read_cam_control(ca->pub, slot,
 						   CTRLIF_SIZE_HIGH);
 		if (status < 0)
@@ -698,7 +611,7 @@ static int dvb_ca_en50221_read_data(struct dvb_ca_private *ca, int slot,
 			goto exit;
 		bytes_read |= status;
 
-		/* check it will fit */
+		 
 		if (!ebuf) {
 			if (bytes_read > sl->link_buf_size) {
 				pr_err("dvb_ca adapter %d: CAM tried to send a buffer larger than the link buffer size (%i > %i)!\n",
@@ -724,19 +637,19 @@ static int dvb_ca_en50221_read_data(struct dvb_ca_private *ca, int slot,
 			}
 		}
 
-		/* fill the buffer */
+		 
 		for (i = 0; i < bytes_read; i++) {
-			/* read byte and check */
+			 
 			status = ca->pub->read_cam_control(ca->pub, slot,
 							   CTRLIF_DATA);
 			if (status < 0)
 				goto exit;
 
-			/* OK, store it in the buffer */
+			 
 			buf[i] = status;
 		}
 
-		/* check for read error (RE should now be 0) */
+		 
 		status = ca->pub->read_cam_control(ca->pub, slot,
 						   CTRLIF_STATUS);
 		if (status < 0)
@@ -748,10 +661,7 @@ static int dvb_ca_en50221_read_data(struct dvb_ca_private *ca, int slot,
 		}
 	}
 
-	/*
-	 * OK, add it to the receive buffer, or copy into external buffer if
-	 * supplied
-	 */
+	 
 	if (!ebuf) {
 		if (!sl->rx_buffer.data) {
 			status = -EIO;
@@ -765,7 +675,7 @@ static int dvb_ca_en50221_read_data(struct dvb_ca_private *ca, int slot,
 	dprintk("Received CA packet for slot %i connection id 0x%x last_frag:%i size:0x%x\n", slot,
 		buf[0], (buf[1] & 0x80) == 0, bytes_read);
 
-	/* wake up readers when a last_fragment is received */
+	 
 	if ((buf[1] & 0x80) == 0x00)
 		wake_up_interruptible(&ca->wait_queue);
 
@@ -775,20 +685,7 @@ exit:
 	return status;
 }
 
-/**
- * dvb_ca_en50221_write_data - This function talks to an EN50221 CAM control
- *				interface. It writes a buffer of data to a CAM.
- *
- * @ca: CA instance.
- * @slot: Slot to write to.
- * @buf: The data in this buffer is treated as a complete link-level packet to
- *	 be written.
- * @bytes_write: Size of ebuf.
- * @size_write_flag: A flag on Command Register which says whether the link size
- * information will be writen or not.
- *
- * return: Number of bytes written, or < 0 on error.
- */
+ 
 static int dvb_ca_en50221_write_data(struct dvb_ca_private *ca, int slot,
 				     u8 *buf, int bytes_write, int size_write_flag)
 {
@@ -798,7 +695,7 @@ static int dvb_ca_en50221_write_data(struct dvb_ca_private *ca, int slot,
 
 	dprintk("%s\n", __func__);
 
-	/* sanity check */
+	 
 	if (bytes_write > sl->link_buf_size)
 		return -EINVAL;
 
@@ -806,12 +703,7 @@ static int dvb_ca_en50221_write_data(struct dvb_ca_private *ca, int slot,
 	    (sl->slot_state != DVB_CA_SLOTSTATE_LINKINIT))
 		return ca->pub->write_data(ca->pub, slot, buf, bytes_write);
 
-	/*
-	 * it is possible we are dealing with a single buffer implementation,
-	 * thus if there is data available for read or if there is even a read
-	 * already in progress, we do nothing but awake the kernel thread to
-	 * process the data if necessary.
-	 */
+	 
 	status = ca->pub->read_cam_control(ca->pub, slot, CTRLIF_STATUS);
 	if (status < 0)
 		goto exitnowrite;
@@ -823,33 +715,23 @@ static int dvb_ca_en50221_write_data(struct dvb_ca_private *ca, int slot,
 		goto exitnowrite;
 	}
 
-	/* OK, set HC bit */
+	 
 	status = ca->pub->write_cam_control(ca->pub, slot, CTRLIF_COMMAND,
 					    IRQEN | CMDREG_HC | size_write_flag);
 	if (status)
 		goto exit;
 
-	/* check if interface is still free */
+	 
 	status = ca->pub->read_cam_control(ca->pub, slot, CTRLIF_STATUS);
 	if (status < 0)
 		goto exit;
 	if (!(status & STATUSREG_FR)) {
-		/* it wasn't free => try again later */
+		 
 		status = -EAGAIN;
 		goto exit;
 	}
 
-	/*
-	 * It may need some time for the CAM to settle down, or there might
-	 * be a race condition between the CAM, writing HC and our last
-	 * check for DA. This happens, if the CAM asserts DA, just after
-	 * checking DA before we are setting HC. In this case it might be
-	 * a bug in the CAM to keep the FR bit, the lower layer/HW
-	 * communication requires a longer timeout or the CAM needs more
-	 * time internally. But this happens in reality!
-	 * We need to read the status from the HW again and do the same
-	 * we did for the previous check for DA
-	 */
+	 
 	status = ca->pub->read_cam_control(ca->pub, slot, CTRLIF_STATUS);
 	if (status < 0)
 		goto exit;
@@ -862,7 +744,7 @@ static int dvb_ca_en50221_write_data(struct dvb_ca_private *ca, int slot,
 		goto exit;
 	}
 
-	/* send the amount of data */
+	 
 	status = ca->pub->write_cam_control(ca->pub, slot, CTRLIF_SIZE_HIGH,
 					    bytes_write >> 8);
 	if (status)
@@ -872,7 +754,7 @@ static int dvb_ca_en50221_write_data(struct dvb_ca_private *ca, int slot,
 	if (status)
 		goto exit;
 
-	/* send the buffer */
+	 
 	for (i = 0; i < bytes_write; i++) {
 		status = ca->pub->write_cam_control(ca->pub, slot, CTRLIF_DATA,
 						    buf[i]);
@@ -880,7 +762,7 @@ static int dvb_ca_en50221_write_data(struct dvb_ca_private *ca, int slot,
 			goto exit;
 	}
 
-	/* check for write error (WE should now be 0) */
+	 
 	status = ca->pub->read_cam_control(ca->pub, slot, CTRLIF_STATUS);
 	if (status < 0)
 		goto exit;
@@ -901,15 +783,10 @@ exitnowrite:
 	return status;
 }
 
-/* ************************************************************************** */
-/* EN50221 higher level functions */
+ 
+ 
 
-/**
- * dvb_ca_en50221_slot_shutdown - A CAM has been removed => shut it down.
- *
- * @ca: CA instance.
- * @slot: Slot to shut down.
- */
+ 
 static int dvb_ca_en50221_slot_shutdown(struct dvb_ca_private *ca, int slot)
 {
 	dprintk("%s\n", __func__);
@@ -917,25 +794,16 @@ static int dvb_ca_en50221_slot_shutdown(struct dvb_ca_private *ca, int slot)
 	ca->pub->slot_shutdown(ca->pub, slot);
 	ca->slot_info[slot].slot_state = DVB_CA_SLOTSTATE_NONE;
 
-	/*
-	 * need to wake up all processes to check if they're now trying to
-	 * write to a defunct CAM
-	 */
+	 
 	wake_up_interruptible(&ca->wait_queue);
 
 	dprintk("Slot %i shutdown\n", slot);
 
-	/* success */
+	 
 	return 0;
 }
 
-/**
- * dvb_ca_en50221_camchange_irq - A CAMCHANGE IRQ has occurred.
- *
- * @pubca: CA instance.
- * @slot: Slot concerned.
- * @change_type: One of the DVB_CA_CAMCHANGE_* values.
- */
+ 
 void dvb_ca_en50221_camchange_irq(struct dvb_ca_en50221 *pubca, int slot,
 				  int change_type)
 {
@@ -959,12 +827,7 @@ void dvb_ca_en50221_camchange_irq(struct dvb_ca_en50221 *pubca, int slot,
 }
 EXPORT_SYMBOL(dvb_ca_en50221_camchange_irq);
 
-/**
- * dvb_ca_en50221_camready_irq - A CAMREADY IRQ has occurred.
- *
- * @pubca: CA instance.
- * @slot: Slot concerned.
- */
+ 
 void dvb_ca_en50221_camready_irq(struct dvb_ca_en50221 *pubca, int slot)
 {
 	struct dvb_ca_private *ca = pubca->private;
@@ -979,12 +842,7 @@ void dvb_ca_en50221_camready_irq(struct dvb_ca_en50221 *pubca, int slot)
 }
 EXPORT_SYMBOL(dvb_ca_en50221_camready_irq);
 
-/**
- * dvb_ca_en50221_frda_irq - An FR or DA IRQ has occurred.
- *
- * @pubca: CA instance.
- * @slot: Slot concerned.
- */
+ 
 void dvb_ca_en50221_frda_irq(struct dvb_ca_en50221 *pubca, int slot)
 {
 	struct dvb_ca_private *ca = pubca->private;
@@ -1010,14 +868,10 @@ void dvb_ca_en50221_frda_irq(struct dvb_ca_en50221 *pubca, int slot)
 }
 EXPORT_SYMBOL(dvb_ca_en50221_frda_irq);
 
-/* ************************************************************************** */
-/* EN50221 thread functions */
+ 
+ 
 
-/**
- * dvb_ca_en50221_thread_wakeup - Wake up the DVB CA thread
- *
- * @ca: CA instance.
- */
+ 
 static void dvb_ca_en50221_thread_wakeup(struct dvb_ca_private *ca)
 {
 	dprintk("%s\n", __func__);
@@ -1027,35 +881,28 @@ static void dvb_ca_en50221_thread_wakeup(struct dvb_ca_private *ca)
 	wake_up_process(ca->thread);
 }
 
-/**
- * dvb_ca_en50221_thread_update_delay - Update the delay used by the thread.
- *
- * @ca: CA instance.
- */
+ 
 static void dvb_ca_en50221_thread_update_delay(struct dvb_ca_private *ca)
 {
 	int delay;
 	int curdelay = 100000000;
 	int slot;
 
-	/*
-	 * Beware of too high polling frequency, because one polling
-	 * call might take several hundred milliseconds until timeout!
-	 */
+	 
 	for (slot = 0; slot < ca->slot_count; slot++) {
 		struct dvb_ca_slot *sl = &ca->slot_info[slot];
 
 		switch (sl->slot_state) {
 		default:
 		case DVB_CA_SLOTSTATE_NONE:
-			delay = HZ * 60;  /* 60s */
+			delay = HZ * 60;   
 			if (!(ca->flags & DVB_CA_EN50221_FLAG_IRQ_CAMCHANGE))
-				delay = HZ * 5;  /* 5s */
+				delay = HZ * 5;   
 			break;
 		case DVB_CA_SLOTSTATE_INVALID:
-			delay = HZ * 60;  /* 60s */
+			delay = HZ * 60;   
 			if (!(ca->flags & DVB_CA_EN50221_FLAG_IRQ_CAMCHANGE))
-				delay = HZ / 10;  /* 100ms */
+				delay = HZ / 10;   
 			break;
 
 		case DVB_CA_SLOTSTATE_UNINITIALISED:
@@ -1063,17 +910,17 @@ static void dvb_ca_en50221_thread_update_delay(struct dvb_ca_private *ca)
 		case DVB_CA_SLOTSTATE_VALIDATE:
 		case DVB_CA_SLOTSTATE_WAITFR:
 		case DVB_CA_SLOTSTATE_LINKINIT:
-			delay = HZ / 10;  /* 100ms */
+			delay = HZ / 10;   
 			break;
 
 		case DVB_CA_SLOTSTATE_RUNNING:
-			delay = HZ * 60;  /* 60s */
+			delay = HZ * 60;   
 			if (!(ca->flags & DVB_CA_EN50221_FLAG_IRQ_CAMCHANGE))
-				delay = HZ / 10;  /* 100ms */
+				delay = HZ / 10;   
 			if (ca->open) {
 				if ((!sl->da_irq_supported) ||
 				    (!(ca->flags & DVB_CA_EN50221_FLAG_IRQ_DA)))
-					delay = HZ / 10;  /* 100ms */
+					delay = HZ / 10;   
 			}
 			break;
 		}
@@ -1085,24 +932,14 @@ static void dvb_ca_en50221_thread_update_delay(struct dvb_ca_private *ca)
 	ca->delay = curdelay;
 }
 
-/**
- * dvb_ca_en50221_poll_cam_gone - Poll if the CAM is gone.
- *
- * @ca: CA instance.
- * @slot: Slot to process.
- * return:: 0 .. no change
- *          1 .. CAM state changed
- */
+ 
 
 static int dvb_ca_en50221_poll_cam_gone(struct dvb_ca_private *ca, int slot)
 {
 	int changed = 0;
 	int status;
 
-	/*
-	 * we need this extra check for annoying interfaces like the
-	 * budget-av
-	 */
+	 
 	if ((!(ca->flags & DVB_CA_EN50221_FLAG_IRQ_CAMCHANGE)) &&
 	    (ca->pub->poll_slot_status)) {
 		status = ca->pub->poll_slot_status(ca->pub, slot, 0);
@@ -1116,13 +953,7 @@ static int dvb_ca_en50221_poll_cam_gone(struct dvb_ca_private *ca, int slot)
 	return changed;
 }
 
-/**
- * dvb_ca_en50221_thread_state_machine - Thread state machine for one CA slot
- *	to perform the data transfer.
- *
- * @ca: CA instance.
- * @slot: Slot to process.
- */
+ 
 static void dvb_ca_en50221_thread_state_machine(struct dvb_ca_private *ca,
 						int slot)
 {
@@ -1133,26 +964,26 @@ static void dvb_ca_en50221_thread_state_machine(struct dvb_ca_private *ca,
 
 	mutex_lock(&sl->slot_lock);
 
-	/* check the cam status + deal with CAMCHANGEs */
+	 
 	while (dvb_ca_en50221_check_camstatus(ca, slot)) {
-		/* clear down an old CI slot if necessary */
+		 
 		if (sl->slot_state != DVB_CA_SLOTSTATE_NONE)
 			dvb_ca_en50221_slot_shutdown(ca, slot);
 
-		/* if a CAM is NOW present, initialise it */
+		 
 		if (sl->camchange_type == DVB_CA_EN50221_CAMCHANGE_INSERTED)
 			sl->slot_state = DVB_CA_SLOTSTATE_UNINITIALISED;
 
-		/* we've handled one CAMCHANGE */
+		 
 		dvb_ca_en50221_thread_update_delay(ca);
 		atomic_dec(&sl->camchange_count);
 	}
 
-	/* CAM state machine */
+	 
 	switch (sl->slot_state) {
 	case DVB_CA_SLOTSTATE_NONE:
 	case DVB_CA_SLOTSTATE_INVALID:
-		/* no action needed */
+		 
 		break;
 
 	case DVB_CA_SLOTSTATE_UNINITIALISED:
@@ -1169,10 +1000,7 @@ static void dvb_ca_en50221_thread_state_machine(struct dvb_ca_private *ca,
 			dvb_ca_en50221_thread_update_delay(ca);
 			break;
 		}
-		/*
-		 * no other action needed; will automatically change state when
-		 * ready
-		 */
+		 
 		break;
 
 	case DVB_CA_SLOTSTATE_VALIDATE:
@@ -1261,31 +1089,22 @@ static void dvb_ca_en50221_thread_state_machine(struct dvb_ca_private *ca,
 		if (!ca->open)
 			break;
 
-		/* poll slots for data */
+		 
 		pktcount = 0;
 		while (dvb_ca_en50221_read_data(ca, slot, NULL, 0) > 0) {
 			if (!ca->open)
 				break;
 
-			/*
-			 * if a CAMCHANGE occurred at some point, do not do any
-			 * more processing of this slot
-			 */
+			 
 			if (dvb_ca_en50221_check_camstatus(ca, slot)) {
-				/*
-				 * we don't want to sleep on the next iteration
-				 * so we can handle the cam change
-				 */
+				 
 				ca->wakeup = 1;
 				break;
 			}
 
-			/* check if we've hit our limit this time */
+			 
 			if (++pktcount >= MAX_RX_PACKETS_PER_ITERATION) {
-				/*
-				 * don't sleep; there is likely to be more data
-				 * to read
-				 */
+				 
 				ca->wakeup = 1;
 				break;
 			}
@@ -1296,10 +1115,7 @@ static void dvb_ca_en50221_thread_state_machine(struct dvb_ca_private *ca,
 	mutex_unlock(&sl->slot_lock);
 }
 
-/*
- * Kernel thread which monitors CA slots for CAM changes, and performs data
- * transfers.
- */
+ 
 static int dvb_ca_en50221_thread(void *data)
 {
 	struct dvb_ca_private *ca = data;
@@ -1307,12 +1123,12 @@ static int dvb_ca_en50221_thread(void *data)
 
 	dprintk("%s\n", __func__);
 
-	/* choose the correct initial delay */
+	 
 	dvb_ca_en50221_thread_update_delay(ca);
 
-	/* main loop */
+	 
 	while (!kthread_should_stop()) {
-		/* sleep for a bit */
+		 
 		if (!ca->wakeup) {
 			set_current_state(TASK_INTERRUPTIBLE);
 			schedule_timeout(ca->delay);
@@ -1321,7 +1137,7 @@ static int dvb_ca_en50221_thread(void *data)
 		}
 		ca->wakeup = 0;
 
-		/* go through all the slots processing them */
+		 
 		for (slot = 0; slot < ca->slot_count; slot++)
 			dvb_ca_en50221_thread_state_machine(ca, slot);
 	}
@@ -1329,20 +1145,10 @@ static int dvb_ca_en50221_thread(void *data)
 	return 0;
 }
 
-/* ************************************************************************** */
-/* EN50221 IO interface functions */
+ 
+ 
 
-/**
- * dvb_ca_en50221_io_do_ioctl - Real ioctl implementation.
- *
- * @file: File concerned.
- * @cmd: IOCTL command.
- * @parg: Associated argument.
- *
- * NOTE: CA_SEND_MSG/CA_GET_MSG ioctls have userspace buffers passed to them.
- *
- * return: 0 on success, <0 on error.
- */
+ 
 static int dvb_ca_en50221_io_do_ioctl(struct file *file,
 				      unsigned int cmd, void *parg)
 {
@@ -1418,31 +1224,14 @@ out_unlock:
 	return err;
 }
 
-/**
- * dvb_ca_en50221_io_ioctl - Wrapper for ioctl implementation.
- *
- * @file: File concerned.
- * @cmd: IOCTL command.
- * @arg: Associated argument.
- *
- * return: 0 on success, <0 on error.
- */
+ 
 static long dvb_ca_en50221_io_ioctl(struct file *file,
 				    unsigned int cmd, unsigned long arg)
 {
 	return dvb_usercopy(file, cmd, arg, dvb_ca_en50221_io_do_ioctl);
 }
 
-/**
- * dvb_ca_en50221_io_write - Implementation of write() syscall.
- *
- * @file: File structure.
- * @buf: Source buffer.
- * @count: Size of source buffer.
- * @ppos: Position in file (ignored).
- *
- * return: Number of bytes read, or <0 on error.
- */
+ 
 static ssize_t dvb_ca_en50221_io_write(struct file *file,
 				       const char __user *buf, size_t count,
 				       loff_t *ppos)
@@ -1460,14 +1249,11 @@ static ssize_t dvb_ca_en50221_io_write(struct file *file,
 
 	dprintk("%s\n", __func__);
 
-	/*
-	 * Incoming packet has a 2 byte header.
-	 * hdr[0] = slot_id, hdr[1] = connection_id
-	 */
+	 
 	if (count < 2)
 		return -EINVAL;
 
-	/* extract slot & connection id */
+	 
 	if (copy_from_user(&slot, buf, 1))
 		return -EFAULT;
 	if (copy_from_user(&connection_id, buf + 1, 1))
@@ -1480,11 +1266,11 @@ static ssize_t dvb_ca_en50221_io_write(struct file *file,
 	slot = array_index_nospec(slot, ca->slot_count);
 	sl = &ca->slot_info[slot];
 
-	/* check if the slot is actually running */
+	 
 	if (sl->slot_state != DVB_CA_SLOTSTATE_RUNNING)
 		return -EINVAL;
 
-	/* fragment the packets & store in the buffer */
+	 
 	while (fragpos < count) {
 		fraglen = sl->link_buf_size - 2;
 		if (fraglen < 0)
@@ -1505,10 +1291,7 @@ static ssize_t dvb_ca_en50221_io_write(struct file *file,
 		timeout = jiffies + HZ / 2;
 		written = 0;
 		while (!time_after(jiffies, timeout)) {
-			/*
-			 * check the CAM hasn't been removed/reset in the
-			 * meantime
-			 */
+			 
 			if (sl->slot_state != DVB_CA_SLOTSTATE_RUNNING) {
 				status = -EIO;
 				goto exit;
@@ -1540,9 +1323,7 @@ exit:
 	return status;
 }
 
-/*
- * Condition for waking up in dvb_ca_en50221_io_read_condition
- */
+ 
 static int dvb_ca_en50221_io_read_condition(struct dvb_ca_private *ca,
 					    int *result, int *_slot)
 {
@@ -1589,16 +1370,7 @@ nextslot:
 	return found;
 }
 
-/**
- * dvb_ca_en50221_io_read - Implementation of read() syscall.
- *
- * @file: File structure.
- * @buf: Destination buffer.
- * @count: Size of destination buffer.
- * @ppos: Position in file (ignored).
- *
- * return: Number of bytes read, or <0 on error.
- */
+ 
 static ssize_t dvb_ca_en50221_io_read(struct file *file, char __user *buf,
 				      size_t count, loff_t *ppos)
 {
@@ -1618,21 +1390,18 @@ static ssize_t dvb_ca_en50221_io_read(struct file *file, char __user *buf,
 
 	dprintk("%s\n", __func__);
 
-	/*
-	 * Outgoing packet has a 2 byte header.
-	 * hdr[0] = slot_id, hdr[1] = connection_id
-	 */
+	 
 	if (count < 2)
 		return -EINVAL;
 
-	/* wait for some data */
+	 
 	status = dvb_ca_en50221_io_read_condition(ca, &result, &slot);
 	if (status == 0) {
-		/* if we're in nonblocking mode, exit immediately */
+		 
 		if (file->f_flags & O_NONBLOCK)
 			return -EWOULDBLOCK;
 
-		/* wait for some data */
+		 
 		status = wait_event_interruptible(ca->wait_queue,
 						  dvb_ca_en50221_io_read_condition
 						  (ca, &result, &slot));
@@ -1700,14 +1469,7 @@ exit:
 	return status;
 }
 
-/**
- * dvb_ca_en50221_io_open - Implementation of file open syscall.
- *
- * @inode: Inode concerned.
- * @file: File concerned.
- *
- * return: 0 on success, <0 on failure.
- */
+ 
 static int dvb_ca_en50221_io_open(struct inode *inode, struct file *file)
 {
 	struct dvb_device *dvbdev = file->private_data;
@@ -1741,11 +1503,7 @@ static int dvb_ca_en50221_io_open(struct inode *inode, struct file *file)
 
 		if (sl->slot_state == DVB_CA_SLOTSTATE_RUNNING) {
 			if (!sl->rx_buffer.data) {
-				/*
-				 * it is safe to call this here without locks
-				 * because ca->open == 0. Data is not read in
-				 * this case
-				 */
+				 
 				dvb_ringbuffer_flush(&sl->rx_buffer);
 			}
 		}
@@ -1761,14 +1519,7 @@ static int dvb_ca_en50221_io_open(struct inode *inode, struct file *file)
 	return 0;
 }
 
-/**
- * dvb_ca_en50221_io_release - Implementation of file close syscall.
- *
- * @inode: Inode concerned.
- * @file: File concerned.
- *
- * return: 0 on success, <0 on failure.
- */
+ 
 static int dvb_ca_en50221_io_release(struct inode *inode, struct file *file)
 {
 	struct dvb_device *dvbdev = file->private_data;
@@ -1779,7 +1530,7 @@ static int dvb_ca_en50221_io_release(struct inode *inode, struct file *file)
 
 	mutex_lock(&ca->remove_mutex);
 
-	/* mark the CA device as closed */
+	 
 	ca->open = 0;
 	dvb_ca_en50221_thread_update_delay(ca);
 
@@ -1799,14 +1550,7 @@ static int dvb_ca_en50221_io_release(struct inode *inode, struct file *file)
 	return err;
 }
 
-/**
- * dvb_ca_en50221_io_poll - Implementation of poll() syscall.
- *
- * @file: File concerned.
- * @wait: poll wait table.
- *
- * return: Standard poll mask.
- */
+ 
 static __poll_t dvb_ca_en50221_io_poll(struct file *file, poll_table *wait)
 {
 	struct dvb_device *dvbdev = file->private_data;
@@ -1822,7 +1566,7 @@ static __poll_t dvb_ca_en50221_io_poll(struct file *file, poll_table *wait)
 	if (dvb_ca_en50221_io_read_condition(ca, &result, &slot) == 1)
 		mask |= EPOLLIN;
 
-	/* if there is something, return now */
+	 
 	if (mask)
 		return mask;
 
@@ -1854,19 +1598,10 @@ static const struct dvb_device dvbdev_ca = {
 	.fops = &dvb_ca_fops,
 };
 
-/* ************************************************************************** */
-/* Initialisation/shutdown functions */
+ 
+ 
 
-/**
- * dvb_ca_en50221_init - Initialise a new DVB CA EN50221 interface device.
- *
- * @dvb_adapter: DVB adapter to attach the new CA device to.
- * @pubca: The dvb_ca instance.
- * @flags: Flags describing the CA device (DVB_CA_FLAG_*).
- * @slot_count: Number of slots supported.
- *
- * return: 0 on success, nonzero on failure
- */
+ 
 int dvb_ca_en50221_init(struct dvb_adapter *dvb_adapter,
 			struct dvb_ca_en50221 *pubca, int flags, int slot_count)
 {
@@ -1879,7 +1614,7 @@ int dvb_ca_en50221_init(struct dvb_adapter *dvb_adapter,
 	if (slot_count < 1)
 		return -EINVAL;
 
-	/* initialise the system data */
+	 
 	ca = kzalloc(sizeof(*ca), GFP_KERNEL);
 	if (!ca) {
 		ret = -ENOMEM;
@@ -1901,13 +1636,13 @@ int dvb_ca_en50221_init(struct dvb_adapter *dvb_adapter,
 	ca->next_read_slot = 0;
 	pubca->private = ca;
 
-	/* register the DVB device */
+	 
 	ret = dvb_register_device(dvb_adapter, &ca->dvbdev, &dvbdev_ca, ca,
 				  DVB_DEVICE_CA, 0);
 	if (ret)
 		goto free_slot_info;
 
-	/* now initialise each slot */
+	 
 	for (i = 0; i < slot_count; i++) {
 		struct dvb_ca_slot *sl = &ca->slot_info[i];
 
@@ -1927,7 +1662,7 @@ int dvb_ca_en50221_init(struct dvb_adapter *dvb_adapter,
 	}
 	mb();
 
-	/* create a kthread for monitoring this CA device */
+	 
 	ca->thread = kthread_run(dvb_ca_en50221_thread, ca, "kdvb-ca-%i:%i",
 				 ca->dvbdev->adapter->num, ca->dvbdev->id);
 	if (IS_ERR(ca->thread)) {
@@ -1950,11 +1685,7 @@ exit:
 }
 EXPORT_SYMBOL(dvb_ca_en50221_init);
 
-/**
- * dvb_ca_en50221_release - Release a DVB CA EN50221 interface device.
- *
- * @pubca: The associated dvb_ca instance.
- */
+ 
 void dvb_ca_en50221_release(struct dvb_ca_en50221 *pubca)
 {
 	struct dvb_ca_private *ca = pubca->private;
@@ -1970,7 +1701,7 @@ void dvb_ca_en50221_release(struct dvb_ca_en50221 *pubca)
 		wait_event(ca->dvbdev->wait_queue,
 				ca->dvbdev->users == 1);
 
-	/* shutdown the thread if there was one */
+	 
 	kthread_stop(ca->thread);
 
 	for (i = 0; i < ca->slot_count; i++)

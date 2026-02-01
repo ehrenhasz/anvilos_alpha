@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018 MediaTek Inc.
- * Author: Owen Chen <owen.chen@mediatek.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/of.h>
@@ -19,25 +16,25 @@
 
 #include <dt-bindings/clock/mt6765-clk.h>
 
-/*fmeter div select 4*/
+ 
 #define _DIV4_ 1
 
 static DEFINE_SPINLOCK(mt6765_clk_lock);
 
-/* Total 12 subsys */
+ 
 static void __iomem *cksys_base;
 static void __iomem *apmixed_base;
 
-/* CKSYS */
+ 
 #define CLK_SCP_CFG_0		(cksys_base + 0x200)
 #define CLK_SCP_CFG_1		(cksys_base + 0x204)
 
-/* CG */
+ 
 #define AP_PLL_CON3		(apmixed_base + 0x0C)
 #define PLLON_CON0		(apmixed_base + 0x44)
 #define PLLON_CON1		(apmixed_base + 0x48)
 
-/* clk cfg update */
+ 
 #define CLK_CFG_0		0x40
 #define CLK_CFG_0_SET		0x44
 #define CLK_CFG_0_CLR		0x48
@@ -364,7 +361,7 @@ static const char * const camtm_parents[] = {
 #define INVALID_MUX_GATE -1
 
 static const struct mtk_mux top_muxes[] = {
-	/* CLK_CFG_0 */
+	 
 	MUX_GATE_CLR_SET_UPD_FLAGS(CLK_TOP_AXI_SEL, "axi_sel", axi_parents,
 			      CLK_CFG_0, CLK_CFG_0_SET, CLK_CFG_0_CLR,
 			      0, 2, 7, CLK_CFG_UPDATE, 0,
@@ -379,7 +376,7 @@ static const struct mtk_mux top_muxes[] = {
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_SCP_SEL, "scp_sel", scp_parents, CLK_CFG_0,
 			CLK_CFG_0_SET, CLK_CFG_0_CLR, 24, 3, 31,
 			CLK_CFG_UPDATE, 3),
-	/* CLK_CFG_1 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_MFG_SEL, "mfg_sel", mfg_parents, CLK_CFG_1,
 			CLK_CFG_1_SET, CLK_CFG_1_CLR, 0, 2, 7,
 			CLK_CFG_UPDATE, 4),
@@ -392,7 +389,7 @@ static const struct mtk_mux top_muxes[] = {
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_CAMTG1_SEL, "camtg1_sel", camtg_parents,
 			CLK_CFG_1, CLK_CFG_1_SET, CLK_CFG_1_CLR,
 			24, 3, 31, CLK_CFG_UPDATE, 7),
-	/* CLK_CFG_2 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_CAMTG2_SEL, "camtg2_sel",
 			camtg_parents, CLK_CFG_2, CLK_CFG_2_SET,
 			CLK_CFG_2_CLR, 0, 3, 7, CLK_CFG_UPDATE, 8),
@@ -405,7 +402,7 @@ static const struct mtk_mux top_muxes[] = {
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_SPI_SEL, "spi_sel", spi_parents, CLK_CFG_2,
 			CLK_CFG_2_SET, CLK_CFG_2_CLR, 24, 2, 31,
 			CLK_CFG_UPDATE, 11),
-	/* CLK_CFG_3 */
+	 
 	MUX_GATE_CLR_SET_UPD_FLAGS(CLK_TOP_MSDC50_0_HCLK_SEL, "msdc5hclk",
 			msdc5hclk_parents, CLK_CFG_3, CLK_CFG_3_SET,
 			CLK_CFG_3_CLR, 0, 2, 7, CLK_CFG_UPDATE, 12, 0),
@@ -418,7 +415,7 @@ static const struct mtk_mux top_muxes[] = {
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_AUDIO_SEL, "audio_sel", audio_parents,
 			CLK_CFG_3, CLK_CFG_3_SET, CLK_CFG_3_CLR,
 			24, 2, 31, CLK_CFG_UPDATE, 15),
-	/* CLK_CFG_4 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_AUD_INTBUS_SEL, "aud_intbus_sel",
 			aud_intbus_parents, CLK_CFG_4, CLK_CFG_4_SET,
 			CLK_CFG_4_CLR, 0, 2, 7, CLK_CFG_UPDATE, 16),
@@ -431,7 +428,7 @@ static const struct mtk_mux top_muxes[] = {
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_DISP_PWM_SEL, "disp_pwm_sel",
 			disp_pwm_parents, CLK_CFG_4, CLK_CFG_4_SET,
 			CLK_CFG_4_CLR, 24, 2, 31, CLK_CFG_UPDATE, 19),
-	/* CLK_CFG_5 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_SSPM_SEL, "sspm_sel", sspm_parents,
 			CLK_CFG_5, CLK_CFG_5_SET, CLK_CFG_5_CLR, 0, 2, 7,
 			CLK_CFG_UPDATE, 20),
@@ -444,7 +441,7 @@ static const struct mtk_mux top_muxes[] = {
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_SPM_SEL, "spm_sel", spm_parents, CLK_CFG_5,
 			CLK_CFG_5_SET, CLK_CFG_5_CLR, 24, 1, 31,
 			CLK_CFG_UPDATE, 23),
-	/* CLK_CFG_6 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_I2C_SEL, "i2c_sel", i2c_parents, CLK_CFG_6,
 			CLK_CFG_6_SET, CLK_CFG_6_CLR, 0, 3, 7, CLK_CFG_UPDATE,
 			24),
@@ -457,7 +454,7 @@ static const struct mtk_mux top_muxes[] = {
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_AES_FDE_SEL, "aes_fde_sel",
 			aes_fde_parents, CLK_CFG_6, CLK_CFG_6_SET,
 			CLK_CFG_6_CLR, 24, 3, 31, CLK_CFG_UPDATE, 27),
-	/* CLK_CFG_7 */
+	 
 	MUX_GATE_CLR_SET_UPD_FLAGS(CLK_TOP_PWRAP_ULPOSC_SEL, "ulposc_sel",
 			      ulposc_parents, CLK_CFG_7, CLK_CFG_7_SET,
 			      CLK_CFG_7_CLR, 0, 3, 7, CLK_CFG_UPDATE, 28,
@@ -495,12 +492,12 @@ static const struct mtk_gate_regs top2_cg_regs = {
 	GATE_MTK(_id, _name, _parent, &top2_cg_regs, _shift, &mtk_clk_gate_ops_no_setclr)
 
 static const struct mtk_gate top_clks[] = {
-	/* TOP0 */
+	 
 	GATE_TOP0(CLK_TOP_MD_32K, "md_32k", "f_frtc_ck", 8),
 	GATE_TOP0(CLK_TOP_MD_26M, "md_26m", "f_f26m_ck", 9),
 	GATE_TOP0(CLK_TOP_MD2_32K, "md2_32k", "f_frtc_ck", 10),
 	GATE_TOP0(CLK_TOP_MD2_26M, "md2_26m", "f_f26m_ck", 11),
-	/* TOP1 */
+	 
 	GATE_TOP1(CLK_TOP_ARMPLL_DIVIDER_PLL0_EN,
 		  "arm_div_pll0_en", "arm_div_pll0", 3),
 	GATE_TOP1(CLK_TOP_ARMPLL_DIVIDER_PLL1_EN,
@@ -512,7 +509,7 @@ static const struct mtk_gate top_clks[] = {
 	GATE_TOP1(CLK_TOP_UNIVPLL_48M_EN, "univpll_48m_en", "univ_48m_div", 9),
 	GATE_TOP1(CLK_TOP_F_UFS_MP_SAP_CFG_EN, "ufs_sap", "f_f26m_ck", 12),
 	GATE_TOP1(CLK_TOP_F_BIST2FPC_EN, "bist2fpc", "f_bist2fpc_ck", 16),
-	/* TOP2 */
+	 
 	GATE_TOP2(CLK_TOP_APLL12_DIV0, "apll12_div0", "aud_1_ck", 2),
 	GATE_TOP2(CLK_TOP_APLL12_DIV1, "apll12_div1", "aud_1_ck", 3),
 	GATE_TOP2(CLK_TOP_APLL12_DIV2, "apll12_div2", "aud_1_ck", 4),
@@ -556,9 +553,9 @@ static const struct mtk_gate_regs ifr5_cg_regs = {
 	GATE_MTK(_id, _name, _parent, &ifr5_cg_regs, _shift, &mtk_clk_gate_ops_setclr)
 
 static const struct mtk_gate ifr_clks[] = {
-	/* INFRA_TOPAXI */
-	/* INFRA PERI */
-	/* INFRA mode 0 */
+	 
+	 
+	 
 	GATE_IFR2(CLK_IFR_ICUSB, "ifr_icusb", "axi_ck", 8),
 	GATE_IFR2(CLK_IFR_GCE, "ifr_gce", "axi_ck", 9),
 	GATE_IFR2(CLK_IFR_THERM, "ifr_therm", "axi_ck", 10),
@@ -578,7 +575,7 @@ static const struct mtk_gate ifr_clks[] = {
 	GATE_IFR2(CLK_IFR_GCE_26M, "ifr_gce_26m", "f_f26m_ck", 27),
 	GATE_IFR2(CLK_IFR_CQ_DMA_FPC, "ifr_dma", "axi_ck", 28),
 	GATE_IFR2(CLK_IFR_BTIF, "ifr_btif", "axi_ck", 31),
-	/* INFRA mode 1 */
+	 
 	GATE_IFR3(CLK_IFR_SPI0, "ifr_spi0", "spi_ck", 1),
 	GATE_IFR3(CLK_IFR_MSDC0, "ifr_msdc0", "msdc5hclk", 2),
 	GATE_IFR3(CLK_IFR_MSDC1, "ifr_msdc1", "axi_ck", 4),
@@ -592,7 +589,7 @@ static const struct mtk_gate ifr_clks[] = {
 	GATE_IFR3(CLK_IFR_CCIF_AP, "ifr_ccif_ap", "axi_ck", 23),
 	GATE_IFR3(CLK_IFR_AUDIO, "ifr_audio", "axi_ck", 25),
 	GATE_IFR3(CLK_IFR_CCIF_MD, "ifr_ccif_md", "axi_ck", 26),
-	/* INFRA mode 2 */
+	 
 	GATE_IFR4(CLK_IFR_RG_PWM_FBCLK6, "ifr_pwmfb", "f_f26m_ck", 0),
 	GATE_IFR4(CLK_IFR_DISP_PWM, "ifr_disp_pwm", "f_fdisp_pwm_ck", 2),
 	GATE_IFR4(CLK_IFR_CLDMA_BCLK, "ifr_cldmabclk", "axi_ck", 3),
@@ -612,7 +609,7 @@ static const struct mtk_gate ifr_clks[] = {
 	GATE_IFR4(CLK_IFR_SPI5, "ifr_spi5", "spi_ck", 26),
 	GATE_IFR4(CLK_IFR_CQ_DMA, "ifr_cq_dma", "axi_ck", 27),
 	GATE_IFR4(CLK_IFR_FAES_FDE, "ifr_faes_fde_ck", "aes_fde_ck", 29),
-	/* INFRA mode 3 */
+	 
 	GATE_IFR5(CLK_IFR_MSDC0_SELF, "ifr_msdc0sf", "msdc50_0_ck", 0),
 	GATE_IFR5(CLK_IFR_MSDC1_SELF, "ifr_msdc1sf", "msdc50_0_ck", 1),
 	GATE_IFR5(CLK_IFR_I2C6, "ifr_i2c6", "i2c_ck", 6),
@@ -627,7 +624,7 @@ static const struct mtk_gate ifr_clks[] = {
 	GATE_IFR5(CLK_IFR_CCIF3_MD, "ifr_ccif3_md", "axi_ck", 21),
 };
 
-/* additional CCF control for mipi26M race condition(disp/camera) */
+ 
 static const struct mtk_gate_regs apmixed_cg_regs = {
 	.set_ofs = 0x14,
 	.clr_ofs = 0x14,
@@ -638,7 +635,7 @@ static const struct mtk_gate_regs apmixed_cg_regs = {
 	GATE_MTK(_id, _name, _parent, &apmixed_cg_regs, _shift, &mtk_clk_gate_ops_no_setclr_inv)
 
 static const struct mtk_gate apmixed_clks[] = {
-	/* AUDIO0 */
+	 
 	GATE_APMIXED(CLK_APMIXED_SSUSB26M, "apmixed_ssusb26m", "f_f26m_ck",
 		     4),
 	GATE_APMIXED(CLK_APMIXED_APPLL26M, "apmixed_appll26m", "f_f26m_ck",
@@ -751,7 +748,7 @@ static int clk_mt6765_apmixed_probe(struct platform_device *pdev)
 		       __func__, r);
 
 	apmixed_base = base;
-	/* MPLL, CCIPLL, MAINPLL set HW mode, TDCLKSQ, CLKSQ1 */
+	 
 	writel(readl(AP_PLL_CON3) & 0xFFFFFFE1, AP_PLL_CON3);
 	writel(readl(PLLON_CON0) & 0x01041041, PLLON_CON0);
 	writel(readl(PLLON_CON1) & 0x01041041, PLLON_CON1);
@@ -791,9 +788,9 @@ static int clk_mt6765_top_probe(struct platform_device *pdev)
 		       __func__, r);
 
 	cksys_base = base;
-	/* [4]:no need */
+	 
 	writel(readl(CLK_SCP_CFG_0) | 0x3EF, CLK_SCP_CFG_0);
-	/*[1,2,3,8]: no need*/
+	 
 	writel(readl(CLK_SCP_CFG_1) | 0x1, CLK_SCP_CFG_1);
 
 	return r;
@@ -836,7 +833,7 @@ static const struct of_device_id of_match_clk_mt6765[] = {
 		.compatible = "mediatek,mt6765-infracfg",
 		.data = clk_mt6765_ifr_probe,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt6765);

@@ -1,18 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
 
-/*
- * msi-ec: MSI laptops' embedded controller driver.
- *
- * This driver allows various MSI laptops' functionalities to be
- * controlled from userspace.
- *
- * It contains EC memory configurations for different firmware versions
- * and exports battery charge thresholds to userspace.
- *
- * Copyright (C) 2023 Jose Angel Pastrana <japp0005@red.ujaen.es>
- * Copyright (C) 2023 Aakash Singh <mail@singhaakash.dev>
- * Copyright (C) 2023 Nikita Kravets <teackot@gmail.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -76,7 +64,7 @@ static struct msi_ec_conf CONF0 __initdata = {
 		},
 	},
 	.super_battery = {
-		.address = MSI_EC_ADDR_UNKNOWN, // 0xd5 needs testing
+		.address = MSI_EC_ADDR_UNKNOWN, 
 	},
 	.fan_mode = {
 		.address = 0xf4,
@@ -107,9 +95,9 @@ static struct msi_ec_conf CONF0 __initdata = {
 		.bit                 = 2,
 	},
 	.kbd_bl = {
-		.bl_mode_address  = 0x2c, // ?
-		.bl_modes         = { 0x00, 0x08 }, // ?
-		.max_mode         = 1, // ?
+		.bl_mode_address  = 0x2c, 
+		.bl_modes         = { 0x00, 0x08 }, 
+		.max_mode         = 1, 
 		.bl_state_address = 0xf3,
 		.state_base_value = 0x80,
 		.max_state        = 3,
@@ -187,9 +175,9 @@ static struct msi_ec_conf CONF1 __initdata = {
 		.bit                 = 2,
 	},
 	.kbd_bl = {
-		.bl_mode_address  = 0x2c, // ?
-		.bl_modes         = { 0x00, 0x08 }, // ?
-		.max_mode         = 1, // ?
+		.bl_mode_address  = 0x2c, 
+		.bl_modes         = { 0x00, 0x08 }, 
+		.max_mode         = 1, 
 		.bl_state_address = 0xf3,
 		.state_base_value = 0x80,
 		.max_state        = 3,
@@ -265,9 +253,9 @@ static struct msi_ec_conf CONF2 __initdata = {
 		.bit                 = 1,
 	},
 	.kbd_bl = {
-		.bl_mode_address  = 0x2c, // ?
-		.bl_modes         = { 0x00, 0x08 }, // ?
-		.max_mode         = 1, // ?
+		.bl_mode_address  = 0x2c, 
+		.bl_modes         = { 0x00, 0x08 }, 
+		.max_mode         = 1, 
 		.bl_state_address = 0xd3,
 		.state_base_value = 0x80,
 		.max_state        = 3,
@@ -329,7 +317,7 @@ static struct msi_ec_conf CONF3 __initdata = {
 		.rt_fan_speed_address  = 0xc9,
 		.rt_fan_speed_base_min = 0x19,
 		.rt_fan_speed_base_max = 0x37,
-		.bs_fan_speed_address  = 0x89, // ?
+		.bs_fan_speed_address  = 0x89, 
 		.bs_fan_speed_base_min = 0x00,
 		.bs_fan_speed_base_max = 0x0f,
 	},
@@ -343,9 +331,9 @@ static struct msi_ec_conf CONF3 __initdata = {
 		.bit                 = 1,
 	},
 	.kbd_bl = {
-		.bl_mode_address  = 0x2c, // ?
-		.bl_modes         = { 0x00, 0x08 }, // ?
-		.max_mode         = 1, // ?
+		.bl_mode_address  = 0x2c, 
+		.bl_modes         = { 0x00, 0x08 }, 
+		.max_mode         = 1, 
 		.bl_state_address = 0xd3,
 		.state_base_value = 0x80,
 		.max_state        = 3,
@@ -372,7 +360,7 @@ static struct msi_ec_conf CONF4 __initdata = {
 		.bit           = 1,
 	},
 	.fn_super_swap = {
-		.address = MSI_EC_ADDR_UNKNOWN, // supported, but unknown
+		.address = MSI_EC_ADDR_UNKNOWN, 
 		.bit     = 4,
 	},
 	.cooler_boost = {
@@ -388,7 +376,7 @@ static struct msi_ec_conf CONF4 __initdata = {
 			MSI_EC_MODE_NULL
 		},
 	},
-	.super_battery = { // may be supported, but address is unknown
+	.super_battery = { 
 		.address = MSI_EC_ADDR_UNKNOWN,
 		.mask    = 0x0f,
 	},
@@ -402,8 +390,8 @@ static struct msi_ec_conf CONF4 __initdata = {
 		},
 	},
 	.cpu = {
-		.rt_temp_address       = 0x68, // needs testing
-		.rt_fan_speed_address  = 0x71, // needs testing
+		.rt_temp_address       = 0x68, 
+		.rt_fan_speed_address  = 0x71, 
 		.rt_fan_speed_base_min = 0x19,
 		.rt_fan_speed_base_max = 0x37,
 		.bs_fan_speed_address  = MSI_EC_ADDR_UNKNOWN,
@@ -420,10 +408,10 @@ static struct msi_ec_conf CONF4 __initdata = {
 		.bit                 = 1,
 	},
 	.kbd_bl = {
-		.bl_mode_address  = MSI_EC_ADDR_UNKNOWN, // ?
-		.bl_modes         = { 0x00, 0x08 }, // ?
-		.max_mode         = 1, // ?
-		.bl_state_address = MSI_EC_ADDR_UNSUPP, // 0xd3, not functional
+		.bl_mode_address  = MSI_EC_ADDR_UNKNOWN, 
+		.bl_modes         = { 0x00, 0x08 }, 
+		.max_mode         = 1, 
+		.bl_state_address = MSI_EC_ADDR_UNSUPP, 
 		.state_base_value = 0x80,
 		.max_state        = 3,
 	},
@@ -450,7 +438,7 @@ static struct msi_ec_conf CONF5 __initdata = {
 		.block_address = 0x2f,
 		.bit           = 1,
 	},
-	.fn_super_swap = { // todo: reverse
+	.fn_super_swap = { 
 		.address = 0xbf,
 		.bit     = 4,
 	},
@@ -467,7 +455,7 @@ static struct msi_ec_conf CONF5 __initdata = {
 			MSI_EC_MODE_NULL
 		},
 	},
-	.super_battery = { // unsupported?
+	.super_battery = { 
 		.address = MSI_EC_ADDR_UNKNOWN,
 		.mask    = 0x0f,
 	},
@@ -481,8 +469,8 @@ static struct msi_ec_conf CONF5 __initdata = {
 		},
 	},
 	.cpu = {
-		.rt_temp_address       = 0x68, // needs testing
-		.rt_fan_speed_address  = 0x71, // needs testing
+		.rt_temp_address       = 0x68, 
+		.rt_fan_speed_address  = 0x71, 
 		.rt_fan_speed_base_min = 0x19,
 		.rt_fan_speed_base_max = 0x37,
 		.bs_fan_speed_address  = MSI_EC_ADDR_UNSUPP,
@@ -499,10 +487,10 @@ static struct msi_ec_conf CONF5 __initdata = {
 		.bit                 = 2,
 	},
 	.kbd_bl = {
-		.bl_mode_address  = MSI_EC_ADDR_UNKNOWN, // ?
-		.bl_modes         = { 0x00, 0x08 }, // ?
-		.max_mode         = 1, // ?
-		.bl_state_address = MSI_EC_ADDR_UNSUPP, // 0xf3, not functional
+		.bl_mode_address  = MSI_EC_ADDR_UNKNOWN, 
+		.bl_modes         = { 0x00, 0x08 }, 
+		.max_mode         = 1, 
+		.bl_state_address = MSI_EC_ADDR_UNSUPP, 
 		.state_base_value = 0x80,
 		.max_state        = 3,
 	},
@@ -529,7 +517,7 @@ static struct msi_ec_conf CONF6 __initdata = {
 		.bit           = 1,
 	},
 	.fn_super_swap = {
-		.address = 0xbf, // todo: reverse
+		.address = 0xbf, 
 		.bit     = 4,
 	},
 	.cooler_boost = {
@@ -578,10 +566,10 @@ static struct msi_ec_conf CONF6 __initdata = {
 		.bit                 = 2,
 	},
 	.kbd_bl = {
-		.bl_mode_address  = MSI_EC_ADDR_UNKNOWN, // ?
-		.bl_modes         = { 0x00, 0x08 }, // ?
-		.max_mode         = 1, // ?
-		.bl_state_address = MSI_EC_ADDR_UNSUPP, // 0xf3, not functional
+		.bl_mode_address  = MSI_EC_ADDR_UNKNOWN, 
+		.bl_modes         = { 0x00, 0x08 }, 
+		.max_mode         = 1, 
+		.bl_state_address = MSI_EC_ADDR_UNSUPP, 
 		.state_base_value = 0x80,
 		.max_state        = 3,
 	},
@@ -609,7 +597,7 @@ static struct msi_ec_conf CONF7 __initdata = {
 		.bit           = 1,
 	},
 	.fn_super_swap = {
-		.address = 0xbf, // needs testing
+		.address = 0xbf, 
 		.bit     = 4,
 	},
 	.cooler_boost = {
@@ -627,13 +615,13 @@ static struct msi_ec_conf CONF7 __initdata = {
 		},
 	},
 	.super_battery = {
-		.address = MSI_EC_ADDR_UNKNOWN, // 0xd5 but has its own wet of modes
+		.address = MSI_EC_ADDR_UNKNOWN, 
 		.mask    = 0x0f,
 	},
 	.fan_mode = {
 		.address = 0xf4,
 		.modes = {
-			{ FM_AUTO_NAME,     0x0d }, // d may not be relevant
+			{ FM_AUTO_NAME,     0x0d }, 
 			{ FM_SILENT_NAME,   0x1d },
 			{ FM_ADVANCED_NAME, 0x8d },
 			MSI_EC_MODE_NULL
@@ -641,7 +629,7 @@ static struct msi_ec_conf CONF7 __initdata = {
 	},
 	.cpu = {
 		.rt_temp_address       = 0x68,
-		.rt_fan_speed_address  = 0xc9, // needs testing
+		.rt_fan_speed_address  = 0xc9, 
 		.rt_fan_speed_base_min = 0x19,
 		.rt_fan_speed_base_max = 0x37,
 		.bs_fan_speed_address  = MSI_EC_ADDR_UNSUPP,
@@ -658,9 +646,9 @@ static struct msi_ec_conf CONF7 __initdata = {
 		.bit                 = 2,
 	},
 	.kbd_bl = {
-		.bl_mode_address  = MSI_EC_ADDR_UNKNOWN, // ?
-		.bl_modes         = { 0x00, 0x08 }, // ?
-		.max_mode         = 1, // ?
+		.bl_mode_address  = MSI_EC_ADDR_UNKNOWN, 
+		.bl_modes         = { 0x00, 0x08 }, 
+		.max_mode         = 1, 
 		.bl_state_address = 0xf3,
 		.state_base_value = 0x80,
 		.max_state        = 3,
@@ -679,11 +667,9 @@ static struct msi_ec_conf *CONFIGS[] __initdata = {
 	NULL
 };
 
-static struct msi_ec_conf conf; // current configuration
+static struct msi_ec_conf conf; 
 
-/*
- * Helper functions
- */
+ 
 
 static int ec_read_seq(u8 addr, u8 *buf, u8 len)
 {
@@ -712,9 +698,7 @@ static int ec_get_firmware_version(u8 buf[MSI_EC_FW_VERSION_LENGTH + 1])
 	return MSI_EC_FW_VERSION_LENGTH + 1;
 }
 
-/*
- * Sysfs power_supply subsystem
- */
+ 
 
 static ssize_t charge_control_threshold_show(u8 offset,
 					     struct device *device,
@@ -817,9 +801,7 @@ static struct acpi_battery_hook battery_hook = {
 	.name = MSI_EC_DRIVER_NAME,
 };
 
-/*
- * Module load/unload
- */
+ 
 
 static const struct dmi_system_id msi_dmi_table[] __initconst __maybe_unused = {
 	{
@@ -842,12 +824,12 @@ static int __init load_configuration(void)
 
 	u8 fw_version[MSI_EC_FW_VERSION_LENGTH + 1];
 
-	/* get firmware version */
+	 
 	result = ec_get_firmware_version(fw_version);
 	if (result < 0)
 		return result;
 
-	/* load the suitable configuration, if exists */
+	 
 	for (int i = 0; CONFIGS[i]; i++) {
 		if (match_string(CONFIGS[i]->allowed_fw, -1, fw_version) != -EINVAL) {
 			conf = *CONFIGS[i];
@@ -856,7 +838,7 @@ static int __init load_configuration(void)
 		}
 	}
 
-	/* config not found */
+	 
 
 	for (int i = 0; i < MSI_EC_FW_VERSION_LENGTH; i++) {
 		if (!isgraph(fw_version[i])) {

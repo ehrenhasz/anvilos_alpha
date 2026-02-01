@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2018-2023 Intel Corporation
- */
+
+ 
 #include "iwl-trans.h"
 #include "iwl-fh.h"
 #include "iwl-context-info-gen3.h"
@@ -98,17 +96,17 @@ int iwl_pcie_ctxt_info_gen3_init(struct iwl_trans *trans,
 		break;
 	case IWL_AMSDU_8K:
 		control_flags |= IWL_PRPH_SCRATCH_RB_SIZE_4K;
-		/* if firmware supports the ext size, tell it */
+		 
 		control_flags |= IWL_PRPH_SCRATCH_RB_SIZE_EXT_8K;
 		break;
 	case IWL_AMSDU_12K:
 		control_flags |= IWL_PRPH_SCRATCH_RB_SIZE_4K;
-		/* if firmware supports the ext size, tell it */
+		 
 		control_flags |= IWL_PRPH_SCRATCH_RB_SIZE_EXT_16K;
 		break;
 	}
 
-	/* Allocate prph scratch */
+	 
 	prph_scratch = dma_alloc_coherent(trans->dev, sizeof(*prph_scratch),
 					  &trans_pcie->prph_scratch_dma_addr,
 					  GFP_KERNEL);
@@ -128,7 +126,7 @@ int iwl_pcie_ctxt_info_gen3_init(struct iwl_trans *trans,
 	if (trans->trans_cfg->imr_enabled)
 		control_flags |= IWL_PRPH_SCRATCH_IMR_DEBUG_EN;
 
-	/* initialize RX default queue */
+	 
 	prph_sc_ctrl->rbd_cfg.free_rbd_addr =
 		cpu_to_le64(trans_pcie->rxq->bd_dma);
 
@@ -136,25 +134,17 @@ int iwl_pcie_ctxt_info_gen3_init(struct iwl_trans *trans,
 				      &control_flags);
 	prph_sc_ctrl->control.control_flags = cpu_to_le32(control_flags);
 
-	/* initialize the Step equalizer data */
+	 
 	prph_sc_ctrl->step_cfg.mbx_addr_0 = cpu_to_le32(trans->mbx_addr_0_step);
 	prph_sc_ctrl->step_cfg.mbx_addr_1 = cpu_to_le32(trans->mbx_addr_1_step);
 
-	/* allocate ucode sections in dram and set addresses */
+	 
 	ret = iwl_pcie_init_fw_sec(trans, fw, &prph_scratch->dram);
 	if (ret)
 		goto err_free_prph_scratch;
 
 
-	/* Allocate prph information
-	 * currently we don't assign to the prph info anything, but it would get
-	 * assigned later
-	 *
-	 * We also use the second half of this page to give the device some
-	 * dummy TR/CR tail pointers - which shouldn't be necessary as we don't
-	 * use this, but the hardware still reads/writes there and we can't let
-	 * it go do that with a NULL pointer.
-	 */
+	 
 	BUILD_BUG_ON(sizeof(*prph_info) > PAGE_SIZE / 2);
 	prph_info = dma_alloc_coherent(trans->dev, PAGE_SIZE,
 				       &trans_pcie->prph_info_dma_addr,
@@ -164,7 +154,7 @@ int iwl_pcie_ctxt_info_gen3_init(struct iwl_trans *trans,
 		goto err_free_prph_scratch;
 	}
 
-	/* Allocate context info */
+	 
 	ctxt_info_gen3 = dma_alloc_coherent(trans->dev,
 					    sizeof(*ctxt_info_gen3),
 					    &trans_pcie->ctxt_info_dma_addr,
@@ -199,7 +189,7 @@ int iwl_pcie_ctxt_info_gen3_init(struct iwl_trans *trans,
 	trans_pcie->prph_info = prph_info;
 	trans_pcie->prph_scratch = prph_scratch;
 
-	/* Allocate IML */
+	 
 	trans_pcie->iml = dma_alloc_coherent(trans->dev, trans->iml_len,
 					     &trans_pcie->iml_dma_addr,
 					     GFP_KERNEL);
@@ -212,7 +202,7 @@ int iwl_pcie_ctxt_info_gen3_init(struct iwl_trans *trans,
 
 	iwl_enable_fw_load_int_ctx_info(trans);
 
-	/* kick FW self load */
+	 
 	iwl_write64(trans, CSR_CTXT_INFO_ADDR,
 		    trans_pcie->ctxt_info_dma_addr);
 	iwl_write64(trans, CSR_IML_DATA_ADDR,
@@ -261,7 +251,7 @@ void iwl_pcie_ctxt_info_gen3_free(struct iwl_trans *trans, bool alive)
 	if (!trans_pcie->ctxt_info_gen3)
 		return;
 
-	/* ctxt_info_gen3 and prph_scratch are still needed for PNVM load */
+	 
 	dma_free_coherent(trans->dev, sizeof(*trans_pcie->ctxt_info_gen3),
 			  trans_pcie->ctxt_info_gen3,
 			  trans_pcie->ctxt_info_dma_addr);
@@ -274,7 +264,7 @@ void iwl_pcie_ctxt_info_gen3_free(struct iwl_trans *trans, bool alive)
 	trans_pcie->prph_scratch_dma_addr = 0;
 	trans_pcie->prph_scratch = NULL;
 
-	/* this is needed for the entire lifetime */
+	 
 	dma_free_coherent(trans->dev, PAGE_SIZE, trans_pcie->prph_info,
 			  trans_pcie->prph_info_dma_addr);
 	trans_pcie->prph_info_dma_addr = 0;
@@ -327,7 +317,7 @@ static int iwl_pcie_load_payloads_segments
 	u32 len;
 	int i;
 
-	/* allocate and init DRAM descriptors array */
+	 
 	len = sizeof(struct iwl_prph_scrath_mem_desc_addr_array);
 	desc_dram->block = iwl_pcie_ctxt_info_dma_alloc_coherent
 						(trans,
@@ -340,7 +330,7 @@ static int iwl_pcie_load_payloads_segments
 	desc_dram->size = len;
 	memset(desc_dram->block, 0, len);
 
-	/* allocate DRAM region for each payload */
+	 
 	dram_regions->n_regions = 0;
 	for (i = 0; i < pnvm_data->n_chunks; i++) {
 		len = pnvm_data->chunks[i].len;
@@ -359,7 +349,7 @@ static int iwl_pcie_load_payloads_segments
 		cur_payload_dram++;
 	}
 
-	/* fill desc with the DRAM payloads addresses */
+	 
 	addresses = desc_dram->block;
 	for (i = 0; i < pnvm_data->n_chunks; i++) {
 		addresses->mem_descs[i] =
@@ -380,7 +370,7 @@ int iwl_trans_pcie_ctx_info_gen3_load_pnvm(struct iwl_trans *trans,
 	struct iwl_dram_regions *dram_regions = &trans_pcie->pnvm_data;
 	int ret = 0;
 
-	/* only allocate the DRAM if not allocated yet */
+	 
 	if (trans->pnvm_loaded)
 		return 0;
 
@@ -395,7 +385,7 @@ int iwl_trans_pcie_ctx_info_gen3_load_pnvm(struct iwl_trans *trans,
 		return -EINVAL;
 	}
 
-	/* save payloads in several DRAM sections */
+	 
 	if (fw_has_capa(capa, IWL_UCODE_TLV_CAPA_FRAGMENTED_PNVM_IMG)) {
 		ret = iwl_pcie_load_payloads_segments(trans,
 						      dram_regions,
@@ -403,7 +393,7 @@ int iwl_trans_pcie_ctx_info_gen3_load_pnvm(struct iwl_trans *trans,
 		if (!ret)
 			trans->pnvm_loaded = true;
 	} else {
-		/* save only in one DRAM section */
+		 
 		ret = iwl_pcie_load_payloads_continuously
 						(trans,
 						 pnvm_payloads,
@@ -476,7 +466,7 @@ int iwl_trans_pcie_ctx_info_gen3_load_reduce_power(struct iwl_trans *trans,
 	struct iwl_dram_regions *dram_regions = &trans_pcie->reduced_tables_data;
 	int ret = 0;
 
-	/* only allocate the DRAM if not allocated yet */
+	 
 	if (trans->reduce_power_loaded)
 		return 0;
 
@@ -491,7 +481,7 @@ int iwl_trans_pcie_ctx_info_gen3_load_reduce_power(struct iwl_trans *trans,
 		return -EINVAL;
 	}
 
-	/* save payloads in several DRAM sections */
+	 
 	if (fw_has_capa(capa, IWL_UCODE_TLV_CAPA_FRAGMENTED_PNVM_IMG)) {
 		ret = iwl_pcie_load_payloads_segments(trans,
 						      dram_regions,
@@ -499,7 +489,7 @@ int iwl_trans_pcie_ctx_info_gen3_load_reduce_power(struct iwl_trans *trans,
 		if (!ret)
 			trans->reduce_power_loaded = true;
 	} else {
-		/* save only in one DRAM section */
+		 
 		ret = iwl_pcie_load_payloads_continuously
 						(trans,
 						 payloads,

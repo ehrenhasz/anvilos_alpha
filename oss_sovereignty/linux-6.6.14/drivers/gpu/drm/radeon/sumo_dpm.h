@@ -1,25 +1,4 @@
-/*
- * Copyright 2012 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #ifndef __SUMO_DPM_H__
 #define __SUMO_DPM_H__
 
@@ -38,14 +17,14 @@ struct sumo_pl {
 	u32 sclk_dpm_tdp_limit;
 };
 
-/* used for the flags field */
+ 
 #define SUMO_POWERSTATE_FLAGS_FORCE_NBPS1_STATE (1 << 0)
 #define SUMO_POWERSTATE_FLAGS_BOOST_STATE       (1 << 1)
 
 struct sumo_ps {
 	struct sumo_pl levels[SUMO_MAX_HARDWARE_POWERLEVELS];
 	u32 num_levels;
-	/* flags */
+	 
 	u32 flags;
 };
 
@@ -188,7 +167,7 @@ struct sumo_power_info {
 #define SUMO_VOLTAGEDROPT_DFLT     1
 #define SUMO_GFXPOWERGATINGT_DFLT  100
 
-/* sumo_dpm.c */
+ 
 void sumo_gfx_clockgating_initialize(struct radeon_device *rdev);
 void sumo_program_vc(struct radeon_device *rdev, u32 vrc);
 void sumo_clear_vc(struct radeon_device *rdev);
@@ -209,7 +188,7 @@ u32 sumo_get_sleep_divider_id_from_clock(struct radeon_device *rdev,
 					 u32 min_sclk_in_sr);
 struct sumo_power_info *sumo_get_pi(struct radeon_device *rdev);
 
-/* sumo_smc.c */
+ 
 void sumo_initialize_m3_arb(struct radeon_device *rdev);
 void sumo_smu_pg_init(struct radeon_device *rdev);
 void sumo_set_tdp_limit(struct radeon_device *rdev, u32 index, u32 tdp_limit);

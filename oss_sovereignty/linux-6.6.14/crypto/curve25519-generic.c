@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include <crypto/curve25519.h>
 #include <crypto/internal/kpp.h>
@@ -44,7 +44,7 @@ static int curve25519_compute_value(struct kpp_request *req)
 
 	curve25519_generic(buf, secret, bp);
 
-	/* might want less than we've got */
+	 
 	nbytes = min_t(size_t, CURVE25519_KEY_SIZE, req->dst_len);
 	copied = sg_copy_from_buffer(req->dst, sg_nents_for_len(req->dst,
 								nbytes),

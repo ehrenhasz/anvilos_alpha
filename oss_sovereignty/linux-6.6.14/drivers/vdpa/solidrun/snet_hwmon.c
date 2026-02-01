@@ -1,17 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SolidRun DPU driver for control plane
- *
- * Copyright (C) 2022-2023 SolidRun
- *
- * Author: Alvaro Karsz <alvaro.karsz@solid-run.com>
- *
- */
+
+ 
 #include <linux/hwmon.h>
 
 #include "snet_vdpa.h"
 
-/* Monitor offsets */
+ 
 #define SNET_MON_TMP0_IN_OFF      0x00
 #define SNET_MON_TMP0_MAX_OFF     0x08
 #define SNET_MON_TMP0_CRIT_OFF    0x10
@@ -173,7 +166,7 @@ static const struct hwmon_chip_info snet_hwmono_info = {
 	.info = snet_hwmon_info,
 };
 
-/* Create an HW monitor device */
+ 
 void psnet_create_hwmon(struct pci_dev *pdev)
 {
 	struct device *hwmon;
@@ -182,7 +175,7 @@ void psnet_create_hwmon(struct pci_dev *pdev)
 	snprintf(psnet->hwmon_name, SNET_NAME_SIZE, "snet_%s", pci_name(pdev));
 	hwmon = devm_hwmon_device_register_with_info(&pdev->dev, psnet->hwmon_name, psnet,
 						     &snet_hwmono_info, NULL);
-	/* The monitor is not mandatory, Just alert user in case of an error */
+	 
 	if (IS_ERR(hwmon))
 		SNET_WARN(pdev, "Failed to create SNET hwmon, error %ld\n", PTR_ERR(hwmon));
 }

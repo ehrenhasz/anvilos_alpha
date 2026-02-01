@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
-   drbd_nl.c
 
-   This file is part of DRBD by Philipp Reisner and Lars Ellenberg.
-
-   Copyright (C) 2001-2008, LINBIT Information Technologies GmbH.
-   Copyright (C) 1999-2008, Philipp Reisner <philipp.reisner@linbit.com>.
-   Copyright (C) 2002-2008, Lars Ellenberg <lars.ellenberg@linbit.com>.
-
-
- */
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -31,9 +21,9 @@
 
 #include <net/genetlink.h>
 
-/* .doit */
-// int drbd_adm_create_resource(struct sk_buff *skb, struct genl_info *info);
-// int drbd_adm_delete_resource(struct sk_buff *skb, struct genl_info *info);
+ 
+
+
 
 int drbd_adm_new_minor(struct sk_buff *skb, struct genl_info *info);
 int drbd_adm_del_minor(struct sk_buff *skb, struct genl_info *info);
@@ -62,7 +52,7 @@ int drbd_adm_outdate(struct sk_buff *skb, struct genl_info *info);
 int drbd_adm_resource_opts(struct sk_buff *skb, struct genl_info *info);
 int drbd_adm_get_status(struct sk_buff *skb, struct genl_info *info);
 int drbd_adm_get_timeout_type(struct sk_buff *skb, struct genl_info *info);
-/* .dumpit */
+ 
 int drbd_adm_get_status_all(struct sk_buff *skb, struct netlink_callback *cb);
 int drbd_adm_dump_resources(struct sk_buff *skb, struct netlink_callback *cb);
 int drbd_adm_dump_devices(struct sk_buff *skb, struct netlink_callback *cb);
@@ -77,12 +67,12 @@ int drbd_adm_get_initial_state(struct sk_buff *skb, struct netlink_callback *cb)
 #include "drbd_nla.h"
 #include <linux/genl_magic_func.h>
 
-static atomic_t drbd_genl_seq = ATOMIC_INIT(2); /* two. */
-static atomic_t notify_genl_seq = ATOMIC_INIT(2); /* two. */
+static atomic_t drbd_genl_seq = ATOMIC_INIT(2);  
+static atomic_t notify_genl_seq = ATOMIC_INIT(2);  
 
 DEFINE_MUTEX(notification_mutex);
 
-/* used blkdev_get_by_path, to claim our meta data device(s) */
+ 
 static char *drbd_m_holder = "Hands off! this is DRBD's meta data device.";
 
 static void drbd_adm_send_reply(struct sk_buff *skb, struct genl_info *info)
@@ -92,8 +82,7 @@ static void drbd_adm_send_reply(struct sk_buff *skb, struct genl_info *info)
 		pr_err("error sending genl reply\n");
 }
 
-/* Used on a fresh "drbd_adm_prepare"d reply_skb, this cannot fail: The only
- * reason it could fail was no space in skb, and there are 4k available. */
+ 
 static int drbd_msg_put_info(struct sk_buff *skb, const char *info)
 {
 	struct nlattr *nla;
@@ -136,7 +125,7 @@ static int drbd_msg_sprintf_info(struct sk_buff *skb, const char *fmt, ...)
 	len = vscnprintf(nla_data(txt), 256, fmt, args);
 	va_end(args);
 
-	/* maybe: retry with larger reserve, if truncated */
+	 
 	txt->nla_len = nla_attr_size(len+1);
 	nlmsg_trim(skb, (char*)txt + NLA_ALIGN(txt->nla_len));
 	nla_nest_end(skb, nla);
@@ -144,15 +133,7 @@ static int drbd_msg_sprintf_info(struct sk_buff *skb, const char *fmt, ...)
 	return 0;
 }
 
-/* This would be a good candidate for a "pre_doit" hook,
- * and per-family private info->pointers.
- * But we need to stay compatible with older kernels.
- * If it returns successfully, adm_ctx members are valid.
- *
- * At this point, we still rely on the global genl_lock().
- * If we want to avoid that, and allow "genl_family.parallel_ops", we may need
- * to add additional synchronization against object destruction/modification.
- */
+ 
 #define DRBD_ADM_NEED_MINOR	1
 #define DRBD_ADM_NEED_RESOURCE	2
 #define DRBD_ADM_NEED_CONNECTION 4
@@ -165,7 +146,7 @@ static int drbd_adm_prepare(struct drbd_config_context *adm_ctx,
 
 	memset(adm_ctx, 0, sizeof(*adm_ctx));
 
-	/* genl_rcv_msg only checks for CAP_NET_ADMIN on "GENL_ADMIN_PERM" :( */
+	 
 	if (cmd != DRBD_ADM_GET_STATUS && !capable(CAP_NET_ADMIN))
 	       return -EPERM;
 
@@ -177,8 +158,7 @@ static int drbd_adm_prepare(struct drbd_config_context *adm_ctx,
 
 	adm_ctx->reply_dh = genlmsg_put_reply(adm_ctx->reply_skb,
 					info, &drbd_genl_family, 0, cmd);
-	/* put of a few bytes into a fresh skb of >= 4k will always succeed.
-	 * but anyways */
+	 
 	if (!adm_ctx->reply_dh) {
 		err = -ENOMEM;
 		goto fail;
@@ -190,20 +170,19 @@ static int drbd_adm_prepare(struct drbd_config_context *adm_ctx,
 	adm_ctx->volume = VOLUME_UNSPECIFIED;
 	if (info->attrs[DRBD_NLA_CFG_CONTEXT]) {
 		struct nlattr *nla;
-		/* parse and validate only */
+		 
 		err = drbd_cfg_context_from_attrs(NULL, info);
 		if (err)
 			goto fail;
 
-		/* It was present, and valid,
-		 * copy it over to the reply skb. */
+		 
 		err = nla_put_nohdr(adm_ctx->reply_skb,
 				info->attrs[DRBD_NLA_CFG_CONTEXT]->nla_len,
 				info->attrs[DRBD_NLA_CFG_CONTEXT]);
 		if (err)
 			goto fail;
 
-		/* and assign stuff to the adm_ctx */
+		 
 		nla = nested_attr_tb[__nla_type(T_ctx_volume)];
 		if (nla)
 			adm_ctx->volume = nla_get_u32(nla);
@@ -224,9 +203,7 @@ static int drbd_adm_prepare(struct drbd_config_context *adm_ctx,
 	adm_ctx->minor = d_in->minor;
 	adm_ctx->device = minor_to_device(d_in->minor);
 
-	/* We are protected by the global genl_lock().
-	 * But we may explicitly drop it/retake it in drbd_adm_set_role(),
-	 * so make sure this object stays around. */
+	 
 	if (adm_ctx->device)
 		kref_get(&adm_ctx->device->kref);
 
@@ -265,7 +242,7 @@ static int drbd_adm_prepare(struct drbd_config_context *adm_ctx,
 		}
 	}
 
-	/* some more paranoia, if the request was over-determined */
+	 
 	if (adm_ctx->device && adm_ctx->resource &&
 	    adm_ctx->device->resource != adm_ctx->resource) {
 		pr_warn("request: minor=%u, resource=%s; but that minor belongs to resource %s\n",
@@ -284,7 +261,7 @@ static int drbd_adm_prepare(struct drbd_config_context *adm_ctx,
 		return ERR_INVALID_REQUEST;
 	}
 
-	/* still, provide adm_ctx->resource always, if possible. */
+	 
 	if (!adm_ctx->resource) {
 		adm_ctx->resource = adm_ctx->device ? adm_ctx->device->resource
 			: adm_ctx->connection ? adm_ctx->connection->resource : NULL;
@@ -328,7 +305,7 @@ static void setup_khelper_env(struct drbd_connection *connection, char **envp)
 {
 	char *afs;
 
-	/* FIXME: A future version will not allow this case. */
+	 
 	if (connection->my_addr_len == 0 || connection->peer_addr_len == 0)
 		return;
 
@@ -356,8 +333,8 @@ int drbd_khelper(struct drbd_device *device, char *cmd)
 	char *envp[] = { "HOME=/",
 			"TERM=linux",
 			"PATH=/sbin:/usr/sbin:/bin:/usr/bin",
-			 (char[20]) { }, /* address family */
-			 (char[60]) { }, /* address */
+			 (char[20]) { },  
+			 (char[60]) { },  
 			NULL };
 	char mb[14];
 	char *argv[] = {drbd_usermode_helper, cmd, mb, NULL };
@@ -371,8 +348,7 @@ int drbd_khelper(struct drbd_device *device, char *cmd)
 	snprintf(mb, 14, "minor-%d", device_to_minor(device));
 	setup_khelper_env(connection, envp);
 
-	/* The helper may take some time.
-	 * write out any unsynced meta data changes now */
+	 
 	drbd_md_sync(device);
 
 	drbd_info(device, "helper command: %s %s %s\n", drbd_usermode_helper, cmd, mb);
@@ -397,7 +373,7 @@ int drbd_khelper(struct drbd_device *device, char *cmd)
 	if (current == connection->worker.task)
 		clear_bit(CALLBACK_PENDING, &connection->flags);
 
-	if (ret < 0) /* Ignore any ERRNOs we got. */
+	if (ret < 0)  
 		ret = 0;
 
 	return ret;
@@ -408,8 +384,8 @@ enum drbd_peer_state conn_khelper(struct drbd_connection *connection, char *cmd)
 	char *envp[] = { "HOME=/",
 			"TERM=linux",
 			"PATH=/sbin:/usr/sbin:/bin:/usr/bin",
-			 (char[20]) { }, /* address family */
-			 (char[60]) { }, /* address */
+			 (char[20]) { },  
+			 (char[60]) { },  
 			NULL };
 	char *resource_name = connection->resource->name;
 	char *argv[] = {drbd_usermode_helper, cmd, resource_name, NULL };
@@ -419,7 +395,7 @@ enum drbd_peer_state conn_khelper(struct drbd_connection *connection, char *cmd)
 	conn_md_sync(connection);
 
 	drbd_info(connection, "helper command: %s %s %s\n", drbd_usermode_helper, cmd, resource_name);
-	/* TODO: conn_bcast_event() ?? */
+	 
 	notify_helper(NOTIFY_CALL, NULL, connection, cmd, 0);
 
 	ret = call_usermodehelper(drbd_usermode_helper, argv, envp, UMH_WAIT_PROC);
@@ -431,10 +407,10 @@ enum drbd_peer_state conn_khelper(struct drbd_connection *connection, char *cmd)
 		drbd_info(connection, "helper command: %s %s %s exit code %u (0x%x)\n",
 			  drbd_usermode_helper, cmd, resource_name,
 			  (ret >> 8) & 0xff, ret);
-	/* TODO: conn_bcast_event() ?? */
+	 
 	notify_helper(NOTIFY_RESPONSE, NULL, connection, cmd, ret);
 
-	if (ret < 0) /* Ignore any ERRNOs we got. */
+	if (ret < 0)  
 		ret = 0;
 
 	return ret;
@@ -496,18 +472,11 @@ bool conn_try_outdate_peer(struct drbd_connection *connection)
 					    (union drbd_state) { { .susp_fen = 1 } },
 					    (union drbd_state) { { .susp_fen = 0 } },
 					    CS_VERBOSE | CS_HARD | CS_DC_SUSP);
-			/* We are no longer suspended due to the fencing policy.
-			 * We may still be suspended due to the on-no-data-accessible policy.
-			 * If that was OND_IO_ERROR, fail pending requests. */
+			 
 			if (!resource_is_supended(resource))
 				_tl_restart(connection, CONNECTION_LOST_WHILE_PENDING);
 		}
-		/* Else: in case we raced with a connection handshake,
-		 * let the handshake figure out if we maybe can RESEND,
-		 * and do not resume/fail pending requests here.
-		 * Worst case is we stay suspended for now, which may be
-		 * resolved by either re-establishing the replication link, or
-		 * the next link failure, or eventually the administrator.  */
+		 
 		spin_unlock_irq(&resource->req_lock);
 		return false;
 
@@ -519,19 +488,19 @@ bool conn_try_outdate_peer(struct drbd_connection *connection)
 	r = conn_khelper(connection, "fence-peer");
 
 	switch ((r>>8) & 0xff) {
-	case P_INCONSISTENT: /* peer is inconsistent */
+	case P_INCONSISTENT:  
 		ex_to_string = "peer is inconsistent or worse";
 		mask.pdsk = D_MASK;
 		val.pdsk = D_INCONSISTENT;
 		break;
-	case P_OUTDATED: /* peer got outdated, or was already outdated */
+	case P_OUTDATED:  
 		ex_to_string = "peer was fenced";
 		mask.pdsk = D_MASK;
 		val.pdsk = D_OUTDATED;
 		break;
-	case P_DOWN: /* peer was down */
+	case P_DOWN:  
 		if (conn_highest_disk(connection) == D_UP_TO_DATE) {
-			/* we will(have) create(d) a new UUID anyways... */
+			 
 			ex_to_string = "peer is unreachable, assumed to be dead";
 			mask.pdsk = D_MASK;
 			val.pdsk = D_OUTDATED;
@@ -539,17 +508,14 @@ bool conn_try_outdate_peer(struct drbd_connection *connection)
 			ex_to_string = "peer unreachable, doing nothing since disk != UpToDate";
 		}
 		break;
-	case P_PRIMARY: /* Peer is primary, voluntarily outdate myself.
-		 * This is useful when an unconnected R_SECONDARY is asked to
-		 * become R_PRIMARY, but finds the other peer being active. */
+	case P_PRIMARY:  
 		ex_to_string = "peer is active";
 		drbd_warn(connection, "Peer is primary, outdating myself.\n");
 		mask.disk = D_MASK;
 		val.disk = D_OUTDATED;
 		break;
 	case P_FENCING:
-		/* THINK: do we need to handle this
-		 * like case 4, or more like case 5? */
+		 
 		if (fp != FP_STONITH)
 			drbd_err(connection, "fence-peer() = 7 && fencing != Stonith !!!\n");
 		ex_to_string = "peer was stonithed";
@@ -557,23 +523,19 @@ bool conn_try_outdate_peer(struct drbd_connection *connection)
 		val.pdsk = D_OUTDATED;
 		break;
 	default:
-		/* The script is broken ... */
+		 
 		drbd_err(connection, "fence-peer helper broken, returned %d\n", (r>>8)&0xff);
-		return false; /* Eventually leave IO frozen */
+		return false;  
 	}
 
 	drbd_info(connection, "fence-peer helper returned %d (%s)\n",
 		  (r>>8) & 0xff, ex_to_string);
 
-	/* Not using
-	   conn_request_state(connection, mask, val, CS_VERBOSE);
-	   here, because we might were able to re-establish the connection in the
-	   meantime. */
+	 
 	spin_lock_irq(&resource->req_lock);
 	if (connection->cstate < C_WF_REPORT_PARAMS && !test_bit(STATE_SENT, &connection->flags)) {
 		if (connection->connect_cnt != connect_cnt)
-			/* In case the connection was established and droped
-			   while the fence-peer handler was running, ignore it */
+			 
 			drbd_info(connection, "Ignoring fence-peer exit code\n");
 		else
 			_conn_request_state(connection, mask, val, CS_VERBOSE);
@@ -598,11 +560,7 @@ void conn_try_outdate_peer_async(struct drbd_connection *connection)
 	struct task_struct *opa;
 
 	kref_get(&connection->kref);
-	/* We may have just sent a signal to this thread
-	 * to get it out of some blocking network function.
-	 * Clear signals; otherwise kthread_run(), which internally uses
-	 * wait_on_completion_killable(), will mistake our pending signal
-	 * for a new fatal signal and fail. */
+	 
 	flush_signals(current);
 	opa = kthread_run(_try_outdate_peer_async, connection, "drbd_async_h");
 	if (IS_ERR(opa)) {
@@ -626,7 +584,7 @@ drbd_set_role(struct drbd_device *const device, enum drbd_role new_role, int for
 	if (new_role == R_PRIMARY) {
 		struct drbd_connection *connection;
 
-		/* Detect dead peers as soon as possible.  */
+		 
 
 		rcu_read_lock();
 		for_each_connection(connection, device->resource)
@@ -642,8 +600,7 @@ drbd_set_role(struct drbd_device *const device, enum drbd_role new_role, int for
 	while (try++ < max_tries) {
 		rv = _drbd_request_state_holding_state_mutex(device, mask, val, CS_WAIT_COMPLETE);
 
-		/* in case we first succeeded to outdate,
-		 * but now suddenly could establish a connection */
+		 
 		if (rv == SS_CW_FAILED_BY_PEER && mask.pdsk != 0) {
 			val.pdsk = 0;
 			mask.pdsk = 0;
@@ -682,8 +639,7 @@ drbd_set_role(struct drbd_device *const device, enum drbd_role new_role, int for
 			continue;
 		}
 		if (rv == SS_TWO_PRIMARIES) {
-			/* Maybe the peer is detected as dead very soon...
-			   retry at most once more in this case. */
+			 
 			if (try < max_tries) {
 				int timeo;
 				try = max_tries - 1;
@@ -710,10 +666,10 @@ drbd_set_role(struct drbd_device *const device, enum drbd_role new_role, int for
 	if (forced)
 		drbd_warn(device, "Forced to consider local data as UpToDate!\n");
 
-	/* Wait until nothing is on the fly :) */
+	 
 	wait_event(device->misc_wait, atomic_read(&device->ap_pending_cnt) == 0);
 
-	/* FIXME also wait for all pending P_BARRIER_ACK? */
+	 
 
 	if (new_role == R_SECONDARY) {
 		if (get_ldev(device)) {
@@ -724,7 +680,7 @@ drbd_set_role(struct drbd_device *const device, enum drbd_role new_role, int for
 		mutex_lock(&device->resource->conf_update);
 		nc = connection->net_conf;
 		if (nc)
-			nc->discard_my_data = 0; /* without copy; single bit op is atomic */
+			nc->discard_my_data = 0;  
 		mutex_unlock(&device->resource->conf_update);
 
 		if (get_ldev(device)) {
@@ -738,11 +694,10 @@ drbd_set_role(struct drbd_device *const device, enum drbd_role new_role, int for
 		}
 	}
 
-	/* writeout of activity log covered areas of the bitmap
-	 * to stable storage done in after state change already */
+	 
 
 	if (device->state.conn >= C_WF_REPORT_PARAMS) {
-		/* if this was forced, we should consider sync */
+		 
 		if (forced)
 			drbd_send_uuids(peer_device);
 		drbd_send_current_state(peer_device);
@@ -804,27 +759,7 @@ out:
 	return 0;
 }
 
-/* Initializes the md.*_offset members, so we are able to find
- * the on disk meta data.
- *
- * We currently have two possible layouts:
- * external:
- *   |----------- md_size_sect ------------------|
- *   [ 4k superblock ][ activity log ][  Bitmap  ]
- *   | al_offset == 8 |
- *   | bm_offset = al_offset + X      |
- *  ==> bitmap sectors = md_size_sect - bm_offset
- *
- * internal:
- *            |----------- md_size_sect ------------------|
- * [data.....][  Bitmap  ][ activity log ][ 4k superblock ]
- *                        | al_offset < 0 |
- *            | bm_offset = al_offset - Y |
- *  ==> bitmap sectors = Y = al_offset - bm_offset
- *
- *  Activity log size used to be fixed 32kB,
- *  but is about to become configurable.
- */
+ 
 static void drbd_md_set_sector_offsets(struct drbd_device *device,
 				       struct drbd_backing_dev *bdev)
 {
@@ -835,47 +770,45 @@ static void drbd_md_set_sector_offsets(struct drbd_device *device,
 
 	switch (bdev->md.meta_dev_idx) {
 	default:
-		/* v07 style fixed size indexed meta data */
+		 
 		bdev->md.md_size_sect = MD_128MB_SECT;
 		bdev->md.al_offset = MD_4kB_SECT;
 		bdev->md.bm_offset = MD_4kB_SECT + al_size_sect;
 		break;
 	case DRBD_MD_INDEX_FLEX_EXT:
-		/* just occupy the full device; unit: sectors */
+		 
 		bdev->md.md_size_sect = drbd_get_capacity(bdev->md_bdev);
 		bdev->md.al_offset = MD_4kB_SECT;
 		bdev->md.bm_offset = MD_4kB_SECT + al_size_sect;
 		break;
 	case DRBD_MD_INDEX_INTERNAL:
 	case DRBD_MD_INDEX_FLEX_INT:
-		/* al size is still fixed */
+		 
 		bdev->md.al_offset = -al_size_sect;
-		/* we need (slightly less than) ~ this much bitmap sectors: */
+		 
 		md_size_sect = drbd_get_capacity(bdev->backing_bdev);
 		md_size_sect = ALIGN(md_size_sect, BM_SECT_PER_EXT);
 		md_size_sect = BM_SECT_TO_EXT(md_size_sect);
 		md_size_sect = ALIGN(md_size_sect, 8);
 
-		/* plus the "drbd meta data super block",
-		 * and the activity log; */
+		 
 		md_size_sect += MD_4kB_SECT + al_size_sect;
 
 		bdev->md.md_size_sect = md_size_sect;
-		/* bitmap offset is adjusted by 'super' block size */
+		 
 		bdev->md.bm_offset   = -md_size_sect + MD_4kB_SECT;
 		break;
 	}
 }
 
-/* input size is expected to be in KB */
+ 
 char *ppsize(char *buf, unsigned long long size)
 {
-	/* Needs 9 bytes at max including trailing NUL:
-	 * -1ULL ==> "16384 EB" */
+	 
 	static char units[] = { 'K', 'M', 'G', 'T', 'P', 'E' };
 	int base = 0;
 	while (size >= 10000 && base < sizeof(units)-1) {
-		/* shift + round */
+		 
 		size = (size >> 10) + !!(size & (1<<9));
 		base++;
 	}
@@ -884,27 +817,9 @@ char *ppsize(char *buf, unsigned long long size)
 	return buf;
 }
 
-/* there is still a theoretical deadlock when called from receiver
- * on an D_INCONSISTENT R_PRIMARY:
- *  remote READ does inc_ap_bio, receiver would need to receive answer
- *  packet from remote to dec_ap_bio again.
- *  receiver receive_sizes(), comes here,
- *  waits for ap_bio_cnt == 0. -> deadlock.
- * but this cannot happen, actually, because:
- *  R_PRIMARY D_INCONSISTENT, and peer's disk is unreachable
- *  (not connected, or bad/no disk on peer):
- *  see drbd_fail_request_early, ap_bio_cnt is zero.
- *  R_PRIMARY D_INCONSISTENT, and C_SYNC_TARGET:
- *  peer may not initiate a resize.
- */
-/* Note these are not to be confused with
- * drbd_adm_suspend_io/drbd_adm_resume_io,
- * which are (sub) state changes triggered by admin (drbdsetup),
- * and can be long lived.
- * This changes an device->flag, is triggered by drbd internals,
- * and should be short-lived. */
-/* It needs to be a counter, since multiple threads might
-   independently suspend and resume IO. */
+ 
+ 
+ 
 void drbd_suspend_io(struct drbd_device *device)
 {
 	atomic_inc(&device->suspend_cnt);
@@ -919,13 +834,7 @@ void drbd_resume_io(struct drbd_device *device)
 		wake_up(&device->misc_wait);
 }
 
-/*
- * drbd_determine_dev_size() -  Sets the right device size obeying all constraints
- * @device:	DRBD device.
- *
- * Returns 0 on success, negative return values indicate errors.
- * You should call drbd_md_sync() after calling this function.
- */
+ 
 enum determine_dev_size
 drbd_determine_dev_size(struct drbd_device *device, enum dds_flags flags, struct resize_parms *rs) __must_hold(local)
 {
@@ -946,22 +855,15 @@ drbd_determine_dev_size(struct drbd_device *device, enum dds_flags flags, struct
 	int md_moved, la_size_changed;
 	enum determine_dev_size rv = DS_UNCHANGED;
 
-	/* We may change the on-disk offsets of our meta data below.  Lock out
-	 * anything that may cause meta data IO, to avoid acting on incomplete
-	 * layout changes or scribbling over meta data that is in the process
-	 * of being moved.
-	 *
-	 * Move is not exactly correct, btw, currently we have all our meta
-	 * data in core memory, to "move" it we just write it all out, there
-	 * are no reads. */
+	 
 	drbd_suspend_io(device);
-	buffer = drbd_md_get_buffer(device, __func__); /* Lock meta-data IO */
+	buffer = drbd_md_get_buffer(device, __func__);  
 	if (!buffer) {
 		drbd_resume_io(device);
 		return DS_ERROR;
 	}
 
-	/* remember current offset and sizes */
+	 
 	prev.last_agreed_sect = md->la_size_sect;
 	prev.md_offset = md->md_offset;
 	prev.al_offset = md->al_offset;
@@ -971,7 +873,7 @@ drbd_determine_dev_size(struct drbd_device *device, enum dds_flags flags, struct
 	prev.al_stripe_size_4k = md->al_stripe_size_4k;
 
 	if (rs) {
-		/* rs is non NULL if we should change the AL layout only */
+		 
 		md->al_stripes = rs->al_stripes;
 		md->al_stripe_size_4k = rs->al_stripe_size / 4;
 		md->al_size_4k = (u64)rs->al_stripes * rs->al_stripe_size / 4;
@@ -986,8 +888,7 @@ drbd_determine_dev_size(struct drbd_device *device, enum dds_flags flags, struct
 
 	if (size < prev.last_agreed_sect) {
 		if (rs && u_size == 0) {
-			/* Remove "rs &&" later. This check should always be active, but
-			   right now the receiver expects the permissive behavior */
+			 
 			drbd_warn(device, "Implicit shrink not allowed. "
 				 "Use --size=%llus for explicit shrink.\n",
 				 (unsigned long long)size);
@@ -1004,7 +905,7 @@ drbd_determine_dev_size(struct drbd_device *device, enum dds_flags flags, struct
 		int err;
 		err = drbd_bm_resize(device, size, !(flags & DDSF_NO_RESYNC));
 		if (unlikely(err)) {
-			/* currently there is only one error: ENOMEM! */
+			 
 			size = drbd_bm_capacity(device);
 			if (size == 0) {
 				drbd_err(device, "OUT OF MEMORY! "
@@ -1015,7 +916,7 @@ drbd_determine_dev_size(struct drbd_device *device, enum dds_flags flags, struct
 			}
 			rv = DS_ERROR;
 		}
-		/* racy, see comments above. */
+		 
 		drbd_set_my_capacity(device, size);
 		md->la_size_sect = size;
 	}
@@ -1030,18 +931,13 @@ drbd_determine_dev_size(struct drbd_device *device, enum dds_flags flags, struct
 	if (la_size_changed || md_moved || rs) {
 		u32 prev_flags;
 
-		/* We do some synchronous IO below, which may take some time.
-		 * Clear the timer, to avoid scary "timer expired!" messages,
-		 * "Superblock" is written out at least twice below, anyways. */
+		 
 		del_timer(&device->md_sync_timer);
 
-		/* We won't change the "al-extents" setting, we just may need
-		 * to move the on-disk location of the activity log ringbuffer.
-		 * Lock for transaction is good enough, it may well be "dirty"
-		 * or even "starving". */
+		 
 		wait_event(device->al_wait, lc_try_lock_for_transaction(device->act_log));
 
-		/* mark current on-disk bitmap and activity log as unreliable */
+		 
 		prev_flags = md->flags;
 		md->flags |= MDF_FULL_SYNC | MDF_AL_DISABLED;
 		drbd_md_write(device, buffer);
@@ -1051,12 +947,11 @@ drbd_determine_dev_size(struct drbd_device *device, enum dds_flags flags, struct
 		drbd_info(device, "Writing the whole bitmap, %s\n",
 			 la_size_changed && md_moved ? "size changed and md moved" :
 			 la_size_changed ? "size changed" : "md moved");
-		/* next line implicitly does drbd_suspend_io()+drbd_resume_io() */
+		 
 		drbd_bitmap_io(device, md_moved ? &drbd_bm_write_all : &drbd_bm_write,
 			       "size changed", BM_LOCKED_MASK, NULL);
 
-		/* on-disk bitmap and activity log is authoritative again
-		 * (unless there was an IO error meanwhile...) */
+		 
 		md->flags = prev_flags;
 		drbd_md_write(device, buffer);
 
@@ -1072,7 +967,7 @@ drbd_determine_dev_size(struct drbd_device *device, enum dds_flags flags, struct
 
 	if (0) {
 	err_out:
-		/* restore previous offset and sizes */
+		 
 		md->la_size_sect = prev.last_agreed_sect;
 		md->md_offset = prev.md_offset;
 		md->al_offset = prev.al_offset;
@@ -1094,9 +989,9 @@ sector_t
 drbd_new_dev_size(struct drbd_device *device, struct drbd_backing_dev *bdev,
 		  sector_t u_size, int assume_peer_has_space)
 {
-	sector_t p_size = device->p_size;   /* partner's disk size. */
-	sector_t la_size_sect = bdev->md.la_size_sect; /* last agreed size. */
-	sector_t m_size; /* my size */
+	sector_t p_size = device->p_size;    
+	sector_t la_size_sect = bdev->md.la_size_sect;  
+	sector_t m_size;  
 	sector_t size = 0;
 
 	m_size = drbd_get_max_capacity(bdev);
@@ -1137,14 +1032,7 @@ drbd_new_dev_size(struct drbd_device *device, struct drbd_backing_dev *bdev,
 	return size;
 }
 
-/*
- * drbd_check_al_size() - Ensures that the AL is of the right size
- * @device:	DRBD device.
- *
- * Returns -EBUSY if current al lru is still used, -ENOMEM when allocation
- * failed, and 0 on success. You should call drbd_md_sync() after you called
- * this function.
- */
+ 
 static int drbd_check_al_size(struct drbd_device *device, struct disk_conf *dc)
 {
 	struct lru_cache *n, *t;
@@ -1185,7 +1073,7 @@ static int drbd_check_al_size(struct drbd_device *device, struct disk_conf *dc)
 	} else {
 		lc_destroy(t);
 	}
-	drbd_md_mark_dirty(device); /* we changed device->act_log->nr_elemens */
+	drbd_md_mark_dirty(device);  
 	return 0;
 }
 
@@ -1196,11 +1084,10 @@ static void blk_queue_discard_granularity(struct request_queue *q, unsigned int 
 
 static unsigned int drbd_max_discard_sectors(struct drbd_connection *connection)
 {
-	/* when we introduced REQ_WRITE_SAME support, we also bumped
-	 * our maximum supported batch bio size used for discards. */
+	 
 	if (connection->agreed_features & DRBD_FF_WSAME)
 		return DRBD_MAX_BBIO_SECTORS;
-	/* before, with DRBD <= 8.4.6, we only allowed up to one AL_EXTENT_SIZE. */
+	 
 	return AL_EXTENT_SIZE >> 9;
 }
 
@@ -1222,14 +1109,7 @@ static void decide_on_discard_support(struct drbd_device *device,
 		goto not_supported;
 	}
 
-	/*
-	 * We don't care for the granularity, really.
-	 *
-	 * Stacking limits below should fix it for the local device.  Whether or
-	 * not it is a suitable granularity on the remote device is not our
-	 * problem, really. If you care, you need to use devices with similar
-	 * topology on all peers.
-	 */
+	 
 	blk_queue_discard_granularity(q, 512);
 	max_discard_sectors = drbd_max_discard_sectors(connection);
 	blk_queue_max_discard_sectors(q, max_discard_sectors);
@@ -1243,13 +1123,9 @@ not_supported:
 
 static void fixup_write_zeroes(struct drbd_device *device, struct request_queue *q)
 {
-	/* Fixup max_write_zeroes_sectors after blk_stack_limits():
-	 * if we can handle "zeroes" efficiently on the protocol,
-	 * we want to do that, even if our backend does not announce
-	 * max_write_zeroes_sectors itself. */
+	 
 	struct drbd_connection *connection = first_peer_device(device)->connection;
-	/* If the peer announces WZEROES support, use it.  Otherwise, rather
-	 * send explicit zeroes than rely on some discard-zeroes-data magic. */
+	 
 	if (connection->agreed_features & DRBD_FF_WZEROES)
 		q->limits.max_write_zeroes_sectors = DRBD_MAX_BBIO_SECTORS;
 	else
@@ -1290,7 +1166,7 @@ static void drbd_setup_queue_param(struct drbd_device *device, struct drbd_backi
 	}
 
 	blk_queue_max_hw_sectors(q, max_hw_sectors);
-	/* This is the workaround for "bio would need to, but cannot, be split" */
+	 
 	blk_queue_max_segments(q, max_segments ? max_segments : BLK_MAX_SEGMENTS);
 	blk_queue_segment_boundary(q, PAGE_SIZE-1);
 	decide_on_discard_support(device, bdev);
@@ -1308,8 +1184,8 @@ void drbd_reconsider_queue_parameters(struct drbd_device *device, struct drbd_ba
 	unsigned int now, new, local, peer;
 
 	now = queue_max_hw_sectors(device->rq_queue) << 9;
-	local = device->local_max_bio_size; /* Eventually last known value, from volatile memory */
-	peer = device->peer_max_bio_size; /* Eventually last known value, from meta data */
+	local = device->local_max_bio_size;  
+	peer = device->peer_max_bio_size;  
 
 	if (bdev) {
 		local = queue_max_hw_sectors(bdev->backing_bdev->bd_disk->queue) << 9;
@@ -1317,24 +1193,19 @@ void drbd_reconsider_queue_parameters(struct drbd_device *device, struct drbd_ba
 	}
 	local = min(local, DRBD_MAX_BIO_SIZE);
 
-	/* We may ignore peer limits if the peer is modern enough.
-	   Because new from 8.3.8 onwards the peer can use multiple
-	   BIOs for a single peer_request */
+	 
 	if (device->state.conn >= C_WF_REPORT_PARAMS) {
 		if (first_peer_device(device)->connection->agreed_pro_version < 94)
 			peer = min(device->peer_max_bio_size, DRBD_MAX_SIZE_H80_PACKET);
-			/* Correct old drbd (up to 8.3.7) if it believes it can do more than 32KiB */
+			 
 		else if (first_peer_device(device)->connection->agreed_pro_version == 94)
 			peer = DRBD_MAX_SIZE_H80_PACKET;
 		else if (first_peer_device(device)->connection->agreed_pro_version < 100)
-			peer = DRBD_MAX_BIO_SIZE_P95;  /* drbd 8.3.8 onwards, before 8.4.0 */
+			peer = DRBD_MAX_BIO_SIZE_P95;   
 		else
 			peer = DRBD_MAX_BIO_SIZE;
 
-		/* We may later detach and re-attach on a disconnected Primary.
-		 * Avoid this setting to jump back in that case.
-		 * We want to store what we know the peer DRBD can handle,
-		 * not what the peer IO backend can handle. */
+		 
 		if (peer > device->peer_max_bio_size)
 			device->peer_max_bio_size = peer;
 	}
@@ -1349,14 +1220,14 @@ void drbd_reconsider_queue_parameters(struct drbd_device *device, struct drbd_ba
 	drbd_setup_queue_param(device, bdev, new, o);
 }
 
-/* Starts the worker thread */
+ 
 static void conn_reconfig_start(struct drbd_connection *connection)
 {
 	drbd_thread_start(&connection->worker);
 	drbd_flush_workqueue(&connection->sender_work);
 }
 
-/* if still unconfigured, stops worker again. */
+ 
 static void conn_reconfig_done(struct drbd_connection *connection)
 {
 	bool stop_threads;
@@ -1365,14 +1236,13 @@ static void conn_reconfig_done(struct drbd_connection *connection)
 		connection->cstate == C_STANDALONE;
 	spin_unlock_irq(&connection->resource->req_lock);
 	if (stop_threads) {
-		/* ack_receiver thread and ack_sender workqueue are implicitly
-		 * stopped by receiver in conn_disconnect() */
+		 
 		drbd_thread_stop(&connection->receiver);
 		drbd_thread_stop(&connection->worker);
 	}
 }
 
-/* Make sure IO is suspended before calling this function(). */
+ 
 static void drbd_suspend_al(struct drbd_device *device)
 {
 	int s = 0;
@@ -1403,19 +1273,7 @@ static bool should_set_defaults(struct genl_info *info)
 
 static unsigned int drbd_al_extents_max(struct drbd_backing_dev *bdev)
 {
-	/* This is limited by 16 bit "slot" numbers,
-	 * and by available on-disk context storage.
-	 *
-	 * Also (u16)~0 is special (denotes a "free" extent).
-	 *
-	 * One transaction occupies one 4kB on-disk block,
-	 * we have n such blocks in the on disk ring buffer,
-	 * the "current" transaction may fail (n-1),
-	 * and there is 919 slot numbers context information per transaction.
-	 *
-	 * 72 transaction blocks amounts to more than 2**16 context slots,
-	 * so cap there first.
-	 */
+	 
 	const unsigned int max_al_nr = DRBD_AL_EXTENTS_MAX;
 	const unsigned int sufficient_on_disk =
 		(max_al_nr + AL_CONTEXT_PER_TRANSACTION -1)
@@ -1448,7 +1306,7 @@ static void sanitize_disk_conf(struct drbd_device *device, struct disk_conf *dis
 
 	if (!bdev_max_discard_sectors(bdev)) {
 		if (disk_conf->rs_discard_granularity) {
-			disk_conf->rs_discard_granularity = 0; /* disable feature */
+			disk_conf->rs_discard_granularity = 0;  
 			drbd_info(device, "rs_discard_granularity feature disabled\n");
 		}
 	}
@@ -1484,8 +1342,7 @@ static int disk_opts_check_al_size(struct drbd_device *device, struct disk_conf 
 		return 0;
 
 	drbd_suspend_io(device);
-	/* If IO completion is currently blocked, we would likely wait
-	 * "forever" for the activity log to become unused. So we don't. */
+	 
 	if (atomic_read(&device->ap_bio_cnt))
 		goto out;
 
@@ -1518,8 +1375,7 @@ int drbd_adm_disk_opts(struct sk_buff *skb, struct genl_info *info)
 	device = adm_ctx.device;
 	mutex_lock(&adm_ctx.resource->adm_mutex);
 
-	/* we also need a disk
-	 * to change the options on */
+	 
 	if (!get_ldev(device)) {
 		retcode = ERR_NO_DISK;
 		goto out;
@@ -1564,8 +1420,7 @@ int drbd_adm_disk_opts(struct sk_buff *skb, struct genl_info *info)
 
 	err = disk_opts_check_al_size(device, new_disk_conf);
 	if (err) {
-		/* Could be just "busy". Ignore?
-		 * Introduce dedicated error code? */
+		 
 		drbd_msg_put_info(adm_ctx.reply_skb,
 			"Try again without changing current al-extents setting");
 		retcode = ERR_NOMEM;
@@ -1673,20 +1528,11 @@ static int open_backing_devices(struct drbd_device *device,
 		return ERR_OPEN_DISK;
 	nbc->backing_bdev = bdev;
 
-	/*
-	 * meta_dev_idx >= 0: external fixed size, possibly multiple
-	 * drbd sharing one meta device.  TODO in that case, paranoia
-	 * check that [md_bdev, meta_dev_idx] is not yet used by some
-	 * other drbd minor!  (if you use drbd.conf + drbdadm, that
-	 * should check it for you already; but if you don't, or
-	 * someone fooled it, we need to double check here)
-	 */
+	 
 	bdev = open_backing_dev(device, new_disk_conf->meta_dev,
-		/* claim ptr: device, if claimed exclusively; shared drbd_m_holder,
-		 * if potentially shared with other drbd minors */
+		 
 			(new_disk_conf->meta_dev_idx < 0) ? (void*)device : (void*)drbd_m_holder,
-		/* avoid double bd_claim_by_disk() for the same (source,target) tuple,
-		 * as would happen with internal metadata. */
+		 
 			(new_disk_conf->meta_dev_idx != DRBD_MD_INDEX_FLEX_INT &&
 			 new_disk_conf->meta_dev_idx != DRBD_MD_INDEX_INTERNAL));
 	if (IS_ERR(bdev))
@@ -1731,7 +1577,7 @@ int drbd_adm_attach(struct sk_buff *skb, struct genl_info *info)
 	enum determine_dev_size dd;
 	sector_t max_possible_sectors;
 	sector_t min_md_device_sectors;
-	struct drbd_backing_dev *nbc = NULL; /* new_backing_conf */
+	struct drbd_backing_dev *nbc = NULL;  
 	struct disk_conf *new_disk_conf = NULL;
 	struct lru_cache *resync_lru = NULL;
 	struct fifo_buffer *new_plan = NULL;
@@ -1751,28 +1597,25 @@ int drbd_adm_attach(struct sk_buff *skb, struct genl_info *info)
 	connection = peer_device->connection;
 	conn_reconfig_start(connection);
 
-	/* if you want to reconfigure, please tear down first */
+	 
 	if (device->state.disk > D_DISKLESS) {
 		retcode = ERR_DISK_CONFIGURED;
 		goto fail;
 	}
-	/* It may just now have detached because of IO error.  Make sure
-	 * drbd_ldev_destroy is done already, we may end up here very fast,
-	 * e.g. if someone calls attach from the on-io-error handler,
-	 * to realize a "hot spare" feature (not that I'd recommend that) */
+	 
 	wait_event(device->misc_wait, !test_bit(GOING_DISKLESS, &device->flags));
 
-	/* make sure there is no leftover from previous force-detach attempts */
+	 
 	clear_bit(FORCE_DETACH, &device->flags);
 	clear_bit(WAS_IO_ERROR, &device->flags);
 	clear_bit(WAS_READ_ERROR, &device->flags);
 
-	/* and no leftover from previously aborted resync or verify, either */
+	 
 	device->rs_total = 0;
 	device->rs_failed = 0;
 	atomic_set(&device->rs_pending_cnt, 0);
 
-	/* allocation not in the IO path, drbdsetup context */
+	 
 	nbc = kzalloc(sizeof(struct drbd_backing_dev), GFP_KERNEL);
 	if (!nbc) {
 		retcode = ERR_NOMEM;
@@ -1839,8 +1682,7 @@ int drbd_adm_attach(struct sk_buff *skb, struct genl_info *info)
 		goto fail;
 	}
 
-	/* Read our meta data super block early.
-	 * This also sets other on-disk offsets. */
+	 
 	retcode = drbd_md_read(device, nbc);
 	if (retcode != NO_ERROR)
 		goto fail;
@@ -1857,7 +1699,7 @@ int drbd_adm_attach(struct sk_buff *skb, struct genl_info *info)
 
 	if (new_disk_conf->meta_dev_idx < 0) {
 		max_possible_sectors = DRBD_MAX_SECTORS_FLEX;
-		/* at least one MB, otherwise it does not make sense */
+		 
 		min_md_device_sectors = (2<<10);
 	} else {
 		max_possible_sectors = DRBD_MAX_SECTORS;
@@ -1872,8 +1714,7 @@ int drbd_adm_attach(struct sk_buff *skb, struct genl_info *info)
 		goto fail;
 	}
 
-	/* Make sure the new disk is big enough
-	 * (we may currently be R_PRIMARY with no local disk...) */
+	 
 	if (drbd_get_max_capacity(nbc) < get_capacity(device->vdisk)) {
 		retcode = ERR_DISK_TOO_SMALL;
 		goto fail;
@@ -1891,15 +1732,10 @@ int drbd_adm_attach(struct sk_buff *skb, struct genl_info *info)
 	}
 
 	drbd_suspend_io(device);
-	/* also wait for the last barrier ack. */
-	/* FIXME see also https://daiquiri.linbit/cgi-bin/bugzilla/show_bug.cgi?id=171
-	 * We need a way to either ignore barrier acks for barriers sent before a device
-	 * was attached, or a way to wait for all pending barrier acks to come in.
-	 * As barriers are counted per resource,
-	 * we'd need to suspend io on all devices of a resource.
-	 */
+	 
+	 
 	wait_event(device->misc_wait, !atomic_read(&device->ap_pending_cnt) || drbd_suspended(device));
-	/* and for any other previously queued work */
+	 
 	drbd_flush_workqueue(&connection->sender_work);
 
 	rv = _drbd_request_state(device, NS(disk, D_ATTACHING), CS_VERBOSE);
@@ -1927,13 +1763,13 @@ int drbd_adm_attach(struct sk_buff *skb, struct genl_info *info)
 		goto force_diskless_dec;
 	}
 
-	/* Since we are diskless, fix the activity log first... */
+	 
 	if (drbd_check_al_size(device, new_disk_conf)) {
 		retcode = ERR_NOMEM;
 		goto force_diskless_dec;
 	}
 
-	/* Prevent shrinking of consistent devices ! */
+	 
 	{
 	unsigned long long nsz = drbd_new_dev_size(device, nbc, nbc->disk_conf->disk_size, 0);
 	unsigned long long eff = nbc->md.la_size_sect;
@@ -1958,17 +1794,13 @@ int drbd_adm_attach(struct sk_buff *skb, struct genl_info *info)
 		goto force_diskless_dec;
 	}
 
-	/* Reset the "barriers don't work" bits here, then force meta data to
-	 * be written, to ensure we determine if barriers are supported. */
+	 
 	if (new_disk_conf->md_flushes)
 		clear_bit(MD_NO_FUA, &device->flags);
 	else
 		set_bit(MD_NO_FUA, &device->flags);
 
-	/* Point of no return reached.
-	 * Devices and memory are no longer released by error cleanup below.
-	 * now device takes over responsibility, and the state engine should
-	 * clean it up somewhere.  */
+	 
 	D_ASSERT(device, device->ldev == NULL);
 	device->ldev = nbc;
 	device->resync = resync_lru;
@@ -1998,20 +1830,7 @@ int drbd_adm_attach(struct sk_buff *skb, struct genl_info *info)
 
 	drbd_reconsider_queue_parameters(device, device->ldev, NULL);
 
-	/* If I am currently not R_PRIMARY,
-	 * but meta data primary indicator is set,
-	 * I just now recover from a hard crash,
-	 * and have been R_PRIMARY before that crash.
-	 *
-	 * Now, if I had no connection before that crash
-	 * (have been degraded R_PRIMARY), chances are that
-	 * I won't find my peer now either.
-	 *
-	 * In that case, and _only_ in that case,
-	 * we use the degr-wfc-timeout instead of the default,
-	 * so we can automatically recover from a crash of a
-	 * degraded but active "cluster" after a certain timeout.
-	 */
+	 
 	clear_bit(USE_DEGR_WFC_T, &device->flags);
 	if (device->state.role != R_PRIMARY &&
 	     drbd_md_test_flag(device->ldev, MDF_PRIMARY_IND) &&
@@ -2046,16 +1865,12 @@ int drbd_adm_attach(struct sk_buff *skb, struct genl_info *info)
 	}
 
 	if (_drbd_bm_total_weight(device) == drbd_bm_bits(device))
-		drbd_suspend_al(device); /* IO is still suspended here... */
+		drbd_suspend_al(device);  
 
 	spin_lock_irq(&device->resource->req_lock);
 	os = drbd_read_state(device);
 	ns = os;
-	/* If MDF_CONSISTENT is not set go into inconsistent state,
-	   otherwise investigate MDF_WasUpToDate...
-	   If MDF_WAS_UP_TO_DATE is not set go into D_OUTDATED disk state,
-	   otherwise into D_CONSISTENT state.
-	*/
+	 
 	if (drbd_md_test_flag(device->ldev, MDF_CONSISTENT)) {
 		if (drbd_md_test_flag(device->ldev, MDF_WAS_UP_TO_DATE))
 			ns.disk = D_CONSISTENT;
@@ -2073,10 +1888,7 @@ int drbd_adm_attach(struct sk_buff *skb, struct genl_info *info)
 	    (ns.pdsk == D_OUTDATED || rcu_dereference(device->ldev->disk_conf)->fencing == FP_DONT_CARE))
 		ns.disk = D_UP_TO_DATE;
 
-	/* All tests on MDF_PRIMARY_IND, MDF_CONNECTED_IND,
-	   MDF_CONSISTENT and MDF_WAS_UP_TO_DATE must happen before
-	   this point, because drbd_request_state() modifies these
-	   flags. */
+	 
 
 	if (rcu_dereference(device->ldev->disk_conf)->al_updates)
 		device->ldev->md.flags &= ~MDF_AL_DISABLED;
@@ -2085,16 +1897,13 @@ int drbd_adm_attach(struct sk_buff *skb, struct genl_info *info)
 
 	rcu_read_unlock();
 
-	/* In case we are C_CONNECTED postpone any decision on the new disk
-	   state after the negotiation phase. */
+	 
 	if (device->state.conn == C_CONNECTED) {
 		device->new_state_tmp.i = ns.i;
 		ns.i = os.i;
 		ns.disk = D_NEGOTIATING;
 
-		/* We expect to receive up-to-date UUIDs soon.
-		   To avoid a race in receive_state, free p_uuid while
-		   holding req_lock. I.e. atomic with the state change */
+		 
 		kfree(device->p_uuid);
 		device->p_uuid = NULL;
 	}
@@ -2157,11 +1966,7 @@ static int adm_detach(struct drbd_device *device, int force)
 	return drbd_request_detach_interruptible(device);
 }
 
-/* Detaching the disk is a process in multiple stages.  First we need to lock
- * out application IO, in-flight IO, IO stuck in drbd_al_begin_io.
- * Then we transition to D_DISKLESS, and wait for put_ldev() to return all
- * internal references as well.
- * Only then we have finally detached. */
+ 
 int drbd_adm_detach(struct sk_buff *skb, struct genl_info *info)
 {
 	struct drbd_config_context adm_ctx;
@@ -2289,7 +2094,7 @@ check_net_options(struct drbd_connection *connection, struct net_conf *new_net_c
 	rv = _check_net_options(connection, rcu_dereference(connection->net_conf), new_net_conf);
 	rcu_read_unlock();
 
-	/* connection->peer_devices protected by genl_lock() here */
+	 
 	idr_for_each_entry(&connection->peer_devices, peer_device, i) {
 		struct drbd_device *device = peer_device->device;
 		if (!device->bitmap) {
@@ -2367,8 +2172,8 @@ int drbd_adm_net_opts(struct sk_buff *skb, struct genl_info *info)
 	struct drbd_connection *connection;
 	struct net_conf *old_net_conf, *new_net_conf = NULL;
 	int err;
-	int ovr; /* online verify running */
-	int rsr; /* re-sync running */
+	int ovr;  
+	int rsr;  
 	struct crypto crypto = { };
 
 	retcode = drbd_adm_prepare(&adm_ctx, skb, info, DRBD_ADM_NEED_CONNECTION);
@@ -2413,14 +2218,14 @@ int drbd_adm_net_opts(struct sk_buff *skb, struct genl_info *info)
 	if (retcode != NO_ERROR)
 		goto fail;
 
-	/* re-sync running */
+	 
 	rsr = conn_resync_running(connection);
 	if (rsr && strcmp(new_net_conf->csums_alg, old_net_conf->csums_alg)) {
 		retcode = ERR_CSUMS_RESYNC_RUNNING;
 		goto fail;
 	}
 
-	/* online verify running */
+	 
 	ovr = conn_ov_running(connection);
 	if (ovr && strcmp(new_net_conf->verify_alg, old_net_conf->verify_alg)) {
 		retcode = ERR_VERIFY_RUNNING;
@@ -2447,7 +2252,7 @@ int drbd_adm_net_opts(struct sk_buff *skb, struct genl_info *info)
 	crypto_free_shash(connection->integrity_tfm);
 	connection->integrity_tfm = crypto.integrity_tfm;
 	if (connection->cstate >= C_WF_REPORT_PARAMS && connection->agreed_pro_version >= 100)
-		/* Do this without trying to take connection->data.mutex again.  */
+		 
 		__drbd_send_protocol(connection, P_PROTOCOL_UPDATE);
 
 	crypto_free_shash(connection->cram_hmac_tfm);
@@ -2529,9 +2334,7 @@ int drbd_adm_connect(struct sk_buff *skb, struct genl_info *info)
 		goto out;
 	}
 
-	/* No need for _rcu here. All reconfiguration is
-	 * strictly serialized on genl_lock(). We are protected against
-	 * concurrent reconfiguration/addition/deletion */
+	 
 	for_each_resource(resource, &drbd_resources) {
 		for_each_connection(connection, resource) {
 			if (nla_len(adm_ctx.my_addr) == connection->my_addr_len &&
@@ -2559,7 +2362,7 @@ int drbd_adm_connect(struct sk_buff *skb, struct genl_info *info)
 		goto fail;
 	}
 
-	/* allocation not in the IO path, drbdsetup / netlink process context */
+	 
 	new_net_conf = kzalloc(sizeof(*new_net_conf), GFP_KERNEL);
 	if (!new_net_conf) {
 		retcode = ERR_NOMEM;
@@ -2666,10 +2469,10 @@ repeat:
 	case SS_ALREADY_STANDALONE:
 		return SS_SUCCESS;
 	case SS_PRIMARY_NOP:
-		/* Our state checking code wants to see the peer outdated. */
+		 
 		rv = conn_request_state(connection, NS2(conn, C_DISCONNECTING, pdsk, D_OUTDATED), 0);
 
-		if (rv == SS_OUTDATE_WO_CONN) /* lost connection before graceful disconnect succeeded */
+		if (rv == SS_OUTDATE_WO_CONN)  
 			rv = conn_request_state(connection, NS(conn, C_DISCONNECTING), CS_VERBOSE);
 
 		break;
@@ -2679,7 +2482,7 @@ repeat:
 		spin_unlock_irq(&connection->resource->req_lock);
 		if (cstate <= C_WF_CONNECTION)
 			goto repeat;
-		/* The peer probably wants to see us outdated. */
+		 
 		rv = conn_request_state(connection, NS2(conn, C_DISCONNECTING,
 							disk, D_OUTDATED), 0);
 		if (rv == SS_IS_DISKLESS || rv == SS_LOWER_THAN_OUTDATED) {
@@ -2688,31 +2491,22 @@ repeat:
 		}
 		break;
 	default:;
-		/* no special handling necessary */
+		 
 	}
 
 	if (rv >= SS_SUCCESS) {
 		enum drbd_state_rv rv2;
-		/* No one else can reconfigure the network while I am here.
-		 * The state handling only uses drbd_thread_stop_nowait(),
-		 * we want to really wait here until the receiver is no more.
-		 */
+		 
 		drbd_thread_stop(&connection->receiver);
 
-		/* Race breaker.  This additional state change request may be
-		 * necessary, if this was a forced disconnect during a receiver
-		 * restart.  We may have "killed" the receiver thread just
-		 * after drbd_receiver() returned.  Typically, we should be
-		 * C_STANDALONE already, now, and this becomes a no-op.
-		 */
+		 
 		rv2 = conn_request_state(connection, NS(conn, C_STANDALONE),
 				CS_VERBOSE | CS_HARD);
 		if (rv2 < SS_SUCCESS)
 			drbd_err(connection,
 				"unexpected rv2=%d in conn_try_disconnect()\n",
 				rv2);
-		/* Unlike in DRBD 9, the state engine has generated
-		 * NOTIFY_DESTROY events before clearing connection->net_conf. */
+		 
 	}
 	return rv;
 }
@@ -2758,7 +2552,7 @@ int drbd_adm_disconnect(struct sk_buff *skb, struct genl_info *info)
 
 void resync_after_online_grow(struct drbd_device *device)
 {
-	int iass; /* I am sync source */
+	int iass;  
 
 	drbd_info(device, "Resync of new storage after online grow\n");
 	if (device->state.role != device->state.peer)
@@ -2950,7 +2744,7 @@ int drbd_adm_invalidate(struct sk_buff *skb, struct genl_info *info)
 {
 	struct drbd_config_context adm_ctx;
 	struct drbd_device *device;
-	int retcode; /* enum drbd_ret_code rsp. enum drbd_state_rv */
+	int retcode;  
 
 	retcode = drbd_adm_prepare(&adm_ctx, skb, info, DRBD_ADM_NEED_MINOR);
 	if (!adm_ctx.reply_skb)
@@ -2966,17 +2760,12 @@ int drbd_adm_invalidate(struct sk_buff *skb, struct genl_info *info)
 
 	mutex_lock(&adm_ctx.resource->adm_mutex);
 
-	/* If there is still bitmap IO pending, probably because of a previous
-	 * resync just being finished, wait for it before requesting a new resync.
-	 * Also wait for it's after_state_ch(). */
+	 
 	drbd_suspend_io(device);
 	wait_event(device->misc_wait, !test_bit(BITMAP_IO, &device->flags));
 	drbd_flush_workqueue(&first_peer_device(device)->connection->sender_work);
 
-	/* If we happen to be C_STANDALONE R_SECONDARY, just change to
-	 * D_INCONSISTENT, and set all bits in the bitmap.  Otherwise,
-	 * try to start a resync handshake as sync target for full sync.
-	 */
+	 
 	if (device->state.conn == C_STANDALONE && device->state.role == R_SECONDARY) {
 		retcode = drbd_request_state(device, NS(disk, D_INCONSISTENT));
 		if (retcode >= SS_SUCCESS) {
@@ -3027,7 +2816,7 @@ static int drbd_bmio_set_susp_al(struct drbd_device *device,
 int drbd_adm_invalidate_peer(struct sk_buff *skb, struct genl_info *info)
 {
 	struct drbd_config_context adm_ctx;
-	int retcode; /* drbd_ret_code, drbd_state_rv */
+	int retcode;  
 	struct drbd_device *device;
 
 	retcode = drbd_adm_prepare(&adm_ctx, skb, info, DRBD_ADM_NEED_MINOR);
@@ -3044,20 +2833,14 @@ int drbd_adm_invalidate_peer(struct sk_buff *skb, struct genl_info *info)
 
 	mutex_lock(&adm_ctx.resource->adm_mutex);
 
-	/* If there is still bitmap IO pending, probably because of a previous
-	 * resync just being finished, wait for it before requesting a new resync.
-	 * Also wait for it's after_state_ch(). */
+	 
 	drbd_suspend_io(device);
 	wait_event(device->misc_wait, !test_bit(BITMAP_IO, &device->flags));
 	drbd_flush_workqueue(&first_peer_device(device)->connection->sender_work);
 
-	/* If we happen to be C_STANDALONE R_PRIMARY, just set all bits
-	 * in the bitmap.  Otherwise, try to start a resync handshake
-	 * as sync source for full sync.
-	 */
+	 
 	if (device->state.conn == C_STANDALONE && device->state.role == R_PRIMARY) {
-		/* The peer will get a resync upon connect anyways. Just make that
-		   into a full resync. */
+		 
 		retcode = drbd_request_state(device, NS(pdsk, D_INCONSISTENT));
 		if (retcode >= SS_SUCCESS) {
 			if (drbd_bitmap_io(device, &drbd_bmio_set_susp_al,
@@ -3132,7 +2915,7 @@ int drbd_adm_resume_io(struct sk_buff *skb, struct genl_info *info)
 {
 	struct drbd_config_context adm_ctx;
 	struct drbd_device *device;
-	int retcode; /* enum drbd_ret_code rsp. enum drbd_state_rv */
+	int retcode;  
 
 	retcode = drbd_adm_prepare(&adm_ctx, skb, info, DRBD_ADM_NEED_MINOR);
 	if (!adm_ctx.reply_skb)
@@ -3147,21 +2930,7 @@ int drbd_adm_resume_io(struct sk_buff *skb, struct genl_info *info)
 			drbd_uuid_new_current(device);
 			put_ldev(device);
 		} else {
-			/* This is effectively a multi-stage "forced down".
-			 * The NEW_CUR_UUID bit is supposedly only set, if we
-			 * lost the replication connection, and are configured
-			 * to freeze IO and wait for some fence-peer handler.
-			 * So we still don't have a replication connection.
-			 * And now we don't have a local disk either.  After
-			 * resume, we will fail all pending and new IO, because
-			 * we don't have any data anymore.  Which means we will
-			 * eventually be able to terminate all users of this
-			 * device, and then take it down.  By bumping the
-			 * "effective" data uuid, we make sure that you really
-			 * need to tear down before you reconfigure, we will
-			 * the refuse to re-connect or re-attach (because no
-			 * matching real data uuid exists).
-			 */
+			 
 			u64 val;
 			get_random_bytes(&val, sizeof(u64));
 			drbd_set_ed_uuid(device, val);
@@ -3220,11 +2989,7 @@ nla_put_failure:
 	return -EMSGSIZE;
 }
 
-/*
- * The generic netlink dump callbacks are called outside the genl_lock(), so
- * they cannot use the simple attribute parsing code which uses global
- * attribute tables.
- */
+ 
 static struct nlattr *find_cfg_context_attr(const struct nlmsghdr *nlh, int attr)
 {
 	const unsigned hdrlen = GENL_HDRLEN + GENL_MAGIC_FAMILY_HDRSZ;
@@ -3253,7 +3018,7 @@ int drbd_adm_dump_resources(struct sk_buff *skb, struct netlink_callback *cb)
 		for_each_resource_rcu(resource, &drbd_resources)
 			if (resource == (struct drbd_resource *)cb->args[0])
 				goto found_resource;
-		err = 0;  /* resource was probably deleted */
+		err = 0;   
 		goto out;
 	}
 	resource = list_entry(&drbd_resources,
@@ -3384,10 +3149,10 @@ int drbd_adm_dump_devices(struct sk_buff *skb, struct netlink_callback *cb)
 	}
 	idr_for_each_entry_continue(idr_to_search, device, minor) {
 		retcode = NO_ERROR;
-		goto put_result;  /* only one iteration */
+		goto put_result;   
 	}
 	err = 0;
-	goto out;  /* no more devices */
+	goto out;   
 
 put_result:
 	dh = genlmsg_put(skb, NETLINK_CB(cb->skb).portid,
@@ -3480,7 +3245,7 @@ int drbd_adm_dump_connections(struct sk_buff *skb, struct netlink_callback *cb)
 		for_each_connection_rcu(connection, resource)
 			if (connection == (struct drbd_connection *)cb->args[2])
 				goto found_connection;
-		/* connection was probably deleted */
+		 
 		goto no_more_connections;
 	}
 	connection = list_entry(&resource->connections, struct drbd_connection, connections);
@@ -3490,7 +3255,7 @@ found_connection:
 		if (!has_net_conf(connection))
 			continue;
 		retcode = NO_ERROR;
-		goto put_result;  /* only one iteration */
+		goto put_result;   
 	}
 
 no_more_connections:
@@ -3499,7 +3264,7 @@ no_more_connections:
 			if (next_resource == resource)
 				goto found_resource;
 		}
-		/* resource was probably deleted */
+		 
 	}
 	goto out;
 
@@ -3513,7 +3278,7 @@ found_resource:
 		cb->args[2] = 0;
 		goto next_resource;
 	}
-	goto out;  /* no more resources */
+	goto out;   
 
 put_result:
 	dh = genlmsg_put(skb, NETLINK_CB(cb->skb).portid,
@@ -3590,7 +3355,7 @@ static void peer_device_to_statistics(struct peer_device_statistics *s,
 			(drbd_md_test_flag(device->ldev, MDF_CONSISTENT) &&
 			 !drbd_md_test_flag(device->ldev, MDF_WAS_UP_TO_DATE) ?
 				MDF_PEER_OUTDATED : 0) +
-			/* FIXME: MDF_PEER_FENCING? */
+			 
 			(drbd_md_test_flag(device->ldev, MDF_FULL_SYNC) ?
 				MDF_PEER_FULL_SYNC : 0);
 		put_ldev(device);
@@ -3642,10 +3407,10 @@ next_device:
 		for_each_peer_device(peer_device, device)
 			if (peer_device == (struct drbd_peer_device *)cb->args[2])
 				goto found_peer_device;
-		/* peer device was probably deleted */
+		 
 		goto next_device;
 	}
-	/* Make peer_device point to the list head (not the first entry). */
+	 
 	peer_device = list_entry(&device->peer_devices, struct drbd_peer_device, peer_devices);
 
 found_peer_device:
@@ -3653,7 +3418,7 @@ found_peer_device:
 		if (!has_net_conf(peer_device->connection))
 			continue;
 		retcode = NO_ERROR;
-		goto put_result;  /* only one iteration */
+		goto put_result;   
 	}
 	goto next_device;
 
@@ -3694,9 +3459,7 @@ out:
 		return err;
 	return skb->len;
 }
-/*
- * Return the connection of @resource if @resource has exactly one connection.
- */
+ 
 static struct drbd_connection *the_only_connection(struct drbd_resource *resource)
 {
 	struct list_head *connections = &resource->connections;
@@ -3710,29 +3473,18 @@ static int nla_put_status_info(struct sk_buff *skb, struct drbd_device *device,
 		const struct sib_info *sib)
 {
 	struct drbd_resource *resource = device->resource;
-	struct state_info *si = NULL; /* for sizeof(si->member); */
+	struct state_info *si = NULL;  
 	struct nlattr *nla;
 	int got_ldev;
 	int err = 0;
 	int exclude_sensitive;
 
-	/* If sib != NULL, this is drbd_bcast_event, which anyone can listen
-	 * to.  So we better exclude_sensitive information.
-	 *
-	 * If sib == NULL, this is drbd_adm_get_status, executed synchronously
-	 * in the context of the requesting user process. Exclude sensitive
-	 * information, unless current has superuser.
-	 *
-	 * NOTE: for drbd_adm_get_status_all(), this is a netlink dump, and
-	 * relies on the current implementation of netlink_dump(), which
-	 * executes the dump callback successively from netlink_recvmsg(),
-	 * always in the context of the receiving process */
+	 
 	exclude_sensitive = sib || !capable(CAP_SYS_ADMIN);
 
 	got_ldev = get_ldev(device);
 
-	/* We need to add connection name and volume number information still.
-	 * Minor number is in drbd_genlmsghdr. */
+	 
 	if (nla_put_drbd_cfg_context(skb, resource, the_only_connection(resource), device))
 		goto nla_put_failure;
 
@@ -3862,33 +3614,14 @@ static int get_one_status(struct sk_buff *skb, struct netlink_callback *cb)
 	struct drbd_resource *tmp;
 	unsigned volume = cb->args[1];
 
-	/* Open coded, deferred, iteration:
-	 * for_each_resource_safe(resource, tmp, &drbd_resources) {
-	 *      connection = "first connection of resource or undefined";
-	 *	idr_for_each_entry(&resource->devices, device, i) {
-	 *	  ...
-	 *	}
-	 * }
-	 * where resource is cb->args[0];
-	 * and i is cb->args[1];
-	 *
-	 * cb->args[2] indicates if we shall loop over all resources,
-	 * or just dump all volumes of a single resource.
-	 *
-	 * This may miss entries inserted after this dump started,
-	 * or entries deleted before they are reached.
-	 *
-	 * We need to make sure the device won't disappear while
-	 * we are looking at it, and revalidate our iterators
-	 * on each iteration.
-	 */
+	 
 
-	/* synchronize with conn_create()/drbd_destroy_connection() */
+	 
 	rcu_read_lock();
-	/* revalidate iterator position */
+	 
 	for_each_resource_rcu(tmp, &drbd_resources) {
 		if (pos == NULL) {
-			/* first iteration */
+			 
 			pos = tmp;
 			resource = pos;
 			break;
@@ -3902,15 +3635,12 @@ static int get_one_status(struct sk_buff *skb, struct netlink_callback *cb)
 next_resource:
 		device = idr_get_next(&resource->devices, &volume);
 		if (!device) {
-			/* No more volumes to dump on this resource.
-			 * Advance resource iterator. */
+			 
 			pos = list_entry_rcu(resource->resources.next,
 					     struct drbd_resource, resources);
-			/* Did we dump any volume of this resource yet? */
+			 
 			if (volume != 0) {
-				/* If we reached the end of the list,
-				 * or only a single resource dump was requested,
-				 * we are done. */
+				 
 				if (&pos->resources == &drbd_resources || cb->args[2])
 					goto out;
 				volume = 0;
@@ -3926,9 +3656,7 @@ next_resource:
 			goto out;
 
 		if (!device) {
-			/* This is a connection without a single volume.
-			 * Suprisingly enough, it may have a network
-			 * configuration. */
+			 
 			struct drbd_connection *connection;
 
 			dh->minor = -1U;
@@ -3963,25 +3691,15 @@ done:
 
 out:
 	rcu_read_unlock();
-	/* where to start the next iteration */
+	 
 	cb->args[0] = (long)pos;
 	cb->args[1] = (pos == resource) ? volume + 1 : 0;
 
-	/* No more resources/volumes/minors found results in an empty skb.
-	 * Which will terminate the dump. */
+	 
         return skb->len;
 }
 
-/*
- * Request status of all resources, or of all volumes within a single resource.
- *
- * This is a dump, as the answer may not fit in a single reply skb otherwise.
- * Which means we cannot use the family->attrbuf or other such members, because
- * dump is NOT protected by the genl_lock().  During dump, we only have access
- * to the incoming skb, and need to opencode "parsing" of the nlattr payload.
- *
- * Once things are setup properly, we call into get_one_status().
- */
+ 
 int drbd_adm_get_status_all(struct sk_buff *skb, struct netlink_callback *cb)
 {
 	const unsigned hdrlen = GENL_HDRLEN + GENL_MAGIC_FAMILY_HDRSZ;
@@ -3990,29 +3708,27 @@ int drbd_adm_get_status_all(struct sk_buff *skb, struct netlink_callback *cb)
 	struct drbd_resource *resource;
 	int maxtype;
 
-	/* Is this a followup call? */
+	 
 	if (cb->args[0]) {
-		/* ... of a single resource dump,
-		 * and the resource iterator has been advanced already? */
+		 
 		if (cb->args[2] && cb->args[2] != cb->args[0])
-			return 0; /* DONE. */
+			return 0;  
 		goto dump;
 	}
 
-	/* First call (from netlink_dump_start).  We need to figure out
-	 * which resource(s) the user wants us to dump. */
+	 
 	nla = nla_find(nlmsg_attrdata(cb->nlh, hdrlen),
 			nlmsg_attrlen(cb->nlh, hdrlen),
 			DRBD_NLA_CFG_CONTEXT);
 
-	/* No explicit context given.  Dump all. */
+	 
 	if (!nla)
 		goto dump;
 	maxtype = ARRAY_SIZE(drbd_cfg_context_nl_policy) - 1;
 	nla = drbd_nla_find_nested(maxtype, nla, __nla_type(T_ctx_resource_name));
 	if (IS_ERR(nla))
 		return PTR_ERR(nla);
-	/* context given, but no name present? */
+	 
 	if (!nla)
 		return -EINVAL;
 	resource_name = nla_data(nla);
@@ -4022,12 +3738,11 @@ int drbd_adm_get_status_all(struct sk_buff *skb, struct netlink_callback *cb)
 	if (!resource)
 		return -ENODEV;
 
-	kref_put(&resource->kref, drbd_destroy_resource); /* get_one_status() revalidates the resource */
+	kref_put(&resource->kref, drbd_destroy_resource);  
 
-	/* prime iterators, and set "filter" mode mark:
-	 * only dump this connection. */
+	 
 	cb->args[0] = (long)resource;
-	/* cb->args[1] = 0; passed in this way. */
+	 
 	cb->args[2] = (long)resource;
 
 dump:
@@ -4077,7 +3792,7 @@ int drbd_adm_start_ov(struct sk_buff *skb, struct genl_info *info)
 
 	device = adm_ctx.device;
 
-	/* resume from last known position, if possible */
+	 
 	parms.ov_start_sector = device->ov_start_sector;
 	parms.ov_stop_sector = ULLONG_MAX;
 	if (info->attrs[DRBD_NLA_START_OV_PARMS]) {
@@ -4090,12 +3805,11 @@ int drbd_adm_start_ov(struct sk_buff *skb, struct genl_info *info)
 	}
 	mutex_lock(&adm_ctx.resource->adm_mutex);
 
-	/* w_make_ov_request expects position to be aligned */
+	 
 	device->ov_start_sector = parms.ov_start_sector & ~(BM_SECT_PER_BIT-1);
 	device->ov_stop_sector = parms.ov_stop_sector;
 
-	/* If there is still bitmap IO pending, e.g. previous resync or verify
-	 * just being finished, wait for it before requesting a new resync. */
+	 
 	drbd_suspend_io(device);
 	wait_event(device->misc_wait, !test_bit(BITMAP_IO, &device->flags));
 	retcode = drbd_request_state(device, NS(conn, C_VERIFY_S));
@@ -4135,14 +3849,14 @@ int drbd_adm_new_c_uuid(struct sk_buff *skb, struct genl_info *info)
 	}
 
 	mutex_lock(&adm_ctx.resource->adm_mutex);
-	mutex_lock(device->state_mutex); /* Protects us against serialized state changes. */
+	mutex_lock(device->state_mutex);  
 
 	if (!get_ldev(device)) {
 		retcode = ERR_NO_DISK;
 		goto out;
 	}
 
-	/* this is "skip initial sync", assume to be clean */
+	 
 	if (device->state.conn == C_CONNECTED &&
 	    first_peer_device(device)->connection->agreed_pro_version >= 90 &&
 	    device->ldev->md.uuid[UI_CURRENT] == UUID_JUST_CREATED && args.clear_bm) {
@@ -4153,8 +3867,8 @@ int drbd_adm_new_c_uuid(struct sk_buff *skb, struct genl_info *info)
 		goto out_dec;
 	}
 
-	drbd_uuid_set(device, UI_BITMAP, 0); /* Rotate UI_BITMAP to History 1, etc... */
-	drbd_uuid_new_current(device); /* New current, previous to UI_BITMAP */
+	drbd_uuid_set(device, UI_BITMAP, 0);  
+	drbd_uuid_new_current(device);  
 
 	if (args.clear_bm) {
 		err = drbd_bitmap_io(device, &drbd_bmio_clear_n_write,
@@ -4193,8 +3907,7 @@ drbd_check_resource_name(struct drbd_config_context *adm_ctx)
 		drbd_msg_put_info(adm_ctx->reply_skb, "resource name missing");
 		return ERR_MANDATORY_TAG;
 	}
-	/* if we want to use these in sysfs/configfs/debugfs some day,
-	 * we must not allow slashes */
+	 
 	if (strchr(name, '/')) {
 		drbd_msg_put_info(adm_ctx->reply_skb, "invalid resource name");
 		return ERR_INVALID_REQUEST;
@@ -4242,11 +3955,11 @@ int drbd_adm_new_resource(struct sk_buff *skb, struct genl_info *info)
 			retcode = ERR_INVALID_REQUEST;
 			drbd_msg_put_info(adm_ctx.reply_skb, "resource exists");
 		}
-		/* else: still NO_ERROR */
+		 
 		goto out;
 	}
 
-	/* not yet safe for genl_family.parallel_ops */
+	 
 	mutex_lock(&resources_mutex);
 	connection = conn_create(adm_ctx.resource_name, &res_opts);
 	mutex_unlock(&resources_mutex);
@@ -4297,12 +4010,11 @@ int drbd_adm_new_minor(struct sk_buff *skb, struct genl_info *info)
 		goto out;
 	}
 
-	/* drbd_adm_prepare made sure already
-	 * that first_peer_device(device)->connection and device->vnr match the request. */
+	 
 	if (adm_ctx.device) {
 		if (info->nlhdr->nlmsg_flags & NLM_F_EXCL)
 			retcode = ERR_MINOR_OR_VOLUME_EXISTS;
-		/* else: still NO_ERROR */
+		 
 		goto out;
 	}
 
@@ -4349,9 +4061,7 @@ static enum drbd_ret_code adm_del_minor(struct drbd_device *device)
 	struct drbd_peer_device *peer_device;
 
 	if (device->state.disk == D_DISKLESS &&
-	    /* no need to be device->state.conn == C_STANDALONE &&
-	     * we may want to delete a minor from a live replication group.
-	     */
+	     
 	    device->state.role == R_SECONDARY) {
 		struct drbd_connection *connection =
 			first_connection(device->resource);
@@ -4359,9 +4069,7 @@ static enum drbd_ret_code adm_del_minor(struct drbd_device *device)
 		_drbd_request_state(device, NS(conn, C_WF_REPORT_PARAMS),
 				    CS_VERBOSE + CS_WAIT_COMPLETE);
 
-		/* If the state engine hasn't stopped the sender thread yet, we
-		 * need to flush the sender work queue before generating the
-		 * DESTROY events here. */
+		 
 		if (get_t_state(&connection->worker) == RUNNING)
 			drbd_flush_workqueue(&connection->sender_work);
 
@@ -4411,9 +4119,7 @@ static int adm_del_resource(struct drbd_resource *resource)
 	if (!idr_is_empty(&resource->devices))
 		return ERR_RES_IN_USE;
 
-	/* The state engine has stopped the sender thread, so we don't
-	 * need to flush the sender work queue before generating the
-	 * DESTROY event here. */
+	 
 	mutex_lock(&notification_mutex);
 	notify_resource_state(NULL, 0, resource, NULL, NOTIFY_DESTROY);
 	mutex_unlock(&notification_mutex);
@@ -4421,8 +4127,7 @@ static int adm_del_resource(struct drbd_resource *resource)
 	mutex_lock(&resources_mutex);
 	list_del_rcu(&resource->resources);
 	mutex_unlock(&resources_mutex);
-	/* Make sure all threads have actually stopped: state handling only
-	 * does drbd_thread_stop_nowait(). */
+	 
 	list_for_each_entry(connection, &resource->connections, connections)
 		drbd_thread_stop(&connection->worker);
 	synchronize_rcu();
@@ -4436,7 +4141,7 @@ int drbd_adm_down(struct sk_buff *skb, struct genl_info *info)
 	struct drbd_resource *resource;
 	struct drbd_connection *connection;
 	struct drbd_device *device;
-	int retcode; /* enum drbd_ret_code rsp. enum drbd_state_rv */
+	int retcode;  
 	unsigned i;
 
 	retcode = drbd_adm_prepare(&adm_ctx, skb, info, DRBD_ADM_NEED_RESOURCE);
@@ -4447,7 +4152,7 @@ int drbd_adm_down(struct sk_buff *skb, struct genl_info *info)
 
 	resource = adm_ctx.resource;
 	mutex_lock(&resource->adm_mutex);
-	/* demote */
+	 
 	for_each_connection(connection, resource) {
 		struct drbd_peer_device *peer_device;
 
@@ -4466,7 +4171,7 @@ int drbd_adm_down(struct sk_buff *skb, struct genl_info *info)
 		}
 	}
 
-	/* detach */
+	 
 	idr_for_each_entry(&resource->devices, device, i) {
 		retcode = adm_detach(device, 0);
 		if (retcode < SS_SUCCESS || retcode > NO_ERROR) {
@@ -4475,11 +4180,11 @@ int drbd_adm_down(struct sk_buff *skb, struct genl_info *info)
 		}
 	}
 
-	/* delete volumes */
+	 
 	idr_for_each_entry(&resource->devices, device, i) {
 		retcode = adm_del_minor(device);
 		if (retcode != NO_ERROR) {
-			/* "can not happen" */
+			 
 			drbd_msg_put_info(adm_ctx.reply_skb, "failed to delete volume");
 			goto out;
 		}
@@ -4528,7 +4233,7 @@ void drbd_bcast_event(struct drbd_device *device, const struct sib_info *sib)
 
 	err = -EMSGSIZE;
 	d_out = genlmsg_put(msg, 0, seq, &drbd_genl_family, 0, DRBD_EVENT);
-	if (!d_out) /* cannot happen, but anyways. */
+	if (!d_out)  
 		goto nla_put_failure;
 	d_out->minor = device_to_minor(device);
 	d_out->ret_code = NO_ERROR;
@@ -4537,7 +4242,7 @@ void drbd_bcast_event(struct drbd_device *device, const struct sib_info *sib)
 		goto nla_put_failure;
 	genlmsg_end(msg, d_out);
 	err = drbd_genl_multicast_events(msg, GFP_NOWAIT);
-	/* msg has been consumed or freed in netlink_broadcast() */
+	 
 	if (err && err != -ESRCH)
 		goto failed;
 
@@ -4599,7 +4304,7 @@ int notify_resource_state(struct sk_buff *skb,
 	genlmsg_end(skb, dh);
 	if (multicast) {
 		err = drbd_genl_multicast_events(skb, GFP_NOWAIT);
-		/* skb has been consumed or freed in netlink_broadcast() */
+		 
 		if (err && err != -ESRCH)
 			goto failed;
 	}
@@ -4649,7 +4354,7 @@ int notify_device_state(struct sk_buff *skb,
 	genlmsg_end(skb, dh);
 	if (multicast) {
 		err = drbd_genl_multicast_events(skb, GFP_NOWAIT);
-		/* skb has been consumed or freed in netlink_broadcast() */
+		 
 		if (err && err != -ESRCH)
 			goto failed;
 	}
@@ -4699,7 +4404,7 @@ int notify_connection_state(struct sk_buff *skb,
 	genlmsg_end(skb, dh);
 	if (multicast) {
 		err = drbd_genl_multicast_events(skb, GFP_NOWAIT);
-		/* skb has been consumed or freed in netlink_broadcast() */
+		 
 		if (err && err != -ESRCH)
 			goto failed;
 	}
@@ -4750,7 +4455,7 @@ int notify_peer_device_state(struct sk_buff *skb,
 	genlmsg_end(skb, dh);
 	if (multicast) {
 		err = drbd_genl_multicast_events(skb, GFP_NOWAIT);
-		/* skb has been consumed or freed in netlink_broadcast() */
+		 
 		if (err && err != -ESRCH)
 			goto failed;
 	}
@@ -4798,7 +4503,7 @@ void notify_helper(enum drbd_notification_type type,
 	genlmsg_end(skb, dh);
 	err = drbd_genl_multicast_events(skb, GFP_NOWAIT);
 	skb = NULL;
-	/* skb has been consumed or freed in netlink_broadcast() */
+	 
 	if (err && err != -ESRCH)
 		goto unlock_fail;
 	mutex_unlock(&notification_mutex);
@@ -4860,10 +4565,7 @@ static int get_initial_state(struct sk_buff *skb, struct netlink_callback *cb)
 	enum drbd_notification_type flags = 0;
 	int err = 0;
 
-	/* There is no need for taking notification_mutex here: it doesn't
-	   matter if the initial state events mix with later state chage
-	   events; we can always tell the events apart by the NOTIFY_EXISTS
-	   flag. */
+	 
 
 	cb->args[5]--;
 	if (cb->args[5] == 1) {
@@ -4925,14 +4627,14 @@ int drbd_adm_get_initial_state(struct sk_buff *skb, struct netlink_callback *cb)
 			struct drbd_state_change *state_change =
 				(struct drbd_state_change *)cb->args[0];
 
-			/* connect list to head */
+			 
 			list_add(&head, &state_change->list);
 			free_state_changes(&head);
 		}
 		return 0;
 	}
 
-	cb->args[5] = 2;  /* number of iterations */
+	cb->args[5] = 2;   
 	mutex_lock(&resources_mutex);
 	for_each_resource(resource, &drbd_resources) {
 		struct drbd_state_change *state_change;
@@ -4955,7 +4657,7 @@ int drbd_adm_get_initial_state(struct sk_buff *skb, struct netlink_callback *cb)
 			list_entry(head.next, struct drbd_state_change, list);
 		cb->args[0] = (long)state_change;
 		cb->args[3] = notifications_for_state_change(state_change);
-		list_del(&head);  /* detach list from head */
+		list_del(&head);   
 	}
 
 	cb->args[2] = cb->nlh->nlmsg_seq;

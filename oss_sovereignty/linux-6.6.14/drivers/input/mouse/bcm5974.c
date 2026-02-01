@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Apple USB BCM5974 (Macbook Air and Penryn Macbook Pro) multitouch driver
- *
- * Copyright (C) 2008	   Henrik Rydberg (rydberg@euromail.se)
- * Copyright (C) 2015      John Horan (knasher@gmail.com)
- *
- * The USB initialization and package decoding was made by
- * Scott Shawcroft as part of the touchd user-space driver project:
- * Copyright (C) 2008	   Scott Shawcroft (scott.shawcroft@gmail.com)
- *
- * The BCM5974 driver is based on the appletouch driver:
- * Copyright (C) 2001-2004 Greg Kroah-Hartman (greg@kroah.com)
- * Copyright (C) 2005      Johannes Berg (johannes@sipsolutions.net)
- * Copyright (C) 2005	   Stelian Pop (stelian@popies.net)
- * Copyright (C) 2005	   Frank Arnold (frank@scirocco-5v-turbo.de)
- * Copyright (C) 2005	   Peter Osterlund (petero2@telia.com)
- * Copyright (C) 2005	   Michael Hanselmann (linux-kernel@hansmi.ch)
- * Copyright (C) 2006	   Nicolas Boichat (nicolas@boichat.ch)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -30,55 +12,55 @@
 
 #define USB_VENDOR_ID_APPLE		0x05ac
 
-/* MacbookAir, aka wellspring */
+ 
 #define USB_DEVICE_ID_APPLE_WELLSPRING_ANSI	0x0223
 #define USB_DEVICE_ID_APPLE_WELLSPRING_ISO	0x0224
 #define USB_DEVICE_ID_APPLE_WELLSPRING_JIS	0x0225
-/* MacbookProPenryn, aka wellspring2 */
+ 
 #define USB_DEVICE_ID_APPLE_WELLSPRING2_ANSI	0x0230
 #define USB_DEVICE_ID_APPLE_WELLSPRING2_ISO	0x0231
 #define USB_DEVICE_ID_APPLE_WELLSPRING2_JIS	0x0232
-/* Macbook5,1 (unibody), aka wellspring3 */
+ 
 #define USB_DEVICE_ID_APPLE_WELLSPRING3_ANSI	0x0236
 #define USB_DEVICE_ID_APPLE_WELLSPRING3_ISO	0x0237
 #define USB_DEVICE_ID_APPLE_WELLSPRING3_JIS	0x0238
-/* MacbookAir3,2 (unibody), aka wellspring5 */
+ 
 #define USB_DEVICE_ID_APPLE_WELLSPRING4_ANSI	0x023f
 #define USB_DEVICE_ID_APPLE_WELLSPRING4_ISO	0x0240
 #define USB_DEVICE_ID_APPLE_WELLSPRING4_JIS	0x0241
-/* MacbookAir3,1 (unibody), aka wellspring4 */
+ 
 #define USB_DEVICE_ID_APPLE_WELLSPRING4A_ANSI	0x0242
 #define USB_DEVICE_ID_APPLE_WELLSPRING4A_ISO	0x0243
 #define USB_DEVICE_ID_APPLE_WELLSPRING4A_JIS	0x0244
-/* Macbook8 (unibody, March 2011) */
+ 
 #define USB_DEVICE_ID_APPLE_WELLSPRING5_ANSI	0x0245
 #define USB_DEVICE_ID_APPLE_WELLSPRING5_ISO	0x0246
 #define USB_DEVICE_ID_APPLE_WELLSPRING5_JIS	0x0247
-/* MacbookAir4,1 (unibody, July 2011) */
+ 
 #define USB_DEVICE_ID_APPLE_WELLSPRING6A_ANSI	0x0249
 #define USB_DEVICE_ID_APPLE_WELLSPRING6A_ISO	0x024a
 #define USB_DEVICE_ID_APPLE_WELLSPRING6A_JIS	0x024b
-/* MacbookAir4,2 (unibody, July 2011) */
+ 
 #define USB_DEVICE_ID_APPLE_WELLSPRING6_ANSI	0x024c
 #define USB_DEVICE_ID_APPLE_WELLSPRING6_ISO	0x024d
 #define USB_DEVICE_ID_APPLE_WELLSPRING6_JIS	0x024e
-/* Macbook8,2 (unibody) */
+ 
 #define USB_DEVICE_ID_APPLE_WELLSPRING5A_ANSI	0x0252
 #define USB_DEVICE_ID_APPLE_WELLSPRING5A_ISO	0x0253
 #define USB_DEVICE_ID_APPLE_WELLSPRING5A_JIS	0x0254
-/* MacbookPro10,1 (unibody, June 2012) */
+ 
 #define USB_DEVICE_ID_APPLE_WELLSPRING7_ANSI	0x0262
 #define USB_DEVICE_ID_APPLE_WELLSPRING7_ISO	0x0263
 #define USB_DEVICE_ID_APPLE_WELLSPRING7_JIS	0x0264
-/* MacbookPro10,2 (unibody, October 2012) */
+ 
 #define USB_DEVICE_ID_APPLE_WELLSPRING7A_ANSI	0x0259
 #define USB_DEVICE_ID_APPLE_WELLSPRING7A_ISO	0x025a
 #define USB_DEVICE_ID_APPLE_WELLSPRING7A_JIS	0x025b
-/* MacbookAir6,2 (unibody, June 2013) */
+ 
 #define USB_DEVICE_ID_APPLE_WELLSPRING8_ANSI	0x0290
 #define USB_DEVICE_ID_APPLE_WELLSPRING8_ISO	0x0291
 #define USB_DEVICE_ID_APPLE_WELLSPRING8_JIS	0x0292
-/* MacbookPro12,1 (2015) */
+ 
 #define USB_DEVICE_ID_APPLE_WELLSPRING9_ANSI	0x0272
 #define USB_DEVICE_ID_APPLE_WELLSPRING9_ISO	0x0273
 #define USB_DEVICE_ID_APPLE_WELLSPRING9_JIS	0x0274
@@ -93,61 +75,61 @@
 	.bInterfaceProtocol = USB_INTERFACE_PROTOCOL_MOUSE	\
 }
 
-/* table of devices that work with this driver */
+ 
 static const struct usb_device_id bcm5974_table[] = {
-	/* MacbookAir1.1 */
+	 
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING_ANSI),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING_ISO),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING_JIS),
-	/* MacbookProPenryn */
+	 
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING2_ANSI),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING2_ISO),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING2_JIS),
-	/* Macbook5,1 */
+	 
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING3_ANSI),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING3_ISO),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING3_JIS),
-	/* MacbookAir3,2 */
+	 
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING4_ANSI),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING4_ISO),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING4_JIS),
-	/* MacbookAir3,1 */
+	 
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING4A_ANSI),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING4A_ISO),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING4A_JIS),
-	/* MacbookPro8 */
+	 
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING5_ANSI),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING5_ISO),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING5_JIS),
-	/* MacbookAir4,1 */
+	 
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING6A_ANSI),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING6A_ISO),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING6A_JIS),
-	/* MacbookAir4,2 */
+	 
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING6_ANSI),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING6_ISO),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING6_JIS),
-	/* MacbookPro8,2 */
+	 
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING5A_ANSI),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING5A_ISO),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING5A_JIS),
-	/* MacbookPro10,1 */
+	 
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING7_ANSI),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING7_ISO),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING7_JIS),
-	/* MacbookPro10,2 */
+	 
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING7A_ANSI),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING7A_ISO),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING7A_JIS),
-	/* MacbookAir6,2 */
+	 
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING8_ANSI),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING8_ISO),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING8_JIS),
-	/* MacbookPro12,1 */
+	 
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING9_ANSI),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING9_ISO),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING9_JIS),
-	/* Terminating entry */
+	 
 	{}
 };
 MODULE_DEVICE_TABLE(usb, bcm5974_table);
@@ -163,132 +145,132 @@ static int debug = 1;
 module_param(debug, int, 0644);
 MODULE_PARM_DESC(debug, "Activate debugging output");
 
-/* button data structure */
+ 
 struct bt_data {
-	u8 unknown1;		/* constant */
-	u8 button;		/* left button */
-	u8 rel_x;		/* relative x coordinate */
-	u8 rel_y;		/* relative y coordinate */
+	u8 unknown1;		 
+	u8 button;		 
+	u8 rel_x;		 
+	u8 rel_y;		 
 };
 
-/* trackpad header types */
+ 
 enum tp_type {
-	TYPE1,			/* plain trackpad */
-	TYPE2,			/* button integrated in trackpad */
-	TYPE3,			/* additional header fields since June 2013 */
-	TYPE4			/* additional header field for pressure data */
+	TYPE1,			 
+	TYPE2,			 
+	TYPE3,			 
+	TYPE4			 
 };
 
-/* trackpad finger data offsets, le16-aligned */
+ 
 #define HEADER_TYPE1		(13 * sizeof(__le16))
 #define HEADER_TYPE2		(15 * sizeof(__le16))
 #define HEADER_TYPE3		(19 * sizeof(__le16))
 #define HEADER_TYPE4		(23 * sizeof(__le16))
 
-/* trackpad button data offsets */
+ 
 #define BUTTON_TYPE1		0
 #define BUTTON_TYPE2		15
 #define BUTTON_TYPE3		23
 #define BUTTON_TYPE4		31
 
-/* list of device capability bits */
+ 
 #define HAS_INTEGRATED_BUTTON	1
 
-/* trackpad finger data block size */
+ 
 #define FSIZE_TYPE1		(14 * sizeof(__le16))
 #define FSIZE_TYPE2		(14 * sizeof(__le16))
 #define FSIZE_TYPE3		(14 * sizeof(__le16))
 #define FSIZE_TYPE4		(15 * sizeof(__le16))
 
-/* offset from header to finger struct */
+ 
 #define DELTA_TYPE1		(0 * sizeof(__le16))
 #define DELTA_TYPE2		(0 * sizeof(__le16))
 #define DELTA_TYPE3		(0 * sizeof(__le16))
 #define DELTA_TYPE4		(1 * sizeof(__le16))
 
-/* usb control message mode switch data */
+ 
 #define USBMSG_TYPE1		8, 0x300, 0, 0, 0x1, 0x8
 #define USBMSG_TYPE2		8, 0x300, 0, 0, 0x1, 0x8
 #define USBMSG_TYPE3		8, 0x300, 0, 0, 0x1, 0x8
 #define USBMSG_TYPE4		2, 0x302, 2, 1, 0x1, 0x0
 
-/* Wellspring initialization constants */
+ 
 #define BCM5974_WELLSPRING_MODE_READ_REQUEST_ID		1
 #define BCM5974_WELLSPRING_MODE_WRITE_REQUEST_ID	9
 
-/* trackpad finger structure, le16-aligned */
+ 
 struct tp_finger {
-	__le16 origin;		/* zero when switching track finger */
-	__le16 abs_x;		/* absolute x coodinate */
-	__le16 abs_y;		/* absolute y coodinate */
-	__le16 rel_x;		/* relative x coodinate */
-	__le16 rel_y;		/* relative y coodinate */
-	__le16 tool_major;	/* tool area, major axis */
-	__le16 tool_minor;	/* tool area, minor axis */
-	__le16 orientation;	/* 16384 when point, else 15 bit angle */
-	__le16 touch_major;	/* touch area, major axis */
-	__le16 touch_minor;	/* touch area, minor axis */
-	__le16 unused[2];	/* zeros */
-	__le16 pressure;	/* pressure on forcetouch touchpad */
-	__le16 multi;		/* one finger: varies, more fingers: constant */
+	__le16 origin;		 
+	__le16 abs_x;		 
+	__le16 abs_y;		 
+	__le16 rel_x;		 
+	__le16 rel_y;		 
+	__le16 tool_major;	 
+	__le16 tool_minor;	 
+	__le16 orientation;	 
+	__le16 touch_major;	 
+	__le16 touch_minor;	 
+	__le16 unused[2];	 
+	__le16 pressure;	 
+	__le16 multi;		 
 } __attribute__((packed,aligned(2)));
 
-/* trackpad finger data size, empirically at least ten fingers */
+ 
 #define MAX_FINGERS		16
 #define MAX_FINGER_ORIENTATION	16384
 
-/* device-specific parameters */
+ 
 struct bcm5974_param {
-	int snratio;		/* signal-to-noise ratio */
-	int min;		/* device minimum reading */
-	int max;		/* device maximum reading */
+	int snratio;		 
+	int min;		 
+	int max;		 
 };
 
-/* device-specific configuration */
+ 
 struct bcm5974_config {
-	int ansi, iso, jis;	/* the product id of this device */
-	int caps;		/* device capability bitmask */
-	int bt_ep;		/* the endpoint of the button interface */
-	int bt_datalen;		/* data length of the button interface */
-	int tp_ep;		/* the endpoint of the trackpad interface */
-	enum tp_type tp_type;	/* type of trackpad interface */
-	int tp_header;		/* bytes in header block */
-	int tp_datalen;		/* data length of the trackpad interface */
-	int tp_button;		/* offset to button data */
-	int tp_fsize;		/* bytes in single finger block */
-	int tp_delta;		/* offset from header to finger struct */
-	int um_size;		/* usb control message length */
-	int um_req_val;		/* usb control message value */
-	int um_req_idx;		/* usb control message index */
-	int um_switch_idx;	/* usb control message mode switch index */
-	int um_switch_on;	/* usb control message mode switch on */
-	int um_switch_off;	/* usb control message mode switch off */
-	struct bcm5974_param p;	/* finger pressure limits */
-	struct bcm5974_param w;	/* finger width limits */
-	struct bcm5974_param x;	/* horizontal limits */
-	struct bcm5974_param y;	/* vertical limits */
-	struct bcm5974_param o;	/* orientation limits */
+	int ansi, iso, jis;	 
+	int caps;		 
+	int bt_ep;		 
+	int bt_datalen;		 
+	int tp_ep;		 
+	enum tp_type tp_type;	 
+	int tp_header;		 
+	int tp_datalen;		 
+	int tp_button;		 
+	int tp_fsize;		 
+	int tp_delta;		 
+	int um_size;		 
+	int um_req_val;		 
+	int um_req_idx;		 
+	int um_switch_idx;	 
+	int um_switch_on;	 
+	int um_switch_off;	 
+	struct bcm5974_param p;	 
+	struct bcm5974_param w;	 
+	struct bcm5974_param x;	 
+	struct bcm5974_param y;	 
+	struct bcm5974_param o;	 
 };
 
-/* logical device structure */
+ 
 struct bcm5974 {
 	char phys[64];
-	struct usb_device *udev;	/* usb device */
-	struct usb_interface *intf;	/* our interface */
-	struct input_dev *input;	/* input dev */
-	struct bcm5974_config cfg;	/* device configuration */
-	struct mutex pm_mutex;		/* serialize access to open/suspend */
-	int opened;			/* 1: opened, 0: closed */
-	struct urb *bt_urb;		/* button usb request block */
-	struct bt_data *bt_data;	/* button transferred data */
-	struct urb *tp_urb;		/* trackpad usb request block */
-	u8 *tp_data;			/* trackpad transferred data */
-	const struct tp_finger *index[MAX_FINGERS];	/* finger index data */
-	struct input_mt_pos pos[MAX_FINGERS];		/* position array */
-	int slots[MAX_FINGERS];				/* slot assignments */
+	struct usb_device *udev;	 
+	struct usb_interface *intf;	 
+	struct input_dev *input;	 
+	struct bcm5974_config cfg;	 
+	struct mutex pm_mutex;		 
+	int opened;			 
+	struct urb *bt_urb;		 
+	struct bt_data *bt_data;	 
+	struct urb *tp_urb;		 
+	u8 *tp_data;			 
+	const struct tp_finger *index[MAX_FINGERS];	 
+	struct input_mt_pos pos[MAX_FINGERS];		 
+	int slots[MAX_FINGERS];				 
 };
 
-/* trackpad finger block data, le16-aligned */
+ 
 static const struct tp_finger *get_tp_finger(const struct bcm5974 *dev, int i)
 {
 	const struct bcm5974_config *c = &dev->cfg;
@@ -306,13 +288,13 @@ static const struct tp_finger *get_tp_finger(const struct bcm5974 *dev, int i)
 	DELTA_##type,					\
 	USBMSG_##type
 
-/* logical signal quality */
-#define SN_PRESSURE	45		/* pressure signal-to-noise ratio */
-#define SN_WIDTH	25		/* width signal-to-noise ratio */
-#define SN_COORD	250		/* coordinate signal-to-noise ratio */
-#define SN_ORIENT	10		/* orientation signal-to-noise ratio */
+ 
+#define SN_PRESSURE	45		 
+#define SN_WIDTH	25		 
+#define SN_COORD	250		 
+#define SN_ORIENT	10		 
 
-/* device constants */
+ 
 static const struct bcm5974_config bcm5974_config_table[] = {
 	{
 		USB_DEVICE_ID_APPLE_WELLSPRING_ANSI,
@@ -486,7 +468,7 @@ static const struct bcm5974_config bcm5974_config_table[] = {
 	{}
 };
 
-/* return the device-specific configuration by device */
+ 
 static const struct bcm5974_config *bcm5974_get_config(struct usb_device *udev)
 {
 	u16 id = le16_to_cpu(udev->descriptor.idProduct);
@@ -499,7 +481,7 @@ static const struct bcm5974_config *bcm5974_get_config(struct usb_device *udev)
 	return bcm5974_config_table;
 }
 
-/* convert 16-bit little endian to signed integer */
+ 
 static inline int raw2int(__le16 x)
 {
 	return (signed short)le16_to_cpu(x);
@@ -512,25 +494,25 @@ static void set_abs(struct input_dev *input, unsigned int code,
 	input_set_abs_params(input, code, p->min, p->max, fuzz, 0);
 }
 
-/* setup which logical events to report */
+ 
 static void setup_events_to_report(struct input_dev *input_dev,
 				   const struct bcm5974_config *cfg)
 {
 	__set_bit(EV_ABS, input_dev->evbit);
 
-	/* for synaptics only */
+	 
 	input_set_abs_params(input_dev, ABS_PRESSURE, 0, 256, 5, 0);
 	input_set_abs_params(input_dev, ABS_TOOL_WIDTH, 0, 16, 0, 0);
 
-	/* finger touch area */
+	 
 	set_abs(input_dev, ABS_MT_TOUCH_MAJOR, &cfg->w);
 	set_abs(input_dev, ABS_MT_TOUCH_MINOR, &cfg->w);
-	/* finger approach area */
+	 
 	set_abs(input_dev, ABS_MT_WIDTH_MAJOR, &cfg->w);
 	set_abs(input_dev, ABS_MT_WIDTH_MINOR, &cfg->w);
-	/* finger orientation */
+	 
 	set_abs(input_dev, ABS_MT_ORIENTATION, &cfg->o);
-	/* finger position */
+	 
 	set_abs(input_dev, ABS_MT_POSITION_X, &cfg->x);
 	set_abs(input_dev, ABS_MT_POSITION_Y, &cfg->y);
 
@@ -544,7 +526,7 @@ static void setup_events_to_report(struct input_dev *input_dev,
 		INPUT_MT_POINTER | INPUT_MT_DROP_UNUSED | INPUT_MT_TRACK);
 }
 
-/* report button data as logical button state */
+ 
 static int report_bt_state(struct bcm5974 *dev, int size)
 {
 	if (size != sizeof(struct bt_data))
@@ -601,7 +583,7 @@ static void report_synaptics_data(struct input_dev *input,
 	input_report_abs(input, ABS_TOOL_WIDTH, abs_w);
 }
 
-/* report trackpad data as logical trackpad state */
+ 
 static int report_tp_state(struct bcm5974 *dev, int size)
 {
 	const struct bcm5974_config *c = &dev->cfg;
@@ -633,7 +615,7 @@ static int report_tp_state(struct bcm5974 *dev, int size)
 
 	report_synaptics_data(input, c, get_tp_finger(dev, 0), raw_n);
 
-	/* later types report button events via integrated button only */
+	 
 	if (c->caps & HAS_INTEGRATED_BUTTON) {
 		int ibt = raw2int(dev->tp_data[c->tp_button]);
 		input_report_key(input, BTN_LEFT, ibt);
@@ -650,7 +632,7 @@ static int bcm5974_wellspring_mode(struct bcm5974 *dev, bool on)
 	int retval = 0, size;
 	char *data;
 
-	/* Type 3 does not require a mode switch */
+	 
 	if (c->tp_type == TYPE3)
 		return 0;
 
@@ -661,7 +643,7 @@ static int bcm5974_wellspring_mode(struct bcm5974 *dev, bool on)
 		goto out;
 	}
 
-	/* read configuration */
+	 
 	size = usb_control_msg(dev->udev, usb_rcvctrlpipe(dev->udev, 0),
 			BCM5974_WELLSPRING_MODE_READ_REQUEST_ID,
 			USB_DIR_IN | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
@@ -673,10 +655,10 @@ static int bcm5974_wellspring_mode(struct bcm5974 *dev, bool on)
 		goto out;
 	}
 
-	/* apply the mode switch */
+	 
 	data[c->um_switch_idx] = on ? c->um_switch_on : c->um_switch_off;
 
-	/* write configuration */
+	 
 	size = usb_control_msg(dev->udev, usb_sndctrlpipe(dev->udev, 0),
 			BCM5974_WELLSPRING_MODE_WRITE_REQUEST_ID,
 			USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
@@ -748,7 +730,7 @@ static void bcm5974_irq_trackpad(struct urb *urb)
 		goto exit;
 	}
 
-	/* control response ignored */
+	 
 	if (dev->tp_urb->actual_length == 2)
 		goto exit;
 
@@ -762,24 +744,7 @@ exit:
 		dev_err(&intf->dev, "trackpad urb failed: %d\n", error);
 }
 
-/*
- * The Wellspring trackpad, like many recent Apple trackpads, share
- * the usb device with the keyboard. Since keyboards are usually
- * handled by the HID system, the device ends up being handled by two
- * modules. Setting up the device therefore becomes slightly
- * complicated. To enable multitouch features, a mode switch is
- * required, which is usually applied via the control interface of the
- * device.  It can be argued where this switch should take place. In
- * some drivers, like appletouch, the switch is made during
- * probe. However, the hid module may also alter the state of the
- * device, resulting in trackpad malfunction under certain
- * circumstances. To get around this problem, there is at least one
- * example that utilizes the USB_QUIRK_RESET_RESUME quirk in order to
- * receive a reset_resume request rather than the normal resume.
- * Since the implementation of reset_resume is equal to mode switch
- * plus start_traffic, it seems easier to always do the switch when
- * starting traffic on the device.
- */
+ 
 static int bcm5974_start_traffic(struct bcm5974 *dev)
 {
 	int error;
@@ -817,14 +782,7 @@ static void bcm5974_pause_traffic(struct bcm5974 *dev)
 	bcm5974_wellspring_mode(dev, false);
 }
 
-/*
- * The code below implements open/close and manual suspend/resume.
- * All functions may be called in random order.
- *
- * Opening a suspended device fails with EACCES - permission denied.
- *
- * Failing a resume leaves the device resumed but closed.
- */
+ 
 static int bcm5974_open(struct input_dev *input)
 {
 	struct bcm5974 *dev = input_get_drvdata(input);
@@ -900,10 +858,10 @@ static int bcm5974_probe(struct usb_interface *iface,
 	struct input_dev *input_dev;
 	int error = -ENOMEM;
 
-	/* find the product index */
+	 
 	cfg = bcm5974_get_config(udev);
 
-	/* allocate memory for our device state and initialize it */
+	 
 	dev = kzalloc(sizeof(struct bcm5974), GFP_KERNEL);
 	input_dev = input_allocate_device();
 	if (!dev || !input_dev) {
@@ -917,7 +875,7 @@ static int bcm5974_probe(struct usb_interface *iface,
 	dev->cfg = *cfg;
 	mutex_init(&dev->pm_mutex);
 
-	/* setup urbs */
+	 
 	if (cfg->tp_type == TYPE1) {
 		dev->bt_urb = usb_alloc_urb(0, GFP_KERNEL);
 		if (!dev->bt_urb)
@@ -958,14 +916,14 @@ static int bcm5974_probe(struct usb_interface *iface,
 
 	dev->tp_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
 
-	/* create bcm5974 device */
+	 
 	usb_make_path(udev, dev->phys, sizeof(dev->phys));
 	strlcat(dev->phys, "/input0", sizeof(dev->phys));
 
 	input_dev->name = "bcm5974";
 	input_dev->phys = dev->phys;
 	usb_to_input_id(dev->udev, &input_dev->id);
-	/* report driver capabilities via the version field */
+	 
 	input_dev->id.version = cfg->caps;
 	input_dev->dev.parent = &iface->dev;
 
@@ -980,7 +938,7 @@ static int bcm5974_probe(struct usb_interface *iface,
 	if (error)
 		goto err_free_buffer;
 
-	/* save our data pointer in this interface device */
+	 
 	usb_set_intfdata(iface, dev);
 
 	return 0;

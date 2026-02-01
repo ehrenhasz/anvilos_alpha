@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2018 MediaTek Inc.
+
+
+
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -68,7 +68,7 @@ struct cmdq_task {
 	struct list_head	list_entry;
 	dma_addr_t		pa_base;
 	struct cmdq_thread	*thread;
-	struct cmdq_pkt		*pkt; /* the packet sent from mailbox client */
+	struct cmdq_pkt		*pkt;  
 };
 
 struct cmdq {
@@ -116,7 +116,7 @@ static int cmdq_thread_suspend(struct cmdq *cmdq, struct cmdq_thread *thread)
 
 	writel(CMDQ_THR_SUSPEND, thread->base + CMDQ_THR_SUSPEND_TASK);
 
-	/* If already disabled, treat as suspended successful. */
+	 
 	if (!(readl(thread->base + CMDQ_THR_ENABLE_TASK) & CMDQ_THR_ENABLED))
 		return 0;
 
@@ -177,7 +177,7 @@ static void cmdq_thread_disable(struct cmdq *cmdq, struct cmdq_thread *thread)
 	writel(CMDQ_THR_DISABLED, thread->base + CMDQ_THR_ENABLE_TASK);
 }
 
-/* notify GCE to re-fetch commands by setting GCE thread PC */
+ 
 static void cmdq_thread_invalidate_fetched_data(struct cmdq_thread *thread)
 {
 	writel(readl(thread->base + CMDQ_THR_CURR_ADDR),
@@ -192,7 +192,7 @@ static void cmdq_task_insert_into_thread(struct cmdq_task *task)
 			&thread->task_busy_list, typeof(*task), list_entry);
 	u64 *prev_task_base = prev_task->pkt->va_base;
 
-	/* let previous task jump to this task */
+	 
 	dma_sync_single_for_cpu(dev, prev_task->pa_base,
 				prev_task->pkt->cmd_buf_size, DMA_TO_DEVICE);
 	prev_task_base[CMDQ_NUM_CMD(prev_task->pkt) - 1] =
@@ -246,12 +246,7 @@ static void cmdq_thread_irq_handler(struct cmdq *cmdq,
 	irq_flag = readl(thread->base + CMDQ_THR_IRQ_STATUS);
 	writel(~irq_flag, thread->base + CMDQ_THR_IRQ_STATUS);
 
-	/*
-	 * When ISR call this function, another CPU core could run
-	 * "release task" right before we acquire the spin lock, and thus
-	 * reset / disable this GCE thread, so we need to check the enable
-	 * bit of this GCE thread.
-	 */
+	 
 	if (!(readl(thread->base + CMDQ_THR_ENABLE_TASK) & CMDQ_THR_ENABLED))
 		return;
 
@@ -370,7 +365,7 @@ static int cmdq_mbox_send_data(struct mbox_chan *chan, void *data)
 	struct cmdq_task *task;
 	unsigned long curr_pa, end_pa;
 
-	/* Client should not flush new tasks if suspended. */
+	 
 	WARN_ON(cmdq->suspended);
 
 	task = kzalloc(sizeof(*task), GFP_ATOMIC);
@@ -386,12 +381,7 @@ static int cmdq_mbox_send_data(struct mbox_chan *chan, void *data)
 	if (list_empty(&thread->task_busy_list)) {
 		WARN_ON(clk_bulk_enable(cmdq->pdata->gce_num, cmdq->clocks));
 
-		/*
-		 * The thread reset will clear thread related register to 0,
-		 * including pc, end, priority, irq, suspend and enable. Thus
-		 * set CMDQ_THR_ENABLED to CMDQ_THR_ENABLE_TASK will enable
-		 * thread and make it running.
-		 */
+		 
 		WARN_ON(cmdq_thread_reset(cmdq, thread) < 0);
 
 		writel(task->pa_base >> cmdq->pdata->shift,
@@ -408,15 +398,15 @@ static int cmdq_mbox_send_data(struct mbox_chan *chan, void *data)
 			cmdq->pdata->shift;
 		end_pa = readl(thread->base + CMDQ_THR_END_ADDR) <<
 			cmdq->pdata->shift;
-		/* check boundary */
+		 
 		if (curr_pa == end_pa - CMDQ_INST_SIZE ||
 		    curr_pa == end_pa) {
-			/* set to this task directly */
+			 
 			writel(task->pa_base >> cmdq->pdata->shift,
 			       thread->base + CMDQ_THR_CURR_ADDR);
 		} else {
 			cmdq_task_insert_into_thread(task);
-			smp_mb(); /* modify jump before enable thread */
+			smp_mb();  
 		}
 		writel((task->pa_base + pkt->cmd_buf_size) >> cmdq->pdata->shift,
 		       thread->base + CMDQ_THR_END_ADDR);
@@ -445,7 +435,7 @@ static void cmdq_mbox_shutdown(struct mbox_chan *chan)
 
 	WARN_ON(cmdq_thread_suspend(cmdq, thread) < 0);
 
-	/* make sure executed tasks have success callback */
+	 
 	cmdq_thread_irq_handler(cmdq, thread);
 	if (list_empty(&thread->task_busy_list))
 		goto done;
@@ -460,12 +450,7 @@ static void cmdq_mbox_shutdown(struct mbox_chan *chan)
 	clk_bulk_disable(cmdq->pdata->gce_num, cmdq->clocks);
 
 done:
-	/*
-	 * The thread->task_busy_list empty means thread already disable. The
-	 * cmdq_mbox_send_data() always reset thread which clear disable and
-	 * suspend statue when first pkt send to channel, so there is no need
-	 * to do any operation here, only unlock and leave.
-	 */
+	 
 	spin_unlock_irqrestore(&thread->chan->lock, flags);
 }
 
@@ -607,7 +592,7 @@ static int cmdq_probe(struct platform_device *pdev)
 	cmdq->mbox.ops = &cmdq_mbox_chan_ops;
 	cmdq->mbox.of_xlate = cmdq_xlate;
 
-	/* make use of TXDONE_BY_ACK */
+	 
 	cmdq->mbox.txdone_irq = false;
 	cmdq->mbox.txdone_poll = false;
 

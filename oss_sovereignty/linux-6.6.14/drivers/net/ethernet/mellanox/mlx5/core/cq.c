@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2013-2015, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/hardirq.h>
@@ -73,11 +43,7 @@ static void mlx5_add_cq_to_tasklet(struct mlx5_core_cq *cq,
 	struct mlx5_eq_tasklet *tasklet_ctx = cq->tasklet_ctx.priv;
 
 	spin_lock_irqsave(&tasklet_ctx->lock, flags);
-	/* When migrating CQs between EQs will be implemented, please note
-	 * that you need to sync this point. It is possible that
-	 * while migrating a CQ, completions on the old EQs could
-	 * still arrive.
-	 */
+	 
 	if (list_empty_careful(&cq->tasklet_ctx.list)) {
 		mlx5_cq_hold(cq);
 		list_add_tail(&cq->tasklet_ctx.list, &tasklet_ctx->list);
@@ -85,7 +51,7 @@ static void mlx5_add_cq_to_tasklet(struct mlx5_core_cq *cq,
 	spin_unlock_irqrestore(&tasklet_ctx->lock, flags);
 }
 
-/* Callers must verify outbox status in case of err */
+ 
 int mlx5_create_cq(struct mlx5_core_dev *dev, struct mlx5_core_cq *cq,
 		   u32 *in, int inlen, u32 *out, int outlen)
 {
@@ -114,16 +80,16 @@ int mlx5_create_cq(struct mlx5_core_dev *dev, struct mlx5_core_cq *cq,
 	init_completion(&cq->free);
 	if (!cq->comp)
 		cq->comp = mlx5_add_cq_to_tasklet;
-	/* assuming CQ will be deleted before the EQ */
+	 
 	cq->tasklet_ctx.priv = &eq->tasklet_ctx;
 	INIT_LIST_HEAD(&cq->tasklet_ctx.list);
 
-	/* Add to comp EQ CQ tree to recv comp events */
+	 
 	err = mlx5_eq_add_cq(&eq->core, cq);
 	if (err)
 		goto err_cmd;
 
-	/* Add to async EQ CQ tree to recv async events */
+	 
 	err = mlx5_eq_add_cq(mlx5_get_async_eq(dev), cq);
 	if (err)
 		goto err_cq_add;
@@ -150,7 +116,7 @@ err_cmd:
 }
 EXPORT_SYMBOL(mlx5_create_cq);
 
-/* oubox is checked and err val is normalized */
+ 
 int mlx5_core_create_cq(struct mlx5_core_dev *dev, struct mlx5_core_cq *cq,
 			u32 *in, int inlen, u32 *out, int outlen)
 {

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Test cases for arithmetic overflow checks. See:
- * "Running tests with kunit_tool" at Documentation/dev-tools/kunit/start.rst
- *	./tools/testing/kunit/kunit.py run overflow [--raw_output]
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <kunit/test.h>
@@ -23,20 +19,14 @@
 	}							\
 } while (0)
 
-/*
- * Clang 11 and earlier generate unwanted libcalls for signed output
- * on unsigned input.
- */
+ 
 #if defined(CONFIG_CC_IS_CLANG) && __clang_major__ <= 11
 # define SKIP_SIGN_MISMATCH(t)	SKIP(t, "Clang 11 unwanted libcalls")
 #else
 # define SKIP_SIGN_MISMATCH(t)	do { } while (0)
 #endif
 
-/*
- * Clang 13 and earlier generate unwanted libcalls for 64-bit tests on
- * 32-bit hosts.
- */
+ 
 #if defined(CONFIG_CC_IS_CLANG) && __clang_major__ <= 13 &&	\
     BITS_PER_LONG != 64
 # define SKIP_64_ON_32(t)	SKIP(t, "Clang 13 unwanted libcalls")
@@ -140,7 +130,7 @@ DEFINE_TEST_ARRAY(u64) = {
 	{1ULL << 32, 1ULL << 32, 1ULL << 33, 0, 0, false, false, true},
 	{1ULL << 32, 1ULL << 31, 3*(1ULL << 31), 1ULL << 31, 1ULL << 63, false, false, false},
 	{1ULL << 63, 1ULL << 63, 0, 0, 0, true, false, true},
-	{1000000000ULL /* 10^9 */, 10000000000ULL /* 10^10 */,
+	{1000000000ULL  , 10000000000ULL  ,
 	 11000000000ULL, 18446744064709551616ULL, 10000000000000000000ULL,
 	 false, true, false},
 	{-15ULL, 10ULL, -5ULL, -25ULL, -150ULL, false, false, true},
@@ -262,7 +252,7 @@ DEFINE_TEST_ARRAY(s64) = {
 	KUNIT_EXPECT_EQ_MSG(test, _r, r,				\
 		"expected "fmt" "sym" "fmt" == "fmt", got "fmt" (type %s)\n", \
 		a, b, r, _r, #t);					\
-	/* Check for internal macro side-effects. */			\
+	 			\
 	_of = check_ ## op ## _overflow(_a_orig++, _b_orig++, &_r);	\
 	KUNIT_EXPECT_EQ_MSG(test, _a_orig, _a_bump, "Unexpected " #op " macro side-effect!\n"); \
 	KUNIT_EXPECT_EQ_MSG(test, _b_orig, _b_bump, "Unexpected " #op " macro side-effect!\n"); \
@@ -332,7 +322,7 @@ DEFINE_TEST_ARRAY_TYPED(int, int, u8) = {
 };
 DEFINE_TEST_FUNC_TYPED(int_int__u8, u8, "%d");
 
-/* Args are: value, shift, type, expected result, overflow expected */
+ 
 #define TEST_ONE_SHIFT(a, s, t, expect, of)	do {			\
 	typeof(a) __a = (a);						\
 	typeof(s) __s = (s);						\
@@ -359,7 +349,7 @@ static void shift_sane_test(struct kunit *test)
 {
 	int count = 0;
 
-	/* Sane shifts. */
+	 
 	TEST_ONE_SHIFT(1, 0, u8, 1 << 0, false);
 	TEST_ONE_SHIFT(1, 4, u8, 1 << 4, false);
 	TEST_ONE_SHIFT(1, 7, u8, 1 << 7, false);
@@ -387,14 +377,14 @@ static void shift_sane_test(struct kunit *test)
 	TEST_ONE_SHIFT(1, 63, u64, 1ULL << 63, false);
 	TEST_ONE_SHIFT(0xFFFFFFFFULL, 32, u64, 0xFFFFFFFFULL << 32, false);
 
-	/* Sane shift: start and end with 0, without a too-wide shift. */
+	 
 	TEST_ONE_SHIFT(0, 7, u8, 0, false);
 	TEST_ONE_SHIFT(0, 15, u16, 0, false);
 	TEST_ONE_SHIFT(0, 31, unsigned int, 0, false);
 	TEST_ONE_SHIFT(0, 31, u32, 0, false);
 	TEST_ONE_SHIFT(0, 63, u64, 0, false);
 
-	/* Sane shift: start and end with 0, without reaching signed bit. */
+	 
 	TEST_ONE_SHIFT(0, 6, s8, 0, false);
 	TEST_ONE_SHIFT(0, 14, s16, 0, false);
 	TEST_ONE_SHIFT(0, 30, int, 0, false);
@@ -408,51 +398,51 @@ static void shift_overflow_test(struct kunit *test)
 {
 	int count = 0;
 
-	/* Overflow: shifted the bit off the end. */
+	 
 	TEST_ONE_SHIFT(1, 8, u8, 0, true);
 	TEST_ONE_SHIFT(1, 16, u16, 0, true);
 	TEST_ONE_SHIFT(1, 32, unsigned int, 0, true);
 	TEST_ONE_SHIFT(1, 32, u32, 0, true);
 	TEST_ONE_SHIFT(1, 64, u64, 0, true);
 
-	/* Overflow: shifted into the signed bit. */
+	 
 	TEST_ONE_SHIFT(1, 7, s8, 0, true);
 	TEST_ONE_SHIFT(1, 15, s16, 0, true);
 	TEST_ONE_SHIFT(1, 31, int, 0, true);
 	TEST_ONE_SHIFT(1, 31, s32, 0, true);
 	TEST_ONE_SHIFT(1, 63, s64, 0, true);
 
-	/* Overflow: high bit falls off unsigned types. */
-	/* 10010110 */
+	 
+	 
 	TEST_ONE_SHIFT(150, 1, u8, 0, true);
-	/* 1000100010010110 */
+	 
 	TEST_ONE_SHIFT(34966, 1, u16, 0, true);
-	/* 10000100000010001000100010010110 */
+	 
 	TEST_ONE_SHIFT(2215151766U, 1, u32, 0, true);
 	TEST_ONE_SHIFT(2215151766U, 1, unsigned int, 0, true);
-	/* 1000001000010000010000000100000010000100000010001000100010010110 */
+	 
 	TEST_ONE_SHIFT(9372061470395238550ULL, 1, u64, 0, true);
 
-	/* Overflow: bit shifted into signed bit on signed types. */
-	/* 01001011 */
+	 
+	 
 	TEST_ONE_SHIFT(75, 1, s8, 0, true);
-	/* 0100010001001011 */
+	 
 	TEST_ONE_SHIFT(17483, 1, s16, 0, true);
-	/* 01000010000001000100010001001011 */
+	 
 	TEST_ONE_SHIFT(1107575883, 1, s32, 0, true);
 	TEST_ONE_SHIFT(1107575883, 1, int, 0, true);
-	/* 0100000100001000001000000010000001000010000001000100010001001011 */
+	 
 	TEST_ONE_SHIFT(4686030735197619275LL, 1, s64, 0, true);
 
-	/* Overflow: bit shifted past signed bit on signed types. */
-	/* 01001011 */
+	 
+	 
 	TEST_ONE_SHIFT(75, 2, s8, 0, true);
-	/* 0100010001001011 */
+	 
 	TEST_ONE_SHIFT(17483, 2, s16, 0, true);
-	/* 01000010000001000100010001001011 */
+	 
 	TEST_ONE_SHIFT(1107575883, 2, s32, 0, true);
 	TEST_ONE_SHIFT(1107575883, 2, int, 0, true);
-	/* 0100000100001000001000000010000001000010000001000100010001001011 */
+	 
 	TEST_ONE_SHIFT(4686030735197619275LL, 2, s64, 0, true);
 
 	kunit_info(test, "%d overflow shift tests finished\n", count);
@@ -462,7 +452,7 @@ static void shift_truncate_test(struct kunit *test)
 {
 	int count = 0;
 
-	/* Overflow: values larger than destination type. */
+	 
 	TEST_ONE_SHIFT(0x100, 0, u8, 0, true);
 	TEST_ONE_SHIFT(0xFF, 0, s8, 0, true);
 	TEST_ONE_SHIFT(0x10000U, 0, u16, 0, true);
@@ -473,7 +463,7 @@ static void shift_truncate_test(struct kunit *test)
 	TEST_ONE_SHIFT(0xFFFFFFFFUL, 0, int, 0, true);
 	TEST_ONE_SHIFT(0xFFFFFFFFFFFFFFFFULL, 0, s64, 0, true);
 
-	/* Overflow: shifted at or beyond entire type's bit width. */
+	 
 	TEST_ONE_SHIFT(0, 8, u8, 0, true);
 	TEST_ONE_SHIFT(0, 9, u8, 0, true);
 	TEST_ONE_SHIFT(0, 8, s8, 0, true);
@@ -500,7 +490,7 @@ static void shift_nonsense_test(struct kunit *test)
 {
 	int count = 0;
 
-	/* Nonsense: negative initial value. */
+	 
 	TEST_ONE_SHIFT(-1, 0, s8, 0, true);
 	TEST_ONE_SHIFT(-1, 0, u8, 0, true);
 	TEST_ONE_SHIFT(-5, 0, s16, 0, true);
@@ -512,7 +502,7 @@ static void shift_nonsense_test(struct kunit *test)
 	TEST_ONE_SHIFT(-10000, 0, s64, 0, true);
 	TEST_ONE_SHIFT(-10000, 0, u64, 0, true);
 
-	/* Nonsense: negative shift values. */
+	 
 	TEST_ONE_SHIFT(0, -5, s8, 0, true);
 	TEST_ONE_SHIFT(0, -5, u8, 0, true);
 	TEST_ONE_SHIFT(0, -10, s16, 0, true);
@@ -524,15 +514,7 @@ static void shift_nonsense_test(struct kunit *test)
 	TEST_ONE_SHIFT(0, -30, s64, 0, true);
 	TEST_ONE_SHIFT(0, -30, u64, 0, true);
 
-	/*
-	 * Corner case: for unsigned types, we fail when we've shifted
-	 * through the entire width of bits. For signed types, we might
-	 * want to match this behavior, but that would mean noticing if
-	 * we shift through all but the signed bit, and this is not
-	 * currently detected (but we'll notice an overflow into the
-	 * signed bit). So, for now, we will test this condition but
-	 * mark it as not expected to overflow.
-	 */
+	 
 	TEST_ONE_SHIFT(0, 7, s8, 0, false);
 	TEST_ONE_SHIFT(0, 15, s16, 0, false);
 	TEST_ONE_SHIFT(0, 31, int, 0, false);
@@ -543,10 +525,7 @@ static void shift_nonsense_test(struct kunit *test)
 }
 #undef TEST_ONE_SHIFT
 
-/*
- * Deal with the various forms of allocator arguments. See comments above
- * the DEFINE_TEST_ALLOC() instances for mapping of the "bits".
- */
+ 
 #define alloc_GFP		 (GFP_KERNEL | __GFP_NOWARN)
 #define alloc010(alloc, arg, sz) alloc(sz, alloc_GFP)
 #define alloc011(alloc, arg, sz) alloc(sz, alloc_GFP, NUMA_NO_NODE)
@@ -556,7 +535,7 @@ static void shift_nonsense_test(struct kunit *test)
 #define free0(free, arg, ptr)	 free(ptr)
 #define free1(free, arg, ptr)	 free(arg, ptr)
 
-/* Wrap around to 16K */
+ 
 #define TEST_SIZE		(5 * 4096)
 
 #define DEFINE_TEST_ALLOC(func, free_func, want_arg, want_gfp, want_node)\
@@ -566,20 +545,20 @@ static void test_ ## func (struct kunit *test, void *arg)		\
 	volatile size_t b = (SIZE_MAX / TEST_SIZE) + 1;			\
 	void *ptr;							\
 									\
-	/* Tiny allocation test. */					\
+	 					\
 	ptr = alloc ## want_arg ## want_gfp ## want_node (func, arg, 1);\
 	KUNIT_ASSERT_NOT_ERR_OR_NULL_MSG(test, ptr,			\
 			    #func " failed regular allocation?!\n");	\
 	free ## want_arg (free_func, arg, ptr);				\
 									\
-	/* Wrapped allocation test. */					\
+	 					\
 	ptr = alloc ## want_arg ## want_gfp ## want_node (func, arg,	\
 							  a * b);	\
 	KUNIT_ASSERT_NOT_ERR_OR_NULL_MSG(test, ptr,			\
 			    #func " unexpectedly failed bad wrapping?!\n"); \
 	free ## want_arg (free_func, arg, ptr);				\
 									\
-	/* Saturated allocation test. */				\
+	 				\
 	ptr = alloc ## want_arg ## want_gfp ## want_node (func, arg,	\
 						   array_size(a, b));	\
 	if (ptr) {							\
@@ -588,12 +567,7 @@ static void test_ ## func (struct kunit *test, void *arg)		\
 	}								\
 }
 
-/*
- * Allocator uses a trailing node argument --------+  (e.g. kmalloc_node())
- * Allocator uses the gfp_t argument -----------+  |  (e.g. kmalloc())
- * Allocator uses a special leading argument +  |  |  (e.g. devm_kmalloc())
- *                                           |  |  |
- */
+ 
 DEFINE_TEST_ALLOC(kmalloc,	 kfree,	     0, 1, 0);
 DEFINE_TEST_ALLOC(kmalloc_node,	 kfree,	     0, 1, 1);
 DEFINE_TEST_ALLOC(kzalloc,	 kfree,	     0, 1, 0);
@@ -617,7 +591,7 @@ static void overflow_allocation_test(struct kunit *test)
 	test_ ## alloc(test, dev);			\
 } while (0)
 
-	/* Create dummy device for devm_kmalloc()-family tests. */
+	 
 	dev = root_device_register(device_name);
 	KUNIT_ASSERT_FALSE_MSG(test, IS_ERR(dev),
 			       "Cannot register test device\n");
@@ -648,14 +622,14 @@ struct __test_flex_array {
 
 static void overflow_size_helpers_test(struct kunit *test)
 {
-	/* Make sure struct_size() can be used in a constant expression. */
+	 
 	u8 ce_array[struct_size_t(struct __test_flex_array, data, 55)];
 	struct __test_flex_array *obj;
 	int count = 0;
 	int var;
 	volatile int unconst = 0;
 
-	/* Verify constant expression against runtime version. */
+	 
 	var = 55;
 	OPTIMIZER_HIDE_VAR(var);
 	KUNIT_EXPECT_EQ(test, sizeof(ce_array), struct_size(obj, data, var));
@@ -749,7 +723,7 @@ static void overflows_type_test(struct kunit *test)
 	count++;							\
 } while (0)
 
-/* Args are: first type, second type, value, overflow expected */
+ 
 #define TEST_OVERFLOWS_TYPE(__t1, __t2, v, of) do {			\
 	__t1 t1 = (v);							\
 	__t2 t2;							\
@@ -933,7 +907,7 @@ static void overflows_type_test(struct kunit *test)
 	TEST_OVERFLOWS_TYPE(s64, s64, S64_MIN, false);
 #endif
 
-	/* Check for macro side-effects. */
+	 
 	var = INT_MAX - 1;
 	__TEST_OVERFLOWS_TYPE(__overflows_type, var++, int, false);
 	__TEST_OVERFLOWS_TYPE(__overflows_type, var++, int, false);
@@ -1006,7 +980,7 @@ do {									\
 	TEST_TYPE_SETS(s64, false, false, false, false, false, false, false,  true);
 #endif
 
-	/* Check for macro side-effects. */
+	 
 	var = 4;
 	KUNIT_EXPECT_EQ(test, var, 4);
 	KUNIT_EXPECT_TRUE(test, __same_type(var++, int));
@@ -1053,7 +1027,7 @@ static void castable_to_type_test(struct kunit *test)
 	u ## width u ## width ## var = 0;					\
 	s ## width s ## width ## var = 0;					\
 										\
-	/* Constant expressions that fit types. */				\
+	 				\
 	TEST_CASTABLE_TO_TYPE(type_max(u ## width), u ## width, true);		\
 	TEST_CASTABLE_TO_TYPE(type_min(u ## width), u ## width, true);		\
 	TEST_CASTABLE_TO_TYPE(type_max(u ## width), u ## width ## var, true);	\
@@ -1062,12 +1036,12 @@ static void castable_to_type_test(struct kunit *test)
 	TEST_CASTABLE_TO_TYPE(type_min(s ## width), s ## width, true);		\
 	TEST_CASTABLE_TO_TYPE(type_max(s ## width), s ## width ## var, true);	\
 	TEST_CASTABLE_TO_TYPE(type_min(u ## width), s ## width ## var, true);	\
-	/* Constant expressions that do not fit types. */			\
+	 			\
 	TEST_CASTABLE_TO_TYPE(type_max(u ## width), s ## width, false);		\
 	TEST_CASTABLE_TO_TYPE(type_max(u ## width), s ## width ## var, false);	\
 	TEST_CASTABLE_TO_TYPE(type_min(s ## width), u ## width, false);		\
 	TEST_CASTABLE_TO_TYPE(type_min(s ## width), u ## width ## var, false);	\
-	/* Non-constant expression with mismatched type. */			\
+	 			\
 	TEST_CASTABLE_TO_TYPE(s ## width ## var, u ## width, false);		\
 	TEST_CASTABLE_TO_TYPE(u ## width ## var, s ## width, false);		\
 } while (0)
@@ -1078,17 +1052,17 @@ static void castable_to_type_test(struct kunit *test)
 	u ## width u ## width ## var = 0;					\
 	s ## width s ## width ## var = 0;					\
 										\
-	/* Constant expression in range. */					\
+	 					\
 	TEST_CASTABLE_TO_TYPE(U ## width ## _MAX, u ## width, true);		\
 	TEST_CASTABLE_TO_TYPE(U ## width ## _MAX, u ## width ## var, true);	\
 	TEST_CASTABLE_TO_TYPE(S ## width ## _MIN, s ## width, true);		\
 	TEST_CASTABLE_TO_TYPE(S ## width ## _MIN, s ## width ## var, true);	\
-	/* Constant expression out of range. */					\
+	 					\
 	TEST_CASTABLE_TO_TYPE((unsigned long)U ## width ## _MAX + 1, u ## width, false); \
 	TEST_CASTABLE_TO_TYPE((unsigned long)U ## width ## _MAX + 1, u ## width ## var, false); \
 	TEST_CASTABLE_TO_TYPE((signed long)S ## width ## _MIN - 1, s ## width, false); \
 	TEST_CASTABLE_TO_TYPE((signed long)S ## width ## _MIN - 1, s ## width ## var, false); \
-	/* Non-constant expression with mismatched type. */			\
+	 			\
 	TEST_CASTABLE_TO_TYPE(big, u ## width, false);				\
 	TEST_CASTABLE_TO_TYPE(big, u ## width ## var, false);			\
 	TEST_CASTABLE_TO_TYPE(small, s ## width, false);			\

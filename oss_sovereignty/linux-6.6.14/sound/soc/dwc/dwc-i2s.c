@@ -1,15 +1,4 @@
-/*
- * ALSA SoC Synopsys I2S Audio Layer
- *
- * sound/soc/dwc/designware_i2s.c
- *
- * Copyright (C) 2010 ST Microelectronics
- * Rajeev Kumar <rajeevkumar.linux@gmail.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -114,31 +103,25 @@ static irqreturn_t i2s_irq_handler(int irq, void *dev_id)
 	i2s_clear_irqs(dev, SNDRV_PCM_STREAM_CAPTURE);
 
 	for (i = 0; i < 4; i++) {
-		/*
-		 * Check if TX fifo is empty. If empty fill FIFO with samples
-		 * NOTE: Only two channels supported
-		 */
+		 
 		if ((isr[i] & ISR_TXFE) && (i == 0) && dev->use_pio) {
 			dw_pcm_push_tx(dev);
 			irq_valid = true;
 		}
 
-		/*
-		 * Data available. Retrieve samples from FIFO
-		 * NOTE: Only two channels supported
-		 */
+		 
 		if ((isr[i] & ISR_RXDA) && (i == 0) && dev->use_pio) {
 			dw_pcm_pop_rx(dev);
 			irq_valid = true;
 		}
 
-		/* Error Handling: TX */
+		 
 		if (isr[i] & ISR_TXFO) {
 			dev_err_ratelimited(dev->dev, "TX overrun (ch_id=%d)\n", i);
 			irq_valid = true;
 		}
 
-		/* Error Handling: TX */
+		 
 		if (isr[i] & ISR_RXFO) {
 			dev_err_ratelimited(dev->dev, "RX overrun (ch_id=%d)\n", i);
 			irq_valid = true;
@@ -155,7 +138,7 @@ static void i2s_enable_dma(struct dw_i2s_dev *dev, u32 stream)
 {
 	u32 dma_reg = i2s_read_reg(dev->i2s_base, I2S_DMACR);
 
-	/* Enable DMA handshake for stream */
+	 
 	if (stream == SNDRV_PCM_STREAM_PLAYBACK)
 		dma_reg |= I2S_DMAEN_TXBLOCK;
 	else
@@ -168,7 +151,7 @@ static void i2s_disable_dma(struct dw_i2s_dev *dev, u32 stream)
 {
 	u32 dma_reg = i2s_read_reg(dev->i2s_base, I2S_DMACR);
 
-	/* Disable DMA handshake for stream */
+	 
 	if (stream == SNDRV_PCM_STREAM_PLAYBACK) {
 		dma_reg &= ~I2S_DMAEN_TXBLOCK;
 		i2s_write_reg(dev->i2s_base, I2S_RTXDMA, 1);
@@ -199,7 +182,7 @@ static void i2s_start(struct dw_i2s_dev *dev,
 	else
 		i2s_write_reg(dev->i2s_base, IRER, 1);
 
-	/* I2S needs to enable IRQ to make a handshake with DMAC on the JH7110 SoC */
+	 
 	if (dev->use_pio || dev->is_jh7110)
 		i2s_enable_irqs(dev, substream->stream, config->chan_nr);
 	else
@@ -543,20 +526,14 @@ static const struct snd_soc_component_driver dw_i2s_component = {
 	.legacy_dai_naming	= 1,
 };
 
-/*
- * The following tables allow a direct lookup of various parameters
- * defined in the I2S block's configuration in terms of sound system
- * parameters.  Each table is sized to the number of entries possible
- * according to the number of configuration bits describing an I2S
- * block parameter.
- */
+ 
 
-/* Maximum bit resolution of a channel - not uniformly spaced */
+ 
 static const u32 fifo_width[COMP_MAX_WORDSIZE] = {
 	12, 16, 20, 24, 32, 0, 0, 0
 };
 
-/* Width of (DMA) bus */
+ 
 static const u32 bus_widths[COMP_MAX_DATA_WIDTH] = {
 	DMA_SLAVE_BUSWIDTH_1_BYTE,
 	DMA_SLAVE_BUSWIDTH_2_BYTES,
@@ -564,7 +541,7 @@ static const u32 bus_widths[COMP_MAX_DATA_WIDTH] = {
 	DMA_SLAVE_BUSWIDTH_UNDEFINED
 };
 
-/* PCM format to support channel resolution */
+ 
 static const u32 formats[COMP_MAX_WORDSIZE] = {
 	SNDRV_PCM_FMTBIT_S16_LE,
 	SNDRV_PCM_FMTBIT_S16_LE,
@@ -580,10 +557,7 @@ static int dw_configure_dai(struct dw_i2s_dev *dev,
 				   struct snd_soc_dai_driver *dw_i2s_dai,
 				   unsigned int rates)
 {
-	/*
-	 * Read component parameter registers to extract
-	 * the I2S block's configuration.
-	 */
+	 
 	u32 comp1 = i2s_read_reg(dev->i2s_base, dev->i2s_reg_comp1);
 	u32 comp2 = i2s_read_reg(dev->i2s_base, dev->i2s_reg_comp2);
 	u32 fifo_depth = 1 << (1 + COMP1_FIFO_DEPTH_GLOBAL(comp1));
@@ -657,7 +631,7 @@ static int dw_configure_dai_by_pd(struct dw_i2s_dev *dev,
 		idx = 1;
 
 	if (dev->is_jh7110) {
-		/* Use platform data and snd_dmaengine_dai_dma_data struct at the same time */
+		 
 		u32 comp2 = i2s_read_reg(dev->i2s_base, I2S_COMP_PARAM_2);
 		u32 idx2;
 
@@ -676,7 +650,7 @@ static int dw_configure_dai_by_pd(struct dw_i2s_dev *dev,
 			dev->capture_dma_data.dt.maxburst = 16;
 		}
 	} else {
-		/* Set DMA slaves info */
+		 
 		dev->play_dma_data.pd.data = pdata->play_dma_data;
 		dev->capture_dma_data.pd.data = pdata->capture_dma_data;
 		dev->play_dma_data.pd.addr = res->start + I2S_TXDMA;
@@ -730,7 +704,7 @@ static int dw_configure_dai_by_dt(struct dw_i2s_dev *dev,
 }
 
 #ifdef CONFIG_OF
-/* clocks initialization with master mode on JH7110 SoC */
+ 
 static int jh7110_i2s_crg_master_init(struct dw_i2s_dev *dev)
 {
 	static struct clk_bulk_data clks[] = {
@@ -765,7 +739,7 @@ static int jh7110_i2s_crg_master_init(struct dw_i2s_dev *dev)
 	if (ret)
 		goto exit;
 
-	/* Use inner mclk first and avoid uninitialized gpio for external mclk */
+	 
 	ret = clk_set_parent(mclk, mclk_inner);
 	if (ret)
 		goto err_dis_pclk;
@@ -774,17 +748,17 @@ static int jh7110_i2s_crg_master_init(struct dw_i2s_dev *dev)
 	if (ret)
 		goto err_dis_pclk;
 
-	/* deassert resets before set clock parent */
+	 
 	ret = reset_control_deassert(resets);
 	if (ret)
 		goto err_dis_all;
 
-	/* external clock (12.288MHz) for Audio */
+	 
 	ret = clk_set_parent(mclk, mclk_ext);
 	if (ret)
 		goto err_dis_all;
 
-	/* i2sclk will be got and enabled repeatedly later and should be disabled now. */
+	 
 	clk_disable_unprepare(bclk_mst);
 	clk_bulk_put(ARRAY_SIZE(clks), clks);
 	dev->is_jh7110 = true;
@@ -800,7 +774,7 @@ exit:
 	return ret;
 }
 
-/* clocks initialization with slave mode on JH7110 SoC */
+ 
 static int jh7110_i2s_crg_slave_init(struct dw_i2s_dev *dev)
 {
 	static struct clk_bulk_data clks[] = {
@@ -859,7 +833,7 @@ static int jh7110_i2s_crg_slave_init(struct dw_i2s_dev *dev)
 	if (ret)
 		goto err_dis_all;
 
-	/* The sources of BCLK and LRCK are the external codec. */
+	 
 	ret = clk_set_parent(bclk, bclk_ext);
 	if (ret)
 		goto err_dis_all;
@@ -872,7 +846,7 @@ static int jh7110_i2s_crg_slave_init(struct dw_i2s_dev *dev)
 	if (ret)
 		goto err_dis_all;
 
-	/* The i2sclk will be got and enabled repeatedly later and should be disabled now. */
+	 
 	clk_disable_unprepare(bclk_mst);
 	clk_bulk_put(ARRAY_SIZE(clks), clks);
 	dev->is_jh7110 = true;
@@ -888,7 +862,7 @@ exit:
 	return ret;
 }
 
-/* Special syscon initialization about RX channel with slave mode on JH7110 SoC */
+ 
 static int jh7110_i2srx_crg_init(struct dw_i2s_dev *dev)
 {
 	struct regmap *regmap;
@@ -900,7 +874,7 @@ static int jh7110_i2srx_crg_init(struct dw_i2s_dev *dev)
 	if (IS_ERR(regmap))
 		return dev_err_probe(dev->dev, PTR_ERR(regmap), "getting the regmap failed\n");
 
-	/* Enable I2Srx with syscon register, args[0]: offset, args[1]: mask */
+	 
 	regmap_update_bits(regmap, args[0], args[1], args[1]);
 
 	return jh7110_i2s_crg_slave_init(dev);
@@ -913,7 +887,7 @@ static int jh7110_i2stx0_clk_cfg(struct i2s_clk_config_data *config)
 
 	return clk_set_rate(dev->clk, bclk_rate);
 }
-#endif /* CONFIG_OF */
+#endif  
 
 static int dw_i2s_probe(struct platform_device *pdev)
 {

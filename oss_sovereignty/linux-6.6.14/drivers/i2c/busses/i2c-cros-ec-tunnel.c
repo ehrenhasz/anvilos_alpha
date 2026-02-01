@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Expose an I2C passthrough to the ChromeOS EC.
-//
-// Copyright (C) 2013 Google, Inc.
+
+
+
+
 
 #include <linux/acpi.h>
 #include <linux/module.h>
@@ -13,16 +13,7 @@
 
 #define I2C_MAX_RETRIES 3
 
-/**
- * struct ec_i2c_device - Driver data for I2C tunnel
- *
- * @dev: Device node
- * @adap: I2C adapter
- * @ec: Pointer to EC device
- * @remote_bus: The EC bus number we tunnel to on the other side.
- * @request_buf: Buffer for transmitting data; we expect most transfers to fit.
- * @response_buf: Buffer for receiving data; we expect most transfers to fit.
- */
+ 
 
 struct ec_i2c_device {
 	struct device *dev;
@@ -35,14 +26,7 @@ struct ec_i2c_device {
 	u8 response_buf[256];
 };
 
-/**
- * ec_i2c_count_message - Count bytes needed for ec_i2c_construct_message
- *
- * @i2c_msgs: The i2c messages to read
- * @num: The number of i2c messages.
- *
- * Returns the number of bytes the messages will take up.
- */
+ 
 static int ec_i2c_count_message(const struct i2c_msg i2c_msgs[], int num)
 {
 	int i;
@@ -57,19 +41,7 @@ static int ec_i2c_count_message(const struct i2c_msg i2c_msgs[], int num)
 	return size;
 }
 
-/**
- * ec_i2c_construct_message - construct a message to go to the EC
- *
- * This function effectively stuffs the standard i2c_msg format of Linux into
- * a format that the EC understands.
- *
- * @buf: The buffer to fill.  We assume that the buffer is big enough.
- * @i2c_msgs: The i2c messages to read.
- * @num: The number of i2c messages.
- * @bus_num: The remote bus number we want to talk to.
- *
- * Returns 0 or a negative error number.
- */
+ 
 static int ec_i2c_construct_message(u8 *buf, const struct i2c_msg i2c_msgs[],
 				    int num, u16 bus_num)
 {
@@ -104,14 +76,7 @@ static int ec_i2c_construct_message(u8 *buf, const struct i2c_msg i2c_msgs[],
 	return 0;
 }
 
-/**
- * ec_i2c_count_response - Count bytes needed for ec_i2c_parse_response
- *
- * @i2c_msgs: The i2c messages to fill up.
- * @num: The number of i2c messages expected.
- *
- * Returns the number of response bytes expeced.
- */
+ 
 static int ec_i2c_count_response(struct i2c_msg i2c_msgs[], int num)
 {
 	int size;
@@ -125,18 +90,7 @@ static int ec_i2c_count_response(struct i2c_msg i2c_msgs[], int num)
 	return size;
 }
 
-/**
- * ec_i2c_parse_response - Parse a response from the EC
- *
- * We'll take the EC's response and copy it back into msgs.
- *
- * @buf: The buffer to parse.
- * @i2c_msgs: The i2c messages to fill up.
- * @num: The number of i2c messages; will be modified to include the actual
- *	 number received.
- *
- * Returns 0 or a negative error number.
- */
+ 
 static int ec_i2c_parse_response(const u8 *buf, struct i2c_msg i2c_msgs[],
 				 int *num)
 {
@@ -154,7 +108,7 @@ static int ec_i2c_parse_response(const u8 *buf, struct i2c_msg i2c_msgs[],
 	else if (resp->i2c_status & EC_I2C_STATUS_ERROR)
 		return -EIO;
 
-	/* Other side could send us back fewer messages, but not more */
+	 
 	if (resp->num_msgs > *num)
 		return -EPROTO;
 	*num = resp->num_msgs;
@@ -191,7 +145,7 @@ static int ec_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg i2c_msgs[],
 
 	response_len = ec_i2c_count_response(i2c_msgs, num);
 	if (response_len < 0) {
-		/* Unexpected; no errors should come when NULL response */
+		 
 		dev_warn(dev, "Error preparing response %d\n", response_len);
 		return response_len;
 	}
@@ -222,7 +176,7 @@ static int ec_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg i2c_msgs[],
 	if (result < 0)
 		goto exit;
 
-	/* Indicate success by saying how many messages were sent */
+	 
 	result = num;
 exit:
 	kfree(msg);

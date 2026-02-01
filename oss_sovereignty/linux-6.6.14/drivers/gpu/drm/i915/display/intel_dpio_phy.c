@@ -1,25 +1,4 @@
-/*
- * Copyright © 2014-2016 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include "i915_reg.h"
 #include "intel_ddi.h"
@@ -31,132 +10,25 @@
 #include "intel_dpio_phy.h"
 #include "vlv_sideband.h"
 
-/**
- * DOC: DPIO
- *
- * VLV, CHV and BXT have slightly peculiar display PHYs for driving DP/HDMI
- * ports. DPIO is the name given to such a display PHY. These PHYs
- * don't follow the standard programming model using direct MMIO
- * registers, and instead their registers must be accessed trough IOSF
- * sideband. VLV has one such PHY for driving ports B and C, and CHV
- * adds another PHY for driving port D. Each PHY responds to specific
- * IOSF-SB port.
- *
- * Each display PHY is made up of one or two channels. Each channel
- * houses a common lane part which contains the PLL and other common
- * logic. CH0 common lane also contains the IOSF-SB logic for the
- * Common Register Interface (CRI) ie. the DPIO registers. CRI clock
- * must be running when any DPIO registers are accessed.
- *
- * In addition to having their own registers, the PHYs are also
- * controlled through some dedicated signals from the display
- * controller. These include PLL reference clock enable, PLL enable,
- * and CRI clock selection, for example.
- *
- * Eeach channel also has two splines (also called data lanes), and
- * each spline is made up of one Physical Access Coding Sub-Layer
- * (PCS) block and two TX lanes. So each channel has two PCS blocks
- * and four TX lanes. The TX lanes are used as DP lanes or TMDS
- * data/clock pairs depending on the output type.
- *
- * Additionally the PHY also contains an AUX lane with AUX blocks
- * for each channel. This is used for DP AUX communication, but
- * this fact isn't really relevant for the driver since AUX is
- * controlled from the display controller side. No DPIO registers
- * need to be accessed during AUX communication,
- *
- * Generally on VLV/CHV the common lane corresponds to the pipe and
- * the spline (PCS/TX) corresponds to the port.
- *
- * For dual channel PHY (VLV/CHV):
- *
- *  pipe A == CMN/PLL/REF CH0
- *
- *  pipe B == CMN/PLL/REF CH1
- *
- *  port B == PCS/TX CH0
- *
- *  port C == PCS/TX CH1
- *
- * This is especially important when we cross the streams
- * ie. drive port B with pipe B, or port C with pipe A.
- *
- * For single channel PHY (CHV):
- *
- *  pipe C == CMN/PLL/REF CH0
- *
- *  port D == PCS/TX CH0
- *
- * On BXT the entire PHY channel corresponds to the port. That means
- * the PLL is also now associated with the port rather than the pipe,
- * and so the clock needs to be routed to the appropriate transcoder.
- * Port A PLL is directly connected to transcoder EDP and port B/C
- * PLLs can be routed to any transcoder A/B/C.
- *
- * Note: DDI0 is digital port B, DD1 is digital port C, and DDI2 is
- * digital port D (CHV) or port A (BXT). ::
- *
- *
- *     Dual channel PHY (VLV/CHV/BXT)
- *     ---------------------------------
- *     |      CH0      |      CH1      |
- *     |  CMN/PLL/REF  |  CMN/PLL/REF  |
- *     |---------------|---------------| Display PHY
- *     | PCS01 | PCS23 | PCS01 | PCS23 |
- *     |-------|-------|-------|-------|
- *     |TX0|TX1|TX2|TX3|TX0|TX1|TX2|TX3|
- *     ---------------------------------
- *     |     DDI0      |     DDI1      | DP/HDMI ports
- *     ---------------------------------
- *
- *     Single channel PHY (CHV/BXT)
- *     -----------------
- *     |      CH0      |
- *     |  CMN/PLL/REF  |
- *     |---------------| Display PHY
- *     | PCS01 | PCS23 |
- *     |-------|-------|
- *     |TX0|TX1|TX2|TX3|
- *     -----------------
- *     |     DDI2      | DP/HDMI port
- *     -----------------
- */
+ 
 
-/**
- * struct bxt_ddi_phy_info - Hold info for a broxton DDI phy
- */
+ 
 struct bxt_ddi_phy_info {
-	/**
-	 * @dual_channel: true if this phy has a second channel.
-	 */
+	 
 	bool dual_channel;
 
-	/**
-	 * @rcomp_phy: If -1, indicates this phy has its own rcomp resistor.
-	 * Otherwise the GRC value will be copied from the phy indicated by
-	 * this field.
-	 */
+	 
 	enum dpio_phy rcomp_phy;
 
-	/**
-	 * @reset_delay: delay in us to wait before setting the common reset
-	 * bit in BXT_PHY_CTL_FAMILY, which effectively enables the phy.
-	 */
+	 
 	int reset_delay;
 
-	/**
-	 * @pwron_mask: Mask with the appropriate bit set that would cause the
-	 * punit to power this phy if written to BXT_P_CR_GT_DISP_PWRON.
-	 */
+	 
 	u32 pwron_mask;
 
-	/**
-	 * @channel: struct containing per channel information.
-	 */
+	 
 	struct {
-		/**
-		 * @channel.port: which port maps to this channel.
-		 */
+		 
 		enum port port;
 	} channel[2];
 };
@@ -286,10 +158,7 @@ void bxt_ddi_phy_set_signal_levels(struct intel_encoder *encoder,
 
 	bxt_port_to_phy_channel(dev_priv, encoder->port, &phy, &ch);
 
-	/*
-	 * While we write to the group register to program all lanes at once we
-	 * can read only lane registers and we pick lanes 0/1 for that.
-	 */
+	 
 	val = intel_de_read(dev_priv, BXT_PORT_PCS_DW10_LN01(phy, ch));
 	val &= ~(TX2_SWING_CALC_INIT | TX1_SWING_CALC_INIT);
 	intel_de_write(dev_priv, BXT_PORT_PCS_DW10_GRP(phy, ch), val);
@@ -374,7 +243,7 @@ static void _bxt_ddi_phy_init(struct drm_i915_private *dev_priv,
 	phy_info = bxt_get_phy_info(dev_priv, phy);
 
 	if (bxt_ddi_phy_is_enabled(dev_priv, phy)) {
-		/* Still read out the GRC value for state verification */
+		 
 		if (phy_info->rcomp_phy != -1)
 			dev_priv->display.state.bxt_phy_grc = bxt_get_grc(dev_priv, phy);
 
@@ -391,14 +260,7 @@ static void _bxt_ddi_phy_init(struct drm_i915_private *dev_priv,
 
 	intel_de_rmw(dev_priv, BXT_P_CR_GT_DISP_PWRON, 0, phy_info->pwron_mask);
 
-	/*
-	 * The PHY registers start out inaccessible and respond to reads with
-	 * all 1s.  Eventually they become accessible as they power up, then
-	 * the reserved bit will give the default 0.  Poll on the reserved bit
-	 * becoming 0 to find when the PHY is accessible.
-	 * The flag should get set in 100us according to the HW team, but
-	 * use 1ms due to occasional timeouts observed with that.
-	 */
+	 
 	if (intel_wait_for_register_fw(&dev_priv->uncore,
 				       BXT_PORT_CL1CM_DW0(phy),
 				       PHY_RESERVED | PHY_POWER_GOOD,
@@ -407,14 +269,14 @@ static void _bxt_ddi_phy_init(struct drm_i915_private *dev_priv,
 		drm_err(&dev_priv->drm, "timeout during PHY%d power on\n",
 			phy);
 
-	/* Program PLL Rcomp code offset */
+	 
 	intel_de_rmw(dev_priv, BXT_PORT_CL1CM_DW9(phy), IREF0RC_OFFSET_MASK,
 		     0xE4 << IREF0RC_OFFSET_SHIFT);
 
 	intel_de_rmw(dev_priv, BXT_PORT_CL1CM_DW10(phy), IREF1RC_OFFSET_MASK,
 		     0xE4 << IREF1RC_OFFSET_SHIFT);
 
-	/* Program power gating */
+	 
 	intel_de_rmw(dev_priv, BXT_PORT_CL1CM_DW28(phy), 0,
 		     OCL1_POWER_DOWN_EN | DW28_OLDO_DYN_PWR_DOWN_EN | SUS_CLK_CONFIG);
 
@@ -427,11 +289,7 @@ static void _bxt_ddi_phy_init(struct drm_i915_private *dev_priv,
 
 		bxt_phy_wait_grc_done(dev_priv, phy_info->rcomp_phy);
 
-		/*
-		 * PHY0 isn't connected to an RCOMP resistor so copy over
-		 * the corresponding calibrated value from PHY1, and disable
-		 * the automatic calibration on PHY0.
-		 */
+		 
 		val = bxt_get_grc(dev_priv, phy_info->rcomp_phy);
 		dev_priv->display.state.bxt_phy_grc = val;
 
@@ -473,10 +331,7 @@ void bxt_ddi_phy_init(struct drm_i915_private *dev_priv, enum dpio_phy phy)
 	if (rcomp_phy != -1)
 		was_enabled = bxt_ddi_phy_is_enabled(dev_priv, rcomp_phy);
 
-	/*
-	 * We need to copy the GRC calibration value from rcomp_phy,
-	 * so make sure it's powered up.
-	 */
+	 
 	if (!was_enabled)
 		_bxt_ddi_phy_init(dev_priv, rcomp_phy);
 
@@ -531,7 +386,7 @@ bool bxt_ddi_phy_verify_state(struct drm_i915_private *dev_priv,
 
 	ok = true;
 
-	/* PLL Rcomp code offset */
+	 
 	ok &= _CHK(BXT_PORT_CL1CM_DW9(phy),
 		    IREF0RC_OFFSET_MASK, 0xe4 << IREF0RC_OFFSET_SHIFT,
 		    "BXT_PORT_CL1CM_DW9(%d)", phy);
@@ -539,7 +394,7 @@ bool bxt_ddi_phy_verify_state(struct drm_i915_private *dev_priv,
 		    IREF1RC_OFFSET_MASK, 0xe4 << IREF1RC_OFFSET_SHIFT,
 		    "BXT_PORT_CL1CM_DW10(%d)", phy);
 
-	/* Power gating */
+	 
 	mask = OCL1_POWER_DOWN_EN | DW28_OLDO_DYN_PWR_DOWN_EN | SUS_CLK_CONFIG;
 	ok &= _CHK(BXT_PORT_CL1CM_DW28(phy), mask, mask,
 		    "BXT_PORT_CL1CM_DW28(%d)", phy);
@@ -601,10 +456,7 @@ void bxt_ddi_phy_set_lane_optim_mask(struct intel_encoder *encoder,
 		u32 val = intel_de_read(dev_priv,
 					BXT_PORT_TX_DW14_LN(phy, ch, lane));
 
-		/*
-		 * Note that on CHV this flag is called UPAR, but has
-		 * the same function.
-		 */
+		 
 		val &= ~LATENCY_OPTIM;
 		if (lane_lat_optim_mask & BIT(lane))
 			val |= LATENCY_OPTIM;
@@ -695,7 +547,7 @@ void chv_set_phy_signal_level(struct intel_encoder *encoder,
 
 	vlv_dpio_get(dev_priv);
 
-	/* Clear calc init */
+	 
 	val = vlv_dpio_read(dev_priv, pipe, VLV_PCS01_DW10(ch));
 	val &= ~(DPIO_PCS_SWING_CALC_TX0_TX2 | DPIO_PCS_SWING_CALC_TX1_TX3);
 	val &= ~(DPIO_PCS_TX1DEEMP_MASK | DPIO_PCS_TX2DEEMP_MASK);
@@ -722,7 +574,7 @@ void chv_set_phy_signal_level(struct intel_encoder *encoder,
 		vlv_dpio_write(dev_priv, pipe, VLV_PCS23_DW9(ch), val);
 	}
 
-	/* Program swing deemph */
+	 
 	for (i = 0; i < crtc_state->lane_count; i++) {
 		val = vlv_dpio_read(dev_priv, pipe, CHV_TX_DW4(ch, i));
 		val &= ~DPIO_SWING_DEEMPH9P5_MASK;
@@ -730,30 +582,21 @@ void chv_set_phy_signal_level(struct intel_encoder *encoder,
 		vlv_dpio_write(dev_priv, pipe, CHV_TX_DW4(ch, i), val);
 	}
 
-	/* Program swing margin */
+	 
 	for (i = 0; i < crtc_state->lane_count; i++) {
 		val = vlv_dpio_read(dev_priv, pipe, CHV_TX_DW2(ch, i));
 
 		val &= ~DPIO_SWING_MARGIN000_MASK;
 		val |= margin_reg_value << DPIO_SWING_MARGIN000_SHIFT;
 
-		/*
-		 * Supposedly this value shouldn't matter when unique transition
-		 * scale is disabled, but in fact it does matter. Let's just
-		 * always program the same value and hope it's OK.
-		 */
+		 
 		val &= ~(0xff << DPIO_UNIQ_TRANS_SCALE_SHIFT);
 		val |= 0x9a << DPIO_UNIQ_TRANS_SCALE_SHIFT;
 
 		vlv_dpio_write(dev_priv, pipe, CHV_TX_DW2(ch, i), val);
 	}
 
-	/*
-	 * The document said it needs to set bit 27 for ch0 and bit 26
-	 * for ch1. Might be a typo in the doc.
-	 * For now, for this unique transition scale selection, set bit
-	 * 27 for ch0 and ch1.
-	 */
+	 
 	for (i = 0; i < crtc_state->lane_count; i++) {
 		val = vlv_dpio_read(dev_priv, pipe, CHV_TX_DW3(ch, i));
 		if (uniq_trans_scale)
@@ -763,7 +606,7 @@ void chv_set_phy_signal_level(struct intel_encoder *encoder,
 		vlv_dpio_write(dev_priv, pipe, CHV_TX_DW3(ch, i), val);
 	}
 
-	/* Start swing calculation */
+	 
 	val = vlv_dpio_read(dev_priv, pipe, VLV_PCS01_DW10(ch));
 	val |= DPIO_PCS_SWING_CALC_TX0_TX2 | DPIO_PCS_SWING_CALC_TX1_TX3;
 	vlv_dpio_write(dev_priv, pipe, VLV_PCS01_DW10(ch), val);
@@ -834,10 +677,7 @@ void chv_phy_pre_pll_enable(struct intel_encoder *encoder,
 		intel_dp_unused_lane_mask(crtc_state->lane_count);
 	u32 val;
 
-	/*
-	 * Must trick the second common lane into life.
-	 * Otherwise we can't even access the PLL.
-	 */
+	 
 	if (ch == DPIO_CH0 && pipe == PIPE_B)
 		dig_port->release_cl2_override =
 			!chv_phy_powergate_ch(dev_priv, DPIO_PHY0, DPIO_CH1, true);
@@ -846,10 +686,10 @@ void chv_phy_pre_pll_enable(struct intel_encoder *encoder,
 
 	vlv_dpio_get(dev_priv);
 
-	/* Assert data lane reset */
+	 
 	chv_data_lane_soft_reset(encoder, crtc_state, true);
 
-	/* program left/right clock distribution */
+	 
 	if (pipe != PIPE_B) {
 		val = vlv_dpio_read(dev_priv, pipe, _CHV_CMN_DW5_CH0);
 		val &= ~(CHV_BUFLEFTENA1_MASK | CHV_BUFRIGHTENA1_MASK);
@@ -868,7 +708,7 @@ void chv_phy_pre_pll_enable(struct intel_encoder *encoder,
 		vlv_dpio_write(dev_priv, pipe, _CHV_CMN_DW1_CH1, val);
 	}
 
-	/* program clock channel usage */
+	 
 	val = vlv_dpio_read(dev_priv, pipe, VLV_PCS01_DW8(ch));
 	val |= CHV_PCS_USEDCLKCHANNEL_OVRRIDE;
 	if (pipe != PIPE_B)
@@ -887,11 +727,7 @@ void chv_phy_pre_pll_enable(struct intel_encoder *encoder,
 		vlv_dpio_write(dev_priv, pipe, VLV_PCS23_DW8(ch), val);
 	}
 
-	/*
-	 * This a a bit weird since generally CL
-	 * matches the pipe, but here we need to
-	 * pick the CL based on the port.
-	 */
+	 
 	val = vlv_dpio_read(dev_priv, pipe, CHV_CMN_DW19(ch));
 	if (pipe != PIPE_B)
 		val &= ~CHV_CMN_USEDCLKCHANNEL;
@@ -916,7 +752,7 @@ void chv_phy_pre_encoder_enable(struct intel_encoder *encoder,
 
 	vlv_dpio_get(dev_priv);
 
-	/* allow hardware to manage TX FIFO reset source */
+	 
 	val = vlv_dpio_read(dev_priv, pipe, VLV_PCS01_DW11(ch));
 	val &= ~DPIO_LANEDESKEW_STRAP_OVRD;
 	vlv_dpio_write(dev_priv, pipe, VLV_PCS01_DW11(ch), val);
@@ -927,9 +763,9 @@ void chv_phy_pre_encoder_enable(struct intel_encoder *encoder,
 		vlv_dpio_write(dev_priv, pipe, VLV_PCS23_DW11(ch), val);
 	}
 
-	/* Program Tx lane latency optimal setting*/
+	 
 	for (i = 0; i < crtc_state->lane_count; i++) {
-		/* Set the upar bit */
+		 
 		if (crtc_state->lane_count == 1)
 			data = 0x0;
 		else
@@ -938,7 +774,7 @@ void chv_phy_pre_encoder_enable(struct intel_encoder *encoder,
 				data << DPIO_UPAR_SHIFT);
 	}
 
-	/* Data lane stagger programming */
+	 
 	if (crtc_state->port_clock > 270000)
 		stagger = 0x18;
 	else if (crtc_state->port_clock > 135000)
@@ -976,7 +812,7 @@ void chv_phy_pre_encoder_enable(struct intel_encoder *encoder,
 			       DPIO_TX2_STAGGER_MULT(5));
 	}
 
-	/* Deassert data lane reset */
+	 
 	chv_data_lane_soft_reset(encoder, crtc_state, false);
 
 	vlv_dpio_put(dev_priv);
@@ -1002,7 +838,7 @@ void chv_phy_post_pll_disable(struct intel_encoder *encoder,
 
 	vlv_dpio_get(dev_priv);
 
-	/* disable left/right clock distribution */
+	 
 	if (pipe != PIPE_B) {
 		val = vlv_dpio_read(dev_priv, pipe, _CHV_CMN_DW5_CH0);
 		val &= ~(CHV_BUFLEFTENA1_MASK | CHV_BUFRIGHTENA1_MASK);
@@ -1015,15 +851,7 @@ void chv_phy_post_pll_disable(struct intel_encoder *encoder,
 
 	vlv_dpio_put(dev_priv);
 
-	/*
-	 * Leave the power down bit cleared for at least one
-	 * lane so that chv_powergate_phy_ch() will power
-	 * on something when the channel is otherwise unused.
-	 * When the port is off and the override is removed
-	 * the lanes power down anyway, so otherwise it doesn't
-	 * really matter what the state of power down bits is
-	 * after this.
-	 */
+	 
 	chv_phy_powergate_lanes(encoder, false, 0x0);
 }
 
@@ -1065,7 +893,7 @@ void vlv_phy_pre_pll_enable(struct intel_encoder *encoder,
 	enum dpio_channel port = vlv_dig_port_to_channel(dig_port);
 	enum pipe pipe = crtc->pipe;
 
-	/* Program Tx lane resets to default */
+	 
 	vlv_dpio_get(dev_priv);
 
 	vlv_dpio_write(dev_priv, pipe, VLV_PCS_DW0(port),
@@ -1077,7 +905,7 @@ void vlv_phy_pre_pll_enable(struct intel_encoder *encoder,
 			 (1<<DPIO_PCS_CLK_DATAWIDTH_SHIFT) |
 				 DPIO_PCS_CLK_SOFT_RESET);
 
-	/* Fix up inter-pair skew failure */
+	 
 	vlv_dpio_write(dev_priv, pipe, VLV_PCS_DW12(port), 0x00750f00);
 	vlv_dpio_write(dev_priv, pipe, VLV_TX_DW11(port), 0x00001500);
 	vlv_dpio_write(dev_priv, pipe, VLV_TX_DW14(port), 0x40400000);
@@ -1098,7 +926,7 @@ void vlv_phy_pre_encoder_enable(struct intel_encoder *encoder,
 
 	vlv_dpio_get(dev_priv);
 
-	/* Enable clock channels for this port */
+	 
 	val = vlv_dpio_read(dev_priv, pipe, VLV_PCS01_DW8(port));
 	val = 0;
 	if (pipe)
@@ -1108,7 +936,7 @@ void vlv_phy_pre_encoder_enable(struct intel_encoder *encoder,
 	val |= 0x001000c4;
 	vlv_dpio_write(dev_priv, pipe, VLV_PCS_DW8(port), val);
 
-	/* Program lane clock */
+	 
 	vlv_dpio_write(dev_priv, pipe, VLV_PCS_DW14(port), 0x00760018);
 	vlv_dpio_write(dev_priv, pipe, VLV_PCS_DW23(port), 0x00400888);
 

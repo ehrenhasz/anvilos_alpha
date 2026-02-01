@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCI support in ACPI
- *
- * Copyright (C) 2005 David Shaohua Li <shaohua.li@intel.com>
- * Copyright (C) 2004 Tom Long Nguyen <tom.l.nguyen@intel.com>
- * Copyright (C) 2004 Intel Corp.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/init.h>
@@ -20,11 +14,7 @@
 #include <linux/rwsem.h>
 #include "pci.h"
 
-/*
- * The GUID is defined in the PCI Firmware Specification available
- * here to PCI-SIG members:
- * https://members.pcisig.com/wg/PCI-SIG/document/15350
- */
+ 
 const guid_t pci_acpi_dsm_guid =
 	GUID_INIT(0xe5c937d0, 0x3553, 0x4d7a,
 		  0x91, 0x17, 0xea, 0x4d, 0x19, 0xc3, 0x43, 0x4d);
@@ -119,11 +109,11 @@ phys_addr_t acpi_pci_root_get_mcfg_addr(acpi_handle handle)
 	return (phys_addr_t)mcfg_addr;
 }
 
-/* _HPX PCI Setting Record (Type 0); same as _HPP */
+ 
 struct hpx_type0 {
-	u32 revision;		/* Not present in _HPP */
-	u8  cache_line_size;	/* Not applicable to PCIe */
-	u8  latency_timer;	/* Not applicable to PCIe */
+	u32 revision;		 
+	u8  cache_line_size;	 
+	u8  latency_timer;	 
 	u8  enable_serr;
 	u8  enable_perr;
 };
@@ -158,7 +148,7 @@ static void program_hpx_type0(struct pci_dev *dev, struct hpx_type0 *hpx)
 		pci_cmd |= PCI_COMMAND_PARITY;
 	pci_write_config_word(dev, PCI_COMMAND, pci_cmd);
 
-	/* Program bridge control value */
+	 
 	if ((dev->class >> 8) == PCI_CLASS_BRIDGE_PCI) {
 		pci_write_config_byte(dev, PCI_SEC_LATENCY_TIMER,
 				      hpx->latency_timer);
@@ -197,7 +187,7 @@ static acpi_status decode_type0_hpx_record(union acpi_object *record,
 	return AE_OK;
 }
 
-/* _HPX PCI-X Setting Record (Type 1) */
+ 
 struct hpx_type1 {
 	u32 revision;
 	u8  max_mem_read;
@@ -261,7 +251,7 @@ static bool pcie_root_rcb_set(struct pci_dev *dev)
 	return false;
 }
 
-/* _HPX PCI Express Setting Record (Type 2) */
+ 
 struct hpx_type2 {
 	u32 revision;
 	u32 unc_err_mask_and;
@@ -299,27 +289,20 @@ static void program_hpx_type2(struct pci_dev *dev, struct hpx_type2 *hpx)
 		return;
 	}
 
-	/*
-	 * Don't allow _HPX to change MPS or MRRS settings.  We manage
-	 * those to make sure they're consistent with the rest of the
-	 * platform.
-	 */
+	 
 	hpx->pci_exp_devctl_and |= PCI_EXP_DEVCTL_PAYLOAD |
 				    PCI_EXP_DEVCTL_READRQ;
 	hpx->pci_exp_devctl_or &= ~(PCI_EXP_DEVCTL_PAYLOAD |
 				    PCI_EXP_DEVCTL_READRQ);
 
-	/* Initialize Device Control Register */
+	 
 	pcie_capability_clear_and_set_word(dev, PCI_EXP_DEVCTL,
 			~hpx->pci_exp_devctl_and, hpx->pci_exp_devctl_or);
 
-	/* Initialize Link Control Register */
+	 
 	if (pcie_cap_has_lnkctl(dev)) {
 
-		/*
-		 * If the Root Port supports Read Completion Boundary of
-		 * 128, set RCB to 128.  Otherwise, clear it.
-		 */
+		 
 		hpx->pci_exp_lnkctl_and |= PCI_EXP_LNKCTL_RCB;
 		hpx->pci_exp_lnkctl_or &= ~PCI_EXP_LNKCTL_RCB;
 		if (pcie_root_rcb_set(dev))
@@ -329,43 +312,38 @@ static void program_hpx_type2(struct pci_dev *dev, struct hpx_type2 *hpx)
 			~hpx->pci_exp_lnkctl_and, hpx->pci_exp_lnkctl_or);
 	}
 
-	/* Find Advanced Error Reporting Enhanced Capability */
+	 
 	pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ERR);
 	if (!pos)
 		return;
 
-	/* Initialize Uncorrectable Error Mask Register */
+	 
 	pci_read_config_dword(dev, pos + PCI_ERR_UNCOR_MASK, &reg32);
 	reg32 = (reg32 & hpx->unc_err_mask_and) | hpx->unc_err_mask_or;
 	pci_write_config_dword(dev, pos + PCI_ERR_UNCOR_MASK, reg32);
 
-	/* Initialize Uncorrectable Error Severity Register */
+	 
 	pci_read_config_dword(dev, pos + PCI_ERR_UNCOR_SEVER, &reg32);
 	reg32 = (reg32 & hpx->unc_err_sever_and) | hpx->unc_err_sever_or;
 	pci_write_config_dword(dev, pos + PCI_ERR_UNCOR_SEVER, reg32);
 
-	/* Initialize Correctable Error Mask Register */
+	 
 	pci_read_config_dword(dev, pos + PCI_ERR_COR_MASK, &reg32);
 	reg32 = (reg32 & hpx->cor_err_mask_and) | hpx->cor_err_mask_or;
 	pci_write_config_dword(dev, pos + PCI_ERR_COR_MASK, reg32);
 
-	/* Initialize Advanced Error Capabilities and Control Register */
+	 
 	pci_read_config_dword(dev, pos + PCI_ERR_CAP, &reg32);
 	reg32 = (reg32 & hpx->adv_err_cap_and) | hpx->adv_err_cap_or;
 
-	/* Don't enable ECRC generation or checking if unsupported */
+	 
 	if (!(reg32 & PCI_ERR_CAP_ECRC_GENC))
 		reg32 &= ~PCI_ERR_CAP_ECRC_GENE;
 	if (!(reg32 & PCI_ERR_CAP_ECRC_CHKC))
 		reg32 &= ~PCI_ERR_CAP_ECRC_CHKE;
 	pci_write_config_dword(dev, pos + PCI_ERR_CAP, reg32);
 
-	/*
-	 * FIXME: The following two registers are not supported yet.
-	 *
-	 *   o Secondary Uncorrectable Error Severity Register
-	 *   o Secondary Uncorrectable Error Mask Register
-	 */
+	 
 }
 
 static acpi_status decode_type2_hpx_record(union acpi_object *record,
@@ -408,7 +386,7 @@ static acpi_status decode_type2_hpx_record(union acpi_object *record,
 	return AE_OK;
 }
 
-/* _HPX PCI Express Setting Record (Type 3) */
+ 
 struct hpx_type3 {
 	u16 device_type;
 	u16 function_type;
@@ -740,10 +718,7 @@ exit:
 	return status;
 }
 
-/* pci_acpi_program_hp_params
- *
- * @dev - the pci_dev for which we want parameters
- */
+ 
 int pci_acpi_program_hp_params(struct pci_dev *dev)
 {
 	acpi_status status;
@@ -760,12 +735,7 @@ int pci_acpi_program_hp_params(struct pci_dev *dev)
 			break;
 	}
 
-	/*
-	 * _HPP settings apply to all child buses, until another _HPP is
-	 * encountered. If we don't find an _HPP for the input pci dev,
-	 * look for it in the parent device scope since that would apply to
-	 * this pci dev.
-	 */
+	 
 	while (handle) {
 		status = acpi_run_hpx(dev, handle);
 		if (ACPI_SUCCESS(status))
@@ -783,13 +753,7 @@ int pci_acpi_program_hp_params(struct pci_dev *dev)
 	return -ENODEV;
 }
 
-/**
- * pciehp_is_native - Check whether a hotplug port is handled by the OS
- * @bridge: Hotplug port to check
- *
- * Returns true if the given @bridge is handled by the native PCIe hotplug
- * driver.
- */
+ 
 bool pciehp_is_native(struct pci_dev *bridge)
 {
 	const struct pci_host_bridge *host;
@@ -809,22 +773,13 @@ bool pciehp_is_native(struct pci_dev *bridge)
 	return host->native_pcie_hotplug;
 }
 
-/**
- * shpchp_is_native - Check whether a hotplug port is handled by the OS
- * @bridge: Hotplug port to check
- *
- * Returns true if the given @bridge is handled by the native SHPC hotplug
- * driver.
- */
+ 
 bool shpchp_is_native(struct pci_dev *bridge)
 {
 	return bridge->shpc_managed;
 }
 
-/**
- * pci_acpi_wake_bus - Root bus wakeup notification fork function.
- * @context: Device wakeup context.
- */
+ 
 static void pci_acpi_wake_bus(struct acpi_device_wakeup_context *context)
 {
 	struct acpi_device *adev;
@@ -835,10 +790,7 @@ static void pci_acpi_wake_bus(struct acpi_device_wakeup_context *context)
 	pci_pme_wakeup_bus(root->bus);
 }
 
-/**
- * pci_acpi_wake_dev - PCI device wakeup notification work function.
- * @context: Device wakeup context.
- */
+ 
 static void pci_acpi_wake_dev(struct acpi_device_wakeup_context *context)
 {
 	struct pci_dev *pci_dev;
@@ -854,7 +806,7 @@ static void pci_acpi_wake_dev(struct acpi_device_wakeup_context *context)
 		return;
 	}
 
-	/* Clear PME Status if set. */
+	 
 	if (pci_dev->pme_support)
 		pci_check_pme_status(pci_dev);
 
@@ -864,48 +816,20 @@ static void pci_acpi_wake_dev(struct acpi_device_wakeup_context *context)
 	pci_pme_wakeup_bus(pci_dev->subordinate);
 }
 
-/**
- * pci_acpi_add_bus_pm_notifier - Register PM notifier for root PCI bus.
- * @dev: PCI root bridge ACPI device.
- */
+ 
 acpi_status pci_acpi_add_bus_pm_notifier(struct acpi_device *dev)
 {
 	return acpi_add_pm_notifier(dev, NULL, pci_acpi_wake_bus);
 }
 
-/**
- * pci_acpi_add_pm_notifier - Register PM notifier for given PCI device.
- * @dev: ACPI device to add the notifier for.
- * @pci_dev: PCI device to check for the PME status if an event is signaled.
- */
+ 
 acpi_status pci_acpi_add_pm_notifier(struct acpi_device *dev,
 				     struct pci_dev *pci_dev)
 {
 	return acpi_add_pm_notifier(dev, &pci_dev->dev, pci_acpi_wake_dev);
 }
 
-/*
- * _SxD returns the D-state with the highest power
- * (lowest D-state number) supported in the S-state "x".
- *
- * If the devices does not have a _PRW
- * (Power Resources for Wake) supporting system wakeup from "x"
- * then the OS is free to choose a lower power (higher number
- * D-state) than the return value from _SxD.
- *
- * But if _PRW is enabled at S-state "x", the OS
- * must not choose a power lower than _SxD --
- * unless the device has an _SxW method specifying
- * the lowest power (highest D-state number) the device
- * may enter while still able to wake the system.
- *
- * ie. depending on global OS policy:
- *
- * if (_PRW at S-state x)
- *	choose from highest power _SxD to lowest power _SxW
- * else // no _PRW at S-state x
- *	choose highest power _SxD or any lower power
- */
+ 
 
 pci_power_t acpi_pci_choose_state(struct pci_dev *pdev)
 {
@@ -943,11 +867,7 @@ void pci_set_acpi_fwnode(struct pci_dev *dev)
 				   acpi_pci_find_companion(&dev->dev));
 }
 
-/**
- * pci_dev_acpi_reset - do a function level reset using _RST method
- * @dev: device to reset
- * @probe: if true, return 0 if device supports _RST
- */
+ 
 int pci_dev_acpi_reset(struct pci_dev *dev, bool probe)
 {
 	acpi_handle handle = ACPI_HANDLE(&dev->dev);
@@ -984,19 +904,11 @@ bool acpi_pci_bridge_d3(struct pci_dev *dev)
 
 	adev = ACPI_COMPANION(&dev->dev);
 	if (adev) {
-		/*
-		 * If the bridge has _S0W, whether or not it can go into D3
-		 * depends on what is returned by that object.  In particular,
-		 * if the power state returned by _S0W is D2 or shallower,
-		 * entering D3 should not be allowed.
-		 */
+		 
 		if (acpi_dev_power_state_for_wake(adev) <= ACPI_STATE_D2)
 			return false;
 
-		/*
-		 * Otherwise, assume that the bridge can enter D3 so long as it
-		 * is power-manageable via ACPI.
-		 */
+		 
 		if (acpi_device_power_manageable(adev))
 			return true;
 	}
@@ -1013,28 +925,16 @@ bool acpi_pci_bridge_d3(struct pci_dev *dev)
 	if (!rpadev)
 		return false;
 
-	/*
-	 * If the Root Port cannot signal wakeup signals at all, i.e., it
-	 * doesn't supply a wakeup GPE via _PRW, it cannot signal hotplug
-	 * events from low-power states including D3hot and D3cold.
-	 */
+	 
 	if (!rpadev->wakeup.flags.valid)
 		return false;
 
-	/*
-	 * In the bridge-below-a-Root-Port case, evaluate _S0W for the Root Port
-	 * to verify whether or not it can signal wakeup from D3.
-	 */
+	 
 	if (rpadev != adev &&
 	    acpi_dev_power_state_for_wake(rpadev) <= ACPI_STATE_D2)
 		return false;
 
-	/*
-	 * The "HotPlugSupportInD3" property in a Root Port _DSD indicates
-	 * the Port can signal hotplug events while in D3.  We assume any
-	 * bridges *below* that Root Port can also signal hotplug events
-	 * while in D3.
-	 */
+	 
 	if (!acpi_dev_get_property(rpadev, "HotPlugSupportInD3",
 				   ACPI_TYPE_INTEGER, &obj) &&
 	    obj->integer.value == 1)
@@ -1065,7 +965,7 @@ int acpi_pci_set_power_state(struct pci_dev *dev, pci_power_t state)
 	};
 	int error;
 
-	/* If the ACPI device has _EJ0, ignore the device */
+	 
 	if (!adev || acpi_has_method(adev->handle, "_EJ0"))
 		return -ENODEV;
 
@@ -1085,7 +985,7 @@ int acpi_pci_set_power_state(struct pci_dev *dev, pci_power_t state)
 				PM_QOS_FLAGS_ALL)
 			return -EBUSY;
 
-		/* Notify AML lack of PCI config space availability */
+		 
 		acpi_pci_config_space_access(dev, false);
 	}
 
@@ -1096,12 +996,7 @@ int acpi_pci_set_power_state(struct pci_dev *dev, pci_power_t state)
 	pci_dbg(dev, "power state changed by ACPI to %s\n",
 	        acpi_power_state_string(adev->power.state));
 
-	/*
-	 * Notify AML of PCI config space availability.  Config space is
-	 * accessible in all states except D3cold; the only transitions
-	 * that change availability are transitions to D3cold and from
-	 * D3cold to D0.
-	 */
+	 
 	if (state == PCI_D0)
 		acpi_pci_config_space_access(dev, true);
 
@@ -1147,7 +1042,7 @@ static int acpi_pci_propagate_wakeup(struct pci_bus *bus, bool enable)
 		bus = bus->parent;
 	}
 
-	/* We have reached the root bus. */
+	 
 	if (bus->bridge) {
 		if (acpi_pm_device_can_wakeup(bus->bridge))
 			return acpi_pm_set_device_wakeup(bus->bridge, enable);
@@ -1173,13 +1068,7 @@ bool acpi_pci_need_resume(struct pci_dev *dev)
 	if (acpi_pci_disabled)
 		return false;
 
-	/*
-	 * In some cases (eg. Samsung 305V4A) leaving a bridge in suspend over
-	 * system-wide suspend/resume confuses the platform firmware, so avoid
-	 * doing that.  According to Section 16.1.6 of ACPI 6.2, endpoint
-	 * devices are expected to be in D3 before invoking the S3 entry path
-	 * from the firmware, so they should not be affected by this issue.
-	 */
+	 
 	if (pci_is_bridge(dev) && acpi_target_system_state() != ACPI_STATE_S0)
 		return true;
 
@@ -1208,10 +1097,7 @@ void acpi_pci_add_bus(struct pci_bus *bus)
 	acpi_pci_slot_enumerate(bus);
 	acpiphp_enumerate_slots(bus);
 
-	/*
-	 * For a host bridge, check its _DSM for function 8 and if
-	 * that is available, mark it in pci_host_bridge.
-	 */
+	 
 	if (!pci_is_root_bus(bus))
 		return;
 
@@ -1236,27 +1122,13 @@ void acpi_pci_remove_bus(struct pci_bus *bus)
 	acpi_pci_slot_remove(bus);
 }
 
-/* ACPI bus type */
+ 
 
 
 static DECLARE_RWSEM(pci_acpi_companion_lookup_sem);
 static struct acpi_device *(*pci_acpi_find_companion_hook)(struct pci_dev *);
 
-/**
- * pci_acpi_set_companion_lookup_hook - Set ACPI companion lookup callback.
- * @func: ACPI companion lookup callback pointer or NULL.
- *
- * Set a special ACPI companion lookup callback for PCI devices whose companion
- * objects in the ACPI namespace have _ADR with non-standard bus-device-function
- * encodings.
- *
- * Return 0 on success or a negative error code on failure (in which case no
- * changes are made).
- *
- * The caller is responsible for the appropriate ordering of the invocations of
- * this function with respect to the enumeration of the PCI devices needing the
- * callback installed by it.
- */
+ 
 int pci_acpi_set_companion_lookup_hook(struct acpi_device *(*func)(struct pci_dev *))
 {
 	int ret;
@@ -1279,17 +1151,7 @@ int pci_acpi_set_companion_lookup_hook(struct acpi_device *(*func)(struct pci_de
 }
 EXPORT_SYMBOL_GPL(pci_acpi_set_companion_lookup_hook);
 
-/**
- * pci_acpi_clear_companion_lookup_hook - Clear ACPI companion lookup callback.
- *
- * Clear the special ACPI companion lookup callback previously set by
- * pci_acpi_set_companion_lookup_hook().  Block until the last running instance
- * of the callback returns before clearing it.
- *
- * The caller is responsible for the appropriate ordering of the invocations of
- * this function with respect to the enumeration of the PCI devices needing the
- * callback cleared by it.
- */
+ 
 void pci_acpi_clear_companion_lookup_hook(void)
 {
 	down_write(&pci_acpi_companion_lookup_sem);
@@ -1321,24 +1183,12 @@ static struct acpi_device *acpi_pci_find_companion(struct device *dev)
 		return adev;
 
 	check_children = pci_is_bridge(pci_dev);
-	/* Please ref to ACPI spec for the syntax of _ADR */
+	 
 	addr = (PCI_SLOT(pci_dev->devfn) << 16) | PCI_FUNC(pci_dev->devfn);
 	adev = acpi_find_child_device(ACPI_COMPANION(dev->parent), addr,
 				      check_children);
 
-	/*
-	 * There may be ACPI device objects in the ACPI namespace that are
-	 * children of the device object representing the host bridge, but don't
-	 * represent PCI devices.  Both _HID and _ADR may be present for them,
-	 * even though that is against the specification (for example, see
-	 * Section 6.1 of ACPI 6.3), but in many cases the _ADR returns 0 which
-	 * appears to indicate that they should not be taken into consideration
-	 * as potential companions of PCI devices on the root bus.
-	 *
-	 * To catch this special case, disregard the returned device object if
-	 * it has a valid _HID, addr is 0 and the PCI device at hand is on the
-	 * root bus.
-	 */
+	 
 	if (adev && adev->pnp.type.platform_id && !addr &&
 	    pci_is_root_bus(pci_dev->bus))
 		return NULL;
@@ -1346,26 +1196,7 @@ static struct acpi_device *acpi_pci_find_companion(struct device *dev)
 	return adev;
 }
 
-/**
- * pci_acpi_optimize_delay - optimize PCI D3 and D3cold delay from ACPI
- * @pdev: the PCI device whose delay is to be updated
- * @handle: ACPI handle of this device
- *
- * Update the d3hot_delay and d3cold_delay of a PCI device from the ACPI _DSM
- * control method of either the device itself or the PCI host bridge.
- *
- * Function 8, "Reset Delay," applies to the entire hierarchy below a PCI
- * host bridge.  If it returns one, the OS may assume that all devices in
- * the hierarchy have already completed power-on reset delays.
- *
- * Function 9, "Device Readiness Durations," applies only to the object
- * where it is located.  It returns delay durations required after various
- * events if the device requires less time than the spec requires.  Delays
- * from this function take precedence over the Reset Delay function.
- *
- * These _DSM functions are defined by the draft ECN of January 28, 2014,
- * titled "ACPI additions for FW latency optimizations."
- */
+ 
 static void pci_acpi_optimize_delay(struct pci_dev *pdev,
 				    acpi_handle handle)
 {
@@ -1406,10 +1237,7 @@ static void pci_acpi_set_external_facing(struct pci_dev *dev)
 	if (device_property_read_u8(&dev->dev, "ExternalFacingPort", &val))
 		return;
 
-	/*
-	 * These root ports expose PCIe (including DMA) outside of the
-	 * system.  Everything downstream from them is external.
-	 */
+	 
 	if (val)
 		dev->external_facing = 1;
 }
@@ -1427,12 +1255,7 @@ void pci_acpi_setup(struct device *dev, struct acpi_device *adev)
 		return;
 
 	device_set_wakeup_capable(dev, true);
-	/*
-	 * For bridges that can do D3 we enable wake automatically (as
-	 * we do for the power management itself in that case). The
-	 * reason is that the bridge may have additional methods such as
-	 * _DSW that need to be called.
-	 */
+	 
 	if (pci_dev->bridge_d3)
 		device_wakeup_enable(dev);
 
@@ -1460,29 +1283,14 @@ void pci_acpi_cleanup(struct device *dev, struct acpi_device *adev)
 
 static struct fwnode_handle *(*pci_msi_get_fwnode_cb)(struct device *dev);
 
-/**
- * pci_msi_register_fwnode_provider - Register callback to retrieve fwnode
- * @fn:       Callback matching a device to a fwnode that identifies a PCI
- *            MSI domain.
- *
- * This should be called by irqchip driver, which is the parent of
- * the MSI domain to provide callback interface to query fwnode.
- */
+ 
 void
 pci_msi_register_fwnode_provider(struct fwnode_handle *(*fn)(struct device *))
 {
 	pci_msi_get_fwnode_cb = fn;
 }
 
-/**
- * pci_host_bridge_acpi_msi_domain - Retrieve MSI domain of a PCI host bridge
- * @bus:      The PCI host bridge bus.
- *
- * This function uses the callback function registered by
- * pci_msi_register_fwnode_provider() to retrieve the irq_domain with
- * type DOMAIN_BUS_PCI_MSI of the specified host bridge bus.
- * This returns NULL on error or when the domain is not found.
- */
+ 
 struct irq_domain *pci_host_bridge_acpi_msi_domain(struct pci_bus *bus)
 {
 	struct fwnode_handle *fwnode;

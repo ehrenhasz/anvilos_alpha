@@ -1,25 +1,4 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef _VEGA20_HWMGR_H_
 #define _VEGA20_HWMGR_H_
@@ -38,7 +17,7 @@
 #define VG20_PSUEDO_NUM_DCEFCLK_DPM_LEVELS  8
 #define VG20_PSUEDO_NUM_UCLK_DPM_LEVELS     4
 
-//OverDriver8 macro defs
+
 #define AVFS_CURVE 0
 #define OD8_HOTCURVE_TEMPERATURE 85
 
@@ -106,7 +85,7 @@ struct vega20_performance_level {
 
 struct vega20_bacos {
 	uint32_t                       baco_flags;
-	/* struct vega20_performance_level  performance_level; */
+	 
 };
 
 struct vega20_uvd_clocks {
@@ -233,7 +212,7 @@ struct vega20_vbios_boot_state {
 #define DPMTABLE_OD_UPDATE_SCLK_MASK     0x00000020
 #define DPMTABLE_OD_UPDATE_MCLK_MASK     0x00000040
 
-// To determine if sclk and mclk are in overdrive state
+
 #define SCLK_MASK_OVERDRIVE_ENABLED      0x00000008
 #define MCLK_MASK_OVERDRIVE_ENABLED      0x00000010
 #define SOCCLK_OVERDRIVE_ENABLED         0x00000020
@@ -390,10 +369,10 @@ enum OD8_FEATURE_ID {
 	OD8_GFXCLK_CURVE                = 1 << 1,
 	OD8_UCLK_MAX                    = 1 << 2,
 	OD8_POWER_LIMIT                 = 1 << 3,
-	OD8_ACOUSTIC_LIMIT_SCLK         = 1 << 4,   //FanMaximumRpm
-	OD8_FAN_SPEED_MIN               = 1 << 5,   //FanMinimumPwm
-	OD8_TEMPERATURE_FAN             = 1 << 6,   //FanTargetTemperature
-	OD8_TEMPERATURE_SYSTEM          = 1 << 7,   //MaxOpTemp
+	OD8_ACOUSTIC_LIMIT_SCLK         = 1 << 4,   
+	OD8_FAN_SPEED_MIN               = 1 << 5,   
+	OD8_TEMPERATURE_FAN             = 1 << 6,   
+	OD8_TEMPERATURE_SYSTEM          = 1 << 7,   
 	OD8_MEMORY_TIMING_TUNE          = 1 << 8,
 	OD8_FAN_ZERO_RPM_CONTROL        = 1 << 9
 };
@@ -452,7 +431,7 @@ struct vega20_hwmgr {
 	uint32_t                           active_auto_throttle_sources;
 	struct vega20_bacos                bacos;
 
-	/* ---- General data ---- */
+	 
 	uint8_t                           need_update_dpm_table;
 
 	bool                           cac_enabled;
@@ -468,7 +447,7 @@ struct vega20_hwmgr {
 
 	struct vega20_display_timing display_timing;
 
-	/* ---- Vega20 Dyn Register Settings ---- */
+	 
 
 	uint32_t                       debug_settings;
 	uint32_t                       lowest_uclk_reserved_for_ulv;
@@ -490,36 +469,36 @@ struct vega20_hwmgr {
 	uint32_t                       phy_clk_quad_eqn_b;
 	uint32_t                       phy_clk_quad_eqn_c;
 
-	/* ---- Thermal Temperature Setting ---- */
+	 
 	struct vega20_dpmlevel_enable_mask     dpm_level_enable_mask;
 
-	/* ---- Power Gating States ---- */
+	 
 	bool                           uvd_power_gated;
 	bool                           vce_power_gated;
 	bool                           samu_power_gated;
 	bool                           need_long_memory_training;
 
-	/* Internal settings to apply the application power optimization parameters */
+	 
 	bool                           apply_optimized_settings;
 	uint32_t                       disable_dpm_mask;
 
-	/* ---- Overdrive next setting ---- */
+	 
 	struct vega20_odn_data         odn_data;
 	bool                           gfxclk_overdrive;
 	bool                           memclk_overdrive;
 
-	/* ---- Overdrive8 Setting ---- */
+	 
 	struct vega20_od8_settings     od8_settings;
 
-	/* ---- Workload Mask ---- */
+	 
 	uint32_t                       workload_mask;
 
-	/* ---- SMU9 ---- */
+	 
 	uint32_t                       smu_version;
 	struct smu_features            smu_features[GNLD_FEATURES_MAX];
 	struct vega20_smc_state_table  smc_state_table;
 
-	/* ---- Gfxoff ---- */
+	 
 	bool                           gfxoff_allowed;
 	uint32_t                       counter_gfxoff;
 
@@ -559,7 +538,7 @@ struct vega20_hwmgr {
 #define VEGA20_VOLTAGE_CONTROL_BY_GPIO                0x1
 #define VEGA20_VOLTAGE_CONTROL_BY_SVID2               0x2
 #define VEGA20_VOLTAGE_CONTROL_MERGED                 0x3
-/* To convert to Q8.8 format for firmware */
+ 
 #define VEGA20_Q88_FORMAT_CONVERSION_UNIT             256
 
 #define VEGA20_UNUSED_GPIO_PIN       0x7F
@@ -571,10 +550,10 @@ struct vega20_hwmgr {
 #define PPVEGA20_VEGA20DISPLAYVOLTAGEMODE_DFLT   0xffffffff
 #define PPREGKEY_VEGA20QUADRATICEQUATION_DFLT    0xffffffff
 
-#define PPVEGA20_VEGA20GFXCLKAVERAGEALPHA_DFLT       25 /* 10% * 255 = 25 */
-#define PPVEGA20_VEGA20SOCCLKAVERAGEALPHA_DFLT       25 /* 10% * 255 = 25 */
-#define PPVEGA20_VEGA20UCLKCLKAVERAGEALPHA_DFLT      25 /* 10% * 255 = 25 */
-#define PPVEGA20_VEGA20GFXACTIVITYAVERAGEALPHA_DFLT  25 /* 10% * 255 = 25 */
+#define PPVEGA20_VEGA20GFXCLKAVERAGEALPHA_DFLT       25  
+#define PPVEGA20_VEGA20SOCCLKAVERAGEALPHA_DFLT       25  
+#define PPVEGA20_VEGA20UCLKCLKAVERAGEALPHA_DFLT      25  
+#define PPVEGA20_VEGA20GFXACTIVITYAVERAGEALPHA_DFLT  25  
 #define PPVEGA20_VEGA20LOWESTUCLKRESERVEDFORULV_DFLT   0xffffffff
 #define PPVEGA20_VEGA20DISPLAYVOLTAGEMODE_DFLT         0xffffffff
 #define PPREGKEY_VEGA20QUADRATICEQUATION_DFLT          0xffffffff
@@ -585,4 +564,4 @@ struct vega20_hwmgr {
 #define VEGA20_UMD_PSTATE_UVDCLK_LEVEL         0x3
 #define VEGA20_UMD_PSTATE_VCEMCLK_LEVEL        0x3
 
-#endif /* _VEGA20_HWMGR_H_ */
+#endif  

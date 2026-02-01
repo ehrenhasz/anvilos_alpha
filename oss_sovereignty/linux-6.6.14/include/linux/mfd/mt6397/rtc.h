@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2014-2019 MediaTek Inc.
- *
- * Author: Tianping.Fang <tianping.fang@mediatek.com>
- *        Sean Wang <sean.wang@mediatek.com>
- */
+ 
+ 
 
 #ifndef _LINUX_MFD_MT6397_RTC_H_
 #define _LINUX_MFD_MT6397_RTC_H_
@@ -37,7 +32,7 @@
 
 #define RTC_TC_SEC             0x000a
 #define RTC_TC_MTH_MASK        0x000f
-/* Min, Hour, Dom... register offset to RTC_TC_SEC */
+ 
 #define RTC_OFFSET_SEC         0
 #define RTC_OFFSET_MIN         1
 #define RTC_OFFSET_HOUR                2
@@ -75,7 +70,7 @@ struct mtk_rtc_data {
 struct mt6397_rtc {
 	struct rtc_device       *rtc_dev;
 
-	/* Protect register access from multiple tasks */
+	 
 	struct mutex            lock;
 	struct regmap           *regmap;
 	int                     irq;
@@ -83,4 +78,4 @@ struct mt6397_rtc {
 	const struct mtk_rtc_data *data;
 };
 
-#endif /* _LINUX_MFD_MT6397_RTC_H_ */
+#endif  

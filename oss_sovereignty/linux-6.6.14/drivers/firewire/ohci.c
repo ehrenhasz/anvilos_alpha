@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for OHCI 1394 controllers
- *
- * Copyright (C) 2003-2006 Kristian Hoegsberg <krh@bitplanet.net>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/bug.h>
@@ -77,7 +73,7 @@ struct descriptor {
 
 #define AR_BUFFER_SIZE	(32*1024)
 #define AR_BUFFERS_MIN	DIV_ROUND_UP(AR_BUFFER_SIZE, PAGE_SIZE)
-/* we need at least two pages for proper list management */
+ 
 #define AR_BUFFERS	(AR_BUFFERS_MIN >= 2 ? AR_BUFFERS_MIN : 2)
 
 #define MAX_ASYNC_PAYLOAD	4096
@@ -102,10 +98,7 @@ typedef int (*descriptor_callback_t)(struct context *ctx,
 				     struct descriptor *d,
 				     struct descriptor *last);
 
-/*
- * A buffer that contains a block of DMA-able coherent memory used for
- * storing a portion of a DMA descriptor program.
- */
+ 
 struct descriptor_buffer {
 	struct list_head list;
 	dma_addr_t buffer_bus;
@@ -122,29 +115,16 @@ struct context {
 	bool running;
 	bool flushing;
 
-	/*
-	 * List of page-sized buffers for storing DMA descriptors.
-	 * Head of list contains buffers in use and tail of list contains
-	 * free buffers.
-	 */
+	 
 	struct list_head buffer_list;
 
-	/*
-	 * Pointer to a buffer inside buffer_list that contains the tail
-	 * end of the current DMA program.
-	 */
+	 
 	struct descriptor_buffer *buffer_tail;
 
-	/*
-	 * The descriptor containing the branch address of the first
-	 * descriptor that has not yet been filled by the device.
-	 */
+	 
 	struct descriptor *last;
 
-	/*
-	 * The last descriptor block in the DMA program. It contains the branch
-	 * address that must be updated upon appending a new descriptor.
-	 */
+	 
 	struct descriptor *prev;
 	int prev_z;
 
@@ -181,7 +161,7 @@ struct fw_ohci {
 	__iomem char *registers;
 	int node_id;
 	int generation;
-	int request_generation;	/* for timestamping incoming requests */
+	int request_generation;	 
 	unsigned quirks;
 	unsigned int pri_req_max;
 	u32 bus_time;
@@ -190,10 +170,7 @@ struct fw_ohci {
 	bool csr_state_setclear_abdicate;
 	int n_ir;
 	int n_it;
-	/*
-	 * Spinlock for accessing fw_ohci data.  Never call out of
-	 * this driver with this lock held.
-	 */
+	 
 	spinlock_t lock;
 
 	struct mutex phy_reg_mutex;
@@ -207,13 +184,13 @@ struct fw_ohci {
 	struct context at_response_ctx;
 
 	u32 it_context_support;
-	u32 it_context_mask;     /* unoccupied IT contexts */
+	u32 it_context_mask;      
 	struct iso_context *it_context_list;
-	u64 ir_context_channels; /* unoccupied channels */
+	u64 ir_context_channels;  
 	u32 ir_context_support;
-	u32 ir_context_mask;     /* unoccupied IR contexts */
+	u32 ir_context_mask;      
 	struct iso_context *ir_context_list;
-	u64 mc_channels; /* channels in use by the multichannel IR context */
+	u64 mc_channels;  
 	bool mc_allocated;
 
 	__be32    *config_rom;
@@ -279,11 +256,11 @@ static char ohci_driver_name[] = KBUILD_MODNAME;
 #define QUIRK_TI_SLLZ059		0x20
 #define QUIRK_IR_WAKE			0x40
 
-// On PCI Express Root Complex in any type of AMD Ryzen machine, VIA VT6306/6307/6308 with Asmedia
-// ASM1083/1085 brings an inconvenience that the read accesses to 'Isochronous Cycle Timer' register
-// (at offset 0xf0 in PCI I/O space) often causes unexpected system reboot. The mechanism is not
-// clear, since the read access to the other registers is enough safe; e.g. 'Node ID' register,
-// while it is probable due to detection of any type of PCIe error.
+
+
+
+
+
 #define QUIRK_REBOOT_BY_CYCLE_TIMER_READ	0x80000000
 
 #if IS_ENABLED(CONFIG_X86)
@@ -299,17 +276,17 @@ static bool detect_vt630x_with_asm1083_on_amd_ryzen_machine(const struct pci_dev
 {
 	const struct pci_dev *pcie_to_pci_bridge;
 
-	// Detect any type of AMD Ryzen machine.
+	
 	if (!static_cpu_has(X86_FEATURE_ZEN))
 		return false;
 
-	// Detect VIA VT6306/6307/6308.
+	
 	if (pdev->vendor != PCI_VENDOR_ID_VIA)
 		return false;
 	if (pdev->device != PCI_DEVICE_ID_VIA_VT630X)
 		return false;
 
-	// Detect Asmedia ASM1083/1085.
+	
 	pcie_to_pci_bridge = pdev->bus->self;
 	if (pcie_to_pci_bridge->vendor != PCI_VENDOR_ID_ASMEDIA)
 		return false;
@@ -324,7 +301,7 @@ static bool detect_vt630x_with_asm1083_on_amd_ryzen_machine(const struct pci_dev
 #define detect_vt630x_with_asm1083_on_amd_ryzen_machine(pdev)	false
 #endif
 
-/* In case of multiple matches in ohci_quirks[], only the first one is used. */
+ 
 static const struct {
 	unsigned short vendor, device, revision, flags;
 } ohci_quirks[] = {
@@ -368,7 +345,7 @@ static const struct {
 		QUIRK_CYCLE_TIMER | QUIRK_IR_WAKE},
 
 	{PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VT6315, 0,
-		QUIRK_CYCLE_TIMER /* FIXME: necessary? */ | QUIRK_NO_MSI},
+		QUIRK_CYCLE_TIMER   | QUIRK_NO_MSI},
 
 	{PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VT6315, PCI_ANY_ID,
 		QUIRK_NO_MSI},
@@ -377,7 +354,7 @@ static const struct {
 		QUIRK_CYCLE_TIMER | QUIRK_NO_MSI},
 };
 
-/* This overrides anything that was found in ohci_quirks[]. */
+ 
 static int param_quirks;
 module_param_named(quirks, param_quirks, int, 0644);
 MODULE_PARM_DESC(quirks, "Chip quirks (default = 0"
@@ -393,7 +370,7 @@ MODULE_PARM_DESC(quirks, "Chip quirks (default = 0"
 #define OHCI_PARAM_DEBUG_AT_AR		1
 #define OHCI_PARAM_DEBUG_SELFIDS	2
 #define OHCI_PARAM_DEBUG_IRQS		4
-#define OHCI_PARAM_DEBUG_BUSRESETS	8 /* only effective before chip init */
+#define OHCI_PARAM_DEBUG_BUSRESETS	8  
 
 static int param_debug;
 module_param_named(debug, param_debug, int, 0644);
@@ -581,16 +558,11 @@ static inline u32 reg_read(const struct fw_ohci *ohci, int offset)
 
 static inline void flush_writes(const struct fw_ohci *ohci)
 {
-	/* Do a dummy read to flush writes. */
+	 
 	reg_read(ohci, OHCI1394_Version);
 }
 
-/*
- * Beware!  read_phy_reg(), write_phy_reg(), update_phy_reg(), and
- * read_paged_phy_reg() require the caller to hold ohci->phy_reg_mutex.
- * In other words, only use ohci_read_phy_reg() and ohci_update_phy_reg()
- * directly.  Exceptions are intrinsically serialized contexts like pci_probe.
- */
+ 
 static int read_phy_reg(struct fw_ohci *ohci, int addr)
 {
 	u32 val;
@@ -600,15 +572,12 @@ static int read_phy_reg(struct fw_ohci *ohci, int addr)
 	for (i = 0; i < 3 + 100; i++) {
 		val = reg_read(ohci, OHCI1394_PhyControl);
 		if (!~val)
-			return -ENODEV; /* Card was ejected. */
+			return -ENODEV;  
 
 		if (val & OHCI1394_PhyControl_ReadDone)
 			return OHCI1394_PhyControl_ReadData(val);
 
-		/*
-		 * Try a few times without waiting.  Sleeping is necessary
-		 * only when the link/PHY interface is busy.
-		 */
+		 
 		if (i >= 3)
 			msleep(1);
 	}
@@ -627,7 +596,7 @@ static int write_phy_reg(const struct fw_ohci *ohci, int addr, u32 val)
 	for (i = 0; i < 3 + 100; i++) {
 		val = reg_read(ohci, OHCI1394_PhyControl);
 		if (!~val)
-			return -ENODEV; /* Card was ejected. */
+			return -ENODEV;  
 
 		if (!(val & OHCI1394_PhyControl_WritePending))
 			return 0;
@@ -648,10 +617,7 @@ static int update_phy_reg(struct fw_ohci *ohci, int addr,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * The interrupt status bits are cleared by writing a one bit.
-	 * Avoid clearing them unless explicitly requested in set_bits.
-	 */
+	 
 	if (addr == 5)
 		clear_bits |= PHY_INT_STATUS_BITS;
 
@@ -708,7 +674,7 @@ static void ar_context_link_page(struct ar_context *ctx, unsigned int index)
 	d->res_count       =  cpu_to_le16(PAGE_SIZE);
 	d->transfer_status =  0;
 
-	wmb(); /* finish init of new descriptors before branch_address update */
+	wmb();  
 	d = &ctx->descriptors[ctx->last_buffer_index];
 	d->branch_address  |= cpu_to_le32(1);
 
@@ -744,7 +710,7 @@ static void ar_context_abort(struct ar_context *ctx, const char *error_msg)
 
 		ohci_err(ohci, "AR error: %s; DMA stopped\n", error_msg);
 	}
-	/* FIXME: restart? */
+	 
 }
 
 static inline unsigned int ar_next_buffer_index(unsigned int index)
@@ -757,10 +723,7 @@ static inline unsigned int ar_first_buffer_index(struct ar_context *ctx)
 	return ar_next_buffer_index(ctx->last_buffer_index);
 }
 
-/*
- * We search for the buffer that contains the last AR packet DMA data written
- * by the controller.
- */
+ 
 static unsigned int ar_search_last_active_buffer(struct ar_context *ctx,
 						 unsigned int *buffer_offset)
 {
@@ -770,25 +733,16 @@ static unsigned int ar_search_last_active_buffer(struct ar_context *ctx,
 	i = ar_first_buffer_index(ctx);
 	res_count = READ_ONCE(ctx->descriptors[i].res_count);
 
-	/* A buffer that is not yet completely filled must be the last one. */
+	 
 	while (i != last && res_count == 0) {
 
-		/* Peek at the next descriptor. */
+		 
 		next_i = ar_next_buffer_index(i);
-		rmb(); /* read descriptors in order */
+		rmb();  
 		next_res_count = READ_ONCE(ctx->descriptors[next_i].res_count);
-		/*
-		 * If the next descriptor is still empty, we must stop at this
-		 * descriptor.
-		 */
+		 
 		if (next_res_count == cpu_to_le16(PAGE_SIZE)) {
-			/*
-			 * The exception is when the DMA data for one packet is
-			 * split over three buffers; in this case, the middle
-			 * buffer's descriptor might be never updated by the
-			 * controller and look still empty, and we have to peek
-			 * at the third one.
-			 */
+			 
 			if (MAX_AR_PACKET_SIZE > PAGE_SIZE && i != last) {
 				next_i = ar_next_buffer_index(next_i);
 				rmb();
@@ -805,7 +759,7 @@ next_buffer_is_active:
 		res_count = next_res_count;
 	}
 
-	rmb(); /* read res_count before the DMA data */
+	rmb();  
 
 	*buffer_offset = PAGE_SIZE - le16_to_cpu(res_count);
 	if (*buffer_offset > PAGE_SIZE) {
@@ -895,7 +849,7 @@ static __le32 *handle_ar_packet(struct ar_context *ctx, __le32 *buffer)
 
 	p.payload = (void *) buffer + p.header_length;
 
-	/* FIXME: What to do about evt_* errors? */
+	 
 	length = (p.header_length + p.payload_length + 3) / 4;
 	status = cond_le32_to_cpu(buffer[length]);
 	evt    = (status >> 16) & 0x1f;
@@ -907,27 +861,12 @@ static __le32 *handle_ar_packet(struct ar_context *ctx, __le32 *buffer)
 
 	log_ar_at_event(ohci, 'R', p.speed, p.header, evt);
 
-	/*
-	 * Several controllers, notably from NEC and VIA, forget to
-	 * write ack_complete status at PHY packet reception.
-	 */
+	 
 	if (evt == OHCI1394_evt_no_status &&
 	    (p.header[0] & 0xff) == (OHCI1394_phy_tcode << 4))
 		p.ack = ACK_COMPLETE;
 
-	/*
-	 * The OHCI bus reset handler synthesizes a PHY packet with
-	 * the new generation number when a bus reset happens (see
-	 * section 8.4.2.3).  This helps us determine when a request
-	 * was received and make sure we send the response in the same
-	 * generation.  We only need this for requests; for responses
-	 * we use the unique tlabel for finding the matching
-	 * request.
-	 *
-	 * Alas some chips sometimes emit bus reset packets with a
-	 * wrong generation.  We set the correct generation for these
-	 * at a slightly incorrect time (in bus_reset_work).
-	 */
+	 
 	if (evt == OHCI1394_evt_bus_reset) {
 		if (!(ohci->quirks & QUIRK_RESET_PACKET))
 			ohci->request_generation = (p.header[2] >> 16) & 0xff;
@@ -984,17 +923,12 @@ static void ar_context_tasklet(unsigned long data)
 	end = ctx->buffer + end_buffer_index * PAGE_SIZE + end_buffer_offset;
 
 	if (end_buffer_index < ar_first_buffer_index(ctx)) {
-		/*
-		 * The filled part of the overall buffer wraps around; handle
-		 * all packets up to the buffer end here.  If the last packet
-		 * wraps around, its tail will be visible after the buffer end
-		 * because the buffer start pages are mapped there again.
-		 */
+		 
 		void *buffer_end = ctx->buffer + AR_BUFFERS * PAGE_SIZE;
 		p = handle_ar_packets(ctx, p, buffer_end);
 		if (p < buffer_end)
 			goto error;
-		/* adjust p to point back into the actual buffer */
+		 
 		p -= AR_BUFFERS * PAGE_SIZE;
 	}
 
@@ -1086,7 +1020,7 @@ static struct descriptor *find_branch_descriptor(struct descriptor *d, int z)
 
 	branch = d->control & cpu_to_le16(DESCRIPTOR_BRANCH_ALWAYS);
 
-	/* figure out which descriptor the branch address goes in */
+	 
 	if (z == 2 && branch == cpu_to_le16(DESCRIPTOR_BRANCH_ALWAYS))
 		return d;
 	else
@@ -1111,8 +1045,7 @@ static void context_tasklet(unsigned long data)
 		address &= ~0xf;
 		ctx->current_bus = address;
 
-		/* If the branch address points to a buffer outside of the
-		 * current buffer, advance to the next buffer. */
+		 
 		if (address < desc->buffer_bus ||
 				address >= desc->buffer_bus + desc->used)
 			desc = list_entry(desc->list.next,
@@ -1124,8 +1057,7 @@ static void context_tasklet(unsigned long data)
 			break;
 
 		if (old_desc != desc) {
-			/* If we've advanced to the next buffer, move the
-			 * previous buffer to the free list. */
+			 
 			unsigned long flags;
 			old_desc->used = 0;
 			spin_lock_irqsave(&ctx->ohci->lock, flags);
@@ -1136,20 +1068,14 @@ static void context_tasklet(unsigned long data)
 	}
 }
 
-/*
- * Allocate a new buffer and add it to the list of free buffers for this
- * context.  Must be called with ohci->lock held.
- */
+ 
 static int context_add_buffer(struct context *ctx)
 {
 	struct descriptor_buffer *desc;
 	dma_addr_t bus_addr;
 	int offset;
 
-	/*
-	 * 16MB of descriptors should be far more than enough for any DMA
-	 * program.  This will catch run-away userspace or DoS attacks.
-	 */
+	 
 	if (ctx->total_allocation >= 16*1024*1024)
 		return -ENOMEM;
 
@@ -1158,12 +1084,7 @@ static int context_add_buffer(struct context *ctx)
 		return -ENOMEM;
 
 	offset = (void *)&desc->buffer - (void *)desc;
-	/*
-	 * Some controllers, like JMicron ones, always issue 0x20-byte DMA reads
-	 * for descriptors, even 0x10-byte ones. This can cause page faults when
-	 * an IOMMU is in use and the oversized read crosses a page boundary.
-	 * Work around this by always leaving at least 0x10 bytes of padding.
-	 */
+	 
 	desc->buffer_size = PAGE_SIZE - offset - 0x10;
 	desc->buffer_bus = bus_addr + offset;
 	desc->used = 0;
@@ -1191,11 +1112,7 @@ static int context_init(struct context *ctx, struct fw_ohci *ohci,
 	tasklet_init(&ctx->tasklet, context_tasklet, (unsigned long)ctx);
 	ctx->callback = callback;
 
-	/*
-	 * We put a dummy descriptor in the buffer that has a NULL
-	 * branch address and looks like it's been sent.  That way we
-	 * have a descriptor to append DMA programs to.
-	 */
+	 
 	memset(ctx->buffer_tail->buffer, 0, sizeof(*ctx->buffer_tail->buffer));
 	ctx->buffer_tail->buffer->control = cpu_to_le16(DESCRIPTOR_OUTPUT_LAST);
 	ctx->buffer_tail->buffer->transfer_status = cpu_to_le16(0x8011);
@@ -1218,7 +1135,7 @@ static void context_release(struct context *ctx)
 	}
 }
 
-/* Must be called with ohci->lock held */
+ 
 static struct descriptor *context_get_descriptors(struct context *ctx,
 						  int z, dma_addr_t *d_bus)
 {
@@ -1229,12 +1146,10 @@ static struct descriptor *context_get_descriptors(struct context *ctx,
 		return NULL;
 
 	if (z * sizeof(*d) > desc->buffer_size - desc->used) {
-		/* No room for the descriptor in this buffer, so advance to the
-		 * next one. */
+		 
 
 		if (desc->list.next == &ctx->buffer_list) {
-			/* If there is no free buffer next in the list,
-			 * allocate one. */
+			 
 			if (context_add_buffer(ctx) < 0)
 				return NULL;
 		}
@@ -1273,20 +1188,12 @@ static void context_append(struct context *ctx,
 
 	desc->used += (z + extra) * sizeof(*d);
 
-	wmb(); /* finish init of new descriptors before branch_address update */
+	wmb();  
 
 	d_branch = find_branch_descriptor(ctx->prev, ctx->prev_z);
 	d_branch->branch_address = cpu_to_le32(d_bus | z);
 
-	/*
-	 * VT6306 incorrectly checks only the single descriptor at the
-	 * CommandPtr when the wake bit is written, so if it's a
-	 * multi-descriptor block starting with an INPUT_MORE, put a copy of
-	 * the branch address in the first descriptor.
-	 *
-	 * Not doing this for transmit contexts since not sure how it interacts
-	 * with skip addresses.
-	 */
+	 
 	if (unlikely(ctx->ohci->quirks & QUIRK_IR_WAKE) &&
 	    d_branch != ctx->prev &&
 	    (ctx->prev->control & cpu_to_le16(DESCRIPTOR_CMD)) ==
@@ -1323,11 +1230,7 @@ struct driver_data {
 	struct fw_packet *packet;
 };
 
-/*
- * This function apppends a packet to the DMA queue for transmission.
- * Must always be called with the ochi->lock held to ensure proper
- * generation handling and locking around packet queue manipulation.
- */
+ 
 static int at_context_queue_packet(struct context *ctx,
 				   struct fw_packet *packet)
 {
@@ -1347,11 +1250,7 @@ static int at_context_queue_packet(struct context *ctx,
 	d[0].control   = cpu_to_le16(DESCRIPTOR_KEY_IMMEDIATE);
 	d[0].res_count = cpu_to_le16(packet->timestamp);
 
-	/*
-	 * The DMA format for asynchronous link packets is different
-	 * from the IEEE1394 layout, so shift the fields around
-	 * accordingly.
-	 */
+	 
 
 	tcode = (packet->header[0] >> 4) & 0x0f;
 	header = (__le32 *) &d[1];
@@ -1398,7 +1297,7 @@ static int at_context_queue_packet(struct context *ctx,
 		break;
 
 	default:
-		/* BUG(); */
+		 
 		packet->ack = RCODE_SEND_ERROR;
 		return -1;
 	}
@@ -1439,7 +1338,7 @@ static int at_context_queue_packet(struct context *ctx,
 				     DESCRIPTOR_IRQ_ALWAYS |
 				     DESCRIPTOR_BRANCH_ALWAYS);
 
-	/* FIXME: Document how the locking works. */
+	 
 	if (ohci->generation != packet->generation) {
 		if (packet->payload_mapped)
 			dma_unmap_single(ohci->card.device, payload_bus,
@@ -1479,13 +1378,13 @@ static int handle_at_packet(struct context *context,
 	int evt;
 
 	if (last->transfer_status == 0 && !context->flushing)
-		/* This descriptor isn't done yet, stop iteration. */
+		 
 		return 0;
 
 	driver_data = (struct driver_data *) &d[3];
 	packet = driver_data->packet;
 	if (packet == NULL)
-		/* This packet was cancelled, just continue. */
+		 
 		return 1;
 
 	if (packet->payload_mapped)
@@ -1499,15 +1398,12 @@ static int handle_at_packet(struct context *context,
 
 	switch (evt) {
 	case OHCI1394_evt_timeout:
-		/* Async response transmit timed out. */
+		 
 		packet->ack = RCODE_CANCELLED;
 		break;
 
 	case OHCI1394_evt_flushed:
-		/*
-		 * The packet was flushed should give same error as
-		 * when we try to use a stale generation count.
-		 */
+		 
 		packet->ack = RCODE_GENERATION;
 		break;
 
@@ -1515,10 +1411,7 @@ static int handle_at_packet(struct context *context,
 		if (context->flushing)
 			packet->ack = RCODE_GENERATION;
 		else {
-			/*
-			 * Using a valid (current) generation count, but the
-			 * node is not on the bus or not sending acks.
-			 */
+			 
 			packet->ack = RCODE_NO_ACK;
 		}
 		break;
@@ -1646,7 +1539,7 @@ static void handle_local_request(struct context *ctx, struct fw_packet *packet)
 		packet->header[2];
 	csr = offset - CSR_REGISTER_BASE;
 
-	/* Handle config rom reads. */
+	 
 	if (csr >= CSR_CONFIG_ROM && csr < CSR_CONFIG_ROM_END)
 		handle_local_rom(ctx->ohci, packet, csr);
 	else switch (csr) {
@@ -1683,7 +1576,7 @@ static void at_context_transmit(struct context *ctx, struct fw_packet *packet)
 	    ctx->ohci->generation == packet->generation) {
 		spin_unlock_irqrestore(&ctx->ohci->lock, flags);
 
-		// Timestamping on behalf of the hardware.
+		
 		packet->timestamp = cycle_time_to_ohci_tstamp(get_cycle_time(ctx->ohci));
 
 		handle_local_request(ctx, packet);
@@ -1694,7 +1587,7 @@ static void at_context_transmit(struct context *ctx, struct fw_packet *packet)
 	spin_unlock_irqrestore(&ctx->ohci->lock, flags);
 
 	if (ret < 0) {
-		// Timestamping on behalf of the hardware.
+		
 		packet->timestamp = cycle_time_to_ohci_tstamp(get_cycle_time(ctx->ohci));
 
 		packet->callback(packet, &ctx->ohci->card, packet->ack);
@@ -1733,7 +1626,7 @@ static void handle_dead_contexts(struct fw_ohci *ohci)
 		sprintf(name, "IR%u", i);
 		detect_dead_context(ohci, name, OHCI1394_IsoRcvContextBase(i));
 	}
-	/* TODO: maybe try to flush and restart the dead contexts */
+	 
 }
 
 static u32 cycle_timer_ticks(u32 cycle_timer)
@@ -1747,21 +1640,7 @@ static u32 cycle_timer_ticks(u32 cycle_timer)
 	return ticks;
 }
 
-/*
- * Some controllers exhibit one or more of the following bugs when updating the
- * iso cycle timer register:
- *  - When the lowest six bits are wrapping around to zero, a read that happens
- *    at the same time will return garbage in the lowest ten bits.
- *  - When the cycleOffset field wraps around to zero, the cycleCount field is
- *    not incremented for about 60 ns.
- *  - Occasionally, the entire register reads zero.
- *
- * To catch these, we read the register three times and ensure that the
- * difference between each two consecutive reads is approximately the same, i.e.
- * less than twice the other.  Furthermore, any negative difference indicates an
- * error.  (A PCI read should take at least 20 ticks of the 24.576 MHz timer to
- * execute, so we have enough precision to compute the ratio of the differences.)
- */
+ 
 static u32 get_cycle_time(struct fw_ohci *ohci)
 {
 	u32 c0, c1, c2;
@@ -1795,12 +1674,7 @@ static u32 get_cycle_time(struct fw_ohci *ohci)
 	return c2;
 }
 
-/*
- * This function has to be called at least every 64 seconds.  The bus_time
- * field stores not only the upper 25 bits of the BUS_TIME register but also
- * the most significant bit of the cycle timer in bit 6 so that we can detect
- * changes in this bit.
- */
+ 
 static u32 update_bus_time(struct fw_ohci *ohci)
 {
 	u32 cycle_time_seconds = get_cycle_time(ohci) >> 25;
@@ -1832,11 +1706,11 @@ static int get_status_for_port(struct fw_ohci *ohci, int port_index)
 
 	switch (reg & 0x0f) {
 	case 0x06:
-		return 2;	/* is child node (connected to parent node) */
+		return 2;	 
 	case 0x0e:
-		return 3;	/* is parent node (connected to child node) */
+		return 3;	 
 	}
-	return 1;		/* not connected */
+	return 1;		 
 }
 
 static int get_self_id_pos(struct fw_ohci *ohci, u32 self_id,
@@ -1861,16 +1735,16 @@ static int initiated_reset(struct fw_ohci *ohci)
 	int ret = 0;
 
 	mutex_lock(&ohci->phy_reg_mutex);
-	reg = write_phy_reg(ohci, 7, 0xe0); /* Select page 7 */
+	reg = write_phy_reg(ohci, 7, 0xe0);  
 	if (reg >= 0) {
 		reg = read_phy_reg(ohci, 8);
 		reg |= 0x40;
-		reg = write_phy_reg(ohci, 8, reg); /* set PMODE bit */
+		reg = write_phy_reg(ohci, 8, reg);  
 		if (reg >= 0) {
-			reg = read_phy_reg(ohci, 12); /* read register 12 */
+			reg = read_phy_reg(ohci, 12);  
 			if (reg >= 0) {
 				if ((reg & 0x08) == 0x08) {
-					/* bit 3 indicates "initiated reset" */
+					 
 					ret = 0x2;
 				}
 			}
@@ -1880,15 +1754,11 @@ static int initiated_reset(struct fw_ohci *ohci)
 	return ret;
 }
 
-/*
- * TI TSB82AA2B and TSB12LV26 do not receive the selfID of a locally
- * attached TSB41BA3D phy; see http://www.ti.com/litv/pdf/sllz059.
- * Construct the selfID from phy register contents.
- */
+ 
 static int find_and_insert_self_id(struct fw_ohci *ohci, int self_id_count)
 {
 	int reg, i, pos, status;
-	/* link active 1, speed 3, bridge 0, contender 1, more packets 0 */
+	 
 	u32 self_id = 0x8040c800;
 
 	reg = reg_read(ohci, OHCI1394_NodeID);
@@ -1897,17 +1767,17 @@ static int find_and_insert_self_id(struct fw_ohci *ohci, int self_id_count)
 			    "node ID not valid, new bus reset in progress\n");
 		return -EBUSY;
 	}
-	self_id |= ((reg & 0x3f) << 24); /* phy ID */
+	self_id |= ((reg & 0x3f) << 24);  
 
 	reg = ohci_read_phy_reg(&ohci->card, 4);
 	if (reg < 0)
 		return reg;
-	self_id |= ((reg & 0x07) << 8); /* power class */
+	self_id |= ((reg & 0x07) << 8);  
 
 	reg = ohci_read_phy_reg(&ohci->card, 1);
 	if (reg < 0)
 		return reg;
-	self_id |= ((reg & 0x3f) << 16); /* gap count */
+	self_id |= ((reg & 0x3f) << 16);  
 
 	for (i = 0; i < 3; i++) {
 		status = get_status_for_port(ohci, i);
@@ -1963,12 +1833,7 @@ static void bus_reset_work(struct work_struct *work)
 		ohci_notice(ohci, "self ID receive error\n");
 		return;
 	}
-	/*
-	 * The count in the SelfIDCount register is the number of
-	 * bytes in the self ID receive buffer.  Since we also receive
-	 * the inverted quadlets and a header quadlet, we shift one
-	 * bit extra to get the actual number of self IDs.
-	 */
+	 
 	self_id_count = (reg >> 3) & 0xff;
 
 	if (self_id_count > 252) {
@@ -1984,13 +1849,7 @@ static void bus_reset_work(struct work_struct *work)
 		u32 id2 = cond_le32_to_cpu(ohci->self_id[i + 1]);
 
 		if (id != ~id2) {
-			/*
-			 * If the invalid data looks like a cycle start packet,
-			 * it's likely to be the result of the cycle master
-			 * having a wrong gap count.  In this case, the self IDs
-			 * so far are valid and should be processed so that the
-			 * bus manager can then correct the gap count.
-			 */
+			 
 			if (id == 0xffff008f) {
 				ohci_notice(ohci, "ignoring spurious self IDs\n");
 				self_id_count = j;
@@ -2019,19 +1878,7 @@ static void bus_reset_work(struct work_struct *work)
 	}
 	rmb();
 
-	/*
-	 * Check the consistency of the self IDs we just read.  The
-	 * problem we face is that a new bus reset can start while we
-	 * read out the self IDs from the DMA buffer. If this happens,
-	 * the DMA buffer will be overwritten with new self IDs and we
-	 * will read out inconsistent data.  The OHCI specification
-	 * (section 11.2) recommends a technique similar to
-	 * linux/seqlock.h, where we remember the generation of the
-	 * self IDs in the buffer before reading them out and compare
-	 * it to the current generation after reading them out.  If
-	 * the two generations match we know we have a consistent set
-	 * of self IDs.
-	 */
+	 
 
 	new_generation = (reg_read(ohci, OHCI1394_SelfIDCount) >> 16) & 0xff;
 	if (new_generation != generation) {
@@ -2039,20 +1886,16 @@ static void bus_reset_work(struct work_struct *work)
 		return;
 	}
 
-	/* FIXME: Document how the locking works. */
+	 
 	spin_lock_irq(&ohci->lock);
 
-	ohci->generation = -1; /* prevent AT packet queueing */
+	ohci->generation = -1;  
 	context_stop(&ohci->at_request_ctx);
 	context_stop(&ohci->at_response_ctx);
 
 	spin_unlock_irq(&ohci->lock);
 
-	/*
-	 * Per OHCI 1.2 draft, clause 7.2.3.3, hardware may leave unsent
-	 * packets in the AT queues and software needs to drain them.
-	 * Some OHCI 1.1 controllers (JMicron) apparently require this too.
-	 */
+	 
 	at_context_flush(&ohci->at_request_ctx);
 	at_context_flush(&ohci->at_response_ctx);
 
@@ -2064,14 +1907,7 @@ static void bus_reset_work(struct work_struct *work)
 	if (ohci->quirks & QUIRK_RESET_PACKET)
 		ohci->request_generation = generation;
 
-	/*
-	 * This next bit is unrelated to the AT context stuff but we
-	 * have to do it under the spinlock also.  If a new config rom
-	 * was set up before this reset, the old one is now no longer
-	 * in use and we can free it. Update the config rom pointers
-	 * to point to the current config rom and clear the
-	 * next_config_rom pointer so a new update can take place.
-	 */
+	 
 
 	if (ohci->next_config_rom != NULL) {
 		if (ohci->next_config_rom != ohci->config_rom) {
@@ -2082,12 +1918,7 @@ static void bus_reset_work(struct work_struct *work)
 		ohci->config_rom_bus  = ohci->next_config_rom_bus;
 		ohci->next_config_rom = NULL;
 
-		/*
-		 * Restore config_rom image and manually update
-		 * config_rom registers.  Writing the header quadlet
-		 * will indicate that the config rom is ready, so we
-		 * do that last.
-		 */
+		 
 		reg_write(ohci, OHCI1394_BusOptions,
 			  be32_to_cpu(ohci->config_rom[2]));
 		ohci->config_rom[0] = ohci->next_header;
@@ -2124,10 +1955,7 @@ static irqreturn_t irq_handler(int irq, void *data)
 	if (!event || !~event)
 		return IRQ_NONE;
 
-	/*
-	 * busReset and postedWriteErr must not be cleared yet
-	 * (OHCI 1.1 clauses 7.2.3.2 and 13.2.8.1)
-	 */
+	 
 	reg_write(ohci, OHCI1394_IntEventClear,
 		  event & ~(OHCI1394_busReset | OHCI1394_postedWriteErr));
 	log_irqs(ohci, event);
@@ -2191,12 +2019,7 @@ static irqreturn_t irq_handler(int irq, void *data)
 	}
 
 	if (unlikely(event & OHCI1394_cycleInconsistent)) {
-		/*
-		 * We need to clear this event bit in order to make
-		 * cycleMatch isochronous I/O work.  In theory we should
-		 * stop active cycleMatch iso contexts now and restart
-		 * them at least two cycles later.  (FIXME?)
-		 */
+		 
 		if (printk_ratelimit())
 			ohci_notice(ohci, "isochronous cycle inconsistent\n");
 	}
@@ -2223,7 +2046,7 @@ static int software_reset(struct fw_ohci *ohci)
 	for (i = 0; i < 500; i++) {
 		val = reg_read(ohci, OHCI1394_HCControlSet);
 		if (!~val)
-			return -ENODEV; /* Card was ejected. */
+			return -ENODEV;  
 
 		if (!(val & OHCI1394_HCControl_softReset))
 			return 0;
@@ -2248,12 +2071,12 @@ static int configure_1394a_enhancements(struct fw_ohci *ohci)
 	bool enable_1394a;
 	int ret, clear, set, offset;
 
-	/* Check if the driver should configure link and PHY. */
+	 
 	if (!(reg_read(ohci, OHCI1394_HCControlSet) &
 	      OHCI1394_HCControl_programPhyEnable))
 		return 0;
 
-	/* Paranoia: check whether the PHY supports 1394a, too. */
+	 
 	enable_1394a = false;
 	ret = read_phy_reg(ohci, 2);
 	if (ret < 0)
@@ -2269,7 +2092,7 @@ static int configure_1394a_enhancements(struct fw_ohci *ohci)
 	if (ohci->quirks & QUIRK_NO_1394A)
 		enable_1394a = false;
 
-	/* Configure PHY and link consistently. */
+	 
 	if (enable_1394a) {
 		clear = 0;
 		set = PHY_ENABLE_ACCEL | PHY_ENABLE_MULTI;
@@ -2287,7 +2110,7 @@ static int configure_1394a_enhancements(struct fw_ohci *ohci)
 		offset = OHCI1394_HCControlClear;
 	reg_write(ohci, offset, OHCI1394_HCControl_aPhyEnhanceEnable);
 
-	/* Clean up: configuration has been taken care of. */
+	 
 	reg_write(ohci, OHCI1394_HCControlClear,
 		  OHCI1394_HCControl_programPhyEnable);
 
@@ -2296,7 +2119,7 @@ static int configure_1394a_enhancements(struct fw_ohci *ohci)
 
 static int probe_tsb41ba3d(struct fw_ohci *ohci)
 {
-	/* TI vendor ID = 0x080028, TSB41BA3D product ID = 0x833005 (sic) */
+	 
 	static const u8 id[] = { 0x08, 0x00, 0x28, 0x83, 0x30, 0x05, };
 	int reg, i;
 
@@ -2329,18 +2152,7 @@ static int ohci_enable(struct fw_card *card,
 		return ret;
 	}
 
-	/*
-	 * Now enable LPS, which we need in order to start accessing
-	 * most of the registers.  In fact, on some cards (ALI M5251),
-	 * accessing registers in the SClk domain without LPS enabled
-	 * will lock up the machine.  Wait 50msec to make sure we have
-	 * full link enabled.  However, with some cards (well, at least
-	 * a JMicron PCIe card), we have to try again sometimes.
-	 *
-	 * TI TSB82AA2 + TSB81BA3(A) cards signal LPS enabled early but
-	 * cannot actually use the phy at that time.  These need tens of
-	 * millisecods pause between LPS write and first phy access too.
-	 */
+	 
 
 	reg_write(ohci, OHCI1394_HCControlSet,
 		  OHCI1394_HCControl_LPS |
@@ -2396,7 +2208,7 @@ static int ohci_enable(struct fw_card *card,
 		card->broadcast_channel_auto_allocated = true;
 	}
 
-	/* Get implemented bits of the priority arbitration request counter. */
+	 
 	reg_write(ohci, OHCI1394_FairnessControl, 0x3f);
 	ohci->pri_req_max = reg_read(ohci, OHCI1394_FairnessControl) & 0x3f;
 	reg_write(ohci, OHCI1394_FairnessControl, 0);
@@ -2410,29 +2222,12 @@ static int ohci_enable(struct fw_card *card,
 	if (ret < 0)
 		return ret;
 
-	/* Activate link_on bit and contender bit in our self ID packets.*/
+	 
 	ret = ohci_update_phy_reg(card, 4, 0, PHY_LINK_ACTIVE | PHY_CONTENDER);
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * When the link is not yet enabled, the atomic config rom
-	 * update mechanism described below in ohci_set_config_rom()
-	 * is not active.  We have to update ConfigRomHeader and
-	 * BusOptions manually, and the write to ConfigROMmap takes
-	 * effect immediately.  We tie this to the enabling of the
-	 * link, so we have a valid config rom before enabling - the
-	 * OHCI requires that ConfigROMhdr and BusOptions have valid
-	 * values before enabling.
-	 *
-	 * However, when the ConfigROMmap is written, some controllers
-	 * always read back quadlets 0 and 2 from the config rom to
-	 * the ConfigRomHeader and BusOptions registers on bus reset.
-	 * They shouldn't do that in this initial case where the link
-	 * isn't enabled.  This means we have to use the same
-	 * workaround here, setting the bus header to 0 and then write
-	 * the right values in the bus reset tasklet.
-	 */
+	 
 
 	if (config_rom) {
 		ohci->next_config_rom = dmam_alloc_coherent(ohci->card.device, CONFIG_ROM_SIZE,
@@ -2442,10 +2237,7 @@ static int ohci_enable(struct fw_card *card,
 
 		copy_config_rom(ohci->next_config_rom, config_rom, length);
 	} else {
-		/*
-		 * In the suspend case, config_rom is NULL, which
-		 * means that we just reuse the old config rom.
-		 */
+		 
 		ohci->next_config_rom = ohci->config_rom;
 		ohci->next_config_rom_bus = ohci->config_rom_bus;
 	}
@@ -2486,7 +2278,7 @@ static int ohci_enable(struct fw_card *card,
 
 	flush_writes(ohci);
 
-	/* We are ready to go, reset bus to finish initialization. */
+	 
 	fw_schedule_bus_reset(&ohci->card, false, true);
 
 	return 0;
@@ -2501,32 +2293,7 @@ static int ohci_set_config_rom(struct fw_card *card,
 
 	ohci = fw_ohci(card);
 
-	/*
-	 * When the OHCI controller is enabled, the config rom update
-	 * mechanism is a bit tricky, but easy enough to use.  See
-	 * section 5.5.6 in the OHCI specification.
-	 *
-	 * The OHCI controller caches the new config rom address in a
-	 * shadow register (ConfigROMmapNext) and needs a bus reset
-	 * for the changes to take place.  When the bus reset is
-	 * detected, the controller loads the new values for the
-	 * ConfigRomHeader and BusOptions registers from the specified
-	 * config rom and loads ConfigROMmap from the ConfigROMmapNext
-	 * shadow register. All automatically and atomically.
-	 *
-	 * Now, there's a twist to this story.  The automatic load of
-	 * ConfigRomHeader and BusOptions doesn't honor the
-	 * noByteSwapData bit, so with a be32 config rom, the
-	 * controller will load be32 values in to these registers
-	 * during the atomic update, even on litte endian
-	 * architectures.  The workaround we use is to put a 0 in the
-	 * header quadlet; 0 is endian agnostic and means that the
-	 * config rom isn't ready yet.  In the bus reset tasklet we
-	 * then set up the real values for the two registers.
-	 *
-	 * We use ohci->lock to avoid racing with the code that sets
-	 * ohci->next_config_rom to NULL (see bus_reset_work).
-	 */
+	 
 
 	next_config_rom = dmam_alloc_coherent(ohci->card.device, CONFIG_ROM_SIZE,
 					      &next_config_rom_bus, GFP_KERNEL);
@@ -2535,16 +2302,7 @@ static int ohci_set_config_rom(struct fw_card *card,
 
 	spin_lock_irq(&ohci->lock);
 
-	/*
-	 * If there is not an already pending config_rom update,
-	 * push our new allocation into the ohci->next_config_rom
-	 * and then mark the local variable as null so that we
-	 * won't deallocate the new buffer.
-	 *
-	 * OTOH, if there is a pending config_rom update, just
-	 * use that buffer with the new config_rom data, and
-	 * let this routine free the unused DMA allocation.
-	 */
+	 
 
 	if (ohci->next_config_rom == NULL) {
 		ohci->next_config_rom = next_config_rom;
@@ -2561,19 +2319,13 @@ static int ohci_set_config_rom(struct fw_card *card,
 
 	spin_unlock_irq(&ohci->lock);
 
-	/* If we didn't use the DMA allocation, delete it. */
+	 
 	if (next_config_rom != NULL) {
 		dmam_free_coherent(ohci->card.device, CONFIG_ROM_SIZE, next_config_rom,
 				   next_config_rom_bus);
 	}
 
-	/*
-	 * Now initiate a bus reset to have the changes take
-	 * effect. We clean up the old config rom memory and DMA
-	 * mappings in the bus reset tasklet, since the OHCI
-	 * controller could need to access it before the bus reset
-	 * takes effect.
-	 */
+	 
 
 	fw_schedule_bus_reset(&ohci->card, true, true);
 
@@ -2614,7 +2366,7 @@ static int ohci_cancel_packet(struct fw_card *card, struct fw_packet *packet)
 	driver_data->packet = NULL;
 	packet->ack = RCODE_CANCELLED;
 
-	// Timestamping on behalf of the hardware.
+	
 	packet->timestamp = cycle_time_to_ohci_tstamp(get_cycle_time(ohci));
 
 	packet->callback(packet, &ohci->card, packet->ack);
@@ -2635,10 +2387,7 @@ static int ohci_enable_phys_dma(struct fw_card *card,
 	if (param_remote_dma)
 		return 0;
 
-	/*
-	 * FIXME:  Make sure this bitmask is cleared when we clear the busReset
-	 * interrupt bit.  Clear physReqResourceAllBuses on bus reset.
-	 */
+	 
 
 	spin_lock_irqsave(&ohci->lock, flags);
 
@@ -2647,10 +2396,7 @@ static int ohci_enable_phys_dma(struct fw_card *card,
 		goto out;
 	}
 
-	/*
-	 * Note, if the node ID contains a non-local bus ID, physical DMA is
-	 * enabled for _all_ nodes on remote buses.
-	 */
+	 
 
 	n = (node_id & 0xffc0) == LOCAL_BUS ? node_id & 0x3f : 63;
 	if (n < 32)
@@ -2692,11 +2438,7 @@ static u32 ohci_read_csr(struct fw_card *card, int csr_offset)
 		return get_cycle_time(ohci);
 
 	case CSR_BUS_TIME:
-		/*
-		 * We might be called just after the cycle timer has wrapped
-		 * around but just before the cycle64Seconds handler, so we
-		 * better check here, too, if the bus time needs to be updated.
-		 */
+		 
 		spin_lock_irqsave(&ohci->lock, flags);
 		value = update_bus_time(ohci);
 		spin_unlock_irqrestore(&ohci->lock, flags);
@@ -2800,15 +2542,11 @@ static void copy_iso_headers(struct iso_context *ctx, const u32 *dma_hdr)
 	ctx_hdr = ctx->header + ctx->header_length;
 	ctx->last_timestamp = (u16)le32_to_cpu((__force __le32)dma_hdr[0]);
 
-	/*
-	 * The two iso header quadlets are byteswapped to little
-	 * endian by the controller, but we want to present them
-	 * as big endian for consistency with the bus endianness.
-	 */
+	 
 	if (ctx->base.header_size > 0)
-		ctx_hdr[0] = swab32(dma_hdr[1]); /* iso packet header */
+		ctx_hdr[0] = swab32(dma_hdr[1]);  
 	if (ctx->base.header_size > 4)
-		ctx_hdr[1] = swab32(dma_hdr[0]); /* timestamp */
+		ctx_hdr[1] = swab32(dma_hdr[0]);  
 	if (ctx->base.header_size > 8)
 		memcpy(&ctx_hdr[2], &dma_hdr[2], ctx->base.header_size - 8);
 	ctx->header_length += ctx->base.header_size;
@@ -2827,7 +2565,7 @@ static int handle_ir_packet_per_buffer(struct context *context,
 		if (pd->transfer_status)
 			break;
 	if (pd > last)
-		/* Descriptor(s) not done yet, stop iteration */
+		 
 		return 0;
 
 	while (!(d->control & cpu_to_le16(DESCRIPTOR_BRANCH_ALWAYS))) {
@@ -2848,7 +2586,7 @@ static int handle_ir_packet_per_buffer(struct context *context,
 	return 1;
 }
 
-/* d == last because each descriptor block is only a single descriptor. */
+ 
 static int handle_ir_buffer_fill(struct context *context,
 				 struct descriptor *d,
 				 struct descriptor *last)
@@ -2869,7 +2607,7 @@ static int handle_ir_buffer_fill(struct context *context,
 	}
 
 	if (res_count != 0)
-		/* Descriptor(s) not done yet, stop iteration */
+		 
 		return 0;
 
 	dma_sync_single_range_for_cpu(context->ohci->card.device,
@@ -2906,18 +2644,14 @@ static inline void sync_it_packet_for_cpu(struct context *context,
 	__le16 control;
 	u32 buffer_dma;
 
-	/* only packets beginning with OUTPUT_MORE* have data buffers */
+	 
 	if (pd->control & cpu_to_le16(DESCRIPTOR_BRANCH_ALWAYS))
 		return;
 
-	/* skip over the OUTPUT_MORE_IMMEDIATE descriptor */
+	 
 	pd += 2;
 
-	/*
-	 * If the packet has a header, the first OUTPUT_MORE/LAST descriptor's
-	 * data buffer is in the context program's coherent page and must not
-	 * be synced.
-	 */
+	 
 	if ((le32_to_cpu(pd->data_address) & PAGE_MASK) ==
 	    (context->current_bus          & PAGE_MASK)) {
 		if (pd->control & cpu_to_le16(DESCRIPTOR_BRANCH_ALWAYS))
@@ -2950,7 +2684,7 @@ static int handle_it_packet(struct context *context,
 		if (pd->transfer_status)
 			break;
 	if (pd > last)
-		/* Descriptor(s) not done yet, stop iteration */
+		 
 		return 0;
 
 	sync_it_packet_for_cpu(context, d);
@@ -2963,7 +2697,7 @@ static int handle_it_packet(struct context *context,
 
 	ctx_hdr = ctx->header + ctx->header_length;
 	ctx->last_timestamp = le16_to_cpu(last->res_count);
-	/* Present this value as big-endian to match the receive code */
+	 
 	*ctx_hdr = cpu_to_be32((le16_to_cpu(pd->transfer_status) << 16) |
 			       le16_to_cpu(pd->res_count));
 	ctx->header_length += 4;
@@ -3091,7 +2825,7 @@ static int ohci_start_iso(struct fw_iso_context *base,
 	u32 control = IR_CONTEXT_ISOCH_HEADER, match;
 	int index;
 
-	/* the controller cannot start without any queued packets */
+	 
 	if (ctx->context.last->branch_address == 0)
 		return -ENODATA;
 
@@ -3206,7 +2940,7 @@ static int ohci_set_iso_channels(struct fw_iso_context *base, u64 *channels)
 
 		spin_lock_irqsave(&ohci->lock, flags);
 
-		/* Don't allow multichannel to grab other contexts' channels. */
+		 
 		if (~ohci->ir_context_channels & ~ohci->mc_channels & *channels) {
 			*channels = ohci->ir_context_channels;
 			ret = -EBUSY;
@@ -3268,7 +3002,7 @@ static int queue_iso_transmit(struct iso_context *ctx,
 	if (p->header_length > 0)
 		z++;
 
-	/* Determine the first page the payload isn't contained in. */
+	 
 	end_page = PAGE_ALIGN(payload_index + p->payload_length) >> PAGE_SHIFT;
 	if (p->payload_length > 0)
 		payload_z = end_page - (payload_index >> PAGE_SHIFT);
@@ -3277,7 +3011,7 @@ static int queue_iso_transmit(struct iso_context *ctx,
 
 	z += payload_z;
 
-	/* Get header size in number of descriptors. */
+	 
 	header_z = DIV_ROUND_UP(p->header_length, sizeof(*d));
 
 	d = context_get_descriptors(&ctx->context, z + header_z, &d_bus);
@@ -3287,13 +3021,7 @@ static int queue_iso_transmit(struct iso_context *ctx,
 	if (!p->skip) {
 		d[0].control   = cpu_to_le16(DESCRIPTOR_KEY_IMMEDIATE);
 		d[0].req_count = cpu_to_le16(8);
-		/*
-		 * Link the skip address to this descriptor itself.  This causes
-		 * a context to skip a cycle whenever lost cycles or FIFO
-		 * overruns occur, without dropping the data.  The application
-		 * should then decide whether this is an error condition or not.
-		 * FIXME:  Make the context's cycle-lost behaviour configurable?
-		 */
+		 
 		d[0].branch_address = cpu_to_le32(d_bus | z);
 
 		header = (__le32 *) &d[1];
@@ -3361,21 +3089,18 @@ static int queue_iso_packet_per_buffer(struct iso_context *ctx,
 	int i, j, length;
 	int page, offset, packet_count, header_size, payload_per_buffer;
 
-	/*
-	 * The OHCI controller puts the isochronous header and trailer in the
-	 * buffer, so we need at least 8 bytes.
-	 */
+	 
 	packet_count = packet->header_length / ctx->base.header_size;
 	header_size  = max(ctx->base.header_size, (size_t)8);
 
-	/* Get header size in number of descriptors. */
+	 
 	header_z = DIV_ROUND_UP(header_size, sizeof(*d));
 	page     = payload >> PAGE_SHIFT;
 	offset   = payload & ~PAGE_MASK;
 	payload_per_buffer = packet->payload_length / packet_count;
 
 	for (i = 0; i < packet_count; i++) {
-		/* d points to the header descriptor */
+		 
 		z = DIV_ROUND_UP(payload_per_buffer + offset, PAGE_SIZE) + 1;
 		d = context_get_descriptors(&ctx->context,
 				z + header_z, &d_bus);
@@ -3443,7 +3168,7 @@ static int queue_iso_buffer_fill(struct iso_context *ctx,
 	offset = payload & ~PAGE_MASK;
 	rest   = packet->payload_length;
 
-	/* We need one descriptor for each page in the buffer. */
+	 
 	z = DIV_ROUND_UP(offset + rest, PAGE_SIZE);
 
 	if (WARN_ON(offset & 3 || rest & 3 || page + z > buffer->page_count))
@@ -3602,7 +3327,7 @@ static void pmac_ohci_off(struct pci_dev *dev)
 #else
 static inline void pmac_ohci_on(struct pci_dev *dev) {}
 static inline void pmac_ohci_off(struct pci_dev *dev) {}
-#endif /* CONFIG_PPC_PMAC */
+#endif  
 
 static void release_ohci(struct device *dev, void *data)
 {
@@ -3681,11 +3406,7 @@ static int pci_probe(struct pci_dev *dev,
 	if (detect_vt630x_with_asm1083_on_amd_ryzen_machine(dev))
 		ohci->quirks |= QUIRK_REBOOT_BY_CYCLE_TIMER_READ;
 
-	/*
-	 * Because dma_alloc_coherent() allocates at least one page,
-	 * we save space by using a common buffer for the AR request/
-	 * response descriptors and the self IDs buffer.
-	 */
+	 
 	BUILD_BUG_ON(AR_BUFFERS * sizeof(struct descriptor) > PAGE_SIZE/4);
 	BUILD_BUG_ON(SELF_ID_BUF_SIZE > PAGE_SIZE/2);
 	ohci->misc_buffer = dmam_alloc_coherent(&dev->dev, PAGE_SIZE, &ohci->misc_buffer_bus,
@@ -3726,7 +3447,7 @@ static int pci_probe(struct pci_dev *dev,
 
 	reg_write(ohci, OHCI1394_IsoXmitIntMaskSet, ~0);
 	ohci->it_context_support = reg_read(ohci, OHCI1394_IsoXmitIntMaskSet);
-	/* JMicron JMB38x often shows 0 at first read, just ignore it */
+	 
 	if (!ohci->it_context_support) {
 		ohci_notice(ohci, "overriding IsoXmitIntMask\n");
 		ohci->it_context_support = 0xf;
@@ -3782,10 +3503,7 @@ static void pci_remove(struct pci_dev *dev)
 {
 	struct fw_ohci *ohci = pci_get_drvdata(dev);
 
-	/*
-	 * If the removal is happening from the suspend state, LPS won't be
-	 * enabled and host registers (eg., IntMaskClear) won't be accessible.
-	 */
+	 
 	if (reg_read(ohci, OHCI1394_HCControlSet) & OHCI1394_HCControl_LPS) {
 		reg_write(ohci, OHCI1394_IntMaskClear, ~0);
 		flush_writes(ohci);
@@ -3793,10 +3511,7 @@ static void pci_remove(struct pci_dev *dev)
 	cancel_work_sync(&ohci->bus_reset_work);
 	fw_core_remove_card(&ohci->card);
 
-	/*
-	 * FIXME: Fail all pending packets here, now that the upper
-	 * layers can't queue any more.
-	 */
+	 
 
 	software_reset(ohci);
 
@@ -3839,7 +3554,7 @@ static int pci_resume(struct pci_dev *dev)
 		return err;
 	}
 
-	/* Some systems don't setup GUID register on resume from ram  */
+	 
 	if (!reg_read(ohci, OHCI1394_GUIDLo) &&
 					!reg_read(ohci, OHCI1394_GUIDHi)) {
 		reg_write(ohci, OHCI1394_GUIDLo, (u32)ohci->card.guid);
@@ -3896,5 +3611,5 @@ MODULE_AUTHOR("Kristian Hoegsberg <krh@bitplanet.net>");
 MODULE_DESCRIPTION("Driver for PCI OHCI IEEE1394 controllers");
 MODULE_LICENSE("GPL");
 
-/* Provide a module alias so root-on-sbp2 initrds don't break. */
+ 
 MODULE_ALIAS("ohci1394");

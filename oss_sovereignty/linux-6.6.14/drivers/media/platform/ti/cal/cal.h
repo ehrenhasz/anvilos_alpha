@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * TI Camera Access Layer (CAL)
- *
- * Copyright (c) 2015-2020 Texas Instruments Inc.
- *
- * Authors:
- *	Benoit Parrot <bparrot@ti.com>
- *	Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
+ 
+ 
 #ifndef __TI_CAL_H__
 #define __TI_CAL_H__
 
@@ -32,12 +24,7 @@
 #define CAL_MAX_NUM_CONTEXT		8
 #define CAL_NUM_CSI2_PORTS		2
 
-/*
- * The width is limited by the size of the CAL_WR_DMA_XSIZE_j.XSIZE field,
- * expressed in multiples of 64 bits. The height is limited by the size of the
- * CAL_CSI2_CTXi_j.CTXi_LINES and CAL_WR_DMA_CTRL_j.YSIZE fields, expressed in
- * lines.
- */
+ 
 #define CAL_MIN_WIDTH_BYTES		16
 #define CAL_MAX_WIDTH_BYTES		(8192 * 8)
 #define CAL_MIN_HEIGHT_LINES		1
@@ -50,13 +37,13 @@
 
 static inline bool cal_rx_pad_is_sink(u32 pad)
 {
-	/* Camera RX has 1 sink pad, and N source pads */
+	 
 	return pad == 0;
 }
 
 static inline bool cal_rx_pad_is_source(u32 pad)
 {
-	/* Camera RX has 1 sink pad, and N source pads */
+	 
 	return pad >= CAL_CAMERARX_PAD_FIRST_SOURCE &&
 	       pad <= CAL_CAMERARX_NUM_SOURCE_PADS;
 }
@@ -67,7 +54,7 @@ struct resource;
 struct regmap;
 struct regmap_fied;
 
-/* CTRL_CORE_CAMERRX_CONTROL register field id */
+ 
 enum cal_camerarx_field {
 	F_CTRLCLKEN,
 	F_CAMMODE,
@@ -86,48 +73,33 @@ enum cal_dma_state {
 struct cal_format_info {
 	u32	fourcc;
 	u32	code;
-	/* Bits per pixel */
+	 
 	u8	bpp;
 	bool	meta;
 };
 
-/* buffer for one video frame */
+ 
 struct cal_buffer {
-	/* common v4l buffer stuff -- must be first */
+	 
 	struct vb2_v4l2_buffer	vb;
 	struct list_head	list;
 };
 
-/**
- * struct cal_dmaqueue - Queue of DMA buffers
- */
+ 
 struct cal_dmaqueue {
-	/**
-	 * @lock: Protects all fields in the cal_dmaqueue.
-	 */
+	 
 	spinlock_t		lock;
 
-	/**
-	 * @queue: Buffers queued to the driver and waiting for DMA processing.
-	 * Buffers are added to the list by the vb2 .buffer_queue() operation,
-	 * and move to @pending when they are scheduled for the next frame.
-	 */
+	 
 	struct list_head	queue;
-	/**
-	 * @pending: Buffer provided to the hardware to DMA the next frame.
-	 * Will move to @active at the end of the current frame.
-	 */
+	 
 	struct cal_buffer	*pending;
-	/**
-	 * @active: Buffer being DMA'ed to for the current frame. Will be
-	 * retired and given back to vb2 at the end of the current frame if
-	 * a @pending buffer has been scheduled to replace it.
-	 */
+	 
 	struct cal_buffer	*active;
 
-	/** @state: State of the DMA engine. */
+	 
 	enum cal_dma_state	state;
-	/** @wait: Wait queue to signal a @state transition to CAL_DMA_STOPPED. */
+	 
 	struct wait_queue_head	wait;
 };
 
@@ -145,22 +117,7 @@ struct cal_data {
 	unsigned int flags;
 };
 
-/*
- * The Camera Adaptation Layer (CAL) module is paired with one or more complex
- * I/O PHYs (CAMERARX). It contains multiple instances of CSI-2, processing and
- * DMA contexts.
- *
- * The cal_dev structure represents the whole subsystem, including the CAL and
- * the CAMERARX instances. Instances of struct cal_dev are named cal through the
- * driver.
- *
- * The cal_camerarx structure represents one CAMERARX instance. Instances of
- * cal_camerarx are named phy through the driver.
- *
- * The cal_ctx structure represents the combination of one CSI-2 context, one
- * processing context and one DMA context. Instance of struct cal_ctx are named
- * ctx through the driver.
- */
+ 
 
 struct cal_camerarx {
 	void __iomem		*base;
@@ -178,7 +135,7 @@ struct cal_camerarx {
 	struct v4l2_subdev	subdev;
 	struct media_pad	pads[CAL_CAMERARX_NUM_PADS];
 
-	/* protects the vc_* fields below */
+	 
 	spinlock_t		vc_lock;
 	u8			vc_enable_count[4];
 	u16			vc_frame_number[4];
@@ -197,11 +154,11 @@ struct cal_dev {
 	const struct cal_data	*data;
 	u32			revision;
 
-	/* Control Module handle */
+	 
 	struct regmap		*syscon_camerrx;
 	u32			syscon_camerrx_offset;
 
-	/* Camera Core Module handle */
+	 
 	struct cal_camerarx	*phy[CAL_NUM_CSI2_PORTS];
 
 	u32 num_contexts;
@@ -214,9 +171,7 @@ struct cal_dev {
 	unsigned long		reserved_pix_proc_mask;
 };
 
-/*
- * There is one cal_ctx structure for each camera core context.
- */
+ 
 struct cal_ctx {
 	struct v4l2_ctrl_handler ctrl_handler;
 	struct video_device	vdev;
@@ -225,17 +180,17 @@ struct cal_ctx {
 	struct cal_dev		*cal;
 	struct cal_camerarx	*phy;
 
-	/* v4l2_ioctl mutex */
+	 
 	struct mutex		mutex;
 
 	struct cal_dmaqueue	dma;
 
-	/* video capture */
+	 
 	const struct cal_format_info	*fmtinfo;
-	/* Used to store current pixel format */
+	 
 	struct v4l2_format	v_fmt;
 
-	/* Current subdev enumerated format (legacy) */
+	 
 	const struct cal_format_info	**active_fmt;
 	unsigned int		num_active_fmt;
 
@@ -336,4 +291,4 @@ void cal_ctx_v4l2_unregister(struct cal_ctx *ctx);
 int cal_ctx_v4l2_init(struct cal_ctx *ctx);
 void cal_ctx_v4l2_cleanup(struct cal_ctx *ctx);
 
-#endif /* __TI_CAL_H__ */
+#endif  

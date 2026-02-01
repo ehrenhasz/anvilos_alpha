@@ -1,15 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-/*
- * Cisco Meraki MX100 (Tinkerbell) board platform driver
- *
- * Based off of arch/x86/platform/meraki/tink.c from the
- * Meraki GPL release meraki-firmware-sources-r23-20150601
- *
- * Format inspired by platform/x86/pcengines-apuv2.c
- *
- * Copyright (C) 2021 Chris Blake <chrisrblake93@gmail.com>
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -26,7 +17,7 @@
 
 #define TINK_GPIO_DRIVER_NAME "gpio_ich"
 
-/* LEDs */
+ 
 static const struct gpio_led tink_leds[] = {
 	{
 		.name = "mx100:green:internet",
@@ -114,11 +105,11 @@ static struct gpiod_lookup_table tink_leds_table = {
 				NULL, 13, GPIO_ACTIVE_LOW),
 		GPIO_LOOKUP_IDX(TINK_GPIO_DRIVER_NAME, 19,
 				NULL, 14, GPIO_ACTIVE_LOW),
-		{} /* Terminating entry */
+		{}  
 	}
 };
 
-/* Reset Button */
+ 
 static struct gpio_keys_button tink_buttons[] = {
 	{
 		.desc			= "Reset",
@@ -142,11 +133,11 @@ static struct gpiod_lookup_table tink_keys_table = {
 	.table = {
 		GPIO_LOOKUP_IDX(TINK_GPIO_DRIVER_NAME, 60,
 				NULL, 0, GPIO_ACTIVE_LOW),
-		{} /* Terminating entry */
+		{}  
 	}
 };
 
-/* Board setup */
+ 
 static const struct dmi_system_id tink_systems[] __initconst = {
 	{
 		.matches = {
@@ -154,7 +145,7 @@ static const struct dmi_system_id tink_systems[] __initconst = {
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "MX100-HW"),
 		},
 	},
-	{} /* Terminating entry */
+	{}  
 };
 MODULE_DEVICE_TABLE(dmi, tink_systems);
 
@@ -181,11 +172,7 @@ static int __init tink_board_init(void)
 	if (!dmi_first_match(tink_systems))
 		return -ENODEV;
 
-	/*
-	 * We need to make sure that GPIO60 isn't set to native mode as is default since it's our
-	 * Reset Button. To do this, write to GPIO_USE_SEL2 to have GPIO60 set to GPIO mode.
-	 * This is documented on page 1609 of the PCH datasheet, order number 327879-005US
-	 */
+	 
 	outl(inl(0x530) | BIT(28), 0x530);
 
 	gpiod_add_lookup_table(&tink_leds_table);

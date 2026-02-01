@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/* Copyright (C) 2020 MediaTek Inc. */
+ 
+ 
 
 #ifndef __MT7915_MCU_H
 #define __MT7915_MCU_H
@@ -18,11 +18,11 @@ struct mt7915_mcu_thermal_ctrl {
 	u8 band_idx;
 	union {
 		struct {
-			u8 protect_type; /* 1: duty admit, 2: radio off */
-			u8 trigger_type; /* 0: low, 1: high */
+			u8 protect_type;  
+			u8 trigger_type;  
 		} __packed type;
 		struct {
-			u8 duty_level;	/* level 0~3 */
+			u8 duty_level;	 
 			u8 duty_cycle;
 		} __packed duty;
 	};
@@ -107,25 +107,22 @@ struct mt7915_mcu_rdd_report {
 } __packed;
 
 struct mt7915_mcu_background_chain_ctrl {
-	u8 chan;		/* primary channel */
-	u8 central_chan;	/* central channel */
+	u8 chan;		 
+	u8 central_chan;	 
 	u8 bw;
 	u8 tx_stream;
 	u8 rx_stream;
 
-	u8 monitor_chan;	/* monitor channel */
-	u8 monitor_central_chan;/* monitor central channel */
+	u8 monitor_chan;	 
+	u8 monitor_central_chan; 
 	u8 monitor_bw;
 	u8 monitor_tx_stream;
 	u8 monitor_rx_stream;
 
-	u8 scan_mode;		/* 0: ScanStop
-				 * 1: ScanStart
-				 * 2: ScanRunning
-				 */
-	u8 band_idx;		/* DBDC */
+	u8 scan_mode;		 
+	u8 band_idx;		 
 	u8 monitor_scan_type;
-	u8 band;		/* 0: 2.4GHz, 1: 5GHz */
+	u8 band;		 
 	u8 rsv[2];
 } __packed;
 
@@ -135,7 +132,7 @@ struct mt7915_mcu_sr_ctrl {
 	u8 band_idx;
 	u8 status;
 	u8 drop_ta_idx;
-	u8 sta_idx;	/* 256 sta */
+	u8 sta_idx;	 
 	u8 rsv[2];
 	__le32 val;
 } __packed;
@@ -170,14 +167,14 @@ struct mt7915_mcu_mib {
 } __packed;
 
 enum mt7915_chan_mib_offs {
-	/* mt7915 */
+	 
 	MIB_TX_TIME = 81,
 	MIB_RX_TIME,
 	MIB_OBSS_AIRTIME = 86,
 	MIB_NON_WIFI_TIME,
 	MIB_TXOP_INIT_COUNT,
 
-	/* mt7916 */
+	 
 	MIB_TX_TIME_V2 = 6,
 	MIB_RX_TIME_V2 = 8,
 	MIB_OBSS_AIRTIME_V2 = 490,
@@ -309,11 +306,11 @@ struct bss_info_ra {
 	u8 force_sgi;
 	u8 force_gf;
 	u8 ht_mode;
-	u8 has_20_sta;		/* Check if any sta support GF. */
+	u8 has_20_sta;		 
 	u8 bss_width_trigger_events;
 	u8 vht_nss_cap;
-	u8 vht_bw_signal;	/* not use */
-	u8 vht_force_sgi;	/* not use */
+	u8 vht_bw_signal;	 
+	u8 vht_force_sgi;	 
 	u8 se_off;
 	u8 antenna_idx;
 	u8 train_up_rule;
@@ -473,7 +470,7 @@ enum {
 	MURU_PLATFORM_TYPE_PERF_LEVEL_2,
 };
 
-/* tx cmd tx statistics */
+ 
 enum {
 	MURU_SET_TXC_TX_STATS_EN = 150,
 	MURU_GET_TXC_TX_STATS = 151,
@@ -481,7 +478,7 @@ enum {
 
 enum {
 	SER_QUERY,
-	/* recovery */
+	 
 	SER_SET_RECOVER_L1,
 	SER_SET_RECOVER_L2,
 	SER_SET_RECOVER_L3_RX_ABORT,
@@ -490,7 +487,7 @@ enum {
 	SER_SET_RECOVER_L3_BF,
 	SER_SET_RECOVER_FULL,
 	SER_SET_SYSTEM_ASSERT,
-	/* action */
+	 
 	SER_ENABLE = 2,
 	SER_RECOVER
 };

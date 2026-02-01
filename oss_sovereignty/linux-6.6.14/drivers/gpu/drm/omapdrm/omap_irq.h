@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * omap_irq.h -- OMAP DRM IRQ Handling
- *
- * Copyright (C) 2011 Texas Instruments
- * Author: Rob Clark <rob@ti.com>
- */
+ 
+ 
 
 #ifndef __OMAPDRM_IRQ_H__
 #define __OMAPDRM_IRQ_H__
@@ -26,4 +21,4 @@ struct omap_irq_wait *omap_irq_wait_init(struct drm_device *dev,
 int omap_irq_wait(struct drm_device *dev, struct omap_irq_wait *wait,
 		unsigned long timeout);
 
-#endif /* __OMAPDRM_IRQ_H__ */
+#endif  

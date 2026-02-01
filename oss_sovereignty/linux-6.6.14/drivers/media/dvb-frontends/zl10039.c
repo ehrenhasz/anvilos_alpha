@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Driver for Zarlink ZL10039 DVB-S tuner
- *
- *  Copyright 2007 Jan D. Louw <jd.louw@mweb.co.za>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -16,7 +12,7 @@
 
 static int debug;
 
-/* Max transfer size done by I2C transfer functions */
+ 
 #define MAX_XFER_SIZE  64
 
 #define dprintk(args...) \
@@ -60,12 +56,12 @@ static int zl10039_read(const struct zl10039_state *state,
 {
 	u8 regbuf[] = { reg };
 	struct i2c_msg msg[] = {
-		{/* Write register address */
+		{ 
 			.addr = state->i2c_addr,
 			.flags = 0,
 			.buf = regbuf,
 			.len = 1,
-		}, {/* Read count bytes */
+		}, { 
 			.addr = state->i2c_addr,
 			.flags = I2C_M_RD,
 			.buf = buf,
@@ -80,7 +76,7 @@ static int zl10039_read(const struct zl10039_state *state,
 		return -EREMOTEIO;
 	}
 
-	return 0; /* Success */
+	return 0;  
 }
 
 static int zl10039_write(struct zl10039_state *state,
@@ -103,7 +99,7 @@ static int zl10039_write(struct zl10039_state *state,
 	}
 
 	dprintk("%s\n", __func__);
-	/* Write register address and data in one go */
+	 
 	buf[0] = reg;
 	memcpy(&buf[1], src, count);
 	if (i2c_transfer(state->i2c, &msg, 1) != 1) {
@@ -111,7 +107,7 @@ static int zl10039_write(struct zl10039_state *state,
 		return -EREMOTEIO;
 	}
 
-	return 0; /* Success */
+	return 0;  
 }
 
 static inline int zl10039_readreg(struct zl10039_state *state,
@@ -124,7 +120,7 @@ static inline int zl10039_writereg(struct zl10039_state *state,
 				const enum zl10039_reg_addr reg,
 				const u8 val)
 {
-	const u8 tmp = val; /* see gcc.gnu.org/bugzilla/show_bug.cgi?id=81715 */
+	const u8 tmp = val;  
 
 	return zl10039_write(state, reg, &tmp, 1);
 }
@@ -137,12 +133,12 @@ static int zl10039_init(struct dvb_frontend *fe)
 	dprintk("%s\n", __func__);
 	if (fe->ops.i2c_gate_ctrl)
 		fe->ops.i2c_gate_ctrl(fe, 1);
-	/* Reset logic */
+	 
 	ret = zl10039_writereg(state, GENERAL, 0x40);
 	if (ret < 0) {
 		dprintk("Note: i2c write error normal when resetting the tuner\n");
 	}
-	/* Wake up */
+	 
 	ret = zl10039_writereg(state, GENERAL, 0x01);
 	if (ret < 0) {
 		dprintk("Tuner power up failed\n");
@@ -187,43 +183,43 @@ static int zl10039_set_params(struct dvb_frontend *fe)
 	dprintk("Set frequency = %d, symbol rate = %d\n",
 			c->frequency, c->symbol_rate);
 
-	/* Assumed 10.111 MHz crystal oscillator */
-	/* Cancelled num/den 80 to prevent overflow */
+	 
+	 
 	div = (c->frequency * 1000) / 126387;
 	fbw = (c->symbol_rate * 27) / 32000;
-	/* Cancelled num/den 10 to prevent overflow */
+	 
 	bf = ((fbw * 5088) / 1011100) - 1;
 
-	/*PLL divider*/
+	 
 	buf[0] = (div >> 8) & 0x7f;
 	buf[1] = (div >> 0) & 0xff;
-	/*Reference divider*/
-	/* Select reference ratio of 80 */
+	 
+	 
 	buf[2] = 0x1D;
-	/*PLL test modes*/
+	 
 	buf[3] = 0x40;
-	/*RF Control register*/
-	buf[4] = 0x6E; /* Bypass enable */
-	/*Baseband filter cutoff */
+	 
+	buf[4] = 0x6E;  
+	 
 	buf[5] = bf;
 
-	/* Open i2c gate */
+	 
 	if (fe->ops.i2c_gate_ctrl)
 		fe->ops.i2c_gate_ctrl(fe, 1);
-	/* BR = 10, Enable filter adjustment */
+	 
 	ret = zl10039_writereg(state, BASE1, 0x0A);
 	if (ret < 0)
 		goto error;
-	/* Write new config values */
+	 
 	ret = zl10039_write(state, PLL0, buf, sizeof(buf));
 	if (ret < 0)
 		goto error;
-	/* BR = 10, Disable filter adjustment */
+	 
 	ret = zl10039_writereg(state, BASE1, 0x6A);
 	if (ret < 0)
 		goto error;
 
-	/* Close i2c gate */
+	 
 	if (fe->ops.i2c_gate_ctrl)
 		fe->ops.i2c_gate_ctrl(fe, 0);
 	return 0;
@@ -261,17 +257,17 @@ struct dvb_frontend *zl10039_attach(struct dvb_frontend *fe,
 	state->i2c = i2c;
 	state->i2c_addr = i2c_addr;
 
-	/* Open i2c gate */
+	 
 	if (fe->ops.i2c_gate_ctrl)
 		fe->ops.i2c_gate_ctrl(fe, 1);
-	/* check if this is a valid tuner */
+	 
 	if (zl10039_readreg(state, GENERAL, &state->id) < 0) {
-		/* Close i2c gate */
+		 
 		if (fe->ops.i2c_gate_ctrl)
 			fe->ops.i2c_gate_ctrl(fe, 0);
 		goto error;
 	}
-	/* Close i2c gate */
+	 
 	if (fe->ops.i2c_gate_ctrl)
 		fe->ops.i2c_gate_ctrl(fe, 0);
 

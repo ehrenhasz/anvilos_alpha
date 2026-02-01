@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 STMicroelectronics Limited
- *
- * Authors: Francesco Virlinzi <francesco.virlinzi@st.com>
- *	    Alexandre Torgue <alexandre.torgue@st.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -228,7 +223,7 @@ static SIMPLE_DEV_PM_OPS(st_ahci_pm_ops, st_ahci_suspend, st_ahci_resume);
 
 static const struct of_device_id st_ahci_match[] = {
 	{ .compatible = "st,ahci", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, st_ahci_match);
 

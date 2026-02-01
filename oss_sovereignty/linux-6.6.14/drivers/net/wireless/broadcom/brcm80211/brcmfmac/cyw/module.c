@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2022 Broadcom Corporation
- */
+
+ 
 #include <linux/module.h>
 #include <bus.h>
 #include <core.h>

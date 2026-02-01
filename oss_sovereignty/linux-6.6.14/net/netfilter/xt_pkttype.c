@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* (C) 1999-2001 Michal Ludvig <michal@logix.cz>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/skbuff.h>

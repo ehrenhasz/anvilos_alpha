@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_LTC_H__
 #define __NVKM_LTC_H__
 #include <core/subdev.h>
@@ -14,7 +14,7 @@ struct nvkm_ltc {
 	u32 ltc_nr;
 	u32 lts_nr;
 
-	struct mutex mutex; /* serialises CBC operations */
+	struct mutex mutex;  
 	u32 num_tags;
 	u32 tag_base;
 	struct nvkm_memory *tag_ram;

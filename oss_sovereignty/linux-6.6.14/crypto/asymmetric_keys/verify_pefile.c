@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Parse a signed PE binary
- *
- * Copyright (C) 2014 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define pr_fmt(fmt) "PEFILE: "fmt
 #include <linux/module.h>
@@ -16,9 +12,7 @@
 #include <crypto/hash.h>
 #include "verify_pefile.h"
 
-/*
- * Parse a PE binary.
- */
+ 
 static int pefile_parse_binary(const void *pebuf, unsigned int pelen,
 			       struct pefile_context *ctx)
 {
@@ -115,10 +109,7 @@ static int pefile_parse_binary(const void *pebuf, unsigned int pelen,
 	return 0;
 }
 
-/*
- * Check and strip the PE wrapper from around the signature and check that the
- * remnant looks something like PKCS#7.
- */
+ 
 static int pefile_strip_sig_wrapper(const void *pebuf,
 				    struct pefile_context *ctx)
 {
@@ -135,12 +126,7 @@ static int pefile_strip_sig_wrapper(const void *pebuf,
 	pr_debug("sig wrapper = { %x, %x, %x }\n",
 		 wrapper.length, wrapper.revision, wrapper.cert_type);
 
-	/* sbsign rounds up the length of certificate table (in optional
-	 * header data directories) to 8 byte alignment.  However, the PE
-	 * specification states that while entries are 8-byte aligned, this is
-	 * not included in their length, and as a result, pesign has not
-	 * rounded up since 0.110.
-	 */
+	 
 	if (wrapper.length > ctx->sig_len) {
 		pr_warn("Signature wrapper bigger than sig len (%x > %x)\n",
 			ctx->sig_len, wrapper.length);
@@ -155,11 +141,7 @@ static int pefile_strip_sig_wrapper(const void *pebuf,
 		return -ENOTSUPP;
 	}
 
-	/* It looks like the pkcs signature length in wrapper->length and the
-	 * size obtained from the data dir entries, which lists the total size
-	 * of certificate table, are both aligned to an octaword boundary, so
-	 * we may have to deal with some padding.
-	 */
+	 
 	ctx->sig_len = wrapper.length;
 	ctx->sig_offset += sizeof(wrapper);
 	ctx->sig_len -= sizeof(wrapper);
@@ -168,7 +150,7 @@ static int pefile_strip_sig_wrapper(const void *pebuf,
 		return -EKEYREJECTED;
 	}
 
-	/* What's left should be a PKCS#7 cert */
+	 
 	pkcs7 = pebuf + ctx->sig_offset;
 	if (pkcs7[0] != (ASN1_CONS_BIT | ASN1_SEQ))
 		goto not_pkcs7;
@@ -193,7 +175,7 @@ static int pefile_strip_sig_wrapper(const void *pebuf,
 
 check_len:
 	if (len <= ctx->sig_len) {
-		/* There may be padding */
+		 
 		ctx->sig_len = len;
 		return 0;
 	}
@@ -202,9 +184,7 @@ not_pkcs7:
 	return -ELIBBAD;
 }
 
-/*
- * Compare two sections for canonicalisation.
- */
+ 
 static int pefile_compare_shdrs(const void *a, const void *b)
 {
 	const struct section_header *shdra = a;
@@ -238,10 +218,7 @@ static int pefile_compare_shdrs(const void *a, const void *b)
 	return 0;
 }
 
-/*
- * Load the contents of the PE binary into the digest, leaving out the image
- * checksum and the certificate data block.
- */
+ 
 static int pefile_digest_pe_contents(const void *pebuf, unsigned int pelen,
 				     struct pefile_context *ctx,
 				     struct shash_desc *desc)
@@ -249,9 +226,7 @@ static int pefile_digest_pe_contents(const void *pebuf, unsigned int pelen,
 	unsigned *canon, tmp, loop, i, hashed_bytes;
 	int ret;
 
-	/* Digest the header and data directory, but leave out the image
-	 * checksum and the data dirent for the signature.
-	 */
+	 
 	ret = crypto_shash_update(desc, pebuf, ctx->image_checksum_offset);
 	if (ret < 0)
 		return ret;
@@ -271,9 +246,7 @@ static int pefile_digest_pe_contents(const void *pebuf, unsigned int pelen,
 	if (!canon)
 		return -ENOMEM;
 
-	/* We have to canonicalise the section table, so we perform an
-	 * insertion sort.
-	 */
+	 
 	canon[0] = 0;
 	for (loop = 1; loop < ctx->n_sections; loop++) {
 		for (i = 0; i < loop; i++) {
@@ -315,10 +288,7 @@ static int pefile_digest_pe_contents(const void *pebuf, unsigned int pelen,
 	return 0;
 }
 
-/*
- * Digest the contents of the PE binary, leaving out the image checksum and the
- * certificate data block.
- */
+ 
 static int pefile_digest_pe(const void *pebuf, unsigned int pelen,
 			    struct pefile_context *ctx)
 {
@@ -330,9 +300,7 @@ static int pefile_digest_pe(const void *pebuf, unsigned int pelen,
 
 	kenter(",%s", ctx->digest_algo);
 
-	/* Allocate the hashing algorithm we're going to need and find out how
-	 * big the hash operational data will be.
-	 */
+	 
 	tfm = crypto_alloc_shash(ctx->digest_algo, 0, 0);
 	if (IS_ERR(tfm))
 		return (PTR_ERR(tfm) == -ENOENT) ? -ENOPKG : PTR_ERR(tfm);
@@ -369,9 +337,7 @@ static int pefile_digest_pe(const void *pebuf, unsigned int pelen,
 
 	pr_debug("Digest calc = [%*ph]\n", ctx->digest_len, digest);
 
-	/* Check that the PE file digest matches that in the MSCODE part of the
-	 * PKCS#7 certificate.
-	 */
+	 
 	if (memcmp(digest, ctx->digest, ctx->digest_len) != 0) {
 		pr_warn("Digest mismatch\n");
 		ret = -EKEYREJECTED;
@@ -387,36 +353,7 @@ error_no_desc:
 	return ret;
 }
 
-/**
- * verify_pefile_signature - Verify the signature on a PE binary image
- * @pebuf: Buffer containing the PE binary image
- * @pelen: Length of the binary image
- * @trusted_keys: Signing certificate(s) to use as starting points
- * @usage: The use to which the key is being put.
- *
- * Validate that the certificate chain inside the PKCS#7 message inside the PE
- * binary image intersects keys we already know and trust.
- *
- * Returns, in order of descending priority:
- *
- *  (*) -ELIBBAD if the image cannot be parsed, or:
- *
- *  (*) -EKEYREJECTED if a signature failed to match for which we have a valid
- *	key, or:
- *
- *  (*) 0 if at least one signature chain intersects with the keys in the trust
- *	keyring, or:
- *
- *  (*) -ENODATA if there is no signature present.
- *
- *  (*) -ENOPKG if a suitable crypto module couldn't be found for a check on a
- *	chain.
- *
- *  (*) -ENOKEY if we couldn't find a match for any of the signature chains in
- *	the message.
- *
- * May also return -ENOMEM.
- */
+ 
 int verify_pefile_signature(const void *pebuf, unsigned pelen,
 			    struct key *trusted_keys,
 			    enum key_being_used_for usage)
@@ -445,9 +382,7 @@ int verify_pefile_signature(const void *pebuf, unsigned pelen,
 	pr_debug("Digest: %u [%*ph]\n",
 		 ctx.digest_len, ctx.digest_len, ctx.digest);
 
-	/* Generate the digest and check against the PKCS7 certificate
-	 * contents.
-	 */
+	 
 	ret = pefile_digest_pe(pebuf, pelen, &ctx);
 
 error:

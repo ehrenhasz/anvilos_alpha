@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2014-2015 Hisilicon Limited.
- */
+ 
+ 
 
 #ifndef _HNS_DSAF_RCB_H
 #define _HNS_DSAF_RCB_H
@@ -69,7 +67,7 @@ struct rcb_common_cb;
 enum rcb_int_flag {
 	RCB_INT_FLAG_TX = 0x1,
 	RCB_INT_FLAG_RX = (0x1 << 1),
-	RCB_INT_FLAG_MAX = (0x1 << 2),	/*must be the last element */
+	RCB_INT_FLAG_MAX = (0x1 << 2),	 
 };
 
 struct hns_ring_hw_stats {
@@ -82,11 +80,11 @@ struct hns_ring_hw_stats {
 };
 
 struct ring_pair_cb {
-	struct rcb_common_cb *rcb_common;	/*  ring belongs to */
-	struct device *dev;	/*device for DMA mapping */
+	struct rcb_common_cb *rcb_common;	 
+	struct device *dev;	 
 	struct hnae_queue q;
 
-	u16 index;	/* global index in a rcb common device */
+	u16 index;	 
 	u16 buf_size;
 
 	int virq[HNS_RCB_IRQ_NUM_PER_QUEUE];
@@ -106,7 +104,7 @@ struct rcb_common_cb {
 
 	u8 comm_index;
 	u32 ring_num;
-	u32 desc_num; /*  desc num per queue*/
+	u32 desc_num;  
 
 	struct ring_pair_cb ring_pair_cb[];
 };
@@ -161,4 +159,4 @@ void hns_rcb_get_strings(int stringset, u8 *data, int index);
 void hns_rcb_set_rx_ring_bs(struct hnae_queue *q, u32 buf_size);
 void hns_rcb_set_tx_ring_bs(struct hnae_queue *q, u32 buf_size);
 
-#endif /* _HNS_DSAF_RCB_H */
+#endif  

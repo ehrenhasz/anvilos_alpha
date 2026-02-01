@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * 3-axis accelerometer driver supporting following Bosch-Sensortec chips:
- *  - BMI088
- *
- * Copyright (c) 2018-2020, Topic Embedded Products
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/regmap.h>
@@ -17,7 +12,7 @@ static int bmi088_regmap_spi_write(void *context, const void *data, size_t count
 {
 	struct spi_device *spi = context;
 
-	/* Write register is same as generic SPI */
+	 
 	return spi_write(spi, data, count);
 }
 
@@ -28,8 +23,8 @@ static int bmi088_regmap_spi_read(void *context, const void *reg,
 	u8 addr[2];
 
 	addr[0] = *(u8 *)reg;
-	addr[0] |= BIT(7); /* Set RW = '1' */
-	addr[1] = 0; /* Read requires a dummy byte transfer */
+	addr[0] |= BIT(7);  
+	addr[1] = 0;  
 
 	return spi_write_then_read(spi, addr, sizeof(addr), val, val_size);
 }

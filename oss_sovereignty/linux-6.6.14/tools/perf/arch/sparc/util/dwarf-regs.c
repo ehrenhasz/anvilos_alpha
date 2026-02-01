@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Mapping of DWARF debug register numbers into register names.
- *
- * Copyright (C) 2010 David S. Miller <davem@davemloft.net>
- */
+
+ 
 
 #include <stddef.h>
 #include <dwarf-regs.h>
@@ -25,14 +21,7 @@ const char *sparc_regs_table[SPARC_MAX_REGS] = {
 	"%f56", "%f57", "%f58", "%f59", "%f60", "%f61", "%f62", "%f63",
 };
 
-/**
- * get_arch_regstr() - lookup register name from it's DWARF register number
- * @n:	the DWARF register number
- *
- * get_arch_regstr() returns the name of the register in struct
- * regdwarfnum_table from it's DWARF register number. If the register is not
- * found in the table, this returns NULL;
- */
+ 
 const char *get_arch_regstr(unsigned int n)
 {
 	return (n < SPARC_MAX_REGS) ? sparc_regs_table[n] : NULL;

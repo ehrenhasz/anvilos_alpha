@@ -1,17 +1,6 @@
-/* $OpenBSD: includes.h,v 1.54 2006/07/22 20:48:23 stevesk Exp $ */
+ 
 
-/*
- * Author: Tatu Ylonen <ylo@cs.hut.fi>
- * Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>, Espoo, Finland
- *                    All rights reserved
- * This file includes most of the needed system headers.
- *
- * As far as I am concerned, the code I have written for this software
- * can be used freely for any purpose.  Any derived versions of this
- * software must be clearly marked as such, and if the derived work is
- * incompatible with the protocol description in the RFC file, it must be
- * called by a name other than "ssh" or "Secure Shell".
- */
+ 
 
 #ifndef INCLUDES_H
 #define INCLUDES_H
@@ -19,14 +8,14 @@
 #include "config.h"
 
 #ifndef _GNU_SOURCE
-#define _GNU_SOURCE /* activate extra prototypes for glibc */
+#define _GNU_SOURCE  
 #endif
 
 #include <sys/types.h>
-#include <sys/socket.h> /* For CMSG_* */
+#include <sys/socket.h>  
 
 #ifdef HAVE_LIMITS_H
-# include <limits.h> /* For PATH_MAX, _POSIX_HOST_NAME_MAX */
+# include <limits.h>  
 #endif
 #ifdef HAVE_BSTRING_H
 # include <bstring.h>
@@ -41,7 +30,7 @@
 # include <utime.h>
 #endif
 #ifdef HAVE_MAILLOCK_H
-# include <maillock.h> /* For _PATH_MAILDIR */
+# include <maillock.h>  
 #endif
 #ifdef HAVE_NEXT
 # include <libc.h>
@@ -50,9 +39,7 @@
 # include <paths.h>
 #endif
 
-/*
- *-*-nto-qnx needs these headers for strcasecmp and LASTLOG_FILE respectively
- */
+ 
 #ifdef HAVE_STRINGS_H
 # include <strings.h>
 #endif
@@ -81,37 +68,37 @@
 #endif
 #include <termios.h>
 #ifdef HAVE_SYS_BITYPES_H
-# include <sys/bitypes.h> /* For u_intXX_t */
+# include <sys/bitypes.h>  
 #endif
 #ifdef HAVE_SYS_CDEFS_H
-# include <sys/cdefs.h> /* For __P() */
+# include <sys/cdefs.h>  
 #endif
 #ifdef HAVE_SYS_STAT_H
-# include <sys/stat.h> /* For S_* constants and macros */
+# include <sys/stat.h>  
 #endif
 #ifdef HAVE_SYS_SYSMACROS_H
-# include <sys/sysmacros.h> /* For MIN, MAX, etc */
+# include <sys/sysmacros.h>  
 #endif
 #ifdef HAVE_SYS_TIME_H
-# include <sys/time.h> /* for timespeccmp if present */
+# include <sys/time.h>  
 #endif
 #ifdef HAVE_SYS_MMAN_H
-#include <sys/mman.h> /* for MAP_ANONYMOUS */
+#include <sys/mman.h>  
 #endif
 #ifdef HAVE_SYS_STRTIO_H
-#include <sys/strtio.h>	/* for TIOCCBRK on HP-UX */
+#include <sys/strtio.h>	 
 #endif
 #if defined(HAVE_SYS_PTMS_H) && defined(HAVE_DEV_PTMX)
 # if defined(HAVE_SYS_STREAM_H)
-#  include <sys/stream.h>	/* reqd for queue_t on Solaris 2.5.1 */
+#  include <sys/stream.h>	 
 # endif
-#include <sys/ptms.h>	/* for grantpt() and friends */
+#include <sys/ptms.h>	 
 #endif
 
 #include <netinet/in.h>
-#include <netinet/in_systm.h> /* For typedefs */
+#include <netinet/in_systm.h>  
 #ifdef HAVE_RPC_TYPES_H
-# include <rpc/types.h> /* For INADDR_LOOPBACK */
+# include <rpc/types.h>  
 #endif
 #ifdef USE_PAM
 #if defined(HAVE_SECURITY_PAM_APPL_H)
@@ -153,10 +140,7 @@
 
 #include <errno.h>
 
-/*
- * On HP-UX 11.11, shadow.h and prot.h provide conflicting declarations
- * of getspnam when _INCLUDE__STDC__ is defined, so we unset it here.
- */
+ 
 #ifdef GETSPNAM_CONFLICTING_DEFS
 # ifdef _INCLUDE__STDC__
 #  undef _INCLUDE__STDC__
@@ -164,7 +148,7 @@
 #endif
 
 #ifdef WITH_OPENSSL
-#include <openssl/opensslv.h> /* For OPENSSL_VERSION_NUMBER */
+#include <openssl/opensslv.h>  
 #endif
 
 #include "defines.h"
@@ -175,4 +159,4 @@
 
 #include "entropy.h"
 
-#endif /* INCLUDES_H */
+#endif  

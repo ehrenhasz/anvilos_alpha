@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Test cases for using floating point operations inside a kernel module.
- *
- * This tests kernel_fpu_begin() and kernel_fpu_end() functions, especially
- * when userland has modified the floating point control registers. The kernel
- * state might depend on the state set by the userland thread that was active
- * before a syscall.
- *
- * To facilitate the test, this module registers file
- * /sys/kernel/debug/selftest_helpers/test_fpu, which when read causes a
- * sequence of floating point operations. If the operations fail, either the
- * read returns error status or the kernel crashes.
- * If the operations succeed, the read returns "1\n".
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -21,28 +8,23 @@
 
 static int test_fpu(void)
 {
-	/*
-	 * This sequence of operations tests that rounding mode is
-	 * to nearest and that denormal numbers are supported.
-	 * Volatile variables are used to avoid compiler optimizing
-	 * the calculations away.
-	 */
+	 
 	volatile double a, b, c, d, e, f, g;
 
 	a = 4.0;
 	b = 1e-15;
 	c = 1e-310;
 
-	/* Sets precision flag */
+	 
 	d = a + b;
 
-	/* Result depends on rounding mode */
+	 
 	e = a + b / 2;
 
-	/* Denormal and very large values */
+	 
 	f = b / c;
 
-	/* Depends on denormal support */
+	 
 	g = a + c * f;
 
 	if (d > a && e > a && g > a)

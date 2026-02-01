@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Retu watchdog driver
- *
- * Copyright (C) 2004, 2005 Nokia Corporation
- *
- * Based on code written by Amit Kucheria and Michael Buesch.
- * Rewritten by Aaro Koskinen.
- */
+
+ 
 
 #include <linux/devm-helpers.h>
 #include <linux/slab.h>
@@ -18,7 +11,7 @@
 #include <linux/watchdog.h>
 #include <linux/platform_device.h>
 
-/* Watchdog timer values in seconds */
+ 
 #define RETU_WDT_MAX_TIMER	63
 
 struct retu_wdt_dev {
@@ -27,11 +20,7 @@ struct retu_wdt_dev {
 	struct delayed_work	ping_work;
 };
 
-/*
- * Since Retu watchdog cannot be disabled in hardware, we must kick it
- * with a timer until userspace watchdog software takes over. If
- * CONFIG_WATCHDOG_NOWAYOUT is set, we never start the feeding.
- */
+ 
 static void retu_wdt_ping_enable(struct retu_wdt_dev *wdev)
 {
 	retu_write(wdev->rdev, RETU_REG_WATCHDOG, RETU_WDT_MAX_TIMER);

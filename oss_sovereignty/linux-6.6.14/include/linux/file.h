@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Wrapper functions for accessing the file_struct fd array.
- */
+ 
+ 
 
 #ifndef __LINUX_FILE_H
 #define __LINUX_FILE_H
@@ -115,4 +113,4 @@ extern void __fput_sync(struct file *);
 
 extern unsigned int sysctl_nr_open_min, sysctl_nr_open_max;
 
-#endif /* __LINUX_FILE_H */
+#endif  

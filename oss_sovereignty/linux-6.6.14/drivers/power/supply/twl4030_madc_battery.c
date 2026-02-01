@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Dumb driver for LiIon batteries using TWL4030 madc.
- *
- * Copyright 2013 Golden Delicious Computers
- * Lukas Märdian <lukas@goldelico.com>
- *
- * Based on dumb driver for gta01 battery
- * Copyright 2009 Openmoko, Inc
- * Balaji Rao <balajirrao@openmoko.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/param.h>
@@ -78,7 +69,7 @@ static int twl4030_madc_bat_voltscale(struct twl4030_madc_battery *bat,
 	struct twl4030_madc_bat_calibration *calibration;
 	int i, res = 0;
 
-	/* choose charging curve */
+	 
 	if (twl4030_madc_bat_get_charging_status(bat))
 		calibration = bat->pdata->charging;
 	else
@@ -90,7 +81,7 @@ static int twl4030_madc_bat_voltscale(struct twl4030_madc_battery *bat,
 		for (i = 0; calibration[i+1].voltage >= 0; i++) {
 			if (volt <= calibration[i].voltage &&
 					volt >= calibration[i+1].voltage) {
-				/* interval found - interpolate within range */
+				 
 				res = calibration[i].level -
 					((calibration[i].voltage - volt) *
 					(calibration[i].level -
@@ -132,7 +123,7 @@ static int twl4030_madc_bat_get_property(struct power_supply *psy,
 		val->intval = twl4030_madc_bat_get_current(bat);
 		break;
 	case POWER_SUPPLY_PROP_PRESENT:
-		/* assume battery is always present */
+		 
 		val->intval = 1;
 		break;
 	case POWER_SUPPLY_PROP_CHARGE_NOW: {
@@ -154,10 +145,10 @@ static int twl4030_madc_bat_get_property(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_TIME_TO_EMPTY_NOW: {
 			int percent = twl4030_madc_bat_voltscale(bat,
 					twl4030_madc_bat_get_voltage(bat));
-			/* in mAh */
+			 
 			int chg = (percent * (bat->pdata->capacity/1000))/100;
 
-			/* assume discharge with 400 mA (ca. 1.5W) */
+			 
 			val->intval = (3600l * chg) / 400;
 			break;
 		}
@@ -213,7 +204,7 @@ static int twl4030_madc_battery_probe(struct platform_device *pdev)
 		goto err_ichg;
 	}
 
-	/* sort charging and discharging calibration data */
+	 
 	sort(pdata->charging, pdata->charging_size,
 		sizeof(struct twl4030_madc_bat_calibration),
 		twl4030_cmp, NULL);

@@ -1,11 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
 
-/*
- * Copyright 2020 IBM Corp.
- *
- * Author: Bulent Abali <abali@us.ibm.com>
- *
- */
+
+ 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -137,11 +132,7 @@ static int nx_wait_for_csb(struct nx_gzip_crb_cpb_t *cmdp)
 	long poll = 0;
 	uint64_t t;
 
-	/* Save power and let other threads use the h/w. top may show
-	 * 100% but only because OS doesn't know we slowed the this
-	 * h/w thread while polling. We're letting other threads have
-	 * higher throughput on the core.
-	 */
+	 
 	cpu_pri_low();
 
 #define CSB_MAX_POLL 200000000UL
@@ -155,10 +146,7 @@ static int nx_wait_for_csb(struct nx_gzip_crb_cpb_t *cmdp)
 
 		cpu_pri_low();
 
-		/* usleep(0) takes around 29000 ticks ~60 us.
-		 * 300000 is spinning for about 600 us then
-		 * start sleeping.
-		 */
+		 
 		if ((__ppc_get_timebase() - t) > USLEEP_TH) {
 			cpu_pri_default();
 			usleep(1);
@@ -167,7 +155,7 @@ static int nx_wait_for_csb(struct nx_gzip_crb_cpb_t *cmdp)
 		if (poll > CSB_MAX_POLL)
 			break;
 
-		/* Fault address from signal handler */
+		 
 		if (nx_fault_storage_address) {
 			cpu_pri_default();
 			return -EAGAIN;
@@ -177,10 +165,10 @@ static int nx_wait_for_csb(struct nx_gzip_crb_cpb_t *cmdp)
 
 	cpu_pri_default();
 
-	/* hw has updated csb and output buffer */
+	 
 	hwsync();
 
-	/* Check CSB flags. */
+	 
 	if (getnn(cmdp->crb.csb, csb_v) == 0) {
 		fprintf(stderr, "CSB still not valid after %d polls.\n",
 			(int) poll);
@@ -230,7 +218,7 @@ static int nxu_run_job(struct nx_gzip_crb_cpb_t *cmdp, void *handle)
 			}
 		} else {
 			if (i < 10) {
-				/* spin for few ticks */
+				 
 #define SPIN_TH 500UL
 				uint64_t fail_spin;
 
@@ -239,7 +227,7 @@ static int nxu_run_job(struct nx_gzip_crb_cpb_t *cmdp, void *handle)
 					 SPIN_TH)
 					;
 			} else {
-				/* sleep */
+				 
 				unsigned int pr = 0;
 
 				if (pr++ % 100 == 0) {
@@ -266,7 +254,7 @@ int nxu_submit_job(struct nx_gzip_crb_cpb_t *cmdp, void *handle)
 	cc = nxu_run_job(cmdp, handle);
 
 	if (!cc)
-		cc = getnn(cmdp->crb.csb, csb_cc);      /* CC Table 6-8 */
+		cc = getnn(cmdp->crb.csb, csb_cc);       
 
 	return cc;
 }
@@ -280,12 +268,7 @@ void nxu_sigsegv_handler(int sig, siginfo_t *info, void *ctx)
 	nx_fault_storage_address = info->si_addr;
 }
 
-/*
- * Fault in pages prior to NX job submission.  wr=1 may be required to
- * touch writeable pages.  System zero pages do not fault-in the page as
- * intended.  Typically set wr=1 for NX target pages and set wr=0 for NX
- * source pages.
- */
+ 
 int nxu_touch_pages(void *buf, long buf_len, long page_len, int wr)
 {
 	char *begin = buf;
@@ -307,7 +290,7 @@ int nxu_touch_pages(void *buf, long buf_len, long page_len, int wr)
 		begin = begin + page_len;
 	} while (begin < end);
 
-	/* When buf_sz is small or buf tail is in another page */
+	 
 	t = *end;
 	if (wr)
 		*end = t;

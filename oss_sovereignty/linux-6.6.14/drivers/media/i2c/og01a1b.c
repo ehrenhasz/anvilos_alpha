@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2022 Intel Corporation.
+
+
 
 #include <asm/unaligned.h>
 #include <linux/acpi.h>
@@ -28,41 +28,41 @@
 #define OG01A1B_MODE_STANDBY		0x00
 #define OG01A1B_MODE_STREAMING		0x01
 
-/* vertical-timings from sensor */
+ 
 #define OG01A1B_REG_VTS			0x380e
 #define OG01A1B_VTS_120FPS		0x0498
 #define OG01A1B_VTS_120FPS_MIN		0x0498
 #define OG01A1B_VTS_MAX			0x7fff
 
-/* horizontal-timings from sensor */
+ 
 #define OG01A1B_REG_HTS			0x380c
 
-/* Exposure controls from sensor */
+ 
 #define OG01A1B_REG_EXPOSURE		0x3501
 #define	OG01A1B_EXPOSURE_MIN		1
 #define OG01A1B_EXPOSURE_MAX_MARGIN	14
 #define	OG01A1B_EXPOSURE_STEP		1
 
-/* Analog gain controls from sensor */
+ 
 #define OG01A1B_REG_ANALOG_GAIN		0x3508
 #define	OG01A1B_ANAL_GAIN_MIN		16
-#define	OG01A1B_ANAL_GAIN_MAX		248 /* Max = 15.5x */
+#define	OG01A1B_ANAL_GAIN_MAX		248  
 #define	OG01A1B_ANAL_GAIN_STEP		1
 
-/* Digital gain controls from sensor */
+ 
 #define OG01A1B_REG_DIG_GAIN		0x350a
 #define OG01A1B_DGTL_GAIN_MIN		1024
-#define OG01A1B_DGTL_GAIN_MAX		16384 /* Max = 16x */
+#define OG01A1B_DGTL_GAIN_MAX		16384  
 #define OG01A1B_DGTL_GAIN_STEP		1
 #define OG01A1B_DGTL_GAIN_DEFAULT	1024
 
-/* Group Access */
+ 
 #define OG01A1B_REG_GROUP_ACCESS	0x3208
 #define OG01A1B_GROUP_HOLD_START	0x0
 #define OG01A1B_GROUP_HOLD_END		0x10
 #define OG01A1B_GROUP_HOLD_LAUNCH	0xa0
 
-/* Test Pattern Control */
+ 
 #define OG01A1B_REG_TEST_PATTERN	0x5100
 #define OG01A1B_TEST_PATTERN_ENABLE	BIT(7)
 #define OG01A1B_TEST_PATTERN_BAR_SHIFT	2
@@ -88,25 +88,25 @@ struct og01a1b_link_freq_config {
 };
 
 struct og01a1b_mode {
-	/* Frame width in pixels */
+	 
 	u32 width;
 
-	/* Frame height in pixels */
+	 
 	u32 height;
 
-	/* Horizontal timining size */
+	 
 	u32 hts;
 
-	/* Default vertical timining size */
+	 
 	u32 vts_def;
 
-	/* Min vertical timining size */
+	 
 	u32 vts_min;
 
-	/* Link frequency needed for this resolution */
+	 
 	u32 link_freq_index;
 
-	/* Sensor register settings for this resolution */
+	 
 	const struct og01a1b_reg_list reg_list;
 };
 
@@ -422,20 +422,20 @@ struct og01a1b {
 	struct media_pad pad;
 	struct v4l2_ctrl_handler ctrl_handler;
 
-	/* V4L2 Controls */
+	 
 	struct v4l2_ctrl *link_freq;
 	struct v4l2_ctrl *pixel_rate;
 	struct v4l2_ctrl *vblank;
 	struct v4l2_ctrl *hblank;
 	struct v4l2_ctrl *exposure;
 
-	/* Current mode */
+	 
 	const struct og01a1b_mode *cur_mode;
 
-	/* To serialize asynchronus callbacks */
+	 
 	struct mutex mutex;
 
-	/* Streaming on/off */
+	 
 	bool streaming;
 };
 
@@ -542,9 +542,9 @@ static int og01a1b_set_ctrl(struct v4l2_ctrl *ctrl)
 	s64 exposure_max;
 	int ret = 0;
 
-	/* Propagate change of current control to all related controls */
+	 
 	if (ctrl->id == V4L2_CID_VBLANK) {
-		/* Update max exposure while meeting expected vblanking */
+		 
 		exposure_max = og01a1b->cur_mode->height + ctrl->val -
 			       OG01A1B_EXPOSURE_MAX_MARGIN;
 		__v4l2_ctrl_modify_range(og01a1b->exposure,
@@ -553,7 +553,7 @@ static int og01a1b_set_ctrl(struct v4l2_ctrl *ctrl)
 					 exposure_max);
 	}
 
-	/* V4L2 controls values will be applied only when power is already up */
+	 
 	if (!pm_runtime_get_if_in_use(&client->dev))
 		return 0;
 
@@ -823,7 +823,7 @@ static int og01a1b_set_format(struct v4l2_subdev *sd,
 		__v4l2_ctrl_s_ctrl_int64(og01a1b->pixel_rate,
 					 to_pixel_rate(mode->link_freq_index));
 
-		/* Update limits and set FPS to default */
+		 
 		vblank_def = mode->vts_def - mode->height;
 		__v4l2_ctrl_modify_range(og01a1b->vblank,
 					 mode->vts_min - mode->height,
@@ -1076,10 +1076,7 @@ static int og01a1b_probe(struct i2c_client *client)
 		goto probe_error_media_entity_cleanup;
 	}
 
-	/*
-	 * Device is already turned on by i2c-core with ACPI domain PM.
-	 * Enable runtime PM and turn off the device.
-	 */
+	 
 	pm_runtime_set_active(&client->dev);
 	pm_runtime_enable(&client->dev);
 	pm_runtime_idle(&client->dev);

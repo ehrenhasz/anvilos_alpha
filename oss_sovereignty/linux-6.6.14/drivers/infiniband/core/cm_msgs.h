@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright (c) 2004, 2011 Intel Corporation.  All rights reserved.
- * Copyright (c) 2004 Topspin Corporation.  All rights reserved.
- * Copyright (c) 2004 Voltaire Corporation.  All rights reserved.
- * Copyright (c) 2019, Mellanox Technologies inc.  All rights reserved.
- */
+ 
+ 
 #ifndef CM_MSGS_H
 #define CM_MSGS_H
 
@@ -12,12 +7,9 @@
 #include <rdma/ib_mad.h>
 #include <rdma/ib_cm.h>
 
-/*
- * Parameters to routines below should be in network-byte order, and values
- * are returned in network-byte order.
- */
+ 
 
-#define IB_CM_CLASS_VERSION	2 /* IB specification 1.2 */
+#define IB_CM_CLASS_VERSION	2  
 
 static inline enum ib_qp_type cm_req_get_qp_type(struct cm_req_msg *req_msg)
 {
@@ -50,7 +42,7 @@ static inline void cm_req_set_qp_type(struct cm_req_msg *req_msg,
 	}
 }
 
-/* Message REJected or MRAed */
+ 
 enum cm_msg_response {
 	CM_MSG_RESPONSE_REQ = 0x0,
 	CM_MSG_RESPONSE_REP = 0x1,
@@ -65,4 +57,4 @@ static inline __be32 cm_rep_get_qpn(struct cm_rep_msg *rep_msg, enum ib_qp_type 
 		       cpu_to_be32(IBA_GET(CM_REP_LOCAL_QPN, rep_msg));
 }
 
-#endif /* CM_MSGS_H */
+#endif  

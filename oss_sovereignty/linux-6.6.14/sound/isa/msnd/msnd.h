@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*********************************************************************
- *
- * msnd.h
- *
- * Turtle Beach MultiSound Sound Card Driver for Linux
- *
- * Some parts of this header file were derived from the Turtle Beach
- * MultiSound Driver Development Kit.
- *
- * Copyright (C) 1998 Andrew Veliath
- * Copyright (C) 1993 Turtle Beach Systems, Inc.
- *
- ********************************************************************/
+ 
+ 
 #ifndef __MSND_H
 #define __MSND_H
 
@@ -156,7 +144,7 @@
 #define	HDEXAR_CAL_A_TO_D	4
 #define	HDEXAR_RD_EXT_DSP_BITS	5
 
-/* Pinnacle only HDEXAR defs */
+ 
 #define	HDEXAR_SET_ANA_IN	0
 #define	HDEXAR_SET_SYNTH_IN	4
 #define	HDEXAR_READ_DAT_IN	5
@@ -184,14 +172,14 @@
 #  define inb			inb_p
 #endif
 
-/* JobQueueStruct */
+ 
 #define JQS_wStart		0x00
 #define JQS_wSize		0x02
 #define JQS_wHead		0x04
 #define JQS_wTail		0x06
 #define JQS__size		0x08
 
-/* DAQueueDataStruct */
+ 
 #define DAQDS_wStart		0x00
 #define DAQDS_wSize		0x02
 #define DAQDS_wFormat		0x04
@@ -219,13 +207,13 @@ struct snd_msnd {
 	void			*msndmidi_mpu;
 	struct snd_rawmidi	*rmidi;
 
-	/* Hardware resources */
+	 
 	long io;
 	int memid, irqid;
 	int irq, irq_ref;
 	unsigned long base;
 
-	/* Motorola 56k DSP SMA */
+	 
 	void __iomem	*SMA;
 	void __iomem	*DAPQ;
 	void __iomem	*DARQ;
@@ -234,7 +222,7 @@ struct snd_msnd {
 	void __iomem	*DSPQ;
 	int dspq_data_buff, dspq_buff_size;
 
-	/* State variables */
+	 
 	enum { msndClassic, msndPinnacle } type;
 	fmode_t mode;
 	unsigned long flags;
@@ -292,4 +280,4 @@ void snd_msndmidi_input_read(void *mpu);
 void snd_msndmix_setup(struct snd_msnd *chip);
 int snd_msndmix_new(struct snd_card *card);
 int snd_msndmix_force_recsrc(struct snd_msnd *chip, int recsrc);
-#endif /* __MSND_H */
+#endif  

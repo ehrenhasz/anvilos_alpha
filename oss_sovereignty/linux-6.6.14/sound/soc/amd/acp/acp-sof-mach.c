@@ -1,16 +1,14 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license. When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2021 Advanced Micro Devices, Inc.
-//
-// Authors: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
-//
 
-/*
- * SOF Machine Driver Support for ACP HW block
- */
+
+
+
+
+
+
+
+
+
+ 
 
 #include <sound/core.h>
 #include <sound/pcm_params.h>
@@ -113,7 +111,7 @@ static int acp_sof_probe(struct platform_device *pdev)
 	card->owner = THIS_MODULE;
 	card->name = pdev->id_entry->name;
 	card->drvdata = (struct acp_card_drvdata *)pdev->id_entry->driver_data;
-	/* Widgets and controls added per-codec in acp-mach-common.c */
+	 
 
 	acp_card_drvdata = card->drvdata;
 	dmi_id = dmi_first_match(acp_quirk_table);

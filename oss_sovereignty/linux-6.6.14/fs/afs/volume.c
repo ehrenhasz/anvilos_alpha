@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* AFS volume management
- *
- * Copyright (C) 2002, 2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -11,10 +7,7 @@
 
 static unsigned __read_mostly afs_volume_record_life = 60 * 60;
 
-/*
- * Insert a volume into a cell.  If there's an existing volume record, that is
- * returned instead with a ref held.
- */
+ 
 static struct afs_volume *afs_insert_volume_into_cell(struct afs_cell *cell,
 						      struct afs_volume *volume)
 {
@@ -67,9 +60,7 @@ static void afs_remove_volume_from_cell(struct afs_volume *volume)
 	}
 }
 
-/*
- * Allocate a volume record and load it up from a vldb record.
- */
+ 
 static struct afs_volume *afs_alloc_volume(struct afs_fs_context *params,
 					   struct afs_vldb_entry *vldb,
 					   unsigned long type_mask)
@@ -113,9 +104,7 @@ error_0:
 	return ERR_PTR(ret);
 }
 
-/*
- * Look up or allocate a volume record.
- */
+ 
 static struct afs_volume *afs_lookup_volume(struct afs_fs_context *params,
 					    struct afs_vldb_entry *vldb,
 					    unsigned long type_mask)
@@ -132,9 +121,7 @@ static struct afs_volume *afs_lookup_volume(struct afs_fs_context *params,
 	return volume;
 }
 
-/*
- * Look up a VLDB record for a volume.
- */
+ 
 static struct afs_vldb_entry *afs_vl_lookup_vldb(struct afs_cell *cell,
 						 struct key *key,
 						 const char *volname,
@@ -155,30 +142,7 @@ static struct afs_vldb_entry *afs_vl_lookup_vldb(struct afs_cell *cell,
 	return ret < 0 ? ERR_PTR(ret) : vldb;
 }
 
-/*
- * Look up a volume in the VL server and create a candidate volume record for
- * it.
- *
- * The volume name can be one of the following:
- *	"%[cell:]volume[.]"		R/W volume
- *	"#[cell:]volume[.]"		R/O or R/W volume (rwparent=0),
- *					 or R/W (rwparent=1) volume
- *	"%[cell:]volume.readonly"	R/O volume
- *	"#[cell:]volume.readonly"	R/O volume
- *	"%[cell:]volume.backup"		Backup volume
- *	"#[cell:]volume.backup"		Backup volume
- *
- * The cell name is optional, and defaults to the current cell.
- *
- * See "The Rules of Mount Point Traversal" in Chapter 5 of the AFS SysAdmin
- * Guide
- * - Rule 1: Explicit type suffix forces access of that type or nothing
- *           (no suffix, then use Rule 2 & 3)
- * - Rule 2: If parent volume is R/O, then mount R/O volume by preference, R/W
- *           if not available
- * - Rule 3: If parent volume is R/W, then only mount R/W volume unless
- *           explicitly told otherwise
- */
+ 
 struct afs_volume *afs_create_volume(struct afs_fs_context *params)
 {
 	struct afs_vldb_entry *vldb;
@@ -195,7 +159,7 @@ struct afs_volume *afs_create_volume(struct afs_fs_context *params)
 		goto error;
 	}
 
-	/* Make the final decision on the type we want */
+	 
 	volume = ERR_PTR(-ENOMEDIUM);
 	if (params->force) {
 		if (!(vldb->flags & type_mask))
@@ -216,9 +180,7 @@ error:
 	return volume;
 }
 
-/*
- * Destroy a volume record
- */
+ 
 static void afs_destroy_volume(struct afs_net *net, struct afs_volume *volume)
 {
 	_enter("%p", volume);
@@ -237,9 +199,7 @@ static void afs_destroy_volume(struct afs_net *net, struct afs_volume *volume)
 	_leave(" [destroyed]");
 }
 
-/*
- * Try to get a reference on a volume record.
- */
+ 
 bool afs_try_get_volume(struct afs_volume *volume, enum afs_volume_trace reason)
 {
 	int r;
@@ -251,9 +211,7 @@ bool afs_try_get_volume(struct afs_volume *volume, enum afs_volume_trace reason)
 	return false;
 }
 
-/*
- * Get a reference on a volume record.
- */
+ 
 struct afs_volume *afs_get_volume(struct afs_volume *volume,
 				  enum afs_volume_trace reason)
 {
@@ -267,9 +225,7 @@ struct afs_volume *afs_get_volume(struct afs_volume *volume,
 }
 
 
-/*
- * Drop a reference on a volume record.
- */
+ 
 void afs_put_volume(struct afs_net *net, struct afs_volume *volume,
 		    enum afs_volume_trace reason)
 {
@@ -285,9 +241,7 @@ void afs_put_volume(struct afs_net *net, struct afs_volume *volume,
 	}
 }
 
-/*
- * Activate a volume.
- */
+ 
 int afs_activate_volume(struct afs_volume *volume)
 {
 #ifdef CONFIG_AFS_FSCACHE
@@ -314,9 +268,7 @@ int afs_activate_volume(struct afs_volume *volume)
 	return 0;
 }
 
-/*
- * Deactivate a volume.
- */
+ 
 void afs_deactivate_volume(struct afs_volume *volume)
 {
 	_enter("%s", volume->name);
@@ -330,9 +282,7 @@ void afs_deactivate_volume(struct afs_volume *volume)
 	_leave("");
 }
 
-/*
- * Query the VL service to update the volume status.
- */
+ 
 static int afs_update_volume_status(struct afs_volume *volume, struct key *key)
 {
 	struct afs_server_list *new, *old, *discard;
@@ -342,9 +292,7 @@ static int afs_update_volume_status(struct afs_volume *volume, struct key *key)
 
 	_enter("");
 
-	/* We look up an ID by passing it as a decimal string in the
-	 * operation's name parameter.
-	 */
+	 
 	idsz = sprintf(idbuf, "%llu", volume->vid);
 
 	vldb = afs_vl_lookup_vldb(volume->cell, key, idbuf, idsz);
@@ -353,15 +301,15 @@ static int afs_update_volume_status(struct afs_volume *volume, struct key *key)
 		goto error;
 	}
 
-	/* See if the volume got renamed. */
+	 
 	if (vldb->name_len != volume->name_len ||
 	    memcmp(vldb->name, volume->name, vldb->name_len) != 0) {
-		/* TODO: Use RCU'd string. */
+		 
 		memcpy(volume->name, vldb->name, AFS_MAXVOLNAME);
 		volume->name_len = vldb->name_len;
 	}
 
-	/* See if the volume's server list got updated. */
+	 
 	new = afs_alloc_server_list(volume->cell, key,
 				    vldb, (1 << volume->type));
 	if (IS_ERR(new)) {
@@ -394,9 +342,7 @@ error:
 	return ret;
 }
 
-/*
- * Make sure the volume record is up to date.
- */
+ 
 int afs_check_volume_status(struct afs_volume *volume, struct afs_operation *op)
 {
 	int ret, retries = 0;

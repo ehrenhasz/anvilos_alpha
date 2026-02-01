@@ -1,37 +1,12 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/******************************************************************************
- *
- * Module Name: apmain - Main module for the acpidump utility
- *
- * Copyright (C) 2000 - 2023, Intel Corp.
- *
- *****************************************************************************/
+
+ 
 
 #define _DECLARE_GLOBALS
 #include "acpidump.h"
 
-/*
- * acpidump - A portable utility for obtaining system ACPI tables and dumping
- * them in an ASCII hex format suitable for binary extraction via acpixtract.
- *
- * Obtaining the system ACPI tables is an OS-specific operation.
- *
- * This utility can be ported to any host operating system by providing a
- * module containing system-specific versions of these interfaces:
- *
- *      acpi_os_get_table_by_address
- *      acpi_os_get_table_by_index
- *      acpi_os_get_table_by_name
- *
- * See the ACPICA Reference Guide for the exact definitions of these
- * interfaces. Also, see these ACPICA source code modules for example
- * implementations:
- *
- *      source/os_specific/service_layers/oswintbl.c
- *      source/os_specific/service_layers/oslinuxtbl.c
- */
+ 
 
-/* Local prototypes */
+ 
 
 static void ap_display_usage(void);
 
@@ -39,7 +14,7 @@ static int ap_do_options(int argc, char **argv);
 
 static int ap_insert_action(char *argument, u32 to_be_done);
 
-/* Table for deferred actions from command line options */
+ 
 
 struct ap_dump_action action_table[AP_MAX_ACTIONS];
 u32 current_action = 0;
@@ -47,13 +22,7 @@ u32 current_action = 0;
 #define AP_UTILITY_NAME             "ACPI Binary Table Dump Utility"
 #define AP_SUPPORTED_OPTIONS        "?a:bc:f:hn:o:r:sv^xz"
 
-/******************************************************************************
- *
- * FUNCTION:    ap_display_usage
- *
- * DESCRIPTION: Usage message for the acpi_dump utility
- *
- ******************************************************************************/
+ 
 
 static void ap_display_usage(void)
 {
@@ -83,23 +52,12 @@ static void ap_display_usage(void)
 			"Multiple mixed instances of -a, -f, and -n are supported\n\n");
 }
 
-/******************************************************************************
- *
- * FUNCTION:    ap_insert_action
- *
- * PARAMETERS:  argument            - Pointer to the argument for this action
- *              to_be_done          - What to do to process this action
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Add an action item to the action table
- *
- ******************************************************************************/
+ 
 
 static int ap_insert_action(char *argument, u32 to_be_done)
 {
 
-	/* Insert action and check for table overflow */
+	 
 
 	action_table[current_action].argument = argument;
 	action_table[current_action].to_be_done = to_be_done;
@@ -114,38 +72,25 @@ static int ap_insert_action(char *argument, u32 to_be_done)
 	return (0);
 }
 
-/******************************************************************************
- *
- * FUNCTION:    ap_do_options
- *
- * PARAMETERS:  argc/argv           - Standard argc/argv
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Command line option processing. The main actions for getting
- *              and dumping tables are deferred via the action table.
- *
- *****************************************************************************/
+ 
 
 static int ap_do_options(int argc, char **argv)
 {
 	int j;
 	acpi_status status;
 
-	/* Command line options */
+	 
 
 	while ((j =
 		acpi_getopt(argc, argv, AP_SUPPORTED_OPTIONS)) != ACPI_OPT_END)
 		switch (j) {
-			/*
-			 * Global options
-			 */
-		case 'b':	/* Dump all input tables to binary files */
+			 
+		case 'b':	 
 
 			gbl_binary_mode = TRUE;
 			continue;
 
-		case 'c':	/* Dump customized tables */
+		case 'c':	 
 
 			if (!strcmp(acpi_gbl_optarg, "on")) {
 				gbl_dump_customized_tables = TRUE;
@@ -165,14 +110,14 @@ static int ap_do_options(int argc, char **argv)
 			ap_display_usage();
 			return (1);
 
-		case 'o':	/* Redirect output to a single file */
+		case 'o':	 
 
 			if (ap_open_output_file(acpi_gbl_optarg)) {
 				return (-1);
 			}
 			continue;
 
-		case 'r':	/* Dump tables from specified RSDP */
+		case 'r':	 
 
 			status =
 			    acpi_ut_strtoul64(acpi_gbl_optarg, &gbl_rsdp_base);
@@ -184,12 +129,12 @@ static int ap_do_options(int argc, char **argv)
 			}
 			continue;
 
-		case 's':	/* Print table summaries only */
+		case 's':	 
 
 			gbl_summary_mode = TRUE;
 			continue;
 
-		case 'x':	/* Do not use XSDT */
+		case 'x':	 
 
 			if (!acpi_gbl_do_not_use_xsdt) {
 				acpi_gbl_do_not_use_xsdt = TRUE;
@@ -198,10 +143,10 @@ static int ap_do_options(int argc, char **argv)
 			}
 			continue;
 
-		case 'v':	/* -v: (Version): signon already emitted, just exit */
+		case 'v':	 
 
 			switch (acpi_gbl_optarg[0]) {
-			case '^':	/* -v: (Version) */
+			case '^':	 
 
 				fprintf(stderr,
 					ACPI_COMMON_SIGNON(AP_UTILITY_NAME));
@@ -222,16 +167,14 @@ static int ap_do_options(int argc, char **argv)
 			}
 			break;
 
-		case 'z':	/* Verbose mode */
+		case 'z':	 
 
 			gbl_verbose_mode = TRUE;
 			fprintf(stderr, ACPI_COMMON_SIGNON(AP_UTILITY_NAME));
 			continue;
 
-			/*
-			 * Table options
-			 */
-		case 'a':	/* Get table by physical address */
+			 
+		case 'a':	 
 
 			if (ap_insert_action
 			    (acpi_gbl_optarg, AP_DUMP_TABLE_BY_ADDRESS)) {
@@ -239,7 +182,7 @@ static int ap_do_options(int argc, char **argv)
 			}
 			break;
 
-		case 'f':	/* Get table from a file */
+		case 'f':	 
 
 			if (ap_insert_action
 			    (acpi_gbl_optarg, AP_DUMP_TABLE_BY_FILE)) {
@@ -247,7 +190,7 @@ static int ap_do_options(int argc, char **argv)
 			}
 			break;
 
-		case 'n':	/* Get table by input name (signature) */
+		case 'n':	 
 
 			if (ap_insert_action
 			    (acpi_gbl_optarg, AP_DUMP_TABLE_BY_NAME)) {
@@ -261,7 +204,7 @@ static int ap_do_options(int argc, char **argv)
 			return (-1);
 		}
 
-	/* If there are no actions, this means "get/dump all tables" */
+	 
 
 	if (current_action == 0) {
 		if (ap_insert_action(NULL, AP_DUMP_ALL_TABLES)) {
@@ -272,17 +215,7 @@ static int ap_do_options(int argc, char **argv)
 	return (0);
 }
 
-/******************************************************************************
- *
- * FUNCTION:    main
- *
- * PARAMETERS:  argc/argv           - Standard argc/argv
- *
- * RETURN:      Status
- *
- * DESCRIPTION: C main function for acpidump utility
- *
- ******************************************************************************/
+ 
 
 #if !defined(_GNU_EFI) && !defined(_EDK2_EFI)
 int ACPI_SYSTEM_XFACE main(int argc, char *argv[])
@@ -295,12 +228,12 @@ int ACPI_SYSTEM_XFACE acpi_main(int argc, char *argv[])
 	u32 file_size;
 	u32 i;
 
-	ACPI_DEBUG_INITIALIZE();	/* For debug version only */
+	ACPI_DEBUG_INITIALIZE();	 
 	acpi_os_initialize();
 	gbl_output_file = ACPI_FILE_OUT;
 	acpi_gbl_integer_byte_width = 8;
 
-	/* Process command line options */
+	 
 
 	status = ap_do_options(argc, argv);
 	if (status > 0) {
@@ -310,7 +243,7 @@ int ACPI_SYSTEM_XFACE acpi_main(int argc, char *argv[])
 		return (status);
 	}
 
-	/* Get/dump ACPI table(s) as requested */
+	 
 
 	for (i = 0; i < current_action; i++) {
 		action = &action_table[i];
@@ -351,7 +284,7 @@ int ACPI_SYSTEM_XFACE acpi_main(int argc, char *argv[])
 	if (gbl_output_filename) {
 		if (gbl_verbose_mode) {
 
-			/* Summary for the output file */
+			 
 
 			file_size = cm_get_file_size(gbl_output_file);
 			fprintf(stderr,

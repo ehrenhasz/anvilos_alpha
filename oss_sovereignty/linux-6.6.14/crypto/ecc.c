@@ -1,28 +1,4 @@
-/*
- * Copyright (c) 2013, 2014 Kenneth MacKay. All rights reserved.
- * Copyright (c) 2019 Vitaly Chikunov <vt@altlinux.org>
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *  * Redistributions of source code must retain the above copyright
- *   notice, this list of conditions and the following disclaimer.
- *  * Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include <crypto/ecc_curve.h>
 #include <linux/module.h>
@@ -43,7 +19,7 @@ typedef struct {
 	u64 m_high;
 } uint128_t;
 
-/* Returns curv25519 curve param */
+ 
 const struct ecc_curve *ecc_get_curve25519(void)
 {
 	return &ecc_25519;
@@ -53,7 +29,7 @@ EXPORT_SYMBOL(ecc_get_curve25519);
 const struct ecc_curve *ecc_get_curve(unsigned int curve_id)
 {
 	switch (curve_id) {
-	/* In FIPS mode only allow P256 and higher */
+	 
 	case ECC_CURVE_NIST_P192:
 		return fips_enabled ? NULL : &nist_p192;
 	case ECC_CURVE_NIST_P256:
@@ -127,7 +103,7 @@ static void vli_clear(u64 *vli, unsigned int ndigits)
 		vli[i] = 0;
 }
 
-/* Returns true if vli == 0, false otherwise. */
+ 
 bool vli_is_zero(const u64 *vli, unsigned int ndigits)
 {
 	int i;
@@ -141,7 +117,7 @@ bool vli_is_zero(const u64 *vli, unsigned int ndigits)
 }
 EXPORT_SYMBOL(vli_is_zero);
 
-/* Returns nonzero if bit of vli is set. */
+ 
 static u64 vli_test_bit(const u64 *vli, unsigned int bit)
 {
 	return (vli[bit / 64] & ((u64)1 << (bit % 64)));
@@ -152,21 +128,18 @@ static bool vli_is_negative(const u64 *vli, unsigned int ndigits)
 	return vli_test_bit(vli, ndigits * 64 - 1);
 }
 
-/* Counts the number of 64-bit "digits" in vli. */
+ 
 static unsigned int vli_num_digits(const u64 *vli, unsigned int ndigits)
 {
 	int i;
 
-	/* Search from the end until we find a non-zero digit.
-	 * We do it in reverse because we expect that most digits will
-	 * be nonzero.
-	 */
+	 
 	for (i = ndigits - 1; i >= 0 && vli[i] == 0; i--);
 
 	return (i + 1);
 }
 
-/* Counts the number of bits required for vli. */
+ 
 unsigned int vli_num_bits(const u64 *vli, unsigned int ndigits)
 {
 	unsigned int i, num_digits;
@@ -184,7 +157,7 @@ unsigned int vli_num_bits(const u64 *vli, unsigned int ndigits)
 }
 EXPORT_SYMBOL(vli_num_bits);
 
-/* Set dest from unaligned bit string src. */
+ 
 void vli_from_be64(u64 *dest, const void *src, unsigned int ndigits)
 {
 	int i;
@@ -205,7 +178,7 @@ void vli_from_le64(u64 *dest, const void *src, unsigned int ndigits)
 }
 EXPORT_SYMBOL(vli_from_le64);
 
-/* Sets dest = src. */
+ 
 static void vli_set(u64 *dest, const u64 *src, unsigned int ndigits)
 {
 	int i;
@@ -214,7 +187,7 @@ static void vli_set(u64 *dest, const u64 *src, unsigned int ndigits)
 		dest[i] = src[i];
 }
 
-/* Returns sign of left - right. */
+ 
 int vli_cmp(const u64 *left, const u64 *right, unsigned int ndigits)
 {
 	int i;
@@ -230,9 +203,7 @@ int vli_cmp(const u64 *left, const u64 *right, unsigned int ndigits)
 }
 EXPORT_SYMBOL(vli_cmp);
 
-/* Computes result = in << c, returning carry. Can modify in place
- * (if result == in). 0 < shift < 64.
- */
+ 
 static u64 vli_lshift(u64 *result, const u64 *in, unsigned int shift,
 		      unsigned int ndigits)
 {
@@ -249,7 +220,7 @@ static u64 vli_lshift(u64 *result, const u64 *in, unsigned int shift,
 	return carry;
 }
 
-/* Computes vli = vli >> 1. */
+ 
 static void vli_rshift1(u64 *vli, unsigned int ndigits)
 {
 	u64 *end = vli;
@@ -264,7 +235,7 @@ static void vli_rshift1(u64 *vli, unsigned int ndigits)
 	}
 }
 
-/* Computes result = left + right, returning carry. Can modify in place. */
+ 
 static u64 vli_add(u64 *result, const u64 *left, const u64 *right,
 		   unsigned int ndigits)
 {
@@ -284,7 +255,7 @@ static u64 vli_add(u64 *result, const u64 *left, const u64 *right,
 	return carry;
 }
 
-/* Computes result = left + right, returning carry. Can modify in place. */
+ 
 static u64 vli_uadd(u64 *result, const u64 *left, u64 right,
 		    unsigned int ndigits)
 {
@@ -306,7 +277,7 @@ static u64 vli_uadd(u64 *result, const u64 *left, u64 right,
 	return carry;
 }
 
-/* Computes result = left - right, returning borrow. Can modify in place. */
+ 
 u64 vli_sub(u64 *result, const u64 *left, const u64 *right,
 		   unsigned int ndigits)
 {
@@ -327,7 +298,7 @@ u64 vli_sub(u64 *result, const u64 *left, const u64 *right,
 }
 EXPORT_SYMBOL(vli_sub);
 
-/* Computes result = left - right, returning borrow. Can modify in place. */
+ 
 static u64 vli_usub(u64 *result, const u64 *left, u64 right,
 	     unsigned int ndigits)
 {
@@ -368,7 +339,7 @@ static uint128_t mul_64_64(u64 left, u64 right)
 	m2 += (m0 >> 32);
 	m2 += m1;
 
-	/* Overflow */
+	 
 	if (m2 < m1)
 		m3 += 0x100000000ull;
 
@@ -395,9 +366,7 @@ static void vli_mult(u64 *result, const u64 *left, const u64 *right,
 	u64 r2 = 0;
 	unsigned int i, k;
 
-	/* Compute each digit of result in sequence, maintaining the
-	 * carries.
-	 */
+	 
 	for (k = 0; k < ndigits * 2 - 1; k++) {
 		unsigned int min;
 
@@ -424,7 +393,7 @@ static void vli_mult(u64 *result, const u64 *left, const u64 *right,
 	result[ndigits * 2 - 1] = r01.m_low;
 }
 
-/* Compute product = left * right, for a small right value. */
+ 
 static void vli_umult(u64 *result, const u64 *left, u32 right,
 		      unsigned int ndigits)
 {
@@ -436,7 +405,7 @@ static void vli_umult(u64 *result, const u64 *left, u32 right,
 
 		product = mul_64_64(left[k], right);
 		r01 = add_128_128(r01, product);
-		/* no carry */
+		 
 		result[k] = r01.m_low;
 		r01.m_low = r01.m_high;
 		r01.m_high = 0;
@@ -485,9 +454,7 @@ static void vli_square(u64 *result, const u64 *left, unsigned int ndigits)
 	result[ndigits * 2 - 1] = r01.m_low;
 }
 
-/* Computes result = (left + right) % mod.
- * Assumes that left < mod and right < mod, result != mod.
- */
+ 
 static void vli_mod_add(u64 *result, const u64 *left, const u64 *right,
 			const u64 *mod, unsigned int ndigits)
 {
@@ -495,38 +462,23 @@ static void vli_mod_add(u64 *result, const u64 *left, const u64 *right,
 
 	carry = vli_add(result, left, right, ndigits);
 
-	/* result > mod (result = mod + remainder), so subtract mod to
-	 * get remainder.
-	 */
+	 
 	if (carry || vli_cmp(result, mod, ndigits) >= 0)
 		vli_sub(result, result, mod, ndigits);
 }
 
-/* Computes result = (left - right) % mod.
- * Assumes that left < mod and right < mod, result != mod.
- */
+ 
 static void vli_mod_sub(u64 *result, const u64 *left, const u64 *right,
 			const u64 *mod, unsigned int ndigits)
 {
 	u64 borrow = vli_sub(result, left, right, ndigits);
 
-	/* In this case, p_result == -diff == (max int) - diff.
-	 * Since -x % d == d - x, we can get the correct result from
-	 * result + mod (with overflow).
-	 */
+	 
 	if (borrow)
 		vli_add(result, result, mod, ndigits);
 }
 
-/*
- * Computes result = product % mod
- * for special form moduli: p = 2^k-c, for small c (note the minus sign)
- *
- * References:
- * R. Crandall, C. Pomerance. Prime Numbers: A Computational Perspective.
- * 9 Fast Algorithms for Large-Integer Arithmetic. 9.2.3 Moduli of special form
- * Algorithm 9.2.13 (Fast mod operation for special-form moduli).
- */
+ 
 static void vli_mmod_special(u64 *result, const u64 *product,
 			      const u64 *mod, unsigned int ndigits)
 {
@@ -547,35 +499,22 @@ static void vli_mmod_special(u64 *result, const u64 *product,
 	vli_set(result, r, ndigits);
 }
 
-/*
- * Computes result = product % mod
- * for special form moduli: p = 2^{k-1}+c, for small c (note the plus sign)
- * where k-1 does not fit into qword boundary by -1 bit (such as 255).
-
- * References (loosely based on):
- * A. Menezes, P. van Oorschot, S. Vanstone. Handbook of Applied Cryptography.
- * 14.3.4 Reduction methods for moduli of special form. Algorithm 14.47.
- * URL: http://cacr.uwaterloo.ca/hac/about/chap14.pdf
- *
- * H. Cohen, G. Frey, R. Avanzi, C. Doche, T. Lange, K. Nguyen, F. Vercauteren.
- * Handbook of Elliptic and Hyperelliptic Curve Cryptography.
- * Algorithm 10.25 Fast reduction for special form moduli
- */
+ 
 static void vli_mmod_special2(u64 *result, const u64 *product,
 			       const u64 *mod, unsigned int ndigits)
 {
 	u64 c2 = mod[0] * 2;
 	u64 q[ECC_MAX_DIGITS];
 	u64 r[ECC_MAX_DIGITS * 2];
-	u64 m[ECC_MAX_DIGITS * 2]; /* expanded mod */
-	int carry; /* last bit that doesn't fit into q */
+	u64 m[ECC_MAX_DIGITS * 2];  
+	int carry;  
 	int i;
 
 	vli_set(m, mod, ndigits);
 	vli_clear(m + ndigits, ndigits);
 
 	vli_set(r, product, ndigits);
-	/* q and carry are top bits */
+	 
 	vli_set(q, product + ndigits, ndigits);
 	vli_clear(r + ndigits, ndigits);
 	carry = vli_is_negative(r, ndigits);
@@ -605,11 +544,7 @@ static void vli_mmod_special2(u64 *result, const u64 *product,
 	vli_set(result, r, ndigits);
 }
 
-/*
- * Computes result = product % mod, where product is 2N words long.
- * Reference: Ken MacKay's micro-ecc.
- * Currently only designed to work for curve_p or curve_n.
- */
+ 
 static void vli_mmod_slow(u64 *result, u64 *product, const u64 *mod,
 			  unsigned int ndigits)
 {
@@ -618,7 +553,7 @@ static void vli_mmod_slow(u64 *result, u64 *product, const u64 *mod,
 	u64 *v[2] = { tmp, product };
 	u64 carry = 0;
 	unsigned int i;
-	/* Shift mod so its highest set bit is at the maximum position. */
+	 
 	int shift = (ndigits * 2 * 64) - vli_num_bits(mod, ndigits);
 	int word_shift = shift / 64;
 	int bit_shift = shift % 64;
@@ -643,7 +578,7 @@ static void vli_mmod_slow(u64 *result, u64 *product, const u64 *mod,
 				borrow = (diff > v[i][j]);
 			v[1 - i][j] = diff;
 		}
-		i = !(i ^ borrow); /* Swap the index if there was no borrow */
+		i = !(i ^ borrow);  
 		vli_rshift1(mod_m, ndigits);
 		mod_m[ndigits - 1] |= mod_m[ndigits] << (64 - 1);
 		vli_rshift1(mod_m + ndigits, ndigits);
@@ -651,15 +586,7 @@ static void vli_mmod_slow(u64 *result, u64 *product, const u64 *mod,
 	vli_set(result, v[i], ndigits);
 }
 
-/* Computes result = product % mod using Barrett's reduction with precomputed
- * value mu appended to the mod after ndigits, mu = (2^{2w} / mod) and have
- * length ndigits + 1, where mu * (2^w - 1) should not overflow ndigits
- * boundary.
- *
- * Reference:
- * R. Brent, P. Zimmermann. Modern Computer Arithmetic. 2010.
- * 2.4.1 Barrett's algorithm. Algorithm 2.5.
- */
+ 
 static void vli_mmod_barrett(u64 *result, u64 *product, const u64 *mod,
 			     unsigned int ndigits)
 {
@@ -682,10 +609,7 @@ static void vli_mmod_barrett(u64 *result, u64 *product, const u64 *mod,
 	vli_set(result, r, ndigits);
 }
 
-/* Computes p_result = p_product % curve_p.
- * See algorithm 5 and 6 from
- * http://www.isys.uni-klu.ac.at/PDF/2001-0126-MT.pdf
- */
+ 
 static void vli_mmod_fast_192(u64 *result, const u64 *product,
 			      const u64 *curve_prime, u64 *tmp)
 {
@@ -710,19 +634,17 @@ static void vli_mmod_fast_192(u64 *result, const u64 *product,
 		carry -= vli_sub(result, result, curve_prime, ndigits);
 }
 
-/* Computes result = product % curve_prime
- * from http://www.nsa.gov/ia/_files/nist-routines.pdf
- */
+ 
 static void vli_mmod_fast_256(u64 *result, const u64 *product,
 			      const u64 *curve_prime, u64 *tmp)
 {
 	int carry;
 	const unsigned int ndigits = 4;
 
-	/* t */
+	 
 	vli_set(result, product, ndigits);
 
-	/* s1 */
+	 
 	tmp[0] = 0;
 	tmp[1] = product[5] & 0xffffffff00000000ull;
 	tmp[2] = product[6];
@@ -730,49 +652,49 @@ static void vli_mmod_fast_256(u64 *result, const u64 *product,
 	carry = vli_lshift(tmp, tmp, 1, ndigits);
 	carry += vli_add(result, result, tmp, ndigits);
 
-	/* s2 */
+	 
 	tmp[1] = product[6] << 32;
 	tmp[2] = (product[6] >> 32) | (product[7] << 32);
 	tmp[3] = product[7] >> 32;
 	carry += vli_lshift(tmp, tmp, 1, ndigits);
 	carry += vli_add(result, result, tmp, ndigits);
 
-	/* s3 */
+	 
 	tmp[0] = product[4];
 	tmp[1] = product[5] & 0xffffffff;
 	tmp[2] = 0;
 	tmp[3] = product[7];
 	carry += vli_add(result, result, tmp, ndigits);
 
-	/* s4 */
+	 
 	tmp[0] = (product[4] >> 32) | (product[5] << 32);
 	tmp[1] = (product[5] >> 32) | (product[6] & 0xffffffff00000000ull);
 	tmp[2] = product[7];
 	tmp[3] = (product[6] >> 32) | (product[4] << 32);
 	carry += vli_add(result, result, tmp, ndigits);
 
-	/* d1 */
+	 
 	tmp[0] = (product[5] >> 32) | (product[6] << 32);
 	tmp[1] = (product[6] >> 32);
 	tmp[2] = 0;
 	tmp[3] = (product[4] & 0xffffffff) | (product[5] << 32);
 	carry -= vli_sub(result, result, tmp, ndigits);
 
-	/* d2 */
+	 
 	tmp[0] = product[6];
 	tmp[1] = product[7];
 	tmp[2] = 0;
 	tmp[3] = (product[4] >> 32) | (product[5] & 0xffffffff00000000ull);
 	carry -= vli_sub(result, result, tmp, ndigits);
 
-	/* d3 */
+	 
 	tmp[0] = (product[6] >> 32) | (product[7] << 32);
 	tmp[1] = (product[7] >> 32) | (product[4] << 32);
 	tmp[2] = (product[4] >> 32) | (product[5] << 32);
 	tmp[3] = (product[6] << 32);
 	carry -= vli_sub(result, result, tmp, ndigits);
 
-	/* d4 */
+	 
 	tmp[0] = product[7];
 	tmp[1] = product[4] & 0xffffffff00000000ull;
 	tmp[2] = product[5];
@@ -793,98 +715,96 @@ static void vli_mmod_fast_256(u64 *result, const u64 *product,
 #define AND64H(x64)  (x64 & 0xffFFffFF00000000ull)
 #define AND64L(x64)  (x64 & 0x00000000ffFFffFFull)
 
-/* Computes result = product % curve_prime
- * from "Mathematical routines for the NIST prime elliptic curves"
- */
+ 
 static void vli_mmod_fast_384(u64 *result, const u64 *product,
 				const u64 *curve_prime, u64 *tmp)
 {
 	int carry;
 	const unsigned int ndigits = 6;
 
-	/* t */
+	 
 	vli_set(result, product, ndigits);
 
-	/* s1 */
-	tmp[0] = 0;		// 0 || 0
-	tmp[1] = 0;		// 0 || 0
-	tmp[2] = SL32OR32(product[11], (product[10]>>32));	//a22||a21
-	tmp[3] = product[11]>>32;	// 0 ||a23
-	tmp[4] = 0;		// 0 || 0
-	tmp[5] = 0;		// 0 || 0
+	 
+	tmp[0] = 0;		
+	tmp[1] = 0;		
+	tmp[2] = SL32OR32(product[11], (product[10]>>32));	
+	tmp[3] = product[11]>>32;	
+	tmp[4] = 0;		
+	tmp[5] = 0;		
 	carry = vli_lshift(tmp, tmp, 1, ndigits);
 	carry += vli_add(result, result, tmp, ndigits);
 
-	/* s2 */
-	tmp[0] = product[6];	//a13||a12
-	tmp[1] = product[7];	//a15||a14
-	tmp[2] = product[8];	//a17||a16
-	tmp[3] = product[9];	//a19||a18
-	tmp[4] = product[10];	//a21||a20
-	tmp[5] = product[11];	//a23||a22
+	 
+	tmp[0] = product[6];	
+	tmp[1] = product[7];	
+	tmp[2] = product[8];	
+	tmp[3] = product[9];	
+	tmp[4] = product[10];	
+	tmp[5] = product[11];	
 	carry += vli_add(result, result, tmp, ndigits);
 
-	/* s3 */
-	tmp[0] = SL32OR32(product[11], (product[10]>>32));	//a22||a21
-	tmp[1] = SL32OR32(product[6], (product[11]>>32));	//a12||a23
-	tmp[2] = SL32OR32(product[7], (product[6])>>32);	//a14||a13
-	tmp[3] = SL32OR32(product[8], (product[7]>>32));	//a16||a15
-	tmp[4] = SL32OR32(product[9], (product[8]>>32));	//a18||a17
-	tmp[5] = SL32OR32(product[10], (product[9]>>32));	//a20||a19
+	 
+	tmp[0] = SL32OR32(product[11], (product[10]>>32));	
+	tmp[1] = SL32OR32(product[6], (product[11]>>32));	
+	tmp[2] = SL32OR32(product[7], (product[6])>>32);	
+	tmp[3] = SL32OR32(product[8], (product[7]>>32));	
+	tmp[4] = SL32OR32(product[9], (product[8]>>32));	
+	tmp[5] = SL32OR32(product[10], (product[9]>>32));	
 	carry += vli_add(result, result, tmp, ndigits);
 
-	/* s4 */
-	tmp[0] = AND64H(product[11]);	//a23|| 0
-	tmp[1] = (product[10]<<32);	//a20|| 0
-	tmp[2] = product[6];	//a13||a12
-	tmp[3] = product[7];	//a15||a14
-	tmp[4] = product[8];	//a17||a16
-	tmp[5] = product[9];	//a19||a18
+	 
+	tmp[0] = AND64H(product[11]);	
+	tmp[1] = (product[10]<<32);	
+	tmp[2] = product[6];	
+	tmp[3] = product[7];	
+	tmp[4] = product[8];	
+	tmp[5] = product[9];	
 	carry += vli_add(result, result, tmp, ndigits);
 
-	/* s5 */
-	tmp[0] = 0;		//  0|| 0
-	tmp[1] = 0;		//  0|| 0
-	tmp[2] = product[10];	//a21||a20
-	tmp[3] = product[11];	//a23||a22
-	tmp[4] = 0;		//  0|| 0
-	tmp[5] = 0;		//  0|| 0
+	 
+	tmp[0] = 0;		
+	tmp[1] = 0;		
+	tmp[2] = product[10];	
+	tmp[3] = product[11];	
+	tmp[4] = 0;		
+	tmp[5] = 0;		
 	carry += vli_add(result, result, tmp, ndigits);
 
-	/* s6 */
-	tmp[0] = AND64L(product[10]);	// 0 ||a20
-	tmp[1] = AND64H(product[10]);	//a21|| 0
-	tmp[2] = product[11];	//a23||a22
-	tmp[3] = 0;		// 0 || 0
-	tmp[4] = 0;		// 0 || 0
-	tmp[5] = 0;		// 0 || 0
+	 
+	tmp[0] = AND64L(product[10]);	
+	tmp[1] = AND64H(product[10]);	
+	tmp[2] = product[11];	
+	tmp[3] = 0;		
+	tmp[4] = 0;		
+	tmp[5] = 0;		
 	carry += vli_add(result, result, tmp, ndigits);
 
-	/* d1 */
-	tmp[0] = SL32OR32(product[6], (product[11]>>32));	//a12||a23
-	tmp[1] = SL32OR32(product[7], (product[6]>>32));	//a14||a13
-	tmp[2] = SL32OR32(product[8], (product[7]>>32));	//a16||a15
-	tmp[3] = SL32OR32(product[9], (product[8]>>32));	//a18||a17
-	tmp[4] = SL32OR32(product[10], (product[9]>>32));	//a20||a19
-	tmp[5] = SL32OR32(product[11], (product[10]>>32));	//a22||a21
+	 
+	tmp[0] = SL32OR32(product[6], (product[11]>>32));	
+	tmp[1] = SL32OR32(product[7], (product[6]>>32));	
+	tmp[2] = SL32OR32(product[8], (product[7]>>32));	
+	tmp[3] = SL32OR32(product[9], (product[8]>>32));	
+	tmp[4] = SL32OR32(product[10], (product[9]>>32));	
+	tmp[5] = SL32OR32(product[11], (product[10]>>32));	
 	carry -= vli_sub(result, result, tmp, ndigits);
 
-	/* d2 */
-	tmp[0] = (product[10]<<32);	//a20|| 0
-	tmp[1] = SL32OR32(product[11], (product[10]>>32));	//a22||a21
-	tmp[2] = (product[11]>>32);	// 0 ||a23
-	tmp[3] = 0;		// 0 || 0
-	tmp[4] = 0;		// 0 || 0
-	tmp[5] = 0;		// 0 || 0
+	 
+	tmp[0] = (product[10]<<32);	
+	tmp[1] = SL32OR32(product[11], (product[10]>>32));	
+	tmp[2] = (product[11]>>32);	
+	tmp[3] = 0;		
+	tmp[4] = 0;		
+	tmp[5] = 0;		
 	carry -= vli_sub(result, result, tmp, ndigits);
 
-	/* d3 */
-	tmp[0] = 0;		// 0 || 0
-	tmp[1] = AND64H(product[11]);	//a23|| 0
-	tmp[2] = product[11]>>32;	// 0 ||a23
-	tmp[3] = 0;		// 0 || 0
-	tmp[4] = 0;		// 0 || 0
-	tmp[5] = 0;		// 0 || 0
+	 
+	tmp[0] = 0;		
+	tmp[1] = AND64H(product[11]);	
+	tmp[2] = product[11]>>32;	
+	tmp[3] = 0;		
+	tmp[4] = 0;		
+	tmp[5] = 0;		
 	carry -= vli_sub(result, result, tmp, ndigits);
 
 	if (carry < 0) {
@@ -902,11 +822,7 @@ static void vli_mmod_fast_384(u64 *result, const u64 *product,
 #undef AND64H
 #undef AND64L
 
-/* Computes result = product % curve_prime for different curve_primes.
- *
- * Note that curve_primes are distinguished just by heuristic check and
- * not by complete conformance check.
- */
+ 
 static bool vli_mmod_fast(u64 *result, u64 *product,
 			  const struct ecc_curve *curve)
 {
@@ -914,9 +830,9 @@ static bool vli_mmod_fast(u64 *result, u64 *product,
 	const u64 *curve_prime = curve->p;
 	const unsigned int ndigits = curve->g.ndigits;
 
-	/* All NIST curves have name prefix 'nist_' */
+	 
 	if (strncmp(curve->name, "nist_", 5) != 0) {
-		/* Try to handle Pseudo-Marsenne primes. */
+		 
 		if (curve_prime[ndigits - 1] == -1ull) {
 			vli_mmod_special(result, product, curve_prime,
 					 ndigits);
@@ -949,9 +865,7 @@ static bool vli_mmod_fast(u64 *result, u64 *product,
 	return true;
 }
 
-/* Computes result = (left * right) % mod.
- * Assumes that mod is big enough curve order.
- */
+ 
 void vli_mod_mult_slow(u64 *result, const u64 *left, const u64 *right,
 		       const u64 *mod, unsigned int ndigits)
 {
@@ -962,7 +876,7 @@ void vli_mod_mult_slow(u64 *result, const u64 *left, const u64 *right,
 }
 EXPORT_SYMBOL(vli_mod_mult_slow);
 
-/* Computes result = (left * right) % curve_prime. */
+ 
 static void vli_mod_mult_fast(u64 *result, const u64 *left, const u64 *right,
 			      const struct ecc_curve *curve)
 {
@@ -972,7 +886,7 @@ static void vli_mod_mult_fast(u64 *result, const u64 *left, const u64 *right,
 	vli_mmod_fast(result, product, curve);
 }
 
-/* Computes result = left^2 % curve_prime. */
+ 
 static void vli_mod_square_fast(u64 *result, const u64 *left,
 				const struct ecc_curve *curve)
 {
@@ -983,10 +897,7 @@ static void vli_mod_square_fast(u64 *result, const u64 *left,
 }
 
 #define EVEN(vli) (!(vli[0] & 1))
-/* Computes result = (1 / p_input) % mod. All VLIs are the same size.
- * See "From Euclid's GCD to Montgomery Multiplication to the Great Divide"
- * https://labs.oracle.com/techrep/2001/smli_tr-2001-95.pdf
- */
+ 
 void vli_mod_inv(u64 *result, const u64 *input, const u64 *mod,
 			unsigned int ndigits)
 {
@@ -1062,9 +973,9 @@ void vli_mod_inv(u64 *result, const u64 *input, const u64 *mod,
 }
 EXPORT_SYMBOL(vli_mod_inv);
 
-/* ------ Point operations ------ */
+ 
 
-/* Returns true if p_point is the point at infinity, false otherwise. */
+ 
 bool ecc_point_is_zero(const struct ecc_point *point)
 {
 	return (vli_is_zero(point->x, point->ndigits) &&
@@ -1072,15 +983,13 @@ bool ecc_point_is_zero(const struct ecc_point *point)
 }
 EXPORT_SYMBOL(ecc_point_is_zero);
 
-/* Point multiplication algorithm using Montgomery's ladder with co-Z
- * coordinates. From https://eprint.iacr.org/2011/338.pdf
- */
+ 
 
-/* Double in place */
+ 
 static void ecc_point_double_jacobian(u64 *x1, u64 *y1, u64 *z1,
 					const struct ecc_curve *curve)
 {
-	/* t1 = x, t2 = y, t3 = z */
+	 
 	u64 t4[ECC_MAX_DIGITS];
 	u64 t5[ECC_MAX_DIGITS];
 	const u64 *curve_prime = curve->p;
@@ -1089,29 +998,29 @@ static void ecc_point_double_jacobian(u64 *x1, u64 *y1, u64 *z1,
 	if (vli_is_zero(z1, ndigits))
 		return;
 
-	/* t4 = y1^2 */
+	 
 	vli_mod_square_fast(t4, y1, curve);
-	/* t5 = x1*y1^2 = A */
+	 
 	vli_mod_mult_fast(t5, x1, t4, curve);
-	/* t4 = y1^4 */
+	 
 	vli_mod_square_fast(t4, t4, curve);
-	/* t2 = y1*z1 = z3 */
+	 
 	vli_mod_mult_fast(y1, y1, z1, curve);
-	/* t3 = z1^2 */
+	 
 	vli_mod_square_fast(z1, z1, curve);
 
-	/* t1 = x1 + z1^2 */
+	 
 	vli_mod_add(x1, x1, z1, curve_prime, ndigits);
-	/* t3 = 2*z1^2 */
+	 
 	vli_mod_add(z1, z1, z1, curve_prime, ndigits);
-	/* t3 = x1 - z1^2 */
+	 
 	vli_mod_sub(z1, x1, z1, curve_prime, ndigits);
-	/* t1 = x1^2 - z1^4 */
+	 
 	vli_mod_mult_fast(x1, x1, z1, curve);
 
-	/* t3 = 2*(x1^2 - z1^4) */
+	 
 	vli_mod_add(z1, x1, x1, curve_prime, ndigits);
-	/* t1 = 3*(x1^2 - z1^4) */
+	 
 	vli_mod_add(x1, x1, z1, curve_prime, ndigits);
 	if (vli_test_bit(x1, 0)) {
 		u64 carry = vli_add(x1, x1, curve_prime, ndigits);
@@ -1121,19 +1030,19 @@ static void ecc_point_double_jacobian(u64 *x1, u64 *y1, u64 *z1,
 	} else {
 		vli_rshift1(x1, ndigits);
 	}
-	/* t1 = 3/2*(x1^2 - z1^4) = B */
+	 
 
-	/* t3 = B^2 */
+	 
 	vli_mod_square_fast(z1, x1, curve);
-	/* t3 = B^2 - A */
+	 
 	vli_mod_sub(z1, z1, t5, curve_prime, ndigits);
-	/* t3 = B^2 - 2A = x3 */
+	 
 	vli_mod_sub(z1, z1, t5, curve_prime, ndigits);
-	/* t5 = A - x3 */
+	 
 	vli_mod_sub(t5, t5, z1, curve_prime, ndigits);
-	/* t1 = B * (A - x3) */
+	 
 	vli_mod_mult_fast(x1, x1, t5, curve);
-	/* t4 = B * (A - x3) - y1^4 = y3 */
+	 
 	vli_mod_sub(t4, x1, t4, curve_prime, ndigits);
 
 	vli_set(x1, z1, ndigits);
@@ -1141,18 +1050,18 @@ static void ecc_point_double_jacobian(u64 *x1, u64 *y1, u64 *z1,
 	vli_set(y1, t4, ndigits);
 }
 
-/* Modify (x1, y1) => (x1 * z^2, y1 * z^3) */
+ 
 static void apply_z(u64 *x1, u64 *y1, u64 *z, const struct ecc_curve *curve)
 {
 	u64 t1[ECC_MAX_DIGITS];
 
-	vli_mod_square_fast(t1, z, curve);		/* z^2 */
-	vli_mod_mult_fast(x1, x1, t1, curve);	/* x1 * z^2 */
-	vli_mod_mult_fast(t1, t1, z, curve);	/* z^3 */
-	vli_mod_mult_fast(y1, y1, t1, curve);	/* y1 * z^3 */
+	vli_mod_square_fast(t1, z, curve);		 
+	vli_mod_mult_fast(x1, x1, t1, curve);	 
+	vli_mod_mult_fast(t1, t1, z, curve);	 
+	vli_mod_mult_fast(y1, y1, t1, curve);	 
 }
 
-/* P = (x1, y1) => 2P, (x2, y2) => P' */
+ 
 static void xycz_initial_double(u64 *x1, u64 *y1, u64 *x2, u64 *y2,
 				u64 *p_initial_z, const struct ecc_curve *curve)
 {
@@ -1175,103 +1084,97 @@ static void xycz_initial_double(u64 *x1, u64 *y1, u64 *x2, u64 *y2,
 	apply_z(x2, y2, z, curve);
 }
 
-/* Input P = (x1, y1, Z), Q = (x2, y2, Z)
- * Output P' = (x1', y1', Z3), P + Q = (x3, y3, Z3)
- * or P => P', Q => P + Q
- */
+ 
 static void xycz_add(u64 *x1, u64 *y1, u64 *x2, u64 *y2,
 			const struct ecc_curve *curve)
 {
-	/* t1 = X1, t2 = Y1, t3 = X2, t4 = Y2 */
+	 
 	u64 t5[ECC_MAX_DIGITS];
 	const u64 *curve_prime = curve->p;
 	const unsigned int ndigits = curve->g.ndigits;
 
-	/* t5 = x2 - x1 */
+	 
 	vli_mod_sub(t5, x2, x1, curve_prime, ndigits);
-	/* t5 = (x2 - x1)^2 = A */
+	 
 	vli_mod_square_fast(t5, t5, curve);
-	/* t1 = x1*A = B */
+	 
 	vli_mod_mult_fast(x1, x1, t5, curve);
-	/* t3 = x2*A = C */
+	 
 	vli_mod_mult_fast(x2, x2, t5, curve);
-	/* t4 = y2 - y1 */
+	 
 	vli_mod_sub(y2, y2, y1, curve_prime, ndigits);
-	/* t5 = (y2 - y1)^2 = D */
+	 
 	vli_mod_square_fast(t5, y2, curve);
 
-	/* t5 = D - B */
+	 
 	vli_mod_sub(t5, t5, x1, curve_prime, ndigits);
-	/* t5 = D - B - C = x3 */
+	 
 	vli_mod_sub(t5, t5, x2, curve_prime, ndigits);
-	/* t3 = C - B */
+	 
 	vli_mod_sub(x2, x2, x1, curve_prime, ndigits);
-	/* t2 = y1*(C - B) */
+	 
 	vli_mod_mult_fast(y1, y1, x2, curve);
-	/* t3 = B - x3 */
+	 
 	vli_mod_sub(x2, x1, t5, curve_prime, ndigits);
-	/* t4 = (y2 - y1)*(B - x3) */
+	 
 	vli_mod_mult_fast(y2, y2, x2, curve);
-	/* t4 = y3 */
+	 
 	vli_mod_sub(y2, y2, y1, curve_prime, ndigits);
 
 	vli_set(x2, t5, ndigits);
 }
 
-/* Input P = (x1, y1, Z), Q = (x2, y2, Z)
- * Output P + Q = (x3, y3, Z3), P - Q = (x3', y3', Z3)
- * or P => P - Q, Q => P + Q
- */
+ 
 static void xycz_add_c(u64 *x1, u64 *y1, u64 *x2, u64 *y2,
 			const struct ecc_curve *curve)
 {
-	/* t1 = X1, t2 = Y1, t3 = X2, t4 = Y2 */
+	 
 	u64 t5[ECC_MAX_DIGITS];
 	u64 t6[ECC_MAX_DIGITS];
 	u64 t7[ECC_MAX_DIGITS];
 	const u64 *curve_prime = curve->p;
 	const unsigned int ndigits = curve->g.ndigits;
 
-	/* t5 = x2 - x1 */
+	 
 	vli_mod_sub(t5, x2, x1, curve_prime, ndigits);
-	/* t5 = (x2 - x1)^2 = A */
+	 
 	vli_mod_square_fast(t5, t5, curve);
-	/* t1 = x1*A = B */
+	 
 	vli_mod_mult_fast(x1, x1, t5, curve);
-	/* t3 = x2*A = C */
+	 
 	vli_mod_mult_fast(x2, x2, t5, curve);
-	/* t4 = y2 + y1 */
+	 
 	vli_mod_add(t5, y2, y1, curve_prime, ndigits);
-	/* t4 = y2 - y1 */
+	 
 	vli_mod_sub(y2, y2, y1, curve_prime, ndigits);
 
-	/* t6 = C - B */
+	 
 	vli_mod_sub(t6, x2, x1, curve_prime, ndigits);
-	/* t2 = y1 * (C - B) */
+	 
 	vli_mod_mult_fast(y1, y1, t6, curve);
-	/* t6 = B + C */
+	 
 	vli_mod_add(t6, x1, x2, curve_prime, ndigits);
-	/* t3 = (y2 - y1)^2 */
+	 
 	vli_mod_square_fast(x2, y2, curve);
-	/* t3 = x3 */
+	 
 	vli_mod_sub(x2, x2, t6, curve_prime, ndigits);
 
-	/* t7 = B - x3 */
+	 
 	vli_mod_sub(t7, x1, x2, curve_prime, ndigits);
-	/* t4 = (y2 - y1)*(B - x3) */
+	 
 	vli_mod_mult_fast(y2, y2, t7, curve);
-	/* t4 = y3 */
+	 
 	vli_mod_sub(y2, y2, y1, curve_prime, ndigits);
 
-	/* t7 = (y2 + y1)^2 = F */
+	 
 	vli_mod_square_fast(t7, t5, curve);
-	/* t7 = x3' */
+	 
 	vli_mod_sub(t7, t7, t6, curve_prime, ndigits);
-	/* t6 = x3' - B */
+	 
 	vli_mod_sub(t6, t7, x1, curve_prime, ndigits);
-	/* t6 = (y2 + y1)*(x3' - B) */
+	 
 	vli_mod_mult_fast(t6, t6, t5, curve);
-	/* t2 = y3' */
+	 
 	vli_mod_sub(y1, t6, y1, curve_prime, ndigits);
 
 	vli_set(x1, t7, ndigits);
@@ -1282,7 +1185,7 @@ static void ecc_point_mult(struct ecc_point *result,
 			   u64 *initial_z, const struct ecc_curve *curve,
 			   unsigned int ndigits)
 {
-	/* R0 and R1 */
+	 
 	u64 rx[2][ECC_MAX_DIGITS];
 	u64 ry[2][ECC_MAX_DIGITS];
 	u64 z[ECC_MAX_DIGITS];
@@ -1311,22 +1214,22 @@ static void ecc_point_mult(struct ecc_point *result,
 	nb = !vli_test_bit(scalar, 0);
 	xycz_add_c(rx[1 - nb], ry[1 - nb], rx[nb], ry[nb], curve);
 
-	/* Find final 1/Z value. */
-	/* X1 - X0 */
+	 
+	 
 	vli_mod_sub(z, rx[1], rx[0], curve_prime, ndigits);
-	/* Yb * (X1 - X0) */
+	 
 	vli_mod_mult_fast(z, z, ry[1 - nb], curve);
-	/* xP * Yb * (X1 - X0) */
+	 
 	vli_mod_mult_fast(z, z, point->x, curve);
 
-	/* 1 / (xP * Yb * (X1 - X0)) */
+	 
 	vli_mod_inv(z, z, curve_prime, point->ndigits);
 
-	/* yP / (xP * Yb * (X1 - X0)) */
+	 
 	vli_mod_mult_fast(z, z, point->y, curve);
-	/* Xb * yP / (xP * Yb * (X1 - X0)) */
+	 
 	vli_mod_mult_fast(z, z, rx[1 - nb], curve);
-	/* End 1/Z calculation */
+	 
 
 	xycz_add(rx[nb], ry[nb], rx[1 - nb], ry[1 - nb], curve);
 
@@ -1336,7 +1239,7 @@ static void ecc_point_mult(struct ecc_point *result,
 	vli_set(result->y, ry[0], ndigits);
 }
 
-/* Computes R = P + Q mod p */
+ 
 static void ecc_point_add(const struct ecc_point *result,
 		   const struct ecc_point *p, const struct ecc_point *q,
 		   const struct ecc_curve *curve)
@@ -1356,9 +1259,7 @@ static void ecc_point_add(const struct ecc_point *result,
 	apply_z(result->x, result->y, z, curve);
 }
 
-/* Computes R = u1P + u2Q mod p using Shamir's trick.
- * Based on: Kenneth MacKay's micro-ecc (2014).
- */
+ 
 void ecc_point_mult_shamir(const struct ecc_point *result,
 			   const u64 *u1, const struct ecc_point *p,
 			   const u64 *u2, const struct ecc_point *q,
@@ -1428,7 +1329,7 @@ static int __ecc_is_key_valid(const struct ecc_curve *curve,
 	if (curve->g.ndigits != ndigits)
 		return -EINVAL;
 
-	/* Make sure the private key is in the range [2, n-3]. */
+	 
 	if (vli_cmp(one, private_key, ndigits) != -1)
 		return -EINVAL;
 	vli_sub(res, curve->n, one, ndigits);
@@ -1454,18 +1355,7 @@ int ecc_is_key_valid(unsigned int curve_id, unsigned int ndigits,
 }
 EXPORT_SYMBOL(ecc_is_key_valid);
 
-/*
- * ECC private keys are generated using the method of extra random bits,
- * equivalent to that described in FIPS 186-4, Appendix B.4.1.
- *
- * d = (c mod(n–1)) + 1    where c is a string of random bits, 64 bits longer
- *                         than requested
- * 0 <= c mod(n-1) <= n-2  and implies that
- * 1 <= d <= n-1
- *
- * This method generates a private key uniformly distributed in the range
- * [1, n-1].
- */
+ 
 int ecc_gen_privkey(unsigned int curve_id, unsigned int ndigits, u64 *privkey)
 {
 	const struct ecc_curve *curve = ecc_get_curve(curve_id);
@@ -1474,21 +1364,11 @@ int ecc_gen_privkey(unsigned int curve_id, unsigned int ndigits, u64 *privkey)
 	unsigned int nbits = vli_num_bits(curve->n, ndigits);
 	int err;
 
-	/* Check that N is included in Table 1 of FIPS 186-4, section 6.1.1 */
+	 
 	if (nbits < 160 || ndigits > ARRAY_SIZE(priv))
 		return -EINVAL;
 
-	/*
-	 * FIPS 186-4 recommends that the private key should be obtained from a
-	 * RBG with a security strength equal to or greater than the security
-	 * strength associated with N.
-	 *
-	 * The maximum security strength identified by NIST SP800-57pt1r4 for
-	 * ECC is 256 (N >= 512).
-	 *
-	 * This condition is met by the default RNG because it selects a favored
-	 * DRBG with a security strength of 256.
-	 */
+	 
 	if (crypto_get_default_rng())
 		return -EFAULT;
 
@@ -1497,7 +1377,7 @@ int ecc_gen_privkey(unsigned int curve_id, unsigned int ndigits, u64 *privkey)
 	if (err)
 		return err;
 
-	/* Make sure the private key is in the valid range. */
+	 
 	if (__ecc_is_key_valid(curve, priv, ndigits))
 		return -EINVAL;
 
@@ -1530,7 +1410,7 @@ int ecc_make_pub_key(unsigned int curve_id, unsigned int ndigits,
 
 	ecc_point_mult(pk, &curve->g, priv, NULL, curve, ndigits);
 
-	/* SP800-56A rev 3 5.6.2.1.3 key check */
+	 
 	if (ecc_is_pubkey_valid_full(curve, pk)) {
 		ret = -EAGAIN;
 		goto err_free_point;
@@ -1546,7 +1426,7 @@ out:
 }
 EXPORT_SYMBOL(ecc_make_pub_key);
 
-/* SP800-56A section 5.6.2.3.4 partial verification: ephemeral keys only */
+ 
 int ecc_is_pubkey_valid_partial(const struct ecc_curve *curve,
 				struct ecc_point *pk)
 {
@@ -1555,43 +1435,43 @@ int ecc_is_pubkey_valid_partial(const struct ecc_curve *curve,
 	if (WARN_ON(pk->ndigits != curve->g.ndigits))
 		return -EINVAL;
 
-	/* Check 1: Verify key is not the zero point. */
+	 
 	if (ecc_point_is_zero(pk))
 		return -EINVAL;
 
-	/* Check 2: Verify key is in the range [1, p-1]. */
+	 
 	if (vli_cmp(curve->p, pk->x, pk->ndigits) != 1)
 		return -EINVAL;
 	if (vli_cmp(curve->p, pk->y, pk->ndigits) != 1)
 		return -EINVAL;
 
-	/* Check 3: Verify that y^2 == (x^3 + a·x + b) mod p */
-	vli_mod_square_fast(yy, pk->y, curve); /* y^2 */
-	vli_mod_square_fast(xxx, pk->x, curve); /* x^2 */
-	vli_mod_mult_fast(xxx, xxx, pk->x, curve); /* x^3 */
-	vli_mod_mult_fast(w, curve->a, pk->x, curve); /* a·x */
-	vli_mod_add(w, w, curve->b, curve->p, pk->ndigits); /* a·x + b */
-	vli_mod_add(w, w, xxx, curve->p, pk->ndigits); /* x^3 + a·x + b */
-	if (vli_cmp(yy, w, pk->ndigits) != 0) /* Equation */
+	 
+	vli_mod_square_fast(yy, pk->y, curve);  
+	vli_mod_square_fast(xxx, pk->x, curve);  
+	vli_mod_mult_fast(xxx, xxx, pk->x, curve);  
+	vli_mod_mult_fast(w, curve->a, pk->x, curve);  
+	vli_mod_add(w, w, curve->b, curve->p, pk->ndigits);  
+	vli_mod_add(w, w, xxx, curve->p, pk->ndigits);  
+	if (vli_cmp(yy, w, pk->ndigits) != 0)  
 		return -EINVAL;
 
 	return 0;
 }
 EXPORT_SYMBOL(ecc_is_pubkey_valid_partial);
 
-/* SP800-56A section 5.6.2.3.3 full verification */
+ 
 int ecc_is_pubkey_valid_full(const struct ecc_curve *curve,
 			     struct ecc_point *pk)
 {
 	struct ecc_point *nQ;
 
-	/* Checks 1 through 3 */
+	 
 	int ret = ecc_is_pubkey_valid_partial(curve, pk);
 
 	if (ret)
 		return ret;
 
-	/* Check 4: Verify that nQ is the zero point. */
+	 
 	nQ = ecc_alloc_point(pk->ndigits);
 	if (!nQ)
 		return -ENOMEM;

@@ -1,28 +1,4 @@
-/*
- * Copyright (C) 2010 Francisco Jerez.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial
- * portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE COPYRIGHT OWNER(S) AND/OR ITS SUPPLIERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "nv04.h"
 #include "fbmem.h"
 
@@ -41,14 +17,14 @@ nv04_devinit_meminit(struct nvkm_devinit *init)
 	struct io_mapping *fb;
 	int i;
 
-	/* Map the framebuffer aperture */
+	 
 	fb = fbmem_init(device);
 	if (!fb) {
 		nvkm_error(subdev, "failed to map fb\n");
 		return;
 	}
 
-	/* Sequencer and refresh off */
+	 
 	nvkm_wrvgas(device, 0, 1, nvkm_rdvgas(device, 0, 1) | 0x20);
 	nvkm_mask(device, NV04_PFB_DEBUG_0, 0, NV04_PFB_DEBUG_0_REFRESH_OFF);
 
@@ -103,7 +79,7 @@ nv04_devinit_meminit(struct nvkm_devinit *init)
 
 	}
 
-	/* Refresh on, sequencer on */
+	 
 	nvkm_mask(device, NV04_PFB_DEBUG_0, NV04_PFB_DEBUG_0_REFRESH_OFF, 0);
 	nvkm_wrvgas(device, 0, 1, nvkm_rdvgas(device, 0, 1) & ~0x20);
 	fbmem_fini(fb);
@@ -128,10 +104,7 @@ powerctrl_1_shift(int chip_version, int reg)
 		shift += 4;
 	}
 
-	/*
-	 * the shift for vpll regs is only used for nv3x chips with a single
-	 * stage pll
-	 */
+	 
 	if (shift > 4 && (chip_version < 0x32 || chip_version == 0x35 ||
 			  chip_version == 0x36 || chip_version >= 0x40))
 		shift = -4;
@@ -152,7 +125,7 @@ setPLL_single(struct nvkm_devinit *init, u32 reg,
 	int shift_powerctrl_1 = powerctrl_1_shift(chip_version, reg);
 
 	if (oldpll == pll)
-		return;	/* already set */
+		return;	 
 
 	if (shift_powerctrl_1 >= 0) {
 		saved_powerctrl_1 = nvkm_rd32(device, 0x001584);
@@ -162,19 +135,19 @@ setPLL_single(struct nvkm_devinit *init, u32 reg,
 	}
 
 	if (oldM && pv->M1 && (oldN / oldM < pv->N1 / pv->M1))
-		/* upclock -- write new post divider first */
+		 
 		nvkm_wr32(device, reg, pv->log2P << 16 | (oldpll & 0xffff));
 	else
-		/* downclock -- write new NM first */
+		 
 		nvkm_wr32(device, reg, (oldpll & 0xffff0000) | pv->NM1);
 
 	if ((chip_version < 0x17 || chip_version == 0x1a) &&
 	    chip_version != 0x11)
-		/* wait a bit on older chips */
+		 
 		msleep(64);
 	nvkm_rd32(device, reg);
 
-	/* then write the other half as well */
+	 
 	nvkm_wr32(device, reg, pll);
 
 	if (shift_powerctrl_1 >= 0)
@@ -186,7 +159,7 @@ new_ramdac580(uint32_t reg1, bool ss, uint32_t ramdac580)
 {
 	bool head_a = (reg1 == 0x680508);
 
-	if (ss)	/* single stage pll mode */
+	if (ss)	 
 		ramdac580 |= head_a ? 0x00000100 : 0x10000000;
 	else
 		ramdac580 &= head_a ? 0xfffffeff : 0xefffffff;
@@ -207,31 +180,31 @@ setPLL_double_highregs(struct nvkm_devinit *init, u32 reg1,
 	uint32_t pll1 = (oldpll1 & 0xfff80000) | pv->log2P << 16 | pv->NM1;
 	uint32_t pll2 = (oldpll2 & 0x7fff0000) | 1 << 31 | pv->NM2;
 	uint32_t oldramdac580 = 0, ramdac580 = 0;
-	bool single_stage = !pv->NM2 || pv->N2 == pv->M2;	/* nv41+ only */
+	bool single_stage = !pv->NM2 || pv->N2 == pv->M2;	 
 	uint32_t saved_powerctrl_1 = 0, savedc040 = 0;
 	int shift_powerctrl_1 = powerctrl_1_shift(chip_version, reg1);
 
-	/* model specific additions to generic pll1 and pll2 set up above */
+	 
 	if (nv3035) {
 		pll1 = (pll1 & 0xfcc7ffff) | (pv->N2 & 0x18) << 21 |
 		       (pv->N2 & 0x7) << 19 | 8 << 4 | (pv->M2 & 7) << 4;
 		pll2 = 0;
 	}
-	if (chip_version > 0x40 && reg1 >= 0x680508) { /* !nv40 */
+	if (chip_version > 0x40 && reg1 >= 0x680508) {  
 		oldramdac580 = nvkm_rd32(device, 0x680580);
 		ramdac580 = new_ramdac580(reg1, single_stage, oldramdac580);
 		if (oldramdac580 != ramdac580)
-			oldpll1 = ~0;	/* force mismatch */
+			oldpll1 = ~0;	 
 		if (single_stage)
-			/* magic value used by nvidia in single stage mode */
+			 
 			pll2 |= 0x011f;
 	}
 	if (chip_version > 0x70)
-		/* magic bits set by the blob (but not the bios) on g71-73 */
+		 
 		pll1 = (pll1 & 0x7fffffff) | (single_stage ? 0x4 : 0xc) << 28;
 
 	if (oldpll1 == pll1 && oldpll2 == pll2)
-		return;	/* already set */
+		return;	 
 
 	if (shift_powerctrl_1 >= 0) {
 		saved_powerctrl_1 = nvkm_rd32(device, 0x001584);
@@ -276,13 +249,7 @@ void
 setPLL_double_lowregs(struct nvkm_devinit *init, u32 NMNMreg,
 		      struct nvkm_pll_vals *pv)
 {
-	/* When setting PLLs, there is a merry game of disabling and enabling
-	 * various bits of hardware during the process. This function is a
-	 * synthesis of six nv4x traces, nearly each card doing a subtly
-	 * different thing. With luck all the necessary bits for each card are
-	 * combined herein. Without luck it deviates from each card's formula
-	 * so as to not work on any :)
-	 */
+	 
 	struct nvkm_device *device = init->subdev.device;
 	uint32_t Preg = NMNMreg - 4;
 	bool mpll = Preg == 0x4020;
@@ -291,7 +258,7 @@ setPLL_double_lowregs(struct nvkm_devinit *init, u32 NMNMreg,
 	uint32_t Pval = (oldPval & (mpll ? ~(0x77 << 16) : ~(7 << 16))) |
 			0xc << 28 | pv->log2P << 16;
 	uint32_t saved4600 = 0;
-	/* some cards have different maskc040s */
+	 
 	uint32_t maskc040 = ~(3 << 14), savedc040;
 	bool single_stage = !pv->NM2 || pv->N2 == pv->M2;
 
@@ -403,10 +370,10 @@ nv04_devinit_preinit(struct nvkm_devinit *base)
 	struct nvkm_subdev *subdev = &init->base.subdev;
 	struct nvkm_device *device = subdev->device;
 
-	/* make i2c busses accessible */
+	 
 	nvkm_mask(device, 0x000200, 0x00000001, 0x00000001);
 
-	/* unslave crtcs */
+	 
 	if (init->owner < 0)
 		init->owner = nvkm_rdvgaowner(device);
 	nvkm_wrvgaowner(device, 0);
@@ -428,7 +395,7 @@ void *
 nv04_devinit_dtor(struct nvkm_devinit *base)
 {
 	struct nv04_devinit *init = nv04_devinit(base);
-	/* restore vga owner saved at first init */
+	 
 	nvkm_wrvgaowner(init->base.subdev.device, init->owner);
 	return init;
 }

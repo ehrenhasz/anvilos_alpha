@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  ALSA sequencer Memory Manager
- *  Copyright (c) 1998 by Frank van de Pol <fvdpol@coil.demon.nl>
- *                        Jaroslav Kysela <perex@perex.cz>
- *                2000 by Takashi Iwai <tiwai@suse.de>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/export.h>
@@ -29,31 +24,9 @@ static inline int snd_seq_output_ok(struct snd_seq_pool *pool)
 	return snd_seq_pool_available(pool) >= pool->room;
 }
 
-/*
- * Variable length event:
- * The event like sysex uses variable length type.
- * The external data may be stored in three different formats.
- * 1) kernel space
- *    This is the normal case.
- *      ext.data.len = length
- *      ext.data.ptr = buffer pointer
- * 2) user space
- *    When an event is generated via read(), the external data is
- *    kept in user space until expanded.
- *      ext.data.len = length | SNDRV_SEQ_EXT_USRPTR
- *      ext.data.ptr = userspace pointer
- * 3) chained cells
- *    When the variable length event is enqueued (in prioq or fifo),
- *    the external data is decomposed to several cells.
- *      ext.data.len = length | SNDRV_SEQ_EXT_CHAINED
- *      ext.data.ptr = the additiona cell head
- *         -> cell.next -> cell.next -> ..
- */
+ 
 
-/*
- * exported:
- * call dump function to expand external data.
- */
+ 
 
 static int get_var_len(const struct snd_seq_event *event)
 {
@@ -130,10 +103,7 @@ int snd_seq_dump_var_event(const struct snd_seq_event *event,
 EXPORT_SYMBOL(snd_seq_dump_var_event);
 
 
-/*
- * exported:
- * expand the variable length event to linear buffer space.
- */
+ 
 
 static int seq_copy_in_kernel(void *ptr, void *src, int size)
 {
@@ -218,9 +188,7 @@ int snd_seq_expand_var_event_at(const struct snd_seq_event *event, int count,
 }
 EXPORT_SYMBOL_GPL(snd_seq_expand_var_event_at);
 
-/*
- * release this cell, free extended data if available
- */
+ 
 
 static inline void free_cell(struct snd_seq_pool *pool,
 			     struct snd_seq_event_cell *cell)
@@ -255,7 +223,7 @@ void snd_seq_cell_free(struct snd_seq_event_cell * cell)
 		}
 	}
 	if (waitqueue_active(&pool->output_sleep)) {
-		/* has enough space now? */
+		 
 		if (snd_seq_output_ok(pool))
 			wake_up(&pool->output_sleep);
 	}
@@ -263,9 +231,7 @@ void snd_seq_cell_free(struct snd_seq_event_cell * cell)
 }
 
 
-/*
- * allocate an event cell.
- */
+ 
 static int snd_seq_cell_alloc(struct snd_seq_pool *pool,
 			      struct snd_seq_event_cell **cellp,
 			      int nonblock, struct file *file,
@@ -283,7 +249,7 @@ static int snd_seq_cell_alloc(struct snd_seq_pool *pool,
 
 	init_waitqueue_entry(&wait, current);
 	spin_lock_irqsave(&pool->lock, flags);
-	if (pool->ptr == NULL) {	/* not initialized */
+	if (pool->ptr == NULL) {	 
 		pr_debug("ALSA: seq: pool is not initialized\n");
 		err = -EINVAL;
 		goto __error;
@@ -300,13 +266,13 @@ static int snd_seq_cell_alloc(struct snd_seq_pool *pool,
 			mutex_lock(mutexp);
 		spin_lock_irqsave(&pool->lock, flags);
 		remove_wait_queue(&pool->output_sleep, &wait);
-		/* interrupted? */
+		 
 		if (signal_pending(current)) {
 			err = -ERESTARTSYS;
 			goto __error;
 		}
 	}
-	if (pool->closing) { /* closing.. */
+	if (pool->closing) {  
 		err = -ENOMEM;
 		goto __error;
 	}
@@ -320,7 +286,7 @@ static int snd_seq_cell_alloc(struct snd_seq_pool *pool,
 		if (pool->max_used < used)
 			pool->max_used = used;
 		pool->event_alloc_success++;
-		/* clear cell pointers */
+		 
 		cell->next = NULL;
 		err = 0;
 	} else
@@ -333,11 +299,7 @@ __error:
 }
 
 
-/*
- * duplicate the event to a cell.
- * if the event has external data, the data is decomposed to additional
- * cells.
- */
+ 
 int snd_seq_event_dup(struct snd_seq_pool *pool, struct snd_seq_event *event,
 		      struct snd_seq_event_cell **cellp, int nonblock,
 		      struct file *file, struct mutex *mutexp)
@@ -362,7 +324,7 @@ int snd_seq_event_dup(struct snd_seq_pool *pool, struct snd_seq_event *event,
 	if (err < 0)
 		return err;
 
-	/* copy the event */
+	 
 	size = snd_seq_event_packet_size(event);
 	memcpy(&cell->ump, event, size);
 #if IS_ENABLED(CONFIG_SND_SEQ_UMP)
@@ -370,7 +332,7 @@ int snd_seq_event_dup(struct snd_seq_pool *pool, struct snd_seq_event *event,
 		cell->ump.raw.extra = 0;
 #endif
 
-	/* decompose */
+	 
 	if (snd_seq_ev_is_variable(event)) {
 		int len = extlen;
 		int is_chained = event->data.ext.len & SNDRV_SEQ_EXT_CHAINED;
@@ -398,7 +360,7 @@ int snd_seq_event_dup(struct snd_seq_pool *pool, struct snd_seq_event *event,
 			if (tail)
 				tail->next = tmp;
 			tail = tmp;
-			/* copy chunk */
+			 
 			if (is_chained && src) {
 				tmp->event = src->event;
 				src = src->next;
@@ -424,7 +386,7 @@ __error:
 }
   
 
-/* poll wait */
+ 
 int snd_seq_pool_poll_wait(struct snd_seq_pool *pool, struct file *file,
 			   poll_table *wait)
 {
@@ -433,7 +395,7 @@ int snd_seq_pool_poll_wait(struct snd_seq_pool *pool, struct file *file,
 }
 
 
-/* allocate room specified number of events */
+ 
 int snd_seq_pool_init(struct snd_seq_pool *pool)
 {
 	int cell;
@@ -447,7 +409,7 @@ int snd_seq_pool_init(struct snd_seq_pool *pool)
 	if (!cellptr)
 		return -ENOMEM;
 
-	/* add new cells to the free cell list */
+	 
 	spin_lock_irq(&pool->lock);
 	if (pool->ptr) {
 		spin_unlock_irq(&pool->lock);
@@ -466,14 +428,14 @@ int snd_seq_pool_init(struct snd_seq_pool *pool)
 	}
 	pool->room = (pool->size + 1) / 2;
 
-	/* init statistics */
+	 
 	pool->max_used = 0;
 	pool->total_elements = pool->size;
 	spin_unlock_irq(&pool->lock);
 	return 0;
 }
 
-/* refuse the further insertion to the pool */
+ 
 void snd_seq_pool_mark_closing(struct snd_seq_pool *pool)
 {
 	unsigned long flags;
@@ -485,7 +447,7 @@ void snd_seq_pool_mark_closing(struct snd_seq_pool *pool)
 	spin_unlock_irqrestore(&pool->lock, flags);
 }
 
-/* remove events */
+ 
 int snd_seq_pool_done(struct snd_seq_pool *pool)
 {
 	struct snd_seq_event_cell *ptr;
@@ -493,14 +455,14 @@ int snd_seq_pool_done(struct snd_seq_pool *pool)
 	if (snd_BUG_ON(!pool))
 		return -EINVAL;
 
-	/* wait for closing all threads */
+	 
 	if (waitqueue_active(&pool->output_sleep))
 		wake_up(&pool->output_sleep);
 
 	while (atomic_read(&pool->counter) > 0)
 		schedule_timeout_uninterruptible(1);
 	
-	/* release all resources */
+	 
 	spin_lock_irq(&pool->lock);
 	ptr = pool->ptr;
 	pool->ptr = NULL;
@@ -518,12 +480,12 @@ int snd_seq_pool_done(struct snd_seq_pool *pool)
 }
 
 
-/* init new memory pool */
+ 
 struct snd_seq_pool *snd_seq_pool_new(int poolsize)
 {
 	struct snd_seq_pool *pool;
 
-	/* create pool block */
+	 
 	pool = kzalloc(sizeof(*pool), GFP_KERNEL);
 	if (!pool)
 		return NULL;
@@ -537,12 +499,12 @@ struct snd_seq_pool *snd_seq_pool_new(int poolsize)
 	
 	pool->size = poolsize;
 
-	/* init statistics */
+	 
 	pool->max_used = 0;
 	return pool;
 }
 
-/* remove memory pool */
+ 
 int snd_seq_pool_delete(struct snd_seq_pool **ppool)
 {
 	struct snd_seq_pool *pool = *ppool;
@@ -556,7 +518,7 @@ int snd_seq_pool_delete(struct snd_seq_pool **ppool)
 	return 0;
 }
 
-/* exported to seq_clientmgr.c */
+ 
 void snd_seq_info_pool(struct snd_info_buffer *buffer,
 		       struct snd_seq_pool *pool, char *space)
 {

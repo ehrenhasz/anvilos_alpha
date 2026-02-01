@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017 Linaro Ltd.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/cdev.h>
@@ -229,7 +227,7 @@ static int qcom_rmtfs_mem_probe(struct platform_device *pdev)
 
 	num_vmids = of_property_count_u32_elems(node, "qcom,vmid");
 	if (num_vmids == -EINVAL) {
-		/* qcom,vmid is optional */
+		 
 		num_vmids = 0;
 	} else if (num_vmids < 0) {
 		dev_err(&pdev->dev, "failed to count qcom,vmid elements: %d\n", num_vmids);

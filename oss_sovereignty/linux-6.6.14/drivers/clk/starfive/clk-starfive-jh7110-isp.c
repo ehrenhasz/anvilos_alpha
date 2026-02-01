@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * StarFive JH7110 Image-Signal-Process Clock Driver
- *
- * Copyright (C) 2022-2023 StarFive Technology Co., Ltd.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -16,7 +12,7 @@
 
 #include "clk-starfive-jh7110.h"
 
-/* external clocks */
+ 
 #define JH7110_ISPCLK_ISP_TOP_CORE		(JH7110_ISPCLK_END + 0)
 #define JH7110_ISPCLK_ISP_TOP_AXI		(JH7110_ISPCLK_END + 1)
 #define JH7110_ISPCLK_NOC_BUS_ISP_AXI		(JH7110_ISPCLK_END + 2)
@@ -29,13 +25,13 @@ static struct clk_bulk_data jh7110_isp_top_clks[] = {
 };
 
 static const struct jh71x0_clk_data jh7110_ispclk_data[] = {
-	/* syscon */
+	 
 	JH71X0__DIV(JH7110_ISPCLK_DOM4_APB_FUNC, "dom4_apb_func", 15,
 		    JH7110_ISPCLK_ISP_TOP_AXI),
 	JH71X0__DIV(JH7110_ISPCLK_MIPI_RX0_PXL, "mipi_rx0_pxl", 8,
 		    JH7110_ISPCLK_ISP_TOP_CORE),
 	JH71X0__INV(JH7110_ISPCLK_DVP_INV, "dvp_inv", JH7110_ISPCLK_DVP_CLK),
-	/* vin */
+	 
 	JH71X0__DIV(JH7110_ISPCLK_M31DPHY_CFG_IN, "m31dphy_cfg_in", 16,
 		    JH7110_ISPCLK_ISP_TOP_CORE),
 	JH71X0__DIV(JH7110_ISPCLK_M31DPHY_REF_IN, "m31dphy_ref_in", 16,
@@ -56,7 +52,7 @@ static const struct jh71x0_clk_data jh7110_ispclk_data[] = {
 	JH71X0__MUX(JH7110_ISPCLK_VIN_P_AXI_WR, "vin_p_axi_wr", 2,
 		    JH7110_ISPCLK_MIPI_RX0_PXL,
 		    JH7110_ISPCLK_DVP_INV),
-	/* ispv2_top_wrapper */
+	 
 	JH71X0_GMUX(JH7110_ISPCLK_ISPV2_TOP_WRAPPER_C, "ispv2_top_wrapper_c", 0, 2,
 		    JH7110_ISPCLK_MIPI_RX0_PXL,
 		    JH7110_ISPCLK_DVP_INV),
@@ -66,7 +62,7 @@ static inline int jh7110_isp_top_rst_init(struct jh71x0_clk_priv *priv)
 {
 	struct reset_control *top_rsts;
 
-	/* The resets should be shared and other ISP modules will use its. */
+	 
 	top_rsts = devm_reset_control_array_get_shared(priv->dev);
 	if (IS_ERR(top_rsts))
 		return dev_err_probe(priv->dev, PTR_ERR(top_rsts),
@@ -138,7 +134,7 @@ static int jh7110_ispcrg_probe(struct platform_device *pdev)
 		return dev_err_probe(priv->dev, ret, "failed to get main clocks\n");
 	dev_set_drvdata(priv->dev, top);
 
-	/* enable power domain and clocks */
+	 
 	pm_runtime_enable(priv->dev);
 	ret = pm_runtime_get_sync(priv->dev);
 	if (ret < 0)
@@ -212,7 +208,7 @@ static int jh7110_ispcrg_remove(struct platform_device *pdev)
 
 static const struct of_device_id jh7110_ispcrg_match[] = {
 	{ .compatible = "starfive,jh7110-ispcrg" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, jh7110_ispcrg_match);
 

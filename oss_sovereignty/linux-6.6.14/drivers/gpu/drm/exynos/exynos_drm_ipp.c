@@ -1,20 +1,4 @@
-/*
- * Copyright (C) 2017 Samsung Electronics Co.Ltd
- * Authors:
- *	Marek Szyprowski <m.szyprowski@samsung.com>
- *
- * Exynos DRM Image Post Processing (IPP) related functions
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- */
+ 
 
 #include <linux/uaccess.h>
 
@@ -31,21 +15,7 @@
 static int num_ipp;
 static LIST_HEAD(ipp_list);
 
-/**
- * exynos_drm_ipp_register - Register a new picture processor hardware module
- * @dev: DRM device
- * @ipp: ipp module to init
- * @funcs: callbacks for the new ipp object
- * @caps: bitmask of ipp capabilities (%DRM_EXYNOS_IPP_CAP_*)
- * @formats: array of supported formats
- * @num_formats: size of the supported formats array
- * @name: name (for debugging purposes)
- *
- * Initializes a ipp module.
- *
- * Returns:
- * Zero on success, error code on failure.
- */
+ 
 int exynos_drm_ipp_register(struct device *dev, struct exynos_drm_ipp *ipp,
 		const struct exynos_drm_ipp_funcs *funcs, unsigned int caps,
 		const struct exynos_drm_ipp_formats *formats,
@@ -66,7 +36,7 @@ int exynos_drm_ipp_register(struct device *dev, struct exynos_drm_ipp *ipp,
 	ipp->formats = formats;
 	ipp->num_formats = num_formats;
 
-	/* ipp_list modification is serialized by component framework */
+	 
 	list_add_tail(&ipp->head, &ipp_list);
 	ipp->id = num_ipp++;
 
@@ -75,11 +45,7 @@ int exynos_drm_ipp_register(struct device *dev, struct exynos_drm_ipp *ipp,
 	return 0;
 }
 
-/**
- * exynos_drm_ipp_unregister - Unregister the picture processor module
- * @dev: DRM device
- * @ipp: ipp module
- */
+ 
 void exynos_drm_ipp_unregister(struct device *dev,
 			       struct exynos_drm_ipp *ipp)
 {
@@ -88,19 +54,7 @@ void exynos_drm_ipp_unregister(struct device *dev,
 	list_del(&ipp->head);
 }
 
-/**
- * exynos_drm_ipp_get_res_ioctl - enumerate all ipp modules
- * @dev: DRM device
- * @data: ioctl data
- * @file_priv: DRM file info
- *
- * Construct a list of ipp ids.
- *
- * Called by the user via ioctl.
- *
- * Returns:
- * Zero on success, negative errno on failure.
- */
+ 
 int exynos_drm_ipp_get_res_ioctl(struct drm_device *dev, void *data,
 				 struct drm_file *file_priv)
 {
@@ -110,10 +64,7 @@ int exynos_drm_ipp_get_res_ioctl(struct drm_device *dev, void *data,
 						(unsigned long)resp->ipp_id_ptr;
 	unsigned int count = num_ipp, copied = 0;
 
-	/*
-	 * This ioctl is called twice, once to determine how much space is
-	 * needed, and the 2nd time to fill it.
-	 */
+	 
 	if (count && resp->count_ipps >= count) {
 		list_for_each_entry(ipp, &ipp_list, head) {
 			if (put_user(ipp->id, ipp_ptr + copied))
@@ -136,19 +87,7 @@ static inline struct exynos_drm_ipp *__ipp_get(uint32_t id)
 	return NULL;
 }
 
-/**
- * exynos_drm_ipp_get_caps_ioctl - get ipp module capabilities and formats
- * @dev: DRM device
- * @data: ioctl data
- * @file_priv: DRM file info
- *
- * Construct a structure describing ipp module capabilities.
- *
- * Called by the user via ioctl.
- *
- * Returns:
- * Zero on success, negative errno on failure.
- */
+ 
 int exynos_drm_ipp_get_caps_ioctl(struct drm_device *dev, void *data,
 				  struct drm_file *file_priv)
 {
@@ -164,10 +103,7 @@ int exynos_drm_ipp_get_caps_ioctl(struct drm_device *dev, void *data,
 	resp->ipp_id = ipp->id;
 	resp->capabilities = ipp->capabilities;
 
-	/*
-	 * This ioctl is called twice, once to determine how much space is
-	 * needed, and the 2nd time to fill it.
-	 */
+	 
 	if (resp->formats_count >= ipp->num_formats) {
 		for (i = 0; i < ipp->num_formats; i++) {
 			struct drm_exynos_ipp_format tmp = {
@@ -201,20 +137,7 @@ static inline const struct exynos_drm_ipp_formats *__ipp_format_get(
 	return NULL;
 }
 
-/**
- * exynos_drm_ipp_get_limits_ioctl - get ipp module limits
- * @dev: DRM device
- * @data: ioctl data
- * @file_priv: DRM file info
- *
- * Construct a structure describing ipp module limitations for provided
- * picture format.
- *
- * Called by the user via ioctl.
- *
- * Returns:
- * Zero on success, negative errno on failure.
- */
+ 
 int exynos_drm_ipp_get_limits_ioctl(struct drm_device *dev, void *data,
 				    struct drm_file *file_priv)
 {
@@ -236,10 +159,7 @@ int exynos_drm_ipp_get_limits_ioctl(struct drm_device *dev, void *data,
 	if (!format)
 		return -EINVAL;
 
-	/*
-	 * This ioctl is called twice, once to determine how much space is
-	 * needed, and the 2nd time to fill it.
-	 */
+	 
 	if (format->num_limits && resp->limits_count >= format->num_limits)
 		if (copy_to_user((void __user *)ptr, format->limits,
 				 sizeof(*format->limits) * format->num_limits))
@@ -266,7 +186,7 @@ static inline struct exynos_drm_ipp_task *
 	task->dev = ipp->dev;
 	task->ipp = ipp;
 
-	/* some defaults */
+	 
 	task->src.rect.w = task->dst.rect.w = UINT_MAX;
 	task->src.rect.h = task->dst.rect.h = UINT_MAX;
 	task->transform.rotation = DRM_MODE_ROTATE_0;
@@ -350,7 +270,7 @@ static int exynos_drm_ipp_task_setup_buffer(struct exynos_drm_ipp_buffer *buf,
 	int ret = 0;
 	int i;
 
-	/* get GEM buffers and check their size */
+	 
 	for (i = 0; i < buf->format->num_planes; i++) {
 		unsigned int height = (i == 0) ? buf->buf.height :
 			     DIV_ROUND_UP(buf->buf.height, buf->format->vsub);
@@ -564,7 +484,7 @@ static int exynos_drm_ipp_check_format(struct exynos_drm_ipp_task *task,
 		return -EINVAL;
 	}
 
-	/* basic checks */
+	 
 	if (buf->buf.width == 0 || buf->buf.height == 0)
 		return -EINVAL;
 
@@ -581,12 +501,12 @@ static int exynos_drm_ipp_check_format(struct exynos_drm_ipp_task *task,
 			return -ENOENT;
 	}
 
-	/* pitch for additional planes must match */
+	 
 	if (buf->format->num_planes > 2 &&
 	    buf->buf.pitch[1] != buf->buf.pitch[2])
 		return -EINVAL;
 
-	/* check driver limits */
+	 
 	ret = exynos_drm_ipp_check_size_limits(buf, fmt->limits,
 					       fmt->num_limits,
 					       rotate,
@@ -736,7 +656,7 @@ static int exynos_drm_ipp_task_cleanup(struct exynos_drm_ipp_task *task)
 
 	if (ret == 0 && task->event) {
 		exynos_drm_ipp_event_send(task);
-		/* ensure event won't be canceled on task free */
+		 
 		task->event = NULL;
 	}
 
@@ -754,11 +674,7 @@ static void exynos_drm_ipp_cleanup_work(struct work_struct *work)
 
 static void exynos_drm_ipp_next_task(struct exynos_drm_ipp *ipp);
 
-/**
- * exynos_drm_ipp_task_done - finish given task and set return code
- * @task: ipp task to finish
- * @ret: error code or 0 if operation has been performed successfully
- */
+ 
 void exynos_drm_ipp_task_done(struct exynos_drm_ipp_task *task, int ret)
 {
 	struct exynos_drm_ipp *ipp = task->ipp;
@@ -834,17 +750,14 @@ static void exynos_drm_ipp_task_abort(struct exynos_drm_ipp *ipp,
 
 	spin_lock_irqsave(&ipp->lock, flags);
 	if (task->flags & DRM_EXYNOS_IPP_TASK_DONE) {
-		/* already completed task */
+		 
 		exynos_drm_ipp_task_cleanup(task);
 	} else if (ipp->task != task) {
-		/* task has not been scheduled for execution yet */
+		 
 		list_del_init(&task->head);
 		exynos_drm_ipp_task_cleanup(task);
 	} else {
-		/*
-		 * currently processed task, call abort() and perform
-		 * cleanup with async worker
-		 */
+		 
 		task->flags |= DRM_EXYNOS_IPP_TASK_ASYNC;
 		spin_unlock_irqrestore(&ipp->lock, flags);
 		if (ipp->funcs->abort)
@@ -854,20 +767,7 @@ static void exynos_drm_ipp_task_abort(struct exynos_drm_ipp *ipp,
 	spin_unlock_irqrestore(&ipp->lock, flags);
 }
 
-/**
- * exynos_drm_ipp_commit_ioctl - perform image processing operation
- * @dev: DRM device
- * @data: ioctl data
- * @file_priv: DRM file info
- *
- * Construct a ipp task from the set of properties provided from the user
- * and try to schedule it to framebuffer processor hardware.
- *
- * Called by the user via ioctl.
- *
- * Returns:
- * Zero on success, negative errno on failure.
- */
+ 
 int exynos_drm_ipp_commit_ioctl(struct drm_device *dev, void *data,
 				struct drm_file *file_priv)
 {
@@ -879,7 +779,7 @@ int exynos_drm_ipp_commit_ioctl(struct drm_device *dev, void *data,
 	if ((arg->flags & ~DRM_EXYNOS_IPP_FLAGS) || arg->reserved)
 		return -EINVAL;
 
-	/* can't test and expect an event at the same time */
+	 
 	if ((arg->flags & DRM_EXYNOS_IPP_FLAG_TEST_ONLY) &&
 			(arg->flags & DRM_EXYNOS_IPP_FLAG_EVENT))
 		return -EINVAL;
@@ -911,10 +811,7 @@ int exynos_drm_ipp_commit_ioctl(struct drm_device *dev, void *data,
 			goto free;
 	}
 
-	/*
-	 * Queue task for processing on the hardware. task object will be
-	 * then freed after exynos_drm_ipp_task_done()
-	 */
+	 
 	if (arg->flags & DRM_EXYNOS_IPP_FLAG_NONBLOCK) {
 		DRM_DEV_DEBUG_DRIVER(ipp->dev,
 				     "ipp: %d, nonblocking processing task %pK\n",

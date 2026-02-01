@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AMD IOMMU driver
- *
- * Copyright (C) 2018 Advanced Micro Devices, Inc.
- *
- * Author: Gary R Hook <gary.hook@amd.com>
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/pci.h>

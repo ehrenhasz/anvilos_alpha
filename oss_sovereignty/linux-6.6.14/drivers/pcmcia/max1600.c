@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MAX1600 PCMCIA power switch library
- *
- * Copyright (C) 2016 Russell King
- */
+
+ 
 #include <linux/device.h>
 #include <linux/module.h>
 #include <linux/gpio/consumer.h>
@@ -94,10 +90,10 @@ int max1600_configure(struct max1600 *m, unsigned int vcc, unsigned int vpp)
 	if (vcc == 0) {
 		__assign_bit(MAX1600_GPIO_0VCC, values, 0);
 		__assign_bit(MAX1600_GPIO_1VCC, values, 0);
-	} else if (vcc == 33) { /* VY */
+	} else if (vcc == 33) {  
 		__assign_bit(MAX1600_GPIO_0VCC, values, 1);
 		__assign_bit(MAX1600_GPIO_1VCC, values, 0);
-	} else if (vcc == 50) { /* VX */
+	} else if (vcc == 50) {  
 		__assign_bit(MAX1600_GPIO_0VCC, values, 0);
 		__assign_bit(MAX1600_GPIO_1VCC, values, 1);
 	} else {
@@ -107,10 +103,7 @@ int max1600_configure(struct max1600 *m, unsigned int vcc, unsigned int vpp)
 	}
 
 	if (m->code == MAX1600_CODE_HIGH) {
-		/*
-		 * Cirrus mode appears to be the same as Intel mode,
-		 * except the VCC pins are inverted.
-		 */
+		 
 		__change_bit(MAX1600_GPIO_0VCC, values);
 		__change_bit(MAX1600_GPIO_1VCC, values);
 	}

@@ -1,22 +1,6 @@
-/* os2compat.c - OS/2 compatibility functions. */
+ 
 
-/* Copyright (C) 2001-2002, 2005-2009 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #define OS2_AWARE
 #ifdef HAVE_CONFIG_H
@@ -27,7 +11,7 @@
 #include <string.h>
 #include <sys/param.h>
 
-/* A version of getenv() that works from DLLs */
+ 
 extern unsigned long DosScanEnv (const unsigned char *pszName, unsigned char **ppszValue);
 
 char *
@@ -40,7 +24,7 @@ _nl_getenv (const char *name)
     return value;
 }
 
-/* A fixed size buffer.  */
+ 
 char libintl_nl_default_dirname[MAXPATHLEN+1];
 
 char *_nlos2_libdir = NULL;

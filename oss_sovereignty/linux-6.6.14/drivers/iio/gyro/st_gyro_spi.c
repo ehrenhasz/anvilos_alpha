@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * STMicroelectronics gyroscopes driver
- *
- * Copyright 2012-2013 STMicroelectronics Inc.
- *
- * Denis Ciocca <denis.ciocca@st.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -17,11 +11,7 @@
 #include <linux/iio/common/st_sensors_spi.h>
 #include "st_gyro.h"
 
-/*
- * For new single-chip sensors use <device_name> as compatible string.
- * For old single-chip devices keep <device_name>-gyro to maintain
- * compatibility
- */
+ 
 static const struct of_device_id st_gyro_of_match[] = {
 	{
 		.compatible = "st,l3g4200d-gyro",

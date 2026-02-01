@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Xilinx ZynqMP SHA Driver.
- * Copyright (c) 2022 Xilinx Inc.
- */
+
+ 
 #include <linux/cacheflush.h>
 #include <crypto/hash.h>
 #include <crypto/internal/hash.h>
@@ -54,7 +51,7 @@ static int zynqmp_sha_init_tfm(struct crypto_shash *hash)
 	drv_ctx = container_of(alg, struct zynqmp_sha_drv_ctx, sha3_384);
 	tfm_ctx->dev = drv_ctx->dev;
 
-	/* Allocate a fallback and abort if it failed. */
+	 
 	fallback_tfm = crypto_alloc_shash(fallback_driver_name, 0,
 					  CRYPTO_ALG_NEED_FALLBACK);
 	if (IS_ERR(fallback_tfm))
@@ -194,7 +191,7 @@ static int zynqmp_sha_probe(struct platform_device *pdev)
 	int err;
 	u32 v;
 
-	/* Verify the hardware is present */
+	 
 	err = zynqmp_pm_get_api_version(&v);
 	if (err)
 		return err;

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MOXA ART RTC driver.
- *
- * Copyright (C) 2013 Jonas Jensen
- *
- * Jonas Jensen <jonas.jensen@gmail.com>
- *
- * Based on code from
- * Moxa Technology Co., Ltd. <www.moxa.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -196,14 +187,14 @@ static int moxart_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	tm->tm_min = (((v & 0x70) >> 4) * 10) + (v & 0x0F);
 
 	v = moxart_rtc_read_register(dev, GPIO_RTC_HOURS_R);
-	if (v & 0x80) { /* 12-hour mode */
+	if (v & 0x80) {  
 		tm->tm_hour = (((v & 0x10) >> 4) * 10) + (v & 0x0F);
-		if (v & 0x20) { /* PM mode */
+		if (v & 0x20) {  
 			tm->tm_hour += 12;
 			if (tm->tm_hour >= 24)
 				tm->tm_hour = 0;
 		}
-	} else { /* 24-hour mode */
+	} else {  
 		tm->tm_hour = (((v & 0x30) >> 4) * 10) + (v & 0x0F);
 	}
 

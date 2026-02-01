@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * CXL Flash Device Driver
- *
- * Written by: Matthew R. Ochs <mrochs@linux.vnet.ibm.com>, IBM Corporation
- *             Uma Krishnan <ukrishn@linux.vnet.ibm.com>, IBM Corporation
- *
- * Copyright (C) 2018 IBM Corporation
- */
+ 
+ 
 
 #ifndef _CXLFLASH_BACKEND_H
 #define _CXLFLASH_BACKEND_H
@@ -45,4 +38,4 @@ struct cxlflash_backend_ops {
 	int (*fd_release)(struct inode *inode, struct file *file);
 };
 
-#endif /* _CXLFLASH_BACKEND_H */
+#endif  

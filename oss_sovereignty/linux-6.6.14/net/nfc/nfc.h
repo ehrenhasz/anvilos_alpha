@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2011 Instituto Nokia de Tecnologia
- *
- * Authors:
- *    Lauro Ramos Venancio <lauro.venancio@openbossa.org>
- *    Aloisio Almeida Jr <aloisio.almeida@openbossa.org>
- */
+ 
+ 
 
 #ifndef __LOCAL_NFC_H
 #define __LOCAL_NFC_H
@@ -148,4 +142,4 @@ int nfc_data_exchange(struct nfc_dev *dev, u32 target_idx, struct sk_buff *skb,
 int nfc_enable_se(struct nfc_dev *dev, u32 se_idx);
 int nfc_disable_se(struct nfc_dev *dev, u32 se_idx);
 
-#endif /* __LOCAL_NFC_H */
+#endif  

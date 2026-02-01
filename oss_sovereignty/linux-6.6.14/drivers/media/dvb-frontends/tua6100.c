@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Infineon tua6100 pll.
- *
- * (c) 2006 Andrew de Quincey
- *
- * Based on code found in budget-av.c, which has the following:
- * Compiled from various sources by Michael Hunold <michael@mihu.de>
- *
- * CI interface support (c) 2004 Olivier Gournet <ogournet@anevia.com> &
- *                               Andrew de Quincey <adq_dvb@lidskialf.net>
- *
- * Copyright (C) 2002 Ralph Metzler <rjkm@metzlerbros.de>
- *
- * Copyright (C) 1999-2002 Ralph  Metzler
- *                       & Marcus Metzler for convergence integrated media GmbH
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -24,7 +9,7 @@
 #include "tua6100.h"
 
 struct tua6100_priv {
-	/* i2c details */
+	 
 	int i2c_address;
 	struct i2c_adapter *i2c;
 	u32 frequency;
@@ -71,13 +56,13 @@ static int tua6100_set_params(struct dvb_frontend *fe)
 #define _P_VAL 32
 #define _ri 4000000
 
-	// setup register 0
+	
 	if (c->frequency < 2000000)
 		reg0[1] = 0x03;
 	else
 		reg0[1] = 0x07;
 
-	// setup register 1
+	
 	if (c->frequency < 1630000)
 		reg1[1] = 0x2c;
 	else
@@ -88,7 +73,7 @@ static int tua6100_set_params(struct dvb_frontend *fe)
 	if (c->frequency >= 1525000)
 		reg1[1] |= 0x80;
 
-	// register 2
+	
 	reg2[1] = (_R_VAL >> 8) & 0x03;
 	reg2[2] = _R_VAL;
 	if (c->frequency < 1455000)
@@ -98,10 +83,7 @@ static int tua6100_set_params(struct dvb_frontend *fe)
 	else
 		reg2[1] |= 0x1c;
 
-	/*
-	 * The N divisor ratio (note: c->frequency is in kHz, but we
-	 * need it in Hz)
-	 */
+	 
 	prediv = (c->frequency * _R_VAL) / (_ri / 1000);
 	div = prediv / _P_VAL;
 	reg1[1] |= (div >> 9) & 0x03;
@@ -109,7 +91,7 @@ static int tua6100_set_params(struct dvb_frontend *fe)
 	reg1[3] = (div << 7);
 	priv->frequency = ((div * _P_VAL) * (_ri / 1000)) / _R_VAL;
 
-	// Finally, calculate and store the value for A
+	
 	reg1[3] |= (prediv - (div*_P_VAL)) & 0x7f;
 
 #undef _R_VAL

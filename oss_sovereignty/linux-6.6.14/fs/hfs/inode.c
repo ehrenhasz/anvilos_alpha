@@ -1,15 +1,4 @@
-/*
- *  linux/fs/hfs/inode.c
- *
- * Copyright (C) 1995-1997  Paul H. Hargrove
- * (C) 2003 Ardis Technologies <roman@ardistech.com>
- * This file may be distributed under the terms of the GNU General Public License.
- *
- * This file contains inode-related functions which do not depend on
- * which scheme is being used to represent forks.
- *
- * Based on the minix file system code, (C) 1991, 1992 by Linus Torvalds
- */
+ 
 
 #include <linux/pagemap.h>
 #include <linux/mpage.h>
@@ -25,7 +14,7 @@
 static const struct file_operations hfs_file_operations;
 static const struct inode_operations hfs_file_inode_operations;
 
-/*================ Variable-like macros ================*/
+ 
 
 #define HFS_VALID_MODE_BITS  (S_IFREG | S_IFDIR | S_IRWXUGO)
 
@@ -137,10 +126,7 @@ static ssize_t hfs_direct_IO(struct kiocb *iocb, struct iov_iter *iter)
 
 	ret = blockdev_direct_IO(iocb, inode, iter, hfs_get_block);
 
-	/*
-	 * In case of error extending write may have instantiated a few
-	 * blocks outside i_size. Trim these off again.
-	 */
+	 
 	if (unlikely(iov_iter_rw(iter) == WRITE && ret < 0)) {
 		loff_t isize = i_size_read(inode);
 		loff_t end = iocb->ki_pos + count;
@@ -181,9 +167,7 @@ const struct address_space_operations hfs_aops = {
 	.migrate_folio	= buffer_migrate_folio,
 };
 
-/*
- * hfs_new_inode
- */
+ 
 struct inode *hfs_new_inode(struct inode *dir, const struct qstr *name, umode_t mode)
 {
 	struct super_block *sb = dir->i_sb;
@@ -312,9 +296,7 @@ static int hfs_test_inode(struct inode *inode, void *data)
 	}
 }
 
-/*
- * hfs_read_inode
- */
+ 
 static int hfs_read_inode(struct inode *inode, void *data)
 {
 	struct hfs_iget_data *idata = data;
@@ -327,7 +309,7 @@ static int hfs_read_inode(struct inode *inode, void *data)
 	INIT_LIST_HEAD(&HFS_I(inode)->open_dir_list);
 	spin_lock_init(&HFS_I(inode)->open_dir_lock);
 
-	/* Initialize the inode */
+	 
 	inode->i_uid = hsb->s_uid;
 	inode->i_gid = hsb->s_gid;
 	set_nlink(inode, 1);
@@ -377,15 +359,7 @@ static int hfs_read_inode(struct inode *inode, void *data)
 	return 0;
 }
 
-/*
- * __hfs_iget()
- *
- * Given the MDB for a HFS filesystem, a 'key' and an 'entry' in
- * the catalog B-tree and the 'type' of the desired file return the
- * inode for that file/directory or NULL.  Note that 'type' indicates
- * whether we want the actual file or directory, or the corresponding
- * metadata (AppleDouble header file or CAP metadata file).
- */
+ 
 struct inode *hfs_iget(struct super_block *sb, struct hfs_cat_key *key, hfs_cat_rec *rec)
 {
 	struct hfs_iget_data data = { key, rec };
@@ -455,7 +429,7 @@ int hfs_write_inode(struct inode *inode, struct writeback_control *wbc)
 		return 0;
 
 	if (hfs_find_init(HFS_SB(main_inode->i_sb)->cat_tree, &fd))
-		/* panic? */
+		 
 		return -EIO;
 
 	res = -EIO;
@@ -578,38 +552,23 @@ static int hfs_file_open(struct inode *inode, struct file *file)
 
 static int hfs_file_release(struct inode *inode, struct file *file)
 {
-	//struct super_block *sb = inode->i_sb;
+	
 
 	if (HFS_IS_RSRC(inode))
 		inode = HFS_I(inode)->rsrc_inode;
 	if (atomic_dec_and_test(&HFS_I(inode)->opencnt)) {
 		inode_lock(inode);
 		hfs_file_truncate(inode);
-		//if (inode->i_flags & S_DEAD) {
-		//	hfs_delete_cat(inode->i_ino, HFSPLUS_SB(sb).hidden_dir, NULL);
-		//	hfs_delete_inode(inode);
-		//}
+		
+		
+		
+		
 		inode_unlock(inode);
 	}
 	return 0;
 }
 
-/*
- * hfs_notify_change()
- *
- * Based very closely on fs/msdos/inode.c by Werner Almesberger
- *
- * This is the notify_change() field in the super_operations structure
- * for HFS file systems.  The purpose is to take that changes made to
- * an inode and apply then in a filesystem-dependent manner.  In this
- * case the process has a few of tasks to do:
- *  1) prevent changes to the i_uid and i_gid fields.
- *  2) map file permissions to the closest allowable permissions
- *  3) Since multiple Linux files can share the same on-disk inode under
- *     HFS (for instance the data and resource forks of a file) a change
- *     to permissions must be applied to all other in-core inodes which
- *     correspond to the same HFS file.
- */
+ 
 
 int hfs_inode_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 		      struct iattr *attr)
@@ -619,11 +578,11 @@ int hfs_inode_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 	int error;
 
 	error = setattr_prepare(&nop_mnt_idmap, dentry,
-				attr); /* basic permission checks */
+				attr);  
 	if (error)
 		return error;
 
-	/* no uig/gid changes and limit which mode bits can be set */
+	 
 	if (((attr->ia_valid & ATTR_UID) &&
 	     (!uid_eq(attr->ia_uid, hsb->s_uid))) ||
 	    ((attr->ia_valid & ATTR_GID) &&
@@ -636,7 +595,7 @@ int hfs_inode_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 	}
 
 	if (attr->ia_valid & ATTR_MODE) {
-		/* Only the 'w' bits can ever change and only all together. */
+		 
 		if (attr->ia_mode & S_IWUSR)
 			attr->ia_mode = inode->i_mode | S_IWUGO;
 		else
@@ -674,13 +633,13 @@ static int hfs_file_fsync(struct file *filp, loff_t start, loff_t end,
 		return ret;
 	inode_lock(inode);
 
-	/* sync the inode to buffers */
+	 
 	ret = write_inode_now(inode, 0);
 
-	/* sync the superblock to buffers */
+	 
 	sb = inode->i_sb;
 	flush_delayed_work(&HFS_SB(sb)->mdb_work);
-	/* .. finally sync the buffers to disk */
+	 
 	err = sync_blockdev(sb->s_bdev);
 	if (!ret)
 		ret = err;

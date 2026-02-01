@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (C) 2011-2012 Freescale Semiconductor, Inc.
+
+
+
 
 #include <linux/init.h>
 #include <linux/io.h>
@@ -16,7 +16,7 @@
 
 #define SNVS_LPREGISTER_OFFSET	0x34
 
-/* These register offsets are relative to LP (Low Power) range */
+ 
 #define SNVS_LPCR		0x04
 #define SNVS_LPSR		0x18
 #define SNVS_LPSRTCMR		0x1c
@@ -32,12 +32,7 @@
 #define SNVS_LPPGDR_INIT	0x41736166
 #define CNTR_TO_SECS_SH		15
 
-/* The maximum RTC clock cycles that are allowed to pass between two
- * consecutive clock counter register reads. If the values are corrupted a
- * bigger difference is expected. The RTC frequency is 32kHz. With 320 cycles
- * we end at 10ms which should be enough for most cases. If it once takes
- * longer than expected we do a retry.
- */
+ 
 #define MAX_RTC_READ_DIFF_CYCLES	320
 
 struct snvs_rtc_data {
@@ -48,7 +43,7 @@ struct snvs_rtc_data {
 	struct clk *clk;
 };
 
-/* Read 64 bit timer register, which could be in inconsistent state */
+ 
 static u64 rtc_read_lpsrt(struct snvs_rtc_data *data)
 {
 	u32 msb, lsb;
@@ -58,19 +53,14 @@ static u64 rtc_read_lpsrt(struct snvs_rtc_data *data)
 	return (u64)msb << 32 | lsb;
 }
 
-/* Read the secure real time counter, taking care to deal with the cases of the
- * counter updating while being read.
- */
+ 
 static u32 rtc_read_lp_counter(struct snvs_rtc_data *data)
 {
 	u64 read1, read2;
 	s64 diff;
 	unsigned int timeout = 100;
 
-	/* As expected, the registers might update between the read of the LSB
-	 * reg and the MSB reg.  It's also possible that one register might be
-	 * in partially modified state as well.
-	 */
+	 
 	read1 = rtc_read_lpsrt(data);
 	do {
 		read2 = read1;
@@ -80,11 +70,11 @@ static u32 rtc_read_lp_counter(struct snvs_rtc_data *data)
 	if (!timeout)
 		dev_err(&data->rtc->dev, "Timeout trying to get valid LPSRT Counter read\n");
 
-	/* Convert 47-bit counter to 32-bit raw second count */
+	 
 	return (u32) (read1 >> CNTR_TO_SECS_SH);
 }
 
-/* Just read the lsb from the counter, dealing with inconsistent state */
+ 
 static int rtc_read_lp_counter_lsb(struct snvs_rtc_data *data, u32 *lsb)
 {
 	u32 count1, count2;
@@ -117,12 +107,12 @@ static int rtc_write_sync_lp(struct snvs_rtc_data *data)
 	if (ret)
 		return ret;
 
-	/* Wait for 3 CKIL cycles, about 61.0-91.5 µs */
+	 
 	do {
 		ret = rtc_read_lp_counter_lsb(data, &count2);
 		if (ret)
 			return ret;
-		elapsed = count2 - count1; /* wrap around _is_ handled! */
+		elapsed = count2 - count1;  
 	} while (elapsed < 3 && --timeout);
 	if (!timeout) {
 		dev_err(&data->rtc->dev, "Timeout waiting for LPSRT Counter to change\n");
@@ -185,16 +175,16 @@ static int snvs_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	if (ret)
 		return ret;
 
-	/* Disable RTC first */
+	 
 	ret = snvs_rtc_enable(data, false);
 	if (ret)
 		return ret;
 
-	/* Write 32-bit time to 47-bit timer, leaving 15 LSBs blank */
+	 
 	regmap_write(data->regmap, data->offset + SNVS_LPSRTCLR, time << CNTR_TO_SECS_SH);
 	regmap_write(data->regmap, data->offset + SNVS_LPSRTCMR, time >> (32 - CNTR_TO_SECS_SH));
 
-	/* Enable RTC again */
+	 
 	ret = snvs_rtc_enable(data, true);
 
 	clk_disable(data->clk);
@@ -259,7 +249,7 @@ static int snvs_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 		return ret;
 	regmap_write(data->regmap, data->offset + SNVS_LPTAR, time);
 
-	/* Clear alarm interrupt status bit */
+	 
 	regmap_write(data->regmap, data->offset + SNVS_LPSR, SNVS_LPSR_LPTA);
 
 	clk_disable(data->clk);
@@ -289,13 +279,13 @@ static irqreturn_t snvs_rtc_irq_handler(int irq, void *dev_id)
 	if (lpsr & SNVS_LPSR_LPTA) {
 		events |= (RTC_AF | RTC_IRQF);
 
-		/* RTC alarm should be one-shot */
+		 
 		snvs_rtc_alarm_irq_enable(dev, 0);
 
 		rtc_update_irq(data->rtc, 1, events);
 	}
 
-	/* clear interrupt status */
+	 
 	regmap_write(data->regmap, data->offset + SNVS_LPSR, lpsr);
 
 	clk_disable(data->clk);
@@ -370,13 +360,13 @@ static int snvs_rtc_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, data);
 
-	/* Initialize glitch detect */
+	 
 	regmap_write(data->regmap, data->offset + SNVS_LPPGDR, SNVS_LPPGDR_INIT);
 
-	/* Clear interrupt status */
+	 
 	regmap_write(data->regmap, data->offset + SNVS_LPSR, 0xffffffff);
 
-	/* Enable RTC */
+	 
 	ret = snvs_rtc_enable(data, true);
 	if (ret) {
 		dev_err(&pdev->dev, "failed to enable rtc %d\n", ret);
@@ -427,7 +417,7 @@ static const struct dev_pm_ops snvs_rtc_pm_ops = {
 
 static const struct of_device_id snvs_dt_ids[] = {
 	{ .compatible = "fsl,sec-v4.0-mon-rtc-lp", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, snvs_dt_ids);
 

@@ -1,10 +1,4 @@
-/*
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 2011, 2012 Cavium Inc.
- */
+ 
 
 #include <linux/platform_device.h>
 #include <linux/kernel.h>
@@ -18,16 +12,10 @@
 #define RX_DAT 0x80
 #define TX_SET 0x88
 #define TX_CLEAR 0x90
-/*
- * The address offset of the GPIO configuration register for a given
- * line.
- */
+ 
 static unsigned int bit_cfg_reg(unsigned int offset)
 {
-	/*
-	 * The register stride is 8, with a discontinuity after the
-	 * first 16.
-	 */
+	 
 	if (offset < 16)
 		return 8 * offset;
 	else

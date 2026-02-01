@@ -1,28 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2017 by Delphix. All rights reserved.
- * Copyright (c) 2013 Steven Hartland. All rights reserved.
- */
+ 
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/dsl_userhold.h>
@@ -43,10 +20,7 @@ typedef struct dsl_dataset_user_hold_arg {
 	minor_t dduha_minor;
 } dsl_dataset_user_hold_arg_t;
 
-/*
- * If you add new checks here, you may need to add additional checks to the
- * "temporary" case in snapshot_check() in dmu_objset.c.
- */
+ 
 int
 dsl_dataset_user_hold_check_one(dsl_dataset_t *ds, const char *htag,
     boolean_t temphold, dmu_tx_t *tx)
@@ -59,11 +33,11 @@ dsl_dataset_user_hold_check_one(dsl_dataset_t *ds, const char *htag,
 
 	if (strlen(htag) > MAXNAMELEN)
 		return (SET_ERROR(E2BIG));
-	/* Tempholds have a more restricted length */
+	 
 	if (temphold && strlen(htag) + MAX_TAG_PREFIX_LEN >= MAXNAMELEN)
 		return (SET_ERROR(E2BIG));
 
-	/* tags must be unique (if ds already exists) */
+	 
 	if (ds != NULL && dsl_dataset_phys(ds)->ds_userrefs_obj != 0) {
 		uint64_t value;
 
@@ -91,10 +65,7 @@ dsl_dataset_user_hold_check(void *arg, dmu_tx_t *tx)
 	if (!dmu_tx_is_syncing(tx))
 		return (0);
 
-	/*
-	 * Ensure the list has no duplicates by copying name/values from
-	 * non-unique dduha_holds to unique tmp_holds, and comparing counts.
-	 */
+	 
 	tmp_holds = fnvlist_alloc();
 	for (nvpair_t *pair = nvlist_next_nvpair(dduha->dduha_holds, NULL);
 	    pair != NULL; pair = nvlist_next_nvpair(dduha->dduha_holds, pair)) {
@@ -117,7 +88,7 @@ dsl_dataset_user_hold_check(void *arg, dmu_tx_t *tx)
 		int error = 0;
 		const char *htag, *name;
 
-		/* must be a snapshot */
+		 
 		name = nvpair_name(pair);
 		if (strchr(name, '@') == NULL)
 			error = SET_ERROR(EINVAL);
@@ -137,10 +108,7 @@ dsl_dataset_user_hold_check(void *arg, dmu_tx_t *tx)
 		if (error == 0) {
 			fnvlist_add_string(dduha->dduha_chkholds, name, htag);
 		} else {
-			/*
-			 * We register ENOENT errors so they can be correctly
-			 * reported if needed, such as when all holds fail.
-			 */
+			 
 			fnvlist_add_int32(dduha->dduha_errlist, name, error);
 			if (error != ENOENT)
 				return (error);
@@ -162,10 +130,7 @@ dsl_dataset_user_hold_sync_one_impl(nvlist_t *tmpholds, dsl_dataset_t *ds,
 	ASSERT(RRW_WRITE_HELD(&dp->dp_config_rwlock));
 
 	if (dsl_dataset_phys(ds)->ds_userrefs_obj == 0) {
-		/*
-		 * This is the first user hold for this dataset.  Create
-		 * the userrefs zap object.
-		 */
+		 
 		dmu_buf_will_dirty(ds->ds_dbuf, tx);
 		zapobj = dsl_dataset_phys(ds)->ds_userrefs_obj =
 		    zap_create(mos, DMU_OT_USERREFS, DMU_OT_NONE, 0, tx);
@@ -294,33 +259,7 @@ dsl_dataset_user_hold_sync(void *arg, dmu_tx_t *tx)
 	dsl_onexit_hold_cleanup(dp->dp_spa, tmpholds, dduha->dduha_minor);
 }
 
-/*
- * The full semantics of this function are described in the comment above
- * lzc_hold().
- *
- * To summarize:
- * holds is nvl of snapname -> holdname
- * errlist will be filled in with snapname -> error
- *
- * The snapshots must all be in the same pool.
- *
- * Holds for snapshots that don't exist will be skipped.
- *
- * If none of the snapshots for requested holds exist then ENOENT will be
- * returned.
- *
- * If cleanup_minor is not 0, the holds will be temporary, which will be cleaned
- * up when the process exits.
- *
- * On success all the holds, for snapshots that existed, will be created and 0
- * will be returned.
- *
- * On failure no holds will be created, the errlist will be filled in,
- * and an errno will returned.
- *
- * In all cases the errlist will contain entries for holds where the snapshot
- * didn't exist.
- */
+ 
 int
 dsl_dataset_user_hold(nvlist_t *holds, minor_t cleanup_minor, nvlist_t *errlist)
 {
@@ -333,7 +272,7 @@ dsl_dataset_user_hold(nvlist_t *holds, minor_t cleanup_minor, nvlist_t *errlist)
 		return (0);
 
 	dduha.dduha_holds = holds;
-	/* chkholds can have non-unique name */
+	 
 	VERIFY(0 == nvlist_alloc(&dduha.dduha_chkholds, 0, KM_SLEEP));
 	dduha.dduha_errlist = errlist;
 	dduha.dduha_minor = cleanup_minor;
@@ -357,7 +296,7 @@ typedef struct dsl_dataset_user_release_arg {
 	nvlist_t *ddura_chkholds;
 } dsl_dataset_user_release_arg_t;
 
-/* Place a dataset hold on the snapshot identified by passed dsobj string */
+ 
 static int
 dsl_dataset_hold_obj_string(dsl_pool_t *dp, const char *dsobj, const void *tag,
     dsl_dataset_t **dsp)
@@ -396,10 +335,7 @@ dsl_dataset_user_release_check_one(dsl_dataset_user_release_arg_t *ddura,
 		else
 			error = SET_ERROR(ENOENT);
 
-		/*
-		 * Non-existent holds are put on the errlist, but don't
-		 * cause an overall failure.
-		 */
+		 
 		if (error == ENOENT) {
 			if (ddura->ddura_errlist != NULL) {
 				char *errtag = kmem_asprintf("%s#%s",
@@ -423,7 +359,7 @@ dsl_dataset_user_release_check_one(dsl_dataset_user_release_arg_t *ddura,
 	if (DS_IS_DEFER_DESTROY(ds) &&
 	    dsl_dataset_phys(ds)->ds_num_children == 1 &&
 	    ds->ds_userrefs == numholds) {
-		/* we need to destroy the snapshot as well */
+		 
 		if (dsl_dataset_long_held(ds)) {
 			fnvlist_free(holds_found);
 			return (SET_ERROR(EBUSY));
@@ -479,10 +415,7 @@ dsl_dataset_user_release_check(void *arg, dmu_tx_t *tx)
 				fnvlist_add_int32(ddura->ddura_errlist,
 				    snapname, error);
 			}
-			/*
-			 * Non-existent snapshots are put on the errlist,
-			 * but don't cause an overall failure.
-			 */
+			 
 			if (error != ENOENT)
 				return (error);
 		}
@@ -503,7 +436,7 @@ dsl_dataset_user_release_sync_one(dsl_dataset_t *ds, nvlist_t *holds,
 		int error;
 		const char *holdname = nvpair_name(pair);
 
-		/* Remove temporary hold if one exists. */
+		 
 		error = dsl_pool_user_release(dp, ds->ds_object, holdname, tx);
 		VERIFY(error == 0 || error == ENOENT);
 
@@ -545,27 +478,7 @@ dsl_dataset_user_release_sync(void *arg, dmu_tx_t *tx)
 	}
 }
 
-/*
- * The full semantics of this function are described in the comment above
- * lzc_release().
- *
- * To summarize:
- * Releases holds specified in the nvl holds.
- *
- * holds is nvl of snapname -> { holdname, ... }
- * errlist will be filled in with snapname -> error
- *
- * If tmpdp is not NULL the names for holds should be the dsobj's of snapshots,
- * otherwise they should be the names of snapshots.
- *
- * As a release may cause snapshots to be destroyed this tries to ensure they
- * aren't mounted.
- *
- * The release of non-existent holds are skipped.
- *
- * At least one hold must have been released for the this function to succeed
- * and return 0.
- */
+ 
 static int
 dsl_dataset_user_release_impl(nvlist_t *holds, nvlist_t *errlist,
     dsl_pool_t *tmpdp)
@@ -579,12 +492,9 @@ dsl_dataset_user_release_impl(nvlist_t *holds, nvlist_t *errlist,
 	if (pair == NULL)
 		return (0);
 
-	/*
-	 * The release may cause snapshots to be destroyed; make sure they
-	 * are not mounted.
-	 */
+	 
 	if (tmpdp != NULL) {
-		/* Temporary holds are specified by dsobj string. */
+		 
 		ddura.ddura_holdfunc = dsl_dataset_hold_obj_string;
 		pool = spa_name(tmpdp->dp_spa);
 #ifdef _KERNEL
@@ -607,7 +517,7 @@ dsl_dataset_user_release_impl(nvlist_t *holds, nvlist_t *errlist,
 		}
 #endif
 	} else {
-		/* Non-temporary holds are specified by name. */
+		 
 		ddura.ddura_holdfunc = dsl_dataset_hold;
 		pool = nvpair_name(pair);
 #ifdef _KERNEL
@@ -634,19 +544,14 @@ dsl_dataset_user_release_impl(nvlist_t *holds, nvlist_t *errlist,
 	return (error);
 }
 
-/*
- * holds is nvl of snapname -> { holdname, ... }
- * errlist will be filled in with snapname -> error
- */
+ 
 int
 dsl_dataset_user_release(nvlist_t *holds, nvlist_t *errlist)
 {
 	return (dsl_dataset_user_release_impl(holds, errlist, NULL));
 }
 
-/*
- * holds is nvl of snapdsobj -> { holdname, ... }
- */
+ 
 void
 dsl_dataset_user_release_tmp(struct dsl_pool *dp, nvlist_t *holds)
 {

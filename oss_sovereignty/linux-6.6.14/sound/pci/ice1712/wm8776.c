@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   ALSA driver for ICEnsemble VT17xx
- *
- *   Lowlevel functions for WM8776 codec
- *
- *	Copyright (c) 2012 Ondrej Zary <linux@rainbow-software.org>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <sound/core.h>
@@ -13,19 +7,19 @@
 #include <sound/tlv.h>
 #include "wm8776.h"
 
-/* low-level access */
+ 
 
 static void snd_wm8776_write(struct snd_wm8776 *wm, u16 addr, u16 data)
 {
-	u8 bus_addr = addr << 1 | data >> 8;	/* addr + 9th data bit */
-	u8 bus_data = data & 0xff;		/* remaining 8 data bits */
+	u8 bus_addr = addr << 1 | data >> 8;	 
+	u8 bus_data = data & 0xff;		 
 
 	if (addr < WM8776_REG_RESET)
 		wm->regs[addr] = data;
 	wm->ops.write(wm, bus_addr, bus_data);
 }
 
-/* register-level functions */
+ 
 
 static void snd_wm8776_activate_ctl(struct snd_wm8776 *wm,
 				    const char *ctl_name,
@@ -81,24 +75,24 @@ static void snd_wm8776_set_agc(struct snd_wm8776 *wm, u16 agc, u16 nothing)
 	u16 alc2 = wm->regs[WM8776_REG_ALCCTRL2] & ~WM8776_ALC2_LCEN;
 
 	switch (agc) {
-	case 0:	/* Off */
+	case 0:	 
 		wm->agc_mode = WM8776_AGC_OFF;
 		break;
-	case 1: /* Limiter */
+	case 1:  
 		alc2 |= WM8776_ALC2_LCEN;
 		wm->agc_mode = WM8776_AGC_LIM;
 		break;
-	case 2: /* ALC Right */
+	case 2:  
 		alc1 |= WM8776_ALC1_LCSEL_ALCR;
 		alc2 |= WM8776_ALC2_LCEN;
 		wm->agc_mode = WM8776_AGC_ALC_R;
 		break;
-	case 3: /* ALC Left */
+	case 3:  
 		alc1 |= WM8776_ALC1_LCSEL_ALCL;
 		alc2 |= WM8776_ALC2_LCEN;
 		wm->agc_mode = WM8776_AGC_ALC_L;
 		break;
-	case 4: /* ALC Stereo */
+	case 4:  
 		alc1 |= WM8776_ALC1_LCSEL_ALCSTEREO;
 		alc2 |= WM8776_ALC2_LCEN;
 		wm->agc_mode = WM8776_AGC_ALC_STEREO;
@@ -114,7 +108,7 @@ static void snd_wm8776_get_agc(struct snd_wm8776 *wm, u16 *mode, u16 *nothing)
 	*mode = wm->agc_mode;
 }
 
-/* mixer controls */
+ 
 
 static const DECLARE_TLV_DB_SCALE(wm8776_hp_tlv, -7400, 100, 1);
 static const DECLARE_TLV_DB_SCALE(wm8776_dac_tlv, -12750, 50, 1);
@@ -268,7 +262,7 @@ static const struct snd_wm8776_ctl snd_wm8776_default_ctl[WM8776_CTL_COUNT] = {
 		.type = SNDRV_CTL_ELEM_TYPE_ENUMERATED,
 		.enum_names = { "Off", "Limiter", "ALC Right", "ALC Left",
 				"ALC Stereo" },
-		.max = 5,	/* .enum_names item count */
+		.max = 5,	 
 		.set = snd_wm8776_set_agc,
 		.get = snd_wm8776_get_agc,
 	},
@@ -286,7 +280,7 @@ static const struct snd_wm8776_ctl snd_wm8776_default_ctl[WM8776_CTL_COUNT] = {
 		.type = SNDRV_CTL_ELEM_TYPE_ENUMERATED,
 		.enum_names = { "0.25 ms", "0.5 ms", "1 ms", "2 ms", "4 ms",
 			"8 ms", "16 ms", "32 ms", "64 ms", "128 ms", "256 ms" },
-		.max = 11,	/* .enum_names item count */
+		.max = 11,	 
 		.reg1 = WM8776_REG_ALCCTRL3,
 		.mask1 = WM8776_ALC3_ATK_MASK,
 		.flags = WM8776_FLAG_LIM,
@@ -297,7 +291,7 @@ static const struct snd_wm8776_ctl snd_wm8776_default_ctl[WM8776_CTL_COUNT] = {
 		.enum_names = {	"1.2 ms", "2.4 ms", "4.8 ms", "9.6 ms",
 			"19.2 ms", "38.4 ms", "76.8 ms", "154 ms", "307 ms",
 			"614 ms", "1.23 s" },
-		.max = 11,	/* .enum_names item count */
+		.max = 11,	 
 		.reg1 = WM8776_REG_ALCCTRL3,
 		.mask1 = WM8776_ALC3_DCY_MASK,
 		.flags = WM8776_FLAG_LIM,
@@ -307,7 +301,7 @@ static const struct snd_wm8776_ctl snd_wm8776_default_ctl[WM8776_CTL_COUNT] = {
 		.type = SNDRV_CTL_ELEM_TYPE_ENUMERATED,
 		.enum_names = {	"0 us", "62.5 us", "125 us", "250 us", "500 us",
 			"1 ms", "2 ms", "4 ms" },
-		.max = 8,	/* .enum_names item count */
+		.max = 8,	 
 		.reg1 = WM8776_REG_LIMITER,
 		.mask1 = WM8776_LIM_TRANWIN_MASK,
 		.flags = WM8776_FLAG_LIM,
@@ -337,7 +331,7 @@ static const struct snd_wm8776_ctl snd_wm8776_default_ctl[WM8776_CTL_COUNT] = {
 		.enum_names = { "8.40 ms", "16.8 ms", "33.6 ms", "67.2 ms",
 			"134 ms", "269 ms", "538 ms", "1.08 s",	"2.15 s",
 			"4.3 s", "8.6 s" },
-		.max = 11,	/* .enum_names item count */
+		.max = 11,	 
 		.reg1 = WM8776_REG_ALCCTRL3,
 		.mask1 = WM8776_ALC3_ATK_MASK,
 		.flags = WM8776_FLAG_ALC,
@@ -348,7 +342,7 @@ static const struct snd_wm8776_ctl snd_wm8776_default_ctl[WM8776_CTL_COUNT] = {
 		.enum_names = {	"33.5 ms", "67.0 ms", "134 ms", "268 ms",
 			"536 ms", "1.07 s", "2.14 s", "4.29 s",	"8.58 s",
 			"17.2 s", "34.3 s" },
-		.max = 11,	/* .enum_names item count */
+		.max = 11,	 
 		.reg1 = WM8776_REG_ALCCTRL3,
 		.mask1 = WM8776_ALC3_DCY_MASK,
 		.flags = WM8776_FLAG_ALC,
@@ -380,7 +374,7 @@ static const struct snd_wm8776_ctl snd_wm8776_default_ctl[WM8776_CTL_COUNT] = {
 			"21.3 ms", "42.7 ms", "85.3 ms", "171 ms", "341 ms",
 			"683 ms", "1.37 s", "2.73 s", "5.46 s", "10.9 s",
 			"21.8 s", "43.7 s" },
-		.max = 16,	/* .enum_names item count */
+		.max = 16,	 
 		.reg1 = WM8776_REG_ALCCTRL2,
 		.mask1 = WM8776_ALC2_HOLD_MASK,
 		.flags = WM8776_FLAG_ALC,
@@ -403,7 +397,7 @@ static const struct snd_wm8776_ctl snd_wm8776_default_ctl[WM8776_CTL_COUNT] = {
 	},
 };
 
-/* exported functions */
+ 
 
 void snd_wm8776_init(struct snd_wm8776 *wm)
 {
@@ -419,9 +413,9 @@ void snd_wm8776_init(struct snd_wm8776 *wm)
 
 	memcpy(wm->ctl, snd_wm8776_default_ctl, sizeof(wm->ctl));
 
-	snd_wm8776_write(wm, WM8776_REG_RESET, 0x00); /* reset */
+	snd_wm8776_write(wm, WM8776_REG_RESET, 0x00);  
 	udelay(10);
-	/* load defaults */
+	 
 	for (i = 0; i < ARRAY_SIZE(default_values); i++)
 		snd_wm8776_write(wm, i, default_values[i]);
 }
@@ -442,11 +436,11 @@ void snd_wm8776_set_power(struct snd_wm8776 *wm, u16 power)
 void snd_wm8776_volume_restore(struct snd_wm8776 *wm)
 {
 	u16 val = wm->regs[WM8776_REG_DACRVOL];
-	/* restore volume after MCLK stopped */
+	 
 	snd_wm8776_write(wm, WM8776_REG_DACRVOL, val | WM8776_VOL_UPDATE);
 }
 
-/* mixer callbacks */
+ 
 
 static int snd_wm8776_volume_info(struct snd_kcontrol *kcontrol,
 				   struct snd_ctl_elem_info *uinfo)
@@ -510,7 +504,7 @@ static int snd_wm8776_ctl_put(struct snd_kcontrol *kcontrol,
 	int n = kcontrol->private_value;
 	u16 val, regval1, regval2;
 
-	/* this also works for enum because value is a union */
+	 
 	regval1 = ucontrol->value.integer.value[0];
 	regval2 = ucontrol->value.integer.value[1];
 	if (wm->ctl[n].flags & WM8776_FLAG_INVERT) {
@@ -522,14 +516,14 @@ static int snd_wm8776_ctl_put(struct snd_kcontrol *kcontrol,
 	else {
 		val = wm->regs[wm->ctl[n].reg1] & ~wm->ctl[n].mask1;
 		val |= regval1 << __ffs(wm->ctl[n].mask1);
-		/* both stereo controls in one register */
+		 
 		if (wm->ctl[n].flags & WM8776_FLAG_STEREO &&
 				wm->ctl[n].reg1 == wm->ctl[n].reg2) {
 			val &= ~wm->ctl[n].mask2;
 			val |= regval2 << __ffs(wm->ctl[n].mask2);
 		}
 		snd_wm8776_write(wm, wm->ctl[n].reg1, val);
-		/* stereo controls in different registers */
+		 
 		if (wm->ctl[n].flags & WM8776_FLAG_STEREO &&
 				wm->ctl[n].reg1 != wm->ctl[n].reg2) {
 			val = wm->regs[wm->ctl[n].reg2] & ~wm->ctl[n].mask2;

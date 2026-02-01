@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <test_progs.h>
 #include "test_task_pt_regs.skel.h"
 
-/* uprobe attach point */
+ 
 static noinline void trigger_func(void)
 {
 	asm volatile ("");
@@ -27,15 +27,15 @@ void test_task_pt_regs(void)
 		goto cleanup;
 
 	uprobe_link = bpf_program__attach_uprobe(skel->progs.handle_uprobe,
-						 false /* retprobe */,
-						 0 /* self pid */,
+						 false  ,
+						 0  ,
 						 "/proc/self/exe",
 						 uprobe_offset);
 	if (!ASSERT_OK_PTR(uprobe_link, "attach_uprobe"))
 		goto cleanup;
 	skel->links.handle_uprobe = uprobe_link;
 
-	/* trigger & validate uprobe */
+	 
 	trigger_func();
 
 	if (!ASSERT_EQ(skel->bss->uprobe_res, 1, "check_uprobe_res"))

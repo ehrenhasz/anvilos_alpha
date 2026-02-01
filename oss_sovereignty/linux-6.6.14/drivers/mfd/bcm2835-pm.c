@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * PM MFD driver for Broadcom BCM2835
- *
- * This driver binds to the PM block and creates the MFD device for
- * the WDT and power drivers.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -53,7 +48,7 @@ static int bcm2835_pm_get_pdata(struct platform_device *pdev,
 		return 0;
 	}
 
-	/* If no 'reg-names' property is found we can assume we're using old DTB. */
+	 
 	pm->base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(pm->base))
 		return PTR_ERR(pm->base);
@@ -92,11 +87,7 @@ static int bcm2835_pm_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/*
-	 * We'll use the presence of the AXI ASB regs in the
-	 * bcm2835-pm binding as the key for whether we can reference
-	 * the full PM register range and support power domains.
-	 */
+	 
 	if (pm->asb)
 		return devm_mfd_add_devices(dev, -1, bcm2835_power_devs,
 					    ARRAY_SIZE(bcm2835_power_devs),

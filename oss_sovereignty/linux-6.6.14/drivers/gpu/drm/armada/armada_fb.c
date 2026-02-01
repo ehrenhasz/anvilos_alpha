@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Russell King
- */
+
+ 
 
 #include <drm/drm_modeset_helper.h>
 #include <drm/drm_fourcc.h>
@@ -72,12 +70,7 @@ struct armada_framebuffer *armada_framebuffer_create(struct drm_device *dev,
 		return ERR_PTR(ret);
 	}
 
-	/*
-	 * Take a reference on our object as we're successful - the
-	 * caller already holds a reference, which keeps us safe for
-	 * the above call, but the caller will drop their reference
-	 * to it.  Hence we need to take our own reference.
-	 */
+	 
 	drm_gem_object_get(&obj->obj);
 
 	return dfb;
@@ -96,7 +89,7 @@ struct drm_framebuffer *armada_fb_create(struct drm_device *dev,
 		mode->flags, mode->pitches[0], mode->pitches[1],
 		mode->pitches[2]);
 
-	/* We can only handle a single plane at the moment */
+	 
 	if (info->num_planes > 1 &&
 	    (mode->handles[0] != mode->handles[1] ||
 	     mode->handles[0] != mode->handles[2])) {
@@ -116,7 +109,7 @@ struct drm_framebuffer *armada_fb_create(struct drm_device *dev,
 			goto err_unref;
 	}
 
-	/* Framebuffer objects must have a valid device address for scanout */
+	 
 	if (!obj->mapped) {
 		ret = -EINVAL;
 		goto err_unref;

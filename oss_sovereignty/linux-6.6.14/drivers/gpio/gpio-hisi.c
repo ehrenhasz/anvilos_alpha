@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2020 HiSilicon Limited. */
+
+ 
 #include <linux/gpio/driver.h>
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -139,13 +139,7 @@ static int hisi_gpio_irq_set_type(struct irq_data *d, u32 type)
 		return -EINVAL;
 	}
 
-	/*
-	 * The dual-edge interrupt and other interrupt's registers do not
-	 * take effect at the same time. The registers of the two-edge
-	 * interrupts have higher priorities, the configuration of
-	 * the dual-edge interrupts must be disabled before the configuration
-	 * of other kind of interrupts.
-	 */
+	 
 	if (type != IRQ_TYPE_EDGE_BOTH) {
 		unsigned int both = hisi_gpio_read_reg(chip, HISI_GPIO_INT_DEDGE_ST);
 
@@ -216,7 +210,7 @@ static void hisi_gpio_init_irq(struct hisi_gpio *hisi_gpio)
 	girq_chip->parent_handler = hisi_gpio_irq_handler;
 	girq_chip->parent_handler_data = hisi_gpio;
 
-	/* Clear Mask of GPIO controller combine IRQ */
+	 
 	hisi_gpio_write_reg(chip, HISI_GPIO_INTCOMB_MASK_WX, 1);
 }
 
@@ -240,7 +234,7 @@ static void hisi_gpio_get_pdata(struct device *dev,
 	int idx = 0;
 
 	device_for_each_child_node(dev, fwnode)  {
-		/* Cycle for once, no need for an array to save line_num */
+		 
 		if (fwnode_property_read_u32(fwnode, "ngpios",
 					     &hisi_gpio->line_num)) {
 			dev_err(dev,
@@ -269,10 +263,7 @@ static int hisi_gpio_probe(struct platform_device *pdev)
 	int port_num;
 	int ret;
 
-	/*
-	 * One GPIO controller own one port currently,
-	 * if we get more from ACPI table, return error.
-	 */
+	 
 	port_num = device_get_child_node_count(dev);
 	if (WARN_ON(port_num != 1))
 		return -ENODEV;

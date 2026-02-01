@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Apple DART page table allocator.
- *
- * Copyright (C) 2022 The Asahi Linux Contributors
- *
- * Based on io-pgtable-arm.
- *
- * Copyright (C) 2014 ARM Limited
- *
- * Author: Will Deacon <will.deacon@arm.com>
- */
+
+ 
 
 #define pr_fmt(fmt)	"dart io-pgtable: " fmt
 
@@ -29,7 +19,7 @@
 #define DART_MAX_TABLES		4
 #define DART_LEVELS		2
 
-/* Struct accessors */
+ 
 #define io_pgtable_to_data(x)						\
 	container_of((x), struct dart_io_pgtable, iop)
 
@@ -48,20 +38,20 @@
 #define APPLE_DART2_PADDR_MASK	GENMASK_ULL(37, 10)
 #define APPLE_DART2_PADDR_SHIFT	(4)
 
-/* Apple DART1 protection bits */
+ 
 #define APPLE_DART1_PTE_PROT_NO_READ	BIT(8)
 #define APPLE_DART1_PTE_PROT_NO_WRITE	BIT(7)
 #define APPLE_DART1_PTE_PROT_SP_DIS	BIT(1)
 
-/* Apple DART2 protection bits */
+ 
 #define APPLE_DART2_PTE_PROT_NO_READ	BIT(3)
 #define APPLE_DART2_PTE_PROT_NO_WRITE	BIT(2)
 #define APPLE_DART2_PTE_PROT_NO_CACHE	BIT(1)
 
-/* marks PTE as valid */
+ 
 #define APPLE_DART_PTE_VALID		BIT(0)
 
-/* IOPTE accessors */
+ 
 #define iopte_deref(pte, d) __va(iopte_to_paddr(pte, d))
 
 struct dart_io_pgtable {
@@ -84,7 +74,7 @@ static dart_iopte paddr_to_iopte(phys_addr_t paddr,
 	if (data->iop.fmt == APPLE_DART)
 		return paddr & APPLE_DART1_PADDR_MASK;
 
-	/* format is APPLE_DART2 */
+	 
 	pte = paddr >> APPLE_DART2_PADDR_SHIFT;
 	pte &= APPLE_DART2_PADDR_MASK;
 
@@ -99,7 +89,7 @@ static phys_addr_t iopte_to_paddr(dart_iopte pte,
 	if (data->iop.fmt == APPLE_DART)
 		return pte & APPLE_DART1_PADDR_MASK;
 
-	/* format is APPLE_DART2 */
+	 
 	paddr = pte & APPLE_DART2_PADDR_MASK;
 	paddr <<= APPLE_DART2_PADDR_SHIFT;
 
@@ -131,12 +121,12 @@ static int dart_init_pte(struct dart_io_pgtable *data,
 
 	for (i = 0; i < num_entries; i++)
 		if (ptep[i] & APPLE_DART_PTE_VALID) {
-			/* We require an unmap first */
+			 
 			WARN_ON(ptep[i] & APPLE_DART_PTE_VALID);
 			return -EEXIST;
 		}
 
-	/* subpage protection: always allow access to the entire page */
+	 
 	pte |= FIELD_PREP(APPLE_DART_PTE_SUBPAGE_START, 0);
 	pte |= FIELD_PREP(APPLE_DART_PTE_SUBPAGE_END, 0xfff);
 
@@ -158,11 +148,7 @@ static dart_iopte dart_install_table(dart_iopte *table,
 
 	new = paddr_to_iopte(__pa(table), data) | APPLE_DART_PTE_VALID;
 
-	/*
-	 * Ensure the table itself is visible before its PTE can be.
-	 * Whilst we could get away with cmpxchg64_release below, this
-	 * doesn't have any ordering semantics when !CONFIG_SMP.
-	 */
+	 
 	dma_wmb();
 
 	old = cmpxchg64_relaxed(ptep, curr, new);
@@ -202,11 +188,11 @@ static  dart_iopte *dart_get_l2(struct dart_io_pgtable *data, unsigned long iova
 	ptep += dart_get_l1_index(data, iova);
 	pte = READ_ONCE(*ptep);
 
-	/* Valid entry? */
+	 
 	if (!pte)
 		return NULL;
 
-	/* Deref to get level 2 table */
+	 
 	return iopte_deref(pte, data);
 }
 
@@ -250,7 +236,7 @@ static int dart_map_pages(struct io_pgtable_ops *ops, unsigned long iova,
 	if (WARN_ON(paddr >> cfg->oas))
 		return -ERANGE;
 
-	/* If no access, then nothing to do */
+	 
 	if (!(iommu_prot & (IOMMU_READ | IOMMU_WRITE)))
 		return 0;
 
@@ -260,7 +246,7 @@ static int dart_map_pages(struct io_pgtable_ops *ops, unsigned long iova,
 	ptep += dart_get_l1_index(data, iova);
 	pte = READ_ONCE(*ptep);
 
-	/* no L2 table present */
+	 
 	if (!pte) {
 		cptep = __dart_alloc_pages(tblsz, gfp, cfg);
 		if (!cptep)
@@ -270,13 +256,13 @@ static int dart_map_pages(struct io_pgtable_ops *ops, unsigned long iova,
 		if (pte)
 			free_pages((unsigned long)cptep, get_order(tblsz));
 
-		/* L2 table is present (now) */
+		 
 		pte = READ_ONCE(*ptep);
 	}
 
 	ptep = iopte_deref(pte, data);
 
-	/* install a leaf entries into L2 table */
+	 
 	prot = dart_prot_to_pte(data, iommu_prot);
 	map_idx_start = dart_get_l2_index(data, iova);
 	max_entries = DART_PTES_PER_TABLE(data) - map_idx_start;
@@ -286,10 +272,7 @@ static int dart_map_pages(struct io_pgtable_ops *ops, unsigned long iova,
 	if (!ret && mapped)
 		*mapped += num_entries * pgsize;
 
-	/*
-	 * Synchronise all PTE updates for the new mapping before there's
-	 * a chance for anything to kick off a table walk for the new iova.
-	 */
+	 
 	wmb();
 
 	return ret;
@@ -309,7 +292,7 @@ static size_t dart_unmap_pages(struct io_pgtable_ops *ops, unsigned long iova,
 
 	ptep = dart_get_l2(data, iova);
 
-	/* Valid L2 IOPTE pointer? */
+	 
 	if (WARN_ON(!ptep))
 		return 0;
 
@@ -324,7 +307,7 @@ static size_t dart_unmap_pages(struct io_pgtable_ops *ops, unsigned long iova,
 		if (WARN_ON(!pte))
 			break;
 
-		/* clear pte */
+		 
 		*ptep = 0;
 
 		if (!iommu_iotlb_gather_queued(gather))
@@ -346,20 +329,20 @@ static phys_addr_t dart_iova_to_phys(struct io_pgtable_ops *ops,
 
 	ptep = dart_get_l2(data, iova);
 
-	/* Valid L2 IOPTE pointer? */
+	 
 	if (!ptep)
 		return 0;
 
 	ptep += dart_get_l2_index(data, iova);
 
 	pte = READ_ONCE(*ptep);
-	/* Found translation */
+	 
 	if (pte) {
 		iova &= (data->iop.cfg.pgsize_bitmap - 1);
 		return iopte_to_paddr(pte, data) | iova;
 	}
 
-	/* Ran out of page tables to walk */
+	 
 	return 0;
 }
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * gpio-fan.c - Hwmon driver for fans connected to GPIO lines.
- *
- * Copyright (C) 2010 LaCie
- *
- * Author: Simon Guinot <sguinot@lacie.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -30,9 +24,9 @@ struct gpio_fan_speed {
 struct gpio_fan_data {
 	struct device		*dev;
 	struct device		*hwmon_dev;
-	/* Cooling device if any */
+	 
 	struct thermal_cooling_device *cdev;
-	struct mutex		lock; /* lock GPIOs operations. */
+	struct mutex		lock;  
 	int			num_gpios;
 	struct gpio_desc	**gpios;
 	int			num_speed;
@@ -44,9 +38,7 @@ struct gpio_fan_data {
 	struct work_struct	alarm_work;
 };
 
-/*
- * Alarm GPIO.
- */
+ 
 
 static void fan_alarm_notify(struct work_struct *ws)
 {
@@ -82,10 +74,7 @@ static int fan_alarm_init(struct gpio_fan_data *fan_data)
 	int alarm_irq;
 	struct device *dev = fan_data->dev;
 
-	/*
-	 * If the alarm GPIO don't support interrupts, just leave
-	 * without initializing the fail notification support.
-	 */
+	 
 	alarm_irq = gpiod_to_irq(fan_data->alarm_gpio);
 	if (alarm_irq <= 0)
 		return 0;
@@ -96,11 +85,9 @@ static int fan_alarm_init(struct gpio_fan_data *fan_data)
 				IRQF_SHARED, "GPIO fan alarm", fan_data);
 }
 
-/*
- * Control GPIOs.
- */
+ 
 
-/* Must be called with fan_data->lock held, except during initialization. */
+ 
 static void __set_fan_ctrl(struct gpio_fan_data *fan_data, int ctrl_val)
 {
 	int i;
@@ -124,7 +111,7 @@ static int __get_fan_ctrl(struct gpio_fan_data *fan_data)
 	return ctrl_val;
 }
 
-/* Must be called with fan_data->lock held, except during initialization. */
+ 
 static void set_fan_speed(struct gpio_fan_data *fan_data, int speed_index)
 {
 	if (fan_data->speed_index == speed_index)
@@ -222,7 +209,7 @@ static ssize_t pwm1_enable_store(struct device *dev,
 
 	fan_data->pwm_enable = val;
 
-	/* Disable manual control mode: set fan at full speed. */
+	 
 	if (val == 0)
 		set_fan_speed(fan_data, fan_data->num_speed - 1);
 
@@ -310,8 +297,8 @@ static umode_t gpio_fan_is_visible(struct kobject *kobj,
 }
 
 static struct attribute *gpio_fan_attributes[] = {
-	&dev_attr_fan1_alarm.attr,		/* 0 */
-	&dev_attr_pwm1.attr,			/* 1 */
+	&dev_attr_fan1_alarm.attr,		 
+	&dev_attr_pwm1.attr,			 
 	&dev_attr_pwm1_enable.attr,
 	&dev_attr_pwm1_mode.attr,
 	&dev_attr_fan1_input.attr,
@@ -338,19 +325,14 @@ static int fan_ctrl_init(struct gpio_fan_data *fan_data)
 	int i, err;
 
 	for (i = 0; i < num_gpios; i++) {
-		/*
-		 * The GPIO descriptors were retrieved with GPIOD_ASIS so here
-		 * we set the GPIO into output mode, carefully preserving the
-		 * current value by setting it to whatever it is already set
-		 * (no surprise changes in default fan speed).
-		 */
+		 
 		err = gpiod_direction_output(gpios[i],
 					gpiod_get_value_cansleep(gpios[i]));
 		if (err)
 			return err;
 	}
 
-	fan_data->pwm_enable = true; /* Enable manual fan speed control. */
+	fan_data->pwm_enable = true;  
 	fan_data->speed_index = get_fan_speed_index(fan_data);
 	if (fan_data->speed_index < 0)
 		return fan_data->speed_index;
@@ -403,9 +385,7 @@ static const struct thermal_cooling_device_ops gpio_fan_cool_ops = {
 	.set_cur_state = gpio_fan_set_cur_state,
 };
 
-/*
- * Translate OpenFirmware node properties into platform_data
- */
+ 
 static int gpio_fan_get_of_data(struct gpio_fan_data *fan_data)
 {
 	struct gpio_fan_speed *speed;
@@ -417,12 +397,12 @@ static int gpio_fan_get_of_data(struct gpio_fan_data *fan_data)
 	struct property *prop;
 	const __be32 *p;
 
-	/* Alarm GPIO if one exists */
+	 
 	fan_data->alarm_gpio = devm_gpiod_get_optional(dev, "alarm", GPIOD_IN);
 	if (IS_ERR(fan_data->alarm_gpio))
 		return PTR_ERR(fan_data->alarm_gpio);
 
-	/* Fill GPIO pin array */
+	 
 	fan_data->num_gpios = gpiod_count(dev, NULL);
 	if (fan_data->num_gpios <= 0) {
 		if (fan_data->alarm_gpio)
@@ -442,7 +422,7 @@ static int gpio_fan_get_of_data(struct gpio_fan_data *fan_data)
 	}
 	fan_data->gpios = gpios;
 
-	/* Get number of RPM/ctrl_val pairs in speed map */
+	 
 	prop = of_find_property(np, "gpio-fan,speed-map", &i);
 	if (!prop) {
 		dev_err(dev, "gpio-fan,speed-map DT property missing");
@@ -455,11 +435,7 @@ static int gpio_fan_get_of_data(struct gpio_fan_data *fan_data)
 	}
 	fan_data->num_speed = i / 2;
 
-	/*
-	 * Populate speed map
-	 * Speed map is in the form <RPM ctrl_val RPM ctrl_val ...>
-	 * this needs splitting into pairs to create gpio_fan_speed structs
-	 */
+	 
 	speed = devm_kcalloc(dev,
 			fan_data->num_speed, sizeof(struct gpio_fan_speed),
 			GFP_KERNEL);
@@ -512,7 +488,7 @@ static int gpio_fan_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, fan_data);
 	mutex_init(&fan_data->lock);
 
-	/* Configure control GPIOs if available. */
+	 
 	if (fan_data->gpios && fan_data->num_gpios > 0) {
 		if (!fan_data->speed || fan_data->num_speed <= 1)
 			return -EINVAL;
@@ -524,7 +500,7 @@ static int gpio_fan_probe(struct platform_device *pdev)
 			return err;
 	}
 
-	/* Make this driver part of hwmon class. */
+	 
 	fan_data->hwmon_dev =
 		devm_hwmon_device_register_with_groups(dev,
 						       "gpio_fan", fan_data,
@@ -532,14 +508,14 @@ static int gpio_fan_probe(struct platform_device *pdev)
 	if (IS_ERR(fan_data->hwmon_dev))
 		return PTR_ERR(fan_data->hwmon_dev);
 
-	/* Configure alarm GPIO if available. */
+	 
 	if (fan_data->alarm_gpio) {
 		err = fan_alarm_init(fan_data);
 		if (err)
 			return err;
 	}
 
-	/* Optional cooling device register for Device tree platforms */
+	 
 	fan_data->cdev = devm_thermal_of_cooling_device_register(dev, np,
 				"gpio-fan", fan_data, &gpio_fan_cool_ops);
 

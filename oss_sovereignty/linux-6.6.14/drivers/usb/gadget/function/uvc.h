@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- *	uvc_gadget.h  --  USB Video Class Gadget driver
- *
- *	Copyright (C) 2009-2010
- *	    Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+ 
+ 
 
 #ifndef _UVC_GADGET_H_
 #define _UVC_GADGET_H_
@@ -27,9 +22,7 @@ struct usb_request;
 struct uvc_descriptor_header;
 struct uvc_device;
 
-/* ------------------------------------------------------------------------
- * Debugging, printing and logging
- */
+ 
 
 #define UVC_TRACE_PROBE				(1 << 0)
 #define UVC_TRACE_DESCR				(1 << 1)
@@ -62,18 +55,14 @@ extern unsigned int uvc_gadget_trace_param;
 #define uvcg_err(f, fmt, args...) \
 	dev_err(&(f)->config->cdev->gadget->dev, "%s: " fmt, (f)->name, ##args)
 
-/* ------------------------------------------------------------------------
- * Driver specific constants
- */
+ 
 
 #define UVC_MAX_REQUEST_SIZE			64
 #define UVC_MAX_EVENTS				4
 
 #define UVCG_REQUEST_HEADER_LEN			12
 
-/* ------------------------------------------------------------------------
- * Structures
- */
+ 
 struct uvc_request {
 	struct usb_request *req;
 	u8 *req_buffer;
@@ -90,17 +79,17 @@ struct uvc_video {
 	struct work_struct pump;
 	struct workqueue_struct *async_wq;
 
-	/* Frame parameters */
+	 
 	u8 bpp;
 	u32 fcc;
 	unsigned int width;
 	unsigned int height;
 	unsigned int imagesize;
-	struct mutex mutex;	/* protects frame parameters */
+	struct mutex mutex;	 
 
 	unsigned int uvc_num_requests;
 
-	/* Requests */
+	 
 	unsigned int req_size;
 	struct uvc_request *ureq;
 	struct list_head req_free;
@@ -111,7 +100,7 @@ struct uvc_video {
 	void (*encode) (struct usb_request *req, struct uvc_video *video,
 			struct uvc_buffer *buf);
 
-	/* Context data used by the completion handler */
+	 
 	__u32 payload_size;
 	__u32 max_payload_size;
 
@@ -136,7 +125,7 @@ struct uvc_device {
 
 	struct uvcg_streaming_header *header;
 
-	/* Descriptors */
+	 
 	struct {
 		const struct uvc_descriptor_header * const *fs_control;
 		const struct uvc_descriptor_header * const *ss_control;
@@ -154,7 +143,7 @@ struct uvc_device {
 
 	unsigned int streaming_intf;
 
-	/* Events */
+	 
 	unsigned int event_length;
 	unsigned int event_setup_out : 1;
 };
@@ -173,12 +162,10 @@ struct uvc_file_handle {
 #define to_uvc_file_handle(handle) \
 	container_of(handle, struct uvc_file_handle, vfh)
 
-/* ------------------------------------------------------------------------
- * Functions
- */
+ 
 
 extern void uvc_function_setup_continue(struct uvc_device *uvc);
 extern void uvc_function_connect(struct uvc_device *uvc);
 extern void uvc_function_disconnect(struct uvc_device *uvc);
 
-#endif /* _UVC_GADGET_H_ */
+#endif  

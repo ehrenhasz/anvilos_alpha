@@ -1,17 +1,4 @@
-/*
- * Silicon Motion SM712 frame buffer device
- *
- * Copyright (C) 2006 Silicon Motion Technology Corp.
- * Authors:	Ge Wang, gewang@siliconmotion.com
- *		Boyod boyod.yang@siliconmotion.com.cn
- *
- * Copyright (C) 2009 Lemote, Inc.
- * Author: Wu Zhangjin, wuzhangjin@gmail.com
- *
- *  This file is subject to the terms and conditions of the GNU General Public
- *  License. See the file COPYING in the main directory of this archive for
- *  more details.
- */
+ 
 
 #define FB_ACCEL_SMI_LYNX 88
 
@@ -71,8 +58,7 @@ static inline unsigned int smtc_seqr(int reg)
 	return smtc_mmiorb(0x3c5);
 }
 
-/* The next structure holds all information relevant for a specific video mode.
- */
+ 
 
 struct modeinit {
 	int mmsizex;

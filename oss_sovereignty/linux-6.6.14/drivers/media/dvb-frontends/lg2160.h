@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *    Support for LG2160 - ATSC/MH
- *
- *    Copyright (C) 2010 Michael Krufky <mkrufky@linuxtv.org>
- */
+ 
+ 
 
 #ifndef _LG2160_H_
 #define _LG2160_H_
@@ -38,13 +34,13 @@ enum lg2161_oif {
 struct lg2160_config {
 	u8 i2c_addr;
 
-	/* user defined IF frequency in KHz */
+	 
 	u16 if_khz;
 
-	/* disable i2c repeater - 0:repeater enabled 1:repeater disabled */
+	 
 	unsigned int deny_i2c_rptr:1;
 
-	/* spectral inversion - 0:disabled 1:enabled */
+	 
 	unsigned int spectral_inversion:1;
 
 	unsigned int output_if;
@@ -64,6 +60,6 @@ struct dvb_frontend *lg2160_attach(const struct lg2160_config *config,
 	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
 	return NULL;
 }
-#endif /* CONFIG_DVB_LG2160 */
+#endif  
 
-#endif /* _LG2160_H_ */
+#endif  

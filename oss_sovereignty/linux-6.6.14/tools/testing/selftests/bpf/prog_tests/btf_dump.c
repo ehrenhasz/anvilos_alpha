@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include <bpf/btf.h>
 
@@ -61,11 +61,7 @@ static int test_btf_dump_case(int n, struct btf_dump_test_case *t)
 		goto done;
 	}
 
-	/* tests with t->known_ptr_sz have no "long" or "unsigned long" type,
-	 * so it's impossible to determine correct pointer size; but if they
-	 * do, it should be 8 regardless of host architecture, becaues BPF
-	 * target is always 64-bit
-	 */
+	 
 	if (!t->known_ptr_sz) {
 		btf__set_pointer_size(btf, 8);
 	} else {
@@ -95,22 +91,13 @@ static int test_btf_dump_case(int n, struct btf_dump_test_case *t)
 
 	snprintf(test_file, sizeof(test_file), "progs/%s.c", t->file);
 	if (access(test_file, R_OK) == -1)
-		/*
-		 * When the test is run with O=, kselftest copies TEST_FILES
-		 * without preserving the directory structure.
-		 */
+		 
 		snprintf(test_file, sizeof(test_file), "%s.c", t->file);
-	/*
-	 * Diff test output and expected test output, contained between
-	 * START-EXPECTED-OUTPUT and END-EXPECTED-OUTPUT lines in test case.
-	 * For expected output lines, everything before '*' is stripped out.
-	 * Also lines containing comment start and comment end markers are
-	 * ignored. 
-	 */
+	 
 	snprintf(diff_cmd, sizeof(diff_cmd),
 		 "awk '/START-EXPECTED-OUTPUT/{out=1;next} "
 		 "/END-EXPECTED-OUTPUT/{out=0} "
-		 "/\\/\\*|\\*\\//{next} " /* ignore comment start/end lines */
+		 "/\\/\\*|\\*\\
 		 "out {sub(/^[ \\t]*\\*/, \"\"); print}' '%s' | diff -u - '%s'",
 		 test_file, out_file);
 	err = system(diff_cmd);
@@ -146,19 +133,7 @@ static void test_btf_dump_incremental(void)
 	if (!ASSERT_OK(libbpf_get_error(d), "btf_dump__new"))
 		goto err_out;
 
-	/* First, generate BTF corresponding to the following C code:
-	 *
-	 * enum x;
-	 *
-	 * enum x { X = 1 };
-	 *
-	 * enum { Y = 1 };
-	 *
-	 * struct s;
-	 *
-	 * struct s { int x; };
-	 *
-	 */
+	 
 	id = btf__add_enum(btf, "x", 4);
 	ASSERT_EQ(id, 1, "enum_declaration_id");
 	id = btf__add_enum(btf, "x", 4);
@@ -188,7 +163,7 @@ static void test_btf_dump_incremental(void)
 	}
 
 	fflush(dump_buf_file);
-	dump_buf[dump_buf_sz] = 0; /* some libc implementations don't do this */
+	dump_buf[dump_buf_sz] = 0;  
 
 	ASSERT_STREQ(dump_buf,
 "enum x;\n"
@@ -207,20 +182,7 @@ static void test_btf_dump_incremental(void)
 "	int x;\n"
 "};\n\n", "c_dump1");
 
-	/* Now, after dumping original BTF, append another struct that embeds
-	 * anonymous enum. It also has a name conflict with the first struct:
-	 *
-	 * struct s___2 {
-	 *     enum { VAL___2 = 1 } x;
-	 *     struct s s;
-	 * };
-	 *
-	 * This will test that btf_dump'er maintains internal state properly.
-	 * Note that VAL___2 enum value. It's because we've already emitted
-	 * that enum as a global anonymous enum, so btf_dump will ensure that
-	 * enum values don't conflict;
-	 *
-	 */
+	 
 	fseek(dump_buf_file, 0, SEEK_SET);
 
 	id = btf__add_struct(btf, "s", 4);
@@ -238,7 +200,7 @@ static void test_btf_dump_incremental(void)
 	}
 
 	fflush(dump_buf_file);
-	dump_buf[dump_buf_sz] = 0; /* some libc implementations don't do this */
+	dump_buf[dump_buf_sz] = 0;  
 	ASSERT_STREQ(dump_buf,
 "struct s___2 {\n"
 "	enum x x;\n"
@@ -317,13 +279,13 @@ static int btf_dump_data(struct btf *btf, struct btf_dump *d,
 				     _expected);			\
 	} while (0)
 
-/* Use where expected data string matches its stringified declaration */
+ 
 #define TEST_BTF_DUMP_DATA_C(_b, _d, _prefix,  _str, _type, _flags,	\
 			     ...)					\
 	TEST_BTF_DUMP_DATA(_b, _d, _prefix, _str, _type, _flags,	\
 			   "(" #_type ")" #__VA_ARGS__,	__VA_ARGS__)
 
-/* overflow test; pass typesize < expected type size, ensure E2BIG returned */
+ 
 #define TEST_BTF_DUMP_DATA_OVER(_b, _d, _prefix, _str, _type, _type_sz,	\
 				_expected, ...)				\
 	do {								\
@@ -353,18 +315,16 @@ static void test_btf_dump_int_data(struct btf *btf, struct btf_dump *d,
 #ifdef __SIZEOF_INT128__
 	unsigned __int128 i = 0xffffffffffffffff;
 
-	/* this dance is required because we cannot directly initialize
-	 * a 128-bit value to anything larger than a 64-bit value.
-	 */
+	 
 	i = (i << 64) | (i - 1);
 #endif
-	/* simple int */
+	 
 	TEST_BTF_DUMP_DATA_C(btf, d, NULL, str, int, BTF_F_COMPACT, 1234);
 	TEST_BTF_DUMP_DATA(btf, d, NULL, str, int, BTF_F_COMPACT | BTF_F_NONAME,
 			   "1234", 1234);
 	TEST_BTF_DUMP_DATA(btf, d, NULL, str, int, 0, "(int)1234", 1234);
 
-	/* zero value should be printed at toplevel */
+	 
 	TEST_BTF_DUMP_DATA(btf, d, NULL, str, int, BTF_F_COMPACT, "(int)0", 0);
 	TEST_BTF_DUMP_DATA(btf, d, NULL, str, int, BTF_F_COMPACT | BTF_F_NONAME,
 			   "0", 0);
@@ -381,10 +341,7 @@ static void test_btf_dump_int_data(struct btf *btf, struct btf_dump *d,
 	TEST_BTF_DUMP_DATA_OVER(btf, d, NULL, str, int, sizeof(int)-1, "", 1);
 
 #ifdef __SIZEOF_INT128__
-	/* gcc encode unsigned __int128 type with name "__int128 unsigned" in dwarf,
-	 * and clang encode it with name "unsigned __int128" in dwarf.
-	 * Do an availability test for either variant before doing actual test.
-	 */
+	 
 	if (btf__find_by_name(btf, "unsigned __int128") > 0) {
 		TEST_BTF_DUMP_DATA(btf, d, NULL, str, unsigned __int128, BTF_F_COMPACT,
 				   "(unsigned __int128)0xffffffffffffffff",
@@ -418,9 +375,7 @@ static void test_btf_dump_float_data(struct btf *btf, struct btf_dump *d,
 	long double t8 = -9.876543;
 	long double t9 = 0.0;
 
-	/* since the kernel does not likely have any float types in its BTF, we
-	 * will need to add some of various sizes.
-	 */
+	 
 
 	ASSERT_GT(btf__add_float(btf, "test_float", 4), 0, "add float");
 	ASSERT_OK(btf_dump_data(btf, d, "test_float", NULL, 0, &t1, 4, str,
@@ -453,12 +408,12 @@ static void test_btf_dump_float_data(struct btf *btf, struct btf_dump *d,
 static void test_btf_dump_char_data(struct btf *btf, struct btf_dump *d,
 				    char *str)
 {
-	/* simple char */
+	 
 	TEST_BTF_DUMP_DATA_C(btf, d, NULL, str, char, BTF_F_COMPACT, 100);
 	TEST_BTF_DUMP_DATA(btf, d, NULL, str, char, BTF_F_COMPACT | BTF_F_NONAME,
 			   "100", 100);
 	TEST_BTF_DUMP_DATA(btf, d, NULL, str, char, 0, "(char)100", 100);
-	/* zero value should be printed at toplevel */
+	 
 	TEST_BTF_DUMP_DATA(btf, d, NULL, str, char, BTF_F_COMPACT,
 			   "(char)0", 0);
 	TEST_BTF_DUMP_DATA(btf, d, NULL, str, char, BTF_F_COMPACT | BTF_F_NONAME,
@@ -475,12 +430,12 @@ static void test_btf_dump_char_data(struct btf *btf, struct btf_dump *d,
 static void test_btf_dump_typedef_data(struct btf *btf, struct btf_dump *d,
 				       char *str)
 {
-	/* simple typedef */
+	 
 	TEST_BTF_DUMP_DATA_C(btf, d, NULL, str, uint64_t, BTF_F_COMPACT, 100);
 	TEST_BTF_DUMP_DATA(btf, d, NULL, str, u64, BTF_F_COMPACT | BTF_F_NONAME,
 			   "1", 1);
 	TEST_BTF_DUMP_DATA(btf, d, NULL, str, u64, 0, "(u64)1", 1);
-	/* zero value should be printed at toplevel */
+	 
 	TEST_BTF_DUMP_DATA(btf, d, NULL, str, u64, BTF_F_COMPACT, "(u64)0", 0);
 	TEST_BTF_DUMP_DATA(btf, d, NULL, str, u64, BTF_F_COMPACT | BTF_F_NONAME,
 			   "0", 0);
@@ -491,7 +446,7 @@ static void test_btf_dump_typedef_data(struct btf *btf, struct btf_dump *d,
 			   "0", 0);
 	TEST_BTF_DUMP_DATA(btf, d, NULL, str, u64, 0, "(u64)0", 0);
 
-	/* typedef struct */
+	 
 	TEST_BTF_DUMP_DATA_C(btf, d, NULL, str, atomic_t, BTF_F_COMPACT,
 			     {.counter = (int)1,});
 	TEST_BTF_DUMP_DATA(btf, d, NULL, str, atomic_t, BTF_F_COMPACT | BTF_F_NONAME,
@@ -501,7 +456,7 @@ static void test_btf_dump_typedef_data(struct btf *btf, struct btf_dump *d,
 "	.counter = (int)1,\n"
 "}",
 			   {.counter = 1,});
-	/* typedef with 0 value should be printed at toplevel */
+	 
 	TEST_BTF_DUMP_DATA(btf, d, NULL, str, atomic_t, BTF_F_COMPACT, "(atomic_t){}",
 			   {.counter = 0,});
 	TEST_BTF_DUMP_DATA(btf, d, NULL, str, atomic_t, BTF_F_COMPACT | BTF_F_NONAME,
@@ -522,7 +477,7 @@ static void test_btf_dump_typedef_data(struct btf *btf, struct btf_dump *d,
 "}",
 			   { .counter = 0,});
 
-	/* overflow should show type but not value since it overflows */
+	 
 	TEST_BTF_DUMP_DATA_OVER(btf, d, NULL, str, atomic_t, sizeof(atomic_t)-1,
 				"(atomic_t){\n", { .counter = 1});
 }
@@ -530,7 +485,7 @@ static void test_btf_dump_typedef_data(struct btf *btf, struct btf_dump *d,
 static void test_btf_dump_enum_data(struct btf *btf, struct btf_dump *d,
 				    char *str)
 {
-	/* enum where enum value does (and does not) exist */
+	 
 	TEST_BTF_DUMP_DATA_C(btf, d, "enum", str, enum bpf_cmd, BTF_F_COMPACT,
 			     BPF_MAP_CREATE);
 	TEST_BTF_DUMP_DATA(btf, d, "enum", str, enum bpf_cmd, BTF_F_COMPACT,
@@ -578,7 +533,7 @@ static void test_btf_dump_struct_data(struct btf *btf, struct btf_dump *d,
 
 	memset(type_data, 255, sizeof(type_data));
 
-	/* simple struct */
+	 
 	TEST_BTF_DUMP_DATA_C(btf, d, "struct", str, struct btf_enum, BTF_F_COMPACT,
 			     {.name_off = (__u32)3,.val = (__s32)-1,});
 	TEST_BTF_DUMP_DATA(btf, d, "struct", str, struct btf_enum,
@@ -599,7 +554,7 @@ static void test_btf_dump_struct_data(struct btf *btf, struct btf_dump *d,
 			   BTF_F_COMPACT | BTF_F_NONAME | BTF_F_ZERO,
 			   "{0,-1,}",
 			   { .name_off = 0, .val = -1,});
-	/* empty struct should be printed */
+	 
 	TEST_BTF_DUMP_DATA(btf, d, "struct", str, struct btf_enum, BTF_F_COMPACT,
 			   "(struct btf_enum){}",
 			   { .name_off = 0, .val = 0,});
@@ -623,7 +578,7 @@ static void test_btf_dump_struct_data(struct btf *btf, struct btf_dump *d,
 "}",
 			   { .name_off = 0, .val = 0,});
 
-	/* struct with pointers */
+	 
 	TEST_BTF_DUMP_DATA(btf, d, "struct", str, struct list_head, BTF_F_COMPACT,
 			   "(struct list_head){.next = (struct list_head *)0x1,}",
 			   { .next = (struct list_head *)1 });
@@ -632,7 +587,7 @@ static void test_btf_dump_struct_data(struct btf *btf, struct btf_dump *d,
 "	.next = (struct list_head *)0x1,\n"
 "}",
 			   { .next = (struct list_head *)1 });
-	/* NULL pointer should not be displayed */
+	 
 	TEST_BTF_DUMP_DATA(btf, d, "struct", str, struct list_head, BTF_F_COMPACT,
 			   "(struct list_head){}",
 			   { .next = (struct list_head *)0 });
@@ -641,7 +596,7 @@ static void test_btf_dump_struct_data(struct btf *btf, struct btf_dump *d,
 "}",
 			   { .next = (struct list_head *)0 });
 
-	/* struct with function pointers */
+	 
 	type_id = btf__find_by_name(btf, "file_operations");
 	if (ASSERT_GT(type_id, 0, "find type id")) {
 		type_sz = btf__resolve_size(btf, type_id);
@@ -658,7 +613,7 @@ static void test_btf_dump_struct_data(struct btf *btf, struct btf_dump *d,
 		ASSERT_STRNEQ(str, cmpstr, strlen(cmpstr), "file_operations");
 	}
 
-	/* struct with char array */
+	 
 	TEST_BTF_DUMP_DATA(btf, d, "struct", str, struct bpf_prog_info, BTF_F_COMPACT,
 			   "(struct bpf_prog_info){.name = (char[16])['f','o','o',],}",
 			   { .name = "foo",});
@@ -675,16 +630,16 @@ static void test_btf_dump_struct_data(struct btf *btf, struct btf_dump *d,
 "	],\n"
 "}",
 			   {.name = "foo",});
-	/* leading null char means do not display string */
+	 
 	TEST_BTF_DUMP_DATA(btf, d, "struct", str, struct bpf_prog_info, BTF_F_COMPACT,
 			   "(struct bpf_prog_info){}",
 			   {.name = {'\0', 'f', 'o', 'o'}});
-	/* handle non-printable characters */
+	 
 	TEST_BTF_DUMP_DATA(btf, d, "struct", str, struct bpf_prog_info, BTF_F_COMPACT,
 			   "(struct bpf_prog_info){.name = (char[16])[1,2,3,],}",
 			   { .name = {1, 2, 3, 0}});
 
-	/* struct with non-char array */
+	 
 	TEST_BTF_DUMP_DATA(btf, d, "struct", str, struct __sk_buff, BTF_F_COMPACT,
 			   "(struct __sk_buff){.cb = (__u32[5])[1,2,3,4,5,],}",
 			   { .cb = {1, 2, 3, 4, 5,},});
@@ -703,7 +658,7 @@ static void test_btf_dump_struct_data(struct btf *btf, struct btf_dump *d,
 "	],\n"
 "}",
 			   { .cb = { 1, 2, 3, 4, 5},});
-	/* For non-char, arrays, show non-zero values only */
+	 
 	TEST_BTF_DUMP_DATA(btf, d, "struct", str, struct __sk_buff, BTF_F_COMPACT,
 			   "(struct __sk_buff){.cb = (__u32[5])[0,0,1,0,0,],}",
 			   { .cb = { 0, 0, 1, 0, 0},});
@@ -719,7 +674,7 @@ static void test_btf_dump_struct_data(struct btf *btf, struct btf_dump *d,
 "}",
 			   { .cb = { 0, 0, 1, 0, 0},});
 
-	/* struct with bitfields */
+	 
 	TEST_BTF_DUMP_DATA_C(btf, d, "struct", str, struct bpf_insn, BTF_F_COMPACT,
 		{.code = (__u8)1,.dst_reg = (__u8)0x2,.src_reg = (__u8)0x3,.off = (__s16)4,.imm = (__s32)5,});
 	TEST_BTF_DUMP_DATA(btf, d, "struct", str, struct bpf_insn,
@@ -737,12 +692,12 @@ static void test_btf_dump_struct_data(struct btf *btf, struct btf_dump *d,
 "}",
 			   {.code = 1, .dst_reg = 2, .src_reg = 3, .off = 4, .imm = 5});
 
-	/* zeroed bitfields should not be displayed */
+	 
 	TEST_BTF_DUMP_DATA(btf, d, "struct", str, struct bpf_insn, BTF_F_COMPACT,
 			   "(struct bpf_insn){.dst_reg = (__u8)0x1,}",
 			   { .code = 0, .dst_reg = 1});
 
-	/* struct with enum bitfield */
+	 
 	type_id = btf__find_by_name(btf, "fs_context");
 	if (ASSERT_GT(type_id,  0, "find fs_context")) {
 		type_sz = btf__resolve_size(btf, type_id);
@@ -757,20 +712,17 @@ static void test_btf_dump_struct_data(struct btf *btf, struct btf_dump *d,
 				  "bitfield value not present");
 	}
 
-	/* struct with nested anon union */
+	 
 	TEST_BTF_DUMP_DATA(btf, d, "struct", str, struct bpf_sock_ops, BTF_F_COMPACT,
 			   "(struct bpf_sock_ops){.op = (__u32)1,(union){.args = (__u32[4])[1,2,3,4,],.reply = (__u32)1,.replylong = (__u32[4])[1,2,3,4,],},}",
 			   { .op = 1, .args = { 1, 2, 3, 4}});
 
-	/* union with nested struct */
+	 
 	TEST_BTF_DUMP_DATA(btf, d, "union", str, union bpf_iter_link_info, BTF_F_COMPACT,
 			   "(union bpf_iter_link_info){.map = (struct){.map_fd = (__u32)1,},.cgroup = (struct){.order = (enum bpf_cgroup_iter_order)BPF_CGROUP_ITER_SELF_ONLY,.cgroup_fd = (__u32)1,},.task = (struct){.tid = (__u32)1,.pid = (__u32)1,},}",
 			   { .cgroup = { .order = 1, .cgroup_fd = 1, }});
 
-	/* struct skb with nested structs/unions; because type output is so
-	 * complex, we don't do a string comparison, just verify we return
-	 * the type size as the amount of data displayed.
-	 */
+	 
 	type_id = btf__find_by_name(btf, "sk_buff");
 	if (ASSERT_GT(type_id, 0, "find struct sk_buff")) {
 		type_sz = btf__resolve_size(btf, type_id);
@@ -781,13 +733,7 @@ static void test_btf_dump_struct_data(struct btf *btf, struct btf_dump *d,
 			  "unexpected return value dumping sk_buff");
 	}
 
-	/* overflow bpf_sock_ops struct with final element nonzero/zero.
-	 * Regardless of the value of the final field, we don't have all the
-	 * data we need to display it, so we should trigger an overflow.
-	 * In other words overflow checking should trump "is field zero?"
-	 * checks because if we've overflowed, it shouldn't matter what the
-	 * field is - we can't trust its value so shouldn't display it.
-	 */
+	 
 	TEST_BTF_DUMP_DATA_OVER(btf, d, "struct", str, struct bpf_sock_ops,
 				sizeof(struct bpf_sock_ops) - 1,
 				"(struct bpf_sock_ops){\n\t.op = (__u32)1,\n",
@@ -882,7 +828,7 @@ void test_btf_dump() {
 	if (!ASSERT_OK_PTR(d, "could not create BTF dump"))
 		return;
 
-	/* Verify type display for various types. */
+	 
 	if (test__start_subtest("btf_dump: int_data"))
 		test_btf_dump_int_data(btf, d, str);
 	if (test__start_subtest("btf_dump: float_data"))

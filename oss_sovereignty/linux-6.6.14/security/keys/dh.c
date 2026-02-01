@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Crypto operations using stored keys
- *
- * Copyright (c) 2016, Intel Corporation
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/uaccess.h>
@@ -68,7 +65,7 @@ static int kdf_alloc(struct crypto_shash **hash, char *hashname)
 {
 	struct crypto_shash *tfm;
 
-	/* allocate synchronous hash */
+	 
 	tfm = crypto_alloc_shash(hashname, 0, 0);
 	if (IS_ERR(tfm)) {
 		pr_info("could not allocate digest TFM handle %s\n", hashname);
@@ -160,14 +157,14 @@ long __keyctl_dh_compute(struct keyctl_dh_params __user *params,
 			goto out1;
 		}
 
-		/* get KDF name string */
+		 
 		hashname = strndup_user(kdfcopy->hashname, CRYPTO_MAX_ALG_NAME);
 		if (IS_ERR(hashname)) {
 			ret = PTR_ERR(hashname);
 			goto out1;
 		}
 
-		/* allocate KDF from the kernel crypto API */
+		 
 		ret = kdf_alloc(&hash, hashname);
 		kfree(hashname);
 		if (ret)
@@ -220,10 +217,7 @@ long __keyctl_dh_compute(struct keyctl_dh_params __user *params,
 	outlen = crypto_kpp_maxsize(tfm);
 
 	if (!kdfcopy) {
-		/*
-		 * When not using a KDF, buflen 0 is used to read the
-		 * required buffer length
-		 */
+		 
 		if (buflen == 0) {
 			ret = outlen;
 			goto out4;
@@ -254,20 +248,14 @@ long __keyctl_dh_compute(struct keyctl_dh_params __user *params,
 				 CRYPTO_TFM_REQ_MAY_SLEEP,
 				 crypto_req_done, &compl);
 
-	/*
-	 * For DH, generate_public_key and generate_shared_secret are
-	 * the same calculation
-	 */
+	 
 	ret = crypto_kpp_generate_public_key(req);
 	ret = crypto_wait_req(ret, &compl);
 	if (ret)
 		goto out6;
 
 	if (kdfcopy) {
-		/*
-		 * Concatenate SP800-56A otherinfo past DH shared secret -- the
-		 * input to the KDF is (DH shared secret || otherinfo)
-		 */
+		 
 		if (copy_from_user(outbuf + req->dst_len, kdfcopy->otherinfo,
 				   kdfcopy->otherinfolen) != 0) {
 			ret = -EFAULT;

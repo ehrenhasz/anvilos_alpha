@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2020 MediaTek Inc.
- * Copyright (c) 2020 BayLibre, SAS
- * Copyright (c) 2023 Collabora, Ltd.
- */
+
+ 
 
 #include <dt-bindings/clock/mt8167-clk.h>
 #include <linux/clk.h>
@@ -52,7 +48,7 @@ static const struct mtk_pll_div_table mmpll_div_table[] = {
 	{ .div = 2, .freq = 604500000 },
 	{ .div = 3, .freq = 253500000 },
 	{ .div = 4, .freq = 126750000 },
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct mtk_pll_data plls[] = {
@@ -130,7 +126,7 @@ unregister_plls:
 
 static const struct of_device_id of_match_clk_mt8167_apmixed[] = {
 	{ .compatible = "mediatek,mt8167-apmixedsys" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8167_apmixed);
 

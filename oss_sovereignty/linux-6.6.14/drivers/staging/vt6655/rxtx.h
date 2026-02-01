@@ -1,32 +1,22 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
- * All rights reserved.
- *
- * Purpose:
- *
- * Author: Jerry Chen
- *
- * Date: Jun. 27, 2002
- *
- */
+ 
+ 
 
 #ifndef __RXTX_H__
 #define __RXTX_H__
 
 #include "device.h"
 
-#define DEFAULT_MSDU_LIFETIME_RES_64us	8000 /* 64us */
-#define DEFAULT_MGN_LIFETIME_RES_64us	125  /* 64us */
+#define DEFAULT_MSDU_LIFETIME_RES_64us	8000  
+#define DEFAULT_MGN_LIFETIME_RES_64us	125   
 
 
-/*---------------------  Export Definitions -------------------------*/
+ 
 
-/*---------------------  Export Variables  --------------------------*/
+ 
 
-/*---------------------  Export Functions  --------------------------*/
+ 
 
-/* MIC HDR data header */
+ 
 struct vnt_mic_hdr {
 	u8 id;
 	u8 tx_priority;
@@ -40,10 +30,10 @@ struct vnt_mic_hdr {
 	u8 addr3[ETH_ALEN];
 	__le16 seq_ctrl;
 	u8 addr4[ETH_ALEN];
-	u16 packing; /* packing to 48 bytes */
+	u16 packing;  
 } __packed;
 
-/* RsvTime buffer header */
+ 
 struct vnt_rrv_time_rts {
 	__le16 rts_rrv_time_ba;
 	__le16 rts_rrv_time_aa;
@@ -65,7 +55,7 @@ struct vnt_rrv_time_ab {
 	__le16 rrv_time;
 } __packed;
 
-/* TX data header */
+ 
 struct vnt_tx_datahead_g {
 	struct vnt_phy_field b;
 	struct vnt_phy_field a;
@@ -100,7 +90,7 @@ struct vnt_tx_datahead_a_fb {
 	__le16 duration_f1;
 } __packed;
 
-/* RTS buffer header */
+ 
 struct vnt_rts_g {
 	struct vnt_phy_field b;
 	struct vnt_phy_field a;
@@ -141,7 +131,7 @@ struct vnt_rts_a_fb {
 	struct ieee80211_rts data;
 } __packed __aligned(2);
 
-/* CTS buffer header */
+ 
 struct vnt_cts {
 	struct vnt_phy_field b;
 	__le16 duration_ba;
@@ -182,4 +172,4 @@ int vnt_beacon_make(struct vnt_private *priv, struct ieee80211_vif *vif);
 int vnt_beacon_enable(struct vnt_private *priv, struct ieee80211_vif *vif,
 		      struct ieee80211_bss_conf *conf);
 
-#endif /* __RXTX_H__ */
+#endif  

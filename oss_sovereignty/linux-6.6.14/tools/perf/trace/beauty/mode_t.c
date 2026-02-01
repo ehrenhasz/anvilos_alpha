@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: LGPL-2.1
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
-/* From include/linux/stat.h */
+ 
 #ifndef S_IRWXUGO
 #define S_IRWXUGO	(S_IRWXU|S_IRWXG|S_IRWXO)
 #endif

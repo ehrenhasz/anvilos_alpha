@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 Linaro Ltd.
- * Copyright (c) 2014 Hisilicon Limited.
- */
+
+ 
 
 #include <linux/of_address.h>
 #include <dt-bindings/clock/hix5hd2-clock.h>
@@ -68,36 +65,36 @@ static struct hisi_mux_clock hix5hd2_mux_clks[] __initdata = {
 };
 
 static struct hisi_gate_clock hix5hd2_gate_clks[] __initdata = {
-	/* sfc */
+	 
 	{ HIX5HD2_SFC_CLK, "clk_sfc", "sfc_mux",
 		CLK_SET_RATE_PARENT, 0x5c, 0, 0, },
 	{ HIX5HD2_SFC_RST, "rst_sfc", "clk_sfc",
 		CLK_SET_RATE_PARENT, 0x5c, 4, CLK_GATE_SET_TO_DISABLE, },
-	/* sdio0 */
+	 
 	{ HIX5HD2_SD_BIU_CLK, "clk_sd_biu", "200m",
 		CLK_SET_RATE_PARENT, 0x9c, 0, 0, },
 	{ HIX5HD2_SD_CIU_CLK, "clk_sd_ciu", "sd_mux",
 		CLK_SET_RATE_PARENT, 0x9c, 1, 0, },
 	{ HIX5HD2_SD_CIU_RST, "rst_sd_ciu", "clk_sd_ciu",
 		CLK_SET_RATE_PARENT, 0x9c, 4, CLK_GATE_SET_TO_DISABLE, },
-	/* sdio1 */
+	 
 	{ HIX5HD2_MMC_BIU_CLK, "clk_mmc_biu", "200m",
 		CLK_SET_RATE_PARENT, 0xa0, 0, 0, },
 	{ HIX5HD2_MMC_CIU_CLK, "clk_mmc_ciu", "mmc_mux",
 		CLK_SET_RATE_PARENT, 0xa0, 1, 0, },
 	{ HIX5HD2_MMC_CIU_RST, "rst_mmc_ciu", "clk_mmc_ciu",
 		CLK_SET_RATE_PARENT, 0xa0, 4, CLK_GATE_SET_TO_DISABLE, },
-	/* gsf */
+	 
 	{ HIX5HD2_FWD_BUS_CLK, "clk_fwd_bus", NULL, 0, 0xcc, 0, 0, },
 	{ HIX5HD2_FWD_SYS_CLK, "clk_fwd_sys", "clk_fwd_bus", 0, 0xcc, 5, 0, },
 	{ HIX5HD2_MAC0_PHY_CLK, "clk_fephy", "clk_fwd_sys",
 		 CLK_SET_RATE_PARENT, 0x120, 0, 0, },
-	/* wdg0 */
+	 
 	{ HIX5HD2_WDG0_CLK, "clk_wdg0", "24m",
 		CLK_SET_RATE_PARENT, 0x178, 0, 0, },
 	{ HIX5HD2_WDG0_RST, "rst_wdg0", "clk_wdg0",
 		CLK_SET_RATE_PARENT, 0x178, 4, CLK_GATE_SET_TO_DISABLE, },
-	/* I2C */
+	 
 	{HIX5HD2_I2C0_CLK, "clk_i2c0", "100m",
 		 CLK_SET_RATE_PARENT, 0x06c, 4, 0, },
 	{HIX5HD2_I2C0_RST, "rst_i2c0", "clk_i2c0",

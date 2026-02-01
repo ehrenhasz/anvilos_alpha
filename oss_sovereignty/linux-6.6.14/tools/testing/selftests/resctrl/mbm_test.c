@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Memory Bandwidth Monitoring (MBM) test
- *
- * Copyright (C) 2018 Intel Corporation
- *
- * Authors:
- *    Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>,
- *    Fenghua Yu <fenghua.yu@intel.com>
- */
+
+ 
 #include "resctrl.h"
 
 #define RESULT_FILE_NAME	"result_mbm"
@@ -22,10 +14,7 @@ show_bw_info(unsigned long *bw_imc, unsigned long *bw_resc, size_t span)
 	int runs, ret, avg_diff_per;
 	float avg_diff = 0;
 
-	/*
-	 * Discard the first value which is inaccurate due to monitoring setup
-	 * transition phase.
-	 */
+	 
 	for (runs = 1; runs < NUM_OF_RUNS ; runs++) {
 		sum_bw_imc += bw_imc[runs];
 		sum_bw_resc += bw_resc[runs];
@@ -90,11 +79,11 @@ static int mbm_setup(struct resctrl_val_param *p)
 {
 	int ret = 0;
 
-	/* Run NUM_OF_RUNS times */
+	 
 	if (p->num_of_runs >= NUM_OF_RUNS)
 		return END_OF_TESTS;
 
-	/* Set up shemata with 100% allocation on the first run. */
+	 
 	if (p->num_of_runs == 0)
 		ret = write_schemata(p->ctrlgrp, "100", p->cpu_no,
 				     p->resctrl_val);

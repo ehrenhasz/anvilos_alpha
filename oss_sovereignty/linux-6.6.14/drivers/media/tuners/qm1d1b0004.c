@@ -1,65 +1,21 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Sharp QM1D1B0004 satellite tuner
- *
- * Copyright (C) 2014 Akihiro Tsukada <tskd08@gmail.com>
- *
- * based on (former) drivers/media/pci/pt1/va1j5jf8007s.c.
- */
 
-/*
- * Note:
- * Since the data-sheet of this tuner chip is not available,
- * this driver lacks some tuner_ops and config options.
- * In addition, the implementation might be dependent on the specific use
- * in the FE module: VA1J5JF8007S and/or in the product: Earthsoft PT1/PT2.
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <media/dvb_frontend.h>
 #include "qm1d1b0004.h"
 
-/*
- * Tuner I/F (copied from the former va1j5jf8007s.c)
- * b[0] I2C addr
- * b[1] "0":1, BG:2, divider_quotient[7:3]:5
- * b[2] divider_quotient[2:0]:3, divider_remainder:5
- * b[3] "111":3, LPF[3:2]:2, TM:1, "0":1, REF:1
- * b[4] BANDX, PSC:1, LPF[1:0]:2, DIV:1, "0":1
- *
- * PLL frequency step :=
- *    REF == 0 -> PLL XTL frequency(4MHz) / 8
- *    REF == 1 -> PLL XTL frequency(4MHz) / 4
- *
- * PreScaler :=
- *    PSC == 0 -> x32
- *    PSC == 1 -> x16
- *
- * divider_quotient := (frequency / PLL frequency step) / PreScaler
- * divider_remainder := (frequency / PLL frequency step) % PreScaler
- *
- * LPF := LPF Frequency / 1000 / 2 - 2
- * LPF Frequency @ baudrate=28.86Mbps = 30000
- *
- * band (1..9)
- *   band 1 (freq <  986000) -> DIV:1, BANDX:5, PSC:1
- *   band 2 (freq < 1072000) -> DIV:1, BANDX:6, PSC:1
- *   band 3 (freq < 1154000) -> DIV:1, BANDX:7, PSC:0
- *   band 4 (freq < 1291000) -> DIV:0, BANDX:1, PSC:0
- *   band 5 (freq < 1447000) -> DIV:0, BANDX:2, PSC:0
- *   band 6 (freq < 1615000) -> DIV:0, BANDX:3, PSC:0
- *   band 7 (freq < 1791000) -> DIV:0, BANDX:4, PSC:0
- *   band 8 (freq < 1972000) -> DIV:0, BANDX:5, PSC:0
- *   band 9 (freq < 2150000) -> DIV:0, BANDX:6, PSC:0
- */
+ 
 
 #define QM1D1B0004_PSC_MASK (1 << 4)
 
 #define QM1D1B0004_XTL_FREQ 4000
 #define QM1D1B0004_LPF_FALLBACK 30000
 
-#if 0 /* Currently unused */
+#if 0  
 static const struct qm1d1b0004_config default_cfg = {
 	.lpf_freq = QM1D1B0004_CFG_LPF_DFLT,
 	.half_step = false,
@@ -120,24 +76,24 @@ static int qm1d1b0004_set_params(struct dvb_frontend *fe)
 	if (cb & QM1D1B0004_PSC_MASK)
 		word = (word << 1 & ~0x1f) | (word & 0x0f);
 
-	/* step.1: set frequency with BG:2, TM:0(4MHZ), LPF:4MHz */
+	 
 	buf[0] = 0x40 | word >> 8;
 	buf[1] = word;
-	/* inconsisnten with the above I/F doc. maybe the doc is wrong */
+	 
 	buf[2] = 0xe0 | state->cfg.half_step;
 	buf[3] = cb;
 	ret = i2c_master_send(state->i2c, buf, 4);
 	if (ret < 0)
 		return ret;
 
-	/* step.2: set TM:1 */
+	 
 	buf[0] = 0xe4 | state->cfg.half_step;
 	ret = i2c_master_send(state->i2c, buf, 1);
 	if (ret < 0)
 		return ret;
 	msleep(20);
 
-	/* step.3: set LPF */
+	 
 	lpf_freq = state->cfg.lpf_freq;
 	if (lpf_freq == QM1D1B0004_CFG_LPF_DFLT)
 		lpf_freq = fe->dtv_property_cache.symbol_rate / 1000;
@@ -150,7 +106,7 @@ static int qm1d1b0004_set_params(struct dvb_frontend *fe)
 	if (ret < 0)
 		return ret;
 
-	/* step.4: read PLL lock? */
+	 
 	buf[0] = 0;
 	ret = i2c_master_recv(state->i2c, buf, 1);
 	if (ret < 0)

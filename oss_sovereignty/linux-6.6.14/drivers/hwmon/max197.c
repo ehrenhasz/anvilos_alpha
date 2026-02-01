@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Maxim MAX197 A/D Converter driver
- *
- * Copyright (c) 2012 Savoir-faire Linux Inc.
- *          Vivien Didelot <vivien.didelot@savoirfairelinux.com>
- *
- * For further information, see the Documentation/hwmon/max197.rst file.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -22,29 +15,21 @@
 #include <linux/platform_device.h>
 #include <linux/platform_data/max197.h>
 
-#define MAX199_LIMIT	4000		/* 4V */
-#define MAX197_LIMIT	10000		/* 10V */
+#define MAX199_LIMIT	4000		 
+#define MAX197_LIMIT	10000		 
 
-#define MAX197_NUM_CH	8		/* 8 Analog Input Channels */
+#define MAX197_NUM_CH	8		 
 
-/* Control byte format */
-#define MAX197_BIP	(1 << 3)	/* Bipolarity */
-#define MAX197_RNG	(1 << 4)	/* Full range */
+ 
+#define MAX197_BIP	(1 << 3)	 
+#define MAX197_RNG	(1 << 4)	 
 
-#define MAX197_SCALE	12207		/* Scale coefficient for raw data */
+#define MAX197_SCALE	12207		 
 
-/* List of supported chips */
+ 
 enum max197_chips { max197, max199 };
 
-/**
- * struct max197_data - device instance specific data
- * @pdata:		Platform data.
- * @hwmon_dev:		The hwmon device.
- * @lock:		Read/Write mutex.
- * @limit:		Max range value (10V for MAX197, 4V for MAX199).
- * @scale:		Need to scale.
- * @ctrl_bytes:		Channels control byte.
- */
+ 
 struct max197_data {
 	struct max197_platform_data *pdata;
 	struct device *hwmon_dev;
@@ -84,7 +69,7 @@ static inline bool max197_is_full_range(struct max197_data *data, int channel)
 	return data->ctrl_bytes[channel] & MAX197_RNG;
 }
 
-/* Function called on read access on in{0,1,2,3,4,5,6,7}_{min,max} */
+ 
 static ssize_t max197_show_range(struct device *dev,
 				 struct device_attribute *devattr, char *buf)
 {
@@ -111,7 +96,7 @@ static ssize_t max197_show_range(struct device *dev,
 	return sprintf(buf, "%d\n", range);
 }
 
-/* Function called on write access on in{0,1,2,3,4,5,6,7}_{min,max} */
+ 
 static ssize_t max197_store_range(struct device *dev,
 				  struct device_attribute *devattr,
 				  const char *buf, size_t count)
@@ -145,7 +130,7 @@ static ssize_t max197_store_range(struct device *dev,
 		return -ERESTARTSYS;
 
 	if (value == 0) {
-		/* We can deduce only the polarity */
+		 
 		max197_set_unipolarity(data, channel);
 	} else if (value == -half) {
 		max197_set_bipolarity(data, channel);
@@ -154,10 +139,10 @@ static ssize_t max197_store_range(struct device *dev,
 		max197_set_bipolarity(data, channel);
 		max197_set_full_range(data, channel);
 	} else if (value == half) {
-		/* We can deduce only the range */
+		 
 		max197_set_half_range(data, channel);
 	} else if (value == full) {
-		/* We can deduce only the range */
+		 
 		max197_set_full_range(data, channel);
 	}
 
@@ -166,7 +151,7 @@ static ssize_t max197_store_range(struct device *dev,
 	return count;
 }
 
-/* Function called on read access on in{0,1,2,3,4,5,6,7}_input */
+ 
 static ssize_t max197_show_input(struct device *dev,
 				 struct device_attribute *devattr,
 				 char *buf)
@@ -187,10 +172,7 @@ static ssize_t max197_show_input(struct device *dev,
 	}
 	value = ret;
 
-	/*
-	 * Coefficient to apply on raw value.
-	 * See Table 1. Full Scale and Zero Scale in the MAX197 datasheet.
-	 */
+	 
 	if (data->scale) {
 		value *= MAX197_SCALE;
 		if (max197_is_full_range(data, channel))

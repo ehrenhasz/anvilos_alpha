@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2005-2006 Fen Systems Ltd.
- * Copyright 2006-2013 Solarflare Communications Inc.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -21,12 +17,7 @@
 #include "workarounds.h"
 #include "mcdi_pcol.h"
 
-/**************************************************************************
- *
- * Generic buffer handling
- * These buffers are used for interrupt status, MAC stats, etc.
- *
- **************************************************************************/
+ 
 
 int efx_nic_alloc_buffer(struct efx_nic *efx, struct efx_buffer *buffer,
 			 unsigned int len, gfp_t gfp_flags)
@@ -48,9 +39,7 @@ void efx_nic_free_buffer(struct efx_nic *efx, struct efx_buffer *buffer)
 	}
 }
 
-/* Check whether an event is present in the eventq at the current
- * read pointer.  Only useful for self-test.
- */
+ 
 bool efx_nic_event_present(struct efx_channel *channel)
 {
 	return efx_event_present(efx_event(channel, channel->eventq_read_ptr));
@@ -70,9 +59,7 @@ int efx_nic_irq_test_start(struct efx_nic *efx)
 	return efx->type->irq_test_generate(efx);
 }
 
-/* Hook interrupt handler(s)
- * Try MSI and then legacy interrupts.
- */
+ 
 int efx_nic_init_interrupt(struct efx_nic *efx)
 {
 	struct efx_channel *channel;
@@ -104,11 +91,11 @@ int efx_nic_init_interrupt(struct efx_nic *efx)
 	}
 #endif
 
-	/* Hook MSI or MSI-X interrupt */
+	 
 	n_irqs = 0;
 	efx_for_each_channel(channel, efx) {
 		rc = request_irq(channel->irq, efx->type->irq_handle_msi,
-				 IRQF_PROBE_SHARED, /* Not shared */
+				 IRQF_PROBE_SHARED,  
 				 efx->msi_context[channel->channel].name,
 				 &efx->msi_context[channel->channel]);
 		if (rc) {
@@ -158,21 +145,21 @@ void efx_nic_fini_interrupt(struct efx_nic *efx)
 	if (!efx->irqs_hooked)
 		return;
 	if (EFX_INT_MODE_USE_MSI(efx)) {
-		/* Disable MSI/MSI-X interrupts */
+		 
 		efx_for_each_channel(channel, efx)
 			free_irq(channel->irq,
 				 &efx->msi_context[channel->channel]);
 	} else {
-		/* Disable legacy interrupt */
+		 
 		free_irq(efx->legacy_irq, efx);
 	}
 	efx->irqs_hooked = false;
 }
 
-/* Register dump */
+ 
 
 #define REGISTER_REVISION_ED	4
-#define REGISTER_REVISION_EZ	4	/* latest EF10 revision */
+#define REGISTER_REVISION_EZ	4	 
 
 struct efx_nic_reg {
 	u32 offset:24;
@@ -187,8 +174,8 @@ struct efx_nic_reg {
 #define REGISTER_DZ(name) REGISTER(name, E, D, Z)
 
 static const struct efx_nic_reg efx_nic_regs[] = {
-	/* XX_PRBS_CTL, XX_PRBS_CHK and XX_PRBS_ERR are not used */
-	/* XX_CORE_STAT is partly RC */
+	 
+	 
 	REGISTER_DZ(BIU_HW_REV_ID),
 	REGISTER_DZ(MC_DB_LWRD),
 	REGISTER_DZ(MC_DB_HWRD),
@@ -269,13 +256,13 @@ void efx_nic_get_regs(struct efx_nic *efx, void *buf)
 
 		for (i = 0; i < table->rows; i++) {
 			switch (table->step) {
-			case 4: /* 32-bit SRAM */
+			case 4:  
 				efx_readd(efx, buf, table->offset + 4 * i);
 				break;
-			case 16: /* 128-bit-readable register */
+			case 16:  
 				efx_reado_table(efx, buf, table->offset, i);
 				break;
-			case 32: /* 128-bit register, interleaved */
+			case 32:  
 				efx_reado_table(efx, buf, table->offset, 2 * i);
 				break;
 			default:
@@ -287,17 +274,7 @@ void efx_nic_get_regs(struct efx_nic *efx, void *buf)
 	}
 }
 
-/**
- * efx_nic_describe_stats - Describe supported statistics for ethtool
- * @desc: Array of &struct efx_hw_stat_desc describing the statistics
- * @count: Length of the @desc array
- * @mask: Bitmask of which elements of @desc are enabled
- * @names: Buffer to copy names to, or %NULL.  The names are copied
- *	starting at intervals of %ETH_GSTRING_LEN bytes.
- *
- * Returns the number of visible statistics, i.e. the number of set
- * bits in the first @count bits of @mask for which a name is defined.
- */
+ 
 size_t efx_nic_describe_stats(const struct efx_hw_stat_desc *desc, size_t count,
 			      const unsigned long *mask, u8 *names)
 {
@@ -318,14 +295,7 @@ size_t efx_nic_describe_stats(const struct efx_hw_stat_desc *desc, size_t count,
 	return visible;
 }
 
-/**
- * efx_nic_copy_stats - Copy stats from the DMA buffer in to an
- *	intermediate buffer. This is used to get a consistent
- *	set of stats while the DMA buffer can be written at any time
- *	by the NIC.
- * @efx: The associated NIC.
- * @dest: Destination buffer. Must be the same size as the DMA buffer.
- */
+ 
 int efx_nic_copy_stats(struct efx_nic *efx, __le64 *dest)
 {
 	__le64 *dma_stats = efx->stats_buffer.addr;
@@ -338,9 +308,7 @@ int efx_nic_copy_stats(struct efx_nic *efx, __le64 *dest)
 	if (!dma_stats)
 		goto return_zeroes;
 
-	/* If we're unlucky enough to read statistics during the DMA, wait
-	 * up to 10ms for it to finish (typically takes <500us)
-	 */
+	 
 	for (retry = 0; retry < 100; ++retry) {
 		generation_end = dma_stats[efx->num_mac_stats - 1];
 		if (generation_end == EFX_MC_STATS_GENERATION_INVALID)
@@ -350,7 +318,7 @@ int efx_nic_copy_stats(struct efx_nic *efx, __le64 *dest)
 		rmb();
 		generation_start = dma_stats[MC_CMD_MAC_GENERATION_START];
 		if (generation_end == generation_start)
-			return 0; /* return good data */
+			return 0;  
 		udelay(100);
 	}
 
@@ -361,20 +329,7 @@ return_zeroes:
 	return rc;
 }
 
-/**
- * efx_nic_update_stats - Convert statistics DMA buffer to array of u64
- * @desc: Array of &struct efx_hw_stat_desc describing the DMA buffer
- *	layout.  DMA widths of 0, 16, 32 and 64 are supported; where
- *	the width is specified as 0 the corresponding element of
- *	@stats is not updated.
- * @count: Length of the @desc array
- * @mask: Bitmask of which elements of @desc are enabled
- * @stats: Buffer to update with the converted statistics.  The length
- *	of this array must be at least @count.
- * @dma_buf: DMA buffer containing hardware statistics
- * @accumulate: If set, the converted values will be added rather than
- *	directly stored to the corresponding elements of @stats
- */
+ 
 void efx_nic_update_stats(const struct efx_hw_stat_desc *desc, size_t count,
 			  const unsigned long *mask,
 			  u64 *stats, const void *dma_buf, bool accumulate)
@@ -412,7 +367,7 @@ void efx_nic_update_stats(const struct efx_hw_stat_desc *desc, size_t count,
 
 void efx_nic_fix_nodesc_drop_stat(struct efx_nic *efx, u64 *rx_nodesc_drops)
 {
-	/* if down, or this is the first update after coming up */
+	 
 	if (!(efx->net_dev->flags & IFF_UP) || !efx->rx_nodesc_drops_prev_state)
 		efx->rx_nodesc_drops_while_down +=
 			*rx_nodesc_drops - efx->rx_nodesc_drops_total;

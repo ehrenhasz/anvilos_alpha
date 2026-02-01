@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM filemap
 
@@ -112,7 +112,7 @@ TRACE_EVENT(file_check_and_advance_wb_err,
 			MINOR(__entry->s_dev), __entry->i_ino, __entry->old,
 			__entry->new)
 );
-#endif /* _TRACE_FILEMAP_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

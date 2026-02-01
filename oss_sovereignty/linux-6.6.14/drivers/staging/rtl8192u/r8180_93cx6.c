@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  This files contains card eeprom (93c46 or 93c56) programming routines,
- *  memory is addressed by 16 bits words.
- *
- *  This is part of rtl8180 OpenSource driver.
- *  Copyright (C) Andrea Merello 2004  <andrea.merello@gmail.com>
- *
- *  Parts of this driver are based on the GPL part of the
- *  official realtek driver.
- *
- *  Parts of this driver are based on the rtl8180 driver skeleton
- *  from Patric Schenke & Andres Salomon.
- *
- *  Parts of this driver are based on the Intel Pro Wireless 2100 GPL driver.
- *
- *  We want to thank the Authors of those projects and the Ndiswrapper
- *  project Authors.
- */
+
+ 
 
 #include "r8180_93cx6.h"
 
@@ -29,10 +12,10 @@ static void eprom_cs(struct net_device *dev, short bit)
 	if (err)
 		return;
 	if (bit)
-		/* enable EPROM */
+		 
 		write_nic_byte_E(dev, EPROM_CMD, cmdreg | EPROM_CS_BIT);
 	else
-		/* disable EPROM */
+		 
 		write_nic_byte_E(dev, EPROM_CMD, cmdreg & ~EPROM_CS_BIT);
 
 	force_pci_posting(dev);
@@ -112,7 +95,7 @@ int eprom_read(struct net_device *dev, u32 addr)
 	int err;
 
 	ret = 0;
-	/* enable EPROM programming */
+	 
 	write_nic_byte_E(dev, EPROM_CMD,
 		       (EPROM_CMD_PROGRAM << EPROM_CMD_OPERATING_MODE_SHIFT));
 	force_pci_posting(dev);
@@ -142,16 +125,11 @@ int eprom_read(struct net_device *dev, u32 addr)
 	eprom_send_bits_string(dev, read_cmd, 3);
 	eprom_send_bits_string(dev, addr_str, addr_len);
 
-	/*
-	 * keep chip pin D to low state while reading.
-	 * I'm unsure if it is necessary, but anyway shouldn't hurt
-	 */
+	 
 	eprom_w(dev, 0);
 
 	for (i = 0; i < 16; i++) {
-		/* eeprom needs a clk cycle between writing opcode&adr
-		 * and reading data. (eeprom outs a dummy 0)
-		 */
+		 
 		eprom_ck_cycle(dev);
 		err = eprom_r(dev);
 		if (err < 0)
@@ -163,7 +141,7 @@ int eprom_read(struct net_device *dev, u32 addr)
 	eprom_cs(dev, 0);
 	eprom_ck_cycle(dev);
 
-	/* disable EPROM programming */
+	 
 	write_nic_byte_E(dev, EPROM_CMD,
 		       (EPROM_CMD_NORMAL << EPROM_CMD_OPERATING_MODE_SHIFT));
 	return ret;

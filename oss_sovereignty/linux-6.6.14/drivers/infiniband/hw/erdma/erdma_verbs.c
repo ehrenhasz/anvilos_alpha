@@ -1,13 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* Authors: Cheng Xu <chengyou@linux.alibaba.com> */
-/*          Kai Shen <kaishen@linux.alibaba.com> */
-/* Copyright (c) 2020-2022, Alibaba Group. */
 
-/* Authors: Bernard Metzler <bmt@zurich.ibm.com> */
-/* Copyright (c) 2008-2019, IBM Corporation */
+ 
+ 
+ 
 
-/* Copyright (c) 2013-2015, Mellanox Technologies. All rights reserved. */
+ 
+ 
+
+ 
 
 #include <linux/vmalloc.h>
 #include <net/addrconf.h>
@@ -614,7 +614,7 @@ static int erdma_create_mtt_buf_sg(struct erdma_dev *dev, struct erdma_mtt *mtt)
 	u32 npages, i, nsg;
 	struct page *pg;
 
-	/* Failed if buf is not page aligned */
+	 
 	if ((uintptr_t)buf & ~PAGE_MASK)
 		return -EINVAL;
 
@@ -700,7 +700,7 @@ static struct erdma_mtt *erdma_create_mtt(struct erdma_dev *dev, size_t size,
 		return mtt;
 	level = 1;
 
-	/* convergence the mtt table. */
+	 
 	while (mtt->nsg != 1 && level <= 3) {
 		tmp_mtt = erdma_create_scatter_mtt(dev, MTT_SIZE(mtt->nsg));
 		if (IS_ERR(tmp_mtt)) {
@@ -1013,7 +1013,7 @@ static int erdma_create_stag(struct erdma_dev *dev, u32 *stag)
 	if (stag_idx < 0)
 		return stag_idx;
 
-	/* For now, we always let key field be zero. */
+	 
 	*stag = (stag_idx << 8);
 
 	return 0;
@@ -1083,11 +1083,11 @@ struct ib_mr *erdma_ib_alloc_mr(struct ib_pd *ibpd, enum ib_mr_type mr_type,
 	mr->ibmr.lkey = stag;
 	mr->ibmr.rkey = stag;
 	mr->ibmr.pd = ibpd;
-	/* update it in FRMR. */
+	 
 	mr->access = ERDMA_MR_ACC_LR | ERDMA_MR_ACC_LW | ERDMA_MR_ACC_RR |
 		     ERDMA_MR_ACC_RW;
 
-	mr->mem.page_size = PAGE_SIZE; /* update it later. */
+	mr->mem.page_size = PAGE_SIZE;  
 	mr->mem.page_cnt = max_num_sg;
 	mr->mem.mtt = erdma_create_mtt(dev, MTT_SIZE(max_num_sg), true);
 	if (IS_ERR(mr->mem.mtt)) {
@@ -1327,7 +1327,7 @@ int erdma_mmap(struct ib_ucontext *ctx, struct vm_area_struct *vma)
 
 	switch (entry->mmap_flag) {
 	case ERDMA_MMAP_IO_NC:
-		/* map doorbell. */
+		 
 		prot = pgprot_device(vma->vm_page_prot);
 		break;
 	default:
@@ -1357,10 +1357,7 @@ static int alloc_db_resources(struct erdma_dev *dev, struct erdma_ucontext *ctx,
 	u64 val0, val1;
 	int ret;
 
-	/*
-	 * CAP_SYS_RAWIO is required if hardware does not support extend
-	 * doorbell mechanism.
-	 */
+	 
 	if (!ext_db_en && !capable(CAP_SYS_RAWIO))
 		return -EPERM;
 
@@ -1609,7 +1606,7 @@ static int erdma_init_kernel_cq(struct erdma_cq *cq)
 	cq->kern_cq.db_record =
 		(u64 *)(cq->kern_cq.qbuf + (cq->depth << CQE_SHIFT));
 	spin_lock_init(&cq->kern_cq.lock);
-	/* use default cqdb addr */
+	 
 	cq->kern_cq.db = dev->func_bar + ERDMA_BAR_CQDB_SPACE_OFFSET;
 
 	return 0;

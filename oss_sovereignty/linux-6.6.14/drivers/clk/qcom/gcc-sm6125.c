@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, Konrad Dybcio <konrad.dybcio@somainline.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/err.h>
@@ -4141,16 +4139,10 @@ static int gcc_sm6125_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/*
-	 * Disable the GPLL0 active input to video block via
-	 * MISC registers.
-	 */
+	 
 	regmap_update_bits(regmap, 0x80258, 0x1, 0x1);
 
-	/*
-	 * Enable DUAL_EDGE mode for MCLK RCGs
-	 * This is required to enable MND divider mode
-	 */
+	 
 	regmap_update_bits(regmap, 0x51004, 0x3000, 0x2000);
 	regmap_update_bits(regmap, 0x51020, 0x3000, 0x2000);
 	regmap_update_bits(regmap, 0x5103c, 0x3000, 0x2000);

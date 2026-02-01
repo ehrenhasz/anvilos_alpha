@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * drivers/net/macsec.c - MACsec device
- *
- * Copyright (c) 2015 Sabrina Dubroca <sd@queasysnail.net>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/skbuff.h>
@@ -25,12 +21,12 @@
 
 #include <uapi/linux/if_macsec.h>
 
-/* SecTAG length = macsec_eth_header without the optional SCI */
+ 
 #define MACSEC_TAG_LEN 6
 
 struct macsec_eth_header {
 	struct ethhdr eth;
-	/* SecTAG */
+	 
 	u8  tci_an;
 #if defined(__LITTLE_ENDIAN_BITFIELD)
 	u8  short_length:6,
@@ -42,10 +38,10 @@ struct macsec_eth_header {
 #error	"Please fix <asm/byteorder.h>"
 #endif
 	__be32 packet_number;
-	u8 secure_channel_id[8]; /* optional */
+	u8 secure_channel_id[8];  
 } __packed;
 
-/* minimum secure data length deemed "not short", see IEEE 802.1AE-2006 9.7 */
+ 
 #define MIN_NON_SHORT_LEN 48
 
 #define GCM_AES_IV_LEN 12
@@ -84,16 +80,7 @@ struct pcpu_secy_stats {
 	struct u64_stats_sync syncp;
 };
 
-/**
- * struct macsec_dev - private data
- * @secy: SecY config
- * @real_dev: pointer to underlying netdevice
- * @dev_tracker: refcount tracker for @real_dev reference
- * @stats: MACsec device stats
- * @secys: linked list of SecY's on the underlying device
- * @gro_cells: pointer to the Generic Receive Offload cell
- * @offload: status of offloading on the MACsec device
- */
+ 
 struct macsec_dev {
 	struct macsec_secy secy;
 	struct net_device *real_dev;
@@ -104,10 +91,7 @@ struct macsec_dev {
 	enum macsec_offload offload;
 };
 
-/**
- * struct macsec_rxh_data - rx_handler private argument
- * @secys: linked list of SecY's on this underlying device
- */
+ 
 struct macsec_rxh_data {
 	struct list_head secys;
 };
@@ -284,7 +268,7 @@ static unsigned int macsec_extra_len(bool sci_present)
 	return macsec_sectag_len(sci_present) + sizeof(__be16);
 }
 
-/* Fill SecTAG according to IEEE 802.1AE-2006 10.5.3 */
+ 
 static void macsec_fill_sectag(struct macsec_eth_header *h,
 			       const struct macsec_secy *secy, u32 pn,
 			       bool sci_present)
@@ -307,7 +291,7 @@ static void macsec_fill_sectag(struct macsec_eth_header *h,
 
 	h->packet_number = htonl(pn);
 
-	/* with GCM, C/E clear for !encrypt, both set for encrypt */
+	 
 	if (tx_sc->encrypt)
 		h->tci_an |= MACSEC_TCI_CONFID;
 	else if (secy->icv_len != MACSEC_DEFAULT_ICV_LEN)
@@ -322,7 +306,7 @@ static void macsec_set_shortlen(struct macsec_eth_header *h, size_t data_len)
 		h->short_length = data_len;
 }
 
-/* Checks if a MACsec interface is being offloaded to an hardware engine */
+ 
 static bool macsec_is_offloaded(struct macsec_dev *macsec)
 {
 	if (macsec->offload == MACSEC_OFFLOAD_MAC ||
@@ -332,7 +316,7 @@ static bool macsec_is_offloaded(struct macsec_dev *macsec)
 	return false;
 }
 
-/* Checks if underlying layers implement MACsec offloading functions. */
+ 
 static bool macsec_check_offload(enum macsec_offload offload,
 				 struct macsec_dev *macsec)
 {
@@ -369,9 +353,7 @@ static const struct macsec_ops *__macsec_get_ops(enum macsec_offload offload,
 		return macsec->real_dev->macsec_ops;
 }
 
-/* Returns a pointer to the MACsec ops struct if any and updates the MACsec
- * context device reference if provided.
- */
+ 
 static const struct macsec_ops *macsec_get_ops(struct macsec_dev *macsec,
 					       struct macsec_context *ctx)
 {
@@ -381,37 +363,37 @@ static const struct macsec_ops *macsec_get_ops(struct macsec_dev *macsec,
 	return __macsec_get_ops(macsec->offload, macsec, ctx);
 }
 
-/* validate MACsec packet according to IEEE 802.1AE-2018 9.12 */
+ 
 static bool macsec_validate_skb(struct sk_buff *skb, u16 icv_len, bool xpn)
 {
 	struct macsec_eth_header *h = (struct macsec_eth_header *)skb->data;
 	int len = skb->len - 2 * ETH_ALEN;
 	int extra_len = macsec_extra_len(!!(h->tci_an & MACSEC_TCI_SC)) + icv_len;
 
-	/* a) It comprises at least 17 octets */
+	 
 	if (skb->len <= 16)
 		return false;
 
-	/* b) MACsec EtherType: already checked */
+	 
 
-	/* c) V bit is clear */
+	 
 	if (h->tci_an & MACSEC_TCI_VERSION)
 		return false;
 
-	/* d) ES or SCB => !SC */
+	 
 	if ((h->tci_an & MACSEC_TCI_ES || h->tci_an & MACSEC_TCI_SCB) &&
 	    (h->tci_an & MACSEC_TCI_SC))
 		return false;
 
-	/* e) Bits 7 and 8 of octet 4 of the SecTAG are clear */
+	 
 	if (h->unused)
 		return false;
 
-	/* rx.pn != 0 if not XPN (figure 10-5 with 802.11AEbw-2013 amendment) */
+	 
 	if (!h->packet_number && !xpn)
 		return false;
 
-	/* length check, f) g) h) i) */
+	 
 	if (h->short_length)
 		return len == extra_len + h->short_length;
 	return len >= extra_len + MIN_NON_SHORT_LEN;
@@ -534,7 +516,7 @@ static void macsec_encrypt_done(void *data, int err)
 
 	rcu_read_lock_bh();
 	macsec_count_tx(skb, &macsec->secy.tx_sc, macsec_skb_cb(skb)->tx_sa);
-	/* packet is encrypted/protected so tx_bytes must be calculated */
+	 
 	len = macsec_msdu_len(skb) + 2 * ETH_ALEN;
 	macsec_encrypt_finish(skb, dev);
 	ret = dev_queue_xmit(skb);
@@ -596,7 +578,7 @@ static struct sk_buff *macsec_encrypt(struct sk_buff *skb,
 	secy = &macsec->secy;
 	tx_sc = &secy->tx_sc;
 
-	/* 10.5.1 TX SA assignment */
+	 
 	tx_sa = macsec_txsa_get(tx_sc->sa[tx_sc->encoding_sa]);
 	if (!tx_sa) {
 		secy->operational = false;
@@ -728,9 +710,7 @@ static bool macsec_post_decrypt(struct sk_buff *skb, struct macsec_secy *secy, u
 	if (rx_sa->next_pn_halves.lower >= secy->replay_window)
 		lowest_pn = rx_sa->next_pn_halves.lower - secy->replay_window;
 
-	/* Now perform replay protection check again
-	 * (see IEEE 802.1AE-2006 figure 10-5)
-	 */
+	 
 	if (secy->replay_protect && pn < lowest_pn &&
 	    (!secy->xpn || pn_same_half(pn, lowest_pn))) {
 		spin_unlock(&rx_sa->lock);
@@ -754,7 +734,7 @@ static bool macsec_post_decrypt(struct sk_buff *skb, struct macsec_secy *secy, u
 	if (!macsec_skb_cb(skb)->valid) {
 		spin_unlock(&rx_sa->lock);
 
-		/* 10.6.5 */
+		 
 		if (hdr->tci_an & MACSEC_TCI_C ||
 		    secy->validate_frames == MACSEC_VALIDATE_STRICT) {
 			u64_stats_update_begin(&rxsc_stats->syncp);
@@ -785,7 +765,7 @@ static bool macsec_post_decrypt(struct sk_buff *skb, struct macsec_secy *secy, u
 		}
 		u64_stats_update_end(&rxsc_stats->syncp);
 
-		// Instead of "pn >=" - to support pn overflow in xpn
+		
 		if (pn + 1 > rx_sa->next_pn_halves.lower) {
 			rx_sa->next_pn_halves.lower = pn + 1;
 		} else if (secy->xpn &&
@@ -920,9 +900,7 @@ static struct sk_buff *macsec_decrypt(struct sk_buff *skb,
 	}
 
 	if (hdr->tci_an & MACSEC_TCI_E) {
-		/* confidentiality: ethernet + macsec header
-		 * authenticated, encrypted payload
-		 */
+		 
 		int len = skb->len - macsec_hdr_len(macsec_skb_cb(skb)->has_sci);
 
 		aead_request_set_crypt(req, sg, sg, len, iv);
@@ -933,7 +911,7 @@ static struct sk_buff *macsec_decrypt(struct sk_buff *skb,
 			return ERR_PTR(-ENOMEM);
 		}
 	} else {
-		/* integrity only: all headers + data authenticated */
+		 
 		aead_request_set_crypt(req, sg, sg, icv_len, iv);
 		aead_request_set_ad(req, skb->len - icv_len);
 	}
@@ -947,9 +925,7 @@ static struct sk_buff *macsec_decrypt(struct sk_buff *skb,
 	if (ret == -EINPROGRESS) {
 		return ERR_PTR(ret);
 	} else if (ret != 0) {
-		/* decryption/authentication failed
-		 * 10.6 if validateFrames is disabled, deliver anyway
-		 */
+		 
 		if (ret != -EBADMSG) {
 			kfree_skb(skb);
 			skb = ERR_PTR(ret);
@@ -990,7 +966,7 @@ static struct macsec_rx_sc *find_rx_sc_rtnl(struct macsec_secy *secy, sci_t sci)
 
 static enum rx_handler_result handle_not_macsec(struct sk_buff *skb)
 {
-	/* Deliver to the uncontrolled port by default */
+	 
 	enum rx_handler_result ret = RX_HANDLER_PASS;
 	struct ethhdr *hdr = eth_hdr(skb);
 	struct metadata_dst *md_dst;
@@ -1006,9 +982,7 @@ static enum rx_handler_result handle_not_macsec(struct sk_buff *skb)
 		struct pcpu_secy_stats *secy_stats = this_cpu_ptr(macsec->stats);
 		struct net_device *ndev = macsec->secy.netdev;
 
-		/* If h/w offloading is enabled, HW decodes frames and strips
-		 * the SecTAG, so we have to deduce which port to deliver to.
-		 */
+		 
 		if (macsec_is_offloaded(macsec) && netif_running(ndev)) {
 			struct macsec_rx_sc *rx_sc = NULL;
 
@@ -1020,14 +994,14 @@ static enum rx_handler_result handle_not_macsec(struct sk_buff *skb)
 
 			if (ether_addr_equal_64bits(hdr->h_dest,
 						    ndev->dev_addr)) {
-				/* exact match, divert skb to this port */
+				 
 				skb->dev = ndev;
 				skb->pkt_type = PACKET_HOST;
 				ret = RX_HANDLER_ANOTHER;
 				goto out;
 			} else if (is_multicast_ether_addr_64bits(
 					   hdr->h_dest)) {
-				/* multicast frame, deliver on this port too */
+				 
 				nskb = skb_clone(skb, GFP_ATOMIC);
 				if (!nskb)
 					break;
@@ -1050,10 +1024,7 @@ static enum rx_handler_result handle_not_macsec(struct sk_buff *skb)
 			continue;
 		}
 
-		/* 10.6 If the management control validateFrames is not
-		 * Strict, frames without a SecTAG are received, counted, and
-		 * delivered to the Controlled Port
-		 */
+		 
 		if (macsec->secy.validate_frames == MACSEC_VALIDATE_STRICT) {
 			u64_stats_update_begin(&secy_stats->syncp);
 			secy_stats->stats.InPktsNoTag++;
@@ -1062,7 +1033,7 @@ static enum rx_handler_result handle_not_macsec(struct sk_buff *skb)
 			continue;
 		}
 
-		/* deliver on this port */
+		 
 		nskb = skb_clone(skb, GFP_ATOMIC);
 		if (!nskb)
 			break;
@@ -1120,21 +1091,17 @@ static rx_handler_result_t macsec_handle_frame(struct sk_buff **pskb)
 
 	hdr = macsec_ethhdr(skb);
 
-	/* Frames with a SecTAG that has the TCI E bit set but the C
-	 * bit clear are discarded, as this reserved encoding is used
-	 * to identify frames with a SecTAG that are not to be
-	 * delivered to the Controlled Port.
-	 */
+	 
 	if ((hdr->tci_an & (MACSEC_TCI_C | MACSEC_TCI_E)) == MACSEC_TCI_E)
 		return RX_HANDLER_PASS;
 
-	/* now, pull the extra length */
+	 
 	if (hdr->tci_an & MACSEC_TCI_SC) {
 		if (!pulled_sci)
 			goto drop_direct;
 	}
 
-	/* ethernet header is part of crypto processing */
+	 
 	skb_push(skb, ETH_HLEN);
 
 	macsec_skb_cb(skb)->has_sci = !!(hdr->tci_an & MACSEC_TCI_SC);
@@ -1174,11 +1141,9 @@ static rx_handler_result_t macsec_handle_frame(struct sk_buff **pskb)
 
 	rx_sa = macsec_rxsa_get(rx_sc->sa[macsec_skb_cb(skb)->assoc_num]);
 	if (!rx_sa) {
-		/* 10.6.1 if the SA is not in use */
+		 
 
-		/* If validateFrames is Strict or the C bit in the
-		 * SecTAG is set, discard
-		 */
+		 
 		struct macsec_rx_sa *active_rx_sa = macsec_active_rxsa_get(rx_sc);
 		if (hdr->tci_an & MACSEC_TCI_C ||
 		    secy->validate_frames == MACSEC_VALIDATE_STRICT) {
@@ -1191,9 +1156,7 @@ static rx_handler_result_t macsec_handle_frame(struct sk_buff **pskb)
 			goto drop_nosa;
 		}
 
-		/* not Strict, the frame (with the SecTAG and ICV
-		 * removed) is delivered to the Controlled Port.
-		 */
+		 
 		u64_stats_update_begin(&rxsc_stats->syncp);
 		rxsc_stats->stats.InPktsUnusedSA++;
 		u64_stats_update_end(&rxsc_stats->syncp);
@@ -1202,7 +1165,7 @@ static rx_handler_result_t macsec_handle_frame(struct sk_buff **pskb)
 		goto deliver;
 	}
 
-	/* First, PN check to avoid decrypting obviously wrong packets */
+	 
 	hdr_pn = ntohl(hdr->packet_number);
 	if (secy->replay_protect) {
 		bool late;
@@ -1226,13 +1189,13 @@ static rx_handler_result_t macsec_handle_frame(struct sk_buff **pskb)
 
 	macsec_skb_cb(skb)->rx_sa = rx_sa;
 
-	/* Disabled && !changed text => skip validation */
+	 
 	if (hdr->tci_an & MACSEC_TCI_C ||
 	    secy->validate_frames != MACSEC_VALIDATE_DISABLED)
 		skb = macsec_decrypt(skb, dev, rx_sa, sci, secy);
 
 	if (IS_ERR(skb)) {
-		/* the decrypt callback needs the reference */
+		 
 		if (PTR_ERR(skb) != -EINPROGRESS) {
 			macsec_rxsa_put(rx_sa);
 			macsec_rxsc_put(rx_sc);
@@ -1278,7 +1241,7 @@ drop_direct:
 	return RX_HANDLER_CONSUMED;
 
 nosci:
-	/* 10.6.1 if the SC is not found */
+	 
 	cbit = !!(hdr->tci_an & MACSEC_TCI_C);
 	if (!cbit)
 		macsec_finalize_skb(skb, MACSEC_DEFAULT_ICV_LEN,
@@ -1289,9 +1252,7 @@ nosci:
 
 		secy_stats = this_cpu_ptr(macsec->stats);
 
-		/* If validateFrames is Strict or the C bit in the
-		 * SecTAG is set, discard
-		 */
+		 
 		if (cbit ||
 		    macsec->secy.validate_frames == MACSEC_VALIDATE_STRICT) {
 			u64_stats_update_begin(&secy_stats->syncp);
@@ -1301,9 +1262,7 @@ nosci:
 			continue;
 		}
 
-		/* not strict, the frame (with the SecTAG and ICV
-		 * removed) is delivered to the Controlled Port.
-		 */
+		 
 		nskb = skb_clone(skb, GFP_ATOMIC);
 		if (!nskb)
 			break;
@@ -1650,7 +1609,7 @@ static const struct nla_policy macsec_genl_offload_policy[NUM_MACSEC_OFFLOAD_ATT
 	[MACSEC_OFFLOAD_ATTR_TYPE] = { .type = NLA_U8 },
 };
 
-/* Offloads an operation to a device driver */
+ 
 static int macsec_offload(int (* const func)(struct macsec_context *),
 			  struct macsec_context *ctx)
 {
@@ -1819,7 +1778,7 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
 			   MACSEC_SALT_LEN);
 	}
 
-	/* If h/w offloading is available, propagate to the device */
+	 
 	if (macsec_is_offloaded(netdev_priv(dev))) {
 		const struct macsec_ops *ops;
 		struct macsec_context ctx;
@@ -2062,7 +2021,7 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
 			   MACSEC_SALT_LEN);
 	}
 
-	/* If h/w offloading is available, propagate to the device */
+	 
 	if (macsec_is_offloaded(netdev_priv(dev))) {
 		const struct macsec_ops *ops;
 		struct macsec_context ctx;
@@ -2133,7 +2092,7 @@ static int macsec_del_rxsa(struct sk_buff *skb, struct genl_info *info)
 		return -EBUSY;
 	}
 
-	/* If h/w offloading is available, propagate to the device */
+	 
 	if (macsec_is_offloaded(netdev_priv(dev))) {
 		const struct macsec_ops *ops;
 		struct macsec_context ctx;
@@ -2200,7 +2159,7 @@ static int macsec_del_rxsc(struct sk_buff *skb, struct genl_info *info)
 		return -ENODEV;
 	}
 
-	/* If h/w offloading is available, propagate to the device */
+	 
 	if (macsec_is_offloaded(netdev_priv(dev))) {
 		const struct macsec_ops *ops;
 		struct macsec_context ctx;
@@ -2258,7 +2217,7 @@ static int macsec_del_txsa(struct sk_buff *skb, struct genl_info *info)
 		return -EBUSY;
 	}
 
-	/* If h/w offloading is available, propagate to the device */
+	 
 	if (macsec_is_offloaded(netdev_priv(dev))) {
 		const struct macsec_ops *ops;
 		struct macsec_context ctx;
@@ -2370,7 +2329,7 @@ static int macsec_upd_txsa(struct sk_buff *skb, struct genl_info *info)
 	if (assoc_num == tx_sc->encoding_sa)
 		secy->operational = tx_sa->active;
 
-	/* If h/w offloading is available, propagate to the device */
+	 
 	if (macsec_is_offloaded(netdev_priv(dev))) {
 		const struct macsec_ops *ops;
 		struct macsec_context ctx;
@@ -2464,7 +2423,7 @@ static int macsec_upd_rxsa(struct sk_buff *skb, struct genl_info *info)
 	if (tb_sa[MACSEC_SA_ATTR_ACTIVE])
 		rx_sa->active = nla_get_u8(tb_sa[MACSEC_SA_ATTR_ACTIVE]);
 
-	/* If h/w offloading is available, propagate to the device */
+	 
 	if (macsec_is_offloaded(netdev_priv(dev))) {
 		const struct macsec_ops *ops;
 		struct macsec_context ctx;
@@ -2537,7 +2496,7 @@ static int macsec_upd_rxsc(struct sk_buff *skb, struct genl_info *info)
 		rx_sc->active = new;
 	}
 
-	/* If h/w offloading is available, propagate to the device */
+	 
 	if (macsec_is_offloaded(netdev_priv(dev))) {
 		const struct macsec_ops *ops;
 		struct macsec_context ctx;
@@ -2593,18 +2552,16 @@ static int macsec_update_offload(struct net_device *dev, enum macsec_offload off
 
 	macsec = macsec_priv(dev);
 
-	/* Check if the offloading mode is supported by the underlying layers */
+	 
 	if (offload != MACSEC_OFFLOAD_OFF &&
 	    !macsec_check_offload(offload, macsec))
 		return -EOPNOTSUPP;
 
-	/* Check if the net device is busy. */
+	 
 	if (netif_running(dev))
 		return -EBUSY;
 
-	/* Check if the device already has rules configured: we do not support
-	 * rules migration.
-	 */
+	 
 	if (macsec_is_configured(macsec))
 		return -EBUSY;
 
@@ -2676,7 +2633,7 @@ static void get_tx_sa_stats(struct net_device *dev, int an,
 	struct macsec_dev *macsec = macsec_priv(dev);
 	int cpu;
 
-	/* If h/w offloading is available, propagate to the device */
+	 
 	if (macsec_is_offloaded(macsec)) {
 		const struct macsec_ops *ops;
 		struct macsec_context ctx;
@@ -2720,7 +2677,7 @@ static void get_rx_sa_stats(struct net_device *dev,
 	struct macsec_dev *macsec = macsec_priv(dev);
 	int cpu;
 
-	/* If h/w offloading is available, propagate to the device */
+	 
 	if (macsec_is_offloaded(macsec)) {
 		const struct macsec_ops *ops;
 		struct macsec_context ctx;
@@ -2773,7 +2730,7 @@ static void get_rx_sc_stats(struct net_device *dev,
 	struct macsec_dev *macsec = macsec_priv(dev);
 	int cpu;
 
-	/* If h/w offloading is available, propagate to the device */
+	 
 	if (macsec_is_offloaded(macsec)) {
 		const struct macsec_ops *ops;
 		struct macsec_context ctx;
@@ -2855,7 +2812,7 @@ static void get_tx_sc_stats(struct net_device *dev,
 	struct macsec_dev *macsec = macsec_priv(dev);
 	int cpu;
 
-	/* If h/w offloading is available, propagate to the device */
+	 
 	if (macsec_is_offloaded(macsec)) {
 		const struct macsec_ops *ops;
 		struct macsec_context ctx;
@@ -2911,7 +2868,7 @@ static void get_secy_stats(struct net_device *dev, struct macsec_dev_stats *sum)
 	struct macsec_dev *macsec = macsec_priv(dev);
 	int cpu;
 
-	/* If h/w offloading is available, propagate to the device */
+	 
 	if (macsec_is_offloaded(macsec)) {
 		const struct macsec_ops *ops;
 		struct macsec_context ctx;
@@ -3261,7 +3218,7 @@ nla_put_failure:
 	return -EMSGSIZE;
 }
 
-static int macsec_generation = 1; /* protected by RTNL */
+static int macsec_generation = 1;  
 
 static int macsec_dump_txsc(struct sk_buff *skb, struct netlink_callback *cb)
 {
@@ -3397,7 +3354,7 @@ static netdev_tx_t macsec_start_xmit(struct sk_buff *skb,
 		return dev_queue_xmit(skb);
 	}
 
-	/* 10.5 */
+	 
 	if (!secy->protect_frames) {
 		secy_stats = this_cpu_ptr(macsec->stats);
 		u64_stats_update_begin(&secy_stats->syncp);
@@ -3464,7 +3421,7 @@ static int macsec_dev_init(struct net_device *dev)
 	if (is_zero_ether_addr(dev->broadcast))
 		memcpy(dev->broadcast, real_dev->broadcast, dev->addr_len);
 
-	/* Get macsec's reference to real_dev */
+	 
 	netdev_hold(real_dev, &macsec->dev_tracker, GFP_KERNEL);
 
 	return 0;
@@ -3513,7 +3470,7 @@ static int macsec_dev_open(struct net_device *dev)
 			goto clear_allmulti;
 	}
 
-	/* If h/w offloading is available, propagate to the device */
+	 
 	if (macsec_is_offloaded(macsec)) {
 		const struct macsec_ops *ops;
 		struct macsec_context ctx;
@@ -3550,7 +3507,7 @@ static int macsec_dev_stop(struct net_device *dev)
 
 	netif_carrier_off(dev);
 
-	/* If h/w offloading is available, propagate to the device */
+	 
 	if (macsec_is_offloaded(macsec)) {
 		const struct macsec_ops *ops;
 		struct macsec_context ctx;
@@ -3621,7 +3578,7 @@ static int macsec_set_mac_address(struct net_device *dev, void *p)
 out:
 	eth_hw_addr_set(dev, addr->sa_data);
 
-	/* If h/w offloading is available, propagate to the device */
+	 
 	if (macsec_is_offloaded(macsec)) {
 		const struct macsec_ops *ops;
 		struct macsec_context ctx;
@@ -3712,7 +3669,7 @@ static void macsec_free_netdev(struct net_device *dev)
 	free_percpu(macsec->stats);
 	free_percpu(macsec->secy.tx_sc.stats);
 
-	/* Get rid of the macsec's reference to real_dev */
+	 
 	netdev_put(macsec->real_dev, &macsec->dev_tracker);
 }
 
@@ -3796,8 +3753,7 @@ static int macsec_changelink_common(struct net_device *dev,
 	if (data[IFLA_MACSEC_WINDOW]) {
 		secy->replay_window = nla_get_u32(data[IFLA_MACSEC_WINDOW]);
 
-		/* IEEE 802.1AEbw-2013 10.7.8 - maximum replay window
-		 * for XPN cipher suites */
+		 
 		if (secy->xpn &&
 		    secy->replay_window > MACSEC_XPN_MAX_REPLAY_WINDOW)
 			return -EINVAL;
@@ -3826,9 +3782,7 @@ static int macsec_changelink(struct net_device *dev, struct nlattr *tb[],
 	    data[IFLA_MACSEC_PORT])
 		return -EINVAL;
 
-	/* Keep a copy of unmodified secy and tx_sc, in case the offload
-	 * propagation fails, to revert macsec_changelink_common.
-	 */
+	 
 	memcpy(&secy, &macsec->secy, sizeof(secy));
 	memcpy(&tx_sc, &macsec->secy.tx_sc, sizeof(tx_sc));
 
@@ -3846,7 +3800,7 @@ static int macsec_changelink(struct net_device *dev, struct nlattr *tb[],
 		}
 	}
 
-	/* If h/w offloading is available, propagate to the device */
+	 
 	if (!macsec_offload_state_change && macsec_is_offloaded(macsec)) {
 		const struct macsec_ops *ops;
 		struct macsec_context ctx;
@@ -3898,7 +3852,7 @@ static void macsec_common_dellink(struct net_device *dev, struct list_head *head
 	struct macsec_dev *macsec = macsec_priv(dev);
 	struct net_device *real_dev = macsec->real_dev;
 
-	/* If h/w offloading is available, propagate to the device */
+	 
 	if (macsec_is_offloaded(macsec)) {
 		const struct macsec_ops *ops;
 		struct macsec_context ctx;
@@ -3992,9 +3946,7 @@ static int macsec_add_dev(struct net_device *dev, sci_t sci, u8 icv_len)
 
 	secy->tx_sc.md_dst = metadata_dst_alloc(0, METADATA_MACSEC, GFP_KERNEL);
 	if (!secy->tx_sc.md_dst)
-		/* macsec and secy percpu stats will be freed when unregistering
-		 * net_device in macsec_free_netdev()
-		 */
+		 
 		return -ENOMEM;
 
 	if (sci == MACSEC_UNDEF_SCI)
@@ -4049,15 +4001,15 @@ static int macsec_newlink(struct net *net, struct net_device *dev,
 	if (data && data[IFLA_MACSEC_OFFLOAD])
 		macsec->offload = nla_get_offload(data[IFLA_MACSEC_OFFLOAD]);
 	else
-		/* MACsec offloading is off by default */
+		 
 		macsec->offload = MACSEC_OFFLOAD_OFF;
 
-	/* Check if the offloading mode is supported by the underlying layers */
+	 
 	if (macsec->offload != MACSEC_OFFLOAD_OFF &&
 	    !macsec_check_offload(macsec->offload, macsec))
 		return -EOPNOTSUPP;
 
-	/* send_sci must be set to true when transmit sci explicitly is set */
+	 
 	if ((data && data[IFLA_MACSEC_SCI]) &&
 	    (data && data[IFLA_MACSEC_INC_SCI])) {
 		u8 send_sci = !!nla_get_u8(data[IFLA_MACSEC_INC_SCI]);
@@ -4090,9 +4042,7 @@ static int macsec_newlink(struct net *net, struct net_device *dev,
 	if (err < 0)
 		goto unregister;
 
-	/* need to be already registered so that ->init has run and
-	 * the MAC addr is set
-	 */
+	 
 	if (data && data[IFLA_MACSEC_SCI])
 		sci = nla_get_sci(data[IFLA_MACSEC_SCI]);
 	else if (data && data[IFLA_MACSEC_PORT])
@@ -4115,7 +4065,7 @@ static int macsec_newlink(struct net *net, struct net_device *dev,
 			goto del_dev;
 	}
 
-	/* If h/w offloading is available, propagate to the device */
+	 
 	if (macsec_is_offloaded(macsec)) {
 		const struct macsec_ops *ops;
 		struct macsec_context ctx;
@@ -4244,19 +4194,19 @@ EXPORT_SYMBOL_GPL(macsec_netdev_is_offloaded);
 
 static size_t macsec_get_size(const struct net_device *dev)
 {
-	return  nla_total_size_64bit(8) + /* IFLA_MACSEC_SCI */
-		nla_total_size(1) + /* IFLA_MACSEC_ICV_LEN */
-		nla_total_size_64bit(8) + /* IFLA_MACSEC_CIPHER_SUITE */
-		nla_total_size(4) + /* IFLA_MACSEC_WINDOW */
-		nla_total_size(1) + /* IFLA_MACSEC_ENCODING_SA */
-		nla_total_size(1) + /* IFLA_MACSEC_ENCRYPT */
-		nla_total_size(1) + /* IFLA_MACSEC_PROTECT */
-		nla_total_size(1) + /* IFLA_MACSEC_INC_SCI */
-		nla_total_size(1) + /* IFLA_MACSEC_ES */
-		nla_total_size(1) + /* IFLA_MACSEC_SCB */
-		nla_total_size(1) + /* IFLA_MACSEC_REPLAY_PROTECT */
-		nla_total_size(1) + /* IFLA_MACSEC_VALIDATION */
-		nla_total_size(1) + /* IFLA_MACSEC_OFFLOAD */
+	return  nla_total_size_64bit(8) +  
+		nla_total_size(1) +  
+		nla_total_size_64bit(8) +  
+		nla_total_size(4) +  
+		nla_total_size(1) +  
+		nla_total_size(1) +  
+		nla_total_size(1) +  
+		nla_total_size(1) +  
+		nla_total_size(1) +  
+		nla_total_size(1) +  
+		nla_total_size(1) +  
+		nla_total_size(1) +  
+		nla_total_size(1) +  
 		0;
 }
 

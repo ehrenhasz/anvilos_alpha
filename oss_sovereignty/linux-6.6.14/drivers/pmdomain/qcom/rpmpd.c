@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2017-2018, The Linux Foundation. All rights reserved. */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -16,8 +16,7 @@
 
 #define domain_to_rpmpd(domain) container_of(domain, struct rpmpd, pd)
 
-/* Resource types:
- * RPMPD_X is X encoded as a little-endian, lower-case, ASCII string */
+ 
 #define RPMPD_SMPA 0x61706d73
 #define RPMPD_LDOA 0x616f646c
 #define RPMPD_SMPB 0x62706d73
@@ -30,12 +29,12 @@
 #define RPMPD_RWSM 0x6d737772
 #define RPMPD_RWGX 0x78677772
 
-/* Operation Keys */
-#define KEY_CORNER		0x6e726f63 /* corn */
-#define KEY_ENABLE		0x6e657773 /* swen */
-#define KEY_FLOOR_CORNER	0x636676   /* vfc */
-#define KEY_FLOOR_LEVEL		0x6c6676   /* vfl */
-#define KEY_LEVEL		0x6c766c76 /* vlvl */
+ 
+#define KEY_CORNER		0x6e726f63  
+#define KEY_ENABLE		0x6e657773  
+#define KEY_FLOOR_CORNER	0x636676    
+#define KEY_FLOOR_LEVEL		0x6c6676    
+#define KEY_LEVEL		0x6c766c76  
 
 #define MAX_CORNER_RPMPD_STATE	6
 
@@ -68,7 +67,7 @@ struct rpmpd_desc {
 
 static DEFINE_MUTEX(rpmpd_lock);
 
-/* CX */
+ 
 static struct rpmpd cx_rwcx0_lvl_ao;
 static struct rpmpd cx_rwcx0_lvl = {
 	.pd = { .name = "cx", },
@@ -201,7 +200,7 @@ static struct rpmpd cx_s3a_vfl = {
 	.key = KEY_FLOOR_LEVEL,
 };
 
-/* G(F)X */
+ 
 static struct rpmpd gfx_s2b_corner = {
 	.pd = { .name = "gfx", },
 	.res_type = RPMPD_SMPB,
@@ -238,7 +237,7 @@ static struct rpmpd gx_rwgx0_lvl_ao = {
 	.key = KEY_LEVEL,
 };
 
-/* MX */
+ 
 static struct rpmpd mx_l3a_corner_ao;
 static struct rpmpd mx_l3a_corner = {
 	.pd = { .name = "mx", },
@@ -368,7 +367,7 @@ static struct rpmpd mx_rwsm6_vfl = {
 	.key = KEY_FLOOR_LEVEL,
 };
 
-/* MD */
+ 
 static struct rpmpd md_s1a_corner_ao;
 static struct rpmpd md_s1a_corner = {
 	.pd = { .name = "md", },
@@ -412,7 +411,7 @@ static struct rpmpd md_s1a_vfc = {
 	.key = KEY_FLOOR_CORNER,
 };
 
-/* LPI_CX */
+ 
 static struct rpmpd lpi_cx_rwlc0_lvl = {
 	.pd = { .name = "lpi_cx", },
 	.res_type = RPMPD_RWLC,
@@ -427,7 +426,7 @@ static struct rpmpd lpi_cx_rwlc0_vfl = {
 	.key = KEY_FLOOR_LEVEL,
 };
 
-/* LPI_MX */
+ 
 static struct rpmpd lpi_mx_rwlm0_lvl = {
 	.pd = { .name = "lpi_mx", },
 	.res_type = RPMPD_RWLM,
@@ -442,7 +441,7 @@ static struct rpmpd lpi_mx_rwlm0_vfl = {
 	.key = KEY_FLOOR_LEVEL,
 };
 
-/* SSC_CX */
+ 
 static struct rpmpd ssc_cx_l26a_corner = {
 	.pd = { .name = "ssc_cx", },
 	.res_type = RPMPD_LDOA,
@@ -485,7 +484,7 @@ static struct rpmpd ssc_cx_rwsc0_vfl = {
 	.key = KEY_FLOOR_LEVEL,
 };
 
-/* SSC_MX */
+ 
 static struct rpmpd ssc_mx_rwlm0_lvl = {
 	.pd = { .name = "ssc_mx", },
 	.res_type = RPMPD_RWLM,
@@ -610,7 +609,7 @@ static struct rpmpd *msm8994_rpmpds[] = {
 	[MSM8994_VDDMX] =	&mx_s2a_corner,
 	[MSM8994_VDDMX_AO] =	&mx_s2a_corner_ao,
 
-	/* Attention! *Some* 8994 boards with pm8004 may use SMPC here! */
+	 
 	[MSM8994_VDDGFX] =	&gfx_s2b_corner,
 	[MSM8994_VDDGFX_VFC] =	&gfx_s2b_vfc,
 };
@@ -823,7 +822,7 @@ static int rpmpd_aggregate_corner(struct rpmpd *pd)
 	unsigned int this_active_corner = 0, this_sleep_corner = 0;
 	unsigned int peer_active_corner = 0, peer_sleep_corner = 0;
 
-	/* Clamp to the highest corner/level if sync_state isn't done yet */
+	 
 	if (!pd->state_synced)
 		this_active_corner = this_sleep_corner = pd->max_state - 1;
 	else
@@ -895,7 +894,7 @@ static int rpmpd_set_performance(struct generic_pm_domain *domain,
 
 	pd->corner = state;
 
-	/* Always send updates for vfc and vfl */
+	 
 	if (!pd->enabled && pd->key != cpu_to_le32(KEY_FLOOR_CORNER) &&
 	    pd->key != cpu_to_le32(KEY_FLOOR_LEVEL))
 		goto out;
@@ -965,7 +964,7 @@ static int rpmpd_probe(struct platform_device *pdev)
 		data->domains[i] = &rpmpds[i]->pd;
 	}
 
-	/* Add subdomains */
+	 
 	for (i = 0; i < num; i++) {
 		if (!rpmpds[i])
 			continue;

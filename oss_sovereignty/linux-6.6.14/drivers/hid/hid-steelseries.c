@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  HID driver for Steelseries devices
- *
- *  Copyright (c) 2013 Simon Wood
- *  Copyright (c) 2023 Bastien Nocera
- */
 
-/*
- */
+ 
+
+ 
 
 #include <linux/device.h>
 #include <linux/hid.h>
@@ -39,89 +33,84 @@ struct steelseries_device {
 #define SRWS1_NUMBER_LEDS 15
 struct steelseries_srws1_data {
 	__u16 led_state;
-	/* the last element is used for setting all leds simultaneously */
+	 
 	struct led_classdev *led[SRWS1_NUMBER_LEDS + 1];
 };
 #endif
 
-/* Fixed report descriptor for Steelseries SRW-S1 wheel controller
- *
- * The original descriptor hides the sensitivity and assists dials
- * a custom vendor usage page. This inserts a patch to make them
- * appear in the 'Generic Desktop' usage.
- */
+ 
 
 static __u8 steelseries_srws1_rdesc_fixed[] = {
-0x05, 0x01,         /*  Usage Page (Desktop)                */
-0x09, 0x08,         /*  Usage (MultiAxis), Changed          */
-0xA1, 0x01,         /*  Collection (Application),           */
-0xA1, 0x02,         /*      Collection (Logical),           */
-0x95, 0x01,         /*          Report Count (1),           */
-0x05, 0x01,         /* Changed  Usage Page (Desktop),       */
-0x09, 0x30,         /* Changed  Usage (X),                  */
-0x16, 0xF8, 0xF8,   /*          Logical Minimum (-1800),    */
-0x26, 0x08, 0x07,   /*          Logical Maximum (1800),     */
-0x65, 0x14,         /*          Unit (Degrees),             */
-0x55, 0x0F,         /*          Unit Exponent (15),         */
-0x75, 0x10,         /*          Report Size (16),           */
-0x81, 0x02,         /*          Input (Variable),           */
-0x09, 0x31,         /* Changed  Usage (Y),                  */
-0x15, 0x00,         /*          Logical Minimum (0),        */
-0x26, 0xFF, 0x03,   /*          Logical Maximum (1023),     */
-0x75, 0x0C,         /*          Report Size (12),           */
-0x81, 0x02,         /*          Input (Variable),           */
-0x09, 0x32,         /* Changed  Usage (Z),                  */
-0x15, 0x00,         /*          Logical Minimum (0),        */
-0x26, 0xFF, 0x03,   /*          Logical Maximum (1023),     */
-0x75, 0x0C,         /*          Report Size (12),           */
-0x81, 0x02,         /*          Input (Variable),           */
-0x05, 0x01,         /*          Usage Page (Desktop),       */
-0x09, 0x39,         /*          Usage (Hat Switch),         */
-0x25, 0x07,         /*          Logical Maximum (7),        */
-0x35, 0x00,         /*          Physical Minimum (0),       */
-0x46, 0x3B, 0x01,   /*          Physical Maximum (315),     */
-0x65, 0x14,         /*          Unit (Degrees),             */
-0x75, 0x04,         /*          Report Size (4),            */
-0x95, 0x01,         /*          Report Count (1),           */
-0x81, 0x02,         /*          Input (Variable),           */
-0x25, 0x01,         /*          Logical Maximum (1),        */
-0x45, 0x01,         /*          Physical Maximum (1),       */
-0x65, 0x00,         /*          Unit,                       */
-0x75, 0x01,         /*          Report Size (1),            */
-0x95, 0x03,         /*          Report Count (3),           */
-0x81, 0x01,         /*          Input (Constant),           */
-0x05, 0x09,         /*          Usage Page (Button),        */
-0x19, 0x01,         /*          Usage Minimum (01h),        */
-0x29, 0x11,         /*          Usage Maximum (11h),        */
-0x95, 0x11,         /*          Report Count (17),          */
-0x81, 0x02,         /*          Input (Variable),           */
-                    /*   ---- Dial patch starts here ----   */
-0x05, 0x01,         /*          Usage Page (Desktop),       */
-0x09, 0x33,         /*          Usage (RX),                 */
-0x75, 0x04,         /*          Report Size (4),            */
-0x95, 0x02,         /*          Report Count (2),           */
-0x15, 0x00,         /*          Logical Minimum (0),        */
-0x25, 0x0b,         /*          Logical Maximum (b),        */
-0x81, 0x02,         /*          Input (Variable),           */
-0x09, 0x35,         /*          Usage (RZ),                 */
-0x75, 0x04,         /*          Report Size (4),            */
-0x95, 0x01,         /*          Report Count (1),           */
-0x25, 0x03,         /*          Logical Maximum (3),        */
-0x81, 0x02,         /*          Input (Variable),           */
-                    /*    ---- Dial patch ends here ----    */
-0x06, 0x00, 0xFF,   /*          Usage Page (FF00h),         */
-0x09, 0x01,         /*          Usage (01h),                */
-0x75, 0x04,         /* Changed  Report Size (4),            */
-0x95, 0x0D,         /* Changed  Report Count (13),          */
-0x81, 0x02,         /*          Input (Variable),           */
-0xC0,               /*      End Collection,                 */
-0xA1, 0x02,         /*      Collection (Logical),           */
-0x09, 0x02,         /*          Usage (02h),                */
-0x75, 0x08,         /*          Report Size (8),            */
-0x95, 0x10,         /*          Report Count (16),          */
-0x91, 0x02,         /*          Output (Variable),          */
-0xC0,               /*      End Collection,                 */
-0xC0                /*  End Collection                      */
+0x05, 0x01,          
+0x09, 0x08,          
+0xA1, 0x01,          
+0xA1, 0x02,          
+0x95, 0x01,          
+0x05, 0x01,          
+0x09, 0x30,          
+0x16, 0xF8, 0xF8,    
+0x26, 0x08, 0x07,    
+0x65, 0x14,          
+0x55, 0x0F,          
+0x75, 0x10,          
+0x81, 0x02,          
+0x09, 0x31,          
+0x15, 0x00,          
+0x26, 0xFF, 0x03,    
+0x75, 0x0C,          
+0x81, 0x02,          
+0x09, 0x32,          
+0x15, 0x00,          
+0x26, 0xFF, 0x03,    
+0x75, 0x0C,          
+0x81, 0x02,          
+0x05, 0x01,          
+0x09, 0x39,          
+0x25, 0x07,          
+0x35, 0x00,          
+0x46, 0x3B, 0x01,    
+0x65, 0x14,          
+0x75, 0x04,          
+0x95, 0x01,          
+0x81, 0x02,          
+0x25, 0x01,          
+0x45, 0x01,          
+0x65, 0x00,          
+0x75, 0x01,          
+0x95, 0x03,          
+0x81, 0x01,          
+0x05, 0x09,          
+0x19, 0x01,          
+0x29, 0x11,          
+0x95, 0x11,          
+0x81, 0x02,          
+                     
+0x05, 0x01,          
+0x09, 0x33,          
+0x75, 0x04,          
+0x95, 0x02,          
+0x15, 0x00,          
+0x25, 0x0b,          
+0x81, 0x02,          
+0x09, 0x35,          
+0x75, 0x04,          
+0x95, 0x01,          
+0x25, 0x03,          
+0x81, 0x02,          
+                     
+0x06, 0x00, 0xFF,    
+0x09, 0x01,          
+0x75, 0x04,          
+0x95, 0x0D,          
+0x81, 0x02,          
+0xC0,                
+0xA1, 0x02,          
+0x09, 0x02,          
+0x75, 0x08,          
+0x95, 0x10,          
+0x91, 0x02,          
+0xC0,                
+0xC0                 
 };
 
 #if IS_BUILTIN(CONFIG_LEDS_CLASS) || \
@@ -151,7 +140,7 @@ static void steelseries_srws1_set_leds(struct hid_device *hdev, __u16 leds)
 
 	hid_hw_request(hdev, report, HID_REQ_SET_REPORT);
 
-	/* Note: LED change does not show on device until the device is read/polled */
+	 
 }
 
 static void steelseries_srws1_led_all_set_brightness(struct led_classdev *led_cdev,
@@ -276,7 +265,7 @@ static int steelseries_srws1_probe(struct hid_device *hdev,
 		goto err_free;
 	}
 
-	/* register led subsystem */
+	 
 	drv_data->led_state = 0;
 	for (i = 0; i < SRWS1_NUMBER_LEDS + 1; i++)
 		drv_data->led[i] = NULL;
@@ -285,7 +274,7 @@ static int steelseries_srws1_probe(struct hid_device *hdev,
 
 	name_sz = strlen(hdev->uniq) + 16;
 
-	/* 'ALL', for setting all LEDs simultaneously */
+	 
 	led = kzalloc(sizeof(struct led_classdev)+name_sz, GFP_KERNEL);
 	if (!led) {
 		hid_err(hdev, "can't allocate memory for LED ALL\n");
@@ -305,7 +294,7 @@ static int steelseries_srws1_probe(struct hid_device *hdev,
 	if (ret)
 		goto err_led;
 
-	/* Each individual LED */
+	 
 	for (i = 0; i < SRWS1_NUMBER_LEDS; i++) {
 		led = kzalloc(sizeof(struct led_classdev)+name_sz, GFP_KERNEL);
 		if (!led) {
@@ -327,7 +316,7 @@ static int steelseries_srws1_probe(struct hid_device *hdev,
 		if (ret) {
 			hid_err(hdev, "failed to register LED %d. Aborting.\n", i);
 err_led:
-			/* Deregister all LEDs (if any) */
+			 
 			for (i = 0; i < SRWS1_NUMBER_LEDS + 1; i++) {
 				led = drv_data->led[i];
 				drv_data->led[i] = NULL;
@@ -336,7 +325,7 @@ err_led:
 				led_classdev_unregister(led);
 				kfree(led);
 			}
-			goto out;	/* but let the driver continue without LEDs */
+			goto out;	 
 		}
 	}
 out:
@@ -354,7 +343,7 @@ static void steelseries_srws1_remove(struct hid_device *hdev)
 	struct steelseries_srws1_data *drv_data = hid_get_drvdata(hdev);
 
 	if (drv_data) {
-		/* Deregister LEDs (if any) */
+		 
 		for (i = 0; i < SRWS1_NUMBER_LEDS + 1; i++) {
 			led = drv_data->led[i];
 			drv_data->led[i] = NULL;
@@ -382,7 +371,7 @@ static int steelseries_headset_arctis_1_fetch_battery(struct hid_device *hdev)
 	u8 *write_buf;
 	int ret;
 
-	/* Request battery information */
+	 
 	write_buf = kmemdup(arctis_1_battery_request, sizeof(arctis_1_battery_request), GFP_KERNEL);
 	if (!write_buf)
 		return -ENOMEM;
@@ -489,7 +478,7 @@ static int steelseries_headset_battery_register(struct steelseries_device *sd)
 	if (!sd->battery_desc.name)
 		return -ENOMEM;
 
-	/* avoid the warning of 0% battery while waiting for the first info */
+	 
 	steelseries_headset_set_wireless_status(sd->hdev, false);
 	sd->battery_capacity = 100;
 
@@ -595,7 +584,7 @@ static int steelseries_headset_raw_event(struct hid_device *hdev,
 	bool connected = sd->headset_connected;
 	unsigned long flags;
 
-	/* Not a headset */
+	 
 	if (sd->quirks & STEELSERIES_SRWS1)
 		return 0;
 
@@ -644,7 +633,7 @@ static const struct hid_device_id steelseries_devices[] = {
 	{ HID_USB_DEVICE(USB_VENDOR_ID_STEELSERIES, USB_DEVICE_ID_STEELSERIES_SRWS1),
 	  .driver_data = STEELSERIES_SRWS1 },
 
-	{ /* SteelSeries Arctis 1 Wireless for XBox */
+	{  
 	  HID_USB_DEVICE(USB_VENDOR_ID_STEELSERIES, 0x12b6),
 	.driver_data = STEELSERIES_ARCTIS_1 },
 

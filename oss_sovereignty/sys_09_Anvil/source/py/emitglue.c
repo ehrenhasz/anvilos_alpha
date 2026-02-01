@@ -1,30 +1,6 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
-// This code glues the code emitters to the runtime.
+
 
 #include <stdint.h>
 #include <stdio.h>
@@ -37,12 +13,12 @@
 #include "py/objfun.h"
 #include "py/profile.h"
 
-#if MICROPY_DEBUG_VERBOSE // print debugging info
+#if MICROPY_DEBUG_VERBOSE 
 #define DEBUG_PRINT (1)
 #define WRITE_CODE (1)
 #define DEBUG_printf DEBUG_printf
 #define DEBUG_OP_printf(...) DEBUG_printf(__VA_ARGS__)
-#else // don't print debugging info
+#else 
 #define DEBUG_printf(...) (void)0
 #define DEBUG_OP_printf(...) (void)0
 #endif
@@ -103,27 +79,27 @@ void mp_emit_glue_assign_native(mp_raw_code_t *rc, mp_raw_code_kind_t kind, cons
 
     assert(kind == MP_CODE_NATIVE_PY || kind == MP_CODE_NATIVE_VIPER || kind == MP_CODE_NATIVE_ASM);
 
-    // Some architectures require flushing/invalidation of the I/D caches,
-    // so that the generated native code which was created in data RAM will
-    // be available for execution from instruction RAM.
+    
+    
+    
     #if MICROPY_EMIT_THUMB || MICROPY_EMIT_INLINE_THUMB
     #if __ICACHE_PRESENT == 1
-    // Flush D-cache, so the code emitted is stored in RAM.
+    
     MP_HAL_CLEAN_DCACHE(fun_data, fun_len);
-    // Invalidate I-cache, so the newly-created code is reloaded from RAM.
+    
     SCB_InvalidateICache();
     #endif
     #elif MICROPY_EMIT_ARM
     #if (defined(__linux__) && defined(__GNUC__)) || __ARM_ARCH == 7
     __builtin___clear_cache((void *)fun_data, (uint8_t *)fun_data + fun_len);
     #elif defined(__arm__)
-    // Flush I-cache and D-cache.
+    
     asm volatile (
         "0:"
-        "mrc p15, 0, r15, c7, c10, 3\n" // test and clean D-cache
+        "mrc p15, 0, r15, c7, c10, 3\n" 
         "bne 0b\n"
         "mov r0, #0\n"
-        "mcr p15, 0, r0, c7, c7, 0\n" // invalidate I-cache and D-cache
+        "mcr p15, 0, r0, c7, c7, 0\n" 
         : : : "r0", "cc");
     #endif
     #endif
@@ -143,7 +119,7 @@ void mp_emit_glue_assign_native(mp_raw_code_t *rc, mp_raw_code_kind_t kind, cons
     #endif
 
     #if MICROPY_EMIT_INLINE_ASM
-    // These two entries are only needed for MP_CODE_NATIVE_ASM.
+    
     rc->asm_n_pos_args = asm_n_pos_args;
     rc->asm_type_sig = asm_type_sig;
     #endif
@@ -173,10 +149,10 @@ mp_obj_t mp_make_function_from_proto_fun(mp_proto_fun_t proto_fun, const mp_modu
     DEBUG_OP_printf("make_function_from_proto_fun %p\n", proto_fun);
     assert(proto_fun != NULL);
 
-    // def_args must be MP_OBJ_NULL or a tuple
+    
     assert(def_args == NULL || def_args[0] == MP_OBJ_NULL || mp_obj_is_type(def_args[0], &mp_type_tuple));
 
-    // def_kw_args must be MP_OBJ_NULL or a dict
+    
     assert(def_args == NULL || def_args[1] == MP_OBJ_NULL || mp_obj_is_type(def_args[1], &mp_type_dict));
 
     #if MICROPY_MODULE_FROZEN_MPY
@@ -191,16 +167,16 @@ mp_obj_t mp_make_function_from_proto_fun(mp_proto_fun_t proto_fun, const mp_modu
     }
     #endif
 
-    // the proto-function is a mp_raw_code_t
+    
     const mp_raw_code_t *rc = proto_fun;
 
-    // make the function, depending on the raw code kind
+    
     mp_obj_t fun;
     switch (rc->kind) {
         #if MICROPY_EMIT_NATIVE
         case MP_CODE_NATIVE_PY:
             fun = mp_obj_new_fun_native(def_args, rc->fun_data, context, rc->children);
-            // Check for a generator function, and if so change the type of the object
+            
             if (rc->is_generator) {
                 ((mp_obj_base_t *)MP_OBJ_TO_PTR(fun))->type = &mp_type_native_gen_wrap;
             }
@@ -215,10 +191,10 @@ mp_obj_t mp_make_function_from_proto_fun(mp_proto_fun_t proto_fun, const mp_modu
             break;
         #endif
         default:
-            // rc->kind should always be set and BYTECODE is the only remaining case
+            
             assert(rc->kind == MP_CODE_BYTECODE);
             fun = mp_obj_new_fun_bc(def_args, rc->fun_data, context, rc->children);
-            // check for generator functions and if so change the type of the object
+            
             if (rc->is_generator) {
                 ((mp_obj_base_t *)MP_OBJ_TO_PTR(fun))->type = &mp_type_gen_wrap;
             }
@@ -236,15 +212,15 @@ mp_obj_t mp_make_function_from_proto_fun(mp_proto_fun_t proto_fun, const mp_modu
 
 mp_obj_t mp_make_closure_from_proto_fun(mp_proto_fun_t proto_fun, const mp_module_context_t *context, mp_uint_t n_closed_over, const mp_obj_t *args) {
     DEBUG_OP_printf("make_closure_from_proto_fun %p " UINT_FMT " %p\n", proto_fun, n_closed_over, args);
-    // make function object
+    
     mp_obj_t ffun;
     if (n_closed_over & 0x100) {
-        // default positional and keyword args given
+        
         ffun = mp_make_function_from_proto_fun(proto_fun, context, args);
     } else {
-        // default positional and keyword args not given
+        
         ffun = mp_make_function_from_proto_fun(proto_fun, context, NULL);
     }
-    // wrap function in closure object
+    
     return mp_obj_new_closure(ffun, n_closed_over & 0xff, args + ((n_closed_over >> 7) & 2));
 }

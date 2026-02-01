@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/efi.h>
 #include <linux/screen_info.h>
@@ -7,17 +7,7 @@
 
 #include "efistub.h"
 
-/*
- * There are two ways of populating the core kernel's struct screen_info via the stub:
- * - using a configuration table, like below, which relies on the EFI init code
- *   to locate the table and copy the contents;
- * - by linking directly to the core kernel's copy of the global symbol.
- *
- * The latter is preferred because it makes the EFIFB earlycon available very
- * early, but it only works if the EFI stub is part of the core kernel image
- * itself. The zboot decompressor can only use the configuration table
- * approach.
- */
+ 
 
 static efi_guid_t screen_info_guid = LINUX_EFI_SCREEN_INFO_TABLE_GUID;
 

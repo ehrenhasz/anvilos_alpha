@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AirSpy SDR driver
- *
- * Copyright (C) 2014 Antti Palosaari <crope@iki.fi>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -15,7 +11,7 @@
 #include <media/videobuf2-v4l2.h>
 #include <media/videobuf2-vmalloc.h>
 
-/* AirSpy USB API commands (from AirSpy Library) */
+ 
 enum {
 	CMD_INVALID                       = 0x00,
 	CMD_RECEIVER_MODE                 = 0x01,
@@ -39,11 +35,7 @@ enum {
 	CMD_SET_PACKING                   = 0x13,
 };
 
-/*
- *       bEndpointAddress     0x81  EP 1 IN
- *         Transfer Type            Bulk
- *       wMaxPacketSize     0x0200  1x 512 bytes
- */
+ 
 #define MAX_BULK_BUFS            (6)
 #define BULK_BUFFER_SIZE         (128 * 512)
 
@@ -69,13 +61,13 @@ static const struct v4l2_frequency_band bands_rf[] = {
 	},
 };
 
-/* stream formats */
+ 
 struct airspy_format {
 	u32	pixelformat;
 	u32	buffersize;
 };
 
-/* format descriptions for capture and preview */
+ 
 static struct airspy_format formats[] = {
 	{
 		.pixelformat	= V4L2_SDR_FMT_RU12LE,
@@ -85,9 +77,9 @@ static struct airspy_format formats[] = {
 
 static const unsigned int NUM_FORMATS = ARRAY_SIZE(formats);
 
-/* intermediate buffers with raw data from the USB device */
+ 
 struct airspy_frame_buf {
-	/* common v4l buffer stuff -- must be first */
+	 
 	struct vb2_v4l2_buffer vb;
 	struct list_head list;
 };
@@ -102,16 +94,16 @@ struct airspy {
 	struct video_device vdev;
 	struct v4l2_device v4l2_dev;
 
-	/* videobuf2 queue and queued buffers list */
+	 
 	struct vb2_queue vb_queue;
 	struct list_head queued_bufs;
-	spinlock_t queued_bufs_lock; /* Protects queued_bufs */
-	unsigned sequence;	     /* Buffer sequence counter */
-	unsigned int vb_full;        /* vb is full and packets dropped */
+	spinlock_t queued_bufs_lock;  
+	unsigned sequence;	      
+	unsigned int vb_full;         
 
-	/* Note if taking both locks v4l2_lock must always be locked first! */
-	struct mutex v4l2_lock;      /* Protects everything else */
-	struct mutex vb_queue_lock;  /* Protects vb_queue and capt_file */
+	 
+	struct mutex v4l2_lock;       
+	struct mutex vb_queue_lock;   
 
 	struct urb     *urb_list[MAX_BULK_BUFS];
 	int            buf_num;
@@ -121,17 +113,17 @@ struct airspy {
 	int            urbs_initialized;
 	int            urbs_submitted;
 
-	/* USB control message buffer */
+	 
 	#define BUF_SIZE 128
 	u8 *buf;
 
-	/* Current configuration */
+	 
 	unsigned int f_adc;
 	unsigned int f_rf;
 	u32 pixelformat;
 	u32 buffersize;
 
-	/* Controls */
+	 
 	struct v4l2_ctrl_handler hdl;
 	struct v4l2_ctrl *lna_gain_auto;
 	struct v4l2_ctrl *lna_gain;
@@ -139,7 +131,7 @@ struct airspy {
 	struct v4l2_ctrl *mixer_gain;
 	struct v4l2_ctrl *if_gain;
 
-	/* Sample rate calc */
+	 
 	unsigned long jiffies_next;
 	unsigned int sample;
 	unsigned int sample_measured;
@@ -156,7 +148,7 @@ struct airspy {
 			_l & 0xff, _l >> 8, _direction, _l, _b); \
 }
 
-/* execute firmware command */
+ 
 static int airspy_ctrl_msg(struct airspy *s, u8 request, u16 value, u16 index,
 		u8 *data, u16 size)
 {
@@ -187,7 +179,7 @@ static int airspy_ctrl_msg(struct airspy *s, u8 request, u16 value, u16 index,
 		goto err;
 	}
 
-	/* write request */
+	 
 	if (!(requesttype & USB_DIR_IN))
 		memcpy(s->buf, data, size);
 
@@ -201,7 +193,7 @@ static int airspy_ctrl_msg(struct airspy *s, u8 request, u16 value, u16 index,
 		goto err;
 	}
 
-	/* read request */
+	 
 	if (requesttype & USB_DIR_IN)
 		memcpy(data, s->buf, size);
 
@@ -210,7 +202,7 @@ err:
 	return ret;
 }
 
-/* Private functions */
+ 
 static struct airspy_frame_buf *airspy_get_next_fill_buf(struct airspy *s)
 {
 	unsigned long flags;
@@ -240,7 +232,7 @@ static unsigned int airspy_convert_stream(struct airspy *s,
 		dst_len = 0;
 	}
 
-	/* calculate sample rate and output it in 10 seconds intervals */
+	 
 	if (unlikely(time_is_before_jiffies(s->jiffies_next))) {
 		#define MSECS 10000UL
 		unsigned int msecs = jiffies_to_msecs(jiffies -
@@ -254,16 +246,13 @@ static unsigned int airspy_convert_stream(struct airspy *s,
 				samples * 1000UL / msecs);
 	}
 
-	/* total number of samples */
+	 
 	s->sample += src_len / 2;
 
 	return dst_len;
 }
 
-/*
- * This gets called for the bulk stream pipe. This is done in interrupt
- * time, so it has to be fast, not crash, and not stall. Neat.
- */
+ 
 static void airspy_urb_complete(struct urb *urb)
 {
 	struct airspy *s = urb->context;
@@ -274,14 +263,14 @@ static void airspy_urb_complete(struct urb *urb)
 			urb->transfer_buffer_length, urb->error_count);
 
 	switch (urb->status) {
-	case 0:             /* success */
-	case -ETIMEDOUT:    /* NAK */
+	case 0:              
+	case -ETIMEDOUT:     
 		break;
-	case -ECONNRESET:   /* kill */
+	case -ECONNRESET:    
 	case -ENOENT:
 	case -ESHUTDOWN:
 		return;
-	default:            /* error */
+	default:             
 		dev_err_ratelimited(s->dev, "URB failed %d\n", urb->status);
 		break;
 	}
@@ -289,7 +278,7 @@ static void airspy_urb_complete(struct urb *urb)
 	if (likely(urb->actual_length > 0)) {
 		void *ptr;
 		unsigned int len;
-		/* get free framebuffer */
+		 
 		fbuf = airspy_get_next_fill_buf(s);
 		if (unlikely(fbuf == NULL)) {
 			s->vb_full++;
@@ -299,7 +288,7 @@ static void airspy_urb_complete(struct urb *urb)
 			goto skip;
 		}
 
-		/* fill framebuffer */
+		 
 		ptr = vb2_plane_vaddr(&fbuf->vb.vb2_buf, 0);
 		len = airspy_convert_stream(s, ptr, urb->transfer_buffer,
 				urb->actual_length);
@@ -318,7 +307,7 @@ static int airspy_kill_urbs(struct airspy *s)
 
 	for (i = s->urbs_submitted - 1; i >= 0; i--) {
 		dev_dbg(s->dev, "kill urb=%d\n", i);
-		/* stop the URB */
+		 
 		usb_kill_urb(s->urb_list[i]);
 	}
 	s->urbs_submitted = 0;
@@ -397,7 +386,7 @@ static int airspy_free_urbs(struct airspy *s)
 	for (i = s->urbs_initialized - 1; i >= 0; i--) {
 		if (s->urb_list[i]) {
 			dev_dbg(s->dev, "free urb=%d\n", i);
-			/* free the URBs */
+			 
 			usb_free_urb(s->urb_list[i]);
 		}
 	}
@@ -410,7 +399,7 @@ static int airspy_alloc_urbs(struct airspy *s)
 {
 	int i, j;
 
-	/* allocate the URBs */
+	 
 	for (i = 0; i < MAX_BULK_BUFS; i++) {
 		dev_dbg(s->dev, "alloc urb=%d\n", i);
 		s->urb_list[i] = usb_alloc_urb(0, GFP_ATOMIC);
@@ -437,7 +426,7 @@ static int airspy_alloc_urbs(struct airspy *s)
 	return 0;
 }
 
-/* Must be called with vb_queue_lock hold */
+ 
 static void airspy_cleanup_queued_bufs(struct airspy *s)
 {
 	unsigned long flags;
@@ -456,7 +445,7 @@ static void airspy_cleanup_queued_bufs(struct airspy *s)
 	spin_unlock_irqrestore(&s->queued_bufs_lock, flags);
 }
 
-/* The user yanked out the cable... */
+ 
 static void airspy_disconnect(struct usb_interface *intf)
 {
 	struct v4l2_device *v = usb_get_intfdata(intf);
@@ -466,7 +455,7 @@ static void airspy_disconnect(struct usb_interface *intf)
 
 	mutex_lock(&s->vb_queue_lock);
 	mutex_lock(&s->v4l2_lock);
-	/* No need to keep the urbs around after disconnection */
+	 
 	s->udev = NULL;
 	v4l2_device_disconnect(&s->v4l2_dev);
 	video_unregister_device(&s->vdev);
@@ -476,7 +465,7 @@ static void airspy_disconnect(struct usb_interface *intf)
 	v4l2_device_put(&s->v4l2_dev);
 }
 
-/* Videobuf2 operations */
+ 
 static int airspy_queue_setup(struct vb2_queue *vq,
 		unsigned int *nbuffers,
 		unsigned int *nplanes, unsigned int sizes[], struct device *alloc_devs[])
@@ -485,7 +474,7 @@ static int airspy_queue_setup(struct vb2_queue *vq,
 
 	dev_dbg(s->dev, "nbuffers=%d\n", *nbuffers);
 
-	/* Need at least 8 buffers */
+	 
 	if (vq->num_buffers + *nbuffers < 8)
 		*nbuffers = 8 - vq->num_buffers;
 	*nplanes = 1;
@@ -503,7 +492,7 @@ static void airspy_buf_queue(struct vb2_buffer *vb)
 			container_of(vbuf, struct airspy_frame_buf, vb);
 	unsigned long flags;
 
-	/* Check the device has not disconnected between prep and queuing */
+	 
 	if (unlikely(!s->udev)) {
 		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_ERROR);
 		return;
@@ -542,7 +531,7 @@ static int airspy_start_streaming(struct vb2_queue *vq, unsigned int count)
 	if (ret)
 		goto err_free_urbs;
 
-	/* start hardware streaming */
+	 
 	ret = airspy_ctrl_msg(s, CMD_RECEIVER_MODE, 1, 0, NULL, 0);
 	if (ret)
 		goto err_kill_urbs;
@@ -558,7 +547,7 @@ err_free_stream_bufs:
 err_clear_bit:
 	clear_bit(POWER_ON, &s->flags);
 
-	/* return all queued buffers to vb2 */
+	 
 	{
 		struct airspy_frame_buf *buf, *tmp;
 
@@ -583,7 +572,7 @@ static void airspy_stop_streaming(struct vb2_queue *vq)
 
 	mutex_lock(&s->v4l2_lock);
 
-	/* stop hardware streaming */
+	 
 	airspy_ctrl_msg(s, CMD_RECEIVER_MODE, 0, 0, NULL, 0);
 
 	airspy_kill_urbs(s);
@@ -993,7 +982,7 @@ static int airspy_probe(struct usb_interface *intf,
 	s->pixelformat = formats[0].pixelformat;
 	s->buffersize = formats[0].buffersize;
 
-	/* Detect device */
+	 
 	ret = airspy_ctrl_msg(s, CMD_BOARD_ID_READ, 0, 0, &u8tmp, 1);
 	if (ret == 0)
 		ret = airspy_ctrl_msg(s, CMD_VERSION_STRING_READ, 0, 0,
@@ -1008,7 +997,7 @@ static int airspy_probe(struct usb_interface *intf,
 	dev_info(s->dev, "Board ID: %02x\n", u8tmp);
 	dev_info(s->dev, "Firmware version: %s\n", buf);
 
-	/* Init videobuf2 queue structure */
+	 
 	s->vb_queue.type = V4L2_BUF_TYPE_SDR_CAPTURE;
 	s->vb_queue.io_modes = VB2_MMAP | VB2_USERPTR | VB2_READ;
 	s->vb_queue.drv_priv = s;
@@ -1022,13 +1011,13 @@ static int airspy_probe(struct usb_interface *intf,
 		goto err_free_mem;
 	}
 
-	/* Init video_device structure */
+	 
 	s->vdev = airspy_template;
 	s->vdev.queue = &s->vb_queue;
 	s->vdev.queue->lock = &s->vb_queue_lock;
 	video_set_drvdata(&s->vdev, s);
 
-	/* Register the v4l2_device structure */
+	 
 	s->v4l2_dev.release = airspy_video_release;
 	ret = v4l2_device_register(&intf->dev, &s->v4l2_dev);
 	if (ret) {
@@ -1036,7 +1025,7 @@ static int airspy_probe(struct usb_interface *intf,
 		goto err_free_mem;
 	}
 
-	/* Register controls */
+	 
 	v4l2_ctrl_handler_init(&s->hdl, 5);
 	s->lna_gain_auto = v4l2_ctrl_new_std(&s->hdl, &airspy_ctrl_ops,
 			V4L2_CID_RF_TUNER_LNA_GAIN_AUTO, 0, 1, 1, 0);
@@ -1071,7 +1060,7 @@ static int airspy_probe(struct usb_interface *intf,
 		goto err_free_controls;
 	}
 
-	/* Free buf if success*/
+	 
 	kfree(buf);
 
 	dev_info(s->dev, "Registered as %s\n",
@@ -1089,14 +1078,14 @@ err_free_mem:
 	return ret;
 }
 
-/* USB device ID list */
+ 
 static const struct usb_device_id airspy_id_table[] = {
-	{ USB_DEVICE(0x1d50, 0x60a1) }, /* AirSpy */
+	{ USB_DEVICE(0x1d50, 0x60a1) },  
 	{ }
 };
 MODULE_DEVICE_TABLE(usb, airspy_id_table);
 
-/* USB subsystem interface */
+ 
 static struct usb_driver airspy_driver = {
 	.name                     = KBUILD_MODNAME,
 	.probe                    = airspy_probe,

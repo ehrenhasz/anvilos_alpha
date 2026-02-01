@@ -1,25 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include "ppatomfwctrl.h"
 #include "atomfirmware.h"
@@ -68,11 +47,7 @@ static struct atom_voltage_objects_info_v4_1 *pp_atomfwctrl_get_voltage_info_tab
 	return (struct atom_voltage_objects_info_v4_1 *)table_address;
 }
 
-/*
- * Returns TRUE if the given voltage type is controlled by GPIO pins.
- * voltage_type is one of SET_VOLTAGE_TYPE_ASIC_VDDC, SET_VOLTAGE_TYPE_ASIC_MVDDC, SET_VOLTAGE_TYPE_ASIC_MVDDQ.
- * voltage_mode is one of ATOM_SET_VOLTAGE, ATOM_SET_VOLTAGE_PHASE
- */
+ 
 bool pp_atomfwctrl_is_voltage_controlled_by_gpio_v4(struct pp_hwmgr *hwmgr,
 		uint8_t voltage_type, uint8_t voltage_mode)
 {
@@ -81,7 +56,7 @@ bool pp_atomfwctrl_is_voltage_controlled_by_gpio_v4(struct pp_hwmgr *hwmgr,
 			pp_atomfwctrl_get_voltage_info_table(hwmgr);
 	bool ret;
 
-	/* If we cannot find the table do NOT try to control this voltage. */
+	 
 	PP_ASSERT_WITH_CODE(voltage_info,
 			"Could not find Voltage Table in BIOS.",
 			return false);
@@ -202,9 +177,7 @@ static bool pp_atomfwctrl_lookup_gpio_pin(
 	return false;
 }
 
-/*
- * Returns TRUE if the given pin id find in lookup table.
- */
+ 
 bool pp_atomfwctrl_get_pp_assign_pin(struct pp_hwmgr *hwmgr,
 		const uint32_t pin_id,
 		struct pp_atomfwctrl_gpio_pin_assignment *gpio_pin_assignment)
@@ -213,7 +186,7 @@ bool pp_atomfwctrl_get_pp_assign_pin(struct pp_hwmgr *hwmgr,
 	struct atom_gpio_pin_lut_v2_1 *gpio_lookup_table =
 			pp_atomfwctrl_get_gpio_lookup_table(hwmgr);
 
-	/* If we cannot find the table do NOT try to control this voltage. */
+	 
 	PP_ASSERT_WITH_CODE(gpio_lookup_table,
 			"Could not find GPIO lookup Table in BIOS.",
 			return false);
@@ -224,25 +197,14 @@ bool pp_atomfwctrl_get_pp_assign_pin(struct pp_hwmgr *hwmgr,
 	return ret;
 }
 
-/*
- * Enter to SelfRefresh mode.
- * @param hwmgr
- */
+ 
 int pp_atomfwctrl_enter_self_refresh(struct pp_hwmgr *hwmgr)
 {
-	/* 0 - no action
-	 * 1 - leave power to video memory always on
-	 */
+	 
 	return 0;
 }
 
-/** pp_atomfwctrl_get_gpu_pll_dividers_vega10().
- *
- * @param hwmgr       input parameter: pointer to HwMgr
- * @param clock_type  input parameter: Clock type: 1 - GFXCLK, 2 - UCLK, 0 - All other clocks
- * @param clock_value input parameter: Clock
- * @param dividers    output parameter:Clock dividers
- */
+ 
 int pp_atomfwctrl_get_gpu_pll_dividers_vega10(struct pp_hwmgr *hwmgr,
 		uint32_t clock_type, uint32_t clock_value,
 		struct pp_atomfwctrl_clock_dividers_soc15 *dividers)

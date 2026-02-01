@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2020 Mellanox Technologies Ltd. */
+
+ 
 
 #include <linux/module.h>
 #include <linux/vdpa.h>
@@ -95,18 +95,12 @@ struct mlx5_vdpa_virtqueue {
 	u64 driver_addr;
 	u32 num_ent;
 
-	/* Resources for implementing the notification channel from the device
-	 * to the driver. fwqp is the firmware end of an RC connection; the
-	 * other end is vqqp used by the driver. cq is where completions are
-	 * reported.
-	 */
+	 
 	struct mlx5_vdpa_cq cq;
 	struct mlx5_vdpa_qp fwqp;
 	struct mlx5_vdpa_qp vqqp;
 
-	/* umem resources are required for the virtqueue operation. They're use
-	 * is internal and they must be provided by the driver.
-	 */
+	 
 	struct mlx5_vdpa_umem umem1;
 	struct mlx5_vdpa_umem umem2;
 	struct mlx5_vdpa_umem umem3;
@@ -121,7 +115,7 @@ struct mlx5_vdpa_virtqueue {
 	int fw_state;
 	struct msi_map map;
 
-	/* keep last in the struct */
+	 
 	struct mlx5_vq_restore_info ri;
 };
 
@@ -158,7 +152,7 @@ static bool mlx5_vdpa_debug;
 			mlx5_vdpa_info(mvdev, "%s\n", #_status);                                   \
 	} while (0)
 
-/* TODO: cross-endian support */
+ 
 static inline bool mlx5_vdpa_is_little_endian(struct mlx5_vdpa_dev *mvdev)
 {
 	return virtio_legacy_is_little_endian() ||
@@ -363,9 +357,7 @@ static void qp_prepare(struct mlx5_vdpa_net *ndev, bool fw, void *in,
 	MLX5_SET(create_qp_in, in, uid, ndev->mvdev.res.uid);
 	qpc = MLX5_ADDR_OF(create_qp_in, in, qpc);
 	if (vqp->fw) {
-		/* Firmware QP is allocated by the driver for the firmware's
-		 * use so we can skip part of the params as they will be chosen by firmware
-		 */
+		 
 		qpc = MLX5_ADDR_OF(create_qp_in, in, qpc);
 		MLX5_SET(qpc, qpc, rq_type, MLX5_ZERO_LEN_RQ);
 		MLX5_SET(qpc, qpc, no_sq, 1);
@@ -498,9 +490,7 @@ static void mlx5_vdpa_handle_completions(struct mlx5_vdpa_virtqueue *mvq, int nu
 	event_cb = &ndev->event_cbs[mvq->index];
 	mlx5_cq_set_ci(&mvq->cq.mcq);
 
-	/* make sure CQ cosumer update is visible to the hardware before updating
-	 * RX doorbell record.
-	 */
+	 
 	dma_wmb();
 	rx_post(&mvq->vqqp, num);
 	if (event_cb->callback)
@@ -517,12 +507,7 @@ static void mlx5_vdpa_cq_comp(struct mlx5_core_cq *mcq, struct mlx5_eqe *eqe)
 	while (!mlx5_vdpa_poll_one(&mvq->cq)) {
 		num++;
 		if (num > mvq->num_ent / 2) {
-			/* If completions keep coming while we poll, we want to
-			 * let the hardware know that we consumed them by
-			 * updating the doorbell record.  We also let vdpa core
-			 * know about this so it passes it on the virtio driver
-			 * on the guest.
-			 */
+			 
 			mlx5_vdpa_handle_completions(mvq, num);
 			num = 0;
 		}
@@ -577,9 +562,7 @@ static int cq_create(struct mlx5_vdpa_net *ndev, u16 idx, u32 num_ent)
 	cqc = MLX5_ADDR_OF(create_cq_in, in, cq_context);
 	MLX5_SET(cqc, cqc, log_page_size, vcq->buf.frag_buf.page_shift - MLX5_ADAPTER_PAGE_SHIFT);
 
-	/* Use vector 0 by default. Consider adding code to choose least used
-	 * vector.
-	 */
+	 
 	err = mlx5_comp_eqn_get(mdev, 0, &eqn);
 	if (err)
 		goto err_vec;
@@ -806,7 +789,7 @@ static int get_queue_type(struct mlx5_vdpa_net *ndev)
 
 	type_mask = MLX5_CAP_DEV_VDPA_EMULATION(ndev->mvdev.mdev, virtio_queue_type);
 
-	/* prefer split queue */
+	 
 	if (type_mask & MLX5_VIRTIO_EMULATION_CAP_VIRTIO_QUEUE_TYPE_SPLIT)
 		return MLX5_VIRTIO_EMULATION_VIRTIO_QUEUE_TYPE_SPLIT;
 
@@ -1061,10 +1044,7 @@ static void free_inout(void *in, void *out)
 	kfree(out);
 }
 
-/* Two QPs are used by each virtqueue. One is used by the driver and one by
- * firmware. The fw argument indicates whether the subjected QP is the one used
- * by firmware.
- */
+ 
 static int modify_qp(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq, bool fw, int cmd)
 {
 	int outlen;
@@ -1685,7 +1665,7 @@ static struct macvlan_node *mac_vlan_lookup(struct mlx5_vdpa_net *ndev, u64 valu
 	struct macvlan_node *pos;
 	u32 idx;
 
-	idx = hash_64(value, 8); // tbd 8
+	idx = hash_64(value, 8); 
 	hlist_for_each_entry(pos, &ndev->macvlan_hash[idx], hlist) {
 		if (pos->macvlan == value)
 			return pos;
@@ -1833,29 +1813,24 @@ static virtio_net_ctrl_ack handle_ctrl_mac(struct mlx5_vdpa_dev *mvdev, u8 cmd)
 			break;
 		}
 
-		/* backup the original mac address so that if failed to add the forward rules
-		 * we could restore it
-		 */
+		 
 		memcpy(mac_back, ndev->config.mac, ETH_ALEN);
 
 		memcpy(ndev->config.mac, mac, ETH_ALEN);
 
-		/* Need recreate the flow table entry, so that the packet could forward back
-		 */
+		 
 		mac_vlan_del(ndev, mac_back, 0, false);
 
 		if (mac_vlan_add(ndev, ndev->config.mac, 0, false)) {
 			mlx5_vdpa_warn(mvdev, "failed to insert forward rules, try to restore\n");
 
-			/* Although it hardly run here, we still need double check */
+			 
 			if (is_zero_ether_addr(mac_back)) {
 				mlx5_vdpa_warn(mvdev, "restore mac failed: Original MAC is zero\n");
 				break;
 			}
 
-			/* Try to restore original mac address to MFPS table, and try to restore
-			 * the forward rule entry.
-			 */
+			 
 			if (mlx5_mpfs_del_mac(pfmdev, ndev->config.mac)) {
 				mlx5_vdpa_warn(mvdev, "restore mac failed: delete MAC %pM from MPFS table failed\n",
 					       ndev->config.mac);
@@ -1933,15 +1908,7 @@ static virtio_net_ctrl_ack handle_ctrl_mq(struct mlx5_vdpa_dev *mvdev, u8 cmd)
 
 	switch (cmd) {
 	case VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET:
-		/* This mq feature check aligns with pre-existing userspace
-		 * implementation.
-		 *
-		 * Without it, an untrusted driver could fake a multiqueue config
-		 * request down to a non-mq device that may cause kernel to
-		 * panic due to uninitialized resources for extra vqs. Even with
-		 * a well behaving guest driver, it is not expected to allow
-		 * changing the number of vqs on a non-mq device.
-		 */
+		 
 		if (!MLX5_FEATURE(mvdev, VIRTIO_NET_F_MQ))
 			break;
 
@@ -2062,7 +2029,7 @@ static void mlx5_cvq_kick_handler(struct work_struct *work)
 			break;
 		}
 
-		/* Make sure data is written before advancing index */
+		 
 		smp_wmb();
 
 		write = vringh_iov_push_iotlb(&cvq->vring, &cvq->wiov, &status, sizeof(status));
@@ -2264,15 +2231,9 @@ static int mlx5_vdpa_get_vq_state(struct vdpa_device *vdev, u16 idx, struct vdpa
 	}
 
 	mvq = &ndev->vqs[idx];
-	/* If the virtq object was destroyed, use the value saved at
-	 * the last minute of suspend_vq. This caters for userspace
-	 * that cares about emulating the index after vq is stopped.
-	 */
+	 
 	if (!mvq->initialized) {
-		/* Firmware returns a wrong value for the available index.
-		 * Since both values should be identical, we take the value of
-		 * used_idx which is reported correctly.
-		 */
+		 
 		state->split.avail_index = mvq->used_idx;
 		return 0;
 	}
@@ -2359,19 +2320,11 @@ static u64 mlx5_vdpa_get_device_features(struct vdpa_device *vdev)
 
 static int verify_driver_features(struct mlx5_vdpa_dev *mvdev, u64 features)
 {
-	/* Minimum features to expect */
+	 
 	if (!(features & BIT_ULL(VIRTIO_F_ACCESS_PLATFORM)))
 		return -EOPNOTSUPP;
 
-	/* Double check features combination sent down by the driver.
-	 * Fail invalid features due to absence of the depended feature.
-	 *
-	 * Per VIRTIO v1.1 specification, section 5.1.3.1 Feature bit
-	 * requirements: "VIRTIO_NET_F_MQ Requires VIRTIO_NET_F_CTRL_VQ".
-	 * By failing the invalid features sent down by untrusted drivers,
-	 * we're assured the assumption made upon is_index_valid() and
-	 * is_ctrl_vq_idx() will not be compromised.
-	 */
+	 
 	if ((features & (BIT_ULL(VIRTIO_NET_F_MQ) | BIT_ULL(VIRTIO_NET_F_CTRL_VQ))) ==
             BIT_ULL(VIRTIO_NET_F_MQ))
 		return -EINVAL;
@@ -2418,16 +2371,14 @@ static void update_cvq_info(struct mlx5_vdpa_dev *mvdev)
 {
 	if (MLX5_FEATURE(mvdev, VIRTIO_NET_F_CTRL_VQ)) {
 		if (MLX5_FEATURE(mvdev, VIRTIO_NET_F_MQ)) {
-			/* MQ supported. CVQ index is right above the last data virtqueue's */
+			 
 			mvdev->max_idx = mvdev->max_vqs;
 		} else {
-			/* Only CVQ supportted. data virtqueues occupy indices 0 and 1.
-			 * CVQ gets index 2
-			 */
+			 
 			mvdev->max_idx = 2;
 		}
 	} else {
-		/* Two data virtqueues only: one for rx and one for tx */
+		 
 		mvdev->max_idx = 1;
 	}
 }
@@ -2557,14 +2508,7 @@ static int mlx5_vdpa_set_driver_features(struct vdpa_device *vdev, u64 features)
 	else
 		ndev->rqt_size = 1;
 
-	/* Device must start with 1 queue pair, as per VIRTIO v1.2 spec, section
-	 * 5.1.6.5.5 "Device operation in multiqueue mode":
-	 *
-	 * Multiqueue is disabled by default.
-	 * The driver enables multiqueue by sending a command using class
-	 * VIRTIO_NET_CTRL_MQ. The command selects the mode of multiqueue
-	 * operation, as follows: ...
-	 */
+	 
 	ndev->cur_num_vqs = 2;
 
 	update_cvq_info(mvdev);
@@ -2705,7 +2649,7 @@ err_mr:
 	return err;
 }
 
-/* reslock must be held for this function */
+ 
 static int setup_driver(struct mlx5_vdpa_dev *mvdev)
 {
 	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
@@ -2763,7 +2707,7 @@ out:
 	return err;
 }
 
-/* reslock must be held for this function */
+ 
 static void teardown_driver(struct mlx5_vdpa_net *ndev)
 {
 
@@ -2856,7 +2800,7 @@ static void init_group_to_asid_map(struct mlx5_vdpa_dev *mvdev)
 {
 	int i;
 
-	/* default mapping all groups are mapped to asid 0 */
+	 
 	for (i = 0; i < MLX5_VDPA_NUMVQ_GROUPS; i++)
 		mvdev->group2asid[i] = 0;
 }
@@ -2911,7 +2855,7 @@ static void mlx5_vdpa_get_config(struct vdpa_device *vdev, unsigned int offset, 
 static void mlx5_vdpa_set_config(struct vdpa_device *vdev, unsigned int offset, const void *buf,
 				 unsigned int len)
 {
-	/* not supported */
+	 
 }
 
 static u32 mlx5_vdpa_get_generation(struct vdpa_device *vdev)
@@ -3011,10 +2955,7 @@ static struct vdpa_notification_area mlx5_get_vq_notification(struct vdpa_device
 	if (!is_index_valid(mvdev, idx) || is_ctrl_vq_idx(mvdev, idx))
 		return ret;
 
-	/* If SF BAR size is smaller than PAGE_SIZE, do not use direct
-	 * notification to avoid the risk of mapping pages that contain BAR of more
-	 * than one SF
-	 */
+	 
 	if (MLX5_CAP_GEN(mvdev->mdev, log_min_sf_size) + 12 < PAGE_SHIFT)
 		return ret;
 
@@ -3451,7 +3392,7 @@ static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *name,
 
 	if (add_config->mask & (1 << VDPA_ATTR_DEV_NET_CFG_MACADDR)) {
 		memcpy(ndev->config.mac, add_config->net.mac, ETH_ALEN);
-	/* No bother setting mac address in config if not going to provision _F_MAC */
+	 
 	} else if ((add_config->mask & BIT_ULL(VDPA_ATTR_DEV_FEATURES)) == 0 ||
 		   device_features & BIT_ULL(VIRTIO_NET_F_MAC)) {
 		err = mlx5_query_nic_vport_mac_address(mdev, 0, 0, config->mac);
@@ -3465,15 +3406,10 @@ static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *name,
 		if (err)
 			goto err_alloc;
 	} else if ((add_config->mask & BIT_ULL(VDPA_ATTR_DEV_FEATURES)) == 0) {
-		/*
-		 * We used to clear _F_MAC feature bit if seeing
-		 * zero mac address when device features are not
-		 * specifically provisioned. Keep the behaviour
-		 * so old scripts do not break.
-		 */
+		 
 		device_features &= ~BIT_ULL(VIRTIO_NET_F_MAC);
 	} else if (device_features & BIT_ULL(VIRTIO_NET_F_MAC)) {
-		/* Don't provision zero mac address for _F_MAC */
+		 
 		mlx5_vdpa_warn(&ndev->mvdev,
 			       "No mac address provisioned?\n");
 		err = -EINVAL;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * CAAM Error Reporting
- *
- * Copyright 2009-2011 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include "compat.h"
 #include "regs.h"
@@ -23,10 +19,7 @@ void caam_dump_sg(const char *prefix_str, int prefix_type,
 	void *buf;
 
 	for (it = sg; it && tlen > 0 ; it = sg_next(it)) {
-		/*
-		 * make sure the scatterlist's page
-		 * has a valid virtual memory mapping
-		 */
+		 
 		it_page = kmap_atomic(sg_page(it));
 		if (unlikely(!it_page)) {
 			pr_err("caam_dump_sg: kmap failed\n");
@@ -47,7 +40,7 @@ void caam_dump_sg(const char *prefix_str, int prefix_type,
 		  int rowsize, int groupsize, struct scatterlist *sg,
 		  size_t tlen, bool ascii)
 {}
-#endif /* DEBUG */
+#endif  
 EXPORT_SYMBOL(caam_dump_sg);
 
 bool caam_little_end;
@@ -244,16 +237,13 @@ static int report_ccb_status(struct device *jrdev, const u32 status,
 	if ((cha_id << JRSTA_CCBERR_CHAID_SHIFT) == JRSTA_CCBERR_CHAID_RNG &&
 	    err_id < ARRAY_SIZE(rng_err_id_list) &&
 	    strlen(rng_err_id_list[err_id])) {
-		/* RNG-only error */
+		 
 		err_str = rng_err_id_list[err_id];
 	} else {
 		err_str = err_id_list[err_id];
 	}
 
-	/*
-	 * CCB ICV check failures are part of normal operation life;
-	 * we leave the upper layers to do what they want with them.
-	 */
+	 
 	if (err_id == JRSTA_CCBERR_ERRID_ICVCHK)
 		return -EBADMSG;
 
@@ -372,10 +362,7 @@ int caam_strstatus(struct device *jrdev, u32 status, bool qi_v2)
 	u32 ssrc = status >> JRSTA_SSRC_SHIFT;
 	const char *error = status_src[ssrc].error;
 
-	/*
-	 * If there is an error handling function, call it to report the error.
-	 * Otherwise print the error source name.
-	 */
+	 
 	if (status_src[ssrc].report_ssed)
 		return status_src[ssrc].report_ssed(jrdev, status, error);
 

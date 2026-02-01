@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -22,7 +22,7 @@
 #define RT6245_CHKSUM_MASK	BIT(7)
 #define RT6245_CODE_MASK	GENMASK(6, 0)
 
-/* HW Enable + Soft start time */
+ 
 #define RT6245_ENTIME_IN_US	5000
 
 #define RT6245_VOUT_MINUV	437500
@@ -90,7 +90,7 @@ static const struct regulator_ops rt6245_regulator_ops = {
 	.is_enabled = rt6245_is_enabled,
 };
 
-/* ramp delay dividend is 12500 uV/uS, and divisor from 1 to 8 */
+ 
 static const unsigned int rt6245_ramp_delay_table[] = {
 	12500, 6250, 4167, 3125, 2500, 2083, 1786, 1562
 };
@@ -150,7 +150,7 @@ static int rt6245_reg_write(void *context, unsigned int reg, unsigned int val)
 	code = func_base[reg];
 	code += val;
 
-	/* xor checksum for bit 6 to 0 */
+	 
 	bit_count = hweight8(code & RT6245_CODE_MASK);
 	if (bit_count % 2)
 		code |= RT6245_CHKSUM_MASK;
@@ -161,17 +161,17 @@ static int rt6245_reg_write(void *context, unsigned int reg, unsigned int val)
 }
 
 static const struct reg_default rt6245_reg_defaults[] = {
-	/* Default over current 14A */
+	 
 	{ RT6245_VIRT_OCLIMIT, 2 },
-	/* Default over temperature 150'c */
+	 
 	{ RT6245_VIRT_OTLEVEL, 0 },
-	/* Default power good delay time 10us */
+	 
 	{ RT6245_VIRT_PGDLYTIME, 1 },
-	/* Default slewrate 12.5mV/uS */
+	 
 	{ RT6245_VIRT_SLEWRATE, 0 },
-	/* Default switch frequency 800KHz */
+	 
 	{ RT6245_VIRT_SWFREQ, 1 },
-	/* Default voltage 750mV */
+	 
 	{ RT6245_VIRT_VOUT, 0x19 }
 };
 

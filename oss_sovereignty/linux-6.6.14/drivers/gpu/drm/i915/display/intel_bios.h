@@ -1,31 +1,6 @@
-/*
- * Copyright © 2016-2019 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
-/*
- * Please use intel_vbt_defs.h for VBT private data, to hide and abstract away
- * the VBT from the rest of the driver. Add the parsed, clean data to struct
- * intel_vbt_data within struct drm_i915_private.
- */
+ 
 
 #ifndef _INTEL_BIOS_H_
 #define _INTEL_BIOS_H_
@@ -58,26 +33,20 @@ struct edp_power_seq {
 	u16 t11_t12;
 } __packed;
 
-/*
- * MIPI Sequence Block definitions
- *
- * Note the VBT spec has AssertReset / DeassertReset swapped from their
- * usual naming, we use the proper names here to avoid confusion when
- * reading the code.
- */
+ 
 enum mipi_seq {
 	MIPI_SEQ_END = 0,
-	MIPI_SEQ_DEASSERT_RESET,	/* Spec says MipiAssertResetPin */
+	MIPI_SEQ_DEASSERT_RESET,	 
 	MIPI_SEQ_INIT_OTP,
 	MIPI_SEQ_DISPLAY_ON,
 	MIPI_SEQ_DISPLAY_OFF,
-	MIPI_SEQ_ASSERT_RESET,		/* Spec says MipiDeassertResetPin */
-	MIPI_SEQ_BACKLIGHT_ON,		/* sequence block v2+ */
-	MIPI_SEQ_BACKLIGHT_OFF,		/* sequence block v2+ */
-	MIPI_SEQ_TEAR_ON,		/* sequence block v2+ */
-	MIPI_SEQ_TEAR_OFF,		/* sequence block v3+ */
-	MIPI_SEQ_POWER_ON,		/* sequence block v3+ */
-	MIPI_SEQ_POWER_OFF,		/* sequence block v3+ */
+	MIPI_SEQ_ASSERT_RESET,		 
+	MIPI_SEQ_BACKLIGHT_ON,		 
+	MIPI_SEQ_BACKLIGHT_OFF,		 
+	MIPI_SEQ_TEAR_ON,		 
+	MIPI_SEQ_TEAR_OFF,		 
+	MIPI_SEQ_POWER_ON,		 
+	MIPI_SEQ_POWER_OFF,		 
 	MIPI_SEQ_MAX
 };
 
@@ -86,9 +55,9 @@ enum mipi_seq_element {
 	MIPI_SEQ_ELEM_SEND_PKT,
 	MIPI_SEQ_ELEM_DELAY,
 	MIPI_SEQ_ELEM_GPIO,
-	MIPI_SEQ_ELEM_I2C,		/* sequence block v2+ */
-	MIPI_SEQ_ELEM_SPI,		/* sequence block v3+ */
-	MIPI_SEQ_ELEM_PMIC,		/* sequence block v3+ */
+	MIPI_SEQ_ELEM_I2C,		 
+	MIPI_SEQ_ELEM_SPI,		 
+	MIPI_SEQ_ELEM_PMIC,		 
 	MIPI_SEQ_ELEM_MAX
 };
 
@@ -98,7 +67,7 @@ enum mipi_seq_element {
 struct mipi_config {
 	u16 panel_id;
 
-	/* General Params */
+	 
 	u32 enable_dithering:1;
 	u32 rsvd1:1;
 	u32 is_bridge:1;
@@ -116,14 +85,14 @@ struct mipi_config {
 #define PPS_BLC_SOC    1
 	u32 pwm_blc:1;
 
-	/* Bit 13:10 */
+	 
 #define PIXEL_FORMAT_RGB565			0x1
 #define PIXEL_FORMAT_RGB666			0x2
 #define PIXEL_FORMAT_RGB666_LOOSELY_PACKED	0x3
 #define PIXEL_FORMAT_RGB888			0x4
 	u32 videomode_color_format:4;
 
-	/* Bit 15:14 */
+	 
 #define ENABLE_ROTATION_0	0x0
 #define ENABLE_ROTATION_90	0x1
 #define ENABLE_ROTATION_180	0x2
@@ -132,7 +101,7 @@ struct mipi_config {
 	u32 bta_enabled:1;
 	u32 rsvd2:15;
 
-	/* 2 byte Port Description */
+	 
 #define DUAL_LINK_NOT_SUPPORTED	0
 #define DUAL_LINK_FRONT_BACK	1
 #define DUAL_LINK_PIXEL_ALT	2
@@ -161,7 +130,7 @@ struct mipi_config {
 
 	u8 rsvd6:6;
 
-	/* DPHY Flags */
+	 
 	u16 dphy_param_valid:1;
 	u16 eot_pkt_disabled:1;
 	u16 enable_clk_stop:1;
@@ -175,7 +144,7 @@ struct mipi_config {
 	u32 dbi_bw_timer;
 	u32 lp_byte_clk_val;
 
-	/*  4 byte Dphy Params */
+	 
 	u32 prepare_cnt:6;
 	u32 rsvd8:2;
 	u32 clk_zero_cnt:8;
@@ -189,7 +158,7 @@ struct mipi_config {
 
 	u32 rsvd11[6];
 
-	/* timings based on dphy spec */
+	 
 	u8 tclk_miss;
 	u8 tclk_post;
 	u8 rsvd12;
@@ -213,7 +182,7 @@ struct mipi_config {
 	u8 tlpx;
 	u8 rsvd15[3];
 
-	/* GPIOs */
+	 
 	u8 panel_enable;
 	u8 bl_enable;
 	u8 pwm_enable;
@@ -223,7 +192,7 @@ struct mipi_config {
 
 } __packed;
 
-/* all delays have a unit of 100us */
+ 
 struct mipi_pps_data {
 	u16 panel_on_delay;
 	u16 bl_enable_delay;
@@ -283,4 +252,4 @@ void intel_bios_for_each_encoder(struct drm_i915_private *i915,
 				 void (*func)(struct drm_i915_private *i915,
 					      const struct intel_bios_encoder_data *devdata));
 
-#endif /* _INTEL_BIOS_H_ */
+#endif  

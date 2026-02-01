@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2016 Linaro Ltd;  <ard.biesheuvel@linaro.org>
- */
+
+ 
 
 #include <linux/efi.h>
 #include <linux/log2.h>
@@ -9,11 +7,7 @@
 
 #include "efistub.h"
 
-/*
- * Return the number of slots covered by this entry, i.e., the number of
- * addresses it covers that are suitably aligned and supply enough room
- * for the allocation.
- */
+ 
 static unsigned long get_entry_num_slots(efi_memory_desc_t *md,
 					 unsigned long size,
 					 unsigned long align_shift,
@@ -43,12 +37,7 @@ static unsigned long get_entry_num_slots(efi_memory_desc_t *md,
 	return ((unsigned long)(last_slot - first_slot) >> align_shift) + 1;
 }
 
-/*
- * The UEFI memory descriptors have a virtual address field that is only used
- * when installing the virtual mapping using SetVirtualAddressMap(). Since it
- * is unused here, we can reuse it to keep track of each descriptor's slot
- * count.
- */
+ 
 #define MD_NUM_SLOTS(md)	((md)->virt_addr)
 
 efi_status_t efi_random_alloc(unsigned long size,
@@ -73,7 +62,7 @@ efi_status_t efi_random_alloc(unsigned long size,
 
 	size = round_up(size, EFI_ALLOC_ALIGN);
 
-	/* count the suitable slots in each memory map entry */
+	 
 	for (map_offset = 0; map_offset < map->map_size; map_offset += map->desc_size) {
 		efi_memory_desc_t *md = (void *)map->map + map_offset;
 		unsigned long slots;
@@ -85,24 +74,14 @@ efi_status_t efi_random_alloc(unsigned long size,
 			total_mirrored_slots += slots;
 	}
 
-	/* consider only mirrored slots for randomization if any exist */
+	 
 	if (total_mirrored_slots > 0)
 		total_slots = total_mirrored_slots;
 
-	/* find a random number between 0 and total_slots */
+	 
 	target_slot = (total_slots * (u64)(random_seed & U32_MAX)) >> 32;
 
-	/*
-	 * target_slot is now a value in the range [0, total_slots), and so
-	 * it corresponds with exactly one of the suitable slots we recorded
-	 * when iterating over the memory map the first time around.
-	 *
-	 * So iterate over the memory map again, subtracting the number of
-	 * slots of each entry at each iteration, until we have found the entry
-	 * that covers our chosen slot. Use the residual value of target_slot
-	 * to calculate the randomly chosen address, and allocate it directly
-	 * using EFI_ALLOCATE_ADDRESS.
-	 */
+	 
 	status = EFI_OUT_OF_RESOURCES;
 	for (map_offset = 0; map_offset < map->map_size; map_offset += map->desc_size) {
 		efi_memory_desc_t *md = (void *)map->map + map_offset;

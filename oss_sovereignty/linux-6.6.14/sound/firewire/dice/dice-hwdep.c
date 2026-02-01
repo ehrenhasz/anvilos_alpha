@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * dice_hwdep.c - a part of driver for DICE based devices
- *
- * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
- * Copyright (c) 2014 Takashi Sakamoto <o-takashi@sakamocchi.jp>
- */
+
+ 
 
 #include "dice.h"
 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2014 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_LRC_H__
 #define __INTEL_LRC_H__
@@ -19,14 +17,14 @@ struct intel_engine_cs;
 struct intel_ring;
 struct kref;
 
-/* At the start of the context image is its per-process HWS page */
+ 
 #define LRC_PPHWSP_PN	(0)
 #define LRC_PPHWSP_SZ	(1)
-/* After the PPHWSP we have the logical state for the context */
+ 
 #define LRC_STATE_PN	(LRC_PPHWSP_PN + LRC_PPHWSP_SZ)
 #define LRC_STATE_OFFSET (LRC_STATE_PN * PAGE_SIZE)
 
-/* Space within PPHWSP reserved to be used as scratch */
+ 
 #define LRC_PPHWSP_SCRATCH		0x34
 #define LRC_PPHWSP_SCRATCH_ADDR		(LRC_PPHWSP_SCRATCH * sizeof(u32))
 
@@ -82,9 +80,9 @@ enum {
 
 enum {
 	FAULT_AND_HANG = 0,
-	FAULT_AND_HALT, /* Debug only */
+	FAULT_AND_HALT,  
 	FAULT_AND_STREAM,
-	FAULT_AND_CONTINUE /* Unsupported */
+	FAULT_AND_CONTINUE  
 };
 
 #define CTX_GTT_ADDRESS_MASK			GENMASK(31, 12)
@@ -142,4 +140,4 @@ static inline void lrc_runtime_stop(struct intel_context *ce)
 
 u32 lrc_indirect_bb(const struct intel_context *ce);
 
-#endif /* __INTEL_LRC_H__ */
+#endif  

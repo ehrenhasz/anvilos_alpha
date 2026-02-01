@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/******************************************************************************
-*******************************************************************************
-**
-**  Copyright (C) Sistina Software, Inc.  1997-2003  All rights reserved.
-**  Copyright (C) 2004-2005 Red Hat, Inc.  All rights reserved.
-**
-**
-*******************************************************************************
-******************************************************************************/
+
+ 
 
 #include "dlm_internal.h"
 #include "lockspace.h"
@@ -21,14 +13,7 @@
 #include "lock.h"
 #include "dir.h"
 
-/*
- * We use the upper 16 bits of the hash value to select the directory node.
- * Low bits are used for distribution of rsb's among hash buckets on each node.
- *
- * To give the exact range wanted (0 to num_nodes-1), we apply a modulus of
- * num_nodes to the hash value.  This value in the desired range is used as an
- * offset into the sorted list of nodeid's to give the particular nodeid.
- */
+ 
 
 int dlm_hash2nodeid(struct dlm_ls *ls, uint32_t hash)
 {
@@ -96,9 +81,7 @@ int dlm_recover_directory(struct dlm_ls *ls, uint64_t seq)
 
 			cond_resched();
 
-			/*
-			 * pick namelen/name pairs out of received buffer
-			 */
+			 
 
 			b = ls->ls_recover_buf->rc_buf;
 			left = le16_to_cpu(ls->ls_recover_buf->rc_header.h_length);
@@ -116,9 +99,7 @@ int dlm_recover_directory(struct dlm_ls *ls, uint64_t seq)
 				b += sizeof(__be16);
 				left -= sizeof(__be16);
 
-				/* namelen of 0xFFFFF marks end of names for
-				   this node; namelen of 0 marks end of the
-				   buffer */
+				 
 
 				if (namelen == 0xFFFF)
 					goto done;
@@ -141,10 +122,7 @@ int dlm_recover_directory(struct dlm_ls *ls, uint64_t seq)
 					goto out_free;
 				}
 
-				/* The name was found in rsbtbl, but the
-				 * master nodeid is different from
-				 * memb->nodeid which says it is the master.
-				 * This should not happen. */
+				 
 
 				if (result == DLM_LU_MATCH &&
 				    nodeid != memb->nodeid) {
@@ -158,16 +136,14 @@ int dlm_recover_directory(struct dlm_ls *ls, uint64_t seq)
 							     b, namelen);
 				}
 
-				/* The name was found in rsbtbl, and the
-				 * master nodeid matches memb->nodeid. */
+				 
 
 				if (result == DLM_LU_MATCH &&
 				    nodeid == memb->nodeid) {
 					count_match++;
 				}
 
-				/* The name was not found in rsbtbl and was
-				 * added with memb->nodeid as the master. */
+				 
 
 				if (result == DLM_LU_ADD) {
 					count_add++;
@@ -229,9 +205,7 @@ static struct dlm_rsb *find_rsb_root(struct dlm_ls *ls, const char *name,
 	return NULL;
 }
 
-/* Find the rsb where we left off (or start again), then send rsb names
-   for rsb's we're master of and whose directory node matches the requesting
-   node.  inbuf is the rsb name last sent, inlen is the name's length */
+ 
 
 void dlm_copy_master_names(struct dlm_ls *ls, const char *inbuf, int inlen,
  			   char *outbuf, int outlen, int nodeid)
@@ -264,16 +238,10 @@ void dlm_copy_master_names(struct dlm_ls *ls, const char *inbuf, int inlen,
 		if (dir_nodeid != nodeid)
 			continue;
 
-		/*
-		 * The block ends when we can't fit the following in the
-		 * remaining buffer space:
-		 * namelen (uint16_t) +
-		 * name (r->res_length) +
-		 * end-of-block record 0x0000 (uint16_t)
-		 */
+		 
 
 		if (offset + sizeof(uint16_t)*2 + r->res_length > outlen) {
-			/* Write end-of-block record */
+			 
 			be_namelen = cpu_to_be16(0);
 			memcpy(outbuf + offset, &be_namelen, sizeof(__be16));
 			offset += sizeof(__be16);
@@ -289,10 +257,7 @@ void dlm_copy_master_names(struct dlm_ls *ls, const char *inbuf, int inlen,
 		ls->ls_recover_dir_sent_res++;
 	}
 
-	/*
-	 * If we've reached the end of the list (and there's room) write a
-	 * terminating record.
-	 */
+	 
 
 	if ((list == &ls->ls_root_list) &&
 	    (offset + sizeof(uint16_t) <= outlen)) {

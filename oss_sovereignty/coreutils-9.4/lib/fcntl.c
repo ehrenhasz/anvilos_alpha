@@ -1,25 +1,8 @@
-/* Provide file descriptor control.
-
-   Copyright (C) 2009-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Eric Blake <ebb9@byu.net>.  */
+ 
 
 #include <config.h>
 
-/* Specification.  */
+ 
 #include <fcntl.h>
 
 #include <errno.h>
@@ -34,28 +17,25 @@
 #endif
 
 #if defined _WIN32 && ! defined __CYGWIN__
-/* Get declarations of the native Windows API functions.  */
+ 
 # define WIN32_LEAN_AND_MEAN
 # include <windows.h>
 
-/* Get _get_osfhandle.  */
+ 
 # if GNULIB_MSVC_NOTHROW
 #  include "msvc-nothrow.h"
 # else
 #  include <io.h>
 # endif
 
-/* Upper bound on getdtablesize().  See lib/getdtablesize.c.  */
+ 
 # define OPEN_MAX_MAX 0x10000
 
-/* Duplicate OLDFD into the first available slot of at least NEWFD,
-   which must be positive, with FLAGS determining whether the duplicate
-   will be inheritable.  */
+ 
 static int
 dupfd (int oldfd, int newfd, int flags)
 {
-  /* Mingw has no way to create an arbitrary fd.  Iterate until all
-     file descriptors less than newfd are filled up.  */
+   
   HANDLE curr_process = GetCurrentProcess ();
   HANDLE old_handle = (HANDLE) _get_osfhandle (oldfd);
   unsigned char fds_to_close[OPEN_MAX_MAX / CHAR_BIT];
@@ -72,8 +52,7 @@ dupfd (int oldfd, int newfd, int flags)
   if (old_handle == INVALID_HANDLE_VALUE
       || (mode = _setmode (oldfd, O_BINARY)) == -1)
     {
-      /* oldfd is not open, or is an unassigned standard file
-         descriptor.  */
+       
       errno = EBADF;
       return -1;
     }
@@ -86,13 +65,13 @@ dupfd (int oldfd, int newfd, int flags)
       int duplicated_fd;
       unsigned int index;
 
-      if (!DuplicateHandle (curr_process,           /* SourceProcessHandle */
-                            old_handle,             /* SourceHandle */
-                            curr_process,           /* TargetProcessHandle */
-                            (PHANDLE) &new_handle,  /* TargetHandle */
-                            (DWORD) 0,              /* DesiredAccess */
-                            inherit,                /* InheritHandle */
-                            DUPLICATE_SAME_ACCESS)) /* Options */
+      if (!DuplicateHandle (curr_process,            
+                            old_handle,              
+                            curr_process,            
+                            (PHANDLE) &new_handle,   
+                            (DWORD) 0,               
+                            inherit,                 
+                            DUPLICATE_SAME_ACCESS))  
         {
           switch (GetLastError ())
             {
@@ -129,12 +108,12 @@ dupfd (int oldfd, int newfd, int flags)
           break;
         }
 
-      /* Set the bit duplicated_fd in fds_to_close[].  */
+       
       index = (unsigned int) duplicated_fd / CHAR_BIT;
       if (fds_to_close_bound <= index)
         {
           if (sizeof fds_to_close <= index)
-            /* Need to increase OPEN_MAX_MAX.  */
+             
             abort ();
           memset (fds_to_close + fds_to_close_bound, '\0',
                   index + 1 - fds_to_close_bound);
@@ -143,7 +122,7 @@ dupfd (int oldfd, int newfd, int flags)
       fds_to_close[index] |= 1 << ((unsigned int) duplicated_fd % CHAR_BIT);
     }
 
-  /* Close the previous fds that turned out to be too small.  */
+   
   {
     int saved_errno = errno;
     unsigned int duplicated_fd;
@@ -165,41 +144,23 @@ dupfd (int oldfd, int newfd, int flags)
 # endif
   return result;
 }
-#endif /* W32 */
+#endif  
 
-/* Forward declarations, because we '#undef fcntl' in the middle of this
-   compilation unit.  */
-/* Our implementation of fcntl (fd, F_DUPFD, target).  */
+ 
+ 
 static int rpl_fcntl_DUPFD (int fd, int target);
-/* Our implementation of fcntl (fd, F_DUPFD_CLOEXEC, target).  */
+ 
 static int rpl_fcntl_DUPFD_CLOEXEC (int fd, int target);
 #ifdef __KLIBC__
-/* Adds support for fcntl on directories.  */
-static int klibc_fcntl (int fd, int action, /* arg */...);
+ 
+static int klibc_fcntl (int fd, int action,  ...);
 #endif
 
 
-/* Perform the specified ACTION on the file descriptor FD, possibly
-   using the argument ARG further described below.  This replacement
-   handles the following actions, and forwards all others on to the
-   native fcntl.  An unrecognized ACTION returns -1 with errno set to
-   EINVAL.
-
-   F_DUPFD - duplicate FD, with int ARG being the minimum target fd.
-   If successful, return the duplicate, which will be inheritable;
-   otherwise return -1 and set errno.
-
-   F_DUPFD_CLOEXEC - duplicate FD, with int ARG being the minimum
-   target fd.  If successful, return the duplicate, which will not be
-   inheritable; otherwise return -1 and set errno.
-
-   F_GETFD - ARG need not be present.  If successful, return a
-   non-negative value containing the descriptor flags of FD (only
-   FD_CLOEXEC is portable, but other flags may be present); otherwise
-   return -1 and set errno.  */
+ 
 
 int
-fcntl (int fd, int action, /* arg */...)
+fcntl (int fd, int action,  ...)
 #undef fcntl
 #ifdef __KLIBC__
 # define fcntl klibc_fcntl
@@ -235,190 +196,183 @@ fcntl (int fd, int action, /* arg */...)
           errno = EBADF;
         else
           result = (flags & HANDLE_FLAG_INHERIT) ? 0 : FD_CLOEXEC;
-# else /* !W32 */
-        /* Use dup2 to reject invalid file descriptors.  No way to
-           access this information, so punt.  */
+# else  
+         
         if (0 <= dup2 (fd, fd))
           result = 0;
-# endif /* !W32 */
+# endif  
         break;
-      } /* F_GETFD */
-#endif /* !HAVE_FCNTL */
+      }  
+#endif  
 
-      /* Implementing F_SETFD on mingw is not trivial - there is no
-         API for changing the O_NOINHERIT bit on an fd, and merely
-         changing the HANDLE_FLAG_INHERIT bit on the underlying handle
-         can lead to odd state.  It may be possible by duplicating the
-         handle, using _open_osfhandle with the right flags, then
-         using dup2 to move the duplicate onto the original, but that
-         is not supported for now.  */
+       
 
     default:
       {
 #if HAVE_FCNTL
         switch (action)
           {
-          #ifdef F_BARRIERFSYNC                  /* macOS */
+          #ifdef F_BARRIERFSYNC                   
           case F_BARRIERFSYNC:
           #endif
-          #ifdef F_CHKCLEAN                      /* macOS */
+          #ifdef F_CHKCLEAN                       
           case F_CHKCLEAN:
           #endif
-          #ifdef F_CLOSEM                        /* NetBSD, HP-UX */
+          #ifdef F_CLOSEM                         
           case F_CLOSEM:
           #endif
-          #ifdef F_FLUSH_DATA                    /* macOS */
+          #ifdef F_FLUSH_DATA                     
           case F_FLUSH_DATA:
           #endif
-          #ifdef F_FREEZE_FS                     /* macOS */
+          #ifdef F_FREEZE_FS                      
           case F_FREEZE_FS:
           #endif
-          #ifdef F_FULLFSYNC                     /* macOS */
+          #ifdef F_FULLFSYNC                      
           case F_FULLFSYNC:
           #endif
-          #ifdef F_GETCONFINED                   /* macOS */
+          #ifdef F_GETCONFINED                    
           case F_GETCONFINED:
           #endif
-          #ifdef F_GETDEFAULTPROTLEVEL           /* macOS */
+          #ifdef F_GETDEFAULTPROTLEVEL            
           case F_GETDEFAULTPROTLEVEL:
           #endif
-          #ifdef F_GETFD                         /* POSIX */
+          #ifdef F_GETFD                          
           case F_GETFD:
           #endif
-          #ifdef F_GETFL                         /* POSIX */
+          #ifdef F_GETFL                          
           case F_GETFL:
           #endif
-          #ifdef F_GETLEASE                      /* Linux */
+          #ifdef F_GETLEASE                       
           case F_GETLEASE:
           #endif
-          #ifdef F_GETNOSIGPIPE                  /* macOS */
+          #ifdef F_GETNOSIGPIPE                   
           case F_GETNOSIGPIPE:
           #endif
-          #ifdef F_GETOWN                        /* POSIX */
+          #ifdef F_GETOWN                         
           case F_GETOWN:
           #endif
-          #ifdef F_GETPIPE_SZ                    /* Linux */
+          #ifdef F_GETPIPE_SZ                     
           case F_GETPIPE_SZ:
           #endif
-          #ifdef F_GETPROTECTIONCLASS            /* macOS */
+          #ifdef F_GETPROTECTIONCLASS             
           case F_GETPROTECTIONCLASS:
           #endif
-          #ifdef F_GETPROTECTIONLEVEL            /* macOS */
+          #ifdef F_GETPROTECTIONLEVEL             
           case F_GETPROTECTIONLEVEL:
           #endif
-          #ifdef F_GET_SEALS                     /* Linux */
+          #ifdef F_GET_SEALS                      
           case F_GET_SEALS:
           #endif
-          #ifdef F_GETSIG                        /* Linux */
+          #ifdef F_GETSIG                         
           case F_GETSIG:
           #endif
-          #ifdef F_MAXFD                         /* NetBSD */
+          #ifdef F_MAXFD                          
           case F_MAXFD:
           #endif
-          #ifdef F_RECYCLE                       /* macOS */
+          #ifdef F_RECYCLE                        
           case F_RECYCLE:
           #endif
-          #ifdef F_SETFIFOENH                    /* HP-UX */
+          #ifdef F_SETFIFOENH                     
           case F_SETFIFOENH:
           #endif
-          #ifdef F_THAW_FS                       /* macOS */
+          #ifdef F_THAW_FS                        
           case F_THAW_FS:
           #endif
-            /* These actions take no argument.  */
+             
             result = fcntl (fd, action);
             break;
 
-          #ifdef F_ADD_SEALS                     /* Linux */
+          #ifdef F_ADD_SEALS                      
           case F_ADD_SEALS:
           #endif
-          #ifdef F_BADFD                         /* Solaris */
+          #ifdef F_BADFD                          
           case F_BADFD:
           #endif
-          #ifdef F_CHECK_OPENEVT                 /* macOS */
+          #ifdef F_CHECK_OPENEVT                  
           case F_CHECK_OPENEVT:
           #endif
-          #ifdef F_DUP2FD                        /* FreeBSD, AIX, Solaris */
+          #ifdef F_DUP2FD                         
           case F_DUP2FD:
           #endif
-          #ifdef F_DUP2FD_CLOEXEC                /* FreeBSD, Solaris */
+          #ifdef F_DUP2FD_CLOEXEC                 
           case F_DUP2FD_CLOEXEC:
           #endif
-          #ifdef F_DUP2FD_CLOFORK                /* Solaris */
+          #ifdef F_DUP2FD_CLOFORK                 
           case F_DUP2FD_CLOFORK:
           #endif
-          #ifdef F_DUPFD                         /* POSIX */
+          #ifdef F_DUPFD                          
           case F_DUPFD:
           #endif
-          #ifdef F_DUPFD_CLOEXEC                 /* POSIX */
+          #ifdef F_DUPFD_CLOEXEC                  
           case F_DUPFD_CLOEXEC:
           #endif
-          #ifdef F_DUPFD_CLOFORK                 /* Solaris */
+          #ifdef F_DUPFD_CLOFORK                  
           case F_DUPFD_CLOFORK:
           #endif
-          #ifdef F_GETXFL                        /* Solaris */
+          #ifdef F_GETXFL                         
           case F_GETXFL:
           #endif
-          #ifdef F_GLOBAL_NOCACHE                /* macOS */
+          #ifdef F_GLOBAL_NOCACHE                 
           case F_GLOBAL_NOCACHE:
           #endif
-          #ifdef F_MAKECOMPRESSED                /* macOS */
+          #ifdef F_MAKECOMPRESSED                 
           case F_MAKECOMPRESSED:
           #endif
-          #ifdef F_MOVEDATAEXTENTS               /* macOS */
+          #ifdef F_MOVEDATAEXTENTS                
           case F_MOVEDATAEXTENTS:
           #endif
-          #ifdef F_NOCACHE                       /* macOS */
+          #ifdef F_NOCACHE                        
           case F_NOCACHE:
           #endif
-          #ifdef F_NODIRECT                      /* macOS */
+          #ifdef F_NODIRECT                       
           case F_NODIRECT:
           #endif
-          #ifdef F_NOTIFY                        /* Linux */
+          #ifdef F_NOTIFY                         
           case F_NOTIFY:
           #endif
-          #ifdef F_OPLKACK                       /* IRIX */
+          #ifdef F_OPLKACK                        
           case F_OPLKACK:
           #endif
-          #ifdef F_OPLKREG                       /* IRIX */
+          #ifdef F_OPLKREG                        
           case F_OPLKREG:
           #endif
-          #ifdef F_RDAHEAD                       /* macOS */
+          #ifdef F_RDAHEAD                        
           case F_RDAHEAD:
           #endif
-          #ifdef F_SETBACKINGSTORE               /* macOS */
+          #ifdef F_SETBACKINGSTORE                
           case F_SETBACKINGSTORE:
           #endif
-          #ifdef F_SETCONFINED                   /* macOS */
+          #ifdef F_SETCONFINED                    
           case F_SETCONFINED:
           #endif
-          #ifdef F_SETFD                         /* POSIX */
+          #ifdef F_SETFD                          
           case F_SETFD:
           #endif
-          #ifdef F_SETFL                         /* POSIX */
+          #ifdef F_SETFL                          
           case F_SETFL:
           #endif
-          #ifdef F_SETLEASE                      /* Linux */
+          #ifdef F_SETLEASE                       
           case F_SETLEASE:
           #endif
-          #ifdef F_SETNOSIGPIPE                  /* macOS */
+          #ifdef F_SETNOSIGPIPE                   
           case F_SETNOSIGPIPE:
           #endif
-          #ifdef F_SETOWN                        /* POSIX */
+          #ifdef F_SETOWN                         
           case F_SETOWN:
           #endif
-          #ifdef F_SETPIPE_SZ                    /* Linux */
+          #ifdef F_SETPIPE_SZ                     
           case F_SETPIPE_SZ:
           #endif
-          #ifdef F_SETPROTECTIONCLASS            /* macOS */
+          #ifdef F_SETPROTECTIONCLASS             
           case F_SETPROTECTIONCLASS:
           #endif
-          #ifdef F_SETSIG                        /* Linux */
+          #ifdef F_SETSIG                         
           case F_SETSIG:
           #endif
-          #ifdef F_SINGLE_WRITER                 /* macOS */
+          #ifdef F_SINGLE_WRITER                  
           case F_SINGLE_WRITER:
           #endif
-            /* These actions take an 'int' argument.  */
+             
             {
               int x = va_arg (arg, int);
               result = fcntl (fd, action, x);
@@ -426,7 +380,7 @@ fcntl (int fd, int action, /* arg */...)
             break;
 
           default:
-            /* Other actions take a pointer argument.  */
+             
             {
               void *p = va_arg (arg, void *);
               result = fcntl (fd, action, p);
@@ -450,7 +404,7 @@ rpl_fcntl_DUPFD (int fd, int target)
 #if !HAVE_FCNTL
   result = dupfd (fd, target, 0);
 #elif FCNTL_DUPFD_BUGGY || REPLACE_FCHDIR
-  /* Detect invalid target; needed for cygwin 1.5.x.  */
+   
   if (target < 0 || getdtablesize () <= target)
     {
       result = -1;
@@ -458,7 +412,7 @@ rpl_fcntl_DUPFD (int fd, int target)
     }
   else
     {
-      /* Haiku alpha 2 loses fd flags on original.  */
+       
       int flags = fcntl (fd, F_GETFD);
       if (flags < 0)
         result = -1;
@@ -490,22 +444,13 @@ rpl_fcntl_DUPFD_CLOEXEC (int fd, int target)
   int result;
 #if !HAVE_FCNTL
   result = dupfd (fd, target, O_CLOEXEC);
-#else /* HAVE_FCNTL */
+#else  
 # if defined __NetBSD__ || defined __HAIKU__
-  /* On NetBSD 9.0, the system fcntl (fd, F_DUPFD_CLOEXEC, target)
-     has only the same effect as fcntl (fd, F_DUPFD, target).  */
-  /* On Haiku, the system fcntl (fd, F_DUPFD_CLOEXEC, target) sets
-     the FD_CLOEXEC flag on fd, not on target.  Therefore avoid the
-     system fcntl in this case.  */
+   
+   
 #  define have_dupfd_cloexec -1
 # else
-  /* Try the system call first, if the headers claim it exists
-     (that is, if GNULIB_defined_F_DUPFD_CLOEXEC is 0), since we
-     may be running with a glibc that has the macro but with an
-     older kernel that does not support it.  Cache the
-     information on whether the system call really works, but
-     avoid caching failure if the corresponding F_DUPFD fails
-     for any reason.  0 = unknown, 1 = yes, -1 = no.  */
+   
   static int have_dupfd_cloexec = GNULIB_defined_F_DUPFD_CLOEXEC ? -1 : 0;
   if (0 <= have_dupfd_cloexec)
     {
@@ -539,7 +484,7 @@ rpl_fcntl_DUPFD_CLOEXEC (int fd, int target)
           result = -1;
         }
     }
-#endif /* HAVE_FCNTL */
+#endif  
   return result;
 }
 
@@ -548,7 +493,7 @@ rpl_fcntl_DUPFD_CLOEXEC (int fd, int target)
 #ifdef __KLIBC__
 
 static int
-klibc_fcntl (int fd, int action, /* arg */...)
+klibc_fcntl (int fd, int action,  ...)
 {
   va_list arg_ptr;
   int arg;
@@ -558,7 +503,7 @@ klibc_fcntl (int fd, int action, /* arg */...)
   va_start (arg_ptr, action);
   arg = va_arg (arg_ptr, int);
   result = fcntl (fd, action, arg);
-  /* EPERM for F_DUPFD, ENOTSUP for others */
+   
   if (result == -1 && (errno == EPERM || errno == ENOTSUP)
       && !fstat (fd, &sbuf) && S_ISDIR (sbuf.st_mode))
     {
@@ -567,14 +512,14 @@ klibc_fcntl (int fd, int action, /* arg */...)
       switch (action)
         {
         case F_DUPFD:
-          /* Find available fd */
+           
           while (fcntl (arg, F_GETFL) != -1 || errno != EBADF)
             arg++;
 
           result = dup2 (fd, arg);
           break;
 
-        /* Using underlying APIs is right ? */
+         
         case F_GETFD:
           if (DosQueryFHState (fd, &ulMode))
             break;
@@ -594,7 +539,7 @@ klibc_fcntl (int fd, int action, /* arg */...)
           else
             ulMode &= ~OPEN_FLAGS_NOINHERIT;
 
-          /* Filter supported flags.  */
+           
           ulMode &= (OPEN_FLAGS_WRITE_THROUGH | OPEN_FLAGS_FAIL_ON_ERROR
                      | OPEN_FLAGS_NO_CACHE | OPEN_FLAGS_NOINHERIT);
 

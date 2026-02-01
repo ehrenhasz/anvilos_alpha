@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Copyright (c) 2021 IBM Corp. */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -76,7 +76,7 @@ static int kcs_bmc_serio_add_device(struct kcs_bmc_device *kcs_bmc)
 	if (!priv)
 		return -ENOMEM;
 
-	/* Use kzalloc() as the allocation is cleaned up with kfree() via serio_unregister_port() */
+	 
 	port = kzalloc(sizeof(*port), GFP_KERNEL);
 	if (!port)
 		return -ENOMEM;
@@ -120,10 +120,10 @@ static int kcs_bmc_serio_remove_device(struct kcs_bmc_device *kcs_bmc)
 	if (!priv)
 		return -ENODEV;
 
-	/* kfree()s priv->port via put_device() */
+	 
 	serio_unregister_port(priv->port);
 
-	/* Ensure the IBF IRQ is disabled if we were the active client */
+	 
 	kcs_bmc_disable_device(kcs_bmc, &priv->client);
 
 	devm_kfree(priv->client.dev->dev, priv);

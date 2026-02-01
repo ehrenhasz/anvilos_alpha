@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2009 Nokia Corporation
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- *
- * VENC settings from TI's DSS driver
- */
+
+ 
 
 #define DSS_SUBSYS_NAME "VENC"
 
@@ -30,7 +25,7 @@
 #include "omapdss.h"
 #include "dss.h"
 
-/* Venc registers */
+ 
 #define VENC_REV_ID				0x00
 #define VENC_STATUS				0x04
 #define VENC_F_CONTROL				0x08
@@ -118,13 +113,13 @@ struct venc_config {
 	u32 gen_ctrl;
 };
 
-/* from TRM */
+ 
 static const struct venc_config venc_config_pal_trm = {
 	.f_control				= 0,
 	.vidout_ctrl				= 1,
 	.sync_ctrl				= 0x40,
-	.llen					= 0x35F, /* 863 */
-	.flens					= 0x270, /* 624 */
+	.llen					= 0x35F,  
+	.flens					= 0x270,  
 	.hfltr_ctrl				= 0,
 	.cc_carr_wss_carr			= 0x2F7225ED,
 	.c_phase				= 0,
@@ -163,7 +158,7 @@ static const struct venc_config venc_config_pal_trm = {
 	.gen_ctrl				= 0x00FF0000,
 };
 
-/* from TRM */
+ 
 static const struct venc_config venc_config_ntsc_trm = {
 	.f_control				= 0,
 	.vidout_ctrl				= 1,
@@ -348,8 +343,8 @@ static void venc_reset(struct venc_device *venc)
 	}
 
 #ifdef CONFIG_OMAP2_DSS_SLEEP_AFTER_VENC_RESET
-	/* the magical sleep that makes things work */
-	/* XXX more info? What bug this circumvents? */
+	 
+	 
 	msleep(20);
 #endif
 }
@@ -397,7 +392,7 @@ static int venc_power_on(struct venc_device *venc)
 
 	if (venc->type == OMAP_DSS_VENC_TYPE_COMPOSITE)
 		l |= 1 << 1;
-	else /* S-Video */
+	else  
 		l |= (1 << 0) | (1 << 2);
 
 	if (venc->invert_polarity == false)
@@ -533,9 +528,7 @@ static int venc_get_clocks(struct venc_device *venc)
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * DRM Bridge Operations
- */
+ 
 
 static int venc_bridge_attach(struct drm_bridge *bridge,
 			      enum drm_bridge_attach_flags flags)
@@ -677,9 +670,7 @@ static void venc_bridge_cleanup(struct venc_device *venc)
 	drm_bridge_remove(&venc->bridge);
 }
 
-/* -----------------------------------------------------------------------------
- * Component Bind & Unbind
- */
+ 
 
 static int venc_bind(struct device *dev, struct device *master, void *data)
 {
@@ -717,9 +708,7 @@ static const struct component_ops venc_component_ops = {
 	.unbind	= venc_unbind,
 };
 
-/* -----------------------------------------------------------------------------
- * Probe & Remove, Suspend & Resume
- */
+ 
 
 static int venc_init_output(struct venc_device *venc)
 {
@@ -800,7 +789,7 @@ err:
 static const struct soc_device_attribute venc_soc_devices[] = {
 	{ .machine = "OMAP3[45]*" },
 	{ .machine = "AM35*" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int venc_probe(struct platform_device *pdev)
@@ -816,7 +805,7 @@ static int venc_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, venc);
 
-	/* The OMAP34xx, OMAP35xx and AM35xx VENC require the TV DAC clock. */
+	 
 	if (soc_device_match(venc_soc_devices))
 		venc->requires_tv_dac_clk = true;
 

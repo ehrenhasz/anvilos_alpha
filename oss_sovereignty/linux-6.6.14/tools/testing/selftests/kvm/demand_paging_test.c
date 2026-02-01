@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * KVM demand paging test
- * Adapted from dirty_log_test.c
- *
- * Copyright (C) 2018, Red Hat, Inc.
- * Copyright (C) 2019, Google, Inc.
- */
 
-#define _GNU_SOURCE /* for pipe2 */
+ 
+
+#define _GNU_SOURCE  
 
 #include <inttypes.h>
 #include <stdio.h>
@@ -43,7 +37,7 @@ static void vcpu_worker(struct memstress_vcpu_args *vcpu_args)
 
 	clock_gettime(CLOCK_MONOTONIC, &start);
 
-	/* Let the guest access its memory */
+	 
 	ret = _vcpu_run(vcpu);
 	TEST_ASSERT(ret == 0, "vcpu_run failed: %d\n", ret);
 	if (get_ucall(vcpu, NULL) != UCALL_SYNC) {
@@ -162,12 +156,9 @@ static void run_test(enum vm_guest_mode mode, void *arg)
 
 			vcpu_args = &memstress_args.vcpu_args[i];
 
-			/* Cache the host addresses of the region */
+			 
 			vcpu_hva = addr_gpa2hva(vm, vcpu_args->gpa);
-			/*
-			 * Set up user fault fd to handle demand paging
-			 * requests.
-			 */
+			 
 			uffd_descs[i] = uffd_setup_demand_paging(
 				p->uffd_mode, p->uffd_delay, vcpu_hva,
 				vcpu_args->pages * memstress_args.guest_page_size,
@@ -186,7 +177,7 @@ static void run_test(enum vm_guest_mode mode, void *arg)
 	pr_info("All vCPU threads joined\n");
 
 	if (p->uffd_mode) {
-		/* Tell the user fault fd handler threads to quit */
+		 
 		for (i = 0; i < nr_vcpus; i++)
 			uffd_stop_demand_paging(uffd_descs[i]);
 	}
@@ -295,7 +286,7 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-#else /* __NR_userfaultfd */
+#else  
 
 #warning "missing __NR_userfaultfd definition"
 
@@ -305,4 +296,4 @@ int main(void)
 	return KSFT_SKIP;
 }
 
-#endif /* __NR_userfaultfd */
+#endif  

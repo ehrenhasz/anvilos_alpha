@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright 2014 Cisco Systems, Inc.  All rights reserved.
+
+
 
 #include <linux/errno.h>
 #include <linux/types.h>
@@ -150,7 +150,7 @@ snic_alloc_vnic_res(struct snic *snic)
 		    ((intr_mode == VNIC_DEV_INTR_MODE_MSIX) ?
 		     "MSI-X" : "Unknown"))));
 
-	/* only MSI-X is supported */
+	 
 	SNIC_BUG_ON(intr_mode != VNIC_DEV_INTR_MODE_MSIX);
 
 	SNIC_INFO("wq %d cq %d intr %d\n", snic->wq_count,
@@ -158,7 +158,7 @@ snic_alloc_vnic_res(struct snic *snic)
 		  snic->intr_count);
 
 
-	/* Allocate WQs used for SCSI IOs */
+	 
 	for (i = 0; i < snic->wq_count; i++) {
 		ret = svnic_wq_alloc(snic->vdev,
 				     &snic->wq[i],
@@ -169,7 +169,7 @@ snic_alloc_vnic_res(struct snic *snic)
 			goto error_cleanup;
 	}
 
-	/* CQ for each WQ */
+	 
 	for (i = 0; i < snic->wq_count; i++) {
 		ret = svnic_cq_alloc(snic->vdev,
 				     &snic->cq[i],
@@ -181,7 +181,7 @@ snic_alloc_vnic_res(struct snic *snic)
 	}
 
 	SNIC_BUG_ON(snic->cq_count != 2 * snic->wq_count);
-	/* CQ for FW TO host */
+	 
 	for (i = snic->wq_count; i < snic->cq_count; i++) {
 		ret = svnic_cq_alloc(snic->vdev,
 				     &snic->cq[i],
@@ -198,11 +198,7 @@ snic_alloc_vnic_res(struct snic *snic)
 			goto error_cleanup;
 	}
 
-	/*
-	 * Init WQ Resources.
-	 * WQ[0 to n] points to CQ[0 to n-1]
-	 * firmware to host comm points to CQ[n to m+1]
-	 */
+	 
 	err_intr_enable = 1;
 	err_intr_offset = snic->err_intr_offset;
 
@@ -217,22 +213,19 @@ snic_alloc_vnic_res(struct snic *snic)
 		intr_offset = i;
 
 		svnic_cq_init(&snic->cq[i],
-			      0 /* flow_control_enable */,
-			      1 /* color_enable */,
-			      0 /* cq_head */,
-			      0 /* cq_tail */,
-			      1 /* cq_tail_color */,
-			      1 /* interrupt_enable */,
-			      1 /* cq_entry_enable */,
-			      0 /* cq_message_enable */,
+			      0  ,
+			      1  ,
+			      0  ,
+			      0  ,
+			      1  ,
+			      1  ,
+			      1  ,
+			      0  ,
 			      intr_offset,
-			      0 /* cq_message_addr */);
+			      0  );
 	}
 
-	/*
-	 * Init INTR resources
-	 * Assumption : snic is always in MSI-X mode
-	 */
+	 
 	SNIC_BUG_ON(intr_mode != VNIC_DEV_INTR_MODE_MSIX);
 	mask_on_assertion = 1;
 
@@ -243,7 +236,7 @@ snic_alloc_vnic_res(struct snic *snic)
 				mask_on_assertion);
 	}
 
-	/* init the stats memory by making the first call here */
+	 
 	ret = svnic_dev_stats_dump(snic->vdev, &snic->stats);
 	if (ret) {
 		SNIC_HOST_ERR(snic->shost,
@@ -252,7 +245,7 @@ snic_alloc_vnic_res(struct snic *snic)
 		goto error_cleanup;
 	}
 
-	/* Clear LIF stats */
+	 
 	svnic_dev_stats_clear(snic->vdev);
 	ret = 0;
 
@@ -278,4 +271,4 @@ snic_log_q_error(struct snic *snic)
 				      i,
 				      err_status);
 	}
-} /* end of snic_log_q_error */
+}  

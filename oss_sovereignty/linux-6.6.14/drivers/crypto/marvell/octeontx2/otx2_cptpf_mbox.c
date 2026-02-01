@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2020 Marvell. */
+
+ 
 
 #include "otx2_cpt_common.h"
 #include "otx2_cptpf.h"
 #include "rvu_reg.h"
 
-/* Fastpath ipsec opcode with inplace processing */
+ 
 #define CPT_INLINE_RX_OPCODE (0x26 | (1 << 6))
 #define CN10K_CPT_INLINE_RX_OPCODE (0x29 | (1 << 6))
 
@@ -19,10 +19,7 @@
 	(opcode);                                       \
 })
 
-/*
- * CPT PF driver version, It will be incremented by 1 for every feature
- * addition in CPT mailbox messages.
- */
+ 
 #define OTX2_CPT_PF_DRV_VERSION 0x1
 
 static int forward_to_af(struct otx2_cptpf_dev *cptpf,
@@ -47,11 +44,7 @@ static int forward_to_af(struct otx2_cptpf_dev *cptpf,
 	msg->ver = req->ver;
 
 	ret = otx2_cpt_sync_mbox_msg(&cptpf->afpf_mbox);
-	/* Error code -EIO indicate there is a communication failure
-	 * to the AF. Rest of the error codes indicate that AF processed
-	 * VF messages and set the error codes in response messages
-	 * (if any) so simply forward responses to VF.
-	 */
+	 
 	if (ret == -EIO) {
 		dev_warn(&cptpf->pdev->dev,
 			 "AF not responding to VF%d messages\n", vf->vf_id);
@@ -210,10 +203,7 @@ static int handle_msg_rx_inline_ipsec_lf_cfg(struct otx2_cptpf_dev *cptpf,
 			"LF is already configured for RX inline ipsec.\n");
 		return -EEXIST;
 	}
-	/*
-	 * Allow LFs to execute requests destined to only grp IE_TYPES and
-	 * set queue priority of each LF to high
-	 */
+	 
 	egrp = otx2_cpt_get_eng_grp(&cptpf->eng_grps, OTX2_CPT_IE_TYPES);
 	if (egrp == OTX2_CPT_INVALID_CRYPTO_ENG_GRP) {
 		dev_err(&cptpf->pdev->dev,
@@ -265,7 +255,7 @@ static int cptpf_handle_vf_req(struct otx2_cptpf_dev *cptpf,
 {
 	int err = 0;
 
-	/* Check if msg is valid, if not reply with an invalid msg */
+	 
 	if (req->sig != OTX2_MBOX_REQ_SIG)
 		goto inval_msg;
 
@@ -302,12 +292,9 @@ irqreturn_t otx2_cptpf_vfpf_mbox_intr(int __always_unused irq, void *arg)
 	int i, vf_idx;
 	u64 intr;
 
-	/*
-	 * Check which VF has raised an interrupt and schedule
-	 * corresponding work queue to process the messages
-	 */
+	 
 	for (i = 0; i < 2; i++) {
-		/* Read the interrupt bits */
+		 
 		intr = otx2_cpt_read64(cptpf->reg_base, BLKADDR_RVUM, 0,
 				       RVU_PF_VFPF_MBOX_INTX(i));
 
@@ -316,7 +303,7 @@ irqreturn_t otx2_cptpf_vfpf_mbox_intr(int __always_unused irq, void *arg)
 			if (intr & (1ULL << vf->intr_idx)) {
 				queue_work(cptpf->vfpf_mbox_wq,
 					   &vf->vfpf_mbox_work);
-				/* Clear the interrupt */
+				 
 				otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM,
 						 0, RVU_PF_VFPF_MBOX_INTX(i),
 						 BIT_ULL(vf->intr_idx));
@@ -339,35 +326,30 @@ void otx2_cptpf_vfpf_mbox_handler(struct work_struct *work)
 	vf = container_of(work, struct otx2_cptvf_info, vfpf_mbox_work);
 	cptpf = vf->cptpf;
 	mbox = &cptpf->vfpf_mbox;
-	/* sync with mbox memory region */
+	 
 	smp_rmb();
 	mdev = &mbox->dev[vf->vf_id];
-	/* Process received mbox messages */
+	 
 	req_hdr = (struct mbox_hdr *)(mdev->mbase + mbox->rx_start);
 	offset = mbox->rx_start + ALIGN(sizeof(*req_hdr), MBOX_MSG_ALIGN);
 
 	for (i = 0; i < req_hdr->num_msgs; i++) {
 		msg = (struct mbox_msghdr *)(mdev->mbase + offset);
 
-		/* Set which VF sent this message based on mbox IRQ */
+		 
 		msg->pcifunc = ((u16)cptpf->pf_id << RVU_PFVF_PF_SHIFT) |
 				((vf->vf_id + 1) & RVU_PFVF_FUNC_MASK);
 
 		err = cptpf_handle_vf_req(cptpf, vf, msg,
 					  msg->next_msgoff - offset);
-		/*
-		 * Behave as the AF, drop the msg if there is
-		 * no memory, timeout handling also goes here
-		 */
+		 
 		if (err == -ENOMEM || err == -EIO)
 			break;
 		offset = msg->next_msgoff;
-		/* Write barrier required for VF responses which are handled by
-		 * PF driver and not forwarded to AF.
-		 */
+		 
 		smp_wmb();
 	}
-	/* Send mbox responses to VF */
+	 
 	if (mdev->num_msgs)
 		otx2_mbox_msg_send(mbox, vf->vf_id);
 }
@@ -380,7 +362,7 @@ irqreturn_t otx2_cptpf_afpf_mbox_intr(int __always_unused irq, void *arg)
 	struct mbox_hdr *hdr;
 	u64 intr;
 
-	/* Read the interrupt bits */
+	 
 	intr = otx2_cpt_read64(cptpf->reg_base, BLKADDR_RVUM, 0, RVU_PF_INT);
 
 	if (intr & 0x1ULL) {
@@ -388,16 +370,16 @@ irqreturn_t otx2_cptpf_afpf_mbox_intr(int __always_unused irq, void *arg)
 		mdev = &mbox->dev[0];
 		hdr = mdev->mbase + mbox->rx_start;
 		if (hdr->num_msgs)
-			/* Schedule work queue function to process the MBOX request */
+			 
 			queue_work(cptpf->afpf_mbox_wq, &cptpf->afpf_mbox_work);
 
 		mbox = &cptpf->afpf_mbox_up;
 		mdev = &mbox->dev[0];
 		hdr = mdev->mbase + mbox->rx_start;
 		if (hdr->num_msgs)
-			/* Schedule work queue function to process the MBOX request */
+			 
 			queue_work(cptpf->afpf_mbox_wq, &cptpf->afpf_mbox_up_work);
-		/* Clear and ack the interrupt */
+		 
 		otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0, RVU_PF_INT,
 				 0x1ULL);
 	}
@@ -501,7 +483,7 @@ static void forward_to_vf(struct otx2_cptpf_dev *cptpf, struct mbox_msghdr *msg,
 	fwd->rc = msg->rc;
 }
 
-/* Handle mailbox messages received from AF */
+ 
 void otx2_cptpf_afpf_mbox_handler(struct work_struct *work)
 {
 	struct otx2_cptpf_dev *cptpf;
@@ -514,7 +496,7 @@ void otx2_cptpf_afpf_mbox_handler(struct work_struct *work)
 	cptpf = container_of(work, struct otx2_cptpf_dev, afpf_mbox_work);
 	afpf_mbox = &cptpf->afpf_mbox;
 	mdev = &afpf_mbox->dev[0];
-	/* Sync mbox data into memory */
+	 
 	smp_wmb();
 
 	rsp_hdr = (struct mbox_hdr *)(mdev->mbase + afpf_mbox->rx_start);
@@ -532,7 +514,7 @@ void otx2_cptpf_afpf_mbox_handler(struct work_struct *work)
 			process_afpf_mbox_msg(cptpf, msg);
 
 		offset = msg->next_msgoff;
-		/* Sync VF response ready to be sent */
+		 
 		smp_wmb();
 		mdev->msgs_acked++;
 	}
@@ -591,7 +573,7 @@ void otx2_cptpf_afpf_mbox_up_handler(struct work_struct *work)
 	cptpf = container_of(work, struct otx2_cptpf_dev, afpf_mbox_up_work);
 	mbox = &cptpf->afpf_mbox_up;
 	mdev = &mbox->dev[0];
-	/* Sync mbox data into memory */
+	 
 	smp_wmb();
 
 	rsp_hdr = (struct mbox_hdr *)(mdev->mbase + mbox->rx_start);

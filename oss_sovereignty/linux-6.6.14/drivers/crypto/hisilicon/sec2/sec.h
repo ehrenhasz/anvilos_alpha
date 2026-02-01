@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2019 HiSilicon Limited. */
+ 
+ 
 
 #ifndef __HISI_SEC_V2_H
 #define __HISI_SEC_V2_H
@@ -7,7 +7,7 @@
 #include <linux/hisi_acc_qm.h>
 #include "sec_crypto.h"
 
-/* Algorithm resource per hardware SEC queue */
+ 
 struct sec_alg_res {
 	u8 *pbuf;
 	dma_addr_t pbuf_dma;
@@ -20,7 +20,7 @@ struct sec_alg_res {
 	u16 depth;
 };
 
-/* Cipher request of SEC private */
+ 
 struct sec_cipher_req {
 	struct hisi_acc_hw_sgl *c_out;
 	dma_addr_t c_out_dma;
@@ -39,7 +39,7 @@ struct sec_aead_req {
 	struct aead_request *aead_req;
 };
 
-/* SEC request of Crypto */
+ 
 struct sec_req {
 	union {
 		struct sec_sqe sec_sqe;
@@ -48,9 +48,7 @@ struct sec_req {
 	struct sec_ctx *ctx;
 	struct sec_qp_ctx *qp_ctx;
 
-	/**
-	 * Common parameter of the SEC request.
-	 */
+	 
 	struct hisi_acc_hw_sgl *in;
 	dma_addr_t in_dma;
 	struct sec_cipher_req c_req;
@@ -61,20 +59,12 @@ struct sec_req {
 	int req_id;
 	u32 flag;
 
-	/* Status of the SEC request */
+	 
 	bool fake_busy;
 	bool use_pbuf;
 };
 
-/**
- * struct sec_req_op - Operations for SEC request
- * @buf_map: DMA map the SGL buffers of the request
- * @buf_unmap: DMA unmap the SGL buffers of the request
- * @bd_fill: Fill the SEC queue BD
- * @bd_send: Send the SEC BD into the hardware queue
- * @callback: Call back for the request
- * @process: Main processing logic of Skcipher
- */
+ 
 struct sec_req_op {
 	int (*buf_map)(struct sec_ctx *ctx, struct sec_req *req);
 	void (*buf_unmap)(struct sec_ctx *ctx, struct sec_req *req);
@@ -85,7 +75,7 @@ struct sec_req_op {
 	int (*process)(struct sec_ctx *ctx, struct sec_req *req);
 };
 
-/* SEC auth context */
+ 
 struct sec_auth_ctx {
 	dma_addr_t a_key_dma;
 	u8 *a_key;
@@ -97,7 +87,7 @@ struct sec_auth_ctx {
 	struct crypto_aead *fallback_aead_tfm;
 };
 
-/* SEC cipher context which cipher's relatives */
+ 
 struct sec_cipher_ctx {
 	u8 *c_key;
 	dma_addr_t c_key_dma;
@@ -108,12 +98,12 @@ struct sec_cipher_ctx {
 	u8 c_alg;
 	u8 c_key_len;
 
-	/* add software support */
+	 
 	bool fallback;
 	struct crypto_sync_skcipher *fbtfm;
 };
 
-/* SEC queue context which defines queue's relatives */
+ 
 struct sec_qp_ctx {
 	struct hisi_qp *qp;
 	struct sec_req **req_list;
@@ -131,23 +121,23 @@ enum sec_alg_type {
 	SEC_AEAD
 };
 
-/* SEC Crypto TFM context which defines queue and cipher .etc relatives */
+ 
 struct sec_ctx {
 	struct sec_qp_ctx *qp_ctx;
 	struct sec_dev *sec;
 	const struct sec_req_op *req_op;
 	struct hisi_qp **qps;
 
-	/* Half queues for encipher, and half for decipher */
+	 
 	u32 hlf_q_num;
 
-	/* Threshold for fake busy, trigger to return -EBUSY to user */
+	 
 	u32 fake_req_limit;
 
-	/* Current cyclic index to select a queue for encipher */
+	 
 	atomic_t enc_qcyclic;
 
-	 /* Current cyclic index to select a queue for decipher */
+	  
 	atomic_t dec_qcyclic;
 
 	enum sec_alg_type alg_type;

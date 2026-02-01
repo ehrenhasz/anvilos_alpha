@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -96,11 +94,7 @@ void i915_drm_client_fdinfo(struct drm_printer *p, struct drm_file *file)
 	struct drm_i915_private *i915 = file_priv->i915;
 	unsigned int i;
 
-	/*
-	 * ******************************************************************
-	 * For text output format description please see drm-usage-stats.rst!
-	 * ******************************************************************
-	 */
+	 
 
 	if (GRAPHICS_VER(i915) < 8)
 		return;

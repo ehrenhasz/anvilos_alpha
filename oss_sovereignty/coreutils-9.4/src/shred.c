@@ -1,74 +1,8 @@
-/* shred.c - overwrite files and devices to make it harder to recover data
+ 
 
-   Copyright (C) 1999-2023 Free Software Foundation, Inc.
-   Copyright (C) 1997, 1998, 1999 Colin Plumb.
+ 
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-   Written by Colin Plumb.  */
-
-/*
- * Do a more secure overwrite of given files or devices, to make it harder
- * for even very expensive hardware probing to recover the data.
- *
- * Although this process is also known as "wiping", I prefer the longer
- * name both because I think it is more evocative of what is happening and
- * because a longer name conveys a more appropriate sense of deliberateness.
- *
- * For the theory behind this, see "Secure Deletion of Data from Magnetic
- * and Solid-State Memory", on line at
- * https://www.cs.auckland.ac.nz/~pgut001/pubs/secure_del.html
- *
- * Just for the record, reversing one or two passes of disk overwrite
- * is not terribly difficult with hardware help.  Hook up a good-quality
- * digitizing oscilloscope to the output of the head preamplifier and copy
- * the high-res digitized data to a computer for some off-line analysis.
- * Read the "current" data and average all the pulses together to get an
- * "average" pulse on the disk.  Subtract this average pulse from all of
- * the actual pulses and you can clearly see the "echo" of the previous
- * data on the disk.
- *
- * Real hard drives have to balance the cost of the media, the head,
- * and the read circuitry.  They use better-quality media than absolutely
- * necessary to limit the cost of the read circuitry.  By throwing that
- * assumption out, and the assumption that you want the data processed
- * as fast as the hard drive can spin, you can do better.
- *
- * If asked to wipe a file, this also unlinks it, renaming it in a
- * clever way to try to leave no trace of the original filename.
- *
- * This was inspired by a desire to improve on some code titled:
- * Wipe V1.0-- Overwrite and delete files.  S. 2/3/96
- * but I've rewritten everything here so completely that no trace of
- * the original remains.
- *
- * Thanks to:
- * Bob Jenkins, for his good RNG work and patience with the FSF copyright
- * paperwork.
- * Jim Meyering, for his work merging this into the GNU fileutils while
- * still letting me feel a sense of ownership and pride.  Getting me to
- * tolerate the GNU brace style was quite a feat of diplomacy.
- * Paul Eggert, for lots of useful discussion and code.  I disagree with
- * an awful lot of his suggestions, but they're disagreements worth having.
- *
- * Things to think about:
- * - Security: Is there any risk to the race
- *   between overwriting and unlinking a file?  Will it do anything
- *   drastically bad if told to attack a named pipe or socket?
- */
-
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "shred"
 
 #define AUTHORS proper_name ("Colin Plumb")
@@ -95,25 +29,23 @@
 #include "renameatu.h"
 #include "stat-size.h"
 
-/* Default number of times to overwrite.  */
+ 
 enum { DEFAULT_PASSES = 3 };
 
-/* How many seconds to wait before checking whether to output another
-   verbose output line.  */
+ 
 enum { VERBOSE_UPDATE = 5 };
 
-/* Sector size and corresponding mask, for recovering after write failures.
-   The size must be a power of 2.  */
+ 
 enum { SECTOR_SIZE = 512 };
 enum { SECTOR_MASK = SECTOR_SIZE - 1 };
 static_assert (0 < SECTOR_SIZE && (SECTOR_SIZE & SECTOR_MASK) == 0);
 
 enum remove_method
 {
-  remove_none = 0,      /* the default: only wipe data.  */
-  remove_unlink,        /* don't obfuscate name, just unlink.  */
-  remove_wipe,          /* obfuscate name before unlink.  */
-  remove_wipesync       /* obfuscate name, syncing each byte, before unlink.  */
+  remove_none = 0,       
+  remove_unlink,         
+  remove_wipe,           
+  remove_wipesync        
 };
 
 static char const *const remove_args[] =
@@ -128,17 +60,16 @@ static enum remove_method const remove_methods[] =
 
 struct Options
 {
-  bool force;		/* -f flag: chmod files if necessary */
-  size_t n_iterations;	/* -n flag: Number of iterations */
-  off_t size;		/* -s flag: size of file */
-  enum remove_method remove_file; /* -u flag: remove file after shredding */
-  bool verbose;		/* -v flag: Print progress */
-  bool exact;		/* -x flag: Do not round up file size */
-  bool zero_fill;	/* -z flag: Add a final zero pass */
+  bool force;		 
+  size_t n_iterations;	 
+  off_t size;		 
+  enum remove_method remove_file;  
+  bool verbose;		 
+  bool exact;		 
+  bool zero_fill;	 
 };
 
-/* For long options that have no equivalent short option, use a
-   non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
+ 
 enum
 {
   RANDOM_SOURCE_OPTION = CHAR_MAX + 1
@@ -882,8 +813,7 @@ do_wipefd (int fd, char const *qname, struct randint_source *s,
           size = lseek (fd, 0, SEEK_END);
           if (size <= 0)
             {
-              /* We are unable to determine the length, up front.
-                 Let dopass do that as part of its first iteration.  */
+               
               size = -1;
             }
         }
@@ -892,7 +822,7 @@ do_wipefd (int fd, char const *qname, struct randint_source *s,
            && st.st_size < MIN (ST_BLKSIZE (st), size))
     i_size = st.st_size;
 
-  /* Schedule the passes in random order. */
+   
   genpattern (passarray, flags->n_iterations, s);
 
   rs = randint_get_source (s);
@@ -913,9 +843,7 @@ do_wipefd (int fd, char const *qname, struct randint_source *s,
           pass_size = size;
           size = 0;
         }
-      /* TODO: consider handling tail packing by
-         writing the tail padding as a separate pass,
-         (that would not rewind).  */
+       
       else
         break;
 
@@ -935,10 +863,7 @@ do_wipefd (int fd, char const *qname, struct randint_source *s,
         }
     }
 
-  /* Now deallocate the data.  The effect of ftruncate is specified
-     on regular files and shared memory objects (also directories, but
-     they are not possible here); don't worry about errors reported
-     for other file types.  */
+   
 
   if (flags->remove_file && ftruncate (fd, 0) != 0
       && (S_ISREG (st.st_mode) || S_TYPEISSHM (&st)))
@@ -953,7 +878,7 @@ wipefd_out:
   return ok;
 }
 
-/* A wrapper with a little more checking for fds on the command line */
+ 
 static bool
 wipefd (int fd, char const *qname, struct randint_source *s,
         struct Options const *flags)
@@ -973,16 +898,13 @@ wipefd (int fd, char const *qname, struct randint_source *s,
   return do_wipefd (fd, qname, s, flags);
 }
 
-/* --- Name-wiping code --- */
+ 
 
-/* Characters allowed in a file name - a safe universal set.  */
+ 
 static char const nameset[] =
 "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.";
 
-/* Increment NAME (with LEN bytes).  NAME must be a big-endian base N
-   number with the digits taken from nameset.  Return true if successful.
-   Otherwise, (because NAME already has the greatest possible value)
-   return false.  */
+ 
 
 static bool
 incname (char *name, size_t len)
@@ -991,49 +913,23 @@ incname (char *name, size_t len)
     {
       char const *p = strchr (nameset, name[len]);
 
-      /* Given that NAME is composed of bytes from NAMESET,
-         P will never be null here.  */
+       
 
-      /* If this character has a successor, use it.  */
+       
       if (p[1])
         {
           name[len] = p[1];
           return true;
         }
 
-      /* Otherwise, set this digit to 0 and increment the prefix.  */
+       
       name[len] = nameset[0];
     }
 
   return false;
 }
 
-/*
- * Repeatedly rename a file with shorter and shorter names,
- * to obliterate all traces of the file name (and length) on any system
- * that adds a trailing delimiter to on-device file names and reuses
- * the same directory slot.  Finally, unlink it.
- * The passed-in filename is modified in place to the new filename.
- * (Which is unlinked if this function succeeds, but is still present if
- * it fails for some reason.)
- *
- * The main loop is written carefully to not get stuck if all possible
- * names of a given length are occupied.  It counts down the length from
- * the original to 0.  While the length is non-zero, it tries to find an
- * unused file name of the given length.  It continues until either the
- * name is available and the rename succeeds, or it runs out of names
- * to try (incname wraps and returns 1).  Finally, it unlinks the file.
- *
- * The unlink is Unix-specific, as ANSI-standard remove has more
- * portability problems with C libraries making it "safe".  rename
- * is ANSI-standard.
- *
- * To force the directory data out, we try to open the directory and
- * invoke fdatasync and/or fsync on it.  This is non-standard, so don't
- * insist that it works: just fall back to a global sync in that case.
- * This is fairly significantly Unix-specific.  Of course, on any
- * file system with synchronous metadata updates, this is unnecessary.
- */
+ 
 static bool
 wipename (char *oldname, char const *qoldname, struct Options const *flags)
 {
@@ -1068,10 +964,7 @@ wipename (char *oldname, char const *qoldname, struct Options const *flags)
               ok = false;
             if (flags->verbose)
               {
-                /* People seem to understand this better than talking
-                   about renaming OLDNAME.  NEWNAME doesn't need
-                   quoting because we picked it.  OLDNAME needs to be
-                   quoted only the first time.  */
+                 
                 char const *old = first ? qoldname : oldname;
                 error (0, 0,
                        _("%s: renamed to %s"), old, newname);
@@ -1104,18 +997,7 @@ wipename (char *oldname, char const *qoldname, struct Options const *flags)
   return ok;
 }
 
-/*
- * Finally, the function that actually takes a filename and grinds
- * it into hamburger.
- *
- * FIXME
- * Detail to note: since we do not restore errno to EACCES after
- * a failed chmod, we end up printing the error code from the chmod.
- * This is actually the error that stopped us from proceeding, so
- * it's arguably the right one, and in practice it'll be either EACCES
- * again or EPERM, which both give similar error messages.
- * Does anyone disagree?
- */
+ 
 static bool
 wipefile (char *name, char const *qname,
           struct randint_source *s, struct Options const *flags)
@@ -1146,12 +1028,10 @@ wipefile (char *name, char const *qname,
 }
 
 
-/* Buffers for random data.  */
+ 
 static struct randint_source *randint_source;
 
-/* Just on general principles, wipe buffers containing information
-   that may be related to the possibly-pseudorandom values used during
-   shredding.  */
+ 
 static void
 clear_random_data (void)
 {
@@ -1260,7 +1140,7 @@ main (int argc, char **argv)
         }
       else
         {
-          /* Plain filename - Note that this overwrites *argv! */
+           
           ok &= wipefile (file[i], qname, randint_source, &flags);
         }
       free (qname);
@@ -1268,6 +1148,4 @@ main (int argc, char **argv)
 
   return ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }
-/*
- * vim:sw=2:sts=2:
- */
+ 

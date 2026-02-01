@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2023 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include <vmlinux.h>
 #include <bpf/bpf_tracing.h>
@@ -10,11 +10,7 @@
 
 char _license[] SEC("license") = "GPL";
 
-/* Prototype for all of the program trace events below:
- *
- * TRACE_EVENT(task_newtask,
- *         TP_PROTO(struct task_struct *p, u64 clone_flags)
- */
+ 
 
 SEC("tp_btf/task_newtask")
 __failure __msg("Unreleased reference")
@@ -25,7 +21,7 @@ int BPF_PROG(test_alloc_no_release, struct task_struct *task, u64 clone_flags)
 	cpumask = create_cpumask();
 	__sink(cpumask);
 
-	/* cpumask is never released. */
+	 
 	return 0;
 }
 
@@ -37,7 +33,7 @@ int BPF_PROG(test_alloc_double_release, struct task_struct *task, u64 clone_flag
 
 	cpumask = create_cpumask();
 
-	/* cpumask is released twice. */
+	 
 	bpf_cpumask_release(cpumask);
 	bpf_cpumask_release(cpumask);
 
@@ -50,7 +46,7 @@ int BPF_PROG(test_acquire_wrong_cpumask, struct task_struct *task, u64 clone_fla
 {
 	struct bpf_cpumask *cpumask;
 
-	/* Can't acquire a non-struct bpf_cpumask. */
+	 
 	cpumask = bpf_cpumask_acquire((struct bpf_cpumask *)task->cpus_ptr);
 	__sink(cpumask);
 
@@ -63,7 +59,7 @@ int BPF_PROG(test_mutate_cpumask, struct task_struct *task, u64 clone_flags)
 {
 	struct bpf_cpumask *cpumask;
 
-	/* Can't set the CPU of a non-struct bpf_cpumask. */
+	 
 	bpf_cpumask_set_cpu(0, (struct bpf_cpumask *)task->cpus_ptr);
 	__sink(cpumask);
 
@@ -90,7 +86,7 @@ int BPF_PROG(test_insert_remove_no_release, struct task_struct *task, u64 clone_
 
 	cpumask = bpf_kptr_xchg(&v->cpumask, NULL);
 
-	/* cpumask is never released. */
+	 
 	return 0;
 }
 
@@ -98,7 +94,7 @@ SEC("tp_btf/task_newtask")
 __failure __msg("NULL pointer passed to trusted arg0")
 int BPF_PROG(test_cpumask_null, struct task_struct *task, u64 clone_flags)
 {
-  /* NULL passed to KF_TRUSTED_ARGS kfunc. */
+   
 	bpf_cpumask_empty(NULL);
 
 	return 0;
@@ -131,7 +127,7 @@ int BPF_PROG(test_global_mask_out_of_rcu, struct task_struct *task, u64 clone_fl
 
 	bpf_rcu_read_unlock();
 
-	/* RCU region is exited before calling KF_RCU kfunc. */
+	 
 
 	bpf_cpumask_test_cpu(0, (const struct cpumask *)local);
 
@@ -158,7 +154,7 @@ int BPF_PROG(test_global_mask_no_null_check, struct task_struct *task, u64 clone
 	bpf_rcu_read_lock();
 	local = global_mask;
 
-	/* No NULL check is performed on global cpumask kptr. */
+	 
 	bpf_cpumask_test_cpu(0, (const struct cpumask *)local);
 
 	bpf_rcu_read_unlock();
@@ -182,7 +178,7 @@ int BPF_PROG(test_global_mask_rcu_no_null_check, struct task_struct *task, u64 c
 
 	bpf_rcu_read_lock();
 	curr = global_mask;
-	/* PTR_TO_BTF_ID | PTR_MAYBE_NULL | MEM_RCU passed to bpf_kptr_xchg() */
+	 
 	prev = bpf_kptr_xchg(&global_mask, curr);
 	bpf_rcu_read_unlock();
 	if (prev)

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 Maxime Ripard <maxime.ripard@free-electrons.com>
- * Copyright (C) 2017 Jonathan Liu <net147@gmail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/i2c.h>
@@ -19,34 +16,25 @@
 	SUN4I_HDMI_DDC_INT_STATUS_BUS_ERROR \
 )
 
-/* FIFO request bit is set when FIFO level is above RX_THRESHOLD during read */
+ 
 #define RX_THRESHOLD SUN4I_HDMI_DDC_FIFO_CTRL_RX_THRES_MAX
 
 static int fifo_transfer(struct sun4i_hdmi *hdmi, u8 *buf, int len, bool read)
 {
-	/*
-	 * 1 byte takes 9 clock cycles (8 bits + 1 ACK) = 90 us for 100 kHz
-	 * clock. As clock rate is fixed, just round it up to 100 us.
-	 */
+	 
 	const unsigned long byte_time_ns = 100;
 	const u32 mask = SUN4I_HDMI_DDC_INT_STATUS_ERROR_MASK |
 			 SUN4I_HDMI_DDC_INT_STATUS_FIFO_REQUEST |
 			 SUN4I_HDMI_DDC_INT_STATUS_TRANSFER_COMPLETE;
 	u32 reg;
-	/*
-	 * If threshold is inclusive, then the FIFO may only have
-	 * RX_THRESHOLD number of bytes, instead of RX_THRESHOLD + 1.
-	 */
+	 
 	int read_len = RX_THRESHOLD +
 		(hdmi->variant->ddc_fifo_thres_incl ? 0 : 1);
 
-	/*
-	 * Limit transfer length by FIFO threshold or FIFO size.
-	 * For TX the threshold is for an empty FIFO.
-	 */
+	 
 	len = min_t(int, len, read ? read_len : SUN4I_HDMI_DDC_FIFO_SIZE);
 
-	/* Wait until error, FIFO request bit set or transfer complete */
+	 
 	if (regmap_field_read_poll_timeout(hdmi->field_ddc_int_status, reg,
 					   reg & mask, len * byte_time_ns,
 					   100000))
@@ -60,7 +48,7 @@ static int fifo_transfer(struct sun4i_hdmi *hdmi, u8 *buf, int len, bool read)
 	else
 		iowrite8_rep(hdmi->base + hdmi->variant->ddc_fifo_reg, buf, len);
 
-	/* Clear FIFO request bit by forcing a write to that bit */
+	 
 	regmap_field_force_write(hdmi->field_ddc_int_status,
 				 SUN4I_HDMI_DDC_INT_STATUS_FIFO_REQUEST);
 
@@ -72,7 +60,7 @@ static int xfer_msg(struct sun4i_hdmi *hdmi, struct i2c_msg *msg)
 	int i, len;
 	u32 reg;
 
-	/* Set FIFO direction */
+	 
 	if (hdmi->variant->ddc_fifo_has_dir) {
 		reg = readl(hdmi->base + SUN4I_HDMI_DDC_CTRL_REG);
 		reg &= ~SUN4I_HDMI_DDC_CTRL_FIFO_DIR_MASK;
@@ -82,18 +70,13 @@ static int xfer_msg(struct sun4i_hdmi *hdmi, struct i2c_msg *msg)
 		writel(reg, hdmi->base + SUN4I_HDMI_DDC_CTRL_REG);
 	}
 
-	/* Clear address register (not cleared by soft reset) */
+	 
 	regmap_field_write(hdmi->field_ddc_addr_reg, 0);
 
-	/* Set I2C address */
+	 
 	regmap_field_write(hdmi->field_ddc_slave_addr, msg->addr);
 
-	/*
-	 * Set FIFO RX/TX thresholds and clear FIFO
-	 *
-	 * If threshold is inclusive, we can set the TX threshold to
-	 * 0 instead of 1.
-	 */
+	 
 	regmap_field_write(hdmi->field_ddc_fifo_tx_thres,
 			   hdmi->variant->ddc_fifo_thres_incl ? 0 : 1);
 	regmap_field_write(hdmi->field_ddc_fifo_rx_thres, RX_THRESHOLD);
@@ -102,25 +85,25 @@ static int xfer_msg(struct sun4i_hdmi *hdmi, struct i2c_msg *msg)
 					   reg, !reg, 100, 2000))
 		return -EIO;
 
-	/* Set transfer length */
+	 
 	regmap_field_write(hdmi->field_ddc_byte_count, msg->len);
 
-	/* Set command */
+	 
 	regmap_field_write(hdmi->field_ddc_cmd,
 			   msg->flags & I2C_M_RD ?
 			   SUN4I_HDMI_DDC_CMD_IMPLICIT_READ :
 			   SUN4I_HDMI_DDC_CMD_IMPLICIT_WRITE);
 
-	/* Clear interrupt status bits by forcing a write */
+	 
 	regmap_field_force_write(hdmi->field_ddc_int_status,
 				 SUN4I_HDMI_DDC_INT_STATUS_ERROR_MASK |
 				 SUN4I_HDMI_DDC_INT_STATUS_FIFO_REQUEST |
 				 SUN4I_HDMI_DDC_INT_STATUS_TRANSFER_COMPLETE);
 
-	/* Start command */
+	 
 	regmap_field_write(hdmi->field_ddc_start, 1);
 
-	/* Transfer bytes */
+	 
 	for (i = 0; i < msg->len; i += len) {
 		len = fifo_transfer(hdmi, msg->buf + i, msg->len - i,
 				    msg->flags & I2C_M_RD);
@@ -128,12 +111,12 @@ static int xfer_msg(struct sun4i_hdmi *hdmi, struct i2c_msg *msg)
 			return len;
 	}
 
-	/* Wait for command to finish */
+	 
 	if (regmap_field_read_poll_timeout(hdmi->field_ddc_start,
 					   reg, !reg, 100, 100000))
 		return -EIO;
 
-	/* Check for errors */
+	 
 	regmap_field_read(hdmi->field_ddc_int_status, &reg);
 	if ((reg & SUN4I_HDMI_DDC_INT_STATUS_ERROR_MASK) ||
 	    !(reg & SUN4I_HDMI_DDC_INT_STATUS_TRANSFER_COMPLETE)) {
@@ -157,11 +140,11 @@ static int sun4i_hdmi_i2c_xfer(struct i2c_adapter *adap,
 			return -EINVAL;
 	}
 
-	/* DDC clock needs to be enabled for the module to work */
+	 
 	clk_prepare_enable(hdmi->ddc_clk);
 	clk_set_rate(hdmi->ddc_clk, 100000);
 
-	/* Reset I2C controller */
+	 
 	regmap_field_write(hdmi->field_ddc_en, 1);
 	regmap_field_write(hdmi->field_ddc_reset, 1);
 	if (regmap_field_read_poll_timeout(hdmi->field_ddc_reset,

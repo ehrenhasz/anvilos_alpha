@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_VIRTIO_NET_H
 #define _LINUX_VIRTIO_NET_H
 
@@ -109,9 +109,7 @@ static inline int virtio_net_hdr_to_skb(struct sk_buff *skb,
 		if (!pskb_may_pull(skb, p_off))
 			return -EINVAL;
 	} else {
-		/* gso packets without NEEDS_CSUM do not set transport_offset.
-		 * probe and drop if does not match one of the above types.
-		 */
+		 
 		if (gso_type && skb->network_header) {
 			struct flow_keys_basic keys;
 
@@ -129,7 +127,7 @@ retry:
 			if (!skb_flow_dissect_flow_keys_basic(NULL, skb, &keys,
 							      NULL, 0, 0, 0,
 							      0)) {
-				/* UFO does not specify ipv4 or 6: try both */
+				 
 				if (gso_type & SKB_GSO_UDP &&
 				    skb->protocol == htons(ETH_P_IP)) {
 					skb->protocol = htons(ETH_P_IPV6);
@@ -158,7 +156,7 @@ retry:
 
 		switch (gso_type & ~SKB_GSO_TCP_ECN) {
 		case SKB_GSO_UDP:
-			/* UFO may not include transport header in gso_size. */
+			 
 			nh_off -= thlen;
 			break;
 		case SKB_GSO_UDP_L4:
@@ -173,16 +171,16 @@ retry:
 			break;
 		}
 
-		/* Kernel has a special handling for GSO_BY_FRAGS. */
+		 
 		if (gso_size == GSO_BY_FRAGS)
 			return -EINVAL;
 
-		/* Too small packets are not really GSO ones. */
+		 
 		if (skb->len - nh_off > gso_size) {
 			shinfo->gso_size = gso_size;
 			shinfo->gso_type = gso_type;
 
-			/* Header must be checked, and gso_segs computed. */
+			 
 			shinfo->gso_type |= SKB_GSO_DODGY;
 			shinfo->gso_segs = 0;
 		}
@@ -197,12 +195,12 @@ static inline int virtio_net_hdr_from_skb(const struct sk_buff *skb,
 					  bool has_data_valid,
 					  int vlan_hlen)
 {
-	memset(hdr, 0, sizeof(*hdr));   /* no info leak */
+	memset(hdr, 0, sizeof(*hdr));    
 
 	if (skb_is_gso(skb)) {
 		struct skb_shared_info *sinfo = skb_shinfo(skb);
 
-		/* This is a hint as to how much should be linear. */
+		 
 		hdr->hdr_len = __cpu_to_virtio16(little_endian,
 						 skb_headlen(skb));
 		hdr->gso_size = __cpu_to_virtio16(little_endian,
@@ -229,9 +227,9 @@ static inline int virtio_net_hdr_from_skb(const struct sk_buff *skb,
 	} else if (has_data_valid &&
 		   skb->ip_summed == CHECKSUM_UNNECESSARY) {
 		hdr->flags = VIRTIO_NET_HDR_F_DATA_VALID;
-	} /* else everything is zero */
+	}  
 
 	return 0;
 }
 
-#endif /* _LINUX_VIRTIO_NET_H */
+#endif  

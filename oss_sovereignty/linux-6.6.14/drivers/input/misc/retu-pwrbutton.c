@@ -1,20 +1,4 @@
-/*
- * Retu power button driver.
- *
- * Copyright (C) 2004-2010 Nokia Corporation
- *
- * Original code written by Ari Saastamoinen, Juha Yrjölä and Felipe Balbi.
- * Rewritten by Aaro Koskinen.
- *
- * This file is subject to the terms and conditions of the GNU General
- * Public License. See the file "COPYING" in the main directory of this
- * archive for more details.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- */
+ 
 
 #include <linux/irq.h>
 #include <linux/slab.h>

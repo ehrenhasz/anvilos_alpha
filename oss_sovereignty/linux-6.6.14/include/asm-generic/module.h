@@ -1,11 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __ASM_GENERIC_MODULE_H
 #define __ASM_GENERIC_MODULE_H
 
-/*
- * Many architectures just need a simple module
- * loader without arch specific data.
- */
+ 
 #ifndef CONFIG_HAVE_MOD_ARCH_SPECIFIC
 struct mod_arch_specific
 {
@@ -28,7 +25,7 @@ struct mod_arch_specific
 #define ELF_R_TYPE(X)	ELF64_R_TYPE(X)
 #define ELF_R_SYM(X)	ELF64_R_SYM(X)
 
-#else /* CONFIG_64BIT */
+#else  
 
 #define Elf_Shdr	Elf32_Shdr
 #define Elf_Phdr	Elf32_Phdr
@@ -46,4 +43,4 @@ struct mod_arch_specific
 #define ELF_R_SYM(X)	ELF32_R_SYM(X)
 #endif
 
-#endif /* __ASM_GENERIC_MODULE_H */
+#endif  

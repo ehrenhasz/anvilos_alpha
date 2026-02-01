@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  lpc32xx_adc.c - Support for ADC in LPC32XX
- *
- *  3-channel, 10-bit ADC
- *
- *  Copyright (C) 2011, 2012 Roland Stigge <stigge@antcom.de>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/completion.h>
@@ -19,28 +13,26 @@
 #include <linux/platform_device.h>
 #include <linux/regulator/consumer.h>
 
-/*
- * LPC32XX registers definitions
- */
+ 
 #define LPC32XXAD_SELECT(x)	((x) + 0x04)
 #define LPC32XXAD_CTRL(x)	((x) + 0x08)
 #define LPC32XXAD_VALUE(x)	((x) + 0x48)
 
-/* Bit definitions for LPC32XXAD_SELECT: */
-/* constant, always write this value! */
+ 
+ 
 #define LPC32XXAD_REFm         0x00000200
-/* constant, always write this value! */
+ 
 #define LPC32XXAD_REFp		0x00000080
- /* multiple of this is the channel number: 0, 1, 2 */
+  
 #define LPC32XXAD_IN		0x00000010
-/* constant, always write this value! */
+ 
 #define LPC32XXAD_INTERNAL	0x00000004
 
-/* Bit definitions for LPC32XXAD_CTRL: */
+ 
 #define LPC32XXAD_STROBE	0x00000002
 #define LPC32XXAD_PDN_CTRL	0x00000004
 
-/* Bit definitions for LPC32XXAD_VALUE: */
+ 
 #define LPC32XXAD_VALUE_MASK	0x000003FF
 
 #define LPC32XXAD_NAME "lpc32xx-adc"
@@ -50,7 +42,7 @@ struct lpc32xx_adc_state {
 	struct clk *clk;
 	struct completion completion;
 	struct regulator *vref;
-	/* lock to protect against multiple access to the device */
+	 
 	struct mutex lock;
 
 	u32 value;
@@ -73,14 +65,14 @@ static int lpc32xx_read_raw(struct iio_dev *indio_dev,
 			mutex_unlock(&st->lock);
 			return ret;
 		}
-		/* Measurement setup */
+		 
 		__raw_writel(LPC32XXAD_INTERNAL | (chan->address) |
 			     LPC32XXAD_REFp | LPC32XXAD_REFm,
 			     LPC32XXAD_SELECT(st->adc_base));
-		/* Trigger conversion */
+		 
 		__raw_writel(LPC32XXAD_PDN_CTRL | LPC32XXAD_STROBE,
 			     LPC32XXAD_CTRL(st->adc_base));
-		wait_for_completion(&st->completion); /* set by ISR */
+		wait_for_completion(&st->completion);  
 		clk_disable_unprepare(st->clk);
 		*val = st->value;
 		mutex_unlock(&st->lock);
@@ -134,7 +126,7 @@ static irqreturn_t lpc32xx_adc_isr(int irq, void *dev_id)
 {
 	struct lpc32xx_adc_state *st = dev_id;
 
-	/* Read value and clear irq */
+	 
 	st->value = __raw_readl(LPC32XXAD_VALUE(st->adc_base)) &
 		LPC32XXAD_VALUE_MASK;
 	complete(&st->completion);

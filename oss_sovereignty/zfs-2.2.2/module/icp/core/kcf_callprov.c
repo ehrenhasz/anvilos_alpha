@@ -1,27 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
+ 
+ 
 
 #include <sys/crypto/common.h>
 #include <sys/crypto/impl.h>
@@ -68,17 +46,7 @@ is_in_triedlist(kcf_provider_desc_t *pd, kcf_prov_tried_t *triedl)
 	return (B_FALSE);
 }
 
-/*
- * Return the best provider for the specified mechanism. The provider
- * is held and it is the caller's responsibility to release it when done.
- * The fg input argument is used as a search criterion to pick a provider.
- * A provider has to support this function group to be picked.
- *
- * Find the least loaded provider in the list of providers. We do a linear
- * search to find one. This is fine as we assume there are only a few
- * number of providers in this list. If this assumption ever changes,
- * we should revisit this.
- */
+ 
 kcf_provider_desc_t *
 kcf_get_mech_provider(crypto_mech_type_t mech_type, kcf_mech_entry_t **mepp,
     int *error, kcf_prov_tried_t *triedl, crypto_func_group_t fg)
@@ -107,7 +75,7 @@ kcf_get_mech_provider(crypto_mech_type_t mech_type, kcf_mech_entry_t **mepp,
 	if (mepp != NULL)
 		*mepp = me;
 
-	/* Is there a provider? */
+	 
 	if (pd == NULL && (mdesc = me->me_sw_prov) != NULL) {
 		pd = mdesc->pm_prov_desc;
 		if (!IS_FG_SUPPORTED(mdesc, fg) ||
@@ -117,12 +85,7 @@ kcf_get_mech_provider(crypto_mech_type_t mech_type, kcf_mech_entry_t **mepp,
 	}
 
 	if (pd == NULL) {
-		/*
-		 * We do not want to report CRYPTO_MECH_NOT_SUPPORTED, when
-		 * we are in the "fallback to the next provider" case. Rather
-		 * we preserve the error, so that the client gets the right
-		 * error code.
-		 */
+		 
 		if (triedl == NULL)
 			*error = CRYPTO_MECH_NOT_SUPPORTED;
 	} else

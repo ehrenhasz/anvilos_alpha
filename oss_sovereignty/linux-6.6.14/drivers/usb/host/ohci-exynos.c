@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * SAMSUNG EXYNOS USB HOST OHCI Controller
- *
- * Copyright (C) 2011 Samsung Electronics Co.Ltd
- * Author: Jingoo Han <jg1.han@samsung.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -42,7 +37,7 @@ static int exynos_ohci_get_phy(struct device *dev,
 	int phy_number, num_phys;
 	int ret;
 
-	/* Get PHYs for the controller */
+	 
 	num_phys = of_count_phandle_with_args(dev->of_node, "phys",
 					      "#phy-cells");
 	for (phy_number = 0; phy_number < num_phys; phy_number++) {
@@ -54,7 +49,7 @@ static int exynos_ohci_get_phy(struct device *dev,
 	if (num_phys > 0)
 		return 0;
 
-	/* Get PHYs using legacy bindings */
+	 
 	for_each_available_child_of_node(dev->of_node, child) {
 		ret = of_property_read_u32(child, "reg", &phy_number);
 		if (ret) {
@@ -115,11 +110,7 @@ static int exynos_ohci_probe(struct platform_device *pdev)
 	int irq;
 	int err;
 
-	/*
-	 * Right now device-tree probed devices don't get dma_mask set.
-	 * Since shared usb code relies on it, set it here for now.
-	 * Once we move to full device tree support this will vanish off.
-	 */
+	 
 	err = dma_coerce_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
 	if (err)
 		return err;
@@ -171,10 +162,7 @@ static int exynos_ohci_probe(struct platform_device *pdev)
 		goto fail_io;
 	}
 
-	/*
-	 * Workaround: reset of_node pointer to avoid conflict between legacy
-	 * Exynos OHCI port subnodes and generic USB device bindings
-	 */
+	 
 	exynos_ohci->of_node = pdev->dev.of_node;
 	if (exynos_ohci->legacy_phy)
 		pdev->dev.of_node = NULL;

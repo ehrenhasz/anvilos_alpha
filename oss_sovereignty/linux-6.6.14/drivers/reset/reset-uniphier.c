@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 Socionext Inc.
- *   Author: Masahiro Yamada <yamada.masahiro@socionext.com>
- */
+
+ 
 
 #include <linux/mfd/syscon.h>
 #include <linux/module.h>
@@ -39,121 +36,121 @@ struct uniphier_reset_data {
 		.flags = UNIPHIER_RESET_ACTIVE_LOW,	\
 	}
 
-/* System reset data */
+ 
 static const struct uniphier_reset_data uniphier_ld4_sys_reset_data[] = {
-	UNIPHIER_RESETX(2, 0x2000, 2),		/* NAND */
-	UNIPHIER_RESETX(8, 0x2000, 10),		/* STDMAC (Ether, HSC, MIO) */
+	UNIPHIER_RESETX(2, 0x2000, 2),		 
+	UNIPHIER_RESETX(8, 0x2000, 10),		 
 	UNIPHIER_RESET_END,
 };
 
 static const struct uniphier_reset_data uniphier_pro4_sys_reset_data[] = {
-	UNIPHIER_RESETX(2, 0x2000, 2),		/* NAND */
-	UNIPHIER_RESETX(6, 0x2000, 12),		/* Ether */
-	UNIPHIER_RESETX(8, 0x2000, 10),		/* STDMAC (HSC, MIO, RLE) */
-	UNIPHIER_RESETX(12, 0x2000, 6),		/* GIO (Ether, SATA, USB3) */
-	UNIPHIER_RESETX(14, 0x2000, 17),	/* USB30 */
-	UNIPHIER_RESETX(15, 0x2004, 17),	/* USB31 */
-	UNIPHIER_RESETX(28, 0x2000, 18),	/* SATA0 */
-	UNIPHIER_RESETX(29, 0x2004, 18),	/* SATA1 */
-	UNIPHIER_RESETX(30, 0x2000, 19),	/* SATA-PHY */
-	UNIPHIER_RESETX(40, 0x2000, 13),	/* AIO */
+	UNIPHIER_RESETX(2, 0x2000, 2),		 
+	UNIPHIER_RESETX(6, 0x2000, 12),		 
+	UNIPHIER_RESETX(8, 0x2000, 10),		 
+	UNIPHIER_RESETX(12, 0x2000, 6),		 
+	UNIPHIER_RESETX(14, 0x2000, 17),	 
+	UNIPHIER_RESETX(15, 0x2004, 17),	 
+	UNIPHIER_RESETX(28, 0x2000, 18),	 
+	UNIPHIER_RESETX(29, 0x2004, 18),	 
+	UNIPHIER_RESETX(30, 0x2000, 19),	 
+	UNIPHIER_RESETX(40, 0x2000, 13),	 
 	UNIPHIER_RESET_END,
 };
 
 static const struct uniphier_reset_data uniphier_pro5_sys_reset_data[] = {
-	UNIPHIER_RESETX(2, 0x2000, 2),		/* NAND */
-	UNIPHIER_RESETX(8, 0x2000, 10),		/* STDMAC (HSC) */
-	UNIPHIER_RESETX(12, 0x2000, 6),		/* GIO (PCIe, USB3) */
-	UNIPHIER_RESETX(14, 0x2000, 17),	/* USB30 */
-	UNIPHIER_RESETX(15, 0x2004, 17),	/* USB31 */
-	UNIPHIER_RESETX(24, 0x2008, 2),		/* PCIe */
-	UNIPHIER_RESETX(40, 0x2000, 13),	/* AIO */
+	UNIPHIER_RESETX(2, 0x2000, 2),		 
+	UNIPHIER_RESETX(8, 0x2000, 10),		 
+	UNIPHIER_RESETX(12, 0x2000, 6),		 
+	UNIPHIER_RESETX(14, 0x2000, 17),	 
+	UNIPHIER_RESETX(15, 0x2004, 17),	 
+	UNIPHIER_RESETX(24, 0x2008, 2),		 
+	UNIPHIER_RESETX(40, 0x2000, 13),	 
 	UNIPHIER_RESET_END,
 };
 
 static const struct uniphier_reset_data uniphier_pxs2_sys_reset_data[] = {
-	UNIPHIER_RESETX(2, 0x2000, 2),		/* NAND */
-	UNIPHIER_RESETX(6, 0x2000, 12),		/* Ether */
-	UNIPHIER_RESETX(8, 0x2000, 10),		/* STDMAC (HSC, RLE) */
-	UNIPHIER_RESETX(14, 0x2000, 17),	/* USB30 */
-	UNIPHIER_RESETX(15, 0x2004, 17),	/* USB31 */
-	UNIPHIER_RESETX(16, 0x2014, 4),		/* USB30-PHY0 */
-	UNIPHIER_RESETX(17, 0x2014, 0),		/* USB30-PHY1 */
-	UNIPHIER_RESETX(18, 0x2014, 2),		/* USB30-PHY2 */
-	UNIPHIER_RESETX(20, 0x2014, 5),		/* USB31-PHY0 */
-	UNIPHIER_RESETX(21, 0x2014, 1),		/* USB31-PHY1 */
-	UNIPHIER_RESETX(28, 0x2014, 12),	/* SATA */
-	UNIPHIER_RESET(30, 0x2014, 8),		/* SATA-PHY (active high) */
-	UNIPHIER_RESETX(40, 0x2000, 13),	/* AIO */
+	UNIPHIER_RESETX(2, 0x2000, 2),		 
+	UNIPHIER_RESETX(6, 0x2000, 12),		 
+	UNIPHIER_RESETX(8, 0x2000, 10),		 
+	UNIPHIER_RESETX(14, 0x2000, 17),	 
+	UNIPHIER_RESETX(15, 0x2004, 17),	 
+	UNIPHIER_RESETX(16, 0x2014, 4),		 
+	UNIPHIER_RESETX(17, 0x2014, 0),		 
+	UNIPHIER_RESETX(18, 0x2014, 2),		 
+	UNIPHIER_RESETX(20, 0x2014, 5),		 
+	UNIPHIER_RESETX(21, 0x2014, 1),		 
+	UNIPHIER_RESETX(28, 0x2014, 12),	 
+	UNIPHIER_RESET(30, 0x2014, 8),		 
+	UNIPHIER_RESETX(40, 0x2000, 13),	 
 	UNIPHIER_RESET_END,
 };
 
 static const struct uniphier_reset_data uniphier_ld11_sys_reset_data[] = {
-	UNIPHIER_RESETX(2, 0x200c, 0),		/* NAND */
-	UNIPHIER_RESETX(4, 0x200c, 2),		/* eMMC */
-	UNIPHIER_RESETX(6, 0x200c, 6),		/* Ether */
-	UNIPHIER_RESETX(8, 0x200c, 8),		/* STDMAC (HSC, MIO) */
-	UNIPHIER_RESETX(9, 0x200c, 9),		/* HSC */
-	UNIPHIER_RESETX(40, 0x2008, 0),		/* AIO */
-	UNIPHIER_RESETX(41, 0x2008, 1),		/* EVEA */
-	UNIPHIER_RESETX(42, 0x2010, 2),		/* EXIV */
+	UNIPHIER_RESETX(2, 0x200c, 0),		 
+	UNIPHIER_RESETX(4, 0x200c, 2),		 
+	UNIPHIER_RESETX(6, 0x200c, 6),		 
+	UNIPHIER_RESETX(8, 0x200c, 8),		 
+	UNIPHIER_RESETX(9, 0x200c, 9),		 
+	UNIPHIER_RESETX(40, 0x2008, 0),		 
+	UNIPHIER_RESETX(41, 0x2008, 1),		 
+	UNIPHIER_RESETX(42, 0x2010, 2),		 
 	UNIPHIER_RESET_END,
 };
 
 static const struct uniphier_reset_data uniphier_ld20_sys_reset_data[] = {
-	UNIPHIER_RESETX(2, 0x200c, 0),		/* NAND */
-	UNIPHIER_RESETX(4, 0x200c, 2),		/* eMMC */
-	UNIPHIER_RESETX(6, 0x200c, 6),		/* Ether */
-	UNIPHIER_RESETX(8, 0x200c, 8),		/* STDMAC (HSC) */
-	UNIPHIER_RESETX(9, 0x200c, 9),		/* HSC */
-	UNIPHIER_RESETX(14, 0x200c, 5),		/* USB30 */
-	UNIPHIER_RESETX(16, 0x200c, 12),	/* USB30-PHY0 */
-	UNIPHIER_RESETX(17, 0x200c, 13),	/* USB30-PHY1 */
-	UNIPHIER_RESETX(18, 0x200c, 14),	/* USB30-PHY2 */
-	UNIPHIER_RESETX(19, 0x200c, 15),	/* USB30-PHY3 */
-	UNIPHIER_RESETX(24, 0x200c, 4),		/* PCIe */
-	UNIPHIER_RESETX(40, 0x2008, 0),		/* AIO */
-	UNIPHIER_RESETX(41, 0x2008, 1),		/* EVEA */
-	UNIPHIER_RESETX(42, 0x2010, 2),		/* EXIV */
+	UNIPHIER_RESETX(2, 0x200c, 0),		 
+	UNIPHIER_RESETX(4, 0x200c, 2),		 
+	UNIPHIER_RESETX(6, 0x200c, 6),		 
+	UNIPHIER_RESETX(8, 0x200c, 8),		 
+	UNIPHIER_RESETX(9, 0x200c, 9),		 
+	UNIPHIER_RESETX(14, 0x200c, 5),		 
+	UNIPHIER_RESETX(16, 0x200c, 12),	 
+	UNIPHIER_RESETX(17, 0x200c, 13),	 
+	UNIPHIER_RESETX(18, 0x200c, 14),	 
+	UNIPHIER_RESETX(19, 0x200c, 15),	 
+	UNIPHIER_RESETX(24, 0x200c, 4),		 
+	UNIPHIER_RESETX(40, 0x2008, 0),		 
+	UNIPHIER_RESETX(41, 0x2008, 1),		 
+	UNIPHIER_RESETX(42, 0x2010, 2),		 
 	UNIPHIER_RESET_END,
 };
 
 static const struct uniphier_reset_data uniphier_pxs3_sys_reset_data[] = {
-	UNIPHIER_RESETX(2, 0x200c, 0),		/* NAND */
-	UNIPHIER_RESETX(4, 0x200c, 2),		/* eMMC */
-	UNIPHIER_RESETX(6, 0x200c, 9),		/* Ether0 */
-	UNIPHIER_RESETX(7, 0x200c, 10),		/* Ether1 */
-	UNIPHIER_RESETX(8, 0x200c, 12),		/* STDMAC */
-	UNIPHIER_RESETX(12, 0x200c, 4),		/* USB30 link */
-	UNIPHIER_RESETX(13, 0x200c, 5),		/* USB31 link */
-	UNIPHIER_RESETX(16, 0x200c, 16),	/* USB30-PHY0 */
-	UNIPHIER_RESETX(17, 0x200c, 18),	/* USB30-PHY1 */
-	UNIPHIER_RESETX(18, 0x200c, 20),	/* USB30-PHY2 */
-	UNIPHIER_RESETX(20, 0x200c, 17),	/* USB31-PHY0 */
-	UNIPHIER_RESETX(21, 0x200c, 19),	/* USB31-PHY1 */
-	UNIPHIER_RESETX(24, 0x200c, 3),		/* PCIe */
-	UNIPHIER_RESETX(28, 0x200c, 7),		/* SATA0 */
-	UNIPHIER_RESETX(29, 0x200c, 8),		/* SATA1 */
-	UNIPHIER_RESETX(30, 0x200c, 21),	/* SATA-PHY */
-	UNIPHIER_RESETX(40, 0x2008, 0),		/* AIO */
-	UNIPHIER_RESETX(42, 0x2010, 2),		/* EXIV */
+	UNIPHIER_RESETX(2, 0x200c, 0),		 
+	UNIPHIER_RESETX(4, 0x200c, 2),		 
+	UNIPHIER_RESETX(6, 0x200c, 9),		 
+	UNIPHIER_RESETX(7, 0x200c, 10),		 
+	UNIPHIER_RESETX(8, 0x200c, 12),		 
+	UNIPHIER_RESETX(12, 0x200c, 4),		 
+	UNIPHIER_RESETX(13, 0x200c, 5),		 
+	UNIPHIER_RESETX(16, 0x200c, 16),	 
+	UNIPHIER_RESETX(17, 0x200c, 18),	 
+	UNIPHIER_RESETX(18, 0x200c, 20),	 
+	UNIPHIER_RESETX(20, 0x200c, 17),	 
+	UNIPHIER_RESETX(21, 0x200c, 19),	 
+	UNIPHIER_RESETX(24, 0x200c, 3),		 
+	UNIPHIER_RESETX(28, 0x200c, 7),		 
+	UNIPHIER_RESETX(29, 0x200c, 8),		 
+	UNIPHIER_RESETX(30, 0x200c, 21),	 
+	UNIPHIER_RESETX(40, 0x2008, 0),		 
+	UNIPHIER_RESETX(42, 0x2010, 2),		 
 	UNIPHIER_RESET_END,
 };
 
 static const struct uniphier_reset_data uniphier_nx1_sys_reset_data[] = {
-	UNIPHIER_RESETX(4, 0x2008, 8),		/* eMMC */
-	UNIPHIER_RESETX(6, 0x200c, 0),		/* Ether */
-	UNIPHIER_RESETX(12, 0x200c, 16),        /* USB30 link */
-	UNIPHIER_RESETX(16, 0x200c, 24),        /* USB30-PHY0 */
-	UNIPHIER_RESETX(17, 0x200c, 25),        /* USB30-PHY1 */
-	UNIPHIER_RESETX(18, 0x200c, 26),        /* USB30-PHY2 */
-	UNIPHIER_RESETX(24, 0x200c, 8),         /* PCIe */
-	UNIPHIER_RESETX(52, 0x2010, 0),         /* VOC */
-	UNIPHIER_RESETX(58, 0x2010, 8),         /* HDMI-Tx */
+	UNIPHIER_RESETX(4, 0x2008, 8),		 
+	UNIPHIER_RESETX(6, 0x200c, 0),		 
+	UNIPHIER_RESETX(12, 0x200c, 16),         
+	UNIPHIER_RESETX(16, 0x200c, 24),         
+	UNIPHIER_RESETX(17, 0x200c, 25),         
+	UNIPHIER_RESETX(18, 0x200c, 26),         
+	UNIPHIER_RESETX(24, 0x200c, 8),          
+	UNIPHIER_RESETX(52, 0x2010, 0),          
+	UNIPHIER_RESETX(58, 0x2010, 8),          
 	UNIPHIER_RESET_END,
 };
 
-/* Media I/O reset data */
+ 
 #define UNIPHIER_MIO_RESET_SD(id, ch)			\
 	UNIPHIER_RESETX((id), 0x110 + 0x200 * (ch), 0)
 
@@ -197,7 +194,7 @@ static const struct uniphier_reset_data uniphier_pro5_sd_reset_data[] = {
 	UNIPHIER_RESET_END,
 };
 
-/* Peripheral reset data */
+ 
 #define UNIPHIER_PERI_RESET_UART(id, ch)		\
 	UNIPHIER_RESETX((id), 0x114, 19 + (ch))
 
@@ -247,13 +244,13 @@ static const struct uniphier_reset_data uniphier_pro4_peri_reset_data[] = {
 	UNIPHIER_RESET_END,
 };
 
-/* Analog signal amplifiers reset data */
+ 
 static const struct uniphier_reset_data uniphier_ld11_adamv_reset_data[] = {
-	UNIPHIER_RESETX(0, 0x10, 6), /* EVEA */
+	UNIPHIER_RESETX(0, 0x10, 6),  
 	UNIPHIER_RESET_END,
 };
 
-/* core implementaton */
+ 
 struct uniphier_reset_priv {
 	struct reset_controller_dev rcdev;
 	struct device *dev;
@@ -353,7 +350,7 @@ static int uniphier_reset_probe(struct platform_device *pdev)
 	if (WARN_ON(!data))
 		return -EINVAL;
 
-	parent = of_get_parent(dev->of_node); /* parent should be syscon node */
+	parent = of_get_parent(dev->of_node);  
 	regmap = syscon_node_to_regmap(parent);
 	of_node_put(parent);
 	if (IS_ERR(regmap)) {
@@ -381,7 +378,7 @@ static int uniphier_reset_probe(struct platform_device *pdev)
 }
 
 static const struct of_device_id uniphier_reset_match[] = {
-	/* System reset */
+	 
 	{
 		.compatible = "socionext,uniphier-ld4-reset",
 		.data = uniphier_ld4_sys_reset_data,
@@ -418,7 +415,7 @@ static const struct of_device_id uniphier_reset_match[] = {
 		.compatible = "socionext,uniphier-nx1-reset",
 		.data = uniphier_nx1_sys_reset_data,
 	},
-	/* Media I/O reset, SD reset */
+	 
 	{
 		.compatible = "socionext,uniphier-ld4-mio-reset",
 		.data = uniphier_ld4_mio_reset_data,
@@ -459,7 +456,7 @@ static const struct of_device_id uniphier_reset_match[] = {
 		.compatible = "socionext,uniphier-nx1-sd-reset",
 		.data = uniphier_pro5_sd_reset_data,
 	},
-	/* Peripheral reset */
+	 
 	{
 		.compatible = "socionext,uniphier-ld4-peri-reset",
 		.data = uniphier_ld4_peri_reset_data,
@@ -496,7 +493,7 @@ static const struct of_device_id uniphier_reset_match[] = {
 		.compatible = "socionext,uniphier-nx1-peri-reset",
 		.data = uniphier_pro4_peri_reset_data,
 	},
-	/* Analog signal amplifiers reset */
+	 
 	{
 		.compatible = "socionext,uniphier-ld11-adamv-reset",
 		.data = uniphier_ld11_adamv_reset_data,
@@ -505,7 +502,7 @@ static const struct of_device_id uniphier_reset_match[] = {
 		.compatible = "socionext,uniphier-ld20-adamv-reset",
 		.data = uniphier_ld11_adamv_reset_data,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, uniphier_reset_match);
 

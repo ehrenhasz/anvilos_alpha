@@ -1,10 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   32bit -> 64bit ioctl wrapper for raw MIDI API
- *   Copyright (c) by Takashi Iwai <tiwai@suse.de>
- */
 
-/* This file included from rawmidi.c */
+ 
+
+ 
 
 #include <linux/compat.h>
 
@@ -12,7 +9,7 @@ struct snd_rawmidi_params32 {
 	s32 stream;
 	u32 buffer_size;
 	u32 avail_min;
-	unsigned int no_active_sensing; /* avoid bit-field */
+	unsigned int no_active_sensing;  
 	unsigned int mode;
 	unsigned char reserved[12];
 } __attribute__((packed));
@@ -45,7 +42,7 @@ static int snd_rawmidi_ioctl_params_compat(struct snd_rawmidi_file *rfile,
 
 struct compat_snd_rawmidi_status64 {
 	s32 stream;
-	u8 rsvd[4]; /* alignment */
+	u8 rsvd[4];  
 	s64 tstamp_sec;
 	s64 tstamp_nsec;
 	u32 avail;

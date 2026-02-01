@@ -1,29 +1,4 @@
-/* Evaluate MSG_ZEROCOPY
- *
- * Send traffic between two processes over one of the supported
- * protocols and modes:
- *
- * PF_INET/PF_INET6
- * - SOCK_STREAM
- * - SOCK_DGRAM
- * - SOCK_DGRAM with UDP_CORK
- * - SOCK_RAW
- * - SOCK_RAW with IP_HDRINCL
- *
- * PF_PACKET
- * - SOCK_DGRAM
- * - SOCK_RAW
- *
- * PF_RDS
- * - SOCK_SEQPACKET
- *
- * Start this program on two connected hosts, one in send mode and
- * the other with option '-r' to put it in receiver mode.
- *
- * If zerocopy mode ('-z') is enabled, the sender will verify that
- * the kernel queues completions on the error queue for all zerocopy
- * transfers.
- */
+ 
 
 #define _GNU_SOURCE
 
@@ -76,7 +51,7 @@
 
 static int  cfg_cork;
 static bool cfg_cork_mixed;
-static int  cfg_cpu		= -1;		/* default: pin to last cpu */
+static int  cfg_cpu		= -1;		 
 static int  cfg_family		= PF_UNSPEC;
 static int  cfg_ifindex		= 1;
 static int  cfg_payload_len;
@@ -228,7 +203,7 @@ static void do_sendmsg_corked(int fd, struct msghdr *msg)
 	bool do_zerocopy = cfg_zerocopy;
 	int i, payload_len, extra_len;
 
-	/* split up the packet. for non-multiple, make first buffer longer */
+	 
 	payload_len = cfg_payload_len / cfg_cork;
 	extra_len = cfg_payload_len - (cfg_cork * payload_len);
 
@@ -236,9 +211,7 @@ static void do_sendmsg_corked(int fd, struct msghdr *msg)
 
 	for (i = 0; i < cfg_cork; i++) {
 
-		/* in mixed-frags mode, alternate zerocopy and copy frags
-		 * start with non-zerocopy, to ensure attach later works
-		 */
+		 
 		if (cfg_cork_mixed)
 			do_zerocopy = (i & 1);
 
@@ -432,9 +405,7 @@ static bool do_recv_completion(int fd, int domain)
 	lo = serr->ee_info;
 	range = hi - lo + 1;
 
-	/* Detect notification gaps. These should not happen often, if at all.
-	 * Gaps can occur due to drops, reordering and retransmissions.
-	 */
+	 
 	if (lo != next_completion)
 		fprintf(stderr, "gap: %u..%u does not append to %u\n",
 			lo, hi, next_completion);
@@ -456,13 +427,13 @@ static bool do_recv_completion(int fd, int domain)
 	return true;
 }
 
-/* Read all outstanding messages on the errqueue */
+ 
 static void do_recv_completions(int fd, int domain)
 {
 	while (do_recv_completion(fd, domain)) {}
 }
 
-/* Wait for all remaining completions on the errqueue */
+ 
 static void do_recv_remaining_completions(int fd, int domain)
 {
 	int64_t tstop = gettimeofday_ms() + cfg_waittime_ms;
@@ -496,7 +467,7 @@ static void do_tx(int domain, int type, int protocol)
 	if (domain == PF_PACKET) {
 		uint16_t proto = cfg_family == PF_INET ? ETH_P_IP : ETH_P_IPV6;
 
-		/* sock_raw passes ll header as data */
+		 
 		if (type == SOCK_RAW) {
 			memset(eth.h_dest, 0x06, ETH_ALEN);
 			memset(eth.h_source, 0x02, ETH_ALEN);
@@ -506,7 +477,7 @@ static void do_tx(int domain, int type, int protocol)
 			msg.msg_iovlen++;
 		}
 
-		/* both sock_raw and sock_dgram expect name */
+		 
 		memset(&laddr, 0, sizeof(laddr));
 		laddr.sll_family	= AF_PACKET;
 		laddr.sll_ifindex	= cfg_ifindex;
@@ -519,7 +490,7 @@ static void do_tx(int domain, int type, int protocol)
 		msg.msg_namelen		= sizeof(laddr);
 	}
 
-	/* packet and raw sockets with hdrincl must pass network header */
+	 
 	if (domain == PF_PACKET || protocol == IPPROTO_RAW) {
 		if (cfg_family == PF_INET)
 			iov[1].iov_len = setup_iph(&nh.iph, cfg_payload_len);
@@ -571,9 +542,7 @@ static int do_setup_rx(int domain, int type, int protocol)
 {
 	int fd;
 
-	/* If tx over PF_PACKET, rx over PF_INET(6)/SOCK_RAW,
-	 * to recv the only copy of the packet, not a clone
-	 */
+	 
 	if (domain == PF_PACKET)
 		error(1, 0, "Use PF_INET/SOCK_RAW to read");
 
@@ -600,12 +569,12 @@ static int do_setup_rx(int domain, int type, int protocol)
 	return fd;
 }
 
-/* Flush all outstanding bytes for the tcp receive queue */
+ 
 static void do_flush_tcp(int fd)
 {
 	int ret;
 
-	/* MSG_TRUNC flushes up to len bytes */
+	 
 	ret = recv(fd, NULL, 1 << 21, MSG_TRUNC | MSG_DONTWAIT);
 	if (ret == -1 && errno == EAGAIN)
 		return;
@@ -618,18 +587,18 @@ static void do_flush_tcp(int fd)
 	bytes += ret;
 }
 
-/* Flush all outstanding datagrams. Verify first few bytes of each. */
+ 
 static void do_flush_datagram(int fd, int type)
 {
 	int ret, off = 0;
 	char buf[64];
 
-	/* MSG_TRUNC will return full datagram length */
+	 
 	ret = recv(fd, buf, sizeof(buf), MSG_DONTWAIT | MSG_TRUNC);
 	if (ret == -1 && errno == EAGAIN)
 		return;
 
-	/* raw ipv4 return with header, raw ipv6 without */
+	 
 	if (cfg_family == PF_INET && type == SOCK_RAW) {
 		off += sizeof(struct iphdr);
 		ret -= sizeof(struct iphdr);
@@ -701,7 +670,7 @@ static void parse_opts(int argc, char **argv)
 	const int max_payload_len = sizeof(payload) -
 				    sizeof(struct ipv6hdr) -
 				    sizeof(struct tcphdr) -
-				    40 /* max tcp options */;
+				    40  ;
 	int c;
 	char *daddr = NULL, *saddr = NULL;
 	char *cfg_test;

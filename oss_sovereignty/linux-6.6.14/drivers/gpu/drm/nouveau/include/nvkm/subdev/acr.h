@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_ACR_H__
 #define __NVKM_ACR_H__
 #define nvkm_acr(p) container_of((p), struct nvkm_acr, subdev)
@@ -113,7 +113,7 @@ struct nvkm_acr_lsfw {
 };
 
 struct nvkm_acr_lsf_func {
-/* The (currently) map directly to LSB header flags. */
+ 
 #define NVKM_ACR_LSF_LOAD_CODE_AT_0                                  0x00000001
 #define NVKM_ACR_LSF_DMACTL_REQ_CTX                                  0x00000004
 #define NVKM_ACR_LSF_FORCE_PRIV_LOAD                                 0x00000008

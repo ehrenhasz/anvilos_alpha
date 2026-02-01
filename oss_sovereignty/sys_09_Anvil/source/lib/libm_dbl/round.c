@@ -18,7 +18,7 @@ double round(double x)
 	if (u.i >> 63)
 		x = -x;
 	if (e < 0x3ff-1) {
-		/* raise inexact if x!=0 */
+		 
 		FORCE_EVAL(x + toint);
 		return 0*u.f;
 	}

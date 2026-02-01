@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2019 American Megatrends International LLC.
- *
- * Author: Karthikeyan Mani <karthikeyanm@amiindia.co.in>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -45,13 +41,7 @@ struct aspeed_sgpio_bank {
 	const char  names[4][3];
 };
 
-/*
- * Note: The "value" register returns the input value when the GPIO is
- *	 configured as an input.
- *
- *	 The "rdata" register returns the output value when the GPIO is
- *	 configured as an output.
- */
+ 
 static const struct aspeed_sgpio_bank aspeed_sgpio_banks[] = {
 	{
 		.val_regs = 0x0000,
@@ -123,7 +113,7 @@ static void __iomem *bank_reg(struct aspeed_sgpio *gpio,
 	case reg_tolerance:
 		return gpio->base + bank->tolerance_regs;
 	default:
-		/* acturally if code runs to here, it's an error case */
+		 
 		BUG();
 	}
 }
@@ -154,7 +144,7 @@ static void aspeed_sgpio_irq_init_valid_mask(struct gpio_chip *gc,
 {
 	unsigned int i;
 
-	/* input GPIOs are even bits */
+	 
 	for (i = 0; i < ngpios; i++) {
 		if (i % 2)
 			clear_bit(i, valid_mask);
@@ -194,8 +184,7 @@ static int sgpio_set_value(struct gpio_chip *gc, unsigned int offset, int val)
 	if (aspeed_sgpio_is_input(offset))
 		return -EINVAL;
 
-	/* Since this is an output, read the cached value from rdata, then
-	 * update val. */
+	 
 	addr_r = bank_reg(gpio, bank, reg_rdata);
 	addr_w = bank_reg(gpio, bank, reg_val);
 
@@ -234,8 +223,7 @@ static int aspeed_sgpio_dir_out(struct gpio_chip *gc, unsigned int offset, int v
 	unsigned long flags;
 	int rc;
 
-	/* No special action is required for setting the direction; we'll
-	 * error-out in sgpio_set_value if this isn't an output GPIO */
+	 
 
 	raw_spin_lock_irqsave(&gpio->lock, flags);
 	rc = sgpio_set_value(gc, offset, val);
@@ -297,7 +285,7 @@ static void aspeed_sgpio_irq_set_mask(struct irq_data *d, bool set)
 	irqd_to_aspeed_sgpio_data(d, &gpio, &bank, &bit, &offset);
 	addr = bank_reg(gpio, bank, reg_irq_enable);
 
-	/* Unmasking the IRQ */
+	 
 	if (set)
 		gpiochip_enable_irq(&gpio->chip, irqd_to_hwirq(d));
 
@@ -313,7 +301,7 @@ static void aspeed_sgpio_irq_set_mask(struct irq_data *d, bool set)
 
 	raw_spin_unlock_irqrestore(&gpio->lock, flags);
 
-	/* Masking the IRQ */
+	 
 	if (!set)
 		gpiochip_disable_irq(&gpio->chip, irqd_to_hwirq(d));
 
@@ -446,12 +434,12 @@ static int aspeed_sgpio_setup_irqs(struct aspeed_sgpio *gpio,
 
 	gpio->irq = rc;
 
-	/* Disable IRQ and clear Interrupt status registers for all SGPIO Pins. */
+	 
 	for (i = 0; i < ARRAY_SIZE(aspeed_sgpio_banks); i++) {
 		bank =  &aspeed_sgpio_banks[i];
-		/* disable irq enable bits */
+		 
 		iowrite32(0x00000000, bank_reg(gpio, bank, reg_irq_enable));
-		/* clear status bits */
+		 
 		iowrite32(0xffffffff, bank_reg(gpio, bank, reg_irq_status));
 	}
 
@@ -465,14 +453,14 @@ static int aspeed_sgpio_setup_irqs(struct aspeed_sgpio *gpio,
 	irq->parents = &gpio->irq;
 	irq->num_parents = 1;
 
-	/* Apply default IRQ settings */
+	 
 	for (i = 0; i < ARRAY_SIZE(aspeed_sgpio_banks); i++) {
 		bank = &aspeed_sgpio_banks[i];
-		/* set falling or level-low irq */
+		 
 		iowrite32(0x00000000, bank_reg(gpio, bank, reg_irq_type0));
-		/* trigger type is edge */
+		 
 		iowrite32(0x00000000, bank_reg(gpio, bank, reg_irq_type1));
-		/* single edge trigger */
+		 
 		iowrite32(0x00000000, bank_reg(gpio, bank, reg_irq_type2));
 	}
 
@@ -582,15 +570,7 @@ static int __init aspeed_sgpio_probe(struct platform_device *pdev)
 
 	apb_freq = clk_get_rate(gpio->pclk);
 
-	/*
-	 * From the datasheet,
-	 *	SGPIO period = 1/PCLK * 2 * (GPIO254[31:16] + 1)
-	 *	period = 2 * (GPIO254[31:16] + 1) / PCLK
-	 *	frequency = 1 / (2 * (GPIO254[31:16] + 1) / PCLK)
-	 *	frequency = PCLK / (2 * (GPIO254[31:16] + 1))
-	 *	frequency * 2 * (GPIO254[31:16] + 1) = PCLK
-	 *	GPIO254[31:16] = PCLK / (frequency * 2) - 1
-	 */
+	 
 	if (sgpio_freq == 0)
 		return -EINVAL;
 

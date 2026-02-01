@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Analog Devices ADF4371 SPI Wideband Synthesizer driver
- *
- * Copyright 2019 Analog Devices Inc.
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -17,62 +13,62 @@
 
 #include <linux/iio/iio.h>
 
-/* Registers address macro */
+ 
 #define ADF4371_REG(x)			(x)
 
-/* ADF4371_REG0 */
+ 
 #define ADF4371_ADDR_ASC_MSK		BIT(2)
 #define ADF4371_ADDR_ASC(x)		FIELD_PREP(ADF4371_ADDR_ASC_MSK, x)
 #define ADF4371_ADDR_ASC_R_MSK		BIT(5)
 #define ADF4371_ADDR_ASC_R(x)		FIELD_PREP(ADF4371_ADDR_ASC_R_MSK, x)
 #define ADF4371_RESET_CMD		0x81
 
-/* ADF4371_REG17 */
+ 
 #define ADF4371_FRAC2WORD_L_MSK		GENMASK(7, 1)
 #define ADF4371_FRAC2WORD_L(x)		FIELD_PREP(ADF4371_FRAC2WORD_L_MSK, x)
 #define ADF4371_FRAC1WORD_MSK		BIT(0)
 #define ADF4371_FRAC1WORD(x)		FIELD_PREP(ADF4371_FRAC1WORD_MSK, x)
 
-/* ADF4371_REG18 */
+ 
 #define ADF4371_FRAC2WORD_H_MSK		GENMASK(6, 0)
 #define ADF4371_FRAC2WORD_H(x)		FIELD_PREP(ADF4371_FRAC2WORD_H_MSK, x)
 
-/* ADF4371_REG1A */
+ 
 #define ADF4371_MOD2WORD_MSK		GENMASK(5, 0)
 #define ADF4371_MOD2WORD(x)		FIELD_PREP(ADF4371_MOD2WORD_MSK, x)
 
-/* ADF4371_REG24 */
+ 
 #define ADF4371_RF_DIV_SEL_MSK		GENMASK(6, 4)
 #define ADF4371_RF_DIV_SEL(x)		FIELD_PREP(ADF4371_RF_DIV_SEL_MSK, x)
 
-/* ADF4371_REG25 */
+ 
 #define ADF4371_MUTE_LD_MSK		BIT(7)
 #define ADF4371_MUTE_LD(x)		FIELD_PREP(ADF4371_MUTE_LD_MSK, x)
 
-/* ADF4371_REG32 */
+ 
 #define ADF4371_TIMEOUT_MSK		GENMASK(1, 0)
 #define ADF4371_TIMEOUT(x)		FIELD_PREP(ADF4371_TIMEOUT_MSK, x)
 
-/* ADF4371_REG34 */
+ 
 #define ADF4371_VCO_ALC_TOUT_MSK	GENMASK(4, 0)
 #define ADF4371_VCO_ALC_TOUT(x)		FIELD_PREP(ADF4371_VCO_ALC_TOUT_MSK, x)
 
-/* Specifications */
-#define ADF4371_MIN_VCO_FREQ		4000000000ULL /* 4000 MHz */
-#define ADF4371_MAX_VCO_FREQ		8000000000ULL /* 8000 MHz */
-#define ADF4371_MAX_OUT_RF8_FREQ	ADF4371_MAX_VCO_FREQ /* Hz */
-#define ADF4371_MIN_OUT_RF8_FREQ	(ADF4371_MIN_VCO_FREQ / 64) /* Hz */
-#define ADF4371_MAX_OUT_RF16_FREQ	(ADF4371_MAX_VCO_FREQ * 2) /* Hz */
-#define ADF4371_MIN_OUT_RF16_FREQ	(ADF4371_MIN_VCO_FREQ * 2) /* Hz */
-#define ADF4371_MAX_OUT_RF32_FREQ	(ADF4371_MAX_VCO_FREQ * 4) /* Hz */
-#define ADF4371_MIN_OUT_RF32_FREQ	(ADF4371_MIN_VCO_FREQ * 4) /* Hz */
+ 
+#define ADF4371_MIN_VCO_FREQ		4000000000ULL  
+#define ADF4371_MAX_VCO_FREQ		8000000000ULL  
+#define ADF4371_MAX_OUT_RF8_FREQ	ADF4371_MAX_VCO_FREQ  
+#define ADF4371_MIN_OUT_RF8_FREQ	(ADF4371_MIN_VCO_FREQ / 64)  
+#define ADF4371_MAX_OUT_RF16_FREQ	(ADF4371_MAX_VCO_FREQ * 2)  
+#define ADF4371_MIN_OUT_RF16_FREQ	(ADF4371_MIN_VCO_FREQ * 2)  
+#define ADF4371_MAX_OUT_RF32_FREQ	(ADF4371_MAX_VCO_FREQ * 4)  
+#define ADF4371_MIN_OUT_RF32_FREQ	(ADF4371_MIN_VCO_FREQ * 4)  
 
-#define ADF4371_MAX_FREQ_PFD		250000000UL /* Hz */
-#define ADF4371_MAX_FREQ_REFIN		600000000UL /* Hz */
+#define ADF4371_MAX_FREQ_PFD		250000000UL  
+#define ADF4371_MAX_FREQ_REFIN		600000000UL  
 
-/* MOD1 is a 24-bit primary modulus with fixed value of 2^25 */
+ 
 #define ADF4371_MODULUS1		33554432ULL
-/* MOD2 is the programmable, 14-bit auxiliary fractional modulus */
+ 
 #define ADF4371_MAX_MODULUS2		BIT(14)
 
 #define ADF4371_CHECK_RANGE(freq, range) \
@@ -158,13 +154,7 @@ struct adf4371_state {
 	struct spi_device *spi;
 	struct regmap *regmap;
 	struct clk *clkin;
-	/*
-	 * Lock for accessing device registers. Some operations require
-	 * multiple consecutive R/W operations, during which the device
-	 * shouldn't be interrupted. The buffers are also shared across
-	 * all operations so need to be protected on stand alone reads and
-	 * writes.
-	 */
+	 
 	struct mutex lock;
 	const struct adf4371_chip_info *chip_info;
 	unsigned long clkin_freq;
@@ -254,14 +244,14 @@ static int adf4371_set_freq(struct adf4371_state *st, unsigned long long freq,
 		}
 		break;
 	case ADF4371_CH_RF16:
-		/* ADF4371 RF16 8000...16000 MHz */
+		 
 		if (ADF4371_CHECK_RANGE(freq, OUT_RF16_FREQ))
 			return -EINVAL;
 
 		freq >>= 1;
 		break;
 	case ADF4371_CH_RF32:
-		/* ADF4371 RF32 16000...32000 MHz */
+		 
 		if (ADF4371_CHECK_RANGE(freq, OUT_RF32_FREQ))
 			return -EINVAL;
 
@@ -274,7 +264,7 @@ static int adf4371_set_freq(struct adf4371_state *st, unsigned long long freq,
 	adf4371_pll_fract_n_compute(freq, st->fpfd, &st->integer, &st->fract1,
 				    &st->fract2, &st->mod2);
 	st->buf[0] = st->integer >> 8;
-	st->buf[1] = 0x40; /* REG12 default */
+	st->buf[1] = 0x40;  
 	st->buf[2] = 0x00;
 	st->buf[3] = st->fract1 & 0xFF;
 	st->buf[4] = st->fract1 >> 8;
@@ -288,10 +278,7 @@ static int adf4371_set_freq(struct adf4371_state *st, unsigned long long freq,
 	ret = regmap_bulk_write(st->regmap, ADF4371_REG(0x11), st->buf, 10);
 	if (ret < 0)
 		return ret;
-	/*
-	 * The R counter allows the input reference frequency to be
-	 * divided down to produce the reference clock to the PFD
-	 */
+	 
 	ret = regmap_write(st->regmap, ADF4371_REG(0x1F), st->ref_div_factor);
 	if (ret < 0)
 		return ret;
@@ -307,10 +294,7 @@ static int adf4371_set_freq(struct adf4371_state *st, unsigned long long freq,
 	ret = regmap_write(st->regmap, ADF4371_REG(0x26), cp_bleed);
 	if (ret < 0)
 		return ret;
-	/*
-	 * Set to 1 when in INT mode (when FRAC1 = FRAC2 = 0),
-	 * and set to 0 when in FRAC mode.
-	 */
+	 
 	if (st->fract1 == 0 && st->fract2 == 0)
 		int_mode = 0x01;
 
@@ -418,11 +402,7 @@ static ssize_t adf4371_write(struct iio_dev *indio_dev,
 }
 
 static const struct iio_chan_spec_ext_info adf4371_ext_info[] = {
-	/*
-	 * Ideally we use IIO_CHAN_INFO_FREQUENCY, but there are
-	 * values > 2^32 in order to support the entire frequency range
-	 * in Hz. Using scale is a bit ugly.
-	 */
+	 
 	_ADF4371_EXT_INFO("frequency", ADF4371_FREQ),
 	_ADF4371_EXT_INFO("powerdown", ADF4371_POWER_DOWN),
 	_ADF4371_EXT_INFO("name", ADF4371_CHANNEL_NAME),
@@ -478,7 +458,7 @@ static int adf4371_setup(struct adf4371_state *st)
 	unsigned int vco_band_div, tmp;
 	int ret;
 
-	/* Perform a software reset */
+	 
 	ret = regmap_write(st->regmap, ADF4371_REG(0x0), ADF4371_RESET_CMD);
 	if (ret < 0)
 		return ret;
@@ -488,7 +468,7 @@ static int adf4371_setup(struct adf4371_state *st)
 	if (ret < 0)
 		return ret;
 
-	/* Mute to Lock Detect */
+	 
 	if (device_property_read_bool(&st->spi->dev, "adi,mute-till-lock-en")) {
 		ret = regmap_update_bits(st->regmap, ADF4371_REG(0x25),
 					 ADF4371_MUTE_LD_MSK,
@@ -497,25 +477,19 @@ static int adf4371_setup(struct adf4371_state *st)
 			return ret;
 	}
 
-	/* Set address in ascending order, so the bulk_write() will work */
+	 
 	ret = regmap_update_bits(st->regmap, ADF4371_REG(0x0),
 				 ADF4371_ADDR_ASC_MSK | ADF4371_ADDR_ASC_R_MSK,
 				 ADF4371_ADDR_ASC(1) | ADF4371_ADDR_ASC_R(1));
 	if (ret < 0)
 		return ret;
-	/*
-	 * Calculate and maximize PFD frequency
-	 * fPFD = REFIN × ((1 + D)/(R × (1 + T)))
-	 * Where D is the REFIN doubler bit, T is the reference divide by 2,
-	 * R is the reference division factor
-	 * TODO: it is assumed D and T equal 0.
-	 */
+	 
 	do {
 		st->ref_div_factor++;
 		st->fpfd = st->clkin_freq / st->ref_div_factor;
 	} while (st->fpfd > ADF4371_MAX_FREQ_PFD);
 
-	/* Calculate Timeouts */
+	 
 	vco_band_div = DIV_ROUND_UP(st->fpfd, 2400000U);
 
 	tmp = DIV_ROUND_CLOSEST(st->fpfd, 1000000U);

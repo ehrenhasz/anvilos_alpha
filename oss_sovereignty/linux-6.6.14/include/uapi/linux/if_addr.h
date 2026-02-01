@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef __LINUX_IF_ADDR_H
 #define __LINUX_IF_ADDR_H
 
@@ -7,22 +7,13 @@
 
 struct ifaddrmsg {
 	__u8		ifa_family;
-	__u8		ifa_prefixlen;	/* The prefix length		*/
-	__u8		ifa_flags;	/* Flags			*/
-	__u8		ifa_scope;	/* Address scope		*/
-	__u32		ifa_index;	/* Link index			*/
+	__u8		ifa_prefixlen;	 
+	__u8		ifa_flags;	 
+	__u8		ifa_scope;	 
+	__u32		ifa_index;	 
 };
 
-/*
- * Important comment:
- * IFA_ADDRESS is prefix address, rather than local interface address.
- * It makes no difference for normally configured broadcast interfaces,
- * but for point-to-point IFA_ADDRESS is DESTINATION address,
- * local address is supplied in IFA_LOCAL attribute.
- *
- * IFA_FLAGS is a u32 attribute that extends the u8 field ifa_flags.
- * If present, the value from struct ifaddrmsg will be ignored.
- */
+ 
 enum {
 	IFA_UNSPEC,
 	IFA_ADDRESS,
@@ -33,15 +24,15 @@ enum {
 	IFA_CACHEINFO,
 	IFA_MULTICAST,
 	IFA_FLAGS,
-	IFA_RT_PRIORITY,	/* u32, priority/metric for prefix route */
+	IFA_RT_PRIORITY,	 
 	IFA_TARGET_NETNSID,
-	IFA_PROTO,		/* u8, address protocol */
+	IFA_PROTO,		 
 	__IFA_MAX,
 };
 
 #define IFA_MAX (__IFA_MAX - 1)
 
-/* ifa_flags */
+ 
 #define IFA_F_SECONDARY		0x01
 #define IFA_F_TEMPORARY		IFA_F_SECONDARY
 
@@ -60,20 +51,20 @@ enum {
 struct ifa_cacheinfo {
 	__u32	ifa_prefered;
 	__u32	ifa_valid;
-	__u32	cstamp; /* created timestamp, hundredths of seconds */
-	__u32	tstamp; /* updated timestamp, hundredths of seconds */
+	__u32	cstamp;  
+	__u32	tstamp;  
 };
 
-/* backwards compatibility for userspace */
+ 
 #ifndef __KERNEL__
 #define IFA_RTA(r)  ((struct rtattr*)(((char*)(r)) + NLMSG_ALIGN(sizeof(struct ifaddrmsg))))
 #define IFA_PAYLOAD(n) NLMSG_PAYLOAD(n,sizeof(struct ifaddrmsg))
 #endif
 
-/* ifa_proto */
+ 
 #define IFAPROT_UNSPEC		0
-#define IFAPROT_KERNEL_LO	1	/* loopback */
-#define IFAPROT_KERNEL_RA	2	/* set by kernel from router announcement */
-#define IFAPROT_KERNEL_LL	3	/* link-local set by kernel */
+#define IFAPROT_KERNEL_LO	1	 
+#define IFAPROT_KERNEL_RA	2	 
+#define IFAPROT_KERNEL_LL	3	 
 
 #endif

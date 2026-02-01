@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2015 Broadcom Corporation
+
+
 
 #include <linux/kernel.h>
 #include <linux/err.h>
@@ -41,10 +41,7 @@ static const struct iproc_pll_ctrl genpll_scr = {
 
 
 static const struct iproc_clk_ctrl genpll_scr_clk[] = {
-	/* bypass_shift, the last value passed into ENABLE_VAL(), is not defined
-	 * in NS2.  However, it doesn't appear to be used anywhere, so setting
-	 * it to 0.
-	 */
+	 
 	[BCM_NS2_GENPLL_SCR_SCR_CLK] = {
 		.channel = BCM_NS2_GENPLL_SCR_SCR_CLK,
 		.flags = IPROC_CLK_AON,
@@ -103,10 +100,7 @@ static const struct iproc_pll_ctrl genpll_sw = {
 };
 
 static const struct iproc_clk_ctrl genpll_sw_clk[] = {
-	/* bypass_shift, the last value passed into ENABLE_VAL(), is not defined
-	 * in NS2.  However, it doesn't appear to be used anywhere, so setting
-	 * it to 0.
-	 */
+	 
 	[BCM_NS2_GENPLL_SW_RPE_CLK] = {
 		.channel = BCM_NS2_GENPLL_SW_RPE_CLK,
 		.flags = IPROC_CLK_AON,
@@ -165,10 +159,7 @@ static const struct iproc_pll_ctrl lcpll_ddr = {
 };
 
 static const struct iproc_clk_ctrl lcpll_ddr_clk[] = {
-	/* bypass_shift, the last value passed into ENABLE_VAL(), is not defined
-	 * in NS2.  However, it doesn't appear to be used anywhere, so setting
-	 * it to 0.
-	 */
+	 
 	[BCM_NS2_LCPLL_DDR_PCIE_SATA_USB_CLK] = {
 		.channel = BCM_NS2_LCPLL_DDR_PCIE_SATA_USB_CLK,
 		.flags = IPROC_CLK_AON,
@@ -227,10 +218,7 @@ static const struct iproc_pll_ctrl lcpll_ports = {
 };
 
 static const struct iproc_clk_ctrl lcpll_ports_clk[] = {
-	/* bypass_shift, the last value passed into ENABLE_VAL(), is not defined
-	 * in NS2.  However, it doesn't appear to be used anywhere, so setting
-	 * it to 0.
-	 */
+	 
 	[BCM_NS2_LCPLL_PORTS_WAN_CLK] = {
 		.channel = BCM_NS2_LCPLL_PORTS_WAN_CLK,
 		.flags = IPROC_CLK_AON,

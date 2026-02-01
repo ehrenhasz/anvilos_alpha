@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
- *
- * Based on the r8180 driver, which is:
- * Copyright 2004-2005 Andrea Merello <andrea.merello@gmail.com>, et al.
- *
- * Contact Information: wlanfae <wlanfae@realtek.com>
- */
+
+ 
 #include "rtl_core.h"
 #include "r8192E_phy.h"
 #include "r8192E_phyreg.h"
@@ -72,7 +65,7 @@ void rtl92e_set_reg(struct net_device *dev, u8 variable, u8 *val)
 
 	switch (variable) {
 	case HW_VAR_BSSID:
-		/* BSSIDR 2 byte alignment */
+		 
 		rtl92e_writew(dev, BSSIDR, *(u16 *)val);
 		rtl92e_writel(dev, BSSIDR + 2, *(u32 *)(val + 2));
 		break;
@@ -1582,7 +1575,7 @@ static void _rtl92e_translate_rx_signal_stats(struct net_device *dev,
 				  (fc & RTLLIB_FCTL_FROMDS) ? hdr->addr2 :
 				  hdr->addr3) &&
 		 (!pstats->bHwError) && (!pstats->bCRC) && (!pstats->bICV));
-	bpacket_toself = bpacket_match_bssid &&		/* check this */
+	bpacket_toself = bpacket_match_bssid &&		 
 			 ether_addr_equal(praddr, priv->rtllib->dev->dev_addr);
 	if (WLAN_FC_GET_FRAMETYPE(fc) == RTLLIB_STYPE_BEACON)
 		bPacketBeacon = true;

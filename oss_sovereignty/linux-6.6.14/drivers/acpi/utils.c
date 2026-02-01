@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  acpi_utils.c - ACPI Utility Functions ($Revision: 10 $)
- *
- *  Copyright (C) 2001, 2002 Andy Grover <andrew.grover@intel.com>
- *  Copyright (C) 2001, 2002 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
- */
+
+ 
 
 #define pr_fmt(fmt) "ACPI: utils: " fmt
 
@@ -20,9 +15,7 @@
 #include "internal.h"
 #include "sleep.h"
 
-/* --------------------------------------------------------------------------
-                            Object Evaluation Helpers
-   -------------------------------------------------------------------------- */
+ 
 static void acpi_util_eval_error(acpi_handle h, acpi_string p, acpi_status s)
 {
 	acpi_handle_debug(h, "Evaluate [%s]: %s\n", p, acpi_format_exception(s));
@@ -66,9 +59,7 @@ acpi_extract_package(union acpi_object *package,
 
 	format_string = format->pointer;
 
-	/*
-	 * Calculate size_required.
-	 */
+	 
 	for (i = 0; i < format_count; i++) {
 
 		union acpi_object *element = &(package->package.elements[i]);
@@ -131,14 +122,12 @@ acpi_extract_package(union acpi_object *package,
 		case ACPI_TYPE_PACKAGE:
 		default:
 			pr_debug("Unsupported element at index=%d\n", i);
-			/* TBD: handle nested packages... */
+			 
 			return AE_SUPPORT;
 		}
 	}
 
-	/*
-	 * Validate output buffer.
-	 */
+	 
 	if (buffer->length == ACPI_ALLOCATE_BUFFER) {
 		buffer->pointer = ACPI_ALLOCATE_ZEROED(size_required);
 		if (!buffer->pointer)
@@ -157,9 +146,7 @@ acpi_extract_package(union acpi_object *package,
 	head = buffer->pointer;
 	tail = buffer->pointer + tail_offset;
 
-	/*
-	 * Extract package data.
-	 */
+	 
 	for (i = 0; i < format_count; i++) {
 
 		u8 **pointer = NULL;
@@ -181,12 +168,12 @@ acpi_extract_package(union acpi_object *package,
 				    element->integer.value;
 				head += sizeof(u64 *);
 				tail += sizeof(u64);
-				/* NULL terminate string */
+				 
 				*tail = (char)0;
 				tail += sizeof(char);
 				break;
 			default:
-				/* Should never get here */
+				 
 				break;
 			}
 			break;
@@ -201,7 +188,7 @@ acpi_extract_package(union acpi_object *package,
 				       element->string.length);
 				head += sizeof(char *);
 				tail += element->string.length * sizeof(char);
-				/* NULL terminate string */
+				 
 				*tail = (char)0;
 				tail += sizeof(char);
 				break;
@@ -214,7 +201,7 @@ acpi_extract_package(union acpi_object *package,
 				tail += element->buffer.length;
 				break;
 			default:
-				/* Should never get here */
+				 
 				break;
 			}
 			break;
@@ -226,14 +213,14 @@ acpi_extract_package(union acpi_object *package,
 				head += sizeof(void *);
 				break;
 			default:
-				/* Should never get here */
+				 
 				break;
 			}
 			break;
 		case ACPI_TYPE_PACKAGE:
-			/* TBD: handle nested packages... */
+			 
 		default:
-			/* Should never get here */
+			 
 			break;
 		}
 	}
@@ -346,7 +333,7 @@ acpi_evaluate_reference(acpi_handle handle,
 		return AE_BAD_PARAMETER;
 	}
 
-	/* Evaluate object. */
+	 
 
 	status = acpi_evaluate_object(handle, pathname, arguments, &buffer);
 	if (ACPI_FAILURE(status))
@@ -376,7 +363,7 @@ acpi_evaluate_reference(acpi_handle handle,
 	}
 	list->count = package->package.count;
 
-	/* Extract package data. */
+	 
 
 	for (i = 0; i < list->count; i++) {
 
@@ -393,7 +380,7 @@ acpi_evaluate_reference(acpi_handle handle,
 			acpi_util_eval_error(handle, pathname, status);
 			break;
 		}
-		/* Get the  acpi_handle. */
+		 
 
 		list->handles[i] = element->reference.handle;
 		acpi_handle_debug(list->handles[i], "Found in reference list\n");
@@ -402,7 +389,7 @@ acpi_evaluate_reference(acpi_handle handle,
       end:
 	if (ACPI_FAILURE(status)) {
 		list->count = 0;
-		//kfree(list->handles);
+		
 	}
 
 	kfree(buffer.pointer);
@@ -445,17 +432,7 @@ out:
 }
 EXPORT_SYMBOL(acpi_get_physical_device_location);
 
-/**
- * acpi_evaluate_ost: Evaluate _OST for hotplug operations
- * @handle: ACPI device handle
- * @source_event: source event code
- * @status_code: status code
- * @status_buf: optional detailed information (NULL if none)
- *
- * Evaluate _OST for hotplug operations. All ACPI hotplug handlers
- * must call this function when evaluating _OST for hotplug operations.
- * When the platform does not support _OST, this function has no effect.
- */
+ 
 acpi_status
 acpi_evaluate_ost(acpi_handle handle, u32 source_event, u32 status_code,
 		  struct acpi_buffer *status_buf)
@@ -481,12 +458,7 @@ acpi_evaluate_ost(acpi_handle handle, u32 source_event, u32 status_code,
 }
 EXPORT_SYMBOL(acpi_evaluate_ost);
 
-/**
- * acpi_handle_path: Return the object path of handle
- * @handle: ACPI device handle
- *
- * Caller must free the returned buffer
- */
+ 
 static char *acpi_handle_path(acpi_handle handle)
 {
 	struct acpi_buffer buffer = {
@@ -500,17 +472,7 @@ static char *acpi_handle_path(acpi_handle handle)
 	return buffer.pointer;
 }
 
-/**
- * acpi_handle_printk: Print message with ACPI prefix and object path
- * @level: log level
- * @handle: ACPI device handle
- * @fmt: format string
- *
- * This function is called through acpi_handle_<level> macros and prints
- * a message with ACPI prefix and object path.  This function acquires
- * the global namespace mutex to obtain an object path.  In interrupt
- * context, it shows the object path as <n/a>.
- */
+ 
 void
 acpi_handle_printk(const char *level, acpi_handle handle, const char *fmt, ...)
 {
@@ -531,17 +493,7 @@ acpi_handle_printk(const char *level, acpi_handle handle, const char *fmt, ...)
 EXPORT_SYMBOL(acpi_handle_printk);
 
 #if defined(CONFIG_DYNAMIC_DEBUG)
-/**
- * __acpi_handle_debug: pr_debug with ACPI prefix and object path
- * @descriptor: Dynamic Debug descriptor
- * @handle: ACPI device handle
- * @fmt: format string
- *
- * This function is called through acpi_handle_debug macro and debug
- * prints a message with ACPI prefix and object path. This function
- * acquires the global namespace mutex to obtain an object path.  In
- * interrupt context, it shows the object path as <n/a>.
- */
+ 
 void
 __acpi_handle_debug(struct _ddebug *descriptor, acpi_handle handle,
 		    const char *fmt, ...)
@@ -563,12 +515,7 @@ __acpi_handle_debug(struct _ddebug *descriptor, acpi_handle handle,
 EXPORT_SYMBOL(__acpi_handle_debug);
 #endif
 
-/**
- * acpi_evaluation_failure_warn - Log evaluation failure warning.
- * @handle: Parent object handle.
- * @name: Name of the object whose evaluation has failed.
- * @status: Status value returned by the failing object evaluation.
- */
+ 
 void acpi_evaluation_failure_warn(acpi_handle handle, const char *name,
 				  acpi_status status)
 {
@@ -577,13 +524,7 @@ void acpi_evaluation_failure_warn(acpi_handle handle, const char *name,
 }
 EXPORT_SYMBOL_GPL(acpi_evaluation_failure_warn);
 
-/**
- * acpi_has_method: Check whether @handle has a method named @name
- * @handle: ACPI device handle
- * @name: name of object or method
- *
- * Check whether @handle has a method named @name.
- */
+ 
 bool acpi_has_method(acpi_handle handle, char *name)
 {
 	acpi_handle tmp;
@@ -604,12 +545,7 @@ acpi_status acpi_execute_simple_method(acpi_handle handle, char *method,
 }
 EXPORT_SYMBOL(acpi_execute_simple_method);
 
-/**
- * acpi_evaluate_ej0: Evaluate _EJ0 method for hotplug operations
- * @handle: ACPI device handle
- *
- * Evaluate device's _EJ0 method for hotplug operations.
- */
+ 
 acpi_status acpi_evaluate_ej0(acpi_handle handle)
 {
 	acpi_status status;
@@ -623,13 +559,7 @@ acpi_status acpi_evaluate_ej0(acpi_handle handle)
 	return status;
 }
 
-/**
- * acpi_evaluate_lck: Evaluate _LCK method to lock/unlock device
- * @handle: ACPI device handle
- * @lock: lock device if non-zero, otherwise unlock device
- *
- * Evaluate device's _LCK method if present to lock/unlock device
- */
+ 
 acpi_status acpi_evaluate_lck(acpi_handle handle, int lock)
 {
 	acpi_status status;
@@ -647,15 +577,7 @@ acpi_status acpi_evaluate_lck(acpi_handle handle, int lock)
 	return status;
 }
 
-/**
- * acpi_evaluate_reg: Evaluate _REG method to register OpRegion presence
- * @handle: ACPI device handle
- * @space_id: ACPI address space id to register OpRegion presence for
- * @function: Parameter to pass to _REG one of ACPI_REG_CONNECT or
- *            ACPI_REG_DISCONNECT
- *
- * Evaluate device's _REG method to register OpRegion presence.
- */
+ 
 acpi_status acpi_evaluate_reg(acpi_handle handle, u8 space_id, u32 function)
 {
 	struct acpi_object_list arg_list;
@@ -672,20 +594,7 @@ acpi_status acpi_evaluate_reg(acpi_handle handle, u8 space_id, u32 function)
 }
 EXPORT_SYMBOL(acpi_evaluate_reg);
 
-/**
- * acpi_evaluate_dsm - evaluate device's _DSM method
- * @handle: ACPI device handle
- * @guid: GUID of requested functions, should be 16 bytes
- * @rev: revision number of requested function
- * @func: requested function number
- * @argv4: the function specific parameter
- *
- * Evaluate device's _DSM method with specified GUID, revision id and
- * function number. Caller needs to free the returned object.
- *
- * Though ACPI defines the fourth parameter for _DSM should be a package,
- * some old BIOSes do expect a buffer or an integer etc.
- */
+ 
 union acpi_object *
 acpi_evaluate_dsm(acpi_handle handle, const guid_t *guid, u64 rev, u64 func,
 		  union acpi_object *argv4)
@@ -725,17 +634,7 @@ acpi_evaluate_dsm(acpi_handle handle, const guid_t *guid, u64 rev, u64 func,
 }
 EXPORT_SYMBOL(acpi_evaluate_dsm);
 
-/**
- * acpi_check_dsm - check if _DSM method supports requested functions.
- * @handle: ACPI device handle
- * @guid: GUID of requested functions, should be 16 bytes at least
- * @rev: revision number of requested functions
- * @funcs: bitmap of requested functions
- *
- * Evaluate device's _DSM method to check whether it supports requested
- * functions. Currently only support 64 functions at maximum, should be
- * enough for now.
- */
+ 
 bool acpi_check_dsm(acpi_handle handle, const guid_t *guid, u64 rev, u64 funcs)
 {
 	int i;
@@ -749,7 +648,7 @@ bool acpi_check_dsm(acpi_handle handle, const guid_t *guid, u64 rev, u64 funcs)
 	if (!obj)
 		return false;
 
-	/* For compatibility, old BIOSes may return an integer */
+	 
 	if (obj->type == ACPI_TYPE_INTEGER)
 		mask = obj->integer.value;
 	else if (obj->type == ACPI_TYPE_BUFFER)
@@ -757,10 +656,7 @@ bool acpi_check_dsm(acpi_handle handle, const guid_t *guid, u64 rev, u64 funcs)
 			mask |= (((u64)obj->buffer.pointer[i]) << (i * 8));
 	ACPI_FREE(obj);
 
-	/*
-	 * Bit 0 indicates whether there's support for any functions other than
-	 * function 0 for the specified GUID and revision.
-	 */
+	 
 	if ((mask & 0x1) && (mask & funcs) == funcs)
 		return true;
 
@@ -768,15 +664,7 @@ bool acpi_check_dsm(acpi_handle handle, const guid_t *guid, u64 rev, u64 funcs)
 }
 EXPORT_SYMBOL(acpi_check_dsm);
 
-/**
- * acpi_dev_hid_uid_match - Match device by supplied HID and UID
- * @adev: ACPI device to match.
- * @hid2: Hardware ID of the device.
- * @uid2: Unique ID of the device, pass NULL to not check _UID.
- *
- * Matches HID and UID in @adev with given @hid2 and @uid2.
- * Returns true if matches.
- */
+ 
 bool acpi_dev_hid_uid_match(struct acpi_device *adev,
 			    const char *hid2, const char *uid2)
 {
@@ -793,15 +681,7 @@ bool acpi_dev_hid_uid_match(struct acpi_device *adev,
 }
 EXPORT_SYMBOL(acpi_dev_hid_uid_match);
 
-/**
- * acpi_dev_uid_to_integer - treat ACPI device _UID as integer
- * @adev: ACPI device to get _UID from
- * @integer: output buffer for integer
- *
- * Considers _UID as integer and converts it to @integer.
- *
- * Returns 0 on success, or negative error code otherwise.
- */
+ 
 int acpi_dev_uid_to_integer(struct acpi_device *adev, u64 *integer)
 {
 	const char *uid;
@@ -817,19 +697,7 @@ int acpi_dev_uid_to_integer(struct acpi_device *adev, u64 *integer)
 }
 EXPORT_SYMBOL(acpi_dev_uid_to_integer);
 
-/**
- * acpi_dev_found - Detect presence of a given ACPI device in the namespace.
- * @hid: Hardware ID of the device.
- *
- * Return %true if the device was present at the moment of invocation.
- * Note that if the device is pluggable, it may since have disappeared.
- *
- * For this function to work, acpi_bus_scan() must have been executed
- * which happens in the subsys_initcall() subsection. Hence, do not
- * call from a subsys_initcall() or earlier (use acpi_get_devices()
- * instead). Calling from module_init() is fine (which is synonymous
- * with device_initcall()).
- */
+ 
 bool acpi_dev_found(const char *hid)
 {
 	struct acpi_device_bus_id *acpi_device_bus_id;
@@ -877,26 +745,7 @@ static int acpi_dev_match_cb(struct device *dev, const void *data)
 	return hrv == match->hrv;
 }
 
-/**
- * acpi_dev_present - Detect that a given ACPI device is present
- * @hid: Hardware ID of the device.
- * @uid: Unique ID of the device, pass NULL to not check _UID
- * @hrv: Hardware Revision of the device, pass -1 to not check _HRV
- *
- * Return %true if a matching device was present at the moment of invocation.
- * Note that if the device is pluggable, it may since have disappeared.
- *
- * Note that unlike acpi_dev_found() this function checks the status
- * of the device. So for devices which are present in the DSDT, but
- * which are disabled (their _STA callback returns 0) this function
- * will return false.
- *
- * For this function to work, acpi_bus_scan() must have been executed
- * which happens in the subsys_initcall() subsection. Hence, do not
- * call from a subsys_initcall() or earlier (use acpi_get_devices()
- * instead). Calling from module_init() is fine (which is synonymous
- * with device_initcall()).
- */
+ 
 bool acpi_dev_present(const char *hid, const char *uid, s64 hrv)
 {
 	struct acpi_dev_match_info match = {};
@@ -912,22 +761,7 @@ bool acpi_dev_present(const char *hid, const char *uid, s64 hrv)
 }
 EXPORT_SYMBOL(acpi_dev_present);
 
-/**
- * acpi_dev_get_next_match_dev - Return the next match of ACPI device
- * @adev: Pointer to the previous ACPI device matching this @hid, @uid and @hrv
- * @hid: Hardware ID of the device.
- * @uid: Unique ID of the device, pass NULL to not check _UID
- * @hrv: Hardware Revision of the device, pass -1 to not check _HRV
- *
- * Return the next match of ACPI device if another matching device was present
- * at the moment of invocation, or NULL otherwise.
- *
- * The caller is responsible for invoking acpi_dev_put() on the returned device.
- * On the other hand the function invokes  acpi_dev_put() on the given @adev
- * assuming that its reference counter had been increased beforehand.
- *
- * See additional information in acpi_dev_present() as well.
- */
+ 
 struct acpi_device *
 acpi_dev_get_next_match_dev(struct acpi_device *adev, const char *hid, const char *uid, s64 hrv)
 {
@@ -945,19 +779,7 @@ acpi_dev_get_next_match_dev(struct acpi_device *adev, const char *hid, const cha
 }
 EXPORT_SYMBOL(acpi_dev_get_next_match_dev);
 
-/**
- * acpi_dev_get_first_match_dev - Return the first match of ACPI device
- * @hid: Hardware ID of the device.
- * @uid: Unique ID of the device, pass NULL to not check _UID
- * @hrv: Hardware Revision of the device, pass -1 to not check _HRV
- *
- * Return the first match of ACPI device if a matching device was present
- * at the moment of invocation, or NULL otherwise.
- *
- * The caller is responsible for invoking acpi_dev_put() on the returned device.
- *
- * See additional information in acpi_dev_present() as well.
- */
+ 
 struct acpi_device *
 acpi_dev_get_first_match_dev(const char *hid, const char *uid, s64 hrv)
 {
@@ -965,21 +787,14 @@ acpi_dev_get_first_match_dev(const char *hid, const char *uid, s64 hrv)
 }
 EXPORT_SYMBOL(acpi_dev_get_first_match_dev);
 
-/**
- * acpi_reduced_hardware - Return if this is an ACPI-reduced-hw machine
- *
- * Return true when running on an ACPI-reduced-hw machine, false otherwise.
- */
+ 
 bool acpi_reduced_hardware(void)
 {
 	return acpi_gbl_reduced_hardware;
 }
 EXPORT_SYMBOL_GPL(acpi_reduced_hardware);
 
-/*
- * acpi_backlight= handling, this is done here rather then in video_detect.c
- * because __setup cannot be used in modules.
- */
+ 
 char acpi_video_backlight_string[16];
 EXPORT_SYMBOL(acpi_video_backlight_string);
 
@@ -991,13 +806,7 @@ static int __init acpi_backlight(char *str)
 }
 __setup("acpi_backlight=", acpi_backlight);
 
-/**
- * acpi_match_platform_list - Check if the system matches with a given list
- * @plat: pointer to acpi_platform_list table terminated by a NULL entry
- *
- * Return the matched index if the system is found in the platform list.
- * Otherwise, return a negative error code.
- */
+ 
 int acpi_match_platform_list(const struct acpi_platform_list *plat)
 {
 	struct acpi_table_header hdr;

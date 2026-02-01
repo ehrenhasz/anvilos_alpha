@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel dynamic_speed_select -- Enumerate and control features
- * Copyright (c) 2019 Intel Corporation.
- */
+
+ 
 
 #include "isst.h"
 
@@ -253,7 +250,7 @@ static void _isst_fact_display_information(struct isst_id *id, FILE *outf, int l
 		if (fact_bucket != 0xff && fact_bucket != j)
 			continue;
 
-		/* core count must be valid for CPU power domain */
+		 
 		if (!bucket_info[j].hp_cores && id->cpu >= 0)
 			break;
 
@@ -304,7 +301,7 @@ static void _isst_fact_display_information(struct isst_id *id, FILE *outf, int l
 		if (!fact_info->lp_ratios[j])
 			continue;
 
-		/* No AVX level name for SSE to be consistent with previous formatting */
+		 
 		if (j == 0 && api_version() == 1 && !is_emr_platform())
 			snprintf(header, sizeof(header), "low-priority-max-frequency(MHz)");
 		else

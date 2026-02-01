@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ff.c - a part of driver for RME Fireface series
- *
- * Copyright (c) 2015-2017 Takashi Sakamoto
- */
+
+ 
 
 #include "ff.h"
 
@@ -127,7 +123,7 @@ static void snd_ff_remove(struct fw_unit *unit)
 {
 	struct snd_ff *ff = dev_get_drvdata(&unit->device);
 
-	// Block till all of ALSA character devices are released.
+	
 	snd_card_free(ff->card);
 }
 
@@ -176,7 +172,7 @@ static const struct snd_ff_spec spec_ufx_802 = {
 };
 
 static const struct ieee1394_device_id snd_ff_id_table[] = {
-	/* Fireface 800 */
+	 
 	{
 		.match_flags	= IEEE1394_MATCH_VENDOR_ID |
 				  IEEE1394_MATCH_SPECIFIER_ID |
@@ -188,7 +184,7 @@ static const struct ieee1394_device_id snd_ff_id_table[] = {
 		.model_id	= 0x101800,
 		.driver_data	= (kernel_ulong_t)&spec_ff800,
 	},
-	/* Fireface 400 */
+	 
 	{
 		.match_flags	= IEEE1394_MATCH_VENDOR_ID |
 				  IEEE1394_MATCH_SPECIFIER_ID |
@@ -200,7 +196,7 @@ static const struct ieee1394_device_id snd_ff_id_table[] = {
 		.model_id	= 0x101800,
 		.driver_data	= (kernel_ulong_t)&spec_ff400,
 	},
-	// Fireface UFX.
+	
 	{
 		.match_flags	= IEEE1394_MATCH_VENDOR_ID |
 				  IEEE1394_MATCH_SPECIFIER_ID |
@@ -212,7 +208,7 @@ static const struct ieee1394_device_id snd_ff_id_table[] = {
 		.model_id	= 0x101800,
 		.driver_data	= (kernel_ulong_t)&spec_ufx_802,
 	},
-	// Fireface UCX.
+	
 	{
 		.match_flags	= IEEE1394_MATCH_VENDOR_ID |
 				  IEEE1394_MATCH_SPECIFIER_ID |
@@ -224,7 +220,7 @@ static const struct ieee1394_device_id snd_ff_id_table[] = {
 		.model_id	= 0x101800,
 		.driver_data	= (kernel_ulong_t)&spec_ucx,
 	},
-	// Fireface 802.
+	
 	{
 		.match_flags	= IEEE1394_MATCH_VENDOR_ID |
 				  IEEE1394_MATCH_SPECIFIER_ID |

@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/extcon/extcon-adc-jack.c
- *
- * Analog Jack extcon driver with ADC-based detection capability.
- *
- * Copyright (C) 2016 Samsung Electronics
- * Chanwoo Choi <cw00.choi@samsung.com>
- *
- * Copyright (C) 2012 Samsung Electronics
- * MyungJoo Ham <myungjoo.ham@samsung.com>
- *
- * Modified for calling to IIO to get adc by <anish.singh@samsung.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -24,18 +12,7 @@
 #include <linux/extcon/extcon-adc-jack.h>
 #include <linux/extcon-provider.h>
 
-/**
- * struct adc_jack_data - internal data for adc_jack device driver
- * @edev:		extcon device.
- * @cable_names:	list of supported cables.
- * @adc_conditions:	list of adc value conditions.
- * @num_conditions:	size of adc_conditions.
- * @irq:		irq number of attach/detach event (0 if not exist).
- * @handling_delay:	interrupt handler will schedule extcon event
- *			handling at handling_delay jiffies.
- * @handler:		extcon event handler called by interrupt handler.
- * @chan:		iio channel being queried.
- */
+ 
 struct adc_jack_data {
 	struct device *dev;
 	struct extcon_dev *edev;
@@ -45,7 +22,7 @@ struct adc_jack_data {
 	int num_conditions;
 
 	int irq;
-	unsigned long handling_delay; /* in jiffies */
+	unsigned long handling_delay;  
 	struct delayed_work handler;
 
 	struct iio_channel *chan;
@@ -67,7 +44,7 @@ static void adc_jack_handler(struct work_struct *work)
 		return;
 	}
 
-	/* Get state from adc value with adc_conditions */
+	 
 	for (i = 0; i < data->num_conditions; i++) {
 		def = &data->adc_conditions[i];
 		if (def->min_adc <= adc_val && def->max_adc >= adc_val) {
@@ -76,7 +53,7 @@ static void adc_jack_handler(struct work_struct *work)
 		}
 	}
 
-	/* Set the detached state if adc value is not included in the range */
+	 
 	for (i = 0; i < data->num_conditions; i++) {
 		def = &data->adc_conditions[i];
 		extcon_set_state_sync(data->edev, def->id, false);
@@ -120,7 +97,7 @@ static int adc_jack_probe(struct platform_device *pdev)
 	}
 	data->adc_conditions = pdata->adc_conditions;
 
-	/* Check the length of array and set num_conditions */
+	 
 	for (i = 0; data->adc_conditions[i].id != EXTCON_NONE; i++);
 	data->num_conditions = i;
 
@@ -189,7 +166,7 @@ static int adc_jack_resume(struct device *dev)
 
 	return 0;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static SIMPLE_DEV_PM_OPS(adc_jack_pm_ops,
 		adc_jack_suspend, adc_jack_resume);

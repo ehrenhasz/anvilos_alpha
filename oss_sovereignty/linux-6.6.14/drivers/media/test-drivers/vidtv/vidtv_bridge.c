@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * The Virtual DTV test driver serves as a reference DVB driver and helps
- * validate the existing APIs in the media subsystem. It can also aid
- * developers working on userspace applications.
- *
- * When this module is loaded, it will attempt to modprobe 'dvb_vidtv_tuner'
- * and 'dvb_vidtv_demod'.
- *
- * Copyright (C) 2020 Daniel W. S. Almeida
- */
+
+ 
 
 #include <linux/dev_printk.h>
 #include <linux/moduleparam.h>
@@ -35,14 +26,10 @@
 #define VIDTV_DEFAULT_NETWORK_NAME "LinuxTV.org"
 #define VIDTV_DEFAULT_TS_ID 0x4081
 
-/*
- * The LNBf fake parameters here are the ranges used by an
- * Universal (extended) European LNBf, which is likely the most common LNBf
- * found on Satellite digital TV system nowadays.
- */
-#define LNB_CUT_FREQUENCY	11700000	/* high IF frequency */
-#define LNB_LOW_FREQ		9750000		/* low IF frequency */
-#define LNB_HIGH_FREQ		10600000	/* transition frequency */
+ 
+#define LNB_CUT_FREQUENCY	11700000	 
+#define LNB_LOW_FREQ		9750000		 
+#define LNB_HIGH_FREQ		10600000	 
 
 static unsigned int drop_tslock_prob_on_low_snr;
 module_param(drop_tslock_prob_on_low_snr, uint, 0);
@@ -92,9 +79,7 @@ MODULE_PARM_DESC(max_frequency_shift_hz,
 
 DVB_DEFINE_MOD_OPT_ADAPTER_NR(adapter_nums);
 
-/*
- * Influences the signal acquisition time. See ISO/IEC 13818-1 : 2000. p. 113.
- */
+ 
 static unsigned int si_period_msec = 40;
 module_param(si_period_msec, uint, 0);
 MODULE_PARM_DESC(si_period_msec, "How often to send SI packets. Default: 40ms");
@@ -151,14 +136,12 @@ static bool vidtv_bridge_check_demod_lock(struct vidtv_dvb *dvb, u32 n)
 			  FE_HAS_LOCK);
 }
 
-/*
- * called on a separate thread by the mux when new packets become available
- */
+ 
 static void vidtv_bridge_on_new_pkts_avail(void *priv, u8 *buf, u32 npkts)
 {
 	struct vidtv_dvb *dvb = priv;
 
-	/* drop packets if we lose the lock */
+	 
 	if (vidtv_bridge_check_demod_lock(dvb, 0))
 		dvb_dmx_swfilter_packets(&dvb->demux, buf, npkts);
 }
@@ -259,7 +242,7 @@ static struct dvb_frontend *vidtv_get_frontend_ptr(struct i2c_client *c)
 {
 	struct vidtv_demod_state *state = i2c_get_clientdata(c);
 
-	/* the demod will set this when its probe function runs */
+	 
 	return &state->frontend;
 }
 
@@ -267,11 +250,7 @@ static int vidtv_master_xfer(struct i2c_adapter *i2c_adap,
 			     struct i2c_msg msgs[],
 			     int num)
 {
-	/*
-	 * Right now, this virtual driver doesn't really send or receive
-	 * messages from I2C. A real driver will require an implementation
-	 * here.
-	 */
+	 
 	return 0;
 }
 
@@ -349,11 +328,11 @@ static int vidtv_bridge_probe_demod(struct vidtv_dvb *dvb, u32 n)
 						    DEMOD_DEFAULT_ADDR,
 						    &cfg);
 
-	/* driver will not work anyways so bail out */
+	 
 	if (!dvb->i2c_client_demod[n])
 		return -ENODEV;
 
-	/* retrieve a ptr to the frontend state */
+	 
 	dvb->fe[n] = vidtv_get_frontend_ptr(dvb->i2c_client_demod[n]);
 
 	return 0;
@@ -369,7 +348,7 @@ static int vidtv_bridge_probe_tuner(struct vidtv_dvb *dvb, u32 n)
 	u32 freq;
 	int i;
 
-	/* TODO: check if the frequencies are at a valid range */
+	 
 
 	memcpy(cfg.vidtv_valid_dvb_t_freqs,
 	       vidtv_valid_dvb_t_freqs,
@@ -379,10 +358,7 @@ static int vidtv_bridge_probe_tuner(struct vidtv_dvb *dvb, u32 n)
 	       vidtv_valid_dvb_c_freqs,
 	       sizeof(vidtv_valid_dvb_c_freqs));
 
-	/*
-	 * Convert Satellite frequencies from Ku-band in kHZ into S-band
-	 * frequencies in Hz.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(vidtv_valid_dvb_s_freqs); i++) {
 		freq = vidtv_valid_dvb_s_freqs[i];
 		if (freq) {
@@ -446,10 +422,7 @@ static int vidtv_bridge_dvb_init(struct vidtv_dvb *dvb)
 		if (ret < 0)
 			goto fail_dmx_conn;
 
-		/*
-		 * The source of the demux is a frontend connected
-		 * to the demux.
-		 */
+		 
 		dvb->dmx_fe[j].source = DMX_FRONTEND_0;
 	}
 
@@ -514,7 +487,7 @@ static int vidtv_bridge_probe(struct platform_device *pdev)
 			"media device register failed (err=%d)\n", ret);
 		goto err_media_device_register;
 	}
-#endif /* CONFIG_MEDIA_CONTROLLER_DVB */
+#endif  
 
 	dev_info(&pdev->dev, "Successfully initialized vidtv!\n");
 	return ret;
@@ -522,7 +495,7 @@ static int vidtv_bridge_probe(struct platform_device *pdev)
 #ifdef CONFIG_MEDIA_CONTROLLER_DVB
 err_media_device_register:
 	media_device_cleanup(&dvb->mdev);
-#endif /* CONFIG_MEDIA_CONTROLLER_DVB */
+#endif  
 err_dvb:
 	kfree(dvb);
 	return ret;
@@ -538,7 +511,7 @@ static void vidtv_bridge_remove(struct platform_device *pdev)
 #ifdef CONFIG_MEDIA_CONTROLLER_DVB
 	media_device_unregister(&dvb->mdev);
 	media_device_cleanup(&dvb->mdev);
-#endif /* CONFIG_MEDIA_CONTROLLER_DVB */
+#endif  
 
 	mutex_destroy(&dvb->feed_lock);
 

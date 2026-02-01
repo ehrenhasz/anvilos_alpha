@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Keystone Navigator QMSS driver internal header
- *
- * Copyright (C) 2014 Texas Instruments Incorporated - http://www.ti.com
- * Author:	Sandeep Nair <sandeep_n@ti.com>
- *		Cyril Chemparathy <cyril@ti.com>
- *		Santosh Shilimkar <santosh.shilimkar@ti.com>
- */
+ 
+ 
 
 #ifndef __KNAV_QMSS_H__
 #define __KNAV_QMSS_H__
@@ -22,7 +15,7 @@
 #define PDSP_CTRL_RUNNING	BIT(15)
 
 #define ACC_MAX_CHANNEL		48
-#define ACC_DEFAULT_PERIOD	25 /* usecs */
+#define ACC_DEFAULT_PERIOD	25  
 
 #define ACC_CHANNEL_INT_BASE		2
 
@@ -147,14 +140,7 @@ struct knav_qmgr_info {
 
 #define KNAV_NUM_LINKRAM	2
 
-/**
- * struct knav_queue_stats:	queue statistics
- * pushes:			number of push operations
- * pops:			number of pop operations
- * push_errors:			number of push errors
- * pop_errors:			number of pop errors
- * notifies:			notifier counts
- */
+ 
 struct knav_queue_stats {
 	unsigned int pushes;
 	unsigned int pops;
@@ -163,13 +149,7 @@ struct knav_queue_stats {
 	unsigned int notifies;
 };
 
-/**
- * struct knav_reg_queue:	queue registers
- * @entry_count:		valid entries in the queue
- * @byte_count:			total byte count in thhe queue
- * @packet_size:		packet size for the queue
- * @ptr_size_thresh:		packet pointer size threshold
- */
+ 
 struct knav_reg_queue {
 	u32		entry_count;
 	u32		byte_count;
@@ -177,19 +157,7 @@ struct knav_reg_queue {
 	u32		ptr_size_thresh;
 };
 
-/**
- * struct knav_region:		qmss region info
- * @dma_start, dma_end:		start and end dma address
- * @virt_start, virt_end:	start and end virtual address
- * @desc_size:			descriptor size
- * @used_desc:			consumed descriptors
- * @id:				region number
- * @num_desc:			total descriptors
- * @link_index:			index of the first descriptor
- * @name:			region name
- * @list:			instance in the device's region list
- * @pools:			list of descriptor pools in the region
- */
+ 
 struct knav_region {
 	dma_addr_t		dma_start, dma_end;
 	void			*virt_start, *virt_end;
@@ -203,20 +171,7 @@ struct knav_region {
 	struct list_head	pools;
 };
 
-/**
- * struct knav_pool:		qmss pools
- * @dev:			device pointer
- * @region:			qmss region info
- * @queue:			queue registers
- * @kdev:			qmss device pointer
- * @region_offset:		offset from the base
- * @num_desc:			total descriptors
- * @desc_size:			descriptor size
- * @region_id:			region number
- * @name:			pool name
- * @list:			list head
- * @region_inst:		instance in the region's pool list
- */
+ 
 struct knav_pool {
 	struct device			*dev;
 	struct knav_region		*region;
@@ -231,22 +186,7 @@ struct knav_pool {
 	struct list_head		region_inst;
 };
 
-/**
- * struct knav_queue_inst:		qmss queue instance properties
- * @descs:				descriptor pointer
- * @desc_head, desc_tail, desc_count:	descriptor counters
- * @acc:				accumulator channel pointer
- * @kdev:				qmss device pointer
- * @range:				range info
- * @qmgr:				queue manager info
- * @id:					queue instance id
- * @irq_num:				irq line number
- * @notify_needed:			notifier needed based on queue type
- * @num_notifiers:			total notifiers
- * @handles:				list head
- * @name:				queue instance name
- * @irq_name:				irq line name
- */
+ 
 struct knav_queue_inst {
 	u32				*descs;
 	atomic_t			desc_head, desc_tail, desc_count;
@@ -263,17 +203,7 @@ struct knav_queue_inst {
 	const char			*irq_name;
 };
 
-/**
- * struct knav_queue:			qmss queue properties
- * @reg_push, reg_pop, reg_peek:	push, pop queue registers
- * @inst:				qmss queue instance properties
- * @notifier_fn:			notifier function
- * @notifier_fn_arg:			notifier function argument
- * @notifier_enabled:			notier enabled for a give queue
- * @rcu:				rcu head
- * @flags:				queue flags
- * @list:				list head
- */
+ 
 struct knav_queue {
 	struct knav_reg_queue __iomem	*reg_push, *reg_pop, *reg_peek;
 	struct knav_queue_inst		*inst;
@@ -384,4 +314,4 @@ extern int knav_init_acc_range(struct knav_device *kdev,
 					struct knav_range_info *range);
 extern void knav_queue_notify(struct knav_queue_inst *inst);
 
-#endif /* __KNAV_QMSS_H__ */
+#endif  

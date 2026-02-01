@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * fs/sysfs/file.c - sysfs regular (text) file implementation
- *
- * Copyright (c) 2001-3 Patrick Mochel
- * Copyright (c) 2007 SUSE Linux Products GmbH
- * Copyright (c) 2007 Tejun Heo <teheo@suse.de>
- *
- * Please see Documentation/filesystems/sysfs.rst for more information.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kobject.h>
@@ -19,10 +11,7 @@
 
 #include "sysfs.h"
 
-/*
- * Determine ktype->sysfs_ops for the given kernfs_node.  This function
- * must be called while holding an active reference.
- */
+ 
 static const struct sysfs_ops *sysfs_file_ops(struct kernfs_node *kn)
 {
 	struct kobject *kobj = kn->parent->priv;
@@ -32,11 +21,7 @@ static const struct sysfs_ops *sysfs_file_ops(struct kernfs_node *kn)
 	return kobj->ktype ? kobj->ktype->sysfs_ops : NULL;
 }
 
-/*
- * Reads on sysfs are handled through seq_file, which takes care of hairy
- * details like buffering and seeking.  The following function pipes
- * sysfs_ops->show() result through seq_file.
- */
+ 
 static int sysfs_kf_seq_show(struct seq_file *sf, void *v)
 {
 	struct kernfs_open_file *of = sf->private;
@@ -48,7 +33,7 @@ static int sysfs_kf_seq_show(struct seq_file *sf, void *v)
 	if (WARN_ON_ONCE(!ops->show))
 		return -EINVAL;
 
-	/* acquire buffer and ensure that it's >= PAGE_SIZE and clear */
+	 
 	count = seq_get_buf(sf, &buf);
 	if (count < PAGE_SIZE) {
 		seq_commit(sf, -1);
@@ -60,14 +45,11 @@ static int sysfs_kf_seq_show(struct seq_file *sf, void *v)
 	if (count < 0)
 		return count;
 
-	/*
-	 * The code works fine with PAGE_SIZE return but it's likely to
-	 * indicate truncated result or overflow in normal use cases.
-	 */
+	 
 	if (count >= (ssize_t)PAGE_SIZE) {
 		printk("fill_read_buffer: %pS returned bad count\n",
 				ops->show);
-		/* Try to struggle along */
+		 
 		count = PAGE_SIZE - 1;
 	}
 	seq_commit(sf, count);
@@ -97,7 +79,7 @@ static ssize_t sysfs_kf_bin_read(struct kernfs_open_file *of, char *buf,
 	return battr->read(of->file, kobj, battr, buf, pos, count);
 }
 
-/* kernfs read callback for regular sysfs files with pre-alloc */
+ 
 static ssize_t sysfs_kf_read(struct kernfs_open_file *of, char *buf,
 			     size_t count, loff_t pos)
 {
@@ -105,10 +87,7 @@ static ssize_t sysfs_kf_read(struct kernfs_open_file *of, char *buf,
 	struct kobject *kobj = of->kn->parent->priv;
 	ssize_t len;
 
-	/*
-	 * If buf != of->prealloc_buf, we don't know how
-	 * large it is, so cannot safely pass it to ->show
-	 */
+	 
 	if (WARN_ON_ONCE(buf != of->prealloc_buf))
 		return 0;
 	len = ops->show(kobj, of->kn->priv, buf);
@@ -123,7 +102,7 @@ static ssize_t sysfs_kf_read(struct kernfs_open_file *of, char *buf,
 	return min_t(ssize_t, count, len);
 }
 
-/* kernfs write callback for regular sysfs files */
+ 
 static ssize_t sysfs_kf_write(struct kernfs_open_file *of, char *buf,
 			      size_t count, loff_t pos)
 {
@@ -136,7 +115,7 @@ static ssize_t sysfs_kf_write(struct kernfs_open_file *of, char *buf,
 	return ops->store(kobj, of->kn->priv, buf, count);
 }
 
-/* kernfs write callback for bin sysfs files */
+ 
 static ssize_t sysfs_kf_bin_write(struct kernfs_open_file *of, char *buf,
 				  size_t count, loff_t pos)
 {
@@ -261,7 +240,7 @@ int sysfs_add_file_mode_ns(struct kernfs_node *parent,
 	const struct kernfs_ops *ops = NULL;
 	struct kernfs_node *kn;
 
-	/* every kobject with an attribute needs a ktype assigned */
+	 
 	if (WARN(!sysfs_ops, KERN_ERR
 			"missing sysfs attribute operations for kobject: %s\n",
 			kobject_name(kobj)))
@@ -336,12 +315,7 @@ int sysfs_add_bin_file_mode_ns(struct kernfs_node *parent,
 	return 0;
 }
 
-/**
- * sysfs_create_file_ns - create an attribute file for an object with custom ns
- * @kobj: object we're creating for
- * @attr: attribute descriptor
- * @ns: namespace the new file should belong to
- */
+ 
 int sysfs_create_file_ns(struct kobject *kobj, const struct attribute *attr,
 			 const void *ns)
 {
@@ -370,12 +344,7 @@ int sysfs_create_files(struct kobject *kobj, const struct attribute * const *ptr
 }
 EXPORT_SYMBOL_GPL(sysfs_create_files);
 
-/**
- * sysfs_add_file_to_group - add an attribute file to a pre-existing group.
- * @kobj: object we're acting for.
- * @attr: attribute descriptor.
- * @group: group name.
- */
+ 
 int sysfs_add_file_to_group(struct kobject *kobj,
 		const struct attribute *attr, const char *group)
 {
@@ -403,13 +372,7 @@ int sysfs_add_file_to_group(struct kobject *kobj,
 }
 EXPORT_SYMBOL_GPL(sysfs_add_file_to_group);
 
-/**
- * sysfs_chmod_file - update the modified mode value on an object attribute.
- * @kobj: object we're acting for.
- * @attr: attribute descriptor.
- * @mode: file permissions.
- *
- */
+ 
 int sysfs_chmod_file(struct kobject *kobj, const struct attribute *attr,
 		     umode_t mode)
 {
@@ -431,16 +394,7 @@ int sysfs_chmod_file(struct kobject *kobj, const struct attribute *attr,
 }
 EXPORT_SYMBOL_GPL(sysfs_chmod_file);
 
-/**
- * sysfs_break_active_protection - break "active" protection
- * @kobj: The kernel object @attr is associated with.
- * @attr: The attribute to break the "active" protection for.
- *
- * With sysfs, just like kernfs, deletion of an attribute is postponed until
- * all active .show() and .store() callbacks have finished unless this function
- * is called. Hence this function is useful in methods that implement self
- * deletion.
- */
+ 
 struct kernfs_node *sysfs_break_active_protection(struct kobject *kobj,
 						  const struct attribute *attr)
 {
@@ -454,17 +408,7 @@ struct kernfs_node *sysfs_break_active_protection(struct kobject *kobj,
 }
 EXPORT_SYMBOL_GPL(sysfs_break_active_protection);
 
-/**
- * sysfs_unbreak_active_protection - restore "active" protection
- * @kn: Pointer returned by sysfs_break_active_protection().
- *
- * Undo the effects of sysfs_break_active_protection(). Since this function
- * calls kernfs_put() on the kernfs node that corresponds to the 'attr'
- * argument passed to sysfs_break_active_protection() that attribute may have
- * been removed between the sysfs_break_active_protection() and
- * sysfs_unbreak_active_protection() calls, it is not safe to access @kn after
- * this function has returned.
- */
+ 
 void sysfs_unbreak_active_protection(struct kernfs_node *kn)
 {
 	struct kobject *kobj = kn->parent->priv;
@@ -475,14 +419,7 @@ void sysfs_unbreak_active_protection(struct kernfs_node *kn)
 }
 EXPORT_SYMBOL_GPL(sysfs_unbreak_active_protection);
 
-/**
- * sysfs_remove_file_ns - remove an object attribute with a custom ns tag
- * @kobj: object we're acting for
- * @attr: attribute descriptor
- * @ns: namespace tag of the file to remove
- *
- * Hash the attribute name and namespace tag and kill the victim.
- */
+ 
 void sysfs_remove_file_ns(struct kobject *kobj, const struct attribute *attr,
 			  const void *ns)
 {
@@ -492,13 +429,7 @@ void sysfs_remove_file_ns(struct kobject *kobj, const struct attribute *attr,
 }
 EXPORT_SYMBOL_GPL(sysfs_remove_file_ns);
 
-/**
- * sysfs_remove_file_self - remove an object attribute from its own method
- * @kobj: object we're acting for
- * @attr: attribute descriptor
- *
- * See kernfs_remove_self() for details.
- */
+ 
 bool sysfs_remove_file_self(struct kobject *kobj, const struct attribute *attr)
 {
 	struct kernfs_node *parent = kobj->sd;
@@ -525,12 +456,7 @@ void sysfs_remove_files(struct kobject *kobj, const struct attribute * const *pt
 }
 EXPORT_SYMBOL_GPL(sysfs_remove_files);
 
-/**
- * sysfs_remove_file_from_group - remove an attribute file from a group.
- * @kobj: object we're acting for.
- * @attr: attribute descriptor.
- * @group: group name.
- */
+ 
 void sysfs_remove_file_from_group(struct kobject *kobj,
 		const struct attribute *attr, const char *group)
 {
@@ -550,11 +476,7 @@ void sysfs_remove_file_from_group(struct kobject *kobj,
 }
 EXPORT_SYMBOL_GPL(sysfs_remove_file_from_group);
 
-/**
- *	sysfs_create_bin_file - create binary file for object.
- *	@kobj:	object.
- *	@attr:	attribute descriptor.
- */
+ 
 int sysfs_create_bin_file(struct kobject *kobj,
 			  const struct bin_attribute *attr)
 {
@@ -570,11 +492,7 @@ int sysfs_create_bin_file(struct kobject *kobj,
 }
 EXPORT_SYMBOL_GPL(sysfs_create_bin_file);
 
-/**
- *	sysfs_remove_bin_file - remove binary file for object.
- *	@kobj:	object.
- *	@attr:	attribute descriptor.
- */
+ 
 void sysfs_remove_bin_file(struct kobject *kobj,
 			   const struct bin_attribute *attr)
 {
@@ -593,20 +511,7 @@ static int internal_change_owner(struct kernfs_node *kn, kuid_t kuid,
 	return kernfs_setattr(kn, &newattrs);
 }
 
-/**
- *	sysfs_link_change_owner - change owner of a sysfs file.
- *	@kobj:	object of the kernfs_node the symlink is located in.
- *	@targ:	object of the kernfs_node the symlink points to.
- *	@name:	name of the link.
- *	@kuid:	new owner's kuid
- *	@kgid:	new owner's kgid
- *
- * This function looks up the sysfs symlink entry @name under @kobj and changes
- * the ownership to @kuid/@kgid. The symlink is looked up in the namespace of
- * @targ.
- *
- * Returns 0 on success or error code on failure.
- */
+ 
 int sysfs_link_change_owner(struct kobject *kobj, struct kobject *targ,
 			    const char *name, kuid_t kuid, kgid_t kgid)
 {
@@ -634,18 +539,7 @@ out:
 	return error;
 }
 
-/**
- *	sysfs_file_change_owner - change owner of a sysfs file.
- *	@kobj:	object.
- *	@name:	name of the file to change.
- *	@kuid:	new owner's kuid
- *	@kgid:	new owner's kgid
- *
- * This function looks up the sysfs entry @name under @kobj and changes the
- * ownership to @kuid/@kgid.
- *
- * Returns 0 on success or error code on failure.
- */
+ 
 int sysfs_file_change_owner(struct kobject *kobj, const char *name, kuid_t kuid,
 			    kgid_t kgid)
 {
@@ -670,24 +564,7 @@ int sysfs_file_change_owner(struct kobject *kobj, const char *name, kuid_t kuid,
 }
 EXPORT_SYMBOL_GPL(sysfs_file_change_owner);
 
-/**
- *	sysfs_change_owner - change owner of the given object.
- *	@kobj:	object.
- *	@kuid:	new owner's kuid
- *	@kgid:	new owner's kgid
- *
- * Change the owner of the default directory, files, groups, and attributes of
- * @kobj to @kuid/@kgid. Note that sysfs_change_owner mirrors how the sysfs
- * entries for a kobject are added by driver core. In summary,
- * sysfs_change_owner() takes care of the default directory entry for @kobj,
- * the default attributes associated with the ktype of @kobj and the default
- * attributes associated with the ktype of @kobj.
- * Additional properties not added by driver core have to be changed by the
- * driver or subsystem which created them. This is similar to how
- * driver/subsystem specific entries are removed.
- *
- * Returns 0 on success or error code on failure.
- */
+ 
 int sysfs_change_owner(struct kobject *kobj, kuid_t kuid, kgid_t kgid)
 {
 	int error;
@@ -696,17 +573,14 @@ int sysfs_change_owner(struct kobject *kobj, kuid_t kuid, kgid_t kgid)
 	if (!kobj->state_in_sysfs)
 		return -EINVAL;
 
-	/* Change the owner of the kobject itself. */
+	 
 	error = internal_change_owner(kobj->sd, kuid, kgid);
 	if (error)
 		return error;
 
 	ktype = get_ktype(kobj);
 	if (ktype) {
-		/*
-		 * Change owner of the default groups associated with the
-		 * ktype of @kobj.
-		 */
+		 
 		error = sysfs_groups_change_owner(kobj, ktype->default_groups,
 						  kuid, kgid);
 		if (error)
@@ -717,15 +591,7 @@ int sysfs_change_owner(struct kobject *kobj, kuid_t kuid, kgid_t kgid)
 }
 EXPORT_SYMBOL_GPL(sysfs_change_owner);
 
-/**
- *	sysfs_emit - scnprintf equivalent, aware of PAGE_SIZE buffer.
- *	@buf:	start of PAGE_SIZE buffer.
- *	@fmt:	format
- *	@...:	optional arguments to @format
- *
- *
- * Returns number of characters written to @buf.
- */
+ 
 int sysfs_emit(char *buf, const char *fmt, ...)
 {
 	va_list args;
@@ -743,17 +609,7 @@ int sysfs_emit(char *buf, const char *fmt, ...)
 }
 EXPORT_SYMBOL_GPL(sysfs_emit);
 
-/**
- *	sysfs_emit_at - scnprintf equivalent, aware of PAGE_SIZE buffer.
- *	@buf:	start of PAGE_SIZE buffer.
- *	@at:	offset in @buf to start write in bytes
- *		@at must be >= 0 && < PAGE_SIZE
- *	@fmt:	format
- *	@...:	optional arguments to @fmt
- *
- *
- * Returns number of characters written starting at &@buf[@at].
- */
+ 
 int sysfs_emit_at(char *buf, int at, const char *fmt, ...)
 {
 	va_list args;

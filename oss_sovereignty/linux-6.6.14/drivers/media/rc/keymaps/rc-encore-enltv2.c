@@ -1,15 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0+
-// encore-enltv2.h - Keytable for encore_enltv2 Remote Controller
-//
-// keymap imported from ir-keymaps.c
-//
-// Copyright (c) 2010 by Mauro Carvalho Chehab
+
+
+
+
+
+
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
-/* Encore ENLTV2-FM  - silver plastic - "Wand Media" written at the botton
-    Mauro Carvalho Chehab <mchehab@kernel.org> */
+ 
 
 static struct rc_map_table encore_enltv2[] = {
 	{ 0x4c, KEY_POWER2 },
@@ -25,16 +24,16 @@ static struct rc_map_table encore_enltv2[] = {
 	{ 0x44, KEY_NUMERIC_9 },
 	{ 0x54, KEY_NUMERIC_0 },
 
-	{ 0x64, KEY_LAST },		/* +100 */
-	{ 0x4e, KEY_AGAIN },		/* Recall */
+	{ 0x64, KEY_LAST },		 
+	{ 0x4e, KEY_AGAIN },		 
 
-	{ 0x6c, KEY_VIDEO },		/* Video Source */
+	{ 0x6c, KEY_VIDEO },		 
 	{ 0x5e, KEY_MENU },
 	{ 0x56, KEY_SCREEN },
 	{ 0x7a, KEY_SETUP },
 
 	{ 0x46, KEY_MUTE },
-	{ 0x5c, KEY_MODE },		/* Stereo */
+	{ 0x5c, KEY_MODE },		 
 	{ 0x74, KEY_INFO },
 	{ 0x7c, KEY_CLEAR },
 
@@ -50,9 +49,9 @@ static struct rc_map_table encore_enltv2[] = {
 	{ 0x72, KEY_CHANNELDOWN },
 
 	{ 0x41, KEY_RECORD },
-	{ 0x51, KEY_CAMERA },		/* Snapshot */
-	{ 0x75, KEY_TIME },		/* Timeshift */
-	{ 0x71, KEY_TV2 },		/* PIP */
+	{ 0x51, KEY_CAMERA },		 
+	{ 0x75, KEY_TIME },		 
+	{ 0x71, KEY_TV2 },		 
 
 	{ 0x45, KEY_REWIND },
 	{ 0x6f, KEY_PAUSE },
@@ -64,7 +63,7 @@ static struct rc_map_list encore_enltv2_map = {
 	.map = {
 		.scan     = encore_enltv2,
 		.size     = ARRAY_SIZE(encore_enltv2),
-		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
+		.rc_proto = RC_PROTO_UNKNOWN,	 
 		.name     = RC_MAP_ENCORE_ENLTV2,
 	}
 };

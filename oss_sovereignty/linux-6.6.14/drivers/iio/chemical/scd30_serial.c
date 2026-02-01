@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Sensirion SCD30 carbon dioxide sensor serial driver
- *
- * Copyright (c) 2020 Tomasz Duszynski <tomasz.duszynski@octakon.com>
- */
+
+ 
 #include <linux/crc16.h>
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -81,30 +77,7 @@ static int scd30_serdev_xfer(struct scd30_state *state, char *txbuf, int txsize,
 static int scd30_serdev_command(struct scd30_state *state, enum scd30_cmd cmd, u16 arg,
 				void *response, int size)
 {
-	/*
-	 * Communication over serial line is based on modbus protocol (or rather
-	 * its variation called modbus over serial to be precise). Upon
-	 * receiving a request device should reply with response.
-	 *
-	 * Frame below represents a request message. Each field takes
-	 * exactly one byte.
-	 *
-	 * +------+------+-----+-----+-------+-------+-----+-----+
-	 * | dev  | op   | reg | reg | byte1 | byte0 | crc | crc |
-	 * | addr | code | msb | lsb |       |       | lsb | msb |
-	 * +------+------+-----+-----+-------+-------+-----+-----+
-	 *
-	 * The message device replies with depends on the 'op code' field from
-	 * the request. In case it was set to SCD30_SERDEV_WRITE sensor should
-	 * reply with unchanged request. Otherwise 'op code' was set to
-	 * SCD30_SERDEV_READ and response looks like the one below. As with
-	 * request, each field takes one byte.
-	 *
-	 * +------+------+--------+-------+-----+-------+-----+-----+
-	 * | dev  | op   | num of | byte0 | ... | byteN | crc | crc |
-	 * | addr | code | bytes  |       |     |       | lsb | msb |
-	 * +------+------+--------+-------+-----+-------+-----+-----+
-	 */
+	 
 	char txbuf[SCD30_SERDEV_MAX_BUF_SIZE] = { SCD30_SERDEV_ADDR },
 	     rxbuf[SCD30_SERDEV_MAX_BUF_SIZE];
 	int ret, rxsize, txsize = 2;
@@ -117,7 +90,7 @@ static int scd30_serdev_command(struct scd30_state *state, enum scd30_cmd cmd, u
 	if (rsp) {
 		txbuf[1] = SCD30_SERDEV_READ;
 		if (cmd == CMD_READ_MEAS)
-			/* number of u16 words to read */
+			 
 			put_unaligned_be16(size / 2, txbuf + txsize);
 		else
 			put_unaligned_be16(0x0001, txbuf + txsize);
@@ -188,7 +161,7 @@ static int scd30_serdev_receive_buf(struct serdev_device *serdev,
 	state = iio_priv(indio_dev);
 	priv = state->priv;
 
-	/* just in case sensor puts some unexpected bytes on the bus */
+	 
 	if (!priv->buf)
 		return 0;
 

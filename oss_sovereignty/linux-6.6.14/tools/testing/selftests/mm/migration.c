@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * The main purpose of the tests here is to exercise the migration entry code
- * paths in the kernel.
- */
+
+ 
 
 #include "../kselftest_harness.h"
 #include <strings.h>
@@ -103,18 +100,14 @@ void *access_mem(void *ptr)
 		pthread_testcancel();
 		y += *x;
 
-		/* Prevent the compiler from optimizing out the writes to y: */
+		 
 		asm volatile("" : "+r" (y));
 	}
 
 	return NULL;
 }
 
-/*
- * Basic migration entry testing. One thread will move pages back and forth
- * between nodes whilst other threads try and access them triggering the
- * migration entry wait paths in the kernel.
- */
+ 
 TEST_F_TIMEOUT(migration, private_anon, 2*RUNTIME)
 {
 	uint64_t *ptr;
@@ -137,9 +130,7 @@ TEST_F_TIMEOUT(migration, private_anon, 2*RUNTIME)
 		ASSERT_EQ(pthread_cancel(self->threads[i]), 0);
 }
 
-/*
- * Same as the previous test but with shared memory.
- */
+ 
 TEST_F_TIMEOUT(migration, shared_anon, 2*RUNTIME)
 {
 	pid_t pid;
@@ -158,7 +149,7 @@ TEST_F_TIMEOUT(migration, shared_anon, 2*RUNTIME)
 		pid = fork();
 		if (!pid) {
 			prctl(PR_SET_PDEATHSIG, SIGHUP);
-			/* Parent may have died before prctl so check now. */
+			 
 			if (getppid() == 1)
 				kill(getpid(), SIGHUP);
 			access_mem(ptr);
@@ -172,9 +163,7 @@ TEST_F_TIMEOUT(migration, shared_anon, 2*RUNTIME)
 		ASSERT_EQ(kill(self->pids[i], SIGTERM), 0);
 }
 
-/*
- * Tests the pmd migration entry paths.
- */
+ 
 TEST_F_TIMEOUT(migration, private_anon_thp, 2*RUNTIME)
 {
 	uint64_t *ptr;

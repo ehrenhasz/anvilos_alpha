@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Copyright (C) 2016 ARM Limited
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -36,12 +33,7 @@ static struct completion suspend_threads_started =
 static struct completion suspend_threads_done =
 	COMPLETION_INITIALIZER(suspend_threads_done);
 
-/*
- * We assume that PSCI operations are used if they are available. This is not
- * necessarily true on arm64, since the decision is based on the
- * "enable-method" property of each CPU in the DT, but given that there is no
- * arch-specific way to check this, we assume that the DT is sensible.
- */
+ 
 static int psci_ops_check(void)
 {
 	int migrate_type = -1;
@@ -57,7 +49,7 @@ static int psci_ops_check(void)
 
 	if (migrate_type == PSCI_0_2_TOS_UP_MIGRATE ||
 	    migrate_type == PSCI_0_2_TOS_UP_NO_MIGRATE) {
-		/* There is a UP Trusted OS, find on which core it resides. */
+		 
 		for_each_online_cpu(cpu)
 			if (psci_tos_resident_on(cpu)) {
 				tos_resident_cpu = cpu;
@@ -70,10 +62,7 @@ static int psci_ops_check(void)
 	return 0;
 }
 
-/*
- * offlined_cpus is a temporary array but passing it as an argument avoids
- * multiple allocations.
- */
+ 
 static unsigned int down_and_up_cpus(const struct cpumask *cpus,
 				     struct cpumask *offlined_cpus)
 {
@@ -82,14 +71,11 @@ static unsigned int down_and_up_cpus(const struct cpumask *cpus,
 
 	cpumask_clear(offlined_cpus);
 
-	/* Try to power down all CPUs in the mask. */
+	 
 	for_each_cpu(cpu, cpus) {
 		int ret = remove_cpu(cpu);
 
-		/*
-		 * cpu_down() checks the number of online CPUs before the TOS
-		 * resident CPU.
-		 */
+		 
 		if (cpumask_weight(offlined_cpus) + 1 == nb_available_cpus) {
 			if (ret != -EBUSY) {
 				pr_err("Unexpected return code %d while trying "
@@ -114,7 +100,7 @@ static unsigned int down_and_up_cpus(const struct cpumask *cpus,
 			cpumask_set_cpu(cpu, offlined_cpus);
 	}
 
-	/* Try to power up all the CPUs that have been offlined. */
+	 
 	for_each_cpu(cpu, offlined_cpus) {
 		int ret = add_cpu(cpu);
 
@@ -127,10 +113,7 @@ static unsigned int down_and_up_cpus(const struct cpumask *cpus,
 		}
 	}
 
-	/*
-	 * Something went bad at some point and some CPUs could not be turned
-	 * back on.
-	 */
+	 
 	WARN_ON(!cpumask_empty(offlined_cpus) ||
 		num_online_cpus() != nb_available_cpus);
 
@@ -199,21 +182,15 @@ static int hotplug_tests(void)
 	if (!page_buf)
 		goto out_free_cpu_groups;
 
-	/*
-	 * Of course the last CPU cannot be powered down and cpu_down() should
-	 * refuse doing that.
-	 */
+	 
 	pr_info("Trying to turn off and on again all CPUs\n");
 	err = down_and_up_cpus(cpu_online_mask, offlined_cpus);
 
-	/*
-	 * Take down CPUs by cpu group this time. When the last CPU is turned
-	 * off, the cpu group itself should shut down.
-	 */
+	 
 	for (i = 0; i < nb_cpu_group; ++i) {
 		ssize_t len = cpumap_print_to_pagebuf(true, page_buf,
 						      cpu_groups[i]);
-		/* Remove trailing newline. */
+		 
 		page_buf[len - 1] = '\0';
 		pr_info("Trying to turn off and on again group %d (CPUs %s)\n",
 			i, page_buf);
@@ -240,19 +217,10 @@ static int suspend_cpu(struct cpuidle_device *dev,
 	arch_cpu_idle_enter();
 
 	if (broadcast) {
-		/*
-		 * The local timer will be shut down, we need to enter tick
-		 * broadcast.
-		 */
+		 
 		ret = tick_broadcast_enter();
 		if (ret) {
-			/*
-			 * In the absence of hardware broadcast mechanism,
-			 * this CPU might be used to broadcast wakeups, which
-			 * may be why entering tick broadcast has failed.
-			 * There is little the kernel can do to work around
-			 * that, so enter WFI instead (idle state 0).
-			 */
+			 
 			cpu_do_idle();
 			ret = 0;
 			goto out_arch_exit;
@@ -276,13 +244,13 @@ static int suspend_test_thread(void *arg)
 	int i, nb_suspend = 0, nb_shallow_sleep = 0, nb_err = 0;
 	struct cpuidle_device *dev;
 	struct cpuidle_driver *drv;
-	/* No need for an actual callback, we just want to wake up the CPU. */
+	 
 	struct timer_list wakeup_timer;
 
-	/* Wait for the main thread to give the start signal. */
+	 
 	wait_for_completion(&suspend_threads_started);
 
-	/* Set maximum priority to preempt all other threads on this CPU. */
+	 
 	sched_set_fifo(current);
 
 	dev = this_cpu_read(cpuidle_devices);
@@ -294,40 +262,27 @@ static int suspend_test_thread(void *arg)
 	timer_setup_on_stack(&wakeup_timer, dummy_callback, 0);
 	for (i = 0; i < NUM_SUSPEND_CYCLE; ++i) {
 		int index;
-		/*
-		 * Test all possible states, except 0 (which is usually WFI and
-		 * doesn't use PSCI).
-		 */
+		 
 		for (index = 1; index < drv->state_count; ++index) {
 			int ret;
 			struct cpuidle_state *state = &drv->states[index];
 
-			/*
-			 * Set the timer to wake this CPU up in some time (which
-			 * should be largely sufficient for entering suspend).
-			 * If the local tick is disabled when entering suspend,
-			 * suspend_cpu() takes care of switching to a broadcast
-			 * tick, so the timer will still wake us up.
-			 */
+			 
 			mod_timer(&wakeup_timer, jiffies +
 				  usecs_to_jiffies(state->target_residency));
 
-			/* IRQs must be disabled during suspend operations. */
+			 
 			local_irq_disable();
 
 			ret = suspend_cpu(dev, drv, index);
 
-			/*
-			 * We have woken up. Re-enable IRQs to handle any
-			 * pending interrupt, do not wait until the end of the
-			 * loop.
-			 */
+			 
 			local_irq_enable();
 
 			if (ret == index) {
 				++nb_suspend;
 			} else if (ret >= 0) {
-				/* We did not enter the expected state. */
+				 
 				++nb_shallow_sleep;
 			} else {
 				pr_err("Failed to suspend CPU %d: error %d "
@@ -338,10 +293,7 @@ static int suspend_test_thread(void *arg)
 		}
 	}
 
-	/*
-	 * Disable the timer to make sure that the timer will not trigger
-	 * later.
-	 */
+	 
 	del_timer(&wakeup_timer);
 	destroy_timer_on_stack(&wakeup_timer);
 
@@ -349,7 +301,7 @@ static int suspend_test_thread(void *arg)
 		complete(&suspend_threads_done);
 
 	for (;;) {
-		/* Needs to be set first to avoid missing a wakeup. */
+		 
 		set_current_state(TASK_INTERRUPTIBLE);
 		if (kthread_should_park())
 			break;
@@ -375,18 +327,12 @@ static int suspend_tests(void)
 	if (!threads)
 		return -ENOMEM;
 
-	/*
-	 * Stop cpuidle to prevent the idle tasks from entering a deep sleep
-	 * mode, as it might interfere with the suspend threads on other CPUs.
-	 * This does not prevent the suspend threads from using cpuidle (only
-	 * the idle tasks check this status). Take the idle lock so that
-	 * the cpuidle driver and device look-up can be carried out safely.
-	 */
+	 
 	cpuidle_pause_and_lock();
 
 	for_each_online_cpu(cpu) {
 		struct task_struct *thread;
-		/* Check that cpuidle is available on that CPU. */
+		 
 		struct cpuidle_device *dev = per_cpu(cpuidle_devices, cpu);
 		struct cpuidle_driver *drv = cpuidle_get_cpu_driver(dev);
 
@@ -412,11 +358,7 @@ static int suspend_tests(void)
 
 	atomic_set(&nb_active_threads, nb_threads);
 
-	/*
-	 * Wake up the suspend threads. To avoid the main thread being preempted
-	 * before all the threads have been unparked, the suspend threads will
-	 * wait for the completion of suspend_threads_started.
-	 */
+	 
 	for (i = 0; i < nb_threads; ++i)
 		wake_up_process(threads[i]);
 	complete_all(&suspend_threads_started);
@@ -424,7 +366,7 @@ static int suspend_tests(void)
 	wait_for_completion(&suspend_threads_done);
 
 
-	/* Stop and destroy all threads, get return status. */
+	 
 	for (i = 0; i < nb_threads; ++i) {
 		err += kthread_park(threads[i]);
 		err += kthread_stop(threads[i]);
@@ -439,18 +381,10 @@ static int __init psci_checker(void)
 {
 	int ret;
 
-	/*
-	 * Since we're in an initcall, we assume that all the CPUs that all
-	 * CPUs that can be onlined have been onlined.
-	 *
-	 * The tests assume that hotplug is enabled but nobody else is using it,
-	 * otherwise the results will be unpredictable. However, since there
-	 * is no userspace yet in initcalls, that should be fine, as long as
-	 * no torture test is running at the same time (see Kconfig).
-	 */
+	 
 	nb_available_cpus = num_online_cpus();
 
-	/* Check PSCI operations are set up and working. */
+	 
 	ret = psci_ops_check();
 	if (ret)
 		return ret;

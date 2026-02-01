@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2021 MediaTek Inc.
- * Author: Yunfei Dong <yunfei.dong@mediatek.com>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <media/v4l2-mem2mem.h>
@@ -15,32 +12,16 @@
 #include "../vdec_drv_if.h"
 #include "../vdec_vpu_if.h"
 
-/* Decoding picture buffer size (3 reference frames plus current frame) */
+ 
 #define VP8_DPB_SIZE 4
 
-/* HW working buffer size (bytes) */
+ 
 #define VP8_SEG_ID_SZ   SZ_256K
 #define VP8_PP_WRAPY_SZ SZ_64K
 #define VP8_PP_WRAPC_SZ SZ_64K
 #define VP8_VLD_PRED_SZ SZ_64K
 
-/**
- * struct vdec_vp8_slice_info - decode misc information
- *
- * @vld_wrapper_dma:	vld wrapper dma address
- * @seg_id_buf_dma:	seg id dma address
- * @wrap_y_dma:	wrap y dma address
- * @wrap_c_dma:	wrap y dma address
- * @cur_y_fb_dma:	current plane Y frame buffer dma address
- * @cur_c_fb_dma:	current plane C frame buffer dma address
- * @bs_dma:		bitstream dma address
- * @bs_sz:		bitstream size
- * @resolution_changed:resolution change flag 1 - changed,  0 - not change
- * @frame_header_type:	current frame header type
- * @wait_key_frame:	wait key frame coming
- * @crc:		used to check whether hardware's status is right
- * @reserved:		reserved, currently unused
- */
+ 
 struct vdec_vp8_slice_info {
 	u64 vld_wrapper_dma;
 	u64 seg_id_buf_dma;
@@ -56,14 +37,7 @@ struct vdec_vp8_slice_info {
 	u32 reserved;
 };
 
-/**
- * struct vdec_vp8_slice_dpb_info  - vp8 reference information
- *
- * @y_dma_addr:	Y bitstream physical address
- * @c_dma_addr:	CbCr bitstream physical address
- * @reference_flag:	reference picture flag
- * @reserved:		64bit align
- */
+ 
 struct vdec_vp8_slice_dpb_info {
 	dma_addr_t y_dma_addr;
 	dma_addr_t c_dma_addr;
@@ -71,30 +45,14 @@ struct vdec_vp8_slice_dpb_info {
 	int reserved;
 };
 
-/**
- * struct vdec_vp8_slice_vsi - VPU shared information
- *
- * @dec:		decoding information
- * @pic:		picture information
- * @vp8_dpb_info:	reference buffer information
- */
+ 
 struct vdec_vp8_slice_vsi {
 	struct vdec_vp8_slice_info dec;
 	struct vdec_pic_info pic;
 	struct vdec_vp8_slice_dpb_info vp8_dpb_info[3];
 };
 
-/**
- * struct vdec_vp8_slice_inst - VP8 decoder instance
- *
- * @seg_id_buf:	seg buffer
- * @wrap_y_buf:	wrapper y buffer
- * @wrap_c_buf:	wrapper c buffer
- * @vld_wrapper_buf:	vld wrapper buffer
- * @ctx:		V4L2 context
- * @vpu:		VPU instance for decoder
- * @vsi:		VPU share information
- */
+ 
 struct vdec_vp8_slice_inst {
 	struct mtk_vcodec_mem seg_id_buf;
 	struct mtk_vcodec_mem wrap_y_buf;
@@ -325,10 +283,10 @@ static int vdec_vp8_slice_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
 	u64 y_fb_dma, c_fb_dma;
 	int err, timeout;
 
-	/* Resolution changes are never initiated by us */
+	 
 	*res_chg = false;
 
-	/* bs NULL means flush decoder */
+	 
 	if (!bs)
 		return vpu_dec_reset(vpu);
 
@@ -373,7 +331,7 @@ static int vdec_vp8_slice_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
 		return 0;
 	}
 
-	/* wait decode done interrupt */
+	 
 	timeout = mtk_vcodec_wait_for_done_ctx(inst->ctx, MTK_INST_IRQ_RECEIVED,
 					       50, MTK_VDEC_CORE);
 

@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ccs811.c - Support for AMS CCS811 VOC Sensor
- *
- * Copyright (C) 2017 Narcisa Vasile <narcisaanamaria12@gmail.com>
- *
- * Datasheet: ams.com/content/download/951091/2269479/CCS811_DS000459_3-00.pdf
- *
- * IIO driver for AMS CCS811 (I2C address 0x5A/0x5B set by ADDR Low/High)
- *
- * TODO:
- * 1. Make the drive mode selectable form userspace
- * 2. Add support for interrupts
- * 3. Adjust time to wait for data to be ready based on selected operation mode
- * 4. Read error register and put the information in logs
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -35,24 +21,20 @@
 #define CCS811_HW_VERSION_VALUE	0x10
 #define CCS811_HW_VERSION_MASK	0xF0
 #define CCS811_ERR		0xE0
-/* Used to transition from boot to application mode */
+ 
 #define CCS811_APP_START	0xF4
 #define CCS811_SW_RESET		0xFF
 
-/* Status register flags */
+ 
 #define CCS811_STATUS_ERROR		BIT(0)
 #define CCS811_STATUS_DATA_READY	BIT(3)
 #define CCS811_STATUS_APP_VALID_MASK	BIT(4)
 #define CCS811_STATUS_APP_VALID_LOADED	BIT(4)
-/*
- * Value of FW_MODE bit of STATUS register describes the sensor's state:
- * 0: Firmware is in boot mode, this allows new firmware to be loaded
- * 1: Firmware is in application mode. CCS811 is ready to take ADC measurements
- */
+ 
 #define CCS811_STATUS_FW_MODE_MASK	BIT(7)
 #define CCS811_STATUS_FW_MODE_APPLICATION	BIT(7)
 
-/* Measurement modes */
+ 
 #define CCS811_MODE_IDLE	0x00
 #define CCS811_MODE_IAQ_1SEC	0x10
 #define CCS811_MODE_IAQ_10SEC	0x20
@@ -73,12 +55,12 @@ struct ccs811_reading {
 
 struct ccs811_data {
 	struct i2c_client *client;
-	struct mutex lock; /* Protect readings */
+	struct mutex lock;  
 	struct ccs811_reading buffer;
 	struct iio_trigger *drdy_trig;
 	struct gpio_desc *wakeup_gpio;
 	bool drdy_trig_on;
-	/* Ensures correct alignment of timestamp if present */
+	 
 	struct {
 		s16 channels[2];
 		s64 ts __aligned(8);
@@ -126,10 +108,7 @@ static const struct iio_chan_spec ccs811_channels[] = {
 	IIO_CHAN_SOFT_TIMESTAMP(2),
 };
 
-/*
- * The CCS811 powers-up in boot mode. A setup write to CCS811_APP_START will
- * transition the sensor to application mode.
- */
+ 
 static int ccs811_start_sensor_application(struct i2c_client *client)
 {
 	int ret;
@@ -193,7 +172,7 @@ static int ccs811_get_measurement(struct ccs811_data *data)
 
 	ccs811_set_wakeup(data, true);
 
-	/* Maximum waiting time: 1s, as measurements are made every second */
+	 
 	while (tries-- > 0) {
 		ret = i2c_smbus_read_byte_data(data->client, CCS811_STATUS);
 		if (ret < 0)
@@ -372,17 +351,13 @@ static int ccs811_reset(struct i2c_client *client)
 	if (IS_ERR(reset_gpio))
 		return PTR_ERR(reset_gpio);
 
-	/* Try to reset using nRESET pin if available else do SW reset */
+	 
 	if (reset_gpio) {
 		gpiod_set_value(reset_gpio, 1);
 		usleep_range(20, 30);
 		gpiod_set_value(reset_gpio, 0);
 	} else {
-		/*
-		 * As per the datasheet, this sequence of values needs to be
-		 * written to the SW_RESET register for triggering the soft
-		 * reset in the device and placing it in boot mode.
-		 */
+		 
 		static const u8 reset_seq[] = {
 			0x11, 0xE5, 0x72, 0x8A,
 		};
@@ -395,7 +370,7 @@ static int ccs811_reset(struct i2c_client *client)
 		}
 	}
 
-	/* tSTART delay required after reset */
+	 
 	usleep_range(1000, 2000);
 
 	return 0;
@@ -434,7 +409,7 @@ static int ccs811_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/* Check hardware id (should be 0x81 for this family of devices) */
+	 
 	ret = i2c_smbus_read_byte_data(client, CCS811_HW_ID);
 	if (ret < 0) {
 		ccs811_set_wakeup(data, false);

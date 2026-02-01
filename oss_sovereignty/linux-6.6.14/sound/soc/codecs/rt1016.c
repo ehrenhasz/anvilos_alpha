@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// rt1016.c  --  RT1016 ALSA SoC audio amplifier driver
-//
-// Copyright 2020 Realtek Semiconductor Corp.
-// Author: Oder Chiou <oder_chiou@realtek.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/fs.h>
 #include <linux/module.h>
@@ -185,7 +185,7 @@ static int rt1016_is_sys_clk_from_pll(struct snd_soc_dapm_widget *source,
 		return 0;
 }
 
-/* Interface data select */
+ 
 static const char * const rt1016_data_select[] = {
 	"L/R", "R/L", "L/L", "R/R"
 };

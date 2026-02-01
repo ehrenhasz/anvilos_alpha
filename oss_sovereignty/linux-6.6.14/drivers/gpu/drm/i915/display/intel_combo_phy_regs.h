@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_COMBO_PHY_REGS__
 #define __INTEL_COMBO_PHY_REGS__
@@ -20,7 +18,7 @@
 						      _RKL_COMBOPHY_D, \
 						      _ADL_COMBOPHY_E)
 
-/* ICL Port CL_DW registers */
+ 
 #define _ICL_PORT_CL_DW(dw, phy)		(_ICL_COMBOPHY(phy) + \
 						 4 * (dw))
 
@@ -48,7 +46,7 @@
 #define ICL_PORT_CL_DW12(phy)			_MMIO(_ICL_PORT_CL_DW(12, phy))
 #define   ICL_LANE_ENABLE_AUX			(1 << 0)
 
-/* ICL Port COMP_DW registers */
+ 
 #define _ICL_PORT_COMP				0x100
 #define _ICL_PORT_COMP_DW(dw, phy)		(_ICL_COMBOPHY(phy) + \
 						 _ICL_PORT_COMP + 4 * (dw))
@@ -77,7 +75,7 @@
 
 #define ICL_PORT_COMP_DW10(phy)			_MMIO(_ICL_PORT_COMP_DW(10, phy))
 
-/* ICL Port PCS registers */
+ 
 #define _ICL_PORT_PCS_AUX			0x300
 #define _ICL_PORT_PCS_GRP			0x600
 #define _ICL_PORT_PCS_LN(ln)			(0x800 + (ln) * 0x100)
@@ -96,7 +94,7 @@
 #define   LATENCY_OPTIM_MASK			(0x3 << 2)
 #define   LATENCY_OPTIM_VAL(x)			((x) << 2)
 
-/* ICL Port TX registers */
+ 
 #define _ICL_PORT_TX_AUX			0x380
 #define _ICL_PORT_TX_GRP			0x680
 #define _ICL_PORT_TX_LN(ln)			(0x880 + (ln) * 0x100)
@@ -159,4 +157,4 @@
 #define ICL_DPHY_CHKN(port)			_MMIO(_ICL_COMBOPHY(port) + _ICL_DPHY_CHKN_REG)
 #define   ICL_DPHY_CHKN_AFE_OVER_PPI_STRAP	REG_BIT(7)
 
-#endif /* __INTEL_COMBO_PHY_REGS__ */
+#endif  

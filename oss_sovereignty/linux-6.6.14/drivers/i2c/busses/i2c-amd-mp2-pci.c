@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * AMD MP2 PCIe communication driver
- *
- * Authors: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
- *          Elie Morisse <syniurge@gmail.com>
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/interrupt.h>
@@ -20,7 +15,7 @@ static void amd_mp2_c2p_mutex_lock(struct amd_i2c_common *i2c_common)
 {
 	struct amd_mp2_dev *privdata = i2c_common->mp2_dev;
 
-	/* there is only one data mailbox for two i2c adapters */
+	 
 	mutex_lock(&privdata->c2p_lock);
 	privdata->c2p_lock_busid = i2c_common->bus_id;
 }
@@ -311,7 +306,7 @@ static int amd_mp2_pci_init(struct amd_mp2_dev *privdata,
 	if (rc)
 		goto err_dma_mask;
 
-	/* request and enable interrupt */
+	 
 	writel(0, privdata->mmio + AMD_P2C_MSG_INTEN);
 	rc = pci_alloc_irq_vectors(pci_dev, 1, 1, PCI_IRQ_ALL_TYPES);
 	if (rc < 0) {
@@ -436,7 +431,7 @@ static int amd_mp2_pci_resume(struct device *dev)
 
 static UNIVERSAL_DEV_PM_OPS(amd_mp2_pci_pm_ops, amd_mp2_pci_suspend,
 			    amd_mp2_pci_resume, NULL);
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct pci_device_id amd_mp2_pci_tbl[] = {
 	{PCI_VDEVICE(AMD, PCI_DEVICE_ID_AMD_MP2)},

@@ -1,27 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "../dmub_srv.h"
 #include "dmub_reg.h"
@@ -36,7 +13,7 @@
 #define CTX dmub
 #define REGS dmub->regs
 
-/* Registers. */
+ 
 
 const struct dmub_srv_common_regs dmub_srv_dcn30_regs = {
 #define DMUB_SR(reg) REG_OFFSET(reg),
@@ -55,7 +32,7 @@ const struct dmub_srv_common_regs dmub_srv_dcn30_regs = {
 #undef DMUB_SF
 };
 
-/* Shared functions. */
+ 
 
 static void dmub_dcn30_get_fb_base_offset(struct dmub_srv *dmub,
 					  uint64_t *fb_base,
@@ -95,7 +72,7 @@ void dmub_dcn30_backdoor_load(struct dmub_srv *dmub,
 
 	REG_UPDATE(DMCUB_SEC_CNTL, DMCUB_SEC_RESET, 1);
 
-	/* MEM_CTNL read/write space doesn't exist. */
+	 
 
 	dmub_dcn30_translate_addr(&cw0->offset, fb_base, fb_offset, &offset);
 
@@ -128,7 +105,7 @@ void dmub_dcn30_setup_windows(struct dmub_srv *dmub,
 {
 	union dmub_addr offset;
 
-	/* sienna_cichlid  has hardwired virtual addressing for CW2-CW7 */
+	 
 
 	offset = cw2->offset;
 
@@ -157,7 +134,7 @@ void dmub_dcn30_setup_windows(struct dmub_srv *dmub,
 
 	offset = cw4->offset;
 
-	/* New firmware can support CW4. */
+	 
 	if (dmub_dcn20_use_cached_inbox(dmub)) {
 		REG_WRITE(DMCUB_REGION3_CW4_OFFSET, offset.u.low_part);
 		REG_WRITE(DMCUB_REGION3_CW4_OFFSET_HIGH, offset.u.high_part);

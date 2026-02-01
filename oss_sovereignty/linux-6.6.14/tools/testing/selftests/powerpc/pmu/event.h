@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2013, Michael Ellerman, IBM Corp.
- */
+ 
+ 
 
 #ifndef _SELFTESTS_POWERPC_PMU_EVENT_H
 #define _SELFTESTS_POWERPC_PMU_EVENT_H
@@ -16,16 +14,13 @@ struct event {
 	struct perf_event_attr attr;
 	char *name;
 	int fd;
-	/* This must match the read_format we use */
+	 
 	struct {
 		u64 value;
 		u64 running;
 		u64 enabled;
 	} result;
-	/*
-	 * mmap buffer used while recording sample.
-	 * Accessed as "struct perf_event_mmap_page"
-	 */
+	 
 	void *mmap_buffer;
 };
 
@@ -46,4 +41,4 @@ int event_read(struct event *e);
 void event_report_justified(struct event *e, int name_width, int result_width);
 void event_report(struct event *e);
 
-#endif /* _SELFTESTS_POWERPC_PMU_EVENT_H */
+#endif  

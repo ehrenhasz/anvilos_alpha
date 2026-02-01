@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * RTL8XXXU mac80211 USB driver - 8723b specific subdriver
- *
- * Copyright (c) 2014 - 2017 Jes Sorensen <Jes.Sorensen@gmail.com>
- *
- * Portions, notably calibration code:
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- * This driver was written as a replacement for the vendor provided
- * rtl8723au driver. As the Realtek 8xxx chips are very similar in
- * their programming interface, I have started adding support for
- * additional 8xxx chips like the 8192cu, 8188cus, etc.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -248,19 +236,12 @@ static const struct rtl8xxxu_rfregval rtl8723bu_radioa_1t_init_table[] = {
 	{0xb0, 0x000ff9f0}, {0x1c, 0x000739d2},
 	{0x1e, 0x00000000}, {0xdf, 0x00000780},
 	{0x50, 0x00067435},
-	/*
-	 * The 8723bu vendor driver indicates that bit 8 should be set in
-	 * 0x51 for package types TFBGA90, TFBGA80, and TFBGA79. However
-	 * they never actually check the package type - and just default
-	 * to not setting it.
-	 */
+	 
 	{0x51, 0x0006b04e},
 	{0x52, 0x000007d2}, {0x53, 0x00000000},
 	{0x54, 0x00050400}, {0x55, 0x0004026e},
 	{0xdd, 0x0000004c}, {0x70, 0x00067435},
-	/*
-	 * 0x71 has same package type condition as for register 0x51
-	 */
+	 
 	{0x71, 0x0006b04e},
 	{0x72, 0x000007d2}, {0x73, 0x00000000},
 	{0x74, 0x00050400}, {0x75, 0x0004026e},
@@ -341,9 +322,7 @@ static int rtl8723bu_identify_chip(struct rtl8xxxu_priv *priv)
 
 	rtl8xxxu_config_endpoints_sie(priv);
 
-	/*
-	 * Fallback for devices that do not provide REG_NORMAL_SIE_EP_TX
-	 */
+	 
 	if (!priv->ep_tx_count)
 		ret = rtl8xxxu_config_endpoints_no_sie(priv);
 
@@ -522,11 +501,11 @@ static void rtl8723bu_init_phy_bb(struct rtl8xxxu_priv *priv)
 
 	rtl8xxxu_write32(priv, REG_S0S1_PATH_SWITCH, 0x00);
 
-	/* 6. 0x1f[7:0] = 0x07 */
+	 
 	val8 = RF_ENABLE | RF_RSTB | RF_SDMRSTB;
 	rtl8xxxu_write8(priv, REG_RF_CTRL, val8);
 
-	/* Why? */
+	 
 	rtl8xxxu_write8(priv, REG_SYS_FUNC, 0xe3);
 	rtl8xxxu_write8(priv, REG_AFE_XTAL_CTRL + 1, 0x80);
 	rtl8xxxu_init_phy_regs(priv, rtl8723b_phy_1t_init_table);
@@ -539,9 +518,7 @@ static int rtl8723bu_init_phy_rf(struct rtl8xxxu_priv *priv)
 	int ret;
 
 	ret = rtl8xxxu_init_phy_rf(priv, rtl8723bu_radioa_1t_init_table, RF_A);
-	/*
-	 * PHY LCK
-	 */
+	 
 	rtl8xxxu_write_rfreg(priv, RF_A, 0xb0, 0xdfbe0);
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_MODE_AG, 0x8c01);
 	msleep(200);
@@ -595,16 +572,12 @@ static int rtl8723bu_iqk_path_a(struct rtl8xxxu_priv *priv)
 
 	path_sel = rtl8xxxu_read32(priv, REG_S0S1_PATH_SWITCH);
 
-	/*
-	 * Leave IQK mode
-	 */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_FPGA0_IQK);
 	val32 &= 0x000000ff;
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, val32);
 
-	/*
-	 * Enable path A PA in TX IQK mode
-	 */
+	 
 	val32 = rtl8xxxu_read_rfreg(priv, RF_A, RF6052_REG_WE_LUT);
 	val32 |= 0x80000;
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_WE_LUT, val32);
@@ -612,13 +585,11 @@ static int rtl8723bu_iqk_path_a(struct rtl8xxxu_priv *priv)
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G1, 0x0003f);
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G2, 0xc7f87);
 
-	/*
-	 * Tx IQK setting
-	 */
+	 
 	rtl8xxxu_write32(priv, REG_TX_IQK, 0x01007c00);
 	rtl8xxxu_write32(priv, REG_RX_IQK, 0x01004800);
 
-	/* path-A IQK setting */
+	 
 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_A, 0x18008c1c);
 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_A, 0x38008c1c);
 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_B, 0x38008c1c);
@@ -629,53 +600,43 @@ static int rtl8723bu_iqk_path_a(struct rtl8xxxu_priv *priv)
 	rtl8xxxu_write32(priv, REG_TX_IQK_PI_B, 0x82110000);
 	rtl8xxxu_write32(priv, REG_RX_IQK_PI_B, 0x28110000);
 
-	/* LO calibration setting */
+	 
 	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x00462911);
 
-	/*
-	 * Enter IQK mode
-	 */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_FPGA0_IQK);
 	val32 &= 0x000000ff;
 	val32 |= 0x80800000;
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, val32);
 
-	/*
-	 * The vendor driver indicates the USB module is always using
-	 * S0S1 path 1 for the 8723bu. This may be different for 8192eu
-	 */
+	 
 	if (priv->rf_paths > 1)
 		rtl8xxxu_write32(priv, REG_S0S1_PATH_SWITCH, 0x00000000);
 	else
 		rtl8xxxu_write32(priv, REG_S0S1_PATH_SWITCH, 0x00000280);
 
-	/*
-	 * Bit 12 seems to be BT_GRANT, and is only found in the 8723bu.
-	 * No trace of this in the 8192eu or 8188eu vendor drivers.
-	 */
+	 
 	rtl8xxxu_write32(priv, REG_BT_CONTROL_8723BU, 0x00000800);
 
-	/* One shot, path A LOK & IQK */
+	 
 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf9000000);
 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf8000000);
 
 	mdelay(1);
 
-	/* Restore Ant Path */
+	 
 	rtl8xxxu_write32(priv, REG_S0S1_PATH_SWITCH, path_sel);
 #ifdef RTL8723BU_BT
-	/* GNT_BT = 1 */
+	 
 	rtl8xxxu_write32(priv, REG_BT_CONTROL_8723BU, 0x00001800);
 #endif
 
-	/*
-	 * Leave IQK mode
-	 */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_FPGA0_IQK);
 	val32 &= 0x000000ff;
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, val32);
 
-	/* Check failed */
+	 
 	reg_eac = rtl8xxxu_read32(priv, REG_RX_POWER_AFTER_IQK_A_2);
 	reg_e94 = rtl8xxxu_read32(priv, REG_TX_POWER_BEFORE_IQK_A);
 	reg_e9c = rtl8xxxu_read32(priv, REG_TX_POWER_AFTER_IQK_A);
@@ -691,7 +652,7 @@ static int rtl8723bu_iqk_path_a(struct rtl8xxxu_priv *priv)
 	    ((reg_e94 & 0x03ff0000)  > 0x00f00000) &&
 	    val32 < 0xf)
 		result |= 0x01;
-	else	/* If TX not OK, ignore RX */
+	else	 
 		goto out;
 
 out:
@@ -705,16 +666,12 @@ static int rtl8723bu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
 
 	path_sel = rtl8xxxu_read32(priv, REG_S0S1_PATH_SWITCH);
 
-	/*
-	 * Leave IQK mode
-	 */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_FPGA0_IQK);
 	val32 &= 0x000000ff;
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, val32);
 
-	/*
-	 * Enable path A PA in TX IQK mode
-	 */
+	 
 	val32 = rtl8xxxu_read_rfreg(priv, RF_A, RF6052_REG_WE_LUT);
 	val32 |= 0x80000;
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_WE_LUT, val32);
@@ -722,13 +679,11 @@ static int rtl8723bu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G1, 0x0001f);
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G2, 0xf7fb7);
 
-	/*
-	 * Tx IQK setting
-	 */
+	 
 	rtl8xxxu_write32(priv, REG_TX_IQK, 0x01007c00);
 	rtl8xxxu_write32(priv, REG_RX_IQK, 0x01004800);
 
-	/* path-A IQK setting */
+	 
 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_A, 0x18008c1c);
 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_A, 0x38008c1c);
 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_B, 0x38008c1c);
@@ -739,53 +694,43 @@ static int rtl8723bu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
 	rtl8xxxu_write32(priv, REG_TX_IQK_PI_B, 0x82110000);
 	rtl8xxxu_write32(priv, REG_RX_IQK_PI_B, 0x28110000);
 
-	/* LO calibration setting */
+	 
 	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x0046a911);
 
-	/*
-	 * Enter IQK mode
-	 */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_FPGA0_IQK);
 	val32 &= 0x000000ff;
 	val32 |= 0x80800000;
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, val32);
 
-	/*
-	 * The vendor driver indicates the USB module is always using
-	 * S0S1 path 1 for the 8723bu. This may be different for 8192eu
-	 */
+	 
 	if (priv->rf_paths > 1)
 		rtl8xxxu_write32(priv, REG_S0S1_PATH_SWITCH, 0x00000000);
 	else
 		rtl8xxxu_write32(priv, REG_S0S1_PATH_SWITCH, 0x00000280);
 
-	/*
-	 * Bit 12 seems to be BT_GRANT, and is only found in the 8723bu.
-	 * No trace of this in the 8192eu or 8188eu vendor drivers.
-	 */
+	 
 	rtl8xxxu_write32(priv, REG_BT_CONTROL_8723BU, 0x00000800);
 
-	/* One shot, path A LOK & IQK */
+	 
 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf9000000);
 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf8000000);
 
 	mdelay(1);
 
-	/* Restore Ant Path */
+	 
 	rtl8xxxu_write32(priv, REG_S0S1_PATH_SWITCH, path_sel);
 #ifdef RTL8723BU_BT
-	/* GNT_BT = 1 */
+	 
 	rtl8xxxu_write32(priv, REG_BT_CONTROL_8723BU, 0x00001800);
 #endif
 
-	/*
-	 * Leave IQK mode
-	 */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_FPGA0_IQK);
 	val32 &= 0x000000ff;
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, val32);
 
-	/* Check failed */
+	 
 	reg_eac = rtl8xxxu_read32(priv, REG_RX_POWER_AFTER_IQK_A_2);
 	reg_e94 = rtl8xxxu_read32(priv, REG_TX_POWER_BEFORE_IQK_A);
 	reg_e9c = rtl8xxxu_read32(priv, REG_TX_POWER_AFTER_IQK_A);
@@ -801,16 +746,14 @@ static int rtl8723bu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
 	    ((reg_e94 & 0x03ff0000)  > 0x00f00000) &&
 	    val32 < 0xf)
 		result |= 0x01;
-	else	/* If TX not OK, ignore RX */
+	else	 
 		goto out;
 
 	val32 = 0x80007c00 | (reg_e94 &0x3ff0000) |
 		((reg_e9c & 0x3ff0000) >> 16);
 	rtl8xxxu_write32(priv, REG_TX_IQK, val32);
 
-	/*
-	 * Modify RX IQK mode
-	 */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_FPGA0_IQK);
 	val32 &= 0x000000ff;
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, val32);
@@ -821,18 +764,14 @@ static int rtl8723bu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G1, 0x0001f);
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G2, 0xf7d77);
 
-	/*
-	 * PA, PAD setting
-	 */
+	 
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_GAIN_CCA, 0xf80);
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_UNKNOWN_55, 0x4021f);
 
-	/*
-	 * RX IQK setting
-	 */
+	 
 	rtl8xxxu_write32(priv, REG_RX_IQK, 0x01004800);
 
-	/* path-A IQK setting */
+	 
 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_A, 0x38008c1c);
 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_A, 0x18008c1c);
 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_B, 0x38008c1c);
@@ -843,12 +782,10 @@ static int rtl8723bu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
 	rtl8xxxu_write32(priv, REG_TX_IQK_PI_B, 0x82110000);
 	rtl8xxxu_write32(priv, REG_RX_IQK_PI_B, 0x28110000);
 
-	/* LO calibration setting */
+	 
 	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x0046a8d1);
 
-	/*
-	 * Enter IQK mode
-	 */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_FPGA0_IQK);
 	val32 &= 0x000000ff;
 	val32 |= 0x80800000;
@@ -859,32 +796,28 @@ static int rtl8723bu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
 	else
 		rtl8xxxu_write32(priv, REG_S0S1_PATH_SWITCH, 0x00000280);
 
-	/*
-	 * Disable BT
-	 */
+	 
 	rtl8xxxu_write32(priv, REG_BT_CONTROL_8723BU, 0x00000800);
 
-	/* One shot, path A LOK & IQK */
+	 
 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf9000000);
 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf8000000);
 
 	mdelay(1);
 
-	/* Restore Ant Path */
+	 
 	rtl8xxxu_write32(priv, REG_S0S1_PATH_SWITCH, path_sel);
 #ifdef RTL8723BU_BT
-	/* GNT_BT = 1 */
+	 
 	rtl8xxxu_write32(priv, REG_BT_CONTROL_8723BU, 0x00001800);
 #endif
 
-	/*
-	 * Leave IQK mode
-	 */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_FPGA0_IQK);
 	val32 &= 0x000000ff;
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, val32);
 
-	/* Check failed */
+	 
 	reg_eac = rtl8xxxu_read32(priv, REG_RX_POWER_AFTER_IQK_A_2);
 	reg_ea4 = rtl8xxxu_read32(priv, REG_RX_POWER_BEFORE_IQK_A_2);
 
@@ -901,7 +834,7 @@ static int rtl8723bu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
 	    ((reg_ea4 & 0x03ff0000)  > 0x00f00000) &&
 	    val32 < 0xf)
 		result |= 0x02;
-	else	/* If TX not OK, ignore RX */
+	else	 
 		goto out;
 out:
 	return result;
@@ -912,7 +845,7 @@ static void rtl8723bu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
 {
 	struct device *dev = &priv->udev->dev;
 	u32 i, val32;
-	int path_a_ok /*, path_b_ok */;
+	int path_a_ok  ;
 	int retry = 2;
 	static const u32 adda_regs[RTL8XXXU_ADDA_REGS] = {
 		REG_FPGA0_XCD_SWITCH_CTRL, REG_BLUETOOTH,
@@ -937,13 +870,10 @@ static void rtl8723bu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
 	u8 xa_agc = rtl8xxxu_read32(priv, REG_OFDM0_XA_AGC_CORE1) & 0xff;
 	u8 xb_agc = rtl8xxxu_read32(priv, REG_OFDM0_XB_AGC_CORE1) & 0xff;
 
-	/*
-	 * Note: IQ calibration must be performed after loading
-	 *       PHY_REG.txt , and radio_a, radio_b.txt
-	 */
+	 
 
 	if (t == 0) {
-		/* Save ADDA parameters, turn Path A ADDA on */
+		 
 		rtl8xxxu_save_regs(priv, adda_regs, priv->adda_backup,
 				   RTL8XXXU_ADDA_REGS);
 		rtl8xxxu_save_mac_regs(priv, iqk_mac_regs, priv->mac_backup);
@@ -953,7 +883,7 @@ static void rtl8723bu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
 
 	rtl8xxxu_path_adda_on(priv, adda_regs, true);
 
-	/* MAC settings */
+	 
 	rtl8xxxu_mac_calibration(priv, iqk_mac_regs, priv->mac_backup);
 
 	val32 = rtl8xxxu_read32(priv, REG_CCK0_AFE_SETTING);
@@ -964,10 +894,7 @@ static void rtl8723bu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
 	rtl8xxxu_write32(priv, REG_OFDM0_TR_MUX_PAR, 0x000800e4);
 	rtl8xxxu_write32(priv, REG_FPGA0_XCD_RF_SW_CTRL, 0x22204000);
 
-	/*
-	 * RX IQ calibration setting for 8723B D cut large current issue
-	 * when leaving IPS
-	 */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_FPGA0_IQK);
 	val32 &= 0x000000ff;
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, val32);
@@ -1029,9 +956,7 @@ static void rtl8723bu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
 		dev_warn(dev, "%s: Path B not supported\n", __func__);
 #else
 
-		/*
-		 * Path A into standby
-		 */
+		 
 		val32 = rtl8xxxu_read32(priv, REG_FPGA0_IQK);
 		val32 &= 0x000000ff;
 		rtl8xxxu_write32(priv, REG_FPGA0_IQK, val32);
@@ -1042,7 +967,7 @@ static void rtl8723bu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
 		val32 |= 0x80800000;
 		rtl8xxxu_write32(priv, REG_FPGA0_IQK, val32);
 
-		/* Turn Path B ADDA on */
+		 
 		rtl8xxxu_path_adda_on(priv, adda_regs, false);
 
 		for (i = 0; i < retry; i++) {
@@ -1077,24 +1002,24 @@ static void rtl8723bu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
 #endif
 	}
 
-	/* Back to BB mode, load original value */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_FPGA0_IQK);
 	val32 &= 0x000000ff;
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, val32);
 
 	if (t) {
-		/* Reload ADDA power saving parameters */
+		 
 		rtl8xxxu_restore_regs(priv, adda_regs, priv->adda_backup,
 				      RTL8XXXU_ADDA_REGS);
 
-		/* Reload MAC parameters */
+		 
 		rtl8xxxu_restore_mac_regs(priv, iqk_mac_regs, priv->mac_backup);
 
-		/* Reload BB parameters */
+		 
 		rtl8xxxu_restore_regs(priv, iqk_bb_regs,
 				      priv->bb_backup, RTL8XXXU_BB_REGS);
 
-		/* Restore RX initial gain */
+		 
 		val32 = rtl8xxxu_read32(priv, REG_OFDM0_XA_AGC_CORE1);
 		val32 &= 0xffffff00;
 		rtl8xxxu_write32(priv, REG_OFDM0_XA_AGC_CORE1, val32 | 0x50);
@@ -1109,7 +1034,7 @@ static void rtl8723bu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
 					 val32 | xb_agc);
 		}
 
-		/* Load 0xe30 IQC default value */
+		 
 		rtl8xxxu_write32(priv, REG_TX_IQK_TONE_A, 0x01008c00);
 		rtl8xxxu_write32(priv, REG_RX_IQK_TONE_A, 0x01008c00);
 	}
@@ -1118,7 +1043,7 @@ static void rtl8723bu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
 static void rtl8723bu_phy_iq_calibrate(struct rtl8xxxu_priv *priv)
 {
 	struct device *dev = &priv->udev->dev;
-	int result[4][8];	/* last is final result */
+	int result[4][8];	 
 	int i, candidate;
 	bool path_a_ok, path_b_ok;
 	u32 reg_e94, reg_e9c, reg_ea4, reg_eac;
@@ -1246,20 +1171,20 @@ static int rtl8723bu_active_to_emu(struct rtl8xxxu_priv *priv)
 	u32 val32;
 	int count, ret = 0;
 
-	/* Turn off RF */
+	 
 	rtl8xxxu_write8(priv, REG_RF_CTRL, 0);
 
-	/* Enable rising edge triggering interrupt */
+	 
 	val16 = rtl8xxxu_read16(priv, REG_GPIO_INTM);
 	val16 &= ~GPIO_INTM_EDGE_TRIG_IRQ;
 	rtl8xxxu_write16(priv, REG_GPIO_INTM, val16);
 
-	/* Release WLON reset 0x04[16]= 1*/
+	 
 	val32 = rtl8xxxu_read32(priv, REG_APS_FSMCO);
 	val32 |= APS_FSMCO_WLON_RESET;
 	rtl8xxxu_write32(priv, REG_APS_FSMCO, val32);
 
-	/* 0x0005[1] = 1 turn off MAC by HW state machine*/
+	 
 	val8 = rtl8xxxu_read8(priv, REG_APS_FSMCO + 1);
 	val8 |= BIT(1);
 	rtl8xxxu_write8(priv, REG_APS_FSMCO + 1, val8);
@@ -1278,17 +1203,17 @@ static int rtl8723bu_active_to_emu(struct rtl8xxxu_priv *priv)
 		goto exit;
 	}
 
-	/* Enable BT control XTAL setting */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_AFE_MISC);
 	val8 &= ~AFE_MISC_WL_XTAL_CTRL;
 	rtl8xxxu_write8(priv, REG_AFE_MISC, val8);
 
-	/* 0x0000[5] = 1 analog Ips to digital, 1:isolation */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_SYS_ISO_CTRL);
 	val8 |= SYS_ISO_ANALOG_IPS;
 	rtl8xxxu_write8(priv, REG_SYS_ISO_CTRL, val8);
 
-	/* 0x0020[0] = 0 disable LDOA12 MACRO block*/
+	 
 	val8 = rtl8xxxu_read8(priv, REG_LDOA15_CTRL);
 	val8 &= ~LDOA15_ENABLE;
 	rtl8xxxu_write8(priv, REG_LDOA15_CTRL, val8);
@@ -1303,29 +1228,29 @@ static int rtl8723b_emu_to_active(struct rtl8xxxu_priv *priv)
 	u32 val32;
 	int count, ret = 0;
 
-	/* 0x20[0] = 1 enable LDOA12 MACRO block for all interface */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_LDOA15_CTRL);
 	val8 |= LDOA15_ENABLE;
 	rtl8xxxu_write8(priv, REG_LDOA15_CTRL, val8);
 
-	/* 0x67[0] = 0 to disable BT_GPS_SEL pins*/
+	 
 	val8 = rtl8xxxu_read8(priv, 0x0067);
 	val8 &= ~BIT(4);
 	rtl8xxxu_write8(priv, 0x0067, val8);
 
 	mdelay(1);
 
-	/* 0x00[5] = 0 release analog Ips to digital, 1:isolation */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_SYS_ISO_CTRL);
 	val8 &= ~SYS_ISO_ANALOG_IPS;
 	rtl8xxxu_write8(priv, REG_SYS_ISO_CTRL, val8);
 
-	/* Disable SW LPS 0x04[10]= 0 */
+	 
 	val32 = rtl8xxxu_read8(priv, REG_APS_FSMCO);
 	val32 &= ~APS_FSMCO_SW_LPS;
 	rtl8xxxu_write32(priv, REG_APS_FSMCO, val32);
 
-	/* Wait until 0x04[17] = 1 power ready */
+	 
 	for (count = RTL8XXXU_MAX_REG_POLL; count; count--) {
 		val32 = rtl8xxxu_read32(priv, REG_APS_FSMCO);
 		if (val32 & BIT(17))
@@ -1339,24 +1264,24 @@ static int rtl8723b_emu_to_active(struct rtl8xxxu_priv *priv)
 		goto exit;
 	}
 
-	/* We should be able to optimize the following three entries into one */
+	 
 
-	/* Release WLON reset 0x04[16]= 1*/
+	 
 	val32 = rtl8xxxu_read32(priv, REG_APS_FSMCO);
 	val32 |= APS_FSMCO_WLON_RESET;
 	rtl8xxxu_write32(priv, REG_APS_FSMCO, val32);
 
-	/* Disable HWPDN 0x04[15]= 0*/
+	 
 	val32 = rtl8xxxu_read32(priv, REG_APS_FSMCO);
 	val32 &= ~APS_FSMCO_HW_POWERDOWN;
 	rtl8xxxu_write32(priv, REG_APS_FSMCO, val32);
 
-	/* Disable WL suspend*/
+	 
 	val32 = rtl8xxxu_read32(priv, REG_APS_FSMCO);
 	val32 &= ~(APS_FSMCO_HW_SUSPEND | APS_FSMCO_PCIE);
 	rtl8xxxu_write32(priv, REG_APS_FSMCO, val32);
 
-	/* Set, then poll until 0 */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_APS_FSMCO);
 	val32 |= APS_FSMCO_MAC_ENABLE;
 	rtl8xxxu_write32(priv, REG_APS_FSMCO, val32);
@@ -1375,32 +1300,32 @@ static int rtl8723b_emu_to_active(struct rtl8xxxu_priv *priv)
 		goto exit;
 	}
 
-	/* Enable WL control XTAL setting */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_AFE_MISC);
 	val8 |= AFE_MISC_WL_XTAL_CTRL;
 	rtl8xxxu_write8(priv, REG_AFE_MISC, val8);
 
-	/* Enable falling edge triggering interrupt */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_GPIO_INTM + 1);
 	val8 |= BIT(1);
 	rtl8xxxu_write8(priv, REG_GPIO_INTM + 1, val8);
 
-	/* Enable GPIO9 interrupt mode */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_GPIO_IO_SEL_2 + 1);
 	val8 |= BIT(1);
 	rtl8xxxu_write8(priv, REG_GPIO_IO_SEL_2 + 1, val8);
 
-	/* Enable GPIO9 input mode */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_GPIO_IO_SEL_2);
 	val8 &= ~BIT(1);
 	rtl8xxxu_write8(priv, REG_GPIO_IO_SEL_2, val8);
 
-	/* Enable HSISR GPIO[C:0] interrupt */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_HSIMR);
 	val8 |= BIT(0);
 	rtl8xxxu_write8(priv, REG_HSIMR, val8);
 
-	/* Enable HSISR GPIO9 interrupt */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_HSIMR + 2);
 	val8 |= BIT(1);
 	rtl8xxxu_write8(priv, REG_HSIMR + 2, val8);
@@ -1409,7 +1334,7 @@ static int rtl8723b_emu_to_active(struct rtl8xxxu_priv *priv)
 	val8 |= MULTI_WIFI_HW_ROF_EN;
 	rtl8xxxu_write8(priv, REG_MULTI_FUNC_CTRL, val8);
 
-	/* For GPIO9 internal pull high setting BIT(14) */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_MULTI_FUNC_CTRL + 1);
 	val8 |= BIT(6);
 	rtl8xxxu_write8(priv, REG_MULTI_FUNC_CTRL + 1, val8);
@@ -1431,10 +1356,7 @@ static int rtl8723bu_power_on(struct rtl8xxxu_priv *priv)
 	if (ret)
 		goto exit;
 
-	/*
-	 * Enable MAC DMA/WMAC/SCHEDULE/SEC block
-	 * Set CR bit10 to enable 32k calibration.
-	 */
+	 
 	val16 = rtl8xxxu_read16(priv, REG_CR);
 	val16 |= (CR_HCI_TXDMA_ENABLE | CR_HCI_RXDMA_ENABLE |
 		  CR_TXDMA_ENABLE | CR_RXDMA_ENABLE |
@@ -1443,10 +1365,7 @@ static int rtl8723bu_power_on(struct rtl8xxxu_priv *priv)
 		  CR_SECURITY_ENABLE | CR_CALTIMER_ENABLE);
 	rtl8xxxu_write16(priv, REG_CR, val16);
 
-	/*
-	 * BT coexist power on settings. This is identical for 1 and 2
-	 * antenna parts.
-	 */
+	 
 	rtl8xxxu_write8(priv, REG_PAD_CTRL1 + 3, 0x20);
 
 	val16 = rtl8xxxu_read16(priv, REG_SYS_FUNC);
@@ -1456,7 +1375,7 @@ static int rtl8723bu_power_on(struct rtl8xxxu_priv *priv)
 	rtl8xxxu_write8(priv, REG_BT_CONTROL_8723BU + 1, 0x18);
 	rtl8xxxu_write8(priv, REG_WLAN_ACT_CONTROL_8723B, 0x04);
 	rtl8xxxu_write32(priv, REG_S0S1_PATH_SWITCH, 0x00);
-	/* Antenna inverse */
+	 
 	rtl8xxxu_write8(priv, 0xfe08, 0x01);
 
 	val16 = rtl8xxxu_read16(priv, REG_PWR_DATA);
@@ -1481,9 +1400,7 @@ static void rtl8723bu_power_off(struct rtl8xxxu_priv *priv)
 
 	rtl8xxxu_flush_fifo(priv);
 
-	/*
-	 * Disable TX report timer
-	 */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_TX_REPORT_CTRL);
 	val8 &= ~TX_REPORT_CTRL_TIMER_ENABLE;
 	rtl8xxxu_write8(priv, REG_TX_REPORT_CTRL, val8);
@@ -1492,25 +1409,25 @@ static void rtl8723bu_power_off(struct rtl8xxxu_priv *priv)
 
 	rtl8xxxu_active_to_lps(priv);
 
-	/* Reset Firmware if running in RAM */
+	 
 	if (rtl8xxxu_read8(priv, REG_MCU_FW_DL) & MCU_FW_RAM_SEL)
 		rtl8xxxu_firmware_self_reset(priv);
 
-	/* Reset MCU */
+	 
 	val16 = rtl8xxxu_read16(priv, REG_SYS_FUNC);
 	val16 &= ~SYS_FUNC_CPU_ENABLE;
 	rtl8xxxu_write16(priv, REG_SYS_FUNC, val16);
 
-	/* Reset MCU ready status */
+	 
 	rtl8xxxu_write8(priv, REG_MCU_FW_DL, 0x00);
 
 	rtl8723bu_active_to_emu(priv);
 
 	val8 = rtl8xxxu_read8(priv, REG_APS_FSMCO + 1);
-	val8 |= BIT(3); /* APS_FSMCO_HW_SUSPEND */
+	val8 |= BIT(3);  
 	rtl8xxxu_write8(priv, REG_APS_FSMCO + 1, val8);
 
-	/* 0x48[16] = 1 to enable GPIO9 as EXT wakeup */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_GPIO_INTM + 2);
 	val8 |= BIT(0);
 	rtl8xxxu_write8(priv, REG_GPIO_INTM + 2, val8);
@@ -1526,16 +1443,9 @@ static void rtl8723b_enable_rf(struct rtl8xxxu_priv *priv)
 	val32 |= (BIT(22) | BIT(23));
 	rtl8xxxu_write32(priv, REG_RX_WAIT_CCA, val32);
 
-	/*
-	 * No indication anywhere as to what 0x0790 does. The 2 antenna
-	 * vendor code preserves bits 6-7 here.
-	 */
+	 
 	rtl8xxxu_write8(priv, 0x0790, 0x05);
-	/*
-	 * 0x0778 seems to be related to enabling the number of antennas
-	 * In the vendor driver halbtc8723b2ant_InitHwConfig() sets it
-	 * to 0x03, while halbtc8723b1ant_InitHwConfig() sets it to 0x01
-	 */
+	 
 	rtl8xxxu_write8(priv, 0x0778, 0x01);
 
 	val8 = rtl8xxxu_read8(priv, REG_GPIO_MUXCFG);
@@ -1544,24 +1454,18 @@ static void rtl8723b_enable_rf(struct rtl8xxxu_priv *priv)
 
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_IQADJ_G1, 0x780);
 
-	rtl8723bu_write_btreg(priv, 0x3c, 0x15); /* BT TRx Mask on */
+	rtl8723bu_write_btreg(priv, 0x3c, 0x15);  
 
-	/*
-	 * Set BT grant to low
-	 */
+	 
 	memset(&h2c, 0, sizeof(struct h2c_cmd));
 	h2c.bt_grant.cmd = H2C_8723B_BT_GRANT;
 	h2c.bt_grant.data = 0;
 	rtl8xxxu_gen2_h2c_cmd(priv, &h2c, sizeof(h2c.bt_grant));
 
-	/*
-	 * WLAN action by PTA
-	 */
+	 
 	rtl8xxxu_write8(priv, REG_WLAN_ACT_CONTROL_8723B, 0x0c);
 
-	/*
-	 * BT select S0/S1 controlled by WiFi
-	 */
+	 
 	val8 = rtl8xxxu_read8(priv, 0x0067);
 	val8 |= BIT(5);
 	rtl8xxxu_write8(priv, 0x0067, val8);
@@ -1570,9 +1474,7 @@ static void rtl8723b_enable_rf(struct rtl8xxxu_priv *priv)
 	val32 |= PWR_DATA_EEPRPAD_RFE_CTRL_EN;
 	rtl8xxxu_write32(priv, REG_PWR_DATA, val32);
 
-	/*
-	 * Bits 6/7 are marked in/out ... but for what?
-	 */
+	 
 	rtl8xxxu_write8(priv, 0x0974, 0xff);
 
 	val32 = rtl8xxxu_read32(priv, REG_RFE_BUFFER);
@@ -1586,9 +1488,7 @@ static void rtl8723b_enable_rf(struct rtl8xxxu_priv *priv)
 	val32 |= BIT(23);
 	rtl8xxxu_write32(priv, REG_LEDCFG0, val32);
 
-	/*
-	 * Fix external switch Main->S1, Aux->S0
-	 */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_PAD_CTRL1);
 	val8 &= ~BIT(0);
 	rtl8xxxu_write8(priv, REG_PAD_CTRL1, val8);
@@ -1599,19 +1499,10 @@ static void rtl8723b_enable_rf(struct rtl8xxxu_priv *priv)
 	h2c.ant_sel_rsv.int_switch_type = 0;
 	rtl8xxxu_gen2_h2c_cmd(priv, &h2c, sizeof(h2c.ant_sel_rsv));
 
-	/*
-	 * Different settings per different antenna position.
-	 *      Antenna Position:   | Normal   Inverse
-	 * --------------------------------------------------
-	 * Antenna switch to BT:    |  0x280,   0x00
-	 * Antenna switch to WiFi:  |  0x0,     0x280
-	 * Antenna switch to PTA:   |  0x200,   0x80
-	 */
+	 
 	rtl8xxxu_write32(priv, REG_S0S1_PATH_SWITCH, 0x80);
 
-	/*
-	 * Software control, antenna at WiFi side
-	 */
+	 
 	rtl8723bu_set_ps_tdma(priv, 0x08, 0x00, 0x00, 0x00, 0x00);
 
 	rtl8xxxu_write32(priv, REG_BT_COEX_TABLE1, 0x55555555);
@@ -1635,9 +1526,7 @@ static void rtl8723bu_init_aggregation(struct rtl8xxxu_priv *priv)
 	u32 agg_rx;
 	u8 agg_ctrl;
 
-	/*
-	 * For now simply disable RX aggregation
-	 */
+	 
 	agg_ctrl = rtl8xxxu_read8(priv, REG_TRXDMA_CTRL);
 	agg_ctrl &= ~TRXDMA_CTRL_RXDMA_AGG_EN;
 
@@ -1653,20 +1542,20 @@ static void rtl8723bu_init_statistics(struct rtl8xxxu_priv *priv)
 {
 	u32 val32;
 
-	/* Time duration for NHM unit: 4us, 0x2710=40ms */
+	 
 	rtl8xxxu_write16(priv, REG_NHM_TIMER_8723B + 2, 0x2710);
 	rtl8xxxu_write16(priv, REG_NHM_TH9_TH10_8723B + 2, 0xffff);
 	rtl8xxxu_write32(priv, REG_NHM_TH3_TO_TH0_8723B, 0xffffff52);
 	rtl8xxxu_write32(priv, REG_NHM_TH7_TO_TH4_8723B, 0xffffffff);
-	/* TH8 */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_FPGA0_IQK);
 	val32 |= 0xff;
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, val32);
-	/* Enable CCK */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_NHM_TH9_TH10_8723B);
 	val32 |= BIT(8) | BIT(9) | BIT(10);
 	rtl8xxxu_write32(priv, REG_NHM_TH9_TH10_8723B, val32);
-	/* Max power amongst all RX antennas */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_OFDM0_FA_RSTC);
 	val32 |= BIT(7);
 	rtl8xxxu_write32(priv, REG_OFDM0_FA_RSTC, val32);

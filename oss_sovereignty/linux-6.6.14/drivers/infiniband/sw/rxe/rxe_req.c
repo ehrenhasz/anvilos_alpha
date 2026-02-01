@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2016 Mellanox Technologies Ltd. All rights reserved.
- * Copyright (c) 2015 System Fabric Works, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/skbuff.h>
 #include <crypto/hash.h>
@@ -105,7 +102,7 @@ void rnr_nak_timer(struct timer_list *t)
 
 	spin_lock_irqsave(&qp->state_lock, flags);
 	if (qp->valid) {
-		/* request a send queue retry */
+		 
 		qp->req.need_retry = 1;
 		qp->req.wait_for_rnr_timer = 0;
 		rxe_sched_task(&qp->req.task);
@@ -128,17 +125,15 @@ static void req_check_sq_drain_done(struct rxe_qp *qp)
 		cons = queue_get_consumer(q, QUEUE_TYPE_FROM_CLIENT);
 		wqe = queue_addr_from_index(q, cons);
 
-		/* check to see if we are drained;
-		 * state_lock used by requester and completer
-		 */
+		 
 		do {
 			if (!qp->attr.sq_draining)
-				/* comp just finished */
+				 
 				break;
 
 			if (wqe && ((index != cons) ||
 				(wqe->state != wqe_state_posted)))
-				/* comp not done yet */
+				 
 				break;
 
 			qp->attr.sq_draining = 0;
@@ -195,28 +190,15 @@ static struct rxe_send_wqe *req_next_wqe(struct rxe_qp *qp)
 	return wqe;
 }
 
-/**
- * rxe_wqe_is_fenced - check if next wqe is fenced
- * @qp: the queue pair
- * @wqe: the next wqe
- *
- * Returns: 1 if wqe needs to wait
- *	    0 if wqe is ready to go
- */
+ 
 static int rxe_wqe_is_fenced(struct rxe_qp *qp, struct rxe_send_wqe *wqe)
 {
-	/* Local invalidate fence (LIF) see IBA 10.6.5.1
-	 * Requires ALL previous operations on the send queue
-	 * are complete. Make mandatory for the rxe driver.
-	 */
+	 
 	if (wqe->wr.opcode == IB_WR_LOCAL_INV)
 		return qp->req.wqe_index != queue_get_consumer(qp->sq.queue,
 						QUEUE_TYPE_FROM_CLIENT);
 
-	/* Fence see IBA 10.8.3.3
-	 * Requires that all previous read and atomic operations
-	 * are complete.
-	 */
+	 
 	return (wqe->wr.send_flags & IB_SEND_FENCE) &&
 		atomic_read(&qp->req.rd_atomic) != qp->attr.max_rd_atomic;
 }
@@ -426,16 +408,16 @@ static struct sk_buff *init_req_packet(struct rxe_qp *qp,
 	u32			qp_num;
 	int			ack_req;
 
-	/* length from start of bth to end of icrc */
+	 
 	paylen = rxe_opcode[opcode].length + payload + pad + RXE_ICRC_SIZE;
 	pkt->paylen = paylen;
 
-	/* init skb */
+	 
 	skb = rxe_init_packet(rxe, av, paylen, pkt);
 	if (unlikely(!skb))
 		return NULL;
 
-	/* init bth */
+	 
 	solicited = (ibwr->send_flags & IB_SEND_SOLICITED) &&
 			(pkt->mask & RXE_END_MASK) &&
 			((pkt->mask & (RXE_SEND_MASK)) ||
@@ -453,7 +435,7 @@ static struct sk_buff *init_req_packet(struct rxe_qp *qp,
 	bth_init(pkt, pkt->opcode, solicited, 0, pad, IB_DEFAULT_PKEY_FULL, qp_num,
 		 ack_req, pkt->psn);
 
-	/* init optional headers */
+	 
 	if (pkt->mask & RXE_RETH_MASK) {
 		if (pkt->mask & RXE_FETH_MASK)
 			reth_set_rkey(pkt, ibwr->wr.flush.rkey);
@@ -463,7 +445,7 @@ static struct sk_buff *init_req_packet(struct rxe_qp *qp,
 		reth_set_len(pkt, wqe->dma.resid);
 	}
 
-	/* Fill Flush Extension Transport Header */
+	 
 	if (pkt->mask & RXE_FETH_MASK)
 		feth_init(pkt, ibwr->wr.flush.type, ibwr->wr.flush.level);
 
@@ -526,7 +508,7 @@ static int finish_packet(struct rxe_qp *qp, struct rxe_av *av,
 			memset(pad, 0, bth_pad(pkt));
 		}
 	} else if (pkt->mask & RXE_FLUSH_MASK) {
-		/* oA19-2: shall have no payload. */
+		 
 		wqe->dma.resid = 0;
 	}
 
@@ -555,10 +537,10 @@ static void update_wqe_psn(struct rxe_qp *qp,
 			   struct rxe_pkt_info *pkt,
 			   u32 payload)
 {
-	/* number of packets left to send including current one */
+	 
 	int num_pkt = (wqe->dma.resid + payload + qp->mtu - 1) / qp->mtu;
 
-	/* handle zero length packet case */
+	 
 	if (num_pkt == 0)
 		num_pkt = 1;
 
@@ -655,10 +637,7 @@ static int rxe_do_local_ops(struct rxe_qp *qp, struct rxe_send_wqe *wqe)
 	wqe->status = IB_WC_SUCCESS;
 	qp->req.wqe_index = queue_next_index(qp->sq.queue, qp->req.wqe_index);
 
-	/* There is no ack coming for local work requests
-	 * which can lead to a deadlock. So go ahead and complete
-	 * it now.
-	 */
+	 
 	rxe_sched_task(&qp->comp.task);
 
 	return 0;
@@ -711,12 +690,7 @@ int rxe_requester(struct rxe_qp *qp)
 	}
 	spin_unlock_irqrestore(&qp->state_lock, flags);
 
-	/* we come here if the retransmit timer has fired
-	 * or if the rnr timer has fired. If the retransmit
-	 * timer fires while we are processing an RNR NAK wait
-	 * until the rnr timer has fired before starting the
-	 * retry flow
-	 */
+	 
 	if (unlikely(qp->req.need_retry && !qp->req.wait_for_rnr_timer)) {
 		req_retry(qp);
 		qp->req.need_retry = 0;
@@ -746,7 +720,7 @@ int rxe_requester(struct rxe_qp *qp)
 		goto exit;
 	}
 
-	/* Limit the number of inflight SKBs per QP */
+	 
 	if (unlikely(atomic_read(&qp->skb_out) >
 		     RXE_INFLIGHT_SKBS_PER_QP_HIGH)) {
 		qp->need_req_skb = 1;
@@ -771,13 +745,9 @@ int rxe_requester(struct rxe_qp *qp)
 			wqe->dma.resid : 0;
 	if (payload > mtu) {
 		if (qp_type(qp) == IB_QPT_UD) {
-			/* C10-93.1.1: If the total sum of all the buffer lengths specified for a
-			 * UD message exceeds the MTU of the port as returned by QueryHCA, the CI
-			 * shall not emit any packets for this message. Further, the CI shall not
-			 * generate an error due to this condition.
-			 */
+			 
 
-			/* fake a successful UD send */
+			 
 			wqe->first_psn = qp->req.psn;
 			wqe->last_psn = qp->req.psn;
 			qp->req.psn = (qp->req.psn + 1) & BTH_PSN_MASK;
@@ -799,7 +769,7 @@ int rxe_requester(struct rxe_qp *qp)
 	pkt.mask = rxe_opcode[opcode].mask;
 	pkt.wqe = wqe;
 
-	/* save wqe state before we build and send packet */
+	 
 	save_state(wqe, qp, &rollback_wqe, &rollback_psn);
 
 	av = rxe_get_av(&pkt, &ah);
@@ -834,7 +804,7 @@ int rxe_requester(struct rxe_qp *qp)
 	if (ah)
 		rxe_put(ah);
 
-	/* update wqe state as though we had sent it */
+	 
 	update_wqe_state(qp, wqe, &pkt);
 	update_wqe_psn(qp, wqe, &pkt, payload);
 
@@ -845,14 +815,10 @@ int rxe_requester(struct rxe_qp *qp)
 			goto err;
 		}
 
-		/* the packet was dropped so reset wqe to the state
-		 * before we sent it so we can try to resend
-		 */
+		 
 		rollback_state(wqe, qp, &rollback_wqe, rollback_psn);
 
-		/* force a delay until the dropped packet is freed and
-		 * the send queue is drained below the low water mark
-		 */
+		 
 		qp->need_req_skb = 1;
 
 		rxe_sched_task(&qp->req.task);
@@ -861,15 +827,12 @@ int rxe_requester(struct rxe_qp *qp)
 
 	update_state(qp, &pkt);
 
-	/* A non-zero return value will cause rxe_do_task to
-	 * exit its loop and end the work item. A zero return
-	 * will continue looping and return to rxe_requester
-	 */
+	 
 done:
 	ret = 0;
 	goto out;
 err:
-	/* update wqe_index for each wqe completion */
+	 
 	qp->req.wqe_index = queue_next_index(qp->sq.queue, qp->req.wqe_index);
 	wqe->state = wqe_state_error;
 	rxe_qp_error(qp);

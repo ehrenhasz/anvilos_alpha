@@ -1,26 +1,4 @@
-/* Clocksource change test
- *		by: john stultz (johnstul@us.ibm.com)
- *		(C) Copyright IBM 2012
- *		Licensed under the GPLv2
- *
- *  NOTE: This is a meta-test which quickly changes the clocksource and
- *  then uses other tests to detect problems. Thus this test requires
- *  that the inconsistency-check and nanosleep tests be present in the
- *  same directory it is run from.
- *
- *  To build:
- *	$ gcc clocksource-switch.c -o clocksource-switch -lrt
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- */
+ 
 
 
 #include <fcntl.h>
@@ -56,7 +34,7 @@ int get_clocksources(char list[][30])
 	head = buf;
 	i = 0;
 	while (head - buf < size) {
-		/* Find the next space */
+		 
 		for (tmp = head; *tmp != ' '; tmp++) {
 			if (*tmp == '\n')
 				break;
@@ -127,7 +105,7 @@ int main(int argc, char **argv)
 	int runtime = 60;
 	pid_t pid;
 
-	/* Process arguments */
+	 
 	while ((opt = getopt(argc, argv, "st:")) != -1) {
 		switch (opt) {
 		case 's':
@@ -153,7 +131,7 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-	/* Check everything is sane before we start switching asynchronously */
+	 
 	if (do_sanity_check) {
 		for (i = 0; i < count; i++) {
 			printf("Validating clocksource %s\n",
@@ -183,7 +161,7 @@ int main(int argc, char **argv)
 out:
 	change_clocksource(orig_clk);
 
-	/* Print at the end to not mix output with child process */
+	 
 	ksft_print_header();
 	ksft_set_plan(1);
 	ksft_test_result(!status, "clocksource-switch\n");

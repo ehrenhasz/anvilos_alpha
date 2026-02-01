@@ -1,14 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2022, Intel Corporation. */
-/* Modeled on trace-events-sample.h */
-/* The trace subsystem name for e1000e will be "e1000e_trace".
- *
- * This file is named e1000e_trace.h.
- *
- * Since this include file's name is different from the trace
- * subsystem name, we'll have to define TRACE_INCLUDE_FILE at the end
- * of this file.
- */
+ 
+ 
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM e1000e_trace
@@ -28,11 +21,8 @@ TRACE_EVENT(e1000e_trace_mac_register,
 );
 
 #endif
-/* This must be outside ifdef _E1000E_TRACE_H */
-/* This trace include file is not located in the .../include/trace
- * with the kernel tracepoint definitions, because we're a loadable
- * module.
- */
+ 
+ 
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

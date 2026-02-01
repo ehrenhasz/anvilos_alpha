@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * StarFive Designware Mobile Storage Host Controller Driver
- *
- * Copyright (c) 2022 StarFive Technology Co., Ltd.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -56,11 +52,7 @@ static int dw_mci_starfive_execute_tuning(struct dw_mci_slot *slot,
 	bool found = 0;
 	u32 regval;
 
-	/*
-	 * Use grade as the max delay chain, and use the rise_point and
-	 * fall_point to ensure the best sampling point of a data input
-	 * signals.
-	 */
+	 
 	for (i = 0; i < grade; i++) {
 		regval = i << priv->syscon_shift;
 		err = regmap_update_bits(priv->reg_syscon, priv->syscon_offset,

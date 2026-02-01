@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * evm.h
- *
- * Copyright (c) 2009 IBM Corporation
- * Author: Mimi Zohar <zohar@us.ibm.com>
- */
+ 
+ 
 
 #ifndef _LINUX_EVM_H
 #define _LINUX_EVM_H
@@ -183,5 +178,5 @@ static inline int evm_read_protected_xattrs(struct dentry *dentry, u8 *buffer,
 	return -EOPNOTSUPP;
 }
 
-#endif /* CONFIG_EVM */
-#endif /* LINUX_EVM_H */
+#endif  
+#endif  

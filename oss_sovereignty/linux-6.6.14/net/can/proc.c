@@ -1,44 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
-/*
- * proc.c - procfs support for Protocol family CAN core module
- *
- * Copyright (c) 2002-2007 Volkswagen Group Electronic Research
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of Volkswagen nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * Alternatively, provided that this notice is retained in full, this
- * software may be distributed under the terms of the GNU General
- * Public License ("GPL") version 2, in which case the provisions of the
- * GPL apply INSTEAD OF those given above.
- *
- * The provided data structures and external interfaces from this code
- * are not restricted to be used by modules with a GPL compatible license.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
- * DAMAGE.
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/proc_fs.h>
@@ -50,9 +11,7 @@
 
 #include "af_can.h"
 
-/*
- * proc filenames for the PF_CAN core
- */
+ 
 
 #define CAN_PROC_STATS       "stats"
 #define CAN_PROC_RESET_STATS "reset_stats"
@@ -72,19 +31,13 @@ static const char rx_list_name[][8] = {
 	[RX_INV] = "rx_inv",
 };
 
-/*
- * af_can statistics stuff
- */
+ 
 
 static void can_init_stats(struct net *net)
 {
 	struct can_pkg_stats *pkg_stats = net->can.pkg_stats;
 	struct can_rcv_lists_stats *rcv_lists_stats = net->can.rcv_lists_stats;
-	/*
-	 * This memset function is called from a timer context (when
-	 * can_stattimer is active which is the default) OR in a process
-	 * context (reading the proc_fs when can_stattimer is disabled).
-	 */
+	 
 	memset(pkg_stats, 0, sizeof(struct can_pkg_stats));
 	pkg_stats->jiffies_init = jiffies;
 
@@ -102,7 +55,7 @@ static unsigned long calc_rate(unsigned long oldjif, unsigned long newjif,
 	if (oldjif == newjif)
 		return 0;
 
-	/* see can_stat_update() - this should NEVER happen! */
+	 
 	if (count > (ULONG_MAX / HZ)) {
 		printk(KERN_ERR "can: calc_rate: count exceeded! %ld\n",
 		       count);
@@ -116,29 +69,29 @@ void can_stat_update(struct timer_list *t)
 {
 	struct net *net = from_timer(net, t, can.stattimer);
 	struct can_pkg_stats *pkg_stats = net->can.pkg_stats;
-	unsigned long j = jiffies; /* snapshot */
+	unsigned long j = jiffies;  
 
-	/* restart counting in timer context on user request */
+	 
 	if (user_reset)
 		can_init_stats(net);
 
-	/* restart counting on jiffies overflow */
+	 
 	if (j < pkg_stats->jiffies_init)
 		can_init_stats(net);
 
-	/* prevent overflow in calc_rate() */
+	 
 	if (pkg_stats->rx_frames > (ULONG_MAX / HZ))
 		can_init_stats(net);
 
-	/* prevent overflow in calc_rate() */
+	 
 	if (pkg_stats->tx_frames > (ULONG_MAX / HZ))
 		can_init_stats(net);
 
-	/* matches overflow - very improbable */
+	 
 	if (pkg_stats->matches > (ULONG_MAX / 100))
 		can_init_stats(net);
 
-	/* calc total values */
+	 
 	if (pkg_stats->rx_frames)
 		pkg_stats->total_rx_match_ratio = (pkg_stats->matches * 100) /
 			pkg_stats->rx_frames;
@@ -148,7 +101,7 @@ void can_stat_update(struct timer_list *t)
 	pkg_stats->total_rx_rate = calc_rate(pkg_stats->jiffies_init, j,
 					    pkg_stats->rx_frames);
 
-	/* calc current values */
+	 
 	if (pkg_stats->rx_frames_delta)
 		pkg_stats->current_rx_match_ratio =
 			(pkg_stats->matches_delta * 100) /
@@ -157,7 +110,7 @@ void can_stat_update(struct timer_list *t)
 	pkg_stats->current_tx_rate = calc_rate(0, HZ, pkg_stats->tx_frames_delta);
 	pkg_stats->current_rx_rate = calc_rate(0, HZ, pkg_stats->rx_frames_delta);
 
-	/* check / update maximum values */
+	 
 	if (pkg_stats->max_tx_rate < pkg_stats->current_tx_rate)
 		pkg_stats->max_tx_rate = pkg_stats->current_tx_rate;
 
@@ -167,18 +120,16 @@ void can_stat_update(struct timer_list *t)
 	if (pkg_stats->max_rx_match_ratio < pkg_stats->current_rx_match_ratio)
 		pkg_stats->max_rx_match_ratio = pkg_stats->current_rx_match_ratio;
 
-	/* clear values for 'current rate' calculation */
+	 
 	pkg_stats->tx_frames_delta = 0;
 	pkg_stats->rx_frames_delta = 0;
 	pkg_stats->matches_delta   = 0;
 
-	/* restart timer (one second) */
+	 
 	mod_timer(&net->can.stattimer, round_jiffies(jiffies + HZ));
 }
 
-/*
- * proc read functions
- */
+ 
 
 static void can_print_rcvlist(struct seq_file *m, struct hlist_head *rx_list,
 			      struct net_device *dev)
@@ -197,10 +148,7 @@ static void can_print_rcvlist(struct seq_file *m, struct hlist_head *rx_list,
 
 static void can_print_recv_banner(struct seq_file *m)
 {
-	/*
-	 *                  can1.  00000000  00000000  00000000
-	 *                 .......          0  tp20
-	 */
+	 
 	if (IS_ENABLED(CONFIG_64BIT))
 		seq_puts(m, "  device   can_id   can_mask      function          userdata       matches  ident\n");
 	else
@@ -304,7 +252,7 @@ static inline void can_rcvlist_proc_show_one(struct seq_file *m, int idx,
 
 static int can_rcvlist_proc_show(struct seq_file *m, void *v)
 {
-	/* double cast to prevent GCC warning */
+	 
 	int idx = (int)(long)pde_data(m->file->f_inode);
 	struct net_device *dev;
 	struct can_dev_rcv_lists *dev_rcv_lists;
@@ -314,11 +262,11 @@ static int can_rcvlist_proc_show(struct seq_file *m, void *v)
 
 	rcu_read_lock();
 
-	/* receive list for 'all' CAN devices (dev == NULL) */
+	 
 	dev_rcv_lists = net->can.rx_alldev_list;
 	can_rcvlist_proc_show_one(m, idx, NULL, dev_rcv_lists);
 
-	/* receive list for registered CAN devices */
+	 
 	for_each_netdev_rcu(net, dev) {
 		struct can_ml_priv *can_ml = can_get_ml_priv(dev);
 
@@ -341,7 +289,7 @@ static inline void can_rcvlist_proc_show_array(struct seq_file *m,
 	unsigned int i;
 	int all_empty = 1;
 
-	/* check whether at least one list is non-empty */
+	 
 	for (i = 0; i < rcv_array_sz; i++)
 		if (!hlist_empty(&rcv_array[i])) {
 			all_empty = 0;
@@ -364,17 +312,17 @@ static int can_rcvlist_sff_proc_show(struct seq_file *m, void *v)
 	struct can_dev_rcv_lists *dev_rcv_lists;
 	struct net *net = m->private;
 
-	/* RX_SFF */
+	 
 	seq_puts(m, "\nreceive list 'rx_sff':\n");
 
 	rcu_read_lock();
 
-	/* sff receive list for 'all' CAN devices (dev == NULL) */
+	 
 	dev_rcv_lists = net->can.rx_alldev_list;
 	can_rcvlist_proc_show_array(m, NULL, dev_rcv_lists->rx_sff,
 				    ARRAY_SIZE(dev_rcv_lists->rx_sff));
 
-	/* sff receive list for registered CAN devices */
+	 
 	for_each_netdev_rcu(net, dev) {
 		struct can_ml_priv *can_ml = can_get_ml_priv(dev);
 
@@ -397,17 +345,17 @@ static int can_rcvlist_eff_proc_show(struct seq_file *m, void *v)
 	struct can_dev_rcv_lists *dev_rcv_lists;
 	struct net *net = m->private;
 
-	/* RX_EFF */
+	 
 	seq_puts(m, "\nreceive list 'rx_eff':\n");
 
 	rcu_read_lock();
 
-	/* eff receive list for 'all' CAN devices (dev == NULL) */
+	 
 	dev_rcv_lists = net->can.rx_alldev_list;
 	can_rcvlist_proc_show_array(m, NULL, dev_rcv_lists->rx_eff,
 				    ARRAY_SIZE(dev_rcv_lists->rx_eff));
 
-	/* eff receive list for registered CAN devices */
+	 
 	for_each_netdev_rcu(net, dev) {
 		struct can_ml_priv *can_ml = can_get_ml_priv(dev);
 
@@ -424,12 +372,10 @@ static int can_rcvlist_eff_proc_show(struct seq_file *m, void *v)
 	return 0;
 }
 
-/*
- * can_init_proc - create main CAN proc directory and procfs entries
- */
+ 
 void can_init_proc(struct net *net)
 {
-	/* create /proc/net/can directory */
+	 
 	net->can.proc_dir = proc_net_mkdir(net, "can", net->proc_net);
 
 	if (!net->can.proc_dir) {
@@ -438,7 +384,7 @@ void can_init_proc(struct net *net)
 		return;
 	}
 
-	/* own procfs entries from the AF_CAN core */
+	 
 	net->can.pde_stats = proc_create_net_single(CAN_PROC_STATS, 0644,
 			net->can.proc_dir, can_stats_proc_show, NULL);
 	net->can.pde_reset_stats = proc_create_net_single(CAN_PROC_RESET_STATS,
@@ -462,9 +408,7 @@ void can_init_proc(struct net *net)
 			0644, net->can.proc_dir, can_rcvlist_sff_proc_show, NULL);
 }
 
-/*
- * can_remove_proc - remove procfs entries and main CAN proc directory
- */
+ 
 void can_remove_proc(struct net *net)
 {
 	if (!net->can.proc_dir)

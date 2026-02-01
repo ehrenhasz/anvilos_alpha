@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// ALSA SoC glue to use IIO devices as audio components
-//
-// Copyright 2023 CS GROUP France
-//
-// Author: Herve Codina <herve.codina@bootlin.com>
+
+
+
+
+
+
+
 
 #include <linux/iio/consumer.h>
 #include <linux/minmax.h>
@@ -96,7 +96,7 @@ static int audio_iio_aux_put_volsw(struct snd_kcontrol *kcontrol,
 	if (ret)
 		return ret;
 
-	return 1; /* The value changed */
+	return 1;  
 }
 
 static int audio_iio_aux_add_controls(struct snd_soc_component *component,
@@ -114,16 +114,11 @@ static int audio_iio_aux_add_controls(struct snd_soc_component *component,
 	return snd_soc_add_component_controls(component, &control, 1);
 }
 
-/*
- * These data could be on stack but they are pretty big.
- * As ASoC internally copy them and protect them against concurrent accesses
- * (snd_soc_bind_card() protects using client_mutex), keep them in the global
- * data area.
- */
+ 
 static struct snd_soc_dapm_widget widgets[3];
 static struct snd_soc_dapm_route routes[2];
 
-/* Be sure sizes are correct (need 3 widgets and 2 routes) */
+ 
 static_assert(ARRAY_SIZE(widgets) >= 3, "3 widgets are needed");
 static_assert(ARRAY_SIZE(routes) >= 2, "2 routes are needed");
 
@@ -167,7 +162,7 @@ static int audio_iio_aux_add_dapms(struct snd_soc_component *component,
 	routes[1].source = pga_name;
 	ret = snd_soc_dapm_add_routes(dapm, routes, 2);
 
-	/* Allocated names are no more needed (duplicated in ASoC internals) */
+	 
 
 out_free_pga_name:
 	kfree(pga_name);
@@ -201,17 +196,13 @@ static int audio_iio_aux_component_probe(struct snd_soc_component *component)
 					     i, chan->name);
 
 		if (chan->min > chan->max) {
-			/*
-			 * This should never happen but to avoid any check
-			 * later, just swap values here to ensure that the
-			 * minimum value is lower than the maximum value.
-			 */
+			 
 			dev_dbg(component->dev, "chan[%d] %s: Swap min and max\n",
 				i, chan->name);
 			swap(chan->min, chan->max);
 		}
 
-		/* Set initial value */
+		 
 		ret = iio_write_channel_raw(chan->iio_chan,
 					    chan->is_invert_range ? chan->max : chan->min);
 		if (ret)
@@ -284,10 +275,7 @@ static int audio_iio_aux_probe(struct platform_device *pdev)
 		goto out_free_invert_ranges;
 	}
 
-	/*
-	 * snd-control-invert-range is optional and can contain fewer items
-	 * than the number of channels. Unset values default to 0.
-	 */
+	 
 	count = device_property_count_u32(dev, "snd-control-invert-range");
 	if (count > 0) {
 		count = min_t(unsigned int, count, iio_aux->num_chans);

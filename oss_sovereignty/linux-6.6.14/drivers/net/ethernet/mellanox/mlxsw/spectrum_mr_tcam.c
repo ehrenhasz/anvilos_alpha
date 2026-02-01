@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2017-2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/list.h>
@@ -15,7 +15,7 @@ struct mlxsw_sp_mr_tcam {
 	void *priv;
 };
 
-/* This struct maps to one RIGR2 register entry */
+ 
 struct mlxsw_sp_mr_erif_sublist {
 	struct list_head list;
 	u32 rigr2_kvdl_index;
@@ -83,9 +83,7 @@ mlxsw_sp_mr_erif_list_add(struct mlxsw_sp *mlxsw_sp,
 {
 	struct mlxsw_sp_mr_erif_sublist *sublist;
 
-	/* If either there is no erif_entry or the last one is full, allocate a
-	 * new one.
-	 */
+	 
 	if (list_empty(&erif_list->erif_sublists)) {
 		sublist = mlxsw_sp_mr_erif_sublist_create(mlxsw_sp, erif_list);
 		if (IS_ERR(sublist))
@@ -104,7 +102,7 @@ mlxsw_sp_mr_erif_list_add(struct mlxsw_sp *mlxsw_sp,
 		}
 	}
 
-	/* Add the eRIF to the last entry's last index */
+	 
 	sublist->erif_indices[sublist->num_erifs++] = erif_index;
 	return 0;
 }
@@ -133,7 +131,7 @@ mlxsw_sp_mr_erif_list_commit(struct mlxsw_sp *mlxsw_sp,
 		if (curr_sublist->synced)
 			continue;
 
-		/* If the sublist is not the last one, pack the next index */
+		 
 		if (list_is_last(&curr_sublist->list,
 				 &erif_list->erif_sublists)) {
 			mlxsw_reg_rigr2_pack(rigr2_pl,
@@ -149,7 +147,7 @@ mlxsw_sp_mr_erif_list_commit(struct mlxsw_sp *mlxsw_sp,
 					     next_sublist->rigr2_kvdl_index);
 		}
 
-		/* Pack all the erifs */
+		 
 		for (i = 0; i < curr_sublist->num_erifs; i++) {
 			u16 erif_index = curr_sublist->erif_indices[i];
 
@@ -157,13 +155,11 @@ mlxsw_sp_mr_erif_list_commit(struct mlxsw_sp *mlxsw_sp,
 							erif_index);
 		}
 
-		/* Write the entry */
+		 
 		err = mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(rigr2),
 				      rigr2_pl);
 		if (err)
-			/* No need of a rollback here because this
-			 * hardware entry should not be pointed yet.
-			 */
+			 
 			return err;
 		curr_sublist->synced = true;
 	}
@@ -216,9 +212,7 @@ mlxsw_sp_mr_tcam_afa_block_create(struct mlxsw_sp *mlxsw_sp,
 		break;
 	case MLXSW_SP_MR_ROUTE_ACTION_TRAP_AND_FORWARD:
 	case MLXSW_SP_MR_ROUTE_ACTION_FORWARD:
-		/* If we are about to append a multicast router action, commit
-		 * the erif_list.
-		 */
+		 
 		err = mlxsw_sp_mr_erif_list_commit(mlxsw_sp, erif_list);
 		if (err)
 			goto err;
@@ -290,19 +284,19 @@ mlxsw_sp_mr_tcam_route_create(struct mlxsw_sp *mlxsw_sp, void *priv,
 	route->min_mtu = route_params->value.min_mtu;
 	route->action = route_params->value.route_action;
 
-	/* Create the egress RIFs list */
+	 
 	mlxsw_sp_mr_erif_list_init(&route->erif_list);
 	err = mlxsw_sp_mr_tcam_erif_populate(mlxsw_sp, &route->erif_list,
 					     &route_params->value);
 	if (err)
 		goto err_erif_populate;
 
-	/* Create the flow counter */
+	 
 	err = mlxsw_sp_flow_counter_alloc(mlxsw_sp, &route->counter_index);
 	if (err)
 		goto err_counter_alloc;
 
-	/* Create the flexible action block */
+	 
 	route->afa_block = mlxsw_sp_mr_tcam_afa_block_create(mlxsw_sp,
 							     route->action,
 							     route->irif_index,
@@ -320,7 +314,7 @@ mlxsw_sp_mr_tcam_route_create(struct mlxsw_sp *mlxsw_sp, void *priv,
 		goto err_route_priv_alloc;
 	}
 
-	/* Write the route to the TCAM */
+	 
 	err = ops->route_create(mlxsw_sp, mr_tcam->priv, route->priv,
 				&route->key, route->afa_block,
 				route_params->prio);
@@ -374,7 +368,7 @@ mlxsw_sp_mr_tcam_route_action_update(struct mlxsw_sp *mlxsw_sp,
 	struct mlxsw_afa_block *afa_block;
 	int err;
 
-	/* Create a new flexible action block */
+	 
 	afa_block = mlxsw_sp_mr_tcam_afa_block_create(mlxsw_sp, route_action,
 						      route->irif_index,
 						      route->counter_index,
@@ -383,12 +377,12 @@ mlxsw_sp_mr_tcam_route_action_update(struct mlxsw_sp *mlxsw_sp,
 	if (IS_ERR(afa_block))
 		return PTR_ERR(afa_block);
 
-	/* Update the TCAM route entry */
+	 
 	err = ops->route_update(mlxsw_sp, route->priv, &route->key, afa_block);
 	if (err)
 		goto err;
 
-	/* Delete the old one */
+	 
 	mlxsw_sp_mr_tcam_afa_block_destroy(route->afa_block);
 	route->afa_block = afa_block;
 	route->action = route_action;
@@ -406,7 +400,7 @@ static int mlxsw_sp_mr_tcam_route_min_mtu_update(struct mlxsw_sp *mlxsw_sp,
 	struct mlxsw_afa_block *afa_block;
 	int err;
 
-	/* Create a new flexible action block */
+	 
 	afa_block = mlxsw_sp_mr_tcam_afa_block_create(mlxsw_sp,
 						      route->action,
 						      route->irif_index,
@@ -416,12 +410,12 @@ static int mlxsw_sp_mr_tcam_route_min_mtu_update(struct mlxsw_sp *mlxsw_sp,
 	if (IS_ERR(afa_block))
 		return PTR_ERR(afa_block);
 
-	/* Update the TCAM route entry */
+	 
 	err = ops->route_update(mlxsw_sp, route->priv, &route->key, afa_block);
 	if (err)
 		goto err;
 
-	/* Delete the old one */
+	 
 	mlxsw_sp_mr_tcam_afa_block_destroy(route->afa_block);
 	route->afa_block = afa_block;
 	route->min_mtu = min_mtu;
@@ -453,7 +447,7 @@ static int mlxsw_sp_mr_tcam_route_erif_add(struct mlxsw_sp *mlxsw_sp,
 	if (err)
 		return err;
 
-	/* Commit the action only if the route action is not TRAP */
+	 
 	if (route->action != MLXSW_SP_MR_ROUTE_ACTION_TRAP)
 		return mlxsw_sp_mr_erif_list_commit(mlxsw_sp,
 						    &route->erif_list);
@@ -471,7 +465,7 @@ static int mlxsw_sp_mr_tcam_route_erif_del(struct mlxsw_sp *mlxsw_sp,
 	int err;
 	int i;
 
-	/* Create a copy of the original erif_list without the deleted entry */
+	 
 	mlxsw_sp_mr_erif_list_init(&erif_list);
 	list_for_each_entry(erif_sublist, &route->erif_list.erif_sublists, list) {
 		for (i = 0; i < erif_sublist->num_erifs; i++) {
@@ -486,7 +480,7 @@ static int mlxsw_sp_mr_tcam_route_erif_del(struct mlxsw_sp *mlxsw_sp,
 		}
 	}
 
-	/* Create the flexible action block pointing to the new erif_list */
+	 
 	afa_block = mlxsw_sp_mr_tcam_afa_block_create(mlxsw_sp, route->action,
 						      route->irif_index,
 						      route->counter_index,
@@ -497,7 +491,7 @@ static int mlxsw_sp_mr_tcam_route_erif_del(struct mlxsw_sp *mlxsw_sp,
 		goto err_afa_block_create;
 	}
 
-	/* Update the TCAM route entry */
+	 
 	err = ops->route_update(mlxsw_sp, route->priv, &route->key, afa_block);
 	if (err)
 		goto err_route_write;
@@ -526,13 +520,13 @@ mlxsw_sp_mr_tcam_route_update(struct mlxsw_sp *mlxsw_sp, void *route_priv,
 	struct mlxsw_afa_block *afa_block;
 	int err;
 
-	/* Create a new erif_list */
+	 
 	mlxsw_sp_mr_erif_list_init(&erif_list);
 	err = mlxsw_sp_mr_tcam_erif_populate(mlxsw_sp, &erif_list, route_info);
 	if (err)
 		goto err_erif_populate;
 
-	/* Create the flexible action block pointing to the new erif_list */
+	 
 	afa_block = mlxsw_sp_mr_tcam_afa_block_create(mlxsw_sp,
 						      route_info->route_action,
 						      route_info->irif_index,
@@ -544,7 +538,7 @@ mlxsw_sp_mr_tcam_route_update(struct mlxsw_sp *mlxsw_sp, void *route_priv,
 		goto err_afa_block_create;
 	}
 
-	/* Update the TCAM route entry */
+	 
 	err = ops->route_update(mlxsw_sp, route->priv, &route->key, afa_block);
 	if (err)
 		goto err_route_write;

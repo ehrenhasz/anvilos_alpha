@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-// PCI1xxxx SPI driver
-// Copyright (C) 2022 Microchip Technology Inc.
-// Authors: Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
-//          Kumaravel Thiagarajan <Kumaravel.Thiagarajan@microchip.com>
+
+
+
+
+
 
 
 #include <linux/module.h>
@@ -34,7 +34,7 @@
 
 #define	SPI_MST1_ADDR_BASE		(0x800)
 
-/* x refers to SPI Host Controller HW instance id in the below macros - 0 or 1 */
+ 
 
 #define	SPI_MST_CMD_BUF_OFFSET(x)		(((x) * SPI_MST1_ADDR_BASE) + 0x00)
 #define	SPI_MST_RSP_BUF_OFFSET(x)		(((x) * SPI_MST1_ADDR_BASE) + 0x200)
@@ -112,7 +112,7 @@ static void pci1xxxx_spi_set_cs(struct spi_device *spi, bool enable)
 	struct pci1xxxx_spi *par = p->parent;
 	u32 regval;
 
-	/* Set the DEV_SEL bits of the SPI_MST_CTL_REG */
+	 
 	regval = readl(par->reg_base + SPI_MST_CTL_REG_OFFSET(p->hw_inst));
 	if (!enable) {
 		regval |= SPI_FORCE_CE;
@@ -207,7 +207,7 @@ static int pci1xxxx_spi_transfer_one(struct spi_controller *spi_ctlr,
 			writel(regval, par->reg_base +
 			       SPI_MST_CTL_REG_OFFSET(p->hw_inst));
 
-			/* Wait for DMA_TERM interrupt */
+			 
 			result = wait_for_completion_timeout(&p->spi_xfer_done,
 							     PCI1XXXX_SPI_TIMEOUT);
 			if (!result)
@@ -231,10 +231,10 @@ static irqreturn_t pci1xxxx_spi_isr(int irq, void *dev)
 	irqreturn_t spi_int_fired = IRQ_NONE;
 	u32 regval;
 
-	/* Clear the SPI GO_BIT Interrupt */
+	 
 	regval = readl(p->parent->reg_base + SPI_MST_EVENT_REG_OFFSET(p->hw_inst));
 	if (regval & SPI_INTR) {
-		/* Clear xfer_done */
+		 
 		complete(&p->spi_xfer_done);
 		spi_int_fired = IRQ_HANDLED;
 	}
@@ -306,7 +306,7 @@ static int pci1xxxx_spi_probe(struct pci_dev *pdev, const struct pci_device_id *
 			}
 
 			init_completion(&spi_sub_ptr->spi_xfer_done);
-			/* Initialize Interrupts - SPI_INT */
+			 
 			regval = readl(spi_bus->reg_base +
 				       SPI_MST_EVENT_MASK_REG_OFFSET(spi_sub_ptr->hw_inst));
 			regval &= ~SPI_INTR;
@@ -324,7 +324,7 @@ static int pci1xxxx_spi_probe(struct pci_dev *pdev, const struct pci_device_id *
 				goto error;
 			}
 
-			/* This register is only applicable for 1st instance */
+			 
 			regval = readl(spi_bus->reg_base + SPI_PCI_CTRL_REG_OFFSET(0));
 			if (!only_sec_inst)
 				regval |= (BIT(4));
@@ -338,7 +338,7 @@ static int pci1xxxx_spi_probe(struct pci_dev *pdev, const struct pci_device_id *
 
 		if (iter == 1) {
 			init_completion(&spi_sub_ptr->spi_xfer_done);
-			/* Initialize Interrupts - SPI_INT */
+			 
 			regval = readl(spi_bus->reg_base +
 			       SPI_MST_EVENT_MASK_REG_OFFSET(spi_sub_ptr->hw_inst));
 			regval &= ~SPI_INTR;
@@ -419,7 +419,7 @@ static int pci1xxxx_spi_resume(struct device *dev)
 		writel(regval, spi_ptr->reg_base +
 		       SPI_MST_EVENT_MASK_REG_OFFSET(iter));
 
-		/* Restore config at resume */
+		 
 		store_restore_config(spi_ptr, spi_sub_ptr, iter, 0);
 	}
 
@@ -439,7 +439,7 @@ static int pci1xxxx_spi_suspend(struct device *dev)
 		while (spi_sub_ptr->spi_xfer_in_progress)
 			msleep(20);
 
-		/* Store existing config before suspend */
+		 
 		store_restore_config(spi_ptr, spi_sub_ptr, iter, 1);
 		spi_controller_suspend(spi_sub_ptr->spi_host);
 		writel(reg1, spi_ptr->reg_base +

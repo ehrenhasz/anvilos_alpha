@@ -1,20 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * (C) 2001 Clemson University and The University of Chicago
- *
- * See COPYING in top-level directory.
- */
 
-/*
- *  Linux VFS namei operations.
- */
+ 
+
+ 
 
 #include "protocol.h"
 #include "orangefs-kernel.h"
 
-/*
- * Get a newly allocated inode to go with a negative dentry.
- */
+ 
 static int orangefs_create(struct mnt_idmap *idmap,
 			struct inode *dir,
 			struct dentry *dentry,
@@ -98,10 +90,7 @@ out:
 	return ret;
 }
 
-/*
- * Attempt to resolve an object name (dentry->d_name), parent handle, and
- * fsid into a handle for the object.
- */
+ 
 static struct dentry *orangefs_lookup(struct inode *dir, struct dentry *dentry,
 				   unsigned int flags)
 {
@@ -110,14 +99,7 @@ static struct dentry *orangefs_lookup(struct inode *dir, struct dentry *dentry,
 	struct inode *inode;
 	int ret = -EINVAL;
 
-	/*
-	 * in theory we could skip a lookup here (if the intent is to
-	 * create) in order to avoid a potentially failed lookup, but
-	 * leaving it in can skip a valid lookup and try to create a file
-	 * that already exists (e.g. the vfs already handles checking for
-	 * -EEXIST on O_EXCL opens, which is broken if we skip this lookup
-	 * in the create path)
-	 */
+	 
 	gossip_debug(GOSSIP_NAME_DEBUG, "%s called on %pd\n",
 		     __func__, dentry);
 
@@ -161,7 +143,7 @@ static struct dentry *orangefs_lookup(struct inode *dir, struct dentry *dentry,
 	} else if (ret == -ENOENT) {
 		inode = NULL;
 	} else {
-		/* must be a non-recoverable error */
+		 
 		inode = ERR_PTR(ret);
 	}
 
@@ -169,7 +151,7 @@ static struct dentry *orangefs_lookup(struct inode *dir, struct dentry *dentry,
 	return d_splice_alias(inode, dentry);
 }
 
-/* return 0 on success; non-zero otherwise */
+ 
 static int orangefs_unlink(struct inode *dir, struct dentry *dentry)
 {
 	struct inode *inode = dentry->d_inode;
@@ -275,12 +257,7 @@ static int orangefs_symlink(struct mnt_idmap *idmap,
 		ret = PTR_ERR(inode);
 		goto out;
 	}
-	/*
-	 * This is necessary because orangefs_inode_getattr will not
-	 * re-read symlink size as it is impossible for it to change.
-	 * Invalidating the cache does not help.  orangefs_new_inode
-	 * does not set the correct size (it does not know symname).
-	 */
+	 
 	inode->i_size = strlen(symname);
 
 	gossip_debug(GOSSIP_NAME_DEBUG,
@@ -362,10 +339,7 @@ static int orangefs_mkdir(struct mnt_idmap *idmap, struct inode *dir,
 		     get_khandle_from_ino(inode),
 		     dentry);
 
-	/*
-	 * NOTE: we have no good way to keep nlink consistent for directories
-	 * across clients; keep constant at 1.
-	 */
+	 
 	memset(&iattr, 0, sizeof iattr);
 	iattr.ia_valid |= ATTR_MTIME | ATTR_CTIME;
 	iattr.ia_mtime = iattr.ia_ctime = current_time(dir);
@@ -427,7 +401,7 @@ static int orangefs_rename(struct mnt_idmap *idmap,
 	return ret;
 }
 
-/* ORANGEFS implementation of VFS inode operations for directories */
+ 
 const struct inode_operations orangefs_dir_inode_operations = {
 	.lookup = orangefs_lookup,
 	.get_inode_acl = orangefs_get_acl,

@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+ 
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/rculist.h>
@@ -127,7 +96,7 @@ void rds_ib_add_conn(struct rds_ib_device *rds_ibdev, struct rds_connection *con
 {
 	struct rds_ib_connection *ic = conn->c_transport_data;
 
-	/* conn was previously on the nodev_conns_list */
+	 
 	spin_lock_irq(&ib_nodev_conns_lock);
 	BUG_ON(list_empty(&ib_nodev_conns));
 	BUG_ON(list_empty(&ic->ib_node));
@@ -146,7 +115,7 @@ void rds_ib_remove_conn(struct rds_ib_device *rds_ibdev, struct rds_connection *
 {
 	struct rds_ib_connection *ic = conn->c_transport_data;
 
-	/* place conn on nodev_conns_list */
+	 
 	spin_lock(&ib_nodev_conns_lock);
 
 	spin_lock_irq(&rds_ibdev->spinlock);
@@ -167,7 +136,7 @@ void rds_ib_destroy_nodev_conns(void)
 	struct rds_ib_connection *ic, *_ic;
 	LIST_HEAD(tmp_list);
 
-	/* avoid calling conn_destroy with irqs off */
+	 
 	spin_lock_irq(&ib_nodev_conns_lock);
 	list_splice(&ib_nodev_conns, &tmp_list);
 	spin_unlock_irq(&ib_nodev_conns_lock);
@@ -246,15 +215,14 @@ void __rds_ib_teardown_mr(struct rds_ib_mr *ibmr)
 		ibmr->sg_dma_len = 0;
 	}
 
-	/* Release the s/g list */
+	 
 	if (ibmr->sg_len) {
 		unsigned int i;
 
 		for (i = 0; i < ibmr->sg_len; ++i) {
 			struct page *page = sg_page(&ibmr->sg[i]);
 
-			/* FIXME we need a way to tell a r/w MR
-			 * from a r/o MR */
+			 
 			WARN_ON(!page->mapping && irqs_disabled());
 			set_page_dirty(page);
 			put_page(page);
@@ -289,9 +257,7 @@ static inline unsigned int rds_ib_flush_goal(struct rds_ib_mr_pool *pool, int fr
 	return 0;
 }
 
-/*
- * given an llist of mrs, put them all into the list_head for more processing
- */
+ 
 static unsigned int llist_append_to_list(struct llist_head *llist,
 					 struct list_head *list)
 {
@@ -311,11 +277,7 @@ static unsigned int llist_append_to_list(struct llist_head *llist,
 	return count;
 }
 
-/*
- * this takes a list head of mrs and turns it into linked llist nodes
- * of clusters.  Each cluster has linked llist nodes of
- * MR_CLUSTER_SIZE mrs that are ready for reuse.
- */
+ 
 static void list_to_llist_nodes(struct list_head *list,
 				struct llist_node **nodes_head,
 				struct llist_node **nodes_tail)
@@ -333,12 +295,7 @@ static void list_to_llist_nodes(struct list_head *list,
 	*nodes_tail = cur;
 }
 
-/*
- * Flush our pool of MRs.
- * At a minimum, all currently unused MRs are unmapped.
- * If the number of MRs allocated exceeds the limit, we also try
- * to free as many MRs as needed to get back to this limit.
- */
+ 
 int rds_ib_flush_mr_pool(struct rds_ib_mr_pool *pool,
 			 int free_all, struct rds_ib_mr **ibmr_ret)
 {
@@ -388,9 +345,7 @@ int rds_ib_flush_mr_pool(struct rds_ib_mr_pool *pool,
 		}
 	}
 
-	/* Get the list of all MRs to be dropped. Ordering matters -
-	 * we want to put drop_list ahead of free_list.
-	 */
+	 
 	dirty_to_clean = llist_append_to_list(&pool->drop_list, &unmap_list);
 	dirty_to_clean += llist_append_to_list(&pool->free_list, &unmap_list);
 	if (free_all) {
@@ -416,7 +371,7 @@ int rds_ib_flush_mr_pool(struct rds_ib_mr_pool *pool,
 			*ibmr_ret = llist_entry(clean_nodes, struct rds_ib_mr, llnode);
 			clean_nodes = clean_nodes->next;
 		}
-		/* more than one entry in llist nodes */
+		 
 		if (clean_nodes) {
 			spin_lock_irqsave(&pool->clean_lock, flags);
 			llist_add_batch(clean_nodes, clean_tail,
@@ -460,7 +415,7 @@ struct rds_ib_mr *rds_ib_try_reuse_ibmr(struct rds_ib_mr_pool *pool)
 			break;
 		}
 
-		/* We do have some empty MRs. Flush them out. */
+		 
 		if (pool->pool_type == RDS_IB_MR_8K_POOL)
 			rds_ib_stats_inc(s_ib_rdma_mr_8k_pool_wait);
 		else
@@ -490,22 +445,19 @@ void rds_ib_free_mr(void *trans_private, int invalidate)
 	rdsdebug("RDS/IB: free_mr nents %u\n", ibmr->sg_len);
 
 	if (ibmr->odp) {
-		/* A MR created and marked as use_once. We use delayed work,
-		 * because there is a change that we are in interrupt and can't
-		 * call to ib_dereg_mr() directly.
-		 */
+		 
 		INIT_DELAYED_WORK(&ibmr->work, rds_ib_odp_mr_worker);
 		queue_delayed_work(rds_ib_mr_wq, &ibmr->work, 0);
 		return;
 	}
 
-	/* Return it to the pool's free list */
+	 
 	rds_ib_free_frmr_list(ibmr);
 
 	atomic_add(ibmr->sg_len, &pool->free_pinned);
 	atomic_inc(&pool->dirty_count);
 
-	/* If we've pinned too many pages, request a flush */
+	 
 	if (atomic_read(&pool->free_pinned) >= pool->max_free_pinned ||
 	    atomic_read(&pool->dirty_count) >= pool->max_items / 5)
 		queue_delayed_work(rds_ib_mr_wq, &pool->flush_worker, 10);
@@ -514,9 +466,7 @@ void rds_ib_free_mr(void *trans_private, int invalidate)
 		if (likely(!in_interrupt())) {
 			rds_ib_flush_mr_pool(pool, 0, NULL);
 		} else {
-			/* We get here if the user created a MR marked
-			 * as use_once and invalidate at the same time.
-			 */
+			 
 			queue_delayed_work(rds_ib_mr_wq,
 					   &pool->flush_worker, 10);
 		}
@@ -659,11 +609,11 @@ struct rds_ib_mr_pool *rds_ib_create_mr_pool(struct rds_ib_device *rds_ibdev,
 	INIT_DELAYED_WORK(&pool->flush_worker, rds_ib_mr_pool_flush_worker);
 
 	if (pool_type == RDS_IB_MR_1M_POOL) {
-		/* +1 allows for unaligned MRs */
+		 
 		pool->max_pages = RDS_MR_1M_MSG_SIZE + 1;
 		pool->max_items = rds_ibdev->max_1m_mrs;
 	} else {
-		/* pool_type == RDS_IB_MR_8K_POOL */
+		 
 		pool->max_pages = RDS_MR_8K_MSG_SIZE + 1;
 		pool->max_items = rds_ibdev->max_8k_mrs;
 	}
@@ -682,10 +632,7 @@ int rds_ib_mr_init(void)
 	return 0;
 }
 
-/* By the time this is called all the IB devices should have been torn down and
- * had their pools freed.  As each pool is freed its work struct is waited on,
- * so the pool flushing work queue should be idle by the time we get here.
- */
+ 
 void rds_ib_mr_exit(void)
 {
 	destroy_workqueue(rds_ib_mr_wq);

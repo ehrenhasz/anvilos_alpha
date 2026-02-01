@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2008 Nokia Corporation
- *
- *  Based on lirc_serial.c
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -24,8 +20,8 @@ struct ir_rx51 {
 	struct device	     *dev;
 	wait_queue_head_t     wqueue;
 
-	unsigned int	freq;		/* carrier frequency */
-	unsigned int	duty_cycle;	/* carrier duty cycle */
+	unsigned int	freq;		 
+	unsigned int	duty_cycle;	 
 	int		wbuf[WBUF_LEN];
 	int		wbuf_index;
 	unsigned long	device_is_open;
@@ -63,10 +59,7 @@ static enum hrtimer_restart ir_rx51_timer_cb(struct hrtimer *timer)
 		goto end;
 	}
 
-	/*
-	 * If we happen to hit an odd latency spike, loop through the
-	 * pulses until we catch up.
-	 */
+	 
 	do {
 		u64 ns;
 
@@ -91,7 +84,7 @@ static enum hrtimer_restart ir_rx51_timer_cb(struct hrtimer *timer)
 
 	return HRTIMER_RESTART;
 end:
-	/* Stop TX here */
+	 
 	ir_rx51_off(ir_rx51);
 	ir_rx51->wbuf_index = -1;
 
@@ -110,30 +103,24 @@ static int ir_rx51_tx(struct rc_dev *dev, unsigned int *buffer,
 
 	memcpy(ir_rx51->wbuf, buffer, count * sizeof(unsigned int));
 
-	/* Wait any pending transfers to finish */
+	 
 	wait_event_interruptible(ir_rx51->wqueue, ir_rx51->wbuf_index < 0);
 
 	init_timing_params(ir_rx51);
 	if (count < WBUF_LEN)
-		ir_rx51->wbuf[count] = -1; /* Insert termination mark */
+		ir_rx51->wbuf[count] = -1;  
 
-	/*
-	 * REVISIT: Adjust latency requirements so the device doesn't go in too
-	 * deep sleep states with pm_qos_add_request().
-	 */
+	 
 
 	ir_rx51_on(ir_rx51);
 	ir_rx51->wbuf_index = 1;
 	hrtimer_start(&ir_rx51->timer,
 		      ns_to_ktime(US_TO_NS(ir_rx51->wbuf[0])),
 		      HRTIMER_MODE_REL);
-	/*
-	 * Don't return back to the userspace until the transfer has
-	 * finished
-	 */
+	 
 	wait_event_interruptible(ir_rx51->wqueue, ir_rx51->wbuf_index < 0);
 
-	/* REVISIT: Remove pm_qos constraint, we can sleep again */
+	 
 
 	return count;
 }
@@ -197,14 +184,7 @@ static int ir_rx51_set_tx_carrier(struct rc_dev *dev, u32 carrier)
 
 static int ir_rx51_suspend(struct platform_device *dev, pm_message_t state)
 {
-	/*
-	 * In case the device is still open, do not suspend. Normally
-	 * this should not be a problem as lircd only keeps the device
-	 * open only for short periods of time. We also don't want to
-	 * get involved with race conditions that might happen if we
-	 * were in a middle of a transmit. Thus, we defer any suspend
-	 * actions until transmit has completed.
-	 */
+	 
 	if (test_and_set_bit(1, &ir_rx51.device_is_open))
 		return -EAGAIN;
 
@@ -223,7 +203,7 @@ static int ir_rx51_resume(struct platform_device *dev)
 #define ir_rx51_suspend	NULL
 #define ir_rx51_resume	NULL
 
-#endif /* CONFIG_PM */
+#endif  
 
 static int ir_rx51_probe(struct platform_device *dev)
 {
@@ -234,7 +214,7 @@ static int ir_rx51_probe(struct platform_device *dev)
 	if (IS_ERR(pwm))
 		return dev_err_probe(&dev->dev, PTR_ERR(pwm), "pwm_get failed\n");
 
-	/* Use default, in case userspace does not set the carrier */
+	 
 	ir_rx51.freq = DIV_ROUND_CLOSEST_ULL(pwm_get_period(pwm), NSEC_PER_SEC);
 	pwm_init_state(pwm, &ir_rx51.state);
 	pwm_put(pwm);

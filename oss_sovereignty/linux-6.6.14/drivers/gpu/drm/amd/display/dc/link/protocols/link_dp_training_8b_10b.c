@@ -1,32 +1,6 @@
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
-/* FILE POLICY AND INTENDED USAGE:
- * This file implements dp 8b/10b link training software policies and
- * sequences.
- */
+ 
 #include "link_dp_training_8b_10b.h"
 #include "link_dpcd.h"
 #include "link_dp_phy.h"
@@ -96,18 +70,12 @@ void decide_8b_10b_training_settings(
 {
 	memset(lt_settings, '\0', sizeof(struct link_training_settings));
 
-	/* Initialize link settings */
+	 
 	lt_settings->link_settings.use_link_rate_set = link_setting->use_link_rate_set;
 	lt_settings->link_settings.link_rate_set = link_setting->link_rate_set;
 	lt_settings->link_settings.link_rate = link_setting->link_rate;
 	lt_settings->link_settings.lane_count = link_setting->lane_count;
-	/* TODO hard coded to SS for now
-	 * lt_settings.link_settings.link_spread =
-	 * dal_display_path_is_ss_supported(
-	 * path_mode->display_path) ?
-	 * LINK_SPREAD_05_DOWNSPREAD_30KHZ :
-	 * LINK_SPREAD_DISABLED;
-	 */
+	 
 	lt_settings->link_settings.link_spread = link->dp_ss_off ?
 			LINK_SPREAD_DISABLED : LINK_SPREAD_05_DOWNSPREAD_30KHZ;
 	lt_settings->cr_pattern_time = get_cr_training_aux_rd_interval(link, link_setting);
@@ -175,26 +143,22 @@ enum link_training_result perform_8b_10b_clock_recovery_sequence(
 	if (!link->ctx->dc->work_arounds.lt_early_cr_pattern)
 		dp_set_hw_training_pattern(link, link_res, lt_settings->pattern_for_cr, offset);
 
-	/* najeeb - The synaptics MST hub can put the LT in
-	* infinite loop by switching the VS
-	*/
-	/* between level 0 and level 1 continuously, here
-	* we try for CR lock for LinkTrainingMaxCRRetry count*/
+	 
+	 
 	while ((retries_cr < LINK_TRAINING_MAX_RETRY_COUNT) &&
 		(retry_count < LINK_TRAINING_MAX_CR_RETRY)) {
 
 
-		/* 1. call HWSS to set lane settings*/
+		 
 		dp_set_hw_lane_settings(
 				link,
 				link_res,
 				lt_settings,
 				offset);
 
-		/* 2. update DPCD of the receiver*/
+		 
 		if (!retry_count)
-			/* EPR #361076 - write as a 5-byte burst,
-			 * but only for the 1-st iteration.*/
+			 
 			dpcd_set_lt_pattern_and_lane_settings(
 					link,
 					lt_settings,
@@ -206,16 +170,14 @@ enum link_training_result perform_8b_10b_clock_recovery_sequence(
 					lt_settings,
 					offset);
 
-		/* 3. wait receiver to lock-on*/
+		 
 		wait_time_microsec = lt_settings->cr_pattern_time;
 
 		dp_wait_for_training_aux_rd_interval(
 				link,
 				wait_time_microsec);
 
-		/* 4. Read lane status and requested drive
-		* settings as set by the sink
-		*/
+		 
 		dp_get_lane_status_and_lane_adjust(
 				link,
 				lt_settings,
@@ -224,21 +186,20 @@ enum link_training_result perform_8b_10b_clock_recovery_sequence(
 				dpcd_lane_adjust,
 				offset);
 
-		/* 5. check CR done*/
+		 
 		if (dp_is_cr_done(lane_count, dpcd_lane_status)) {
 			DC_LOG_HW_LINK_TRAINING("%s: Clock recovery OK\n", __func__);
 			return LINK_TRAINING_SUCCESS;
 		}
 
-		/* 6. max VS reached*/
+		 
 		if ((link_dp_get_encoding_format(&lt_settings->link_settings) ==
 				DP_8b_10b_ENCODING) &&
 				dp_is_max_vs_reached(lt_settings))
 			break;
 
-		/* 7. same lane settings*/
-		/* Note: settings are the same for all lanes,
-		 * so comparing first lane is sufficient*/
+		 
+		 
 		if ((link_dp_get_encoding_format(&lt_settings->link_settings) == DP_8b_10b_ENCODING) &&
 				lt_settings->dpcd_lane_settings[0].bits.VOLTAGE_SWING_SET ==
 						dpcd_lane_adjust[0].bits.VOLTAGE_SWING_LANE)
@@ -250,7 +211,7 @@ enum link_training_result perform_8b_10b_clock_recovery_sequence(
 		else
 			retries_cr = 0;
 
-		/* 8. update VS/PE/PC2 in lt_settings*/
+		 
 		dp_decide_lane_settings(lt_settings, dpcd_lane_adjust,
 				lt_settings->hw_lane_settings, lt_settings->dpcd_lane_settings);
 		retry_count++;
@@ -281,7 +242,7 @@ enum link_training_result perform_8b_10b_channel_equalization_sequence(
 	union lane_status dpcd_lane_status[LANE_COUNT_DP_MAX] = {0};
 	union lane_adjust dpcd_lane_adjust[LANE_COUNT_DP_MAX] = {0};
 
-	/* Note: also check that TPS4 is a supported feature*/
+	 
 	tr_pattern = lt_settings->pattern_for_eq;
 
 	if (is_repeater(lt_settings, offset) && link_dp_get_encoding_format(&lt_settings->link_settings) == DP_8b_10b_ENCODING)
@@ -294,11 +255,9 @@ enum link_training_result perform_8b_10b_channel_equalization_sequence(
 
 		dp_set_hw_lane_settings(link, link_res, lt_settings, offset);
 
-		/* 2. update DPCD*/
+		 
 		if (!retries_ch_eq)
-			/* EPR #361076 - write as a 5-byte burst,
-			 * but only for the 1-st iteration
-			 */
+			 
 
 			dpcd_set_lt_pattern_and_lane_settings(
 				link,
@@ -307,7 +266,7 @@ enum link_training_result perform_8b_10b_channel_equalization_sequence(
 		else
 			dpcd_set_lane_settings(link, lt_settings, offset);
 
-		/* 3. wait for receiver to lock-on*/
+		 
 		wait_time_microsec = lt_settings->eq_pattern_time;
 
 		if (is_repeater(lt_settings, offset))
@@ -319,8 +278,7 @@ enum link_training_result perform_8b_10b_channel_equalization_sequence(
 				link,
 				wait_time_microsec);
 
-		/* 4. Read lane status and requested
-		 * drive settings as set by the sink*/
+		 
 
 		dp_get_lane_status_and_lane_adjust(
 			link,
@@ -330,19 +288,19 @@ enum link_training_result perform_8b_10b_channel_equalization_sequence(
 			dpcd_lane_adjust,
 			offset);
 
-		/* 5. check CR done*/
+		 
 		if (!dp_is_cr_done(lane_count, dpcd_lane_status))
 			return dpcd_lane_status[0].bits.CR_DONE_0 ?
 					LINK_TRAINING_EQ_FAIL_CR_PARTIAL :
 					LINK_TRAINING_EQ_FAIL_CR;
 
-		/* 6. check CHEQ done*/
+		 
 		if (dp_is_ch_eq_done(lane_count, dpcd_lane_status) &&
 				dp_is_symbol_locked(lane_count, dpcd_lane_status) &&
 				dp_is_interlane_aligned(dpcd_lane_status_updated))
 			return LINK_TRAINING_SUCCESS;
 
-		/* 7. update VS/PE/PC2 in lt_settings*/
+		 
 		dp_decide_lane_settings(lt_settings, dpcd_lane_adjust,
 				lt_settings->hw_lane_settings, lt_settings->dpcd_lane_settings);
 	}
@@ -365,14 +323,12 @@ enum link_training_result dp_perform_8b_10b_link_training(
 	if (link->ctx->dc->work_arounds.lt_early_cr_pattern)
 		start_clock_recovery_pattern_early(link, link_res, lt_settings, DPRX);
 
-	/* 1. set link rate, lane count and spread. */
+	 
 	dpcd_set_link_settings(link, lt_settings);
 
 	if (lt_settings->lttpr_mode == LTTPR_MODE_NON_TRANSPARENT) {
 
-		/* 2. perform link training (set link training done
-		 *  to false is done as well)
-		 */
+		 
 		repeater_cnt = dp_parse_lttpr_repeater_count(link->dpcd_caps.lttpr_caps.phy_repeater_cnt);
 
 		for (repeater_id = repeater_cnt; (repeater_id > 0 && status == LINK_TRAINING_SUCCESS);

@@ -1,45 +1,9 @@
-/* Reformat numbers like 11505426432 to the more human-readable 11G
-   Copyright (C) 2012-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-#include <float.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <langinfo.h>
-
-#include "mbsalign.h"
-#include "argmatch.h"
-#include "c-ctype.h"
-#include "quote.h"
-#include "system.h"
-#include "xstrtol.h"
-
-#include "set-fields.h"
-
-#if HAVE_FPSETPREC
-# include <ieeefp.h>
-#endif
-
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "numfmt"
 
 #define AUTHORS proper_name ("Assaf Gordon")
 
-/* Exit code when some numbers fail to convert.  */
+ 
 enum { EXIT_CONVERSION_WARNINGS = 2 };
 
 enum
@@ -62,11 +26,11 @@ enum
 
 enum scale_type
 {
-  scale_none,                   /* the default: no scaling.  */
-  scale_auto,                   /* --from only.  */
+  scale_none,                    
+  scale_auto,                    
   scale_SI,
   scale_IEC,
-  scale_IEC_I                   /* 'i' suffix is required.  */
+  scale_IEC_I                    
 };
 
 static char const *const scale_from_args[] =
@@ -151,17 +115,13 @@ static struct option const longopts[] =
   {nullptr, 0, nullptr, 0}
 };
 
-/* If delimiter has this value, blanks separate fields.  */
+ 
 enum { DELIMITER_DEFAULT = CHAR_MAX + 1 };
 
-/* Maximum number of digits we can safely handle
-   without precision loss, if scaling is 'none'.  */
+ 
 enum { MAX_UNSCALED_DIGITS = LDBL_DIG };
 
-/* Maximum number of digits we can work with.
-   This is equivalent to 999Q.
-   NOTE: 'long double' can handle more than that, but there's
-         no official suffix assigned beyond Quetta (1000^10).  */
+ 
 enum { MAX_ACCEPTABLE_DIGITS = 33 };
 
 static enum scale_type scale_from = scale_none;
@@ -181,32 +141,31 @@ static char const *format_str = nullptr;
 static char *format_str_prefix = nullptr;
 static char *format_str_suffix = nullptr;
 
-/* By default, any conversion error will terminate the program.  */
+ 
 static int conv_exit_code = EXIT_CONVERSION_WARNINGS;
 
 
-/* auto-pad each line based on skipped whitespace.  */
+ 
 static int auto_padding = 0;
 static mbs_align_t padding_alignment = MBS_ALIGN_RIGHT;
 
-/* field delimiter */
+ 
 static int delimiter = DELIMITER_DEFAULT;
 
-/* line delimiter.  */
+ 
 static unsigned char line_delim = '\n';
 
-/* if non-zero, the first 'header' lines from STDIN are skipped.  */
+ 
 static uintmax_t header = 0;
 
-/* Debug for users: print warnings to STDERR about possible
-   error (similar to sort's debug).  */
+ 
 static bool debug;
 
-/* will be set according to the current locale.  */
+ 
 static char const *decimal_point;
 static int decimal_point_length;
 
-/* debugging for developers.  Enables devmsg().  */
+ 
 static bool dev_debug = false;
 
 
@@ -241,37 +200,37 @@ suffix_power (const char suf)
 {
   switch (suf)
     {
-    case 'K':                  /* kilo or kibi.  */
+    case 'K':                   
       return 1;
 
-    case 'M':                  /* mega or mebi.  */
+    case 'M':                   
       return 2;
 
-    case 'G':                  /* giga or gibi.  */
+    case 'G':                   
       return 3;
 
-    case 'T':                  /* tera or tebi.  */
+    case 'T':                   
       return 4;
 
-    case 'P':                  /* peta or pebi.  */
+    case 'P':                   
       return 5;
 
-    case 'E':                  /* exa or exbi.  */
+    case 'E':                   
       return 6;
 
-    case 'Z':                  /* zetta or 2**70.  */
+    case 'Z':                   
       return 7;
 
-    case 'Y':                  /* yotta or 2**80.  */
+    case 'Y':                   
       return 8;
 
-    case 'R':                  /* ronna or 2**90.  */
+    case 'R':                   
       return 9;
 
-    case 'Q':                  /* quetta or 2**100.  */
+    case 'Q':                   
       return 10;
 
-    default:                   /* should never happen. assert?  */
+    default:                    
       return 0;
     }
 }
@@ -319,35 +278,30 @@ suffix_power_char (int power)
     }
 }
 
-/* Similar to 'powl(3)' but without requiring 'libm'.  */
+ 
 static long double
 powerld (long double base, int x)
 {
   long double result = base;
   if (x == 0)
-    return 1;                   /* note for test coverage: this is never
-                                   reached, as 'powerld' won't be called if
-                                   there's no suffix, hence, no "power".  */
+    return 1;                    
 
-  /* TODO: check for overflow, inf?  */
+   
   while (--x)
     result *= base;
   return result;
 }
 
-/* Similar to 'fabs(3)' but without requiring 'libm'.  */
+ 
 static inline long double
 absld (long double val)
 {
   return val < 0 ? -val : val;
 }
 
-/* Scale down 'val', returns 'updated val' and 'x', such that
-     val*base^X = original val
-     Similar to "frexpl(3)" but without requiring 'libm',
-     allowing only integer scale, limited functionality and error checking.  */
+ 
 static long double
-expld (long double val, int base, int /*output */ *x)
+expld (long double val, int base, int   *x)
 {
   int power = 0;
 
@@ -364,8 +318,7 @@ expld (long double val, int base, int /*output */ *x)
   return val;
 }
 
-/* EXTREMELY limited 'ceil' - without 'libm'.
-   Assumes values that fit in intmax_t.  */
+ 
 static inline intmax_t
 simple_round_ceiling (long double val)
 {
@@ -375,32 +328,28 @@ simple_round_ceiling (long double val)
   return intval;
 }
 
-/* EXTREMELY limited 'floor' - without 'libm'.
-   Assumes values that fit in intmax_t.  */
+ 
 static inline intmax_t
 simple_round_floor (long double val)
 {
   return -simple_round_ceiling (-val);
 }
 
-/* EXTREMELY limited 'round away from zero'.
-   Assumes values that fit in intmax_t.  */
+ 
 static inline intmax_t
 simple_round_from_zero (long double val)
 {
   return val < 0 ? simple_round_floor (val) : simple_round_ceiling (val);
 }
 
-/* EXTREMELY limited 'round away to zero'.
-   Assumes values that fit in intmax_t.  */
+ 
 static inline intmax_t
 simple_round_to_zero (long double val)
 {
   return val;
 }
 
-/* EXTREMELY limited 'round' - without 'libm'.
-   Assumes values that fit in intmax_t.  */
+ 
 static inline intmax_t
 simple_round_nearest (long double val)
 {
@@ -438,7 +387,7 @@ simple_round (long double val, enum round_type t)
       break;
 
     default:
-      /* to silence the compiler - this should never happen.  */
+       
       return 0;
     }
 
@@ -452,28 +401,13 @@ enum simple_strtod_error
   SSE_OVERFLOW,
   SSE_INVALID_NUMBER,
 
-  /* the following are returned by 'simple_strtod_human'.  */
+   
   SSE_VALID_BUT_FORBIDDEN_SUFFIX,
   SSE_INVALID_SUFFIX,
   SSE_MISSING_I_SUFFIX
 };
 
-/* Read an *integer* INPUT_STR,
-   but return the integer value in a 'long double' VALUE
-   hence, no UINTMAX_MAX limitation.
-   NEGATIVE is updated, and is stored separately from the VALUE
-   so that signbit() isn't required to determine the sign of -0..
-   ENDPTR is required (unlike strtod) and is used to store a pointer
-   to the character after the last character used in the conversion.
-
-   Note locale'd grouping is not supported,
-   nor is skipping of white-space supported.
-
-   Returns:
-      SSE_OK - valid number.
-      SSE_OK_PRECISION_LOSS - if more than 18 digits were used.
-      SSE_OVERFLOW          - if more than 33 digits (999Q) were used.
-      SSE_INVALID_NUMBER    - if no digits were found.  */
+ 
 static enum simple_strtod_error
 simple_strtod_int (char const *input_str,
                    char **endptr, long double *value, bool *negative)
@@ -525,20 +459,7 @@ simple_strtod_int (char const *input_str,
   return e;
 }
 
-/* Read a floating-point INPUT_STR represented as "NNNN[.NNNNN]",
-   and return the value in a 'long double' VALUE.
-   ENDPTR is required (unlike strtod) and is used to store a pointer
-   to the character after the last character used in the conversion.
-   PRECISION is optional and used to indicate fractions are present.
-
-   Note locale'd grouping is not supported,
-   nor is skipping of white-space supported.
-
-   Returns:
-      SSE_OK - valid number.
-      SSE_OK_PRECISION_LOSS - if more than 18 digits were used.
-      SSE_OVERFLOW          - if more than 33 digits (999Q) were used.
-      SSE_INVALID_NUMBER    - if no digits were found.  */
+ 
 static enum simple_strtod_error
 simple_strtod_float (char const *input_str,
                      char **endptr,
@@ -551,12 +472,12 @@ simple_strtod_float (char const *input_str,
   if (precision)
     *precision = 0;
 
-  /* TODO: accept locale'd grouped values for the integral part.  */
+   
   e = simple_strtod_int (input_str, endptr, value, &negative);
   if (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
     return e;
 
-  /* optional decimal point + fraction.  */
+   
   if (STREQ_LEN (*endptr, decimal_point, decimal_point_length))
     {
       char *ptr2;
@@ -569,17 +490,16 @@ simple_strtod_float (char const *input_str,
       if (e2 != SSE_OK && e2 != SSE_OK_PRECISION_LOSS)
         return e2;
       if (e2 == SSE_OK_PRECISION_LOSS)
-        e = e2;                       /* propagate warning.  */
+        e = e2;                        
       if (neg_frac)
         return SSE_INVALID_NUMBER;
 
-      /* number of digits in the fractions.  */
+       
       size_t exponent = ptr2 - *endptr;
 
       val_frac = ((long double) val_frac) / powerld (10, exponent);
 
-      /* TODO: detect loss of precision (only really 18 digits
-         of precision across all digits (before and after '.')).  */
+       
       if (value)
         {
           if (negative)
@@ -596,32 +516,14 @@ simple_strtod_float (char const *input_str,
   return e;
 }
 
-/* Read a 'human' INPUT_STR represented as "NNNN[.NNNNN] + suffix",
-   and return the value in a 'long double' VALUE,
-   with the precision of the input returned in PRECISION.
-   ENDPTR is required (unlike strtod) and is used to store a pointer
-   to the character after the last character used in the conversion.
-   ALLOWED_SCALING determines the scaling supported.
-
-   TODO:
-     support locale'd grouping
-     accept scientific and hex floats (probably use strtold directly)
-
-   Returns:
-      SSE_OK - valid number.
-      SSE_OK_PRECISION_LOSS - if more than LDBL_DIG digits were used.
-      SSE_OVERFLOW          - if more than 33 digits (999Q) were used.
-      SSE_INVALID_NUMBER    - if no digits were found.
-      SSE_VALID_BUT_FORBIDDEN_SUFFIX
-      SSE_INVALID_SUFFIX
-      SSE_MISSING_I_SUFFIX  */
+ 
 static enum simple_strtod_error
 simple_strtod_human (char const *input_str,
                      char **endptr, long double *value, size_t *precision,
                      enum scale_type allowed_scaling)
 {
   int power = 0;
-  /* 'scale_auto' is checked below.  */
+   
   int scale_base = default_scale_base (allowed_scaling);
 
   devmsg ("simple_strtod_human:\n  input string: %s\n"
@@ -641,9 +543,9 @@ simple_strtod_human (char const *input_str,
 
   if (**endptr != '\0')
     {
-      /* process suffix.  */
+       
 
-      /* Skip any blanks between the number and suffix.  */
+       
       while (isblank (to_uchar (**endptr)))
         (*endptr)++;
 
@@ -654,19 +556,18 @@ simple_strtod_human (char const *input_str,
         return SSE_VALID_BUT_FORBIDDEN_SUFFIX;
 
       power = suffix_power (**endptr);
-      (*endptr)++;                     /* skip first suffix character.  */
+      (*endptr)++;                      
 
       if (allowed_scaling == scale_auto && **endptr == 'i')
         {
-          /* auto-scaling enabled, and the first suffix character
-              is followed by an 'i' (e.g. Ki, Mi, Gi).  */
+           
           scale_base = 1024;
-          (*endptr)++;              /* skip second  ('i') suffix character.  */
+          (*endptr)++;               
           devmsg ("  Auto-scaling, found 'i', switching to base %d\n",
                   scale_base);
         }
 
-      *precision = 0;  /* Reset, to select precision based on scale.  */
+      *precision = 0;   
     }
 
   if (allowed_scaling == scale_IEC_I)
@@ -681,7 +582,7 @@ simple_strtod_human (char const *input_str,
 
   devmsg ("  suffix power=%d^%d = %Lf\n", scale_base, power, multiplier);
 
-  /* TODO: detect loss of precision and overflows.  */
+   
   (*value) = (*value) * multiplier;
 
   devmsg ("  returning value: %Lf (%LG)\n", *value, *value);
@@ -699,7 +600,7 @@ simple_strtod_fatal (enum simple_strtod_error err, char const *input_str)
     {
     case SSE_OK_PRECISION_LOSS:
     case SSE_OK:
-      /* should never happen - this function isn't called when OK.  */
+       
       unreachable ();
 
     case SSE_OVERFLOW:
@@ -728,7 +629,7 @@ simple_strtod_fatal (enum simple_strtod_error err, char const *input_str)
     error (conv_exit_code, 0, gettext (msgid), quote (input_str));
 }
 
-/* Convert VAL to a human format string in BUF.  */
+ 
 static void
 double_to_human (long double val, int precision,
                  char *buf, size_t buf_size,
@@ -738,7 +639,7 @@ double_to_human (long double val, int precision,
   char fmt[64];
   static_assert ((INT_BUFSIZE_BOUND (zero_padding_width)
                   + INT_BUFSIZE_BOUND (precision)
-                  + 10 /* for %.Lf  etc.  */)
+                  + 10  )
                  < sizeof fmt);
 
   char *pfmt = fmt;
@@ -771,22 +672,21 @@ double_to_human (long double val, int precision,
       return;
     }
 
-  /* Scaling requested by user. */
+   
   double scale_base = default_scale_base (scale);
 
-  /* Normalize val to scale. */
+   
   int power = 0;
   val = expld (val, scale_base, &power);
   devmsg ("  scaled value to %Lf * %0.f ^ %d\n", val, scale_base, power);
 
-  /* Perform rounding. */
+   
   int power_adjust = 0;
   if (user_precision != -1)
     power_adjust = MIN (power * 3, user_precision);
   else if (absld (val) < 10)
     {
-      /* for values less than 10, we allow one decimal-point digit,
-         so adjust before rounding. */
+       
       power_adjust = 1;
     }
 
@@ -794,19 +694,16 @@ double_to_human (long double val, int precision,
   val = simple_round (val, round);
   val /= powerld (10, power_adjust);
 
-  /* two special cases after rounding:
-     1. a "999.99" can turn into 1000 - so scale down
-     2. a "9.99" can turn into 10 - so don't display decimal-point.  */
+   
   if (absld (val) >= scale_base)
     {
       val /= scale_base;
       power++;
     }
 
-  /* should "7.0" be printed as "7" ?
-     if removing the ".0" is preferred, enable the fourth condition.  */
+   
   int show_decimal_point = (val != 0) && (absld (val) < 10) && (power > 0);
-  /* && (absld (val) > simple_round_floor (val))) */
+   
 
   devmsg ("  after rounding, value=%Lf * %0.f ^ %d\n", val, scale_base, power);
 
@@ -814,7 +711,7 @@ double_to_human (long double val, int precision,
 
   int prec = user_precision == -1 ? show_decimal_point : user_precision;
 
-  /* buf_size - 1 used here to ensure place for possible scale_IEC_I suffix.  */
+   
   num_size = snprintf (buf, buf_size - 1, fmt, prec, val,
                        suffix_power_char (power));
   if (num_size < 0 || num_size >= (int) buf_size - 1)
@@ -829,10 +726,7 @@ double_to_human (long double val, int precision,
   return;
 }
 
-/* Convert a string of decimal digits, N_STRING, with an optional suffix
-   to an integral value.  Suffixes are handled as with --from=auto.
-   Upon successful conversion, return that value.
-   If it cannot be converted, give a diagnostic and exit.  */
+ 
 static uintmax_t
 unit_to_umax (char const *n_string)
 {
@@ -844,7 +738,7 @@ unit_to_umax (char const *n_string)
   uintmax_t n;
   char const *suffixes = valid_suffixes;
 
-  /* Adjust suffixes so K=1000, Ki=1024, KiB=invalid.  */
+   
   if (n_len && ! c_isdigit (n_string[n_len - 1]))
     {
       t_string = xmalloc (n_len + 2);
@@ -1177,7 +1071,7 @@ parse_format_string (char const *fmt)
    If there are any trailing characters after the number
    (besides a valid suffix) - exits with an error.  */
 static enum simple_strtod_error
-parse_human_number (char const *str, long double /*output */ *value,
+parse_human_number (char const *str, long double   *value,
                     size_t *precision)
 {
   char *ptr = nullptr;
@@ -1201,17 +1095,16 @@ parse_human_number (char const *str, long double /*output */ *value,
 }
 
 
-/* Print the given VAL, using the requested representation.
-   The number is printed to STDOUT, with padding and alignment.  */
+ 
 static int
 prepare_padded_number (const long double val, size_t precision)
 {
-  /* Generate Output. */
+   
   char buf[128];
 
   size_t precision_used = user_precision == -1 ? precision : user_precision;
 
-  /* Can't reliably print too-large values without auto-scaling. */
+   
   int x;
   expld (val, 10, &x);
 
@@ -1277,8 +1170,7 @@ print_padded_number (void)
     fputs (format_str_suffix, stdout);
 }
 
-/* Converts the TEXT number string to the requested representation,
-   and handles automatic suffix addition.  */
+ 
 static int
 process_suffixed_number (char *text, long double *result,
                          size_t *precision, long int field)
@@ -1289,7 +1181,7 @@ process_suffixed_number (char *text, long double *result,
 
       if (STREQ (suffix, possible_suffix))
         {
-          /* trim suffix, ONLY if it's at the end of the text.  */
+           
           *possible_suffix = '\0';
           devmsg ("trimming suffix %s\n", quote (suffix));
         }
@@ -1297,12 +1189,12 @@ process_suffixed_number (char *text, long double *result,
         devmsg ("no valid suffix found\n");
     }
 
-  /* Skip white space - always.  */
+   
   char *p = text;
   while (*p && isblank (to_uchar (*p)))
     ++p;
 
-  /* setup auto-padding.  */
+   
   if (auto_padding)
     {
       if (text < p || field > 1)
@@ -1331,8 +1223,7 @@ process_suffixed_number (char *text, long double *result,
   return (e == SSE_OK || e == SSE_OK_PRECISION_LOSS);
 }
 
-/* Return a pointer to the beginning of the next field in line.
-   The line pointer is moved to the end of the next field. */
+ 
 static char*
 next_field (char **line)
 {
@@ -1346,11 +1237,11 @@ next_field (char **line)
           while (*field_end && *field_end != delimiter)
             ++field_end;
         }
-      /* else empty field */
+       
     }
   else
     {
-      /* keep any space prefix in the returned field */
+       
       while (*field_end && field_sep (*field_end))
         ++field_end;
 
@@ -1379,8 +1270,7 @@ include_field (uintmax_t field)
   return false;
 }
 
-/* Convert and output the given field. If it is not included in the set
-   of fields to process just output the original */
+ 
 static bool
 process_field (char *text, uintmax_t field)
 {
@@ -1407,8 +1297,7 @@ process_field (char *text, uintmax_t field)
   return valid_number;
 }
 
-/* Convert number in a given line of text.
-   NEWLINE specifies whether to output a '\n' for this "line".  */
+ 
 static int
 process_line (char *line, bool newline)
 {
@@ -1422,7 +1311,7 @@ process_line (char *line, bool newline)
 
     if (*line != '\0')
       {
-        /* nul terminate the current field string and process */
+         
         *line = '\0';
 
         if (! process_field (next, field))
@@ -1434,7 +1323,7 @@ process_line (char *line, bool newline)
       }
     else
       {
-        /* end of the line, process the last field and finish */
+         
         if (! process_field (next, field))
           valid_number = false;
 
@@ -1461,7 +1350,7 @@ main (int argc, char **argv)
   textdomain (PACKAGE);
 
 #if HAVE_FPSETPREC
-  /* Enabled extended precision if needed.  */
+   
   fpsetprec (FP_PE);
 #endif
 
@@ -1517,8 +1406,7 @@ main (int argc, char **argv)
               padding_alignment = MBS_ALIGN_LEFT;
               padding_width = -padding_width;
             }
-          /* TODO: We probably want to apply a specific --padding
-             to --header lines too.  */
+           
           break;
 
         case FIELD_OPTION:
@@ -1528,7 +1416,7 @@ main (int argc, char **argv)
           break;
 
         case 'd':
-          /* Interpret -d '' to mean 'use the NUL byte as the delimiter.'  */
+           
           if (optarg[0] != '\0' && optarg[1] != '\0')
             error (EXIT_FAILURE, 0,
                    _("the delimiter must be a single character"));
@@ -1589,7 +1477,7 @@ main (int argc, char **argv)
   if (debug && ! locale_ok)
     error (0, 0, _("failed to set locale"));
 
-  /* Warn about no-op.  */
+   
   if (debug && scale_from == scale_none && scale_to == scale_none
       && !grouping && (padding_width == 0) && (format_str == nullptr))
     error (0, 0, _("no conversion option specified"));

@@ -1,11 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Atlantic Network Driver
- *
- * Copyright (C) 2014-2019 aQuantia Corporation
- * Copyright (C) 2019-2020 Marvell International Ltd.
- */
+ 
+ 
 
-/* File aq_pci_func.h: Declaration of PCI functions. */
+ 
 
 #ifndef AQ_PCI_FUNC_H
 #define AQ_PCI_FUNC_H
@@ -29,4 +25,4 @@ unsigned int aq_pci_func_get_irq_type(struct aq_nic_s *self);
 int aq_pci_func_register_driver(void);
 void aq_pci_func_unregister_driver(void);
 
-#endif /* AQ_PCI_FUNC_H */
+#endif  

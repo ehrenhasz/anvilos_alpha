@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Crypto acceleration support for Rockchip RK3288
- *
- * Copyright (c) 2015, Fuzhou Rockchip Electronics Co., Ltd
- *
- * Author: Zain Wang <zain.wang@rock-chips.com>
- *
- * Some ideas are from marvell-cesa.c and s5p-sss.c driver.
- */
+
+ 
 
 #include "rk3288_crypto.h"
 #include <crypto/engine.h>
@@ -110,10 +102,7 @@ static void rk_crypto_disable_clk(struct rk_crypto_info *dev)
 	clk_bulk_disable_unprepare(dev->num_clks, dev->clks);
 }
 
-/*
- * Power management strategy: The device is suspended until a request
- * is handled. For avoiding suspend/resume yoyo, the autosuspend is set to 2s.
- */
+ 
 static int rk_crypto_pm_suspend(struct device *dev)
 {
 	struct rk_crypto_info *rkdev = dev_get_drvdata(dev);
@@ -238,7 +227,7 @@ static void register_debugfs(struct rk_crypto_info *crypto_info)
 	struct dentry *dbgfs_dir __maybe_unused;
 	struct dentry *dbgfs_stats __maybe_unused;
 
-	/* Ignore error of debugfs */
+	 
 	dbgfs_dir = debugfs_create_dir("rk3288_crypto", NULL);
 	dbgfs_stats = debugfs_create_file("stats", 0444, dbgfs_dir, &rocklist,
 					  &rk_crypto_debugfs_fops);

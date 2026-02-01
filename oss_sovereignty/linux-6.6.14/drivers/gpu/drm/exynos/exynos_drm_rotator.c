@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Samsung Electronics Co.Ltd
- * Authors:
- *	YoungJun Cho <yj44.cho@samsung.com>
- *	Eunchul Kim <chulspro.kim@samsung.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -24,11 +19,7 @@
 #include "exynos_drm_ipp.h"
 #include "regs-rotator.h"
 
-/*
- * Rotator supports image crop/rotator and input/output DMA operations.
- * input DMA reads image data from the memory.
- * output DMA writes image data to memory.
- */
+ 
 
 #define ROTATOR_AUTOSUSPEND_DELAY	2000
 
@@ -45,14 +36,7 @@ struct rot_variant {
 	unsigned int	num_formats;
 };
 
-/*
- * A structure of rotator context.
- * @ippdrv: prepare initialization using ippdrv.
- * @regs: memory mapped io registers.
- * @clock: rotator gate clock.
- * @limit_tbl: limitation of rotator.
- * @irq: irq number.
- */
+ 
 struct rot_context {
 	struct exynos_drm_ipp ipp;
 	struct drm_device *drm_dev;
@@ -95,10 +79,10 @@ static irqreturn_t rotator_irq_handler(int irq, void *arg)
 	enum rot_irq_status irq_status;
 	u32 val;
 
-	/* Get execution result */
+	 
 	irq_status = rotator_reg_get_irq_status(rot);
 
-	/* clear status */
+	 
 	val = rot_read(ROT_STATUS);
 	val |= ROT_STATUS_IRQ_PENDING((u32)irq_status);
 	rot_write(val, ROT_STATUS);
@@ -140,19 +124,19 @@ static void rotator_src_set_buf(struct rot_context *rot,
 {
 	u32 val;
 
-	/* Set buffer size configuration */
+	 
 	val = ROT_SET_BUF_SIZE_H(buf->buf.height) |
 	      ROT_SET_BUF_SIZE_W(buf->buf.pitch[0] / buf->format->cpp[0]);
 	rot_write(val, ROT_SRC_BUF_SIZE);
 
-	/* Set crop image position configuration */
+	 
 	val = ROT_CROP_POS_Y(buf->rect.y) | ROT_CROP_POS_X(buf->rect.x);
 	rot_write(val, ROT_SRC_CROP_POS);
 	val = ROT_SRC_CROP_SIZE_H(buf->rect.h) |
 	      ROT_SRC_CROP_SIZE_W(buf->rect.w);
 	rot_write(val, ROT_SRC_CROP_SIZE);
 
-	/* Set buffer DMA address */
+	 
 	rot_write(buf->dma_addr[0], ROT_SRC_BUF_ADDR(0));
 	rot_write(buf->dma_addr[1], ROT_SRC_BUF_ADDR(1));
 }
@@ -162,7 +146,7 @@ static void rotator_dst_set_transf(struct rot_context *rot,
 {
 	u32 val;
 
-	/* Set transform configuration */
+	 
 	val = rot_read(ROT_CONTROL);
 	val &= ~ROT_CONTROL_FLIP_MASK;
 
@@ -188,16 +172,16 @@ static void rotator_dst_set_buf(struct rot_context *rot,
 {
 	u32 val;
 
-	/* Set buffer size configuration */
+	 
 	val = ROT_SET_BUF_SIZE_H(buf->buf.height) |
 	      ROT_SET_BUF_SIZE_W(buf->buf.pitch[0] / buf->format->cpp[0]);
 	rot_write(val, ROT_DST_BUF_SIZE);
 
-	/* Set crop image position configuration */
+	 
 	val = ROT_CROP_POS_Y(buf->rect.y) | ROT_CROP_POS_X(buf->rect.x);
 	rot_write(val, ROT_DST_CROP_POS);
 
-	/* Set buffer DMA address */
+	 
 	rot_write(buf->dma_addr[0], ROT_DST_BUF_ADDR(0));
 	rot_write(buf->dma_addr[1], ROT_DST_BUF_ADDR(1));
 }
@@ -206,7 +190,7 @@ static void rotator_start(struct rot_context *rot)
 {
 	u32 val;
 
-	/* Set interrupt enable */
+	 
 	rotator_reg_set_irq(rot, true);
 
 	val = rot_read(ROT_CONTROL);

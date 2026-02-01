@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Microchip Image Sensor Controller (ISC) Scaler entity support
- *
- * Copyright (C) 2022 Microchip Technology, Inc.
- *
- * Author: Eugen Hristev <eugen.hristev@microchip.com>
- *
- */
+
+ 
 
 #include <media/media-device.h>
 #include <media/media-entity.h>
@@ -54,13 +47,13 @@ static int isc_scaler_set_fmt(struct v4l2_subdev *sd,
 	struct isc_format *fmt;
 	unsigned int i;
 
-	/* Source format is fixed, we cannot change it */
+	 
 	if (req_fmt->pad == ISC_SCALER_PAD_SOURCE) {
 		req_fmt->format = isc->scaler_format[ISC_SCALER_PAD_SOURCE];
 		return 0;
 	}
 
-	/* There is no limit on the frame size on the sink pad */
+	 
 	v4l_bound_align_image(&req_fmt->format.width, 16, UINT_MAX, 0,
 			      &req_fmt->format.height, 16, UINT_MAX, 0, 0);
 
@@ -77,7 +70,7 @@ static int isc_scaler_set_fmt(struct v4l2_subdev *sd,
 		v4l2_try_fmt = v4l2_subdev_get_try_format(sd, sd_state,
 							  req_fmt->pad);
 		*v4l2_try_fmt = req_fmt->format;
-		/* Trying on the sink pad makes the source pad change too */
+		 
 		v4l2_try_fmt = v4l2_subdev_get_try_format(sd, sd_state,
 							  ISC_SCALER_PAD_SOURCE);
 		*v4l2_try_fmt = req_fmt->format;
@@ -86,13 +79,13 @@ static int isc_scaler_set_fmt(struct v4l2_subdev *sd,
 				      16, isc->max_width, 0,
 				      &v4l2_try_fmt->height,
 				      16, isc->max_height, 0, 0);
-		/* if we are just trying, we are done */
+		 
 		return 0;
 	}
 
 	isc->scaler_format[ISC_SCALER_PAD_SINK] = req_fmt->format;
 
-	/* The source pad is the same as the sink, but we have to crop it */
+	 
 	isc->scaler_format[ISC_SCALER_PAD_SOURCE] =
 		isc->scaler_format[ISC_SCALER_PAD_SINK];
 	v4l_bound_align_image
@@ -110,11 +103,7 @@ static int isc_scaler_enum_mbus_code(struct v4l2_subdev *sd,
 {
 	struct isc_device *isc = container_of(sd, struct isc_device, scaler_sd);
 
-	/*
-	 * All formats supported by the ISC are supported by the scaler.
-	 * Advertise the formats which the ISC can take as input, as the scaler
-	 * entity cropping is part of the PFE module (parallel front end)
-	 */
+	 
 	if (code->index < isc->formats_list_size) {
 		code->code = isc->formats_list[code->index].mbus_code;
 		return 0;

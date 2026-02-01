@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file is based on code from OCTEON SDK by Cavium Networks.
- *
- * Copyright (c) 2003-2007 Cavium Networks
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/ethtool.h>
@@ -45,14 +41,7 @@ const struct ethtool_ops cvm_oct_ethtool_ops = {
 	.set_link_ksettings = phy_ethtool_set_link_ksettings,
 };
 
-/**
- * cvm_oct_ioctl - IOCTL support for PHY control
- * @dev:    Device to change
- * @rq:     the request
- * @cmd:    the command
- *
- * Returns Zero on success
- */
+ 
 int cvm_oct_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 {
 	if (!netif_running(dev))
@@ -89,9 +78,7 @@ void cvm_oct_adjust_link(struct net_device *dev)
 	link_info.s.speed	= dev->phydev->speed;
 	priv->link_info		= link_info.u64;
 
-	/*
-	 * The polling task need to know about link status changes.
-	 */
+	 
 	if (priv->poll)
 		priv->poll(dev);
 
@@ -129,13 +116,7 @@ int cvm_oct_common_stop(struct net_device *dev)
 	return 0;
 }
 
-/**
- * cvm_oct_phy_setup_device - setup the PHY
- *
- * @dev:    Device to setup
- *
- * Returns Zero on success, negative on failure
- */
+ 
 int cvm_oct_phy_setup_device(struct net_device *dev)
 {
 	struct octeon_ethernet *priv = netdev_priv(dev);
@@ -163,9 +144,7 @@ int cvm_oct_phy_setup_device(struct net_device *dev)
 
 	return 0;
 no_phy:
-	/* If there is no phy, assume a direct MAC connection and that
-	 * the link is up.
-	 */
+	 
 	netif_carrier_on(dev);
 	return 0;
 }

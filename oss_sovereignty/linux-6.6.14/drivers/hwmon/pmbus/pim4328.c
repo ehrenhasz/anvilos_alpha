@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hardware monitoring driver for PIM4006, PIM4328 and PIM4820
- *
- * Copyright (c) 2021 Flextronics International Sweden AB
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -23,19 +19,19 @@ struct pim4328_data {
 
 #define to_pim4328_data(x)  container_of(x, struct pim4328_data, info)
 
-/* PIM4006 and PIM4328 */
+ 
 #define PIM4328_MFR_READ_VINA		0xd3
 #define PIM4328_MFR_READ_VINB		0xd4
 
-/* PIM4006 */
+ 
 #define PIM4328_MFR_READ_IINA		0xd6
 #define PIM4328_MFR_READ_IINB		0xd7
 #define PIM4328_MFR_FET_CHECKSTATUS	0xd9
 
-/* PIM4328 */
+ 
 #define PIM4328_MFR_STATUS_BITS		0xd5
 
-/* PIM4820 */
+ 
 #define PIM4328_MFR_READ_STATUS		0xd0
 
 static const struct i2c_device_id pim4328_id[] = {
@@ -99,27 +95,27 @@ static int pim4328_read_byte_data(struct i2c_client *client, int page, int reg)
 						      PIM4328_MFR_FET_CHECKSTATUS);
 			if (status < 0)
 				return status;
-			if (status & 0x0630) /* Input UV */
+			if (status & 0x0630)  
 				ret |= PB_STATUS_VIN_UV;
 		} else if (data->id == pim4328) {
 			status = pmbus_read_byte_data(client, page,
 						      PIM4328_MFR_STATUS_BITS);
 			if (status < 0)
 				return status;
-			if (status & 0x04) /* Input UV */
+			if (status & 0x04)  
 				ret |= PB_STATUS_VIN_UV;
-			if (status & 0x40) /* Output UV */
+			if (status & 0x40)  
 				ret |= PB_STATUS_NONE_ABOVE;
 		} else if (data->id == pim4820) {
 			status = pmbus_read_byte_data(client, page,
 						      PIM4328_MFR_READ_STATUS);
 			if (status < 0)
 				return status;
-			if (status & 0x05) /* Input OV or OC */
+			if (status & 0x05)  
 				ret |= PB_STATUS_NONE_ABOVE;
-			if (status & 0x1a) /* Input UV */
+			if (status & 0x1a)  
 				ret |= PB_STATUS_VIN_UV;
-			if (status & 0x40) /* OT */
+			if (status & 0x40)  
 				ret |= PB_STATUS_TEMPERATURE;
 		}
 		break;

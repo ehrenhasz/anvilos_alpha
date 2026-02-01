@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2020 Mellanox Technologies. All rights reserved.
- */
+
+ 
 
 #include <rdma/ib_verbs.h>
 #include <rdma/ib_cache.h>

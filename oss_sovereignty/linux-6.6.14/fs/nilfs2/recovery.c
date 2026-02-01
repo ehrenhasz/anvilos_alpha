@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * NILFS recovery logic
- *
- * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
- *
- * Written by Ryusuke Konishi.
- */
+
+ 
 
 #include <linux/buffer_head.h>
 #include <linux/blkdev.h>
@@ -18,9 +12,7 @@
 #include "page.h"
 #include "segbuf.h"
 
-/*
- * Segment check result
- */
+ 
 enum {
 	NILFS_SEG_VALID,
 	NILFS_SEG_NO_SUPER_ROOT,
@@ -32,15 +24,12 @@ enum {
 	NILFS_SEG_FAIL_CONSISTENCY,
 };
 
-/* work structure for recovery */
+ 
 struct nilfs_recovery_block {
-	ino_t ino;		/*
-				 * Inode number of the file that this block
-				 * belongs to
-				 */
-	sector_t blocknr;	/* block number */
-	__u64 vblocknr;		/* virtual block number */
-	unsigned long blkoff;	/* File offset of the data block (per block) */
+	ino_t ino;		 
+	sector_t blocknr;	 
+	__u64 vblocknr;		 
+	unsigned long blkoff;	 
 	struct list_head list;
 };
 
@@ -79,16 +68,7 @@ static int nilfs_warn_segment_error(struct super_block *sb, int err)
 	return -EINVAL;
 }
 
-/**
- * nilfs_compute_checksum - compute checksum of blocks continuously
- * @nilfs: nilfs object
- * @bhs: buffer head of start block
- * @sum: place to store result
- * @offset: offset bytes in the first block
- * @check_bytes: number of bytes to be checked
- * @start: DBN of start block
- * @nblock: number of blocks to be checked
- */
+ 
 static int nilfs_compute_checksum(struct the_nilfs *nilfs,
 				  struct buffer_head *bhs, u32 *sum,
 				  unsigned long offset, u64 check_bytes,
@@ -120,13 +100,7 @@ static int nilfs_compute_checksum(struct the_nilfs *nilfs,
 	return 0;
 }
 
-/**
- * nilfs_read_super_root_block - read super root block
- * @nilfs: nilfs object
- * @sr_block: disk block number of the super root block
- * @pbh: address of a buffer_head pointer to return super root buffer
- * @check: CRC check flag
- */
+ 
 int nilfs_read_super_root_block(struct the_nilfs *nilfs, sector_t sr_block,
 				struct buffer_head **pbh, int check)
 {
@@ -171,12 +145,7 @@ int nilfs_read_super_root_block(struct the_nilfs *nilfs, sector_t sr_block,
 	return nilfs_warn_segment_error(nilfs->ns_sb, ret);
 }
 
-/**
- * nilfs_read_log_header - read summary header of the specified log
- * @nilfs: nilfs object
- * @start_blocknr: start block number of the log
- * @sum: pointer to return segment summary structure
- */
+ 
 static struct buffer_head *
 nilfs_read_log_header(struct the_nilfs *nilfs, sector_t start_blocknr,
 		      struct nilfs_segment_summary **sum)
@@ -189,13 +158,7 @@ nilfs_read_log_header(struct the_nilfs *nilfs, sector_t start_blocknr,
 	return bh_sum;
 }
 
-/**
- * nilfs_validate_log - verify consistency of log
- * @nilfs: nilfs object
- * @seg_seq: sequence number of segment
- * @bh_sum: buffer head of summary block
- * @sum: segment summary struct
- */
+ 
 static int nilfs_validate_log(struct the_nilfs *nilfs, u64 seg_seq,
 			      struct buffer_head *bh_sum,
 			      struct nilfs_segment_summary *sum)
@@ -215,7 +178,7 @@ static int nilfs_validate_log(struct the_nilfs *nilfs, u64 seg_seq,
 	nblock = le32_to_cpu(sum->ss_nblocks);
 	ret = NILFS_SEG_FAIL_CONSISTENCY;
 	if (unlikely(nblock == 0 || nblock > nilfs->ns_blocks_per_segment))
-		/* This limits the number of blocks read in the CRC check */
+		 
 		goto out;
 
 	ret = NILFS_SEG_FAIL_IO;
@@ -232,13 +195,7 @@ out:
 	return ret;
 }
 
-/**
- * nilfs_read_summary_info - read an item on summary blocks of a log
- * @nilfs: nilfs object
- * @pbh: the current buffer head on summary blocks [in, out]
- * @offset: the current byte offset on summary blocks [in, out]
- * @bytes: byte size of the item to be read
- */
+ 
 static void *nilfs_read_summary_info(struct the_nilfs *nilfs,
 				     struct buffer_head **pbh,
 				     unsigned int *offset, unsigned int bytes)
@@ -261,14 +218,7 @@ static void *nilfs_read_summary_info(struct the_nilfs *nilfs,
 	return ptr;
 }
 
-/**
- * nilfs_skip_summary_info - skip items on summary blocks of a log
- * @nilfs: nilfs object
- * @pbh: the current buffer head on summary blocks [in, out]
- * @offset: the current byte offset on summary blocks [in, out]
- * @bytes: byte size of the item to be skipped
- * @count: number of items to be skipped
- */
+ 
 static void nilfs_skip_summary_info(struct the_nilfs *nilfs,
 				    struct buffer_head **pbh,
 				    unsigned int *offset, unsigned int bytes,
@@ -294,13 +244,7 @@ static void nilfs_skip_summary_info(struct the_nilfs *nilfs,
 	}
 }
 
-/**
- * nilfs_scan_dsync_log - get block information of a log written for data sync
- * @nilfs: nilfs object
- * @start_blocknr: start block number of the log
- * @sum: log summary information
- * @head: list head to add nilfs_recovery_block struct
- */
+ 
 static int nilfs_scan_dsync_log(struct the_nilfs *nilfs, sector_t start_blocknr,
 				struct nilfs_segment_summary *sum,
 				struct list_head *head)
@@ -355,12 +299,12 @@ static int nilfs_scan_dsync_log(struct the_nilfs *nilfs, sector_t start_blocknr,
 			rb->blocknr = blocknr++;
 			rb->vblocknr = le64_to_cpu(binfo->bi_vblocknr);
 			rb->blkoff = le64_to_cpu(binfo->bi_blkoff);
-			/* INIT_LIST_HEAD(&rb->list); */
+			 
 			list_add_tail(&rb->list, head);
 		}
 		if (--nfinfo == 0)
 			break;
-		blocknr += nnodeblk; /* always 0 for data sync logs */
+		blocknr += nnodeblk;  
 		nilfs_skip_summary_info(nilfs, &bh, &offset, sizeof(__le64),
 					nnodeblk);
 		if (unlikely(!bh))
@@ -368,7 +312,7 @@ static int nilfs_scan_dsync_log(struct the_nilfs *nilfs, sector_t start_blocknr,
 	}
 	err = 0;
  out:
-	brelse(bh);   /* brelse(NULL) is just ignored */
+	brelse(bh);    
 	return err;
 }
 
@@ -428,10 +372,7 @@ static int nilfs_prepare_segment_for_recovery(struct the_nilfs *nilfs,
 	segnum[2] = ri->ri_segnum;
 	segnum[3] = ri->ri_nextnum;
 
-	/*
-	 * Releasing the next segment of the latest super root.
-	 * The next segment is invalidated by this recovery.
-	 */
+	 
 	err = nilfs_sufile_free(sufile, segnum[1]);
 	if (unlikely(err))
 		goto failed;
@@ -442,10 +383,7 @@ static int nilfs_prepare_segment_for_recovery(struct the_nilfs *nilfs,
 			goto failed;
 	}
 
-	/*
-	 * Collecting segments written after the latest super root.
-	 * These are marked dirty to avoid being reallocated in the next write.
-	 */
+	 
 	list_for_each_entry_safe(ent, n, head, list) {
 		if (ent->segnum != segnum[0]) {
 			err = nilfs_sufile_scrap(sufile, ent->segnum);
@@ -456,7 +394,7 @@ static int nilfs_prepare_segment_for_recovery(struct the_nilfs *nilfs,
 		kfree(ent);
 	}
 
-	/* Allocate new segments for recovery */
+	 
 	err = nilfs_sufile_alloc(sufile, &segnum[0]);
 	if (unlikely(err))
 		goto failed;
@@ -466,7 +404,7 @@ static int nilfs_prepare_segment_for_recovery(struct the_nilfs *nilfs,
 	nilfs->ns_nextnum = nilfs->ns_segnum = segnum[0];
 
  failed:
-	/* No need to recover sufile because it will be destroyed on error */
+	 
 	return err;
 }
 
@@ -550,20 +488,14 @@ static int nilfs_recover_dsync_blocks(struct the_nilfs *nilfs,
 		if (!err2)
 			err2 = err;
  next:
-		iput(inode); /* iput(NULL) is just ignored */
+		iput(inode);  
 		list_del_init(&rb->list);
 		kfree(rb);
 	}
 	return err2;
 }
 
-/**
- * nilfs_do_roll_forward - salvage logical segments newer than the latest
- * checkpoint
- * @nilfs: nilfs object
- * @sb: super block instance
- * @ri: pointer to a nilfs_recovery_info
- */
+ 
 static int nilfs_do_roll_forward(struct the_nilfs *nilfs,
 				 struct super_block *sb,
 				 struct nilfs_root *root,
@@ -572,17 +504,17 @@ static int nilfs_do_roll_forward(struct the_nilfs *nilfs,
 	struct buffer_head *bh_sum = NULL;
 	struct nilfs_segment_summary *sum = NULL;
 	sector_t pseg_start;
-	sector_t seg_start, seg_end;  /* Starting/ending DBN of full segment */
+	sector_t seg_start, seg_end;   
 	unsigned long nsalvaged_blocks = 0;
 	unsigned int flags;
 	u64 seg_seq;
 	__u64 segnum, nextnum = 0;
 	int empty_seg = 0;
 	int err = 0, ret;
-	LIST_HEAD(dsync_blocks);  /* list of data blocks to be recovered */
+	LIST_HEAD(dsync_blocks);   
 	enum {
 		RF_INIT_ST,
-		RF_DSYNC_ST,   /* scanning data-sync segments */
+		RF_DSYNC_ST,    
 	};
 	int state = RF_INIT_ST;
 
@@ -612,7 +544,7 @@ static int nilfs_do_roll_forward(struct the_nilfs *nilfs,
 		if (flags & NILFS_SS_SR)
 			goto confused;
 
-		/* Found a valid partial segment; do recovery actions */
+		 
 		nextnum = nilfs_get_segnum_of_block(nilfs,
 						    le64_to_cpu(sum->ss_next));
 		empty_seg = 0;
@@ -643,7 +575,7 @@ static int nilfs_do_roll_forward(struct the_nilfs *nilfs,
 					goto failed;
 				state = RF_INIT_ST;
 			}
-			break; /* Fall through to try_next_pseg */
+			break;  
 		}
 
  try_next_pseg:
@@ -659,7 +591,7 @@ static int nilfs_do_roll_forward(struct the_nilfs *nilfs,
 			break;
 
  feed_segment:
-		/* Looking to the next full segment */
+		 
 		if (empty_seg++)
 			break;
 		seg_seq++;
@@ -707,25 +639,7 @@ static void nilfs_finish_roll_forward(struct the_nilfs *nilfs,
 	brelse(bh);
 }
 
-/**
- * nilfs_salvage_orphan_logs - salvage logs written after the latest checkpoint
- * @nilfs: nilfs object
- * @sb: super block instance
- * @ri: pointer to a nilfs_recovery_info struct to store search results.
- *
- * Return Value: On success, 0 is returned.  On error, one of the following
- * negative error code is returned.
- *
- * %-EINVAL - Inconsistent filesystem state.
- *
- * %-EIO - I/O error
- *
- * %-ENOSPC - No space left on device (only in a panic state).
- *
- * %-ERESTARTSYS - Interrupted.
- *
- * %-ENOMEM - Insufficient memory available.
- */
+ 
 int nilfs_salvage_orphan_logs(struct the_nilfs *nilfs,
 			      struct super_block *sb,
 			      struct nilfs_recovery_info *ri)
@@ -776,31 +690,14 @@ int nilfs_salvage_orphan_logs(struct the_nilfs *nilfs,
 	return err;
 }
 
-/**
- * nilfs_search_super_root - search the latest valid super root
- * @nilfs: the_nilfs
- * @ri: pointer to a nilfs_recovery_info struct to store search results.
- *
- * nilfs_search_super_root() looks for the latest super-root from a partial
- * segment pointed by the superblock.  It sets up struct the_nilfs through
- * this search. It fills nilfs_recovery_info (ri) required for recovery.
- *
- * Return Value: On success, 0 is returned.  On error, one of the following
- * negative error code is returned.
- *
- * %-EINVAL - No valid segment found
- *
- * %-EIO - I/O error
- *
- * %-ENOMEM - Insufficient memory available.
- */
+ 
 int nilfs_search_super_root(struct the_nilfs *nilfs,
 			    struct nilfs_recovery_info *ri)
 {
 	struct buffer_head *bh_sum = NULL;
 	struct nilfs_segment_summary *sum = NULL;
 	sector_t pseg_start, pseg_end, sr_pseg_start = 0;
-	sector_t seg_start, seg_end; /* range of full segment (block number) */
+	sector_t seg_start, seg_end;  
 	sector_t b, end;
 	unsigned long nblocks;
 	unsigned int flags;
@@ -816,10 +713,10 @@ int nilfs_search_super_root(struct the_nilfs *nilfs,
 	cno = nilfs->ns_last_cno;
 	segnum = nilfs_get_segnum_of_block(nilfs, pseg_start);
 
-	/* Calculate range of segment */
+	 
 	nilfs_get_segment_range(nilfs, segnum, &seg_start, &seg_end);
 
-	/* Read ahead segment */
+	 
 	b = seg_start;
 	while (b <= seg_end)
 		__breadahead(nilfs->ns_bdev, b++, nilfs->ns_blocksize);
@@ -845,7 +742,7 @@ int nilfs_search_super_root(struct the_nilfs *nilfs,
 			goto strayed;
 		}
 
-		/* A valid partial segment */
+		 
 		ri->ri_pseg_start = pseg_start;
 		ri->ri_seq = seg_seq;
 		ri->ri_segnum = segnum;
@@ -856,11 +753,7 @@ int nilfs_search_super_root(struct the_nilfs *nilfs,
 
 		flags = le16_to_cpu(sum->ss_flags);
 		if (!(flags & NILFS_SS_SR) && !scan_newer) {
-			/*
-			 * This will never happen because a superblock
-			 * (last_segment) always points to a pseg with
-			 * a super root.
-			 */
+			 
 			ret = NILFS_SEG_FAIL_CONSISTENCY;
 			goto failed;
 		}
@@ -881,7 +774,7 @@ int nilfs_search_super_root(struct the_nilfs *nilfs,
 			goto try_next_pseg;
 		}
 
-		/* A valid super root was found. */
+		 
 		ri->ri_cno = cno++;
 		ri->ri_super_root = pseg_end;
 		ri->ri_lsegs_start = ri->ri_lsegs_end = 0;
@@ -891,7 +784,7 @@ int nilfs_search_super_root(struct the_nilfs *nilfs,
 		nilfs->ns_pseg_offset = pseg_start + nblocks - seg_start;
 		nilfs->ns_seg_seq = seg_seq;
 		nilfs->ns_segnum = segnum;
-		nilfs->ns_cno = cno;  /* nilfs->ns_cno = ri->ri_cno + 1 */
+		nilfs->ns_cno = cno;   
 		nilfs->ns_ctime = le64_to_cpu(sum->ss_create);
 		nilfs->ns_nextnum = nextnum;
 
@@ -904,25 +797,22 @@ int nilfs_search_super_root(struct the_nilfs *nilfs,
 		}
 
  try_next_pseg:
-		/* Standing on a course, or met an inconsistent state */
+		 
 		pseg_start += nblocks;
 		if (pseg_start < seg_end)
 			continue;
 		goto feed_segment;
 
  strayed:
-		/* Off the trail */
+		 
 		if (!scan_newer)
-			/*
-			 * This can happen if a checkpoint was written without
-			 * barriers, or as a result of an I/O failure.
-			 */
+			 
 			goto failed;
 
  feed_segment:
-		/* Looking to the next full segment */
+		 
 		if (empty_seg++)
-			goto super_root_found; /* found a valid super root */
+			goto super_root_found;  
 
 		ret = nilfs_segment_list_add(&segments, segnum);
 		if (unlikely(ret))
@@ -935,7 +825,7 @@ int nilfs_search_super_root(struct the_nilfs *nilfs,
 	}
 
  super_root_found:
-	/* Updating pointers relating to the latest checkpoint */
+	 
 	brelse(bh_sum);
 	list_splice_tail(&segments, &ri->ri_used_segments);
 	nilfs->ns_last_pseg = sr_pseg_start;

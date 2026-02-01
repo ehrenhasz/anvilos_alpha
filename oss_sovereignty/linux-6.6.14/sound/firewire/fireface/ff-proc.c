@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ff-proc.c - a part of driver for RME Fireface series
- *
- * Copyright (c) 2015-2017 Takashi Sakamoto
- */
+
+ 
 
 #include "./ff.h"
 
@@ -48,10 +44,7 @@ void snd_ff_proc_init(struct snd_ff *ff)
 {
 	struct snd_info_entry *root;
 
-	/*
-	 * All nodes are automatically removed at snd_card_disconnect(),
-	 * by following to link list.
-	 */
+	 
 	root = snd_info_create_card_entry(ff->card, "firewire",
 					  ff->card->proc_root);
 	if (root == NULL)

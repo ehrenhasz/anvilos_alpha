@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <vmlinux.h>
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_endian.h>
@@ -142,10 +142,10 @@ nf_ct_test(struct nf_conn *(*lookup_fn)(void *, struct bpf_sock_tuple *, u32,
 	else
 		test_eafnosupport = opts_def.error;
 
-	bpf_tuple.ipv4.saddr = bpf_get_prandom_u32(); /* src IP */
-	bpf_tuple.ipv4.daddr = bpf_get_prandom_u32(); /* dst IP */
-	bpf_tuple.ipv4.sport = bpf_get_prandom_u32(); /* src port */
-	bpf_tuple.ipv4.dport = bpf_get_prandom_u32(); /* dst port */
+	bpf_tuple.ipv4.saddr = bpf_get_prandom_u32();  
+	bpf_tuple.ipv4.daddr = bpf_get_prandom_u32();  
+	bpf_tuple.ipv4.sport = bpf_get_prandom_u32();  
+	bpf_tuple.ipv4.dport = bpf_get_prandom_u32();  
 
 	ct = alloc_fn(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def,
 		      sizeof(opts_def));
@@ -159,10 +159,10 @@ nf_ct_test(struct nf_conn *(*lookup_fn)(void *, struct bpf_sock_tuple *, u32,
 		bpf_ct_set_timeout(ct, 10000);
 		ct->mark = 77;
 
-		/* snat */
+		 
 		saddr.ip = bpf_get_prandom_u32();
 		bpf_ct_set_nat_info(ct, &saddr, sport, NF_NAT_MANIP_SRC___local);
-		/* dnat */
+		 
 		daddr.ip = bpf_get_prandom_u32();
 		bpf_ct_set_nat_info(ct, &daddr, dport, NF_NAT_MANIP_DST___local);
 
@@ -175,7 +175,7 @@ nf_ct_test(struct nf_conn *(*lookup_fn)(void *, struct bpf_sock_tuple *, u32,
 			if (ct_lk) {
 				struct nf_conntrack_tuple *tuple;
 
-				/* check snat and dnat addresses */
+				 
 				tuple = &ct_lk->tuplehash[IP_CT_DIR_REPLY].tuple;
 				if (tuple->dst.u3.ip == saddr.ip &&
 				    tuple->dst.u.all == bpf_htons(sport))
@@ -184,7 +184,7 @@ nf_ct_test(struct nf_conn *(*lookup_fn)(void *, struct bpf_sock_tuple *, u32,
 				    tuple->src.u.all == bpf_htons(dport))
 					test_dnat_addr = 0;
 
-				/* update ct entry timeout */
+				 
 				bpf_ct_change_timeout(ct_lk, 10000);
 				test_delta_timeout = ct_lk->timeout - bpf_jiffies64();
 				test_delta_timeout /= CONFIG_HZ;

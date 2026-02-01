@@ -1,34 +1,10 @@
-/*
- * Copyright 2015 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs <bskeggs@redhat.com>
- */
+ 
 #include "bus.h"
 #include "pad.h"
 
 #include <core/option.h>
 
-/*******************************************************************************
- * i2c-algo-bit
- ******************************************************************************/
+ 
 static int
 nvkm_i2c_bus_pre_xfer(struct i2c_adapter *adap)
 {
@@ -71,9 +47,7 @@ nvkm_i2c_bus_getsda(void *data)
 	return bus->func->sense_sda(bus);
 }
 
-/*******************************************************************************
- * !i2c-algo-bit (off-chip i2c bus / hw i2c / internal bit-banging algo)
- ******************************************************************************/
+ 
 static int
 nvkm_i2c_bus_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num)
 {
@@ -101,9 +75,7 @@ nvkm_i2c_bus_algo = {
 	.functionality = nvkm_i2c_bus_func,
 };
 
-/*******************************************************************************
- * nvkm_i2c_bus base
- ******************************************************************************/
+ 
 void
 nvkm_i2c_bus_init(struct nvkm_i2c_bus *bus)
 {

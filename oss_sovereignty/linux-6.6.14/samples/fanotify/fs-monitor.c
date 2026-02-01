@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2021, Collabora Ltd.
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <errno.h>

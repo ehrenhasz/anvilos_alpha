@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2019 Pengutronix, Michael Tretter <kernel@pengutronix.de>
- *
- * Convert NAL units between raw byte sequence payloads (RBSP) and C structs.
- */
+ 
+ 
 
 #ifndef __NAL_H264_H__
 #define __NAL_H264_H__
@@ -14,12 +10,7 @@
 #include <linux/v4l2-controls.h>
 #include <linux/videodev2.h>
 
-/*
- * struct nal_h264_hrd_parameters - HRD parameters
- *
- * C struct representation of the sequence parameter set NAL unit as defined by
- * Rec. ITU-T H.264 (04/2017) E.1.2 HRD parameters syntax.
- */
+ 
 struct nal_h264_hrd_parameters {
 	unsigned int cpb_cnt_minus1;
 	unsigned int bit_rate_scale;
@@ -35,12 +26,7 @@ struct nal_h264_hrd_parameters {
 	unsigned int time_offset_length;
 };
 
-/*
- * struct nal_h264_vui_parameters - VUI parameters
- *
- * C struct representation of the VUI parameters as defined by Rec. ITU-T
- * H.264 (04/2017) E.1.1 VUI parameters syntax.
- */
+ 
 struct nal_h264_vui_parameters {
 	unsigned int aspect_ratio_info_present_flag;
 	struct {
@@ -90,12 +76,7 @@ struct nal_h264_vui_parameters {
 	};
 };
 
-/*
- * struct nal_h264_sps - Sequence parameter set
- *
- * C struct representation of the sequence parameter set NAL unit as defined by
- * Rec. ITU-T H.264 (04/2017) 7.3.2.1.1 Sequence parameter set data syntax.
- */
+ 
 struct nal_h264_sps {
 	unsigned int profile_idc;
 	unsigned int constraint_set0_flag;
@@ -145,12 +126,7 @@ struct nal_h264_sps {
 	struct nal_h264_vui_parameters vui;
 };
 
-/*
- * struct nal_h264_pps - Picture parameter set
- *
- * C struct representation of the picture parameter set NAL unit as defined by
- * Rec. ITU-T H.264 (04/2017) 7.3.2.2 Picture parameter set RBSP syntax.
- */
+ 
 struct nal_h264_pps {
 	unsigned int pic_parameter_set_id;
 	unsigned int seq_parameter_set_id;
@@ -190,15 +166,7 @@ struct nal_h264_pps {
 	};
 };
 
-/**
- * nal_h264_profile() - Get profile_idc for v4l2 h264 profile
- * @profile: the profile as &enum v4l2_mpeg_video_h264_profile
- *
- * Convert the &enum v4l2_mpeg_video_h264_profile to profile_idc as specified
- * in Rec. ITU-T H.264 (04/2017) A.2.
- *
- * Return: the profile_idc for the passed level
- */
+ 
 static inline int nal_h264_profile(enum v4l2_mpeg_video_h264_profile profile)
 {
 	switch (profile) {
@@ -215,15 +183,7 @@ static inline int nal_h264_profile(enum v4l2_mpeg_video_h264_profile profile)
 	}
 }
 
-/**
- * nal_h264_level() - Get level_idc for v4l2 h264 level
- * @level: the level as &enum v4l2_mpeg_video_h264_level
- *
- * Convert the &enum v4l2_mpeg_video_h264_level to level_idc as specified in
- * Rec. ITU-T H.264 (04/2017) A.3.2.
- *
- * Return: the level_idc for the passed level
- */
+ 
 static inline int nal_h264_level(enum v4l2_mpeg_video_h264_level level)
 {
 	switch (level) {
@@ -264,15 +224,7 @@ static inline int nal_h264_level(enum v4l2_mpeg_video_h264_level level)
 	}
 }
 
-/**
- * nal_h264_full_range() - Get video_full_range_flag for v4l2 quantization
- * @quantization: the quantization type as &enum v4l2_quantization
- *
- * Convert the &enum v4l2_quantization to video_full_range_flag as specified in
- * Rec. ITU-T H.264 (04/2017) E.2.1.
- *
- * Return: the video_full_range_flag value for the passed quantization
- */
+ 
 static inline int nal_h264_full_range(enum v4l2_quantization quantization)
 {
 	switch (quantization) {
@@ -287,15 +239,7 @@ static inline int nal_h264_full_range(enum v4l2_quantization quantization)
 	return 0;
 }
 
-/**
- * nal_h264_color_primaries() - Get color_primaries for v4l2 colorspace
- * @colorspace: the color space as &enum v4l2_colorspace
- *
- * Convert the &enum v4l2_colorspace to color_primaries as specified in
- * Rec. ITU-T H.264 (04/2017) E.2.1.
- *
- * Return: the color_primaries value for the passed colorspace
- */
+ 
 static inline int nal_h264_color_primaries(enum v4l2_colorspace colorspace)
 {
 	switch (colorspace) {
@@ -322,16 +266,7 @@ static inline int nal_h264_color_primaries(enum v4l2_colorspace colorspace)
 	}
 }
 
-/**
- * nal_h264_transfer_characteristics() - Get transfer_characteristics for v4l2 xfer_func
- * @colorspace: the color space as &enum v4l2_colorspace
- * @xfer_func: the transfer function as &enum v4l2_xfer_func
- *
- * Convert the &enum v4l2_xfer_func to transfer_characteristics as specified in
- * Rec. ITU-T H.264 (04/2017) E.2.1.
- *
- * Return: the transfer_characteristics value for the passed transfer function
- */
+ 
 static inline int nal_h264_transfer_characteristics(enum v4l2_colorspace colorspace,
 						    enum v4l2_xfer_func xfer_func)
 {
@@ -353,16 +288,7 @@ static inline int nal_h264_transfer_characteristics(enum v4l2_colorspace colorsp
 	}
 }
 
-/**
- * nal_h264_matrix_coeffs() - Get matrix_coefficients for v4l2 v4l2_ycbcr_encoding
- * @colorspace: the color space as &enum v4l2_colorspace
- * @ycbcr_encoding: the ycbcr encoding as &enum v4l2_ycbcr_encoding
- *
- * Convert the &enum v4l2_ycbcr_encoding to matrix_coefficients as specified in
- * Rec. ITU-T H.264 (04/2017) E.2.1.
- *
- * Return: the matrix_coefficients value for the passed encoding
- */
+ 
 static inline int nal_h264_matrix_coeffs(enum v4l2_colorspace colorspace,
 					 enum v4l2_ycbcr_encoding ycbcr_encoding)
 {
@@ -401,4 +327,4 @@ void nal_h264_print_pps(const struct device *dev, struct nal_h264_pps *pps);
 ssize_t nal_h264_write_filler(const struct device *dev, void *dest, size_t n);
 ssize_t nal_h264_read_filler(const struct device *dev, void *src, size_t n);
 
-#endif /* __NAL_H264_H__ */
+#endif  

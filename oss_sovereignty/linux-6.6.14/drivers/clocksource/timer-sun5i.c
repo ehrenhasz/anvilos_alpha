@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Allwinner SoCs hstimer driver.
- *
- * Copyright (C) 2013 Maxime Ripard
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clockchips.h>
@@ -49,12 +43,7 @@ struct sun5i_timer {
 #define clkevt_to_sun5i_timer(x) \
 	container_of(x, struct sun5i_timer, clkevt)
 
-/*
- * When we disable a timer, we need to wait at least for 2 cycles of
- * the timer source clock. We will use for that the clocksource timer
- * that is already setup and runs at the same frequency than the other
- * timers, and we never will be disabled.
- */
+ 
 static void sun5i_clkevt_sync(struct sun5i_timer *ce)
 {
 	u32 old = readl(ce->base + TIMER_CNTVAL_LO_REG(1));
@@ -215,7 +204,7 @@ static int sun5i_setup_clockevent(struct platform_device *pdev,
 	ce->clkevt.irq = irq;
 	ce->clkevt.cpumask = cpu_possible_mask;
 
-	/* Enable timer0 interrupt */
+	 
 	val = readl(base + TIMER_IRQ_EN_REG);
 	writel(val | TIMER_IRQ_EN(0), base + TIMER_IRQ_EN_REG);
 

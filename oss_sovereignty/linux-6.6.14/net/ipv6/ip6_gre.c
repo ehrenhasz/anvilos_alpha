@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	GRE over IPv6 protocol decoder.
- *
- *	Authors: Dmitry Kozlov (xeb@mail.ru)
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -79,23 +75,9 @@ static void ip6gre_tunnel_link(struct ip6gre_net *ign, struct ip6_tnl *t);
 static void ip6gre_tnl_link_config(struct ip6_tnl *t, int set_mtu);
 static void ip6erspan_tnl_link_config(struct ip6_tnl *t, int set_mtu);
 
-/* Tunnel hash table */
+ 
 
-/*
-   4 hash tables:
-
-   3: (remote,local)
-   2: (remote,*)
-   1: (*,local)
-   0: (*,*)
-
-   We require exact key match i.e. if a key is present in packet
-   it will match only tunnel with the same key; if it is not present,
-   it will match only keyless tunnel.
-
-   All keysless packets, if not matched configured keyless tunnels
-   will match fallback tunnel.
- */
+ 
 
 #define HASH_KEY(key) (((__force u32)key^((__force u32)key>>4))&(IP6_GRE_HASH_SIZE - 1))
 static u32 HASH_ADDR(const struct in6_addr *addr)
@@ -110,7 +92,7 @@ static u32 HASH_ADDR(const struct in6_addr *addr)
 #define tunnels_l	tunnels[1]
 #define tunnels_wc	tunnels[0]
 
-/* Given src, dst and key, find appropriate for input tunnel. */
+ 
 
 static struct ip6_tnl *ip6gre_tunnel_lookup(struct net_device *dev,
 		const struct in6_addr *remote, const struct in6_addr *local,
@@ -563,10 +545,7 @@ static int ip6erspan_rcv(struct sk_buff *skb,
 			if (!tun_dst)
 				return PACKET_REJECT;
 
-			/* skb can be uncloned in __iptunnel_pull_header, so
-			 * old pkt_md is no longer valid and we need to reset
-			 * it
-			 */
+			 
 			gh = skb_network_header(skb) +
 			     skb_network_header_len(skb);
 			pkt_md = (struct erspan_metadata *)(gh + gre_hdr_len +
@@ -664,7 +643,7 @@ static int prepare_ip6gre_xmit_ipv6(struct sk_buff *skb,
 	__u16 offset;
 
 	offset = ip6_tnl_parse_tlv_enc_lim(skb, skb_network_header(skb));
-	/* ip6_tnl_parse_tlv_enc_lim() might have reallocated skb->head */
+	 
 	ipv6h = ipv6_hdr(skb);
 
 	if (offset > 0) {
@@ -756,7 +735,7 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
 	else
 		fl6->daddr = tunnel->parms.raddr;
 
-	/* Push GRE header. */
+	 
 	protocol = (dev->type == ARPHRD_ETHER) ? htons(ETH_P_TEB) : proto;
 
 	if (tunnel->parms.collect_md) {
@@ -829,7 +808,7 @@ static inline int ip6gre_xmit_ipv4(struct sk_buff *skb, struct net_device *dev)
 	err = __gre6_xmit(skb, dev, dsfield, &fl6, encap_limit, &mtu,
 			  skb->protocol);
 	if (err != 0) {
-		/* XXX: send ICMP error even if DF is not set. */
+		 
 		if (err == -EMSGSIZE)
 			icmp_ndo_send(skb, ICMP_DEST_UNREACH, ICMP_FRAG_NEEDED,
 				      htonl(mtu));
@@ -982,9 +961,7 @@ static netdev_tx_t ip6erspan_tunnel_xmit(struct sk_buff *skb,
 	t->parms.o_flags &= ~TUNNEL_KEY;
 	IPCB(skb)->flags = 0;
 
-	/* For collect_md mode, derive fl6 from the tunnel key,
-	 * for native mode, call prepare_ip6gre_xmit_{ipv4,ipv6}.
-	 */
+	 
 	if (t->parms.collect_md) {
 		const struct ip_tunnel_key *key;
 		struct erspan_metadata *md;
@@ -1064,17 +1041,17 @@ static netdev_tx_t ip6erspan_tunnel_xmit(struct sk_buff *skb,
 		fl6.daddr = t->parms.raddr;
 	}
 
-	/* Push GRE header. */
+	 
 	gre_build_header(skb, 8, TUNNEL_SEQ, proto, 0, htonl(atomic_fetch_inc(&t->o_seqno)));
 
-	/* TooBig packet may have updated dst->dev's mtu */
+	 
 	if (!t->parms.collect_md && dst && dst_mtu(dst) > dst->dev->mtu)
 		dst->ops->update_pmtu(dst, NULL, skb, dst->dev->mtu, false);
 
 	err = ip6_tnl_xmit(skb, dev, dsfield, &fl6, encap_limit, &mtu,
 			   NEXTHDR_GRE);
 	if (err != 0) {
-		/* XXX: send ICMP error even if DF is not set. */
+		 
 		if (err == -EMSGSIZE) {
 			if (skb->protocol == htons(ETH_P_IP))
 				icmp_ndo_send(skb, ICMP_DEST_UNREACH,
@@ -1106,7 +1083,7 @@ static void ip6gre_tnl_link_config_common(struct ip6_tnl *t)
 		memcpy(dev->broadcast, &p->raddr, sizeof(struct in6_addr));
 	}
 
-	/* Set up flowi template */
+	 
 	fl6->saddr = p->laddr;
 	fl6->daddr = p->raddr;
 	fl6->flowi6_oif = p->link;
@@ -1394,9 +1371,7 @@ static int ip6gre_header(struct sk_buff *skb, struct net_device *dev,
 	p[0] = t->parms.o_flags;
 	p[1] = htons(type);
 
-	/*
-	 *	Set the source hardware address.
-	 */
+	 
 
 	if (saddr)
 		memcpy(&ipv6h->saddr, saddr, sizeof(struct in6_addr));
@@ -1442,7 +1417,7 @@ static void ip6gre_tunnel_setup(struct net_device *dev)
 	dev->flags |= IFF_NOARP;
 	dev->addr_len = sizeof(struct in6_addr);
 	netif_keep_dst(dev);
-	/* This perm addr will be used as interface identifier by IPv6 */
+	 
 	dev->addr_assign_type = NET_ADDR_RANDOM;
 	eth_random_addr(dev->perm_addr);
 }
@@ -1462,9 +1437,7 @@ static void ip6gre_tnl_init_features(struct net_device *dev)
 
 	flags = nt->parms.o_flags;
 
-	/* TCP offload with GRE SEQ is not supported, nor can we support 2
-	 * levels of outer headers requiring an update.
-	 */
+	 
 	if (flags & TUNNEL_SEQ)
 		return;
 	if (flags & TUNNEL_CSUM && nt->encap.type != TUNNEL_ENCAP_NONE)
@@ -1581,9 +1554,7 @@ static void ip6gre_destroy_tunnels(struct net *net, struct list_head *head)
 			t = rtnl_dereference(ign->tunnels[prio][h]);
 
 			while (t) {
-				/* If dev is in the same netns, it has already
-				 * been added to the list by the previous loop.
-				 */
+				 
 				if (!net_eq(dev_net(t->dev), net))
 					unregister_netdevice_queue(t->dev,
 								   head);
@@ -1609,9 +1580,7 @@ static int __net_init ip6gre_init_net(struct net *net)
 	}
 	ign->fb_tunnel_dev = ndev;
 	dev_net_set(ign->fb_tunnel_dev, net);
-	/* FB netdevice is special: we have one, and only one per netns.
-	 * Allowing to move it to another netns is clearly unsafe.
-	 */
+	 
 	ign->fb_tunnel_dev->features |= NETIF_F_NETNS_LOCAL;
 
 
@@ -1708,7 +1677,7 @@ static int ip6erspan_tap_validate(struct nlattr *tb[], struct nlattr *data[],
 	if (ret)
 		return ret;
 
-	/* ERSPAN should only have GRE sequence and key flag */
+	 
 	if (data[IFLA_GRE_OFLAGS])
 		flags |= nla_get_be16(data[IFLA_GRE_OFLAGS]);
 	if (data[IFLA_GRE_IFLAGS])
@@ -1717,9 +1686,7 @@ static int ip6erspan_tap_validate(struct nlattr *tb[], struct nlattr *data[],
 	    flags != (GRE_SEQ | GRE_KEY))
 		return -EINVAL;
 
-	/* ERSPAN Session ID only has 10-bit. Since we reuse
-	 * 32-bit key field as ID, check it's range.
-	 */
+	 
 	if (data[IFLA_GRE_IKEY] &&
 	    (ntohl(nla_get_be32(data[IFLA_GRE_IKEY])) & ~ID_MASK))
 		return -EINVAL;
@@ -2101,41 +2068,41 @@ static void ip6gre_dellink(struct net_device *dev, struct list_head *head)
 static size_t ip6gre_get_size(const struct net_device *dev)
 {
 	return
-		/* IFLA_GRE_LINK */
+		 
 		nla_total_size(4) +
-		/* IFLA_GRE_IFLAGS */
+		 
 		nla_total_size(2) +
-		/* IFLA_GRE_OFLAGS */
+		 
 		nla_total_size(2) +
-		/* IFLA_GRE_IKEY */
+		 
 		nla_total_size(4) +
-		/* IFLA_GRE_OKEY */
+		 
 		nla_total_size(4) +
-		/* IFLA_GRE_LOCAL */
+		 
 		nla_total_size(sizeof(struct in6_addr)) +
-		/* IFLA_GRE_REMOTE */
+		 
 		nla_total_size(sizeof(struct in6_addr)) +
-		/* IFLA_GRE_TTL */
+		 
 		nla_total_size(1) +
-		/* IFLA_GRE_ENCAP_LIMIT */
+		 
 		nla_total_size(1) +
-		/* IFLA_GRE_FLOWINFO */
+		 
 		nla_total_size(4) +
-		/* IFLA_GRE_FLAGS */
+		 
 		nla_total_size(4) +
-		/* IFLA_GRE_ENCAP_TYPE */
+		 
 		nla_total_size(2) +
-		/* IFLA_GRE_ENCAP_FLAGS */
+		 
 		nla_total_size(2) +
-		/* IFLA_GRE_ENCAP_SPORT */
+		 
 		nla_total_size(2) +
-		/* IFLA_GRE_ENCAP_DPORT */
+		 
 		nla_total_size(2) +
-		/* IFLA_GRE_COLLECT_METADATA */
+		 
 		nla_total_size(0) +
-		/* IFLA_GRE_FWMARK */
+		 
 		nla_total_size(4) +
-		/* IFLA_GRE_ERSPAN_INDEX */
+		 
 		nla_total_size(4) +
 		0;
 }
@@ -2347,9 +2314,7 @@ static struct rtnl_link_ops ip6erspan_tap_ops __read_mostly = {
 	.get_link_net	= ip6_tnl_get_link_net,
 };
 
-/*
- *	And now the modules code and kernel interface.
- */
+ 
 
 static int __init ip6gre_init(void)
 {

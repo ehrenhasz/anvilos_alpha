@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2018 Mellanox Technologies. */
+
+ 
 
 #include <net/geneve.h>
 #include "lib/geneve.h"
@@ -31,9 +31,7 @@ static int mlx5e_tc_tun_check_udp_dport_geneve(struct mlx5e_priv *priv,
 
 	flow_rule_match_enc_ports(rule, &enc_ports);
 
-	/* Currently we support only default GENEVE
-	 * port, so udp dst port must match.
-	 */
+	 
 	if (be16_to_cpu(enc_ports.key->dst) != GENEVE_UDP_PORT) {
 		NL_SET_ERR_MSG_MOD(extack,
 				   "Matched UDP dst port is not registered as a GENEVE port");
@@ -68,10 +66,7 @@ static int mlx5e_tc_tun_init_encap_attr_geneve(struct net_device *tunnel_dev,
 {
 	e->tunnel = &geneve_tunnel;
 
-	/* Reformat type for GENEVE encap is similar to VXLAN:
-	 * in both cases the HW adds in the same place a
-	 * defined encapsulation header that the SW provides.
-	 */
+	 
 	e->reformat_type = MLX5_REFORMAT_TYPE_L2_TO_VXLAN;
 	return 0;
 }
@@ -186,7 +181,7 @@ static int mlx5e_tc_tun_parse_geneve_options(struct mlx5e_priv *priv,
 		return -EOPNOTSUPP;
 	}
 
-	/* make sure that we're talking about GENEVE options */
+	 
 
 	if (enc_opts.key->dst_opt_type != TUNNEL_GENEVE_OPT) {
 		NL_SET_ERR_MSG_MOD(extack,
@@ -205,11 +200,7 @@ static int mlx5e_tc_tun_parse_geneve_options(struct mlx5e_priv *priv,
 		return -EOPNOTSUPP;
 	}
 
-	/* max_geneve_tlv_option_data_len comes in multiples of 4 bytes, and it
-	 * doesn't include the TLV option header. 'geneve_opt_len' is a total
-	 * len of all the options, including the headers, also multiples of 4
-	 * bytes. Len that comes from the dissector is in bytes.
-	 */
+	 
 
 	if ((enc_opts.key->len / 4) > ((max_tlv_option_data_len + 1) * max_tlv_options)) {
 		NL_SET_ERR_MSG_MOD(extack,
@@ -223,7 +214,7 @@ static int mlx5e_tc_tun_parse_geneve_options(struct mlx5e_priv *priv,
 	MLX5_SET(fte_match_set_misc, misc_c, geneve_opt_len, enc_opts.mask->len / 4);
 	MLX5_SET(fte_match_set_misc, misc_v, geneve_opt_len, enc_opts.key->len / 4);
 
-	/* we support matching on one option only, so just get it */
+	 
 	option_key = (struct geneve_opt *)&enc_opts.key->data[0];
 	option_mask = (struct geneve_opt *)&enc_opts.mask->data[0];
 
@@ -240,7 +231,7 @@ static int mlx5e_tc_tun_parse_geneve_options(struct mlx5e_priv *priv,
 		return -EOPNOTSUPP;
 	}
 
-	/* data can't be all 0 - fail to offload such rule */
+	 
 	if (!memchr_inv(option_key->opt_data, 0, option_key->length * 4)) {
 		NL_SET_ERR_MSG_MOD(extack,
 				   "Matching on GENEVE options: can't match on 0 data field");
@@ -249,7 +240,7 @@ static int mlx5e_tc_tun_parse_geneve_options(struct mlx5e_priv *priv,
 		return -EOPNOTSUPP;
 	}
 
-	/* add new GENEVE TLV options object */
+	 
 	res = mlx5_geneve_tlv_option_add(priv->mdev->geneve, option_key);
 	if (res) {
 		NL_SET_ERR_MSG_MOD(extack,
@@ -261,11 +252,7 @@ static int mlx5e_tc_tun_parse_geneve_options(struct mlx5e_priv *priv,
 		return res;
 	}
 
-	/* In general, after creating the object, need to query it
-	 * in order to check which option data to set in misc3.
-	 * But we support only geneve_tlv_option_0_data, so no
-	 * point querying at this stage.
-	 */
+	 
 
 	memcpy(&opt_data_key, option_key->opt_data, option_key->length * 4);
 	memcpy(&opt_data_mask, option_mask->opt_data, option_mask->length * 4);
@@ -292,7 +279,7 @@ static int mlx5e_tc_tun_parse_geneve_params(struct mlx5e_priv *priv,
 	void *misc_v = MLX5_ADDR_OF(fte_match_param, spec->match_value,  misc_parameters);
 	struct netlink_ext_ack *extack = f->common.extack;
 
-	/* match on OAM - packets with OAM bit on should NOT be offloaded */
+	 
 
 	if (!MLX5_CAP_ESW_FLOWTABLE_FDB(priv->mdev, ft_field_support.outer_geneve_oam)) {
 		NL_SET_ERR_MSG_MOD(extack, "Matching on GENEVE OAM is not supported");
@@ -302,7 +289,7 @@ static int mlx5e_tc_tun_parse_geneve_params(struct mlx5e_priv *priv,
 	MLX5_SET_TO_ONES(fte_match_set_misc, misc_c, geneve_oam);
 	MLX5_SET(fte_match_set_misc, misc_v, geneve_oam, 0);
 
-	/* Match on GENEVE protocol. We support only Transparent Eth Bridge. */
+	 
 
 	if (MLX5_CAP_ESW_FLOWTABLE_FDB(priv->mdev,
 				       ft_field_support.outer_geneve_protocol_type)) {

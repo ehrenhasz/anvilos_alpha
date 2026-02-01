@@ -1,9 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #include <linux/buffer_head.h>
 #include <linux/fs.h>
 #include <linux/adfs_fs.h>
 
-/* Internal data structures for ADFS */
+ 
 
 #define ADFS_FREE_FRAG		 0
 #define ADFS_BAD_FRAG		 1
@@ -11,7 +11,7 @@
 
 #define ADFS_FILETYPE_NONE	((u16)~0)
 
-/* RISC OS 12-bit filetype is stored in load_address[19:8] */
+ 
 static inline u16 adfs_filetype(u32 loadaddr)
 {
 	return (loadaddr & 0xfff00000) == 0xfff00000 ?
@@ -26,16 +26,14 @@ static inline u16 adfs_filetype(u32 loadaddr)
 #define ADFS_NDA_PUBLIC_READ	(1 << 5)
 #define ADFS_NDA_PUBLIC_WRITE	(1 << 6)
 
-/*
- * adfs file system inode data in memory
- */
+ 
 struct adfs_inode_info {
 	loff_t		mmu_private;
-	__u32		parent_id;	/* parent indirect disc address	*/
-	__u32		indaddr;	/* object indirect disc address	*/
-	__u32		loadaddr;	/* RISC OS load address		*/
-	__u32		execaddr;	/* RISC OS exec address		*/
-	unsigned int	attr;		/* RISC OS permissions		*/
+	__u32		parent_id;	 
+	__u32		indaddr;	 
+	__u32		loadaddr;	 
+	__u32		execaddr;	 
+	unsigned int	attr;		 
 	struct inode vfs_inode;
 };
 
@@ -49,34 +47,30 @@ static inline bool adfs_inode_is_stamped(struct inode *inode)
 	return (ADFS_I(inode)->loadaddr & 0xfff00000) == 0xfff00000;
 }
 
-/*
- * Forward-declare this
- */
+ 
 struct adfs_discmap;
 struct adfs_dir_ops;
 
-/*
- * ADFS file system superblock data in memory
- */
+ 
 struct adfs_sb_info {
 	union { struct {
-		struct adfs_discmap *s_map;	/* bh list containing map */
-		const struct adfs_dir_ops *s_dir; /* directory operations */
+		struct adfs_discmap *s_map;	 
+		const struct adfs_dir_ops *s_dir;  
 		};
-		struct rcu_head rcu;	/* used only at shutdown time	 */
+		struct rcu_head rcu;	 
 	};
-	kuid_t		s_uid;		/* owner uid */
-	kgid_t		s_gid;		/* owner gid */
-	umode_t		s_owner_mask;	/* ADFS owner perm -> unix perm */
-	umode_t		s_other_mask;	/* ADFS other perm -> unix perm	*/
-	int		s_ftsuffix;	/* ,xyz hex filetype suffix option */
+	kuid_t		s_uid;		 
+	kgid_t		s_gid;		 
+	umode_t		s_owner_mask;	 
+	umode_t		s_other_mask;	 
+	int		s_ftsuffix;	 
 
-	__u32		s_ids_per_zone;	/* max. no ids in one zone */
-	__u32		s_idlen;	/* length of ID in map */
-	__u32		s_map_size;	/* sector size of a map	*/
-	signed int	s_map2blk;	/* shift left by this for map->sector*/
-	unsigned int	s_log2sharesize;/* log2 share size */
-	unsigned int	s_namelen;	/* maximum number of characters in name	 */
+	__u32		s_ids_per_zone;	 
+	__u32		s_idlen;	 
+	__u32		s_map_size;	 
+	signed int	s_map2blk;	 
+	unsigned int	s_log2sharesize; 
+	unsigned int	s_namelen;	 
 };
 
 static inline struct adfs_sb_info *ADFS_SB(struct super_block *sb)
@@ -84,9 +78,7 @@ static inline struct adfs_sb_info *ADFS_SB(struct super_block *sb)
 	return sb->s_fs_info;
 }
 
-/*
- * Directory handling
- */
+ 
 struct adfs_dir {
 	struct super_block	*sb;
 
@@ -107,19 +99,17 @@ struct adfs_dir {
 	};
 };
 
-/*
- * This is the overall maximum name length
- */
-#define ADFS_MAX_NAME_LEN	(256 + 4) /* +4 for ,xyz hex filetype suffix */
+ 
+#define ADFS_MAX_NAME_LEN	(256 + 4)  
 struct object_info {
-	__u32		parent_id;		/* parent object id	*/
-	__u32		indaddr;		/* indirect disc addr	*/
-	__u32		loadaddr;		/* load address		*/
-	__u32		execaddr;		/* execution address	*/
-	__u32		size;			/* size			*/
-	__u8		attr;			/* RISC OS attributes	*/
-	unsigned int	name_len;		/* name length		*/
-	char		name[ADFS_MAX_NAME_LEN];/* file name		*/
+	__u32		parent_id;		 
+	__u32		indaddr;		 
+	__u32		loadaddr;		 
+	__u32		execaddr;		 
+	__u32		size;			 
+	__u8		attr;			 
+	unsigned int	name_len;		 
+	char		name[ADFS_MAX_NAME_LEN]; 
 };
 
 struct adfs_dir_ops {
@@ -141,32 +131,30 @@ struct adfs_discmap {
 	unsigned int		dm_endbit;
 };
 
-/* Inode stuff */
+ 
 struct inode *adfs_iget(struct super_block *sb, struct object_info *obj);
 int adfs_write_inode(struct inode *inode, struct writeback_control *wbc);
 int adfs_notify_change(struct mnt_idmap *idmap, struct dentry *dentry,
 		       struct iattr *attr);
 
-/* map.c */
+ 
 int adfs_map_lookup(struct super_block *sb, u32 frag_id, unsigned int offset);
 void adfs_map_statfs(struct super_block *sb, struct kstatfs *buf);
 struct adfs_discmap *adfs_read_map(struct super_block *sb, struct adfs_discrecord *dr);
 void adfs_free_map(struct super_block *sb);
 
-/* Misc */
+ 
 __printf(3, 4)
 void __adfs_error(struct super_block *sb, const char *function,
 		  const char *fmt, ...);
 #define adfs_error(sb, fmt...) __adfs_error(sb, __func__, fmt)
 void adfs_msg(struct super_block *sb, const char *pfx, const char *fmt, ...);
 
-/* super.c */
+ 
 
-/*
- * Inodes and file operations
- */
+ 
 
-/* dir_*.c */
+ 
 extern const struct inode_operations adfs_dir_inode_operations;
 extern const struct file_operations adfs_dir_operations;
 extern const struct dentry_operations adfs_dentry_operations;
@@ -184,7 +172,7 @@ void adfs_object_fixup(struct adfs_dir *dir, struct object_info *obj);
 extern int adfs_dir_update(struct super_block *sb, struct object_info *obj,
 			   int wait);
 
-/* file.c */
+ 
 extern const struct inode_operations adfs_file_inode_operations;
 extern const struct file_operations adfs_file_operations;
 
@@ -197,12 +185,7 @@ static inline __u32 signed_asl(__u32 val, signed int shift)
 	return val;
 }
 
-/*
- * Calculate the address of a block in an object given the block offset
- * and the object identity.
- *
- * The root directory ID should always be looked up in the map [3.4]
- */
+ 
 static inline int __adfs_block_map(struct super_block *sb, u32 indaddr,
 				   unsigned int block)
 {
@@ -216,7 +199,7 @@ static inline int __adfs_block_map(struct super_block *sb, u32 indaddr,
 	return adfs_map_lookup(sb, indaddr >> 8, block);
 }
 
-/* Return the disc record from the map */
+ 
 static inline
 struct adfs_discrecord *adfs_map_discrecord(struct adfs_discmap *dm)
 {

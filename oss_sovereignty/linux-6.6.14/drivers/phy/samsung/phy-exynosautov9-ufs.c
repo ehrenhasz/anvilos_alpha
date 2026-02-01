@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * UFS PHY driver data for Samsung EXYNOSAUTO v9 SoC
- *
- * Copyright (C) 2021 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include "phy-samsung-ufs.h"
 
@@ -15,7 +11,7 @@
 #define PHY_TRSV_REG_CFG_AUTOV9(o, v, d) \
 	PHY_TRSV_REG_CFG_OFFSET(o, v, d, 0x50)
 
-/* Calibration for phy initialization */
+ 
 static const struct samsung_ufs_phy_cfg exynosautov9_pre_init_cfg[] = {
 	PHY_COMN_REG_CFG(0x023, 0x80, PWR_MODE_ANY),
 	PHY_COMN_REG_CFG(0x01d, 0x10, PWR_MODE_ANY),
@@ -38,7 +34,7 @@ static const struct samsung_ufs_phy_cfg exynosautov9_pre_init_cfg[] = {
 	END_UFS_PHY_CFG,
 };
 
-/* Calibration for HS mode series A/B */
+ 
 static const struct samsung_ufs_phy_cfg exynosautov9_pre_pwr_hs_cfg[] = {
 	PHY_TRSV_REG_CFG_AUTOV9(0x032, 0xbc, PWR_MODE_HS_ANY),
 	PHY_TRSV_REG_CFG_AUTOV9(0x03c, 0x7f, PWR_MODE_HS_ANY),

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * GPIO library for the ACCES IDIO-16 family
- * Copyright (C) 2022 William Breathitt Gray
- */
+
+ 
 #include <linux/bits.h>
 #include <linux/device.h>
 #include <linux/err.h>
@@ -42,14 +39,14 @@ static int idio_16_handle_mask_sync(const int index, const unsigned int mask_buf
 	int err;
 	unsigned int val;
 
-	/* exit early if no change since the previous mask */
+	 
 	if (mask_buf == prev_mask)
 		return 0;
 
-	/* remember the current mask for the next mask sync */
+	 
 	data->irq_mask = mask_buf;
 
-	/* if all previously masked, enable interrupts when unmasking */
+	 
 	if (prev_mask == mask_buf_def) {
 		err = regmap_write(data->map, IDIO_16_CLEAR_INTERRUPT, 0x00);
 		if (err)
@@ -57,7 +54,7 @@ static int idio_16_handle_mask_sync(const int index, const unsigned int mask_buf
 		return regmap_read(data->map, IDIO_16_ENABLE_IRQ, &val);
 	}
 
-	/* if all are currently masked, disable interrupts */
+	 
 	if (mask_buf == mask_buf_def)
 		return regmap_write(data->map, IDIO_16_DISABLE_IRQ, 0x00);
 
@@ -70,7 +67,7 @@ static int idio_16_reg_mask_xlate(struct gpio_regmap *const gpio, const unsigned
 {
 	unsigned int stride;
 
-	/* Input lines start at GPIO 16 */
+	 
 	if (offset < 16) {
 		stride = offset / IDIO_16_NGPIO_PER_REG;
 		*reg = IDIO_16_OUT_BASE + stride * IDIO_16_REG_STRIDE;
@@ -91,13 +88,7 @@ static const char *idio_16_names[IDIO_16_NGPIO] = {
 	"IIN8", "IIN9", "IIN10", "IIN11", "IIN12", "IIN13", "IIN14", "IIN15",
 };
 
-/**
- * devm_idio_16_regmap_register - Register an IDIO-16 GPIO device
- * @dev:	device that is registering this IDIO-16 GPIO device
- * @config:	configuration for idio_16_regmap_config
- *
- * Registers an IDIO-16 GPIO device. Returns 0 on success and negative error number on failure.
- */
+ 
 int devm_idio_16_regmap_register(struct device *const dev,
 				 const struct idio_16_regmap_config *const config)
 {
@@ -136,7 +127,7 @@ int devm_idio_16_regmap_register(struct device *const dev,
 	chip->handle_mask_sync = idio_16_handle_mask_sync;
 	chip->irq_drv_data = data;
 
-	/* Disable IRQ to prevent spurious interrupts before we're ready */
+	 
 	err = regmap_write(data->map, IDIO_16_DISABLE_IRQ, 0x00);
 	if (err)
 		return err;
@@ -146,7 +137,7 @@ int devm_idio_16_regmap_register(struct device *const dev,
 		return dev_err_probe(dev, err, "IRQ registration failed\n");
 
 	if (config->filters) {
-		/* Deactivate input filters */
+		 
 		err = regmap_write(data->map, IDIO_16_DEACTIVATE_INPUT_FILTERS, 0x00);
 		if (err)
 			return err;

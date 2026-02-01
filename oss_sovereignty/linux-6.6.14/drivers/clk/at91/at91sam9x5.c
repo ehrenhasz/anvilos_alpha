@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/clk-provider.h>
 #include <linux/mfd/syscon.h>
 #include <linux/slab.h>
@@ -44,10 +44,7 @@ static const struct {
 	unsigned long flags;
 	u8 id;
 } at91sam9x5_systemck[] = {
-	/*
-	 * ddrck feeds DDR controller and is enabled by bootloader thus we need
-	 * to keep it enabled in case there is no Linux consumer for it.
-	 */
+	 
 	{ .n = "ddrck", .p = "masterck_div", .id = 2, .flags = CLK_IS_CRITICAL },
 	{ .n = "smdck", .p = "smdclk",   .id = 4 },
 	{ .n = "uhpck", .p = "usbck",    .id = 6 },
@@ -96,20 +93,20 @@ static const struct pck at91sam9x5_periphck[] = {
 
 static const struct pck at91sam9g15_periphck[] = {
 	{ .n = "lcdc_clk", .id = 25, },
-	{ /* sentinel */}
+	{  }
 };
 
 static const struct pck at91sam9g25_periphck[] = {
 	{ .n = "usart3_clk", .id = 8, },
 	{ .n = "macb0_clk", .id = 24, },
 	{ .n = "isi_clk", .id = 25, },
-	{ /* sentinel */}
+	{  }
 };
 
 static const struct pck at91sam9g35_periphck[] = {
 	{ .n = "macb0_clk", .id = 24, },
 	{ .n = "lcdc_clk", .id = 25, },
-	{ /* sentinel */}
+	{  }
 };
 
 static const struct pck at91sam9x25_periphck[] = {
@@ -118,7 +115,7 @@ static const struct pck at91sam9x25_periphck[] = {
 	{ .n = "macb1_clk", .id = 27, },
 	{ .n = "can0_clk", .id = 29, },
 	{ .n = "can1_clk", .id = 30, },
-	{ /* sentinel */}
+	{  }
 };
 
 static const struct pck at91sam9x35_periphck[] = {
@@ -126,7 +123,7 @@ static const struct pck at91sam9x35_periphck[] = {
 	{ .n = "lcdc_clk", .id = 25, },
 	{ .n = "can0_clk", .id = 29, },
 	{ .n = "can1_clk", .id = 30, },
-	{ /* sentinel */}
+	{  }
 };
 
 static void __init at91sam9x5_pmc_setup(struct device_node *np,

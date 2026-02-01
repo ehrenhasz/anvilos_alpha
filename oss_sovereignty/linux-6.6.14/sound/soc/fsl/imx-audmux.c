@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright 2012 Freescale Semiconductor, Inc.
-// Copyright 2012 Linaro Ltd.
-// Copyright 2009 Pengutronix, Sascha Hauer <s.hauer@pengutronix.de>
-//
-// Initial development of this code was funded by
-// Phytec Messtechnik GmbH, https://www.phytec.de
+
+
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/debugfs.h>
@@ -32,8 +32,7 @@ static u32 reg_max;
 #ifdef CONFIG_DEBUG_FS
 static struct dentry *audmux_debugfs_root;
 
-/* There is an annoying discontinuity in the SSI numbering with regard
- * to the Linux number of the devices */
+ 
 static const char *audmux_port_string(int port)
 {
 	switch (port) {
@@ -169,7 +168,7 @@ static enum imx_audmux_type {
 static const struct of_device_id imx_audmux_dt_ids[] = {
 	{ .compatible = "fsl,imx21-audmux", .data = (void *)IMX21_AUDMUX, },
 	{ .compatible = "fsl,imx31-audmux", .data = (void *)IMX31_AUDMUX, },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx_audmux_dt_ids);
 
@@ -349,7 +348,7 @@ static int imx_audmux_resume(struct device *dev)
 
 	return 0;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct dev_pm_ops imx_audmux_pm = {
 	SET_SYSTEM_SLEEP_PM_OPS(imx_audmux_suspend, imx_audmux_resume)

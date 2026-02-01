@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * RTL8XXXU mac80211 USB driver - 8723a specific subdriver
- *
- * Copyright (c) 2014 - 2017 Jes Sorensen <Jes.Sorensen@gmail.com>
- *
- * Portions, notably calibration code:
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- * This driver was written as a replacement for the vendor provided
- * rtl8723au driver. As the Realtek 8xxx chips are very similar in
- * their programming interface, I have started adding support for
- * additional 8xxx chips like the 8192cu, 8188cus, etc.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -168,9 +156,7 @@ static int rtl8723au_identify_chip(struct rtl8xxxu_priv *priv)
 
 	rtl8xxxu_config_endpoints_sie(priv);
 
-	/*
-	 * Fallback for devices that do not provide REG_NORMAL_SIE_EP_TX
-	 */
+	 
 	if (!priv->ep_tx_count)
 		ret = rtl8xxxu_config_endpoints_no_sie(priv);
 
@@ -255,7 +241,7 @@ static int rtl8723au_init_phy_rf(struct rtl8xxxu_priv *priv)
 
 	ret = rtl8xxxu_init_phy_rf(priv, rtl8723au_radioa_1t_init_table, RF_A);
 
-	/* Reduce 80M spur */
+	 
 	rtl8xxxu_write32(priv, REG_AFE_XTAL_CTRL, 0x0381808d);
 	rtl8xxxu_write32(priv, REG_AFE_PLL_CTRL, 0xf0ffff83);
 	rtl8xxxu_write32(priv, REG_AFE_PLL_CTRL, 0xf0ffff82);
@@ -270,29 +256,29 @@ static int rtl8723a_emu_to_active(struct rtl8xxxu_priv *priv)
 	u32 val32;
 	int count, ret = 0;
 
-	/* 0x20[0] = 1 enable LDOA12 MACRO block for all interface*/
+	 
 	val8 = rtl8xxxu_read8(priv, REG_LDOA15_CTRL);
 	val8 |= LDOA15_ENABLE;
 	rtl8xxxu_write8(priv, REG_LDOA15_CTRL, val8);
 
-	/* 0x67[0] = 0 to disable BT_GPS_SEL pins*/
+	 
 	val8 = rtl8xxxu_read8(priv, 0x0067);
 	val8 &= ~BIT(4);
 	rtl8xxxu_write8(priv, 0x0067, val8);
 
 	mdelay(1);
 
-	/* 0x00[5] = 0 release analog Ips to digital, 1:isolation */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_SYS_ISO_CTRL);
 	val8 &= ~SYS_ISO_ANALOG_IPS;
 	rtl8xxxu_write8(priv, REG_SYS_ISO_CTRL, val8);
 
-	/* disable SW LPS 0x04[10]= 0 */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_APS_FSMCO + 1);
 	val8 &= ~BIT(2);
 	rtl8xxxu_write8(priv, REG_APS_FSMCO + 1, val8);
 
-	/* wait till 0x04[17] = 1 power ready*/
+	 
 	for (count = RTL8XXXU_MAX_REG_POLL; count; count--) {
 		val32 = rtl8xxxu_read32(priv, REG_APS_FSMCO);
 		if (val32 & BIT(17))
@@ -306,24 +292,24 @@ static int rtl8723a_emu_to_active(struct rtl8xxxu_priv *priv)
 		goto exit;
 	}
 
-	/* We should be able to optimize the following three entries into one */
+	 
 
-	/* release WLON reset 0x04[16]= 1*/
+	 
 	val8 = rtl8xxxu_read8(priv, REG_APS_FSMCO + 2);
 	val8 |= BIT(0);
 	rtl8xxxu_write8(priv, REG_APS_FSMCO + 2, val8);
 
-	/* disable HWPDN 0x04[15]= 0*/
+	 
 	val8 = rtl8xxxu_read8(priv, REG_APS_FSMCO + 1);
 	val8 &= ~BIT(7);
 	rtl8xxxu_write8(priv, REG_APS_FSMCO + 1, val8);
 
-	/* disable WL suspend*/
+	 
 	val8 = rtl8xxxu_read8(priv, REG_APS_FSMCO + 1);
 	val8 &= ~(BIT(3) | BIT(4));
 	rtl8xxxu_write8(priv, REG_APS_FSMCO + 1, val8);
 
-	/* set, then poll until 0 */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_APS_FSMCO);
 	val32 |= APS_FSMCO_MAC_ENABLE;
 	rtl8xxxu_write32(priv, REG_APS_FSMCO, val32);
@@ -342,11 +328,8 @@ static int rtl8723a_emu_to_active(struct rtl8xxxu_priv *priv)
 		goto exit;
 	}
 
-	/* 0x4C[23] = 0x4E[7] = 1, switch DPDT_SEL_P output from WL BB */
-	/*
-	 * Note: Vendor driver actually clears this bit, despite the
-	 * documentation claims it's being set!
-	 */
+	 
+	 
 	val8 = rtl8xxxu_read8(priv, REG_LEDCFG2);
 	val8 |= LEDCFG2_DPDT_SELECT;
 	val8 &= ~LEDCFG2_DPDT_SELECT;
@@ -363,9 +346,7 @@ static int rtl8723au_power_on(struct rtl8xxxu_priv *priv)
 	u32 val32;
 	int ret;
 
-	/*
-	 * RSV_CTRL 0x001C[7:0] = 0x00, unlock ISO/CLK/Power control register
-	 */
+	 
 	rtl8xxxu_write8(priv, REG_RSV_CTRL, 0x0);
 
 	rtl8xxxu_disabled_to_emu(priv);
@@ -374,17 +355,12 @@ static int rtl8723au_power_on(struct rtl8xxxu_priv *priv)
 	if (ret)
 		goto exit;
 
-	/*
-	 * 0x0004[19] = 1, reset 8051
-	 */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_APS_FSMCO + 2);
 	val8 |= BIT(3);
 	rtl8xxxu_write8(priv, REG_APS_FSMCO + 2, val8);
 
-	/*
-	 * Enable MAC DMA/WMAC/SCHEDULE/SEC block
-	 * Set CR bit10 to enable 32k calibration.
-	 */
+	 
 	val16 = rtl8xxxu_read16(priv, REG_CR);
 	val16 |= (CR_HCI_TXDMA_ENABLE | CR_HCI_RXDMA_ENABLE |
 		  CR_TXDMA_ENABLE | CR_RXDMA_ENABLE |
@@ -393,7 +369,7 @@ static int rtl8723au_power_on(struct rtl8xxxu_priv *priv)
 		  CR_SECURITY_ENABLE | CR_CALTIMER_ENABLE);
 	rtl8xxxu_write16(priv, REG_CR, val16);
 
-	/* For EFuse PG */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_EFUSE_CTRL);
 	val32 &= ~(BIT(28) | BIT(29) | BIT(30));
 	val32 |= (0x06 << 28);

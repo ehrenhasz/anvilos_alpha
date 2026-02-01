@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Tegra host1x Interrupt Management
- *
- * Copyright (C) 2010 Google, Inc.
- * Copyright (c) 2010-2013, NVIDIA Corporation.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/irq.h>
@@ -50,26 +45,19 @@ static void host1x_intr_disable_all_syncpt_intrs(struct host1x *host)
 static void intr_hw_init(struct host1x *host, u32 cpm)
 {
 #if HOST1X_HW < 6
-	/* disable the ip_busy_timeout. this prevents write drops */
+	 
 	host1x_sync_writel(host, 0, HOST1X_SYNC_IP_BUSY_TIMEOUT);
 
-	/*
-	 * increase the auto-ack timout to the maximum value. 2d will hang
-	 * otherwise on Tegra2.
-	 */
+	 
 	host1x_sync_writel(host, 0xff, HOST1X_SYNC_CTXSW_TIMEOUT_CFG);
 
-	/* update host clocks per usec */
+	 
 	host1x_sync_writel(host, cpm, HOST1X_SYNC_USEC_CLK);
 #endif
 #if HOST1X_HW >= 8
 	u32 id;
 
-	/*
-	 * Program threshold interrupt destination among 8 lines per VM,
-	 * per syncpoint. For now, just direct all to the first interrupt
-	 * line.
-	 */
+	 
 	for (id = 0; id < host->info->nb_pts; id++)
 		host1x_sync_writel(host, 0, HOST1X_SYNC_SYNCPT_INTR_DEST(id));
 #endif

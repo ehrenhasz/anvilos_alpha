@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Khadas System control Microcontroller
- *
- * Copyright (C) 2020 BayLibre SAS
- *
- * Author(s): Neil Armstrong <narmstrong@baylibre.com>
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/i2c.h>
 #include <linux/mfd/core.h>
@@ -76,7 +70,7 @@ static const struct regmap_config khadas_mcu_regmap_config = {
 };
 
 static struct mfd_cell khadas_mcu_fan_cells[] = {
-	/* VIM1/2 Rev13+ and VIM3 only */
+	 
 	{ .name = "khadas-mcu-fan-ctrl", },
 };
 

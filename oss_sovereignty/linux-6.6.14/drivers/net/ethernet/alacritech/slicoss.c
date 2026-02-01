@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for Gigabit Ethernet adapters based on the Session Layer
- * Interface (SLIC) technology by Alacritech. The driver does not
- * support the hardware acceleration features provided by these cards.
- *
- * Copyright (C) 2016 Lino Sanfilippo <LinoSanfilippo@gmx.de>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -90,18 +84,18 @@ static unsigned int slic_next_compl_idx(struct slic_device *sdev)
 		return SLIC_INVALID_STAT_DESC_IDX;
 
 	idx = (le32_to_cpu(stat->hnd) & 0xffff) - 1;
-	/* reset desc */
+	 
 	stat->hnd = 0;
 	stat->status = 0;
 
 	stq->done_idx = slic_next_queue_idx(stq->done_idx, stq->len);
-	/* check for wraparound */
+	 
 	if (!stq->done_idx) {
 		dma_addr_t paddr = stq->paddr[active];
 
 		slic_write(sdev, SLIC_REG_RBAR, lower_32_bits(paddr) |
 						stq->len);
-		/* make sure new status descriptors are immediately available */
+		 
 		slic_flush_write(sdev);
 		active++;
 		active &= (SLIC_NUM_STAT_DESC_ARRAYS - 1);
@@ -112,7 +106,7 @@ static unsigned int slic_next_compl_idx(struct slic_device *sdev)
 
 static unsigned int slic_get_free_tx_descs(struct slic_tx_queue *txq)
 {
-	/* ensure tail idx is updated */
+	 
 	smp_mb();
 	return slic_get_free_queue_descs(txq->put_idx, txq->done_idx, txq->len);
 }
@@ -180,7 +174,7 @@ static struct slic_upr *slic_dequeue_upr(struct slic_device *sdev)
 						    struct slic_upr, list);
 	}
 	spin_unlock_bh(&upr_list->lock);
-	/* trigger processing of the next upr in list */
+	 
 	if (next_upr)
 		slic_start_upr(sdev, next_upr);
 
@@ -207,18 +201,15 @@ static void slic_set_mcast_bit(u64 *mcmask, unsigned char const *addr)
 {
 	u64 mask = *mcmask;
 	u8 crc;
-	/* Get the CRC polynomial for the mac address: we use bits 1-8 (lsb),
-	 * bitwise reversed, msb (= lsb bit 0 before bitrev) is automatically
-	 * discarded.
-	 */
+	 
 	crc = ether_crc(ETH_ALEN, addr) >> 23;
-	 /* we only have space on the SLIC for 64 entries */
+	  
 	crc &= 0x3F;
 	mask |= (u64)1 << crc;
 	*mcmask = mask;
 }
 
-/* must be called with link_lock held */
+ 
 static void slic_configure_rcv(struct slic_device *sdev)
 {
 	u32 val;
@@ -235,7 +226,7 @@ static void slic_configure_rcv(struct slic_device *sdev)
 	slic_write(sdev, SLIC_REG_WRCFG, val);
 }
 
-/* must be called with link_lock held */
+ 
 static void slic_configure_xmt(struct slic_device *sdev)
 {
 	u32 val;
@@ -248,7 +239,7 @@ static void slic_configure_xmt(struct slic_device *sdev)
 	slic_write(sdev, SLIC_REG_WXCFG, val);
 }
 
-/* must be called with link_lock held */
+ 
 static void slic_configure_mac(struct slic_device *sdev)
 {
 	u32 val;
@@ -257,7 +248,7 @@ static void slic_configure_mac(struct slic_device *sdev)
 		val = SLIC_GMCR_GAPBB_1000 << SLIC_GMCR_GAPBB_SHIFT |
 		      SLIC_GMCR_GAPR1_1000 << SLIC_GMCR_GAPR1_SHIFT |
 		      SLIC_GMCR_GAPR2_1000 << SLIC_GMCR_GAPR2_SHIFT |
-		      SLIC_GMCR_GBIT; /* enable GMII */
+		      SLIC_GMCR_GBIT;  
 	} else {
 		val = SLIC_GMCR_GAPBB_100 << SLIC_GMCR_GAPBB_SHIFT |
 		      SLIC_GMCR_GAPR1_100 << SLIC_GMCR_GAPR1_SHIFT |
@@ -285,7 +276,7 @@ static void slic_configure_link_locked(struct slic_device *sdev, int speed,
 		if (netif_carrier_ok(dev))
 			netif_carrier_off(dev);
 	} else {
-		/* (re)configure link settings */
+		 
 		slic_configure_mac(sdev);
 		slic_configure_xmt(sdev);
 		slic_configure_rcv(sdev);
@@ -312,11 +303,7 @@ static void slic_set_rx_mode(struct net_device *dev)
 	u64 mcmask;
 
 	if (dev->flags & (IFF_PROMISC | IFF_ALLMULTI)) {
-		/* Turn on all multicast addresses. We have to do this for
-		 * promiscuous mode as well as ALLMCAST mode (it saves the
-		 * microcode from having to keep state about the MAC
-		 * configuration).
-		 */
+		 
 		mcmask = ~(u64)0;
 	} else  {
 		mcmask = 0;
@@ -348,9 +335,7 @@ static void slic_xmit_complete(struct slic_device *sdev)
 	unsigned int bytes = 0;
 	unsigned int idx;
 
-	/* Limit processing to SLIC_MAX_TX_COMPLETIONS frames to avoid that new
-	 * completions during processing keeps the loop running endlessly.
-	 */
+	 
 	do {
 		idx = slic_next_compl_idx(sdev);
 		if (idx == SLIC_INVALID_STAT_DESC_IDX)
@@ -374,7 +359,7 @@ static void slic_xmit_complete(struct slic_device *sdev)
 		dev_kfree_skb_any(buff->skb);
 		buff->skb = NULL;
 	} while (frames < SLIC_MAX_TX_COMPLETIONS);
-	/* make sure xmit sees the new value for done_idx */
+	 
 	smp_wmb();
 
 	u64_stats_update_begin(&sdev->stats.syncp);
@@ -411,25 +396,25 @@ static void slic_refill_rx_queue(struct slic_device *sdev, gfp_t gfp)
 				       DMA_FROM_DEVICE);
 		if (dma_mapping_error(&sdev->pdev->dev, paddr)) {
 			netdev_err(dev, "mapping rx packet failed\n");
-			/* drop skb */
+			 
 			dev_kfree_skb_any(skb);
 			break;
 		}
-		/* ensure head buffer descriptors are 256 byte aligned */
+		 
 		offset = 0;
 		misalign = paddr & ALIGN_MASK;
 		if (misalign) {
 			offset = SLIC_RX_BUFF_ALIGN - misalign;
 			skb_reserve(skb, offset);
 		}
-		/* the HW expects dma chunks for descriptor + frame data */
+		 
 		desc = (struct slic_rx_desc *)skb->data;
-		/* temporarily sync descriptor for CPU to clear status */
+		 
 		dma_sync_single_for_cpu(&sdev->pdev->dev, paddr,
 					offset + sizeof(*desc),
 					DMA_FROM_DEVICE);
 		desc->status = 0;
-		/* return it to HW again */
+		 
 		dma_sync_single_for_device(&sdev->pdev->dev, paddr,
 					   offset + sizeof(*desc),
 					   DMA_FROM_DEVICE);
@@ -439,9 +424,9 @@ static void slic_refill_rx_queue(struct slic_device *sdev, gfp_t gfp)
 		dma_unmap_addr_set(buff, map_addr, paddr);
 		dma_unmap_len_set(buff, map_len, maplen);
 		buff->addr_offset = offset;
-		/* complete write to descriptor before it is handed to HW */
+		 
 		wmb();
-		/* head buffer descriptors are placed immediately before skb */
+		 
 		slic_write(sdev, SLIC_REG_HBAR, lower_32_bits(paddr) + offset);
 		rxq->put_idx = slic_next_queue_idx(rxq->put_idx, rxq->len);
 	}
@@ -460,21 +445,21 @@ static void slic_handle_frame_error(struct slic_device *sdev,
 		info = (struct slic_rx_info_oasis *)skb->data;
 		status = le32_to_cpu(info->frame_status);
 		status_b = le32_to_cpu(info->frame_status_b);
-		/* transport layer */
+		 
 		if (status_b & SLIC_VRHSTATB_TPCSUM)
 			SLIC_INC_STATS_COUNTER(stats, rx_tpcsum);
 		if (status & SLIC_VRHSTAT_TPOFLO)
 			SLIC_INC_STATS_COUNTER(stats, rx_tpoflow);
 		if (status_b & SLIC_VRHSTATB_TPHLEN)
 			SLIC_INC_STATS_COUNTER(stats, rx_tphlen);
-		/* ip layer */
+		 
 		if (status_b & SLIC_VRHSTATB_IPCSUM)
 			SLIC_INC_STATS_COUNTER(stats, rx_ipcsum);
 		if (status_b & SLIC_VRHSTATB_IPLERR)
 			SLIC_INC_STATS_COUNTER(stats, rx_iplen);
 		if (status_b & SLIC_VRHSTATB_IPHERR)
 			SLIC_INC_STATS_COUNTER(stats, rx_iphlen);
-		/* link layer */
+		 
 		if (status_b & SLIC_VRHSTATB_RCVE)
 			SLIC_INC_STATS_COUNTER(stats, rx_early);
 		if (status_b & SLIC_VRHSTATB_BUFF)
@@ -491,13 +476,13 @@ static void slic_handle_frame_error(struct slic_device *sdev,
 			SLIC_INC_STATS_COUNTER(stats, rx_uflow802);
 		if (status_b & SLIC_VRHSTATB_CARRE)
 			SLIC_INC_STATS_COUNTER(stats, tx_carrier);
-	} else { /* mojave */
+	} else {  
 		struct slic_rx_info_mojave *info;
 		u32 status;
 
 		info = (struct slic_rx_info_mojave *)skb->data;
 		status = le32_to_cpu(info->frame_status);
-		/* transport layer */
+		 
 		if (status & SLIC_VGBSTAT_XPERR) {
 			u32 xerr = status >> SLIC_VGBSTAT_XERRSHFT;
 
@@ -508,7 +493,7 @@ static void slic_handle_frame_error(struct slic_device *sdev,
 			if (xerr == SLIC_VGBSTAT_XHLEN)
 				SLIC_INC_STATS_COUNTER(stats, rx_tphlen);
 		}
-		/* ip layer */
+		 
 		if (status & SLIC_VGBSTAT_NETERR) {
 			u32 nerr = status >> SLIC_VGBSTAT_NERRSHFT &
 				   SLIC_VGBSTAT_NERRMSK;
@@ -520,7 +505,7 @@ static void slic_handle_frame_error(struct slic_device *sdev,
 			if (nerr == SLIC_VGBSTAT_NHLEN)
 				SLIC_INC_STATS_COUNTER(stats, rx_iphlen);
 		}
-		/* link layer */
+		 
 		if (status & SLIC_VGBSTAT_LNKERR) {
 			u32 lerr = status & SLIC_VGBSTAT_LERRMSK;
 
@@ -588,7 +573,7 @@ static void slic_handle_receive(struct slic_device *sdev, unsigned int todo,
 				 dma_unmap_len(buff, map_len),
 				 DMA_FROM_DEVICE);
 
-		/* skip rx descriptor that is placed before the frame data */
+		 
 		skb_reserve(skb, SLIC_RX_BUFF_HDR_SIZE);
 
 		if (unlikely(status & SLIC_IRHDDR_ERR)) {
@@ -653,7 +638,7 @@ static void slic_handle_upr_irq(struct slic_device *sdev, u32 irqs)
 {
 	struct slic_upr *upr;
 
-	/* remove upr that caused this irq (always the first entry in list) */
+	 
 	upr = slic_dequeue_upr(sdev);
 	if (!upr) {
 		netdev_warn(sdev->netdev, "no upr found on list\n");
@@ -662,7 +647,7 @@ static void slic_handle_upr_irq(struct slic_device *sdev, u32 irqs)
 
 	if (upr->type == SLIC_UPR_LSTAT) {
 		if (unlikely(irqs & SLIC_ISR_UPCERR_MASK)) {
-			/* try again */
+			 
 			slic_queue_upr(sdev, upr);
 			return;
 		}
@@ -719,9 +704,9 @@ static int slic_poll(struct napi_struct *napi, int todo)
 
 	if (done < todo) {
 		napi_complete_done(napi, done);
-		/* reenable irqs */
+		 
 		sm_data->isr = 0;
-		/* make sure sm_data->isr is cleard before irqs are reenabled */
+		 
 		wmb();
 		slic_write(sdev, SLIC_REG_ISR, 0);
 		slic_flush_write(sdev);
@@ -738,12 +723,12 @@ static irqreturn_t slic_irq(int irq, void *dev_id)
 
 	slic_write(sdev, SLIC_REG_ICR, SLIC_ICR_INT_MASK);
 	slic_flush_write(sdev);
-	/* make sure sm_data->isr is read after ICR_INT_MASK is set */
+	 
 	wmb();
 
 	if (!sm_data->isr) {
 		dma_rmb();
-		/* spurious interrupt */
+		 
 		slic_write(sdev, SLIC_REG_ISR, 0);
 		slic_flush_write(sdev);
 		return IRQ_NONE;
@@ -759,7 +744,7 @@ static void slic_card_reset(struct slic_device *sdev)
 	u16 cmd;
 
 	slic_write(sdev, SLIC_REG_RESET, SLIC_RESET_MAGIC);
-	/* flush write by means of config space */
+	 
 	pci_read_config_word(sdev->pdev, PCI_COMMAND, &cmd);
 	mdelay(1);
 }
@@ -791,7 +776,7 @@ static int slic_init_stat_queue(struct slic_device *sdev)
 			err = -ENOMEM;
 			goto free_descs;
 		}
-		/* ensure correct alignment */
+		 
 		offset = 0;
 		misalign = paddr & DESC_ALIGN_MASK;
 		if (misalign) {
@@ -938,7 +923,7 @@ static void slic_free_rx_queue(struct slic_device *sdev)
 	struct slic_rx_buffer *buff;
 	unsigned int i;
 
-	/* free rx buffers */
+	 
 	for (i = 0; i < rxq->len; i++) {
 		buff = &rxq->rxbuffs[i];
 
@@ -960,46 +945,42 @@ static void slic_set_link_autoneg(struct slic_device *sdev)
 	u32 val;
 
 	if (sdev->is_fiber) {
-		/* We've got a fiber gigabit interface, and register 4 is
-		 * different in fiber mode than in copper mode.
-		 */
-		/* advertise FD only @1000 Mb */
+		 
+		 
 		val = MII_ADVERTISE << 16 | ADVERTISE_1000XFULL |
 		      ADVERTISE_1000XPAUSE | ADVERTISE_1000XPSE_ASYM;
-		/* enable PAUSE frames */
+		 
 		slic_write(sdev, SLIC_REG_WPHY, val);
-		/* reset phy, enable auto-neg  */
+		 
 		val = MII_BMCR << 16 | BMCR_RESET | BMCR_ANENABLE |
 		      BMCR_ANRESTART;
 		slic_write(sdev, SLIC_REG_WPHY, val);
-	} else {	/* copper gigabit */
-		/* We've got a copper gigabit interface, and register 4 is
-		 * different in copper mode than in fiber mode.
-		 */
-		/* advertise 10/100 Mb modes   */
+	} else {	 
+		 
+		 
 		val = MII_ADVERTISE << 16 | ADVERTISE_100FULL |
 		      ADVERTISE_100HALF | ADVERTISE_10FULL | ADVERTISE_10HALF;
-		/* enable PAUSE frames  */
+		 
 		val |= ADVERTISE_PAUSE_CAP | ADVERTISE_PAUSE_ASYM;
-		/* required by the Cicada PHY  */
+		 
 		val |= ADVERTISE_CSMA;
 		slic_write(sdev, SLIC_REG_WPHY, val);
 
-		/* advertise FD only @1000 Mb  */
+		 
 		val = MII_CTRL1000 << 16 | ADVERTISE_1000FULL;
 		slic_write(sdev, SLIC_REG_WPHY, val);
 
 		if (subid != PCI_SUBDEVICE_ID_ALACRITECH_CICADA) {
-			 /* if a Marvell PHY enable auto crossover */
+			  
 			val = SLIC_MIICR_REG_16 | SLIC_MRV_REG16_XOVERON;
 			slic_write(sdev, SLIC_REG_WPHY, val);
 
-			/* reset phy, enable auto-neg  */
+			 
 			val = MII_BMCR << 16 | BMCR_RESET | BMCR_ANENABLE |
 			      BMCR_ANRESTART;
 			slic_write(sdev, SLIC_REG_WPHY, val);
 		} else {
-			/* enable and restart auto-neg (don't reset)  */
+			 
 			val = MII_BMCR << 16 | BMCR_ANENABLE | BMCR_ANRESTART;
 			slic_write(sdev, SLIC_REG_WPHY, val);
 		}
@@ -1056,9 +1037,7 @@ static int slic_load_rcvseq_firmware(struct slic_device *sdev)
 			"failed to load receive sequencer firmware %s\n", file);
 		return err;
 	}
-	/* Do an initial sanity check concerning firmware size now. A further
-	 * check follows below.
-	 */
+	 
 	if (fw->size < SLIC_FIRMWARE_MIN_SIZE) {
 		dev_err(&sdev->pdev->dev,
 			"invalid firmware size %zu (min %u expected)\n",
@@ -1069,7 +1048,7 @@ static int slic_load_rcvseq_firmware(struct slic_device *sdev)
 
 	codelen = slic_read_dword_from_firmware(fw, &idx);
 
-	/* do another sanity check against firmware size */
+	 
 	if ((codelen + 4) > fw->size) {
 		dev_err(&sdev->pdev->dev,
 			"invalid rcv-sequencer firmware size %zu\n", fw->size);
@@ -1077,24 +1056,24 @@ static int slic_load_rcvseq_firmware(struct slic_device *sdev)
 		goto release;
 	}
 
-	/* download sequencer code to card */
+	 
 	slic_write(sdev, SLIC_REG_RCV_WCS, SLIC_RCVWCS_BEGIN);
 	for (addr = 0; addr < codelen; addr++) {
 		__le32 val;
-		/* write out instruction address */
+		 
 		slic_write(sdev, SLIC_REG_RCV_WCS, addr);
 
 		instr = slic_read_dword_from_firmware(fw, &idx);
-		/* write out the instruction data low addr */
+		 
 		slic_write(sdev, SLIC_REG_RCV_WCS, instr);
 
 		val = (__le32)fw->data[idx];
 		instr = le32_to_cpu(val);
 		idx++;
-		/* write out the instruction data high addr */
+		 
 		slic_write(sdev, SLIC_REG_RCV_WCS, instr);
 	}
-	/* finish download */
+	 
 	slic_write(sdev, SLIC_REG_RCV_WCS, SLIC_RCVWCS_FINISH);
 	slic_flush_write(sdev);
 release:
@@ -1130,9 +1109,7 @@ static int slic_load_firmware(struct slic_device *sdev)
 		dev_err(&sdev->pdev->dev, "failed to load firmware %s\n", file);
 		return err;
 	}
-	/* Do an initial sanity check concerning firmware size now. A further
-	 * check follows below.
-	 */
+	 
 	if (fw->size < SLIC_FIRMWARE_MIN_SIZE) {
 		dev_err(&sdev->pdev->dev,
 			"invalid firmware size %zu (min is %u)\n", fw->size,
@@ -1155,7 +1132,7 @@ static int slic_load_firmware(struct slic_device *sdev)
 		datalen += sectsize[i];
 	}
 
-	/* do another sanity check against firmware size */
+	 
 	if (datalen > fw->size) {
 		dev_err(&sdev->pdev->dev,
 			"invalid firmware size %zu (expected >= %u)\n",
@@ -1163,7 +1140,7 @@ static int slic_load_firmware(struct slic_device *sdev)
 		err = -EINVAL;
 		goto release;
 	}
-	/* get sections */
+	 
 	for (i = 0; i < numsects; i++)
 		sectstart[i] = slic_read_dword_from_firmware(fw, &idx);
 
@@ -1176,12 +1153,12 @@ static int slic_load_firmware(struct slic_device *sdev)
 		base = sectstart[sect];
 
 		for (addr = 0; addr < ssize; addr++) {
-			/* write out instruction address */
+			 
 			slic_write(sdev, SLIC_REG_WCS, base + addr);
-			/* write out instruction to low addr */
+			 
 			slic_write(sdev, SLIC_REG_WCS, instr);
 			instr = slic_read_dword_from_firmware(fw, &idx);
-			/* write out instruction to high addr */
+			 
 			slic_write(sdev, SLIC_REG_WCS, instr);
 			instr = slic_read_dword_from_firmware(fw, &idx);
 		}
@@ -1198,23 +1175,23 @@ static int slic_load_firmware(struct slic_device *sdev)
 			continue;
 
 		for (addr = 0; addr < ssize; addr++) {
-			/* write out instruction address */
+			 
 			slic_write(sdev, SLIC_REG_WCS,
 				   SLIC_WCS_COMPARE | (base + addr));
-			/* write out instruction to low addr */
+			 
 			slic_write(sdev, SLIC_REG_WCS, instr);
 			instr = slic_read_dword_from_firmware(fw, &idx);
-			/* write out instruction to high addr */
+			 
 			slic_write(sdev, SLIC_REG_WCS, instr);
 			instr = slic_read_dword_from_firmware(fw, &idx);
 		}
 	}
 	slic_flush_write(sdev);
 	mdelay(10);
-	/* everything OK, kick off the card */
+	 
 	slic_write(sdev, SLIC_REG_WCS, SLIC_WCS_START);
 	slic_flush_write(sdev);
-	/* wait long enough for ucode to init card and reach the mainloop */
+	 
 	mdelay(20);
 release:
 	release_firmware(fw);
@@ -1302,7 +1279,7 @@ static int slic_init_iface(struct slic_device *sdev)
 
 	slic_write(sdev, SLIC_REG_ISP, lower_32_bits(sm->isr_paddr));
 	napi_enable(&sdev->napi);
-	/* disable irq mitigation */
+	 
 	slic_write(sdev, SLIC_REG_INTAGG, 0);
 	slic_write(sdev, SLIC_REG_ISR, 0);
 	slic_flush_write(sdev);
@@ -1325,7 +1302,7 @@ static int slic_init_iface(struct slic_device *sdev)
 
 	slic_write(sdev, SLIC_REG_ICR, SLIC_ICR_INT_ON);
 	slic_flush_write(sdev);
-	/* request initial link status */
+	 
 	err = slic_handle_link_change(sdev);
 	if (err)
 		netdev_warn(sdev->netdev,
@@ -1371,14 +1348,14 @@ static int slic_close(struct net_device *dev)
 
 	netif_stop_queue(dev);
 
-	/* stop irq handling */
+	 
 	napi_disable(&sdev->napi);
 	slic_write(sdev, SLIC_REG_ICR, SLIC_ICR_INT_OFF);
 	slic_write(sdev, SLIC_REG_ISR, 0);
 	slic_flush_write(sdev);
 
 	free_irq(sdev->pdev->irq, sdev);
-	/* turn off RCV and XMT and power down PHY */
+	 
 	val = SLIC_GXCR_RESET | SLIC_GXCR_PAUSEEN;
 	slic_write(sdev, SLIC_REG_WXCFG, val);
 
@@ -1442,7 +1419,7 @@ static netdev_tx_t slic_xmit(struct sk_buff *skb, struct net_device *dev)
 	txq->put_idx = slic_next_queue_idx(txq->put_idx, txq->len);
 
 	cbar_val = lower_32_bits(buff->desc_paddr) | 1;
-	/* complete writes to RAM and DMA before hardware is informed */
+	 
 	wmb();
 
 	slic_write(sdev, SLIC_REG_CBAR, cbar_val);
@@ -1570,7 +1547,7 @@ static u16 slic_eeprom_csum(unsigned char *eeprom, unsigned int len)
 	return ~csum;
 }
 
-/* check eeprom size, magic and checksum */
+ 
 static bool slic_eeprom_valid(unsigned char *eeprom, unsigned int size)
 {
 	const unsigned int MAX_SIZE = 128;
@@ -1583,7 +1560,7 @@ static bool slic_eeprom_valid(unsigned char *eeprom, unsigned int size)
 	memcpy(&magic, eeprom, sizeof(magic));
 	if (le16_to_cpu(magic) != SLIC_EEPROM_MAGIC)
 		return false;
-	/* cut checksum bytes */
+	 
 	size -= 2;
 	memcpy(&csum, eeprom + size, sizeof(csum));
 
@@ -1610,7 +1587,7 @@ static int slic_read_eeprom(struct slic_device *sdev)
 		return -ENOMEM;
 
 	slic_write(sdev, SLIC_REG_ICR, SLIC_ICR_INT_OFF);
-	/* setup ISP temporarily */
+	 
 	slic_write(sdev, SLIC_REG_ISP, lower_32_bits(sm->isr_paddr));
 
 	err = slic_new_upr(sdev, SLIC_UPR_CONFIG, paddr);
@@ -1657,7 +1634,7 @@ static int slic_read_eeprom(struct slic_device *sdev)
 		err = -EINVAL;
 		goto free_eeprom;
 	}
-	/* set mac address */
+	 
 	eth_hw_addr_set(sdev->netdev, mac[devfn]);
 free_eeprom:
 	dma_free_coherent(&sdev->pdev->dev, SLIC_EEPROM_SIZE, eeprom, paddr);
@@ -1683,7 +1660,7 @@ static int slic_init(struct slic_device *sdev)
 		return err;
 	}
 
-	/* we need the shared memory to read EEPROM so set it up temporarily */
+	 
 	err = slic_init_shmem(sdev);
 	if (err) {
 		dev_err(&sdev->pdev->dev, "failed to init shared memory\n");
@@ -1709,10 +1686,10 @@ free_sm:
 static bool slic_is_fiber(unsigned short subdev)
 {
 	switch (subdev) {
-	/* Mojave */
+	 
 	case PCI_SUBDEVICE_ID_ALACRITECH_1000X1F:
 	case PCI_SUBDEVICE_ID_ALACRITECH_SES1001F: fallthrough;
-	/* Oasis */
+	 
 	case PCI_SUBDEVICE_ID_ALACRITECH_SEN2002XF:
 	case PCI_SUBDEVICE_ID_ALACRITECH_SEN2001XF:
 	case PCI_SUBDEVICE_ID_ALACRITECH_SEN2104EF:

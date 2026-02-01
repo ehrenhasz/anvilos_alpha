@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* Copyright (C) 2016-2022 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- *
- * SipHash: a fast short-input PRF
- * https://131002.net/siphash/
- *
- * This implementation is specifically for SipHash2-4 for a secure PRF
- * and HalfSipHash1-3/SipHash1-3 for an insecure PRF only suitable for
- * hashtables.
- */
+
+ 
 
 #include <linux/siphash.h>
 #include <asm/unaligned.h>
@@ -108,11 +100,7 @@ u64 __siphash_unaligned(const void *data, size_t len, const siphash_key_t *key)
 }
 EXPORT_SYMBOL(__siphash_unaligned);
 
-/**
- * siphash_1u64 - compute 64-bit siphash PRF value of a u64
- * @first: first u64
- * @key: the siphash key
- */
+ 
 u64 siphash_1u64(const u64 first, const siphash_key_t *key)
 {
 	PREAMBLE(8)
@@ -124,12 +112,7 @@ u64 siphash_1u64(const u64 first, const siphash_key_t *key)
 }
 EXPORT_SYMBOL(siphash_1u64);
 
-/**
- * siphash_2u64 - compute 64-bit siphash PRF value of 2 u64
- * @first: first u64
- * @second: second u64
- * @key: the siphash key
- */
+ 
 u64 siphash_2u64(const u64 first, const u64 second, const siphash_key_t *key)
 {
 	PREAMBLE(16)
@@ -145,13 +128,7 @@ u64 siphash_2u64(const u64 first, const u64 second, const siphash_key_t *key)
 }
 EXPORT_SYMBOL(siphash_2u64);
 
-/**
- * siphash_3u64 - compute 64-bit siphash PRF value of 3 u64
- * @first: first u64
- * @second: second u64
- * @third: third u64
- * @key: the siphash key
- */
+ 
 u64 siphash_3u64(const u64 first, const u64 second, const u64 third,
 		 const siphash_key_t *key)
 {
@@ -172,14 +149,7 @@ u64 siphash_3u64(const u64 first, const u64 second, const u64 third,
 }
 EXPORT_SYMBOL(siphash_3u64);
 
-/**
- * siphash_4u64 - compute 64-bit siphash PRF value of 4 u64
- * @first: first u64
- * @second: second u64
- * @third: third u64
- * @forth: forth u64
- * @key: the siphash key
- */
+ 
 u64 siphash_4u64(const u64 first, const u64 second, const u64 third,
 		 const u64 forth, const siphash_key_t *key)
 {
@@ -227,9 +197,7 @@ u64 siphash_3u32(const u32 first, const u32 second, const u32 third,
 EXPORT_SYMBOL(siphash_3u32);
 
 #if BITS_PER_LONG == 64
-/* Note that on 64-bit, we make HalfSipHash1-3 actually be SipHash1-3, for
- * performance reasons. On 32-bit, below, we actually implement HalfSipHash1-3.
- */
+ 
 
 #define HSIPROUND SIPROUND
 #define HPREAMBLE(len) PREAMBLE(len)
@@ -308,11 +276,7 @@ u32 __hsiphash_unaligned(const void *data, size_t len,
 }
 EXPORT_SYMBOL(__hsiphash_unaligned);
 
-/**
- * hsiphash_1u32 - compute 64-bit hsiphash PRF value of a u32
- * @first: first u32
- * @key: the hsiphash key
- */
+ 
 u32 hsiphash_1u32(const u32 first, const hsiphash_key_t *key)
 {
 	HPREAMBLE(4)
@@ -321,12 +285,7 @@ u32 hsiphash_1u32(const u32 first, const hsiphash_key_t *key)
 }
 EXPORT_SYMBOL(hsiphash_1u32);
 
-/**
- * hsiphash_2u32 - compute 32-bit hsiphash PRF value of 2 u32
- * @first: first u32
- * @second: second u32
- * @key: the hsiphash key
- */
+ 
 u32 hsiphash_2u32(const u32 first, const u32 second, const hsiphash_key_t *key)
 {
 	u64 combined = (u64)second << 32 | first;
@@ -338,13 +297,7 @@ u32 hsiphash_2u32(const u32 first, const u32 second, const hsiphash_key_t *key)
 }
 EXPORT_SYMBOL(hsiphash_2u32);
 
-/**
- * hsiphash_3u32 - compute 32-bit hsiphash PRF value of 3 u32
- * @first: first u32
- * @second: second u32
- * @third: third u32
- * @key: the hsiphash key
- */
+ 
 u32 hsiphash_3u32(const u32 first, const u32 second, const u32 third,
 		  const hsiphash_key_t *key)
 {
@@ -358,14 +311,7 @@ u32 hsiphash_3u32(const u32 first, const u32 second, const u32 third,
 }
 EXPORT_SYMBOL(hsiphash_3u32);
 
-/**
- * hsiphash_4u32 - compute 32-bit hsiphash PRF value of 4 u32
- * @first: first u32
- * @second: second u32
- * @third: third u32
- * @forth: forth u32
- * @key: the hsiphash key
- */
+ 
 u32 hsiphash_4u32(const u32 first, const u32 second, const u32 third,
 		  const u32 forth, const hsiphash_key_t *key)
 {
@@ -450,11 +396,7 @@ u32 __hsiphash_unaligned(const void *data, size_t len,
 }
 EXPORT_SYMBOL(__hsiphash_unaligned);
 
-/**
- * hsiphash_1u32 - compute 32-bit hsiphash PRF value of a u32
- * @first: first u32
- * @key: the hsiphash key
- */
+ 
 u32 hsiphash_1u32(const u32 first, const hsiphash_key_t *key)
 {
 	HPREAMBLE(4)
@@ -465,12 +407,7 @@ u32 hsiphash_1u32(const u32 first, const hsiphash_key_t *key)
 }
 EXPORT_SYMBOL(hsiphash_1u32);
 
-/**
- * hsiphash_2u32 - compute 32-bit hsiphash PRF value of 2 u32
- * @first: first u32
- * @second: second u32
- * @key: the hsiphash key
- */
+ 
 u32 hsiphash_2u32(const u32 first, const u32 second, const hsiphash_key_t *key)
 {
 	HPREAMBLE(8)
@@ -484,13 +421,7 @@ u32 hsiphash_2u32(const u32 first, const u32 second, const hsiphash_key_t *key)
 }
 EXPORT_SYMBOL(hsiphash_2u32);
 
-/**
- * hsiphash_3u32 - compute 32-bit hsiphash PRF value of 3 u32
- * @first: first u32
- * @second: second u32
- * @third: third u32
- * @key: the hsiphash key
- */
+ 
 u32 hsiphash_3u32(const u32 first, const u32 second, const u32 third,
 		  const hsiphash_key_t *key)
 {
@@ -508,14 +439,7 @@ u32 hsiphash_3u32(const u32 first, const u32 second, const u32 third,
 }
 EXPORT_SYMBOL(hsiphash_3u32);
 
-/**
- * hsiphash_4u32 - compute 32-bit hsiphash PRF value of 4 u32
- * @first: first u32
- * @second: second u32
- * @third: third u32
- * @forth: forth u32
- * @key: the hsiphash key
- */
+ 
 u32 hsiphash_4u32(const u32 first, const u32 second, const u32 third,
 		  const u32 forth, const hsiphash_key_t *key)
 {

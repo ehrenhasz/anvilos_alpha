@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Nouveau Community
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Martin Peres
- */
+ 
 #include <subdev/bios.h>
 #include <subdev/bios/bit.h>
 #include <subdev/bios/therm.h>
@@ -42,7 +20,7 @@ therm_table(struct nvkm_bios *bios, u8 *ver, u8 *hdr, u8 *len, u8 *cnt)
 				   bit_P.version);
 	}
 
-	/* exit now if we haven't found the thermal table */
+	 
 	if (!therm)
 		return 0;
 
@@ -72,11 +50,11 @@ nvbios_therm_sensor_parse(struct nvkm_bios *bios,
 	u8 ver, len, i;
 	u32 entry;
 
-	/* we only support the core domain for now */
+	 
 	if (domain != NVBIOS_THERM_DOMAIN_CORE)
 		return -EINVAL;
 
-	/* Read the entries from the table */
+	 
 	thrs_section = 0;
 	sensor_section = -1;
 	i = 0;
@@ -87,7 +65,7 @@ nvbios_therm_sensor_parse(struct nvkm_bios *bios,
 		case 0x0:
 			thrs_section = value;
 			if (value > 0)
-				return 0; /* we do not try to support ambient */
+				return 0;  
 			break;
 		case 0x01:
 			sensor_section++;
@@ -202,7 +180,7 @@ nvbios_therm_fan_parse(struct nvkm_bios *bios, struct nvbios_therm_fan *fan)
 		}
 	}
 
-	/* starting from fermi, fan management is always linear */
+	 
 	if (bios->subdev.device->card_type >= NV_C0 &&
 		fan->fan_mode == NVBIOS_THERM_FAN_OTHER) {
 		fan->fan_mode = NVBIOS_THERM_FAN_LINEAR;

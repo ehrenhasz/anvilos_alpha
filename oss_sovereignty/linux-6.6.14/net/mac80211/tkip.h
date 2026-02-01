@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2002-2004, Instant802 Networks, Inc.
- */
+ 
+ 
 
 #ifndef TKIP_H
 #define TKIP_H
@@ -27,4 +25,4 @@ int ieee80211_tkip_decrypt_data(struct arc4_ctx *ctx,
 				u8 *ra, int only_iv, int queue,
 				u32 *out_iv32, u16 *out_iv16);
 
-#endif /* TKIP_H */
+#endif  

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * OWL SoC's Pinctrl driver
- *
- * Copyright (c) 2014 Actions Semi Inc.
- * Author: David Liu <liuwei@actions-semi.com>
- *
- * Copyright (c) 2018 Linaro Ltd.
- * Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -31,18 +23,7 @@
 #include "../pinctrl-utils.h"
 #include "pinctrl-owl.h"
 
-/**
- * struct owl_pinctrl - pinctrl state of the device
- * @dev: device handle
- * @pctrldev: pinctrl handle
- * @chip: gpio chip
- * @lock: spinlock to protect registers
- * @clk: clock control
- * @soc: reference to soc_data
- * @base: pinctrl register base address
- * @num_irq: number of possible interrupts
- * @irq: interrupt numbers
- */
+ 
 struct owl_pinctrl {
 	struct device *dev;
 	struct pinctrl_dev *pctrldev;
@@ -472,7 +453,7 @@ static int owl_group_config_set(struct pinctrl_dev *pctrldev,
 		if (ret)
 			return ret;
 
-		/* Update register */
+		 
 		raw_spin_lock_irqsave(&pctrl->lock, flags);
 
 		owl_write_field(pctrl, reg, arg, bit, width);
@@ -544,10 +525,7 @@ static int owl_gpio_request(struct gpio_chip *chip, unsigned int offset)
 
 	gpio_base = pctrl->base + port->offset;
 
-	/*
-	 * GPIOs have higher priority over other modules, so either setting
-	 * them as OUT or IN is sufficient
-	 */
+	 
 	raw_spin_lock_irqsave(&pctrl->lock, flags);
 	owl_gpio_update_reg(gpio_base + port->outen, offset, true);
 	raw_spin_unlock_irqrestore(&pctrl->lock, flags);
@@ -569,10 +547,10 @@ static void owl_gpio_free(struct gpio_chip *chip, unsigned int offset)
 	gpio_base = pctrl->base + port->offset;
 
 	raw_spin_lock_irqsave(&pctrl->lock, flags);
-	/* disable gpio output */
+	 
 	owl_gpio_update_reg(gpio_base + port->outen, offset, false);
 
-	/* disable gpio input */
+	 
 	owl_gpio_update_reg(gpio_base + port->inen, offset, false);
 	raw_spin_unlock_irqrestore(&pctrl->lock, flags);
 }
@@ -669,12 +647,7 @@ static void irq_set_type(struct owl_pinctrl *pctrl, int gpio, unsigned int type)
 
 	switch (type) {
 	case IRQ_TYPE_EDGE_BOTH:
-		/*
-		 * Since the hardware doesn't support interrupts on both edges,
-		 * emulate it in the software by setting the single edge
-		 * interrupt and switching to the opposite edge while ACKing
-		 * the interrupt
-		 */
+		 
 		if (owl_gpio_get(&pctrl->chip, gpio))
 			irq_type = OWL_GPIO_INT_EDGE_FALLING;
 		else
@@ -739,7 +712,7 @@ static void owl_gpio_irq_mask(struct irq_data *data)
 
 	owl_gpio_update_reg(gpio_base + port->intc_msk, gpio, false);
 
-	/* disable port interrupt if no interrupt pending bit is active */
+	 
 	val = readl_relaxed(gpio_base + port->intc_msk);
 	if (val == 0)
 		owl_gpio_update_reg(gpio_base + port->intc_ctl,
@@ -770,13 +743,13 @@ static void owl_gpio_irq_unmask(struct irq_data *data)
 	gpio_base = pctrl->base + port->offset;
 	raw_spin_lock_irqsave(&pctrl->lock, flags);
 
-	/* enable port interrupt */
+	 
 	value = readl_relaxed(gpio_base + port->intc_ctl);
 	value |= ((BIT(OWL_GPIO_CTLR_ENABLE) | BIT(OWL_GPIO_CTLR_SAMPLE_CLK_24M))
 			<< port->shared_ctl_offset * 5);
 	writel_relaxed(value, gpio_base + port->intc_ctl);
 
-	/* enable GPIO interrupt */
+	 
 	owl_gpio_update_reg(gpio_base + port->intc_msk, gpio, true);
 
 	raw_spin_unlock_irqrestore(&pctrl->lock, flags);
@@ -792,10 +765,7 @@ static void owl_gpio_irq_ack(struct irq_data *data)
 	void __iomem *gpio_base;
 	unsigned long flags;
 
-	/*
-	 * Switch the interrupt edge to the opposite edge of the interrupt
-	 * which got triggered for the case of emulating both edges
-	 */
+	 
 	if (irqd_get_trigger_type(data) == IRQ_TYPE_EDGE_BOTH) {
 		if (owl_gpio_get(gc, hwirq))
 			irq_set_type(pctrl, hwirq, IRQ_TYPE_EDGE_FALLING);
@@ -859,7 +829,7 @@ static void owl_gpio_irq_handler(struct irq_desc *desc)
 		port = &pctrl->soc->ports[i];
 		base = pctrl->base + port->offset;
 
-		/* skip ports that are not associated with this irq */
+		 
 		if (parent != pctrl->irq[i])
 			goto skip;
 
@@ -868,7 +838,7 @@ static void owl_gpio_irq_handler(struct irq_desc *desc)
 		for_each_set_bit(pin, &pending_irq, port->pins) {
 			generic_handle_domain_irq(domain, offset + pin);
 
-			/* clear pending interrupt */
+			 
 			owl_gpio_update_reg(base + port->intc_pd, pin, true);
 		}
 
@@ -938,7 +908,7 @@ int owl_pinctrl_probe(struct platform_device *pdev,
 	if (IS_ERR(pctrl->base))
 		return PTR_ERR(pctrl->base);
 
-	/* enable GPIO/MFP clock */
+	 
 	pctrl->clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(pctrl->clk)) {
 		dev_err(&pdev->dev, "no clock defined\n");

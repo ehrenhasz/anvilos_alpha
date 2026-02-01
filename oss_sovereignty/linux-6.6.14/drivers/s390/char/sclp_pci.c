@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCI I/O adapter configuration related functions.
- *
- * Copyright IBM Corp. 2016
- */
+
+ 
 #define KMSG_COMPONENT "sclp_cmd"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
 
@@ -49,10 +45,10 @@ struct err_notify_sccb {
 
 struct pci_cfg_sccb {
 	struct sccb_header header;
-	u8 atype;		/* adapter type */
+	u8 atype;		 
 	u8 reserved1;
 	u16 reserved2;
-	u32 aid;		/* adapter identifier */
+	u32 aid;		 
 } __packed;
 
 static int do_pci_configure(sclp_cmdw_t cmd, u32 fid)

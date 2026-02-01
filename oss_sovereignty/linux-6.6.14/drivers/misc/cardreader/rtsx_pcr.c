@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Driver for Realtek PCI-Express card reader
- *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Wei WANG <wei_wang@realsil.com.cn>
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/module.h>
@@ -131,7 +125,7 @@ static void rtsx_comm_pm_full_on(struct rtsx_pcr *pcr)
 
 	rtsx_disable_aspm(pcr);
 
-	/* Fixes DMA transfer timeout issue after disabling ASPM on RTS5260 */
+	 
 	msleep(1);
 
 	if (option->ltr_enabled)
@@ -148,7 +142,7 @@ static void rtsx_pm_full_on(struct rtsx_pcr *pcr)
 
 void rtsx_pci_start_run(struct rtsx_pcr *pcr)
 {
-	/* If pci device removed, don't queue idle work any more */
+	 
 	if (pcr->remove_pci)
 		return;
 
@@ -330,7 +324,7 @@ void rtsx_pci_send_cmd_no_wait(struct rtsx_pcr *pcr)
 	rtsx_pci_writel(pcr, RTSX_HCBAR, pcr->host_cmds_addr);
 
 	val |= (u32)(pcr->ci * 4) & 0x00FFFFFF;
-	/* Hardware Auto Response */
+	 
 	val |= 0x40000000;
 	rtsx_pci_writel(pcr, RTSX_HCBCTLR, val);
 }
@@ -346,7 +340,7 @@ int rtsx_pci_send_cmd(struct rtsx_pcr *pcr, int timeout)
 
 	spin_lock_irqsave(&pcr->lock, flags);
 
-	/* set up data structures for the wakeup system */
+	 
 	pcr->done = &trans_done;
 	pcr->trans_result = TRANS_NOT_READY;
 	init_completion(&trans_done);
@@ -354,13 +348,13 @@ int rtsx_pci_send_cmd(struct rtsx_pcr *pcr, int timeout)
 	rtsx_pci_writel(pcr, RTSX_HCBAR, pcr->host_cmds_addr);
 
 	val |= (u32)(pcr->ci * 4) & 0x00FFFFFF;
-	/* Hardware Auto Response */
+	 
 	val |= 0x40000000;
 	rtsx_pci_writel(pcr, RTSX_HCBCTLR, val);
 
 	spin_unlock_irqrestore(&pcr->lock, flags);
 
-	/* Wait for TRANS_OK_INT */
+	 
 	timeleft = wait_for_completion_interruptible_timeout(
 			&trans_done, msecs_to_jiffies(timeout));
 	if (timeleft <= 0) {
@@ -672,7 +666,7 @@ static void rtsx_pci_enable_bus_int(struct rtsx_pcr *pcr)
 	if (pcr->num_slots > 1)
 		pcr->bier |= MS_INT_EN;
 
-	/* Enable Bus Interrupt */
+	 
 	rtsx_pci_writel(pcr, RTSX_BIER, pcr->bier);
 
 	pcr_dbg(pcr, "RTSX_BIER: 0x%08x\n", pcr->bier);
@@ -716,7 +710,7 @@ int rtsx_pci_switch_clock(struct rtsx_pcr *pcr, unsigned int card_clock,
 				ssc_depth, initial_mode, double_clk, vpclk);
 
 	if (initial_mode) {
-		/* We use 250k(around) here, in initial stage */
+		 
 		clk_divider = SD_CLK_DIVIDE_128;
 		card_clock = 30000000;
 	} else {
@@ -727,7 +721,7 @@ int rtsx_pci_switch_clock(struct rtsx_pcr *pcr, unsigned int card_clock,
 	if (err < 0)
 		return err;
 
-	/* Reduce card clock by 20MHz each time a DMA transfer error occurs */
+	 
 	if (card_clock == UHS_SDR104_MAX_DTR &&
 	    pcr->dma_error_count &&
 	    PCI_PID(pcr) == RTS5227_DEVICE_ID)
@@ -757,7 +751,7 @@ int rtsx_pci_switch_clock(struct rtsx_pcr *pcr, unsigned int card_clock,
 	if (mcu_cnt > 15)
 		mcu_cnt = 15;
 
-	/* Make sure that the SSC clock div_n is not less than MIN_DIV_N_PCR */
+	 
 	div = CLK_DIV_1;
 	while ((n < MIN_DIV_N_PCR) && (div < CLK_DIV_8)) {
 		if (pcr->ops->conv_clk_and_div_n) {
@@ -800,7 +794,7 @@ int rtsx_pci_switch_clock(struct rtsx_pcr *pcr, unsigned int card_clock,
 	if (err < 0)
 		return err;
 
-	/* Wait SSC clock stable */
+	 
 	udelay(SSC_CLOCK_STABLE_WAIT);
 	err = rtsx_pci_write_register(pcr, CLK_CTL, CLK_LOW_FREQ, 0);
 	if (err < 0)
@@ -837,9 +831,7 @@ int rtsx_pci_card_exclusive_check(struct rtsx_pcr *pcr, int card)
 	};
 
 	if (!(pcr->flags & PCR_MS_PMOS)) {
-		/* When using single PMOS, accessing card is not permitted
-		 * if the existing card is not the designated one.
-		 */
+		 
 		if (pcr->card_exist & (~cd_mask[card]))
 			return -EIO;
 	}
@@ -974,7 +966,7 @@ static irqreturn_t rtsx_pci_isr(int irq, void *dev_id)
 	spin_lock(&pcr->lock);
 
 	int_reg = rtsx_pci_readl(pcr, RTSX_BIPR);
-	/* Clear interrupt flag */
+	 
 	rtsx_pci_writel(pcr, RTSX_BIPR, int_reg);
 	if ((int_reg & pcr->bier) == 0) {
 		spin_unlock(&pcr->lock);
@@ -1056,7 +1048,7 @@ static int rtsx_pci_acquire_irq(struct rtsx_pcr *pcr)
 
 static void rtsx_base_force_power_down(struct rtsx_pcr *pcr)
 {
-	/* Set relink_time to 0 */
+	 
 	rtsx_pci_write_register(pcr, AUTOLOAD_CFG_BASE + 1, MASK_8_BIT_DEF, 0);
 	rtsx_pci_write_register(pcr, AUTOLOAD_CFG_BASE + 2, MASK_8_BIT_DEF, 0);
 	rtsx_pci_write_register(pcr, AUTOLOAD_CFG_BASE + 3,
@@ -1225,9 +1217,9 @@ static int rtsx_pci_init_hw(struct rtsx_pcr *pcr)
 
 	rtsx_pci_enable_bus_int(pcr);
 
-	/* Power on SSC */
+	 
 	if (PCI_PID(pcr) == PID_5261) {
-		/* Gating real mcu clock */
+		 
 		err = rtsx_pci_write_register(pcr, RTS5261_FW_CFG1,
 			RTS5261_MCU_CLOCK_GATING, 0);
 		err = rtsx_pci_write_register(pcr, RTS5261_REG_FPDCTL,
@@ -1238,7 +1230,7 @@ static int rtsx_pci_init_hw(struct rtsx_pcr *pcr)
 	if (err < 0)
 		return err;
 
-	/* Wait SSC power stable */
+	 
 	udelay(200);
 
 	rtsx_disable_aspm(pcr);
@@ -1250,18 +1242,18 @@ static int rtsx_pci_init_hw(struct rtsx_pcr *pcr)
 
 	rtsx_pci_init_cmd(pcr);
 
-	/* Set mcu_cnt to 7 to ensure data can be sampled properly */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, CLK_DIV, 0x07, 0x07);
 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, HOST_SLEEP_STATE, 0x03, 0x00);
-	/* Disable card clock */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, CARD_CLK_EN, 0x1E, 0);
-	/* Reset delink mode */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, CHANGE_LINK_STATE, 0x0A, 0);
-	/* Card driving select */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, CARD_DRIVE_SEL,
 			0xFF, pcr->card_drive_sel);
-	/* Enable SSC Clock */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, SSC_CTL1,
 			0xFF, SSC_8X_EN | SSC_SEL_4M);
 	if (PCI_PID(pcr) == PID_5261)
@@ -1273,25 +1265,16 @@ static int rtsx_pci_init_hw(struct rtsx_pcr *pcr)
 	else
 		rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, SSC_CTL2, 0xFF, 0x12);
 
-	/* Disable cd_pwr_save */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, CHANGE_LINK_STATE, 0x16, 0x10);
-	/* Clear Link Ready Interrupt */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, IRQSTAT0,
 			LINK_RDY_INT, LINK_RDY_INT);
-	/* Enlarge the estimation window of PERST# glitch
-	 * to reduce the chance of invalid card interrupt
-	 */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, PERST_GLITCH_WIDTH, 0xFF, 0x80);
-	/* Update RC oscillator to 400k
-	 * bit[0] F_HIGH: for RC oscillator, Rst_value is 1'b1
-	 *                1: 2M  0: 400k
-	 */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, RCCTL, 0x01, 0x00);
-	/* Set interrupt write clear
-	 * bit 1: U_elbi_if_rd_clr_en
-	 *	1: Enable ELBI interrupt[31:22] & [7:0] flag read clear
-	 *	0: ELBI interrupt flag[31:22] & [7:0] only can be write clear
-	 */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, NFTS_TX_CTRL, 0x02, 0);
 
 	err = rtsx_pci_send_cmd(pcr, 100);
@@ -1311,13 +1294,13 @@ static int rtsx_pci_init_hw(struct rtsx_pcr *pcr)
 		break;
 	}
 
-	/*init ocp*/
+	 
 	rtsx_pci_init_ocp(pcr);
 
-	/* Enable clk_request_n to enable clock power management */
+	 
 	pcie_capability_clear_and_set_word(pcr->pci, PCI_EXP_LNKCTL,
 					0, PCI_EXP_LNKCTL_CLKREQ_EN);
-	/* Enter L1 when host tx idle */
+	 
 	pci_write_config_byte(pdev, 0x70F, 0x5B);
 
 	if (pcr->ops->extra_init_hw) {
@@ -1329,9 +1312,7 @@ static int rtsx_pci_init_hw(struct rtsx_pcr *pcr)
 	if (pcr->aspm_mode == ASPM_MODE_REG)
 		rtsx_pci_write_register(pcr, ASPM_FORCE_CTL, 0x30, 0x30);
 
-	/* No CD interrupt if probing driver with card inserted.
-	 * So we need to initialize pcr->card_exist here.
-	 */
+	 
 	if (pcr->ops->cd_deglitch)
 		pcr->card_exist = pcr->ops->cd_deglitch(pcr);
 	else
@@ -1640,7 +1621,7 @@ static void rtsx_pci_remove(struct pci_dev *pcidev)
 	pm_runtime_get_sync(&pcidev->dev);
 	pm_runtime_forbid(&pcidev->dev);
 
-	/* Disable interrupts at the pcr level */
+	 
 	spin_lock_irq(&pcr->lock);
 	rtsx_pci_writel(pcr, RTSX_BIER, 0);
 	pcr->bier = 0;
@@ -1832,13 +1813,13 @@ static int rtsx_pci_runtime_resume(struct device *device)
 	return 0;
 }
 
-#else /* CONFIG_PM */
+#else  
 
 #define rtsx_pci_shutdown NULL
 #define rtsx_pci_runtime_suspend NULL
 #define rtsx_pic_runtime_resume NULL
 
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct dev_pm_ops rtsx_pci_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(rtsx_pci_suspend, rtsx_pci_resume)

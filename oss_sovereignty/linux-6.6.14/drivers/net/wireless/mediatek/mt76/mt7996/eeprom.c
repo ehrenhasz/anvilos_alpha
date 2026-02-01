@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2022 MediaTek Inc.
- */
+
+ 
 
 #include <linux/firmware.h>
 #include "mt7996.h"
@@ -22,7 +20,7 @@ static int mt7996_check_eeprom(struct mt7996_dev *dev)
 
 static char *mt7996_eeprom_name(struct mt7996_dev *dev)
 {
-	/* reserve for future variants */
+	 
 	return MT7996_EEPROM_DEFAULT;
 }
 
@@ -71,11 +69,11 @@ static int mt7996_eeprom_load(struct mt7996_dev *dev)
 		if (ret < 0)
 			return ret;
 
-		/* efuse info isn't enough */
+		 
 		if (free_block_num >= 59)
 			return -EINVAL;
 
-		/* read eeprom data from efuse */
+		 
 		block_num = DIV_ROUND_UP(MT7996_EEPROM_SIZE, eeprom_blk_size);
 		for (i = 0; i < block_num; i++) {
 			ret = mt7996_mcu_get_eeprom(dev, i * eeprom_blk_size);
@@ -104,7 +102,7 @@ static int mt7996_eeprom_parse_efuse_hw_cap(struct mt7996_dev *dev)
 	}
 
 	if (dev->wtbl_size_group < 2 || dev->wtbl_size_group > 4)
-		dev->wtbl_size_group = 2; /* set default */
+		dev->wtbl_size_group = 2;  
 
 	return 0;
 }

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2022 Analog Devices, Inc.
- * ADI Regulator driver for the MAX77540 and MAX77541
- */
+
+ 
 
 #include <linux/mfd/max77541.h>
 #include <linux/mod_devicetable.h>
@@ -20,25 +17,25 @@ static const struct regulator_ops max77541_buck_ops = {
 };
 
 static const struct linear_range max77540_buck_ranges[] = {
-	/* Ranges when VOLT_SEL bits are 0x00 */
+	 
 	REGULATOR_LINEAR_RANGE(500000, 0x00, 0x8B, 5000),
 	REGULATOR_LINEAR_RANGE(1200000, 0x8C, 0xFF, 0),
-	/* Ranges when VOLT_SEL bits are 0x40 */
+	 
 	REGULATOR_LINEAR_RANGE(1200000, 0x00, 0x8B, 10000),
 	REGULATOR_LINEAR_RANGE(2400000, 0x8C, 0xFF, 0),
-	/* Ranges when VOLT_SEL bits are  0x80 */
+	 
 	REGULATOR_LINEAR_RANGE(2000000, 0x00, 0x9F, 20000),
 	REGULATOR_LINEAR_RANGE(5200000, 0xA0, 0xFF, 0),
 };
 
 static const struct linear_range max77541_buck_ranges[] = {
-	/* Ranges when VOLT_SEL bits are 0x00 */
+	 
 	REGULATOR_LINEAR_RANGE(300000, 0x00, 0xB3, 5000),
 	REGULATOR_LINEAR_RANGE(1200000, 0xB4, 0xFF, 0),
-	/* Ranges when VOLT_SEL bits are 0x40 */
+	 
 	REGULATOR_LINEAR_RANGE(1200000, 0x00, 0x8B, 10000),
 	REGULATOR_LINEAR_RANGE(2400000, 0x8C, 0xFF, 0),
-	/* Ranges when VOLT_SEL bits are  0x80 */
+	 
 	REGULATOR_LINEAR_RANGE(2000000, 0x00, 0x9F, 20000),
 	REGULATOR_LINEAR_RANGE(5200000, 0xA0, 0xFF, 0),
 };

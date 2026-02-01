@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
@@ -353,7 +352,7 @@ static ssize_t rtw_debugfs_set_write_reg(struct file *filp,
 	if (ret)
 		return ret;
 
-	/* write BB/MAC register */
+	 
 	num = sscanf(tmp, "%x %x %x", &addr, &val, &len);
 
 	if (num !=  3)
@@ -599,9 +598,9 @@ static void rtw_print_vht_rate_txt(struct seq_file *m, u8 rate)
 	u8 idx = rate - DESC_RATEVHT1SS_MCS0;
 	u8 n_ss, mcs_n;
 
-	/* n spatial stream */
+	 
 	n_ss = 1 + idx / 10;
-	/* MCS n */
+	 
 	mcs_n = idx % 10;
 	seq_printf(m, " VHT%uSMCS%u", n_ss, mcs_n);
 }
@@ -670,15 +669,15 @@ static int rtw_debugfs_get_tx_pwr_tbl(struct seq_file *m, void *v)
 
 	mutex_lock(&hal->tx_power_mutex);
 	for (path = RF_PATH_A; path <= RF_PATH_B; path++) {
-		/* there is no CCK rates used in 5G */
+		 
 		if (hal->current_band_type == RTW_BAND_5G)
 			rate = DESC_RATE6M;
 		else
 			rate = DESC_RATE1M;
 
-		/* now, not support vht 3ss and vht 4ss*/
+		 
 		for (; rate <= DESC_RATEVHT2SS_MCS9; rate++) {
-			/* now, not support ht 3ss and ht 4ss*/
+			 
 			if (rate > DESC_RATEMCS15 &&
 			    rate < DESC_RATEVHT1SS_MCS0)
 				continue;
@@ -1310,7 +1309,7 @@ void rtw_debugfs_init(struct rtw_dev *rtwdev)
 	rtw_debugfs_add_rw(dm_cap);
 }
 
-#endif /* CONFIG_RTW88_DEBUGFS */
+#endif  
 
 #ifdef CONFIG_RTW88_DEBUG
 
@@ -1332,4 +1331,4 @@ void __rtw_dbg(struct rtw_dev *rtwdev, enum rtw_debug_mask mask,
 }
 EXPORT_SYMBOL(__rtw_dbg);
 
-#endif /* CONFIG_RTW88_DEBUG */
+#endif  

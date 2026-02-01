@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2009-2011, Frederic Weisbecker <fweisbec@gmail.com>
- *
- * Handle the callchains from the stream in an ad-hoc radix tree and then
- * sort them in an rbtree.
- *
- * Using a radix for code path provides a fast retrieval and factorizes
- * memory use. Also that lets us use the paths in a hierarchical graph view.
- *
- */
+
+ 
 
 #include <inttypes.h>
 #include <stdlib.h>
@@ -45,20 +36,14 @@ struct callchain_param callchain_param = {
 	CALLCHAIN_PARAM_DEFAULT
 };
 
-/*
- * Are there any events usind DWARF callchains?
- *
- * I.e.
- *
- * -e cycles/call-graph=dwarf/
- */
+ 
 bool dwarf_callchain_users;
 
 struct callchain_param callchain_param_default = {
 	CALLCHAIN_PARAM_DEFAULT
 };
 
-/* Used for thread-local struct callchain_cursor. */
+ 
 static pthread_key_t callchain_cursor;
 
 int parse_callchain_record_opt(const char *arg, struct callchain_param *param)
@@ -193,14 +178,14 @@ __parse_callchain_report_opt(const char *arg, bool allow_record_opt)
 		    !parse_callchain_order(tok) ||
 		    !parse_callchain_sort_key(tok) ||
 		    !parse_callchain_value(tok)) {
-			/* parsing ok - move on to the next */
+			 
 			try_stack_size = false;
 			goto next;
 		} else if (allow_record_opt && !record_opt_set) {
 			if (parse_callchain_record(tok, &callchain_param))
 				goto try_numbers;
 
-			/* assume that number followed by 'dwarf' is stack size */
+			 
 			if (callchain_param.record_mode == CALLCHAIN_DWARF)
 				try_stack_size = true;
 
@@ -217,13 +202,13 @@ try_numbers:
 			callchain_param.dump_size = size;
 			try_stack_size = false;
 		} else if (!minpcnt_set) {
-			/* try to get the min percent */
+			 
 			callchain_param.min_percent = strtod(tok, &endptr);
 			if (tok == endptr)
 				return -1;
 			minpcnt_set = true;
 		} else {
-			/* try print limit at last */
+			 
 			callchain_param.print_limit = strtoul(tok, &endptr, 0);
 			if (tok == endptr)
 				return -1;
@@ -255,7 +240,7 @@ int parse_callchain_record(const char *arg, struct callchain_param *param)
 	char *buf;
 	int ret = -1;
 
-	/* We need buffer that we know we can write to. */
+	 
 	buf = malloc(strlen(arg) + 1);
 	if (!buf)
 		return -ENOMEM;
@@ -266,7 +251,7 @@ int parse_callchain_record(const char *arg, struct callchain_param *param)
 	name = tok ? : (char *)buf;
 
 	do {
-		/* Framepointer style */
+		 
 		if (!strncmp(name, "fp", sizeof("fp"))) {
 			ret = 0;
 			param->record_mode = CALLCHAIN_FP;
@@ -281,7 +266,7 @@ int parse_callchain_record(const char *arg, struct callchain_param *param)
 			}
 			break;
 
-		/* Dwarf style */
+		 
 		} else if (!strncmp(name, "dwarf", sizeof("dwarf"))) {
 			const unsigned long default_stack_dump_size = 8192;
 
@@ -399,7 +384,7 @@ rb_insert_callchain(struct rb_root *root, struct callchain_node *chain,
 			else
 				p = &(*p)->rb_right;
 			break;
-		case CHAIN_GRAPH_ABS: /* Falldown */
+		case CHAIN_GRAPH_ABS:  
 		case CHAIN_GRAPH_REL:
 			if (rnode_cumul < chain_cumul)
 				p = &(*p)->rb_left;
@@ -435,10 +420,7 @@ __sort_chain_flat(struct rb_root *rb_root, struct callchain_node *node,
 		rb_insert_callchain(rb_root, node, CHAIN_FLAT);
 }
 
-/*
- * Once we get every callchains from the stream, we can now
- * sort them by hit
- */
+ 
 static void
 sort_chain_flat(struct rb_root *rb_root, struct callchain_root *root,
 		u64 min_hit, struct callchain_param *param __maybe_unused)
@@ -525,10 +507,7 @@ int callchain_register_param(struct callchain_param *param)
 	return 0;
 }
 
-/*
- * Create a child for a parent. If inherit_children, then the new child
- * will become the new parent of it's parent children
- */
+ 
 static struct callchain_node *
 create_child(struct callchain_node *parent, bool inherit_children)
 {
@@ -557,7 +536,7 @@ create_child(struct callchain_node *parent, bool inherit_children)
 			n = rb_next(n);
 		}
 
-		/* make it the first child */
+		 
 		rb_link_node(&new->rb_node_in, NULL, &parent->rb_root_in.rb_node);
 		rb_insert_color(&new->rb_node_in, &parent->rb_root_in);
 	}
@@ -566,9 +545,7 @@ create_child(struct callchain_node *parent, bool inherit_children)
 }
 
 
-/*
- * Fill the node with callchain values
- */
+ 
 static int
 fill_node(struct callchain_node *node, struct callchain_cursor *cursor)
 {
@@ -598,10 +575,7 @@ fill_node(struct callchain_node *node, struct callchain_cursor *cursor)
 			call->branch_count = 1;
 
 			if (cursor_node->branch_from) {
-				/*
-				 * branch_from is set with value somewhere else
-				 * to imply it's "to" of a branch.
-				 */
+				 
 				call->brtype_stat.branch_to = true;
 
 				if (cursor_node->branch_flags.predicted)
@@ -615,9 +589,7 @@ fill_node(struct callchain_node *node, struct callchain_cursor *cursor)
 						  cursor_node->branch_from,
 						  cursor_node->ip);
 			} else {
-				/*
-				 * It's "from" of a branch
-				 */
+				 
 				call->brtype_stat.branch_to = false;
 				call->cycles_count =
 					cursor_node->branch_flags.cycles;
@@ -693,14 +665,7 @@ static enum match_result match_chain_strings(const char *left,
 	return ret;
 }
 
-/*
- * We need to always use relative addresses because we're aggregating
- * callchains from multiple threads, i.e. different address spaces, so
- * comparing absolute addresses make no sense as a symbol in a DSO may end up
- * in a different address when used in a different binary or even the same
- * binary but with some sort of address randomization technique, thus we need
- * to compare just relative addresses. -acme
- */
+ 
 static enum match_result match_chain_dso_addresses(struct map *left_map, u64 left_ip,
 						   struct map *right_map, u64 right_ip)
 {
@@ -726,16 +691,11 @@ static enum match_result match_chain(struct callchain_cursor_node *node,
 		match = match_chain_strings(cnode->srcline, node->srcline);
 		if (match != MATCH_ERROR)
 			break;
-		/* otherwise fall-back to symbol-based comparison below */
+		 
 		fallthrough;
 	case CCKEY_FUNCTION:
 		if (node->ms.sym && cnode->ms.sym) {
-			/*
-			 * Compare inlined frames based on their symbol name
-			 * because different inlined frames will have the same
-			 * symbol start. Otherwise do a faster comparison based
-			 * on the symbol start address.
-			 */
+			 
 			if (cnode->ms.sym->inlined || node->ms.sym->inlined) {
 				match = match_chain_strings(cnode->ms.sym->name,
 							    node->ms.sym->name);
@@ -747,7 +707,7 @@ static enum match_result match_chain(struct callchain_cursor_node *node,
 				break;
 			}
 		}
-		/* otherwise fall-back to IP-based comparison below */
+		 
 		fallthrough;
 	case CCKEY_ADDRESS:
 	default:
@@ -759,9 +719,7 @@ static enum match_result match_chain(struct callchain_cursor_node *node,
 		cnode->branch_count++;
 
 		if (node->branch_from) {
-			/*
-			 * It's "to" of a branch
-			 */
+			 
 			cnode->brtype_stat.branch_to = true;
 
 			if (node->branch_flags.predicted)
@@ -775,9 +733,7 @@ static enum match_result match_chain(struct callchain_cursor_node *node,
 					  node->branch_from,
 					  node->ip);
 		} else {
-			/*
-			 * It's "from" of a branch
-			 */
+			 
 			cnode->brtype_stat.branch_to = false;
 			cnode->cycles_count += node->branch_flags.cycles;
 			cnode->iter_count += node->nr_loop_iter;
@@ -789,11 +745,7 @@ static enum match_result match_chain(struct callchain_cursor_node *node,
 	return match;
 }
 
-/*
- * Split the parent in two parts (a new child is created) and
- * give a part of its callchain to the created child.
- * Then create another child to host the given callchain of new branch
- */
+ 
 static int
 split_add_child(struct callchain_node *parent,
 		struct callchain_cursor *cursor,
@@ -804,12 +756,12 @@ split_add_child(struct callchain_node *parent,
 	struct list_head *old_tail;
 	unsigned int idx_total = idx_parents + idx_local;
 
-	/* split */
+	 
 	new = create_child(parent, true);
 	if (new == NULL)
 		return -1;
 
-	/* split the callchain and move a part to the new child */
+	 
 	old_tail = parent->val.prev;
 	list_del_range(&to_split->list, old_tail);
 	new->val.next = &to_split->list;
@@ -817,7 +769,7 @@ split_add_child(struct callchain_node *parent,
 	to_split->list.prev = &new->val;
 	old_tail->next = &new->val;
 
-	/* split the hits */
+	 
 	new->hit = parent->hit;
 	new->children_hit = parent->children_hit;
 	parent->children_hit = callchain_cumul_hits(new);
@@ -827,7 +779,7 @@ split_add_child(struct callchain_node *parent,
 	new->children_count = parent->children_count;
 	parent->children_count = callchain_cumul_counts(new);
 
-	/* create a new child for the new branch if any */
+	 
 	if (idx_total < cursor->nr) {
 		struct callchain_node *first;
 		struct callchain_list *cnode;
@@ -844,10 +796,7 @@ split_add_child(struct callchain_node *parent,
 		if (new == NULL)
 			return -1;
 
-		/*
-		 * This is second child since we moved parent's children
-		 * to new (first) child above.
-		 */
+		 
 		p = parent->rb_root_in.rb_node;
 		first = rb_entry(p, struct callchain_node, rb_node_in);
 		cnode = list_first_entry(&first->val, struct callchain_list,
@@ -886,14 +835,14 @@ append_chain_children(struct callchain_node *root,
 	if (!node)
 		return -1;
 
-	/* lookup in children */
+	 
 	while (*p) {
 		enum match_result ret;
 
 		parent = *p;
 		rnode = rb_entry(parent, struct callchain_node, rb_node_in);
 
-		/* If at least first entry matches, rely to children */
+		 
 		ret = append_chain(rnode, cursor, period);
 		if (ret == MATCH_EQ)
 			goto inc_children_hit;
@@ -905,7 +854,7 @@ append_chain_children(struct callchain_node *root,
 		else
 			p = &parent->rb_right;
 	}
-	/* nothing in children, add to the current node */
+	 
 	rnode = add_child(root, cursor, period);
 	if (rnode == NULL)
 		return -1;
@@ -930,12 +879,7 @@ append_chain(struct callchain_node *root,
 	u64 matches;
 	enum match_result cmp = MATCH_ERROR;
 
-	/*
-	 * Lookup in the current node
-	 * If we have a symbol, then compare the start to match
-	 * anywhere inside a function, unless function
-	 * mode is disabled.
-	 */
+	 
 	list_for_each_entry(cnode, &root->val, list) {
 		struct callchain_cursor_node *node;
 
@@ -952,7 +896,7 @@ append_chain(struct callchain_node *root,
 		callchain_cursor_advance(cursor);
 	}
 
-	/* matches not, relay no the parent */
+	 
 	if (!found) {
 		WARN_ONCE(cmp == MATCH_ERROR, "Chain comparison error\n");
 		return cmp;
@@ -960,7 +904,7 @@ append_chain(struct callchain_node *root,
 
 	matches = cursor->pos - start;
 
-	/* we match only a part of the node. Split it and add the new chain */
+	 
 	if (matches < root->val_nr) {
 		if (split_add_child(root, cursor, cnode, start, matches,
 				    period) < 0)
@@ -969,14 +913,14 @@ append_chain(struct callchain_node *root,
 		return MATCH_EQ;
 	}
 
-	/* we match 100% of the path, increment the hit */
+	 
 	if (matches == root->val_nr && cursor->pos == cursor->nr) {
 		root->hit += period;
 		root->count++;
 		return MATCH_EQ;
 	}
 
-	/* We match the node and still have a part remaining */
+	 
 	if (append_chain_children(root, cursor, period) < 0)
 		return MATCH_ERROR;
 
@@ -1640,10 +1584,7 @@ int callchain_cursor__copy(struct callchain_cursor *dst,
 	return rc;
 }
 
-/*
- * Initialize a cursor before adding entries inside, but keep
- * the previously allocated entries as a cache.
- */
+ 
 void callchain_cursor_reset(struct callchain_cursor *cursor)
 {
 	struct callchain_cursor_node *node;
@@ -1670,15 +1611,7 @@ void callchain_param_setup(u64 sample_type, const char *arch)
 			callchain_param.record_mode = CALLCHAIN_FP;
 	}
 
-	/*
-	 * It's necessary to use libunwind to reliably determine the caller of
-	 * a leaf function on aarch64, as otherwise we cannot know whether to
-	 * start from the LR or FP.
-	 *
-	 * Always starting from the LR can result in duplicate or entirely
-	 * erroneous entries. Always skipping the LR and starting from the FP
-	 * can result in missing entries.
-	 */
+	 
 	if (callchain_param.record_mode == CALLCHAIN_FP && !strcmp(arch, "arm64"))
 		dwarf_callchain_users = true;
 }
@@ -1727,10 +1660,7 @@ bool callchain_cnode_matched(struct callchain_node *base_cnode,
 		pair_chain = list_next_entry(pair_chain, list);
 	}
 
-	/*
-	 * Say chain1 is ABC, chain2 is ABCD, we consider they are
-	 * not fully matched.
-	 */
+	 
 	if (pair_chain && (&pair_chain->list != &pair_cnode->val))
 		return false;
 

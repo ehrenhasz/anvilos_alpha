@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dcn20_hubp.h"
 
@@ -51,15 +28,15 @@ void hubp2_set_vm_system_aperture_settings(struct hubp *hubp,
 	PHYSICAL_ADDRESS_LOC mc_vm_apt_low;
 	PHYSICAL_ADDRESS_LOC mc_vm_apt_high;
 
-	// The format of default addr is 48:12 of the 48 bit addr
+	
 	mc_vm_apt_default.quad_part = apt->sys_default.quad_part >> 12;
 
-	// The format of high/low are 48:18 of the 48 bit addr
+	
 	mc_vm_apt_low.quad_part = apt->sys_low.quad_part >> 18;
 	mc_vm_apt_high.quad_part = apt->sys_high.quad_part >> 18;
 
 	REG_UPDATE_2(DCN_VM_SYSTEM_APERTURE_DEFAULT_ADDR_MSB,
-		DCN_VM_SYSTEM_APERTURE_DEFAULT_SYSTEM, 1, /* 1 = system physical memory */
+		DCN_VM_SYSTEM_APERTURE_DEFAULT_SYSTEM, 1,  
 		DCN_VM_SYSTEM_APERTURE_DEFAULT_ADDR_MSB, mc_vm_apt_default.high_part);
 
 	REG_SET(DCN_VM_SYSTEM_APERTURE_DEFAULT_ADDR_LSB, 0,
@@ -83,7 +60,7 @@ void hubp2_program_deadline(
 {
 	struct dcn20_hubp *hubp2 = TO_DCN20_HUBP(hubp);
 
-	/* DLG - Per hubp */
+	 
 	REG_SET_2(BLANK_OFFSET_0, 0,
 		REFCYC_H_BLANK_END, dlg_attr->refcyc_h_blank_end,
 		DLG_V_BLANK_END, dlg_attr->dlg_vblank_end);
@@ -101,7 +78,7 @@ void hubp2_program_deadline(
 	REG_SET(REF_FREQ_TO_PIX_FREQ, 0,
 		REF_FREQ_TO_PIX_FREQ, dlg_attr->ref_freq_to_pix_freq);
 
-	/* DLG - Per luma/chroma */
+	 
 	REG_SET(VBLANK_PARAMETERS_1, 0,
 		REFCYC_PER_PTE_GROUP_VBLANK_L, dlg_attr->refcyc_per_pte_group_vblank_l);
 
@@ -140,13 +117,13 @@ void hubp2_program_deadline(
 	REG_SET(NOM_PARAMETERS_7, 0,
 		REFCYC_PER_META_CHUNK_NOM_C, dlg_attr->refcyc_per_meta_chunk_nom_c);
 
-	/* TTU - per hubp */
+	 
 	REG_SET_2(DCN_TTU_QOS_WM, 0,
 		QoS_LEVEL_LOW_WM, ttu_attr->qos_level_low_wm,
 		QoS_LEVEL_HIGH_WM, ttu_attr->qos_level_high_wm);
 
-	/* TTU - per luma/chroma */
-	/* Assumed surf0 is luma and 1 is chroma */
+	 
+	 
 
 	REG_SET_3(DCN_SURF0_TTU_CNTL0, 0,
 		REFCYC_PER_REQ_DELIVERY, ttu_attr->refcyc_per_req_delivery_l,
@@ -172,15 +149,9 @@ void hubp2_vready_at_or_After_vsync(struct hubp *hubp,
 {
 	uint32_t value = 0;
 	struct dcn20_hubp *hubp2 = TO_DCN20_HUBP(hubp);
-	/* disable_dlg_test_mode Set 9th bit to 1 to disable "dv" mode */
+	 
 	REG_WRITE(HUBPREQ_DEBUG_DB, 1 << 8);
-	/*
-	if (VSTARTUP_START - (VREADY_OFFSET+VUPDATE_WIDTH+VUPDATE_OFFSET)/htotal)
-	<= OTG_V_BLANK_END
-		Set HUBP_VREADY_AT_OR_AFTER_VSYNC = 1
-	else
-		Set HUBP_VREADY_AT_OR_AFTER_VSYNC = 0
-	*/
+	 
 	if (pipe_dest->htotal != 0) {
 		if ((pipe_dest->vstartup_start - (pipe_dest->vready_offset+pipe_dest->vupdate_width
 			+ pipe_dest->vupdate_offset) / pipe_dest->htotal) <= pipe_dest->vblank_end) {
@@ -231,9 +202,7 @@ static void hubp2_setup(
 		struct _vcs_dpi_display_rq_regs_st *rq_regs,
 		struct _vcs_dpi_display_pipe_dest_params_st *pipe_dest)
 {
-	/* otg is locked when this func is called. Register are double buffered.
-	 * disable the requestors is not needed
-	 */
+	 
 
 	hubp2_vready_at_or_After_vsync(hubp, pipe_dest);
 	hubp2_program_requestor(hubp, rq_regs);
@@ -292,20 +261,7 @@ void hubp2_setup_interdependent(
 		QoS_LEVEL_FLIP, ttu_attr->qos_level_flip);
 }
 
-/* DCN2 (GFX10), the following GFX fields are deprecated. They can be set but they will not be used:
- *	NUM_BANKS
- *	NUM_SE
- *	NUM_RB_PER_SE
- *	RB_ALIGNED
- * Other things can be defaulted, since they never change:
- *	PIPE_ALIGNED = 0
- *	META_LINEAR = 0
- * In GFX10, only these apply:
- *	PIPE_INTERLEAVE
- *	NUM_PIPES
- *	MAX_COMPRESSED_FRAGS
- *	SW_MODE
- */
+ 
 static void hubp2_program_tiling(
 	struct dcn20_hubp *hubp2,
 	const union dc_tiling_info *info,
@@ -333,16 +289,14 @@ void hubp2_program_size(
 	uint32_t pitch, meta_pitch, pitch_c, meta_pitch_c;
 	bool use_pitch_c = false;
 
-	/* Program data and meta surface pitch (calculation from addrlib)
-	 * 444 or 420 luma
-	 */
+	 
 	use_pitch_c = format >= SURFACE_PIXEL_FORMAT_VIDEO_BEGIN
 		&& format < SURFACE_PIXEL_FORMAT_SUBSAMPLE_END;
 	use_pitch_c = use_pitch_c
 		|| (format == SURFACE_PIXEL_FORMAT_GRPH_RGBE_ALPHA);
 	if (use_pitch_c) {
 		ASSERT(plane_size->chroma_pitch != 0);
-		/* Chroma pitch zero can cause system hang! */
+		 
 
 		pitch = plane_size->surface_pitch - 1;
 		meta_pitch = dcc->meta_pitch - 1;
@@ -385,7 +339,7 @@ void hubp2_program_rotation(
 	else
 		mirror = 0;
 
-	/* Program rotation angle and horz mirror - no mirror */
+	 
 	if (rotation == ROTATION_ANGLE_0)
 		REG_UPDATE_2(DCSURF_SURFACE_CONFIG,
 				ROTATION_ANGLE, 0,
@@ -426,7 +380,7 @@ void hubp2_program_pixel_format(
 	uint32_t red_bar = 3;
 	uint32_t blue_bar = 2;
 
-	/* swap for ABGR format */
+	 
 	if (format == SURFACE_PIXEL_FORMAT_GRPH_ABGR8888
 			|| format == SURFACE_PIXEL_FORMAT_GRPH_ABGR2101010
 			|| format == SURFACE_PIXEL_FORMAT_GRPH_ABGR2101010_XR_BIAS
@@ -440,7 +394,7 @@ void hubp2_program_pixel_format(
 			CROSSBAR_SRC_CB_B, blue_bar,
 			CROSSBAR_SRC_CR_R, red_bar);
 
-	/* Mapping is same as ipp programming (cnvc) */
+	 
 
 	switch (format)	{
 	case SURFACE_PIXEL_FORMAT_GRPH_ARGB1555:
@@ -463,12 +417,12 @@ void hubp2_program_pixel_format(
 				SURFACE_PIXEL_FORMAT, 10);
 		break;
 	case SURFACE_PIXEL_FORMAT_GRPH_ARGB16161616:
-	case SURFACE_PIXEL_FORMAT_GRPH_ABGR16161616: /*we use crossbar already*/
+	case SURFACE_PIXEL_FORMAT_GRPH_ABGR16161616:  
 		REG_UPDATE(DCSURF_SURFACE_CONFIG,
-				SURFACE_PIXEL_FORMAT, 26); /* ARGB16161616_UNORM */
+				SURFACE_PIXEL_FORMAT, 26);  
 		break;
 	case SURFACE_PIXEL_FORMAT_GRPH_ARGB16161616F:
-	case SURFACE_PIXEL_FORMAT_GRPH_ABGR16161616F:/*we use crossbar already*/
+	case SURFACE_PIXEL_FORMAT_GRPH_ABGR16161616F: 
 		REG_UPDATE(DCSURF_SURFACE_CONFIG,
 				SURFACE_PIXEL_FORMAT, 24);
 		break;
@@ -528,7 +482,7 @@ void hubp2_program_pixel_format(
 		break;
 	}
 
-	/* don't see the need of program the xbar in DCN 1.0 */
+	 
 }
 
 void hubp2_program_surface_config(
@@ -613,9 +567,9 @@ void hubp2_cursor_set_attributes(
 			CURSOR_LINES_PER_CHUNK, lpc);
 
 	REG_SET_2(CURSOR_SETTINGS, 0,
-			/* no shift of the cursor HDL schedule */
+			 
 			CURSOR0_DST_Y_OFFSET, 0,
-			 /* used to shift the cursor chunk request deadline */
+			  
 			CURSOR0_CHUNK_HDL_ADJUST, 3);
 
 	hubp->att.SURFACE_ADDR_HIGH  = attr->address.high_part;
@@ -641,14 +595,14 @@ void hubp2_dmdata_set_attributes(
 	struct dcn20_hubp *hubp2 = TO_DCN20_HUBP(hubp);
 
 	if (attr->dmdata_mode == DMDATA_HW_MODE) {
-		/* set to HW mode */
+		 
 		REG_UPDATE(DMDATA_CNTL,
 				DMDATA_MODE, 1);
 
-		/* for DMDATA flip, need to use SURFACE_UPDATE_LOCK */
+		 
 		REG_UPDATE(DCSURF_FLIP_CONTROL, SURFACE_UPDATE_LOCK, 1);
 
-		/* toggle DMDATA_UPDATED and set repeat and size */
+		 
 		REG_UPDATE(DMDATA_CNTL,
 				DMDATA_UPDATED, 0);
 		REG_UPDATE_3(DMDATA_CNTL,
@@ -656,7 +610,7 @@ void hubp2_dmdata_set_attributes(
 				DMDATA_REPEAT, attr->dmdata_repeat,
 				DMDATA_SIZE, attr->dmdata_size);
 
-		/* set DMDATA address */
+		 
 		REG_WRITE(DMDATA_ADDRESS_LOW, attr->address.low_part);
 		REG_UPDATE(DMDATA_ADDRESS_HIGH,
 				DMDATA_ADDRESS_HIGH, attr->address.high_part);
@@ -664,21 +618,21 @@ void hubp2_dmdata_set_attributes(
 		REG_UPDATE(DCSURF_FLIP_CONTROL, SURFACE_UPDATE_LOCK, 0);
 
 	} else {
-		/* set to SW mode before loading data */
+		 
 		REG_SET(DMDATA_CNTL, 0,
 				DMDATA_MODE, 0);
-		/* toggle DMDATA_SW_UPDATED to start loading sequence */
+		 
 		REG_UPDATE(DMDATA_SW_CNTL,
 				DMDATA_SW_UPDATED, 0);
 		REG_UPDATE_3(DMDATA_SW_CNTL,
 				DMDATA_SW_UPDATED, 1,
 				DMDATA_SW_REPEAT, attr->dmdata_repeat,
 				DMDATA_SW_SIZE, attr->dmdata_size);
-		/* load data into hubp dmdata buffer */
+		 
 		hubp2_dmdata_load(hubp, attr->dmdata_size, attr->dmdata_sw_data);
 	}
 
-	/* Note that DL_DELTA must be programmed if we want to use TTU mode */
+	 
 	REG_SET_3(DMDATA_QOS_CNTL, 0,
 			DMDATA_QOS_MODE, attr->dmdata_qos_mode,
 			DMDATA_QOS_LEVEL, attr->dmdata_qos_level,
@@ -693,7 +647,7 @@ void hubp2_dmdata_load(
 	int i;
 	struct dcn20_hubp *hubp2 = TO_DCN20_HUBP(hubp);
 
-	/* load dmdata into HUBP buffer in SW mode */
+	 
 	for (i = 0; i < dmdata_sw_size / 4; i++)
 		REG_WRITE(DMDATA_SW_DATA, dmdata_sw_data[i]);
 }
@@ -714,28 +668,19 @@ bool hubp2_program_surface_flip_and_addr(
 {
 	struct dcn20_hubp *hubp2 = TO_DCN20_HUBP(hubp);
 
-	//program flip type
+	 
 	REG_UPDATE(DCSURF_FLIP_CONTROL,
 			SURFACE_FLIP_TYPE, flip_immediate);
 
-	// Program VMID reg
+	 
 	REG_UPDATE(VMID_SETTINGS_0,
 			VMID, address->vmid);
 
 
-	/* HW automatically latch rest of address register on write to
-	 * DCSURF_PRIMARY_SURFACE_ADDRESS if SURFACE_UPDATE_LOCK is not used
-	 *
-	 * program high first and then the low addr, order matters!
-	 */
+	 
 	switch (address->type) {
 	case PLN_ADDR_TYPE_GRAPHICS:
-		/* DCN1.0 does not support const color
-		 * TODO: program DCHUBBUB_RET_PATH_DCC_CFGx_0/1
-		 * base on address->grph.dcc_const_color
-		 * x = 0, 2, 4, 6 for pipe 0, 1, 2, 3 for rgb and luma
-		 * x = 1, 3, 5, 7 for pipe 0, 1, 2, 3 for chroma
-		 */
+		 
 
 		if (address->grph.addr.quad_part == 0)
 			break;
@@ -950,12 +895,7 @@ void hubp2_set_blank_regs(struct hubp *hubp, bool blank)
 		uint32_t reg_val = REG_READ(DCHUBP_CNTL);
 
 		if (reg_val) {
-			/* init sequence workaround: in case HUBP is
-			 * power gated, this wait would timeout.
-			 *
-			 * we just wrote reg_val to non-0, if it stay 0
-			 * it means HUBP is gated
-			 */
+			 
 			REG_WAIT(DCHUBP_CNTL,
 					HUBP_NO_OUTSTANDING_REQ, 1,
 					1, 100000);
@@ -986,32 +926,26 @@ void hubp2_cursor_set_position(
 
 	hubp->curs_pos = *pos;
 
-	/*
-	 * Guard aganst cursor_set_position() from being called with invalid
-	 * attributes
-	 *
-	 * TODO: Look at combining cursor_set_position() and
-	 * cursor_set_attributes() into cursor_update()
-	 */
+	 
 	if (hubp->curs_attr.address.quad_part == 0)
 		return;
 
-	// Transform cursor width / height and hotspots for offset calculations
+	 
 	if (param->rotation == ROTATION_ANGLE_90 || param->rotation == ROTATION_ANGLE_270) {
 		swap(cursor_height, cursor_width);
 		swap(x_hotspot, y_hotspot);
 
 		if (param->rotation == ROTATION_ANGLE_90) {
-			// hotspot = (-y, x)
+			 
 			src_x_offset = x_pos - (cursor_width - x_hotspot);
 			src_y_offset = y_pos - y_hotspot;
 		} else if (param->rotation == ROTATION_ANGLE_270) {
-			// hotspot = (y, -x)
+			 
 			src_x_offset = x_pos - x_hotspot;
 			src_y_offset = y_pos - (cursor_height - y_hotspot);
 		}
 	} else if (param->rotation == ROTATION_ANGLE_180) {
-		// hotspot = (-x, -y)
+		 
 		if (!param->mirror)
 			src_x_offset = x_pos - (cursor_width - x_hotspot);
 
@@ -1030,16 +964,16 @@ void hubp2_cursor_set_position(
 				param->h_scale_ratio));
 
 	if (src_x_offset >= (int)param->viewport.width)
-		cur_en = 0;  /* not visible beyond right edge*/
+		cur_en = 0;   
 
 	if (src_x_offset + cursor_width <= 0)
-		cur_en = 0;  /* not visible beyond left edge*/
+		cur_en = 0;   
 
 	if (src_y_offset >= (int)param->viewport.height)
-		cur_en = 0;  /* not visible beyond bottom edge*/
+		cur_en = 0;   
 
 	if (src_y_offset + cursor_height <= 0)
-		cur_en = 0;  /* not visible beyond top edge*/
+		cur_en = 0;   
 
 	if (cur_en && REG_READ(CURSOR_SURFACE_ADDRESS) == 0)
 		hubp->funcs->set_cursor_attributes(hubp, &hubp->curs_attr);
@@ -1057,24 +991,20 @@ void hubp2_cursor_set_position(
 
 	REG_SET(CURSOR_DST_OFFSET, 0,
 			CURSOR_DST_X_OFFSET, dst_x_offset);
-	/* TODO Handle surface pixel formats other than 4:4:4 */
-	/* Cursor Position Register Config */
+	 
+	 
 	hubp->pos.cur_ctl.bits.cur_enable = cur_en;
 	hubp->pos.position.bits.x_pos = pos->x;
 	hubp->pos.position.bits.y_pos = pos->y;
 	hubp->pos.hot_spot.bits.x_hot = pos->x_hotspot;
 	hubp->pos.hot_spot.bits.y_hot = pos->y_hotspot;
 	hubp->pos.dst_offset.bits.dst_x_offset = dst_x_offset;
-	/* Cursor Rectangle Cache
-	 * Cursor bitmaps have different hotspot values
-	 * There's a possibility that the above logic returns a negative value,
-	 * so we clamp them to 0
-	 */
+	 
 	if (src_x_offset < 0)
 		src_x_offset = 0;
 	if (src_y_offset < 0)
 		src_y_offset = 0;
-	/* Save necessary cursor info x, y position. w, h is saved in attribute func. */
+	 
 	if (param->stream->link->psr_settings.psr_version >= DC_PSR_VERSION_SU_1 &&
 	    param->rotation != ROTATION_ANGLE_0) {
 		hubp->cur_rect.x = 0;
@@ -1117,7 +1047,7 @@ void hubp2_read_state_common(struct hubp *hubp)
 	struct _vcs_dpi_display_ttu_regs_st *ttu_attr = &s->ttu_attr;
 	struct _vcs_dpi_display_rq_regs_st *rq_regs = &s->rq_regs;
 
-	/* Requester */
+	 
 	REG_GET(HUBPRET_CONTROL,
 			DET_BUF_PLANE1_BASE_ADDRESS, &rq_regs->plane1_base_address);
 	REG_GET_4(DCN_EXPANSION_MODE,
@@ -1132,7 +1062,7 @@ void hubp2_read_state_common(struct hubp *hubp)
 	REG_GET(DCN_VM_SYSTEM_APERTURE_LOW_ADDR,
 			MC_VM_SYSTEM_APERTURE_LOW_ADDR, &rq_regs->aperture_low_addr);
 
-	/* DLG - Per hubp */
+	 
 	REG_GET_2(BLANK_OFFSET_0,
 		REFCYC_H_BLANK_END, &dlg_attr->refcyc_h_blank_end,
 		DLG_V_BLANK_END, &dlg_attr->dlg_vblank_end);
@@ -1163,7 +1093,7 @@ void hubp2_read_state_common(struct hubp *hubp)
 	REG_GET(REF_FREQ_TO_PIX_FREQ,
 		REF_FREQ_TO_PIX_FREQ, &dlg_attr->ref_freq_to_pix_freq);
 
-	/* DLG - Per luma/chroma */
+	 
 	REG_GET(VBLANK_PARAMETERS_1,
 		REFCYC_PER_PTE_GROUP_VBLANK_L, &dlg_attr->refcyc_per_pte_group_vblank_l);
 
@@ -1219,7 +1149,7 @@ void hubp2_read_state_common(struct hubp *hubp)
 	REG_GET(NOM_PARAMETERS_7,
 		REFCYC_PER_META_CHUNK_NOM_C, &dlg_attr->refcyc_per_meta_chunk_nom_c);
 
-	/* TTU - per hubp */
+	 
 	REG_GET_2(DCN_TTU_QOS_WM,
 		QoS_LEVEL_LOW_WM, &ttu_attr->qos_level_low_wm,
 		QoS_LEVEL_HIGH_WM, &ttu_attr->qos_level_high_wm);
@@ -1228,8 +1158,8 @@ void hubp2_read_state_common(struct hubp *hubp)
 		MIN_TTU_VBLANK, &ttu_attr->min_ttu_vblank,
 		QoS_LEVEL_FLIP, &ttu_attr->qos_level_flip);
 
-	/* TTU - per luma/chroma */
-	/* Assumed surf0 is luma and 1 is chroma */
+	 
+	 
 
 	REG_GET_3(DCN_SURF0_TTU_CNTL0,
 		REFCYC_PER_REQ_DELIVERY, &ttu_attr->refcyc_per_req_delivery_l,
@@ -1249,7 +1179,7 @@ void hubp2_read_state_common(struct hubp *hubp)
 		REFCYC_PER_REQ_DELIVERY_PRE,
 		&ttu_attr->refcyc_per_req_delivery_pre_c);
 
-	/* Rest of hubp */
+	 
 	REG_GET(DCSURF_SURFACE_CONFIG,
 			SURFACE_PIXEL_FORMAT, &s->pixel_format);
 
@@ -1344,7 +1274,7 @@ static void hubp2_validate_dml_output(struct hubp *hubp,
 	DC_LOGGER_INIT(ctx->logger);
 	DC_LOG_DEBUG("DML Validation | Running Validation");
 
-	/* Requestor Regs */
+	 
 	REG_GET(HUBPRET_CONTROL,
 		DET_BUF_PLANE1_BASE_ADDRESS, &rq_regs.plane1_base_address);
 	REG_GET_4(DCN_EXPANSION_MODE,
@@ -1437,7 +1367,7 @@ static void hubp2_validate_dml_output(struct hubp *hubp,
 		DC_LOG_DEBUG("DML Validation | DCHUBP_REQ_SIZE_CONFIG:PTE_ROW_HEIGHT_LINEAR_C - Expected: %u  Actual: %u\n",
 				dml_rq_regs->rq_regs_c.pte_row_height_linear, rq_regs.rq_regs_c.pte_row_height_linear);
 
-	/* DLG - Per hubp */
+	 
 	REG_GET_2(BLANK_OFFSET_0,
 		REFCYC_H_BLANK_END, &dlg_attr.refcyc_h_blank_end,
 		DLG_V_BLANK_END, &dlg_attr.dlg_vblank_end);
@@ -1473,7 +1403,7 @@ static void hubp2_validate_dml_output(struct hubp *hubp,
 		DC_LOG_DEBUG("DML Validation | REF_FREQ_TO_PIX_FREQ:REF_FREQ_TO_PIX_FREQ - Expected: %u  Actual: %u\n",
 				dml_dlg_attr->ref_freq_to_pix_freq, dlg_attr.ref_freq_to_pix_freq);
 
-	/* DLG - Per luma/chroma */
+	 
 	REG_GET(VBLANK_PARAMETERS_1,
 		REFCYC_PER_PTE_GROUP_VBLANK_L, &dlg_attr.refcyc_per_pte_group_vblank_l);
 	if (REG(NOM_PARAMETERS_0))
@@ -1558,7 +1488,7 @@ static void hubp2_validate_dml_output(struct hubp *hubp,
 		DC_LOG_DEBUG("DML Validation | VBLANK_PARAMETERS_4:REFCYC_PER_META_CHUNK_VBLANK_C - Expected: %u  Actual: %u\n",
 				dml_dlg_attr->refcyc_per_meta_chunk_vblank_c, dlg_attr.refcyc_per_meta_chunk_vblank_c);
 
-	/* TTU - per hubp */
+	 
 	REG_GET_2(DCN_TTU_QOS_WM,
 		QoS_LEVEL_LOW_WM, &ttu_attr.qos_level_low_wm,
 		QoS_LEVEL_HIGH_WM, &ttu_attr.qos_level_high_wm);
@@ -1570,8 +1500,8 @@ static void hubp2_validate_dml_output(struct hubp *hubp,
 		DC_LOG_DEBUG("DML Validation | DCN_TTU_QOS_WM:QoS_LEVEL_HIGH_WM - Expected: %u  Actual: %u\n",
 				dml_ttu_attr->qos_level_high_wm, ttu_attr.qos_level_high_wm);
 
-	/* TTU - per luma/chroma */
-	/* Assumed surf0 is luma and 1 is chroma */
+	 
+	 
 	REG_GET_3(DCN_SURF0_TTU_CNTL0,
 		REFCYC_PER_REQ_DELIVERY, &ttu_attr.refcyc_per_req_delivery_l,
 		QoS_LEVEL_FIXED, &ttu_attr.qos_level_fixed_l,

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright 2011 Cisco Systems, Inc.  All rights reserved.
+
+
 
 #include <linux/pci.h>
 #include <linux/etherdevice.h>
@@ -162,7 +162,7 @@ int enic_dev_intr_coal_timer_info(struct enic *enic)
 	return err;
 }
 
-/* rtnl lock is held */
+ 
 int enic_vlan_rx_add_vid(struct net_device *netdev, __be16 proto, u16 vid)
 {
 	struct enic *enic = netdev_priv(netdev);
@@ -175,7 +175,7 @@ int enic_vlan_rx_add_vid(struct net_device *netdev, __be16 proto, u16 vid)
 	return err;
 }
 
-/* rtnl lock is held */
+ 
 int enic_vlan_rx_kill_vid(struct net_device *netdev, __be16 proto, u16 vid)
 {
 	struct enic *enic = netdev_priv(netdev);

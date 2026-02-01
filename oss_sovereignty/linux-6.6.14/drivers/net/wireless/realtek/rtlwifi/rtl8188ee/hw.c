@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2013  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "../efuse.h"
@@ -253,7 +253,7 @@ static void _rtl88ee_fwlps_leave(struct ieee80211_hw *hw)
 	u8 rpwm_val = 0, fw_pwrmode = FW_PS_ACTIVE_MODE;
 
 	if (ppsc->low_power_enable) {
-		rpwm_val = (FW_PS_STATE_ALL_ON_88E|FW_PS_ACK);/* RF on */
+		rpwm_val = (FW_PS_STATE_ALL_ON_88E|FW_PS_ACK); 
 		_rtl88ee_set_fw_clock_on(hw, rpwm_val, false);
 		rtlhal->allow_sw_to_change_hwclc = false;
 		rtlpriv->cfg->ops->set_hw_reg(hw, HW_VAR_H2C_FW_PWRMODE,
@@ -261,7 +261,7 @@ static void _rtl88ee_fwlps_leave(struct ieee80211_hw *hw)
 		rtlpriv->cfg->ops->set_hw_reg(hw, HW_VAR_FW_PSMODE_STATUS,
 					      (u8 *)(&fw_current_inps));
 	} else {
-		rpwm_val = FW_PS_STATE_ALL_ON_88E;	/* RF on */
+		rpwm_val = FW_PS_STATE_ALL_ON_88E;	 
 		rtlpriv->cfg->ops->set_hw_reg(hw, HW_VAR_SET_RPWM, &rpwm_val);
 		rtlpriv->cfg->ops->set_hw_reg(hw, HW_VAR_H2C_FW_PWRMODE,
 					      &fw_pwrmode);
@@ -279,7 +279,7 @@ static void _rtl88ee_fwlps_enter(struct ieee80211_hw *hw)
 	u8 rpwm_val;
 
 	if (ppsc->low_power_enable) {
-		rpwm_val = FW_PS_STATE_RF_OFF_LOW_PWR_88E;	/* RF off */
+		rpwm_val = FW_PS_STATE_RF_OFF_LOW_PWR_88E;	 
 		rtlpriv->cfg->ops->set_hw_reg(hw, HW_VAR_FW_PSMODE_STATUS,
 					      (u8 *)(&fw_current_inps));
 		rtlpriv->cfg->ops->set_hw_reg(hw, HW_VAR_H2C_FW_PWRMODE,
@@ -287,7 +287,7 @@ static void _rtl88ee_fwlps_enter(struct ieee80211_hw *hw)
 		rtlhal->allow_sw_to_change_hwclc = true;
 		_rtl88ee_set_fw_clock_off(hw, rpwm_val);
 	} else {
-		rpwm_val = FW_PS_STATE_RF_OFF_88E;	/* RF off */
+		rpwm_val = FW_PS_STATE_RF_OFF_88E;	 
 		rtlpriv->cfg->ops->set_hw_reg(hw, HW_VAR_FW_PSMODE_STATUS,
 					      (u8 *)(&fw_current_inps));
 		rtlpriv->cfg->ops->set_hw_reg(hw, HW_VAR_H2C_FW_PWRMODE,
@@ -765,7 +765,7 @@ static bool _rtl88ee_llt_table_init(struct ieee80211_hw *hw)
 	rtl_write_byte(rtlpriv, REG_RQPN_NPQ, 0x01);
 	rtl_write_dword(rtlpriv, REG_RQPN, 0x80730d29);
 
-	/*0x2600   MaxRxBuff=10k-max(TxReportSize(64*8), WOLPattern(16*24)) */
+	 
 	rtl_write_dword(rtlpriv, REG_TRXFF_BNDY, (0x25FF0000 | txpktbuf_bndy));
 	rtl_write_byte(rtlpriv, REG_TDECTRL + 1, txpktbuf_bndy);
 
@@ -825,15 +825,15 @@ static bool _rtl88ee_init_mac(struct ieee80211_hw *hw)
 	u8 bytetmp;
 	u16 wordtmp;
 
-	/*Disable XTAL OUTPUT for power saving. YJ,add,111206. */
+	 
 	bytetmp = rtl_read_byte(rtlpriv, REG_XCK_OUT_CTRL) & (~BIT(0));
 	rtl_write_byte(rtlpriv, REG_XCK_OUT_CTRL, bytetmp);
-	/*Auto Power Down to CHIP-off State*/
+	 
 	bytetmp = rtl_read_byte(rtlpriv, REG_APS_FSMCO + 1) & (~BIT(7));
 	rtl_write_byte(rtlpriv, REG_APS_FSMCO + 1, bytetmp);
 
 	rtl_write_byte(rtlpriv, REG_RSV_CTRL, 0x00);
-	/* HW Power on sequence */
+	 
 	if (!rtl_hal_pwrseqcmdparsing(rtlpriv, PWR_CUT_ALL_MSK,
 				      PWR_FAB_ALL_MSK, PWR_INTF_PCI_MSK,
 				      RTL8188EE_NIC_ENABLE_FLOW)) {
@@ -859,7 +859,7 @@ static bool _rtl88ee_init_mac(struct ieee80211_hw *hw)
 	rtl_write_byte(rtlpriv, REG_TX_RPT_CTRL+1, 2);
 	rtl_write_word(rtlpriv, REG_TX_RPT_TIME, 0xcdf0);
 
-	/*Add for wake up online*/
+	 
 	bytetmp = rtl_read_byte(rtlpriv, REG_SYS_CLKR);
 
 	rtl_write_byte(rtlpriv, REG_SYS_CLKR, bytetmp|BIT(3));
@@ -911,15 +911,13 @@ static bool _rtl88ee_init_mac(struct ieee80211_hw *hw)
 			(u64) rtlpci->rx_ring[RX_MPDU_QUEUE].dma &
 			DMA_BIT_MASK(32));
 
-	/* if we want to support 64 bit DMA, we should set it here,
-	 * but now we do not support 64 bit DMA
-	 */
+	 
 	rtl_write_dword(rtlpriv, REG_INT_MIG, 0);
 
 	rtl_write_dword(rtlpriv, REG_MCUTST_1, 0x0);
-	rtl_write_byte(rtlpriv, REG_PCIE_CTRL_REG+1, 0);/*Enable RX DMA */
+	rtl_write_byte(rtlpriv, REG_PCIE_CTRL_REG+1, 0); 
 
-	if (rtlhal->earlymode_enable) {/*Early mode enable*/
+	if (rtlhal->earlymode_enable) { 
 		bytetmp = rtl_read_byte(rtlpriv, REG_EARLY_MODE_CONTROL);
 		bytetmp |= 0x1f;
 		rtl_write_byte(rtlpriv, REG_EARLY_MODE_CONTROL, bytetmp);
@@ -1048,13 +1046,7 @@ int rtl88ee_hw_init(struct ieee80211_hw *hw)
 	unsigned long flags;
 
 	rtlpriv->rtlhal.being_init_adapter = true;
-	/* As this function can take a very long time (up to 350 ms)
-	 * and can be called with irqs disabled, reenable the irqs
-	 * to let the other devices continue being serviced.
-	 *
-	 * It is safe doing so since our own interrupts will only be enabled
-	 * in a subsequent step.
-	 */
+	 
 	local_save_flags(flags);
 	local_irq_enable();
 	rtlhal->fw_ready = false;
@@ -1085,7 +1077,7 @@ int rtl88ee_hw_init(struct ieee80211_hw *hw)
 		goto exit;
 	}
 	rtlhal->fw_ready = true;
-	/*fw related variable initialize */
+	 
 	rtlhal->last_hmeboxnum = 0;
 	rtlhal->fw_ps_state = FW_PS_STATE_ALL_ON_88E;
 	rtlhal->fw_clk_change_in_progress = false;
@@ -1093,11 +1085,7 @@ int rtl88ee_hw_init(struct ieee80211_hw *hw)
 	ppsc->fw_current_inpsmode = false;
 
 	rtl88e_phy_mac_config(hw);
-	/* because last function modify RCR, so we update
-	 * rcr var here, or TP will unstable for receive_config
-	 * is wrong, RX RCR_ACRC32 will cause TP unstabel & Rx
-	 * RCR_APP_ICV will cause mac80211 unassoc for cisco 1252
-	 */
+	 
 	rtlpci->receive_config &= ~(RCR_ACRC32 | RCR_AICV);
 	rtl_write_dword(rtlpriv, REG_RCR, rtlpci->receive_config);
 
@@ -1232,12 +1220,7 @@ static int _rtl88ee_set_media_status(struct ieee80211_hw *hw,
 		return 1;
 	}
 
-	/* MSR_INFRA == Link in infrastructure network;
-	 * MSR_ADHOC == Link in ad hoc network;
-	 * Therefore, check link state is necessary.
-	 *
-	 * MSR_AP == AP mode; link state is not cared here.
-	 */
+	 
 	if (mode != MSR_AP && rtlpriv->mac80211.link_state < MAC80211_LINKED) {
 		mode = MSR_NOLINK;
 		ledaction = LED_CTL_NO_LINK;
@@ -1306,9 +1289,7 @@ int rtl88ee_set_network_type(struct ieee80211_hw *hw,
 	return 0;
 }
 
-/* don't set REG_EDCA_BE_PARAM here
- * because mac80211 will send pkt when scan
- */
+ 
 void rtl88ee_set_qos(struct ieee80211_hw *hw, int aci)
 {
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
@@ -1341,13 +1322,9 @@ void rtl88ee_enable_interrupt(struct ieee80211_hw *hw)
 	rtl_write_dword(rtlpriv, REG_HIMRE,
 			rtlpci->irq_mask[1] & 0xFFFFFFFF);
 	rtlpci->irq_enabled = true;
-	/* there are some C2H CMDs have been sent
-	 * before system interrupt is enabled, e.g., C2H, CPWM.
-	 * So we need to clear all C2H events that FW has notified,
-	 * otherwise FW won't schedule any commands anymore.
-	 */
+	 
 	rtl_write_byte(rtlpriv, REG_C2HEVT_CLEAR, 0);
-	/*enable system interrupt*/
+	 
 	rtl_write_dword(rtlpriv, REG_HSIMR,
 			rtlpci->sys_irq_mask & 0xFFFFFFFF);
 }
@@ -1360,7 +1337,7 @@ void rtl88ee_disable_interrupt(struct ieee80211_hw *hw)
 	rtl_write_dword(rtlpriv, REG_HIMR, IMR_DISABLED);
 	rtl_write_dword(rtlpriv, REG_HIMRE, IMR_DISABLED);
 	rtlpci->irq_enabled = false;
-	/*synchronize_irq(rtlpci->pdev->irq);*/
+	 
 }
 
 static void _rtl88ee_poweroff_adapter(struct ieee80211_hw *hw)
@@ -1443,7 +1420,7 @@ void rtl88ee_card_disable(struct ieee80211_hw *hw)
 	RT_SET_PS_LEVEL(ppsc, RT_RF_OFF_LEVL_HALT_NIC);
 	_rtl88ee_poweroff_adapter(hw);
 
-	/* after power off we should do iqk again */
+	 
 	rtlpriv->phy.iqk_initialized = false;
 }
 
@@ -1469,7 +1446,7 @@ void rtl88ee_set_beacon_related_registers(struct ieee80211_hw *hw)
 	u16 bcn_interval, atim_window;
 
 	bcn_interval = mac->beacon_interval;
-	atim_window = 2;	/*FIX MERGE */
+	atim_window = 2;	 
 	rtl88ee_disable_interrupt(hw);
 	rtl_write_word(rtlpriv, REG_ATIMWND, atim_window);
 	rtl_write_word(rtlpriv, REG_BCN_INTERVAL, bcn_interval);
@@ -1479,7 +1456,7 @@ void rtl88ee_set_beacon_related_registers(struct ieee80211_hw *hw)
 	rtl_write_byte(rtlpriv, 0x606, 0x30);
 	rtlpci->reg_bcn_ctrl_val |= BIT(3);
 	rtl_write_byte(rtlpriv, REG_BCN_CTRL, (u8) rtlpci->reg_bcn_ctrl_val);
-	/*rtl88ee_enable_interrupt(hw);*/
+	 
 }
 
 void rtl88ee_set_beacon_interval(struct ieee80211_hw *hw)
@@ -1490,9 +1467,9 @@ void rtl88ee_set_beacon_interval(struct ieee80211_hw *hw)
 
 	rtl_dbg(rtlpriv, COMP_BEACON, DBG_DMESG,
 		"beacon_interval:%d\n", bcn_interval);
-	/*rtl88ee_disable_interrupt(hw);*/
+	 
 	rtl_write_word(rtlpriv, REG_BCN_INTERVAL, bcn_interval);
-	/*rtl88ee_enable_interrupt(hw);*/
+	 
 }
 
 void rtl88ee_update_interrupt_mask(struct ieee80211_hw *hw,
@@ -1564,21 +1541,21 @@ static void read_power_value_fromprom(struct ieee80211_hw *hw,
 	rtl_dbg(rtlpriv, COMP_INIT, DBG_LOUD,
 		"hal_ReadPowerValueFromPROM88E():PROMContent[0x%x]=0x%x\n",
 		(eeaddr + 1), hwinfo[eeaddr + 1]);
-	if (0xFF == hwinfo[eeaddr+1])  /*YJ,add,120316*/
+	if (0xFF == hwinfo[eeaddr+1])   
 		autoload_fail = true;
 
 	if (autoload_fail) {
 		rtl_dbg(rtlpriv, COMP_INIT, DBG_LOUD,
 			"auto load fail : Use Default value!\n");
 		for (rfpath = 0 ; rfpath < MAX_RF_PATH ; rfpath++) {
-			/* 2.4G default value */
+			 
 			set_24g_base(pwrinfo24g, rfpath);
 		}
 		return;
 	}
 
 	for (rfpath = 0 ; rfpath < MAX_RF_PATH ; rfpath++) {
-		/*2.4G default value*/
+		 
 		for (group = 0 ; group < MAX_CHNL_GROUP_24G; group++) {
 			pwrinfo24g->index_cck_base[rfpath][group] =
 			  hwinfo[eeaddr++];
@@ -1599,7 +1576,7 @@ static void read_power_value_fromprom(struct ieee80211_hw *hw,
 		} else {
 			pwrinfo24g->bw20_diff[rfpath][0] =
 				(hwinfo[eeaddr]&0xf0)>>4;
-			/*bit sign number to 8 bit sign number*/
+			 
 			if (pwrinfo24g->bw20_diff[rfpath][0] & BIT(3))
 				pwrinfo24g->bw20_diff[rfpath][0] |= 0xF0;
 		}
@@ -1609,7 +1586,7 @@ static void read_power_value_fromprom(struct ieee80211_hw *hw,
 		} else {
 			pwrinfo24g->ofdm_diff[rfpath][0] =
 				(hwinfo[eeaddr]&0x0f);
-				/*bit sign number to 8 bit sign number*/
+				 
 			if (pwrinfo24g->ofdm_diff[rfpath][0] & BIT(3))
 				pwrinfo24g->ofdm_diff[rfpath][0] |= 0xF0;
 		}
@@ -1664,7 +1641,7 @@ static void read_power_value_fromprom(struct ieee80211_hw *hw,
 			eeaddr++;
 		}
 
-		/*5G default value*/
+		 
 		for (group = 0 ; group < MAX_CHNL_GROUP_5G; group++) {
 			pwrinfo5g->index_bw40_base[rfpath][group] =
 				hwinfo[eeaddr++];
@@ -1797,7 +1774,7 @@ static void _rtl88ee_read_txpower_info_from_hwpg(struct ieee80211_hw *hw,
 
 	if (!autoload_fail) {
 		rtlefuse->eeprom_regulatory =
-			hwinfo[EEPROM_RF_BOARD_OPTION_88E] & 0x07;/*bit0~2*/
+			hwinfo[EEPROM_RF_BOARD_OPTION_88E] & 0x07; 
 		if (hwinfo[EEPROM_RF_BOARD_OPTION_88E] == 0xFF)
 			rtlefuse->eeprom_regulatory = 0;
 	} else {
@@ -1830,9 +1807,9 @@ static void _rtl88ee_read_adapter_info(struct ieee80211_hw *hw)
 
 	rtl_dbg(rtlpriv, COMP_INIT, DBG_LOUD,
 		"EEPROM Customer ID: 0x%2x\n", rtlefuse->eeprom_oemid);
-	/* set channel plan from efuse */
+	 
 	rtlefuse->channel_plan = rtlefuse->eeprom_channelplan;
-	/*tx power*/
+	 
 	_rtl88ee_read_txpower_info_from_hwpg(hw,
 					     rtlefuse->autoload_failflag,
 					     hwinfo);
@@ -1842,18 +1819,18 @@ static void _rtl88ee_read_adapter_info(struct ieee80211_hw *hw)
 						 rtlefuse->autoload_failflag,
 						 hwinfo);
 
-	/*board type*/
+	 
 	rtlefuse->board_type =
 		((hwinfo[EEPROM_RF_BOARD_OPTION_88E] & 0xE0) >> 5);
 	rtlhal->board_type = rtlefuse->board_type;
-	/*Wake on wlan*/
+	 
 	rtlefuse->wowlan_enable =
 		((hwinfo[EEPROM_RF_FEATURE_OPTION_88E] & 0x40) >> 6);
-	/*parse xtal*/
+	 
 	rtlefuse->crystalcap = hwinfo[EEPROM_XTAL_88E];
 	if (hwinfo[EEPROM_XTAL_88E])
 		rtlefuse->crystalcap = 0x20;
-	/*antenna diversity*/
+	 
 	rtlefuse->antenna_div_cfg =
 		(hwinfo[EEPROM_RF_BOARD_OPTION_88E] & 0x18) >> 3;
 	if (hwinfo[EEPROM_RF_BOARD_OPTION_88E] == 0xFF)
@@ -1975,7 +1952,7 @@ static void rtl88ee_update_hal_rate_table(struct ieee80211_hw *hw,
 	u32 ratr_value;
 	u8 ratr_index = 0;
 	u8 b_nmode = mac->ht_enable;
-	/*u8 mimo_ps = IEEE80211_SMPS_OFF;*/
+	 
 	u16 shortgi_rate;
 	u32 tmp_ratr_value;
 	u8 curtxbw_40mhz = mac->bw_40;
@@ -2075,7 +2052,7 @@ static void rtl88ee_update_hal_rate_mask(struct ieee80211_hw *hw,
 	bool b_shortgi = false;
 	u8 rate_mask[5];
 	u8 macid = 0;
-	/*u8 mimo_ps = IEEE80211_SMPS_OFF;*/
+	 
 
 	sta_entry = (struct rtl_sta_info *)sta->drv_priv;
 	wirelessmode = sta_entry->wireless_mode;
@@ -2149,7 +2126,7 @@ static void rtl88ee_update_hal_rate_mask(struct ieee80211_hw *hw,
 					ratr_bitmap &= 0x0f8ff005;
 			}
 		}
-		/*}*/
+		 
 
 		if ((curtxbw_40mhz && curshortgi_40mhz) ||
 		    (!curtxbw_40mhz && curshortgi_20mhz)) {
@@ -2468,9 +2445,9 @@ void rtl8188ee_bt_reg_init(struct ieee80211_hw *hw)
 {
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 
-	/* 0:Low, 1:High, 2:From Efuse. */
+	 
 	rtlpriv->btcoexist.reg_bt_iso = 2;
-	/* 0:Disable BT control A-MPDU, 1:Enable BT control A-MPDU. */
+	 
 	rtlpriv->btcoexist.reg_bt_sco = 0;
 }
 
@@ -2498,7 +2475,7 @@ void rtl8188ee_bt_hw_init(struct ieee80211_hw *hw)
 		rtl_write_dword(rtlpriv, REG_BT_COEX_TABLE+8, 0xffbd0040);
 		rtl_write_dword(rtlpriv, REG_BT_COEX_TABLE+0xc, 0x40000010);
 
-		/* Config to 1T1R. */
+		 
 		if (rtlphy->rf_type == RF_1T1R) {
 			u1_tmp = rtl_read_byte(rtlpriv, ROFDM0_TRXPATHENABLE);
 			u1_tmp &= ~(BIT(1));

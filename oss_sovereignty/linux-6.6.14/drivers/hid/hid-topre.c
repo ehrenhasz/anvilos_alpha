@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  HID driver for Topre REALFORCE Keyboards
- *
- *  Copyright (c) 2022 Harry Stern <harry@harrystern.net>
- *
- *  Based on the hid-macally driver
- */
+
+ 
 
 #include <linux/hid.h>
 #include <linux/module.h>
@@ -16,11 +10,7 @@ MODULE_AUTHOR("Harry Stern <harry@harrystern.net>");
 MODULE_DESCRIPTION("REALFORCE R2 Keyboard driver");
 MODULE_LICENSE("GPL");
 
-/*
- * Fix the REALFORCE R2's non-boot interface's report descriptor to match the
- * events it's actually sending. It claims to send array events but is instead
- * sending variable events.
- */
+ 
 static __u8 *topre_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 				 unsigned int *rsize)
 {

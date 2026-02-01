@@ -1,40 +1,4 @@
-/*
- * Broadcom NetXtreme-E RoCE driver.
- *
- * Copyright (c) 2016 - 2017, Broadcom. All rights reserved.  The term
- * Broadcom refers to Broadcom Limited and/or its subsidiaries.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * BSD license below:
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS''
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
- * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Description: Main component of the bnxt_re driver
- */
+ 
 
 #include <linux/module.h>
 #include <linux/netdevice.h>
@@ -74,7 +38,7 @@ MODULE_AUTHOR("Eddie Wai <eddie.wai@broadcom.com>");
 MODULE_DESCRIPTION(BNXT_RE_DESC);
 MODULE_LICENSE("Dual BSD/GPL");
 
-/* globals */
+ 
 static DEFINE_MUTEX(bnxt_re_mutex);
 
 static void bnxt_re_stop_irq(void *handle);
@@ -101,21 +65,17 @@ static void bnxt_re_set_db_offset(struct bnxt_re_dev *rdev)
 	en_dev = rdev->en_dev;
 	cctx = rdev->chip_ctx;
 
-	/* Issue qcfg */
+	 
 	rc = bnxt_re_hwrm_qcfg(rdev, &l2db_len, &offset);
 	if (rc)
 		dev_info(rdev_to_dev(rdev),
 			 "Couldn't get DB bar size, Low latency framework is disabled\n");
-	/* set register offsets for both UC and WC */
+	 
 	res->dpi_tbl.ucreg.offset = res->is_vf ? BNXT_QPLIB_DBR_VF_DB_OFFSET :
 						 BNXT_QPLIB_DBR_PF_DB_OFFSET;
 	res->dpi_tbl.wcreg.offset = res->dpi_tbl.ucreg.offset;
 
-	/* If WC mapping is disabled by L2 driver then en_dev->l2_db_size
-	 * is equal to the DB-Bar actual size. This indicates that L2
-	 * is mapping entire bar as UC-. RoCE driver can't enable WC mapping
-	 * in such cases and DB-push will be disabled.
-	 */
+	 
 	barlen = pci_resource_len(res->pdev, RCFW_DBR_PCI_BAR_REGION);
 	if (cctx->modes.db_push && l2db_len && en_dev->l2_db_size != barlen) {
 		res->dpi_tbl.wcreg.offset = en_dev->l2_db_size;
@@ -165,7 +125,7 @@ static int bnxt_re_setup_chip_ctx(struct bnxt_re_dev *rdev, u8 wqe_mode)
 	chip_ctx->hw_stats_size = en_dev->hw_ring_stats_size;
 
 	rdev->chip_ctx = chip_ctx;
-	/* rest members to follow eventually */
+	 
 
 	rdev->qplib_res.cctx = rdev->chip_ctx;
 	rdev->rcfw.res = &rdev->qplib_res;
@@ -185,7 +145,7 @@ static int bnxt_re_setup_chip_ctx(struct bnxt_re_dev *rdev, u8 wqe_mode)
 	return 0;
 }
 
-/* SR-IOV helper functions */
+ 
 
 static void bnxt_re_get_sriov_func_type(struct bnxt_re_dev *rdev)
 {
@@ -193,11 +153,7 @@ static void bnxt_re_get_sriov_func_type(struct bnxt_re_dev *rdev)
 		rdev->is_virtfn = 1;
 }
 
-/* Set the maximum number of each resource that the driver actually wants
- * to allocate. This may be up to the maximum number the firmware has
- * reserved for the function. The driver may choose to allocate fewer
- * resources than the firmware maximum.
- */
+ 
 static void bnxt_re_limit_pf_res(struct bnxt_re_dev *rdev)
 {
 	struct bnxt_qplib_dev_attr *attr;
@@ -210,7 +166,7 @@ static void bnxt_re_limit_pf_res(struct bnxt_re_dev *rdev)
 	ctx->qpc_count = min_t(u32, BNXT_RE_MAX_QPC_COUNT,
 			       attr->max_qp);
 	ctx->mrw_count = BNXT_RE_MAX_MRW_COUNT_256K;
-	/* Use max_mr from fw since max_mrw does not get set */
+	 
 	ctx->mrw_count = min_t(u32, ctx->mrw_count, attr->max_mr);
 	ctx->srqc_count = min_t(u32, BNXT_RE_MAX_SRQC_COUNT,
 				attr->max_srq);
@@ -229,24 +185,14 @@ static void bnxt_re_limit_vf_res(struct bnxt_qplib_ctx *qplib_ctx, u32 num_vf)
 	u32 nvfs;
 
 	vf_res = &qplib_ctx->vf_res;
-	/*
-	 * Reserve a set of resources for the PF. Divide the remaining
-	 * resources among the VFs
-	 */
+	 
 	vf_pct = 100 - BNXT_RE_PCT_RSVD_FOR_PF;
 	nvfs = num_vf;
 	num_vf = 100 * num_vf;
 	vf_res->max_qp_per_vf = (qplib_ctx->qpc_count * vf_pct) / num_vf;
 	vf_res->max_srq_per_vf = (qplib_ctx->srqc_count * vf_pct) / num_vf;
 	vf_res->max_cq_per_vf = (qplib_ctx->cq_count * vf_pct) / num_vf;
-	/*
-	 * The driver allows many more MRs than other resources. If the
-	 * firmware does also, then reserve a fixed amount for the PF and
-	 * divide the rest among VFs. VFs may use many MRs for NFS
-	 * mounts, ISER, NVME applications, etc. If the firmware severely
-	 * restricts the number of MRs, then let PF have half and divide
-	 * the rest among VFs, as for the other resource types.
-	 */
+	 
 	if (qplib_ctx->mrw_count < BNXT_RE_MAX_MRW_COUNT_64K) {
 		mrws = qplib_ctx->mrw_count * vf_pct;
 		nvfs = num_vf;
@@ -317,18 +263,12 @@ static void bnxt_re_start_irq(void *handle, struct bnxt_msix_entry *ent)
 	int indx, rc;
 
 	if (!ent) {
-		/* Not setting the f/w timeout bit in rcfw.
-		 * During the driver unload the first command
-		 * to f/w will timeout and that will set the
-		 * timeout bit.
-		 */
+		 
 		ibdev_err(&rdev->ibdev, "Failed to re-start IRQs\n");
 		return;
 	}
 
-	/* Vectors may change after restart, so update with new vectors
-	 * in device sctructure.
-	 */
+	 
 	for (indx = 0; indx < rdev->num_msix; indx++)
 		rdev->en_dev->msix_entries[indx].vector = ent[indx].vector;
 
@@ -355,7 +295,7 @@ static struct bnxt_ulp_ops bnxt_re_ulp_ops = {
 	.ulp_irq_restart = bnxt_re_start_irq
 };
 
-/* RoCE -> Net driver */
+ 
 
 static int bnxt_re_register_netdev(struct bnxt_re_dev *rdev)
 {
@@ -388,7 +328,7 @@ static void bnxt_re_fill_fw_msg(struct bnxt_fw_msg *fw_msg, void *msg,
 	fw_msg->timeout = timeout;
 }
 
-/* Query device config using common hwrm */
+ 
 static int bnxt_re_hwrm_qcfg(struct bnxt_re_dev *rdev, u32 *db_len,
 			     u32 *offset)
 {
@@ -410,7 +350,7 @@ static int bnxt_re_hwrm_qcfg(struct bnxt_re_dev *rdev, u32 *db_len,
 	return rc;
 }
 
-/* Query function capabilities using common hwrm */
+ 
 int bnxt_re_hwrm_qcaps(struct bnxt_re_dev *rdev)
 {
 	struct bnxt_en_dev *en_dev = rdev->en_dev;
@@ -463,7 +403,7 @@ static int bnxt_re_hwrm_dbr_pacing_qcfg(struct bnxt_re_dev *rdev)
 	return 0;
 }
 
-/* Update the pacing tunable parameters to the default values */
+ 
 static void bnxt_re_set_default_pacing_data(struct bnxt_re_dev *rdev)
 {
 	struct bnxt_qplib_db_pacing_data *pacing_data = rdev->qplib_res.pacing_data;
@@ -478,15 +418,13 @@ static void __wait_for_fifo_occupancy_below_th(struct bnxt_re_dev *rdev)
 {
 	u32 read_val, fifo_occup;
 
-	/* loop shouldn't run infintely as the occupancy usually goes
-	 * below pacing algo threshold as soon as pacing kicks in.
-	 */
+	 
 	while (1) {
 		read_val = readl(rdev->en_dev->bar0 + rdev->pacing.dbr_db_fifo_reg_off);
 		fifo_occup = BNXT_RE_MAX_FIFO_DEPTH -
 			((read_val & BNXT_RE_DB_FIFO_ROOM_MASK) >>
 			 BNXT_RE_DB_FIFO_ROOM_SHIFT);
-		/* Fifo occupancy cannot be greater the MAX FIFO depth */
+		 
 		if (fifo_occup > BNXT_RE_MAX_FIFO_DEPTH)
 			break;
 
@@ -509,16 +447,10 @@ static void bnxt_re_db_fifo_check(struct work_struct *work)
 	__wait_for_fifo_occupancy_below_th(rdev);
 	cancel_delayed_work_sync(&rdev->dbq_pacing_work);
 	if (pacing_save > rdev->pacing.dbr_def_do_pacing) {
-		/* Double the do_pacing value during the congestion */
+		 
 		pacing_save = pacing_save << 1;
 	} else {
-		/*
-		 * when a new congestion is detected increase the do_pacing
-		 * by 8 times. And also increase the pacing_th by 4 times. The
-		 * reason to increase pacing_th is to give more space for the
-		 * queue to oscillate down without getting empty, but also more
-		 * room for the queue to increase without causing another alarm.
-		 */
+		 
 		pacing_save = pacing_save << 3;
 		pacing_data->pacing_th = rdev->pacing.pacing_algo_th * 4;
 	}
@@ -555,10 +487,7 @@ static void bnxt_re_pacing_timer_exp(struct work_struct *work)
 	if (fifo_occup > pacing_data->pacing_th)
 		goto restart_timer;
 
-	/*
-	 * Instead of immediately going back to the default do_pacing
-	 * reduce it by 1/8 times and restart the timer.
-	 */
+	 
 	pacing_data->do_pacing = pacing_data->do_pacing - (pacing_data->do_pacing >> 3);
 	pacing_data->do_pacing = max_t(u32, rdev->pacing.dbr_def_do_pacing, pacing_data->do_pacing);
 	if (pacing_data->do_pacing <= rdev->pacing.dbr_def_do_pacing) {
@@ -585,10 +514,7 @@ void bnxt_re_pacing_alert(struct bnxt_re_dev *rdev)
 	mutex_lock(&rdev->pacing.dbq_lock);
 	pacing_data = rdev->qplib_res.pacing_data;
 
-	/*
-	 * Increase the alarm_th to max so that other user lib instances do not
-	 * keep alerting the driver.
-	 */
+	 
 	pacing_data->alarm_th = BNXT_RE_MAX_FIFO_DEPTH;
 	pacing_data->do_pacing = BNXT_RE_MAX_DBR_DO_PACING;
 	cancel_work_sync(&rdev->dbq_fifo_check_work);
@@ -601,7 +527,7 @@ static int bnxt_re_initialize_dbr_pacing(struct bnxt_re_dev *rdev)
 	if (bnxt_re_hwrm_dbr_pacing_qcfg(rdev))
 		return -EIO;
 
-	/* Allocate a page for app use */
+	 
 	rdev->pacing.dbr_page = (void *)__get_free_page(GFP_KERNEL);
 	if (!rdev->pacing.dbr_page)
 		return -ENOMEM;
@@ -609,7 +535,7 @@ static int bnxt_re_initialize_dbr_pacing(struct bnxt_re_dev *rdev)
 	memset((u8 *)rdev->pacing.dbr_page, 0, PAGE_SIZE);
 	rdev->qplib_res.pacing_data = (struct bnxt_qplib_db_pacing_data *)rdev->pacing.dbr_page;
 
-	/* MAP HW window 2 for reading db fifo depth */
+	 
 	writel(rdev->chip_ctx->dbr_stat_db_fifo & BNXT_GRC_BASE_MASK,
 	       rdev->en_dev->bar0 + BNXT_GRCPF_REG_WINDOW_BASE_OUT + 4);
 	rdev->pacing.dbr_db_fifo_reg_off =
@@ -627,7 +553,7 @@ static int bnxt_re_initialize_dbr_pacing(struct bnxt_re_dev *rdev)
 	rdev->qplib_res.pacing_data->fifo_room_shift = BNXT_RE_DB_FIFO_ROOM_SHIFT;
 	rdev->qplib_res.pacing_data->grc_reg_offset = rdev->pacing.dbr_db_fifo_reg_off;
 	bnxt_re_set_default_pacing_data(rdev);
-	/* Initialize worker for DBR Pacing */
+	 
 	INIT_WORK(&rdev->dbq_fifo_check_work, bnxt_re_db_fifo_check);
 	INIT_DELAYED_WORK(&rdev->dbq_pacing_work, bnxt_re_pacing_timer_exp);
 	return 0;
@@ -693,12 +619,12 @@ static int bnxt_re_net_ring_alloc(struct bnxt_re_dev *rdev,
 	req.enables = 0;
 	req.page_tbl_addr =  cpu_to_le64(ring_attr->dma_arr[0]);
 	if (ring_attr->pages > 1) {
-		/* Page size is in log2 units */
+		 
 		req.page_size = BNXT_PAGE_SHIFT;
 		req.page_tbl_depth = 1;
 	}
 	req.fbo = 0;
-	/* Association of ring index with doorbell index and MSIX number */
+	 
 	req.logical_id = cpu_to_le16(ring_attr->lrid);
 	req.length = cpu_to_le32(ring_attr->depth + 1);
 	req.ring_type = ring_attr->type;
@@ -773,7 +699,7 @@ static void bnxt_re_disassociate_ucontext(struct ib_ucontext *ibcontext)
 {
 }
 
-/* Device */
+ 
 
 static struct bnxt_re_dev *bnxt_re_from_netdev(struct net_device *netdev)
 {
@@ -877,7 +803,7 @@ static int bnxt_re_register_ib(struct bnxt_re_dev *rdev)
 	struct ib_device *ibdev = &rdev->ibdev;
 	int ret;
 
-	/* ib device init */
+	 
 	ibdev->node_type = RDMA_NODE_IB_CA;
 	strscpy(ibdev->node_desc, BNXT_RE_DESC " HCA",
 		strlen(BNXT_RE_DESC) + 5);
@@ -907,14 +833,14 @@ static struct bnxt_re_dev *bnxt_re_dev_add(struct bnxt_aux_priv *aux_priv,
 {
 	struct bnxt_re_dev *rdev;
 
-	/* Allocate bnxt_re_dev instance here */
+	 
 	rdev = ib_alloc_device(bnxt_re_dev, ibdev);
 	if (!rdev) {
 		ibdev_err(NULL, "%s: bnxt_re_dev allocation failure!",
 			  ROCE_DRV_MODULE_NAME);
 		return NULL;
 	}
-	/* Default values */
+	 
 	rdev->nb.notifier_call = NULL;
 	rdev->netdev = en_dev->net;
 	rdev->en_dev = en_dev;
@@ -999,7 +925,7 @@ static int bnxt_re_handle_affi_async_event(struct creq_qp_event *affi_async,
 	u8 event;
 
 	if (!obj)
-		return rc; /* QP was already dead, still return success */
+		return rc;  
 
 	event = affi_async->event;
 	if (event == CREQ_QP_EVENT_EVENT_QP_ERROR_NOTIFICATION) {
@@ -1046,7 +972,7 @@ static int bnxt_re_srqn_handler(struct bnxt_qplib_nq *nq,
 		ib_event.event = IB_EVENT_SRQ_ERR;
 
 	if (srq->ib_srq.event_handler) {
-		/* Lock event_handler? */
+		 
 		(*srq->ib_srq.event_handler)(&ib_event,
 					     srq->ib_srq.srq_context);
 	}
@@ -1060,7 +986,7 @@ static int bnxt_re_cqn_handler(struct bnxt_qplib_nq *nq,
 					     qplib_cq);
 
 	if (cq->ib_cq.comp_handler) {
-		/* Lock comp_handler? */
+		 
 		(*cq->ib_cq.comp_handler)(&cq->ib_cq, cq->ib_cq.cq_context);
 	}
 
@@ -1150,7 +1076,7 @@ static int bnxt_re_alloc_res(struct bnxt_re_dev *rdev)
 	int rc, i;
 	u8 type;
 
-	/* Configure and allocate resources for qplib */
+	 
 	rdev->qplib_res.rcfw = &rdev->rcfw;
 	rc = bnxt_qplib_get_dev_attr(&rdev->rcfw, &rdev->dev_attr);
 	if (rc)
@@ -1247,7 +1173,7 @@ static void bnxt_re_dev_stop(struct bnxt_re_dev *rdev)
 	qp_attr.qp_state = IB_QPS_ERR;
 	mutex_lock(&rdev->qp_lock);
 	list_for_each_entry(qp, &rdev->qp_list, list) {
-		/* Modify the state of all QPs except QP1/Shadow QP */
+		 
 		if (!bnxt_re_is_qp1_or_shadow_qp(rdev, qp)) {
 			if (qp->qplib_qp.state !=
 			    CMDQ_MODIFY_QP_NEW_STATE_RESET &&
@@ -1279,9 +1205,7 @@ static int bnxt_re_update_gid(struct bnxt_re_dev *rdev)
 		if (!memcmp(&sgid_tbl->tbl[index], &bnxt_qplib_gid_zero,
 			    sizeof(bnxt_qplib_gid_zero)))
 			continue;
-		/* need to modify the VLAN enable setting of non VLAN GID only
-		 * as setting is done for VLAN GID while adding GID
-		 */
+		 
 		if (sgid_tbl->vlan[index])
 			continue;
 
@@ -1320,15 +1244,13 @@ static int bnxt_re_setup_qos(struct bnxt_re_dev *rdev)
 {
 	u8 prio_map = 0;
 
-	/* Get priority for roce */
+	 
 	prio_map = bnxt_re_get_priority_mask(rdev);
 
 	if (prio_map == rdev->cur_prio_map)
 		return 0;
 	rdev->cur_prio_map = prio_map;
-	/* Actual priorities are not programmed as they are already
-	 * done by L2 driver; just enable or disable priority vlan tagging
-	 */
+	 
 	if ((prio_map == 0 && rdev->qplib_res.prio) ||
 	    (prio_map != 0 && !rdev->qplib_res.prio)) {
 		rdev->qplib_res.prio = prio_map;
@@ -1378,7 +1300,7 @@ static int bnxt_re_ib_init(struct bnxt_re_dev *rdev)
 	int rc;
 	u32 event;
 
-	/* Register ib dev */
+	 
 	rc = bnxt_re_register_ib(rdev);
 	if (rc) {
 		pr_err("Failed to register with IB: %#x\n", rc);
@@ -1432,7 +1354,7 @@ static void bnxt_re_dev_uninit(struct bnxt_re_dev *rdev)
 		bnxt_unregister_dev(rdev->en_dev);
 }
 
-/* worker thread for polling periodic events. Now used for QoS programming*/
+ 
 static void bnxt_re_worker(struct work_struct *work)
 {
 	struct bnxt_re_dev *rdev = container_of(work, struct bnxt_re_dev,
@@ -1451,7 +1373,7 @@ static int bnxt_re_dev_init(struct bnxt_re_dev *rdev, u8 wqe_mode)
 	u8 type;
 	int rc;
 
-	/* Registered a new RoCE device instance to netdev */
+	 
 	rc = bnxt_re_register_netdev(rdev);
 	if (rc) {
 		ibdev_err(&rdev->ibdev,
@@ -1468,7 +1390,7 @@ static int bnxt_re_dev_init(struct bnxt_re_dev *rdev, u8 wqe_mode)
 		return -EINVAL;
 	}
 
-	/* Check whether VF or PF */
+	 
 	bnxt_re_get_sriov_func_type(rdev);
 
 	if (!rdev->en_dev->ulp_tbl->msix_requested) {
@@ -1483,9 +1405,7 @@ static int bnxt_re_dev_init(struct bnxt_re_dev *rdev, u8 wqe_mode)
 
 	bnxt_re_query_hwrm_intf_version(rdev);
 
-	/* Establish RCFW Communication Channel to initialize the context
-	 * memory for the function and all child VFs
-	 */
+	 
 	rc = bnxt_qplib_alloc_rcfw_channel(&rdev->qplib_res, &rdev->rcfw,
 					   &rdev->qplib_ctx,
 					   BNXT_RE_MAX_QPC_COUNT);
@@ -1560,7 +1480,7 @@ static int bnxt_re_dev_init(struct bnxt_re_dev *rdev, u8 wqe_mode)
 	}
 	set_bit(BNXT_RE_FLAG_RCFW_CHANNEL_EN, &rdev->flags);
 
-	/* Resources based on the 'new' device caps */
+	 
 	rc = bnxt_re_alloc_res(rdev);
 	if (rc) {
 		ibdev_err(&rdev->ibdev,
@@ -1586,10 +1506,7 @@ static int bnxt_re_dev_init(struct bnxt_re_dev *rdev, u8 wqe_mode)
 		INIT_DELAYED_WORK(&rdev->worker, bnxt_re_worker);
 		set_bit(BNXT_RE_FLAG_QOS_WORK_REG, &rdev->flags);
 		schedule_delayed_work(&rdev->worker, msecs_to_jiffies(30000));
-		/*
-		 * Use the total VF count since the actual VF count may not be
-		 * available at this point.
-		 */
+		 
 		bnxt_re_vf_res_config(rdev);
 	}
 
@@ -1619,7 +1536,7 @@ static int bnxt_re_add_device(struct auxiliary_device *adev, u8 wqe_mode)
 	struct bnxt_re_dev *rdev;
 	int rc;
 
-	/* en_dev should never be NULL as long as adev and aux_dev are valid. */
+	 
 	en_dev = aux_priv->edev;
 
 	rdev = bnxt_re_dev_add(aux_priv, en_dev);
@@ -1654,11 +1571,11 @@ static void bnxt_re_setup_cc(struct bnxt_re_dev *rdev, bool enable)
 {
 	struct bnxt_qplib_cc_param cc_param = {};
 
-	/* Do not enable congestion control on VFs */
+	 
 	if (rdev->is_virtfn)
 		return;
 
-	/* Currently enabling only for GenP5 adapters */
+	 
 	if (!bnxt_qplib_is_chip_gen_p5(rdev->chip_ctx))
 		return;
 
@@ -1675,20 +1592,7 @@ static void bnxt_re_setup_cc(struct bnxt_re_dev *rdev, bool enable)
 		ibdev_err(&rdev->ibdev, "Failed to setup CC enable = %d\n", enable);
 }
 
-/*
- * "Notifier chain callback can be invoked for the same chain from
- * different CPUs at the same time".
- *
- * For cases when the netdev is already present, our call to the
- * register_netdevice_notifier() will actually get the rtnl_lock()
- * before sending NETDEV_REGISTER and (if up) NETDEV_UP
- * events.
- *
- * But for cases when the netdev is not already present, the notifier
- * chain is subjected to be invoked from different CPUs simultaneously.
- *
- * This is protected by the netdev_mutex.
- */
+ 
 static int bnxt_re_netdev_event(struct notifier_block *notifier,
 				unsigned long event, void *ptr)
 {
@@ -1738,9 +1642,7 @@ static void bnxt_re_remove(struct auxiliary_device *adev)
 		unregister_netdevice_notifier(&rdev->nb);
 		rdev->nb.notifier_call = NULL;
 	} else {
-		/* If notifier is null, we should have already done a
-		 * clean up before coming here.
-		 */
+		 
 		goto skip_remove;
 	}
 	bnxt_re_setup_cc(rdev, false);
@@ -1794,27 +1696,16 @@ static int bnxt_re_suspend(struct auxiliary_device *adev, pm_message_t state)
 		return 0;
 
 	mutex_lock(&bnxt_re_mutex);
-	/* L2 driver may invoke this callback during device error/crash or device
-	 * reset. Current RoCE driver doesn't recover the device in case of
-	 * error. Handle the error by dispatching fatal events to all qps
-	 * ie. by calling bnxt_re_dev_stop and release the MSIx vectors as
-	 * L2 driver want to modify the MSIx table.
-	 */
+	 
 
 	ibdev_info(&rdev->ibdev, "Handle device suspend call");
-	/* Check the current device state from bnxt_en_dev and move the
-	 * device to detached state if FW_FATAL_COND is set.
-	 * This prevents more commands to HW during clean-up,
-	 * in case the device is already in error.
-	 */
+	 
 	if (test_bit(BNXT_STATE_FW_FATAL_COND, &rdev->en_dev->en_state))
 		set_bit(ERR_DEVICE_DETACHED, &rdev->rcfw.cmdq.flags);
 
 	bnxt_re_dev_stop(rdev);
 	bnxt_re_stop_irq(rdev);
-	/* Move the device states to detached and  avoid sending any more
-	 * commands to HW
-	 */
+	 
 	set_bit(BNXT_RE_FLAG_ERR_DEVICE_DETACHED, &rdev->flags);
 	set_bit(ERR_DEVICE_DETACHED, &rdev->rcfw.cmdq.flags);
 	wake_up_all(&rdev->rcfw.cmdq.waitq);
@@ -1831,12 +1722,7 @@ static int bnxt_re_resume(struct auxiliary_device *adev)
 		return 0;
 
 	mutex_lock(&bnxt_re_mutex);
-	/* L2 driver may invoke this callback during device recovery, resume.
-	 * reset. Current RoCE driver doesn't recover the device in case of
-	 * error. Handle the error by dispatching fatal events to all qps
-	 * ie. by calling bnxt_re_dev_stop and release the MSIx vectors as
-	 * L2 driver want to modify the MSIx table.
-	 */
+	 
 
 	ibdev_info(&rdev->ibdev, "Handle device resume call");
 	mutex_unlock(&bnxt_re_mutex);

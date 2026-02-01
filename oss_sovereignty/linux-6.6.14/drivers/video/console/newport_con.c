@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * newport_con.c: Abscon for newport hardware
- * 
- * (C) 1998 Thomas Bogendoerfer (tsbogend@alpha.franken.de)
- * (C) 1999 Ulf Carlsson (ulfc@thepuffingruop.com)
- * 
- * This driver is based on sgicons.c and cons_newport.
- * 
- * Copyright (C) 1996 David S. Miller (davem@davemloft.net)
- * Copyright (C) 1997 Miguel de Icaza (miguel@nuclecu.unam.mx)
- */
+
+ 
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -127,7 +117,7 @@ static const struct linux_logo *newport_show_logo(void)
 	return logo;
 #else
 	return NULL;
-#endif /* CONFIG_LOGO_SGI_CLUT224 */
+#endif  
 }
 
 static inline void newport_clear_screen(int xstart, int ystart, int xend,
@@ -177,7 +167,7 @@ static void newport_reset(void)
 
 	newport_init_cmap();
 
-	/* turn off popup plane */
+	 
 	npregs->set.dcbmode = (DCB_XMAP0 | R_DCB_XMAP9_PROTOCOL |
 			       XM9_CRS_CONFIG | NPORT_DMODE_W1);
 	npregs->set.dcbdata0.bybytes.b3 &= ~XM9_PUPMODE;
@@ -189,19 +179,16 @@ static void newport_reset(void)
 	npregs->cset.topscan = 0x3ff;
 	npregs->cset.xywin = (4096 << 16) | 4096;
 
-	/* Clear the screen. */
+	 
 	newport_clear_screen(0, 0, 1280 + 63, 1024, 0);
 }
 
-/*
- * calculate the actual screen size by reading
- * the video timing out of the VC2
- */
+ 
 static void newport_get_screensize(void)
 {
 	int i, cols;
 	unsigned short ventry, treg;
-	unsigned short linetable[128];	/* should be enough */
+	unsigned short linetable[128];	 
 
 	ventry = newport_vc2_get(npregs, VC2_IREG_VENTRY);
 	newport_vc2_set(npregs, VC2_IREG_RADDR, ventry);
@@ -283,7 +270,7 @@ static void newport_get_revisions(void)
 	     L(cmap_rev ? (cmap_rev + 1) : 0), L(bt445_rev));
 #undef L
 
-	if (board_rev == 3)	/* I don't know all affected revisions */
+	if (board_rev == 3)	 
 		xcurs_correction = 21;
 }
 
@@ -291,12 +278,12 @@ static void newport_exit(void)
 {
 	int i;
 
-	/* free memory used by user font */
+	 
 	for (i = 0; i < MAX_NR_CONSOLES; i++)
 		newport_set_def_font(i, NULL);
 }
 
-/* Can't be __init, do_take_over_console may call it later */
+ 
 static const char *newport_startup(void)
 {
 	int i;
@@ -380,19 +367,19 @@ static void newport_putc(struct vc_data *vc, int charattr, int ypos,
 	newport_render_background(xpos, ypos, xpos, ypos,
 				  (charattr & 0xf0) >> 4);
 
-	/* Set the color and drawing mode. */
+	 
 	newport_wait(npregs);
 	npregs->set.colori = charattr & 0xf;
 	npregs->set.drawmode0 = (NPORT_DMODE0_DRAW | NPORT_DMODE0_BLOCK |
 				 NPORT_DMODE0_STOPX | NPORT_DMODE0_ZPENAB |
 				 NPORT_DMODE0_L32);
 
-	/* Set coordinates for bitmap operation. */
+	 
 	npregs->set.xystarti = (xpos << 16) | ((ypos + topscan) & 0x3ff);
 	npregs->set.xyendi = ((xpos + 7) << 16);
 	newport_wait(npregs);
 
-	/* Go, baby, go... */
+	 
 	RENDER(npregs, p);
 }
 
@@ -409,14 +396,14 @@ static void newport_putcs(struct vc_data *vc, const unsigned short *s,
 	ypos <<= 4;
 
 	if (!logo_active)
-		/* Clear the area behing the string */
+		 
 		newport_render_background(xpos, ypos,
 					  xpos + ((count - 1) << 3), ypos,
 					  (charattr & 0xf0) >> 4);
 
 	newport_wait(npregs);
 
-	/* Set the color and drawing mode. */
+	 
 	npregs->set.colori = charattr & 0xf;
 	npregs->set.drawmode0 = (NPORT_DMODE0_DRAW | NPORT_DMODE0_BLOCK |
 				 NPORT_DMODE0_STOPX | NPORT_DMODE0_ZPENAB |
@@ -427,12 +414,12 @@ static void newport_putcs(struct vc_data *vc, const unsigned short *s,
 
 		newport_wait(npregs);
 
-		/* Set coordinates for bitmap operation. */
+		 
 		npregs->set.xystarti =
 		    (xpos << 16) | ((ypos + topscan) & 0x3ff);
 		npregs->set.xyendi = ((xpos + 7) << 16);
 
-		/* Go, baby, go... */
+		 
 		RENDER(npregs, p);
 	}
 }
@@ -484,12 +471,12 @@ static int newport_blank(struct vc_data *c, int blank, int mode_switch)
 	unsigned short treg;
 
 	if (blank == 0) {
-		/* unblank console */
+		 
 		treg = newport_vc2_get(npregs, VC2_IREG_CONTROL);
 		newport_vc2_set(npregs, VC2_IREG_CONTROL,
 				(treg | VC2_CTRL_EDISP));
 	} else {
-		/* blank console */
+		 
 		treg = newport_vc2_get(npregs, VC2_IREG_CONTROL);
 		newport_vc2_set(npregs, VC2_IREG_CONTROL,
 				(treg & ~(VC2_CTRL_EDISP)));
@@ -505,8 +492,7 @@ static int newport_set_font(int unit, struct console_font *op, unsigned int vpit
 	int i;
 	unsigned char *new_data, *data = op->data, *p;
 
-	/* ladis: when I grow up, there will be a day... and more sizes will
-	 * be supported ;-) */
+	 
 	if ((w != 8) || (h != 16) || (vpitch != 32)
 	    || (op->charcount != 256 && op->charcount != 512))
 		return -EINVAL;
@@ -517,7 +503,7 @@ static int newport_set_font(int unit, struct console_font *op, unsigned int vpit
 	new_data += FONT_EXTRA_WORDS * sizeof(int);
 	FNTSIZE(new_data) = size;
 	FNTCHARCNT(new_data) = op->charcount;
-	REFCOUNT(new_data) = 0;	/* usage counter */
+	REFCOUNT(new_data) = 0;	 
 	FNTSUM(new_data) = 0;
 
 	p = new_data;
@@ -527,20 +513,20 @@ static int newport_set_font(int unit, struct console_font *op, unsigned int vpit
 		p += h;
 	}
 
-	/* check if font is already used by other console */
+	 
 	for (i = 0; i < MAX_NR_CONSOLES; i++) {
 		if (font_data[i] != FONT_DATA
 		    && FNTSIZE(font_data[i]) == size
 		    && !memcmp(font_data[i], new_data, size)) {
 			kfree(new_data - FONT_EXTRA_WORDS * sizeof(int));
-			/* current font is the same as the new one */
+			 
 			if (i == unit)
 				return 0;
 			new_data = font_data[i];
 			break;
 		}
 	}
-	/* old font is user font */
+	 
 	if (font_data[unit] != FONT_DATA) {
 		if (--REFCOUNT(font_data[unit]) == 0)
 			kfree(font_data[unit] -
@@ -582,7 +568,7 @@ static bool newport_scroll(struct vc_data *vc, unsigned int t, unsigned int b,
 	unsigned short *s, *d;
 	unsigned short chattr;
 
-	logo_active = 0;	/* it's time to disable the logo now.. */
+	logo_active = 0;	 
 
 	if (t == 0 && b == vc->vc_rows) {
 		if (dir == SM_UP) {
@@ -702,13 +688,13 @@ static int newport_probe(struct gio_device *dev,
 		return -EINVAL;
 
 	if (npregs)
-		return -EBUSY; /* we only support one Newport as console */
+		return -EBUSY;  
 
 	newport_addr = dev->resource.start + 0xF0000;
 	if (!request_mem_region(newport_addr, NEWPORT_LEN, "Newport"))
 		return -ENODEV;
 
-	npregs = (struct newport_regs *)/* ioremap cannot fail */
+	npregs = (struct newport_regs *) 
 		ioremap(newport_addr, sizeof(struct newport_regs));
 	console_lock();
 	err = do_take_over_console(&newport_con, 0, MAX_NR_CONSOLES - 1, 1);

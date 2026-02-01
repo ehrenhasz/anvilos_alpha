@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __LINUX_GPIO_CONSUMER_H
 #define __LINUX_GPIO_CONSUMER_H
 
@@ -12,14 +12,7 @@ struct fwnode_handle;
 struct gpio_array;
 struct gpio_desc;
 
-/**
- * struct gpio_descs - Struct containing an array of descriptors that can be
- *                     obtained using gpiod_get_array()
- *
- * @info:	Pointer to the opaque gpio_array structure
- * @ndescs:	Number of held descriptors
- * @desc:	Array of pointers to GPIO descriptors
- */
+ 
 struct gpio_descs {
 	struct gpio_array *info;
 	unsigned int ndescs;
@@ -32,18 +25,7 @@ struct gpio_descs {
 #define GPIOD_FLAGS_BIT_OPEN_DRAIN	BIT(3)
 #define GPIOD_FLAGS_BIT_NONEXCLUSIVE	BIT(4)
 
-/**
- * enum gpiod_flags - Optional flags that can be passed to one of gpiod_* to
- *                    configure direction and output value. These values
- *                    cannot be OR'd.
- *
- * @GPIOD_ASIS:			Don't change anything
- * @GPIOD_IN:			Set lines to input mode
- * @GPIOD_OUT_LOW:		Set lines to output and drive them low
- * @GPIOD_OUT_HIGH:		Set lines to output and drive them high
- * @GPIOD_OUT_LOW_OPEN_DRAIN:	Set lines to open-drain output and drive them low
- * @GPIOD_OUT_HIGH_OPEN_DRAIN:	Set lines to open-drain output and drive them high
- */
+ 
 enum gpiod_flags {
 	GPIOD_ASIS	= 0,
 	GPIOD_IN	= GPIOD_FLAGS_BIT_DIR_SET,
@@ -56,10 +38,10 @@ enum gpiod_flags {
 
 #ifdef CONFIG_GPIOLIB
 
-/* Return the number of GPIOs associated with a device / function */
+ 
 int gpiod_count(struct device *dev, const char *con_id);
 
-/* Acquire and dispose GPIOs */
+ 
 struct gpio_desc *__must_check gpiod_get(struct device *dev,
 					 const char *con_id,
 					 enum gpiod_flags flags);
@@ -113,7 +95,7 @@ int gpiod_direction_output_raw(struct gpio_desc *desc, int value);
 int gpiod_enable_hw_timestamp_ns(struct gpio_desc *desc, unsigned long flags);
 int gpiod_disable_hw_timestamp_ns(struct gpio_desc *desc, unsigned long flags);
 
-/* Value get/set from non-sleeping context */
+ 
 int gpiod_get_value(const struct gpio_desc *desc);
 int gpiod_get_array_value(unsigned int array_size,
 			  struct gpio_desc **desc_array,
@@ -135,7 +117,7 @@ int gpiod_set_raw_array_value(unsigned int array_size,
 			      struct gpio_array *array_info,
 			      unsigned long *value_bitmap);
 
-/* Value get/set from sleeping context */
+ 
 int gpiod_get_value_cansleep(const struct gpio_desc *desc);
 int gpiod_get_array_value_cansleep(unsigned int array_size,
 				   struct gpio_desc **desc_array,
@@ -168,7 +150,7 @@ int gpiod_cansleep(const struct gpio_desc *desc);
 int gpiod_to_irq(const struct gpio_desc *desc);
 int gpiod_set_consumer_name(struct gpio_desc *desc, const char *name);
 
-/* Convert between the old gpio_ and new gpiod_ interfaces */
+ 
 struct gpio_desc *gpio_to_desc(unsigned gpio);
 int desc_to_gpio(const struct gpio_desc *desc);
 
@@ -182,7 +164,7 @@ struct gpio_desc *devm_fwnode_gpiod_get_index(struct device *dev,
 					      enum gpiod_flags flags,
 					      const char *label);
 
-#else /* CONFIG_GPIOLIB */
+#else  
 
 #include <linux/err.h>
 #include <linux/kernel.h>
@@ -241,7 +223,7 @@ static inline void gpiod_put(struct gpio_desc *desc)
 {
 	might_sleep();
 
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc);
 }
 
@@ -250,7 +232,7 @@ static inline void devm_gpiod_unhinge(struct device *dev,
 {
 	might_sleep();
 
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc);
 }
 
@@ -258,7 +240,7 @@ static inline void gpiod_put_array(struct gpio_descs *descs)
 {
 	might_sleep();
 
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(descs);
 }
 
@@ -311,7 +293,7 @@ static inline void devm_gpiod_put(struct device *dev, struct gpio_desc *desc)
 {
 	might_sleep();
 
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc);
 }
 
@@ -320,32 +302,32 @@ static inline void devm_gpiod_put_array(struct device *dev,
 {
 	might_sleep();
 
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(descs);
 }
 
 
 static inline int gpiod_get_direction(const struct gpio_desc *desc)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc);
 	return -ENOSYS;
 }
 static inline int gpiod_direction_input(struct gpio_desc *desc)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc);
 	return -ENOSYS;
 }
 static inline int gpiod_direction_output(struct gpio_desc *desc, int value)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc);
 	return -ENOSYS;
 }
 static inline int gpiod_direction_output_raw(struct gpio_desc *desc, int value)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc);
 	return -ENOSYS;
 }
@@ -363,7 +345,7 @@ static inline int gpiod_disable_hw_timestamp_ns(struct gpio_desc *desc,
 }
 static inline int gpiod_get_value(const struct gpio_desc *desc)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc);
 	return 0;
 }
@@ -372,13 +354,13 @@ static inline int gpiod_get_array_value(unsigned int array_size,
 					struct gpio_array *array_info,
 					unsigned long *value_bitmap)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc_array);
 	return 0;
 }
 static inline void gpiod_set_value(struct gpio_desc *desc, int value)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc);
 }
 static inline int gpiod_set_array_value(unsigned int array_size,
@@ -386,13 +368,13 @@ static inline int gpiod_set_array_value(unsigned int array_size,
 					struct gpio_array *array_info,
 					unsigned long *value_bitmap)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc_array);
 	return 0;
 }
 static inline int gpiod_get_raw_value(const struct gpio_desc *desc)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc);
 	return 0;
 }
@@ -401,13 +383,13 @@ static inline int gpiod_get_raw_array_value(unsigned int array_size,
 					    struct gpio_array *array_info,
 					    unsigned long *value_bitmap)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc_array);
 	return 0;
 }
 static inline void gpiod_set_raw_value(struct gpio_desc *desc, int value)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc);
 }
 static inline int gpiod_set_raw_array_value(unsigned int array_size,
@@ -415,14 +397,14 @@ static inline int gpiod_set_raw_array_value(unsigned int array_size,
 					    struct gpio_array *array_info,
 					    unsigned long *value_bitmap)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc_array);
 	return 0;
 }
 
 static inline int gpiod_get_value_cansleep(const struct gpio_desc *desc)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc);
 	return 0;
 }
@@ -431,13 +413,13 @@ static inline int gpiod_get_array_value_cansleep(unsigned int array_size,
 				     struct gpio_array *array_info,
 				     unsigned long *value_bitmap)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc_array);
 	return 0;
 }
 static inline void gpiod_set_value_cansleep(struct gpio_desc *desc, int value)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc);
 }
 static inline int gpiod_set_array_value_cansleep(unsigned int array_size,
@@ -445,13 +427,13 @@ static inline int gpiod_set_array_value_cansleep(unsigned int array_size,
 					    struct gpio_array *array_info,
 					    unsigned long *value_bitmap)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc_array);
 	return 0;
 }
 static inline int gpiod_get_raw_value_cansleep(const struct gpio_desc *desc)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc);
 	return 0;
 }
@@ -460,14 +442,14 @@ static inline int gpiod_get_raw_array_value_cansleep(unsigned int array_size,
 					       struct gpio_array *array_info,
 					       unsigned long *value_bitmap)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc_array);
 	return 0;
 }
 static inline void gpiod_set_raw_value_cansleep(struct gpio_desc *desc,
 						int value)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc);
 }
 static inline int gpiod_set_raw_array_value_cansleep(unsigned int array_size,
@@ -475,54 +457,54 @@ static inline int gpiod_set_raw_array_value_cansleep(unsigned int array_size,
 						struct gpio_array *array_info,
 						unsigned long *value_bitmap)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc_array);
 	return 0;
 }
 
 static inline int gpiod_set_config(struct gpio_desc *desc, unsigned long config)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc);
 	return -ENOSYS;
 }
 
 static inline int gpiod_set_debounce(struct gpio_desc *desc, unsigned int debounce)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc);
 	return -ENOSYS;
 }
 
 static inline int gpiod_set_transitory(struct gpio_desc *desc, bool transitory)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc);
 	return -ENOSYS;
 }
 
 static inline void gpiod_toggle_active_low(struct gpio_desc *desc)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc);
 }
 
 static inline int gpiod_is_active_low(const struct gpio_desc *desc)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc);
 	return 0;
 }
 static inline int gpiod_cansleep(const struct gpio_desc *desc)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc);
 	return 0;
 }
 
 static inline int gpiod_to_irq(const struct gpio_desc *desc)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc);
 	return -EINVAL;
 }
@@ -530,7 +512,7 @@ static inline int gpiod_to_irq(const struct gpio_desc *desc)
 static inline int gpiod_set_consumer_name(struct gpio_desc *desc,
 					  const char *name)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc);
 	return -EINVAL;
 }
@@ -542,7 +524,7 @@ static inline struct gpio_desc *gpio_to_desc(unsigned gpio)
 
 static inline int desc_to_gpio(const struct gpio_desc *desc)
 {
-	/* GPIO can never have been requested */
+	 
 	WARN_ON(desc);
 	return -EINVAL;
 }
@@ -566,7 +548,7 @@ struct gpio_desc *devm_fwnode_gpiod_get_index(struct device *dev,
 	return ERR_PTR(-ENOSYS);
 }
 
-#endif /* CONFIG_GPIOLIB */
+#endif  
 
 static inline
 struct gpio_desc *devm_fwnode_gpiod_get(struct device *dev,
@@ -590,16 +572,11 @@ struct acpi_gpio_mapping {
 	const struct acpi_gpio_params *data;
 	unsigned int size;
 
-/* Ignore IoRestriction field */
+ 
 #define ACPI_GPIO_QUIRK_NO_IO_RESTRICTION	BIT(0)
-/*
- * When ACPI GPIO mapping table is in use the index parameter inside it
- * refers to the GPIO resource in _CRS method. That index has no
- * distinction of actual type of the resource. When consumer wants to
- * get GpioIo type explicitly, this quirk may be used.
- */
+ 
 #define ACPI_GPIO_QUIRK_ONLY_GPIOIO		BIT(1)
-/* Use given pin as an absolute GPIO number in the system */
+ 
 #define ACPI_GPIO_QUIRK_ABSOLUTE_NUMBER		BIT(2)
 
 	unsigned int quirks;
@@ -616,7 +593,7 @@ int devm_acpi_dev_add_driver_gpios(struct device *dev,
 
 struct gpio_desc *acpi_get_and_request_gpiod(char *path, unsigned int pin, char *label);
 
-#else  /* CONFIG_GPIOLIB && CONFIG_ACPI */
+#else   
 
 #include <linux/err.h>
 
@@ -639,7 +616,7 @@ static inline struct gpio_desc *acpi_get_and_request_gpiod(char *path, unsigned 
 	return ERR_PTR(-ENOSYS);
 }
 
-#endif /* CONFIG_GPIOLIB && CONFIG_ACPI */
+#endif  
 
 
 #if IS_ENABLED(CONFIG_GPIOLIB) && IS_ENABLED(CONFIG_GPIO_SYSFS)
@@ -649,7 +626,7 @@ int gpiod_export_link(struct device *dev, const char *name,
 		      struct gpio_desc *desc);
 void gpiod_unexport(struct gpio_desc *desc);
 
-#else  /* CONFIG_GPIOLIB && CONFIG_GPIO_SYSFS */
+#else   
 
 #include <asm/errno.h>
 
@@ -669,6 +646,6 @@ static inline void gpiod_unexport(struct gpio_desc *desc)
 {
 }
 
-#endif /* CONFIG_GPIOLIB && CONFIG_GPIO_SYSFS */
+#endif  
 
 #endif

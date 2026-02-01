@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- *
- * Copyright (c) 2014 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include "a3xx_gpu.h"
 
@@ -36,10 +31,10 @@ static void a3xx_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit)
 	for (i = 0; i < submit->nr_cmds; i++) {
 		switch (submit->cmd[i].type) {
 		case MSM_SUBMIT_CMD_IB_TARGET_BUF:
-			/* ignore IB-targets */
+			 
 			break;
 		case MSM_SUBMIT_CMD_CTX_RESTORE_BUF:
-			/* ignore if there has not been a ctx switch: */
+			 
 			if (gpu->cur_ctx_seqno == submit->queue->ctx->seqno)
 				break;
 			fallthrough;
@@ -55,25 +50,22 @@ static void a3xx_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit)
 	OUT_PKT0(ring, REG_AXXX_CP_SCRATCH_REG2, 1);
 	OUT_RING(ring, submit->seqno);
 
-	/* Flush HLSQ lazy updates to make sure there is nothing
-	 * pending for indirect loads after the timestamp has
-	 * passed:
-	 */
+	 
 	OUT_PKT3(ring, CP_EVENT_WRITE, 1);
 	OUT_RING(ring, HLSQ_FLUSH);
 
-	/* wait for idle before cache flush/interrupt */
+	 
 	OUT_PKT3(ring, CP_WAIT_FOR_IDLE, 1);
 	OUT_RING(ring, 0x00000000);
 
-	/* BIT(31) of CACHE_FLUSH_TS triggers CACHE_FLUSH_TS IRQ from GPU */
+	 
 	OUT_PKT3(ring, CP_EVENT_WRITE, 3);
 	OUT_RING(ring, CACHE_FLUSH_TS | CP_EVENT_WRITE_0_IRQ);
 	OUT_RING(ring, rbmemptr(ring, fence));
 	OUT_RING(ring, submit->seqno);
 
 #if 0
-	/* Dummy set-constant to trigger context rollover */
+	 
 	OUT_PKT3(ring, CP_SET_CONSTANT, 2);
 	OUT_RING(ring, CP_REG(REG_A3XX_HLSQ_CL_KERNEL_GROUP_X_REG));
 	OUT_RING(ring, 0x00000000);
@@ -119,7 +111,7 @@ static int a3xx_hw_init(struct msm_gpu *gpu)
 	DBG("%s", gpu->name);
 
 	if (adreno_is_a305(adreno_gpu)) {
-		/* Set up 16 deep read/write request queues: */
+		 
 		gpu_write(gpu, REG_A3XX_VBIF_IN_RD_LIM_CONF0, 0x10101010);
 		gpu_write(gpu, REG_A3XX_VBIF_IN_RD_LIM_CONF1, 0x10101010);
 		gpu_write(gpu, REG_A3XX_VBIF_OUT_RD_LIM_CONF0, 0x10101010);
@@ -127,11 +119,11 @@ static int a3xx_hw_init(struct msm_gpu *gpu)
 		gpu_write(gpu, REG_A3XX_VBIF_DDR_OUT_MAX_BURST, 0x0000303);
 		gpu_write(gpu, REG_A3XX_VBIF_IN_WR_LIM_CONF0, 0x10101010);
 		gpu_write(gpu, REG_A3XX_VBIF_IN_WR_LIM_CONF1, 0x10101010);
-		/* Enable WR-REQ: */
+		 
 		gpu_write(gpu, REG_A3XX_VBIF_GATE_OFF_WRREQ_EN, 0x0000ff);
-		/* Set up round robin arbitration between both AXI ports: */
+		 
 		gpu_write(gpu, REG_A3XX_VBIF_ARB_CTL, 0x00000030);
-		/* Set up AOOO: */
+		 
 		gpu_write(gpu, REG_A3XX_VBIF_OUT_AXI_AOOO_EN, 0x0000003c);
 		gpu_write(gpu, REG_A3XX_VBIF_OUT_AXI_AOOO, 0x003c003c);
 	} else if (adreno_is_a306(adreno_gpu)) {
@@ -139,7 +131,7 @@ static int a3xx_hw_init(struct msm_gpu *gpu)
 		gpu_write(gpu, REG_A3XX_VBIF_OUT_RD_LIM_CONF0, 0x0000000a);
 		gpu_write(gpu, REG_A3XX_VBIF_OUT_WR_LIM_CONF0, 0x0000000a);
 	} else if (adreno_is_a320(adreno_gpu)) {
-		/* Set up 16 deep read/write request queues: */
+		 
 		gpu_write(gpu, REG_A3XX_VBIF_IN_RD_LIM_CONF0, 0x10101010);
 		gpu_write(gpu, REG_A3XX_VBIF_IN_RD_LIM_CONF1, 0x10101010);
 		gpu_write(gpu, REG_A3XX_VBIF_OUT_RD_LIM_CONF0, 0x10101010);
@@ -147,34 +139,30 @@ static int a3xx_hw_init(struct msm_gpu *gpu)
 		gpu_write(gpu, REG_A3XX_VBIF_DDR_OUT_MAX_BURST, 0x0000303);
 		gpu_write(gpu, REG_A3XX_VBIF_IN_WR_LIM_CONF0, 0x10101010);
 		gpu_write(gpu, REG_A3XX_VBIF_IN_WR_LIM_CONF1, 0x10101010);
-		/* Enable WR-REQ: */
+		 
 		gpu_write(gpu, REG_A3XX_VBIF_GATE_OFF_WRREQ_EN, 0x0000ff);
-		/* Set up round robin arbitration between both AXI ports: */
+		 
 		gpu_write(gpu, REG_A3XX_VBIF_ARB_CTL, 0x00000030);
-		/* Set up AOOO: */
+		 
 		gpu_write(gpu, REG_A3XX_VBIF_OUT_AXI_AOOO_EN, 0x0000003c);
 		gpu_write(gpu, REG_A3XX_VBIF_OUT_AXI_AOOO, 0x003c003c);
-		/* Enable 1K sort: */
+		 
 		gpu_write(gpu, REG_A3XX_VBIF_ABIT_SORT, 0x000000ff);
 		gpu_write(gpu, REG_A3XX_VBIF_ABIT_SORT_CONF, 0x000000a4);
 
 	} else if (adreno_is_a330v2(adreno_gpu)) {
-		/*
-		 * Most of the VBIF registers on 8974v2 have the correct
-		 * values at power on, so we won't modify those if we don't
-		 * need to
-		 */
-		/* Enable 1k sort: */
+		 
+		 
 		gpu_write(gpu, REG_A3XX_VBIF_ABIT_SORT, 0x0001003f);
 		gpu_write(gpu, REG_A3XX_VBIF_ABIT_SORT_CONF, 0x000000a4);
-		/* Enable WR-REQ: */
+		 
 		gpu_write(gpu, REG_A3XX_VBIF_GATE_OFF_WRREQ_EN, 0x00003f);
 		gpu_write(gpu, REG_A3XX_VBIF_DDR_OUT_MAX_BURST, 0x0000303);
-		/* Set up VBIF_ROUND_ROBIN_QOS_ARB: */
+		 
 		gpu_write(gpu, REG_A3XX_VBIF_ROUND_ROBIN_QOS_ARB, 0x0003);
 
 	} else if (adreno_is_a330(adreno_gpu)) {
-		/* Set up 16 deep read/write request queues: */
+		 
 		gpu_write(gpu, REG_A3XX_VBIF_IN_RD_LIM_CONF0, 0x18181818);
 		gpu_write(gpu, REG_A3XX_VBIF_IN_RD_LIM_CONF1, 0x18181818);
 		gpu_write(gpu, REG_A3XX_VBIF_OUT_RD_LIM_CONF0, 0x18181818);
@@ -182,54 +170,48 @@ static int a3xx_hw_init(struct msm_gpu *gpu)
 		gpu_write(gpu, REG_A3XX_VBIF_DDR_OUT_MAX_BURST, 0x0000303);
 		gpu_write(gpu, REG_A3XX_VBIF_IN_WR_LIM_CONF0, 0x18181818);
 		gpu_write(gpu, REG_A3XX_VBIF_IN_WR_LIM_CONF1, 0x18181818);
-		/* Enable WR-REQ: */
+		 
 		gpu_write(gpu, REG_A3XX_VBIF_GATE_OFF_WRREQ_EN, 0x00003f);
-		/* Set up round robin arbitration between both AXI ports: */
+		 
 		gpu_write(gpu, REG_A3XX_VBIF_ARB_CTL, 0x00000030);
-		/* Set up VBIF_ROUND_ROBIN_QOS_ARB: */
+		 
 		gpu_write(gpu, REG_A3XX_VBIF_ROUND_ROBIN_QOS_ARB, 0x0001);
-		/* Set up AOOO: */
+		 
 		gpu_write(gpu, REG_A3XX_VBIF_OUT_AXI_AOOO_EN, 0x0000003f);
 		gpu_write(gpu, REG_A3XX_VBIF_OUT_AXI_AOOO, 0x003f003f);
-		/* Enable 1K sort: */
+		 
 		gpu_write(gpu, REG_A3XX_VBIF_ABIT_SORT, 0x0001003f);
 		gpu_write(gpu, REG_A3XX_VBIF_ABIT_SORT_CONF, 0x000000a4);
-		/* Disable VBIF clock gating. This is to enable AXI running
-		 * higher frequency than GPU:
-		 */
+		 
 		gpu_write(gpu, REG_A3XX_VBIF_CLKON, 0x00000001);
 
 	} else {
 		BUG();
 	}
 
-	/* Make all blocks contribute to the GPU BUSY perf counter: */
+	 
 	gpu_write(gpu, REG_A3XX_RBBM_GPU_BUSY_MASKED, 0xffffffff);
 
-	/* Tune the hystersis counters for SP and CP idle detection: */
+	 
 	gpu_write(gpu, REG_A3XX_RBBM_SP_HYST_CNT, 0x10);
 	gpu_write(gpu, REG_A3XX_RBBM_WAIT_IDLE_CLOCKS_CTL, 0x10);
 
-	/* Enable the RBBM error reporting bits.  This lets us get
-	 * useful information on failure:
-	 */
+	 
 	gpu_write(gpu, REG_A3XX_RBBM_AHB_CTL0, 0x00000001);
 
-	/* Enable AHB error reporting: */
+	 
 	gpu_write(gpu, REG_A3XX_RBBM_AHB_CTL1, 0xa6ffffff);
 
-	/* Turn on the power counters: */
+	 
 	gpu_write(gpu, REG_A3XX_RBBM_RBBM_CTL, 0x00030000);
 
-	/* Turn on hang detection - this spews a lot of useful information
-	 * into the RBBM registers on a hang:
-	 */
+	 
 	gpu_write(gpu, REG_A3XX_RBBM_INTERFACE_HANG_INT_CTL, 0x00010fff);
 
-	/* Enable 64-byte cacheline size. HW Default is 32-byte (0x000000E0): */
+	 
 	gpu_write(gpu, REG_A3XX_UCHE_CACHE_MODE_CONTROL_REG, 0x00000001);
 
-	/* Enable Clock gating: */
+	 
 	if (adreno_is_a306(adreno_gpu))
 		gpu_write(gpu, REG_A3XX_RBBM_CLOCK_CTL, 0xaaaaaaaa);
 	else if (adreno_is_a320(adreno_gpu))
@@ -244,16 +226,16 @@ static int a3xx_hw_init(struct msm_gpu *gpu)
 	else if (adreno_is_a330(adreno_gpu))
 		gpu_write(gpu, REG_A3XX_RBBM_GPR0_CTL, 0x00000000);
 
-	/* Set the OCMEM base address for A330, etc */
+	 
 	if (a3xx_gpu->ocmem.hdl) {
 		gpu_write(gpu, REG_A3XX_RB_GMEM_BASE_ADDR,
 			(unsigned int)(a3xx_gpu->ocmem.base >> 14));
 	}
 
-	/* Turn on performance counters: */
+	 
 	gpu_write(gpu, REG_A3XX_RBBM_PERFCTR_CTL, 0x01);
 
-	/* Enable the perfcntrs that we use.. */
+	 
 	for (i = 0; i < gpu->num_perfcntrs; i++) {
 		const struct msm_gpu_perfcntr *perfcntr = &gpu->perfcntrs[i];
 		gpu_write(gpu, perfcntr->select_reg, perfcntr->select_val);
@@ -265,20 +247,17 @@ static int a3xx_hw_init(struct msm_gpu *gpu)
 	if (ret)
 		return ret;
 
-	/*
-	 * Use the default ringbuffer size and block size but disable the RPTR
-	 * shadow
-	 */
+	 
 	gpu_write(gpu, REG_AXXX_CP_RB_CNTL,
 		MSM_GPU_RB_CNTL_DEFAULT | AXXX_CP_RB_CNTL_NO_UPDATE);
 
-	/* Set the ringbuffer address */
+	 
 	gpu_write(gpu, REG_AXXX_CP_RB_BASE, lower_32_bits(gpu->rb[0]->iova));
 
-	/* setup access protection: */
+	 
 	gpu_write(gpu, REG_A3XX_CP_PROTECT_CTRL, 0x00000007);
 
-	/* RBBM registers */
+	 
 	gpu_write(gpu, REG_A3XX_CP_PROTECT(0), 0x63000040);
 	gpu_write(gpu, REG_A3XX_CP_PROTECT(1), 0x62000080);
 	gpu_write(gpu, REG_A3XX_CP_PROTECT(2), 0x600000cc);
@@ -286,26 +265,22 @@ static int a3xx_hw_init(struct msm_gpu *gpu)
 	gpu_write(gpu, REG_A3XX_CP_PROTECT(4), 0x64000140);
 	gpu_write(gpu, REG_A3XX_CP_PROTECT(5), 0x66000400);
 
-	/* CP registers */
+	 
 	gpu_write(gpu, REG_A3XX_CP_PROTECT(6), 0x65000700);
 	gpu_write(gpu, REG_A3XX_CP_PROTECT(7), 0x610007d8);
 	gpu_write(gpu, REG_A3XX_CP_PROTECT(8), 0x620007e0);
 	gpu_write(gpu, REG_A3XX_CP_PROTECT(9), 0x61001178);
 	gpu_write(gpu, REG_A3XX_CP_PROTECT(10), 0x64001180);
 
-	/* RB registers */
+	 
 	gpu_write(gpu, REG_A3XX_CP_PROTECT(11), 0x60003300);
 
-	/* VBIF registers */
+	 
 	gpu_write(gpu, REG_A3XX_CP_PROTECT(12), 0x6b00c000);
 
-	/* NOTE: PM4/micro-engine firmware registers look to be the same
-	 * for a2xx and a3xx.. we could possibly push that part down to
-	 * adreno_gpu base class.  Or push both PM4 and PFP but
-	 * parameterize the pfp ucode addr/data registers..
-	 */
+	 
 
-	/* Load PM4: */
+	 
 	ptr = (uint32_t *)(adreno_gpu->fw[ADRENO_FW_PM4]->data);
 	len = adreno_gpu->fw[ADRENO_FW_PM4]->size / 4;
 	DBG("loading PM4 ucode version: %x", ptr[1]);
@@ -317,7 +292,7 @@ static int a3xx_hw_init(struct msm_gpu *gpu)
 	for (i = 1; i < len; i++)
 		gpu_write(gpu, REG_AXXX_CP_ME_RAM_DATA, ptr[i]);
 
-	/* Load PFP: */
+	 
 	ptr = (uint32_t *)(adreno_gpu->fw[ADRENO_FW_PFP]->data);
 	len = adreno_gpu->fw[ADRENO_FW_PFP]->size / 4;
 	DBG("loading PFP ucode version: %x", ptr[5]);
@@ -326,7 +301,7 @@ static int a3xx_hw_init(struct msm_gpu *gpu)
 	for (i = 1; i < len; i++)
 		gpu_write(gpu, REG_A3XX_CP_PFP_UCODE_DATA, ptr[i]);
 
-	/* CP ROQ queue sizes (bytes) - RB:16, ST:16, IB1:32, IB2:64 */
+	 
 	if (adreno_is_a305(adreno_gpu) || adreno_is_a306(adreno_gpu) ||
 			adreno_is_a320(adreno_gpu)) {
 		gpu_write(gpu, REG_AXXX_CP_QUEUE_THRESHOLDS,
@@ -334,15 +309,11 @@ static int a3xx_hw_init(struct msm_gpu *gpu)
 				AXXX_CP_QUEUE_THRESHOLDS_CSQ_IB2_START(6) |
 				AXXX_CP_QUEUE_THRESHOLDS_CSQ_ST_START(14));
 	} else if (adreno_is_a330(adreno_gpu)) {
-		/* NOTE: this (value take from downstream android driver)
-		 * includes some bits outside of the known bitfields.  But
-		 * A330 has this "MERCIU queue" thing too, which might
-		 * explain a new bitfield or reshuffling:
-		 */
+		 
 		gpu_write(gpu, REG_AXXX_CP_QUEUE_THRESHOLDS, 0x003e2008);
 	}
 
-	/* clear ME_HALT to start micro engine */
+	 
 	gpu_write(gpu, REG_AXXX_CP_ME_CNTL, 0);
 
 	return a3xx_me_init(gpu) ? 0 : -EINVAL;
@@ -359,7 +330,7 @@ static void a3xx_recover(struct msm_gpu *gpu)
 			gpu_read(gpu, REG_AXXX_CP_SCRATCH_REG0 + i));
 	}
 
-	/* dump registers before resetting gpu, if enabled: */
+	 
 	if (hang_debug)
 		a3xx_dump(gpu);
 
@@ -385,16 +356,16 @@ static void a3xx_destroy(struct msm_gpu *gpu)
 
 static bool a3xx_idle(struct msm_gpu *gpu)
 {
-	/* wait for ringbuffer to drain: */
+	 
 	if (!adreno_idle(gpu, gpu->rb[0]))
 		return false;
 
-	/* then wait for GPU to finish: */
+	 
 	if (spin_until(!(gpu_read(gpu, REG_A3XX_RBBM_STATUS) &
 			A3XX_RBBM_STATUS_GPU_BUSY))) {
 		DRM_ERROR("%s: timeout waiting for GPU to idle!\n", gpu->name);
 
-		/* TODO maybe we need to reset GPU here to recover from hang? */
+		 
 		return false;
 	}
 
@@ -408,7 +379,7 @@ static irqreturn_t a3xx_irq(struct msm_gpu *gpu)
 	status = gpu_read(gpu, REG_A3XX_RBBM_INT_0_STATUS);
 	DBG("%s: %08x", gpu->name, status);
 
-	// TODO
+	
 
 	gpu_write(gpu, REG_A3XX_RBBM_INT_CLEAR_CMD, status);
 
@@ -452,10 +423,10 @@ static const unsigned int a3xx_registers[] = {
 	0x26ec, 0x26ec, 0x26f0, 0x26f7, 0x26ff, 0x26ff, 0x2740, 0x2743,
 	0x300c, 0x300e, 0x301c, 0x301d, 0x302a, 0x302a, 0x302c, 0x302d,
 	0x3030, 0x3031, 0x3034, 0x3036, 0x303c, 0x303c, 0x305e, 0x305f,
-	~0   /* sentinel */
+	~0    
 };
 
-/* would be nice to not have to duplicate the _show() stuff with printk(): */
+ 
 static void a3xx_dump(struct msm_gpu *gpu)
 {
 	printk("status:   %08x\n",
@@ -558,7 +529,7 @@ struct msm_gpu *a3xx_gpu_init(struct drm_device *dev)
 	if (ret)
 		goto fail;
 
-	/* if needed, allocate gmem: */
+	 
 	if (adreno_is_a330(adreno_gpu)) {
 		ret = adreno_gpu_ocmem_init(&adreno_gpu->base.pdev->dev,
 					    adreno_gpu, &a3xx_gpu->ocmem);
@@ -567,13 +538,7 @@ struct msm_gpu *a3xx_gpu_init(struct drm_device *dev)
 	}
 
 	if (!gpu->aspace) {
-		/* TODO we think it is possible to configure the GPU to
-		 * restrict access to VRAM carveout.  But the required
-		 * registers are unknown.  For now just bail out and
-		 * limp along with just modesetting.  If it turns out
-		 * to not be possible to restrict access, then we must
-		 * implement a cmdstream validator.
-		 */
+		 
 		DRM_DEV_ERROR(dev->dev, "No memory protection without IOMMU\n");
 		if (!allow_vram_carveout) {
 			ret = -ENXIO;
@@ -590,18 +555,14 @@ struct msm_gpu *a3xx_gpu_init(struct drm_device *dev)
 	ocmem_icc_path = devm_of_icc_get(&pdev->dev, "ocmem");
 	if (IS_ERR(ocmem_icc_path)) {
 		ret = PTR_ERR(ocmem_icc_path);
-		/* allow -ENODATA, ocmem icc is optional */
+		 
 		if (ret != -ENODATA)
 			goto fail;
 		ocmem_icc_path = NULL;
 	}
 
 
-	/*
-	 * Set the ICC path to maximum speed for now by multiplying the fastest
-	 * frequency by the bus width (8). We'll want to scale this later on to
-	 * improve battery life.
-	 */
+	 
 	icc_set_bw(icc_path, 0, Bps_to_icc(gpu->fast_rate) * 8);
 	icc_set_bw(ocmem_icc_path, 0, Bps_to_icc(gpu->fast_rate) * 8);
 

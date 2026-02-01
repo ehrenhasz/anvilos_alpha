@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-//  max17040_battery.c
-//  fuel-gauge systems for lithium-ion (Li+) batteries
-//
-//  Copyright (C) 2009 Samsung Electronics
-//  Minkyu Kang <mk7.kang@samsung.com>
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -50,7 +50,7 @@ enum chip_id {
 	ID_MAX17059,
 };
 
-/* values that differ by chip_id */
+ 
 struct chip_data {
 	u16 reset_val;
 	u16 vcell_shift;
@@ -143,13 +143,13 @@ struct max17040_chip {
 	struct power_supply		*battery;
 	struct chip_data		data;
 
-	/* battery capacity */
+	 
 	int soc;
-	/* Low alert threshold from 32% to 1% of the State of Charge */
+	 
 	u32 low_soc_alert;
-	/* some devices return twice the capacity */
+	 
 	bool quirk_double_soc;
-	/* higher 8 bits for 17043+, 16 bits for 17040,41 */
+	 
 	u16 rcomp;
 };
 
@@ -282,18 +282,18 @@ static void max17040_work(struct work_struct *work)
 
 	chip = container_of(work, struct max17040_chip, work.work);
 
-	/* store SOC to check changes */
+	 
 	last_soc = chip->soc;
 	max17040_check_changes(chip);
 
-	/* check changes and send uevent */
+	 
 	if (last_soc != chip->soc)
 		power_supply_changed(chip->battery);
 
 	max17040_queue_work(chip);
 }
 
-/* Returns true if alert cause was SOC change, not low SOC */
+ 
 static bool max17040_handle_soc_alert(struct max17040_chip *chip)
 {
 	bool ret = true;
@@ -302,11 +302,11 @@ static bool max17040_handle_soc_alert(struct max17040_chip *chip)
 	regmap_read(chip->regmap, MAX17040_STATUS, &data);
 
 	if (data & MAX17040_STATUS_HD_MASK) {
-		// this alert was caused by low soc
+		
 		ret = false;
 	}
 	if (data & MAX17040_STATUS_SC_MASK) {
-		// soc change bit -- deassert to mark as handled
+		
 		regmap_write(chip->regmap, MAX17040_STATUS,
 				data & ~MAX17040_STATUS_SC_MASK);
 	}
@@ -321,13 +321,13 @@ static irqreturn_t max17040_thread_handler(int id, void *dev)
 	if (!(chip->data.has_soc_alert && max17040_handle_soc_alert(chip)))
 		dev_warn(&chip->client->dev, "IRQ: Alert battery low level\n");
 
-	/* read registers */
+	 
 	max17040_check_changes(chip);
 
-	/* send uevent */
+	 
 	power_supply_changed(chip->battery);
 
-	/* reset alert bit */
+	 
 	max17040_set_low_soc_alert(chip, chip->low_soc_alert);
 
 	return IRQ_HANDLED;
@@ -365,7 +365,7 @@ static int max17040_set_property(struct power_supply *psy,
 
 	switch (psp) {
 	case POWER_SUPPLY_PROP_CAPACITY_ALERT_MIN:
-		/* alert threshold can be programmed from 1% up to 16/32% */
+		 
 		if ((val->intval < 1) ||
 		    (val->intval > (chip->quirk_double_soc ? 16 : 32))) {
 			ret = -EINVAL;
@@ -480,7 +480,7 @@ static int max17040_probe(struct i2c_client *client)
 
 	max17040_set_rcomp(chip, chip->rcomp);
 
-	/* check interrupt */
+	 
 	if (client->irq && chip->data.has_low_soc_alert) {
 		ret = max17040_set_low_soc_alert(chip, chip->low_soc_alert);
 		if (ret) {
@@ -501,7 +501,7 @@ static int max17040_probe(struct i2c_client *client)
 		}
 		enable_irq = true;
 	} else {
-		/* soc alerts negate the need for polling */
+		 
 		INIT_DEFERRABLE_WORK(&chip->work, max17040_work);
 		ret = devm_add_action(&client->dev, max17040_stop_work, chip);
 		if (ret)
@@ -529,7 +529,7 @@ static int max17040_suspend(struct device *dev)
 	struct max17040_chip *chip = i2c_get_clientdata(client);
 
 	if (client->irq && chip->data.has_soc_alert)
-		// disable soc alert to prevent wakeup
+		
 		max17040_set_soc_alert(chip, 0);
 	else
 		cancel_delayed_work(&chip->work);
@@ -563,7 +563,7 @@ static SIMPLE_DEV_PM_OPS(max17040_pm_ops, max17040_suspend, max17040_resume);
 
 #define MAX17040_PM_OPS NULL
 
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct i2c_device_id max17040_id[] = {
 	{ "max17040", ID_MAX17040 },
@@ -575,7 +575,7 @@ static const struct i2c_device_id max17040_id[] = {
 	{ "max17049", ID_MAX17049 },
 	{ "max17058", ID_MAX17058 },
 	{ "max17059", ID_MAX17059 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, max17040_id);
 
@@ -589,7 +589,7 @@ static const struct of_device_id max17040_of_match[] = {
 	{ .compatible = "maxim,max17049", .data = (void *) ID_MAX17049 },
 	{ .compatible = "maxim,max17058", .data = (void *) ID_MAX17058 },
 	{ .compatible = "maxim,max17059", .data = (void *) ID_MAX17059 },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, max17040_of_match);
 

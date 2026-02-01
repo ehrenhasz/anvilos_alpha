@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2022, Analog Devices Inc.
+
+
 
 #include <linux/gpio/consumer.h>
 #include <linux/i2c.h>
@@ -380,7 +380,7 @@ static int max98396_dai_set_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	/* interface format */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		format |= MAX98396_PCM_FORMAT_I2S;
@@ -418,7 +418,7 @@ static int max98396_dai_set_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 			if (bclk_pol != (reg & MAX98396_PCM_MODE_CFG_BCLKEDGE))
 				update = true;
 		}
-		/* GLOBAL_EN OFF prior to pcm mode, clock configuration change */
+		 
 		if (update)
 			max98396_global_enable_onoff(max98396->regmap, false);
 	}
@@ -451,7 +451,7 @@ static int max98396_dai_set_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 #define MAX98396_BSEL_250	0xc
 #define MAX98396_BSEL_125	0xd
 
-/* Refer to table 5 in the datasheet */
+ 
 static const struct max98396_pcm_config {
 	int in, out, width, bsel, max_sr;
 } max98396_pcm_configs[] = {
@@ -513,7 +513,7 @@ static int max98396_dai_hw_params(struct snd_pcm_substream *substream,
 	int ret, reg, status, bsel = 0;
 	bool update = false;
 
-	/* pcm mode configuration */
+	 
 	switch (snd_pcm_format_width(params_format(params))) {
 	case 16:
 		chan_sz = MAX98396_PCM_MODE_CFG_CHANSZ_16;
@@ -533,7 +533,7 @@ static int max98396_dai_hw_params(struct snd_pcm_substream *substream,
 	dev_dbg(component->dev, "format supported %d",
 		params_format(params));
 
-	/* sampling rate configuration */
+	 
 	switch (params_rate(params)) {
 	case 8000:
 		sampling_rate = MAX98396_PCM_SR_8000;
@@ -584,7 +584,7 @@ static int max98396_dai_hw_params(struct snd_pcm_substream *substream,
 			goto err;
 		}
 	} else {
-		/* BCLK configuration */
+		 
 		ret = max98396_pcm_config_index(params_channels(params),
 						params_channels(params),
 						snd_pcm_format_width(params_format(params)));
@@ -622,20 +622,20 @@ static int max98396_dai_hw_params(struct snd_pcm_substream *substream,
 				update = true;
 		}
 
-		/* GLOBAL_EN OFF prior to channel size and sampling rate change */
+		 
 		if (update)
 			max98396_global_enable_onoff(max98396->regmap, false);
 	}
 
-	/* set channel size */
+	 
 	regmap_update_bits(max98396->regmap, MAX98396_R2041_PCM_MODE_CFG,
 			   MAX98396_PCM_MODE_CFG_CHANSZ_MASK, chan_sz);
 
-	/* set DAI_SR to correct LRCLK frequency */
+	 
 	regmap_update_bits(max98396->regmap, MAX98396_R2043_PCM_SR_SETUP,
 			   MAX98396_PCM_SR_MASK, sampling_rate);
 
-	/* set sampling rate of IV */
+	 
 	if (max98396->interleave_mode &&
 	    sampling_rate > MAX98396_PCM_SR_16000)
 		regmap_update_bits(max98396->regmap,
@@ -682,7 +682,7 @@ static int max98396_dai_tdm_slot(struct snd_soc_dai *dai,
 	else
 		max98396->tdm_mode = true;
 
-	/* BCLK configuration */
+	 
 	ret = max98396_pcm_config_index(slots, slots, slot_width);
 	if (ret < 0) {
 		dev_err(component->dev, "no TDM config for %d slots %d bits\n",
@@ -693,7 +693,7 @@ static int max98396_dai_tdm_slot(struct snd_soc_dai *dai,
 	bsel = max98396_pcm_configs[ret].bsel;
 	max98396->tdm_max_samplerate = max98396_pcm_configs[ret].max_sr;
 
-	/* Channel size configuration */
+	 
 	switch (slot_width) {
 	case 16:
 		chan_sz = MAX98396_PCM_MODE_CFG_CHANSZ_16;
@@ -728,7 +728,7 @@ static int max98396_dai_tdm_slot(struct snd_soc_dai *dai,
 				update = true;
 		}
 
-		/* GLOBAL_EN OFF prior to channel size and BCLK per LRCLK change */
+		 
 		if (update)
 			max98396_global_enable_onoff(max98396->regmap, false);
 	}
@@ -742,7 +742,7 @@ static int max98396_dai_tdm_slot(struct snd_soc_dai *dai,
 			   MAX98396_R2041_PCM_MODE_CFG,
 			   MAX98396_PCM_MODE_CFG_CHANSZ_MASK, chan_sz);
 
-	/* Rx slot configuration */
+	 
 	if (max98396->device_id == CODEC_TYPE_MAX98396) {
 		regmap_update_bits(max98396->regmap,
 				   MAX98396_R2056_PCM_RX_SRC2,
@@ -763,7 +763,7 @@ static int max98396_dai_tdm_slot(struct snd_soc_dai *dai,
 				   rx_mask << MAX98396_PCM_DMIX_CH1_SHIFT);
 	}
 
-	/* Tx slot Hi-Z configuration */
+	 
 	if (max98396->device_id == CODEC_TYPE_MAX98396) {
 		regmap_write(max98396->regmap,
 			     MAX98396_R2053_PCM_TX_HIZ_CTRL_8,
@@ -1115,7 +1115,7 @@ static int max98396_adc_value_get(struct snd_kcontrol *kcontrol,
 	u8 val[2];
 	int reg = mc->reg;
 
-	/* ADC value is not available if the device is powered down */
+	 
 	if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF)
 		goto exit;
 
@@ -1139,7 +1139,7 @@ static int max98396_adc_value_get(struct snd_kcontrol *kcontrol,
 	if (ret)
 		goto exit;
 
-	/* ADC readback bits[8:0] rearrangement */
+	 
 	ucontrol->value.integer.value[0] = (val[0] << 1) | (val[1] & 1);
 	return 0;
 
@@ -1149,48 +1149,48 @@ exit:
 }
 
 static const struct snd_kcontrol_new max98396_snd_controls[] = {
-	/* Volume */
+	 
 	SOC_SINGLE_TLV("Digital Volume", MAX98396_R2090_AMP_VOL_CTRL,
 		       0, 0x7F, 1, max98396_digital_tlv),
 	SOC_SINGLE_TLV("Speaker Volume", MAX98396_R2091_AMP_PATH_GAIN,
 		       0, 0x11, 0, max98396_spk_tlv),
-	/* Volume Ramp Up/Down Enable*/
+	 
 	SOC_SINGLE("Ramp Up Switch", MAX98396_R2092_AMP_DSP_CFG,
 		   MAX98396_DSP_SPK_VOL_RMPUP_SHIFT, 1, 0),
 	SOC_SINGLE("Ramp Down Switch", MAX98396_R2092_AMP_DSP_CFG,
 		   MAX98396_DSP_SPK_VOL_RMPDN_SHIFT, 1, 0),
-	/* Clock Monitor Enable */
+	 
 	SOC_SINGLE("CLK Monitor Switch", MAX98396_R203F_ENABLE_CTRLS,
 		   MAX98396_CTRL_CMON_EN_SHIFT, 1, 0),
-	/* Dither Enable */
+	 
 	SOC_SINGLE("Dither Switch", MAX98396_R2092_AMP_DSP_CFG,
 		   MAX98396_DSP_SPK_DITH_EN_SHIFT, 1, 0),
 	SOC_SINGLE("IV Dither Switch", MAX98396_R20E0_IV_SENSE_PATH_CFG,
 		   MAX98396_IV_SENSE_DITH_EN_SHIFT, 1, 0),
-	/* DC Blocker Enable */
+	 
 	SOC_SINGLE("DC Blocker Switch", MAX98396_R2092_AMP_DSP_CFG,
 		   MAX98396_DSP_SPK_DCBLK_EN_SHIFT, 1, 0),
 	SOC_SINGLE("IV DC Blocker Switch", MAX98396_R20E0_IV_SENSE_PATH_CFG,
 		   MAX98396_IV_SENSE_DCBLK_EN_SHIFT, 3, 0),
-	/* Speaker Safe Mode Enable */
+	 
 	SOC_SINGLE("Safe Mode Switch", MAX98396_R2092_AMP_DSP_CFG,
 		   MAX98396_DSP_SPK_SAFE_EN_SHIFT, 1, 0),
-	/* Wideband Filter Enable */
+	 
 	SOC_SINGLE("WB Filter Switch", MAX98396_R2092_AMP_DSP_CFG,
 		   MAX98396_DSP_SPK_WB_FLT_EN_SHIFT, 1, 0),
 	SOC_SINGLE("IV WB Filter Switch", MAX98396_R20E0_IV_SENSE_PATH_CFG,
 		   MAX98396_IV_SENSE_WB_FLT_EN_SHIFT, 1, 0),
-	/* Dynamic Headroom Tracking */
+	 
 	SOC_SINGLE("DHT Switch", MAX98396_R20DF_DHT_EN, 0, 1, 0),
-	/* Brownout Protection Engine */
+	 
 	SOC_SINGLE("BPE Switch", MAX98396_R210D_BPE_EN, 0, 1, 0),
 	SOC_SINGLE("BPE Limiter Switch", MAX98396_R210D_BPE_EN, 1, 1, 0),
-	/* Bypass Path Enable */
+	 
 	SOC_SINGLE("Bypass Path Switch",
 		   MAX98396_R205E_PCM_RX_EN, 1, 1, 0),
-	/* Speaker Operation Mode */
+	 
 	SOC_ENUM("OP Mode", max98396_op_mod_enum),
-	/* Auto Restart functions */
+	 
 	SOC_SINGLE("CMON Auto Restart Switch", MAX98396_R2038_CLK_MON_CTRL,
 		   MAX98396_CLK_MON_AUTO_RESTART_SHIFT, 1, 0),
 	SOC_SINGLE("PVDD Auto Restart Switch", MAX98396_R210E_AUTO_RESTART,
@@ -1201,7 +1201,7 @@ static const struct snd_kcontrol_new max98396_snd_controls[] = {
 		   MAX98396_THEM_SHDN_RESTART_SHFT, 1, 0),
 	SOC_SINGLE("OVC Auto Restart Switch", MAX98396_R210E_AUTO_RESTART,
 		   MAX98396_OVC_RESTART_SHFT, 1, 0),
-	/* Thermal Threshold */
+	 
 	SOC_ENUM("THERM Thresh1", max98396_thermal_warn_thresh1_enum),
 	SOC_ENUM("THERM Thresh2", max98396_thermal_warn_thresh2_enum),
 	SOC_ENUM("THERM SHDN Thresh", max98396_thermal_shdn_thresh_enum),
@@ -1212,7 +1212,7 @@ static const struct snd_kcontrol_new max98396_snd_controls[] = {
 	SOC_ENUM("THERM Slope2", max98396_thermal_fb_slope2_enum),
 	SOC_ENUM("THERM Release", max98396_thermal_fb_reltime_enum),
 	SOC_ENUM("THERM Hold", max98396_thermal_fb_holdtime_enum),
-	/* ADC */
+	 
 	SOC_SINGLE_EXT("ADC PVDD", MAX98396_R20B6_ADC_PVDD_READBACK_MSB, 0, 0x1FF, 0,
 		       max98396_adc_value_get, NULL),
 	SOC_SINGLE_EXT("ADC VBAT", MAX98396_R20B8_ADC_VBAT_READBACK_MSB, 0, 0x1FF, 0,
@@ -1222,48 +1222,48 @@ static const struct snd_kcontrol_new max98396_snd_controls[] = {
 };
 
 static const struct snd_kcontrol_new max98397_snd_controls[] = {
-	/* Volume */
+	 
 	SOC_SINGLE_TLV("Digital Volume", MAX98396_R2090_AMP_VOL_CTRL,
 		       0, 0xFF, 1, max98397_digital_tlv),
 	SOC_SINGLE_TLV("Speaker Volume", MAX98396_R2091_AMP_PATH_GAIN,
 		       0, 0x15, 0, max98397_spk_tlv),
-	/* Volume Ramp Up/Down Enable*/
+	 
 	SOC_SINGLE("Ramp Up Switch", MAX98396_R2092_AMP_DSP_CFG,
 		   MAX98396_DSP_SPK_VOL_RMPUP_SHIFT, 1, 0),
 	SOC_SINGLE("Ramp Down Switch", MAX98396_R2092_AMP_DSP_CFG,
 		   MAX98396_DSP_SPK_VOL_RMPDN_SHIFT, 1, 0),
-	/* Clock Monitor Enable */
+	 
 	SOC_SINGLE("CLK Monitor Switch", MAX98396_R203F_ENABLE_CTRLS,
 		   MAX98396_CTRL_CMON_EN_SHIFT, 1, 0),
-	/* Dither Enable */
+	 
 	SOC_SINGLE("Dither Switch", MAX98396_R2092_AMP_DSP_CFG,
 		   MAX98396_DSP_SPK_DITH_EN_SHIFT, 1, 0),
 	SOC_SINGLE("IV Dither Switch", MAX98396_R20E0_IV_SENSE_PATH_CFG,
 		   MAX98396_IV_SENSE_DITH_EN_SHIFT, 1, 0),
-	/* DC Blocker Enable */
+	 
 	SOC_SINGLE("DC Blocker Switch", MAX98396_R2092_AMP_DSP_CFG,
 		   MAX98396_DSP_SPK_DCBLK_EN_SHIFT, 1, 0),
 	SOC_SINGLE("IV DC Blocker Switch", MAX98396_R20E0_IV_SENSE_PATH_CFG,
 		   MAX98396_IV_SENSE_DCBLK_EN_SHIFT, 3, 0),
-	/* Speaker Safe Mode Enable */
+	 
 	SOC_SINGLE("Safe Mode Switch", MAX98396_R2092_AMP_DSP_CFG,
 		   MAX98396_DSP_SPK_SAFE_EN_SHIFT, 1, 0),
-	/* Wideband Filter Enable */
+	 
 	SOC_SINGLE("WB Filter Switch", MAX98396_R2092_AMP_DSP_CFG,
 		   MAX98396_DSP_SPK_WB_FLT_EN_SHIFT, 1, 0),
 	SOC_SINGLE("IV WB Filter Switch", MAX98396_R20E0_IV_SENSE_PATH_CFG,
 		   MAX98396_IV_SENSE_WB_FLT_EN_SHIFT, 1, 0),
-	/* Dynamic Headroom Tracking */
+	 
 	SOC_SINGLE("DHT Switch", MAX98396_R20DF_DHT_EN, 0, 1, 0),
-	/* Brownout Protection Engine */
+	 
 	SOC_SINGLE("BPE Switch", MAX98396_R210D_BPE_EN, 0, 1, 0),
 	SOC_SINGLE("BPE Limiter Switch", MAX98396_R210D_BPE_EN, 1, 1, 0),
-	/* Bypass Path Enable */
+	 
 	SOC_SINGLE("Bypass Path Switch",
 		   MAX98396_R205E_PCM_RX_EN, 1, 1, 0),
-	/* Speaker Operation Mode */
+	 
 	SOC_ENUM("OP Mode", max98396_op_mod_enum),
-	/* Auto Restart functions */
+	 
 	SOC_SINGLE("CMON Auto Restart Switch", MAX98396_R2038_CLK_MON_CTRL,
 		   MAX98396_CLK_MON_AUTO_RESTART_SHIFT, 1, 0),
 	SOC_SINGLE("PVDD Auto Restart Switch", MAX98396_R210E_AUTO_RESTART,
@@ -1274,7 +1274,7 @@ static const struct snd_kcontrol_new max98397_snd_controls[] = {
 		   MAX98396_THEM_SHDN_RESTART_SHFT, 1, 0),
 	SOC_SINGLE("OVC Auto Restart Switch", MAX98396_R210E_AUTO_RESTART,
 		   MAX98396_OVC_RESTART_SHFT, 1, 0),
-	/* Thermal Threshold */
+	 
 	SOC_ENUM("THERM Thresh1", max98396_thermal_warn_thresh1_enum),
 	SOC_ENUM("THERM Thresh2", max98396_thermal_warn_thresh2_enum),
 	SOC_ENUM("THERM SHDN Thresh", max98396_thermal_shdn_thresh_enum),
@@ -1285,7 +1285,7 @@ static const struct snd_kcontrol_new max98397_snd_controls[] = {
 	SOC_ENUM("THERM Slope2", max98396_thermal_fb_slope2_enum),
 	SOC_ENUM("THERM Release", max98396_thermal_fb_reltime_enum),
 	SOC_ENUM("THERM Hold", max98396_thermal_fb_holdtime_enum),
-	/* ADC */
+	 
 	SOC_SINGLE_EXT("ADC PVDD", MAX98396_R20B6_ADC_PVDD_READBACK_MSB, 0, 0x1FF, 0,
 		       max98396_adc_value_get, NULL),
 	SOC_SINGLE_EXT("ADC VBAT", MAX98396_R20B8_ADC_VBAT_READBACK_MSB, 0, 0x1FF, 0,
@@ -1295,12 +1295,12 @@ static const struct snd_kcontrol_new max98397_snd_controls[] = {
 };
 
 static const struct snd_soc_dapm_route max98396_audio_map[] = {
-	/* Plabyack */
+	 
 	{"DAI Sel Mux", "Left", "Amp Enable"},
 	{"DAI Sel Mux", "Right", "Amp Enable"},
 	{"DAI Sel Mux", "LeftRight", "Amp Enable"},
 	{"BE_OUT", NULL, "DAI Sel Mux"},
-	/* Capture */
+	 
 	{ "VI Sense", "Switch", "VMON" },
 	{ "VI Sense", "Switch", "IMON" },
 	{ "Voltage Sense", NULL, "VI Sense" },
@@ -1353,7 +1353,7 @@ static void max98396_reset(struct max98396_priv *max98396, struct device *dev)
 {
 	int ret, reg, count;
 
-	/* Software Reset */
+	 
 	ret = regmap_write(max98396->regmap,
 			   MAX98396_R2000_SW_RESET, 1);
 	if (ret)
@@ -1362,7 +1362,7 @@ static void max98396_reset(struct max98396_priv *max98396, struct device *dev)
 	count = 0;
 	while (count < 3) {
 		usleep_range(5000, 6000);
-		/* Software Reset Verification */
+		 
 		ret = regmap_read(max98396->regmap,
 				  GET_REG_ADDR_REV_ID(max98396->device_id), &reg);
 		if (!ret) {
@@ -1379,10 +1379,10 @@ static int max98396_probe(struct snd_soc_component *component)
 	struct max98396_priv *max98396 =
 		snd_soc_component_get_drvdata(component);
 
-	/* Software Reset */
+	 
 	max98396_reset(max98396, component->dev);
 
-	/* L/R mix configuration */
+	 
 	if (max98396->device_id == CODEC_TYPE_MAX98396) {
 		regmap_write(max98396->regmap,
 			     MAX98396_R2055_PCM_RX_SRC1, 0x02);
@@ -1394,35 +1394,35 @@ static int max98396_probe(struct snd_soc_component *component)
 		regmap_write(max98396->regmap,
 			     MAX98397_R2057_PCM_RX_SRC2, 0x10);
 	}
-	/* Supply control */
+	 
 	regmap_update_bits(max98396->regmap,
 			   MAX98396_R20A0_AMP_SUPPLY_CTL,
 			   MAX98396_AMP_SUPPLY_NOVBAT,
 			   (max98396->vbat == NULL) ?
 				MAX98396_AMP_SUPPLY_NOVBAT : 0);
-	/* Enable DC blocker */
+	 
 	regmap_update_bits(max98396->regmap,
 			   MAX98396_R2092_AMP_DSP_CFG, 1, 1);
-	/* Enable IV Monitor DC blocker */
+	 
 	regmap_update_bits(max98396->regmap,
 			   MAX98396_R20E0_IV_SENSE_PATH_CFG,
 			   MAX98396_IV_SENSE_DCBLK_EN_MASK,
 			   MAX98396_IV_SENSE_DCBLK_EN_MASK);
-	/* Configure default data output sources */
+	 
 	regmap_write(max98396->regmap,
 		     MAX98396_R205D_PCM_TX_SRC_EN, 3);
-	/* Enable Wideband Filter */
+	 
 	regmap_update_bits(max98396->regmap,
 			   MAX98396_R2092_AMP_DSP_CFG, 0x40, 0x40);
-	/* Enable IV Wideband Filter */
+	 
 	regmap_update_bits(max98396->regmap,
 			   MAX98396_R20E0_IV_SENSE_PATH_CFG, 8, 8);
 
-	/* Enable Bypass Source */
+	 
 	regmap_write(max98396->regmap,
 		     MAX98396_R2058_PCM_BYPASS_SRC,
 		     max98396->bypass_slot);
-	/* Voltage, current slot configuration */
+	 
 	regmap_write(max98396->regmap,
 		     MAX98396_R2044_PCM_TX_CTRL_1,
 		     max98396->v_slot);
@@ -1471,7 +1471,7 @@ static int max98396_probe(struct snd_soc_component *component)
 					   MAX98397_R2053_PCM_TX_HIZ_CTRL_7,
 					   1 << (max98396->i_slot - 8), 0);
 
-	/* Set interleave mode */
+	 
 	if (max98396->interleave_mode)
 		regmap_update_bits(max98396->regmap,
 				   MAX98396_R2041_PCM_MODE_CFG,
@@ -1564,7 +1564,7 @@ static int max98396_probe(struct snd_soc_component *component)
 			max98396->dmon_mag_threshold);
 	}
 
-	/* Speaker Amplifier PCM RX Enable by default */
+	 
 	regmap_update_bits(max98396->regmap,
 			   MAX98396_R205E_PCM_RX_EN,
 			   MAX98396_PCM_RX_EN_MASK, 1);
@@ -1747,7 +1747,7 @@ static int max98396_i2c_probe(struct i2c_client *i2c)
 
 	max98396->device_id =  id->driver_data;
 
-	/* regmap initialization */
+	 
 	if (max98396->device_id == CODEC_TYPE_MAX98396)
 		max98396->regmap = devm_regmap_init_i2c(i2c, &max98396_regmap);
 
@@ -1761,7 +1761,7 @@ static int max98396_i2c_probe(struct i2c_client *i2c)
 		return ret;
 	}
 
-	/* Obtain regulator supplies */
+	 
 	for (i = 0; i < MAX98396_NUM_CORE_SUPPLIES; i++)
 		max98396->core_supplies[i].supply = max98396_core_supplies[i];
 
@@ -1824,16 +1824,16 @@ static int max98396_i2c_probe(struct i2c_client *i2c)
 			return ret;
 	}
 
-	/* update interleave mode info */
+	 
 	if (device_property_read_bool(&i2c->dev, "adi,interleave_mode"))
 		max98396->interleave_mode = true;
 	else
 		max98396->interleave_mode = false;
 
-	/* voltage/current slot & gpio configuration */
+	 
 	max98396_read_device_property(&i2c->dev, max98396);
 
-	/* Reset the Device */
+	 
 	max98396->reset_gpio = devm_gpiod_get_optional(&i2c->dev,
 						       "reset", GPIOD_OUT_HIGH);
 	if (IS_ERR(max98396->reset_gpio)) {
@@ -1845,7 +1845,7 @@ static int max98396_i2c_probe(struct i2c_client *i2c)
 	if (max98396->reset_gpio) {
 		usleep_range(5000, 6000);
 		gpiod_set_value_cansleep(max98396->reset_gpio, 0);
-		/* Wait for the hw reset done */
+		 
 		usleep_range(5000, 6000);
 	}
 
@@ -1857,7 +1857,7 @@ static int max98396_i2c_probe(struct i2c_client *i2c)
 	}
 	dev_info(&i2c->dev, "%s revision ID: 0x%02X\n", id->name, reg);
 
-	/* codec registration */
+	 
 	if (max98396->device_id == CODEC_TYPE_MAX98396)
 		ret = devm_snd_soc_register_component(&i2c->dev,
 						      &soc_codec_dev_max98396,

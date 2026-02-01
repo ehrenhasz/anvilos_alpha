@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* User-mappable watch queue
- *
- * Copyright (C) 2020 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- *
- * See Documentation/core-api/watch_queue.rst
- */
+
+ 
 
 #ifndef _LINUX_WATCH_QUEUE_H
 #define _LINUX_WATCH_QUEUE_H
@@ -20,55 +14,51 @@ struct cred;
 
 struct watch_type_filter {
 	enum watch_notification_type type;
-	__u32		subtype_filter[1];	/* Bitmask of subtypes to filter on */
-	__u32		info_filter;		/* Filter on watch_notification::info */
-	__u32		info_mask;		/* Mask of relevant bits in info_filter */
+	__u32		subtype_filter[1];	 
+	__u32		info_filter;		 
+	__u32		info_mask;		 
 };
 
 struct watch_filter {
 	union {
 		struct rcu_head	rcu;
-		/* Bitmask of accepted types */
+		 
 		DECLARE_BITMAP(type_filter, WATCH_TYPE__NR);
 	};
-	u32			nr_filters;	/* Number of filters */
+	u32			nr_filters;	 
 	struct watch_type_filter filters[];
 };
 
 struct watch_queue {
 	struct rcu_head		rcu;
 	struct watch_filter __rcu *filter;
-	struct pipe_inode_info	*pipe;		/* Pipe we use as a buffer, NULL if queue closed */
-	struct hlist_head	watches;	/* Contributory watches */
-	struct page		**notes;	/* Preallocated notifications */
-	unsigned long		*notes_bitmap;	/* Allocation bitmap for notes */
-	struct kref		usage;		/* Object usage count */
+	struct pipe_inode_info	*pipe;		 
+	struct hlist_head	watches;	 
+	struct page		**notes;	 
+	unsigned long		*notes_bitmap;	 
+	struct kref		usage;		 
 	spinlock_t		lock;
-	unsigned int		nr_notes;	/* Number of notes */
-	unsigned int		nr_pages;	/* Number of pages in notes[] */
+	unsigned int		nr_notes;	 
+	unsigned int		nr_pages;	 
 };
 
-/*
- * Representation of a watch on an object.
- */
+ 
 struct watch {
 	union {
 		struct rcu_head	rcu;
-		u32		info_id;	/* ID to be OR'd in to info field */
+		u32		info_id;	 
 	};
-	struct watch_queue __rcu *queue;	/* Queue to post events to */
-	struct hlist_node	queue_node;	/* Link in queue->watches */
+	struct watch_queue __rcu *queue;	 
+	struct hlist_node	queue_node;	 
 	struct watch_list __rcu	*watch_list;
-	struct hlist_node	list_node;	/* Link in watch_list->watchers */
-	const struct cred	*cred;		/* Creds of the owner of the watch */
-	void			*private;	/* Private data for the watched object */
-	u64			id;		/* Internal identifier */
-	struct kref		usage;		/* Object usage count */
+	struct hlist_node	list_node;	 
+	const struct cred	*cred;		 
+	void			*private;	 
+	u64			id;		 
+	struct kref		usage;		 
 };
 
-/*
- * List of watches on an object.
- */
+ 
 struct watch_list {
 	struct rcu_head		rcu;
 	struct hlist_head	watchers;
@@ -116,10 +106,7 @@ static inline void remove_watch_list(struct watch_list *wlist, u64 id)
 	}
 }
 
-/**
- * watch_sizeof - Calculate the information part of the size of a watch record,
- * given the structure size.
- */
+ 
 #define watch_sizeof(STRUCT) (sizeof(STRUCT) << WATCH_INFO_LENGTH__SHIFT)
 
 #else
@@ -130,4 +117,4 @@ static inline int watch_queue_init(struct pipe_inode_info *pipe)
 
 #endif
 
-#endif /* _LINUX_WATCH_QUEUE_H */
+#endif  

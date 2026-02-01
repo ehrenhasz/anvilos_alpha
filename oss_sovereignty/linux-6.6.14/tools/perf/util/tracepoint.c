@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "tracepoint.h"
 
 #include <errno.h>
@@ -23,9 +23,7 @@ int tp_event_has_id(const char *dir_path, struct dirent *evt_dir)
 	return 0;
 }
 
-/*
- * Check whether event is in <debugfs_mount_point>/tracing/events
- */
+ 
 int is_valid_tracepoint(const char *event_string)
 {
 	DIR *sys_dir, *evt_dir;

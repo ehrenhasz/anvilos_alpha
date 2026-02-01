@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2022 Marek Vasut <marex@denx.de>
- *
- * This code is based on drivers/gpu/drm/mxsfb/mxsfb*
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -166,7 +162,7 @@ static int lcdif_load(struct drm_device *drm)
 	if (ret)
 		return ret;
 
-	/* Modeset init */
+	 
 	drm_mode_config_init(drm);
 
 	ret = lcdif_kms_init(lcdif);
@@ -181,7 +177,7 @@ static int lcdif_load(struct drm_device *drm)
 		return ret;
 	}
 
-	/* Start with vertical blanking interrupt reporting disabled. */
+	 
 	drm_crtc_vblank_off(&lcdif->crtc);
 
 	ret = lcdif_attach_bridge(lcdif);
@@ -251,7 +247,7 @@ static const struct drm_driver lcdif_driver = {
 static const struct of_device_id lcdif_dt_ids[] = {
 	{ .compatible = "fsl,imx8mp-lcdif" },
 	{ .compatible = "fsl,imx93-lcdif" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, lcdif_dt_ids);
 
@@ -306,11 +302,11 @@ static int __maybe_unused lcdif_rpm_suspend(struct device *dev)
 	struct drm_device *drm = dev_get_drvdata(dev);
 	struct lcdif_drm_private *lcdif = drm->dev_private;
 
-	/* These clock supply the DISPLAY CLOCK Domain */
+	 
 	clk_disable_unprepare(lcdif->clk);
-	/* These clock supply the System Bus, AXI, Write Path, LFIFO */
+	 
 	clk_disable_unprepare(lcdif->clk_disp_axi);
-	/* These clock supply the Control Bus, APB, APBH Ctrl Registers */
+	 
 	clk_disable_unprepare(lcdif->clk_axi);
 
 	return 0;
@@ -321,11 +317,11 @@ static int __maybe_unused lcdif_rpm_resume(struct device *dev)
 	struct drm_device *drm = dev_get_drvdata(dev);
 	struct lcdif_drm_private *lcdif = drm->dev_private;
 
-	/* These clock supply the Control Bus, APB, APBH Ctrl Registers */
+	 
 	clk_prepare_enable(lcdif->clk_axi);
-	/* These clock supply the System Bus, AXI, Write Path, LFIFO */
+	 
 	clk_prepare_enable(lcdif->clk_disp_axi);
-	/* These clock supply the DISPLAY CLOCK Domain */
+	 
 	clk_prepare_enable(lcdif->clk);
 
 	return 0;

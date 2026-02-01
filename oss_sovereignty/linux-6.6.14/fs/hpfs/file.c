@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/hpfs/file.c
- *
- *  Mikulas Patocka (mikulas@artax.karlin.mff.cuni.cz), 1998-1999
- *
- *  file VFS functions
- */
+
+ 
 
 #include "hpfs_fn.h"
 #include <linux/mpage.h>
@@ -33,10 +27,7 @@ int hpfs_file_fsync(struct file *file, loff_t start, loff_t end, int datasync)
 	return sync_blockdev(inode->i_sb->s_bdev);
 }
 
-/*
- * generic_file_read often calls bmap with non-existing sector,
- * so we must ignore such errors.
- */
+ 
 
 static secno hpfs_bmap(struct inode *inode, unsigned file_secno, unsigned *n_secs)
 {
@@ -65,7 +56,7 @@ static secno hpfs_bmap(struct inode *inode, unsigned file_secno, unsigned *n_sec
 
 void hpfs_truncate(struct inode *i)
 {
-	if (IS_IMMUTABLE(i)) return /*-EPERM*/;
+	if (IS_IMMUTABLE(i)) return  ;
 	hpfs_lock_assert(i->i_sb);
 
 	hpfs_i(i)->i_n_secs = 0;
@@ -214,7 +205,7 @@ static int hpfs_write_end(struct file *file, struct address_space *mapping,
 	if (err < len)
 		hpfs_write_failed(mapping, pos + len);
 	if (!(err < 0)) {
-		/* make sure we write it on close, if not earlier */
+		 
 		hpfs_lock(inode->i_sb);
 		hpfs_i(inode)->i_dirty = 1;
 		hpfs_unlock(inode->i_sb);

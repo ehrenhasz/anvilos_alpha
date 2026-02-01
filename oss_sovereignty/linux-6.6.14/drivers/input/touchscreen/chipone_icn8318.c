@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for ChipOne icn8318 i2c touchscreen controller
- *
- * Copyright (c) 2015 Red Hat Inc.
- *
- * Red Hat authors:
- * Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/interrupt.h>
@@ -30,13 +23,13 @@ struct icn8318_touch {
 	__u8 slot;
 	__be16 x;
 	__be16 y;
-	__u8 pressure;	/* Seems more like finger width then pressure really */
+	__u8 pressure;	 
 	__u8 event;
-/* The difference between 2 and 3 is unclear */
-#define ICN8318_EVENT_NO_DATA	1 /* No finger seen yet since wakeup */
-#define ICN8318_EVENT_UPDATE1	2 /* New or updated coordinates */
-#define ICN8318_EVENT_UPDATE2	3 /* New or updated coordinates */
-#define ICN8318_EVENT_END	4 /* Finger lifted */
+ 
+#define ICN8318_EVENT_NO_DATA	1  
+#define ICN8318_EVENT_UPDATE1	2  
+#define ICN8318_EVENT_UPDATE2	3  
+#define ICN8318_EVENT_END	4  
 } __packed;
 
 struct icn8318_touch_data {
@@ -93,12 +86,7 @@ static irqreturn_t icn8318_irq(int irq, void *dev_id)
 	}
 
 	if (touch_data.softbutton) {
-		/*
-		 * Other data is invalid when a softbutton is pressed.
-		 * This needs some extra devicetree bindings to map the icn8318
-		 * softbutton codes to evdev codes. Currently no known devices
-		 * use this.
-		 */
+		 
 		return IRQ_HANDLED;
 	}
 
@@ -230,7 +218,7 @@ static int icn8318_probe(struct i2c_client *client)
 		return error;
 	}
 
-	/* Stop device till opened */
+	 
 	icn8318_stop(data->input);
 
 	error = input_register_device(input);
@@ -248,7 +236,7 @@ static const struct of_device_id icn8318_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, icn8318_of_match);
 
-/* This is useless for OF-enabled devices, but it is needed by I2C subsystem */
+ 
 static const struct i2c_device_id icn8318_i2c_id[] = {
 	{ },
 };

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  acpi_bus.c - ACPI Bus Driver ($Revision: 80 $)
- *
- *  Copyright (C) 2001, 2002 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
- */
+
+ 
 
 #define pr_fmt(fmt) "ACPI: " fmt
 
@@ -54,10 +50,7 @@ static int set_copy_dsdt(const struct dmi_system_id *id)
 #endif
 
 static const struct dmi_system_id dsdt_dmi_table[] __initconst = {
-	/*
-	 * Invoke DSDT corruption work-around on all Toshiba Satellite.
-	 * https://bugzilla.kernel.org/show_bug.cgi?id=14679
-	 */
+	 
 	{
 	 .callback = set_copy_dsdt,
 	 .ident = "TOSHIBA Satellite",
@@ -70,9 +63,7 @@ static const struct dmi_system_id dsdt_dmi_table[] __initconst = {
 };
 #endif
 
-/* --------------------------------------------------------------------------
-                                Device Management
-   -------------------------------------------------------------------------- */
+ 
 
 acpi_status acpi_bus_get_status_handle(acpi_handle handle,
 				       unsigned long long *sta)
@@ -102,7 +93,7 @@ int acpi_bus_get_status(struct acpi_device *device)
 		return 0;
 	}
 
-	/* Battery devices must have their deps met before calling _STA */
+	 
 	if (acpi_device_is_battery(device) && device->dep_unmet) {
 		acpi_set_device_status(device, 0);
 		return 0;
@@ -200,7 +191,7 @@ acpi_status acpi_run_osc(acpi_handle handle, struct acpi_osc_context *context)
 	context->ret.length = ACPI_ALLOCATE_BUFFER;
 	context->ret.pointer = NULL;
 
-	/* Setting up input parameters */
+	 
 	input.count = 4;
 	input.pointer = in_params;
 	in_params[0].type 		= ACPI_TYPE_BUFFER;
@@ -229,7 +220,7 @@ acpi_status acpi_run_osc(acpi_handle handle, struct acpi_osc_context *context)
 		status = AE_TYPE;
 		goto out_kfree;
 	}
-	/* Need to ignore the bit0 in result code */
+	 
 	errors = *((u32 *)out_obj->buffer.pointer) & ~(1 << 0);
 	if (errors) {
 		if (errors & OSC_REQUEST_ERROR)
@@ -269,30 +260,15 @@ EXPORT_SYMBOL(acpi_run_osc);
 
 bool osc_sb_apei_support_acked;
 
-/*
- * ACPI 6.0 Section 8.4.4.2 Idle State Coordination
- * OSPM supports platform coordinated low power idle(LPI) states
- */
+ 
 bool osc_pc_lpi_support_confirmed;
 EXPORT_SYMBOL_GPL(osc_pc_lpi_support_confirmed);
 
-/*
- * ACPI 6.2 Section 6.2.11.2 'Platform-Wide OSPM Capabilities':
- *   Starting with ACPI Specification 6.2, all _CPC registers can be in
- *   PCC, System Memory, System IO, or Functional Fixed Hardware address
- *   spaces. OSPM support for this more flexible register space scheme is
- *   indicated by the “Flexible Address Space for CPPC Registers” _OSC bit.
- *
- * Otherwise (cf ACPI 6.1, s8.4.7.1.1.X), _CPC registers must be in:
- * - PCC or Functional Fixed Hardware address space if defined
- * - SystemMemory address space (NULL register) if not defined
- */
+ 
 bool osc_cpc_flexible_adr_space_confirmed;
 EXPORT_SYMBOL_GPL(osc_cpc_flexible_adr_space_confirmed);
 
-/*
- * ACPI 6.4 Operating System Capabilities for USB.
- */
+ 
 bool osc_sb_native_usb4_support_confirmed;
 EXPORT_SYMBOL_GPL(osc_sb_native_usb4_support_confirmed);
 
@@ -311,7 +287,7 @@ static void acpi_bus_osc_negotiate_platform_control(void)
 	acpi_handle handle;
 
 	capbuf[OSC_QUERY_DWORD] = OSC_QUERY_ENABLE;
-	capbuf[OSC_SUPPORT_DWORD] = OSC_SB_PR3_SUPPORT; /* _PR3 is in use */
+	capbuf[OSC_SUPPORT_DWORD] = OSC_SB_PR3_SUPPORT;  
 	if (IS_ENABLED(CONFIG_ACPI_PROCESSOR_AGGREGATOR))
 		capbuf[OSC_SUPPORT_DWORD] |= OSC_SB_PAD_SUPPORT;
 	if (IS_ENABLED(CONFIG_ACPI_PROCESSOR))
@@ -358,10 +334,7 @@ static void acpi_bus_osc_negotiate_platform_control(void)
 		return;
 	}
 
-	/*
-	 * Now run _OSC again with query flag clear and with the caps
-	 * supported by both the OS and the platform.
-	 */
+	 
 	capbuf[OSC_QUERY_DWORD] = 0;
 	capbuf[OSC_SUPPORT_DWORD] = capbuf_ret[OSC_SUPPORT_DWORD];
 	kfree(context.ret.pointer);
@@ -388,11 +361,7 @@ static void acpi_bus_osc_negotiate_platform_control(void)
 	kfree(context.ret.pointer);
 }
 
-/*
- * Native control of USB4 capabilities. If any of the tunneling bits is
- * set it means OS is in control and we use software based connection
- * manager.
- */
+ 
 u32 osc_sb_native_usb4_control;
 EXPORT_SYMBOL_GPL(osc_sb_native_usb4_control);
 
@@ -452,18 +421,9 @@ out_free:
 	kfree(context.ret.pointer);
 }
 
-/* --------------------------------------------------------------------------
-                             Notification Handling
-   -------------------------------------------------------------------------- */
+ 
 
-/**
- * acpi_bus_notify - Global system-level (0x00-0x7F) notifications handler
- * @handle: Target ACPI object.
- * @type: Notification type.
- * @data: Ignored.
- *
- * This only handles notifications related to device hotplug.
- */
+ 
 static void acpi_bus_notify(acpi_handle handle, u32 type, void *data)
 {
 	struct acpi_device *adev;
@@ -487,7 +447,7 @@ static void acpi_bus_notify(acpi_handle handle, u32 type, void *data)
 
 	case ACPI_NOTIFY_DEVICE_CHECK_LIGHT:
 		acpi_handle_debug(handle, "ACPI_NOTIFY_DEVICE_CHECK_LIGHT event\n");
-		/* TBD: Exactly what does 'light' mean? */
+		 
 		return;
 
 	case ACPI_NOTIFY_FREQUENCY_MISMATCH:
@@ -578,7 +538,7 @@ void acpi_dev_remove_notify_handler(struct acpi_device *adev,
 }
 EXPORT_SYMBOL_GPL(acpi_dev_remove_notify_handler);
 
-/* Handle events targeting \_SB device (at present only graceful shutdown) */
+ 
 
 #define ACPI_SB_NOTIFY_SHUTDOWN_REQUEST 0x81
 #define ACPI_SB_INDICATE_INTERVAL	10000
@@ -589,11 +549,7 @@ static void sb_notify_work(struct work_struct *dummy)
 
 	orderly_poweroff(true);
 
-	/*
-	 * After initiating graceful shutdown, the ACPI spec requires OSPM
-	 * to evaluate _OST method once every 10seconds to indicate that
-	 * the shutdown is in progress
-	 */
+	 
 	acpi_get_handle(NULL, "\\_SB", &sb_handle);
 	while (1) {
 		pr_info("Graceful shutdown in progress.\n");
@@ -629,16 +585,9 @@ static int __init acpi_setup_sb_notify_handler(void)
 	return 0;
 }
 
-/* --------------------------------------------------------------------------
-                             Device Matching
-   -------------------------------------------------------------------------- */
+ 
 
-/**
- * acpi_get_first_physical_node - Get first physical node of an ACPI device
- * @adev:	ACPI device in question
- *
- * Return: First physical node of ACPI device @adev
- */
+ 
 struct device *acpi_get_first_physical_node(struct acpi_device *adev)
 {
 	struct mutex *physical_node_lock = &adev->physical_node_lock;
@@ -668,44 +617,14 @@ static struct acpi_device *acpi_primary_dev_companion(struct acpi_device *adev,
 	return phys_dev && phys_dev == dev ? adev : NULL;
 }
 
-/**
- * acpi_device_is_first_physical_node - Is given dev first physical node
- * @adev: ACPI companion device
- * @dev: Physical device to check
- *
- * Function checks if given @dev is the first physical devices attached to
- * the ACPI companion device. This distinction is needed in some cases
- * where the same companion device is shared between many physical devices.
- *
- * Note that the caller have to provide valid @adev pointer.
- */
+ 
 bool acpi_device_is_first_physical_node(struct acpi_device *adev,
 					const struct device *dev)
 {
 	return !!acpi_primary_dev_companion(adev, dev);
 }
 
-/*
- * acpi_companion_match() - Can we match via ACPI companion device
- * @dev: Device in question
- *
- * Check if the given device has an ACPI companion and if that companion has
- * a valid list of PNP IDs, and if the device is the first (primary) physical
- * device associated with it.  Return the companion pointer if that's the case
- * or NULL otherwise.
- *
- * If multiple physical devices are attached to a single ACPI companion, we need
- * to be careful.  The usage scenario for this kind of relationship is that all
- * of the physical devices in question use resources provided by the ACPI
- * companion.  A typical case is an MFD device where all the sub-devices share
- * the parent's ACPI companion.  In such cases we can only allow the primary
- * (first) physical device to be matched with the help of the companion's PNP
- * IDs.
- *
- * Additional physical devices sharing the ACPI companion can still use
- * resources available from it but they will be matched normally using functions
- * provided by their bus types (and analogously for their modalias).
- */
+ 
 const struct acpi_device *acpi_companion_match(const struct device *dev)
 {
 	struct acpi_device *adev;
@@ -720,16 +639,7 @@ const struct acpi_device *acpi_companion_match(const struct device *dev)
 	return acpi_primary_dev_companion(adev, dev);
 }
 
-/**
- * acpi_of_match_device - Match device object using the "compatible" property.
- * @adev: ACPI device object to match.
- * @of_match_table: List of device IDs to match against.
- * @of_id: OF ID if matched
- *
- * If @dev has an ACPI companion which has ACPI_DT_NAMESPACE_HID in its list of
- * identifiers and a _DSD object with the "compatible" property, use that
- * property to match against the given list of identifiers.
- */
+ 
 static bool acpi_of_match_device(const struct acpi_device *adev,
 				 const struct of_device_id *of_match_table,
 				 const struct of_device_id **of_id)
@@ -747,11 +657,11 @@ static bool acpi_of_match_device(const struct acpi_device *adev,
 	if (of_compatible->type == ACPI_TYPE_PACKAGE) {
 		nval = of_compatible->package.count;
 		obj = of_compatible->package.elements;
-	} else { /* Must be ACPI_TYPE_STRING. */
+	} else {  
 		nval = 1;
 		obj = of_compatible;
 	}
-	/* Now we can look for the driver DT compatible strings */
+	 
 	for (i = 0; i < nval; i++, obj++) {
 		const struct of_device_id *id;
 
@@ -779,7 +689,7 @@ static bool acpi_of_modalias(struct acpi_device *adev,
 
 	if (of_compatible->type == ACPI_TYPE_PACKAGE)
 		obj = of_compatible->package.elements;
-	else /* Must be ACPI_TYPE_STRING. */
+	else  
 		obj = of_compatible;
 
 	str = obj->string.pointer;
@@ -789,18 +699,7 @@ static bool acpi_of_modalias(struct acpi_device *adev,
 	return true;
 }
 
-/**
- * acpi_set_modalias - Set modalias using "compatible" property or supplied ID
- * @adev:	ACPI device object to match
- * @default_id:	ID string to use as default if no compatible string found
- * @modalias:   Pointer to buffer that modalias value will be copied into
- * @len:	Length of modalias buffer
- *
- * This is a counterpart of of_alias_from_compatible() for struct acpi_device
- * objects. If there is a compatible string for @adev, it will be copied to
- * @modalias with the vendor prefix stripped; otherwise, @default_id will be
- * used.
- */
+ 
 void acpi_set_modalias(struct acpi_device *adev, const char *default_id,
 		       char *modalias, size_t len)
 {
@@ -818,7 +717,7 @@ static bool __acpi_match_device_cls(const struct acpi_device_id *id,
 	if (!id->cls)
 		return false;
 
-	/* Apply class-code bitmask, before checking each class-code byte */
+	 
 	for (i = 1; i <= 3; i++) {
 		byte_shift = 8 * (3 - i);
 		msk = (id->cls_msk >> byte_shift) & 0xFF;
@@ -841,15 +740,12 @@ static bool __acpi_match_device(const struct acpi_device *device,
 	const struct acpi_device_id *id;
 	struct acpi_hardware_id *hwid;
 
-	/*
-	 * If the device is not present, it is unnecessary to load device
-	 * driver for it.
-	 */
+	 
 	if (!device || !device->status.present)
 		return false;
 
 	list_for_each_entry(hwid, &device->pnp.ids, list) {
-		/* First, check the ACPI/PNP IDs provided by the caller. */
+		 
 		if (acpi_ids) {
 			for (id = acpi_ids; id->id[0] || id->cls; id++) {
 				if (id->id[0] && !strcmp((char *)id->id, hwid->id))
@@ -859,10 +755,7 @@ static bool __acpi_match_device(const struct acpi_device *device,
 			}
 		}
 
-		/*
-		 * Next, check ACPI_DT_NAMESPACE_HID and try to match the
-		 * "compatible" property if found.
-		 */
+		 
 		if (!strcmp(ACPI_DT_NAMESPACE_HID, hwid->id))
 			return acpi_of_match_device(device, of_ids, of_id);
 	}
@@ -874,16 +767,7 @@ out_acpi_match:
 	return true;
 }
 
-/**
- * acpi_match_acpi_device - Match an ACPI device against a given list of ACPI IDs
- * @ids: Array of struct acpi_device_id objects to match against.
- * @adev: The ACPI device pointer to match.
- *
- * Match the ACPI device @adev against a given list of ACPI IDs @ids.
- *
- * Return:
- * a pointer to the first matching ACPI ID on success or %NULL on failure.
- */
+ 
 const struct acpi_device_id *acpi_match_acpi_device(const struct acpi_device_id *ids,
 						    const struct acpi_device *adev)
 {
@@ -894,17 +778,7 @@ const struct acpi_device_id *acpi_match_acpi_device(const struct acpi_device_id 
 }
 EXPORT_SYMBOL_GPL(acpi_match_acpi_device);
 
-/**
- * acpi_match_device - Match a struct device against a given list of ACPI IDs
- * @ids: Array of struct acpi_device_id object to match against.
- * @dev: The device structure to match.
- *
- * Check if @dev has a valid ACPI handle and if there is a struct acpi_device
- * object for that handle and use that object to match against a given list of
- * device IDs.
- *
- * Return a pointer to the first matching ID on success or %NULL on failure.
- */
+ 
 const struct acpi_device_id *acpi_match_device(const struct acpi_device_id *ids,
 					       const struct device *dev)
 {
@@ -959,18 +833,9 @@ bool acpi_driver_match_device(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(acpi_driver_match_device);
 
-/* --------------------------------------------------------------------------
-                              ACPI Driver Management
-   -------------------------------------------------------------------------- */
+ 
 
-/**
- * acpi_bus_register_driver - register a driver with the ACPI bus
- * @driver: driver being registered
- *
- * Registers a driver with the ACPI bus.  Searches the namespace for all
- * devices that match the driver's criteria and binds.  Returns zero for
- * success or a negative error status for failure.
- */
+ 
 int acpi_bus_register_driver(struct acpi_driver *driver)
 {
 	if (acpi_disabled)
@@ -984,13 +849,7 @@ int acpi_bus_register_driver(struct acpi_driver *driver)
 
 EXPORT_SYMBOL(acpi_bus_register_driver);
 
-/**
- * acpi_bus_unregister_driver - unregisters a driver with the ACPI bus
- * @driver: driver to unregister
- *
- * Unregisters a driver with the ACPI bus.  Searches the namespace for all
- * devices that match the driver's criteria and unbinds.
- */
+ 
 void acpi_bus_unregister_driver(struct acpi_driver *driver)
 {
 	driver_unregister(&driver->drv);
@@ -998,9 +857,7 @@ void acpi_bus_unregister_driver(struct acpi_driver *driver)
 
 EXPORT_SYMBOL(acpi_bus_unregister_driver);
 
-/* --------------------------------------------------------------------------
-                              ACPI Bus operations
-   -------------------------------------------------------------------------- */
+ 
 
 static int acpi_bus_match(struct device *dev, struct device_driver *drv)
 {
@@ -1124,9 +981,7 @@ int acpi_dev_for_each_child_reverse(struct acpi_device *adev,
 	return device_for_each_child_reverse(&adev->dev, &adwc, acpi_dev_for_one_check);
 }
 
-/* --------------------------------------------------------------------------
-                             Initialization/Cleanup
-   -------------------------------------------------------------------------- */
+ 
 
 static int __init acpi_bus_init_irq(void)
 {
@@ -1134,10 +989,7 @@ static int __init acpi_bus_init_irq(void)
 	char *message = NULL;
 
 
-	/*
-	 * Let the system know what interrupt model we are using by
-	 * evaluating the \_PIC object, if exists.
-	 */
+	 
 
 	switch (acpi_irq_model) {
 	case ACPI_IRQ_MODEL_PIC:
@@ -1174,16 +1026,7 @@ static int __init acpi_bus_init_irq(void)
 	return 0;
 }
 
-/**
- * acpi_early_init - Initialize ACPICA and populate the ACPI namespace.
- *
- * The ACPI tables are accessible after this, but the handling of events has not
- * been initialized and the global lock is not available yet, so AML should not
- * be executed at this point.
- *
- * Doing this before switching the EFI runtime services to virtual mode allows
- * the EfiBootServices memory to be freed slightly earlier on boot.
- */
+ 
 void __init acpi_early_init(void)
 {
 	acpi_status status;
@@ -1193,20 +1036,14 @@ void __init acpi_early_init(void)
 
 	pr_info("Core revision %08x\n", ACPI_CA_VERSION);
 
-	/* enable workarounds, unless strict ACPI spec. compliance */
+	 
 	if (!acpi_strict)
 		acpi_gbl_enable_interpreter_slack = TRUE;
 
 	acpi_permanent_mmap = true;
 
 #ifdef CONFIG_X86
-	/*
-	 * If the machine falls into the DMI check table,
-	 * DSDT will be copied to memory.
-	 * Note that calling dmi_check_system() here on other architectures
-	 * would not be OK because only x86 initializes dmi early enough.
-	 * Thankfully only x86 systems need such quirks for now.
-	 */
+	 
 	dmi_check_system(dsdt_dmi_table);
 #endif
 
@@ -1224,19 +1061,16 @@ void __init acpi_early_init(void)
 
 #ifdef CONFIG_X86
 	if (!acpi_ioapic) {
-		/* compatible (0) means level (3) */
+		 
 		if (!(acpi_sci_flags & ACPI_MADT_TRIGGER_MASK)) {
 			acpi_sci_flags &= ~ACPI_MADT_TRIGGER_MASK;
 			acpi_sci_flags |= ACPI_MADT_TRIGGER_LEVEL;
 		}
-		/* Set PIC-mode SCI trigger type */
+		 
 		acpi_pic_sci_set_trigger(acpi_gbl_FADT.sci_interrupt,
 					 (acpi_sci_flags & ACPI_MADT_TRIGGER_MASK) >> 2);
 	} else {
-		/*
-		 * now that acpi_gbl_FADT is initialized,
-		 * update it with result from INT_SRC_OVR parsing
-		 */
+		 
 		acpi_gbl_FADT.sci_interrupt = acpi_sci_override_gsi;
 	}
 #endif
@@ -1246,15 +1080,7 @@ void __init acpi_early_init(void)
 	disable_acpi();
 }
 
-/**
- * acpi_subsystem_init - Finalize the early initialization of ACPI.
- *
- * Switch over the platform to the ACPI mode (if possible).
- *
- * Doing this too early is generally unsafe, but at the same time it needs to be
- * done before all things that really depend on ACPI.  The right spot appears to
- * be before finalizing the EFI initialization.
- */
+ 
 void __init acpi_subsystem_init(void)
 {
 	acpi_status status;
@@ -1267,12 +1093,7 @@ void __init acpi_subsystem_init(void)
 		pr_err("Unable to enable ACPI\n");
 		disable_acpi();
 	} else {
-		/*
-		 * If the system is using ACPI then we can be reasonably
-		 * confident that any regulators are managed by the firmware
-		 * so tell the regulator core it has everything it needs to
-		 * know.
-		 */
+		 
 		regulator_has_full_constraints();
 	}
 }
@@ -1298,16 +1119,7 @@ static int __init acpi_bus_init(void)
 		goto error1;
 	}
 
-	/*
-	 * ACPI 2.0 requires the EC driver to be loaded and work before the EC
-	 * device is found in the namespace.
-	 *
-	 * This is accomplished by looking for the ECDT table and getting the EC
-	 * parameters out of that.
-	 *
-	 * Do that before calling acpi_initialize_objects() which may trigger EC
-	 * address space accesses.
-	 */
+	 
 	acpi_ec_ecdt_probe();
 
 	status = acpi_enable_subsystem(ACPI_NO_ACPI_ENABLE);
@@ -1322,44 +1134,31 @@ static int __init acpi_bus_init(void)
 		goto error1;
 	}
 
-	/*
-	 * _OSC method may exist in module level code,
-	 * so it must be run after ACPI_FULL_INITIALIZATION
-	 */
+	 
 	acpi_bus_osc_negotiate_platform_control();
 	acpi_bus_osc_negotiate_usb_control();
 
-	/*
-	 * _PDC control method may load dynamic SSDT tables,
-	 * and we need to install the table handler before that.
-	 */
+	 
 	status = acpi_install_table_handler(acpi_bus_table_handler, NULL);
 
 	acpi_sysfs_init();
 
 	acpi_early_processor_control_setup();
 
-	/*
-	 * Maybe EC region is required at bus_scan/acpi_get_devices. So it
-	 * is necessary to enable it as early as possible.
-	 */
+	 
 	acpi_ec_dsdt_probe();
 
 	pr_info("Interpreter enabled\n");
 
-	/* Initialize sleep structures */
+	 
 	acpi_sleep_init();
 
-	/*
-	 * Get the system interrupt model and evaluate \_PIC.
-	 */
+	 
 	result = acpi_bus_init_irq();
 	if (result)
 		goto error1;
 
-	/*
-	 * Register the for all standard device notifications.
-	 */
+	 
 	status =
 	    acpi_install_notify_handler(ACPI_ROOT_OBJECT, ACPI_SYSTEM_NOTIFY,
 					&acpi_bus_notify, NULL);
@@ -1368,16 +1167,14 @@ static int __init acpi_bus_init(void)
 		goto error1;
 	}
 
-	/*
-	 * Create the top ACPI proc directory
-	 */
+	 
 	acpi_root_dir = proc_mkdir(ACPI_BUS_FILE_ROOT, NULL);
 
 	result = bus_register(&acpi_bus_type);
 	if (!result)
 		return 0;
 
-	/* Mimic structured exception handling */
+	 
       error1:
 	acpi_terminate();
 	return -ENODEV;

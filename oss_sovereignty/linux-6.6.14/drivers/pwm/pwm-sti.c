@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * PWM device driver for ST SoCs
- *
- * Copyright (C) 2013-2016 STMicroelectronics (R&D) Limited
- *
- * Author: Ajit Pal Singh <ajitpal.singh@st.com>
- *         Lee Jones <lee.jones@linaro.org>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -22,13 +15,13 @@
 #include <linux/time.h>
 #include <linux/wait.h>
 
-#define PWM_OUT_VAL(x)	(0x00 + (4 * (x))) /* Device's Duty Cycle register */
-#define PWM_CPT_VAL(x)	(0x10 + (4 * (x))) /* Capture value */
-#define PWM_CPT_EDGE(x) (0x30 + (4 * (x))) /* Edge to capture on */
+#define PWM_OUT_VAL(x)	(0x00 + (4 * (x)))  
+#define PWM_CPT_VAL(x)	(0x10 + (4 * (x)))  
+#define PWM_CPT_EDGE(x) (0x30 + (4 * (x)))  
 
-#define STI_PWM_CTRL		0x50	/* Control/Config register */
-#define STI_INT_EN		0x54	/* Interrupt Enable/Disable register */
-#define STI_INT_STA		0x58	/* Interrupt Status register */
+#define STI_PWM_CTRL		0x50	 
+#define STI_INT_EN		0x54	 
+#define STI_INT_STA		0x58	 
 #define PWM_INT_ACK		0x5c
 #define PWM_PRESCALE_LOW_MASK	0x0f
 #define PWM_PRESCALE_HIGH_MASK	0xf0
@@ -38,9 +31,9 @@
 #define STI_MAX_CPT_DEVS	4
 #define CPT_DC_MAX		0xff
 
-/* Regfield IDs */
+ 
 enum {
-	/* Bits in PWM_CTRL*/
+	 
 	PWMCLK_PRESCALE_LOW,
 	PWMCLK_PRESCALE_HIGH,
 	CPTCLK_PRESCALE,
@@ -51,14 +44,11 @@ enum {
 	PWM_CPT_INT_EN,
 	PWM_CPT_INT_STAT,
 
-	/* Keep last */
+	 
 	MAX_REGFIELDS
 };
 
-/*
- * Each capture input can be programmed to detect rising-edge, falling-edge,
- * either edge or neither egde.
- */
+ 
 enum sti_cpt_edge {
 	CPT_EDGE_DISABLED,
 	CPT_EDGE_RISING,
@@ -98,7 +88,7 @@ struct sti_pwm_chip {
 	struct pwm_device *cur;
 	unsigned long configured;
 	unsigned int en_count;
-	struct mutex sti_pwm_lock; /* To sync between enable/disable calls */
+	struct mutex sti_pwm_lock;  
 	void __iomem *mmio;
 };
 
@@ -117,9 +107,7 @@ static inline struct sti_pwm_chip *to_sti_pwmchip(struct pwm_chip *chip)
 	return container_of(chip, struct sti_pwm_chip, chip);
 }
 
-/*
- * Calculate the prescaler value corresponding to the period.
- */
+ 
 static int sti_pwm_get_prescale(struct sti_pwm_chip *pc, unsigned long period,
 				unsigned int *prescale)
 {
@@ -134,9 +122,7 @@ static int sti_pwm_get_prescale(struct sti_pwm_chip *pc, unsigned long period,
 		return -EINVAL;
 	}
 
-	/*
-	 * prescale = ((period_ns * clk_rate) / (10^9 * (max_pwm_cnt + 1)) - 1
-	 */
+	 
 	value = NSEC_PER_SEC / clk_rate;
 	value *= cdata->max_pwm_cnt + 1;
 
@@ -152,15 +138,7 @@ static int sti_pwm_get_prescale(struct sti_pwm_chip *pc, unsigned long period,
 	return 0;
 }
 
-/*
- * For STiH4xx PWM IP, the PWM period is fixed to 256 local clock cycles. The
- * only way to change the period (apart from changing the PWM input clock) is
- * to change the PWM clock prescaler.
- *
- * The prescaler is of 8 bits, so 256 prescaler values and hence 256 possible
- * period values are supported (for a particular clock rate). The requested
- * period will be applied only if it matches one of these 256 values.
- */
+ 
 static int sti_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 			  int duty_ns, int period_ns)
 {
@@ -176,23 +154,12 @@ static int sti_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	if (ncfg)
 		period_same = (period_ns == pwm_get_period(cur));
 
-	/*
-	 * Allow configuration changes if one of the following conditions
-	 * satisfy.
-	 * 1. No devices have been configured.
-	 * 2. Only one device has been configured and the new request is for
-	 *    the same device.
-	 * 3. Only one device has been configured and the new request is for
-	 *    a new device and period of the new device is same as the current
-	 *    configured period.
-	 * 4. More than one devices are configured and period of the new
-	 *    requestis the same as the current period.
-	 */
+	 
 	if (!ncfg ||
 	    ((ncfg == 1) && (pwm->hwpwm == cur->hwpwm)) ||
 	    ((ncfg == 1) && (pwm->hwpwm != cur->hwpwm) && period_same) ||
 	    ((ncfg > 1) && period_same)) {
-		/* Enable clock before writing to PWM registers. */
+		 
 		ret = clk_enable(pc->pwm_clk);
 		if (ret)
 			return ret;
@@ -219,12 +186,7 @@ static int sti_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 				goto clk_dis;
 		}
 
-		/*
-		 * When PWMVal == 0, PWM pulse = 1 local clock cycle.
-		 * When PWMVal == max_pwm_count,
-		 * PWM pulse = (max_pwm_count + 1) local cycles,
-		 * that is continuous pulse: signal never goes low.
-		 */
+		 
 		value = cdata->max_pwm_cnt * duty_ns / period_ns;
 
 		ret = regmap_write(pc->regmap, PWM_OUT_VAL(pwm->hwpwm), value);
@@ -254,10 +216,7 @@ static int sti_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
 	struct device *dev = pc->dev;
 	int ret = 0;
 
-	/*
-	 * Since we have a common enable for all PWM devices, do not enable if
-	 * already enabled.
-	 */
+	 
 	mutex_lock(&pc->sti_pwm_lock);
 
 	if (!pc->en_count) {
@@ -329,11 +288,11 @@ static int sti_pwm_capture(struct pwm_chip *chip, struct pwm_device *pwm,
 	mutex_lock(&ddata->lock);
 	ddata->index = 0;
 
-	/* Prepare capture measurement */
+	 
 	regmap_write(pc->regmap, PWM_CPT_EDGE(pwm->hwpwm), CPT_EDGE_RISING);
 	regmap_field_write(pc->pwm_cpt_int_en, BIT(pwm->hwpwm));
 
-	/* Enable capture */
+	 
 	ret = regmap_field_write(pc->pwm_cpt_en, 1);
 	if (ret) {
 		dev_err(dev, "failed to enable PWM capture %u: %d\n",
@@ -352,20 +311,14 @@ static int sti_pwm_capture(struct pwm_chip *chip, struct pwm_device *pwm,
 	switch (ddata->index) {
 	case 0:
 	case 1:
-		/*
-		 * Getting here could mean:
-		 *  - input signal is constant of less than 1 Hz
-		 *  - there is no input signal at all
-		 *
-		 * In such case the frequency is rounded down to 0
-		 */
+		 
 		result->period = 0;
 		result->duty_cycle = 0;
 
 		break;
 
 	case 2:
-		/* We have everying we need */
+		 
 		high = ddata->snapshot[1] - ddata->snapshot[0];
 		low = ddata->snapshot[2] - ddata->snapshot[1];
 
@@ -385,7 +338,7 @@ static int sti_pwm_capture(struct pwm_chip *chip, struct pwm_device *pwm,
 	}
 
 out:
-	/* Disable capture */
+	 
 	regmap_field_write(pc->pwm_cpt_en, 0);
 
 	mutex_unlock(&ddata->lock);
@@ -443,21 +396,7 @@ static irqreturn_t sti_pwm_interrupt(int irq, void *data)
 
 		ddata = &pc->cdata->ddata[devicenum];
 
-		/*
-		 * Capture input:
-		 *    _______                   _______
-		 *   |       |                 |       |
-		 * __|       |_________________|       |________
-		 *   ^0      ^1                ^2
-		 *
-		 * Capture start by the first available rising edge. When a
-		 * capture event occurs, capture value (CPT_VALx) is stored,
-		 * index incremented, capture edge changed.
-		 *
-		 * After the capture, if the index > 1, we have collected the
-		 * necessary data so we signal the thread waiting for it and
-		 * disable the capture by setting capture edge to none
-		 */
+		 
 
 		regmap_read(pc->regmap,
 			    PWM_CPT_VAL(devicenum),
@@ -489,7 +428,7 @@ static irqreturn_t sti_pwm_interrupt(int irq, void *data)
 		ret = IRQ_HANDLED;
 	}
 
-	/* Just ACK everything */
+	 
 	regmap_write(pc->regmap, PWM_INT_ACK, PWM_INT_ACK_MASK);
 
 	return ret;
@@ -594,10 +533,7 @@ static int sti_pwm_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/*
-	 * Setup PWM data with default values: some values could be replaced
-	 * with specific ones provided from Device Tree.
-	 */
+	 
 	cdata->reg_fields = sti_pwm_regfields;
 	cdata->max_prescale = 0xff;
 	cdata->max_pwm_cnt = 255;
@@ -680,7 +616,7 @@ static void sti_pwm_remove(struct platform_device *pdev)
 
 static const struct of_device_id sti_pwm_of_match[] = {
 	{ .compatible = "st,sti-pwm", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, sti_pwm_of_match);
 

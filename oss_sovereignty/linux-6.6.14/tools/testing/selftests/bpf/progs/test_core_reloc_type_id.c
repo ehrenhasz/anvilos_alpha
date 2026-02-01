@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 Facebook
+
+
 
 #include <linux/bpf.h>
 #include <stdint.h>
@@ -15,7 +15,7 @@ struct {
 	bool skip;
 } data = {};
 
-/* some types are shared with test_core_reloc_type_based.c */
+ 
 struct a_struct {
 	int x;
 };
@@ -62,7 +62,7 @@ struct core_reloc_type_id_output {
 	int targ_arr_typedef;
 };
 
-/* preserve types even if Clang doesn't support built-in */
+ 
 struct a_struct t1 = {};
 union a_union t2 = {};
 enum an_enum t3 = 0;
@@ -73,15 +73,7 @@ arr_typedef t6 = {};
 SEC("raw_tracepoint/sys_enter")
 int test_core_type_id(void *ctx)
 {
-	/* We use __builtin_btf_type_id() in this tests, but up until the time
-	 * __builtin_preserve_type_info() was added it contained a bug that
-	 * would make this test fail. The bug was fixed ([0]) with addition of
-	 * __builtin_preserve_type_info(), though, so that's what we are using
-	 * to detect whether this test has to be executed, however strange
-	 * that might look like.
-	 *
-	 *   [0] https://reviews.llvm.org/D85174
-	 */
+	 
 #if __has_builtin(__builtin_preserve_type_info)
 	struct core_reloc_type_id_output *out = (void *)&data.out;
 

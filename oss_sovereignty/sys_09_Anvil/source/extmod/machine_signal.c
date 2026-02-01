@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2017 Paul Sokolovsky
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <string.h>
 #include "py/runtime.h"
@@ -32,7 +8,7 @@
 #include "extmod/modmachine.h"
 #include "extmod/virtpin.h"
 
-// Signal class
+
 
 typedef struct _machine_signal_t {
     mp_obj_base_t base;
@@ -53,9 +29,9 @@ static mp_obj_t signal_make_new(const mp_obj_type_t *type, size_t n_args, size_t
     }
 
     if (pin_p == NULL) {
-        // If first argument isn't a Pin-like object, we filter out "invert"
-        // from keyword arguments and pass them all to the exported Pin
-        // constructor to create one.
+        
+        
+        
         mp_obj_t *pin_args = mp_local_alloc((n_args + n_kw * 2) * sizeof(mp_obj_t));
         memcpy(pin_args, args, n_args * sizeof(mp_obj_t));
         const mp_obj_t *src = args + n_args;
@@ -70,9 +46,9 @@ static mp_obj_t signal_make_new(const mp_obj_type_t *type, size_t n_args, size_t
                 *dst++ = src[1];
             }
             if (*src == MP_OBJ_NEW_QSTR(MP_QSTR_value)) {
-                // Value is pertained to Signal, so we should invert
-                // it for Pin if needed, and we should do it only when
-                // inversion status is guaranteedly known.
+                
+                
+                
                 sig_value = dst - 1;
             }
             src += 2;
@@ -82,15 +58,15 @@ static mp_obj_t signal_make_new(const mp_obj_type_t *type, size_t n_args, size_t
             *sig_value = mp_obj_is_true(*sig_value) ? MP_OBJ_NEW_SMALL_INT(0) : MP_OBJ_NEW_SMALL_INT(1);
         }
 
-        // Here we pass NULL as a type, hoping that mp_pin_make_new()
-        // will just ignore it as set a concrete type. If not, we'd need
-        // to expose port's "default" pin type too.
+        
+        
+        
         pin = MICROPY_PY_MACHINE_PIN_MAKE_NEW(NULL, n_args, n_kw, pin_args);
 
         mp_local_free(pin_args);
     } else
     #endif
-    // Otherwise there should be 1 or 2 args
+    
     {
         if (n_args == 1) {
             pin = args[0];
@@ -128,14 +104,14 @@ static mp_uint_t signal_ioctl(mp_obj_t self_in, mp_uint_t request, uintptr_t arg
     return -1;
 }
 
-// fast method for getting/setting signal value
+
 static mp_obj_t signal_call(mp_obj_t self_in, size_t n_args, size_t n_kw, const mp_obj_t *args) {
     mp_arg_check_num(n_args, n_kw, 0, 1, false);
     if (n_args == 0) {
-        // get pin
+        
         return MP_OBJ_NEW_SMALL_INT(mp_virtual_pin_read(self_in));
     } else {
-        // set pin
+        
         mp_virtual_pin_write(self_in, mp_obj_is_true(args[0]));
         return mp_const_none;
     }
@@ -180,4 +156,4 @@ MP_DEFINE_CONST_OBJ_TYPE(
     locals_dict, &signal_locals_dict
     );
 
-#endif // MICROPY_PY_MACHINE_SIGNAL
+#endif 

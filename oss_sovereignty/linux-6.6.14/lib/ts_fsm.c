@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * lib/ts_fsm.c	   A naive finite state machine text search approach
- *
- * Authors:	Thomas Graf <tgraf@suug.ch>
- *
- * ==========================================================================
- *
- *   A finite state machine consists of n states (struct ts_fsm_token)
- *   representing the pattern as a finite automaton. The data is read
- *   sequentially on an octet basis. Every state token specifies the number
- *   of recurrences and the type of value accepted which can be either a
- *   specific character or ctype based set of characters. The available
- *   type of recurrences include 1, (0|1), [0 n], and [1 n].
- *
- *   The algorithm differs between strict/non-strict mode specifying
- *   whether the pattern has to start at the first octet. Strict mode
- *   is enabled by default and can be disabled by inserting
- *   TS_FSM_HEAD_IGNORE as the first token in the chain.
- *
- *   The runtime performance of the algorithm should be around O(n),
- *   however while in strict mode the average runtime can be better.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -35,11 +14,11 @@ struct ts_fsm
 	struct ts_fsm_token	tokens[];
 };
 
-/* other values derived from ctype.h */
-#define _A		0x100 /* ascii */
-#define _W		0x200 /* wildcard */
+ 
+#define _A		0x100  
+#define _W		0x200  
 
-/* Map to _ctype flags and some magic numbers */
+ 
 static const u16 token_map[TS_FSM_TYPE_MAX+1] = {
 	[TS_FSM_SPECIFIC] = 0,
 	[TS_FSM_WILDCARD] = _W,
@@ -58,70 +37,70 @@ static const u16 token_map[TS_FSM_TYPE_MAX+1] = {
 };
 
 static const u16 token_lookup_tbl[256] = {
-_W|_A|_C,      _W|_A|_C,     _W|_A|_C,     _W|_A|_C,		/*   0-  3 */
-_W|_A|_C,      _W|_A|_C,     _W|_A|_C,     _W|_A|_C,		/*   4-  7 */
-_W|_A|_C,      _W|_A|_C|_S,  _W|_A|_C|_S,  _W|_A|_C|_S,		/*   8- 11 */
-_W|_A|_C|_S,   _W|_A|_C|_S,  _W|_A|_C,     _W|_A|_C,		/*  12- 15 */
-_W|_A|_C,      _W|_A|_C,     _W|_A|_C,     _W|_A|_C,		/*  16- 19 */
-_W|_A|_C,      _W|_A|_C,     _W|_A|_C,     _W|_A|_C,		/*  20- 23 */
-_W|_A|_C,      _W|_A|_C,     _W|_A|_C,     _W|_A|_C,		/*  24- 27 */
-_W|_A|_C,      _W|_A|_C,     _W|_A|_C,     _W|_A|_C,		/*  28- 31 */
-_W|_A|_S|_SP,  _W|_A|_P,     _W|_A|_P,     _W|_A|_P,		/*  32- 35 */
-_W|_A|_P,      _W|_A|_P,     _W|_A|_P,     _W|_A|_P,		/*  36- 39 */
-_W|_A|_P,      _W|_A|_P,     _W|_A|_P,     _W|_A|_P,		/*  40- 43 */
-_W|_A|_P,      _W|_A|_P,     _W|_A|_P,     _W|_A|_P,		/*  44- 47 */
-_W|_A|_D,      _W|_A|_D,     _W|_A|_D,     _W|_A|_D,		/*  48- 51 */
-_W|_A|_D,      _W|_A|_D,     _W|_A|_D,     _W|_A|_D,		/*  52- 55 */
-_W|_A|_D,      _W|_A|_D,     _W|_A|_P,     _W|_A|_P,		/*  56- 59 */
-_W|_A|_P,      _W|_A|_P,     _W|_A|_P,     _W|_A|_P,		/*  60- 63 */
-_W|_A|_P,      _W|_A|_U|_X,  _W|_A|_U|_X,  _W|_A|_U|_X,		/*  64- 67 */
-_W|_A|_U|_X,   _W|_A|_U|_X,  _W|_A|_U|_X,  _W|_A|_U,		/*  68- 71 */
-_W|_A|_U,      _W|_A|_U,     _W|_A|_U,     _W|_A|_U,		/*  72- 75 */
-_W|_A|_U,      _W|_A|_U,     _W|_A|_U,     _W|_A|_U,		/*  76- 79 */
-_W|_A|_U,      _W|_A|_U,     _W|_A|_U,     _W|_A|_U,		/*  80- 83 */
-_W|_A|_U,      _W|_A|_U,     _W|_A|_U,     _W|_A|_U,		/*  84- 87 */
-_W|_A|_U,      _W|_A|_U,     _W|_A|_U,     _W|_A|_P,		/*  88- 91 */
-_W|_A|_P,      _W|_A|_P,     _W|_A|_P,     _W|_A|_P,		/*  92- 95 */
-_W|_A|_P,      _W|_A|_L|_X,  _W|_A|_L|_X,  _W|_A|_L|_X,		/*  96- 99 */
-_W|_A|_L|_X,   _W|_A|_L|_X,  _W|_A|_L|_X,  _W|_A|_L,		/* 100-103 */
-_W|_A|_L,      _W|_A|_L,     _W|_A|_L,     _W|_A|_L,		/* 104-107 */
-_W|_A|_L,      _W|_A|_L,     _W|_A|_L,     _W|_A|_L,		/* 108-111 */
-_W|_A|_L,      _W|_A|_L,     _W|_A|_L,     _W|_A|_L,		/* 112-115 */
-_W|_A|_L,      _W|_A|_L,     _W|_A|_L,     _W|_A|_L,		/* 116-119 */
-_W|_A|_L,      _W|_A|_L,     _W|_A|_L,     _W|_A|_P,		/* 120-123 */
-_W|_A|_P,      _W|_A|_P,     _W|_A|_P,     _W|_A|_C,		/* 124-127 */
-_W,            _W,           _W,           _W,			/* 128-131 */
-_W,            _W,           _W,           _W,			/* 132-135 */
-_W,            _W,           _W,           _W,			/* 136-139 */
-_W,            _W,           _W,           _W,			/* 140-143 */
-_W,            _W,           _W,           _W,			/* 144-147 */
-_W,            _W,           _W,           _W,			/* 148-151 */
-_W,            _W,           _W,           _W,			/* 152-155 */
-_W,            _W,           _W,           _W,			/* 156-159 */
-_W|_S|_SP,     _W|_P,        _W|_P,        _W|_P,		/* 160-163 */
-_W|_P,         _W|_P,        _W|_P,        _W|_P,		/* 164-167 */
-_W|_P,         _W|_P,        _W|_P,        _W|_P,		/* 168-171 */
-_W|_P,         _W|_P,        _W|_P,        _W|_P,		/* 172-175 */
-_W|_P,         _W|_P,        _W|_P,        _W|_P,		/* 176-179 */
-_W|_P,         _W|_P,        _W|_P,        _W|_P,		/* 180-183 */
-_W|_P,         _W|_P,        _W|_P,        _W|_P,		/* 184-187 */
-_W|_P,         _W|_P,        _W|_P,        _W|_P,		/* 188-191 */
-_W|_U,         _W|_U,        _W|_U,        _W|_U,		/* 192-195 */
-_W|_U,         _W|_U,        _W|_U,        _W|_U,		/* 196-199 */
-_W|_U,         _W|_U,        _W|_U,        _W|_U,		/* 200-203 */
-_W|_U,         _W|_U,        _W|_U,        _W|_U,		/* 204-207 */
-_W|_U,         _W|_U,        _W|_U,        _W|_U,		/* 208-211 */
-_W|_U,         _W|_U,        _W|_U,        _W|_P,		/* 212-215 */
-_W|_U,         _W|_U,        _W|_U,        _W|_U,		/* 216-219 */
-_W|_U,         _W|_U,        _W|_U,        _W|_L,		/* 220-223 */
-_W|_L,         _W|_L,        _W|_L,        _W|_L,		/* 224-227 */
-_W|_L,         _W|_L,        _W|_L,        _W|_L,		/* 228-231 */
-_W|_L,         _W|_L,        _W|_L,        _W|_L,		/* 232-235 */
-_W|_L,         _W|_L,        _W|_L,        _W|_L,		/* 236-239 */
-_W|_L,         _W|_L,        _W|_L,        _W|_L,		/* 240-243 */
-_W|_L,         _W|_L,        _W|_L,        _W|_P,		/* 244-247 */
-_W|_L,         _W|_L,        _W|_L,        _W|_L,		/* 248-251 */
-_W|_L,         _W|_L,        _W|_L,        _W|_L};		/* 252-255 */
+_W|_A|_C,      _W|_A|_C,     _W|_A|_C,     _W|_A|_C,		 
+_W|_A|_C,      _W|_A|_C,     _W|_A|_C,     _W|_A|_C,		 
+_W|_A|_C,      _W|_A|_C|_S,  _W|_A|_C|_S,  _W|_A|_C|_S,		 
+_W|_A|_C|_S,   _W|_A|_C|_S,  _W|_A|_C,     _W|_A|_C,		 
+_W|_A|_C,      _W|_A|_C,     _W|_A|_C,     _W|_A|_C,		 
+_W|_A|_C,      _W|_A|_C,     _W|_A|_C,     _W|_A|_C,		 
+_W|_A|_C,      _W|_A|_C,     _W|_A|_C,     _W|_A|_C,		 
+_W|_A|_C,      _W|_A|_C,     _W|_A|_C,     _W|_A|_C,		 
+_W|_A|_S|_SP,  _W|_A|_P,     _W|_A|_P,     _W|_A|_P,		 
+_W|_A|_P,      _W|_A|_P,     _W|_A|_P,     _W|_A|_P,		 
+_W|_A|_P,      _W|_A|_P,     _W|_A|_P,     _W|_A|_P,		 
+_W|_A|_P,      _W|_A|_P,     _W|_A|_P,     _W|_A|_P,		 
+_W|_A|_D,      _W|_A|_D,     _W|_A|_D,     _W|_A|_D,		 
+_W|_A|_D,      _W|_A|_D,     _W|_A|_D,     _W|_A|_D,		 
+_W|_A|_D,      _W|_A|_D,     _W|_A|_P,     _W|_A|_P,		 
+_W|_A|_P,      _W|_A|_P,     _W|_A|_P,     _W|_A|_P,		 
+_W|_A|_P,      _W|_A|_U|_X,  _W|_A|_U|_X,  _W|_A|_U|_X,		 
+_W|_A|_U|_X,   _W|_A|_U|_X,  _W|_A|_U|_X,  _W|_A|_U,		 
+_W|_A|_U,      _W|_A|_U,     _W|_A|_U,     _W|_A|_U,		 
+_W|_A|_U,      _W|_A|_U,     _W|_A|_U,     _W|_A|_U,		 
+_W|_A|_U,      _W|_A|_U,     _W|_A|_U,     _W|_A|_U,		 
+_W|_A|_U,      _W|_A|_U,     _W|_A|_U,     _W|_A|_U,		 
+_W|_A|_U,      _W|_A|_U,     _W|_A|_U,     _W|_A|_P,		 
+_W|_A|_P,      _W|_A|_P,     _W|_A|_P,     _W|_A|_P,		 
+_W|_A|_P,      _W|_A|_L|_X,  _W|_A|_L|_X,  _W|_A|_L|_X,		 
+_W|_A|_L|_X,   _W|_A|_L|_X,  _W|_A|_L|_X,  _W|_A|_L,		 
+_W|_A|_L,      _W|_A|_L,     _W|_A|_L,     _W|_A|_L,		 
+_W|_A|_L,      _W|_A|_L,     _W|_A|_L,     _W|_A|_L,		 
+_W|_A|_L,      _W|_A|_L,     _W|_A|_L,     _W|_A|_L,		 
+_W|_A|_L,      _W|_A|_L,     _W|_A|_L,     _W|_A|_L,		 
+_W|_A|_L,      _W|_A|_L,     _W|_A|_L,     _W|_A|_P,		 
+_W|_A|_P,      _W|_A|_P,     _W|_A|_P,     _W|_A|_C,		 
+_W,            _W,           _W,           _W,			 
+_W,            _W,           _W,           _W,			 
+_W,            _W,           _W,           _W,			 
+_W,            _W,           _W,           _W,			 
+_W,            _W,           _W,           _W,			 
+_W,            _W,           _W,           _W,			 
+_W,            _W,           _W,           _W,			 
+_W,            _W,           _W,           _W,			 
+_W|_S|_SP,     _W|_P,        _W|_P,        _W|_P,		 
+_W|_P,         _W|_P,        _W|_P,        _W|_P,		 
+_W|_P,         _W|_P,        _W|_P,        _W|_P,		 
+_W|_P,         _W|_P,        _W|_P,        _W|_P,		 
+_W|_P,         _W|_P,        _W|_P,        _W|_P,		 
+_W|_P,         _W|_P,        _W|_P,        _W|_P,		 
+_W|_P,         _W|_P,        _W|_P,        _W|_P,		 
+_W|_P,         _W|_P,        _W|_P,        _W|_P,		 
+_W|_U,         _W|_U,        _W|_U,        _W|_U,		 
+_W|_U,         _W|_U,        _W|_U,        _W|_U,		 
+_W|_U,         _W|_U,        _W|_U,        _W|_U,		 
+_W|_U,         _W|_U,        _W|_U,        _W|_U,		 
+_W|_U,         _W|_U,        _W|_U,        _W|_U,		 
+_W|_U,         _W|_U,        _W|_U,        _W|_P,		 
+_W|_U,         _W|_U,        _W|_U,        _W|_U,		 
+_W|_U,         _W|_U,        _W|_U,        _W|_L,		 
+_W|_L,         _W|_L,        _W|_L,        _W|_L,		 
+_W|_L,         _W|_L,        _W|_L,        _W|_L,		 
+_W|_L,         _W|_L,        _W|_L,        _W|_L,		 
+_W|_L,         _W|_L,        _W|_L,        _W|_L,		 
+_W|_L,         _W|_L,        _W|_L,        _W|_L,		 
+_W|_L,         _W|_L,        _W|_L,        _W|_P,		 
+_W|_L,         _W|_L,        _W|_L,        _W|_L,		 
+_W|_L,         _W|_L,        _W|_L,        _W|_L};		 
 
 static inline int match_token(struct ts_fsm_token *t, u8 d)
 {
@@ -211,21 +190,13 @@ startover:
 			}
 			continue;
 
-		/*
-		 * Optimization: Prefer small local loop over jumping
-		 * back and forth until garbage at head is munched.
-		 */
+		 
 		case TS_FSM_HEAD_IGNORE:
 			if (end_of_data())
 				continue;
 
 			while (!match_token(next, data[block_idx])) {
-				/*
-				 * Special case, don't start over upon
-				 * a mismatch, give the user the
-				 * chance to specify the type of data
-				 * allowed to be ignored.
-				 */
+				 
 				if (!match_token(cur, data[block_idx]))
 					goto no_match;
 

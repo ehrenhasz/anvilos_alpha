@@ -1,26 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  HID driver for some samsung "special" devices
- *
- *  Copyright (c) 1999 Andreas Gal
- *  Copyright (c) 2000-2005 Vojtech Pavlik <vojtech@suse.cz>
- *  Copyright (c) 2005 Michael Haboustak <mike-@cinci.rr.com> for Concept2, Inc
- *  Copyright (c) 2006-2007 Jiri Kosina
- *  Copyright (c) 2008 Jiri Slaby
- *  Copyright (c) 2010 Don Prince <dhprince.devel@yahoo.co.uk>
- *
- *  This driver supports several HID devices:
- *
- *  [0419:0001] Samsung IrDA remote controller (reports as Cypress USB Mouse).
- *	various hid report fixups for different variants.
- *
- *  [0419:0600] Creative Desktop Wireless 6000 keyboard/mouse combo
- *	several key mappings used from the consumer usage page
- *	deviate from the USB HUT 1.12 standard.
- */
 
-/*
- */
+ 
+
+ 
 
 #include <linux/device.h>
 #include <linux/usb.h>
@@ -29,25 +10,7 @@
 
 #include "hid-ids.h"
 
-/*
- * There are several variants for 0419:0001:
- *
- * 1. 184 byte report descriptor
- * Vendor specific report #4 has a size of 48 bit,
- * and therefore is not accepted when inspecting the descriptors.
- * As a workaround we reinterpret the report as:
- *   Variable type, count 6, size 8 bit, log. maximum 255
- * The burden to reconstruct the data is moved into user space.
- *
- * 2. 203 byte report descriptor
- * Report #4 has an array field with logical range 0..18 instead of 1..15.
- *
- * 3. 135 byte report descriptor
- * Report #4 has an array field with logical range 0..17 instead of 1..14.
- *
- * 4. 171 byte report descriptor
- * Report #3 has an array field with logical range 0..1 instead of 1..3.
- */
+ 
 static inline void samsung_irda_dev_trace(struct hid_device *hdev,
 		unsigned int rsize)
 {
@@ -106,7 +69,7 @@ static int samsung_kbd_mouse_input_mapping(struct hid_device *hdev,
 		usage->hid & HID_USAGE);
 
 	switch (usage->hid & HID_USAGE) {
-	/* report 2 */
+	 
 	case 0x183: samsung_kbd_mouse_map_key_clear(KEY_MEDIA); break;
 	case 0x195: samsung_kbd_mouse_map_key_clear(KEY_EMAIL);	break;
 	case 0x196: samsung_kbd_mouse_map_key_clear(KEY_CALC); break;
@@ -163,7 +126,7 @@ static int samsung_probe(struct hid_device *hdev,
 
 	if (USB_DEVICE_ID_SAMSUNG_IR_REMOTE == hdev->product) {
 		if (hdev->rsize == 184) {
-			/* disable hidinput, force hiddev */
+			 
 			cmask = (cmask & ~HID_CONNECT_HIDINPUT) |
 				HID_CONNECT_HIDDEV_FORCE;
 		}

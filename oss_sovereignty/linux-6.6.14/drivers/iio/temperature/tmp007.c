@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tmp007.c - Support for TI TMP007 IR thermopile sensor with integrated math engine
- *
- * Copyright (c) 2017 Manivannan Sadhasivam <manivannanece23@gmail.com>
- *
- * Driver for the Texas Instruments I2C 16-bit IR thermopile sensor
- *
- * (7-bit I2C slave address (0x40 - 0x47), changeable via ADR pins)
- *
- * Note:
- * 1. This driver assumes that the sensor has been calibrated beforehand
- * 2. Limit threshold events are enabled at the start
- * 3. Operating mode: INT
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -46,7 +33,7 @@
 #define TMP007_CONFIG_ALERT_EN BIT(8)
 #define TMP007_CONFIG_CR_SHIFT 9
 
-/* Status register flags */
+ 
 #define TMP007_STATUS_ALERT BIT(15)
 #define TMP007_STATUS_CONV_READY BIT(14)
 #define TMP007_STATUS_OHF BIT(13)
@@ -109,7 +96,7 @@ static int tmp007_read_raw(struct iio_dev *indio_dev,
 	switch (mask) {
 	case IIO_CHAN_INFO_RAW:
 		switch (channel->channel2) {
-		case IIO_MOD_TEMP_AMBIENT: /* LSB: 0.03125 degree Celsius */
+		case IIO_MOD_TEMP_AMBIENT:  
 			ret = i2c_smbus_read_word_swapped(data->client, TMP007_TDIE);
 			if (ret < 0)
 				return ret;
@@ -291,7 +278,7 @@ static int tmp007_read_thresh(struct iio_dev *indio_dev,
 	u8 reg;
 
 	switch (chan->channel2) {
-	case IIO_MOD_TEMP_AMBIENT: /* LSB: 0.5 degree Celsius */
+	case IIO_MOD_TEMP_AMBIENT:  
 		if (dir == IIO_EV_DIR_RISING)
 			reg = TMP007_TDIE_HIGH_LIMIT;
 		else
@@ -311,7 +298,7 @@ static int tmp007_read_thresh(struct iio_dev *indio_dev,
 	if (ret < 0)
 		return ret;
 
-	/* Shift length 7 bits = 6(15:6) + 1(0.5 LSB) */
+	 
 	*val = sign_extend32(ret, 15) >> 7;
 
 	return IIO_VAL_INT;
@@ -342,11 +329,11 @@ static int tmp007_write_thresh(struct iio_dev *indio_dev,
 		return -EINVAL;
 	}
 
-	/* Full scale threshold value is +/- 256 degree Celsius */
+	 
 	if (val < -256 || val > 255)
 		return -EINVAL;
 
-	/* Shift length 7 bits = 6(15:6) + 1(0.5 LSB) */
+	 
 	return i2c_smbus_write_word_swapped(data->client, reg, (val << 7));
 }
 
@@ -477,12 +464,7 @@ static int tmp007_probe(struct i2c_client *client)
 	indio_dev->channels = tmp007_channels;
 	indio_dev->num_channels = ARRAY_SIZE(tmp007_channels);
 
-	/*
-	 * Set Configuration register:
-	 * 1. Conversion ON
-	 * 2. ALERT enable
-	 * 3. Transient correction enable
-	 */
+	 
 
 	ret = i2c_smbus_read_word_swapped(data->client, TMP007_CONFIG);
 	if (ret < 0)
@@ -500,16 +482,7 @@ static int tmp007_probe(struct i2c_client *client)
 	if (ret)
 		return ret;
 
-	/*
-	 * Only the following flags can activate ALERT pin. Data conversion/validity flags
-	 * flags can still be polled for getting temperature data
-	 *
-	 * Set Status Mask register:
-	 * 1. Object temperature high limit enable
-	 * 2. Object temperature low limit enable
-	 * 3. TDIE temperature high limit enable
-	 * 4. TDIE temperature low limit enable
-	 */
+	 
 
 	ret = i2c_smbus_read_word_swapped(data->client, TMP007_STATUS_MASK);
 	if (ret < 0)

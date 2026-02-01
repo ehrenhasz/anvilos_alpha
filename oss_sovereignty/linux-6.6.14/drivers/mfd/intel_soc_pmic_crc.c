@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Device access for Crystal Cove PMIC
- *
- * Copyright (C) 2012-2014, 2022 Intel Corporation. All rights reserved.
- *
- * Author: Yang, Bin <bin.yang@intel.com>
- * Author: Zhu, Lejun <lejun.zhu@linux.intel.com>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/interrupt.h>
@@ -135,7 +128,7 @@ static const struct regmap_irq_chip crystal_cove_irq_chip = {
 	.mask_base = CRYSTAL_COVE_REG_MIRQLVL1,
 };
 
-/* PWM consumed by the Intel GFX */
+ 
 static struct pwm_lookup crc_pwm_lookup[] = {
 	PWM_LOOKUP("crystal_cove_pwm", 0, "0000:00:02.0", "pwm_pmic_backlight", 0, PWM_POLARITY_NORMAL),
 };
@@ -198,10 +191,10 @@ static int crystal_cove_i2c_probe(struct i2c_client *i2c)
 	if (ret)
 		dev_warn(dev, "Can't enable IRQ as wake source: %d\n", ret);
 
-	/* Add lookup table for crc-pwm */
+	 
 	pwm_add_table(crc_pwm_lookup, ARRAY_SIZE(crc_pwm_lookup));
 
-	/* To distuingish this domain from the GPIO/charger's irqchip domains */
+	 
 	irq_domain_update_bus_token(regmap_irq_get_domain(pmic->irq_chip_data),
 				    DOMAIN_BUS_NEXUS);
 
@@ -216,7 +209,7 @@ static int crystal_cove_i2c_probe(struct i2c_client *i2c)
 
 static void crystal_cove_i2c_remove(struct i2c_client *i2c)
 {
-	/* remove crc-pwm lookup table */
+	 
 	pwm_remove_table(crc_pwm_lookup, ARRAY_SIZE(crc_pwm_lookup));
 
 	mfd_remove_devices(&i2c->dev);

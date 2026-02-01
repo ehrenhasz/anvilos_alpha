@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef LINUX_CRASH_CORE_H
 #define LINUX_CRASH_CORE_H
 
@@ -11,11 +11,7 @@
 #define CRASH_CORE_NOTE_NAME_BYTES ALIGN(sizeof(CRASH_CORE_NOTE_NAME), 4)
 #define CRASH_CORE_NOTE_DESC_BYTES ALIGN(sizeof(struct elf_prstatus), 4)
 
-/*
- * The per-cpu notes area is a list of notes terminated by a "NULL"
- * note header.  For kdump, the code in vmcore.c runs in the context
- * of the second kernel to combine them into one note.
- */
+ 
 #define CRASH_CORE_NOTE_BYTES	   ((CRASH_CORE_NOTE_HEAD_BYTES * 2) +	\
 				     CRASH_CORE_NOTE_NAME_BYTES +	\
 				     CRASH_CORE_NOTE_DESC_BYTES)
@@ -28,7 +24,7 @@
 				     VMCOREINFO_BYTES)
 
 typedef u32 note_buf_t[CRASH_CORE_NOTE_BYTES/4];
-/* Per cpu memory for storing cpu states in case of system crash. */
+ 
 extern note_buf_t __percpu *crash_notes;
 
 void crash_update_vmcoreinfo_safecopy(void *ptr);
@@ -86,7 +82,7 @@ int parse_crashkernel_high(char *cmdline, unsigned long long system_ram,
 int parse_crashkernel_low(char *cmdline, unsigned long long system_ram,
 		unsigned long long *crash_size, unsigned long long *crash_base);
 
-/* Alignment required for elf header segment */
+ 
 #define ELF_CORE_HEADER_ALIGN   4096
 
 struct crash_mem {
@@ -111,4 +107,4 @@ struct kexec_segment;
 #define KEXEC_CRASH_HP_REMOVE_MEMORY		4
 #define KEXEC_CRASH_HP_INVALID_CPU		-1U
 
-#endif /* LINUX_CRASH_CORE_H */
+#endif  

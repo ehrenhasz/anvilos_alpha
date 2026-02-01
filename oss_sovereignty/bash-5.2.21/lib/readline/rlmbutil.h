@@ -1,36 +1,18 @@
-/* rlmbutil.h -- utility functions for multibyte characters. */
+ 
 
-/* Copyright (C) 2001-2021 Free Software Foundation, Inc.
-
-   This file is part of the GNU Readline Library (Readline), a library
-   for reading lines of text with interactive input and history editing.      
-
-   Readline is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Readline is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Readline.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #if !defined (_RL_MBUTIL_H_)
 #define _RL_MBUTIL_H_
 
 #include "rlstdc.h"
 
-/************************************************/
-/* check multibyte capability for I18N code     */
-/************************************************/
+ 
+ 
+ 
 
-/* For platforms which support the ISO C amendment 1 functionality we
-   support user defined character classes.  */
-   /* Solaris 2.5 has a bug: <wchar.h> must be included before <wctype.h>.  */
+ 
+    
 #if defined (HAVE_WCTYPE_H) && defined (HAVE_WCHAR_H) && defined (HAVE_LOCALE_H)
 #  include <wchar.h>
 #  include <wctype.h>
@@ -44,18 +26,17 @@
       defined (HAVE_TOWUPPER) && \
       defined (HAVE_WCHAR_T) && \
       defined (HAVE_WCWIDTH)
-     /* system is supposed to support XPG5 */
+      
 #    define HANDLE_MULTIBYTE      1
 #  endif
 #endif
 
-/* If we don't want multibyte chars even on a system that supports them, let
-   the configuring user turn multibyte support off. */
+ 
 #if defined (NO_MULTIBYTE_SUPPORT)
 #  undef HANDLE_MULTIBYTE
 #endif
 
-/* Some systems, like BeOS, have multibyte encodings but lack mbstate_t.  */
+ 
 #if HANDLE_MULTIBYTE && !defined (HAVE_MBSTATE_T)
 #  define wcsrtombs(dest, src, len, ps) (wcsrtombs) (dest, src, len, 0)
 #  define mbsrtowcs(dest, src, len, ps) (mbsrtowcs) (dest, src, len, 0)
@@ -65,8 +46,7 @@
 #  define mbstate_t int
 #endif
 
-/* Make sure MB_LEN_MAX is at least 16 on systems that claim to be able to
-   handle multibyte chars (some systems define MB_LEN_MAX as 1) */
+ 
 #ifdef HANDLE_MULTIBYTE
 #  include <limits.h>
 #  if defined(MB_LEN_MAX) && (MB_LEN_MAX < 16)
@@ -77,29 +57,22 @@
 #  endif
 #endif
 
-/************************************************/
-/* end of multibyte capability checks for I18N  */
-/************************************************/
+ 
+ 
+ 
 
-/*
- * wchar_t doesn't work for 32-bit values on Windows using MSVC
- */
+ 
 #ifdef WCHAR_T_BROKEN
 #  define WCHAR_T char32_t
 #  define MBRTOWC mbrtoc32
 #  define WCRTOMB c32rtomb
-#else	/* normal systems */
+#else	 
 #  define WCHAR_T wchar_t
 #  define MBRTOWC mbrtowc
 #  define WCRTOMB wcrtomb
 #endif
 
-/*
- * Flags for _rl_find_prev_mbchar and _rl_find_next_mbchar:
- *
- * MB_FIND_ANY		find any multibyte character
- * MB_FIND_NONZERO	find a non-zero-width multibyte character
- */
+ 
 
 #define MB_FIND_ANY	0x00
 #define MB_FIND_NONZERO	0x01
@@ -136,8 +109,7 @@ extern int _rl_walphabetic (WCHAR_T);
 #define MB_INVALIDCH(x)		((x) == (size_t)-1 || (x) == (size_t)-2)
 #define MB_NULLWCH(x)		((x) == 0)
 
-/* Try and shortcut the printable ascii characters to cut down the number of
-   calls to a libc wcwidth() */
+ 
 static inline int
 _rl_wcwidth (WCHAR_T wc)
 {
@@ -169,7 +141,7 @@ _rl_wcwidth (WCHAR_T wc)
     }
 }
 
-/* Unicode combining characters range from U+0300 to U+036F */
+ 
 #define UNICODE_COMBINING_CHAR(x) ((x) >= 768 && (x) <= 879)
 
 #if defined (WCWIDTH_BROKEN)
@@ -188,7 +160,7 @@ _rl_wcwidth (WCHAR_T wc)
 #define UTF8_MBFIRSTCHAR(c)	(((c) & 0xc0) == 0xc0)
 #define UTF8_MBCHAR(c)		(((c) & 0xc0) == 0x80)
 
-#else /* !HANDLE_MULTIBYTE */
+#else  
 
 #undef MB_LEN_MAX
 #undef MB_CUR_MAX
@@ -218,8 +190,8 @@ _rl_wcwidth (WCHAR_T wc)
 #  define wchar_t int
 #endif
 
-#endif /* !HANDLE_MULTIBYTE */
+#endif  
 
 extern int rl_byte_oriented;
 
-#endif /* _RL_MBUTIL_H_ */
+#endif  

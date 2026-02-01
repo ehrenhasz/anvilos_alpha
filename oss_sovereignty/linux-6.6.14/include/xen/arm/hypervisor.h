@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_ARM_XEN_HYPERVISOR_H
 #define _ASM_ARM_XEN_HYPERVISOR_H
 
@@ -23,4 +23,4 @@ static inline void xen_arch_unregister_cpu(int num)
 }
 #endif
 
-#endif /* _ASM_ARM_XEN_HYPERVISOR_H */
+#endif  

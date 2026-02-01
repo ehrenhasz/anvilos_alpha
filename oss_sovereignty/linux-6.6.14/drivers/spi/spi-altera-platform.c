@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Altera SPI driver
- *
- * Copyright (C) 2008 Thomas Chou <thomas@wytron.com.tw>
- *
- * Based on spi_s3c24xx.c, which is:
- * Copyright (c) 2006 Ben Dooks
- * Copyright (c) 2006 Simtec Electronics
- *	Ben Dooks <ben@simtec.co.uk>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/errno.h>
@@ -47,7 +38,7 @@ static int altera_spi_probe(struct platform_device *pdev)
 	if (!host)
 		return err;
 
-	/* setup the host state. */
+	 
 	host->bus_num = -1;
 
 	if (pdata) {
@@ -76,7 +67,7 @@ static int altera_spi_probe(struct platform_device *pdev)
 	if (platid)
 		type = platid->driver_data;
 
-	/* find and map our resources */
+	 
 	if (type == ALTERA_SPI_TYPE_SUBDEV) {
 		struct resource *regoff;
 
@@ -109,7 +100,7 @@ static int altera_spi_probe(struct platform_device *pdev)
 
 	altera_spi_init_host(host);
 
-	/* irq is optional */
+	 
 	hw->irq = platform_get_irq(pdev, 0);
 	if (hw->irq >= 0) {
 		err = devm_request_irq(&pdev->dev, hw->irq, altera_spi_irq, 0,
@@ -146,7 +137,7 @@ static const struct of_device_id altera_spi_match[] = {
 	{},
 };
 MODULE_DEVICE_TABLE(of, altera_spi_match);
-#endif /* CONFIG_OF */
+#endif  
 
 static const struct platform_device_id altera_spi_ids[] = {
 	{ DRV_NAME,		ALTERA_SPI_TYPE_UNKNOWN },

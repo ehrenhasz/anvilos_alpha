@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2017 Etnaviv Project
- */
+ 
+ 
 
 #ifndef __ETNAVIV_SCHED_H__
 #define __ETNAVIV_SCHED_H__
@@ -20,4 +18,4 @@ int etnaviv_sched_init(struct etnaviv_gpu *gpu);
 void etnaviv_sched_fini(struct etnaviv_gpu *gpu);
 int etnaviv_sched_push_job(struct etnaviv_gem_submit *submit);
 
-#endif /* __ETNAVIV_SCHED_H__ */
+#endif  

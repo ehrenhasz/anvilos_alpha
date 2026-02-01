@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Zhaoxin PMU; like Intel Architectural PerfMon-v2
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -18,9 +16,7 @@
 
 #include "../perf_event.h"
 
-/*
- * Zhaoxin PerfMon, used on zxc and later.
- */
+ 
 static u64 zx_pmon_event_map[PERF_COUNT_HW_MAX] __read_mostly = {
 
 	[PERF_COUNT_HW_CPU_CYCLES]        = 0x0082,
@@ -32,15 +28,15 @@ static u64 zx_pmon_event_map[PERF_COUNT_HW_MAX] __read_mostly = {
 
 static struct event_constraint zxc_event_constraints[] __read_mostly = {
 
-	FIXED_EVENT_CONSTRAINT(0x0082, 1), /* unhalted core clock cycles */
+	FIXED_EVENT_CONSTRAINT(0x0082, 1),  
 	EVENT_CONSTRAINT_END
 };
 
 static struct event_constraint zxd_event_constraints[] __read_mostly = {
 
-	FIXED_EVENT_CONSTRAINT(0x00c0, 0), /* retired instructions */
-	FIXED_EVENT_CONSTRAINT(0x0082, 1), /* unhalted core clock cycles */
-	FIXED_EVENT_CONSTRAINT(0x0083, 2), /* unhalted bus clock cycles */
+	FIXED_EVENT_CONSTRAINT(0x00c0, 0),  
+	FIXED_EVENT_CONSTRAINT(0x0082, 1),  
+	FIXED_EVENT_CONSTRAINT(0x0083, 2),  
 	EVENT_CONSTRAINT_END
 };
 
@@ -278,9 +274,7 @@ static inline void zhaoxin_pmu_ack_status(u64 ack)
 
 static inline void zxc_pmu_ack_status(u64 ack)
 {
-	/*
-	 * ZXC needs global control enabled in order to clear status bits.
-	 */
+	 
 	zhaoxin_pmu_enable_all(0);
 	zhaoxin_pmu_ack_status(ack);
 	zhaoxin_pmu_disable_all();
@@ -315,11 +309,7 @@ static void zhaoxin_pmu_enable_fixed(struct hw_perf_event *hwc)
 	int idx = hwc->idx - INTEL_PMC_IDX_FIXED;
 	u64 ctrl_val, bits, mask;
 
-	/*
-	 * Enable IRQ generation (0x8),
-	 * and enable ring-3 counting (0x2) and ring-0 counting (0x1)
-	 * if requested:
-	 */
+	 
 	bits = 0x8ULL;
 	if (hwc->config & ARCH_PERFMON_EVENTSEL_USR)
 		bits |= 0x2;
@@ -347,10 +337,7 @@ static void zhaoxin_pmu_enable_event(struct perf_event *event)
 	__x86_pmu_enable_event(hwc, ARCH_PERFMON_EVENTSEL_ENABLE);
 }
 
-/*
- * This handler is triggered by the local APIC, so the APIC IRQ handling
- * rules apply:
- */
+ 
 static int zhaoxin_pmu_handle_irq(struct pt_regs *regs)
 {
 	struct perf_sample_data data;
@@ -374,10 +361,7 @@ again:
 
 	inc_irq_stat(apic_perf_irqs);
 
-	/*
-	 * CondChgd bit 63 doesn't mean any overflow status. Ignore
-	 * and clear the bit.
-	 */
+	 
 	if (__test_and_clear_bit(63, (unsigned long *)&status)) {
 		if (!status)
 			goto done;
@@ -401,9 +385,7 @@ again:
 			x86_pmu_stop(event, 0);
 	}
 
-	/*
-	 * Repeat if there is more work to be done:
-	 */
+	 
 	status = zhaoxin_pmu_get_status();
 	if (status)
 		goto again;
@@ -470,9 +452,7 @@ static const struct x86_pmu zhaoxin_pmu __initconst = {
 	.event_map		= zhaoxin_pmu_event_map,
 	.max_events		= ARRAY_SIZE(zx_pmon_event_map),
 	.apic			= 1,
-	/*
-	 * For zxd/zxe, read/write operation for PMCx MSR is 48 bits.
-	 */
+	 
 	.max_period		= (1ULL << 47) - 1,
 	.get_event_constraints	= zhaoxin_get_event_constraints,
 
@@ -494,7 +474,7 @@ static __init void zhaoxin_arch_events_quirk(void)
 {
 	int bit;
 
-	/* disable event that reported as not present by cpuid */
+	 
 	for_each_set_bit(bit, x86_pmu.events_mask, ARRAY_SIZE(zx_arch_events_map)) {
 		zx_pmon_event_map[zx_arch_events_map[bit].id] = 0;
 		pr_warn("CPUID marked event: \'%s\' unavailable\n",
@@ -513,10 +493,7 @@ __init int zhaoxin_pmu_init(void)
 
 	pr_info("Welcome to zhaoxin pmu!\n");
 
-	/*
-	 * Check whether the Architectural PerfMon supports
-	 * hw_event or not.
-	 */
+	 
 	cpuid(10, &eax.full, &ebx.full, &unused, &edx.full);
 
 	if (eax.split.mask_length < ARCH_PERFMON_EVENTS_COUNT - 1)
@@ -541,17 +518,13 @@ __init int zhaoxin_pmu_init(void)
 
 	switch (boot_cpu_data.x86) {
 	case 0x06:
-		/*
-		 * Support Zhaoxin CPU from ZXC series, exclude Nano series through FMS.
-		 * Nano FMS: Family=6, Model=F, Stepping=[0-A][C-D]
-		 * ZXC FMS: Family=6, Model=F, Stepping=E-F OR Family=6, Model=0x19, Stepping=0-3
-		 */
+		 
 		if ((boot_cpu_data.x86_model == 0x0f && boot_cpu_data.x86_stepping >= 0x0e) ||
 			boot_cpu_data.x86_model == 0x19) {
 
 			x86_pmu.max_period = x86_pmu.cntval_mask >> 1;
 
-			/* Clearing status works only if the global control is enable on zxc. */
+			 
 			x86_pmu.enabled_ack = 1;
 
 			x86_pmu.event_constraints = zxc_event_constraints;

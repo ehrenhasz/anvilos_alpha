@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012, NVIDIA CORPORATION.  All rights reserved.
- * Copyright (C) 2011 Google, Inc.
- *
- * Author:
- *	Jay Cheng <jacheng@nvidia.com>
- *	James Wylder <james.wylder@motorola.com>
- *	Benoit Goby <benoit@android.com>
- *	Colin Cross <ccross@android.com>
- *	Hiroshi DOYU <hdoyu@nvidia.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/kernel.h>
@@ -73,14 +63,7 @@
 
 #define AHB_ARBITRATION_XBAR_CTRL_SMMU_INIT_DONE BIT(17)
 
-/*
- * INCORRECT_BASE_ADDR_LOW_BYTE: Legacy kernel DT files for Tegra SoCs
- * prior to Tegra124 generally use a physical base address ending in
- * 0x4 for the AHB IP block.  According to the TRM, the low byte
- * should be 0x0.  During device probing, this macro is used to detect
- * whether the passed-in physical address is incorrect, and if so, to
- * correct it.
- */
+ 
 #define INCORRECT_BASE_ADDR_LOW_BYTE		0x4
 
 static struct platform_driver tegra_ahb_driver;
@@ -249,7 +232,7 @@ static int tegra_ahb_probe(struct platform_device *pdev)
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 
-	/* Correct the IP block base address if necessary */
+	 
 	if (res &&
 	    (res->start & INCORRECT_BASE_ADDR_LOW_BYTE) ==
 	    INCORRECT_BASE_ADDR_LOW_BYTE) {

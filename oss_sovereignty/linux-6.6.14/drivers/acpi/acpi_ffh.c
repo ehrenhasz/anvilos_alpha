@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Author: Sudeep Holla <sudeep.holla@arm.com>
- * Copyright 2022 Arm Limited
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/acpi.h>
 #include <linux/completion.h>

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Here's a sample kernel module showing the use of fprobe to dump a
- * stack trace and selected registers when kernel_clone() is called.
- *
- * For more information on theory of operation of kprobes, see
- * Documentation/trace/kprobes.rst
- *
- * You will see the trace data in /var/log/messages and on the console
- * whenever kernel_clone() is invoked to create a new process.
- */
+
+ 
 
 #define pr_fmt(fmt) "%s: " fmt, __func__
 
@@ -53,10 +44,7 @@ static int sample_entry_handler(struct fprobe *fp, unsigned long ip,
 				struct pt_regs *regs, void *data)
 {
 	if (use_trace)
-		/*
-		 * This is just an example, no kernel code should call
-		 * trace_printk() except when actively debugging.
-		 */
+		 
 		trace_printk("Enter <%pS> ip = 0x%p\n", (void *)ip, (void *)ip);
 	else
 		pr_info("Enter <%pS> ip = 0x%p\n", (void *)ip, (void *)ip);
@@ -73,10 +61,7 @@ static void sample_exit_handler(struct fprobe *fp, unsigned long ip,
 	unsigned long rip = ret_ip;
 
 	if (use_trace)
-		/*
-		 * This is just an example, no kernel code should call
-		 * trace_printk() except when actively debugging.
-		 */
+		 
 		trace_printk("Return from <%pS> ip = 0x%p to rip = 0x%p (%pS)\n",
 			(void *)ip, (void *)ip, (void *)rip, (void *)rip);
 	else
@@ -97,7 +82,7 @@ static int __init fprobe_init(void)
 	sample_probe.exit_handler = sample_exit_handler;
 
 	if (strchr(symbol, '*')) {
-		/* filter based fprobe */
+		 
 		ret = register_fprobe(&sample_probe, symbol,
 				      nosymbol[0] == '\0' ? NULL : nosymbol);
 		goto out;
@@ -107,7 +92,7 @@ static int __init fprobe_init(void)
 		goto out;
 	}
 
-	/* Comma separated symbols */
+	 
 	symbuf = kstrdup(symbol, GFP_KERNEL);
 	if (!symbuf)
 		return -ENOMEM;

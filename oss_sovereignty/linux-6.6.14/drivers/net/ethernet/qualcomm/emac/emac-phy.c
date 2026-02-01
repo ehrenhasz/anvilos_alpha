@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
- */
 
-/* Qualcomm Technologies, Inc. EMAC PHY Controller driver.
- */
+ 
+
+ 
 
 #include <linux/of_mdio.h>
 #include <linux/phy.h>
@@ -11,12 +9,12 @@
 #include <linux/acpi.h>
 #include "emac.h"
 
-/* EMAC base register offsets */
+ 
 #define EMAC_MDIO_CTRL                                        0x001414
 #define EMAC_PHY_STS                                          0x001418
 #define EMAC_MDIO_EX_CTRL                                     0x001440
 
-/* EMAC_MDIO_CTRL */
+ 
 #define MDIO_MODE                                              BIT(30)
 #define MDIO_PR                                                BIT(29)
 #define MDIO_AP_EN                                             BIT(28)
@@ -31,7 +29,7 @@
 #define MDIO_DATA_BMSK                                          0xffff
 #define MDIO_DATA_SHFT                                               0
 
-/* EMAC_PHY_STS */
+ 
 #define PHY_ADDR_BMSK                                         0x1f0000
 #define PHY_ADDR_SHFT                                               16
 
@@ -88,14 +86,14 @@ static int emac_mdio_write(struct mii_bus *bus, int addr, int regnum, u16 val)
 	return 0;
 }
 
-/* Configure the MDIO bus and connect the external PHY */
+ 
 int emac_phy_config(struct platform_device *pdev, struct emac_adapter *adpt)
 {
 	struct device_node *np = pdev->dev.of_node;
 	struct mii_bus *mii_bus;
 	int ret;
 
-	/* Create the mii_bus object for talking to the MDIO bus */
+	 
 	adpt->mii_bus = mii_bus = devm_mdiobus_alloc(&pdev->dev);
 	if (!mii_bus)
 		return -ENOMEM;
@@ -118,18 +116,12 @@ int emac_phy_config(struct platform_device *pdev, struct emac_adapter *adpt)
 		ret = device_property_read_u32(&pdev->dev, "phy-channel",
 					       &phy_addr);
 		if (ret)
-			/* If we can't read a valid phy address, then assume
-			 * that there is only one phy on this mdio bus.
-			 */
+			 
 			adpt->phydev = phy_find_first(mii_bus);
 		else
 			adpt->phydev = mdiobus_get_phy(mii_bus, phy_addr);
 
-		/* of_phy_find_device() claims a reference to the phydev,
-		 * so we do that here manually as well. When the driver
-		 * later unloads, it can unilaterally drop the reference
-		 * without worrying about ACPI vs DT.
-		 */
+		 
 		if (adpt->phydev)
 			get_device(&adpt->phydev->mdio.dev);
 	} else {

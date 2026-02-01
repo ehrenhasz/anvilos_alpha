@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020, Google LLC.
- *
- * Tests for KVM paravirtual feature disablement
- */
+
+ 
 #include <asm/kvm_para.h>
 #include <linux/kvm_para.h>
 #include <linux/stringify.h>
@@ -14,7 +10,7 @@
 #include "kvm_util.h"
 #include "processor.h"
 
-/* VMCALL and VMMCALL are both 3-byte opcodes. */
+ 
 #define HYPERCALL_INSN_SIZE	3
 
 static bool quirk_disabled;
@@ -56,7 +52,7 @@ static void guest_main(void)
 		other_hypercall_insn  = vmx_vmcall;
 	} else {
 		GUEST_ASSERT(0);
-		/* unreachable */
+		 
 		return;
 	}
 
@@ -64,12 +60,7 @@ static void guest_main(void)
 
 	ret = do_sched_yield(GET_APIC_ID_FIELD(xapic_read_reg(APIC_ID)));
 
-	/*
-	 * If the quirk is disabled, verify that guest_ud_handler() "returned"
-	 * -EFAULT and that KVM did NOT patch the hypercall.  If the quirk is
-	 * enabled, verify that the hypercall succeeded and that KVM patched in
-	 * the "right" hypercall.
-	 */
+	 
 	if (quirk_disabled) {
 		GUEST_ASSERT(ret == (uint64_t)-EFAULT);
 		GUEST_ASSERT(!memcmp(other_hypercall_insn, hypercall_insn,

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2010-2014 Michael Krufky (mkrufky@linuxtv.org)
- *
- * see Documentation/driver-api/media/drivers/dvb-usb.rst for more information
- */
+ 
+ 
 
 #ifndef _DVB_USB_MXL111SF_H_
 #define _DVB_USB_MXL111SF_H_
@@ -16,7 +12,7 @@
 #include <media/tveeprom.h>
 #include <media/media-entity.h>
 
-/* Max transfer size done by I2C transfer functions */
+ 
 #define MXL_MAX_XFER_SIZE  64
 
 #define MXL_EP1_REG_READ     1
@@ -78,13 +74,7 @@ struct mxl111sf_state {
 #if 1
 	int device_mode;
 #endif
-	/* use usb alt setting 1 for EP4 ISOC transfer (dvb-t),
-				     EP5 BULK transfer (atsc-mh),
-				     EP6 BULK transfer (atsc/qam),
-	   use usb alt setting 2 for EP4 BULK transfer (dvb-t),
-				     EP5 ISOC transfer (atsc-mh),
-				     EP6 ISOC transfer (atsc/qam),
-	 */
+	 
 	int alt_mode;
 	int gpio_mode;
 	struct tveeprom tv;
@@ -115,8 +105,7 @@ int mxl111sf_write_reg_mask(struct mxl111sf_state *state,
 int mxl111sf_ctrl_program_regs(struct mxl111sf_state *state,
 			       struct mxl111sf_reg_ctrl_info *ctrl_reg_info);
 
-/* needed for hardware i2c functions in mxl111sf-i2c.c:
- * mxl111sf_i2c_send_data / mxl111sf_i2c_get_data */
+ 
 int mxl111sf_ctrl_msg(struct mxl111sf_state *state,
 		      u8 cmd, u8 *wbuf, int wlen, u8 *rbuf, int rlen);
 
@@ -146,9 +135,7 @@ extern int dvb_usb_mxl111sf_debug;
 		(MXL_I2C_DBG | MXL_ADV_DBG)) \
 			mxl_printk(KERN_DEBUG, fmt, ##arg)
 
-/* The following allows the mxl_fail() macro defined below to work
- * in externel modules, such as mxl111sf-tuner.ko, even though
- * dvb_usb_mxl111sf_debug is not defined within those modules */
+ 
 #if (defined(__MXL111SF_TUNER_H__)) || (defined(__MXL111SF_DEMOD_H__))
 #define MXL_ADV_DEBUG_ENABLED MXL_ADV_DBG
 #else
@@ -165,4 +152,4 @@ extern int dvb_usb_mxl111sf_debug;
 	__ret;								\
 })
 
-#endif /* _DVB_USB_MXL111SF_H_ */
+#endif  

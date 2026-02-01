@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #include <linux/types.h>
 #include <linux/ip.h>
 #include <linux/netfilter.h>
@@ -21,9 +21,7 @@
 
 #include "../br_private.h"
 
-/* Best effort variant of ip_do_fragment which preserves geometry, unless skbuff
- * has been linearized or cloned.
- */
+ 
 static int nf_br_ip_fragment(struct net *net, struct sock *sk,
 			     struct sk_buff *skb,
 			     struct nf_bridge_frag_data *data,
@@ -39,16 +37,14 @@ static int nf_br_ip_fragment(struct net *net, struct sock *sk,
 	struct iphdr *iph;
 	int err = 0;
 
-	/* for offloaded checksums cleanup checksum before fragmentation */
+	 
 	if (skb->ip_summed == CHECKSUM_PARTIAL &&
 	    (err = skb_checksum_help(skb)))
 		goto blackhole;
 
 	iph = ip_hdr(skb);
 
-	/*
-	 *	Setup starting values
-	 */
+	 
 
 	hlen = iph->ihl * 4;
 	frag_max_size -= hlen;
@@ -98,10 +94,7 @@ static int nf_br_ip_fragment(struct net *net, struct sock *sk,
 		return err;
 	}
 slow_path:
-	/* This is a linearized skbuff, the original geometry is lost for us.
-	 * This may also be a clone skbuff, we could preserve the geometry for
-	 * the copies but probably not worth the effort.
-	 */
+	 
 	ip_frag_init(skb, hlen, ll_rs, frag_max_size, false, &state);
 
 	while (state.left > 0) {
@@ -126,7 +119,7 @@ blackhole:
 	return 0;
 }
 
-/* ip_defrag() expects IPCB() in place. */
+ 
 static void br_skb_cb_save(struct sk_buff *skb, struct br_input_skb_cb *cb,
 			   size_t inet_skb_parm_size)
 {
@@ -190,7 +183,7 @@ static unsigned int nf_ct_br_defrag6(struct sk_buff *skb,
 
 	err = nf_ct_frag6_gather(state->net, skb,
 				 IP_DEFRAG_CONNTRACK_BRIDGE_IN + zone_id);
-	/* queued */
+	 
 	if (err == -EINPROGRESS)
 		return NF_STOLEN;
 
@@ -331,7 +324,7 @@ nf_ct_bridge_refrag(struct sk_buff *skb, const struct nf_hook_state *state,
 	return NF_STOLEN;
 }
 
-/* Actually only slow path refragmentation needs this. */
+ 
 static int nf_ct_bridge_frag_restore(struct sk_buff *skb,
 				     const struct nf_bridge_frag_data *data)
 {

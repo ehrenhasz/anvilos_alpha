@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2016, Mellanox Technologies, Ltd.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/refcount.h>
@@ -39,9 +9,9 @@
 
 struct mlx5_vxlan {
 	struct mlx5_core_dev		*mdev;
-	/* max_num_ports is usually 4, 16 buckets is more than enough */
+	 
 	DECLARE_HASHTABLE(htable, 4);
-	struct mutex                    sync_lock; /* sync add/del port HW operations */
+	struct mutex                    sync_lock;  
 };
 
 struct mlx5_vxlan_port {
@@ -159,7 +129,7 @@ struct mlx5_vxlan *mlx5_vxlan_create(struct mlx5_core_dev *mdev)
 	mutex_init(&vxlan->sync_lock);
 	hash_init(vxlan->htable);
 
-	/* Hardware adds 4789 (IANA_VXLAN_UDP_PORT) by default */
+	 
 	mlx5_vxlan_add_port(vxlan, IANA_VXLAN_UDP_PORT);
 
 	return vxlan;
@@ -186,9 +156,7 @@ void mlx5_vxlan_reset_to_default(struct mlx5_vxlan *vxlan)
 		return;
 
 	hash_for_each_safe(vxlan->htable, bkt, tmp, vxlanp, hlist) {
-		/* Don't delete default UDP port added by the HW.
-		 * Remove only user configured ports
-		 */
+		 
 		if (vxlanp->udp_port == IANA_VXLAN_UDP_PORT)
 			continue;
 		mlx5_vxlan_del_port(vxlan, vxlanp->udp_port);

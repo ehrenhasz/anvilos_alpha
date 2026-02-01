@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AHCI SATA platform library
- *
- * Copyright 2004-2005  Red Hat, Inc.
- *   Jeff Garzik <jgarzik@pobox.com>
- * Copyright 2010  MontaVista Software, LLC.
- *   Anton Vorontsov <avorontsov@ru.mvista.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/kernel.h>
@@ -33,17 +26,7 @@ struct ata_port_operations ahci_platform_ops = {
 };
 EXPORT_SYMBOL_GPL(ahci_platform_ops);
 
-/**
- * ahci_platform_enable_phys - Enable PHYs
- * @hpriv: host private area to store config values
- *
- * This function enables all the PHYs found in hpriv->phys, if any.
- * If a PHY fails to be enabled, it disables all the PHYs already
- * enabled in reverse order and returns an error.
- *
- * RETURNS:
- * 0 on success otherwise a negative error code
- */
+ 
 int ahci_platform_enable_phys(struct ahci_host_priv *hpriv)
 {
 	int rc, i;
@@ -77,12 +60,7 @@ disable_phys:
 }
 EXPORT_SYMBOL_GPL(ahci_platform_enable_phys);
 
-/**
- * ahci_platform_disable_phys - Disable PHYs
- * @hpriv: host private area to store config values
- *
- * This function disables all PHYs found in hpriv->phys.
- */
+ 
 void ahci_platform_disable_phys(struct ahci_host_priv *hpriv)
 {
 	int i;
@@ -94,17 +72,7 @@ void ahci_platform_disable_phys(struct ahci_host_priv *hpriv)
 }
 EXPORT_SYMBOL_GPL(ahci_platform_disable_phys);
 
-/**
- * ahci_platform_find_clk - Find platform clock
- * @hpriv: host private area to store config values
- * @con_id: clock connection ID
- *
- * This function returns a pointer to the clock descriptor of the clock with
- * the passed ID.
- *
- * RETURNS:
- * Pointer to the clock descriptor on success otherwise NULL
- */
+ 
 struct clk *ahci_platform_find_clk(struct ahci_host_priv *hpriv, const char *con_id)
 {
 	int i;
@@ -118,45 +86,21 @@ struct clk *ahci_platform_find_clk(struct ahci_host_priv *hpriv, const char *con
 }
 EXPORT_SYMBOL_GPL(ahci_platform_find_clk);
 
-/**
- * ahci_platform_enable_clks - Enable platform clocks
- * @hpriv: host private area to store config values
- *
- * This function enables all the clks found for the AHCI device.
- *
- * RETURNS:
- * 0 on success otherwise a negative error code
- */
+ 
 int ahci_platform_enable_clks(struct ahci_host_priv *hpriv)
 {
 	return clk_bulk_prepare_enable(hpriv->n_clks, hpriv->clks);
 }
 EXPORT_SYMBOL_GPL(ahci_platform_enable_clks);
 
-/**
- * ahci_platform_disable_clks - Disable platform clocks
- * @hpriv: host private area to store config values
- *
- * This function disables all the clocks enabled before
- * (bulk-clocks-disable function is supposed to do that in reverse
- * from the enabling procedure order).
- */
+ 
 void ahci_platform_disable_clks(struct ahci_host_priv *hpriv)
 {
 	clk_bulk_disable_unprepare(hpriv->n_clks, hpriv->clks);
 }
 EXPORT_SYMBOL_GPL(ahci_platform_disable_clks);
 
-/**
- * ahci_platform_deassert_rsts - Deassert/trigger platform resets
- * @hpriv: host private area to store config values
- *
- * This function deasserts or triggers all the reset lines found for
- * the AHCI device.
- *
- * RETURNS:
- * 0 on success otherwise a negative error code
- */
+ 
 int ahci_platform_deassert_rsts(struct ahci_host_priv *hpriv)
 {
 	if (hpriv->f_rsts & AHCI_PLATFORM_RST_TRIGGER)
@@ -166,16 +110,7 @@ int ahci_platform_deassert_rsts(struct ahci_host_priv *hpriv)
 }
 EXPORT_SYMBOL_GPL(ahci_platform_deassert_rsts);
 
-/**
- * ahci_platform_assert_rsts - Assert/rearm platform resets
- * @hpriv: host private area to store config values
- *
- * This function asserts or rearms (for self-deasserting resets) all
- * the reset controls found for the AHCI device.
- *
- * RETURNS:
- * 0 on success otherwise a negative error code
- */
+ 
 int ahci_platform_assert_rsts(struct ahci_host_priv *hpriv)
 {
 	if (hpriv->f_rsts & AHCI_PLATFORM_RST_TRIGGER)
@@ -185,18 +120,7 @@ int ahci_platform_assert_rsts(struct ahci_host_priv *hpriv)
 }
 EXPORT_SYMBOL_GPL(ahci_platform_assert_rsts);
 
-/**
- * ahci_platform_enable_regulators - Enable regulators
- * @hpriv: host private area to store config values
- *
- * This function enables all the regulators found in controller and
- * hpriv->target_pwrs, if any.  If a regulator fails to be enabled, it
- * disables all the regulators already enabled in reverse order and
- * returns an error.
- *
- * RETURNS:
- * 0 on success otherwise a negative error code
- */
+ 
 int ahci_platform_enable_regulators(struct ahci_host_priv *hpriv)
 {
 	int rc, i;
@@ -232,13 +156,7 @@ disable_ahci_pwrs:
 }
 EXPORT_SYMBOL_GPL(ahci_platform_enable_regulators);
 
-/**
- * ahci_platform_disable_regulators - Disable regulators
- * @hpriv: host private area to store config values
- *
- * This function disables all regulators found in hpriv->target_pwrs and
- * AHCI controller.
- */
+ 
 void ahci_platform_disable_regulators(struct ahci_host_priv *hpriv)
 {
 	int i;
@@ -253,23 +171,7 @@ void ahci_platform_disable_regulators(struct ahci_host_priv *hpriv)
 	regulator_disable(hpriv->phy_regulator);
 }
 EXPORT_SYMBOL_GPL(ahci_platform_disable_regulators);
-/**
- * ahci_platform_enable_resources - Enable platform resources
- * @hpriv: host private area to store config values
- *
- * This function enables all ahci_platform managed resources in the
- * following order:
- * 1) Regulator
- * 2) Clocks (through ahci_platform_enable_clks)
- * 3) Resets
- * 4) Phys
- *
- * If resource enabling fails at any point the previous enabled resources
- * are disabled in reverse order.
- *
- * RETURNS:
- * 0 on success otherwise a negative error code
- */
+ 
 int ahci_platform_enable_resources(struct ahci_host_priv *hpriv)
 {
 	int rc;
@@ -305,17 +207,7 @@ disable_regulator:
 }
 EXPORT_SYMBOL_GPL(ahci_platform_enable_resources);
 
-/**
- * ahci_platform_disable_resources - Disable platform resources
- * @hpriv: host private area to store config values
- *
- * This function disables all ahci_platform managed resources in the
- * following order:
- * 1) Phys
- * 2) Resets
- * 3) Clocks (through ahci_platform_disable_clks)
- * 4) Regulator
- */
+ 
 void ahci_platform_disable_resources(struct ahci_host_priv *hpriv)
 {
 	ahci_platform_disable_phys(hpriv);
@@ -338,11 +230,7 @@ static void ahci_platform_put_resources(struct device *dev, void *res)
 		pm_runtime_disable(dev);
 	}
 
-	/*
-	 * The regulators are tied to child node device and not to the
-	 * SATA device itself. So we can't use devm for automatically
-	 * releasing them. We have to do it manually here.
-	 */
+	 
 	for (c = 0; c < hpriv->nports; c++)
 		if (hpriv->target_pwrs && hpriv->target_pwrs[c])
 			regulator_put(hpriv->target_pwrs[c]);
@@ -363,7 +251,7 @@ static int ahci_platform_get_phy(struct ahci_host_priv *hpriv, u32 port,
 	rc = PTR_ERR(hpriv->phys[port]);
 	switch (rc) {
 	case -ENOSYS:
-		/* No PHY support. Check if PHY is required. */
+		 
 		if (of_property_present(node, "phys")) {
 			dev_err(dev,
 				"couldn't get PHY in node %pOFn: ENOSYS\n",
@@ -372,12 +260,12 @@ static int ahci_platform_get_phy(struct ahci_host_priv *hpriv, u32 port,
 		}
 		fallthrough;
 	case -ENODEV:
-		/* continue normally */
+		 
 		hpriv->phys[port] = NULL;
 		rc = 0;
 		break;
 	case -EPROBE_DEFER:
-		/* Do not complain yet */
+		 
 		break;
 
 	default:
@@ -435,25 +323,7 @@ static int ahci_platform_get_firmware(struct ahci_host_priv *hpriv,
 	return 0;
 }
 
-/**
- * ahci_platform_get_resources - Get platform resources
- * @pdev: platform device to get resources for
- * @flags: bitmap representing the resource to get
- *
- * This function allocates an ahci_host_priv struct, and gets the following
- * resources, storing a reference to them inside the returned struct:
- *
- * 1) mmio registers (IORESOURCE_MEM 0, mandatory)
- * 2) regulator for controlling the targets power (optional)
- *    regulator for controlling the AHCI controller (optional)
- * 3) all clocks specified in the devicetree node, or a single
- *    clock for non-OF platforms (optional)
- * 4) resets, if flags has AHCI_PLATFORM_GET_RESETS (optional)
- * 5) phys (optional)
- *
- * RETURNS:
- * The allocated ahci_host_priv on success, otherwise an ERR_PTR value
- */
+ 
 struct ahci_host_priv *ahci_platform_get_resources(struct platform_device *pdev,
 						   unsigned int flags)
 {
@@ -473,10 +343,7 @@ struct ahci_host_priv *ahci_platform_get_resources(struct platform_device *pdev,
 
 	devres_add(dev, hpriv);
 
-	/*
-	 * If the DT provided an "ahci" named resource, use it. Otherwise,
-	 * fallback to using the default first resource for the device node.
-	 */
+	 
 	if (platform_get_resource_byname(pdev, IORESOURCE_MEM, "ahci"))
 		hpriv->mmio = devm_platform_ioremap_resource_byname(pdev, "ahci");
 	else
@@ -486,25 +353,16 @@ struct ahci_host_priv *ahci_platform_get_resources(struct platform_device *pdev,
 		goto err_out;
 	}
 
-	/*
-	 * Bulk clocks getting procedure can fail to find any clock due to
-	 * running on a non-OF platform or due to the clocks being defined in
-	 * bypass of the DT firmware (like da850, spear13xx). In that case we
-	 * fallback to getting a single clock source right from the dev clocks
-	 * list.
-	 */
+	 
 	rc = devm_clk_bulk_get_all(dev, &hpriv->clks);
 	if (rc < 0)
 		goto err_out;
 
 	if (rc > 0) {
-		/* Got clocks in bulk */
+		 
 		hpriv->n_clks = rc;
 	} else {
-		/*
-		 * No clock bulk found: fallback to manually getting
-		 * the optional clock.
-		 */
+		 
 		hpriv->clks = devm_kzalloc(dev, sizeof(*hpriv->clks), GFP_KERNEL);
 		if (!hpriv->clks) {
 			rc = -ENOMEM;
@@ -543,21 +401,14 @@ struct ahci_host_priv *ahci_platform_get_resources(struct platform_device *pdev,
 		hpriv->f_rsts = flags & AHCI_PLATFORM_RST_TRIGGER;
 	}
 
-	/*
-	 * Too many sub-nodes most likely means having something wrong with
-	 * the firmware.
-	 */
+	 
 	child_nodes = of_get_child_count(dev->of_node);
 	if (child_nodes > AHCI_MAX_PORTS) {
 		rc = -EINVAL;
 		goto err_out;
 	}
 
-	/*
-	 * If no sub-node was found, we still need to set nports to
-	 * one in order to be able to use the
-	 * ahci_platform_[en|dis]able_[phys|regulators] functions.
-	 */
+	 
 	if (child_nodes)
 		hpriv->nports = child_nodes;
 	else
@@ -568,10 +419,7 @@ struct ahci_host_priv *ahci_platform_get_resources(struct platform_device *pdev,
 		rc = -ENOMEM;
 		goto err_out;
 	}
-	/*
-	 * We cannot use devm_ here, since ahci_platform_put_resources() uses
-	 * target_pwrs after devm_ have freed memory
-	 */
+	 
 	hpriv->target_pwrs = kcalloc(hpriv->nports, sizeof(*hpriv->target_pwrs), GFP_KERNEL);
 	if (!hpriv->target_pwrs) {
 		rc = -ENOMEM;
@@ -630,10 +478,7 @@ struct ahci_host_priv *ahci_platform_get_resources(struct platform_device *pdev,
 		if (!hpriv->mask_port_map)
 			hpriv->mask_port_map = mask_port_map;
 	} else {
-		/*
-		 * If no sub-node was found, keep this for device tree
-		 * compatibility
-		 */
+		 
 		rc = ahci_platform_get_phy(hpriv, 0, dev, dev->of_node);
 		if (rc)
 			goto err_out;
@@ -643,10 +488,7 @@ struct ahci_host_priv *ahci_platform_get_resources(struct platform_device *pdev,
 			goto err_out;
 	}
 
-	/*
-	 * Retrieve firmware-specific flags which then will be used to set
-	 * the HW-init fields of HBA and its ports
-	 */
+	 
 	rc = ahci_platform_get_firmware(hpriv, dev);
 	if (rc)
 		goto err_out;
@@ -664,20 +506,7 @@ err_out:
 }
 EXPORT_SYMBOL_GPL(ahci_platform_get_resources);
 
-/**
- * ahci_platform_init_host - Bring up an ahci-platform host
- * @pdev: platform device pointer for the host
- * @hpriv: ahci-host private data for the host
- * @pi_template: template for the ata_port_info to use
- * @sht: scsi_host_template to use when registering
- *
- * This function does all the usual steps needed to bring up an
- * ahci-platform host, note any necessary resources (ie clks, phys, etc.)
- * must be initialized / enabled before calling this.
- *
- * RETURNS:
- * 0 on success otherwise a negative error code
- */
+ 
 int ahci_platform_init_host(struct platform_device *pdev,
 			    struct ahci_host_priv *hpriv,
 			    const struct ata_port_info *pi_template,
@@ -697,7 +526,7 @@ int ahci_platform_init_host(struct platform_device *pdev,
 
 	hpriv->irq = irq;
 
-	/* prepare host */
+	 
 	pi.private_data = (void *)(unsigned long)hpriv->flags;
 
 	ahci_save_initial_config(dev, hpriv);
@@ -710,11 +539,7 @@ int ahci_platform_init_host(struct platform_device *pdev,
 
 	ahci_set_em_messages(hpriv, &pi);
 
-	/* CAP.NP sometimes indicate the index of the last enabled
-	 * port, at other times, that of the last possible port, so
-	 * determining the maximum port number requires looking at
-	 * both CAP.NP and port_map.
-	 */
+	 
 	n_ports = max(ahci_nr_ports(hpriv->cap), fls(hpriv->port_map));
 
 	host = ata_host_alloc_pinfo(dev, ppi, n_ports);
@@ -738,11 +563,11 @@ int ahci_platform_init_host(struct platform_device *pdev,
 			      platform_get_resource(pdev, IORESOURCE_MEM, 0));
 		ata_port_desc(ap, "port 0x%x", 0x100 + ap->port_no * 0x80);
 
-		/* set enclosure management message type */
+		 
 		if (ap->flags & ATA_FLAG_EM)
 			ap->em_message_type = hpriv->em_msg_type;
 
-		/* disabled/not-implemented port */
+		 
 		if (!(hpriv->port_map & (1 << i)))
 			ap->ops = &ata_dummy_port_ops;
 	}
@@ -773,14 +598,7 @@ static void ahci_host_stop(struct ata_host *host)
 	ahci_platform_disable_resources(hpriv);
 }
 
-/**
- * ahci_platform_shutdown - Disable interrupts and stop DMA for host ports
- * @pdev: platform device pointer for the host
- *
- * This function is called during system shutdown and performs the minimal
- * deconfiguration required to ensure that an ahci_platform host cannot
- * corrupt or otherwise interfere with a new kernel being started with kexec.
- */
+ 
 void ahci_platform_shutdown(struct platform_device *pdev)
 {
 	struct ata_host *host = platform_get_drvdata(pdev);
@@ -791,34 +609,24 @@ void ahci_platform_shutdown(struct platform_device *pdev)
 	for (i = 0; i < host->n_ports; i++) {
 		struct ata_port *ap = host->ports[i];
 
-		/* Disable port interrupts */
+		 
 		if (ap->ops->freeze)
 			ap->ops->freeze(ap);
 
-		/* Stop the port DMA engines */
+		 
 		if (ap->ops->port_stop)
 			ap->ops->port_stop(ap);
 	}
 
-	/* Disable and clear host interrupts */
+	 
 	writel(readl(mmio + HOST_CTL) & ~HOST_IRQ_EN, mmio + HOST_CTL);
-	readl(mmio + HOST_CTL); /* flush */
+	readl(mmio + HOST_CTL);  
 	writel(GENMASK(host->n_ports, 0), mmio + HOST_IRQ_STAT);
 }
 EXPORT_SYMBOL_GPL(ahci_platform_shutdown);
 
 #ifdef CONFIG_PM_SLEEP
-/**
- * ahci_platform_suspend_host - Suspend an ahci-platform host
- * @dev: device pointer for the host
- *
- * This function does all the usual steps needed to suspend an
- * ahci-platform host, note any necessary resources (ie clks, phys, etc.)
- * must be disabled after calling this.
- *
- * RETURNS:
- * 0 on success otherwise a negative error code
- */
+ 
 int ahci_platform_suspend_host(struct device *dev)
 {
 	struct ata_host *host = dev_get_drvdata(dev);
@@ -831,15 +639,11 @@ int ahci_platform_suspend_host(struct device *dev)
 		return -EIO;
 	}
 
-	/*
-	 * AHCI spec rev1.1 section 8.3.3:
-	 * Software must disable interrupts prior to requesting a
-	 * transition of the HBA to D3 state.
-	 */
+	 
 	ctl = readl(mmio + HOST_CTL);
 	ctl &= ~HOST_IRQ_EN;
 	writel(ctl, mmio + HOST_CTL);
-	readl(mmio + HOST_CTL); /* flush */
+	readl(mmio + HOST_CTL);  
 
 	if (hpriv->flags & AHCI_HFLAG_SUSPEND_PHYS)
 		ahci_platform_disable_phys(hpriv);
@@ -849,17 +653,7 @@ int ahci_platform_suspend_host(struct device *dev)
 }
 EXPORT_SYMBOL_GPL(ahci_platform_suspend_host);
 
-/**
- * ahci_platform_resume_host - Resume an ahci-platform host
- * @dev: device pointer for the host
- *
- * This function does all the usual steps needed to resume an ahci-platform
- * host, note any necessary resources (ie clks, phys, etc.)  must be
- * initialized / enabled before calling this.
- *
- * RETURNS:
- * 0 on success otherwise a negative error code
- */
+ 
 int ahci_platform_resume_host(struct device *dev)
 {
 	struct ata_host *host = dev_get_drvdata(dev);
@@ -883,16 +677,7 @@ int ahci_platform_resume_host(struct device *dev)
 }
 EXPORT_SYMBOL_GPL(ahci_platform_resume_host);
 
-/**
- * ahci_platform_suspend - Suspend an ahci-platform device
- * @dev: the platform device to suspend
- *
- * This function suspends the host associated with the device, followed by
- * disabling all the resources of the device.
- *
- * RETURNS:
- * 0 on success otherwise a negative error code
- */
+ 
 int ahci_platform_suspend(struct device *dev)
 {
 	struct ata_host *host = dev_get_drvdata(dev);
@@ -909,16 +694,7 @@ int ahci_platform_suspend(struct device *dev)
 }
 EXPORT_SYMBOL_GPL(ahci_platform_suspend);
 
-/**
- * ahci_platform_resume - Resume an ahci-platform device
- * @dev: the platform device to resume
- *
- * This function enables all the resources of the device followed by
- * resuming the host associated with the device.
- *
- * RETURNS:
- * 0 on success otherwise a negative error code
- */
+ 
 int ahci_platform_resume(struct device *dev)
 {
 	struct ata_host *host = dev_get_drvdata(dev);
@@ -933,7 +709,7 @@ int ahci_platform_resume(struct device *dev)
 	if (rc)
 		goto disable_resources;
 
-	/* We resumed so update PM runtime state */
+	 
 	pm_runtime_disable(dev);
 	pm_runtime_set_active(dev);
 	pm_runtime_enable(dev);

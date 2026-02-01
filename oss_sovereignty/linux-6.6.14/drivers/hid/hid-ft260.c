@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * hid-ft260.c - FTDI FT260 USB HID to I2C host bridge
- *
- * Copyright (c) 2021, Michael Zaidman <michaelz@xsightlabs.com>
- *
- * Data Sheet:
- *   https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT260.pdf
- */
+
+ 
 
 #include "hid-ids.h"
 #include <linux/hidraw.h>
@@ -31,28 +24,13 @@ MODULE_PARM_DESC(debug, "Toggle FT260 debugging messages");
 #define FT260_REPORT_MAX_LENGTH (64)
 #define FT260_I2C_DATA_REPORT_ID(len) (FT260_I2C_REPORT_MIN + (len - 1) / 4)
 
-#define FT260_WAKEUP_NEEDED_AFTER_MS (4800) /* 5s minus 200ms margin */
+#define FT260_WAKEUP_NEEDED_AFTER_MS (4800)  
 
-/*
- * The ft260 input report format defines 62 bytes for the data payload, but
- * when requested 62 bytes, the controller returns 60 and 2 in separate input
- * reports. To achieve better performance with the multi-report read data
- * transfers, we set the maximum read payload length to a multiple of 60.
- * With a 100 kHz I2C clock, one 240 bytes read takes about 1/27 second,
- * which is excessive; On the other hand, some higher layer drivers like at24
- * or optoe limit the i2c reads to 128 bytes. To not block other drivers out
- * of I2C for potentially troublesome amounts of time, we select the maximum
- * read payload length to be 180 bytes.
-*/
+ 
 #define FT260_RD_DATA_MAX (180)
 #define FT260_WR_DATA_MAX (60)
 
-/*
- * Device interface configuration.
- * The FT260 has 2 interfaces that are controlled by DCNF0 and DCNF1 pins.
- * First implementes USB HID to I2C bridge function and
- * second - USB HID to UART bridge function.
- */
+ 
 enum {
 	FT260_MODE_ALL			= 0x00,
 	FT260_MODE_I2C			= 0x01,
@@ -60,7 +38,7 @@ enum {
 	FT260_MODE_BOTH			= 0x03,
 };
 
-/* Control pipe */
+ 
 enum {
 	FT260_GET_RQST_TYPE		= 0xA1,
 	FT260_GET_REPORT		= 0x01,
@@ -69,7 +47,7 @@ enum {
 	FT260_FEATURE			= 0x03,
 };
 
-/* Report IDs / Feature In */
+ 
 enum {
 	FT260_CHIP_VERSION		= 0xA0,
 	FT260_SYSTEM_SETTINGS		= 0xA1,
@@ -84,7 +62,7 @@ enum {
 	FT260_UART_REPORT		= 0xF0,
 };
 
-/* Feature Out */
+ 
 enum {
 	FT260_SET_CLOCK			= 0x01,
 	FT260_SET_I2C_MODE		= 0x02,
@@ -110,7 +88,7 @@ enum {
 	FT260_SET_UART_XON_XOFF		= 0x49,
 };
 
-/* Response codes in I2C status report */
+ 
 enum {
 	FT260_I2C_STATUS_SUCCESS	= 0x00,
 	FT260_I2C_STATUS_CTRL_BUSY	= 0x01,
@@ -122,7 +100,7 @@ enum {
 	FT260_I2C_STATUS_BUS_BUSY	= 0x40,
 };
 
-/* I2C Conditions flags */
+ 
 enum {
 	FT260_FLAG_NONE			= 0x00,
 	FT260_FLAG_START		= 0x02,
@@ -134,102 +112,102 @@ enum {
 
 #define FT260_SET_REQUEST_VALUE(report_id) ((FT260_FEATURE << 8) | report_id)
 
-/* Feature In reports */
+ 
 
 struct ft260_get_chip_version_report {
-	u8 report;		/* FT260_CHIP_VERSION */
-	u8 chip_code[4];	/* FTDI chip identification code */
+	u8 report;		 
+	u8 chip_code[4];	 
 	u8 reserved[8];
 } __packed;
 
 struct ft260_get_system_status_report {
-	u8 report;		/* FT260_SYSTEM_SETTINGS */
-	u8 chip_mode;		/* DCNF0 and DCNF1 status, bits 0-1 */
-	u8 clock_ctl;		/* 0 - 12MHz, 1 - 24MHz, 2 - 48MHz */
-	u8 suspend_status;	/* 0 - not suspended, 1 - suspended */
-	u8 pwren_status;	/* 0 - FT260 is not ready, 1 - ready */
-	u8 i2c_enable;		/* 0 - disabled, 1 - enabled */
-	u8 uart_mode;		/* 0 - OFF; 1 - RTS_CTS, 2 - DTR_DSR, */
-				/* 3 - XON_XOFF, 4 - No flow control */
-	u8 hid_over_i2c_en;	/* 0 - disabled, 1 - enabled */
-	u8 gpio2_function;	/* 0 - GPIO,  1 - SUSPOUT, */
-				/* 2 - PWREN, 4 - TX_LED */
-	u8 gpioA_function;	/* 0 - GPIO, 3 - TX_ACTIVE, 4 - TX_LED */
-	u8 gpioG_function;	/* 0 - GPIO, 2 - PWREN, */
-				/* 5 - RX_LED, 6 - BCD_DET */
-	u8 suspend_out_pol;	/* 0 - active-high, 1 - active-low */
-	u8 enable_wakeup_int;	/* 0 - disabled, 1 - enabled */
-	u8 intr_cond;		/* Interrupt trigger conditions */
-	u8 power_saving_en;	/* 0 - disabled, 1 - enabled */
+	u8 report;		 
+	u8 chip_mode;		 
+	u8 clock_ctl;		 
+	u8 suspend_status;	 
+	u8 pwren_status;	 
+	u8 i2c_enable;		 
+	u8 uart_mode;		 
+				 
+	u8 hid_over_i2c_en;	 
+	u8 gpio2_function;	 
+				 
+	u8 gpioA_function;	 
+	u8 gpioG_function;	 
+				 
+	u8 suspend_out_pol;	 
+	u8 enable_wakeup_int;	 
+	u8 intr_cond;		 
+	u8 power_saving_en;	 
 	u8 reserved[10];
 } __packed;
 
 struct ft260_get_i2c_status_report {
-	u8 report;		/* FT260_I2C_STATUS */
-	u8 bus_status;		/* I2C bus status */
-	__le16 clock;		/* I2C bus clock in range 60-3400 KHz */
+	u8 report;		 
+	u8 bus_status;		 
+	__le16 clock;		 
 	u8 reserved;
 } __packed;
 
-/* Feature Out reports */
+ 
 
 struct ft260_set_system_clock_report {
-	u8 report;		/* FT260_SYSTEM_SETTINGS */
-	u8 request;		/* FT260_SET_CLOCK */
-	u8 clock_ctl;		/* 0 - 12MHz, 1 - 24MHz, 2 - 48MHz */
+	u8 report;		 
+	u8 request;		 
+	u8 clock_ctl;		 
 } __packed;
 
 struct ft260_set_i2c_mode_report {
-	u8 report;		/* FT260_SYSTEM_SETTINGS */
-	u8 request;		/* FT260_SET_I2C_MODE */
-	u8 i2c_enable;		/* 0 - disabled, 1 - enabled */
+	u8 report;		 
+	u8 request;		 
+	u8 i2c_enable;		 
 } __packed;
 
 struct ft260_set_uart_mode_report {
-	u8 report;		/* FT260_SYSTEM_SETTINGS */
-	u8 request;		/* FT260_SET_UART_MODE */
-	u8 uart_mode;		/* 0 - OFF; 1 - RTS_CTS, 2 - DTR_DSR, */
-				/* 3 - XON_XOFF, 4 - No flow control */
+	u8 report;		 
+	u8 request;		 
+	u8 uart_mode;		 
+				 
 } __packed;
 
 struct ft260_set_i2c_reset_report {
-	u8 report;		/* FT260_SYSTEM_SETTINGS */
-	u8 request;		/* FT260_SET_I2C_RESET */
+	u8 report;		 
+	u8 request;		 
 } __packed;
 
 struct ft260_set_i2c_speed_report {
-	u8 report;		/* FT260_SYSTEM_SETTINGS */
-	u8 request;		/* FT260_SET_I2C_CLOCK_SPEED */
-	__le16 clock;		/* I2C bus clock in range 60-3400 KHz */
+	u8 report;		 
+	u8 request;		 
+	__le16 clock;		 
 } __packed;
 
-/* Data transfer reports */
+ 
 
 struct ft260_i2c_write_request_report {
-	u8 report;		/* FT260_I2C_REPORT */
-	u8 address;		/* 7-bit I2C address */
-	u8 flag;		/* I2C transaction condition */
-	u8 length;		/* data payload length */
-	u8 data[FT260_WR_DATA_MAX]; /* data payload */
+	u8 report;		 
+	u8 address;		 
+	u8 flag;		 
+	u8 length;		 
+	u8 data[FT260_WR_DATA_MAX];  
 } __packed;
 
 struct ft260_i2c_read_request_report {
-	u8 report;		/* FT260_I2C_READ_REQ */
-	u8 address;		/* 7-bit I2C address */
-	u8 flag;		/* I2C transaction condition */
-	__le16 length;		/* data payload length */
+	u8 report;		 
+	u8 address;		 
+	u8 flag;		 
+	__le16 length;		 
 } __packed;
 
 struct ft260_i2c_input_report {
-	u8 report;		/* FT260_I2C_REPORT */
-	u8 length;		/* data payload length */
-	u8 data[2];		/* data payload */
+	u8 report;		 
+	u8 length;		 
+	u8 data[2];		 
 } __packed;
 
 static const struct hid_device_id ft260_devices[] = {
 	{ HID_USB_DEVICE(USB_VENDOR_ID_FUTURE_TECHNOLOGY,
 			 USB_DEVICE_ID_FT260) },
-	{ /* END OF LIST */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(hid, ft260_devices);
 
@@ -337,11 +315,7 @@ static int ft260_xfer_status(struct ft260_device *dev, u8 bus_busy)
 	if (report.bus_status & (FT260_I2C_STATUS_CTRL_BUSY | bus_busy))
 		return -EAGAIN;
 
-	/*
-	 * The error condition (bit 1) is a status bit reflecting any
-	 * error conditions. When any of the bits 2, 3, or 4 are raised
-	 * to 1, bit 1 is also set to 1.
-	 */
+	 
 	if (report.bus_status & FT260_I2C_STATUS_ERROR) {
 		hid_err(hdev, "i2c bus error: %#02x\n", report.bus_status);
 		return -EIO;
@@ -383,7 +357,7 @@ static int ft260_hid_output_report_check_status(struct ft260_device *dev,
 		return ret;
 	}
 
-	/* transfer time = 1 / clock(KHz) * 9 bits * bytes */
+	 
 	usec = len * 9000 / dev->clock;
 	if (usec > 2000) {
 		usec -= 1500;
@@ -391,11 +365,7 @@ static int ft260_hid_output_report_check_status(struct ft260_device *dev,
 		ft260_dbg("wait %d usec, len %d\n", usec, len);
 	}
 
-	/*
-	 * Do not check the busy bit for combined transactions
-	 * since the controller keeps the bus busy between writing
-	 * and reading IOs to ensure an atomic operation.
-	 */
+	 
 	if (rep->flag == FT260_FLAG_START)
 		bus_busy = 0;
 	else
@@ -566,12 +536,7 @@ ft260_i2c_read_exit:
 	return ret;
 }
 
-/*
- * A random read operation is implemented as a dummy write operation, followed
- * by a current address read operation. The dummy write operation is used to
- * load the target byte address into the current byte address counter, from
- * which the subsequent current address read operation then reads.
- */
+ 
 static int ft260_i2c_write_read(struct ft260_device *dev, struct i2c_msg *msgs)
 {
 	int ret;
@@ -636,7 +601,7 @@ static int ft260_i2c_xfer(struct i2c_adapter *adapter, struct i2c_msg *msgs,
 			goto i2c_exit;
 
 	} else {
-		/* Combined write then read message */
+		 
 		ret = ft260_i2c_write_read(dev, msgs);
 		if (ret < 0)
 			goto i2c_exit;

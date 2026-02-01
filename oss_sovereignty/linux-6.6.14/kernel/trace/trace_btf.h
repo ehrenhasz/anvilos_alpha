@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #include <linux/btf.h>
 
 const struct btf_type *btf_find_func_proto(const char *func_name,

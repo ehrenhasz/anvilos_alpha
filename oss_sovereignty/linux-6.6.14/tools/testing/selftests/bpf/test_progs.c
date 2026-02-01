@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2017 Facebook
- */
+
+ 
 #define _GNU_SOURCE
 #include "test_progs.h"
 #include "testing_helpers.h"
@@ -10,8 +9,8 @@
 #include <sched.h>
 #include <signal.h>
 #include <string.h>
-#include <execinfo.h> /* backtrace */
-#include <sys/sysinfo.h> /* get_nprocs */
+#include <execinfo.h>  
+#include <sys/sysinfo.h>  
 #include <netinet/in.h>
 #include <sys/select.h>
 #include <sys/socket.h>
@@ -28,7 +27,7 @@ static void stdio_hijack_init(char **log_buf, size_t *log_cnt)
 {
 #ifdef __GLIBC__
 	if (verbose() && env.worker_id == -1) {
-		/* nothing to do, output to stdout by default */
+		 
 		return;
 	}
 
@@ -55,7 +54,7 @@ static void stdio_hijack(char **log_buf, size_t *log_cnt)
 {
 #ifdef __GLIBC__
 	if (verbose() && env.worker_id == -1) {
-		/* nothing to do, output to stdout by default */
+		 
 		return;
 	}
 
@@ -70,7 +69,7 @@ static void stdio_restore_cleanup(void)
 {
 #ifdef __GLIBC__
 	if (verbose() && env.worker_id == -1) {
-		/* nothing to do, output to stdout by default */
+		 
 		return;
 	}
 
@@ -92,7 +91,7 @@ static void stdio_restore(void)
 {
 #ifdef __GLIBC__
 	if (verbose() && env.worker_id == -1) {
-		/* nothing to do, output to stdout by default */
+		 
 		return;
 	}
 
@@ -106,7 +105,7 @@ static void stdio_restore(void)
 #endif
 }
 
-/* Adapted from perf/util/string.c */
+ 
 static bool glob_match(const char *str, const char *pat)
 {
 	while (*str && *pat && *pat != '*') {
@@ -115,11 +114,11 @@ static bool glob_match(const char *str, const char *pat)
 		str++;
 		pat++;
 	}
-	/* Check wild card */
+	 
 	if (*pat == '*') {
 		while (*pat == '*')
 			pat++;
-		if (!*pat) /* Tail wild card matches all */
+		if (!*pat)  
 			return true;
 		while (*str)
 			if (glob_match(str++, pat))
@@ -131,7 +130,7 @@ static bool glob_match(const char *str, const char *pat)
 #define EXIT_NO_TEST		2
 #define EXIT_ERR_SETUP_INFRA	3
 
-/* defined in test_progs.h */
+ 
 struct test_env env = {};
 
 struct prog_test_def {
@@ -143,10 +142,7 @@ struct prog_test_def {
 	bool need_cgroup_cleanup;
 };
 
-/* Override C runtime library's usleep() implementation to ensure nanosleep()
- * is always called. Usleep is frequently used in selftests as a way to
- * trigger kprobe and tracepoints.
- */
+ 
 int usleep(useconds_t usec)
 {
 	struct timespec ts = {
@@ -271,9 +267,7 @@ static void print_subtest_name(int test_num, int subtest_num,
 
 static void jsonw_write_log_message(json_writer_t *w, char *log_buf, size_t log_cnt)
 {
-	/* open_memstream (from stdio_hijack_init) ensures that log_bug is terminated by a
-	 * null byte. Yet in parallel mode, log_buf will be NULL if there is no message.
-	 */
+	 
 	if (log_cnt) {
 		jsonw_string_field(w, "message", log_buf);
 	} else {
@@ -296,13 +290,11 @@ static void dump_test_log(const struct prog_test_def *test,
 	bool subtest_filtered;
 	bool print_subtest;
 
-	/* we do not print anything in the worker thread */
+	 
 	if (env.worker_id != -1)
 		return;
 
-	/* there is nothing to print when verbose log is used and execution
-	 * is not in parallel mode
-	 */
+	 
 	if (verbose() && !par_exec_result)
 		return;
 
@@ -358,9 +350,7 @@ static void dump_test_log(const struct prog_test_def *test,
 
 static void stdio_restore(void);
 
-/* A bunch of tests set custom affinity per-thread and/or per-process. Reset
- * it after each test/sub-test.
- */
+ 
 static void reset_affinity(void)
 {
 	cpu_set_t cpuset;
@@ -628,7 +618,7 @@ out:
 	return err;
 }
 
-/* extern declarations for test funcs */
+ 
 #define DEFINE_TEST(name)				\
 	extern void test_##name(void) __weak;		\
 	extern void serial_test_##name(void) __weak;
@@ -857,20 +847,10 @@ static error_t parse_arg(int key, char *arg, struct argp_state *state)
 	return err;
 }
 
-/*
- * Determine if test_progs is running as a "flavored" test runner and switch
- * into corresponding sub-directory to load correct BPF objects.
- *
- * This is done by looking at executable name. If it contains "-flavor"
- * suffix, then we are running as a flavored test runner.
- */
+ 
 int cd_flavor_subdir(const char *exec_name)
 {
-	/* General form of argv[0] passed here is:
-	 * some/path/to/test_progs[-flavor], where -flavor part is optional.
-	 * First cut out "test_progs[-flavor]" part, then extract "flavor"
-	 * part, if it's there.
-	 */
+	 
 	const char *flavor = strrchr(exec_name, '/');
 
 	if (!flavor)
@@ -1084,7 +1064,7 @@ static void run_one_test(int test_num)
 	else if (test->run_serial_test)
 		test->run_serial_test();
 
-	/* ensure last sub-test is finalized properly */
+	 
 	if (env.subtest_state)
 		test__end_subtest();
 
@@ -1170,7 +1150,7 @@ static int dispatch_thread_send_subtests(int sock_fd, struct test_state *state)
 		subtest_state->skipped = msg.subtest_done.skipped;
 		subtest_state->filtered = msg.subtest_done.filtered;
 
-		/* collect all logs */
+		 
 		if (msg.subtest_done.have_log)
 			if (dispatch_thread_read_log(sock_fd,
 						     &subtest_state->log_buf,
@@ -1193,7 +1173,7 @@ static void *dispatch_thread(void *ctx)
 		struct prog_test_def *test;
 		struct test_state *state;
 
-		/* grab a test */
+		 
 		{
 			pthread_mutex_lock(&current_test_lock);
 
@@ -1212,7 +1192,7 @@ static void *dispatch_thread(void *ctx)
 		if (!test->should_run || test->run_serial_test)
 			continue;
 
-		/* run test through worker */
+		 
 		{
 			struct msg msg_do_test;
 
@@ -1226,7 +1206,7 @@ static void *dispatch_thread(void *ctx)
 			env.worker_current_test[data->worker_id] = test_to_run;
 		}
 
-		/* wait for test done */
+		 
 		do {
 			struct msg msg;
 
@@ -1242,7 +1222,7 @@ static void *dispatch_thread(void *ctx)
 			state->sub_succ_cnt = msg.test_done.sub_succ_cnt;
 			state->subtest_num = msg.test_done.subtest_num;
 
-			/* collect all logs */
+			 
 			if (msg.test_done.have_log) {
 				if (dispatch_thread_read_log(sock_fd,
 							     &state->log_buf,
@@ -1250,7 +1230,7 @@ static void *dispatch_thread(void *ctx)
 					goto error;
 			}
 
-			/* collect all subtests and subtest logs */
+			 
 			if (!state->subtest_num)
 				break;
 
@@ -1261,7 +1241,7 @@ static void *dispatch_thread(void *ctx)
 		pthread_mutex_lock(&stdout_output_lock);
 		dump_test_log(test, state, false, true, NULL);
 		pthread_mutex_unlock(&stdout_output_lock);
-	} /* while (true) */
+	}  
 error:
 	if (env.debug)
 		fprintf(stderr, "[%d]: Protocol/IO error: %s.\n", data->worker_id, strerror(errno));
@@ -1317,15 +1297,11 @@ static void calculate_summary_and_print_errors(struct test_env *env)
 		jsonw_start_array(w);
 	}
 
-	/*
-	 * We only print error logs summary when there are failed tests and
-	 * verbose mode is not enabled. Otherwise, results may be incosistent.
-	 *
-	 */
+	 
 	if (!verbose() && fail_cnt) {
 		printf("\nAll error logs:\n");
 
-		/* print error logs again */
+		 
 		for (i = 0; i < prog_test_cnt; i++) {
 			struct prog_test_def *test = &prog_test_defs[i];
 			struct test_state *state = &test_states[i];
@@ -1383,7 +1359,7 @@ static void server_main(void)
 		}
 	}
 
-	/* wait for all dispatcher to finish */
+	 
 	for (i = 0; i < env.workers; i++) {
 		while (true) {
 			int ret = pthread_tryjoin_np(dispatcher_threads[i], NULL);
@@ -1406,7 +1382,7 @@ static void server_main(void)
 	free(env.worker_current_test);
 	free(data);
 
-	/* run serial tests */
+	 
 	save_netns();
 
 	for (int i = 0; i < prog_test_cnt; i++) {
@@ -1418,13 +1394,13 @@ static void server_main(void)
 		run_one_test(i);
 	}
 
-	/* generate summary */
+	 
 	fflush(stderr);
 	fflush(stdout);
 
 	calculate_summary_and_print_errors(&env);
 
-	/* reap all workers */
+	 
 	for (i = 0; i < env.workers; i++) {
 		int wstatus, pid;
 
@@ -1504,7 +1480,7 @@ static int worker_main_send_subtests(int sock, struct test_state *state)
 			goto out;
 		}
 
-		/* send logs */
+		 
 		if (msg.subtest_done.have_log)
 			worker_main_send_log(sock, subtest_state->log_buf, subtest_state->log_cnt);
 
@@ -1524,7 +1500,7 @@ static int worker_main(int sock)
 	save_netns();
 
 	while (true) {
-		/* receive command */
+		 
 		struct msg msg;
 
 		if (recv_message(sock, &msg) < 0)
@@ -1568,7 +1544,7 @@ static int worker_main(int sock)
 				goto out;
 			}
 
-			/* send logs */
+			 
 			if (msg.test_done.have_log)
 				worker_main_send_log(sock, state->log_buf, state->log_cnt);
 
@@ -1588,7 +1564,7 @@ static int worker_main(int sock)
 					test_to_run + 1,
 					test->test_name);
 			break;
-		} /* case MSG_DO_TEST */
+		}  
 		default:
 			if (env.debug)
 				fprintf(stderr, "[%d]: unknown message.\n",  env.worker_id);
@@ -1639,7 +1615,7 @@ int main(int argc, char **argv)
 	if (err)
 		return err;
 
-	/* Use libbpf 1.0 API mode */
+	 
 	libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
 	libbpf_set_print(libbpf_print_fn);
 
@@ -1658,7 +1634,7 @@ int main(int argc, char **argv)
 
 	env.has_testmod = true;
 	if (!env.list_test_names) {
-		/* ensure previous instance of the module is unloaded */
+		 
 		unload_bpf_testmod(verbose());
 
 		if (load_bpf_testmod(verbose())) {
@@ -1667,7 +1643,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	/* initializing tests */
+	 
 	for (i = 0; i < prog_test_cnt; i++) {
 		struct prog_test_def *test = &prog_test_defs[i];
 
@@ -1683,12 +1659,12 @@ int main(int argc, char **argv)
 		}
 	}
 
-	/* ignore workers if we are just listing */
+	 
 	if (env.get_test_cnt || env.list_test_names)
 		env.workers = 0;
 
-	/* launch workers if requested */
-	env.worker_id = -1; /* main process */
+	 
+	env.worker_id = -1;  
 	if (env.workers) {
 		env.worker_pids = calloc(sizeof(__pid_t), env.workers);
 		env.worker_socks = calloc(sizeof(int), env.workers);
@@ -1706,11 +1682,11 @@ int main(int argc, char **argv)
 			if (pid < 0) {
 				perror("Failed to fork worker");
 				return -1;
-			} else if (pid != 0) { /* main process */
+			} else if (pid != 0) {  
 				close(sv[1]);
 				env.worker_pids[i] = pid;
 				env.worker_socks[i] = sv[0];
-			} else { /* inside each worker process */
+			} else {  
 				close(sv[0]);
 				env.worker_id = i;
 				return worker_main(sv[1]);
@@ -1723,9 +1699,9 @@ int main(int argc, char **argv)
 		}
 	}
 
-	/* The rest of the main process */
+	 
 
-	/* on single mode */
+	 
 	save_netns();
 
 	for (i = 0; i < prog_test_cnt; i++) {

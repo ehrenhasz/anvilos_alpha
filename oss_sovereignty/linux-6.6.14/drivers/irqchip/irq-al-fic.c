@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/irq.h>
@@ -13,7 +11,7 @@
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
 
-/* FIC Registers */
+ 
 #define AL_FIC_CAUSE		0x00
 #define AL_FIC_SET_CAUSE	0x08
 #define AL_FIC_MASK		0x10
@@ -79,15 +77,7 @@ static int al_fic_irq_set_type(struct irq_data *data, unsigned int flow_type)
 	new_state = (flow_type & IRQ_TYPE_LEVEL_HIGH) ?
 		AL_FIC_CONFIGURED_LEVEL : AL_FIC_CONFIGURED_RISING_EDGE;
 
-	/*
-	 * A given FIC instance can be either all level or all edge triggered.
-	 * This is generally fixed depending on what pieces of HW it's wired up
-	 * to.
-	 *
-	 * We configure it based on the sensitivity of the first source
-	 * being setup, and reject any subsequent attempt at configuring it in a
-	 * different way.
-	 */
+	 
 	if (fic->state == AL_FIC_UNCONFIGURED) {
 		al_fic_set_trigger(fic, gc, new_state);
 	} else if (fic->state != new_state) {
@@ -181,18 +171,7 @@ err_domain_remove:
 	return ret;
 }
 
-/*
- * al_fic_wire_init() - initialize and configure fic in wire mode
- * @of_node: optional pointer to interrupt controller's device tree node.
- * @base: mmio to fic register
- * @name: name of the fic
- * @parent_irq: interrupt of parent
- *
- * This API will configure the fic hardware to to work in wire mode.
- * In wire mode, fic hardware is generating a wire ("wired") interrupt.
- * Interrupt can be generated based on positive edge or level - configuration is
- * to be determined based on connected hardware to this fic.
- */
+ 
 static struct al_fic *al_fic_wire_init(struct device_node *node,
 				       void __iomem *base,
 				       const char *name,
@@ -210,10 +189,10 @@ static struct al_fic *al_fic_wire_init(struct device_node *node,
 	fic->parent_irq = parent_irq;
 	fic->name = name;
 
-	/* mask out all interrupts */
+	 
 	writel_relaxed(0xFFFFFFFF, fic->base + AL_FIC_MASK);
 
-	/* clear any pending interrupt */
+	 
 	writel_relaxed(0, fic->base + AL_FIC_CAUSE);
 
 	writel_relaxed(control, fic->base + AL_FIC_CONTROL);

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef __I915_GEM_TILING_H__
 #define __I915_GEM_TILING_H__
@@ -17,4 +15,4 @@ u32 i915_gem_fence_size(struct drm_i915_private *i915, u32 size,
 u32 i915_gem_fence_alignment(struct drm_i915_private *i915, u32 size,
 			     unsigned int tiling, unsigned int stride);
 
-#endif /* __I915_GEM_TILING_H__ */
+#endif  

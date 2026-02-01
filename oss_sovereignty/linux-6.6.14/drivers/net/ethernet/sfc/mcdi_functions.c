@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2019 Solarflare Communications Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
- */
+
+ 
 
 #include "net_driver.h"
 #include "efx.h"
@@ -22,7 +15,7 @@ int efx_mcdi_free_vis(struct efx_nic *efx)
 	int rc = efx_mcdi_rpc_quiet(efx, MC_CMD_FREE_VIS, NULL, 0,
 				    outbuf, sizeof(outbuf), &outlen);
 
-	/* -EALREADY means nothing to free, so ignore */
+	 
 	if (rc == -EALREADY)
 		rc = 0;
 	if (rc)
@@ -80,12 +73,12 @@ int efx_mcdi_ev_init(struct efx_channel *channel, bool v1_cut_thru, bool v2)
 	dma_addr_t dma_addr;
 	int rc, i;
 
-	/* Fill event queue with all ones (i.e. empty events) */
+	 
 	memset(channel->eventq.addr, 0xff, channel->eventq.len);
 
 	MCDI_SET_DWORD(inbuf, INIT_EVQ_IN_SIZE, channel->eventq_mask + 1);
 	MCDI_SET_DWORD(inbuf, INIT_EVQ_IN_INSTANCE, channel->channel);
-	/* INIT_EVQ expects index in vector table, not absolute */
+	 
 	MCDI_SET_DWORD(inbuf, INIT_EVQ_IN_IRQ_NUM, channel->channel);
 	MCDI_SET_DWORD(inbuf, INIT_EVQ_IN_TMR_MODE,
 		       MC_CMD_INIT_EVQ_IN_TMR_MODE_DIS);
@@ -96,10 +89,7 @@ int efx_mcdi_ev_init(struct efx_channel *channel, bool v1_cut_thru, bool v2)
 	MCDI_SET_DWORD(inbuf, INIT_EVQ_IN_COUNT_THRSHLD, 0);
 
 	if (v2) {
-		/* Use the new generic approach to specifying event queue
-		 * configuration, requesting lower latency or higher throughput.
-		 * The options that actually get used appear in the output.
-		 */
+		 
 		MCDI_POPULATE_DWORD_2(inbuf, INIT_EVQ_V2_IN_FLAGS,
 				      INIT_EVQ_V2_IN_FLAG_INTERRUPTING, 1,
 				      INIT_EVQ_V2_IN_FLAG_TYPE,
@@ -197,17 +187,9 @@ int efx_mcdi_tx_init(struct efx_tx_queue *tx_queue)
 	do {
 		bool tso_v2 = tx_queue->tso_version == 2;
 
-		/* TSOv2 implies IP header checksum offload for TSO frames,
-		 * so we can safely disable IP header checksum offload for
-		 * everything else.  If we don't have TSOv2, then we have to
-		 * enable IP header checksum offload, which is strictly
-		 * incorrect but better than breaking TSO.
-		 */
+		 
 		MCDI_POPULATE_DWORD_6(inbuf, INIT_TXQ_IN_FLAGS,
-				/* This flag was removed from mcdi_pcol.h for
-				 * the non-_EXT version of INIT_TXQ.  However,
-				 * firmware still honours it.
-				 */
+				 
 				INIT_TXQ_EXT_IN_FLAG_TSOV2_EN, tso_v2,
 				INIT_TXQ_IN_FLAG_IP_CSUM_DIS, !(csum_offload && tso_v2),
 				INIT_TXQ_IN_FLAG_TCP_CSUM_DIS, !csum_offload,
@@ -218,7 +200,7 @@ int efx_mcdi_tx_init(struct efx_tx_queue *tx_queue)
 		rc = efx_mcdi_rpc_quiet(efx, MC_CMD_INIT_TXQ, inbuf, inlen,
 					NULL, 0, NULL);
 		if (rc == -ENOSPC && tso_v2) {
-			/* Retry without TSOv2 if we're short on contexts. */
+			 
 			tx_queue->tso_version = 0;
 			netif_warn(efx, probe, efx->net_dev,
 				   "TSOv2 context not available to segment in "
@@ -359,15 +341,13 @@ int efx_fini_dmaq(struct efx_nic *efx)
 	struct efx_channel *channel;
 	int pending;
 
-	/* If the MC has just rebooted, the TX/RX queues will have already been
-	 * torn down, but efx->active_queues needs to be set to zero.
-	 */
+	 
 	if (efx->must_realloc_vis) {
 		atomic_set(&efx->active_queues, 0);
 		return 0;
 	}
 
-	/* Do not attempt to write to the NIC during EEH recovery */
+	 
 	if (efx->state != STATE_RECOVERY) {
 		efx_for_each_channel(channel, efx) {
 			efx_for_each_channel_rx_queue(rx_queue, channel)

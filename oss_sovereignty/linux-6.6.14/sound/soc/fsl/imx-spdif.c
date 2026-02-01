@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (C) 2013 Freescale Semiconductor, Inc.
+
+
+
 
 #include <linux/module.h>
 #include <linux/of_platform.h>
@@ -32,10 +32,7 @@ static int imx_spdif_audio_probe(struct platform_device *pdev)
 		goto end;
 	}
 
-	/*
-	 * CPU == Platform
-	 * platform is using soc-generic-dmaengine-pcm
-	 */
+	 
 	data->dai.cpus		=
 	data->dai.platforms	= comp;
 	data->dai.codecs	= &asoc_dummy_dlc;
@@ -82,7 +79,7 @@ end:
 
 static const struct of_device_id imx_spdif_dt_ids[] = {
 	{ .compatible = "fsl,imx-audio-spdif", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx_spdif_dt_ids);
 

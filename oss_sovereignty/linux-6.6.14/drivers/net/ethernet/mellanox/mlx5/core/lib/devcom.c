@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2018 Mellanox Technologies */
+
+ 
 
 #include <linux/mlx5/vport.h>
 #include <linux/list.h>
@@ -8,9 +8,9 @@
 
 static LIST_HEAD(devcom_dev_list);
 static LIST_HEAD(devcom_comp_list);
-/* protect device list */
+ 
 static DEFINE_MUTEX(dev_list_lock);
-/* protect component list */
+ 
 static DEFINE_MUTEX(comp_list_lock);
 
 #define devcom_for_each_component(iter) \
@@ -366,9 +366,7 @@ void *mlx5_devcom_get_next_peer_data_rcu(struct mlx5_devcom_comp_dev *devcom,
 
 	list_for_each_entry_continue(tmp, &comp->comp_dev_list_head, list) {
 		if (tmp != devcom) {
-			/* This can change concurrently, however 'data' pointer will remain
-			 * valid for the duration of RCU read section.
-			 */
+			 
 			if (!READ_ONCE(comp->ready))
 				return NULL;
 			data = rcu_dereference(tmp->data);

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/vmalloc.h>
 #include <linux/bitmap.h>
 #include "null_blk.h"
@@ -102,13 +102,13 @@ int null_init_zoned_dev(struct nullb_device *dev, struct request_queue *q)
 			dev->zone_nr_conv);
 	}
 
-	/* Max active zones has to be < nbr of seq zones in order to be enforceable */
+	 
 	if (dev->zone_max_active >= dev->nr_zones - dev->zone_nr_conv) {
 		dev->zone_max_active = 0;
 		pr_info("zone_max_active limit disabled, limit >= zone count\n");
 	}
 
-	/* Max open zones has to be <= max active zones */
+	 
 	if (dev->zone_max_active && dev->zone_max_open > dev->zone_max_active) {
 		dev->zone_max_open = dev->zone_max_active;
 		pr_info("changed the maximum number of open zones to %u\n",
@@ -200,12 +200,7 @@ int null_report_zones(struct gendisk *disk, sector_t sector,
 	memset(&blkz, 0, sizeof(struct blk_zone));
 	zone = &dev->zones[first_zone];
 	for (i = 0; i < nr_zones; i++, zone++) {
-		/*
-		 * Stacked DM target drivers will remap the zone information by
-		 * modifying the zone information passed to the report callback.
-		 * So use a local copy to avoid corruption of the device zone
-		 * array.
-		 */
+		 
 		null_lock_zone(dev, zone);
 		blkz.start = zone->start;
 		blkz.len = zone->len;
@@ -223,10 +218,7 @@ int null_report_zones(struct gendisk *disk, sector_t sector,
 	return nr_zones;
 }
 
-/*
- * This is called in the case of memory backing from null_process_cmd()
- * with the target zone already locked.
- */
+ 
 size_t null_zone_valid_read_len(struct nullb *nullb,
 				sector_t sector, unsigned int len)
 {
@@ -234,7 +226,7 @@ size_t null_zone_valid_read_len(struct nullb *nullb,
 	struct nullb_zone *zone = &dev->zones[null_zone_no(dev, sector)];
 	unsigned int nr_sectors = len >> SECTOR_SHIFT;
 
-	/* Read must be below the write pointer position */
+	 
 	if (zone->type == BLK_ZONE_TYPE_CONVENTIONAL ||
 	    sector + nr_sectors <= zone->wp)
 		return len;
@@ -250,7 +242,7 @@ static blk_status_t __null_close_zone(struct nullb_device *dev,
 {
 	switch (zone->cond) {
 	case BLK_ZONE_COND_CLOSED:
-		/* close operation on closed is not an error */
+		 
 		return BLK_STS_OK;
 	case BLK_ZONE_COND_IMP_OPEN:
 		dev->nr_zones_imp_open--;
@@ -327,19 +319,7 @@ static blk_status_t null_check_open(struct nullb_device *dev)
 	return BLK_STS_ZONE_OPEN_RESOURCE;
 }
 
-/*
- * This function matches the manage open zone resources function in the ZBC standard,
- * with the addition of max active zones support (added in the ZNS standard).
- *
- * The function determines if a zone can transition to implicit open or explicit open,
- * while maintaining the max open zone (and max active zone) limit(s). It may close an
- * implicit open zone in order to make additional zone resources available.
- *
- * ZBC states that an implicit open zone shall be closed only if there is not
- * room within the open limit. However, with the addition of an active limit,
- * it is not certain that closing an implicit open zone will allow a new zone
- * to be opened, since we might already be at the active limit capacity.
- */
+ 
 static blk_status_t null_check_zone_resources(struct nullb_device *dev,
 					      struct nullb_zone *zone)
 {
@@ -354,7 +334,7 @@ static blk_status_t null_check_zone_resources(struct nullb_device *dev,
 	case BLK_ZONE_COND_CLOSED:
 		return null_check_open(dev);
 	default:
-		/* Should never be called for other states */
+		 
 		WARN_ON(1);
 		return BLK_STS_IOERR;
 	}
@@ -381,17 +361,12 @@ static blk_status_t null_zone_write(struct nullb_cmd *cmd, sector_t sector,
 	if (zone->cond == BLK_ZONE_COND_FULL ||
 	    zone->cond == BLK_ZONE_COND_READONLY ||
 	    zone->cond == BLK_ZONE_COND_OFFLINE) {
-		/* Cannot write to the zone */
+		 
 		ret = BLK_STS_IOERR;
 		goto unlock;
 	}
 
-	/*
-	 * Regular writes must be at the write pointer position.
-	 * Zone append writes are automatically issued at the write
-	 * pointer and the position returned using the request or BIO
-	 * sector.
-	 */
+	 
 	if (append) {
 		sector = zone->wp;
 		if (dev->queue_mode == NULL_Q_MQ)
@@ -465,7 +440,7 @@ static blk_status_t null_open_zone(struct nullb_device *dev,
 
 	switch (zone->cond) {
 	case BLK_ZONE_COND_EXP_OPEN:
-		/* open operation on exp open is not an error */
+		 
 		goto unlock;
 	case BLK_ZONE_COND_EMPTY:
 		ret = null_check_zone_resources(dev, zone);
@@ -523,7 +498,7 @@ static blk_status_t null_finish_zone(struct nullb_device *dev,
 
 	switch (zone->cond) {
 	case BLK_ZONE_COND_FULL:
-		/* finish operation on full is not an error */
+		 
 		goto unlock;
 	case BLK_ZONE_COND_EMPTY:
 		ret = null_check_zone_resources(dev, zone);
@@ -566,7 +541,7 @@ static blk_status_t null_reset_zone(struct nullb_device *dev,
 
 	switch (zone->cond) {
 	case BLK_ZONE_COND_EMPTY:
-		/* reset operation on empty is not an error */
+		 
 		null_unlock_zone_res(dev);
 		return BLK_STS_OK;
 	case BLK_ZONE_COND_IMP_OPEN:
@@ -689,9 +664,7 @@ blk_status_t null_process_zoned_cmd(struct nullb_cmd *cmd, enum req_op op,
 	}
 }
 
-/*
- * Set a zone in the read-only or offline condition.
- */
+ 
 static void null_set_zone_cond(struct nullb_device *dev,
 			       struct nullb_zone *zone, enum blk_zone_cond cond)
 {
@@ -701,13 +674,7 @@ static void null_set_zone_cond(struct nullb_device *dev,
 
 	null_lock_zone(dev, zone);
 
-	/*
-	 * If the read-only condition is requested again to zones already in
-	 * read-only condition, restore back normal empty condition. Do the same
-	 * if the offline condition is requested for offline zones. Otherwise,
-	 * set the specified zone condition to the zones. Finish the zones
-	 * beforehand to free up zone resources.
-	 */
+	 
 	if (zone->cond == cond) {
 		zone->cond = BLK_ZONE_COND_EMPTY;
 		zone->wp = zone->start;
@@ -724,10 +691,7 @@ static void null_set_zone_cond(struct nullb_device *dev,
 	null_unlock_zone(dev, zone);
 }
 
-/*
- * Identify a zone from the sector written to configfs file. Then set zone
- * condition to the zone.
- */
+ 
 ssize_t zone_cond_store(struct nullb_device *dev, const char *page,
 			size_t count, enum blk_zone_cond cond)
 {

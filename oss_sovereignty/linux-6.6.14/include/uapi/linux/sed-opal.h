@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- * Copyright © 2016 Intel Corporation
- *
- * Authors:
- *    Rafael Antognolli <rafael.antognolli@intel.com>
- *    Scott  Bauer      <scott.bauer@intel.com>
- */
+ 
+ 
 
 #ifndef _UAPI_SED_OPAL_H
 #define _UAPI_SED_OPAL_H
@@ -39,19 +33,19 @@ enum opal_user {
 };
 
 enum opal_lock_state {
-	OPAL_RO = 0x01, /* 0001 */
-	OPAL_RW = 0x02, /* 0010 */
-	OPAL_LK = 0x04, /* 0100 */
+	OPAL_RO = 0x01,  
+	OPAL_RW = 0x02,  
+	OPAL_LK = 0x04,  
 };
 
 enum opal_lock_flags {
-	/* IOC_OPAL_SAVE will also store the provided key for locking */
+	 
 	OPAL_SAVE_FOR_LOCK = 0x01,
 };
 
 enum opal_key_type {
-	OPAL_INCLUDED = 0,	/* key[] is the key */
-	OPAL_KEYRING,		/* key is in keyring */
+	OPAL_INCLUDED = 0,	 
+	OPAL_KEYRING,		 
 };
 
 struct opal_key {
@@ -71,7 +65,7 @@ struct opal_lr_act {
 	__u32 sum;
 	__u8 num_lrs;
 	__u8 lr[OPAL_MAX_LRS];
-	__u8 align[2]; /* Align to 8 byte boundary */
+	__u8 align[2];  
 };
 
 struct opal_session_info {
@@ -83,8 +77,8 @@ struct opal_session_info {
 struct opal_user_lr_setup {
 	__u64 range_start;
 	__u64 range_length;
-	__u32 RLE; /* Read Lock enabled */
-	__u32 WLE; /* Write Lock Enabled */
+	__u32 RLE;  
+	__u32 WLE;  
 	struct opal_session_info session;
 };
 
@@ -92,8 +86,8 @@ struct opal_lr_status {
 	struct opal_session_info session;
 	__u64 range_start;
 	__u64 range_length;
-	__u32 RLE; /* Read Lock enabled */
-	__u32 WLE; /* Write Lock Enabled */
+	__u32 RLE;  
+	__u32 WLE;  
 	__u32 l_state;
 	__u8  align[4];
 };
@@ -108,15 +102,7 @@ struct opal_lock_unlock {
 struct opal_new_pw {
 	struct opal_session_info session;
 
-	/* When we're not operating in sum, and we first set
-	 * passwords we need to set them via ADMIN authority.
-	 * After passwords are changed, we can set them via,
-	 * User authorities.
-	 * Because of this restriction we need to know about
-	 * Two different users. One in 'session' which we will use
-	 * to start the session and new_userr_pw as the user we're
-	 * chaning the pw for.
-	 */
+	 
 	struct opal_session_info new_user_pw;
 };
 
@@ -139,7 +125,7 @@ struct opal_shadow_mbr {
 	__u64 size;
 };
 
-/* Opal table operations */
+ 
 enum opal_table_ops {
 	OPAL_READ_TABLE,
 	OPAL_WRITE_TABLE,
@@ -171,10 +157,7 @@ struct opal_status {
 	__u32 reserved;
 };
 
-/*
- * Geometry Reporting per TCG Storage OPAL SSC
- * section 3.1.1.4
- */
+ 
 struct opal_geometry {
 	__u8 align;
 	__u32 logical_block_size;
@@ -216,4 +199,4 @@ struct opal_revert_lsp {
 #define IOC_OPAL_DISCOVERY          _IOW('p', 239, struct opal_discovery)
 #define IOC_OPAL_REVERT_LSP         _IOW('p', 240, struct opal_revert_lsp)
 
-#endif /* _UAPI_SED_OPAL_H */
+#endif  

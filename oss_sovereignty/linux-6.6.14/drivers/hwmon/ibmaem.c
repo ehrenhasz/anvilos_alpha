@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * A hwmon driver for the IBM System Director Active Energy Manager (AEM)
- * temperature/power/energy sensors and capping functionality.
- * Copyright (C) 2008 IBM
- *
- * Author: Darrick J. Wong <darrick.wong@oracle.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -60,9 +54,9 @@
 #define AEM1_NUM_ENERGY_REGS	1
 #define AEM1_NUM_SENSORS	3
 
-/* AEM 2.x has more energy registers */
+ 
 #define AEM_NUM_ENERGY_REGS	AEM2_NUM_ENERGY_REGS
-/* AEM 2.x needs more sensor files */
+ 
 #define AEM_NUM_SENSORS		AEM2_NUM_SENSORS
 
 #define POWER_CAP		0
@@ -128,49 +122,38 @@ struct aem_data {
 	struct platform_device	*pdev;
 	struct mutex		lock;
 	bool			valid;
-	unsigned long		last_updated;	/* In jiffies */
+	unsigned long		last_updated;	 
 	u8			ver_major;
 	u8			ver_minor;
 	u8			module_handle;
 	int			id;
 	struct aem_ipmi_data	ipmi;
 
-	/* Function and buffer to update sensors */
+	 
 	void (*update)(struct aem_data *data);
 	struct aem_read_sensor_resp *rs_resp;
 
-	/*
-	 * AEM 1.x sensors:
-	 * Available sensors:
-	 * Energy meter
-	 * Power meter
-	 *
-	 * AEM 2.x sensors:
-	 * Two energy meters
-	 * Two power meters
-	 * Two temperature sensors
-	 * Six power cap registers
-	 */
+	 
 
-	/* sysfs attrs */
+	 
 	struct sensor_device_attribute	sensors[AEM_NUM_SENSORS];
 
-	/* energy use in mJ */
+	 
 	u64			energy[AEM_NUM_ENERGY_REGS];
 
-	/* power sampling interval in ms */
+	 
 	unsigned long		power_period[AEM_NUM_ENERGY_REGS];
 
-	/* Everything past here is for AEM2 only */
+	 
 
-	/* power caps in dW */
+	 
 	u16			pcap[AEM2_NUM_PCAP_REGS];
 
-	/* exhaust temperature in C */
+	 
 	u8			temp[AEM2_NUM_TEMP_REGS];
 };
 
-/* Data structures returned by the AEM firmware */
+ 
 struct aem_iana_id {
 	u8			bytes[3];
 };
@@ -178,7 +161,7 @@ static struct aem_iana_id system_x_id = {
 	.bytes = {0x4D, 0x4F, 0x00}
 };
 
-/* These are used to find AEM1 instances */
+ 
 struct aem_find_firmware_req {
 	struct aem_iana_id	id;
 	u8			rsvd;
@@ -191,7 +174,7 @@ struct aem_find_firmware_resp {
 	u8			num_instances;
 } __packed;
 
-/* These are used to find AEM2 instances */
+ 
 struct aem_find_instance_req {
 	struct aem_iana_id	id;
 	u8			instance_number;
@@ -207,7 +190,7 @@ struct aem_find_instance_resp {
 	u16			record_id;
 } __packed;
 
-/* These are used to query sensors */
+ 
 struct aem_read_sensor_req {
 	struct aem_iana_id	id;
 	u8			module_handle;
@@ -222,7 +205,7 @@ struct aem_read_sensor_resp {
 	u8			bytes[];
 } __packed;
 
-/* Data structures to talk to the IPMI layer */
+ 
 struct aem_driver_data {
 	struct list_head	aem_devices;
 	struct ipmi_smi_watcher	bmc_events;
@@ -251,9 +234,9 @@ static struct aem_driver_data driver_data = {
 	},
 };
 
-/* Functions to talk to the IPMI layer */
+ 
 
-/* Initialize IPMI address, message buffers and user data */
+ 
 static int aem_init_ipmi_data(struct aem_ipmi_data *data, int iface,
 			      struct device *bmc)
 {
@@ -262,17 +245,17 @@ static int aem_init_ipmi_data(struct aem_ipmi_data *data, int iface,
 	init_completion(&data->read_complete);
 	data->bmc_device = bmc;
 
-	/* Initialize IPMI address */
+	 
 	data->address.addr_type = IPMI_SYSTEM_INTERFACE_ADDR_TYPE;
 	data->address.channel = IPMI_BMC_CHANNEL;
 	data->address.data[0] = 0;
 	data->interface = iface;
 
-	/* Initialize message buffers */
+	 
 	data->tx_msgid = 0;
 	data->tx_message.netfn = AEM_NETFN;
 
-	/* Create IPMI messaging interface user */
+	 
 	err = ipmi_create_user(data->interface, &driver_data.ipmi_hndlrs,
 			       data, &data->user);
 	if (err < 0) {
@@ -285,7 +268,7 @@ static int aem_init_ipmi_data(struct aem_ipmi_data *data, int iface,
 	return 0;
 }
 
-/* Send an IPMI command */
+ 
 static int aem_send_message(struct aem_ipmi_data *data)
 {
 	int err;
@@ -309,7 +292,7 @@ out:
 	return err;
 }
 
-/* Dispatch IPMI messages to callers */
+ 
 static void aem_msg_handler(struct ipmi_recv_msg *msg, void *user_msg_data)
 {
 	unsigned short rx_len;
@@ -343,19 +326,19 @@ static void aem_msg_handler(struct ipmi_recv_msg *msg, void *user_msg_data)
 	complete(&data->read_complete);
 }
 
-/* Sensor support functions */
+ 
 
-/* Read a sensor value; must be called with data->lock held */
+ 
 static int aem_read_sensor(struct aem_data *data, u8 elt, u8 reg,
 			   void *buf, size_t size)
 {
 	int rs_size, res;
 	struct aem_read_sensor_req rs_req;
-	/* Use preallocated rx buffer */
+	 
 	struct aem_read_sensor_resp *rs_resp = data->rs_resp;
 	struct aem_ipmi_data *ipmi = &data->ipmi;
 
-	/* AEM registers are 1, 2, 4 or 8 bytes */
+	 
 	switch (size) {
 	case 1:
 	case 2:
@@ -423,7 +406,7 @@ out:
 	return res;
 }
 
-/* Update AEM energy registers */
+ 
 static void update_aem_energy_one(struct aem_data *data, int which)
 {
 	aem_read_sensor(data, AEM_ENERGY_ELEMENT, which,
@@ -438,7 +421,7 @@ static void update_aem_energy(struct aem_data *data)
 	update_aem_energy_one(data, 1);
 }
 
-/* Update all AEM1 sensors */
+ 
 static void update_aem1_sensors(struct aem_data *data)
 {
 	mutex_lock(&data->lock);
@@ -451,7 +434,7 @@ out:
 	mutex_unlock(&data->lock);
 }
 
-/* Update all AEM2 sensors */
+ 
 static void update_aem2_sensors(struct aem_data *data)
 {
 	int i;
@@ -472,7 +455,7 @@ out:
 	mutex_unlock(&data->lock);
 }
 
-/* Delete an AEM instance */
+ 
 static void aem_delete(struct aem_data *data)
 {
 	list_del(&data->list);
@@ -486,9 +469,9 @@ static void aem_delete(struct aem_data *data)
 	kfree(data);
 }
 
-/* Probe functions for AEM1 devices */
+ 
 
-/* Retrieve version and module handle for an AEM1 instance */
+ 
 static int aem_find_aem1_count(struct aem_ipmi_data *data)
 {
 	int res;
@@ -519,7 +502,7 @@ static int aem_find_aem1_count(struct aem_ipmi_data *data)
 	return ff_resp.num_instances;
 }
 
-/* Find and initialize one AEM1 instance */
+ 
 static int aem_init_aem1_inst(struct aem_ipmi_data *probe, u8 module_handle)
 {
 	struct aem_data *data;
@@ -531,14 +514,14 @@ static int aem_init_aem1_inst(struct aem_ipmi_data *probe, u8 module_handle)
 		return res;
 	mutex_init(&data->lock);
 
-	/* Copy instance data */
+	 
 	data->ver_major = 1;
 	data->ver_minor = 0;
 	data->module_handle = module_handle;
 	for (i = 0; i < AEM1_NUM_ENERGY_REGS; i++)
 		data->power_period[i] = AEM_DEFAULT_POWER_INTERVAL;
 
-	/* Create sub-device for this fw instance */
+	 
 	data->id = ida_alloc(&aem_ida, GFP_KERNEL);
 	if (data->id < 0)
 		goto id_err;
@@ -554,13 +537,13 @@ static int aem_init_aem1_inst(struct aem_ipmi_data *probe, u8 module_handle)
 
 	platform_set_drvdata(data->pdev, data);
 
-	/* Set up IPMI interface */
+	 
 	res = aem_init_ipmi_data(&data->ipmi, probe->interface,
 				 probe->bmc_device);
 	if (res)
 		goto ipmi_err;
 
-	/* Register with hwmon */
+	 
 	data->hwmon_dev = hwmon_device_register(&data->pdev->dev);
 	if (IS_ERR(data->hwmon_dev)) {
 		dev_err(&data->pdev->dev,
@@ -577,12 +560,12 @@ static int aem_init_aem1_inst(struct aem_ipmi_data *probe, u8 module_handle)
 		goto alloc_resp_err;
 	}
 
-	/* Find sensors */
+	 
 	res = aem1_find_sensors(data);
 	if (res)
 		goto sensor_err;
 
-	/* Add to our list of AEM devices */
+	 
 	list_add_tail(&data->list, &driver_data.aem_devices);
 
 	dev_info(data->ipmi.bmc_device, "Found AEM v%d.%d at 0x%X\n",
@@ -609,7 +592,7 @@ id_err:
 	return res;
 }
 
-/* Find and initialize all AEM1 instances */
+ 
 static void aem_init_aem1(struct aem_ipmi_data *probe)
 {
 	int num, i, err;
@@ -625,9 +608,9 @@ static void aem_init_aem1(struct aem_ipmi_data *probe)
 	}
 }
 
-/* Probe functions for AEM2 devices */
+ 
 
-/* Retrieve version and module handle for an AEM2 instance */
+ 
 static int aem_find_aem2(struct aem_ipmi_data *data,
 			    struct aem_find_instance_resp *fi_resp,
 			    int instance_num)
@@ -660,7 +643,7 @@ static int aem_find_aem2(struct aem_ipmi_data *data,
 	return 0;
 }
 
-/* Find and initialize one AEM2 instance */
+ 
 static int aem_init_aem2_inst(struct aem_ipmi_data *probe,
 			      struct aem_find_instance_resp *fi_resp)
 {
@@ -673,14 +656,14 @@ static int aem_init_aem2_inst(struct aem_ipmi_data *probe,
 		return res;
 	mutex_init(&data->lock);
 
-	/* Copy instance data */
+	 
 	data->ver_major = fi_resp->major;
 	data->ver_minor = fi_resp->minor;
 	data->module_handle = fi_resp->module_handle;
 	for (i = 0; i < AEM2_NUM_ENERGY_REGS; i++)
 		data->power_period[i] = AEM_DEFAULT_POWER_INTERVAL;
 
-	/* Create sub-device for this fw instance */
+	 
 	data->id = ida_alloc(&aem_ida, GFP_KERNEL);
 	if (data->id < 0)
 		goto id_err;
@@ -696,13 +679,13 @@ static int aem_init_aem2_inst(struct aem_ipmi_data *probe,
 
 	platform_set_drvdata(data->pdev, data);
 
-	/* Set up IPMI interface */
+	 
 	res = aem_init_ipmi_data(&data->ipmi, probe->interface,
 				 probe->bmc_device);
 	if (res)
 		goto ipmi_err;
 
-	/* Register with hwmon */
+	 
 	data->hwmon_dev = hwmon_device_register(&data->pdev->dev);
 	if (IS_ERR(data->hwmon_dev)) {
 		dev_err(&data->pdev->dev,
@@ -719,12 +702,12 @@ static int aem_init_aem2_inst(struct aem_ipmi_data *probe,
 		goto alloc_resp_err;
 	}
 
-	/* Find sensors */
+	 
 	res = aem2_find_sensors(data);
 	if (res)
 		goto sensor_err;
 
-	/* Add to our list of AEM devices */
+	 
 	list_add_tail(&data->list, &driver_data.aem_devices);
 
 	dev_info(data->ipmi.bmc_device, "Found AEM v%d.%d at 0x%X\n",
@@ -751,7 +734,7 @@ id_err:
 	return res;
 }
 
-/* Find and initialize all AEM2 instances */
+ 
 static void aem_init_aem2(struct aem_ipmi_data *probe)
 {
 	struct aem_find_instance_resp fi_resp;
@@ -776,7 +759,7 @@ static void aem_init_aem2(struct aem_ipmi_data *probe)
 	}
 }
 
-/* Probe a BMC for AEM firmware instances */
+ 
 static void aem_register_bmc(int iface, struct device *dev)
 {
 	struct aem_ipmi_data probe;
@@ -784,14 +767,14 @@ static void aem_register_bmc(int iface, struct device *dev)
 	if (aem_init_ipmi_data(&probe, iface, dev))
 		return;
 
-	/* Ignore probe errors; they won't cause problems */
+	 
 	aem_init_aem1(&probe);
 	aem_init_aem2(&probe);
 
 	ipmi_destroy_user(probe.user);
 }
 
-/* Handle BMC deletion */
+ 
 static void aem_bmc_gone(int iface)
 {
 	struct aem_data *p1, *next1;
@@ -801,9 +784,9 @@ static void aem_bmc_gone(int iface)
 			aem_delete(p1);
 }
 
-/* sysfs support functions */
+ 
 
-/* AEM device name */
+ 
 static ssize_t name_show(struct device *dev, struct device_attribute *devattr,
 			 char *buf)
 {
@@ -813,7 +796,7 @@ static ssize_t name_show(struct device *dev, struct device_attribute *devattr,
 }
 static SENSOR_DEVICE_ATTR_RO(name, name, 0);
 
-/* AEM device version */
+ 
 static ssize_t version_show(struct device *dev,
 			    struct device_attribute *devattr, char *buf)
 {
@@ -823,7 +806,7 @@ static ssize_t version_show(struct device *dev,
 }
 static SENSOR_DEVICE_ATTR_RO(version, version, 0);
 
-/* Display power use */
+ 
 static ssize_t aem_show_power(struct device *dev,
 			      struct device_attribute *devattr,
 			      char *buf)
@@ -857,7 +840,7 @@ static ssize_t aem_show_power(struct device *dev,
 		(unsigned long long)div64_u64(delta * NSEC_PER_SEC, time));
 }
 
-/* Display energy use */
+ 
 static ssize_t aem_show_energy(struct device *dev,
 			       struct device_attribute *devattr,
 			       char *buf)
@@ -872,7 +855,7 @@ static ssize_t aem_show_energy(struct device *dev,
 			(unsigned long long)a->energy[attr->index] * 1000);
 }
 
-/* Display power interval registers */
+ 
 static ssize_t aem_show_power_period(struct device *dev,
 				     struct device_attribute *devattr,
 				     char *buf)
@@ -884,7 +867,7 @@ static ssize_t aem_show_power_period(struct device *dev,
 	return sprintf(buf, "%lu\n", a->power_period[attr->index]);
 }
 
-/* Set power interval registers */
+ 
 static ssize_t aem_set_power_period(struct device *dev,
 				    struct device_attribute *devattr,
 				    const char *buf, size_t count)
@@ -908,7 +891,7 @@ static ssize_t aem_set_power_period(struct device *dev,
 	return count;
 }
 
-/* Discover sensors on an AEM device */
+ 
 static int aem_register_sensors(struct aem_data *data,
 				const struct aem_ro_sensor_template *ro,
 				const struct aem_rw_sensor_template *rw)
@@ -917,7 +900,7 @@ static int aem_register_sensors(struct aem_data *data,
 	struct sensor_device_attribute *sensors = data->sensors;
 	int err;
 
-	/* Set up read-only sensors */
+	 
 	while (ro->label) {
 		sysfs_attr_init(&sensors->dev_attr.attr);
 		sensors->dev_attr.attr.name = ro->label;
@@ -934,7 +917,7 @@ static int aem_register_sensors(struct aem_data *data,
 		ro++;
 	}
 
-	/* Set up read-write sensors */
+	 
 	while (rw->label) {
 		sysfs_attr_init(&sensors->dev_attr.attr);
 		sensors->dev_attr.attr.name = rw->label;
@@ -963,9 +946,9 @@ error:
 	return err;
 }
 
-/* sysfs support functions for AEM2 sensors */
+ 
 
-/* Display temperature use */
+ 
 static ssize_t aem2_show_temp(struct device *dev,
 			      struct device_attribute *devattr,
 			      char *buf)
@@ -977,7 +960,7 @@ static ssize_t aem2_show_temp(struct device *dev,
 	return sprintf(buf, "%u\n", a->temp[attr->index] * 1000);
 }
 
-/* Display power-capping registers */
+ 
 static ssize_t aem2_show_pcap_value(struct device *dev,
 				    struct device_attribute *devattr,
 				    char *buf)
@@ -989,7 +972,7 @@ static ssize_t aem2_show_pcap_value(struct device *dev,
 	return sprintf(buf, "%u\n", a->pcap[attr->index] * 100000);
 }
 
-/* Remove sensors attached to an AEM device */
+ 
 static void aem_remove_sensors(struct aem_data *data)
 {
 	int i;
@@ -1007,9 +990,9 @@ static void aem_remove_sensors(struct aem_data *data)
 			   &sensor_dev_attr_version.dev_attr);
 }
 
-/* Sensor probe functions */
+ 
 
-/* Description of AEM1 sensors */
+ 
 static const struct aem_ro_sensor_template aem1_ro_sensors[] = {
 {"energy1_input",  aem_show_energy, 0},
 {"power1_average", aem_show_power,  0},
@@ -1021,7 +1004,7 @@ static const struct aem_rw_sensor_template aem1_rw_sensors[] = {
 {NULL,			    NULL,                  NULL,                 0},
 };
 
-/* Description of AEM2 sensors */
+ 
 static const struct aem_ro_sensor_template aem2_ro_sensors[] = {
 {"energy1_input",	  aem_show_energy,	0},
 {"energy2_input",	  aem_show_energy,	1},
@@ -1046,19 +1029,19 @@ static const struct aem_rw_sensor_template aem2_rw_sensors[] = {
 {NULL,			    NULL,                  NULL,                 0},
 };
 
-/* Set up AEM1 sensor attrs */
+ 
 static int aem1_find_sensors(struct aem_data *data)
 {
 	return aem_register_sensors(data, aem1_ro_sensors, aem1_rw_sensors);
 }
 
-/* Set up AEM2 sensor attrs */
+ 
 static int aem2_find_sensors(struct aem_data *data)
 {
 	return aem_register_sensors(data, aem2_ro_sensors, aem2_rw_sensors);
 }
 
-/* Module init/exit routines */
+ 
 
 static int __init aem_init(void)
 {

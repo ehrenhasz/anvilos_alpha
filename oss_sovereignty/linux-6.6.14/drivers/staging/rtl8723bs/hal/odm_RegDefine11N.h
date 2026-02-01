@@ -1,15 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 
 #ifndef	__ODM_REGDEFINE11N_H__
 #define __ODM_REGDEFINE11N_H__
 
 
-/* 2 RF REG LIST */
+ 
 #define	ODM_REG_RF_MODE_11N				0x00
 #define	ODM_REG_RF_0B_11N				0x0B
 #define	ODM_REG_CHNBW_11N				0x18
@@ -23,8 +19,8 @@
 #define	ODM_REG_T_METER_92D_11N			0x42
 #define	ODM_REG_T_METER_88E_11N			0x42
 
-/* 2 BB REG LIST */
-/* PAGE 8 */
+ 
+ 
 #define	ODM_REG_BB_CTRL_11N				0x800
 #define	ODM_REG_RF_PIN_11N				0x804
 #define	ODM_REG_PSD_CTRL_11N				0x808
@@ -48,11 +44,11 @@
 #define	ODM_REG_NHM_TH3_TO_TH0_11N		0x898
 #define	ODM_REG_NHM_TH7_TO_TH4_11N		0x89c
 #define	ODM_REG_NHM_CNT_11N				0x8d8
-/* PAGE 9 */
+ 
 #define	ODM_REG_DBG_RPT_11N				0x908
 #define	ODM_REG_ANT_MAPPING1_11N		0x914
 #define	ODM_REG_ANT_MAPPING2_11N		0x918
-/* PAGE A */
+ 
 #define	ODM_REG_CCK_ANTDIV_PARA1_11N	0xA00
 #define	ODM_REG_CCK_CCA_11N				0xA0A
 #define	ODM_REG_CCK_ANTDIV_PARA2_11N	0xA0C
@@ -71,13 +67,13 @@
 #define	ODM_REG_CCK_FA_LSB_11N			0xA5C
 #define	ODM_REG_CCK_CCA_CNT_11N			0xA60
 #define	ODM_REG_BB_PWR_SAV4_11N		0xA74
-/* PAGE B */
+ 
 #define	ODM_REG_LNA_SWITCH_11N			0xB2C
 #define	ODM_REG_PATH_SWITCH_11N			0xB30
 #define	ODM_REG_RSSI_CTRL_11N			0xB38
 #define	ODM_REG_CONFIG_ANTA_11N			0xB68
 #define	ODM_REG_RSSI_BT_11N				0xB9C
-/* PAGE C */
+ 
 #define	ODM_REG_OFDM_FA_HOLDC_11N		0xC00
 #define	ODM_REG_BB_RX_PATH_11N			0xC04
 #define	ODM_REG_TRMUX_11N				0xC08
@@ -98,14 +94,14 @@
 #define	ODM_REG_RXIQK_MATRIX_LSB_11N	0xCA0
 #define	ODM_REG_ANTDIV_PARA1_11N		0xCA4
 #define	ODM_REG_OFDM_FA_TYPE1_11N		0xCF0
-/* PAGE D */
+ 
 #define	ODM_REG_OFDM_FA_RSTD_11N		0xD00
 #define	ODM_REG_BB_ATC_11N				0xD2C
 #define	ODM_REG_OFDM_FA_TYPE2_11N		0xDA0
 #define	ODM_REG_OFDM_FA_TYPE3_11N		0xDA4
 #define	ODM_REG_OFDM_FA_TYPE4_11N		0xDA8
 #define	ODM_REG_RPT_11N					0xDF4
-/* PAGE E */
+ 
 #define	ODM_REG_TXAGC_A_6_18_11N		0xE00
 #define	ODM_REG_TXAGC_A_24_54_11N		0xE04
 #define	ODM_REG_TXAGC_A_1_MCS32_11N	0xE08
@@ -138,7 +134,7 @@
 #define	ODM_REG_IGI_C_11N					0xF84
 #define	ODM_REG_IGI_D_11N					0xF88
 
-/* 2 MAC REG LIST */
+ 
 #define	ODM_REG_BB_RST_11N				0x02
 #define	ODM_REG_ANTSEL_PIN_11N			0x4C
 #define	ODM_REG_EARLY_MODE_11N			0x4D0
@@ -153,7 +149,7 @@
 #define	ODM_REG_ANT_TRAIN_PARA2_11N		0x7b4
 
 
-/* DIG Related */
+ 
 #define	ODM_BIT_IGI_11N					0x0000007F
 #define	ODM_BIT_CCK_RPT_FORMAT_11N		BIT9
 #define	ODM_BIT_BB_RX_PATH_11N			0xF

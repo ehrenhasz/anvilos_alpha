@@ -1,15 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Linux network driver for QLogic BR-series Converged Network Adapter.
- */
-/*
- * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
- * Copyright (c) 2014-2015 QLogic Corporation
- * All rights reserved
- * www.qlogic.com
- */
 
-/* MSGQ module source file. */
+ 
+ 
+
+ 
 
 #include "bfi.h"
 #include "bfa_msgq.h"
@@ -75,7 +68,7 @@ cmdq_sm_stopped(struct bfa_msgq_cmdq *cmdq, enum cmdq_event event)
 
 	case CMDQ_E_STOP:
 	case CMDQ_E_FAIL:
-		/* No-op */
+		 
 		break;
 
 	case CMDQ_E_POST:
@@ -231,7 +224,7 @@ bfa_msgq_cmdq_ci_update(struct bfa_msgq_cmdq *cmdq, struct bfi_mbmsg *mb)
 
 	cmdq->consumer_index = ntohs(dbell->idx.cmdq_ci);
 
-	/* Walk through pending list to see if the command can be posted */
+	 
 	while (!list_empty(&cmdq->pending_q)) {
 		cmd = list_first_entry(&cmdq->pending_q,
 				       struct bfa_msgq_cmd_entry, qe);
@@ -342,7 +335,7 @@ rspq_sm_stopped(struct bfa_msgq_rspq *rspq, enum rspq_event event)
 
 	case RSPQ_E_STOP:
 	case RSPQ_E_FAIL:
-		/* No-op */
+		 
 		break;
 
 	default:

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* eBPF example program:
- *
- * - Loads eBPF program
- *
- *   The eBPF program loads a filter from file and attaches the
- *   program to a cgroup using BPF_PROG_ATTACH
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -67,7 +61,7 @@ int main(int argc, char **argv)
 		goto cleanup;
 	}
 
-	/* load BPF program */
+	 
 	if (bpf_object__load(obj)) {
 		printf("ERROR: loading BPF object file failed\n");
 		goto cleanup;

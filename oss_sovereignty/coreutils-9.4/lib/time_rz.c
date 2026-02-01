@@ -1,26 +1,6 @@
-/* Time zone functions such as tzalloc and localtime_rz
+ 
 
-   Copyright 2015-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation, either version 3 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Paul Eggert.  */
-
-/* Although this module is not thread-safe, any races should be fairly
-   rare and reasonably benign.  For complete thread-safety, use a C
-   library with a working timezone_t type, so that this module is not
-   needed.  */
+ 
 
 #include <config.h>
 
@@ -35,23 +15,16 @@
 #include "idx.h"
 #include "time-internal.h"
 
-/* The approximate size to use for small allocation requests.  This is
-   the largest "small" request for the GNU C library malloc.  */
+ 
 enum { DEFAULT_MXFAST = 64 * sizeof (size_t) / 4 };
 
-/* Minimum size of the ABBRS member of struct tm_zone.  ABBRS is larger
-   only in the unlikely case where an abbreviation longer than this is
-   used.  */
+ 
 enum { ABBR_SIZE_MIN = DEFAULT_MXFAST - offsetof (struct tm_zone, abbrs) };
 
-/* Magic cookie timezone_t value, for local time.  It differs from
-   NULL and from all other timezone_t values.  Only the address
-   matters; the pointer is never dereferenced.  */
+ 
 static timezone_t const local_tz = (timezone_t) 1;
 
-/* Copy to ABBRS the abbreviation at ABBR with size ABBR_SIZE (this
-   includes its trailing null byte).  Append an extra null byte to
-   mark the end of ABBRS.  */
+ 
 static void
 extend_abbrs (char *abbrs, char const *abbr, size_t abbr_size)
 {
@@ -59,8 +32,7 @@ extend_abbrs (char *abbrs, char const *abbr, size_t abbr_size)
   abbrs[abbr_size] = '\0';
 }
 
-/* Return a newly allocated time zone for NAME, or NULL on failure.
-   A null NAME stands for wall clock time (which is like unset TZ).  */
+ 
 timezone_t
 tzalloc (char const *name)
 {
@@ -81,10 +53,7 @@ tzalloc (char const *name)
   return tz;
 }
 
-/* Save into TZ any nontrivial time zone abbreviation used by TM, and
-   update *TM (if HAVE_STRUCT_TM_TM_ZONE) or *TZ (if
-   !HAVE_STRUCT_TM_TM_ZONE && HAVE_TZNAME) if they use the abbreviation.
-   Return true if successful, false (setting errno) otherwise.  */
+ 
 static bool
 save_abbr (timezone_t tz, struct tm *tm)
 {
@@ -108,7 +77,7 @@ save_abbr (timezone_t tz, struct tm *tm)
     }
 # endif
 
-  /* No need to replace null zones, or zones within the struct tm.  */
+   
   if (!zone || ((char *) tm <= zone && zone < (char *) (tm + 1)))
     return true;
 
@@ -143,7 +112,7 @@ save_abbr (timezone_t tz, struct tm *tm)
         }
     }
 
-  /* Replace the zone name so that its lifetime matches that of TZ.  */
+   
 # if HAVE_STRUCT_TM_TM_ZONE
   tm->tm_zone = zone_copy;
 # else
@@ -155,7 +124,7 @@ save_abbr (timezone_t tz, struct tm *tm)
   return true;
 }
 
-/* Free a time zone.  */
+ 
 void
 tzfree (timezone_t tz)
 {
@@ -168,8 +137,7 @@ tzfree (timezone_t tz)
       }
 }
 
-/* Get and set the TZ environment variable.  These functions can be
-   overridden by programs like Emacs that manage their own environment.  */
+ 
 
 #ifndef getenv_TZ
 static char *
@@ -187,8 +155,7 @@ setenv_TZ (char const *tz)
 }
 #endif
 
-/* Change the environment to match the specified timezone_t value.
-   Return true if successful, false (setting errno) otherwise.  */
+ 
 static bool
 change_env (timezone_t tz)
 {
@@ -198,10 +165,7 @@ change_env (timezone_t tz)
   return true;
 }
 
-/* Temporarily set the time zone to TZ, which must not be null.
-   Return LOCAL_TZ if the time zone setting is already correct.
-   Otherwise return a newly allocated time zone representing the old
-   setting, or NULL (setting errno) on failure.  */
+ 
 static timezone_t
 set_tz (timezone_t tz)
 {
@@ -226,9 +190,7 @@ set_tz (timezone_t tz)
     }
 }
 
-/* Restore an old setting returned by set_tz.  It must not be null.
-   Return true (preserving errno) if successful, false (setting errno)
-   otherwise.  */
+ 
 static bool
 revert_tz (timezone_t tz)
 {
@@ -246,18 +208,12 @@ revert_tz (timezone_t tz)
     }
 }
 
-/* Use time zone TZ to compute localtime_r (T, TM).  */
+ 
 struct tm *
 localtime_rz (timezone_t tz, time_t const *t, struct tm *tm)
 {
 #ifdef HAVE_LOCALTIME_INFLOOP_BUG
-  /* The -67768038400665599 comes from:
-     https://lists.gnu.org/r/bug-gnulib/2017-07/msg00142.html
-     On affected platforms the greatest POSIX-compatible time_t value
-     that could return nonnull is 67768036191766798 (when
-     TZ="XXX24:59:59" it resolves to the year 2**31 - 1 + 1900, on
-     12-31 at 23:59:59), so test for that too while we're in the
-     neighborhood.  */
+   
   if (! (-67768038400665599 <= *t && *t <= 67768036191766798))
     {
       errno = EOVERFLOW;
@@ -280,7 +236,7 @@ localtime_rz (timezone_t tz, time_t const *t, struct tm *tm)
     }
 }
 
-/* Use time zone TZ to compute mktime (TM).  */
+ 
 time_t
 mktime_z (timezone_t tz, struct tm *tm)
 {

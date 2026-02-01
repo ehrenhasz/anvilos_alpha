@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2017 Western Digital Corporation or its affiliates.
- *
- * This file is released under the GPL.
- */
+ 
+ 
 
 #ifndef DM_ZONED_H
 #define DM_ZONED_H
@@ -21,9 +17,7 @@
 #include <linux/radix-tree.h>
 #include <linux/shrinker.h>
 
-/*
- * dm-zoned creates block devices with 4KB blocks, always.
- */
+ 
 #define DMZ_BLOCK_SHIFT		12
 #define DMZ_BLOCK_SIZE		(1 << DMZ_BLOCK_SHIFT)
 #define DMZ_BLOCK_MASK		(DMZ_BLOCK_SIZE - 1)
@@ -36,9 +30,7 @@
 #define DMZ_BLOCK_SECTORS	(DMZ_BLOCK_SIZE >> SECTOR_SHIFT)
 #define DMZ_BLOCK_SECTORS_MASK	(DMZ_BLOCK_SECTORS - 1)
 
-/*
- * 4KB block <-> 512B sector conversion.
- */
+ 
 #define dmz_blk2sect(b)		((sector_t)(b) << DMZ_BLOCK_SECTORS_SHIFT)
 #define dmz_sect2blk(s)		((sector_t)(s) >> DMZ_BLOCK_SECTORS_SHIFT)
 
@@ -48,9 +40,7 @@
 struct dmz_metadata;
 struct dmz_reclaim;
 
-/*
- * Zoned block device information.
- */
+ 
 struct dmz_dev {
 	struct block_device	*bdev;
 	struct dmz_metadata	*metadata;
@@ -84,75 +74,65 @@ struct dmz_dev {
 				 dmz_zone_nr_sectors_shift(zmd))
 #define dmz_chunk_block(zmd, b)	((b) & (dmz_zone_nr_blocks(zmd) - 1))
 
-/* Device flags. */
+ 
 #define DMZ_BDEV_DYING		(1 << 0)
 #define DMZ_CHECK_BDEV		(2 << 0)
 #define DMZ_BDEV_REGULAR	(4 << 0)
 
-/*
- * Zone descriptor.
- */
+ 
 struct dm_zone {
-	/* For listing the zone depending on its state */
+	 
 	struct list_head	link;
 
-	/* Device containing this zone */
+	 
 	struct dmz_dev		*dev;
 
-	/* Zone type and state */
+	 
 	unsigned long		flags;
 
-	/* Zone activation reference count */
+	 
 	atomic_t		refcount;
 
-	/* Zone id */
+	 
 	unsigned int		id;
 
-	/* Zone write pointer block (relative to the zone start block) */
+	 
 	unsigned int		wp_block;
 
-	/* Zone weight (number of valid blocks in the zone) */
+	 
 	unsigned int		weight;
 
-	/* The chunk that the zone maps */
+	 
 	unsigned int		chunk;
 
-	/*
-	 * For a sequential data zone, pointer to the random zone
-	 * used as a buffer for processing unaligned writes.
-	 * For a buffer zone, this points back to the data zone.
-	 */
+	 
 	struct dm_zone		*bzone;
 };
 
-/*
- * Zone flags.
- */
+ 
 enum {
-	/* Zone write type */
+	 
 	DMZ_CACHE,
 	DMZ_RND,
 	DMZ_SEQ,
 
-	/* Zone critical condition */
+	 
 	DMZ_OFFLINE,
 	DMZ_READ_ONLY,
 
-	/* How the zone is being used */
+	 
 	DMZ_META,
 	DMZ_DATA,
 	DMZ_BUF,
 	DMZ_RESERVED,
 
-	/* Zone internal state */
+	 
 	DMZ_RECLAIM,
 	DMZ_SEQ_WRITE_ERR,
 	DMZ_RECLAIM_TERMINATE,
 };
 
-/*
- * Zone data accessors.
- */
+ 
 #define dmz_is_cache(z)		test_bit(DMZ_CACHE, &(z)->flags)
 #define dmz_is_rnd(z)		test_bit(DMZ_RND, &(z)->flags)
 #define dmz_is_seq(z)		test_bit(DMZ_SEQ, &(z)->flags)
@@ -171,9 +151,7 @@ enum {
 
 #define dmz_weight(z)		((z)->weight)
 
-/*
- * Message functions.
- */
+ 
 #define dmz_dev_info(dev, format, args...)	\
 	DMINFO("(%pg): " format, (dev)->bdev, ## args)
 
@@ -186,9 +164,7 @@ enum {
 #define dmz_dev_debug(dev, format, args...)	\
 	DMDEBUG("(%pg): " format, (dev)->bdev, ## args)
 
-/*
- * Functions defined in dm-zoned-metadata.c
- */
+ 
 int dmz_ctr_metadata(struct dmz_dev *dev, int num_dev,
 		     struct dmz_metadata **zmd, const char *devname);
 void dmz_dtr_metadata(struct dmz_metadata *zmd);
@@ -234,9 +210,7 @@ unsigned int dmz_zone_nr_blocks_shift(struct dmz_metadata *zmd);
 unsigned int dmz_zone_nr_sectors(struct dmz_metadata *zmd);
 unsigned int dmz_zone_nr_sectors_shift(struct dmz_metadata *zmd);
 
-/*
- * Activate a zone (increment its reference count).
- */
+ 
 static inline void dmz_activate_zone(struct dm_zone *zone)
 {
 	atomic_inc(&zone->refcount);
@@ -266,9 +240,7 @@ int dmz_copy_valid_blocks(struct dmz_metadata *zmd, struct dm_zone *from_zone,
 int dmz_merge_valid_blocks(struct dmz_metadata *zmd, struct dm_zone *from_zone,
 			   struct dm_zone *to_zone, sector_t chunk_block);
 
-/*
- * Functions defined in dm-zoned-reclaim.c
- */
+ 
 int dmz_ctr_reclaim(struct dmz_metadata *zmd, struct dmz_reclaim **zrc, int idx);
 void dmz_dtr_reclaim(struct dmz_reclaim *zrc);
 void dmz_suspend_reclaim(struct dmz_reclaim *zrc);
@@ -276,28 +248,21 @@ void dmz_resume_reclaim(struct dmz_reclaim *zrc);
 void dmz_reclaim_bio_acc(struct dmz_reclaim *zrc);
 void dmz_schedule_reclaim(struct dmz_reclaim *zrc);
 
-/*
- * Functions defined in dm-zoned-target.c
- */
+ 
 bool dmz_bdev_is_dying(struct dmz_dev *dmz_dev);
 bool dmz_check_bdev(struct dmz_dev *dmz_dev);
 
-/*
- * Deactivate a zone. This decrement the zone reference counter
- * indicating that all BIOs to the zone have completed when the count is 0.
- */
+ 
 static inline void dmz_deactivate_zone(struct dm_zone *zone)
 {
 	dmz_reclaim_bio_acc(zone->dev->reclaim);
 	atomic_dec(&zone->refcount);
 }
 
-/*
- * Test if a zone is active, that is, has a refcount > 0.
- */
+ 
 static inline bool dmz_is_active(struct dm_zone *zone)
 {
 	return atomic_read(&zone->refcount);
 }
 
-#endif /* DM_ZONED_H */
+#endif  

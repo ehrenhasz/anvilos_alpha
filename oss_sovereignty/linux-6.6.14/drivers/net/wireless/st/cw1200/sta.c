@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Mac80211 STA API for ST-Ericsson CW1200 drivers
- *
- * Copyright (c) 2010, ST-Ericsson
- * Author: Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>
- */
+
+ 
 
 #include <linux/vmalloc.h>
 #include <linux/sched.h>
@@ -48,8 +43,8 @@ static inline void __cw1200_free_event_queue(struct list_head *list)
 	}
 }
 
-/* ******************************************************************** */
-/* STA API								*/
+ 
+ 
 
 int cw1200_start(struct ieee80211_hw *dev)
 {
@@ -60,7 +55,7 @@ int cw1200_start(struct ieee80211_hw *dev)
 
 	mutex_lock(&priv->conf_mutex);
 
-	/* default EDCA */
+	 
 	WSM_EDCA_SET(&priv->edca, 0, 0x0002, 0x0003, 0x0007, 47, 0xc8, false);
 	WSM_EDCA_SET(&priv->edca, 1, 0x0002, 0x0007, 0x000f, 94, 0xc8, false);
 	WSM_EDCA_SET(&priv->edca, 2, 0x0003, 0x000f, 0x03ff, 0, 0xc8, false);
@@ -99,7 +94,7 @@ void cw1200_stop(struct ieee80211_hw *dev)
 	wsm_lock_tx(priv);
 
 	while (down_trylock(&priv->scan.lock)) {
-		/* Scan is in progress. Force it to stop. */
+		 
 		priv->scan.req = NULL;
 		schedule();
 	}
@@ -132,12 +127,12 @@ void cw1200_stop(struct ieee80211_hw *dev)
 	mutex_unlock(&priv->conf_mutex);
 	tx_policy_clean(priv);
 
-	/* HACK! */
+	 
 	if (atomic_xchg(&priv->tx_lock, 1) != 1)
 		pr_debug("[STA] TX is force-unlocked due to stop request.\n");
 
 	wsm_unlock_tx(priv);
-	atomic_xchg(&priv->tx_lock, 0); /* for recovery to work */
+	atomic_xchg(&priv->tx_lock, 0);  
 }
 
 static int cw1200_bssloss_mitigation = 1;
@@ -159,7 +154,7 @@ void __cw1200_cqm_bssloss_sm(struct cw1200_common *priv,
 		 atomic_read(&priv->tx_lock),
 		 priv->delayed_unjoin);
 
-	/* If we have a pending unjoin */
+	 
 	if (priv->delayed_unjoin)
 		return;
 
@@ -169,7 +164,7 @@ void __cw1200_cqm_bssloss_sm(struct cw1200_common *priv,
 				   HZ);
 		priv->bss_loss_state = 0;
 
-		/* Skip the confimration procedure in P2P case */
+		 
 		if (!priv->vif->p2p && !atomic_read(&priv->tx_lock))
 			tx = 1;
 	} else if (good) {
@@ -177,7 +172,7 @@ void __cw1200_cqm_bssloss_sm(struct cw1200_common *priv,
 		priv->bss_loss_state = 0;
 		queue_work(priv->workqueue, &priv->bss_params_work);
 	} else if (bad) {
-		/* XXX Should we just keep going until we time out? */
+		 
 		if (priv->bss_loss_state < 3)
 			tx = 1;
 	} else {
@@ -185,11 +180,11 @@ void __cw1200_cqm_bssloss_sm(struct cw1200_common *priv,
 		priv->bss_loss_state = 0;
 	}
 
-	/* Bypass mitigation if it's disabled */
+	 
 	if (!cw1200_bssloss_mitigation)
 		tx = 0;
 
-	/* Spit out a NULL packet to our AP if necessary */
+	 
 	if (tx) {
 		struct sk_buff *skb;
 
@@ -207,7 +202,7 @@ int cw1200_add_interface(struct ieee80211_hw *dev,
 {
 	int ret;
 	struct cw1200_common *priv = dev->priv;
-	/* __le32 auto_calibration_mode = __cpu_to_le32(1); */
+	 
 
 	vif->driver_flags |= IEEE80211_VIF_BEACON_FILTER |
 			     IEEE80211_VIF_SUPPORTS_UAPSD |
@@ -235,11 +230,8 @@ int cw1200_add_interface(struct ieee80211_hw *dev,
 	priv->vif = vif;
 	memcpy(priv->mac_addr, vif->addr, ETH_ALEN);
 	ret = cw1200_setup_mac(priv);
-	/* Enable auto-calibration */
-	/* Exception in subsequent channel switch; disabled.
-	 *  wsm_write_mib(priv, WSM_MIB_ID_SET_AUTO_CALIBRATION_MODE,
-	 *      &auto_calibration_mode, sizeof(auto_calibration_mode));
-	*/
+	 
+	 
 
 	mutex_unlock(&priv->conf_mutex);
 	return ret;
@@ -331,8 +323,8 @@ int cw1200_config(struct ieee80211_hw *dev, u32 changed)
 
 	down(&priv->scan.lock);
 	mutex_lock(&priv->conf_mutex);
-	/* TODO: IEEE80211_CONF_CHANGE_QOS */
-	/* TODO: IEEE80211_CONF_CHANGE_LISTEN_INTERVAL */
+	 
+	 
 
 	if (changed & IEEE80211_CONF_CHANGE_POWER) {
 		priv->output_power = conf->power_level;
@@ -349,21 +341,21 @@ int cw1200_config(struct ieee80211_hw *dev, u32 changed)
 		pr_debug("[STA] Freq %d (wsm ch: %d).\n",
 			 ch->center_freq, ch->hw_value);
 
-		/* __cw1200_flush() implicitly locks tx, if successful */
+		 
 		if (!__cw1200_flush(priv, false)) {
 			if (!wsm_switch_channel(priv, &channel)) {
 				ret = wait_event_timeout(priv->channel_switch_done,
 							 !priv->channel_switch_in_progress,
 							 3 * HZ);
 				if (ret) {
-					/* Already unlocks if successful */
+					 
 					priv->channel = ch;
 					ret = 0;
 				} else {
 					ret = -ETIMEDOUT;
 				}
 			} else {
-				/* Unlock if switch channel fails */
+				 
 				wsm_unlock_tx(priv);
 			}
 		}
@@ -377,10 +369,7 @@ int cw1200_config(struct ieee80211_hw *dev, u32 changed)
 		else
 			priv->powersave_mode.mode = WSM_PSM_FAST_PS;
 
-		/* Firmware requires that value for this 1-byte field must
-		 * be specified in units of 500us. Values above the 128ms
-		 * threshold are not supported.
-		 */
+		 
 		if (conf->dynamic_ps_timeout >= 0x80)
 			priv->powersave_mode.fast_psm_idle_period = 0xFF;
 		else
@@ -393,12 +382,7 @@ int cw1200_config(struct ieee80211_hw *dev, u32 changed)
 	}
 
 	if (changed & IEEE80211_CONF_CHANGE_MONITOR) {
-		/* TBD: It looks like it's transparent
-		 * there's a monitor interface present -- use this
-		 * to determine for example whether to calculate
-		 * timestamps for packets or not, do not use instead
-		 * of filter flags!
-		 */
+		 
 	}
 
 	if (changed & IEEE80211_CONF_CHANGE_IDLE) {
@@ -408,7 +392,7 @@ int cw1200_config(struct ieee80211_hw *dev, u32 changed)
 		};
 
 		wsm_lock_tx(priv);
-		/* Disable p2p-dev mode forced by TX request */
+		 
 		if ((priv->join_status == CW1200_JOIN_STATUS_MONITOR) &&
 		    (conf->flags & IEEE80211_CONF_IDLE) &&
 		    !priv->listening) {
@@ -482,14 +466,7 @@ void cw1200_update_filtering(struct cw1200_common *priv)
 		bf_tbl.num = __cpu_to_le32(3);
 	}
 
-	/* When acting as p2p client being connected to p2p GO, in order to
-	 * receive frames from a different p2p device, turn off bssid filter.
-	 *
-	 * WARNING: FW dependency!
-	 * This can only be used with FW WSM371 and its successors.
-	 * In that FW version even with bssid filter turned off,
-	 * device will block most of the unwanted frames.
-	 */
+	 
 	if (is_p2p)
 		bssid_filtering = false;
 
@@ -542,14 +519,14 @@ u64 cw1200_prepare_multicast(struct ieee80211_hw *hw,
 	struct netdev_hw_addr *ha;
 	int count = 0;
 
-	/* Disable multicast filtering */
+	 
 	priv->has_multicast_subscription = false;
 	memset(&priv->multicast_filter, 0x00, sizeof(priv->multicast_filter));
 
 	if (netdev_hw_addr_list_count(mc_list) > WSM_MAX_GRP_ADDRTABLE_ENTRIES)
 		return 0;
 
-	/* Enable if requested */
+	 
 	netdev_hw_addr_list_for_each(ha, mc_list) {
 		pr_debug("[STA] multicast: %pM\n", ha->addr);
 		memcpy(&priv->multicast_filter.macaddrs[count],
@@ -611,7 +588,7 @@ int cw1200_conf_tx(struct ieee80211_hw *dev, struct ieee80211_vif *vif,
 {
 	struct cw1200_common *priv = dev->priv;
 	int ret = 0;
-	/* To prevent re-applying PM request OID again and again*/
+	 
 	bool old_uapsd_flags;
 
 	mutex_lock(&priv->conf_mutex);
@@ -869,7 +846,7 @@ int cw1200_set_rts_threshold(struct ieee80211_hw *hw, u32 value)
 	if (value != (u32) -1)
 		val32 = __cpu_to_le32(value);
 	else
-		val32 = 0; /* disabled */
+		val32 = 0;  
 
 	if (priv->rts_threshold == value)
 		goto out;
@@ -877,26 +854,24 @@ int cw1200_set_rts_threshold(struct ieee80211_hw *hw, u32 value)
 	pr_debug("[STA] Setting RTS threshold: %d\n",
 		 priv->rts_threshold);
 
-	/* mutex_lock(&priv->conf_mutex); */
+	 
 	ret = wsm_write_mib(priv, WSM_MIB_ID_DOT11_RTS_THRESHOLD,
 			    &val32, sizeof(val32));
 	if (!ret)
 		priv->rts_threshold = value;
-	/* mutex_unlock(&priv->conf_mutex); */
+	 
 
 out:
 	return ret;
 }
 
-/* If successful, LOCKS the TX queue! */
+ 
 static int __cw1200_flush(struct cw1200_common *priv, bool drop)
 {
 	int i, ret;
 
 	for (;;) {
-		/* TODO: correct flush handling is required when dev_stop.
-		 * Temporary workaround: 2s
-		 */
+		 
 		if (drop) {
 			for (i = 0; i < 4; ++i)
 				cw1200_queue_clear(&priv->tx_queue[i]);
@@ -917,7 +892,7 @@ static int __cw1200_flush(struct cw1200_common *priv, bool drop)
 
 		wsm_lock_tx(priv);
 		if (!cw1200_queue_stats_is_empty(&priv->tx_queue_stats, -1)) {
-			/* Highly unlikely: WSM requeued frames. */
+			 
 			wsm_unlock_tx(priv);
 			continue;
 		}
@@ -947,8 +922,8 @@ void cw1200_flush(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 	return;
 }
 
-/* ******************************************************************** */
-/* WSM callbacks							*/
+ 
+ 
 
 void cw1200_free_event_queue(struct cw1200_common *priv)
 {
@@ -984,11 +959,9 @@ void cw1200_event_handler(struct work_struct *work)
 				cw1200_cqm_bssloss_sm(priv, 1, 0, 0);
 				up(&priv->scan.lock);
 			} else {
-				/* Scan is in progress. Delay reporting.
-				 * Scan complete will trigger bss_loss_work
-				 */
+				 
 				priv->delayed_link_loss = 1;
-				/* Also start a watchdog. */
+				 
 				queue_delayed_work(priv->workqueue,
 						   &priv->bss_loss_work, 5*HZ);
 			}
@@ -1003,9 +976,7 @@ void cw1200_event_handler(struct work_struct *work)
 			break;
 		case WSM_EVENT_RCPI_RSSI:
 		{
-			/* RSSI: signed Q8.0, RCPI: unsigned Q7.1
-			 * RSSI = RCPI / 2 - 110
-			 */
+			 
 			int rcpi_rssi = (int)(event->evt.data & 0xFF);
 			int cqm_evt;
 			if (priv->cqm_use_rssi)
@@ -1056,13 +1027,10 @@ void cw1200_bss_params_work(struct work_struct *work)
 	mutex_unlock(&priv->conf_mutex);
 }
 
-/* ******************************************************************** */
-/* Internal API								*/
+ 
+ 
 
-/* This function is called to Parse the SDD file
- * to extract listen_interval and PTA related information
- * sdd is a TLV: u8 id, u8 len, u8 data[]
- */
+ 
 static int cw1200_parse_sdd_file(struct cw1200_common *priv)
 {
 	const u8 *p = priv->sdd->data;
@@ -1082,7 +1050,7 @@ static int cw1200_parse_sdd_file(struct cw1200_common *priv)
 				break;
 			}
 			v = le16_to_cpu(*((__le16 *)(p + 2)));
-			if (!v)  /* non-zero means this is enabled */
+			if (!v)   
 				break;
 
 			v = le16_to_cpu(*((__le16 *)(p + 4)));
@@ -1115,14 +1083,7 @@ int cw1200_setup_mac(struct cw1200_common *priv)
 {
 	int ret = 0;
 
-	/* NOTE: There is a bug in FW: it reports signal
-	 * as RSSI if RSSI subscription is enabled.
-	 * It's not enough to set WSM_RCPI_RSSI_USE_RSSI.
-	 *
-	 * NOTE2: RSSI based reports have been switched to RCPI, since
-	 * FW has a bug and RSSI reported values are not stable,
-	 * what can lead to signal level oscilations in user-end applications
-	 */
+	 
 	struct wsm_rcpi_rssi_threshold threshold = {
 		.rssiRcpiMode = WSM_RCPI_RSSI_THRESHOLD_ENABLE |
 		WSM_RCPI_RSSI_DONT_USE_UPPER |
@@ -1134,9 +1095,7 @@ int cw1200_setup_mac(struct cw1200_common *priv)
 		.dot11StationId = &priv->mac_addr[0],
 	};
 
-	/* Remember the decission here to make sure, we will handle
-	 * the RCPI/RSSI value correctly on WSM_EVENT_RCPI_RSS
-	 */
+	 
 	if (threshold.rssiRcpiMode & WSM_RCPI_RSSI_USE_RSSI)
 		priv->cqm_use_rssi = true;
 
@@ -1155,7 +1114,7 @@ int cw1200_setup_mac(struct cw1200_common *priv)
 	if (ret)
 		return ret;
 
-	/* Configure RSSI/SCPI reporting as RSSI. */
+	 
 	wsm_set_rcpi_rssi_threshold(priv, &threshold);
 
 	return 0;
@@ -1177,7 +1136,7 @@ static void cw1200_join_complete(struct cw1200_common *priv)
 		else
 			priv->join_status = CW1200_JOIN_STATUS_PRE_STA;
 	}
-	wsm_unlock_tx(priv); /* Clearing the lock held before do_join() */
+	wsm_unlock_tx(priv);  
 }
 
 void cw1200_join_complete_work(struct work_struct *work)
@@ -1201,7 +1160,7 @@ void cw1200_join_complete_cb(struct cw1200_common *priv,
 	}
 }
 
-/* MUST be called with tx_lock held!  It will be unlocked for us. */
+ 
 static void cw1200_do_join(struct cw1200_common *priv)
 {
 	const u8 *bssid;
@@ -1238,9 +1197,7 @@ static void cw1200_do_join(struct cw1200_common *priv)
 
 	mutex_lock(&priv->conf_mutex);
 
-	/* Under the conf lock: check scan status and
-	 * bail out if it is in progress.
-	 */
+	 
 	if (atomic_read(&priv->scan.in_progress)) {
 		wsm_unlock_tx(priv);
 		goto done_put;
@@ -1248,17 +1205,17 @@ static void cw1200_do_join(struct cw1200_common *priv)
 
 	priv->join_pending = true;
 
-	/* Sanity check basic rates */
+	 
 	if (!join.basic_rate_set)
 		join.basic_rate_set = 7;
 
-	/* Sanity check beacon interval */
+	 
 	if (!priv->beacon_int)
 		priv->beacon_int = 1;
 
 	join.beacon_interval = priv->beacon_int;
 
-	/* BT Coex related changes */
+	 
 	if (priv->bt_present) {
 		if (((priv->conf_listen_interval * 100) %
 		     priv->beacon_int) == 0)
@@ -1302,7 +1259,7 @@ static void cw1200_do_join(struct cw1200_common *priv)
 			cw1200_rate_mask_to_wsm(priv, 0xFF0);
 	}
 
-	/* Enable asynchronous join calls */
+	 
 	if (!priv->vif->cfg.ibss_joined) {
 		join.flags |= WSM_JOIN_FLAGS_FORCE;
 		join.flags |= WSM_JOIN_FLAGS_FORCE_WITH_COMPLETE_IND;
@@ -1310,17 +1267,17 @@ static void cw1200_do_join(struct cw1200_common *priv)
 
 	wsm_flush_tx(priv);
 
-	/* Stay Awake for Join and Auth Timeouts and a bit more */
+	 
 	cw1200_pm_stay_awake(&priv->pm_state,
 			     CW1200_JOIN_TIMEOUT + CW1200_AUTH_TIMEOUT);
 
 	cw1200_update_listening(priv, false);
 
-	/* Turn on Block ACKs */
+	 
 	wsm_set_block_ack_policy(priv, priv->ba_tx_tid_mask,
 				 priv->ba_rx_tid_mask);
 
-	/* Set up timeout */
+	 
 	if (join.flags & WSM_JOIN_FLAGS_FORCE_WITH_COMPLETE_IND) {
 		priv->join_status = CW1200_JOIN_STATUS_JOINING;
 		queue_delayed_work(priv->workqueue,
@@ -1328,32 +1285,28 @@ static void cw1200_do_join(struct cw1200_common *priv)
 				   CW1200_JOIN_TIMEOUT);
 	}
 
-	/* 802.11w protected mgmt frames */
+	 
 	mgmt_policy.protectedMgmtEnable = 0;
 	mgmt_policy.unprotectedMgmtFramesAllowed = 1;
 	mgmt_policy.encryptionForAuthFrame = 1;
 	wsm_set_protected_mgmt_policy(priv, &mgmt_policy);
 
-	/* Perform actual join */
+	 
 	if (wsm_join(priv, &join)) {
 		pr_err("[STA] cw1200_join_work: wsm_join failed!\n");
 		cancel_delayed_work_sync(&priv->join_timeout);
 		cw1200_update_listening(priv, priv->listening);
-		/* Tx lock still held, unjoin will clear it. */
+		 
 		if (queue_work(priv->workqueue, &priv->unjoin_work) <= 0)
 			wsm_unlock_tx(priv);
 	} else {
 		if (!(join.flags & WSM_JOIN_FLAGS_FORCE_WITH_COMPLETE_IND))
-			cw1200_join_complete(priv); /* Will clear tx_lock */
+			cw1200_join_complete(priv);  
 
-		/* Upload keys */
+		 
 		cw1200_upload_keys(priv);
 
-		/* Due to beacon filtering it is possible that the
-		 * AP's beacon is not known for the mac80211 stack.
-		 * Disable filtering temporary to make sure the stack
-		 * receives at least one
-		 */
+		 
 		priv->disable_beacon_filter = true;
 	}
 	cw1200_update_filtering(priv);
@@ -1405,7 +1358,7 @@ static void cw1200_do_unjoin(struct cw1200_common *priv)
 	cancel_work_sync(&priv->set_beacon_wakeup_period_work);
 	priv->join_status = CW1200_JOIN_STATUS_PASSIVE;
 
-	/* Unjoin is a reset. */
+	 
 	wsm_flush_tx(priv);
 	wsm_keep_alive_period(priv, 0);
 	wsm_reset(priv, &reset);
@@ -1417,7 +1370,7 @@ static void cw1200_do_unjoin(struct cw1200_common *priv)
 	cw1200_update_listening(priv, priv->listening);
 	cw1200_cqm_bssloss_sm(priv, 0, 0, 0);
 
-	/* Disable Block ACKs */
+	 
 	wsm_set_block_ack_policy(priv, 0, 0);
 
 	priv->disable_beacon_filter = false;
@@ -1442,7 +1395,7 @@ void cw1200_unjoin_work(struct work_struct *work)
 
 	cw1200_do_unjoin(priv);
 
-	/* Tell the stack we're dead */
+	 
 	ieee80211_connection_loss(priv->vif);
 
 	wsm_unlock_tx(priv);
@@ -1504,9 +1457,7 @@ int cw1200_set_uapsd_param(struct cw1200_common *priv,
 	int ret;
 	u16 uapsd_flags = 0;
 
-	/* Here's the mapping AC [queue, bit]
-	 *  VO [0,3], VI [1, 2], BE [2, 1], BK [3, 0]
-	 */
+	 
 
 	if (arg->uapsd_enable[0])
 		uapsd_flags |= 1 << 3;
@@ -1520,10 +1471,7 @@ int cw1200_set_uapsd_param(struct cw1200_common *priv,
 	if (arg->uapsd_enable[3])
 		uapsd_flags |= 1;
 
-	/* Currently pseudo U-APSD operation is not supported, so setting
-	 * MinAutoTriggerInterval, MaxAutoTriggerInterval and
-	 * AutoTriggerStep to 0
-	 */
+	 
 
 	priv->uapsd_info.uapsd_flags = cpu_to_le16(uapsd_flags);
 	priv->uapsd_info.min_auto_trigger_interval = 0;
@@ -1534,8 +1482,8 @@ int cw1200_set_uapsd_param(struct cw1200_common *priv,
 	return ret;
 }
 
-/* ******************************************************************** */
-/* AP API								*/
+ 
+ 
 
 int cw1200_sta_add(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 		   struct ieee80211_sta *sta)
@@ -1599,7 +1547,7 @@ static void __cw1200_sta_notify(struct ieee80211_hw *dev,
 	struct cw1200_common *priv = dev->priv;
 	u32 bit, prev;
 
-	/* Zero link id means "for all link IDs" */
+	 
 	if (link_id)
 		bit = BIT(link_id);
 	else if (WARN_ON_ONCE(notify_cmd != STA_NOTIFY_AWAKE))
@@ -1680,12 +1628,10 @@ static int cw1200_set_tim_impl(struct cw1200_common *priv, bool aid0_bit_set)
 	}
 
 	if (tim_offset && tim_length >= 6) {
-		/* Ignore DTIM count from mac80211:
-		 * firmware handles DTIM internally.
-		 */
+		 
 		skb->data[tim_offset + 2] = 0;
 
-		/* Set/reset aid0 bit */
+		 
 		if (aid0_bit_set)
 			skb->data[tim_offset + 4] |= 1;
 		else
@@ -1754,7 +1700,7 @@ static int cw1200_set_btcoexinfo(struct cw1200_common *priv)
 	int ret = 0;
 
 	if (priv->mode == NL80211_IFTYPE_STATION) {
-		/* Plumb PSPOLL and NULL template */
+		 
 		cw1200_upload_pspoll(priv);
 		cw1200_upload_null(priv);
 		cw1200_upload_qosnull(priv);
@@ -1765,20 +1711,20 @@ static int cw1200_set_btcoexinfo(struct cw1200_common *priv)
 	memset(&arg, 0, sizeof(struct wsm_override_internal_txrate));
 
 	if (!priv->vif->p2p) {
-		/* STATION mode */
+		 
 		if (priv->bss_params.operational_rate_set & ~0xF) {
 			pr_debug("[STA] STA has ERP rates\n");
-			/* G or BG mode */
+			 
 			arg.internalTxRate = (__ffs(
 			priv->bss_params.operational_rate_set & ~0xF));
 		} else {
 			pr_debug("[STA] STA has non ERP rates\n");
-			/* B only mode */
+			 
 			arg.internalTxRate = (__ffs(le32_to_cpu(priv->association_mode.basic_rate_set)));
 		}
 		arg.nonErpInternalTxRate = (__ffs(le32_to_cpu(priv->association_mode.basic_rate_set)));
 	} else {
-		/* P2P mode */
+		 
 		arg.internalTxRate = (__ffs(priv->bss_params.operational_rate_set & ~0xF));
 		arg.nonErpInternalTxRate = (__ffs(priv->bss_params.operational_rate_set & ~0xF));
 	}
@@ -1806,8 +1752,8 @@ void cw1200_bss_info_changed(struct ieee80211_hw *dev,
 
 	pr_debug("BSS CHANGED:  %llx\n", changed);
 
-	/* TODO: BSS_CHANGED_QOS */
-	/* TODO: BSS_CHANGED_TXPOWER */
+	 
+	 
 
 	if (changed & BSS_CHANGED_ARP_FILTER) {
 		struct wsm_mib_arp_ipv4_filter filter = {0};
@@ -1816,9 +1762,7 @@ void cw1200_bss_info_changed(struct ieee80211_hw *dev,
 		pr_debug("[STA] BSS_CHANGED_ARP_FILTER cnt: %d\n",
 			 vif->cfg.arp_addr_cnt);
 
-		/* Currently only one IP address is supported by firmware.
-		 * In case of more IPs arp filtering will be disabled.
-		 */
+		 
 		if (vif->cfg.arp_addr_cnt > 0 &&
 		    vif->cfg.arp_addr_cnt <= WSM_MAX_ARP_IP_ADDRTABLE_ENTRIES) {
 			for (i = 0; i < vif->cfg.arp_addr_cnt; i++) {
@@ -1864,7 +1808,7 @@ void cw1200_bss_info_changed(struct ieee80211_hw *dev,
 			cw1200_update_beaconing(priv);
 	}
 
-	/* assoc/disassoc, or maybe AID changed */
+	 
 	if (changed & BSS_CHANGED_ASSOC) {
 		wsm_lock_tx(priv);
 		priv->wep_default_key_id = -1;
@@ -1921,18 +1865,15 @@ void cw1200_bss_info_changed(struct ieee80211_hw *dev,
 			}
 			rcu_read_unlock();
 
-			/* Non Greenfield stations present */
+			 
 			if (priv->ht_info.operation_mode &
 			    IEEE80211_HT_OP_MODE_NON_GF_STA_PRSNT)
 				htprot |= cpu_to_le32(WSM_NON_GREENFIELD_STA_PRESENT);
 
-			/* Set HT protection method */
+			 
 			htprot |= cpu_to_le32((priv->ht_info.operation_mode & IEEE80211_HT_OP_MODE_PROTECTION) << 2);
 
-			/* TODO:
-			 * STBC_param.dual_cts
-			 *  STBC_param.LSIG_TXOP_FILL
-			 */
+			 
 
 			wsm_write_mib(priv, WSM_MIB_ID_SET_HT_PROTECTION,
 				      &htprot, sizeof(htprot));
@@ -1975,7 +1916,7 @@ void cw1200_bss_info_changed(struct ieee80211_hw *dev,
 			wsm_set_association_mode(priv, &priv->association_mode);
 
 			if (!vif->cfg.ibss_joined) {
-				wsm_keep_alive_period(priv, 30 /* sec */);
+				wsm_keep_alive_period(priv, 30  );
 				wsm_set_bss_params(priv, &priv->bss_params);
 				priv->setbssparams_done = true;
 				cw1200_set_beacon_wakeup_period_work(&priv->set_beacon_wakeup_period_work);
@@ -1995,7 +1936,7 @@ void cw1200_bss_info_changed(struct ieee80211_hw *dev,
 		}
 	}
 
-	/* ERP Protection */
+	 
 	if (changed & (BSS_CHANGED_ASSOC |
 		       BSS_CHANGED_ERP_CTS_PROT |
 		       BSS_CHANGED_ERP_PREAMBLE)) {
@@ -2016,7 +1957,7 @@ void cw1200_bss_info_changed(struct ieee80211_hw *dev,
 			queue_work(priv->workqueue, &priv->set_cts_work);
 	}
 
-	/* ERP Slottime */
+	 
 	if (changed & (BSS_CHANGED_ASSOC | BSS_CHANGED_ERP_SLOT)) {
 		__le32 slot_time = info->use_short_slot ?
 			__cpu_to_le32(9) : __cpu_to_le32(20);
@@ -2036,16 +1977,10 @@ void cw1200_bss_info_changed(struct ieee80211_hw *dev,
 		priv->cqm_rssi_hyst = info->cqm_rssi_hyst;
 
 		if (info->cqm_rssi_thold || info->cqm_rssi_hyst) {
-			/* RSSI subscription enabled */
-			/* TODO: It's not a correct way of setting threshold.
-			 * Upper and lower must be set equal here and adjusted
-			 * in callback. However current implementation is much
-			 * more relaible and stable.
-			 */
+			 
+			 
 
-			/* RSSI: signed Q8.0, RCPI: unsigned Q7.1
-			 * RSSI = RCPI / 2 - 110
-			 */
+			 
 			if (priv->cqm_use_rssi) {
 				threshold.upperThreshold =
 					info->cqm_rssi_thold + info->cqm_rssi_hyst;
@@ -2058,9 +1993,7 @@ void cw1200_bss_info_changed(struct ieee80211_hw *dev,
 			}
 			threshold.rssiRcpiMode |= WSM_RCPI_RSSI_THRESHOLD_ENABLE;
 		} else {
-			/* There is a bug in FW, see sta.c. We have to enable
-			 * dummy subscription to get correct RSSI values.
-			 */
+			 
 			threshold.rssiRcpiMode |=
 				WSM_RCPI_RSSI_THRESHOLD_ENABLE |
 				WSM_RCPI_RSSI_DONT_USE_UPPER |
@@ -2074,7 +2007,7 @@ void cw1200_bss_info_changed(struct ieee80211_hw *dev,
 
 	if (do_join) {
 		wsm_lock_tx(priv);
-		cw1200_do_join(priv); /* Will unlock it for us */
+		cw1200_do_join(priv);  
 	}
 }
 
@@ -2128,18 +2061,14 @@ int cw1200_ampdu_action(struct ieee80211_hw *hw,
 			struct ieee80211_vif *vif,
 			struct ieee80211_ampdu_params *params)
 {
-	/* Aggregation is implemented fully in firmware,
-	 * including block ack negotiation. Do not allow
-	 * mac80211 stack to do anything: it interferes with
-	 * the firmware.
-	 */
+	 
 
-	/* Note that we still need this function stubbed. */
+	 
 	return -ENOTSUPP;
 }
 
-/* ******************************************************************** */
-/* WSM callback								*/
+ 
+ 
 void cw1200_suspend_resume(struct cw1200_common *priv,
 			  struct wsm_suspend_resume *arg)
 {
@@ -2153,11 +2082,7 @@ void cw1200_suspend_resume(struct cw1200_common *priv,
 		if (arg->stop) {
 			priv->tx_multicast = false;
 		} else {
-			/* Firmware sends this indication every DTIM if there
-			 * is a STA in powersave connected. There is no reason
-			 * to suspend, following wakeup will consume much more
-			 * power than it could be saved.
-			 */
+			 
 			cw1200_pm_stay_awake(&priv->pm_state,
 					     priv->join_dtim_period *
 					     (priv->beacon_int + 20) * HZ / 1024);
@@ -2181,8 +2106,8 @@ void cw1200_suspend_resume(struct cw1200_common *priv,
 	return;
 }
 
-/* ******************************************************************** */
-/* AP privates								*/
+ 
+ 
 
 static int cw1200_upload_beacon(struct cw1200_common *priv)
 {
@@ -2213,9 +2138,7 @@ static int cw1200_upload_beacon(struct cw1200_common *priv)
 	if (ret)
 		goto done;
 
-	/* TODO: Distill probe resp; remove TIM
-	 * and any other beacon-specific IEs
-	 */
+	 
 	mgmt = (void *)frame.skb->data;
 	mgmt->frame_control =
 		__cpu_to_le16(IEEE80211_FTYPE_MGMT |
@@ -2276,22 +2199,7 @@ static int cw1200_upload_null(struct cw1200_common *priv)
 
 static int cw1200_upload_qosnull(struct cw1200_common *priv)
 {
-	/* TODO:  This needs to be implemented
-
-	struct wsm_template_frame frame = {
-		.frame_type = WSM_FRAME_TYPE_QOS_NULL,
-		.rate = 0xFF,
-	};
-
-	frame.skb = ieee80211_qosnullfunc_get(priv->hw, priv->vif);
-	if (!frame.skb)
-		return -ENOMEM;
-
-	ret = wsm_set_template_frame(priv, &frame);
-
-	dev_kfree_skb(frame.skb);
-
-	*/
+	 
 	return 0;
 }
 
@@ -2370,7 +2278,7 @@ static int cw1200_update_beaconing(struct cw1200_common *priv)
 	};
 
 	if (priv->mode == NL80211_IFTYPE_AP) {
-		/* TODO: check if changed channel, band */
+		 
 		if (priv->join_status != CW1200_JOIN_STATUS_AP ||
 		    priv->beacon_int != conf->beacon_int) {
 			pr_debug("ap restarting\n");

@@ -1,112 +1,72 @@
-/****************************************************************************
- * Copyright 2020,2021 Thomas E. Dickey                                     *
- * Copyright 1998-2012,2014 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *   Author:  Juergen Pfeifer, 1995,1997                                    *
- ****************************************************************************/
+ 
 
-/***************************************************************************
-* Module m_global                                                          *
-* Globally used internal routines and the default menu and item structures *
-***************************************************************************/
+ 
 
 #include "menu.priv.h"
 
 MODULE_ID("$Id: m_global.c,v 1.33 2021/03/27 23:46:29 tom Exp $")
 
 static char mark[] = "-";
-/* *INDENT-OFF* */
+ 
 MENU_EXPORT_VAR(MENU) _nc_Default_Menu = {
-  16,				  /* Nr. of chars high */
-  1,				  /* Nr. of chars wide */
-  16,				  /* Nr. of items high */
-  1,			          /* Nr. of items wide */
-  16,				  /* Nr. of formatted items high */
-  1,				  /* Nr. of formatted items wide */
-  16,				  /* Nr. of items high (actual) */
-  0,				  /* length of widest name */
-  0,				  /* length of widest description */
-  1,				  /* length of mark */
-  1,				  /* length of one item */
-  1,                              /* Spacing for descriptor */
-  1,                              /* Spacing for columns */
-  1,                              /* Spacing for rows */
-  (char *)0,			  /* buffer used to store match chars */
-  0,				  /* Index into pattern buffer */
-  (WINDOW *)0,			  /* Window containing entire menu */
-  (WINDOW *)0,			  /* Portion of menu displayed */
-  (WINDOW *)0,			  /* User's window */
-  (WINDOW *)0,			  /* User's subwindow */
-  (ITEM **)0,			  /* List of items */
-  0,				  /* Total Nr. of items in menu */
-  (ITEM *)0,			  /* Current item */
-  0,				  /* Top row of menu */
-  (chtype)A_REVERSE,		  /* Attribute for selection */
-  (chtype)A_NORMAL,		  /* Attribute for nonselection */
-  (chtype)A_UNDERLINE,		  /* Attribute for inactive */
-  ' ',  			  /* Pad character */
-  (Menu_Hook)0,			  /* Menu init */
-  (Menu_Hook)0,			  /* Menu term */
-  (Menu_Hook)0,			  /* Item init */
-  (Menu_Hook)0,			  /* Item term */
-  (void *)0,			  /* userptr */
-  mark,				  /* mark */
-  ALL_MENU_OPTS,                  /* options */
-  0			          /* status */
+  16,				   
+  1,				   
+  16,				   
+  1,			           
+  16,				   
+  1,				   
+  16,				   
+  0,				   
+  0,				   
+  1,				   
+  1,				   
+  1,                               
+  1,                               
+  1,                               
+  (char *)0,			   
+  0,				   
+  (WINDOW *)0,			   
+  (WINDOW *)0,			   
+  (WINDOW *)0,			   
+  (WINDOW *)0,			   
+  (ITEM **)0,			   
+  0,				   
+  (ITEM *)0,			   
+  0,				   
+  (chtype)A_REVERSE,		   
+  (chtype)A_NORMAL,		   
+  (chtype)A_UNDERLINE,		   
+  ' ',  			   
+  (Menu_Hook)0,			   
+  (Menu_Hook)0,			   
+  (Menu_Hook)0,			   
+  (Menu_Hook)0,			   
+  (void *)0,			   
+  mark,				   
+  ALL_MENU_OPTS,                   
+  0			           
 };
 
 MENU_EXPORT_VAR(ITEM) _nc_Default_Item = {
-  { (char *)0, 0 },		  /* name */
-  { (char *)0, 0 },		  /* description */
-  (MENU *)0,		          /* Pointer to parent menu */
-  (char *)0,			  /* Userpointer */
-  ALL_ITEM_OPTS,		  /* options */
-  0,				  /* Item Nr. */
-  0,				  /* y */
-  0,				  /* x */
-  FALSE,			  /* value */
-  (ITEM *)0,		          /* left */
-  (ITEM *)0,		          /* right */
-  (ITEM *)0,		          /* up */
-  (ITEM *)0		          /* down */
+  { (char *)0, 0 },		   
+  { (char *)0, 0 },		   
+  (MENU *)0,		           
+  (char *)0,			   
+  ALL_ITEM_OPTS,		   
+  0,				   
+  0,				   
+  0,				   
+  FALSE,			   
+  (ITEM *)0,		           
+  (ITEM *)0,		           
+  (ITEM *)0,		           
+  (ITEM *)0		           
   };
-/* *INDENT-ON* */
+ 
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnmenu
-|   Function      :  static void ComputeMaximum_NameDesc_Lenths(MENU *menu)
-|
-|   Description   :  Calculates the maximum name and description lengths
-|                    of the items connected to the menu
-|
-|   Return Values :  -
-+--------------------------------------------------------------------------*/
+ 
 NCURSES_INLINE static void
 ComputeMaximum_NameDesc_Lengths(MENU *menu)
 {
@@ -132,15 +92,7 @@ ComputeMaximum_NameDesc_Lengths(MENU *menu)
   T(("ComputeMaximum_NameDesc_Lengths %d,%d", menu->namelen, menu->desclen));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnmenu
-|   Function      :  static void ResetConnectionInfo(MENU *, ITEM **)
-|
-|   Description   :  Reset all information in the menu and the items in
-|                    the item array that indicates a connection
-|
-|   Return Values :  -
-+--------------------------------------------------------------------------*/
+ 
 NCURSES_INLINE static void
 ResetConnectionInfo(MENU *menu, ITEM **items)
 {
@@ -160,17 +112,7 @@ ResetConnectionInfo(MENU *menu, ITEM **items)
   menu->nitems = 0;
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnmenu
-|   Function      :  bool _nc_Connect_Items(MENU *menu, ITEM **items)
-|
-|   Description   :  Connect the items in the item array to the menu.
-|                    Decorate all the items with a number and a backward
-|                    pointer to the menu.
-|
-|   Return Values :  TRUE       - successful connection
-|                    FALSE      - connection failed
-+--------------------------------------------------------------------------*/
+ 
 MENU_EXPORT(bool)
 _nc_Connect_Items(MENU *menu, ITEM **items)
 {
@@ -184,12 +126,12 @@ _nc_Connect_Items(MENU *menu, ITEM **items)
 	{
 	  if ((*item)->imenu)
 	    {
-	      /* if a item is already connected, reject connection */
+	       
 	      break;
 	    }
 	}
       if (!(*item))
-	/* we reached the end, so there was no connected item */
+	 
 	{
 	  for (item = items; *item; item++)
 	    {
@@ -220,20 +162,12 @@ _nc_Connect_Items(MENU *menu, ITEM **items)
 	}
     }
 
-  /* If we fall through to this point, we have to reset all items connection
-     and inform about a reject connection */
+   
   ResetConnectionInfo(menu, items);
   return (FALSE);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnmenu
-|   Function      :  void _nc_Disconnect_Items(MENU *menu)
-|
-|   Description   :  Disconnect the menus item array from the menu
-|
-|   Return Values :  -
-+--------------------------------------------------------------------------*/
+ 
 MENU_EXPORT(void)
 _nc_Disconnect_Items(MENU *menu)
 {
@@ -241,16 +175,9 @@ _nc_Disconnect_Items(MENU *menu)
     ResetConnectionInfo(menu, menu->items);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnmenu
-|   Function      :  int _nc_Calculate_Text_Width(const TEXT * item)
-|
-|   Description   :  Calculate the number of columns for a TEXT.
-|
-|   Return Values :  the width
-+--------------------------------------------------------------------------*/
+ 
 MENU_EXPORT(int)
-_nc_Calculate_Text_Width(const TEXT *item /*FIXME: limit length */ )
+_nc_Calculate_Text_Width(const TEXT *item   )
 {
 #if USE_WIDEC_SUPPORT
   int result = item->length;
@@ -285,9 +212,7 @@ _nc_Calculate_Text_Width(const TEXT *item /*FIXME: limit length */ )
 #endif
 }
 
-/*
- * Calculate the actual width of a menu entry for wide-characters.
- */
+ 
 #if USE_WIDEC_SUPPORT
 static int
 calculate_actual_width(MENU *menu, bool name)
@@ -325,15 +250,7 @@ calculate_actual_width(MENU *menu, bool name)
 #define calculate_actual_width(menu, name) (name ? menu->namelen : menu->desclen)
 #endif
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnmenu
-|   Function      :  void _nc_Calculate_Item_Length_and_Width(MENU *menu)
-|
-|   Description   :  Calculate the length of an item and the width of the
-|                    whole menu.
-|
-|   Return Values :  -
-+--------------------------------------------------------------------------*/
+ 
 MENU_EXPORT(void)
 _nc_Calculate_Item_Length_and_Width(MENU *menu)
 {
@@ -354,7 +271,7 @@ _nc_Calculate_Item_Length_and_Width(MENU *menu)
 
   menu->itemlen = (short)l;
   l *= menu->cols;
-  l += (menu->cols - 1) * menu->spc_cols;	/* for the padding between the columns */
+  l += (menu->cols - 1) * menu->spc_cols;	 
   menu->width = (short)l;
 
   T(("_nc_CalculateItem_Length_and_Width columns %d, item %d, width %d",
@@ -363,16 +280,7 @@ _nc_Calculate_Item_Length_and_Width(MENU *menu)
      menu->width));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnmenu
-|   Function      :  void _nc_Link_Item(MENU *menu)
-|
-|   Description   :  Statically calculate for every item its four neighbors.
-|                    This depends on the orientation of the menu. This
-|                    static approach simplifies navigation in the menu a lot.
-|
-|   Return Values :  -
-+--------------------------------------------------------------------------*/
+ 
 MENU_EXPORT(void)
 _nc_Link_Items(MENU *menu)
 {
@@ -399,8 +307,7 @@ _nc_Link_Items(MENU *menu)
 	      Last_in_Row = row * Number_Of_Columns + (Number_Of_Columns - 1);
 
 	      item->left = (col) ?
-	      /* if we are not in the leftmost column, we can use the
-	         predecessor in the items array */
+	       
 		menu->items[i - 1] :
 		(cycle ? menu->items[(Last_in_Row >= Number_Of_Items) ?
 				     Number_Of_Items - 1 :
@@ -493,14 +400,7 @@ _nc_Link_Items(MENU *menu)
     }
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnmenu
-|   Function      :  void _nc_Show_Menu(const MENU* menu)
-|
-|   Description   :  Update the window that is associated with the menu
-|
-|   Return Values :  -
-+--------------------------------------------------------------------------*/
+ 
 MENU_EXPORT(void)
 _nc_Show_Menu(const MENU *menu)
 {
@@ -510,7 +410,7 @@ _nc_Show_Menu(const MENU *menu)
       WINDOW *win;
       int maxy, maxx;
 
-      /* adjust the internal subwindow to start on the current top */
+       
       assert(menu->sub);
       mvderwin(menu->sub, menu->spc_rows * menu->toprow, 0);
       win = Get_Menu_Window(menu);
@@ -528,19 +428,7 @@ _nc_Show_Menu(const MENU *menu)
     }
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnmenu
-|   Function      :  void _nc_New_TopRow_and_CurrentItem(
-|                            MENU *menu,
-|                            int new_toprow,
-|                            ITEM *new_current_item)
-|
-|   Description   :  Redisplay the menu so that the given row becomes the
-|                    top row and the given item becomes the new current
-|                    item.
-|
-|   Return Values :  -
-+--------------------------------------------------------------------------*/
+ 
 MENU_EXPORT(void)
 _nc_New_TopRow_and_CurrentItem(
 				MENU *menu,
@@ -578,7 +466,7 @@ _nc_New_TopRow_and_CurrentItem(
 	}
       if (iterm_called)
 	{
-	  /* this means, move from the old current_item to the new one... */
+	   
 	  Move_To_Current_Item(menu, cur_item);
 	  Call_Hook(menu, iteminit);
 	}
@@ -590,7 +478,7 @@ _nc_New_TopRow_and_CurrentItem(
 	pos_menu_cursor(menu);
     }
   else
-    {				/* if we are not posted, this is quite simple */
+    {				 
       menu->toprow = (short)(((menu->rows - menu->frows) >= 0)
 			     ? min(menu->rows - menu->frows, new_toprow)
 			     : 0);
@@ -598,4 +486,4 @@ _nc_New_TopRow_and_CurrentItem(
     }
 }
 
-/* m_global.c ends here */
+ 

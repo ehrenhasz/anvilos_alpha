@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Synquacer HSSPI controller driver
-//
-// Copyright (c) 2015-2018 Socionext Inc.
-// Copyright (c) 2018-2019 Linaro Ltd.
-//
+
+
+
+
+
+
+
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -20,7 +20,7 @@
 #include <linux/spinlock.h>
 #include <linux/clk.h>
 
-/* HSSPI register address definitions */
+ 
 #define SYNQUACER_HSSPI_REG_MCTRL	0x00
 #define SYNQUACER_HSSPI_REG_PCC0	0x04
 #define SYNQUACER_HSSPI_REG_PCC(n)	(SYNQUACER_HSSPI_REG_PCC0 + (n) * 4)
@@ -41,7 +41,7 @@
 #define SYNQUACER_HSSPI_REG_RX_FIFO	0x90
 #define SYNQUACER_HSSPI_REG_MID		0xFC
 
-/* HSSPI register bit definitions */
+ 
 #define SYNQUACER_HSSPI_MCTRL_MEN			BIT(0)
 #define SYNQUACER_HSSPI_MCTRL_COMMAND_SEQUENCE_EN	BIT(1)
 #define SYNQUACER_HSSPI_MCTRL_CDSS			BIT(3)
@@ -164,7 +164,7 @@ static int read_fifo(struct synquacer_spi *sspi)
 		break;
 	}
 	case 24:
-		/* fallthrough, should use 32-bits access */
+		 
 	case 32: {
 		u32 *buf = sspi->rx_buf;
 
@@ -208,7 +208,7 @@ static int write_fifo(struct synquacer_spi *sspi)
 		break;
 	}
 	case 24:
-		/* fallthrough, should use 32-bits access */
+		 
 	case 32: {
 		const u32 *buf = sspi->tx_buf;
 
@@ -233,7 +233,7 @@ static int synquacer_spi_config(struct spi_master *master,
 	unsigned int speed, mode, bpw, cs, bus_width, transfer_mode;
 	u32 rate, val, div;
 
-	/* Full Duplex only on 1-bit wide bus */
+	 
 	if (xfer->rx_buf && xfer->tx_buf &&
 	    (xfer->rx_nbits != 1 || xfer->tx_nbits != 1)) {
 		dev_err(sspi->dev,
@@ -254,7 +254,7 @@ static int synquacer_spi_config(struct spi_master *master,
 	speed = xfer->speed_hz;
 	bpw = xfer->bits_per_word;
 
-	/* return if nothing to change */
+	 
 	if (speed == sspi->speed &&
 		bus_width == sspi->bus_width && bpw == sspi->bpw &&
 		mode == sspi->mode && cs == sspi->cs &&
@@ -370,17 +370,14 @@ static int synquacer_spi_transfer_one(struct spi_master *master,
 	val |= SYNQUACER_HSSPI_FIFOCFG_TX_FLUSH;
 	writel(val, sspi->regs + SYNQUACER_HSSPI_REG_FIFOCFG);
 
-	/*
-	 * See if we can transfer 4-bytes as 1 word
-	 * to maximize the FIFO buffer efficiency.
-	 */
+	 
 	bpw = xfer->bits_per_word;
 	if (bpw == 8 && !(xfer->len % 4) && !(spi->mode & SPI_LSB_FIRST))
 		xfer->bits_per_word = 32;
 
 	ret = synquacer_spi_config(master, spi, xfer);
 
-	/* restore */
+	 
 	xfer->bits_per_word = bpw;
 
 	if (ret)
@@ -399,7 +396,7 @@ static int synquacer_spi_transfer_one(struct spi_master *master,
 		words = xfer->len / 2;
 		break;
 	case 24:
-		/* fallthrough, should use 32-bits access */
+		 
 	case 32:
 		words = xfer->len / 4;
 		break;
@@ -440,7 +437,7 @@ static int synquacer_spi_transfer_one(struct spi_master *master,
 	writel(~0, sspi->regs + SYNQUACER_HSSPI_REG_TXC);
 	writel(~0, sspi->regs + SYNQUACER_HSSPI_REG_RXC);
 
-	/* Trigger */
+	 
 	val = readl(sspi->regs + SYNQUACER_HSSPI_REG_DMSTART);
 	val |= SYNQUACER_HSSPI_DMSTART_START;
 	writel(val, sspi->regs + SYNQUACER_HSSPI_REG_DMSTART);
@@ -463,7 +460,7 @@ static int synquacer_spi_transfer_one(struct spi_master *master,
 			msecs_to_jiffies(SYNQUACER_HSSPI_TRANSFER_TMOUT_MSEC));
 		writel(0, sspi->regs + SYNQUACER_HSSPI_REG_RXE);
 
-		/* stop RX and clean RXFIFO */
+		 
 		val = readl(sspi->regs + SYNQUACER_HSSPI_REG_DMSTART);
 		val |= SYNQUACER_HSSPI_DMSTOP_STOP;
 		writel(val, sspi->regs + SYNQUACER_HSSPI_REG_DMSTART);
@@ -503,7 +500,7 @@ static int synquacer_spi_wait_status_update(struct synquacer_spi *sspi,
 	unsigned long timeout = jiffies +
 		msecs_to_jiffies(SYNQUACER_HSSPI_ENABLE_TMOUT_MSEC);
 
-	/* wait MES(Module Enable Status) is updated */
+	 
 	do {
 		val = readl(sspi->regs + SYNQUACER_HSSPI_REG_MCTRL) &
 		      SYNQUACER_HSSPI_MCTRL_MES;
@@ -523,7 +520,7 @@ static int synquacer_spi_enable(struct spi_master *master)
 	int status;
 	struct synquacer_spi *sspi = spi_master_get_devdata(master);
 
-	/* Disable module */
+	 
 	writel(0, sspi->regs + SYNQUACER_HSSPI_REG_MCTRL);
 	status = synquacer_spi_wait_status_update(sspi, false);
 	if (status < 0)
@@ -550,7 +547,7 @@ static int synquacer_spi_enable(struct spi_master *master)
 	val |= SYNQUACER_HSSPI_MCTRL_MEN;
 	val |= SYNQUACER_HSSPI_MCTRL_SYNCON;
 
-	/* Enable module */
+	 
 	writel(val, sspi->regs + SYNQUACER_HSSPI_REG_MCTRL);
 	status = synquacer_spi_wait_status_update(sspi, true);
 	if (status < 0)
@@ -623,9 +620,9 @@ static int synquacer_spi_probe(struct platform_device *pdev)
 		goto put_spi;
 	}
 
-	sspi->clk_src_type = SYNQUACER_HSSPI_CLOCK_SRC_IHCLK; /* Default */
+	sspi->clk_src_type = SYNQUACER_HSSPI_CLOCK_SRC_IHCLK;  
 	device_property_read_u32(&pdev->dev, "socionext,ihclk-rate",
-				 &master->max_speed_hz); /* for ACPI */
+				 &master->max_speed_hz);  
 
 	if (dev_of_node(&pdev->dev)) {
 		if (device_property_match_string(&pdev->dev,
@@ -768,7 +765,7 @@ static int __maybe_unused synquacer_spi_resume(struct device *dev)
 	int ret;
 
 	if (!pm_runtime_suspended(dev)) {
-		/* Ensure reconfigure during next xfer */
+		 
 		sspi->speed = 0;
 
 		ret = clk_prepare_enable(sspi->clk);
@@ -805,7 +802,7 @@ MODULE_DEVICE_TABLE(of, synquacer_spi_of_match);
 #ifdef CONFIG_ACPI
 static const struct acpi_device_id synquacer_hsspi_acpi_ids[] = {
 	{ "SCX0004" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(acpi, synquacer_hsspi_acpi_ids);
 #endif

@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2011-2017, The Linux Foundation. All rights reserved.
-// Copyright (c) 2018, Linaro Limited
+
+
+
 
 #include <linux/init.h>
 #include <linux/err.h>
@@ -347,16 +347,7 @@ struct msm_routing_data {
 
 static struct msm_routing_data *routing_data;
 
-/**
- * q6routing_stream_open() - Register a new stream for route setup
- *
- * @fedai_id: Frontend dai id.
- * @perf_mode: Performance mode.
- * @stream_id: ASM stream id to map.
- * @stream_type: Direction of stream
- *
- * Return: Will be an negative on error or a zero on success.
- */
+ 
 int q6routing_stream_open(int fedai_id, int perf_mode,
 			   int stream_id, int stream_type)
 {
@@ -388,7 +379,7 @@ int q6routing_stream_open(int fedai_id, int perf_mode,
 	session->channels = pdata->channels;
 	session->bits_per_sample = pdata->bits_per_sample;
 
-	payload.num_copps = 0; /* only RX needs to use payload */
+	payload.num_copps = 0;  
 	topology = NULL_COPP_TOPOLOGY;
 	copp = q6adm_open(routing_data->dev, session->port_id,
 			      session->path_type, session->sample_rate,
@@ -434,14 +425,7 @@ static struct session_data *get_session_from_id(struct msm_routing_data *data,
 
 	return NULL;
 }
-/**
- * q6routing_stream_close() - Deregister a stream
- *
- * @fedai_id: Frontend dai id.
- * @stream_type: Direction of stream
- *
- * Return: Will be an negative on error or a zero on success.
- */
+ 
 void q6routing_stream_close(int fedai_id, int stream_type)
 {
 	struct session_data *session;
@@ -732,7 +716,7 @@ static const struct snd_kcontrol_new mmul8_mixer_controls[] = {
 	Q6ROUTING_TX_MIXERS(MSM_FRONTEND_DAI_MULTIMEDIA8) };
 
 static const struct snd_soc_dapm_widget msm_qdsp6_widgets[] = {
-	/* Mixer definitions */
+	 
 	SND_SOC_DAPM_MIXER("HDMI Mixer", SND_SOC_NOPM, 0, 0,
 			   hdmi_mixer_controls,
 			   ARRAY_SIZE(hdmi_mixer_controls)),
@@ -1100,14 +1084,14 @@ static int msm_routing_probe(struct snd_soc_component *c)
 static unsigned int q6routing_reg_read(struct snd_soc_component *component,
 				       unsigned int reg)
 {
-	/* default value */
+	 
 	return 0;
 }
 
 static int q6routing_reg_write(struct snd_soc_component *component,
 			       unsigned int reg, unsigned int val)
 {
-	/* dummy */
+	 
 	return 0;
 }
 

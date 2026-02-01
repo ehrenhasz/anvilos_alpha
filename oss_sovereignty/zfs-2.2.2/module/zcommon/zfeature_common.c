@@ -1,33 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2011, 2018 by Delphix. All rights reserved.
- * Copyright (c) 2013 by Saso Kiselkov. All rights reserved.
- * Copyright (c) 2013, Joyent, Inc. All rights reserved.
- * Copyright (c) 2014, Nexenta Systems, Inc. All rights reserved.
- * Copyright (c) 2017, Intel Corporation.
- * Copyright (c) 2019, Klara Inc.
- * Copyright (c) 2019, Allan Jude
- */
+ 
 
 #ifndef _KERNEL
 #include <errno.h>
@@ -44,20 +17,12 @@
 #include <sys/zfs_sysfs.h>
 #include "zfeature_common.h"
 
-/*
- * Set to disable all feature checks while opening pools, allowing pools with
- * unsupported features to be opened. Set for testing only.
- */
+ 
 boolean_t zfeature_checks_disable = B_FALSE;
 
 zfeature_info_t spa_feature_table[SPA_FEATURES];
 
-/*
- * Valid characters for feature guids. This list is mainly for aesthetic
- * purposes and could be expanded in the future. There are different allowed
- * characters in the guids reverse dns portion (before the colon) and its
- * short name (after the colon).
- */
+ 
 static int
 valid_char(char c, boolean_t after_colon)
 {
@@ -67,11 +32,7 @@ valid_char(char c, boolean_t after_colon)
 	    (!after_colon && (c == '.' || c == '-')));
 }
 
-/*
- * Every feature guid must contain exactly one colon which separates a reverse
- * dns organization name from the feature's "short" name (e.g.
- * "com.company:feature_name").
- */
+ 
 boolean_t
 zfeature_is_valid_guid(const char *name)
 {
@@ -213,10 +174,7 @@ zfs_mod_list_supported(const char *scope)
 		}
 
 		if (tsearch(name, &ret->tree, STRCMP) == NULL) {
-			/*
-			 * Don't bother checking for duplicate entries:
-			 * we're iterating a single directory.
-			 */
+			 
 			free(name);
 			goto nomem;
 		}
@@ -269,19 +227,11 @@ zfs_mod_supported(const char *scope, const char *name,
 		return (sfeatures->all_features ||
 		    tfind(name, &sfeatures->tree, STRCMP));
 
-	/*
-	 * Check both the primary and alternate sysfs locations to determine
-	 * if the required functionality is supported.
-	 */
+	 
 	supported = (zfs_mod_supported_impl(scope, name, ZFS_SYSFS_DIR) ||
 	    zfs_mod_supported_impl(scope, name, ZFS_SYSFS_ALT_DIR));
 
-	/*
-	 * For backwards compatibility with kernel modules that predate
-	 * supported feature/property checking.  Report the feature/property
-	 * as supported if the kernel module is loaded but the requested
-	 * scope directory does not exist.
-	 */
+	 
 	if (supported == B_FALSE) {
 		if ((access(ZFS_SYSFS_DIR, F_OK) == 0 &&
 		    !zfs_mod_supported_impl(scope, NULL, ZFS_SYSFS_DIR)) ||
@@ -299,16 +249,7 @@ static boolean_t
 zfs_mod_supported_feature(const char *name,
     const struct zfs_mod_supported_features *sfeatures)
 {
-	/*
-	 * The zfs module spa_feature_table[], whether in-kernel or in
-	 * libzpool, always supports all the features. libzfs needs to
-	 * query the running module, via sysfs, to determine which
-	 * features are supported.
-	 *
-	 * The equivalent _can_ be done on FreeBSD by way of the sysctl
-	 * tree, but this has not been done yet.  Therefore, we return
-	 * that all features are supported.
-	 */
+	 
 
 #if defined(_KERNEL) || defined(LIB_ZPOOL_BUILD) || defined(__FreeBSD__)
 	(void) name, (void) sfeatures;
@@ -351,19 +292,7 @@ zfeature_register(spa_feature_t fid, const char *guid, const char *name,
 	    zfs_mod_supported_feature(guid, sfeatures);
 }
 
-/*
- * Every feature has a GUID of the form com.example:feature_name.  The
- * reversed DNS name ensures that the feature's GUID is unique across all ZFS
- * implementations.  This allows companies to independently develop and
- * release features.  Examples include org.delphix and org.datto.  Previously,
- * features developed on one implementation have used that implementation's
- * domain name (e.g. org.illumos and org.zfsonlinux).  Use of the org.openzfs
- * domain name is recommended for new features which are developed by the
- * OpenZFS community and its platforms.  This domain may optionally be used by
- * companies developing features for initial release through an OpenZFS
- * implementation.  Use of the org.openzfs domain requires reserving the
- * feature name in advance with the OpenZFS project.
- */
+ 
 void
 zpool_feature_init(void)
 {

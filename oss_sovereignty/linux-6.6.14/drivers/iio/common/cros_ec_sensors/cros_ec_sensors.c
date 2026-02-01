@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * cros_ec_sensors - Driver for Chrome OS Embedded Controller sensors.
- *
- * Copyright (C) 2016 Google, Inc
- *
- * This driver uses the cros-ec interface to communicate with the Chrome OS
- * EC about sensors data. Data access is presented through iio sysfs.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/iio/buffer.h>
@@ -25,9 +18,9 @@
 
 #define CROS_EC_SENSORS_MAX_CHANNELS 4
 
-/* State data for ec_sensors iio driver. */
+ 
 struct cros_ec_sensors_state {
-	/* Shared by all sensors */
+	 
 	struct cros_ec_sensors_core_state core;
 
 	struct iio_chan_spec channels[CROS_EC_SENSORS_MAX_CHANNELS];
@@ -62,7 +55,7 @@ static int cros_ec_sensors_read(struct iio_dev *indio_dev,
 		if (ret < 0)
 			break;
 
-		/* Save values */
+		 
 		for (i = CROS_EC_SENSOR_X; i < CROS_EC_SENSOR_MAX_AXIS; i++)
 			st->core.calib[i].offset =
 				st->core.resp->sensor_offset.offset[i];
@@ -75,7 +68,7 @@ static int cros_ec_sensors_read(struct iio_dev *indio_dev,
 
 		ret = cros_ec_motion_send_host_cmd(&st->core, 0);
 		if (ret == -EPROTO || ret == -EOPNOTSUPP) {
-			/* Reading calibscale is not supported on older EC. */
+			 
 			*val = 1;
 			*val2 = 0;
 			ret = IIO_VAL_INT_PLUS_MICRO;
@@ -84,7 +77,7 @@ static int cros_ec_sensors_read(struct iio_dev *indio_dev,
 			break;
 		}
 
-		/* Save values */
+		 
 		for (i = CROS_EC_SENSOR_X; i < CROS_EC_SENSOR_MAX_AXIS; i++)
 			st->core.calib[i].scale =
 				st->core.resp->sensor_scale.scale[i];
@@ -105,30 +98,20 @@ static int cros_ec_sensors_read(struct iio_dev *indio_dev,
 		val64 = st->core.resp->sensor_range.ret;
 		switch (st->core.type) {
 		case MOTIONSENSE_TYPE_ACCEL:
-			/*
-			 * EC returns data in g, iio exepects m/s^2.
-			 * Do not use IIO_G_TO_M_S_2 to avoid precision loss.
-			 */
+			 
 			*val = div_s64(val64 * 980665, 10);
 			*val2 = 10000 << (CROS_EC_SENSOR_BITS - 1);
 			ret = IIO_VAL_FRACTIONAL;
 			break;
 		case MOTIONSENSE_TYPE_GYRO:
-			/*
-			 * EC returns data in dps, iio expects rad/s.
-			 * Do not use IIO_DEGREE_TO_RAD to avoid precision
-			 * loss. Round to the nearest integer.
-			 */
+			 
 			*val = 0;
 			*val2 = div_s64(val64 * 3141592653ULL,
 					180 << (CROS_EC_SENSOR_BITS - 1));
 			ret = IIO_VAL_INT_PLUS_NANO;
 			break;
 		case MOTIONSENSE_TYPE_MAG:
-			/*
-			 * EC returns data in 16LSB / uT,
-			 * iio expects Gauss
-			 */
+			 
 			*val = val64;
 			*val2 = 100 << (CROS_EC_SENSOR_BITS - 1);
 			ret = IIO_VAL_FRACTIONAL;
@@ -162,7 +145,7 @@ static int cros_ec_sensors_write(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_CALIBBIAS:
 		st->core.calib[idx].offset = val;
 
-		/* Send to EC for each axis, even if not complete */
+		 
 		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_OFFSET;
 		st->core.param.sensor_offset.flags =
 			MOTION_SENSE_SET_OFFSET;
@@ -176,7 +159,7 @@ static int cros_ec_sensors_write(struct iio_dev *indio_dev,
 		break;
 	case IIO_CHAN_INFO_CALIBSCALE:
 		st->core.calib[idx].scale = val;
-		/* Send to EC for each axis, even if not complete */
+		 
 
 		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_SCALE;
 		st->core.param.sensor_offset.flags =
@@ -197,7 +180,7 @@ static int cros_ec_sensors_write(struct iio_dev *indio_dev,
 		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_RANGE;
 		st->core.param.sensor_range.data = val;
 
-		/* Always roundup, so caller gets at least what it asks for. */
+		 
 		st->core.param.sensor_range.roundup = 1;
 
 		ret = cros_ec_motion_send_host_cmd(&st->core, 0);
@@ -244,7 +227,7 @@ static int cros_ec_sensors_probe(struct platform_device *pdev)
 	state = iio_priv(indio_dev);
 	for (channel = state->channels, i = CROS_EC_SENSOR_X;
 	     i < CROS_EC_SENSOR_MAX_AXIS; i++, channel++) {
-		/* Common part */
+		 
 		channel->info_mask_separate =
 			BIT(IIO_CHAN_INFO_RAW) |
 			BIT(IIO_CHAN_INFO_CALIBBIAS) |
@@ -262,7 +245,7 @@ static int cros_ec_sensors_probe(struct platform_device *pdev)
 		channel->channel2 = IIO_MOD_X + i;
 		channel->scan_type.sign = 's';
 
-		/* Sensor specific */
+		 
 		switch (state->core.type) {
 		case MOTIONSENSE_TYPE_ACCEL:
 			channel->type = IIO_ACCEL;
@@ -279,7 +262,7 @@ static int cros_ec_sensors_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Timestamp */
+	 
 	channel->type = IIO_TIMESTAMP;
 	channel->channel = -1;
 	channel->scan_index = CROS_EC_SENSOR_MAX_AXIS;
@@ -290,7 +273,7 @@ static int cros_ec_sensors_probe(struct platform_device *pdev)
 	indio_dev->channels = state->channels;
 	indio_dev->num_channels = CROS_EC_SENSORS_MAX_CHANNELS;
 
-	/* There is only enough room for accel and gyro in the io space */
+	 
 	if ((state->core.ec->cmd_readmem != NULL) &&
 	    (state->core.type != MOTIONSENSE_TYPE_MAG))
 		state->core.read_ec_sensors_data = cros_ec_sensors_read_lpc;
@@ -311,7 +294,7 @@ static const struct platform_device_id cros_ec_sensors_ids[] = {
 	{
 		.name = "cros-ec-mag",
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, cros_ec_sensors_ids);
 

@@ -1,37 +1,9 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-/*
- * Copyright (c) 2013 by Saso Kiselkov. All rights reserved.
- */
+ 
+ 
 
-/*
- * Copyright (c) 2013, 2018 by Delphix. All rights reserved.
- * Copyright (c) 2019, Klara Inc.
- * Copyright (c) 2019, Allan Jude
- */
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/spa.h>
@@ -40,15 +12,10 @@
 #include <sys/zio_compress.h>
 #include <sys/zstd/zstd.h>
 
-/*
- * If nonzero, every 1/X decompression attempts will fail, simulating
- * an undetected memory error.
- */
+ 
 static unsigned long zio_decompress_fail_fraction = 0;
 
-/*
- * Compression vectors.
- */
+ 
 zio_compress_info_t zio_compress_table[ZIO_COMPRESS_FUNCTIONS] = {
 	{"inherit",	0,	NULL,		NULL, NULL},
 	{"on",		0,	NULL,		NULL, NULL},
@@ -135,23 +102,20 @@ zio_compress_data(enum zio_compress c, abd_t *src, void **dst, size_t s_len,
 	ASSERT((uint_t)c < ZIO_COMPRESS_FUNCTIONS);
 	ASSERT((uint_t)c == ZIO_COMPRESS_EMPTY || ci->ci_compress != NULL);
 
-	/*
-	 * If the data is all zeroes, we don't even need to allocate
-	 * a block for it.  We indicate this by returning zero size.
-	 */
+	 
 	if (abd_iterate_func(src, 0, s_len, zio_compress_zeroed_cb, NULL) == 0)
 		return (0);
 
 	if (c == ZIO_COMPRESS_EMPTY)
 		return (s_len);
 
-	/* Compress at least 12.5% */
+	 
 	d_len = s_len - (s_len >> 3);
 
 	complevel = ci->ci_level;
 
 	if (c == ZIO_COMPRESS_ZSTD) {
-		/* If we don't know the level, we can't compress it */
+		 
 		if (level == ZIO_COMPLEVEL_INHERIT)
 			return (s_len);
 
@@ -166,7 +130,7 @@ zio_compress_data(enum zio_compress c, abd_t *src, void **dst, size_t s_len,
 	if (*dst == NULL)
 		*dst = zio_buf_alloc(s_len);
 
-	/* No compression algorithms can read from ABDs directly */
+	 
 	void *tmp = abd_borrow_buf_copy(src, s_len);
 	c_len = ci->ci_compress(tmp, *dst, s_len, d_len, complevel);
 	abd_return_buf(src, tmp, s_len);
@@ -200,11 +164,7 @@ zio_decompress_data(enum zio_compress c, abd_t *src, void *dst,
 	int ret = zio_decompress_data_buf(c, tmp, dst, s_len, d_len, level);
 	abd_return_buf(src, tmp, s_len);
 
-	/*
-	 * Decompression shouldn't fail, because we've already verified
-	 * the checksum.  However, for extra protection (e.g. against bitflips
-	 * in non-ECC RAM), we handle this error (and test it).
-	 */
+	 
 	if (zio_decompress_fail_fraction != 0 &&
 	    random_in_range(zio_decompress_fail_fraction) == 0)
 		ret = SET_ERROR(EINVAL);

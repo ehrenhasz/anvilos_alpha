@@ -1,21 +1,21 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2020 Marvell. */
+
+ 
 
 #include "otx2_cptvf.h"
 #include "otx2_cpt_common.h"
 
-/* SG list header size in bytes */
+ 
 #define SG_LIST_HDR_SIZE	8
 
-/* Default timeout when waiting for free pending entry in us */
+ 
 #define CPT_PENTRY_TIMEOUT	1000
 #define CPT_PENTRY_STEP		50
 
-/* Default threshold for stopping and resuming sender requests */
+ 
 #define CPT_IQ_STOP_MARGIN	128
 #define CPT_IQ_RESUME_MARGIN	512
 
-/* Default command timeout in seconds */
+ 
 #define CPT_COMMAND_TIMEOUT	4
 #define CPT_TIME_IN_RESET_COUNT 5
 
@@ -193,7 +193,7 @@ static inline struct otx2_cpt_inst_info *info_create(struct pci_dev *pdev,
 	((u16 *)info->in_buffer)[3] = 0;
 	cpu_to_be64s((u64 *)info->in_buffer);
 
-	/* Setup gather (input) components */
+	 
 	if (setup_sgio_components(pdev, req->in, req->in_cnt,
 				  &info->in_buffer[8])) {
 		dev_err(&pdev->dev, "Failed to setup gather list\n");
@@ -213,10 +213,7 @@ static inline struct otx2_cpt_inst_info *info_create(struct pci_dev *pdev,
 		dev_err(&pdev->dev, "DMA Mapping failed for cpt req\n");
 		goto destroy_info;
 	}
-	/*
-	 * Get buffer for union otx2_cpt_res_s response
-	 * structure and its physical address
-	 */
+	 
 	info->completion_addr = info->in_buffer + align_dlen;
 	info->comp_baddr = info->dptr_baddr + align_dlen;
 
@@ -272,11 +269,7 @@ static int process_request(struct pci_dev *pdev, struct otx2_cpt_req_info *req,
 		goto destroy_info;
 	}
 
-	/*
-	 * Check if we are close to filling in entire pending queue,
-	 * if so then tell the sender to stop/sleep by returning -EBUSY
-	 * We do it only for context which can sleep (GFP_KERNEL)
-	 */
+	 
 	if (gfp == GFP_KERNEL &&
 	    pqueue->pending_count > (pqueue->qlen - CPT_IQ_STOP_MARGIN)) {
 		pentry->resume_sender = true;
@@ -294,24 +287,24 @@ static int process_request(struct pci_dev *pdev, struct otx2_cpt_req_info *req,
 	info->time_in = jiffies;
 	info->req = req;
 
-	/* Fill in the command */
+	 
 	iq_cmd.cmd.u = 0;
 	iq_cmd.cmd.s.opcode = cpu_to_be16(cpt_req->opcode.flags);
 	iq_cmd.cmd.s.param1 = cpu_to_be16(cpt_req->param1);
 	iq_cmd.cmd.s.param2 = cpu_to_be16(cpt_req->param2);
 	iq_cmd.cmd.s.dlen   = cpu_to_be16(cpt_req->dlen);
 
-	/* 64-bit swap for microcode data reads, not needed for addresses*/
+	 
 	cpu_to_be64s(&iq_cmd.cmd.u);
 	iq_cmd.dptr = info->dptr_baddr;
 	iq_cmd.rptr = 0;
 	iq_cmd.cptr.u = 0;
 	iq_cmd.cptr.s.grp = ctrl->s.grp;
 
-	/* Fill in the CPT_INST_S type command for HW interpretation */
+	 
 	otx2_cpt_fill_inst(&cptinst, &iq_cmd, info->comp_baddr);
 
-	/* Print debug info if enabled */
+	 
 	otx2_cpt_dump_sg_list(pdev, req);
 	pr_debug("Cpt_inst_s hexdump (%d bytes)\n", OTX2_CPT_INST_SIZE);
 	print_hex_dump_debug("", 0, 16, 1, &cptinst, OTX2_CPT_INST_SIZE, false);
@@ -319,15 +312,10 @@ static int process_request(struct pci_dev *pdev, struct otx2_cpt_req_info *req,
 	print_hex_dump_debug("", 0, 16, 1, info->in_buffer,
 			     cpt_req->dlen, false);
 
-	/* Send CPT command */
+	 
 	lf->lfs->ops->send_cmd(&cptinst, 1, lf);
 
-	/*
-	 * We allocate and prepare pending queue entry in critical section
-	 * together with submitting CPT instruction to CPT instruction queue
-	 * to make sure that order of CPT requests is the same in both
-	 * pending and instruction queues
-	 */
+	 
 	spin_unlock_bh(&pqueue->lock);
 
 	ret = resume_sender ? -EBUSY : -EINPROGRESS;
@@ -378,7 +366,7 @@ static int cpt_process_ccode(struct otx2_cptlfs_info *lfs,
 		break;
 
 	case OTX2_CPT_COMP_E_NOTDONE:
-		/* check for timeout */
+		 
 		if (time_after_eq(jiffies, info->time_in +
 				  CPT_COMMAND_TIMEOUT * HZ))
 			dev_warn(&pdev->dev,
@@ -391,19 +379,9 @@ static int cpt_process_ccode(struct otx2_cptlfs_info *lfs,
 
 	case OTX2_CPT_COMP_E_GOOD:
 	case OTX2_CPT_COMP_E_WARN:
-		/*
-		 * Check microcode completion code, it is only valid
-		 * when completion code is CPT_COMP_E::GOOD
-		 */
+		 
 		if (uc_ccode != OTX2_CPT_UCC_SUCCESS) {
-			/*
-			 * If requested hmac is truncated and ucode returns
-			 * s/g write length error then we report success
-			 * because ucode writes as many bytes of calculated
-			 * hmac as available in gather buffer and reports
-			 * s/g write length error if number of bytes in gather
-			 * buffer is less than full hmac size.
-			 */
+			 
 			if (info->req->is_trunc_hmac &&
 			    uc_ccode == OTX2_CPT_UCC_SG_WRITE_LENGTH) {
 				*res_code = 0;
@@ -416,7 +394,7 @@ static int cpt_process_ccode(struct otx2_cptlfs_info *lfs,
 			otx2_cpt_dump_sg_list(pdev, info->req);
 			break;
 		}
-		/* Request has been processed with success */
+		 
 		*res_code = 0;
 		break;
 
@@ -486,11 +464,7 @@ static inline void process_pending_queue(struct otx2_cptlfs_info *lfs,
 		info->pdev = pdev;
 
 process_pentry:
-		/*
-		 * Check if we should inform sending side to resume
-		 * We do it CPT_IQ_RESUME_MARGIN elements in advance before
-		 * pending queue becomes empty
-		 */
+		 
 		resume_index = modulo_inc(pqueue->front, pqueue->qlen,
 					  CPT_IQ_RESUME_MARGIN);
 		resume_pentry = &pqueue->head[resume_index];
@@ -503,10 +477,7 @@ process_pentry:
 			if (callback) {
 				spin_unlock_bh(&pqueue->lock);
 
-				/*
-				 * EINPROGRESS is an indication for sending
-				 * side that it can resume sending requests
-				 */
+				 
 				callback(-EINPROGRESS, areq, info);
 				spin_lock_bh(&pqueue->lock);
 			}
@@ -520,11 +491,7 @@ process_pentry:
 		pqueue->front = modulo_inc(pqueue->front, pqueue->qlen, 1);
 		spin_unlock_bh(&pqueue->lock);
 
-		/*
-		 * Call callback after current pending entry has been
-		 * processed, we don't do it if the callback pointer is
-		 * invalid.
-		 */
+		 
 		if (callback)
 			callback(res_code, areq, info);
 	}

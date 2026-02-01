@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Read-Copy Update module-based scalability-test facility
- *
- * Copyright (C) IBM Corporation, 2015
- *
- * Authors: Paul E. McKenney <paulmck@linux.ibm.com>
- */
+
+ 
 
 #define pr_fmt(fmt) fmt
 
@@ -53,29 +47,7 @@ MODULE_AUTHOR("Paul E. McKenney <paulmck@linux.ibm.com>");
 #define SCALEOUT_ERRSTRING(s) \
 	pr_alert("%s" SCALE_FLAG "!!! %s\n", scale_type, s)
 
-/*
- * The intended use cases for the nreaders and nwriters module parameters
- * are as follows:
- *
- * 1.	Specify only the nr_cpus kernel boot parameter.  This will
- *	set both nreaders and nwriters to the value specified by
- *	nr_cpus for a mixed reader/writer test.
- *
- * 2.	Specify the nr_cpus kernel boot parameter, but set
- *	rcuscale.nreaders to zero.  This will set nwriters to the
- *	value specified by nr_cpus for an update-only test.
- *
- * 3.	Specify the nr_cpus kernel boot parameter, but set
- *	rcuscale.nwriters to zero.  This will set nreaders to the
- *	value specified by nr_cpus for a read-only test.
- *
- * Various other use cases may of course be specified.
- *
- * Note that this test's readers are intended only as a test load for
- * the writers.  The reader scalability statistics will be overly
- * pessimistic due to the per-critical-section interrupt disabling,
- * test-end checks, and the pair of calls through pointers.
- */
+ 
 
 #ifdef MODULE
 # define RCUSCALE_SHUTDOWN 0
@@ -124,9 +96,7 @@ static DEFINE_PER_CPU(atomic_t, n_async_inflight);
 #define MAX_MEAS 10000
 #define MIN_MEAS 100
 
-/*
- * Operations vector for selecting different types of tests.
- */
+ 
 
 struct rcu_scale_ops {
 	int ptype;
@@ -147,9 +117,7 @@ struct rcu_scale_ops {
 
 static struct rcu_scale_ops *cur_ops;
 
-/*
- * Definitions for rcu scalability testing.
- */
+ 
 
 static int rcu_scale_read_lock(void) __acquires(RCU)
 {
@@ -186,9 +154,7 @@ static struct rcu_scale_ops rcu_ops = {
 	.name		= "rcu"
 };
 
-/*
- * Definitions for srcu scalability testing.
- */
+ 
 
 DEFINE_STATIC_SRCU(srcu_ctl_scale);
 static struct srcu_struct *srcu_ctlp = &srcu_ctl_scale;
@@ -274,9 +240,7 @@ static struct rcu_scale_ops srcud_ops = {
 
 #ifdef CONFIG_TASKS_RCU
 
-/*
- * Definitions for RCU-tasks scalability testing.
- */
+ 
 
 static int tasks_scale_read_lock(void)
 {
@@ -304,17 +268,15 @@ static struct rcu_scale_ops tasks_ops = {
 
 #define TASKS_OPS &tasks_ops,
 
-#else // #ifdef CONFIG_TASKS_RCU
+#else  
 
 #define TASKS_OPS
 
-#endif // #else // #ifdef CONFIG_TASKS_RCU
+#endif  
 
 #ifdef CONFIG_TASKS_RUDE_RCU
 
-/*
- * Definitions for RCU-tasks-rude scalability testing.
- */
+ 
 
 static int tasks_rude_scale_read_lock(void)
 {
@@ -342,17 +304,15 @@ static struct rcu_scale_ops tasks_rude_ops = {
 
 #define TASKS_RUDE_OPS &tasks_rude_ops,
 
-#else // #ifdef CONFIG_TASKS_RUDE_RCU
+#else  
 
 #define TASKS_RUDE_OPS
 
-#endif // #else // #ifdef CONFIG_TASKS_RUDE_RCU
+#endif  
 
 #ifdef CONFIG_TASKS_TRACE_RCU
 
-/*
- * Definitions for RCU-tasks-trace scalability testing.
- */
+ 
 
 static int tasks_trace_scale_read_lock(void)
 {
@@ -382,11 +342,11 @@ static struct rcu_scale_ops tasks_tracing_ops = {
 
 #define TASKS_TRACING_OPS &tasks_tracing_ops,
 
-#else // #ifdef CONFIG_TASKS_TRACE_RCU
+#else  
 
 #define TASKS_TRACING_OPS
 
-#endif // #else // #ifdef CONFIG_TASKS_TRACE_RCU
+#endif  
 
 static unsigned long rcuscale_seq_diff(unsigned long new, unsigned long old)
 {
@@ -395,9 +355,7 @@ static unsigned long rcuscale_seq_diff(unsigned long new, unsigned long old)
 	return cur_ops->gp_diff(new, old);
 }
 
-/*
- * If scalability tests complete, wait for shutdown to commence.
- */
+ 
 static void rcu_scale_wait_shutdown(void)
 {
 	cond_resched_tasks_rcu_qs();
@@ -407,12 +365,7 @@ static void rcu_scale_wait_shutdown(void)
 		schedule_timeout_uninterruptible(1);
 }
 
-/*
- * RCU scalability reader kthread.  Repeatedly does empty RCU read-side
- * critical section, minimizing update-side interference.  However, the
- * point of this test is not to evaluate reader scalability, but instead
- * to serve as a test load for update-side scalability testing.
- */
+ 
 static int
 rcu_scale_reader(void *arg)
 {
@@ -436,18 +389,14 @@ rcu_scale_reader(void *arg)
 	return 0;
 }
 
-/*
- * Callback function for asynchronous grace periods from rcu_scale_writer().
- */
+ 
 static void rcu_scale_async_cb(struct rcu_head *rhp)
 {
 	atomic_dec(this_cpu_ptr(&n_async_inflight));
 	kfree(rhp);
 }
 
-/*
- * RCU scale writer kthread.  Repeatedly does a grace period.
- */
+ 
 static int
 rcu_scale_writer(void *arg)
 {
@@ -471,11 +420,7 @@ rcu_scale_writer(void *arg)
 	if (holdoff)
 		schedule_timeout_idle(holdoff * HZ);
 
-	/*
-	 * Wait until rcu_end_inkernel_boot() is called for normal GP tests
-	 * so that RCU is not always expedited for normal GP tests.
-	 * The system_state test is approximate, but works well in practice.
-	 */
+	 
 	while (!gp_exp && system_state != SYSTEM_RUNNING)
 		schedule_timeout_uninterruptible(1);
 
@@ -510,7 +455,7 @@ retry:
 				cur_ops->gp_barrier();
 				goto retry;
 			} else {
-				kfree(rhp); /* Because we are stopping. */
+				kfree(rhp);  
 			}
 		} else if (gp_exp) {
 			cur_ops->exp_sync();
@@ -542,7 +487,7 @@ retry:
 						cur_ops->get_gp_seq();
 				}
 				if (shutdown) {
-					smp_mb(); /* Assign before wake. */
+					smp_mb();  
 					wake_up(&shutdown_wq);
 				}
 			}
@@ -570,11 +515,7 @@ rcu_scale_print_module_parms(struct rcu_scale_ops *cur_ops, const char *tag)
 		 scale_type, tag, gp_async, gp_async_max, gp_exp, holdoff, minruntime, nrealreaders, nrealwriters, writer_holdoff, writer_holdoff_jiffies, verbose, shutdown);
 }
 
-/*
- * Return the number if non-negative.  If -1, the number of CPUs.
- * If less than -1, that much less than the number of CPUs, but
- * at least one.
- */
+ 
 static int compute_real(int n)
 {
 	int nr;
@@ -589,10 +530,7 @@ static int compute_real(int n)
 	return nr;
 }
 
-/*
- * kfree_rcu() scalability tests: Start a kfree_rcu() loop on all CPUs for number
- * of iterations and measure total time and number of GP for all iterations to complete.
- */
+ 
 
 torture_param(int, kfree_nthreads, -1, "Number of threads running loops of kfree_rcu().");
 torture_param(int, kfree_alloc_num, 8000, "Number of allocations and frees done in an iteration.");
@@ -612,7 +550,7 @@ struct kfree_obj {
 	struct rcu_head rh;
 };
 
-/* Used if doing RCU-kfree'ing via call_rcu(). */
+ 
 static void kfree_call_rcu(struct rcu_head *rh)
 {
 	struct kfree_obj *obj = container_of(rh, struct kfree_obj, rh);
@@ -662,10 +600,10 @@ kfree_scale_thread(void *arg)
 				continue;
 			}
 
-			// By default kfree_rcu_test_single and kfree_rcu_test_double are
-			// initialized to false. If both have the same value (false or true)
-			// both are randomly tested, otherwise only the one with value true
-			// is tested.
+			
+			
+			
+			
 			if ((kfree_rcu_test_single && !kfree_rcu_test_double) ||
 					(kfree_rcu_test_both && torture_random(&tr) & 0x800))
 				kfree_rcu_mightsleep(alloc_ptr);
@@ -690,7 +628,7 @@ kfree_scale_thread(void *arg)
 		       (mem_begin - mem_during) >> (20 - PAGE_SHIFT));
 
 		if (shutdown) {
-			smp_mb(); /* Assign before wake. */
+			smp_mb();  
 			wake_up(&shutdown_wq);
 		}
 	}
@@ -717,23 +655,21 @@ kfree_scale_cleanup(void)
 	torture_cleanup_end();
 }
 
-/*
- * shutdown kthread.  Just waits to be awakened, then shuts down system.
- */
+ 
 static int
 kfree_scale_shutdown(void *arg)
 {
 	wait_event_idle(shutdown_wq,
 			atomic_read(&n_kfree_scale_thread_ended) >= kfree_nrealthreads);
 
-	smp_mb(); /* Wake before output. */
+	smp_mb();  
 
 	kfree_scale_cleanup();
 	kernel_power_off();
 	return -EINVAL;
 }
 
-// Used if doing RCU-kfree'ing via call_rcu().
+
 static unsigned long jiffies_at_lazy_cb;
 static struct rcu_head lazy_test1_rh;
 static int rcu_lazy_test1_cb_called;
@@ -755,15 +691,15 @@ kfree_scale_init(void)
 		 "--- kfree_rcu_test: kfree_mult=%d kfree_by_call_rcu=%d kfree_nthreads=%d kfree_alloc_num=%d kfree_loops=%d kfree_rcu_test_double=%d kfree_rcu_test_single=%d\n",
 		 scale_type, kfree_mult, kfree_by_call_rcu, kfree_nthreads, kfree_alloc_num, kfree_loops, kfree_rcu_test_double, kfree_rcu_test_single);
 
-	// Also, do a quick self-test to ensure laziness is as much as
-	// expected.
+	
+	
 	if (kfree_by_call_rcu && !IS_ENABLED(CONFIG_RCU_LAZY)) {
 		pr_alert("CONFIG_RCU_LAZY is disabled, falling back to kfree_rcu() for delayed RCU kfree'ing\n");
 		kfree_by_call_rcu = 0;
 	}
 
 	if (kfree_by_call_rcu) {
-		/* do a test to check the timeout. */
+		 
 		orig_jif = rcu_lazy_get_jiffies_till_flush();
 
 		rcu_lazy_set_jiffies_till_flush(2 * HZ);
@@ -791,7 +727,7 @@ kfree_scale_init(void)
 	}
 
 	kfree_nrealthreads = compute_real(kfree_nthreads);
-	/* Start up the kthreads. */
+	 
 	if (shutdown) {
 		init_waitqueue_head(&shutdown_wq);
 		firsterr = torture_create_kthread(kfree_scale_shutdown, NULL,
@@ -840,10 +776,7 @@ rcu_scale_cleanup(void)
 	u64 *wdp;
 	u64 *wdpp;
 
-	/*
-	 * Would like warning at start, but everything is expedited
-	 * during the mid-boot phase, so have to wait till the end.
-	 */
+	 
 	if (rcu_gp_is_expedited() && !rcu_gp_is_normal() && !gp_exp)
 		SCALEOUT_ERRSTRING("All grace periods expedited, no normal ones to measure!");
 	if (rcu_gp_is_normal() && gp_exp)
@@ -851,7 +784,7 @@ rcu_scale_cleanup(void)
 	if (gp_exp && gp_async)
 		SCALEOUT_ERRSTRING("No expedited async GPs, so went with async!");
 
-	// If built-in, just report all of the GP kthread's CPU time.
+	
 	if (IS_BUILTIN(CONFIG_RCU_SCALE_TEST) && !kthread_tp && cur_ops->rso_gp_kthread)
 		kthread_tp = cur_ops->rso_gp_kthread();
 	if (kthread_tp) {
@@ -924,22 +857,19 @@ rcu_scale_cleanup(void)
 		kfree(writer_n_durations);
 	}
 
-	/* Do torture-type-specific cleanup operations.  */
+	 
 	if (cur_ops->cleanup != NULL)
 		cur_ops->cleanup();
 
 	torture_cleanup_end();
 }
 
-/*
- * RCU scalability shutdown kthread.  Just waits to be awakened, then shuts
- * down system.
- */
+ 
 static int
 rcu_scale_shutdown(void *arg)
 {
 	wait_event_idle(shutdown_wq, atomic_read(&n_rcu_scale_writer_finished) >= nrealwriters);
-	smp_mb(); /* Wake before output. */
+	smp_mb();  
 	rcu_scale_cleanup();
 	kernel_power_off();
 	return -EINVAL;
@@ -957,7 +887,7 @@ rcu_scale_init(void)
 	if (!torture_init_begin(scale_type, verbose))
 		return -EBUSY;
 
-	/* Process args and announce that the scalability'er is on the job. */
+	 
 	for (i = 0; i < ARRAY_SIZE(scale_ops); i++) {
 		cur_ops = scale_ops[i];
 		if (strcmp(scale_type, cur_ops->name) == 0)
@@ -991,7 +921,7 @@ rcu_scale_init(void)
 	atomic_set(&n_rcu_scale_writer_finished, 0);
 	rcu_scale_print_module_parms(cur_ops, "Start of test");
 
-	/* Start up the kthreads. */
+	 
 
 	if (shutdown) {
 		init_waitqueue_head(&shutdown_wq);

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/unistd.h>
 #include <linux/kernel.h>
 #include <linux/fs.h>
@@ -14,7 +14,7 @@
 
 unsigned long initrd_start, initrd_end;
 int initrd_below_start_ok;
-static unsigned int real_root_dev;	/* do_proc_dointvec cannot handle kdev_t */
+static unsigned int real_root_dev;	 
 static int __initdata mount_initrd = 1;
 
 phys_addr_t phys_initrd_start __initdata;
@@ -38,7 +38,7 @@ static __init int kernel_do_mounts_initrd_sysctls_init(void)
 	return 0;
 }
 late_initcall(kernel_do_mounts_initrd_sysctls_init);
-#endif /* CONFIG_SYSCTL */
+#endif  
 
 static int __init no_initrd(char *str)
 {
@@ -75,7 +75,7 @@ static int __init init_linuxrc(struct subprocess_info *info, struct cred *new)
 {
 	ksys_unshare(CLONE_FS | CLONE_FILES);
 	console_on_rootfs();
-	/* move initrd over / and chdir/chroot in initrd root */
+	 
 	init_chdir("/root");
 	init_mount(".", "/", NULL, MS_MOVE, NULL);
 	init_chroot(".");
@@ -94,7 +94,7 @@ static void __init handle_initrd(char *root_device_name)
 
 	real_root_dev = new_encode_dev(ROOT_DEV);
 	create_dev("/dev/root.old", Root_RAM0);
-	/* mount initrd on rootfs' /root */
+	 
 	mount_root_generic("/dev/root.old", root_device_name,
 			   root_mountflags & ~MS_RDONLY);
 	init_mkdir("/old", 0700);
@@ -106,9 +106,9 @@ static void __init handle_initrd(char *root_device_name)
 		return;
 	call_usermodehelper_exec(info, UMH_WAIT_PROC|UMH_FREEZABLE);
 
-	/* move initrd to rootfs' /old */
+	 
 	init_mount("..", ".", NULL, MS_MOVE, NULL);
-	/* switch root and cwd back to / of rootfs */
+	 
 	init_chroot("..");
 
 	if (new_decode_dev(real_root_dev) == Root_RAM0) {
@@ -138,12 +138,7 @@ bool __init initrd_load(char *root_device_name)
 {
 	if (mount_initrd) {
 		create_dev("/dev/ram", Root_RAM0);
-		/*
-		 * Load the initrd data into /dev/ram0. Execute it as initrd
-		 * unless /dev/ram0 is supposed to be our actual root device,
-		 * in that case the ram disk is just set up here, and gets
-		 * mounted in the normal path.
-		 */
+		 
 		if (rd_load_image("/initrd.image") && ROOT_DEV != Root_RAM0) {
 			init_unlink("/initrd.image");
 			handle_initrd(root_device_name);

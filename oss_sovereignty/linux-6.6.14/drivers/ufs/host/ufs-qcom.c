@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013-2016, Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/time.h>
@@ -62,7 +60,7 @@ static const struct __ufs_qcom_bw_table {
 	u32 mem_bw;
 	u32 cfg_bw;
 } ufs_qcom_bw_table[MODE_MAX + 1][QCOM_UFS_MAX_GEAR + 1][QCOM_UFS_MAX_LANE + 1] = {
-	[MODE_MIN][0][0]		   = { 0,		0 }, /* Bandwidth values in KB/s */
+	[MODE_MIN][0][0]		   = { 0,		0 },  
 	[MODE_PWM][UFS_PWM_G1][UFS_LANE_1] = { 922,		1000 },
 	[MODE_PWM][UFS_PWM_G2][UFS_LANE_1] = { 1844,		1000 },
 	[MODE_PWM][UFS_PWM_G3][UFS_LANE_1] = { 3688,		1000 },
@@ -155,7 +153,7 @@ static int ufs_qcom_ice_program_key(struct ufs_hba *hba,
 	bool config_enable =
 		cfg->config_enable & UFS_CRYPTO_CONFIGURATION_ENABLE;
 
-	/* Only AES-256-XTS has been tested so far. */
+	 
 	cap = hba->crypto_cap_array[cfg->crypto_cap_idx];
 	if (cap.algorithm_id != UFS_CRYPTO_ALG_AES_XTS ||
 	    cap.key_size != UFS_CRYPTO_KEY_SIZE_256)
@@ -305,7 +303,7 @@ static int ufs_qcom_init_lane_clks(struct ufs_qcom_host *host)
 	if (err)
 		return err;
 
-	/* In case of single lane per direction, don't read lane1 clocks */
+	 
 	if (host->hba->lanes_per_direction > 1) {
 		err = ufs_qcom_host_clk_get(dev, "rx_lane1_sync_clk",
 			&host->rx_l1_sync_clk, false);
@@ -333,14 +331,11 @@ static int ufs_qcom_check_hibern8(struct ufs_hba *hba)
 		if (err || tx_fsm_val == TX_FSM_HIBERN8)
 			break;
 
-		/* sleep for max. 200us */
+		 
 		usleep_range(100, 200);
 	} while (time_before(jiffies, timeout));
 
-	/*
-	 * we might have scheduled out for long during polling so
-	 * check the state again.
-	 */
+	 
 	if (time_after(jiffies, timeout))
 		err = ufshcd_dme_get(hba,
 				UIC_ARG_MIB_SEL(MPHY_TX_FSM_STATE,
@@ -368,13 +363,11 @@ static void ufs_qcom_select_unipro_mode(struct ufs_qcom_host *host)
 	if (host->hw_ver.major >= 0x05)
 		ufshcd_rmwl(host->hba, QUNIPRO_G4_SEL, 0, REG_UFS_CFG0);
 
-	/* make sure above configuration is applied before we return */
+	 
 	mb();
 }
 
-/*
- * ufs_qcom_host_reset - reset host controller and PHY
- */
+ 
 static int ufs_qcom_host_reset(struct ufs_hba *hba)
 {
 	int ret = 0;
@@ -397,11 +390,7 @@ static int ufs_qcom_host_reset(struct ufs_hba *hba)
 		return ret;
 	}
 
-	/*
-	 * The hardware requirement for delay between assert/deassert
-	 * is at least 3-4 sleep clock (32.7KHz) cycles, which comes to
-	 * ~125us (4/32768). To be on the safe side add 200us delay.
-	 */
+	 
 	usleep_range(200, 210);
 
 	ret = reset_control_deassert(host->core_reset);
@@ -424,19 +413,13 @@ static u32 ufs_qcom_get_hs_gear(struct ufs_hba *hba)
 	struct ufs_qcom_host *host = ufshcd_get_variant(hba);
 
 	if (host->hw_ver.major == 0x1) {
-		/*
-		 * HS-G3 operations may not reliably work on legacy QCOM
-		 * UFS host controller hardware even though capability
-		 * exchange during link startup phase may end up
-		 * negotiating maximum supported gear as G3.
-		 * Hence downgrade the maximum supported gear to HS-G2.
-		 */
+		 
 		return UFS_HS_G2;
 	} else if (host->hw_ver.major >= 0x4) {
 		return UFS_QCOM_MAX_GEAR(ufshcd_readl(hba, REG_UFS_PARAM0));
 	}
 
-	/* Default is HS-G3 */
+	 
 	return UFS_HS_G3;
 }
 
@@ -446,13 +429,13 @@ static int ufs_qcom_power_up_sequence(struct ufs_hba *hba)
 	struct phy *phy = host->generic_phy;
 	int ret;
 
-	/* Reset UFS Host Controller and PHY */
+	 
 	ret = ufs_qcom_host_reset(hba);
 	if (ret)
 		dev_warn(hba->dev, "%s: host reset returned %d\n",
 				  __func__, ret);
 
-	/* phy initialization - calibrate the phy */
+	 
 	ret = phy_init(phy);
 	if (ret) {
 		dev_err(hba->dev, "%s: phy init failed, ret = %d\n",
@@ -462,7 +445,7 @@ static int ufs_qcom_power_up_sequence(struct ufs_hba *hba)
 
 	phy_set_mode_ext(phy, PHY_MODE_UFS_HS_B, host->hs_gear);
 
-	/* power on phy - start serdes and phy's power and clocks */
+	 
 	ret = phy_power_on(phy);
 	if (ret) {
 		dev_err(hba->dev, "%s: phy power on failed, ret = %d\n",
@@ -480,21 +463,14 @@ out_disable_phy:
 	return ret;
 }
 
-/*
- * The UTP controller has a number of internal clock gating cells (CGCs).
- * Internal hardware sub-modules within the UTP controller control the CGCs.
- * Hardware CGCs disable the clock to inactivate UTP sub-modules not involved
- * in a specific operation, UTP controller CGCs are by default disabled and
- * this function enables them (after every UFS link startup) to save some power
- * leakage.
- */
+ 
 static void ufs_qcom_enable_hw_clk_gating(struct ufs_hba *hba)
 {
 	ufshcd_writel(hba,
 		ufshcd_readl(hba, REG_UFS_CFG2) | REG_UFS_CFG2_CGC_EN_ALL,
 		REG_UFS_CFG2);
 
-	/* Ensure that HW clock gating is enabled before next operations */
+	 
 	mb();
 }
 
@@ -507,15 +483,11 @@ static int ufs_qcom_hce_enable_notify(struct ufs_hba *hba,
 	switch (status) {
 	case PRE_CHANGE:
 		ufs_qcom_power_up_sequence(hba);
-		/*
-		 * The PHY PLL output is the source of tx/rx lane symbol
-		 * clocks, hence, enable the lane clocks only after PHY
-		 * is initialized.
-		 */
+		 
 		err = ufs_qcom_enable_lane_clks(host);
 		break;
 	case POST_CHANGE:
-		/* check if UFS PHY moved from DISABLED to HIBERN8 */
+		 
 		err = ufs_qcom_check_hibern8(hba);
 		ufs_qcom_enable_hw_clk_gating(hba);
 		ufs_qcom_ice_enable(host);
@@ -528,9 +500,7 @@ static int ufs_qcom_hce_enable_notify(struct ufs_hba *hba,
 	return err;
 }
 
-/*
- * Return: zero for success and non-zero in case of a failure.
- */
+ 
 static int ufs_qcom_cfg_timers(struct ufs_hba *hba, u32 gear,
 			       u32 hs, u32 rate, bool update_link_startup_timer)
 {
@@ -560,13 +530,7 @@ static int ufs_qcom_cfg_timers(struct ufs_hba *hba, u32 gear,
 		{UFS_HS_G3, 0x92},
 	};
 
-	/*
-	 * The Qunipro controller does not use following registers:
-	 * SYS1CLK_1US_REG, TX_SYMBOL_CLK_1US_REG, CLK_NS_REG &
-	 * UFS_REG_PA_LINK_STARTUP_TIMER
-	 * But UTP controller uses SYS1CLK_1US_REG register for Interrupt
-	 * Aggregation logic.
-	*/
+	 
 	if (ufs_qcom_cap_qunipro(host) && !ufshcd_is_intr_aggr_allowed(hba))
 		return 0;
 
@@ -580,17 +544,14 @@ static int ufs_qcom_cfg_timers(struct ufs_hba *hba, u32 gear,
 			core_clk_rate = clk_get_rate(clki->clk);
 	}
 
-	/* If frequency is smaller than 1MHz, set to 1MHz */
+	 
 	if (core_clk_rate < DEFAULT_CLK_RATE_HZ)
 		core_clk_rate = DEFAULT_CLK_RATE_HZ;
 
 	core_clk_cycles_per_us = core_clk_rate / USEC_PER_SEC;
 	if (ufshcd_readl(hba, REG_UFS_SYS1CLK_1US) != core_clk_cycles_per_us) {
 		ufshcd_writel(hba, core_clk_cycles_per_us, REG_UFS_SYS1CLK_1US);
-		/*
-		 * make sure above write gets applied before we return from
-		 * this function.
-		 */
+		 
 		mb();
 	}
 
@@ -647,23 +608,17 @@ static int ufs_qcom_cfg_timers(struct ufs_hba *hba, u32 gear,
 
 	if (ufshcd_readl(hba, REG_UFS_TX_SYMBOL_CLK_NS_US) !=
 	    (core_clk_period_in_ns | tx_clk_cycles_per_us)) {
-		/* this register 2 fields shall be written at once */
+		 
 		ufshcd_writel(hba, core_clk_period_in_ns | tx_clk_cycles_per_us,
 			      REG_UFS_TX_SYMBOL_CLK_NS_US);
-		/*
-		 * make sure above write gets applied before we return from
-		 * this function.
-		 */
+		 
 		mb();
 	}
 
 	if (update_link_startup_timer && host->hw_ver.major != 0x5) {
 		ufshcd_writel(hba, ((core_clk_rate / MSEC_PER_SEC) * 100),
 			      REG_UFS_CFG0);
-		/*
-		 * make sure that this configuration is applied before
-		 * we return
-		 */
+		 
 		mb();
 	}
 
@@ -686,20 +641,11 @@ static int ufs_qcom_link_startup_notify(struct ufs_hba *hba,
 		}
 
 		if (ufs_qcom_cap_qunipro(host))
-			/*
-			 * set unipro core clock cycles to 150 & clear clock
-			 * divider
-			 */
+			 
 			err = ufs_qcom_set_dme_vs_core_clk_ctrl_clear_div(hba,
 									  150);
 
-		/*
-		 * Some UFS devices (and may be host) have issues if LCC is
-		 * enabled. So we are setting PA_Local_TX_LCC_Enable to 0
-		 * before link startup which will make sure that both host
-		 * and device TX LCC are disabled once link startup is
-		 * completed.
-		 */
+		 
 		if (ufshcd_get_local_unipro_ver(hba) != UFS_UNIPRO_VER_1_41)
 			err = ufshcd_disable_host_tx_lcc(hba);
 
@@ -715,7 +661,7 @@ static void ufs_qcom_device_reset_ctrl(struct ufs_hba *hba, bool asserted)
 {
 	struct ufs_qcom_host *host = ufshcd_get_variant(hba);
 
-	/* reset gpio is optional */
+	 
 	if (!host->device_reset)
 		return;
 
@@ -732,15 +678,11 @@ static int ufs_qcom_suspend(struct ufs_hba *hba, enum ufs_pm_op pm_op,
 		return 0;
 
 	if (ufs_qcom_is_link_off(hba)) {
-		/*
-		 * Disable the tx/rx lane symbol clocks before PHY is
-		 * powered down as the PLL source should be disabled
-		 * after downstream clocks are disabled.
-		 */
+		 
 		ufs_qcom_disable_lane_clks(host);
 		phy_power_off(phy);
 
-		/* reset the connected UFS device during power down */
+		 
 		ufs_qcom_device_reset_ctrl(hba, true);
 
 	} else if (!ufs_qcom_is_link_active(hba)) {
@@ -788,12 +730,7 @@ static void ufs_qcom_dev_ref_clk_ctrl(struct ufs_qcom_host *host, bool enable)
 		else
 			temp &= ~host->dev_ref_clk_en_mask;
 
-		/*
-		 * If we are here to disable this clock it might be immediately
-		 * after entering into hibern8 in which case we need to make
-		 * sure that device ref_clk is active for specific time after
-		 * hibern8 enter.
-		 */
+		 
 		if (!enable) {
 			unsigned long gating_wait;
 
@@ -801,13 +738,7 @@ static void ufs_qcom_dev_ref_clk_ctrl(struct ufs_qcom_host *host, bool enable)
 			if (!gating_wait) {
 				udelay(1);
 			} else {
-				/*
-				 * bRefClkGatingWaitTime defines the minimum
-				 * time for which the reference clock is
-				 * required by device during transition from
-				 * HS-MODE to LS-MODE or HIBERN8 state. Give it
-				 * more delay to be on the safe side.
-				 */
+				 
 				gating_wait += 10;
 				usleep_range(gating_wait, gating_wait + 10);
 			}
@@ -815,17 +746,10 @@ static void ufs_qcom_dev_ref_clk_ctrl(struct ufs_qcom_host *host, bool enable)
 
 		writel_relaxed(temp, host->dev_ref_clk_ctrl_mmio);
 
-		/*
-		 * Make sure the write to ref_clk reaches the destination and
-		 * not stored in a Write Buffer (WB).
-		 */
+		 
 		readl(host->dev_ref_clk_ctrl_mmio);
 
-		/*
-		 * If we call hibern8 exit after this, we need to make sure that
-		 * device ref_clk is stable for at least 1us before the hibern8
-		 * exit command.
-		 */
+		 
 		if (enable)
 			udelay(1);
 
@@ -897,7 +821,7 @@ static int ufs_qcom_pwr_change_notify(struct ufs_hba *hba,
 		ufshcd_init_pwr_dev_param(&ufs_qcom_cap);
 		ufs_qcom_cap.hs_rate = UFS_QCOM_LIMIT_HS_RATE;
 
-		/* This driver only supports symmetic gear setting i.e., hs_tx_gear == hs_rx_gear */
+		 
 		ufs_qcom_cap.hs_tx_gear = ufs_qcom_cap.hs_rx_gear = ufs_qcom_get_hs_gear(hba);
 
 		ret = ufshcd_get_pwr_dev_param(&ufs_qcom_cap,
@@ -909,15 +833,11 @@ static int ufs_qcom_pwr_change_notify(struct ufs_hba *hba,
 			return ret;
 		}
 
-		/*
-		 * Update hs_gear only when the gears are scaled to a higher value. This is because,
-		 * the PHY gear settings are backwards compatible and we only need to change the PHY
-		 * settings while scaling to higher gears.
-		 */
+		 
 		if (dev_req_params->gear_tx > host->hs_gear)
 			host->hs_gear = dev_req_params->gear_tx;
 
-		/* enable the device ref clock before changing to HS mode */
+		 
 		if (!ufshcd_is_hs_mode(&hba->pwr_info) &&
 			ufshcd_is_hs_mode(dev_req_params))
 			ufs_qcom_dev_ref_clk_ctrl(host, true);
@@ -934,21 +854,17 @@ static int ufs_qcom_pwr_change_notify(struct ufs_hba *hba,
 					dev_req_params->hs_rate, false)) {
 			dev_err(hba->dev, "%s: ufs_qcom_cfg_timers() failed\n",
 				__func__);
-			/*
-			 * we return error code at the end of the routine,
-			 * but continue to configure UFS_PHY_TX_LANE_ENABLE
-			 * and bus voting as usual
-			 */
+			 
 			ret = -EINVAL;
 		}
 
-		/* cache the power mode parameters to use internally */
+		 
 		memcpy(&host->dev_req_params,
 				dev_req_params, sizeof(*dev_req_params));
 
 		ufs_qcom_icc_update_bw(host);
 
-		/* disable the device ref clock if entered PWM mode */
+		 
 		if (ufshcd_is_hs_mode(&hba->pwr_info) &&
 			!ufshcd_is_hs_mode(dev_req_params))
 			ufs_qcom_dev_ref_clk_ctrl(host, false);
@@ -971,7 +887,7 @@ static int ufs_qcom_quirk_host_pa_saveconfigtime(struct ufs_hba *hba)
 	if (err)
 		return err;
 
-	/* Allow extension of MSB bits of PA_SaveConfigTime attribute */
+	 
 	return ufshcd_dme_set(hba, UIC_ARG_MIB(PA_VS_CONFIG_REG1),
 			    (pa_vs_config_reg1 | (1 << 12)));
 }
@@ -999,15 +915,7 @@ static u32 ufs_qcom_get_ufs_hci_version(struct ufs_hba *hba)
 		return ufshci_version(2, 0);
 }
 
-/**
- * ufs_qcom_advertise_quirks - advertise the known QCOM UFS controller quirks
- * @hba: host controller instance
- *
- * QCOM UFS host controller might have some non standard behaviours (quirks)
- * than what is specified by UFSHCI specification. Advertise all such
- * quirks to standard UFS host controller driver so standard takes them into
- * account.
- */
+ 
 static void ufs_qcom_advertise_quirks(struct ufs_hba *hba)
 {
 	struct ufs_qcom_host *host = ufshcd_get_variant(hba);
@@ -1027,7 +935,7 @@ static void ufs_qcom_advertise_quirks(struct ufs_hba *hba)
 		hba->quirks |= UFSHCD_QUIRK_BROKEN_UFS_HCI_VERSION;
 
 		if (!ufs_qcom_cap_qunipro(host))
-			/* Legacy UniPro mode still need following quirks */
+			 
 			hba->quirks |= (UFSHCD_QUIRK_DELAY_BEFORE_DME_CMDS
 				| UFSHCD_QUIRK_DME_PEER_ACCESS_AUTO_MODE
 				| UFSHCD_QUIRK_BROKEN_PA_RXHSUNTERMCAP);
@@ -1054,24 +962,13 @@ static void ufs_qcom_set_caps(struct ufs_hba *hba)
 	}
 }
 
-/**
- * ufs_qcom_setup_clocks - enables/disable clocks
- * @hba: host controller instance
- * @on: If true, enable clocks else disable them.
- * @status: PRE_CHANGE or POST_CHANGE notify
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 static int ufs_qcom_setup_clocks(struct ufs_hba *hba, bool on,
 				 enum ufs_notify_change_status status)
 {
 	struct ufs_qcom_host *host = ufshcd_get_variant(hba);
 
-	/*
-	 * In case ufs_qcom_init() is not yet done, simply ignore.
-	 * This ufs_qcom_setup_clocks() shall be called from
-	 * ufs_qcom_init() after init is done.
-	 */
+	 
 	if (!host)
 		return 0;
 
@@ -1081,14 +978,14 @@ static int ufs_qcom_setup_clocks(struct ufs_hba *hba, bool on,
 			ufs_qcom_icc_update_bw(host);
 		} else {
 			if (!ufs_qcom_is_link_active(hba)) {
-				/* disable device ref_clk */
+				 
 				ufs_qcom_dev_ref_clk_ctrl(host, false);
 			}
 		}
 		break;
 	case POST_CHANGE:
 		if (on) {
-			/* enable the device ref clock for HS mode*/
+			 
 			if (ufshcd_is_hs_mode(&hba->pwr_info))
 				ufs_qcom_dev_ref_clk_ctrl(host, true);
 		} else {
@@ -1107,7 +1004,7 @@ ufs_qcom_reset_assert(struct reset_controller_dev *rcdev, unsigned long id)
 	struct ufs_qcom_host *host = rcdev_to_ufs_host(rcdev);
 
 	ufs_qcom_assert_reset(host->hba);
-	/* provide 1ms delay to let the reset pulse propagate. */
+	 
 	usleep_range(1000, 1100);
 	return 0;
 }
@@ -1119,10 +1016,7 @@ ufs_qcom_reset_deassert(struct reset_controller_dev *rcdev, unsigned long id)
 
 	ufs_qcom_deassert_reset(host->hba);
 
-	/*
-	 * after reset deassertion, phy will need all ref clocks,
-	 * voltage, current to settle down before starting serdes.
-	 */
+	 
 	usleep_range(1000, 1100);
 	return 0;
 }
@@ -1147,11 +1041,7 @@ static int ufs_qcom_icc_init(struct ufs_qcom_host *host)
 		return dev_err_probe(dev, PTR_ERR(host->icc_cpu),
 				    "failed to acquire interconnect path\n");
 
-	/*
-	 * Set Maximum bandwidth vote before initializing the UFS controller and
-	 * device. Ideally, a minimal interconnect vote would suffice for the
-	 * initialization, but a max vote would allow faster initialization.
-	 */
+	 
 	ret = ufs_qcom_icc_set_bw(host, ufs_qcom_bw_table[MODE_MAX][0][0].mem_bw,
 				  ufs_qcom_bw_table[MODE_MAX][0][0].cfg_bw);
 	if (ret < 0)
@@ -1160,16 +1050,7 @@ static int ufs_qcom_icc_init(struct ufs_qcom_host *host)
 	return 0;
 }
 
-/**
- * ufs_qcom_init - bind phy with controller
- * @hba: host controller instance
- *
- * Binds PHY with controller and powers up PHY enabling clocks
- * and regulators.
- *
- * Return: -EPROBE_DEFER if binding fails, returns negative error
- * on phy power up failure and returns zero on success.
- */
+ 
 static int ufs_qcom_init(struct ufs_hba *hba)
 {
 	int err;
@@ -1185,11 +1066,11 @@ static int ufs_qcom_init(struct ufs_hba *hba)
 		return -ENOMEM;
 	}
 
-	/* Make a two way bind between the qcom host and the hba */
+	 
 	host->hba = hba;
 	ufshcd_set_variant(hba, host);
 
-	/* Setup the optional reset control of HCI */
+	 
 	host->core_reset = devm_reset_control_get_optional(hba->dev, "rst");
 	if (IS_ERR(host->core_reset)) {
 		err = dev_err_probe(dev, PTR_ERR(host->core_reset),
@@ -1197,7 +1078,7 @@ static int ufs_qcom_init(struct ufs_hba *hba)
 		goto out_variant_clear;
 	}
 
-	/* Fire up the reset controller. Failure here is non-fatal. */
+	 
 	host->rcdev.of_node = dev->of_node;
 	host->rcdev.ops = &ufs_qcom_reset_ops;
 	host->rcdev.owner = dev->driver->owner;
@@ -1230,15 +1111,12 @@ static int ufs_qcom_init(struct ufs_hba *hba)
 	ufs_qcom_get_controller_revision(hba, &host->hw_ver.major,
 		&host->hw_ver.minor, &host->hw_ver.step);
 
-	/*
-	 * for newer controllers, device reference clock control bit has
-	 * moved inside UFS controller register address space itself.
-	 */
+	 
 	if (host->hw_ver.major >= 0x02) {
 		host->dev_ref_clk_ctrl_mmio = hba->mmio_base + REG_UFS_CFG1;
 		host->dev_ref_clk_en_mask = BIT(26);
 	} else {
-		/* "dev_ref_clk_ctrl_mem" is optional resource */
+		 
 		res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
 						   "dev_ref_clk_ctrl_mem");
 		if (res) {
@@ -1274,14 +1152,11 @@ static int ufs_qcom_init(struct ufs_hba *hba)
 	ufs_qcom_get_default_testbus_cfg(host);
 	err = ufs_qcom_testbus_config(host);
 	if (err)
-		/* Failure is non-fatal */
+		 
 		dev_warn(dev, "%s: failed to configure the testbus %d\n",
 				__func__, err);
 
-	/*
-	 * Power up the PHY using the minimum supported gear (UFS_HS_G2).
-	 * Switching to max gear will be performed during reinit if supported.
-	 */
+	 
 	host->hs_gear = UFS_HS_G2;
 
 	return 0;
@@ -1319,7 +1194,7 @@ static int ufs_qcom_set_dme_vs_core_clk_ctrl_clear_div(struct ufs_hba *hba,
 	core_clk_ctrl_reg &= ~DME_VS_CORE_CLK_CTRL_MAX_CORE_CLK_1US_CYCLES_MASK;
 	core_clk_ctrl_reg |= clk_cycles;
 
-	/* Clear CORE_CLK_DIV_EN */
+	 
 	core_clk_ctrl_reg &= ~DME_VS_CORE_CLK_CTRL_CORE_CLK_DIV_EN_BIT;
 
 	return ufshcd_dme_set(hba,
@@ -1329,7 +1204,7 @@ static int ufs_qcom_set_dme_vs_core_clk_ctrl_clear_div(struct ufs_hba *hba,
 
 static int ufs_qcom_clk_scale_up_pre_change(struct ufs_hba *hba)
 {
-	/* nothing to do as of now */
+	 
 	return 0;
 }
 
@@ -1340,7 +1215,7 @@ static int ufs_qcom_clk_scale_up_post_change(struct ufs_hba *hba)
 	if (!ufs_qcom_cap_qunipro(host))
 		return 0;
 
-	/* set unipro core clock cycles to 150 and clear clock divider */
+	 
 	return ufs_qcom_set_dme_vs_core_clk_ctrl_clear_div(hba, 150);
 }
 
@@ -1357,7 +1232,7 @@ static int ufs_qcom_clk_scale_down_pre_change(struct ufs_hba *hba)
 			    UIC_ARG_MIB(DME_VS_CORE_CLK_CTRL),
 			    &core_clk_ctrl_reg);
 
-	/* make sure CORE_CLK_DIV_EN is cleared */
+	 
 	if (!err &&
 	    (core_clk_ctrl_reg & DME_VS_CORE_CLK_CTRL_CORE_CLK_DIV_EN_BIT)) {
 		core_clk_ctrl_reg &= ~DME_VS_CORE_CLK_CTRL_CORE_CLK_DIV_EN_BIT;
@@ -1376,7 +1251,7 @@ static int ufs_qcom_clk_scale_down_post_change(struct ufs_hba *hba)
 	if (!ufs_qcom_cap_qunipro(host))
 		return 0;
 
-	/* set unipro core clock cycles to 75 and clear clock divider */
+	 
 	return ufs_qcom_set_dme_vs_core_clk_ctrl_clear_div(hba, 75);
 }
 
@@ -1387,7 +1262,7 @@ static int ufs_qcom_clk_scale_notify(struct ufs_hba *hba,
 	struct ufs_pa_layer_attr *dev_req_params = &host->dev_req_params;
 	int err = 0;
 
-	/* check the host controller state before sending hibern8 cmd */
+	 
 	if (!ufshcd_is_hba_active(hba))
 		return 0;
 
@@ -1437,7 +1312,7 @@ static void ufs_qcom_enable_test_bus(struct ufs_qcom_host *host)
 
 static void ufs_qcom_get_default_testbus_cfg(struct ufs_qcom_host *host)
 {
-	/* provide a legal default configuration */
+	 
 	host->testbus.select_major = TSTBUS_UNIPRO;
 	host->testbus.select_minor = 37;
 }
@@ -1516,11 +1391,7 @@ int ufs_qcom_testbus_config(struct ufs_qcom_host *host)
 		offset = 20;
 		mask = 0xFFF;
 		break;
-	/*
-	 * No need for a default case, since
-	 * ufs_qcom_testbus_cfg_is_ok() checks that the configuration
-	 * is legal
-	 */
+	 
 	}
 	mask <<= offset;
 	ufshcd_rmwl(host->hba, TEST_BUS_SEL,
@@ -1530,10 +1401,7 @@ int ufs_qcom_testbus_config(struct ufs_qcom_host *host)
 		    (u32)host->testbus.select_minor << offset,
 		    reg);
 	ufs_qcom_enable_test_bus(host);
-	/*
-	 * Make sure the test bus configuration is
-	 * committed before returning.
-	 */
+	 
 	mb();
 
 	return 0;
@@ -1565,7 +1433,7 @@ static void ufs_qcom_dump_dbg_regs(struct ufs_hba *hba)
 	reg = ufs_qcom_get_debug_reg_offset(host, UFS_UFS_DBG_RD_PRDT_RAM);
 	ufshcd_dump_regs(hba, reg, 64 * 4, "UFS_UFS_DBG_RD_PRDT_RAM ");
 
-	/* clear bit 17 - UTP_DBG_RAMS_EN */
+	 
 	ufshcd_rmwl(hba, UTP_DBG_RAMS_EN, 0, REG_UFS_CFG1);
 
 	reg = ufs_qcom_get_debug_reg_offset(host, UFS_DBG_RD_REG_UAWM);
@@ -1590,24 +1458,16 @@ static void ufs_qcom_dump_dbg_regs(struct ufs_hba *hba)
 	ufshcd_dump_regs(hba, reg, 9 * 4, "UFS_DBG_RD_REG_TMRLUT ");
 }
 
-/**
- * ufs_qcom_device_reset() - toggle the (optional) device reset line
- * @hba: per-adapter instance
- *
- * Toggles the (optional) reset line to reset the attached device.
- */
+ 
 static int ufs_qcom_device_reset(struct ufs_hba *hba)
 {
 	struct ufs_qcom_host *host = ufshcd_get_variant(hba);
 
-	/* reset gpio is optional */
+	 
 	if (!host->device_reset)
 		return -EOPNOTSUPP;
 
-	/*
-	 * The UFS device shall detect reset pulses of 1us, sleep for 10us to
-	 * be on the safe side.
-	 */
+	 
 	ufs_qcom_device_reset_ctrl(hba, true);
 	usleep_range(10, 15);
 
@@ -1642,19 +1502,19 @@ static void ufs_qcom_reinit_notify(struct ufs_hba *hba)
 	phy_power_off(host->generic_phy);
 }
 
-/* Resources */
+ 
 static const struct ufshcd_res_info ufs_res_info[RES_MAX] = {
 	{.name = "ufs_mem",},
 	{.name = "mcq",},
-	/* Submission Queue DAO */
+	 
 	{.name = "mcq_sqd",},
-	/* Submission Queue Interrupt Status */
+	 
 	{.name = "mcq_sqis",},
-	/* Completion Queue DAO */
+	 
 	{.name = "mcq_cqd",},
-	/* Completion Queue Interrupt Status */
+	 
 	{.name = "mcq_cqis",},
-	/* MCQ vendor specific */
+	 
 	{.name = "mcq_vs",},
 };
 
@@ -1693,13 +1553,13 @@ static int ufs_qcom_mcq_config_resource(struct ufs_hba *hba)
 		}
 	}
 
-	/* MCQ resource provided in DT */
+	 
 	res = &hba->res[RES_MCQ];
-	/* Bail if MCQ resource is provided */
+	 
 	if (res->base)
 		goto out;
 
-	/* Explicitly allocate MCQ resource from ufs_mem */
+	 
 	res_mcq = devm_kzalloc(hba->dev, sizeof(*res_mcq), GFP_KERNEL);
 	if (!res_mcq)
 		return -ENOMEM;
@@ -1759,7 +1619,7 @@ static int ufs_qcom_op_runtime_config(struct ufs_hba *hba)
 
 static int ufs_qcom_get_hba_mac(struct ufs_hba *hba)
 {
-	/* Qualcomm HC supports up to 64 */
+	 
 	return MAX_SUPP_MAC;
 }
 
@@ -1808,10 +1668,7 @@ static int ufs_qcom_config_esi(struct ufs_hba *hba)
 	if (host->esi_enabled)
 		return 0;
 
-	/*
-	 * 1. We only handle CQs as of now.
-	 * 2. Poll queues do not need ESI.
-	 */
+	 
 	nr_irqs = hba->nr_hw_queues - hba->nr_queues[HCTX_TYPE_POLL];
 	ret = platform_msi_domain_alloc_irqs(hba->dev, nr_irqs,
 					     ufs_qcom_write_msi_msg);
@@ -1835,7 +1692,7 @@ static int ufs_qcom_config_esi(struct ufs_hba *hba)
 	msi_unlock_descs(hba->dev);
 
 	if (ret) {
-		/* Rewind */
+		 
 		msi_lock_descs(hba->dev);
 		msi_for_each_desc(desc, hba->dev, MSI_DESC_ALL) {
 			if (desc == failed_desc)
@@ -1861,12 +1718,7 @@ out:
 	return ret;
 }
 
-/*
- * struct ufs_hba_qcom_vops - UFS QCOM specific variant operations
- *
- * The variant operations configure the necessary controller and PHY
- * handshake during initialization.
- */
+ 
 static const struct ufs_hba_variant_ops ufs_hba_qcom_vops = {
 	.name                   = "qcom",
 	.init                   = ufs_qcom_init,
@@ -1892,18 +1744,13 @@ static const struct ufs_hba_variant_ops ufs_hba_qcom_vops = {
 	.config_esi		= ufs_qcom_config_esi,
 };
 
-/**
- * ufs_qcom_probe - probe routine of the driver
- * @pdev: pointer to Platform device handle
- *
- * Return: zero for success and non-zero for failure.
- */
+ 
 static int ufs_qcom_probe(struct platform_device *pdev)
 {
 	int err;
 	struct device *dev = &pdev->dev;
 
-	/* Perform generic probe */
+	 
 	err = ufshcd_pltfrm_init(pdev, &ufs_hba_qcom_vops);
 	if (err)
 		return dev_err_probe(dev, err, "ufshcd_pltfrm_init() failed\n");
@@ -1911,12 +1758,7 @@ static int ufs_qcom_probe(struct platform_device *pdev)
 	return 0;
 }
 
-/**
- * ufs_qcom_remove - set driver_data of the device to NULL
- * @pdev: pointer to platform device handle
- *
- * Always returns 0
- */
+ 
 static int ufs_qcom_remove(struct platform_device *pdev)
 {
 	struct ufs_hba *hba =  platform_get_drvdata(pdev);

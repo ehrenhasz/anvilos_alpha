@@ -1,26 +1,4 @@
-/*
- * Copyright 2013 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "priv.h"
 
 #include <subdev/bios.h>
@@ -121,7 +99,7 @@ nvkm_volt_map(struct nvkm_volt *volt, u8 id, u8 temp)
 			result += div64_s64((s64)info.arg[2] * volt->speedo * volt->speedo, 100000);
 		} else if (ver == 0x20) {
 			switch (info.mode) {
-			/* 0x0 handled above! */
+			 
 			case 0x1:
 				result =  ((s64)info.arg[0] * 15625) >> 18;
 				result += ((s64)info.arg[1] * volt->speedo * 15625) >> 18;
@@ -289,7 +267,7 @@ nvkm_volt_ctor(const struct nvkm_volt_func *func, struct nvkm_device *device,
 	nvkm_subdev_ctor(&nvkm_volt, device, type, inst, &volt->subdev);
 	volt->func = func;
 
-	/* Assuming the non-bios device should build the voltage table later */
+	 
 	if (bios) {
 		u8 ver, hdr, cnt, len;
 		struct nvbios_vmap vmap;

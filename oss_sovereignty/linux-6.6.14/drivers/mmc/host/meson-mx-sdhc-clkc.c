@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Amlogic Meson SDHC clock controller
- *
- * Copyright (C) 2020 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -41,7 +37,7 @@ static const struct clk_div_table meson_mx_sdhc_div_table[] = {
 	{ .div = 850, .val = 849, },
 	{ .div = 2126, .val = 2125, },
 	{ .div = 4096, .val = 4095, },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int meson_mx_sdhc_clk_hw_register(struct device *dev,
@@ -143,10 +139,7 @@ int meson_mx_sdhc_register_clkc(struct device *dev, void __iomem *base,
 	if (ret)
 		return ret;
 
-	/*
-	 * TODO: Replace clk_hw.clk with devm_clk_hw_get_clk() once that is
-	 * available.
-	 */
+	 
 	clk_bulk_data[0].clk = clkc_data->mod_clk_en.hw.clk;
 	clk_bulk_data[1].clk = clkc_data->sd_clk_en.hw.clk;
 	clk_bulk_data[2].clk = clkc_data->tx_clk_en.hw.clk;

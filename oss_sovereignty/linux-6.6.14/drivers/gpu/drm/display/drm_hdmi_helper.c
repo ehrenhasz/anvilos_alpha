@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+
 
 #include <linux/module.h>
 
@@ -14,14 +14,7 @@ static inline bool is_eotf_supported(u8 output_eotf, u8 sink_eotf)
 	return sink_eotf & BIT(output_eotf);
 }
 
-/**
- * drm_hdmi_infoframe_set_hdr_metadata() - fill an HDMI DRM infoframe with
- *                                         HDR metadata from userspace
- * @frame: HDMI DRM infoframe
- * @conn_state: Connector state containing HDR metadata
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 int drm_hdmi_infoframe_set_hdr_metadata(struct hdmi_drm_infoframe *frame,
 					const struct drm_connector_state *conn_state)
 {
@@ -42,7 +35,7 @@ int drm_hdmi_infoframe_set_hdr_metadata(struct hdmi_drm_infoframe *frame,
 	if (!hdr_metadata || !connector)
 		return -EINVAL;
 
-	/* Sink EOTF is Bit map while infoframe is absolute values */
+	 
 	if (!is_eotf_supported(hdr_metadata->hdmi_metadata_type1.eotf,
 	    connector->hdr_sink_metadata.hdmi_type1.eotf))
 		DRM_DEBUG_KMS("Unknown EOTF %d\n", hdr_metadata->hdmi_metadata_type1.eotf);
@@ -78,7 +71,7 @@ int drm_hdmi_infoframe_set_hdr_metadata(struct hdmi_drm_infoframe *frame,
 }
 EXPORT_SYMBOL(drm_hdmi_infoframe_set_hdr_metadata);
 
-/* HDMI Colorspace Spec Definitions */
+ 
 #define FULL_COLORIMETRY_MASK		0x1FF
 #define NORMAL_COLORIMETRY_MASK		0x3
 #define EXTENDED_COLORIMETRY_MASK	0x7
@@ -120,12 +113,7 @@ static const u32 hdmi_colorimetry_val[] = {
 #undef EC
 #undef ACE
 
-/**
- * drm_hdmi_avi_infoframe_colorimetry() - fill the HDMI AVI infoframe
- *                                       colorimetry information
- * @frame: HDMI AVI infoframe
- * @conn_state: connector state
- */
+ 
 void drm_hdmi_avi_infoframe_colorimetry(struct hdmi_avi_infoframe *frame,
 					const struct drm_connector_state *conn_state)
 {
@@ -138,21 +126,13 @@ void drm_hdmi_avi_infoframe_colorimetry(struct hdmi_avi_infoframe *frame,
 		colorimetry_val = hdmi_colorimetry_val[colorimetry_index];
 
 	frame->colorimetry = colorimetry_val & NORMAL_COLORIMETRY_MASK;
-	/*
-	 * ToDo: Extend it for ACE formats as well. Modify the infoframe
-	 * structure and extend it in drivers/video/hdmi
-	 */
+	 
 	frame->extended_colorimetry = (colorimetry_val >> 2) &
 					EXTENDED_COLORIMETRY_MASK;
 }
 EXPORT_SYMBOL(drm_hdmi_avi_infoframe_colorimetry);
 
-/**
- * drm_hdmi_avi_infoframe_bars() - fill the HDMI AVI infoframe
- *                                 bar information
- * @frame: HDMI AVI infoframe
- * @conn_state: connector state
- */
+ 
 void drm_hdmi_avi_infoframe_bars(struct hdmi_avi_infoframe *frame,
 				 const struct drm_connector_state *conn_state)
 {
@@ -163,14 +143,7 @@ void drm_hdmi_avi_infoframe_bars(struct hdmi_avi_infoframe *frame,
 }
 EXPORT_SYMBOL(drm_hdmi_avi_infoframe_bars);
 
-/**
- * drm_hdmi_avi_infoframe_content_type() - fill the HDMI AVI infoframe
- *                                         content type information, based
- *                                         on correspondent DRM property.
- * @frame: HDMI AVI infoframe
- * @conn_state: DRM display connector state
- *
- */
+ 
 void drm_hdmi_avi_infoframe_content_type(struct hdmi_avi_infoframe *frame,
 					 const struct drm_connector_state *conn_state)
 {
@@ -188,7 +161,7 @@ void drm_hdmi_avi_infoframe_content_type(struct hdmi_avi_infoframe *frame,
 		frame->content_type = HDMI_CONTENT_TYPE_PHOTO;
 		break;
 	default:
-		/* Graphics is the default(0) */
+		 
 		frame->content_type = HDMI_CONTENT_TYPE_GRAPHICS;
 	}
 

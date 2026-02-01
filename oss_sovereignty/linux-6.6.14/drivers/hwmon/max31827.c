@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * max31827.c - Support for Maxim Low-Power Switch
- *
- * Copyright (c) 2023 Daniel Matyas <daniel.matyas@analog.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -40,9 +36,7 @@
 #define MAX31827_DEVICE_ENABLE(x)	((x) ? 0xA : 0x0)
 
 struct max31827_state {
-	/*
-	 * Prevent simultaneous access to the i2c client.
-	 */
+	 
 	struct mutex lock;
 	struct regmap *regmap;
 	bool enable;
@@ -63,14 +57,7 @@ static int write_alarm_val(struct max31827_state *st, unsigned int reg,
 
 	val = MAX31827_M_DGR_TO_16_BIT(val);
 
-	/*
-	 * Before the Temperature Threshold Alarm and Alarm Hysteresis Threshold
-	 * register values are changed over I2C, the part must be in shutdown
-	 * mode.
-	 *
-	 * Mutex is used to ensure, that some other process doesn't change the
-	 * configuration register.
-	 */
+	 
 	mutex_lock(&st->lock);
 
 	if (!st->enable) {
@@ -152,11 +139,7 @@ static int max31827_read(struct device *dev, enum hwmon_sensor_types type,
 			mutex_lock(&st->lock);
 
 			if (!st->enable) {
-				/*
-				 * This operation requires mutex protection,
-				 * because the chip configuration should not
-				 * be changed during the conversion process.
-				 */
+				 
 
 				ret = regmap_update_bits(st->regmap,
 							 MAX31827_CONFIGURATION_REG,
@@ -294,11 +277,7 @@ static int max31827_write(struct device *dev, enum hwmon_sensor_types type,
 				return -EINVAL;
 
 			mutex_lock(&st->lock);
-			/**
-			 * The chip should not be enabled while a conversion is
-			 * performed. Neither should the chip be enabled when
-			 * the alarm values are changed.
-			 */
+			 
 
 			st->enable = val;
 

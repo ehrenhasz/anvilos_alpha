@@ -1,25 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/***********************************************************************
 
-    AudioScience HPI driver
-    Functions for reading DSP code using hotplug firmware loader
-
-    Copyright (C) 1997-2014  AudioScience Inc. <support@audioscience.com>
-
-
-***********************************************************************/
+ 
 #define SOURCEFILE_NAME "hpidspcd.c"
 #include "hpidspcd.h"
 #include "hpidebug.h"
 #include "hpi_version.h"
 
 struct dsp_code_private {
-	/**  Firmware descriptor */
+	 
 	const struct firmware *firmware;
 	struct pci_dev *dev;
 };
 
-/*-------------------------------------------------------------------*/
+ 
 short hpi_dsp_code_open(u32 adapter, void *os_data, struct dsp_code *dsp_code,
 	u32 *os_error_code)
 {
@@ -45,7 +37,7 @@ short hpi_dsp_code_open(u32 adapter, void *os_data, struct dsp_code *dsp_code,
 	}
 	memcpy(&header, firmware->data, sizeof(header));
 
-	if ((header.type != 0x45444F43) ||	/* "CODE" */
+	if ((header.type != 0x45444F43) ||	 
 		(header.adapter != adapter)
 		|| (header.size != firmware->size)) {
 		dev_err(&dev->dev,
@@ -55,7 +47,7 @@ short hpi_dsp_code_open(u32 adapter, void *os_data, struct dsp_code *dsp_code,
 	}
 
 	if (HPI_VER_MAJOR(header.version) != HPI_VER_MAJOR(HPI_VER)) {
-		/* Major version change probably means Host-DSP protocol change */
+		 
 		dev_err(&dev->dev,
 			"Incompatible firmware version DSP image %X != Driver %X\n",
 			header.version, HPI_VER);
@@ -89,7 +81,7 @@ error1:
 	return err_ret;
 }
 
-/*-------------------------------------------------------------------*/
+ 
 void hpi_dsp_code_close(struct dsp_code *dsp_code)
 {
 	HPI_DEBUG_LOG(DEBUG, "dsp code closed\n");
@@ -97,14 +89,14 @@ void hpi_dsp_code_close(struct dsp_code *dsp_code)
 	kfree(dsp_code->pvt);
 }
 
-/*-------------------------------------------------------------------*/
+ 
 void hpi_dsp_code_rewind(struct dsp_code *dsp_code)
 {
-	/* Go back to start of  data, after header */
+	 
 	dsp_code->word_count = sizeof(struct code_header) / sizeof(u32);
 }
 
-/*-------------------------------------------------------------------*/
+ 
 short hpi_dsp_code_read_word(struct dsp_code *dsp_code, u32 *pword)
 {
 	if (dsp_code->word_count + 1 > dsp_code->block_length)
@@ -116,7 +108,7 @@ short hpi_dsp_code_read_word(struct dsp_code *dsp_code, u32 *pword)
 	return 0;
 }
 
-/*-------------------------------------------------------------------*/
+ 
 short hpi_dsp_code_read_block(size_t words_requested,
 	struct dsp_code *dsp_code, u32 **ppblock)
 {

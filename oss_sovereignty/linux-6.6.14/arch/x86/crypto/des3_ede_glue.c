@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Glue Code for assembler optimized version of 3DES
- *
- * Copyright © 2014 Jussi Kivilinna <jussi.kivilinna@mbnet.fi>
- *
- * CBC & ECB parts based on code (crypto/cbc.c,ecb.c) by:
- *   Copyright (c) 2006 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+ 
 
 #include <crypto/algapi.h>
 #include <crypto/des.h>
@@ -21,11 +14,11 @@ struct des3_ede_x86_ctx {
 	struct des3_ede_ctx dec;
 };
 
-/* regular block cipher functions */
+ 
 asmlinkage void des3_ede_x86_64_crypt_blk(const u32 *expkey, u8 *dst,
 					  const u8 *src);
 
-/* 3-way parallel cipher functions */
+ 
 asmlinkage void des3_ede_x86_64_crypt_blk_3way(const u32 *expkey, u8 *dst,
 					       const u8 *src);
 
@@ -76,7 +69,7 @@ static int ecb_crypt(struct skcipher_request *req, const u32 *expkey)
 		u8 *wsrc = walk.src.virt.addr;
 		u8 *wdst = walk.dst.virt.addr;
 
-		/* Process four block batch */
+		 
 		if (nbytes >= bsize * 3) {
 			do {
 				des3_ede_x86_64_crypt_blk_3way(expkey, wdst,
@@ -91,7 +84,7 @@ static int ecb_crypt(struct skcipher_request *req, const u32 *expkey)
 				goto done;
 		}
 
-		/* Handle leftovers */
+		 
 		do {
 			des3_ede_x86_64_crypt_blk(expkey, wdst, wsrc);
 
@@ -174,13 +167,13 @@ static unsigned int __cbc_decrypt(struct des3_ede_x86_ctx *ctx,
 	u64 ivs[3 - 1];
 	u64 last_iv;
 
-	/* Start of the last block. */
+	 
 	src += nbytes / bsize - 1;
 	dst += nbytes / bsize - 1;
 
 	last_iv = *src;
 
-	/* Process four block batch */
+	 
 	if (nbytes >= bsize * 3) {
 		do {
 			nbytes -= bsize * 3 - bsize;
@@ -205,7 +198,7 @@ static unsigned int __cbc_decrypt(struct des3_ede_x86_ctx *ctx,
 		} while (nbytes >= bsize * 3);
 	}
 
-	/* Handle leftovers */
+	 
 	for (;;) {
 		des3_ede_dec_blk(ctx, (u8 *)dst, (u8 *)src);
 
@@ -263,8 +256,7 @@ static int des3_ede_x86_setkey(struct crypto_tfm *tfm, const u8 *key,
 		return err;
 	}
 
-	/* Fix encryption context for this implementation and form decryption
-	 * context. */
+	 
 	j = DES3_EDE_EXPKEY_WORDS - 2;
 	for (i = 0; i < DES3_EDE_EXPKEY_WORDS; i += 2, j -= 2) {
 		tmp = ror32(ctx->enc.expkey[i + 1], 4);
@@ -339,11 +331,7 @@ static bool is_blacklisted_cpu(void)
 		return false;
 
 	if (boot_cpu_data.x86 == 0x0f) {
-		/*
-		 * On Pentium 4, des3_ede-x86_64 is slower than generic C
-		 * implementation because use of 64bit rotates (which are really
-		 * slow on P4). Therefore blacklist P4s.
-		 */
+		 
 		return true;
 	}
 

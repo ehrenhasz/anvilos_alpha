@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* sunhv.c: Serial driver for SUN4V hypervisor console.
- *
- * Copyright (C) 2006, 2007 David S. Miller (davem@davemloft.net)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -136,7 +133,7 @@ static int receive_chars_read(struct uart_port *port)
 				uart_handle_dcd_change(port, false);
 				continue;
 			} else {
-				/* HV_EWOULDBLOCK, etc.  */
+				 
 				break;
 			}
 		}
@@ -185,7 +182,7 @@ static struct tty_port *receive_chars(struct uart_port *port)
 {
 	struct tty_port *tport = NULL;
 
-	if (port->state != NULL)		/* Unopened serial console */
+	if (port->state != NULL)		 
 		tport = &port->state->port;
 
 	if (sunhv_ops->receive_chars(port))
@@ -228,41 +225,38 @@ static irqreturn_t sunhv_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/* port->lock is not held.  */
+ 
 static unsigned int sunhv_tx_empty(struct uart_port *port)
 {
-	/* Transmitter is always empty for us.  If the circ buffer
-	 * is non-empty or there is an x_char pending, our caller
-	 * will do the right thing and ignore what we return here.
-	 */
+	 
 	return TIOCSER_TEMT;
 }
 
-/* port->lock held by caller.  */
+ 
 static void sunhv_set_mctrl(struct uart_port *port, unsigned int mctrl)
 {
 	return;
 }
 
-/* port->lock is held by caller and interrupts are disabled.  */
+ 
 static unsigned int sunhv_get_mctrl(struct uart_port *port)
 {
 	return TIOCM_DSR | TIOCM_CAR | TIOCM_CTS;
 }
 
-/* port->lock held by caller.  */
+ 
 static void sunhv_stop_tx(struct uart_port *port)
 {
 	return;
 }
 
-/* port->lock held by caller.  */
+ 
 static void sunhv_start_tx(struct uart_port *port)
 {
 	transmit_chars(port);
 }
 
-/* port->lock is not held.  */
+ 
 static void sunhv_send_xchar(struct uart_port *port, char ch)
 {
 	unsigned long flags;
@@ -283,12 +277,12 @@ static void sunhv_send_xchar(struct uart_port *port, char ch)
 	spin_unlock_irqrestore(&port->lock, flags);
 }
 
-/* port->lock held by caller.  */
+ 
 static void sunhv_stop_rx(struct uart_port *port)
 {
 }
 
-/* port->lock is not held.  */
+ 
 static void sunhv_break_ctl(struct uart_port *port, int break_state)
 {
 	if (break_state) {
@@ -308,18 +302,18 @@ static void sunhv_break_ctl(struct uart_port *port, int break_state)
 	}
 }
 
-/* port->lock is not held.  */
+ 
 static int sunhv_startup(struct uart_port *port)
 {
 	return 0;
 }
 
-/* port->lock is not held.  */
+ 
 static void sunhv_shutdown(struct uart_port *port)
 {
 }
 
-/* port->lock is not held.  */
+ 
 static void sunhv_set_termios(struct uart_port *port, struct ktermios *termios,
 			      const struct ktermios *old)
 {
@@ -339,7 +333,7 @@ static void sunhv_set_termios(struct uart_port *port, struct ktermios *termios,
 	if ((cflag & CREAD) == 0)
 		port->ignore_status_mask |= IGNORE_ALL;
 
-	/* XXX */
+	 
 	uart_update_timeout(port, cflag,
 			    (port->uartclk / (16 * quot)));
 
@@ -399,15 +393,11 @@ static struct uart_port *sunhv_port;
 
 void sunhv_migrate_hvcons_irq(int cpu)
 {
-	/* Migrate hvcons irq to param cpu */
+	 
 	irq_force_affinity(sunhv_port->irq, cpumask_of(cpu));
 }
 
-/* Copy 's' into the con_write_page, decoding "\n" into
- * "\r\n" along the way.  We have to return two lengths
- * because the caller needs to know how much to advance
- * 's' and also how many bytes to output via con_write_page.
- */
+ 
 static int fill_con_write_page(const char *s, unsigned int n,
 			       unsigned long *page_bytes)
 {
@@ -550,7 +540,7 @@ static int hv_probe(struct platform_device *op)
 	port->line = 0;
 	port->ops = &sunhv_pops;
 	port->type = PORT_SUNHV;
-	port->uartclk = ( 29491200 / 16 ); /* arbitrary */
+	port->uartclk = ( 29491200 / 16 );  
 
 	port->membase = (unsigned char __iomem *) __pa(port);
 
@@ -642,7 +632,7 @@ static int __init sunhv_init(void)
 }
 device_initcall(sunhv_init);
 
-#if 0 /* ...def MODULE ; never supported as such */
+#if 0  
 MODULE_AUTHOR("David S. Miller");
 MODULE_DESCRIPTION("SUN4V Hypervisor console driver");
 MODULE_VERSION("2.0");

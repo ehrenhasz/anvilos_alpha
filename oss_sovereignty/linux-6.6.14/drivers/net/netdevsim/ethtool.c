@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 Facebook
+
+
 
 #include <linux/debugfs.h>
 #include <linux/ethtool.h>
@@ -24,7 +24,7 @@ nsim_get_pauseparam(struct net_device *dev, struct ethtool_pauseparam *pause)
 {
 	struct netdevsim *ns = netdev_priv(dev);
 
-	pause->autoneg = 0; /* We don't support ksettings, so can't pretend */
+	pause->autoneg = 0;  
 	pause->rx_pause = ns->ethtool.pauseparam.rx;
 	pause->tx_pause = ns->ethtool.pauseparam.tx;
 }

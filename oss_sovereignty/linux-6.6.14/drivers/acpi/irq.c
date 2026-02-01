@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ACPI GSI IRQ layer
- *
- * Copyright (C) 2015 ARM Ltd.
- * Author: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/irq.h>
 #include <linux/irqdomain.h>
@@ -15,16 +10,7 @@ enum acpi_irq_model_id acpi_irq_model;
 static struct fwnode_handle *(*acpi_get_gsi_domain_id)(u32 gsi);
 static u32 (*acpi_gsi_to_irq_fallback)(u32 gsi);
 
-/**
- * acpi_gsi_to_irq() - Retrieve the linux irq number for a given GSI
- * @gsi: GSI IRQ number to map
- * @irq: pointer where linux IRQ number is stored
- *
- * irq location updated with irq value [>0 on success, 0 on failure]
- *
- * Returns: 0 on success
- *          -EINVAL on failure
- */
+ 
 int acpi_gsi_to_irq(u32 gsi, unsigned int *irq)
 {
 	struct irq_domain *d;
@@ -32,10 +18,7 @@ int acpi_gsi_to_irq(u32 gsi, unsigned int *irq)
 	d = irq_find_matching_fwnode(acpi_get_gsi_domain_id(gsi),
 					DOMAIN_BUS_ANY);
 	*irq = irq_find_mapping(d, gsi);
-	/*
-	 * *irq == 0 means no mapping, that should be reported as a
-	 * failure, unless there is an arch-specific fallback handler.
-	 */
+	 
 	if (!*irq && acpi_gsi_to_irq_fallback)
 		*irq = acpi_gsi_to_irq_fallback(gsi);
 
@@ -43,16 +26,7 @@ int acpi_gsi_to_irq(u32 gsi, unsigned int *irq)
 }
 EXPORT_SYMBOL_GPL(acpi_gsi_to_irq);
 
-/**
- * acpi_register_gsi() - Map a GSI to a linux IRQ number
- * @dev: device for which IRQ has to be mapped
- * @gsi: GSI IRQ number
- * @trigger: trigger type of the GSI number to be mapped
- * @polarity: polarity of the GSI to be mapped
- *
- * Returns: a valid linux IRQ number on success
- *          -EINVAL on failure
- */
+ 
 int acpi_register_gsi(struct device *dev, u32 gsi, int trigger,
 		      int polarity)
 {
@@ -77,10 +51,7 @@ int acpi_register_gsi(struct device *dev, u32 gsi, int trigger,
 }
 EXPORT_SYMBOL_GPL(acpi_register_gsi);
 
-/**
- * acpi_unregister_gsi() - Free a GSI<->linux IRQ number mapping
- * @gsi: GSI IRQ number
- */
+ 
 void acpi_unregister_gsi(u32 gsi)
 {
 	struct irq_domain *d;
@@ -96,18 +67,7 @@ void acpi_unregister_gsi(u32 gsi)
 }
 EXPORT_SYMBOL_GPL(acpi_unregister_gsi);
 
-/**
- * acpi_get_irq_source_fwhandle() - Retrieve fwhandle from IRQ resource source.
- * @source: acpi_resource_source to use for the lookup.
- * @gsi: GSI IRQ number
- *
- * Description:
- * Retrieve the fwhandle of the device referenced by the given IRQ resource
- * source.
- *
- * Return:
- * The referenced device fwhandle or NULL on failure
- */
+ 
 static struct fwnode_handle *
 acpi_get_irq_source_fwhandle(const struct acpi_resource_source *source,
 			     u32 gsi)
@@ -133,11 +93,7 @@ acpi_get_irq_source_fwhandle(const struct acpi_resource_source *source,
 	return result;
 }
 
-/*
- * Context for the resource walk used to lookup IRQ resources.
- * Contains a return code, the lookup index, and references to the flags
- * and fwspec where the result is returned.
- */
+ 
 struct acpi_irq_parse_one_ctx {
 	int rc;
 	unsigned int index;
@@ -145,21 +101,7 @@ struct acpi_irq_parse_one_ctx {
 	struct irq_fwspec *fwspec;
 };
 
-/**
- * acpi_irq_parse_one_match - Handle a matching IRQ resource.
- * @fwnode: matching fwnode
- * @hwirq: hardware IRQ number
- * @triggering: triggering attributes of hwirq
- * @polarity: polarity attributes of hwirq
- * @polarity: polarity attributes of hwirq
- * @shareable: shareable attributes of hwirq
- * @wake_capable: wake capable attribute of hwirq
- * @ctx: acpi_irq_parse_one_ctx updated by this function
- *
- * Description:
- * Handle a matching IRQ resource by populating the given ctx with
- * the information passed.
- */
+ 
 static inline void acpi_irq_parse_one_match(struct fwnode_handle *fwnode,
 					    u32 hwirq, u8 triggering,
 					    u8 polarity, u8 shareable,
@@ -176,24 +118,7 @@ static inline void acpi_irq_parse_one_match(struct fwnode_handle *fwnode,
 	ctx->fwspec->param_count = 2;
 }
 
-/**
- * acpi_irq_parse_one_cb - Handle the given resource.
- * @ares: resource to handle
- * @context: context for the walk
- *
- * Description:
- * This is called by acpi_walk_resources passing each resource returned by
- * the _CRS method. We only inspect IRQ resources. Since IRQ resources
- * might contain multiple interrupts we check if the index is within this
- * one's interrupt array, otherwise we subtract the current resource IRQ
- * count from the lookup index to prepare for the next resource.
- * Once a match is found we call acpi_irq_parse_one_match to populate
- * the result and end the walk by returning AE_CTRL_TERMINATE.
- *
- * Return:
- * AE_OK if the walk should continue, AE_CTRL_TERMINATE if a matching
- * IRQ resource was found.
- */
+ 
 static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
 					 void *context)
 {
@@ -233,22 +158,7 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
 	return AE_OK;
 }
 
-/**
- * acpi_irq_parse_one - Resolve an interrupt for a device
- * @handle: the device whose interrupt is to be resolved
- * @index: index of the interrupt to resolve
- * @fwspec: structure irq_fwspec filled by this function
- * @flags: resource flags filled by this function
- *
- * Description:
- * Resolves an interrupt for a device by walking its CRS resources to find
- * the appropriate ACPI IRQ resource and populating the given struct irq_fwspec
- * and flags.
- *
- * Return:
- * The result stored in ctx.rc by the callback, or the default -EINVAL value
- * if an error occurs.
- */
+ 
 static int acpi_irq_parse_one(acpi_handle handle, unsigned int index,
 			      struct irq_fwspec *fwspec, unsigned long *flags)
 {
@@ -258,21 +168,7 @@ static int acpi_irq_parse_one(acpi_handle handle, unsigned int index,
 	return ctx.rc;
 }
 
-/**
- * acpi_irq_get - Lookup an ACPI IRQ resource and use it to initialize resource.
- * @handle: ACPI device handle
- * @index:  ACPI IRQ resource index to lookup
- * @res:    Linux IRQ resource to initialize
- *
- * Description:
- * Look for the ACPI IRQ resource with the given index and use it to initialize
- * the given Linux IRQ resource.
- *
- * Return:
- * 0 on success
- * -EINVAL if an error occurs
- * -EPROBE_DEFER if the IRQ lookup/conversion failed
- */
+ 
 int acpi_irq_get(acpi_handle handle, unsigned int index, struct resource *res)
 {
 	struct irq_fwspec fwspec;
@@ -300,12 +196,7 @@ int acpi_irq_get(acpi_handle handle, unsigned int index, struct resource *res)
 }
 EXPORT_SYMBOL_GPL(acpi_irq_get);
 
-/**
- * acpi_set_irq_model - Setup the GSI irqdomain information
- * @model: the value assigned to acpi_irq_model
- * @fn: a dispatcher function that will return the domain fwnode
- *	for a given GSI
- */
+ 
 void __init acpi_set_irq_model(enum acpi_irq_model_id model,
 			       struct fwnode_handle *(*fn)(u32))
 {
@@ -313,25 +204,13 @@ void __init acpi_set_irq_model(enum acpi_irq_model_id model,
 	acpi_get_gsi_domain_id = fn;
 }
 
-/**
- * acpi_set_gsi_to_irq_fallback - Register a GSI transfer
- * callback to fallback to arch specified implementation.
- * @fn: arch-specific fallback handler
- */
+ 
 void __init acpi_set_gsi_to_irq_fallback(u32 (*fn)(u32))
 {
 	acpi_gsi_to_irq_fallback = fn;
 }
 
-/**
- * acpi_irq_create_hierarchy - Create a hierarchical IRQ domain with the default
- *                             GSI domain as its parent.
- * @flags:      Irq domain flags associated with the domain
- * @size:       Size of the domain.
- * @fwnode:     Optional fwnode of the interrupt controller
- * @ops:        Pointer to the interrupt domain callbacks
- * @host_data:  Controller private data pointer
- */
+ 
 struct irq_domain *acpi_irq_create_hierarchy(unsigned int flags,
 					     unsigned int size,
 					     struct fwnode_handle *fwnode,
@@ -340,7 +219,7 @@ struct irq_domain *acpi_irq_create_hierarchy(unsigned int flags,
 {
 	struct irq_domain *d;
 
-	/* This only works for the GIC model... */
+	 
 	if (acpi_irq_model != ACPI_IRQ_MODEL_GIC)
 		return NULL;
 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_UTSNAME_H
 #define _LINUX_UTSNAME_H
 
@@ -89,4 +89,4 @@ static inline struct new_utsname *init_utsname(void)
 
 extern struct rw_semaphore uts_sem;
 
-#endif /* _LINUX_UTSNAME_H */
+#endif  

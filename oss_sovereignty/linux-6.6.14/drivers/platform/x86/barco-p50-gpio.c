@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-/*
- * Support for EC-connected GPIOs for identify
- * LED/button on Barco P50 board
- *
- * Copyright (C) 2021 Barco NV
- * Author: Santosh Kumar Yadav <santoshkumar.yadav@barco.com>
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -26,23 +20,23 @@
 
 #define DRIVER_NAME		"barco-p50-gpio"
 
-/* GPIO lines */
+ 
 #define P50_GPIO_LINE_LED	0
 #define P50_GPIO_LINE_BTN	1
 
-/* GPIO IO Ports */
+ 
 #define P50_GPIO_IO_PORT_BASE	0x299
 
 #define P50_PORT_DATA		0x00
 #define P50_PORT_CMD		0x01
 
-#define P50_STATUS_OBF		0x01 /* EC output buffer full */
-#define P50_STATUS_IBF		0x02 /* EC input buffer full */
+#define P50_STATUS_OBF		0x01  
+#define P50_STATUS_IBF		0x02  
 
 #define P50_CMD_READ		0xa0
 #define P50_CMD_WRITE		0x50
 
-/* EC mailbox registers */
+ 
 #define P50_MBOX_REG_CMD	0x00
 #define P50_MBOX_REG_STATUS	0x01
 #define P50_MBOX_REG_PARAM	0x02
@@ -87,7 +81,7 @@ static struct gpiod_lookup_table p50_gpio_led_table = {
 	}
 };
 
-/* GPIO LEDs */
+ 
 static struct gpio_led leds[] = {
 	{ .name = "identify" }
 };
@@ -97,7 +91,7 @@ static struct gpio_led_platform_data leds_pdata = {
 	.leds = leds,
 };
 
-/* GPIO keyboard */
+ 
 static struct gpio_keys_button buttons[] = {
 	{
 		.code = KEY_VENDOR,
@@ -117,7 +111,7 @@ static struct gpio_keys_platform_data keys_pdata = {
 };
 
 
-/* low level access routines */
+ 
 
 static int p50_wait_ec(struct p50_gpio *p50, int mask, int expected)
 {
@@ -143,10 +137,10 @@ static int p50_read_mbox_reg(struct p50_gpio *p50, int reg)
 	if (ret)
 		return ret;
 
-	/* clear output buffer flag, prevent unfinished commands */
+	 
 	inb(p50->base + P50_PORT_DATA);
 
-	/* cmd/address */
+	 
 	outb(P50_CMD_READ | reg, p50->base + P50_PORT_CMD);
 
 	ret = p50_wait_ec(p50, P50_STATUS_OBF, P50_STATUS_OBF);
@@ -164,21 +158,21 @@ static int p50_write_mbox_reg(struct p50_gpio *p50, int reg, int val)
 	if (ret)
 		return ret;
 
-	/* cmd/address */
+	 
 	outb(P50_CMD_WRITE | reg, p50->base + P50_PORT_CMD);
 
 	ret = p50_wait_ec(p50, P50_STATUS_IBF, 0);
 	if (ret)
 		return ret;
 
-	/* data */
+	 
 	outb(val, p50->base + P50_PORT_DATA);
 
 	return 0;
 }
 
 
-/* mbox routines */
+ 
 
 static int p50_wait_mbox_idle(struct p50_gpio *p50)
 {
@@ -186,7 +180,7 @@ static int p50_wait_mbox_idle(struct p50_gpio *p50)
 
 	for (i = 0; i < 1000; i++) {
 		val = p50_read_mbox_reg(p50, P50_MBOX_REG_CMD);
-		/* cmd is 0 when idle */
+		 
 		if (val <= 0)
 			return val;
 
@@ -236,7 +230,7 @@ static int p50_send_mbox_cmd(struct p50_gpio *p50, int cmd, int param, int data)
 }
 
 
-/* gpio routines */
+ 
 
 static int p50_gpio_get_direction(struct gpio_chip *gc, unsigned int offset)
 {
@@ -315,7 +309,7 @@ static int p50_gpio_probe(struct platform_device *pdev)
 	p50->gc.set = p50_gpio_set;
 
 
-	/* reset mbox */
+	 
 	ret = p50_wait_mbox_idle(p50);
 	if (ret)
 		return ret;
@@ -346,7 +340,7 @@ static int p50_gpio_probe(struct platform_device *pdev)
 		goto err_leds;
 	}
 
-	/* gpio-keys-polled uses old-style gpio interface, pass the right identifier */
+	 
 	buttons[0].gpio += p50->gc.base;
 
 	p50->keys_pdev =
@@ -388,7 +382,7 @@ static struct platform_driver p50_gpio_driver = {
 	.remove_new = p50_gpio_remove,
 };
 
-/* Board setup */
+ 
 static const struct dmi_system_id dmi_ids[] __initconst = {
 	{
 		.matches = {

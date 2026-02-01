@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright Amazon.com Inc. or its affiliates. */
+
+ 
 #define _GNU_SOURCE
 #include <sched.h>
 
@@ -9,7 +9,7 @@
 
 #include "../kselftest_harness.h"
 
-#define CLIENT_PER_SERVER	32 /* More sockets, more reliable */
+#define CLIENT_PER_SERVER	32  
 #define NR_SERVER		self->nproc
 #define NR_CLIENT		(CLIENT_PER_SERVER * NR_SERVER)
 
@@ -110,9 +110,7 @@ int create_server(struct __test_metadata *_metadata,
 	if (variant->when_to_set == BEFORE_LISTEN)
 		set_so_incoming_cpu(_metadata, fd, cpu);
 
-	/* We don't use CLIENT_PER_SERVER here not to block
-	 * this test at connect() if SO_INCOMING_CPU is broken.
-	 */
+	 
 	ret = listen(fd, NR_CLIENT);
 	ASSERT_EQ(ret, 0);
 
@@ -156,9 +154,7 @@ void create_clients(struct __test_metadata *_metadata,
 		ASSERT_EQ(CPU_COUNT(&cpu_set), 1);
 		ASSERT_NE(CPU_ISSET(i, &cpu_set), 0);
 
-		/* Make sure SYN will be processed on the i-th CPU
-		 * and finally distributed to the i-th listener.
-		 */
+		 
 		ret = sched_setaffinity(0, sizeof(cpu_set), &cpu_set);
 		ASSERT_EQ(ret, 0);
 
@@ -182,7 +178,7 @@ void verify_incoming_cpu(struct __test_metadata *_metadata,
 
 	for (i = 0; i < NR_SERVER; i++) {
 		for (j = 0; j < CLIENT_PER_SERVER; j++) {
-			/* If we see -EAGAIN here, SO_INCOMING_CPU is broken */
+			 
 			fd = accept(self->servers[i], &self->addr, &self->addrlen);
 			ASSERT_NE(fd, -1);
 
@@ -213,7 +209,7 @@ TEST_F(so_incoming_cpu, test2)
 
 	create_servers(_metadata, self, variant);
 
-	/* No CPU specified */
+	 
 	server = create_server(_metadata, self, variant, -1);
 	close(server);
 
@@ -227,12 +223,12 @@ TEST_F(so_incoming_cpu, test3)
 
 	create_servers(_metadata, self, variant);
 
-	/* No CPU specified */
+	 
 	server = create_server(_metadata, self, variant, -1);
 
 	create_clients(_metadata, self);
 
-	/* Never receive any requests */
+	 
 	client = accept(server, &self->addr, &self->addrlen);
 	ASSERT_EQ(client, -1);
 

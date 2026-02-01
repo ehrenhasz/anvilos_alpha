@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -22,5 +22,5 @@ static int __init disable_modeset(char *str)
 	return 1;
 }
 
-/* Disable kernel modesetting */
+ 
 __setup("nomodeset", disable_modeset);

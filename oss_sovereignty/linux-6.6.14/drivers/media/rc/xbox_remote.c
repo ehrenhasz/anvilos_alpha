@@ -1,50 +1,36 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Driver for Xbox DVD Movie Playback Kit
-// Copyright (c) 2018 by Benjamin Valentin <benpicco@googlemail.com>
 
-/*
- *  Xbox DVD Movie Playback Kit USB IR dongle support
- *
- *  The driver was derived from the ati_remote driver 2.2.1
- *          and used information from lirc_xbox.c
- *
- *          Copyright (c) 2011, 2012 Anssi Hannula <anssi.hannula@iki.fi>
- *          Copyright (c) 2004 Torrey Hoffman <thoffman@arnor.net>
- *          Copyright (c) 2002 Vladimir Dergachev
- *          Copyright (c) 2003-2004 Paul Miller <pmiller9@users.sourceforge.net>
- */
+
+
+
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/usb/input.h>
 #include <media/rc-core.h>
 
-/*
- * Module and Version Information
- */
+ 
 #define DRIVER_VERSION	"1.0.0"
 #define DRIVER_AUTHOR	"Benjamin Valentin <benpicco@googlemail.com>"
 #define DRIVER_DESC		"Xbox DVD USB Remote Control"
 
-#define NAME_BUFSIZE      80    /* size of product name, path buffers */
-#define DATA_BUFSIZE      8     /* size of URB data buffers */
+#define NAME_BUFSIZE      80     
+#define DATA_BUFSIZE      8      
 
-/*
- * USB vendor ids for XBOX DVD Dongles
- */
+ 
 #define VENDOR_GAMESTER     0x040b
 #define VENDOR_MICROSOFT    0x045e
 
 static const struct usb_device_id xbox_remote_table[] = {
-	/* Gamester Xbox DVD Movie Playback Kit IR */
+	 
 	{
 		USB_DEVICE(VENDOR_GAMESTER, 0x6521),
 	},
-	/* Microsoft Xbox DVD Movie Playback Kit IR */
+	 
 	{
 		USB_DEVICE(VENDOR_MICROSOFT, 0x0284),
 	},
-	{}	/* Terminating entry */
+	{}	 
 };
 
 MODULE_DEVICE_TABLE(usb, xbox_remote_table);
@@ -65,7 +51,7 @@ static int xbox_remote_rc_open(struct rc_dev *rdev)
 {
 	struct xbox_remote *xbox_remote = rdev->priv;
 
-	/* On first open, submit the read urb which was set up previously. */
+	 
 	xbox_remote->irq_urb->dev = xbox_remote->udev;
 	if (usb_submit_urb(xbox_remote->irq_urb, GFP_KERNEL)) {
 		dev_err(&xbox_remote->interface->dev,
@@ -83,24 +69,15 @@ static void xbox_remote_rc_close(struct rc_dev *rdev)
 	usb_kill_urb(xbox_remote->irq_urb);
 }
 
-/*
- * xbox_remote_report_input
- */
+ 
 static void xbox_remote_input_report(struct urb *urb)
 {
 	struct xbox_remote *xbox_remote = urb->context;
 	unsigned char *data = xbox_remote->inbuf;
 
-	/*
-	 * data[0] = 0x00
-	 * data[1] = length - always 0x06
-	 * data[2] = the key code
-	 * data[3] = high part of key code
-	 * data[4] = last_press_ms (low)
-	 * data[5] = last_press_ms (high)
-	 */
+	 
 
-	/* Deal with strange looking inputs */
+	 
 	if (urb->actual_length != 6 || urb->actual_length != data[1]) {
 		dev_warn(&urb->dev->dev, "Weird data, len=%d: %*ph\n",
 			 urb->actual_length, urb->actual_length, data);
@@ -111,26 +88,24 @@ static void xbox_remote_input_report(struct urb *urb)
 		   le16_to_cpup((__le16 *)(data + 2)), 0);
 }
 
-/*
- * xbox_remote_irq_in
- */
+ 
 static void xbox_remote_irq_in(struct urb *urb)
 {
 	struct xbox_remote *xbox_remote = urb->context;
 	int retval;
 
 	switch (urb->status) {
-	case 0:			/* success */
+	case 0:			 
 		xbox_remote_input_report(urb);
 		break;
-	case -ECONNRESET:	/* unlink */
+	case -ECONNRESET:	 
 	case -ENOENT:
 	case -ESHUTDOWN:
 		dev_dbg(&xbox_remote->interface->dev,
 			"%s: urb error status, unlink?\n",
 			__func__);
 		return;
-	default:		/* error */
+	default:		 
 		dev_dbg(&xbox_remote->interface->dev,
 			"%s: Nonzero urb status %d\n",
 			__func__, urb->status);
@@ -169,7 +144,7 @@ static void xbox_remote_initialize(struct xbox_remote *xbox_remote,
 	struct usb_device *udev = xbox_remote->udev;
 	int pipe, maxp;
 
-	/* Set up irq_urb */
+	 
 	pipe = usb_rcvintpipe(udev, endpoint_in->bEndpointAddress);
 	maxp = usb_maxpacket(udev, pipe);
 	maxp = (maxp > DATA_BUFSIZE) ? DATA_BUFSIZE : maxp;
@@ -179,9 +154,7 @@ static void xbox_remote_initialize(struct xbox_remote *xbox_remote,
 			 endpoint_in->bInterval);
 }
 
-/*
- * xbox_remote_probe
- */
+ 
 static int xbox_remote_probe(struct usb_interface *interface,
 			     const struct usb_device_id *id)
 {
@@ -192,7 +165,7 @@ static int xbox_remote_probe(struct usb_interface *interface,
 	struct rc_dev *rc_dev;
 	int err = -ENOMEM;
 
-	// why is there also a device with no endpoints?
+	
 	if (iface_host->desc.bNumEndpoints == 0)
 		return -ENODEV;
 
@@ -218,7 +191,7 @@ static int xbox_remote_probe(struct usb_interface *interface,
 	if (!xbox_remote || !rc_dev)
 		goto exit_free_dev_rdev;
 
-	/* Allocate URB buffer */
+	 
 	xbox_remote->irq_urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!xbox_remote->irq_urb)
 		goto exit_free_buffers;
@@ -242,14 +215,14 @@ static int xbox_remote_probe(struct usb_interface *interface,
 			 le16_to_cpu(xbox_remote->udev->descriptor.idVendor),
 			 le16_to_cpu(xbox_remote->udev->descriptor.idProduct));
 
-	rc_dev->map_name = RC_MAP_XBOX_DVD; /* default map */
+	rc_dev->map_name = RC_MAP_XBOX_DVD;  
 
 	xbox_remote_rc_init(xbox_remote);
 
-	/* Device Hardware Initialization */
+	 
 	xbox_remote_initialize(xbox_remote, endpoint_in);
 
-	/* Set up and register rc device */
+	 
 	err = rc_register_device(xbox_remote->rdev);
 	if (err)
 		goto exit_kill_urbs;
@@ -269,9 +242,7 @@ exit_free_dev_rdev:
 	return err;
 }
 
-/*
- * xbox_remote_disconnect
- */
+ 
 static void xbox_remote_disconnect(struct usb_interface *interface)
 {
 	struct xbox_remote *xbox_remote;
@@ -289,7 +260,7 @@ static void xbox_remote_disconnect(struct usb_interface *interface)
 	kfree(xbox_remote);
 }
 
-/* usb specific object to register with the usb subsystem */
+ 
 static struct usb_driver xbox_remote_driver = {
 	.name         = "xbox_remote",
 	.probe        = xbox_remote_probe,

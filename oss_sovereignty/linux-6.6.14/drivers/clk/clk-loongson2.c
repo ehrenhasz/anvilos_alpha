@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Author: Yinbo Zhu <zhuyinbo@loongson.cn>
- * Copyright (C) 2022-2023 Loongson Technology Corporation Limited
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -255,12 +252,7 @@ static int loongson2_clk_probe(struct platform_device *pdev)
 						6, CLK_DIVIDER_ONE_BASED,
 						&loongson2_clk_lock);
 
-	/*
-	 * The hda clk divisor in the upper 32bits and the clk-prodiver
-	 * layer code doesn't support 64bit io operation thus a conversion
-	 * is required that subtract shift by 32 and add 4byte to the hda
-	 * address
-	 */
+	 
 	hws[LOONGSON2_HDA_CLK] = devm_clk_hw_register_divider(dev, "hda",
 						"ddr_pll", 0,
 						loongson2_pll_base + 0x22, 12,

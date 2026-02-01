@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
@@ -6,10 +6,7 @@
 
 #define PT_REGS_SIZE sizeof(struct pt_regs)
 
-/*
- * The kernel struct pt_regs isn't exported in its entirety to userspace.
- * Pass it as an array to task_pt_regs.c
- */
+ 
 char current_regs[PT_REGS_SIZE] = {};
 char ctx_regs[PT_REGS_SIZE] = {};
 int uprobe_res = 0;
@@ -27,7 +24,7 @@ int handle_uprobe(struct pt_regs *ctx)
 	if (bpf_probe_read_kernel(ctx_regs, PT_REGS_SIZE, ctx))
 		return 0;
 
-	/* Prove that uprobe was run */
+	 
 	uprobe_res = 1;
 
 	return 0;

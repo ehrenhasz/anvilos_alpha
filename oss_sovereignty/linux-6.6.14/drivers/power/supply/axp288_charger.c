@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * axp288_charger.c - X-power AXP288 PMIC Charger driver
- *
- * Copyright (C) 2016-2017 Hans de Goede <hdegoede@redhat.com>
- * Copyright (C) 2014 Intel Corporation
- * Author: Ramakrishna Pallala <ramakrishna.pallala@intel.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bitops.h>
@@ -38,63 +32,63 @@
 
 #define VBUS_ISPOUT_CUR_LIM_MASK	0x03
 #define VBUS_ISPOUT_CUR_LIM_BIT_POS	0
-#define VBUS_ISPOUT_CUR_LIM_900MA	0x0	/* 900mA */
-#define VBUS_ISPOUT_CUR_LIM_1500MA	0x1	/* 1500mA */
-#define VBUS_ISPOUT_CUR_LIM_2000MA	0x2	/* 2000mA */
-#define VBUS_ISPOUT_CUR_NO_LIM		0x3	/* 2500mA */
+#define VBUS_ISPOUT_CUR_LIM_900MA	0x0	 
+#define VBUS_ISPOUT_CUR_LIM_1500MA	0x1	 
+#define VBUS_ISPOUT_CUR_LIM_2000MA	0x2	 
+#define VBUS_ISPOUT_CUR_NO_LIM		0x3	 
 #define VBUS_ISPOUT_VHOLD_SET_MASK	0x38
 #define VBUS_ISPOUT_VHOLD_SET_BIT_POS	0x3
-#define VBUS_ISPOUT_VHOLD_SET_OFFSET	4000	/* 4000mV */
-#define VBUS_ISPOUT_VHOLD_SET_LSB_RES	100	/* 100mV */
-#define VBUS_ISPOUT_VHOLD_SET_4400MV	0x4	/* 4400mV */
+#define VBUS_ISPOUT_VHOLD_SET_OFFSET	4000	 
+#define VBUS_ISPOUT_VHOLD_SET_LSB_RES	100	 
+#define VBUS_ISPOUT_VHOLD_SET_4400MV	0x4	 
 #define VBUS_ISPOUT_VBUS_PATH_DIS	BIT(7)
 
-#define CHRG_CCCV_CC_MASK		0xf		/* 4 bits */
+#define CHRG_CCCV_CC_MASK		0xf		 
 #define CHRG_CCCV_CC_BIT_POS		0
-#define CHRG_CCCV_CC_OFFSET		200		/* 200mA */
-#define CHRG_CCCV_CC_LSB_RES		200		/* 200mA */
-#define CHRG_CCCV_ITERM_20P		BIT(4)		/* 20% of CC */
-#define CHRG_CCCV_CV_MASK		0x60		/* 2 bits */
+#define CHRG_CCCV_CC_OFFSET		200		 
+#define CHRG_CCCV_CC_LSB_RES		200		 
+#define CHRG_CCCV_ITERM_20P		BIT(4)		 
+#define CHRG_CCCV_CV_MASK		0x60		 
 #define CHRG_CCCV_CV_BIT_POS		5
-#define CHRG_CCCV_CV_4100MV		0x0		/* 4.10V */
-#define CHRG_CCCV_CV_4150MV		0x1		/* 4.15V */
-#define CHRG_CCCV_CV_4200MV		0x2		/* 4.20V */
-#define CHRG_CCCV_CV_4350MV		0x3		/* 4.35V */
+#define CHRG_CCCV_CV_4100MV		0x0		 
+#define CHRG_CCCV_CV_4150MV		0x1		 
+#define CHRG_CCCV_CV_4200MV		0x2		 
+#define CHRG_CCCV_CV_4350MV		0x3		 
 #define CHRG_CCCV_CHG_EN		BIT(7)
 
-#define CNTL2_CC_TIMEOUT_MASK		0x3	/* 2 bits */
-#define CNTL2_CC_TIMEOUT_OFFSET		6	/* 6 Hrs */
-#define CNTL2_CC_TIMEOUT_LSB_RES	2	/* 2 Hrs */
-#define CNTL2_CC_TIMEOUT_12HRS		0x3	/* 12 Hrs */
+#define CNTL2_CC_TIMEOUT_MASK		0x3	 
+#define CNTL2_CC_TIMEOUT_OFFSET		6	 
+#define CNTL2_CC_TIMEOUT_LSB_RES	2	 
+#define CNTL2_CC_TIMEOUT_12HRS		0x3	 
 #define CNTL2_CHGLED_TYPEB		BIT(4)
 #define CNTL2_CHG_OUT_TURNON		BIT(5)
 #define CNTL2_PC_TIMEOUT_MASK		0xC0
-#define CNTL2_PC_TIMEOUT_OFFSET		40	/* 40 mins */
-#define CNTL2_PC_TIMEOUT_LSB_RES	10	/* 10 mins */
+#define CNTL2_PC_TIMEOUT_OFFSET		40	 
+#define CNTL2_PC_TIMEOUT_LSB_RES	10	 
 #define CNTL2_PC_TIMEOUT_70MINS		0x3
 
 #define CHRG_ILIM_TEMP_LOOP_EN		BIT(3)
 #define CHRG_VBUS_ILIM_MASK		0xf0
 #define CHRG_VBUS_ILIM_BIT_POS		4
-#define CHRG_VBUS_ILIM_100MA		0x0	/* 100mA */
-#define CHRG_VBUS_ILIM_500MA		0x1	/* 500mA */
-#define CHRG_VBUS_ILIM_900MA		0x2	/* 900mA */
-#define CHRG_VBUS_ILIM_1500MA		0x3	/* 1500mA */
-#define CHRG_VBUS_ILIM_2000MA		0x4	/* 2000mA */
-#define CHRG_VBUS_ILIM_2500MA		0x5	/* 2500mA */
-#define CHRG_VBUS_ILIM_3000MA		0x6	/* 3000mA */
-#define CHRG_VBUS_ILIM_3500MA		0x7	/* 3500mA */
-#define CHRG_VBUS_ILIM_4000MA		0x8	/* 4000mA */
+#define CHRG_VBUS_ILIM_100MA		0x0	 
+#define CHRG_VBUS_ILIM_500MA		0x1	 
+#define CHRG_VBUS_ILIM_900MA		0x2	 
+#define CHRG_VBUS_ILIM_1500MA		0x3	 
+#define CHRG_VBUS_ILIM_2000MA		0x4	 
+#define CHRG_VBUS_ILIM_2500MA		0x5	 
+#define CHRG_VBUS_ILIM_3000MA		0x6	 
+#define CHRG_VBUS_ILIM_3500MA		0x7	 
+#define CHRG_VBUS_ILIM_4000MA		0x8	 
 
-#define CHRG_VLTFC_0C			0xA5	/* 0 DegC */
-#define CHRG_VHTFC_45C			0x1F	/* 45 DegC */
+#define CHRG_VLTFC_0C			0xA5	 
+#define CHRG_VHTFC_45C			0x1F	 
 
 #define FG_CNTL_OCV_ADJ_EN		BIT(3)
 
-#define CV_4100MV			4100	/* 4100mV */
-#define CV_4150MV			4150	/* 4150mV */
-#define CV_4200MV			4200	/* 4200mV */
-#define CV_4350MV			4350	/* 4350mV */
+#define CV_4100MV			4100	 
+#define CV_4150MV			4150	 
+#define CV_4200MV			4200	 
+#define CV_4350MV			4350	 
 
 #define AXP288_REG_UPDATE_INTERVAL	(60 * HZ)
 
@@ -123,7 +117,7 @@ struct axp288_chrg_info {
 	struct power_supply *psy_usb;
 	struct mutex lock;
 
-	/* OTG/Host mode */
+	 
 	struct {
 		struct work_struct work;
 		struct extcon_dev *cable;
@@ -131,7 +125,7 @@ struct axp288_chrg_info {
 		bool id_short;
 	} otg;
 
-	/* SDP/CDP/DCP USB charging cable notifications */
+	 
 	struct {
 		struct extcon_dev *edev;
 		struct notifier_block nb;
@@ -229,7 +223,7 @@ static int axp288_charger_get_vbus_inlmt(struct axp288_chrg_info *info)
 	case CHRG_VBUS_ILIM_3500MA:
 		return 3500000;
 	default:
-		/* All b1xxx values map to 4000 mA */
+		 
 		return 4000000;
 	}
 }
@@ -422,7 +416,7 @@ static int axp288_charger_usb_get_property(struct power_supply *psy,
 
 	switch (psp) {
 	case POWER_SUPPLY_PROP_PRESENT:
-		/* Check for OTG case first */
+		 
 		if (info->otg.id_short) {
 			val->intval = 0;
 			break;
@@ -430,7 +424,7 @@ static int axp288_charger_usb_get_property(struct power_supply *psy,
 		val->intval = (info->input_status & PS_STAT_VBUS_PRESENT) ? 1 : 0;
 		break;
 	case POWER_SUPPLY_PROP_ONLINE:
-		/* Check for OTG case first */
+		 
 		if (info->otg.id_short) {
 			val->intval = 0;
 			break;
@@ -565,37 +559,7 @@ out:
 	return IRQ_HANDLED;
 }
 
-/*
- * The HP Pavilion x2 10 series comes in a number of variants:
- * Bay Trail SoC    + AXP288 PMIC, Micro-USB, DMI_BOARD_NAME: "8021"
- * Bay Trail SoC    + AXP288 PMIC, Type-C,    DMI_BOARD_NAME: "815D"
- * Cherry Trail SoC + AXP288 PMIC, Type-C,    DMI_BOARD_NAME: "813E"
- * Cherry Trail SoC + TI PMIC,     Type-C,    DMI_BOARD_NAME: "827C" or "82F4"
- *
- * The variants with the AXP288 + Type-C connector are all kinds of special:
- *
- * 1. They use a Type-C connector which the AXP288 does not support, so when
- * using a Type-C charger it is not recognized. Unlike most AXP288 devices,
- * this model actually has mostly working ACPI AC / Battery code, the ACPI code
- * "solves" this by simply setting the input_current_limit to 3A.
- * There are still some issues with the ACPI code, so we use this native driver,
- * and to solve the charging not working (500mA is not enough) issue we hardcode
- * the 3A input_current_limit like the ACPI code does.
- *
- * 2. If no charger is connected the machine boots with the vbus-path disabled.
- * Normally this is done when a 5V boost converter is active to avoid the PMIC
- * trying to charge from the 5V boost converter's output. This is done when
- * an OTG host cable is inserted and the ID pin on the micro-B receptacle is
- * pulled low and the ID pin has an ACPI event handler associated with it
- * which re-enables the vbus-path when the ID pin is pulled high when the
- * OTG host cable is removed. The Type-C connector has no ID pin, there is
- * no ID pin handler and there appears to be no 5V boost converter, so we
- * end up not charging because the vbus-path is disabled, until we unplug
- * the charger which automatically clears the vbus-path disable bit and then
- * on the second plug-in of the adapter we start charging. To solve the not
- * charging on first charger plugin we unconditionally enable the vbus-path at
- * probe on this model, which is safe since there is no 5V boost converter.
- */
+ 
 static const struct dmi_system_id axp288_hp_x2_dmi_ids[] = {
 	{
 		.matches = {
@@ -611,7 +575,7 @@ static const struct dmi_system_id axp288_hp_x2_dmi_ids[] = {
 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "813E"),
 		},
 	},
-	{} /* Terminating entry */
+	{}  
 };
 
 static void axp288_charger_extcon_evt_worker(struct work_struct *work)
@@ -628,7 +592,7 @@ static void axp288_charger_extcon_evt_worker(struct work_struct *work)
 		return;
 	}
 
-	/* Offline? Disable charging and bail */
+	 
 	if (!(val & PS_STAT_VBUS_VALID)) {
 		dev_dbg(&info->pdev->dev, "USB charger disconnected\n");
 		axp288_charger_enable_charger(info, false);
@@ -639,9 +603,9 @@ static void axp288_charger_extcon_evt_worker(struct work_struct *work)
 		return;
 	}
 
-	/* Determine cable/charger type */
+	 
 	if (dmi_check_system(axp288_hp_x2_dmi_ids)) {
-		/* See comment above axp288_hp_x2_dmi_ids declaration */
+		 
 		dev_dbg(&info->pdev->dev, "HP X2 with Type-C, setting inlmt to 3A\n");
 		current_limit = 3000000;
 	} else if (extcon_get_state(edev, EXTCON_CHG_USB_SDP) > 0) {
@@ -654,11 +618,11 @@ static void axp288_charger_extcon_evt_worker(struct work_struct *work)
 		dev_dbg(&info->pdev->dev, "USB DCP charger is connected\n");
 		current_limit = 2000000;
 	} else {
-		/* Charger type detection still in progress, bail. */
+		 
 		return;
 	}
 
-	/* Set vbus current limit first, then enable charger */
+	 
 	ret = axp288_charger_set_vbus_inlmt(info, current_limit);
 	if (ret == 0)
 		axp288_charger_enable_charger(info, true);
@@ -691,13 +655,10 @@ static void axp288_charger_otg_evt_worker(struct work_struct *work)
 	dev_dbg(&info->pdev->dev, "external connector USB-Host is %s\n",
 				usb_host ? "attached" : "detached");
 
-	/*
-	 * Set usb_id_short flag to avoid running charger detection logic
-	 * in case usb host.
-	 */
+	 
 	info->otg.id_short = usb_host;
 
-	/* Disable VBUS path before enabling the 5V boost */
+	 
 	ret = axp288_charger_vbus_path_select(info, !info->otg.id_short);
 	if (ret < 0)
 		dev_warn(&info->pdev->dev, "vbus path disable failed\n");
@@ -719,7 +680,7 @@ static int charger_init_hw_regs(struct axp288_chrg_info *info)
 	int ret, cc, cv;
 	unsigned int val;
 
-	/* Program temperature thresholds */
+	 
 	ret = regmap_write(info->regmap, AXP20X_V_LTF_CHRG, CHRG_VLTFC_0C);
 	if (ret < 0) {
 		dev_err(&info->pdev->dev, "register(%x) write error(%d)\n",
@@ -734,7 +695,7 @@ static int charger_init_hw_regs(struct axp288_chrg_info *info)
 		return ret;
 	}
 
-	/* Do not turn-off charger o/p after charge cycle ends */
+	 
 	ret = regmap_update_bits(info->regmap,
 				AXP20X_CHRG_CTRL2,
 				CNTL2_CHG_OUT_TURNON, CNTL2_CHG_OUT_TURNON);
@@ -744,7 +705,7 @@ static int charger_init_hw_regs(struct axp288_chrg_info *info)
 		return ret;
 	}
 
-	/* Setup ending condition for charging to be 10% of I(chrg) */
+	 
 	ret = regmap_update_bits(info->regmap,
 				AXP20X_CHRG_CTRL1,
 				CHRG_CCCV_ITERM_20P, 0);
@@ -754,7 +715,7 @@ static int charger_init_hw_regs(struct axp288_chrg_info *info)
 		return ret;
 	}
 
-	/* Disable OCV-SOC curve calibration */
+	 
 	ret = regmap_update_bits(info->regmap,
 				AXP20X_CC_CTRL,
 				FG_CNTL_OCV_ADJ_EN, 0);
@@ -765,12 +726,12 @@ static int charger_init_hw_regs(struct axp288_chrg_info *info)
 	}
 
 	if (dmi_check_system(axp288_hp_x2_dmi_ids)) {
-		/* See comment above axp288_hp_x2_dmi_ids declaration */
+		 
 		ret = axp288_charger_vbus_path_select(info, true);
 		if (ret < 0)
 			return ret;
 	} else {
-		/* Set Vhold to the factory default / recommended 4.4V */
+		 
 		val = VBUS_ISPOUT_VHOLD_SET_4400MV << VBUS_ISPOUT_VHOLD_SET_BIT_POS;
 		ret = regmap_update_bits(info->regmap, AXP20X_VBUS_IPSOUT_MGMT,
 					 VBUS_ISPOUT_VHOLD_SET_MASK, val);
@@ -781,7 +742,7 @@ static int charger_init_hw_regs(struct axp288_chrg_info *info)
 		}
 	}
 
-	/* Read current charge voltage and current limit */
+	 
 	ret = regmap_read(info->regmap, AXP20X_CHRG_CTRL1, &val);
 	if (ret < 0) {
 		dev_err(&info->pdev->dev, "register(%x) read error(%d)\n",
@@ -789,7 +750,7 @@ static int charger_init_hw_regs(struct axp288_chrg_info *info)
 		return ret;
 	}
 
-	/* Determine charge voltage */
+	 
 	cv = (val & CHRG_CCCV_CV_MASK) >> CHRG_CCCV_CV_BIT_POS;
 	switch (cv) {
 	case CHRG_CCCV_CV_4100MV:
@@ -806,15 +767,12 @@ static int charger_init_hw_regs(struct axp288_chrg_info *info)
 		break;
 	}
 
-	/* Determine charge current limit */
+	 
 	cc = (val & CHRG_CCCV_CC_MASK) >> CHRG_CCCV_CC_BIT_POS;
 	cc = (cc * CHRG_CCCV_CC_LSB_RES) + CHRG_CCCV_CC_OFFSET;
 	info->cc = cc;
 
-	/*
-	 * Do not allow the user to configure higher settings then those
-	 * set by the firmware
-	 */
+	 
 	info->max_cv = info->cv;
 	info->max_cc = info->cc;
 
@@ -839,17 +797,11 @@ static int axp288_charger_probe(struct platform_device *pdev)
 	const char *extcon_name = NULL;
 	unsigned int val;
 
-	/*
-	 * Normally the native AXP288 fg/charger drivers are preferred but
-	 * on some devices the ACPI drivers should be used instead.
-	 */
+	 
 	if (!acpi_quirk_skip_acpi_ac_and_battery())
 		return -ENODEV;
 
-	/*
-	 * On some devices the fuelgauge and charger parts of the axp288 are
-	 * not used, check that the fuelgauge is enabled (CC_CTRL != 0).
-	 */
+	 
 	ret = regmap_read(axp20x->regmap, AXP20X_CC_CTRL, &val);
 	if (ret < 0)
 		return ret;
@@ -873,11 +825,7 @@ static int axp288_charger_probe(struct platform_device *pdev)
 		return PTR_ERR(info->cable.edev);
 	}
 
-	/*
-	 * On devices with broken ACPI GPIO event handlers there also is no ACPI
-	 * "INT3496" (USB_HOST_EXTCON_HID) device. x86-android-tablets.ko
-	 * instantiates an "intel-int3496" extcon on these devs as a workaround.
-	 */
+	 
 	if (acpi_quirk_skip_gpio_event_handlers())
 		extcon_name = "intel-int3496";
 	else if (acpi_dev_present(USB_HOST_EXTCON_HID, NULL, -1))
@@ -900,7 +848,7 @@ static int axp288_charger_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Register with power supply class */
+	 
 	charger_cfg.drv_data = info;
 	info->psy_usb = devm_power_supply_register(dev, &axp288_charger_desc,
 						   &charger_cfg);
@@ -910,12 +858,12 @@ static int axp288_charger_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Cancel our work on cleanup, register this before the notifiers */
+	 
 	ret = devm_add_action(dev, axp288_charger_cancel_work, info);
 	if (ret)
 		return ret;
 
-	/* Register for extcon notification */
+	 
 	INIT_WORK(&info->cable.work, axp288_charger_extcon_evt_worker);
 	info->cable.nb.notifier_call = axp288_charger_handle_cable_evt;
 	ret = devm_extcon_register_notifier_all(dev, info->cable.edev,
@@ -926,7 +874,7 @@ static int axp288_charger_probe(struct platform_device *pdev)
 	}
 	schedule_work(&info->cable.work);
 
-	/* Register for OTG notification */
+	 
 	INIT_WORK(&info->otg.work, axp288_charger_otg_evt_worker);
 	info->otg.id_nb.notifier_call = axp288_charger_handle_otg_evt;
 	if (info->otg.cable) {
@@ -939,7 +887,7 @@ static int axp288_charger_probe(struct platform_device *pdev)
 		schedule_work(&info->otg.work);
 	}
 
-	/* Register charger interrupts */
+	 
 	for (i = 0; i < CHRG_INTR_END; i++) {
 		pirq = platform_get_irq(info->pdev, i);
 		if (pirq < 0)

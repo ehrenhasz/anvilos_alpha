@@ -1,24 +1,4 @@
-/*
- * Copyright 2021 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "priv.h"
 #include "cgrp.h"
 #include "chan.h"
@@ -54,7 +34,7 @@ ga100_chan_start(struct nvkm_chan *chan)
 	const int gfid = 0;
 
 	nvkm_wr32(device, runl->chan + (chan->id * 4), 0x00000002);
-	nvkm_wr32(device, runl->addr + 0x0090, (gfid << 16) | chan->id); /* INTERNAL_DOORBELL. */
+	nvkm_wr32(device, runl->addr + 0x0090, (gfid << 16) | chan->id);  
 }
 
 static void
@@ -129,11 +109,11 @@ ga100_engn_cxid(struct nvkm_engn *engn, bool *cgid)
 	*cgid = true;
 
 	switch ((stat & 0x0000e000) >> 13) {
-	case 0 /* INVALID */: return -ENODEV;
-	case 1 /*   VALID */:
-	case 5 /*    SAVE */: return (stat & 0x00000fff);
-	case 6 /*    LOAD */: return (stat & 0x0fff0000) >> 16;
-	case 7 /*  SWITCH */:
+	case 0  : return -ENODEV;
+	case 1  :
+	case 5  : return (stat & 0x00000fff);
+	case 6  : return (stat & 0x0fff0000) >> 16;
+	case 7  :
 		if (nvkm_engine_chsw_load(engn->engine))
 			return (stat & 0x0fff0000) >> 16;
 		return (stat & 0x00000fff);
@@ -231,7 +211,7 @@ ga100_runq_intr_0(struct nvkm_runq *runq, struct nvkm_runl *runl)
 		return false;
 	}
 
-	/*TODO: expand on this when fixing up gf100's version. */
+	 
 	if (stat & 0xc6afe000) {
 		u32 chid = nvkm_rd32(device, 0x040120 + (runq->id * 0x0800)) & runl->chid->mask;
 		struct nvkm_chan *chan;
@@ -270,10 +250,10 @@ ga100_runq_init(struct nvkm_runq *runq)
 {
 	struct nvkm_device *device = runq->fifo->engine.subdev.device;
 
-	nvkm_wr32(device, 0x040108 + (runq->id * 0x800), 0xffffffff); /* INTR_0 */
-	nvkm_wr32(device, 0x040148 + (runq->id * 0x800), 0xffffffff); /* INTR_1 */
-	nvkm_wr32(device, 0x040170 + (runq->id * 0x800), 0xffffffff); /* INTR_0_EN_SET_TREE */
-	nvkm_wr32(device, 0x040180 + (runq->id * 0x800), 0xffffffff); /* INTR_1_EN_SET_TREE */
+	nvkm_wr32(device, 0x040108 + (runq->id * 0x800), 0xffffffff);  
+	nvkm_wr32(device, 0x040148 + (runq->id * 0x800), 0xffffffff);  
+	nvkm_wr32(device, 0x040170 + (runq->id * 0x800), 0xffffffff);  
+	nvkm_wr32(device, 0x040180 + (runq->id * 0x800), 0xffffffff);  
 }
 
 const struct nvkm_runq_func
@@ -396,20 +376,20 @@ ga100_runl_init(struct nvkm_runl *runl)
 	struct nvkm_device *device = fifo->engine.subdev.device;
 	int i;
 
-	/* Submit NULL runlist and preempt. */
+	 
 	nvkm_wr32(device, runl->addr + 0x088, 0x00000000);
 	runl->func->preempt(runl);
 
-	/* Enable doorbell. */
+	 
 	nvkm_mask(device, runl->addr + 0x300, 0x80000000, 0x80000000);
 
-	nvkm_wr32(device, runl->addr + 0x100, 0xffffffff); /* INTR_0 */
-	nvkm_wr32(device, runl->addr + 0x140, 0xffffffff); /* INTR_0_EN_CLEAR_TREE(0) */
-	nvkm_wr32(device, runl->addr + 0x120, 0x000f1307); /* INTR_0_EN_SET_TREE(0) */
-	nvkm_wr32(device, runl->addr + 0x148, 0xffffffff); /* INTR_0_EN_CLEAR_TREE(1) */
-	nvkm_wr32(device, runl->addr + 0x128, 0x00000000); /* INTR_0_EN_SET_TREE(1) */
+	nvkm_wr32(device, runl->addr + 0x100, 0xffffffff);  
+	nvkm_wr32(device, runl->addr + 0x140, 0xffffffff);  
+	nvkm_wr32(device, runl->addr + 0x120, 0x000f1307);  
+	nvkm_wr32(device, runl->addr + 0x148, 0xffffffff);  
+	nvkm_wr32(device, runl->addr + 0x128, 0x00000000);  
 
-	/* Init PBDMA(s). */
+	 
 	for (i = 0; i < runl->runq_nr; i++) {
 		runq = runl->runq[i];
 		runq->func->init(runq);

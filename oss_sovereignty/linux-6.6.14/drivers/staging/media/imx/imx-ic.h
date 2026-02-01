@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * V4L2 Image Converter Subdev for Freescale i.MX5/6 SOC
- *
- * Copyright (c) 2016 Mentor Graphics Inc.
- */
+ 
+ 
 #ifndef _IMX_IC_H
 #define _IMX_IC_H
 

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2010-2013 Bluecherry, LLC <https://www.bluecherrydvr.com>
- *
- * Original author:
- * Ben Collins <bcollins@ubuntu.com>
- *
- * Additional work by:
- * John Brooks <john.brooks@bluecherry.net>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -31,7 +23,7 @@ static unsigned video_nr = -1;
 module_param(video_nr, uint, 0644);
 MODULE_PARM_DESC(video_nr, "videoX start number, -1 is autodetect (default)");
 
-static int full_eeprom; /* default is only top 64B */
+static int full_eeprom;  
 module_param(full_eeprom, uint, 0644);
 MODULE_PARM_DESC(full_eeprom, "Allow access to full 128B EEPROM (dangerous)");
 
@@ -42,7 +34,7 @@ static void solo_set_time(struct solo_dev *solo_dev)
 
 	ktime_get_ts64(&ts);
 
-	/* no overflow because we use monotonic timestamps */
+	 
 	solo_reg_write(solo_dev, SOLO_TIMER_SEC, (u32)ts.tv_sec);
 	solo_reg_write(solo_dev, SOLO_TIMER_USEC, (u32)ts.tv_nsec / NSEC_PER_USEC);
 }
@@ -97,7 +89,7 @@ static irqreturn_t solo_isr(int irq, void *data)
 	if (!status)
 		return IRQ_NONE;
 
-	/* Acknowledge all interrupts immediately */
+	 
 	solo_reg_write(solo_dev, SOLO_IRQ_STAT, status);
 
 	if (status & SOLO_IRQ_PCI_ERR)
@@ -132,7 +124,7 @@ static void free_solo_dev(struct solo_dev *solo_dev)
 		device_unregister(&solo_dev->dev);
 
 	if (solo_dev->reg_base) {
-		/* Bring down the sub-devices first */
+		 
 		solo_g723_exit(solo_dev);
 		solo_enc_v4l2_exit(solo_dev);
 		solo_enc_exit(solo_dev);
@@ -142,7 +134,7 @@ static void free_solo_dev(struct solo_dev *solo_dev)
 		solo_p2m_exit(solo_dev);
 		solo_i2c_exit(solo_dev);
 
-		/* Now cleanup the PCI device */
+		 
 		solo_irq_off(solo_dev, ~0);
 		free_irq(pdev->irq, solo_dev);
 		pci_iounmap(pdev, solo_dev->reg_base);
@@ -398,7 +390,7 @@ static const struct device_attribute solo_dev_attrs[] = {
 
 static void solo_device_release(struct device *dev)
 {
-	/* Do nothing */
+	 
 }
 
 static int solo_sysfs_init(struct solo_dev *solo_dev)
@@ -467,7 +459,7 @@ static int solo_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (ret)
 		goto fail_probe;
 
-	/* Only for during init */
+	 
 	solo_dev->p2m_jiffies = msecs_to_jiffies(100);
 
 	ret = pci_enable_device(pdev);
@@ -476,7 +468,7 @@ static int solo_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	pci_set_master(pdev);
 
-	/* RETRY/TRDY Timeout disabled */
+	 
 	pci_write_config_byte(pdev, 0x40, 0x00);
 	pci_write_config_byte(pdev, 0x41, 0x00);
 
@@ -510,10 +502,10 @@ static int solo_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		solo_dev->nr_ext = 1;
 	}
 
-	/* Disable all interrupts to start */
+	 
 	solo_irq_off(solo_dev, ~0);
 
-	/* Initial global settings */
+	 
 	if (solo_dev->type == SOLO_DEV_6010) {
 		solo_dev->clock_mhz = 108;
 		solo_dev->sys_config = SOLO_SYS_CFG_SDRAM64BIT
@@ -535,11 +527,11 @@ static int solo_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		}
 
 		solo_reg_write(solo_dev, SOLO_PLL_CONFIG,
-			       (1 << 20) | /* PLL_RANGE */
-			       (8 << 15) | /* PLL_DIVR  */
+			       (1 << 20) |  
+			       (8 << 15) |  
 			       (divq << 12) |
 			       (divf <<  4) |
-			       (1 <<  1)   /* PLL_FSEN */);
+			       (1 <<  1)    );
 
 		solo_dev->sys_config = SOLO_SYS_CFG_SDRAM64BIT;
 	}
@@ -548,7 +540,7 @@ static int solo_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	solo_reg_write(solo_dev, SOLO_TIMER_CLOCK_NUM,
 		       solo_dev->clock_mhz - 1);
 
-	/* PLL locking time of 1ms */
+	 
 	mdelay(1);
 
 	ret = request_irq(pdev->irq, solo_isr, IRQF_SHARED, SOLO6X10_NAME,
@@ -556,14 +548,14 @@ static int solo_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (ret)
 		goto fail_probe;
 
-	/* Handle this from the start */
+	 
 	solo_irq_on(solo_dev, SOLO_IRQ_PCI_ERR);
 
 	ret = solo_i2c_init(solo_dev);
 	if (ret)
 		goto fail_probe;
 
-	/* Setup the DMA engine */
+	 
 	solo_reg_write(solo_dev, SOLO_DMA_CTRL,
 		       SOLO_DMA_CTRL_REFRESH_CYCLE(1) |
 		       SOLO_DMA_CTRL_SDRAM_SIZE(2) |
@@ -571,7 +563,7 @@ static int solo_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		       SOLO_DMA_CTRL_READ_CLK_SELECT |
 		       SOLO_DMA_CTRL_LATENCY(1));
 
-	/* Undocumented crap */
+	 
 	solo_reg_write(solo_dev, SOLO_DMA_CTRL1,
 		       solo_dev->type == SOLO_DEV_6010 ? 0x100 : 0x300);
 
@@ -580,10 +572,10 @@ static int solo_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		solo_set_time(solo_dev);
 	}
 
-	/* Disable watchdog */
+	 
 	solo_reg_write(solo_dev, SOLO_WATCHDOG, 0);
 
-	/* Initialize sub components */
+	 
 
 	ret = solo_p2m_init(solo_dev);
 	if (ret)
@@ -621,7 +613,7 @@ static int solo_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (ret)
 		goto fail_probe;
 
-	/* Now that init is over, set this lower */
+	 
 	solo_dev->p2m_jiffies = msecs_to_jiffies(20);
 
 	return 0;
@@ -640,7 +632,7 @@ static void solo_pci_remove(struct pci_dev *pdev)
 }
 
 static const struct pci_device_id solo_id_table[] = {
-	/* 6010 based cards */
+	 
 	{ PCI_DEVICE(PCI_VENDOR_ID_SOFTLOGIC, PCI_DEVICE_ID_SOLO6010),
 	  .driver_data = SOLO_DEV_6010 },
 	{ PCI_DEVICE(PCI_VENDOR_ID_BLUECHERRY, PCI_DEVICE_ID_NEUSOLO_4),
@@ -655,7 +647,7 @@ static const struct pci_device_id solo_id_table[] = {
 	  .driver_data = SOLO_DEV_6010 },
 	{ PCI_DEVICE(PCI_VENDOR_ID_BLUECHERRY, PCI_DEVICE_ID_BC_SOLO_16),
 	  .driver_data = SOLO_DEV_6010 },
-	/* 6110 based cards */
+	 
 	{ PCI_DEVICE(PCI_VENDOR_ID_SOFTLOGIC, PCI_DEVICE_ID_SOLO6110),
 	  .driver_data = SOLO_DEV_6110 },
 	{ PCI_DEVICE(PCI_VENDOR_ID_BLUECHERRY, PCI_DEVICE_ID_BC_6110_4),

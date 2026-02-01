@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ROHM BD9571MWV-M and BD9574MWF-M regulator driver
- *
- * Copyright (C) 2017 Marek Vasut <marek.vasut+renesas@gmail.com>
- *
- * Based on the TPS65086 driver
- *
- * NOTE: VD09 is missing
- */
+
+ 
 
 #include <linux/mfd/rohm-generic.h>
 #include <linux/module.h>
@@ -20,12 +12,12 @@
 struct bd9571mwv_reg {
 	struct regmap *regmap;
 
-	/* DDR Backup Power */
-	u8 bkup_mode_cnt_keepon;	/* from "rohm,ddr-backup-power" */
+	 
+	u8 bkup_mode_cnt_keepon;	 
 	u8 bkup_mode_cnt_saved;
 	bool bkup_mode_enabled;
 
-	/* Power switch type */
+	 
 	bool rstbmode_level;
 	bool rstbmode_pulse;
 };
@@ -100,7 +92,7 @@ static int bd9571mwv_reg_set_voltage_sel_regmap(struct regulator_dev *rdev,
 				 rdev->desc->vsel_mask, sel);
 }
 
-/* Operations permitted on AVS voltage regulator */
+ 
 static const struct regulator_ops avs_ops = {
 	.set_voltage_sel	= bd9571mwv_avs_set_voltage_sel_regmap,
 	.map_voltage		= regulator_map_voltage_linear,
@@ -108,7 +100,7 @@ static const struct regulator_ops avs_ops = {
 	.list_voltage		= regulator_list_voltage_linear,
 };
 
-/* Operations permitted on voltage regulators */
+ 
 static const struct regulator_ops reg_ops = {
 	.set_voltage_sel	= bd9571mwv_reg_set_voltage_sel_regmap,
 	.map_voltage		= regulator_map_voltage_linear,
@@ -116,7 +108,7 @@ static const struct regulator_ops reg_ops = {
 	.list_voltage		= regulator_list_voltage_linear,
 };
 
-/* Operations permitted on voltage monitors */
+ 
 static const struct regulator_ops vid_ops = {
 	.map_voltage		= regulator_map_voltage_linear,
 	.get_voltage_sel	= regulator_get_voltage_sel_regmap,
@@ -195,10 +187,7 @@ static ssize_t backup_mode_store(struct device *dev,
 	if (!bdreg->rstbmode_level)
 		return count;
 
-	/*
-	 * Configure DDR Backup Mode, to change the role of the accessory power
-	 * switch from a power switch to a wake-up switch, or vice versa
-	 */
+	 
 	ret = bd9571mwv_bkup_mode_read(bdreg, &mode);
 	if (ret)
 		return ret;
@@ -225,7 +214,7 @@ static int bd9571mwv_suspend(struct device *dev)
 	if (!bdreg->bkup_mode_enabled)
 		return 0;
 
-	/* Save DDR Backup Mode */
+	 
 	ret = bd9571mwv_bkup_mode_read(bdreg, &mode);
 	if (ret)
 		return ret;
@@ -235,7 +224,7 @@ static int bd9571mwv_suspend(struct device *dev)
 	if (!bdreg->rstbmode_pulse)
 		return 0;
 
-	/* Enable DDR Backup Mode */
+	 
 	mode &= ~BD9571MWV_BKUP_MODE_CNT_KEEPON_MASK;
 	mode |= bdreg->bkup_mode_cnt_keepon;
 
@@ -252,7 +241,7 @@ static int bd9571mwv_resume(struct device *dev)
 	if (!bdreg->bkup_mode_enabled)
 		return 0;
 
-	/* Restore DDR Backup Mode */
+	 
 	return bd9571mwv_bkup_mode_write(bdreg, bdreg->bkup_mode_cnt_saved);
 }
 
@@ -269,7 +258,7 @@ static int bd9571mwv_regulator_remove(struct platform_device *pdev)
 #else
 #define DEV_PM_OPS	NULL
 #define bd9571mwv_regulator_remove	NULL
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static int bd9571mwv_regulator_probe(struct platform_device *pdev)
 {
@@ -294,7 +283,7 @@ static int bd9571mwv_regulator_probe(struct platform_device *pdev)
 	config.regmap = bdreg->regmap;
 
 	for (i = 0; i < ARRAY_SIZE(regulators); i++) {
-		/* BD9574MWF supports DVFS only */
+		 
 		if (chip == ROHM_CHIP_TYPE_BD9574 && regulators[i].id != DVFS)
 			continue;
 		rdev = devm_regulator_register(&pdev->dev, &regulators[i],
@@ -328,17 +317,14 @@ static int bd9571mwv_regulator_probe(struct platform_device *pdev)
 	if (bdreg->bkup_mode_cnt_keepon) {
 		int ret;
 
-		/*
-		 * Backup mode is enabled by default in pulse mode, but needs
-		 * explicit user setup in level mode.
-		 */
+		 
 		bdreg->bkup_mode_enabled = bdreg->rstbmode_pulse;
 
 		ret = device_create_file(&pdev->dev, &dev_attr_backup_mode);
 		if (ret)
 			return ret;
 	}
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 	return 0;
 }
@@ -346,7 +332,7 @@ static int bd9571mwv_regulator_probe(struct platform_device *pdev)
 static const struct platform_device_id bd9571mwv_regulator_id_table[] = {
 	{ "bd9571mwv-regulator", ROHM_CHIP_TYPE_BD9571 },
 	{ "bd9574mwf-regulator", ROHM_CHIP_TYPE_BD9574 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, bd9571mwv_regulator_id_table);
 

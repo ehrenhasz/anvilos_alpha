@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Housekeeping management. Manage the targets for routine code that can run on
- *  any CPU: unbound workqueues, timers, kthreads and any offloadable work.
- *
- * Copyright (C) 2017 Red Hat, Inc., Frederic Weisbecker
- * Copyright (C) 2017-2018 SUSE, Frederic Weisbecker
- *
- */
+
+ 
 
 enum hk_flags {
 	HK_FLAG_TIMER		= BIT(HK_TYPE_TIMER),
@@ -92,7 +85,7 @@ void __init housekeeping_init(void)
 		sched_tick_offload_init();
 
 	for_each_set_bit(type, &housekeeping.flags, HK_TYPE_MAX) {
-		/* We need at least one CPU to handle housekeeping work */
+		 
 		WARN_ON_ONCE(cpumask_empty(housekeeping.cpumasks[type]));
 	}
 }
@@ -139,13 +132,13 @@ static int __init housekeeping_setup(char *str, unsigned long flags)
 	}
 
 	if (!housekeeping.flags) {
-		/* First setup call ("nohz_full=" or "isolcpus=") */
+		 
 		enum hk_type type;
 
 		for_each_set_bit(type, &flags, HK_TYPE_MAX)
 			housekeeping_setup_type(type, housekeeping_staging);
 	} else {
-		/* Second setup call ("nohz_full=" after "isolcpus=" or the reverse) */
+		 
 		enum hk_type type;
 		unsigned long iter_flags = flags & housekeeping.flags;
 
@@ -214,10 +207,7 @@ static int __init housekeeping_isolcpus_setup(char *str)
 			continue;
 		}
 
-		/*
-		 * Skip unknown sub-parameter and validate that it is not
-		 * containing an invalid character.
-		 */
+		 
 		for (par = str, len = 0; *str && *str != ','; str++, len++) {
 			if (!isalpha(*str) && *str != '_')
 				illegal = true;
@@ -232,7 +222,7 @@ static int __init housekeeping_isolcpus_setup(char *str)
 		str++;
 	}
 
-	/* Default behaviour for isolcpus without flags */
+	 
 	if (!flags)
 		flags |= HK_FLAG_DOMAIN;
 

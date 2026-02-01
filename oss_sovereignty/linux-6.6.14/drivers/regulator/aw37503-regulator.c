@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// AWINIC AW37503 Regulator Driver
-//
-// Copyright (C) 2023 awinic. All Rights Reserved
-//
-// Author: <like@awinic.com>
+
+
+
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/gpio/consumer.h>
@@ -55,7 +55,7 @@ static int aw37503_regulator_enable(struct regulator_dev *rdev)
 		rpdata->ena_gpio_state = 1;
 	}
 
-	/* Hardware automatically enable discharge bit in enable */
+	 
 	if (rdev->constraints->active_discharge ==
 			REGULATOR_ACTIVE_DISCHARGE_DISABLE) {
 		ret = regulator_set_active_discharge_regmap(rdev, false);
@@ -121,7 +121,7 @@ static int aw37503_of_parse_cb(struct device_node *np,
 	if (IS_ERR(rpdata->en_gpiod)) {
 		ret = PTR_ERR(rpdata->en_gpiod);
 
-		/* Ignore the error other than probe defer */
+		 
 		if (ret == -EPROBE_DEFER)
 			return ret;
 		return 0;
@@ -219,7 +219,7 @@ MODULE_DEVICE_TABLE(i2c, aw37503_id);
 
 static const struct of_device_id aw37503_of_match[] = {
 	{.compatible = "awinic,aw37503",},
-	{ /* Sentinel */ },
+	{   },
 };
 
 MODULE_DEVICE_TABLE(of, aw37503_of_match);

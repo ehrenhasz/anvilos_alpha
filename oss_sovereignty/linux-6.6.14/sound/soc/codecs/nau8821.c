@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// nau8821.c -- Nuvoton NAU88L21 audio codec driver
-//
-// Copyright 2021 Nuvoton Technology Corp.
-// Author: John Hsu <kchsu0@nuvoton.com>
-// Co-author: Seven Lee <wtli@nuvoton.com>
-//
+
+
+
+
+
+
+
+
 
 #include <linux/acpi.h>
 #include <linux/clk.h>
@@ -39,7 +39,7 @@ MODULE_PARM_DESC(quirk, "Board-specific quirk override");
 
 #define NAU8821_BUTTON SND_JACK_BTN_0
 
-/* the maximum frequency of CLK_ADC and CLK_DAC */
+ 
 #define CLK_DA_AD_MAX 6144000
 
 static int nau8821_configure_sysclk(struct nau8821 *nau8821,
@@ -59,7 +59,7 @@ struct nau8821_fll_attr {
 	unsigned int val;
 };
 
-/* scaling for mclk from sysclk_src output */
+ 
 static const struct nau8821_fll_attr mclk_src_scaling[] = {
 	{ 1, 0x0 },
 	{ 2, 0x2 },
@@ -76,7 +76,7 @@ static const struct nau8821_fll_attr mclk_src_scaling[] = {
 	{ 5, 0xf },
 };
 
-/* ratio for input clk freq */
+ 
 static const struct nau8821_fll_attr fll_ratio[] = {
 	{ 512000, 0x01 },
 	{ 256000, 0x02 },
@@ -94,25 +94,25 @@ static const struct nau8821_fll_attr fll_pre_scalar[] = {
 	{ 3, 0x3 },
 };
 
-/* over sampling rate */
+ 
 struct nau8821_osr_attr {
 	unsigned int osr;
 	unsigned int clk_src;
 };
 
 static const struct nau8821_osr_attr osr_dac_sel[] = {
-	{ 64, 2 },	/* OSR 64, SRC 1/4 */
-	{ 256, 0 },	/* OSR 256, SRC 1 */
-	{ 128, 1 },	/* OSR 128, SRC 1/2 */
+	{ 64, 2 },	 
+	{ 256, 0 },	 
+	{ 128, 1 },	 
 	{ 0, 0 },
-	{ 32, 3 },	/* OSR 32, SRC 1/8 */
+	{ 32, 3 },	 
 };
 
 static const struct nau8821_osr_attr osr_adc_sel[] = {
-	{ 32, 3 },	/* OSR 32, SRC 1/8 */
-	{ 64, 2 },	/* OSR 64, SRC 1/4 */
-	{ 128, 1 },	/* OSR 128, SRC 1/2 */
-	{ 256, 0 },	/* OSR 256, SRC 1 */
+	{ 32, 3 },	 
+	{ 64, 2 },	 
+	{ 128, 1 },	 
+	{ 256, 0 },	 
 };
 
 struct nau8821_dmic_speed {
@@ -121,10 +121,10 @@ struct nau8821_dmic_speed {
 };
 
 static const struct nau8821_dmic_speed dmic_speed_sel[] = {
-	{ 0, 0x0 },	/*SPEED 1, SRC 1 */
-	{ 1, 0x1 },	/*SPEED 2, SRC 1/2 */
-	{ 2, 0x2 },	/*SPEED 4, SRC 1/4 */
-	{ 3, 0x3 },	/*SPEED 8, SRC 1/8 */
+	{ 0, 0x0 },	 
+	{ 1, 0x1 },	 
+	{ 2, 0x2 },	 
+	{ 3, 0x3 },	 
 };
 
 static const struct reg_default nau8821_reg_defaults[] = {
@@ -472,10 +472,7 @@ static int dmic_clock_control(struct snd_soc_dapm_widget *w,
 	int i, speed_selection = -1, clk_adc_src, clk_adc;
 	unsigned int clk_divider_r03;
 
-	/* The DMIC clock is gotten from adc clock divided by
-	 * CLK_DMIC_SRC (1, 2, 4, 8). The clock has to be equal or
-	 * less than nau8821->dmic_clk_threshold.
-	 */
+	 
 	regmap_read(nau8821->regmap, NAU8821_R03_CLK_DIVIDER,
 		&clk_divider_r03);
 	clk_adc_src = (clk_divider_r03 & NAU8821_CLK_ADC_SRC_MASK)
@@ -560,7 +557,7 @@ static int nau8821_pump_event(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
-		/* Prevent startup click by letting charge pump to ramp up */
+		 
 		msleep(20);
 		regmap_update_bits(nau8821->regmap, NAU8821_R80_CHARGE_PUMP,
 			NAU8821_JAMNODCLOW, NAU8821_JAMNODCLOW);
@@ -585,7 +582,7 @@ static int nau8821_output_dac_event(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		/* Disables the TESTDAC to let DAC signal pass through. */
+		 
 		regmap_update_bits(nau8821->regmap, NAU8821_R66_BIAS_ADJ,
 			NAU8821_BIAS_TESTDAC_EN, 0);
 		break;
@@ -609,11 +606,7 @@ static int system_clock_control(struct snd_soc_dapm_widget *w,
 
 	if (SND_SOC_DAPM_EVENT_OFF(event)) {
 		dev_dbg(nau8821->dev, "system clock control : POWER OFF\n");
-		/* Set clock source to disable or internal clock before the
-		 * playback or capture end. Codec needs clock for Jack
-		 * detection and button press if jack inserted; otherwise,
-		 * the clock should be closed.
-		 */
+		 
 		if (nau8821_is_jack_inserted(nau8821->regmap)) {
 			nau8821_configure_sysclk(nau8821,
 				NAU8821_CLK_INTERNAL, 0);
@@ -665,7 +658,7 @@ static const struct snd_soc_dapm_widget nau8821_dapm_widgets[] = {
 		NAU8821_POWERUP_ADCL_SFT, 0),
 	SND_SOC_DAPM_ADC("ADCR Power", NULL, NAU8821_R72_ANALOG_ADC_2,
 		NAU8821_POWERUP_ADCR_SFT, 0),
-	/* single-ended design only on the left */
+	 
 	SND_SOC_DAPM_PGA_S("Frontend PGA L", 1, NAU8821_R7F_POWER_UP_CONTROL,
 		NAU8821_PUP_PGA_L_SFT, 0, nau8821_left_fepga_event,
 		SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_POST_PMD),
@@ -729,7 +722,7 @@ static const struct snd_soc_dapm_widget nau8821_dapm_widgets[] = {
 		0, nau8821_output_dac_event,
 		SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
 
-	/* HPOL/R are ungrounded by disabling 16 Ohm pull-downs on playback */
+	 
 	SND_SOC_DAPM_PGA_S("HPOL Pulldown", 8,
 		NAU8821_R0D_JACK_DET_CTRL,
 		NAU8821_SPKR_DWN1L_SFT, 0, NULL, 0),
@@ -737,7 +730,7 @@ static const struct snd_soc_dapm_widget nau8821_dapm_widgets[] = {
 		NAU8821_R0D_JACK_DET_CTRL,
 		NAU8821_SPKR_DWN1R_SFT, 0, NULL, 0),
 
-	/* High current HPOL/R boost driver */
+	 
 	SND_SOC_DAPM_PGA_S("HP Boost Driver", 9,
 		NAU8821_R76_BOOST, NAU8821_HP_BOOST_DIS_SFT, 1, NULL, 0),
 	SND_SOC_DAPM_PGA("Class G", NAU8821_R4B_CLASSG_CTRL,
@@ -851,12 +844,7 @@ static int nau8821_hw_params(struct snd_pcm_substream *substream,
 	const struct nau8821_osr_attr *osr;
 
 	nau8821->fs = params_rate(params);
-	/* CLK_DAC or CLK_ADC = OSR * FS
-	 * DAC or ADC clock frequency is defined as Over Sampling Rate (OSR)
-	 * multiplied by the audio sample rate (Fs). Note that the OSR and Fs
-	 * values must be selected such that the maximum frequency is less
-	 * than 6.144 MHz.
-	 */
+	 
 	osr = nau8821_get_osr(nau8821, substream->stream);
 	if (!osr || !osr->osr)
 		return -EINVAL;
@@ -871,10 +859,10 @@ static int nau8821_hw_params(struct snd_pcm_substream *substream,
 			NAU8821_CLK_ADC_SRC_MASK,
 			osr->clk_src << NAU8821_CLK_ADC_SRC_SFT);
 
-	/* make BCLK and LRC divde configuration if the codec as master. */
+	 
 	regmap_read(nau8821->regmap, NAU8821_R1D_I2S_PCM_CTRL2, &ctrl_val);
 	if (ctrl_val & NAU8821_I2S_MS_MASTER) {
-		/* get the bclk and fs ratio */
+		 
 		bclk_fs = snd_soc_params_to_bclk(params) / nau8821->fs;
 		if (bclk_fs <= 32)
 			clk_div = 3;
@@ -1024,9 +1012,7 @@ static bool nau8821_is_jack_inserted(struct regmap *regmap)
 	active_high = jkdet & NAU8821_JACK_POLARITY;
 	regmap_read(regmap, NAU8821_R82_GENERAL_STATUS, &status);
 	is_high = status & NAU8821_GPIO2_IN;
-	/* return jack connection status according to jack insertion logic
-	 * active high or active low.
-	 */
+	 
 	return active_high == is_high;
 }
 
@@ -1034,9 +1020,7 @@ static void nau8821_int_status_clear_all(struct regmap *regmap)
 {
 	int active_irq, clear_irq, i;
 
-	/* Reset the intrruption status from rightmost bit if the corres-
-	 * ponding irq event occurs.
-	 */
+	 
 	regmap_read(regmap, NAU8821_R10_IRQ_STATUS, &active_irq);
 	for (i = 0; i < NAU8821_REG_DATA_LEN; i++) {
 		clear_irq = (0x1 << i);
@@ -1052,25 +1036,23 @@ static void nau8821_eject_jack(struct nau8821 *nau8821)
 	struct regmap *regmap = nau8821->regmap;
 	struct snd_soc_component *component = snd_soc_dapm_to_component(dapm);
 
-	/* Detach 2kOhm Resistors from MICBIAS to MICGND */
+	 
 	regmap_update_bits(regmap, NAU8821_R74_MIC_BIAS,
 		NAU8821_MICBIAS_JKR2, 0);
-	/* HPL/HPR short to ground */
+	 
 	regmap_update_bits(regmap, NAU8821_R0D_JACK_DET_CTRL,
 		NAU8821_SPKR_DWN1R | NAU8821_SPKR_DWN1L, 0);
 	snd_soc_component_disable_pin(component, "MICBIAS");
 	snd_soc_dapm_sync(dapm);
 
-	/* Clear all interruption status */
+	 
 	nau8821_int_status_clear_all(regmap);
 
-	/* Enable the insertion interruption, disable the ejection inter-
-	 * ruption, and then bypass de-bounce circuit.
-	 */
+	 
 	regmap_update_bits(regmap, NAU8821_R12_INTERRUPT_DIS_CTRL,
 		NAU8821_IRQ_EJECT_DIS | NAU8821_IRQ_INSERT_DIS,
 		NAU8821_IRQ_EJECT_DIS);
-	/* Mask unneeded IRQs: 1 - disable, 0 - enable */
+	 
 	regmap_update_bits(regmap, NAU8821_R0F_INTERRUPT_MASK,
 		NAU8821_IRQ_EJECT_EN | NAU8821_IRQ_INSERT_EN,
 		NAU8821_IRQ_EJECT_EN);
@@ -1078,11 +1060,11 @@ static void nau8821_eject_jack(struct nau8821 *nau8821)
 	regmap_update_bits(regmap, NAU8821_R0D_JACK_DET_CTRL,
 		NAU8821_JACK_DET_DB_BYPASS, NAU8821_JACK_DET_DB_BYPASS);
 
-	/* Close clock for jack type detection at manual mode */
+	 
 	if (dapm->bias_level < SND_SOC_BIAS_PREPARE)
 		nau8821_configure_sysclk(nau8821, NAU8821_CLK_DIS, 0);
 
-	/* Recover to normal channel input */
+	 
 	regmap_update_bits(regmap, NAU8821_R2B_ADC_RATE,
 			NAU8821_ADC_R_SRC_EN, 0);
 	if (nau8821->key_enable) {
@@ -1120,12 +1102,10 @@ static void nau8821_jdet_work(struct work_struct *work)
 		dev_dbg(nau8821->dev, "Headset connected\n");
 		event |= SND_JACK_HEADSET;
 
-		/* 2kOhm Resistor from MICBIAS to MICGND1 */
+		 
 		regmap_update_bits(regmap, NAU8821_R74_MIC_BIAS,
 			NAU8821_MICBIAS_JKR2, NAU8821_MICBIAS_JKR2);
-		/* Latch Right Channel Analog data
-		 * input into the Right Channel Filter
-		 */
+		 
 		regmap_update_bits(regmap, NAU8821_R2B_ADC_RATE,
 			NAU8821_ADC_R_SRC_EN, NAU8821_ADC_R_SRC_EN);
 		if (nau8821->key_enable) {
@@ -1147,26 +1127,22 @@ static void nau8821_jdet_work(struct work_struct *work)
 	snd_soc_jack_report(nau8821->jack, event, event_mask);
 }
 
-/* Enable interruptions with internal clock. */
+ 
 static void nau8821_setup_inserted_irq(struct nau8821 *nau8821)
 {
 	struct regmap *regmap = nau8821->regmap;
 
-	/* Enable internal VCO needed for interruptions */
+	 
 	if (nau8821->dapm->bias_level < SND_SOC_BIAS_PREPARE)
 		nau8821_configure_sysclk(nau8821, NAU8821_CLK_INTERNAL, 0);
 
-	/* Chip needs one FSCLK cycle in order to generate interruptions,
-	 * as we cannot guarantee one will be provided by the system. Turning
-	 * master mode on then off enables us to generate that FSCLK cycle
-	 * with a minimum of contention on the clock bus.
-	 */
+	 
 	regmap_update_bits(regmap, NAU8821_R1D_I2S_PCM_CTRL2,
 		NAU8821_I2S_MS_MASK, NAU8821_I2S_MS_MASTER);
 	regmap_update_bits(regmap, NAU8821_R1D_I2S_PCM_CTRL2,
 		NAU8821_I2S_MS_MASK, NAU8821_I2S_MS_SLAVE);
 
-	/* Not bypass de-bounce circuit */
+	 
 	regmap_update_bits(regmap, NAU8821_R0D_JACK_DET_CTRL,
 		NAU8821_JACK_DET_DB_BYPASS, 0);
 
@@ -1208,10 +1184,10 @@ static irqreturn_t nau8821_interrupt(int irq, void *data)
 		regmap_update_bits(regmap, NAU8821_R71_ANALOG_ADC_1,
 			NAU8821_MICDET_MASK, NAU8821_MICDET_EN);
 		if (nau8821_is_jack_inserted(regmap)) {
-			/* detect microphone and jack type */
+			 
 			cancel_work_sync(&nau8821->jdet_work);
 			schedule_work(&nau8821->jdet_work);
-			/* Turn off insertion interruption at manual mode */
+			 
 			regmap_update_bits(regmap,
 				NAU8821_R12_INTERRUPT_DIS_CTRL,
 				NAU8821_IRQ_INSERT_DIS,
@@ -1230,7 +1206,7 @@ static irqreturn_t nau8821_interrupt(int irq, void *data)
 
 	if (!clear_irq)
 		clear_irq = active_irq;
-	/* clears the rightmost interruption */
+	 
 	regmap_write(regmap, NAU8821_R11_INT_CLR_KEY_STATUS, clear_irq);
 
 	if (event_mask)
@@ -1264,26 +1240,14 @@ static int nau8821_component_probe(struct snd_soc_component *component)
 	return 0;
 }
 
-/**
- * nau8821_calc_fll_param - Calculate FLL parameters.
- * @fll_in: external clock provided to codec.
- * @fs: sampling rate.
- * @fll_param: Pointer to structure of FLL parameters.
- *
- * Calculate FLL parameters to configure codec.
- *
- * Returns 0 for success or negative error code.
- */
+ 
 static int nau8821_calc_fll_param(unsigned int fll_in,
 	unsigned int fs, struct nau8821_fll *fll_param)
 {
 	u64 fvco, fvco_max;
 	unsigned int fref, i, fvco_sel;
 
-	/* Ensure the reference clock frequency (FREF) is <= 13.5MHz by
-	 * dividing freq_in by 1, 2, 4, or 8 using FLL pre-scalar.
-	 * FREF = freq_in / NAU8821_FLL_REF_DIV_MASK
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(fll_pre_scalar); i++) {
 		fref = fll_in >> fll_pre_scalar[i].param;
 		if (fref <= NAU_FREF_MAX)
@@ -1293,7 +1257,7 @@ static int nau8821_calc_fll_param(unsigned int fll_in,
 		return -EINVAL;
 	fll_param->clk_ref_div = fll_pre_scalar[i].val;
 
-	/* Choose the FLL ratio based on FREF */
+	 
 	for (i = 0; i < ARRAY_SIZE(fll_ratio); i++) {
 		if (fref >= fll_ratio[i].param)
 			break;
@@ -1302,11 +1266,7 @@ static int nau8821_calc_fll_param(unsigned int fll_in,
 		return -EINVAL;
 	fll_param->ratio = fll_ratio[i].val;
 
-	/* Calculate the frequency of DCO (FDCO) given freq_out = 256 * Fs.
-	 * FDCO must be within the 90MHz - 100MHz or the FFL cannot be
-	 * guaranteed across the full range of operation.
-	 * FDCO = freq_out * 2 * mclk_src_scaling
-	 */
+	 
 	fvco_max = 0;
 	fvco_sel = ARRAY_SIZE(mclk_src_scaling);
 	for (i = 0; i < ARRAY_SIZE(mclk_src_scaling); i++) {
@@ -1321,9 +1281,7 @@ static int nau8821_calc_fll_param(unsigned int fll_in,
 		return -EINVAL;
 	fll_param->mclk_src = mclk_src_scaling[fvco_sel].val;
 
-	/* Calculate the FLL 10-bit integer input and the FLL 24-bit fractional
-	 * input based on FDCO, FREF and FLL ratio.
-	 */
+	 
 	fvco = div_u64(fvco_max << 24, fref * fll_param->ratio);
 	fll_param->fll_int = (fvco >> 24) & 0x3ff;
 	fll_param->fll_frac = fvco & 0xffffff;
@@ -1339,30 +1297,30 @@ static void nau8821_fll_apply(struct nau8821 *nau8821,
 	regmap_update_bits(regmap, NAU8821_R03_CLK_DIVIDER,
 		NAU8821_CLK_SRC_MASK | NAU8821_CLK_MCLK_SRC_MASK,
 		NAU8821_CLK_SRC_MCLK | fll_param->mclk_src);
-	/* Make DSP operate at high speed for better performance. */
+	 
 	regmap_update_bits(regmap, NAU8821_R04_FLL1,
 		NAU8821_FLL_RATIO_MASK | NAU8821_ICTRL_LATCH_MASK,
 		fll_param->ratio | (0x6 << NAU8821_ICTRL_LATCH_SFT));
-	/* FLL 24-bit fractional input */
+	 
 	regmap_write(regmap, NAU8821_R0A_FLL7,
 		(fll_param->fll_frac >> 16) & 0xff);
 	regmap_write(regmap, NAU8821_R0B_FLL8, fll_param->fll_frac & 0xffff);
-	/* FLL 10-bit integer input */
+	 
 	regmap_update_bits(regmap, NAU8821_R06_FLL3,
 		NAU8821_FLL_INTEGER_MASK, fll_param->fll_int);
-	/* FLL pre-scaler */
+	 
 	regmap_update_bits(regmap, NAU8821_R07_FLL4,
 		NAU8821_HIGHBW_EN | NAU8821_FLL_REF_DIV_MASK,
 		NAU8821_HIGHBW_EN |
 		(fll_param->clk_ref_div << NAU8821_FLL_REF_DIV_SFT));
-	/* select divided VCO input */
+	 
 	regmap_update_bits(regmap, NAU8821_R08_FLL5,
 		NAU8821_FLL_CLK_SW_MASK, NAU8821_FLL_CLK_SW_REF);
-	/* Disable free-running mode */
+	 
 	regmap_update_bits(regmap,
 		NAU8821_R09_FLL6, NAU8821_DCO_EN, 0);
 	if (fll_param->fll_frac) {
-		/* set FLL loop filter enable and cutoff frequency at 500Khz */
+		 
 		regmap_update_bits(regmap, NAU8821_R08_FLL5,
 			NAU8821_FLL_PDB_DAC_EN | NAU8821_FLL_LOOP_FTR_EN |
 			NAU8821_FLL_FTR_SW_MASK,
@@ -1372,7 +1330,7 @@ static void nau8821_fll_apply(struct nau8821 *nau8821,
 			NAU8821_SDM_EN | NAU8821_CUTOFF500,
 			NAU8821_SDM_EN | NAU8821_CUTOFF500);
 	} else {
-		/* disable FLL loop filter and cutoff frequency */
+		 
 		regmap_update_bits(regmap, NAU8821_R08_FLL5,
 			NAU8821_FLL_PDB_DAC_EN | NAU8821_FLL_LOOP_FTR_EN |
 			NAU8821_FLL_FTR_SW_MASK, NAU8821_FLL_FTR_SW_ACCU);
@@ -1381,19 +1339,7 @@ static void nau8821_fll_apply(struct nau8821 *nau8821,
 	}
 }
 
-/**
- * nau8821_set_fll - FLL configuration of nau8821
- * @component:  codec component
- * @pll_id:  PLL requested
- * @source:  clock source
- * @freq_in:  frequency of input clock source
- * @freq_out:  must be 256*Fs in order to achieve the best performance
- *
- * The FLL function can select BCLK or MCLK as the input clock source.
- *
- * Returns 0 if the parameters have been applied successfully
- * or negative error code.
- */
+ 
 static int nau8821_set_fll(struct snd_soc_component *component,
 	int pll_id, int source, unsigned int freq_in, unsigned int freq_out)
 {
@@ -1428,7 +1374,7 @@ static void nau8821_configure_mclk_as_sysclk(struct regmap *regmap)
 		NAU8821_CLK_SRC_MASK, NAU8821_CLK_SRC_MCLK);
 	regmap_update_bits(regmap, NAU8821_R09_FLL6,
 		NAU8821_DCO_EN, 0);
-	/* Make DSP operate as default setting for power saving. */
+	 
 	regmap_update_bits(regmap, NAU8821_R04_FLL1,
 		NAU8821_ICTRL_LATCH_MASK, 0);
 }
@@ -1440,12 +1386,12 @@ static int nau8821_configure_sysclk(struct nau8821 *nau8821,
 
 	switch (clk_id) {
 	case NAU8821_CLK_DIS:
-		/* Clock provided externally and disable internal VCO clock */
+		 
 		nau8821_configure_mclk_as_sysclk(regmap);
 		break;
 	case NAU8821_CLK_MCLK:
 		nau8821_configure_mclk_as_sysclk(regmap);
-		/* MCLK not changed by clock tree */
+		 
 		regmap_update_bits(regmap, NAU8821_R03_CLK_DIVIDER,
 			NAU8821_CLK_MCLK_SRC_MASK, 0);
 		break;
@@ -1455,9 +1401,7 @@ static int nau8821_configure_sysclk(struct nau8821 *nau8821,
 				NAU8821_DCO_EN, NAU8821_DCO_EN);
 			regmap_update_bits(regmap, NAU8821_R03_CLK_DIVIDER,
 				NAU8821_CLK_SRC_MASK, NAU8821_CLK_SRC_VCO);
-			/* Decrease the VCO frequency and make DSP operate
-			 * as default setting for power saving.
-			 */
+			 
 			regmap_update_bits(regmap, NAU8821_R03_CLK_DIVIDER,
 				NAU8821_CLK_MCLK_SRC_MASK, 0xf);
 			regmap_update_bits(regmap, NAU8821_R04_FLL1,
@@ -1468,33 +1412,20 @@ static int nau8821_configure_sysclk(struct nau8821 *nau8821,
 		}
 		break;
 	case NAU8821_CLK_FLL_MCLK:
-		/* Higher FLL reference input frequency can only set lower
-		 * gain error, such as 0000 for input reference from MCLK
-		 * 12.288Mhz.
-		 */
+		 
 		regmap_update_bits(regmap, NAU8821_R06_FLL3,
 			NAU8821_FLL_CLK_SRC_MASK | NAU8821_GAIN_ERR_MASK,
 			NAU8821_FLL_CLK_SRC_MCLK | 0);
 		break;
 	case NAU8821_CLK_FLL_BLK:
-		/* If FLL reference input is from low frequency source,
-		 * higher error gain can apply such as 0xf which has
-		 * the most sensitive gain error correction threshold,
-		 * Therefore, FLL has the most accurate DCO to
-		 * target frequency.
-		 */
+		 
 		regmap_update_bits(regmap, NAU8821_R06_FLL3,
 			NAU8821_FLL_CLK_SRC_MASK | NAU8821_GAIN_ERR_MASK,
 			NAU8821_FLL_CLK_SRC_BLK |
 			(0xf << NAU8821_GAIN_ERR_SFT));
 		break;
 	case NAU8821_CLK_FLL_FS:
-		/* If FLL reference input is from low frequency source,
-		 * higher error gain can apply such as 0xf which has
-		 * the most sensitive gain error correction threshold,
-		 * Therefore, FLL has the most accurate DCO to
-		 * target frequency.
-		 */
+		 
 		regmap_update_bits(regmap, NAU8821_R06_FLL3,
 			NAU8821_FLL_CLK_SRC_MASK | NAU8821_GAIN_ERR_MASK,
 			NAU8821_FLL_CLK_SRC_FS |
@@ -1523,15 +1454,13 @@ static int nau8821_resume_setup(struct nau8821 *nau8821)
 {
 	struct regmap *regmap = nau8821->regmap;
 
-	/* Close clock when jack type detection at manual mode */
+	 
 	nau8821_configure_sysclk(nau8821, NAU8821_CLK_DIS, 0);
 	if (nau8821->irq) {
-		/* Clear all interruption status */
+		 
 		nau8821_int_status_clear_all(regmap);
 
-		/* Enable both insertion and ejection interruptions, and then
-		 * bypass de-bounce circuit.
-		 */
+		 
 		regmap_update_bits(regmap, NAU8821_R0F_INTERRUPT_MASK,
 			NAU8821_IRQ_EJECT_EN | NAU8821_IRQ_INSERT_EN, 0);
 		regmap_update_bits(regmap, NAU8821_R0D_JACK_DET_CTRL,
@@ -1558,26 +1487,21 @@ static int nau8821_set_bias_level(struct snd_soc_component *component,
 		break;
 
 	case SND_SOC_BIAS_STANDBY:
-		/* Setup codec configuration after resume */
+		 
 		if (snd_soc_component_get_bias_level(component) ==
 			SND_SOC_BIAS_OFF)
 			nau8821_resume_setup(nau8821);
 		break;
 
 	case SND_SOC_BIAS_OFF:
-		/* HPL/HPR short to ground */
+		 
 		regmap_update_bits(regmap, NAU8821_R0D_JACK_DET_CTRL,
 			NAU8821_SPKR_DWN1R | NAU8821_SPKR_DWN1L, 0);
 		if (nau8821->irq) {
-			/* Reset the configuration of jack type for detection.
-			 * Detach 2kOhm Resistors from MICBIAS to MICGND1/2.
-			 */
+			 
 			regmap_update_bits(regmap, NAU8821_R74_MIC_BIAS,
 				NAU8821_MICBIAS_JKR2, 0);
-			/* Turn off all interruptions before system shutdown.
-			 * Keep theinterruption quiet before resume
-			 * setup completes.
-			 */
+			 
 			regmap_write(regmap,
 				NAU8821_R12_INTERRUPT_DIS_CTRL, 0xffff);
 			regmap_update_bits(regmap, NAU8821_R0F_INTERRUPT_MASK,
@@ -1599,7 +1523,7 @@ static int __maybe_unused nau8821_suspend(struct snd_soc_component *component)
 	if (nau8821->irq)
 		disable_irq(nau8821->irq);
 	snd_soc_component_force_bias_level(component, SND_SOC_BIAS_OFF);
-	/* Power down codec power; don't support button wakeup */
+	 
 	snd_soc_component_disable_pin(component, "MICBIAS");
 	snd_soc_dapm_sync(nau8821->dapm);
 	regcache_cache_only(nau8821->regmap, true);
@@ -1639,16 +1563,7 @@ static const struct snd_soc_component_driver nau8821_component_driver = {
 	.endianness		= 1,
 };
 
-/**
- * nau8821_enable_jack_detect - Specify a jack for event reporting
- *
- * @component:  component to register the jack with
- * @jack: jack to use to report headset and button events on
- *
- * After this function has been called the headset insert/remove and button
- * events will be routed to the given jack.  Jack can be null to stop
- * reporting.
- */
+ 
 int nau8821_enable_jack_detect(struct snd_soc_component *component,
 	struct snd_soc_jack *jack)
 {
@@ -1656,7 +1571,7 @@ int nau8821_enable_jack_detect(struct snd_soc_component *component,
 	int ret;
 
 	nau8821->jack = jack;
-	/* Initiate jack detection work queue */
+	 
 	INIT_WORK(&nau8821->jdet_work, nau8821_jdet_work);
 	ret = devm_request_threaded_irq(nau8821->dev, nau8821->irq, NULL,
 		nau8821_interrupt, IRQF_TRIGGER_LOW | IRQF_ONESHOT,
@@ -1743,43 +1658,39 @@ static void nau8821_init_regs(struct nau8821 *nau8821)
 {
 	struct regmap *regmap = nau8821->regmap;
 
-	/* Enable Bias/Vmid */
+	 
 	regmap_update_bits(regmap, NAU8821_R66_BIAS_ADJ,
 		NAU8821_BIAS_VMID, NAU8821_BIAS_VMID);
 	regmap_update_bits(regmap, NAU8821_R76_BOOST,
 		NAU8821_GLOBAL_BIAS_EN, NAU8821_GLOBAL_BIAS_EN);
-	/* VMID Tieoff setting and enable TESTDAC.
-	 * This sets the analog DAC inputs to a '0' input signal to avoid
-	 * any glitches due to power up transients in both the analog and
-	 * digital DAC circuit.
-	 */
+	 
 	regmap_update_bits(regmap, NAU8821_R66_BIAS_ADJ,
 		NAU8821_BIAS_VMID_SEL_MASK | NAU8821_BIAS_TESTDAC_EN,
 		(nau8821->vref_impedance << NAU8821_BIAS_VMID_SEL_SFT) |
 		NAU8821_BIAS_TESTDAC_EN);
-	/* Disable short Frame Sync detection logic */
+	 
 	regmap_update_bits(regmap, NAU8821_R1E_LEFT_TIME_SLOT,
 		NAU8821_DIS_FS_SHORT_DET, NAU8821_DIS_FS_SHORT_DET);
-	/* Disable Boost Driver, Automatic Short circuit protection enable */
+	 
 	regmap_update_bits(regmap, NAU8821_R76_BOOST,
 		NAU8821_PRECHARGE_DIS | NAU8821_HP_BOOST_DIS |
 		NAU8821_HP_BOOST_G_DIS | NAU8821_SHORT_SHUTDOWN_EN,
 		NAU8821_PRECHARGE_DIS | NAU8821_HP_BOOST_DIS |
 		NAU8821_HP_BOOST_G_DIS | NAU8821_SHORT_SHUTDOWN_EN);
-	/* Class G timer 64ms */
+	 
 	regmap_update_bits(regmap, NAU8821_R4B_CLASSG_CTRL,
 		NAU8821_CLASSG_TIMER_MASK,
 		0x20 << NAU8821_CLASSG_TIMER_SFT);
-	/* Class AB bias current to 2x, DAC Capacitor enable MSB/LSB */
+	 
 	regmap_update_bits(regmap, NAU8821_R6A_ANALOG_CONTROL_2,
 		NAU8821_HP_NON_CLASSG_CURRENT_2xADJ |
 		NAU8821_DAC_CAPACITOR_MSB | NAU8821_DAC_CAPACITOR_LSB,
 		NAU8821_HP_NON_CLASSG_CURRENT_2xADJ |
 		NAU8821_DAC_CAPACITOR_MSB | NAU8821_DAC_CAPACITOR_LSB);
-	/* Disable DACR/L power */
+	 
 	regmap_update_bits(regmap, NAU8821_R80_CHARGE_PUMP,
 		NAU8821_POWER_DOWN_DACR | NAU8821_POWER_DOWN_DACL, 0);
-	/* DAC clock delay 2ns, VREF */
+	 
 	regmap_update_bits(regmap, NAU8821_R73_RDAC,
 		NAU8821_DAC_CLK_DELAY_MASK | NAU8821_DAC_VREF_MASK,
 		(0x2 << NAU8821_DAC_CLK_DELAY_SFT) |
@@ -1787,9 +1698,7 @@ static void nau8821_init_regs(struct nau8821 *nau8821)
 
 	regmap_update_bits(regmap, NAU8821_R74_MIC_BIAS,
 		NAU8821_MICBIAS_VOLTAGE_MASK, nau8821->micbias_voltage);
-	/* Default oversampling/decimations settings are unusable
-	 * (audible hiss). Set it to something better.
-	 */
+	 
 	regmap_update_bits(regmap, NAU8821_R2B_ADC_RATE,
 		NAU8821_ADC_SYNC_DOWN_MASK, NAU8821_ADC_SYNC_DOWN_64);
 	regmap_update_bits(regmap, NAU8821_R2C_DAC_CTRL1,
@@ -1806,7 +1715,7 @@ static int nau8821_setup_irq(struct nau8821 *nau8821)
 {
 	struct regmap *regmap = nau8821->regmap;
 
-	/* Jack detection */
+	 
 	regmap_update_bits(regmap, NAU8821_R1A_GPIO12_CTRL,
 		NAU8821_JKDET_OUTPUT_EN,
 		nau8821->jkdet_enable ? 0 : NAU8821_JKDET_OUTPUT_EN);
@@ -1818,7 +1727,7 @@ static int nau8821_setup_irq(struct nau8821 *nau8821)
 		nau8821->jkdet_pull_up ? NAU8821_JKDET_PULL_UP : 0);
 	regmap_update_bits(regmap, NAU8821_R0D_JACK_DET_CTRL,
 		NAU8821_JACK_POLARITY,
-		/* jkdet_polarity - 1  is for active-low */
+		 
 		nau8821->jkdet_polarity ? 0 : NAU8821_JACK_POLARITY);
 	regmap_update_bits(regmap, NAU8821_R0D_JACK_DET_CTRL,
 		NAU8821_JACK_INSERT_DEBOUNCE_MASK,
@@ -1828,22 +1737,22 @@ static int nau8821_setup_irq(struct nau8821 *nau8821)
 		NAU8821_JACK_EJECT_DEBOUNCE_MASK,
 		nau8821->jack_eject_debounce <<
 		NAU8821_JACK_EJECT_DEBOUNCE_SFT);
-	/* Pull up IRQ pin */
+	 
 	regmap_update_bits(regmap, NAU8821_R0F_INTERRUPT_MASK,
 		NAU8821_IRQ_PIN_PULL_UP | NAU8821_IRQ_PIN_PULL_EN |
 		NAU8821_IRQ_OUTPUT_EN, NAU8821_IRQ_PIN_PULL_UP |
 		NAU8821_IRQ_PIN_PULL_EN | NAU8821_IRQ_OUTPUT_EN);
-	/* Disable interruption before codec initiation done */
-	/* Mask unneeded IRQs: 1 - disable, 0 - enable */
+	 
+	 
 	regmap_update_bits(regmap, NAU8821_R0F_INTERRUPT_MASK, 0x3f5, 0x3f5);
 
 	return 0;
 }
 
-/* Please keep this list alphabetically sorted */
+ 
 static const struct dmi_system_id nau8821_quirk_table[] = {
 	{
-		/* Positivo CW14Q01P-V2 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Positivo Tecnologia SA"),
 			DMI_MATCH(DMI_BOARD_NAME, "CW14Q01P-V2"),

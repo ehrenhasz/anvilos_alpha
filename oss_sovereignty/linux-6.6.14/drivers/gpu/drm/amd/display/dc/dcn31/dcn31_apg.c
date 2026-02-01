@@ -1,27 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- *  and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 
 #include "dc_bios_types.h"
@@ -49,7 +26,7 @@ static void apg31_enable(
 {
 	struct dcn31_apg *apg31 = DCN31_APG_FROM_APG(apg);
 
-	/* Reset APG */
+	 
 	REG_UPDATE(APG_CONTROL, APG_RESET, 1);
 	REG_WAIT(APG_CONTROL,
 			APG_RESET_DONE, 1,
@@ -59,7 +36,7 @@ static void apg31_enable(
 			APG_RESET_DONE, 0,
 			1, 10);
 
-	/* Enable APG */
+	 
 	REG_UPDATE(APG_CONTROL2, APG_ENABLE, 1);
 }
 
@@ -68,7 +45,7 @@ static void apg31_disable(
 {
 	struct dcn31_apg *apg31 = DCN31_APG_FROM_APG(apg);
 
-	/* Disable APG */
+	 
 	REG_UPDATE(APG_CONTROL2, APG_ENABLE, 0);
 }
 
@@ -80,18 +57,17 @@ static void apg31_se_audio_setup(
 	struct dcn31_apg *apg31 = DCN31_APG_FROM_APG(apg);
 
 	ASSERT(audio_info);
-	/* This should not happen.it does so we don't get BSOD*/
+	 
 	if (audio_info == NULL)
 		return;
 
-	/* DisplayPort only allows for one audio stream with stream ID 0 */
+	 
 	REG_UPDATE(APG_CONTROL2, APG_DP_AUDIO_STREAM_ID, 0);
 
-	/* When running in "pair mode", pairs of audio channels have their own enable
-	 * this is for really old audio drivers */
+	 
 	REG_UPDATE(APG_DBG_GEN_CONTROL, APG_DBG_AUDIO_CHANNEL_ENABLE, 0xFF);
 
-	/* Disable forced mem power off */
+	 
 	REG_UPDATE(APG_MEM_PWR, APG_MEM_PWR_FORCE, 0);
 }
 

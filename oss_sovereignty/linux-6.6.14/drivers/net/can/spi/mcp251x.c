@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* CAN bus driver for Microchip 251x/25625 CAN Controller with SPI Interface
- *
- * MCP2510 support and bug fixes by Christian Pellegrin
- * <chripell@evolware.org>
- *
- * Copyright 2009 Christian Pellegrin EVOL S.r.l.
- *
- * Copyright 2007 Raymarine UK, Ltd. All Rights Reserved.
- * Written under contract by:
- *   Chris Elston, Katalix Systems, Ltd.
- *
- * Based on Microchip MCP251x CAN controller driver written by
- * David Vrabel, Copyright 2006 Arcom Control Systems Ltd.
- *
- * Based on CAN bus driver for the CCAN controller written by
- * - Sascha Hauer, Marc Kleine-Budde, Pengutronix
- * - Simon Kallweit, intefo AG
- * Copyright 2007
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/can/core.h>
@@ -43,7 +25,7 @@
 #include <linux/spi/spi.h>
 #include <linux/uaccess.h>
 
-/* SPI interface instruction set */
+ 
 #define INSTRUCTION_WRITE	0x02
 #define INSTRUCTION_READ	0x03
 #define INSTRUCTION_BIT_MODIFY	0x05
@@ -55,7 +37,7 @@
 #define RTS_TXB2		0x04
 #define INSTRUCTION_RTS(n)	(0x80 | ((n) & 0x07))
 
-/* MPC251x registers */
+ 
 #define BFPCTRL			0x0c
 #  define BFPCTRL_B0BFM		BIT(0)
 #  define BFPCTRL_B1BFM		BIT(1)
@@ -194,9 +176,7 @@
 #define SET_BYTE(val, byte)			\
 	(((val) & 0xff) << ((byte) * 8))
 
-/* Buffer size required for the largest SPI transfer (i.e., reading a
- * frame)
- */
+ 
 #define CAN_FRAME_MAX_DATA_LEN	8
 #define SPI_TRANSFER_BUF_LEN	(6 + CAN_FRAME_MAX_DATA_LEN)
 #define CAN_FRAME_MAX_BITS	128
@@ -231,7 +211,7 @@ struct mcp251x_priv {
 	struct spi_device *spi;
 	enum mcp251x_model model;
 
-	struct mutex mcp_lock; /* SPI device lock */
+	struct mutex mcp_lock;  
 
 	u8 *spi_tx_buf;
 	u8 *spi_rx_buf;
@@ -282,18 +262,7 @@ static void mcp251x_clean(struct net_device *net)
 	priv->tx_busy = false;
 }
 
-/* Note about handling of error return of mcp251x_spi_trans: accessing
- * registers via SPI is not really different conceptually than using
- * normal I/O assembler instructions, although it's much more
- * complicated from a practical POV. So it's not advisable to always
- * check the return value of this function. Imagine that every
- * read{b,l}, write{b,l} and friends would be bracketed in "if ( < 0)
- * error();", it would be a great mess (well there are some situation
- * when exception handling C++ like could be useful after all). So we
- * just check that transfers are OK at the beginning of our
- * conversation with the chip and to avoid doing really nasty things
- * (like injecting bogus packets in the network stack).
- */
+ 
 static int mcp251x_spi_trans(struct spi_device *spi, int len)
 {
 	struct mcp251x_priv *priv = spi_get_drvdata(spi);
@@ -413,10 +382,10 @@ static u8 mcp251x_read_stat(struct spi_device *spi)
 
 #ifdef CONFIG_GPIOLIB
 enum {
-	MCP251X_GPIO_TX0RTS = 0,		/* inputs */
+	MCP251X_GPIO_TX0RTS = 0,		 
 	MCP251X_GPIO_TX1RTS,
 	MCP251X_GPIO_TX2RTS,
-	MCP251X_GPIO_RX0BF,			/* outputs */
+	MCP251X_GPIO_RX0BF,			 
 	MCP251X_GPIO_RX1BF,
 };
 
@@ -426,10 +395,10 @@ enum {
 	GENMASK(MCP251X_GPIO_RX1BF, MCP251X_GPIO_RX0BF)
 
 static const char * const mcp251x_gpio_names[] = {
-	[MCP251X_GPIO_TX0RTS] = "TX0RTS",	/* inputs */
+	[MCP251X_GPIO_TX0RTS] = "TX0RTS",	 
 	[MCP251X_GPIO_TX1RTS] = "TX1RTS",
 	[MCP251X_GPIO_TX2RTS] = "TX2RTS",
-	[MCP251X_GPIO_RX0BF] = "RX0BF",		/* outputs */
+	[MCP251X_GPIO_RX0BF] = "RX0BF",		 
 	[MCP251X_GPIO_RX1BF] = "RX1BF",
 };
 
@@ -444,7 +413,7 @@ static int mcp251x_gpio_request(struct gpio_chip *chip,
 	struct mcp251x_priv *priv = gpiochip_get_data(chip);
 	u8 val;
 
-	/* nothing to be done for inputs */
+	 
 	if (mcp251x_gpio_is_input(offset))
 		return 0;
 
@@ -465,7 +434,7 @@ static void mcp251x_gpio_free(struct gpio_chip *chip,
 	struct mcp251x_priv *priv = gpiochip_get_data(chip);
 	u8 val;
 
-	/* nothing to be done for inputs */
+	 
 	if (mcp251x_gpio_is_input(offset))
 		return;
 
@@ -586,7 +555,7 @@ static int mcp251x_gpio_setup(struct mcp251x_priv *priv)
 	if (!device_property_present(&priv->spi->dev, "gpio-controller"))
 		return 0;
 
-	/* gpiochip handles TX[0..2]RTS and RX[0..1]BF */
+	 
 	gpio->label = priv->spi->modalias;
 	gpio->parent = &priv->spi->dev;
 	gpio->owner = THIS_MODULE;
@@ -639,13 +608,13 @@ static void mcp251x_hw_tx(struct spi_device *spi, struct can_frame *frame,
 	u32 sid, eid, exide, rtr;
 	u8 buf[SPI_TRANSFER_BUF_LEN];
 
-	exide = (frame->can_id & CAN_EFF_FLAG) ? 1 : 0; /* Extended ID Enable */
+	exide = (frame->can_id & CAN_EFF_FLAG) ? 1 : 0;  
 	if (exide)
 		sid = (frame->can_id & CAN_EFF_MASK) >> 18;
 	else
-		sid = frame->can_id & CAN_SFF_MASK; /* Standard ID */
-	eid = frame->can_id & CAN_EFF_MASK; /* Extended ID */
-	rtr = (frame->can_id & CAN_RTR_FLAG) ? 1 : 0; /* Remote transmission */
+		sid = frame->can_id & CAN_SFF_MASK;  
+	eid = frame->can_id & CAN_EFF_MASK;  
+	rtr = (frame->can_id & CAN_RTR_FLAG) ? 1 : 0;  
 
 	buf[TXBCTRL_OFF] = INSTRUCTION_LOAD_TXB(tx_buf_idx);
 	buf[TXBSIDH_OFF] = sid >> SIDH_SHIFT;
@@ -658,7 +627,7 @@ static void mcp251x_hw_tx(struct spi_device *spi, struct can_frame *frame,
 	memcpy(buf + TXBDAT_OFF, frame->data, frame->len);
 	mcp251x_hw_tx_frame(spi, buf, frame->len, tx_buf_idx);
 
-	/* use INSTRUCTION_RTS, to avoid "repeated frame problem" */
+	 
 	priv->spi_tx_buf[0] = INSTRUCTION_RTS(1 << tx_buf_idx);
 	mcp251x_spi_write(priv->spi, 1);
 }
@@ -708,28 +677,28 @@ static void mcp251x_hw_rx(struct spi_device *spi, int buf_idx)
 
 	mcp251x_hw_rx_frame(spi, buf, buf_idx);
 	if (buf[RXBSIDL_OFF] & RXBSIDL_IDE) {
-		/* Extended ID format */
+		 
 		frame->can_id = CAN_EFF_FLAG;
 		frame->can_id |=
-			/* Extended ID part */
+			 
 			SET_BYTE(buf[RXBSIDL_OFF] & RXBSIDL_EID, 2) |
 			SET_BYTE(buf[RXBEID8_OFF], 1) |
 			SET_BYTE(buf[RXBEID0_OFF], 0) |
-			/* Standard ID part */
+			 
 			(((buf[RXBSIDH_OFF] << RXBSIDH_SHIFT) |
 			  (buf[RXBSIDL_OFF] >> RXBSIDL_SHIFT)) << 18);
-		/* Remote transmission request */
+		 
 		if (buf[RXBDLC_OFF] & RXBDLC_RTR)
 			frame->can_id |= CAN_RTR_FLAG;
 	} else {
-		/* Standard ID format */
+		 
 		frame->can_id =
 			(buf[RXBSIDH_OFF] << RXBSIDH_SHIFT) |
 			(buf[RXBSIDL_OFF] >> RXBSIDL_SHIFT);
 		if (buf[RXBSIDL_OFF] & RXBSIDL_SRR)
 			frame->can_id |= CAN_RTR_FLAG;
 	}
-	/* Data length */
+	 
 	frame->len = can_cc_dlc2len(buf[RXBDLC_OFF] & RXBDLC_LEN_MASK);
 	if (!(frame->can_id & CAN_RTR_FLAG)) {
 		memcpy(frame->data, buf + RXBDAT_OFF, frame->len);
@@ -746,23 +715,23 @@ static void mcp251x_hw_sleep(struct spi_device *spi)
 	mcp251x_write_reg(spi, CANCTRL, CANCTRL_REQOP_SLEEP);
 }
 
-/* May only be called when device is sleeping! */
+ 
 static int mcp251x_hw_wake(struct spi_device *spi)
 {
 	u8 value;
 	int ret;
 
-	/* Force wakeup interrupt to wake device, but don't execute IST */
+	 
 	disable_irq(spi->irq);
 	mcp251x_write_2regs(spi, CANINTE, CANINTE_WAKIE, CANINTF_WAKIF);
 
-	/* Wait for oscillator startup timer after wake up */
+	 
 	mdelay(MCP251X_OST_DELAY_MS);
 
-	/* Put device into config mode */
+	 
 	mcp251x_write_reg(spi, CANCTRL, CANCTRL_REQOP_CONF);
 
-	/* Wait for the device to enter config mode */
+	 
 	ret = mcp251x_read_stat_poll_timeout(spi, value, value == CANCTRL_REQOP_CONF,
 					     MCP251X_OST_DELAY_MS * 1000,
 					     USEC_PER_SEC);
@@ -771,7 +740,7 @@ static int mcp251x_hw_wake(struct spi_device *spi)
 		return ret;
 	}
 
-	/* Disable and clear pending interrupts */
+	 
 	mcp251x_write_2regs(spi, CANINTE, 0x00, 0x00);
 	enable_irq(spi->irq);
 
@@ -806,7 +775,7 @@ static int mcp251x_do_set_mode(struct net_device *net, enum can_mode mode)
 	switch (mode) {
 	case CAN_MODE_START:
 		mcp251x_clean(net);
-		/* We have to delay work since SPI I/O may sleep */
+		 
 		priv->can.state = CAN_STATE_ERROR_ACTIVE;
 		priv->restart_tx = 1;
 		if (priv->can.restart_ms == 0)
@@ -826,22 +795,22 @@ static int mcp251x_set_normal_mode(struct spi_device *spi)
 	u8 value;
 	int ret;
 
-	/* Enable interrupts */
+	 
 	mcp251x_write_reg(spi, CANINTE,
 			  CANINTE_ERRIE | CANINTE_TX2IE | CANINTE_TX1IE |
 			  CANINTE_TX0IE | CANINTE_RX1IE | CANINTE_RX0IE);
 
 	if (priv->can.ctrlmode & CAN_CTRLMODE_LOOPBACK) {
-		/* Put device into loopback mode */
+		 
 		mcp251x_write_reg(spi, CANCTRL, CANCTRL_REQOP_LOOPBACK);
 	} else if (priv->can.ctrlmode & CAN_CTRLMODE_LISTENONLY) {
-		/* Put device into listen-only mode */
+		 
 		mcp251x_write_reg(spi, CANCTRL, CANCTRL_REQOP_LISTEN_ONLY);
 	} else {
-		/* Put device into normal mode */
+		 
 		mcp251x_write_reg(spi, CANCTRL, CANCTRL_REQOP_NORMAL);
 
-		/* Wait for the device to enter normal mode */
+		 
 		ret = mcp251x_read_stat_poll_timeout(spi, value, value == 0,
 						     MCP251X_OST_DELAY_MS * 1000,
 						     USEC_PER_SEC);
@@ -894,7 +863,7 @@ static int mcp251x_hw_reset(struct spi_device *spi)
 	u8 value;
 	int ret;
 
-	/* Wait for oscillator startup timer after power up */
+	 
 	mdelay(MCP251X_OST_DELAY_MS);
 
 	priv->spi_tx_buf[0] = INSTRUCTION_RESET;
@@ -902,10 +871,10 @@ static int mcp251x_hw_reset(struct spi_device *spi)
 	if (ret)
 		return ret;
 
-	/* Wait for oscillator startup timer after reset */
+	 
 	mdelay(MCP251X_OST_DELAY_MS);
 
-	/* Wait for reset to finish */
+	 
 	ret = mcp251x_read_stat_poll_timeout(spi, value, value == CANCTRL_REQOP_CONF,
 					     MCP251X_OST_DELAY_MS * 1000,
 					     USEC_PER_SEC);
@@ -927,7 +896,7 @@ static int mcp251x_hw_probe(struct spi_device *spi)
 
 	dev_dbg(&spi->dev, "CANCTRL 0x%02x\n", ctrl);
 
-	/* Check for power up default value */
+	 
 	if ((ctrl & 0x17) != 0x07)
 		return -ENODEV;
 
@@ -957,7 +926,7 @@ static int mcp251x_stop(struct net_device *net)
 
 	mutex_lock(&priv->mcp_lock);
 
-	/* Disable and clear pending interrupts */
+	 
 	mcp251x_write_2regs(spi, CANINTE, 0x00, 0x00);
 
 	mcp251x_write_reg(spi, TXBCTRL(0), 0);
@@ -1070,41 +1039,39 @@ static irqreturn_t mcp251x_can_ist(int irq, void *dev_id)
 
 		mcp251x_read_2regs(spi, CANINTF, &intf, &eflag);
 
-		/* receive buffer 0 */
+		 
 		if (intf & CANINTF_RX0IF) {
 			mcp251x_hw_rx(spi, 0);
-			/* Free one buffer ASAP
-			 * (The MCP2515/25625 does this automatically.)
-			 */
+			 
 			if (mcp251x_is_2510(spi))
 				mcp251x_write_bits(spi, CANINTF,
 						   CANINTF_RX0IF, 0x00);
 
-			/* check if buffer 1 is already known to be full, no need to re-read */
+			 
 			if (!(intf & CANINTF_RX1IF)) {
 				u8 intf1, eflag1;
 
-				/* intf needs to be read again to avoid a race condition */
+				 
 				mcp251x_read_2regs(spi, CANINTF, &intf1, &eflag1);
 
-				/* combine flags from both operations for error handling */
+				 
 				intf |= intf1;
 				eflag |= eflag1;
 			}
 		}
 
-		/* receive buffer 1 */
+		 
 		if (intf & CANINTF_RX1IF) {
 			mcp251x_hw_rx(spi, 1);
-			/* The MCP2515/25625 does this automatically. */
+			 
 			if (mcp251x_is_2510(spi))
 				clear_intf |= CANINTF_RX1IF;
 		}
 
-		/* mask out flags we don't care about */
+		 
 		intf &= CANINTF_RX | CANINTF_TX | CANINTF_ERR;
 
-		/* any error or tx interrupt we need to clear? */
+		 
 		if (intf & (CANINTF_ERR | CANINTF_TX))
 			clear_intf |= intf & (CANINTF_ERR | CANINTF_TX);
 		if (clear_intf)
@@ -1113,7 +1080,7 @@ static irqreturn_t mcp251x_can_ist(int irq, void *dev_id)
 		if (eflag & (EFLG_RX0OVR | EFLG_RX1OVR))
 			mcp251x_write_bits(spi, EFLG, eflag, 0x00);
 
-		/* Update can state */
+		 
 		if (eflag & EFLG_TXBO) {
 			new_state = CAN_STATE_BUS_OFF;
 			can_id |= CAN_ERR_BUSOFF;
@@ -1137,7 +1104,7 @@ static irqreturn_t mcp251x_can_ist(int irq, void *dev_id)
 			new_state = CAN_STATE_ERROR_ACTIVE;
 		}
 
-		/* Update can state statistics */
+		 
 		switch (priv->can.state) {
 		case CAN_STATE_ERROR_ACTIVE:
 			if (new_state >= CAN_STATE_ERROR_WARNING &&
@@ -1155,7 +1122,7 @@ static irqreturn_t mcp251x_can_ist(int irq, void *dev_id)
 		priv->can.state = new_state;
 
 		if (intf & CANINTF_ERRIF) {
-			/* Handle overflow counters */
+			 
 			if (eflag & (EFLG_RX0OVR | EFLG_RX1OVR)) {
 				if (eflag & EFLG_RX0OVR) {
 					net->stats.rx_over_errors++;
@@ -1316,11 +1283,11 @@ static int mcp251x_can_probe(struct spi_device *spi)
 	if (freq == 0)
 		device_property_read_u32(&spi->dev, "clock-frequency", &freq);
 
-	/* Sanity check */
+	 
 	if (freq < 1000000 || freq > 25000000)
 		return -ERANGE;
 
-	/* Allocate can/net device */
+	 
 	net = alloc_candev(sizeof(struct mcp251x_priv), TX_ECHO_SKB_MAX);
 	if (!net)
 		return -ENOMEM;
@@ -1348,7 +1315,7 @@ static int mcp251x_can_probe(struct spi_device *spi)
 
 	spi_set_drvdata(spi, priv);
 
-	/* Configure the SPI bus */
+	 
 	spi->bits_per_word = 8;
 	if (mcp251x_is_2510(spi))
 		spi->max_speed_hz = spi->max_speed_hz ? : 5 * 1000 * 1000;
@@ -1398,7 +1365,7 @@ static int mcp251x_can_probe(struct spi_device *spi)
 
 	SET_NETDEV_DEV(net, &spi->dev);
 
-	/* Here is OK to not lock the MCP, no one knows about it yet */
+	 
 	ret = mcp251x_hw_probe(spi);
 	if (ret) {
 		if (ret == -ENODEV)
@@ -1463,9 +1430,7 @@ static int __maybe_unused mcp251x_can_suspend(struct device *dev)
 
 	priv->force_quit = 1;
 	disable_irq(spi->irq);
-	/* Note: at this point neither IST nor workqueues are running.
-	 * open/stop cannot be called anyway so locking is not needed
-	 */
+	 
 	if (netif_running(net)) {
 		netif_device_detach(net);
 

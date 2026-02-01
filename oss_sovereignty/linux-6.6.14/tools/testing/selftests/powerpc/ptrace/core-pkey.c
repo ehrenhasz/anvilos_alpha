@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Ptrace test for Memory Protection Key registers
- *
- * Copyright (C) 2015 Anshuman Khandual, IBM Corporation.
- * Copyright (C) 2018 IBM Corporation.
- */
+
+ 
 #include <limits.h>
 #include <linux/kernel.h>
 #include <sys/mman.h>
@@ -37,27 +32,27 @@
 #define PKEY_REG_BITS (sizeof(u64) * 8)
 #define pkeyshift(pkey) (PKEY_REG_BITS - ((pkey + 1) * AMR_BITS_PER_PKEY))
 
-#define CORE_FILE_LIMIT	(5 * 1024 * 1024)	/* 5 MB should be enough */
+#define CORE_FILE_LIMIT	(5 * 1024 * 1024)	 
 
 static const char core_pattern_file[] = "/proc/sys/kernel/core_pattern";
 
 static const char user_write[] = "[User Write (Running)]";
 static const char core_read_running[] = "[Core Read (Running)]";
 
-/* Information shared between the parent and the child. */
+ 
 struct shared_info {
 	struct child_sync child_sync;
 
-	/* AMR value the parent expects to read in the core file. */
+	 
 	unsigned long amr;
 
-	/* IAMR value the parent expects to read in the core file. */
+	 
 	unsigned long iamr;
 
-	/* UAMOR value the parent expects to read in the core file. */
+	 
 	unsigned long uamor;
 
-	/* When the child crashed. */
+	 
 	time_t core_time;
 };
 
@@ -113,7 +108,7 @@ static int child(struct shared_info *info)
 	int pkey1, pkey2, pkey3;
 	int *ptr, ret;
 
-	/* Wait until parent fills out the initial register values. */
+	 
 	ret = wait_parent(&info->child_sync);
 	if (ret)
 		return ret;
@@ -121,7 +116,7 @@ static int child(struct shared_info *info)
 	ret = increase_core_file_limit();
 	FAIL_IF(ret);
 
-	/* Get some pkeys so that we can change their bits in the AMR. */
+	 
 	pkey1 = sys_pkey_alloc(0, PKEY_DISABLE_EXECUTE);
 	if (pkey1 < 0) {
 		pkey1 = sys_pkey_alloc(0, 0);
@@ -152,25 +147,22 @@ static int child(struct shared_info *info)
 
 	set_amr(info->amr);
 
-	/*
-	 * We won't use pkey3. This tests whether the kernel restores the UAMOR
-	 * permissions after a key is freed.
-	 */
+	 
 	sys_pkey_free(pkey3);
 
 	info->core_time = time(NULL);
 
-	/* Crash. */
+	 
 	ptr = 0;
 	*ptr = 1;
 
-	/* Shouldn't get here. */
+	 
 	FAIL_IF(true);
 
 	return TEST_FAIL;
 }
 
-/* Return file size if filename exists and pass sanity check, or zero if not. */
+ 
 static off_t try_core_file(const char *filename, struct shared_info *info,
 			   pid_t pid)
 {
@@ -181,7 +173,7 @@ static off_t try_core_file(const char *filename, struct shared_info *info,
 	if (ret == -1)
 		return TEST_FAIL;
 
-	/* Make sure we're not using a stale core file. */
+	 
 	return buf.st_mtime >= info->core_time ? buf.st_size : TEST_FAIL;
 }
 
@@ -209,17 +201,14 @@ static int check_core_file(struct shared_info *info, Elf64_Ehdr *ehdr,
 	FAIL_IF(ehdr->e_machine != EM_PPC64);
 	FAIL_IF(ehdr->e_phoff == 0 || ehdr->e_phnum == 0);
 
-	/*
-	 * e_phnum is at most 65535 so calculating the size of the
-	 * program header cannot overflow.
-	 */
+	 
 	phdr_size = sizeof(*phdr) * ehdr->e_phnum;
 
-	/* Sanity check the program header table location. */
+	 
 	FAIL_IF(ehdr->e_phoff + phdr_size < ehdr->e_phoff);
 	FAIL_IF(ehdr->e_phoff + phdr_size > core_size);
 
-	/* Find the PT_NOTE segment. */
+	 
 	for (phdr = p + ehdr->e_phoff;
 	     (void *) phdr < p + ehdr->e_phoff + phdr_size;
 	     phdr += ehdr->e_phentsize)
@@ -228,7 +217,7 @@ static int check_core_file(struct shared_info *info, Elf64_Ehdr *ehdr,
 
 	FAIL_IF((void *) phdr >= p + ehdr->e_phoff + phdr_size);
 
-	/* Find the NT_PPC_PKEY note. */
+	 
 	for (nhdr = p + phdr->p_offset;
 	     (void *) nhdr < p + phdr->p_offset + phdr->p_filesz;
 	     nhdr = next_note(nhdr))
@@ -261,10 +250,7 @@ static int parent(struct shared_info *info, pid_t pid)
 	off_t core_size;
 	void *core;
 
-	/*
-	 * Get the initial values for AMR, IAMR and UAMOR and communicate them
-	 * to the child.
-	 */
+	 
 	ret = ptrace_read_regs(pid, NT_PPC_PKEY, regs, 3);
 	PARENT_SKIP_IF_UNSUPPORTED(ret, &info->child_sync, "PKEYs not supported");
 	PARENT_FAIL_IF(ret, &info->child_sync);
@@ -273,7 +259,7 @@ static int parent(struct shared_info *info, pid_t pid)
 	info->iamr = regs[1];
 	info->uamor = regs[2];
 
-	/* Wake up child so that it can set itself up. */
+	 
 	ret = prod_child(&info->child_sync);
 	PARENT_FAIL_IF(ret, &info->child_sync);
 
@@ -286,7 +272,7 @@ static int parent(struct shared_info *info, pid_t pid)
 		return TEST_FAIL;
 	}
 
-	/* Construct array of core file names to try. */
+	 
 
 	filename[0] = filenames = malloc(PATH_MAX);
 	if (!filenames) {
@@ -381,7 +367,7 @@ static int setup_core_pattern(char **core_pattern_, bool *changed_)
 
 	core_pattern[len] = '\0';
 
-	/* Check whether we can predict the name of the core file. */
+	 
 	if (!strcmp(core_pattern, "core") || !strcmp(core_pattern, "core.%p"))
 		*changed_ = false;
 	else {

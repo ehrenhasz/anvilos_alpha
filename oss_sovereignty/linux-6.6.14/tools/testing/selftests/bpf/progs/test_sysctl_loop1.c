@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Facebook
+
+
 
 #include <stdint.h>
 #include <string.h>
@@ -13,8 +13,8 @@
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 #endif
 
-/* tcp_mem sysctl has only 3 ints, but this test is doing TCP_MEM_LOOPS */
-#define TCP_MEM_LOOPS 28  /* because 30 doesn't fit into 512 bytes of stack */
+ 
+#define TCP_MEM_LOOPS 28   
 #define MAX_ULONG_STR_LEN 7
 #define MAX_VALUE_STR_LEN (TCP_MEM_LOOPS * MAX_ULONG_STR_LEN)
 
@@ -44,9 +44,7 @@ int sysctl_tcp_mem(struct bpf_sysctl *ctx)
 	unsigned long tcp_mem[TCP_MEM_LOOPS] = {};
 	char value[MAX_VALUE_STR_LEN];
 	unsigned char i, off = 0;
-	/* a workaround to prevent compiler from generating
-	 * codes verifier cannot handle yet.
-	 */
+	 
 	volatile int ret;
 
 	if (ctx->write)

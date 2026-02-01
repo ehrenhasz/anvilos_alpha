@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- *
- * Modifications for inclusion into the Linux staging tree are
- * Copyright(c) 2010 Larry Finger. All rights reserved.
- *
- * Contact information:
- * WLAN FAE <wlanfae@realtek.com>
- * Larry Finger <Larry.Finger@lwfinger.net>
- *
- ******************************************************************************/
+ 
+ 
 #ifndef _WIFI_H_
 #define _WIFI_H_
 
@@ -21,7 +10,7 @@
 #define WLAN_HDR_A3_QOS_LEN	26
 
 enum WIFI_FRAME_TYPE {
-	WIFI_QOS_DATA_TYPE	= (BIT(7) | BIT(3)),	/*!< QoS Data */
+	WIFI_QOS_DATA_TYPE	= (BIT(7) | BIT(3)),	 
 };
 
 #define SetToDs(pbuf) ({ \
@@ -162,35 +151,29 @@ static inline unsigned char *get_hdr_bssid(unsigned char *pframe)
 	unsigned int	to_fr_ds = (GetToDs(pframe) << 1) | GetFrDs(pframe);
 
 	switch (to_fr_ds) {
-	case 0x00:	/* ToDs=0, FromDs=0 */
+	case 0x00:	 
 		sa = GetAddr3Ptr(pframe);
 		break;
-	case 0x01:	/* ToDs=0, FromDs=1 */
+	case 0x01:	 
 		sa = GetAddr2Ptr(pframe);
 		break;
-	case 0x02:	/* ToDs=1, FromDs=0 */
+	case 0x02:	 
 		sa = GetAddr1Ptr(pframe);
 		break;
-	default:	/* ToDs=1, FromDs=1 */
+	default:	 
 		sa = NULL;
 		break;
 	}
 	return sa;
 }
 
-/* ---------------------------------------------------------------------------
- *			Below is the fixed elements...
- * ---------------------------------------------------------------------------
- */
+ 
 #define _BEACON_ITERVAL_		2
 #define _CAPABILITY_			2
 #define _TIMESTAMP_				8
 
-/*-----------------------------------------------------------------------------
- *			Below is the definition for WMM
- *------------------------------------------------------------------------------
- */
-#define _WMM_IE_Length_				7  /* for WMM STA */
+ 
+#define _WMM_IE_Length_				7   
 
-#endif /* _WIFI_H_ */
+#endif  
 

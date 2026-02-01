@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/platform_device.h>
 #include <linux/memregion.h>
 #include <linux/module.h>
@@ -88,8 +88,5 @@ static __init int hmem_init(void)
 	return 0;
 }
 
-/*
- * As this is a fallback for address ranges unclaimed by the ACPI HMAT
- * parsing it must be at an initcall level greater than hmat_init().
- */
+ 
 device_initcall(hmem_init);

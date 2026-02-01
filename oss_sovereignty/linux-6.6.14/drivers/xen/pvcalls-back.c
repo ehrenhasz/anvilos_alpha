@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * (c) 2017 Stefano Stabellini <stefano@aporeto.com>
- */
+
+ 
 
 #include <linux/inet.h>
 #include <linux/kthread.h>
@@ -30,11 +28,7 @@ static struct pvcalls_back_global {
 	struct semaphore frontends_lock;
 } pvcalls_back_global;
 
-/*
- * Per-frontend data structure. It contains pointers to the command
- * ring, its event channel, a list of active sockets and a tree of
- * passive sockets.
- */
+ 
 struct pvcalls_fedata {
 	struct list_head list;
 	struct xenbus_device *dev;
@@ -105,7 +99,7 @@ static bool pvcalls_conn_back_read(void *opaque)
 	cons = intf->in_cons;
 	prod = intf->in_prod;
 	error = intf->in_error;
-	/* read the indexes first, then deal with the data */
+	 
 	virt_mb();
 
 	if (error)
@@ -142,7 +136,7 @@ static bool pvcalls_conn_back_read(void *opaque)
 	atomic_set(&map->read, 0);
 	ret = inet_recvmsg(map->sock, &msg, wanted, MSG_DONTWAIT);
 	WARN_ON(ret > wanted);
-	if (ret == -EAGAIN) /* shouldn't happen */
+	if (ret == -EAGAIN)  
 		return true;
 	if (!ret)
 		ret = -ENOTCONN;
@@ -151,14 +145,14 @@ static bool pvcalls_conn_back_read(void *opaque)
 		atomic_inc(&map->read);
 	spin_unlock_irqrestore(&map->sock->sk->sk_receive_queue.lock, flags);
 
-	/* write the data, then modify the indexes */
+	 
 	virt_wmb();
 	if (ret < 0) {
 		atomic_set(&map->read, 0);
 		intf->in_error = ret;
 	} else
 		intf->in_prod = prod + ret;
-	/* update the indexes, then notify the other end */
+	 
 	virt_wmb();
 	notify_remote_via_irq(map->irq);
 
@@ -178,7 +172,7 @@ static bool pvcalls_conn_back_write(struct sock_mapping *map)
 
 	cons = intf->out_cons;
 	prod = intf->out_prod;
-	/* read the indexes before dealing with the data */
+	 
 	virt_mb();
 
 	array_size = XEN_FLEX_RING_SIZE(map->ring_order);
@@ -207,7 +201,7 @@ static bool pvcalls_conn_back_write(struct sock_mapping *map)
 		return true;
 	}
 
-	/* write the data, then update the indexes */
+	 
 	virt_wmb();
 	if (ret < 0) {
 		intf->out_error = ret;
@@ -216,7 +210,7 @@ static bool pvcalls_conn_back_write(struct sock_mapping *map)
 		intf->out_cons = cons + ret;
 		prod = intf->out_prod;
 	}
-	/* update the indexes, then notify the other end */
+	 
 	virt_wmb();
 	if (prod != cons + ret) {
 		atomic_inc(&map->write);
@@ -275,7 +269,7 @@ static int pvcalls_back_socket(struct xenbus_device *dev,
 	else
 		ret = 0;
 
-	/* leave the actual socket allocation for later */
+	 
 
 	rsp = RING_GET_RESPONSE(&fedata->ring, fedata->ring.rsp_prod_pvt++);
 	rsp->req_id = req->req_id;
@@ -340,7 +334,7 @@ static struct sock_mapping *pvcalls_new_active_socket(
 		goto out;
 	map->ring = page;
 	map->ring_order = map->ring->ring_order;
-	/* first read the order, then map the data ring */
+	 
 	virt_rmb();
 	if (map->ring_order > MAX_RING_ORDER) {
 		pr_warn("%s frontend requested ring_order %u, which is > MAX (%u)\n",
@@ -528,12 +522,7 @@ static void __pvcalls_back_accept(struct work_struct *work)
 	unsigned long flags;
 
 	fedata = mappass->fedata;
-	/*
-	 * __pvcalls_back_accept can race against pvcalls_back_accept.
-	 * We only need to check the value of "cmd" on read. It could be
-	 * done atomically, but to simplify the code on the write side, we
-	 * use a spinlock.
-	 */
+	 
 	spin_lock_irqsave(&mappass->copy_lock, flags);
 	req = &mappass->reqcopy;
 	if (req->cmd != PVCALLS_ACCEPT) {
@@ -728,10 +717,7 @@ static int pvcalls_back_accept(struct xenbus_device *dev,
 	if (mappass == NULL)
 		goto out_error;
 
-	/*
-	 * Limitation of the current implementation: only support one
-	 * concurrent accept or poll call on one socket.
-	 */
+	 
 	spin_lock_irqsave(&mappass->copy_lock, flags);
 	if (mappass->reqcopy.cmd != 0) {
 		spin_unlock_irqrestore(&mappass->copy_lock, flags);
@@ -743,7 +729,7 @@ static int pvcalls_back_accept(struct xenbus_device *dev,
 	spin_unlock_irqrestore(&mappass->copy_lock, flags);
 	queue_work(mappass->wq, &mappass->register_work);
 
-	/* Tell the caller we don't need to send back a notification yet */
+	 
 	return -1;
 
 out_error:
@@ -776,10 +762,7 @@ static int pvcalls_back_poll(struct xenbus_device *dev,
 	if (mappass == NULL)
 		return -EINVAL;
 
-	/*
-	 * Limitation of the current implementation: only support one
-	 * concurrent accept or poll call on one socket.
-	 */
+	 
 	spin_lock_irqsave(&mappass->copy_lock, flags);
 	if (mappass->reqcopy.cmd != 0) {
 		ret = -EINTR;
@@ -797,7 +780,7 @@ static int pvcalls_back_poll(struct xenbus_device *dev,
 	}
 	spin_unlock_irqrestore(&mappass->copy_lock, flags);
 
-	/* Tell the caller we don't need to send back a notification yet */
+	 
 	return -1;
 
 out:

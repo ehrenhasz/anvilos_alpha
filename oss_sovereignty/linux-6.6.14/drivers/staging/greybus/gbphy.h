@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Greybus Bridged-Phy Bus driver
- *
- * Copyright 2016 Google Inc.
- */
+ 
+ 
 
 #ifndef __GBPHY_H
 #define __GBPHY_H
@@ -54,14 +50,7 @@ void gb_gbphy_deregister_driver(struct gbphy_driver *driver);
 #define gb_gbphy_deregister(driver) \
 	gb_gbphy_deregister_driver(driver)
 
-/**
- * module_gbphy_driver() - Helper macro for registering a gbphy driver
- * @__gbphy_driver: gbphy_driver structure
- *
- * Helper macro for gbphy drivers to set up proper module init / exit
- * functions.  Replaces module_init() and module_exit() and keeps people from
- * printing pointless things to the kernel log when their driver is loaded.
- */
+ 
 #define module_gbphy_driver(__gbphy_driver)	\
 	module_driver(__gbphy_driver, gb_gbphy_register, gb_gbphy_deregister)
 
@@ -105,5 +94,5 @@ static inline void gbphy_runtime_get_noresume(struct gbphy_device *gbphy_dev) {}
 static inline void gbphy_runtime_put_noidle(struct gbphy_device *gbphy_dev) {}
 #endif
 
-#endif /* __GBPHY_H */
+#endif  
 

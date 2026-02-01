@@ -1,15 +1,4 @@
-/*
- * cxgb4i.c: Chelsio T4 iSCSI driver.
- *
- * Copyright (c) 2010-2015 Chelsio Communications, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- *
- * Written by:	Karen Xie (kxie@chelsio.com)
- *		Rakesh Ranjan (rranjan@chelsio.com)
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":%s: " fmt, __func__
 
@@ -128,11 +117,11 @@ static struct iscsi_transport cxgb4i_iscsi_transport = {
 	.attr_is_visible	= cxgbi_attr_is_visible,
 	.get_host_param	= cxgbi_get_host_param,
 	.set_host_param	= cxgbi_set_host_param,
-	/* session management */
+	 
 	.create_session	= cxgbi_create_session,
 	.destroy_session	= cxgbi_destroy_session,
 	.get_session_param = iscsi_session_get_param,
-	/* connection management */
+	 
 	.create_conn	= cxgbi_create_conn,
 	.bind_conn		= cxgbi_bind_conn,
 	.unbind_conn	= iscsi_conn_unbind,
@@ -142,23 +131,23 @@ static struct iscsi_transport cxgb4i_iscsi_transport = {
 	.get_conn_param	= iscsi_conn_get_param,
 	.set_param	= cxgbi_set_conn_param,
 	.get_stats	= cxgbi_get_conn_stats,
-	/* pdu xmit req from user space */
+	 
 	.send_pdu	= iscsi_conn_send_pdu,
-	/* task */
+	 
 	.init_task	= iscsi_tcp_task_init,
 	.xmit_task	= iscsi_tcp_task_xmit,
 	.cleanup_task	= cxgbi_cleanup_task,
-	/* pdu */
+	 
 	.alloc_pdu	= cxgbi_conn_alloc_pdu,
 	.init_pdu	= cxgbi_conn_init_pdu,
 	.xmit_pdu	= cxgbi_conn_xmit_pdu,
 	.parse_pdu_itt	= cxgbi_parse_pdu_itt,
-	/* TCP connect/disconnect */
+	 
 	.get_ep_param	= cxgbi_get_ep_param,
 	.ep_connect	= cxgbi_ep_connect,
 	.ep_poll	= cxgbi_ep_poll,
 	.ep_disconnect	= cxgbi_ep_disconnect,
-	/* Error recovery timeout call */
+	 
 	.session_recovery_timedout = iscsi_session_recovery_timedout,
 };
 
@@ -173,25 +162,14 @@ static struct notifier_block cxgb4_dcb_change = {
 
 static struct scsi_transport_template *cxgb4i_stt;
 
-/*
- * CPL (Chelsio Protocol Language) defines a message passing interface between
- * the host driver and Chelsio asic.
- * The section below implments CPLs that related to iscsi tcp connection
- * open/close/abort and data send/receive.
- */
+ 
 
 #define RCV_BUFSIZ_MASK		0x3FFU
 #define MAX_IMM_TX_PKT_LEN	256
 
 static int push_tx_frames(struct cxgbi_sock *, int);
 
-/*
- * is_ofld_imm - check whether a packet can be sent as immediate data
- * @skb: the packet
- *
- * Returns true if a packet can be sent as an offload WR with immediate
- * data.  We currently use the same limit as for Ethernet packets.
- */
+ 
 static inline bool is_ofld_imm(const struct sk_buff *skb)
 {
 	int len = skb->len;
@@ -523,11 +501,7 @@ static void send_abort_rpl(struct cxgbi_sock *csk, int rst_status)
 	cxgb4_ofld_send(csk->cdev->ports[csk->port_id], skb);
 }
 
-/*
- * CPL connection rx data ack: host ->
- * Send RX credits through an RX_DATA_ACK CPL message. Returns the number of
- * credits sent.
- */
+ 
 static u32 send_rx_credits(struct cxgbi_sock *csk, u32 credits)
 {
 	struct sk_buff *skb;
@@ -554,26 +528,14 @@ static u32 send_rx_credits(struct cxgbi_sock *csk, u32 credits)
 	return credits;
 }
 
-/*
- * sgl_len - calculates the size of an SGL of the given capacity
- * @n: the number of SGL entries
- * Calculates the number of flits needed for a scatter/gather list that
- * can hold the given number of entries.
- */
+ 
 static inline unsigned int sgl_len(unsigned int n)
 {
 	n--;
 	return (3 * n) / 2 + (n & 1) + 2;
 }
 
-/*
- * calc_tx_flits_ofld - calculate # of flits for an offload packet
- * @skb: the packet
- *
- * Returns the number of flits needed for the given offload packet.
- * These packets are already fully constructed and no additional headers
- * will be added.
- */
+ 
 static inline unsigned int calc_tx_flits_ofld(const struct sk_buff *skb)
 {
 	unsigned int flits, cnt;
@@ -599,10 +561,7 @@ static inline int tx_flowc_wr_credits(int *nparamsp, int *flowclenp)
 	flowclen = offsetof(struct fw_flowc_wr, mnemval[nparams]);
 	flowclen16 = DIV_ROUND_UP(flowclen, 16);
 	flowclen = flowclen16 * 16;
-	/*
-	 * Return the number of 16-byte credits used by the FlowC request.
-	 * Pass back the nparams and actual FlowC length if requested.
-	 */
+	 
 	if (nparamsp)
 		*nparamsp = nparams;
 	if (flowclenp)
@@ -801,10 +760,7 @@ static int push_tx_frames(struct cxgbi_sock *csk, int req_completion)
 			credits_needed +=
 			   DIV_ROUND_UP(sizeof(struct fw_ofld_tx_data_wr), 16);
 
-		/*
-		 * Assumes the initial credits is large enough to support
-		 * fw_flowc_wr plus largest possible first payload
-		 */
+		 
 		if (!cxgbi_sock_flag(csk, CTPF_TX_DATA_SENT)) {
 			flowclen16 = send_tx_flowc_wr(csk);
 			csk->wr_cred -= flowclen16;
@@ -935,10 +891,7 @@ static void do_act_establish(struct cxgbi_device *cdev, struct sk_buff *skb)
 	}
 
 	csk->copied_seq = csk->rcv_wup = csk->rcv_nxt = rcv_isn;
-	/*
-	 * Causes the first RX_DATA_ACK to supply any Rx credits we couldn't
-	 * pass through opt0.
-	 */
+	 
 	if (csk->rcv_win > (RCV_BUFSIZ_MASK << 10))
 		csk->rcv_wup -= csk->rcv_win - (RCV_BUFSIZ_MASK << 10);
 
@@ -1233,7 +1186,7 @@ static void do_rx_data(struct cxgbi_device *cdev, struct sk_buff *skb)
 	if (!csk) {
 		pr_err("can't find connection for tid %u.\n", tid);
 	} else {
-		/* not expecting this, reset the connection. */
+		 
 		pr_err("csk 0x%p, tid %u, rcv cpl_rx_data.\n", csk, tid);
 		spin_lock_bh(&csk->lock);
 		send_abort_req(csk);
@@ -1893,7 +1846,7 @@ static int init_act_open(struct cxgbi_sock *csk)
 		       csk->flags, csk->tx_chan, csk->txq_idx, csk->rss_qid,
 		       csk->mtu, csk->mss_idx, csk->smac_idx);
 
-	/* must wait for either a act_open_rpl or act_open_establish */
+	 
 	if (!try_module_get(cdev->owner)) {
 		pr_err("%s, try_module_get failed.\n", ndev->name);
 		goto rel_resource;
@@ -2087,7 +2040,7 @@ static int ddp_setup_conn_pgidx(struct cxgbi_sock *csk, unsigned int tid,
 	if (!skb)
 		return -ENOMEM;
 
-	/*  set up ulp page size */
+	 
 	req = (struct cpl_set_tcb_field *)skb->head;
 	INIT_TP_WR(req, csk->tid);
 	OPCODE_TID(req) = htonl(MK_OPCODE_TID(CPL_SET_TCB_FIELD, csk->tid));
@@ -2122,7 +2075,7 @@ static int ddp_setup_conn_digest(struct cxgbi_sock *csk, unsigned int tid,
 
 	csk->hcrc_len = (hcrc ? 4 : 0);
 	csk->dcrc_len = (dcrc ? 4 : 0);
-	/*  set up ulp submode */
+	 
 	req = (struct cpl_set_tcb_field *)skb->head;
 	INIT_TP_WR(req, tid);
 	OPCODE_TID(req) = htonl(MK_OPCODE_TID(CPL_SET_TCB_FIELD, tid));
@@ -2275,7 +2228,7 @@ static void *t4_uld_add(const struct cxgb4_lld_info *lldi)
 		pr_info("%s, 0x%p, NO adapter struct.\n", ndev->name, cdev);
 	}
 
-	/* ISO is enabled in T5/T6 firmware version >= 1.13.43.0 */
+	 
 	if (!is_t4(lldi->adapter_type) &&
 	    (lldi->fw_vers >= 0x10d2b00) &&
 	    !(cdev->flags & CXGBI_FLAG_DEV_ISO_OFF))
@@ -2360,7 +2313,7 @@ static int t4_uld_state_change(void *handle, enum cxgb4_state state)
 		break;
 	case CXGB4_STATE_START_RECOVERY:
 		pr_info("cdev 0x%p, RECOVERY.\n", cdev);
-		/* close all connections */
+		 
 		break;
 	case CXGB4_STATE_DOWN:
 		pr_info("cdev 0x%p, DOWN.\n", cdev);

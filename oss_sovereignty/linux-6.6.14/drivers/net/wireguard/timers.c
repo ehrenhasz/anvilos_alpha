@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
+
+ 
 
 #include "timers.h"
 #include "device.h"
@@ -9,23 +7,7 @@
 #include "queueing.h"
 #include "socket.h"
 
-/*
- * - Timer for retransmitting the handshake if we don't hear back after
- * `REKEY_TIMEOUT + jitter` ms.
- *
- * - Timer for sending empty packet if we have received a packet but after have
- * not sent one for `KEEPALIVE_TIMEOUT` ms.
- *
- * - Timer for initiating new handshake if we have sent a packet but after have
- * not received one (even empty) for `(KEEPALIVE_TIMEOUT + REKEY_TIMEOUT) +
- * jitter` ms.
- *
- * - Timer for zeroing out all ephemeral keys after `(REJECT_AFTER_TIME * 3)` ms
- * if no new keys have been received.
- *
- * - Timer for, if enabled, sending an empty authenticated packet every user-
- * specified seconds.
- */
+ 
 
 static inline void mod_peer_timer(struct wg_peer *peer,
 				  struct timer_list *timer,
@@ -49,14 +31,10 @@ static void wg_expired_retransmit_handshake(struct timer_list *timer)
 			 &peer->endpoint.addr, (int)MAX_TIMER_HANDSHAKES + 2);
 
 		del_timer(&peer->timer_send_keepalive);
-		/* We drop all packets without a keypair and don't try again,
-		 * if we try unsuccessfully for too long to make a handshake.
-		 */
+		 
 		wg_packet_purge_staged_packets(peer);
 
-		/* We set a timer for destroying any residue that might be left
-		 * of a partial exchange.
-		 */
+		 
 		if (!timer_pending(&peer->timer_zero_key_material))
 			mod_peer_timer(peer, &peer->timer_zero_key_material,
 				       jiffies + REJECT_AFTER_TIME * 3 * HZ);
@@ -67,9 +45,7 @@ static void wg_expired_retransmit_handshake(struct timer_list *timer)
 			 &peer->endpoint.addr, (int)REKEY_TIMEOUT,
 			 peer->timer_handshake_attempts + 1);
 
-		/* We clear the endpoint address src address, in case this is
-		 * the cause of trouble.
-		 */
+		 
 		wg_socket_clear_peer_endpoint_src(peer);
 
 		wg_packet_send_queued_handshake_initiation(peer, true);
@@ -95,9 +71,7 @@ static void wg_expired_new_handshake(struct timer_list *timer)
 	pr_debug("%s: Retrying handshake with peer %llu (%pISpfsc) because we stopped hearing back after %d seconds\n",
 		 peer->device->dev->name, peer->internal_id,
 		 &peer->endpoint.addr, (int)(KEEPALIVE_TIMEOUT + REKEY_TIMEOUT));
-	/* We clear the endpoint address src address, in case this is the cause
-	 * of trouble.
-	 */
+	 
 	wg_socket_clear_peer_endpoint_src(peer);
 	wg_packet_send_queued_handshake_initiation(peer, false);
 }
@@ -111,9 +85,7 @@ static void wg_expired_zero_key_material(struct timer_list *timer)
 		wg_peer_get(peer);
 		if (!queue_work(peer->device->handshake_send_wq,
 				&peer->clear_peer_work))
-			/* If the work was already on the queue, we want to drop
-			 * the extra reference.
-			 */
+			 
 			wg_peer_put(peer);
 	}
 	rcu_read_unlock_bh();
@@ -141,7 +113,7 @@ static void wg_expired_send_persistent_keepalive(struct timer_list *timer)
 		wg_packet_send_keepalive(peer);
 }
 
-/* Should be called after an authenticated data packet is sent. */
+ 
 void wg_timers_data_sent(struct wg_peer *peer)
 {
 	if (!timer_pending(&peer->timer_new_handshake))
@@ -150,7 +122,7 @@ void wg_timers_data_sent(struct wg_peer *peer)
 			get_random_u32_below(REKEY_TIMEOUT_JITTER_MAX_JIFFIES));
 }
 
-/* Should be called after an authenticated data packet is received. */
+ 
 void wg_timers_data_received(struct wg_peer *peer)
 {
 	if (likely(netif_running(peer->device->dev))) {
@@ -162,23 +134,19 @@ void wg_timers_data_received(struct wg_peer *peer)
 	}
 }
 
-/* Should be called after any type of authenticated packet is sent, whether
- * keepalive, data, or handshake.
- */
+ 
 void wg_timers_any_authenticated_packet_sent(struct wg_peer *peer)
 {
 	del_timer(&peer->timer_send_keepalive);
 }
 
-/* Should be called after any type of authenticated packet is received, whether
- * keepalive, data, or handshake.
- */
+ 
 void wg_timers_any_authenticated_packet_received(struct wg_peer *peer)
 {
 	del_timer(&peer->timer_new_handshake);
 }
 
-/* Should be called after a handshake initiation message is sent. */
+ 
 void wg_timers_handshake_initiated(struct wg_peer *peer)
 {
 	mod_peer_timer(peer, &peer->timer_retransmit_handshake,
@@ -186,9 +154,7 @@ void wg_timers_handshake_initiated(struct wg_peer *peer)
 		       get_random_u32_below(REKEY_TIMEOUT_JITTER_MAX_JIFFIES));
 }
 
-/* Should be called after a handshake response message is received and processed
- * or when getting key confirmation via the first data message.
- */
+ 
 void wg_timers_handshake_complete(struct wg_peer *peer)
 {
 	del_timer(&peer->timer_retransmit_handshake);
@@ -197,18 +163,14 @@ void wg_timers_handshake_complete(struct wg_peer *peer)
 	ktime_get_real_ts64(&peer->walltime_last_handshake);
 }
 
-/* Should be called after an ephemeral key is created, which is before sending a
- * handshake response or after receiving a handshake response.
- */
+ 
 void wg_timers_session_derived(struct wg_peer *peer)
 {
 	mod_peer_timer(peer, &peer->timer_zero_key_material,
 		       jiffies + REJECT_AFTER_TIME * 3 * HZ);
 }
 
-/* Should be called before a packet with authentication, whether
- * keepalive, data, or handshakem is sent, or after one is received.
- */
+ 
 void wg_timers_any_authenticated_packet_traversal(struct wg_peer *peer)
 {
 	if (peer->persistent_keepalive_interval)

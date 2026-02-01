@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * KMSAN shadow implementation.
- *
- * Copyright (C) 2017-2022 Google LLC
- * Author: Alexander Potapenko <glider@google.com>
- *
- */
+
+ 
 
 #include <asm/kmsan.h>
 #include <asm/tlbflush.h>
@@ -44,11 +38,7 @@ static void set_no_shadow_origin_page(struct page *page)
 	origin_page_for(page) = NULL;
 }
 
-/*
- * Dummy load and store pages to be used when the real metadata is unavailable.
- * There are separate pages for loads and stores, so that every load returns a
- * zero, and every store doesn't affect other loads.
- */
+ 
 static char dummy_load_page[PAGE_SIZE] __aligned(PAGE_SIZE);
 static char dummy_store_page[PAGE_SIZE] __aligned(PAGE_SIZE);
 
@@ -84,10 +74,7 @@ struct shadow_origin_ptr kmsan_get_shadow_origin_ptr(void *address, u64 size,
 	struct shadow_origin_ptr ret;
 	void *shadow;
 
-	/*
-	 * Even if we redirect this memory access to the dummy page, it will
-	 * go out of bounds.
-	 */
+	 
 	KMSAN_WARN_ON(size > PAGE_SIZE);
 
 	if (!kmsan_enabled)
@@ -104,23 +91,18 @@ struct shadow_origin_ptr kmsan_get_shadow_origin_ptr(void *address, u64 size,
 
 return_dummy:
 	if (store) {
-		/* Ignore this store. */
+		 
 		ret.shadow = dummy_store_page;
 		ret.origin = dummy_store_page;
 	} else {
-		/* This load will return zero. */
+		 
 		ret.shadow = dummy_load_page;
 		ret.origin = dummy_load_page;
 	}
 	return ret;
 }
 
-/*
- * Obtain the shadow or origin pointer for the given address, or NULL if there's
- * none. The caller must check the return value for being non-NULL if needed.
- * The return value of this function should not depend on whether we're in the
- * runtime or not.
- */
+ 
 void *kmsan_get_metadata(void *address, bool is_origin)
 {
 	u64 addr = (u64)address, pad, off;
@@ -158,7 +140,7 @@ void kmsan_copy_page_meta(struct page *dst, struct page *src)
 		return;
 	if (!src || !page_has_metadata(src)) {
 		kmsan_internal_unpoison_memory(page_address(dst), PAGE_SIZE,
-					       /*checked*/ false);
+					         false);
 		return;
 	}
 
@@ -188,18 +170,15 @@ void kmsan_alloc_page(struct page *page, unsigned int order, gfp_t flags)
 		return;
 	}
 
-	/* Zero pages allocated by the runtime should also be initialized. */
+	 
 	if (kmsan_in_runtime())
 		return;
 
 	__memset(page_address(shadow), -1, PAGE_SIZE * pages);
 	kmsan_enter_runtime();
-	handle = kmsan_save_stack_with_flags(flags, /*extra_bits*/ 0);
+	handle = kmsan_save_stack_with_flags(flags,   0);
 	kmsan_leave_runtime();
-	/*
-	 * Addresses are page-aligned, pages are contiguous, so it's ok
-	 * to just fill the origin pages with @handle.
-	 */
+	 
 	for (int i = 0; i < PAGE_SIZE * pages / sizeof(handle); i++)
 		((depot_stack_handle_t *)page_address(origin))[i] = handle;
 }
@@ -273,7 +252,7 @@ ret:
 	return err;
 }
 
-/* Allocate metadata for pages allocated at boot time. */
+ 
 void __init kmsan_init_alloc_meta_for_range(void *start, void *end)
 {
 	struct page *shadow_p, *origin_p;

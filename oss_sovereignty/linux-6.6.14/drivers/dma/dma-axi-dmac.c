@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the Analog Devices AXI-DMAC core
- *
- * Copyright 2013-2019 Analog Devices Inc.
- *  Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -29,23 +24,7 @@
 #include "dmaengine.h"
 #include "virt-dma.h"
 
-/*
- * The AXI-DMAC is a soft IP core that is used in FPGA designs. The core has
- * various instantiation parameters which decided the exact feature set support
- * by the core.
- *
- * Each channel of the core has a source interface and a destination interface.
- * The number of channels and the type of the channel interfaces is selected at
- * configuration time. A interface can either be a connected to a central memory
- * interconnect, which allows access to system memory, or it can be connected to
- * a dedicated bus which is directly connected to a data port on a peripheral.
- * Given that those are configuration options of the core that are selected when
- * it is instantiated this means that they can not be changed by software at
- * runtime. By extension this means that each channel is uni-directional. It can
- * either be device to memory or memory to device, but not both. Also since the
- * device side is a dedicated data bus only connected to a single peripheral
- * there is no address than can or needs to be configured for the device side.
- */
+ 
 
 #define AXI_DMAC_REG_INTERFACE_DESC	0x10
 #define   AXI_DMAC_DMA_SRC_TYPE_MSK	GENMASK(13, 12)
@@ -94,7 +73,7 @@
 
 #define AXI_DMAC_FLAG_PARTIAL_XFER_DONE BIT(31)
 
-/* The maximum ID allocated by the hardware is 31 */
+ 
 #define AXI_DMAC_SG_UNUSED 32U
 
 struct axi_dmac_sg {
@@ -192,14 +171,14 @@ static bool axi_dmac_check_len(struct axi_dmac_chan *chan, unsigned int len)
 {
 	if (len == 0)
 		return false;
-	if ((len & chan->length_align_mask) != 0) /* Not aligned */
+	if ((len & chan->length_align_mask) != 0)  
 		return false;
 	return true;
 }
 
 static bool axi_dmac_check_addr(struct axi_dmac_chan *chan, dma_addr_t addr)
 {
-	if ((addr & chan->address_align_mask) != 0) /* Not aligned */
+	if ((addr & chan->address_align_mask) != 0)  
 		return false;
 	return true;
 }
@@ -214,7 +193,7 @@ static void axi_dmac_start_transfer(struct axi_dmac_chan *chan)
 	unsigned int val;
 
 	val = axi_dmac_read(dmac, AXI_DMAC_REG_START_TRANSFER);
-	if (val) /* Queue is full, wait for the next SOT IRQ */
+	if (val)  
 		return;
 
 	desc = chan->next_desc;
@@ -228,7 +207,7 @@ static void axi_dmac_start_transfer(struct axi_dmac_chan *chan)
 	}
 	sg = &desc->sg[desc->num_submitted];
 
-	/* Already queued in cyclic mode. Wait for it to finish */
+	 
 	if (sg->id != AXI_DMAC_SG_UNUSED) {
 		sg->schedule_when_free = true;
 		return;
@@ -238,7 +217,7 @@ static void axi_dmac_start_transfer(struct axi_dmac_chan *chan)
 	if (desc->num_submitted == desc->num_sgs ||
 	    desc->have_partial_xfer) {
 		if (desc->cyclic)
-			desc->num_submitted = 0; /* Start again */
+			desc->num_submitted = 0;  
 		else
 			chan->next_desc = NULL;
 		flags |= AXI_DMAC_FLAG_LAST;
@@ -258,11 +237,7 @@ static void axi_dmac_start_transfer(struct axi_dmac_chan *chan)
 		axi_dmac_write(dmac, AXI_DMAC_REG_SRC_STRIDE, sg->src_stride);
 	}
 
-	/*
-	 * If the hardware supports cyclic transfers and there is no callback to
-	 * call and only a single segment, enable hw cyclic mode to avoid
-	 * unnecessary interrupts.
-	 */
+	 
 	if (chan->hw_cyclic && desc->cyclic && !desc->vdesc.tx.callback &&
 		desc->num_sgs == 1)
 		flags |= AXI_DMAC_FLAG_CYCLIC;
@@ -330,7 +305,7 @@ static void axi_dmac_dequeue_partial_xfers(struct axi_dmac_chan *chan)
 				 id, len);
 		}
 
-		/* Check if we have any more partial transfers */
+		 
 		xfer_done = axi_dmac_read(dmac, AXI_DMAC_REG_TRANSFER_DONE);
 		xfer_done = !(xfer_done & AXI_DMAC_FLAG_PARTIAL_XFER_DONE);
 
@@ -348,10 +323,7 @@ static void axi_dmac_compute_residue(struct axi_dmac_chan *chan,
 	rslt->result = DMA_TRANS_NOERROR;
 	rslt->residue = 0;
 
-	/*
-	 * We get here if the last completed segment is partial, which
-	 * means we can compute the residue from that segment onwards
-	 */
+	 
 	for (i = start; i < active->num_sgs; i++) {
 		sg = &active->sg[i];
 		total = axi_dmac_total_sg_bytes(chan, sg);
@@ -376,7 +348,7 @@ static bool axi_dmac_transfer_done(struct axi_dmac_chan *chan,
 
 	do {
 		sg = &active->sg[active->num_completed];
-		if (sg->id == AXI_DMAC_SG_UNUSED) /* Not yet submitted */
+		if (sg->id == AXI_DMAC_SG_UNUSED)  
 			break;
 		if (!(BIT(sg->id) & completed_transfers))
 			break;
@@ -396,7 +368,7 @@ static bool axi_dmac_transfer_done(struct axi_dmac_chan *chan,
 		if (active->num_completed == active->num_sgs ||
 		    sg->partial_len) {
 			if (active->cyclic) {
-				active->num_completed = 0; /* wrap around */
+				active->num_completed = 0;  
 			} else {
 				list_del(&active->vdesc.node);
 				vchan_cookie_complete(&active->vdesc);
@@ -421,14 +393,14 @@ static irqreturn_t axi_dmac_interrupt_handler(int irq, void *devid)
 	axi_dmac_write(dmac, AXI_DMAC_REG_IRQ_PENDING, pending);
 
 	spin_lock(&dmac->chan.vchan.lock);
-	/* One or more transfers have finished */
+	 
 	if (pending & AXI_DMAC_IRQ_EOT) {
 		unsigned int completed;
 
 		completed = axi_dmac_read(dmac, AXI_DMAC_REG_TRANSFER_DONE);
 		start_next = axi_dmac_transfer_done(&dmac->chan, completed);
 	}
-	/* Space has become available in the descriptor queue */
+	 
 	if ((pending & AXI_DMAC_IRQ_SOT) || start_next)
 		axi_dmac_start_transfer(&dmac->chan);
 	spin_unlock(&dmac->chan.vchan.lock);
@@ -502,10 +474,10 @@ static struct axi_dmac_sg *axi_dmac_fill_linear_sg(struct axi_dmac_chan *chan,
 	unsigned int segment_size;
 	unsigned int len;
 
-	/* Split into multiple equally sized segments if necessary */
+	 
 	num_segments = DIV_ROUND_UP(period_len, chan->max_length);
 	segment_size = DIV_ROUND_UP(period_len, num_segments);
-	/* Take care of alignment */
+	 
 	segment_size = ((segment_size - 1) | chan->length_align_mask) + 1;
 
 	for (i = 0; i < num_periods; i++) {
@@ -744,11 +716,7 @@ static void axi_dmac_adjust_chan_params(struct axi_dmac_chan *chan)
 		chan->direction = DMA_DEV_TO_DEV;
 }
 
-/*
- * The configuration stored in the devicetree matches the configuration
- * parameters of the peripheral instance and allows the driver to know which
- * features are implemented and how it should behave.
- */
+ 
 static int axi_dmac_parse_chan_dt(struct device_node *of_chan,
 	struct axi_dmac_chan *chan)
 {
@@ -759,7 +727,7 @@ static int axi_dmac_parse_chan_dt(struct device_node *of_chan,
 	if (ret)
 		return ret;
 
-	/* We only support 1 channel for now */
+	 
 	if (val != 0)
 		return -EINVAL;
 
@@ -844,7 +812,7 @@ static int axi_dmac_read_chan_config(struct device *dev, struct axi_dmac *dmac)
 		dev_err(dev, "Source bus width is zero\n");
 		return -EINVAL;
 	}
-	/* widths are stored in log2 */
+	 
 	chan->src_width = 1 << val;
 
 	val = AXI_DMAC_DMA_DST_WIDTH_GET(desc);

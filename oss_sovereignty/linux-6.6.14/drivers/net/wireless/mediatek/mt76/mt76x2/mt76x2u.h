@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- */
+ 
+ 
 
 #ifndef __MT76x2U_H
 #define __MT76x2U_H
@@ -13,8 +11,8 @@
 
 #define MT7612U_EEPROM_SIZE		512
 
-#define MT_USB_AGGR_SIZE_LIMIT		21 /* 1024B unit */
-#define MT_USB_AGGR_TIMEOUT		0x80 /* 33ns unit */
+#define MT_USB_AGGR_SIZE_LIMIT		21  
+#define MT_USB_AGGR_TIMEOUT		0x80  
 
 extern const struct ieee80211_ops mt76x2u_ops;
 
@@ -40,4 +38,4 @@ void mt76x2u_stop_queues(struct mt76x02_dev *dev);
 int mt76x2u_skb_dma_info(struct sk_buff *skb, enum dma_msg_port port,
 			 u32 flags);
 
-#endif /* __MT76x2U_H */
+#endif  

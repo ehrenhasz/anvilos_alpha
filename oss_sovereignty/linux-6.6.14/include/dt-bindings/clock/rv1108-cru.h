@@ -1,19 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2016 Rockchip Electronics Co. Ltd.
- * Author: Shawn Lin <shawn.lin@rock-chips.com>
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_ROCKCHIP_RV1108_H
 #define _DT_BINDINGS_CLK_ROCKCHIP_RV1108_H
 
-/* pll id */
+ 
 #define PLL_APLL			0
 #define PLL_DPLL			1
 #define PLL_GPLL			2
 #define ARMCLK				3
 
-/* sclk gates (special clocks) */
+ 
 #define SCLK_SPI0			65
 #define SCLK_NANDC			67
 #define SCLK_SDMMC			68
@@ -82,7 +79,7 @@
 #define DCLK_HDMIPHY			186
 #define DCLK_VOP			187
 
-/* aclk gates */
+ 
 #define ACLK_DMAC			192
 #define ACLK_PRE			193
 #define ACLK_CORE			194
@@ -103,7 +100,7 @@
 #define ACLK_PERI			209
 #define ACLK_GMAC			210
 
-/* pclk gates */
+ 
 #define PCLK_GPIO1			256
 #define PCLK_GPIO2			257
 #define PCLK_GPIO3			258
@@ -135,7 +132,7 @@
 #define PCLK_WDT			284
 #define PCLK_GMAC			285
 
-/* hclk gates */
+ 
 #define HCLK_I2S0_8CH			320
 #define HCLK_I2S1_2CH			321
 #define HCLK_I2S2_2CH			322
@@ -165,7 +162,7 @@
 
 #define CLK_NR_CLKS			(HCLK_VPU + 1)
 
-/* reset id */
+ 
 #define SRST_CORE_PO_AD			0
 #define SRST_CORE_AD			1
 #define SRST_L2_AD			2
@@ -350,4 +347,4 @@
 #define ARST_DSP_EDP_PERF		184
 #define ARST_DSP_EPP_PERF		185
 
-#endif /* _DT_BINDINGS_CLK_ROCKCHIP_RV1108_H */
+#endif  

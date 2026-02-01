@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * atlas-ezo-sensor.c - Support for Atlas Scientific EZO sensors
- *
- * Copyright (C) 2020 Konsulko Group
- * Author: Matt Ranostay <matt.ranostay@konsulko.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/delay.h>
@@ -37,7 +32,7 @@ struct atlas_ezo_data {
 	struct i2c_client *client;
 	const struct atlas_ezo_device *chip;
 
-	/* lock to avoid multiple concurrent read calls */
+	 
 	struct mutex lock;
 
 	u8 buffer[8];
@@ -143,7 +138,7 @@ static int atlas_ezo_read_raw(struct iio_dev *indio_dev,
 			return -EBUSY;
 		}
 
-		/* removing floating point for fixed number representation */
+		 
 		atlas_ezo_sanitize(data->buffer + 2);
 
 		ret = kstrtol(data->buffer + 1, 10, &tmp);
@@ -165,11 +160,11 @@ static int atlas_ezo_read_raw(struct iio_dev *indio_dev,
 			return -EINVAL;
 		}
 
-		/* IIO_CONCENTRATION modifiers */
+		 
 		switch (chan->channel2) {
 		case IIO_MOD_CO2:
 			*val = 0;
-			*val2 = 100; /* 0.0001 */
+			*val2 = 100;  
 			return IIO_VAL_INT_PLUS_MICRO;
 		case IIO_MOD_O2:
 			*val = 100;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
- */
+
+ 
 
 #include <linux/iio/iio.h>
 #include <linux/interrupt.h>
@@ -17,13 +15,10 @@
 #define SSP_LIMIT_RESET_CNT		20
 #define SSP_LIMIT_TIMEOUT_CNT		3
 
-/* It is possible that it is max clk rate for version 1.0 of bootcode */
+ 
 #define SSP_BOOT_SPI_HZ	400000
 
-/*
- * These fields can look enigmatic but this structure is used mainly to flat
- * some values and depends on command type.
- */
+ 
 struct ssp_instruction {
 	__le32 a;
 	__le32 b;
@@ -108,10 +103,7 @@ static void ssp_enable_mcu(struct ssp_data *data, bool enable)
 	}
 }
 
-/*
- * This function is the first one which communicates with the mcu so it is
- * possible that the first attempt will fail
- */
+ 
 static int ssp_check_fwbl(struct ssp_data *data)
 {
 	int retries = 0;
@@ -194,27 +186,14 @@ static void ssp_disable_wdt_timer(struct ssp_data *data)
 	cancel_work_sync(&data->work_wdt);
 }
 
-/**
- * ssp_get_sensor_delay() - gets sensor data acquisition period
- * @data:	sensorhub structure
- * @type:	SSP sensor type
- *
- * Returns acquisition period in ms
- */
+ 
 u32 ssp_get_sensor_delay(struct ssp_data *data, enum ssp_sensor_type type)
 {
 	return data->delay_buf[type];
 }
 EXPORT_SYMBOL_NS(ssp_get_sensor_delay, IIO_SSP_SENSORS);
 
-/**
- * ssp_enable_sensor() - enables data acquisition for sensor
- * @data:	sensorhub structure
- * @type:	SSP sensor type
- * @delay:	delay in ms
- *
- * Returns 0 or negative value in case of error
- */
+ 
 int ssp_enable_sensor(struct ssp_data *data, enum ssp_sensor_type type,
 		      u32 delay)
 {
@@ -227,7 +206,7 @@ int ssp_enable_sensor(struct ssp_data *data, enum ssp_sensor_type type,
 
 	switch (data->check_status[type]) {
 	case SSP_INITIALIZATION_STATE:
-		/* do calibration step, now just enable */
+		 
 	case SSP_ADD_SENSOR_STATE:
 		ret = ssp_send_instruction(data,
 					   SSP_MSG2SSP_INST_BYPASS_SENSOR_ADD,
@@ -269,14 +248,7 @@ derror:
 }
 EXPORT_SYMBOL_NS(ssp_enable_sensor, IIO_SSP_SENSORS);
 
-/**
- * ssp_change_delay() - changes data acquisition for sensor
- * @data:	sensorhub structure
- * @type:	SSP sensor type
- * @delay:	delay in ms
- *
- * Returns 0 or negative value in case of error
- */
+ 
 int ssp_change_delay(struct ssp_data *data, enum ssp_sensor_type type,
 		     u32 delay)
 {
@@ -300,14 +272,7 @@ int ssp_change_delay(struct ssp_data *data, enum ssp_sensor_type type,
 }
 EXPORT_SYMBOL_NS(ssp_change_delay, IIO_SSP_SENSORS);
 
-/**
- * ssp_disable_sensor() - disables sensor
- *
- * @data:	sensorhub structure
- * @type:	SSP sensor type
- *
- * Returns 0 or negative value in case of error
- */
+ 
 int ssp_disable_sensor(struct ssp_data *data, enum ssp_sensor_type type)
 {
 	int ret;
@@ -341,10 +306,7 @@ static irqreturn_t ssp_irq_thread_fn(int irq, void *dev_id)
 {
 	struct ssp_data *data = dev_id;
 
-	/*
-	 * This wrapper is done to preserve error path for ssp_irq_msg, also
-	 * it is defined in different file.
-	 */
+	 
 	ssp_irq_msg(data);
 
 	return IRQ_HANDLED;
@@ -366,10 +328,7 @@ static int ssp_initialize_mcu(struct ssp_data *data)
 
 	dev_info(&data->spi->dev, "MCU device ID = %d\n", ret);
 
-	/*
-	 * needs clarification, for now do not want to export all transfer
-	 * methods to sensors' drivers
-	 */
+	 
 	ret = ssp_set_magnetic_matrix(data);
 	if (ret < 0) {
 		dev_err(&data->spi->dev,
@@ -391,10 +350,7 @@ static int ssp_initialize_mcu(struct ssp_data *data)
 	return ssp_command(data, SSP_MSG2SSP_AP_MCU_DUMP_CHECK, 0);
 }
 
-/*
- * sensorhub can request its reinitialization as some brutal and rare error
- * handling. It can be requested from the MCU.
- */
+ 
 static void ssp_refresh_task(struct work_struct *work)
 {
 	struct ssp_data *data = container_of((struct delayed_work *)work,
@@ -466,12 +422,7 @@ static struct ssp_data *ssp_parse_dt(struct device *dev)
 	return data;
 }
 
-/**
- * ssp_register_consumer() - registers iio consumer in ssp framework
- *
- * @indio_dev:	consumer iio device
- * @type:	ssp sensor type
- */
+ 
 void ssp_register_consumer(struct iio_dev *indio_dev, enum ssp_sensor_type type)
 {
 	struct ssp_data *data = dev_get_drvdata(indio_dev->dev.parent->parent);
@@ -542,10 +493,10 @@ static int ssp_probe(struct spi_device *spi)
 		goto err_setup_irq;
 	}
 
-	/* Let's start with enabled one so irq balance could be ok */
+	 
 	data->shut_down = false;
 
-	/* just to avoid unbalanced irq set wake up */
+	 
 	enable_irq_wake(data->spi->irq);
 
 	data->fw_dl_state = ssp_check_fwbl(data);
@@ -641,7 +592,7 @@ static int ssp_resume(struct device *dev)
 		return ret;
 	}
 
-	/* timesyncing is set by MCU */
+	 
 	data->last_resume_state = SSP_MSG2SSP_AP_STATUS_RESUME;
 
 	return 0;

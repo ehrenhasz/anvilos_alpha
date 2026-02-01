@@ -1,29 +1,4 @@
-/*
- * Copyright 2014 Advanced Micro Devices, Inc.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * Authors: Christian König <christian.koenig@amd.com>
- */
+ 
 
 #include <linux/firmware.h>
 
@@ -67,13 +42,7 @@ static void vce_v3_0_set_irq_funcs(struct amdgpu_device *adev);
 static int vce_v3_0_wait_for_idle(void *handle);
 static int vce_v3_0_set_clockgating_state(void *handle,
 					  enum amd_clockgating_state state);
-/**
- * vce_v3_0_ring_get_rptr - get read pointer
- *
- * @ring: amdgpu_ring pointer
- *
- * Returns the current hardware read pointer
- */
+ 
 static uint64_t vce_v3_0_ring_get_rptr(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -99,13 +68,7 @@ static uint64_t vce_v3_0_ring_get_rptr(struct amdgpu_ring *ring)
 	return v;
 }
 
-/**
- * vce_v3_0_ring_get_wptr - get write pointer
- *
- * @ring: amdgpu_ring pointer
- *
- * Returns the current hardware write pointer
- */
+ 
 static uint64_t vce_v3_0_ring_get_wptr(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -131,13 +94,7 @@ static uint64_t vce_v3_0_ring_get_wptr(struct amdgpu_ring *ring)
 	return v;
 }
 
-/**
- * vce_v3_0_ring_set_wptr - set write pointer
- *
- * @ring: amdgpu_ring pointer
- *
- * Commits the write pointer to the hardware
- */
+ 
 static void vce_v3_0_ring_set_wptr(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -170,14 +127,10 @@ static void vce_v3_0_set_vce_sw_clock_gating(struct amdgpu_device *adev,
 {
 	u32 data;
 
-	/* Set Override to disable Clock Gating */
+	 
 	vce_v3_0_override_vce_clock_gating(adev, true);
 
-	/* This function enables MGCG which is controlled by firmware.
-	   With the clocks in the gated state the core is still
-	   accessible but the firmware will throttle the clocks on the
-	   fly as necessary.
-	*/
+	 
 	if (!gated) {
 		data = RREG32(mmVCE_CLOCK_GATING_B);
 		data |= 0x1ff;
@@ -255,13 +208,7 @@ static int vce_v3_0_firmware_loaded(struct amdgpu_device *adev)
 	return -ETIMEDOUT;
 }
 
-/**
- * vce_v3_0_start - start VCE block
- *
- * @adev: amdgpu_device pointer
- *
- * Setup and start the VCE block
- */
+ 
 static int vce_v3_0_start(struct amdgpu_device *adev)
 {
 	struct amdgpu_ring *ring;
@@ -274,8 +221,7 @@ static int vce_v3_0_start(struct amdgpu_device *adev)
 
 		WREG32(mmGRBM_GFX_INDEX, GET_VCE_INSTANCE(idx));
 
-		/* Program instance 0 reg space for two instances or instance 0 case
-		program instance 1 reg space for only instance 1 available case */
+		 
 		if (idx != 1 || adev->vce.harvest_config == AMDGPU_VCE_HARVEST_VCE0) {
 			ring = &adev->vce.ring[0];
 			WREG32(mmVCE_RB_RPTR, lower_32_bits(ring->wptr));
@@ -312,7 +258,7 @@ static int vce_v3_0_start(struct amdgpu_device *adev)
 
 		r = vce_v3_0_firmware_loaded(adev);
 
-		/* clear BUSY flag */
+		 
 		WREG32_FIELD(VCE_STATUS, JOB_BUSY, 0);
 
 		if (r) {
@@ -344,10 +290,10 @@ static int vce_v3_0_stop(struct amdgpu_device *adev)
 		else
 			WREG32_FIELD(VCE_VCPU_CNTL, CLK_EN, 0);
 
-		/* hold on ECPU */
+		 
 		WREG32_FIELD(VCE_SOFT_RESET, ECPU_SOFT_RESET, 1);
 
-		/* clear VCE STATUS */
+		 
 		WREG32(mmVCE_STATUS, 0);
 	}
 
@@ -421,7 +367,7 @@ static int vce_v3_0_sw_init(void *handle)
 	struct amdgpu_ring *ring;
 	int r, i;
 
-	/* VCE */
+	 
 	r = amdgpu_irq_add_id(adev, AMDGPU_IRQ_CLIENTID_LEGACY, VISLANDS30_IV_SRCID_VCE_TRAP, &adev->vce.irq);
 	if (r)
 		return r;
@@ -431,7 +377,7 @@ static int vce_v3_0_sw_init(void *handle)
 	if (r)
 		return r;
 
-	/* 52.8.3 required for 3 ring support */
+	 
 	if (adev->vce.fw_version < FW_52_8_3)
 		adev->vce.num_rings = 2;
 
@@ -507,17 +453,7 @@ static int vce_v3_0_suspend(void *handle)
 	int r;
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
-	/*
-	 * Proper cleanups before halting the HW engine:
-	 *   - cancel the delayed idle work
-	 *   - enable powergating
-	 *   - enable clockgating
-	 *   - disable dpm
-	 *
-	 * TODO: to align with the VCN implementation, move the
-	 * jobs for clockgating/powergating/dpm setting to
-	 * ->set_powergating_state().
-	 */
+	 
 	cancel_delayed_work_sync(&adev->vce.idle_work);
 
 	if (adev->pm.dpm_enabled) {
@@ -623,9 +559,9 @@ static int vce_v3_0_wait_for_idle(void *handle)
 	return -ETIMEDOUT;
 }
 
-#define  VCE_STATUS_VCPU_REPORT_AUTO_BUSY_MASK  0x00000008L   /* AUTO_BUSY */
-#define  VCE_STATUS_VCPU_REPORT_RB0_BUSY_MASK   0x00000010L   /* RB0_BUSY */
-#define  VCE_STATUS_VCPU_REPORT_RB1_BUSY_MASK   0x00000020L   /* RB1_BUSY */
+#define  VCE_STATUS_VCPU_REPORT_AUTO_BUSY_MASK  0x00000008L    
+#define  VCE_STATUS_VCPU_REPORT_RB0_BUSY_MASK   0x00000010L    
+#define  VCE_STATUS_VCPU_REPORT_RB1_BUSY_MASK   0x00000020L    
 #define  AMDGPU_VCE_STATUS_BUSY_MASK (VCE_STATUS_VCPU_REPORT_AUTO_BUSY_MASK | \
 				      VCE_STATUS_VCPU_REPORT_RB0_BUSY_MASK)
 
@@ -634,19 +570,7 @@ static bool vce_v3_0_check_soft_reset(void *handle)
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 	u32 srbm_soft_reset = 0;
 
-	/* According to VCE team , we should use VCE_STATUS instead
-	 * SRBM_STATUS.VCE_BUSY bit for busy status checking.
-	 * GRBM_GFX_INDEX.INSTANCE_INDEX is used to specify which VCE
-	 * instance's registers are accessed
-	 * (0 for 1st instance, 10 for 2nd instance).
-	 *
-	 *VCE_STATUS
-	 *|UENC|ACPI|AUTO ACTIVE|RB1 |RB0 |RB2 |          |FW_LOADED|JOB |
-	 *|----+----+-----------+----+----+----+----------+---------+----|
-	 *|bit8|bit7|    bit6   |bit5|bit4|bit3|   bit2   |  bit1   |bit0|
-	 *
-	 * VCE team suggest use bit 3--bit 6 for busy status check
-	 */
+	 
 	mutex_lock(&adev->grbm_idx_mutex);
 	WREG32(mmGRBM_GFX_INDEX, GET_VCE_INSTANCE(0));
 	if (RREG32(mmVCE_STATUS) & AMDGPU_VCE_STATUS_BUSY_MASK) {
@@ -694,7 +618,7 @@ static int vce_v3_0_soft_reset(void *handle)
 		WREG32(mmSRBM_SOFT_RESET, tmp);
 		tmp = RREG32(mmSRBM_SOFT_RESET);
 
-		/* Wait a little for things to settle down */
+		 
 		udelay(50);
 	}
 
@@ -775,20 +699,20 @@ static int vce_v3_0_set_clockgating_state(void *handle,
 
 	mutex_lock(&adev->grbm_idx_mutex);
 	for (i = 0; i < 2; i++) {
-		/* Program VCE Instance 0 or 1 if not harvested */
+		 
 		if (adev->vce.harvest_config & (1 << i))
 			continue;
 
 		WREG32(mmGRBM_GFX_INDEX, GET_VCE_INSTANCE(i));
 
 		if (!enable) {
-			/* initialize VCE_CLOCK_GATING_A: Clock ON/OFF delay */
+			 
 			uint32_t data = RREG32(mmVCE_CLOCK_GATING_A);
 			data &= ~(0xf | 0xff0);
 			data |= ((0x0 << 0) | (0x04 << 4));
 			WREG32(mmVCE_CLOCK_GATING_A, data);
 
-			/* initialize VCE_UENC_CLOCK_GATING: Clock ON/OFF delay */
+			 
 			data = RREG32(mmVCE_UENC_CLOCK_GATING);
 			data &= ~(0xf | 0xff0);
 			data |= ((0x0 << 0) | (0x04 << 4));
@@ -807,13 +731,7 @@ static int vce_v3_0_set_clockgating_state(void *handle,
 static int vce_v3_0_set_powergating_state(void *handle,
 					  enum amd_powergating_state state)
 {
-	/* This doesn't actually powergate the VCE block.
-	 * That's done in the dpm code via the SMC.  This
-	 * just re-inits the block as necessary.  The actual
-	 * gating still happens in the dpm code.  We should
-	 * revisit this when there is a cleaner line between
-	 * the smc and the hw blocks
-	 */
+	 
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 	int ret = 0;
 
@@ -850,7 +768,7 @@ static void vce_v3_0_get_clockgating_state(void *handle, u64 *flags)
 
 	WREG32_FIELD(GRBM_GFX_INDEX, VCE_INSTANCE, 0);
 
-	/* AMD_CG_SUPPORT_VCE_MGCG */
+	 
 	data = RREG32(mmVCE_CLOCK_GATING_A);
 	if (data & (0x04 << 4))
 		*flags |= AMD_CG_SUPPORT_VCE_MGCG;
@@ -928,9 +846,9 @@ static const struct amdgpu_ring_funcs vce_v3_0_ring_phys_funcs = {
 	.set_wptr = vce_v3_0_ring_set_wptr,
 	.parse_cs = amdgpu_vce_ring_parse_cs,
 	.emit_frame_size =
-		4 + /* vce_v3_0_emit_pipeline_sync */
-		6, /* amdgpu_vce_ring_emit_fence x1 no user fence */
-	.emit_ib_size = 4, /* amdgpu_vce_ring_emit_ib */
+		4 +  
+		6,  
+	.emit_ib_size = 4,  
 	.emit_ib = amdgpu_vce_ring_emit_ib,
 	.emit_fence = amdgpu_vce_ring_emit_fence,
 	.test_ring = amdgpu_vce_ring_test_ring,
@@ -952,10 +870,10 @@ static const struct amdgpu_ring_funcs vce_v3_0_ring_vm_funcs = {
 	.set_wptr = vce_v3_0_ring_set_wptr,
 	.parse_cs = amdgpu_vce_ring_parse_cs_vm,
 	.emit_frame_size =
-		6 + /* vce_v3_0_emit_vm_flush */
-		4 + /* vce_v3_0_emit_pipeline_sync */
-		6 + 6, /* amdgpu_vce_ring_emit_fence x2 vm fence */
-	.emit_ib_size = 5, /* vce_v3_0_ring_emit_ib */
+		6 +  
+		4 +  
+		6 + 6,  
+	.emit_ib_size = 5,  
 	.emit_ib = vce_v3_0_ring_emit_ib,
 	.emit_vm_flush = vce_v3_0_emit_vm_flush,
 	.emit_pipeline_sync = vce_v3_0_emit_pipeline_sync,

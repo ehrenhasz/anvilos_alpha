@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2020, Oracle and/or its affiliates.
- *    Author: Alan Maguire <alan.maguire@oracle.com>
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/module.h>
@@ -15,14 +12,7 @@
 #define KUNIT_DEBUGFS_ROOT             "kunit"
 #define KUNIT_DEBUGFS_RESULTS          "results"
 
-/*
- * Create a debugfs representation of test suites:
- *
- * Path						Semantics
- * /sys/kernel/debug/kunit/<testsuite>/results	Show results of last run for
- *						testsuite
- *
- */
+ 
 
 static struct dentry *debugfs_rootdir;
 
@@ -47,9 +37,7 @@ static void debugfs_print_result(struct seq_file *seq,
 	seq_printf(seq, "%s", test_case->log);
 }
 
-/*
- * /sys/kernel/debug/kunit/<testsuite>/results shows all results for testsuite.
- */
+ 
 static int debugfs_print_results(struct seq_file *seq, void *v)
 {
 	struct kunit_suite *suite = (struct kunit_suite *)seq->private;
@@ -61,11 +49,11 @@ static int debugfs_print_results(struct seq_file *seq, void *v)
 
 	success = kunit_suite_has_succeeded(suite);
 
-	/* Print KTAP header so the debugfs log can be parsed as valid KTAP. */
+	 
 	seq_puts(seq, "KTAP version 1\n");
 	seq_puts(seq, "1..1\n");
 
-	/* Print suite header because it is not stored in the test logs. */
+	 
 	seq_puts(seq, KUNIT_SUBTEST_INDENT "KTAP version 1\n");
 	seq_printf(seq, KUNIT_SUBTEST_INDENT "# Subtest: %s\n", suite->name);
 	seq_printf(seq, KUNIT_SUBTEST_INDENT "1..%zd\n", kunit_suite_num_test_cases(suite));
@@ -106,7 +94,7 @@ void kunit_debugfs_create_suite(struct kunit_suite *suite)
 {
 	struct kunit_case *test_case;
 
-	/* Allocate logs before creating debugfs representation. */
+	 
 	suite->log = kzalloc(KUNIT_LOG_SIZE, GFP_KERNEL);
 	kunit_suite_for_each_test_case(suite, test_case)
 		test_case->log = kzalloc(KUNIT_LOG_SIZE, GFP_KERNEL);

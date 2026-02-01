@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * StarFive JH7110 PLL Clock Generator Driver
- *
- * Copyright (C) 2023 StarFive Technology Co., Ltd.
- * Copyright (C) 2023 Emil Renner Berthing <emil.renner.berthing@canonical.com>
- *
- * This driver is about to register JH7110 PLL clock generator and support ops.
- * The JH7110 have three PLL clock, PLL0, PLL1 and PLL2.
- * Each PLL clocks work in integer mode or fraction mode by some dividers,
- * and the configuration registers and dividers are set in several syscon registers.
- * The formula for calculating frequency is:
- * Fvco = Fref * (NI + NF) / M / Q1
- * Fref: OSC source clock rate
- * NI: integer frequency dividing ratio of feedback divider, set by fbdiv[11:0].
- * NF: fractional frequency dividing ratio, set by frac[23:0]. NF = frac[23:0] / 2^24 = 0 ~ 0.999.
- * M: frequency dividing ratio of pre-divider, set by prediv[5:0].
- * Q1: frequency dividing ratio of post divider, set by 2^postdiv1[1:0], eg. 1, 2, 4 or 8.
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk-provider.h>
@@ -29,7 +12,7 @@
 
 #include <dt-bindings/clock/starfive,jh7110-crg.h>
 
-/* this driver expects a 24MHz input frequency from the oscillator */
+ 
 #define JH7110_PLL_OSC_RATE		24000000UL
 
 #define JH7110_PLL0_PD_OFFSET		0x18
@@ -79,8 +62,8 @@ enum jh7110_pll_mode {
 
 struct jh7110_pll_preset {
 	unsigned long freq;
-	u32 frac;		/* frac value should be decimals multiplied by 2^24 */
-	unsigned fbdiv    : 12;	/* fbdiv value should be 8 to 4095 */
+	u32 frac;		 
+	unsigned fbdiv    : 12;	 
 	unsigned prediv   :  6;
 	unsigned postdiv1 :  2;
 	unsigned mode     :  1;
@@ -152,11 +135,7 @@ struct jh7110_pll_regvals {
 	u32 prediv;
 };
 
-/*
- * Because the pll frequency is relatively fixed,
- * it cannot be set arbitrarily, so it needs a specific configuration.
- * PLL0 frequency should be multiple of 125MHz (USB frequency).
- */
+ 
 static const struct jh7110_pll_preset jh7110_pll0_presets[] = {
 	{
 		.freq = 375000000,
@@ -305,13 +284,7 @@ static unsigned long jh7110_pll_recalc_rate(struct clk_hw *hw, unsigned long par
 
 	jh7110_pll_regvals_get(priv->regmap, &jh7110_plls[pll->idx], &val);
 
-	/*
-	 * dacpd = dsmpd = 0: fraction mode
-	 * dacpd = dsmpd = 1: integer mode, frac value ignored
-	 *
-	 * rate = parent * (fbdiv + frac/2^24) / prediv / 2^postdiv1
-	 *      = (parent * fbdiv + parent * frac / 2^24) / (prediv * 2^postdiv1)
-	 */
+	 
 	if (val.dacpd == 0 && val.dsmpd == 0)
 		rate = parent_rate * val.frac / (1UL << 24);
 	else if (val.dacpd == 1 && val.dsmpd == 1)
@@ -332,13 +305,13 @@ static int jh7110_pll_determine_rate(struct clk_hw *hw, struct clk_rate_request 
 	const struct jh7110_pll_preset *selected = &info->presets[0];
 	unsigned int idx;
 
-	/* if the parent rate doesn't match our expectations the presets won't work */
+	 
 	if (req->best_parent_rate != JH7110_PLL_OSC_RATE) {
 		req->rate = jh7110_pll_recalc_rate(hw, req->best_parent_rate);
 		return 0;
 	}
 
-	/* find highest rate lower or equal to the requested rate */
+	 
 	for (idx = 1; idx < info->npresets; idx++) {
 		const struct jh7110_pll_preset *val = &info->presets[idx];
 
@@ -361,7 +334,7 @@ static int jh7110_pll_set_rate(struct clk_hw *hw, unsigned long rate,
 	const struct jh7110_pll_preset *val;
 	unsigned int idx;
 
-	/* if the parent rate doesn't match our expectations the presets won't work */
+	 
 	if (parent_rate != JH7110_PLL_OSC_RATE)
 		return -EINVAL;
 
@@ -494,7 +467,7 @@ static int jh7110_pll_probe(struct platform_device *pdev)
 
 static const struct of_device_id jh7110_pll_match[] = {
 	{ .compatible = "starfive,jh7110-pll" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, jh7110_pll_match);
 

@@ -1,16 +1,4 @@
-/*
- * Sonics Silicon Backplane
- * Bus scanning
- *
- * Copyright (C) 2005-2007 Michael Buesch <m@bues.ch>
- * Copyright (C) 2005 Martin Langer <martin-langer@gmx.de>
- * Copyright (C) 2005 Stefano Brivio <st3@riseup.net>
- * Copyright (C) 2005 Danny van Dyk <kugelfang@gentoo.org>
- * Copyright (C) 2005 Andreas Jaggi <andreas.jaggi@waterwave.ch>
- * Copyright (C) 2006 Broadcom Corporation.
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #include "ssb_private.h"
 
@@ -210,7 +198,7 @@ void ssb_iounmap(struct ssb_bus *bus)
 #ifdef CONFIG_SSB_PCIHOST
 		pci_iounmap(bus->host_pci, bus->mmio);
 #else
-		WARN_ON(1); /* Can't reach this code. */
+		WARN_ON(1);  
 #endif
 		break;
 	case SSB_BUSTYPE_SDIO:
@@ -227,7 +215,7 @@ static void __iomem *ssb_ioremap(struct ssb_bus *bus,
 
 	switch (bus->bustype) {
 	case SSB_BUSTYPE_SSB:
-		/* Only map the first core for now. */
+		 
 		fallthrough;
 	case SSB_BUSTYPE_PCMCIA:
 		mmio = ioremap(baseaddr, SSB_CORE_SIZE);
@@ -236,11 +224,11 @@ static void __iomem *ssb_ioremap(struct ssb_bus *bus,
 #ifdef CONFIG_SSB_PCIHOST
 		mmio = pci_iomap(bus->host_pci, 0, ~0UL);
 #else
-		WARN_ON(1); /* Can't reach this code. */
+		WARN_ON(1);  
 #endif
 		break;
 	case SSB_BUSTYPE_SDIO:
-		/* Nothing to ioremap in the SDIO case, just fake it */
+		 
 		mmio = (void __iomem *)baseaddr;
 		break;
 	}
@@ -250,10 +238,7 @@ static void __iomem *ssb_ioremap(struct ssb_bus *bus,
 
 static int we_support_multiple_80211_cores(struct ssb_bus *bus)
 {
-	/* More than one 802.11 core is only supported by special chips.
-	 * There are chips with two 802.11 cores, but with dangling
-	 * pins on the second core. Be careful and reject them here.
-	 */
+	 
 
 #ifdef CONFIG_SSB_PCIHOST
 	if (bus->bustype == SSB_BUSTYPE_PCI) {
@@ -264,7 +249,7 @@ static int we_support_multiple_80211_cores(struct ssb_bus *bus)
 		     (bus->host_pci->device == 0x4324)))
 			return 1;
 	}
-#endif /* CONFIG_SSB_PCIHOST */
+#endif  
 	return 0;
 }
 
@@ -283,7 +268,7 @@ int ssb_bus_scan(struct ssb_bus *bus,
 		goto out;
 	bus->mmio = mmio;
 
-	err = scan_switchcore(bus, 0); /* Switch to first core */
+	err = scan_switchcore(bus, 0);  
 	if (err)
 		goto err_unmap;
 
@@ -329,9 +314,7 @@ int ssb_bus_scan(struct ssb_bus *bus,
 		goto err_unmap;
 	}
 	if (bus->bustype == SSB_BUSTYPE_SSB) {
-		/* Now that we know the number of cores,
-		 * remap the whole IO space for all cores.
-		 */
+		 
 		err = -ENOMEM;
 		iounmap(mmio);
 		mmio = ioremap(baseaddr, SSB_CORE_SIZE * bus->nr_devices);
@@ -340,7 +323,7 @@ int ssb_bus_scan(struct ssb_bus *bus,
 		bus->mmio = mmio;
 	}
 
-	/* Fetch basic information about each core/device */
+	 
 	for (i = 0, dev_i = 0; i < bus->nr_devices; i++) {
 		err = scan_switchcore(bus, i);
 		if (err)
@@ -377,7 +360,7 @@ int ssb_bus_scan(struct ssb_bus *bus,
 				break;
 			}
 			bus->extif.dev = dev;
-#endif /* CONFIG_SSB_DRIVER_EXTIF */
+#endif  
 			break;
 		case SSB_DEV_CHIPCOMMON:
 			if (bus->chipco.dev) {
@@ -394,15 +377,13 @@ int ssb_bus_scan(struct ssb_bus *bus,
 				break;
 			}
 			bus->mipscore.dev = dev;
-#endif /* CONFIG_SSB_DRIVER_MIPS */
+#endif  
 			break;
 		case SSB_DEV_PCI:
 		case SSB_DEV_PCIE:
 #ifdef CONFIG_SSB_DRIVER_PCICORE
 			if (bus->bustype == SSB_BUSTYPE_PCI) {
-				/* Ignore PCI cores on PCI-E cards.
-				 * Ignore PCI-E cores on PCI cards.
-				 */
+				 
 				if (dev->id.coreid == SSB_DEV_PCI) {
 					if (pci_is_pcie(bus->host_pci))
 						continue;
@@ -416,15 +397,13 @@ int ssb_bus_scan(struct ssb_bus *bus,
 				break;
 			}
 			bus->pcicore.dev = dev;
-#endif /* CONFIG_SSB_DRIVER_PCICORE */
+#endif  
 			break;
 		case SSB_DEV_ETHERNET:
 			if (bus->bustype == SSB_BUSTYPE_PCI) {
 				if (bus->host_pci->vendor == PCI_VENDOR_ID_BROADCOM &&
 				    (bus->host_pci->device & 0xFF00) == 0x4300) {
-					/* This is a dangling ethernet core on a
-					 * wireless device. Ignore it.
-					 */
+					 
 					continue;
 				}
 			}

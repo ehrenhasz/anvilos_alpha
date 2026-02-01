@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "nv50.h"
 #include "pll.h"
 #include "seq.h"
@@ -33,7 +11,7 @@ read_div(struct nv50_clk *clk)
 {
 	struct nvkm_device *device = clk->base.subdev.device;
 	switch (device->chipset) {
-	case 0x50: /* it exists, but only has bit 31, not the dividers.. */
+	case 0x50:  
 	case 0x84:
 	case 0x86:
 	case 0x98:
@@ -166,7 +144,7 @@ read_pll(struct nv50_clk *clk, u32 base)
 	int N1, N2, M1, M2;
 
 	if (base == 0x004028 && (mast & 0x00100000)) {
-		/* wtf, appears to only disable post-divider on gt200 */
+		 
 		if (device->chipset != 0xa0)
 			return nvkm_clk_read(&clk->base, nv_clk_src_dom6);
 	}
@@ -201,7 +179,7 @@ nv50_clk_read(struct nvkm_clk *base, enum nv_clk_src src)
 	case nv_clk_src_crystal:
 		return device->crystal;
 	case nv_clk_src_href:
-		return 100000; /* PCIE reference clock */
+		return 100000;  
 	case nv_clk_src_hclk:
 		return div_u64((u64)nvkm_clk_read(&clk->base, nv_clk_src_href) * 27778, 10000);
 	case nv_clk_src_hclkm3:
@@ -212,7 +190,7 @@ nv50_clk_read(struct nvkm_clk *base, enum nv_clk_src src)
 		switch (mast & 0x30000000) {
 		case 0x00000000: return nvkm_clk_read(&clk->base, nv_clk_src_href);
 		case 0x10000000: break;
-		case 0x20000000: /* !0x50 */
+		case 0x20000000:  
 		case 0x30000000: return nvkm_clk_read(&clk->base, nv_clk_src_hclk);
 		}
 		break;
@@ -263,7 +241,7 @@ nv50_clk_read(struct nvkm_clk *base, enum nv_clk_src src)
 		case 0xa0:
 			switch (mast & 0x00000c00) {
 			case 0x00000000:
-				if (device->chipset == 0xa0) /* wtf?? */
+				if (device->chipset == 0xa0)  
 					return nvkm_clk_read(&clk->base, nv_clk_src_core) >> P;
 				return nvkm_clk_read(&clk->base, nv_clk_src_crystal) >> P;
 			case 0x00000400:
@@ -381,32 +359,29 @@ nv50_clk_calc(struct nvkm_clk *base, struct nvkm_cstate *cstate)
 	int N, M, P1, P2;
 	int freq, out;
 
-	/* prepare a hwsq script from which we'll perform the reclock */
+	 
 	out = clk_init(hwsq, subdev);
 	if (out)
 		return out;
 
-	clk_wr32(hwsq, fifo, 0x00000001); /* block fifo */
+	clk_wr32(hwsq, fifo, 0x00000001);  
 	clk_nsec(hwsq, 8000);
-	clk_setf(hwsq, 0x10, 0x00); /* disable fb */
-	clk_wait(hwsq, 0x00, 0x01); /* wait for fb disabled */
+	clk_setf(hwsq, 0x10, 0x00);  
+	clk_wait(hwsq, 0x00, 0x01);  
 
-	/* vdec: avoid modifying xpll until we know exactly how the other
-	 * clock domains work, i suspect at least some of them can also be
-	 * tied to xpll...
-	 */
+	 
 	if (vdec) {
-		/* see how close we can get using nvclk as a source */
+		 
 		freq = calc_div(core, vdec, &P1);
 
-		/* see how close we can get using xpll/hclk as a source */
+		 
 		if (device->chipset != 0x98)
 			out = read_pll(clk, 0x004030);
 		else
 			out = nvkm_clk_read(&clk->base, nv_clk_src_hclkm3d2);
 		out = calc_div(out, vdec, &P2);
 
-		/* select whichever gets us closest */
+		 
 		if (abs(vdec - freq) <= abs(vdec - out)) {
 			if (device->chipset != 0x98)
 				mastv |= 0x00000c00;
@@ -420,9 +395,7 @@ nv50_clk_calc(struct nvkm_clk *base, struct nvkm_cstate *cstate)
 		divsm |= 0x00000700;
 	}
 
-	/* dom6: nfi what this is, but we're limited to various combinations
-	 * of the host clock frequency
-	 */
+	 
 	if (dom6) {
 		if (clk_same(dom6, nvkm_clk_read(&clk->base, nv_clk_src_href))) {
 			mastv |= 0x00000000;
@@ -441,22 +414,18 @@ nv50_clk_calc(struct nvkm_clk *base, struct nvkm_cstate *cstate)
 		divsm |= 0x00000007;
 	}
 
-	/* vdec/dom6: switch to "safe" clocks temporarily, update dividers
-	 * and then switch to target clocks
-	 */
+	 
 	clk_mask(hwsq, mast, mastm, 0x00000000);
 	clk_mask(hwsq, divs, divsm, divsv);
 	clk_mask(hwsq, mast, mastm, mastv);
 
-	/* core/shader: disconnect nvclk/sclk from their PLLs (nvclk to dom6,
-	 * sclk to hclk) before reprogramming
-	 */
+	 
 	if (device->chipset < 0x92)
 		clk_mask(hwsq, mast, 0x001000b0, 0x00100080);
 	else
 		clk_mask(hwsq, mast, 0x000000b3, 0x00000081);
 
-	/* core: for the moment at least, always use nvpll */
+	 
 	freq = calc_pll(clk, 0x4028, core, &N, &M, &P1);
 	if (freq == 0)
 		return -ERANGE;
@@ -465,12 +434,7 @@ nv50_clk_calc(struct nvkm_clk *base, struct nvkm_cstate *cstate)
 				 0x80000000 | (P1 << 19) | (P1 << 16));
 	clk_mask(hwsq, nvpll[1], 0x0000ffff, (N << 8) | M);
 
-	/* shader: tie to nvclk if possible, otherwise use spll.  have to be
-	 * very careful that the shader clock is at least twice the core, or
-	 * some chipsets will be very unhappy.  i expect most or all of these
-	 * cases will be handled by tying to nvclk, but it's possible there's
-	 * corners
-	 */
+	 
 	if (P1-- && shader == (core << 1)) {
 		clk_mask(hwsq, spll[0], 0xc03f0100, (P1 << 19) | (P1 << 16));
 		clk_mask(hwsq, mast, 0x00100033, 0x00000023);
@@ -485,10 +449,10 @@ nv50_clk_calc(struct nvkm_clk *base, struct nvkm_cstate *cstate)
 		clk_mask(hwsq, mast, 0x00100033, 0x00000033);
 	}
 
-	/* restore normal operation */
-	clk_setf(hwsq, 0x10, 0x01); /* enable fb */
-	clk_wait(hwsq, 0x00, 0x00); /* wait for fb enabled */
-	clk_wr32(hwsq, fifo, 0x00000000); /* un-block fifo */
+	 
+	clk_setf(hwsq, 0x10, 0x01);  
+	clk_wait(hwsq, 0x00, 0x00);  
+	clk_wr32(hwsq, fifo, 0x00000000);  
 	return 0;
 }
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NXP Wireless LAN device driver: AP TX and RX data handling
- *
- * Copyright 2011-2020 NXP
- */
+
+ 
 
 #include "decl.h"
 #include "ioctl.h"
@@ -12,11 +8,7 @@
 #include "11n_aggr.h"
 #include "11n_rxreorder.h"
 
-/* This function checks if particular RA list has packets more than low bridge
- * packet threshold and then deletes packet from this RA list.
- * Function deletes packets from such RA list and returns true. If no such list
- * is found, false is returned.
- */
+ 
 static bool
 mwifiex_uap_del_tx_pkts_in_ralist(struct mwifiex_private *priv,
 				  struct list_head *ra_list_head,
@@ -53,10 +45,7 @@ mwifiex_uap_del_tx_pkts_in_ralist(struct mwifiex_private *priv,
 	return pkt_deleted;
 }
 
-/* This function deletes packets from particular RA List. RA list index
- * from which packets are deleted is preserved so that packets from next RA
- * list are deleted upon subsequent call thus maintaining fairness.
- */
+ 
 static void mwifiex_uap_cleanup_tx_queues(struct mwifiex_private *priv)
 {
 	struct list_head *ra_list;
@@ -119,16 +108,7 @@ static void mwifiex_uap_queue_bridged_pkt(struct mwifiex_private *priv,
 		     sizeof(rfc1042_header)) &&
 	     ntohs(rx_pkt_hdr->rfc1042_hdr.snap_type) != ETH_P_AARP &&
 	     ntohs(rx_pkt_hdr->rfc1042_hdr.snap_type) != ETH_P_IPX)) {
-		/* Replace the 803 header and rfc1042 header (llc/snap) with
-		 * an Ethernet II header, keep the src/dst and snap_type
-		 * (ethertype).
-		 *
-		 * The firmware only passes up SNAP frames converting all RX
-		 * data from 802.11 to 802.2/LLC/SNAP frames.
-		 *
-		 * To create the Ethernet II, just move the src, dst address
-		 * right before the snap_type.
-		 */
+		 
 		p_ethhdr = (struct ethhdr *)
 			((u8 *)(&rx_pkt_hdr->eth803_hdr)
 			 + sizeof(rx_pkt_hdr->eth803_hdr)
@@ -140,26 +120,21 @@ static void mwifiex_uap_queue_bridged_pkt(struct mwifiex_private *priv,
 		       sizeof(p_ethhdr->h_source));
 		memcpy(p_ethhdr->h_dest, rx_pkt_hdr->eth803_hdr.h_dest,
 		       sizeof(p_ethhdr->h_dest));
-		/* Chop off the rxpd + the excess memory from
-		 * 802.2/llc/snap header that was removed.
-		 */
+		 
 		hdr_chop = (u8 *)p_ethhdr - (u8 *)uap_rx_pd;
 	} else {
-		/* Chop off the rxpd */
+		 
 		hdr_chop = (u8 *)&rx_pkt_hdr->eth803_hdr - (u8 *)uap_rx_pd;
 	}
 
-	/* Chop off the leading header bytes so that it points
-	 * to the start of either the reconstructed EthII frame
-	 * or the 802.2/llc/snap frame.
-	 */
+	 
 	skb_pull(skb, hdr_chop);
 
 	if (skb_headroom(skb) < MWIFIEX_MIN_DATA_HEADER_LEN) {
 		mwifiex_dbg(priv->adapter, ERROR,
 			    "data: Tx: insufficient skb headroom %d\n",
 			    skb_headroom(skb));
-		/* Insufficient skb headroom - allocate a new skb */
+		 
 		new_skb =
 			skb_realloc_headroom(skb, MWIFIEX_MIN_DATA_HEADER_LEN);
 		if (unlikely(!new_skb)) {
@@ -193,15 +168,11 @@ static void mwifiex_uap_queue_bridged_pkt(struct mwifiex_private *priv,
 	}
 
 	if (is_unicast_ether_addr(rx_pkt_hdr->eth803_hdr.h_dest)) {
-		/* Update bridge packet statistics as the
-		 * packet is not going to kernel/upper layer.
-		 */
+		 
 		priv->stats.rx_bytes += skb->len;
 		priv->stats.rx_packets++;
 
-		/* Sending bridge packet to TX queue, so save the packet
-		 * length in TXCB to update statistics in TX complete.
-		 */
+		 
 		tx_info->pkt_len = skb->len;
 	}
 
@@ -218,17 +189,7 @@ static void mwifiex_uap_queue_bridged_pkt(struct mwifiex_private *priv,
 	return;
 }
 
-/*
- * This function contains logic for AP packet forwarding.
- *
- * If a packet is multicast/broadcast, it is sent to kernel/upper layer
- * as well as queued back to AP TX queue so that it can be sent to other
- * associated stations.
- * If a packet is unicast and RA is present in associated station list,
- * it is again requeued into AP TX queue.
- * If a packet is unicast and RA is not in associated station list,
- * packet is forwarded to kernel to handle routing logic.
- */
+ 
 int mwifiex_handle_uap_rx_forward(struct mwifiex_private *priv,
 				  struct sk_buff *skb)
 {
@@ -241,7 +202,7 @@ int mwifiex_handle_uap_rx_forward(struct mwifiex_private *priv,
 	uap_rx_pd = (struct uap_rxpd *)(skb->data);
 	rx_pkt_hdr = (void *)uap_rx_pd + le16_to_cpu(uap_rx_pd->rx_pkt_offset);
 
-	/* don't do packet forwarding in disconnected state */
+	 
 	if (!priv->media_connected) {
 		mwifiex_dbg(adapter, ERROR,
 			    "drop packet in disconnected state.\n");
@@ -264,13 +225,13 @@ int mwifiex_handle_uap_rx_forward(struct mwifiex_private *priv,
 		}
 	} else {
 		if (mwifiex_get_sta_entry(priv, ra)) {
-			/* Requeue Intra-BSS packet */
+			 
 			mwifiex_uap_queue_bridged_pkt(priv, skb);
 			return 0;
 		}
 	}
 
-	/* Forward unicat/Inter-BSS packets to kernel. */
+	 
 	return mwifiex_process_rx_packet(priv, skb);
 }
 
@@ -324,7 +285,7 @@ int mwifiex_uap_recv_packet(struct mwifiex_private *priv,
 		}
 
 		mwifiex_queue_main_work(adapter);
-		/* Don't forward Intra-BSS unicast packet to upper layer*/
+		 
 		if (mwifiex_get_sta_entry(priv, p_ethhdr->h_dest))
 			return 0;
 	}
@@ -333,43 +294,18 @@ int mwifiex_uap_recv_packet(struct mwifiex_private *priv,
 	skb->protocol = eth_type_trans(skb, priv->netdev);
 	skb->ip_summed = CHECKSUM_NONE;
 
-	/* This is required only in case of 11n and USB/PCIE as we alloc
-	 * a buffer of 4K only if its 11N (to be able to receive 4K
-	 * AMSDU packets). In case of SD we allocate buffers based
-	 * on the size of packet and hence this is not needed.
-	 *
-	 * Modifying the truesize here as our allocation for each
-	 * skb is 4K but we only receive 2K packets and this cause
-	 * the kernel to start dropping packets in case where
-	 * application has allocated buffer based on 2K size i.e.
-	 * if there a 64K packet received (in IP fragments and
-	 * application allocates 64K to receive this packet but
-	 * this packet would almost double up because we allocate
-	 * each 1.5K fragment in 4K and pass it up. As soon as the
-	 * 64K limit hits kernel will start to drop rest of the
-	 * fragments. Currently we fail the Filesndl-ht.scr script
-	 * for UDP, hence this fix
-	 */
+	 
 	if ((adapter->iface_type == MWIFIEX_USB ||
 	     adapter->iface_type == MWIFIEX_PCIE) &&
 	    skb->truesize > MWIFIEX_RX_DATA_BUF_SIZE)
 		skb->truesize += (skb->len - MWIFIEX_RX_DATA_BUF_SIZE);
 
-	/* Forward multicast/broadcast packet to upper layer*/
+	 
 	netif_rx(skb);
 	return 0;
 }
 
-/*
- * This function processes the packet received on AP interface.
- *
- * The function looks into the RxPD and performs sanity tests on the
- * received buffer to ensure its a valid packet before processing it
- * further. If the packet is determined to be aggregated, it is
- * de-aggregated accordingly. Then skb is passed to AP packet forwarding logic.
- *
- * The completion callback is called after processing is complete.
- */
+ 
 int mwifiex_process_uap_rx_packet(struct mwifiex_private *priv,
 				  struct sk_buff *skb)
 {
@@ -438,7 +374,7 @@ int mwifiex_process_uap_rx_packet(struct mwifiex_private *priv,
 		return ret;
 	}
 
-	/* Reorder and send to kernel */
+	 
 	pkt_type = (u8)le16_to_cpu(uap_rx_pd->rx_pkt_type);
 	ret = mwifiex_11n_rx_reorder_pkt(priv, le16_to_cpu(uap_rx_pd->seq_num),
 					 uap_rx_pd->priority, ta, pkt_type,
@@ -453,23 +389,7 @@ int mwifiex_process_uap_rx_packet(struct mwifiex_private *priv,
 	return ret;
 }
 
-/*
- * This function fills the TxPD for AP tx packets.
- *
- * The Tx buffer received by this function should already have the
- * header space allocated for TxPD.
- *
- * This function inserts the TxPD in between interface header and actual
- * data and adjusts the buffer pointers accordingly.
- *
- * The following TxPD fields are set by this function, as required -
- *      - BSS number
- *      - Tx packet length and offset
- *      - Priority
- *      - Packet delay
- *      - Priority specific Tx control
- *      - Flags
- */
+ 
 void mwifiex_process_uap_txpd(struct mwifiex_private *priv,
 			      struct sk_buff *skb)
 {
@@ -504,27 +424,24 @@ void mwifiex_process_uap_txpd(struct mwifiex_private *priv,
 	}
 
 	if (txpd->priority < ARRAY_SIZE(priv->wmm.user_pri_pkt_tx_ctrl))
-		/*
-		 * Set the priority specific tx_control field, setting of 0 will
-		 * cause the default value to be used later in this function.
-		 */
+		 
 		txpd->tx_control =
 		    cpu_to_le32(priv->wmm.user_pri_pkt_tx_ctrl[txpd->priority]);
 
-	/* Offset of actual data */
+	 
 	pkt_offset = sizeof(*txpd) + pad;
 	if (pkt_type == PKT_TYPE_MGMT) {
-		/* Set the packet type and add header for management frame */
+		 
 		txpd->tx_pkt_type = cpu_to_le16(pkt_type);
 		pkt_offset += MWIFIEX_MGMT_FRAME_HEADER_SIZE;
 	}
 
 	txpd->tx_pkt_offset = cpu_to_le16(pkt_offset);
 
-	/* make space for adapter->intf_hdr_len */
+	 
 	skb_push(skb, hroom);
 
 	if (!txpd->tx_control)
-		/* TxCtrl set by user or default */
+		 
 		txpd->tx_control = cpu_to_le32(priv->pkt_tx_ctrl);
 }

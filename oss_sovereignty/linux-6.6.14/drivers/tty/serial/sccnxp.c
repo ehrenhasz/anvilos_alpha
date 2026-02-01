@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  NXP (Philips) SCC+++(SCN+++) serial driver
- *
- *  Copyright (C) 2012 Alexander Shiyan <shc_work@mail.ru>
- *
- *  Based on sc26xx.c, by Thomas Bogendörfer (tsbogend@alpha.franken.de)
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -88,7 +82,7 @@
 #define SCCNXP_START_COUNTER_REG	SCCNXP_SOP_REG
 #define SCCNXP_ROP_REG			(0x0f)
 
-/* Route helpers */
+ 
 #define MCTRL_MASK(sig)			(0xf << (sig))
 #define MCTRL_IBIT(cfg, sig)		((((cfg) >> (sig)) & 0xf) - LINE_IP0)
 #define MCTRL_OBIT(cfg, sig)		((((cfg) >> (sig)) & 0xf) - LINE_OP0)
@@ -104,7 +98,7 @@ struct sccnxp_chip {
 	unsigned long		freq_max;
 	unsigned int		flags;
 	unsigned int		fifosize;
-	/* Time between read/write cycles */
+	 
 	unsigned int		trwd;
 };
 
@@ -307,7 +301,7 @@ static int sccnxp_set_baud(struct uart_port *port, int baud)
 	struct sccnxp_chip *chip = s->chip;
 	u8 i, acr = 0, csr = 0, mr0 = 0;
 
-	/* Find divisor to load to the timer preset registers */
+	 
 	div_std = DIV_ROUND_CLOSEST(port->uartclk, 2 * 16 * baud);
 	if ((div_std >= 2) && (div_std <= 0xffff)) {
 		bestbaud = DIV_ROUND_CLOSEST(port->uartclk, 2 * 16 * div_std);
@@ -315,11 +309,11 @@ static int sccnxp_set_baud(struct uart_port *port, int baud)
 		csr = CSR_TIMER_MODE;
 		sccnxp_port_write(port, SCCNXP_CTPU_REG, div_std >> 8);
 		sccnxp_port_write(port, SCCNXP_CTPL_REG, div_std);
-		/* Issue start timer/counter command */
+		 
 		sccnxp_port_read(port, SCCNXP_START_COUNTER_REG);
 	}
 
-	/* Find best baud from table */
+	 
 	for (i = 0; baud_std[i].baud && besterr; i++) {
 		if (baud_std[i].mr0 && !(chip->flags & SCCNXP_HAVE_MR0))
 			continue;
@@ -334,9 +328,9 @@ static int sccnxp_set_baud(struct uart_port *port, int baud)
 	}
 
 	if (chip->flags & SCCNXP_HAVE_MR0) {
-		/* Enable FIFO, set half level for TX */
+		 
 		mr0 |= MR0_FIFO | MR0_TXLVL;
-		/* Update MR0 */
+		 
 		sccnxp_port_write(port, SCCNXP_CR_REG, CR_CMD_MRPTR0);
 		sccnxp_port_write(port, SCCNXP_MR_REG, mr0);
 	}
@@ -450,11 +444,11 @@ static void sccnxp_handle_tx(struct uart_port *port)
 	}
 
 	if (uart_circ_empty(xmit) || uart_tx_stopped(port)) {
-		/* Disable TX if FIFO is empty */
+		 
 		if (sccnxp_port_read(port, SCCNXP_SR_REG) & SR_TXEMT) {
 			sccnxp_disable_irq(port, IMR_TXRDY);
 
-			/* Set direction to input */
+			 
 			if (s->chip->flags & SCCNXP_HAVE_IO)
 				sccnxp_set_bit(port, DIR_OP, 0);
 		}
@@ -525,7 +519,7 @@ static void sccnxp_start_tx(struct uart_port *port)
 
 	spin_lock_irqsave(&s->lock, flags);
 
-	/* Set direction to output */
+	 
 	if (s->chip->flags & SCCNXP_HAVE_IO)
 		sccnxp_set_bit(port, DIR_OP, 1);
 
@@ -536,7 +530,7 @@ static void sccnxp_start_tx(struct uart_port *port)
 
 static void sccnxp_stop_tx(struct uart_port *port)
 {
-	/* Do nothing */
+	 
 }
 
 static void sccnxp_stop_rx(struct uart_port *port)
@@ -644,17 +638,17 @@ static void sccnxp_set_termios(struct uart_port *port,
 
 	spin_lock_irqsave(&s->lock, flags);
 
-	/* Mask termios capabilities we don't support */
+	 
 	termios->c_cflag &= ~CMSPAR;
 
-	/* Disable RX & TX, reset break condition, status and FIFOs */
+	 
 	sccnxp_port_write(port, SCCNXP_CR_REG, CR_CMD_RX_RESET |
 					       CR_RX_DISABLE | CR_TX_DISABLE);
 	sccnxp_port_write(port, SCCNXP_CR_REG, CR_CMD_TX_RESET);
 	sccnxp_port_write(port, SCCNXP_CR_REG, CR_CMD_STATUS_RESET);
 	sccnxp_port_write(port, SCCNXP_CR_REG, CR_CMD_BREAK_RESET);
 
-	/* Word size */
+	 
 	switch (termios->c_cflag & CSIZE) {
 	case CS5:
 		mr1 = MR1_BITS_5;
@@ -671,29 +665,29 @@ static void sccnxp_set_termios(struct uart_port *port,
 		break;
 	}
 
-	/* Parity */
+	 
 	if (termios->c_cflag & PARENB) {
 		if (termios->c_cflag & PARODD)
 			mr1 |= MR1_PAR_ODD;
 	} else
 		mr1 |= MR1_PAR_NO;
 
-	/* Stop bits */
+	 
 	mr2 = (termios->c_cflag & CSTOPB) ? MR2_STOP2 : MR2_STOP1;
 
-	/* Update desired format */
+	 
 	sccnxp_port_write(port, SCCNXP_CR_REG, CR_CMD_MRPTR1);
 	sccnxp_port_write(port, SCCNXP_MR_REG, mr1);
 	sccnxp_port_write(port, SCCNXP_MR_REG, mr2);
 
-	/* Set read status mask */
+	 
 	port->read_status_mask = SR_OVR;
 	if (termios->c_iflag & INPCK)
 		port->read_status_mask |= SR_PE | SR_FE;
 	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
 		port->read_status_mask |= SR_BRK;
 
-	/* Set status ignore mask */
+	 
 	port->ignore_status_mask = 0;
 	if (termios->c_iflag & IGNBRK)
 		port->ignore_status_mask |= SR_BRK;
@@ -702,20 +696,20 @@ static void sccnxp_set_termios(struct uart_port *port,
 	if (!(termios->c_cflag & CREAD))
 		port->ignore_status_mask |= SR_PE | SR_OVR | SR_FE | SR_BRK;
 
-	/* Setup baudrate */
+	 
 	baud = uart_get_baud_rate(port, termios, old, 50,
 				  (s->chip->flags & SCCNXP_HAVE_MR0) ?
 				  230400 : 38400);
 	baud = sccnxp_set_baud(port, baud);
 
-	/* Update timeout according to new baud rate */
+	 
 	uart_update_timeout(port, termios->c_cflag, baud);
 
-	/* Report actual baudrate back to core */
+	 
 	if (tty_termios_baud_rate(termios))
 		tty_termios_encode_baud_rate(termios, baud, baud);
 
-	/* Enable RX & TX */
+	 
 	sccnxp_port_write(port, SCCNXP_CR_REG, CR_RX_ENABLE | CR_TX_ENABLE);
 
 	spin_unlock_irqrestore(&s->lock, flags);
@@ -729,20 +723,20 @@ static int sccnxp_startup(struct uart_port *port)
 	spin_lock_irqsave(&s->lock, flags);
 
 	if (s->chip->flags & SCCNXP_HAVE_IO) {
-		/* Outputs are controlled manually */
+		 
 		sccnxp_write(port, SCCNXP_OPCR_REG, 0);
 	}
 
-	/* Reset break condition, status and FIFOs */
+	 
 	sccnxp_port_write(port, SCCNXP_CR_REG, CR_CMD_RX_RESET);
 	sccnxp_port_write(port, SCCNXP_CR_REG, CR_CMD_TX_RESET);
 	sccnxp_port_write(port, SCCNXP_CR_REG, CR_CMD_STATUS_RESET);
 	sccnxp_port_write(port, SCCNXP_CR_REG, CR_CMD_BREAK_RESET);
 
-	/* Enable RX & TX */
+	 
 	sccnxp_port_write(port, SCCNXP_CR_REG, CR_RX_ENABLE | CR_TX_ENABLE);
 
-	/* Enable RX interrupt */
+	 
 	sccnxp_enable_irq(port, IMR_RXRDY);
 
 	s->opened[port->line] = 1;
@@ -761,13 +755,13 @@ static void sccnxp_shutdown(struct uart_port *port)
 
 	s->opened[port->line] = 0;
 
-	/* Disable interrupts */
+	 
 	sccnxp_disable_irq(port, IMR_TXRDY | IMR_RXRDY);
 
-	/* Disable TX & RX */
+	 
 	sccnxp_port_write(port, SCCNXP_CR_REG, CR_RX_DISABLE | CR_TX_DISABLE);
 
-	/* Leave direction to input */
+	 
 	if (s->chip->flags & SCCNXP_HAVE_IO)
 		sccnxp_set_bit(port, DIR_OP, 0);
 
@@ -783,12 +777,12 @@ static const char *sccnxp_type(struct uart_port *port)
 
 static void sccnxp_release_port(struct uart_port *port)
 {
-	/* Do nothing */
+	 
 }
 
 static int sccnxp_request_port(struct uart_port *port)
 {
-	/* Do nothing */
+	 
 	return 0;
 }
 
@@ -927,7 +921,7 @@ static int sccnxp_probe(struct platform_device *pdev)
 		uartclk = s->chip->freq_std;
 	}
 
-	/* Check input frequency */
+	 
 	if ((uartclk < s->chip->freq_min) || (uartclk > s->chip->freq_max)) {
 		dev_err(&pdev->dev, "Frequency out of bounds\n");
 		ret = -EINVAL;
@@ -987,12 +981,12 @@ static int sccnxp_probe(struct platform_device *pdev)
 		s->port[i].ops		= &sccnxp_ops;
 		s->port[i].has_sysrq = IS_ENABLED(CONFIG_SERIAL_SCCNXP_CONSOLE);
 		uart_add_one_port(&s->uart, &s->port[i]);
-		/* Set direction to input */
+		 
 		if (s->chip->flags & SCCNXP_HAVE_IO)
 			sccnxp_set_bit(&s->port[i], DIR_OP, 0);
 	}
 
-	/* Disable interrupts */
+	 
 	s->imr = 0;
 	sccnxp_write(&s->port[0], SCCNXP_IMR_REG, 0);
 

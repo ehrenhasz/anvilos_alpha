@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Discovery service for the NVMe over Fabrics target.
- * Copyright (C) 2016 Intel Corporation. All rights reserved.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/slab.h>
 #include <generated/utsrelease.h>
@@ -42,7 +39,7 @@ void nvmet_port_disc_changed(struct nvmet_port *port,
 	}
 	mutex_unlock(&nvmet_disc_subsys->lock);
 
-	/* If transport can signal change, notify transport */
+	 
 	if (port->tr_ops && port->tr_ops->discovery_chg)
 		port->tr_ops->discovery_chg(port);
 }
@@ -112,7 +109,7 @@ static void nvmet_format_discovery_entry(struct nvmf_disc_rsp_page_hdr *hdr,
 	e->adrfam = port->disc_addr.adrfam;
 	e->treq = port->disc_addr.treq;
 	e->portid = port->disc_addr.portid;
-	/* we support only dynamic controllers */
+	 
 	e->cntlid = cpu_to_le16(NVME_CNTLID_DYNAMIC);
 	e->asqsz = cpu_to_le16(NVME_AQ_DEPTH);
 	e->subtype = type;
@@ -122,16 +119,7 @@ static void nvmet_format_discovery_entry(struct nvmf_disc_rsp_page_hdr *hdr,
 	strncpy(e->subnqn, subsys_nqn, NVMF_NQN_SIZE);
 }
 
-/*
- * nvmet_set_disc_traddr - set a correct discovery log entry traddr
- *
- * IP based transports (e.g RDMA) can listen on "any" ipv4/ipv6 addresses
- * (INADDR_ANY or IN6ADDR_ANY_INIT). The discovery log page traddr reply
- * must not contain that "any" IP address. If the transport implements
- * .disc_traddr, use it. this callback will set the discovery traddr
- * from the req->port address in case the port in question listens
- * "any" IP address.
- */
+ 
 static void nvmet_set_disc_traddr(struct nvmet_req *req, struct nvmet_port *port,
 		char *traddr)
 {
@@ -183,7 +171,7 @@ static void nvmet_execute_disc_get_log_page(struct nvmet_req *req)
 		goto out;
 	}
 
-	/* Spec requires dword aligned offsets */
+	 
 	if (offset & 0x3) {
 		req->error_loc =
 			offsetof(struct nvme_get_log_page_command, lpo);
@@ -191,11 +179,7 @@ static void nvmet_execute_disc_get_log_page(struct nvmet_req *req)
 		goto out;
 	}
 
-	/*
-	 * Make sure we're passing at least a buffer of response header size.
-	 * If host provided data len is less than the header size, only the
-	 * number of bytes requested by host will be sent to host.
-	 */
+	 
 	down_read(&nvmet_config_sem);
 	alloc_len = sizeof(*hdr) + entry_size * discovery_log_entries(req);
 	buffer = kzalloc(alloc_len, GFP_KERNEL);
@@ -275,16 +259,16 @@ static void nvmet_execute_disc_identify(struct nvmet_req *req)
 
 	id->cntrltype = NVME_CTRL_DISC;
 
-	/* no limit on data transfer sizes for now */
+	 
 	id->mdts = 0;
 	id->cntlid = cpu_to_le16(ctrl->cntlid);
 	id->ver = cpu_to_le32(ctrl->subsys->ver);
 	id->lpa = (1 << 2);
 
-	/* no enforcement soft-limit for maxcmd - pick arbitrary high value */
+	 
 	id->maxcmd = cpu_to_le16(NVMET_MAX_CMD);
 
-	id->sgls = cpu_to_le32(1 << 0);	/* we always support SGLs */
+	id->sgls = cpu_to_le32(1 << 0);	 
 	if (ctrl->ops->flags & NVMF_KEYED_SGLS)
 		id->sgls |= cpu_to_le32(1 << 2);
 	if (req->port->inline_data_size)

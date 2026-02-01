@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2010-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include "htc.h"
 
@@ -40,11 +26,7 @@ void ath9k_htc_beaconq_config(struct ath9k_htc_priv *priv)
 
 		qi.tqi_aifs = qi_be.tqi_aifs;
 
-		/*
-		 * For WIFI Beacon Distribution
-		 * Long slot time  : 2x cwmin
-		 * Short slot time : 4x cwmin
-		 */
+		 
 		if (ah->slottime == 20)
 			qi.tqi_cwmin = 2*qi_be.tqi_cwmin;
 		else
@@ -62,9 +44,7 @@ void ath9k_htc_beaconq_config(struct ath9k_htc_priv *priv)
 	}
 }
 
-/*
- * Both nexttbtt and intval have to be in usecs.
- */
+ 
 static void ath9k_htc_beacon_init(struct ath9k_htc_priv *priv,
 				  struct ath_beacon_config *conf,
 				  bool reset_tsf)
@@ -214,17 +194,14 @@ static void ath9k_htc_send_beacon(struct ath9k_htc_priv *priv,
 		return;
 	}
 
-	/* Get a new beacon */
+	 
 	beacon = ieee80211_beacon_get(priv->hw, vif, 0);
 	if (!beacon) {
 		spin_unlock_bh(&priv->beacon_lock);
 		return;
 	}
 
-	/*
-	 * Update the TSF adjust value here, the HW will
-	 * add this value for every beacon.
-	 */
+	 
 	mgmt = (struct ieee80211_mgmt *)beacon->data;
 	mgmt->u.beacon.timestamp = avp->tsfadjust;
 
@@ -355,10 +332,7 @@ void ath9k_htc_remove_bslot(struct ath9k_htc_priv *priv,
 		avp->bslot);
 }
 
-/*
- * Calculate the TSF adjustment value for all slots
- * other than zero.
- */
+ 
 void ath9k_htc_set_tsfadjust(struct ath9k_htc_priv *priv,
 			     struct ieee80211_vif *vif)
 {
@@ -370,11 +344,7 @@ void ath9k_htc_set_tsfadjust(struct ath9k_htc_priv *priv,
 	if (avp->bslot == 0)
 		return;
 
-	/*
-	 * The beacon interval cannot be different for multi-AP mode,
-	 * and we reach here only for VIF slots greater than zero,
-	 * so beacon_interval is guaranteed to be set in cur_conf.
-	 */
+	 
 	tsfadjust = cur_conf->beacon_interval * avp->bslot / ATH9K_HTC_MAX_BCN_VIF;
 	avp->tsfadjust = cpu_to_le64(TU_TO_USEC(tsfadjust));
 
@@ -400,11 +370,7 @@ static bool ath9k_htc_check_beacon_config(struct ath9k_htc_priv *priv,
 	struct ieee80211_bss_conf *bss_conf = &vif->bss_conf;
 	bool beacon_configured;
 
-	/*
-	 * Changing the beacon interval when multiple AP interfaces
-	 * are configured will affect beacon transmission of all
-	 * of them.
-	 */
+	 
 	if ((priv->ah->opmode == NL80211_IFTYPE_AP) &&
 	    (priv->num_ap_vif > 1) &&
 	    (vif->type == NL80211_IFTYPE_AP) &&
@@ -414,10 +380,7 @@ static bool ath9k_htc_check_beacon_config(struct ath9k_htc_priv *priv,
 		return false;
 	}
 
-	/*
-	 * If the HW is operating in AP mode, any new station interfaces that
-	 * are added cannot change the beacon parameters.
-	 */
+	 
 	if (priv->num_ap_vif &&
 	    (vif->type != NL80211_IFTYPE_AP)) {
 		ath_dbg(common, CONFIG,
@@ -425,10 +388,7 @@ static bool ath9k_htc_check_beacon_config(struct ath9k_htc_priv *priv,
 		return false;
 	}
 
-	/*
-	 * The beacon parameters are configured only for the first
-	 * station interface.
-	 */
+	 
 	if ((priv->ah->opmode == NL80211_IFTYPE_STATION) &&
 	    (priv->num_sta_vif > 1) &&
 	    (vif->type == NL80211_IFTYPE_STATION)) {

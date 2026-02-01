@@ -1,31 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI/National Semiconductor LP3943 MFD Core Driver
- *
- * Copyright 2013 Texas Instruments
- *
- * Author: Milo Kim <milo.kim@ti.com>
- *
- * Driver structure:
- *   LP3943 is an integrated device capable of driving 16 output channels.
- *   It can be used for a GPIO expander and PWM generators.
- *
- *                                   LED control    General usage for a device
- *                                   ___________   ____________________________
- *
- *   LP3943 MFD ---- GPIO expander    leds-gpio        eg) HW enable pin
- *               |
- *               --- PWM generator    leds-pwm         eg) PWM input
- *
- *   Internal two PWM channels are used for LED dimming effect.
- *   And each output pin can be used as a GPIO as well.
- *   The LED functionality can work with GPIOs or PWMs.
- *   LEDs can be controlled with legacy leds-gpio(static brightness) or
- *   leds-pwm drivers(dynamic brightness control).
- *   Alternatively, it can be used for generic GPIO and PWM controller.
- *   For example, a GPIO is HW enable pin of a device.
- *   A PWM is input pin of a backlight device.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/gpio.h>
@@ -38,9 +12,9 @@
 
 #define LP3943_MAX_REGISTERS		0x09
 
-/* Register configuration for pin MUX */
+ 
 static const struct lp3943_reg_cfg lp3943_mux_cfg[] = {
-	/* address, mask, shift */
+	 
 	{ LP3943_REG_MUX0, 0x03, 0 },
 	{ LP3943_REG_MUX0, 0x0C, 2 },
 	{ LP3943_REG_MUX0, 0x30, 4 },

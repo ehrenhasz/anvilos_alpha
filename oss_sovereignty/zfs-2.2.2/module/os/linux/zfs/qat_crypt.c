@@ -1,30 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * This file represents the QAT implementation of checksums and encryption.
- * Internally, QAT shares the same cryptographic instances for both of these
- * operations, so the code has been combined here. QAT data compression uses
- * compression instances, so that code is separated into qat_compress.c
- */
+ 
 
 #if defined(_KERNEL) && defined(HAVE_QAT)
 #include <linux/slab.h>
@@ -37,12 +13,7 @@
 #include "lac/cpa_cy_common.h"
 #include <sys/qat.h>
 
-/*
- * Max instances in a QAT device, each instance is a channel to submit
- * jobs to QAT hardware, this is only for pre-allocating instances
- * and session arrays; the actual number of instances are defined in
- * the QAT driver's configure file.
- */
+ 
 #define	QAT_CRYPT_MAX_INSTANCES		48
 
 #define	MAX_PAGE_NUM			1024
@@ -66,7 +37,7 @@ symcallback(void *p_callback, CpaStatus status, const CpaCySymOp operation,
 	cy_callback_t *cb = p_callback;
 
 	if (cb != NULL) {
-		/* indicate that the function has been called */
+		 
 		cb->verify_result = verify;
 		complete(&cb->complete);
 	}
@@ -112,7 +83,7 @@ qat_cy_init(void)
 	if (status != CPA_STATUS_SUCCESS)
 		return (-1);
 
-	/* if the user has configured no QAT encryption units just return */
+	 
 	if (num_inst == 0)
 		return (0);
 
@@ -221,11 +192,7 @@ qat_init_checksum_session_ctx(CpaInstanceHandle inst_handle,
 	Cpa32U hash_algorithm;
 	CpaCySymSessionSetupData sd = { 0 };
 
-	/*
-	 * ZFS's SHA512 checksum is actually SHA512/256, which uses
-	 * a different IV from standard SHA512. QAT does not support
-	 * SHA512/256, so we can only support SHA256.
-	 */
+	 
 	if (cksum == ZIO_CHECKSUM_SHA256)
 		hash_algorithm = CPA_CY_SYM_HASH_SHA256;
 	else
@@ -330,17 +297,13 @@ qat_crypt(qat_encrypt_dir_t dir, uint8_t *src_buf, uint8_t *dst_buf,
 	status = qat_init_crypt_session_ctx(dir, cy_inst_handle,
 	    &cy_session_ctx, key, crypt, aad_len);
 	if (status != CPA_STATUS_SUCCESS) {
-		/* don't count CCM as a failure since it's not supported */
+		 
 		if (zio_crypt_table[crypt].ci_crypt_type == ZC_TYPE_GCM)
 			QAT_STAT_BUMP(crypt_fails);
 		return (status);
 	}
 
-	/*
-	 * We increment nr_bufs by 2 to allow us to handle non
-	 * page-aligned buffer addresses and buffers whose sizes
-	 * are not divisible by PAGE_SIZE.
-	 */
+	 
 	status = qat_init_cy_buffer_lists(cy_inst_handle, nr_bufs,
 	    &src_buffer_list, &dst_buffer_list);
 	if (status != CPA_STATUS_SUCCESS)
@@ -414,7 +377,7 @@ qat_crypt(qat_encrypt_dir_t dir, uint8_t *src_buf, uint8_t *dst_buf,
 	op_data.messageLenToCipherInBytes = enc_len;
 	op_data.ivLenInBytes = ZIO_DATA_IV_LEN;
 	memcpy(op_data.pIv, iv_buf, ZIO_DATA_IV_LEN);
-	/* if dir is QAT_DECRYPT, copy digest_buf to pDigestResult */
+	 
 	if (dir == QAT_DECRYPT)
 		memcpy(op_data.pDigestResult, digest_buf, ZIO_DATA_MAC_LEN);
 
@@ -425,7 +388,7 @@ qat_crypt(qat_encrypt_dir_t dir, uint8_t *src_buf, uint8_t *dst_buf,
 	if (status != CPA_STATUS_SUCCESS)
 		goto fail;
 
-	/* we now wait until the completion of the operation. */
+	 
 	wait_for_completion(&cb.complete);
 
 	if (cb.verify_result == CPA_FALSE) {
@@ -434,7 +397,7 @@ qat_crypt(qat_encrypt_dir_t dir, uint8_t *src_buf, uint8_t *dst_buf,
 	}
 
 	if (dir == QAT_ENCRYPT) {
-		/* if dir is QAT_ENCRYPT, save pDigestResult to digest_buf */
+		 
 		memcpy(digest_buf, op_data.pDigestResult, ZIO_DATA_MAC_LEN);
 		QAT_STAT_INCR(encrypt_total_out_bytes, enc_len);
 	} else {
@@ -493,18 +456,14 @@ qat_checksum(uint64_t cksum, uint8_t *buf, uint64_t size, zio_cksum_t *zcp)
 	status = qat_init_checksum_session_ctx(cy_inst_handle,
 	    &cy_session_ctx, cksum);
 	if (status != CPA_STATUS_SUCCESS) {
-		/* don't count unsupported checksums as a failure */
+		 
 		if (cksum == ZIO_CHECKSUM_SHA256 ||
 		    cksum == ZIO_CHECKSUM_SHA512)
 			QAT_STAT_BUMP(cksum_fails);
 		return (status);
 	}
 
-	/*
-	 * We increment nr_bufs by 2 to allow us to handle non
-	 * page-aligned buffer addresses and buffers whose sizes
-	 * are not divisible by PAGE_SIZE.
-	 */
+	 
 	status = qat_init_cy_buffer_lists(cy_inst_handle, nr_bufs,
 	    &src_buffer_list, &src_buffer_list);
 	if (status != CPA_STATUS_SUCCESS)
@@ -549,7 +508,7 @@ qat_checksum(uint64_t cksum, uint8_t *buf, uint64_t size, zio_cksum_t *zcp)
 	if (status != CPA_STATUS_SUCCESS)
 		goto fail;
 
-	/* we now wait until the completion of the operation. */
+	 
 	wait_for_completion(&cb.complete);
 
 	if (cb.verify_result == CPA_FALSE) {
@@ -583,10 +542,7 @@ param_set_qat_encrypt(const char *val, zfs_kernel_param_t *kp)
 	ret = param_set_int(val, kp);
 	if (ret)
 		return (ret);
-	/*
-	 * zfs_qat_encrypt_disable = 0: enable qat encrypt
-	 * try to initialize qat instance if it has not been done
-	 */
+	 
 	if (*pvalue == 0 && !qat_cy_init_done) {
 		ret = qat_cy_init();
 		if (ret != 0) {
@@ -605,10 +561,7 @@ param_set_qat_checksum(const char *val, zfs_kernel_param_t *kp)
 	ret = param_set_int(val, kp);
 	if (ret)
 		return (ret);
-	/*
-	 * set_checksum_param_ops = 0: enable qat checksum
-	 * try to initialize qat instance if it has not been done
-	 */
+	 
 	if (*pvalue == 0 && !qat_cy_init_done) {
 		ret = qat_cy_init();
 		if (ret != 0) {

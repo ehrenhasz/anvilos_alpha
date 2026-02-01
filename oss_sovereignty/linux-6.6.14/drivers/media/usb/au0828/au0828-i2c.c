@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Driver for the Auvitek AU0828 USB bridge
- *
- *  Copyright (c) 2008 Steven Toth <stoth@linuxtv.org>
- */
+
+ 
 
 #include "au0828.h"
 
@@ -115,7 +111,7 @@ static int i2c_wait_done(struct i2c_adapter *i2c_adap)
 	return 1;
 }
 
-/* FIXME: Implement join handling correctly */
+ 
 static int i2c_sendbytes(struct i2c_adapter *i2c_adap,
 	const struct i2c_msg *msg, int joined_rlen)
 {
@@ -130,32 +126,23 @@ static int i2c_sendbytes(struct i2c_adapter *i2c_adap,
 	if (((dev->board.tuner_type == TUNER_XC5000) ||
 	     (dev->board.tuner_type == TUNER_XC5000C)) &&
 	    (dev->board.tuner_addr == msg->addr)) {
-		/*
-		 * Due to I2C clock stretch, we need to use a lower speed
-		 * on xc5000 for commands. However, firmware transfer can
-		 * speed up to 400 KHz.
-		 */
+		 
 		if (msg->len == 64)
 			i2c_speed = AU0828_I2C_CLK_250KHZ;
 		else
 			i2c_speed = AU0828_I2C_CLK_20KHZ;
 	}
-	/* Set the I2C clock */
+	 
 	au0828_write(dev, AU0828_I2C_CLK_DIVIDER_202, i2c_speed);
 
-	/* Hardware needs 8 bit addresses */
+	 
 	au0828_write(dev, AU0828_I2C_DEST_ADDR_203, msg->addr << 1);
 
 	dprintk(4, "SEND: %02x\n", msg->addr);
 
-	/* Deal with i2c_scan */
+	 
 	if (msg->len == 0) {
-		/* The analog tuner detection code makes use of the SMBUS_QUICK
-		   message (which involves a zero length i2c write).  To avoid
-		   checking the status register when we didn't strobe out any
-		   actual bytes to the bus, just do a read check.  This is
-		   consistent with how I saw i2c device checking done in the
-		   USB trace of the Windows driver */
+		 
 		au0828_write(dev, AU0828_I2C_TRIGGER_200,
 			     AU0828_I2C_TRIGGER_READ);
 
@@ -179,7 +166,7 @@ static int i2c_sendbytes(struct i2c_adapter *i2c_adap,
 
 		if ((strobe >= 4) || (i >= msg->len)) {
 
-			/* Strobe the byte into the bus */
+			 
 			if (i < msg->len)
 				au0828_write(dev, AU0828_I2C_TRIGGER_200,
 					     AU0828_I2C_TRIGGER_WRITE |
@@ -188,7 +175,7 @@ static int i2c_sendbytes(struct i2c_adapter *i2c_adap,
 				au0828_write(dev, AU0828_I2C_TRIGGER_200,
 					     AU0828_I2C_TRIGGER_WRITE);
 
-			/* Reset strobe trigger */
+			 
 			strobe = 0;
 
 			if (!i2c_wait_write_done(i2c_adap))
@@ -205,7 +192,7 @@ static int i2c_sendbytes(struct i2c_adapter *i2c_adap,
 	return msg->len;
 }
 
-/* FIXME: Implement join handling correctly */
+ 
 static int i2c_readbytes(struct i2c_adapter *i2c_adap,
 	const struct i2c_msg *msg, int joined)
 {
@@ -217,24 +204,21 @@ static int i2c_readbytes(struct i2c_adapter *i2c_adap,
 
 	au0828_write(dev, AU0828_I2C_MULTIBYTE_MODE_2FF, 0x01);
 
-	/*
-	 * Due to xc5000c clock stretch, we cannot use full speed at
-	 * readings from xc5000, as otherwise they'll fail.
-	 */
+	 
 	if (((dev->board.tuner_type == TUNER_XC5000) ||
 	     (dev->board.tuner_type == TUNER_XC5000C)) &&
 	    (dev->board.tuner_addr == msg->addr))
 		i2c_speed = AU0828_I2C_CLK_20KHZ;
 
-	/* Set the I2C clock */
+	 
 	au0828_write(dev, AU0828_I2C_CLK_DIVIDER_202, i2c_speed);
 
-	/* Hardware needs 8 bit addresses */
+	 
 	au0828_write(dev, AU0828_I2C_DEST_ADDR_203, msg->addr << 1);
 
 	dprintk(4, " RECV:\n");
 
-	/* Deal with i2c_scan */
+	 
 	if (msg->len == 0) {
 		au0828_write(dev, AU0828_I2C_TRIGGER_200,
 			     AU0828_I2C_TRIGGER_READ);
@@ -283,11 +267,11 @@ static int i2c_xfer(struct i2c_adapter *i2c_adap,
 		dprintk(4, "%s(num = %d) addr = 0x%02x  len = 0x%x\n",
 			__func__, num, msgs[i].addr, msgs[i].len);
 		if (msgs[i].flags & I2C_M_RD) {
-			/* read */
+			 
 			retval = i2c_readbytes(i2c_adap, &msgs[i], 0);
 		} else if (i + 1 < num && (msgs[i + 1].flags & I2C_M_RD) &&
 			   msgs[i].addr == msgs[i + 1].addr) {
-			/* write then read from same address */
+			 
 			retval = i2c_sendbytes(i2c_adap, &msgs[i],
 					       msgs[i + 1].len);
 			if (retval < 0)
@@ -295,7 +279,7 @@ static int i2c_xfer(struct i2c_adapter *i2c_adap,
 			i++;
 			retval = i2c_readbytes(i2c_adap, &msgs[i], 1);
 		} else {
-			/* write */
+			 
 			retval = i2c_sendbytes(i2c_adap, &msgs[i], 0);
 		}
 		if (retval < 0)
@@ -317,7 +301,7 @@ static const struct i2c_algorithm au0828_i2c_algo_template = {
 	.functionality	= au0828_functionality,
 };
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static const struct i2c_adapter au0828_i2c_adap_template = {
 	.name              = KBUILD_MODNAME,
@@ -350,7 +334,7 @@ static void do_i2c_scan(char *name, struct i2c_client *c)
 	}
 }
 
-/* init + register i2c adapter */
+ 
 int au0828_i2c_register(struct au0828_dev *dev)
 {
 	dprintk(1, "%s()\n", __func__);

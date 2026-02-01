@@ -1,17 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0
-// Broadcom BCM84881 NBASE-T PHY driver, as found on a SFP+ module.
-// Copyright (C) 2019 Russell King, Deep Blue Solutions Ltd.
-//
-// Like the Marvell 88x3310, the Broadcom 84881 changes its host-side
-// interface according to the operating speed between 10GBASE-R,
-// 2500BASE-X and SGMII (but unlike the 88x3310, without the control
-// word).
-//
-// This driver only supports those aspects of the PHY that I'm able to
-// observe and test with the SFP+ module, which is an incomplete subset
-// of what this PHY is able to support. For example, I only assume it
-// supports a single lane Serdes connection, but it may be that the PHY
-// is able to support more than that.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #include <linux/delay.h>
 #include <linux/module.h>
 #include <linux/phy.h>
@@ -44,7 +44,7 @@ static int bcm84881_config_init(struct phy_device *phydev)
 
 static int bcm84881_probe(struct phy_device *phydev)
 {
-	/* This driver requires PMAPMD and AN blocks */
+	 
 	const u32 mmd_mask = MDIO_DEVS_PMAPMD | MDIO_DEVS_AN;
 
 	if (!phydev->is_c45 ||
@@ -62,7 +62,7 @@ static int bcm84881_get_features(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/* Although the PHY sets bit 1.11.8, it does not support 10M modes */
+	 
 	linkmode_clear_bit(ETHTOOL_LINK_MODE_10baseT_Half_BIT,
 			   phydev->supported);
 	linkmode_clear_bit(ETHTOOL_LINK_MODE_10baseT_Full_BIT,
@@ -77,17 +77,15 @@ static int bcm84881_config_aneg(struct phy_device *phydev)
 	u32 adv;
 	int ret;
 
-	/* Wait for the PHY to finish initialising, otherwise our
-	 * advertisement may be overwritten.
-	 */
+	 
 	ret = bcm84881_wait_init(phydev);
 	if (ret)
 		return ret;
 
-	/* We don't support manual MDI control */
+	 
 	phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
 
-	/* disabled autoneg doesn't seem to work with this PHY */
+	 
 	if (phydev->autoneg == AUTONEG_DISABLE)
 		return -EINVAL;
 
@@ -182,18 +180,12 @@ static int bcm84881_read_status(struct phy_device *phydev)
 	}
 
 	if (phydev->autoneg == AUTONEG_DISABLE) {
-		/* disabled autoneg doesn't seem to work, so force the link
-		 * down.
-		 */
+		 
 		phydev->link = 0;
 		return 0;
 	}
 
-	/* Set the host link mode - we set the phy interface mode and
-	 * the speed according to this register so that downshift works.
-	 * We leave the duplex setting as per the resolution from the
-	 * above.
-	 */
+	 
 	val = phy_read_mmd(phydev, MDIO_MMD_VEND1, 0x4011);
 	mode = (val & 0x1e) >> 1;
 	if (mode == 1 || mode == 2)
@@ -239,7 +231,7 @@ static struct phy_driver bcm84881_drivers[] = {
 
 module_phy_driver(bcm84881_drivers);
 
-/* FIXME: module auto-loading for Clause 45 PHYs seems non-functional */
+ 
 static struct mdio_device_id __maybe_unused bcm84881_tbl[] = {
 	{ 0xae025150, 0xfffffff0 },
 	{ },

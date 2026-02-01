@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011 Sascha Hauer, Pengutronix <s.hauer@pengutronix.de>
- */
+
+ 
 #include <linux/mm.h>
 #include <linux/delay.h>
 #include <linux/clk.h>
@@ -62,10 +60,10 @@
 #define MXC_CCM_CCGR6		(ccm_base + 0x80)
 #define MXC_CCM_CCGR7		(ccm_base + 0x84)
 
-/* Low-power Audio Playback Mode clock */
+ 
 static const char *lp_apm_sel[] = { "osc", };
 
-/* This is used multiple times */
+ 
 static const char *standard_pll_sel[] = { "pll1_sw", "pll2_sw", "pll3_sw", "lp_apm", };
 static const char *periph_apm_sel[] = { "pll1_sw", "pll3_sw", "lp_apm", };
 static const char *main_bus_sel[] = { "pll2_sw", "periph_apm", };
@@ -100,21 +98,21 @@ static const char *mx53_cko1_sel[] = {
 	"di_pred", "dummy", "dummy", "ahb",
 	"ipg", "per_root", "ckil", "dummy",};
 static const char *mx53_cko2_sel[] = {
-	"dummy"/* dptc_core */, "dummy"/* dptc_perich */,
+	"dummy" , "dummy" ,
 	"dummy", "esdhc_a_podf",
-	"usboh3_podf", "dummy"/* wrck_clk_root */,
-	"ecspi_podf", "dummy"/* pll1_ref_clk */,
-	"esdhc_b_podf", "dummy"/* ddr_clk_root */,
-	"dummy"/* arm_axi_clk_root */, "dummy"/* usb_phy_out */,
+	"usboh3_podf", "dummy" ,
+	"ecspi_podf", "dummy" ,
+	"esdhc_b_podf", "dummy" ,
+	"dummy" , "dummy" ,
 	"vpu_sel", "ipu_sel",
 	"osc", "ckih1",
 	"dummy", "esdhc_c_sel",
 	"ssi1_root_podf", "ssi2_root_podf",
 	"dummy", "dummy",
-	"dummy"/* lpsr_clk_root */, "dummy"/* pgc_clk_root */,
-	"dummy"/* tve_out */, "usb_phy_sel",
+	"dummy" , "dummy" ,
+	"dummy" , "usb_phy_sel",
 	"tve_sel", "lp_apm",
-	"uart_root", "dummy"/* spdif0_clk_root */,
+	"uart_root", "dummy" ,
 	"dummy", "dummy", };
 static const char *mx51_spdif_xtal_sel[] = { "osc", "ckih", "ckih2", };
 static const char *mx53_spdif_xtal_sel[] = { "osc", "ckih", "ckih2", "pll4_sw", };
@@ -123,7 +121,7 @@ static const char *spdif0_com_sel[] = { "spdif0_podf", "ssi1_root_gate", };
 static const char *mx51_spdif1_com_sel[] = { "spdif1_podf", "ssi2_root_gate", };
 static const char *step_sels[] = { "lp_apm", };
 static const char *cpu_podf_sels[] = { "pll1_sw", "step_sel" };
-static const char *ieee1588_sels[] = { "pll3_sw", "pll4_sw", "dummy" /* usbphy2_clk */, "dummy" /* fec_phy_clk */ };
+static const char *ieee1588_sels[] = { "pll3_sw", "pll4_sw", "dummy"  , "dummy"   };
 
 static struct clk *clk[IMX5_CLK_END];
 static struct clk_onecell_data clk_data;
@@ -273,7 +271,7 @@ static void __init mx5_clocks_common_init(void __iomem *ccm_base)
 	clk_register_clkdev(clk[IMX5_CLK_CPU_PODF], NULL, "cpu0");
 	clk_register_clkdev(clk[IMX5_CLK_GPC_DVFS], "gpc_dvfs", NULL);
 
-	/* move usb phy clk to 24MHz */
+	 
 	clk_set_parent(clk[IMX5_CLK_USB_PHY_SEL], clk[IMX5_CLK_OSC]);
 }
 
@@ -300,10 +298,7 @@ static void __init mx50_clocks_init(struct device_node *np)
 
 	mx5_clocks_common_init(ccm_base);
 
-	/*
-	 * This clock is called periph_clk in the i.MX50 Reference Manual, but
-	 * it comes closest in scope to the main_bus_clk of i.MX51 and i.MX53
-	 */
+	 
 	clk[IMX5_CLK_MAIN_BUS]          = imx_clk_mux("main_bus", MXC_CCM_CBCDR, 25, 2,
 						standard_pll_sel, ARRAY_SIZE(standard_pll_sel));
 
@@ -343,11 +338,11 @@ static void __init mx50_clocks_init(struct device_node *np)
 	clk_data.clk_num = ARRAY_SIZE(clk);
 	of_clk_add_provider(np, of_clk_src_onecell_get, &clk_data);
 
-	/* Set SDHC parents to be PLL2 */
+	 
 	clk_set_parent(clk[IMX5_CLK_ESDHC_A_SEL], clk[IMX5_CLK_PLL2_SW]);
 	clk_set_parent(clk[IMX5_CLK_ESDHC_B_SEL], clk[IMX5_CLK_PLL2_SW]);
 
-	/* set SDHC root clock to 200MHZ*/
+	 
 	clk_set_rate(clk[IMX5_CLK_ESDHC_A_PODF], 200000000);
 	clk_set_rate(clk[IMX5_CLK_ESDHC_B_PODF], 200000000);
 
@@ -434,14 +429,14 @@ static void __init mx51_clocks_init(struct device_node *np)
 	clk_data.clk_num = ARRAY_SIZE(clk);
 	of_clk_add_provider(np, of_clk_src_onecell_get, &clk_data);
 
-	/* set the usboh3 parent to pll2_sw */
+	 
 	clk_set_parent(clk[IMX5_CLK_USBOH3_SEL], clk[IMX5_CLK_PLL2_SW]);
 
-	/* Set SDHC parents to be PLL2 */
+	 
 	clk_set_parent(clk[IMX5_CLK_ESDHC_A_SEL], clk[IMX5_CLK_PLL2_SW]);
 	clk_set_parent(clk[IMX5_CLK_ESDHC_B_SEL], clk[IMX5_CLK_PLL2_SW]);
 
-	/* set SDHC root clock to 166.25MHZ*/
+	 
 	clk_set_rate(clk[IMX5_CLK_ESDHC_A_PODF], 166250000);
 	clk_set_rate(clk[IMX5_CLK_ESDHC_B_PODF], 166250000);
 
@@ -449,13 +444,7 @@ static void __init mx51_clocks_init(struct device_node *np)
 	imx_print_silicon_rev("i.MX51", mx51_revision());
 	clk_disable_unprepare(clk[IMX5_CLK_IIM_GATE]);
 
-	/*
-	 * Reference Manual says: Functionality of CCDR[18] and CLPCR[23] is no
-	 * longer supported. Set to one for better power saving.
-	 *
-	 * The effect of not setting these bits is that MIPI clocks can't be
-	 * enabled without the IPU clock being enabled aswell.
-	 */
+	 
 	val = readl(MXC_CCM_CCDR);
 	val |= 1 << 18;
 	writel(val, MXC_CCM_CCDR);
@@ -588,18 +577,18 @@ static void __init mx53_clocks_init(struct device_node *np)
 	clk_data.clk_num = ARRAY_SIZE(clk);
 	of_clk_add_provider(np, of_clk_src_onecell_get, &clk_data);
 
-	/* Set SDHC parents to be PLL2 */
+	 
 	clk_set_parent(clk[IMX5_CLK_ESDHC_A_SEL], clk[IMX5_CLK_PLL2_SW]);
 	clk_set_parent(clk[IMX5_CLK_ESDHC_B_SEL], clk[IMX5_CLK_PLL2_SW]);
 
-	/* set SDHC root clock to 200MHZ*/
+	 
 	clk_set_rate(clk[IMX5_CLK_ESDHC_A_PODF], 200000000);
 	clk_set_rate(clk[IMX5_CLK_ESDHC_B_PODF], 200000000);
 
-	/* move can bus clk to 24MHz */
+	 
 	clk_set_parent(clk[IMX5_CLK_CAN_SEL], clk[IMX5_CLK_LP_APM]);
 
-	/* make sure step clock is running from 24MHz */
+	 
 	clk_set_parent(clk[IMX5_CLK_STEP_SEL], clk[IMX5_CLK_LP_APM]);
 
 	clk_prepare_enable(clk[IMX5_CLK_IIM_GATE]);

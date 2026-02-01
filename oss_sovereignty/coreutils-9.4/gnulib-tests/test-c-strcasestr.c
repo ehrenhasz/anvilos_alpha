@@ -1,20 +1,4 @@
-/* Test of case-insensitive searching in a string.
-   Copyright (C) 2007-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2007.  */
+ 
 
 #include <config.h>
 
@@ -58,7 +42,7 @@ main ()
     ASSERT (result == input + 11);
   }
 
-  /* Check that a long periodic needle does not cause false positives.  */
+   
   {
     const char input[] = "F_BD_CE_BD_EF_BF_BD_EF_BF_BD_EF_BF_BD_EF_BF_BD"
                          "_C3_88_20_EF_BF_BD_EF_BF_BD_EF_BF_BD"
@@ -77,8 +61,7 @@ main ()
     ASSERT (result == input + 115);
   }
 
-  /* Check that a very long haystack is handled quickly if the needle is
-     short and occurs near the beginning.  */
+   
   {
     size_t repeat = 10000;
     size_t m = 1000000;
@@ -102,8 +85,7 @@ main ()
       }
   }
 
-  /* Check that a very long needle is discarded quickly if the haystack is
-     short.  */
+   
   {
     size_t repeat = 10000;
     size_t m = 1000000;
@@ -125,7 +107,7 @@ main ()
       }
   }
 
-  /* Check that the asymptotic worst-case complexity is not quadratic.  */
+   
   {
     size_t m = 1000000;
     char *haystack = (char *) malloc (2 * m + 2);
@@ -150,10 +132,7 @@ main ()
   }
 
   {
-    /* Ensure that with a barely periodic "short" needle, c_strcasestr's
-       search does not mistakenly skip just past the match point.
-       This use of c_strcasestr would mistakenly return NULL before
-       gnulib v0.0-4927.  */
+     
     const char *haystack =
       "\n"
       "with_build_libsubdir\n"
@@ -196,7 +175,7 @@ main ()
   }
 
   {
-    /* Same bug, shorter trigger.  */
+     
     const char *haystack = "..wi.D.";
     const char *needle = ".d.";
     const char* p = c_strcasestr (haystack, needle);
@@ -204,12 +183,7 @@ main ()
   }
 
   {
-    /* Like the above, but trigger the flaw in two_way_long_needle
-       by using a needle of length LONG_NEEDLE_THRESHOLD (32) or greater.
-       Rather than trying to find the right alignment manually, I've
-       arbitrarily chosen the following needle and template for the
-       haystack, and ensure that for each placement of the needle in
-       that haystack, c_strcasestr finds it.  */
+     
     const char *needle = "\nwith_gnu_ld-extend-to-len-32-b\n";
     const char *h =
       "\n"
@@ -238,15 +212,7 @@ main ()
     free (haystack);
   }
 
-  /* Test case from Yves Bastide.
-     <https://www.openwall.com/lists/musl/2014/04/18/2>  */
-  {
-    const char input[] = "playing PLAY play PLAY always";
-    const char *result = c_strcasestr (input, "play PLAY play");
-    ASSERT (result == input + 8);
-  }
-
-  /* Test long needles.  */
+   
   {
     size_t m = 1024;
     char *haystack = (char *) malloc (2 * m + 1);

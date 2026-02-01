@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	IPV6 GSO/GRO offload support
- *	Linux INET6 implementation
- *
- *      TCPv6 GSO/GRO support
- */
+
+ 
 #include <linux/indirect_call_wrapper.h>
 #include <linux/skbuff.h>
 #include <net/gro.h>
@@ -16,7 +11,7 @@
 INDIRECT_CALLABLE_SCOPE
 struct sk_buff *tcp6_gro_receive(struct list_head *head, struct sk_buff *skb)
 {
-	/* Don't bother verifying checksum if we're going to flush anyway. */
+	 
 	if (!NAPI_GRO_CB(skb)->flush &&
 	    skb_gro_checksum_validate(skb, IPPROTO_TCP,
 				      ip6_gro_compute_pseudo)) {
@@ -55,9 +50,7 @@ static struct sk_buff *tcp6_gso_segment(struct sk_buff *skb,
 		const struct ipv6hdr *ipv6h = ipv6_hdr(skb);
 		struct tcphdr *th = tcp_hdr(skb);
 
-		/* Set up pseudo header, usually expect stack to have done
-		 * this.
-		 */
+		 
 
 		th->check = 0;
 		skb->ip_summed = CHECKSUM_PARTIAL;

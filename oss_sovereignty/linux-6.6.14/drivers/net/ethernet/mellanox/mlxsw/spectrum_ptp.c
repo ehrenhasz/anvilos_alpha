@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2019 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/ptp_clock_kernel.h>
 #include <linux/clocksource.h>
@@ -18,15 +18,13 @@
 #include "core.h"
 
 #define MLXSW_SP1_PTP_CLOCK_CYCLES_SHIFT	29
-#define MLXSW_SP1_PTP_CLOCK_FREQ_KHZ		156257 /* 6.4nSec */
+#define MLXSW_SP1_PTP_CLOCK_FREQ_KHZ		156257  
 #define MLXSW_SP1_PTP_CLOCK_MASK		64
 
-#define MLXSW_SP1_PTP_HT_GC_INTERVAL		500 /* ms */
+#define MLXSW_SP1_PTP_HT_GC_INTERVAL		500  
 
-/* How long, approximately, should the unmatched entries stay in the hash table
- * before they are collected. Should be evenly divisible by the GC interval.
- */
-#define MLXSW_SP1_PTP_HT_GC_TIMEOUT		1000 /* ms */
+ 
+#define MLXSW_SP1_PTP_HT_GC_TIMEOUT		1000  
 
 struct mlxsw_sp_ptp_state {
 	struct mlxsw_sp *mlxsw_sp;
@@ -35,18 +33,16 @@ struct mlxsw_sp_ptp_state {
 struct mlxsw_sp1_ptp_state {
 	struct mlxsw_sp_ptp_state common;
 	struct rhltable unmatched_ht;
-	spinlock_t unmatched_lock; /* protects the HT */
+	spinlock_t unmatched_lock;  
 	struct delayed_work ht_gc_dw;
 	u32 gc_cycle;
 };
 
 struct mlxsw_sp2_ptp_state {
 	struct mlxsw_sp_ptp_state common;
-	refcount_t ptp_port_enabled_ref; /* Number of ports with time stamping
-					  * enabled.
-					  */
+	refcount_t ptp_port_enabled_ref;  
 	struct hwtstamp_config config;
-	struct mutex lock; /* Protects 'config' and HW configuration. */
+	struct mutex lock;  
 };
 
 struct mlxsw_sp1_ptp_key {
@@ -80,7 +76,7 @@ struct mlxsw_sp_ptp_clock {
 
 struct mlxsw_sp1_ptp_clock {
 	struct mlxsw_sp_ptp_clock common;
-	spinlock_t lock; /* protect this structure */
+	spinlock_t lock;  
 	struct cyclecounter cycles;
 	struct timecounter tc;
 	u32 nominal_c_mult;
@@ -121,7 +117,7 @@ static u64 __mlxsw_sp1_ptp_read_frc(struct mlxsw_sp1_ptp_clock *clock,
 	frc_h2 = mlxsw_core_read_frc_h(mlxsw_core);
 
 	if (frc_h1 != frc_h2) {
-		/* wrap around */
+		 
 		ptp_read_system_prets(sts);
 		frc_l = mlxsw_core_read_frc_l(mlxsw_core);
 		ptp_read_system_postts(sts);
@@ -291,13 +287,7 @@ mlxsw_sp1_ptp_clock_init(struct mlxsw_sp *mlxsw_sp, struct device *dev)
 
 	timecounter_init(&clock->tc, &clock->cycles, 0);
 
-	/* Calculate period in seconds to call the overflow watchdog - to make
-	 * sure counter is checked at least twice every wrap around.
-	 * The period is calculated as the minimum between max HW cycles count
-	 * (The clock source mask) and max amount of cycles that can be
-	 * multiplied by clock multiplier where the result doesn't exceed
-	 * 64bits.
-	 */
+	 
 	overflow_cycles = div64_u64(~0ULL >> 1, clock->cycles.mult);
 	overflow_cycles = min(overflow_cycles, div_u64(clock->cycles.mask, 3));
 
@@ -346,7 +336,7 @@ static u64 mlxsw_sp2_ptp_read_utc(struct mlxsw_sp_ptp_clock *clock,
 	utc_sec2 = mlxsw_core_read_utc_sec(mlxsw_core);
 
 	if (utc_sec1 != utc_sec2) {
-		/* Wrap around. */
+		 
 		ptp_read_system_prets(sts);
 		utc_nsec = mlxsw_core_read_utc_nsec(mlxsw_core);
 		ptp_read_system_postts(sts);
@@ -375,10 +365,7 @@ static int mlxsw_sp2_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 		container_of(ptp, struct mlxsw_sp_ptp_clock, ptp_info);
 	s32 ppb = scaled_ppm_to_ppb(scaled_ppm);
 
-	/* In Spectrum-2 and newer ASICs, the frequency adjustment in MTUTC is
-	 * reversed, positive values mean to decrease the frequency. Adjust the
-	 * sign of PPB to this behavior.
-	 */
+	 
 	return mlxsw_sp_ptp_phc_adjfreq(clock, -ppb);
 }
 
@@ -389,7 +376,7 @@ static int mlxsw_sp2_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
 	struct mlxsw_core *mlxsw_core = clock->core;
 	char mtutc_pl[MLXSW_REG_MTUTC_LEN];
 
-	/* HW time adjustment range is s16. If out of range, set time instead. */
+	 
 	if (delta < S16_MIN || delta > S16_MAX) {
 		u64 nsec;
 
@@ -509,9 +496,7 @@ static int mlxsw_sp_ptp_parse(struct sk_buff *skb,
 	return 0;
 }
 
-/* Returns NULL on successful insertion, a pointer on conflict, or an ERR_PTR on
- * error.
- */
+ 
 static int
 mlxsw_sp1_ptp_unmatched_save(struct mlxsw_sp *mlxsw_sp,
 			     struct mlxsw_sp1_ptp_key key,
@@ -571,14 +556,7 @@ mlxsw_sp1_ptp_unmatched_remove(struct mlxsw_sp *mlxsw_sp,
 			       mlxsw_sp1_ptp_unmatched_ht_params);
 }
 
-/* This function is called in the following scenarios:
- *
- * 1) When a packet is matched with its timestamp.
- * 2) In several situation when it is necessary to immediately pass on
- *    an SKB without a timestamp.
- * 3) From GC indirectly through mlxsw_sp1_ptp_unmatched_finish().
- *    This case is similar to 2) above.
- */
+ 
 static void mlxsw_sp1_ptp_packet_finish(struct mlxsw_sp *mlxsw_sp,
 					struct sk_buff *skb, u16 local_port,
 					bool ingress,
@@ -586,10 +564,7 @@ static void mlxsw_sp1_ptp_packet_finish(struct mlxsw_sp *mlxsw_sp,
 {
 	struct mlxsw_sp_port *mlxsw_sp_port;
 
-	/* Between capturing the packet and finishing it, there is a window of
-	 * opportunity for the originating port to go away (e.g. due to a
-	 * split). Also make sure the SKB device reference is still valid.
-	 */
+	 
 	mlxsw_sp_port = mlxsw_sp->ports[local_port];
 	if (!(mlxsw_sp_port && (!skb->dev || skb->dev == mlxsw_sp_port->dev))) {
 		dev_kfree_skb_any(skb);
@@ -601,7 +576,7 @@ static void mlxsw_sp1_ptp_packet_finish(struct mlxsw_sp *mlxsw_sp,
 			*skb_hwtstamps(skb) = *hwtstamps;
 		mlxsw_sp_rx_listener_no_mark_func(skb, local_port, mlxsw_sp);
 	} else {
-		/* skb_tstamp_tx() allows hwtstamps to be NULL. */
+		 
 		skb_tstamp_tx(skb, hwtstamps);
 		dev_kfree_skb_any(skb);
 	}
@@ -647,9 +622,7 @@ static void mlxsw_sp1_ptp_unmatched_free_fn(void *ptr, void *arg)
 {
 	struct mlxsw_sp1_ptp_unmatched *unmatched = ptr;
 
-	/* This is invoked at a point where the ports are gone already. Nothing
-	 * to do with whatever is left in the HT but to free it.
-	 */
+	 
 	if (unmatched->skb)
 		dev_kfree_skb_any(unmatched->skb);
 	kfree_rcu(unmatched, rcu);
@@ -674,9 +647,7 @@ static void mlxsw_sp1_ptp_got_piece(struct mlxsw_sp *mlxsw_sp,
 	} else if (timestamp && unmatched && unmatched->skb) {
 		unmatched->timestamp = timestamp;
 	} else {
-		/* Either there is no entry to match, or one that is there is
-		 * incompatible.
-		 */
+		 
 		if (length < 100)
 			err = mlxsw_sp1_ptp_unmatched_save(mlxsw_sp, key,
 							   skb, timestamp);
@@ -729,9 +700,7 @@ static void mlxsw_sp1_ptp_got_packet(struct mlxsw_sp *mlxsw_sp,
 	if (err)
 		goto immediate;
 
-	/* For packets whose timestamping was not enabled on this port, don't
-	 * bother trying to match the timestamp.
-	 */
+	 
 	if (!((1 << key.message_type) & types))
 		goto immediate;
 
@@ -760,9 +729,7 @@ void mlxsw_sp1_ptp_got_timestamp(struct mlxsw_sp *mlxsw_sp, bool ingress,
 	types = ingress ? mlxsw_sp_port->ptp.ing_types :
 			  mlxsw_sp_port->ptp.egr_types;
 
-	/* For message types whose timestamping was not enabled on this port,
-	 * don't bother with the timestamp.
-	 */
+	 
 	if (!((1 << message_type) & types))
 		return;
 
@@ -798,13 +765,7 @@ mlxsw_sp1_ptp_ht_gc_collect(struct mlxsw_sp1_ptp_state *ptp_state,
 	struct mlxsw_sp_port *mlxsw_sp_port;
 	int err;
 
-	/* If an unmatched entry has an SKB, it has to be handed over to the
-	 * networking stack. This is usually done from a trap handler, which is
-	 * invoked in a softirq context. Here we are going to do it in process
-	 * context. If that were to be interrupted by a softirq, it could cause
-	 * a deadlock when an attempt is made to take an already-taken lock
-	 * somewhere along the sending path. Disable softirqs to prevent this.
-	 */
+	 
 	local_bh_disable();
 
 	spin_lock(&ptp_state->unmatched_lock);
@@ -813,7 +774,7 @@ mlxsw_sp1_ptp_ht_gc_collect(struct mlxsw_sp1_ptp_state *ptp_state,
 	spin_unlock(&ptp_state->unmatched_lock);
 
 	if (err)
-		/* The packet was matched with timestamp during the walk. */
+		 
 		goto out;
 
 	mlxsw_sp_port = mlxsw_sp->ports[unmatched->key.local_port];
@@ -827,12 +788,7 @@ mlxsw_sp1_ptp_ht_gc_collect(struct mlxsw_sp1_ptp_state *ptp_state,
 			stats->timestamps++;
 	}
 
-	/* mlxsw_sp1_ptp_unmatched_finish() invokes netif_receive_skb(). While
-	 * the comment at that function states that it can only be called in
-	 * soft IRQ context, this pattern of local_bh_disable() +
-	 * netif_receive_skb(), in process context, is seen elsewhere in the
-	 * kernel, notably in pktgen.
-	 */
+	 
 	mlxsw_sp1_ptp_unmatched_finish(mlxsw_sp, unmatched);
 
 out:
@@ -992,7 +948,7 @@ static int mlxsw_sp_ptp_traps_set(struct mlxsw_sp *mlxsw_sp)
 	u16 event_message_type;
 	int err;
 
-	/* Deliver these message types as PTP0. */
+	 
 	event_message_type = BIT(PTP_MSGTYPE_SYNC) |
 			     BIT(PTP_MSGTYPE_DELAY_REQ) |
 			     BIT(PTP_MSGTYPE_PDELAY_REQ) |
@@ -1003,7 +959,7 @@ static int mlxsw_sp_ptp_traps_set(struct mlxsw_sp *mlxsw_sp)
 	if (err)
 		return err;
 
-	/* Everything else is PTP1. */
+	 
 	err = mlxsw_sp_ptp_mtptpt_set(mlxsw_sp, MLXSW_REG_MTPTPT_TRAP_ID_PTP1,
 				      ~event_message_type);
 	if (err)
@@ -1160,9 +1116,7 @@ static int mlxsw_sp1_ptp_mtpppc_update(struct mlxsw_sp_port *mlxsw_sp_port,
 	int err;
 	int i;
 
-	/* MTPPPC configures timestamping globally, not per port. Find the
-	 * configuration that contains all configured timestamping requests.
-	 */
+	 
 	for (i = 1; i < mlxsw_core_max_ports(mlxsw_sp->core); i++) {
 		tmp = mlxsw_sp->ports[i];
 		if (tmp) {
@@ -1269,7 +1223,7 @@ int mlxsw_sp1_ptp_hwtstamp_set(struct mlxsw_sp_port *mlxsw_sp_port,
 	if (err)
 		return err;
 
-	/* Notify the ioctl caller what we are actually timestamping. */
+	 
 	config->rx_filter = rx_filter;
 
 	return 0;
@@ -1389,9 +1343,7 @@ static u32 mlxsw_ptp_utc_time_stamp_sec_get(struct mlxsw_core *mlxsw_core,
 	u32 utc_sec = mlxsw_core_read_utc_sec(mlxsw_core);
 
 	if (cqe_ts_sec > (utc_sec & 0xff))
-		/* Time stamp above the last bits of UTC (UTC & 0xff) means the
-		 * latter has wrapped after the time stamp was collected.
-		 */
+		 
 		utc_sec -= 256;
 
 	utc_sec &= ~0xff;
@@ -1408,13 +1360,7 @@ static void mlxsw_sp2_ptp_hwtstamp_fill(struct mlxsw_core *mlxsw_core,
 
 	WARN_ON_ONCE(!cb->cqe_ts.sec && !cb->cqe_ts.nsec);
 
-	/* The time stamp in the CQE is represented by 38 bits, which is a short
-	 * representation of UTC time. Software should create the full time
-	 * stamp using the global UTC clock. The seconds have only 8 bits in the
-	 * CQE, to create the full time stamp, use the current UTC time and fix
-	 * the seconds according to the relation between UTC seconds and CQE
-	 * seconds.
-	 */
+	 
 	ts_sec = mlxsw_ptp_utc_time_stamp_sec_get(mlxsw_core, cb->cqe_ts.sec);
 	ts_nsec = cb->cqe_ts.nsec;
 
@@ -1487,11 +1433,7 @@ mlxsw_sp2_ptp_get_message_types(const struct hwtstamp_config *config,
 	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
 	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
 	case HWTSTAMP_FILTER_PTP_V2_EVENT:
-		/* In Spectrum-2 and above, all packets get time stamp by
-		 * default and the driver fill the time stamp only for event
-		 * packets. Return all event types even if only specific types
-		 * were required.
-		 */
+		 
 		ing_types = 0x0f;
 		*p_rx_filter = HWTSTAMP_FILTER_SOME;
 		break;
@@ -1647,7 +1589,7 @@ int mlxsw_sp2_ptp_hwtstamp_set(struct mlxsw_sp_port *mlxsw_sp_port,
 	mlxsw_sp_port->ptp.ing_types = new_ing_types;
 	mlxsw_sp_port->ptp.egr_types = new_egr_types;
 
-	/* Notify the ioctl caller what we are actually timestamping. */
+	 
 	config->rx_filter = rx_filter;
 	mutex_unlock(&ptp_state->lock);
 
@@ -1693,13 +1635,7 @@ int mlxsw_sp2_ptp_txhdr_construct(struct mlxsw_core *mlxsw_core,
 				  struct sk_buff *skb,
 				  const struct mlxsw_tx_info *tx_info)
 {
-	/* In Spectrum-2 and Spectrum-3, in order for PTP event packets to have
-	 * their correction field correctly set on the egress port they must be
-	 * transmitted as data packets. Such packets ingress the ASIC via the
-	 * CPU port and must have a VLAN tag, as the CPU port is not configured
-	 * with a PVID. Push the default VLAN (4095), which is configured as
-	 * egress untagged on all the ports.
-	 */
+	 
 	if (!skb_vlan_tagged(skb)) {
 		skb = vlan_insert_tag_set_proto(skb, htons(ETH_P_8021Q),
 						MLXSW_SP_DEFAULT_VID);

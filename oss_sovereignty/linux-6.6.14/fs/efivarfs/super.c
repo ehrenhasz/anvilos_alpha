@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Red Hat, Inc.
- * Copyright (C) 2012 Jeremy Kerr <jeremy.kerr@canonical.com>
- */
+
+ 
 
 #include <linux/ctype.h>
 #include <linux/efi.h>
@@ -33,7 +30,7 @@ static int efivarfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 	u64 storage_space, remaining_space, max_variable_size;
 	efi_status_t status;
 
-	/* Some UEFI firmware does not implement QueryVariableInfo() */
+	 
 	storage_space = remaining_space = 0;
 	if (efi_rt_services_supported(EFI_RT_SUPPORTED_QUERY_VARIABLE_INFO)) {
 		status = efivar_query_variable_info(attr, &storage_space,
@@ -44,22 +41,14 @@ static int efivarfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 					    status);
 	}
 
-	/*
-	 * This is not a normal filesystem, so no point in pretending it has a block
-	 * size; we declare f_bsize to 1, so that we can then report the exact value
-	 * sent by EFI QueryVariableInfo in f_blocks and f_bfree
-	 */
+	 
 	buf->f_bsize	= 1;
 	buf->f_namelen	= NAME_MAX;
 	buf->f_blocks	= storage_space;
 	buf->f_bfree	= remaining_space;
 	buf->f_type	= dentry->d_sb->s_magic;
 
-	/*
-	 * In f_bavail we declare the free space that the kernel will allow writing
-	 * when the storage_paranoia x86 quirk is active. To use more, users
-	 * should boot the kernel with efi_no_storage_paranoia.
-	 */
+	 
 	if (remaining_space > efivar_reserved_space())
 		buf->f_bavail = remaining_space - efivar_reserved_space();
 	else
@@ -73,17 +62,7 @@ static const struct super_operations efivarfs_ops = {
 	.evict_inode = efivarfs_evict_inode,
 };
 
-/*
- * Compare two efivarfs file names.
- *
- * An efivarfs filename is composed of two parts,
- *
- *	1. A case-sensitive variable name
- *	2. A case-insensitive GUID
- *
- * So we need to perform a case-sensitive match on part 1 and a
- * case-insensitive match on part 2.
- */
+ 
 static int efivarfs_d_compare(const struct dentry *dentry,
 			      unsigned int len, const char *str,
 			      const struct qstr *name)
@@ -93,11 +72,11 @@ static int efivarfs_d_compare(const struct dentry *dentry,
 	if (name->len != len)
 		return 1;
 
-	/* Case-sensitive compare for the variable name */
+	 
 	if (memcmp(str, name->name, guid))
 		return 1;
 
-	/* Case-insensitive compare for the GUID */
+	 
 	return strncasecmp(name->name + guid, str + guid, EFI_VARIABLE_GUID_LEN);
 }
 
@@ -113,7 +92,7 @@ static int efivarfs_d_hash(const struct dentry *dentry, struct qstr *qstr)
 	while (len-- > EFI_VARIABLE_GUID_LEN)
 		hash = partial_name_hash(*s++, hash);
 
-	/* GUID is case-insensitive. */
+	 
 	while (len--)
 		hash = partial_name_hash(tolower(*s++), hash);
 
@@ -172,7 +151,7 @@ static int efivarfs_callback(efi_char16_t *name16, efi_guid_t vendor,
 
 	len = ucs2_utf8size(entry->var.VariableName);
 
-	/* name, plus '-', plus GUID, plus NUL*/
+	 
 	name = kmalloc(len + 1 + EFI_VARIABLE_GUID_LEN + 1, GFP_KERNEL);
 	if (!name)
 		goto fail;
@@ -188,7 +167,7 @@ static int efivarfs_callback(efi_char16_t *name16, efi_guid_t vendor,
 
 	name[len + EFI_VARIABLE_GUID_LEN+1] = '\0';
 
-	/* replace invalid slashes like kobject_set_name_vargs does for /sys/firmware/efi/vars. */
+	 
 	strreplace(name, '/', '!');
 
 	inode = efivarfs_get_inode(sb, d_inode(root), S_IFREG | 0644, 0,
@@ -205,7 +184,7 @@ static int efivarfs_callback(efi_char16_t *name16, efi_guid_t vendor,
 	__efivar_entry_get(entry, NULL, &size, NULL);
 	__efivar_entry_add(entry, &efivarfs_list);
 
-	/* copied by the above to local storage in the dentry. */
+	 
 	kfree(name);
 
 	inode_lock(inode);
@@ -306,7 +285,7 @@ static void efivarfs_kill_sb(struct super_block *sb)
 	if (!efivar_is_available())
 		return;
 
-	/* Remove all entries and destroy */
+	 
 	efivar_entry_iter(efivarfs_destroy, &efivarfs_list, NULL);
 	kfree(sfi);
 }

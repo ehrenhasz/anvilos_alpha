@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  cht-bsw-max98090.c - ASoc Machine driver for Intel Cherryview-based
- *  platforms Cherrytrail and Braswell, with max98090 & TI codec.
- *
- *  Copyright (C) 2015 Intel Corp
- *  Author: Fang, Yang A <yang.a.fang@intel.com>
- *  This file is modified from cht_bsw_rt5645.c
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 
 #include <linux/dmi.h>
 #include <linux/gpio/consumer.h>
@@ -48,7 +38,7 @@ static int platform_clock_control(struct snd_soc_dapm_widget *w,
 	struct cht_mc_private *ctx = snd_soc_card_get_drvdata(card);
 	int ret;
 
-	/* See the comment in snd_cht_mc_probe() */
+	 
 	if (ctx->quirks & QUIRK_PMC_PLT_CLK_0)
 		return 0;
 
@@ -191,10 +181,7 @@ static int cht_codec_init(struct snd_soc_pcm_runtime *runtime)
 	struct snd_soc_jack *jack = &ctx->jack;
 
 	if (ctx->ts3a227e_present) {
-		/*
-		 * The jack has already been created in the
-		 * cht_max98090_headset_init() function.
-		 */
+		 
 		snd_soc_jack_notifier_register(jack, &cht_jack_nb);
 		return 0;
 	}
@@ -214,28 +201,16 @@ static int cht_codec_init(struct snd_soc_pcm_runtime *runtime)
 				      ARRAY_SIZE(hs_jack_gpios),
 				      hs_jack_gpios);
 	if (ret) {
-		/*
-		 * flag error but don't bail if jack detect is broken
-		 * due to platform issues or bad BIOS/configuration
-		 */
+		 
 		dev_err(runtime->dev,
 			"jack detection gpios not added, error %d\n", ret);
 	}
 
-	/* See the comment in snd_cht_mc_probe() */
+	 
 	if (ctx->quirks & QUIRK_PMC_PLT_CLK_0)
 		return 0;
 
-	/*
-	 * The firmware might enable the clock at
-	 * boot (this information may or may not
-	 * be reflected in the enable clock register).
-	 * To change the rate we must disable the clock
-	 * first to cover these cases. Due to common
-	 * clock framework restrictions that do not allow
-	 * to disable a clock that has not been enabled,
-	 * we need to enable the clock first.
-	 */
+	 
 	ret = clk_prepare_enable(ctx->mclk);
 	if (!ret)
 		clk_disable_unprepare(ctx->mclk);
@@ -272,11 +247,11 @@ static int cht_codec_fixup(struct snd_soc_pcm_runtime *rtd,
 		return ret;
 	}
 
-	/* The DSP will convert the FE rate to 48k, stereo, 24bits */
+	 
 	rate->min = rate->max = 48000;
 	channels->min = channels->max = 2;
 
-	/* set SSP2 to 16-bit */
+	 
 	params_set_format(params, SNDRV_PCM_FORMAT_S16_LE);
 	return 0;
 }
@@ -295,13 +270,7 @@ static int cht_max98090_headset_init(struct snd_soc_component *component)
 	int jack_type;
 	int ret;
 
-	/*
-	 * TI supports 4 buttons headset detection
-	 * KEY_MEDIA
-	 * KEY_VOICECOMMAND
-	 * KEY_VOLUMEUP
-	 * KEY_VOLUMEDOWN
-	 */
+	 
 	jack_type = SND_JACK_HEADPHONE | SND_JACK_MICROPHONE |
 		    SND_JACK_BTN_0 | SND_JACK_BTN_1 |
 		    SND_JACK_BTN_2 | SND_JACK_BTN_3;
@@ -365,7 +334,7 @@ static struct snd_soc_dai_link cht_dailink[] = {
 		.ops = &cht_aif1_ops,
 		SND_SOC_DAILINK_REG(deepbuffer, dummy, platform),
 	},
-	/* back ends */
+	 
 	{
 		.name = "SSP2-Codec",
 		.id = 0,
@@ -381,14 +350,14 @@ static struct snd_soc_dai_link cht_dailink[] = {
 	},
 };
 
-/* use space before codec name to simplify card ID, and simplify driver name */
-#define SOF_CARD_NAME "bytcht max98090" /* card name will be 'sof-bytcht max98090 */
+ 
+#define SOF_CARD_NAME "bytcht max98090"  
 #define SOF_DRIVER_NAME "SOF"
 
 #define CARD_NAME "chtmax98090"
-#define DRIVER_NAME NULL /* card name will be used for driver name */
+#define DRIVER_NAME NULL  
 
-/* SoC card */
+ 
 static struct snd_soc_card snd_soc_card_cht = {
 	.owner = THIS_MODULE,
 	.dai_link = cht_dailink,
@@ -405,119 +374,119 @@ static struct snd_soc_card snd_soc_card_cht = {
 
 static const struct dmi_system_id cht_max98090_quirk_table[] = {
 	{
-		/* Banjo model Chromebook */
+		 
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "Banjo"),
 		},
 		.driver_data = (void *)QUIRK_PMC_PLT_CLK_0,
 	},
 	{
-		/* Candy model Chromebook */
+		 
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "Candy"),
 		},
 		.driver_data = (void *)QUIRK_PMC_PLT_CLK_0,
 	},
 	{
-		/* Clapper model Chromebook */
+		 
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "Clapper"),
 		},
 		.driver_data = (void *)QUIRK_PMC_PLT_CLK_0,
 	},
 	{
-		/* Cyan model Chromebook */
+		 
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "Cyan"),
 		},
 		.driver_data = (void *)QUIRK_PMC_PLT_CLK_0,
 	},
 	{
-		/* Enguarde model Chromebook */
+		 
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "Enguarde"),
 		},
 		.driver_data = (void *)QUIRK_PMC_PLT_CLK_0,
 	},
 	{
-		/* Glimmer model Chromebook */
+		 
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "Glimmer"),
 		},
 		.driver_data = (void *)QUIRK_PMC_PLT_CLK_0,
 	},
 	{
-		/* Gnawty model Chromebook (Acer Chromebook CB3-111) */
+		 
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "Gnawty"),
 		},
 		.driver_data = (void *)QUIRK_PMC_PLT_CLK_0,
 	},
 	{
-		/* Heli model Chromebook */
+		 
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "Heli"),
 		},
 		.driver_data = (void *)QUIRK_PMC_PLT_CLK_0,
 	},
 	{
-		/* Kip model Chromebook */
+		 
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "Kip"),
 		},
 		.driver_data = (void *)QUIRK_PMC_PLT_CLK_0,
 	},
 	{
-		/* Ninja model Chromebook */
+		 
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "Ninja"),
 		},
 		.driver_data = (void *)QUIRK_PMC_PLT_CLK_0,
 	},
 	{
-		/* Orco model Chromebook */
+		 
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "Orco"),
 		},
 		.driver_data = (void *)QUIRK_PMC_PLT_CLK_0,
 	},
 	{
-		/* Quawks model Chromebook */
+		 
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "Quawks"),
 		},
 		.driver_data = (void *)QUIRK_PMC_PLT_CLK_0,
 	},
 	{
-		/* Rambi model Chromebook */
+		 
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "Rambi"),
 		},
 		.driver_data = (void *)QUIRK_PMC_PLT_CLK_0,
 	},
 	{
-		/* Squawks model Chromebook */
+		 
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "Squawks"),
 		},
 		.driver_data = (void *)QUIRK_PMC_PLT_CLK_0,
 	},
 	{
-		/* Sumo model Chromebook */
+		 
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "Sumo"),
 		},
 		.driver_data = (void *)QUIRK_PMC_PLT_CLK_0,
 	},
 	{
-		/* Swanky model Chromebook (Toshiba Chromebook 2) */
+		 
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "Swanky"),
 		},
 		.driver_data = (void *)QUIRK_PMC_PLT_CLK_0,
 	},
 	{
-		/* Winky model Chromebook */
+		 
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "Winky"),
 		},
@@ -547,7 +516,7 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
 
 	drv->ts3a227e_present = acpi_dev_found("104C227E");
 	if (!drv->ts3a227e_present) {
-		/* no need probe TI jack detection chip */
+		 
 		snd_soc_card_cht.aux_dev = NULL;
 		snd_soc_card_cht.num_aux_devs = 0;
 
@@ -557,7 +526,7 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
 			dev_dbg(dev, "Unable to add GPIO mapping table\n");
 	}
 
-	/* override platform name, if required */
+	 
 	snd_soc_card_cht.dev = dev;
 	mach = dev->platform_data;
 	platform_name = mach->mach_params.platform;
@@ -567,7 +536,7 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
 	if (ret_val)
 		return ret_val;
 
-	/* register the soc card */
+	 
 	snd_soc_card_set_drvdata(&snd_soc_card_cht, drv);
 
 	if (drv->quirks & QUIRK_PMC_PLT_CLK_0)
@@ -583,13 +552,7 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
 		return PTR_ERR(drv->mclk);
 	}
 
-	/*
-	 * Boards which have the MAX98090's clk connected to clk_0 do not seem
-	 * to like it if we muck with the clock. If we disable the clock when
-	 * it is unused we get "max98090 i2c-193C9890:00: PLL unlocked" errors
-	 * and the PLL never seems to lock again.
-	 * So for these boards we enable it here once and leave it at that.
-	 */
+	 
 	if (drv->quirks & QUIRK_PMC_PLT_CLK_0) {
 		ret_val = clk_prepare_enable(drv->mclk);
 		if (ret_val < 0) {
@@ -600,7 +563,7 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
 
 	sof_parent = snd_soc_acpi_sof_parent(dev);
 
-	/* set card and driver name */
+	 
 	if (sof_parent) {
 		snd_soc_card_cht.name = SOF_CARD_NAME;
 		snd_soc_card_cht.driver_name = SOF_DRIVER_NAME;
@@ -609,7 +572,7 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
 		snd_soc_card_cht.driver_name = DRIVER_NAME;
 	}
 
-	/* set pm ops */
+	 
 	if (sof_parent)
 		dev->driver->pm = &snd_soc_pm_ops;
 

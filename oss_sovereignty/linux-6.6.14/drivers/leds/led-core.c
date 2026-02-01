@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LED Class Core
- *
- * Copyright 2005-2006 Openedhand Ltd.
- *
- * Author: Richard Purdie <rpurdie@openedhand.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/leds.h>
@@ -77,7 +71,7 @@ static void led_timer_function(struct timer_list *t)
 
 	brightness = led_get_brightness(led_cdev);
 	if (!brightness) {
-		/* Time to switch the LED on. */
+		 
 		if (test_and_clear_bit(LED_BLINK_BRIGHTNESS_CHANGE,
 					&led_cdev->work_flags))
 			brightness = led_cdev->new_blink_brightness;
@@ -85,9 +79,7 @@ static void led_timer_function(struct timer_list *t)
 			brightness = led_cdev->blink_brightness;
 		delay = led_cdev->blink_delay_on;
 	} else {
-		/* Store the current brightness value to be able
-		 * to restore it when the delay_off period is over.
-		 */
+		 
 		led_cdev->blink_brightness = brightness;
 		brightness = LED_OFF;
 		delay = led_cdev->blink_delay_off;
@@ -95,10 +87,7 @@ static void led_timer_function(struct timer_list *t)
 
 	led_set_brightness_nosleep(led_cdev, brightness);
 
-	/* Return in next iteration if led is in one-shot mode and we are in
-	 * the final blink state so that the led is toggled each delay_on +
-	 * delay_off milliseconds in worst case.
-	 */
+	 
 	if (test_bit(LED_BLINK_ONESHOT, &led_cdev->work_flags)) {
 		if (test_bit(LED_BLINK_INVERT, &led_cdev->work_flags)) {
 			if (brightness)
@@ -123,7 +112,7 @@ static void set_brightness_delayed_set_brightness(struct led_classdev *led_cdev,
 	if (ret == -ENOTSUPP)
 		ret = __led_set_brightness_blocking(led_cdev, value);
 	if (ret < 0 &&
-	    /* LED HW might have been unplugged, therefore don't warn */
+	     
 	    !(ret == -ENODEV && (led_cdev->flags & LED_UNREGISTERING) &&
 	    (led_cdev->flags & LED_HW_PLUGGABLE)))
 		dev_err(led_cdev->dev,
@@ -140,13 +129,7 @@ static void set_brightness_delayed(struct work_struct *ws)
 		set_bit(LED_SET_BRIGHTNESS_OFF, &led_cdev->work_flags);
 	}
 
-	/*
-	 * Triggers may call led_set_brightness(LED_OFF),
-	 * led_set_brightness(LED_FULL) in quick succession to disable blinking
-	 * and turn the LED on. Both actions may have been scheduled to run
-	 * before this work item runs once. To make sure this works properly
-	 * handle LED_SET_BRIGHTNESS_OFF first.
-	 */
+	 
 	if (test_and_clear_bit(LED_SET_BRIGHTNESS_OFF, &led_cdev->work_flags))
 		set_brightness_delayed_set_brightness(led_cdev, LED_OFF);
 
@@ -176,13 +159,13 @@ static void led_set_software_blink(struct led_classdev *led_cdev,
 	led_cdev->blink_delay_on = delay_on;
 	led_cdev->blink_delay_off = delay_off;
 
-	/* never on - just set to off */
+	 
 	if (!delay_on) {
 		led_set_brightness_nosleep(led_cdev, LED_OFF);
 		return;
 	}
 
-	/* never off - just set to brightness */
+	 
 	if (!delay_off) {
 		led_set_brightness_nosleep(led_cdev,
 					   led_cdev->blink_brightness);
@@ -203,7 +186,7 @@ static void led_blink_setup(struct led_classdev *led_cdev,
 	    !led_cdev->blink_set(led_cdev, delay_on, delay_off))
 		return;
 
-	/* blink with 1 Hz as default if nothing specified */
+	 
 	if (!*delay_on && !*delay_off)
 		*delay_on = *delay_off = 500;
 
@@ -256,7 +239,7 @@ EXPORT_SYMBOL_GPL(led_blink_set_oneshot);
 void led_blink_set_nosleep(struct led_classdev *led_cdev, unsigned long delay_on,
 			   unsigned long delay_off)
 {
-	/* If necessary delegate to a work queue task. */
+	 
 	if (led_cdev->blink_set && led_cdev->brightness_set_blocking) {
 		led_cdev->delayed_delay_on = delay_on;
 		led_cdev->delayed_delay_off = delay_off;
@@ -280,16 +263,9 @@ EXPORT_SYMBOL_GPL(led_stop_software_blink);
 
 void led_set_brightness(struct led_classdev *led_cdev, unsigned int brightness)
 {
-	/*
-	 * If software blink is active, delay brightness setting
-	 * until the next timer tick.
-	 */
+	 
 	if (test_bit(LED_BLINK_SW, &led_cdev->work_flags)) {
-		/*
-		 * If we need to disable soft blinking delegate this to the
-		 * work queue task to avoid problems in case we are called
-		 * from hard irq context.
-		 */
+		 
 		if (!brightness) {
 			set_bit(LED_BLINK_DISABLE, &led_cdev->work_flags);
 			schedule_work(&led_cdev->set_brightness_work);
@@ -307,18 +283,11 @@ EXPORT_SYMBOL_GPL(led_set_brightness);
 
 void led_set_brightness_nopm(struct led_classdev *led_cdev, unsigned int value)
 {
-	/* Use brightness_set op if available, it is guaranteed not to sleep */
+	 
 	if (!__led_set_brightness(led_cdev, value))
 		return;
 
-	/*
-	 * Brightness setting can sleep, delegate it to a work queue task.
-	 * value 0 / LED_OFF is special, since it also disables hw-blinking
-	 * (sw-blink disable is handled in led_set_brightness()).
-	 * To avoid a hw-blink-disable getting lost when a second brightness
-	 * change is done immediately afterwards (before the work runs),
-	 * it uses a separate work_flag.
-	 */
+	 
 	if (value) {
 		led_cdev->delayed_set_value = value;
 		set_bit(LED_SET_BRIGHTNESS, &led_cdev->work_flags);
@@ -398,7 +367,7 @@ u32 *led_get_default_pattern(struct led_classdev *led_cdev, unsigned int *size)
 }
 EXPORT_SYMBOL_GPL(led_get_default_pattern);
 
-/* Caller must ensure led_cdev->led_access held */
+ 
 void led_sysfs_disable(struct led_classdev *led_cdev)
 {
 	lockdep_assert_held(&led_cdev->led_access);
@@ -407,7 +376,7 @@ void led_sysfs_disable(struct led_classdev *led_cdev)
 }
 EXPORT_SYMBOL_GPL(led_sysfs_disable);
 
-/* Caller must ensure led_cdev->led_access held */
+ 
 void led_sysfs_enable(struct led_classdev *led_cdev)
 {
 	lockdep_assert_held(&led_cdev->led_access);
@@ -480,12 +449,7 @@ int led_compose_name(struct device *dev, struct led_init_data *init_data,
 	led_parse_fwnode_props(dev, fwnode, &props);
 
 	if (props.label) {
-		/*
-		 * If init_data.devicename is NULL, then it indicates that
-		 * DT label should be used as-is for LED class device name.
-		 * Otherwise the label is prepended with devicename to compose
-		 * the final LED class device name.
-		 */
+		 
 		if (!devicename) {
 			strscpy(led_classdev_name, props.label,
 				LED_MAX_NAME_SIZE);

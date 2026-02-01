@@ -1,13 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
- * Copyright(c) 2020-2022  Realtek Corporation
- */
+ 
 
 #ifndef __RTW89_CHAN_H__
 #define __RTW89_CHAN_H__
 
 #include "core.h"
 
-/* The dwell time in TU before doing rtw89_chanctx_work(). */
+ 
 #define RTW89_CHANCTX_TIME_MCC_PREPARE 100
 
 static inline bool rtw89_get_entity_state(struct rtw89_dev *rtwdev)

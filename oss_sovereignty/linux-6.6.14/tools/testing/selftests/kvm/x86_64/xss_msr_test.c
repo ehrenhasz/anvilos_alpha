@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019, Google LLC.
- *
- * Tests for the IA32_XSS MSR.
- */
 
-#define _GNU_SOURCE /* for program_invocation_short_name */
+ 
+
+#define _GNU_SOURCE  
 #include <sys/ioctl.h>
 
 #include "test_util.h"
@@ -22,7 +18,7 @@ int main(int argc, char *argv[])
 	uint64_t xss_val;
 	int i, r;
 
-	/* Create VM */
+	 
 	vm = vm_create_with_one_vcpu(&vcpu, NULL);
 
 	TEST_REQUIRE(kvm_cpu_has(X86_FEATURE_XSAVES));
@@ -33,20 +29,12 @@ int main(int argc, char *argv[])
 
 	vcpu_set_msr(vcpu, MSR_IA32_XSS, xss_val);
 
-	/*
-	 * At present, KVM only supports a guest IA32_XSS value of 0. Verify
-	 * that trying to set the guest IA32_XSS to an unsupported value fails.
-	 * Also, in the future when a non-zero value succeeds check that
-	 * IA32_XSS is in the list of MSRs to save/restore.
-	 */
+	 
 	xss_in_msr_list = kvm_msr_is_in_save_restore_list(MSR_IA32_XSS);
 	for (i = 0; i < MSR_BITS; ++i) {
 		r = _vcpu_set_msr(vcpu, MSR_IA32_XSS, 1ull << i);
 
-		/*
-		 * Setting a list of MSRs returns the entry that "faulted", or
-		 * the last entry +1 if all MSRs were successfully written.
-		 */
+		 
 		TEST_ASSERT(!r || r == 1, KVM_IOCTL_ERROR(KVM_SET_MSRS, r));
 		TEST_ASSERT(r != 1 || xss_in_msr_list,
 			    "IA32_XSS was able to be set, but was not in save/restore list");

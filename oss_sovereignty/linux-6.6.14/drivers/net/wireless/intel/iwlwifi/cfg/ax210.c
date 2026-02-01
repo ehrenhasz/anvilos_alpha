@@ -1,26 +1,23 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2015-2017 Intel Deutschland GmbH
- * Copyright (C) 2018-2023 Intel Corporation
- */
+
+ 
 #include <linux/module.h>
 #include <linux/stringify.h>
 #include "iwl-config.h"
 #include "iwl-prph.h"
 #include "fw/api/txq.h"
 
-/* Highest firmware API version supported */
+ 
 #define IWL_AX210_UCODE_API_MAX	83
 
-/* Lowest firmware API version supported */
+ 
 #define IWL_AX210_UCODE_API_MIN	59
 
-/* NVM versions */
+ 
 #define IWL_AX210_NVM_VERSION		0x0a1d
 
-/* Memory offsets and lengths */
-#define IWL_AX210_DCCM_OFFSET		0x800000 /* LMAC1 */
-#define IWL_AX210_DCCM_LEN		0x10000 /* LMAC1 */
+ 
+#define IWL_AX210_DCCM_OFFSET		0x800000  
+#define IWL_AX210_DCCM_LEN		0x10000  
 #define IWL_AX210_DCCM2_OFFSET		0x880000
 #define IWL_AX210_DCCM2_LEN		0x8000
 #define IWL_AX210_SMEM_OFFSET		0x400000
@@ -146,7 +143,7 @@ const struct iwl_cfg_trans_params iwl_so_trans_cfg = {
 	.base_params = &iwl_ax210_base_params,
 	.umac_prph_offset = 0x300000,
 	.integrated = true,
-	/* TODO: the following values need to be checked */
+	 
 	.xtal_latency = 500,
 	.ltr_delay = IWL_CFG_TRANS_LTR_DELAY_200US,
 };
@@ -178,13 +175,7 @@ const struct iwl_cfg_trans_params iwl_so_long_latency_imr_trans_cfg = {
 	.imr_enabled = true,
 };
 
-/*
- * If the device doesn't support HE, no need to have that many buffers.
- * AX210 devices can split multiple frames into a single RB, so fewer are
- * needed; AX210 cannot (but use smaller RBs by default) - these sizes
- * were picked according to 8 MSDUs inside 256 A-MSDUs in an A-MPDU, with
- * additional overhead to account for processing time.
- */
+ 
 #define IWL_NUM_RBDS_NON_HE		512
 #define IWL_NUM_RBDS_AX210_HE		4096
 

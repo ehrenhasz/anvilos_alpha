@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM kmem
 
@@ -304,9 +304,7 @@ TRACE_EVENT(mm_page_alloc_extfrag,
 		__entry->change_ownership)
 );
 
-/*
- * Required for uniquely and securely identifying mm in rss_stat tracepoint.
- */
+ 
 #ifndef __PTR_TO_HASHVAL
 static unsigned int __maybe_unused mm_ptr_to_hash(const void *ptr)
 {
@@ -317,7 +315,7 @@ static unsigned int __maybe_unused mm_ptr_to_hash(const void *ptr)
 	if (ret)
 		return 0;
 
-	/* The hashed value is only 32-bit */
+	 
 	return (unsigned int)hashval;
 }
 #define __PTR_TO_HASHVAL
@@ -371,7 +369,7 @@ TRACE_EVENT(rss_stat,
 		__print_symbolic(__entry->member, TRACE_MM_PAGES),
 		__entry->size)
 	);
-#endif /* _TRACE_KMEM_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Marvell PXA2xx family pin control
- *
- * Copyright (C) 2015 Robert Jarzmik
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/io.h>
@@ -268,12 +264,7 @@ static int pxa2xx_build_functions(struct pxa_pinctrl *pctl)
 	struct pxa_pinctrl_function *functions;
 	struct pxa_desc_function *df;
 
-	/*
-	 * Each pin can have at most 6 alternate functions, and 2 gpio functions
-	 * which are common to each pin. As there are more than 2 pins without
-	 * alternate function, 6 * npins is an absolute high limit of the number
-	 * of functions.
-	 */
+	 
 	functions = devm_kcalloc(pctl->dev, pctl->npins * 6,
 				 sizeof(*functions), GFP_KERNEL);
 	if (!functions)

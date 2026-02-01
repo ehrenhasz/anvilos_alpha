@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/dmapool.h>
@@ -99,7 +99,7 @@ struct prestera_sdma {
 	struct net_device napi_dev;
 	u32 map_addr;
 	u64 dma_mask;
-	/* protect SDMA with concurrent access from multiple CPUs */
+	 
 	spinlock_t tx_lock;
 };
 
@@ -141,7 +141,7 @@ static void prestera_sdma_rx_desc_init(struct prestera_sdma *sdma,
 
 	desc->buff = cpu_to_le32(prestera_sdma_map(sdma, buf));
 
-	/* make sure buffer is set before reset the descriptor */
+	 
 	wmb();
 
 	desc->word1 = cpu_to_le32(0xA0000000);
@@ -220,7 +220,7 @@ static int prestera_rxtx_process_skb(struct prestera_sdma *sdma,
 
 	skb_pull(skb, ETH_HLEN);
 
-	/* ethertype field is part of the dsa header */
+	 
 	err = prestera_dsa_parse(&dsa, skb->data - ETH_TLEN);
 	if (err)
 		return err;
@@ -238,7 +238,7 @@ static int prestera_rxtx_process_skb(struct prestera_sdma *sdma,
 	if (unlikely(!pskb_may_pull(skb, PRESTERA_DSA_HLEN)))
 		return -EINVAL;
 
-	/* remove DSA tag and update checksum */
+	 
 	skb_pull_rcsum(skb, PRESTERA_DSA_HLEN);
 
 	memmove(skb->data - ETH_HLEN, skb->data - ETH_HLEN - PRESTERA_DSA_HLEN,
@@ -335,7 +335,7 @@ static void prestera_sdma_rx_fini(struct prestera_sdma *sdma)
 	int qnum = PRESTERA_SDMA_RX_QUEUE_NUM;
 	int q, b;
 
-	/* disable all rx queues */
+	 
 	prestera_write(sdma->sw, PRESTERA_SDMA_RX_QUEUE_STATUS_REG,
 		       GENMASK(15, 8));
 
@@ -371,7 +371,7 @@ static int prestera_sdma_rx_init(struct prestera_sdma *sdma)
 	int err;
 	int q;
 
-	/* disable all rx queues */
+	 
 	prestera_write(sdma->sw, PRESTERA_SDMA_RX_QUEUE_STATUS_REG,
 		       GENMASK(15, 8));
 
@@ -409,14 +409,14 @@ static int prestera_sdma_rx_init(struct prestera_sdma *sdma)
 			next++;
 		} while (prev != tail);
 
-		/* join tail with head to make a circular list */
+		 
 		prestera_sdma_rx_desc_set_next(sdma, tail->desc, head->desc_dma);
 
 		prestera_write(sdma->sw, PRESTERA_SDMA_RX_QUEUE_DESC_REG(q),
 			       prestera_sdma_map(sdma, head->desc_dma));
 	}
 
-	/* make sure all rx descs are filled before enabling all rx queues */
+	 
 	wmb();
 
 	prestera_write(sdma->sw, PRESTERA_SDMA_RX_QUEUE_STATUS_REG,
@@ -457,7 +457,7 @@ static void prestera_sdma_tx_desc_xmit(struct prestera_sdma_desc *desc)
 
 	word |= PRESTERA_SDMA_TX_DESC_DMA_OWN << 31;
 
-	/* make sure everything is written before enable xmit */
+	 
 	wmb();
 
 	desc->word1 = cpu_to_le32(word);
@@ -512,7 +512,7 @@ static void prestera_sdma_tx_recycle_work_fn(struct work_struct *work)
 		dev_consume_skb_any(buf->skb);
 		buf->skb = NULL;
 
-		/* make sure everything is cleaned up */
+		 
 		wmb();
 
 		buf->is_used = false;
@@ -558,10 +558,10 @@ static int prestera_sdma_tx_init(struct prestera_sdma *sdma)
 		next++;
 	} while (prev != tail);
 
-	/* join tail with head to make a circular list */
+	 
 	prestera_sdma_tx_desc_set_next(sdma, tail->desc, head->desc_dma);
 
-	/* make sure descriptors are written */
+	 
 	wmb();
 
 	prestera_write(sdma->sw, PRESTERA_SDMA_TX_QUEUE_DESC_REG,

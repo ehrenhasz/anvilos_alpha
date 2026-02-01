@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Marvell RVU Ethernet driver
- *
- * Copyright (C) 2020 Marvell.
- *
- */
+ 
+ 
 
 #ifndef OTX2_TXRX_H
 #define OTX2_TXRX_H
@@ -30,33 +26,25 @@
 
 #define MAX_XDP_MTU	(1530 - OTX2_ETH_HLEN)
 
-/* Rx buffer size should be in multiples of 128bytes */
+ 
 #define RCV_FRAG_LEN1(x)				\
 		((OTX2_HEAD_ROOM + OTX2_DATA_ALIGN(x)) + \
 		OTX2_DATA_ALIGN(sizeof(struct skb_shared_info)))
 
-/* Prefer 2048 byte buffers for better last level cache
- * utilization or data distribution across regions.
- */
+ 
 #define RCV_FRAG_LEN(x)	\
 		((RCV_FRAG_LEN1(x) < 2048) ? 2048 : RCV_FRAG_LEN1(x))
 
 #define DMA_BUFFER_LEN(x)	((x) - OTX2_HEAD_ROOM)
 
-/* IRQ triggered when NIX_LF_CINTX_CNT[ECOUNT]
- * is equal to this value.
- */
+ 
 #define CQ_CQE_THRESH_DEFAULT	10
 
-/* IRQ triggered when NIX_LF_CINTX_CNT[ECOUNT]
- * is nonzero and this much time elapses after that.
- */
-#define CQ_TIMER_THRESH_DEFAULT	1  /* 1 usec */
-#define CQ_TIMER_THRESH_MAX     25 /* 25 usec */
+ 
+#define CQ_TIMER_THRESH_DEFAULT	1   
+#define CQ_TIMER_THRESH_MAX     25  
 
-/* Min number of CQs (of the ones mapped to this CINT)
- * with valid CQEs.
- */
+ 
 #define CQ_QCOUNT_DEFAULT	1
 
 #define CQ_OP_STAT_OP_ERR       63
@@ -105,7 +93,7 @@ enum cq_type {
 	CQ_TX,
 	CQ_XDP,
 	CQ_QOS,
-	CQS_PER_CINT = 4, /* RQ + SQ + XDP + QOS_SQ */
+	CQS_PER_CINT = 4,  
 };
 
 struct otx2_cq_poll {
@@ -127,7 +115,7 @@ struct otx2_pool {
 struct otx2_cq_queue {
 	u8			cq_idx;
 	u8			cq_type;
-	u8			cint_idx; /* CQ interrupt id */
+	u8			cint_idx;  
 	u8			refill_task_sched;
 	u16			cqe_size;
 	u16			pool_ptrs;
@@ -143,7 +131,7 @@ struct otx2_cq_queue {
 
 struct otx2_qset {
 	u32			rqe_cnt;
-	u32			sqe_cnt; /* Keep these two at top */
+	u32			sqe_cnt;  
 #define OTX2_MAX_CQ_CNT		64
 	u16			cq_cnt;
 	u16			xqe_size;
@@ -154,10 +142,10 @@ struct otx2_qset {
 	struct otx2_rcv_queue	*rq;
 };
 
-/* Translate IOVA to physical address */
+ 
 static inline u64 otx2_iova_to_phys(void *iommu_domain, dma_addr_t dma_addr)
 {
-	/* Translation is installed only when IOMMU is present */
+	 
 	if (likely(iommu_domain))
 		return iommu_iova_to_phys(iommu_domain, dma_addr);
 	return dma_addr;
@@ -172,4 +160,4 @@ void otx2_sqe_flush(void *dev, struct otx2_snd_queue *sq,
 		    int size, int qidx);
 int otx2_refill_pool_ptrs(void *dev, struct otx2_cq_queue *cq);
 int cn10k_refill_pool_ptrs(void *dev, struct otx2_cq_queue *cq);
-#endif /* OTX2_TXRX_H */
+#endif  

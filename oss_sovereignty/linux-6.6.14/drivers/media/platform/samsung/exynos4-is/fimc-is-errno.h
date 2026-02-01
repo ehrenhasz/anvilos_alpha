@@ -1,24 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Samsung Exynos4 SoC series FIMC-IS slave interface driver
- *
- * FIMC-IS error code definition
- *
- * Copyright (C) 2011 - 2013 Samsung Electronics Co., Ltd.
- *
- * Authors: Younghwan Joo <yhwan.joo@samsung.com>
- *          Sylwester Nawrocki <s.nawrocki@samsung.com>
-*/
+ 
+ 
 
 #ifndef FIMC_IS_ERR_H_
 #define FIMC_IS_ERR_H_
 
-#define IS_ERROR_VER			011 /* IS ERROR VERSION 0.11 */
+#define IS_ERROR_VER			011  
 
 enum {
 	IS_ERROR_NONE,
 
-	/* General 1 ~ 99 */
+	 
 	IS_ERROR_INVALID_COMMAND,
 	IS_ERROR_REQUEST_FAIL,
 	IS_ERROR_INVALID_SCENARIO,
@@ -51,12 +42,12 @@ enum {
 	IS_ERROR_LHFD_MSG_FAIL,
 	IS_ERROR_LHFD_INTERNAL_STOP,
 
-	/* Sensor 100 ~ 199 */
+	 
 	IS_ERROR_SENSOR_PWRDN_FAIL	= 100,
 	IS_ERROR_SENSOR_STREAM_ON_FAIL,
 	IS_ERROR_SENSOR_STREAM_OFF_FAIL,
 
-	/* ISP 200 ~ 299 */
+	 
 	IS_ERROR_ISP_PWRDN_FAIL		= 200,
 	IS_ERROR_ISP_MULTIPLE_INPUT,
 	IS_ERROR_ISP_ABSENT_INPUT,
@@ -68,7 +59,7 @@ enum {
 	IS_ERROR_ISP_BITWIDTH_MISMATCH,
 	IS_ERROR_ISP_FRAME_END_TIME_OUT,
 
-	/* DRC 300 ~ 399 */
+	 
 	IS_ERROR_DRC_PWRDN_FAIL		= 300,
 	IS_ERROR_DRC_MULTIPLE_INPUT,
 	IS_ERROR_DRC_ABSENT_INPUT,
@@ -81,22 +72,22 @@ enum {
 	IS_ERROR_DRC_BITWIDTH_MISMATCH,
 	IS_ERROR_DRC_FRAME_END_TIME_OUT,
 
-	/* SCALERC 400 ~ 499 */
+	 
 	IS_ERROR_SCALERC_PWRDN_FAIL	= 400,
 
-	/* ODC 500 ~ 599 */
+	 
 	IS_ERROR_ODC_PWRDN_FAIL		= 500,
 
-	/* DIS 600 ~ 699 */
+	 
 	IS_ERROR_DIS_PWRDN_FAIL		= 600,
 
-	/* TDNR 700 ~ 799 */
+	 
 	IS_ERROR_TDNR_PWRDN_FAIL	= 700,
 
-	/* SCALERC 800 ~ 899 */
+	 
 	IS_ERROR_SCALERP_PWRDN_FAIL	= 800,
 
-	/* FD 900 ~ 999 */
+	 
 	IS_ERROR_FD_PWRDN_FAIL		= 900,
 	IS_ERROR_FD_MULTIPLE_INPUT,
 	IS_ERROR_FD_ABSENT_INPUT,
@@ -108,78 +99,78 @@ enum {
 
 #define IS_ERROR_TIME_OUT_FLAG	0x80000000
 
-/* Set parameter error enum */
+ 
 enum fimc_is_error {
-	/* Common error (0~99) */
+	 
 	ERROR_COMMON_NONE		= 0,
-	ERROR_COMMON_CMD		= 1,	/* Invalid command */
-	ERROR_COMMON_PARAMETER		= 2,	/* Invalid parameter */
-	/* setfile is not loaded before adjusting */
+	ERROR_COMMON_CMD		= 1,	 
+	ERROR_COMMON_PARAMETER		= 2,	 
+	 
 	ERROR_COMMON_SETFILE_LOAD	= 3,
-	/* setfile is not Adjusted before running. */
+	 
 	ERROR_COMMON_SETFILE_ADJUST	= 4,
-	/* Index of setfile is not valid (0~MAX_SETFILE_NUM-1) */
+	 
 	ERROR_COMMON_SETFILE_INDEX	= 5,
-	/* Input path can be changed in ready state(stop) */
+	 
 	ERROR_COMMON_INPUT_PATH		= 6,
-	/* IP can not start if input path is not set */
+	 
 	ERROR_COMMON_INPUT_INIT		= 7,
-	/* Output path can be changed in ready state (stop) */
+	 
 	ERROR_COMMON_OUTPUT_PATH	= 8,
-	/* IP can not start if output path is not set */
+	 
 	ERROR_COMMON_OUTPUT_INIT	= 9,
 
 	ERROR_CONTROL_NONE		= ERROR_COMMON_NONE,
-	ERROR_CONTROL_BYPASS		= 11,	/* Enable or Disable */
+	ERROR_CONTROL_BYPASS		= 11,	 
 
 	ERROR_OTF_INPUT_NONE		= ERROR_COMMON_NONE,
 	ERROR_OTF_INPUT_CMD		= 21,
-	/* invalid format  (DRC: YUV444, FD: YUV444, 422, 420) */
+	 
 	ERROR_OTF_INPUT_FORMAT		= 22,
-	/* invalid width (DRC: 128~8192, FD: 32~8190) */
+	 
 	ERROR_OTF_INPUT_WIDTH		= 23,
-	/* invalid height (DRC: 64~8192, FD: 16~8190) */
+	 
 	ERROR_OTF_INPUT_HEIGHT		= 24,
-	/* invalid bit-width (DRC: 8~12bits, FD: 8bit) */
+	 
 	ERROR_OTF_INPUT_BIT_WIDTH	= 25,
-	/* invalid FrameTime for ISP */
+	 
 	ERROR_OTF_INPUT_USER_FRAMETIIME	= 26,
 
 	ERROR_DMA_INPUT_NONE		= ERROR_COMMON_NONE,
-	/* invalid width (DRC: 128~8192, FD: 32~8190) */
+	 
 	ERROR_DMA_INPUT_WIDTH		= 31,
-	/* invalid height (DRC: 64~8192, FD: 16~8190) */
+	 
 	ERROR_DMA_INPUT_HEIGHT		= 32,
-	/* invalid format (DRC: YUV444 or YUV422, FD: YUV444, 422, 420) */
+	 
 	ERROR_DMA_INPUT_FORMAT		= 33,
-	/* invalid bit-width (DRC: 8~12bit, FD: 8bit) */
+	 
 	ERROR_DMA_INPUT_BIT_WIDTH	= 34,
-	/* invalid order(DRC: YYCbCrorYCbYCr, FD:NO,YYCbCr,YCbYCr,CbCr,CrCb) */
+	 
 	ERROR_DMA_INPUT_ORDER		= 35,
-	/* invalid plane (DRC: 3, FD: 1, 2, 3) */
+	 
 	ERROR_DMA_INPUT_PLANE		= 36,
 
 	ERROR_OTF_OUTPUT_NONE		= ERROR_COMMON_NONE,
-	/* invalid width (DRC: 128~8192) */
+	 
 	ERROR_OTF_OUTPUT_WIDTH		= 41,
-	/* invalid height (DRC: 64~8192) */
+	 
 	ERROR_OTF_OUTPUT_HEIGHT		= 42,
-	/* invalid format (DRC: YUV444) */
+	 
 	ERROR_OTF_OUTPUT_FORMAT		= 43,
-	/* invalid bit-width (DRC: 8~12bits) */
+	 
 	ERROR_OTF_OUTPUT_BIT_WIDTH	= 44,
 
 	ERROR_DMA_OUTPUT_NONE		= ERROR_COMMON_NONE,
-	ERROR_DMA_OUTPUT_WIDTH		= 51,	/* invalid width */
-	ERROR_DMA_OUTPUT_HEIGHT		= 52,	/* invalid height */
-	ERROR_DMA_OUTPUT_FORMAT		= 53,	/* invalid format */
-	ERROR_DMA_OUTPUT_BIT_WIDTH	= 54,	/* invalid bit-width */
-	ERROR_DMA_OUTPUT_PLANE		= 55,	/* invalid plane */
-	ERROR_DMA_OUTPUT_ORDER		= 56,	/* invalid order */
+	ERROR_DMA_OUTPUT_WIDTH		= 51,	 
+	ERROR_DMA_OUTPUT_HEIGHT		= 52,	 
+	ERROR_DMA_OUTPUT_FORMAT		= 53,	 
+	ERROR_DMA_OUTPUT_BIT_WIDTH	= 54,	 
+	ERROR_DMA_OUTPUT_PLANE		= 55,	 
+	ERROR_DMA_OUTPUT_ORDER		= 56,	 
 
 	ERROR_GLOBAL_SHOTMODE_NONE	= ERROR_COMMON_NONE,
 
-	/* SENSOR Error(100~199) */
+	 
 	ERROR_SENSOR_NONE		= ERROR_COMMON_NONE,
 	ERROR_SENSOR_I2C_FAIL		= 101,
 	ERROR_SENSOR_INVALID_FRAMERATE,
@@ -192,7 +183,7 @@ enum fimc_is_error {
 	ERROR_SENSOR_UNSUPPORT_PERI,
 	ERROR_SENSOR_UNSUPPORT_AF,
 
-	/* ISP Error (200~299) */
+	 
 	ERROR_ISP_AF_NONE		= ERROR_COMMON_NONE,
 	ERROR_ISP_AF_BUSY		= 201,
 	ERROR_ISP_AF_INVALID_COMMAND	= 202,
@@ -205,11 +196,11 @@ enum fimc_is_error {
 	ERROR_ISP_METERING_NONE		= ERROR_COMMON_NONE,
 	ERROR_ISP_AFC_NONE		= ERROR_COMMON_NONE,
 
-	/* DRC Error (300~399) */
+	 
 
-	/* FD Error  (400~499) */
+	 
 	ERROR_FD_NONE					= ERROR_COMMON_NONE,
-	/* Invalid max number (1~16) */
+	 
 	ERROR_FD_CONFIG_MAX_NUMBER_STATE		= 401,
 	ERROR_FD_CONFIG_MAX_NUMBER_INVALID		= 402,
 	ERROR_FD_CONFIG_YAW_ANGLE_STATE			= 403,
@@ -223,11 +214,11 @@ enum fimc_is_error {
 	ERROR_FD_CONFIG_ORIENTATION_STATE		= 411,
 	ERROR_FD_CONFIG_ORIENTATION_INVALID		= 412,
 	ERROR_FD_CONFIG_ORIENTATION_VALUE_INVALID	= 413,
-	/* PARAM_FdResultStr can be only applied in ready-state or stream off */
+	 
 	ERROR_FD_RESULT					= 414,
-	/* PARAM_FdModeStr can be only applied in ready-state or stream off */
+	 
 	ERROR_FD_MODE					= 415,
-	/* Scaler Error  (500 ~ 599) */
+	 
 	ERROR_SCALER_NO_NONE				= ERROR_COMMON_NONE,
 	ERROR_SCALER_DMA_OUTSEL				= 501,
 	ERROR_SCALER_H_RATIO				= 502,
@@ -242,4 +233,4 @@ enum fimc_is_error {
 const char *fimc_is_strerr(unsigned int error);
 const char *fimc_is_param_strerr(unsigned int error);
 
-#endif /* FIMC_IS_ERR_H_ */
+#endif  

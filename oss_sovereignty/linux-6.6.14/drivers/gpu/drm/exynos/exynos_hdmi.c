@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2011 Samsung Electronics Co.Ltd
- * Authors:
- * Seung-Woo Kim <sw0312.kim@samsung.com>
- *	Inki Dae <inki.dae@samsung.com>
- *	Joonyoung Shim <jy0922.shim@samsung.com>
- *
- * Based on drivers/media/video/s5p-tv/hdmi_drv.c
- */
+
+ 
 
 #include <drm/exynos_drm.h>
 #include <linux/clk.h>
@@ -100,10 +92,7 @@ struct hdmi_driver_data {
 	unsigned int has_sysreg:1;
 	struct hdmiphy_configs phy_confs;
 	struct string_array_spec clk_gates;
-	/*
-	 * Array of triplets (p_off, p_on, clock), where p_off and p_on are
-	 * required parents of clock when HDMI-PHY is respectively off or on.
-	 */
+	 
 	struct string_array_spec clk_muxes;
 };
 
@@ -139,7 +128,7 @@ struct hdmi_context {
 	struct exynos_drm_clk		phy_clk;
 	struct drm_bridge		*bridge;
 
-	/* mutex protecting subsequent fields below */
+	 
 	struct mutex			mutex;
 	struct hdmi_audio		audio;
 	bool				powered;
@@ -1014,9 +1003,7 @@ static bool hdmi_mode_fixup(struct drm_encoder *encoder,
 	if (mode_ok == MODE_OK)
 		goto cleanup;
 
-	/*
-	 * Find the most suitable mode and copy it to adjusted_mode.
-	 */
+	 
 	list_for_each_entry(m, &connector->modes, head) {
 		mode_ok = hdmi_mode_valid(connector, m);
 
@@ -1088,7 +1075,7 @@ static void hdmi_audio_config(struct hdmi_context *hdata)
 	val = hdmi_reg_read(hdata, HDMI_I2S_DSD_CON) | 0x01;
 	hdmi_reg_writeb(hdata, HDMI_I2S_DSD_CON, val);
 
-	/* Configuration I2S input ports. Configure I2S_PIN_SEL_0~4 */
+	 
 	hdmi_reg_writeb(hdata, HDMI_I2S_PIN_SEL_0, HDMI_I2S_SEL_SCLK(5)
 			| HDMI_I2S_SEL_LRCK(6));
 
@@ -1100,7 +1087,7 @@ static void hdmi_audio_config(struct hdmi_context *hdata)
 
 	hdmi_reg_writeb(hdata, HDMI_I2S_PIN_SEL_3, HDMI_I2S_SEL_DSD(0));
 
-	/* I2S_CON_1 & 2 */
+	 
 	hdmi_reg_writeb(hdata, HDMI_I2S_CON_1, HDMI_I2S_SCLK_FALLING_EDGE
 			| HDMI_I2S_L_CH_LOW_POL);
 	hdmi_reg_writeb(hdata, HDMI_I2S_CON_2, HDMI_I2S_MSB_FIRST_MODE
@@ -1108,7 +1095,7 @@ static void hdmi_audio_config(struct hdmi_context *hdata)
 			| HDMI_I2S_SET_SDATA_BIT(data_num)
 			| HDMI_I2S_BASIC_FORMAT);
 
-	/* Configuration of the audio channel status registers */
+	 
 	for (i = 0; i < HDMI_I2S_CH_ST_MAXNUM; i++)
 		hdmi_reg_writeb(hdata, HDMI_I2S_CH_ST(i),
 				hdata->audio.params.iec.status[i]);
@@ -1143,16 +1130,16 @@ static void hdmi_start(struct hdmi_context *hdata, bool start)
 
 static void hdmi_conf_init(struct hdmi_context *hdata)
 {
-	/* disable HPD interrupts from HDMI IP block, use GPIO instead */
+	 
 	hdmi_reg_writemask(hdata, HDMI_INTC_CON, 0, HDMI_INTC_EN_GLOBAL |
 		HDMI_INTC_EN_HPD_PLUG | HDMI_INTC_EN_HPD_UNPLUG);
 
-	/* choose HDMI mode */
+	 
 	hdmi_reg_writemask(hdata, HDMI_MODE_SEL,
 		HDMI_MODE_HDMI_EN, HDMI_MODE_MASK);
-	/* apply video pre-amble and guard band in HDMI mode only */
+	 
 	hdmi_reg_writeb(hdata, HDMI_CON_2, 0);
-	/* disable bluescreen */
+	 
 	hdmi_reg_writemask(hdata, HDMI_CON_0, 0, HDMI_BLUE_SCR_EN);
 
 	if (hdata->dvi_mode) {
@@ -1163,14 +1150,14 @@ static void hdmi_conf_init(struct hdmi_context *hdata)
 	}
 
 	if (hdata->drv_data->type == HDMI_TYPE13) {
-		/* choose bluescreen (fecal) color */
+		 
 		hdmi_reg_writeb(hdata, HDMI_V13_BLUE_SCREEN_0, 0x12);
 		hdmi_reg_writeb(hdata, HDMI_V13_BLUE_SCREEN_1, 0x34);
 		hdmi_reg_writeb(hdata, HDMI_V13_BLUE_SCREEN_2, 0x56);
 
-		/* enable AVI packet every vsync, fixes purple line problem */
+		 
 		hdmi_reg_writeb(hdata, HDMI_V13_AVI_CON, 0x02);
-		/* force RGB, look to CEA-861-D, table 7 for more detail */
+		 
 		hdmi_reg_writeb(hdata, HDMI_V13_AVI_BYTE(0), 0 << 5);
 		hdmi_reg_writemask(hdata, HDMI_CON_1, 0x10 << 5, 0x11 << 5);
 
@@ -1180,7 +1167,7 @@ static void hdmi_conf_init(struct hdmi_context *hdata)
 	} else {
 		hdmi_reg_infoframes(hdata);
 
-		/* enable AVI packet every vsync, fixes purple line problem */
+		 
 		hdmi_reg_writemask(hdata, HDMI_CON_1, 2, 3 << 5);
 	}
 }
@@ -1224,13 +1211,9 @@ static void hdmi_v13_mode_apply(struct hdmi_context *hdata)
 	val |= ((m->flags & DRM_MODE_FLAG_NHSYNC) ? 1 : 0)<<20;
 	hdmi_reg_writev(hdata, HDMI_V13_H_SYNC_GEN_0, 3, val);
 
-	/*
-	 * Quirk requirement for exynos HDMI IP design,
-	 * 2 pixels less than the actual calculation for hsync_start
-	 * and end.
-	 */
+	 
 
-	/* Following values & calculations differ for different type of modes */
+	 
 	if (m->flags & DRM_MODE_FLAG_INTERLACE) {
 		val = ((m->vsync_end - m->vdisplay) / 2);
 		val |= ((m->vsync_start - m->vdisplay) / 2) << 12;
@@ -1290,11 +1273,7 @@ static void hdmi_v14_mode_apply(struct hdmi_context *hdata)
 				&hdata->encoder.crtc->state->adjusted_mode;
 	int hquirk = 0;
 
-	/*
-	 * In case video mode coming from CRTC differs from requested one HDMI
-	 * sometimes is able to almost properly perform conversion - only
-	 * first line is distorted.
-	 */
+	 
 	if ((m->vdisplay != am->vdisplay) &&
 	    (m->hdisplay == 1280 || m->hdisplay == 1024 || m->hdisplay == 1366))
 		hquirk = 258;
@@ -1309,13 +1288,9 @@ static void hdmi_v14_mode_apply(struct hdmi_context *hdata)
 	hdmi_reg_writev(hdata, HDMI_INT_PRO_MODE, 1,
 			(m->flags & DRM_MODE_FLAG_INTERLACE) ? 1 : 0);
 
-	/*
-	 * Quirk requirement for exynos 5 HDMI IP design,
-	 * 2 pixels less than the actual calculation for hsync_start
-	 * and end.
-	 */
+	 
 
-	/* Following values & calculations differ for different type of modes */
+	 
 	if (m->flags & DRM_MODE_FLAG_INTERLACE) {
 		hdmi_reg_writev(hdata, HDMI_V_SYNC_LINE_BEF_2_0, 2,
 			(m->vsync_end - m->vdisplay) / 2);
@@ -1458,7 +1433,7 @@ static void hdmiphy_conf_apply(struct hdmi_context *hdata)
 	hdmiphy_wait_for_pll(hdata);
 }
 
-/* Should be called with hdata->mutex mutex held */
+ 
 static void hdmi_conf_apply(struct hdmi_context *hdata)
 {
 	hdmi_start(hdata, false);
@@ -1477,7 +1452,7 @@ static void hdmi_set_refclk(struct hdmi_context *hdata, bool on)
 			   SYSREG_HDMI_REFCLK_INT_CLK, on ? ~0 : 0);
 }
 
-/* Should be called with hdata->mutex mutex held. */
+ 
 static void hdmiphy_enable(struct hdmi_context *hdata)
 {
 	int ret;
@@ -1507,7 +1482,7 @@ static void hdmiphy_enable(struct hdmi_context *hdata)
 	hdata->powered = true;
 }
 
-/* Should be called with hdata->mutex mutex held. */
+ 
 static void hdmiphy_disable(struct hdmi_context *hdata)
 {
 	if (!hdata->powered)
@@ -1548,15 +1523,7 @@ static void hdmi_disable(struct drm_encoder *encoder)
 	mutex_lock(&hdata->mutex);
 
 	if (hdata->powered) {
-		/*
-		 * The SFRs of VP and Mixer are updated by Vertical Sync of
-		 * Timing generator which is a part of HDMI so the sequence
-		 * to disable TV Subsystem should be as following,
-		 *	VP -> Mixer -> HDMI
-		 *
-		 * To achieve such sequence HDMI is disabled together with
-		 * HDMI PHY, via pipe clock callback.
-		 */
+		 
 		mutex_unlock(&hdata->mutex);
 		cancel_delayed_work(&hdata->hotplug_work);
 		if (hdata->notifier)
@@ -1835,7 +1802,7 @@ static const struct of_device_id hdmi_match_types[] = {
 		.compatible = "samsung,exynos5433-hdmi",
 		.data = &exynos5433_hdmi_driver_data,
 	}, {
-		/* end node */
+		 
 	}
 };
 MODULE_DEVICE_TABLE (of, hdmi_match_types);

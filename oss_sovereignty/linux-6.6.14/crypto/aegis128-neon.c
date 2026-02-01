@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2019 Linaro Ltd <ard.biesheuvel@linaro.org>
- */
+
+ 
 
 #include <asm/cpufeature.h>
 #include <asm/neon.h>

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * DRM driver for Ilitek ILI9486 panels
- *
- * Copyright 2020 Kamlesh Gurudasani <kamlesh.gurudasani@gmail.com>
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -34,11 +30,7 @@
 #define ILI9486_MADCTL_MX       BIT(6)
 #define ILI9486_MADCTL_MY       BIT(7)
 
-/*
- * The PiScreen/waveshare rpi-lcd-35 has a SPI to 16-bit parallel bus converter
- * in front of the  display controller. This means that 8-bit values have to be
- * transferred as 16-bit.
- */
+ 
 static int waveshare_command(struct mipi_dbi *mipi, u8 *cmd, u8 *par,
 			     size_t num)
 {
@@ -53,11 +45,7 @@ static int waveshare_command(struct mipi_dbi *mipi, u8 *cmd, u8 *par,
 	if (!buf)
 		return -ENOMEM;
 
-	/*
-	 * The displays are Raspberry Pi HATs and connected to the 8-bit only
-	 * SPI controller, so 16-bit command and parameters need byte swapping
-	 * before being transferred as 8-bit on the big endian SPI bus.
-	 */
+	 
 	buf[0] = cpu_to_be16(*cmd);
 	spi_bus_lock(spi->controller);
 	gpiod_set_value_cansleep(mipi->dc, 0);
@@ -67,7 +55,7 @@ static int waveshare_command(struct mipi_dbi *mipi, u8 *cmd, u8 *par,
 	if (ret || !num)
 		goto free;
 
-	/* 8-bit configuration data, not 16-bit pixel data */
+	 
 	if (num <= 32) {
 		for (i = 0; i < num; i++)
 			buf[i] = cpu_to_be16(par[i]);
@@ -75,9 +63,7 @@ static int waveshare_command(struct mipi_dbi *mipi, u8 *cmd, u8 *par,
 		data = buf;
 	}
 
-	/*
-	 * Check whether pixel data bytes needs to be swapped or not
-	 */
+	 
 	if (*cmd == MIPI_DCS_WRITE_MEMORY_START && !mipi->swap_bytes)
 		bpw = 16;
 

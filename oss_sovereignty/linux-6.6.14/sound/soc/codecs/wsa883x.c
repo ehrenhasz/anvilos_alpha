@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015-2021, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/device.h>
@@ -420,7 +418,7 @@
 			SNDRV_PCM_RATE_32000 | SNDRV_PCM_RATE_48000 |\
 			SNDRV_PCM_RATE_96000 | SNDRV_PCM_RATE_192000 |\
 			SNDRV_PCM_RATE_384000)
-/* Fractional Rates */
+ 
 #define WSA883X_FRAC_RATES (SNDRV_PCM_RATE_44100 | SNDRV_PCM_RATE_88200 |\
 				SNDRV_PCM_RATE_176400 | SNDRV_PCM_RATE_352800)
 
@@ -481,10 +479,10 @@ enum {
 static const struct soc_enum wsa_dev_mode_enum =
 	SOC_ENUM_SINGLE_EXT(ARRAY_SIZE(wsa_dev_mode_text), wsa_dev_mode_text);
 
-/* 4 ports */
+ 
 static struct sdw_dpn_prop wsa_sink_dpn_prop[WSA883X_MAX_SWR_PORTS] = {
 	{
-		/* DAC */
+		 
 		.num = 1,
 		.type = SDW_DPN_SIMPLE,
 		.min_ch = 1,
@@ -492,7 +490,7 @@ static struct sdw_dpn_prop wsa_sink_dpn_prop[WSA883X_MAX_SWR_PORTS] = {
 		.simple_ch_prep_sm = true,
 		.read_only_wordlength = true,
 	}, {
-		/* COMP */
+		 
 		.num = 2,
 		.type = SDW_DPN_SIMPLE,
 		.min_ch = 1,
@@ -500,7 +498,7 @@ static struct sdw_dpn_prop wsa_sink_dpn_prop[WSA883X_MAX_SWR_PORTS] = {
 		.simple_ch_prep_sm = true,
 		.read_only_wordlength = true,
 	}, {
-		/* BOOST */
+		 
 		.num = 3,
 		.type = SDW_DPN_SIMPLE,
 		.min_ch = 1,
@@ -508,7 +506,7 @@ static struct sdw_dpn_prop wsa_sink_dpn_prop[WSA883X_MAX_SWR_PORTS] = {
 		.simple_ch_prep_sm = true,
 		.read_only_wordlength = true,
 	}, {
-		/* VISENSE */
+		 
 		.num = 4,
 		.type = SDW_DPN_SIMPLE,
 		.min_ch = 1,
@@ -528,7 +526,7 @@ static const struct sdw_port_config wsa883x_pconfig[WSA883X_MAX_SWR_PORTS] = {
 	}, {
 		.num = 3,
 		.ch_mask = 0x3,
-	}, {	/* IV feedback */
+	}, {	 
 		.num = 4,
 		.ch_mask = 0x3,
 	},
@@ -1032,7 +1030,7 @@ static void wsa883x_init(struct wsa883x_priv *wsa883x)
 
 	wsa883x->comp_offset = COMP_OFFSET2;
 
-	/* Initial settings */
+	 
 	regmap_multi_reg_write(regmap, reg_init, ARRAY_SIZE(reg_init));
 
 	if (wsa883x->variant == WSA8830 || wsa883x->variant == WSA8832) {

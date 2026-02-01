@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -110,7 +107,7 @@ static int vnic_dev_discover_res(struct vnic_dev *vdev,
 
 		r++;
 
-		if (bar_num != 0)  /* only mapping in BAR0 resources */
+		if (bar_num != 0)   
 			continue;
 
 		switch (type) {
@@ -118,7 +115,7 @@ static int vnic_dev_discover_res(struct vnic_dev *vdev,
 		case RES_TYPE_RQ:
 		case RES_TYPE_CQ:
 		case RES_TYPE_INTR_CTRL:
-			/* each count is stride bytes long */
+			 
 			len = count * VNIC_RES_STRIDE;
 			if (len + bar_offset > bar->len) {
 				printk(KERN_ERR "vNIC BAR0 resource %d "
@@ -174,11 +171,7 @@ unsigned int vnic_dev_desc_ring_size(struct vnic_dev_ring *ring,
 				     unsigned int desc_count,
 				     unsigned int desc_size)
 {
-	/* The base address of the desc rings must be 512 byte aligned.
-	 * Descriptor count is aligned to groups of 32 descriptors.  A
-	 * count of 0 means the maximum 4096 descriptors.  Descriptor
-	 * size is aligned to 16 bytes.
-	 */
+	 
 
 	unsigned int count_align = 32;
 	unsigned int desc_align = 16;
@@ -248,12 +241,12 @@ static int vnic_dev_cmd1(struct vnic_dev *vdev, enum vnic_devcmd_cmd cmd, int wa
 	int delay;
 	u32 status;
 	static const int dev_cmd_err[] = {
-		/* convert from fw's version of error.h to host's version */
-		0,	/* ERR_SUCCESS */
-		EINVAL,	/* ERR_EINVAL */
-		EFAULT,	/* ERR_EFAULT */
-		EPERM,	/* ERR_EPERM */
-		EBUSY,  /* ERR_EBUSY */
+		 
+		0,	 
+		EINVAL,	 
+		EFAULT,	 
+		EPERM,	 
+		EBUSY,   
 	};
 	int err;
 	u64 *a0 = &vdev->args[0];
@@ -321,7 +314,7 @@ static int vnic_dev_cmd2(struct vnic_dev *vdev, enum vnic_devcmd_cmd cmd,
 	fetch_index = ioread32(&dc2c->wq_ctrl->fetch_index);
 
 	if (posted == 0xFFFFFFFF || fetch_index == 0xFFFFFFFF) {
-		/* Hardware surprise removal: return error */
+		 
 		pr_err("%s: devcmd2 invalid posted or fetch index on cmd %d\n",
 				pci_name(vdev->pdev), _CMD_N(cmd));
 		pr_err("%s: fetch index: %u, posted index: %u\n",
@@ -352,11 +345,7 @@ static int vnic_dev_cmd2(struct vnic_dev *vdev, enum vnic_devcmd_cmd cmd,
 
 	}
 
-	/* Adding write memory barrier prevents compiler and/or CPU
-	 * reordering, thus avoiding descriptor posting before
-	 * descriptor is initialized. Otherwise, hardware can read
-	 * stale descriptor fields.
-	 */
+	 
 	wmb();
 	iowrite32(new_posted, &dc2c->wq_ctrl->posted_index);
 
@@ -385,7 +374,7 @@ static int vnic_dev_cmd2(struct vnic_dev *vdev, enum vnic_devcmd_cmd cmd,
 				return err;
 			}
 			if (_CMD_DIR(cmd) & _CMD_DIR_READ) {
-				rmb(); /*prevent reorder while reding result*/
+				rmb();  
 				for (i = 0; i < VNIC_DEVCMD_NARGS; i++)
 					vdev->args[i] = result->results[i];
 			}
@@ -430,17 +419,13 @@ static int vnic_dev_init_devcmd2(struct vnic_dev *vdev)
 		goto err_free_devcmd2;
 
 	fetch_index = ioread32(&vdev->devcmd2->wq.ctrl->fetch_index);
-	if (fetch_index == 0xFFFFFFFF) { /* check for hardware gone  */
+	if (fetch_index == 0xFFFFFFFF) {  
 		pr_err("error in devcmd2 init");
 		err = -ENODEV;
 		goto err_free_wq;
 	}
 
-	/*
-	 * Don't change fetch_index ever and
-	 * set posted_index same as fetch_index
-	 * when setting up the WQ for devcmd2.
-	 */
+	 
 	vnic_wq_init_start(&vdev->devcmd2->wq, 0, fetch_index,
 			fetch_index, 0, 0);
 
@@ -539,7 +524,7 @@ int vnic_dev_fw_info(struct vnic_dev *vdev,
 
 		a0 = vdev->fw_info_pa;
 
-		/* only get fw_info once and cache it */
+		 
 		err = vnic_dev_cmd(vdev, CMD_MCPU_FW_INFO, &a0, &a1, wait);
 	}
 
@@ -775,8 +760,8 @@ void vnic_dev_notify_unset(struct vnic_dev *vdev)
 	u64 a0, a1;
 	int wait = 1000;
 
-	a0 = 0;  /* paddr = 0 to unset notify buffer */
-	a1 = 0x0000ffff00000000ULL; /* intr num = -1 to unreg for intr */
+	a0 = 0;   
+	a1 = 0x0000ffff00000000ULL;  
 	a1 += sizeof(struct vnic_devcmd_notify);
 
 	vnic_dev_cmd(vdev, CMD_NOTIFY, &a0, &a1, wait);

@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Libata driver for the highpoint 366 and 368 UDMA66 ATA controllers.
- *
- * This driver is heavily based upon:
- *
- * linux/drivers/ide/pci/hpt366.c		Version 0.36	April 25, 2003
- *
- * Copyright (C) 1999-2003		Andre Hedrick <andre@linux-ide.org>
- * Portions Copyright (C) 2001	        Sun Microsystems, Inc.
- * Portions Copyright (C) 2003		Red Hat Inc
- *
- *
- * TODO
- *	Look into engine reset on timeout errors. Should not be required.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -30,26 +16,7 @@ struct hpt_clock {
 	u32	timing;
 };
 
-/* key for bus clock timings
- * bit
- * 0:3    data_high_time. Inactive time of DIOW_/DIOR_ for PIO and MW DMA.
- *        cycles = value + 1
- * 4:7    data_low_time. Active time of DIOW_/DIOR_ for PIO and MW DMA.
- *        cycles = value + 1
- * 8:11   cmd_high_time. Inactive time of DIOW_/DIOR_ during task file
- *        register access.
- * 12:15  cmd_low_time. Active time of DIOW_/DIOR_ during task file
- *        register access.
- * 16:18  udma_cycle_time. Clock cycles for UDMA xfer?
- * 19:21  pre_high_time. Time to initialize 1st cycle for PIO and MW DMA xfer.
- * 22:24  cmd_pre_high_time. Time to initialize 1st PIO cycle for task file
- *        register access.
- * 28     UDMA enable.
- * 29     DMA  enable.
- * 30     PIO_MST enable. If set, the chip is in bus master mode during
- *        PIO xfer.
- * 31     FIFO enable.
- */
+ 
 
 static const struct hpt_clock hpt366_40[] = {
 	{	XFER_UDMA_4,	0x900fd943	},
@@ -78,14 +45,14 @@ static const struct hpt_clock hpt366_33[] = {
 	{	XFER_UDMA_0,	0x90c8a731	},
 
 	{	XFER_MW_DMA_2,	0xa0c8a731	},
-	{	XFER_MW_DMA_1,	0xa0c8a732	},	/* 0xa0c8a733 */
+	{	XFER_MW_DMA_1,	0xa0c8a732	},	 
 	{	XFER_MW_DMA_0,	0xa0c8a797	},
 
 	{	XFER_PIO_4,	0xc0c8a731	},
 	{	XFER_PIO_3,	0xc0c8a742	},
 	{	XFER_PIO_2,	0xc0d0a753	},
-	{	XFER_PIO_1,	0xc0d0a7a3	},	/* 0xc0d0a793 */
-	{	XFER_PIO_0,	0xc0d0a7aa	},	/* 0xc0d0a7a7 */
+	{	XFER_PIO_1,	0xc0d0a7a3	},	 
+	{	XFER_PIO_0,	0xc0d0a7aa	},	 
 	{	0,		0x0120a7a7	}
 };
 
@@ -108,14 +75,7 @@ static const struct hpt_clock hpt366_25[] = {
 	{	0,		0x01208585	}
 };
 
-/**
- *	hpt36x_find_mode	-	find the hpt36x timing
- *	@ap: ATA port
- *	@speed: transfer mode
- *
- *	Return the 32bit register programming information for this channel
- *	that matches the speed provided.
- */
+ 
 
 static u32 hpt36x_find_mode(struct ata_port *ap, int speed)
 {
@@ -127,7 +87,7 @@ static u32 hpt36x_find_mode(struct ata_port *ap, int speed)
 		clocks++;
 	}
 	BUG();
-	return 0xffffffffU;	/* silence compiler warning */
+	return 0xffffffffU;	 
 }
 
 static const char * const bad_ata33[] = {
@@ -186,13 +146,7 @@ static int hpt_dma_blacklisted(const struct ata_device *dev, char *modestr,
 	return 0;
 }
 
-/**
- *	hpt366_filter	-	mode selection filter
- *	@adev: ATA device
- *	@mask: Current mask to manipulate and pass back
- *
- *	Block UDMA on devices that cause trouble with this controller.
- */
+ 
 
 static unsigned int hpt366_filter(struct ata_device *adev, unsigned int mask)
 {
@@ -214,10 +168,7 @@ static int hpt36x_cable_detect(struct ata_port *ap)
 	struct pci_dev *pdev = to_pci_dev(ap->host->dev);
 	u8 ata66;
 
-	/*
-	 * Each channel of pata_hpt366 occupies separate PCI function
-	 * as the primary channel and bit1 indicates the cable type.
-	 */
+	 
 	pci_read_config_byte(pdev, 0x5A, &ata66);
 	if (ata66 & 2)
 		return ATA_CBL_PATA40;
@@ -231,7 +182,7 @@ static void hpt366_set_mode(struct ata_port *ap, struct ata_device *adev,
 	u32 addr = 0x40 + 4 * adev->devno;
 	u32 mask, reg, t;
 
-	/* determine timing mask and find matching clock entry */
+	 
 	if (mode < XFER_MW_DMA_0)
 		mask = 0xc1f8ffff;
 	else if (mode < XFER_UDMA_0)
@@ -241,62 +192,33 @@ static void hpt366_set_mode(struct ata_port *ap, struct ata_device *adev,
 
 	t = hpt36x_find_mode(ap, mode);
 
-	/*
-	 * Combine new mode bits with old config bits and disable
-	 * on-chip PIO FIFO/buffer (and PIO MST mode as well) to avoid
-	 * problems handling I/O errors later.
-	 */
+	 
 	pci_read_config_dword(pdev, addr, &reg);
 	reg = ((reg & ~mask) | (t & mask)) & ~0xc0000000;
 	pci_write_config_dword(pdev, addr, reg);
 }
 
-/**
- *	hpt366_set_piomode		-	PIO setup
- *	@ap: ATA interface
- *	@adev: device on the interface
- *
- *	Perform PIO mode setup.
- */
+ 
 
 static void hpt366_set_piomode(struct ata_port *ap, struct ata_device *adev)
 {
 	hpt366_set_mode(ap, adev, adev->pio_mode);
 }
 
-/**
- *	hpt366_set_dmamode		-	DMA timing setup
- *	@ap: ATA interface
- *	@adev: Device being configured
- *
- *	Set up the channel for MWDMA or UDMA modes. Much the same as with
- *	PIO, load the mode number and then set MWDMA or UDMA flag.
- */
+ 
 
 static void hpt366_set_dmamode(struct ata_port *ap, struct ata_device *adev)
 {
 	hpt366_set_mode(ap, adev, adev->dma_mode);
 }
 
-/**
- *	hpt366_prereset		-	reset the hpt36x bus
- *	@link: ATA link to reset
- *	@deadline: deadline jiffies for the operation
- *
- *	Perform the initial reset handling for the 36x series controllers.
- *	Reset the hardware and state machine,
- */
+ 
 
 static int hpt366_prereset(struct ata_link *link, unsigned long deadline)
 {
 	struct ata_port *ap = link->ap;
 	struct pci_dev *pdev = to_pci_dev(ap->host->dev);
-	/*
-	 * HPT36x chips have one channel per function and have
-	 * both channel enable bits located differently and visible
-	 * to both functions -- really stupid design decision... :-(
-	 * Bit 4 is for the primary channel, bit 5 for the secondary.
-	 */
+	 
 	static const struct pci_bits hpt366_enable_bits = {
 		0x50, 1, 0x30, 0x30
 	};
@@ -316,9 +238,7 @@ static const struct scsi_host_template hpt36x_sht = {
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
-/*
- *	Configuration for HPT366/68
- */
+ 
 
 static struct ata_port_operations hpt366_port_ops = {
 	.inherits	= &ata_bmdma_port_ops,
@@ -329,13 +249,7 @@ static struct ata_port_operations hpt366_port_ops = {
 	.set_dmamode	= hpt366_set_dmamode,
 };
 
-/**
- *	hpt36x_init_chipset	-	common chip setup
- *	@dev: PCI device
- *
- *	Perform the chip setup work that must be done at both init and
- *	resume time
- */
+ 
 
 static void hpt36x_init_chipset(struct pci_dev *dev)
 {
@@ -346,35 +260,13 @@ static void hpt36x_init_chipset(struct pci_dev *dev)
 	pci_write_config_byte(dev, PCI_MIN_GNT, 0x08);
 	pci_write_config_byte(dev, PCI_MAX_LAT, 0x08);
 
-	/*
-	 * Now we'll have to force both channels enabled if at least one
-	 * of them has been enabled by BIOS...
-	 */
+	 
 	pci_read_config_byte(dev, 0x50, &mcr1);
 	if (mcr1 & 0x30)
 		pci_write_config_byte(dev, 0x50, mcr1 | 0x30);
 }
 
-/**
- *	hpt36x_init_one		-	Initialise an HPT366/368
- *	@dev: PCI device
- *	@id: Entry in match table
- *
- *	Initialise an HPT36x device. There are some interesting complications
- *	here. Firstly the chip may report 366 and be one of several variants.
- *	Secondly all the timings depend on the clock for the chip which we must
- *	detect and look up
- *
- *	This is the known chip mappings. It may be missing a couple of later
- *	releases.
- *
- *	Chip version		PCI		Rev	Notes
- *	HPT366			4 (HPT366)	0	UDMA66
- *	HPT366			4 (HPT366)	1	UDMA66
- *	HPT368			4 (HPT366)	2	UDMA66
- *	HPT37x/30x		4 (HPT366)	3+	Other driver
- *
- */
+ 
 
 static int hpt36x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 {
@@ -395,8 +287,8 @@ static int hpt36x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 	if (rc)
 		return rc;
 
-	/* May be a later chip in disguise. Check */
-	/* Newer chips are not in the HPT36x driver. Ignore them */
+	 
+	 
 	if (dev->revision > 2)
 		return -ENODEV;
 
@@ -404,8 +296,8 @@ static int hpt36x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 
 	pci_read_config_dword(dev, 0x40,  &reg1);
 
-	/* PCI clocking determines the ATA timing values to use */
-	/* info_hpt366 is safe against re-entry so we can scribble on it */
+	 
+	 
 	switch ((reg1 & 0xf00) >> 8) {
 	case 9:
 		hpriv = &hpt366_40;
@@ -417,7 +309,7 @@ static int hpt36x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 		hpriv = &hpt366_33;
 		break;
 	}
-	/* Now kick off ATA set up */
+	 
 	return ata_pci_bmdma_init_one(dev, ppi, &hpt36x_sht, (void *)hpriv, 0);
 }
 

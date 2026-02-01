@@ -1,27 +1,4 @@
-/*
- *  Copyright (C) 2007-2010 Lawrence Livermore National Security, LLC.
- *  Copyright (C) 2007 The Regents of the University of California.
- *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
- *  Written by Brian Behlendorf <behlendorf1@llnl.gov>.
- *  UCRL-CODE-235197
- *
- *  This file is part of the SPL, Solaris Porting Layer.
- *
- *  The SPL is free software; you can redistribute it and/or modify it
- *  under the terms of the GNU General Public License as published by the
- *  Free Software Foundation; either version 2 of the License, or (at your
- *  option) any later version.
- *
- *  The SPL is distributed in the hope that it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- *  for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with the SPL.  If not, see <http://www.gnu.org/licenses/>.
- *
- *  Solaris Porting Layer (SPL) Proc Implementation.
- */
+ 
 
 #include <sys/systeminfo.h>
 #include <sys/kstat.h>
@@ -79,13 +56,13 @@ proc_domemused(struct ctl_table *table, int write,
 		val = atomic64_read((atomic64_t *)table->data);
 #else
 		val = atomic_read((atomic_t *)table->data);
-#endif /* HAVE_ATOMIC64_T */
+#endif  
 		rc = proc_doulongvec_minmax(&dummy, write, buffer, lenp, ppos);
 	}
 
 	return (rc);
 }
-#endif /* DEBUG_KMEM */
+#endif  
 
 static int
 proc_doslab(struct ctl_table *table, int write,
@@ -109,11 +86,11 @@ proc_doslab(struct ctl_table *table, int write,
 
 		list_for_each_entry(skc, &spl_kmem_cache_list, skc_list) {
 
-			/* Only use slabs of the correct kmem/vmem type */
+			 
 			if (!(skc->skc_flags & mask))
 				continue;
 
-			/* Sum the specified field for selected slabs */
+			 
 			switch (mask & (KMC_TOTAL | KMC_ALLOC | KMC_MAX)) {
 			case KMC_TOTAL:
 				val += skc->skc_slab_size * skc->skc_slab_total;
@@ -149,15 +126,11 @@ proc_dohostid(struct ctl_table *table, int write,
 		snprintf(str, sizeof (str), "%lx",
 		    (unsigned long) zone_get_hostid(NULL));
 
-	/* always returns 0 */
+	 
 	proc_dostring(&dummy, write, buffer, lenp, ppos);
 
 	if (write) {
-		/*
-		 * We can't use proc_doulongvec_minmax() in the write
-		 * case here because hostid, while a hex value, has no
-		 * leading 0x, which confuses the helper function.
-		 */
+		 
 
 		hid = simple_strtoul(str, &end, 16);
 		if (str == end)
@@ -176,7 +149,7 @@ taskq_seq_show_headers(struct seq_file *f)
 	    "mina", "maxa", "cura", "flags");
 }
 
-/* indices into the lheads array below */
+ 
 #define	LHEAD_PEND	0
 #define	LHEAD_PRIO	1
 #define	LHEAD_DELAY	2
@@ -185,7 +158,7 @@ taskq_seq_show_headers(struct seq_file *f)
 #define	LHEAD_SIZE	5
 
 static unsigned int spl_max_show_tasks = 512;
-/* CSTYLED */
+ 
 module_param(spl_max_show_tasks, uint, 0644);
 MODULE_PARM_DESC(spl_max_show_tasks, "Max number of tasks shown in taskq proc");
 
@@ -207,7 +180,7 @@ taskq_seq_show_impl(struct seq_file *f, void *p, boolean_t allflag)
 	spin_lock_irqsave_nested(&tq->tq_lock, flags, tq->tq_lock_class);
 	spin_lock_irqsave(&tq->tq_wait_waitq.lock, wflags);
 
-	/* get the various lists and check whether they're empty */
+	 
 	lheads[LHEAD_PEND] = &tq->tq_pend_list;
 	lheads[LHEAD_PRIO] = &tq->tq_prio_list;
 	lheads[LHEAD_DELAY] = &tq->tq_delay_list;
@@ -225,18 +198,18 @@ taskq_seq_show_impl(struct seq_file *f, void *p, boolean_t allflag)
 			++have_lheads;
 	}
 
-	/* early return in non-"all" mode if lists are all empty */
+	 
 	if (!allflag && !have_lheads) {
 		spin_unlock_irqrestore(&tq->tq_wait_waitq.lock, wflags);
 		spin_unlock_irqrestore(&tq->tq_lock, flags);
 		return (0);
 	}
 
-	/* unlock the waitq quickly */
+	 
 	if (!lheads[LHEAD_WAIT])
 		spin_unlock_irqrestore(&tq->tq_wait_waitq.lock, wflags);
 
-	/* show the base taskq contents */
+	 
 	snprintf(name, sizeof (name), "%s/%d", tq->tq_name, tq->tq_instance);
 	seq_printf(f, "%-25s ", name);
 	seq_printf(f, "%5d %5d %5d %5d %5d %5d %12d %5d %10x\n",
@@ -244,7 +217,7 @@ taskq_seq_show_impl(struct seq_file *f, void *p, boolean_t allflag)
 	    tq->tq_maxthreads, tq->tq_pri, tq->tq_minalloc, tq->tq_maxalloc,
 	    tq->tq_nalloc, tq->tq_flags);
 
-	/* show the active list */
+	 
 	if (lheads[LHEAD_ACTIVE]) {
 		j = 0;
 		list_for_each_entry(tqt, &tq->tq_active_list, tqt_active_list) {
@@ -273,7 +246,7 @@ taskq_seq_show_impl(struct seq_file *f, void *p, boolean_t allflag)
 					seq_printf(f, "\n\t(truncated)");
 					break;
 				}
-				/* show the wait waitq list */
+				 
 				if (i == LHEAD_WAIT) {
 #ifdef HAVE_WAIT_QUEUE_HEAD_ENTRY
 					wq = list_entry(lh,
@@ -290,7 +263,7 @@ taskq_seq_show_impl(struct seq_file *f, void *p, boolean_t allflag)
 
 					tsk = wq->private;
 					seq_printf(f, " %d", tsk->pid);
-				/* pend, prio and delay lists */
+				 
 				} else {
 					tqe = list_entry(lh, taskq_ent_t,
 					    tqent_list);
@@ -382,13 +355,7 @@ slab_seq_show(struct seq_file *f, void *p)
 	ASSERT(skc->skc_magic == SKC_MAGIC);
 
 	if (skc->skc_flags & KMC_SLAB) {
-		/*
-		 * This cache is backed by a generic Linux kmem cache which
-		 * has its own accounting. For these caches we only track
-		 * the number of active allocated objects that exist within
-		 * the underlying Linux slabs. For the overall statistics of
-		 * the underlying Linux cache please refer to /proc/slabinfo.
-		 */
+		 
 		spin_lock(&skc->skc_lock);
 		uint64_t objs_allocated =
 		    percpu_counter_sum(&skc->skc_linux_alloc);
@@ -561,7 +528,7 @@ static struct ctl_table spl_kmem_table[] = {
 		.maxlen		= sizeof (atomic64_t),
 #else
 		.maxlen		= sizeof (atomic_t),
-#endif /* HAVE_ATOMIC64_T */
+#endif  
 		.mode		= 0444,
 		.proc_handler	= &proc_domemused,
 	},
@@ -574,7 +541,7 @@ static struct ctl_table spl_kmem_table[] = {
 		.mode		= 0444,
 		.proc_handler	= &proc_doulongvec_minmax,
 	},
-#endif /* DEBUG_KMEM */
+#endif  
 	{
 		.procname	= "slab_kvmem_total",
 		.data		= (void *)(KMC_KVMEM | KMC_TOTAL),
@@ -610,10 +577,7 @@ static struct ctl_table spl_kstat_table[] = {
 };
 
 static struct ctl_table spl_table[] = {
-	/*
-	 * NB No .strategy entries have been provided since
-	 * sysctl(8) prefers to go via /proc for portability.
-	 */
+	 
 	{
 		.procname	= "gitrev",
 		.data		= (char *)ZFS_META_GITREV,

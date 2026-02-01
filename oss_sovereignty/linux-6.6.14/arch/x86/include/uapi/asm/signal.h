@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _UAPI_ASM_X86_SIGNAL_H
 #define _UAPI_ASM_X86_SIGNAL_H
 
@@ -7,17 +7,17 @@
 #include <linux/time.h>
 #include <linux/compiler.h>
 
-/* Avoid too many header ordering problems.  */
+ 
 struct siginfo;
 
 #ifndef __KERNEL__
-/* Here we must cater to libcs that poke about in kernel headers.  */
+ 
 
 #define NSIG		32
 typedef unsigned long sigset_t;
 
-#endif /* __KERNEL__ */
-#endif /* __ASSEMBLY__ */
+#endif  
+#endif  
 
 
 #define SIGHUP		 1
@@ -51,14 +51,12 @@ typedef unsigned long sigset_t;
 #define SIGWINCH	28
 #define SIGIO		29
 #define SIGPOLL		SIGIO
-/*
-#define SIGLOST		29
-*/
+ 
 #define SIGPWR		30
 #define SIGSYS		31
 #define	SIGUNUSED	31
 
-/* These should not be considered constants from userland.  */
+ 
 #define SIGRTMIN	32
 #define SIGRTMAX	_NSIG
 
@@ -73,7 +71,7 @@ typedef unsigned long sigset_t;
 
 
 # ifndef __KERNEL__
-/* Here we must cater to libcs that poke about in kernel headers.  */
+ 
 #ifdef __i386__
 
 struct sigaction {
@@ -89,17 +87,17 @@ struct sigaction {
 #define sa_handler	_u._sa_handler
 #define sa_sigaction	_u._sa_sigaction
 
-#else /* __i386__ */
+#else  
 
 struct sigaction {
 	__sighandler_t sa_handler;
 	unsigned long sa_flags;
 	__sigrestore_t sa_restorer;
-	sigset_t sa_mask;		/* mask last for extensibility */
+	sigset_t sa_mask;		 
 };
 
-#endif /* !__i386__ */
-# endif /* ! __KERNEL__ */
+#endif  
+# endif  
 
 typedef struct sigaltstack {
 	void __user *ss_sp;
@@ -107,6 +105,6 @@ typedef struct sigaltstack {
 	__kernel_size_t ss_size;
 } stack_t;
 
-#endif /* __ASSEMBLY__ */
+#endif  
 
-#endif /* _UAPI_ASM_X86_SIGNAL_H */
+#endif  

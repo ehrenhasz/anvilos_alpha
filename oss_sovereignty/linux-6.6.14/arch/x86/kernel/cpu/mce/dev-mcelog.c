@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * /dev/mcelog driver
- *
- * K8 parts Copyright 2002,2003 Andi Kleen, SuSE Labs.
- * Rest from unknown author(s).
- * 2004 Andi Kleen. Rewrote most of it.
- * Copyright 2008 Intel Corporation
- * Author: Andi Kleen
- */
+
+ 
 
 #include <linux/miscdevice.h>
 #include <linux/slab.h>
@@ -23,11 +15,7 @@ static DEFINE_MUTEX(mce_chrdev_read_mutex);
 static char mce_helper[128];
 static char *mce_helper_argv[2] = { mce_helper, NULL };
 
-/*
- * Lockless MCE logging infrastructure.
- * This avoids deadlocks on printk locks without having to break locks. Also
- * separate MCEs from kernel messages to avoid bogus bug reports.
- */
+ 
 
 static struct mce_log_buffer *mcelog;
 
@@ -46,10 +34,7 @@ static int dev_mce_log(struct notifier_block *nb, unsigned long val,
 
 	entry = mcelog->next;
 
-	/*
-	 * When the buffer fills up discard new entries. Assume that the
-	 * earlier errors are the more interesting ones:
-	 */
+	 
 	if (entry >= mcelog->len) {
 		set_bit(MCE_OVERFLOW, (unsigned long *)&mcelog->flags);
 		goto unlock;
@@ -61,7 +46,7 @@ static int dev_mce_log(struct notifier_block *nb, unsigned long val,
 	mcelog->entry[entry].finished = 1;
 	mcelog->entry[entry].kflags = 0;
 
-	/* wake processes polling /dev/mcelog */
+	 
 	wake_up_interruptible(&mce_chrdev_wait);
 
 unlock:
@@ -116,13 +101,11 @@ static ssize_t set_trigger(struct device *s, struct device_attribute *attr,
 
 DEVICE_ATTR(trigger, 0644, show_trigger, set_trigger);
 
-/*
- * mce_chrdev: Character device /dev/mcelog to read and clear the MCE log.
- */
+ 
 
 static DEFINE_SPINLOCK(mce_chrdev_state_lock);
-static int mce_chrdev_open_count;	/* #times opened */
-static int mce_chrdev_open_exclu;	/* already open exclusive? */
+static int mce_chrdev_open_count;	 
+static int mce_chrdev_open_exclu;	 
 
 static int mce_chrdev_open(struct inode *inode, struct file *file)
 {
@@ -158,7 +141,7 @@ static int mce_chrdev_release(struct inode *inode, struct file *file)
 
 static int mce_apei_read_done;
 
-/* Collect MCE record of previous boot in persistent storage via APEI ERST. */
+ 
 static int __mce_read_apei(char __user **ubuf, size_t usize)
 {
 	int rc;
@@ -169,13 +152,10 @@ static int __mce_read_apei(char __user **ubuf, size_t usize)
 		return -EINVAL;
 
 	rc = apei_read_mce(&m, &record_id);
-	/* Error or no more MCE record */
+	 
 	if (rc <= 0) {
 		mce_apei_read_done = 1;
-		/*
-		 * When ERST is disabled, mce_chrdev_read() should return
-		 * "no record" instead of "no device."
-		 */
+		 
 		if (rc == -ENODEV)
 			return 0;
 		return rc;
@@ -183,12 +163,7 @@ static int __mce_read_apei(char __user **ubuf, size_t usize)
 	rc = -EFAULT;
 	if (copy_to_user(*ubuf, &m, sizeof(struct mce)))
 		return rc;
-	/*
-	 * In fact, we should have cleared the record after that has
-	 * been flushed to the disk or sent to network in
-	 * /sbin/mcelog, but we have no interface to support that now,
-	 * so just clear it to avoid duplication.
-	 */
+	 
 	rc = apei_clear_mce(record_id);
 	if (rc) {
 		mce_apei_read_done = 1;
@@ -214,7 +189,7 @@ static ssize_t mce_chrdev_read(struct file *filp, char __user *ubuf,
 			goto out;
 	}
 
-	/* Only supports full reads right now */
+	 
 	err = -EINVAL;
 	if (*off != 0 || usize < mcelog->len * sizeof(struct mce))
 		goto out;
@@ -297,10 +272,7 @@ static ssize_t mce_chrdev_write(struct file *filp, const char __user *ubuf,
 
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
-	/*
-	 * There are some cases where real MSR reads could slip
-	 * through.
-	 */
+	 
 	if (!boot_cpu_has(X86_FEATURE_MCE) || !boot_cpu_has(X86_FEATURE_MCA))
 		return -EIO;
 
@@ -312,10 +284,7 @@ static ssize_t mce_chrdev_write(struct file *filp, const char __user *ubuf,
 	if (m.extcpu >= num_possible_cpus() || !cpu_online(m.extcpu))
 		return -EINVAL;
 
-	/*
-	 * Need to give user space some time to set everything up,
-	 * so do it a jiffie or two later everywhere.
-	 */
+	 
 	schedule_timeout(2);
 
 	blocking_notifier_call_chain(&mce_injector_chain, 0, &m);
@@ -354,11 +323,11 @@ static __init int dev_mcelog_init_device(void)
 	mcelog->len = mce_log_len;
 	mcelog->recordlen = sizeof(struct mce);
 
-	/* register character device /dev/mcelog */
+	 
 	err = misc_register(&mce_chrdev_device);
 	if (err) {
 		if (err == -EBUSY)
-			/* Xen dom0 might have registered the device already. */
+			 
 			pr_info("Unable to init device /dev/mcelog, already registered");
 		else
 			pr_err("Unable to init device /dev/mcelog (rc: %d)\n", err);

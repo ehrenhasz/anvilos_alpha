@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * DMA driver for STMicroelectronics STi FDMA controller
- *
- * Copyright (C) 2014 STMicroelectronics
- *
- * Author: Ludovic Barre <Ludovic.barre@st.com>
- *	   Peter Griffin <peter.griffin@linaro.org>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -36,11 +29,7 @@ static int st_fdma_dreq_get(struct st_fdma_chan *fchan)
 	u32 dreq_line;
 	int try = 0;
 
-	/*
-	 * dreq_mask is shared for n channels of fdma, so all accesses must be
-	 * atomic. if the dreq_mask is changed between ffz and set_bit,
-	 * we retry
-	 */
+	 
 	do {
 		if (fdev->dreq_mask == ~0L) {
 			dev_err(fdev->dev, "No req lines available\n");
@@ -85,7 +74,7 @@ static void st_fdma_xfer_desc(struct st_fdma_chan *fchan)
 	cmd = FDMA_CMD_START(fchan->vchan.chan.chan_id);
 	ch_cmd = fchan->fdesc->node[0].pdesc | FDMA_CH_CMD_STA_START;
 
-	/* start the channel for the descriptor */
+	 
 	fnode_write(fchan, nbytes, FDMA_CNTN_OFST);
 	fchan_write(fchan, ch_cmd, FDMA_CH_CMD_OFST);
 	writel(cmd,
@@ -149,7 +138,7 @@ static irqreturn_t st_fdma_irq_handler(int irq, void *dev_id)
 				vchan_cyclic_callback(&fchan->fdesc->vdesc);
 			}
 
-			/* Start the next descriptor (if available) */
+			 
 			if (!fchan->fdesc)
 				st_fdma_xfer_desc(fchan);
 		}
@@ -266,7 +255,7 @@ static int st_fdma_alloc_chan_res(struct dma_chan *chan)
 {
 	struct st_fdma_chan *fchan = to_st_fdma_chan(chan);
 
-	/* Create the dma pool for descriptor allocation */
+	 
 	fchan->node_pool = dma_pool_create(dev_name(&chan->dev->device),
 					    fchan->fdev->dev,
 					    sizeof(struct st_fdma_hw_node),
@@ -320,7 +309,7 @@ static struct dma_async_tx_descriptor *st_fdma_prep_dma_memcpy(
 
 	fchan = to_st_fdma_chan(chan);
 
-	/* We only require a single descriptor */
+	 
 	fdesc = st_fdma_alloc_desc(fchan, 1);
 	if (!fdesc) {
 		dev_err(fchan->fdev->dev, "no memory for desc\n");
@@ -465,7 +454,7 @@ static struct dma_async_tx_descriptor *st_fdma_prep_dma_cyclic(
 		return NULL;
 	}
 
-	/* the buffer length must be a multiple of period_len */
+	 
 	if (len % period_len != 0) {
 		dev_err(fchan->fdev->dev, "len is not multiple of period\n");
 		return NULL;
@@ -546,7 +535,7 @@ static struct dma_async_tx_descriptor *st_fdma_prep_slave_sg(
 		hw_node->generic.length = sg_dma_len(sg);
 	}
 
-	/* interrupt at end of last node */
+	 
 	hw_node->control |= FDMA_NODE_CTRL_INT_EON;
 
 	return vchan_tx_prep(&fchan->vchan, &fdesc->vdesc, flags);
@@ -789,7 +778,7 @@ static int st_fdma_probe(struct platform_device *pdev)
 		goto err;
 	}
 
-	/* Initialise list of FDMA channels */
+	 
 	INIT_LIST_HEAD(&fdev->dma_device.channels);
 	for (i = 0; i < fdev->nr_channels; i++) {
 		struct st_fdma_chan *fchan = &fdev->chans[i];
@@ -799,7 +788,7 @@ static int st_fdma_probe(struct platform_device *pdev)
 		vchan_init(&fchan->vchan, &fdev->dma_device);
 	}
 
-	/* Initialise the FDMA dreq (reserve 0 & 31 for FDMA use) */
+	 
 	fdev->dreq_mask = BIT(0) | BIT(31);
 
 	dma_cap_set(DMA_SLAVE, fdev->dma_device.cap_mask);

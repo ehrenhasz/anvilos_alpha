@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2017-2018 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/bitfield.h>
 #include <net/pkt_cls.h>
@@ -11,7 +11,7 @@ void
 nfp_flower_compile_meta(struct nfp_flower_meta_tci *ext,
 			struct nfp_flower_meta_tci *msk, u8 key_type)
 {
-	/* Populate the metadata frame. */
+	 
 	ext->nfp_flow_key_layer = key_type;
 	ext->mask_id = ~0;
 
@@ -30,7 +30,7 @@ nfp_flower_compile_tci(struct nfp_flower_meta_tci *ext,
 		struct flow_match_vlan match;
 
 		flow_rule_match_vlan(rule, &match);
-		/* Populate the tci field. */
+		 
 		key_tci = NFP_FLOWER_MASK_VLAN_PRESENT;
 		key_tci |= FIELD_PREP(NFP_FLOWER_MASK_VLAN_PRIO,
 				      match.key->vlan_priority) |
@@ -102,7 +102,7 @@ nfp_flower_compile_mac(struct nfp_flower_mac_mpls *ext,
 		int i;
 
 		flow_rule_match_eth_addrs(rule, &match);
-		/* Populate mac frame. */
+		 
 		for (i = 0; i < ETH_ALEN; i++) {
 			tmp = match.key->dst[i] & match.mask->dst[i];
 			ext->mac_dst[i] |= tmp & (~msk->mac_dst[i]);
@@ -127,7 +127,7 @@ nfp_flower_compile_mpls(struct nfp_flower_mac_mpls *ext,
 
 		flow_rule_match_mpls(rule, &match);
 
-		/* Only support matching the first LSE */
+		 
 		if (match.mask->used_lses != 1) {
 			NL_SET_ERR_MSG_MOD(extack,
 					   "unsupported offload: invalid LSE depth for MPLS match offload");
@@ -153,10 +153,7 @@ nfp_flower_compile_mpls(struct nfp_flower_mac_mpls *ext,
 		ext->mpls_lse |= cpu_to_be32((key_mpls & msk_mpls));
 		msk->mpls_lse |= cpu_to_be32(msk_mpls);
 	} else if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_BASIC)) {
-		/* Check for mpls ether type and set NFP_FLOWER_MASK_MPLS_Q
-		 * bit, which indicates an mpls ether type but without any
-		 * mpls fields.
-		 */
+		 
 		struct flow_match_basic match;
 
 		flow_rule_match_basic(rule, &match);
@@ -488,7 +485,7 @@ nfp_flower_compile_ipv4_gre_tun(struct nfp_flower_ipv4_gre_tun *ext,
 				struct nfp_flower_ipv4_gre_tun *msk,
 				struct flow_rule *rule)
 {
-	/* NVGRE is the only supported GRE tunnel type */
+	 
 	ext->ethertype = cpu_to_be16(ETH_P_TEB);
 	msk->ethertype = cpu_to_be16(~0);
 
@@ -523,7 +520,7 @@ nfp_flower_compile_ipv6_gre_tun(struct nfp_flower_ipv6_gre_tun *ext,
 				struct nfp_flower_ipv6_gre_tun *msk,
 				struct flow_rule *rule)
 {
-	/* NVGRE is the only supported GRE tunnel type */
+	 
 	ext->ethertype = cpu_to_be16(ETH_P_TEB);
 	msk->ethertype = cpu_to_be16(~0);
 
@@ -565,7 +562,7 @@ int nfp_flower_compile_flow_match(struct nfp_app *app,
 	ext += sizeof(struct nfp_flower_meta_tci);
 	msk += sizeof(struct nfp_flower_meta_tci);
 
-	/* Populate Extended Metadata if Required. */
+	 
 	if (NFP_FLOWER_LAYER_EXT_META & key_ls->key_layer) {
 		nfp_flower_compile_ext_meta((struct nfp_flower_ext_meta *)ext,
 					    key_ls->key_layer_two);
@@ -575,13 +572,13 @@ int nfp_flower_compile_flow_match(struct nfp_app *app,
 		msk += sizeof(struct nfp_flower_ext_meta);
 	}
 
-	/* Populate Exact Port data. */
+	 
 	err = nfp_flower_compile_port((struct nfp_flower_in_port *)ext,
 				      port_id, false, tun_type, extack);
 	if (err)
 		return err;
 
-	/* Populate Mask Port Data. */
+	 
 	err = nfp_flower_compile_port((struct nfp_flower_in_port *)msk,
 				      port_id, true, tun_type, extack);
 	if (err)
@@ -660,9 +657,7 @@ int nfp_flower_compile_flow_match(struct nfp_app *app,
 			ext += sizeof(struct nfp_flower_ipv4_gre_tun);
 			msk += sizeof(struct nfp_flower_ipv4_gre_tun);
 
-			/* Store the tunnel destination in the rule data.
-			 * This must be present and be an exact match.
-			 */
+			 
 			nfp_flow->nfp_tun_ipv4_addr = dst;
 			nfp_tunnel_add_ipv4_off(app, dst);
 		}
@@ -696,9 +691,7 @@ int nfp_flower_compile_flow_match(struct nfp_app *app,
 			ext += sizeof(struct nfp_flower_ipv4_udp_tun);
 			msk += sizeof(struct nfp_flower_ipv4_udp_tun);
 
-			/* Store the tunnel destination in the rule data.
-			 * This must be present and be an exact match.
-			 */
+			 
 			nfp_flow->nfp_tun_ipv4_addr = dst;
 			nfp_tunnel_add_ipv4_off(app, dst);
 		}
@@ -708,9 +701,7 @@ int nfp_flower_compile_flow_match(struct nfp_app *app,
 		}
 	}
 
-	/* Check that the flow key does not exceed the maximum limit.
-	 * All structures in the key is multiples of 4 bytes, so use u32.
-	 */
+	 
 	ext_len = (u32 *)ext - (u32 *)nfp_flow->unmasked_data;
 	if (ext_len > NFP_FLOWER_KEY_MAX_LW) {
 		NL_SET_ERR_MSG_MOD(extack,

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020-21 Intel Corporation.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bitfield.h>
@@ -15,36 +13,33 @@
 MODULE_DESCRIPTION("IOSM Driver");
 MODULE_LICENSE("GPL v2");
 
-/* WWAN GUID */
+ 
 static guid_t wwan_acpi_guid = GUID_INIT(0xbad01b75, 0x22a8, 0x4f48, 0x87, 0x92,
 				       0xbd, 0xde, 0x94, 0x67, 0x74, 0x7d);
 
 static void ipc_pcie_resources_release(struct iosm_pcie *ipc_pcie)
 {
-	/* Free the MSI resources. */
+	 
 	ipc_release_irq(ipc_pcie);
 
-	/* Free mapped doorbell scratchpad bus memory into CPU space. */
+	 
 	iounmap(ipc_pcie->scratchpad);
 
-	/* Free mapped IPC_REGS bus memory into CPU space. */
+	 
 	iounmap(ipc_pcie->ipc_regs);
 
-	/* Releases all PCI I/O and memory resources previously reserved by a
-	 * successful call to pci_request_regions.  Call this function only
-	 * after all use of the PCI regions has ceased.
-	 */
+	 
 	pci_release_regions(ipc_pcie->pci);
 }
 
 static void ipc_pcie_cleanup(struct iosm_pcie *ipc_pcie)
 {
-	/* Free the shared memory resources. */
+	 
 	ipc_imem_cleanup(ipc_pcie->imem);
 
 	ipc_pcie_resources_release(ipc_pcie);
 
-	/* Signal to the system that the PCI device is not in use. */
+	 
 	pci_disable_device(ipc_pcie->pci);
 }
 
@@ -69,21 +64,14 @@ static int ipc_pcie_resources_request(struct iosm_pcie *ipc_pcie)
 	u32 cap = 0;
 	u32 ret;
 
-	/* Reserved PCI I/O and memory resources.
-	 * Mark all PCI regions associated with PCI device pci as
-	 * being reserved by owner IOSM_IPC.
-	 */
+	 
 	ret = pci_request_regions(pci, "IOSM_IPC");
 	if (ret) {
 		dev_err(ipc_pcie->dev, "failed pci request regions");
 		goto pci_request_region_fail;
 	}
 
-	/* Reserve the doorbell IPC REGS memory resources.
-	 * Remap the memory into CPU space. Arrange for the physical address
-	 * (BAR) to be visible from this driver.
-	 * pci_ioremap_bar() ensures that the memory is marked uncachable.
-	 */
+	 
 	ipc_pcie->ipc_regs = pci_ioremap_bar(pci, ipc_pcie->ipc_regs_bar_nr);
 
 	if (!ipc_pcie->ipc_regs) {
@@ -92,11 +80,7 @@ static int ipc_pcie_resources_request(struct iosm_pcie *ipc_pcie)
 		goto ipc_regs_remap_fail;
 	}
 
-	/* Reserve the MMIO scratchpad memory resources.
-	 * Remap the memory into CPU space. Arrange for the physical address
-	 * (BAR) to be visible from this driver.
-	 * pci_ioremap_bar() ensures that the memory is marked uncachable.
-	 */
+	 
 	ipc_pcie->scratchpad =
 		pci_ioremap_bar(pci, ipc_pcie->scratchpad_bar_nr);
 
@@ -106,19 +90,17 @@ static int ipc_pcie_resources_request(struct iosm_pcie *ipc_pcie)
 		goto scratch_remap_fail;
 	}
 
-	/* Install the irq handler triggered by CP. */
+	 
 	ret = ipc_acquire_irq(ipc_pcie);
 	if (ret) {
 		dev_err(ipc_pcie->dev, "acquiring MSI irq failed!");
 		goto irq_acquire_fail;
 	}
 
-	/* Enable bus-mastering for the IOSM IPC device. */
+	 
 	pci_set_master(pci);
 
-	/* Enable LTR if possible
-	 * This is needed for L1.2!
-	 */
+	 
 	pcie_capability_read_dword(ipc_pcie->pci, PCI_EXP_DEVCAP2, &cap);
 	if (cap & PCI_EXP_DEVCAP2_LTR)
 		pcie_capability_set_word(ipc_pcie->pci, PCI_EXP_DEVCTL2,
@@ -201,7 +183,7 @@ void ipc_pcie_config_aspm(struct iosm_pcie *ipc_pcie)
 {
 	bool parent_aspm_enabled, dev_aspm_enabled;
 
-	/* check if both root port and child supports ASPM L1 */
+	 
 	if (!ipc_pcie_check_aspm_supported(ipc_pcie, true) ||
 	    !ipc_pcie_check_aspm_supported(ipc_pcie, false))
 		return;
@@ -214,22 +196,20 @@ void ipc_pcie_config_aspm(struct iosm_pcie *ipc_pcie)
 		dev_aspm_enabled ? "Enabled" : "Disabled");
 }
 
-/* Initializes PCIe endpoint configuration */
+ 
 static void ipc_pcie_config_init(struct iosm_pcie *ipc_pcie)
 {
-	/* BAR0 is used for doorbell */
+	 
 	ipc_pcie->ipc_regs_bar_nr = IPC_DOORBELL_BAR0;
 
-	/* update HW configuration */
+	 
 	ipc_pcie->scratchpad_bar_nr = IPC_SCRATCHPAD_BAR2;
 	ipc_pcie->doorbell_reg_offset = IPC_DOORBELL_CH_OFFSET;
 	ipc_pcie->doorbell_write = IPC_WRITE_PTR_REG_0;
 	ipc_pcie->doorbell_capture = IPC_CAPTURE_PTR_REG_0;
 }
 
-/* This will read the BIOS WWAN RTD3 settings:
- * D0L1.2/D3L2/Disabled
- */
+ 
 static enum ipc_pcie_sleep_state ipc_pcie_read_bios_cfg(struct device *dev)
 {
 	enum ipc_pcie_sleep_state sleep_state = IPC_PCIE_D0L12;
@@ -267,28 +247,22 @@ static int ipc_pcie_probe(struct pci_dev *pci,
 	if (!ipc_pcie)
 		goto ret_fail;
 
-	/* Initialize ipc dbg component for the PCIe device */
+	 
 	ipc_pcie->dev = &pci->dev;
 
-	/* Set the driver specific data. */
+	 
 	pci_set_drvdata(pci, ipc_pcie);
 
-	/* Save the address of the PCI device configuration. */
+	 
 	ipc_pcie->pci = pci;
 
-	/* Update platform configuration */
+	 
 	ipc_pcie_config_init(ipc_pcie);
 
-	/* Initialize the device before it is used. Ask low-level code
-	 * to enable I/O and memory. Wake up the device if it was suspended.
-	 */
+	 
 	if (pci_enable_device(pci)) {
 		dev_err(ipc_pcie->dev, "failed to enable the AP PCIe device");
-		/* If enable of PCIe device has failed then calling
-		 * ipc_pcie_cleanup will panic the system. More over
-		 * ipc_pcie_cleanup() is required to be called after
-		 * ipc_imem_mount()
-		 */
+		 
 		goto pci_enable_fail;
 	}
 
@@ -301,8 +275,7 @@ static int ipc_pcie_probe(struct pci_dev *pci,
 	ipc_pcie_config_aspm(ipc_pcie);
 	dev_dbg(ipc_pcie->dev, "PCIe device enabled.");
 
-	/* Read WWAN RTD3 BIOS Setting
-	 */
+	 
 	ipc_pcie->d3l2_support = ipc_pcie_read_bios_cfg(&pci->dev);
 
 	ipc_pcie->suspend = 0;
@@ -310,7 +283,7 @@ static int ipc_pcie_probe(struct pci_dev *pci,
 	if (ipc_pcie_resources_request(ipc_pcie))
 		goto resources_req_fail;
 
-	/* Establish the link to the imem layer. */
+	 
 	ipc_pcie->imem = ipc_imem_init(ipc_pcie, pci->device,
 				       ipc_pcie->scratchpad, ipc_pcie->dev);
 	if (!ipc_pcie->imem) {
@@ -338,18 +311,17 @@ static const struct pci_device_id iosm_ipc_ids[] = {
 };
 MODULE_DEVICE_TABLE(pci, iosm_ipc_ids);
 
-/* Enter sleep in s2idle case
- */
+ 
 static int __maybe_unused ipc_pcie_suspend_s2idle(struct iosm_pcie *ipc_pcie)
 {
 	ipc_cp_irq_sleep_control(ipc_pcie, IPC_MEM_DEV_PM_FORCE_SLEEP);
 
-	/* Complete all memory stores before setting bit */
+	 
 	smp_mb__before_atomic();
 
 	set_bit(0, &ipc_pcie->suspend);
 
-	/* Complete all memory stores after setting bit */
+	 
 	smp_mb__after_atomic();
 
 	ipc_imem_pm_s2idle_sleep(ipc_pcie->imem, true);
@@ -357,27 +329,26 @@ static int __maybe_unused ipc_pcie_suspend_s2idle(struct iosm_pcie *ipc_pcie)
 	return 0;
 }
 
-/* Resume from sleep in s2idle case
- */
+ 
 static int __maybe_unused ipc_pcie_resume_s2idle(struct iosm_pcie *ipc_pcie)
 {
 	ipc_cp_irq_sleep_control(ipc_pcie, IPC_MEM_DEV_PM_FORCE_ACTIVE);
 
 	ipc_imem_pm_s2idle_sleep(ipc_pcie->imem, false);
 
-	/* Complete all memory stores before clearing bit. */
+	 
 	smp_mb__before_atomic();
 
 	clear_bit(0, &ipc_pcie->suspend);
 
-	/* Complete all memory stores after clearing bit. */
+	 
 	smp_mb__after_atomic();
 	return 0;
 }
 
 int __maybe_unused ipc_pcie_suspend(struct iosm_pcie *ipc_pcie)
 {
-	/* The HAL shall ask the shared memory layer whether D3 is allowed. */
+	 
 	ipc_imem_pm_suspend(ipc_pcie->imem);
 
 	dev_dbg(ipc_pcie->dev, "SUSPEND done");
@@ -386,9 +357,7 @@ int __maybe_unused ipc_pcie_suspend(struct iosm_pcie *ipc_pcie)
 
 int __maybe_unused ipc_pcie_resume(struct iosm_pcie *ipc_pcie)
 {
-	/* The HAL shall inform the shared memory layer that the device is
-	 * active.
-	 */
+	 
 	ipc_imem_pm_resume(ipc_pcie->imem);
 
 	dev_dbg(ipc_pcie->dev, "RESUME done");
@@ -512,7 +481,7 @@ struct sk_buff *ipc_pcie_alloc_skb(struct iosm_pcie *ipc_pcie, size_t size,
 
 	BUILD_BUG_ON(sizeof(*IPC_CB(skb)) > sizeof(skb->cb));
 
-	/* Store the mapping address in skb scratch pad for later usage */
+	 
 	IPC_CB(skb)->mapping = *mapping;
 	IPC_CB(skb)->direction = direction;
 	IPC_CB(skb)->len = size;

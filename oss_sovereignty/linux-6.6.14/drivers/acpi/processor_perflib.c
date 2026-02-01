@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * processor_perflib.c - ACPI Processor P-States Library ($Revision: 71 $)
- *
- *  Copyright (C) 2001, 2002 Andy Grover <andrew.grover@intel.com>
- *  Copyright (C) 2001, 2002 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
- *  Copyright (C) 2004       Dominik Brodowski <linux@brodo.de>
- *  Copyright (C) 2004  Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>
- *  			- Added processor hotplug support
- */
+
+ 
 
 #define pr_fmt(fmt) "ACPI: " fmt
 
@@ -26,22 +18,9 @@
 
 static DEFINE_MUTEX(performance_mutex);
 
-/*
- * _PPC support is implemented as a CPUfreq policy notifier:
- * This means each time a CPUfreq driver registered also with
- * the ACPI core is asked to change the speed policy, the maximum
- * value is adjusted so that it is within the platform limit.
- *
- * Also, when a new platform limit value is detected, the CPUfreq
- * policy is adjusted accordingly.
- */
+ 
 
-/* ignore_ppc:
- * -1 -> cpufreq low level drivers not initialized -> _PSS, etc. not called yet
- *       ignore _PPC
- *  0 -> cpufreq low level drivers initialized -> consider _PPC values
- *  1 -> ignore _PPC totally -> forced by user through boot param
- */
+ 
 static int ignore_ppc = -1;
 module_param(ignore_ppc, int, 0644);
 MODULE_PARM_DESC(ignore_ppc, "If the frequency of your machine gets wrongly" \
@@ -60,10 +39,7 @@ static int acpi_processor_get_platform_limit(struct acpi_processor *pr)
 	if (!pr)
 		return -EINVAL;
 
-	/*
-	 * _PPC indicates the maximum state currently supported by the platform
-	 * (e.g. 0 = states 0..n; 1 = states 1..n; etc.
-	 */
+	 
 	status = acpi_evaluate_integer(pr->handle, "_PPC", NULL, &ppc);
 	if (status != AE_NOT_FOUND) {
 		acpi_processor_ppc_in_use = true;
@@ -88,10 +64,7 @@ static int acpi_processor_get_platform_limit(struct acpi_processor *pr)
 	if (unlikely(!freq_qos_request_active(&pr->perflib_req)))
 		return 0;
 
-	/*
-	 * If _PPC returns 0, it means that all of the available states can be
-	 * used ("no limit").
-	 */
+	 
 	if (index == 0)
 		qos_value = FREQ_QOS_MAX_DEFAULT_VALUE;
 	else
@@ -107,13 +80,7 @@ static int acpi_processor_get_platform_limit(struct acpi_processor *pr)
 }
 
 #define ACPI_PROCESSOR_NOTIFY_PERFORMANCE	0x80
-/*
- * acpi_processor_ppc_ost: Notify firmware the _PPC evaluation status
- * @handle: ACPI processor handle
- * @status: the status code of _PPC evaluation
- *	0: success. OSPM is now using the performance state specified.
- *	1: failure. OSPM has not changed the number of P-states in use
- */
+ 
 static void acpi_processor_ppc_ost(acpi_handle handle, int status)
 {
 	if (acpi_has_method(handle, "_OST"))
@@ -126,20 +93,14 @@ void acpi_processor_ppc_has_changed(struct acpi_processor *pr, int event_flag)
 	int ret;
 
 	if (ignore_ppc || !pr->performance) {
-		/*
-		 * Only when it is notification event, the _OST object
-		 * will be evaluated. Otherwise it is skipped.
-		 */
+		 
 		if (event_flag)
 			acpi_processor_ppc_ost(pr->handle, 1);
 		return;
 	}
 
 	ret = acpi_processor_get_platform_limit(pr);
-	/*
-	 * Only when it is notification event, the _OST object
-	 * will be evaluated. Otherwise it is skipped.
-	 */
+	 
 	if (event_flag) {
 		if (ret < 0)
 			acpi_processor_ppc_ost(pr->handle, 1);
@@ -181,11 +142,7 @@ void acpi_processor_ppc_init(struct cpufreq_policy *policy)
 		if (!pr)
 			continue;
 
-		/*
-		 * Reset performance_platform_limit in case there is a stale
-		 * value in it, so as to make it match the "no limit" QoS value
-		 * below.
-		 */
+		 
 		pr->performance_platform_limit = 0;
 
 		ret = freq_qos_add_request(&policy->constraints,
@@ -230,9 +187,7 @@ static int acpi_processor_get_performance_control(struct acpi_processor *pr)
 		goto end;
 	}
 
-	/*
-	 * control_register
-	 */
+	 
 
 	obj = pct->package.elements[0];
 
@@ -245,9 +200,7 @@ static int acpi_processor_get_performance_control(struct acpi_processor *pr)
 	memcpy(&pr->performance->control_register, obj.buffer.pointer,
 	       sizeof(struct acpi_pct_register));
 
-	/*
-	 * status_register
-	 */
+	 
 
 	obj = pct->package.elements[1];
 
@@ -268,10 +221,7 @@ end:
 }
 
 #ifdef CONFIG_X86
-/*
- * Some AMDs have 50MHz frequency multiples, but only provide 100MHz rounding
- * in their ACPI data. Calculate the real values and fix up the _PSS data.
- */
+ 
 static void amd_fixup_frequency(struct acpi_processor_px *px, int i)
 {
 	u32 hi, lo, fid, did;
@@ -283,10 +233,7 @@ static void amd_fixup_frequency(struct acpi_processor_px *px, int i)
 	if ((boot_cpu_data.x86 == 0x10 && boot_cpu_data.x86_model < 10) ||
 	    boot_cpu_data.x86 == 0x11) {
 		rdmsr(MSR_AMD_PSTATE_DEF_BASE + index, lo, hi);
-		/*
-		 * MSR C001_0064+:
-		 * Bit 63: PstateEn. Read-write. If set, the P-state is valid.
-		 */
+		 
 		if (!(hi & BIT(31)))
 			return;
 
@@ -369,9 +316,7 @@ static int acpi_processor_get_performance_states(struct acpi_processor *pr)
 				  (u32) px->bus_master_latency,
 				  (u32) px->control, (u32) px->status);
 
-		/*
-		 * Check that ACPI's u64 MHz will be valid as u32 KHz in cpufreq
-		 */
+		 
 		if (!px->core_frequency ||
 		    (u32)(px->core_frequency * 1000) != px->core_frequency * 1000) {
 			pr_err(FW_BUG
@@ -381,9 +326,7 @@ static int acpi_processor_get_performance_states(struct acpi_processor *pr)
 				last_invalid = i;
 		} else {
 			if (last_invalid != -1) {
-				/*
-				 * Copy this valid entry over last_invalid entry
-				 */
+				 
 				memcpy(&(pr->performance->states[last_invalid]),
 				       px, sizeof(struct acpi_processor_px));
 				++last_invalid;
@@ -429,16 +372,13 @@ int acpi_processor_get_performance_info(struct acpi_processor *pr)
 	if (result)
 		goto update_bios;
 
-	/* We need to call _PPC once when cpufreq starts */
+	 
 	if (ignore_ppc != 1)
 		result = acpi_processor_get_platform_limit(pr);
 
 	return result;
 
-	/*
-	 * Having _PPC but missing frequencies (_PSS, _PCT) is a very good hint that
-	 * the BIOS is older than the CPU and does not know its frequencies
-	 */
+	 
  update_bios:
 #ifdef CONFIG_X86
 	if (acpi_has_method(pr->handle, "_PPC")) {
@@ -483,11 +423,7 @@ int acpi_processor_notify_smm(struct module *calling_module)
 	if (!try_module_get(calling_module))
 		return -EINVAL;
 
-	/*
-	 * is_done is set to negative if an error occurs and to 1 if no error
-	 * occurrs, but SMM has been notified already. This avoids repeated
-	 * notification which might lead to unexpected results.
-	 */
+	 
 	if (is_done != 0) {
 		if (is_done < 0)
 			result = is_done;
@@ -507,10 +443,7 @@ int acpi_processor_notify_smm(struct module *calling_module)
 	}
 
 	is_done = 1;
-	/*
-	 * Success. If there _PPC, unloading the cpufreq driver would be risky,
-	 * so disallow it in that case.
-	 */
+	 
 	if (acpi_processor_ppc_in_use)
 		return 0;
 
@@ -599,14 +532,11 @@ int acpi_processor_preregister_performance(
 
 	mutex_lock(&performance_mutex);
 
-	/*
-	 * Check if another driver has already registered, and abort before
-	 * changing pr->performance if it has. Check input data as well.
-	 */
+	 
 	for_each_possible_cpu(i) {
 		pr = per_cpu(processors, i);
 		if (!pr) {
-			/* Look only at processors in ACPI namespace */
+			 
 			continue;
 		}
 
@@ -621,7 +551,7 @@ int acpi_processor_preregister_performance(
 		}
 	}
 
-	/* Call _PSD for all CPUs */
+	 
 	for_each_possible_cpu(i) {
 		pr = per_cpu(processors, i);
 		if (!pr)
@@ -637,10 +567,7 @@ int acpi_processor_preregister_performance(
 	if (retval)
 		goto err_ret;
 
-	/*
-	 * Now that we have _PSD data from all CPUs, lets setup P-state
-	 * domain info.
-	 */
+	 
 	for_each_possible_cpu(i) {
 		pr = per_cpu(processors, i);
 		if (!pr)
@@ -655,7 +582,7 @@ int acpi_processor_preregister_performance(
 		if (pdomain->num_processors <= 1)
 			continue;
 
-		/* Validate the Domain info */
+		 
 		count_target = pdomain->num_processors;
 		if (pdomain->coord_type == DOMAIN_COORD_TYPE_SW_ALL)
 			pr->performance->shared_type = CPUFREQ_SHARED_TYPE_ALL;
@@ -676,7 +603,7 @@ int acpi_processor_preregister_performance(
 			if (match_pdomain->domain != pdomain->domain)
 				continue;
 
-			/* Here i and j are in the same domain */
+			 
 
 			if (match_pdomain->num_processors != count_target) {
 				retval = -EINVAL;
@@ -717,13 +644,13 @@ err_ret:
 		if (!pr || !pr->performance)
 			continue;
 
-		/* Assume no coordination on any error parsing domain info */
+		 
 		if (retval) {
 			cpumask_clear(pr->performance->shared_cpu_map);
 			cpumask_set_cpu(i, pr->performance->shared_cpu_map);
 			pr->performance->shared_type = CPUFREQ_SHARED_TYPE_NONE;
 		}
-		pr->performance = NULL; /* Will be set for real in register */
+		pr->performance = NULL;  
 	}
 
 err_out:

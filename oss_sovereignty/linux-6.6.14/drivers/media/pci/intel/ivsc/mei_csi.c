@@ -1,16 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2023 Intel Corporation. All rights reserved.
- * Intel Visual Sensing Controller CSI Linux driver
- */
 
-/*
- * To set ownership of CSI-2 link and to configure CSI-2 link, there
- * are specific commands, which are sent via MEI protocol. The send
- * command function uses "completion" as a synchronization mechanism.
- * The response for command is received via a mei callback which wakes
- * up the caller. There can be only one outstanding command at a time.
- */
+ 
+
+ 
 
 #include <linux/completion.h>
 #include <linux/delay.h>
@@ -35,36 +26,32 @@
 
 #define MEI_CSI_LINK_FREQ_400MHZ 400000000ULL
 
-/* the 5s used here is based on experiment */
+ 
 #define CSI_CMD_TIMEOUT (5 * HZ)
-/* to setup CSI-2 link an extra delay needed and determined experimentally */
+ 
 #define CSI_FW_READY_DELAY_MS 100
-/* link frequency unit is 100kHz */
+ 
 #define CSI_LINK_FREQ(x) ((u32)(div_u64(x, 100 * HZ_PER_KHZ)))
 
-/*
- * identify the command id supported by firmware
- * IPC, as well as the privacy notification id
- * used when processing privacy event.
- */
+ 
 enum csi_cmd_id {
-	/* used to set csi ownership */
+	 
 	CSI_SET_OWNER = 0,
 
-	/* used to configure CSI-2 link */
+	 
 	CSI_SET_CONF = 2,
 
-	/* privacy notification id used when privacy state changes */
+	 
 	CSI_PRIVACY_NOTIF = 6,
 };
 
-/* CSI-2 link ownership definition */
+ 
 enum csi_link_owner {
 	CSI_LINK_IVSC,
 	CSI_LINK_HOST,
 };
 
-/* privacy status definition */
+ 
 enum ivsc_privacy_status {
 	CSI_PRIVACY_OFF,
 	CSI_PRIVACY_ON,
@@ -77,19 +64,19 @@ enum csi_pads {
 	CSI_NUM_PADS
 };
 
-/* configuration of the CSI-2 link between host and IVSC */
+ 
 struct csi_link_cfg {
-	/* number of data lanes used on the CSI-2 link */
+	 
 	u32 nr_of_lanes;
 
-	/* frequency of the CSI-2 link */
+	 
 	u32 link_freq;
 
-	/* for future use */
+	 
 	u32 rsvd[2];
 } __packed;
 
-/* CSI command structure */
+ 
 struct csi_cmd {
 	u32 cmd_id;
 	union _cmd_param {
@@ -98,7 +85,7 @@ struct csi_cmd {
 	} param;
 } __packed;
 
-/* CSI notification structure */
+ 
 struct csi_notif {
 	u32 cmd_id;
 	int status;
@@ -111,11 +98,11 @@ struct csi_notif {
 struct mei_csi {
 	struct mei_cl_device *cldev;
 
-	/* command response */
+	 
 	struct csi_notif cmd_response;
-	/* used to wait for command response from firmware */
+	 
 	struct completion cmd_completion;
-	/* protect command download */
+	 
 	struct mutex lock;
 
 	struct v4l2_subdev subdev;
@@ -125,18 +112,18 @@ struct mei_csi {
 	struct v4l2_ctrl *freq_ctrl;
 	struct v4l2_ctrl *privacy_ctrl;
 	unsigned int remote_pad;
-	/* start streaming or not */
+	 
 	int streaming;
 
 	struct media_pad pads[CSI_NUM_PADS];
 	struct v4l2_mbus_framefmt format_mbus[CSI_NUM_PADS];
 
-	/* number of data lanes used on the CSI-2 link */
+	 
 	u32 nr_of_lanes;
-	/* frequency of the CSI-2 link */
+	 
 	u64 link_freq;
 
-	/* privacy status */
+	 
 	enum ivsc_privacy_status status;
 };
 
@@ -166,7 +153,7 @@ static inline struct mei_csi *ctrl_to_csi(struct v4l2_ctrl *ctrl)
 	return container_of(ctrl->handler, struct mei_csi, ctrl_handler);
 }
 
-/* send a command to firmware and mutex must be held by caller */
+ 
 static int mei_csi_send(struct mei_csi *csi, u8 *buf, size_t len)
 {
 	struct csi_cmd *cmd = (struct csi_cmd *)buf;
@@ -187,7 +174,7 @@ static int mei_csi_send(struct mei_csi *csi, u8 *buf, size_t len)
 		goto out;
 	}
 
-	/* command response status */
+	 
 	ret = csi->cmd_response.status;
 	if (ret) {
 		ret = -EINVAL;
@@ -201,7 +188,7 @@ out:
 	return ret;
 }
 
-/* set CSI-2 link ownership */
+ 
 static int csi_set_link_owner(struct mei_csi *csi, enum csi_link_owner owner)
 {
 	struct csi_cmd cmd = { 0 };
@@ -221,7 +208,7 @@ static int csi_set_link_owner(struct mei_csi *csi, enum csi_link_owner owner)
 	return ret;
 }
 
-/* configure CSI-2 link between host and IVSC */
+ 
 static int csi_set_link_cfg(struct mei_csi *csi)
 {
 	struct csi_cmd cmd = { 0 };
@@ -236,11 +223,7 @@ static int csi_set_link_cfg(struct mei_csi *csi)
 	mutex_lock(&csi->lock);
 
 	ret = mei_csi_send(csi, (u8 *)&cmd, cmd_size);
-	/*
-	 * wait configuration ready if download success. placing
-	 * delay under mutex is to make sure current command flow
-	 * completed before starting a possible new one.
-	 */
+	 
 	if (!ret)
 		msleep(CSI_FW_READY_DELAY_MS);
 
@@ -249,7 +232,7 @@ static int csi_set_link_cfg(struct mei_csi *csi)
 	return ret;
 }
 
-/* callback for receive */
+ 
 static void mei_csi_rx(struct mei_cl_device *cldev)
 {
 	struct mei_csi *csi = mei_cldev_get_drvdata(cldev);
@@ -296,12 +279,12 @@ static int mei_csi_set_stream(struct v4l2_subdev *sd, int enable)
 		}
 		csi->link_freq = freq;
 
-		/* switch CSI-2 link to host */
+		 
 		ret = csi_set_link_owner(csi, CSI_LINK_HOST);
 		if (ret < 0)
 			goto err;
 
-		/* configure CSI-2 link */
+		 
 		ret = csi_set_link_cfg(csi);
 		if (ret < 0)
 			goto err_switch;
@@ -312,7 +295,7 @@ static int mei_csi_set_stream(struct v4l2_subdev *sd, int enable)
 	} else if (!enable && csi->streaming == 1) {
 		v4l2_subdev_call(csi->remote, video, s_stream, 0);
 
-		/* switch CSI-2 link to IVSC */
+		 
 		ret = csi_set_link_owner(csi, CSI_LINK_IVSC);
 		if (ret < 0)
 			dev_warn(&csi->cldev->dev,
@@ -805,7 +788,7 @@ static void mei_csi_remove(struct mei_cl_device *cldev)
 
 static const struct mei_cl_device_id mei_csi_tbl[] = {
 	{ MEI_CSI_DRIVER_NAME, MEI_CSI_UUID, MEI_CL_VERSION_ANY },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(mei, mei_csi_tbl);
 

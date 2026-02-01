@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Subdriver for Scopium astro-camera (DTCS033, 0547:7303)
- *
- * Copyright (C) 2014 Robert Butora (robert.butora.fi@gmail.com)
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #define MODULE_NAME "dtcs033"
@@ -21,7 +17,7 @@ struct dtcs033_usb_requests {
 	u16 wLength;
 };
 
-/* send a usb request */
+ 
 static void reg_rw(struct gspca_dev *gspca_dev,
 		u8 bRequestType, u8 bRequest,
 		u16 wValue, u16 wIndex, u16 wLength)
@@ -46,7 +42,7 @@ static void reg_rw(struct gspca_dev *gspca_dev,
 
 	return;
 }
-/* send several usb in/out requests */
+ 
 static int reg_reqs(struct gspca_dev *gspca_dev,
 		    const struct dtcs033_usb_requests *preqs, int n_reqs)
 {
@@ -79,17 +75,17 @@ static int reg_reqs(struct gspca_dev *gspca_dev,
 	return gspca_dev->usb_err;
 }
 
-/* -- subdriver interface implementation -- */
+ 
 
 #define DT_COLS (640)
 static const struct v4l2_pix_format dtcs033_mode[] = {
-	/* raw Bayer patterned output */
+	 
 	{DT_COLS, 480, V4L2_PIX_FMT_GREY, V4L2_FIELD_NONE,
 		.bytesperline = DT_COLS,
 		.sizeimage = DT_COLS*480,
 		.colorspace = V4L2_COLORSPACE_SRGB,
 	},
-	/* this mode will demosaic the Bayer pattern */
+	 
 	{DT_COLS, 480, V4L2_PIX_FMT_SRGGB8, V4L2_FIELD_NONE,
 		.bytesperline = DT_COLS,
 		.sizeimage = DT_COLS*480,
@@ -97,7 +93,7 @@ static const struct v4l2_pix_format dtcs033_mode[] = {
 	}
 };
 
-/* config called at probe time */
+ 
 static int sd_config(struct gspca_dev *gspca_dev,
 		const struct usb_device_id *id)
 {
@@ -111,50 +107,50 @@ static int sd_config(struct gspca_dev *gspca_dev,
 	return 0;
 }
 
-/* init called at probe and resume time */
+ 
 static int sd_init(struct gspca_dev *gspca_dev)
 {
 	return 0;
 }
 
-/* start stop the camera */
+ 
 static int  dtcs033_start(struct gspca_dev *gspca_dev);
 static void dtcs033_stopN(struct gspca_dev *gspca_dev);
 
-/* intercept camera image data */
+ 
 static void dtcs033_pkt_scan(struct gspca_dev *gspca_dev,
-			u8 *data,  /* packet data */
-			int len)   /* packet data length */
+			u8 *data,   
+			int len)    
 {
-	/* drop incomplete frames */
+	 
 	if (len != DT_COLS*512) {
 		gspca_dev->last_packet_type = DISCARD_PACKET;
-		/* gspca.c: discard invalidates the whole frame. */
+		 
 		return;
 	}
 
-	/* forward complete frames */
+	 
 	gspca_frame_add(gspca_dev, FIRST_PACKET, NULL, 0);
 	gspca_frame_add(gspca_dev, INTER_PACKET,
 		data + 16*DT_COLS,
-		len  - 32*DT_COLS); /* skip first & last 16 lines */
+		len  - 32*DT_COLS);  
 	gspca_frame_add(gspca_dev, LAST_PACKET,  NULL, 0);
 
 	return;
 }
 
-/* -- controls: exposure and gain -- */
+ 
 
 static void dtcs033_setexposure(struct gspca_dev *gspca_dev,
 			s32 expo, s32 gain)
 {
-	/* gain [dB] encoding */
+	 
 	u16 sGain   = (u16)gain;
 	u16 gainVal = 224+(sGain-14)*(768-224)/(33-14);
 	u16 wIndex =  0x0100|(0x00FF&gainVal);
 	u16 wValue = (0xFF00&gainVal)>>8;
 
-	/* exposure time [msec] encoding */
+	 
 	u16 sXTime   = (u16)expo;
 	u16 xtimeVal = (524*(150-(sXTime-1)))/150;
 
@@ -173,11 +169,11 @@ static void dtcs033_setexposure(struct gspca_dev *gspca_dev,
 		gspca_err(gspca_dev, "usb error in setexposure(time) sequence\n");
 }
 
-/* specific webcam descriptor */
+ 
 struct sd {
-	struct gspca_dev gspca_dev;/* !! must be the first item */
+	struct gspca_dev gspca_dev; 
 
-	/* exposure & gain controls */
+	 
 	struct {
 		struct v4l2_ctrl *exposure;
 		struct v4l2_ctrl *gain;
@@ -220,13 +216,13 @@ static int dtcs033_init_controls(struct gspca_dev *gspca_dev)
 
 	gspca_dev->vdev.ctrl_handler = hdl;
 	v4l2_ctrl_handler_init(hdl, 2);
-	/*                               min max step default */
+	 
 	sd->exposure = v4l2_ctrl_new_std(hdl, &sd_ctrl_ops,
 				V4L2_CID_EXPOSURE,
-				1,  150,  1,  75);/* [msec] */
+				1,  150,  1,  75); 
 	sd->gain     = v4l2_ctrl_new_std(hdl, &sd_ctrl_ops,
 				V4L2_CID_GAIN,
-				14,  33,  1,  24);/* [dB] */
+				14,  33,  1,  24); 
 	if (hdl->error) {
 		gspca_err(gspca_dev, "Could not initialize controls: %d\n",
 			  hdl->error);
@@ -237,7 +233,7 @@ static int dtcs033_init_controls(struct gspca_dev *gspca_dev)
 	return 0;
 }
 
-/* sub-driver description */
+ 
 static const struct sd_desc sd_desc = {
 	.name     = MODULE_NAME,
 	.config   = sd_config,
@@ -248,7 +244,7 @@ static const struct sd_desc sd_desc = {
 	.init_controls = dtcs033_init_controls,
 };
 
-/* -- module initialisation -- */
+ 
 
 static const struct usb_device_id device_table[] = {
 	{USB_DEVICE(0x0547, 0x7303)},
@@ -256,7 +252,7 @@ static const struct usb_device_id device_table[] = {
 };
 MODULE_DEVICE_TABLE(usb, device_table);
 
-/* device connect */
+ 
 static int sd_probe(struct usb_interface *intf,
 			const struct usb_device_id *id)
 {
@@ -279,15 +275,9 @@ static struct usb_driver sd_driver = {
 module_usb_driver(sd_driver);
 
 
-/* ---------------------------------------------------------
- USB requests to start/stop the camera [USB 2.0 spec Ch.9].
-
- bRequestType :
- 0x40 =  USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
- 0xC0 =  USB_DIR_IN  | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
-*/
+ 
 static const struct dtcs033_usb_requests dtcs033_start_reqs[] = {
-/* -- bRequest,wValue,wIndex,wLength */
+ 
 { 0x40, 0x01, 0x0001, 0x000F, 0x0000 },
 { 0x40, 0x01, 0x0000, 0x000F, 0x0000 },
 { 0x40, 0x01, 0x0001, 0x000F, 0x0000 },
@@ -411,7 +401,7 @@ static const struct dtcs033_usb_requests dtcs033_start_reqs[] = {
 };
 
 static const struct dtcs033_usb_requests dtcs033_stop_reqs[] = {
-/* -- bRequest,wValue,wIndex,wLength */
+ 
 { 0x40, 0x01, 0x0001, 0x000F, 0x0000 },
 { 0x40, 0x01, 0x0000, 0x000F, 0x0000 },
 { 0x40, 0x18, 0x0000, 0x0003, 0x0000 }

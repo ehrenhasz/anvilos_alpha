@@ -1,29 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012 Cyril Plisko. All rights reserved.
- * Copyright (c) 2013, 2017 by Delphix. All rights reserved.
- * Copyright (c) 2021, 2022 by Pawel Jakub Dawidek
- */
+ 
+ 
 
 #include <sys/types.h>
 #include <sys/param.h>
@@ -51,21 +27,9 @@
 #include <sys/dmu_objset.h>
 #include <sys/zfeature.h>
 
-/*
- * NB: FreeBSD expects to be able to do vnode locking in lookup and
- * hold the locks across all subsequent VOPs until vput is called.
- * This means that its zfs vnops routines can't do any internal locking.
- * In order to have the same contract as the Linux vnops there would
- * needed to be duplicate locked vnops. If the vnops were used more widely
- * in common code this would likely be preferable. However, currently
- * this is the only file where this is the case.
- */
+ 
 
-/*
- * Functions to replay ZFS intent log (ZIL) records
- * The functions are called through a function vector (zfs_replay_vector)
- * which is indexed by the transaction type.
- */
+ 
 
 static void
 zfs_init_vattr(vattr_t *vap, uint64_t mask, uint64_t mode,
@@ -102,7 +66,7 @@ zfs_replay_xvattr(lr_attr_t *lrattr, xvattr_t *xvap)
 
 	xvap->xva_vattr.va_mask |= ATTR_XVATTR;
 	if ((xoap = xva_getxoptattr(xvap)) == NULL) {
-		xvap->xva_vattr.va_mask &= ~ATTR_XVATTR; /* shouldn't happen */
+		xvap->xva_vattr.va_mask &= ~ATTR_XVATTR;  
 		return;
 	}
 
@@ -146,10 +110,7 @@ zfs_replay_xvattr(lr_attr_t *lrattr, xvattr_t *xvap)
 
 		memcpy(xoap->xoa_av_scanstamp, scanstamp, AV_SCANSTAMP_SZ);
 	} else if (XVA_ISSET_REQ(xvap, XAT_PROJID)) {
-		/*
-		 * XAT_PROJID and XAT_AV_SCANSTAMP will never be valid
-		 * at the same time, so we can share the same space.
-		 */
+		 
 		memcpy(&xoap->xoa_projid, scanstamp, sizeof (uint64_t));
 	}
 	if (XVA_ISSET_REQ(xvap, XAT_REPARSE))
@@ -193,16 +154,11 @@ zfs_replay_fuid_domain_common(zfs_fuid_info_t *fuid_infop, void *start,
 	return (start);
 }
 
-/*
- * Set the uid/gid in the fuid_info structure.
- */
+ 
 static void
 zfs_replay_fuid_ugid(zfs_fuid_info_t *fuid_infop, uint64_t uid, uint64_t gid)
 {
-	/*
-	 * If owner or group are log specific FUIDs then slurp up
-	 * domain information and build zfs_fuid_info_t
-	 */
+	 
 	if (IS_EPHEMERAL(uid))
 		fuid_infop->z_fuid_owner = uid;
 
@@ -210,9 +166,7 @@ zfs_replay_fuid_ugid(zfs_fuid_info_t *fuid_infop, uint64_t uid, uint64_t gid)
 		fuid_infop->z_fuid_group = gid;
 }
 
-/*
- * Load fuid domains into fuid_info_t
- */
+ 
 static zfs_fuid_info_t *
 zfs_replay_fuid_domain(void *buf, void **end, uint64_t uid, uint64_t gid)
 {
@@ -237,9 +191,7 @@ zfs_replay_fuid_domain(void *buf, void **end, uint64_t uid, uint64_t gid)
 	return (fuid_infop);
 }
 
-/*
- * load zfs_fuid_t's and fuid_domains into fuid_info_t
- */
+ 
 static zfs_fuid_info_t *
 zfs_replay_fuids(void *start, void **end, int idcnt, int domcnt, uint64_t uid,
     uint64_t gid)
@@ -274,26 +226,23 @@ zfs_replay_fuids(void *start, void **end, int idcnt, int domcnt, uint64_t uid,
 static void
 zfs_replay_swap_attrs(lr_attr_t *lrattr)
 {
-	/* swap the lr_attr structure */
+	 
 	byteswap_uint32_array(lrattr, sizeof (*lrattr));
-	/* swap the bitmap */
+	 
 	byteswap_uint32_array(lrattr + 1, (lrattr->lr_attr_masksize - 1) *
 	    sizeof (uint32_t));
-	/* swap the attributes, create time + 64 bit word for attributes */
+	 
 	byteswap_uint64_array((caddr_t)(lrattr + 1) + (sizeof (uint32_t) *
 	    (lrattr->lr_attr_masksize - 1)), 3 * sizeof (uint64_t));
 }
 
-/*
- * Replay file create with optional ACL, xvattr information as well
- * as option FUID information.
- */
+ 
 static int
 zfs_replay_create_acl(void *arg1, void *arg2, boolean_t byteswap)
 {
 	zfsvfs_t *zfsvfs = arg1;
 	lr_acl_create_t *lracl = arg2;
-	char *name = NULL;		/* location determined later */
+	char *name = NULL;		 
 	lr_create_t *lr = (lr_create_t *)lracl;
 	znode_t *dzp;
 	znode_t *zp;
@@ -321,7 +270,7 @@ zfs_replay_create_acl(void *arg1, void *arg2, boolean_t byteswap)
 
 		aclstart = (caddr_t)(lracl + 1) + xvatlen;
 		zfs_ace_byteswap(aclstart, lracl->lr_acl_bytes, B_FALSE);
-		/* swap fuids */
+		 
 		if (lracl->lr_fuidcnt) {
 			byteswap_uint64_array((caddr_t)aclstart +
 			    ZIL_ACE_LENGTH(lracl->lr_acl_bytes),
@@ -339,14 +288,7 @@ zfs_replay_create_acl(void *arg1, void *arg2, boolean_t byteswap)
 	zfs_init_vattr(&xva.xva_vattr, ATTR_MODE | ATTR_UID | ATTR_GID,
 	    lr->lr_mode, lr->lr_uid, lr->lr_gid, lr->lr_rdev, objid);
 
-	/*
-	 * All forms of zfs create (create, mkdir, mkxattrdir, symlink)
-	 * eventually end up in zfs_mknode(), which assigns the object's
-	 * creation time, generation number, and dnode size. The generic
-	 * zfs_create() has no concept of these attributes, so we smuggle
-	 * the values inside the vattr's otherwise unused va_ctime,
-	 * va_nblocks, and va_fsid fields.
-	 */
+	 
 	ZFS_TIME_DECODE(&xva.xva_vattr.va_ctime, lr->lr_crtime);
 	xva.xva_vattr.va_nblocks = lr->lr_gen;
 	xva.xva_vattr.va_fsid = dnodesize;
@@ -455,8 +397,8 @@ zfs_replay_create(void *arg1, void *arg2, boolean_t byteswap)
 {
 	zfsvfs_t *zfsvfs = arg1;
 	lr_create_t *lr = arg2;
-	char *name = NULL;		/* location determined later */
-	char *link;			/* symlink content follows name */
+	char *name = NULL;		 
+	char *link;			 
 	znode_t *dzp;
 	znode_t *zp = NULL;
 	xvattr_t xva;
@@ -488,14 +430,7 @@ zfs_replay_create(void *arg1, void *arg2, boolean_t byteswap)
 	zfs_init_vattr(&xva.xva_vattr, ATTR_MODE | ATTR_UID | ATTR_GID,
 	    lr->lr_mode, lr->lr_uid, lr->lr_gid, lr->lr_rdev, objid);
 
-	/*
-	 * All forms of zfs create (create, mkdir, mkxattrdir, symlink)
-	 * eventually end up in zfs_mknode(), which assigns the object's
-	 * creation time, generation number, and dnode slot count. The
-	 * generic zfs_create() has no concept of these attributes, so
-	 * we smuggle the values inside the vattr's otherwise unused
-	 * va_ctime, va_nblocks, and va_fsid fields.
-	 */
+	 
 	ZFS_TIME_DECODE(&xva.xva_vattr.va_ctime, lr->lr_crtime);
 	xva.xva_vattr.va_nblocks = lr->lr_gen;
 	xva.xva_vattr.va_fsid = dnodesize;
@@ -507,12 +442,7 @@ zfs_replay_create(void *arg1, void *arg2, boolean_t byteswap)
 	if (lr->lr_common.lrc_txtype & TX_CI)
 		vflg |= FIGNORECASE;
 
-	/*
-	 * Symlinks don't have fuid info, and CIFS never creates
-	 * symlinks.
-	 *
-	 * The _ATTR versions will grab the fuid info in their subcases.
-	 */
+	 
 	if (txtype != TX_SYMLINK &&
 	    txtype != TX_MKDIR_ATTR &&
 	    txtype != TX_CREATE_ATTR) {
@@ -608,7 +538,7 @@ zfs_replay_remove(void *arg1, void *arg2, boolean_t byteswap)
 {
 	zfsvfs_t *zfsvfs = arg1;
 	lr_remove_t *lr = arg2;
-	char *name = (char *)(lr + 1);	/* name follows lr_remove_t */
+	char *name = (char *)(lr + 1);	 
 	znode_t *dzp;
 	int error;
 	int vflg = 0;
@@ -643,7 +573,7 @@ zfs_replay_link(void *arg1, void *arg2, boolean_t byteswap)
 {
 	zfsvfs_t *zfsvfs = arg1;
 	lr_link_t *lr = arg2;
-	char *name = (char *)(lr + 1);	/* name follows lr_link_t */
+	char *name = (char *)(lr + 1);	 
 	znode_t *dzp, *zp;
 	int error;
 	int vflg = 0;
@@ -676,11 +606,11 @@ do_zfs_replay_rename(zfsvfs_t *zfsvfs, lr_rename_t *lr, char *sname,
 	znode_t *sdzp, *tdzp;
 	int error, vflg = 0;
 
-	/* Only Linux currently supports RENAME_* flags. */
+	 
 #ifdef __linux__
 	VERIFY0(rflags & ~(RENAME_EXCHANGE | RENAME_WHITEOUT));
 
-	/* wo_vap must be non-NULL iff. we're doing RENAME_WHITEOUT */
+	 
 	VERIFY_EQUIV(rflags & RENAME_WHITEOUT, wo_vap != NULL);
 #else
 	VERIFY0(rflags);
@@ -715,7 +645,7 @@ zfs_replay_rename(void *arg1, void *arg2, boolean_t byteswap)
 {
 	zfsvfs_t *zfsvfs = arg1;
 	lr_rename_t *lr = arg2;
-	char *sname = (char *)(lr + 1);	/* sname and tname follow lr_rename_t */
+	char *sname = (char *)(lr + 1);	 
 	char *tname = sname + strlen(sname) + 1;
 
 	if (byteswap)
@@ -730,7 +660,7 @@ zfs_replay_rename_exchange(void *arg1, void *arg2, boolean_t byteswap)
 #ifdef __linux__
 	zfsvfs_t *zfsvfs = arg1;
 	lr_rename_t *lr = arg2;
-	char *sname = (char *)(lr + 1);	/* sname and tname follow lr_rename_t */
+	char *sname = (char *)(lr + 1);	 
 	char *tname = sname + strlen(sname) + 1;
 
 	if (byteswap)
@@ -750,10 +680,10 @@ zfs_replay_rename_whiteout(void *arg1, void *arg2, boolean_t byteswap)
 	zfsvfs_t *zfsvfs = arg1;
 	lr_rename_whiteout_t *lr = arg2;
 	int error;
-	/* sname and tname follow lr_rename_whiteout_t */
+	 
 	char *sname = (char *)(lr + 1);
 	char *tname = sname + strlen(sname) + 1;
-	/* For the whiteout file. */
+	 
 	xvattr_t xva;
 	uint64_t objid;
 	uint64_t dnodesize;
@@ -768,13 +698,7 @@ zfs_replay_rename_whiteout(void *arg1, void *arg2, boolean_t byteswap)
 	zfs_init_vattr(&xva.xva_vattr, ATTR_MODE | ATTR_UID | ATTR_GID,
 	    lr->lr_wmode, lr->lr_wuid, lr->lr_wgid, lr->lr_wrdev, objid);
 
-	/*
-	 * As with TX_CREATE, RENAME_WHITEOUT ends up in zfs_mknode(), which
-	 * assigns the object's creation time, generation number, and dnode
-	 * slot count. The generic zfs_rename() has no concept of these
-	 * attributes, so we smuggle the values inside the vattr's otherwise
-	 * unused va_ctime, va_nblocks, and va_fsid fields.
-	 */
+	 
 	ZFS_TIME_DECODE(&xva.xva_vattr.va_ctime, lr->lr_wcrtime);
 	xva.xva_vattr.va_nblocks = lr->lr_wgen;
 	xva.xva_vattr.va_fsid = dnodesize;
@@ -795,7 +719,7 @@ zfs_replay_write(void *arg1, void *arg2, boolean_t byteswap)
 {
 	zfsvfs_t *zfsvfs = arg1;
 	lr_write_t *lr = arg2;
-	char *data = (char *)(lr + 1);	/* data follows lr_write_t */
+	char *data = (char *)(lr + 1);	 
 	znode_t	*zp;
 	int error;
 	uint64_t eod, offset, length;
@@ -804,11 +728,7 @@ zfs_replay_write(void *arg1, void *arg2, boolean_t byteswap)
 		byteswap_uint64_array(lr, sizeof (*lr));
 
 	if ((error = zfs_zget(zfsvfs, lr->lr_foid, &zp)) != 0) {
-		/*
-		 * As we can log writes out of order, it's possible the
-		 * file has been removed. In this case just drop the write
-		 * and return success.
-		 */
+		 
 		if (error == ENOENT)
 			error = 0;
 		return (error);
@@ -816,22 +736,13 @@ zfs_replay_write(void *arg1, void *arg2, boolean_t byteswap)
 
 	offset = lr->lr_offset;
 	length = lr->lr_length;
-	eod = offset + length;	/* end of data for this write */
+	eod = offset + length;	 
 
-	/*
-	 * This may be a write from a dmu_sync() for a whole block,
-	 * and may extend beyond the current end of the file.
-	 * We can't just replay what was written for this TX_WRITE as
-	 * a future TX_WRITE2 may extend the eof and the data for that
-	 * write needs to be there. So we write the whole block and
-	 * reduce the eof. This needs to be done within the single dmu
-	 * transaction created within vn_rdwr -> zfs_write. So a possible
-	 * new end of file is passed through in zfsvfs->z_replay_eof
-	 */
+	 
 
-	zfsvfs->z_replay_eof = 0; /* 0 means don't change end of file */
+	zfsvfs->z_replay_eof = 0;  
 
-	/* If it's a dmu_sync() block, write the whole block */
+	 
 	if (lr->lr_common.lrc_reclen == sizeof (lr_write_t)) {
 		uint64_t blocksize = BP_GET_LSIZE(&lr->lr_blkptr);
 		if (length < blocksize) {
@@ -843,17 +754,12 @@ zfs_replay_write(void *arg1, void *arg2, boolean_t byteswap)
 	}
 	error = zfs_write_simple(zp, data, length, offset, NULL);
 	zrele(zp);
-	zfsvfs->z_replay_eof = 0;	/* safety */
+	zfsvfs->z_replay_eof = 0;	 
 
 	return (error);
 }
 
-/*
- * TX_WRITE2 are only generated when dmu_sync() returns EALREADY
- * meaning the pool block is already being synced. So now that we always write
- * out full blocks, all we have to do is expand the eof if
- * the file is grown.
- */
+ 
 static int
 zfs_replay_write2(void *arg1, void *arg2, boolean_t byteswap)
 {
@@ -890,7 +796,7 @@ top:
 		(void) sa_update(zp->z_sa_hdl, SA_ZPL_SIZE(zfsvfs),
 		    (void *)&zp->z_size, sizeof (uint64_t), tx);
 
-		/* Ensure the replayed seq is updated */
+		 
 		(void) zil_replaying(zfsvfs->z_log, tx);
 
 		dmu_tx_commit(tx);
@@ -961,9 +867,7 @@ zfs_replay_setattr(void *arg1, void *arg2, boolean_t byteswap)
 	gethrestime(&vap->va_ctime);
 	vap->va_mask |= ATTR_CTIME;
 
-	/*
-	 * Fill in xvattr_t portions if necessary.
-	 */
+	 
 
 	start = (lr_setattr_t *)(lr + 1);
 	if (vap->va_mask & ATTR_XVATTR) {
@@ -1022,7 +926,7 @@ zfs_replay_setsaxattr(void *arg1, void *arg2, boolean_t byteswap)
 	ASSERT(zp->z_xattr_cached);
 	nvl = zp->z_xattr_cached;
 
-	/* Get xattr name, value and size from log record */
+	 
 	size = lr->lr_size;
 	name = (char *)(lr + 1);
 	if (size == 0) {
@@ -1030,13 +934,13 @@ zfs_replay_setsaxattr(void *arg1, void *arg2, boolean_t byteswap)
 		error = nvlist_remove(nvl, name, DATA_TYPE_BYTE_ARRAY);
 	} else {
 		value = name + strlen(name) + 1;
-		/* Limited to 32k to keep nvpair memory allocations small */
+		 
 		if (size > DXATTR_MAX_ENTRY_SIZE) {
 			error = SET_ERROR(EFBIG);
 			goto out;
 		}
 
-		/* Prevent the DXATTR SA from consuming the entire SA region */
+		 
 		error = nvlist_size(nvl, &sa_size, NV_ENCODE_XDR);
 		if (error)
 			goto out;
@@ -1050,11 +954,7 @@ zfs_replay_setsaxattr(void *arg1, void *arg2, boolean_t byteswap)
 		    size);
 	}
 
-	/*
-	 * Update the SA for additions, modifications, and removals. On
-	 * error drop the inconsistent cached version of the nvlist, it
-	 * will be reconstructed from the ARC when next accessed.
-	 */
+	 
 	if (error == 0)
 		error = zfs_sa_set_xattr(zp, name, value, size);
 
@@ -1074,7 +974,7 @@ zfs_replay_acl_v0(void *arg1, void *arg2, boolean_t byteswap)
 {
 	zfsvfs_t *zfsvfs = arg1;
 	lr_acl_v0_t *lr = arg2;
-	ace_t *ace = (ace_t *)(lr + 1);	/* ace array follows lr_acl_t */
+	ace_t *ace = (ace_t *)(lr + 1);	 
 	vsecattr_t vsa = {0};
 	znode_t *zp;
 	int error;
@@ -1100,20 +1000,7 @@ zfs_replay_acl_v0(void *arg1, void *arg2, boolean_t byteswap)
 	return (error);
 }
 
-/*
- * Replaying ACLs is complicated by FUID support.
- * The log record may contain some optional data
- * to be used for replaying FUID's.  These pieces
- * are the actual FUIDs that were created initially.
- * The FUID table index may no longer be valid and
- * during zfs_create() a new index may be assigned.
- * Because of this the log will contain the original
- * domain+rid in order to create a new FUID.
- *
- * The individual ACEs may contain an ephemeral uid/gid which is no
- * longer valid and will need to be replaced with an actual FUID.
- *
- */
+ 
 static int
 zfs_replay_acl(void *arg1, void *arg2, boolean_t byteswap)
 {
@@ -1175,10 +1062,7 @@ zfs_replay_clone_range(void *arg1, void *arg2, boolean_t byteswap)
 		byteswap_uint64_array(lr, sizeof (*lr));
 
 	if ((error = zfs_zget(zfsvfs, lr->lr_foid, &zp)) != 0) {
-		/*
-		 * Clones can be logged out of order, so don't be surprised if
-		 * the file is gone - just return success.
-		 */
+		 
 		if (error == ENOENT)
 			error = 0;
 		return (error);
@@ -1191,33 +1075,31 @@ zfs_replay_clone_range(void *arg1, void *arg2, boolean_t byteswap)
 	return (error);
 }
 
-/*
- * Callback vectors for replaying records
- */
+ 
 zil_replay_func_t *const zfs_replay_vector[TX_MAX_TYPE] = {
-	zfs_replay_error,	/* no such type */
-	zfs_replay_create,	/* TX_CREATE */
-	zfs_replay_create,	/* TX_MKDIR */
-	zfs_replay_create,	/* TX_MKXATTR */
-	zfs_replay_create,	/* TX_SYMLINK */
-	zfs_replay_remove,	/* TX_REMOVE */
-	zfs_replay_remove,	/* TX_RMDIR */
-	zfs_replay_link,	/* TX_LINK */
-	zfs_replay_rename,	/* TX_RENAME */
-	zfs_replay_write,	/* TX_WRITE */
-	zfs_replay_truncate,	/* TX_TRUNCATE */
-	zfs_replay_setattr,	/* TX_SETATTR */
-	zfs_replay_acl_v0,	/* TX_ACL_V0 */
-	zfs_replay_acl,		/* TX_ACL */
-	zfs_replay_create_acl,	/* TX_CREATE_ACL */
-	zfs_replay_create,	/* TX_CREATE_ATTR */
-	zfs_replay_create_acl,	/* TX_CREATE_ACL_ATTR */
-	zfs_replay_create_acl,	/* TX_MKDIR_ACL */
-	zfs_replay_create,	/* TX_MKDIR_ATTR */
-	zfs_replay_create_acl,	/* TX_MKDIR_ACL_ATTR */
-	zfs_replay_write2,	/* TX_WRITE2 */
-	zfs_replay_setsaxattr,	/* TX_SETSAXATTR */
-	zfs_replay_rename_exchange,	/* TX_RENAME_EXCHANGE */
-	zfs_replay_rename_whiteout,	/* TX_RENAME_WHITEOUT */
-	zfs_replay_clone_range,	/* TX_CLONE_RANGE */
+	zfs_replay_error,	 
+	zfs_replay_create,	 
+	zfs_replay_create,	 
+	zfs_replay_create,	 
+	zfs_replay_create,	 
+	zfs_replay_remove,	 
+	zfs_replay_remove,	 
+	zfs_replay_link,	 
+	zfs_replay_rename,	 
+	zfs_replay_write,	 
+	zfs_replay_truncate,	 
+	zfs_replay_setattr,	 
+	zfs_replay_acl_v0,	 
+	zfs_replay_acl,		 
+	zfs_replay_create_acl,	 
+	zfs_replay_create,	 
+	zfs_replay_create_acl,	 
+	zfs_replay_create_acl,	 
+	zfs_replay_create,	 
+	zfs_replay_create_acl,	 
+	zfs_replay_write2,	 
+	zfs_replay_setsaxattr,	 
+	zfs_replay_rename_exchange,	 
+	zfs_replay_rename_whiteout,	 
+	zfs_replay_clone_range,	 
 };

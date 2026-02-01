@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 
@@ -37,7 +37,7 @@ check_hash_elem(struct bpf_map *map, __u32 *key, __u64 *val,
 		k = *key;
 		v = *val;
 		if (skb->len == 10000 && k == 10 && v == 10)
-			data->output = 3; /* impossible path */
+			data->output = 3;  
 		else
 			data->output = 4;
 	} else {

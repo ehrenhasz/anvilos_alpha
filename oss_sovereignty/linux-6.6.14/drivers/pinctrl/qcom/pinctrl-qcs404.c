@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -27,7 +25,7 @@ enum {
 			gpio##id##_pins, 		\
 			ARRAY_SIZE(gpio##id##_pins)),	\
 		.funcs = (int[]){			\
-			msm_mux_gpio, /* gpio mode */	\
+			msm_mux_gpio,  	\
 			msm_mux_##f1,			\
 			msm_mux_##f2,			\
 			msm_mux_##f3,			\
@@ -1481,11 +1479,7 @@ static const struct pinfunction qcs404_functions[] = {
 	MSM_PIN_FUNCTION(i2s_3_ws_a),
 };
 
-/* Every pin is maintained as a single group, and missing or non-existing pin
- * would be maintained as dummy group to synchronize pin group index with
- * pin descriptor registered with pinctrl core.
- * Clients would not be able to request these dummy pin groups.
- */
+ 
 static const struct msm_pingroup qcs404_groups[] = {
 	[0] = PINGROUP(0, SOUTH, _, _, _, _, _, _, _, _, _),
 	[1] = PINGROUP(1, SOUTH, _, _, _, _, _, _, _, _, _),

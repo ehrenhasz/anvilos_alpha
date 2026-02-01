@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Driver for the PCM512x CODECs
- *
- * Author:	Mark Brown <broonie@kernel.org>
- *		Copyright 2014 Linaro Ltd
- */
+ 
+ 
 
 #ifndef _SND_SOC_PCM512X
 #define _SND_SOC_PCM512X
@@ -93,35 +88,35 @@
 
 #define PCM512x_MAX_REGISTER      (PCM512x_PAGE_BASE(253) + 64)
 
-/* Page 0, Register 1 - reset */
+ 
 #define PCM512x_RSTR (1 << 0)
 #define PCM512x_RSTM (1 << 4)
 
-/* Page 0, Register 2 - power */
+ 
 #define PCM512x_RQPD       (1 << 0)
 #define PCM512x_RQPD_SHIFT 0
 #define PCM512x_RQST       (1 << 4)
 #define PCM512x_RQST_SHIFT 4
 
-/* Page 0, Register 3 - mute */
+ 
 #define PCM512x_RQMR (1 << 0)
 #define PCM512x_RQMR_SHIFT 0
 #define PCM512x_RQML (1 << 4)
 #define PCM512x_RQML_SHIFT 4
 
-/* Page 0, Register 4 - PLL */
+ 
 #define PCM512x_PLLE       (1 << 0)
 #define PCM512x_PLLE_SHIFT 0
 #define PCM512x_PLCK       (1 << 4)
 #define PCM512x_PLCK_SHIFT 4
 
-/* Page 0, Register 7 - DSP */
+ 
 #define PCM512x_SDSL       (1 << 0)
 #define PCM512x_SDSL_SHIFT 0
 #define PCM512x_DEMP       (1 << 4)
 #define PCM512x_DEMP_SHIFT 4
 
-/* Page 0, Register 8 - GPIO output enable */
+ 
 #define PCM512x_G1OE       (1 << 0)
 #define PCM512x_G2OE       (1 << 1)
 #define PCM512x_G3OE       (1 << 2)
@@ -129,7 +124,7 @@
 #define PCM512x_G5OE       (1 << 4)
 #define PCM512x_G6OE       (1 << 5)
 
-/* Page 0, Register 9 - BCK, LRCLK configuration */
+ 
 #define PCM512x_LRKO       (1 << 0)
 #define PCM512x_LRKO_SHIFT 0
 #define PCM512x_BCKO       (1 << 4)
@@ -137,20 +132,20 @@
 #define PCM512x_BCKP       (1 << 5)
 #define PCM512x_BCKP_SHIFT 5
 
-/* Page 0, Register 12 - Master mode BCK, LRCLK reset */
+ 
 #define PCM512x_RLRK       (1 << 0)
 #define PCM512x_RLRK_SHIFT 0
 #define PCM512x_RBCK       (1 << 1)
 #define PCM512x_RBCK_SHIFT 1
 
-/* Page 0, Register 13 - PLL reference */
+ 
 #define PCM512x_SREF        (7 << 4)
 #define PCM512x_SREF_SHIFT  4
 #define PCM512x_SREF_SCK    (0 << 4)
 #define PCM512x_SREF_BCK    (1 << 4)
 #define PCM512x_SREF_GPIO   (3 << 4)
 
-/* Page 0, Register 14 - DAC reference */
+ 
 #define PCM512x_SDAC        (7 << 4)
 #define PCM512x_SDAC_SHIFT  4
 #define PCM512x_SDAC_MCK    (0 << 4)
@@ -159,7 +154,7 @@
 #define PCM512x_SDAC_BCK    (4 << 4)
 #define PCM512x_SDAC_GPIO   (5 << 4)
 
-/* Page 0, Register 16, 18 - GPIO source for DAC, PLL */
+ 
 #define PCM512x_GREF        (7 << 0)
 #define PCM512x_GREF_SHIFT  0
 #define PCM512x_GREF_GPIO1  (0 << 0)
@@ -169,12 +164,12 @@
 #define PCM512x_GREF_GPIO5  (4 << 0)
 #define PCM512x_GREF_GPIO6  (5 << 0)
 
-/* Page 0, Register 19 - synchronize */
+ 
 #define PCM512x_RQSY        (1 << 0)
 #define PCM512x_RQSY_RESUME (0 << 0)
 #define PCM512x_RQSY_HALT   (1 << 0)
 
-/* Page 0, Register 34 - fs speed mode */
+ 
 #define PCM512x_FSSP        (3 << 0)
 #define PCM512x_FSSP_SHIFT  0
 #define PCM512x_FSSP_48KHZ  (0 << 0)
@@ -182,7 +177,7 @@
 #define PCM512x_FSSP_192KHZ (2 << 0)
 #define PCM512x_FSSP_384KHZ (3 << 0)
 
-/* Page 0, Register 37 - Error detection */
+ 
 #define PCM512x_IPLK (1 << 0)
 #define PCM512x_DCAS (1 << 1)
 #define PCM512x_IDCM (1 << 2)
@@ -191,7 +186,7 @@
 #define PCM512x_IDBK (1 << 5)
 #define PCM512x_IDFS (1 << 6)
 
-/* Page 0, Register 40 - I2S configuration */
+ 
 #define PCM512x_ALEN       (3 << 0)
 #define PCM512x_ALEN_SHIFT 0
 #define PCM512x_ALEN_16    (0 << 0)
@@ -205,30 +200,30 @@
 #define PCM512x_AFMT_RTJ   (2 << 4)
 #define PCM512x_AFMT_LTJ   (3 << 4)
 
-/* Page 0, Register 42 - DAC routing */
+ 
 #define PCM512x_AUPR_SHIFT 0
 #define PCM512x_AUPL_SHIFT 4
 
-/* Page 0, Register 59 - auto mute */
+ 
 #define PCM512x_ATMR_SHIFT 0
 #define PCM512x_ATML_SHIFT 4
 
-/* Page 0, Register 63 - ramp rates */
+ 
 #define PCM512x_VNDF_SHIFT 6
 #define PCM512x_VNDS_SHIFT 4
 #define PCM512x_VNUF_SHIFT 2
 #define PCM512x_VNUS_SHIFT 0
 
-/* Page 0, Register 64 - emergency ramp rates */
+ 
 #define PCM512x_VEDF_SHIFT 6
 #define PCM512x_VEDS_SHIFT 4
 
-/* Page 0, Register 65 - Digital mute enables */
+ 
 #define PCM512x_ACTL_SHIFT 2
 #define PCM512x_AMLE_SHIFT 1
 #define PCM512x_AMRE_SHIFT 0
 
-/* Page 0, Register 80-85, GPIO output selection */
+ 
 #define PCM512x_GxSL       (31 << 0)
 #define PCM512x_GxSL_SHIFT 0
 #define PCM512x_GxSL_OFF   (0 << 0)
@@ -247,11 +242,11 @@
 #define PCM512x_GxSL_UV0_3 (15 << 0)
 #define PCM512x_GxSL_PLLCK (16 << 0)
 
-/* Page 1, Register 2 - analog volume control */
+ 
 #define PCM512x_RAGN_SHIFT 0
 #define PCM512x_LAGN_SHIFT 4
 
-/* Page 1, Register 7 - analog boost control */
+ 
 #define PCM512x_AGBR_SHIFT 0
 #define PCM512x_AGBL_SHIFT 4
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver For Marvell Two-channel DMA Engine
- *
- * Copyright: Marvell International Ltd.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/module.h>
@@ -21,21 +17,19 @@
 
 #include "dmaengine.h"
 
-/*
- * Two-Channel DMA registers
- */
-#define TDBCR		0x00	/* Byte Count */
-#define TDSAR		0x10	/* Src Addr */
-#define TDDAR		0x20	/* Dst Addr */
-#define TDNDPR		0x30	/* Next Desc */
-#define TDCR		0x40	/* Control */
-#define TDCP		0x60	/* Priority*/
-#define TDCDPR		0x70	/* Current Desc */
-#define TDIMR		0x80	/* Int Mask */
-#define TDISR		0xa0	/* Int Status */
+ 
+#define TDBCR		0x00	 
+#define TDSAR		0x10	 
+#define TDDAR		0x20	 
+#define TDNDPR		0x30	 
+#define TDCR		0x40	 
+#define TDCP		0x60	 
+#define TDCDPR		0x70	 
+#define TDIMR		0x80	 
+#define TDISR		0xa0	 
 
-/* Two-Channel DMA Control Register */
-#define TDCR_SSZ_8_BITS		(0x0 << 22)	/* Sample Size */
+ 
+#define TDCR_SSZ_8_BITS		(0x0 << 22)	 
 #define TDCR_SSZ_12_BITS	(0x1 << 22)
 #define TDCR_SSZ_16_BITS	(0x2 << 22)
 #define TDCR_SSZ_20_BITS	(0x3 << 22)
@@ -43,16 +37,16 @@
 #define TDCR_SSZ_32_BITS	(0x5 << 22)
 #define TDCR_SSZ_SHIFT		(0x1 << 22)
 #define TDCR_SSZ_MASK		(0x7 << 22)
-#define TDCR_SSPMOD		(0x1 << 21)	/* SSP MOD */
-#define TDCR_ABR		(0x1 << 20)	/* Channel Abort */
-#define TDCR_CDE		(0x1 << 17)	/* Close Desc Enable */
-#define TDCR_PACKMOD		(0x1 << 16)	/* Pack Mode (ADMA Only) */
-#define TDCR_CHANACT		(0x1 << 14)	/* Channel Active */
-#define TDCR_FETCHND		(0x1 << 13)	/* Fetch Next Desc */
-#define TDCR_CHANEN		(0x1 << 12)	/* Channel Enable */
-#define TDCR_INTMODE		(0x1 << 10)	/* Interrupt Mode */
-#define TDCR_CHAINMOD		(0x1 << 9)	/* Chain Mode */
-#define TDCR_BURSTSZ_MSK	(0x7 << 6)	/* Burst Size */
+#define TDCR_SSPMOD		(0x1 << 21)	 
+#define TDCR_ABR		(0x1 << 20)	 
+#define TDCR_CDE		(0x1 << 17)	 
+#define TDCR_PACKMOD		(0x1 << 16)	 
+#define TDCR_CHANACT		(0x1 << 14)	 
+#define TDCR_FETCHND		(0x1 << 13)	 
+#define TDCR_CHANEN		(0x1 << 12)	 
+#define TDCR_INTMODE		(0x1 << 10)	 
+#define TDCR_CHAINMOD		(0x1 << 9)	 
+#define TDCR_BURSTSZ_MSK	(0x7 << 6)	 
 #define TDCR_BURSTSZ_4B		(0x0 << 6)
 #define TDCR_BURSTSZ_8B		(0x1 << 6)
 #define TDCR_BURSTSZ_16B	(0x3 << 6)
@@ -65,25 +59,22 @@
 #define TDCR_BURSTSZ_SQU_16B	(0x3 << 6)
 #define TDCR_BURSTSZ_SQU_32B	(0x7 << 6)
 #define TDCR_BURSTSZ_128B	(0x5 << 6)
-#define TDCR_DSTDIR_MSK		(0x3 << 4)	/* Dst Direction */
-#define TDCR_DSTDIR_ADDR_HOLD	(0x2 << 4)	/* Dst Addr Hold */
-#define TDCR_DSTDIR_ADDR_INC	(0x0 << 4)	/* Dst Addr Increment */
-#define TDCR_SRCDIR_MSK		(0x3 << 2)	/* Src Direction */
-#define TDCR_SRCDIR_ADDR_HOLD	(0x2 << 2)	/* Src Addr Hold */
-#define TDCR_SRCDIR_ADDR_INC	(0x0 << 2)	/* Src Addr Increment */
+#define TDCR_DSTDIR_MSK		(0x3 << 4)	 
+#define TDCR_DSTDIR_ADDR_HOLD	(0x2 << 4)	 
+#define TDCR_DSTDIR_ADDR_INC	(0x0 << 4)	 
+#define TDCR_SRCDIR_MSK		(0x3 << 2)	 
+#define TDCR_SRCDIR_ADDR_HOLD	(0x2 << 2)	 
+#define TDCR_SRCDIR_ADDR_INC	(0x0 << 2)	 
 #define TDCR_DSTDESCCONT	(0x1 << 1)
 #define TDCR_SRCDESTCONT	(0x1 << 0)
 
-/* Two-Channel DMA Int Mask Register */
+ 
 #define TDIMR_COMP		(0x1 << 0)
 
-/* Two-Channel DMA Int Status Register */
+ 
 #define TDISR_COMP		(0x1 << 0)
 
-/*
- * Two-Channel DMA Descriptor Struct
- * NOTE: desc's buf must be aligned to 16 bytes.
- */
+ 
 struct mmp_tdma_desc {
 	u32 byte_cnt;
 	u32 src_addr;
@@ -157,7 +148,7 @@ static void mmp_tdma_enable_irq(struct mmp_tdma_chan *tdmac, bool enable)
 
 static void mmp_tdma_enable_chan(struct mmp_tdma_chan *tdmac)
 {
-	/* enable dma chan */
+	 
 	writel(readl(tdmac->reg_base + TDCR) | TDCR_CHANEN,
 					tdmac->reg_base + TDCR);
 	tdmac->status = DMA_IN_PROGRESS;
@@ -290,7 +281,7 @@ static int mmp_tdma_clear_chan_irq(struct mmp_tdma_chan *tdmac)
 	u32 reg = readl(tdmac->reg_base + TDISR);
 
 	if (reg & TDISR_COMP) {
-		/* clear irq */
+		 
 		reg &= ~TDISR_COMP;
 		writel(reg, tdmac->reg_base + TDISR);
 
@@ -477,7 +468,7 @@ static struct dma_async_tx_descriptor *mmp_tdma_prep_dma_cyclic(
 		i++;
 	}
 
-	/* enable interrupt */
+	 
 	if (flags & DMA_PREP_INTERRUPT)
 		mmp_tdma_enable_irq(tdmac, true);
 
@@ -497,7 +488,7 @@ static int mmp_tdma_terminate_all(struct dma_chan *chan)
 	struct mmp_tdma_chan *tdmac = to_mmp_tdma_chan(chan);
 
 	mmp_tdma_disable_chan(chan);
-	/* disable interrupt */
+	 
 	mmp_tdma_enable_irq(tdmac, false);
 
 	return 0;
@@ -571,7 +562,7 @@ static int mmp_tdma_chan_init(struct mmp_tdma_device *tdev,
 		return -EINVAL;
 	}
 
-	/* alloc channel */
+	 
 	tdmac = devm_kzalloc(tdev->dev, sizeof(*tdmac), GFP_KERNEL);
 	if (!tdmac)
 		return -ENOMEM;
@@ -588,7 +579,7 @@ static int mmp_tdma_chan_init(struct mmp_tdma_device *tdev,
 	tdev->tdmac[tdmac->idx] = tdmac;
 	tasklet_setup(&tdmac->tasklet, dma_do_tasklet);
 
-	/* add the channel to tdma_chan list */
+	 
 	list_add_tail(&tdmac->chan.device_node,
 			&tdev->device.channels);
 	return 0;
@@ -650,7 +641,7 @@ static int mmp_tdma_probe(struct platform_device *pdev)
 	else
 		type = platform_get_device_id(pdev)->driver_data;
 
-	/* always have couple channels */
+	 
 	tdev = devm_kzalloc(&pdev->dev, sizeof(*tdev), GFP_KERNEL);
 	if (!tdev)
 		return -ENOMEM;
@@ -682,7 +673,7 @@ static int mmp_tdma_probe(struct platform_device *pdev)
 			return ret;
 	}
 
-	/* initialize channel parameters */
+	 
 	for (i = 0; i < chan_num; i++) {
 		irq = (irq_num != chan_num) ? 0 : platform_get_irq(pdev, i);
 		ret = mmp_tdma_chan_init(tdev, i, irq, type, pool);

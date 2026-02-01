@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (c) 2012-2014 Samsung Electronics Co., Ltd
-//              http://www.samsung.com
+
+
+
+
 
 #include <linux/bug.h>
 #include <linux/err.h>
@@ -21,7 +21,7 @@
 #include <linux/mfd/samsung/s2mps15.h>
 #include <linux/mfd/samsung/s2mpu02.h>
 
-/* The highest number of possible regulators for supported devices. */
+ 
 #define S2MPS_REGULATOR_MAX		S2MPS13_REGULATOR_MAX
 struct s2mps11_info {
 	int ramp_delay2;
@@ -33,16 +33,10 @@ struct s2mps11_info {
 
 	enum sec_device_type dev_type;
 
-	/*
-	 * One bit for each S2MPS11/S2MPS13/S2MPS14/S2MPU02 regulator whether
-	 * the suspend mode was enabled.
-	 */
+	 
 	DECLARE_BITMAP(suspend_state, S2MPS_REGULATOR_MAX);
 
-	/*
-	 * Array (size: number of regulators) with GPIO-s for external
-	 * sleep control.
-	 */
+	 
 	struct gpio_desc **ext_control_gpiod;
 };
 
@@ -204,7 +198,7 @@ static int s2mps11_set_ramp_delay(struct regulator_dev *rdev, int ramp_delay)
 	if (!ramp_enable)
 		goto ramp_disable;
 
-	/* Ramp delay can be enabled/disabled only for buck[2346] */
+	 
 	if ((rdev_id >= S2MPS11_BUCK2 && rdev_id <= S2MPS11_BUCK4) ||
 	    rdev_id == S2MPS11_BUCK6)  {
 		ret = regmap_update_bits(rdev->regmap, S2MPS11_REG_RAMP,
@@ -268,7 +262,7 @@ static int s2mps11_regulator_set_suspend_disable(struct regulator_dev *rdev)
 	struct s2mps11_info *s2mps11 = rdev_get_drvdata(rdev);
 	int rdev_id = rdev_get_id(rdev);
 
-	/* Below LDO should be always on or does not support suspend mode. */
+	 
 	switch (s2mps11->dev_type) {
 	case S2MPS11X:
 		switch (rdev_id) {
@@ -315,13 +309,7 @@ static int s2mps11_regulator_set_suspend_disable(struct regulator_dev *rdev)
 		return ret;
 
 	set_bit(rdev_id, s2mps11->suspend_state);
-	/*
-	 * Don't enable suspend mode if regulator is already disabled because
-	 * this would effectively for a short time turn on the regulator after
-	 * resuming.
-	 * However we still want to toggle the suspend_state bit for regulator
-	 * in case if it got enabled before suspending the system.
-	 */
+	 
 	if (!(val & rdev->desc->enable_mask))
 		return 0;
 
@@ -748,37 +736,37 @@ static const struct regulator_ops s2mps15_reg_buck_ops = {
 	.enable_mask	= S2MPS15_ENABLE_MASK				\
 }
 
-/* voltage range for s2mps15 LDO 3, 5, 15, 16, 18, 20, 23 and 27 */
+ 
 static const struct linear_range s2mps15_ldo_voltage_ranges1[] = {
 	REGULATOR_LINEAR_RANGE(1000000, 0xc, 0x38, 25000),
 };
 
-/* voltage range for s2mps15 LDO 2, 6, 14, 17, 19, 21, 24 and 25 */
+ 
 static const struct linear_range s2mps15_ldo_voltage_ranges2[] = {
 	REGULATOR_LINEAR_RANGE(1800000, 0x0, 0x3f, 25000),
 };
 
-/* voltage range for s2mps15 LDO 4, 11, 12, 13, 22 and 26 */
+ 
 static const struct linear_range s2mps15_ldo_voltage_ranges3[] = {
 	REGULATOR_LINEAR_RANGE(700000, 0x0, 0x34, 12500),
 };
 
-/* voltage range for s2mps15 LDO 7, 8, 9 and 10 */
+ 
 static const struct linear_range s2mps15_ldo_voltage_ranges4[] = {
 	REGULATOR_LINEAR_RANGE(700000, 0x10, 0x20, 25000),
 };
 
-/* voltage range for s2mps15 LDO 1 */
+ 
 static const struct linear_range s2mps15_ldo_voltage_ranges5[] = {
 	REGULATOR_LINEAR_RANGE(500000, 0x0, 0x20, 12500),
 };
 
-/* voltage range for s2mps15 BUCK 1, 2, 3, 4, 5, 6 and 7 */
+ 
 static const struct linear_range s2mps15_buck_voltage_ranges1[] = {
 	REGULATOR_LINEAR_RANGE(500000, 0x20, 0xc0, 6250),
 };
 
-/* voltage range for s2mps15 BUCK 8, 9 and 10 */
+ 
 static const struct linear_range s2mps15_buck_voltage_ranges2[] = {
 	REGULATOR_LINEAR_RANGE(1000000, 0x20, 0x78, 12500),
 };
@@ -1192,10 +1180,7 @@ static int s2mps11_pmic_probe(struct platform_device *pdev)
 		config.init_data = rdata[i].init_data;
 		config.of_node = rdata[i].of_node;
 		config.ena_gpiod = s2mps11->ext_control_gpiod[i];
-		/*
-		 * Hand the GPIO descriptor management over to the regulator
-		 * core, remove it from devres management.
-		 */
+		 
 		if (config.ena_gpiod)
 			devm_gpiod_unhinge(&pdev->dev, config.ena_gpiod);
 		regulator = devm_regulator_register(&pdev->dev,
@@ -1246,7 +1231,7 @@ static struct platform_driver s2mps11_pmic_driver = {
 
 module_platform_driver(s2mps11_pmic_driver);
 
-/* Module information */
+ 
 MODULE_AUTHOR("Sangbeom Kim <sbkim73@samsung.com>");
 MODULE_DESCRIPTION("Samsung S2MPS11/S2MPS14/S2MPS15/S2MPU02 Regulator Driver");
 MODULE_LICENSE("GPL");

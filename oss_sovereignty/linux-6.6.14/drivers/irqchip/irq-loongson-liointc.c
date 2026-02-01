@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2020, Jiaxun Yang <jiaxun.yang@flygoat.com>
- *  Loongson Local IO Interrupt Controller support
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/init.h>
@@ -32,10 +29,7 @@
 #define LIOINTC_REG_INTC_EN_STATUS	(LIOINTC_INTC_CHIP_START + 0x04)
 #define LIOINTC_REG_INTC_ENABLE	(LIOINTC_INTC_CHIP_START + 0x08)
 #define LIOINTC_REG_INTC_DISABLE	(LIOINTC_INTC_CHIP_START + 0x0c)
-/*
- * LIOINTC_REG_INTC_POL register is only valid for Loongson-2K series, and
- * Loongson-3 series behave as noops.
- */
+ 
 #define LIOINTC_REG_INTC_POL	(LIOINTC_INTC_CHIP_START + 0x10)
 #define LIOINTC_REG_INTC_EDGE	(LIOINTC_INTC_CHIP_START + 0x14)
 
@@ -79,7 +73,7 @@ static void liointc_chained_handle_irq(struct irq_desc *desc)
 	pending = readl(handler->priv->core_isr[core]);
 
 	if (!pending) {
-		/* Always blame LPC IRQ if we have that bug */
+		 
 		if (handler->priv->has_lpc_irq_errata &&
 			(handler->parent_int_map & gc->mask_cache &
 			BIT(LIOINTC_ERRATA_IRQ)))
@@ -159,14 +153,14 @@ static void liointc_resume(struct irq_chip_generic *gc)
 	int i;
 
 	irq_gc_lock_irqsave(gc, flags);
-	/* Disable all at first */
+	 
 	writel(0xffffffff, gc->reg_base + LIOINTC_REG_INTC_DISABLE);
-	/* Restore map cache */
+	 
 	for (i = 0; i < LIOINTC_CHIP_IRQ; i++)
 		writeb(priv->map_cache[i], gc->reg_base + i);
 	writel(priv->int_pol, gc->reg_base + LIOINTC_REG_INTC_POL);
 	writel(priv->int_edge, gc->reg_base + LIOINTC_REG_INTC_EDGE);
-	/* Restore mask cache */
+	 
 	writel(gc->mask_cache, gc->reg_base + LIOINTC_REG_INTC_ENABLE);
 	irq_gc_unlock_irqrestore(gc, flags);
 }
@@ -237,7 +231,7 @@ static int liointc_init(phys_addr_t addr, unsigned long size, int revision,
 			goto out_iounmap;
 	}
 
-	/* Setup IRQ domain */
+	 
 	if (!acpi_disabled)
 		domain = irq_domain_create_linear(domain_handle, LIOINTC_CHIP_IRQ,
 					&acpi_irq_gc_ops, priv);
@@ -258,12 +252,12 @@ static int liointc_init(phys_addr_t addr, unsigned long size, int revision,
 	}
 
 
-	/* Disable all IRQs */
+	 
 	writel(0xffffffff, base + LIOINTC_REG_INTC_DISABLE);
-	/* Set to level triggered */
+	 
 	writel(0x0, base + LIOINTC_REG_INTC_EDGE);
 
-	/* Generate parent INT part of map cache */
+	 
 	for (i = 0; i < LIOINTC_NUM_PARENT; i++) {
 		u32 pending = priv->handler[i].parent_int_map;
 
@@ -276,7 +270,7 @@ static int liointc_init(phys_addr_t addr, unsigned long size, int revision,
 	}
 
 	for (i = 0; i < LIOINTC_CHIP_IRQ; i++) {
-		/* Generate core part of map cache */
+		 
 		priv->map_cache[i] |= BIT(loongson_sysconf.boot_cpu_id);
 		writeb(priv->map_cache[i], base + i);
 	}

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Basic HP/COMPAQ MSA 1000 support. This is only needed if your HW cannot be
- * upgraded.
- *
- * Copyright (C) 2006 Red Hat, Inc.  All rights reserved.
- * Copyright (C) 2006 Mike Christie
- * Copyright (C) 2008 Hannes Reinecke <hare@suse.de>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -33,13 +26,7 @@ struct hp_sw_dh_data {
 
 static int hp_sw_start_stop(struct hp_sw_dh_data *);
 
-/*
- * tur_done - Handle TEST UNIT READY return status
- * @sdev: sdev the command has been sent to
- * @errors: blk error code
- *
- * Returns SCSI_DH_DEV_OFFLINED if the sdev is on the passive path
- */
+ 
 static int tur_done(struct scsi_device *sdev, struct hp_sw_dh_data *h,
 		    struct scsi_sense_hdr *sshdr)
 {
@@ -51,11 +38,7 @@ static int tur_done(struct scsi_device *sdev, struct hp_sw_dh_data *h,
 		break;
 	case NOT_READY:
 		if (sshdr->asc == 0x04 && sshdr->ascq == 2) {
-			/*
-			 * LUN not ready - Initialization command required
-			 *
-			 * This is the passive path
-			 */
+			 
 			h->path_state = HP_SW_PATH_PASSIVE;
 			ret = SCSI_DH_OK;
 			break;
@@ -71,13 +54,7 @@ static int tur_done(struct scsi_device *sdev, struct hp_sw_dh_data *h,
 	return ret;
 }
 
-/*
- * hp_sw_tur - Send TEST UNIT READY
- * @sdev: sdev command should be sent to
- *
- * Use the TEST UNIT READY command to determine
- * the path state.
- */
+ 
 static int hp_sw_tur(struct scsi_device *sdev, struct hp_sw_dh_data *h)
 {
 	unsigned char cmd[6] = { TEST_UNIT_READY };
@@ -111,12 +88,7 @@ retry:
 	return ret;
 }
 
-/*
- * hp_sw_start_stop - Send START STOP UNIT command
- * @sdev: sdev command should be sent to
- *
- * Sending START STOP UNIT activates the SP.
- */
+ 
 static int hp_sw_start_stop(struct hp_sw_dh_data *h)
 {
 	unsigned char cmd[6] = { START_STOP, 0, 0, 0, 1, 0 };
@@ -143,11 +115,7 @@ retry:
 		switch (sshdr.sense_key) {
 		case NOT_READY:
 			if (sshdr.asc == 0x04 && sshdr.ascq == 3) {
-				/*
-				 * LUN not ready - manual intervention required
-				 *
-				 * Switch-over in progress, retry.
-				 */
+				 
 				if (--retry_cnt)
 					goto retry;
 				rc = SCSI_DH_RETRY;
@@ -177,16 +145,7 @@ static blk_status_t hp_sw_prep_fn(struct scsi_device *sdev, struct request *req)
 	return BLK_STS_OK;
 }
 
-/*
- * hp_sw_activate - Activate a path
- * @sdev: sdev on the path to be activated
- *
- * The HP Active/Passive firmware is pretty simple;
- * the passive path reports NOT READY with sense codes
- * 0x04/0x02; a START STOP UNIT command will then
- * activate the passive path (and deactivate the
- * previously active one).
- */
+ 
 static int hp_sw_activate(struct scsi_device *sdev,
 				activate_complete fn, void *data)
 {

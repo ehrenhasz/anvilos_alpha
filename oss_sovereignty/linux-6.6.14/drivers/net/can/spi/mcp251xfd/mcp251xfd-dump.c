@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// mcp251xfd - Microchip MCP251xFD Family CAN controller driver
-//
-// Copyright (c) 2020, 2021 Pengutronix,
-//               Marc Kleine-Budde <kernel@pengutronix.de>
-// Copyright (C) 2015-2018 Etnaviv Project
-//
+
+
+
+
+
+
+
+
 
 #include <linux/devcoredump.h>
 
@@ -234,7 +234,7 @@ static void mcp251xfd_dump_end(const struct mcp251xfd_priv *priv,
 	hdr->offset = cpu_to_le32(0);
 	hdr->len = cpu_to_le32(0);
 
-	/* provoke NULL pointer access, if used after END object */
+	 
 	iter->hdr = NULL;
 }
 
@@ -245,24 +245,24 @@ void mcp251xfd_dump(const struct mcp251xfd_priv *priv)
 	unsigned int file_size = 0;
 	unsigned int i;
 
-	/* register space + end marker */
+	 
 	obj_num = 2;
 
-	/* register space */
+	 
 	for (i = 0; i < ARRAY_SIZE(mcp251xfd_dump_reg_space); i++)
 		file_size += mcp251xfd_dump_reg_space[i].size / sizeof(u32) *
 			sizeof(struct mcp251xfd_dump_object_reg);
 
-	/* TEF ring, RX rings, TX ring */
+	 
 	rings_num = 1 + priv->rx_ring_num + 1;
 	obj_num += rings_num;
 	file_size += rings_num * __MCP251XFD_DUMP_OBJECT_RING_KEY_MAX  *
 		sizeof(struct mcp251xfd_dump_object_reg);
 
-	/* size of the headers */
+	 
 	file_size += sizeof(*iter.hdr) * obj_num;
 
-	/* allocate the file in vmalloc memory, it's likely to be big */
+	 
 	iter.start = __vmalloc(file_size, GFP_KERNEL | __GFP_NOWARN |
 			       __GFP_ZERO | __GFP_NORETRY);
 	if (!iter.start) {
@@ -270,7 +270,7 @@ void mcp251xfd_dump(const struct mcp251xfd_priv *priv)
 		return;
 	}
 
-	/* point the data member after the headers */
+	 
 	iter.hdr = iter.start;
 	iter.data = &iter.hdr[obj_num];
 

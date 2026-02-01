@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2018 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitmap.h>
@@ -159,7 +159,7 @@ nfp_abm_kill_repr(struct nfp_app *app, struct nfp_abm_link *alink,
 	rcu_assign_pointer(reprs->reprs[alink->id], NULL);
 	rtnl_unlock();
 	synchronize_rcu();
-	/* Cast to make sure nfp_repr_clean_and_free() takes a nfp_repr */
+	 
 	nfp_repr_clean_and_free((struct nfp_repr *)netdev_priv(netdev));
 }
 
@@ -338,9 +338,7 @@ nfp_abm_vnic_alloc(struct nfp_app *app, struct nfp_net *nn, unsigned int id)
 		goto err_free_alink;
 	}
 
-	/* This is a multi-host app, make sure MAC/PHY is up, but don't
-	 * make the MAC/PHY state follow the state of any of the ports.
-	 */
+	 
 	err = nfp_eth_set_configured(app->cpp, eth_port->index, true);
 	if (err < 0)
 		goto err_free_priomap;
@@ -487,7 +485,7 @@ static int nfp_abm_init(struct nfp_app *app)
 	if (!abm->actions)
 		goto err_free_thresh;
 
-	/* We start in legacy mode, make sure advanced queuing is disabled */
+	 
 	err = nfp_abm_fw_init_reset(abm);
 	if (err)
 		goto err_free_act;

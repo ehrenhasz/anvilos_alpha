@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * DMABUF CMA heap exporter
- *
- * Copyright (C) 2012, 2019, 2020 Linaro Ltd.
- * Author: <benjamin.gaignard@linaro.org> for ST-Ericsson.
- *
- * Also utilizing parts of Andrew Davis' SRAM heap:
- * Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com/
- *	Andrew F. Davis <afd@ti.com>
- */
+
+ 
 #include <linux/cma.h>
 #include <linux/dma-buf.h>
 #include <linux/dma-heap.h>
@@ -253,9 +244,9 @@ static void cma_heap_dma_buf_release(struct dma_buf *dmabuf)
 		buffer->vaddr = NULL;
 	}
 
-	/* free page list */
+	 
 	kfree(buffer->pages);
-	/* release memory */
+	 
 	cma_release(cma_heap->cma, buffer->cma_pages, buffer->pagecount);
 	kfree(buffer);
 }
@@ -304,7 +295,7 @@ static struct dma_buf *cma_heap_allocate(struct dma_heap *heap,
 	if (!cma_pages)
 		goto free_buffer;
 
-	/* Clear the cma pages */
+	 
 	if (PageHighMem(cma_pages)) {
 		unsigned long nr_clear_pages = pagecount;
 		struct page *page = cma_pages;
@@ -314,10 +305,7 @@ static struct dma_buf *cma_heap_allocate(struct dma_heap *heap,
 
 			memset(vaddr, 0, PAGE_SIZE);
 			kunmap_atomic(vaddr);
-			/*
-			 * Avoid wasting time zeroing memory if the process
-			 * has been killed by by SIGKILL
-			 */
+			 
 			if (fatal_signal_pending(current))
 				goto free_cma;
 			page++;
@@ -340,7 +328,7 @@ static struct dma_buf *cma_heap_allocate(struct dma_heap *heap,
 	buffer->heap = cma_heap;
 	buffer->pagecount = pagecount;
 
-	/* create the dmabuf */
+	 
 	exp_info.exp_name = dma_heap_get_name(heap);
 	exp_info.ops = &cma_heap_buf_ops;
 	exp_info.size = buffer->len;

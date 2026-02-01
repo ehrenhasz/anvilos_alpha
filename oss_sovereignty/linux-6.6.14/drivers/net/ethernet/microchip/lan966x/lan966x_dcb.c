@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include "lan966x_main.h"
 
@@ -22,10 +22,10 @@ static const char *lan966x_dcb_apptrust_names[__LAN966X_DCB_APPTRUST_MAX] = {
 	[LAN966X_DCB_APPTRUST_DSCP_PCP] = "dscp pcp"
 };
 
-/* Lan966x supported apptrust policies */
+ 
 static const struct lan966x_dcb_apptrust
 	lan966x_dcb_apptrust_policies[__LAN966X_DCB_APPTRUST_MAX] = {
-	/* Empty *must* be first */
+	 
 	[LAN966X_DCB_APPTRUST_EMPTY]    = { { 0 }, 0 },
 	[LAN966X_DCB_APPTRUST_DSCP]     = { { IEEE_8021QAZ_APP_SEL_DSCP }, 1 },
 	[LAN966X_DCB_APPTRUST_PCP]      = { { DCB_APP_SEL_PCP }, 1 },
@@ -54,26 +54,26 @@ static void lan966x_dcb_app_update(struct net_device *dev)
 	bool dscp_rewr = false;
 	bool pcp_rewr = false;
 
-	/* Get pcp ingress mapping */
+	 
 	for (int i = 0; i < ARRAY_SIZE(qos.pcp.map); i++) {
 		app_itr.selector = DCB_APP_SEL_PCP;
 		app_itr.protocol = i;
 		qos.pcp.map[i] = dcb_getapp(dev, &app_itr);
 	}
 
-	/* Get dscp ingress mapping */
+	 
 	for (int i = 0; i < ARRAY_SIZE(qos.dscp.map); i++) {
 		app_itr.selector = IEEE_8021QAZ_APP_SEL_DSCP;
 		app_itr.protocol = i;
 		qos.dscp.map[i] = dcb_getapp(dev, &app_itr);
 	}
 
-	/* Get default prio */
+	 
 	qos.default_prio = dcb_ieee_getapp_default_prio_mask(dev);
 	if (qos.default_prio)
 		qos.default_prio = fls(qos.default_prio) - 1;
 
-	/* Get pcp rewrite mapping */
+	 
 	dcb_getrewr_prio_pcp_mask_map(dev, &pcp_rewr_map);
 	for (int i = 0; i < ARRAY_SIZE(pcp_rewr_map.map); i++) {
 		if (!pcp_rewr_map.map[i])
@@ -83,7 +83,7 @@ static void lan966x_dcb_app_update(struct net_device *dev)
 		qos.pcp_rewr.map[i] = fls(pcp_rewr_map.map[i]) - 1;
 	}
 
-	/* Get dscp rewrite mapping */
+	 
 	dcb_getrewr_prio_dscp_mask_map(dev, &dscp_rewr_map);
 	for (int i = 0; i < ARRAY_SIZE(dscp_rewr_map.map); i++) {
 		if (!dscp_rewr_map.map[i])
@@ -93,7 +93,7 @@ static void lan966x_dcb_app_update(struct net_device *dev)
 		qos.dscp_rewr.map[i] = fls64(dscp_rewr_map.map[i]) - 1;
 	}
 
-	/* Enable use of pcp for queue classification */
+	 
 	if (lan966x_dcb_apptrust_contains(port->chip_port, DCB_APP_SEL_PCP)) {
 		qos.pcp.enable = true;
 
@@ -101,7 +101,7 @@ static void lan966x_dcb_app_update(struct net_device *dev)
 			qos.pcp_rewr.enable = true;
 	}
 
-	/* Enable use of dscp for queue classification */
+	 
 	if (lan966x_dcb_apptrust_contains(port->chip_port, IEEE_8021QAZ_APP_SEL_DSCP)) {
 		qos.dscp.enable = true;
 
@@ -112,9 +112,7 @@ static void lan966x_dcb_app_update(struct net_device *dev)
 	lan966x_port_qos_set(port, &qos);
 }
 
-/* DSCP mapping is global for all ports, so set and delete app entries are
- * replicated for each port.
- */
+ 
 static int lan966x_dcb_ieee_dscp_setdel(struct net_device *dev,
 					struct dcb_app *app,
 					int (*setdel)(struct net_device *,
@@ -143,21 +141,21 @@ static int lan966x_dcb_app_validate(struct net_device *dev,
 	int err = 0;
 
 	switch (app->selector) {
-	/* Default priority checks */
+	 
 	case IEEE_8021QAZ_APP_SEL_ETHERTYPE:
 		if (app->protocol)
 			err = -EINVAL;
 		else if (app->priority >= NUM_PRIO_QUEUES)
 			err = -ERANGE;
 		break;
-	/* Dscp checks */
+	 
 	case IEEE_8021QAZ_APP_SEL_DSCP:
 		if (app->protocol >= LAN966X_PORT_QOS_DSCP_COUNT)
 			err = -EINVAL;
 		else if (app->priority >= NUM_PRIO_QUEUES)
 			err = -ERANGE;
 		break;
-	/* Pcp checks */
+	 
 	case DCB_APP_SEL_PCP:
 		if (app->protocol >= LAN966X_PORT_QOS_PCP_DEI_COUNT)
 			err = -EINVAL;
@@ -203,7 +201,7 @@ static int lan966x_dcb_ieee_setapp(struct net_device *dev, struct dcb_app *app)
 	if (err)
 		return err;
 
-	/* Delete current mapping, if it exists */
+	 
 	prio = dcb_getapp(dev, app);
 	if (prio) {
 		app_itr = *app;
@@ -311,7 +309,7 @@ static int lan966x_dcb_setrewr(struct net_device *dev, struct dcb_app *app)
 	if (err)
 		goto out;
 
-	/* Delete current mapping, if it exists. */
+	 
 	proto = dcb_getrewr(dev, app);
 	if (proto) {
 		app_itr = *app;
@@ -356,9 +354,7 @@ void lan966x_dcb_init(struct lan966x *lan966x)
 		lan966x_port_apptrust[port->chip_port] =
 			&lan966x_dcb_apptrust_policies[LAN966X_DCB_APPTRUST_DSCP_PCP];
 
-		/* Enable DSCP classification based on classified QoS class and
-		 * DP, for all DSCP values, for all ports.
-		 */
+		 
 		lan966x_port_qos_dscp_rewr_mode_set(port,
 						    LAN966X_PORT_QOS_REWR_DSCP_ALL);
 	}

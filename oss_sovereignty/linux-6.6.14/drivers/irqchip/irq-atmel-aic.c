@@ -1,17 +1,4 @@
-/*
- * Atmel AT91 AIC (Advanced Interrupt Controller) driver
- *
- *  Copyright (C) 2004 SAN People
- *  Copyright (C) 2004 ATMEL
- *  Copyright (C) Rick Bronson
- *  Copyright (C) 2014 Free Electrons
- *
- *  Author: Boris BREZILLON <boris.brezillon@free-electrons.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -33,7 +20,7 @@
 
 #include "irq-atmel-aic-common.h"
 
-/* Number of irq lines managed by AIC */
+ 
 #define NR_AIC_IRQS	32
 
 #define AT91_AIC_SMR(n)			((n) * 4)
@@ -78,7 +65,7 @@ static int aic_retrigger(struct irq_data *d)
 {
 	struct irq_chip_generic *gc = irq_data_get_irq_chip_data(d);
 
-	/* Enable interrupt on AIC5 */
+	 
 	irq_gc_lock(gc);
 	irq_reg_writel(gc, d->mask, AT91_AIC_ISCR);
 	irq_gc_unlock(gc);
@@ -136,31 +123,24 @@ static void aic_pm_shutdown(struct irq_data *d)
 #define aic_suspend		NULL
 #define aic_resume		NULL
 #define aic_pm_shutdown		NULL
-#endif /* CONFIG_PM */
+#endif  
 
 static void __init aic_hw_init(struct irq_domain *domain)
 {
 	struct irq_chip_generic *gc = irq_get_domain_generic_chip(domain, 0);
 	int i;
 
-	/*
-	 * Perform 8 End Of Interrupt Command to make sure AIC
-	 * will not Lock out nIRQ
-	 */
+	 
 	for (i = 0; i < 8; i++)
 		irq_reg_writel(gc, 0, AT91_AIC_EOICR);
 
-	/*
-	 * Spurious Interrupt ID in Spurious Vector Register.
-	 * When there is no current interrupt, the IRQ Vector Register
-	 * reads the value stored in AIC_SPU
-	 */
+	 
 	irq_reg_writel(gc, 0xffffffff, AT91_AIC_SPU);
 
-	/* No debugging in AIC: Debug (Protect) Control Register */
+	 
 	irq_reg_writel(gc, 0, AT91_AIC_DCR);
 
-	/* Disable and clear all interrupts initially */
+	 
 	irq_reg_writel(gc, 0xffffffff, AT91_AIC_IDCR);
 	irq_reg_writel(gc, 0xffffffff, AT91_AIC_ICCR);
 
@@ -235,7 +215,7 @@ static const struct of_device_id aic_irq_fixups[] __initconst = {
 	{ .compatible = "atmel,at91sam9261", .data = at91sam9260_aic_irq_fixup },
 	{ .compatible = "atmel,at91sam9263", .data = at91sam9260_aic_irq_fixup },
 	{ .compatible = "atmel,at91sam9g20", .data = at91sam9260_aic_irq_fixup },
-	{ /* sentinel */ },
+	{   },
 };
 
 static int __init aic_of_init(struct device_node *node,

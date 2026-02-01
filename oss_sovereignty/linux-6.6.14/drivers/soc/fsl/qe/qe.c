@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2006-2010 Freescale Semiconductor, Inc. All rights reserved.
- *
- * Authors: 	Shlomi Gridish <gridish@freescale.com>
- * 		Li Yang <leoli@freescale.com>
- * Based on cpm2_common.c from Dan Malek (dmalek@jlc.net)
- *
- * Description:
- * General Purpose functions for the global management of the
- * QUICC Engine (QE).
- */
+
+ 
 #include <linux/bitmap.h>
 #include <linux/errno.h>
 #include <linux/sched.h>
@@ -37,13 +27,11 @@ static DEFINE_SPINLOCK(qe_lock);
 DEFINE_SPINLOCK(cmxgcr_lock);
 EXPORT_SYMBOL(cmxgcr_lock);
 
-/* We allocate this here because it is used almost exclusively for
- * the communication processor devices.
- */
+ 
 struct qe_immap __iomem *qe_immr;
 EXPORT_SYMBOL(qe_immr);
 
-static u8 snums[QE_NUM_OF_SNUM];	/* Dynamically allocated SNUMs */
+static u8 snums[QE_NUM_OF_SNUM];	 
 static DECLARE_BITMAP(snum_state, QE_NUM_OF_SNUM);
 static unsigned int qe_num_of_snum;
 
@@ -53,10 +41,7 @@ static struct device_node *qe_get_device_node(void)
 {
 	struct device_node *qe;
 
-	/*
-	 * Newer device trees have an "fsl,qe" compatible property for the QE
-	 * node, but we still need to support older device trees.
-	 */
+	 
 	qe = of_find_compatible_node(NULL, NULL, "fsl,qe");
 	if (qe)
 		return qe;
@@ -94,7 +79,7 @@ void qe_reset(void)
 	qe_issue_cmd(QE_RESET, QE_CR_SUBBLOCK_INVALID,
 		     QE_CR_PROTOCOL_UNSPECIFIED, 0);
 
-	/* Reclaim the MURAM memory for our use. */
+	 
 	qe_muram_init();
 
 	if (qe_sdma_init())
@@ -113,11 +98,10 @@ int qe_issue_cmd(u32 cmd, u32 device, u8 mcn_protocol, u32 cmd_input)
 		iowrite32be((u32)(cmd | QE_CR_FLG), &qe_immr->cp.cecr);
 	} else {
 		if (cmd == QE_ASSIGN_PAGE) {
-			/* Here device is the SNUM, not sub-block */
+			 
 			dev_shift = QE_CR_SNUM_SHIFT;
 		} else if (cmd == QE_ASSIGN_RISC) {
-			/* Here device is the SNUM, and mcnProtocol is
-			 * e_QeCmdRiscAssignment value */
+			 
 			dev_shift = QE_CR_SNUM_SHIFT;
 			mcn_shift = QE_CR_MCN_RISC_ASSIGN_SHIFT;
 		} else {
@@ -132,26 +116,17 @@ int qe_issue_cmd(u32 cmd, u32 device, u8 mcn_protocol, u32 cmd_input)
 			       &qe_immr->cp.cecr);
 	}
 
-	/* wait for the QE_CR_FLG to clear */
+	 
 	ret = readx_poll_timeout_atomic(ioread32be, &qe_immr->cp.cecr, val,
 					(val & QE_CR_FLG) == 0, 0, 100);
-	/* On timeout, ret is -ETIMEDOUT, otherwise it will be 0. */
+	 
 	spin_unlock_irqrestore(&qe_lock, flags);
 
 	return ret == 0;
 }
 EXPORT_SYMBOL(qe_issue_cmd);
 
-/* Set a baud rate generator. This needs lots of work. There are
- * 16 BRGs, which can be connected to the QE channels or output
- * as clocks. The BRGs are in two different block of internal
- * memory mapped space.
- * The BRG clock is the QE clock divided by 2.
- * It was set up long ago during the initial boot phase and is
- * given to us.
- * Baud rate clocks are zero-based in the driver code (as that maps
- * to port numbers). Documentation uses 1-based numbering.
- */
+ 
 static unsigned int brg_clk = 0;
 
 #define CLK_GRAN	(1000)
@@ -175,7 +150,7 @@ unsigned int qe_get_brg_clk(void)
 
 	of_node_put(qe);
 
-	/* round this if near to a multiple of CLK_GRAN */
+	 
 	mod = brg_clk % CLK_GRAN;
 	if (mod) {
 		if (mod < CLK_GRAN_LIMIT)
@@ -199,14 +174,7 @@ static bool qe_general4_errata(void)
 	return false;
 }
 
-/* Program the BRG to the given sampling rate and multiplier
- *
- * @brg: the BRG, QE_BRG1 - QE_BRG16
- * @rate: the desired sampling rate
- * @multiplier: corresponds to the value programmed in GUMR_L[RDCR] or
- * GUMR_L[TDCR].  E.g., if this BRG is the RX clock, and GUMR_L[RDCR]=01,
- * then 'multiplier' should be 8.
- */
+ 
 int qe_setbrg(enum qe_clock brg, unsigned int rate, unsigned int multiplier)
 {
 	u32 divisor, tempval;
@@ -222,9 +190,7 @@ int qe_setbrg(enum qe_clock brg, unsigned int rate, unsigned int multiplier)
 		divisor /= 16;
 	}
 
-	/* Errata QE_General4, which affects some MPC832x and MPC836x SOCs, says
-	   that the BRG divisor must be even if you're not using divide-by-16
-	   mode. */
+	 
 	if (qe_general4_errata())
 		if (!div16 && (divisor & 1) && (divisor > 3))
 			divisor++;
@@ -238,11 +204,7 @@ int qe_setbrg(enum qe_clock brg, unsigned int rate, unsigned int multiplier)
 }
 EXPORT_SYMBOL(qe_setbrg);
 
-/* Convert a string to a QE clock source enum
- *
- * This function takes a string, typically from a property in the device
- * tree, and returns the corresponding "enum qe_clock" value.
-*/
+ 
 enum qe_clock qe_clock_source(const char *source)
 {
 	unsigned int i;
@@ -276,9 +238,7 @@ enum qe_clock qe_clock_source(const char *source)
 }
 EXPORT_SYMBOL(qe_clock_source);
 
-/* Initialize SNUMs (thread serial numbers) according to
- * QE Module Control chapter, SNUM table
- */
+ 
 static void qe_snums_init(void)
 {
 	static const u8 snum_init_76[] = {
@@ -306,7 +266,7 @@ static void qe_snums_init(void)
 	int i;
 
 	bitmap_zero(snum_state, QE_NUM_OF_SNUM);
-	qe_num_of_snum = 28; /* The default number of snum for threads is 28 */
+	qe_num_of_snum = 28;  
 	qe = qe_get_device_node();
 	if (qe) {
 		i = of_property_read_variable_u8_array(qe, "fsl,qe-snums",
@@ -316,11 +276,7 @@ static void qe_snums_init(void)
 			qe_num_of_snum = i;
 			return;
 		}
-		/*
-		 * Fall back to legacy binding of using the value of
-		 * fsl,qe-num-snums to choose one of the static arrays
-		 * above.
-		 */
+		 
 		of_property_read_u32(qe, "fsl,qe-num-snums", &qe_num_of_snum);
 		of_node_put(qe);
 	}
@@ -368,8 +324,7 @@ static int qe_sdma_init(void)
 	struct sdma __iomem *sdma = &qe_immr->sdma;
 	static s32 sdma_buf_offset = -ENOMEM;
 
-	/* allocate 2 internal temporary buffers (512 bytes size each) for
-	 * the SDMA */
+	 
 	if (sdma_buf_offset < 0) {
 		sdma_buf_offset = qe_muram_alloc(512 * 2, 4096);
 		if (sdma_buf_offset < 0)
@@ -384,24 +339,16 @@ static int qe_sdma_init(void)
 	return 0;
 }
 
-/* The maximum number of RISCs we support */
+ 
 #define MAX_QE_RISC     4
 
-/* Firmware information stored here for qe_get_firmware_info() */
+ 
 static struct qe_firmware_info qe_firmware_info;
 
-/*
- * Set to 1 if QE firmware has been uploaded, and therefore
- * qe_firmware_info contains valid data.
- */
+ 
 static int qe_firmware_uploaded;
 
-/*
- * Upload a QE microcode
- *
- * This function is a worker function for qe_upload_firmware().  It does
- * the actual uploading of the microcode.
- */
+ 
 static void qe_upload_microcode(const void *base,
 	const struct qe_microcode *ucode)
 {
@@ -416,34 +363,18 @@ static void qe_upload_microcode(const void *base,
 		printk(KERN_INFO "qe-firmware: "
 			"uploading microcode '%s'\n", ucode->id);
 
-	/* Use auto-increment */
+	 
 	iowrite32be(be32_to_cpu(ucode->iram_offset) | QE_IRAM_IADD_AIE | QE_IRAM_IADD_BADDR,
 		       &qe_immr->iram.iadd);
 
 	for (i = 0; i < be32_to_cpu(ucode->count); i++)
 		iowrite32be(be32_to_cpu(code[i]), &qe_immr->iram.idata);
 
-	/* Set I-RAM Ready Register */
+	 
 	iowrite32be(QE_IRAM_READY, &qe_immr->iram.iready);
 }
 
-/*
- * Upload a microcode to the I-RAM at a specific address.
- *
- * See Documentation/powerpc/qe_firmware.rst for information on QE microcode
- * uploading.
- *
- * Currently, only version 1 is supported, so the 'version' field must be
- * set to 1.
- *
- * The SOC model and revision are not validated, they are only displayed for
- * informational purposes.
- *
- * 'calc_size' is the calculated size, in bytes, of the firmware structure and
- * all of the microcode structures, minus the CRC.
- *
- * 'length' is the size that the structure says it is, including the CRC.
- */
+ 
 int qe_upload_firmware(const struct qe_firmware *firmware)
 {
 	unsigned int i;
@@ -461,53 +392,47 @@ int qe_upload_firmware(const struct qe_firmware *firmware)
 	hdr = &firmware->header;
 	length = be32_to_cpu(hdr->length);
 
-	/* Check the magic */
+	 
 	if ((hdr->magic[0] != 'Q') || (hdr->magic[1] != 'E') ||
 	    (hdr->magic[2] != 'F')) {
 		printk(KERN_ERR "qe-firmware: not a microcode\n");
 		return -EPERM;
 	}
 
-	/* Check the version */
+	 
 	if (hdr->version != 1) {
 		printk(KERN_ERR "qe-firmware: unsupported version\n");
 		return -EPERM;
 	}
 
-	/* Validate some of the fields */
+	 
 	if ((firmware->count < 1) || (firmware->count > MAX_QE_RISC)) {
 		printk(KERN_ERR "qe-firmware: invalid data\n");
 		return -EINVAL;
 	}
 
-	/* Validate the length and check if there's a CRC */
+	 
 	calc_size = struct_size(firmware, microcode, firmware->count);
 
 	for (i = 0; i < firmware->count; i++)
-		/*
-		 * For situations where the second RISC uses the same microcode
-		 * as the first, the 'code_offset' and 'count' fields will be
-		 * zero, so it's okay to add those.
-		 */
+		 
 		calc_size += sizeof(__be32) *
 			be32_to_cpu(firmware->microcode[i].count);
 
-	/* Validate the length */
+	 
 	if (length != calc_size + sizeof(__be32)) {
 		printk(KERN_ERR "qe-firmware: invalid length\n");
 		return -EPERM;
 	}
 
-	/* Validate the CRC */
+	 
 	crc = be32_to_cpu(*(__be32 *)((void *)firmware + calc_size));
 	if (crc != crc32(0, firmware, calc_size)) {
 		printk(KERN_ERR "qe-firmware: firmware CRC is invalid\n");
 		return -EIO;
 	}
 
-	/*
-	 * If the microcode calls for it, split the I-RAM.
-	 */
+	 
 	if (!firmware->split)
 		qe_setbits_be16(&qe_immr->cp.cercr, QE_CP_CERCR_CIR);
 
@@ -520,25 +445,22 @@ int qe_upload_firmware(const struct qe_firmware *firmware)
 		printk(KERN_INFO "qe-firmware: firmware '%s'\n",
 			firmware->id);
 
-	/*
-	 * The QE only supports one microcode per RISC, so clear out all the
-	 * saved microcode information and put in the new.
-	 */
+	 
 	memset(&qe_firmware_info, 0, sizeof(qe_firmware_info));
 	strscpy(qe_firmware_info.id, firmware->id, sizeof(qe_firmware_info.id));
 	qe_firmware_info.extended_modes = be64_to_cpu(firmware->extended_modes);
 	memcpy(qe_firmware_info.vtraps, firmware->vtraps,
 		sizeof(firmware->vtraps));
 
-	/* Loop through each microcode. */
+	 
 	for (i = 0; i < firmware->count; i++) {
 		const struct qe_microcode *ucode = &firmware->microcode[i];
 
-		/* Upload a microcode if it's present */
+		 
 		if (ucode->code_offset)
 			qe_upload_microcode(firmware, ucode);
 
-		/* Program the traps for this processor */
+		 
 		for (j = 0; j < 16; j++) {
 			u32 trap = be32_to_cpu(ucode->traps[j]);
 
@@ -547,7 +469,7 @@ int qe_upload_firmware(const struct qe_firmware *firmware)
 					       &qe_immr->rsp[i].tibcr[j]);
 		}
 
-		/* Enable traps */
+		 
 		iowrite32be(be32_to_cpu(ucode->eccr),
 			       &qe_immr->rsp[i].eccr);
 	}
@@ -558,12 +480,7 @@ int qe_upload_firmware(const struct qe_firmware *firmware)
 }
 EXPORT_SYMBOL(qe_upload_firmware);
 
-/*
- * Get info on the currently-loaded firmware
- *
- * This function also checks the device tree to see if the boot loader has
- * uploaded a firmware already.
- */
+ 
 struct qe_firmware_info *qe_get_firmware_info(void)
 {
 	static int initialized;
@@ -571,10 +488,7 @@ struct qe_firmware_info *qe_get_firmware_info(void)
 	struct device_node *fw = NULL;
 	const char *sprop;
 
-	/*
-	 * If we haven't checked yet, and a driver hasn't uploaded a firmware
-	 * yet, then check the device tree for information.
-	 */
+	 
 	if (qe_firmware_uploaded)
 		return &qe_firmware_info;
 
@@ -587,17 +501,17 @@ struct qe_firmware_info *qe_get_firmware_info(void)
 	if (!qe)
 		return NULL;
 
-	/* Find the 'firmware' child node */
+	 
 	fw = of_get_child_by_name(qe, "firmware");
 	of_node_put(qe);
 
-	/* Did we find the 'firmware' node? */
+	 
 	if (!fw)
 		return NULL;
 
 	qe_firmware_uploaded = 1;
 
-	/* Copy the data into qe_firmware_info*/
+	 
 	sprop = of_get_property(fw, "id", NULL);
 	if (sprop)
 		strscpy(qe_firmware_info.id, sprop,
@@ -679,4 +593,4 @@ static struct platform_driver qe_driver = {
 };
 
 builtin_platform_driver(qe_driver);
-#endif /* defined(CONFIG_SUSPEND) && defined(CONFIG_PPC_85xx) */
+#endif  

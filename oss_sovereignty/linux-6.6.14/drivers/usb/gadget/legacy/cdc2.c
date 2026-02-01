@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * cdc2.c -- CDC Composite driver, with ECM and ACM support
- *
- * Copyright (C) 2008 David Brownell
- * Copyright (C) 2008 Nokia Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -17,57 +12,53 @@
 #define DRIVER_DESC		"CDC Composite Gadget"
 #define DRIVER_VERSION		"King Kamehameha Day 2008"
 
-/*-------------------------------------------------------------------------*/
+ 
 
-/* DO NOT REUSE THESE IDs with a protocol-incompatible driver!!  Ever!!
- * Instead:  allocate your own, using normal USB-IF procedures.
- */
+ 
 
-/* Thanks to NetChip Technologies for donating this product ID.
- * It's for devices with only this composite CDC configuration.
- */
-#define CDC_VENDOR_NUM		0x0525	/* NetChip */
-#define CDC_PRODUCT_NUM		0xa4aa	/* CDC Composite: ECM + ACM */
+ 
+#define CDC_VENDOR_NUM		0x0525	 
+#define CDC_PRODUCT_NUM		0xa4aa	 
 
 USB_GADGET_COMPOSITE_OPTIONS();
 
 USB_ETHERNET_MODULE_PARAMETERS();
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static struct usb_device_descriptor device_desc = {
 	.bLength =		sizeof device_desc,
 	.bDescriptorType =	USB_DT_DEVICE,
 
-	/* .bcdUSB = DYNAMIC */
+	 
 
 	.bDeviceClass =		USB_CLASS_COMM,
 	.bDeviceSubClass =	0,
 	.bDeviceProtocol =	0,
-	/* .bMaxPacketSize0 = f(hardware) */
+	 
 
-	/* Vendor and product id can be overridden by module parameters.  */
+	 
 	.idVendor =		cpu_to_le16(CDC_VENDOR_NUM),
 	.idProduct =		cpu_to_le16(CDC_PRODUCT_NUM),
-	/* .bcdDevice = f(hardware) */
-	/* .iManufacturer = DYNAMIC */
-	/* .iProduct = DYNAMIC */
-	/* NO SERIAL NUMBER */
+	 
+	 
+	 
+	 
 	.bNumConfigurations =	1,
 };
 
 static const struct usb_descriptor_header *otg_desc[2];
 
-/* string IDs are assigned dynamically */
+ 
 static struct usb_string strings_dev[] = {
 	[USB_GADGET_MANUFACTURER_IDX].s = "",
 	[USB_GADGET_PRODUCT_IDX].s = DRIVER_DESC,
 	[USB_GADGET_SERIAL_IDX].s = "",
-	{  } /* end of list */
+	{  }  
 };
 
 static struct usb_gadget_strings stringtab_dev = {
-	.language	= 0x0409,	/* en-us */
+	.language	= 0x0409,	 
 	.strings	= strings_dev,
 };
 
@@ -76,16 +67,14 @@ static struct usb_gadget_strings *dev_strings[] = {
 	NULL,
 };
 
-/*-------------------------------------------------------------------------*/
+ 
 static struct usb_function *f_acm;
 static struct usb_function_instance *fi_serial;
 
 static struct usb_function *f_ecm;
 static struct usb_function_instance *fi_ecm;
 
-/*
- * We _always_ have both CDC ECM and CDC ACM functions.
- */
+ 
 static int cdc_do_config(struct usb_configuration *c)
 {
 	int	status;
@@ -129,11 +118,11 @@ err_get_ecm:
 static struct usb_configuration cdc_config_driver = {
 	.label			= "CDC Composite (ECM + ACM)",
 	.bConfigurationValue	= 1,
-	/* .iConfiguration = DYNAMIC */
+	 
 	.bmAttributes		= USB_CONFIG_ATT_SELFPOWER,
 };
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static int cdc_bind(struct usb_composite_dev *cdev)
 {
@@ -165,9 +154,7 @@ static int cdc_bind(struct usb_composite_dev *cdev)
 		goto fail;
 	}
 
-	/* Allocate string descriptor numbers ... note that string
-	 * contents can be overridden by the composite_dev glue.
-	 */
+	 
 
 	status = usb_string_ids_tab(cdev, strings_dev);
 	if (status < 0)
@@ -188,7 +175,7 @@ static int cdc_bind(struct usb_composite_dev *cdev)
 		otg_desc[1] = NULL;
 	}
 
-	/* register our configuration */
+	 
 	status = usb_add_config(cdev, &cdc_config_driver, cdc_do_config);
 	if (status < 0)
 		goto fail2;

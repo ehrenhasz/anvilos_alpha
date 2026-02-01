@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Freescale Semiconductor, Inc.
- *
- * Copyright (C) 2014 Linaro.
- * Viresh Kumar <viresh.kumar@linaro.org>
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -38,7 +33,7 @@ static LIST_HEAD(priv_list);
 
 static struct freq_attr *cpufreq_dt_attr[] = {
 	&cpufreq_freq_attr_scaling_available_freqs,
-	NULL,   /* Extra space for boost-attr if required */
+	NULL,    
 	NULL,
 };
 
@@ -62,10 +57,7 @@ static int set_target(struct cpufreq_policy *policy, unsigned int index)
 	return dev_pm_opp_set_rate(priv->cpu_dev, freq * 1000);
 }
 
-/*
- * An earlier version of opp-v1 bindings used to name the regulator
- * "cpu0-supply", we still need to handle that for backwards compatibility.
- */
+ 
 static const char *find_supply_name(struct device *dev)
 {
 	struct device_node *np;
@@ -75,11 +67,11 @@ static const char *find_supply_name(struct device *dev)
 
 	np = of_node_get(dev->of_node);
 
-	/* This must be valid for sure */
+	 
 	if (WARN_ON(!np))
 		return NULL;
 
-	/* Try "cpu0" for older DTs */
+	 
 	if (!cpu) {
 		pp = of_find_property(np, "cpu0-supply", NULL);
 		if (pp) {
@@ -134,9 +126,9 @@ static int cpufreq_init(struct cpufreq_policy *policy)
 	policy->cpuinfo.transition_latency = transition_latency;
 	policy->dvfs_possible_from_any_cpu = true;
 
-	/* Support turbo/boost mode */
+	 
 	if (policy_has_boost_freq(policy)) {
-		/* This gets disabled by core on driver unregister */
+		 
 		ret = cpufreq_enable_boost_support();
 		if (ret)
 			goto out_clk_put;
@@ -153,16 +145,13 @@ out_clk_put:
 
 static int cpufreq_online(struct cpufreq_policy *policy)
 {
-	/* We did light-weight tear down earlier, nothing to do here */
+	 
 	return 0;
 }
 
 static int cpufreq_offline(struct cpufreq_policy *policy)
 {
-	/*
-	 * Preserve policy->driver_data and don't free resources on light-weight
-	 * tear down.
-	 */
+	 
 	return 0;
 }
 
@@ -196,7 +185,7 @@ static int dt_cpufreq_early_init(struct device *dev, int cpu)
 	const char *reg_name[] = { NULL, NULL };
 	int ret;
 
-	/* Check if this CPU is already covered by some other policy */
+	 
 	if (cpufreq_dt_find_data(cpu))
 		return 0;
 
@@ -214,10 +203,7 @@ static int dt_cpufreq_early_init(struct device *dev, int cpu)
 	cpumask_set_cpu(cpu, priv->cpus);
 	priv->cpu_dev = cpu_dev;
 
-	/*
-	 * OPP layer will be taking care of regulators now, but it needs to know
-	 * the name of the regulator first.
-	 */
+	 
 	reg_name[0] = find_supply_name(cpu_dev);
 	if (reg_name[0]) {
 		priv->opp_token = dev_pm_opp_set_regulators(cpu_dev, reg_name);
@@ -228,32 +214,18 @@ static int dt_cpufreq_early_init(struct device *dev, int cpu)
 		}
 	}
 
-	/* Get OPP-sharing information from "operating-points-v2" bindings */
+	 
 	ret = dev_pm_opp_of_get_sharing_cpus(cpu_dev, priv->cpus);
 	if (ret) {
 		if (ret != -ENOENT)
 			goto out;
 
-		/*
-		 * operating-points-v2 not supported, fallback to all CPUs share
-		 * OPP for backward compatibility if the platform hasn't set
-		 * sharing CPUs.
-		 */
+		 
 		if (dev_pm_opp_get_sharing_cpus(cpu_dev, priv->cpus))
 			fallback = true;
 	}
 
-	/*
-	 * Initialize OPP tables for all priv->cpus. They will be shared by
-	 * all CPUs which have marked their CPUs shared with OPP bindings.
-	 *
-	 * For platforms not using operating-points-v2 bindings, we do this
-	 * before updating priv->cpus. Otherwise, we will end up creating
-	 * duplicate OPPs for the CPUs.
-	 *
-	 * OPPs might be populated at runtime, don't fail for error here unless
-	 * it is -EPROBE_DEFER.
-	 */
+	 
 	ret = dev_pm_opp_of_cpumask_add_table(priv->cpus);
 	if (!ret) {
 		priv->have_static_opps = true;
@@ -261,10 +233,7 @@ static int dt_cpufreq_early_init(struct device *dev, int cpu)
 		goto out;
 	}
 
-	/*
-	 * The OPP table must be initialized, statically or dynamically, by this
-	 * point.
-	 */
+	 
 	ret = dev_pm_opp_get_opp_count(cpu_dev);
 	if (ret <= 0) {
 		dev_err(cpu_dev, "OPP table can't be empty\n");
@@ -317,7 +286,7 @@ static int dt_cpufreq_probe(struct platform_device *pdev)
 	struct cpufreq_dt_platform_data *data = dev_get_platdata(&pdev->dev);
 	int ret, cpu;
 
-	/* Request resources early so we can return in case of -EPROBE_DEFER */
+	 
 	for_each_possible_cpu(cpu) {
 		ret = dt_cpufreq_early_init(&pdev->dev, cpu);
 		if (ret)

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/err.h>
@@ -20,7 +20,7 @@
 #define MLXSW_SP_ACL_ATCAM_LKEY_ID_BLOCK_CLEAR_END	5
 
 struct mlxsw_sp_acl_atcam_lkey_id_ht_key {
-	char enc_key[MLXSW_REG_PTCEX_FLEX_KEY_BLOCKS_LEN]; /* MSB blocks */
+	char enc_key[MLXSW_REG_PTCEX_FLEX_KEY_BLOCKS_LEN];  
 	u8 erp_id;
 };
 
@@ -275,7 +275,7 @@ int mlxsw_sp_acl_atcam_region_associate(struct mlxsw_sp *mlxsw_sp,
 					u16 region_id)
 {
 	char perar_pl[MLXSW_REG_PERAR_LEN];
-	/* For now, just assume that every region has 12 key blocks */
+	 
 	u16 hw_region = region_id * 3;
 	u64 max_regions;
 
@@ -294,9 +294,7 @@ mlxsw_sp_acl_atcam_region_type_init(struct mlxsw_sp_acl_atcam_region *aregion)
 	enum mlxsw_sp_acl_atcam_region_type region_type;
 	unsigned int blocks_count;
 
-	/* We already know the blocks count can not exceed the maximum
-	 * blocks count.
-	 */
+	 
 	blocks_count = mlxsw_afk_key_info_blocks_count_get(region->key_info);
 	if (blocks_count <= 2)
 		region_type = MLXSW_SP_ACL_ATCAM_REGION_TYPE_2KB;
@@ -490,9 +488,7 @@ __mlxsw_sp_acl_atcam_entry_add(struct mlxsw_sp *mlxsw_sp,
 	memcpy(aentry->enc_key, aentry->ht_key.full_enc_key,
 	       sizeof(aentry->enc_key));
 
-	/* Compute all needed delta information and clear the delta bits
-	 * from the encrypted key.
-	 */
+	 
 	delta = mlxsw_sp_acl_erp_delta(aentry->erp_mask);
 	aentry->delta_info.start = mlxsw_sp_acl_erp_delta_start(delta);
 	aentry->delta_info.mask = mlxsw_sp_acl_erp_delta_mask(delta);
@@ -501,24 +497,17 @@ __mlxsw_sp_acl_atcam_entry_add(struct mlxsw_sp *mlxsw_sp,
 					     aentry->ht_key.full_enc_key);
 	mlxsw_sp_acl_erp_delta_clear(delta, aentry->enc_key);
 
-	/* Add rule to the list of A-TCAM rules, assuming this
-	 * rule is intended to A-TCAM. In case this rule does
-	 * not fit into A-TCAM it will be removed from the list.
-	 */
+	 
 	list_add(&aentry->list, &aregion->entries_list);
 
-	/* We can't insert identical rules into the A-TCAM, so fail and
-	 * let the rule spill into C-TCAM
-	 */
+	 
 	err = rhashtable_lookup_insert_fast(&aregion->entries_ht,
 					    &aentry->ht_node,
 					    mlxsw_sp_acl_atcam_entries_ht_params);
 	if (err)
 		goto err_rhashtable_insert;
 
-	/* Bloom filter must be updated here, before inserting the rule into
-	 * the A-TCAM.
-	 */
+	 
 	err = mlxsw_sp_acl_erp_bf_insert(mlxsw_sp, aregion, erp_mask, aentry);
 	if (err)
 		goto err_bf_insert;
@@ -576,9 +565,7 @@ int mlxsw_sp_acl_atcam_entry_add(struct mlxsw_sp *mlxsw_sp,
 	if (!err)
 		return 0;
 
-	/* It is possible we failed to add the rule to the A-TCAM due to
-	 * exceeded number of masks. Try to spill into C-TCAM.
-	 */
+	 
 	trace_mlxsw_sp_acl_atcam_entry_add_ctcam_spill(mlxsw_sp, aregion);
 	err = mlxsw_sp_acl_ctcam_entry_add(mlxsw_sp, &aregion->cregion,
 					   &achunk->cchunk, &aentry->centry,

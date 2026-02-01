@@ -1,15 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Host1x init for Tegra194 SoCs
- *
- * Copyright (c) 2018 NVIDIA Corporation.
- */
 
-/* include hw specification */
+ 
+
+ 
 #include "host1x07.h"
 #include "host1x07_hardware.h"
 
-/* include code */
+ 
 #define HOST1X_HW 7
 
 #include "cdma_hw.c"

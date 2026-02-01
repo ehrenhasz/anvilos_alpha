@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Clock driver for Loongson-1 SoC
- *
- * Copyright (C) 2012-2023 Keguang Zhang <keguang.zhang@gmail.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk-provider.h>
@@ -16,7 +12,7 @@
 
 #include <dt-bindings/clock/loongson,ls1x-clk.h>
 
-/* Loongson 1 Clock Register Definitions */
+ 
 #define CLK_PLL_FREQ		0x0
 #define CLK_PLL_DIV		0x4
 
@@ -38,7 +34,7 @@ struct ls1x_clk_div_data {
 	const struct clk_div_table *table;
 	u8 bypass_shift;
 	u8 bypass_inv;
-	spinlock_t *lock;	/* protect access to DIV registers */
+	spinlock_t *lock;	 
 };
 
 struct ls1x_clk {
@@ -118,7 +114,7 @@ static int ls1x_divider_set_rate(struct clk_hw *hw, unsigned long rate,
 
 	spin_lock_irqsave(d->lock, flags);
 
-	/* Bypass the clock */
+	 
 	val = readl(ls1x_clk->reg);
 	if (d->bypass_inv)
 		val &= ~BIT(d->bypass_shift);
@@ -131,7 +127,7 @@ static int ls1x_divider_set_rate(struct clk_hw *hw, unsigned long rate,
 	val |= (u32)div_val << d->shift;
 	writel(val, ls1x_clk->reg);
 
-	/* Restore the clock */
+	 
 	val = readl(ls1x_clk->reg);
 	if (d->bypass_inv)
 		val |= BIT(d->bypass_shift);
@@ -223,7 +219,7 @@ static const struct clk_div_table ls1c_ahb_div_table[] = {
 	[1] = { .val = 1, .div = 4 },
 	[2] = { .val = 2, .div = 3 },
 	[3] = { .val = 3, .div = 3 },
-	[4] = { /* sentinel */ }
+	[4] = {   }
 };
 
 static LS1X_CLK_PLL(ls1c_clk_pll, CLK_PLL_FREQ, 0, 2, 8, 8, 16, 8);
@@ -262,7 +258,7 @@ static void __init ls1x_clk_init(struct device_node *np,
 	}
 
 	for (i = 0; i < hw_data->num; i++) {
-		/* array might be sparse */
+		 
 		if (!hw_data->hws[i])
 			continue;
 

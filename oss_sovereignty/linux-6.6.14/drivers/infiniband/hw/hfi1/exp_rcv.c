@@ -1,25 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
-/*
- * Copyright(c) 2017 Intel Corporation.
- */
+
+ 
 
 #include "exp_rcv.h"
 #include "trace.h"
 
-/**
- * hfi1_exp_tid_set_init - initialize exp_tid_set
- * @set: the set
- */
+ 
 static void hfi1_exp_tid_set_init(struct exp_tid_set *set)
 {
 	INIT_LIST_HEAD(&set->list);
 	set->count = 0;
 }
 
-/**
- * hfi1_exp_tid_group_init - initialize rcd expected receive
- * @rcd: the rcd
- */
+ 
 void hfi1_exp_tid_group_init(struct hfi1_ctxtdata *rcd)
 {
 	hfi1_exp_tid_set_init(&rcd->tid_group_list);
@@ -27,10 +19,7 @@ void hfi1_exp_tid_group_init(struct hfi1_ctxtdata *rcd)
 	hfi1_exp_tid_set_init(&rcd->tid_full_list);
 }
 
-/**
- * hfi1_alloc_ctxt_rcv_groups - initialize expected receive groups
- * @rcd: the context to add the groupings to
- */
+ 
 int hfi1_alloc_ctxt_rcv_groups(struct hfi1_ctxtdata *rcd)
 {
 	struct hfi1_devdata *dd = rcd->dd;
@@ -57,17 +46,7 @@ int hfi1_alloc_ctxt_rcv_groups(struct hfi1_ctxtdata *rcd)
 	return 0;
 }
 
-/**
- * hfi1_free_ctxt_rcv_groups - free  expected receive groups
- * @rcd: the context to free
- *
- * The routine dismantles the expect receive linked
- * list and clears any tids associated with the receive
- * context.
- *
- * This should only be called for kernel contexts and the
- * a base user context.
- */
+ 
 void hfi1_free_ctxt_rcv_groups(struct hfi1_ctxtdata *rcd)
 {
 	kfree(rcd->groups);

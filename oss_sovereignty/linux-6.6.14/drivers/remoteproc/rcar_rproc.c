@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) IoT.bzh 2021
- */
+
+ 
 
 #include <linux/limits.h>
 #include <linux/module.h>
@@ -33,7 +31,7 @@ static int rcar_rproc_mem_alloc(struct rproc *rproc,
 		return -ENOMEM;
 	}
 
-	/* Update memory entry va */
+	 
 	mem->va = va;
 
 	return 0;
@@ -57,7 +55,7 @@ static int rcar_rproc_prepare(struct rproc *rproc)
 	struct reserved_mem *rmem;
 	u32 da;
 
-	/* Register associated reserved memory regions */
+	 
 	of_phandle_iterator_init(&it, np, "memory-region", NULL, 0);
 	while (of_phandle_iterator_next(&it) == 0) {
 
@@ -74,7 +72,7 @@ static int rcar_rproc_prepare(struct rproc *rproc)
 			return -EINVAL;
 		}
 
-		/* No need to translate pa to da, R-Car use same map */
+		 
 		da = rmem->base;
 		mem = rproc_mem_entry_init(dev, NULL,
 					   rmem->base,
@@ -181,7 +179,7 @@ static int rcar_rproc_probe(struct platform_device *pdev)
 
 	dev_set_drvdata(dev, rproc);
 
-	/* Manually start the rproc */
+	 
 	rproc->auto_boot = false;
 
 	ret = devm_rproc_add(dev, rproc);

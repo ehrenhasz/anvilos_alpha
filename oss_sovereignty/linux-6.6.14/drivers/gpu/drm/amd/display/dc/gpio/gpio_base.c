@@ -1,31 +1,6 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
-/*
- * Pre-requisites: headers required by header of this unit
- */
+ 
 
 #include "dm_services.h"
 
@@ -36,18 +11,11 @@
 #include "hw_factory.h"
 #include "gpio_service.h"
 
-/*
- * Post-requisites: headers required by this unit
- */
+ 
 
-/*
- * This unit
- */
+ 
 
-/*
- * @brief
- * Public API
- */
+ 
 
 enum gpio_result dal_gpio_open(
 	struct gpio *gpio,
@@ -65,7 +33,7 @@ enum gpio_result dal_gpio_open_ex(
 		return GPIO_RESULT_ALREADY_OPENED;
 	}
 
-	// No action if allocation failed during gpio construct
+	
 	if (!gpio->hw_container.ddc) {
 		BREAK_TO_DEBUGGER();
 		return GPIO_RESULT_NON_SPECIFIC_ERROR;
@@ -259,10 +227,7 @@ void dal_gpio_close(
 	gpio->mode = GPIO_MODE_UNKNOWN;
 }
 
-/*
- * @brief
- * Creation and destruction
- */
+ 
 
 struct gpio *dal_gpio_create(
 	struct gpio_service *service,
@@ -284,7 +249,7 @@ struct gpio *dal_gpio_create(
 	gpio->mode = GPIO_MODE_UNKNOWN;
 	gpio->output_state = output_state;
 
-	//initialize hw_container union based on id
+	
 	switch (gpio->id) {
 	case GPIO_ID_DDC_DATA:
 		gpio->service->factory.funcs->init_ddc_data(&gpio->hw_container.ddc, service->ctx, id, en);
@@ -298,7 +263,7 @@ struct gpio *dal_gpio_create(
 	case GPIO_ID_HPD:
 		gpio->service->factory.funcs->init_hpd(&gpio->hw_container.hpd, service->ctx, id, en);
 		break;
-	// TODO: currently gpio for sync and gsl does not get created, might need it later
+	
 	case GPIO_ID_SYNC:
 		break;
 	case GPIO_ID_GSL:
@@ -325,7 +290,7 @@ void dal_gpio_destroy(
 		(*gpio)->hw_container.ddc = NULL;
 		break;
 	case GPIO_ID_DDC_CLOCK:
-		//TODO: might want to change it to init_ddc_clock
+		
 		kfree((*gpio)->hw_container.ddc);
 		(*gpio)->hw_container.ddc = NULL;
 		break;
@@ -337,7 +302,7 @@ void dal_gpio_destroy(
 		kfree((*gpio)->hw_container.hpd);
 		(*gpio)->hw_container.hpd = NULL;
 		break;
-	// TODO: currently gpio for sync and gsl does not get created, might need it later
+	
 	case GPIO_ID_SYNC:
 		break;
 	case GPIO_ID_GSL:

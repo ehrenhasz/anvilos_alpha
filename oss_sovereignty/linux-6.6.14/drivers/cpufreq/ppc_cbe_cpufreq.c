@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * cpufreq driver for the cell processor
- *
- * (C) Copyright IBM Deutschland Entwicklung GmbH 2005-2007
- *
- * Author: Christian Krafft <krafft@de.ibm.com>
- */
+
+ 
 
 #include <linux/cpufreq.h>
 #include <linux/module.h>
@@ -16,7 +10,7 @@
 
 #include "ppc_cbe_cpufreq.h"
 
-/* the CBE supports an 8 step frequency scaling */
+ 
 static struct cpufreq_frequency_table cbe_freqs[] = {
 	{0, 1,	0},
 	{0, 2,	0},
@@ -29,9 +23,7 @@ static struct cpufreq_frequency_table cbe_freqs[] = {
 	{0, 0,	CPUFREQ_TABLE_END},
 };
 
-/*
- * hardware specific functions
- */
+ 
 
 static int set_pmode(unsigned int cpu, unsigned int slow_mode)
 {
@@ -47,9 +39,7 @@ static int set_pmode(unsigned int cpu, unsigned int slow_mode)
 	return rc;
 }
 
-/*
- * cpufreq functions
- */
+ 
 
 static int cbe_cpufreq_cpu_init(struct cpufreq_policy *policy)
 {
@@ -66,9 +56,7 @@ static int cbe_cpufreq_cpu_init(struct cpufreq_policy *policy)
 
 	pr_debug("init cpufreq on CPU %d\n", policy->cpu);
 
-	/*
-	 * Let's check we can actually get to the CELL regs
-	 */
+	 
 	if (!cbe_get_cpu_pmd_regs(policy->cpu) ||
 	    !cbe_get_cpu_mic_tm_regs(policy->cpu)) {
 		pr_info("invalid CBE regs pointers for cpufreq\n");
@@ -83,20 +71,19 @@ static int cbe_cpufreq_cpu_init(struct cpufreq_policy *policy)
 	if (!max_freqp)
 		return -EINVAL;
 
-	/* we need the freq in kHz */
+	 
 	max_freq = *max_freqp / 1000;
 
 	pr_debug("max clock-frequency is at %u kHz\n", max_freq);
 	pr_debug("initializing frequency table\n");
 
-	/* initialize frequency table */
+	 
 	cpufreq_for_each_entry(pos, cbe_freqs) {
 		pos->frequency = max_freq / pos->driver_data;
 		pr_debug("%d: %d\n", (int)(pos - cbe_freqs), pos->frequency);
 	}
 
-	/* if DEBUG is enabled set_pmode() measures the latency
-	 * of a transition */
+	 
 	policy->cpuinfo.transition_latency = 25000;
 
 	cur_pmode = cbe_cpufreq_get_pmode(policy->cpu);
@@ -140,9 +127,7 @@ static struct cpufreq_driver cbe_cpufreq_driver = {
 	.flags		= CPUFREQ_CONST_LOOPS,
 };
 
-/*
- * module init and destoy
- */
+ 
 
 static int __init cbe_cpufreq_init(void)
 {

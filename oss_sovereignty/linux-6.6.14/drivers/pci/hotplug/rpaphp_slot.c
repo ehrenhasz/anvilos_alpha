@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * RPA Virtual I/O device functions
- * Copyright (C) 2004 Linda Xie <lxie@us.ibm.com>
- *
- * All rights reserved.
- *
- * Send feedback to <lxie@us.ibm.com>
- *
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/sysfs.h>
@@ -19,7 +11,7 @@
 #include <asm/rtas.h>
 #include "rpaphp.h"
 
-/* free up the memory used by a slot */
+ 
 void dealloc_slot_struct(struct slot *slot)
 {
 	of_node_put(slot->dn);
@@ -91,7 +83,7 @@ int rpaphp_register_slot(struct slot *slot)
 		__func__, slot->dn, slot->index, slot->name,
 		slot->power_domain, slot->type);
 
-	/* should not try to register the same slot twice */
+	 
 	if (is_registered(slot)) {
 		err("rpaphp_register_slot: slot[%s] is already registered\n", slot->name);
 		return -EAGAIN;
@@ -112,7 +104,7 @@ int rpaphp_register_slot(struct slot *slot)
 		return retval;
 	}
 
-	/* add slot to our internal list */
+	 
 	list_add(&slot->rpaphp_slot_list, &rpaphp_slot_head);
 	info("Slot [%s] registered\n", slot->name);
 	return 0;

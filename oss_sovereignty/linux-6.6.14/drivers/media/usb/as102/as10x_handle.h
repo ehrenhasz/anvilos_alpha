@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Abilis Systems Single DVB-T Receiver
- * Copyright (C) 2008 Pierrick Hascoet <pierrick.hascoet@abilis.com>
- */
+ 
+ 
 #ifndef _AS10X_HANDLE_H
 #define _AS10X_HANDLE_H
 struct as10x_bus_adapter_t;
@@ -10,7 +7,7 @@ struct as102_dev_t;
 
 #include "as10x_cmd.h"
 
-/* values for "mode" field */
+ 
 #define REGMODE8	8
 #define REGMODE16	16
 #define REGMODE32	32

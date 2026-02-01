@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 Marek Vasut <marex@denx.de>
- *
- * This code is based on drivers/video/fbdev/mxsfb.c :
- * Copyright (C) 2010 Juergen Beisert, Pengutronix
- * Copyright (C) 2008-2009 Freescale Semiconductor, Inc. All Rights Reserved.
- * Copyright (C) 2008 Embedded Alley Solutions, Inc All Rights Reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -36,10 +29,7 @@
 enum mxsfb_devtype {
 	MXSFB_V3,
 	MXSFB_V4,
-	/*
-	 * Starting at i.MX6 the hardware version register is gone, use the
-	 * i.MX family number as the version.
-	 */
+	 
 	MXSFB_V6,
 };
 
@@ -143,10 +133,7 @@ static int mxsfb_attach_bridge(struct mxsfb_drm_private *mxsfb)
 
 	mxsfb->bridge = bridge;
 
-	/*
-	 * Get hold of the connector. This is a bit of a hack, until the bridge
-	 * API gives us bus flags and formats.
-	 */
+	 
 	drm_connector_list_iter_begin(drm, &iter);
 	mxsfb->connector = drm_connector_list_iter_next(&iter);
 	drm_connector_list_iter_end(&iter);
@@ -183,7 +170,7 @@ static void mxsfb_irq_disable(struct drm_device *drm)
 
 	mxsfb_enable_axi_clk(mxsfb);
 
-	/* Disable and clear VBLANK IRQ */
+	 
 	writel(CTRL1_CUR_FRAME_DONE_IRQ_EN, mxsfb->base + LCDC_CTRL1 + REG_CLR);
 	writel(CTRL1_CUR_FRAME_DONE_IRQ, mxsfb->base + LCDC_CTRL1 + REG_CLR);
 
@@ -247,7 +234,7 @@ static int mxsfb_load(struct drm_device *drm,
 
 	pm_runtime_enable(drm->dev);
 
-	/* Modeset init */
+	 
 	drm_mode_config_init(drm);
 
 	ret = mxsfb_kms_init(mxsfb);
@@ -262,7 +249,7 @@ static int mxsfb_load(struct drm_device *drm,
 		goto err_vblank;
 	}
 
-	/* Start with vertical blanking interrupt reporting disabled. */
+	 
 	drm_crtc_vblank_off(&mxsfb->crtc);
 
 	ret = mxsfb_attach_bridge(mxsfb);
@@ -339,7 +326,7 @@ static const struct of_device_id mxsfb_dt_ids[] = {
 	{ .compatible = "fsl,imx23-lcdif", .data = &mxsfb_devdata[MXSFB_V3], },
 	{ .compatible = "fsl,imx28-lcdif", .data = &mxsfb_devdata[MXSFB_V4], },
 	{ .compatible = "fsl,imx6sx-lcdif", .data = &mxsfb_devdata[MXSFB_V6], },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mxsfb_dt_ids);
 

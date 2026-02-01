@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2004 Topspin Corporation.  All rights reserved.
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/errno.h>
 #include <linux/string.h>
@@ -300,18 +269,7 @@ __sum16 ib_ud_ip4_csum(struct ib_ud_header *header)
 }
 EXPORT_SYMBOL(ib_ud_ip4_csum);
 
-/**
- * ib_ud_header_init - Initialize UD header structure
- * @payload_bytes:Length of packet payload
- * @lrh_present: specify if LRH is present
- * @eth_present: specify if Eth header is present
- * @vlan_present: packet is tagged vlan
- * @grh_present: GRH flag (if non-zero, GRH will be included)
- * @ip_version: if non-zero, IP header, V4 or V6, will be included
- * @udp_present :if non-zero, UDP header will be included
- * @immediate_present: specify if immediate data is present
- * @header:Structure to initialize
- */
+ 
 int ib_ud_header_init(int     payload_bytes,
 		      int    lrh_present,
 		      int    eth_present,
@@ -327,9 +285,7 @@ int ib_ud_header_init(int     payload_bytes,
 	grh_present = grh_present && !ip_version;
 	memset(header, 0, sizeof *header);
 
-	/*
-	 * UDP header without IP header doesn't make sense
-	 */
+	 
 	if (udp_present && ip_version != 4 && ip_version != 6)
 		return -EINVAL;
 
@@ -344,8 +300,8 @@ int ib_ud_header_init(int     payload_bytes,
 				 IB_DETH_BYTES	+
 				 (grh_present ? IB_GRH_BYTES : 0) +
 				 payload_bytes	+
-				 4		+ /* ICRC     */
-				 3) / 4;	  /* round up */
+				 4		+  
+				 3) / 4;	   
 		header->lrh.packet_length = cpu_to_be16(packet_length);
 	}
 
@@ -359,21 +315,21 @@ int ib_ud_header_init(int     payload_bytes,
 				     IB_BTH_BYTES     +
 				     IB_DETH_BYTES    +
 				     payload_bytes    +
-				     4                + /* ICRC     */
-				     3) & ~3);          /* round up */
+				     4                +  
+				     3) & ~3);           
 		header->grh.next_header     = udp_present ? IPPROTO_UDP : 0x1b;
 	}
 
 	if (ip_version == 4) {
-		header->ip4.ver = 4; /* version 4 */
-		header->ip4.hdr_len = 5; /* 5 words */
+		header->ip4.ver = 4;  
+		header->ip4.hdr_len = 5;  
 		header->ip4.tot_len =
 			cpu_to_be16(IB_IP4_BYTES   +
 				     udp_bytes     +
 				     IB_BTH_BYTES  +
 				     IB_DETH_BYTES +
 				     payload_bytes +
-				     4);     /* ICRC     */
+				     4);      
 		header->ip4.protocol = IPPROTO_UDP;
 	}
 	if (udp_present && ip_version)
@@ -382,7 +338,7 @@ int ib_ud_header_init(int     payload_bytes,
 				     IB_BTH_BYTES  +
 				     IB_DETH_BYTES +
 				     payload_bytes +
-				     4);     /* ICRC     */
+				     4);      
 
 	if (immediate_present)
 		header->bth.opcode           = IB_OPCODE_UD_SEND_ONLY_WITH_IMMEDIATE;
@@ -402,14 +358,7 @@ int ib_ud_header_init(int     payload_bytes,
 }
 EXPORT_SYMBOL(ib_ud_header_init);
 
-/**
- * ib_ud_header_pack - Pack UD header struct into wire format
- * @header:UD header struct
- * @buf:Buffer to pack into
- *
- * ib_ud_header_pack() packs the UD header structure @header into wire
- * format in the buffer @buf.
- */
+ 
 int ib_ud_header_pack(struct ib_ud_header *header,
 		      void                *buf)
 {
@@ -463,14 +412,7 @@ int ib_ud_header_pack(struct ib_ud_header *header,
 }
 EXPORT_SYMBOL(ib_ud_header_pack);
 
-/**
- * ib_ud_header_unpack - Unpack UD header struct from wire format
- * @header:UD header struct
- * @buf:Buffer to pack into
- *
- * ib_ud_header_pack() unpacks the UD header structure @header from wire
- * format in the buffer @buf.
- */
+ 
 int ib_ud_header_unpack(void                *buf,
 			struct ib_ud_header *header)
 {

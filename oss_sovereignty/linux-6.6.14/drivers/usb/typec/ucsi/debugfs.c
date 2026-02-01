@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * UCSI debugfs interface
- *
- * Copyright (C) 2023 Intel Corporation
- *
- * Authors: Rajaram Regupathy <rajaram.regupathy@intel.com>
- *	    Gopal Saranya <saranya.gopal@intel.com>
- */
+
+ 
 #include <linux/debugfs.h>
 #include <linux/slab.h>
 #include <linux/string.h>

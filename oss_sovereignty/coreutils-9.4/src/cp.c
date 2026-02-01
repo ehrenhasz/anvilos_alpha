@@ -1,20 +1,4 @@
-/* cp.c  -- file copying (main routines)
-   Copyright (C) 1989-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-   Written by Torbjörn Granlund, David MacKenzie, and Jim Meyering. */
+ 
 
 #include <config.h>
 #include <stdio.h>
@@ -36,7 +20,7 @@
 #include "utimens.h"
 #include "acl.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "cp"
 
 #define AUTHORS \
@@ -44,9 +28,7 @@
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
 
-/* Used by do_copy, make_dir_parents_private, and re_protect
-   to keep a list of leading directories whose protections
-   need to be fixed after copying. */
+ 
 struct dir_attr
 {
   struct stat st;
@@ -55,8 +37,7 @@ struct dir_attr
   struct dir_attr *next;
 };
 
-/* For long options that have no equivalent short option, use a
-   non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
+ 
 enum
 {
   ATTRIBUTES_ONLY_OPTION = CHAR_MAX + 1,
@@ -71,14 +52,13 @@ enum
   UNLINK_DEST_BEFORE_OPENING
 };
 
-/* True if the kernel is SELinux enabled.  */
+ 
 static bool selinux_enabled;
 
-/* If true, the command "cp x/e_file e_dir" uses "e_dir/x/e_file"
-   as its destination instead of the usual "e_dir/e_file." */
+ 
 static bool parents_option = false;
 
-/* Remove any trailing slashes from each SOURCE argument.  */
+ 
 static bool remove_trailing_slashes;
 
 static char const *const sparse_type_string[] =
@@ -128,7 +108,7 @@ static struct option const long_opts[] =
   {"no-target-directory", no_argument, nullptr, 'T'},
   {"one-file-system", no_argument, nullptr, 'x'},
   {"parents", no_argument, nullptr, PARENTS_OPTION},
-  {"path", no_argument, nullptr, PARENTS_OPTION},   /* Deprecated.  */
+  {"path", no_argument, nullptr, PARENTS_OPTION},    
   {"preserve", optional_argument, nullptr, PRESERVE_ATTRIBUTES_OPTION},
   {"recursive", no_argument, nullptr, 'R'},
   {"remove-destination", no_argument, nullptr, UNLINK_DEST_BEFORE_OPENING},
@@ -1279,7 +1259,7 @@ main (int argc, char **argv)
                               "built without xattr support"));
 #endif
 
-  /* Allocate space for remembering copied and created files.  */
+   
 
   hash_init ();
 

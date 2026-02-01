@@ -1,10 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef ARCH_PERF_BOOK3S_HV_EXITS_H
 #define ARCH_PERF_BOOK3S_HV_EXITS_H
 
-/*
- * PowerPC Interrupt vectors : exit code to name mapping
- */
+ 
 
 #define kvm_trace_symbol_exit \
 	{0x0,	"RETURN_TO_HOST"}, \

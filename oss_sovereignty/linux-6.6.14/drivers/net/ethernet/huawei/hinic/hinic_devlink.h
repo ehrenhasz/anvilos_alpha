@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Huawei HiNIC PCI Express Linux driver
- * Copyright(c) 2017 Huawei Technologies Co., Ltd
- */
+ 
+ 
 
 #ifndef __HINIC_DEVLINK_H__
 #define __HINIC_DEVLINK_H__
@@ -116,4 +114,4 @@ void hinic_devlink_unregister(struct hinic_devlink_priv *priv);
 int hinic_health_reporters_create(struct hinic_devlink_priv *priv);
 void hinic_health_reporters_destroy(struct hinic_devlink_priv *priv);
 
-#endif /* __HINIC_DEVLINK_H__ */
+#endif  

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+ 
 
 #include <linux/refcount.h>
 #include <linux/idr.h>
@@ -9,8 +9,8 @@
 
 struct mlxsw_sp_pgt {
 	struct idr pgt_idr;
-	u16 end_index; /* Exclusive. */
-	struct mutex lock; /* Protects PGT. */
+	u16 end_index;  
+	struct mutex lock;  
 	bool smpe_index_valid;
 };
 
@@ -21,7 +21,7 @@ struct mlxsw_sp_pgt_entry {
 };
 
 struct mlxsw_sp_pgt_entry_port {
-	struct list_head list; /* Member of 'ports_list'. */
+	struct list_head list;  
 	u16 local_port;
 };
 
@@ -62,11 +62,7 @@ mlxsw_sp_pgt_mid_alloc_range(struct mlxsw_sp *mlxsw_sp, u16 mid_base, u16 count)
 
 	mutex_lock(&mlxsw_sp->pgt->lock);
 
-	/* This function is supposed to be called several times as part of
-	 * driver init, in specific order. Verify that the mid_index is the
-	 * first free index in the idr, to be able to free the indexes in case
-	 * of error.
-	 */
+	 
 	idr_cursor = idr_get_cursor(&mlxsw_sp->pgt->pgt_idr);
 	if (WARN_ON(idr_cursor != mid_base)) {
 		err = -EINVAL;

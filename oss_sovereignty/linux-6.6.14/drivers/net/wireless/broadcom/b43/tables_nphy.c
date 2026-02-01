@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
 
-  Broadcom B43 wireless driver
-  IEEE 802.11n PHY data tables
-
-  Copyright (c) 2008 Michael Buesch <m@bues.ch>
-  Copyright (c) 2010 Rafał Miłecki <zajec5@gmail.com>
-
-
-*/
+ 
 
 #include "b43.h"
 #include "tables_nphy.h"
@@ -1085,7 +1076,7 @@ static const u32 b43_ntab_tmap[] = {
 	0x00000000, 0x00000000, 0x00000000, 0x00000000,
 };
 
-/* static tables, PHY revision >= 3 */
+ 
 static const u32 b43_ntab_framestruct_r3[] = {
 	0x08004a04, 0x00100000, 0x01000a05, 0x00100020,
 	0x09804506, 0x00100030, 0x09804507, 0x00100030,
@@ -2091,9 +2082,9 @@ static const u16 b43_ntab_loftlt1_r3[] = {
 	0x0000, 0x0000,
 };
 
-/* volatile  tables, PHY revision >= 3 */
+ 
 
-/* indexed by antswctl2g */
+ 
 static const u16 b43_ntab_antswctl_r3[4][32] = {
 	{
 		0x0082, 0x0082, 0x0211, 0x0222, 0x0328,
@@ -2133,9 +2124,9 @@ static const u16 b43_ntab_antswctl_r3[4][32] = {
 	}
 };
 
-/* static tables, PHY revision >= 7 */
+ 
 
-/* Copied from brcmsmac (5.75.11) */
+ 
 static const u32 b43_ntab_tmap_r7[] = {
 	0x8a88aa80, 0x8aaaaa8a, 0x8a8a8aa8, 0x00000888,
 	0x88000000, 0x8a8a88aa, 0x8aa88888, 0x8888a8a8,
@@ -2251,7 +2242,7 @@ static const u32 b43_ntab_tmap_r7[] = {
 	0x00000000, 0x00000000, 0x00000000, 0x00000000,
 };
 
-/* Extracted from MMIO dump of 6.30.223.141 */
+ 
 static const u32 b43_ntab_noisevar_r7[] = {
 	0x020c020c, 0x0000014d, 0x020c020c, 0x0000014d,
 	0x020c020c, 0x0000014d, 0x020c020c, 0x0000014d,
@@ -2319,9 +2310,7 @@ static const u32 b43_ntab_noisevar_r7[] = {
 	0x020c020c, 0x0000014d, 0x020c020c, 0x0000014d,
 };
 
-/**************************************************
- * TX gain tables
- **************************************************/
+ 
 
 static const u32 b43_ntab_tx_gain_rev0_1_2[] = {
 	0x03cc2b44, 0x03cc2b42, 0x03cc2a44, 0x03cc2a42,
@@ -2358,7 +2347,7 @@ static const u32 b43_ntab_tx_gain_rev0_1_2[] = {
 	0x03801442, 0x03801344, 0x03801342, 0x00002b00,
 };
 
-/* EPA 2 GHz */
+ 
 
 static const u32 b43_ntab_tx_gain_epa_rev3_2g[] = {
 	0x1f410044, 0x1f410042, 0x1f410040, 0x1f41003e,
@@ -2430,7 +2419,7 @@ static const u32 b43_ntab_tx_gain_epa_rev3_hi_pwr_2g[] = {
 	0x0041003c, 0x0041003b, 0x00410039, 0x00410037
 };
 
-/* EPA 5 GHz */
+ 
 
 static const u32 b43_ntab_tx_gain_epa_rev3_5g[] = {
 	0xcff70044, 0xcff70042, 0xcff70040, 0xcff7003e,
@@ -2572,7 +2561,7 @@ static const u32 b43_ntab_tx_gain_epa_rev5_5g[] = {
 	0x0062003b, 0x00620039, 0x00620037, 0x00620035,
 };
 
-/* IPA 2 GHz */
+ 
 
 static const u32 b43_ntab_tx_gain_ipa_rev3_2g[] = {
 	0x5ff7002d, 0x5ff7002b, 0x5ff7002a, 0x5ff70029,
@@ -2679,7 +2668,7 @@ static const u32 b43_ntab_tx_gain_ipa_rev6_2g[] = {
 	0x00f70028, 0x00f70027, 0x00f70026, 0x00f70025,
 };
 
-/* Copied from brcmsmac (5.75.11): nphy_tpc_txgain_ipa_2g_2057rev5 */
+ 
 static const u32 b43_ntab_tx_gain_ipa_2057_rev5_2g[] = {
 	0x30ff0031, 0x30e70031, 0x30e7002e, 0x30cf002e,
 	0x30bf002e, 0x30af002e, 0x309f002f, 0x307f0033,
@@ -2715,7 +2704,7 @@ static const u32 b43_ntab_tx_gain_ipa_2057_rev5_2g[] = {
 	0x300f0715, 0x300f0715, 0x300f0715, 0x300f0715,
 };
 
-/* Extracted from MMIO dump of 6.30.223.141 */
+ 
 static const u32 b43_ntab_tx_gain_ipa_2057_rev9_2g[] = {
 	0x60ff0031, 0x60e7002c, 0x60cf002a, 0x60c70029,
 	0x60b70029, 0x60a70029, 0x609f002a, 0x6097002b,
@@ -2751,7 +2740,7 @@ static const u32 b43_ntab_tx_gain_ipa_2057_rev9_2g[] = {
 	0x600f0715, 0x600f0715, 0x600f0715, 0x600f0715,
 };
 
-/* Extracted from MMIO dump of 6.30.223.248 */
+ 
 static const u32 b43_ntab_tx_gain_ipa_2057_rev14_2g[] = {
 	0x50df002e, 0x50cf002d, 0x50bf002c, 0x50b7002b,
 	0x50af002a, 0x50a70029, 0x509f0029, 0x50970028,
@@ -2787,7 +2776,7 @@ static const u32 b43_ntab_tx_gain_ipa_2057_rev14_2g[] = {
 	0x500f0015, 0x500f0015, 0x500f0015, 0x500f0015,
 };
 
-/* IPA 2 5Hz */
+ 
 
 static const u32 b43_ntab_tx_gain_ipa_rev3_5g[] = {
 	0x7ff70035, 0x7ff70033, 0x7ff70032, 0x7ff70031,
@@ -2824,7 +2813,7 @@ static const u32 b43_ntab_tx_gain_ipa_rev3_5g[] = {
 	0x70f70021, 0x70f70020, 0x70f70020, 0x70f7001f,
 };
 
-/* Extracted from MMIO dump of 6.30.223.141 */
+ 
 static const u32 b43_ntab_tx_gain_ipa_2057_rev9_5g[] = {
 	0x7f7f0053, 0x7f7f004b, 0x7f7f0044, 0x7f7f003f,
 	0x7f7f0039, 0x7f7f0035, 0x7f7f0032, 0x7f7f0030,
@@ -2865,9 +2854,7 @@ const s8 b43_ntab_papd_pga_gain_delta_ipa_2g[] = {
 	-54, -46, -39, -31, -23, -15, -8, 0
 };
 
-/* Extracted from MMIO dump of 6.30.223.248
- * Entries: 0, 15, 17, 21, 24, 26, 27, 29, 30 were guessed
- */
+ 
 static const s16 b43_ntab_rf_pwr_offset_2057_rev9_2g[] = {
 	-133, -133, -107, -92, -81,
 	-73, -66, -61, -56, -52,
@@ -2878,7 +2865,7 @@ static const s16 b43_ntab_rf_pwr_offset_2057_rev9_2g[] = {
 	-1, 0,
 };
 
-/* Extracted from MMIO dump of 6.30.223.248 */
+ 
 static const s16 b43_ntab_rf_pwr_offset_2057_rev9_5g[] = {
 	-101, -94, -86, -79, -72,
 	-65, -57, -50, -42, -35,
@@ -2886,9 +2873,7 @@ static const s16 b43_ntab_rf_pwr_offset_2057_rev9_5g[] = {
 	0,
 };
 
-/* Extracted from MMIO dump of 6.30.223.248
- * Entries: 0, 26, 28, 29, 30, 31 were guessed
- */
+ 
 static const s16 b43_ntab_rf_pwr_offset_2057_rev14_2g[] = {
 	-111, -111, -111, -84, -70,
 	-59, -52, -45, -40, -36,
@@ -3085,44 +3070,44 @@ const s16 tbl_tx_filter_coef_rev4[7][15] = {
 	  0x12d,  0x97, 0x25a, 0xd10, 0x25a }
 };
 
-/* addr0,  addr1,  bmask,  shift */
+ 
 const struct nphy_rf_control_override_rev2 tbl_rf_control_override_rev2[] = {
-	{ 0x78, 0x78, 0x0038,  3 }, /* for field == 0x0002 (fls == 2) */
-	{ 0x7A, 0x7D, 0x0001,  0 }, /* for field == 0x0004 (fls == 3) */
-	{ 0x7A, 0x7D, 0x0002,  1 }, /* for field == 0x0008 (fls == 4) */
-	{ 0x7A, 0x7D, 0x0004,  2 }, /* for field == 0x0010 (fls == 5) */
-	{ 0x7A, 0x7D, 0x0030,  4 }, /* for field == 0x0020 (fls == 6) */
-	{ 0x7A, 0x7D, 0x00C0,  6 }, /* for field == 0x0040 (fls == 7) */
-	{ 0x7A, 0x7D, 0x0100,  8 }, /* for field == 0x0080 (fls == 8) */
-	{ 0x7A, 0x7D, 0x0200,  9 }, /* for field == 0x0100 (fls == 9) */
-	{ 0x78, 0x78, 0x0004,  2 }, /* for field == 0x0200 (fls == 10) */
-	{ 0x7B, 0x7E, 0x01FF,  0 }, /* for field == 0x0400 (fls == 11) */
-	{ 0x7C, 0x7F, 0x01FF,  0 }, /* for field == 0x0800 (fls == 12) */
-	{ 0x78, 0x78, 0x0100,  8 }, /* for field == 0x1000 (fls == 13) */
-	{ 0x78, 0x78, 0x0200,  9 }, /* for field == 0x2000 (fls == 14) */
-	{ 0x78, 0x78, 0xF000, 12 }  /* for field == 0x4000 (fls == 15) */
+	{ 0x78, 0x78, 0x0038,  3 },  
+	{ 0x7A, 0x7D, 0x0001,  0 },  
+	{ 0x7A, 0x7D, 0x0002,  1 },  
+	{ 0x7A, 0x7D, 0x0004,  2 },  
+	{ 0x7A, 0x7D, 0x0030,  4 },  
+	{ 0x7A, 0x7D, 0x00C0,  6 },  
+	{ 0x7A, 0x7D, 0x0100,  8 },  
+	{ 0x7A, 0x7D, 0x0200,  9 },  
+	{ 0x78, 0x78, 0x0004,  2 },  
+	{ 0x7B, 0x7E, 0x01FF,  0 },  
+	{ 0x7C, 0x7F, 0x01FF,  0 },  
+	{ 0x78, 0x78, 0x0100,  8 },  
+	{ 0x78, 0x78, 0x0200,  9 },  
+	{ 0x78, 0x78, 0xF000, 12 }   
 };
 
-/* val_mask, val_shift, en_addr0, val_addr0, en_addr1, val_addr1 */
+ 
 const struct nphy_rf_control_override_rev3 tbl_rf_control_override_rev3[] = {
-	{ 0x8000, 15, 0xE5, 0xF9, 0xE6, 0xFB }, /* field == 0x0001 (fls 1) */
-	{ 0x0001,  0, 0xE7, 0x7A, 0xEC, 0x7D }, /* field == 0x0002 (fls 2) */
-	{ 0x0002,  1, 0xE7, 0x7A, 0xEC, 0x7D }, /* field == 0x0004 (fls 3) */
-	{ 0x0004,  2, 0xE7, 0x7A, 0xEC, 0x7D }, /* field == 0x0008 (fls 4) */
-	{ 0x0010,  4, 0xE7, 0x7A, 0xEC, 0x7D }, /* field == 0x0010 (fls 5) */
-	{ 0x0020,  5, 0xE7, 0x7A, 0xEC, 0x7D }, /* field == 0x0020 (fls 6) */
-	{ 0x0040,  6, 0xE7, 0x7A, 0xEC, 0x7D }, /* field == 0x0040 (fls 7) */
-	{ 0x0080,  7, 0xE7, 0x7A, 0xEC, 0x7D }, /* field == 0x0080 (fls 8) */
-	{ 0x0100,  8, 0xE7, 0x7A, 0xEC, 0x7D }, /* field == 0x0100 (fls 9) */
-	{ 0x0007,  0, 0xE7, 0xF8, 0xEC, 0xFA }, /* field == 0x0200 (fls 10) */
-	{ 0x0070,  4, 0xE7, 0xF8, 0xEC, 0xFA }, /* field == 0x0400 (fls 11) */
-	{ 0xE000, 13, 0xE7, 0x7A, 0xEC, 0x7D }, /* field == 0x0800 (fls 12) */
-	{ 0xFFFF,  0, 0xE7, 0x7B, 0xEC, 0x7E }, /* field == 0x1000 (fls 13) */
-	{ 0xFFFF,  0, 0xE7, 0x7C, 0xEC, 0x7F }, /* field == 0x2000 (fls 14) */
-	{ 0x00C0,  6, 0xE7, 0xF9, 0xEC, 0xFB }  /* field == 0x4000 (fls 15) */
+	{ 0x8000, 15, 0xE5, 0xF9, 0xE6, 0xFB },  
+	{ 0x0001,  0, 0xE7, 0x7A, 0xEC, 0x7D },  
+	{ 0x0002,  1, 0xE7, 0x7A, 0xEC, 0x7D },  
+	{ 0x0004,  2, 0xE7, 0x7A, 0xEC, 0x7D },  
+	{ 0x0010,  4, 0xE7, 0x7A, 0xEC, 0x7D },  
+	{ 0x0020,  5, 0xE7, 0x7A, 0xEC, 0x7D },  
+	{ 0x0040,  6, 0xE7, 0x7A, 0xEC, 0x7D },  
+	{ 0x0080,  7, 0xE7, 0x7A, 0xEC, 0x7D },  
+	{ 0x0100,  8, 0xE7, 0x7A, 0xEC, 0x7D },  
+	{ 0x0007,  0, 0xE7, 0xF8, 0xEC, 0xFA },  
+	{ 0x0070,  4, 0xE7, 0xF8, 0xEC, 0xFA },  
+	{ 0xE000, 13, 0xE7, 0x7A, 0xEC, 0x7D },  
+	{ 0xFFFF,  0, 0xE7, 0x7B, 0xEC, 0x7E },  
+	{ 0xFFFF,  0, 0xE7, 0x7C, 0xEC, 0x7F },  
+	{ 0x00C0,  6, 0xE7, 0xF9, 0xEC, 0xFB }   
 };
 
-/* field, val_addr_core0, val_addr_core1, val_mask, val_shift */
+ 
 static const struct nphy_rf_control_override_rev7
 			tbl_rf_control_override_rev7_over0[] = {
 	{ 0x0004, 0x07A, 0x07D, 0x0002, 1 },
@@ -3138,7 +3123,7 @@ static const struct nphy_rf_control_override_rev7
 	{ 0x2000, 0x348, 0x349, 0x000F, 0 },
 };
 
-/* field, val_addr_core0, val_addr_core1, val_mask, val_shift */
+ 
 static const struct nphy_rf_control_override_rev7
 			tbl_rf_control_override_rev7_over1[] = {
 	{ 0x0002, 0x340, 0x341, 0x0002, 1 },
@@ -3155,7 +3140,7 @@ static const struct nphy_rf_control_override_rev7
 	{ 0x0001, 0x340, 0x341, 0x0001, 0 },
 };
 
-/* field, val_addr_core0, val_addr_core1, val_mask, val_shift */
+ 
 static const struct nphy_rf_control_override_rev7
 			tbl_rf_control_override_rev7_over2[] = {
 	{ 0x0008, 0x344, 0x345, 0x0008, 3 },
@@ -3177,8 +3162,8 @@ static struct nphy_gain_ctl_workaround_entry nphy_gain_ctl_wa_phy6_radio11_ghz2 
 	0x01D0, 0x5,
 };
 static struct nphy_gain_ctl_workaround_entry nphy_gain_ctl_workaround[2][4] = {
-	{ /* 2GHz */
-		{ /* PHY rev 3 */
+	{  
+		{  
 			{ 7, 11, 16, 23 },
 			{ -5, 6, 10, 14 },
 			{ 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA },
@@ -3189,7 +3174,7 @@ static struct nphy_gain_ctl_workaround_entry nphy_gain_ctl_workaround[2][4] = {
 			0x18, 0x18, 0x18,
 			0x020D, 0x5,
 		},
-		{ /* PHY rev 4 */
+		{  
 			{ 8, 12, 17, 25 },
 			{ -5, 6, 10, 14 },
 			{ 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA },
@@ -3200,31 +3185,31 @@ static struct nphy_gain_ctl_workaround_entry nphy_gain_ctl_workaround[2][4] = {
 			0x18, 0x18, 0x18,
 			0x01A1, 0x5,
 		},
-		{ /* PHY rev 5 */
+		{  
 			{ 9, 13, 18, 26 },
 			{ -3, 7, 11, 16 },
 			{ 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA },
 			{ 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 },
-			0x427E, /* invalid for external LNA! */
-			{ 0x413F, 0x413F, 0x413F, 0x413F }, /* invalid for external LNA! */
-			0x1076, 0x0066, 0x0000, /* low is invalid (the last one) */
+			0x427E,  
+			{ 0x413F, 0x413F, 0x413F, 0x413F },  
+			0x1076, 0x0066, 0x0000,  
 			0x18, 0x18, 0x18,
 			0x01D0, 0x9,
 		},
-		{ /* PHY rev 6+ */
+		{  
 			{ 8, 13, 18, 25 },
 			{ -5, 6, 10, 14 },
 			{ 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA },
 			{ 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 },
-			0x527E, /* invalid for external LNA! */
-			{ 0x513F, 0x513F, 0x513F, 0x513F }, /* invalid for external LNA! */
-			0x007E, 0x0066, 0x0000, /* low is invalid (the last one) */
+			0x527E,  
+			{ 0x513F, 0x513F, 0x513F, 0x513F },  
+			0x007E, 0x0066, 0x0000,  
 			0x18, 0x18, 0x18,
 			0x01D0, 0x5,
 		},
 	},
-	{ /* 5GHz */
-		{ /* PHY rev 3 */
+	{  
+		{  
 			{ 7, 11, 17, 23 },
 			{ -6, 2, 6, 10 },
 			{ 0x13, 0x13, 0x13, 0x13, 0x13, 0x13, 0x13, 0x13, 0x13, 0x13 },
@@ -3235,7 +3220,7 @@ static struct nphy_gain_ctl_workaround_entry nphy_gain_ctl_workaround[2][4] = {
 			0x1E, 0x1E, 0x1E,
 			0x01A1, 25,
 		},
-		{ /* PHY rev 4 */
+		{  
 			{ 8, 12, 18, 23 },
 			{ -5, 2, 6, 10 },
 			{ 0xD, 0xD, 0xD, 0xD, 0xD, 0xD, 0xD, 0xD, 0xD, 0xD },
@@ -3246,7 +3231,7 @@ static struct nphy_gain_ctl_workaround_entry nphy_gain_ctl_workaround[2][4] = {
 			0x24, 0x24, 0x24,
 			0x0107, 25,
 		},
-		{ /* PHY rev 5 */
+		{  
 			{ 6, 10, 16, 21 },
 			{ -7, 0, 4, 8 },
 			{ 0xD, 0xD, 0xD, 0xD, 0xD, 0xD, 0xD, 0xD, 0xD, 0xD },
@@ -3257,7 +3242,7 @@ static struct nphy_gain_ctl_workaround_entry nphy_gain_ctl_workaround[2][4] = {
 			0x24, 0x24, 0x24,
 			0x00A9, 25,
 		},
-		{ /* PHY rev 6+ */
+		{  
 			{ 6, 10, 16, 21 },
 			{ -7, 0, 4, 8 },
 			{ 0xD, 0xD, 0xD, 0xD, 0xD, 0xD, 0xD, 0xD, 0xD, 0xD },
@@ -3265,7 +3250,7 @@ static struct nphy_gain_ctl_workaround_entry nphy_gain_ctl_workaround[2][4] = {
 			0x729E,
 			{ 0x714F, 0x714F, 0x714F, 0x714F },
 			0x029E, 0x2084, 0x2086,
-			0x24, 0x24, 0x24, /* low is invalid for radio rev 11! */
+			0x24, 0x24, 0x24,  
 			0x00F0, 25,
 		},
 	},
@@ -3351,7 +3336,7 @@ void b43_ntab_read_bulk(struct b43_wldev *dev, u32 offset,
 	b43_phy_write(dev, B43_NPHY_TABLE_ADDR, offset);
 
 	for (i = 0; i < nr_elements; i++) {
-		/* Auto increment broken + caching issue on BCM43224? */
+		 
 		if (dev->dev->chip_id == 43224 && dev->dev->chip_rev == 1) {
 			b43_phy_read(dev, B43_NPHY_TABLE_DATALO);
 			b43_phy_write(dev, B43_NPHY_TABLE_ADDR, offset + i);
@@ -3408,7 +3393,7 @@ void b43_ntab_write(struct b43_wldev *dev, u32 offset, u32 value)
 
 	return;
 
-	/* Some compiletime assertions... */
+	 
 	assert_ntab_array_sizes();
 }
 
@@ -3426,7 +3411,7 @@ void b43_ntab_write_bulk(struct b43_wldev *dev, u32 offset,
 	b43_phy_write(dev, B43_NPHY_TABLE_ADDR, offset);
 
 	for (i = 0; i < nr_elements; i++) {
-		/* Auto increment broken + caching issue on BCM43224? */
+		 
 		if ((offset >> 10) == 9 && dev->dev->chip_id == 43224 &&
 		    dev->dev->chip_rev == 1) {
 			b43_phy_read(dev, B43_NPHY_TABLE_DATALO);
@@ -3483,10 +3468,10 @@ static void b43_nphy_tables_init_rev7_volatile(struct b43_wldev *dev)
 	u8 antswlut;
 	int core, offset, i;
 
-	const int antswlut0_offsets[] = { 0, 4, 8, }; /* Offsets for values */
+	const int antswlut0_offsets[] = { 0, 4, 8, };  
 	const u8 antswlut0_values[][3] = {
-		{ 0x2, 0x12, 0x8 }, /* Core 0 */
-		{ 0x2, 0x18, 0x2 }, /* Core 1 */
+		{ 0x2, 0x12, 0x8 },  
+		{ 0x2, 0x18, 0x2 },  
 	};
 
 	if (b43_current_band(dev->wl) == NL80211_BAND_5GHZ)
@@ -3513,19 +3498,19 @@ static void b43_nphy_tables_init_rev7_volatile(struct b43_wldev *dev)
 
 static void b43_nphy_tables_init_rev16(struct b43_wldev *dev)
 {
-	/* Static tables */
+	 
 	if (dev->phy.do_full_init) {
 		ntab_upload(dev, B43_NTAB_NOISEVAR_R7, b43_ntab_noisevar_r7);
 		b43_nphy_tables_init_shared_lut(dev);
 	}
 
-	/* Volatile tables */
+	 
 	b43_nphy_tables_init_rev7_volatile(dev);
 }
 
 static void b43_nphy_tables_init_rev7(struct b43_wldev *dev)
 {
-	/* Static tables */
+	 
 	if (dev->phy.do_full_init) {
 		ntab_upload(dev, B43_NTAB_FRAMESTRUCT_R3, b43_ntab_framestruct_r3);
 		ntab_upload(dev, B43_NTAB_PILOT_R3, b43_ntab_pilot_r3);
@@ -3544,7 +3529,7 @@ static void b43_nphy_tables_init_rev7(struct b43_wldev *dev)
 		b43_nphy_tables_init_shared_lut(dev);
 	}
 
-	/* Volatile tables */
+	 
 	b43_nphy_tables_init_rev7_volatile(dev);
 }
 
@@ -3558,7 +3543,7 @@ static void b43_nphy_tables_init_rev3(struct b43_wldev *dev)
 	else
 		antswlut = sprom->fem.ghz2.antswlut;
 
-	/* Static tables */
+	 
 	if (dev->phy.do_full_init) {
 		ntab_upload(dev, B43_NTAB_FRAMESTRUCT_R3, b43_ntab_framestruct_r3);
 		ntab_upload(dev, B43_NTAB_PILOT_R3, b43_ntab_pilot_r3);
@@ -3577,7 +3562,7 @@ static void b43_nphy_tables_init_rev3(struct b43_wldev *dev)
 		b43_nphy_tables_init_shared_lut(dev);
 	}
 
-	/* Volatile tables */
+	 
 	if (antswlut < ARRAY_SIZE(b43_ntab_antswctl_r3))
 		ntab_upload(dev, B43_NTAB_ANT_SW_CTL_R3,
 			    b43_ntab_antswctl_r3[antswlut]);
@@ -3587,7 +3572,7 @@ static void b43_nphy_tables_init_rev3(struct b43_wldev *dev)
 
 static void b43_nphy_tables_init_rev0(struct b43_wldev *dev)
 {
-	/* Static tables */
+	 
 	if (dev->phy.do_full_init) {
 		ntab_upload(dev, B43_NTAB_FRAMESTRUCT, b43_ntab_framestruct);
 		ntab_upload(dev, B43_NTAB_FRAMELT, b43_ntab_framelookup);
@@ -3605,7 +3590,7 @@ static void b43_nphy_tables_init_rev0(struct b43_wldev *dev)
 		ntab_upload(dev, B43_NTAB_NOISEVAR11, b43_ntab_noisevar11);
 	}
 
-	/* Volatile tables */
+	 
 	ntab_upload(dev, B43_NTAB_BDI, b43_ntab_bdi);
 	ntab_upload(dev, B43_NTAB_PILOTLT, b43_ntab_pilotlt);
 	ntab_upload(dev, B43_NTAB_C0_GAINCTL, b43_ntab_gainctl0);
@@ -3620,78 +3605,7 @@ static void b43_nphy_tables_init_rev0(struct b43_wldev *dev)
 	ntab_upload(dev, B43_NTAB_C1_LOFEEDTH, b43_ntab_loftlt1);
 }
 
-/* https://bcm-v4.sipsolutions.net/802.11/PHY/N/InitTables */
-void b43_nphy_tables_init(struct b43_wldev *dev)
-{
-	if (dev->phy.rev >= 16)
-		b43_nphy_tables_init_rev16(dev);
-	else if (dev->phy.rev >= 7)
-		b43_nphy_tables_init_rev7(dev);
-	else if (dev->phy.rev >= 3)
-		b43_nphy_tables_init_rev3(dev);
-	else
-		b43_nphy_tables_init_rev0(dev);
-}
-
-/* https://bcm-v4.sipsolutions.net/802.11/PHY/N/GetIpaGainTbl */
-static const u32 *b43_nphy_get_ipa_gain_table(struct b43_wldev *dev)
-{
-	struct b43_phy *phy = &dev->phy;
-
-	if (b43_current_band(dev->wl) == NL80211_BAND_2GHZ) {
-		switch (phy->rev) {
-		case 17:
-			if (phy->radio_rev == 14)
-				return b43_ntab_tx_gain_ipa_2057_rev14_2g;
-			break;
-		case 16:
-			if (phy->radio_rev == 9)
-				return b43_ntab_tx_gain_ipa_2057_rev9_2g;
-			break;
-		case 8:
-			if (phy->radio_rev == 5)
-				return b43_ntab_tx_gain_ipa_2057_rev5_2g;
-			break;
-		case 6:
-			if (dev->dev->chip_id == BCMA_CHIP_ID_BCM47162)
-				return b43_ntab_tx_gain_ipa_rev5_2g;
-			return b43_ntab_tx_gain_ipa_rev6_2g;
-		case 5:
-			return b43_ntab_tx_gain_ipa_rev5_2g;
-		case 4:
-		case 3:
-			return b43_ntab_tx_gain_ipa_rev3_2g;
-		}
-
-		b43err(dev->wl,
-		       "No 2GHz IPA gain table available for this device\n");
-		return NULL;
-	} else {
-		switch (phy->rev) {
-		case 16:
-			if (phy->radio_rev == 9)
-				return b43_ntab_tx_gain_ipa_2057_rev9_5g;
-			break;
-		case 3 ... 6:
-			return b43_ntab_tx_gain_ipa_rev3_5g;
-		}
-
-		b43err(dev->wl,
-		       "No 5GHz IPA gain table available for this device\n");
-		return NULL;
-	}
-}
-
-const u32 *b43_nphy_get_tx_gain_table(struct b43_wldev *dev)
-{
-	struct b43_phy *phy = &dev->phy;
-	enum nl80211_band band = b43_current_band(dev->wl);
-	struct ssb_sprom *sprom = dev->dev->bus_sprom;
-
-	if (dev->phy.rev < 3)
-		return b43_ntab_tx_gain_rev0_1_2;
-
-	/* rev 3+ */
+ 
 	if ((dev->phy.n->ipa2g_on && band == NL80211_BAND_2GHZ) ||
 	    (dev->phy.n->ipa5g_on && band == NL80211_BAND_5GHZ)) {
 		return b43_nphy_get_ipa_gain_table(dev);
@@ -3783,7 +3697,7 @@ struct nphy_gain_ctl_workaround_entry *b43_nphy_get_gain_ctl_workaround_ent(
 		phy_idx = 0;
 	e = &nphy_gain_ctl_workaround[ghz5][phy_idx];
 
-	/* Some workarounds to the workarounds... */
+	 
 	if (!ghz5) {
 		u8 tr_iso = dev->dev->bus_sprom->fem.ghz2.tr_iso;
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * zfcp device driver
- *
- * sysfs attributes.
- *
- * Copyright IBM Corp. 2008, 2020
- */
+
+ 
 
 #define KMSG_COMPONENT "zfcp"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -221,22 +215,13 @@ static ssize_t zfcp_sysfs_port_rescan_store(struct device *dev,
 	if (!adapter)
 		return -ENODEV;
 
-	/*
-	 * If `scsi_host` is missing, we can't schedule `scan_work`, as it
-	 * makes use of the corresponding fc_host object. But this state is
-	 * only possible if xconfig/xport data has never completed yet,
-	 * and we couldn't successfully scan for ports anyway.
-	 */
+	 
 	if (adapter->scsi_host == NULL) {
 		retval = -ENODEV;
 		goto out;
 	}
 
-	/*
-	 * Users wish is our command: immediately schedule and flush a
-	 * worker to conduct a synchronous port scan, that is, neither
-	 * a random delay nor a rate limit is applied here.
-	 */
+	 
 	queue_delayed_work(adapter->work_queue, &adapter->scan_work, 0);
 	flush_delayed_work(&adapter->scan_work);
 out:
@@ -269,7 +254,7 @@ static bool zfcp_sysfs_port_in_use(struct zfcp_port *const port)
 
 	mutex_lock(&zfcp_sysfs_port_units_mutex);
 	if (atomic_read(&port->units) > 0)
-		goto unlock_port_units_mutex; /* zfcp_unit(s) under port */
+		goto unlock_port_units_mutex;  
 
 	spin_lock_irqsave(adapter->scsi_host->host_lock, flags);
 	__shost_for_each_device(sdev, adapter->scsi_host) {
@@ -280,11 +265,11 @@ static bool zfcp_sysfs_port_in_use(struct zfcp_port *const port)
 			continue;
 		if (zsdev->port != port)
 			continue;
-		/* alive scsi_device under port of interest */
+		 
 		goto unlock_host_lock;
 	}
 
-	/* port is about to be removed, so no more unit_add or slave_alloc */
+	 
 	zfcp_sysfs_port_set_removing(port);
 	in_use = false;
 
@@ -319,7 +304,7 @@ static ssize_t zfcp_sysfs_port_remove_store(struct device *dev,
 
 	if (zfcp_sysfs_port_in_use(port)) {
 		retval = -EBUSY;
-		put_device(&port->dev); /* undo zfcp_get_port_by_wwpn() */
+		put_device(&port->dev);  
 		goto out;
 	}
 
@@ -330,7 +315,7 @@ static ssize_t zfcp_sysfs_port_remove_store(struct device *dev,
 	zfcp_erp_port_shutdown(port, 0, "syprs_1");
 	device_unregister(&port->dev);
 
-	put_device(&port->dev); /* undo zfcp_get_port_by_wwpn() */
+	put_device(&port->dev);  
  out:
 	zfcp_ccw_adapter_put(adapter);
 	return retval ? retval : (ssize_t) count;
@@ -348,7 +333,7 @@ zfcp_sysfs_adapter_diag_max_age_show(struct device *dev,
 	if (!adapter)
 		return -ENODEV;
 
-	/* ceil(log(2^64 - 1) / log(10)) = 20 */
+	 
 	rc = scnprintf(buf, 20 + 2, "%lu\n", adapter->diagnostics->max_age);
 
 	zfcp_ccw_adapter_put(adapter);
@@ -393,12 +378,7 @@ static ssize_t zfcp_sysfs_adapter_fc_security_show(
 	if (!adapter)
 		return -ENODEV;
 
-	/*
-	 * Adapter status COMMON_OPEN implies xconf data and xport data
-	 * was done. Adapter FC Endpoint Security capability remains
-	 * unchanged in case of COMMON_ERP_FAILED (e.g. due to local link
-	 * down).
-	 */
+	 
 	status = atomic_read(&adapter->status);
 	if (0 == (status & ZFCP_STATUS_COMMON_OPEN))
 		i = sprintf(buf, "unknown\n");
@@ -837,7 +817,7 @@ static ssize_t zfcp_sysfs_adapter_diag_b2b_credit_show(
 		goto out;
 
 	spin_lock_irqsave(&diag_hdr->access_lock, flags);
-	/* nport_serv_param doesn't contain the ELS_Command code */
+	 
 	nsp = (struct fc_els_flogi *)((unsigned long)
 					      adapter->diagnostics->config_data
 						      .data.nport_serv_param -

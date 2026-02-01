@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel Low Power Subsystem PWM controller driver
- *
- * Copyright (C) 2014, Intel Corporation
- *
- * Derived from the original pwm-lpss.c
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/mod_devicetable.h>
@@ -37,21 +31,7 @@ static int pwm_lpss_probe_platform(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, lpwm);
 
-	/*
-	 * On Cherry Trail devices the GFX0._PS0 AML checks if the controller
-	 * is on and if it is not on it turns it on and restores what it
-	 * believes is the correct state to the PWM controller.
-	 * Because of this we must disallow direct-complete, which keeps the
-	 * controller (runtime)suspended on resume, to avoid 2 issues:
-	 * 1. The controller getting turned on without the linux-pm code
-	 *    knowing about this. On devices where the controller is unused
-	 *    this causes it to stay on during the next suspend causing high
-	 *    battery drain (because S0i3 is not reached)
-	 * 2. The state restoring code unexpectedly messing with the controller
-	 *
-	 * Leaving the controller runtime-suspended (skipping runtime-resume +
-	 * normal-suspend) during suspend is fine.
-	 */
+	 
 	if (info->other_devices_aml_touches_pwm_regs)
 		dev_pm_set_driver_flags(&pdev->dev, DPM_FLAG_NO_DIRECT_COMPLETE|
 						    DPM_FLAG_SMART_SUSPEND);

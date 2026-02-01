@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef __AUDIO_TYPES_H__
 #define __AUDIO_TYPES_H__
@@ -38,8 +15,8 @@ struct audio_crtc_info {
 	uint32_t h_active;
 	uint32_t v_active;
 	uint32_t pixel_repetition;
-	uint32_t requested_pixel_clock_100Hz; /* in 100Hz */
-	uint32_t calculated_pixel_clock_100Hz; /* in 100Hz */
+	uint32_t requested_pixel_clock_100Hz;  
+	uint32_t calculated_pixel_clock_100Hz;  
 	uint32_t refresh_rate;
 	enum dc_color_depth color_depth;
 	bool interlaced;
@@ -61,7 +38,7 @@ enum audio_dto_source {
 	DTO_SOURCE_ID5
 };
 
-/* PLL information required for AZALIA DTO calculation */
+ 
 
 struct audio_pll_info {
 	uint32_t dp_dto_source_clock_in_khz;
@@ -89,13 +66,13 @@ struct audio_channel_associate_info {
 };
 
 struct audio_output {
-	/* Front DIG id. */
+	 
 	enum engine_id engine_id;
-	/* encoder output signal */
+	 
 	enum signal_type signal;
-	/* video timing */
+	 
 	struct audio_crtc_info crtc_info;
-	/* PLL for audio */
+	 
 	struct audio_pll_info pll_info;
 };
 
@@ -103,4 +80,4 @@ enum audio_payload {
 	CHANNEL_SPLIT_MAPPINGCHANG = 0x9,
 };
 
-#endif /* __AUDIO_TYPES_H__ */
+#endif  

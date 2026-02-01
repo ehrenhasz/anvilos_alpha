@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2012-2014, 2020 Intel Corporation
- * Copyright (C) 2016 Intel Deutschland GmbH
- * Copyright (C) 2022 Intel Corporation
- */
+
+ 
 #include <net/mac80211.h>
 #include "fw-api.h"
 #include "mvm.h"
@@ -106,10 +102,7 @@ static int iwl_mvm_binding_update(struct iwl_mvm *mvm,
 						   iwl_mvm_iface_iterator,
 						   &data);
 
-	/*
-	 * If there are no other interfaces yet we
-	 * need to create a new binding.
-	 */
+	 
 	if (data.idx == 0) {
 		if (add)
 			action = FW_CTXT_ACTION_ADD;
@@ -136,10 +129,7 @@ int iwl_mvm_binding_add_vif(struct iwl_mvm *mvm, struct ieee80211_vif *vif)
 	if (WARN_ON_ONCE(!mvmvif->deflink.phy_ctxt))
 		return -EINVAL;
 
-	/*
-	 * Update SF - Disable if needed. if this fails, SF might still be on
-	 * while many macs are bound, which is forbidden - so fail the binding.
-	 */
+	 
 	if (iwl_mvm_sf_update(mvm, vif, false))
 		return -EINVAL;
 

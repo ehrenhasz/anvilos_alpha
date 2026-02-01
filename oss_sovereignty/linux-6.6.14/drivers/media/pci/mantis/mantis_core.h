@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-	Mantis PCI bridge driver
-
-	Copyright (C) Manu Abraham (abraham.manu@gmail.com)
-
-*/
+ 
+ 
 
 #ifndef __MANTIS_CORE_H
 #define __MANTIS_CORE_H
@@ -40,4 +35,4 @@ extern void mantis_dma_stop(struct mantis_pci *mantis);
 extern int mantis_i2c_init(struct mantis_pci *mantis);
 extern int mantis_i2c_exit(struct mantis_pci *mantis);
 
-#endif /* __MANTIS_CORE_H */
+#endif  

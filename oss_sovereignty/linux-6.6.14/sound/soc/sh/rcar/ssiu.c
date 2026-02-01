@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Renesas R-Car SSIU support
-//
-// Copyright (c) 2015 Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+
+
+
+
+
 
 #include "rsnd.h"
 
@@ -10,13 +10,13 @@
 
 struct rsnd_ssiu {
 	struct rsnd_mod mod;
-	u32 busif_status[8]; /* for BUSIF0 - BUSIF7 */
+	u32 busif_status[8];  
 	unsigned int usrcnt;
 	int id;
 	int id_sub;
 };
 
-/* SSI_MODE */
+ 
 #define TDM_EXT		(1 << 0)
 #define TDM_SPLIT	(1 << 8)
 
@@ -28,25 +28,12 @@ struct rsnd_ssiu {
 		     ((pos) = ((struct rsnd_ssiu *)(priv)->ssiu + i));	\
 	     i++)
 
-/*
- *	SSI	Gen2		Gen3		Gen4
- *	0	BUSIF0-3	BUSIF0-7	BUSIF0-7
- *	1	BUSIF0-3	BUSIF0-7
- *	2	BUSIF0-3	BUSIF0-7
- *	3	BUSIF0		BUSIF0-7
- *	4	BUSIF0		BUSIF0-7
- *	5	BUSIF0		BUSIF0
- *	6	BUSIF0		BUSIF0
- *	7	BUSIF0		BUSIF0
- *	8	BUSIF0		BUSIF0
- *	9	BUSIF0-3	BUSIF0-7
- *	total	22		52		8
- */
+ 
 static const int gen2_id[] = { 0, 4,  8, 12, 13, 14, 15, 16, 17, 18 };
 static const int gen3_id[] = { 0, 8, 16, 24, 32, 40, 41, 42, 43, 44 };
 static const int gen4_id[] = { 0 };
 
-/* enable busif buffer over/under run interrupt. */
+ 
 #define rsnd_ssiu_busif_err_irq_enable(mod)  rsnd_ssiu_busif_err_irq_ctrl(mod, 1)
 #define rsnd_ssiu_busif_err_irq_disable(mod) rsnd_ssiu_busif_err_irq_ctrl(mod, 0)
 static void rsnd_ssiu_busif_err_irq_ctrl(struct rsnd_mod *mod, int enable)
@@ -150,24 +137,17 @@ static int rsnd_ssiu_init(struct rsnd_mod *mod,
 	int is_clk_master = rsnd_rdai_is_clk_master(rdai);
 	u32 val1, val2;
 
-	/* clear status */
+	 
 	rsnd_ssiu_busif_err_status_clear(mod);
 
-	/* Gen4 doesn't have SSI_MODE */
+	 
 	if (rsnd_is_gen4(priv))
 		goto ssi_mode_setting_end;
 
-	/*
-	 * SSI_MODE0
-	 */
+	 
 	rsnd_mod_bset(mod, SSI_MODE0, (1 << id), !use_busif << id);
 
-	/*
-	 * SSI_MODE1 / SSI_MODE2
-	 *
-	 * FIXME
-	 * sharing/multi with SSI0 are mainly supported
-	 */
+	 
 	val1 = rsnd_mod_read(mod, SSI_MODE1);
 	val2 = rsnd_mod_read(mod, SSI_MODE2);
 	if (rsnd_ssi_is_pin_sharing(io)) {
@@ -175,36 +155,32 @@ static int rsnd_ssiu_init(struct rsnd_mod *mod,
 		ssis |= (1 << id);
 
 	} else if (ssis) {
-		/*
-		 * Multi SSI
-		 *
-		 * set synchronized bit here
-		 */
+		 
 
-		/* SSI4 is synchronized with SSI3 */
+		 
 		if (ssis & (1 << 4))
 			val1 |= (1 << 20);
-		/* SSI012 are synchronized */
+		 
 		if (ssis == 0x0006)
 			val1 |= (1 << 4);
-		/* SSI0129 are synchronized */
+		 
 		if (ssis == 0x0206)
 			val2 |= (1 << 4);
 	}
 
-	/* SSI1 is sharing pin with SSI0 */
+	 
 	if (ssis & (1 << 1))
 		val1 |= is_clk_master ? 0x2 : 0x1;
 
-	/* SSI2 is sharing pin with SSI0 */
+	 
 	if (ssis & (1 << 2))
 		val1 |= is_clk_master ?	0x2 << 2 :
 					0x1 << 2;
-	/* SSI4 is sharing pin with SSI3 */
+	 
 	if (ssis & (1 << 4))
 		val1 |= is_clk_master ? 0x2 << 16 :
 					0x1 << 16;
-	/* SSI9 is sharing pin with SSI0 */
+	 
 	if (ssis & (1 << 9))
 		val2 |= is_clk_master ? 0x2 : 0x1;
 
@@ -212,12 +188,7 @@ static int rsnd_ssiu_init(struct rsnd_mod *mod,
 	rsnd_mod_bset(mod, SSI_MODE2, 0x00000017, val2);
 
 ssi_mode_setting_end:
-	/*
-	 * Enable busif buffer over/under run interrupt.
-	 * It will be handled from ssi.c
-	 * see
-	 *	__rsnd_ssi_interrupt()
-	 */
+	 
 	rsnd_ssiu_busif_err_irq_enable(mod);
 
 	return 0;
@@ -227,7 +198,7 @@ static int rsnd_ssiu_quit(struct rsnd_mod *mod,
 			  struct rsnd_dai_stream *io,
 			  struct rsnd_priv *priv)
 {
-	/* disable busif buffer over/under run interrupt. */
+	 
 	rsnd_ssiu_busif_err_irq_disable(mod);
 
 	return 0;
@@ -256,11 +227,7 @@ static int rsnd_ssiu_init_gen2(struct rsnd_mod *mod,
 
 	ssiu->usrcnt++;
 
-	/*
-	 * TDM Extend/Split Mode
-	 * see
-	 *	rsnd_ssi_config_init()
-	 */
+	 
 	if (rsnd_runtime_is_tdm(io))
 		mode = TDM_EXT;
 	else if (rsnd_runtime_is_tdm_split(io))
@@ -307,7 +274,7 @@ static int rsnd_ssiu_init_gen2(struct rsnd_mod *mod,
 
 		i = rsnd_mod_id(ssi_mod);
 
-		/* output all same SSI as default */
+		 
 		val =	i << 16 |
 			i << 20 |
 			i << 24 |
@@ -372,7 +339,7 @@ static int rsnd_ssiu_id(struct rsnd_mod *mod)
 {
 	struct rsnd_ssiu *ssiu = rsnd_mod_to_ssiu(mod);
 
-	/* see rsnd_ssiu_probe() */
+	 
 	return ssiu->id;
 }
 
@@ -380,7 +347,7 @@ static int rsnd_ssiu_id_sub(struct rsnd_mod *mod)
 {
 	struct rsnd_ssiu *ssiu = rsnd_mod_to_ssiu(mod);
 
-	/* see rsnd_ssiu_probe() */
+	 
 	return ssiu->id_sub;
 }
 
@@ -391,16 +358,7 @@ static struct dma_chan *rsnd_ssiu_dma_req(struct rsnd_dai_stream *io,
 	int is_play = rsnd_io_is_play(io);
 	char *name;
 
-	/*
-	 * It should use "rcar_sound,ssiu" on DT.
-	 * But, we need to keep compatibility for old version.
-	 *
-	 * If it has "rcar_sound.ssiu", it will be used.
-	 * If not, "rcar_sound.ssi" will be used.
-	 * see
-	 *	rsnd_ssi_dma_req()
-	 *	rsnd_dma_of_path()
-	 */
+	 
 
 	name = is_play ? "rx" : "tx";
 
@@ -453,7 +411,7 @@ static void rsnd_parse_connect_ssiu_compatible(struct rsnd_priv *priv,
 
 	is_dma_mode = rsnd_ssi_is_dma_mode(ssi_mod);
 
-	/* select BUSIF0 */
+	 
 	for_each_rsnd_ssiu(ssiu, priv, i) {
 		struct rsnd_mod *mod = rsnd_mod_get(ssiu);
 
@@ -476,7 +434,7 @@ void rsnd_parse_connect_ssiu(struct rsnd_dai *rdai,
 	struct rsnd_dai_stream *io_p = &rdai->playback;
 	struct rsnd_dai_stream *io_c = &rdai->capture;
 
-	/* use rcar_sound,ssiu if exist */
+	 
 	if (node) {
 		struct device_node *np;
 		int i = 0;
@@ -502,7 +460,7 @@ void rsnd_parse_connect_ssiu(struct rsnd_dai *rdai,
 		of_node_put(node);
 	}
 
-	/* Keep DT compatibility */
+	 
 	if (!rsnd_io_to_mod_ssiu(io_p))
 		rsnd_parse_connect_ssiu_compatible(priv, io_p);
 	if (!rsnd_io_to_mod_ssiu(io_c))
@@ -518,13 +476,7 @@ int rsnd_ssiu_probe(struct rsnd_priv *priv)
 	const int *list = NULL;
 	int i, nr;
 
-	/*
-	 * Keep DT compatibility.
-	 * if it has "rcar_sound,ssiu", use it.
-	 * if not, use "rcar_sound,ssi"
-	 * see
-	 *	rsnd_ssiu_bufsif_to_id()
-	 */
+	 
 	node = rsnd_ssiu_of_node(priv);
 	if (node)
 		nr = rsnd_node_count(priv, node, SSIU_NAME);
@@ -546,7 +498,7 @@ int rsnd_ssiu_probe(struct rsnd_priv *priv)
 	else
 		ops = &rsnd_ssiu_ops_gen2;
 
-	/* Keep compatibility */
+	 
 	nr = 0;
 	if ((node) &&
 	    (ops == &rsnd_ssiu_ops_gen2)) {
@@ -574,11 +526,7 @@ int rsnd_ssiu_probe(struct rsnd_priv *priv)
 		if (node) {
 			int j;
 
-			/*
-			 * see
-			 *	rsnd_ssiu_get_id()
-			 *	rsnd_ssiu_get_id_sub()
-			 */
+			 
 			for (j = 0; j < nr; j++) {
 				if (list[j] > i)
 					break;

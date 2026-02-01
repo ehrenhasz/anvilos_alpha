@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2013, NVIDIA Corporation.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -282,7 +280,7 @@ static int gr2d_probe(struct platform_device *pdev)
 		return err;
 	}
 
-	/* initialize address register map */
+	 
 	for (i = 0; i < ARRAY_SIZE(gr2d_addr_regs); i++)
 		set_bit(gr2d_addr_regs[i], gr2d->addr_regs);
 
@@ -305,18 +303,7 @@ static int __maybe_unused gr2d_runtime_suspend(struct device *dev)
 	host1x_channel_stop(gr2d->channel);
 	reset_control_bulk_release(gr2d->nresets, gr2d->resets);
 
-	/*
-	 * GR2D module shouldn't be reset while hardware is idling, otherwise
-	 * host1x's cmdproc will stuck on trying to access any G2 register
-	 * after reset. GR2D module could be either hot-reset or reset after
-	 * power-gating of the HEG partition. Hence we will put in reset only
-	 * the memory client part of the module, the HEG GENPD will take care
-	 * of resetting GR2D module across power-gating.
-	 *
-	 * On Tegra20 there is no HEG partition, but it's okay to have
-	 * undetermined h/w state since userspace is expected to reprogram
-	 * the state on each job submission anyways.
-	 */
+	 
 	err = reset_control_acquire(gr2d->resets[RST_MC].rstc);
 	if (err) {
 		dev_err(dev, "failed to acquire MC reset: %d\n", err);
@@ -360,7 +347,7 @@ static int __maybe_unused gr2d_runtime_resume(struct device *dev)
 
 	usleep_range(2000, 4000);
 
-	/* this is a reset array which deasserts both 2D MC and 2D itself */
+	 
 	err = reset_control_bulk_deassert(gr2d->nresets, gr2d->resets);
 	if (err) {
 		dev_err(dev, "failed to deassert reset: %d\n", err);

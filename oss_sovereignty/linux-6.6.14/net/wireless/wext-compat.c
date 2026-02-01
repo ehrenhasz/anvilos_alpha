@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * cfg80211 - wext compat code
- *
- * This is temporary code until all wireless functionality is migrated
- * into cfg80211, when that happens all the exports here go away and
- * we directly assign the wireless handlers of wireless interfaces.
- *
- * Copyright 2008-2009	Johannes Berg <johannes@sipsolutions.net>
- * Copyright (C) 2019-2022 Intel Corporation
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/wireless.h>
@@ -97,7 +88,7 @@ int cfg80211_wext_giwmode(struct net_device *dev, struct iw_request_info *info,
 		*mode = IW_MODE_REPEAT;
 		break;
 	case NL80211_IFTYPE_AP_VLAN:
-		*mode = IW_MODE_SECOND;		/* FIXME */
+		*mode = IW_MODE_SECOND;		 
 		break;
 	default:
 		*mode = IW_MODE_AUTO;
@@ -223,18 +214,10 @@ int cfg80211_wext_giwrange(struct net_device *dev,
 EXPORT_WEXT_HANDLER(cfg80211_wext_giwrange);
 
 
-/**
- * cfg80211_wext_freq - get wext frequency for non-"auto"
- * @freq: the wext freq encoding
- *
- * Returns a frequency, or a negative error code, or 0 for auto.
- */
+ 
 int cfg80211_wext_freq(struct iw_freq *freq)
 {
-	/*
-	 * Parse frequency - return 0 for auto and
-	 * -EINVAL for impossible things.
-	 */
+	 
 	if (freq->e == 0) {
 		enum nl80211_band band = NL80211_BAND_2GHZ;
 		if (freq->m < 0)
@@ -315,7 +298,7 @@ int cfg80211_wext_siwfrag(struct net_device *dev,
 		err = -EINVAL;
 		goto out;
 	} else {
-		/* Fragment length must be even, so strip LSB. */
+		 
 		wdev->wiphy->frag_threshold = frag->value & ~0x1;
 	}
 
@@ -394,10 +377,7 @@ int cfg80211_wext_giwretry(struct net_device *dev,
 	retry->disabled = 0;
 
 	if (retry->flags == 0 || (retry->flags & IW_RETRY_SHORT)) {
-		/*
-		 * First return short value, iwconfig will ask long value
-		 * later if needed
-		 */
+		 
 		retry->flags |= IW_RETRY_LIMIT | IW_RETRY_SHORT;
 		retry->value = wdev->wiphy->retry_short;
 		if (wdev->wiphy->retry_long == wdev->wiphy->retry_short)
@@ -430,10 +410,7 @@ static int __cfg80211_set_encryption(struct cfg80211_registered_device *rdev,
 	if (pairwise && !addr)
 		return -EINVAL;
 
-	/*
-	 * In many cases we won't actually need this, but it's better
-	 * to do it first in case the allocation fails. Don't use wext.
-	 */
+	 
 	if (!wdev->wext.keys) {
 		wdev->wext.keys = kzalloc(sizeof(*wdev->wext.keys),
 					  GFP_KERNEL);
@@ -465,10 +442,7 @@ static int __cfg80211_set_encryption(struct cfg80211_registered_device *rdev,
 		if (wdev->connected ||
 		    (wdev->iftype == NL80211_IFTYPE_ADHOC &&
 		     wdev->u.ibss.current_bss)) {
-			/*
-			 * If removing the current TX key, we will need to
-			 * join a new IBSS without the privacy bit clear.
-			 */
+			 
 			if (idx == wdev->wext.default_key &&
 			    wdev->iftype == NL80211_IFTYPE_ADHOC) {
 				__cfg80211_leave_ibss(rdev, wdev->netdev, true);
@@ -483,10 +457,7 @@ static int __cfg80211_set_encryption(struct cfg80211_registered_device *rdev,
 						   addr);
 		}
 		wdev->wext.connect.privacy = false;
-		/*
-		 * Applications using wireless extensions expect to be
-		 * able to delete keys that don't exist, so allow that.
-		 */
+		 
 		if (err == -ENOENT)
 			err = 0;
 		if (!err) {
@@ -525,11 +496,7 @@ static int __cfg80211_set_encryption(struct cfg80211_registered_device *rdev,
 	if (err)
 		return err;
 
-	/*
-	 * We only need to store WEP keys, since they're the only keys that
-	 * can be set before a connection is established and persist after
-	 * disconnecting.
-	 */
+	 
 	if (!addr && (params->cipher == WLAN_CIPHER_SUITE_WEP40 ||
 		      params->cipher == WLAN_CIPHER_SUITE_WEP104)) {
 		wdev->wext.keys->params[idx] = *params;
@@ -545,11 +512,7 @@ static int __cfg80211_set_encryption(struct cfg80211_registered_device *rdev,
 		if (wdev->connected ||
 		    (wdev->iftype == NL80211_IFTYPE_ADHOC &&
 		     wdev->u.ibss.current_bss)) {
-			/*
-			 * If we are getting a new TX key from not having
-			 * had one before we need to join a new IBSS with
-			 * the privacy bit set.
-			 */
+			 
 			if (wdev->iftype == NL80211_IFTYPE_ADHOC &&
 			    wdev->wext.default_key == -1) {
 				__cfg80211_leave_ibss(rdev, wdev->netdev, true);
@@ -610,7 +573,7 @@ static int cfg80211_wext_siwencode(struct net_device *dev,
 	    wdev->iftype != NL80211_IFTYPE_ADHOC)
 		return -EOPNOTSUPP;
 
-	/* no use -- only MFP (set_default_mgmt_key) is optional */
+	 
 	if (!rdev->ops->del_key ||
 	    !rdev->ops->add_key ||
 	    !rdev->ops->set_default_key)
@@ -637,7 +600,7 @@ static int cfg80211_wext_siwencode(struct net_device *dev,
 	if (erq->flags & IW_ENCODE_DISABLED)
 		remove = true;
 	else if (erq->length == 0) {
-		/* No key data - just set the default TX key index */
+		 
 		err = 0;
 		wdev_lock(wdev);
 		if (wdev->connected ||
@@ -691,7 +654,7 @@ static int cfg80211_wext_siwencodeext(struct net_device *dev,
 	    wdev->iftype != NL80211_IFTYPE_ADHOC)
 		return -EOPNOTSUPP;
 
-	/* no use -- only MFP (set_default_mgmt_key) is optional */
+	 
 	if (!rdev->ops->del_key ||
 	    !rdev->ops->add_key ||
 	    !rdev->ops->set_default_key)
@@ -940,25 +903,19 @@ static int cfg80211_wext_siwtxpower(struct net_device *dev,
 	if (!rdev->ops->set_tx_power)
 		return -EOPNOTSUPP;
 
-	/* only change when not disabling */
+	 
 	if (!data->txpower.disabled) {
 		rfkill_set_sw_state(rdev->wiphy.rfkill, false);
 
 		if (data->txpower.fixed) {
-			/*
-			 * wext doesn't support negative values, see
-			 * below where it's for automatic
-			 */
+			 
 			if (data->txpower.value < 0)
 				return -EINVAL;
 			dbm = data->txpower.value;
 			type = NL80211_TX_POWER_FIXED;
-			/* TODO: do regulatory check! */
+			 
 		} else {
-			/*
-			 * Automatic power level setting, max being the value
-			 * passed in from userland.
-			 */
+			 
 			if (data->txpower.value < 0) {
 				type = NL80211_TX_POWER_AUTOMATIC;
 			} else {
@@ -1001,7 +958,7 @@ static int cfg80211_wext_giwtxpower(struct net_device *dev,
 	if (err)
 		return err;
 
-	/* well... oh well */
+	 
 	data->txpower.fixed = 1;
 	data->txpower.disabled = rfkill_blocked(rdev->wiphy.rfkill);
 	data->txpower.value = val;
@@ -1197,7 +1154,7 @@ static int cfg80211_wext_giwauth(struct net_device *dev,
 				 struct iw_request_info *info,
 				 union iwreq_data *wrqu, char *extra)
 {
-	/* XXX: what do we need? */
+	 
 
 	return -EOPNOTSUPP;
 }
@@ -1223,12 +1180,12 @@ static int cfg80211_wext_siwpower(struct net_device *dev,
 		ps = false;
 	} else {
 		switch (wrq->flags & IW_POWER_MODE) {
-		case IW_POWER_ON:       /* If not specified */
-		case IW_POWER_MODE:     /* If set all mask */
-		case IW_POWER_ALL_R:    /* If explicitely state all */
+		case IW_POWER_ON:        
+		case IW_POWER_MODE:      
+		case IW_POWER_ALL_R:     
 			ps = true;
 			break;
-		default:                /* Otherwise we ignore */
+		default:                 
 			return -EINVAL;
 		}
 
@@ -1285,7 +1242,7 @@ static int cfg80211_wext_siwrate(struct net_device *dev,
 	maxrate = (u32)-1;
 
 	if (rate->value < 0) {
-		/* nothing */
+		 
 	} else if (rate->fixed) {
 		fixed = rate->value / 100000;
 	} else {
@@ -1369,12 +1326,12 @@ free:
 	return err;
 }
 
-/* Get wireless statistics.  Called by /proc/net/wireless and by SIOCGIWSTATS */
+ 
 static struct iw_statistics *cfg80211_wireless_stats(struct net_device *dev)
 {
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
-	/* we are under RTNL - globally locked - so can use static structs */
+	 
 	static struct iw_statistics wstats;
 	static struct station_info sinfo = {};
 	u8 bssid[ETH_ALEN];
@@ -1386,7 +1343,7 @@ static struct iw_statistics *cfg80211_wireless_stats(struct net_device *dev)
 	if (!rdev->ops->get_station)
 		return NULL;
 
-	/* Grab BSSID of current BSS, if any */
+	 
 	wdev_lock(wdev);
 	if (wdev->valid_links || !wdev->links[0].client.current_bss) {
 		wdev_unlock(wdev);

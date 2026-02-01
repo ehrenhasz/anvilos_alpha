@@ -1,55 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- */
 
-/*
- * Each of the CPU clusters (Power and Perf) on msm8996 are
- * clocked via 2 PLLs, a primary and alternate. There are also
- * 2 Mux'es, a primary and secondary all connected together
- * as shown below
- *
- *                              +-------+
- *               XO             |       |
- *           +------------------>0      |
- *               SYS_APCS_AUX   |       |
- *           +------------------>3      |
- *                              |       |
- *                    PLL/2     | SMUX  +----+
- *                      +------->1      |    |
- *                      |       |       |    |
- *                      |       +-------+    |    +-------+
- *                      |                    +---->0      |
- *                      |                         |       |
- * +---------------+    |             +----------->1      | CPU clk
- * |Primary PLL    +----+ PLL_EARLY   |           |       +------>
- * |               +------+-----------+    +------>2 PMUX |
- * +---------------+      |                |      |       |
- *                        |   +------+     |   +-->3      |
- *                        +--^+  ACD +-----+   |  +-------+
- * +---------------+          +------+         |
- * |Alt PLL        |                           |
- * |               +---------------------------+
- * +---------------+         PLL_EARLY
- *
- * The primary PLL is what drives the CPU clk, except for times
- * when we are reprogramming the PLL itself (for rate changes) when
- * we temporarily switch to an alternate PLL.
- *
- * The primary PLL operates on a single VCO range, between 600MHz
- * and 3GHz. However the CPUs do support OPPs with frequencies
- * between 300MHz and 600MHz. In order to support running the CPUs
- * at those frequencies we end up having to lock the PLL at twice
- * the rate and drive the CPU clk via the PLL/2 output and SMUX.
- *
- * So for frequencies above 600MHz we follow the following path
- *  Primary PLL --> PLL_EARLY --> PMUX(1) --> CPU clk
- * and for frequencies between 300MHz and 600MHz we follow
- *  Primary PLL --> PLL/2 --> SMUX(1) --> PMUX(0) --> CPU clk
- *
- * ACD stands for Adaptive Clock Distribution and is used to
- * detect voltage droops.
- */
+ 
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -109,7 +61,7 @@ static const u8 alt_pll_regs[PLL_OFF_MAX_REGS] = {
 	[PLL_OFF_STATUS] = 0x28,
 };
 
-/* PLLs */
+ 
 
 static const struct alpha_pll_config hfpll_config = {
 	.l = 54,
@@ -321,9 +273,9 @@ static const struct clk_ops clk_cpu_8996_pmux_ops = {
 };
 
 static const struct parent_map smux_parent_map[] = {
-	{ .cfg = 0, }, /* xo */
-	{ .cfg = 1, }, /* pll */
-	{ .cfg = 3, }, /* sys_apcs_aux */
+	{ .cfg = 0, },  
+	{ .cfg = 1, },  
+	{ .cfg = 3, },  
 };
 
 static const struct clk_parent_data pwrcl_smux_parents[] = {
@@ -388,7 +340,7 @@ static struct clk_cpu_8996_pmux pwrcl_pmux = {
 		.parent_hws = pwrcl_pmux_parents,
 		.num_parents = ARRAY_SIZE(pwrcl_pmux_parents),
 		.ops = &clk_cpu_8996_pmux_ops,
-		/* CPU clock is critical and should never be gated */
+		 
 		.flags = CLK_SET_RATE_PARENT | CLK_IS_CRITICAL,
 	},
 };
@@ -401,7 +353,7 @@ static struct clk_cpu_8996_pmux perfcl_pmux = {
 		.parent_hws = perfcl_pmux_parents,
 		.num_parents = ARRAY_SIZE(perfcl_pmux_parents),
 		.ops = &clk_cpu_8996_pmux_ops,
-		/* CPU clock is critical and should never be gated */
+		 
 		.flags = CLK_SET_RATE_PARENT | CLK_IS_CRITICAL,
 	},
 };
@@ -440,14 +392,14 @@ static int qcom_cpu_clk_msm8996_register_clks(struct device *dev,
 {
 	int i, ret;
 
-	/* Select GPLL0 for 300MHz for both clusters */
+	 
 	regmap_write(regmap, PERFCL_REG_OFFSET + MUX_OFFSET, 0xc);
 	regmap_write(regmap, PWRCL_REG_OFFSET + MUX_OFFSET, 0xc);
 
-	/* Ensure write goes through before PLLs are reconfigured */
+	 
 	udelay(5);
 
-	/* Set the auto clock sel always-on source to GPLL0/2 (300MHz) */
+	 
 	regmap_update_bits(regmap, PWRCL_REG_OFFSET + MUX_OFFSET,
 			   MUX_AUTO_CLK_SEL_ALWAYS_ON_MASK,
 			   MUX_AUTO_CLK_SEL_ALWAYS_ON_GPLL0_SEL);
@@ -460,25 +412,25 @@ static int qcom_cpu_clk_msm8996_register_clks(struct device *dev,
 	clk_alpha_pll_configure(&pwrcl_alt_pll, regmap, &altpll_config);
 	clk_alpha_pll_configure(&perfcl_alt_pll, regmap, &altpll_config);
 
-	/* Wait for PLL(s) to lock */
+	 
 	udelay(50);
 
-	/* Enable auto clock selection for both clusters */
+	 
 	regmap_update_bits(regmap, PWRCL_REG_OFFSET + CLK_CTL_OFFSET,
 			   CLK_CTL_AUTO_CLK_SEL, CLK_CTL_AUTO_CLK_SEL);
 	regmap_update_bits(regmap, PERFCL_REG_OFFSET + CLK_CTL_OFFSET,
 			   CLK_CTL_AUTO_CLK_SEL, CLK_CTL_AUTO_CLK_SEL);
 
-	/* Ensure write goes through before muxes are switched */
+	 
 	udelay(5);
 
 	qcom_cpu_clk_msm8996_acd_init(regmap);
 
-	/* Pulse swallower and soft-start settings */
+	 
 	regmap_write(regmap, PWRCL_REG_OFFSET + PSCTL_OFFSET, 0x00030005);
 	regmap_write(regmap, PERFCL_REG_OFFSET + PSCTL_OFFSET, 0x00030005);
 
-	/* Switch clusters to use the ACD leg */
+	 
 	regmap_write(regmap, PWRCL_REG_OFFSET + MUX_OFFSET, 0x32);
 	regmap_write(regmap, PERFCL_REG_OFFSET + MUX_OFFSET, 0x32);
 
@@ -494,7 +446,7 @@ static int qcom_cpu_clk_msm8996_register_clks(struct device *dev,
 			return ret;
 	}
 
-	/* Enable alt PLLs */
+	 
 	clk_prepare_enable(pwrcl_alt_pll.clkr.hw.clk);
 	clk_prepare_enable(perfcl_alt_pll.clkr.hw.clk);
 
@@ -553,21 +505,14 @@ static int cpu_clk_notifier_cb(struct notifier_block *nb, unsigned long event,
 	case PRE_RATE_CHANGE:
 		qcom_cpu_clk_msm8996_acd_init(cpuclk->clkr.regmap);
 
-		/*
-		 * Avoid overvolting. clk_core_set_rate_nolock() walks from top
-		 * to bottom, so it will change the rate of the PLL before
-		 * chaging the parent of PMUX. This can result in pmux getting
-		 * clocked twice the expected rate.
-		 *
-		 * Manually switch to PLL/2 here.
-		 */
+		 
 		if (cnd->new_rate < DIV_2_THRESHOLD &&
 		    cnd->old_rate > DIV_2_THRESHOLD)
 			clk_cpu_8996_pmux_set_parent(&cpuclk->clkr.hw, SMUX_INDEX);
 
 		break;
 	case ABORT_RATE_CHANGE:
-		/* Revert manual change */
+		 
 		if (cnd->new_rate < DIV_2_THRESHOLD &&
 		    cnd->old_rate > DIV_2_THRESHOLD)
 			clk_cpu_8996_pmux_set_parent(&cpuclk->clkr.hw, ACD_INDEX);

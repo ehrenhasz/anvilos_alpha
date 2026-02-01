@@ -1,30 +1,4 @@
-/*
- * Linux ARCnet driver - COM90xx chipset (IO-mapped buffers)
- *
- * Written 1997 by David Woodhouse.
- * Written 1994-1999 by Avery Pennarun.
- * Written 1999-2000 by Martin Mares <mj@ucw.cz>.
- * Derived from skeleton.c by Donald Becker.
- *
- * Special thanks to Contemporary Controls, Inc. (www.ccontrols.com)
- *  for sponsoring the further development of this driver.
- *
- * **********************
- *
- * The original copyright of skeleton.c was as follows:
- *
- * skeleton.c Written 1993 by Donald Becker.
- * Copyright 1993 United States Government as represented by the
- * Director, National Security Agency.  This software may only be used
- * and distributed according to the terms of the GNU General Public License as
- * modified by SRC, incorporated herein by reference.
- *
- * **********************
- *
- * For more details, see drivers/net/arcnet.c
- *
- * **********************
- */
+ 
 
 #define pr_fmt(fmt) "arcnet:" KBUILD_MODNAME ": " fmt
 
@@ -42,7 +16,7 @@
 #include "arcdevice.h"
 #include "com9026.h"
 
-/* Internal function declarations */
+ 
 
 static int com90io_found(struct net_device *dev);
 static void com90io_command(struct net_device *dev, int command);
@@ -54,16 +28,12 @@ static void com90io_copy_to_card(struct net_device *dev, int bufnum, int offset,
 static void com90io_copy_from_card(struct net_device *dev, int bufnum,
 				   int offset, void *buf, int count);
 
-/* Handy defines for ARCnet specific stuff */
+ 
 
-/* The number of low I/O ports used by the card. */
+ 
 #define ARCNET_TOTAL_SIZE 16
 
-/****************************************************************************
- *                                                                          *
- * IO-mapped operation routines                                             *
- *                                                                          *
- ****************************************************************************/
+ 
 
 #undef ONE_AT_A_TIME_TX
 #undef ONE_AT_A_TIME_RX
@@ -124,9 +94,7 @@ static void put_whole_buffer(struct net_device *dev, unsigned offset,
 #endif
 }
 
-/* We cannot probe for an IO mapped card either, although we can check that
- * it's where we were told it was, and even autoirq
- */
+ 
 static int __init com90io_probe(struct net_device *dev)
 {
 	int ioaddr = dev->base_addr, status;
@@ -179,7 +147,7 @@ static int __init com90io_probe(struct net_device *dev)
 	arcnet_outb((0x16 | IOMAPflag) & ~ENABLE16flag,
 		    ioaddr, COM9026_REG_RW_CONFIG);
 
-	/* Read first loc'n of memory */
+	 
 
 	arcnet_outb(AUTOINCflag, ioaddr, COM9026_REG_W_ADDR_HI);
 	arcnet_outb(0, ioaddr,  COM9026_REG_W_ADDR_LO);
@@ -191,10 +159,7 @@ static int __init com90io_probe(struct net_device *dev)
 		goto err_out;
 	}
 	if (!dev->irq) {
-		/* if we do this, we're sure to get an IRQ since the
-		 * card has just reset and the NORXflag is on until
-		 * we tell it to start receiving.
-		 */
+		 
 
 		airqmask = probe_irq_on();
 		arcnet_outb(NORXflag, ioaddr, COM9026_REG_W_INTMASK);
@@ -207,7 +172,7 @@ static int __init com90io_probe(struct net_device *dev)
 			goto err_out;
 		}
 	}
-	release_region(ioaddr, ARCNET_TOTAL_SIZE); /* end of probing */
+	release_region(ioaddr, ARCNET_TOTAL_SIZE);  
 	return com90io_found(dev);
 
 err_out:
@@ -215,22 +180,20 @@ err_out:
 	return -ENODEV;
 }
 
-/* Set up the struct net_device associated with this card.  Called after
- * probing succeeds.
- */
+ 
 static int __init com90io_found(struct net_device *dev)
 {
 	struct arcnet_local *lp;
 	int ioaddr = dev->base_addr;
 	int err;
 
-	/* Reserve the irq */
+	 
 	if (request_irq(dev->irq, arcnet_interrupt, 0,
 			"arcnet (COM90xx-IO)", dev)) {
 		arc_printk(D_NORMAL, dev, "Can't get IRQ %d!\n", dev->irq);
 		return -ENODEV;
 	}
-	/* Reserve the I/O region */
+	 
 	if (!request_region(dev->base_addr, ARCNET_TOTAL_SIZE,
 			    "arcnet (COM90xx-IO)")) {
 		free_irq(dev->irq, dev);
@@ -250,7 +213,7 @@ static int __init com90io_found(struct net_device *dev)
 	lp->config = (0x16 | IOMAPflag) & ~ENABLE16flag;
 	arcnet_outb(lp->config, ioaddr, COM9026_REG_RW_CONFIG);
 
-	/* get and check the station ID from offset 1 in shmem */
+	 
 
 	arcnet_set_addr(dev, get_buffer_byte(dev, 1));
 
@@ -269,13 +232,7 @@ static int __init com90io_found(struct net_device *dev)
 	return 0;
 }
 
-/* Do a hardware reset on the card, and set up necessary registers.
- *
- * This should be called as little as possible, because it disrupts the
- * token on the network (causes a RECON) and requires a significant delay.
- *
- * However, it does make sure the card is in a defined state.
- */
+ 
 static int com90io_reset(struct net_device *dev, int really_reset)
 {
 	struct arcnet_local *lp = netdev_priv(dev);
@@ -285,26 +242,26 @@ static int com90io_reset(struct net_device *dev, int really_reset)
 		   dev->name, arcnet_inb(ioaddr, COM9026_REG_R_STATUS));
 
 	if (really_reset) {
-		/* reset the card */
+		 
 		arcnet_inb(ioaddr, COM9026_REG_R_RESET);
 		mdelay(RESETtime);
 	}
-	/* Set the thing to IO-mapped, 8-bit  mode */
+	 
 	lp->config = (0x1C | IOMAPflag) & ~ENABLE16flag;
 	arcnet_outb(lp->config, ioaddr, COM9026_REG_RW_CONFIG);
 
 	arcnet_outb(CFLAGScmd | RESETclear, ioaddr, COM9026_REG_W_COMMAND);
-					/* clear flags & end reset */
+					 
 	arcnet_outb(CFLAGScmd | CONFIGclear, ioaddr, COM9026_REG_W_COMMAND);
 
-	/* verify that the ARCnet signature byte is present */
+	 
 	if (get_buffer_byte(dev, 0) != TESTvalue) {
 		arc_printk(D_NORMAL, dev, "reset failed: TESTvalue not present.\n");
 		return 1;
 	}
-	/* enable extended (512-byte) packets */
+	 
 	arcnet_outb(CONFIGcmd | EXTconf, ioaddr, COM9026_REG_W_COMMAND);
-	/* done!  return success. */
+	 
 	return 0;
 }
 
@@ -343,9 +300,9 @@ static void com90io_copy_from_card(struct net_device *dev, int bufnum,
 	     get_whole_buffer(dev, bufnum * 512 + offset, count, buf));
 }
 
-static int io;			/* use the insmod io= irq= shmem= options */
+static int io;			 
 static int irq;
-static char device[9];		/* use eg. device=arc1 to change name */
+static char device[9];		 
 
 module_param_hw(io, int, ioport, 0);
 module_param_hw(irq, int, irq, 0);
@@ -361,13 +318,13 @@ static int __init com90io_setup(char *s)
 	if (!ints[0])
 		return 0;
 	switch (ints[0]) {
-	default:		/* ERROR */
+	default:		 
 		pr_err("Too many arguments\n");
 		fallthrough;
-	case 2:		/* IRQ */
+	case 2:		 
 		irq = ints[2];
 		fallthrough;
-	case 1:		/* IO address */
+	case 1:		 
 		io = ints[1];
 	}
 	if (*s)
@@ -411,9 +368,7 @@ static void __exit com90io_exit(void)
 
 	unregister_netdev(dev);
 
-	/* In case the old driver is loaded later,
-	 * set the thing back to MMAP mode
-	 */
+	 
 	arcnet_outb(arcnet_inb(ioaddr, COM9026_REG_RW_CONFIG) & ~IOMAPflag,
 		    ioaddr, COM9026_REG_RW_CONFIG);
 

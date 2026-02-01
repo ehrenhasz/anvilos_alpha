@@ -1,33 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only OR BSD-3-Clause */
-/*
- * AES CTR mode by8 optimization with AVX instructions. (x86_64)
- *
- * Copyright(c) 2014 Intel Corporation.
- *
- * Contact Information:
- * James Guilford <james.guilford@intel.com>
- * Sean Gulley <sean.m.gulley@intel.com>
- * Chandramouli Narayanan <mouli@linux.intel.com>
- */
-/*
- * This is AES128/192/256 CTR mode optimization implementation. It requires
- * the support of Intel(R) AESNI and AVX instructions.
- *
- * This work was inspired by the AES CTR mode optimization published
- * in Intel Optimized IPSEC Cryptographic library.
- * Additional information on it can be found at:
- *    https://github.com/intel/intel-ipsec-mb
- */
+ 
+ 
+ 
 
 #include <linux/linkage.h>
 
 #define VMOVDQ		vmovdqu
 
-/*
- * Note: the "x" prefix in these aliases means "this is an xmm register".  The
- * alias prefixes have no relation to XCTR where the "X" prefix means "XOR
- * counter".
- */
+ 
 #define xdata0		%xmm0
 #define xdata1		%xmm1
 #define xdata2		%xmm2
@@ -36,10 +15,10 @@
 #define xdata5		%xmm5
 #define xdata6		%xmm6
 #define xdata7		%xmm7
-#define xcounter	%xmm8	// CTR mode only
-#define xiv		%xmm8	// XCTR mode only
-#define xbyteswap	%xmm9	// CTR mode only
-#define xtmp		%xmm9	// XCTR mode only
+#define xcounter	%xmm8	 
+#define xiv		%xmm8	 
+#define xbyteswap	%xmm9	 
+#define xtmp		%xmm9	 
 #define xkey0		%xmm10
 #define xkey4		%xmm11
 #define xkey8		%xmm12
@@ -52,7 +31,7 @@
 #define p_keys		%rdx
 #define p_out		%rcx
 #define num_bytes	%r8
-#define counter		%r9	// XCTR mode only
+#define counter		%r9	 
 #define tmp		%r10
 #define	DDQ_DATA	0
 #define	XDATA		1
@@ -88,14 +67,14 @@ ddq_add_8:
 
 .text
 
-/* generate a unique variable for ddq_add_x */
+ 
 
-/* generate a unique variable for xmm register */
+ 
 .macro setxdata n
 	var_xdata = %xmm\n
 .endm
 
-/* club the numeric 'id' to the symbol 'name' */
+ 
 
 .macro club name, id
 .altmacro
@@ -105,10 +84,7 @@ ddq_add_8:
 .noaltmacro
 .endm
 
-/*
- * do_aes num_in_par load_keys key_len
- * This increments p_in, but not p_out
- */
+ 
 .macro do_aes b, k, key_len, xctr
 	.set by, \b
 	.set load_keys, \k
@@ -173,7 +149,7 @@ ddq_add_8:
 	.set i, 0
 	.rept by
 		club XDATA, i
-		vaesenc	xkeyA, var_xdata, var_xdata		/* key 1 */
+		vaesenc	xkeyA, var_xdata, var_xdata		 
 		.set i, (i +1)
 	.endr
 
@@ -188,7 +164,7 @@ ddq_add_8:
 	.set i, 0
 	.rept by
 		club XDATA, i
-		vaesenc	xkeyB, var_xdata, var_xdata		/* key 2 */
+		vaesenc	xkeyB, var_xdata, var_xdata		 
 		.set i, (i +1)
 	.endr
 
@@ -205,7 +181,7 @@ ddq_add_8:
 	.set i, 0
 	.rept by
 		club XDATA, i
-		/* key 3 */
+		 
 		.if (klen == KEY_128)
 			vaesenc	xkey4, var_xdata, var_xdata
 		.else
@@ -219,7 +195,7 @@ ddq_add_8:
 	.set i, 0
 	.rept by
 		club XDATA, i
-		/* key 4 */
+		 
 		.if (klen == KEY_128)
 			vaesenc	xkeyB, var_xdata, var_xdata
 		.else
@@ -239,7 +215,7 @@ ddq_add_8:
 	.set i, 0
 	.rept by
 		club XDATA, i
-		vaesenc	xkeyA, var_xdata, var_xdata		/* key 5 */
+		vaesenc	xkeyA, var_xdata, var_xdata		 
 		.set i, (i +1)
 	.endr
 
@@ -248,7 +224,7 @@ ddq_add_8:
 	.set i, 0
 	.rept by
 		club XDATA, i
-		/* key 6 */
+		 
 		.if (klen == KEY_128)
 			vaesenc	xkey8, var_xdata, var_xdata
 		.else
@@ -268,7 +244,7 @@ ddq_add_8:
 	.set i, 0
 	.rept by
 		club XDATA, i
-		vaesenc	xkeyA, var_xdata, var_xdata		/* key 7 */
+		vaesenc	xkeyA, var_xdata, var_xdata		 
 		.set i, (i +1)
 	.endr
 
@@ -283,7 +259,7 @@ ddq_add_8:
 	.set i, 0
 	.rept by
 		club XDATA, i
-		/* key 8 */
+		 
 		.if (klen == KEY_128)
 			vaesenc	xkeyB, var_xdata, var_xdata
 		.else
@@ -297,7 +273,7 @@ ddq_add_8:
 	.set i, 0
 	.rept by
 		club XDATA, i
-		/* key 9 */
+		 
 		.if (klen == KEY_128)
 			vaesenc	xkey12, var_xdata, var_xdata
 		.else
@@ -313,7 +289,7 @@ ddq_add_8:
 	.set i, 0
 	.rept by
 		club XDATA, i
-		/* key 10 */
+		 
 		.if (klen == KEY_128)
 			vaesenclast	xkeyB, var_xdata, var_xdata
 		.else
@@ -330,7 +306,7 @@ ddq_add_8:
 		.set i, 0
 		.rept by
 			club XDATA, i
-			vaesenc	xkeyA, var_xdata, var_xdata	/* key 11 */
+			vaesenc	xkeyA, var_xdata, var_xdata	 
 			.set i, (i +1)
 		.endr
 
@@ -342,7 +318,7 @@ ddq_add_8:
 		.rept by
 			club XDATA, i
 			.if (klen == KEY_256)
-				/* key 12 */
+				 
 				vaesenc	xkey12, var_xdata, var_xdata
 			.else
 				vaesenclast xkey12, var_xdata, var_xdata
@@ -356,7 +332,7 @@ ddq_add_8:
 			.set i, 0
 			.rept by
 				club XDATA, i
-				/* key 13 */
+				 
 				vaesenc	xkeyA, var_xdata, var_xdata
 				.set i, (i +1)
 			.endr
@@ -364,7 +340,7 @@ ddq_add_8:
 			.set i, 0
 			.rept by
 				club XDATA, i
-				/* key 14 */
+				 
 				vaesenclast	xkeyB, var_xdata, var_xdata
 				.set i, (i +1)
 			.endr
@@ -405,7 +381,7 @@ ddq_add_8:
 	do_aes \val, 0, \key_len, \xctr
 .endm
 
-/* main body of aes ctr load */
+ 
 
 .macro do_aes_ctrmain key_len, xctr
 	cmp	$16, num_bytes
@@ -424,7 +400,7 @@ ddq_add_8:
 	and	$(7*16), tmp
 	jz	.Lmult_of_8_blks\xctr\key_len
 
-	/* 1 <= tmp <= 7 */
+	 
 	cmp	$(4*16), tmp
 	jg	.Lgt4\xctr\key_len
 	je	.Leq4\xctr\key_len
@@ -503,7 +479,7 @@ ddq_add_8:
 	.endif
 .align 16
 .Lmain_loop2\xctr\key_len:
-	/* num_bytes is a multiple of 8 and >0 */
+	 
 	do_aes_noload	8, \key_len, \xctr
 	add	$(8*16), p_out
 	sub	$(8*16), num_bytes
@@ -511,87 +487,51 @@ ddq_add_8:
 
 .Ldo_return2\xctr\key_len:
 	.if !\xctr
-		/* return updated IV */
+		 
 		vpshufb	xbyteswap, xcounter, xcounter
 		vmovdqu	xcounter, (p_iv)
 	.endif
 	RET
 .endm
 
-/*
- * routine to do AES128 CTR enc/decrypt "by8"
- * XMM registers are clobbered.
- * Saving/restoring must be done at a higher level
- * aes_ctr_enc_128_avx_by8(void *in, void *iv, void *keys, void *out,
- *			unsigned int num_bytes)
- */
+ 
 SYM_FUNC_START(aes_ctr_enc_128_avx_by8)
-	/* call the aes main loop */
+	 
 	do_aes_ctrmain KEY_128 0
 
 SYM_FUNC_END(aes_ctr_enc_128_avx_by8)
 
-/*
- * routine to do AES192 CTR enc/decrypt "by8"
- * XMM registers are clobbered.
- * Saving/restoring must be done at a higher level
- * aes_ctr_enc_192_avx_by8(void *in, void *iv, void *keys, void *out,
- *			unsigned int num_bytes)
- */
+ 
 SYM_FUNC_START(aes_ctr_enc_192_avx_by8)
-	/* call the aes main loop */
+	 
 	do_aes_ctrmain KEY_192 0
 
 SYM_FUNC_END(aes_ctr_enc_192_avx_by8)
 
-/*
- * routine to do AES256 CTR enc/decrypt "by8"
- * XMM registers are clobbered.
- * Saving/restoring must be done at a higher level
- * aes_ctr_enc_256_avx_by8(void *in, void *iv, void *keys, void *out,
- *			unsigned int num_bytes)
- */
+ 
 SYM_FUNC_START(aes_ctr_enc_256_avx_by8)
-	/* call the aes main loop */
+	 
 	do_aes_ctrmain KEY_256 0
 
 SYM_FUNC_END(aes_ctr_enc_256_avx_by8)
 
-/*
- * routine to do AES128 XCTR enc/decrypt "by8"
- * XMM registers are clobbered.
- * Saving/restoring must be done at a higher level
- * aes_xctr_enc_128_avx_by8(const u8 *in, const u8 *iv, const void *keys,
- * 	u8* out, unsigned int num_bytes, unsigned int byte_ctr)
- */
+ 
 SYM_FUNC_START(aes_xctr_enc_128_avx_by8)
-	/* call the aes main loop */
+	 
 	do_aes_ctrmain KEY_128 1
 
 SYM_FUNC_END(aes_xctr_enc_128_avx_by8)
 
-/*
- * routine to do AES192 XCTR enc/decrypt "by8"
- * XMM registers are clobbered.
- * Saving/restoring must be done at a higher level
- * aes_xctr_enc_192_avx_by8(const u8 *in, const u8 *iv, const void *keys,
- * 	u8* out, unsigned int num_bytes, unsigned int byte_ctr)
- */
+ 
 SYM_FUNC_START(aes_xctr_enc_192_avx_by8)
-	/* call the aes main loop */
+	 
 	do_aes_ctrmain KEY_192 1
 
 SYM_FUNC_END(aes_xctr_enc_192_avx_by8)
 
-/*
- * routine to do AES256 XCTR enc/decrypt "by8"
- * XMM registers are clobbered.
- * Saving/restoring must be done at a higher level
- * aes_xctr_enc_256_avx_by8(const u8 *in, const u8 *iv, const void *keys,
- * 	u8* out, unsigned int num_bytes, unsigned int byte_ctr)
- */
+ 
 SYM_FUNC_START(aes_xctr_enc_256_avx_by8)
-	/* call the aes main loop */
+	 
 	do_aes_ctrmain KEY_256 1
 
 SYM_FUNC_END(aes_xctr_enc_256_avx_by8)

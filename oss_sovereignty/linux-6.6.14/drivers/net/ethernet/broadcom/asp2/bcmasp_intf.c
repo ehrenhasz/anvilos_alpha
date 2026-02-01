@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define pr_fmt(fmt)			"bcmasp_intf: " fmt
 
 #include <asm/byteorder.h>
@@ -28,7 +28,7 @@ static int incr_ring(int index, int ring_count)
 	return index;
 }
 
-/* Points to last byte of descriptor */
+ 
 static dma_addr_t incr_last_byte(dma_addr_t addr, dma_addr_t beg,
 				 int ring_count)
 {
@@ -41,7 +41,7 @@ static dma_addr_t incr_last_byte(dma_addr_t addr, dma_addr_t beg,
 	return addr;
 }
 
-/* Points to first byte of descriptor */
+ 
 static dma_addr_t incr_first_byte(dma_addr_t addr, dma_addr_t beg,
 				  int ring_count)
 {
@@ -126,7 +126,7 @@ set_promisc:
 	bcmasp_set_promisc(intf, 1);
 	intf->mib.promisc_filters_cnt++;
 
-	/* disable all filters used by this port */
+	 
 	bcmasp_disable_all_filters(intf);
 
 	spin_unlock_bh(&intf->parent->mda_lock);
@@ -146,7 +146,7 @@ static int tx_spb_ring_full(struct bcmasp_intf *intf, int cnt)
 {
 	int next_index, i;
 
-	/* Check if we have enough room for cnt descriptors */
+	 
 	for (i = 0; i < cnt; i++) {
 		next_index = incr_ring(intf->tx_spb_index, DESC_RING_COUNT);
 		if (next_index == intf->tx_spb_clean_index)
@@ -287,7 +287,7 @@ static netdev_tx_t bcmasp_xmit(struct sk_buff *skb, struct net_device *dev)
 		return NETDEV_TX_BUSY;
 	}
 
-	/* Save skb len before adding csum offload header */
+	 
 	total_bytes = skb->len;
 	skb = bcmasp_csum_offload(dev, skb, &csum_hw);
 	if (!skb)
@@ -320,7 +320,7 @@ static netdev_tx_t bcmasp_xmit(struct sk_buff *skb, struct net_device *dev)
 				spb_index = incr_ring(spb_index,
 						      DESC_RING_COUNT);
 			}
-			/* Rewind so we do not have a hole */
+			 
 			spb_index = intf->tx_spb_index;
 			return NETDEV_TX_OK;
 		}
@@ -357,9 +357,7 @@ static netdev_tx_t bcmasp_xmit(struct sk_buff *skb, struct net_device *dev)
 				       DESC_RING_COUNT);
 	}
 
-	/* Ensure all descriptors have been written to DRAM for the
-	 * hardware to see up-to-date contents.
-	 */
+	 
 	wmb();
 
 	intf->tx_spb_index = spb_index;
@@ -417,9 +415,7 @@ static void umac_enable_set(struct bcmasp_intf *intf, u32 mask,
 		reg &= ~mask;
 	umac_wl(intf, reg, UMC_CMD);
 
-	/* UniMAC stops on a packet boundary, wait for a full-sized packet
-	 * to be processed (1 msec).
-	 */
+	 
 	if (enable == 0)
 		usleep_range(1000, 2000);
 }
@@ -478,9 +474,7 @@ static int bcmasp_tx_poll(struct napi_struct *napi, int budget)
 							DESC_RING_COUNT);
 	}
 
-	/* Ensure all descriptors have been written to DRAM for the hardware
-	 * to see updated contents.
-	 */
+	 
 	wmb();
 
 	napi_complete(&intf->tx_napi);
@@ -514,12 +508,10 @@ static int bcmasp_rx_poll(struct napi_struct *napi, int budget)
 	while ((processed < budget) && (valid != intf->rx_edpkt_dma_read)) {
 		desc = &intf->rx_edpkt_cpu[intf->rx_edpkt_index];
 
-		/* Ensure that descriptor has been fully written to DRAM by
-		 * hardware before reading by the CPU
-		 */
+		 
 		rmb();
 
-		/* Calculate virt addr by offsetting from physical addr */
+		 
 		data = intf->rx_ring_cpu +
 			(DESC_ADDR(desc->buf) - intf->rx_ring_dma);
 
@@ -708,10 +700,10 @@ static int bcmasp_init_rx(struct bcmasp_intf *intf)
 	intf->rx_edpkt_dma_read = intf->rx_edpkt_dma_addr;
 	intf->rx_edpkt_index = 0;
 
-	/* Make sure channels are disabled */
+	 
 	rx_edpkt_cfg_wl(intf, 0x0, RX_EDPKT_CFG_ENABLE);
 
-	/* Rx SPB */
+	 
 	rx_edpkt_cfg_wq(intf, intf->rx_ring_dma, RX_EDPKT_RING_BUFFER_READ);
 	rx_edpkt_cfg_wq(intf, intf->rx_ring_dma, RX_EDPKT_RING_BUFFER_WRITE);
 	rx_edpkt_cfg_wq(intf, intf->rx_ring_dma, RX_EDPKT_RING_BUFFER_BASE);
@@ -720,7 +712,7 @@ static int bcmasp_init_rx(struct bcmasp_intf *intf)
 	rx_edpkt_cfg_wq(intf, intf->rx_ring_dma_valid,
 			RX_EDPKT_RING_BUFFER_VALID);
 
-	/* EDPKT */
+	 
 	rx_edpkt_cfg_wl(intf, (RX_EDPKT_CFG_CFG0_RBUF_4K <<
 			RX_EDPKT_CFG_CFG0_DBUF_SHIFT) |
 		       (RX_EDPKT_CFG_CFG0_64_ALN <<
@@ -788,11 +780,11 @@ static int bcmasp_init_tx(struct bcmasp_intf *intf)
 
 	netif_napi_add_tx(intf->ndev, &intf->tx_napi, bcmasp_tx_poll);
 
-	/* Make sure channels are disabled */
+	 
 	tx_spb_ctrl_wl(intf, 0x0, TX_SPB_CTRL_ENABLE);
 	tx_epkt_core_wl(intf, 0x0, TX_EPKT_C_CFG_MISC);
 
-	/* Tx SPB */
+	 
 	tx_spb_ctrl_wl(intf, ((intf->channel + 8) << TX_SPB_CTRL_XF_BID_SHIFT),
 		       TX_SPB_CTRL_XF_CTRL2);
 	tx_pause_ctrl_wl(intf, (1 << (intf->channel + 8)), TX_PAUSE_MAP_VECTOR);
@@ -817,11 +809,11 @@ static void bcmasp_reclaim_free_all_tx(struct bcmasp_intf *intf)
 {
 	struct device *kdev = &intf->parent->pdev->dev;
 
-	/* Free descriptors */
+	 
 	dma_free_coherent(kdev, DESC_RING_SIZE, intf->tx_spb_cpu,
 			  intf->tx_spb_dma_addr);
 
-	/* Free cbs */
+	 
 	kfree(intf->tx_cbs);
 }
 
@@ -852,9 +844,7 @@ static void bcmasp_ephy_enable_set(struct bcmasp_intf *intf, bool enable)
 	rgmii_wl(intf, reg, RGMII_EPHY_CNTRL);
 	mdelay(1);
 
-	/* Set or clear the LED control override to avoid lighting up LEDs
-	 * while the EPHY is powered off and drawing unnecessary current.
-	 */
+	 
 	reg = rgmii_rl(intf, RGMII_SYS_LED_CNTRL);
 	if (enable)
 		reg &= ~RGMII_SYS_LED_CNTRL_LINK_OVRD;
@@ -885,7 +875,7 @@ static void bcmasp_netif_deinit(struct net_device *dev)
 
 	bcmasp_enable_tx(intf, 0);
 
-	/* Flush any TX packets in the pipe */
+	 
 	tx_spb_dma_wl(intf, TX_SPB_DMA_FIFO_FLUSH, TX_SPB_DMA_FIFO_CTRL);
 	do {
 		reg = tx_spb_dma_rl(intf, TX_SPB_DMA_FIFO_STATUS);
@@ -907,7 +897,7 @@ static void bcmasp_netif_deinit(struct net_device *dev)
 
 	napi_disable(&intf->rx_napi);
 
-	/* Disable interrupts */
+	 
 	bcmasp_enable_tx_irq(intf, 0);
 	bcmasp_enable_rx_irq(intf, 0);
 
@@ -924,20 +914,20 @@ static int bcmasp_stop(struct net_device *dev)
 
 	netif_dbg(intf, ifdown, dev, "bcmasp stop\n");
 
-	/* Stop tx from updating HW */
+	 
 	netif_tx_disable(dev);
 
 	bcmasp_netif_deinit(dev);
 
 	phy_disconnect(dev->phydev);
 
-	/* Disable internal EPHY or external PHY */
+	 
 	if (intf->internal_phy)
 		bcmasp_ephy_enable_set(intf, false);
 	else
 		bcmasp_rgmii_mode_en_set(intf, false);
 
-	/* Disable the interface clocks */
+	 
 	bcmasp_core_clock_set_intf(intf, false);
 
 	clk_disable_unprepare(intf->parent->clk);
@@ -954,12 +944,7 @@ static void bcmasp_configure_port(struct bcmasp_intf *intf)
 
 	switch (intf->phy_interface) {
 	case PHY_INTERFACE_MODE_RGMII:
-		/* RGMII_NO_ID: TXC transitions at the same time as TXD
-		 *		(requires PCB or receiver-side delay)
-		 * RGMII:	Add 2ns delay on TXC (90 degree shift)
-		 *
-		 * ID is implicitly disabled for 100Mbps (RG)MII operation.
-		 */
+		 
 		id_mode_dis = RGMII_ID_MODE_DIS;
 		fallthrough;
 	case PHY_INTERFACE_MODE_RGMII_TXID:
@@ -993,41 +978,17 @@ static int bcmasp_netif_init(struct net_device *dev, bool phy_connect)
 	struct phy_device *phydev = NULL;
 	int ret;
 
-	/* Always enable interface clocks */
+	 
 	bcmasp_core_clock_set_intf(intf, true);
 
-	/* Enable internal PHY or external PHY before any MAC activity */
+	 
 	if (intf->internal_phy)
 		bcmasp_ephy_enable_set(intf, true);
 	else
 		bcmasp_rgmii_mode_en_set(intf, true);
 	bcmasp_configure_port(intf);
 
-	/* This is an ugly quirk but we have not been correctly
-	 * interpreting the phy_interface values and we have done that
-	 * across different drivers, so at least we are consistent in
-	 * our mistakes.
-	 *
-	 * When the Generic PHY driver is in use either the PHY has
-	 * been strapped or programmed correctly by the boot loader so
-	 * we should stick to our incorrect interpretation since we
-	 * have validated it.
-	 *
-	 * Now when a dedicated PHY driver is in use, we need to
-	 * reverse the meaning of the phy_interface_mode values to
-	 * something that the PHY driver will interpret and act on such
-	 * that we have two mistakes canceling themselves so to speak.
-	 * We only do this for the two modes that GENET driver
-	 * officially supports on Broadcom STB chips:
-	 * PHY_INTERFACE_MODE_RGMII and PHY_INTERFACE_MODE_RGMII_TXID.
-	 * Other modes are not *officially* supported with the boot
-	 * loader and the scripted environment generating Device Tree
-	 * blobs for those platforms.
-	 *
-	 * Note that internal PHY and fixed-link configurations are not
-	 * affected because they use different phy_interface_t values
-	 * or the Generic PHY driver.
-	 */
+	 
 	switch (phy_iface) {
 	case PHY_INTERFACE_MODE_RGMII:
 		phy_iface = PHY_INTERFACE_MODE_RGMII_ID;
@@ -1058,7 +1019,7 @@ static int bcmasp_netif_init(struct net_device *dev, bool phy_connect)
 
 	umac_init(intf);
 
-	/* Disable the UniMAC RX/TX */
+	 
 	umac_enable_set(intf, (UMC_CMD_RX_EN | UMC_CMD_TX_EN), 0);
 
 	umac_set_hw_addr(intf, dev->dev_addr);
@@ -1071,7 +1032,7 @@ static int bcmasp_netif_init(struct net_device *dev, bool phy_connect)
 	if (ret)
 		goto err_phy_disconnect;
 
-	/* Turn on asp */
+	 
 	bcmasp_enable_tx(intf, 1);
 
 	ret = bcmasp_init_rx(intf);
@@ -1080,7 +1041,7 @@ static int bcmasp_netif_init(struct net_device *dev, bool phy_connect)
 
 	bcmasp_enable_rx(intf, 1);
 
-	/* Turn on UniMAC TX/RX */
+	 
 	umac_enable_set(intf, (UMC_CMD_RX_EN | UMC_CMD_TX_EN), 1);
 
 	intf->crc_fwd = !!(umac_rl(intf, UMC_CMD) & UMC_CMD_CRC_FWD);
@@ -1178,13 +1139,13 @@ static const struct net_device_ops bcmasp_netdev_ops = {
 
 static void bcmasp_map_res(struct bcmasp_priv *priv, struct bcmasp_intf *intf)
 {
-	/* Per port */
+	 
 	intf->res.umac = priv->base + UMC_OFFSET(intf);
 	intf->res.umac2fb = priv->base + (priv->hw_info->umac2fb +
 					  (intf->port * 0x4));
 	intf->res.rgmii = priv->base + RGMII_OFFSET(intf);
 
-	/* Per ch */
+	 
 	intf->tx_spb_dma = priv->base + TX_SPB_DMA_OFFSET(intf);
 	intf->res.tx_spb_ctrl = priv->base + TX_SPB_CTRL_OFFSET(intf);
 	intf->res.tx_spb_top = priv->base + TX_SPB_TOP_OFFSET(intf);
@@ -1248,7 +1209,7 @@ struct bcmasp_intf *bcmasp_interface_create(struct bcmasp_priv *priv,
 		intf->phy_dn = ndev_dn;
 	}
 
-	/* Map resource */
+	 
 	bcmasp_map_res(priv, intf);
 
 	if ((!phy_interface_mode_is_rgmii(intf->phy_interface) &&
@@ -1306,7 +1267,7 @@ static void bcmasp_suspend_to_wol(struct bcmasp_intf *intf)
 		reg |= UMC_MPD_CTRL_MPD_EN;
 	reg &= ~UMC_MPD_CTRL_PSW_EN;
 	if (intf->wolopts & WAKE_MAGICSECURE) {
-		/* Program the SecureOn password */
+		 
 		umac_wl(intf, get_unaligned_be16(&intf->sopass[0]),
 			UMC_PSW_MS);
 		umac_wl(intf, get_unaligned_be32(&intf->sopass[2]),
@@ -1318,7 +1279,7 @@ static void bcmasp_suspend_to_wol(struct bcmasp_intf *intf)
 	if (intf->wolopts & WAKE_FILTER)
 		bcmasp_netfilt_suspend(intf);
 
-	/* UniMAC receive needs to be turned on */
+	 
 	umac_enable_set(intf, UMC_CMD_RX_EN, 1);
 
 	if (intf->parent->wol_irq > 0) {
@@ -1352,9 +1313,7 @@ int bcmasp_interface_suspend(struct bcmasp_intf *intf)
 		else
 			bcmasp_rgmii_mode_en_set(intf, false);
 
-		/* If Wake-on-LAN is disabled, we can safely
-		 * disable the network interface clocks.
-		 */
+		 
 		bcmasp_core_clock_set_intf(intf, false);
 	}
 

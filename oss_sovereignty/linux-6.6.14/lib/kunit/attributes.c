@@ -1,38 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * KUnit API to save and access test attributes
- *
- * Copyright (C) 2023, Google LLC.
- * Author: Rae Moar <rmoar@google.com>
- */
+
+ 
 
 #include <kunit/test.h>
 #include <kunit/attributes.h>
 
-/* Options for printing attributes:
- * PRINT_ALWAYS - attribute is printed for every test case and suite if set
- * PRINT_SUITE - attribute is printed for every suite if set but not for test cases
- * PRINT_NEVER - attribute is never printed
- */
+ 
 enum print_ops {
 	PRINT_ALWAYS,
 	PRINT_SUITE,
 	PRINT_NEVER,
 };
 
-/**
- * struct kunit_attr - represents a test attribute and holds flexible
- * helper functions to interact with attribute.
- *
- * @name: name of test attribute, eg. speed
- * @get_attr: function to return attribute value given a test
- * @to_string: function to return string representation of given
- * attribute value
- * @filter: function to indicate whether a given attribute value passes a
- * filter
- * @attr_default: default attribute value used during filtering
- * @print: value of enum print_ops to indicate when to print attribute
- */
+ 
 struct kunit_attr {
 	const char *name;
 	void *(*get_attr)(void *test_or_suite, bool is_test);
@@ -42,11 +21,11 @@ struct kunit_attr {
 	enum print_ops print;
 };
 
-/* String Lists for enum Attributes */
+ 
 
 static const char * const speed_str_list[] = {"unset", "very_slow", "slow", "normal"};
 
-/* To String Methods */
+ 
 
 static const char *attr_enum_to_string(void *attr, const char * const str_list[], bool *to_free)
 {
@@ -69,14 +48,11 @@ static const char *attr_string_to_string(void *attr, bool *to_free)
 	return (char *) attr;
 }
 
-/* Filter Methods */
+ 
 
 static const char op_list[] = "<>!=";
 
-/*
- * Returns whether the inputted integer value matches the filter given
- * by the operation string and inputted integer.
- */
+ 
 static int int_filter(long val, const char *op, int input, int *err)
 {
 	if (!strncmp(op, "<=", 2))
@@ -96,11 +72,7 @@ static int int_filter(long val, const char *op, int input, int *err)
 	return false;
 }
 
-/*
- * Returns whether the inputted enum value "attr" matches the filter given
- * by the input string. Note: the str_list includes the corresponding string
- * list to the enum values.
- */
+ 
 static int attr_enum_filter(void *attr, const char *input, int *err,
 		const char * const str_list[], int max)
 {
@@ -140,10 +112,7 @@ static int attr_speed_filter(void *attr, const char *input, int *err)
 	return attr_enum_filter(attr, input, err, speed_str_list, KUNIT_SPEED_MAX);
 }
 
-/*
- * Returns whether the inputted string value (attr) matches the filter given
- * by the input string.
- */
+ 
 static int attr_string_filter(void *attr, const char *input, int *err)
 {
 	char *str = attr;
@@ -167,7 +136,7 @@ static int attr_string_filter(void *attr, const char *input, int *err)
 }
 
 
-/* Get Attribute Methods */
+ 
 
 static void *attr_speed_get(void *test_or_suite, bool is_test)
 {
@@ -185,7 +154,7 @@ static void *attr_module_get(void *test_or_suite, bool is_test)
 	struct kunit_suite *suite = is_test ? NULL : test_or_suite;
 	struct kunit_case *test = is_test ? test_or_suite : NULL;
 
-	// Suites get their module attribute from their first test_case
+	
 	if (test)
 		return ((void *) test->module_name);
 	else if (kunit_suite_num_test_cases(suite) > 0)
@@ -194,7 +163,7 @@ static void *attr_module_get(void *test_or_suite, bool is_test)
 		return (void *) "";
 }
 
-/* List of all Test Attributes */
+ 
 
 static struct kunit_attr kunit_attr_list[] = {
 	{
@@ -215,7 +184,7 @@ static struct kunit_attr kunit_attr_list[] = {
 	}
 };
 
-/* Helper Functions to Access Attributes */
+ 
 
 const char *kunit_attr_filter_name(struct kunit_attr_filter filter)
 {
@@ -248,14 +217,14 @@ void kunit_print_attr(void *test_or_suite, bool is_test, unsigned int test_level
 					KUNIT_INDENT_LEN * test_level, "", attr_name, attr_str);
 			}
 
-			/* Free to_string of attribute if needed */
+			 
 			if (to_free)
 				kfree(attr_str);
 		}
 	}
 }
 
-/* Helper Functions to Filter Attributes */
+ 
 
 int kunit_get_filter_count(char *input)
 {
@@ -281,7 +250,7 @@ struct kunit_attr_filter kunit_next_attr_filter(char **filters, int *err)
 	char op;
 	char *input = *filters;
 
-	/* Parse input until operation */
+	 
 	for (i = 0; input[i]; i++) {
 		if (op_index < 0 && strchr(op_list, input[i])) {
 			op_index = i;
@@ -299,11 +268,11 @@ struct kunit_attr_filter kunit_next_attr_filter(char **filters, int *err)
 		return filter;
 	}
 
-	/* Temporarily set operator to \0 character. */
+	 
 	op = input[op_index];
 	input[op_index] = '\0';
 
-	/* Find associated kunit_attr object */
+	 
 	for (j = 0; j < ARRAY_SIZE(kunit_attr_list); j++) {
 		if (!strcmp(input, kunit_attr_list[j].name)) {
 			attr_index = j;
@@ -343,7 +312,7 @@ struct kunit_suite *kunit_filter_attr_tests(const struct kunit_suite *const suit
 	void *suite_val, *test_val;
 	bool suite_result, test_result, default_result, result;
 
-	/* Allocate memory for new copy of suite and list of test cases */
+	 
 	copy = kmemdup(suite, sizeof(*copy), GFP_KERNEL);
 	if (!copy)
 		return ERR_PTR(-ENOMEM);
@@ -358,18 +327,18 @@ struct kunit_suite *kunit_filter_attr_tests(const struct kunit_suite *const suit
 
 	n = 0;
 
-	/* Save filtering result on default value */
+	 
 	default_result = filter.attr->filter(filter.attr->attr_default, filter.input, err);
 	if (*err)
 		goto err;
 
-	/* Save suite attribute value and filtering result on that value */
+	 
 	suite_val = filter.attr->get_attr((void *)suite, false);
 	suite_result = filter.attr->filter(suite_val, filter.input, err);
 	if (*err)
 		goto err;
 
-	/* For each test case, save test case if passes filtering. */
+	 
 	kunit_suite_for_each_test_case(suite, test_case) {
 		test_val = filter.attr->get_attr((void *) test_case, true);
 		test_result = filter.attr->filter(filter.attr->get_attr(test_case, true),
@@ -377,11 +346,7 @@ struct kunit_suite *kunit_filter_attr_tests(const struct kunit_suite *const suit
 		if (*err)
 			goto err;
 
-		/*
-		 * If attribute value of test case is set, filter on that value.
-		 * If not, filter on suite value if set. If not, filter on
-		 * default value.
-		 */
+		 
 		result = false;
 		if (test_val) {
 			if (test_result)

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright Intel Corporation (C) 2017. All Rights Reserved
- *
- * Reset driver for Altera Arria10 MAX5 System Resource Chip
- *
- * Adapted from reset-socfpga.c
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/mfd/altera-a10sr.h>

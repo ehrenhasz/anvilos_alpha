@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* The industrial I/O core in kernel channel mapping
- *
- * Copyright (c) 2011 Jonathan Cameron
- */
+
+ 
 #include <linux/err.h>
 #include <linux/export.h>
 #include <linux/minmax.h>
@@ -70,9 +67,7 @@ error_ret:
 }
 EXPORT_SYMBOL_GPL(iio_map_array_register);
 
-/*
- * Remove all map entries associated with the given iio device
- */
+ 
 int iio_map_array_unregister(struct iio_dev *indio_dev)
 {
 	int ret;
@@ -117,16 +112,7 @@ static const struct iio_chan_spec
 	return chan;
 }
 
-/**
- * __fwnode_iio_simple_xlate - translate iiospec to the IIO channel index
- * @indio_dev:	pointer to the iio_dev structure
- * @iiospec:	IIO specifier as found in the device tree
- *
- * This is simple translation function, suitable for the most 1:1 mapped
- * channels in IIO chips. This function performs only one sanity check:
- * whether IIO index is less than num_channels (that is specified in the
- * iio_dev).
- */
+ 
 static int __fwnode_iio_simple_xlate(struct iio_dev *indio_dev,
 				     const struct fwnode_reference_args *iiospec)
 {
@@ -210,12 +196,7 @@ __fwnode_iio_channel_get_by_name(struct fwnode_handle *fwnode, const char *name)
 	struct iio_channel *chan;
 	int index = 0;
 
-	/*
-	 * For named iio channels, first look up the name in the
-	 * "io-channel-names" property.  If it cannot be found, the
-	 * index will be an error code, and fwnode_iio_channel_get()
-	 * will fail.
-	 */
+	 
 	if (name)
 		index = fwnode_property_match_string(fwnode, "io-channel-names",
 						     name);
@@ -227,31 +208,18 @@ __fwnode_iio_channel_get_by_name(struct fwnode_handle *fwnode, const char *name)
 		if (index >= 0) {
 			pr_err("ERROR: could not get IIO channel %pfw:%s(%i)\n",
 			       fwnode, name, index);
-			/*
-			 * In this case, we found 'name' in 'io-channel-names'
-			 * but somehow we still fail so that we should not proceed
-			 * with any other lookup. Hence, explicitly return -EINVAL
-			 * (maybe not the better error code) so that the caller
-			 * won't do a system lookup.
-			 */
+			 
 			return ERR_PTR(-EINVAL);
 		}
-		/*
-		 * If index < 0, then fwnode_property_get_reference_args() fails
-		 * with -EINVAL or -ENOENT (ACPI case) which is expected. We
-		 * should not proceed if we get any other error.
-		 */
+		 
 		if (PTR_ERR(chan) != -EINVAL && PTR_ERR(chan) != -ENOENT)
 			return chan;
 	} else if (PTR_ERR(chan) != -ENOENT) {
-		/*
-		 * if !name, then we should only proceed the lookup if
-		 * fwnode_property_get_reference_args() returns -ENOENT.
-		 */
+		 
 		return chan;
 	}
 
-	/* so we continue the lookup */
+	 
 	return ERR_PTR(-ENODEV);
 }
 
@@ -261,16 +229,12 @@ struct iio_channel *fwnode_iio_channel_get_by_name(struct fwnode_handle *fwnode,
 	struct fwnode_handle *parent;
 	struct iio_channel *chan;
 
-	/* Walk up the tree of devices looking for a matching iio channel */
+	 
 	chan = __fwnode_iio_channel_get_by_name(fwnode, name);
 	if (!IS_ERR(chan) || PTR_ERR(chan) != -ENODEV)
 		return chan;
 
-	/*
-	 * No matching IIO channel found on this node.
-	 * If the parent node has a "io-channel-ranges" property,
-	 * then we can try one of its channels.
-	 */
+	 
 	fwnode_for_each_parent_node(fwnode, parent) {
 		if (!fwnode_property_present(parent, "io-channel-ranges")) {
 			fwnode_handle_put(parent);
@@ -306,12 +270,12 @@ static struct iio_channel *fwnode_iio_channel_get_all(struct device *dev)
 	if (nummaps == 0)
 		return ERR_PTR(-ENODEV);
 
-	/* NULL terminated array to save passing size */
+	 
 	chans = kcalloc(nummaps + 1, sizeof(*chans), GFP_KERNEL);
 	if (!chans)
 		return ERR_PTR(-ENOMEM);
 
-	/* Search for FW matches */
+	 
 	for (mapind = 0; mapind < nummaps; mapind++) {
 		ret = __fwnode_iio_channel_get(&chans[mapind], fwnode, mapind);
 		if (ret)
@@ -336,7 +300,7 @@ static struct iio_channel *iio_channel_get_sys(const char *name,
 	if (!(name || channel_name))
 		return ERR_PTR(-ENODEV);
 
-	/* first find matching entry the channel map */
+	 
 	mutex_lock(&iio_map_list_lock);
 	list_for_each_entry(c_i, &iio_map_list, l) {
 		if ((name && strcmp(name, c_i->map->consumer_dev_name) != 0) ||
@@ -460,17 +424,14 @@ struct iio_channel *iio_channel_get_all(struct device *dev)
 		return ERR_PTR(-EINVAL);
 
 	chans = fwnode_iio_channel_get_all(dev);
-	/*
-	 * We only want to carry on if the error is -ENODEV.  Anything else
-	 * should be reported up the stack.
-	 */
+	 
 	if (!IS_ERR(chans) || PTR_ERR(chans) != -ENODEV)
 		return chans;
 
 	name = dev_name(dev);
 
 	mutex_lock(&iio_map_list_lock);
-	/* first count the matching maps */
+	 
 	list_for_each_entry(c, &iio_map_list, l)
 		if (name && strcmp(name, c->map->consumer_dev_name) != 0)
 			continue;
@@ -482,14 +443,14 @@ struct iio_channel *iio_channel_get_all(struct device *dev)
 		goto error_ret;
 	}
 
-	/* NULL terminated array to save passing size */
+	 
 	chans = kcalloc(nummaps + 1, sizeof(*chans), GFP_KERNEL);
 	if (!chans) {
 		ret = -ENOMEM;
 		goto error_ret;
 	}
 
-	/* for each map fill in the chans element */
+	 
 	list_for_each_entry(c, &iio_map_list, l) {
 		if (name && strcmp(name, c->map->consumer_dev_name) != 0)
 			continue;
@@ -641,10 +602,7 @@ static int iio_convert_raw_to_processed_unlocked(struct iio_channel *chan,
 			break;
 		case IIO_VAL_INT_PLUS_MICRO:
 		case IIO_VAL_INT_PLUS_NANO:
-			/*
-			 * Both IIO_VAL_INT_PLUS_MICRO and IIO_VAL_INT_PLUS_NANO
-			 * implicitely truncate the offset to it's integer form.
-			 */
+			 
 			break;
 		case IIO_VAL_FRACTIONAL:
 			offset_val /= offset_val2;
@@ -662,10 +620,7 @@ static int iio_convert_raw_to_processed_unlocked(struct iio_channel *chan,
 	scale_type = iio_channel_read(chan, &scale_val, &scale_val2,
 				      IIO_CHAN_INFO_SCALE);
 	if (scale_type < 0) {
-		/*
-		 * If no channel scaling is available apply consumer scale to
-		 * raw value and return.
-		 */
+		 
 		*processed = raw * scale;
 		return 0;
 	}
@@ -786,7 +741,7 @@ EXPORT_SYMBOL_GPL(iio_read_channel_processed_scale);
 
 int iio_read_channel_processed(struct iio_channel *chan, int *val)
 {
-	/* This is just a special case with scale factor 1 */
+	 
 	return iio_read_channel_processed_scale(chan, val, 1);
 }
 EXPORT_SYMBOL_GPL(iio_read_channel_processed);
@@ -839,7 +794,7 @@ int iio_read_avail_channel_raw(struct iio_channel *chan,
 					       IIO_CHAN_INFO_RAW);
 
 	if (ret >= 0 && type != IIO_VAL_INT)
-		/* raw values are assumed to be IIO_VAL_INT */
+		 
 		ret = -EINVAL;
 
 	return ret;
@@ -879,7 +834,7 @@ static int iio_channel_read_max(struct iio_channel *chan,
 			*val = max_array(vals, length);
 			break;
 		default:
-			/* TODO: learn about max for other iio values */
+			 
 			return -EINVAL;
 		}
 		return 0;
@@ -942,7 +897,7 @@ static int iio_channel_read_min(struct iio_channel *chan,
 			*val = min_array(vals, length);
 			break;
 		default:
-			/* TODO: learn about min for other iio values */
+			 
 			return -EINVAL;
 		}
 		return 0;
@@ -976,7 +931,7 @@ int iio_get_channel_type(struct iio_channel *chan, enum iio_chan_type *type)
 {
 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(chan->indio_dev);
 	int ret = 0;
-	/* Need to verify underlying driver has not gone away */
+	 
 
 	mutex_lock(&iio_dev_opaque->info_exist_lock);
 	if (!chan->indio_dev->info) {

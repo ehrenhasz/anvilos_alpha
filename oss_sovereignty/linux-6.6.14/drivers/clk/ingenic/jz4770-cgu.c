@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * JZ4770 SoC CGU driver
- * Copyright 2018, Paul Cercueil <paul@crapouillou.net>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk-provider.h>
@@ -15,9 +12,7 @@
 #include "cgu.h"
 #include "pm.h"
 
-/*
- * CPM registers offset address definition
- */
+ 
 #define CGU_REG_CPCCR		0x00
 #define CGU_REG_LCR		0x04
 #define CGU_REG_CPPCR0		0x10
@@ -40,11 +35,11 @@
 #define CGU_REG_MSC2CDR		0xA8
 #define CGU_REG_BCHCDR		0xAC
 
-/* bits within the OPCR register */
-#define OPCR_SPENDH		BIT(5)		/* UHC PHY suspend */
+ 
+#define OPCR_SPENDH		BIT(5)		 
 
-/* bits within the USBPCR1 register */
-#define USBPCR1_UHC_POWER	BIT(5)		/* UHC PHY power down */
+ 
+#define USBPCR1_UHC_POWER	BIT(5)		 
 
 static struct ingenic_cgu *cgu;
 
@@ -92,12 +87,12 @@ static const u8 jz4770_cgu_cpccr_div_table[] = {
 
 static const struct ingenic_cgu_clk_info jz4770_cgu_clocks[] = {
 
-	/* External clocks */
+	 
 
 	[JZ4770_CLK_EXT] = { "ext", CGU_CLK_EXT },
 	[JZ4770_CLK_OSC32K] = { "osc32k", CGU_CLK_EXT },
 
-	/* PLLs */
+	 
 
 	[JZ4770_CLK_PLL0] = {
 		"pll0", CGU_CLK_PLL,
@@ -123,7 +118,7 @@ static const struct ingenic_cgu_clk_info jz4770_cgu_clocks[] = {
 	},
 
 	[JZ4770_CLK_PLL1] = {
-		/* TODO: PLL1 can depend on PLL0 */
+		 
 		"pll1", CGU_CLK_PLL,
 		.parents = { JZ4770_CLK_EXT },
 		.pll = {
@@ -145,14 +140,11 @@ static const struct ingenic_cgu_clk_info jz4770_cgu_clocks[] = {
 		},
 	},
 
-	/* Main clocks */
+	 
 
 	[JZ4770_CLK_CCLK] = {
 		"cclk", CGU_CLK_DIV,
-		/*
-		 * Disabling the CPU clock or any parent clocks will hang the
-		 * system; mark it critical.
-		 */
+		 
 		.flags = CLK_IS_CRITICAL,
 		.parents = { JZ4770_CLK_PLL0, },
 		.div = {
@@ -192,7 +184,7 @@ static const struct ingenic_cgu_clk_info jz4770_cgu_clocks[] = {
 			CGU_REG_CPCCR, 12, 1, 4, 22, -1, -1, 0,
 			jz4770_cgu_cpccr_div_table,
 		},
-		.gate = { CGU_REG_OPCR, 31, true }, // disable CCLK stop on idle
+		.gate = { CGU_REG_OPCR, 31, true }, 
 	},
 	[JZ4770_CLK_PCLK] = {
 		"pclk", CGU_CLK_DIV,
@@ -203,7 +195,7 @@ static const struct ingenic_cgu_clk_info jz4770_cgu_clocks[] = {
 		},
 	},
 
-	/* Those divided clocks can connect to PLL0 or PLL1 */
+	 
 
 	[JZ4770_CLK_MMC0_MUX] = {
 		"mmc0_mux", CGU_CLK_DIV | CGU_CLK_GATE | CGU_CLK_MUX,
@@ -269,7 +261,7 @@ static const struct ingenic_cgu_clk_info jz4770_cgu_clocks[] = {
 		.gate = { CGU_REG_CLKGR0, 22 },
 	},
 
-	/* Those divided clocks can connect to EXT, PLL0 or PLL1 */
+	 
 
 	[JZ4770_CLK_SSI_MUX] = {
 		"ssi_mux", CGU_CLK_DIV | CGU_CLK_MUX,
@@ -302,7 +294,7 @@ static const struct ingenic_cgu_clk_info jz4770_cgu_clocks[] = {
 		.gate = { CGU_REG_CLKGR0, 2 },
 	},
 
-	/* Gate-only clocks */
+	 
 
 	[JZ4770_CLK_SSI0] = {
 		"ssi0", CGU_CLK_GATE,
@@ -420,7 +412,7 @@ static const struct ingenic_cgu_clk_info jz4770_cgu_clocks[] = {
 		.gate = { CGU_REG_OPCR, 7, true, 50 },
 	},
 
-	/* Custom clocks */
+	 
 
 	[JZ4770_CLK_UHC_PHY] = {
 		"uhc_phy", CGU_CLK_CUSTOM,
@@ -459,5 +451,5 @@ static void __init jz4770_cgu_init(struct device_node *np)
 	ingenic_cgu_register_syscore_ops(cgu);
 }
 
-/* We only probe via devicetree, no need for a platform driver */
+ 
 CLK_OF_DECLARE_DRIVER(jz4770_cgu, "ingenic,jz4770-cgu", jz4770_cgu_init);

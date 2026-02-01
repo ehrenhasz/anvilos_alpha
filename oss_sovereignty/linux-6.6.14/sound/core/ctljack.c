@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Helper functions for jack-detection kcontrols
- *
- * Copyright (c) 2011 Takashi Iwai <tiwai@suse.de>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/export.h>
@@ -20,7 +16,7 @@ static int jack_detect_kctl_get(struct snd_kcontrol *kcontrol,
 }
 
 static const struct snd_kcontrol_new jack_detect_kctl = {
-	/* name is filled later */
+	 
 	.iface = SNDRV_CTL_ELEM_IFACE_CARD,
 	.access = SNDRV_CTL_ELEM_ACCESS_READ,
 	.info = jack_detect_kctl_info,
@@ -39,7 +35,7 @@ static int get_available_index(struct snd_card *card, const char *name)
 
 	while (snd_ctl_find_id(card, &sid)) {
 		sid.index++;
-		/* reset numid; otherwise snd_ctl_find_id() hits this again */
+		 
 		sid.numid = 0;
 	}
 
@@ -51,7 +47,7 @@ static void jack_kctl_name_gen(char *name, const char *src_name, int size)
 	size_t count = strlen(src_name);
 	bool need_cat = true;
 
-	/* remove redundant " Jack" from src_name */
+	 
 	if (count >= 5)
 		need_cat = strncmp(&src_name[count - 5], " Jack", 5) ? true : false;
 

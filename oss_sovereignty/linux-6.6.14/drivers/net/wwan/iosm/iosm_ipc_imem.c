@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020-21 Intel Corporation.
- */
+
+ 
 
 #include <linux/delay.h>
 
@@ -13,7 +11,7 @@
 #include "iosm_ipc_trace.h"
 #include "iosm_ipc_debugfs.h"
 
-/* Check the wwan ips if it is valid with Channel as input. */
+ 
 static int ipc_imem_check_wwan_ips(struct ipc_mem_channel *chnl)
 {
 	if (chnl)
@@ -38,16 +36,14 @@ static int ipc_imem_msg_send_device_sleep(struct iosm_imem *ipc_imem, u32 state)
 static bool ipc_imem_dl_skb_alloc(struct iosm_imem *ipc_imem,
 				  struct ipc_pipe *pipe)
 {
-	/* limit max. nr of entries */
+	 
 	if (pipe->nr_of_queued_entries >= pipe->max_nr_of_queued_entries)
 		return false;
 
 	return ipc_protocol_dl_td_prepare(ipc_imem->ipc_protocol, pipe);
 }
 
-/* This timer handler will retry DL buff allocation if a pipe has no free buf
- * and gives doorbell if TD is available
- */
+ 
 static int ipc_imem_tq_td_alloc_timer(struct iosm_imem *ipc_imem, int arg,
 				      void *msg, size_t size)
 {
@@ -87,13 +83,13 @@ static enum hrtimer_restart ipc_imem_td_alloc_timer_cb(struct hrtimer *hr_timer)
 {
 	struct iosm_imem *ipc_imem =
 		container_of(hr_timer, struct iosm_imem, td_alloc_timer);
-	/* Post an async tasklet event to trigger HP update Doorbell */
+	 
 	ipc_task_queue_send_task(ipc_imem, ipc_imem_tq_td_alloc_timer, 0, NULL,
 				 0, false);
 	return HRTIMER_NORESTART;
 }
 
-/* Fast update timer tasklet handler to trigger HP update */
+ 
 static int ipc_imem_tq_fast_update_timer_cb(struct iosm_imem *ipc_imem, int arg,
 					    void *msg, size_t size)
 {
@@ -108,7 +104,7 @@ ipc_imem_fast_update_timer_cb(struct hrtimer *hr_timer)
 {
 	struct iosm_imem *ipc_imem =
 		container_of(hr_timer, struct iosm_imem, fast_update_timer);
-	/* Post an async tasklet event to trigger HP update Doorbell */
+	 
 	ipc_task_queue_send_task(ipc_imem, ipc_imem_tq_fast_update_timer_cb, 0,
 				 NULL, 0, false);
 	return HRTIMER_NORESTART;
@@ -148,9 +144,7 @@ static int ipc_imem_setup_cp_mux_cap_init(struct iosm_imem *ipc_imem,
 			       MUX_UL_ON_CREDITS :
 			       MUX_UL;
 
-	/* The instance ID is same as channel ID because this is been reused
-	 * for channel alloc function.
-	 */
+	 
 	cfg->instance_id = IPC_MEM_MUX_IP_CH_IF_ID;
 
 	return 0;
@@ -171,15 +165,12 @@ void ipc_imem_msg_send_feature_set(struct iosm_imem *ipc_imem,
 				      IPC_MSG_PREP_FEATURE_SET, &prep_args);
 }
 
-/**
- * ipc_imem_td_update_timer_start - Starts the TD Update Timer if not started.
- * @ipc_imem:                       Pointer to imem data-struct
- */
+ 
 void ipc_imem_td_update_timer_start(struct iosm_imem *ipc_imem)
 {
-	/* Use the TD update timer only in the runtime phase */
+	 
 	if (!ipc_imem->enter_runtime || ipc_imem->td_update_timer_suspended) {
-		/* trigger the doorbell irq on CP directly. */
+		 
 		ipc_protocol_doorbell_trigger(ipc_imem->ipc_protocol,
 					      IPC_HP_TD_UPD_TMR_START);
 		return;
@@ -201,10 +192,7 @@ void ipc_imem_hrtimer_stop(struct hrtimer *hr_timer)
 		hrtimer_cancel(hr_timer);
 }
 
-/**
- * ipc_imem_adb_timer_start -	Starts the adb Timer if not starting.
- * @ipc_imem:			Pointer to imem data-struct
- */
+ 
 void ipc_imem_adb_timer_start(struct iosm_imem *ipc_imem)
 {
 	if (!hrtimer_active(&ipc_imem->adb_timer)) {
@@ -225,7 +213,7 @@ bool ipc_imem_ul_write_td(struct iosm_imem *ipc_imem)
 	struct ipc_pipe *pipe;
 	int i;
 
-	/* Analyze the uplink pipe of all active channels. */
+	 
 	for (i = 0; i < ipc_imem->nr_of_channels; i++) {
 		channel = &ipc_imem->channels[i];
 
@@ -234,10 +222,10 @@ bool ipc_imem_ul_write_td(struct iosm_imem *ipc_imem)
 
 		pipe = &channel->ul_pipe;
 
-		/* Get the reference to the skbuf accumulator list. */
+		 
 		ul_list = &channel->ul_list;
 
-		/* Fill the transfer descriptor with the uplink buffer info. */
+		 
 		if (!ipc_imem_check_wwan_ips(channel)) {
 			hpda_ctrl_pending |=
 				ipc_protocol_ul_td_send(ipc_imem->ipc_protocol,
@@ -249,7 +237,7 @@ bool ipc_imem_ul_write_td(struct iosm_imem *ipc_imem)
 		}
 	}
 
-	/* forced HP update needed for non data channels */
+	 
 	if (hpda_ctrl_pending) {
 		hpda_pending = false;
 		ipc_protocol_doorbell_trigger(ipc_imem->ipc_protocol,
@@ -265,17 +253,17 @@ void ipc_imem_ipc_init_check(struct iosm_imem *ipc_imem)
 
 	ipc_imem->ipc_requested_state = IPC_MEM_DEVICE_IPC_INIT;
 
-	/* Trigger the CP interrupt to enter the init state. */
+	 
 	ipc_doorbell_fire(ipc_imem->pcie, IPC_DOORBELL_IRQ_IPC,
 			  IPC_MEM_DEVICE_IPC_INIT);
-	/* Wait for the CP update. */
+	 
 	do {
 		if (ipc_mmio_get_ipc_state(ipc_imem->mmio) ==
 		    ipc_imem->ipc_requested_state) {
-			/* Prepare the MMIO space */
+			 
 			ipc_mmio_config(ipc_imem->mmio);
 
-			/* Trigger the CP irq to enter the running state. */
+			 
 			ipc_imem->ipc_requested_state =
 				IPC_MEM_DEVICE_IPC_RUNNING;
 			ipc_doorbell_fire(ipc_imem->pcie, IPC_DOORBELL_IRQ_IPC,
@@ -286,7 +274,7 @@ void ipc_imem_ipc_init_check(struct iosm_imem *ipc_imem)
 		msleep(20);
 	} while (--timeout);
 
-	/* timeout */
+	 
 	dev_err(ipc_imem->dev, "%s: ipc_status(%d) ne. IPC_MEM_DEVICE_IPC_INIT",
 		ipc_imem_phase_get_string(ipc_imem->phase),
 		ipc_mmio_get_ipc_state(ipc_imem->mmio));
@@ -294,7 +282,7 @@ void ipc_imem_ipc_init_check(struct iosm_imem *ipc_imem)
 	ipc_uevent_send(ipc_imem->dev, UEVENT_MDM_TIMEOUT);
 }
 
-/* Analyze the packet type and distribute it. */
+ 
 static void ipc_imem_dl_skb_process(struct iosm_imem *ipc_imem,
 				    struct ipc_pipe *pipe, struct sk_buff *skb)
 {
@@ -303,7 +291,7 @@ static void ipc_imem_dl_skb_process(struct iosm_imem *ipc_imem,
 	if (!skb)
 		return;
 
-	/* An AT/control or IP packet is expected. */
+	 
 	switch (pipe->channel->ctype) {
 	case IPC_CTYPE_CTRL:
 		port_id = pipe->channel->channel_id;
@@ -330,7 +318,7 @@ static void ipc_imem_dl_skb_process(struct iosm_imem *ipc_imem,
 	}
 }
 
-/* Process the downlink data and pass them to the char or net layer. */
+ 
 static void ipc_imem_dl_pipe_process(struct iosm_imem *ipc_imem,
 				     struct ipc_pipe *pipe)
 {
@@ -353,32 +341,29 @@ static void ipc_imem_dl_pipe_process(struct iosm_imem *ipc_imem,
 
 	processed_td_cnt = cnt;
 
-	/* Seek for pipes with pending DL data. */
+	 
 	while (cnt--) {
 		skb = ipc_protocol_dl_td_process(ipc_imem->ipc_protocol, pipe);
 
-		/* Analyze the packet type and distribute it. */
+		 
 		ipc_imem_dl_skb_process(ipc_imem, pipe, skb);
 	}
 
-	/* try to allocate new empty DL SKbs from head..tail - 1*/
+	 
 	while (ipc_imem_dl_skb_alloc(ipc_imem, pipe))
 		processed = true;
 
 	if (processed && !ipc_imem_check_wwan_ips(channel)) {
-		/* Force HP update for non IP channels */
+		 
 		ipc_protocol_doorbell_trigger(ipc_imem->ipc_protocol,
 					      IPC_HP_DL_PROCESS);
 		processed = false;
 
-		/* If Fast Update timer is already running then stop */
+		 
 		ipc_imem_hrtimer_stop(&ipc_imem->fast_update_timer);
 	}
 
-	/* Any control channel process will get immediate HP update.
-	 * Start Fast update timer only for IP channel if all the TDs were
-	 * used in last process.
-	 */
+	 
 	if (processed && (processed_td_cnt == pipe->nr_of_entries - 1)) {
 		ipc_imem->hrtimer_period =
 		ktime_set(0, FORCE_UPDATE_DEFAULT_TIMEOUT_USEC * 1000ULL);
@@ -390,7 +375,7 @@ static void ipc_imem_dl_pipe_process(struct iosm_imem *ipc_imem,
 		complete(&ipc_imem->dl_pend_sem);
 }
 
-/* process open uplink pipe */
+ 
 static void ipc_imem_ul_pipe_process(struct iosm_imem *ipc_imem,
 				     struct ipc_pipe *pipe)
 {
@@ -401,7 +386,7 @@ static void ipc_imem_ul_pipe_process(struct iosm_imem *ipc_imem,
 
 	channel = pipe->channel;
 
-	/* Get the internal phase. */
+	 
 	ipc_protocol_get_head_tail_index(ipc_imem->ipc_protocol, pipe, &head,
 					 &tail);
 
@@ -412,20 +397,18 @@ static void ipc_imem_ul_pipe_process(struct iosm_imem *ipc_imem,
 			cnt = pipe->nr_of_entries - pipe->old_tail + tail;
 	}
 
-	/* Free UL buffers. */
+	 
 	while (cnt--) {
 		skb = ipc_protocol_ul_td_process(ipc_imem->ipc_protocol, pipe);
 
 		if (!skb)
 			continue;
 
-		/* If the user app was suspended in uplink direction - blocking
-		 * write, resume it.
-		 */
+		 
 		if (IPC_CB(skb)->op_type == UL_USR_OP_BLOCKED)
 			complete(&channel->ul_sem);
 
-		/* Free the skbuf element. */
+		 
 		if (IPC_CB(skb)->op_type == UL_MUX_OP_ADB) {
 			if (channel->if_id == IPC_MEM_MUX_IP_CH_IF_ID)
 				ipc_mux_ul_encoded_process(ipc_imem->mux, skb);
@@ -438,7 +421,7 @@ static void ipc_imem_ul_pipe_process(struct iosm_imem *ipc_imem,
 		}
 	}
 
-	/* Trace channel stats for IP UL pipe. */
+	 
 	if (ipc_imem_check_wwan_ips(pipe->channel))
 		ipc_mux_check_n_restart_tx(ipc_imem->mux);
 
@@ -446,7 +429,7 @@ static void ipc_imem_ul_pipe_process(struct iosm_imem *ipc_imem,
 		complete(&ipc_imem->ul_pend_sem);
 }
 
-/* Executes the irq. */
+ 
 static void ipc_imem_rom_irq_exec(struct iosm_imem *ipc_imem)
 {
 	struct ipc_mem_channel *channel;
@@ -456,7 +439,7 @@ static void ipc_imem_rom_irq_exec(struct iosm_imem *ipc_imem)
 	complete(&channel->ul_sem);
 }
 
-/* Execute the UL bundle timer actions, generating the doorbell irq. */
+ 
 static int ipc_imem_tq_td_update_timer_cb(struct iosm_imem *ipc_imem, int arg,
 					  void *msg, size_t size)
 {
@@ -465,26 +448,26 @@ static int ipc_imem_tq_td_update_timer_cb(struct iosm_imem *ipc_imem, int arg,
 	return 0;
 }
 
-/* Consider link power management in the runtime phase. */
+ 
 static void ipc_imem_slp_control_exec(struct iosm_imem *ipc_imem)
 {
-	    /* link will go down, Test pending UL packets.*/
+	     
 	if (ipc_protocol_pm_dev_sleep_handle(ipc_imem->ipc_protocol) &&
 	    hrtimer_active(&ipc_imem->tdupdate_timer)) {
-		/* Generate the doorbell irq. */
+		 
 		ipc_imem_tq_td_update_timer_cb(ipc_imem, 0, NULL, 0);
-		/* Stop the TD update timer. */
+		 
 		ipc_imem_hrtimer_stop(&ipc_imem->tdupdate_timer);
-		/* Stop the fast update timer. */
+		 
 		ipc_imem_hrtimer_stop(&ipc_imem->fast_update_timer);
 	}
 }
 
-/* Execute startup timer and wait for delayed start (e.g. NAND) */
+ 
 static int ipc_imem_tq_startup_timer_cb(struct iosm_imem *ipc_imem, int arg,
 					void *msg, size_t size)
 {
-	/* Update & check the current operation phase. */
+	 
 	if (ipc_imem_phase_update(ipc_imem) != IPC_P_RUN)
 		return -EIO;
 
@@ -496,17 +479,17 @@ static int ipc_imem_tq_startup_timer_cb(struct iosm_imem *ipc_imem, int arg,
 				  IPC_MEM_DEVICE_IPC_INIT);
 
 		ipc_imem->hrtimer_period = ktime_set(0, 100 * 1000UL * 1000ULL);
-		/* reduce period to 100 ms to check for mmio init state */
+		 
 		if (!hrtimer_active(&ipc_imem->startup_timer))
 			hrtimer_start(&ipc_imem->startup_timer,
 				      ipc_imem->hrtimer_period,
 				      HRTIMER_MODE_REL);
 	} else if (ipc_mmio_get_ipc_state(ipc_imem->mmio) ==
 		   IPC_MEM_DEVICE_IPC_INIT) {
-		/* Startup complete  - disable timer */
+		 
 		ipc_imem_hrtimer_stop(&ipc_imem->startup_timer);
 
-		/* Prepare the MMIO space */
+		 
 		ipc_mmio_config(ipc_imem->mmio);
 		ipc_imem->ipc_requested_state = IPC_MEM_DEVICE_IPC_RUNNING;
 		ipc_doorbell_fire(ipc_imem->pcie, IPC_DOORBELL_IRQ_IPC,
@@ -533,7 +516,7 @@ static enum hrtimer_restart ipc_imem_startup_timer_cb(struct hrtimer *hr_timer)
 	return result;
 }
 
-/* Get the CP execution stage */
+ 
 static enum ipc_mem_exec_stage
 ipc_imem_get_exec_stage_buffered(struct iosm_imem *ipc_imem)
 {
@@ -543,7 +526,7 @@ ipc_imem_get_exec_stage_buffered(struct iosm_imem *ipc_imem)
 		       ipc_mmio_get_exec_stage(ipc_imem->mmio);
 }
 
-/* Callback to send the modem ready uevent */
+ 
 static int ipc_imem_send_mdm_rdy_cb(struct iosm_imem *ipc_imem, int arg,
 				    void *msg, size_t size)
 {
@@ -556,9 +539,7 @@ static int ipc_imem_send_mdm_rdy_cb(struct iosm_imem *ipc_imem, int arg,
 	return 0;
 }
 
-/* This function is executed in a task context via an ipc_worker object,
- * as the creation or removal of device can't be done from tasklet.
- */
+ 
 static void ipc_imem_run_state_worker(struct work_struct *instance)
 {
 	struct ipc_chnl_cfg chnl_cfg_port = { 0 };
@@ -623,12 +604,12 @@ static void ipc_imem_run_state_worker(struct work_struct *instance)
 	ipc_task_queue_send_task(ipc_imem, ipc_imem_send_mdm_rdy_cb, 0, NULL, 0,
 				 false);
 
-	/* Complete all memory stores before setting bit */
+	 
 	smp_mb__before_atomic();
 
 	set_bit(FULLY_FUNCTIONAL, &ipc_imem->flag);
 
-	/* Complete all memory stores after setting bit */
+	 
 	smp_mb__after_atomic();
 
 	return;
@@ -650,7 +631,7 @@ static void ipc_imem_handle_irq(struct iosm_imem *ipc_imem, int irq)
 	if (irq != IMEM_IRQ_DONT_CARE)
 		ipc_imem->ev_irq_pending[irq] = false;
 
-	/* Get the internal phase. */
+	 
 	old_phase = ipc_imem->phase;
 
 	if (old_phase == IPC_P_OFF_REQ) {
@@ -660,18 +641,16 @@ static void ipc_imem_handle_irq(struct iosm_imem *ipc_imem, int irq)
 		return;
 	}
 
-	/* Update the phase controlled by CP. */
+	 
 	phase = ipc_imem_phase_update(ipc_imem);
 
 	switch (phase) {
 	case IPC_P_RUN:
 		if (!ipc_imem->enter_runtime) {
-			/* Excute the transition from flash/boot to runtime. */
+			 
 			ipc_imem->enter_runtime = 1;
 
-			/* allow device to sleep, default value is
-			 * IPC_HOST_SLEEP_ENTER_SLEEP
-			 */
+			 
 			ipc_imem_msg_send_device_sleep(ipc_imem,
 						       ipc_imem->device_sleep);
 
@@ -683,7 +662,7 @@ static void ipc_imem_handle_irq(struct iosm_imem *ipc_imem, int irq)
 		curr_ipc_status =
 			ipc_protocol_get_ipc_status(ipc_imem->ipc_protocol);
 
-		/* check ipc_status change */
+		 
 		if (ipc_imem->ipc_status != curr_ipc_status) {
 			ipc_imem->ipc_status = curr_ipc_status;
 
@@ -693,11 +672,11 @@ static void ipc_imem_handle_irq(struct iosm_imem *ipc_imem, int irq)
 			}
 		}
 
-		/* Consider power management in the runtime phase. */
+		 
 		ipc_imem_slp_control_exec(ipc_imem);
-		break; /* Continue with skbuf processing. */
+		break;  
 
-		/* Unexpected phases. */
+		 
 	case IPC_P_OFF:
 	case IPC_P_OFF_REQ:
 		dev_err(ipc_imem->dev, "confused phase %s",
@@ -709,13 +688,10 @@ static void ipc_imem_handle_irq(struct iosm_imem *ipc_imem, int irq)
 			break;
 
 		fallthrough;
-		/* On CP the PSI phase is already active. */
+		 
 
 	case IPC_P_ROM:
-		/* Before CP ROM driver starts the PSI image, it sets
-		 * the exit_code field on the doorbell scratchpad and
-		 * triggers the irq.
-		 */
+		 
 		ipc_imem_rom_irq_exec(ipc_imem);
 		return;
 
@@ -723,10 +699,10 @@ static void ipc_imem_handle_irq(struct iosm_imem *ipc_imem, int irq)
 		break;
 	}
 
-	/* process message ring */
+	 
 	ipc_protocol_msg_process(ipc_imem, irq);
 
-	/* process all open pipes */
+	 
 	for (i = 0; i < IPC_MEM_MAX_CHANNELS; i++) {
 		struct ipc_pipe *ul_pipe = &ipc_imem->channels[i].ul_pipe;
 		struct ipc_pipe *dl_pipe = &ipc_imem->channels[i].dl_pipe;
@@ -743,19 +719,17 @@ static void ipc_imem_handle_irq(struct iosm_imem *ipc_imem, int irq)
 			ipc_imem_ul_pipe_process(ipc_imem, ul_pipe);
 	}
 
-	/* Try to generate new ADB or ADGH. */
+	 
 	if (ipc_mux_ul_data_encode(ipc_imem->mux)) {
 		ipc_imem_td_update_timer_start(ipc_imem);
 		if (ipc_imem->mux->protocol == MUX_AGGREGATION)
 			ipc_imem_adb_timer_start(ipc_imem);
 	}
 
-	/* Continue the send procedure with accumulated SIO or NETIF packets.
-	 * Reset the debounce flags.
-	 */
+	 
 	ul_pending |= ipc_imem_ul_write_td(ipc_imem);
 
-	/* if UL data is pending restart TD update timer */
+	 
 	if (ul_pending) {
 		ipc_imem->hrtimer_period =
 		ktime_set(0, TD_UPDATE_DEFAULT_TIMEOUT_USEC * 1000ULL);
@@ -765,10 +739,7 @@ static void ipc_imem_handle_irq(struct iosm_imem *ipc_imem, int irq)
 				      HRTIMER_MODE_REL);
 	}
 
-	/* If CP has executed the transition
-	 * from IPC_INIT to IPC_RUNNING in the PSI
-	 * phase, wake up the flash app to open the pipes.
-	 */
+	 
 	if ((phase == IPC_P_PSI || phase == IPC_P_EBL) &&
 	    ipc_imem->ipc_requested_state == IPC_MEM_DEVICE_IPC_RUNNING &&
 	    ipc_mmio_get_ipc_state(ipc_imem->mmio) ==
@@ -776,7 +747,7 @@ static void ipc_imem_handle_irq(struct iosm_imem *ipc_imem, int irq)
 		complete(&ipc_imem->ipc_devlink->devlink_sio.channel->ul_sem);
 	}
 
-	/* Reset the expected CP state. */
+	 
 	ipc_imem->ipc_requested_state = IPC_MEM_DEVICE_IPC_DONT_CARE;
 
 	if (retry_allocation) {
@@ -789,7 +760,7 @@ static void ipc_imem_handle_irq(struct iosm_imem *ipc_imem, int irq)
 	}
 }
 
-/* Callback by tasklet for handling interrupt events. */
+ 
 static int ipc_imem_tq_irq_cb(struct iosm_imem *ipc_imem, int arg, void *msg,
 			      size_t size)
 {
@@ -800,19 +771,19 @@ static int ipc_imem_tq_irq_cb(struct iosm_imem *ipc_imem, int arg, void *msg,
 
 void ipc_imem_ul_send(struct iosm_imem *ipc_imem)
 {
-	/* start doorbell irq delay timer if UL is pending */
+	 
 	if (ipc_imem_ul_write_td(ipc_imem))
 		ipc_imem_td_update_timer_start(ipc_imem);
 }
 
-/* Check the execution stage and update the AP phase */
+ 
 static enum ipc_phase ipc_imem_phase_update_check(struct iosm_imem *ipc_imem,
 						  enum ipc_mem_exec_stage stage)
 {
 	switch (stage) {
 	case IPC_MEM_EXEC_STAGE_BOOT:
 		if (ipc_imem->phase != IPC_P_ROM) {
-			/* Send this event only once */
+			 
 			ipc_uevent_send(ipc_imem->dev, UEVENT_ROM_READY);
 		}
 
@@ -849,9 +820,7 @@ static enum ipc_phase ipc_imem_phase_update_check(struct iosm_imem *ipc_imem,
 		break;
 
 	default:
-		/* unknown exec stage:
-		 * assume that link is down and send info to listeners
-		 */
+		 
 		ipc_uevent_send(ipc_imem->dev, UEVENT_CD_READY_LINK_DOWN);
 		break;
 	}
@@ -859,7 +828,7 @@ static enum ipc_phase ipc_imem_phase_update_check(struct iosm_imem *ipc_imem,
 	return ipc_imem->phase;
 }
 
-/* Send msg to device to open pipe */
+ 
 static bool ipc_imem_pipe_open(struct iosm_imem *ipc_imem,
 			       struct ipc_pipe *pipe)
 {
@@ -874,7 +843,7 @@ static bool ipc_imem_pipe_open(struct iosm_imem *ipc_imem,
 	return pipe->is_open;
 }
 
-/* Allocates the TDs for the given pipe along with firing HP update DB. */
+ 
 static int ipc_imem_tq_pipe_td_alloc(struct iosm_imem *ipc_imem, int arg,
 				     void *msg, size_t size)
 {
@@ -885,9 +854,7 @@ static int ipc_imem_tq_pipe_td_alloc(struct iosm_imem *ipc_imem, int arg,
 	for (i = 0; i < dl_pipe->nr_of_entries - 1; i++)
 		processed |= ipc_imem_dl_skb_alloc(ipc_imem, dl_pipe);
 
-	/* Trigger the doorbell irq to inform CP that new downlink buffers are
-	 * available.
-	 */
+	 
 	if (processed)
 		ipc_protocol_doorbell_trigger(ipc_imem->ipc_protocol, arg);
 
@@ -905,12 +872,12 @@ ipc_imem_td_update_timer_cb(struct hrtimer *hr_timer)
 	return HRTIMER_NORESTART;
 }
 
-/* Get the CP execution state and map it to the AP phase. */
+ 
 enum ipc_phase ipc_imem_phase_update(struct iosm_imem *ipc_imem)
 {
 	enum ipc_mem_exec_stage exec_stage =
 				ipc_imem_get_exec_stage_buffered(ipc_imem);
-	/* If the CP stage is undef, return the internal precalculated phase. */
+	 
 	return ipc_imem->phase == IPC_P_OFF_REQ ?
 		       ipc_imem->phase :
 		       ipc_imem_phase_update_check(ipc_imem, exec_stage);
@@ -976,9 +943,9 @@ void ipc_imem_channel_close(struct iosm_imem *ipc_imem, int channel_id)
 		return;
 	}
 
-	/* Free only the channel id in the CP power off mode. */
+	 
 	if (channel->state == IMEM_CHANNEL_RESERVED)
-		/* Release only the channel id. */
+		 
 		goto channel_free;
 
 	if (ipc_imem->phase == IPC_P_RUN) {
@@ -1013,14 +980,14 @@ struct ipc_mem_channel *ipc_imem_channel_open(struct iosm_imem *ipc_imem,
 	if (!ipc_imem_pipe_open(ipc_imem, &channel->dl_pipe))
 		goto dl_pipe_err;
 
-	/* Allocate the downlink buffers in tasklet context. */
+	 
 	if (ipc_task_queue_send_task(ipc_imem, ipc_imem_tq_pipe_td_alloc, db_id,
 				     &channel->dl_pipe, 0, false)) {
 		dev_err(ipc_imem->dev, "td allocation failed : %d", channel_id);
 		goto task_failed;
 	}
 
-	/* Active channel. */
+	 
 	return channel;
 task_failed:
 	ipc_imem_pipe_close(ipc_imem, &channel->dl_pipe);
@@ -1053,7 +1020,7 @@ void ipc_imem_pm_resume(struct iosm_imem *ipc_imem)
 
 void ipc_imem_channel_free(struct ipc_mem_channel *channel)
 {
-	/* Reset dynamic channel elements. */
+	 
 	channel->state = IMEM_CHANNEL_FREE;
 }
 
@@ -1063,7 +1030,7 @@ int ipc_imem_channel_alloc(struct iosm_imem *ipc_imem, int index,
 	struct ipc_mem_channel *channel;
 	int i;
 
-	/* Find channel of given type/index */
+	 
 	for (i = 0; i < ipc_imem->nr_of_channels; i++) {
 		channel = &ipc_imem->channels[i];
 		if (channel->ctype == ctype && channel->index == index)
@@ -1185,39 +1152,30 @@ void ipc_imem_pipe_cleanup(struct iosm_imem *ipc_imem, struct ipc_pipe *pipe)
 {
 	struct sk_buff *skb;
 
-	/* Force pipe to closed state also when not explicitly closed through
-	 * ipc_imem_pipe_close()
-	 */
+	 
 	pipe->is_open = false;
 
-	/* Empty the uplink skb accumulator. */
+	 
 	while ((skb = skb_dequeue(&pipe->channel->ul_list)))
 		ipc_pcie_kfree_skb(ipc_imem->pcie, skb);
 
 	ipc_protocol_pipe_cleanup(ipc_imem->ipc_protocol, pipe);
 }
 
-/* Send IPC protocol uninit to the modem when Link is active. */
+ 
 static void ipc_imem_device_ipc_uninit(struct iosm_imem *ipc_imem)
 {
 	int timeout = IPC_MODEM_UNINIT_TIMEOUT_MS;
 	enum ipc_mem_device_ipc_state ipc_state;
 
-	/* When PCIe link is up set IPC_UNINIT
-	 * of the modem otherwise ignore it when PCIe link down happens.
-	 */
+	 
 	if (ipc_pcie_check_data_link_active(ipc_imem->pcie)) {
-		/* set modem to UNINIT
-		 * (in case we want to reload the AP driver without resetting
-		 * the modem)
-		 */
+		 
 		ipc_doorbell_fire(ipc_imem->pcie, IPC_DOORBELL_IRQ_IPC,
 				  IPC_MEM_DEVICE_IPC_UNINIT);
 		ipc_state = ipc_mmio_get_ipc_state(ipc_imem->mmio);
 
-		/* Wait for maximum 30ms to allow the Modem to uninitialize the
-		 * protocol.
-		 */
+		 
 		while ((ipc_state <= IPC_MEM_DEVICE_IPC_DONT_CARE) &&
 		       (ipc_state != IPC_MEM_DEVICE_IPC_UNINIT) &&
 		       (timeout > 0)) {
@@ -1232,7 +1190,7 @@ void ipc_imem_cleanup(struct iosm_imem *ipc_imem)
 {
 	ipc_imem->phase = IPC_P_OFF_REQ;
 
-	/* forward MDM_NOT_READY to listeners */
+	 
 	ipc_uevent_send(ipc_imem->dev, UEVENT_MDM_NOT_READY);
 
 	hrtimer_cancel(&ipc_imem->td_alloc_timer);
@@ -1240,7 +1198,7 @@ void ipc_imem_cleanup(struct iosm_imem *ipc_imem)
 	hrtimer_cancel(&ipc_imem->fast_update_timer);
 	hrtimer_cancel(&ipc_imem->startup_timer);
 
-	/* cancel the workqueue */
+	 
 	cancel_work_sync(&ipc_imem->run_state_worker);
 
 	if (test_and_clear_bit(FULLY_FUNCTIONAL, &ipc_imem->flag)) {
@@ -1265,31 +1223,27 @@ void ipc_imem_cleanup(struct iosm_imem *ipc_imem)
 	ipc_imem->phase = IPC_P_OFF;
 }
 
-/* After CP has unblocked the PCIe link, save the start address of the doorbell
- * scratchpad and prepare the shared memory region. If the flashing to RAM
- * procedure shall be executed, copy the chip information from the doorbell
- * scratchtpad to the application buffer and wake up the flash app.
- */
+ 
 static int ipc_imem_config(struct iosm_imem *ipc_imem)
 {
 	enum ipc_phase phase;
 
-	/* Initialize the semaphore for the blocking read UL/DL transfer. */
+	 
 	init_completion(&ipc_imem->ul_pend_sem);
 
 	init_completion(&ipc_imem->dl_pend_sem);
 
-	/* clear internal flags */
+	 
 	ipc_imem->ipc_status = IPC_MEM_DEVICE_IPC_UNINIT;
 	ipc_imem->enter_runtime = 0;
 
 	phase = ipc_imem_phase_update(ipc_imem);
 
-	/* Either CP shall be in the power off or power on phase. */
+	 
 	switch (phase) {
 	case IPC_P_ROM:
 		ipc_imem->hrtimer_period = ktime_set(0, 1000 * 1000 * 1000ULL);
-		/* poll execution stage (for delayed start, e.g. NAND) */
+		 
 		if (!hrtimer_active(&ipc_imem->startup_timer))
 			hrtimer_start(&ipc_imem->startup_timer,
 				      ipc_imem->hrtimer_period,
@@ -1299,10 +1253,10 @@ static int ipc_imem_config(struct iosm_imem *ipc_imem)
 	case IPC_P_PSI:
 	case IPC_P_EBL:
 	case IPC_P_RUN:
-		/* The initial IPC state is IPC_MEM_DEVICE_IPC_UNINIT. */
+		 
 		ipc_imem->ipc_requested_state = IPC_MEM_DEVICE_IPC_UNINIT;
 
-		/* Verify the exepected initial state. */
+		 
 		if (ipc_imem->ipc_requested_state ==
 		    ipc_mmio_get_ipc_state(ipc_imem->mmio)) {
 			ipc_imem_ipc_init_check(ipc_imem);
@@ -1330,7 +1284,7 @@ static int ipc_imem_config(struct iosm_imem *ipc_imem)
 	return -EIO;
 }
 
-/* Pass the dev ptr to the shared memory driver and request the entry points */
+ 
 struct iosm_imem *ipc_imem_init(struct iosm_pcie *pcie, unsigned int device_id,
 				void __iomem *mmio, struct device *dev)
 {
@@ -1340,7 +1294,7 @@ struct iosm_imem *ipc_imem_init(struct iosm_pcie *pcie, unsigned int device_id,
 	if (!ipc_imem)
 		return NULL;
 
-	/* Save the device address. */
+	 
 	ipc_imem->pcie = pcie;
 	ipc_imem->dev = dev;
 
@@ -1349,10 +1303,10 @@ struct iosm_imem *ipc_imem_init(struct iosm_pcie *pcie, unsigned int device_id,
 	ipc_imem->cp_version = 0;
 	ipc_imem->device_sleep = IPC_HOST_SLEEP_ENTER_SLEEP;
 
-	/* Reset the max number of configured channels */
+	 
 	ipc_imem->nr_of_channels = 0;
 
-	/* allocate IPC MMIO */
+	 
 	ipc_imem->mmio = ipc_mmio_init(mmio, ipc_imem->dev);
 	if (!ipc_imem->mmio) {
 		dev_err(ipc_imem->dev, "failed to initialize mmio region");
@@ -1362,7 +1316,7 @@ struct iosm_imem *ipc_imem_init(struct iosm_pcie *pcie, unsigned int device_id,
 	ipc_imem->ipc_task = kzalloc(sizeof(*ipc_imem->ipc_task),
 				     GFP_KERNEL);
 
-	/* Create tasklet for event handling*/
+	 
 	if (!ipc_imem->ipc_task)
 		goto ipc_task_fail;
 
@@ -1378,7 +1332,7 @@ struct iosm_imem *ipc_imem_init(struct iosm_pcie *pcie, unsigned int device_id,
 	if (!ipc_imem->ipc_protocol)
 		goto protocol_init_fail;
 
-	/* The phase is set to power off. */
+	 
 	ipc_imem->phase = IPC_P_OFF;
 
 	hrtimer_init(&ipc_imem->startup_timer, CLOCK_MONOTONIC,
@@ -1407,7 +1361,7 @@ struct iosm_imem *ipc_imem_init(struct iosm_pcie *pcie, unsigned int device_id,
 
 	stage = ipc_mmio_get_exec_stage(ipc_imem->mmio);
 	if (stage == IPC_MEM_EXEC_STAGE_BOOT) {
-		/* Alloc and Register devlink */
+		 
 		ipc_imem->ipc_devlink = ipc_devlink_init(ipc_imem);
 		if (!ipc_imem->ipc_devlink) {
 			dev_err(ipc_imem->dev, "Devlink register failed");
@@ -1441,7 +1395,7 @@ mmio_init_fail:
 
 void ipc_imem_irq_process(struct iosm_imem *ipc_imem, int irq)
 {
-	/* Debounce IPC_EV_IRQ. */
+	 
 	if (ipc_imem && !ipc_imem->ev_irq_pending[irq]) {
 		ipc_imem->ev_irq_pending[irq] = true;
 		ipc_task_queue_send_task(ipc_imem, ipc_imem_tq_irq_cb, irq,
@@ -1454,9 +1408,7 @@ void ipc_imem_td_update_timer_suspend(struct iosm_imem *ipc_imem, bool suspend)
 	ipc_imem->td_update_timer_suspended = suspend;
 }
 
-/* Verify the CP execution state, copy the chip info,
- * change the execution phase to ROM
- */
+ 
 static int ipc_imem_devlink_trigger_chip_info_cb(struct iosm_imem *ipc_imem,
 						 int arg, void *msg,
 						 size_t msgsize)
@@ -1466,14 +1418,14 @@ static int ipc_imem_devlink_trigger_chip_info_cb(struct iosm_imem *ipc_imem,
 	int rc = -EINVAL;
 	size_t size;
 
-	/* Test the CP execution state. */
+	 
 	stage = ipc_mmio_get_exec_stage(ipc_imem->mmio);
 	if (stage != IPC_MEM_EXEC_STAGE_BOOT) {
 		dev_err(ipc_imem->dev,
 			"Execution_stage: expected BOOT, received = %X", stage);
 		goto trigger_chip_info_fail;
 	}
-	/* Allocate a new sk buf for the chip info. */
+	 
 	size = ipc_imem->mmio->chip_info_size;
 	if (size > IOSM_CHIP_INFO_SIZE_MAX)
 		goto trigger_chip_info_fail;
@@ -1484,9 +1436,9 @@ static int ipc_imem_devlink_trigger_chip_info_cb(struct iosm_imem *ipc_imem,
 		rc = -ENOMEM;
 		goto trigger_chip_info_fail;
 	}
-	/* Copy the chip info characters into the ipc_skb. */
+	 
 	ipc_mmio_copy_chip_info(ipc_imem->mmio, skb_put(skb, size), size);
-	/* First change to the ROM boot phase. */
+	 
 	dev_dbg(ipc_imem->dev, "execution_stage[%X] eq. BOOT", stage);
 	ipc_imem->phase = ipc_imem_phase_update(ipc_imem);
 	ipc_imem_sys_devlink_notify_rx(ipc_imem->ipc_devlink, skb);

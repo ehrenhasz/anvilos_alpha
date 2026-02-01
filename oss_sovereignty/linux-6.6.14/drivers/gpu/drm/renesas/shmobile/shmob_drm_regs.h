@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * shmob_drm_regs.h  --  SH Mobile DRM registers
- *
- * Copyright (C) 2012 Renesas Electronics Corporation
- *
- * Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+ 
+ 
 
 #ifndef __SHMOB_DRM_REGS_H__
 #define __SHMOB_DRM_REGS_H__
@@ -15,7 +9,7 @@
 
 #include "shmob_drm_drv.h"
 
-/* Register definitions */
+ 
 #define LDDCKPAT1R		0x400
 #define LDDCKPAT2R		0x404
 #define LDDCKR			0x410
@@ -307,4 +301,4 @@ static inline int lcdc_wait_bit(struct shmob_drm_device *sdev, u32 reg,
 	return 0;
 }
 
-#endif /* __SHMOB_DRM_REGS_H__ */
+#endif  

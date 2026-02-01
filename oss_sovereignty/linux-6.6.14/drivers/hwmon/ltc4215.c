@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for Linear Technology LTC4215 I2C Hot Swap Controller
- *
- * Copyright (C) 2009 Ira W. Snyder <iws@ovro.caltech.edu>
- *
- * Datasheet:
- * http://www.linear.com/pc/downloadDocument.do?navId=H0,C1,C1003,C1006,C1163,P17572,D12697
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -18,15 +11,15 @@
 #include <linux/hwmon-sysfs.h>
 #include <linux/jiffies.h>
 
-/* Here are names of the chip's registers (a.k.a. commands) */
+ 
 enum ltc4215_cmd {
-	LTC4215_CONTROL			= 0x00, /* rw */
-	LTC4215_ALERT			= 0x01, /* rw */
-	LTC4215_STATUS			= 0x02, /* ro */
-	LTC4215_FAULT			= 0x03, /* rw */
-	LTC4215_SENSE			= 0x04, /* rw */
-	LTC4215_SOURCE			= 0x05, /* rw */
-	LTC4215_ADIN			= 0x06, /* rw */
+	LTC4215_CONTROL			= 0x00,  
+	LTC4215_ALERT			= 0x01,  
+	LTC4215_STATUS			= 0x02,  
+	LTC4215_FAULT			= 0x03,  
+	LTC4215_SENSE			= 0x04,  
+	LTC4215_SOURCE			= 0x05,  
+	LTC4215_ADIN			= 0x06,  
 };
 
 struct ltc4215_data {
@@ -34,9 +27,9 @@ struct ltc4215_data {
 
 	struct mutex update_lock;
 	bool valid;
-	unsigned long last_updated; /* in jiffies */
+	unsigned long last_updated;  
 
-	/* Registers */
+	 
 	u8 regs[7];
 };
 
@@ -49,12 +42,12 @@ static struct ltc4215_data *ltc4215_update_device(struct device *dev)
 
 	mutex_lock(&data->update_lock);
 
-	/* The chip's A/D updates 10 times per second */
+	 
 	if (time_after(jiffies, data->last_updated + HZ / 10) || !data->valid) {
 
 		dev_dbg(&client->dev, "Starting ltc4215 update\n");
 
-		/* Read all registers */
+		 
 		for (i = 0; i < ARRAY_SIZE(data->regs); i++) {
 			val = i2c_smbus_read_byte_data(client, i);
 			if (unlikely(val < 0))
@@ -72,7 +65,7 @@ static struct ltc4215_data *ltc4215_update_device(struct device *dev)
 	return data;
 }
 
-/* Return the voltage from the given register in millivolts */
+ 
 static int ltc4215_get_voltage(struct device *dev, u8 reg)
 {
 	struct ltc4215_data *data = ltc4215_update_device(dev);
@@ -81,22 +74,19 @@ static int ltc4215_get_voltage(struct device *dev, u8 reg)
 
 	switch (reg) {
 	case LTC4215_SENSE:
-		/* 151 uV per increment */
+		 
 		voltage = regval * 151 / 1000;
 		break;
 	case LTC4215_SOURCE:
-		/* 60.5 mV per increment */
+		 
 		voltage = regval * 605 / 10;
 		break;
 	case LTC4215_ADIN:
-		/*
-		 * The ADIN input is divided by 12.5, and has 4.82 mV
-		 * per increment, so we have the additional multiply
-		 */
+		 
 		voltage = regval * 482 * 125 / 1000;
 		break;
 	default:
-		/* If we get here, the developer messed up */
+		 
 		WARN_ON_ONCE(1);
 		break;
 	}
@@ -104,30 +94,17 @@ static int ltc4215_get_voltage(struct device *dev, u8 reg)
 	return voltage;
 }
 
-/* Return the current from the sense resistor in mA */
+ 
 static unsigned int ltc4215_get_current(struct device *dev)
 {
 	struct ltc4215_data *data = ltc4215_update_device(dev);
 
-	/*
-	 * The strange looking conversions that follow are fixed-point
-	 * math, since we cannot do floating point in the kernel.
-	 *
-	 * Step 1: convert sense register to microVolts
-	 * Step 2: convert voltage to milliAmperes
-	 *
-	 * If you play around with the V=IR equation, you come up with
-	 * the following: X uV / Y mOhm == Z mA
-	 *
-	 * With the resistors that are fractions of a milliOhm, we multiply
-	 * the voltage and resistance by 10, to shift the decimal point.
-	 * Now we can use the normal division operator again.
-	 */
+	 
 
-	/* Calculate voltage in microVolts (151 uV per increment) */
+	 
 	const unsigned int voltage = data->regs[LTC4215_SENSE] * 151;
 
-	/* Calculate current in milliAmperes (4 milliOhm sense resistor) */
+	 
 	const unsigned int curr = voltage / 4;
 
 	return curr;
@@ -156,7 +133,7 @@ static ssize_t ltc4215_power_show(struct device *dev,
 	const unsigned int curr = ltc4215_get_current(dev);
 	const int output_voltage = ltc4215_get_voltage(dev, LTC4215_ADIN);
 
-	/* current in mA * voltage in mV == power in uW */
+	 
 	const unsigned int power = abs(output_voltage * curr);
 
 	return sysfs_emit(buf, "%u\n", power);
@@ -173,34 +150,27 @@ static ssize_t ltc4215_alarm_show(struct device *dev,
 	return sysfs_emit(buf, "%u\n", !!(reg & mask));
 }
 
-/*
- * These macros are used below in constructing device attribute objects
- * for use with sysfs_create_group() to make a sysfs device file
- * for each register.
- */
+ 
 
-/* Construct a sensor_device_attribute structure for each register */
+ 
 
-/* Current */
+ 
 static SENSOR_DEVICE_ATTR_RO(curr1_input, ltc4215_current, 0);
 static SENSOR_DEVICE_ATTR_RO(curr1_max_alarm, ltc4215_alarm, 1 << 2);
 
-/* Power (virtual) */
+ 
 static SENSOR_DEVICE_ATTR_RO(power1_input, ltc4215_power, 0);
 
-/* Input Voltage */
+ 
 static SENSOR_DEVICE_ATTR_RO(in1_input, ltc4215_voltage, LTC4215_ADIN);
 static SENSOR_DEVICE_ATTR_RO(in1_max_alarm, ltc4215_alarm, 1 << 0);
 static SENSOR_DEVICE_ATTR_RO(in1_min_alarm, ltc4215_alarm, 1 << 1);
 
-/* Output Voltage */
+ 
 static SENSOR_DEVICE_ATTR_RO(in2_input, ltc4215_voltage, LTC4215_SOURCE);
 static SENSOR_DEVICE_ATTR_RO(in2_min_alarm, ltc4215_alarm, 1 << 3);
 
-/*
- * Finally, construct an array of pointers to members of the above objects,
- * as required for sysfs_create_group()
- */
+ 
 static struct attribute *ltc4215_attrs[] = {
 	&sensor_dev_attr_curr1_input.dev_attr.attr,
 	&sensor_dev_attr_curr1_max_alarm.dev_attr.attr,
@@ -235,7 +205,7 @@ static int ltc4215_probe(struct i2c_client *client)
 	data->client = client;
 	mutex_init(&data->update_lock);
 
-	/* Initialize the LTC4215 chip */
+	 
 	i2c_smbus_write_byte_data(client, LTC4215_FAULT, 0x00);
 
 	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
@@ -250,7 +220,7 @@ static const struct i2c_device_id ltc4215_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, ltc4215_id);
 
-/* This is the driver that will be inserted */
+ 
 static struct i2c_driver ltc4215_driver = {
 	.driver = {
 		.name	= "ltc4215",

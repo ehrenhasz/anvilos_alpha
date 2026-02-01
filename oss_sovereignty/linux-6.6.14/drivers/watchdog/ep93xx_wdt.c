@@ -1,29 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Watchdog driver for Cirrus Logic EP93xx family of devices.
- *
- * Copyright (c) 2004 Ray Lehtiniemi
- * Copyright (c) 2006 Tower Technologies
- * Based on ep93xx driver, bits from alim7101_wdt.c
- *
- * Authors: Ray Lehtiniemi <rayl@mail.com>,
- *	Alessandro Zummo <a.zummo@towertech.it>
- *
- * Copyright (c) 2012 H Hartley Sweeten <hsweeten@visionengravers.com>
- *	Convert to a platform device and use the watchdog framework API
- *
- * This watchdog fires after 250msec, which is a too short interval
- * for us to rely on the user space daemon alone. So we ping the
- * wdt each ~200msec and eventually stop doing it if the user space
- * daemon dies.
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/module.h>
 #include <linux/watchdog.h>
 #include <linux/io.h>
 
-/* default timeout (secs) */
+ 
 #define WDT_TIMEOUT 30
 
 static bool nowayout = WATCHDOG_NOWAYOUT;

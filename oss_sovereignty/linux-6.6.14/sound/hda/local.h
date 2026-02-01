@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Local helper macros and functions for HD-audio core drivers
- */
+ 
+ 
 
 #ifndef __HDAC_LOCAL_H
 #define __HDAC_LOCAL_H
@@ -9,11 +7,11 @@
 #define get_wcaps(codec, nid) \
 	snd_hdac_read_parm(codec, nid, AC_PAR_AUDIO_WIDGET_CAP)
 
-/* get the widget type from widget capability bits */
+ 
 static inline int get_wcaps_type(unsigned int wcaps)
 {
 	if (!wcaps)
-		return -1; /* invalid type */
+		return -1;  
 	return (wcaps & AC_WCAP_TYPE) >> AC_WCAP_TYPE_SHIFT;
 }
 
@@ -43,4 +41,4 @@ int snd_hdac_bus_exec_verb(struct hdac_bus *bus, unsigned int addr,
 int snd_hdac_exec_verb(struct hdac_device *codec, unsigned int cmd,
 		       unsigned int flags, unsigned int *res);
 
-#endif /* __HDAC_LOCAL_H */
+#endif  

@@ -1,19 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2021 Gerhard Engleder <gerhard@engleder-embedded.com> */
 
-/* TSN endpoint Ethernet MAC driver
- *
- * The TSN endpoint Ethernet MAC is a FPGA based network device for real-time
- * communication. It is designed for endpoints within TSN (Time Sensitive
- * Networking) networks; e.g., for PLCs in the industrial automation case.
- *
- * It supports multiple TX/RX queue pairs. The first TX/RX queue pair is used
- * by the driver.
- *
- * More information can be found here:
- * - www.embedded-experts.at/tsn
- * - www.engleder-embedded.com
- */
+ 
+
+ 
 
 #include "tsnep.h"
 #include "tsnep_hw.h"
@@ -35,7 +23,7 @@
 #define TSNEP_HEADROOM ALIGN(TSNEP_RX_OFFSET, 4)
 #define TSNEP_MAX_RX_BUF_SIZE (PAGE_SIZE - TSNEP_HEADROOM - \
 			       SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
-/* XSK buffer shall store at least Q-in-Q frame */
+ 
 #define TSNEP_XSK_RX_BUF_SIZE (ALIGN(TSNEP_RX_INLINE_METADATA_SIZE + \
 				     ETH_FRAME_LEN + ETH_FCS_LEN + \
 				     VLAN_HLEN * 2, 4))
@@ -77,19 +65,19 @@ static irqreturn_t tsnep_irq(int irq, void *arg)
 	struct tsnep_adapter *adapter = arg;
 	u32 active = ioread32(adapter->addr + ECM_INT_ACTIVE);
 
-	/* acknowledge interrupt */
+	 
 	if (active != 0)
 		iowrite32(active, adapter->addr + ECM_INT_ACKNOWLEDGE);
 
-	/* handle link interrupt */
+	 
 	if ((active & ECM_INT_LINK) != 0)
 		phy_mac_interrupt(adapter->netdev->phydev);
 
-	/* handle TX/RX queue 0 interrupt */
+	 
 	if ((active & adapter->queue[0].irq_mask) != 0) {
 		if (napi_schedule_prep(&adapter->queue[0].napi)) {
 			tsnep_disable_irq(adapter, adapter->queue[0].irq_mask);
-			/* schedule after masking to avoid races */
+			 
 			__napi_schedule(&adapter->queue[0].napi);
 		}
 	}
@@ -101,10 +89,10 @@ static irqreturn_t tsnep_irq_txrx(int irq, void *arg)
 {
 	struct tsnep_queue *queue = arg;
 
-	/* handle TX/RX queue interrupt */
+	 
 	if (napi_schedule_prep(&queue->napi)) {
 		tsnep_disable_irq(queue->adapter, queue->irq_mask);
-		/* schedule after masking to avoid races */
+		 
 		__napi_schedule(&queue->napi);
 	}
 
@@ -215,10 +203,7 @@ static int tsnep_phy_loopback(struct tsnep_adapter *adapter, bool enable)
 
 	retval = phy_loopback(adapter->phydev, enable);
 
-	/* PHY link state change is not signaled if loopback is enabled, it
-	 * would delay a working loopback anyway, let's ensure that loopback
-	 * is working immediately by setting link mode directly
-	 */
+	 
 	if (!retval && enable)
 		tsnep_set_link_mode(adapter);
 
@@ -238,15 +223,13 @@ static int tsnep_phy_open(struct tsnep_adapter *adapter)
 		return retval;
 	phydev = adapter->netdev->phydev;
 
-	/* MAC supports only 100Mbps|1000Mbps full duplex
-	 * SPE (Single Pair Ethernet) is also an option but not implemented yet
-	 */
+	 
 	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_10baseT_Half_BIT);
 	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_10baseT_Full_BIT);
 	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_100baseT_Half_BIT);
 	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
 
-	/* disable EEE autoneg, EEE not supported by TSNEP */
+	 
 	memset(&ethtool_eee, 0, sizeof(ethtool_eee));
 	phy_ethtool_set_eee(adapter->phydev, &ethtool_eee);
 
@@ -353,12 +336,12 @@ static void tsnep_tx_disable(struct tsnep_tx *tx, struct napi_struct *napi)
 	netif_tx_stop_queue(nq);
 	__netif_tx_unlock_bh(nq);
 
-	/* wait until TX is done in hardware */
+	 
 	readx_poll_timeout(ioread32, tx->addr + TSNEP_CONTROL, val,
 			   ((val & TSNEP_CONTROL_TX_ENABLE) == 0), 10000,
 			   1000000);
 
-	/* wait until TX is also done in software */
+	 
 	while (READ_ONCE(tx->read) != tx->write) {
 		napi_schedule(napi);
 		napi_synchronize(napi);
@@ -371,7 +354,7 @@ static void tsnep_tx_activate(struct tsnep_tx *tx, int index, int length,
 	struct tsnep_tx_entry *entry = &tx->entry[index];
 
 	entry->properties = 0;
-	/* xdpf and zc are union with skb */
+	 
 	if (entry->skb) {
 		entry->properties = length & TSNEP_DESC_LENGTH_MASK;
 		entry->properties |= TSNEP_DESC_INTERRUPT_FLAG;
@@ -379,24 +362,7 @@ static void tsnep_tx_activate(struct tsnep_tx *tx, int index, int length,
 		    (skb_shinfo(entry->skb)->tx_flags & SKBTX_IN_PROGRESS))
 			entry->properties |= TSNEP_DESC_EXTENDED_WRITEBACK_FLAG;
 
-		/* toggle user flag to prevent false acknowledge
-		 *
-		 * Only the first fragment is acknowledged. For all other
-		 * fragments no acknowledge is done and the last written owner
-		 * counter stays in the writeback descriptor. Therefore, it is
-		 * possible that the last written owner counter is identical to
-		 * the new incremented owner counter and a false acknowledge is
-		 * detected before the real acknowledge has been done by
-		 * hardware.
-		 *
-		 * The user flag is used to prevent this situation. The user
-		 * flag is copied to the writeback descriptor by the hardware
-		 * and is used as additional acknowledge data. By toggeling the
-		 * user flag only for the first fragment (which is
-		 * acknowledged), it is guaranteed that the last acknowledge
-		 * done for this descriptor has used a different user flag and
-		 * cannot be detected as false acknowledge.
-		 */
+		 
 		entry->owner_user_flag = !entry->owner_user_flag;
 	}
 	if (last)
@@ -417,9 +383,7 @@ static void tsnep_tx_activate(struct tsnep_tx *tx, int index, int length,
 	entry->desc->more_properties =
 		__cpu_to_le32(entry->len & TSNEP_DESC_LENGTH_MASK);
 
-	/* descriptor properties shall be written last, because valid data is
-	 * signaled there
-	 */
+	 
 	dma_wmb();
 
 	entry->desc->properties = __cpu_to_le32(entry->properties);
@@ -516,9 +480,7 @@ static netdev_tx_t tsnep_xmit_frame_ring(struct sk_buff *skb,
 		count += skb_shinfo(skb)->nr_frags;
 
 	if (tsnep_tx_desc_available(tx) < count) {
-		/* ring full, shall not happen because queue is stopped if full
-		 * below
-		 */
+		 
 		netif_stop_subqueue(tx->adapter->netdev, tx->queue_index);
 
 		return NETDEV_TX_BUSY;
@@ -549,13 +511,13 @@ static netdev_tx_t tsnep_xmit_frame_ring(struct sk_buff *skb,
 
 	skb_tx_timestamp(skb);
 
-	/* descriptor properties shall be valid before hardware is notified */
+	 
 	dma_wmb();
 
 	iowrite32(TSNEP_CONTROL_TX_ENABLE, tx->addr + TSNEP_CONTROL);
 
 	if (tsnep_tx_desc_available(tx) < (MAX_SKB_FRAGS + 1)) {
-		/* ring can get full with next frame */
+		 
 		netif_stop_subqueue(tx->adapter->netdev, tx->queue_index);
 	}
 
@@ -617,7 +579,7 @@ static int tsnep_xdp_tx_map(struct xdp_frame *xdpf, struct tsnep_tx *tx,
 	return map_len;
 }
 
-/* This function requires __netif_tx_lock is held by the caller. */
+ 
 static bool tsnep_xdp_xmit_frame_ring(struct xdp_frame *xdpf,
 				      struct tsnep_tx *tx, u32 type)
 {
@@ -629,10 +591,7 @@ static bool tsnep_xdp_xmit_frame_ring(struct xdp_frame *xdpf,
 	if (unlikely(xdp_frame_has_frags(xdpf)))
 		count += shinfo->nr_frags;
 
-	/* ensure that TX ring is not filled up by XDP, always MAX_SKB_FRAGS
-	 * will be available for normal TX path and queue is stopped there if
-	 * necessary
-	 */
+	 
 	if (tsnep_tx_desc_available(tx) < (MAX_SKB_FRAGS + 1 + count))
 		return false;
 
@@ -655,7 +614,7 @@ static bool tsnep_xdp_xmit_frame_ring(struct xdp_frame *xdpf,
 				  i == count - 1);
 	tx->write = (tx->write + count) & TSNEP_RING_MASK;
 
-	/* descriptor properties shall be valid before hardware is notified */
+	 
 	dma_wmb();
 
 	return true;
@@ -680,7 +639,7 @@ static bool tsnep_xdp_xmit_back(struct tsnep_adapter *adapter,
 
 	xmit = tsnep_xdp_xmit_frame_ring(xdpf, tx, TSNEP_TX_TYPE_XDP_TX);
 
-	/* Avoid transmit queue timeout since we share it with the slow path */
+	 
 	if (xmit)
 		txq_trans_cond_update(tx_nq);
 
@@ -725,10 +684,7 @@ static void tsnep_xdp_xmit_zc(struct tsnep_tx *tx)
 	struct xdp_desc *descs = tx->xsk_pool->tx_descs;
 	int batch, i;
 
-	/* ensure that TX ring is not filled up by XDP, always MAX_SKB_FRAGS
-	 * will be available for normal TX path and queue is stopped there if
-	 * necessary
-	 */
+	 
 	if (desc_available <= (MAX_SKB_FRAGS + 1))
 		return;
 	desc_available -= MAX_SKB_FRAGS + 1;
@@ -738,9 +694,7 @@ static void tsnep_xdp_xmit_zc(struct tsnep_tx *tx)
 		tsnep_xdp_xmit_frame_ring_zc(&descs[i], tx);
 
 	if (batch) {
-		/* descriptor properties shall be valid before hardware is
-		 * notified
-		 */
+		 
 		dma_wmb();
 
 		tsnep_xdp_xmit_flush(tx);
@@ -769,9 +723,7 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
 		    (entry->properties & TSNEP_TX_DESC_OWNER_MASK))
 			break;
 
-		/* descriptor properties shall be read first, because valid data
-		 * is signaled there
-		 */
+		 
 		dma_rmb();
 
 		count = 1;
@@ -811,7 +763,7 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
 			xdp_return_frame_rx_napi(entry->xdpf);
 		else
 			xsk_frames++;
-		/* xdpf and zc are union with skb */
+		 
 		entry->skb = NULL;
 
 		tx->read = (tx->read + count) & TSNEP_RING_MASK;
@@ -893,7 +845,7 @@ static void tsnep_rx_ring_cleanup(struct tsnep_rx *rx)
 						false);
 		if (rx->xsk_pool && entry->xdp)
 			xsk_buff_free(entry->xdp);
-		/* xdp is union with page */
+		 
 		entry->page = NULL;
 	}
 
@@ -982,7 +934,7 @@ static void tsnep_rx_init(struct tsnep_rx *rx)
 
 static void tsnep_rx_enable(struct tsnep_rx *rx)
 {
-	/* descriptor properties shall be valid before hardware is notified */
+	 
 	dma_wmb();
 
 	iowrite32(TSNEP_CONTROL_RX_ENABLE, rx->addr + TSNEP_CONTROL);
@@ -1010,9 +962,7 @@ static void tsnep_rx_free_page_buffer(struct tsnep_rx *rx)
 {
 	struct page **page;
 
-	/* last entry of page_buffer is always zero, because ring cannot be
-	 * filled completely
-	 */
+	 
 	page = rx->page_buffer;
 	while (*page) {
 		page_pool_put_full_page(rx->page_pool, *page, false);
@@ -1025,9 +975,7 @@ static int tsnep_rx_alloc_page_buffer(struct tsnep_rx *rx)
 {
 	int i;
 
-	/* alloc for all ring entries except the last one, because ring cannot
-	 * be filled completely
-	 */
+	 
 	for (i = 0; i < TSNEP_RING_SIZE - 1; i++) {
 		rx->page_buffer[i] = page_pool_dev_alloc_pages(rx->page_pool);
 		if (!rx->page_buffer[i]) {
@@ -1075,7 +1023,7 @@ static void tsnep_rx_activate(struct tsnep_rx *rx, int index)
 {
 	struct tsnep_rx_entry *entry = &rx->entry[index];
 
-	/* TSNEP_MAX_RX_BUF_SIZE and TSNEP_XSK_RX_BUF_SIZE are multiple of 4 */
+	 
 	entry->properties = entry->len & TSNEP_DESC_LENGTH_MASK;
 	entry->properties |= TSNEP_DESC_INTERRUPT_FLAG;
 	if (index == rx->increment_owner_counter) {
@@ -1090,9 +1038,7 @@ static void tsnep_rx_activate(struct tsnep_rx *rx, int index)
 		(rx->owner_counter << TSNEP_DESC_OWNER_COUNTER_SHIFT) &
 		TSNEP_DESC_OWNER_COUNTER_MASK;
 
-	/* descriptor properties shall be written last, because valid data is
-	 * signaled there
-	 */
+	 
 	dma_wmb();
 
 	entry->desc->properties = __cpu_to_le32(entry->properties);
@@ -1110,7 +1056,7 @@ static int tsnep_rx_alloc(struct tsnep_rx *rx, int count, bool reuse)
 			rx->alloc_failed++;
 			alloc_failed = true;
 
-			/* reuse only if no other allocation was successful */
+			 
 			if (i == 0 && reuse)
 				tsnep_rx_reuse_buffer(rx, index);
 			else
@@ -1239,9 +1185,7 @@ out_failure:
 		trace_xdp_exception(rx->adapter->netdev, prog, act);
 		fallthrough;
 	case XDP_DROP:
-		/* Due xdp_adjust_tail: DMA sync for_device cover max len CPU
-		 * touch
-		 */
+		 
 		sync = xdp->data_end - xdp->data_hard_start -
 		       XDP_PACKET_HEADROOM;
 		sync = max(sync, length);
@@ -1260,7 +1204,7 @@ static bool tsnep_xdp_run_prog_zc(struct tsnep_rx *rx, struct bpf_prog *prog,
 
 	act = bpf_prog_run_xdp(prog, xdp);
 
-	/* XDP_REDIRECT is the main action for zero-copy */
+	 
 	if (likely(act == XDP_REDIRECT)) {
 		if (xdp_do_redirect(rx->adapter->netdev, xdp, prog) < 0)
 			goto out_failure;
@@ -1311,7 +1255,7 @@ static struct sk_buff *tsnep_build_skb(struct tsnep_rx *rx, struct page *page,
 	if (unlikely(!skb))
 		return NULL;
 
-	/* update pointers within the skb to store the data */
+	 
 	skb_reserve(skb, TSNEP_RX_OFFSET + TSNEP_RX_INLINE_METADATA_SIZE);
 	__skb_put(skb, length - ETH_FCS_LEN);
 
@@ -1395,10 +1339,7 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
 			desc_available -= tsnep_rx_refill(rx, desc_available,
 							  reuse);
 			if (!entry->page) {
-				/* buffer has been reused for refill to prevent
-				 * empty RX ring, thus buffer cannot be used for
-				 * RX processing
-				 */
+				 
 				rx->read = (rx->read + 1) & TSNEP_RING_MASK;
 				desc_available++;
 
@@ -1408,9 +1349,7 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
 			}
 		}
 
-		/* descriptor properties shall be read first, because valid data
-		 * is signaled there
-		 */
+		 
 		dma_rmb();
 
 		prefetch(page_address(entry->page) + TSNEP_RX_OFFSET);
@@ -1419,11 +1358,7 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
 		dma_sync_single_range_for_cpu(dmadev, entry->dma,
 					      TSNEP_RX_OFFSET, length, dma_dir);
 
-		/* RX metadata with timestamps is in front of actual data,
-		 * subtract metadata size to get length of actual data and
-		 * consider metadata size as offset of actual data during RX
-		 * processing
-		 */
+		 
 		length -= TSNEP_RX_INLINE_METADATA_SIZE;
 
 		rx->read = (rx->read + 1) & TSNEP_RING_MASK;
@@ -1496,10 +1431,7 @@ static int tsnep_rx_poll_zc(struct tsnep_rx *rx, struct napi_struct *napi,
 			desc_available -= tsnep_rx_refill_zc(rx, desc_available,
 							     reuse);
 			if (!entry->xdp) {
-				/* buffer has been reused for refill to prevent
-				 * empty RX ring, thus buffer cannot be used for
-				 * RX processing
-				 */
+				 
 				rx->read = (rx->read + 1) & TSNEP_RING_MASK;
 				desc_available++;
 
@@ -1509,9 +1441,7 @@ static int tsnep_rx_poll_zc(struct tsnep_rx *rx, struct napi_struct *napi,
 			}
 		}
 
-		/* descriptor properties shall be read first, because valid data
-		 * is signaled there
-		 */
+		 
 		dma_rmb();
 
 		prefetch(entry->xdp->data);
@@ -1520,11 +1450,7 @@ static int tsnep_rx_poll_zc(struct tsnep_rx *rx, struct napi_struct *napi,
 		xsk_buff_set_size(entry->xdp, length);
 		xsk_buff_dma_sync_for_cpu(entry->xdp, rx->xsk_pool);
 
-		/* RX metadata with timestamps is in front of actual data,
-		 * subtract metadata size to get length of actual data and
-		 * consider metadata size as offset of actual data during RX
-		 * processing
-		 */
+		 
 		length -= TSNEP_RX_INLINE_METADATA_SIZE;
 
 		rx->read = (rx->read + 1) & TSNEP_RING_MASK;
@@ -1616,9 +1542,7 @@ static int tsnep_rx_open(struct tsnep_rx *rx)
 		goto alloc_failed;
 	}
 
-	/* prealloc pages to prevent allocation failures when XSK pool is
-	 * disabled at runtime
-	 */
+	 
 	if (rx->xsk_pool) {
 		retval = tsnep_rx_alloc_page_buffer(rx);
 		if (retval)
@@ -1650,13 +1574,11 @@ static void tsnep_rx_reopen(struct tsnep_rx *rx)
 	for (i = 0; i < TSNEP_RING_SIZE; i++) {
 		struct tsnep_rx_entry *entry = &rx->entry[i];
 
-		/* defined initial values for properties are required for
-		 * correct owner counter checking
-		 */
+		 
 		entry->desc->properties = 0;
 		entry->desc_wb->properties = 0;
 
-		/* prevent allocation failures by reusing kept pages */
+		 
 		if (*page) {
 			tsnep_rx_set_page(rx, entry, *page);
 			tsnep_rx_activate(rx, rx->write);
@@ -1676,19 +1598,14 @@ static void tsnep_rx_reopen_xsk(struct tsnep_rx *rx)
 
 	tsnep_rx_init(rx);
 
-	/* alloc all ring entries except the last one, because ring cannot be
-	 * filled completely, as many buffers as possible is enough as wakeup is
-	 * done if new buffers are available
-	 */
+	 
 	allocated = xsk_buff_alloc_batch(rx->xsk_pool, rx->xdp_batch,
 					 TSNEP_RING_SIZE - 1);
 
 	for (i = 0; i < TSNEP_RING_SIZE; i++) {
 		struct tsnep_rx_entry *entry = &rx->entry[i];
 
-		/* keep pages to prevent allocation failures when xsk is
-		 * disabled
-		 */
+		 
 		if (entry->page) {
 			*page = entry->page;
 			entry->page = NULL;
@@ -1696,9 +1613,7 @@ static void tsnep_rx_reopen_xsk(struct tsnep_rx *rx)
 			page++;
 		}
 
-		/* defined initial values for properties are required for
-		 * correct owner counter checking
-		 */
+		 
 		entry->desc->properties = 0;
 		entry->desc_wb->properties = 0;
 
@@ -1734,7 +1649,7 @@ static int tsnep_poll(struct napi_struct *napi, int budget)
 	if (queue->tx)
 		complete = tsnep_tx_poll(queue->tx, budget);
 
-	/* handle case where we are called by netpoll with a budget of 0 */
+	 
 	if (unlikely(budget <= 0))
 		return budget;
 
@@ -1746,17 +1661,14 @@ static int tsnep_poll(struct napi_struct *napi, int budget)
 			complete = false;
 	}
 
-	/* if all work not completed, return budget and keep polling */
+	 
 	if (!complete)
 		return budget;
 
 	if (likely(napi_complete_done(napi, done))) {
 		tsnep_enable_irq(queue->adapter, queue->irq_mask);
 
-		/* reschedule if work is already pending, prevent rotten packets
-		 * which are transmitted or received after polling but before
-		 * interrupt enable
-		 */
+		 
 		if (tsnep_pending(queue)) {
 			tsnep_disable_irq(queue->adapter, queue->irq_mask);
 			napi_schedule(napi);
@@ -1793,7 +1705,7 @@ static int tsnep_request_irq(struct tsnep_queue *queue, bool first)
 
 	retval = request_irq(queue->irq, handler, 0, queue->name, dev);
 	if (retval) {
-		/* if name is empty, then interrupt won't be freed */
+		 
 		memset(queue->name, 0, sizeof(queue->name));
 	}
 
@@ -1842,7 +1754,7 @@ static int tsnep_queue_open(struct tsnep_adapter *adapter,
 	netif_napi_add(adapter->netdev, &queue->napi, tsnep_poll);
 
 	if (rx) {
-		/* choose TX queue for XDP_TX */
+		 
 		if (tx)
 			rx->tx_queue_index = tx->queue_index;
 		else if (rx->queue_index < adapter->num_tx_queues)
@@ -1850,10 +1762,7 @@ static int tsnep_queue_open(struct tsnep_adapter *adapter,
 		else
 			rx->tx_queue_index = 0;
 
-		/* prepare both memory models to eliminate possible registration
-		 * errors when memory model is switched between page pool and
-		 * XSK pool during runtime
-		 */
+		 
 		retval = xdp_rxq_info_reg(&rx->xdp_rxq, adapter->netdev,
 					  rx->queue_index, queue->napi.napi_id);
 		if (retval)
@@ -1911,9 +1820,7 @@ static void tsnep_queue_disable(struct tsnep_queue *queue)
 	napi_disable(&queue->napi);
 	tsnep_disable_irq(queue->adapter, queue->irq_mask);
 
-	/* disable RX after NAPI polling has been disabled, because RX can be
-	 * enabled during NAPI polling
-	 */
+	 
 	if (queue->rx)
 		tsnep_rx_disable(queue->rx);
 }
@@ -2086,7 +1993,7 @@ static void tsnep_netdev_set_multicast(struct net_device *netdev)
 
 	u16 rx_filter = 0;
 
-	/* configured MAC address and broadcasts are never filtered */
+	 
 	if (netdev->flags & IFF_PROMISC) {
 		rx_filter |= TSNEP_RX_FILTER_ACCEPT_ALL_MULTICASTS;
 		rx_filter |= TSNEP_RX_FILTER_ACCEPT_ALL_UNICASTS;
@@ -2250,9 +2157,7 @@ static int tsnep_netdev_xdp_xmit(struct net_device *dev, int n,
 		if (!xmit)
 			break;
 
-		/* avoid transmit queue timeout since we share it with the slow
-		 * path
-		 */
+		 
 		txq_trans_cond_update(nq);
 	}
 
@@ -2302,17 +2207,10 @@ static int tsnep_mac_init(struct tsnep_adapter *adapter)
 {
 	int retval;
 
-	/* initialize RX filtering, at least configured MAC address and
-	 * broadcast are not filtered
-	 */
+	 
 	iowrite16(0, adapter->addr + TSNEP_RX_FILTER);
 
-	/* try to get MAC address in the following order:
-	 * - device tree
-	 * - valid MAC address already set
-	 * - MAC address register if valid
-	 * - random MAC address
-	 */
+	 
 	retval = of_get_mac_address(adapter->pdev->dev.of_node,
 				    adapter->mac_address);
 	if (retval == -EPROBE_DEFER)
@@ -2361,7 +2259,7 @@ static int tsnep_mdio_init(struct tsnep_adapter *adapter)
 	snprintf(adapter->mdiobus->id, MII_BUS_ID_SIZE, "%s",
 		 adapter->pdev->name);
 
-	/* do not scan broadcast address */
+	 
 	adapter->mdiobus->phy_mask = 0x0000001;
 
 	retval = of_mdiobus_register(adapter->mdiobus, np);
@@ -2401,7 +2299,7 @@ static int tsnep_queue_init(struct tsnep_adapter *adapter, int queue_count)
 	int i;
 	int retval;
 
-	/* one TX/RX queue pair for netdev is mandatory */
+	 
 	if (platform_irq_count(adapter->pdev) == 1)
 		retval = platform_get_irq(adapter->pdev, 0);
 	else
@@ -2430,9 +2328,7 @@ static int tsnep_queue_init(struct tsnep_adapter *adapter, int queue_count)
 
 	adapter->netdev->irq = adapter->queue[0].irq;
 
-	/* add additional TX/RX queue pairs only if dedicated interrupt is
-	 * available
-	 */
+	 
 	for (i = 1; i < queue_count; i++) {
 		sprintf(name, "txrx-%d", i);
 		retval = platform_get_irq_byname_optional(adapter->pdev, name);
@@ -2559,7 +2455,7 @@ static int tsnep_probe(struct platform_device *pdev)
 			       NETDEV_XDP_ACT_NDO_XMIT_SG |
 			       NETDEV_XDP_ACT_XSK_ZEROCOPY;
 
-	/* carrier off reporting is important to ethtool even BEFORE open */
+	 
 	netif_carrier_off(netdev);
 
 	retval = register_netdev(netdev);

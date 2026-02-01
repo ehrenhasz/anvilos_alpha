@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Hisilicon hi6220 SoC divider clock driver
- *
- * Copyright (c) 2015 Hisilicon Limited.
- *
- * Author: Bintian Wang <bintian.wang@huawei.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/clk-provider.h>
@@ -18,17 +12,7 @@
 
 #define div_mask(width)	((1 << (width)) - 1)
 
-/**
- * struct hi6220_clk_divider - divider clock for hi6220
- *
- * @hw:		handle between common and hardware-specific interfaces
- * @reg:	register containing divider
- * @shift:	shift to the divider bit field
- * @width:	width of the divider bit field
- * @mask:	mask for setting divider rate
- * @table:	the div table that the divider supports
- * @lock:	register lock
- */
+ 
 struct hi6220_clk_divider {
 	struct clk_hw	hw;
 	void __iomem	*reg;
@@ -108,12 +92,12 @@ struct clk *hi6220_register_clkdiv(struct device *dev, const char *name,
 	u32 max_div, min_div;
 	int i;
 
-	/* allocate the divider */
+	 
 	div = kzalloc(sizeof(*div), GFP_KERNEL);
 	if (!div)
 		return ERR_PTR(-ENOMEM);
 
-	/* Init the divider table */
+	 
 	max_div = div_mask(width) + 1;
 	min_div = 1;
 
@@ -134,7 +118,7 @@ struct clk *hi6220_register_clkdiv(struct device *dev, const char *name,
 	init.parent_names = parent_name ? &parent_name : NULL;
 	init.num_parents = parent_name ? 1 : 0;
 
-	/* struct hi6220_clk_divider assignments */
+	 
 	div->reg = reg;
 	div->shift = shift;
 	div->width = width;
@@ -143,7 +127,7 @@ struct clk *hi6220_register_clkdiv(struct device *dev, const char *name,
 	div->hw.init = &init;
 	div->table = table;
 
-	/* register the clock */
+	 
 	clk = clk_register(dev, &div->hw);
 	if (IS_ERR(clk)) {
 		kfree(table);

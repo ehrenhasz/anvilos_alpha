@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2016 Broadcom
- */
 
-/*
- * This file works with the SPU2 version of the SPU. SPU2 has different message
- * formats than the previous version of the SPU. All SPU message format
- * differences should be hidden in the spux.c,h files.
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/string.h>
@@ -16,12 +10,9 @@
 #include "spu.h"
 #include "spu2.h"
 
-#define SPU2_TX_STATUS_LEN  0	/* SPU2 has no STATUS in input packet */
+#define SPU2_TX_STATUS_LEN  0	 
 
-/*
- * Controlled by pkt_stat_cnt field in CRYPTO_SS_SPU0_CORE_SPU2_CONTROL0
- * register. Defaults to 2.
- */
+ 
 #define SPU2_RX_STATUS_LEN  2
 
 enum spu2_proto_sel {
@@ -84,10 +75,7 @@ static char *spu2_hash_mode_name(enum spu2_hash_mode hash_mode)
 	return spu2_hash_mode_names[hash_mode];
 }
 
-/*
- * Convert from a software cipher mode value to the corresponding value
- * for SPU2.
- */
+ 
 static int spu2_cipher_mode_xlate(enum spu_cipher_mode cipher_mode,
 				  enum spu2_cipher_mode *spu2_mode)
 {
@@ -122,17 +110,7 @@ static int spu2_cipher_mode_xlate(enum spu_cipher_mode cipher_mode,
 	return 0;
 }
 
-/**
- * spu2_cipher_xlate() - Convert a cipher {alg/mode/type} triple to a SPU2
- * cipher type and mode.
- * @cipher_alg:  [in]  cipher algorithm value from software enumeration
- * @cipher_mode: [in]  cipher mode value from software enumeration
- * @cipher_type: [in]  cipher type value from software enumeration
- * @spu2_type:   [out] cipher type value used by spu2 hardware
- * @spu2_mode:   [out] cipher mode value used by spu2 hardware
- *
- * Return:  0 if successful
- */
+ 
 static int spu2_cipher_xlate(enum spu_cipher_alg cipher_alg,
 			     enum spu_cipher_mode cipher_mode,
 			     enum spu_cipher_type cipher_type,
@@ -152,7 +130,7 @@ static int spu2_cipher_xlate(enum spu_cipher_alg cipher_alg,
 		*spu2_type = SPU2_CIPHER_TYPE_NONE;
 		break;
 	case CIPHER_ALG_RC4:
-		/* SPU2 does not support RC4 */
+		 
 		err = -EINVAL;
 		*spu2_type = SPU2_CIPHER_TYPE_NONE;
 		break;
@@ -189,10 +167,7 @@ static int spu2_cipher_xlate(enum spu_cipher_alg cipher_alg,
 	return err;
 }
 
-/*
- * Convert from a software hash mode value to the corresponding value
- * for SPU2. Note that HASH_MODE_NONE and HASH_MODE_XCBC have the same value.
- */
+ 
 static int spu2_hash_mode_xlate(enum hash_mode hash_mode,
 				enum spu2_hash_mode *spu2_mode)
 {
@@ -218,18 +193,7 @@ static int spu2_hash_mode_xlate(enum hash_mode hash_mode,
 	return 0;
 }
 
-/**
- * spu2_hash_xlate() - Convert a hash {alg/mode/type} triple to a SPU2 hash type
- * and mode.
- * @hash_alg:  [in] hash algorithm value from software enumeration
- * @hash_mode: [in] hash mode value from software enumeration
- * @hash_type: [in] hash type value from software enumeration
- * @ciph_type: [in] cipher type value from software enumeration
- * @spu2_type: [out] hash type value used by SPU2 hardware
- * @spu2_mode: [out] hash mode value used by SPU2 hardware
- *
- * Return:  0 if successful
- */
+ 
 static int
 spu2_hash_xlate(enum hash_alg hash_alg, enum hash_mode hash_mode,
 		enum hash_type hash_type, enum spu_cipher_type ciph_type,
@@ -304,7 +268,7 @@ spu2_hash_xlate(enum hash_alg hash_alg, enum hash_mode hash_mode,
 	return err;
 }
 
-/* Dump FMD ctrl0. The ctrl0 input is in host byte order */
+ 
 static void spu2_dump_fmd_ctrl0(u64 ctrl0)
 {
 	enum spu2_cipher_type ciph_type;
@@ -364,7 +328,7 @@ static void spu2_dump_fmd_ctrl0(u64 ctrl0)
 	}
 }
 
-/* Dump FMD ctrl1. The ctrl1 input is in host byte order */
+ 
 static void spu2_dump_fmd_ctrl1(u64 ctrl1)
 {
 	u8 hash_key_len;
@@ -441,7 +405,7 @@ static void spu2_dump_fmd_ctrl1(u64 ctrl1)
 	packet_log("\n");
 }
 
-/* Dump FMD ctrl2. The ctrl2 input is in host byte order */
+ 
 static void spu2_dump_fmd_ctrl2(u64 ctrl2)
 {
 	packet_log(" FMD CTRL2 %#16llx\n", ctrl2);
@@ -455,7 +419,7 @@ static void spu2_dump_fmd_ctrl2(u64 ctrl2)
 		   (ctrl2 & SPU2_PL_OFFSET) >> SPU2_PL_OFFSET_SHIFT);
 }
 
-/* Dump FMD ctrl3. The ctrl3 input is in host byte order */
+ 
 static void spu2_dump_fmd_ctrl3(u64 ctrl3)
 {
 	packet_log(" FMD CTRL3 %#16llx\n", ctrl3);
@@ -504,7 +468,7 @@ static void spu2_dump_omd(u8 *omd, u16 hash_key_len, u16 ciph_key_len,
 	}
 }
 
-/* Dump a SPU2 header for debug */
+ 
 void spu2_dump_msg_hdr(u8 *buf, unsigned int buf_len)
 {
 	struct SPU2_FMD *fmd = (struct SPU2_FMD *)buf;
@@ -530,7 +494,7 @@ void spu2_dump_msg_hdr(u8 *buf, unsigned int buf_len)
 	spu2_dump_omd(omd, hash_key_len, ciph_key_len, hash_iv_len,
 		      ciph_iv_len);
 
-	/* Double check sanity */
+	 
 	omd_len = hash_key_len + ciph_key_len + hash_iv_len + ciph_iv_len;
 	if (FMD_SIZE + omd_len != buf_len) {
 		packet_log
@@ -540,17 +504,7 @@ void spu2_dump_msg_hdr(u8 *buf, unsigned int buf_len)
 	packet_log("\n");
 }
 
-/**
- * spu2_fmd_init() - At setkey time, initialize the fixed meta data for
- * subsequent skcipher requests for this context.
- * @fmd:               Start of FMD field to be written
- * @spu2_type:         Cipher algorithm
- * @spu2_mode:         Cipher mode
- * @cipher_key_len:    Length of cipher key, in bytes
- * @cipher_iv_len:     Length of cipher initialization vector, in bytes
- *
- * Return:  0 (success)
- */
+ 
 static int spu2_fmd_init(struct SPU2_FMD *fmd,
 			 enum spu2_cipher_type spu2_type,
 			 enum spu2_cipher_mode spu2_mode,
@@ -572,10 +526,7 @@ static int spu2_fmd_init(struct SPU2_FMD *fmd,
 	    ((u64)cipher_iv_len << SPU2_IV_LEN_SHIFT) |
 	    ((u64)SPU2_RET_FMD_ONLY << SPU2_RETURN_MD_SHIFT) | SPU2_RETURN_PAY;
 
-	/*
-	 * AAD1 offset is from start of FD. FD length is always 0 for this
-	 * driver. So AAD1_offset is always 0.
-	 */
+	 
 	aad1_offset = 0;
 	aad2_offset = aad1_offset;
 	payload_offset = 0;
@@ -594,18 +545,7 @@ static int spu2_fmd_init(struct SPU2_FMD *fmd,
 	return 0;
 }
 
-/**
- * spu2_fmd_ctrl0_write() - Write ctrl0 field in fixed metadata (FMD) field of
- * SPU request packet.
- * @fmd:            Start of FMD field to be written
- * @is_inbound:     true if decrypting. false if encrypting.
- * @auth_first:     true if alg authenticates before encrypting
- * @protocol:       protocol selector
- * @cipher_type:    cipher algorithm
- * @cipher_mode:    cipher mode
- * @auth_type:      authentication type
- * @auth_mode:      authentication mode
- */
+ 
 static void spu2_fmd_ctrl0_write(struct SPU2_FMD *fmd,
 				 bool is_inbound, bool auth_first,
 				 enum spu2_proto_sel protocol,
@@ -637,27 +577,7 @@ static void spu2_fmd_ctrl0_write(struct SPU2_FMD *fmd,
 	fmd->ctrl0 = cpu_to_le64(ctrl0);
 }
 
-/**
- * spu2_fmd_ctrl1_write() - Write ctrl1 field in fixed metadata (FMD) field of
- * SPU request packet.
- * @fmd:            Start of FMD field to be written
- * @is_inbound:     true if decrypting. false if encrypting.
- * @assoc_size:     Length of additional associated data, in bytes
- * @auth_key_len:   Length of authentication key, in bytes
- * @cipher_key_len: Length of cipher key, in bytes
- * @gen_iv:         If true, hw generates IV and returns in response
- * @hash_iv:        IV participates in hash. Used for IPSEC and TLS.
- * @return_iv:      Return IV in output packet before payload
- * @ret_iv_len:     Length of IV returned from SPU, in bytes
- * @ret_iv_offset:  Offset into full IV of start of returned IV
- * @cipher_iv_len:  Length of input cipher IV, in bytes
- * @digest_size:    Length of digest (aka, hash tag or ICV), in bytes
- * @return_payload: Return payload in SPU response
- * @return_md : return metadata in SPU response
- *
- * Packet can have AAD2 w/o AAD1. For algorithms currently supported,
- * associated data goes in AAD2.
- */
+ 
 static void spu2_fmd_ctrl1_write(struct SPU2_FMD *fmd, bool is_inbound,
 				 u64 assoc_size,
 				 u64 auth_key_len, u64 cipher_key_len,
@@ -673,7 +593,7 @@ static void spu2_fmd_ctrl1_write(struct SPU2_FMD *fmd, bool is_inbound,
 
 	if (assoc_size) {
 		ctrl1 |= SPU2_HAS_AAD2;
-		ctrl1 |= SPU2_RETURN_AAD2;  /* need aad2 for gcm aes esp */
+		ctrl1 |= SPU2_RETURN_AAD2;   
 	}
 
 	if (auth_key_len)
@@ -702,15 +622,13 @@ static void spu2_fmd_ctrl1_write(struct SPU2_FMD *fmd, bool is_inbound,
 		ctrl1 |= ((digest_size << SPU2_HASH_TAG_LEN_SHIFT) &
 			  SPU2_HASH_TAG_LEN);
 
-	/* Let's ask for the output pkt to include FMD, but don't need to
-	 * get keys and IVs back in OMD.
-	 */
+	 
 	if (return_md)
 		ctrl1 |= ((u64)SPU2_RET_FMD_ONLY << SPU2_RETURN_MD_SHIFT);
 	else
 		ctrl1 |= ((u64)SPU2_RET_NO_MD << SPU2_RETURN_MD_SHIFT);
 
-	/* Crypto API does not get assoc data back. So no need for AAD2. */
+	 
 
 	if (return_payload)
 		ctrl1 |= SPU2_RETURN_PAY;
@@ -718,17 +636,7 @@ static void spu2_fmd_ctrl1_write(struct SPU2_FMD *fmd, bool is_inbound,
 	fmd->ctrl1 = cpu_to_le64(ctrl1);
 }
 
-/**
- * spu2_fmd_ctrl2_write() - Set the ctrl2 field in the fixed metadata field of
- * SPU2 header.
- * @fmd:            Start of FMD field to be written
- * @cipher_offset:  Number of bytes from Start of Packet (end of FD field) where
- *                  data to be encrypted or decrypted begins
- * @auth_key_len:   Length of authentication key, in bytes
- * @auth_iv_len:    Length of authentication initialization vector, in bytes
- * @cipher_key_len: Length of cipher key, in bytes
- * @cipher_iv_len:  Length of cipher IV, in bytes
- */
+ 
 static void spu2_fmd_ctrl2_write(struct SPU2_FMD *fmd, u64 cipher_offset,
 				 u64 auth_key_len, u64 auth_iv_len,
 				 u64 cipher_key_len, u64 cipher_iv_len)
@@ -739,7 +647,7 @@ static void spu2_fmd_ctrl2_write(struct SPU2_FMD *fmd, u64 cipher_offset,
 	u16 aad1_len = 0;
 	u64 payload_offset;
 
-	/* AAD1 offset is from start of FD. FD length always 0. */
+	 
 	aad1_offset = 0;
 
 	aad2_offset = aad1_offset;
@@ -752,11 +660,7 @@ static void spu2_fmd_ctrl2_write(struct SPU2_FMD *fmd, u64 cipher_offset,
 	fmd->ctrl2 = cpu_to_le64(ctrl2);
 }
 
-/**
- * spu2_fmd_ctrl3_write() - Set the ctrl3 field in FMD
- * @fmd:          Fixed meta data. First field in SPU2 msg header.
- * @payload_len:  Length of payload, in bytes
- */
+ 
 static void spu2_fmd_ctrl3_write(struct SPU2_FMD *fmd, u64 payload_len)
 {
 	u64 ctrl3;
@@ -766,20 +670,7 @@ static void spu2_fmd_ctrl3_write(struct SPU2_FMD *fmd, u64 payload_len)
 	fmd->ctrl3 = cpu_to_le64(ctrl3);
 }
 
-/**
- * spu2_ctx_max_payload() - Determine the maximum length of the payload for a
- * SPU message for a given cipher and hash alg context.
- * @cipher_alg:		The cipher algorithm
- * @cipher_mode:	The cipher mode
- * @blocksize:		The size of a block of data for this algo
- *
- * For SPU2, the hardware generally ignores the PayloadLen field in ctrl3 of
- * FMD and just keeps computing until it receives a DMA descriptor with the EOF
- * flag set. So we consider the max payload to be infinite. AES CCM is an
- * exception.
- *
- * Return: Max payload length in bytes
- */
+ 
 u32 spu2_ctx_max_payload(enum spu_cipher_alg cipher_alg,
 			 enum spu_cipher_mode cipher_mode,
 			 unsigned int blocksize)
@@ -794,13 +685,7 @@ u32 spu2_ctx_max_payload(enum spu_cipher_alg cipher_alg,
 	}
 }
 
-/**
- * spu2_payload_length() -  Given a SPU2 message header, extract the payload
- * length.
- * @spu_hdr:  Start of SPU message header (FMD)
- *
- * Return: payload length, in bytes
- */
+ 
 u32 spu2_payload_length(u8 *spu_hdr)
 {
 	struct SPU2_FMD *fmd = (struct SPU2_FMD *)spu_hdr;
@@ -813,64 +698,27 @@ u32 spu2_payload_length(u8 *spu_hdr)
 	return pl_len;
 }
 
-/**
- * spu2_response_hdr_len() - Determine the expected length of a SPU response
- * header.
- * @auth_key_len:  Length of authentication key, in bytes
- * @enc_key_len:   Length of encryption key, in bytes
- * @is_hash:       Unused
- *
- * For SPU2, includes just FMD. OMD is never requested.
- *
- * Return: Length of FMD, in bytes
- */
+ 
 u16 spu2_response_hdr_len(u16 auth_key_len, u16 enc_key_len, bool is_hash)
 {
 	return FMD_SIZE;
 }
 
-/**
- * spu2_hash_pad_len() - Calculate the length of hash padding required to extend
- * data to a full block size.
- * @hash_alg:        hash algorithm
- * @hash_mode:       hash mode
- * @chunksize:       length of data, in bytes
- * @hash_block_size: size of a hash block, in bytes
- *
- * SPU2 hardware does all hash padding
- *
- * Return:  length of hash pad in bytes
- */
+ 
 u16 spu2_hash_pad_len(enum hash_alg hash_alg, enum hash_mode hash_mode,
 		      u32 chunksize, u16 hash_block_size)
 {
 	return 0;
 }
 
-/**
- * spu2_gcm_ccm_pad_len() -  Determine the length of GCM/CCM padding for either
- * the AAD field or the data.
- * @cipher_mode:  Unused
- * @data_size:    Unused
- *
- * Return:  0. Unlike SPU-M, SPU2 hardware does any GCM/CCM padding required.
- */
+ 
 u32 spu2_gcm_ccm_pad_len(enum spu_cipher_mode cipher_mode,
 			 unsigned int data_size)
 {
 	return 0;
 }
 
-/**
- * spu2_assoc_resp_len() - Determine the size of the AAD2 buffer needed to catch
- * associated data in a SPU2 output packet.
- * @cipher_mode:   cipher mode
- * @assoc_len:     length of additional associated data, in bytes
- * @iv_len:        length of initialization vector, in bytes
- * @is_encrypt:    true if encrypting. false if decrypt.
- *
- * Return: Length of buffer to catch associated data in response
- */
+ 
 u32 spu2_assoc_resp_len(enum spu_cipher_mode cipher_mode,
 			unsigned int assoc_len, unsigned int iv_len,
 			bool is_encrypt)
@@ -878,69 +726,31 @@ u32 spu2_assoc_resp_len(enum spu_cipher_mode cipher_mode,
 	u32 resp_len = assoc_len;
 
 	if (is_encrypt)
-		/* gcm aes esp has to write 8-byte IV in response */
+		 
 		resp_len += iv_len;
 	return resp_len;
 }
 
-/**
- * spu2_aead_ivlen() - Calculate the length of the AEAD IV to be included
- * in a SPU request after the AAD and before the payload.
- * @cipher_mode:  cipher mode
- * @iv_len:   initialization vector length in bytes
- *
- * For SPU2, AEAD IV is included in OMD and does not need to be repeated
- * prior to the payload.
- *
- * Return: Length of AEAD IV in bytes
- */
+ 
 u8 spu2_aead_ivlen(enum spu_cipher_mode cipher_mode, u16 iv_len)
 {
 	return 0;
 }
 
-/**
- * spu2_hash_type() - Determine the type of hash operation.
- * @src_sent:  The number of bytes in the current request that have already
- *             been sent to the SPU to be hashed.
- *
- * SPU2 always does a FULL hash operation
- */
+ 
 enum hash_type spu2_hash_type(u32 src_sent)
 {
 	return HASH_TYPE_FULL;
 }
 
-/**
- * spu2_digest_size() - Determine the size of a hash digest to expect the SPU to
- * return.
- * @alg_digest_size: Number of bytes in the final digest for the given algo
- * @alg:             The hash algorithm
- * @htype:           Type of hash operation (init, update, full, etc)
- *
- */
+ 
 u32 spu2_digest_size(u32 alg_digest_size, enum hash_alg alg,
 		     enum hash_type htype)
 {
 	return alg_digest_size;
 }
 
-/**
- * spu2_create_request() - Build a SPU2 request message header, includint FMD and
- * OMD.
- * @spu_hdr: Start of buffer where SPU request header is to be written
- * @req_opts: SPU request message options
- * @cipher_parms: Parameters related to cipher algorithm
- * @hash_parms:   Parameters related to hash algorithm
- * @aead_parms:   Parameters related to AEAD operation
- * @data_size:    Length of data to be encrypted or authenticated. If AEAD, does
- *		  not include length of AAD.
- *
- * Construct the message starting at spu_hdr. Caller should allocate this buffer
- * in DMA-able memory at least SPU_HEADER_ALLOC_LEN bytes long.
- *
- * Return: the length of the SPU header in bytes. 0 if an error occurs.
- */
+ 
 u32 spu2_create_request(u8 *spu_hdr,
 			struct spu_request_opts *req_opts,
 			struct spu_cipher_parms *cipher_parms,
@@ -959,17 +769,17 @@ u32 spu2_create_request(u8 *spu_hdr,
 	bool return_md = true;
 	enum spu2_proto_sel proto = SPU2_PROTO_RESV;
 
-	/* size of the payload */
+	 
 	unsigned int payload_len =
 	    hash_parms->prebuf_len + data_size + hash_parms->pad_len -
 	    ((req_opts->is_aead && req_opts->is_inbound) ?
 	     hash_parms->digestsize : 0);
 
-	/* offset of prebuf or data from start of AAD2 */
+	 
 	unsigned int cipher_offset = aead_parms->assoc_size +
 			aead_parms->aad_pad_len + aead_parms->iv_len;
 
-	/* total size of the data following OMD (without STAT word padding) */
+	 
 	unsigned int real_db_size = spu_real_db_size(aead_parms->assoc_size,
 						 aead_parms->iv_len,
 						 hash_parms->prebuf_len,
@@ -982,13 +792,10 @@ u32 spu2_create_request(u8 *spu_hdr,
 	if (req_opts->is_aead &&
 	    (cipher_parms->alg == CIPHER_ALG_AES) &&
 	    (cipher_parms->mode == CIPHER_MODE_GCM))
-		/*
-		 * On SPU 2, aes gcm cipher first on encrypt, auth first on
-		 * decrypt
-		 */
+		 
 		req_opts->auth_first = req_opts->is_inbound;
 
-	/* and do opposite for ccm (auth 1st on encrypt) */
+	 
 	if (req_opts->is_aead &&
 	    (cipher_parms->alg == CIPHER_ALG_AES) &&
 	    (cipher_parms->mode == CIPHER_MODE_CCM))
@@ -1018,21 +825,16 @@ u32 spu2_create_request(u8 *spu_hdr,
 		 cipher_offset, payload_len);
 	flow_log("  aead_iv: %u\n", aead_parms->iv_len);
 
-	/* Convert to spu2 values for cipher alg, hash alg */
+	 
 	err = spu2_cipher_xlate(cipher_parms->alg, cipher_parms->mode,
 				cipher_parms->type,
 				&spu2_ciph_type, &spu2_ciph_mode);
 
-	/* If we are doing GCM hashing only - either via rfc4543 transform
-	 * or because we happen to do GCM with AAD only and no payload - we
-	 * need to configure hardware to use hash key rather than cipher key
-	 * and put data into payload.  This is because unlike SPU-M, running
-	 * GCM cipher with 0 size payload is not permitted.
-	 */
+	 
 	if ((req_opts->is_rfc4543) ||
 	    ((spu2_ciph_mode == SPU2_CIPHER_MODE_GCM) &&
 	    (payload_len == 0))) {
-		/* Use hashing (only) and set up hash key */
+		 
 		spu2_ciph_type = SPU2_CIPHER_TYPE_NONE;
 		hash_parms->key_len = cipher_parms->key_len;
 		memcpy(hash_parms->key_buf, cipher_parms->key_buf,
@@ -1087,7 +889,7 @@ u32 spu2_create_request(u8 *spu_hdr,
 	ptr = (u8 *)(fmd + 1);
 	buf_len = sizeof(struct SPU2_FMD);
 
-	/* Write OMD */
+	 
 	if (hash_parms->key_len) {
 		memcpy(ptr, hash_parms->key_buf, hash_parms->key_len);
 		ptr += hash_parms->key_len;
@@ -1109,20 +911,7 @@ u32 spu2_create_request(u8 *spu_hdr,
 	return buf_len;
 }
 
-/**
- * spu2_cipher_req_init() - Build an skcipher SPU2 request message header,
- * including FMD and OMD.
- * @spu_hdr:       Location of start of SPU request (FMD field)
- * @cipher_parms:  Parameters describing cipher request
- *
- * Called at setkey time to initialize a msg header that can be reused for all
- * subsequent skcipher requests. Construct the message starting at spu_hdr.
- * Caller should allocate this buffer in DMA-able memory at least
- * SPU_HEADER_ALLOC_LEN bytes long.
- *
- * Return: the total length of the SPU header (FMD and OMD) in bytes. 0 if an
- * error occurs.
- */
+ 
 u16 spu2_cipher_req_init(u8 *spu_hdr, struct spu_cipher_parms *cipher_parms)
 {
 	struct SPU2_FMD *fmd;
@@ -1138,7 +927,7 @@ u16 spu2_cipher_req_init(u8 *spu_hdr, struct spu_cipher_parms *cipher_parms)
 	flow_log("    key: %d\n", cipher_parms->key_len);
 	flow_dump("    key: ", cipher_parms->key_buf, cipher_parms->key_len);
 
-	/* Convert to spu2 values */
+	 
 	err = spu2_cipher_xlate(cipher_parms->alg, cipher_parms->mode,
 				cipher_parms->type, &spu2_type, &spu2_mode);
 	if (err)
@@ -1148,14 +937,14 @@ u16 spu2_cipher_req_init(u8 *spu_hdr, struct spu_cipher_parms *cipher_parms)
 		 spu2_ciph_type_name(spu2_type),
 		 spu2_ciph_mode_name(spu2_mode));
 
-	/* Construct the FMD header */
+	 
 	fmd = (struct SPU2_FMD *)spu_hdr;
 	err = spu2_fmd_init(fmd, spu2_type, spu2_mode, cipher_parms->key_len,
 			    cipher_parms->iv_len);
 	if (err)
 		return 0;
 
-	/* Write cipher key to OMD */
+	 
 	omd = (u8 *)(fmd + 1);
 	if (cipher_parms->key_buf && cipher_parms->key_len)
 		memcpy(omd, cipher_parms->key_buf, cipher_parms->key_len);
@@ -1166,19 +955,7 @@ u16 spu2_cipher_req_init(u8 *spu_hdr, struct spu_cipher_parms *cipher_parms)
 	return FMD_SIZE + cipher_parms->key_len + cipher_parms->iv_len;
 }
 
-/**
- * spu2_cipher_req_finish() - Finish building a SPU request message header for a
- * block cipher request.
- * @spu_hdr:         Start of the request message header (MH field)
- * @spu_req_hdr_len: Length in bytes of the SPU request header
- * @is_inbound:      0 encrypt, 1 decrypt
- * @cipher_parms:    Parameters describing cipher operation to be performed
- * @data_size:       Length of the data in the BD field
- *
- * Assumes much of the header was already filled in at setkey() time in
- * spu_cipher_req_init().
- * spu_cipher_req_init() fills in the encryption key.
- */
+ 
 void spu2_cipher_req_finish(u8 *spu_hdr,
 			    u16 spu_req_hdr_len,
 			    unsigned int is_inbound,
@@ -1186,7 +963,7 @@ void spu2_cipher_req_finish(u8 *spu_hdr,
 			    unsigned int data_size)
 {
 	struct SPU2_FMD *fmd;
-	u8 *omd;		/* start of optional metadata */
+	u8 *omd;		 
 	u64 ctrl0;
 	u64 ctrl3;
 
@@ -1201,19 +978,16 @@ void spu2_cipher_req_finish(u8 *spu_hdr,
 	fmd = (struct SPU2_FMD *)spu_hdr;
 	omd = (u8 *)(fmd + 1);
 
-	/*
-	 * FMD ctrl0 was initialized at setkey time. update it to indicate
-	 * whether we are encrypting or decrypting.
-	 */
+	 
 	ctrl0 = le64_to_cpu(fmd->ctrl0);
 	if (is_inbound)
-		ctrl0 &= ~SPU2_CIPH_ENCRYPT_EN;	/* decrypt */
+		ctrl0 &= ~SPU2_CIPH_ENCRYPT_EN;	 
 	else
-		ctrl0 |= SPU2_CIPH_ENCRYPT_EN;	/* encrypt */
+		ctrl0 |= SPU2_CIPH_ENCRYPT_EN;	 
 	fmd->ctrl0 = cpu_to_le64(ctrl0);
 
 	if (cipher_parms->alg && cipher_parms->iv_buf && cipher_parms->iv_len) {
-		/* cipher iv provided so put it in here */
+		 
 		memcpy(omd + cipher_parms->key_len, cipher_parms->iv_buf,
 		       cipher_parms->iv_len);
 	}
@@ -1226,29 +1000,14 @@ void spu2_cipher_req_finish(u8 *spu_hdr,
 	packet_dump("  SPU request header: ", spu_hdr, spu_req_hdr_len);
 }
 
-/**
- * spu2_request_pad() - Create pad bytes at the end of the data.
- * @pad_start:      Start of buffer where pad bytes are to be written
- * @gcm_padding:    Length of GCM padding, in bytes
- * @hash_pad_len:   Number of bytes of padding extend data to full block
- * @auth_alg:       Authentication algorithm
- * @auth_mode:      Authentication mode
- * @total_sent:     Length inserted at end of hash pad
- * @status_padding: Number of bytes of padding to align STATUS word
- *
- * There may be three forms of pad:
- *  1. GCM pad - for GCM mode ciphers, pad to 16-byte alignment
- *  2. hash pad - pad to a block length, with 0x80 data terminator and
- *                size at the end
- *  3. STAT pad - to ensure the STAT field is 4-byte aligned
- */
+ 
 void spu2_request_pad(u8 *pad_start, u32 gcm_padding, u32 hash_pad_len,
 		      enum hash_alg auth_alg, enum hash_mode auth_mode,
 		      unsigned int total_sent, u32 status_padding)
 {
 	u8 *ptr = pad_start;
 
-	/* fix data alignent for GCM */
+	 
 	if (gcm_padding > 0) {
 		flow_log("  GCM: padding to 16 byte alignment: %u bytes\n",
 			 gcm_padding);
@@ -1257,22 +1016,22 @@ void spu2_request_pad(u8 *pad_start, u32 gcm_padding, u32 hash_pad_len,
 	}
 
 	if (hash_pad_len > 0) {
-		/* clear the padding section */
+		 
 		memset(ptr, 0, hash_pad_len);
 
-		/* terminate the data */
+		 
 		*ptr = 0x80;
 		ptr += (hash_pad_len - sizeof(u64));
 
-		/* add the size at the end as required per alg */
+		 
 		if (auth_alg == HASH_ALG_MD5)
 			*(__le64 *)ptr = cpu_to_le64(total_sent * 8ull);
-		else		/* SHA1, SHA2-224, SHA2-256 */
+		else		 
 			*(__be64 *)ptr = cpu_to_be64(total_sent * 8ull);
 		ptr += sizeof(u64);
 	}
 
-	/* pad to a 4byte alignment for STAT */
+	 
 	if (status_padding > 0) {
 		flow_log("  STAT: padding to 4 byte alignment: %u bytes\n",
 			 status_padding);
@@ -1282,49 +1041,28 @@ void spu2_request_pad(u8 *pad_start, u32 gcm_padding, u32 hash_pad_len,
 	}
 }
 
-/**
- * spu2_xts_tweak_in_payload() - Indicate that SPU2 does NOT place the XTS
- * tweak field in the packet payload (it uses IV instead)
- *
- * Return: 0
- */
+ 
 u8 spu2_xts_tweak_in_payload(void)
 {
 	return 0;
 }
 
-/**
- * spu2_tx_status_len() - Return the length of the STATUS field in a SPU
- * response message.
- *
- * Return: Length of STATUS field in bytes.
- */
+ 
 u8 spu2_tx_status_len(void)
 {
 	return SPU2_TX_STATUS_LEN;
 }
 
-/**
- * spu2_rx_status_len() - Return the length of the STATUS field in a SPU
- * response message.
- *
- * Return: Length of STATUS field in bytes.
- */
+ 
 u8 spu2_rx_status_len(void)
 {
 	return SPU2_RX_STATUS_LEN;
 }
 
-/**
- * spu2_status_process() - Process the status from a SPU response message.
- * @statp:  start of STATUS word
- *
- * Return:  0 - if status is good and response should be processed
- *         !0 - status indicates an error and response is invalid
- */
+ 
 int spu2_status_process(u8 *statp)
 {
-	/* SPU2 status is 2 bytes by default - SPU_RX_STATUS_LEN */
+	 
 	u16 status = le16_to_cpu(*(__le16 *)statp);
 
 	if (status == 0)
@@ -1337,47 +1075,28 @@ int spu2_status_process(u8 *statp)
 	return -EBADMSG;
 }
 
-/**
- * spu2_ccm_update_iv() - Update the IV as per the requirements for CCM mode.
- *
- * @digestsize:		Digest size of this request
- * @cipher_parms:	(pointer to) cipher parmaeters, includes IV buf & IV len
- * @assoclen:		Length of AAD data
- * @chunksize:		length of input data to be sent in this req
- * @is_encrypt:		true if this is an output/encrypt operation
- * @is_esp:		true if this is an ESP / RFC4309 operation
- *
- */
+ 
 void spu2_ccm_update_iv(unsigned int digestsize,
 			struct spu_cipher_parms *cipher_parms,
 			unsigned int assoclen, unsigned int chunksize,
 			bool is_encrypt, bool is_esp)
 {
-	int L;  /* size of length field, in bytes */
+	int L;   
 
-	/*
-	 * In RFC4309 mode, L is fixed at 4 bytes; otherwise, IV from
-	 * testmgr contains (L-1) in bottom 3 bits of first byte,
-	 * per RFC 3610.
-	 */
+	 
 	if (is_esp)
 		L = CCM_ESP_L_VALUE;
 	else
 		L = ((cipher_parms->iv_buf[0] & CCM_B0_L_PRIME) >>
 		      CCM_B0_L_PRIME_SHIFT) + 1;
 
-	/* SPU2 doesn't want these length bytes nor the first byte... */
+	 
 	cipher_parms->iv_len -= (1 + L);
 	memmove(cipher_parms->iv_buf, &cipher_parms->iv_buf[1],
 		cipher_parms->iv_len);
 }
 
-/**
- * spu2_wordalign_padlen() - SPU2 does not require padding.
- * @data_size: length of data field in bytes
- *
- * Return: length of status field padding, in bytes (always 0 on SPU2)
- */
+ 
 u32 spu2_wordalign_padlen(u32 data_size)
 {
 	return 0;

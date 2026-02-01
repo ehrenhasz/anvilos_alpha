@@ -1,27 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- * 	    Martin Peres
- */
+ 
 #include "priv.h"
 
 #include <subdev/fuse.h>
@@ -42,11 +19,11 @@ g84_sensor_setup(struct nvkm_therm *therm)
 {
 	struct nvkm_device *device = therm->subdev.device;
 
-	/* enable temperature reading for cards with insane defaults */
+	 
 	if (nvkm_fuse_read(device->fuse, 0x1a8) == 1) {
 		nvkm_mask(device, 0x20008, 0x80008000, 0x80000000);
 		nvkm_mask(device, 0x2000c, 0x80000003, 0x00000000);
-		mdelay(20); /* wait for the temperature to stabilize */
+		mdelay(20);  
 	}
 }
 
@@ -60,20 +37,20 @@ g84_therm_program_alarms(struct nvkm_therm *therm)
 
 	spin_lock_irqsave(&therm->sensor.alarm_program_lock, flags);
 
-	/* enable RISING and FALLING IRQs for shutdown, THRS 0, 1, 2 and 4 */
+	 
 	nvkm_wr32(device, 0x20000, 0x000003ff);
 
-	/* shutdown: The computer should be shutdown when reached */
+	 
 	nvkm_wr32(device, 0x20484, sensor->thrs_shutdown.hysteresis);
 	nvkm_wr32(device, 0x20480, sensor->thrs_shutdown.temp);
 
-	/* THRS_1 : fan boost*/
+	 
 	nvkm_wr32(device, 0x204c4, sensor->thrs_fan_boost.temp);
 
-	/* THRS_2 : critical */
+	 
 	nvkm_wr32(device, 0x204c0, sensor->thrs_critical.temp);
 
-	/* THRS_4 : down clock */
+	 
 	nvkm_wr32(device, 0x20414, sensor->thrs_down_clock.temp);
 	spin_unlock_irqrestore(&therm->sensor.alarm_program_lock, flags);
 
@@ -90,7 +67,7 @@ g84_therm_program_alarms(struct nvkm_therm *therm)
 
 }
 
-/* must be called with alarm_program_lock taken ! */
+ 
 static void
 g84_therm_threshold_hyst_emulation(struct nvkm_therm *therm,
 				   uint32_t thrs_reg, u8 status_bit,
@@ -105,7 +82,7 @@ g84_therm_threshold_hyst_emulation(struct nvkm_therm *therm,
 	prev_state = nvkm_therm_sensor_get_threshold_state(therm, thrs_name);
 	temp = nvkm_rd32(device, thrs_reg);
 
-	/* program the next threshold */
+	 
 	if (temp == thrs->temp) {
 		nvkm_wr32(device, thrs_reg, thrs->temp - thrs->hysteresis);
 		new_state = NVKM_THERM_THRS_HIGHER;
@@ -114,7 +91,7 @@ g84_therm_threshold_hyst_emulation(struct nvkm_therm *therm,
 		new_state = NVKM_THERM_THRS_LOWER;
 	}
 
-	/* fix the state (in case someone reprogrammed the alarms) */
+	 
 	cur = therm->func->temp_get(therm);
 	if (new_state == NVKM_THERM_THRS_LOWER && cur > thrs->temp)
 		new_state = NVKM_THERM_THRS_HIGHER;
@@ -123,7 +100,7 @@ g84_therm_threshold_hyst_emulation(struct nvkm_therm *therm,
 		new_state = NVKM_THERM_THRS_LOWER;
 	nvkm_therm_sensor_set_threshold_state(therm, thrs_name, new_state);
 
-	/* find the direction */
+	 
 	if (prev_state < new_state)
 		direction = NVKM_THERM_THRS_RISING;
 	else if (prev_state > new_state)
@@ -131,7 +108,7 @@ g84_therm_threshold_hyst_emulation(struct nvkm_therm *therm,
 	else
 		return;
 
-	/* advertise a change in direction */
+	 
 	nvkm_therm_sensor_event(therm, thrs_name, direction);
 }
 
@@ -148,7 +125,7 @@ g84_therm_intr(struct nvkm_therm *therm)
 
 	intr = nvkm_rd32(device, 0x20100) & 0x3ff;
 
-	/* THRS_4: downclock */
+	 
 	if (intr & 0x002) {
 		g84_therm_threshold_hyst_emulation(therm, 0x20414, 24,
 						   &sensor->thrs_down_clock,
@@ -156,7 +133,7 @@ g84_therm_intr(struct nvkm_therm *therm)
 		intr &= ~0x002;
 	}
 
-	/* shutdown */
+	 
 	if (intr & 0x004) {
 		g84_therm_threshold_hyst_emulation(therm, 0x20480, 20,
 						   &sensor->thrs_shutdown,
@@ -164,7 +141,7 @@ g84_therm_intr(struct nvkm_therm *therm)
 		intr &= ~0x004;
 	}
 
-	/* THRS_1 : fan boost */
+	 
 	if (intr & 0x008) {
 		g84_therm_threshold_hyst_emulation(therm, 0x204c4, 21,
 						   &sensor->thrs_fan_boost,
@@ -172,7 +149,7 @@ g84_therm_intr(struct nvkm_therm *therm)
 		intr &= ~0x008;
 	}
 
-	/* THRS_2 : critical */
+	 
 	if (intr & 0x010) {
 		g84_therm_threshold_hyst_emulation(therm, 0x204c0, 22,
 						   &sensor->thrs_critical,
@@ -183,9 +160,9 @@ g84_therm_intr(struct nvkm_therm *therm)
 	if (intr)
 		nvkm_error(subdev, "intr %08x\n", intr);
 
-	/* ACK everything */
+	 
 	nvkm_wr32(device, 0x20100, 0xffffffff);
-	nvkm_wr32(device, 0x1100, 0x10000); /* PBUS */
+	nvkm_wr32(device, 0x1100, 0x10000);  
 
 	spin_unlock_irqrestore(&therm->sensor.alarm_program_lock, flags);
 }
@@ -195,12 +172,12 @@ g84_therm_fini(struct nvkm_therm *therm)
 {
 	struct nvkm_device *device = therm->subdev.device;
 
-	/* Disable PTherm IRQs */
+	 
 	nvkm_wr32(device, 0x20000, 0x00000000);
 
-	/* ACK all PTherm IRQs */
+	 
 	nvkm_wr32(device, 0x20100, 0xffffffff);
-	nvkm_wr32(device, 0x1100, 0x10000); /* PBUS */
+	nvkm_wr32(device, 0x1100, 0x10000);  
 }
 
 void
@@ -234,7 +211,7 @@ g84_therm_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,
 	if (ret)
 		return ret;
 
-	/* init the thresholds */
+	 
 	nvkm_therm_sensor_set_threshold_state(therm, NVKM_THERM_THRS_SHUTDOWN,
 						     NVKM_THERM_THRS_LOWER);
 	nvkm_therm_sensor_set_threshold_state(therm, NVKM_THERM_THRS_FANBOOST,

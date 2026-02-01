@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* Copyright (C) 2023 Linaro Ltd. */
+
+ 
 
 #include <linux/log2.h>
 
@@ -9,33 +9,33 @@
 #include "../ipa_endpoint.h"
 #include "../ipa_mem.h"
 
-/** enum ipa_resource_type - IPA resource types for an SoC having IPA v5.0 */
+ 
 enum ipa_resource_type {
-	/* Source resource types; first must have value 0 */
+	 
 	IPA_RESOURCE_TYPE_SRC_PKT_CONTEXTS		= 0,
 	IPA_RESOURCE_TYPE_SRC_DESCRIPTOR_LISTS,
 	IPA_RESOURCE_TYPE_SRC_DESCRIPTOR_BUFF,
 	IPA_RESOURCE_TYPE_SRC_HPS_DMARS,
 	IPA_RESOURCE_TYPE_SRC_ACK_ENTRIES,
 
-	/* Destination resource types; first must have value 0 */
+	 
 	IPA_RESOURCE_TYPE_DST_DATA_SECTORS		= 0,
 	IPA_RESOURCE_TYPE_DST_DPS_DMARS,
 	IPA_RESOURCE_TYPE_DST_ULSO_SEGMENTS,
 };
 
-/* Resource groups used for an SoC having IPA v5.0 */
+ 
 enum ipa_rsrc_group_id {
-	/* Source resource group identifiers */
+	 
 	IPA_RSRC_GROUP_SRC_UL				= 0,
 	IPA_RSRC_GROUP_SRC_DL,
 	IPA_RSRC_GROUP_SRC_UNUSED_2,
 	IPA_RSRC_GROUP_SRC_UNUSED_3,
 	IPA_RSRC_GROUP_SRC_URLLC,
 	IPA_RSRC_GROUP_SRC_U_RX_QC,
-	IPA_RSRC_GROUP_SRC_COUNT,	/* Last in set; not a source group */
+	IPA_RSRC_GROUP_SRC_COUNT,	 
 
-	/* Destination resource group identifiers */
+	 
 	IPA_RSRC_GROUP_DST_UL				= 0,
 	IPA_RSRC_GROUP_DST_DL,
 	IPA_RSRC_GROUP_DST_DMA,
@@ -43,24 +43,24 @@ enum ipa_rsrc_group_id {
 	IPA_RSRC_GROUP_DST_CV2X,
 	IPA_RSRC_GROUP_DST_UC,
 	IPA_RSRC_GROUP_DST_DRB_IP,
-	IPA_RSRC_GROUP_DST_COUNT,	/* Last; not a destination group */
+	IPA_RSRC_GROUP_DST_COUNT,	 
 };
 
-/* QSB configuration data for an SoC having IPA v5.0 */
+ 
 static const struct ipa_qsb_data ipa_qsb_data[] = {
 	[IPA_QSB_MASTER_DDR] = {
 		.max_writes		= 0,
-		.max_reads		= 0,	/* no limit (hardware max) */
+		.max_reads		= 0,	 
 		.max_reads_beats	= 0,
 	},
 	[IPA_QSB_MASTER_PCIE] = {
 		.max_writes		= 0,
-		.max_reads		= 0,	/* no limit (hardware max) */
+		.max_reads		= 0,	 
 		.max_reads_beats	= 0,
 	},
 };
 
-/* Endpoint configuration data for an SoC having IPA v5.0 */
+ 
 static const struct ipa_gsi_endpoint_data ipa_gsi_endpoint_data[] = {
 	[IPA_ENDPOINT_AP_COMMAND_TX] = {
 		.ee_id		= GSI_EE_AP,
@@ -181,7 +181,7 @@ static const struct ipa_gsi_endpoint_data ipa_gsi_endpoint_data[] = {
 	},
 };
 
-/* Source resource configuration data for an SoC having IPA v5.0 */
+ 
 static const struct ipa_resource ipa_resource_src[] = {
 	[IPA_RESOURCE_TYPE_SRC_PKT_CONTEXTS] = {
 		.limits[IPA_RSRC_GROUP_SRC_UL] = {
@@ -246,7 +246,7 @@ static const struct ipa_resource ipa_resource_src[] = {
 	},
 };
 
-/* Destination resource configuration data for an SoC having IPA v5.0 */
+ 
 static const struct ipa_resource ipa_resource_dst[] = {
 	[IPA_RESOURCE_TYPE_DST_DATA_SECTORS] = {
 		.limits[IPA_RSRC_GROUP_DST_UL] = {
@@ -277,7 +277,7 @@ static const struct ipa_resource ipa_resource_dst[] = {
 	},
 };
 
-/* Resource configuration data for an SoC having IPA v5.0 */
+ 
 static const struct ipa_resource_data ipa_resource_data = {
 	.rsrc_group_dst_count	= IPA_RSRC_GROUP_DST_COUNT,
 	.rsrc_group_src_count	= IPA_RSRC_GROUP_SRC_COUNT,
@@ -287,7 +287,7 @@ static const struct ipa_resource_data ipa_resource_data = {
 	.resource_dst		= ipa_resource_dst,
 };
 
-/* IPA-resident memory region data for an SoC having IPA v5.0 */
+ 
 static const struct ipa_mem ipa_mem_local_data[] = {
 	{
 		.id		= IPA_MEM_UC_EVENT_RING,
@@ -435,7 +435,7 @@ static const struct ipa_mem ipa_mem_local_data[] = {
 	},
 };
 
-/* Memory configuration data for an SoC having IPA v5.0 */
+ 
 static const struct ipa_mem_data ipa_mem_data = {
 	.local_count	= ARRAY_SIZE(ipa_mem_local_data),
 	.local		= ipa_mem_local_data,
@@ -445,29 +445,29 @@ static const struct ipa_mem_data ipa_mem_data = {
 	.smem_size	= 0x00009000,
 };
 
-/* Interconnect rates are in 1000 byte/second units */
+ 
 static const struct ipa_interconnect_data ipa_interconnect_data[] = {
 	{
 		.name			= "memory",
-		.peak_bandwidth		= 1900000,	/* 1.9 GBps */
-		.average_bandwidth	= 600000,	/* 600 MBps */
+		.peak_bandwidth		= 1900000,	 
+		.average_bandwidth	= 600000,	 
 	},
-	/* Average rate is unused for the next interconnect */
+	 
 	{
 		.name			= "config",
-		.peak_bandwidth		= 76800,	/* 76.8 MBps */
-		.average_bandwidth	= 0,		/* unused */
+		.peak_bandwidth		= 76800,	 
+		.average_bandwidth	= 0,		 
 	},
 };
 
-/* Clock and interconnect configuration data for an SoC having IPA v5.0 */
+ 
 static const struct ipa_power_data ipa_power_data = {
-	.core_clock_rate	= 120 * 1000 * 1000,	/* Hz */
+	.core_clock_rate	= 120 * 1000 * 1000,	 
 	.interconnect_count	= ARRAY_SIZE(ipa_interconnect_data),
 	.interconnect_data	= ipa_interconnect_data,
 };
 
-/* Configuration data for an SoC having IPA v5.0. */
+ 
 const struct ipa_data ipa_data_v5_0 = {
 	.version		= IPA_VERSION_5_0,
 	.qsb_count		= ARRAY_SIZE(ipa_qsb_data),

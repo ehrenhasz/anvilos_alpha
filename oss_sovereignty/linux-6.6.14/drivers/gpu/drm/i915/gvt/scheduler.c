@@ -1,37 +1,4 @@
-/*
- * Copyright(c) 2011-2016 Intel Corporation. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Authors:
- *    Zhi Wang <zhi.a.wang@intel.com>
- *
- * Contributors:
- *    Ping Gao <ping.a.gao@intel.com>
- *    Tina Zhang <tina.zhang@intel.com>
- *    Chanbin Du <changbin.du@intel.com>
- *    Min He <min.he@intel.com>
- *    Bing Niu <bing.niu@intel.com>
- *    Zhenyu Wang <zhenyuw@linux.intel.com>
- *
- */
+ 
 
 #include <linux/kthread.h>
 
@@ -76,11 +43,7 @@ static void update_shadow_pdps(struct intel_vgpu_workload *workload)
 			(void *)workload->shadow_mm->ppgtt_mm.shadow_pdps);
 }
 
-/*
- * when populating shadow ctx from guest, we should not overrride oa related
- * registers, so that they will not be overlapped by guest oa configs. Thus
- * made it possible to capture oa data from host for both host and guests.
- */
+ 
 static void sr_oa_regs(struct intel_vgpu_workload *workload,
 		u32 *reg_state, bool save)
 {
@@ -133,8 +96,8 @@ static int populate_shadow_context(struct intel_vgpu_workload *workload)
 	void *dst;
 	void *context_base;
 	unsigned long context_gpa, context_page_num;
-	unsigned long gpa_base; /* first gpa of consecutive GPAs */
-	unsigned long gpa_size; /* size of consecutive GPAs */
+	unsigned long gpa_base;  
+	unsigned long gpa_size;  
 	struct intel_vgpu_submission *s = &vgpu->submission;
 	int i;
 	bool skip = false;
@@ -175,9 +138,7 @@ static int populate_shadow_context(struct intel_vgpu_workload *workload)
 #undef COPY_REG
 #undef COPY_REG_MASKED
 
-	/* don't copy Ring Context (the first 0x50 dwords),
-	 * only copy the Engine Context part from guest
-	 */
+	 
 	intel_gvt_read_gpa(vgpu,
 			workload->ring_context_gpa +
 			RING_CTX_SIZE,
@@ -192,12 +153,7 @@ static int populate_shadow_context(struct intel_vgpu_workload *workload)
 			workload->ctx_desc.context_id,
 			workload->ring_context_gpa);
 
-	/* only need to ensure this context is not pinned/unpinned during the
-	 * period from last submission to this this submission.
-	 * Upon reaching this function, the currently submitted context is not
-	 * supposed to get unpinned. If a misbehaving guest driver ever does
-	 * this, it would corrupt itself.
-	 */
+	 
 	if (s->last_ctx[ring_id].valid &&
 			(s->last_ctx[ring_id].lrca ==
 				workload->ctx_desc.lrca) &&
@@ -218,9 +174,7 @@ static int populate_shadow_context(struct intel_vgpu_workload *workload)
 	if (IS_BROADWELL(gvt->gt->i915) && workload->engine->id == RCS0)
 		context_page_num = 19;
 
-	/* find consecutive GPAs from gma until the first inconsecutive GPA.
-	 * read from the continuous GPAs into dst virtual address
-	 */
+	 
 	gpa_size = 0;
 	for (i = 2; i < context_page_num; i++) {
 		context_gpa = intel_vgpu_gma_to_gpa(vgpu->gtt.ggtt_mm,
@@ -298,7 +252,7 @@ static int shadow_context_status_change(struct notifier_block *nb,
 		spin_lock_irqsave(&scheduler->mmio_context_lock, flags);
 		if (action == INTEL_CONTEXT_SCHEDULE_IN &&
 		    scheduler->engine_owner[ring_id]) {
-			/* Switch ring from vGPU to host. */
+			 
 			intel_gvt_switch_mmio(scheduler->engine_owner[ring_id],
 					      NULL, rq->engine);
 			scheduler->engine_owner[ring_id] = NULL;
@@ -316,7 +270,7 @@ static int shadow_context_status_change(struct notifier_block *nb,
 	case INTEL_CONTEXT_SCHEDULE_IN:
 		spin_lock_irqsave(&scheduler->mmio_context_lock, flags);
 		if (workload->vgpu != scheduler->engine_owner[ring_id]) {
-			/* Switch ring from host to vGPU or vGPU to vGPU. */
+			 
 			intel_gvt_switch_mmio(scheduler->engine_owner[ring_id],
 					      workload->vgpu, rq->engine);
 			scheduler->engine_owner[ring_id] = workload->vgpu;
@@ -347,10 +301,7 @@ shadow_context_descriptor_update(struct intel_context *ce,
 {
 	u64 desc = ce->lrc.desc;
 
-	/*
-	 * Update bits 0-11 of the context descriptor which includes flags
-	 * like GEN8_CTX_* cached in desc_template
-	 */
+	 
 	desc &= ~(0x3ull << GEN8_CTX_ADDRESSING_MODE_SHIFT);
 	desc |= (u64)workload->ctx_desc.addressing_mode <<
 		GEN8_CTX_ADDRESSING_MODE_SHIFT;
@@ -369,16 +320,7 @@ static int copy_workload_to_ring_buffer(struct intel_vgpu_workload *workload)
 	if (GRAPHICS_VER(req->engine->i915) == 9 && is_inhibit_context(req->context))
 		intel_vgpu_restore_inhibit_context(vgpu, req);
 
-	/*
-	 * To track whether a request has started on HW, we can emit a
-	 * breadcrumb at the beginning of the request and check its
-	 * timeline's HWSP to see if the breadcrumb has advanced past the
-	 * start of this request. Actually, the request must have the
-	 * init_breadcrumb if its timeline set has_init_bread_crumb, or the
-	 * scheduler might get a wrong state of it during reset. Since the
-	 * requests from gvt always set the has_init_breadcrumb flag, here
-	 * need to do the emit_init_breadcrumb for all the requests.
-	 */
+	 
 	if (req->engine->emit_init_breadcrumb) {
 		err = req->engine->emit_init_breadcrumb(req);
 		if (err) {
@@ -387,7 +329,7 @@ static int copy_workload_to_ring_buffer(struct intel_vgpu_workload *workload)
 		}
 	}
 
-	/* allocate shadow ring buffer */
+	 
 	cs = intel_ring_begin(workload->req, workload->rb_len / sizeof(u32));
 	if (IS_ERR(cs)) {
 		gvt_vgpu_err("fail to alloc size =%ld shadow  ring buffer\n",
@@ -397,7 +339,7 @@ static int copy_workload_to_ring_buffer(struct intel_vgpu_workload *workload)
 
 	shadow_ring_buffer_va = workload->shadow_ring_buffer_va;
 
-	/* get shadow ring buffer va */
+	 
 	workload->shadow_ring_buffer_va = cs;
 
 	memcpy(cs, shadow_ring_buffer_va,
@@ -427,7 +369,7 @@ static void set_dma_address(struct i915_page_directory *pd, dma_addr_t addr)
 {
 	struct scatterlist *sg = pd->pt.base->mm.pages->sgl;
 
-	/* This is not a good idea */
+	 
 	sg->dma_address = addr;
 }
 
@@ -444,9 +386,7 @@ static void set_context_ppgtt_from_shadow(struct intel_vgpu_workload *workload,
 		for (i = 0; i < GVT_RING_CTX_NR_PDPS; i++) {
 			struct i915_page_directory * const pd =
 				i915_pd_entry(ppgtt->pd, i);
-			/* skip now as current i915 ppgtt alloc won't allocate
-			   top level pdp for non 4-level table, won't impact
-			   shadow ppgtt. */
+			 
 			if (!pd)
 				break;
 
@@ -475,14 +415,7 @@ intel_gvt_workload_req_alloc(struct intel_vgpu_workload *workload)
 	return 0;
 }
 
-/**
- * intel_gvt_scan_and_shadow_workload - audit the workload by scanning and
- * shadow it as well, include ringbuffer,wa_ctx and ctx.
- * @workload: an abstract entity for each execlist submission.
- *
- * This function is called before the workload submitting to i915, to make
- * sure the content of the workload is valid.
- */
+ 
 int intel_gvt_scan_and_shadow_workload(struct intel_vgpu_workload *workload)
 {
 	struct intel_vgpu *vgpu = workload->vgpu;
@@ -528,26 +461,13 @@ static int prepare_shadow_batch_buffer(struct intel_vgpu_workload *workload)
 	int ret;
 
 	list_for_each_entry(bb, &workload->shadow_bb, list) {
-		/* For privilge batch buffer and not wa_ctx, the bb_start_cmd_va
-		 * is only updated into ring_scan_buffer, not real ring address
-		 * allocated in later copy_workload_to_ring_buffer. pls be noted
-		 * shadow_ring_buffer_va is now pointed to real ring buffer va
-		 * in copy_workload_to_ring_buffer.
-		 */
+		 
 
 		if (bb->bb_offset)
 			bb->bb_start_cmd_va = workload->shadow_ring_buffer_va
 				+ bb->bb_offset;
 
-		/*
-		 * For non-priv bb, scan&shadow is only for
-		 * debugging purpose, so the content of shadow bb
-		 * is the same as original bb. Therefore,
-		 * here, rather than switch to shadow bb's gma
-		 * address, we directly use original batch buffer's
-		 * gma address, and send original bb to hardware
-		 * directly
-		 */
+		 
 		if (!bb->ppgtt) {
 			i915_gem_ww_ctx_init(&ww, false);
 retry:
@@ -565,7 +485,7 @@ retry:
 				goto err;
 			}
 
-			/* relocate shadow batch buffer */
+			 
 			bb->bb_start_cmd_va[1] = i915_ggtt_offset(bb->vma);
 			if (gmadr_bytes == 8)
 				bb->bb_start_cmd_va[2] = 0;
@@ -575,7 +495,7 @@ retry:
 			if (ret)
 				goto err;
 
-			/* No one is going to touch shadow bb from now on. */
+			 
 			i915_gem_object_flush_map(bb->obj);
 			i915_gem_ww_ctx_fini(&ww);
 		}
@@ -633,10 +553,7 @@ retry:
 
 	i915_gem_ww_ctx_fini(&ww);
 
-	/* FIXME: we are not tracking our pinned VMA leaving it
-	 * up to the core to fix up the stray pin_count upon
-	 * free.
-	 */
+	 
 
 	wa_ctx->indirect_ctx.shadow_gma = i915_ggtt_offset(vma);
 
@@ -824,9 +741,7 @@ static int dispatch_workload(struct intel_vgpu_workload *workload)
 	ret = prepare_workload(workload);
 out:
 	if (ret) {
-		/* We might still need to add request with
-		 * clean ctx to retire it properly..
-		 */
+		 
 		rq = fetch_and_zero(&workload->req);
 		i915_request_put(rq);
 	}
@@ -852,10 +767,7 @@ pick_next_workload(struct intel_gvt *gvt, struct intel_engine_cs *engine)
 
 	mutex_lock(&gvt->sched_lock);
 
-	/*
-	 * no current vgpu / will be scheduled out / no workload
-	 * bail out
-	 */
+	 
 	if (!scheduler->current_vgpu) {
 		gvt_dbg_sched("ring %s stop - no current vgpu\n", engine->name);
 		goto out;
@@ -871,10 +783,7 @@ pick_next_workload(struct intel_gvt *gvt, struct intel_engine_cs *engine)
 	    list_empty(workload_q_head(scheduler->current_vgpu, engine)))
 		goto out;
 
-	/*
-	 * still have current workload, maybe the workload disptacher
-	 * fail to submit it for some reason, resubmit it.
-	 */
+	 
 	if (scheduler->current_workload[engine->id]) {
 		workload = scheduler->current_workload[engine->id];
 		gvt_dbg_sched("ring %s still have current workload %p\n",
@@ -882,12 +791,7 @@ pick_next_workload(struct intel_gvt *gvt, struct intel_engine_cs *engine)
 		goto out;
 	}
 
-	/*
-	 * pick a workload as current workload
-	 * once current workload is set, schedule policy routines
-	 * will wait the current workload is finished when trying to
-	 * schedule out a vgpu.
-	 */
+	 
 	scheduler->current_workload[engine->id] =
 		list_first_entry(workload_q_head(scheduler->current_vgpu,
 						 engine),
@@ -927,7 +831,7 @@ check_shadow_context_ppgtt(struct execlist_ring_context *c, struct intel_vgpu_mm
 		}
 		return true;
 	} else {
-		/* see comment in LRI handler in cmd_parser.c */
+		 
 		gvt_dbg_mm("invalid shadow mm type\n");
 		return false;
 	}
@@ -942,8 +846,8 @@ static void update_guest_context(struct intel_vgpu_workload *workload)
 	void *context_base;
 	void *src;
 	unsigned long context_gpa, context_page_num;
-	unsigned long gpa_base; /* first gpa of consecutive GPAs */
-	unsigned long gpa_size; /* size of consecutive GPAs*/
+	unsigned long gpa_base;  
+	unsigned long gpa_size;  
 	int i;
 	u32 ring_base;
 	u32 head, tail;
@@ -980,9 +884,7 @@ static void update_guest_context(struct intel_vgpu_workload *workload)
 	context_base = (void *) ctx->lrc_reg_state -
 			(LRC_STATE_PN << I915_GTT_PAGE_SHIFT);
 
-	/* find consecutive GPAs from gma until the first inconsecutive GPA.
-	 * write to the consecutive GPAs from src virtual address
-	 */
+	 
 	gpa_size = 0;
 	for (i = 2; i < context_page_num; i++) {
 		context_gpa = intel_vgpu_gma_to_gpa(vgpu->gtt.ggtt_mm,
@@ -1052,7 +954,7 @@ void intel_vgpu_clean_workloads(struct intel_vgpu *vgpu,
 	struct intel_vgpu_workload *pos, *n;
 	intel_engine_mask_t tmp;
 
-	/* free the unsubmited workloads in the queues. */
+	 
 	for_each_engine_masked(engine, vgpu->gvt->gt, engine_mask, tmp) {
 		list_for_each_entry_safe(pos, n,
 			&s->workload_q_head[engine->id], list) {
@@ -1076,19 +978,12 @@ static void complete_current_workload(struct intel_gvt *gvt, int ring_id)
 	mutex_lock(&vgpu->vgpu_lock);
 	mutex_lock(&gvt->sched_lock);
 
-	/* For the workload w/ request, needs to wait for the context
-	 * switch to make sure request is completed.
-	 * For the workload w/o request, directly complete the workload.
-	 */
+	 
 	if (rq) {
 		wait_event(workload->shadow_ctx_status_wq,
 			   !atomic_read(&workload->shadow_ctx_active));
 
-		/* If this request caused GPU hang, req->fence.error will
-		 * be set to -EIO. Use -EIO to set workload status so
-		 * that when this request caused GPU hang, didn't trigger
-		 * context switch interrupt to guest.
-		 */
+		 
 		if (likely(workload->status == -EINPROGRESS)) {
 			if (workload->req->fence.error == -EIO)
 				workload->status = -EIO;
@@ -1116,19 +1011,7 @@ static void complete_current_workload(struct intel_gvt *gvt, int ring_id)
 	list_del_init(&workload->list);
 
 	if (workload->status || vgpu->resetting_eng & BIT(ring_id)) {
-		/* if workload->status is not successful means HW GPU
-		 * has occurred GPU hang or something wrong with i915/GVT,
-		 * and GVT won't inject context switch interrupt to guest.
-		 * So this error is a vGPU hang actually to the guest.
-		 * According to this we should emunlate a vGPU hang. If
-		 * there are pending workloads which are already submitted
-		 * from guest, we should clean them up like HW GPU does.
-		 *
-		 * if it is in middle of engine resetting, the pending
-		 * workloads won't be submitted to HW GPU and will be
-		 * cleaned up during the resetting process later, so doing
-		 * the workload clean up here doesn't have any impact.
-		 **/
+		 
 		intel_vgpu_clean_workloads(vgpu, BIT(ring_id));
 	}
 
@@ -1188,12 +1071,7 @@ static int workload_thread(void *arg)
 		if (need_force_wake)
 			intel_uncore_forcewake_get(engine->uncore,
 						   FORCEWAKE_ALL);
-		/*
-		 * Update the vReg of the vGPU which submitted this
-		 * workload. The vGPU may use these registers for checking
-		 * the context state. The value comes from GPU commands
-		 * in this workload.
-		 */
+		 
 		update_vreg_in_ctx(workload);
 
 		ret = dispatch_workload(workload);
@@ -1308,13 +1186,7 @@ i915_context_ppgtt_root_restore(struct intel_vgpu_submission *s,
 	}
 }
 
-/**
- * intel_vgpu_clean_submission - free submission-related resource for vGPU
- * @vgpu: a vGPU
- *
- * This function is called when a vGPU is being destroyed.
- *
- */
+ 
 void intel_vgpu_clean_submission(struct intel_vgpu *vgpu)
 {
 	struct intel_vgpu_submission *s = &vgpu->submission;
@@ -1331,14 +1203,7 @@ void intel_vgpu_clean_submission(struct intel_vgpu *vgpu)
 }
 
 
-/**
- * intel_vgpu_reset_submission - reset submission-related resource for vGPU
- * @vgpu: a vGPU
- * @engine_mask: engines expected to be reset
- *
- * This function is called when a vGPU is being destroyed.
- *
- */
+ 
 void intel_vgpu_reset_submission(struct intel_vgpu *vgpu,
 				 intel_engine_mask_t engine_mask)
 {
@@ -1369,16 +1234,7 @@ i915_context_ppgtt_root_save(struct intel_vgpu_submission *s,
 	}
 }
 
-/**
- * intel_vgpu_setup_submission - setup submission-related resource for vGPU
- * @vgpu: a vGPU
- *
- * This function is called when a vGPU is being created.
- *
- * Returns:
- * Zero on success, negative error code if failed.
- *
- */
+ 
 int intel_vgpu_setup_submission(struct intel_vgpu *vgpu)
 {
 	struct drm_i915_private *i915 = vgpu->gvt->gt->i915;
@@ -1410,7 +1266,7 @@ int intel_vgpu_setup_submission(struct intel_vgpu *vgpu)
 		ce->vm = i915_vm_get(&ppgtt->vm);
 		intel_context_set_single_submission(ce);
 
-		/* Max ring buffer size */
+		 
 		if (!intel_uc_wants_guc_submission(&engine->gt->uc))
 			ce->ring_size = SZ_2M;
 
@@ -1451,18 +1307,7 @@ out_shadow_ctx:
 	return ret;
 }
 
-/**
- * intel_vgpu_select_submission_ops - select virtual submission interface
- * @vgpu: a vGPU
- * @engine_mask: either ALL_ENGINES or target engine mask
- * @interface: expected vGPU virtual submission interface
- *
- * This function is called when guest configures submission interface.
- *
- * Returns:
- * Zero on success, negative error code if failed.
- *
- */
+ 
 int intel_vgpu_select_submission_ops(struct intel_vgpu *vgpu,
 				     intel_engine_mask_t engine_mask,
 				     unsigned int interface)
@@ -1507,13 +1352,7 @@ int intel_vgpu_select_submission_ops(struct intel_vgpu *vgpu,
 	return 0;
 }
 
-/**
- * intel_vgpu_destroy_workload - destroy a vGPU workload
- * @workload: workload to destroy
- *
- * This function is called when destroy a vGPU workload.
- *
- */
+ 
 void intel_vgpu_destroy_workload(struct intel_vgpu_workload *workload)
 {
 	struct intel_vgpu_submission *s = &workload->vgpu->submission;
@@ -1586,10 +1425,10 @@ static int prepare_mm(struct intel_vgpu_workload *workload)
 	u64 pdps[GVT_RING_CTX_NR_PDPS];
 
 	switch (desc->addressing_mode) {
-	case 1: /* legacy 32-bit */
+	case 1:  
 		root_entry_type = GTT_TYPE_PPGTT_ROOT_L3_ENTRY;
 		break;
-	case 3: /* legacy 64-bit */
+	case 3:  
 		root_entry_type = GTT_TYPE_PPGTT_ROOT_L4_ENTRY;
 		break;
 	default:
@@ -1610,19 +1449,7 @@ static int prepare_mm(struct intel_vgpu_workload *workload)
 #define same_context(a, b) (((a)->context_id == (b)->context_id) && \
 		((a)->lrca == (b)->lrca))
 
-/**
- * intel_vgpu_create_workload - create a vGPU workload
- * @vgpu: a vGPU
- * @engine: the engine
- * @desc: a guest context descriptor
- *
- * This function is called when creating a vGPU workload.
- *
- * Returns:
- * struct intel_vgpu_workload * on success, negative error code in
- * pointer if failed.
- *
- */
+ 
 struct intel_vgpu_workload *
 intel_vgpu_create_workload(struct intel_vgpu *vgpu,
 			   const struct intel_engine_cs *engine,
@@ -1662,10 +1489,7 @@ intel_vgpu_create_workload(struct intel_vgpu *vgpu,
 				   engine->name);
 			gvt_dbg_el("ctx head %x real head %lx\n", head,
 				   last_workload->rb_tail);
-			/*
-			 * cannot use guest context head pointer here,
-			 * as it might not be updated at this time
-			 */
+			 
 			head = last_workload->rb_tail;
 			break;
 		}
@@ -1673,7 +1497,7 @@ intel_vgpu_create_workload(struct intel_vgpu *vgpu,
 
 	gvt_dbg_el("ring %s begin a new workload\n", engine->name);
 
-	/* record some ring buffer register values for scan and shadow */
+	 
 	intel_gvt_read_gpa(vgpu, ring_context_gpa +
 			RING_CTX_OFF(rb_start.val), &start, 4);
 	intel_gvt_read_gpa(vgpu, ring_context_gpa +
@@ -1747,9 +1571,7 @@ intel_vgpu_create_workload(struct intel_vgpu *vgpu,
 		return ERR_PTR(ret);
 	}
 
-	/* Only scan and shadow the first workload in the queue
-	 * as there is only one pre-allocated buf-obj for shadow.
-	 */
+	 
 	if (list_empty(q)) {
 		intel_wakeref_t wakeref;
 
@@ -1773,10 +1595,7 @@ intel_vgpu_create_workload(struct intel_vgpu *vgpu,
 	return workload;
 }
 
-/**
- * intel_vgpu_queue_workload - Qeue a vGPU workload
- * @workload: the workload to queue in
- */
+ 
 void intel_vgpu_queue_workload(struct intel_vgpu_workload *workload)
 {
 	list_add_tail(&workload->list,

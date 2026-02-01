@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __IP_SET_HASH_H
 #define __IP_SET_HASH_H
 
@@ -11,4 +11,4 @@
 #define IPSET_DEFAULT_PROBES		4
 #define IPSET_DEFAULT_RESIZE		100
 
-#endif /* __IP_SET_HASH_H */
+#endif  

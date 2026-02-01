@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-1.0+
-/*
- * OHCI HCD (Host Controller Driver) for USB.
- *
- * (C) Copyright 1999 Roman Weissgaerber <weissg@vienna.at>
- * (C) Copyright 2000-2002 David Brownell <dbrownell@users.sourceforge.net>
- * (C) Copyright 2002 Hewlett-Packard Company
- * (C) Copyright 2006 Sylvain Munaut <tnt@246tNt.com>
- *
- * Bus glue for OHCI HC on the of_platform bus
- *
- * Modified for of_platform bus from ohci-sa1111.c
- *
- * This file is licenced under the GPL.
- */
+
+ 
 
 #include <linux/signal.h>
 #include <linux/of.h>
@@ -44,34 +31,24 @@ static const struct hc_driver ohci_ppc_of_hc_driver = {
 	.product_desc =		"OF OHCI",
 	.hcd_priv_size =	sizeof(struct ohci_hcd),
 
-	/*
-	 * generic hardware linkage
-	 */
+	 
 	.irq =			ohci_irq,
 	.flags =		HCD_USB11 | HCD_DMA | HCD_MEMORY,
 
-	/*
-	 * basic lifecycle operations
-	 */
+	 
 	.start =		ohci_ppc_of_start,
 	.stop =			ohci_stop,
 	.shutdown = 		ohci_shutdown,
 
-	/*
-	 * managing i/o requests and associated device resources
-	 */
+	 
 	.urb_enqueue =		ohci_urb_enqueue,
 	.urb_dequeue =		ohci_urb_dequeue,
 	.endpoint_disable =	ohci_endpoint_disable,
 
-	/*
-	 * scheduling support
-	 */
+	 
 	.get_frame_number =	ohci_get_frame,
 
-	/*
-	 * root hub support
-	 */
+	 
 	.hub_status_data =	ohci_hub_status_data,
 	.hub_control =		ohci_hub_control,
 #ifdef	CONFIG_PM
@@ -145,18 +122,10 @@ static int ohci_hcd_ppc_of_probe(struct platform_device *op)
 		return 0;
 	}
 
-	/* by now, 440epx is known to show usb_23 erratum */
+	 
 	np = of_find_compatible_node(NULL, NULL, "ibm,usb-ehci-440epx");
 
-	/* Work around - At this point ohci_run has executed, the
-	* controller is running, everything, the root ports, etc., is
-	* set up.  If the ehci driver is loaded, put the ohci core in
-	* the suspended state.  The ehci driver will bring it out of
-	* suspended state when / if a non-high speed USB device is
-	* attached to the USB Host port.  If the ehci driver is not
-	* loaded, do nothing. request_mem_region is used to test if
-	* the ehci driver is loaded.
-	*/
+	 
 	if (np !=  NULL) {
 		if (!of_address_to_resource(np, 0, &res)) {
 			if (!request_mem_region(res.start, 0x4, hcd_name)) {

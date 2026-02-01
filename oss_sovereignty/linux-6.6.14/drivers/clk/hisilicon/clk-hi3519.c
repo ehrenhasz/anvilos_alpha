@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hi3519 Clock Driver
- *
- * Copyright (c) 2015-2016 HiSilicon Technologies Co., Ltd.
- */
+
+ 
 
 #include <dt-bindings/clock/hi3519-clock.h>
 #include <linux/clk-provider.h>

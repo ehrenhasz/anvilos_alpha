@@ -1,27 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- *          Roy Spliet
- */
+ 
 #define gt215_clk(p) container_of((p), struct gt215_clk, base)
 #include "gt215.h"
 #include "pll.h"
@@ -63,10 +40,10 @@ read_clk(struct gt215_clk *clk, int idx, bool ignore_en)
 	struct nvkm_device *device = clk->base.subdev.device;
 	u32 sctl, sdiv, sclk;
 
-	/* refclk for the 0xe8xx plls is a fixed frequency */
+	 
 	if (idx >= 0x40) {
 		if (device->chipset == 0xaf) {
-			/* no joke.. seriously.. sigh.. */
+			 
 			return nvkm_rd32(device, 0x00471c) * 1000;
 		}
 
@@ -77,11 +54,11 @@ read_clk(struct gt215_clk *clk, int idx, bool ignore_en)
 	if (!ignore_en && !(sctl & 0x00000100))
 		return 0;
 
-	/* out_alt */
+	 
 	if (sctl & 0x00000400)
 		return 108000;
 
-	/* vco_out */
+	 
 	switch (sctl & 0x00003000) {
 	case 0x00000000:
 		if (!(sctl & 0x00000200))
@@ -92,7 +69,7 @@ read_clk(struct gt215_clk *clk, int idx, bool ignore_en)
 			return 108000;
 		return 100000;
 	case 0x00003000:
-		/* vco_enable */
+		 
 		if (!(sctl & 0x00000001))
 			return 0;
 
@@ -119,9 +96,7 @@ read_pll(struct gt215_clk *clk, int idx, u32 pll)
 			N = (coef & 0x0000ff00) >> 8;
 			P = (coef & 0x003f0000) >> 16;
 
-			/* no post-divider on these..
-			 * XXX: it looks more like two post-"dividers" that
-			 * cross each other out in the default RPLL config */
+			 
 			if ((pll & 0x00ff00) == 0x00e800)
 				P = 1;
 
@@ -209,17 +184,13 @@ gt215_clk_info(struct nvkm_clk *base, int idx, u32 khz,
 		oclk = (sclk * 2) / sdiv;
 		diff = ((khz + 3000) - oclk);
 
-		/* When imprecise, play it safe and aim for a clock lower than
-		 * desired rather than higher */
+		 
 		if (diff < 0) {
 			sdiv++;
 			oclk = (sclk * 2) / sdiv;
 		}
 
-		/* divider can go as low as 2, limited here because NVIDIA
-		 * and the VBIOS on my NVA8 seem to prefer using the PLL
-		 * for 810MHz - is there a good reason?
-		 * XXX: PLLs with refclk 810MHz?  */
+		 
 		if (sdiv > 4) {
 			info->clk = (((sdiv - 2) << 16) | 0x00003100);
 			return oclk;
@@ -243,15 +214,14 @@ gt215_pll_info(struct nvkm_clk *base, int idx, u32 pll, u32 khz,
 
 	info->pll = 0;
 
-	/* If we can get a within [-2, 3) MHz of a divider, we'll disable the
-	 * PLL and use the divider instead. */
+	 
 	ret = gt215_clk_info(&clk->base, idx, khz, info);
 	diff = khz - ret;
 	if (!pll || (diff >= -2000 && diff < 3000)) {
 		goto out;
 	}
 
-	/* Try with PLL */
+	 
 	ret = nvbios_pll_parse(subdev->device->bios, pll, &limits);
 	if (ret)
 		return ret;
@@ -309,10 +279,10 @@ gt215_clk_pre(struct nvkm_clk *clk, unsigned long *flags)
 	struct nvkm_device *device = clk->subdev.device;
 	struct nvkm_fifo *fifo = device->fifo;
 
-	/* halt and idle execution engines */
+	 
 	nvkm_mask(device, 0x020060, 0x00070000, 0x00000000);
 	nvkm_mask(device, 0x002504, 0x00000001, 0x00000001);
-	/* Wait until the interrupt handler is finished */
+	 
 	if (nvkm_msec(device, 2000,
 		if (!nvkm_rd32(device, 0x000100))
 			break;
@@ -371,7 +341,7 @@ prog_pll(struct gt215_clk *clk, int idx, u32 pll, int dom)
 	u32 bypass;
 
 	if (info->pll) {
-		/* Always start from a non-PLL clock */
+		 
 		bypass = nvkm_rd32(device, ctrl)  & 0x00000008;
 		if (!bypass) {
 			nvkm_mask(device, src1, 0x00000101, 0x00000101);
@@ -435,7 +405,7 @@ prog_host(struct gt215_clk *clk)
 		break;
 	}
 
-	/* This seems to be a clock gating factor on idle, always set to 64 */
+	 
 	nvkm_wr32(device, 0xc044, 0x3e);
 }
 
@@ -469,8 +439,7 @@ gt215_clk_calc(struct nvkm_clk *base, struct nvkm_cstate *cstate)
 	    (ret = calc_host(clk, cstate)))
 		return ret;
 
-	/* XXX: Should be reading the highest bit in the VBIOS clock to decide
-	 * whether to use a PLL or not... but using a PLL defeats the purpose */
+	 
 	if (core->pll) {
 		ret = gt215_clk_info(&clk->base, 0x10,
 				     cstate->domain[nv_clk_src_core_intm],

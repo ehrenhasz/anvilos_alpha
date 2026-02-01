@@ -1,15 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Generic userspace implementations of gettimeofday() and similar.
- */
+
+ 
 #include <vdso/datapage.h>
 #include <vdso/helpers.h>
 
 #ifndef vdso_calc_delta
-/*
- * Default implementation which works for all sane clocksources. That
- * obviously excludes x86/TSC.
- */
+ 
 static __always_inline
 u64 vdso_calc_delta(u64 cycles, u64 last, u64 mask, u32 mult)
 {
@@ -80,14 +75,11 @@ static __always_inline int do_hres_timens(const struct vdso_data *vdns, clockid_
 		sec = vdso_ts->sec;
 	} while (unlikely(vdso_read_retry(vd, seq)));
 
-	/* Add the namespace offset */
+	 
 	sec += offs->sec;
 	ns += offs->nsec;
 
-	/*
-	 * Do this outside the loop: a race inside the loop could result
-	 * in __iter_div_u64_rem() being extremely slow.
-	 */
+	 
 	ts->tv_sec = sec + __iter_div_u64_rem(ns, NSEC_PER_SEC, &ns);
 	ts->tv_nsec = ns;
 
@@ -114,22 +106,12 @@ static __always_inline int do_hres(const struct vdso_data *vd, clockid_t clk,
 	u64 cycles, last, sec, ns;
 	u32 seq;
 
-	/* Allows to compile the high resolution parts out */
+	 
 	if (!__arch_vdso_hres_capable())
 		return -1;
 
 	do {
-		/*
-		 * Open coded to handle VDSO_CLOCKMODE_TIMENS. Time namespace
-		 * enabled tasks have a special VVAR page installed which
-		 * has vd->seq set to 1 and vd->clock_mode set to
-		 * VDSO_CLOCKMODE_TIMENS. For non time namespace affected tasks
-		 * this does not affect performance because if vd->seq is
-		 * odd, i.e. a concurrent update is in progress the extra
-		 * check for vd->clock_mode is just a few extra
-		 * instructions while spin waiting for vd->seq to become
-		 * even again.
-		 */
+		 
 		while (unlikely((seq = READ_ONCE(vd->seq)) & 1)) {
 			if (IS_ENABLED(CONFIG_TIME_NS) &&
 			    vd->clock_mode == VDSO_CLOCKMODE_TIMENS)
@@ -151,10 +133,7 @@ static __always_inline int do_hres(const struct vdso_data *vd, clockid_t clk,
 		sec = vdso_ts->sec;
 	} while (unlikely(vdso_read_retry(vd, seq)));
 
-	/*
-	 * Do this outside the loop: a race inside the loop could result
-	 * in __iter_div_u64_rem() being extremely slow.
-	 */
+	 
 	ts->tv_sec = sec + __iter_div_u64_rem(ns, NSEC_PER_SEC, &ns);
 	ts->tv_nsec = ns;
 
@@ -178,14 +157,11 @@ static __always_inline int do_coarse_timens(const struct vdso_data *vdns, clocki
 		nsec = vdso_ts->nsec;
 	} while (unlikely(vdso_read_retry(vd, seq)));
 
-	/* Add the namespace offset */
+	 
 	sec += offs->sec;
 	nsec += offs->nsec;
 
-	/*
-	 * Do this outside the loop: a race inside the loop could result
-	 * in __iter_div_u64_rem() being extremely slow.
-	 */
+	 
 	ts->tv_sec = sec + __iter_div_u64_rem(nsec, NSEC_PER_SEC, &nsec);
 	ts->tv_nsec = nsec;
 	return 0;
@@ -205,10 +181,7 @@ static __always_inline int do_coarse(const struct vdso_data *vd, clockid_t clk,
 	u32 seq;
 
 	do {
-		/*
-		 * Open coded to handle VDSO_CLOCK_TIMENS. See comment in
-		 * do_hres().
-		 */
+		 
 		while ((seq = READ_ONCE(vd->seq)) & 1) {
 			if (IS_ENABLED(CONFIG_TIME_NS) &&
 			    vd->clock_mode == VDSO_CLOCKMODE_TIMENS)
@@ -230,14 +203,11 @@ __cvdso_clock_gettime_common(const struct vdso_data *vd, clockid_t clock,
 {
 	u32 msk;
 
-	/* Check for negative values or invalid clocks */
+	 
 	if (unlikely((u32) clock >= MAX_CLOCKS))
 		return -1;
 
-	/*
-	 * Convert the clockid to a bitmask and use it to check which
-	 * clocks are handled in the VDSO directly.
-	 */
+	 
 	msk = 1U << clock;
 	if (likely(msk & VDSO_HRES))
 		vd = &vd[CS_HRES_COARSE];
@@ -281,7 +251,7 @@ __cvdso_clock_gettime32_data(const struct vdso_data *vd, clockid_t clock,
 	if (unlikely(ret))
 		return clock_gettime32_fallback(clock, res);
 
-	/* For ret == 0 */
+	 
 	res->tv_sec = ts.tv_sec;
 	res->tv_nsec = ts.tv_nsec;
 
@@ -293,7 +263,7 @@ __cvdso_clock_gettime32(clockid_t clock, struct old_timespec32 *res)
 {
 	return __cvdso_clock_gettime32_data(__arch_get_vdso_data(), clock, res);
 }
-#endif /* BUILD_VDSO32 */
+#endif  
 
 static __maybe_unused int
 __cvdso_gettimeofday_data(const struct vdso_data *vd,
@@ -350,7 +320,7 @@ static __maybe_unused __kernel_old_time_t __cvdso_time(__kernel_old_time_t *time
 {
 	return __cvdso_time_data(__arch_get_vdso_data(), time);
 }
-#endif /* VDSO_HAS_TIME */
+#endif  
 
 #ifdef VDSO_HAS_CLOCK_GETRES
 static __maybe_unused
@@ -360,7 +330,7 @@ int __cvdso_clock_getres_common(const struct vdso_data *vd, clockid_t clock,
 	u32 msk;
 	u64 ns;
 
-	/* Check for negative values or invalid clocks */
+	 
 	if (unlikely((u32) clock >= MAX_CLOCKS))
 		return -1;
 
@@ -368,20 +338,13 @@ int __cvdso_clock_getres_common(const struct vdso_data *vd, clockid_t clock,
 	    vd->clock_mode == VDSO_CLOCKMODE_TIMENS)
 		vd = __arch_get_timens_vdso_data(vd);
 
-	/*
-	 * Convert the clockid to a bitmask and use it to check which
-	 * clocks are handled in the VDSO directly.
-	 */
+	 
 	msk = 1U << clock;
 	if (msk & (VDSO_HRES | VDSO_RAW)) {
-		/*
-		 * Preserves the behaviour of posix_get_hrtimer_res().
-		 */
+		 
 		ns = READ_ONCE(vd[CS_HRES_COARSE].hrtimer_res);
 	} else if (msk & VDSO_COARSE) {
-		/*
-		 * Preserves the behaviour of posix_get_coarse_res().
-		 */
+		 
 		ns = LOW_RES_NSEC;
 	} else {
 		return -1;
@@ -437,5 +400,5 @@ __cvdso_clock_getres_time32(clockid_t clock, struct old_timespec32 *res)
 	return __cvdso_clock_getres_time32_data(__arch_get_vdso_data(),
 						clock, res);
 }
-#endif /* BUILD_VDSO32 */
-#endif /* VDSO_HAS_CLOCK_GETRES */
+#endif  
+#endif  

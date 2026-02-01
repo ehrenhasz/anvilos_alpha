@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
-* Simple driver for Texas Instruments LM3639 Backlight + Flash LED driver chip
-* Copyright (C) 2012 Texas Instruments
-*/
+
+ 
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/i2c.h>
@@ -43,14 +40,14 @@ struct lm3639_chip_data {
 	unsigned int last_flag;
 };
 
-/* initialize chip */
+ 
 static int lm3639_chip_init(struct lm3639_chip_data *pchip)
 {
 	int ret;
 	unsigned int reg_val;
 	struct lm3639_platform_data *pdata = pchip->pdata;
 
-	/* input pins config. */
+	 
 	ret =
 	    regmap_update_bits(pchip->regmap, REG_BL_CONF_1, 0x08,
 			       pdata->pin_pwm);
@@ -62,7 +59,7 @@ static int lm3639_chip_init(struct lm3639_chip_data *pchip)
 	if (ret < 0)
 		goto out;
 
-	/* init brightness */
+	 
 	ret = regmap_write(pchip->regmap, REG_BL_CONF_4, pdata->init_brt_led);
 	if (ret < 0)
 		goto out;
@@ -71,7 +68,7 @@ static int lm3639_chip_init(struct lm3639_chip_data *pchip)
 	if (ret < 0)
 		goto out;
 
-	/* output pins config. */
+	 
 	if (!pdata->init_brt_led) {
 		reg_val = pdata->fled_pins;
 		reg_val |= pdata->bled_pins;
@@ -90,7 +87,7 @@ out:
 	return ret;
 }
 
-/* update and get brightness */
+ 
 static int lm3639_bled_update_status(struct backlight_device *bl)
 {
 	int ret;
@@ -105,7 +102,7 @@ static int lm3639_bled_update_status(struct backlight_device *bl)
 	if (reg_val != 0)
 		dev_info(pchip->dev, "last flag is 0x%x\n", reg_val);
 
-	/* pwm control */
+	 
 	if (pdata->pin_pwm) {
 		if (pdata->pwm_set_intensity)
 			pdata->pwm_set_intensity(bl->props.brightness,
@@ -116,7 +113,7 @@ static int lm3639_bled_update_status(struct backlight_device *bl)
 		return bl->props.brightness;
 	}
 
-	/* i2c control and set brigtness */
+	 
 	ret = regmap_write(pchip->regmap, REG_BL_CONF_4, bl->props.brightness);
 	if (ret < 0)
 		goto out;
@@ -176,7 +173,7 @@ static const struct backlight_ops lm3639_bled_ops = {
 	.get_brightness = lm3639_bled_get_brightness,
 };
 
-/* backlight mapping mode */
+ 
 static ssize_t lm3639_bled_mode_store(struct device *dev,
 				      struct device_attribute *devAttr,
 				      const char *buf, size_t size)
@@ -215,7 +212,7 @@ out_input:
 
 static DEVICE_ATTR(bled_mode, S_IWUSR, NULL, lm3639_bled_mode_store);
 
-/* torch */
+ 
 static void lm3639_torch_brightness_set(struct led_classdev *cdev,
 					enum led_brightness brightness)
 {
@@ -231,7 +228,7 @@ static void lm3639_torch_brightness_set(struct led_classdev *cdev,
 	if (reg_val != 0)
 		dev_info(pchip->dev, "last flag is 0x%x\n", reg_val);
 
-	/* brightness 0 means off state */
+	 
 	if (!brightness) {
 		ret = regmap_update_bits(pchip->regmap, REG_ENABLE, 0x06, 0x00);
 		if (ret < 0)
@@ -252,7 +249,7 @@ out:
 	dev_err(pchip->dev, "i2c failed to access register\n");
 }
 
-/* flash */
+ 
 static void lm3639_flash_brightness_set(struct led_classdev *cdev,
 					enum led_brightness brightness)
 {
@@ -268,12 +265,12 @@ static void lm3639_flash_brightness_set(struct led_classdev *cdev,
 	if (reg_val != 0)
 		dev_info(pchip->dev, "last flag is 0x%x\n", reg_val);
 
-	/* torch off before flash control */
+	 
 	ret = regmap_update_bits(pchip->regmap, REG_ENABLE, 0x06, 0x00);
 	if (ret < 0)
 		goto out;
 
-	/* brightness 0 means off state */
+	 
 	if (!brightness)
 		return;
 
@@ -330,14 +327,14 @@ static int lm3639_probe(struct i2c_client *client)
 	}
 	i2c_set_clientdata(client, pchip);
 
-	/* chip initialize */
+	 
 	ret = lm3639_chip_init(pchip);
 	if (ret < 0) {
 		dev_err(&client->dev, "fail : chip init\n");
 		goto err_out;
 	}
 
-	/* backlight */
+	 
 	props.type = BACKLIGHT_RAW;
 	props.brightness = pdata->init_brt_led;
 	props.max_brightness = pdata->max_brt_led;
@@ -357,7 +354,7 @@ static int lm3639_probe(struct i2c_client *client)
 		goto err_out;
 	}
 
-	/* flash */
+	 
 	pchip->cdev_flash.name = "lm3639_flash";
 	pchip->cdev_flash.max_brightness = 16;
 	pchip->cdev_flash.brightness_set = lm3639_flash_brightness_set;
@@ -368,7 +365,7 @@ static int lm3639_probe(struct i2c_client *client)
 		goto err_flash;
 	}
 
-	/* torch */
+	 
 	pchip->cdev_torch.name = "lm3639_torch";
 	pchip->cdev_torch.max_brightness = 8;
 	pchip->cdev_torch.brightness_set = lm3639_torch_brightness_set;

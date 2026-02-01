@@ -1,29 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- * Copyright (c) 2014-2018 Paul Sokolovsky
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include "py/runtime.h"
 #include "py/binary.h"
@@ -39,27 +14,9 @@
 #include <dlfcn.h>
 #include <ffi.h>
 
-/*
- * modffi uses character codes to encode a value type, based on "struct"
- * module type codes, with some extensions and overridings.
- *
- * Extra/overridden typecodes:
- *      v - void, can be used only as return type
- *      P - const void*, pointer to read-only memory
- *      p - void*, meaning pointer to a writable memory (note that this
- *          clashes with struct's "p" as "Pascal string").
- *      s - as argument, the same as "p", as return value, causes string
- *          to be allocated and returned, instead of pointer value.
- *      O - mp_obj_t, passed as is (mostly useful as a callback param)
- *
- * TODO:
- *      C - callback function
- *
- * Note: all constraint specified by typecode can be not enforced at this time,
- * but may be later.
- */
+ 
 
-// This union is large enough to hold any supported argument/return value.
+ 
 typedef union _ffi_union_t {
     ffi_arg ffi;
     unsigned char B;
@@ -85,7 +42,7 @@ typedef struct _mp_obj_ffivar_t {
     mp_obj_base_t base;
     void *var;
     char type;
-//    ffi_type *type;
+ 
 } mp_obj_ffivar_t;
 
 typedef struct _mp_obj_ffifunc_t {
@@ -107,7 +64,7 @@ typedef struct _mp_obj_fficallback_t {
     ffi_type *params[];
 } mp_obj_fficallback_t;
 
-// static const mp_obj_type_t opaque_type;
+ 
 static const mp_obj_type_t ffimod_type;
 static const mp_obj_type_t ffifunc_type;
 static const mp_obj_type_t fficallback_type;
@@ -141,10 +98,10 @@ static ffi_type *char2ffi_type(char c) {
         case 'd':
             return &ffi_type_double;
         #endif
-        case 'O': // mp_obj_t
-        case 'C': // (*)()
-        case 'P': // const void*
-        case 'p': // void*
+        case 'O':  
+        case 'C':  
+        case 'P':  
+        case 'p':  
         case 's':
             return &ffi_type_pointer;
         case 'v':
@@ -162,7 +119,7 @@ static ffi_type *get_ffi_type(mp_obj_t o_in) {
             return t;
         }
     }
-    // TODO: Support actual libffi type objects
+     
 
     mp_raise_TypeError(MP_ERROR_TEXT("unknown type"));
 }
@@ -207,7 +164,7 @@ static mp_obj_t return_ffi_value(ffi_union_t *val, char type) {
     }
 }
 
-// FFI module
+ 
 
 static void ffimod_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind_t kind) {
     (void)kind;
@@ -250,7 +207,7 @@ static mp_obj_t make_func(mp_obj_t rettype_in, void *func, mp_obj_t argtypes_in)
 }
 
 static mp_obj_t ffimod_func(size_t n_args, const mp_obj_t *args) {
-    (void)n_args; // always 4
+    (void)n_args;  
     mp_obj_ffimod_t *self = MP_OBJ_TO_PTR(args[0]);
     const char *symname = mp_obj_str_get_str(args[2]);
 
@@ -305,7 +262,7 @@ static void call_py_func_with_lock(ffi_cif *cif, void *ret, void **args, void *u
         }
         nlr_pop();
     } else {
-        // Uncaught exception
+         
         mp_printf(MICROPY_ERROR_PRINTER, "Uncaught exception in FFI callback\n");
         mp_obj_print_exception(MICROPY_ERROR_PRINTER, MP_OBJ_FROM_PTR(nlr.ret_val));
     }
@@ -317,12 +274,12 @@ static void call_py_func_with_lock(ffi_cif *cif, void *ret, void **args, void *u
 }
 
 static mp_obj_t mod_ffi_callback(size_t n_args, const mp_obj_t *pos_args, mp_map_t *kw_args) {
-    // first 3 args are positional: retttype, func, paramtypes.
+     
     mp_obj_t rettype_in = pos_args[0];
     mp_obj_t func_in = pos_args[1];
     mp_obj_t paramtypes_in = pos_args[2];
 
-    // arg parsing is used only for additional kwargs
+     
     enum { ARG_lock };
     static const mp_arg_t allowed_args[] = {
         { MP_QSTR_lock,        MP_ARG_KW_ONLY | MP_ARG_BOOL,  {.u_bool = false} },
@@ -429,7 +386,7 @@ static MP_DEFINE_CONST_OBJ_TYPE(
     locals_dict, &ffimod_locals_dict
     );
 
-// FFI function
+ 
 
 static void ffifunc_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind_t kind) {
     (void)kind;
@@ -508,7 +465,7 @@ static mp_obj_t ffifunc_call(mp_obj_t self_in, size_t n_args, size_t n_kw, const
         } else if (MP_OBJ_TYPE_HAS_SLOT(((mp_obj_base_t *)MP_OBJ_TO_PTR(a))->type, buffer)) {
             mp_obj_base_t *o = (mp_obj_base_t *)MP_OBJ_TO_PTR(a);
             mp_buffer_info_t bufinfo;
-            int ret = MP_OBJ_TYPE_GET_SLOT(o->type, buffer)(MP_OBJ_FROM_PTR(o), &bufinfo, MP_BUFFER_READ); // TODO: MP_BUFFER_READ?
+            int ret = MP_OBJ_TYPE_GET_SLOT(o->type, buffer)(MP_OBJ_FROM_PTR(o), &bufinfo, MP_BUFFER_READ);  
             if (ret != 0) {
                 goto error;
             }
@@ -538,7 +495,7 @@ static MP_DEFINE_CONST_OBJ_TYPE(
     call, ffifunc_call
     );
 
-// FFI callback for Python function
+ 
 
 static void fficallback_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind_t kind) {
     (void)kind;
@@ -565,12 +522,12 @@ static MP_DEFINE_CONST_OBJ_TYPE(
     locals_dict, &fficallback_locals_dict
     );
 
-// FFI variable
+ 
 
 static void ffivar_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind_t kind) {
     (void)kind;
     mp_obj_ffivar_t *self = MP_OBJ_TO_PTR(self_in);
-    // Variable value printed as cast to int
+     
     mp_printf(print, "<ffivar @%p: 0x%x>", self->var, *(int *)self->var);
 }
 
@@ -602,16 +559,9 @@ static MP_DEFINE_CONST_OBJ_TYPE(
     locals_dict, &ffivar_locals_dict
     );
 
-// Generic opaque storage object (unused)
 
-/*
-static MP_DEFINE_CONST_OBJ_TYPE(
-    opaque_type,
-    MP_QSTR_opaqueval,
-    MP_TYPE_FLAG_NONE,
-    make_new, //    .print = opaque_print,
-    );
-*/
+
+ 
 
 static mp_obj_t mod_ffi_open(size_t n_args, const mp_obj_t *args) {
     return ffimod_make_new(&ffimod_type, n_args, 0, args);
@@ -640,4 +590,4 @@ const mp_obj_module_t mp_module_ffi = {
 
 MP_REGISTER_MODULE(MP_QSTR_ffi, mp_module_ffi);
 
-#endif // MICROPY_PY_FFI
+#endif 

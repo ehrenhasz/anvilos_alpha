@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the Epson RTC module RX-8010 SJ
- *
- * Copyright(C) Timesys Corporation 2015
- * Copyright(C) General Electric Company 2015
- */
+
+ 
 
 #include <linux/bcd.h>
 #include <linux/bitops.h>
@@ -30,7 +25,7 @@
 #define RX8010_EXT		0x1D
 #define RX8010_FLAG		0x1E
 #define RX8010_CTRL		0x1F
-/* 0x20 to 0x2F are user registers */
+ 
 #define RX8010_RESV30		0x30
 #define RX8010_RESV31		0x31
 #define RX8010_IRQ		0x32
@@ -140,7 +135,7 @@ static int rx8010_set_time(struct device *dev, struct rtc_time *dt)
 	u8 date[RX8010_YEAR - RX8010_SEC + 1];
 	int err;
 
-	/* set STOP bit before changing clock/calendar */
+	 
 	err = regmap_set_bits(rx8010->regs, RX8010_CTRL, RX8010_CTRL_STOP);
 	if (err)
 		return err;
@@ -157,7 +152,7 @@ static int rx8010_set_time(struct device *dev, struct rtc_time *dt)
 	if (err)
 		return err;
 
-	/* clear STOP bit after changing clock/calendar */
+	 
 	err = regmap_clear_bits(rx8010->regs, RX8010_CTRL, RX8010_CTRL_STOP);
 	if (err)
 		return err;
@@ -175,7 +170,7 @@ static int rx8010_init(struct device *dev)
 	u8 ctrl[2];
 	int need_clear = 0, err;
 
-	/* Initialize reserved registers as specified in datasheet */
+	 
 	err = regmap_write(rx8010->regs, RX8010_RESV17, 0xD8);
 	if (err)
 		return err;

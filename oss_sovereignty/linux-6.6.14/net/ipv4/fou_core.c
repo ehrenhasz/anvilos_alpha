@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/module.h>
 #include <linux/errno.h>
 #include <linux/socket.h>
@@ -55,9 +55,7 @@ static inline struct fou *fou_from_sock(struct sock *sk)
 
 static int fou_recv_pull(struct sk_buff *skb, struct fou *fou, size_t len)
 {
-	/* Remove 'len' bytes from the packet (UDP header and
-	 * FOU header if present).
-	 */
+	 
 	if (fou->family == AF_INET)
 		ip_hdr(skb)->tot_len = htons(ntohs(ip_hdr(skb)->tot_len) - len);
 	else
@@ -112,7 +110,7 @@ static struct guehdr *gue_remcsum(struct sk_buff *skb, struct guehdr *guehdr,
 
 static int gue_control_message(struct sk_buff *skb, struct guehdr *guehdr)
 {
-	/* No support yet */
+	 
 	kfree_skb(skb);
 	return 0;
 }
@@ -136,11 +134,11 @@ static int gue_udp_recv(struct sock *sk, struct sk_buff *skb)
 	guehdr = (struct guehdr *)&udp_hdr(skb)[1];
 
 	switch (guehdr->version) {
-	case 0: /* Full GUE header present */
+	case 0:  
 		break;
 
 	case 1: {
-		/* Direct encapsulation of IPv4 or IPv6 */
+		 
 
 		int prot;
 
@@ -161,7 +159,7 @@ static int gue_udp_recv(struct sock *sk, struct sk_buff *skb)
 		return -prot;
 	}
 
-	default: /* Undefined version */
+	default:  
 		goto drop;
 	}
 
@@ -171,7 +169,7 @@ static int gue_udp_recv(struct sock *sk, struct sk_buff *skb)
 	if (!pskb_may_pull(skb, len))
 		goto drop;
 
-	/* guehdr may change after pull */
+	 
 	guehdr = (struct guehdr *)&udp_hdr(skb)[1];
 
 	if (validate_gue_flags(guehdr, optlen))
@@ -185,9 +183,7 @@ static int gue_udp_recv(struct sock *sk, struct sk_buff *skb)
 		ipv6_hdr(skb)->payload_len =
 		    htons(ntohs(ipv6_hdr(skb)->payload_len) - len);
 
-	/* Pull csum through the guehdr now . This can be used if
-	 * there is a remote checksum offload.
-	 */
+	 
 	skb_postpull_rcsum(skb, udp_hdr(skb), len);
 
 	data = &guehdr[1];
@@ -237,15 +233,10 @@ static struct sk_buff *fou_gro_receive(struct sock *sk,
 	const struct net_offload *ops;
 	struct sk_buff *pp = NULL;
 
-	/* We can clear the encap_mark for FOU as we are essentially doing
-	 * one of two possible things.  We are either adding an L4 tunnel
-	 * header to the outer L3 tunnel header, or we are simply
-	 * treating the GRE tunnel header as though it is a UDP protocol
-	 * specific header such as VXLAN or GENEVE.
-	 */
+	 
 	NAPI_GRO_CB(skb)->encap_mark = 0;
 
-	/* Flag this frame as already having an outer encap header */
+	 
 	NAPI_GRO_CB(skb)->is_fou = 1;
 
 	offloads = NAPI_GRO_CB(skb)->is_ipv6 ? inet6_offloads : inet_offloads;
@@ -363,9 +354,7 @@ static struct sk_buff *gue_gro_receive(struct sock *sk,
 
 	hdrlen = sizeof(*guehdr) + optlen;
 
-	/* Adjust NAPI_GRO_CB(skb)->csum to account for guehdr,
-	 * this is needed if there is a remote checkcsum offload.
-	 */
+	 
 	skb_gro_postpull_rcsum(skb, guehdr, hdrlen);
 
 	data = &guehdr[1];
@@ -400,15 +389,13 @@ static struct sk_buff *gue_gro_receive(struct sock *sk,
 
 		guehdr2 = (struct guehdr *)(p->data + off);
 
-		/* Compare base GUE header to be equal (covers
-		 * hlen, version, proto_ctype, and flags.
-		 */
+		 
 		if (guehdr->word != guehdr2->word) {
 			NAPI_GRO_CB(p)->same_flow = 0;
 			continue;
 		}
 
-		/* Compare optional fields are the same. */
+		 
 		if (guehdr->hlen && memcmp(&guehdr[1], &guehdr2[1],
 					   guehdr->hlen << 2)) {
 			NAPI_GRO_CB(p)->same_flow = 0;
@@ -420,15 +407,10 @@ static struct sk_buff *gue_gro_receive(struct sock *sk,
 
 next_proto:
 
-	/* We can clear the encap_mark for GUE as we are essentially doing
-	 * one of two possible things.  We are either adding an L4 tunnel
-	 * header to the outer L3 tunnel header, or we are simply
-	 * treating the GRE tunnel header as though it is a UDP protocol
-	 * specific header such as VXLAN or GENEVE.
-	 */
+	 
 	NAPI_GRO_CB(skb)->encap_mark = 0;
 
-	/* Flag this frame as already having an outer encap header */
+	 
 	NAPI_GRO_CB(skb)->is_fou = 1;
 
 	offloads = NAPI_GRO_CB(skb)->is_ipv6 ? inet6_offloads : inet_offloads;
@@ -557,12 +539,12 @@ static int fou_create(struct net *net, struct fou_cfg *cfg,
 	struct udp_tunnel_sock_cfg tunnel_cfg;
 	int err;
 
-	/* Open UDP socket */
+	 
 	err = udp_sock_create(net, &cfg->udp_config, &sock);
 	if (err < 0)
 		goto error;
 
-	/* Allocate FOU port structure */
+	 
 	fou = kzalloc(sizeof(*fou), GFP_KERNEL);
 	if (!fou) {
 		err = -ENOMEM;
@@ -582,7 +564,7 @@ static int fou_create(struct net *net, struct fou_cfg *cfg,
 	tunnel_cfg.sk_user_data = fou;
 	tunnel_cfg.encap_destroy = NULL;
 
-	/* Initial for fou type */
+	 
 	switch (cfg->type) {
 	case FOU_ENCAP_DIRECT:
 		tunnel_cfg.encap_rcv = fou_udp_recv;
@@ -960,7 +942,7 @@ int __gue_build_header(struct sk_buff *skb, struct ip_tunnel_encap *e,
 	if (err)
 		return err;
 
-	/* Get source port (based on flow hash) before skb_push */
+	 
 	*sport = e->sport ? : udp_flow_src_port(dev_net(skb->dev),
 						skb, 0, 0, false);
 
@@ -1092,10 +1074,10 @@ static int gue_err(struct sk_buff *skb, u32 info)
 	guehdr = (struct guehdr *)&udp_hdr(skb)[1];
 
 	switch (guehdr->version) {
-	case 0: /* Full GUE header present */
+	case 0:  
 		break;
 	case 1: {
-		/* Direct encapsulation of IPv4 or IPv6 */
+		 
 		skb_set_transport_header(skb, -(int)sizeof(struct icmphdr));
 
 		switch (((struct iphdr *)guehdr)->version) {
@@ -1112,7 +1094,7 @@ static int gue_err(struct sk_buff *skb, u32 info)
 			goto out;
 		}
 	}
-	default: /* Undefined version */
+	default:  
 		return -EOPNOTSUPP;
 	}
 
@@ -1128,10 +1110,7 @@ static int gue_err(struct sk_buff *skb, u32 info)
 	if (validate_gue_flags(guehdr, optlen))
 		return -EINVAL;
 
-	/* Handling exceptions for direct UDP encapsulation in GUE would lead to
-	 * recursion. Besides, this kind of encapsulation can't even be
-	 * configured currently. Discard this.
-	 */
+	 
 	if (guehdr->proto_ctype == IPPROTO_UDP ||
 	    guehdr->proto_ctype == IPPROTO_UDPLITE)
 		return -EOPNOTSUPP;
@@ -1210,7 +1189,7 @@ static __net_exit void fou_exit_net(struct net *net)
 	struct fou_net *fn = net_generic(net, fou_net_id);
 	struct fou *fou, *next;
 
-	/* Close all the FOU sockets */
+	 
 	mutex_lock(&fn->fou_lock);
 	list_for_each_entry_safe(fou, next, &fn->fou_list, list)
 		fou_release(fou);

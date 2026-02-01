@@ -1,23 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/* IEEE 802.11 SoftMAC layer
- * Copyright (c) 2005 Andrea Merello <andrea.merello@gmail.com>
- *
- * Mostly extracted from the rtl8180-sa2400 driver for the
- * in-kernel generic ieee802.11 stack.
- *
- * Some pieces of code might be stolen from ipw2100 driver
- * copyright of who own it's copyright ;-)
- *
- * PS wx handler mostly stolen from hostap, copyright who
- * own it's copyright ;-)
- */
+
+ 
 
 
 #include <linux/etherdevice.h>
 
 #include "ieee80211.h"
 #include "dot11d.h"
-/* FIXME: add A freqs */
+ 
 
 const long ieee80211_wlan_frequencies[] = {
 	2412, 2417, 2422, 2427,
@@ -40,7 +29,7 @@ int ieee80211_wx_set_freq(struct ieee80211_device *ieee, struct iw_request_info 
 		goto out;
 	}
 
-	/* if setting by freq convert to channel */
+	 
 	if (fwrq->e == 1) {
 		if ((fwrq->m >= (int)2.412e8 &&
 		     fwrq->m <= (int)2.487e8)) {
@@ -50,7 +39,7 @@ int ieee80211_wx_set_freq(struct ieee80211_device *ieee, struct iw_request_info 
 			while ((c < 14) && (f != ieee80211_wlan_frequencies[c]))
 				c++;
 
-			/* hack to fall through */
+			 
 			fwrq->e = 0;
 			fwrq->m = c + 1;
 		}
@@ -60,7 +49,7 @@ int ieee80211_wx_set_freq(struct ieee80211_device *ieee, struct iw_request_info 
 		ret = -EOPNOTSUPP;
 		goto out;
 
-	} else { /* Set the channel */
+	} else {  
 
 		if (!(GET_DOT11D_INFO(ieee)->channel_map)[fwrq->m]) {
 			ret = -EINVAL;
@@ -91,11 +80,11 @@ int ieee80211_wx_get_freq(struct ieee80211_device *ieee,
 
 	if (ieee->current_network.channel == 0)
 		return -1;
-	/* NM 0.7.0 will not accept channel any more. */
+	 
 	fwrq->m = ieee80211_wlan_frequencies[ieee->current_network.channel - 1] * 100000;
 	fwrq->e = 1;
-	/* fwrq->m = ieee->current_network.channel; */
-	/* fwrq->e = 0; */
+	 
+	 
 
 	return 0;
 }
@@ -112,7 +101,7 @@ int ieee80211_wx_get_wap(struct ieee80211_device *ieee,
 	if (ieee->iw_mode == IW_MODE_MONITOR)
 		return -1;
 
-	/* We want avoid to give to the user inconsistent infos*/
+	 
 	spin_lock_irqsave(&ieee->lock, flags);
 
 	if (ieee->state != IEEE80211_LINKED &&
@@ -139,13 +128,13 @@ int ieee80211_wx_set_wap(struct ieee80211_device *ieee,
 	int ret = 0;
 	unsigned long flags;
 
-	short ifup = ieee->proto_started; /* dev->flags & IFF_UP; */
+	short ifup = ieee->proto_started;  
 	struct sockaddr *temp = (struct sockaddr *)awrq;
 
 	ieee->sync_scan_hurryup = 1;
 
 	mutex_lock(&ieee->wx_mutex);
-	/* use ifconfig hw ether */
+	 
 	if (ieee->iw_mode == IW_MODE_MASTER) {
 		ret = -1;
 		goto out;
@@ -159,9 +148,7 @@ int ieee80211_wx_set_wap(struct ieee80211_device *ieee,
 	if (ifup)
 		ieee80211_stop_protocol(ieee);
 
-	/* just to avoid to give inconsistent infos in the
-	 * get wx method. not really needed otherwise
-	 */
+	 
 	spin_lock_irqsave(&ieee->lock, flags);
 
 	memcpy(ieee->current_network.bssid, temp->sa_data, ETH_ALEN);
@@ -185,7 +172,7 @@ int ieee80211_wx_get_essid(struct ieee80211_device *ieee, struct iw_request_info
 	if (ieee->iw_mode == IW_MODE_MONITOR)
 		return -1;
 
-	/* We want avoid to give to the user inconsistent infos*/
+	 
 	spin_lock_irqsave(&ieee->lock, flags);
 
 	if (ieee->current_network.ssid[0] == '\0' ||
@@ -221,7 +208,7 @@ int ieee80211_wx_set_rate(struct ieee80211_device *ieee,
 	u32 target_rate = wrqu->bitrate.value;
 
 	ieee->rate = target_rate / 100000;
-	/* FIXME: we might want to limit rate also in management protocols. */
+	 
 	return 0;
 }
 EXPORT_SYMBOL(ieee80211_wx_set_rate);
@@ -261,7 +248,7 @@ int ieee80211_wx_get_rts(struct ieee80211_device *ieee,
 			     union iwreq_data *wrqu, char *extra)
 {
 	wrqu->rts.value = ieee->rts;
-	wrqu->rts.fixed = 0;	/* no auto select */
+	wrqu->rts.fixed = 0;	 
 	wrqu->rts.disabled = (wrqu->rts.value == DEFAULT_RTS_THRESHOLD);
 	return 0;
 }
@@ -340,7 +327,7 @@ void ieee80211_wx_sync_scan_wq(struct work_struct *work)
 	ieee->InitialGainHandler(ieee->dev, IG_Restore);
 	ieee->state = IEEE80211_LINKED;
 	ieee->link_change(ieee->dev);
-	/* To prevent the immediately calling watch_dog after scan. */
+	 
 	if (ieee->LinkDetectInfo.NumRecvBcnInPeriod == 0 || ieee->LinkDetectInfo.NumRecvDataInPeriod == 0) {
 		ieee->LinkDetectInfo.NumRecvBcnInPeriod = 1;
 		ieee->LinkDetectInfo.NumRecvDataInPeriod = 1;
@@ -370,7 +357,7 @@ int ieee80211_wx_set_scan(struct ieee80211_device *ieee, struct iw_request_info 
 
 	if (ieee->state == IEEE80211_LINKED) {
 		queue_work(ieee->wq, &ieee->wx_sync_scan_wq);
-		/* intentionally forget to up sem */
+		 
 		return 0;
 	}
 
@@ -408,13 +395,11 @@ int ieee80211_wx_set_essid(struct ieee80211_device *ieee,
 		ieee80211_stop_protocol(ieee);
 
 
-	/* this is just to be sure that the GET wx callback
-	 * has consisten infos. not needed otherwise
-	 */
+	 
 	spin_lock_irqsave(&ieee->lock, flags);
 
 	if (wrqu->essid.flags && wrqu->essid.length) {
-		/* first flush current network.ssid */
+		 
 		len = ((wrqu->essid.length - 1) < IW_ESSID_MAX_SIZE) ? (wrqu->essid.length - 1) : IW_ESSID_MAX_SIZE;
 		strncpy(ieee->current_network.ssid, extra, len + 1);
 		ieee->current_network.ssid_len = len + 1;
@@ -506,7 +491,7 @@ int ieee80211_wx_get_name(struct ieee80211_device *ieee,
 }
 EXPORT_SYMBOL(ieee80211_wx_get_name);
 
-/* this is mostly stolen from hostap */
+ 
 int ieee80211_wx_set_power(struct ieee80211_device *ieee,
 				 struct iw_request_info *info,
 				 union iwreq_data *wrqu, char *extra)
@@ -520,15 +505,15 @@ int ieee80211_wx_set_power(struct ieee80211_device *ieee,
 		goto exit;
 	}
 	if (wrqu->power.flags & IW_POWER_TIMEOUT) {
-		/* ieee->ps_period = wrqu->power.value / 1000; */
+		 
 		ieee->ps_timeout = wrqu->power.value / 1000;
 	}
 
 	if (wrqu->power.flags & IW_POWER_PERIOD) {
 
-		/* ieee->ps_timeout = wrqu->power.value / 1000; */
+		 
 		ieee->ps_period = wrqu->power.value / 1000;
-		/* wrq->value / 1024; */
+		 
 
 	}
 	switch (wrqu->power.flags & IW_POWER_MODE) {
@@ -543,7 +528,7 @@ int ieee80211_wx_set_power(struct ieee80211_device *ieee,
 		break;
 
 	case IW_POWER_ON:
-		/* ieee->ps = IEEE80211_PS_DISABLED; */
+		 
 		break;
 
 	default:
@@ -558,7 +543,7 @@ exit:
 }
 EXPORT_SYMBOL(ieee80211_wx_set_power);
 
-/* this is stolen from hostap */
+ 
 int ieee80211_wx_get_power(struct ieee80211_device *ieee,
 				 struct iw_request_info *info,
 				 union iwreq_data *wrqu, char *extra)
@@ -576,11 +561,11 @@ int ieee80211_wx_get_power(struct ieee80211_device *ieee,
 		wrqu->power.flags = IW_POWER_TIMEOUT;
 		wrqu->power.value = ieee->ps_timeout * 1000;
 	} else {
-		/* ret = -EOPNOTSUPP; */
-		/* goto exit; */
+		 
+		 
 		wrqu->power.flags = IW_POWER_PERIOD;
 		wrqu->power.value = ieee->ps_period * 1000;
-		/* ieee->current_network.dtim_period * ieee->current_network.beacon_interval * 1024; */
+		 
 	}
 
 	if ((ieee->ps & (IEEE80211_PS_MBCAST | IEEE80211_PS_UNICAST)) == (IEEE80211_PS_MBCAST | IEEE80211_PS_UNICAST))

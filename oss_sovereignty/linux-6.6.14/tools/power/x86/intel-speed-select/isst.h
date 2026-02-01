@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Intel Speed Select -- Enumerate and control features
- * Copyright (c) 2019 Intel Corporation.
- */
+ 
+ 
 
 #ifndef _ISST_H_
 #define _ISST_H_
@@ -83,7 +80,7 @@
 #define MAX_DIE_PER_PACKAGE	2
 #define MAX_PUNIT_PER_DIE	8
 
-/* Unified structure to specific a CPU or a Power Domain */
+ 
 struct isst_id {
 	int cpu;
 	int pkg;
@@ -155,7 +152,7 @@ struct isst_pkg_ctdp_level_info {
 	size_t core_cpumask_size;
 	cpu_set_t *core_cpumask;
 	int cpu_count;
-	unsigned long long trl_cores;	/* Buckets info */
+	unsigned long long trl_cores;	 
 	int trl_ratios[TRL_MAX_LEVELS][ISST_TRL_MAX_ACTIVE_CORES];
 	int kobj_bucket_index;
 	int active_bucket;
@@ -167,7 +164,7 @@ struct isst_pkg_ctdp_level_info {
 	struct isst_fact_info fact_info;
 };
 
-#define ISST_MAX_TDP_LEVELS	(4 + 1) /* +1 for base config */
+#define ISST_MAX_TDP_LEVELS	(4 + 1)  
 struct isst_pkg_ctdp {
 	int locked;
 	int version;
@@ -217,7 +214,7 @@ extern int get_cpu_count(struct isst_id *id);
 extern int get_max_punit_core_id(struct isst_id *id);
 extern int api_version(void);
 
-/* Common interfaces */
+ 
 FILE *get_output_file(void);
 extern int is_debug_enabled(void);
 extern void debug_printf(const char *format, ...);
@@ -312,11 +309,11 @@ extern void process_level_change(struct isst_id *id);
 extern int hfi_main(void);
 extern void hfi_exit(void);
 
-/* Interface specific callbacks */
+ 
 extern struct isst_platform_ops *mbox_get_platform_ops(void);
 extern struct isst_platform_ops *tpmi_get_platform_ops(void);
 
-/* Cgroup related interface */
+ 
 extern int enable_cpuset_controller(void);
 extern int isolate_cpus(struct isst_id *id, int mask_size, cpu_set_t *cpu_mask, int level);
 extern int use_cgroupv2(void);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Linux NET3:	GRE over IP protocol decoder.
- *
- *	Authors: Alexey Kuznetsov (kuznet@ms2.inr.ac.ru)
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -45,62 +41,7 @@
 #include <net/dst_metadata.h>
 #include <net/erspan.h>
 
-/*
-   Problems & solutions
-   --------------------
-
-   1. The most important issue is detecting local dead loops.
-   They would cause complete host lockup in transmit, which
-   would be "resolved" by stack overflow or, if queueing is enabled,
-   with infinite looping in net_bh.
-
-   We cannot track such dead loops during route installation,
-   it is infeasible task. The most general solutions would be
-   to keep skb->encapsulation counter (sort of local ttl),
-   and silently drop packet when it expires. It is a good
-   solution, but it supposes maintaining new variable in ALL
-   skb, even if no tunneling is used.
-
-   Current solution: xmit_recursion breaks dead loops. This is a percpu
-   counter, since when we enter the first ndo_xmit(), cpu migration is
-   forbidden. We force an exit if this counter reaches RECURSION_LIMIT
-
-   2. Networking dead loops would not kill routers, but would really
-   kill network. IP hop limit plays role of "t->recursion" in this case,
-   if we copy it from packet being encapsulated to upper header.
-   It is very good solution, but it introduces two problems:
-
-   - Routing protocols, using packets with ttl=1 (OSPF, RIP2),
-     do not work over tunnels.
-   - traceroute does not work. I planned to relay ICMP from tunnel,
-     so that this problem would be solved and traceroute output
-     would even more informative. This idea appeared to be wrong:
-     only Linux complies to rfc1812 now (yes, guys, Linux is the only
-     true router now :-)), all routers (at least, in neighbourhood of mine)
-     return only 8 bytes of payload. It is the end.
-
-   Hence, if we want that OSPF worked or traceroute said something reasonable,
-   we should search for another solution.
-
-   One of them is to parse packet trying to detect inner encapsulation
-   made by our node. It is difficult or even impossible, especially,
-   taking into account fragmentation. TO be short, ttl is not solution at all.
-
-   Current solution: The solution was UNEXPECTEDLY SIMPLE.
-   We force DF flag on tunnels with preconfigured hop limit,
-   that is ALL. :-) Well, it does not remove the problem completely,
-   but exponential growth of network traffic is changed to linear
-   (branches, that exceed pmtu are pruned) and tunnel mtu
-   rapidly degrades to value <68, where looping stops.
-   Yes, it is not good if there exists a router in the loop,
-   which does not force DF, even when encapsulating packets have DF set.
-   But it is not our problem! Nobody could accuse us, we made
-   all that we could make. Even if it is your gated who injected
-   fatal route to network, even if it were you who configured
-   fatal static route: you are innocent. :-)
-
-   Alexey Kuznetsov.
- */
+ 
 
 static bool log_ecn_error = true;
 module_param(log_ecn_error, bool, 0644);
@@ -122,19 +63,7 @@ static int ipgre_err(struct sk_buff *skb, u32 info,
 		     const struct tnl_ptk_info *tpi)
 {
 
-	/* All the routers (except for Linux) return only
-	   8 bytes of packet payload. It means, that precise relaying of
-	   ICMP in the real Internet is absolutely infeasible.
-
-	   Moreover, Cisco "wise men" put GRE key to the third word
-	   in GRE header. It makes impossible maintaining even soft
-	   state for keyed GRE tunnels with enabled checksum. Tell
-	   them "thank you".
-
-	   Well, I wonder, rfc1812 was written by Cisco employee,
-	   what the hell these idiots break standards established
-	   by themselves???
-	   */
+	 
 	struct net *net = dev_net(skb->dev);
 	struct ip_tunnel_net *itn;
 	const struct iphdr *iph;
@@ -167,13 +96,10 @@ static int ipgre_err(struct sk_buff *skb, u32 info,
 		switch (code) {
 		case ICMP_SR_FAILED:
 		case ICMP_PORT_UNREACH:
-			/* Impossible event. */
+			 
 			return 0;
 		default:
-			/* All others are translated to HOST_UNREACH.
-			   rfc2003 contains "deep thoughts" about NET_UNREACH,
-			   I believe they are just ether pollution. --ANK
-			 */
+			 
 			break;
 		}
 		break;
@@ -181,7 +107,7 @@ static int ipgre_err(struct sk_buff *skb, u32 info,
 	case ICMP_TIME_EXCEEDED:
 		if (code != ICMP_EXC_TTL)
 			return 0;
-		data_len = icmp_hdr(skb)->un.reserved[1] * 4; /* RFC 4884 4.1 */
+		data_len = icmp_hdr(skb)->un.reserved[1] * 4;  
 		break;
 
 	case ICMP_REDIRECT:
@@ -213,19 +139,7 @@ static int ipgre_err(struct sk_buff *skb, u32 info,
 
 static void gre_err(struct sk_buff *skb, u32 info)
 {
-	/* All the routers (except for Linux) return only
-	 * 8 bytes of packet payload. It means, that precise relaying of
-	 * ICMP in the real Internet is absolutely infeasible.
-	 *
-	 * Moreover, Cisco "wise men" put GRE key to the third word
-	 * in GRE header. It makes impossible maintaining even soft
-	 * state for keyed
-	 * GRE tunnels with enabled checksum. Tell them "thank you".
-	 *
-	 * Well, I wonder, rfc1812 was written by Cisco employee,
-	 * what the hell these idiots break standards established
-	 * by themselves???
-	 */
+	 
 
 	const struct iphdr *iph = (struct iphdr *)skb->data;
 	const int type = icmp_hdr(skb)->type;
@@ -252,10 +166,7 @@ static void gre_err(struct sk_buff *skb, u32 info)
 
 static bool is_erspan_type1(int gre_hdr_len)
 {
-	/* Both ERSPAN type I (version 0) and type II (version 1) use
-	 * protocol 0x88BE, but the type I has only 4-byte GRE header,
-	 * while type II has 8-byte.
-	 */
+	 
 	return gre_hdr_len == 4;
 }
 
@@ -318,10 +229,7 @@ static int erspan_rcv(struct sk_buff *skb, struct tnl_ptk_info *tpi,
 			if (!tun_dst)
 				return PACKET_REJECT;
 
-			/* skb can be uncloned in __iptunnel_pull_header, so
-			 * old pkt_md is no longer valid and we need to reset
-			 * it
-			 */
+			 
 			gh = skb_network_header(skb) +
 			     skb_network_header_len(skb);
 			pkt_md = (struct erspan_metadata *)(gh + gre_hdr_len +
@@ -366,9 +274,7 @@ static int __ipgre_rcv(struct sk_buff *skb, const struct tnl_ptk_info *tpi,
 					   raw_proto, false) < 0)
 			goto drop;
 
-		/* Special case for ipgre_header_parse(), which expects the
-		 * mac_header to point to the outer IP header.
-		 */
+		 
 		if (tunnel->dev->header_ops == &ipgre_header_ops)
 			skb_pop_mac_header(skb);
 		else
@@ -410,9 +316,7 @@ static int ipgre_rcv(struct sk_buff *skb, const struct tnl_ptk_info *tpi,
 
 	res = __ipgre_rcv(skb, tpi, itn, hdr_len, false);
 	if (res == PACKET_NEXT && tpi->proto == htons(ETH_P_TEB)) {
-		/* ipgre tunnels in collect metadata mode should receive
-		 * also ETH_P_TEB traffic.
-		 */
+		 
 		itn = net_generic(net, ipgre_net_id);
 		res = __ipgre_rcv(skb, tpi, itn, hdr_len, true);
 	}
@@ -427,7 +331,7 @@ static int gre_rcv(struct sk_buff *skb)
 
 #ifdef CONFIG_NET_IPGRE_BROADCAST
 	if (ipv4_is_multicast(ip_hdr(skb)->daddr)) {
-		/* Looped back packet, drop it! */
+		 
 		if (rt_is_output_route(skb_rtable(skb)))
 			goto drop;
 	}
@@ -461,7 +365,7 @@ static void __gre_xmit(struct sk_buff *skb, struct net_device *dev,
 	struct ip_tunnel *tunnel = netdev_priv(dev);
 	__be16 flags = tunnel->parms.o_flags;
 
-	/* Push GRE header. */
+	 
 	gre_build_header(skb, tunnel->tun_hlen,
 			 flags, proto, tunnel->parms.o_key,
 			 (flags & TUNNEL_SEQ) ? htonl(atomic_fetch_inc(&tunnel->o_seqno)) : 0);
@@ -494,7 +398,7 @@ static void gre_fb_xmit(struct sk_buff *skb, struct net_device *dev,
 	if (skb_cow_head(skb, dev->needed_headroom))
 		goto err_free_skb;
 
-	/* Push Tunnel header. */
+	 
 	if (gre_handle_offloads(skb, !!(tun_info->key.tun_flags & TUNNEL_CSUM)))
 		goto err_free_skb;
 
@@ -537,7 +441,7 @@ static void erspan_fb_xmit(struct sk_buff *skb, struct net_device *dev)
 		goto err_free_skb;
 	md = ip_tunnel_info_opts(tun_info);
 
-	/* ERSPAN has fixed 8 byte GRE header */
+	 
 	version = md->version;
 	tunnel_hlen = 8 + erspan_hdr_len(version);
 
@@ -645,7 +549,7 @@ static netdev_tx_t ipgre_xmit(struct sk_buff *skb,
 		if (!pskb_network_may_pull(skb, pull_len))
 			goto free_skb;
 
-		/* ip_tunnel_xmit() needs skb->data pointing to gre header. */
+		 
 		skb_pull(skb, pull_len);
 		skb_reset_mac_header(skb);
 
@@ -698,7 +602,7 @@ static netdev_tx_t erspan_xmit(struct sk_buff *skb,
 		truncate = true;
 	}
 
-	/* Push ERSPAN header */
+	 
 	if (tunnel->erspan_ver == 0) {
 		proto = htons(ETH_P_ERSPAN);
 		tunnel->parms.o_flags &= ~TUNNEL_SEQ;
@@ -819,33 +723,7 @@ static int ipgre_tunnel_ctl(struct net_device *dev, struct ip_tunnel_parm *p,
 	return 0;
 }
 
-/* Nice toy. Unfortunately, useless in real life :-)
-   It allows to construct virtual multiprotocol broadcast "LAN"
-   over the Internet, provided multicast routing is tuned.
-
-
-   I have no idea was this bicycle invented before me,
-   so that I had to set ARPHRD_IPGRE to a random value.
-   I have an impression, that Cisco could make something similar,
-   but this feature is apparently missing in IOS<=11.2(8).
-
-   I set up 10.66.66/24 and fec0:6666:6666::0/96 as virtual networks
-   with broadcast 224.66.66.66. If you have access to mbone, play with me :-)
-
-   ping -t 255 224.66.66.66
-
-   If nobody answers, mbone does not work.
-
-   ip tunnel add Universe mode gre remote 224.66.66.66 local <Your_real_addr> ttl 255
-   ip addr add 10.66.66.<somewhat>/24 dev Universe
-   ifconfig Universe up
-   ifconfig Universe add fe80::<Your_real_addr>/10
-   ifconfig Universe add fec0:6666:6666::<Your_real_addr>/96
-   ftp 10.66.66.66
-   ...
-   ftp fec0:6666:6666::193.233.7.65
-   ...
- */
+ 
 static int ipgre_header(struct sk_buff *skb, struct net_device *dev,
 			unsigned short type,
 			const void *daddr, const void *saddr, unsigned int len)
@@ -861,7 +739,7 @@ static int ipgre_header(struct sk_buff *skb, struct net_device *dev,
 
 	memcpy(iph, &t->parms.iph, sizeof(struct iphdr));
 
-	/* Set the source hardware address. */
+	 
 	if (saddr)
 		memcpy(&iph->saddr, saddr, 4);
 	if (daddr)
@@ -969,9 +847,7 @@ static void __gre_tunnel_init(struct net_device *dev)
 
 	flags = tunnel->parms.o_flags;
 
-	/* TCP offload with GRE SEQ is not supported, nor can we support 2
-	 * levels of outer headers requiring an update.
-	 */
+	 
 	if (flags & TUNNEL_SEQ)
 		return;
 	if (flags & TUNNEL_CSUM && tunnel->encap.type != TUNNEL_ENCAP_NONE)
@@ -1103,7 +979,7 @@ static int erspan_validate(struct nlattr *tb[], struct nlattr *data[],
 	    nla_get_u8(data[IFLA_GRE_ERSPAN_VER]) == 0)
 		return 0;
 
-	/* ERSPAN type II/III should only have GRE sequence and key flag */
+	 
 	if (data[IFLA_GRE_OFLAGS])
 		flags |= nla_get_be16(data[IFLA_GRE_OFLAGS]);
 	if (data[IFLA_GRE_IFLAGS])
@@ -1112,9 +988,7 @@ static int erspan_validate(struct nlattr *tb[], struct nlattr *data[],
 	    flags != (GRE_SEQ | GRE_KEY))
 		return -EINVAL;
 
-	/* ERSPAN Session ID only has 10-bit. Since we reuse
-	 * 32-bit key field as ID, check it's range.
-	 */
+	 
 	if (data[IFLA_GRE_IKEY] &&
 	    (ntohl(nla_get_be32(data[IFLA_GRE_IKEY])) & ~ID_MASK))
 		return -EINVAL;
@@ -1237,7 +1111,7 @@ static int erspan_netlink_parms(struct net_device *dev,
 	return 0;
 }
 
-/* This function returns true when ENCAP attributes are present in the nl msg */
+ 
 static bool ipgre_netlink_encap_parms(struct nlattr *data[],
 				      struct ip_tunnel_encap *ipencap)
 {
@@ -1297,9 +1171,9 @@ static int erspan_tunnel_init(struct net_device *dev)
 	struct ip_tunnel *tunnel = netdev_priv(dev);
 
 	if (tunnel->erspan_ver == 0)
-		tunnel->tun_hlen = 4; /* 4-byte GRE hdr. */
+		tunnel->tun_hlen = 4;  
 	else
-		tunnel->tun_hlen = 8; /* 8-byte GRE hdr. */
+		tunnel->tun_hlen = 8;  
 
 	tunnel->parms.iph.protocol = IPPROTO_GRE;
 	tunnel->hlen = tunnel->tun_hlen + tunnel->encap_hlen +
@@ -1446,47 +1320,47 @@ static int erspan_changelink(struct net_device *dev, struct nlattr *tb[],
 static size_t ipgre_get_size(const struct net_device *dev)
 {
 	return
-		/* IFLA_GRE_LINK */
+		 
 		nla_total_size(4) +
-		/* IFLA_GRE_IFLAGS */
+		 
 		nla_total_size(2) +
-		/* IFLA_GRE_OFLAGS */
+		 
 		nla_total_size(2) +
-		/* IFLA_GRE_IKEY */
+		 
 		nla_total_size(4) +
-		/* IFLA_GRE_OKEY */
+		 
 		nla_total_size(4) +
-		/* IFLA_GRE_LOCAL */
+		 
 		nla_total_size(4) +
-		/* IFLA_GRE_REMOTE */
+		 
 		nla_total_size(4) +
-		/* IFLA_GRE_TTL */
+		 
 		nla_total_size(1) +
-		/* IFLA_GRE_TOS */
+		 
 		nla_total_size(1) +
-		/* IFLA_GRE_PMTUDISC */
+		 
 		nla_total_size(1) +
-		/* IFLA_GRE_ENCAP_TYPE */
+		 
 		nla_total_size(2) +
-		/* IFLA_GRE_ENCAP_FLAGS */
+		 
 		nla_total_size(2) +
-		/* IFLA_GRE_ENCAP_SPORT */
+		 
 		nla_total_size(2) +
-		/* IFLA_GRE_ENCAP_DPORT */
+		 
 		nla_total_size(2) +
-		/* IFLA_GRE_COLLECT_METADATA */
+		 
 		nla_total_size(0) +
-		/* IFLA_GRE_IGNORE_DF */
+		 
 		nla_total_size(1) +
-		/* IFLA_GRE_FWMARK */
+		 
 		nla_total_size(4) +
-		/* IFLA_GRE_ERSPAN_INDEX */
+		 
 		nla_total_size(4) +
-		/* IFLA_GRE_ERSPAN_VER */
+		 
 		nla_total_size(1) +
-		/* IFLA_GRE_ERSPAN_DIR */
+		 
 		nla_total_size(1) +
-		/* IFLA_GRE_ERSPAN_HWID */
+		 
 		nla_total_size(2) +
 		0;
 }
@@ -1663,7 +1537,7 @@ struct net_device *gretap_fb_dev_create(struct net *net, const char *name,
 	if (IS_ERR(dev))
 		return dev;
 
-	/* Configure flow based GRE device. */
+	 
 	t = netdev_priv(dev);
 	t->collect_md = true;
 
@@ -1673,9 +1547,7 @@ struct net_device *gretap_fb_dev_create(struct net *net, const char *name,
 		return ERR_PTR(err);
 	}
 
-	/* openvswitch users expect packet sizes to be unrestricted,
-	 * so set the largest MTU we can.
-	 */
+	 
 	err = __ip_tunnel_change_mtu(dev, IP_MAX_MTU, false);
 	if (err)
 		goto out;

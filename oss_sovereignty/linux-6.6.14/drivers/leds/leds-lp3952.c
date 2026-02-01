@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *	LED driver for TI lp3952 controller
- *
- *	Copyright (C) 2016, DAQRI, LLC.
- *	Author: Tony Makkiel <tony.makkiel@daqri.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -50,11 +45,7 @@ static void lp3952_on_off(struct lp3952_led_array *priv,
 		dev_err(&priv->client->dev, "%s, Error %d\n", __func__, ret);
 }
 
-/*
- * Using Imax to control brightness. There are 4 possible
- * setting 25, 50, 75 and 100 % of Imax. Possible values are
- * values 0-4. 0 meaning turn off.
- */
+ 
 static int lp3952_set_brightness(struct led_classdev *cdev,
 				 enum led_brightness value)
 {
@@ -85,7 +76,7 @@ static int lp3952_set_brightness(struct led_classdev *cdev,
 		shift_val = led->channel * 2;
 	}
 
-	/* Enable the LED in case it is not enabled already */
+	 
 	lp3952_on_off(priv, led->channel, true);
 
 	return regmap_update_bits(priv->regmap, reg, 3 << shift_val,
@@ -178,24 +169,24 @@ static int lp3952_configure(struct lp3952_led_array *priv)
 {
 	int ret;
 
-	/* Disable any LEDs on from any previous conf. */
+	 
 	ret = lp3952_register_write(priv->client, LP3952_REG_LED_CTRL, 0);
 	if (ret)
 		return ret;
 
-	/* enable rgb patter, loop */
+	 
 	ret = lp3952_register_write(priv->client, LP3952_REG_PAT_GEN_CTRL,
 				    LP3952_PATRN_LOOP | LP3952_PATRN_GEN_EN);
 	if (ret)
 		return ret;
 
-	/* Update Bit 6 (Active mode), Select both Led sets, Bit [1:0] */
+	 
 	ret = lp3952_register_write(priv->client, LP3952_REG_ENABLES,
 				    LP3952_ACTIVE_MODE | LP3952_INT_B00ST_LDR);
 	if (ret)
 		return ret;
 
-	/* Set Cmd1 for RGB intensity,cmd and transition time */
+	 
 	return lp3952_set_pattern_gen_cmd(priv, 0, I46, I71, I100, TT0,
 					   CET197);
 }

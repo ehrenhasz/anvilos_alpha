@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Microchip Sparx5 Switch driver
- *
- * Copyright (c) 2021 Microchip Technology Inc. and its subsidiaries.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/device.h>
@@ -10,11 +7,11 @@
 #include "sparx5_main_regs.h"
 #include "sparx5_main.h"
 
-/* QSYS calendar information */
-#define SPX5_PORTS_PER_CALREG          10  /* Ports mapped in a calendar register */
-#define SPX5_CALBITS_PER_PORT          3   /* Bit per port in calendar register */
+ 
+#define SPX5_PORTS_PER_CALREG          10   
+#define SPX5_CALBITS_PER_PORT          3    
 
-/* DSM calendar information */
+ 
 #define SPX5_DSM_CAL_LEN               64
 #define SPX5_DSM_CAL_EMPTY             0xFFFF
 #define SPX5_DSM_CAL_MAX_DEVS_PER_TAXI 13
@@ -25,7 +22,7 @@
 
 #define SPEED_12500                    12500
 
-/* Maps from taxis to port numbers */
+ 
 static u32 sparx5_taxi_ports[SPX5_DSM_CAL_TAXIS][SPX5_DSM_CAL_MAX_DEVS_PER_TAXI] = {
 	{57, 12, 0, 1, 2, 16, 17, 18, 19, 20, 21, 22, 23},
 	{58, 13, 3, 4, 5, 24, 25, 26, 27, 28, 29, 30, 31},
@@ -73,7 +70,7 @@ static u32 sparx5_target_bandwidth(struct sparx5 *sparx5)
 	}
 }
 
-/* This is used in calendar configuration */
+ 
 enum sparx5_cal_bw {
 	SPX5_CAL_SPEED_NONE = 0,
 	SPX5_CAL_SPEED_1G   = 1,
@@ -88,9 +85,9 @@ enum sparx5_cal_bw {
 static u32 sparx5_clk_to_bandwidth(enum sparx5_core_clockfreq cclock)
 {
 	switch (cclock) {
-	case SPX5_CORE_CLOCK_250MHZ: return 83000; /* 250000 / 3 */
-	case SPX5_CORE_CLOCK_500MHZ: return 166000; /* 500000 / 3 */
-	case SPX5_CORE_CLOCK_625MHZ: return  208000; /* 625000 / 3 */
+	case SPX5_CORE_CLOCK_250MHZ: return 83000;  
+	case SPX5_CORE_CLOCK_500MHZ: return 166000;  
+	case SPX5_CORE_CLOCK_625MHZ: return  208000;  
 	default: return 0;
 	}
 	return 0;
@@ -132,31 +129,31 @@ static enum sparx5_cal_bw sparx5_get_port_cal_speed(struct sparx5 *sparx5,
 	struct sparx5_port *port;
 
 	if (portno >= SPX5_PORTS) {
-		/* Internal ports */
+		 
 		if (portno == SPX5_PORT_CPU_0 || portno == SPX5_PORT_CPU_1) {
-			/* Equals 1.25G */
+			 
 			return SPX5_CAL_SPEED_2G5;
 		} else if (portno == SPX5_PORT_VD0) {
-			/* IPMC only idle BW */
+			 
 			return SPX5_CAL_SPEED_NONE;
 		} else if (portno == SPX5_PORT_VD1) {
-			/* OAM only idle BW */
+			 
 			return SPX5_CAL_SPEED_NONE;
 		} else if (portno == SPX5_PORT_VD2) {
-			/* IPinIP gets only idle BW */
+			 
 			return SPX5_CAL_SPEED_NONE;
 		}
-		/* not in port map */
+		 
 		return SPX5_CAL_SPEED_NONE;
 	}
-	/* Front ports - may be used */
+	 
 	port = sparx5->ports[portno];
 	if (!port)
 		return SPX5_CAL_SPEED_NONE;
 	return sparx5_bandwidth_to_calendar(port->conf.bandwidth);
 }
 
-/* Auto configure the QSYS calendar based on port configuration */
+ 
 int sparx5_config_auto_calendar(struct sparx5 *sparx5)
 {
 	u32 cal[7], value, idx, portno;
@@ -173,7 +170,7 @@ int sparx5_config_auto_calendar(struct sparx5 *sparx5)
 		return -EINVAL;
 	}
 
-	/* Setup the calendar with the bandwidth to each port */
+	 
 	for (portno = 0; portno < SPX5_PORTS_ALL; portno++) {
 		u64 reg, offset, this_bw;
 
@@ -185,7 +182,7 @@ int sparx5_config_auto_calendar(struct sparx5 *sparx5)
 		if (portno < SPX5_PORTS)
 			used_port_bw += this_bw;
 		else
-			/* Internal ports are granted half the value */
+			 
 			this_bw = this_bw / 2;
 		total_bw += this_bw;
 		reg = portno;
@@ -207,35 +204,33 @@ int sparx5_config_auto_calendar(struct sparx5 *sparx5)
 		return -EINVAL;
 	}
 
-	/* Halt the calendar while changing it */
+	 
 	spx5_rmw(QSYS_CAL_CTRL_CAL_MODE_SET(10),
 		 QSYS_CAL_CTRL_CAL_MODE,
 		 sparx5, QSYS_CAL_CTRL);
 
-	/* Assign port bandwidth to auto calendar */
+	 
 	for (idx = 0; idx < ARRAY_SIZE(cal); idx++)
 		spx5_wr(cal[idx], sparx5, QSYS_CAL_AUTO(idx));
 
-	/* Increase grant rate of all ports to account for
-	 * core clock ppm deviations
-	 */
-	spx5_rmw(QSYS_CAL_CTRL_CAL_AUTO_GRANT_RATE_SET(671), /* 672->671 */
+	 
+	spx5_rmw(QSYS_CAL_CTRL_CAL_AUTO_GRANT_RATE_SET(671),  
 		 QSYS_CAL_CTRL_CAL_AUTO_GRANT_RATE,
 		 sparx5,
 		 QSYS_CAL_CTRL);
 
-	/* Grant idle usage to VD 0-2 */
+	 
 	for (idx = 2; idx < 5; idx++)
 		spx5_wr(HSCH_OUTB_SHARE_ENA_OUTB_SHARE_ENA_SET(12),
 			sparx5,
 			HSCH_OUTB_SHARE_ENA(idx));
 
-	/* Enable Auto mode */
+	 
 	spx5_rmw(QSYS_CAL_CTRL_CAL_MODE_SET(8),
 		 QSYS_CAL_CTRL_CAL_MODE,
 		 sparx5, QSYS_CAL_CTRL);
 
-	/* Verify successful calendar config */
+	 
 	value = spx5_rd(sparx5, QSYS_CAL_CTRL);
 	if (QSYS_CAL_CTRL_CAL_AUTO_ERROR_GET(value)) {
 		dev_err(sparx5->dev, "QSYS calendar error\n");
@@ -297,10 +292,10 @@ static int sparx5_dsm_calendar_calc(struct sparx5 *sparx5, u32 taxi,
 		data->schedule[idx] = SPX5_DSM_CAL_EMPTY;
 		data->temp_sched[idx] = SPX5_DSM_CAL_EMPTY;
 	}
-	/* Default empty calendar */
+	 
 	data->schedule[0] = SPX5_DSM_CAL_MAX_DEVS_PER_TAXI;
 
-	/* Map ports to taxi positions */
+	 
 	for (idx = 0; idx < SPX5_DSM_CAL_MAX_DEVS_PER_TAXI; idx++) {
 		u32 portno = data->taxi_ports[idx];
 
@@ -324,9 +319,9 @@ static int sparx5_dsm_calendar_calc(struct sparx5 *sparx5, u32 taxi,
 		for (jdx = 0; jdx < ARRAY_SIZE(data->taxi_speeds); jdx++)
 			gcd = sparx5_dsm_exb_gcd(gcd, data->taxi_speeds[jdx]);
 	}
-	if (sum == 0) /* Empty calendar */
+	if (sum == 0)  
 		return 0;
-	/* Make room for overhead traffic */
+	 
 	factor = 100 * 100 * 1000 / (100 * 100 - SPX5_DSM_CAL_BW_LOSS);
 
 	if (sum * factor > (taxi_bw * 1000)) {
@@ -562,7 +557,7 @@ update_err:
 	return -EINVAL;
 }
 
-/* Configure the DSM calendar based on port configuration */
+ 
 int sparx5_config_dsm_calendar(struct sparx5 *sparx5)
 {
 	int taxi;

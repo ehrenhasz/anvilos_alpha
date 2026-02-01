@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2015-2018 Netronome Systems, Inc. */
 
-/*
- * nfp_cpplib.c
- * Library of functions to access the NFP's CPP bus
- * Authors: Jakub Kicinski <jakub.kicinski@netronome.com>
- *          Jason McMullan <jason.mcmullan@netronome.com>
- *          Rolf Neugebauer <rolf.neugebauer@netronome.com>
- */
+ 
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/bitfield.h>
@@ -21,7 +15,7 @@
 #include "nfp6000/nfp6000.h"
 #include "nfp6000/nfp_xpb.h"
 
-/* NFP6000 PL */
+ 
 #define NFP_PL_DEVICE_PART_NFP6000		0x6200
 #define NFP_PL_DEVICE_ID			0x00000004
 #define   NFP_PL_DEVICE_ID_MASK			GENMASK(7, 0)
@@ -29,15 +23,7 @@
 #define NFP_PL_DEVICE_MODEL_MASK		(NFP_PL_DEVICE_PART_MASK | \
 						 NFP_PL_DEVICE_ID_MASK)
 
-/**
- * nfp_cpp_readl() - Read a u32 word from a CPP location
- * @cpp:	CPP device handle
- * @cpp_id:	CPP ID for operation
- * @address:	Address for operation
- * @value:	Pointer to read buffer
- *
- * Return: 0 on success, or -ERRNO
- */
+ 
 int nfp_cpp_readl(struct nfp_cpp *cpp, u32 cpp_id,
 		  unsigned long long address, u32 *value)
 {
@@ -52,15 +38,7 @@ int nfp_cpp_readl(struct nfp_cpp *cpp, u32 cpp_id,
 	return 0;
 }
 
-/**
- * nfp_cpp_writel() - Write a u32 word to a CPP location
- * @cpp:	CPP device handle
- * @cpp_id:	CPP ID for operation
- * @address:	Address for operation
- * @value:	Value to write
- *
- * Return: 0 on success, or -ERRNO
- */
+ 
 int nfp_cpp_writel(struct nfp_cpp *cpp, u32 cpp_id,
 		   unsigned long long address, u32 value)
 {
@@ -73,15 +51,7 @@ int nfp_cpp_writel(struct nfp_cpp *cpp, u32 cpp_id,
 	return n == sizeof(tmp) ? 0 : n < 0 ? n : -EIO;
 }
 
-/**
- * nfp_cpp_readq() - Read a u64 word from a CPP location
- * @cpp:	CPP device handle
- * @cpp_id:	CPP ID for operation
- * @address:	Address for operation
- * @value:	Pointer to read buffer
- *
- * Return: 0 on success, or -ERRNO
- */
+ 
 int nfp_cpp_readq(struct nfp_cpp *cpp, u32 cpp_id,
 		  unsigned long long address, u64 *value)
 {
@@ -96,15 +66,7 @@ int nfp_cpp_readq(struct nfp_cpp *cpp, u32 cpp_id,
 	return 0;
 }
 
-/**
- * nfp_cpp_writeq() - Write a u64 word to a CPP location
- * @cpp:	CPP device handle
- * @cpp_id:	CPP ID for operation
- * @address:	Address for operation
- * @value:	Value to write
- *
- * Return: 0 on success, or -ERRNO
- */
+ 
 int nfp_cpp_writeq(struct nfp_cpp *cpp, u32 cpp_id,
 		   unsigned long long address, u64 value)
 {
@@ -117,9 +79,7 @@ int nfp_cpp_writeq(struct nfp_cpp *cpp, u32 cpp_id,
 	return n == sizeof(tmp) ? 0 : n < 0 ? n : -EIO;
 }
 
-/* NOTE: This code should not use nfp_xpb_* functions,
- * as those are model-specific
- */
+ 
 int nfp_cpp_model_autodetect(struct nfp_cpp *cpp, u32 *model)
 {
 	u32 reg;
@@ -131,7 +91,7 @@ int nfp_cpp_model_autodetect(struct nfp_cpp *cpp, u32 *model)
 		return err;
 
 	*model = reg & NFP_PL_DEVICE_MODEL_MASK;
-	/* Disambiguate the NFP4000/NFP5000/NFP6000 chips */
+	 
 	if (FIELD_GET(NFP_PL_DEVICE_PART_MASK, reg) ==
 	    NFP_PL_DEVICE_PART_NFP6000) {
 		if (*model & NFP_PL_DEVICE_ID_MASK)
@@ -173,7 +133,7 @@ int nfp_cpp_explicit_read(struct nfp_cpp *cpp, u32 cpp_id,
 	incr = min_t(int, 16 * width_read, 128);
 	incr = min_t(int, incr, len);
 
-	/* Translate a NFP_CPP_ACTION_RW to action 0 */
+	 
 	if (NFP_CPP_ID_ACTION_of(cpp_id) == NFP_CPP_ACTION_RW)
 		cpp_id = NFP_CPP_ID(NFP_CPP_ID_TARGET_of(cpp_id), 0,
 				    NFP_CPP_ID_TOKEN_of(cpp_id));
@@ -226,7 +186,7 @@ int nfp_cpp_explicit_write(struct nfp_cpp *cpp, u32 cpp_id, u64 addr,
 	incr = min_t(int, 16 * width_write, 128);
 	incr = min_t(int, incr, len);
 
-	/* Translate a NFP_CPP_ACTION_RW to action 1 */
+	 
 	if (NFP_CPP_ID_ACTION_of(cpp_id) == NFP_CPP_ACTION_RW)
 		cpp_id = NFP_CPP_ID(NFP_CPP_ID_TARGET_of(cpp_id), 1,
 				    NFP_CPP_ID_TOKEN_of(cpp_id));
@@ -261,20 +221,7 @@ exit_release:
 	return err;
 }
 
-/**
- * nfp_cpp_map_area() - Helper function to map an area
- * @cpp:    NFP CPP handler
- * @name:   Name for the area
- * @cpp_id: CPP ID for operation
- * @addr:   CPP address
- * @size:   Size of the area
- * @area:   Area handle (output)
- *
- * Map an area of IOMEM access.  To undo the effect of this function call
- * @nfp_cpp_area_release_free(*area).
- *
- * Return: Pointer to memory mapped area or ERR_PTR
- */
+ 
 u8 __iomem *
 nfp_cpp_map_area(struct nfp_cpp *cpp, const char *name, u32 cpp_id, u64 addr,
 		 unsigned long size, struct nfp_cpp_area **area)

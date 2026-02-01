@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2021 Aspeed Technology Inc.
- */
+
+ 
 
 #include "aspeed-hace.h"
 #include <crypto/engine.h>
@@ -26,7 +24,7 @@
 	dev_dbg((d)->dev, "%s() " fmt, __func__, ##__VA_ARGS__)
 #endif
 
-/* HACE interrupt service routine */
+ 
 static irqreturn_t aspeed_hace_irq(int irq, void *dev)
 {
 	struct aspeed_hace_dev *hace_dev = (struct aspeed_hace_dev *)dev;
@@ -128,7 +126,7 @@ static int aspeed_hace_probe(struct platform_device *pdev)
 	if (IS_ERR(hace_dev->regs))
 		return PTR_ERR(hace_dev->regs);
 
-	/* Get irq number and register it */
+	 
 	hace_dev->irq = platform_get_irq(pdev, 0);
 	if (hace_dev->irq < 0)
 		return -ENXIO;
@@ -140,7 +138,7 @@ static int aspeed_hace_probe(struct platform_device *pdev)
 		return rc;
 	}
 
-	/* Get clk and enable it */
+	 
 	hace_dev->clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(hace_dev->clk)) {
 		dev_err(&pdev->dev, "Failed to get clk\n");
@@ -153,7 +151,7 @@ static int aspeed_hace_probe(struct platform_device *pdev)
 		return rc;
 	}
 
-	/* Initialize crypto hardware engine structure for hash */
+	 
 	hace_dev->crypt_engine_hash = crypto_engine_alloc_init(hace_dev->dev,
 							       true);
 	if (!hace_dev->crypt_engine_hash) {
@@ -168,7 +166,7 @@ static int aspeed_hace_probe(struct platform_device *pdev)
 	tasklet_init(&hash_engine->done_task, aspeed_hace_hash_done_task,
 		     (unsigned long)hace_dev);
 
-	/* Initialize crypto hardware engine structure for crypto */
+	 
 	hace_dev->crypt_engine_crypto = crypto_engine_alloc_init(hace_dev->dev,
 								 true);
 	if (!hace_dev->crypt_engine_crypto) {
@@ -183,7 +181,7 @@ static int aspeed_hace_probe(struct platform_device *pdev)
 	tasklet_init(&crypto_engine->done_task, aspeed_hace_crypto_done_task,
 		     (unsigned long)hace_dev);
 
-	/* Allocate DMA buffer for hash engine input used */
+	 
 	hash_engine->ahash_src_addr =
 		dmam_alloc_coherent(&pdev->dev,
 				    ASPEED_HASH_SRC_DMA_BUF_LEN,
@@ -195,7 +193,7 @@ static int aspeed_hace_probe(struct platform_device *pdev)
 		goto err_engine_crypto_start;
 	}
 
-	/* Allocate DMA buffer for crypto engine context used */
+	 
 	crypto_engine->cipher_ctx =
 		dmam_alloc_coherent(&pdev->dev,
 				    PAGE_SIZE,
@@ -207,7 +205,7 @@ static int aspeed_hace_probe(struct platform_device *pdev)
 		goto err_engine_crypto_start;
 	}
 
-	/* Allocate DMA buffer for crypto engine input used */
+	 
 	crypto_engine->cipher_addr =
 		dmam_alloc_coherent(&pdev->dev,
 				    ASPEED_CRYPTO_SRC_DMA_BUF_LEN,
@@ -219,7 +217,7 @@ static int aspeed_hace_probe(struct platform_device *pdev)
 		goto err_engine_crypto_start;
 	}
 
-	/* Allocate DMA buffer for crypto engine output used */
+	 
 	if (hace_dev->version == AST2600_VERSION) {
 		crypto_engine->dst_sg_addr =
 			dmam_alloc_coherent(&pdev->dev,

@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-/*
- * Copyright 2018 IBM Corporation.
- */
+
+ 
 
 #define __SANE_USERSPACE_TYPES__
 
@@ -55,7 +53,7 @@ static void sigill_handler(int signr, siginfo_t *info, void *unused)
 	ucontext_t *ctx = (ucontext_t *)unused;
 	unsigned long *pc = &UCONTEXT_NIA(ctx);
 
-	/* mtspr 3,RS to check for move to DSCR below */
+	 
 	if ((*((unsigned int *)*pc) & 0xfc1fffff) == 0x7c0303a6) {
 		if (!warned++)
 			printf("WARNING: Skipping over dscr setup. Consider running 'ppc64_cpu --dscr=1' manually.\n");

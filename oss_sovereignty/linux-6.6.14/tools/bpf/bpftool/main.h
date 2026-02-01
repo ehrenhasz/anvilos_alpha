@@ -1,10 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/* Copyright (C) 2017-2018 Netronome Systems, Inc. */
+ 
+ 
 
 #ifndef __BPF_TOOL_H
 #define __BPF_TOOL_H
 
-/* BFD and kernel.h both define GCC_VERSION, differently */
+ 
 #undef GCC_VERSION
 #include <stdbool.h>
 #include <stdio.h>
@@ -18,7 +18,7 @@
 
 #include "json_writer.h"
 
-/* Make sure we do not use kernel-only integer typedefs */
+ 
 #pragma GCC poison u8 u16 u32 u64 s8 s16 s32 s64
 
 static inline __u64 ptr_to_u64(const void *ptr)
@@ -63,7 +63,7 @@ static inline void *u64_to_ptr(__u64 ptr)
 #define HELP_SPEC_LINK							\
 	"LINK := { id LINK_ID | pinned FILE }"
 
-/* keep in sync with the definition in skeleton/pid_iter.bpf.c */
+ 
 enum bpf_obj_type {
 	BPF_OBJ_UNKNOWN,
 	BPF_OBJ_PROG,
@@ -146,11 +146,11 @@ int mount_bpffs_for_pin(const char *name, bool is_dir);
 int do_pin_any(int argc, char **argv, int (*get_fd_by_id)(int *, char ***));
 int do_pin_fd(int fd, const char *name);
 
-/* commands available in bootstrap mode */
+ 
 int do_gen(int argc, char **argv);
 int do_btf(int argc, char **argv);
 
-/* non-bootstrap only commands */
+ 
 int do_prog(int argc, char **arg) __weak;
 int do_map(int argc, char **arg) __weak;
 int do_link(int argc, char **arg) __weak;
@@ -212,13 +212,7 @@ struct btf_dumper {
 	bool prog_id_as_func_ptr;
 };
 
-/* btf_dumper_type - print data along with type information
- * @d: an instance containing context for dumping types
- * @type_id: index in btf->types array. this points to the type to be dumped
- * @data: pointer the actual data, i.e. the values to be printed
- *
- * Returns zero on success and negative error code otherwise
- */
+ 
 int btf_dumper_type(const struct btf_dumper *d, __u32 type_id,
 		    const void *data);
 void btf_dumper_type_only(const struct btf *btf, __u32 func_type_id,
@@ -245,18 +239,7 @@ int print_all_levels(__maybe_unused enum libbpf_print_level level,
 size_t hash_fn_for_key_as_id(long key, void *ctx);
 bool equal_fn_for_key_as_id(long k1, long k2, void *ctx);
 
-/* bpf_attach_type_input_str - convert the provided attach type value into a
- * textual representation that we accept for input purposes.
- *
- * This function is similar in nature to libbpf_bpf_attach_type_str, but
- * recognizes some attach type names that have been used by the program in the
- * past and which do not follow the string inference scheme that libbpf uses.
- * These textual representations should only be used for user input.
- *
- * @t: The attach type
- * Returns a pointer to a static string identifying the attach type. NULL is
- * returned for unknown bpf_attach_type values.
- */
+ 
 const char *bpf_attach_type_input_str(enum bpf_attach_type t);
 
 static inline bool hashmap__empty(struct hashmap *map)
@@ -267,7 +250,7 @@ static inline bool hashmap__empty(struct hashmap *map)
 int pathname_concat(char *buf, int buf_sz, const char *path,
 		    const char *name);
 
-/* print netfilter bpf_link info */
+ 
 void netfilter_dump_plain(const struct bpf_link_info *info);
 void netfilter_dump_json(const struct bpf_link_info *info, json_writer_t *wtr);
 #endif

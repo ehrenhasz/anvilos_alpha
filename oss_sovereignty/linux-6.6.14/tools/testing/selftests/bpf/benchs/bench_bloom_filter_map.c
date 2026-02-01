@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 
 #include <argp.h>
 #include <linux/log2.h>
@@ -99,7 +99,7 @@ static error_t parse_arg(int key, char *arg, struct argp_state *state)
 	return 0;
 }
 
-/* exported into benchmark runner */
+ 
 const struct argp bench_bloom_map_argp = {
 	.options = opts,
 	.parser = parse_arg,
@@ -146,9 +146,7 @@ static void *map_prepare_thread(void *arg)
 			break;
 
 again:
-		/* Populate hashmap, bloom filter map, and array map with the same
-		 * random values
-		 */
+		 
 		err = syscall(__NR_getrandom, val, val_size, 0);
 		if (err != val_size) {
 			ctx.map_prepare_err = true;
@@ -268,26 +266,26 @@ static struct bloom_filter_bench *setup_skeleton(void)
 	skel->rodata->hashmap_use_bloom = ctx.hashmap_use_bloom;
 	skel->rodata->count_false_hits = ctx.count_false_hits;
 
-	/* Resize number of entries */
+	 
 	bpf_map__set_max_entries(skel->maps.hashmap, args.nr_entries);
 
 	bpf_map__set_max_entries(skel->maps.array_map, args.nr_entries);
 
 	bpf_map__set_max_entries(skel->maps.bloom_map, args.nr_entries);
 
-	/* Set value size */
+	 
 	bpf_map__set_value_size(skel->maps.array_map, args.value_size);
 
 	bpf_map__set_value_size(skel->maps.bloom_map, args.value_size);
 
 	bpf_map__set_value_size(skel->maps.hashmap, args.value_size);
 
-	/* For the hashmap, we use the value as the key as well */
+	 
 	bpf_map__set_key_size(skel->maps.hashmap, args.value_size);
 
 	skel->bss->value_size = args.value_size;
 
-	/* Set number of hash functions */
+	 
 	bpf_map__set_map_extra(skel->maps.bloom_map, args.nr_hash_funcs);
 
 	if (bloom_filter_bench__load(skel)) {

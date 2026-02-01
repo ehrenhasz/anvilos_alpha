@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2008 Christian Lamparter <chunkeey@web.de>
- * Copyright 2008       Johannes Berg <johannes@sipsolutions.net>
- *
- * This driver is a port from stlc45xx:
- *	Copyright (C) 2008 Nokia Corporation and/or its subsidiary(-ies).
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -25,15 +19,12 @@
 
 #ifdef CONFIG_P54_SPI_DEFAULT_EEPROM
 #include "p54spi_eeprom.h"
-#endif /* CONFIG_P54_SPI_DEFAULT_EEPROM */
+#endif  
 
 MODULE_FIRMWARE("3826.arm");
 MODULE_FIRMWARE("3826.eeprom");
 
-/* gpios should be handled in board files and provided via platform data,
- * but because it's currently impossible for p54spi to have a header file
- * in include/linux, let's use module paramaters for now
- */
+ 
 
 static int p54spi_gpio_power = 97;
 module_param(p54spi_gpio_power, int, 0444);
@@ -50,7 +41,7 @@ static void p54spi_spi_read(struct p54s_priv *priv, u8 address,
 	struct spi_message m;
 	__le16 addr;
 
-	/* We first push the address */
+	 
 	addr = cpu_to_le16(address << 8 | SPI_ADRS_READ_BIT_15);
 
 	spi_message_init(&m);
@@ -75,7 +66,7 @@ static void p54spi_spi_write(struct p54s_priv *priv, u8 address,
 	struct spi_message m;
 	__le16 addr;
 
-	/* We first push the address */
+	 
 	addr = cpu_to_le16(address << 8);
 
 	spi_message_init(&m);
@@ -155,7 +146,7 @@ static int p54spi_request_firmware(struct ieee80211_hw *dev)
 	struct p54s_priv *priv = dev->priv;
 	int ret;
 
-	/* FIXME: should driver use it's own struct device? */
+	 
 	ret = request_firmware(&priv->firmware, "3826.arm", &priv->spi->dev);
 
 	if (ret < 0) {
@@ -165,7 +156,7 @@ static int p54spi_request_firmware(struct ieee80211_hw *dev)
 
 	ret = p54_parse_firmware(dev, priv->firmware);
 	if (ret) {
-		/* the firmware is released by the caller */
+		 
 		return ret;
 	}
 
@@ -178,8 +169,7 @@ static int p54spi_request_eeprom(struct ieee80211_hw *dev)
 	const struct firmware *eeprom;
 	int ret;
 
-	/* allow users to customize their eeprom.
-	 */
+	 
 
 	ret = request_firmware_direct(&eeprom, "3826.eeprom", &priv->spi->dev);
 	if (ret < 0) {
@@ -189,7 +179,7 @@ static int p54spi_request_eeprom(struct ieee80211_hw *dev)
 				       sizeof(p54spi_eeprom));
 #else
 		dev_err(&priv->spi->dev, "Failed to request user eeprom\n");
-#endif /* CONFIG_P54_SPI_DEFAULT_EEPROM */
+#endif  
 	} else {
 		dev_info(&priv->spi->dev, "loading user eeprom...\n");
 		ret = p54_parse_eeprom(dev, (void *) eeprom->data,
@@ -212,7 +202,7 @@ static int p54spi_upload_firmware(struct ieee80211_hw *dev)
 	if (!fw)
 		return -ENOMEM;
 
-	/* stop the device */
+	 
 	p54spi_write16(priv, SPI_ADRS_DEV_CTRL_STAT, cpu_to_le16(
 		       SPI_CTRL_STAT_HOST_OVERRIDE | SPI_CTRL_STAT_HOST_RESET |
 		       SPI_CTRL_STAT_START_HALTED));
@@ -240,11 +230,11 @@ static int p54spi_upload_firmware(struct ieee80211_hw *dev)
 
 	BUG_ON(fw_len != 0);
 
-	/* enable host interrupts */
+	 
 	p54spi_write32(priv, SPI_ADRS_HOST_INT_EN,
 		       cpu_to_le32(SPI_HOST_INTS_DEFAULT));
 
-	/* boot the device */
+	 
 	p54spi_write16(priv, SPI_ADRS_DEV_CTRL_STAT, cpu_to_le16(
 		       SPI_CTRL_STAT_HOST_OVERRIDE | SPI_CTRL_STAT_HOST_RESET |
 		       SPI_CTRL_STAT_RAM_BOOT));
@@ -271,9 +261,7 @@ static void p54spi_power_on(struct p54s_priv *priv)
 	gpio_set_value(p54spi_gpio_power, 1);
 	enable_irq(gpio_to_irq(p54spi_gpio_irq));
 
-	/* need to wait a while before device can be accessed, the length
-	 * is just a guess
-	 */
+	 
 	msleep(10);
 }
 
@@ -284,11 +272,11 @@ static inline void p54spi_int_ack(struct p54s_priv *priv, u32 val)
 
 static int p54spi_wakeup(struct p54s_priv *priv)
 {
-	/* wake the chip */
+	 
 	p54spi_write32(priv, SPI_ADRS_ARM_INTERRUPTS,
 		       cpu_to_le32(SPI_TARGET_INT_WAKEUP));
 
-	/* And wait for the READY interrupt */
+	 
 	if (!p54spi_wait_bit(priv, SPI_ADRS_HOST_INTERRUPTS,
 			     SPI_HOST_INT_READY)) {
 		dev_err(&priv->spi->dev, "INT_READY timeout\n");
@@ -317,7 +305,7 @@ static void p54spi_int_ready(struct p54s_priv *priv)
 		break;
 	case FW_STATE_RESETTING:
 		priv->fw_state = FW_STATE_READY;
-		/* TODO: reinitialize state */
+		 
 		break;
 	default:
 		break;
@@ -334,10 +322,7 @@ static int p54spi_rx(struct p54s_priv *priv)
 	if (p54spi_wakeup(priv) < 0)
 		return -EBUSY;
 
-	/* Read data size and first data word in one SPI transaction
-	 * This is workaround for firmware/DMA bug,
-	 * when first data word gets lost under high load.
-	 */
+	 
 	p54spi_spi_read(priv, SPI_ADRS_DMA_DATA, rx_head, sizeof(rx_head));
 	len = rx_head[0];
 
@@ -347,11 +332,7 @@ static int p54spi_rx(struct p54s_priv *priv)
 		return 0;
 	}
 
-	/* Firmware may insert up to 4 padding bytes after the lmac header,
-	 * but it does not amend the size of SPI data transfer.
-	 * Such packets has correct data size in header, thus referencing
-	 * past the end of allocated skb. Reserve extra 4 bytes for this case
-	 */
+	 
 	skb = dev_alloc_skb(len + 4);
 	if (!skb) {
 		p54spi_sleep(priv);
@@ -368,9 +349,7 @@ static int p54spi_rx(struct p54s_priv *priv)
 				len - READAHEAD_SZ);
 	}
 	p54spi_sleep(priv);
-	/* Put additional bytes to compensate for the possible
-	 * alignment-caused truncation
-	 */
+	 
 	skb_put(skb, 4);
 
 	if (p54_rx(priv->hw, skb) == 0)

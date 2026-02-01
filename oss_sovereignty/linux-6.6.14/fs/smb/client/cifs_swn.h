@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Witness Service client for CIFS
- *
- * Copyright (c) 2020 Samuel Cabrero <scabrero@suse.de>
- */
+ 
+ 
 
 #ifndef _CIFS_SWN_H
 #define _CIFS_SWN_H
@@ -48,5 +44,5 @@ static inline void cifs_swn_check(void) {}
 static inline bool cifs_swn_set_server_dstaddr(struct TCP_Server_Info *server) { return false; }
 static inline void cifs_swn_reset_server_dstaddr(struct TCP_Server_Info *server) {}
 
-#endif /* CONFIG_CIFS_SWN_UPCALL */
-#endif /* _CIFS_SWN_H */
+#endif  
+#endif  

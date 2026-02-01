@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-// linux/sound/soc/bcm/bcm63xx-i2s.h
-// Copyright (c) 2020 Broadcom Corporation
-// Author: Kevin-Ke Li <kevin-ke.li@broadcom.com>
+
+
+
+
 
 #ifndef __BCM63XX_I2S_H
 #define __BCM63XX_I2S_H
@@ -54,7 +54,7 @@
 #define I2S_RX_DESC_OFF_INTR_EN_MSK	(1 << 1)
 #define I2S_RX_DESC_OFF_INTR_EN	I2S_RX_DESC_OFF_INTR_EN_MSK
 
-#define I2S_RX_CFG			(0x0040) /* 20c0 */
+#define I2S_RX_CFG			(0x0040)  
 #define I2S_RX_IRQ_CTL			(0x0044)
 #define I2S_RX_IRQ_EN			(0x0048)
 #define I2S_RX_IRQ_IFF_THLD		(0x004C)

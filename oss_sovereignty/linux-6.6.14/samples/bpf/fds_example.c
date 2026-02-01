@@ -146,7 +146,7 @@ int main(int argc, char **argv)
 
 	while ((opt = getopt(argc, argv, "F:PGmk:v:po:")) != -1) {
 		switch (opt) {
-		/* General args */
+		 
 		case 'F':
 			file = optarg;
 			break;
@@ -156,7 +156,7 @@ int main(int argc, char **argv)
 		case 'G':
 			flags |= BPF_F_GET;
 			break;
-		/* Map-related args */
+		 
 		case 'm':
 			mode = BPF_M_MAP;
 			break;
@@ -168,7 +168,7 @@ int main(int argc, char **argv)
 			value = strtoul(optarg, NULL, 0);
 			flags |= BPF_F_VAL;
 			break;
-		/* Prog-related args */
+		 
 		case 'p':
 			mode = BPF_M_PROG;
 			break;

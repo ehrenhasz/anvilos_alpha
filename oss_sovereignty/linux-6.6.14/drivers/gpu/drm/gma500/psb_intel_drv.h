@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2009-2011, Intel Corporation.
- */
+ 
+ 
 
 #ifndef __INTEL_DRV_H__
 #define __INTEL_DRV_H__
@@ -14,14 +12,12 @@
 #include <drm/drm_vblank.h>
 #include "gma_display.h"
 
-/*
- * Display related stuff
- */
+ 
 
-/* maximum connectors per crtcs in the mode set */
+ 
 #define INTELFB_CONN_LIMIT 4
 
-/* Intel Pipe Clone Bit */
+ 
 #define INTEL_HDMIB_CLONE_BIT 1
 #define INTEL_HDMIC_CLONE_BIT 2
 #define INTEL_HDMID_CLONE_BIT 3
@@ -40,8 +36,7 @@
 #define INTEL_DVO_LVDS_CLONE_BIT 16
 #define INTEL_EDP_CLONE_BIT 17
 
-/* these are outputs from the chip - integrated only
- * external chips are via DVO or SDVO output */
+ 
 #define INTEL_OUTPUT_UNUSED 0
 #define INTEL_OUTPUT_ANALOG 1
 #define INTEL_OUTPUT_DVO 2
@@ -54,25 +49,18 @@
 #define INTEL_OUTPUT_DISPLAYPORT 9
 #define INTEL_OUTPUT_EDP 10
 
-/*
- * Hold information useally put on the device driver privates here,
- * since it needs to be shared across multiple of devices drivers privates.
- */
+ 
 struct psb_intel_mode_device {
 
-	/*
-	 * Abstracted memory manager operations
-	 */
+	 
 	 size_t(*bo_offset) (struct drm_device *dev, void *bo);
 
-	/*
-	 * LVDS info
-	 */
-	int backlight_duty_cycle;	/* restore backlight to this value */
+	 
+	int backlight_duty_cycle;	 
 	bool panel_wants_dither;
 	struct drm_display_mode *panel_fixed_mode;
 	struct drm_display_mode *panel_fixed_mode2;
-	struct drm_display_mode *vbt_mode;	/* if any */
+	struct drm_display_mode *vbt_mode;	 
 
 	uint32_t saveBLC_PWM_CTL;
 };
@@ -82,9 +70,9 @@ struct gma_i2c_chan {
 	struct i2c_algo_bit_data algo;
 	u8 slave_addr;
 
-	/* for getting at dev. private (mmio etc.) */
+	 
 	struct drm_device *drm_dev;
-	u32 reg; /* GPIO reg */
+	u32 reg;  
 };
 
 struct gma_encoder {
@@ -94,15 +82,14 @@ struct gma_encoder {
 	void (*hot_plug)(struct gma_encoder *);
 	int crtc_mask;
 	int clone_mask;
-	u32 ddi_select;	/* Channel info */
+	u32 ddi_select;	 
 #define DDI0_SELECT	0x01
 #define DDI1_SELECT	0x02
 #define DP_MASK		0x8000
 #define DDI_MASK	0x03
-	void *dev_priv; /* For sdvo_priv, lvds_priv, etc... */
+	void *dev_priv;  
 
-	/* FIXME: Either make SDVO and LVDS store it's i2c here or give CDV it's
-	   own set of output privates */
+	 
 	struct gma_i2c_chan *i2c_bus;
 };
 
@@ -142,10 +129,10 @@ struct gma_crtc {
 	struct psb_gem_object *cursor_pobj;
 	u8 lut_adj[256];
 	struct psb_intel_framebuffer *fbdev_fb;
-	/* a mode_set for fbdev users on this crtc */
+	 
 	struct drm_mode_set mode_set;
 
-	/* GEM object that holds our cursor */
+	 
 	struct drm_gem_object *cursor_obj;
 
 	struct drm_display_mode saved_mode;
@@ -153,12 +140,12 @@ struct gma_crtc {
 
 	struct psb_intel_mode_device *mode_dev;
 
-	/*crtc mode setting flags*/
+	 
 	u32 mode_flags;
 
 	bool active;
 
-	/* Saved Crtc HW states */
+	 
 	struct psb_intel_crtc_state *crtc_state;
 
 	const struct gma_clock_funcs *clock_funcs;
@@ -229,14 +216,14 @@ extern int psb_intel_lvds_set_property(struct drm_connector *connector,
 					uint64_t value);
 extern void psb_intel_lvds_destroy(struct drm_connector *connector);
 
-/* intel_gmbus.c */
+ 
 extern void gma_intel_i2c_reset(struct drm_device *dev);
 extern int gma_intel_setup_gmbus(struct drm_device *dev);
 extern void gma_intel_gmbus_set_speed(struct i2c_adapter *adapter, int speed);
 extern void gma_intel_gmbus_force_bit(struct i2c_adapter *adapter, bool force_bit);
 extern void gma_intel_teardown_gmbus(struct drm_device *dev);
 
-/* DP support */
+ 
 extern void cdv_intel_dp_init(struct drm_device *dev, struct psb_intel_mode_device *mode_dev, int output_reg);
 extern void cdv_intel_dp_set_m_n(struct drm_crtc *crtc,
 					struct drm_display_mode *mode,
@@ -252,4 +239,4 @@ extern void cdv_sb_reset(struct drm_device *dev);
 extern void cdv_intel_attach_force_audio_property(struct drm_connector *connector);
 extern void cdv_intel_attach_broadcast_rgb_property(struct drm_connector *connector);
 
-#endif				/* __INTEL_DRV_H__ */
+#endif				 

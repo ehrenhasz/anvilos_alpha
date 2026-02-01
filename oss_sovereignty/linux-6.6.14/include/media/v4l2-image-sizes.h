@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Standard image size definitions
- *
- * Copyright (C) 2013, Sylwester Nawrocki <sylvester.nawrocki@gmail.com>
- */
+ 
+ 
 #ifndef _IMAGE_SIZES_H
 #define _IMAGE_SIZES_H
 
@@ -43,4 +39,4 @@
 #define XGA_WIDTH	1024
 #define XGA_HEIGHT	768
 
-#endif /* _IMAGE_SIZES_H */
+#endif  

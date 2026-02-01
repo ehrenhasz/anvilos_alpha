@@ -1,28 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright 2016 VMware, Inc., Palo Alto, CA., USA
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+
+ 
 
 #include <linux/objtool.h>
 #include <linux/kernel.h>
@@ -86,7 +63,7 @@ struct rpc_channel {
 };
 
 #if IS_ENABLED(CONFIG_DRM_VMWGFX_MKSSTATS)
-/* Kernel mksGuestStats counter names and desciptions; same order as enum mksstat_kern_stats_t */
+ 
 static const char* const mksstat_kern_name_desc[MKSSTAT_KERN_COUNT][2] =
 {
 	{ "vmw_execbuf_ioctl", "vmw_execbuf_ioctl" },
@@ -94,14 +71,7 @@ static const char* const mksstat_kern_name_desc[MKSSTAT_KERN_COUNT][2] =
 };
 #endif
 
-/**
- * vmw_open_channel
- *
- * @channel: RPC channel
- * @protocol:
- *
- * Returns: 0 on success
- */
+ 
 static int vmw_open_channel(struct rpc_channel *channel, unsigned int protocol)
 {
 	unsigned long eax, ebx, ecx, edx, si = 0, di = 0;
@@ -124,18 +94,12 @@ static int vmw_open_channel(struct rpc_channel *channel, unsigned int protocol)
 
 
 
-/**
- * vmw_close_channel
- *
- * @channel: RPC channel
- *
- * Returns: 0 on success
- */
+ 
 static int vmw_close_channel(struct rpc_channel *channel)
 {
 	unsigned long eax, ebx, ecx, edx, si, di;
 
-	/* Set up additional parameters */
+	 
 	si  = channel->cookie_high;
 	di  = channel->cookie_low;
 
@@ -151,22 +115,14 @@ static int vmw_close_channel(struct rpc_channel *channel)
 	return 0;
 }
 
-/**
- * vmw_port_hb_out - Send the message payload either through the
- * high-bandwidth port if available, or through the backdoor otherwise.
- * @channel: The rpc channel.
- * @msg: NULL-terminated message.
- * @hb: Whether the high-bandwidth port is available.
- *
- * Return: The port status.
- */
+ 
 static unsigned long vmw_port_hb_out(struct rpc_channel *channel,
 				     const char *msg, bool hb)
 {
 	unsigned long si, di, eax, ebx, ecx, edx;
 	unsigned long msg_len = strlen(msg);
 
-	/* HB port can't access encrypted memory. */
+	 
 	if (hb && !cc_platform_has(CC_ATTR_MEM_ENCRYPT)) {
 		unsigned long bp = channel->cookie_high;
 		u32 channel_id = (channel->channel_id << 16);
@@ -185,7 +141,7 @@ static unsigned long vmw_port_hb_out(struct rpc_channel *channel,
 		return ebx;
 	}
 
-	/* HB port not available. Send the message 4 bytes at a time. */
+	 
 	ecx = MESSAGE_STATUS_SUCCESS << 16;
 	while (msg_len && (HIGH_WORD(ecx) & MESSAGE_STATUS_SUCCESS)) {
 		unsigned int bytes = min_t(size_t, msg_len, 4);
@@ -207,22 +163,13 @@ static unsigned long vmw_port_hb_out(struct rpc_channel *channel,
 	return ecx;
 }
 
-/**
- * vmw_port_hb_in - Receive the message payload either through the
- * high-bandwidth port if available, or through the backdoor otherwise.
- * @channel: The rpc channel.
- * @reply: Pointer to buffer holding reply.
- * @reply_len: Length of the reply.
- * @hb: Whether the high-bandwidth port is available.
- *
- * Return: The port status.
- */
+ 
 static unsigned long vmw_port_hb_in(struct rpc_channel *channel, char *reply,
 				    unsigned long reply_len, bool hb)
 {
 	unsigned long si, di, eax, ebx, ecx, edx;
 
-	/* HB port can't access encrypted memory */
+	 
 	if (hb && !cc_platform_has(CC_ATTR_MEM_ENCRYPT)) {
 		unsigned long bp = channel->cookie_low;
 		u32 channel_id = (channel->channel_id << 16);
@@ -240,7 +187,7 @@ static unsigned long vmw_port_hb_in(struct rpc_channel *channel, char *reply,
 		return ebx;
 	}
 
-	/* HB port not available. Retrieve the message 4 bytes at a time. */
+	 
 	ecx = MESSAGE_STATUS_SUCCESS << 16;
 	while (reply_len) {
 		unsigned int bytes = min_t(unsigned long, reply_len, 4);
@@ -266,14 +213,7 @@ static unsigned long vmw_port_hb_in(struct rpc_channel *channel, char *reply,
 }
 
 
-/**
- * vmw_send_msg: Sends a message to the host
- *
- * @channel: RPC channel
- * @msg: NULL terminated string
- *
- * Returns: 0 on success
- */
+ 
 static int vmw_send_msg(struct rpc_channel *channel, const char *msg)
 {
 	unsigned long eax, ebx, ecx, edx, si, di;
@@ -283,7 +223,7 @@ static int vmw_send_msg(struct rpc_channel *channel, const char *msg)
 	while (retries < RETRIES) {
 		retries++;
 
-		/* Set up additional parameters */
+		 
 		si  = channel->cookie_high;
 		di  = channel->cookie_low;
 
@@ -294,18 +234,18 @@ static int vmw_send_msg(struct rpc_channel *channel, const char *msg)
 			eax, ebx, ecx, edx, si, di);
 
 		if ((HIGH_WORD(ecx) & MESSAGE_STATUS_SUCCESS) == 0) {
-			/* Expected success. Give up. */
+			 
 			return -EINVAL;
 		}
 
-		/* Send msg */
+		 
 		ebx = vmw_port_hb_out(channel, msg,
 				      !!(HIGH_WORD(ecx) & MESSAGE_STATUS_HB));
 
 		if ((HIGH_WORD(ebx) & MESSAGE_STATUS_SUCCESS) != 0) {
 			return 0;
 		} else if ((HIGH_WORD(ebx) & MESSAGE_STATUS_CPT) != 0) {
-			/* A checkpoint occurred. Retry. */
+			 
 			continue;
 		} else {
 			break;
@@ -317,15 +257,7 @@ static int vmw_send_msg(struct rpc_channel *channel, const char *msg)
 STACK_FRAME_NON_STANDARD(vmw_send_msg);
 
 
-/**
- * vmw_recv_msg: Receives a message from the host
- *
- * Note:  It is the caller's responsibility to call kfree() on msg.
- *
- * @channel:  channel opened by vmw_open_channel
- * @msg:  [OUT] message received from the host
- * @msg_len: message length
- */
+ 
 static int vmw_recv_msg(struct rpc_channel *channel, void **msg,
 			size_t *msg_len)
 {
@@ -341,7 +273,7 @@ static int vmw_recv_msg(struct rpc_channel *channel, void **msg,
 	while (retries < RETRIES) {
 		retries++;
 
-		/* Set up additional parameters */
+		 
 		si  = channel->cookie_high;
 		di  = channel->cookie_low;
 
@@ -356,7 +288,7 @@ static int vmw_recv_msg(struct rpc_channel *channel, void **msg,
 			return -EINVAL;
 		}
 
-		/* No reply available.  This is okay. */
+		 
 		if ((HIGH_WORD(ecx) & MESSAGE_STATUS_DORECV) == 0)
 			return 0;
 
@@ -368,14 +300,14 @@ static int vmw_recv_msg(struct rpc_channel *channel, void **msg,
 		}
 
 
-		/* Receive buffer */
+		 
 		ebx = vmw_port_hb_in(channel, reply, reply_len,
 				     !!(HIGH_WORD(ecx) & MESSAGE_STATUS_HB));
 		if ((HIGH_WORD(ebx) & MESSAGE_STATUS_SUCCESS) == 0) {
 			kfree(reply);
 			reply = NULL;
 			if ((HIGH_WORD(ebx) & MESSAGE_STATUS_CPT) != 0) {
-				/* A checkpoint occurred. Retry. */
+				 
 				continue;
 			}
 
@@ -385,7 +317,7 @@ static int vmw_recv_msg(struct rpc_channel *channel, void **msg,
 		reply[reply_len] = '\0';
 
 
-		/* Ack buffer */
+		 
 		si  = channel->cookie_high;
 		di  = channel->cookie_low;
 
@@ -399,7 +331,7 @@ static int vmw_recv_msg(struct rpc_channel *channel, void **msg,
 			kfree(reply);
 			reply = NULL;
 			if ((HIGH_WORD(ecx) & MESSAGE_STATUS_CPT) != 0) {
-				/* A checkpoint occurred. Retry. */
+				 
 				continue;
 			}
 
@@ -420,18 +352,7 @@ static int vmw_recv_msg(struct rpc_channel *channel, void **msg,
 STACK_FRAME_NON_STANDARD(vmw_recv_msg);
 
 
-/**
- * vmw_host_get_guestinfo: Gets a GuestInfo parameter
- *
- * Gets the value of a  GuestInfo.* parameter.  The value returned will be in
- * a string, and it is up to the caller to post-process.
- *
- * @guest_info_param:  Parameter to get, e.g. GuestInfo.svga.gl3
- * @buffer: if NULL, *reply_len will contain reply size.
- * @length: size of the reply_buf.  Set to size of reply upon return
- *
- * Returns: 0 on success
- */
+ 
 int vmw_host_get_guestinfo(const char *guest_info_param,
 			   char *buffer, size_t *length)
 {
@@ -461,9 +382,7 @@ int vmw_host_get_guestinfo(const char *guest_info_param,
 
 	vmw_close_channel(&channel);
 	if (buffer && reply && reply_len > 0) {
-		/* Remove reply code, which are the first 2 characters of
-		 * the reply
-		 */
+		 
 		reply_len = max(reply_len - 2, (size_t) 0);
 		reply_len = min(reply_len, *length);
 
@@ -490,13 +409,7 @@ out_open:
 }
 
 
-/**
- * vmw_host_printf: Sends a log message to the host
- *
- * @fmt: Regular printf format string and arguments
- *
- * Returns: 0 on success
- */
+ 
 __printf(1, 2)
 int vmw_host_printf(const char *fmt, ...)
 {
@@ -550,17 +463,7 @@ out_open:
 }
 
 
-/**
- * vmw_msg_ioctl: Sends and receveives a message to/from host from/to user-space
- *
- * Sends a message from user-space to host.
- * Can also receive a result from host and return that to user-space.
- *
- * @dev: Identifies the drm device.
- * @data: Pointer to the ioctl argument.
- * @file_priv: Identifies the caller.
- * Return: Zero on success, negative error code on error.
- */
+ 
 
 int vmw_msg_ioctl(struct drm_device *dev, void *data,
 		  struct drm_file *file_priv)
@@ -629,12 +532,7 @@ out_open:
 	return -EINVAL;
 }
 
-/**
- * reset_ppn_array: Resets a PPN64 array to INVALID_PPN64 content
- *
- * @arr: Array to reset.
- * @size: Array length.
- */
+ 
 static inline void reset_ppn_array(PPN64 *arr, size_t size)
 {
 	size_t i;
@@ -645,11 +543,7 @@ static inline void reset_ppn_array(PPN64 *arr, size_t size)
 		arr[i] = INVALID_PPN64;
 }
 
-/**
- * hypervisor_ppn_reset_all: Removes all mksGuestStat instance descriptors from
- * the hypervisor. All related pages should be subsequently unpinned or freed.
- *
- */
+ 
 static inline void hypervisor_ppn_reset_all(void)
 {
 	unsigned long eax, ebx, ecx, edx, si = 0, di = 0;
@@ -661,12 +555,7 @@ static inline void hypervisor_ppn_reset_all(void)
 		eax, ebx, ecx, edx, si, di);
 }
 
-/**
- * hypervisor_ppn_add: Adds a single mksGuestStat instance descriptor to the
- * hypervisor. Any related userspace pages should be pinned in advance.
- *
- * @pfn: Physical page number of the instance descriptor
- */
+ 
 static inline void hypervisor_ppn_add(PPN64 pfn)
 {
 	unsigned long eax, ebx, ecx, edx, si = 0, di = 0;
@@ -678,12 +567,7 @@ static inline void hypervisor_ppn_add(PPN64 pfn)
 		eax, ebx, ecx, edx, si, di);
 }
 
-/**
- * hypervisor_ppn_remove: Removes a single mksGuestStat instance descriptor from
- * the hypervisor. All related pages should be subsequently unpinned or freed.
- *
- * @pfn: Physical page number of the instance descriptor
- */
+ 
 static inline void hypervisor_ppn_remove(PPN64 pfn)
 {
 	unsigned long eax, ebx, ecx, edx, si = 0, di = 0;
@@ -697,21 +581,12 @@ static inline void hypervisor_ppn_remove(PPN64 pfn)
 
 #if IS_ENABLED(CONFIG_DRM_VMWGFX_MKSSTATS)
 
-/* Order of the total number of pages used for kernel-internal mksGuestStat; at least 2 */
+ 
 #define MKSSTAT_KERNEL_PAGES_ORDER 2
-/* Header to the text description of mksGuestStat instance descriptor */
+ 
 #define MKSSTAT_KERNEL_DESCRIPTION "vmwgfx"
 
-/**
- * mksstat_init_record_time: Initializes an MKSGuestStatCounterTime-based record
- * for the respective mksGuestStat index.
- *
- * @stat_idx: Index of the MKSGuestStatCounterTime-based mksGuestStat record.
- * @pstat: Pointer to array of MKSGuestStatCounterTime.
- * @pinfo: Pointer to array of MKSGuestStatInfoEntry.
- * @pstrs: Pointer to current end of the name/description sequence.
- * Return: Pointer to the new end of the names/description sequence.
- */
+ 
 
 static inline char *mksstat_init_record_time(mksstat_kern_stats_t stat_idx,
 	MKSGuestStatCounterTime *pstat, MKSGuestStatInfoEntry *pinfo, char *pstrs)
@@ -728,17 +603,7 @@ static inline char *mksstat_init_record_time(mksstat_kern_stats_t stat_idx,
 	return pstrd + strlen(mksstat_kern_name_desc[stat_idx][1]) + 1;
 }
 
-/**
- * mksstat_init_kern_id: Creates a single mksGuestStat instance descriptor and
- * kernel-internal counters. Adds PFN mapping to the hypervisor.
- *
- * Create a single mksGuestStat instance descriptor and corresponding structures
- * for all kernel-internal counters. The corresponding PFNs are mapped with the
- * hypervisor.
- *
- * @ppage: Output pointer to page containing the instance descriptor.
- * Return: Zero on success, negative error code on error.
- */
+ 
 
 static int mksstat_init_kern_id(struct page **ppage)
 {
@@ -747,7 +612,7 @@ static int mksstat_init_kern_id(struct page **ppage)
 	MKSGuestStatInfoEntry *pinfo;
 	char *pstrs, *pstrs_acc;
 
-	/* Allocate pages for the kernel-internal instance descriptor */
+	 
 	struct page *page = alloc_pages(GFP_KERNEL | __GFP_ZERO, MKSSTAT_KERNEL_PAGES_ORDER);
 
 	if (!page)
@@ -758,16 +623,16 @@ static int mksstat_init_kern_id(struct page **ppage)
 	pinfo = vmw_mksstat_get_kern_pinfo(pdesc);
 	pstrs = vmw_mksstat_get_kern_pstrs(pdesc);
 
-	/* Set up all kernel-internal counters and corresponding structures */
+	 
 	pstrs_acc = pstrs;
 	pstrs_acc = mksstat_init_record_time(MKSSTAT_KERN_EXECBUF, pstat, pinfo, pstrs_acc);
 	pstrs_acc = mksstat_init_record_time(MKSSTAT_KERN_COTABLE_RESIZE, pstat, pinfo, pstrs_acc);
 
-	/* Add new counters above, in their order of appearance in mksstat_kern_stats_t */
+	 
 
 	BUG_ON(pstrs_acc - pstrs > PAGE_SIZE);
 
-	/* Set up the kernel-internal instance descriptor */
+	 
 	pdesc->reservedMBZ = 0;
 	pdesc->statStartVA = (uintptr_t)pstat;
 	pdesc->strsStartVA = (uintptr_t)pstrs;
@@ -793,18 +658,7 @@ static int mksstat_init_kern_id(struct page **ppage)
 	return 0;
 }
 
-/**
- * vmw_mksstat_get_kern_slot: Acquires a slot for a single kernel-internal
- * mksGuestStat instance descriptor.
- *
- * Find a slot for a single kernel-internal mksGuestStat instance descriptor.
- * In case no such was already present, allocate a new one and set up a kernel-
- * internal mksGuestStat instance descriptor for the former.
- *
- * @pid: Process for which a slot is sought.
- * @dev_priv: Identifies the drm private device.
- * Return: Non-negative slot on success, negative error code on error.
- */
+ 
 
 int vmw_mksstat_get_kern_slot(pid_t pid, struct vmw_private *dev_priv)
 {
@@ -814,16 +668,16 @@ int vmw_mksstat_get_kern_slot(pid_t pid, struct vmw_private *dev_priv)
 	for (i = 0; i < ARRAY_SIZE(dev_priv->mksstat_kern_pids); ++i) {
 		const size_t slot = (i + base) % ARRAY_SIZE(dev_priv->mksstat_kern_pids);
 
-		/* Check if an instance descriptor for this pid is already present */
+		 
 		if (pid == (pid_t)atomic_read(&dev_priv->mksstat_kern_pids[slot]))
 			return (int)slot;
 
-		/* Set up a new instance descriptor for this pid */
+		 
 		if (!atomic_cmpxchg(&dev_priv->mksstat_kern_pids[slot], 0, MKSSTAT_PID_RESERVED)) {
 			const int ret = mksstat_init_kern_id(&dev_priv->mksstat_kern_pages[slot]);
 
 			if (!ret) {
-				/* Reset top-timer tracking for this slot */
+				 
 				dev_priv->mksstat_kern_top_timer[slot] = MKSSTAT_KERN_COUNT;
 
 				atomic_set(&dev_priv->mksstat_kern_pids[slot], pid);
@@ -840,15 +694,7 @@ int vmw_mksstat_get_kern_slot(pid_t pid, struct vmw_private *dev_priv)
 
 #endif
 
-/**
- * vmw_mksstat_cleanup_descriptor: Frees a single userspace-originating
- * mksGuestStat instance-descriptor page and unpins all related user pages.
- *
- * Unpin all user pages realated to this instance descriptor and free
- * the instance-descriptor page itself.
- *
- * @page: Page of the instance descriptor.
- */
+ 
 
 static void vmw_mksstat_cleanup_descriptor(struct page *page)
 {
@@ -867,26 +713,17 @@ static void vmw_mksstat_cleanup_descriptor(struct page *page)
 	__free_page(page);
 }
 
-/**
- * vmw_mksstat_remove_all: Resets all mksGuestStat instance descriptors
- * from the hypervisor.
- *
- * Discard all hypervisor PFN mappings, containing active mksGuestState instance
- * descriptors, unpin the related userspace pages and free the related kernel pages.
- *
- * @dev_priv: Identifies the drm private device.
- * Return: Zero on success, negative error code on error.
- */
+ 
 
 int vmw_mksstat_remove_all(struct vmw_private *dev_priv)
 {
 	int ret = 0;
 	size_t i;
 
-	/* Discard all PFN mappings with the hypervisor */
+	 
 	hypervisor_ppn_reset_all();
 
-	/* Discard all userspace-originating instance descriptors and unpin all related pages */
+	 
 	for (i = 0; i < ARRAY_SIZE(dev_priv->mksstat_user_pids); ++i) {
 		const pid_t pid0 = (pid_t)atomic_read(&dev_priv->mksstat_user_pids[i]);
 
@@ -916,7 +753,7 @@ int vmw_mksstat_remove_all(struct vmw_private *dev_priv)
 	}
 
 #if IS_ENABLED(CONFIG_DRM_VMWGFX_MKSSTATS)
-	/* Discard all kernel-internal instance descriptors and free all related pages */
+	 
 	for (i = 0; i < ARRAY_SIZE(dev_priv->mksstat_kern_pids); ++i) {
 		const pid_t pid0 = (pid_t)atomic_read(&dev_priv->mksstat_kern_pids[i]);
 
@@ -949,18 +786,7 @@ int vmw_mksstat_remove_all(struct vmw_private *dev_priv)
 	return ret;
 }
 
-/**
- * vmw_mksstat_reset_ioctl: Resets all mksGuestStat instance descriptors
- * from the hypervisor.
- *
- * Discard all hypervisor PFN mappings, containing active mksGuestStat instance
- * descriptors, unpin the related userspace pages and free the related kernel pages.
- *
- * @dev: Identifies the drm device.
- * @data: Pointer to the ioctl argument.
- * @file_priv: Identifies the caller; unused.
- * Return: Zero on success, negative error code on error.
- */
+ 
 
 int vmw_mksstat_reset_ioctl(struct drm_device *dev, void *data,
 				struct drm_file *file_priv)
@@ -969,18 +795,7 @@ int vmw_mksstat_reset_ioctl(struct drm_device *dev, void *data,
 	return vmw_mksstat_remove_all(dev_priv);
 }
 
-/**
- * vmw_mksstat_add_ioctl: Creates a single userspace-originating mksGuestStat
- * instance descriptor and registers that with the hypervisor.
- *
- * Create a hypervisor PFN mapping, containing a single mksGuestStat instance
- * descriptor and pin the corresponding userspace pages.
- *
- * @dev: Identifies the drm device.
- * @data: Pointer to the ioctl argument.
- * @file_priv: Identifies the caller; unused.
- * Return: Zero on success, negative error code on error.
- */
+ 
 
 int vmw_mksstat_add_ioctl(struct drm_device *dev, void *data,
 				struct drm_file *file_priv)
@@ -1021,7 +836,7 @@ int vmw_mksstat_add_ioctl(struct drm_device *dev, void *data,
 		num_pages_strs > ARRAY_SIZE(pdesc->strsPPNs))
 		return -EINVAL;
 
-	/* Find an available slot in the mksGuestStats user array and reserve it */
+	 
 	for (slot = 0; slot < ARRAY_SIZE(dev_priv->mksstat_user_pids); ++slot)
 		if (!atomic_cmpxchg(&dev_priv->mksstat_user_pids[slot], 0, MKSSTAT_PID_RESERVED))
 			break;
@@ -1031,7 +846,7 @@ int vmw_mksstat_add_ioctl(struct drm_device *dev, void *data,
 
 	BUG_ON(dev_priv->mksstat_user_pages[slot]);
 
-	/* Allocate statically-sized temp arrays for pages -- too big to keep in frame */
+	 
 	pages_stat = (struct page **)kmalloc_array(
 		ARRAY_SIZE(pdesc->statPPNs) +
 		ARRAY_SIZE(pdesc->infoPPNs) +
@@ -1043,13 +858,13 @@ int vmw_mksstat_add_ioctl(struct drm_device *dev, void *data,
 	pages_info = pages_stat + ARRAY_SIZE(pdesc->statPPNs);
 	pages_strs = pages_info + ARRAY_SIZE(pdesc->infoPPNs);
 
-	/* Allocate a page for the instance descriptor */
+	 
 	page = alloc_page(GFP_KERNEL | __GFP_ZERO);
 
 	if (!page)
 		goto err_nomem;
 
-	/* Set up the instance descriptor */
+	 
 	pdesc = page_address(page);
 
 	pdesc->reservedMBZ = 0;
@@ -1070,7 +885,7 @@ int vmw_mksstat_add_ioctl(struct drm_device *dev, void *data,
 	reset_ppn_array(pdesc->infoPPNs, ARRAY_SIZE(pdesc->infoPPNs));
 	reset_ppn_array(pdesc->strsPPNs, ARRAY_SIZE(pdesc->strsPPNs));
 
-	/* Pin mksGuestStat user pages and store those in the instance descriptor */
+	 
 	nr_pinned_stat = pin_user_pages_fast(arg->stat, num_pages_stat, FOLL_LONGTERM, pages_stat);
 	if (num_pages_stat != nr_pinned_stat)
 		goto err_pin_stat;
@@ -1092,9 +907,7 @@ int vmw_mksstat_add_ioctl(struct drm_device *dev, void *data,
 	for (i = 0; i < num_pages_strs; ++i)
 		pdesc->strsPPNs[i] = page_to_pfn(pages_strs[i]);
 
-	/* Send the descriptor to the host via a hypervisor call. The mksGuestStat
-	   pages will remain in use until the user requests a matching remove stats
-	   or a stats reset occurs. */
+	 
 	hypervisor_ppn_add((PPN64)page_to_pfn(page));
 
 	dev_priv->mksstat_user_pages[slot] = page;
@@ -1128,18 +941,7 @@ err_nomem:
 	return ret_err;
 }
 
-/**
- * vmw_mksstat_remove_ioctl: Removes a single userspace-originating mksGuestStat
- * instance descriptor from the hypervisor.
- *
- * Discard a hypervisor PFN mapping, containing a single mksGuestStat instance
- * descriptor and unpin the corresponding userspace pages.
- *
- * @dev: Identifies the drm device.
- * @data: Pointer to the ioctl argument.
- * @file_priv: Identifies the caller; unused.
- * Return: Zero on success, negative error code on error.
- */
+ 
 
 int vmw_mksstat_remove_ioctl(struct drm_device *dev, void *data,
 				struct drm_file *file_priv)
@@ -1180,10 +982,7 @@ int vmw_mksstat_remove_ioctl(struct drm_device *dev, void *data,
 	return -EAGAIN;
 }
 
-/**
- * vmw_disable_backdoor: Disables all backdoor communication
- * with the hypervisor.
- */
+ 
 void vmw_disable_backdoor(void)
 {
 	vmw_msg_enabled = 0;

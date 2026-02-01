@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  LED state routines for driver control interface
- *  Copyright (c) 2021 by Jaroslav Kysela <perex@perex.cz>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -97,10 +94,7 @@ static struct snd_ctl_led *snd_ctl_led_get_by_access(unsigned int access)
 	return &snd_ctl_leds[group];
 }
 
-/*
- * A note for callers:
- *   The two static variables info and value are protected using snd_ctl_led_mutex.
- */
+ 
 static int snd_ctl_led_get(struct snd_ctl_led_ctl *lctl)
 {
 	static struct snd_ctl_elem_info info;
@@ -148,7 +142,7 @@ static void snd_ctl_led_set_state(struct snd_card *card, unsigned int access,
 	route = -1;
 	found = false;
 	mutex_lock(&snd_ctl_led_mutex);
-	/* the card may not be registered (active) at this point */
+	 
 	if (card && !snd_ctl_led_card_valid[card->number]) {
 		mutex_unlock(&snd_ctl_led_mutex);
 		return;
@@ -174,7 +168,7 @@ static void snd_ctl_led_set_state(struct snd_card *card, unsigned int access,
 	case MODE_OFF:		route = 1; break;
 	case MODE_ON:		route = 0; break;
 	case MODE_FOLLOW_ROUTE:	if (route >= 0) route ^= 1; break;
-	case MODE_FOLLOW_MUTE:	/* noop */ break;
+	case MODE_FOLLOW_MUTE:	  break;
 	}
 	if (route >= 0)
 		ledtrig_audio_set(led->trigger_type, route ? LED_OFF : LED_ON);
@@ -356,7 +350,7 @@ static void snd_ctl_led_register(struct snd_card *card)
 	mutex_lock(&snd_ctl_led_mutex);
 	snd_ctl_led_card_valid[card->number] = true;
 	mutex_unlock(&snd_ctl_led_mutex);
-	/* the register callback is already called with held card->controls_rwsem */
+	 
 	list_for_each_entry(kctl, &card->controls, list)
 		for (ioff = 0; ioff < kctl->count; ioff++)
 			snd_ctl_led_notify(card, SNDRV_CTL_EVENT_MASK_VALUE, kctl, ioff);
@@ -389,9 +383,7 @@ static void snd_ctl_led_dev_release(struct device *dev)
 {
 }
 
-/*
- * sysfs
- */
+ 
 
 static ssize_t mode_show(struct device *dev,
 			 struct device_attribute *attr, char *buf)
@@ -518,14 +510,7 @@ static char *parse_iface(char *s, snd_ctl_elem_iface_t *val)
 	return find_eos(s);
 }
 
-/*
- * These types of input strings are accepted:
- *
- *   unsigned integer - numid (equivaled to numid=UINT)
- *   string - basic mixer name (equivalent to iface=MIXER,name=STR)
- *   numid=UINT
- *   [iface=MIXER,][device=UINT,][subdevice=UINT,]name=STR[,index=UINT]
- */
+ 
 static ssize_t set_led_id(struct snd_ctl_led_card *led_card, const char *buf, size_t count,
 			  bool attach)
 {
@@ -721,9 +706,7 @@ static void snd_ctl_led_sysfs_remove(struct snd_card *card)
 	}
 }
 
-/*
- * Control layer registration
- */
+ 
 static struct snd_ctl_layer_ops snd_ctl_led_lops = {
 	.module_name = SND_CTL_LAYER_MODULE_LED,
 	.lregister = snd_ctl_led_register,

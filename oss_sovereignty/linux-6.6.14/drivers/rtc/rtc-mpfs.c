@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Microchip MPFS RTC driver
- *
- * Copyright (c) 2021-2022 Microchip Corporation. All rights reserved.
- *
- * Author: Daire McNamara <daire.mcnamara@microchip.com>
- *         & Conor Dooley <conor.dooley@microchip.com>
- */
+
+ 
 #include "linux/bits.h"
 #include "linux/iopoll.h"
 #include <linux/clk.h>
@@ -75,11 +68,7 @@ static void mpfs_rtc_clear_irq(struct mpfs_rtc_dev *rtcdev)
 	val &= ~(CONTROL_ALARM_ON_BIT | CONTROL_STOP_BIT);
 	val |= CONTROL_ALARM_OFF_BIT;
 	writel(val, rtcdev->base + CONTROL_REG);
-	/*
-	 * Ensure that the posted write to the CONTROL_REG register completed before
-	 * returning from this function. Not doing this may result in the interrupt
-	 * only being cleared some time after this function returns.
-	 */
+	 
 	(void)readl(rtcdev->base + CONTROL_REG);
 }
 
@@ -144,7 +133,7 @@ static int mpfs_rtc_setalarm(struct device *dev, struct rtc_wkalrm *alrm)
 	u32 mode, ctrl;
 	u64 time;
 
-	/* Disable the alarm before updating */
+	 
 	ctrl = readl(rtcdev->base + CONTROL_REG);
 	ctrl |= CONTROL_ALARM_OFF_BIT;
 	writel(ctrl, rtcdev->base + CONTROL_REG);
@@ -154,16 +143,16 @@ static int mpfs_rtc_setalarm(struct device *dev, struct rtc_wkalrm *alrm)
 	writel((u32)time, rtcdev->base + ALARM_LOWER_REG);
 	writel((u32)(time >> 32) & ALARM_UPPER_MASK, rtcdev->base + ALARM_UPPER_REG);
 
-	/* Bypass compare register in alarm mode */
+	 
 	writel(GENMASK(31, 0), rtcdev->base + COMPARE_LOWER_REG);
 	writel(GENMASK(29, 0), rtcdev->base + COMPARE_UPPER_REG);
 
-	/* Configure the RTC to enable the alarm. */
+	 
 	ctrl = readl(rtcdev->base + CONTROL_REG);
 	mode = readl(rtcdev->base + MODE_REG);
 	if (alrm->enabled) {
 		mode = MODE_WAKE_EN | MODE_WAKE_CONTINUE;
-		/* Enable the alarm */
+		 
 		ctrl &= ~CONTROL_ALARM_OFF_BIT;
 		ctrl |= CONTROL_ALARM_ON_BIT;
 	}
@@ -231,7 +220,7 @@ static int mpfs_rtc_probe(struct platform_device *pdev)
 
 	rtcdev->rtc->ops = &mpfs_rtc_ops;
 
-	/* range is capped by alarm max, lower reg is 31:0 & upper is 10:0 */
+	 
 	rtcdev->rtc->range_max = GENMASK_ULL(42, 0);
 
 	clk = devm_clk_get_enabled(&pdev->dev, "rtc");
@@ -256,7 +245,7 @@ static int mpfs_rtc_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* prescaler hardware adds 1 to reg value */
+	 
 	prescaler = clk_get_rate(devm_clk_get(&pdev->dev, "rtcref")) - 1;
 	if (prescaler > MAX_PRESCALER_COUNT) {
 		dev_dbg(&pdev->dev, "invalid prescaler %lu\n", prescaler);

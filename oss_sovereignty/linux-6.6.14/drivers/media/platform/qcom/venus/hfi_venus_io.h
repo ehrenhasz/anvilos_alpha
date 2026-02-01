@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
- * Copyright (C) 2017 Linaro Ltd.
- */
+ 
+ 
 #ifndef __VENUS_HFI_VENUS_IO_H__
 #define __VENUS_HFI_VENUS_IO_H__
 
@@ -31,7 +28,7 @@
 #define VIDC_CTRL_INIT_CTRL_MASK		0x1
 #define VIDC_CTRL_INIT_CTRL_SHIFT		0
 
-/* HFI control status */
+ 
 #define CPU_CS_SCIACMDARG0			0x4c
 #define CPU_CS_SCIACMDARG0_MASK			0xff
 #define CPU_CS_SCIACMDARG0_SHIFT		0x0
@@ -42,13 +39,13 @@
 #define CPU_CS_SCIACMDARG0_PC_READY		BIT(8)
 #define CPU_CS_SCIACMDARG0_INIT_IDLE_MSG_MASK	BIT(30)
 
-/* HFI queue table info */
+ 
 #define CPU_CS_SCIACMDARG1			0x50
 
-/* HFI queue table address */
+ 
 #define CPU_CS_SCIACMDARG2			0x54
 
-/* Venus cpu */
+ 
 #define CPU_CS_SCIACMDARG3			0x58
 
 #define SFR_ADDR				0x5c
@@ -66,14 +63,14 @@
 #define CPU_CS_X2RPMH_SWOVERRIDE_BMSK_V6	0x4
 #define CPU_CS_X2RPMH_SWOVERRIDE_SHFT_V6	0x3
 
-/* Relative to CPU_IC_BASE */
+ 
 #define CPU_IC_SOFTINT				0x18
 #define CPU_IC_SOFTINT_V6			0x150
 #define CPU_IC_SOFTINT_H2A_MASK			0x8000
 #define CPU_IC_SOFTINT_H2A_SHIFT		0xf
 #define CPU_IC_SOFTINT_H2A_SHIFT_V6		0x0
 
-/* Venus wrapper */
+ 
 #define WRAPPER_BASE_V6				0x000b0000
 #define WRAPPER_BASE				0x000e0000
 
@@ -135,24 +132,24 @@
 #define WRAPPER_A9SS_SW_RESET			0x3000
 #define WRAPPER_A9SS_SW_RESET_BIT		BIT(4)
 
-/* Venus 4xx */
+ 
 #define WRAPPER_VCODEC0_MMCC_POWER_STATUS	0x90
 #define WRAPPER_VCODEC0_MMCC_POWER_CONTROL	0x94
 
 #define WRAPPER_VCODEC1_MMCC_POWER_STATUS	0x110
 #define WRAPPER_VCODEC1_MMCC_POWER_CONTROL	0x114
 
-/* Venus 6xx */
+ 
 #define WRAPPER_CORE_POWER_STATUS_V6		0x80
 #define WRAPPER_CORE_POWER_CONTROL_V6		0x84
 
-/* Wrapper TZ 6xx */
+ 
 #define WRAPPER_TZ_BASE_V6			0x000c0000
 #define WRAPPER_TZ_CPU_STATUS_V6		0x10
 #define WRAPPER_TZ_XTSS_SW_RESET		0x1000
 #define WRAPPER_XTSS_SW_RESET_BIT		BIT(0)
 
-/* Venus AON */
+ 
 #define AON_BASE_V6				0x000e0000
 #define AON_WRAPPER_MVP_NOC_LPI_CONTROL		0x00
 #define AON_WRAPPER_MVP_NOC_LPI_STATUS		0x04

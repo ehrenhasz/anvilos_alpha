@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Medifield PNW Camera Imaging ISP subsystem.
- *
- * Copyright (c) 2010 Intel Corporation. All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- *
- */
+
+ 
 #include <linux/module.h>
 #include <linux/uaccess.h>
 #include <linux/delay.h>
@@ -47,7 +32,7 @@ const struct atomisp_in_fmt_conv atomisp_in_fmt_conv[] = {
 	{ MEDIA_BUS_FMT_SRGGB12_1X12, 12, 12, ATOMISP_INPUT_FORMAT_RAW_12, IA_CSS_BAYER_ORDER_RGGB },
 	{ MEDIA_BUS_FMT_UYVY8_1X16, 8, 8, ATOMISP_INPUT_FORMAT_YUV422_8, 0 },
 	{ MEDIA_BUS_FMT_YUYV8_1X16, 8, 8, ATOMISP_INPUT_FORMAT_YUV422_8, 0 },
-#if 0 // disabled due to clang warnings
+#if 0 
 	{ MEDIA_BUS_FMT_JPEG_1X8, 8, 8, IA_CSS_FRAME_FORMAT_BINARY_8, 0 },
 	{ V4L2_MBUS_FMT_CUSTOM_NV12, 12, 12, IA_CSS_FRAME_FORMAT_NV12, 0 },
 	{ V4L2_MBUS_FMT_CUSTOM_NV21, 12, 12, IA_CSS_FRAME_FORMAT_NV21, 0 },
@@ -56,7 +41,7 @@ const struct atomisp_in_fmt_conv atomisp_in_fmt_conv[] = {
 #if 0
 	{ V4L2_MBUS_FMT_CUSTOM_M10MO_RAW, 8, 8, IA_CSS_FRAME_FORMAT_BINARY_8, 0 },
 #endif
-	/* no valid V4L2 MBUS code for metadata format, so leave it 0. */
+	 
 	{ 0, 0, 0, ATOMISP_INPUT_FORMAT_EMBEDDED, 0 },
 	{}
 };
@@ -130,31 +115,16 @@ bool atomisp_subdev_format_conversion(struct atomisp_sub_device *asd)
 	       && !atomisp_is_mbuscode_raw(src->code);
 }
 
-/*
- * V4L2 subdev operations
- */
+ 
 
-/*
- * isp_subdev_ioctl - CCDC module private ioctl's
- * @sd: ISP V4L2 subdevice
- * @cmd: ioctl command
- * @arg: ioctl argument
- *
- * Return 0 on success or a negative error code otherwise.
- */
+ 
 static long isp_subdev_ioctl(struct v4l2_subdev *sd,
 			     unsigned int cmd, void *arg)
 {
 	return 0;
 }
 
-/*
- * isp_subdev_set_power - Power on/off the CCDC module
- * @sd: ISP V4L2 subdevice
- * @on: power on/off
- *
- * Return 0 on success or a negative error code otherwise.
- */
+ 
 static int isp_subdev_set_power(struct v4l2_subdev *sd, int on)
 {
 	return 0;
@@ -190,13 +160,7 @@ static int isp_subdev_unsubscribe_event(struct v4l2_subdev *sd,
 	return v4l2_event_unsubscribe(fh, sub);
 }
 
-/*
- * isp_subdev_enum_mbus_code - Handle pixel format enumeration
- * @sd: pointer to v4l2 subdev structure
- * @fh : V4L2 subdev file handle
- * @code: pointer to v4l2_subdev_pad_mbus_code_enum structure
- * return -EINVAL or zero on success
- */
+ 
 static int isp_subdev_enum_mbus_code(struct v4l2_subdev *sd,
 				     struct v4l2_subdev_state *sd_state,
 				     struct v4l2_subdev_mbus_code_enum *code)
@@ -305,7 +269,7 @@ static void isp_subdev_propagate(struct v4l2_subdev *sd,
 	case ATOMISP_SUBDEV_PAD_SINK: {
 		struct v4l2_rect r = {0};
 
-		/* Only crop target supported on sink pad. */
+		 
 		r.width = ffmt[pad]->width;
 		r.height = ffmt[pad]->height;
 
@@ -376,7 +340,7 @@ int atomisp_subdev_set_selection(struct v4l2_subdev *sd,
 	r->height = rounddown(r->height, ATOM_ISP_STEP_HEIGHT);
 
 	if (pad == ATOMISP_SUBDEV_PAD_SINK) {
-		/* Only crop target supported on sink pad. */
+		 
 		unsigned int dvs_w, dvs_h;
 
 		crop[pad]->width = ffmt[pad]->width;
@@ -390,11 +354,7 @@ int atomisp_subdev_set_selection(struct v4l2_subdev *sd,
 
 		if (isp_sd->params.video_dis_en &&
 		    isp_sd->run_mode->val == ATOMISP_RUN_MODE_VIDEO) {
-			/* This resolution contains 20 % of DVS slack
-			 * (of the desired captured image before
-			 * scaling, or 1 / 6 of what we get from the
-			 * sensor) in both width and height. Remove
-			 * it. */
+			 
 			crop[pad]->width = roundup(crop[pad]->width * 5 / 6,
 						   ATOM_ISP_STEP_WIDTH);
 			crop[pad]->height = roundup(crop[pad]->height * 5 / 6,
@@ -423,10 +383,7 @@ int atomisp_subdev_set_selection(struct v4l2_subdev *sd,
 					  ATOM_ISP_STEP_HEIGHT);
 		} else if (!isp_sd->params.video_dis_en &&
 			   isp_sd->run_mode->val == ATOMISP_RUN_MODE_VIDEO) {
-			/*
-			 * For CSS2.0, digital zoom needs to set dvs envelope to 12
-			 * when dvs is disabled.
-			 */
+			 
 			dvs_w = dvs_h = 12;
 		} else {
 			dvs_w = dvs_h = 0;
@@ -437,9 +394,9 @@ int atomisp_subdev_set_selection(struct v4l2_subdev *sd,
 							   crop[pad]->width,
 							   crop[pad]->height);
 	} else if (isp_sd->run_mode->val != ATOMISP_RUN_MODE_PREVIEW) {
-		/* Only compose target is supported on source pads. */
+		 
 		if (isp_sd->vfpp->val == ATOMISP_VFPP_DISABLE_LOWLAT) {
-			/* Scaling is disabled in this mode */
+			 
 			r->width = crop[ATOMISP_SUBDEV_PAD_SINK]->width;
 			r->height = crop[ATOMISP_SUBDEV_PAD_SINK]->height;
 		}
@@ -457,20 +414,7 @@ int atomisp_subdev_set_selection(struct v4l2_subdev *sd,
 		    crop[ATOMISP_SUBDEV_PAD_SINK]->width == 0 ||
 		    crop[ATOMISP_SUBDEV_PAD_SINK]->height == 0)
 			goto get_rect;
-		/*
-		 * do cropping on sensor input if ratio of required resolution
-		 * is different with sensor output resolution ratio:
-		 *
-		 * ratio = width / height
-		 *
-		 * if ratio_output < ratio_sensor:
-		 *	effect_width = sensor_height * out_width / out_height;
-		 *	effect_height = sensor_height;
-		 * else
-		 *	effect_width = sensor_width;
-		 *	effect_height = sensor_width * out_height / out_width;
-		 *
-		 */
+		 
 		if (r->width * crop[ATOMISP_SUBDEV_PAD_SINK]->height <
 		    crop[ATOMISP_SUBDEV_PAD_SINK]->width * r->height)
 			atomisp_css_input_set_effective_resolution(isp_sd,
@@ -492,7 +436,7 @@ int atomisp_subdev_set_selection(struct v4l2_subdev *sd,
 	}
 
 get_rect:
-	/* Set format dimensions on non-sink pads as well. */
+	 
 	if (pad != ATOMISP_SUBDEV_PAD_SINK) {
 		ffmt[pad]->width = comp[pad]->width;
 		ffmt[pad]->height = comp[pad]->height;
@@ -576,16 +520,7 @@ void atomisp_subdev_set_ffmt(struct v4l2_subdev *sd,
 	}
 }
 
-/*
- * isp_subdev_get_format - Retrieve the video format on a pad
- * @sd : ISP V4L2 subdevice
- * @fh : V4L2 subdev file handle
- * @pad: Pad number
- * @fmt: Format
- *
- * Return 0 on success or -EINVAL if the pad is invalid or doesn't correspond
- * to the format type.
- */
+ 
 static int isp_subdev_get_format(struct v4l2_subdev *sd,
 				 struct v4l2_subdev_state *sd_state,
 				 struct v4l2_subdev_format *fmt)
@@ -596,16 +531,7 @@ static int isp_subdev_get_format(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * isp_subdev_set_format - Set the video format on a pad
- * @sd : ISP subdev V4L2 subdevice
- * @fh : V4L2 subdev file handle
- * @pad: Pad number
- * @fmt: Format
- *
- * Return 0 on success or -EINVAL if the pad is invalid or doesn't correspond
- * to the format type.
- */
+ 
 static int isp_subdev_set_format(struct v4l2_subdev *sd,
 				 struct v4l2_subdev_state *sd_state,
 				 struct v4l2_subdev_format *fmt)
@@ -616,14 +542,14 @@ static int isp_subdev_set_format(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/* V4L2 subdev core operations */
+ 
 static const struct v4l2_subdev_core_ops isp_subdev_v4l2_core_ops = {
 	.ioctl = isp_subdev_ioctl, .s_power = isp_subdev_set_power,
 	.subscribe_event = isp_subdev_subscribe_event,
 	.unsubscribe_event = isp_subdev_unsubscribe_event,
 };
 
-/* V4L2 subdev pad operations */
+ 
 static const struct v4l2_subdev_pad_ops isp_subdev_v4l2_pad_ops = {
 	.enum_mbus_code = isp_subdev_enum_mbus_code,
 	.get_fmt = isp_subdev_get_format,
@@ -633,7 +559,7 @@ static const struct v4l2_subdev_pad_ops isp_subdev_v4l2_pad_ops = {
 	.link_validate = v4l2_subdev_link_validate_default,
 };
 
-/* V4L2 subdev operations */
+ 
 static const struct v4l2_subdev_ops isp_subdev_v4l2_ops = {
 	.core = &isp_subdev_v4l2_core_ops,
 	.pad = &isp_subdev_v4l2_pad_ops,
@@ -643,7 +569,7 @@ static void isp_subdev_init_params(struct atomisp_sub_device *asd)
 {
 	unsigned int i;
 
-	/* parameters initialization */
+	 
 	INIT_LIST_HEAD(&asd->s3a_stats);
 	INIT_LIST_HEAD(&asd->s3a_stats_in_css);
 	INIT_LIST_HEAD(&asd->s3a_stats_ready);
@@ -657,10 +583,10 @@ static void isp_subdev_init_params(struct atomisp_sub_device *asd)
 	}
 }
 
-/* media operations */
+ 
 static const struct media_entity_operations isp_subdev_media_ops = {
 	.link_validate = v4l2_subdev_link_validate,
-	/*	 .set_power = v4l2_subdev_set_power,	*/
+	 
 };
 
 static int __atomisp_update_run_mode(struct atomisp_sub_device *asd)
@@ -727,9 +653,9 @@ static const struct v4l2_ctrl_config ctrl_run_mode = {
 };
 
 static const char *const ctrl_vfpp_mode_menu[] = {
-	"Enable",			/* vfpp always enabled */
-	"Disable to scaler mode",	/* CSS into video mode and disable */
-	"Disable to low latency mode",	/* CSS into still mode and disable */
+	"Enable",			 
+	"Disable to scaler mode",	 
+	"Disable to low latency mode",	 
 };
 
 static const struct v4l2_ctrl_config ctrl_vfpp = {
@@ -742,42 +668,19 @@ static const struct v4l2_ctrl_config ctrl_vfpp = {
 	.qmenu = ctrl_vfpp_mode_menu,
 };
 
-/*
- * Control for continuous mode raw buffer size
- *
- * The size of the RAW ringbuffer sets limit on how much
- * back in time application can go when requesting capture
- * frames to be rendered, and how many frames can be rendered
- * in a burst at full sensor rate.
- *
- * Note: this setting has a big impact on memory consumption of
- * the CSS subsystem.
- */
+ 
 static const struct v4l2_ctrl_config ctrl_continuous_raw_buffer_size = {
 	.ops = &ctrl_ops,
 	.id = V4L2_CID_ATOMISP_CONTINUOUS_RAW_BUFFER_SIZE,
 	.type = V4L2_CTRL_TYPE_INTEGER,
 	.name = "Continuous raw ringbuffer size",
 	.min = 1,
-	.max = 100, /* depends on CSS version, runtime checked */
+	.max = 100,  
 	.step = 1,
 	.def = 3,
 };
 
-/*
- * Control for enabling continuous viewfinder
- *
- * When enabled, and ISP is in continuous mode (see ctrl_continuous_mode ),
- * preview pipeline continues concurrently with capture
- * processing. When disabled, and continuous mode is used,
- * preview is paused while captures are processed, but
- * full pipeline restart is not needed.
- *
- * By setting this to disabled, capture processing is
- * essentially given priority over preview, and the effective
- * capture output rate may be higher than with continuous
- * viewfinder enabled.
- */
+ 
 static const struct v4l2_ctrl_config ctrl_continuous_viewfinder = {
 	.id = V4L2_CID_ATOMISP_CONTINUOUS_VIEWFINDER,
 	.type = V4L2_CTRL_TYPE_BOOLEAN,
@@ -788,14 +691,7 @@ static const struct v4l2_ctrl_config ctrl_continuous_viewfinder = {
 	.def = 0,
 };
 
-/*
- * Control for enabling Lock&Unlock Raw Buffer mechanism
- *
- * When enabled, Raw Buffer can be locked and unlocked.
- * Application can hold the exp_id of Raw Buffer
- * and unlock it when no longer needed.
- * Note: Make sure set this configuration before creating stream.
- */
+ 
 static const struct v4l2_ctrl_config ctrl_enable_raw_buffer_lock = {
 	.id = V4L2_CID_ENABLE_RAW_BUFFER_LOCK,
 	.type = V4L2_CTRL_TYPE_BOOLEAN,
@@ -806,14 +702,7 @@ static const struct v4l2_ctrl_config ctrl_enable_raw_buffer_lock = {
 	.def = 0,
 };
 
-/*
- * Control to disable digital zoom of the whole stream
- *
- * When it is true, pipe configuration enable_dz will be set to false.
- * This can help get a better performance by disabling pp binary.
- *
- * Note: Make sure set this configuration before creating stream.
- */
+ 
 static const struct v4l2_ctrl_config ctrl_disable_dz = {
 	.id = V4L2_CID_DISABLE_DZ,
 	.type = V4L2_CTRL_TYPE_BOOLEAN,
@@ -835,7 +724,7 @@ static int atomisp_init_subdev_pipe(struct atomisp_sub_device *asd,
 	spin_lock_init(&pipe->irq_lock);
 	mutex_init(&pipe->vb_queue_mutex);
 
-	/* Init videobuf2 queue structure */
+	 
 	pipe->vb_queue.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	pipe->vb_queue.io_modes = VB2_MMAP | VB2_USERPTR;
 	pipe->vb_queue.buf_struct_size = sizeof(struct ia_css_frame);
@@ -857,12 +746,7 @@ static int atomisp_init_subdev_pipe(struct atomisp_sub_device *asd,
 	return 0;
 }
 
-/*
- * isp_subdev_init_entities - Initialize V4L2 subdev and media entity
- * @asd: ISP CCDC module
- *
- * Return 0 on success and a negative error code on failure.
- */
+ 
 static int isp_subdev_init_entities(struct atomisp_sub_device *asd)
 {
 	struct v4l2_subdev *sd = &asd->subdev;
@@ -921,7 +805,7 @@ static int isp_subdev_init_entities(struct atomisp_sub_device *asd)
 				 &ctrl_disable_dz,
 				 NULL);
 
-	/* Make controls visible on subdev as well. */
+	 
 	asd->subdev.ctrl_handler = &asd->ctrl_handler;
 	spin_lock_init(&asd->raw_buffer_bitmap_lock);
 	return asd->ctrl_handler.error;
@@ -961,14 +845,7 @@ int atomisp_subdev_register_subdev(struct atomisp_sub_device *asd,
 	return v4l2_device_register_subdev(vdev, &asd->subdev);
 }
 
-/*
- * atomisp_subdev_init - ISP Subdevice  initialization.
- * @dev: Device pointer specific to the ATOM ISP.
- *
- * TODO: Get the initialisation values from platform data.
- *
- * Return 0 on success or a negative error code otherwise.
- */
+ 
 int atomisp_subdev_init(struct atomisp_device *isp)
 {
 	int ret;

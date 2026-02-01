@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 #include <linux/kernel.h>
 
 #include <drm/drm_atomic_helper.h>
@@ -19,7 +17,7 @@
 #include "intel_fbc.h"
 #include "intel_sprite.h"
 
-/* Primary plane formats for gen <= 3 */
+ 
 static const u32 i8xx_primary_formats[] = {
 	DRM_FORMAT_C8,
 	DRM_FORMAT_XRGB1555,
@@ -27,7 +25,7 @@ static const u32 i8xx_primary_formats[] = {
 	DRM_FORMAT_XRGB8888,
 };
 
-/* Primary plane formats for ivb (no fp16 due to hw issue) */
+ 
 static const u32 ivb_primary_formats[] = {
 	DRM_FORMAT_C8,
 	DRM_FORMAT_RGB565,
@@ -37,7 +35,7 @@ static const u32 ivb_primary_formats[] = {
 	DRM_FORMAT_XBGR2101010,
 };
 
-/* Primary plane formats for gen >= 4, except ivb */
+ 
 static const u32 i965_primary_formats[] = {
 	DRM_FORMAT_C8,
 	DRM_FORMAT_RGB565,
@@ -48,7 +46,7 @@ static const u32 i965_primary_formats[] = {
 	DRM_FORMAT_XBGR16161616F,
 };
 
-/* Primary plane formats for vlv/chv */
+ 
 static const u32 vlv_primary_formats[] = {
 	DRM_FORMAT_C8,
 	DRM_FORMAT_RGB565,
@@ -113,7 +111,7 @@ static bool i9xx_plane_has_fbc(struct drm_i915_private *dev_priv,
 		return false;
 
 	if (IS_BROADWELL(dev_priv) || IS_HASWELL(dev_priv))
-		return i9xx_plane == PLANE_A; /* tied to pipe A */
+		return i9xx_plane == PLANE_A;  
 	else if (IS_IVYBRIDGE(dev_priv))
 		return i9xx_plane == PLANE_A || i9xx_plane == PLANE_B ||
 			i9xx_plane == PLANE_C;
@@ -241,7 +239,7 @@ int i9xx_check_plane_surface(struct intel_plane_state *plane_state)
 	src_x = plane_state->uapi.src.x1 >> 16;
 	src_y = plane_state->uapi.src.y1 >> 16;
 
-	/* Undocumented hardware limit on i965/g4x/vlv/chv */
+	 
 	if (HAS_GMCH(dev_priv) && fb->format->cpp[0] == 8 && src_w > 2048)
 		return -EINVAL;
 
@@ -253,17 +251,7 @@ int i9xx_check_plane_surface(struct intel_plane_state *plane_state)
 	else
 		offset = 0;
 
-	/*
-	 * When using an X-tiled surface the plane starts to
-	 * misbehave if the x offset + width exceeds the stride.
-	 * hsw/bdw: underrun galore
-	 * ilk/snb/ivb: wrap to the next tile row mid scanout
-	 * i965/g4x: so far appear immune to this
-	 * vlv/chv: TODO check
-	 *
-	 * Linear surfaces seem to work just fine, even on hsw/bdw
-	 * despite them not using the linear offset anymore.
-	 */
+	 
 	if (DISPLAY_VER(dev_priv) >= 4 && fb->modifier == I915_FORMAT_MOD_X_TILED) {
 		u32 alignment = intel_surf_alignment(fb, 0);
 		int cpp = fb->format->cpp[0];
@@ -280,14 +268,11 @@ int i9xx_check_plane_surface(struct intel_plane_state *plane_state)
 		}
 	}
 
-	/*
-	 * Put the final coordinates back so that the src
-	 * coordinate checks will see the right values.
-	 */
+	 
 	drm_rect_translate_to(&plane_state->uapi.src,
 			      src_x << 16, src_y << 16);
 
-	/* HSW/BDW do this automagically in hardware */
+	 
 	if (!IS_HASWELL(dev_priv) && !IS_BROADWELL(dev_priv)) {
 		unsigned int rotation = plane_state->hw.rotation;
 		int src_w = drm_rect_width(&plane_state->uapi.src) >> 16;
@@ -374,13 +359,7 @@ static void i9xx_plane_ratio(const struct intel_crtc_state *crtc_state,
 	const struct drm_framebuffer *fb = plane_state->hw.fb;
 	unsigned int cpp = fb->format->cpp[0];
 
-	/*
-	 * g4x bspec says 64bpp pixel rate can't exceed 80%
-	 * of cdclk when the sprite plane is enabled on the
-	 * same pipe. ilk/snb bspec says 64bpp pixel rate is
-	 * never allowed to exceed 80% of cdclk. Let's just go
-	 * with the ilk/snb limit always.
-	 */
+	 
 	if (cpp == 8) {
 		*num = 10;
 		*den = 8;
@@ -396,18 +375,12 @@ static int i9xx_plane_min_cdclk(const struct intel_crtc_state *crtc_state,
 	unsigned int pixel_rate;
 	unsigned int num, den;
 
-	/*
-	 * Note that crtc_state->pixel_rate accounts for both
-	 * horizontal and vertical panel fitter downscaling factors.
-	 * Pre-HSW bspec tells us to only consider the horizontal
-	 * downscaling factor here. We ignore that and just consider
-	 * both for simplicity.
-	 */
+	 
 	pixel_rate = crtc_state->pixel_rate;
 
 	i9xx_plane_ratio(crtc_state, plane_state, &num, &den);
 
-	/* two pixels per clock with double wide pipe */
+	 
 	if (crtc_state->double_wide)
 		den *= 2;
 
@@ -430,11 +403,7 @@ static void i9xx_plane_update_noarm(struct intel_plane *plane,
 		int crtc_w = drm_rect_width(&plane_state->uapi.dst);
 		int crtc_h = drm_rect_height(&plane_state->uapi.dst);
 
-		/*
-		 * PLANE_A doesn't actually have a full window
-		 * generator but let's assume we still need to
-		 * program whatever is there.
-		 */
+		 
 		intel_de_write_fw(dev_priv, DSPPOS(i9xx_plane),
 				  DISP_POS_Y(crtc_y) | DISP_POS_X(crtc_x));
 		intel_de_write_fw(dev_priv, DSPSIZE(i9xx_plane),
@@ -484,11 +453,7 @@ static void i9xx_plane_update_arm(struct intel_plane *plane,
 				  DISP_OFFSET_Y(y) | DISP_OFFSET_X(x));
 	}
 
-	/*
-	 * The control register self-arms if the plane was previously
-	 * disabled. Try to make the plane enable atomic by writing
-	 * the control register just before the surface register.
-	 */
+	 
 	intel_de_write_fw(dev_priv, DSPCNTR(i9xx_plane), dspcntr);
 
 	if (DISPLAY_VER(dev_priv) >= 4)
@@ -503,12 +468,7 @@ static void i830_plane_update_arm(struct intel_plane *plane,
 				  const struct intel_crtc_state *crtc_state,
 				  const struct intel_plane_state *plane_state)
 {
-	/*
-	 * On i830/i845 all registers are self-arming [ALM040].
-	 *
-	 * Additional breakage on i830 causes register reads to return
-	 * the last latched value instead of the last written value [ALM026].
-	 */
+	 
 	i9xx_plane_update_noarm(plane, crtc_state, plane_state);
 	i9xx_plane_update_arm(plane, crtc_state, plane_state);
 }
@@ -520,16 +480,7 @@ static void i9xx_plane_disable_arm(struct intel_plane *plane,
 	enum i9xx_plane_id i9xx_plane = plane->i9xx_plane;
 	u32 dspcntr;
 
-	/*
-	 * DSPCNTR pipe gamma enable on g4x+ and pipe csc
-	 * enable on ilk+ affect the pipe bottom color as
-	 * well, so we must configure them even if the plane
-	 * is disabled.
-	 *
-	 * On pre-g4x there is no way to gamma correct the
-	 * pipe bottom color but we'll keep on doing this
-	 * anyway so that the crtc state readout works correctly.
-	 */
+	 
 	dspcntr = i9xx_plane_ctl_crtc(crtc_state);
 
 	intel_de_write_fw(dev_priv, DSPCNTR(i9xx_plane), dspcntr);
@@ -668,11 +619,7 @@ static bool i9xx_plane_get_hw_state(struct intel_plane *plane,
 	bool ret;
 	u32 val;
 
-	/*
-	 * Not 100% correct for planes that can move between pipes,
-	 * but that's only the case for gen2-4 which don't have any
-	 * display power wells.
-	 */
+	 
 	power_domain = POWER_DOMAIN_PIPE(plane->pipe);
 	wakeref = intel_display_power_get_if_enabled(dev_priv, power_domain);
 	if (!wakeref)
@@ -700,7 +647,7 @@ hsw_primary_max_stride(struct intel_plane *plane,
 	const struct drm_format_info *info = drm_format_info(pixel_format);
 	int cpp = info->cpp[0];
 
-	/* Limit to 8k pixels to guarantee OFFSET.x doesn't get too big. */
+	 
 	return min(8192 * cpp, 32 * 1024);
 }
 
@@ -712,7 +659,7 @@ ilk_primary_max_stride(struct intel_plane *plane,
 	const struct drm_format_info *info = drm_format_info(pixel_format);
 	int cpp = info->cpp[0];
 
-	/* Limit to 4k pixels to guarantee TILEOFF.x doesn't get too big. */
+	 
 	if (modifier == I915_FORMAT_MOD_X_TILED)
 		return min(4096 * cpp, 32 * 1024);
 	else
@@ -727,7 +674,7 @@ i965_plane_max_stride(struct intel_plane *plane,
 	const struct drm_format_info *info = drm_format_info(pixel_format);
 	int cpp = info->cpp[0];
 
-	/* Limit to 4k pixels to guarantee TILEOFF.x doesn't get too big. */
+	 
 	if (modifier == I915_FORMAT_MOD_X_TILED)
 		return min(4096 * cpp, 16 * 1024);
 	else
@@ -788,10 +735,7 @@ intel_primary_plane_create(struct drm_i915_private *dev_priv, enum pipe pipe)
 		return plane;
 
 	plane->pipe = pipe;
-	/*
-	 * On gen2/3 only plane A can do FBC, but the panel fitter and LVDS
-	 * port is hooked to pipe B. Hence we want plane A feeding pipe B.
-	 */
+	 
 	if (HAS_FBC(dev_priv) && DISPLAY_VER(dev_priv) < 4 &&
 	    INTEL_NUM_PIPES(dev_priv) == 2)
 		plane->i9xx_plane = (enum i9xx_plane_id) !pipe;
@@ -806,19 +750,7 @@ intel_primary_plane_create(struct drm_i915_private *dev_priv, enum pipe pipe)
 		formats = vlv_primary_formats;
 		num_formats = ARRAY_SIZE(vlv_primary_formats);
 	} else if (DISPLAY_VER(dev_priv) >= 4) {
-		/*
-		 * WaFP16GammaEnabling:ivb
-		 * "Workaround : When using the 64-bit format, the plane
-		 *  output on each color channel has one quarter amplitude.
-		 *  It can be brought up to full amplitude by using pipe
-		 *  gamma correction or pipe color space conversion to
-		 *  multiply the plane output by four."
-		 *
-		 * There is no dedicated plane gamma for the primary plane,
-		 * and using the pipe gamma/csc could conflict with other
-		 * planes, so we choose not to expose fp16 on IVB primary
-		 * planes. HSW primary planes no longer have this problem.
-		 */
+		 
 		if (IS_IVYBRIDGE(dev_priv)) {
 			formats = ivb_primary_formats;
 			num_formats = ARRAY_SIZE(ivb_primary_formats);

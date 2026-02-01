@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_GENERIC_HUGETLB_H
 #define _ASM_GENERIC_HUGETLB_H
 
@@ -105,7 +105,7 @@ static inline int huge_pte_none(pte_t pte)
 }
 #endif
 
-/* Please refer to comments above pte_none_mostly() for the usage */
+ 
 static inline int huge_pte_none_mostly(pte_t pte)
 {
 	return huge_pte_none(pte) || is_pte_marker(pte);
@@ -155,6 +155,6 @@ static inline bool gigantic_page_runtime_supported(void)
 {
 	return IS_ENABLED(CONFIG_ARCH_HAS_GIGANTIC_PAGE);
 }
-#endif /* __HAVE_ARCH_GIGANTIC_PAGE_RUNTIME_SUPPORTED */
+#endif  
 
-#endif /* _ASM_GENERIC_HUGETLB_H */
+#endif  

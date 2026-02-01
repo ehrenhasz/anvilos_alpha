@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Microsemi MIPS SoC reset driver
- *
- * License: Dual MIT/GPL
- * Copyright (c) 2017 Microsemi Corporation
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/io.h>
 #include <linux/notifier.h>
@@ -47,11 +42,11 @@ static int ocelot_restart_handle(struct notifier_block *this,
 							restart_handler);
 	u32 if_si_owner_bit = ctx->props->if_si_owner_bit;
 
-	/* Make sure the core is not protected from reset */
+	 
 	regmap_update_bits(ctx->cpu_ctrl, ctx->props->protect_reg,
 			   ctx->props->vcore_protect, 0);
 
-	/* Make the SI back to boot mode */
+	 
 	if (if_si_owner_bit != BIT_OFF_INVALID)
 		regmap_update_bits(ctx->cpu_ctrl,
 				   ICPU_CFG_CPU_SYSTEM_CTRL_GENERAL_CTRL,
@@ -108,7 +103,7 @@ static const struct reset_props reset_props_luton = {
 	.syscon		 = "mscc,ocelot-cpu-syscon",
 	.protect_reg     = 0x20,
 	.vcore_protect   = BIT(2),
-	.if_si_owner_bit = BIT_OFF_INVALID, /* n/a */
+	.if_si_owner_bit = BIT_OFF_INVALID,  
 };
 
 static const struct reset_props reset_props_ocelot = {
@@ -139,7 +134,7 @@ static const struct of_device_id ocelot_reset_of_match[] = {
 		.compatible = "microchip,sparx5-chip-reset",
 		.data = &reset_props_sparx5
 	},
-	{ /*sentinel*/ }
+	{   }
 };
 
 static struct platform_driver ocelot_reset_driver = {

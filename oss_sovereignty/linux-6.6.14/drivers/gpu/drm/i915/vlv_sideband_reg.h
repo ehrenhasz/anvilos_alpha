@@ -1,15 +1,13 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef _VLV_SIDEBAND_REG_H_
 #define _VLV_SIDEBAND_REG_H_
 
-/* See configdb bunit SB addr map */
+ 
 #define BUNIT_REG_BISOC				0x11
 
-/* PUNIT_REG_*SSPM0 */
+ 
 #define   _SSPM0_SSC(val)			((val) << 0)
 #define   SSPM0_SSC_MASK			_SSPM0_SSC(0x3)
 #define   SSPM0_SSC_PWR_ON			_SSPM0_SSC(0x0)
@@ -23,7 +21,7 @@
 #define   SSPM0_SSS_RESET			_SSPM0_SSS(0x2)
 #define   SSPM0_SSS_PWR_GATE			_SSPM0_SSS(0x3)
 
-/* PUNIT_REG_*SSPM1 */
+ 
 #define   SSPM1_FREQSTAT_SHIFT			24
 #define   SSPM1_FREQSTAT_MASK			(0x1f << SSPM1_FREQSTAT_SHIFT)
 #define   SSPM1_FREQGUAR_SHIFT			8
@@ -43,9 +41,9 @@
 #define   DSPFREQSTAT_MASK			(0x3 << DSPFREQSTAT_SHIFT)
 #define   DSPFREQGUAR_SHIFT			14
 #define   DSPFREQGUAR_MASK			(0x3 << DSPFREQGUAR_SHIFT)
-#define   DSP_MAXFIFO_PM5_STATUS		(1 << 22) /* chv */
-#define   DSP_AUTO_CDCLK_GATE_DISABLE		(1 << 7) /* chv */
-#define   DSP_MAXFIFO_PM5_ENABLE		(1 << 6) /* chv */
+#define   DSP_MAXFIFO_PM5_STATUS		(1 << 22)  
+#define   DSP_AUTO_CDCLK_GATE_DISABLE		(1 << 7)  
+#define   DSP_MAXFIFO_PM5_ENABLE		(1 << 6)  
 #define   _DP_SSC(val, pipe)			((val) << (2 * (pipe)))
 #define   DP_SSC_MASK(pipe)			_DP_SSC(0x3, (pipe))
 #define   DP_SSC_PWR_ON(pipe)			_DP_SSC(0x0, (pipe))
@@ -90,8 +88,8 @@
 #define PUNIT_REG_MEDIA_TURBO_FREQ_REQ		0xdc
 #define PUNIT_REG_CZ_TIMESTAMP			0xce
 
-#define PUNIT_FUSE_BUS2				0xf6 /* bits 47:40 */
-#define PUNIT_FUSE_BUS1				0xf5 /* bits 55:48 */
+#define PUNIT_FUSE_BUS2				0xf6  
+#define PUNIT_FUSE_BUS1				0xf5  
 
 #define FB_GFX_FMAX_AT_VMAX_FUSE		0x136
 #define FB_GFX_FREQ_FUSE_MASK			0xff
@@ -134,7 +132,7 @@
 #define   VLV_BIAS_CPU_125_SOC_875	(6 << 2)
 #define   CHV_BIAS_CPU_50_SOC_50	(3 << 2)
 
-/* vlv2 north clock has */
+ 
 #define CCK_FUSE_REG				0x8
 #define  CCK_FUSE_HPLL_FREQ_MASK		0x3
 #define CCK_REG_DSI_PLL_FUSE			0x44
@@ -177,4 +175,4 @@
 #define  CCK_FREQUENCY_STATUS_SHIFT		8
 #define  CCK_FREQUENCY_VALUES			(0x1f << 0)
 
-#endif /* _VLV_SIDEBAND_REG_H_ */
+#endif  

@@ -1,39 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2010 Broadcom
- * Copyright 2012 Simon Arlott, Chris Boot, Stephen Warren
- *
- * Quirk 1: Shortcut interrupts don't set the bank 1/2 register pending bits
- *
- * If an interrupt fires on bank 1 that isn't in the shortcuts list, bit 8
- * on bank 0 is set to signify that an interrupt in bank 1 has fired, and
- * to look in the bank 1 status register for more information.
- *
- * If an interrupt fires on bank 1 that _is_ in the shortcuts list, its
- * shortcut bit in bank 0 is set as well as its interrupt bit in the bank 1
- * status register, but bank 0 bit 8 is _not_ set.
- *
- * Quirk 2: You can't mask the register 1/2 pending interrupts
- *
- * In a proper cascaded interrupt controller, the interrupt lines with
- * cascaded interrupt controllers on them are just normal interrupt lines.
- * You can mask the interrupts and get on with things. With this controller
- * you can't do that.
- *
- * Quirk 3: The shortcut interrupts can't be (un)masked in bank 0
- *
- * Those interrupts that have shortcuts can only be masked/unmasked in
- * their respective banks' enable/disable registers. Doing so in the bank 0
- * enable/disable registers has no effect.
- *
- * The FIQ control register:
- *  Bits 0-6: IRQ (index in order of interrupts from banks 1, 2, then 0)
- *  Bit    7: Enable FIQ generation
- *  Bits  8+: Unused
- *
- * An interrupt must be disabled before configuring it for FIQ generation
- * otherwise both handlers will fire at the same time!
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/slab.h>
@@ -44,14 +10,14 @@
 
 #include <asm/exception.h>
 
-/* Put the bank and irq (32 bits) into the hwirq */
+ 
 #define MAKE_HWIRQ(b, n)	((b << 5) | (n))
 #define HWIRQ_BANK(i)		(i >> 5)
 #define HWIRQ_BIT(i)		BIT(i & 0x1f)
 
 #define NR_IRQS_BANK0		8
 #define BANK0_HWIRQ_MASK	0xff
-/* Shortcuts can't be disabled so any unknown new ones need to be masked */
+ 
 #define SHORTCUT1_MASK		0x00007c00
 #define SHORTCUT2_MASK		0x001f8000
 #define SHORTCUT_SHIFT		10
@@ -72,8 +38,8 @@ static const int reg_disable[] __initconst = { 0x24, 0x1c, 0x20 };
 static const int bank_irqs[] __initconst = { 8, 32, 32 };
 
 static const int shortcuts[] = {
-	7, 9, 10, 18, 19,		/* Bank 1 */
-	21, 22, 23, 24, 25, 30		/* Bank 2 */
+	7, 9, 10, 18, 19,		 
+	21, 22, 23, 24, 25, 30		 
 };
 
 struct armctrl_ic {
@@ -202,11 +168,7 @@ static int __init bcm2836_armctrl_of_init(struct device_node *node,
 }
 
 
-/*
- * Handle each interrupt across the entire interrupt controller.  This reads the
- * status register before handling each interrupt, which is necessary given that
- * handle_IRQ may briefly re-enable interrupts for soft IRQ handling.
- */
+ 
 
 static u32 armctrl_translate_bank(int bank)
 {

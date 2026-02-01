@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright (c) 2010-2012 Broadcom. All rights reserved. */
+
+ 
 
 #include "vchiq_connected.h"
 #include "vchiq_core.h"
@@ -14,19 +14,14 @@ static   void (*g_deferred_callback[MAX_CALLBACKS])(void);
 static   int                        g_once_init;
 static   DEFINE_MUTEX(g_connected_mutex);
 
-/* Function to initialize our lock */
+ 
 static void connected_init(void)
 {
 	if (!g_once_init)
 		g_once_init = 1;
 }
 
-/*
- * This function is used to defer initialization until the vchiq stack is
- * initialized. If the stack is already initialized, then the callback will
- * be made immediately, otherwise it will be deferred until
- * vchiq_call_connected_callbacks is called.
- */
+ 
 void vchiq_add_connected_callback(void (*callback)(void))
 {
 	connected_init();
@@ -35,7 +30,7 @@ void vchiq_add_connected_callback(void (*callback)(void))
 		return;
 
 	if (g_connected) {
-		/* We're already connected. Call the callback immediately. */
+		 
 		callback();
 	} else {
 		if (g_num_deferred_callbacks >= MAX_CALLBACKS) {
@@ -52,10 +47,7 @@ void vchiq_add_connected_callback(void (*callback)(void))
 }
 EXPORT_SYMBOL(vchiq_add_connected_callback);
 
-/*
- * This function is called by the vchiq stack once it has been connected to
- * the videocore and clients can start to use the stack.
- */
+ 
 void vchiq_call_connected_callbacks(void)
 {
 	int i;

@@ -1,36 +1,4 @@
-/*
- *  Mapping of UID/GIDs to name and vice versa.
- *
- *  Copyright (c) 2002, 2003 The Regents of the University of
- *  Michigan.  All rights reserved.
- *
- *  Marius Aamodt Eriksen <marius@umich.edu>
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *  1. Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *  2. Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
- *  3. Neither the name of the University nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED
- *  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- *  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
- *  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- *  BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- *  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- *  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/seq_file.h>
@@ -43,33 +11,26 @@
 #include "netns.h"
 #include "vfs.h"
 
-/*
- * Turn off idmapping when using AUTH_SYS.
- */
+ 
 static bool nfs4_disable_idmapping = true;
 module_param(nfs4_disable_idmapping, bool, 0644);
 MODULE_PARM_DESC(nfs4_disable_idmapping,
 		"Turn off server's NFSv4 idmapping when using 'sec=sys'");
 
-/*
- * Cache entry
- */
+ 
 
-/*
- * XXX we know that IDMAP_NAMESZ < PAGE_SIZE, but it's ugly to rely on
- * that.
- */
+ 
 
 struct ent {
 	struct cache_head h;
-	int               type;		       /* User / Group */
+	int               type;		        
 	u32               id;
 	char              name[IDMAP_NAMESZ];
 	char              authname[IDMAP_NAMESZ];
 	struct rcu_head	  rcu_head;
 };
 
-/* Common entry handling */
+ 
 
 #define ENT_HASHBITS          8
 #define ENT_HASHMAX           (1 << ENT_HASHBITS)
@@ -104,9 +65,7 @@ ent_alloc(void)
 		return NULL;
 }
 
-/*
- * ID -> Name cache
- */
+ 
 
 static uint32_t
 idtoname_hash(struct ent *ent)
@@ -116,7 +75,7 @@ idtoname_hash(struct ent *ent)
 	hash = hash_str(ent->authname, ENT_HASHBITS);
 	hash = hash_long(hash ^ ent->id, ENT_HASHBITS);
 
-	/* Flip LSB for user/group */
+	 
 	if (ent->type == IDMAP_TYPE_GROUP)
 		hash ^= 1;
 
@@ -220,26 +179,26 @@ idtoname_parse(struct cache_detail *cd, char *buf, int buflen)
 
 	memset(&ent, 0, sizeof(ent));
 
-	/* Authentication name */
+	 
 	len = qword_get(&buf, buf1, PAGE_SIZE);
 	if (len <= 0 || len >= IDMAP_NAMESZ)
 		goto out;
 	memcpy(ent.authname, buf1, sizeof(ent.authname));
 
-	/* Type */
+	 
 	if (qword_get(&buf, buf1, PAGE_SIZE) <= 0)
 		goto out;
 	ent.type = strcmp(buf1, "user") == 0 ?
 		IDMAP_TYPE_USER : IDMAP_TYPE_GROUP;
 
-	/* ID */
+	 
 	if (qword_get(&buf, buf1, PAGE_SIZE) <= 0)
 		goto out;
 	ent.id = simple_strtoul(buf1, &bp, 10);
 	if (bp == buf1)
 		goto out;
 
-	/* expiry */
+	 
 	error = get_expiry(&buf, &ent.h.expiry_time);
 	if (error)
 		goto out;
@@ -249,7 +208,7 @@ idtoname_parse(struct cache_detail *cd, char *buf, int buflen)
 	if (!res)
 		goto out;
 
-	/* Name */
+	 
 	error = -EINVAL;
 	len = qword_get(&buf, buf1, PAGE_SIZE);
 	if (len < 0 || len >= IDMAP_NAMESZ)
@@ -293,9 +252,7 @@ idtoname_update(struct cache_detail *cd, struct ent *new, struct ent *old)
 }
 
 
-/*
- * Name -> ID cache
- */
+ 
 
 static inline int
 nametoid_hash(struct ent *ent)
@@ -389,30 +346,30 @@ nametoid_parse(struct cache_detail *cd, char *buf, int buflen)
 
 	memset(&ent, 0, sizeof(ent));
 
-	/* Authentication name */
+	 
 	len = qword_get(&buf, buf1, PAGE_SIZE);
 	if (len <= 0 || len >= IDMAP_NAMESZ)
 		goto out;
 	memcpy(ent.authname, buf1, sizeof(ent.authname));
 
-	/* Type */
+	 
 	if (qword_get(&buf, buf1, PAGE_SIZE) <= 0)
 		goto out;
 	ent.type = strcmp(buf1, "user") == 0 ?
 		IDMAP_TYPE_USER : IDMAP_TYPE_GROUP;
 
-	/* Name */
+	 
 	len = qword_get(&buf, buf1, PAGE_SIZE);
 	if (len <= 0 || len >= IDMAP_NAMESZ)
 		goto out;
 	memcpy(ent.name, buf1, sizeof(ent.name));
 
-	/* expiry */
+	 
 	error = get_expiry(&buf, &ent.h.expiry_time);
 	if (error)
 		goto out;
 
-	/* ID */
+	 
 	error = get_int(&buf, &ent.id);
 	if (error == -EINVAL)
 		goto out;
@@ -457,9 +414,7 @@ nametoid_update(struct cache_detail *cd, struct ent *new, struct ent *old)
 		return NULL;
 }
 
-/*
- * Exported API
- */
+ 
 
 int
 nfsd_idmap_init(struct net *net)
@@ -608,9 +563,9 @@ numeric_name_to_id(struct svc_rqst *rqstp, int type, const char *name, u32 namel
 	char buf[11];
 
 	if (namelen + 1 > sizeof(buf))
-		/* too long to represent a 32-bit id: */
+		 
 		return false;
-	/* Just to make sure it's null-terminated: */
+	 
 	memcpy(buf, name, namelen);
 	buf[namelen] = '\0';
 	ret = kstrtouint(buf, 10, id);
@@ -623,10 +578,7 @@ do_name_to_id(struct svc_rqst *rqstp, int type, const char *name, u32 namelen, u
 	if (nfs4_disable_idmapping && rqstp->rq_cred.cr_flavor < RPC_AUTH_GSS)
 		if (numeric_name_to_id(rqstp, type, name, namelen, id))
 			return 0;
-		/*
-		 * otherwise, fall through and try idmapping, for
-		 * backwards compatibility with clients sending names:
-		 */
+		 
 	return idmap_name_to_id(rqstp, type, name, namelen, id);
 }
 

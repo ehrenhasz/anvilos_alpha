@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "reg_helper.h"
 #include "dcn20_optc.h"
@@ -37,35 +14,23 @@
 #define FN(reg_name, field_name) \
 	optc1->tg_shift->field_name, optc1->tg_mask->field_name
 
-/**
- * optc2_enable_crtc() - Enable CRTC - call ASIC Control Object to enable Timing generator.
- *
- * @optc: timing_generator instance.
- *
- * Return: If CRTC is enabled, return true.
- *
- */
+ 
 bool optc2_enable_crtc(struct timing_generator *optc)
 {
-	/* TODO FPGA wait for answer
-	 * OTG_MASTER_UPDATE_MODE != CRTC_MASTER_UPDATE_MODE
-	 * OTG_MASTER_UPDATE_LOCK != CRTC_MASTER_UPDATE_LOCK
-	 */
+	 
 	struct optc *optc1 = DCN10TG_FROM_TG(optc);
 
-	/* opp instance for OTG. For DCN1.0, ODM is remoed.
-	 * OPP and OPTC should 1:1 mapping
-	 */
+	 
 	REG_UPDATE(OPTC_DATA_SOURCE_SELECT,
 			OPTC_SEG0_SRC_SEL, optc->inst);
 
-	/* VTG enable first is for HW workaround */
+	 
 	REG_UPDATE(CONTROL,
 			VTG0_ENABLE, 1);
 
 	REG_SEQ_START();
 
-	/* Enable CRTC */
+	 
 	REG_UPDATE_2(OTG_CONTROL,
 			OTG_DISABLE_POINT_CNTL, 3,
 			OTG_MASTER_EN, 1);
@@ -76,23 +41,13 @@ bool optc2_enable_crtc(struct timing_generator *optc)
 	return true;
 }
 
-/**
- * optc2_set_gsl() - Assign OTG to GSL groups,
- *                   set one of the OTGs to be master & rest are slaves
- *
- * @optc: timing_generator instance.
- * @params: pointer to gsl_params
- */
+ 
 void optc2_set_gsl(struct timing_generator *optc,
 		   const struct gsl_params *params)
 {
 	struct optc *optc1 = DCN10TG_FROM_TG(optc);
 
-/*
- * There are (MAX_OPTC+1)/2 gsl groups available for use.
- * In each group (assign an OTG to a group by setting OTG_GSLX_EN = 1,
- * set one of the OTGs to be the master (OTG_GSL_MASTER_EN = 1) and the rest are slaves.
- */
+ 
 	REG_UPDATE_5(OTG_GSL_CONTROL,
 		OTG_GSL0_EN, params->gsl0_en,
 		OTG_GSL1_EN, params->gsl1_en,
@@ -124,11 +79,7 @@ void optc2_set_gsl_source_select(
 	}
 }
 
-/* Set DSC-related configuration.
- *   dsc_mode: 0 disables DSC, other values enable DSC in specified format
- *   sc_bytes_per_pixel: Bytes per pixel in u3.28 format
- *   dsc_slice_width: Slice width in pixels
- */
+ 
 void optc2_set_dsc_config(struct timing_generator *optc,
 					enum optc_dsc_mode dsc_mode,
 					uint32_t dsc_bytes_per_pixel,
@@ -146,9 +97,7 @@ void optc2_set_dsc_config(struct timing_generator *optc,
 		OPTC_DSC_SLICE_WIDTH, dsc_slice_width);
 }
 
-/* Get DSC-related configuration.
- *   dsc_mode: 0 disables DSC, other values enable DSC in specified format
- */
+ 
 void optc2_get_dsc_status(struct timing_generator *optc,
 					uint32_t *dsc_mode)
 {
@@ -159,7 +108,7 @@ void optc2_get_dsc_status(struct timing_generator *optc,
 }
 
 
-/*TEMP: Need to figure out inheritance model here.*/
+ 
 bool optc2_is_two_pixels_per_containter(const struct dc_crtc_timing *timing)
 {
 	return optc1_is_two_pixels_per_containter(timing);
@@ -195,19 +144,9 @@ void optc2_set_odm_combine(struct timing_generator *optc, int *opp_id, int opp_c
 
 	ASSERT(opp_cnt == 2);
 
-	/* TODO: In pseudocode but does not affect maximus, delete comment if we dont need on asic
-	 * REG_SET(OTG_GLOBAL_CONTROL2, 0, GLOBAL_UPDATE_LOCK_EN, 1);
-	 * Program OTG register MASTER_UPDATE_LOCK_DB_X/Y to the position before DP frame start
-	 * REG_SET_2(OTG_GLOBAL_CONTROL1, 0,
-	 *		MASTER_UPDATE_LOCK_DB_X, 160,
-	 *		MASTER_UPDATE_LOCK_DB_Y, 240);
-	 */
+	 
 
-	/* 2 pieces of memory required for up to 5120 displays, 4 for up to 8192,
-	 * however, for ODM combine we can simplify by always using 4.
-	 * To make sure there's no overlap, each instance "reserves" 2 memories and
-	 * they are uniquely combined here.
-	 */
+	 
 	memory_mask = 0x3 << (opp_id[0] * 2) | 0x3 << (opp_id[1] * 2);
 
 	if (REG(OPTC_MEMORY_CONFIG))
@@ -244,7 +183,7 @@ void optc2_get_optc_source(struct timing_generator *optc,
 	else
 		*num_of_src_opp = 1;
 
-	/* Work around VBIOS not updating OPTC_NUM_OF_INPUT_SEGMENT */
+	 
 	if (*src_opp_id_1 == 0xf)
 		*num_of_src_opp = 1;
 }
@@ -270,7 +209,7 @@ static void optc2_align_vblanks(
 	uint8_t master_clock_divider,
 	uint8_t slave_clock_divider)
 {
-	/* accessing slave OTG registers */
+	 
 	struct optc *optc1 = DCN10TG_FROM_TG(optc_slave);
 
 	uint32_t master_v_active = 0;
@@ -280,26 +219,26 @@ static void optc2_align_vblanks(
 	uint32_t X, Y, p = 10000;
 	uint32_t master_update_lock;
 
-	/* disable slave OTG */
+	 
 	REG_UPDATE(OTG_CONTROL, OTG_MASTER_EN, 0);
-	/* wait until disabled */
+	 
 	REG_WAIT(OTG_CONTROL,
 			 OTG_CURRENT_MASTER_EN_STATE,
 			 0, 10, 5000);
 
 	REG_GET(OTG_H_TOTAL, OTG_H_TOTAL, &slave_h_total);
 
-	/* assign slave OTG to be controlled by master update lock */
+	 
 	REG_SET(OTG_GLOBAL_CONTROL0, 0,
 			OTG_MASTER_UPDATE_LOCK_SEL, optc_master->inst);
 
-	/* accessing master OTG registers */
+	 
 	optc1 = DCN10TG_FROM_TG(optc_master);
 
-	/* saving update lock state, not sure if it's needed */
+	 
 	REG_GET(OTG_MASTER_UPDATE_LOCK,
 			OTG_MASTER_UPDATE_LOCK, &master_update_lock);
-	/* unlocking master OTG */
+	 
 	REG_SET(OTG_MASTER_UPDATE_LOCK, 0,
 			OTG_MASTER_UPDATE_LOCK, 0);
 
@@ -307,7 +246,7 @@ static void optc2_align_vblanks(
 			OTG_V_BLANK_START, &master_v_active);
 	REG_GET(OTG_H_TOTAL, OTG_H_TOTAL, &master_h_total);
 
-	/* calculate when to enable slave OTG */
+	 
 	L = (uint64_t)p * slave_h_total * master_pixel_clock_100Hz;
 	L = div_u64(L, master_h_total);
 	L = div_u64(L, slave_pixel_clock_100Hz);
@@ -315,10 +254,7 @@ static void optc2_align_vblanks(
 	Y = master_v_active - XY - 1;
 	X = div_u64(((XY + 1) * p - L) * master_h_total, p * master_clock_divider);
 
-	/*
-	 * set master OTG to unlock when V/H
-	 * counters reach calculated values
-	 */
+	 
 	REG_UPDATE(OTG_GLOBAL_CONTROL1,
 			   MASTER_UPDATE_LOCK_DB_EN, 1);
 	REG_UPDATE_2(OTG_GLOBAL_CONTROL1,
@@ -327,44 +263,38 @@ static void optc2_align_vblanks(
 				 MASTER_UPDATE_LOCK_DB_Y,
 				 Y);
 
-	/* lock master OTG */
+	 
 	REG_SET(OTG_MASTER_UPDATE_LOCK, 0,
 			OTG_MASTER_UPDATE_LOCK, 1);
 	REG_WAIT(OTG_MASTER_UPDATE_LOCK,
 			 UPDATE_LOCK_STATUS, 1, 1, 10);
 
-	/* accessing slave OTG registers */
+	 
 	optc1 = DCN10TG_FROM_TG(optc_slave);
 
-	/*
-	 * enable slave OTG, the OTG is locked with
-	 * master's update lock, so it will not run
-	 */
+	 
 	REG_UPDATE(OTG_CONTROL,
 			   OTG_MASTER_EN, 1);
 
-	/* accessing master OTG registers */
+	 
 	optc1 = DCN10TG_FROM_TG(optc_master);
 
-	/*
-	 * unlock master OTG. When master H/V counters reach
-	 * DB_XY point, slave OTG will start
-	 */
+	 
 	REG_SET(OTG_MASTER_UPDATE_LOCK, 0,
 			OTG_MASTER_UPDATE_LOCK, 0);
 
-	/* accessing slave OTG registers */
+	 
 	optc1 = DCN10TG_FROM_TG(optc_slave);
 
-	/* wait for slave OTG to start running*/
+	 
 	REG_WAIT(OTG_CONTROL,
 			 OTG_CURRENT_MASTER_EN_STATE,
 			 1, 10, 5000);
 
-	/* accessing master OTG registers */
+	 
 	optc1 = DCN10TG_FROM_TG(optc_master);
 
-	/* disable the XY point*/
+	 
 	REG_UPDATE(OTG_GLOBAL_CONTROL1,
 			   MASTER_UPDATE_LOCK_DB_EN, 0);
 	REG_UPDATE_2(OTG_GLOBAL_CONTROL1,
@@ -373,13 +303,13 @@ static void optc2_align_vblanks(
 				 MASTER_UPDATE_LOCK_DB_Y,
 				 0);
 
-	/*restore master update lock*/
+	 
 	REG_SET(OTG_MASTER_UPDATE_LOCK, 0,
 			OTG_MASTER_UPDATE_LOCK, master_update_lock);
 
-	/* accessing slave OTG registers */
+	 
 	optc1 = DCN10TG_FROM_TG(optc_slave);
-	/* restore slave to be controlled by it's own */
+	 
 	REG_SET(OTG_GLOBAL_CONTROL0, 0,
 			OTG_MASTER_UPDATE_LOCK_SEL, optc_slave->inst);
 
@@ -462,15 +392,12 @@ void optc2_setup_manual_trigger(struct timing_generator *optc)
 {
 	struct optc *optc1 = DCN10TG_FROM_TG(optc);
 
-	/* Set the min/max selectors unconditionally so that
-	 * DMCUB fw may change OTG timings when necessary
-	 * TODO: Remove the w/a after fixing the issue in DMCUB firmware
-	 */
+	 
 	REG_UPDATE_4(OTG_V_TOTAL_CONTROL,
 				 OTG_V_TOTAL_MIN_SEL, 1,
 				 OTG_V_TOTAL_MAX_SEL, 1,
 				 OTG_FORCE_LOCK_ON_EVENT, 0,
-				 OTG_SET_V_TOTAL_MIN_MASK, (1 << 1)); /* TRIGA */
+				 OTG_SET_V_TOTAL_MIN_MASK, (1 << 1));  
 
 	REG_SET_8(OTG_TRIGA_CNTL, 0,
 			OTG_TRIGA_SOURCE_SELECT, 21,
@@ -520,14 +447,14 @@ static struct timing_generator_funcs dcn20_tg_funcs = {
 		.program_global_sync = optc1_program_global_sync,
 		.enable_crtc = optc2_enable_crtc,
 		.disable_crtc = optc1_disable_crtc,
-		/* used by enable_timing_synchronization. Not need for FPGA */
+		 
 		.is_counter_moving = optc1_is_counter_moving,
 		.get_position = optc1_get_position,
 		.get_frame_count = optc1_get_vblank_counter,
 		.get_scanoutpos = optc1_get_crtc_scanoutpos,
 		.get_otg_active_size = optc1_get_otg_active_size,
 		.set_early_control = optc1_set_early_control,
-		/* used by enable_timing_synchronization. Not need for FPGA */
+		 
 		.wait_for_state = optc1_wait_for_state,
 		.set_blank = optc1_set_blank,
 		.is_blanked = optc1_is_blanked,
@@ -582,6 +509,6 @@ void dcn20_timing_generator_init(struct optc *optc1)
 	optc1->min_h_blank = 32;
 	optc1->min_v_blank = 3;
 	optc1->min_v_blank_interlace = 5;
-	optc1->min_h_sync_width = 4;//	Minimum HSYNC = 8 pixels asked By HW in the first place for no actual reason. Oculus Rift S will not light up with 8 as it's hsyncWidth is 6. Changing it to 4 to fix that issue.
+	optc1->min_h_sync_width = 4;
 	optc1->min_v_sync_width = 1;
 }

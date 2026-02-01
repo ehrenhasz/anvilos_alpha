@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NXP Wireless LAN device driver: commands and events
- *
- * Copyright 2011-2020 NXP
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include "decl.h"
@@ -16,14 +12,7 @@
 
 static void mwifiex_cancel_pending_ioctl(struct mwifiex_adapter *adapter);
 
-/*
- * This function initializes a command node.
- *
- * The actual allocation of the node is not done by this function. It only
- * initiates a node by filling it with default parameters. Similarly,
- * allocation of the different buffers used (IOCTL buffer, data buffer) are
- * not done by this function either.
- */
+ 
 static void
 mwifiex_init_cmd_node(struct mwifiex_private *priv,
 		      struct cmd_ctrl_node *cmd_node,
@@ -41,10 +30,7 @@ mwifiex_init_cmd_node(struct mwifiex_private *priv,
 	cmd_node->cmd_skb = cmd_node->skb;
 }
 
-/*
- * This function returns a command node from the free queue depending upon
- * availability.
- */
+ 
 static struct cmd_ctrl_node *
 mwifiex_get_cmd_node(struct mwifiex_adapter *adapter)
 {
@@ -65,17 +51,7 @@ mwifiex_get_cmd_node(struct mwifiex_adapter *adapter)
 	return cmd_node;
 }
 
-/*
- * This function cleans up a command node.
- *
- * The function resets the fields including the buffer pointers.
- * This function does not try to free the buffers. They must be
- * freed before calling this function.
- *
- * This function will however call the receive completion callback
- * in case a response buffer is still available before resetting
- * the pointer.
- */
+ 
 static void
 mwifiex_clean_cmd_node(struct mwifiex_adapter *adapter,
 		       struct cmd_ctrl_node *cmd_node)
@@ -94,12 +70,7 @@ mwifiex_clean_cmd_node(struct mwifiex_adapter *adapter,
 	}
 }
 
-/*
- * This function returns a command to the command free queue.
- *
- * The function also calls the completion callback if required, before
- * cleaning the command node and re-inserting it into the free queue.
- */
+ 
 static void
 mwifiex_insert_cmd_to_free_q(struct mwifiex_adapter *adapter,
 			     struct cmd_ctrl_node *cmd_node)
@@ -109,16 +80,16 @@ mwifiex_insert_cmd_to_free_q(struct mwifiex_adapter *adapter,
 
 	if (cmd_node->wait_q_enabled)
 		mwifiex_complete_cmd(adapter, cmd_node);
-	/* Clean the node */
+	 
 	mwifiex_clean_cmd_node(adapter, cmd_node);
 
-	/* Insert node into cmd_free_q */
+	 
 	spin_lock_bh(&adapter->cmd_free_q_lock);
 	list_add_tail(&cmd_node->list, &adapter->cmd_free_q);
 	spin_unlock_bh(&adapter->cmd_free_q_lock);
 }
 
-/* This function reuses a command node. */
+ 
 void mwifiex_recycle_cmd_node(struct mwifiex_adapter *adapter,
 			      struct cmd_ctrl_node *cmd_node)
 {
@@ -133,32 +104,19 @@ void mwifiex_recycle_cmd_node(struct mwifiex_adapter *adapter,
 		atomic_read(&adapter->cmd_pending));
 }
 
-/*
- * This function sends a host command to the firmware.
- *
- * The function copies the host command into the driver command
- * buffer, which will be transferred to the firmware later by the
- * main thread.
- */
+ 
 static int mwifiex_cmd_host_cmd(struct mwifiex_private *priv,
 				struct host_cmd_ds_command *cmd,
 				struct mwifiex_ds_misc_cmd *pcmd_ptr)
 {
-	/* Copy the HOST command to command buffer */
+	 
 	memcpy(cmd, pcmd_ptr->cmd, pcmd_ptr->len);
 	mwifiex_dbg(priv->adapter, CMD,
 		    "cmd: host cmd size = %d\n", pcmd_ptr->len);
 	return 0;
 }
 
-/*
- * This function downloads a command to the firmware.
- *
- * The function performs sanity tests, sets the command sequence
- * number and size, converts the header fields to CPU format before
- * sending. Afterwards, it logs the command ID and action for debugging
- * and sets up the command timeout timer.
- */
+ 
 static int mwifiex_dnld_cmd_to_fw(struct mwifiex_private *priv,
 				  struct cmd_ctrl_node *cmd_node)
 {
@@ -174,7 +132,7 @@ static int mwifiex_dnld_cmd_to_fw(struct mwifiex_private *priv,
 
 	host_cmd = (struct host_cmd_ds_command *) (cmd_node->cmd_skb->data);
 
-	/* Sanity test */
+	 
 	if (host_cmd->size == 0) {
 		mwifiex_dbg(adapter, ERROR,
 			    "DNLD_CMD: host_cmd is null\t"
@@ -200,7 +158,7 @@ static int mwifiex_dnld_cmd_to_fw(struct mwifiex_private *priv,
 		return -1;
 	}
 
-	/* Set command sequence number */
+	 
 	adapter->seq_num++;
 	host_cmd->seq_num = cpu_to_le16(HostCmd_SET_SEQ_NO_BSS_INFO
 					(adapter->seq_num,
@@ -211,19 +169,12 @@ static int mwifiex_dnld_cmd_to_fw(struct mwifiex_private *priv,
 	adapter->curr_cmd = cmd_node;
 	spin_unlock_bh(&adapter->mwifiex_cmd_lock);
 
-	/* Adjust skb length */
+	 
 	if (cmd_node->cmd_skb->len > cmd_size)
-		/*
-		 * cmd_size is less than sizeof(struct host_cmd_ds_command).
-		 * Trim off the unused portion.
-		 */
+		 
 		skb_trim(cmd_node->cmd_skb, cmd_size);
 	else if (cmd_node->cmd_skb->len < cmd_size)
-		/*
-		 * cmd_size is larger than sizeof(struct host_cmd_ds_command)
-		 * because we have appended custom IE TLV. Increase skb length
-		 * accordingly.
-		 */
+		 
 		skb_put(cmd_node->cmd_skb, cmd_size - cmd_node->cmd_skb->len);
 
 	mwifiex_dbg(adapter, CMD,
@@ -268,35 +219,25 @@ static int mwifiex_dnld_cmd_to_fw(struct mwifiex_private *priv,
 		return -1;
 	}
 
-	/* Save the last command id and action to debug log */
+	 
 	adapter->dbg.last_cmd_index =
 			(adapter->dbg.last_cmd_index + 1) % DBG_CMD_NUM;
 	adapter->dbg.last_cmd_id[adapter->dbg.last_cmd_index] = cmd_code;
 	adapter->dbg.last_cmd_act[adapter->dbg.last_cmd_index] =
 			get_unaligned_le16((u8 *)host_cmd + S_DS_GEN);
 
-	/* Setup the timer after transmit command, except that specific
-	 * command might not have command response.
-	 */
+	 
 	if (cmd_code != HostCmd_CMD_FW_DUMP_EVENT)
 		mod_timer(&adapter->cmd_timer,
 			  jiffies + msecs_to_jiffies(MWIFIEX_TIMER_10S));
 
-	/* Clear BSS_NO_BITS from HostCmd */
+	 
 	cmd_code &= HostCmd_CMD_ID_MASK;
 
 	return 0;
 }
 
-/*
- * This function downloads a sleep confirm command to the firmware.
- *
- * The function performs sanity tests, sets the command sequence
- * number and size, converts the header fields to CPU format before
- * sending.
- *
- * No responses are needed for sleep confirm command.
- */
+ 
 static int mwifiex_dnld_sleep_confirm_cmd(struct mwifiex_adapter *adapter)
 {
 	int ret;
@@ -358,7 +299,7 @@ static int mwifiex_dnld_sleep_confirm_cmd(struct mwifiex_adapter *adapter)
 	}
 
 	if (!le16_to_cpu(sleep_cfm_buf->resp_ctrl))
-		/* Response is not needed for sleep confirm command */
+		 
 		adapter->ps_state = PS_STATE_SLEEP;
 	else
 		adapter->ps_state = PS_STATE_SLEEP_CFM;
@@ -374,24 +315,13 @@ static int mwifiex_dnld_sleep_confirm_cmd(struct mwifiex_adapter *adapter)
 	return ret;
 }
 
-/*
- * This function allocates the command buffers and links them to
- * the command free queue.
- *
- * The driver uses a pre allocated number of command buffers, which
- * are created at driver initializations and freed at driver cleanup.
- * Every command needs to obtain a command buffer from this pool before
- * it can be issued. The command free queue lists the command buffers
- * currently free to use, while the command pending queue lists the
- * command buffers already in use and awaiting handling. Command buffers
- * are returned to the free queue after use.
- */
+ 
 int mwifiex_alloc_cmd_buffer(struct mwifiex_adapter *adapter)
 {
 	struct cmd_ctrl_node *cmd_array;
 	u32 i;
 
-	/* Allocate and initialize struct cmd_ctrl_node */
+	 
 	cmd_array = kcalloc(MWIFIEX_NUM_OF_CMD_BUFFER,
 			    sizeof(struct cmd_ctrl_node), GFP_KERNEL);
 	if (!cmd_array)
@@ -399,7 +329,7 @@ int mwifiex_alloc_cmd_buffer(struct mwifiex_adapter *adapter)
 
 	adapter->cmd_pool = cmd_array;
 
-	/* Allocate and initialize command buffers */
+	 
 	for (i = 0; i < MWIFIEX_NUM_OF_CMD_BUFFER; i++) {
 		cmd_array[i].skb = dev_alloc_skb(MWIFIEX_SIZE_OF_CMD_BUFFER);
 		if (!cmd_array[i].skb) {
@@ -415,18 +345,13 @@ int mwifiex_alloc_cmd_buffer(struct mwifiex_adapter *adapter)
 	return 0;
 }
 
-/*
- * This function frees the command buffers.
- *
- * The function calls the completion callback for all the command
- * buffers that still have response buffers associated with them.
- */
+ 
 void mwifiex_free_cmd_buffer(struct mwifiex_adapter *adapter)
 {
 	struct cmd_ctrl_node *cmd_array;
 	u32 i;
 
-	/* Need to check if cmd pool is allocated or not */
+	 
 	if (!adapter->cmd_pool) {
 		mwifiex_dbg(adapter, FATAL,
 			    "info: FREE_CMD_BUF: cmd_pool is null\n");
@@ -435,7 +360,7 @@ void mwifiex_free_cmd_buffer(struct mwifiex_adapter *adapter)
 
 	cmd_array = adapter->cmd_pool;
 
-	/* Release shared memory buffers */
+	 
 	for (i = 0; i < MWIFIEX_NUM_OF_CMD_BUFFER; i++) {
 		if (cmd_array[i].skb) {
 			mwifiex_dbg(adapter, CMD,
@@ -451,7 +376,7 @@ void mwifiex_free_cmd_buffer(struct mwifiex_adapter *adapter)
 		else
 			dev_kfree_skb_any(cmd_array[i].resp_skb);
 	}
-	/* Release struct cmd_ctrl_node */
+	 
 	if (adapter->cmd_pool) {
 		mwifiex_dbg(adapter, CMD,
 			    "cmd: free cmd pool\n");
@@ -460,16 +385,7 @@ void mwifiex_free_cmd_buffer(struct mwifiex_adapter *adapter)
 	}
 }
 
-/*
- * This function handles events generated by firmware.
- *
- * Event body of events received from firmware are not used (though they are
- * saved), only the event ID is used. Some events are re-invoked by
- * the driver, with a new event body.
- *
- * After processing, the function calls the completion callback
- * for cleanup.
- */
+ 
 int mwifiex_process_event(struct mwifiex_adapter *adapter)
 {
 	int ret, i;
@@ -493,19 +409,19 @@ int mwifiex_process_event(struct mwifiex_adapter *adapter)
 
 	eventcause = adapter->event_cause;
 
-	/* Save the last event to debug log */
+	 
 	adapter->dbg.last_event_index =
 			(adapter->dbg.last_event_index + 1) % DBG_CMD_NUM;
 	adapter->dbg.last_event[adapter->dbg.last_event_index] =
 							(u16) eventcause;
 
-	/* Get BSS number and corresponding priv */
+	 
 	priv = mwifiex_get_priv_by_id(adapter, EVENT_GET_BSS_NUM(eventcause),
 				      EVENT_GET_BSS_TYPE(eventcause));
 	if (!priv)
 		priv = mwifiex_get_priv(adapter, MWIFIEX_BSS_ROLE_ANY);
 
-	/* Clear BSS_NO_BITS from event */
+	 
 	eventcause &= EVENT_ID_MASK;
 	adapter->event_cause = eventcause;
 
@@ -532,17 +448,7 @@ int mwifiex_process_event(struct mwifiex_adapter *adapter)
 	return ret;
 }
 
-/*
- * This function prepares a command and send it to the firmware.
- *
- * Preparation includes -
- *      - Sanity tests to make sure the card is still present or the FW
- *        is not reset
- *      - Getting a new command node from the command free queue
- *      - Initializing the command node for default parameters
- *      - Fill up the non-default parameters and buffer pointers
- *      - Add the command to pending queue
- */
+ 
 int mwifiex_send_cmd(struct mwifiex_private *priv, u16 cmd_no,
 		     u16 cmd_action, u32 cmd_oid, void *data_buf, bool sync)
 {
@@ -588,9 +494,7 @@ int mwifiex_send_cmd(struct mwifiex_private *priv, u16 cmd_no,
 			return -1;
 		}
 	}
-	/* We don't expect commands in manufacturing mode. They are cooked
-	 * in application and ready to download buffer is passed to the driver
-	 */
+	 
 	if (adapter->mfg_mode && cmd_no) {
 		dev_dbg(adapter->dev, "Ignoring commands in manufacturing mode\n");
 		return -1;
@@ -602,7 +506,7 @@ int mwifiex_send_cmd(struct mwifiex_private *priv, u16 cmd_no,
 		priv->adapter->hs_activated_manually = false;
 	}
 
-	/* Get a new command node */
+	 
 	cmd_node = mwifiex_get_cmd_node(adapter);
 
 	if (!cmd_node) {
@@ -611,7 +515,7 @@ int mwifiex_send_cmd(struct mwifiex_private *priv, u16 cmd_no,
 		return -1;
 	}
 
-	/* Initialize the command node */
+	 
 	mwifiex_init_cmd_node(priv, cmd_node, cmd_no, data_buf, sync);
 
 	if (!cmd_node->cmd_skb) {
@@ -626,7 +530,7 @@ int mwifiex_send_cmd(struct mwifiex_private *priv, u16 cmd_no,
 	cmd_ptr->command = cpu_to_le16(cmd_no);
 	cmd_ptr->result = 0;
 
-	/* Prepare command */
+	 
 	if (cmd_no) {
 		switch (cmd_no) {
 		case HostCmd_CMD_UAP_SYS_CONFIG:
@@ -650,7 +554,7 @@ int mwifiex_send_cmd(struct mwifiex_private *priv, u16 cmd_no,
 		cmd_node->cmd_flag |= CMD_F_HOSTCMD;
 	}
 
-	/* Return error, since the command preparation failed */
+	 
 	if (ret) {
 		mwifiex_dbg(adapter, ERROR,
 			    "PREP_CMD: cmd %#x preparation failed\n",
@@ -659,7 +563,7 @@ int mwifiex_send_cmd(struct mwifiex_private *priv, u16 cmd_no,
 		return -1;
 	}
 
-	/* Send command */
+	 
 	if (cmd_no == HostCmd_CMD_802_11_SCAN ||
 	    cmd_no == HostCmd_CMD_802_11_SCAN_EXT) {
 		mwifiex_queue_scan_cmd(priv, cmd_node);
@@ -673,13 +577,7 @@ int mwifiex_send_cmd(struct mwifiex_private *priv, u16 cmd_no,
 	return ret;
 }
 
-/*
- * This function queues a command to the command pending queue.
- *
- * This in effect adds the command to the command list to be executed.
- * Exit PS command is handled specially, by placing it always to the
- * front of the command queue.
- */
+ 
 void
 mwifiex_insert_cmd_to_pending_q(struct mwifiex_adapter *adapter,
 				struct cmd_ctrl_node *cmd_node)
@@ -696,7 +594,7 @@ mwifiex_insert_cmd_to_pending_q(struct mwifiex_adapter *adapter,
 
 	command = le16_to_cpu(host_cmd->command);
 
-	/* Exit_PS command needs to be queued in the header always. */
+	 
 	if (command == HostCmd_CMD_802_11_PS_MODE_ENH) {
 		struct host_cmd_ds_802_11_ps_mode_enh *pm =
 						&host_cmd->params.psmode_enh;
@@ -707,7 +605,7 @@ mwifiex_insert_cmd_to_pending_q(struct mwifiex_adapter *adapter,
 		}
 	}
 
-	/* Same with exit host sleep cmd, luckily that can't happen at the same time as EXIT_PS */
+	 
 	if (command == HostCmd_CMD_802_11_HS_CFG_ENH) {
 		struct host_cmd_ds_802_11_hs_cfg_enh *hs_cfg =
 			&host_cmd->params.opt_hs_cfg;
@@ -729,17 +627,7 @@ mwifiex_insert_cmd_to_pending_q(struct mwifiex_adapter *adapter,
 		command, atomic_read(&adapter->cmd_pending));
 }
 
-/*
- * This function executes the next command in command pending queue.
- *
- * This function will fail if a command is already in processing stage,
- * otherwise it will dequeue the first command from the command pending
- * queue and send to the firmware.
- *
- * If the device is currently in host sleep mode, any commands, except the
- * host sleep configuration command will de-activate the host sleep. For PS
- * mode, the function will put the firmware back to sleep if applicable.
- */
+ 
 int mwifiex_exec_next_cmd(struct mwifiex_adapter *adapter)
 {
 	struct mwifiex_private *priv;
@@ -747,7 +635,7 @@ int mwifiex_exec_next_cmd(struct mwifiex_adapter *adapter)
 	int ret = 0;
 	struct host_cmd_ds_command *host_cmd;
 
-	/* Check if already in processing */
+	 
 	if (adapter->curr_cmd) {
 		mwifiex_dbg(adapter, FATAL,
 			    "EXEC_NEXT_CMD: cmd in processing\n");
@@ -755,7 +643,7 @@ int mwifiex_exec_next_cmd(struct mwifiex_adapter *adapter)
 	}
 
 	spin_lock_bh(&adapter->mwifiex_cmd_lock);
-	/* Check if any command is pending */
+	 
 	spin_lock_bh(&adapter->cmd_pending_q_lock);
 	if (list_empty(&adapter->cmd_pending_q)) {
 		spin_unlock_bh(&adapter->cmd_pending_q_lock);
@@ -783,10 +671,7 @@ int mwifiex_exec_next_cmd(struct mwifiex_adapter *adapter)
 	spin_unlock_bh(&adapter->mwifiex_cmd_lock);
 	ret = mwifiex_dnld_cmd_to_fw(priv, cmd_node);
 	priv = mwifiex_get_priv(adapter, MWIFIEX_BSS_ROLE_ANY);
-	/* Any command sent to the firmware when host is in sleep
-	 * mode should de-configure host sleep. We should skip the
-	 * host sleep configuration command itself though
-	 */
+	 
 	if (priv && (host_cmd->command !=
 	     cpu_to_le16(HostCmd_CMD_802_11_HS_CFG_ENH))) {
 		if (adapter->hs_activated) {
@@ -799,12 +684,7 @@ int mwifiex_exec_next_cmd(struct mwifiex_adapter *adapter)
 	return ret;
 }
 
-/*
- * This function handles the command response.
- *
- * After processing, the function cleans the command node and puts
- * it back to the command free queue.
- */
+ 
 int mwifiex_process_cmdresp(struct mwifiex_adapter *adapter)
 {
 	struct host_cmd_ds_command *resp;
@@ -833,12 +713,12 @@ int mwifiex_process_cmdresp(struct mwifiex_adapter *adapter)
 			    adapter->curr_cmd->cmd_no, cmdresp_no);
 		return -1;
 	}
-	/* Now we got response from FW, cancel the command timer */
+	 
 	del_timer_sync(&adapter->cmd_timer);
 	clear_bit(MWIFIEX_IS_CMD_TIMEDOUT, &adapter->work_flags);
 
 	if (adapter->curr_cmd->cmd_flag & CMD_F_HOSTCMD) {
-		/* Copy original response back to response buffer */
+		 
 		struct mwifiex_ds_misc_cmd *hostcmd;
 		uint16_t size = le16_to_cpu(resp->size);
 		mwifiex_dbg(adapter, INFO,
@@ -851,19 +731,19 @@ int mwifiex_process_cmdresp(struct mwifiex_adapter *adapter)
 		}
 	}
 
-	/* Get BSS number and corresponding priv */
+	 
 	priv = mwifiex_get_priv_by_id(adapter,
 			     HostCmd_GET_BSS_NO(le16_to_cpu(resp->seq_num)),
 			     HostCmd_GET_BSS_TYPE(le16_to_cpu(resp->seq_num)));
 	if (!priv)
 		priv = mwifiex_get_priv(adapter, MWIFIEX_BSS_ROLE_ANY);
-	/* Clear RET_BIT from HostCmd */
+	 
 	resp->command = cpu_to_le16(orig_cmdresp_no & HostCmd_CMD_ID_MASK);
 
 	cmdresp_no = le16_to_cpu(resp->command);
 	cmdresp_result = le16_to_cpu(resp->result);
 
-	/* Save the last command response to debug log */
+	 
 	adapter->dbg.last_cmd_resp_index =
 			(adapter->dbg.last_cmd_resp_index + 1) % DBG_CMD_NUM;
 	adapter->dbg.last_cmd_resp_id[adapter->dbg.last_cmd_resp_index] =
@@ -894,11 +774,11 @@ int mwifiex_process_cmdresp(struct mwifiex_adapter *adapter)
 		    (cmdresp_no == HostCmd_CMD_802_11_HS_CFG_ENH))
 			ret = mwifiex_ret_802_11_hs_cfg(priv, resp);
 	} else {
-		/* handle response */
+		 
 		ret = mwifiex_process_sta_cmdresp(priv, cmdresp_no, resp);
 	}
 
-	/* Check init command response */
+	 
 	if (adapter->hw_status == MWIFIEX_HW_STATUS_INITIALIZING) {
 		if (ret) {
 			mwifiex_dbg(adapter, ERROR,
@@ -924,11 +804,7 @@ int mwifiex_process_cmdresp(struct mwifiex_adapter *adapter)
 	return ret;
 }
 
-/*
- * This function handles the timeout of command sending.
- *
- * It will re-send the same command again.
- */
+ 
 void
 mwifiex_cmd_timeout_func(struct timer_list *t)
 {
@@ -1025,7 +901,7 @@ mwifiex_cancel_pending_scan_cmd(struct mwifiex_adapter *adapter)
 {
 	struct cmd_ctrl_node *cmd_node = NULL, *tmp_node;
 
-	/* Cancel all pending scan command */
+	 
 	spin_lock_bh(&adapter->scan_pending_q_lock);
 	list_for_each_entry_safe(cmd_node, tmp_node,
 				 &adapter->scan_pending_q, list) {
@@ -1036,27 +912,21 @@ mwifiex_cancel_pending_scan_cmd(struct mwifiex_adapter *adapter)
 	spin_unlock_bh(&adapter->scan_pending_q_lock);
 }
 
-/*
- * This function cancels all the pending commands.
- *
- * The current command, all commands in command pending queue and all scan
- * commands in scan pending queue are cancelled. All the completion callbacks
- * are called with failure status to ensure cleanup.
- */
+ 
 void
 mwifiex_cancel_all_pending_cmd(struct mwifiex_adapter *adapter)
 {
 	struct cmd_ctrl_node *cmd_node = NULL, *tmp_node;
 
 	spin_lock_bh(&adapter->mwifiex_cmd_lock);
-	/* Cancel current cmd */
+	 
 	if ((adapter->curr_cmd) && (adapter->curr_cmd->wait_q_enabled)) {
 		adapter->cmd_wait_q.status = -1;
 		mwifiex_complete_cmd(adapter, adapter->curr_cmd);
 		adapter->curr_cmd->wait_q_enabled = false;
-		/* no recycle probably wait for response */
+		 
 	}
-	/* Cancel all pending command */
+	 
 	spin_lock_bh(&adapter->cmd_pending_q_lock);
 	list_for_each_entry_safe(cmd_node, tmp_node,
 				 &adapter->cmd_pending_q, list) {
@@ -1072,16 +942,7 @@ mwifiex_cancel_all_pending_cmd(struct mwifiex_adapter *adapter)
 	mwifiex_cancel_scan(adapter);
 }
 
-/*
- * This function cancels all pending commands that matches with
- * the given IOCTL request.
- *
- * Both the current command buffer and the pending command queue are
- * searched for matching IOCTL request. The completion callback of
- * the matched command is called with failure status to ensure cleanup.
- * In case of scan commands, all pending commands in scan pending queue
- * are cancelled.
- */
+ 
 static void
 mwifiex_cancel_pending_ioctl(struct mwifiex_adapter *adapter)
 {
@@ -1091,14 +952,7 @@ mwifiex_cancel_pending_ioctl(struct mwifiex_adapter *adapter)
 	    (adapter->curr_cmd->wait_q_enabled)) {
 		spin_lock_bh(&adapter->mwifiex_cmd_lock);
 		cmd_node = adapter->curr_cmd;
-		/* setting curr_cmd to NULL is quite dangerous, because
-		 * mwifiex_process_cmdresp checks curr_cmd to be != NULL
-		 * at the beginning then relies on it and dereferences
-		 * it at will
-		 * this probably works since mwifiex_cmd_timeout_func
-		 * is the only caller of this function and responses
-		 * at that point
-		 */
+		 
 		adapter->curr_cmd = NULL;
 		spin_unlock_bh(&adapter->mwifiex_cmd_lock);
 
@@ -1108,15 +962,7 @@ mwifiex_cancel_pending_ioctl(struct mwifiex_adapter *adapter)
 	mwifiex_cancel_scan(adapter);
 }
 
-/*
- * This function sends the sleep confirm command to firmware, if
- * possible.
- *
- * The sleep confirm command cannot be issued if command response,
- * data response or event response is awaiting handling, or if we
- * are in the middle of sending a command, or expecting a command
- * response.
- */
+ 
 void
 mwifiex_check_ps_cond(struct mwifiex_adapter *adapter)
 {
@@ -1132,11 +978,7 @@ mwifiex_check_ps_cond(struct mwifiex_adapter *adapter)
 			    (IS_CARD_RX_RCVD(adapter)) ? "R" : "");
 }
 
-/*
- * This function sends a Host Sleep activated event to applications.
- *
- * This event is generated by the driver, with a blank event body.
- */
+ 
 void
 mwifiex_hs_activated_event(struct mwifiex_private *priv, u8 activated)
 {
@@ -1162,16 +1004,7 @@ mwifiex_hs_activated_event(struct mwifiex_private *priv, u8 activated)
 	}
 }
 
-/*
- * This function handles the command response of a Host Sleep configuration
- * command.
- *
- * Handling includes changing the header fields into CPU format
- * and setting the current host sleep activation status in driver.
- *
- * In case host sleep status change, the function generates an event to
- * notify the applications.
- */
+ 
 int mwifiex_ret_802_11_hs_cfg(struct mwifiex_private *priv,
 			      struct host_cmd_ds_command *resp)
 {
@@ -1205,10 +1038,7 @@ int mwifiex_ret_802_11_hs_cfg(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function wakes up the adapter and generates a Host Sleep
- * cancel event on receiving the power up interrupt.
- */
+ 
 void
 mwifiex_process_hs_config(struct mwifiex_adapter *adapter)
 {
@@ -1234,11 +1064,7 @@ mwifiex_process_hs_config(struct mwifiex_adapter *adapter)
 }
 EXPORT_SYMBOL_GPL(mwifiex_process_hs_config);
 
-/*
- * This function handles the command response of a sleep confirm command.
- *
- * The function sets the card state to SLEEP if the response indicates success.
- */
+ 
 void
 mwifiex_process_sleep_confirm_resp(struct mwifiex_adapter *adapter,
 				   u8 *pbuf, u32 upld_len)
@@ -1260,15 +1086,15 @@ mwifiex_process_sleep_confirm_resp(struct mwifiex_adapter *adapter,
 		    "cmd: CMD_RESP: 0x%x, result %d, len %d, seqno 0x%x\n",
 		    command, result, le16_to_cpu(cmd->size), seq_num);
 
-	/* Get BSS number and corresponding priv */
+	 
 	priv = mwifiex_get_priv_by_id(adapter, HostCmd_GET_BSS_NO(seq_num),
 				      HostCmd_GET_BSS_TYPE(seq_num));
 	if (!priv)
 		priv = mwifiex_get_priv(adapter, MWIFIEX_BSS_ROLE_ANY);
 
-	/* Update sequence number */
+	 
 	seq_num = HostCmd_GET_SEQ_NO(seq_num);
-	/* Clear RET_BIT from HostCmd */
+	 
 	command &= HostCmd_CMD_ID_MASK;
 
 	if (command != HostCmd_CMD_802_11_PS_MODE_ENH) {
@@ -1297,18 +1123,7 @@ mwifiex_process_sleep_confirm_resp(struct mwifiex_adapter *adapter,
 }
 EXPORT_SYMBOL_GPL(mwifiex_process_sleep_confirm_resp);
 
-/*
- * This function prepares an enhanced power mode command.
- *
- * This function can be used to disable power save or to configure
- * power save with auto PS or STA PS or auto deep sleep.
- *
- * Preparation includes -
- *      - Setting command ID, action and proper size
- *      - Setting Power Save bitmap, PS parameters TLV, PS mode TLV,
- *        auto deep sleep TLV (as required)
- *      - Ensuring correct endian-ness
- */
+ 
 int mwifiex_cmd_enh_power_mode(struct mwifiex_private *priv,
 			       struct host_cmd_ds_command *cmd,
 			       u16 cmd_action, uint16_t ps_bitmap,
@@ -1386,13 +1201,7 @@ int mwifiex_cmd_enh_power_mode(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function handles the command response of an enhanced power mode
- * command.
- *
- * Handling includes changing the header fields into CPU format
- * and setting the current enhanced power mode in driver.
- */
+ 
 int mwifiex_ret_enh_power_mode(struct mwifiex_private *priv,
 			       struct host_cmd_ds_command *resp,
 			       struct mwifiex_ds_pm_cfg *pm_cfg)
@@ -1446,7 +1255,7 @@ int mwifiex_ret_enh_power_mode(struct mwifiex_private *priv,
 			    "cmd: ps_bitmap=%#x\n", ps_bitmap);
 
 		if (pm_cfg) {
-			/* This section is for get power save mode */
+			 
 			if (ps_bitmap & BITMAP_STA_PS)
 				pm_cfg->param.ps_mode = 1;
 			else
@@ -1456,14 +1265,7 @@ int mwifiex_ret_enh_power_mode(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function prepares command to get hardware specifications.
- *
- * Preparation includes -
- *      - Setting command ID, action and proper size
- *      - Setting permanent address parameter
- *      - Ensuring correct endian-ness
- */
+ 
 int mwifiex_cmd_get_hw_spec(struct mwifiex_private *priv,
 			    struct host_cmd_ds_command *cmd)
 {
@@ -1477,26 +1279,7 @@ int mwifiex_cmd_get_hw_spec(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function handles the command response of get hardware
- * specifications.
- *
- * Handling includes changing the header fields into CPU format
- * and saving/updating the following parameters in driver -
- *      - Firmware capability information
- *      - Firmware band settings
- *      - Ad-hoc start band and channel
- *      - Ad-hoc 11n activation status
- *      - Firmware release number
- *      - Number of antennas
- *      - Hardware address
- *      - Hardware interface version
- *      - Firmware version
- *      - Region code
- *      - 11n capabilities
- *      - MCS support fields
- *      - MP end port
- */
+ 
 int mwifiex_ret_get_hw_spec(struct mwifiex_private *priv,
 			    struct host_cmd_ds_command *resp)
 {
@@ -1549,7 +1332,7 @@ int mwifiex_ret_get_hw_spec(struct mwifiex_private *priv,
 	if (le32_to_cpu(hw_spec->dot_11ac_dev_cap)) {
 		adapter->is_hw_11ac_capable = true;
 
-		/* Copy 11AC cap */
+		 
 		adapter->hw_dot_11ac_dev_cap =
 					le32_to_cpu(hw_spec->dot_11ac_dev_cap);
 		adapter->usr_dot_11ac_dev_cap_bg = adapter->hw_dot_11ac_dev_cap
@@ -1557,7 +1340,7 @@ int mwifiex_ret_get_hw_spec(struct mwifiex_private *priv,
 		adapter->usr_dot_11ac_dev_cap_a = adapter->hw_dot_11ac_dev_cap
 					& ~MWIFIEX_DEF_11AC_CAP_BF_RESET_MASK;
 
-		/* Copy 11AC mcs */
+		 
 		adapter->hw_dot_11ac_mcs_support =
 				le32_to_cpu(hw_spec->dot_11ac_mcs_support);
 		adapter->usr_dot_11ac_mcs_support =
@@ -1568,7 +1351,7 @@ int mwifiex_ret_get_hw_spec(struct mwifiex_private *priv,
 
 	resp_size = le16_to_cpu(resp->size) - S_DS_GEN;
 	if (resp_size > sizeof(struct host_cmd_ds_get_hw_spec)) {
-		/* we have variable HW SPEC information */
+		 
 		left_len = resp_size - sizeof(struct host_cmd_ds_get_hw_spec);
 		while (left_len > sizeof(struct mwifiex_ie_types_header)) {
 			tlv = (void *)&hw_spec->tlvs + parsed_len;
@@ -1658,11 +1441,11 @@ int mwifiex_ret_get_hw_spec(struct mwifiex_private *priv,
 	adapter->region_code = le16_to_cpu(hw_spec->region_code);
 
 	for (i = 0; i < MWIFIEX_MAX_REGION_CODE; i++)
-		/* Use the region code to search for the index */
+		 
 		if (adapter->region_code == region_code_index[i])
 			break;
 
-	/* If it's unidentified region code, use the default (world) */
+	 
 	if (i >= MWIFIEX_MAX_REGION_CODE) {
 		adapter->region_code = 0x00;
 		mwifiex_dbg(adapter, WARN,
@@ -1683,9 +1466,7 @@ int mwifiex_ret_get_hw_spec(struct mwifiex_private *priv,
 	return 0;
 }
 
-/* This function handles the command response of hs wakeup reason
- * command.
- */
+ 
 int mwifiex_ret_wakeup_reason(struct mwifiex_private *priv,
 			      struct host_cmd_ds_command *resp,
 			      struct host_cmd_ds_wakeup_reason *wakeup_reason)

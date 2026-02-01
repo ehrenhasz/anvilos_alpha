@@ -52,11 +52,7 @@ static void ila_csum_do_neutral_fmt(struct ila_addr *iaddr,
 
 	*adjust = ~csum_fold(csum_add(diff, csum_unfold(*adjust)));
 
-	/* Flip the csum-neutral bit. Either we are doing a SIR->ILA
-	 * translation with ILA_CSUM_NEUTRAL_MAP as the csum_method
-	 * and the C-bit is not set, or we are doing an ILA-SIR
-	 * tranlsation and the C-bit is set.
-	 */
+	 
 	iaddr->ident.csum_neutral ^= 1;
 }
 
@@ -130,15 +126,11 @@ void ila_update_ipv6_locator(struct sk_buff *skb, struct ila_params *p,
 	case ILA_CSUM_NEUTRAL_MAP:
 		if (sir2ila) {
 			if (WARN_ON(ila_csum_neutral_set(iaddr->ident))) {
-				/* Checksum flag should never be
-				 * set in a formatted SIR address.
-				 */
+				 
 				break;
 			}
 		} else if (!ila_csum_neutral_set(iaddr->ident)) {
-			/* ILA to SIR translation and C-bit isn't
-			 * set so we're good.
-			 */
+			 
 			break;
 		}
 		ila_csum_do_neutral_fmt(iaddr, p);
@@ -150,6 +142,6 @@ void ila_update_ipv6_locator(struct sk_buff *skb, struct ila_params *p,
 		break;
 	}
 
-	/* Now change destination address */
+	 
 	iaddr->loc = p->locator;
 }

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * A test for GUEST_PRINTF
- *
- * Copyright 2022, Google, Inc. and/or its affiliates.
- */
+
+ 
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,7 +18,7 @@ struct guest_vals {
 
 static struct guest_vals vals;
 
-/* GUEST_PRINTF()/GUEST_ASSERT_FMT() does not support float or double. */
+ 
 #define TYPE_LIST					\
 TYPE(test_type_i64,  I64,  "%ld",   int64_t)		\
 TYPE(test_type_u64,  U64u, "%lu",   uint64_t)		\
@@ -85,12 +81,7 @@ static void guest_code(void)
 	}
 }
 
-/*
- * Unfortunately this gets a little messy because 'assert_msg' doesn't
- * just contains the matching string, it also contains additional assert
- * info.  Fortunately the part that matches should be at the very end of
- * 'assert_msg'.
- */
+ 
 static void ucall_abort(const char *assert_msg, const char *expected_assert_msg)
 {
 	int len_str = strlen(assert_msg);

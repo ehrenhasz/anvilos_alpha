@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/sch_blackhole.c	Black hole queue
- *
- * Authors:	Thomas Graf <tgraf@suug.ch>
- *
- * Note: Quantum tunneling is not supported.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/types.h>

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Copyright (c) 2011, The Linux Foundation. All rights reserved.
- */
+
+ 
 #include <linux/of.h>
 #include <linux/of_dma.h>
 #include <linux/bitops.h>
@@ -10,7 +7,7 @@
 #include <linux/mmc/card.h>
 #include "mmci.h"
 
-/* Registers */
+ 
 #define DML_CONFIG			0x00
 #define PRODUCER_CRCI_MSK		GENMASK(1, 0)
 #define PRODUCER_CRCI_DISABLE		0
@@ -39,7 +36,7 @@
 #define DML_PRODUCER_BAM_BLOCK_SIZE	0x24
 #define DML_PRODUCER_BAM_TRANS_SIZE	0x28
 
-/* other definitions */
+ 
 #define PRODUCER_PIPE_LOGICAL_SIZE	4096
 #define CONSUMER_PIPE_LOGICAL_SIZE	4096
 
@@ -56,41 +53,41 @@ static int qcom_dma_start(struct mmci_host *host, unsigned int *datactrl)
 		return ret;
 
 	if (data->flags & MMC_DATA_READ) {
-		/* Read operation: configure DML for producer operation */
-		/* Set producer CRCI-x and disable consumer CRCI */
+		 
+		 
 		config = readl_relaxed(base + DML_CONFIG);
 		config = (config & ~PRODUCER_CRCI_MSK) | PRODUCER_CRCI_X_SEL;
 		config = (config & ~CONSUMER_CRCI_MSK) | CONSUMER_CRCI_DISABLE;
 		writel_relaxed(config, base + DML_CONFIG);
 
-		/* Set the Producer BAM block size */
+		 
 		writel_relaxed(data->blksz, base + DML_PRODUCER_BAM_BLOCK_SIZE);
 
-		/* Set Producer BAM Transaction size */
+		 
 		writel_relaxed(data->blocks * data->blksz,
 			       base + DML_PRODUCER_BAM_TRANS_SIZE);
-		/* Set Producer Transaction End bit */
+		 
 		config = readl_relaxed(base + DML_CONFIG);
 		config |= PRODUCER_TRANS_END_EN;
 		writel_relaxed(config, base + DML_CONFIG);
-		/* Trigger producer */
+		 
 		writel_relaxed(1, base + DML_PRODUCER_START);
 	} else {
-		/* Write operation: configure DML for consumer operation */
-		/* Set consumer CRCI-x and disable producer CRCI*/
+		 
+		 
 		config = readl_relaxed(base + DML_CONFIG);
 		config = (config & ~CONSUMER_CRCI_MSK) | CONSUMER_CRCI_X_SEL;
 		config = (config & ~PRODUCER_CRCI_MSK) | PRODUCER_CRCI_DISABLE;
 		writel_relaxed(config, base + DML_CONFIG);
-		/* Clear Producer Transaction End bit */
+		 
 		config = readl_relaxed(base + DML_CONFIG);
 		config &= ~PRODUCER_TRANS_END_EN;
 		writel_relaxed(config, base + DML_CONFIG);
-		/* Trigger consumer */
+		 
 		writel_relaxed(1, base + DML_CONSUMER_START);
 	}
 
-	/* make sure the dml is configured before dma is triggered */
+	 
 	wmb();
 	return 0;
 }
@@ -115,7 +112,7 @@ static int of_get_dml_pipe_index(struct device_node *np, const char *name)
 	return -ENODEV;
 }
 
-/* Initialize the dml hardware connected to SD Card controller */
+ 
 static int qcom_dma_setup(struct mmci_host *host)
 {
 	u32 config;
@@ -136,44 +133,30 @@ static int qcom_dma_setup(struct mmci_host *host)
 
 	base = host->base + DML_OFFSET;
 
-	/* Reset the DML block */
+	 
 	writel_relaxed(1, base + DML_SW_RESET);
 
-	/* Disable the producer and consumer CRCI */
+	 
 	config = (PRODUCER_CRCI_DISABLE | CONSUMER_CRCI_DISABLE);
-	/*
-	 * Disable the bypass mode. Bypass mode will only be used
-	 * if data transfer is to happen in PIO mode and don't
-	 * want the BAM interface to connect with SDCC-DML.
-	 */
+	 
 	config &= ~BYPASS;
-	/*
-	 * Disable direct mode as we don't DML to MASTER the AHB bus.
-	 * BAM connected with DML should MASTER the AHB bus.
-	 */
+	 
 	config &= ~DIRECT_MODE;
-	/*
-	 * Disable infinite mode transfer as we won't be doing any
-	 * infinite size data transfers. All data transfer will be
-	 * of finite data size.
-	 */
+	 
 	config &= ~INFINITE_CONS_TRANS;
 	writel_relaxed(config, base + DML_CONFIG);
 
-	/*
-	 * Initialize the logical BAM pipe size for producer
-	 * and consumer.
-	 */
+	 
 	writel_relaxed(PRODUCER_PIPE_LOGICAL_SIZE,
 		       base + DML_PRODUCER_PIPE_LOGICAL_SIZE);
 	writel_relaxed(CONSUMER_PIPE_LOGICAL_SIZE,
 		       base + DML_CONSUMER_PIPE_LOGICAL_SIZE);
 
-	/* Initialize Producer/consumer pipe id */
+	 
 	writel_relaxed(producer_id | (consumer_id << CONSUMER_PIPE_ID_SHFT),
 		       base + DML_PIPE_ID);
 
-	/* Make sure dml initialization is finished */
+	 
 	mb();
 
 	return 0;

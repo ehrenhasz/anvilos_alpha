@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright IBM Corp. 2000, 2009
- * Author(s): Utz Bacher <utz.bacher@de.ibm.com>
- *	      Cornelia Huck <cornelia.huck@de.ibm.com>
- *	      Jan Glauber <jang@linux.vnet.ibm.com>
- */
+
+ 
 #include <linux/io.h>
 #include <linux/slab.h>
 #include <linux/kernel_stat.h>
@@ -22,21 +17,18 @@
 #include "qdio.h"
 #include "qdio_debug.h"
 
-/*
- * Restriction: only 63 iqdio subchannels would have its own indicator,
- * after that, subsequent subchannels share one indicator
- */
+ 
 #define TIQDIO_NR_NONSHARED_IND		63
 #define TIQDIO_NR_INDICATORS		(TIQDIO_NR_NONSHARED_IND + 1)
 #define TIQDIO_SHARED_IND		63
 
-/* device state change indicators */
+ 
 struct indicator_t {
-	u32 ind;	/* u32 because of compare-and-swap performance */
-	atomic_t count; /* use count, 0 or 1 for non-shared indicators */
+	u32 ind;	 
+	atomic_t count;  
 };
 
-/* list of thin interrupt input queues */
+ 
 static LIST_HEAD(tiq_list);
 static DEFINE_MUTEX(tiq_list_lock);
 
@@ -44,7 +36,7 @@ static struct indicator_t *q_indicators;
 
 u64 last_ai_time;
 
-/* returns addr for the device state change indicator */
+ 
 static u32 *get_indicator(void)
 {
 	int i;
@@ -53,7 +45,7 @@ static u32 *get_indicator(void)
 		if (!atomic_cmpxchg(&q_indicators[i].count, 0, 1))
 			return &q_indicators[i].ind;
 
-	/* use the shared indicator */
+	 
 	atomic_inc(&q_indicators[TIQDIO_SHARED_IND].count);
 	return &q_indicators[TIQDIO_SHARED_IND].ind;
 }
@@ -91,11 +83,7 @@ static inline u32 clear_shared_ind(void)
 	return xchg(&q_indicators[TIQDIO_SHARED_IND].ind, 0);
 }
 
-/**
- * tiqdio_thinint_handler - thin interrupt handler for qdio
- * @airq: pointer to adapter interrupt descriptor
- * @tpi_info: interrupt information (e.g. floating vs directed -- unused)
- */
+ 
 static void tiqdio_thinint_handler(struct airq_struct *airq,
 				   struct tpi_info *tpi_info)
 {
@@ -106,11 +94,11 @@ static void tiqdio_thinint_handler(struct airq_struct *airq,
 	last_ai_time = irq_time;
 	inc_irq_stat(IRQIO_QAI);
 
-	/* protect tiq_list entries, only changed in activate or shutdown */
+	 
 	rcu_read_lock();
 
 	list_for_each_entry_rcu(irq, &tiq_list, entry) {
-		/* only process queues from changed sets */
+		 
 		if (unlikely(references_shared_dsci(irq))) {
 			if (!si_used)
 				continue;
@@ -195,7 +183,7 @@ void qdio_shutdown_thinint(struct qdio_irq *irq_ptr)
 	mutex_unlock(&tiq_list_lock);
 	synchronize_rcu();
 
-	/* reset adapter interrupt indicators */
+	 
 	set_subchannel_ind(irq_ptr, 1);
 	put_indicator(irq_ptr->dsci);
 }

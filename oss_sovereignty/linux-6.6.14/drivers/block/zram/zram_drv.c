@@ -1,16 +1,4 @@
-/*
- * Compressed RAM block device
- *
- * Copyright (C) 2008, 2009, 2010  Nitin Gupta
- *               2012, 2013 Minchan Kim
- *
- * This code is released using a dual license strategy: BSD/GPL
- * You can choose the licence that better fits your requirements.
- *
- * Released under the terms of 3-clause BSD License
- * Released under the terms of GNU General Public License Version 2.0
- *
- */
+ 
 
 #define KMSG_COMPONENT "zram"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -37,18 +25,15 @@
 #include "zram_drv.h"
 
 static DEFINE_IDR(zram_index_idr);
-/* idr index must be protected */
+ 
 static DEFINE_MUTEX(zram_index_mutex);
 
 static int zram_major;
 static const char *default_compressor = CONFIG_ZRAM_DEF_COMP;
 
-/* Module params (documentation at end) */
+ 
 static unsigned int num_devices = 1;
-/*
- * Pages that compress to sizes equals or greater than this are stored
- * uncompressed in memory.
- */
+ 
 static size_t huge_class_size;
 
 static const struct block_device_operations zram_devops;
@@ -92,7 +77,7 @@ static void zram_set_handle(struct zram *zram, u32 index, unsigned long handle)
 	zram->table[index].handle = handle;
 }
 
-/* flag operations require table entry bit_spin_lock() being held */
+ 
 static bool zram_test_flag(struct zram *zram, u32 index,
 			enum zram_pageflags flag)
 {
@@ -158,10 +143,7 @@ static inline bool is_partial_io(struct bio_vec *bvec)
 static inline void zram_set_priority(struct zram *zram, u32 index, u32 prio)
 {
 	prio &= ZRAM_COMP_PRIORITY_MASK;
-	/*
-	 * Clear previous priority value first, in case if we recompress
-	 * further an already recompressed page
-	 */
+	 
 	zram->table[index].flags &= ~(ZRAM_COMP_PRIORITY_MASK <<
 				      ZRAM_COMP_PRIORITY_BIT1);
 	zram->table[index].flags |= (prio << ZRAM_COMP_PRIORITY_BIT1);
@@ -244,7 +226,7 @@ static ssize_t mem_limit_store(struct device *dev,
 	struct zram *zram = dev_to_zram(dev);
 
 	limit = memparse(buf, &tmp);
-	if (buf == tmp) /* no chars parsed, invalid input */
+	if (buf == tmp)  
 		return -EINVAL;
 
 	down_write(&zram->init_lock);
@@ -275,10 +257,7 @@ static ssize_t mem_used_max_store(struct device *dev,
 	return len;
 }
 
-/*
- * Mark all pages which are older than or equal to cutoff as IDLE.
- * Callers should hold the zram init lock in read mode
- */
+ 
 static void mark_idle(struct zram *zram, ktime_t cutoff)
 {
 	int is_idle = 1;
@@ -286,10 +265,7 @@ static void mark_idle(struct zram *zram, ktime_t cutoff)
 	int index;
 
 	for (index = 0; index < nr_pages; index++) {
-		/*
-		 * Do not mark ZRAM_UNDER_WB slot as ZRAM_IDLE to close race.
-		 * See the comment in writeback_store.
-		 */
+		 
 		zram_slot_lock(zram, index);
 		if (zram_allocated(zram, index) &&
 				!zram_test_flag(zram, index, ZRAM_UNDER_WB)) {
@@ -311,10 +287,7 @@ static ssize_t idle_store(struct device *dev,
 	ssize_t rv = -EINVAL;
 
 	if (!sysfs_streq(buf, "all")) {
-		/*
-		 * If it did not parse as 'all' try to treat it as an integer
-		 * when we have memory tracking enabled.
-		 */
+		 
 		u64 age_sec;
 
 		if (IS_ENABLED(CONFIG_ZRAM_MEMORY_TRACKING) && !kstrtoull(buf, 0, &age_sec))
@@ -328,10 +301,7 @@ static ssize_t idle_store(struct device *dev,
 	if (!init_done(zram))
 		goto out_unlock;
 
-	/*
-	 * A cutoff_time of 0 marks everything as idle, this is the
-	 * "all" behavior.
-	 */
+	 
 	mark_idle(zram, cutoff_time);
 	rv = len;
 
@@ -421,7 +391,7 @@ static void reset_bdev(struct zram *zram)
 
 	bdev = zram->bdev;
 	blkdev_put(bdev, zram);
-	/* hope filp_close flush all of IO */
+	 
 	filp_close(zram->backing_dev, NULL);
 	zram->backing_dev = NULL;
 	zram->bdev = NULL;
@@ -486,7 +456,7 @@ static ssize_t backing_dev_store(struct device *dev,
 	}
 
 	strscpy(file_name, buf, PATH_MAX);
-	/* ignore trailing newline */
+	 
 	sz = strlen(file_name);
 	if (sz > 0 && file_name[sz - 1] == '\n')
 		file_name[sz - 1] = 0x00;
@@ -501,7 +471,7 @@ static ssize_t backing_dev_store(struct device *dev,
 	mapping = backing_dev->f_mapping;
 	inode = mapping->host;
 
-	/* Support only block device in this moment */
+	 
 	if (!S_ISBLK(inode->i_mode)) {
 		err = -ENOTBLK;
 		goto out;
@@ -555,7 +525,7 @@ static unsigned long alloc_block_bdev(struct zram *zram)
 {
 	unsigned long blk_idx = 1;
 retry:
-	/* skip 0 bit to confuse zram.handle = 0 */
+	 
 	blk_idx = find_next_zero_bit(zram->bitmap, zram->nr_pages, blk_idx);
 	if (blk_idx == zram->nr_pages)
 		return 0;
@@ -681,12 +651,9 @@ static ssize_t writeback_store(struct device *dev,
 		    !zram_test_flag(zram, index, ZRAM_INCOMPRESSIBLE))
 			goto next;
 
-		/*
-		 * Clearing ZRAM_UNDER_WB is duty of caller.
-		 * IOW, zram_free_page never clear it.
-		 */
+		 
 		zram_set_flag(zram, index, ZRAM_UNDER_WB);
-		/* Need for hugepage writeback racing */
+		 
 		zram_set_flag(zram, index, ZRAM_IDLE);
 		zram_slot_unlock(zram, index);
 		if (zram_read_page(zram, page, index, NULL)) {
@@ -702,38 +669,20 @@ static ssize_t writeback_store(struct device *dev,
 		bio.bi_iter.bi_sector = blk_idx * (PAGE_SIZE >> 9);
 		__bio_add_page(&bio, page, PAGE_SIZE, 0);
 
-		/*
-		 * XXX: A single page IO would be inefficient for write
-		 * but it would be not bad as starter.
-		 */
+		 
 		err = submit_bio_wait(&bio);
 		if (err) {
 			zram_slot_lock(zram, index);
 			zram_clear_flag(zram, index, ZRAM_UNDER_WB);
 			zram_clear_flag(zram, index, ZRAM_IDLE);
 			zram_slot_unlock(zram, index);
-			/*
-			 * BIO errors are not fatal, we continue and simply
-			 * attempt to writeback the remaining objects (pages).
-			 * At the same time we need to signal user-space that
-			 * some writes (at least one, but also could be all of
-			 * them) were not successful and we do so by returning
-			 * the most recent BIO error.
-			 */
+			 
 			ret = err;
 			continue;
 		}
 
 		atomic64_inc(&zram->stats.bd_writes);
-		/*
-		 * We released zram_slot_lock so need to check if the slot was
-		 * changed. If there is freeing for the slot, we can catch it
-		 * easily by zram_allocated.
-		 * A subtle case is the slot is freed/reallocated/marked as
-		 * ZRAM_IDLE again. To close the race, idle_store doesn't
-		 * mark ZRAM_IDLE once it found the slot was ZRAM_UNDER_WB.
-		 * Thus, we could close the race by checking ZRAM_IDLE bit.
-		 */
+		 
 		zram_slot_lock(zram, index);
 		if (!zram_allocated(zram, index) ||
 			  !zram_test_flag(zram, index, ZRAM_IDLE)) {
@@ -785,11 +734,7 @@ static void zram_sync_read(struct work_struct *work)
 	zw->error = submit_bio_wait(&bio);
 }
 
-/*
- * Block layer want one ->submit_bio to be active at a time, so if we use
- * chained IO with parent IO in same context, it's a deadlock. To avoid that,
- * use a worker thread context.
- */
+ 
 static int read_from_bdev_sync(struct zram *zram, struct page *page,
 				unsigned long entry)
 {
@@ -941,15 +886,7 @@ static void zram_debugfs_register(struct zram *zram) {};
 static void zram_debugfs_unregister(struct zram *zram) {};
 #endif
 
-/*
- * We switched to per-cpu streams and this attr is not needed anymore.
- * However, we will keep it around for some time, because:
- * a) we may revert per-cpu streams in the future
- * b) it's visible to user space and we need to follow our 2 years
- *    retirement rule; but we already have a number of 'soon to be
- *    altered' attrs, so max_comp_streams need to wait for the next
- *    layoff cycle.
- */
+ 
 static ssize_t max_comp_streams_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
@@ -964,7 +901,7 @@ static ssize_t max_comp_streams_store(struct device *dev,
 
 static void comp_algorithm_set(struct zram *zram, u32 prio, const char *alg)
 {
-	/* Do not free statically defined compression algorithms */
+	 
 	if (zram->comp_algs[prio] != default_compressor)
 		kfree(zram->comp_algs[prio]);
 
@@ -995,7 +932,7 @@ static int __comp_algorithm_store(struct zram *zram, u32 prio, const char *buf)
 	if (!compressor)
 		return -ENOMEM;
 
-	/* ignore trailing newline */
+	 
 	if (sz > 0 && compressor[sz - 1] == '\n')
 		compressor[sz - 1] = 0x00;
 
@@ -1220,7 +1157,7 @@ static void zram_meta_free(struct zram *zram, u64 disksize)
 	size_t num_pages = disksize >> PAGE_SHIFT;
 	size_t index;
 
-	/* Free all pages that are still in this zram device */
+	 
 	for (index = 0; index < num_pages; index++)
 		zram_free_page(zram, index);
 
@@ -1248,11 +1185,7 @@ static bool zram_meta_alloc(struct zram *zram, u64 disksize)
 	return true;
 }
 
-/*
- * To protect concurrent access to the same index entry,
- * caller should hold this table index entry's bit_spinlock to
- * indicate this index entry is accessing.
- */
+ 
 static void zram_free_page(struct zram *zram, size_t index)
 {
 	unsigned long handle;
@@ -1279,10 +1212,7 @@ static void zram_free_page(struct zram *zram, size_t index)
 		goto out;
 	}
 
-	/*
-	 * No memory is allocated for same element filled pages.
-	 * Simply clear same page flag.
-	 */
+	 
 	if (zram_test_flag(zram, index, ZRAM_SAME)) {
 		zram_clear_flag(zram, index, ZRAM_SAME);
 		atomic64_dec(&zram->stats.same_pages);
@@ -1305,10 +1235,7 @@ out:
 		~(1UL << ZRAM_LOCK | 1UL << ZRAM_UNDER_WB));
 }
 
-/*
- * Reads (decompresses if needed) a page from zspool (zsmalloc).
- * Corresponding ZRAM slot should be locked.
- */
+ 
 static int zram_read_from_zspool(struct zram *zram, struct page *page,
 				 u32 index)
 {
@@ -1361,31 +1288,25 @@ static int zram_read_page(struct zram *zram, struct page *page, u32 index,
 
 	zram_slot_lock(zram, index);
 	if (!zram_test_flag(zram, index, ZRAM_WB)) {
-		/* Slot should be locked through out the function call */
+		 
 		ret = zram_read_from_zspool(zram, page, index);
 		zram_slot_unlock(zram, index);
 	} else {
-		/*
-		 * The slot should be unlocked before reading from the backing
-		 * device.
-		 */
+		 
 		zram_slot_unlock(zram, index);
 
 		ret = read_from_bdev(zram, page, zram_get_element(zram, index),
 				     parent);
 	}
 
-	/* Should NEVER happen. Return bio error if it does. */
+	 
 	if (WARN_ON(ret < 0))
 		pr_err("Decompression failed! err=%d, page=%u\n", ret, index);
 
 	return ret;
 }
 
-/*
- * Use a temporary buffer to decompress the page, as the decompressor
- * always expects a full page for the output.
- */
+ 
 static int zram_bvec_read_partial(struct zram *zram, struct bio_vec *bvec,
 				  u32 index, int offset)
 {
@@ -1423,7 +1344,7 @@ static int zram_write_page(struct zram *zram, struct page *page, u32 index)
 	mem = kmap_atomic(page);
 	if (page_same_filled(mem, &element)) {
 		kunmap_atomic(mem);
-		/* Free memory associated with this sector now. */
+		 
 		flags = ZRAM_SAME;
 		atomic64_inc(&zram->stats.same_pages);
 		goto out;
@@ -1445,19 +1366,7 @@ compress_again:
 
 	if (comp_len >= huge_class_size)
 		comp_len = PAGE_SIZE;
-	/*
-	 * handle allocation has 2 paths:
-	 * a) fast path is executed with preemption disabled (for
-	 *  per-cpu streams) and has __GFP_DIRECT_RECLAIM bit clear,
-	 *  since we can't sleep;
-	 * b) slow path enables preemption and attempts to allocate
-	 *  the page with __GFP_DIRECT_RECLAIM bit set. we have to
-	 *  put per-cpu compression stream and, thus, to re-do
-	 *  the compression once handle is allocated.
-	 *
-	 * if we have a 'non-null' handle here then we are coming
-	 * from the slow path and handle has already been allocated.
-	 */
+	 
 	if (IS_ERR_VALUE(handle))
 		handle = zs_malloc(zram->mem_pool, comp_len,
 				__GFP_KSWAPD_RECLAIM |
@@ -1475,13 +1384,7 @@ compress_again:
 
 		if (comp_len != PAGE_SIZE)
 			goto compress_again;
-		/*
-		 * If the page is not compressible, you need to acquire the
-		 * lock and execute the code below. The zcomp_stream_get()
-		 * call is needed to disable the cpu hotplug and grab the
-		 * zstrm buffer back. It is necessary that the dereferencing
-		 * of the zstrm variable below occurs correctly.
-		 */
+		 
 		zstrm = zcomp_stream_get(zram->comps[ZRAM_PRIMARY_COMP]);
 	}
 
@@ -1507,10 +1410,7 @@ compress_again:
 	zs_unmap_object(zram->mem_pool, handle);
 	atomic64_add(comp_len, &zram->stats.compr_data_size);
 out:
-	/*
-	 * Free memory associated with this sector
-	 * before overwriting unused sectors.
-	 */
+	 
 	zram_slot_lock(zram, index);
 	zram_free_page(zram, index);
 
@@ -1529,14 +1429,12 @@ out:
 	}
 	zram_slot_unlock(zram, index);
 
-	/* Update stats */
+	 
 	atomic64_inc(&zram->stats.pages_stored);
 	return ret;
 }
 
-/*
- * This is a partial IO. Read the full page before writing the changes.
- */
+ 
 static int zram_bvec_write_partial(struct zram *zram, struct bio_vec *bvec,
 				   u32 index, int offset, struct bio *bio)
 {
@@ -1564,13 +1462,7 @@ static int zram_bvec_write(struct zram *zram, struct bio_vec *bvec,
 }
 
 #ifdef CONFIG_ZRAM_MULTI_COMP
-/*
- * This function will decompress (unless it's ZRAM_HUGE) the page and then
- * attempt to compress it using provided compression algorithm priority
- * (which is potentially more effective).
- *
- * Corresponding ZRAM slot should be locked.
- */
+ 
 static int zram_recompress(struct zram *zram, u32 index, struct page *page,
 			   u32 threshold, u32 prio, u32 prio_max)
 {
@@ -1590,9 +1482,7 @@ static int zram_recompress(struct zram *zram, u32 index, struct page *page,
 		return -EINVAL;
 
 	comp_len_old = zram_get_obj_size(zram, index);
-	/*
-	 * Do not recompress objects that are already "small enough".
-	 */
+	 
 	if (comp_len_old < threshold)
 		return 0;
 
@@ -1601,18 +1491,12 @@ static int zram_recompress(struct zram *zram, u32 index, struct page *page,
 		return ret;
 
 	class_index_old = zs_lookup_class_index(zram->mem_pool, comp_len_old);
-	/*
-	 * Iterate the secondary comp algorithms list (in order of priority)
-	 * and try to recompress the page.
-	 */
+	 
 	for (; prio < prio_max; prio++) {
 		if (!zram->comps[prio])
 			continue;
 
-		/*
-		 * Skip if the object is already re-compressed with a higher
-		 * priority algorithm (or same algorithm).
-		 */
+		 
 		if (prio <= zram_get_priority(zram, index))
 			continue;
 
@@ -1630,52 +1514,33 @@ static int zram_recompress(struct zram *zram, u32 index, struct page *page,
 		class_index_new = zs_lookup_class_index(zram->mem_pool,
 							comp_len_new);
 
-		/* Continue until we make progress */
+		 
 		if (class_index_new >= class_index_old ||
 		    (threshold && comp_len_new >= threshold)) {
 			zcomp_stream_put(zram->comps[prio]);
 			continue;
 		}
 
-		/* Recompression was successful so break out */
+		 
 		break;
 	}
 
-	/*
-	 * We did not try to recompress, e.g. when we have only one
-	 * secondary algorithm and the page is already recompressed
-	 * using that algorithm
-	 */
+	 
 	if (!zstrm)
 		return 0;
 
 	if (class_index_new >= class_index_old) {
-		/*
-		 * Secondary algorithms failed to re-compress the page
-		 * in a way that would save memory, mark the object as
-		 * incompressible so that we will not try to compress
-		 * it again.
-		 *
-		 * We need to make sure that all secondary algorithms have
-		 * failed, so we test if the number of recompressions matches
-		 * the number of active secondary algorithms.
-		 */
+		 
 		if (num_recomps == zram->num_active_comps - 1)
 			zram_set_flag(zram, index, ZRAM_INCOMPRESSIBLE);
 		return 0;
 	}
 
-	/* Successful recompression but above threshold */
+	 
 	if (threshold && comp_len_new >= threshold)
 		return 0;
 
-	/*
-	 * No direct reclaim (slow path) for handle allocation and no
-	 * re-compression attempt (unlike in zram_write_bvec()) since
-	 * we already have stored that object in zsmalloc. If we cannot
-	 * alloc memory for recompressed object then we bail out and
-	 * simply keep the old (existing) object in zsmalloc.
-	 */
+	 
 	handle_new = zs_malloc(zram->mem_pool, comp_len_new,
 			       __GFP_KSWAPD_RECLAIM |
 			       __GFP_NOWARN |
@@ -1737,10 +1602,7 @@ static ssize_t recompress_store(struct device *dev,
 		}
 
 		if (!strcmp(param, "threshold")) {
-			/*
-			 * We will re-compress only idle objects equal or
-			 * greater in size than watermark.
-			 */
+			 
 			ret = kstrtouint(val, 10, &threshold);
 			if (ret)
 				return ret;
@@ -1838,16 +1700,7 @@ static void zram_bio_discard(struct zram *zram, struct bio *bio)
 	u32 offset = (bio->bi_iter.bi_sector & (SECTORS_PER_PAGE - 1)) <<
 			SECTOR_SHIFT;
 
-	/*
-	 * zram manages data in physical block size units. Because logical block
-	 * size isn't identical with physical block size on some arch, we
-	 * could get a discard request pointing to a specific offset within a
-	 * certain physical block.  Although we can handle this request by
-	 * reading that physiclal block and decompressing and partially zeroing
-	 * and re-compressing and then re-storing it, this isn't reasonable
-	 * because our intent with a discard request is to save memory.  So
-	 * skipping this logical block is appropriate here.
-	 */
+	 
 	if (offset) {
 		if (n <= (PAGE_SIZE - offset))
 			return;
@@ -1929,9 +1782,7 @@ static void zram_bio_write(struct zram *zram, struct bio *bio)
 	bio_endio(bio);
 }
 
-/*
- * Handler function for all zram I/O requests.
- */
+ 
 static void zram_submit_bio(struct bio *bio)
 {
 	struct zram *zram = bio->bi_bdev->bd_disk->private_data;
@@ -1999,7 +1850,7 @@ static void zram_reset_device(struct zram *zram)
 	set_capacity_and_notify(zram->disk, 0);
 	part_stat_set_all(zram->disk->part0, 0);
 
-	/* I/O operation under all of CPU are done so let's free */
+	 
 	zram_meta_free(zram, zram->disksize);
 	zram->disksize = 0;
 	zram_destroy_comps(zram);
@@ -2084,17 +1935,17 @@ static ssize_t reset_store(struct device *dev,
 	disk = zram->disk;
 
 	mutex_lock(&disk->open_mutex);
-	/* Do not reset an active device or claimed device */
+	 
 	if (disk_openers(disk) || zram->claim) {
 		mutex_unlock(&disk->open_mutex);
 		return -EBUSY;
 	}
 
-	/* From now on, anyone can't open /dev/zram[0-9] */
+	 
 	zram->claim = true;
 	mutex_unlock(&disk->open_mutex);
 
-	/* Make sure all the pending I/O are finished */
+	 
 	sync_blockdev(disk->part0);
 	zram_reset_device(zram);
 
@@ -2111,7 +1962,7 @@ static int zram_open(struct gendisk *disk, blk_mode_t mode)
 
 	WARN_ON(!mutex_is_locked(&disk->open_mutex));
 
-	/* zram was claimed to reset so open request fails */
+	 
 	if (zram->claim)
 		return -EBUSY;
 	return 0;
@@ -2175,10 +2026,7 @@ static struct attribute *zram_disk_attrs[] = {
 
 ATTRIBUTE_GROUPS(zram_disk);
 
-/*
- * Allocate and initialize new zram device. the function returns
- * '>= 0' device_id upon success, and negative value otherwise.
- */
+ 
 static int zram_add(void)
 {
 	struct zram *zram;
@@ -2198,7 +2046,7 @@ static int zram_add(void)
 	spin_lock_init(&zram->wb_limit_lock);
 #endif
 
-	/* gendisk structure */
+	 
 	zram->disk = blk_alloc_disk(NUMA_NO_NODE);
 	if (!zram->disk) {
 		pr_err("Error allocating disk structure for device %d\n",
@@ -2215,16 +2063,13 @@ static int zram_add(void)
 	zram->disk->private_data = zram;
 	snprintf(zram->disk->disk_name, 16, "zram%d", device_id);
 
-	/* Actual capacity set using sysfs (/sys/block/zram<id>/disksize */
+	 
 	set_capacity(zram->disk, 0);
-	/* zram devices sort of resembles non-rotational disks */
+	 
 	blk_queue_flag_set(QUEUE_FLAG_NONROT, zram->disk->queue);
 	blk_queue_flag_set(QUEUE_FLAG_SYNCHRONOUS, zram->disk->queue);
 
-	/*
-	 * To ensure that we always get PAGE_SIZE aligned
-	 * and n*PAGE_SIZED sized I/O requests.
-	 */
+	 
 	blk_queue_physical_block_size(zram->disk->queue, PAGE_SIZE);
 	blk_queue_logical_block_size(zram->disk->queue,
 					ZRAM_LOGICAL_BLOCK_SIZE);
@@ -2233,14 +2078,7 @@ static int zram_add(void)
 	zram->disk->queue->limits.discard_granularity = PAGE_SIZE;
 	blk_queue_max_discard_sectors(zram->disk->queue, UINT_MAX);
 
-	/*
-	 * zram_bio_discard() will clear all logical blocks if logical block
-	 * size is identical with physical block size(PAGE_SIZE). But if it is
-	 * different, we will skip discarding some parts of logical blocks in
-	 * the part of the request range which isn't aligned to physical block
-	 * size.  So we can't ensure that all discarded logical blocks are
-	 * zeroed.
-	 */
+	 
 	if (ZRAM_LOGICAL_BLOCK_SIZE == PAGE_SIZE)
 		blk_queue_max_write_zeroes_sectors(zram->disk->queue, UINT_MAX);
 
@@ -2282,13 +2120,10 @@ static int zram_remove(struct zram *zram)
 	zram_debugfs_unregister(zram);
 
 	if (claimed) {
-		/*
-		 * If we were claimed by reset_store(), del_gendisk() will
-		 * wait until reset_store() is done, so nothing need to do.
-		 */
+		 
 		;
 	} else {
-		/* Make sure all the pending I/O are finished */
+		 
 		sync_blockdev(zram->disk->part0);
 		zram_reset_device(zram);
 	}
@@ -2297,14 +2132,10 @@ static int zram_remove(struct zram *zram)
 
 	del_gendisk(zram->disk);
 
-	/* del_gendisk drains pending reset_store */
+	 
 	WARN_ON_ONCE(claimed && zram->claim);
 
-	/*
-	 * disksize_store() may be called in between zram_reset_device()
-	 * and del_gendisk(), so run the last reset to avoid leaking
-	 * anything allocated with disksize_store()
-	 */
+	 
 	zram_reset_device(zram);
 
 	put_disk(zram->disk);
@@ -2312,14 +2143,9 @@ static int zram_remove(struct zram *zram)
 	return 0;
 }
 
-/* zram-control sysfs attributes */
+ 
 
-/*
- * NOTE: hot_add attribute is not the usual read-only sysfs attribute. In a
- * sense that reading from this file does alter the state of your system -- it
- * creates a new un-initialized zram device and returns back this device's
- * device_id (or an error code if it fails to create a new device).
- */
+ 
 static ssize_t hot_add_show(const struct class *class,
 			const struct class_attribute *attr,
 			char *buf)
@@ -2334,7 +2160,7 @@ static ssize_t hot_add_show(const struct class *class,
 		return ret;
 	return scnprintf(buf, PAGE_SIZE, "%d\n", ret);
 }
-/* This attribute must be set to 0400, so CLASS_ATTR_RO() can not be used */
+ 
 static struct class_attribute class_attr_hot_add =
 	__ATTR(hot_add, 0400, hot_add_show, NULL);
 
@@ -2346,7 +2172,7 @@ static ssize_t hot_remove_store(const struct class *class,
 	struct zram *zram;
 	int ret, dev_id;
 
-	/* dev_id is gendisk->first_minor, which is `int' */
+	 
 	ret = kstrtoint(buf, 10, &dev_id);
 	if (ret)
 		return ret;

@@ -1,27 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef DC_DP_TYPES_H
 #define DC_DP_TYPES_H
@@ -38,42 +15,34 @@ enum dc_lane_count {
 	LANE_COUNT_DP_MAX = LANE_COUNT_FOUR
 };
 
-/* This is actually a reference clock (27MHz) multiplier
- * 162MBps bandwidth for 1.62GHz like rate,
- * 270MBps for 2.70GHz,
- * 324MBps for 3.24Ghz,
- * 540MBps for 5.40GHz
- * 810MBps for 8.10GHz
- */
+ 
 enum dc_link_rate {
 	LINK_RATE_UNKNOWN = 0,
-	LINK_RATE_LOW = 0x06,		// Rate_1 (RBR)  - 1.62 Gbps/Lane
-	LINK_RATE_RATE_2 = 0x08,	// Rate_2        - 2.16 Gbps/Lane
-	LINK_RATE_RATE_3 = 0x09,	// Rate_3        - 2.43 Gbps/Lane
-	LINK_RATE_HIGH = 0x0A,		// Rate_4 (HBR)  - 2.70 Gbps/Lane
-	LINK_RATE_RBR2 = 0x0C,		// Rate_5 (RBR2) - 3.24 Gbps/Lane
-	LINK_RATE_RATE_6 = 0x10,	// Rate_6        - 4.32 Gbps/Lane
-	LINK_RATE_HIGH2 = 0x14,		// Rate_7 (HBR2) - 5.40 Gbps/Lane
-	LINK_RATE_RATE_8 = 0x19,	// Rate_8        - 6.75 Gbps/Lane
-	LINK_RATE_HIGH3 = 0x1E,		// Rate_9 (HBR3) - 8.10 Gbps/Lane
-	/* Starting from DP2.0 link rate enum directly represents actual
-	 * link rate value in unit of 10 mbps
-	 */
-	LINK_RATE_UHBR10 = 1000,	// UHBR10 - 10.0 Gbps/Lane
-	LINK_RATE_UHBR13_5 = 1350,	// UHBR13.5 - 13.5 Gbps/Lane
-	LINK_RATE_UHBR20 = 2000,	// UHBR20 - 20.0 Gbps/Lane
+	LINK_RATE_LOW = 0x06,		
+	LINK_RATE_RATE_2 = 0x08,	
+	LINK_RATE_RATE_3 = 0x09,	
+	LINK_RATE_HIGH = 0x0A,		
+	LINK_RATE_RBR2 = 0x0C,		
+	LINK_RATE_RATE_6 = 0x10,	
+	LINK_RATE_HIGH2 = 0x14,		
+	LINK_RATE_RATE_8 = 0x19,	
+	LINK_RATE_HIGH3 = 0x1E,		
+	 
+	LINK_RATE_UHBR10 = 1000,	
+	LINK_RATE_UHBR13_5 = 1350,	
+	LINK_RATE_UHBR20 = 2000,	
 };
 
 enum dc_link_spread {
 	LINK_SPREAD_DISABLED = 0x00,
-	/* 0.5 % downspread 30 kHz */
+	 
 	LINK_SPREAD_05_DOWNSPREAD_30KHZ = 0x10,
-	/* 0.5 % downspread 33 kHz */
+	 
 	LINK_SPREAD_05_DOWNSPREAD_33KHZ = 0x11
 };
 
 enum dc_voltage_swing {
-	VOLTAGE_SWING_LEVEL0 = 0,	/* direct HW translation! */
+	VOLTAGE_SWING_LEVEL0 = 0,	 
 	VOLTAGE_SWING_LEVEL1,
 	VOLTAGE_SWING_LEVEL2,
 	VOLTAGE_SWING_LEVEL3,
@@ -81,17 +50,15 @@ enum dc_voltage_swing {
 };
 
 enum dc_pre_emphasis {
-	PRE_EMPHASIS_DISABLED = 0,	/* direct HW translation! */
+	PRE_EMPHASIS_DISABLED = 0,	 
 	PRE_EMPHASIS_LEVEL1,
 	PRE_EMPHASIS_LEVEL2,
 	PRE_EMPHASIS_LEVEL3,
 	PRE_EMPHASIS_MAX_LEVEL = PRE_EMPHASIS_LEVEL3
 };
-/* Post Cursor 2 is optional for transmitter
- * and it applies only to the main link operating at HBR2
- */
+ 
 enum dc_post_cursor2 {
-	POST_CURSOR2_DISABLED = 0,	/* direct HW translation! */
+	POST_CURSOR2_DISABLED = 0,	 
 	POST_CURSOR2_LEVEL1,
 	POST_CURSOR2_LEVEL2,
 	POST_CURSOR2_LEVEL3,
@@ -322,9 +289,8 @@ union dpcd_training_pattern {
 	uint8_t raw;
 };
 
-/* Training Lane is used to configure downstream DP device's voltage swing
-and pre-emphasis levels*/
-/* The DPCD addresses are from 0x103 to 0x106*/
+ 
+ 
 union dpcd_training_lane {
 	struct {
 		uint8_t VOLTAGE_SWING_SET:2;
@@ -340,7 +306,7 @@ union dpcd_training_lane {
 	uint8_t raw;
 };
 
-/* TMDS-converter related */
+ 
 union dwnstream_port_caps_byte0 {
 	struct {
 		uint8_t DWN_STRM_PORTX_TYPE:3;
@@ -350,13 +316,13 @@ union dwnstream_port_caps_byte0 {
 	uint8_t raw;
 };
 
-/* these are the detailed types stored at DWN_STRM_PORTX_CAP (00080h)*/
+ 
 enum dpcd_downstream_port_detailed_type {
 	DOWN_STREAM_DETAILED_DP = 0,
 	DOWN_STREAM_DETAILED_VGA,
 	DOWN_STREAM_DETAILED_DVI,
 	DOWN_STREAM_DETAILED_HDMI,
-	DOWN_STREAM_DETAILED_NONDDC,/* has no EDID (TV,CV)*/
+	DOWN_STREAM_DETAILED_NONDDC, 
 	DOWN_STREAM_DETAILED_DP_PLUS_PLUS
 };
 
@@ -414,24 +380,23 @@ union hdmi_sink_encoded_link_bw_support {
 
 union hdmi_encoded_link_bw {
 	struct {
-		uint8_t FRL_MODE:1; // Bit 0
+		uint8_t FRL_MODE:1;  
 		uint8_t BW_9Gbps:1;
 		uint8_t BW_18Gbps:1;
 		uint8_t BW_24Gbps:1;
 		uint8_t BW_32Gbps:1;
 		uint8_t BW_40Gbps:1;
 		uint8_t BW_48Gbps:1;
-		uint8_t RESERVED:1; // Bit 7
+		uint8_t RESERVED:1;  
 	} bits;
 	uint8_t raw;
 };
 
-/*4-byte structure for detailed capabilities of a down-stream port
-(DP-to-TMDS converter).*/
+ 
 union dwnstream_portxcaps {
 	struct {
 		union dwnstream_port_caps_byte0 byte0;
-		unsigned char max_TMDS_clock;   //byte1
+		unsigned char max_TMDS_clock;    
 		union dwnstream_port_caps_byte2 byte2;
 
 		union {
@@ -464,15 +429,14 @@ union sink_status {
 	uint8_t raw;
 };
 
-/*6-byte structure corresponding to 6 registers (200h-205h)
-read during handling of HPD-IRQ*/
+ 
 union hpd_irq_data {
 	struct {
-		union sink_count sink_cnt;/* 200h */
-		union device_service_irq device_service_irq;/* 201h */
-		union lane_status lane01_status;/* 202h */
-		union lane_status lane23_status;/* 203h */
-		union lane_align_status_updated lane_status_updated;/* 204h */
+		union sink_count sink_cnt; 
+		union device_service_irq device_service_irq; 
+		union lane_status lane01_status; 
+		union lane_status lane23_status; 
+		union lane_align_status_updated lane_status_updated; 
 		union sink_status sink_status;
 	} bytes;
 	uint8_t raw[6];
@@ -481,16 +445,10 @@ union hpd_irq_data {
 union down_stream_port_count {
 	struct {
 		uint8_t DOWN_STR_PORT_COUNT:4;
-		uint8_t RESERVED:2; /*Bits 5:4 = RESERVED. Read all 0s.*/
-		/*Bit 6 = MSA_TIMING_PAR_IGNORED
-		0 = Sink device requires the MSA timing parameters
-		1 = Sink device is capable of rendering incoming video
-		 stream without MSA timing parameters*/
+		uint8_t RESERVED:2;  
+		 
 		uint8_t IGNORE_MSA_TIMING_PARAM:1;
-		/*Bit 7 = OUI Support
-		0 = OUI not supported
-		1 = OUI supported
-		(OUI and Device Identification mandatory for DP 1.2)*/
+		 
 		uint8_t OUI_SUPPORT:1;
 	} bits;
 	uint8_t raw;
@@ -498,20 +456,13 @@ union down_stream_port_count {
 
 union down_spread_ctrl {
 	struct {
-		uint8_t RESERVED1:4;/* Bit 3:0 = RESERVED. Read all 0s*/
-	/* Bits 4 = SPREAD_AMP. Spreading amplitude
-	0 = Main link signal is not downspread
-	1 = Main link signal is downspread <= 0.5%
-	with frequency in the range of 30kHz ~ 33kHz*/
+		uint8_t RESERVED1:4; 
+	 
 		uint8_t SPREAD_AMP:1;
-		uint8_t RESERVED2:1;/*Bit 5 = RESERVED. Read all 0s*/
-	/* Bit 6 = FIXED_VTOTAL_AS_SDP_EN_IN_PR_ACTIVE.
-	0 = FIXED_VTOTAL_AS_SDP_EN_IN_PR_ACTIVE is not enabled by the Source device (default)
-	1 = FIXED_VTOTAL_AS_SDP_EN_IN_PR_ACTIVE is enabled by Source device */
+		uint8_t RESERVED2:1; 
+	 
 		uint8_t FIXED_VTOTAL_AS_SDP_EN_IN_PR_ACTIVE:1;
-	/*Bit 7 = MSA_TIMING_PAR_IGNORE_EN
-	0 = Source device will send valid data for the MSA Timing Params
-	1 = Source device may send invalid data for these MSA Timing Params*/
+	 
 		uint8_t IGNORE_MSA_TIMING_PARAM:1;
 	} bits;
 	uint8_t raw;
@@ -528,8 +479,8 @@ union dpcd_edp_config {
 };
 
 struct dp_device_vendor_id {
-	uint8_t ieee_oui[3];/*24-bit IEEE OUI*/
-	uint8_t ieee_device_id[6];/*usually 6-byte ASCII name*/
+	uint8_t ieee_oui[3]; 
+	uint8_t ieee_device_id[6]; 
 };
 
 struct dp_sink_hw_fw_revision {
@@ -542,8 +493,8 @@ struct dpcd_vendor_signature {
 
 	union dpcd_ieee_vendor_signature {
 		struct {
-			uint8_t ieee_oui[3];/*24-bit IEEE OUI*/
-			uint8_t ieee_device_id[6];/*usually 6-byte ASCII name*/
+			uint8_t ieee_oui[3]; 
+			uint8_t ieee_device_id[6]; 
 			uint8_t ieee_hw_rev;
 			uint8_t ieee_fw_rev[2];
 		};
@@ -588,13 +539,13 @@ struct dpcd_source_backlight_set {
 
 union dpcd_source_backlight_get {
 	struct {
-		uint32_t backlight_millinits_peak; /* 326h */
-		uint32_t backlight_millinits_avg; /* 32Ah */
+		uint32_t backlight_millinits_peak;  
+		uint32_t backlight_millinits_avg;  
 	} bytes;
 	uint8_t raw[8];
 };
 
-/*DPCD register of DP receiver capability field bits-*/
+ 
 union edp_configuration_cap {
 	struct {
 		uint8_t ALT_SCRAMBLER_RESET:1;
@@ -608,14 +559,14 @@ union edp_configuration_cap {
 
 union dprx_feature {
 	struct {
-		uint8_t GTC_CAP:1;                             // bit 0: DP 1.3+
-		uint8_t SST_SPLIT_SDP_CAP:1;                   // bit 1: DP 1.4
-		uint8_t AV_SYNC_CAP:1;                         // bit 2: DP 1.3+
-		uint8_t VSC_SDP_COLORIMETRY_SUPPORTED:1;       // bit 3: DP 1.3+
-		uint8_t VSC_EXT_VESA_SDP_SUPPORTED:1;          // bit 4: DP 1.4
-		uint8_t VSC_EXT_VESA_SDP_CHAINING_SUPPORTED:1; // bit 5: DP 1.4
-		uint8_t VSC_EXT_CEA_SDP_SUPPORTED:1;           // bit 6: DP 1.4
-		uint8_t VSC_EXT_CEA_SDP_CHAINING_SUPPORTED:1;  // bit 7: DP 1.4
+		uint8_t GTC_CAP:1;                              
+		uint8_t SST_SPLIT_SDP_CAP:1;                    
+		uint8_t AV_SYNC_CAP:1;                          
+		uint8_t VSC_SDP_COLORIMETRY_SUPPORTED:1;        
+		uint8_t VSC_EXT_VESA_SDP_SUPPORTED:1;           
+		uint8_t VSC_EXT_VESA_SDP_CHAINING_SUPPORTED:1;  
+		uint8_t VSC_EXT_CEA_SDP_SUPPORTED:1;            
+		uint8_t VSC_EXT_CEA_SDP_CHAINING_SUPPORTED:1;   
 	} bits;
 	uint8_t raw;
 };
@@ -628,7 +579,7 @@ union training_aux_rd_interval {
 	uint8_t raw;
 };
 
-/* Automated test structures */
+ 
 union test_request {
 	struct {
 	uint8_t LINK_TRAINING                :1;
@@ -654,14 +605,14 @@ union test_response {
 
 union phy_test_pattern {
 	struct {
-		/* This field is 7 bits for DP2.0 */
+		 
 		uint8_t PATTERN     :7;
 		uint8_t RESERVED    :1;
 	} bits;
 	uint8_t raw;
 };
 
-/* States of Compliance Test Specification (CTS DP1.2). */
+ 
 union compliance_test_state {
 	struct {
 		unsigned char STEREO_3D_RUNNING        : 1;
@@ -672,7 +623,7 @@ union compliance_test_state {
 
 union link_test_pattern {
 	struct {
-		/* dpcd_link_test_patterns */
+		 
 		unsigned char PATTERN :2;
 		unsigned char RESERVED:6;
 	} bits;
@@ -682,12 +633,12 @@ union link_test_pattern {
 union test_misc {
 	struct dpcd_test_misc_bits {
 		unsigned char SYNC_CLOCK  :1;
-		/* dpcd_test_color_format */
+		 
 		unsigned char CLR_FORMAT  :2;
-		/* dpcd_test_dyn_range */
+		 
 		unsigned char DYN_RANGE   :1;
 		unsigned char YCBCR_COEFS :1;
-		/* dpcd_test_bit_depth */
+		 
 		unsigned char BPC         :3;
 	} bits;
 	unsigned char raw;
@@ -727,7 +678,7 @@ struct dp_audio_test_data {
 	uint8_t pattern_period[8];
 };
 
-/* FEC capability DPCD register field bits-*/
+ 
 union dpcd_fec_capability {
 	struct {
 		uint8_t FEC_CAPABLE:1;
@@ -742,7 +693,7 @@ union dpcd_fec_capability {
 	uint8_t raw;
 };
 
-/* DSC capability DPCD register field bits-*/
+ 
 struct dpcd_dsc_support {
 	uint8_t DSC_SUPPORT		:1;
 	uint8_t DSC_PASSTHROUGH_SUPPORT	:1;
@@ -854,7 +805,7 @@ struct dpcd_dsc_capabilities {
 	union dpcd_dsc_branch_decoder_capabilities dsc_branch_decoder_caps;
 };
 
-/* These parameters are from PSR capabilities reported by Sink DPCD */
+ 
 struct psr_caps {
 	unsigned char psr_version;
 	unsigned int psr_rfb_setup_time;
@@ -885,10 +836,10 @@ struct adaptive_sync_caps {
 	union dpcd_dprx_feature_enumeration_list_cont_1 dp_adap_sync_caps;
 };
 
-/* Length of router topology ID read from DPCD in bytes. */
+ 
 #define DPCD_USB4_TOPOLOGY_ID_LEN 5
 
-/* DPCD[0xE000D] DP_TUNNELING_CAPABILITIES SUPPORT register. */
+ 
 union dp_tun_cap_support {
 	struct {
 		uint8_t dp_tunneling :1;
@@ -899,7 +850,7 @@ union dp_tun_cap_support {
 	uint8_t raw;
 };
 
-/* DPCD[0xE000E] DP_IN_ADAPTER_INFO register. */
+ 
 union dpia_info {
 	struct {
 		uint8_t dpia_num :5;
@@ -908,7 +859,7 @@ union dpia_info {
 	uint8_t raw;
 };
 
-/* DP Tunneling over USB4 */
+ 
 struct dpcd_usb4_dp_tunneling_info {
 	union dp_tun_cap_support dp_tun_cap;
 	union dpia_info dpia_info;
@@ -981,8 +932,8 @@ struct dpcd_usb4_dp_tunneling_info {
 #endif
 #ifndef DP_INTRA_HOP_AUX_REPLY_INDICATION
 #define DP_INTRA_HOP_AUX_REPLY_INDICATION		(1 << 3)
-/* TODO - Use DRM header to replace above once available */
-#endif // DP_INTRA_HOP_AUX_REPLY_INDICATION
+ 
+#endif  
 union dp_main_line_channel_coding_cap {
 	struct {
 		uint8_t DP_8b_10b_SUPPORTED	:1;
@@ -1172,11 +1123,10 @@ struct dc_dongle_dfp_cap_ext {
 };
 
 struct dc_dongle_caps {
-	/* dongle type (DP converter, CV smart dongle) */
+	 
 	enum display_dongle_type dongle_type;
 	bool extendedCapValid;
-	/* If dongle_type == DISPLAY_DONGLE_DP_HDMI_CONVERTER,
-	indicates 'Frame Sequential-to-lllFrame Pack' conversion capability.*/
+	 
 	bool is_dp_hdmi_s3d_converter;
 	bool is_dp_hdmi_ycbcr422_pass_through;
 	bool is_dp_hdmi_ycbcr420_pass_through;
@@ -1194,20 +1144,19 @@ struct dpcd_caps {
 	union max_down_spread max_down_spread;
 	union dprx_feature dprx_feature;
 
-	/* valid only for eDP v1.4 or higher*/
+	 
 	uint8_t edp_supported_link_rates_count;
 	enum dc_link_rate edp_supported_link_rates[8];
 
-	/* dongle type (DP converter, CV smart dongle) */
+	 
 	enum display_dongle_type dongle_type;
 	bool is_dongle_type_one;
-	/* branch device or sink device */
+	 
 	bool is_branch_dev;
-	/* Dongle's downstream count. */
+	 
 	union sink_count sink_count;
 	bool is_mst_capable;
-	/* If dongle_type == DISPLAY_DONGLE_DP_HDMI_CONVERTER,
-	indicates 'Frame Sequential-to-lllFrame Pack' conversion capability.*/
+	 
 	struct dc_dongle_caps dongle_caps;
 
 	uint32_t sink_dev_id;
@@ -1247,9 +1196,7 @@ struct dpcd_caps {
 
 union dpcd_sink_ext_caps {
 	struct {
-		/* 0 - Sink supports backlight adjust via PWM during SDR/HDR mode
-		 * 1 - Sink supports backlight adjust via AUX during SDR/HDR mode.
-		 */
+		 
 		uint8_t sdr_aux_backlight_control : 1;
 		uint8_t hdr_aux_backlight_control : 1;
 		uint8_t reserved_1 : 2;
@@ -1273,9 +1220,9 @@ union dpcd_psr_configuration {
 		unsigned char TRANSMITTER_ACTIVE_IN_PSR : 1;
 		unsigned char CRC_VERIFICATION          : 1;
 		unsigned char FRAME_CAPTURE_INDICATION  : 1;
-		/* For eDP 1.4, PSR v2*/
+		 
 		unsigned char LINE_CAPTURE_INDICATION   : 1;
-		/* For eDP 1.4, PSR v2*/
+		 
 		unsigned char IRQ_HPD_WITH_CRC_ERROR    : 1;
 		unsigned char ENABLE_PSR2               : 1;
 		unsigned char EARLY_TRANSPORT_ENABLE    : 1;
@@ -1355,16 +1302,16 @@ enum link_training_result {
 	LINK_TRAINING_CR_FAIL_LANE0,
 	LINK_TRAINING_CR_FAIL_LANE1,
 	LINK_TRAINING_CR_FAIL_LANE23,
-	/* CR DONE bit is cleared during EQ step */
+	 
 	LINK_TRAINING_EQ_FAIL_CR,
-	/* CR DONE bit is cleared but LANE0_CR_DONE is set during EQ step */
+	 
 	LINK_TRAINING_EQ_FAIL_CR_PARTIAL,
-	/* other failure during EQ step */
+	 
 	LINK_TRAINING_EQ_FAIL_EQ,
 	LINK_TRAINING_LQA_FAIL,
-	/* one of the CR,EQ or symbol lock is dropped */
+	 
 	LINK_TRAINING_LINK_LOSS,
-	/* Abort link training (because sink unplugged) */
+	 
 	LINK_TRAINING_ABORT,
 	DP_128b_132b_LT_FAILED,
 	DP_128b_132b_MAX_LOOP_COUNT_REACHED,
@@ -1390,9 +1337,7 @@ struct dp_trace {
 	struct edp_trace_power_timestamps edp_trace_power_timestamps;
 };
 
-/* TODO - This is a temporary location for any new DPCD definitions.
- * We should move these to drm_dp header.
- */
+ 
 #ifndef DP_LINK_SQUARE_PATTERN
 #define DP_LINK_SQUARE_PATTERN				0x10F
 #endif
@@ -1408,35 +1353,35 @@ struct dp_trace {
 #ifndef DP_TUNNELING_IRQ
 #define DP_TUNNELING_IRQ				(1 << 5)
 #endif
-/** USB4 DPCD BW Allocation Registers Chapter 10.7 **/
+ 
 #ifndef DP_TUNNELING_CAPABILITIES
-#define DP_TUNNELING_CAPABILITIES			0xE000D /* 1.4a */
+#define DP_TUNNELING_CAPABILITIES			0xE000D  
 #endif
 #ifndef USB4_DRIVER_ID
-#define USB4_DRIVER_ID					0xE000F /* 1.4a */
+#define USB4_DRIVER_ID					0xE000F  
 #endif
 #ifndef USB4_DRIVER_BW_CAPABILITY
-#define USB4_DRIVER_BW_CAPABILITY			0xE0020 /* 1.4a */
+#define USB4_DRIVER_BW_CAPABILITY			0xE0020  
 #endif
 #ifndef DP_IN_ADAPTER_TUNNEL_INFO
-#define DP_IN_ADAPTER_TUNNEL_INFO			0xE0021 /* 1.4a */
+#define DP_IN_ADAPTER_TUNNEL_INFO			0xE0021  
 #endif
 #ifndef DP_BW_GRANULALITY
-#define DP_BW_GRANULALITY				0xE0022 /* 1.4a */
+#define DP_BW_GRANULALITY				0xE0022  
 #endif
 #ifndef ESTIMATED_BW
-#define ESTIMATED_BW					0xE0023 /* 1.4a */
+#define ESTIMATED_BW					0xE0023  
 #endif
 #ifndef ALLOCATED_BW
-#define ALLOCATED_BW					0xE0024 /* 1.4a */
+#define ALLOCATED_BW					0xE0024  
 #endif
 #ifndef DP_TUNNELING_STATUS
-#define DP_TUNNELING_STATUS				0xE0025 /* 1.4a */
+#define DP_TUNNELING_STATUS				0xE0025  
 #endif
 #ifndef DPTX_BW_ALLOCATION_MODE_CONTROL
-#define DPTX_BW_ALLOCATION_MODE_CONTROL			0xE0030 /* 1.4a */
+#define DPTX_BW_ALLOCATION_MODE_CONTROL			0xE0030  
 #endif
 #ifndef REQUESTED_BW
-#define REQUESTED_BW					0xE0031 /* 1.4a */
+#define REQUESTED_BW					0xE0031  
 #endif
-#endif /* DC_DP_TYPES_H */
+#endif  

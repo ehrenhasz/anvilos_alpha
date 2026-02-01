@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * binfmt_misc.c
- *
- * Copyright (C) 1997 Richard Günther
- *
- * binfmt_misc detects binaries via a magic or filename extension and invokes
- * a specified wrapper. See Documentation/admin-guide/binfmt-misc.rst for more details.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -37,7 +30,7 @@
 #endif
 
 enum {
-	VERBOSE_STATUS = 1 /* make it zero to save 400 bytes kernel memory */
+	VERBOSE_STATUS = 1  
 };
 
 static LIST_HEAD(entries);
@@ -51,12 +44,12 @@ enum {Enabled, Magic};
 
 typedef struct {
 	struct list_head list;
-	unsigned long flags;		/* type, status, etc. */
-	int offset;			/* offset of magic */
-	int size;			/* size of magic/mask */
-	char *magic;			/* magic or filename extension */
-	char *mask;			/* mask, NULL for exact match */
-	const char *interpreter;	/* filename of interpreter */
+	unsigned long flags;		 
+	int offset;			 
+	int size;			 
+	char *magic;			 
+	char *mask;			 
+	const char *interpreter;	 
 	char *name;
 	struct dentry *dentry;
 	struct file *interp_file;
@@ -67,49 +60,33 @@ static struct file_system_type bm_fs_type;
 static struct vfsmount *bm_mnt;
 static int entry_count;
 
-/*
- * Max length of the register string.  Determined by:
- *  - 7 delimiters
- *  - name:   ~50 bytes
- *  - type:   1 byte
- *  - offset: 3 bytes (has to be smaller than BINPRM_BUF_SIZE)
- *  - magic:  128 bytes (512 in escaped form)
- *  - mask:   128 bytes (512 in escaped form)
- *  - interp: ~50 bytes
- *  - flags:  5 bytes
- * Round that up a bit, and then back off to hold the internal data
- * (like struct Node).
- */
+ 
 #define MAX_REGISTER_LENGTH 1920
 
-/*
- * Check if we support the binfmt
- * if we do, return the node, else NULL
- * locking is done in load_misc_binary
- */
+ 
 static Node *check_file(struct linux_binprm *bprm)
 {
 	char *p = strrchr(bprm->interp, '.');
 	struct list_head *l;
 
-	/* Walk all the registered handlers. */
+	 
 	list_for_each(l, &entries) {
 		Node *e = list_entry(l, Node, list);
 		char *s;
 		int j;
 
-		/* Make sure this one is currently enabled. */
+		 
 		if (!test_bit(Enabled, &e->flags))
 			continue;
 
-		/* Do matching based on extension if applicable. */
+		 
 		if (!test_bit(Magic, &e->flags)) {
 			if (p && !strcmp(e->magic, p + 1))
 				return e;
 			continue;
 		}
 
-		/* Do matching based on magic & mask. */
+		 
 		s = bprm->buf + e->offset;
 		if (e->mask) {
 			for (j = 0; j < e->size; j++)
@@ -126,9 +103,7 @@ static Node *check_file(struct linux_binprm *bprm)
 	return NULL;
 }
 
-/*
- * the loader itself
- */
+ 
 static int load_misc_binary(struct linux_binprm *bprm)
 {
 	Node *fmt;
@@ -139,7 +114,7 @@ static int load_misc_binary(struct linux_binprm *bprm)
 	if (!enabled)
 		return retval;
 
-	/* to keep locking time low, we copy the interpreter string */
+	 
 	read_lock(&entries_lock);
 	fmt = check_file(bprm);
 	if (fmt)
@@ -148,7 +123,7 @@ static int load_misc_binary(struct linux_binprm *bprm)
 	if (!fmt)
 		return retval;
 
-	/* Need to be able to load the file after exec */
+	 
 	retval = -ENOENT;
 	if (bprm->interp_flags & BINPRM_FLAGS_PATH_INACCESSIBLE)
 		goto ret;
@@ -164,19 +139,19 @@ static int load_misc_binary(struct linux_binprm *bprm)
 	if (fmt->flags & MISC_FMT_OPEN_BINARY)
 		bprm->have_execfd = 1;
 
-	/* make argv[1] be the path to the binary */
+	 
 	retval = copy_string_kernel(bprm->interp, bprm);
 	if (retval < 0)
 		goto ret;
 	bprm->argc++;
 
-	/* add the interp as argv[0] */
+	 
 	retval = copy_string_kernel(fmt->interpreter, bprm);
 	if (retval < 0)
 		goto ret;
 	bprm->argc++;
 
-	/* Update interp in case binfmt_script needs it. */
+	 
 	retval = bprm_change_interp(fmt->interpreter, bprm);
 	if (retval < 0)
 		goto ret;
@@ -202,14 +177,9 @@ ret:
 	return retval;
 }
 
-/* Command parsers */
+ 
 
-/*
- * parses and copies one argument enclosed in del from *sp to *dp,
- * recognising the \x special.
- * returns pointer to the copied argument or NULL in case of an
- * error (and sets err) or null argument length.
- */
+ 
 static char *scanarg(char *s, char del)
 {
 	char c;
@@ -232,7 +202,7 @@ static char *check_special_flags(char *sfs, Node *e)
 	char *p = sfs;
 	int cont = 1;
 
-	/* special flags */
+	 
 	while (cont) {
 		switch (*p) {
 		case 'P':
@@ -248,8 +218,7 @@ static char *check_special_flags(char *sfs, Node *e)
 		case 'C':
 			pr_debug("register: flag: C (preserve creds)\n");
 			p++;
-			/* this flags also implies the
-			   open-binary flag */
+			 
 			e->flags |= (MISC_FMT_CREDENTIALS |
 					MISC_FMT_OPEN_BINARY);
 			break;
@@ -266,11 +235,7 @@ static char *check_special_flags(char *sfs, Node *e)
 	return p;
 }
 
-/*
- * This registers a new binary format, it recognises the syntax
- * ':name:type:offset:magic:mask:interpreter:flags'
- * where the ':' is the IFS, that can be chosen with the first char
- */
+ 
 static Node *create_entry(const char __user *buffer, size_t count)
 {
 	Node *e;
@@ -280,7 +245,7 @@ static Node *create_entry(const char __user *buffer, size_t count)
 
 	pr_debug("register: received %zu bytes\n", count);
 
-	/* some sanity checks */
+	 
 	err = -EINVAL;
 	if ((count < 11) || (count > MAX_REGISTER_LENGTH))
 		goto out;
@@ -297,14 +262,14 @@ static Node *create_entry(const char __user *buffer, size_t count)
 	if (copy_from_user(buf, buffer, count))
 		goto efault;
 
-	del = *p++;	/* delimeter */
+	del = *p++;	 
 
 	pr_debug("register: delim: %#x {%c}\n", del, del);
 
-	/* Pad the buffer with the delim to simplify parsing below. */
+	 
 	memset(buf + count, del, 8);
 
-	/* Parse the 'name' field. */
+	 
 	e->name = p;
 	p = strchr(p, del);
 	if (!p)
@@ -318,7 +283,7 @@ static Node *create_entry(const char __user *buffer, size_t count)
 
 	pr_debug("register: name: {%s}\n", e->name);
 
-	/* Parse the 'type' field. */
+	 
 	switch (*p++) {
 	case 'E':
 		pr_debug("register: type: E (extension)\n");
@@ -335,10 +300,10 @@ static Node *create_entry(const char __user *buffer, size_t count)
 		goto einval;
 
 	if (test_bit(Magic, &e->flags)) {
-		/* Handle the 'M' (magic) format. */
+		 
 		char *s;
 
-		/* Parse the 'offset' field. */
+		 
 		s = strchr(p, del);
 		if (!s)
 			goto einval;
@@ -353,7 +318,7 @@ static Node *create_entry(const char __user *buffer, size_t count)
 			goto einval;
 		pr_debug("register: offset: %#x\n", e->offset);
 
-		/* Parse the 'magic' field. */
+		 
 		e->magic = p;
 		p = scanarg(p, del);
 		if (!p)
@@ -365,7 +330,7 @@ static Node *create_entry(const char __user *buffer, size_t count)
 				KBUILD_MODNAME ": register: magic[raw]: ",
 				DUMP_PREFIX_NONE, e->magic, p - e->magic);
 
-		/* Parse the 'mask' field. */
+		 
 		e->mask = p;
 		p = scanarg(p, del);
 		if (!p)
@@ -378,12 +343,7 @@ static Node *create_entry(const char __user *buffer, size_t count)
 				KBUILD_MODNAME ": register:  mask[raw]: ",
 				DUMP_PREFIX_NONE, e->mask, p - e->mask);
 
-		/*
-		 * Decode the magic & mask fields.
-		 * Note: while we might have accepted embedded NUL bytes from
-		 * above, the unescape helpers here will stop at the first one
-		 * it encounters.
-		 */
+		 
 		e->size = string_unescape_inplace(e->magic, UNESCAPE_HEX);
 		if (e->mask &&
 		    string_unescape_inplace(e->mask, UNESCAPE_HEX) != e->size)
@@ -417,15 +377,15 @@ static Node *create_entry(const char __user *buffer, size_t count)
 			}
 		}
 	} else {
-		/* Handle the 'E' (extension) format. */
+		 
 
-		/* Skip the 'offset' field. */
+		 
 		p = strchr(p, del);
 		if (!p)
 			goto einval;
 		*p++ = '\0';
 
-		/* Parse the 'magic' field. */
+		 
 		e->magic = p;
 		p = strchr(p, del);
 		if (!p)
@@ -435,14 +395,14 @@ static Node *create_entry(const char __user *buffer, size_t count)
 			goto einval;
 		pr_debug("register: extension: {%s}\n", e->magic);
 
-		/* Skip the 'mask' field. */
+		 
 		p = strchr(p, del);
 		if (!p)
 			goto einval;
 		*p++ = '\0';
 	}
 
-	/* Parse the 'interpreter' field. */
+	 
 	e->interpreter = p;
 	p = strchr(p, del);
 	if (!p)
@@ -452,7 +412,7 @@ static Node *create_entry(const char __user *buffer, size_t count)
 		goto einval;
 	pr_debug("register: interpreter: {%s}\n", e->interpreter);
 
-	/* Parse the 'flags' field. */
+	 
 	p = check_special_flags(p, e);
 	if (*p == '\n')
 		p++;
@@ -472,10 +432,7 @@ einval:
 	return ERR_PTR(-EINVAL);
 }
 
-/*
- * Set status of entry/binfmt_misc:
- * '1' enables, '0' disables and '-1' clears entry/binfmt_misc
- */
+ 
 static int parse_command(const char __user *buffer, size_t count)
 {
 	char s[4];
@@ -497,7 +454,7 @@ static int parse_command(const char __user *buffer, size_t count)
 	return -EINVAL;
 }
 
-/* generic stuff */
+ 
 
 static void entry_status(Node *e, char *page)
 {
@@ -514,7 +471,7 @@ static void entry_status(Node *e, char *page)
 
 	dp += sprintf(dp, "%s\ninterpreter %s\n", status, e->interpreter);
 
-	/* print the special flags */
+	 
 	dp += sprintf(dp, "flags: ");
 	if (e->flags & MISC_FMT_PRESERVE_ARGV0)
 		*dp++ = 'P';
@@ -578,7 +535,7 @@ static void kill_node(Node *e)
 	simple_release_fs(&bm_mnt, &entry_count);
 }
 
-/* /<entry> */
+ 
 
 static ssize_t
 bm_entry_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
@@ -608,15 +565,15 @@ static ssize_t bm_entry_write(struct file *file, const char __user *buffer,
 
 	switch (res) {
 	case 1:
-		/* Disable this handler. */
+		 
 		clear_bit(Enabled, &e->flags);
 		break;
 	case 2:
-		/* Enable this handler. */
+		 
 		set_bit(Enabled, &e->flags);
 		break;
 	case 3:
-		/* Delete this handler. */
+		 
 		root = file_inode(file)->i_sb->s_root;
 		inode_lock(d_inode(root));
 
@@ -638,7 +595,7 @@ static const struct file_operations bm_entry_operations = {
 	.llseek		= default_llseek,
 };
 
-/* /register */
+ 
 
 static ssize_t bm_register_write(struct file *file, const char __user *buffer,
 			       size_t count, loff_t *ppos)
@@ -718,7 +675,7 @@ static const struct file_operations bm_register_operations = {
 	.llseek		= noop_llseek,
 };
 
-/* /status */
+ 
 
 static ssize_t
 bm_status_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
@@ -736,15 +693,15 @@ static ssize_t bm_status_write(struct file *file, const char __user *buffer,
 
 	switch (res) {
 	case 1:
-		/* Disable all handlers. */
+		 
 		enabled = 0;
 		break;
 	case 2:
-		/* Enable all handlers. */
+		 
 		enabled = 1;
 		break;
 	case 3:
-		/* Delete all handlers. */
+		 
 		root = file_inode(file)->i_sb->s_root;
 		inode_lock(d_inode(root));
 
@@ -766,7 +723,7 @@ static const struct file_operations bm_status_operations = {
 	.llseek		= default_llseek,
 };
 
-/* Superblock handling */
+ 
 
 static const struct super_operations s_ops = {
 	.statfs		= simple_statfs,
@@ -779,7 +736,7 @@ static int bm_fill_super(struct super_block *sb, struct fs_context *fc)
 	static const struct tree_descr bm_files[] = {
 		[2] = {"status", &bm_status_operations, S_IWUSR|S_IRUGO},
 		[3] = {"register", &bm_register_operations, S_IWUSR},
-		/* last one */ {""}
+		  {""}
 	};
 
 	err = simple_fill_super(sb, BINFMTFS_MAGIC, bm_files);

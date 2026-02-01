@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  Pvpanic PCI Device Support
- *
- *  Copyright (C) 2021 Oracle.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -85,7 +81,7 @@ static int pvpanic_pci_probe(struct pci_dev *pdev, const struct pci_device_id *e
 	pi->base = base;
 	pi->capability = PVPANIC_PANICKED | PVPANIC_CRASH_LOADED;
 
-	/* initlize capability by RDPT */
+	 
 	pi->capability &= ioread8(base);
 	pi->events = pi->capability;
 

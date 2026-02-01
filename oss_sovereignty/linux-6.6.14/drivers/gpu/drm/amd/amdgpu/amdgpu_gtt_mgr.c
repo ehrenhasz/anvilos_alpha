@@ -1,26 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Christian König
- */
+ 
 
 #include <drm/ttm/ttm_range_manager.h>
 
@@ -32,14 +10,7 @@ to_gtt_mgr(struct ttm_resource_manager *man)
 	return container_of(man, struct amdgpu_gtt_mgr, manager);
 }
 
-/**
- * DOC: mem_info_gtt_total
- *
- * The amdgpu driver provides a sysfs API for reporting current total size of
- * the GTT.
- * The file mem_info_gtt_total is used for this, and returns the total size of
- * the GTT block, in bytes
- */
+ 
 static ssize_t amdgpu_mem_info_gtt_total_show(struct device *dev,
 					      struct device_attribute *attr,
 					      char *buf)
@@ -52,14 +23,7 @@ static ssize_t amdgpu_mem_info_gtt_total_show(struct device *dev,
 	return sysfs_emit(buf, "%llu\n", man->size);
 }
 
-/**
- * DOC: mem_info_gtt_used
- *
- * The amdgpu driver provides a sysfs API for reporting current total amount of
- * used GTT.
- * The file mem_info_gtt_used is used for this, and returns the current used
- * size of the GTT block, in bytes
- */
+ 
 static ssize_t amdgpu_mem_info_gtt_used_show(struct device *dev,
 					     struct device_attribute *attr,
 					     char *buf)
@@ -86,13 +50,7 @@ const struct attribute_group amdgpu_gtt_mgr_attr_group = {
 	.attrs = amdgpu_gtt_mgr_attributes
 };
 
-/**
- * amdgpu_gtt_mgr_has_gart_addr - Check if mem has address space
- *
- * @res: the mem object to check
- *
- * Check if a mem object has already address space allocated.
- */
+ 
 bool amdgpu_gtt_mgr_has_gart_addr(struct ttm_resource *res)
 {
 	struct ttm_range_mgr_node *node = to_ttm_range_mgr_node(res);
@@ -100,16 +58,7 @@ bool amdgpu_gtt_mgr_has_gart_addr(struct ttm_resource *res)
 	return drm_mm_node_allocated(&node->mm_nodes[0]);
 }
 
-/**
- * amdgpu_gtt_mgr_new - allocate a new node
- *
- * @man: TTM memory type manager
- * @tbo: TTM BO we need this range for
- * @place: placement flags and restrictions
- * @res: the resulting mem object
- *
- * Dummy, allocate the node but no space for it yet.
- */
+ 
 static int amdgpu_gtt_mgr_new(struct ttm_resource_manager *man,
 			      struct ttm_buffer_object *tbo,
 			      const struct ttm_place *place,
@@ -157,14 +106,7 @@ err_free:
 	return r;
 }
 
-/**
- * amdgpu_gtt_mgr_del - free ranges
- *
- * @man: TTM memory type manager
- * @res: TTM memory object
- *
- * Free the allocated GTT again.
- */
+ 
 static void amdgpu_gtt_mgr_del(struct ttm_resource_manager *man,
 			       struct ttm_resource *res)
 {
@@ -180,13 +122,7 @@ static void amdgpu_gtt_mgr_del(struct ttm_resource_manager *man,
 	kfree(node);
 }
 
-/**
- * amdgpu_gtt_mgr_recover - re-init gart
- *
- * @mgr: amdgpu_gtt_mgr pointer
- *
- * Re-init the gart for each known BO in the GTT.
- */
+ 
 void amdgpu_gtt_mgr_recover(struct amdgpu_gtt_mgr *mgr)
 {
 	struct ttm_range_mgr_node *node;
@@ -204,16 +140,7 @@ void amdgpu_gtt_mgr_recover(struct amdgpu_gtt_mgr *mgr)
 	amdgpu_gart_invalidate_tlb(adev);
 }
 
-/**
- * amdgpu_gtt_mgr_intersects - test for intersection
- *
- * @man: Our manager object
- * @res: The resource to test
- * @place: The place for the new allocation
- * @size: The size of the new allocation
- *
- * Simplified intersection test, only interesting if we need GART or not.
- */
+ 
 static bool amdgpu_gtt_mgr_intersects(struct ttm_resource_manager *man,
 				      struct ttm_resource *res,
 				      const struct ttm_place *place,
@@ -222,16 +149,7 @@ static bool amdgpu_gtt_mgr_intersects(struct ttm_resource_manager *man,
 	return !place->lpfn || amdgpu_gtt_mgr_has_gart_addr(res);
 }
 
-/**
- * amdgpu_gtt_mgr_compatible - test for compatibility
- *
- * @man: Our manager object
- * @res: The resource to test
- * @place: The place for the new allocation
- * @size: The size of the new allocation
- *
- * Simplified compatibility test.
- */
+ 
 static bool amdgpu_gtt_mgr_compatible(struct ttm_resource_manager *man,
 				      struct ttm_resource *res,
 				      const struct ttm_place *place,
@@ -240,14 +158,7 @@ static bool amdgpu_gtt_mgr_compatible(struct ttm_resource_manager *man,
 	return !place->lpfn || amdgpu_gtt_mgr_has_gart_addr(res);
 }
 
-/**
- * amdgpu_gtt_mgr_debug - dump VRAM table
- *
- * @man: TTM memory type manager
- * @printer: DRM printer to use
- *
- * Dump the table content using printk.
- */
+ 
 static void amdgpu_gtt_mgr_debug(struct ttm_resource_manager *man,
 				 struct drm_printer *printer)
 {
@@ -266,14 +177,7 @@ static const struct ttm_resource_manager_func amdgpu_gtt_mgr_func = {
 	.debug = amdgpu_gtt_mgr_debug
 };
 
-/**
- * amdgpu_gtt_mgr_init - init GTT manager and DRM MM
- *
- * @adev: amdgpu_device pointer
- * @gtt_size: maximum size of GTT
- *
- * Allocate and initialize the GTT manager.
- */
+ 
 int amdgpu_gtt_mgr_init(struct amdgpu_device *adev, uint64_t gtt_size)
 {
 	struct amdgpu_gtt_mgr *mgr = &adev->mman.gtt_mgr;
@@ -295,14 +199,7 @@ int amdgpu_gtt_mgr_init(struct amdgpu_device *adev, uint64_t gtt_size)
 	return 0;
 }
 
-/**
- * amdgpu_gtt_mgr_fini - free and destroy GTT manager
- *
- * @adev: amdgpu_device pointer
- *
- * Destroy and free the GTT manager, returns -EBUSY if ranges are still
- * allocated inside it.
- */
+ 
 void amdgpu_gtt_mgr_fini(struct amdgpu_device *adev)
 {
 	struct amdgpu_gtt_mgr *mgr = &adev->mman.gtt_mgr;

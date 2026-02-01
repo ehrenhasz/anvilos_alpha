@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * max8907.c - mfd driver for MAX8907
- *
- * Copyright (C) 2010 Gyungoh Yoo <jack.yoo@maxim-ic.com>
- * Copyright (C) 2010-2012, NVIDIA CORPORATION. All rights reserved.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>

@@ -1,25 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2018-2020, Intel Corporation. */
+
+ 
 
 #include "ice.h"
 
-/**
- * ice_is_arfs_active - helper to check is aRFS is active
- * @vsi: VSI to check
- */
+ 
 static bool ice_is_arfs_active(struct ice_vsi *vsi)
 {
 	return !!vsi->arfs_fltr_list;
 }
 
-/**
- * ice_is_arfs_using_perfect_flow - check if aRFS has active perfect filters
- * @hw: pointer to the HW structure
- * @flow_type: flow type as Flow Director understands it
- *
- * Flow Director will query this function to see if aRFS is currently using
- * the specified flow_type for perfect (4-tuple) filters.
- */
+ 
 bool
 ice_is_arfs_using_perfect_flow(struct ice_hw *hw, enum ice_fltr_ptype flow_type)
 {
@@ -33,7 +23,7 @@ ice_is_arfs_using_perfect_flow(struct ice_hw *hw, enum ice_fltr_ptype flow_type)
 
 	arfs_fltr_cntrs = vsi->arfs_fltr_cntrs;
 
-	/* active counters can be updated by multiple CPUs */
+	 
 	smp_mb__before_atomic();
 	switch (flow_type) {
 	case ICE_FLTR_PTYPE_NONF_IPV4_UDP:
@@ -49,12 +39,7 @@ ice_is_arfs_using_perfect_flow(struct ice_hw *hw, enum ice_fltr_ptype flow_type)
 	}
 }
 
-/**
- * ice_arfs_update_active_fltr_cntrs - update active filter counters for aRFS
- * @vsi: VSI that aRFS is active on
- * @entry: aRFS entry used to change counters
- * @add: true to increment counter, false to decrement
- */
+ 
 static void
 ice_arfs_update_active_fltr_cntrs(struct ice_vsi *vsi,
 				  struct ice_arfs_entry *entry, bool add)
@@ -92,15 +77,7 @@ ice_arfs_update_active_fltr_cntrs(struct ice_vsi *vsi,
 	}
 }
 
-/**
- * ice_arfs_del_flow_rules - delete the rules passed in from HW
- * @vsi: VSI for the flow rules that need to be deleted
- * @del_list_head: head of the list of ice_arfs_entry(s) for rule deletion
- *
- * Loop through the delete list passed in and remove the rules from HW. After
- * each rule is deleted, disconnect and free the ice_arfs_entry because it is no
- * longer being referenced by the aRFS hash table.
- */
+ 
 static void
 ice_arfs_del_flow_rules(struct ice_vsi *vsi, struct hlist_head *del_list_head)
 {
@@ -122,22 +99,13 @@ ice_arfs_del_flow_rules(struct ice_vsi *vsi, struct hlist_head *del_list_head)
 				result, e->fltr_state, e->fltr_info.fltr_id,
 				e->flow_id, e->fltr_info.q_index);
 
-		/* The aRFS hash table is no longer referencing this entry */
+		 
 		hlist_del(&e->list_entry);
 		devm_kfree(dev, e);
 	}
 }
 
-/**
- * ice_arfs_add_flow_rules - add the rules passed in from HW
- * @vsi: VSI for the flow rules that need to be added
- * @add_list_head: head of the list of ice_arfs_entry_ptr(s) for rule addition
- *
- * Loop through the add list passed in and remove the rules from HW. After each
- * rule is added, disconnect and free the ice_arfs_entry_ptr node. Don't free
- * the ice_arfs_entry(s) because they are still being referenced in the aRFS
- * hash table.
- */
+ 
 static void
 ice_arfs_add_flow_rules(struct ice_vsi *vsi, struct hlist_head *add_list_head)
 {
@@ -168,15 +136,7 @@ ice_arfs_add_flow_rules(struct ice_vsi *vsi, struct hlist_head *add_list_head)
 	}
 }
 
-/**
- * ice_arfs_is_flow_expired - check if the aRFS entry has expired
- * @vsi: VSI containing the aRFS entry
- * @arfs_entry: aRFS entry that's being checked for expiration
- *
- * Return true if the flow has expired, else false. This function should be used
- * to determine whether or not an aRFS entry should be removed from the hardware
- * and software structures.
- */
+ 
 static bool
 ice_arfs_is_flow_expired(struct ice_vsi *vsi, struct ice_arfs_entry *arfs_entry)
 {
@@ -186,7 +146,7 @@ ice_arfs_is_flow_expired(struct ice_vsi *vsi, struct ice_arfs_entry *arfs_entry)
 				arfs_entry->fltr_info.fltr_id))
 		return true;
 
-	/* expiration timer only used for UDP filters */
+	 
 	if (arfs_entry->fltr_info.flow_type != ICE_FLTR_PTYPE_NONF_IPV4_UDP &&
 	    arfs_entry->fltr_info.flow_type != ICE_FLTR_PTYPE_NONF_IPV6_UDP)
 		return false;
@@ -196,20 +156,7 @@ ice_arfs_is_flow_expired(struct ice_vsi *vsi, struct ice_arfs_entry *arfs_entry)
 			       arfs_entry->time_activated, get_jiffies_64());
 }
 
-/**
- * ice_arfs_update_flow_rules - add/delete aRFS rules in HW
- * @vsi: the VSI to be forwarded to
- * @idx: index into the table of aRFS filter lists. Obtained from skb->hash
- * @add_list: list to populate with filters to be added to Flow Director
- * @del_list: list to populate with filters to be deleted from Flow Director
- *
- * Iterate over the hlist at the index given in the aRFS hash table and
- * determine if there are any aRFS entries that need to be either added or
- * deleted in the HW. If the aRFS entry is marked as ICE_ARFS_INACTIVE the
- * filter needs to be added to HW, else if it's marked as ICE_ARFS_ACTIVE and
- * the flow has expired delete the filter from HW. The caller of this function
- * is expected to add/delete rules on the add_list/del_list respectively.
- */
+ 
 static void
 ice_arfs_update_flow_rules(struct ice_vsi *vsi, u16 idx,
 			   struct hlist_head *add_list,
@@ -221,9 +168,9 @@ ice_arfs_update_flow_rules(struct ice_vsi *vsi, u16 idx,
 
 	dev = ice_pf_to_dev(vsi->back);
 
-	/* go through the aRFS hlist at this idx and check for needed updates */
+	 
 	hlist_for_each_entry_safe(e, n, &vsi->arfs_fltr_list[idx], list_entry)
-		/* check if filter needs to be added to HW */
+		 
 		if (e->fltr_state == ICE_ARFS_INACTIVE) {
 			enum ice_fltr_ptype flow_type = e->fltr_info.flow_type;
 			struct ice_arfs_entry_ptr *ep =
@@ -232,33 +179,27 @@ ice_arfs_update_flow_rules(struct ice_vsi *vsi, u16 idx,
 			if (!ep)
 				continue;
 			INIT_HLIST_NODE(&ep->list_entry);
-			/* reference aRFS entry to add HW filter */
+			 
 			ep->arfs_entry = e;
 			hlist_add_head(&ep->list_entry, add_list);
 			e->fltr_state = ICE_ARFS_ACTIVE;
-			/* expiration timer only used for UDP flows */
+			 
 			if (flow_type == ICE_FLTR_PTYPE_NONF_IPV4_UDP ||
 			    flow_type == ICE_FLTR_PTYPE_NONF_IPV6_UDP)
 				e->time_activated = get_jiffies_64();
 		} else if (e->fltr_state == ICE_ARFS_ACTIVE) {
-			/* check if filter needs to be removed from HW */
+			 
 			if (ice_arfs_is_flow_expired(vsi, e)) {
-				/* remove aRFS entry from hash table for delete
-				 * and to prevent referencing it the next time
-				 * through this hlist index
-				 */
+				 
 				hlist_del(&e->list_entry);
 				e->fltr_state = ICE_ARFS_TODEL;
-				/* save reference to aRFS entry for delete */
+				 
 				hlist_add_head(&e->list_entry, del_list);
 			}
 		}
 }
 
-/**
- * ice_sync_arfs_fltrs - update all aRFS filters
- * @pf: board private structure
- */
+ 
 void ice_sync_arfs_fltrs(struct ice_pf *pf)
 {
 	HLIST_HEAD(tmp_del_list);
@@ -274,28 +215,20 @@ void ice_sync_arfs_fltrs(struct ice_pf *pf)
 		return;
 
 	spin_lock_bh(&pf_vsi->arfs_lock);
-	/* Once we process aRFS for the PF VSI get out */
+	 
 	for (i = 0; i < ICE_MAX_ARFS_LIST; i++)
 		ice_arfs_update_flow_rules(pf_vsi, i, &tmp_add_list,
 					   &tmp_del_list);
 	spin_unlock_bh(&pf_vsi->arfs_lock);
 
-	/* use list of ice_arfs_entry(s) for delete */
+	 
 	ice_arfs_del_flow_rules(pf_vsi, &tmp_del_list);
 
-	/* use list of ice_arfs_entry_ptr(s) for add */
+	 
 	ice_arfs_add_flow_rules(pf_vsi, &tmp_add_list);
 }
 
-/**
- * ice_arfs_build_entry - builds an aRFS entry based on input
- * @vsi: destination VSI for this flow
- * @fk: flow dissector keys for creating the tuple
- * @rxq_idx: Rx queue to steer this flow to
- * @flow_id: passed down from the stack and saved for flow expiration
- *
- * returns an aRFS entry on success and NULL on failure
- */
+ 
 static struct ice_arfs_entry *
 ice_arfs_build_entry(struct ice_vsi *vsi, const struct flow_keys *fk,
 		     u16 rxq_idx, u32 flow_id)
@@ -325,7 +258,7 @@ ice_arfs_build_entry(struct ice_vsi *vsi, const struct flow_keys *fk,
 		fltr_info->ip.v4.dst_ip = fk->addrs.v4addrs.dst;
 		fltr_info->ip.v4.src_port = fk->ports.src;
 		fltr_info->ip.v4.dst_port = fk->ports.dst;
-	} else { /* ETH_P_IPV6 */
+	} else {  
 		fltr_info->ip.v6.proto = ip_proto;
 		fltr_info->flow_type = (ip_proto == IPPROTO_TCP) ?
 			ICE_FLTR_PTYPE_NONF_IPV6_TCP :
@@ -345,22 +278,13 @@ ice_arfs_build_entry(struct ice_vsi *vsi, const struct flow_keys *fk,
 	return arfs_entry;
 }
 
-/**
- * ice_arfs_is_perfect_flow_set - Check to see if perfect flow is set
- * @hw: pointer to HW structure
- * @l3_proto: ETH_P_IP or ETH_P_IPV6 in network order
- * @l4_proto: IPPROTO_UDP or IPPROTO_TCP
- *
- * We only support perfect (4-tuple) filters for aRFS. This function allows aRFS
- * to check if perfect (4-tuple) flow rules are currently in place by Flow
- * Director.
- */
+ 
 static bool
 ice_arfs_is_perfect_flow_set(struct ice_hw *hw, __be16 l3_proto, u8 l4_proto)
 {
 	unsigned long *perfect_fltr = hw->fdir_perfect_fltr;
 
-	/* advanced Flow Director disabled, perfect filters always supported */
+	 
 	if (!perfect_fltr)
 		return true;
 
@@ -376,22 +300,7 @@ ice_arfs_is_perfect_flow_set(struct ice_hw *hw, __be16 l3_proto, u8 l4_proto)
 	return false;
 }
 
-/**
- * ice_rx_flow_steer - steer the Rx flow to where application is being run
- * @netdev: ptr to the netdev being adjusted
- * @skb: buffer with required header information
- * @rxq_idx: queue to which the flow needs to move
- * @flow_id: flow identifier provided by the netdev
- *
- * Based on the skb, rxq_idx, and flow_id passed in add/update an entry in the
- * aRFS hash table. Iterate over one of the hlists in the aRFS hash table and
- * if the flow_id already exists in the hash table but the rxq_idx has changed
- * mark the entry as ICE_ARFS_INACTIVE so it can get updated in HW, else
- * if the entry is marked as ICE_ARFS_TODEL delete it from the aRFS hash table.
- * If neither of the previous conditions are true then add a new entry in the
- * aRFS hash table, which gets set to ICE_ARFS_INACTIVE by default so it can be
- * added to HW.
- */
+ 
 int
 ice_rx_flow_steer(struct net_device *netdev, const struct sk_buff *skb,
 		  u16 rxq_idx, u32 flow_id)
@@ -406,7 +315,7 @@ ice_rx_flow_steer(struct net_device *netdev, const struct sk_buff *skb,
 	u16 idx;
 	int ret;
 
-	/* failed to allocate memory for aRFS so don't crash */
+	 
 	if (unlikely(!vsi->arfs_fltr_list))
 		return -ENODEV;
 
@@ -419,30 +328,30 @@ ice_rx_flow_steer(struct net_device *netdev, const struct sk_buff *skb,
 		return -EPROTONOSUPPORT;
 
 	n_proto = fk.basic.n_proto;
-	/* Support only IPV4 and IPV6 */
+	 
 	if ((n_proto == htons(ETH_P_IP) && !ip_is_fragment(ip_hdr(skb))) ||
 	    n_proto == htons(ETH_P_IPV6))
 		ip_proto = fk.basic.ip_proto;
 	else
 		return -EPROTONOSUPPORT;
 
-	/* Support only TCP and UDP */
+	 
 	if (ip_proto != IPPROTO_TCP && ip_proto != IPPROTO_UDP)
 		return -EPROTONOSUPPORT;
 
-	/* only support 4-tuple filters for aRFS */
+	 
 	if (!ice_arfs_is_perfect_flow_set(&pf->hw, n_proto, ip_proto))
 		return -EOPNOTSUPP;
 
-	/* choose the aRFS list bucket based on skb hash */
+	 
 	idx = skb_get_hash_raw(skb) & ICE_ARFS_LST_MASK;
-	/* search for entry in the bucket */
+	 
 	spin_lock_bh(&vsi->arfs_lock);
 	hlist_for_each_entry(arfs_entry, &vsi->arfs_fltr_list[idx],
 			     list_entry) {
 		struct ice_fdir_fltr *fltr_info;
 
-		/* keep searching for the already existing arfs_entry flow */
+		 
 		if (arfs_entry->flow_id != flow_id)
 			continue;
 
@@ -453,7 +362,7 @@ ice_rx_flow_steer(struct net_device *netdev, const struct sk_buff *skb,
 		    arfs_entry->fltr_state != ICE_ARFS_ACTIVE)
 			goto out;
 
-		/* update the queue to forward to on an already existing flow */
+		 
 		fltr_info->q_index = rxq_idx;
 		arfs_entry->fltr_state = ICE_ARFS_INACTIVE;
 		ice_arfs_update_active_fltr_cntrs(vsi, arfs_entry, false);
@@ -476,10 +385,7 @@ out:
 	return ret;
 }
 
-/**
- * ice_init_arfs_cntrs - initialize aRFS counter values
- * @vsi: VSI that aRFS counters need to be initialized on
- */
+ 
 static int ice_init_arfs_cntrs(struct ice_vsi *vsi)
 {
 	if (!vsi || vsi->type != ICE_VSI_PF)
@@ -501,10 +407,7 @@ static int ice_init_arfs_cntrs(struct ice_vsi *vsi)
 	return 0;
 }
 
-/**
- * ice_init_arfs - initialize aRFS resources
- * @vsi: the VSI to be forwarded to
- */
+ 
 void ice_init_arfs(struct ice_vsi *vsi)
 {
 	struct hlist_head *arfs_fltr_list;
@@ -534,10 +437,7 @@ free_arfs_fltr_list:
 	kfree(arfs_fltr_list);
 }
 
-/**
- * ice_clear_arfs - clear the aRFS hash table and any memory used for aRFS
- * @vsi: the VSI to be forwarded to
- */
+ 
 void ice_clear_arfs(struct ice_vsi *vsi)
 {
 	struct device *dev;
@@ -569,10 +469,7 @@ void ice_clear_arfs(struct ice_vsi *vsi)
 	vsi->arfs_fltr_cntrs = NULL;
 }
 
-/**
- * ice_free_cpu_rx_rmap - free setup CPU reverse map
- * @vsi: the VSI to be forwarded to
- */
+ 
 void ice_free_cpu_rx_rmap(struct ice_vsi *vsi)
 {
 	struct net_device *netdev;
@@ -588,10 +485,7 @@ void ice_free_cpu_rx_rmap(struct ice_vsi *vsi)
 	netdev->rx_cpu_rmap = NULL;
 }
 
-/**
- * ice_set_cpu_rx_rmap - setup CPU reverse map for each queue
- * @vsi: the VSI to be forwarded to
- */
+ 
 int ice_set_cpu_rx_rmap(struct ice_vsi *vsi)
 {
 	struct net_device *netdev;
@@ -623,10 +517,7 @@ int ice_set_cpu_rx_rmap(struct ice_vsi *vsi)
 	return 0;
 }
 
-/**
- * ice_remove_arfs - remove/clear all aRFS resources
- * @pf: device private structure
- */
+ 
 void ice_remove_arfs(struct ice_pf *pf)
 {
 	struct ice_vsi *pf_vsi;
@@ -638,10 +529,7 @@ void ice_remove_arfs(struct ice_pf *pf)
 	ice_clear_arfs(pf_vsi);
 }
 
-/**
- * ice_rebuild_arfs - remove/clear all aRFS resources and rebuild after reset
- * @pf: device private structure
- */
+ 
 void ice_rebuild_arfs(struct ice_pf *pf)
 {
 	struct ice_vsi *pf_vsi;

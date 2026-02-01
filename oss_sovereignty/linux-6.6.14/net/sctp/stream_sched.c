@@ -1,27 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* SCTP kernel implementation
- * (C) Copyright Red Hat Inc. 2017
- *
- * This file is part of the SCTP kernel implementation
- *
- * These functions manipulate sctp stream queue/scheduling.
- *
- * Please send any bug reports or fixes you make to the
- * email addresched(es):
- *    lksctp developers <linux-sctp@vger.kernel.org>
- *
- * Written or modified by:
- *    Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
- */
+
+ 
 
 #include <linux/list.h>
 #include <net/sctp/sctp.h>
 #include <net/sctp/sm.h>
 #include <net/sctp/stream_sched.h>
 
-/* First Come First Serve (a.k.a. FIFO)
- * RFC DRAFT ndata Section 3.1
- */
+ 
 static int sctp_sched_fcfs_set(struct sctp_stream *stream, __u16 sid,
 			       __u16 value, gfp_t gfp)
 {
@@ -109,7 +94,7 @@ static void sctp_sched_ops_fcfs_init(void)
 	sctp_sched_ops_register(SCTP_SS_FCFS, &sctp_sched_fcfs);
 }
 
-/* API to other parts of the stack */
+ 
 
 static struct sctp_sched_ops *sctp_sched_ops[SCTP_SS_MAX + 1];
 
@@ -140,7 +125,7 @@ static void sctp_sched_free_sched(struct sctp_stream *stream)
 		if (!soute)
 			continue;
 		sched->free_sid(stream, i);
-		/* Give the next scheduler a clean slate. */
+		 
 		memset_after(soute, 0, outq);
 	}
 }
@@ -175,7 +160,7 @@ int sctp_sched_set_sched(struct sctp_association *asoc,
 			goto err;
 	}
 
-	/* We have to requeue all chunks already queued. */
+	 
 	list_for_each_entry(ch, &asoc->outqueue.out_chunk_list, list) {
 		if (ch->msg == msg)
 			continue;
@@ -187,7 +172,7 @@ int sctp_sched_set_sched(struct sctp_association *asoc,
 
 err:
 	sctp_sched_free_sched(&asoc->stream);
-	asoc->outqueue.sched = &sctp_sched_fcfs; /* Always safe */
+	asoc->outqueue.sched = &sctp_sched_fcfs;  
 
 	return ret;
 }
@@ -239,10 +224,7 @@ void sctp_sched_dequeue_done(struct sctp_outq *q, struct sctp_chunk *ch)
 		struct sctp_stream_out *sout;
 		__u16 sid;
 
-		/* datamsg is not finish, so save it as current one,
-		 * in case application switch scheduler or a higher
-		 * priority stream comes in.
-		 */
+		 
 		sid = sctp_chunk_stream_no(ch);
 		sout = SCTP_SO(&q->asoc->stream, sid);
 		q->asoc->stream.out_curr = sout;
@@ -253,7 +235,7 @@ void sctp_sched_dequeue_done(struct sctp_outq *q, struct sctp_chunk *ch)
 	q->sched->dequeue_done(q, ch);
 }
 
-/* Auxiliary functions for the schedulers */
+ 
 void sctp_sched_dequeue_common(struct sctp_outq *q, struct sctp_chunk *ch)
 {
 	list_del_init(&ch->list);

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2017, 2018, 2019, 2021 BMW Car IT GmbH
- * Author: Viktor Rosendahl (viktor.rosendahl@bmw.de)
- */
+
+ 
 
 #define _GNU_SOURCE
 #define _POSIX_C_SOURCE 200809L
@@ -148,10 +145,7 @@ static const struct policy policies[] = {
 	{ NULL,    0,           DEFAULT_PRI    }
 };
 
-/*
- * The default tracer will be the first on this list that is supported by the
- * currently running Linux kernel.
- */
+ 
 static const char * const relevant_tracers[] = {
 	"preemptirqsoff",
 	"preemptoff",
@@ -162,7 +156,7 @@ static const char * const relevant_tracers[] = {
 	NULL
 };
 
-/* This is the list of tracers for which random sleep makes sense */
+ 
 static const char * const random_tracers[] = {
 	"preemptirqsoff",
 	"preemptoff",
@@ -317,10 +311,7 @@ static void open_stdout(void)
 		err(EXIT_FAILURE, "fileno() failed");
 }
 
-/*
- * It's not worth it to call cleanup_exit() from mutex functions because
- * cleanup_exit() uses mutexes.
- */
+ 
 static __always_inline void mutex_lock(pthread_mutex_t *mtx)
 {
 	errno = pthread_mutex_lock(mtx);
@@ -620,10 +611,7 @@ static void cleanup_exit(int status)
 	if (!setup_ftrace)
 		exit(status);
 
-	/*
-	 * We try the print_mtx for 1 sec in order to avoid garbled
-	 * output if possible, but if it cannot be obtained we proceed anyway.
-	 */
+	 
 	mutex_trylock_limit(&print_mtx, TRY_PRINTMUTEX_MS);
 
 	maxlat = read_file(TR_MAXLAT, ERR_WARN);
@@ -633,13 +621,7 @@ static void cleanup_exit(int status)
 	}
 
 	restore_ftrace();
-	/*
-	 * We do not need to unlock the print_mtx here because we will exit at
-	 * the end of this function. Unlocking print_mtx causes problems if a
-	 * print thread happens to be waiting for the mutex because we have
-	 * just changed the ftrace settings to the original and thus the
-	 * print thread would output incorrect data from ftrace.
-	 */
+	 
 	exit(status);
 }
 
@@ -737,7 +719,7 @@ static void sleeptable_resize(int size, bool printout, struct short_msg *msg)
 	}
 
 	if (unlikely(size < 0)) {
-		/* Should never happen */
+		 
 		warnx("Bad program state at %s:%d", __FILE__, __LINE__);
 		cleanup_exit(EXIT_FAILURE);
 		return;
@@ -766,7 +748,7 @@ static int table_get_probability(const struct entry *req,
 
 	msg->len = 0;
 	diff--;
-	/* Should never happen...*/
+	 
 	if (unlikely(diff < 0)) {
 		warnx("Programmer assumption error at %s:%d\n", __FILE__,
 		      __LINE__);
@@ -806,10 +788,7 @@ static __always_inline int queue_nr_free(const struct queue *q)
 {
 	int nr_free = QUEUE_SIZE - queue_len(q);
 
-	/*
-	 * If there is only one slot left we will anyway lie and claim that the
-	 * queue is full because adding an element will make it appear empty
-	 */
+	 
 	if (nr_free == 1)
 		nr_free = 0;
 	return nr_free;
@@ -1102,7 +1081,7 @@ void __print_skipmessage(const struct short_msg *resize_msg,
 	else
 		bytes += r;
 
-	/* These prints could happen concurrently */
+	 
 	mutex_lock(&print_mtx);
 	write_or_die(fd_stdout, buffer, bytes);
 	mutex_unlock(&print_mtx);
@@ -1138,7 +1117,7 @@ static void print_tracefile(const struct short_msg *resize_msg,
 	long slept_ms;
 	int trace_fd;
 
-	/* Save some space for the final string and final null char */
+	 
 	bufspace = bufspace - reserve - 1;
 
 	if (resize_msg != NULL && resize_msg->len > 0) {
@@ -1212,7 +1191,7 @@ static void print_tracefile(const struct short_msg *resize_msg,
 		warn("close() failed on %s", debug_tracefile);
 
 	printstate_cnt_dec();
-	/* Add the reserve space back to the budget for the final string */
+	 
 	bufspace += reserve;
 
 	bytes = snprintf(p, bufspace,
@@ -1225,7 +1204,7 @@ static void print_tracefile(const struct short_msg *resize_msg,
 
 	bytes_tot += bytes;
 
-	/* These prints could happen concurrently */
+	 
 	mutex_lock(&print_mtx);
 	write_or_die(fd_stdout, buffer, bytes_tot);
 	mutex_unlock(&print_mtx);
@@ -1237,7 +1216,7 @@ static char *get_no_opt(const char *opt)
 	int s;
 
 	s = strlen(opt) + strlen(OPT_NO_PREFIX) + 1;
-	/* We may be called from cleanup_exit() via set_trace_opt() */
+	 
 	no_opt = malloc_or_die_nocleanup(s);
 	strcpy(no_opt, OPT_NO_PREFIX);
 	strcat(no_opt, opt);
@@ -1343,7 +1322,7 @@ static void write_file(const char *file, const char *cur, const char *new,
 	int r;
 	static const char *emsg = "Failed to write to the %s file!";
 
-	/* Do nothing if we now that the current and new value are equal */
+	 
 	if (cur && !needs_change(cur, new))
 		return;
 
@@ -1411,11 +1390,7 @@ void set_trace_opts(struct ftrace_state *state, bool *new)
 	int i;
 	int r;
 
-	/*
-	 * We only set options if we earlier detected that the option exists in
-	 * the trace_options file and that the wanted setting is different from
-	 * the one we saw in save_and_disable_tracer()
-	 */
+	 
 	for (i = 0; i < OPTIDX_NR; i++)
 		if (state->opt_valid[i] &&
 		    state->opt[i] != new[i]) {
@@ -1470,14 +1445,9 @@ static void tracing_loop(void)
 
 
 	if (setup_ftrace) {
-		/*
-		 * We must disable the tracer before resetting the max_latency
-		 */
+		 
 		save_and_disable_tracer();
-		/*
-		 * We must reset the max_latency before the inotify_add_watch()
-		 * call.
-		 */
+		 
 		reset_max_latency();
 	}
 
@@ -1533,7 +1503,7 @@ static void tracing_loop(void)
 			}
 			mutex_unlock(&printstate.mutex);
 			if (queue_try_to_add_entry(&printqueue, &req) != 0) {
-				/* These prints could happen concurrently */
+				 
 				check_signals();
 				mutex_lock(&print_mtx);
 				check_signals();
@@ -1581,44 +1551,25 @@ static void *do_printloop(void *arg)
 		}
 		mutex_unlock(&printstate.mutex);
 
-		/*
-		 * Toss a coin to decide if we want to sleep before printing
-		 * out the backtrace. The reason for this is that opening
-		 * /sys/kernel/tracing/trace will cause a blackout of
-		 * hundreds of ms, where no latencies will be noted by the
-		 * latency tracer. Thus by randomly sleeping we try to avoid
-		 * missing traces systematically due to this. With this option
-		 * we will sometimes get the first latency, some other times
-		 * some of the later ones, in case of closely spaced traces.
-		 */
+		 
 		if (trace_enable && use_random_sleep) {
 			slept = 0;
 			prob = table_get_probability(&req, &resize_msg);
 			if (!toss_coin(&drandbuf, prob))
 				slept = go_to_sleep(&req);
 			if (slept >= 0) {
-				/* A print is ongoing */
+				 
 				printstate_cnt_inc();
-				/*
-				 * We will do the printout below so we have to
-				 * mark it as completed while we still have the
-				 * mutex.
-				 */
+				 
 				mutex_lock(&printstate.mutex);
 				printstate_mark_req_completed(&req);
 				mutex_unlock(&printstate.mutex);
 			}
 		}
 		if (trace_enable) {
-			/*
-			 * slept < 0  means that we detected another
-			 * notification in go_to_sleep() above
-			 */
+			 
 			if (slept >= 0)
-				/*
-				 * N.B. printstate_cnt_dec(); will be called
-				 * inside print_tracefile()
-				 */
+				 
 				print_tracefile(&resize_msg, &timestamp, buffer,
 						bufspace, slept, &req);
 			else
@@ -1792,13 +1743,13 @@ static void find_tracefiles(void)
 {
 	debug_tracefile_dflt = tracefs_get_tracing_file("trace");
 	if (debug_tracefile_dflt == NULL) {
-		/* This is needed in show_usage() */
+		 
 		debug_tracefile_dflt = DEBUG_NOFILE;
 	}
 
 	debug_maxlat_dflt = tracefs_get_tracing_file("tracing_max_latency");
 	if (debug_maxlat_dflt == NULL) {
-		/* This is needed in show_usage() */
+		 
 		debug_maxlat_dflt = DEBUG_NOFILE;
 	}
 
@@ -1853,10 +1804,7 @@ static void scan_arguments(int argc, char *argv[])
 	int value;
 	bool notracer, valid;
 
-	/*
-	 * We must do this before parsing the arguments because show_usage()
-	 * needs to display these.
-	 */
+	 
 	find_tracefiles();
 
 	while (true) {

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1
-/*
- *
- *   Functions which do error mapping of SMB2 status codes to POSIX errors
- *
- *   Copyright (C) International Business Machines  Corp., 2009
- *   Author(s): Steve French (sfrench@us.ibm.com)
- *
- */
+
+ 
 #include <linux/errno.h>
 #include "cifsglob.h"
 #include "cifs_debug.h"
@@ -1021,7 +1014,7 @@ static const struct status_to_posix_error smb2_error_map_table[] = {
 	{STATUS_UNFINISHED_CONTEXT_DELETED, -EIO,
 	"STATUS_UNFINISHED_CONTEXT_DELETED"},
 	{STATUS_NO_TGT_REPLY, -EIO, "STATUS_NO_TGT_REPLY"},
-	/* Note that ENOATTTR and ENODATA are the same errno */
+	 
 	{STATUS_OBJECTID_NOT_FOUND, -ENODATA, "STATUS_OBJECTID_NOT_FOUND"},
 	{STATUS_NO_IP_ADDRESSES, -EIO, "STATUS_NO_IP_ADDRESSES"},
 	{STATUS_WRONG_CREDENTIAL_HANDLE, -EIO,
@@ -2416,9 +2409,7 @@ static const struct status_to_posix_error smb2_error_map_table[] = {
 	{0, 0, NULL}
 };
 
-/*****************************************************************************
- Print an error message from the status code
- *****************************************************************************/
+ 
 static void
 smb2_print_status(__le32 status)
 {
@@ -2450,7 +2441,7 @@ map_smb2_to_linux_error(char *buf, bool log_err)
 		return 0;
 	}
 
-	/* mask facility */
+	 
 	if (log_err && (smb2err != STATUS_MORE_PROCESSING_REQUIRED) &&
 	    (smb2err != STATUS_END_OF_FILE))
 		smb2_print_status(smb2err);
@@ -2465,7 +2456,7 @@ map_smb2_to_linux_error(char *buf, bool log_err)
 		}
 	}
 
-	/* on error mapping not found  - return EIO */
+	 
 
 	cifs_dbg(FYI, "Mapping SMB2 status code 0x%08x to POSIX err %d\n",
 		 __le32_to_cpu(smb2err), rc);

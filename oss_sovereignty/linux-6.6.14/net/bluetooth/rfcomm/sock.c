@@ -1,29 +1,6 @@
-/*
-   RFCOMM implementation for Linux Bluetooth stack (BlueZ).
-   Copyright (C) 2002 Maxim Krasnyansky <maxk@qualcomm.com>
-   Copyright (C) 2002 Marcel Holtmann <marcel@holtmann.org>
+ 
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License version 2 as
-   published by the Free Software Foundation;
-
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS.
-   IN NO EVENT SHALL THE COPYRIGHT HOLDER(S) AND AUTHOR(S) BE LIABLE FOR ANY
-   CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES
-   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
-   ALL LIABILITY, INCLUDING LIABILITY FOR INFRINGEMENT OF ANY PATENTS,
-   COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS, RELATING TO USE OF THIS
-   SOFTWARE IS DISCLAIMED.
-*/
-
-/*
- * RFCOMM sockets.
- */
+ 
 #include <linux/compat.h>
 #include <linux/export.h>
 #include <linux/debugfs.h>
@@ -43,10 +20,7 @@ static struct bt_sock_list rfcomm_sk_list = {
 static void rfcomm_sock_close(struct sock *sk);
 static void rfcomm_sock_kill(struct sock *sk);
 
-/* ---- DLC callbacks ----
- *
- * called under rfcomm_dlc_lock()
- */
+ 
 static void rfcomm_sk_data_ready(struct rfcomm_dlc *d, struct sk_buff *skb)
 {
 	struct sock *sk = d->owner;
@@ -94,15 +68,14 @@ static void rfcomm_sk_state_change(struct rfcomm_dlc *d, int err)
 	release_sock(sk);
 
 	if (parent && sock_flag(sk, SOCK_ZAPPED)) {
-		/* We have to drop DLC lock here, otherwise
-		 * rfcomm_sock_destruct() will dead lock. */
+		 
 		rfcomm_dlc_unlock(d);
 		rfcomm_sock_kill(sk);
 		rfcomm_dlc_lock(d);
 	}
 }
 
-/* ---- Socket functions ---- */
+ 
 static struct sock *__rfcomm_get_listen_sock_by_addr(u8 channel, bdaddr_t *src)
 {
 	struct sock *sk = NULL;
@@ -121,9 +94,7 @@ static struct sock *__rfcomm_get_listen_sock_by_addr(u8 channel, bdaddr_t *src)
 	return sk ? sk : NULL;
 }
 
-/* Find socket with channel and source bdaddr.
- * Returns closest match.
- */
+ 
 static struct sock *rfcomm_get_sock_by_channel(int state, u8 channel, bdaddr_t *src)
 {
 	struct sock *sk = NULL, *sk1 = NULL;
@@ -135,11 +106,11 @@ static struct sock *rfcomm_get_sock_by_channel(int state, u8 channel, bdaddr_t *
 			continue;
 
 		if (rfcomm_pi(sk)->channel == channel) {
-			/* Exact match. */
+			 
 			if (!bacmp(&rfcomm_pi(sk)->src, src))
 				break;
 
-			/* Closest match */
+			 
 			if (!bacmp(&rfcomm_pi(sk)->src, BDADDR_ANY))
 				sk1 = sk;
 		}
@@ -162,7 +133,7 @@ static void rfcomm_sock_destruct(struct sock *sk)
 	rfcomm_dlc_lock(d);
 	rfcomm_pi(sk)->dlc = NULL;
 
-	/* Detach DLC if it's owned by this socket */
+	 
 	if (d->owner == sk)
 		d->owner = NULL;
 	rfcomm_dlc_unlock(d);
@@ -176,7 +147,7 @@ static void rfcomm_sock_cleanup_listen(struct sock *parent)
 
 	BT_DBG("parent %p", parent);
 
-	/* Close not yet accepted dlcs */
+	 
 	while ((sk = bt_accept_dequeue(parent, NULL))) {
 		rfcomm_sock_close(sk);
 		rfcomm_sock_kill(sk);
@@ -186,9 +157,7 @@ static void rfcomm_sock_cleanup_listen(struct sock *parent)
 	sock_set_flag(parent, SOCK_ZAPPED);
 }
 
-/* Kill socket (only if zapped and orphan)
- * Must be called on unlocked socket.
- */
+ 
 static void rfcomm_sock_kill(struct sock *sk)
 {
 	if (!sock_flag(sk, SOCK_ZAPPED) || sk->sk_socket)
@@ -196,7 +165,7 @@ static void rfcomm_sock_kill(struct sock *sk)
 
 	BT_DBG("sk %p state %d refcnt %d", sk, sk->sk_state, refcount_read(&sk->sk_refcnt));
 
-	/* Kill poor orphan */
+	 
 	bt_sock_unlink(&rfcomm_sk_list, sk);
 	sock_set_flag(sk, SOCK_DEAD);
 	sock_put(sk);
@@ -226,9 +195,7 @@ static void __rfcomm_sock_close(struct sock *sk)
 	}
 }
 
-/* Close socket.
- * Must be called on unlocked socket.
- */
+ 
 static void rfcomm_sock_close(struct sock *sk)
 {
 	lock_sock(sk);
@@ -358,7 +325,7 @@ static int rfcomm_sock_bind(struct socket *sock, struct sockaddr *addr, int addr
 	    __rfcomm_get_listen_sock_by_addr(sa.rc_channel, &sa.rc_bdaddr)) {
 		err = -EADDRINUSE;
 	} else {
-		/* Save source address */
+		 
 		bacpy(&rfcomm_pi(sk)->src, &sa.rc_bdaddr);
 		rfcomm_pi(sk)->channel = sa.rc_channel;
 		sk->sk_state = BT_BOUND;
@@ -404,7 +371,7 @@ static int rfcomm_sock_connect(struct socket *sock, struct sockaddr *addr, int a
 	d->sec_level = rfcomm_pi(sk)->sec_level;
 	d->role_switch = rfcomm_pi(sk)->role_switch;
 
-	/* Drop sock lock to avoid potential deadlock with the RFCOMM lock */
+	 
 	release_sock(sk);
 	err = rfcomm_dlc_open(d, &rfcomm_pi(sk)->src, &sa->rc_bdaddr,
 			      sa->rc_channel);
@@ -487,7 +454,7 @@ static int rfcomm_sock_accept(struct socket *sock, struct socket *newsock, int f
 
 	BT_DBG("sk %p timeo %ld", sk, timeo);
 
-	/* Wait for an incoming connection. (wake-one). */
+	 
 	add_wait_queue_exclusive(sk_sleep(sk), &wait);
 	while (1) {
 		if (sk->sk_state != BT_LISTEN) {
@@ -930,10 +897,7 @@ static int rfcomm_sock_release(struct socket *sock)
 	return err;
 }
 
-/* ---- RFCOMM core layer callbacks ----
- *
- * called under rfcomm_lock()
- */
+ 
 int rfcomm_connect_ind(struct rfcomm_session *s, u8 channel, struct rfcomm_dlc **d)
 {
 	struct sock *sk, *parent;
@@ -944,14 +908,14 @@ int rfcomm_connect_ind(struct rfcomm_session *s, u8 channel, struct rfcomm_dlc *
 
 	rfcomm_session_getaddr(s, &src, &dst);
 
-	/* Check if we have socket listening on channel */
+	 
 	parent = rfcomm_get_sock_by_channel(BT_LISTEN, channel, &src);
 	if (!parent)
 		return 0;
 
 	lock_sock(parent);
 
-	/* Check for backlog size */
+	 
 	if (sk_acceptq_is_full(parent)) {
 		BT_DBG("backlog full %d", parent->sk_ack_backlog);
 		goto done;
@@ -971,7 +935,7 @@ int rfcomm_connect_ind(struct rfcomm_session *s, u8 channel, struct rfcomm_dlc *
 	sk->sk_state = BT_CONFIG;
 	bt_accept_enqueue(parent, sk, true);
 
-	/* Accept connection and return socket DLC */
+	 
 	*d = rfcomm_pi(sk)->dlc;
 	result = 1;
 

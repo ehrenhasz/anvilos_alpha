@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Aspeed AST2400/2500/2600 ADC
- *
- * Copyright (C) 2017 Google, Inc.
- * Copyright (C) 2021 Aspeed Technology Inc.
- *
- * ADC clock formula:
- * Ast2400/Ast2500:
- * clock period = period of PCLK * 2 * (ADC0C[31:17] + 1) * (ADC0C[9:0] + 1)
- * Ast2600:
- * clock period = period of PCLK * 2 * (ADC0C[15:0] + 1)
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -40,10 +29,7 @@
 #define ASPEED_REG_VGA_DETECT_CONTROL	0x08
 #define ASPEED_REG_CLOCK_CONTROL	0x0C
 #define ASPEED_REG_COMPENSATION_TRIM	0xC4
-/*
- * The register offset between 0xC8~0xCC can be read and won't affect the
- * hardware logic in each version of ADC.
- */
+ 
 #define ASPEED_REG_MAX			0xD0
 
 #define ASPEED_ADC_ENGINE_ENABLE		BIT(0)
@@ -53,10 +39,7 @@
 #define ASPEED_ADC_OP_MODE_NORMAL		7
 #define ASPEED_ADC_CTRL_COMPENSATION		BIT(4)
 #define ASPEED_ADC_AUTO_COMPENSATION		BIT(5)
-/*
- * Bit 6 determines not only the reference voltage range but also the dividing
- * circuit for battery sensing.
- */
+ 
 #define ASPEED_ADC_REF_VOLTAGE			GENMASK(7, 6)
 #define ASPEED_ADC_REF_VOLTAGE_2500mV		0
 #define ASPEED_ADC_REF_VOLTAGE_1200mV		1
@@ -75,11 +58,7 @@
 
 #define ASPEED_ADC_INIT_POLLING_TIME	500
 #define ASPEED_ADC_INIT_TIMEOUT		500000
-/*
- * When the sampling rate is too high, the ADC may not have enough charging
- * time, resulting in a low voltage value. Thus, the default uses a slow
- * sampling rate for most use cases.
- */
+ 
 #define ASPEED_ADC_DEF_SAMPLING_RATE	65000
 
 struct aspeed_adc_trim_locate {
@@ -89,8 +68,8 @@ struct aspeed_adc_trim_locate {
 
 struct aspeed_adc_model_data {
 	const char *model_name;
-	unsigned int min_sampling_rate;	// Hz
-	unsigned int max_sampling_rate;	// Hz
+	unsigned int min_sampling_rate;	
+	unsigned int max_sampling_rate;	
 	unsigned int vref_fixed_mv;
 	bool wait_init_sequence;
 	bool need_prescaler;
@@ -226,27 +205,15 @@ static int aspeed_adc_compensation(struct iio_dev *indio_dev)
 	adc_engine_control_reg_val |=
 		(FIELD_PREP(ASPEED_ADC_OP_MODE, ASPEED_ADC_OP_MODE_NORMAL) |
 		 ASPEED_ADC_ENGINE_ENABLE);
-	/*
-	 * Enable compensating sensing:
-	 * After that, the input voltage of ADC will force to half of the reference
-	 * voltage. So the expected reading raw data will become half of the max
-	 * value. We can get compensating value = 0x200 - ADC read raw value.
-	 * It is recommended to average at least 10 samples to get a final CV.
-	 */
+	 
 	writel(adc_engine_control_reg_val | ASPEED_ADC_CTRL_COMPENSATION |
 		       ASPEED_ADC_CTRL_CHANNEL_ENABLE(0),
 	       data->base + ASPEED_REG_ENGINE_CONTROL);
-	/*
-	 * After enable compensating sensing mode need to wait some time for ADC stable
-	 * Experiment result is 1ms.
-	 */
+	 
 	mdelay(1);
 
 	for (index = 0; index < 16; index++) {
-		/*
-		 * Waiting for the sampling period ensures that the value acquired
-		 * is fresh each time.
-		 */
+		 
 		ndelay(data->sample_period_ns);
 		adc_raw += readw(data->base + aspeed_adc_iio_channels[0].address);
 	}
@@ -266,7 +233,7 @@ static int aspeed_adc_set_sampling_rate(struct iio_dev *indio_dev, u32 rate)
 	if (rate < data->model_data->min_sampling_rate ||
 	    rate > data->model_data->max_sampling_rate)
 		return -EINVAL;
-	/* Each sampling needs 12 clocks to convert.*/
+	 
 	clk_set_rate(data->clk_scaler->clk, rate * ASPEED_CLOCKS_PER_SAMPLE);
 	rate = clk_get_rate(data->clk_scaler->clk);
 	data->sample_period_ns = DIV_ROUND_UP_ULL(
@@ -294,15 +261,12 @@ static int aspeed_adc_read_raw(struct iio_dev *indio_dev,
 						  ASPEED_ADC_CH7_BAT) |
 				       ASPEED_ADC_BAT_SENSING_ENABLE,
 			       data->base + ASPEED_REG_ENGINE_CONTROL);
-			/*
-			 * After enable battery sensing mode need to wait some time for adc stable
-			 * Experiment result is 1ms.
-			 */
+			 
 			mdelay(1);
 			*val = readw(data->base + chan->address);
 			*val = (*val * data->battery_mode_gain.mult) /
 			       data->battery_mode_gain.div;
-			/* Restore control register value */
+			 
 			writel(adc_engine_control_reg_val,
 			       data->base + ASPEED_REG_ENGINE_CONTROL);
 		} else
@@ -342,12 +306,7 @@ static int aspeed_adc_write_raw(struct iio_dev *indio_dev,
 
 	case IIO_CHAN_INFO_SCALE:
 	case IIO_CHAN_INFO_RAW:
-		/*
-		 * Technically, these could be written but the only reasons
-		 * for doing so seem better handled in userspace.  EPERM is
-		 * returned to signal this is a policy choice rather than a
-		 * hardware limitation.
-		 */
+		 
 		return -EPERM;
 
 	default:
@@ -433,7 +392,7 @@ static int aspeed_adc_vref_config(struct iio_dev *indio_dev)
 		if (ret)
 			return ret;
 		data->vref_mv = regulator_get_voltage(data->regulator);
-		/* Conversion from uV to mV */
+		 
 		data->vref_mv /= 1000;
 		if ((data->vref_mv >= 1550) && (data->vref_mv <= 2700))
 			writel(adc_engine_control_reg_val |
@@ -459,7 +418,7 @@ static int aspeed_adc_vref_config(struct iio_dev *indio_dev)
 		of_property_read_u32(data->dev->of_node,
 				     "aspeed,int-vref-microvolt",
 				     &data->vref_mv);
-		/* Conversion from uV to mV */
+		 
 		data->vref_mv /= 1000;
 		if (data->vref_mv == 2500)
 			writel(adc_engine_control_reg_val |
@@ -502,7 +461,7 @@ static int aspeed_adc_probe(struct platform_device *pdev)
 	if (IS_ERR(data->base))
 		return PTR_ERR(data->base);
 
-	/* Register ADC clock prescaler with source specified by device tree. */
+	 
 	spin_lock_init(&data->clk_lock);
 	snprintf(clk_parent_name, ARRAY_SIZE(clk_parent_name), "%s",
 		 of_clk_get_parent_name(pdev->dev.of_node, 0));
@@ -533,10 +492,7 @@ static int aspeed_adc_probe(struct platform_device *pdev)
 			 clk_name);
 		scaler_flags = CLK_SET_RATE_PARENT;
 	}
-	/*
-	 * Register ADC clock scaler downstream from the prescaler. Allow rate
-	 * setting to adjust the prescaler as well.
-	 */
+	 
 	snprintf(clk_name, ARRAY_SIZE(clk_name), "%s-scaler",
 		 data->model_data->model_name);
 	data->clk_scaler = devm_clk_hw_register_divider(
@@ -604,7 +560,7 @@ static int aspeed_adc_probe(struct platform_device *pdev)
 	adc_engine_control_reg_val |=
 		FIELD_PREP(ASPEED_ADC_OP_MODE, ASPEED_ADC_OP_MODE_NORMAL) |
 		ASPEED_ADC_ENGINE_ENABLE;
-	/* Enable engine in normal mode. */
+	 
 	writel(adc_engine_control_reg_val,
 	       data->base + ASPEED_REG_ENGINE_CONTROL);
 
@@ -614,7 +570,7 @@ static int aspeed_adc_probe(struct platform_device *pdev)
 		return ret;
 
 	if (data->model_data->wait_init_sequence) {
-		/* Wait for initial sequence complete. */
+		 
 		ret = readl_poll_timeout(data->base + ASPEED_REG_ENGINE_CONTROL,
 					 adc_engine_control_reg_val,
 					 adc_engine_control_reg_val &
@@ -626,7 +582,7 @@ static int aspeed_adc_probe(struct platform_device *pdev)
 	}
 
 	aspeed_adc_compensation(indio_dev);
-	/* Start all channels in normal mode. */
+	 
 	adc_engine_control_reg_val =
 		readl(data->base + ASPEED_REG_ENGINE_CONTROL);
 	adc_engine_control_reg_val |= ASPEED_ADC_CTRL_CHANNEL;

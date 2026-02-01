@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for EHCI UHP on Atmel chips
- *
- *  Copyright (C) 2009 Atmel Corporation,
- *                     Nicolas Ferre <nicolas.ferre@atmel.com>
- *
- *  Based on various ehci-*.c drivers
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -28,7 +21,7 @@
 #define EHCI_INSNREG(index)			((index) * 4 + 0x90)
 #define EHCI_INSNREG08_HSIC_EN			BIT(2)
 
-/* interface and function clocks */
+ 
 #define hcd_to_atmel_ehci_priv(h) \
 	((struct atmel_ehci_priv *)hcd_to_ehci(h)->priv)
 
@@ -44,7 +37,7 @@ static const struct ehci_driver_overrides ehci_atmel_drv_overrides __initconst =
 	.extra_priv_size = sizeof(struct atmel_ehci_priv),
 };
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static void atmel_start_clock(struct atmel_ehci_priv *atmel_ehci)
 {
@@ -84,7 +77,7 @@ static void atmel_stop_ehci(struct platform_device *pdev)
 	atmel_stop_clock(atmel_ehci);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static int ehci_atmel_drv_probe(struct platform_device *pdev)
 {
@@ -107,10 +100,7 @@ static int ehci_atmel_drv_probe(struct platform_device *pdev)
 		goto fail_create_hcd;
 	}
 
-	/* Right now device-tree probed devices don't get dma_mask set.
-	 * Since shared usb code relies on it, set it here for now.
-	 * Once we have dma capability bindings this can go away.
-	 */
+	 
 	retval = dma_coerce_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
 	if (retval)
 		goto fail_create_hcd;
@@ -146,7 +136,7 @@ static int ehci_atmel_drv_probe(struct platform_device *pdev)
 	}
 
 	ehci = hcd_to_ehci(hcd);
-	/* registers start at offset 0x0 */
+	 
 	ehci->caps = hcd->regs;
 
 	atmel_start_ehci(pdev);
@@ -209,7 +199,7 @@ static int __maybe_unused ehci_atmel_drv_resume(struct device *dev)
 #ifdef CONFIG_OF
 static const struct of_device_id atmel_ehci_dt_ids[] = {
 	{ .compatible = "atmel,at91sam9g45-ehci" },
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, atmel_ehci_dt_ids);

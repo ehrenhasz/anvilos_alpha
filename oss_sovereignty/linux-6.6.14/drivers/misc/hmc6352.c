@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * hmc6352.c - Honeywell Compass Driver
- *
- * Copyright (C) 2009 Intel Corp
- *
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -73,7 +65,7 @@ static ssize_t compass_heading_data_show(struct device *dev,
 		mutex_unlock(&compass_mutex);
 		return ret;
 	}
-	msleep(10); /* sending 'A' cmd we need to wait for 7-10 millisecs */
+	msleep(10);  
 	ret = i2c_master_recv(client, i2c_data, 2);
 	mutex_unlock(&compass_mutex);
 	if (ret < 0) {

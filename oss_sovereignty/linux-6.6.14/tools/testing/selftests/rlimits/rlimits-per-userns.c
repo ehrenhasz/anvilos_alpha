@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Author: Alexey Gladkov <gladkov.alexey@gmail.com>
- */
+
+ 
 #define _GNU_SOURCE
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -100,9 +98,7 @@ int main(int argc, char **argv)
 
 	warnx("(pid=%d) Starting testcase", pid);
 
-	/*
-	 * This rlimit is not a problem for root because it can be exceeded.
-	 */
+	 
 	setrlimit_nproc(1);
 
 	for (i = 0; i < NR_CHILDS; i++) {

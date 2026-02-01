@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This file is part of wl1271
- *
- * Copyright (C) 1998-2009 Texas Instruments. All rights reserved.
- * Copyright (C) 2008-2010 Nokia Corporation
- *
- * Contact: Luciano Coelho <luciano.coelho@nokia.com>
- */
+ 
+ 
 
 #ifndef __IO_H__
 #define __IO_H__
@@ -40,7 +33,7 @@ void wl1271_io_reset(struct wl1271 *wl);
 void wl1271_io_init(struct wl1271 *wl);
 int wlcore_translate_addr(struct wl1271 *wl, int addr);
 
-/* Raw target IO, address is not translated */
+ 
 static inline int __must_check wlcore_raw_write(struct wl1271 *wl, int addr,
 						void *buf, size_t len,
 						bool fixed)
@@ -156,7 +149,7 @@ static inline int __must_check wlcore_read_hwaddr(struct wl1271 *wl, int hwaddr,
 	int physical;
 	int addr;
 
-	/* Convert from FW internal address which is chip arch dependent */
+	 
 	addr = wl->ops->convert_hwaddr(wl, hwaddr);
 
 	physical = wlcore_translate_addr(wl, addr);
@@ -222,7 +215,7 @@ int wlcore_set_partition(struct wl1271 *wl,
 
 bool wl1271_set_block_size(struct wl1271 *wl);
 
-/* Functions from wl1271_main.c */
+ 
 
 int wl1271_tx_dummy_packet(struct wl1271 *wl);
 

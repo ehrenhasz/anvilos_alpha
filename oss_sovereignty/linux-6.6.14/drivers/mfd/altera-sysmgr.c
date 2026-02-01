@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2018-2019, Intel Corporation.
- *  Copyright (C) 2012 Freescale Semiconductor, Inc.
- *  Copyright (C) 2012 Linaro Ltd.
- *
- *  Based on syscon driver.
- */
+
+ 
 
 #include <linux/arm-smccc.h>
 #include <linux/err.h>
@@ -18,26 +12,14 @@
 #include <linux/regmap.h>
 #include <linux/slab.h>
 
-/**
- * struct altr_sysmgr - Altera SOCFPGA System Manager
- * @regmap: the regmap used for System Manager accesses.
- */
+ 
 struct altr_sysmgr {
 	struct regmap   *regmap;
 };
 
 static struct platform_driver altr_sysmgr_driver;
 
-/**
- * s10_protected_reg_write
- * Write to a protected SMC register.
- * @base: Base address of System Manager
- * @reg:  Address offset of register
- * @val:  Value to write
- * Return: INTEL_SIP_SMC_STATUS_OK (0) on success
- *	   INTEL_SIP_SMC_REG_ERROR on error
- *	   INTEL_SIP_SMC_RETURN_UNKNOWN_FUNCTION if not supported
- */
+ 
 static int s10_protected_reg_write(void *base,
 				   unsigned int reg, unsigned int val)
 {
@@ -50,16 +32,7 @@ static int s10_protected_reg_write(void *base,
 	return (int)result.a0;
 }
 
-/**
- * s10_protected_reg_read
- * Read the status of a protected SMC register
- * @base: Base address of System Manager.
- * @reg:  Address of register
- * @val:  Value read.
- * Return: INTEL_SIP_SMC_STATUS_OK (0) on success
- *	   INTEL_SIP_SMC_REG_ERROR on error
- *	   INTEL_SIP_SMC_RETURN_UNKNOWN_FUNCTION if not supported
- */
+ 
 static int s10_protected_reg_read(void *base,
 				  unsigned int reg, unsigned int *val)
 {
@@ -84,14 +57,7 @@ static struct regmap_config altr_sysmgr_regmap_cfg = {
 	.use_single_write = true,
 };
 
-/**
- * altr_sysmgr_regmap_lookup_by_phandle
- * Find the sysmgr previous configured in probe() and return regmap property.
- * Return: regmap if found or error if not found.
- *
- * @np: Pointer to device's Device Tree node
- * @property: Device Tree property name which references the sysmgr
- */
+ 
 struct regmap *altr_sysmgr_regmap_lookup_by_phandle(struct device_node *np,
 						    const char *property)
 {
@@ -143,7 +109,7 @@ static int sysmgr_probe(struct platform_device *pdev)
 		sysmgr_config.reg_read = s10_protected_reg_read;
 		sysmgr_config.reg_write = s10_protected_reg_write;
 
-		/* Need physical address for SMCC call */
+		 
 		regmap = devm_regmap_init(dev, NULL,
 					  (void *)(uintptr_t)res->start,
 					  &sysmgr_config);

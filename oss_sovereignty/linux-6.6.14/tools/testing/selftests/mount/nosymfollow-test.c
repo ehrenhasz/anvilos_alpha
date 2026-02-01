@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <errno.h>
 #include <fcntl.h>
@@ -16,11 +16,11 @@
 #include <unistd.h>
 
 #ifndef MS_NOSYMFOLLOW
-# define MS_NOSYMFOLLOW 256     /* Do not follow symlinks */
+# define MS_NOSYMFOLLOW 256      
 #endif
 
 #ifndef ST_NOSYMFOLLOW
-# define ST_NOSYMFOLLOW 0x2000  /* Do not follow symlinks */
+# define ST_NOSYMFOLLOW 0x2000   
 #endif
 
 #define DATA "/tmp/data"

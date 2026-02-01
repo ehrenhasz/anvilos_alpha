@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/iopoll.h>
 #include <linux/module.h>
@@ -149,7 +149,7 @@ static int lan9662_otp_write(void *context, unsigned int offset,
 
 	lan9662_otp_power(otp, true);
 	for (i = 0; i < bytes; i++) {
-		/* Skip zero bytes */
+		 
 		if (val[i]) {
 			rc = lan9662_otp_read_byte(otp, offset + i, &data);
 			if (rc < 0)

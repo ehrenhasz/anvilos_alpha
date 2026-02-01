@@ -1,10 +1,4 @@
-/*
- * Driver for the Gemini pin controller
- *
- * Copyright (C) 2017 Linus Walleij <linus.walleij@linaro.org>
- *
- * This is a group-only pin controller.
- */
+ 
 #include <linux/err.h>
 #include <linux/init.h>
 #include <linux/io.h>
@@ -25,30 +19,14 @@
 
 #define DRIVER_NAME "pinctrl-gemini"
 
-/**
- * struct gemini_pin_conf - information about configuring a pin
- * @pin: the pin number
- * @reg: config register
- * @mask: the bits affecting the configuration of the pin
- */
+ 
 struct gemini_pin_conf {
 	unsigned int pin;
 	u32 reg;
 	u32 mask;
 };
 
-/**
- * struct gemini_pmx - state holder for the gemini pin controller
- * @dev: a pointer back to containing device
- * @virtbase: the offset to the controller in virtual memory
- * @map: regmap to access registers
- * @is_3512: whether the SoC/package is the 3512 variant
- * @is_3516: whether the SoC/package is the 3516 variant
- * @flash_pin: whether the flash pin (extended pins for parallel
- * flash) is set
- * @confs: pin config information
- * @nconfs: number of pin config information items
- */
+ 
 struct gemini_pmx {
 	struct device *dev;
 	struct pinctrl_dev *pctl;
@@ -60,19 +38,7 @@ struct gemini_pmx {
 	unsigned int nconfs;
 };
 
-/**
- * struct gemini_pin_group - describes a Gemini pin group
- * @name: the name of this specific pin group
- * @pins: an array of discrete physical pins used in this group, taken
- *	from the driver-local pin enumeration space
- * @num_pins: the number of pins in this group array, i.e. the number of
- *	elements in .pins so we can iterate over that array
- * @mask: bits to clear to enable this when doing pin muxing
- * @value: bits to set to enable this when doing pin muxing
- * @driving_mask: bitmask for the IO Pad driving register for this
- *	group, if it supports altering the driving strength of
- *	its lines.
- */
+ 
 struct gemini_pin_group {
 	const char *name;
 	const unsigned int *pins;
@@ -82,7 +48,7 @@ struct gemini_pin_group {
 	u32 driving_mask;
 };
 
-/* Some straight-forward control registers */
+ 
 #define GLOBAL_WORD_ID		0x00
 #define GLOBAL_STATUS		0x04
 #define GLOBAL_STATUS_FLPIN	BIT(20)
@@ -90,25 +56,14 @@ struct gemini_pin_group {
 #define GLOBAL_GMAC_CTRL_SKEW	0x1c
 #define GLOBAL_GMAC0_DATA_SKEW	0x20
 #define GLOBAL_GMAC1_DATA_SKEW	0x24
-/*
- * Global Miscellaneous Control Register
- * This register controls all Gemini pad/pin multiplexing
- *
- * It is a tricky register though:
- * - For the bits named *_ENABLE, once you DISABLE something, it simply cannot
- *   be brought back online, so it means permanent disablement of the
- *   corresponding pads.
- * - For the bits named *_DISABLE, once you enable something, it cannot be
- *   DISABLED again. So you select a flash configuration once, and then
- *   you are stuck with it.
- */
+ 
 #define GLOBAL_MISC_CTRL	0x30
 #define GEMINI_GMAC_IOSEL_MASK	GENMASK(28, 27)
-/* Not really used */
+ 
 #define GEMINI_GMAC_IOSEL_GMAC0_GMII	BIT(28)
-/* Activated with GMAC1 */
+ 
 #define GEMINI_GMAC_IOSEL_GMAC0_GMAC1_RGMII BIT(27)
-/* This will be the default */
+ 
 #define GEMINI_GMAC_IOSEL_GMAC0_RGMII_GMAC1_GPIO2 0
 #define TVC_CLK_PAD_ENABLE	BIT(20)
 #define PCI_CLK_PAD_ENABLE	BIT(17)
@@ -126,7 +81,7 @@ struct gemini_pin_group {
 #define PADS_MASK		(GENMASK(9, 0) | BIT(16) | BIT(17) | BIT(20) | BIT(27))
 #define PADS_MAXBIT		27
 
-/* Ordered by bit index */
+ 
 static const char * const gemini_padgroups[] = {
 	"serial flash",
 	"parallel flash",
@@ -148,7 +103,7 @@ static const char * const gemini_padgroups[] = {
 };
 
 static const struct pinctrl_pin_desc gemini_3512_pins[] = {
-	/* Row A */
+	 
 	PINCTRL_PIN(0, "A1 VREF CTRL"),
 	PINCTRL_PIN(1, "A2 VCC2IO CTRL"),
 	PINCTRL_PIN(2, "A3 DRAM CK"),
@@ -167,7 +122,7 @@ static const struct pinctrl_pin_desc gemini_3512_pins[] = {
 	PINCTRL_PIN(15, "A16 PCI REQ2 N"),
 	PINCTRL_PIN(16, "A17 PCI REQ3 N"),
 	PINCTRL_PIN(17, "A18 PCI AD31"),
-	/* Row B */
+	 
 	PINCTRL_PIN(18, "B1 VCCK CTRL"),
 	PINCTRL_PIN(19, "B2 PWR EN"),
 	PINCTRL_PIN(20, "B3 RTC CLKI"),
@@ -186,8 +141,8 @@ static const struct pinctrl_pin_desc gemini_3512_pins[] = {
 	PINCTRL_PIN(33, "B16 PCI REQ1 N"),
 	PINCTRL_PIN(34, "B17 PCI AD30"),
 	PINCTRL_PIN(35, "B18 PCI AD29"),
-	/* Row C */
-	PINCTRL_PIN(36, "C1 CIR RST N"), /* REALLY? CIR is not in 3512... */
+	 
+	PINCTRL_PIN(36, "C1 CIR RST N"),  
 	PINCTRL_PIN(37, "C2 XTALI"),
 	PINCTRL_PIN(38, "C3 PWR BTN"),
 	PINCTRL_PIN(39, "C4 RTC CLKO"),
@@ -205,7 +160,7 @@ static const struct pinctrl_pin_desc gemini_3512_pins[] = {
 	PINCTRL_PIN(51, "C16 PCI AD28"),
 	PINCTRL_PIN(52, "C17 PCI AD27"),
 	PINCTRL_PIN(53, "C18 PCI AD26"),
-	/* Row D */
+	 
 	PINCTRL_PIN(54, "D1 AVCCKHA"),
 	PINCTRL_PIN(55, "D2 AGNDIOHA"),
 	PINCTRL_PIN(56, "D3 XTALO"),
@@ -224,7 +179,7 @@ static const struct pinctrl_pin_desc gemini_3512_pins[] = {
 	PINCTRL_PIN(69, "D16 PCI AD24"),
 	PINCTRL_PIN(70, "D17 PCI CBE3 N"),
 	PINCTRL_PIN(71, "D18 PCI AD23"),
-	/* Row E */
+	 
 	PINCTRL_PIN(72, "E1 AVCC3IOHA"),
 	PINCTRL_PIN(73, "E2 EBG"),
 	PINCTRL_PIN(74, "E3 AVCC3IOHB"),
@@ -243,7 +198,7 @@ static const struct pinctrl_pin_desc gemini_3512_pins[] = {
 	PINCTRL_PIN(87, "E16 PCI AD21"),
 	PINCTRL_PIN(88, "E17 PCI AD20"),
 	PINCTRL_PIN(89, "E18 PCI AD19"),
-	/* Row F */
+	 
 	PINCTRL_PIN(90, "F1 SATA0 RXDP"),
 	PINCTRL_PIN(91, "F2 SATA0 RXDN"),
 	PINCTRL_PIN(92, "F3 AGNDK 0"),
@@ -262,7 +217,7 @@ static const struct pinctrl_pin_desc gemini_3512_pins[] = {
 	PINCTRL_PIN(105, "F16 PCI AD16"),
 	PINCTRL_PIN(106, "F17 PCI CBE2 N"),
 	PINCTRL_PIN(107, "F18 PCI FRAME N"),
-	/* Row G */
+	 
 	PINCTRL_PIN(108, "G1 SATA0 TXDP"),
 	PINCTRL_PIN(109, "G2 SATA0 TXDN"),
 	PINCTRL_PIN(110, "G3 AGNDK 1"),
@@ -281,7 +236,7 @@ static const struct pinctrl_pin_desc gemini_3512_pins[] = {
 	PINCTRL_PIN(123, "G16 PCI DEVSEL N"),
 	PINCTRL_PIN(124, "G17 PCI STOP N"),
 	PINCTRL_PIN(125, "G18 PCI PAR"),
-	/* Row H */
+	 
 	PINCTRL_PIN(126, "H1 SATA1 TXDP"),
 	PINCTRL_PIN(127, "H2 SATA1 TXDN"),
 	PINCTRL_PIN(128, "H3 AGNDK 2"),
@@ -300,7 +255,7 @@ static const struct pinctrl_pin_desc gemini_3512_pins[] = {
 	PINCTRL_PIN(141, "H16 PCI AD14"),
 	PINCTRL_PIN(142, "H17 PCI AD13"),
 	PINCTRL_PIN(143, "H18 PCI AD12"),
-	/* Row J (for some reason I is skipped) */
+	 
 	PINCTRL_PIN(144, "J1 SATA1 RXDP"),
 	PINCTRL_PIN(145, "J2 SATA1 RXDN"),
 	PINCTRL_PIN(146, "J3 AGNDK 3"),
@@ -319,7 +274,7 @@ static const struct pinctrl_pin_desc gemini_3512_pins[] = {
 	PINCTRL_PIN(159, "J16 PCI AD9"),
 	PINCTRL_PIN(160, "J17 PCI AD8"),
 	PINCTRL_PIN(161, "J18 PCI CBE0 N"),
-	/* Row K */
+	 
 	PINCTRL_PIN(162, "K1 IDE CS1 N"),
 	PINCTRL_PIN(163, "K2 IDE CS0 N"),
 	PINCTRL_PIN(164, "K3 AVCCK 3"),
@@ -338,7 +293,7 @@ static const struct pinctrl_pin_desc gemini_3512_pins[] = {
 	PINCTRL_PIN(177, "K16 PCI AD5"),
 	PINCTRL_PIN(178, "K17 PCI AD6"),
 	PINCTRL_PIN(179, "K18 PCI AD7"),
-	/* Row L */
+	 
 	PINCTRL_PIN(180, "L1 IDE INTRQ"),
 	PINCTRL_PIN(181, "L2 IDE DMACK N"),
 	PINCTRL_PIN(182, "L3 IDE IORDY"),
@@ -357,7 +312,7 @@ static const struct pinctrl_pin_desc gemini_3512_pins[] = {
 	PINCTRL_PIN(195, "L16 PCI AD0"),
 	PINCTRL_PIN(196, "L17 PCI AD1"),
 	PINCTRL_PIN(197, "L18 PCI AD2"),
-	/* Row M */
+	 
 	PINCTRL_PIN(198, "M1 IDE DMARQ"),
 	PINCTRL_PIN(199, "M2 IDE DD15"),
 	PINCTRL_PIN(200, "M3 IDE DD0"),
@@ -376,7 +331,7 @@ static const struct pinctrl_pin_desc gemini_3512_pins[] = {
 	PINCTRL_PIN(213, "M16 GPIO0 27"),
 	PINCTRL_PIN(214, "M17 GPIO0 28"),
 	PINCTRL_PIN(215, "M18 GPIO0 29"),
-	/* Row N */
+	 
 	PINCTRL_PIN(216, "N1 IDE DD13"),
 	PINCTRL_PIN(217, "N2 IDE DD2"),
 	PINCTRL_PIN(218, "N3 IDE DD12"),
@@ -395,7 +350,7 @@ static const struct pinctrl_pin_desc gemini_3512_pins[] = {
 	PINCTRL_PIN(231, "N16 GPIO0 22"),
 	PINCTRL_PIN(232, "N17 GPIO0 23"),
 	PINCTRL_PIN(233, "N18 GPIO0 24"),
-	/* Row P (for some reason O is skipped) */
+	 
 	PINCTRL_PIN(234, "P1 IDE DD4"),
 	PINCTRL_PIN(235, "P2 IDE DD10"),
 	PINCTRL_PIN(236, "P3 IDE DD5"),
@@ -414,7 +369,7 @@ static const struct pinctrl_pin_desc gemini_3512_pins[] = {
 	PINCTRL_PIN(249, "P16 GPIO0 17"),
 	PINCTRL_PIN(250, "P17 GPIO0 18"),
 	PINCTRL_PIN(251, "P18 GPIO0 19"),
-	/* Row R (for some reason Q is skipped) */
+	 
 	PINCTRL_PIN(252, "R1 IDE DD6"),
 	PINCTRL_PIN(253, "R2 IDE DD8"),
 	PINCTRL_PIN(254, "R3 IDE DD7"),
@@ -433,7 +388,7 @@ static const struct pinctrl_pin_desc gemini_3512_pins[] = {
 	PINCTRL_PIN(267, "R16 GPIO0 9"),
 	PINCTRL_PIN(268, "R17 GPIO0 15"),
 	PINCTRL_PIN(269, "R18 GPIO0 16"),
-	/* Row T (for some reason S is skipped) */
+	 
 	PINCTRL_PIN(270, "T1 ICE0 DBGRQ"),
 	PINCTRL_PIN(271, "T2 ICE0 IDO"),
 	PINCTRL_PIN(272, "T3 ICE0 ICK"),
@@ -452,7 +407,7 @@ static const struct pinctrl_pin_desc gemini_3512_pins[] = {
 	PINCTRL_PIN(285, "T16 GPIO0 8"),
 	PINCTRL_PIN(286, "T17 GPIO0 12"),
 	PINCTRL_PIN(287, "T18 GPIO0 14"),
-	/* Row U */
+	 
 	PINCTRL_PIN(288, "U1 ICE0 IRST N"),
 	PINCTRL_PIN(289, "U2 USB0 VCCHSRT"),
 	PINCTRL_PIN(290, "U3 USB0 DP"),
@@ -471,7 +426,7 @@ static const struct pinctrl_pin_desc gemini_3512_pins[] = {
 	PINCTRL_PIN(303, "U16 GPIO0 7"),
 	PINCTRL_PIN(304, "U17 GPIO0 11"),
 	PINCTRL_PIN(305, "U18 GPIO0 13"),
-	/* Row V */
+	 
 	PINCTRL_PIN(306, "V1 USB0 GNDHSRT"),
 	PINCTRL_PIN(307, "V2 USB0 DM"),
 	PINCTRL_PIN(308, "V3 USB GNDA U20"),
@@ -493,7 +448,7 @@ static const struct pinctrl_pin_desc gemini_3512_pins[] = {
 };
 
 
-/* Digital ground */
+ 
 static const unsigned int gnd_3512_pins[] = {
 	76, 85, 95, 102, 114, 119, 133, 134, 135, 136, 151, 152, 153, 154, 169,
 	170, 171, 172, 187, 188, 189, 190, 204, 209, 221, 228, 238, 247
@@ -531,7 +486,7 @@ static const unsigned int usb_3512_pins[] = {
 	306, 289, 307, 290, 239, 257, 275, 308, 291, 309, 292, 310, 293
 };
 
-/* GMII, ethernet pins */
+ 
 static const unsigned int gmii_gmac0_3512_pins[] = {
 	240, 241, 242, 258, 259, 260, 276, 277, 278, 294, 295, 311, 312, 313
 };
@@ -547,162 +502,154 @@ static const unsigned int pci_3512_pins[] = {
 	178, 179, 195, 196, 197
 };
 
-/*
- * Apparently the LPC interface is using the PCICLK for the clocking so
- * PCI needs to be active at the same time.
- */
+ 
 static const unsigned int lpc_3512_pins[] = {
-	285, /* LPC_LAD[0] */
-	304, /* LPC_SERIRQ */
-	286, /* LPC_LAD[2] */
-	305, /* LPC_LFRAME# */
-	287, /* LPC_LAD[3] */
-	268, /* LPC_LAD[1] */
+	285,  
+	304,  
+	286,  
+	305,  
+	287,  
+	268,  
 };
 
-/* Character LCD */
+ 
 static const unsigned int lcd_3512_pins[] = {
 	262, 244, 317, 299, 246, 319, 301, 283, 269, 233, 211
 };
 
 static const unsigned int ssp_3512_pins[] = {
-	285, /* SSP_97RST# SSP AC97 Reset, active low */
-	304, /* SSP_FSC */
-	286, /* SSP_ECLK */
-	305, /* SSP_TXD */
-	287, /* SSP_RXD */
-	268, /* SSP_SCLK */
+	285,  
+	304,  
+	286,  
+	305,  
+	287,  
+	268,  
 };
 
 static const unsigned int uart_rxtx_3512_pins[] = {
-	267, /* UART_SIN serial input, RX */
-	322, /* UART_SOUT serial output, TX */
+	267,  
+	322,  
 };
 
 static const unsigned int uart_modem_3512_pins[] = {
-	285, /* UART_NDCD DCD carrier detect */
-	304, /* UART_NDTR DTR data terminal ready */
-	286, /* UART_NDSR DSR data set ready */
-	305, /* UART_NRTS RTS request to send */
-	287, /* UART_NCTS CTS clear to send */
-	268, /* UART_NRI RI ring indicator */
+	285,  
+	304,  
+	286,  
+	305,  
+	287,  
+	268,  
 };
 
 static const unsigned int tvc_3512_pins[] = {
-	246, /* TVC_DATA[0] */
-	319, /* TVC_DATA[1] */
-	301, /* TVC_DATA[2] */
-	283, /* TVC_DATA[3] */
-	320, /* TVC_DATA[4] */
-	302, /* TVC_DATA[5] */
-	284, /* TVC_DATA[6] */
-	266, /* TVC_DATA[7] */
+	246,  
+	319,  
+	301,  
+	283,  
+	320,  
+	302,  
+	284,  
+	266,  
 };
 
 static const unsigned int tvc_clk_3512_pins[] = {
-	265, /* TVC_CLK */
+	265,  
 };
 
-/* NAND flash pins */
+ 
 static const unsigned int nflash_3512_pins[] = {
 	199, 200, 201, 202, 216, 217, 218, 219, 220, 234, 235, 236, 237, 252,
 	253, 254, 249, 250, 232, 233, 211, 193, 194
 };
 
-/* Parallel (NOR) flash pins, D[0-15], A[16-25], CE0, CE1, RB, WE, OE, ALE */
+ 
 static const unsigned int pflash_3512_pins[] = {
 	162, 163, 165, 166, 148, 199, 200, 201, 202, 216, 217, 218, 219, 220,
 	234, 235, 236, 237, 252, 253, 254, 251, 229, 232, 233, 211, 212, 213,
 	214, 215, 193, 194
 };
 
-/*
- * The parallel flash can be set up in a 26-bit address bus mode exposing
- * A[0-15] (A[15] takes the place of ALE), but it has the
- * side effect of stealing pins from GMAC1 and TVC so these blocks cannot be
- * used at the same time.
- */
+ 
 static const unsigned int pflash_3512_pins_extended[] = {
 	162, 163, 165, 166, 148, 199, 200, 201, 202, 216, 217, 218, 219, 220,
 	234, 235, 236, 237, 252, 253, 254, 251, 229, 232, 233, 211, 212, 213,
 	214, 215, 193, 194,
-	/* The extra pins */
+	 
 	296, 315, 297, 279, 261, 243, 316, 298, 280, 262, 244, 317, 299, 281,
 	265,
 };
 
-/* Serial flash pins CE0, CE1, DI, DO, CK */
+ 
 static const unsigned int sflash_3512_pins[] = { 230, 231, 232, 233, 211 };
 
-/* The GPIO0A (0) pin overlap with TVC CLK and extended parallel flash */
+ 
 static const unsigned int gpio0a_3512_pins[] = { 265 };
 
-/* The GPIO0B (1-4) pins overlap with TVC and ICE */
+ 
 static const unsigned int gpio0b_3512_pins[] = { 320, 302, 284, 266 };
 
-/* The GPIO0C (5-7) pins overlap with ICE */
+ 
 static const unsigned int gpio0c_3512_pins[] = { 248, 321, 303 };
 
-/* The GPIO0D (9,10) pins overlap with UART RX/TX */
+ 
 static const unsigned int gpio0d_3512_pins[] = { 267, 322 };
 
-/* The GPIO0E (8,11-15) pins overlap with LPC, UART modem pins, SSP */
+ 
 static const unsigned int gpio0e_3512_pins[] = { 285, 304, 286, 305, 287, 268 };
 
-/* The GPIO0F (16) pins overlap with LCD */
+ 
 static const unsigned int gpio0f_3512_pins[] = { 269 };
 
-/* The GPIO0G (17,18) pins overlap with NAND flash CE0, CE1 */
+ 
 static const unsigned int gpio0g_3512_pins[] = { 249, 250 };
 
-/* The GPIO0H (19,20) pins overlap with parallel flash CE0, CE1 */
+ 
 static const unsigned int gpio0h_3512_pins[] = { 251, 229 };
 
-/* The GPIO0I (21,22) pins overlap with serial flash CE0, CE1 */
+ 
 static const unsigned int gpio0i_3512_pins[] = { 230, 231 };
 
-/* The GPIO0J (23) pins overlap with all flash */
+ 
 static const unsigned int gpio0j_3512_pins[] = { 232 };
 
-/* The GPIO0K (24,25) pins overlap with all flash and LCD */
+ 
 static const unsigned int gpio0k_3512_pins[] = { 233, 211 };
 
-/* The GPIO0L (26-29) pins overlap with parallel flash */
+ 
 static const unsigned int gpio0l_3512_pins[] = { 212, 213, 214, 215 };
 
-/* The GPIO0M (30,31) pins overlap with parallel flash and NAND flash */
+ 
 static const unsigned int gpio0m_3512_pins[] = { 193, 194 };
 
-/* The GPIO1A (0-4) pins that overlap with IDE and parallel flash */
+ 
 static const unsigned int gpio1a_3512_pins[] = { 162, 163, 165, 166, 148 };
 
-/* The GPIO1B (5-10, 27) pins overlap with just IDE */
+ 
 static const unsigned int gpio1b_3512_pins[] = {
 	180, 181, 182, 183, 184, 198, 255
 };
 
-/* The GPIO1C (11-26) pins overlap with IDE, parallel flash and NAND flash */
+ 
 static const unsigned int gpio1c_3512_pins[] = {
 	199, 200, 201, 202, 216, 217, 218, 219, 220, 234, 235, 236, 237,
 	252, 253, 254
 };
 
-/* The GPIO1D (28-31) pins overlap with LCD and TVC */
+ 
 static const unsigned int gpio1d_3512_pins[] = { 246, 319, 301, 283 };
 
-/* The GPIO2A (0-3) pins overlap with GMII GMAC1 and extended parallel flash */
+ 
 static const unsigned int gpio2a_3512_pins[] = { 315, 297, 279, 261 };
 
-/* The GPIO2B (4-7) pins overlap with GMII GMAC1, extended parallel flash and LCD */
+ 
 static const unsigned int gpio2b_3512_pins[] = { 262, 244, 317, 299 };
 
-/* The GPIO2C (8-31) pins overlap with PCI */
+ 
 static const unsigned int gpio2c_3512_pins[] = {
 	17, 34, 35, 51, 52, 53, 68, 69, 71, 86, 87, 88, 89, 103, 104, 105,
 	140, 141, 142, 143, 157, 158, 159, 160
 };
 
-/* Groups for the 3512 SoC/package */
+ 
 static const struct gemini_pin_group gemini_3512_pin_groups[] = {
 	{
 		.name = "gndgrp",
@@ -739,13 +686,13 @@ static const struct gemini_pin_group gemini_3512_pin_groups[] = {
 		.name = "icegrp",
 		.pins = ice_3512_pins,
 		.num_pins = ARRAY_SIZE(ice_3512_pins),
-		/* Conflict with some GPIO groups */
+		 
 	},
 	{
 		.name = "idegrp",
 		.pins = ide_3512_pins,
 		.num_pins = ARRAY_SIZE(ide_3512_pins),
-		/* Conflict with all flash usage */
+		 
 		.value = IDE_PADS_ENABLE | NAND_PADS_DISABLE |
 			PFLASH_PADS_DISABLE | SFLASH_PADS_DISABLE,
 		.driving_mask = GENMASK(21, 20),
@@ -770,7 +717,7 @@ static const struct gemini_pin_group gemini_3512_pin_groups[] = {
 		.name = "gmii_gmac1_grp",
 		.pins = gmii_gmac1_3512_pins,
 		.num_pins = ARRAY_SIZE(gmii_gmac1_3512_pins),
-		/* Bring out RGMII on the GMAC1 pins */
+		 
 		.value = GEMINI_GMAC_IOSEL_GMAC0_GMAC1_RGMII,
 		.driving_mask = GENMASK(19, 18),
 	},
@@ -778,7 +725,7 @@ static const struct gemini_pin_group gemini_3512_pin_groups[] = {
 		.name = "pcigrp",
 		.pins = pci_3512_pins,
 		.num_pins = ARRAY_SIZE(pci_3512_pins),
-		/* Conflict only with GPIO2 */
+		 
 		.value = PCI_PADS_ENABLE | PCI_CLK_PAD_ENABLE,
 		.driving_mask = GENMASK(23, 22),
 	},
@@ -786,7 +733,7 @@ static const struct gemini_pin_group gemini_3512_pin_groups[] = {
 		.name = "lpcgrp",
 		.pins = lpc_3512_pins,
 		.num_pins = ARRAY_SIZE(lpc_3512_pins),
-		/* Conflict with SSP and UART modem pins */
+		 
 		.mask = SSP_PADS_ENABLE,
 		.value = LPC_PADS_ENABLE | LPC_CLK_PAD_ENABLE,
 	},
@@ -794,7 +741,7 @@ static const struct gemini_pin_group gemini_3512_pin_groups[] = {
 		.name = "lcdgrp",
 		.pins = lcd_3512_pins,
 		.num_pins = ARRAY_SIZE(lcd_3512_pins),
-		/* Conflict with TVC and ICE */
+		 
 		.mask = TVC_PADS_ENABLE,
 		.value = LCD_PADS_ENABLE,
 	},
@@ -802,7 +749,7 @@ static const struct gemini_pin_group gemini_3512_pin_groups[] = {
 		.name = "sspgrp",
 		.pins = ssp_3512_pins,
 		.num_pins = ARRAY_SIZE(ssp_3512_pins),
-		/* Conflict with LPC and UART modem pins */
+		 
 		.mask = LPC_PADS_ENABLE,
 		.value = SSP_PADS_ENABLE,
 	},
@@ -810,23 +757,20 @@ static const struct gemini_pin_group gemini_3512_pin_groups[] = {
 		.name = "uartrxtxgrp",
 		.pins = uart_rxtx_3512_pins,
 		.num_pins = ARRAY_SIZE(uart_rxtx_3512_pins),
-		/* No conflicts except GPIO */
+		 
 	},
 	{
 		.name = "uartmodemgrp",
 		.pins = uart_modem_3512_pins,
 		.num_pins = ARRAY_SIZE(uart_modem_3512_pins),
-		/*
-		 * Conflict with LPC and SSP,
-		 * so when those are both disabled, modem UART can thrive.
-		 */
+		 
 		.mask = LPC_PADS_ENABLE | SSP_PADS_ENABLE,
 	},
 	{
 		.name = "tvcgrp",
 		.pins = tvc_3512_pins,
 		.num_pins = ARRAY_SIZE(tvc_3512_pins),
-		/* Conflict with character LCD and ICE */
+		 
 		.mask = LCD_PADS_ENABLE,
 		.value = TVC_PADS_ENABLE,
 	},
@@ -836,18 +780,12 @@ static const struct gemini_pin_group gemini_3512_pin_groups[] = {
 		.num_pins = ARRAY_SIZE(tvc_clk_3512_pins),
 		.value = TVC_CLK_PAD_ENABLE,
 	},
-	/*
-	 * The construction is done such that it is possible to use a serial
-	 * flash together with a NAND or parallel (NOR) flash, but it is not
-	 * possible to use NAND and parallel flash together. To use serial
-	 * flash with one of the two others, the muxbits need to be flipped
-	 * around before any access.
-	 */
+	 
 	{
 		.name = "nflashgrp",
 		.pins = nflash_3512_pins,
 		.num_pins = ARRAY_SIZE(nflash_3512_pins),
-		/* Conflict with IDE, parallel and serial flash */
+		 
 		.mask = NAND_PADS_DISABLE | IDE_PADS_ENABLE,
 		.value = PFLASH_PADS_DISABLE | SFLASH_PADS_DISABLE,
 	},
@@ -855,7 +793,7 @@ static const struct gemini_pin_group gemini_3512_pin_groups[] = {
 		.name = "pflashgrp",
 		.pins = pflash_3512_pins,
 		.num_pins = ARRAY_SIZE(pflash_3512_pins),
-		/* Conflict with IDE, NAND and serial flash */
+		 
 		.mask = PFLASH_PADS_DISABLE | IDE_PADS_ENABLE,
 		.value = NAND_PADS_DISABLE | SFLASH_PADS_DISABLE,
 	},
@@ -863,7 +801,7 @@ static const struct gemini_pin_group gemini_3512_pin_groups[] = {
 		.name = "sflashgrp",
 		.pins = sflash_3512_pins,
 		.num_pins = ARRAY_SIZE(sflash_3512_pins),
-		/* Conflict with IDE, NAND and parallel flash */
+		 
 		.mask = SFLASH_PADS_DISABLE | IDE_PADS_ENABLE,
 		.value = NAND_PADS_DISABLE | PFLASH_PADS_DISABLE,
 	},
@@ -871,68 +809,68 @@ static const struct gemini_pin_group gemini_3512_pin_groups[] = {
 		.name = "gpio0agrp",
 		.pins = gpio0a_3512_pins,
 		.num_pins = ARRAY_SIZE(gpio0a_3512_pins),
-		/* Conflict with TVC CLK */
+		 
 		.mask = TVC_CLK_PAD_ENABLE,
 	},
 	{
 		.name = "gpio0bgrp",
 		.pins = gpio0b_3512_pins,
 		.num_pins = ARRAY_SIZE(gpio0b_3512_pins),
-		/* Conflict with TVC and ICE */
+		 
 		.mask = TVC_PADS_ENABLE,
 	},
 	{
 		.name = "gpio0cgrp",
 		.pins = gpio0c_3512_pins,
 		.num_pins = ARRAY_SIZE(gpio0c_3512_pins),
-		/* Conflict with ICE */
+		 
 	},
 	{
 		.name = "gpio0dgrp",
 		.pins = gpio0d_3512_pins,
 		.num_pins = ARRAY_SIZE(gpio0d_3512_pins),
-		/* Conflict with UART RX/TX */
+		 
 	},
 	{
 		.name = "gpio0egrp",
 		.pins = gpio0e_3512_pins,
 		.num_pins = ARRAY_SIZE(gpio0e_3512_pins),
-		/* Conflict with LPC, UART modem pins, SSP */
+		 
 		.mask = LPC_PADS_ENABLE | SSP_PADS_ENABLE,
 	},
 	{
 		.name = "gpio0fgrp",
 		.pins = gpio0f_3512_pins,
 		.num_pins = ARRAY_SIZE(gpio0f_3512_pins),
-		/* Conflict with LCD */
+		 
 		.mask = LCD_PADS_ENABLE,
 	},
 	{
 		.name = "gpio0ggrp",
 		.pins = gpio0g_3512_pins,
 		.num_pins = ARRAY_SIZE(gpio0g_3512_pins),
-		/* Conflict with NAND flash */
+		 
 		.value = NAND_PADS_DISABLE,
 	},
 	{
 		.name = "gpio0hgrp",
 		.pins = gpio0h_3512_pins,
 		.num_pins = ARRAY_SIZE(gpio0h_3512_pins),
-		/* Conflict with parallel flash */
+		 
 		.value = PFLASH_PADS_DISABLE,
 	},
 	{
 		.name = "gpio0igrp",
 		.pins = gpio0i_3512_pins,
 		.num_pins = ARRAY_SIZE(gpio0i_3512_pins),
-		/* Conflict with serial flash */
+		 
 		.value = SFLASH_PADS_DISABLE,
 	},
 	{
 		.name = "gpio0jgrp",
 		.pins = gpio0j_3512_pins,
 		.num_pins = ARRAY_SIZE(gpio0j_3512_pins),
-		/* Conflict with all flash */
+		 
 		.value = PFLASH_PADS_DISABLE | NAND_PADS_DISABLE |
 			SFLASH_PADS_DISABLE,
 	},
@@ -940,7 +878,7 @@ static const struct gemini_pin_group gemini_3512_pin_groups[] = {
 		.name = "gpio0kgrp",
 		.pins = gpio0k_3512_pins,
 		.num_pins = ARRAY_SIZE(gpio0k_3512_pins),
-		/* Conflict with all flash and LCD */
+		 
 		.mask = LCD_PADS_ENABLE,
 		.value = PFLASH_PADS_DISABLE | NAND_PADS_DISABLE |
 			SFLASH_PADS_DISABLE,
@@ -949,21 +887,21 @@ static const struct gemini_pin_group gemini_3512_pin_groups[] = {
 		.name = "gpio0lgrp",
 		.pins = gpio0l_3512_pins,
 		.num_pins = ARRAY_SIZE(gpio0l_3512_pins),
-		/* Conflict with parallel flash */
+		 
 		.value = PFLASH_PADS_DISABLE,
 	},
 	{
 		.name = "gpio0mgrp",
 		.pins = gpio0m_3512_pins,
 		.num_pins = ARRAY_SIZE(gpio0m_3512_pins),
-		/* Conflict with parallel and NAND flash */
+		 
 		.value = PFLASH_PADS_DISABLE | NAND_PADS_DISABLE,
 	},
 	{
 		.name = "gpio1agrp",
 		.pins = gpio1a_3512_pins,
 		.num_pins = ARRAY_SIZE(gpio1a_3512_pins),
-		/* Conflict with IDE and parallel flash */
+		 
 		.mask = IDE_PADS_ENABLE,
 		.value = PFLASH_PADS_DISABLE,
 	},
@@ -971,14 +909,14 @@ static const struct gemini_pin_group gemini_3512_pin_groups[] = {
 		.name = "gpio1bgrp",
 		.pins = gpio1b_3512_pins,
 		.num_pins = ARRAY_SIZE(gpio1b_3512_pins),
-		/* Conflict with IDE only */
+		 
 		.mask = IDE_PADS_ENABLE,
 	},
 	{
 		.name = "gpio1cgrp",
 		.pins = gpio1c_3512_pins,
 		.num_pins = ARRAY_SIZE(gpio1c_3512_pins),
-		/* Conflict with IDE, parallel and NAND flash */
+		 
 		.mask = IDE_PADS_ENABLE,
 		.value = NAND_PADS_DISABLE | PFLASH_PADS_DISABLE,
 	},
@@ -986,7 +924,7 @@ static const struct gemini_pin_group gemini_3512_pin_groups[] = {
 		.name = "gpio1dgrp",
 		.pins = gpio1d_3512_pins,
 		.num_pins = ARRAY_SIZE(gpio1d_3512_pins),
-		/* Conflict with LCD and TVC */
+		 
 		.mask = LCD_PADS_ENABLE | TVC_PADS_ENABLE,
 	},
 	{
@@ -994,27 +932,27 @@ static const struct gemini_pin_group gemini_3512_pin_groups[] = {
 		.pins = gpio2a_3512_pins,
 		.num_pins = ARRAY_SIZE(gpio2a_3512_pins),
 		.mask = GEMINI_GMAC_IOSEL_GMAC0_GMAC1_RGMII,
-		/* Conflict with GMII GMAC1 and extended parallel flash */
+		 
 	},
 	{
 		.name = "gpio2bgrp",
 		.pins = gpio2b_3512_pins,
 		.num_pins = ARRAY_SIZE(gpio2b_3512_pins),
-		/* Conflict with GMII GMAC1, extended parallel flash and LCD */
+		 
 		.mask = LCD_PADS_ENABLE | GEMINI_GMAC_IOSEL_GMAC0_GMAC1_RGMII,
 	},
 	{
 		.name = "gpio2cgrp",
 		.pins = gpio2c_3512_pins,
 		.num_pins = ARRAY_SIZE(gpio2c_3512_pins),
-		/* Conflict with PCI */
+		 
 		.mask = PCI_PADS_ENABLE,
 	},
 };
 
-/* Pin names for the pinmux subsystem, 3516 variant */
+ 
 static const struct pinctrl_pin_desc gemini_3516_pins[] = {
-	/* Row A */
+	 
 	PINCTRL_PIN(0, "A1 AVCC3IOHA"),
 	PINCTRL_PIN(1, "A2 DRAM CK N"),
 	PINCTRL_PIN(2, "A3 DRAM CK"),
@@ -1035,7 +973,7 @@ static const struct pinctrl_pin_desc gemini_3516_pins[] = {
 	PINCTRL_PIN(17, "A18 PCI INTA N"),
 	PINCTRL_PIN(18, "A19 PCI INTB N"),
 	PINCTRL_PIN(19, "A20 PCI INTC N"),
-	/* Row B */
+	 
 	PINCTRL_PIN(20, "B1 PWR EN"),
 	PINCTRL_PIN(21, "B2 GND"),
 	PINCTRL_PIN(22, "B3 RTC CLKO"),
@@ -1056,7 +994,7 @@ static const struct pinctrl_pin_desc gemini_3516_pins[] = {
 	PINCTRL_PIN(37, "B18 DRAM A2"),
 	PINCTRL_PIN(38, "B19 GND"),
 	PINCTRL_PIN(39, "B20 PCI GNT0 N"),
-	/* Row C */
+	 
 	PINCTRL_PIN(40, "C1 AGNDIOHA"),
 	PINCTRL_PIN(41, "C2 XTALI"),
 	PINCTRL_PIN(42, "C3 GND"),
@@ -1077,7 +1015,7 @@ static const struct pinctrl_pin_desc gemini_3516_pins[] = {
 	PINCTRL_PIN(57, "C18 GND"),
 	PINCTRL_PIN(58, "C19 PCI GNT1 N"),
 	PINCTRL_PIN(59, "C20 PCI REQ2 N"),
-	/* Row D */
+	 
 	PINCTRL_PIN(60, "D1 AVCC3IOAHA"),
 	PINCTRL_PIN(61, "D2 AVCCKHA"),
 	PINCTRL_PIN(62, "D3 XTALO"),
@@ -1098,7 +1036,7 @@ static const struct pinctrl_pin_desc gemini_3516_pins[] = {
 	PINCTRL_PIN(77, "D18 EXT RESET N"),
 	PINCTRL_PIN(78, "D19 PCI REQ1 N"),
 	PINCTRL_PIN(79, "D20 PCI REQ3 N"),
-	/* Row E */
+	 
 	PINCTRL_PIN(80, "E1 VCC2IO CTRL"),
 	PINCTRL_PIN(81, "E2 VREF CTRL"),
 	PINCTRL_PIN(82, "E3 CIR RST N"),
@@ -1119,7 +1057,7 @@ static const struct pinctrl_pin_desc gemini_3516_pins[] = {
 	PINCTRL_PIN(97, "E18 PCI GNT3 N"),
 	PINCTRL_PIN(98, "E19 PCI AD29"),
 	PINCTRL_PIN(99, "E20 PCI AD28"),
-	/* Row F */
+	 
 	PINCTRL_PIN(100, "F1 AVCCKHB"),
 	PINCTRL_PIN(101, "F2 AVCCK P"),
 	PINCTRL_PIN(102, "F3 EBG"),
@@ -1140,7 +1078,7 @@ static const struct pinctrl_pin_desc gemini_3516_pins[] = {
 	PINCTRL_PIN(117, "F18 PCI AD31"),
 	PINCTRL_PIN(118, "F19 PCI AD26"),
 	PINCTRL_PIN(119, "F20 PCI CBE3 N"),
-	/* Row G */
+	 
 	PINCTRL_PIN(120, "G1 SATA0 RXDP"),
 	PINCTRL_PIN(121, "G2 SATA0 RXDN"),
 	PINCTRL_PIN(122, "G3 AGNDK 0"),
@@ -1161,7 +1099,7 @@ static const struct pinctrl_pin_desc gemini_3516_pins[] = {
 	PINCTRL_PIN(137, "G18 PCI AD24"),
 	PINCTRL_PIN(138, "G19 PCI AD23"),
 	PINCTRL_PIN(139, "G20 PCI AD21"),
-	/* Row H */
+	 
 	PINCTRL_PIN(140, "H1 SATA0 TXDP"),
 	PINCTRL_PIN(141, "H2 SATA0 TXDN"),
 	PINCTRL_PIN(142, "H3 AGNDK 1"),
@@ -1182,7 +1120,7 @@ static const struct pinctrl_pin_desc gemini_3516_pins[] = {
 	PINCTRL_PIN(157, "H18 PCI AD22"),
 	PINCTRL_PIN(158, "H19 PCI AD18"),
 	PINCTRL_PIN(159, "H20 PCI AD17"),
-	/* Row J (for some reason I is skipped) */
+	 
 	PINCTRL_PIN(160, "J1 SATA1 TXDP"),
 	PINCTRL_PIN(161, "J2 SATA1 TXDN"),
 	PINCTRL_PIN(162, "J3 AGNDK 2"),
@@ -1203,7 +1141,7 @@ static const struct pinctrl_pin_desc gemini_3516_pins[] = {
 	PINCTRL_PIN(177, "J18 PCI AD16"),
 	PINCTRL_PIN(178, "J19 PCI CBE2 N"),
 	PINCTRL_PIN(179, "J20 PCI FRAME N"),
-	/* Row K */
+	 
 	PINCTRL_PIN(180, "K1 SATA1 RXDP"),
 	PINCTRL_PIN(181, "K2 SATA1 RXDN"),
 	PINCTRL_PIN(182, "K3 AGNDK 3"),
@@ -1224,7 +1162,7 @@ static const struct pinctrl_pin_desc gemini_3516_pins[] = {
 	PINCTRL_PIN(197, "K18 PCI DEVSEL N"),
 	PINCTRL_PIN(198, "K19 PCI STOP N"),
 	PINCTRL_PIN(199, "K20 PCI PAR"),
-	/* Row L */
+	 
 	PINCTRL_PIN(200, "L1 IDE CS0 N"),
 	PINCTRL_PIN(201, "L2 IDE DA0"),
 	PINCTRL_PIN(202, "L3 AVCCK 3"),
@@ -1245,7 +1183,7 @@ static const struct pinctrl_pin_desc gemini_3516_pins[] = {
 	PINCTRL_PIN(217, "L18 PCI AD14"),
 	PINCTRL_PIN(218, "L19 PCI AD15"),
 	PINCTRL_PIN(219, "L20 PCI CBE1 N"),
-	/* Row M */
+	 
 	PINCTRL_PIN(220, "M1 IDE DA1"),
 	PINCTRL_PIN(221, "M2 IDE CS1 N"),
 	PINCTRL_PIN(222, "M3 IDE DA2"),
@@ -1266,7 +1204,7 @@ static const struct pinctrl_pin_desc gemini_3516_pins[] = {
 	PINCTRL_PIN(237, "M18 PCI AD9"),
 	PINCTRL_PIN(238, "M19 PCI AD10"),
 	PINCTRL_PIN(239, "M20 PCI AD11"),
-	/* Row N */
+	 
 	PINCTRL_PIN(240, "N1 IDE IORDY"),
 	PINCTRL_PIN(241, "N2 IDE INTRQ"),
 	PINCTRL_PIN(242, "N3 IDE DIOW N"),
@@ -1287,7 +1225,7 @@ static const struct pinctrl_pin_desc gemini_3516_pins[] = {
 	PINCTRL_PIN(257, "N18 PCI AD4"),
 	PINCTRL_PIN(258, "N19 PCI CBE0 N"),
 	PINCTRL_PIN(259, "N20 PCI AD8"),
-	/* Row P (for some reason O is skipped) */
+	 
 	PINCTRL_PIN(260, "P1 IDE DD0"),
 	PINCTRL_PIN(261, "P2 IDE DD14"),
 	PINCTRL_PIN(262, "P3 IDE DD2"),
@@ -1308,7 +1246,7 @@ static const struct pinctrl_pin_desc gemini_3516_pins[] = {
 	PINCTRL_PIN(277, "P18 PCI AD1"),
 	PINCTRL_PIN(278, "P19 PCI AD3"),
 	PINCTRL_PIN(279, "P20 PCI AD5"),
-	/* Row R (for some reason Q is skipped) */
+	 
 	PINCTRL_PIN(280, "R1 IDE DD13"),
 	PINCTRL_PIN(281, "R2 IDE DD12"),
 	PINCTRL_PIN(282, "R3 IDE DD10"),
@@ -1329,7 +1267,7 @@ static const struct pinctrl_pin_desc gemini_3516_pins[] = {
 	PINCTRL_PIN(297, "R18 GPIO0 26"),
 	PINCTRL_PIN(298, "R19 GPIO0 31"),
 	PINCTRL_PIN(299, "R20 PCI AD2"),
-	/* Row T (for some reason S is skipped) */
+	 
 	PINCTRL_PIN(300, "T1 IDE DD11"),
 	PINCTRL_PIN(301, "T2 IDE DD5"),
 	PINCTRL_PIN(302, "T3 IDE DD8"),
@@ -1350,7 +1288,7 @@ static const struct pinctrl_pin_desc gemini_3516_pins[] = {
 	PINCTRL_PIN(317, "T18 GPIO0 19"),
 	PINCTRL_PIN(318, "T19 GPIO0 27"),
 	PINCTRL_PIN(319, "T20 GPIO0 29"),
-	/* Row U */
+	 
 	PINCTRL_PIN(320, "U1 IDE DD9"),
 	PINCTRL_PIN(321, "U2 IDE DD7"),
 	PINCTRL_PIN(322, "U3 ICE0 ICK"),
@@ -1371,7 +1309,7 @@ static const struct pinctrl_pin_desc gemini_3516_pins[] = {
 	PINCTRL_PIN(337, "U18 GPIO0 17"),
 	PINCTRL_PIN(338, "U19 GPIO0 22"),
 	PINCTRL_PIN(339, "U20 GPIO0 25"),
-	/* Row V */
+	 
 	PINCTRL_PIN(340, "V1 ICE0 DBGACK"),
 	PINCTRL_PIN(341, "V2 ICE0 DBGRQ"),
 	PINCTRL_PIN(342, "V3 GND"),
@@ -1392,7 +1330,7 @@ static const struct pinctrl_pin_desc gemini_3516_pins[] = {
 	PINCTRL_PIN(357, "V18 GND"),
 	PINCTRL_PIN(358, "V19 GPIO0 18"),
 	PINCTRL_PIN(359, "V20 GPIO0 24"),
-	/* Row W */
+	 
 	PINCTRL_PIN(360, "W1 IDE RESET N"),
 	PINCTRL_PIN(361, "W2 GND"),
 	PINCTRL_PIN(362, "W3 USB0 VCCHSRT"),
@@ -1413,7 +1351,7 @@ static const struct pinctrl_pin_desc gemini_3516_pins[] = {
 	PINCTRL_PIN(377, "W18 GPIO0 12"),
 	PINCTRL_PIN(378, "W19 GND"),
 	PINCTRL_PIN(379, "W20 GPIO0 20"),
-	/* Row Y */
+	 
 	PINCTRL_PIN(380, "Y1 ICE0 IMS"),
 	PINCTRL_PIN(381, "Y2 USB0 GNDHSRT"),
 	PINCTRL_PIN(382, "Y3 USB0 DM"),
@@ -1436,7 +1374,7 @@ static const struct pinctrl_pin_desc gemini_3516_pins[] = {
 	PINCTRL_PIN(399, "Y20 GPIO0 15"),
 };
 
-/* Digital ground */
+ 
 static const unsigned int gnd_3516_pins[] = {
 	21, 38, 42, 57, 63, 76, 84, 95, 105, 114, 126, 133, 147, 148, 149, 150,
 	151, 152, 167, 168, 169, 170, 171, 172, 187, 188, 189, 190, 191, 192,
@@ -1480,7 +1418,7 @@ static const unsigned int usb_3516_pins[] = {
 	305, 324, 344, 362, 363, 364, 365, 366, 381, 382, 383, 384, 385
 };
 
-/* GMII, ethernet pins */
+ 
 static const unsigned int gmii_gmac0_3516_pins[] = {
 	306, 307, 325, 326, 327, 328, 345, 346, 347, 348, 367, 368, 386, 387
 };
@@ -1496,157 +1434,149 @@ static const unsigned int pci_3516_pins[] = {
 	237, 238, 239, 255, 256, 257, 258, 259, 277, 278, 279, 299
 };
 
-/*
- * Apparently the LPC interface is using the PCICLK for the clocking so
- * PCI needs to be active at the same time.
- */
+ 
 static const unsigned int lpc_3516_pins[] = {
-	355, /* LPC_LAD[0] */
-	356, /* LPC_SERIRQ */
-	377, /* LPC_LAD[2] */
-	398, /* LPC_LFRAME# */
-	316, /* LPC_LAD[3] */
-	399, /* LPC_LAD[1] */
+	355,  
+	356,  
+	377,  
+	398,  
+	316,  
+	399,  
 };
 
-/* Character LCD */
+ 
 static const unsigned int lcd_3516_pins[] = {
 	391, 351, 310, 371, 353, 311, 394, 374, 314, 359, 339
 };
 
 static const unsigned int ssp_3516_pins[] = {
-	355, /* SSP_97RST# SSP AC97 Reset, active low */
-	356, /* SSP_FSC */
-	377, /* SSP_ECLK */
-	398, /* SSP_TXD */
-	316, /* SSP_RXD */
-	399, /* SSP_SCLK */
+	355,  
+	356,  
+	377,  
+	398,  
+	316,  
+	399,  
 };
 
 static const unsigned int uart_rxtx_3516_pins[] = {
-	313, /* UART_SIN serial input, RX */
-	335, /* UART_SOUT serial output, TX */
+	313,  
+	335,  
 };
 
 static const unsigned int uart_modem_3516_pins[] = {
-	355, /* UART_NDCD DCD carrier detect */
-	356, /* UART_NDTR DTR data terminal ready */
-	377, /* UART_NDSR DSR data set ready */
-	398, /* UART_NRTS RTS request to send */
-	316, /* UART_NCTS CTS clear to send */
-	399, /* UART_NRI RI ring indicator */
+	355,  
+	356,  
+	377,  
+	398,  
+	316,  
+	399,  
 };
 
 static const unsigned int tvc_3516_pins[] = {
-	353, /* TVC_DATA[0] */
-	311, /* TVC_DATA[1] */
-	394, /* TVC_DATA[2] */
-	374, /* TVC_DATA[3] */
-	354, /* TVC_DATA[4] */
-	395, /* TVC_DATA[5] */
-	312, /* TVC_DATA[6] */
-	334, /* TVC_DATA[7] */
+	353,  
+	311,  
+	394,  
+	374,  
+	354,  
+	395,  
+	312,  
+	334,  
 };
 
 static const unsigned int tvc_clk_3516_pins[] = {
-	333, /* TVC_CLK */
+	333,  
 };
 
-/* NAND flash pins */
+ 
 static const unsigned int nflash_3516_pins[] = {
 	243, 260, 261, 224, 280, 262, 281, 264, 300, 263, 282, 301, 320, 283,
 	302, 321, 337, 358, 295, 359, 339, 275, 298
 };
 
-/* Parallel (NOR) flash pins, D[0-15], A[16-25], CE0, CE1, RB, WE, OE, ALE */
+ 
 static const unsigned int pflash_3516_pins[] = {
 	221, 200, 222, 201, 220, 243, 260, 261, 224, 280, 262, 281, 264, 300,
 	263, 282, 301, 320, 283, 302, 321, 317, 379, 295, 359, 339, 297, 318,
 	276, 319, 275, 298
 };
 
-/*
- * The parallel flash can be set up in a 26-bit address bus mode exposing
- * A[0-15] (A[15] takes the place of ALE), but it has the
- * side effect of stealing pins from GMAC1 and TVC so these blocks cannot be
- * used at the same time.
- */
+ 
 static const unsigned int pflash_3516_pins_extended[] = {
 	221, 200, 222, 201, 220, 243, 260, 261, 224, 280, 262, 281, 264, 300,
 	263, 282, 301, 320, 283, 302, 321, 317, 379, 295, 359, 339, 297, 318,
 	276, 319, 275, 298,
-	/* The extra pins */
+	 
 	349, 308, 369, 389, 329, 350, 370, 309, 390, 391, 351, 310, 371, 330,
 	333
 };
 
-/* Serial flash pins CE0, CE1, DI, DO, CK */
+ 
 static const unsigned int sflash_3516_pins[] = { 296, 338, 295, 359, 339 };
 
-/* The GPIO0A (0-4) pins overlap with TVC and extended parallel flash */
+ 
 static const unsigned int gpio0a_3516_pins[] = { 354, 395, 312, 334 };
 
-/* The GPIO0B (5-7) pins overlap with ICE */
+ 
 static const unsigned int gpio0b_3516_pins[] = { 375, 396, 376 };
 
-/* The GPIO0C (8,11-15) pins overlap with LPC, UART and SSP */
+ 
 static const unsigned int gpio0c_3516_pins[] = { 355, 356, 377, 398, 316, 399 };
 
-/* The GPIO0D (9,10) pins overlap with UART RX/TX */
+ 
 static const unsigned int gpio0d_3516_pins[] = { 313, 335 };
 
-/* The GPIO0E (16) pins overlap with LCD */
+ 
 static const unsigned int gpio0e_3516_pins[] = { 314 };
 
-/* The GPIO0F (17,18) pins overlap with NAND flash CE0, CE1 */
+ 
 static const unsigned int gpio0f_3516_pins[] = { 337, 358 };
 
-/* The GPIO0G (19,20,26-29) pins overlap with parallel flash */
+ 
 static const unsigned int gpio0g_3516_pins[] = { 317, 379, 297, 318, 276, 319 };
 
-/* The GPIO0H (21,22) pins overlap with serial flash CE0, CE1 */
+ 
 static const unsigned int gpio0h_3516_pins[] = { 296, 338 };
 
-/* The GPIO0I (23) pins overlap with all flash */
+ 
 static const unsigned int gpio0i_3516_pins[] = { 295 };
 
-/* The GPIO0J (24,25) pins overlap with all flash and LCD */
+ 
 static const unsigned int gpio0j_3516_pins[] = { 359, 339 };
 
-/* The GPIO0K (30,31) pins overlap with NAND flash */
+ 
 static const unsigned int gpio0k_3516_pins[] = { 275, 298 };
 
-/* The GPIO0L (0) pins overlap with TVC_CLK */
+ 
 static const unsigned int gpio0l_3516_pins[] = { 333 };
 
-/* The GPIO1A (0-4) pins that overlap with IDE and parallel flash */
+ 
 static const unsigned int gpio1a_3516_pins[] = { 221, 200, 222, 201, 220 };
 
-/* The GPIO1B (5-10,27) pins overlap with just IDE */
+ 
 static const unsigned int gpio1b_3516_pins[] = { 241, 223, 240, 204, 242, 244, 360 };
 
-/* The GPIO1C (11-26) pins overlap with IDE, parallel flash and NAND flash */
+ 
 static const unsigned int gpio1c_3516_pins[] = {
 	243, 260, 261, 224, 280, 262, 281, 264, 300, 263, 282, 301, 320, 283,
 	302, 321
 };
 
-/* The GPIO1D (28-31) pins overlap with TVC */
+ 
 static const unsigned int gpio1d_3516_pins[] = { 353, 311, 394, 374 };
 
-/* The GPIO2A (0-3) pins overlap with GMII GMAC1 and extended parallel flash */
+ 
 static const unsigned int gpio2a_3516_pins[] = { 308, 369, 389, 329 };
 
-/* The GPIO2B (4-7) pins overlap with GMII GMAC1, extended parallel flash and LCD */
+ 
 static const unsigned int gpio2b_3516_pins[] = { 391, 351, 310, 371 };
 
-/* The GPIO2C (8-31) pins overlap with PCI */
+ 
 static const unsigned int gpio2c_3516_pins[] = {
 	259, 237, 238, 239, 215, 216, 217, 218, 177, 159, 158, 175, 176, 139,
 	157, 138, 137, 156, 118, 155, 99, 98, 136, 117
 };
 
-/* Groups for the 3516 SoC/package */
+ 
 static const struct gemini_pin_group gemini_3516_pin_groups[] = {
 	{
 		.name = "gndgrp",
@@ -1688,13 +1618,13 @@ static const struct gemini_pin_group gemini_3516_pin_groups[] = {
 		.name = "icegrp",
 		.pins = ice_3516_pins,
 		.num_pins = ARRAY_SIZE(ice_3516_pins),
-		/* Conflict with some GPIO groups */
+		 
 	},
 	{
 		.name = "idegrp",
 		.pins = ide_3516_pins,
 		.num_pins = ARRAY_SIZE(ide_3516_pins),
-		/* Conflict with all flash usage */
+		 
 		.value = IDE_PADS_ENABLE | NAND_PADS_DISABLE |
 			PFLASH_PADS_DISABLE | SFLASH_PADS_DISABLE,
 		.driving_mask = GENMASK(21, 20),
@@ -1720,7 +1650,7 @@ static const struct gemini_pin_group gemini_3516_pin_groups[] = {
 		.name = "gmii_gmac1_grp",
 		.pins = gmii_gmac1_3516_pins,
 		.num_pins = ARRAY_SIZE(gmii_gmac1_3516_pins),
-		/* Bring out RGMII on the GMAC1 pins */
+		 
 		.mask = GEMINI_GMAC_IOSEL_MASK,
 		.value = GEMINI_GMAC_IOSEL_GMAC0_GMAC1_RGMII,
 		.driving_mask = GENMASK(19, 18),
@@ -1729,7 +1659,7 @@ static const struct gemini_pin_group gemini_3516_pin_groups[] = {
 		.name = "pcigrp",
 		.pins = pci_3516_pins,
 		.num_pins = ARRAY_SIZE(pci_3516_pins),
-		/* Conflict only with GPIO2 */
+		 
 		.value = PCI_PADS_ENABLE | PCI_CLK_PAD_ENABLE,
 		.driving_mask = GENMASK(23, 22),
 	},
@@ -1737,7 +1667,7 @@ static const struct gemini_pin_group gemini_3516_pin_groups[] = {
 		.name = "lpcgrp",
 		.pins = lpc_3516_pins,
 		.num_pins = ARRAY_SIZE(lpc_3516_pins),
-		/* Conflict with SSP */
+		 
 		.mask = SSP_PADS_ENABLE,
 		.value = LPC_PADS_ENABLE | LPC_CLK_PAD_ENABLE,
 	},
@@ -1752,7 +1682,7 @@ static const struct gemini_pin_group gemini_3516_pin_groups[] = {
 		.name = "sspgrp",
 		.pins = ssp_3516_pins,
 		.num_pins = ARRAY_SIZE(ssp_3516_pins),
-		/* Conflict with LPC */
+		 
 		.mask = LPC_PADS_ENABLE,
 		.value = SSP_PADS_ENABLE,
 	},
@@ -1760,23 +1690,20 @@ static const struct gemini_pin_group gemini_3516_pin_groups[] = {
 		.name = "uartrxtxgrp",
 		.pins = uart_rxtx_3516_pins,
 		.num_pins = ARRAY_SIZE(uart_rxtx_3516_pins),
-		/* No conflicts except GPIO */
+		 
 	},
 	{
 		.name = "uartmodemgrp",
 		.pins = uart_modem_3516_pins,
 		.num_pins = ARRAY_SIZE(uart_modem_3516_pins),
-		/*
-		 * Conflict with LPC and SSP,
-		 * so when those are both disabled, modem UART can thrive.
-		 */
+		 
 		.mask = LPC_PADS_ENABLE | SSP_PADS_ENABLE,
 	},
 	{
 		.name = "tvcgrp",
 		.pins = tvc_3516_pins,
 		.num_pins = ARRAY_SIZE(tvc_3516_pins),
-		/* Conflict with character LCD */
+		 
 		.mask = LCD_PADS_ENABLE,
 		.value = TVC_PADS_ENABLE,
 	},
@@ -1786,18 +1713,12 @@ static const struct gemini_pin_group gemini_3516_pin_groups[] = {
 		.num_pins = ARRAY_SIZE(tvc_clk_3516_pins),
 		.value = TVC_CLK_PAD_ENABLE,
 	},
-	/*
-	 * The construction is done such that it is possible to use a serial
-	 * flash together with a NAND or parallel (NOR) flash, but it is not
-	 * possible to use NAND and parallel flash together. To use serial
-	 * flash with one of the two others, the muxbits need to be flipped
-	 * around before any access.
-	 */
+	 
 	{
 		.name = "nflashgrp",
 		.pins = nflash_3516_pins,
 		.num_pins = ARRAY_SIZE(nflash_3516_pins),
-		/* Conflict with IDE, parallel and serial flash */
+		 
 		.mask = NAND_PADS_DISABLE | IDE_PADS_ENABLE,
 		.value = PFLASH_PADS_DISABLE | SFLASH_PADS_DISABLE,
 	},
@@ -1805,7 +1726,7 @@ static const struct gemini_pin_group gemini_3516_pin_groups[] = {
 		.name = "pflashgrp",
 		.pins = pflash_3516_pins,
 		.num_pins = ARRAY_SIZE(pflash_3516_pins),
-		/* Conflict with IDE, NAND and serial flash */
+		 
 		.mask = PFLASH_PADS_DISABLE | IDE_PADS_ENABLE,
 		.value = NAND_PADS_DISABLE | SFLASH_PADS_DISABLE,
 	},
@@ -1813,7 +1734,7 @@ static const struct gemini_pin_group gemini_3516_pin_groups[] = {
 		.name = "sflashgrp",
 		.pins = sflash_3516_pins,
 		.num_pins = ARRAY_SIZE(sflash_3516_pins),
-		/* Conflict with IDE, NAND and parallel flash */
+		 
 		.mask = SFLASH_PADS_DISABLE | IDE_PADS_ENABLE,
 		.value = NAND_PADS_DISABLE | PFLASH_PADS_DISABLE,
 	},
@@ -1821,61 +1742,61 @@ static const struct gemini_pin_group gemini_3516_pin_groups[] = {
 		.name = "gpio0agrp",
 		.pins = gpio0a_3516_pins,
 		.num_pins = ARRAY_SIZE(gpio0a_3516_pins),
-		/* Conflict with TVC and ICE */
+		 
 		.mask = TVC_PADS_ENABLE,
 	},
 	{
 		.name = "gpio0bgrp",
 		.pins = gpio0b_3516_pins,
 		.num_pins = ARRAY_SIZE(gpio0b_3516_pins),
-		/* Conflict with ICE */
+		 
 	},
 	{
 		.name = "gpio0cgrp",
 		.pins = gpio0c_3516_pins,
 		.num_pins = ARRAY_SIZE(gpio0c_3516_pins),
-		/* Conflict with LPC, UART and SSP */
+		 
 		.mask = LPC_PADS_ENABLE | SSP_PADS_ENABLE,
 	},
 	{
 		.name = "gpio0dgrp",
 		.pins = gpio0d_3516_pins,
 		.num_pins = ARRAY_SIZE(gpio0d_3516_pins),
-		/* Conflict with UART */
+		 
 	},
 	{
 		.name = "gpio0egrp",
 		.pins = gpio0e_3516_pins,
 		.num_pins = ARRAY_SIZE(gpio0e_3516_pins),
-		/* Conflict with LCD */
+		 
 		.mask = LCD_PADS_ENABLE,
 	},
 	{
 		.name = "gpio0fgrp",
 		.pins = gpio0f_3516_pins,
 		.num_pins = ARRAY_SIZE(gpio0f_3516_pins),
-		/* Conflict with NAND flash */
+		 
 		.value = NAND_PADS_DISABLE,
 	},
 	{
 		.name = "gpio0ggrp",
 		.pins = gpio0g_3516_pins,
 		.num_pins = ARRAY_SIZE(gpio0g_3516_pins),
-		/* Conflict with parallel flash */
+		 
 		.value = PFLASH_PADS_DISABLE,
 	},
 	{
 		.name = "gpio0hgrp",
 		.pins = gpio0h_3516_pins,
 		.num_pins = ARRAY_SIZE(gpio0h_3516_pins),
-		/* Conflict with serial flash */
+		 
 		.value = SFLASH_PADS_DISABLE,
 	},
 	{
 		.name = "gpio0igrp",
 		.pins = gpio0i_3516_pins,
 		.num_pins = ARRAY_SIZE(gpio0i_3516_pins),
-		/* Conflict with all flash */
+		 
 		.value = PFLASH_PADS_DISABLE | NAND_PADS_DISABLE |
 			SFLASH_PADS_DISABLE,
 	},
@@ -1883,7 +1804,7 @@ static const struct gemini_pin_group gemini_3516_pin_groups[] = {
 		.name = "gpio0jgrp",
 		.pins = gpio0j_3516_pins,
 		.num_pins = ARRAY_SIZE(gpio0j_3516_pins),
-		/* Conflict with all flash and LCD */
+		 
 		.mask = LCD_PADS_ENABLE,
 		.value = PFLASH_PADS_DISABLE | NAND_PADS_DISABLE |
 			SFLASH_PADS_DISABLE,
@@ -1892,21 +1813,21 @@ static const struct gemini_pin_group gemini_3516_pin_groups[] = {
 		.name = "gpio0kgrp",
 		.pins = gpio0k_3516_pins,
 		.num_pins = ARRAY_SIZE(gpio0k_3516_pins),
-		/* Conflict with parallel and NAND flash */
+		 
 		.value = PFLASH_PADS_DISABLE | NAND_PADS_DISABLE,
 	},
 	{
 		.name = "gpio0lgrp",
 		.pins = gpio0l_3516_pins,
 		.num_pins = ARRAY_SIZE(gpio0l_3516_pins),
-		/* Conflict with TVE CLK */
+		 
 		.mask = TVC_CLK_PAD_ENABLE,
 	},
 	{
 		.name = "gpio1agrp",
 		.pins = gpio1a_3516_pins,
 		.num_pins = ARRAY_SIZE(gpio1a_3516_pins),
-		/* Conflict with IDE and parallel flash */
+		 
 		.mask = IDE_PADS_ENABLE,
 		.value = PFLASH_PADS_DISABLE,
 	},
@@ -1914,14 +1835,14 @@ static const struct gemini_pin_group gemini_3516_pin_groups[] = {
 		.name = "gpio1bgrp",
 		.pins = gpio1b_3516_pins,
 		.num_pins = ARRAY_SIZE(gpio1b_3516_pins),
-		/* Conflict with IDE only */
+		 
 		.mask = IDE_PADS_ENABLE,
 	},
 	{
 		.name = "gpio1cgrp",
 		.pins = gpio1c_3516_pins,
 		.num_pins = ARRAY_SIZE(gpio1c_3516_pins),
-		/* Conflict with IDE, parallel and NAND flash */
+		 
 		.mask = IDE_PADS_ENABLE,
 		.value = NAND_PADS_DISABLE | PFLASH_PADS_DISABLE,
 	},
@@ -1929,7 +1850,7 @@ static const struct gemini_pin_group gemini_3516_pin_groups[] = {
 		.name = "gpio1dgrp",
 		.pins = gpio1d_3516_pins,
 		.num_pins = ARRAY_SIZE(gpio1d_3516_pins),
-		/* Conflict with TVC */
+		 
 		.mask = TVC_PADS_ENABLE,
 	},
 	{
@@ -1937,20 +1858,20 @@ static const struct gemini_pin_group gemini_3516_pin_groups[] = {
 		.pins = gpio2a_3516_pins,
 		.num_pins = ARRAY_SIZE(gpio2a_3516_pins),
 		.mask = GEMINI_GMAC_IOSEL_GMAC0_GMAC1_RGMII,
-		/* Conflict with GMII GMAC1 and extended parallel flash */
+		 
 	},
 	{
 		.name = "gpio2bgrp",
 		.pins = gpio2b_3516_pins,
 		.num_pins = ARRAY_SIZE(gpio2b_3516_pins),
-		/* Conflict with GMII GMAC1, extended parallel flash and LCD */
+		 
 		.mask = LCD_PADS_ENABLE | GEMINI_GMAC_IOSEL_GMAC0_GMAC1_RGMII,
 	},
 	{
 		.name = "gpio2cgrp",
 		.pins = gpio2c_3516_pins,
 		.num_pins = ARRAY_SIZE(gpio2c_3516_pins),
-		/* Conflict with PCI */
+		 
 		.mask = PCI_PADS_ENABLE,
 	},
 };
@@ -1985,7 +1906,7 @@ static int gemini_get_group_pins(struct pinctrl_dev *pctldev,
 {
 	struct gemini_pmx *pmx = pinctrl_dev_get_drvdata(pctldev);
 
-	/* The special case with the 3516 flash pin */
+	 
 	if (pmx->flash_pin &&
 	    pmx->is_3512 &&
 	    !strcmp(gemini_3512_pin_groups[selector].name, "pflashgrp")) {
@@ -2026,11 +1947,7 @@ static const struct pinctrl_ops gemini_pctrl_ops = {
 	.dt_free_map = pinconf_generic_dt_free_map,
 };
 
-/**
- * struct gemini_pmx_func - describes Gemini pinmux functions
- * @name: the name of this specific function
- * @groups: corresponding pin groups
- */
+ 
 struct gemini_pmx_func {
 	const char *name;
 	const char * const *groups;
@@ -2083,7 +2000,7 @@ static const struct gemini_pmx_func gemini_pmx_functions[] = {
 		.num_groups = ARRAY_SIZE(powergrps),
 	},
 	{
-		/* This function is strictly unavailable on 3512 */
+		 
 		.name = "cir",
 		.groups = cirgrps,
 		.num_groups = ARRAY_SIZE(cirgrps),
@@ -2219,19 +2136,19 @@ static int gemini_pmx_set_mux(struct pinctrl_dev *pctldev,
 			   grp->value);
 	regmap_read(pmx->map, GLOBAL_MISC_CTRL, &after);
 
-	/* Which bits changed */
+	 
 	before &= PADS_MASK;
 	after &= PADS_MASK;
 	expected = before &= ~grp->mask;
 	expected |= grp->value;
 	expected &= PADS_MASK;
 
-	/* Print changed states */
+	 
 	tmp = grp->mask;
 	for_each_set_bit(i, &tmp, PADS_MAXBIT) {
 		bool enabled = !(i > 3);
 
-		/* Did not go low though it should */
+		 
 		if (after & BIT(i)) {
 			dev_err(pmx->dev,
 				"pin group %s could not be %s: "
@@ -2253,7 +2170,7 @@ static int gemini_pmx_set_mux(struct pinctrl_dev *pctldev,
 	for_each_set_bit(i, &tmp, PADS_MAXBIT) {
 		bool enabled = (i > 3);
 
-		/* Did not go high though it should */
+		 
 		if (!(after & BIT(i))) {
 			dev_err(pmx->dev,
 				"pin group %s could not be %s: "
@@ -2309,57 +2226,57 @@ static const struct pinmux_ops gemini_pmx_ops = {
 }
 
 static const struct gemini_pin_conf gemini_confs_3512[] = {
-	GEMINI_CFGPIN(259, GLOBAL_GMAC_CTRL_SKEW, 0, 3), /* GMAC0 RXDV */
-	GEMINI_CFGPIN(277, GLOBAL_GMAC_CTRL_SKEW, 4, 7), /* GMAC0 RXC */
-	GEMINI_CFGPIN(241, GLOBAL_GMAC_CTRL_SKEW, 8, 11), /* GMAC0 TXEN */
-	GEMINI_CFGPIN(312, GLOBAL_GMAC_CTRL_SKEW, 12, 15), /* GMAC0 TXC */
-	GEMINI_CFGPIN(298, GLOBAL_GMAC_CTRL_SKEW, 16, 19), /* GMAC1 RXDV */
-	GEMINI_CFGPIN(280, GLOBAL_GMAC_CTRL_SKEW, 20, 23), /* GMAC1 RXC */
-	GEMINI_CFGPIN(316, GLOBAL_GMAC_CTRL_SKEW, 24, 27), /* GMAC1 TXEN */
-	GEMINI_CFGPIN(243, GLOBAL_GMAC_CTRL_SKEW, 28, 31), /* GMAC1 TXC */
-	GEMINI_CFGPIN(295, GLOBAL_GMAC0_DATA_SKEW, 0, 3), /* GMAC0 RXD0 */
-	GEMINI_CFGPIN(313, GLOBAL_GMAC0_DATA_SKEW, 4, 7), /* GMAC0 RXD1 */
-	GEMINI_CFGPIN(242, GLOBAL_GMAC0_DATA_SKEW, 8, 11), /* GMAC0 RXD2 */
-	GEMINI_CFGPIN(260, GLOBAL_GMAC0_DATA_SKEW, 12, 15), /* GMAC0 RXD3 */
-	GEMINI_CFGPIN(294, GLOBAL_GMAC0_DATA_SKEW, 16, 19), /* GMAC0 TXD0 */
-	GEMINI_CFGPIN(276, GLOBAL_GMAC0_DATA_SKEW, 20, 23), /* GMAC0 TXD1 */
-	GEMINI_CFGPIN(258, GLOBAL_GMAC0_DATA_SKEW, 24, 27), /* GMAC0 TXD2 */
-	GEMINI_CFGPIN(240, GLOBAL_GMAC0_DATA_SKEW, 28, 31), /* GMAC0 TXD3 */
-	GEMINI_CFGPIN(262, GLOBAL_GMAC1_DATA_SKEW, 0, 3), /* GMAC1 RXD0 */
-	GEMINI_CFGPIN(244, GLOBAL_GMAC1_DATA_SKEW, 4, 7), /* GMAC1 RXD1 */
-	GEMINI_CFGPIN(317, GLOBAL_GMAC1_DATA_SKEW, 8, 11), /* GMAC1 RXD2 */
-	GEMINI_CFGPIN(299, GLOBAL_GMAC1_DATA_SKEW, 12, 15), /* GMAC1 RXD3 */
-	GEMINI_CFGPIN(261, GLOBAL_GMAC1_DATA_SKEW, 16, 19), /* GMAC1 TXD0 */
-	GEMINI_CFGPIN(279, GLOBAL_GMAC1_DATA_SKEW, 20, 23), /* GMAC1 TXD1 */
-	GEMINI_CFGPIN(297, GLOBAL_GMAC1_DATA_SKEW, 24, 27), /* GMAC1 TXD2 */
-	GEMINI_CFGPIN(315, GLOBAL_GMAC1_DATA_SKEW, 28, 31), /* GMAC1 TXD3 */
+	GEMINI_CFGPIN(259, GLOBAL_GMAC_CTRL_SKEW, 0, 3),  
+	GEMINI_CFGPIN(277, GLOBAL_GMAC_CTRL_SKEW, 4, 7),  
+	GEMINI_CFGPIN(241, GLOBAL_GMAC_CTRL_SKEW, 8, 11),  
+	GEMINI_CFGPIN(312, GLOBAL_GMAC_CTRL_SKEW, 12, 15),  
+	GEMINI_CFGPIN(298, GLOBAL_GMAC_CTRL_SKEW, 16, 19),  
+	GEMINI_CFGPIN(280, GLOBAL_GMAC_CTRL_SKEW, 20, 23),  
+	GEMINI_CFGPIN(316, GLOBAL_GMAC_CTRL_SKEW, 24, 27),  
+	GEMINI_CFGPIN(243, GLOBAL_GMAC_CTRL_SKEW, 28, 31),  
+	GEMINI_CFGPIN(295, GLOBAL_GMAC0_DATA_SKEW, 0, 3),  
+	GEMINI_CFGPIN(313, GLOBAL_GMAC0_DATA_SKEW, 4, 7),  
+	GEMINI_CFGPIN(242, GLOBAL_GMAC0_DATA_SKEW, 8, 11),  
+	GEMINI_CFGPIN(260, GLOBAL_GMAC0_DATA_SKEW, 12, 15),  
+	GEMINI_CFGPIN(294, GLOBAL_GMAC0_DATA_SKEW, 16, 19),  
+	GEMINI_CFGPIN(276, GLOBAL_GMAC0_DATA_SKEW, 20, 23),  
+	GEMINI_CFGPIN(258, GLOBAL_GMAC0_DATA_SKEW, 24, 27),  
+	GEMINI_CFGPIN(240, GLOBAL_GMAC0_DATA_SKEW, 28, 31),  
+	GEMINI_CFGPIN(262, GLOBAL_GMAC1_DATA_SKEW, 0, 3),  
+	GEMINI_CFGPIN(244, GLOBAL_GMAC1_DATA_SKEW, 4, 7),  
+	GEMINI_CFGPIN(317, GLOBAL_GMAC1_DATA_SKEW, 8, 11),  
+	GEMINI_CFGPIN(299, GLOBAL_GMAC1_DATA_SKEW, 12, 15),  
+	GEMINI_CFGPIN(261, GLOBAL_GMAC1_DATA_SKEW, 16, 19),  
+	GEMINI_CFGPIN(279, GLOBAL_GMAC1_DATA_SKEW, 20, 23),  
+	GEMINI_CFGPIN(297, GLOBAL_GMAC1_DATA_SKEW, 24, 27),  
+	GEMINI_CFGPIN(315, GLOBAL_GMAC1_DATA_SKEW, 28, 31),  
 };
 
 static const struct gemini_pin_conf gemini_confs_3516[] = {
-	GEMINI_CFGPIN(347, GLOBAL_GMAC_CTRL_SKEW, 0, 3), /* GMAC0 RXDV */
-	GEMINI_CFGPIN(386, GLOBAL_GMAC_CTRL_SKEW, 4, 7), /* GMAC0 RXC */
-	GEMINI_CFGPIN(307, GLOBAL_GMAC_CTRL_SKEW, 8, 11), /* GMAC0 TXEN */
-	GEMINI_CFGPIN(327, GLOBAL_GMAC_CTRL_SKEW, 12, 15), /* GMAC0 TXC */
-	GEMINI_CFGPIN(309, GLOBAL_GMAC_CTRL_SKEW, 16, 19), /* GMAC1 RXDV */
-	GEMINI_CFGPIN(390, GLOBAL_GMAC_CTRL_SKEW, 20, 23), /* GMAC1 RXC */
-	GEMINI_CFGPIN(370, GLOBAL_GMAC_CTRL_SKEW, 24, 27), /* GMAC1 TXEN */
-	GEMINI_CFGPIN(350, GLOBAL_GMAC_CTRL_SKEW, 28, 31), /* GMAC1 TXC */
-	GEMINI_CFGPIN(367, GLOBAL_GMAC0_DATA_SKEW, 0, 3), /* GMAC0 RXD0 */
-	GEMINI_CFGPIN(348, GLOBAL_GMAC0_DATA_SKEW, 4, 7), /* GMAC0 RXD1 */
-	GEMINI_CFGPIN(387, GLOBAL_GMAC0_DATA_SKEW, 8, 11), /* GMAC0 RXD2 */
-	GEMINI_CFGPIN(328, GLOBAL_GMAC0_DATA_SKEW, 12, 15), /* GMAC0 RXD3 */
-	GEMINI_CFGPIN(306, GLOBAL_GMAC0_DATA_SKEW, 16, 19), /* GMAC0 TXD0 */
-	GEMINI_CFGPIN(325, GLOBAL_GMAC0_DATA_SKEW, 20, 23), /* GMAC0 TXD1 */
-	GEMINI_CFGPIN(346, GLOBAL_GMAC0_DATA_SKEW, 24, 27), /* GMAC0 TXD2 */
-	GEMINI_CFGPIN(326, GLOBAL_GMAC0_DATA_SKEW, 28, 31), /* GMAC0 TXD3 */
-	GEMINI_CFGPIN(391, GLOBAL_GMAC1_DATA_SKEW, 0, 3), /* GMAC1 RXD0 */
-	GEMINI_CFGPIN(351, GLOBAL_GMAC1_DATA_SKEW, 4, 7), /* GMAC1 RXD1 */
-	GEMINI_CFGPIN(310, GLOBAL_GMAC1_DATA_SKEW, 8, 11), /* GMAC1 RXD2 */
-	GEMINI_CFGPIN(371, GLOBAL_GMAC1_DATA_SKEW, 12, 15), /* GMAC1 RXD3 */
-	GEMINI_CFGPIN(329, GLOBAL_GMAC1_DATA_SKEW, 16, 19), /* GMAC1 TXD0 */
-	GEMINI_CFGPIN(389, GLOBAL_GMAC1_DATA_SKEW, 20, 23), /* GMAC1 TXD1 */
-	GEMINI_CFGPIN(369, GLOBAL_GMAC1_DATA_SKEW, 24, 27), /* GMAC1 TXD2 */
-	GEMINI_CFGPIN(308, GLOBAL_GMAC1_DATA_SKEW, 28, 31), /* GMAC1 TXD3 */
+	GEMINI_CFGPIN(347, GLOBAL_GMAC_CTRL_SKEW, 0, 3),  
+	GEMINI_CFGPIN(386, GLOBAL_GMAC_CTRL_SKEW, 4, 7),  
+	GEMINI_CFGPIN(307, GLOBAL_GMAC_CTRL_SKEW, 8, 11),  
+	GEMINI_CFGPIN(327, GLOBAL_GMAC_CTRL_SKEW, 12, 15),  
+	GEMINI_CFGPIN(309, GLOBAL_GMAC_CTRL_SKEW, 16, 19),  
+	GEMINI_CFGPIN(390, GLOBAL_GMAC_CTRL_SKEW, 20, 23),  
+	GEMINI_CFGPIN(370, GLOBAL_GMAC_CTRL_SKEW, 24, 27),  
+	GEMINI_CFGPIN(350, GLOBAL_GMAC_CTRL_SKEW, 28, 31),  
+	GEMINI_CFGPIN(367, GLOBAL_GMAC0_DATA_SKEW, 0, 3),  
+	GEMINI_CFGPIN(348, GLOBAL_GMAC0_DATA_SKEW, 4, 7),  
+	GEMINI_CFGPIN(387, GLOBAL_GMAC0_DATA_SKEW, 8, 11),  
+	GEMINI_CFGPIN(328, GLOBAL_GMAC0_DATA_SKEW, 12, 15),  
+	GEMINI_CFGPIN(306, GLOBAL_GMAC0_DATA_SKEW, 16, 19),  
+	GEMINI_CFGPIN(325, GLOBAL_GMAC0_DATA_SKEW, 20, 23),  
+	GEMINI_CFGPIN(346, GLOBAL_GMAC0_DATA_SKEW, 24, 27),  
+	GEMINI_CFGPIN(326, GLOBAL_GMAC0_DATA_SKEW, 28, 31),  
+	GEMINI_CFGPIN(391, GLOBAL_GMAC1_DATA_SKEW, 0, 3),  
+	GEMINI_CFGPIN(351, GLOBAL_GMAC1_DATA_SKEW, 4, 7),  
+	GEMINI_CFGPIN(310, GLOBAL_GMAC1_DATA_SKEW, 8, 11),  
+	GEMINI_CFGPIN(371, GLOBAL_GMAC1_DATA_SKEW, 12, 15),  
+	GEMINI_CFGPIN(329, GLOBAL_GMAC1_DATA_SKEW, 16, 19),  
+	GEMINI_CFGPIN(389, GLOBAL_GMAC1_DATA_SKEW, 20, 23),  
+	GEMINI_CFGPIN(369, GLOBAL_GMAC1_DATA_SKEW, 24, 27),  
+	GEMINI_CFGPIN(308, GLOBAL_GMAC1_DATA_SKEW, 28, 31),  
 };
 
 static const struct gemini_pin_conf *gemini_get_pin_conf(struct gemini_pmx *pmx,
@@ -2457,7 +2374,7 @@ static int gemini_pinconf_group_set(struct pinctrl_dev *pctldev,
 	if (pmx->is_3516)
 		grp = &gemini_3516_pin_groups[selector];
 
-	/* First figure out if this group supports configs */
+	 
 	if (!grp->driving_mask) {
 		dev_err(pmx->dev, "pin config group \"%s\" does "
 			"not support drive strength setting\n",
@@ -2533,7 +2450,7 @@ static int gemini_pmx_probe(struct platform_device *pdev)
 	int ret;
 	int i;
 
-	/* Create state holders etc for this driver */
+	 
 	pmx = devm_kzalloc(&pdev->dev, sizeof(*pmx), GFP_KERNEL);
 	if (!pmx)
 		return -ENOMEM;
@@ -2551,7 +2468,7 @@ static int gemini_pmx_probe(struct platform_device *pdev)
 	}
 	pmx->map = map;
 
-	/* Check that regmap works at first call, then no more */
+	 
 	ret = regmap_read(map, GLOBAL_WORD_ID, &val);
 	if (ret) {
 		dev_err(dev, "cannot access regmap\n");
@@ -2580,18 +2497,18 @@ static int gemini_pmx_probe(struct platform_device *pdev)
 
 	ret = regmap_read(map, GLOBAL_MISC_CTRL, &val);
 	dev_info(dev, "GLOBAL MISC CTRL at boot: 0x%08x\n", val);
-	/* Mask off relevant pads */
+	 
 	val &= PADS_MASK;
-	/* Invert the meaning of the DRAM+flash pads */
+	 
 	val ^= 0x0f;
-	/* Print initial state */
+	 
 	tmp = val;
 	for_each_set_bit(i, &tmp, PADS_MAXBIT) {
 		dev_dbg(dev, "pad group %s %s\n", gemini_padgroups[i],
 			(val & BIT(i)) ? "enabled" : "disabled");
 	}
 
-	/* Check if flash pin is set */
+	 
 	regmap_read(map, GLOBAL_STATUS, &val);
 	pmx->flash_pin = !!(val & GLOBAL_STATUS_FLPIN);
 	dev_info(dev, "flash pin is %s\n", pmx->flash_pin ? "set" : "not set");

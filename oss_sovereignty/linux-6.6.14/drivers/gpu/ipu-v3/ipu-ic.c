@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2012-2014 Mentor Graphics Inc.
- * Copyright 2005-2012 Freescale Semiconductor, Inc. All Rights Reserved.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/init.h>
@@ -14,7 +11,7 @@
 #include <linux/sizes.h>
 #include "ipu-prv.h"
 
-/* IC Register Offsets */
+ 
 #define IC_CONF                 0x0000
 #define IC_PRP_ENC_RSC          0x0004
 #define IC_PRP_VF_RSC           0x0008
@@ -26,7 +23,7 @@
 #define IC_IDMAC_3              0x0020
 #define IC_IDMAC_4              0x0024
 
-/* IC Register Fields */
+ 
 #define IC_CONF_PRPENC_EN       (1 << 0)
 #define IC_CONF_PRPENC_CSC1     (1 << 1)
 #define IC_CONF_PRPENC_ROT_EN   (1 << 2)
@@ -110,10 +107,10 @@ static const struct ic_task_bitfields ic_task_bit[IC_NUM_TASKS] = {
 	[IC_TASK_ENCODER] = {
 		.ic_conf_en = IC_CONF_PRPENC_EN,
 		.ic_conf_rot_en = IC_CONF_PRPENC_ROT_EN,
-		.ic_conf_cmb_en = 0,    /* NA */
+		.ic_conf_cmb_en = 0,     
 		.ic_conf_csc1_en = IC_CONF_PRPENC_CSC1,
-		.ic_conf_csc2_en = 0,   /* NA */
-		.ic_cmb_galpha_bit = 0, /* NA */
+		.ic_conf_csc2_en = 0,    
+		.ic_cmb_galpha_bit = 0,  
 	},
 	[IC_TASK_VIEWFINDER] = {
 		.ic_conf_en = IC_CONF_PRPVF_EN,
@@ -184,7 +181,7 @@ static int init_csc(struct ipu_ic *ic,
 	base = (u32 __iomem *)
 		(priv->tpmem_base + ic->reg->tpmem_csc[csc_index]);
 
-	/* Cast to unsigned */
+	 
 	c = (const u16 (*)[3])csc->params.coeff;
 	a = (const u16 *)csc->params.offset;
 
@@ -222,10 +219,7 @@ static int calc_resize_coeffs(struct ipu_ic *ic,
 	struct ipu_soc *ipu = priv->ipu;
 	u32 temp_size, temp_downsize;
 
-	/*
-	 * Input size cannot be more than 4096, and output size cannot
-	 * be more than 1024
-	 */
+	 
 	if (in_size > 4096) {
 		dev_err(ipu->dev, "Unsupported resize (in_size > 4096)\n");
 		return -EINVAL;
@@ -235,13 +229,13 @@ static int calc_resize_coeffs(struct ipu_ic *ic,
 		return -EINVAL;
 	}
 
-	/* Cannot downsize more than 4:1 */
+	 
 	if ((out_size << 2) < in_size) {
 		dev_err(ipu->dev, "Unsupported downsize\n");
 		return -EINVAL;
 	}
 
-	/* Compute downsizing coefficient */
+	 
 	temp_downsize = 0;
 	temp_size = in_size;
 	while (((temp_size > 1024) || (temp_size >= out_size * 2)) &&
@@ -251,11 +245,7 @@ static int calc_resize_coeffs(struct ipu_ic *ic,
 	}
 	*downsize_coeff = temp_downsize;
 
-	/*
-	 * compute resizing coefficient using the following equation:
-	 * resize_coeff = M * (SI - 1) / (SO - 1)
-	 * where M = 2^13, SI = input size, SO = output size
-	 */
+	 
 	*resize_coeff = (8192L * (temp_size - 1)) / (out_size - 1);
 	if (*resize_coeff >= 16384L) {
 		dev_err(ipu->dev, "Warning! Overflow on resize coeff.\n");
@@ -352,7 +342,7 @@ int ipu_ic_task_graphics_init(struct ipu_ic *ic,
 		if (ret)
 			goto unlock;
 
-		/* need transparent CSC1 conversion */
+		 
 		ret = init_csc(ic, &csc1, 0);
 		if (ret)
 			goto unlock;
@@ -406,7 +396,7 @@ int ipu_ic_task_init_rsc(struct ipu_ic *ic,
 	int ret = 0;
 
 	if (!rsc) {
-		/* Setup vertical resizing */
+		 
 
 		ret = calc_resize_coeffs(ic, in_height, out_height,
 					 &resize_coeff, &downsize_coeff);
@@ -415,7 +405,7 @@ int ipu_ic_task_init_rsc(struct ipu_ic *ic,
 
 		rsc = (downsize_coeff << 30) | (resize_coeff << 16);
 
-		/* Setup horizontal resizing */
+		 
 		ret = calc_resize_coeffs(ic, in_width, out_width,
 					 &resize_coeff, &downsize_coeff);
 		if (ret)
@@ -428,7 +418,7 @@ int ipu_ic_task_init_rsc(struct ipu_ic *ic,
 
 	ipu_ic_write(ic, rsc, ic->reg->rsc);
 
-	/* Setup color space conversion */
+	 
 	ic->in_cs = csc->in_cs;
 	ic->out_cs = csc->out_cs;
 
@@ -469,7 +459,7 @@ int ipu_ic_task_idma_init(struct ipu_ic *ic, struct ipuv3_channel *channel,
 	width--;
 	height--;
 
-	if (temp_rot & 0x2)	/* Need horizontal flip */
+	if (temp_rot & 0x2)	 
 		need_hor_flip = true;
 
 	spin_lock_irqsave(&priv->lock, flags);

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * xen-acpi-pad.c - Xen pad interface
- *
- * Copyright (c) 2012, Intel Corporation.
- *    Author: Liu, Jinsong <jinsong.liu@intel.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -43,10 +38,7 @@ static int xen_acpi_pad_idle_cpus_num(void)
 	       ?: op.u.core_parking.idle_nums;
 }
 
-/*
- * Query firmware how many CPUs should be idle
- * return -1 on failure
- */
+ 
 static int acpi_pad_pur(acpi_handle handle)
 {
 	struct acpi_buffer buffer = {ACPI_ALLOCATE_BUFFER, NULL};
@@ -63,7 +55,7 @@ static int acpi_pad_pur(acpi_handle handle)
 
 	if (package->type == ACPI_TYPE_PACKAGE &&
 		package->package.count == 2 &&
-		package->package.elements[0].integer.value == 1) /* rev 1 */
+		package->package.elements[0].integer.value == 1)  
 		num = package->package.elements[1].integer.value;
 
 	kfree(buffer.pointer);
@@ -149,11 +141,11 @@ static struct acpi_driver acpi_pad_driver = {
 
 static int __init xen_acpi_pad_init(void)
 {
-	/* Only DOM0 is responsible for Xen acpi pad */
+	 
 	if (!xen_initial_domain())
 		return -ENODEV;
 
-	/* Only Xen4.2 or later support Xen acpi pad */
+	 
 	if (!xen_running_on_version_or_later(4, 2))
 		return -ENODEV;
 

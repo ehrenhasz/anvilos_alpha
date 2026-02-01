@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) by Francisco Moraes <fmoraes@nc.rr.com>
- *  Driver EMU10K1X chips
- *
- *  Parts of this code were adapted from audigyls.c driver which is
- *  Copyright (c) by James Courtier-Dutton <James@superbug.demon.co.uk>
- *
- *  BUGS:
- *    --
- *
- *  TODO:
- *
- *  Chips (SB0200 model):
- *    - EMU10K1X-DBQ
- *    - STAC 9708T
- */
+
+ 
 #include <linux/init.h>
 #include <linux/interrupt.h>
 #include <linux/pci.h>
@@ -32,7 +17,7 @@ MODULE_AUTHOR("Francisco Moraes <fmoraes@nc.rr.com>");
 MODULE_DESCRIPTION("EMU10K1X");
 MODULE_LICENSE("GPL");
 
-// module parameters (see "Module Parameters")
+
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;
 static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP;
@@ -45,140 +30,123 @@ module_param_array(enable, bool, NULL, 0444);
 MODULE_PARM_DESC(enable, "Enable the EMU10K1X soundcard.");
 
 
-// some definitions were borrowed from emu10k1 driver as they seem to be the same
-/************************************************************************************************/
-/* PCI function 0 registers, address = <val> + PCIBASE0						*/
-/************************************************************************************************/
 
-#define PTR			0x00		/* Indexed register set pointer register	*/
-						/* NOTE: The CHANNELNUM and ADDRESS words can	*/
-						/* be modified independently of each other.	*/
+ 
+ 
+ 
 
-#define DATA			0x04		/* Indexed register set data register		*/
+#define PTR			0x00		 
+						 
+						 
 
-#define IPR			0x08		/* Global interrupt pending register		*/
-						/* Clear pending interrupts by writing a 1 to	*/
-						/* the relevant bits and zero to the other bits	*/
-#define IPR_MIDITRANSBUFEMPTY   0x00000001	/* MIDI UART transmit buffer empty		*/
-#define IPR_MIDIRECVBUFEMPTY    0x00000002	/* MIDI UART receive buffer empty		*/
-#define IPR_CH_0_LOOP           0x00000800      /* Channel 0 loop                               */
-#define IPR_CH_0_HALF_LOOP      0x00000100      /* Channel 0 half loop                          */
-#define IPR_CAP_0_LOOP          0x00080000      /* Channel capture loop                         */
-#define IPR_CAP_0_HALF_LOOP     0x00010000      /* Channel capture half loop                    */
+#define DATA			0x04		 
 
-#define INTE			0x0c		/* Interrupt enable register			*/
-#define INTE_MIDITXENABLE       0x00000001	/* Enable MIDI transmit-buffer-empty interrupts	*/
-#define INTE_MIDIRXENABLE       0x00000002	/* Enable MIDI receive-buffer-empty interrupts	*/
-#define INTE_CH_0_LOOP          0x00000800      /* Channel 0 loop                               */
-#define INTE_CH_0_HALF_LOOP     0x00000100      /* Channel 0 half loop                          */
-#define INTE_CAP_0_LOOP         0x00080000      /* Channel capture loop                         */
-#define INTE_CAP_0_HALF_LOOP    0x00010000      /* Channel capture half loop                    */
+#define IPR			0x08		 
+						 
+						 
+#define IPR_MIDITRANSBUFEMPTY   0x00000001	 
+#define IPR_MIDIRECVBUFEMPTY    0x00000002	 
+#define IPR_CH_0_LOOP           0x00000800       
+#define IPR_CH_0_HALF_LOOP      0x00000100       
+#define IPR_CAP_0_LOOP          0x00080000       
+#define IPR_CAP_0_HALF_LOOP     0x00010000       
 
-#define HCFG			0x14		/* Hardware config register			*/
+#define INTE			0x0c		 
+#define INTE_MIDITXENABLE       0x00000001	 
+#define INTE_MIDIRXENABLE       0x00000002	 
+#define INTE_CH_0_LOOP          0x00000800       
+#define INTE_CH_0_HALF_LOOP     0x00000100       
+#define INTE_CAP_0_LOOP         0x00080000       
+#define INTE_CAP_0_HALF_LOOP    0x00010000       
 
-#define HCFG_LOCKSOUNDCACHE	0x00000008	/* 1 = Cancel bustmaster accesses to soundcache */
-						/* NOTE: This should generally never be used.  	*/
-#define HCFG_AUDIOENABLE	0x00000001	/* 0 = CODECs transmit zero-valued samples	*/
-						/* Should be set to 1 when the EMU10K1 is	*/
-						/* completely initialized.			*/
-#define GPIO			0x18		/* Defaults: 00001080-Analog, 00001000-SPDIF.   */
+#define HCFG			0x14		 
+
+#define HCFG_LOCKSOUNDCACHE	0x00000008	 
+						 
+#define HCFG_AUDIOENABLE	0x00000001	 
+						 
+						 
+#define GPIO			0x18		 
 
 
-#define AC97DATA		0x1c		/* AC97 register set data register (16 bit)	*/
+#define AC97DATA		0x1c		 
 
-#define AC97ADDRESS		0x1e		/* AC97 register set address register (8 bit)	*/
+#define AC97ADDRESS		0x1e		 
 
-/********************************************************************************************************/
-/* Emu10k1x pointer-offset register set, accessed through the PTR and DATA registers			*/
-/********************************************************************************************************/
-#define PLAYBACK_LIST_ADDR	0x00		/* Base DMA address of a list of pointers to each period/size */
-						/* One list entry: 4 bytes for DMA address, 
-						 * 4 bytes for period_size << 16.
-						 * One list entry is 8 bytes long.
-						 * One list entry for each period in the buffer.
-						 */
-#define PLAYBACK_LIST_SIZE	0x01		/* Size of list in bytes << 16. E.g. 8 periods -> 0x00380000  */
-#define PLAYBACK_LIST_PTR	0x02		/* Pointer to the current period being played */
-#define PLAYBACK_DMA_ADDR	0x04		/* Playback DMA address */
-#define PLAYBACK_PERIOD_SIZE	0x05		/* Playback period size */
-#define PLAYBACK_POINTER	0x06		/* Playback period pointer. Sample currently in DAC */
+ 
+ 
+ 
+#define PLAYBACK_LIST_ADDR	0x00		 
+						 
+#define PLAYBACK_LIST_SIZE	0x01		 
+#define PLAYBACK_LIST_PTR	0x02		 
+#define PLAYBACK_DMA_ADDR	0x04		 
+#define PLAYBACK_PERIOD_SIZE	0x05		 
+#define PLAYBACK_POINTER	0x06		 
 #define PLAYBACK_UNKNOWN1       0x07
 #define PLAYBACK_UNKNOWN2       0x08
 
-/* Only one capture channel supported */
-#define CAPTURE_DMA_ADDR	0x10		/* Capture DMA address */
-#define CAPTURE_BUFFER_SIZE	0x11		/* Capture buffer size */
-#define CAPTURE_POINTER		0x12		/* Capture buffer pointer. Sample currently in ADC */
+ 
+#define CAPTURE_DMA_ADDR	0x10		 
+#define CAPTURE_BUFFER_SIZE	0x11		 
+#define CAPTURE_POINTER		0x12		 
 #define CAPTURE_UNKNOWN         0x13
 
-/* From 0x20 - 0x3f, last samples played on each channel */
+ 
 
-#define TRIGGER_CHANNEL         0x40            /* Trigger channel playback                     */
-#define TRIGGER_CHANNEL_0       0x00000001      /* Trigger channel 0                            */
-#define TRIGGER_CHANNEL_1       0x00000002      /* Trigger channel 1                            */
-#define TRIGGER_CHANNEL_2       0x00000004      /* Trigger channel 2                            */
-#define TRIGGER_CAPTURE         0x00000100      /* Trigger capture channel                      */
+#define TRIGGER_CHANNEL         0x40             
+#define TRIGGER_CHANNEL_0       0x00000001       
+#define TRIGGER_CHANNEL_1       0x00000002       
+#define TRIGGER_CHANNEL_2       0x00000004       
+#define TRIGGER_CAPTURE         0x00000100       
 
-#define ROUTING                 0x41            /* Setup sound routing ?                        */
+#define ROUTING                 0x41             
 #define ROUTING_FRONT_LEFT      0x00000001
 #define ROUTING_FRONT_RIGHT     0x00000002
 #define ROUTING_REAR_LEFT       0x00000004
 #define ROUTING_REAR_RIGHT      0x00000008
 #define ROUTING_CENTER_LFE      0x00010000
 
-#define SPCS0			0x42		/* SPDIF output Channel Status 0 register	*/
+#define SPCS0			0x42		 
 
-#define SPCS1			0x43		/* SPDIF output Channel Status 1 register	*/
+#define SPCS1			0x43		 
 
-#define SPCS2			0x44		/* SPDIF output Channel Status 2 register	*/
+#define SPCS2			0x44		 
 
-#define SPCS_CLKACCYMASK	0x30000000	/* Clock accuracy				*/
-#define SPCS_CLKACCY_1000PPM	0x00000000	/* 1000 parts per million			*/
-#define SPCS_CLKACCY_50PPM	0x10000000	/* 50 parts per million				*/
-#define SPCS_CLKACCY_VARIABLE	0x20000000	/* Variable accuracy				*/
-#define SPCS_SAMPLERATEMASK	0x0f000000	/* Sample rate					*/
-#define SPCS_SAMPLERATE_44	0x00000000	/* 44.1kHz sample rate				*/
-#define SPCS_SAMPLERATE_48	0x02000000	/* 48kHz sample rate				*/
-#define SPCS_SAMPLERATE_32	0x03000000	/* 32kHz sample rate				*/
-#define SPCS_CHANNELNUMMASK	0x00f00000	/* Channel number				*/
-#define SPCS_CHANNELNUM_UNSPEC	0x00000000	/* Unspecified channel number			*/
-#define SPCS_CHANNELNUM_LEFT	0x00100000	/* Left channel					*/
-#define SPCS_CHANNELNUM_RIGHT	0x00200000	/* Right channel				*/
-#define SPCS_SOURCENUMMASK	0x000f0000	/* Source number				*/
-#define SPCS_SOURCENUM_UNSPEC	0x00000000	/* Unspecified source number			*/
-#define SPCS_GENERATIONSTATUS	0x00008000	/* Originality flag (see IEC-958 spec)		*/
-#define SPCS_CATEGORYCODEMASK	0x00007f00	/* Category code (see IEC-958 spec)		*/
-#define SPCS_MODEMASK		0x000000c0	/* Mode (see IEC-958 spec)			*/
-#define SPCS_EMPHASISMASK	0x00000038	/* Emphasis					*/
-#define SPCS_EMPHASIS_NONE	0x00000000	/* No emphasis					*/
-#define SPCS_EMPHASIS_50_15	0x00000008	/* 50/15 usec 2 channel				*/
-#define SPCS_COPYRIGHT		0x00000004	/* Copyright asserted flag -- do not modify	*/
-#define SPCS_NOTAUDIODATA	0x00000002	/* 0 = Digital audio, 1 = not audio		*/
-#define SPCS_PROFESSIONAL	0x00000001	/* 0 = Consumer (IEC-958), 1 = pro (AES3-1992)	*/
+#define SPCS_CLKACCYMASK	0x30000000	 
+#define SPCS_CLKACCY_1000PPM	0x00000000	 
+#define SPCS_CLKACCY_50PPM	0x10000000	 
+#define SPCS_CLKACCY_VARIABLE	0x20000000	 
+#define SPCS_SAMPLERATEMASK	0x0f000000	 
+#define SPCS_SAMPLERATE_44	0x00000000	 
+#define SPCS_SAMPLERATE_48	0x02000000	 
+#define SPCS_SAMPLERATE_32	0x03000000	 
+#define SPCS_CHANNELNUMMASK	0x00f00000	 
+#define SPCS_CHANNELNUM_UNSPEC	0x00000000	 
+#define SPCS_CHANNELNUM_LEFT	0x00100000	 
+#define SPCS_CHANNELNUM_RIGHT	0x00200000	 
+#define SPCS_SOURCENUMMASK	0x000f0000	 
+#define SPCS_SOURCENUM_UNSPEC	0x00000000	 
+#define SPCS_GENERATIONSTATUS	0x00008000	 
+#define SPCS_CATEGORYCODEMASK	0x00007f00	 
+#define SPCS_MODEMASK		0x000000c0	 
+#define SPCS_EMPHASISMASK	0x00000038	 
+#define SPCS_EMPHASIS_NONE	0x00000000	 
+#define SPCS_EMPHASIS_50_15	0x00000008	 
+#define SPCS_COPYRIGHT		0x00000004	 
+#define SPCS_NOTAUDIODATA	0x00000002	 
+#define SPCS_PROFESSIONAL	0x00000001	 
 
-#define SPDIF_SELECT		0x45		/* Enables SPDIF or Analogue outputs 0-Analogue, 0x700-SPDIF */
+#define SPDIF_SELECT		0x45		 
 
-/* This is the MPU port on the card                      					*/
+ 
 #define MUDATA		0x47
 #define MUCMD		0x48
 #define MUSTAT		MUCMD
 
-/* From 0x50 - 0x5f, last samples captured */
+ 
 
-/*
- * The hardware has 3 channels for playback and 1 for capture.
- *  - channel 0 is the front channel
- *  - channel 1 is the rear channel
- *  - channel 2 is the center/lfe channel
- * Volume is controlled by the AC97 for the front and rear channels by
- * the PCM Playback Volume, Sigmatel Surround Playback Volume and 
- * Surround Playback Volume. The Sigmatel 4-Speaker Stereo switch affects
- * the front/rear channel mixing in the REAR OUT jack. When using the
- * 4-Speaker Stereo, both front and rear channels will be mixed in the
- * REAR OUT.
- * The center/lfe channel has no volume control and cannot be muted during
- * playback.
- */
+ 
 
 struct emu10k1x_voice {
 	struct emu10k1x *emu;
@@ -210,7 +178,7 @@ struct emu10k1x_midi {
 	void (*interrupt)(struct emu10k1x *emu, unsigned int status);
 };
 
-// definition of the chip-specific record
+
 struct emu10k1x {
 	struct snd_card *card;
 	struct pci_dev *pci;
@@ -218,9 +186,9 @@ struct emu10k1x {
 	unsigned long port;
 	int irq;
 
-	unsigned char revision;		/* chip revision */
-	unsigned int serial;            /* serial number */
-	unsigned short model;		/* subsystem id */
+	unsigned char revision;		 
+	unsigned int serial;             
+	unsigned short model;		 
 
 	spinlock_t emu_lock;
 	spinlock_t voice_lock;
@@ -230,14 +198,14 @@ struct emu10k1x {
 
 	struct emu10k1x_voice voices[3];
 	struct emu10k1x_voice capture_voice;
-	u32 spdif_bits[3]; // SPDIF out setup
+	u32 spdif_bits[3]; 
 
 	struct snd_dma_buffer *dma_buffer;
 
 	struct emu10k1x_midi midi;
 };
 
-/* hardware definition */
+ 
 static const struct snd_pcm_hardware snd_emu10k1x_playback_hw = {
 	.info =			(SNDRV_PCM_INFO_MMAP | 
 				 SNDRV_PCM_INFO_INTERLEAVED |
@@ -363,7 +331,7 @@ static void snd_emu10k1x_pcm_interrupt(struct emu10k1x *emu, struct emu10k1x_voi
 	snd_pcm_period_elapsed(epcm->substream);
 }
 
-/* open callback */
+ 
 static int snd_emu10k1x_playback_open(struct snd_pcm_substream *substream)
 {
 	struct emu10k1x *chip = snd_pcm_substream_chip(substream);
@@ -392,13 +360,13 @@ static int snd_emu10k1x_playback_open(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-/* close callback */
+ 
 static int snd_emu10k1x_playback_close(struct snd_pcm_substream *substream)
 {
 	return 0;
 }
 
-/* hw_params callback */
+ 
 static int snd_emu10k1x_pcm_hw_params(struct snd_pcm_substream *substream,
 				      struct snd_pcm_hw_params *hw_params)
 {
@@ -414,7 +382,7 @@ static int snd_emu10k1x_pcm_hw_params(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-/* hw_free callback */
+ 
 static int snd_emu10k1x_pcm_hw_free(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
@@ -434,7 +402,7 @@ static int snd_emu10k1x_pcm_hw_free(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-/* prepare callback */
+ 
 static int snd_emu10k1x_pcm_prepare(struct snd_pcm_substream *substream)
 {
 	struct emu10k1x *emu = snd_pcm_substream_chip(substream);
@@ -463,7 +431,7 @@ static int snd_emu10k1x_pcm_prepare(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-/* trigger callback */
+ 
 static int snd_emu10k1x_pcm_trigger(struct snd_pcm_substream *substream,
 				    int cmd)
 {
@@ -473,11 +441,7 @@ static int snd_emu10k1x_pcm_trigger(struct snd_pcm_substream *substream,
 	int channel = epcm->voice->number;
 	int result = 0;
 
-	/*
-	dev_dbg(emu->card->dev,
-		"trigger - emu10k1x = 0x%x, cmd = %i, pointer = %d\n",
-		(int)emu, cmd, (int)substream->ops->pointer(substream));
-	*/
+	 
 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
@@ -500,7 +464,7 @@ static int snd_emu10k1x_pcm_trigger(struct snd_pcm_substream *substream,
 	return result;
 }
 
-/* pointer callback */
+ 
 static snd_pcm_uframes_t
 snd_emu10k1x_pcm_pointer(struct snd_pcm_substream *substream)
 {
@@ -532,7 +496,7 @@ snd_emu10k1x_pcm_pointer(struct snd_pcm_substream *substream)
 	return ptr;
 }
 
-/* operators */
+ 
 static const struct snd_pcm_ops snd_emu10k1x_playback_ops = {
 	.open =        snd_emu10k1x_playback_open,
 	.close =       snd_emu10k1x_playback_close,
@@ -543,7 +507,7 @@ static const struct snd_pcm_ops snd_emu10k1x_playback_ops = {
 	.pointer =     snd_emu10k1x_pcm_pointer,
 };
 
-/* open_capture callback */
+ 
 static int snd_emu10k1x_pcm_open_capture(struct snd_pcm_substream *substream)
 {
 	struct emu10k1x *chip = snd_pcm_substream_chip(substream);
@@ -573,13 +537,13 @@ static int snd_emu10k1x_pcm_open_capture(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-/* close callback */
+ 
 static int snd_emu10k1x_pcm_close_capture(struct snd_pcm_substream *substream)
 {
 	return 0;
 }
 
-/* hw_params callback */
+ 
 static int snd_emu10k1x_pcm_hw_params_capture(struct snd_pcm_substream *substream,
 					      struct snd_pcm_hw_params *hw_params)
 {
@@ -597,7 +561,7 @@ static int snd_emu10k1x_pcm_hw_params_capture(struct snd_pcm_substream *substrea
 	return 0;
 }
 
-/* hw_free callback */
+ 
 static int snd_emu10k1x_pcm_hw_free_capture(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
@@ -617,21 +581,21 @@ static int snd_emu10k1x_pcm_hw_free_capture(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-/* prepare capture callback */
+ 
 static int snd_emu10k1x_pcm_prepare_capture(struct snd_pcm_substream *substream)
 {
 	struct emu10k1x *emu = snd_pcm_substream_chip(substream);
 	struct snd_pcm_runtime *runtime = substream->runtime;
 
 	snd_emu10k1x_ptr_write(emu, CAPTURE_DMA_ADDR, 0, runtime->dma_addr);
-	snd_emu10k1x_ptr_write(emu, CAPTURE_BUFFER_SIZE, 0, frames_to_bytes(runtime, runtime->buffer_size)<<16); // buffer size in bytes
+	snd_emu10k1x_ptr_write(emu, CAPTURE_BUFFER_SIZE, 0, frames_to_bytes(runtime, runtime->buffer_size)<<16); 
 	snd_emu10k1x_ptr_write(emu, CAPTURE_POINTER, 0, 0);
 	snd_emu10k1x_ptr_write(emu, CAPTURE_UNKNOWN, 0, 0);
 
 	return 0;
 }
 
-/* trigger_capture callback */
+ 
 static int snd_emu10k1x_pcm_trigger_capture(struct snd_pcm_substream *substream,
 					    int cmd)
 {
@@ -660,7 +624,7 @@ static int snd_emu10k1x_pcm_trigger_capture(struct snd_pcm_substream *substream,
 	return result;
 }
 
-/* pointer_capture callback */
+ 
 static snd_pcm_uframes_t
 snd_emu10k1x_pcm_pointer_capture(struct snd_pcm_substream *substream)
 {
@@ -728,7 +692,7 @@ static int snd_emu10k1x_ac97(struct emu10k1x *chip)
 	err = snd_ac97_bus(chip->card, 0, &ops, NULL, &pbus);
 	if (err < 0)
 		return err;
-	pbus->no_vra = 1; /* we don't need VRA */
+	pbus->no_vra = 1;  
 
 	memset(&ac97, 0, sizeof(ac97));
 	ac97.private_data = chip;
@@ -741,9 +705,9 @@ static void snd_emu10k1x_free(struct snd_card *card)
 	struct emu10k1x *chip = card->private_data;
 
 	snd_emu10k1x_ptr_write(chip, TRIGGER_CHANNEL, 0, 0);
-	// disable interrupts
+	
 	outl(0, chip->port + INTE);
-	// disable audio
+	
 	outl(HCFG_LOCKSOUNDCACHE, chip->port + HCFG);
 }
 
@@ -761,7 +725,7 @@ static irqreturn_t snd_emu10k1x_interrupt(int irq, void *dev_id)
 	if (! status)
 		return IRQ_NONE;
 
-	// capture interrupt
+	
 	if (status & (IPR_CAP_0_LOOP | IPR_CAP_0_HALF_LOOP)) {
 		struct emu10k1x_voice *cap_voice = &chip->capture_voice;
 		if (cap_voice->use)
@@ -791,10 +755,10 @@ static irqreturn_t snd_emu10k1x_interrupt(int irq, void *dev_id)
 			snd_emu10k1x_intr_disable(chip, INTE_MIDITXENABLE|INTE_MIDIRXENABLE);
 	}
 		
-	// acknowledge the interrupt if necessary
+	
 	outl(status, chip->port + IPR);
 
-	/* dev_dbg(chip->card->dev, "interrupt %08x\n", status); */
+	 
 	return IRQ_HANDLED;
 }
 
@@ -904,7 +868,7 @@ static int snd_emu10k1x_create(struct snd_card *card,
 		return -ENOMEM;
 
 	pci_set_master(pci);
-	/* read revision & serial */
+	 
 	chip->revision = pci->revision;
 	pci_read_config_dword(pci, PCI_SUBSYSTEM_VENDOR_ID, &chip->serial);
 	pci_read_config_word(pci, PCI_SUBSYSTEM_ID, &chip->model);
@@ -918,20 +882,7 @@ static int snd_emu10k1x_create(struct snd_card *card,
 		chip->voices[ch].number = ch;
 	}
 
-	/*
-	 *  Init to 0x02109204 :
-	 *  Clock accuracy    = 0     (1000ppm)
-	 *  Sample Rate       = 2     (48kHz)
-	 *  Audio Channel     = 1     (Left of 2)
-	 *  Source Number     = 0     (Unspecified)
-	 *  Generation Status = 1     (Original for Cat Code 12)
-	 *  Cat Code          = 12    (Digital Signal Mixer)
-	 *  Mode              = 0     (Mode 0)
-	 *  Emphasis          = 0     (None)
-	 *  CP                = 1     (Copyright unasserted)
-	 *  AN                = 0     (Audio data)
-	 *  P                 = 0     (Consumer)
-	 */
+	 
 	snd_emu10k1x_ptr_write(chip, SPCS0, 0,
 			       chip->spdif_bits[0] = 
 			       SPCS_CLKACCY_1000PPM | SPCS_SAMPLERATE_48 |
@@ -951,9 +902,9 @@ static int snd_emu10k1x_create(struct snd_card *card,
 			       SPCS_GENERATIONSTATUS | 0x00001200 |
 			       0x00000000 | SPCS_EMPHASIS_NONE | SPCS_COPYRIGHT);
 
-	snd_emu10k1x_ptr_write(chip, SPDIF_SELECT, 0, 0x700); // disable SPDIF
-	snd_emu10k1x_ptr_write(chip, ROUTING, 0, 0x1003F); // routing
-	snd_emu10k1x_gpio_write(chip, 0x1080); // analog mode
+	snd_emu10k1x_ptr_write(chip, SPDIF_SELECT, 0, 0x700); 
+	snd_emu10k1x_ptr_write(chip, ROUTING, 0, 0x1003F); 
+	snd_emu10k1x_gpio_write(chip, 0x1080); 
 
 	outl(HCFG_LOCKSOUNDCACHE|HCFG_AUDIOENABLE, chip->port+HCFG);
 
@@ -1033,12 +984,12 @@ static int snd_emu10k1x_shared_spdif_put(struct snd_kcontrol *kcontrol,
 	val = ucontrol->value.integer.value[0] ;
 
 	if (val) {
-		// enable spdif output
+		
 		snd_emu10k1x_ptr_write(emu, SPDIF_SELECT, 0, 0x000);
 		snd_emu10k1x_ptr_write(emu, ROUTING, 0, 0x700);
 		snd_emu10k1x_gpio_write(emu, 0x1000);
 	} else {
-		// disable spdif output
+		
 		snd_emu10k1x_ptr_write(emu, SPDIF_SELECT, 0, 0x700);
 		snd_emu10k1x_ptr_write(emu, ROUTING, 0, 0x1003F);
 		snd_emu10k1x_gpio_write(emu, 0x1080);
@@ -1191,9 +1142,7 @@ static void mpu401_clear_rx(struct emu10k1x *emu, struct emu10k1x_midi *mpu)
 #endif
 }
 
-/*
-
- */
+ 
 
 static void do_emu10k1x_midi_interrupt(struct emu10k1x *emu,
 				       struct emu10k1x_midi *midi, unsigned int status)
@@ -1242,7 +1191,7 @@ static int snd_emu10k1x_midi_cmd(struct emu10k1x * emu,
 
 	spin_lock_irqsave(&midi->input_lock, flags);
 	mpu401_write_data(emu, midi, 0x00);
-	/* mpu401_clear_rx(emu, midi); */
+	 
 
 	mpu401_write_cmd(emu, midi, cmd);
 	if (ack) {
@@ -1399,13 +1348,13 @@ static void snd_emu10k1x_midi_output_trigger(struct snd_rawmidi_substream *subst
 		int max = 4;
 		unsigned char byte;
 	
-		/* try to send some amount of bytes here before interrupts */
+		 
 		spin_lock_irqsave(&midi->output_lock, flags);
 		while (max > 0) {
 			if (mpu401_output_ready(emu, midi)) {
 				if (!(midi->midi_mode & EMU10K1X_MIDI_MODE_OUTPUT) ||
 				    snd_rawmidi_transmit(substream, &byte, 1) != 1) {
-					/* no more data */
+					 
 					spin_unlock_irqrestore(&midi->output_lock, flags);
 					return;
 				}
@@ -1422,9 +1371,7 @@ static void snd_emu10k1x_midi_output_trigger(struct snd_rawmidi_substream *subst
 	}
 }
 
-/*
-
- */
+ 
 
 static const struct snd_rawmidi_ops snd_emu10k1x_midi_output =
 {
@@ -1560,14 +1507,14 @@ static int snd_emu10k1x_probe(struct pci_dev *pci,
 	return snd_card_free_on_error(&pci->dev, __snd_emu10k1x_probe(pci, pci_id));
 }
 
-// PCI IDs
+
 static const struct pci_device_id snd_emu10k1x_ids[] = {
-	{ PCI_VDEVICE(CREATIVE, 0x0006), 0 },	/* Dell OEM version (EMU10K1) */
+	{ PCI_VDEVICE(CREATIVE, 0x0006), 0 },	 
 	{ 0, }
 };
 MODULE_DEVICE_TABLE(pci, snd_emu10k1x_ids);
 
-// pci_driver definition
+
 static struct pci_driver emu10k1x_driver = {
 	.name = KBUILD_MODNAME,
 	.id_table = snd_emu10k1x_ids,

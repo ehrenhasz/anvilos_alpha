@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Kernel module to match Segment Routing Header (SRH) parameters. */
 
-/* Author:
- * Ahmed Abdelsalam <amsalam20@gmail.com>
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
@@ -17,7 +15,7 @@
 #include <linux/netfilter_ipv6/ip6t_srh.h>
 #include <linux/netfilter_ipv6/ip6_tables.h>
 
-/* Test a struct->mt_invflags and a boolean for inequality */
+ 
 #define NF_SRH_INVF(ptr, flag, boolean)	\
 	((boolean) ^ !!((ptr)->mt_invflags & (flag)))
 
@@ -44,13 +42,13 @@ static bool srh_mt6(const struct sk_buff *skb, struct xt_action_param *par)
 	if (srh->segments_left > srh->first_segment)
 		return false;
 
-	/* Next Header matching */
+	 
 	if (srhinfo->mt_flags & IP6T_SRH_NEXTHDR)
 		if (NF_SRH_INVF(srhinfo, IP6T_SRH_INV_NEXTHDR,
 				!(srh->nexthdr == srhinfo->next_hdr)))
 			return false;
 
-	/* Header Extension Length matching */
+	 
 	if (srhinfo->mt_flags & IP6T_SRH_LEN_EQ)
 		if (NF_SRH_INVF(srhinfo, IP6T_SRH_INV_LEN_EQ,
 				!(srh->hdrlen == srhinfo->hdr_len)))
@@ -66,7 +64,7 @@ static bool srh_mt6(const struct sk_buff *skb, struct xt_action_param *par)
 				!(srh->hdrlen < srhinfo->hdr_len)))
 			return false;
 
-	/* Segments Left matching */
+	 
 	if (srhinfo->mt_flags & IP6T_SRH_SEGS_EQ)
 		if (NF_SRH_INVF(srhinfo, IP6T_SRH_INV_SEGS_EQ,
 				!(srh->segments_left == srhinfo->segs_left)))
@@ -82,11 +80,7 @@ static bool srh_mt6(const struct sk_buff *skb, struct xt_action_param *par)
 				!(srh->segments_left < srhinfo->segs_left)))
 			return false;
 
-	/**
-	 * Last Entry matching
-	 * Last_Entry field was introduced in revision 6 of the SRH draft.
-	 * It was called First_Segment in the previous revision
-	 */
+	 
 	if (srhinfo->mt_flags & IP6T_SRH_LAST_EQ)
 		if (NF_SRH_INVF(srhinfo, IP6T_SRH_INV_LAST_EQ,
 				!(srh->first_segment == srhinfo->last_entry)))
@@ -102,10 +96,7 @@ static bool srh_mt6(const struct sk_buff *skb, struct xt_action_param *par)
 				!(srh->first_segment < srhinfo->last_entry)))
 			return false;
 
-	/**
-	 * Tag matchig
-	 * Tag field was introduced in revision 6 of the SRH draft.
-	 */
+	 
 	if (srhinfo->mt_flags & IP6T_SRH_TAG)
 		if (NF_SRH_INVF(srhinfo, IP6T_SRH_INV_TAG,
 				!(srh->tag == srhinfo->tag)))
@@ -138,13 +129,13 @@ static bool srh1_mt6(const struct sk_buff *skb, struct xt_action_param *par)
 	if (srh->segments_left > srh->first_segment)
 		return false;
 
-	/* Next Header matching */
+	 
 	if (srhinfo->mt_flags & IP6T_SRH_NEXTHDR)
 		if (NF_SRH_INVF(srhinfo, IP6T_SRH_INV_NEXTHDR,
 				!(srh->nexthdr == srhinfo->next_hdr)))
 			return false;
 
-	/* Header Extension Length matching */
+	 
 	if (srhinfo->mt_flags & IP6T_SRH_LEN_EQ)
 		if (NF_SRH_INVF(srhinfo, IP6T_SRH_INV_LEN_EQ,
 				!(srh->hdrlen == srhinfo->hdr_len)))
@@ -158,7 +149,7 @@ static bool srh1_mt6(const struct sk_buff *skb, struct xt_action_param *par)
 				!(srh->hdrlen < srhinfo->hdr_len)))
 			return false;
 
-	/* Segments Left matching */
+	 
 	if (srhinfo->mt_flags & IP6T_SRH_SEGS_EQ)
 		if (NF_SRH_INVF(srhinfo, IP6T_SRH_INV_SEGS_EQ,
 				!(srh->segments_left == srhinfo->segs_left)))
@@ -172,11 +163,7 @@ static bool srh1_mt6(const struct sk_buff *skb, struct xt_action_param *par)
 				!(srh->segments_left < srhinfo->segs_left)))
 			return false;
 
-	/**
-	 * Last Entry matching
-	 * Last_Entry field was introduced in revision 6 of the SRH draft.
-	 * It was called First_Segment in the previous revision
-	 */
+	 
 	if (srhinfo->mt_flags & IP6T_SRH_LAST_EQ)
 		if (NF_SRH_INVF(srhinfo, IP6T_SRH_INV_LAST_EQ,
 				!(srh->first_segment == srhinfo->last_entry)))
@@ -190,16 +177,13 @@ static bool srh1_mt6(const struct sk_buff *skb, struct xt_action_param *par)
 				!(srh->first_segment < srhinfo->last_entry)))
 			return false;
 
-	/**
-	 * Tag matchig
-	 * Tag field was introduced in revision 6 of the SRH draft
-	 */
+	 
 	if (srhinfo->mt_flags & IP6T_SRH_TAG)
 		if (NF_SRH_INVF(srhinfo, IP6T_SRH_INV_TAG,
 				!(srh->tag == srhinfo->tag)))
 			return false;
 
-	/* Previous SID matching */
+	 
 	if (srhinfo->mt_flags & IP6T_SRH_PSID) {
 		if (srh->segments_left == srh->first_segment)
 			return false;
@@ -214,7 +198,7 @@ static bool srh1_mt6(const struct sk_buff *skb, struct xt_action_param *par)
 			return false;
 	}
 
-	/* Next SID matching */
+	 
 	if (srhinfo->mt_flags & IP6T_SRH_NSID) {
 		if (srh->segments_left == 0)
 			return false;
@@ -229,7 +213,7 @@ static bool srh1_mt6(const struct sk_buff *skb, struct xt_action_param *par)
 			return false;
 	}
 
-	/* Last SID matching */
+	 
 	if (srhinfo->mt_flags & IP6T_SRH_LSID) {
 		lsidoff = srhoff + sizeof(struct ipv6_sr_hdr);
 		lsid = skb_header_pointer(skb, lsidoff, sizeof(_lsid), &_lsid);

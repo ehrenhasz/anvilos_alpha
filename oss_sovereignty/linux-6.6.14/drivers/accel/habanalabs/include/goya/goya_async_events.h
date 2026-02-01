@@ -1,9 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
 #ifndef __GOYA_ASYNC_EVENTS_H_
 #define __GOYA_ASYNC_EVENTS_H_
@@ -197,4 +192,4 @@ enum goya_async_event_id {
 	GOYA_ASYNC_EVENT_ID_SIZE
 };
 
-#endif /* __GOYA_ASYNC_EVENTS_H_ */
+#endif  

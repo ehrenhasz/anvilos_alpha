@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #define TIMER_RETRY 1
 
 struct k_clock {
@@ -6,10 +6,10 @@ struct k_clock {
 				struct timespec64 *tp);
 	int	(*clock_set)(const clockid_t which_clock,
 			     const struct timespec64 *tp);
-	/* Returns the clock value in the current time namespace. */
+	 
 	int	(*clock_get_timespec)(const clockid_t which_clock,
 				      struct timespec64 *tp);
-	/* Returns the clock value in the root time namespace. */
+	 
 	ktime_t	(*clock_get_ktime)(const clockid_t which_clock);
 	int	(*clock_adj)(const clockid_t which_clock, struct __kernel_timex *tx);
 	int	(*timer_create)(struct k_itimer *timer);

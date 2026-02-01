@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * 3-axis accelerometer driver supporting many Bosch-Sensortec chips
- * Copyright (c) 2014, Intel Corporation.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -50,7 +47,7 @@
 #define BMC150_ACCEL_DEF_RANGE_8G		0x08
 #define BMC150_ACCEL_DEF_RANGE_16G		0x0C
 
-/* Default BW: 125Hz */
+ 
 #define BMC150_ACCEL_REG_PMU_BW		0x10
 #define BMC150_ACCEL_DEF_BW			125
 
@@ -96,16 +93,16 @@
 #define BMC150_ACCEL_REG_INT_6			0x28
 #define BMC150_ACCEL_SLOPE_THRES_MASK		0xFF
 
-/* Slope duration in terms of number of samples */
+ 
 #define BMC150_ACCEL_DEF_SLOPE_DURATION		1
-/* in terms of multiples of g's/LSB, based on range */
+ 
 #define BMC150_ACCEL_DEF_SLOPE_THRESHOLD	1
 
 #define BMC150_ACCEL_REG_XOUT_L		0x02
 
 #define BMC150_ACCEL_MAX_STARTUP_TIME_MS	100
 
-/* Sleep Duration values */
+ 
 #define BMC150_ACCEL_SLEEP_500_MICRO		0x05
 #define BMC150_ACCEL_SLEEP_1_MS		0x06
 #define BMC150_ACCEL_SLEEP_2_MS		0x07
@@ -358,31 +355,7 @@ static int bmc150_accel_set_power_state(struct bmc150_accel_data *data, bool on)
 #endif
 
 #ifdef CONFIG_ACPI
-/*
- * Support for getting accelerometer information from BOSC0200 ACPI nodes.
- *
- * There are 2 variants of the BOSC0200 ACPI node. Some 2-in-1s with 360 degree
- * hinges declare 2 I2C ACPI-resources for 2 accelerometers, 1 in the display
- * and 1 in the base of the 2-in-1. On these 2-in-1s the ROMS ACPI object
- * contains the mount-matrix for the sensor in the display and ROMK contains
- * the mount-matrix for the sensor in the base. On devices using a single
- * sensor there is a ROTM ACPI object which contains the mount-matrix.
- *
- * Here is an incomplete list of devices known to use 1 of these setups:
- *
- * Yoga devices with 2 accelerometers using ROMS + ROMK for the mount-matrices:
- * Lenovo Thinkpad Yoga 11e 3th gen
- * Lenovo Thinkpad Yoga 11e 4th gen
- *
- * Tablets using a single accelerometer using ROTM for the mount-matrix:
- * Chuwi Hi8 Pro (CWI513)
- * Chuwi Vi8 Plus (CWI519)
- * Chuwi Hi13
- * Irbis TW90
- * Jumper EZpad mini 3
- * Onda V80 plus
- * Predia Basic Tablet
- */
+ 
 static bool bmc150_apply_bosc0200_acpi_orientation(struct device *dev,
 						   struct iio_mount_matrix *orientation)
 {
@@ -460,7 +433,7 @@ static bool bmc150_apply_dual250e_acpi_orientation(struct device *dev,
 	else
 		indio_dev->label = "accel-display";
 
-	return false; /* DUAL250E fwnodes have no mount matrix info */
+	return false;  
 }
 
 static bool bmc150_apply_acpi_orientation(struct device *dev,
@@ -493,13 +466,13 @@ struct bmc150_accel_interrupt_info {
 
 static const struct bmc150_accel_interrupt_info
 bmc150_accel_interrupts_int1[BMC150_ACCEL_INTERRUPTS] = {
-	{ /* data ready interrupt */
+	{  
 		.map_reg = BMC150_ACCEL_REG_INT_MAP_1,
 		.map_bitmask = BMC150_ACCEL_INT_MAP_1_BIT_INT1_DATA,
 		.en_reg = BMC150_ACCEL_REG_INT_EN_1,
 		.en_bitmask = BMC150_ACCEL_INT_EN_BIT_DATA_EN,
 	},
-	{  /* motion interrupt */
+	{   
 		.map_reg = BMC150_ACCEL_REG_INT_MAP_0,
 		.map_bitmask = BMC150_ACCEL_INT_MAP_0_BIT_INT1_SLOPE,
 		.en_reg = BMC150_ACCEL_REG_INT_EN_0,
@@ -507,7 +480,7 @@ bmc150_accel_interrupts_int1[BMC150_ACCEL_INTERRUPTS] = {
 			BMC150_ACCEL_INT_EN_BIT_SLP_Y |
 			BMC150_ACCEL_INT_EN_BIT_SLP_Z
 	},
-	{ /* fifo watermark interrupt */
+	{  
 		.map_reg = BMC150_ACCEL_REG_INT_MAP_1,
 		.map_bitmask = BMC150_ACCEL_INT_MAP_1_BIT_INT1_FWM,
 		.en_reg = BMC150_ACCEL_REG_INT_EN_1,
@@ -517,13 +490,13 @@ bmc150_accel_interrupts_int1[BMC150_ACCEL_INTERRUPTS] = {
 
 static const struct bmc150_accel_interrupt_info
 bmc150_accel_interrupts_int2[BMC150_ACCEL_INTERRUPTS] = {
-	{ /* data ready interrupt */
+	{  
 		.map_reg = BMC150_ACCEL_REG_INT_MAP_1,
 		.map_bitmask = BMC150_ACCEL_INT_MAP_1_BIT_INT2_DATA,
 		.en_reg = BMC150_ACCEL_REG_INT_EN_1,
 		.en_bitmask = BMC150_ACCEL_INT_EN_BIT_DATA_EN,
 	},
-	{  /* motion interrupt */
+	{   
 		.map_reg = BMC150_ACCEL_REG_INT_MAP_2,
 		.map_bitmask = BMC150_ACCEL_INT_MAP_2_BIT_INT2_SLOPE,
 		.en_reg = BMC150_ACCEL_REG_INT_EN_0,
@@ -531,7 +504,7 @@ bmc150_accel_interrupts_int2[BMC150_ACCEL_INTERRUPTS] = {
 			BMC150_ACCEL_INT_EN_BIT_SLP_Y |
 			BMC150_ACCEL_INT_EN_BIT_SLP_Z
 	},
-	{ /* fifo watermark interrupt */
+	{  
 		.map_reg = BMC150_ACCEL_REG_INT_MAP_1,
 		.map_bitmask = BMC150_ACCEL_INT_MAP_1_BIT_INT2_FWM,
 		.en_reg = BMC150_ACCEL_REG_INT_EN_1,
@@ -546,12 +519,7 @@ static void bmc150_accel_interrupts_setup(struct iio_dev *indio_dev,
 	struct device *dev = regmap_get_device(data->regmap);
 	int i;
 
-	/*
-	 * For now we map all interrupts to the same output pin.
-	 * However, some boards may have just INT2 (and not INT1) connected,
-	 * so we try to detect which IRQ it is based on the interrupt-names.
-	 * Without interrupt-names, we assume the irq belongs to INT1.
-	 */
+	 
 	irq_info = bmc150_accel_interrupts_int1;
 	if (data->type == BOSCH_BMC156 ||
 	    irq == of_irq_get_byname(dev->of_node, "INT2"))
@@ -577,20 +545,12 @@ static int bmc150_accel_set_interrupt(struct bmc150_accel_data *data, int i,
 			return 0;
 	}
 
-	/*
-	 * We will expect the enable and disable to do operation in reverse
-	 * order. This will happen here anyway, as our resume operation uses
-	 * sync mode runtime pm calls. The suspend operation will be delayed
-	 * by autosuspend delay.
-	 * So the disable operation will still happen in reverse order of
-	 * enable operation. When runtime pm is disabled the mode is always on,
-	 * so sequence doesn't matter.
-	 */
+	 
 	ret = bmc150_accel_set_power_state(data, state);
 	if (ret < 0)
 		return ret;
 
-	/* map the interrupt to the appropriate pins */
+	 
 	ret = regmap_update_bits(data->regmap, info->map_reg, info->map_bitmask,
 				 (state ? info->map_bitmask : 0));
 	if (ret < 0) {
@@ -598,7 +558,7 @@ static int bmc150_accel_set_interrupt(struct bmc150_accel_data *data, int i,
 		goto out_fix_power_state;
 	}
 
-	/* enable/disable the interrupt */
+	 
 	ret = regmap_update_bits(data->regmap, info->en_reg, info->en_bitmask,
 				 (state ? info->en_bitmask : 0));
 	if (ret < 0) {
@@ -955,10 +915,7 @@ static int bmc150_accel_set_watermark(struct iio_dev *indio_dev, unsigned val)
 	return 0;
 }
 
-/*
- * We must read at least one full frame in one burst, otherwise the rest of the
- * frame data is discarded.
- */
+ 
 static int bmc150_accel_fifo_transfer(struct bmc150_accel_data *data,
 				      char *buffer, int samples)
 {
@@ -999,33 +956,13 @@ static int __bmc150_accel_fifo_flush(struct iio_dev *indio_dev,
 	if (!count)
 		return 0;
 
-	/*
-	 * If we getting called from IRQ handler we know the stored timestamp is
-	 * fairly accurate for the last stored sample. Otherwise, if we are
-	 * called as a result of a read operation from userspace and hence
-	 * before the watermark interrupt was triggered, take a timestamp
-	 * now. We can fall anywhere in between two samples so the error in this
-	 * case is at most one sample period.
-	 */
+	 
 	if (!irq) {
 		data->old_timestamp = data->timestamp;
 		data->timestamp = iio_get_time_ns(indio_dev);
 	}
 
-	/*
-	 * Approximate timestamps for each of the sample based on the sampling
-	 * frequency, timestamp for last sample and number of samples.
-	 *
-	 * Note that we can't use the current bandwidth settings to compute the
-	 * sample period because the sample rate varies with the device
-	 * (e.g. between 31.70ms to 32.20ms for a bandwidth of 15.63HZ). That
-	 * small variation adds when we store a large number of samples and
-	 * creates significant jitter between the last and first samples in
-	 * different batches (e.g. 32ms vs 21ms).
-	 *
-	 * To avoid this issue we compute the actual sample period ourselves
-	 * based on the timestamp delta between the last two flush operations.
-	 */
+	 
 	sample_period = (data->timestamp - data->old_timestamp);
 	do_div(sample_period, count);
 	tstamp = data->timestamp - (count - 1) * sample_period;
@@ -1037,12 +974,7 @@ static int __bmc150_accel_fifo_flush(struct iio_dev *indio_dev,
 	if (ret)
 		return ret;
 
-	/*
-	 * Ideally we want the IIO core to handle the demux when running in fifo
-	 * mode but not when running in triggered buffer mode. Unfortunately
-	 * this does not seem to be possible, so stick with driver demux for
-	 * now.
-	 */
+	 
 	for (i = 0; i < count; i++) {
 		int j, bit;
 
@@ -1136,13 +1068,7 @@ static const struct iio_chan_spec bmc150_accel_channels[] =
 static const struct iio_chan_spec bma280_accel_channels[] =
 	BMC150_ACCEL_CHANNELS(14);
 
-/*
- * The range for the Bosch sensors is typically +-2g/4g/8g/16g, distributed
- * over the amount of bits (see above). The scale table can be calculated using
- *     (range / 2^bits) * g = (range / 2^bits) * 9.80665 m/s^2
- * e.g. for +-2g and 12 bits: (4 / 2^12) * 9.80665 m/s^2 = 0.0095768... m/s^2
- * Multiply 10^6 and round to get the values listed below.
- */
+ 
 static const struct bmc150_accel_chip_info bmc150_accel_chip_info_tbl[] = {
 	{
 		.name = "BMA222",
@@ -1252,12 +1178,12 @@ static void bmc150_accel_trig_reen(struct iio_trigger *trig)
 	struct device *dev = regmap_get_device(data->regmap);
 	int ret;
 
-	/* new data interrupts don't need ack */
+	 
 	if (t == &t->data->triggers[BMC150_ACCEL_TRIGGER_DATA_READY])
 		return;
 
 	mutex_lock(&data->mutex);
-	/* clear any latched interrupt */
+	 
 	ret = regmap_write(data->regmap, BMC150_ACCEL_REG_INT_RST_LATCH,
 			   BMC150_ACCEL_INT_MODE_LATCH_INT |
 			   BMC150_ACCEL_INT_MODE_LATCH_RESET);
@@ -1596,10 +1522,7 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
 	int ret, i;
 	unsigned int val;
 
-	/*
-	 * Reset chip to get it in a known good state. A delay of 1.8ms after
-	 * reset is required according to the data sheets of supported chips.
-	 */
+	 
 	regmap_write(data->regmap, BMC150_ACCEL_REG_RESET,
 		     BMC150_ACCEL_RESET_VAL);
 	usleep_range(1800, 2500);
@@ -1627,12 +1550,12 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
 	if (ret < 0)
 		return ret;
 
-	/* Set Bandwidth */
+	 
 	ret = bmc150_accel_set_bw(data, BMC150_ACCEL_DEF_BW, 0);
 	if (ret < 0)
 		return ret;
 
-	/* Set Default Range */
+	 
 	ret = regmap_write(data->regmap, BMC150_ACCEL_REG_PMU_RANGE,
 			   BMC150_ACCEL_DEF_RANGE_4G);
 	if (ret < 0) {
@@ -1642,14 +1565,14 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
 
 	data->range = BMC150_ACCEL_DEF_RANGE_4G;
 
-	/* Set default slope duration and thresholds */
+	 
 	data->slope_thres = BMC150_ACCEL_DEF_SLOPE_THRESHOLD;
 	data->slope_dur = BMC150_ACCEL_DEF_SLOPE_DURATION;
 	ret = bmc150_accel_update_slope(data);
 	if (ret < 0)
 		return ret;
 
-	/* Set default as latched interrupts */
+	 
 	ret = regmap_write(data->regmap, BMC150_ACCEL_REG_INT_RST_LATCH,
 			   BMC150_ACCEL_INT_MODE_LATCH_INT |
 			   BMC150_ACCEL_INT_MODE_LATCH_RESET);
@@ -1686,10 +1609,7 @@ int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
 			return ret;
 	}
 
-	/*
-	 * VDD   is the analog and digital domain voltage supply
-	 * VDDIO is the digital I/O voltage supply
-	 */
+	 
 	data->regulators[0].supply = "vdd";
 	data->regulators[1].supply = "vddio";
 	ret = devm_regulator_bulk_get(dev,
@@ -1704,10 +1624,7 @@ int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
 		dev_err(dev, "failed to enable regulators: %d\n", ret);
 		return ret;
 	}
-	/*
-	 * 2ms or 3ms power-on time according to datasheets, let's better
-	 * be safe than sorry and set this delay to 5ms.
-	 */
+	 
 	msleep(5);
 
 	ret = bmc150_accel_chip_init(data);
@@ -1752,12 +1669,7 @@ int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
 		if (ret)
 			goto err_buffer_cleanup;
 
-		/*
-		 * Set latched mode interrupt. While certain interrupts are
-		 * non-latched regardless of this settings (e.g. new data) we
-		 * want to use latch mode when we can to prevent interrupt
-		 * flooding.
-		 */
+		 
 		ret = regmap_write(data->regmap, BMC150_ACCEL_REG_INT_RST_LATCH,
 				   BMC150_ACCEL_INT_MODE_LATCH_RESET);
 		if (ret < 0) {

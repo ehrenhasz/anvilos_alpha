@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2015 Linaro Ltd.
- * Copyright (c) 2015 Hisilicon Limited.
- */
+
+ 
 
 #include "hisi_sas.h"
 #define DRV_NAME "hisi_sas"
@@ -18,7 +15,7 @@ static void hisi_sas_release_task(struct hisi_hba *hisi_hba,
 static void hisi_sas_dev_gone(struct domain_device *device);
 
 struct hisi_sas_internal_abort_data {
-	bool rst_ha_timeout; /* reset the HA for timeout */
+	bool rst_ha_timeout;  
 };
 
 u8 hisi_sas_get_ata_protocol(struct host_to_dev_fis *fis, int direction)
@@ -116,10 +113,7 @@ void hisi_sas_sata_done(struct sas_task *task,
 }
 EXPORT_SYMBOL_GPL(hisi_sas_sata_done);
 
-/*
- * This function assumes linkrate mask fits in 8 bits, which it
- * does for all HW versions supported.
- */
+ 
 u8 hisi_sas_get_prog_phy_linkrate_mask(enum sas_linkrate max)
 {
 	u8 rate = 0;
@@ -335,7 +329,7 @@ static int hisi_sas_dma_map(struct hisi_hba *hisi_hba,
 	return 0;
 
 err_out_dma_unmap:
-	/* It would be better to call dma_unmap_sg() here, but it's messy */
+	 
 	hisi_sas_dma_unmap(hisi_hba, task, *n_elem);
 prep_out:
 	return rc;
@@ -449,7 +443,7 @@ void hisi_sas_task_deliver(struct hisi_hba *hisi_hba,
 		return;
 	}
 
-	/* Make slot memories observable before marking as ready */
+	 
 	smp_wmb();
 	WRITE_ONCE(slot->ready, 1);
 
@@ -478,10 +472,7 @@ static int hisi_sas_queue_command(struct sas_task *task, gfp_t gfp_flags)
 
 		ts->resp = SAS_TASK_UNDELIVERED;
 		ts->stat = SAS_PHY_DOWN;
-		/*
-		 * libsas will use dev->port, should
-		 * not call task_done for sata
-		 */
+		 
 		if (device->dev_type != SAS_SATA_DEV && !internal_abort)
 			task->task_done(task);
 		return -ECOMM;
@@ -536,11 +527,7 @@ static int hisi_sas_queue_command(struct sas_task *task, gfp_t gfp_flags)
 			int queue;
 
 			if (hisi_hba->iopoll_q_cnt) {
-				/*
-				 * Use interrupt queue (queue 0) to deliver and complete
-				 * internal IOs of libsas or libata when there is at least
-				 * one iopoll queue
-				 */
+				 
 				queue = 0;
 			} else {
 				struct Scsi_Host *shost = hisi_hba->shost;
@@ -599,7 +586,7 @@ static int hisi_sas_queue_command(struct sas_task *task, gfp_t gfp_flags)
 	slot->tmf = task->tmf;
 	slot->is_internal = !!task->tmf || internal_abort;
 
-	/* protect task_prep and start_delivery sequence */
+	 
 	hisi_sas_task_deliver(hisi_hba, slot, dq, sas_dev);
 
 	return 0;
@@ -647,7 +634,7 @@ static void hisi_sas_bytes_dmaed(struct hisi_hba *hisi_hba, int phy_no,
 		id->initiator_bits = SAS_PROTOCOL_ALL;
 		id->target_bits = phy->identify.target_port_protocols;
 	} else if (phy->phy_type & PORT_TYPE_SATA) {
-		/* Nothing */
+		 
 	}
 
 	sas_phy->frame_rcvd_size = phy->frame_rcvd_size;
@@ -689,7 +676,7 @@ static struct hisi_sas_device *hisi_sas_alloc_dev(struct domain_device *device)
 
 static void hisi_sas_sync_poll_cq(struct hisi_sas_cq *cq)
 {
-	/* make sure CQ entries being processed are processed to completion */
+	 
 	spin_lock(&cq->poll_lock);
 	spin_unlock(&cq->poll_lock);
 }
@@ -746,10 +733,7 @@ static void hisi_sas_tmf_aborted(struct sas_task *task)
 	if (slot) {
 		struct hisi_sas_cq *cq =
 			   &hisi_hba->cq[slot->dlvry_queue];
-		/*
-		 * sync irq or poll queue to avoid free'ing task
-		 * before using task in IO completion
-		 */
+		 
 		hisi_sas_sync_cq(cq);
 		slot->task = NULL;
 	}
@@ -779,19 +763,7 @@ static int hisi_sas_init_device(struct domain_device *device)
 	case SAS_SATA_PM:
 	case SAS_SATA_PM_PORT:
 	case SAS_SATA_PENDING:
-		/*
-		 * If an expander is swapped when a SATA disk is attached then
-		 * we should issue a hard reset to clear previous affiliation
-		 * of STP target port, see SPL (chapter 6.19.4).
-		 *
-		 * However we don't need to issue a hard reset here for these
-		 * reasons:
-		 * a. When probing the device, libsas/libata already issues a
-		 * hard reset in sas_probe_sata() -> ata_port_probe().
-		 * Note that in hisi_sas_debug_I_T_nexus_reset() we take care
-		 * to issue a hard reset by checking the dev status (== INIT).
-		 * b. When resetting the controller, this is simply unnecessary.
-		 */
+		 
 		while (retry-- > 0) {
 			rc = hisi_sas_softreset_ata_disk(device);
 			if (!rc)
@@ -895,7 +867,7 @@ int hisi_sas_scan_finished(struct Scsi_Host *shost, unsigned long time)
 	struct hisi_hba *hisi_hba = shost_priv(shost);
 	struct sas_ha_struct *sha = &hisi_hba->sha;
 
-	/* Wait for PHY up interrupt to occur */
+	 
 	if (time < HZ)
 		return 0;
 
@@ -1037,7 +1009,7 @@ static void hisi_sas_phy_init(struct hisi_hba *hisi_hba, int phy_no)
 	timer_setup(&phy->timer, hisi_sas_wait_phyup_timedout, 0);
 }
 
-/* Wrapper to ensure we track hisi_sas_phy.enable properly */
+ 
 void hisi_sas_phy_enable(struct hisi_hba *hisi_hba, int phy_no, int enable)
 {
 	struct hisi_sas_phy *phy = &hisi_hba->phy[phy_no];
@@ -1048,7 +1020,7 @@ void hisi_sas_phy_enable(struct hisi_hba *hisi_hba, int phy_no, int enable)
 	spin_lock_irqsave(&phy->lock, flags);
 
 	if (enable) {
-		/* We may have been enabled already; if so, don't touch */
+		 
 		if (!phy->enable)
 			sphy->negotiated_linkrate = SAS_LINK_RATE_UNKNOWN;
 		hisi_hba->hw->phy_start(hisi_hba, phy_no);
@@ -1183,7 +1155,7 @@ static void hisi_sas_dev_gone(struct domain_device *device)
 	if (hisi_hba->hw->free_device)
 		hisi_hba->hw->free_device(sas_dev);
 
-	/* Don't mark it as SAS_PHY_UNUSED if failed to clear ITCT */
+	 
 	if (!ret)
 		sas_dev->dev_type = SAS_PHY_UNUSED;
 	sas_dev->sas_device = NULL;
@@ -1371,7 +1343,7 @@ static void hisi_sas_refresh_port_id(struct hisi_hba *hisi_hba)
 		if (phy) {
 			port->id = phy->port_id;
 
-			/* Update linkrate of directly attached device. */
+			 
 			if (!device->parent)
 				device->linkrate = phy->sas_phy.linkrate;
 
@@ -1395,7 +1367,7 @@ static void hisi_sas_rescan_topology(struct hisi_hba *hisi_hba, u32 state)
 		if (!sas_phy->phy->enabled)
 			continue;
 
-		/* Report PHY state change to libsas */
+		 
 		if (state & BIT(phy_no)) {
 			if (do_port_check && sas_port && sas_port->port_dev) {
 				struct domain_device *dev = sas_port->port_dev;
@@ -1485,7 +1457,7 @@ static void hisi_sas_terminate_stp_reject(struct hisi_hba *hisi_hba)
 		if (!port_dev || !dev_is_expander(port_dev->dev_type))
 			continue;
 
-		/* Try to find a SATA device */
+		 
 		list_for_each_entry(device, &sas_port->dev_list,
 				    dev_list_node) {
 			if (dev_is_sata(device)) {
@@ -1536,7 +1508,7 @@ void hisi_sas_controller_reset_done(struct hisi_hba *hisi_hba)
 	ASYNC_DOMAIN_EXCLUSIVE(async);
 	int phy_no;
 
-	/* Init and wait for PHYs to come up and all libsas event finished. */
+	 
 	for (phy_no = 0; phy_no < hisi_hba->n_phy; phy_no++) {
 		struct hisi_sas_phy *phy = &hisi_hba->phy[phy_no];
 
@@ -1627,10 +1599,7 @@ static int hisi_sas_abort_task(struct sas_task *task)
 		struct hisi_sas_cq *cq;
 
 		if (slot) {
-			/*
-			 * sync irq or poll queue to avoid free'ing task
-			 * before using task in IO completion
-			 */
+			 
 			cq = &hisi_hba->cq[slot->dlvry_queue];
 			hisi_sas_sync_cq(cq);
 		}
@@ -1656,13 +1625,7 @@ static int hisi_sas_abort_task(struct sas_task *task)
 			return TMF_RESP_FUNC_FAILED;
 		}
 
-		/*
-		 * If the TMF finds that the IO is not in the device and also
-		 * the internal abort does not succeed, then it is safe to
-		 * free the slot.
-		 * Note: if the internal abort succeeds then the slot
-		 * will have already been completed
-		 */
+		 
 		if (rc == TMF_RESP_FUNC_COMPLETE && rc2 != TMF_RESP_FUNC_SUCC) {
 			if (task->lldd_task)
 				hisi_sas_do_release_task(hisi_hba, task, slot, true);
@@ -1679,10 +1642,7 @@ static int hisi_sas_abort_task(struct sas_task *task)
 			}
 			hisi_sas_dereg_device(hisi_hba, device);
 
-			/*
-			 * If an ATA internal command times out in ATA EH, it
-			 * need to execute soft reset, so check the scsicmd
-			 */
+			 
 			if ((sas_dev->dev_status == HISI_SAS_DEV_NCQ_ERR) &&
 			    qc && qc->scsicmd) {
 				hisi_sas_do_release_task(hisi_hba, task, slot, true);
@@ -1692,7 +1652,7 @@ static int hisi_sas_abort_task(struct sas_task *task)
 			}
 		}
 	} else if (task->task_proto & SAS_PROTOCOL_SMP) {
-		/* SMP */
+		 
 		u32 tag = slot->idx;
 		struct hisi_sas_cq *cq = &hisi_hba->cq[slot->dlvry_queue];
 
@@ -1701,10 +1661,7 @@ static int hisi_sas_abort_task(struct sas_task *task)
 						       &internal_abort_data);
 		if (((rc < 0) || (rc == TMF_RESP_FUNC_FAILED)) &&
 					task->lldd_task) {
-			/*
-			 * sync irq or poll queue to avoid free'ing task
-			 * before using task in IO completion
-			 */
+			 
 			hisi_sas_sync_cq(cq);
 			slot->task = NULL;
 		}
@@ -1779,13 +1736,13 @@ static int hisi_sas_debug_I_T_nexus_reset(struct domain_device *device)
 		phy->in_reset = 0;
 		spin_unlock_irqrestore(&phy->lock, flags);
 
-		/* report PHY down if timed out */
+		 
 		if (rc == -ETIMEDOUT)
 			hisi_sas_phy_down(hisi_hba, sas_phy->id, 0, GFP_KERNEL);
 		return rc;
 	}
 
-	/* Remote phy */
+	 
 	if (rc)
 		return rc;
 
@@ -1858,7 +1815,7 @@ static int hisi_sas_lu_reset(struct domain_device *device, u8 *lun)
 	struct device *dev = hisi_hba->dev;
 	int rc = TMF_RESP_FUNC_FAILED;
 
-	/* Clear internal IO and then lu reset */
+	 
 	rc = hisi_sas_internal_task_abort_dev(sas_dev, false);
 	if (rc < 0) {
 		dev_err(dev, "lu_reset: internal abort failed\n");
@@ -1940,9 +1897,9 @@ static int hisi_sas_query_task(struct sas_task *task)
 
 		rc = sas_query_task(task, tag);
 		switch (rc) {
-		/* The task is still in Lun, release it then */
+		 
 		case TMF_RESP_FUNC_SUCC:
-		/* The task is not in Lun or failed, reset the phy */
+		 
 		case TMF_RESP_FUNC_FAILED:
 		case TMF_RESP_FUNC_COMPLETE:
 			break;
@@ -1975,10 +1932,7 @@ static bool hisi_sas_internal_abort_timeout(struct sas_task *task,
 		if (slot) {
 			struct hisi_sas_cq *cq =
 				&hisi_hba->cq[slot->dlvry_queue];
-			/*
-			 * sync irq or poll queue to avoid free'ing task
-			 * before using task in IO completion
-			 */
+			 
 			hisi_sas_sync_cq(cq);
 			slot->task = NULL;
 		}
@@ -2041,7 +1995,7 @@ void hisi_sas_phy_down(struct hisi_hba *hisi_hba, int phy_no, int rdy,
 	struct device *dev = hisi_hba->dev;
 
 	if (rdy) {
-		/* Phy down but ready */
+		 
 		hisi_sas_bytes_dmaed(hisi_hba, phy_no, gfp_flags);
 		hisi_sas_port_notify_formed(sas_phy);
 	} else {
@@ -2052,7 +2006,7 @@ void hisi_sas_phy_down(struct hisi_hba *hisi_hba, int phy_no, int rdy,
 			dev_info(dev, "ignore flutter phy%d down\n", phy_no);
 			return;
 		}
-		/* Phy down and not ready */
+		 
 		sas_notify_phy_event(sas_phy, PHYE_LOSS_OF_SIGNAL, gfp_flags);
 		sas_phy_disconnected(sas_phy);
 
@@ -2177,18 +2131,18 @@ int hisi_sas_alloc(struct hisi_hba *hisi_hba)
 		struct hisi_sas_cq *cq = &hisi_hba->cq[i];
 		struct hisi_sas_dq *dq = &hisi_hba->dq[i];
 
-		/* Completion queue structure */
+		 
 		cq->id = i;
 		cq->hisi_hba = hisi_hba;
 		spin_lock_init(&cq->poll_lock);
 
-		/* Delivery queue structure */
+		 
 		spin_lock_init(&dq->lock);
 		INIT_LIST_HEAD(&dq->list);
 		dq->id = i;
 		dq->hisi_hba = hisi_hba;
 
-		/* Delivery queue */
+		 
 		s = sizeof(struct hisi_sas_cmd_hdr) * HISI_SAS_QUEUE_SLOTS;
 		hisi_hba->cmd_hdr[i] = dmam_alloc_coherent(dev, s,
 						&hisi_hba->cmd_hdr_dma[i],
@@ -2196,7 +2150,7 @@ int hisi_sas_alloc(struct hisi_hba *hisi_hba)
 		if (!hisi_hba->cmd_hdr[i])
 			goto err_out;
 
-		/* Completion queue */
+		 
 		s = hisi_hba->hw->complete_hdr_size * HISI_SAS_QUEUE_SLOTS;
 		hisi_hba->complete_hdr[i] = dmam_alloc_coherent(dev, s,
 						&hisi_hba->complete_hdr_dma[i],
@@ -2217,7 +2171,7 @@ int hisi_sas_alloc(struct hisi_hba *hisi_hba)
 	if (!hisi_hba->slot_info)
 		goto err_out;
 
-	/* roundup to avoid overly large block size */
+	 
 	max_command_entries_ru = roundup(max_command_entries, 64);
 	if (hisi_hba->prot_mask & HISI_SAS_DIX_PROT_MASK)
 		sz_slot_buf_ru = sizeof(struct hisi_sas_slot_dif_buf_table);
@@ -2353,10 +2307,7 @@ int hisi_sas_get_fw_info(struct hisi_hba *hisi_hba)
 	}
 
 	if (np) {
-		/*
-		 * These properties are only required for platform device-based
-		 * controller with DT firmware.
-		 */
+		 
 		hisi_hba->ctrl = syscon_regmap_lookup_by_phandle(np,
 					"hisilicon,sas-syscon");
 		if (IS_ERR(hisi_hba->ctrl)) {

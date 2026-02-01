@@ -1,28 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * media_device_open.c - Media Controller Device Open Test
- *
- * Copyright (c) 2016 Shuah Khan <shuahkh@osg.samsung.com>
- * Copyright (c) 2016 Samsung Electronics Co., Ltd.
- *
- */
 
-/*
- * This file adds a test for Media Controller API.
- * This test should be run as root and should not be
- * included in the Kselftest run. This test should be
- * run when hardware and driver that makes use Media
- * Controller API are present in the system.
- *
- * This test opens user specified Media Device and calls
- * MEDIA_IOC_DEVICE_INFO ioctl, closes the file, and exits.
- *
- * Usage:
- *	sudo ./media_device_open -d /dev/mediaX
- *
- *	Run this test is a loop and run bind/unbind on the driver.
-*/
+ 
+
+ 
 
 #include <stdio.h>
 #include <unistd.h>
@@ -50,7 +30,7 @@ int main(int argc, char **argv)
 		exit(-1);
 	}
 
-	/* Process arguments */
+	 
 	while ((opt = getopt(argc, argv, "d:")) != -1) {
 		switch (opt) {
 		case 'd':
@@ -66,7 +46,7 @@ int main(int argc, char **argv)
 	if (getuid() != 0)
 		ksft_exit_skip("Please run the test as root - Exiting.\n");
 
-	/* Open Media device and keep it open */
+	 
 	fd = open(media_device, O_RDWR);
 	if (fd == -1) {
 		printf("Media Device open errno %s\n", strerror(errno));

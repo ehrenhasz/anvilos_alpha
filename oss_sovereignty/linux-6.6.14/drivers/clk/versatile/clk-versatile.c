@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Clock driver for the ARM Integrator/AP, Integrator/CP, Versatile AB and
- * Versatile PB boards.
- * Copyright (C) 2012 Linus Walleij
- */
+
+ 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
 #include <linux/of.h>
@@ -17,7 +13,7 @@
 #define VERSATILE_SYS_OSCCLCD_OFFSET	0x1c
 #define VERSATILE_SYS_LOCK_OFFSET	0x20
 
-/* Base offset for the core module */
+ 
 static void __iomem *cm_base;
 
 static const struct icst_params cp_auxosc_params = {
@@ -61,7 +57,7 @@ static void __init cm_osc_setup(struct device_node *np,
 	const char *parent_name;
 
 	if (!cm_base) {
-		/* Remap the core module base if not done yet */
+		 
 		struct device_node *parent;
 
 		parent = of_get_parent(np);

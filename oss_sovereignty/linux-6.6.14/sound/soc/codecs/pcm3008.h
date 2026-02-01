@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * PCM3008 ALSA SoC Layer
- *
- * Author:	Hugo Villeneuve
- * Copyright (C) 2008 Lyrtech inc
- */
+ 
+ 
 
 #ifndef __LINUX_SND_SOC_PCM3008_H
 #define __LINUX_SND_SOC_PCM3008_H

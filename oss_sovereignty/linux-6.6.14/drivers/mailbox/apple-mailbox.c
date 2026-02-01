@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only OR MIT
-/*
- * Apple mailbox driver
- *
- * Copyright (C) 2021 The Asahi Linux Contributors
- *
- * This driver adds support for two mailbox variants (called ASC and M3 by
- * Apple) found in Apple SoCs such as the M1. It consists of two FIFOs used to
- * exchange 64+32 bit messages between the main CPU and a co-processor.
- * Various coprocessors implement different IPC protocols based on these simple
- * messages and shared memory buffers.
- *
- * Both the main CPU and the co-processor see the same set of registers but
- * the first FIFO (A2I) is always used to transfer messages from the application
- * processor (us) to the I/O processor and the second one (I2A) for the
- * other direction.
- */
+
+ 
 
 #include <linux/apple-mailbox.h>
 #include <linux/delay.h>
@@ -172,15 +157,7 @@ static int apple_mbox_chan_send_data(struct mbox_chan *chan, void *data)
 	if (ret)
 		return ret;
 
-	/*
-	 * The interrupt is level triggered and will keep firing as long as the
-	 * FIFO is empty. It will also keep firing if the FIFO was empty
-	 * at any point in the past until it has been acknowledged at the
-	 * mailbox level. By acknowledging it here we can ensure that we will
-	 * only get the interrupt once the FIFO has been cleared again.
-	 * If the FIFO is already empty before the ack it will fire again
-	 * immediately after the ack.
-	 */
+	 
 	if (apple_mbox->hw->has_irq_controls) {
 		writel_relaxed(apple_mbox->hw->irq_bit_send_empty,
 			       apple_mbox->regs + apple_mbox->hw->irq_ack);
@@ -194,13 +171,7 @@ static irqreturn_t apple_mbox_send_empty_irq(int irq, void *data)
 {
 	struct apple_mbox *apple_mbox = data;
 
-	/*
-	 * We don't need to acknowledge the interrupt at the mailbox level
-	 * here even if supported by the hardware. It will keep firing but that
-	 * doesn't matter since it's disabled at the main interrupt controller.
-	 * apple_mbox_chan_send_data will acknowledge it before enabling
-	 * it at the main controller again.
-	 */
+	 
 	disable_irq_nosync(apple_mbox->irq_send_empty);
 	mbox_chan_txdone(&apple_mbox->chan, 0);
 	return IRQ_HANDLED;
@@ -216,14 +187,7 @@ static int apple_mbox_poll(struct apple_mbox *apple_mbox)
 		ret++;
 	}
 
-	/*
-	 * The interrupt will keep firing even if there are no more messages
-	 * unless we also acknowledge it at the mailbox level here.
-	 * There's no race if a message comes in between the check in the while
-	 * loop above and the ack below: If a new messages arrives inbetween
-	 * those two the interrupt will just fire again immediately after the
-	 * ack since it's level triggered.
-	 */
+	 
 	if (apple_mbox->hw->has_irq_controls) {
 		writel_relaxed(apple_mbox->hw->irq_bit_recv_not_empty,
 			       apple_mbox->regs + apple_mbox->hw->irq_ack);
@@ -277,14 +241,7 @@ static int apple_mbox_chan_startup(struct mbox_chan *chan)
 {
 	struct apple_mbox *apple_mbox = chan->con_priv;
 
-	/*
-	 * Only some variants of this mailbox HW provide interrupt control
-	 * at the mailbox level. We therefore need to handle enabling/disabling
-	 * interrupts at the main interrupt controller anyway for hardware that
-	 * doesn't. Just always keep the interrupts we care about enabled at
-	 * the mailbox level so that both hardware revisions behave almost
-	 * the same.
-	 */
+	 
 	if (apple_mbox->hw->has_irq_controls) {
 		writel_relaxed(apple_mbox->hw->irq_bit_recv_not_empty |
 				       apple_mbox->hw->irq_bit_send_empty,

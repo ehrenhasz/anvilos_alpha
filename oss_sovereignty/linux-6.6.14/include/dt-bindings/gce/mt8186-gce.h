@@ -1,17 +1,14 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (C) 2022 MediaTek Inc.
- * Author: Yongqiang Niu <yongqiang.niu@mediatek.com>
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_GCE_MT8186_H
 #define _DT_BINDINGS_GCE_MT8186_H
 
-/* assign timeout 0 also means default */
+ 
 #define CMDQ_NO_TIMEOUT		0xffffffff
 #define CMDQ_TIMEOUT_DEFAULT	1000
 
-/* GCE thread priority */
+ 
 #define CMDQ_THR_PRIO_LOWEST	0
 #define CMDQ_THR_PRIO_1		1
 #define CMDQ_THR_PRIO_2		2
@@ -21,10 +18,10 @@
 #define CMDQ_THR_PRIO_6		6
 #define CMDQ_THR_PRIO_HIGHEST	7
 
-/* CPR count in 32bit register */
+ 
 #define GCE_CPR_COUNT		1312
 
-/* GCE subsys table */
+ 
 #define SUBSYS_1300XXXX		0
 #define SUBSYS_1400XXXX		1
 #define SUBSYS_1401XXXX		2
@@ -57,37 +54,35 @@
 #define SUBSYS_1A06XXXX		29
 #define SUBSYS_NO_SUPPORT	99
 
-/* GCE General Purpose Register (GPR) support
- * Leave note for scenario usage here
- */
-/* GCE: write mask */
+ 
+ 
 #define GCE_GPR_R00		0x00
 #define GCE_GPR_R01		0x01
-/* MDP: P1: JPEG dest */
+ 
 #define GCE_GPR_R02		0x02
 #define GCE_GPR_R03		0x03
-/* MDP: PQ color */
+ 
 #define GCE_GPR_R04		0x04
-/* MDP: 2D sharpness */
+ 
 #define GCE_GPR_R05		0x05
-/* DISP: poll esd */
+ 
 #define GCE_GPR_R06		0x06
 #define GCE_GPR_R07		0x07
-/* MDP: P4: 2D sharpness dst */
+ 
 #define GCE_GPR_R08		0x08
 #define GCE_GPR_R09		0x09
-/* VCU: poll with timeout for GPR timer */
+ 
 #define GCE_GPR_R10		0x0A
 #define GCE_GPR_R11		0x0B
-/* CMDQ: debug */
+ 
 #define GCE_GPR_R12		0x0C
 #define GCE_GPR_R13		0x0D
-/* CMDQ: P7: debug */
+ 
 #define GCE_GPR_R14		0x0E
 #define GCE_GPR_R15		0x0F
 
-/* GCE hardware events */
-/* VDEC */
+ 
+ 
 #define CMDQ_EVENT_LINE_COUNT_THRESHOLD_INTERRUPT	0
 #define CMDQ_EVENT_VDEC_INT				1
 #define CMDQ_EVENT_VDEC_PAUSE				2
@@ -119,7 +114,7 @@
 #define CMDQ_EVENT_VDEC_MINI_MDP_EVENT_15		31
 #define CMDQ_EVENT_WPE_GCE_FRAME_DONE			32
 
-/* CAM */
+ 
 #define CMDQ_EVENT_ISP_FRAME_DONE_A			65
 #define CMDQ_EVENT_ISP_FRAME_DONE_B			66
 #define CMDQ_EVENT_CAMSV1_PASS1_DONE			70
@@ -150,7 +145,7 @@
 #define CMDQ_EVENT_CQ_VR_SNAP_A_INT			99
 #define CMDQ_EVENT_TG_GRABERR_B_INT			100
 #define CMDQ_EVENT_CQ_VR_SNAP_B_INT			101
-/* VENC */
+ 
 #define CMDQ_EVENT_VENC_CMDQ_FRAME_DONE			129
 #define CMDQ_EVENT_VENC_CMDQ_PAUSE_DONE			130
 #define CMDQ_EVENT_JPGENC_CMDQ_DONE			131
@@ -159,13 +154,13 @@
 #define CMDQ_EVENT_VENC_CMDQ_PPS_DONE			136
 #define CMDQ_EVENT_VENC_CMDQ_SPS_DONE			137
 #define CMDQ_EVENT_VENC_CMDQ_VPS_DONE			138
-/* IPE */
+ 
 #define CMDQ_EVENT_FDVT_DONE				161
 #define CMDQ_EVENT_FE_DONE				162
 #define CMDQ_EVENT_RSC_DONE				163
 #define CMDQ_EVENT_DVS_DONE_ASYNC_SHOT			164
 #define CMDQ_EVENT_DVP_DONE_ASYNC_SHOT			165
-/* IMG2 */
+ 
 #define CMDQ_EVENT_GCE_IMG2_EVENT0			193
 #define CMDQ_EVENT_GCE_IMG2_EVENT1			194
 #define CMDQ_EVENT_GCE_IMG2_EVENT2			195
@@ -190,7 +185,7 @@
 #define CMDQ_EVENT_GCE_IMG2_EVENT21			214
 #define CMDQ_EVENT_GCE_IMG2_EVENT22			215
 #define CMDQ_EVENT_GCE_IMG2_EVENT23			216
-/* IMG1 */
+ 
 #define CMDQ_EVENT_GCE_IMG1_EVENT0			225
 #define CMDQ_EVENT_GCE_IMG1_EVENT1			226
 #define CMDQ_EVENT_GCE_IMG1_EVENT2			227
@@ -215,7 +210,7 @@
 #define CMDQ_EVENT_GCE_IMG1_EVENT21			246
 #define CMDQ_EVENT_GCE_IMG1_EVENT22			247
 #define CMDQ_EVENT_GCE_IMG1_EVENT23			248
-/* MDP */
+ 
 #define CMDQ_EVENT_MDP_RDMA0_SOF			256
 #define CMDQ_EVENT_MDP_RDMA1_SOF			257
 #define CMDQ_EVENT_MDP_AAL0_SOF				258
@@ -277,7 +272,7 @@
 #define CMDQ_EVENT_MDP_RDMA2_SW_RST_DONE_ENG_EVENT	341
 #define CMDQ_EVENT_MDP_RDMA1_SW_RST_DONE_ENG_EVENT	342
 #define CMDQ_EVENT_MDP_RDMA0_SW_RST_DONE_ENG_EVENT	343
-/* DISP */
+ 
 #define CMDQ_EVENT_DISP_OVL0_SOF			384
 #define CMDQ_EVENT_DISP_OVL0_2L_SOF			385
 #define CMDQ_EVENT_DISP_RDMA0_SOF			386
@@ -345,59 +340,49 @@
 #define CMDQ_EVENT_BUF_UNDERRUN_ENG_EVENT_7		465
 #define CMDQ_EVENT_OUT_EVENT_0				898
 
-/* CMDQ sw tokens
- * Following definitions are gce sw token which may use by clients
- * event operation API.
- * Note that token 512 to 639 may set secure
- */
+ 
 
-/* end of hw event and begin of sw token */
+ 
 #define CMDQ_MAX_HW_EVENT				512
 
-/* Config thread notify trigger thread */
+ 
 #define CMDQ_SYNC_TOKEN_CONFIG_DIRTY			640
-/* Trigger thread notify config thread */
+ 
 #define CMDQ_SYNC_TOKEN_STREAM_EOF			641
-/* Block Trigger thread until the ESD check finishes. */
+ 
 #define CMDQ_SYNC_TOKEN_ESD_EOF				642
 #define CMDQ_SYNC_TOKEN_STREAM_BLOCK			643
-/* check CABC setup finish */
+ 
 #define CMDQ_SYNC_TOKEN_CABC_EOF			644
 
-/* Notify normal CMDQ there are some secure task done
- * MUST NOT CHANGE, this token sync with secure world
- */
+ 
 #define CMDQ_SYNC_SECURE_THR_EOF			647
 
-/* CMDQ use sw token */
+ 
 #define CMDQ_SYNC_TOKEN_USER_0				649
 #define CMDQ_SYNC_TOKEN_USER_1				650
 #define CMDQ_SYNC_TOKEN_POLL_MONITOR			651
 #define CMDQ_SYNC_TOKEN_TPR_LOCK			652
 
-/* ISP sw token */
+ 
 #define CMDQ_SYNC_TOKEN_MSS				665
 #define CMDQ_SYNC_TOKEN_MSF				666
 
-/* DISP sw token */
+ 
 #define CMDQ_SYNC_TOKEN_SODI				671
 
-/* GPR access tokens (for register backup)
- * There are 15 32-bit GPR, 3 GPR form a set
- * (64-bit for address, 32-bit for value)
- * MUST NOT CHANGE, these tokens sync with MDP
- */
+ 
 #define CMDQ_SYNC_TOKEN_GPR_SET_0			700
 #define CMDQ_SYNC_TOKEN_GPR_SET_1			701
 #define CMDQ_SYNC_TOKEN_GPR_SET_2			702
 #define CMDQ_SYNC_TOKEN_GPR_SET_3			703
 #define CMDQ_SYNC_TOKEN_GPR_SET_4			704
 
-/* Resource lock event to control resource in GCE thread */
+ 
 #define CMDQ_SYNC_RESOURCE_WROT0			710
 #define CMDQ_SYNC_RESOURCE_WROT1			711
 
-/* event for gpr timer, used in sleep and poll with timeout */
+ 
 #define CMDQ_TOKEN_GPR_TIMER_R0				994
 #define CMDQ_TOKEN_GPR_TIMER_R1				995
 #define CMDQ_TOKEN_GPR_TIMER_R2				996
@@ -416,6 +401,6 @@
 #define CMDQ_TOKEN_GPR_TIMER_R15			1009
 
 #define CMDQ_EVENT_MAX					0x3FF
-/* CMDQ sw tokens END */
+ 
 
 #endif

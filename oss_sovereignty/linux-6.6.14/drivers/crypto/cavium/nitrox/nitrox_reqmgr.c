@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/gfp.h>
 #include <linux/workqueue.h>
 #include <crypto/internal/skcipher.h>
@@ -8,39 +8,18 @@
 #include "nitrox_req.h"
 #include "nitrox_csr.h"
 
-/* SLC_STORE_INFO */
+ 
 #define MIN_UDD_LEN 16
-/* PKT_IN_HDR + SLC_STORE_INFO */
+ 
 #define FDATA_SIZE 32
-/* Base destination port for the solicited requests */
+ 
 #define SOLICIT_BASE_DPORT 256
 
 #define REQ_NOT_POSTED 1
 #define REQ_BACKLOG    2
 #define REQ_POSTED     3
 
-/*
- * Response codes from SE microcode
- * 0x00 - Success
- *   Completion with no error
- * 0x43 - ERR_GC_DATA_LEN_INVALID
- *   Invalid Data length if Encryption Data length is
- *   less than 16 bytes for AES-XTS and AES-CTS.
- * 0x45 - ERR_GC_CTX_LEN_INVALID
- *   Invalid context length: CTXL != 23 words.
- * 0x4F - ERR_GC_DOCSIS_CIPHER_INVALID
- *   DOCSIS support is enabled with other than
- *   AES/DES-CBC mode encryption.
- * 0x50 - ERR_GC_DOCSIS_OFFSET_INVALID
- *   Authentication offset is other than 0 with
- *   Encryption IV source = 0.
- *   Authentication offset is other than 8 (DES)/16 (AES)
- *   with Encryption IV source = 1
- * 0x51 - ERR_GC_CRC32_INVALID_SELECTION
- *   CRC32 is enabled for other than DOCSIS encryption.
- * 0x52 - ERR_GC_AES_CCM_FLAG_INVALID
- *   Invalid flag options in AES-CCM IV.
- */
+ 
 
 static inline int incr_index(int index, int count, int max)
 {
@@ -81,29 +60,7 @@ static void softreq_destroy(struct nitrox_softreq *sr)
 	kfree(sr);
 }
 
-/**
- * create_sg_component - create SG componets for N5 device.
- * @sr: Request structure
- * @sgtbl: SG table
- * @map_nents: number of dma mapped entries
- *
- * Component structure
- *
- *   63     48 47     32 31    16 15      0
- *   --------------------------------------
- *   |   LEN0  |  LEN1  |  LEN2  |  LEN3  |
- *   |-------------------------------------
- *   |               PTR0                 |
- *   --------------------------------------
- *   |               PTR1                 |
- *   --------------------------------------
- *   |               PTR2                 |
- *   --------------------------------------
- *   |               PTR3                 |
- *   --------------------------------------
- *
- *   Returns 0 if success or a negative errno code on error.
- */
+ 
 static int create_sg_component(struct nitrox_softreq *sr,
 			       struct nitrox_sgtable *sgtbl, int map_nents)
 {
@@ -116,7 +73,7 @@ static int create_sg_component(struct nitrox_softreq *sr,
 
 	nr_sgcomp = roundup(map_nents, 4) / 4;
 
-	/* each component holds 4 dma pointers */
+	 
 	sz_comp = nr_sgcomp * sizeof(*sgcomp);
 	sgcomp = kzalloc(sz_comp, sr->gfp);
 	if (!sgcomp)
@@ -125,7 +82,7 @@ static int create_sg_component(struct nitrox_softreq *sr,
 	sgtbl->sgcomp = sgcomp;
 
 	sg = sgtbl->sg;
-	/* populate device sg component */
+	 
 	for (i = 0; i < nr_sgcomp; i++) {
 		for (j = 0; j < 4 && sg; j++) {
 			sgcomp[i].len[j] = cpu_to_be16(sg_dma_len(sg));
@@ -133,7 +90,7 @@ static int create_sg_component(struct nitrox_softreq *sr,
 			sg = sg_next(sg);
 		}
 	}
-	/* map the device sg component */
+	 
 	dma = dma_map_single(DEV(ndev), sgtbl->sgcomp, sz_comp, DMA_TO_DEVICE);
 	if (dma_mapping_error(DEV(ndev), dma)) {
 		kfree(sgtbl->sgcomp);
@@ -147,14 +104,7 @@ static int create_sg_component(struct nitrox_softreq *sr,
 	return 0;
 }
 
-/**
- * dma_map_inbufs - DMA map input sglist and creates sglist component
- *                  for N5 device.
- * @sr: Request structure
- * @req: Crypto request structre
- *
- * Returns 0 if successful or a negative errno code on error.
- */
+ 
 static int dma_map_inbufs(struct nitrox_softreq *sr,
 			  struct se_crypto_request *req)
 {
@@ -267,23 +217,16 @@ static inline bool cmdq_full(struct nitrox_cmdq *cmdq, int qlen)
 {
 	if (atomic_inc_return(&cmdq->pending_count) > qlen) {
 		atomic_dec(&cmdq->pending_count);
-		/* sync with other cpus */
+		 
 		smp_mb__after_atomic();
 		return true;
 	}
-	/* sync with other cpus */
+	 
 	smp_mb__after_atomic();
 	return false;
 }
 
-/**
- * post_se_instr - Post SE instruction to Packet Input ring
- * @sr: Request structure
- * @cmdq: Command queue structure
- *
- * Returns 0 if successful or a negative error code,
- * if no space in ring.
- */
+ 
 static void post_se_instr(struct nitrox_softreq *sr,
 			  struct nitrox_cmdq *cmdq)
 {
@@ -294,24 +237,24 @@ static void post_se_instr(struct nitrox_softreq *sr,
 	spin_lock_bh(&cmdq->cmd_qlock);
 
 	idx = cmdq->write_idx;
-	/* copy the instruction */
+	 
 	ent = cmdq->base + (idx * cmdq->instr_size);
 	memcpy(ent, &sr->instr, cmdq->instr_size);
 
 	atomic_set(&sr->status, REQ_POSTED);
 	response_list_add(sr, cmdq);
 	sr->tstamp = jiffies;
-	/* flush the command queue updates */
+	 
 	dma_wmb();
 
-	/* Ring doorbell with count 1 */
+	 
 	writeq(1, cmdq->dbell_csr_addr);
 
 	cmdq->write_idx = incr_index(idx, 1, ndev->qlen);
 
 	spin_unlock_bh(&cmdq->cmd_qlock);
 
-	/* increment the posted command count */
+	 
 	atomic64_inc(&ndev->stats.posted);
 }
 
@@ -327,18 +270,18 @@ static int post_backlog_cmds(struct nitrox_cmdq *cmdq)
 	spin_lock_bh(&cmdq->backlog_qlock);
 
 	list_for_each_entry_safe(sr, tmp, &cmdq->backlog_head, backlog) {
-		/* submit until space available */
+		 
 		if (unlikely(cmdq_full(cmdq, ndev->qlen))) {
 			ret = -ENOSPC;
 			break;
 		}
-		/* delete from backlog list */
+		 
 		list_del(&sr->backlog);
 		atomic_dec(&cmdq->backlog_count);
-		/* sync with other cpus */
+		 
 		smp_mb__after_atomic();
 
-		/* post the command */
+		 
 		post_se_instr(sr, cmdq);
 	}
 	spin_unlock_bh(&cmdq->backlog_qlock);
@@ -351,16 +294,16 @@ static int nitrox_enqueue_request(struct nitrox_softreq *sr)
 	struct nitrox_cmdq *cmdq = sr->cmdq;
 	struct nitrox_device *ndev = sr->ndev;
 
-	/* try to post backlog requests */
+	 
 	post_backlog_cmds(cmdq);
 
 	if (unlikely(cmdq_full(cmdq, ndev->qlen))) {
 		if (!(sr->flags & CRYPTO_TFM_REQ_MAY_BACKLOG)) {
-			/* increment drop count */
+			 
 			atomic64_inc(&ndev->stats.dropped);
 			return -ENOSPC;
 		}
-		/* add to backlog list */
+		 
 		backlog_list_add(sr, cmdq);
 		return -EINPROGRESS;
 	}
@@ -369,15 +312,7 @@ static int nitrox_enqueue_request(struct nitrox_softreq *sr)
 	return -EINPROGRESS;
 }
 
-/**
- * nitrox_process_se_request - Send request to SE core
- * @ndev: NITROX device
- * @req: Crypto request
- * @callback: Completion callback
- * @cb_arg: Completion callback arguments
- *
- * Returns 0 on success, or a negative error code.
- */
+ 
 int nitrox_process_se_request(struct nitrox_device *ndev,
 			      struct se_crypto_request *req,
 			      completion_t callback,
@@ -411,7 +346,7 @@ int nitrox_process_se_request(struct nitrox_device *ndev,
 		return ret;
 	}
 
-	/* get the context handle */
+	 
 	if (req->ctx_handle) {
 		struct ctx_hdr *hdr;
 		u8 *ctx_ptr;
@@ -421,32 +356,18 @@ int nitrox_process_se_request(struct nitrox_device *ndev,
 		ctx_handle = hdr->ctx_dma;
 	}
 
-	/* select the queue */
+	 
 	qno = smp_processor_id() % ndev->nr_queues;
 
 	sr->cmdq = &ndev->pkt_inq[qno];
 
-	/*
-	 * 64-Byte Instruction Format
-	 *
-	 *  ----------------------
-	 *  |      DPTR0         | 8 bytes
-	 *  ----------------------
-	 *  |  PKT_IN_INSTR_HDR  | 8 bytes
-	 *  ----------------------
-	 *  |    PKT_IN_HDR      | 16 bytes
-	 *  ----------------------
-	 *  |    SLC_INFO        | 16 bytes
-	 *  ----------------------
-	 *  |   Front data       | 16 bytes
-	 *  ----------------------
-	 */
+	 
 
-	/* fill the packet instruction */
-	/* word 0 */
+	 
+	 
 	sr->instr.dptr0 = cpu_to_be64(sr->in.sgcomp_dma);
 
-	/* word 1 */
+	 
 	sr->instr.ih.value = 0;
 	sr->instr.ih.s.g = 1;
 	sr->instr.ih.s.gsz = sr->in.sgmap_cnt;
@@ -455,34 +376,30 @@ int nitrox_process_se_request(struct nitrox_device *ndev,
 	sr->instr.ih.s.tlen = sr->instr.ih.s.fsz + sr->in.total_bytes;
 	sr->instr.ih.bev = cpu_to_be64(sr->instr.ih.value);
 
-	/* word 2 */
+	 
 	sr->instr.irh.value[0] = 0;
 	sr->instr.irh.s.uddl = MIN_UDD_LEN;
-	/* context length in 64-bit words */
+	 
 	sr->instr.irh.s.ctxl = (req->ctrl.s.ctxl / 8);
-	/* offset from solicit base port 256 */
+	 
 	sr->instr.irh.s.destport = SOLICIT_BASE_DPORT + qno;
 	sr->instr.irh.s.ctxc = req->ctrl.s.ctxc;
 	sr->instr.irh.s.arg = req->ctrl.s.arg;
 	sr->instr.irh.s.opcode = req->opcode;
 	sr->instr.irh.bev[0] = cpu_to_be64(sr->instr.irh.value[0]);
 
-	/* word 3 */
+	 
 	sr->instr.irh.s.ctxp = cpu_to_be64(ctx_handle);
 
-	/* word 4 */
+	 
 	sr->instr.slc.value[0] = 0;
 	sr->instr.slc.s.ssz = sr->out.sgmap_cnt;
 	sr->instr.slc.bev[0] = cpu_to_be64(sr->instr.slc.value[0]);
 
-	/* word 5 */
+	 
 	sr->instr.slc.s.rptr = cpu_to_be64(sr->out.sgcomp_dma);
 
-	/*
-	 * No conversion for front data,
-	 * It goes into payload
-	 * put GP Header in front data
-	 */
+	 
 	sr->instr.fdata[0] = *((u64 *)&req->gph);
 	sr->instr.fdata[1] = 0;
 
@@ -528,12 +445,7 @@ static bool sr_completed(struct nitrox_softreq *sr)
 	return true;
 }
 
-/**
- * process_response_list - process completed requests
- * @cmdq: Command queue structure
- *
- * Returns the number of responses processed.
- */
+ 
 static void process_response_list(struct nitrox_cmdq *cmdq)
 {
 	struct nitrox_device *ndev = cmdq->ndev;
@@ -542,7 +454,7 @@ static void process_response_list(struct nitrox_cmdq *cmdq)
 	completion_t callback;
 	void *cb_arg;
 
-	/* check all pending requests */
+	 
 	budget = atomic_read(&cmdq->pending_count);
 
 	while (req_completed < budget) {
@@ -553,9 +465,9 @@ static void process_response_list(struct nitrox_cmdq *cmdq)
 		if (atomic_read(&sr->status) != REQ_POSTED)
 			break;
 
-		/* check orh and completion bytes updates */
+		 
 		if (!sr_completed(sr)) {
-			/* request not completed, check for timeout */
+			 
 			if (!cmd_timeout(sr->tstamp, ndev->timeout))
 				break;
 			dev_err_ratelimited(DEV(ndev),
@@ -564,11 +476,11 @@ static void process_response_list(struct nitrox_cmdq *cmdq)
 		}
 		atomic_dec(&cmdq->pending_count);
 		atomic64_inc(&ndev->stats.completed);
-		/* sync with other cpus */
+		 
 		smp_mb__after_atomic();
-		/* remove from response list */
+		 
 		response_list_del(sr, cmdq);
-		/* ORH error code */
+		 
 		err = READ_ONCE(*sr->resp.orh) & 0xff;
 		callback = sr->callback;
 		cb_arg = sr->cb_arg;
@@ -580,26 +492,21 @@ static void process_response_list(struct nitrox_cmdq *cmdq)
 	}
 }
 
-/*
- * pkt_slc_resp_tasklet - post processing of SE responses
- */
+ 
 void pkt_slc_resp_tasklet(unsigned long data)
 {
 	struct nitrox_q_vector *qvec = (void *)(uintptr_t)(data);
 	struct nitrox_cmdq *cmdq = qvec->cmdq;
 	union nps_pkt_slc_cnts slc_cnts;
 
-	/* read completion count */
+	 
 	slc_cnts.value = readq(cmdq->compl_cnt_csr_addr);
-	/* resend the interrupt if more work to do */
+	 
 	slc_cnts.s.resend = 1;
 
 	process_response_list(cmdq);
 
-	/*
-	 * clear the interrupt with resend bit enabled,
-	 * MSI-X interrupt generates if Completion count > Threshold
-	 */
+	 
 	writeq(slc_cnts.value, cmdq->compl_cnt_csr_addr);
 
 	if (atomic_read(&cmdq->backlog_count))

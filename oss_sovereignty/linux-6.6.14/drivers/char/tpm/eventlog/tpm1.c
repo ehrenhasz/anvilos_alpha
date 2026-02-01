@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2005, 2012 IBM Corporation
- *
- * Authors:
- *	Kent Yoder <key@linux.vnet.ibm.com>
- *	Seiji Munetoh <munetoh@jp.ibm.com>
- *	Stefan Berger <stefanb@us.ibm.com>
- *	Reiner Sailer <sailer@watson.ibm.com>
- *	Kylene Hall <kjhall@us.ibm.com>
- *	Nayna Jain <nayna@linux.vnet.ibm.com>
- *
- * Maintained by: <tpmdd-devel@lists.sourceforge.net>
- *
- * Access to the event log created by a system's firmware / BIOS
- */
+
+ 
 
 #include <linux/seq_file.h>
 #include <linux/efi.h>
@@ -66,7 +52,7 @@ static const char* tcpa_pc_event_id_strings[] = {
 	"Table of Devices",
 };
 
-/* returns pointer to start of pos. entry of tcg log */
+ 
 static void *tpm1_bios_measurements_start(struct seq_file *m, loff_t *pos)
 {
 	loff_t i = 0;
@@ -78,11 +64,11 @@ static void *tpm1_bios_measurements_start(struct seq_file *m, loff_t *pos)
 	u32 converted_event_size;
 	u32 converted_event_type;
 
-	/* read over *pos measurements */
+	 
 	do {
 		event = addr;
 
-		/* check if current entry is valid */
+		 
 		if (addr + sizeof(struct tcpa_event) > limit)
 			return NULL;
 
@@ -120,7 +106,7 @@ static void *tpm1_bios_measurements_next(struct seq_file *m, void *v,
 
 	v += sizeof(struct tcpa_event) + converted_event_size;
 
-	/* now check if current entry is valid */
+	 
 	if ((v + sizeof(struct tcpa_event)) > limit)
 		return NULL;
 
@@ -144,7 +130,7 @@ static int get_event_name(char *dest, struct tcpa_event *event,
 			unsigned char * event_entry)
 {
 	const char *name = "";
-	/* 41 so there is room for 40 data and 1 nul */
+	 
 	char data[41] = "";
 	int i, n_len = 0, d_len = 0;
 	struct tcpa_pc_event *pc_event;
@@ -180,7 +166,7 @@ static int get_event_name(char *dest, struct tcpa_event *event,
 	case EVENT_TAG:
 		pc_event = (struct tcpa_pc_event *)event_entry;
 
-		/* ToDo Row data -> Base64 */
+		 
 
 		switch (do_endian_conversion(pc_event->event_id)) {
 		case SMBIOS:
@@ -194,7 +180,7 @@ static int get_event_name(char *dest, struct tcpa_event *event,
 							(pc_event->event_id)];
 			n_len = strlen(name);
 			break;
-		/* hash data */
+		 
 		case POST_BIOS_ROM:
 		case ESCD:
 		case OPTION_ROM_MICROCODE:
@@ -229,7 +215,7 @@ static int tpm1_binary_bios_measurements_show(struct seq_file *m, void *v)
 
 	memcpy(&temp_event, event, sizeof(struct tcpa_event));
 
-	/* convert raw integers for endianness */
+	 
 	temp_event.pcr_index = do_endian_conversion(event->pcr_index);
 	temp_event.event_type = do_endian_conversion(event->event_type);
 	temp_event.event_size = do_endian_conversion(event->event_size);
@@ -263,18 +249,18 @@ static int tpm1_ascii_bios_measurements_show(struct seq_file *m, void *v)
 		return -EFAULT;
 	}
 
-	/* 1st: PCR */
+	 
 	seq_printf(m, "%2d ", do_endian_conversion(event->pcr_index));
 
-	/* 2nd: SHA1 */
+	 
 	seq_printf(m, "%20phN", event->pcr_value);
 
-	/* 3rd: event type identifier */
+	 
 	seq_printf(m, " %02x", do_endian_conversion(event->event_type));
 
 	get_event_name(eventname, event, event_entry);
 
-	/* 4th: eventname <= max + \'0' delimiter */
+	 
 	seq_printf(m, " %s\n", eventname);
 
 	kfree(eventname);

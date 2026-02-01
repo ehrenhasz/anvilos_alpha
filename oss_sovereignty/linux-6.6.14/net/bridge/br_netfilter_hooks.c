@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Handle firewalling
- *	Linux ethernet bridge
- *
- *	Authors:
- *	Lennert Buytenhek		<buytenh@gnu.org>
- *	Bart De Schuymer		<bdschuym@pandora.be>
- *
- *	Lennert dedicates this file to Kerstin Wurdinger.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -52,12 +43,12 @@ struct brnf_net {
 	struct ctl_table_header *ctl_hdr;
 #endif
 
-	/* default value is 1 */
+	 
 	int call_iptables;
 	int call_ip6tables;
 	int call_arptables;
 
-	/* default value is 0 */
+	 
 	int filter_vlan_tagged;
 	int filter_pppoe_tagged;
 	int pass_vlan_indev;
@@ -129,7 +120,7 @@ static inline bool is_pppoe_ipv6(const struct sk_buff *skb,
 	       brnet->filter_pppoe_tagged;
 }
 
-/* largest possible L2 header, see br_nf_dev_queue_xmit() */
+ 
 #define NF_BRIDGE_MAX_MAC_HEADER_LENGTH (PPPOE_SES_HLEN + ETH_HLEN)
 
 struct brnf_frag_data {
@@ -188,10 +179,7 @@ static inline void nf_bridge_pull_encap_header_rcsum(struct sk_buff *skb)
 	skb->network_header += len;
 }
 
-/* When handing a packet over to the IP layer
- * check whether we have a skb that is in the
- * expected format
- */
+ 
 
 static int br_validate_ipv4(struct net *net, struct sk_buff *skb)
 {
@@ -203,7 +191,7 @@ static int br_validate_ipv4(struct net *net, struct sk_buff *skb)
 
 	iph = ip_hdr(skb);
 
-	/* Basic sanity checks */
+	 
 	if (iph->ihl < 5 || iph->version != 4)
 		goto inhdr_error;
 
@@ -227,11 +215,7 @@ static int br_validate_ipv4(struct net *net, struct sk_buff *skb)
 	}
 
 	memset(IPCB(skb), 0, sizeof(struct inet_skb_parm));
-	/* We should really parse IP options here but until
-	 * somebody who actually uses IP options complains to
-	 * us we'll just silently ignore the options because
-	 * we're lazy!
-	 */
+	 
 	return 0;
 
 csum_error:
@@ -258,11 +242,7 @@ void nf_bridge_update_protocol(struct sk_buff *skb)
 	}
 }
 
-/* Obtain the correct destination MAC address, while preserving the original
- * source MAC address. If we already know this address, we just copy it. If we
- * don't, we use the neighbour framework to find out. In both cases, we make
- * sure that br_handle_frame_finish() is called afterwards.
- */
+ 
 int br_nf_pre_routing_finish_bridge(struct net *net, struct sock *sk, struct sk_buff *skb)
 {
 	struct neighbour *neigh;
@@ -292,17 +272,14 @@ int br_nf_pre_routing_finish_bridge(struct net *net, struct sock *sk, struct sk_
 
 			ret = br_handle_frame_finish(net, sk, skb);
 		} else {
-			/* the neighbour function below overwrites the complete
-			 * MAC header, so we save the Ethernet source address and
-			 * protocol number.
-			 */
+			 
 			skb_copy_from_linear_data_offset(skb,
 							 -(ETH_HLEN-ETH_ALEN),
 							 nf_bridge->neigh_header,
 							 ETH_HLEN-ETH_ALEN);
-			/* tell br_dev_xmit to continue with forwarding */
+			 
 			nf_bridge->bridged_dnat = 1;
-			/* FIXME Need to refragment */
+			 
 			ret = READ_ONCE(neigh->output)(neigh, skb);
 		}
 		neigh_release(neigh);
@@ -320,45 +297,7 @@ br_nf_ipv4_daddr_was_changed(const struct sk_buff *skb,
 	return ip_hdr(skb)->daddr != nf_bridge->ipv4_daddr;
 }
 
-/* This requires some explaining. If DNAT has taken place,
- * we will need to fix up the destination Ethernet address.
- * This is also true when SNAT takes place (for the reply direction).
- *
- * There are two cases to consider:
- * 1. The packet was DNAT'ed to a device in the same bridge
- *    port group as it was received on. We can still bridge
- *    the packet.
- * 2. The packet was DNAT'ed to a different device, either
- *    a non-bridged device or another bridge port group.
- *    The packet will need to be routed.
- *
- * The correct way of distinguishing between these two cases is to
- * call ip_route_input() and to look at skb->dst->dev, which is
- * changed to the destination device if ip_route_input() succeeds.
- *
- * Let's first consider the case that ip_route_input() succeeds:
- *
- * If the output device equals the logical bridge device the packet
- * came in on, we can consider this bridging. The corresponding MAC
- * address will be obtained in br_nf_pre_routing_finish_bridge.
- * Otherwise, the packet is considered to be routed and we just
- * change the destination MAC address so that the packet will
- * later be passed up to the IP stack to be routed. For a redirected
- * packet, ip_route_input() will give back the localhost as output device,
- * which differs from the bridge device.
- *
- * Let's now consider the case that ip_route_input() fails:
- *
- * This can be because the destination address is martian, in which case
- * the packet will be dropped.
- * If IP forwarding is disabled, ip_route_input() will fail, while
- * ip_route_output_key() can return success. The source
- * address for ip_route_output_key() is set to zero, so ip_route_output_key()
- * thinks we're handling a locally generated packet and won't care
- * if IP forwarding is enabled. If the output device equals the logical bridge
- * device, we proceed as if ip_route_input() succeeded. If it differs from the
- * logical bridge port or if ip_route_output_key() fails we drop the packet.
- */
+ 
 static int br_nf_pre_routing_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
 {
 	struct net_device *dev = skb->dev, *br_indev;
@@ -384,21 +323,14 @@ static int br_nf_pre_routing_finish(struct net *net, struct sock *sk, struct sk_
 		if ((err = ip_route_input(skb, iph->daddr, iph->saddr, iph->tos, dev))) {
 			struct in_device *in_dev = __in_dev_get_rcu(dev);
 
-			/* If err equals -EHOSTUNREACH the error is due to a
-			 * martian destination or due to the fact that
-			 * forwarding is disabled. For most martian packets,
-			 * ip_route_output_key() will fail. It won't fail for 2 types of
-			 * martian destinations: loopback destinations and destination
-			 * 0.0.0.0. In both cases the packet will be dropped because the
-			 * destination is the loopback device and not the bridge. */
+			 
 			if (err != -EHOSTUNREACH || !in_dev || IN_DEV_FORWARD(in_dev))
 				goto free_skb;
 
 			rt = ip_route_output(net, iph->daddr, 0,
 					     RT_TOS(iph->tos), 0);
 			if (!IS_ERR(rt)) {
-				/* - Bridged-and-DNAT'ed traffic doesn't
-				 *   require ip_forwarding. */
+				 
 				if (rt->dst.dev == dev) {
 					skb_dst_drop(skb);
 					skb_dst_set(skb, &rt->dst);
@@ -460,7 +392,7 @@ static struct net_device *brnf_get_logical_dev(struct sk_buff *skb,
 	return vlan ? vlan : br;
 }
 
-/* Some common code for IPv4/IPv6 */
+ 
 struct net_device *setup_pre_routing(struct sk_buff *skb, const struct net *net)
 {
 	struct nf_bridge_info *nf_bridge = nf_bridge_info_get(skb);
@@ -479,17 +411,12 @@ struct net_device *setup_pre_routing(struct sk_buff *skb, const struct net *net)
 	else if (skb->protocol == htons(ETH_P_PPP_SES))
 		nf_bridge->orig_proto = BRNF_PROTO_PPPOE;
 
-	/* Must drop socket now because of tproxy. */
+	 
 	skb_orphan(skb);
 	return skb->dev;
 }
 
-/* Direct IPv6 traffic to br_nf_pre_routing_ipv6.
- * Replicate the checks that IPv4 does on packet reception.
- * Set skb->dev to the bridge device (i.e. parent of the
- * receiving device) to make netfilter happy, the REDIRECT
- * target in particular.  Save the original destination IP
- * address to be able to detect DNAT afterwards. */
+ 
 static unsigned int br_nf_pre_routing(void *priv,
 				      struct sk_buff *skb,
 				      const struct nf_hook_state *state)
@@ -554,7 +481,7 @@ static unsigned int br_nf_pre_routing(void *priv,
 }
 
 
-/* PF_BRIDGE/FORWARD *************************************************/
+ 
 static int br_nf_forward_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
 {
 	struct nf_bridge_info *nf_bridge = nf_bridge_info_get(skb);
@@ -589,11 +516,7 @@ static int br_nf_forward_finish(struct net *net, struct sock *sk, struct sk_buff
 }
 
 
-/* This is the 'purely bridged' case.  For IP, we pass the packet to
- * netfilter with indev and outdev set to the bridge device,
- * but we are still able to filter on the 'real' indev/outdev
- * because of the physdev module. For ARP, indev and outdev are the
- * bridge ports. */
+ 
 static unsigned int br_nf_forward_ip(void *priv,
 				     struct sk_buff *skb,
 				     const struct nf_hook_state *state)
@@ -606,8 +529,7 @@ static unsigned int br_nf_forward_ip(void *priv,
 	if (!nf_bridge)
 		return NF_ACCEPT;
 
-	/* Need exclusive nf_bridge_info since we might have multiple
-	 * different physoutdevs. */
+	 
 	if (!nf_bridge_unshare(skb))
 		return NF_DROP;
 
@@ -773,9 +695,7 @@ static int br_nf_dev_queue_xmit(struct net *net, struct sock *sk, struct sk_buff
 		return br_dev_queue_push_xmit(net, sk, skb);
 	}
 
-	/* This is wrong! We should preserve the original fragment
-	 * boundaries by preserving frag_list rather than refragmenting.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_NF_DEFRAG_IPV4) &&
 	    skb->protocol == htons(ETH_P_IP)) {
 		struct brnf_frag_data *data;
@@ -832,7 +752,7 @@ static int br_nf_dev_queue_xmit(struct net *net, struct sock *sk, struct sk_buff
 	return 0;
 }
 
-/* PF_BRIDGE/POST_ROUTING ********************************************/
+ 
 static unsigned int br_nf_post_routing(void *priv,
 				       struct sk_buff *skb,
 				       const struct nf_hook_state *state)
@@ -841,11 +761,7 @@ static unsigned int br_nf_post_routing(void *priv,
 	struct net_device *realoutdev = bridge_parent(skb->dev);
 	u_int8_t pf;
 
-	/* if nf_bridge is set, but ->physoutdev is NULL, this packet came in
-	 * on a bridge, but was delivered locally and is now being routed:
-	 *
-	 * POST_ROUTING was already invoked from the ip stack.
-	 */
+	 
 	if (!nf_bridge || !nf_bridge->physoutdev)
 		return NF_ACCEPT;
 
@@ -879,9 +795,8 @@ static unsigned int br_nf_post_routing(void *priv,
 	return NF_STOLEN;
 }
 
-/* IP/SABOTAGE *****************************************************/
-/* Don't hand locally destined packets to PF_INET(6)/PRE_ROUTING
- * for the second time. */
+ 
+ 
 static unsigned int ip_sabotage_in(void *priv,
 				   struct sk_buff *skb,
 				   const struct nf_hook_state *state)
@@ -904,15 +819,7 @@ static unsigned int ip_sabotage_in(void *priv,
 	return NF_ACCEPT;
 }
 
-/* This is called when br_netfilter has called into iptables/netfilter,
- * and DNAT has taken place on a bridge-forwarded packet.
- *
- * neigh->output has created a new MAC header, with local br0 MAC
- * as saddr.
- *
- * This restores the original MAC saddr of the bridged packet
- * before invoking bridge forward logic to transmit the packet.
- */
+ 
 static void br_nf_pre_routing_finish_bridge_slow(struct sk_buff *skb)
 {
 	struct nf_bridge_info *nf_bridge = nf_bridge_info_get(skb);
@@ -953,8 +860,7 @@ static const struct nf_br_ops br_ops = {
 	.br_dev_xmit_hook =	br_nf_dev_xmit,
 };
 
-/* For br_nf_post_routing, we need (prio = NF_BR_PRI_LAST), because
- * br_dev_queue_push_xmit is called afterwards */
+ 
 static const struct nf_hook_ops br_nf_ops[] = {
 	{
 		.hook = br_nf_pre_routing,
@@ -1024,11 +930,7 @@ static struct notifier_block brnf_notifier __read_mostly = {
 	.notifier_call = brnf_device_event,
 };
 
-/* recursively invokes nf_hook_slow (again), skipping already-called
- * hooks (< NF_BR_PRI_BRNF).
- *
- * Called with rcu read lock held.
- */
+ 
 int br_nf_hook_thresh(unsigned int hook, struct net *net,
 		      struct sock *sk, struct sk_buff *skb,
 		      struct net_device *indev,
@@ -1048,19 +950,17 @@ int br_nf_hook_thresh(unsigned int hook, struct net *net,
 
 	ops = nf_hook_entries_get_hook_ops(e);
 	for (i = 0; i < e->num_hook_entries; i++) {
-		/* These hooks have already been called */
+		 
 		if (ops[i]->priority < NF_BR_PRI_BRNF)
 			continue;
 
-		/* These hooks have not been called yet, run them. */
+		 
 		if (ops[i]->priority > NF_BR_PRI_BRNF)
 			break;
 
-		/* take a closer look at NF_BR_PRI_BRNF. */
+		 
 		if (ops[i]->hook == br_nf_pre_routing) {
-			/* This hook diverted the skb to this function,
-			 * hooks after this have not been run yet.
-			 */
+			 
 			i++;
 			break;
 		}

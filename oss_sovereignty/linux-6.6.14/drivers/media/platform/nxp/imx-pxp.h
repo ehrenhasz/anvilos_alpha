@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Freescale PXP Register Definitions
- *
- * based on pxp_dma_v3.h, Xml Revision: 1.77, Template Revision: 1.3
- *
- * Copyright 2014-2015 Freescale Semiconductor, Inc. All Rights Reserved.
- */
+ 
+ 
 
 #ifndef __IMX_PXP_H__
 #define __IMX_PXP_H__
@@ -1682,4 +1676,4 @@
 #define BF_PXP_VERSION_STEP(v)  \
 	(((v) << 0) & BM_PXP_VERSION_STEP)
 
-#endif /* __IMX_PXP_H__ */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/drivers/cpufreq/cpufreq_performance.c
- *
- *  Copyright (C) 2002 - 2003 Dominik Brodowski <linux@brodo.de>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 

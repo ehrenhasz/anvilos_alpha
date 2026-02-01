@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * FB driver for the uPD161704 LCD Controller
- *
- * Copyright (C) 2014 Seong-Woo Kim
- *
- * Based on fb_ili9325.c by Noralf Tronnes
- * Based on ili9325.c by Jeroen Domburg
- * Init code from UTFT library by Henning Karlsen
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -25,14 +17,14 @@ static int init_display(struct fbtft_par *par)
 {
 	par->fbtftops.reset(par);
 
-	/* Initialization sequence from Lib_UTFT */
+	 
 
-	/* oscillator start */
-	write_reg(par, 0x000, 0x0001);	/*oscillator 0: stop, 1: operation */
+	 
+	write_reg(par, 0x000, 0x0001);	 
 	mdelay(10);
 
-	/* Power settings */
-	write_reg(par, 0x100, 0x0000); /* power supply setup */
+	 
+	write_reg(par, 0x100, 0x0000);  
 	write_reg(par, 0x101, 0x0000);
 	write_reg(par, 0x102, 0x3110);
 	write_reg(par, 0x103, 0xe200);
@@ -43,7 +35,7 @@ static int init_display(struct fbtft_par *par)
 
 	write_reg(par, 0x100, 0x3120);
 	mdelay(80);
-	/* Display control */
+	 
 	write_reg(par, 0x001, 0x0100);
 	write_reg(par, 0x002, 0x0000);
 	write_reg(par, 0x003, 0x1230);
@@ -54,7 +46,7 @@ static int init_display(struct fbtft_par *par)
 	write_reg(par, 0x00b, 0x0000);
 	write_reg(par, 0x00c, 0x0000);
 	write_reg(par, 0x00d, 0x0018);
-	/* LTPS control settings */
+	 
 	write_reg(par, 0x012, 0x0000);
 	write_reg(par, 0x013, 0x0000);
 	write_reg(par, 0x018, 0x0000);
@@ -72,7 +64,7 @@ static int init_display(struct fbtft_par *par)
 	write_reg(par, 0x216, 0x0000);
 	write_reg(par, 0x217, 0x0000);
 
-	/* Gray scale settings */
+	 
 	write_reg(par, 0x300, 0x5343);
 	write_reg(par, 0x301, 0x1021);
 	write_reg(par, 0x302, 0x0003);
@@ -84,11 +76,11 @@ static int init_display(struct fbtft_par *par)
 	write_reg(par, 0x308, 0x1201);
 	write_reg(par, 0x309, 0x050a);
 
-	/* RAM access settings */
+	 
 	write_reg(par, 0x400, 0x4027);
 	write_reg(par, 0x401, 0x0000);
-	write_reg(par, 0x402, 0x0000);  /* First screen drive position (1) */
-	write_reg(par, 0x403, 0x013f);  /* First screen drive position (2) */
+	write_reg(par, 0x402, 0x0000);   
+	write_reg(par, 0x403, 0x013f);   
 	write_reg(par, 0x404, 0x0000);
 
 	write_reg(par, 0x200, 0x0000);
@@ -104,8 +96,8 @@ static int init_display(struct fbtft_par *par)
 static void set_addr_win(struct fbtft_par *par, int xs, int ys, int xe, int ye)
 {
 	switch (par->info->var.rotate) {
-	/* R200h = Horizontal GRAM Start Address */
-	/* R201h = Vertical GRAM Start Address */
+	 
+	 
 	case 0:
 		write_reg(par, 0x0200, xs);
 		write_reg(par, 0x0201, ys);
@@ -123,13 +115,13 @@ static void set_addr_win(struct fbtft_par *par, int xs, int ys, int xe, int ye)
 		write_reg(par, 0x0201, HEIGHT - 1 - xs);
 		break;
 	}
-	write_reg(par, 0x202); /* Write Data to GRAM */
+	write_reg(par, 0x202);  
 }
 
 static int set_var(struct fbtft_par *par)
 {
 	switch (par->info->var.rotate) {
-	/* AM: GRAM update direction */
+	 
 	case 0:
 		write_reg(par, 0x003, 0x1230);
 		break;

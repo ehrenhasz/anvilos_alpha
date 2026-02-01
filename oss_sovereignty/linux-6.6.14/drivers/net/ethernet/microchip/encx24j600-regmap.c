@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Register map access API - ENCX24J600 support
- *
- * Copyright 2015 Gridpoint
- *
- * Author: Jon Ringle <jringle@gridpoint.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/errno.h>
@@ -75,9 +69,7 @@ static int regmap_encx24j600_sfr_read(void *context, u8 reg, u8 *val,
 		if (unlikely(ret))
 			return ret;
 	} else {
-		/* Translate registers that are more effecient using
-		 * 3-byte SPI commands
-		 */
+		 
 		switch (reg) {
 		case EGPRDPT:
 			cmd = RGPRDPT; break;
@@ -129,9 +121,7 @@ static int regmap_encx24j600_sfr_update(struct encx24j600_context *ctx,
 		if (unlikely(ret))
 			return ret;
 	} else {
-		/* Translate registers that are more effecient using
-		 * 3-byte SPI commands
-		 */
+		 
 		switch (reg) {
 		case EGPRDPT:
 			cmd = WGPRDPT; break;
@@ -225,7 +215,7 @@ int regmap_encx24j600_spi_write(void *context, u8 reg, const u8 *data,
 	if (reg < 0xc0)
 		return encx24j600_cmdn(ctx, reg, data, count);
 
-	/* SPI 1-byte command. Ignore data */
+	 
 	return spi_write(ctx->spi, &reg, 1);
 }
 EXPORT_SYMBOL_GPL(regmap_encx24j600_spi_write);
@@ -318,10 +308,10 @@ static bool encx24j600_regmap_volatile(struct device *dev, unsigned int reg)
 	case EDMACS:
 	case ETXSTAT:
 	case ETXWIRE:
-	case ECON1:	/* Can be modified via single byte cmds */
-	case ECON2:	/* Can be modified via single byte cmds */
+	case ECON1:	 
+	case ECON2:	 
 	case ESTAT:
-	case EIR:	/* Can be modified via single byte cmds */
+	case EIR:	 
 	case MIRD:
 	case MISTAT:
 		return true;
@@ -334,7 +324,7 @@ static bool encx24j600_regmap_volatile(struct device *dev, unsigned int reg)
 
 static bool encx24j600_regmap_precious(struct device *dev, unsigned int reg)
 {
-	/* single byte cmds are precious */
+	 
 	if (((reg >= 0xc0) && (reg < 0xc8)) ||
 	    ((reg >= 0xca) && (reg < 0xf0)))
 		return true;

@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020 Intel Corporation.
- *
- * Limitations:
- * - The hardware supports fixed period & configures only 2-wire mode.
- * - Supports normal polarity. Does not support changing polarity.
- * - When PWM is disabled, output of PWM will become 0(inactive). It doesn't
- *   keep track of running period.
- * - When duty cycle is changed, PWM output may be a mix of previous setting
- *   and new setting for the first period. From second period, the output is
- *   based on new setting.
- * - It is a dedicated PWM fan controller. There are no other consumers for
- *   this PWM controller.
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -68,7 +55,7 @@ static int lgm_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	u32 duty_cycle, val;
 	int ret;
 
-	/* The hardware only supports normal polarity and fixed period. */
+	 
 	if (state->polarity != PWM_POLARITY_NORMAL || state->period < pc->period)
 		return -EINVAL;
 
@@ -95,7 +82,7 @@ static int lgm_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
 	state->enabled = regmap_test_bits(pc->regmap, LGM_PWM_FAN_CON0,
 					  LGM_PWM_FAN_EN_EN);
 	state->polarity = PWM_POLARITY_NORMAL;
-	state->period = pc->period; /* fixed period */
+	state->period = pc->period;  
 
 	regmap_read(pc->regmap, LGM_PWM_FAN_CON0, &val);
 	duty = FIELD_GET(LGM_PWM_FAN_DC_MSK, val);

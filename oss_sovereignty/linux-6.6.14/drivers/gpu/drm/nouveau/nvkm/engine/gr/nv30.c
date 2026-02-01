@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+
 #include "nv20.h"
 #include "regs.h"
 
@@ -7,9 +7,7 @@
 #include <engine/fifo/chan.h>
 #include <subdev/fb.h>
 
-/*******************************************************************************
- * PGRAPH context
- ******************************************************************************/
+ 
 
 static const struct nvkm_object_func
 nv30_gr_chan = {
@@ -96,9 +94,7 @@ nv30_gr_chan_new(struct nvkm_gr *base, struct nvkm_chan *fifoch,
 	return 0;
 }
 
-/*******************************************************************************
- * PGRAPH engine/subdev functions
- ******************************************************************************/
+ 
 
 int
 nv30_gr_init(struct nvkm_gr *base)
@@ -123,7 +119,7 @@ nv30_gr_init(struct nvkm_gr *base)
 	nvkm_wr32(device, 0x400B84, 0x0c000000);
 	nvkm_wr32(device, 0x400098, 0x00000000);
 	nvkm_wr32(device, 0x40009C, 0x0005ad00);
-	nvkm_wr32(device, 0x400B88, 0x62ff00ff); /* suspiciously like PGRAPH_DEBUG_2 */
+	nvkm_wr32(device, 0x400B88, 0x62ff00ff);  
 	nvkm_wr32(device, 0x4000a0, 0x00000000);
 	nvkm_wr32(device, 0x4000a4, 0x00000008);
 	nvkm_wr32(device, 0x4008a8, 0xb784a400);
@@ -148,8 +144,8 @@ nv30_gr_init(struct nvkm_gr *base)
 	nvkm_wr32(device, NV10_PGRAPH_STATE      , 0xFFFFFFFF);
 	nvkm_wr32(device, 0x0040075c             , 0x00000001);
 
-	/* begin RAM config */
-	/* vramsz = pci_resource_len(gr->dev->pdev, 1) - 1; */
+	 
+	 
 	nvkm_wr32(device, 0x4009A4, nvkm_rd32(device, 0x100200));
 	nvkm_wr32(device, 0x4009A8, nvkm_rd32(device, 0x100204));
 	if (device->chipset != 0x34) {
@@ -171,24 +167,24 @@ nv30_gr = {
 	.tile = nv20_gr_tile,
 	.chan_new = nv30_gr_chan_new,
 	.sclass = {
-		{ -1, -1, 0x0012, &nv04_gr_object }, /* beta1 */
-		{ -1, -1, 0x0019, &nv04_gr_object }, /* clip */
-		{ -1, -1, 0x0030, &nv04_gr_object }, /* null */
-		{ -1, -1, 0x0039, &nv04_gr_object }, /* m2mf */
-		{ -1, -1, 0x0043, &nv04_gr_object }, /* rop */
-		{ -1, -1, 0x0044, &nv04_gr_object }, /* patt */
-		{ -1, -1, 0x004a, &nv04_gr_object }, /* gdi */
-		{ -1, -1, 0x0062, &nv04_gr_object }, /* surf2d */
-		{ -1, -1, 0x0072, &nv04_gr_object }, /* beta4 */
-		{ -1, -1, 0x0089, &nv04_gr_object }, /* sifm */
-		{ -1, -1, 0x008a, &nv04_gr_object }, /* ifc */
-		{ -1, -1, 0x009f, &nv04_gr_object }, /* imageblit */
-		{ -1, -1, 0x0362, &nv04_gr_object }, /* surf2d (nv30) */
-		{ -1, -1, 0x0389, &nv04_gr_object }, /* sifm (nv30) */
-		{ -1, -1, 0x038a, &nv04_gr_object }, /* ifc (nv30) */
-		{ -1, -1, 0x039e, &nv04_gr_object }, /* swzsurf (nv30) */
-		{ -1, -1, 0x0397, &nv04_gr_object }, /* rankine */
-		{ -1, -1, 0x0597, &nv04_gr_object }, /* kelvin */
+		{ -1, -1, 0x0012, &nv04_gr_object },  
+		{ -1, -1, 0x0019, &nv04_gr_object },  
+		{ -1, -1, 0x0030, &nv04_gr_object },  
+		{ -1, -1, 0x0039, &nv04_gr_object },  
+		{ -1, -1, 0x0043, &nv04_gr_object },  
+		{ -1, -1, 0x0044, &nv04_gr_object },  
+		{ -1, -1, 0x004a, &nv04_gr_object },  
+		{ -1, -1, 0x0062, &nv04_gr_object },  
+		{ -1, -1, 0x0072, &nv04_gr_object },  
+		{ -1, -1, 0x0089, &nv04_gr_object },  
+		{ -1, -1, 0x008a, &nv04_gr_object },  
+		{ -1, -1, 0x009f, &nv04_gr_object },  
+		{ -1, -1, 0x0362, &nv04_gr_object },  
+		{ -1, -1, 0x0389, &nv04_gr_object },  
+		{ -1, -1, 0x038a, &nv04_gr_object },  
+		{ -1, -1, 0x039e, &nv04_gr_object },  
+		{ -1, -1, 0x0397, &nv04_gr_object },  
+		{ -1, -1, 0x0597, &nv04_gr_object },  
 		{}
 	}
 };

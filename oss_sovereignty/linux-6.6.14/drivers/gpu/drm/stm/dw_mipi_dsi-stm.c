@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2017
- *
- * Authors: Philippe Cornu <philippe.cornu@st.com>
- *          Yannick Fertre <yannick.fertre@st.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/iopoll.h>
@@ -19,37 +14,37 @@
 #include <drm/drm_mipi_dsi.h>
 #include <drm/drm_print.h>
 
-#define HWVER_130			0x31333000	/* IP version 1.30 */
-#define HWVER_131			0x31333100	/* IP version 1.31 */
+#define HWVER_130			0x31333000	 
+#define HWVER_131			0x31333100	 
 
-/* DSI digital registers & bit definitions */
+ 
 #define DSI_VERSION			0x00
 #define VERSION				GENMASK(31, 8)
 
-/* DSI wrapper registers & bit definitions */
-/* Note: registers are named as in the Reference Manual */
-#define DSI_WCFGR	0x0400		/* Wrapper ConFiGuration Reg */
-#define WCFGR_DSIM	BIT(0)		/* DSI Mode */
-#define WCFGR_COLMUX	GENMASK(3, 1)	/* COLor MUltipleXing */
+ 
+ 
+#define DSI_WCFGR	0x0400		 
+#define WCFGR_DSIM	BIT(0)		 
+#define WCFGR_COLMUX	GENMASK(3, 1)	 
 
-#define DSI_WCR		0x0404		/* Wrapper Control Reg */
-#define WCR_DSIEN	BIT(3)		/* DSI ENable */
+#define DSI_WCR		0x0404		 
+#define WCR_DSIEN	BIT(3)		 
 
-#define DSI_WISR	0x040C		/* Wrapper Interrupt and Status Reg */
-#define WISR_PLLLS	BIT(8)		/* PLL Lock Status */
-#define WISR_RRS	BIT(12)		/* Regulator Ready Status */
+#define DSI_WISR	0x040C		 
+#define WISR_PLLLS	BIT(8)		 
+#define WISR_RRS	BIT(12)		 
 
-#define DSI_WPCR0	0x0418		/* Wrapper Phy Conf Reg 0 */
-#define WPCR0_UIX4	GENMASK(5, 0)	/* Unit Interval X 4 */
-#define WPCR0_TDDL	BIT(16)		/* Turn Disable Data Lanes */
+#define DSI_WPCR0	0x0418		 
+#define WPCR0_UIX4	GENMASK(5, 0)	 
+#define WPCR0_TDDL	BIT(16)		 
 
-#define DSI_WRPCR	0x0430		/* Wrapper Regulator & Pll Ctrl Reg */
-#define WRPCR_PLLEN	BIT(0)		/* PLL ENable */
-#define WRPCR_NDIV	GENMASK(8, 2)	/* pll loop DIVision Factor */
-#define WRPCR_IDF	GENMASK(14, 11)	/* pll Input Division Factor */
-#define WRPCR_ODF	GENMASK(17, 16)	/* pll Output Division Factor */
-#define WRPCR_REGEN	BIT(24)		/* REGulator ENable */
-#define WRPCR_BGREN	BIT(28)		/* BandGap Reference ENable */
+#define DSI_WRPCR	0x0430		 
+#define WRPCR_PLLEN	BIT(0)		 
+#define WRPCR_NDIV	GENMASK(8, 2)	 
+#define WRPCR_IDF	GENMASK(14, 11)	 
+#define WRPCR_ODF	GENMASK(17, 16)	 
+#define WRPCR_REGEN	BIT(24)		 
+#define WRPCR_BGREN	BIT(28)		 
 #define IDF_MIN		1
 #define IDF_MAX		7
 #define NDIV_MIN	10
@@ -57,7 +52,7 @@
 #define ODF_MIN		1
 #define ODF_MAX		8
 
-/* dsi color format coding according to the datasheet */
+ 
 enum dsi_color {
 	DSI_RGB565_CONF1,
 	DSI_RGB565_CONF2,
@@ -70,7 +65,7 @@ enum dsi_color {
 #define LANE_MIN_KBPS	31250
 #define LANE_MAX_KBPS	500000
 
-/* Sleep & timeout for regulator on/off, pll lock/unlock & fifo empty */
+ 
 #define SLEEP_US	1000
 #define TIMEOUT_US	200000
 
@@ -131,7 +126,7 @@ static int dsi_pll_get_clkout_khz(int clkin_khz, int idf, int ndiv, int odf)
 {
 	int divisor = idf * odf;
 
-	/* prevent from division by 0 */
+	 
 	if (!divisor)
 		return 0;
 
@@ -143,27 +138,27 @@ static int dsi_pll_get_params(struct dw_mipi_dsi_stm *dsi,
 			      int *idf, int *ndiv, int *odf)
 {
 	int i, o, n, n_min, n_max;
-	int fvco_min, fvco_max, delta, best_delta; /* all in khz */
+	int fvco_min, fvco_max, delta, best_delta;  
 
-	/* Early checks preventing division by 0 & odd results */
+	 
 	if (clkin_khz <= 0 || clkout_khz <= 0)
 		return -EINVAL;
 
 	fvco_min = dsi->lane_min_kbps * 2 * ODF_MAX;
 	fvco_max = dsi->lane_max_kbps * 2 * ODF_MIN;
 
-	best_delta = 1000000; /* big started value (1000000khz) */
+	best_delta = 1000000;  
 
 	for (i = IDF_MIN; i <= IDF_MAX; i++) {
-		/* Compute ndiv range according to Fvco */
+		 
 		n_min = ((fvco_min * i) / (2 * clkin_khz)) + 1;
 		n_max = (fvco_max * i) / (2 * clkin_khz);
 
-		/* No need to continue idf loop if we reach ndiv max */
+		 
 		if (n_min >= NDIV_MAX)
 			break;
 
-		/* Clamp ndiv to valid values */
+		 
 		if (n_min < NDIV_MIN)
 			n_min = NDIV_MIN;
 		if (n_max > NDIV_MAX)
@@ -171,10 +166,10 @@ static int dsi_pll_get_params(struct dw_mipi_dsi_stm *dsi,
 
 		for (o = ODF_MIN; o <= ODF_MAX; o *= 2) {
 			n = DIV_ROUND_CLOSEST(i * o * clkout_khz, clkin_khz);
-			/* Check ndiv according to vco range */
+			 
 			if (n < n_min || n > n_max)
 				continue;
-			/* Check if new delta is better & saves parameters */
+			 
 			delta = dsi_pll_get_clkout_khz(clkin_khz, i, n, o) -
 				clkout_khz;
 			if (delta < 0)
@@ -185,7 +180,7 @@ static int dsi_pll_get_params(struct dw_mipi_dsi_stm *dsi,
 				*odf = o;
 				best_delta = delta;
 			}
-			/* fast return in case of "perfect result" */
+			 
 			if (!delta)
 				return 0;
 		}
@@ -200,14 +195,14 @@ static int dw_mipi_dsi_phy_init(void *priv_data)
 	u32 val;
 	int ret;
 
-	/* Enable the regulator */
+	 
 	dsi_set(dsi, DSI_WRPCR, WRPCR_REGEN | WRPCR_BGREN);
 	ret = readl_poll_timeout(dsi->base + DSI_WISR, val, val & WISR_RRS,
 				 SLEEP_US, TIMEOUT_US);
 	if (ret)
 		DRM_DEBUG_DRIVER("!TIMEOUT! waiting REGU, let's continue\n");
 
-	/* Enable the DSI PLL & wait for its lock */
+	 
 	dsi_set(dsi, DSI_WRPCR, WRPCR_PLLEN);
 	ret = readl_poll_timeout(dsi->base + DSI_WISR, val, val & WISR_PLLLS,
 				 SLEEP_US, TIMEOUT_US);
@@ -223,7 +218,7 @@ static void dw_mipi_dsi_phy_power_on(void *priv_data)
 
 	DRM_DEBUG_DRIVER("\n");
 
-	/* Enable the DSI wrapper */
+	 
 	dsi_set(dsi, DSI_WCR, WCR_DSIEN);
 }
 
@@ -233,7 +228,7 @@ static void dw_mipi_dsi_phy_power_off(void *priv_data)
 
 	DRM_DEBUG_DRIVER("\n");
 
-	/* Disable the DSI wrapper */
+	 
 	dsi_clear(dsi, DSI_WCR, WCR_DSIEN);
 }
 
@@ -249,11 +244,11 @@ dw_mipi_dsi_get_lane_mbps(void *priv_data, const struct drm_display_mode *mode,
 
 	pll_in_khz = (unsigned int)(clk_get_rate(dsi->pllref_clk) / 1000);
 
-	/* Compute requested pll out */
+	 
 	bpp = mipi_dsi_pixel_format_to_bpp(format);
 	pll_out_khz = mode->clock * bpp / lanes;
 
-	/* Add 20% to pll out to be higher than pixel bw (burst mode only) */
+	 
 	if (mode_flags & MIPI_DSI_MODE_VIDEO_BURST)
 		pll_out_khz = (pll_out_khz * 12) / 10;
 
@@ -266,7 +261,7 @@ dw_mipi_dsi_get_lane_mbps(void *priv_data, const struct drm_display_mode *mode,
 		DRM_WARN("Warning min phy mbps is used\n");
 	}
 
-	/* Compute best pll parameters */
+	 
 	idf = 0;
 	ndiv = 0;
 	odf = 0;
@@ -275,21 +270,21 @@ dw_mipi_dsi_get_lane_mbps(void *priv_data, const struct drm_display_mode *mode,
 	if (ret)
 		DRM_WARN("Warning dsi_pll_get_params(): bad params\n");
 
-	/* Get the adjusted pll out value */
+	 
 	pll_out_khz = dsi_pll_get_clkout_khz(pll_in_khz, idf, ndiv, odf);
 
-	/* Set the PLL division factors */
+	 
 	dsi_update_bits(dsi, DSI_WRPCR,	WRPCR_NDIV | WRPCR_IDF | WRPCR_ODF,
 			(ndiv << 2) | (idf << 11) | ((ffs(odf) - 1) << 16));
 
-	/* Compute uix4 & set the bit period in high-speed mode */
+	 
 	val = 4000000 / pll_out_khz;
 	dsi_update_bits(dsi, DSI_WPCR0, WPCR0_UIX4, val);
 
-	/* Select video mode by resetting DSIM bit */
+	 
 	dsi_clear(dsi, DSI_WCFGR, WCFGR_DSIM);
 
-	/* Select the color coding */
+	 
 	dsi_update_bits(dsi, DSI_WCFGR, WCFGR_COLMUX,
 			dsi_color_from_mipi(format) << 1);
 
@@ -307,13 +302,7 @@ static int
 dw_mipi_dsi_phy_get_timing(void *priv_data, unsigned int lane_mbps,
 			   struct dw_mipi_dsi_dphy_timing *timing)
 {
-	/*
-	 * From STM32MP157 datasheet, valid for STM32F469, STM32F7x9, STM32H747
-	 * phy_clkhs2lp_time = (272+136*UI)/(8*UI)
-	 * phy_clklp2hs_time = (512+40*UI)/(8*UI)
-	 * phy_hs2lp_time = (192+64*UI)/(8*UI)
-	 * phy_lp2hs_time = (256+32*UI)/(8*UI)
-	 */
+	 
 	timing->clk_hs2lp = DSI_PHY_DELAY(272, 136, lane_mbps);
 	timing->clk_lp2hs = DSI_PHY_DELAY(512, 40, lane_mbps);
 	timing->data_hs2lp = DSI_PHY_DELAY(192, 64, lane_mbps);
@@ -337,21 +326,21 @@ dw_mipi_dsi_stm_mode_valid(void *priv_data,
 	if (bpp < 0)
 		return MODE_BAD;
 
-	/* Compute requested pll out */
+	 
 	pll_out_khz = mode->clock * bpp / lanes;
 
 	if (pll_out_khz > dsi->lane_max_kbps)
 		return MODE_CLOCK_HIGH;
 
 	if (mode_flags & MIPI_DSI_MODE_VIDEO_BURST) {
-		/* Add 20% to pll out to be higher than pixel bw */
+		 
 		pll_out_khz = (pll_out_khz * 12) / 10;
 	} else {
 		if (pll_out_khz < dsi->lane_min_kbps)
 			return MODE_CLOCK_LOW;
 	}
 
-	/* Compute best pll parameters */
+	 
 	idf = 0;
 	ndiv = 0;
 	odf = 0;
@@ -367,37 +356,34 @@ dw_mipi_dsi_stm_mode_valid(void *priv_data,
 		int dsi_short_packet_size_px, hfp, hsync, hbp, delay_to_lp;
 		struct dw_mipi_dsi_dphy_timing dphy_timing;
 
-		/* Get the adjusted pll out value */
+		 
 		pll_out_khz = dsi_pll_get_clkout_khz(pll_in_khz, idf, ndiv, odf);
 
 		px_clock_hz = DIV_ROUND_CLOSEST_ULL(1000ULL * pll_out_khz * lanes, bpp);
 		target_px_clock_hz = mode->clock * 1000;
-		/*
-		 * Filter modes according to the clock value, particularly useful for
-		 * hdmi modes that require precise pixel clocks.
-		 */
+		 
 		if (px_clock_hz < target_px_clock_hz - CLK_TOLERANCE_HZ ||
 		    px_clock_hz > target_px_clock_hz + CLK_TOLERANCE_HZ)
 			return MODE_CLOCK_RANGE;
 
-		/* sync packets are codes as DSI short packets (4 bytes) */
+		 
 		dsi_short_packet_size_px = DIV_ROUND_UP(4 * BITS_PER_BYTE, bpp);
 
 		hfp = mode->hsync_start - mode->hdisplay;
 		hsync = mode->hsync_end - mode->hsync_start;
 		hbp = mode->htotal - mode->hsync_end;
 
-		/* hsync must be longer than 4 bytes HSS packets */
+		 
 		if (hsync < dsi_short_packet_size_px)
 			return MODE_HSYNC_NARROW;
 
 		if (mode_flags & MIPI_DSI_MODE_VIDEO_SYNC_PULSE) {
-			/* HBP must be longer than 4 bytes HSE packets */
+			 
 			if (hbp < dsi_short_packet_size_px)
 				return MODE_HSYNC_NARROW;
 			hbp -= dsi_short_packet_size_px;
 		} else {
-			/* With sync events HBP extends in the hsync */
+			 
 			hbp += hsync - dsi_short_packet_size_px;
 		}
 
@@ -405,11 +391,7 @@ dw_mipi_dsi_stm_mode_valid(void *priv_data,
 		ret = dw_mipi_dsi_phy_get_timing(priv_data, lane_mbps, &dphy_timing);
 		if (ret)
 			return MODE_ERROR;
-		/*
-		 * In non-burst mode DSI has to enter in LP during HFP
-		 * (horizontal front porch) or HBP (horizontal back porch) to
-		 * resync with LTDC pixel clock.
-		 */
+		 
 		delay_to_lp = DIV_ROUND_UP((dphy_timing.data_hs2lp + dphy_timing.data_lp2hs) *
 					   lanes * BITS_PER_BYTE, bpp);
 		if (hfp < delay_to_lp && hbp < delay_to_lp)
@@ -505,7 +487,7 @@ static int dw_mipi_dsi_stm_probe(struct platform_device *pdev)
 		goto err_dsi_probe;
 	}
 
-	/* set lane capabilities according to hw version */
+	 
 	dsi->lane_min_kbps = LANE_MIN_KBPS;
 	dsi->lane_max_kbps = LANE_MAX_KBPS;
 	if (dsi->hw_version == HWVER_131) {

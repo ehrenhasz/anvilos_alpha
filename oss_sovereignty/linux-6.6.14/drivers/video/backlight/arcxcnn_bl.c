@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Backlight driver for ArcticSand ARC_X_C_0N_0N Devices
- *
- * Copyright 2016 ArcticSand, Inc.
- * Author : Brian Dodge <bdodge@arcticsand.com>
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/err.h>
@@ -17,18 +12,7 @@ enum arcxcnn_chip_id {
 	ARC2C0608
 };
 
-/**
- * struct arcxcnn_platform_data
- * @name		: Backlight driver name (NULL will use default)
- * @initial_brightness	: initial value of backlight brightness
- * @leden		: initial LED string enables, upper bit is global on/off
- * @led_config_0	: fading speed (period between intensity steps)
- * @led_config_1	: misc settings, see datasheet
- * @dim_freq		: pwm dimming frequency if in pwm mode
- * @comp_config		: misc config, see datasheet
- * @filter_config	: RC/PWM filter config, see datasheet
- * @trim_config		: full scale current trim, see datasheet
- */
+ 
 struct arcxcnn_platform_data {
 	const char *name;
 	u16 initial_brightness;
@@ -41,28 +25,28 @@ struct arcxcnn_platform_data {
 	u8	trim_config;
 };
 
-#define ARCXCNN_CMD		0x00	/* Command Register */
-#define ARCXCNN_CMD_STDBY	0x80	/*   I2C Standby */
-#define ARCXCNN_CMD_RESET	0x40	/*   Reset */
-#define ARCXCNN_CMD_BOOST	0x10	/*   Boost */
-#define ARCXCNN_CMD_OVP_MASK	0x0C	/*   --- Over Voltage Threshold */
-#define ARCXCNN_CMD_OVP_XXV	0x0C	/*   <rsvrd> Over Voltage Threshold */
-#define ARCXCNN_CMD_OVP_20V	0x08	/*   20v Over Voltage Threshold */
-#define ARCXCNN_CMD_OVP_24V	0x04	/*   24v Over Voltage Threshold */
-#define ARCXCNN_CMD_OVP_31V	0x00	/*   31.4v Over Voltage Threshold */
-#define ARCXCNN_CMD_EXT_COMP	0x01	/*   part (0) or full (1) ext. comp */
+#define ARCXCNN_CMD		0x00	 
+#define ARCXCNN_CMD_STDBY	0x80	 
+#define ARCXCNN_CMD_RESET	0x40	 
+#define ARCXCNN_CMD_BOOST	0x10	 
+#define ARCXCNN_CMD_OVP_MASK	0x0C	 
+#define ARCXCNN_CMD_OVP_XXV	0x0C	 
+#define ARCXCNN_CMD_OVP_20V	0x08	 
+#define ARCXCNN_CMD_OVP_24V	0x04	 
+#define ARCXCNN_CMD_OVP_31V	0x00	 
+#define ARCXCNN_CMD_EXT_COMP	0x01	 
 
-#define ARCXCNN_CONFIG		0x01	/* Configuration */
-#define ARCXCNN_STATUS1		0x02	/* Status 1 */
-#define ARCXCNN_STATUS2		0x03	/* Status 2 */
-#define ARCXCNN_FADECTRL	0x04	/* Fading Control */
-#define ARCXCNN_ILED_CONFIG	0x05	/* ILED Configuration */
-#define ARCXCNN_ILED_DIM_PWM	0x00	/*   config dim mode pwm */
-#define ARCXCNN_ILED_DIM_INT	0x04	/*   config dim mode internal */
-#define ARCXCNN_LEDEN		0x06	/* LED Enable Register */
-#define ARCXCNN_LEDEN_ISETEXT	0x80	/*   Full-scale current set extern */
-#define ARCXCNN_LEDEN_MASK	0x3F	/*   LED string enables mask */
-#define ARCXCNN_LEDEN_BITS	0x06	/*   Bits of LED string enables */
+#define ARCXCNN_CONFIG		0x01	 
+#define ARCXCNN_STATUS1		0x02	 
+#define ARCXCNN_STATUS2		0x03	 
+#define ARCXCNN_FADECTRL	0x04	 
+#define ARCXCNN_ILED_CONFIG	0x05	 
+#define ARCXCNN_ILED_DIM_PWM	0x00	 
+#define ARCXCNN_ILED_DIM_INT	0x04	 
+#define ARCXCNN_LEDEN		0x06	 
+#define ARCXCNN_LEDEN_ISETEXT	0x80	 
+#define ARCXCNN_LEDEN_MASK	0x3F	 
+#define ARCXCNN_LEDEN_BITS	0x06	 
 #define ARCXCNN_LEDEN_LED1	0x01
 #define ARCXCNN_LEDEN_LED2	0x02
 #define ARCXCNN_LEDEN_LED3	0x04
@@ -70,9 +54,9 @@ struct arcxcnn_platform_data {
 #define ARCXCNN_LEDEN_LED5	0x10
 #define ARCXCNN_LEDEN_LED6	0x20
 
-#define ARCXCNN_WLED_ISET_LSB	0x07	/* LED ISET LSB (in upper nibble) */
-#define ARCXCNN_WLED_ISET_LSB_SHIFT 0x04  /* ISET LSB Left Shift */
-#define ARCXCNN_WLED_ISET_MSB	0x08	/* LED ISET MSB (8 bits) */
+#define ARCXCNN_WLED_ISET_LSB	0x07	 
+#define ARCXCNN_WLED_ISET_LSB_SHIFT 0x04   
+#define ARCXCNN_WLED_ISET_MSB	0x08	 
 
 #define ARCXCNN_DIMFREQ		0x09
 #define ARCXCNN_COMP_CONFIG	0x0A
@@ -114,14 +98,14 @@ static int arcxcnn_set_brightness(struct arcxcnn *lp, u32 brightness)
 	int ret;
 	u8 val;
 
-	/* lower nibble of brightness goes in upper nibble of LSB register */
+	 
 	val = (brightness & 0xF) << ARCXCNN_WLED_ISET_LSB_SHIFT;
 	ret = i2c_smbus_write_byte_data(lp->client,
 		ARCXCNN_WLED_ISET_LSB, val);
 	if (ret < 0)
 		return ret;
 
-	/* remaining 8 bits of brightness go in MSB register */
+	 
 	val = (brightness >> 4);
 	return i2c_smbus_write_byte_data(lp->client,
 		ARCXCNN_WLED_ISET_MSB, val);
@@ -137,7 +121,7 @@ static int arcxcnn_bl_update_status(struct backlight_device *bl)
 	if (ret)
 		return ret;
 
-	/* set power-on/off/save modes */
+	 
 	return arcxcnn_update_field(lp, ARCXCNN_CMD, ARCXCNN_CMD_STDBY,
 		(bl->props.power == 0) ? 0 : ARCXCNN_CMD_STDBY);
 }
@@ -176,7 +160,7 @@ static void arcxcnn_parse_dt(struct arcxcnn *lp)
 	u32 prog_val, num_entry, entry, sources[ARCXCNN_LEDEN_BITS];
 	int ret;
 
-	/* device tree entry isn't required, defaults are OK */
+	 
 	if (!node)
 		return;
 
@@ -214,7 +198,7 @@ static void arcxcnn_parse_dt(struct arcxcnn *lp)
 
 	ret = of_property_count_u32_elems(node, "led-sources");
 	if (ret < 0) {
-		lp->pdata->leden = ARCXCNN_LEDEN_MASK; /* all on is default */
+		lp->pdata->leden = ARCXCNN_LEDEN_MASK;  
 	} else {
 		num_entry = ret;
 		if (num_entry > ARCXCNN_LEDEN_BITS)
@@ -229,7 +213,7 @@ static void arcxcnn_parse_dt(struct arcxcnn *lp)
 
 		lp->pdata->leden = 0;
 
-		/* for each enable in source, set bit in led enable */
+		 
 		for (entry = 0; entry < num_entry; entry++) {
 			u8 onbit = 1 << sources[entry];
 
@@ -254,7 +238,7 @@ static int arcxcnn_probe(struct i2c_client *cl)
 	lp->dev = &cl->dev;
 	lp->pdata = dev_get_platdata(&cl->dev);
 
-	/* reset the device */
+	 
 	ret = i2c_smbus_write_byte_data(lp->client,
 		ARCXCNN_CMD, ARCXCNN_CMD_RESET);
 	if (ret)
@@ -266,7 +250,7 @@ static int arcxcnn_probe(struct i2c_client *cl)
 		if (!lp->pdata)
 			return -ENOMEM;
 
-		/* Setup defaults based on power-on defaults */
+		 
 		lp->pdata->name = NULL;
 		lp->pdata->initial_brightness = INIT_BRIGHT;
 		lp->pdata->leden = ARCXCNN_LEDEN_MASK;
@@ -276,7 +260,7 @@ static int arcxcnn_probe(struct i2c_client *cl)
 
 		lp->pdata->led_config_1 = i2c_smbus_read_byte_data(
 			lp->client, ARCXCNN_ILED_CONFIG);
-		/* insure dim mode is not default pwm */
+		 
 		lp->pdata->led_config_1 |= ARCXCNN_ILED_DIM_INT;
 
 		lp->pdata->dim_freq = i2c_smbus_read_byte_data(
@@ -297,16 +281,16 @@ static int arcxcnn_probe(struct i2c_client *cl)
 
 	i2c_set_clientdata(cl, lp);
 
-	/* constrain settings to what is possible */
+	 
 	if (lp->pdata->initial_brightness > MAX_BRIGHTNESS)
 		lp->pdata->initial_brightness = MAX_BRIGHTNESS;
 
-	/* set initial brightness */
+	 
 	ret = arcxcnn_set_brightness(lp, lp->pdata->initial_brightness);
 	if (ret)
 		goto probe_err;
 
-	/* set other register values directly */
+	 
 	ret = i2c_smbus_write_byte_data(lp->client, ARCXCNN_FADECTRL,
 		lp->pdata->led_config_0);
 	if (ret)
@@ -337,7 +321,7 @@ static int arcxcnn_probe(struct i2c_client *cl)
 	if (ret)
 		goto probe_err;
 
-	/* set initial LED Enables */
+	 
 	arcxcnn_update_field(lp, ARCXCNN_LEDEN,
 		ARCXCNN_LEDEN_MASK, lp->pdata->leden);
 
@@ -363,10 +347,10 @@ static void arcxcnn_remove(struct i2c_client *cl)
 {
 	struct arcxcnn *lp = i2c_get_clientdata(cl);
 
-	/* disable all strings (ignore errors) */
+	 
 	i2c_smbus_write_byte_data(lp->client,
 		ARCXCNN_LEDEN, 0x00);
-	/* reset the device (ignore errors) */
+	 
 	i2c_smbus_write_byte_data(lp->client,
 		ARCXCNN_CMD, ARCXCNN_CMD_RESET);
 

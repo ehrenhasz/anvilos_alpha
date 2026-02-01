@@ -1,20 +1,4 @@
-/*
- * broadsheetfb.c -- FB driver for E-Ink Broadsheet controller
- *
- * Copyright (C) 2008, Jaya Kumar
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License. See the file COPYING in the main directory of this archive for
- * more details.
- *
- * Layout is based on skeletonfb.c by James Simmons and Geert Uytterhoeven.
- *
- * This driver is written to be used with the Broadsheet display controller.
- *
- * It is intended to be architecture independent. A board specific driver
- * must be used to perform all the physical IO interactions.
- *
- */
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -34,7 +18,7 @@
 
 #include <video/broadsheetfb.h>
 
-/* track panel specific parameters */
+ 
 struct panel_info {
 	int w;
 	int h;
@@ -48,9 +32,9 @@ struct panel_info {
 	u16 pixclk;
 };
 
-/* table of panel specific parameters to be indexed into by the board drivers */
+ 
 static struct panel_info panel_table[] = {
-	{	/* standard 6" on TFT backplane */
+	{	 
 		.w = 800,
 		.h = 600,
 		.sdcfg = (100 | (1 << 8) | (1 << 9)),
@@ -62,7 +46,7 @@ static struct panel_info panel_table[] = {
 		.lendlbegin = (100 << 8) | 4,
 		.pixclk = 6,
 	},
-	{	/* custom 3.7" flexible on PET or steel */
+	{	 
 		.w = 320,
 		.h = 240,
 		.sdcfg = (67 | (0 << 8) | (0 << 9) | (0 << 10) | (0 << 12)),
@@ -74,7 +58,7 @@ static struct panel_info panel_table[] = {
 		.lendlbegin = (80 << 8) | 20,
 		.pixclk = 14,
 	},
-	{	/* standard 9.7" on TFT backplane */
+	{	 
 		.w = 1200,
 		.h = 825,
 		.sdcfg = (100 | (1 << 8) | (1 << 9) | (0 << 10) | (0 << 12)),
@@ -115,7 +99,7 @@ static struct fb_var_screeninfo broadsheetfb_var = {
 	.transp =	{ 0, 0, 0 },
 };
 
-/* main broadsheetfb functions */
+ 
 static void broadsheet_gpio_issue_data(struct broadsheetfb_par *par, u16 data)
 {
 	par->board->set_ctl(par, BS_WR, 0);
@@ -229,17 +213,17 @@ static void broadsheet_burst_write(struct broadsheetfb_par *par, int size,
 static u16 broadsheet_gpio_get_data(struct broadsheetfb_par *par)
 {
 	u16 res;
-	/* wait for ready to go hi. (lo is busy) */
+	 
 	par->board->wait_for_rdy(par);
 
-	/* cs lo, dc lo for cmd, we lo for each data, db as usual */
+	 
 	par->board->set_ctl(par, BS_DC, 1);
 	par->board->set_ctl(par, BS_CS, 0);
 	par->board->set_ctl(par, BS_WR, 0);
 
 	res = par->board->get_hdb(par);
 
-	/* strobe wr */
+	 
 	par->board->set_ctl(par, BS_WR, 1);
 	par->board->set_ctl(par, BS_CS, 1);
 
@@ -258,10 +242,10 @@ static u16 broadsheet_get_data(struct broadsheetfb_par *par)
 static void broadsheet_gpio_write_reg(struct broadsheetfb_par *par, u16 reg,
 					u16 data)
 {
-	/* wait for ready to go hi. (lo is busy) */
+	 
 	par->board->wait_for_rdy(par);
 
-	/* cs lo, dc lo for cmd, we lo for each data, db as usual */
+	 
 	par->board->set_ctl(par, BS_CS, 0);
 
 	broadsheet_gpio_issue_cmd(par, BS_CMD_WR_REG);
@@ -307,7 +291,7 @@ static u16 broadsheet_read_reg(struct broadsheetfb_par *par, u16 reg)
 	return broadsheet_get_data(par);
 }
 
-/* functions for waveform manipulation */
+ 
 static int is_broadsheet_pll_locked(struct broadsheetfb_par *par)
 {
 	return broadsheet_read_reg(par, 0x000A) & 0x0001;
@@ -318,7 +302,7 @@ static int broadsheet_setup_plls(struct broadsheetfb_par *par)
 	int retry_count = 0;
 	u16 tmp;
 
-	/* disable arral saemipu mode */
+	 
 	broadsheet_write_reg(par, 0x0006, 0x0000);
 
 	broadsheet_write_reg(par, 0x0010, 0x0004);
@@ -603,11 +587,7 @@ static int broadsheet_spiflash_write_sector(struct broadsheetfb_par *par,
 	return 0;
 }
 
-/*
- * The caller must guarantee that the data to be rewritten is entirely
- * contained within this sector. That is, data_start_addr + data_len
- * must be less than sector_start_addr + sector_size.
- */
+ 
 static int broadsheet_spiflash_rewrite_sector(struct broadsheetfb_par *par,
 					int sector_size, int data_start_addr,
 					int data_len, const char *data)
@@ -621,31 +601,22 @@ static int broadsheet_spiflash_rewrite_sector(struct broadsheetfb_par *par,
 	if (!sector_buffer)
 		return -ENOMEM;
 
-	/* the start address of the sector is the 0th byte of that sector */
+	 
 	start_sector_addr = (data_start_addr / sector_size) * sector_size;
 
-	/*
-	 * check if there is head data that we need to readback into our sector
-	 * buffer first
-	 */
+	 
 	if (data_start_addr != start_sector_addr) {
-		/*
-		 * we need to read every byte up till the start address of our
-		 * data and we put it into our sector buffer.
-		 */
+		 
 		err = broadsheet_spiflash_read_range(par, start_sector_addr,
 						data_start_addr, sector_buffer);
 		if (err)
 			goto out;
 	}
 
-	/* now we copy our data into the right place in the sector buffer */
+	 
 	memcpy(sector_buffer + data_start_addr, data, data_len);
 
-	/*
-	 * now we check if there is a tail section of the sector that we need to
-	 * readback.
-	 */
+	 
 	tail_start_addr = (data_start_addr + data_len) % sector_size;
 
 	if (tail_start_addr) {
@@ -653,21 +624,21 @@ static int broadsheet_spiflash_rewrite_sector(struct broadsheetfb_par *par,
 
 		tail_len = sector_size - tail_start_addr;
 
-		/* now we read this tail into our sector buffer */
+		 
 		err = broadsheet_spiflash_read_range(par, tail_start_addr,
 			tail_len, sector_buffer + tail_start_addr);
 		if (err)
 			goto out;
 	}
 
-	/* if we got here we have the full sector that we want to rewrite. */
+	 
 
-	/* first erase the sector */
+	 
 	err = broadsheet_spiflash_erase_sector(par, start_sector_addr);
 	if (err)
 		goto out;
 
-	/* now write it */
+	 
 	err = broadsheet_spiflash_write_sector(par, start_sector_addr,
 					sector_buffer, sector_size);
 out:
@@ -748,7 +719,7 @@ static ssize_t broadsheet_loadstore_waveform(struct device *dev,
 		goto err_failed;
 	}
 
-	/* try to enforce reasonable min max on waveform */
+	 
 	if ((fw_entry->size < 8*1024) || (fw_entry->size > 64*1024)) {
 		dev_err(dev, "Invalid waveform\n");
 		err = -EINVAL;
@@ -777,7 +748,7 @@ err_failed:
 static DEVICE_ATTR(loadstore_waveform, S_IWUSR, NULL,
 			broadsheet_loadstore_waveform);
 
-/* upper level functions that manipulate the display and other stuff */
+ 
 static void broadsheet_init_display(struct broadsheetfb_par *par)
 {
 	u16 args[5];
@@ -791,7 +762,7 @@ static void broadsheet_init_display(struct broadsheetfb_par *par)
 	args[4] = panel_table[par->panel_index].lutfmt;
 	broadsheet_send_cmdargs(par, BS_CMD_INIT_DSPE_CFG, 5, args);
 
-	/* did the controller really set it? */
+	 
 	broadsheet_send_cmdargs(par, BS_CMD_INIT_DSPE_CFG, 5, args);
 
 	args[0] = panel_table[par->panel_index].fsynclen;
@@ -803,7 +774,7 @@ static void broadsheet_init_display(struct broadsheetfb_par *par)
 
 	broadsheet_write_reg32(par, 0x310, xres*yres*2);
 
-	/* setup waveform */
+	 
 	args[0] = 0x886;
 	args[1] = 0;
 	broadsheet_send_cmdargs(par, BS_CMD_RD_WFM_INFO, 2, args);
@@ -856,7 +827,7 @@ static void broadsheet_identify(struct broadsheetfb_par *par)
 static void broadsheet_init(struct broadsheetfb_par *par)
 {
 	broadsheet_send_command(par, BS_CMD_INIT_SYS_RUN);
-	/* the controller needs a second */
+	 
 	msleep(1000);
 	broadsheet_init_display(par);
 }
@@ -868,9 +839,9 @@ static void broadsheetfb_dpy_update_pages(struct broadsheetfb_par *par,
 	unsigned char *buf = par->info->screen_buffer;
 
 	mutex_lock(&(par->io_lock));
-	/* y1 must be a multiple of 4 so drop the lower bits */
+	 
 	y1 &= 0xFFFC;
-	/* y2 must be a multiple of 4 , but - 1 so up the lower bits */
+	 
 	y2 |= 0x0003;
 
 	args[0] = 0x3 << 4;
@@ -928,7 +899,7 @@ static void broadsheetfb_dpy_update(struct broadsheetfb_par *par)
 	mutex_unlock(&(par->io_lock));
 }
 
-/* this is called back from the deferred io workqueue */
+ 
 static void broadsheetfb_dpy_deferred_io(struct fb_info *info, struct list_head *pagereflist)
 {
 	u16 y1 = 0, h = 0;
@@ -938,31 +909,31 @@ static void broadsheetfb_dpy_deferred_io(struct fb_info *info, struct list_head 
 	u16 yres = info->var.yres;
 	u16 xres = info->var.xres;
 
-	/* height increment is fixed per page */
+	 
 	h_inc = DIV_ROUND_UP(PAGE_SIZE , xres);
 
-	/* walk the written page list and swizzle the data */
+	 
 	list_for_each_entry(pageref, pagereflist, list) {
 		if (prev_offset == ULONG_MAX) {
-			/* just starting so assign first page */
+			 
 			y1 = pageref->offset / xres;
 			h = h_inc;
 		} else if ((prev_offset + PAGE_SIZE) == pageref->offset) {
-			/* this page is consecutive so increase our height */
+			 
 			h += h_inc;
 		} else {
-			/* page not consecutive, issue previous update first */
+			 
 			broadsheetfb_dpy_update_pages(info->par, y1, y1 + h);
-			/* start over with our non consecutive page */
+			 
 			y1 = pageref->offset / xres;
 			h = h_inc;
 		}
 		prev_offset = pageref->offset;
 	}
 
-	/* if we still have any pages to update we do so now */
+	 
 	if (h >= yres) {
-		/* its a full screen update, just do it */
+		 
 		broadsheetfb_dpy_update(info->par);
 	} else {
 		broadsheetfb_dpy_update_pages(info->par, y1,
@@ -1012,12 +983,12 @@ static int broadsheetfb_probe(struct platform_device *dev)
 	int dpyw, dpyh;
 	int panel_index;
 
-	/* pick up board specific routines */
+	 
 	board = dev->dev.platform_data;
 	if (!board)
 		return -EINVAL;
 
-	/* try to count device specific driver, if can't, platform recalls */
+	 
 	if (!try_module_get(board->owner))
 		return -ENODEV;
 
@@ -1080,7 +1051,7 @@ static int broadsheetfb_probe(struct platform_device *dev)
 		goto err_vfree;
 	}
 
-	/* set cmap */
+	 
 	for (i = 0; i < 16; i++)
 		info->cmap.red[i] = (((2*i)+1)*(0xFFFF))/32;
 	memcpy(info->cmap.green, info->cmap.red, sizeof(u16)*16);
@@ -1090,7 +1061,7 @@ static int broadsheetfb_probe(struct platform_device *dev)
 	if (retval < 0)
 		goto err_cmap;
 
-	/* this inits the dpy */
+	 
 	retval = board->init(par);
 	if (retval < 0)
 		goto err_free_irq;

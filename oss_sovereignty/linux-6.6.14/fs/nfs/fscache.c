@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* NFS filesystem cache interface
- *
- * Copyright (C) 2008 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -37,12 +33,7 @@ static bool nfs_append_int(char *key, int *_len, unsigned long long x)
 	return true;
 }
 
-/*
- * Get the per-client index cookie for an NFS client if the appropriate mount
- * flag was set
- * - We always try and get an index cookie for the client, but get filehandle
- *   cookies on a per-superblock basis, depending on the mount flags
- */
+ 
 static bool nfs_fscache_get_client_key(struct nfs_client *clp,
 				       char *key, int *_len)
 {
@@ -78,13 +69,7 @@ static bool nfs_fscache_get_client_key(struct nfs_client *clp,
 	}
 }
 
-/*
- * Get the cache cookie for an NFS superblock.
- *
- * The default uniquifier is just an empty string, but it may be overridden
- * either by the 'fsc=xxx' option to mount, or by inheriting it from the parent
- * superblock across an automount point of some nature.
- */
+ 
 int nfs_fscache_get_super_cookie(struct super_block *sb, const char *uniq, int ulen)
 {
 	struct fscache_volume *vcookie;
@@ -126,10 +111,10 @@ int nfs_fscache_get_super_cookie(struct super_block *sb, const char *uniq, int u
 	}
 	key[len] = 0;
 
-	/* create a cache index for looking up filehandles */
+	 
 	vcookie = fscache_acquire_volume(key,
-					 NULL, /* preferred_cache */
-					 NULL, 0 /* coherency_data */);
+					 NULL,  
+					 NULL, 0  );
 	if (IS_ERR(vcookie)) {
 		if (vcookie != ERR_PTR(-EBUSY)) {
 			kfree(key);
@@ -145,9 +130,7 @@ out:
 	return 0;
 }
 
-/*
- * release a per-superblock cookie
- */
+ 
 void nfs_fscache_release_super_cookie(struct super_block *sb)
 {
 	struct nfs_server *nfss = NFS_SB(sb);
@@ -157,9 +140,7 @@ void nfs_fscache_release_super_cookie(struct super_block *sb)
 	kfree(nfss->fscache_uniq);
 }
 
-/*
- * Initialise the per-inode cache cookie pointer for an NFS inode.
- */
+ 
 void nfs_fscache_init_inode(struct inode *inode)
 {
 	struct nfs_fscache_inode_auxdata auxdata;
@@ -175,9 +156,9 @@ void nfs_fscache_init_inode(struct inode *inode)
 	netfs_inode(inode)->cache = fscache_acquire_cookie(
 					       nfss->fscache,
 					       0,
-					       nfsi->fh.data, /* index_key */
+					       nfsi->fh.data,  
 					       nfsi->fh.size,
-					       &auxdata,      /* aux_data */
+					       &auxdata,       
 					       sizeof(auxdata),
 					       i_size_read(inode));
 
@@ -185,34 +166,14 @@ void nfs_fscache_init_inode(struct inode *inode)
 		mapping_set_release_always(inode->i_mapping);
 }
 
-/*
- * Release a per-inode cookie.
- */
+ 
 void nfs_fscache_clear_inode(struct inode *inode)
 {
 	fscache_relinquish_cookie(netfs_i_cookie(netfs_inode(inode)), false);
 	netfs_inode(inode)->cache = NULL;
 }
 
-/*
- * Enable or disable caching for a file that is being opened as appropriate.
- * The cookie is allocated when the inode is initialised, but is not enabled at
- * that time.  Enablement is deferred to file-open time to avoid stat() and
- * access() thrashing the cache.
- *
- * For now, with NFS, only regular files that are open read-only will be able
- * to use the cache.
- *
- * We enable the cache for an inode if we open it read-only and it isn't
- * currently open for writing.  We disable the cache if the inode is open
- * write-only.
- *
- * The caller uses the file struct to pin i_writecount on the inode before
- * calling us when a file is opened for writing, so we can make use of that.
- *
- * Note that this may be invoked multiple times in parallel by parallel
- * nfs_open() functions.
- */
+ 
 void nfs_fscache_open_file(struct inode *inode, struct file *filp)
 {
 	struct nfs_fscache_inode_auxdata auxdata;
@@ -320,11 +281,11 @@ static void nfs_netfs_issue_read(struct netfs_io_subrequest *sreq)
 	if (!netfs)
 		return netfs_subreq_terminated(sreq, -ENOMEM, false);
 
-	pgio.pg_netfs = netfs; /* used in completion */
+	pgio.pg_netfs = netfs;  
 
 	xas_lock(&xas);
 	xas_for_each(&xas, page, last) {
-		/* nfs_read_add_folio() may schedule() due to pNFS layout and other RPCs  */
+		 
 		xas_pause(&xas);
 		xas_unlock(&xas);
 		err = nfs_read_add_folio(&pgio, ctx, page_folio(page));
@@ -354,9 +315,7 @@ int nfs_netfs_folio_unlock(struct folio *folio)
 {
 	struct inode *inode = folio_file_mapping(folio)->host;
 
-	/*
-	 * If fscache is enabled, netfs will unlock pages.
-	 */
+	 
 	if (netfs_inode(inode)->cache)
 		return 0;
 

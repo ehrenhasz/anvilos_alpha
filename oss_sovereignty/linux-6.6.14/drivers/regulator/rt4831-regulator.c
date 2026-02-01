@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/bitops.h>
 #include <linux/kernel.h>
@@ -164,7 +164,7 @@ static int rt4831_regulator_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
-	/* Configure DSV mode to normal by default */
+	 
 	ret = regmap_update_bits(regmap, RT4831_REG_DSVEN, RT4831_DSVMODE_MASK, DSV_MODE_NORMAL);
 	if (ret) {
 		dev_err(&pdev->dev, "Failed to configure dsv mode to normal\n");

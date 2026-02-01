@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2015 HiSilicon Technologies Co., Ltd.
- */
+ 
+ 
 
 #ifndef __DTS_HI3519_CLOCK_H
 #define __DTS_HI3519_CLOCK_H
@@ -25,4 +23,4 @@
 #define HI3519_USB2_PORT_CLK		17
 #define HI3519_USB3_CLK			18
 
-#endif	/* __DTS_HI3519_CLOCK_H */
+#endif	 

@@ -1,28 +1,4 @@
-/*
-* Copyright 2012-15 Advanced Micro Devices, Inc.cls
-*
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 
@@ -117,8 +93,7 @@ static const struct dce110_timing_generator_offsets dce120_tg_offsets[] = {
 	}
 };
 
-/* begin *********************
- * macros to expend register list macro defined in HW object header file */
+ 
 
 #define BASE_INNER(seg) \
 	DCE_BASE__INST0_SEG ## seg
@@ -129,7 +104,7 @@ static const struct dce110_timing_generator_offsets dce120_tg_offsets[] = {
 #define NBIO_BASE(seg) \
 	NBIO_BASE_INNER(seg)
 
-/* compile time expand base address. */
+ 
 #define BASE(seg) \
 	BASE_INNER(seg)
 
@@ -141,7 +116,7 @@ static const struct dce110_timing_generator_offsets dce120_tg_offsets[] = {
 	.reg_name = BASE(mm ## block ## id ## _ ## reg_name ## _BASE_IDX) + \
 					mm ## block ## id ## _ ## reg_name
 
-/* MMHUB */
+ 
 #define MMHUB_BASE_INNER(seg) \
 	MMHUB_BASE__INST0_SEG ## seg
 
@@ -152,8 +127,7 @@ static const struct dce110_timing_generator_offsets dce120_tg_offsets[] = {
 		.reg_name = MMHUB_BASE(mm ## reg_name ## _BASE_IDX) +  \
 					mm ## reg_name
 
-/* macros to expend register list macro defined in HW object header file
- * end *********************/
+ 
 
 
 static const struct dce_dmcu_registers dmcu_regs = {
@@ -562,12 +536,10 @@ static void dce120_clock_source_destroy(struct clock_source **clk_src)
 
 static bool dce120_hw_sequencer_create(struct dc *dc)
 {
-	/* All registers used by dce11.2 match those in dce11 in offset and
-	 * structure
-	 */
+	 
 	dce120_hw_sequencer_construct(dc);
 
-	/*TODO	Move to separate file and Override what is needed */
+	 
 
 	return true;
 }
@@ -786,7 +758,7 @@ static const struct dce_hwseq_mask hwseq_mask = {
 		HWSEQ_DCE12_MASK_SH_LIST(_MASK)
 };
 
-/* HWSEQ regs for VG20 */
+ 
 static const struct dce_hwseq_registers dce121_hwseq_reg = {
 		HWSEQ_VG20_REG_LIST()
 };
@@ -888,7 +860,7 @@ static struct transform *dce120_transform_create(
 
 	dce_transform_construct(transform, ctx, inst,
 				&xfm_regs[inst], &xfm_shift, &xfm_mask);
-	transform->lb_memory_size = 0x1404; /*5124*/
+	transform->lb_memory_size = 0x1404;  
 	return &transform->base;
 }
 
@@ -919,10 +891,10 @@ static void bw_calcs_data_update_from_pplib(struct dc *dc)
 	int i;
 	unsigned int clk;
 	unsigned int latency;
-	/*original logic in dal3*/
+	 
 	int memory_type_multiplier = MEMORY_TYPE_MULTIPLIER_CZ;
 
-	/*do system clock*/
+	 
 	if (!dm_pp_get_clock_levels_by_type_with_latency(
 				dc->ctx,
 				DM_PP_CLOCK_TYPE_ENGINE_CLK,
@@ -937,7 +909,7 @@ static void bw_calcs_data_update_from_pplib(struct dc *dc)
 		}
 	}
 
-	/* convert all the clock fro kHz to fix point mHz  TODO: wloop data */
+	 
 	dc->bw_vbios->high_sclk = bw_frc_to_fixed(
 		eng_clks.data[eng_clks.num_levels-1].clocks_in_khz, 1000);
 	dc->bw_vbios->mid1_sclk  = bw_frc_to_fixed(
@@ -955,7 +927,7 @@ static void bw_calcs_data_update_from_pplib(struct dc *dc)
 	dc->bw_vbios->low_sclk  = bw_frc_to_fixed(
 			eng_clks.data[0].clocks_in_khz, 1000);
 
-	/*do memory clock*/
+	 
 	if (!dm_pp_get_clock_levels_by_type_with_latency(
 			dc->ctx,
 			DM_PP_CLOCK_TYPE_MEMORY_CLK,
@@ -974,11 +946,7 @@ static void bw_calcs_data_update_from_pplib(struct dc *dc)
 
 	}
 
-	/* we don't need to call PPLIB for validation clock since they
-	 * also give us the highest sclk and highest mclk (UMA clock).
-	 * ALSO always convert UMA clock (from PPLIB)  to YCLK (HW formula):
-	 * YCLK = UMACLK*m_memoryTypeMultiplier
-	 */
+	 
 	if (dc->bw_vbios->memory_type == bw_def_hbm)
 		memory_type_multiplier = MEMORY_TYPE_HBM;
 
@@ -991,11 +959,7 @@ static void bw_calcs_data_update_from_pplib(struct dc *dc)
 		mem_clks.data[mem_clks.num_levels-1].clocks_in_khz * memory_type_multiplier,
 		1000);
 
-	/* Now notify PPLib/SMU about which Watermarks sets they should select
-	 * depending on DPM state they are in. And update BW MGR GFX Engine and
-	 * Memory clock member variables for Watermarks calculations for each
-	 * Watermark Set
-	 */
+	 
 	clk_ranges.num_wm_sets = 4;
 	clk_ranges.wm_clk_ranges[0].wm_set_id = WM_SET_A;
 	clk_ranges.wm_clk_ranges[0].wm_min_eng_clk_in_khz =
@@ -1010,7 +974,7 @@ static void bw_calcs_data_update_from_pplib(struct dc *dc)
 	clk_ranges.wm_clk_ranges[1].wm_set_id = WM_SET_B;
 	clk_ranges.wm_clk_ranges[1].wm_min_eng_clk_in_khz =
 			eng_clks.data[eng_clks.num_levels*3/8].clocks_in_khz;
-	/* 5 GHz instead of data[7].clockInKHz to cover Overdrive */
+	 
 	clk_ranges.wm_clk_ranges[1].wm_max_eng_clk_in_khz = 5000000;
 	clk_ranges.wm_clk_ranges[1].wm_min_mem_clk_in_khz =
 			mem_clks.data[0].clocks_in_khz;
@@ -1024,27 +988,27 @@ static void bw_calcs_data_update_from_pplib(struct dc *dc)
 			eng_clks.data[eng_clks.num_levels*3/8].clocks_in_khz - 1;
 	clk_ranges.wm_clk_ranges[2].wm_min_mem_clk_in_khz =
 			mem_clks.data[mem_clks.num_levels>>1].clocks_in_khz;
-	/* 5 GHz instead of data[2].clockInKHz to cover Overdrive */
+	 
 	clk_ranges.wm_clk_ranges[2].wm_max_mem_clk_in_khz = 5000000;
 
 	clk_ranges.wm_clk_ranges[3].wm_set_id = WM_SET_D;
 	clk_ranges.wm_clk_ranges[3].wm_min_eng_clk_in_khz =
 			eng_clks.data[eng_clks.num_levels*3/8].clocks_in_khz;
-	/* 5 GHz instead of data[7].clockInKHz to cover Overdrive */
+	 
 	clk_ranges.wm_clk_ranges[3].wm_max_eng_clk_in_khz = 5000000;
 	clk_ranges.wm_clk_ranges[3].wm_min_mem_clk_in_khz =
 			mem_clks.data[mem_clks.num_levels>>1].clocks_in_khz;
-	/* 5 GHz instead of data[2].clockInKHz to cover Overdrive */
+	 
 	clk_ranges.wm_clk_ranges[3].wm_max_mem_clk_in_khz = 5000000;
 
-	/* Notify PP Lib/SMU which Watermarks to use for which clock ranges */
+	 
 	dm_pp_notify_wm_clock_changes(dc->ctx, &clk_ranges);
 }
 
 static uint32_t read_pipe_fuses(struct dc_context *ctx)
 {
 	uint32_t value = dm_read_reg_soc15(ctx, mmCC_DC_PIPE_DIS, 0);
-	/* VG20 support max 6 pipes */
+	 
 	value = value & 0x3f;
 	return value;
 }
@@ -1067,14 +1031,14 @@ static bool dce120_resource_construct(
 	pool->base.res_cap = &res_cap;
 	pool->base.funcs = &dce120_res_pool_funcs;
 
-	/* TODO: Fill more data from GreenlandAsicCapability.cpp */
+	 
 	pool->base.pipe_count = res_cap.num_timing_generator;
 	pool->base.timing_generator_count = pool->base.res_cap->num_timing_generator;
 	pool->base.underlay_pipe_index = NO_UNDERLAY_PIPE;
 
 	dc->caps.max_downscale_ratio = 200;
 	dc->caps.i2c_speed_in_khz = 100;
-	dc->caps.i2c_speed_in_khz_hdcp = 100; /*1.4 w/a not applied by default*/
+	dc->caps.i2c_speed_in_khz_hdcp = 100;  
 	dc->caps.max_cursor_size = 128;
 	dc->caps.min_horizontal_blanking_period = 80;
 	dc->caps.dual_link_dvi = true;
@@ -1082,9 +1046,7 @@ static bool dce120_resource_construct(
 	dc->caps.extended_aux_timeout_support = false;
 	dc->debug = debug_defaults;
 
-	/*************************************************
-	 *  Create resources                             *
-	 *************************************************/
+	 
 
 	pool->base.clock_sources[DCE120_CLK_SRC_PLL0] =
 			dce120_clock_source_create(ctx, ctx->dc_bios,
@@ -1151,11 +1113,11 @@ static bool dce120_resource_construct(
 	if (!pool->base.irqs)
 		goto irqs_create_fail;
 
-	/* VG20: Pipe harvesting enabled, retrieve valid pipe fuses */
+	 
 	if (is_vg20)
 		pipe_fuses = read_pipe_fuses(ctx);
 
-	/* index to valid pipe resource */
+	 
 	j = 0;
 	for (i = 0; i < pool->base.pipe_count; i++) {
 		if (is_vg20) {
@@ -1210,7 +1172,7 @@ static bool dce120_resource_construct(
 				"DC: failed to create output pixel processor!\n");
 		}
 
-		/* check next valid pipe */
+		 
 		j++;
 	}
 
@@ -1232,7 +1194,7 @@ static bool dce120_resource_construct(
 		pool->base.sw_i2cs[i] = NULL;
 	}
 
-	/* valid pipe num */
+	 
 	pool->base.pipe_count = j;
 	pool->base.timing_generator_count = j;
 
@@ -1244,7 +1206,7 @@ static bool dce120_resource_construct(
 	if (!resource_construct(num_virtual_links, dc, &pool->base, res_funcs))
 		goto res_create_fail;
 
-	/* Create hardware sequencer */
+	 
 	if (!dce120_hw_sequencer_create(dc))
 		goto controller_create_fail;
 

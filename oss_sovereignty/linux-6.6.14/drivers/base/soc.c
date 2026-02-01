@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) ST-Ericsson SA 2011
- *
- * Author: Lee Jones <lee.jones@linaro.org> for ST-Ericsson.
- */
+
+ 
 
 #include <linux/sysfs.h>
 #include <linux/init.h>
@@ -18,7 +14,7 @@
 
 static DEFINE_IDA(soc_ida);
 
-/* Prototype to allow declarations of DEVICE_ATTR(<foo>) before soc_info_show */
+ 
 static ssize_t soc_info_show(struct device *dev, struct device_attribute *attr,
 			     char *buf);
 
@@ -62,7 +58,7 @@ static umode_t soc_attribute_mode(struct kobject *kobj,
 	if ((attr == &dev_attr_soc_id.attr) && soc_dev->attr->soc_id)
 		return attr->mode;
 
-	/* Unknown or unfilled attribute */
+	 
 	return 0;
 }
 
@@ -154,7 +150,7 @@ struct soc_device *soc_device_register(struct soc_device_attribute *soc_dev_attr
 	soc_attr_groups[0] = &soc_attr_group;
 	soc_attr_groups[1] = soc_dev_attr->custom_attr_group;
 
-	/* Fetch a unique (reclaimable) SOC ID. */
+	 
 	ret = ida_simple_get(&soc_ida, 0, 0, GFP_KERNEL);
 	if (ret < 0)
 		goto out3;
@@ -184,7 +180,7 @@ out1:
 }
 EXPORT_SYMBOL_GPL(soc_device_register);
 
-/* Ensure soc_dev->attr is freed after calling soc_device_unregister. */
+ 
 void soc_device_unregister(struct soc_device *soc_dev)
 {
 	device_unregister(&soc_dev->dev);
@@ -237,24 +233,7 @@ static int soc_device_match_one(struct device *dev, void *arg)
 	return soc_device_match_attr(soc_dev->attr, arg);
 }
 
-/*
- * soc_device_match - identify the SoC in the machine
- * @matches: zero-terminated array of possible matches
- *
- * returns the first matching entry of the argument array, or NULL
- * if none of them match.
- *
- * This function is meant as a helper in place of of_match_node()
- * in cases where either no device tree is available or the information
- * in a device node is insufficient to identify a particular variant
- * by its compatible strings or other properties. For new devices,
- * the DT binding should always provide unique compatible strings
- * that allow the use of of_match_node() instead.
- *
- * The calling function can use the .data entry of the
- * soc_device_attribute to pass a structure or function pointer for
- * each entry.
- */
+ 
 const struct soc_device_attribute *soc_device_match(
 	const struct soc_device_attribute *matches)
 {

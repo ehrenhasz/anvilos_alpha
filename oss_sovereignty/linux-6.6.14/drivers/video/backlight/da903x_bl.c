@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Backlight driver for Dialog Semiconductor DA9030/DA9034
- *
- * Copyright (C) 2008 Compulab, Ltd.
- *	Mike Rapoport <mike@compulab.co.il>
- *
- * Copyright (C) 2006-2008 Marvell International Ltd.
- *	Eric Miao <eric.miao@marvell.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -122,7 +114,7 @@ static int da903x_backlight_probe(struct platform_device *pdev)
 	data->da903x_dev = pdev->dev.parent;
 	data->current_brightness = 0;
 
-	/* adjust the WLED output current */
+	 
 	if (pdata)
 		da903x_write(data->da903x_dev, DA9034_WLED_CONTROL2,
 				DA9034_WLED_ISET(pdata->output_current));

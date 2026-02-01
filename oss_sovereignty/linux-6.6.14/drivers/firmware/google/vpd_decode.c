@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vpd_decode.c
- *
- * Google VPD decoding routines.
- *
- * Copyright 2017 Google Inc.
- */
+
+ 
 
 #include "vpd_decode.h"
 
@@ -48,7 +42,7 @@ static int vpd_decode_entry(const u32 max_len, const u8 *input_buf,
 	consumed += decoded_len;
 	*entry = input_buf + consumed;
 
-	/* entry_len is untrusted data and must be checked again. */
+	 
 	if (max_len - consumed < *entry_len)
 		return VPD_FAIL;
 
@@ -66,7 +60,7 @@ int vpd_decode_string(const u32 max_len, const u8 *input_buf, u32 *consumed,
 	const u8 *key;
 	const u8 *value;
 
-	/* type */
+	 
 	if (*consumed >= max_len)
 		return VPD_FAIL;
 

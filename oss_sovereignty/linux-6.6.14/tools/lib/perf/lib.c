@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <unistd.h>
 #include <stdbool.h>
 #include <errno.h>
@@ -13,7 +13,7 @@ static ssize_t ion(bool is_read, int fd, void *buf, size_t n)
 	size_t left = n;
 
 	while (left) {
-		/* buf must be treated as const if !is_read. */
+		 
 		ssize_t ret = is_read ? read(fd, buf, left) :
 					write(fd, buf, left);
 
@@ -30,9 +30,7 @@ static ssize_t ion(bool is_read, int fd, void *buf, size_t n)
 	return n;
 }
 
-/*
- * Read exactly 'n' bytes or return an error.
- */
+ 
 ssize_t readn(int fd, void *buf, size_t n)
 {
 	return ion(true, fd, buf, n);
@@ -58,11 +56,9 @@ ssize_t preadn(int fd, void *buf, size_t n, off_t offs)
 	return n;
 }
 
-/*
- * Write exactly 'n' bytes or return an error.
- */
+ 
 ssize_t writen(int fd, const void *buf, size_t n)
 {
-	/* ion does not modify buf. */
+	 
 	return ion(false, fd, (void *)buf, n);
 }

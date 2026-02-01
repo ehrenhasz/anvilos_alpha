@@ -1,30 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2023-2024 Arduino SA
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * OpenAMP's Python module.
- */
+ 
 
 #if MICROPY_PY_OPENAMP
 
@@ -54,18 +28,18 @@
 #define VIRTIO_DEV_ID           0xFF
 #define VIRTIO_DEV_FEATURES     (1 << VIRTIO_RPMSG_F_NS)
 
-#define VRING0_ID               0   // VRING0 ID (host to remote) fixed to 0 for linux compatibility
-#define VRING1_ID               1   // VRING1 ID (remote to host) fixed to 1 for linux compatibility
+#define VRING0_ID               0    
+#define VRING1_ID               1    
 #define VRING_NOTIFY_ID         VRING0_ID
 
 #define VRING_COUNT             2
 #define VRING_ALIGNMENT         32
-// Note the number of buffers must be a power of 2
+ 
 #define VRING_NUM_BUFFS         64
 
-// The following config should be enough for about 128 descriptors.
-// See lib/include/openamp/virtio_ring.h for the layout of vrings
-// and vring_size() to calculate the vring size.
+ 
+ 
+ 
 #define VRING_RX_ADDR           (METAL_SHM_ADDR)
 #define VRING_TX_ADDR           (METAL_SHM_ADDR + 0x1000)
 #define VRING_BUFF_ADDR         (METAL_SHM_ADDR + 0x2000)
@@ -75,7 +49,7 @@ static const char openamp_trace_buf[128];
 #define MICROPY_PY_OPENAMP_TRACE_BUF       ((uint32_t)openamp_trace_buf)
 #define MICROPY_PY_OPENAMP_TRACE_BUF_LEN   sizeof(MICROPY_PY_OPENAMP_TRACE_BUF)
 
-#endif // MICROPY_PY_OPENAMP_RSC_TABLE_ENABLE
+#endif  
 
 #if MICROPY_PY_OPENAMP_REMOTEPROC
 extern mp_obj_type_t openamp_remoteproc_type;
@@ -83,10 +57,10 @@ extern mp_obj_type_t openamp_remoteproc_type;
 
 static struct metal_device shm_device = {
     .name = METAL_SHM_NAME,
-    // The number of IO regions is fixed and must match the number and
-    // layout of the remote processor's IO regions. The first region is
-    // used for the vring shared memory, and the second one is used for
-    // the shared resource table.
+     
+     
+    
+    
     .num_regions = METAL_MAX_DEVICE_REGIONS,
     .regions = { { 0 } },
     .node = { NULL },
@@ -95,7 +69,7 @@ static struct metal_device shm_device = {
 };
 static metal_phys_addr_t shm_physmap[] = { 0 };
 
-// ###################### Virtio device class ######################
+
 typedef struct _virtio_dev_obj_t {
     mp_obj_base_t base;
     struct rpmsg_virtio_device rvdev;
@@ -125,7 +99,7 @@ static MP_DEFINE_CONST_OBJ_TYPE(
     locals_dict, &virtio_dev_locals_dict
     );
 
-// ###################### RPMsg Endpoint class ######################
+
 typedef struct _endpoint_obj_t {
     mp_obj_base_t base;
     mp_obj_t name;
@@ -152,7 +126,7 @@ static mp_obj_t endpoint_send(uint n_args, const mp_obj_t *pos_args, mp_map_t *k
         { MP_QSTR_timeout, MP_ARG_INT | MP_ARG_KW_ONLY,  {.u_int = -1 } },
     };
 
-    // Parse args.
+    
     mp_arg_val_t args[MP_ARRAY_SIZE(allowed_args)];
     mp_arg_parse_all(n_args - 2, pos_args + 2, kw_args, MP_ARRAY_SIZE(allowed_args), allowed_args, args);
 
@@ -215,7 +189,7 @@ static mp_obj_t endpoint_make_new(const mp_obj_type_t *type, size_t n_args, size
         { MP_QSTR_dest, MP_ARG_INT | MP_ARG_KW_ONLY,  {.u_int = RPMSG_ADDR_ANY } },
     };
 
-    // Parse args.
+    
     mp_arg_val_t args[MP_ARRAY_SIZE(allowed_args)];
     mp_arg_parse_all_kw_array(n_args, n_kw, all_args, MP_ARRAY_SIZE(allowed_args), allowed_args, args);
 
@@ -251,7 +225,7 @@ static MP_DEFINE_CONST_OBJ_TYPE(
     locals_dict, &endpoint_locals_dict
     );
 
-// ###################### openamp module ######################
+
 void openamp_remoteproc_notified(mp_sched_node_t *node) {
     (void)node;
     rproc_virtio_notified(MP_STATE_PORT(virtio_device)->rvdev.vdev, VRING_NOTIFY_ID);
@@ -259,8 +233,8 @@ void openamp_remoteproc_notified(mp_sched_node_t *node) {
 
 static void openamp_ns_callback(struct rpmsg_device *rdev, const char *name, uint32_t dest) {
     metal_log(METAL_LOG_DEBUG, "rpmsg_new_service_callback() new service request name: %s dest %lu\n", name, dest);
-    // The remote processor advertises its presence to the host by sending
-    // the Name Service (NS) announcement containing the name of the channel.
+    
+    
     virtio_dev_obj_t *virtio_device = metal_container_of(rdev, virtio_dev_obj_t, rvdev);
     if (virtio_device->ns_callback != mp_const_none) {
         mp_call_function_2(virtio_device->ns_callback, mp_obj_new_int(dest), mp_obj_new_str(name, strlen(name)));
@@ -268,9 +242,9 @@ static void openamp_ns_callback(struct rpmsg_device *rdev, const char *name, uin
 }
 
 #if MICROPY_PY_OPENAMP_RSC_TABLE_ENABLE
-// The shared resource table must be initialized manually by the host here,
-// because it's not located in the data region, so the startup code doesn't
-// know about it.
+
+
+
 static void openamp_rsc_table_init(openamp_rsc_table_t **rsc_table_out) {
     openamp_rsc_table_t *rsc_table = METAL_RSC_ADDR;
     memset(rsc_table, 0, METAL_RSC_SIZE);
@@ -296,12 +270,12 @@ static void openamp_rsc_table_init(openamp_rsc_table_t **rsc_table_out) {
     };
     #endif
     #ifdef VIRTIO_USE_DCACHE
-    // Flush resource table.
+    
     metal_cache_flush((uint32_t *)rsc_table, sizeof(openamp_rsc_table_t));
     #endif
     *rsc_table_out = rsc_table;
 }
-#endif // MICROPY_PY_OPENAMP_RSC_TABLE_ENABLE
+#endif 
 
 static mp_obj_t openamp_new_service_callback(mp_obj_t ns_callback) {
     if (MP_STATE_PORT(virtio_device) == NULL) {
@@ -324,7 +298,7 @@ void openamp_metal_log_handler(enum metal_log_level level, const char *fmt, ...)
 
 void openamp_init(void) {
     if (MP_STATE_PORT(virtio_device) != NULL) {
-        // Already initialized.
+        
         return;
     }
 
@@ -332,16 +306,16 @@ void openamp_init(void) {
     struct metal_init_params metal_params = { 0 };
 
     #if METAL_LOG_HANDLER_ENABLE
-    // If logging is enabled, set the default log level and handler before
-    // calling metal_init, to allow ports to override them in metal_sys_init.
+    
+    
     metal_params.log_level = METAL_LOG_DEBUG;
     metal_params.log_handler = openamp_metal_log_handler;
     #endif
 
-    // Initialize libmetal.
+    
     metal_init(&metal_params);
 
-    // Initialize the shared resource table.
+    
     openamp_rsc_table_t *rsc_table;
     openamp_rsc_table_init(&rsc_table);
 
@@ -353,28 +327,28 @@ void openamp_init(void) {
         mp_raise_msg(&mp_type_OSError, MP_ERROR_TEXT("Failed to open metal device"));
     }
 
-    // Initialize shared memory IO region.
+    
     metal_io_init(&device->regions[0], (void *)METAL_SHM_ADDR, (void *)shm_physmap, METAL_SHM_SIZE, -1U, 0, NULL);
     struct metal_io_region *shm_io = metal_device_io_region(device, 0);
     if (shm_io == NULL) {
         mp_raise_msg(&mp_type_OSError, MP_ERROR_TEXT("Failed to initialize device io region"));
     }
 
-    // Initialize resource table IO region.
+    
     metal_io_init(&device->regions[1], (void *)rsc_table, (void *)rsc_table, sizeof(*rsc_table), -1U, 0, NULL);
     struct metal_io_region *rsc_io = metal_device_io_region(device, 1);
     if (rsc_io == NULL) {
         mp_raise_msg(&mp_type_OSError, MP_ERROR_TEXT("Failed to initialize device io region"));
     }
 
-    // Create virtio device.
+    
     struct virtio_device *vdev = rproc_virtio_create_vdev(RPMSG_HOST, VIRTIO_DEV_ID,
         &rsc_table->vdev, rsc_io, NULL, metal_rproc_notify, NULL);
     if (vdev == NULL) {
         mp_raise_msg(&mp_type_OSError, MP_ERROR_TEXT("Failed to create virtio device"));
     }
 
-    // Initialize vrings.
+    
     struct fw_rsc_vdev_vring *vring_rsc = &rsc_table->vring0;
     for (int i = 0; i < VRING_COUNT; i++, vring_rsc++) {
         if (rproc_virtio_init_vring(vdev, vring_rsc->notifyid, vring_rsc->notifyid,
@@ -386,8 +360,8 @@ void openamp_init(void) {
     virtio_dev_obj_t *virtio_device = mp_obj_malloc_with_finaliser(virtio_dev_obj_t, &virtio_dev_type);
     virtio_device->ns_callback = mp_const_none;
 
-    // The remote processor detects that the virtio device is ready by polling
-    // the status field in the resource table.
+    
+    
     rpmsg_virtio_init_shm_pool(&virtio_device->shm_pool, (void *)VRING_BUFF_ADDR, (size_t)VRING_BUFF_SIZE);
     rpmsg_init_vdev(&virtio_device->rvdev, vdev, openamp_ns_callback, shm_io, &virtio_device->shm_pool);
 
@@ -413,4 +387,4 @@ const mp_obj_module_t openamp_module = {
 MP_REGISTER_ROOT_POINTER(struct _virtio_dev_obj_t *virtio_device);
 MP_REGISTER_MODULE(MP_QSTR_openamp, openamp_module);
 
-#endif // MICROPY_PY_OPENAMP
+#endif 

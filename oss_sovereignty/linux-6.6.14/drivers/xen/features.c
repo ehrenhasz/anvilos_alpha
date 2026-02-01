@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/******************************************************************************
- * features.c
- *
- * Xen feature flags.
- *
- * Copyright (c) 2006, Ian Campbell, XenSource Inc.
- */
+
+ 
 #include <linux/types.h>
 #include <linux/cache.h>
 #include <linux/export.h>
@@ -18,12 +12,7 @@
 #include <xen/interface/version.h>
 #include <xen/features.h>
 
-/*
- * Linux kernel expects at least Xen 4.0.
- *
- * Assume some features to be available for that reason (depending on guest
- * mode, of course).
- */
+ 
 #define chk_required_feature(f) {					\
 		if (!xen_feature(f))					\
 			panic("Xen: feature %s not available!\n", #f);	\

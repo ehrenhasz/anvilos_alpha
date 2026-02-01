@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2015-2019 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/bpf_trace.h>
 #include <linux/netdevice.h>
@@ -30,7 +30,7 @@ static void nfp_nfdk_tx_ring_stop(struct netdev_queue *nd_q,
 {
 	netif_tx_stop_queue(nd_q);
 
-	/* We can race with the TX completion out of NAPI so recheck */
+	 
 	smp_mb();
 	if (unlikely(nfp_nfdk_tx_ring_should_wake(tx_ring)))
 		netif_tx_start_queue(nd_q);
@@ -92,7 +92,7 @@ nfp_nfdk_tx_csum(struct nfp_net_dp *dp, struct nfp_net_r_vector *r_vec,
 	iph = skb->encapsulation ? inner_ip_hdr(skb) : ip_hdr(skb);
 	ipv6h = skb->encapsulation ? inner_ipv6_hdr(skb) : ipv6_hdr(skb);
 
-	/* L3 checksum offloading flag is not required for ipv6 */
+	 
 	if (iph->version == 4) {
 		flags |= NFDK_DESC_TX_L3_CSUM;
 	} else if (ipv6h->version != 6) {
@@ -142,7 +142,7 @@ recount_descs:
 		return -EINVAL;
 	}
 
-	/* Under count by 1 (don't count meta) for the round down to work out */
+	 
 	n_descs += !!skb_is_gso(skb);
 
 	if (round_down(tx_ring->wr_p, NFDK_TX_DESC_BLOCK_CNT) !=
@@ -211,9 +211,7 @@ nfp_nfdk_prep_tx_meta(struct nfp_net_dp *dp, struct nfp_app *app,
 	}
 	if (vlan_insert) {
 		data -= NFP_NET_META_VLAN_SIZE;
-		/* data type of skb->vlan_proto is __be16
-		 * so it fills metadata without calling put_unaligned_be16
-		 */
+		 
 		memcpy(data, &skb->vlan_proto, sizeof(skb->vlan_proto));
 		put_unaligned_be16(skb_vlan_tag_get(skb), data + sizeof(skb->vlan_proto));
 		meta_id <<= NFP_NET_META_FIELD_SIZE;
@@ -240,13 +238,7 @@ nfp_nfdk_prep_tx_meta(struct nfp_net_dp *dp, struct nfp_app *app,
 	return NFDK_DESC_TX_CHAIN_META;
 }
 
-/**
- * nfp_nfdk_tx() - Main transmit entry point
- * @skb:    SKB to transmit
- * @netdev: netdev structure
- *
- * Return: NETDEV_TX_OK on success.
- */
+ 
 netdev_tx_t nfp_nfdk_tx(struct sk_buff *skb, struct net_device *netdev)
 {
 	struct nfp_net *nn = netdev_priv(netdev);
@@ -271,7 +263,7 @@ netdev_tx_t nfp_nfdk_tx(struct sk_buff *skb, struct net_device *netdev)
 	r_vec = tx_ring->r_vec;
 	nd_q = netdev_get_tx_queue(dp->netdev, qidx);
 
-	/* Don't bother counting frags, assume the worst */
+	 
 	if (unlikely(nfp_net_tx_full(tx_ring, NFDK_TX_DESC_STOP_CNT))) {
 		nn_dp_warn(dp, "TX ring %d busy. wrp=%u rdp=%u\n",
 			   qidx, tx_ring->wr_p, tx_ring->rd_p);
@@ -290,11 +282,9 @@ netdev_tx_t nfp_nfdk_tx(struct sk_buff *skb, struct net_device *netdev)
 	if (nfp_nfdk_tx_maybe_close_block(tx_ring, skb))
 		goto err_flush;
 
-	/* nr_frags will change after skb_linearize so we get nr_frags after
-	 * nfp_nfdk_tx_maybe_close_block function
-	 */
+	 
 	nr_frags = skb_shinfo(skb)->nr_frags;
-	/* DMA map all */
+	 
 	wr_idx = D_IDX(tx_ring, tx_ring->wr_p);
 	txd = &tx_ring->ktxds[wr_idx];
 	txbuf = &tx_ring->ktxbufs[wr_idx];
@@ -317,15 +307,10 @@ netdev_tx_t nfp_nfdk_tx(struct sk_buff *skb, struct net_device *netdev)
 	txbuf->dma_addr = dma_addr;
 	txbuf++;
 
-	/* FIELD_PREP() implicitly truncates to chunk */
+	 
 	dma_len -= 1;
 
-	/* We will do our best to pass as much data as we can in descriptor
-	 * and we need to make sure the first descriptor includes whole head
-	 * since there is limitation in firmware side. Sometimes the value of
-	 * dma_len bitwise and NFDK_DESC_TX_DMA_LEN_HEAD will less than
-	 * headlen.
-	 */
+	 
 	dlen_type = FIELD_PREP(NFDK_DESC_TX_DMA_LEN_HEAD,
 			       dma_len > NFDK_DESC_TX_DMA_LEN_HEAD ?
 			       NFDK_DESC_TX_DMA_LEN_HEAD : dma_len) |
@@ -334,20 +319,16 @@ netdev_tx_t nfp_nfdk_tx(struct sk_buff *skb, struct net_device *netdev)
 	txd->dma_len_type = cpu_to_le16(dlen_type);
 	nfp_desc_set_dma_addr_48b(txd, dma_addr);
 
-	/* starts at bit 0 */
+	 
 	BUILD_BUG_ON(!(NFDK_DESC_TX_DMA_LEN_HEAD & 1));
 
-	/* Preserve the original dlen_type, this way below the EOP logic
-	 * can use dlen_type.
-	 */
+	 
 	tmp_dlen = dlen_type & NFDK_DESC_TX_DMA_LEN_HEAD;
 	dma_len -= tmp_dlen;
 	dma_addr += tmp_dlen + 1;
 	txd++;
 
-	/* The rest of the data (if any) will be in larger dma descritors
-	 * and is handled with the fragment loop.
-	 */
+	 
 	frag = skb_shinfo(skb)->frags;
 	fend = frag + nr_frags;
 
@@ -386,16 +367,16 @@ netdev_tx_t nfp_nfdk_tx(struct sk_buff *skb, struct net_device *netdev)
 
 	if (!skb_is_gso(skb)) {
 		real_len = skb->len;
-		/* Metadata desc */
+		 
 		if (!ipsec)
 			metadata = nfp_nfdk_tx_csum(dp, r_vec, 1, skb, metadata);
 		txd->raw = cpu_to_le64(metadata);
 		txd++;
 	} else {
-		/* lso desc should be placed after metadata desc */
+		 
 		(txd + 1)->raw = nfp_nfdk_tx_tso(r_vec, txbuf, skb);
 		real_len = txbuf->real_len;
-		/* Metadata desc */
+		 
 		if (!ipsec)
 			metadata = nfp_nfdk_tx_csum(dp, r_vec, txbuf->pkt_cnt, skb, metadata);
 		txd->raw = cpu_to_le64(metadata);
@@ -431,9 +412,9 @@ err_warn_overflow:
 	if (skb_is_gso(skb))
 		txbuf--;
 err_unmap:
-	/* txbuf pointed to the next-to-use */
+	 
 	etxbuf = txbuf;
-	/* first txbuf holds the skb */
+	 
 	txbuf = &tx_ring->ktxbufs[wr_idx + 1];
 	if (txbuf < etxbuf) {
 		dma_unmap_single(dp->dev, txbuf->dma_addr,
@@ -460,11 +441,7 @@ err_flush:
 	return NETDEV_TX_OK;
 }
 
-/**
- * nfp_nfdk_tx_complete() - Handled completed TX packets
- * @tx_ring:	TX ring structure
- * @budget:	NAPI budget (only used as bool to determine if in NAPI context)
- */
+ 
 static void nfp_nfdk_tx_complete(struct nfp_net_tx_ring *tx_ring, int budget)
 {
 	struct nfp_net_r_vector *r_vec = tx_ring->r_vec;
@@ -480,7 +457,7 @@ static void nfp_nfdk_tx_complete(struct nfp_net_tx_ring *tx_ring, int budget)
 	if (tx_ring->wr_p == rd_p)
 		return;
 
-	/* Work out how many descriptors have been transmitted */
+	 
 	qcp_rd_p = nfp_net_read_tx_cmpl(tx_ring, dp);
 
 	if (qcp_rd_p == tx_ring->qcp_rd_p)
@@ -499,19 +476,19 @@ static void nfp_nfdk_tx_complete(struct nfp_net_tx_ring *tx_ring, int budget)
 		skb = txbuf->skb;
 		txbuf++;
 
-		/* Closed block */
+		 
 		if (!skb) {
 			n_descs = D_BLOCK_CPL(rd_p);
 			goto next;
 		}
 
-		/* Unmap head */
+		 
 		size = skb_headlen(skb);
 		n_descs += nfp_nfdk_headlen_to_segs(size);
 		dma_unmap_single(dev, txbuf->dma_addr, size, DMA_TO_DEVICE);
 		txbuf++;
 
-		/* Unmap frags */
+		 
 		frag = skb_shinfo(skb)->frags;
 		fend = frag + skb_shinfo(skb)->nr_frags;
 		for (; frag < fend; frag++) {
@@ -552,7 +529,7 @@ next:
 	nd_q = netdev_get_tx_queue(dp->netdev, tx_ring->idx);
 	netdev_tx_completed_queue(nd_q, done_pkts, done_bytes);
 	if (nfp_nfdk_tx_ring_should_wake(tx_ring)) {
-		/* Make sure TX thread will see updated tx_ring->rd_p */
+		 
 		smp_mb();
 
 		if (unlikely(netif_tx_queue_stopped(nd_q)))
@@ -564,7 +541,7 @@ next:
 		  tx_ring->rd_p, tx_ring->wr_p, tx_ring->cnt);
 }
 
-/* Receive processing */
+ 
 static void *
 nfp_nfdk_napi_alloc_one(struct nfp_net_dp *dp, dma_addr_t *dma_addr)
 {
@@ -593,13 +570,7 @@ nfp_nfdk_napi_alloc_one(struct nfp_net_dp *dp, dma_addr_t *dma_addr)
 	return frag;
 }
 
-/**
- * nfp_nfdk_rx_give_one() - Put mapped skb on the software and hardware rings
- * @dp:		NFP Net data path struct
- * @rx_ring:	RX ring structure
- * @frag:	page fragment buffer
- * @dma_addr:	DMA address of skb mapping
- */
+ 
 static void
 nfp_nfdk_rx_give_one(const struct nfp_net_dp *dp,
 		     struct nfp_net_rx_ring *rx_ring,
@@ -611,11 +582,11 @@ nfp_nfdk_rx_give_one(const struct nfp_net_dp *dp,
 
 	nfp_net_dma_sync_dev_rx(dp, dma_addr);
 
-	/* Stash SKB and DMA address away */
+	 
 	rx_ring->rxbufs[wr_idx].frag = frag;
 	rx_ring->rxbufs[wr_idx].dma_addr = dma_addr;
 
-	/* Fill freelist descriptor */
+	 
 	rx_ring->rxds[wr_idx].fld.reserved = 0;
 	rx_ring->rxds[wr_idx].fld.meta_len_dd = 0;
 	nfp_desc_set_dma_addr_48b(&rx_ring->rxds[wr_idx].fld,
@@ -623,19 +594,13 @@ nfp_nfdk_rx_give_one(const struct nfp_net_dp *dp,
 
 	rx_ring->wr_p++;
 	if (!(rx_ring->wr_p % NFP_NET_FL_BATCH)) {
-		/* Update write pointer of the freelist queue. Make
-		 * sure all writes are flushed before telling the hardware.
-		 */
+		 
 		wmb();
 		nfp_qcp_wr_ptr_add(rx_ring->qcp_fl, NFP_NET_FL_BATCH);
 	}
 }
 
-/**
- * nfp_nfdk_rx_ring_fill_freelist() - Give buffers from the ring to FW
- * @dp:	     NFP Net data path struct
- * @rx_ring: RX ring to fill
- */
+ 
 void nfp_nfdk_rx_ring_fill_freelist(struct nfp_net_dp *dp,
 				    struct nfp_net_rx_ring *rx_ring)
 {
@@ -646,10 +611,7 @@ void nfp_nfdk_rx_ring_fill_freelist(struct nfp_net_dp *dp,
 				     rx_ring->rxbufs[i].dma_addr);
 }
 
-/**
- * nfp_nfdk_rx_csum_has_errors() - group check if rxd has any csum errors
- * @flags: RX descriptor flags field in CPU byte order
- */
+ 
 static int nfp_nfdk_rx_csum_has_errors(u16 flags)
 {
 	u16 csum_all_checked, csum_all_ok;
@@ -660,14 +622,7 @@ static int nfp_nfdk_rx_csum_has_errors(u16 flags)
 	return csum_all_checked != (csum_all_ok << PCIE_DESC_RX_CSUM_OK_SHIFT);
 }
 
-/**
- * nfp_nfdk_rx_csum() - set SKB checksum field based on RX descriptor flags
- * @dp:  NFP Net data path struct
- * @r_vec: per-ring structure
- * @rxd: Pointer to RX descriptor
- * @meta: Parsed metadata prepend
- * @skb: Pointer to SKB
- */
+ 
 static void
 nfp_nfdk_rx_csum(struct nfp_net_dp *dp, struct nfp_net_r_vector *r_vec,
 		 struct nfp_net_rx_desc *rxd, struct nfp_meta_parsed *meta,
@@ -694,10 +649,7 @@ nfp_nfdk_rx_csum(struct nfp_net_dp *dp, struct nfp_net_r_vector *r_vec,
 		return;
 	}
 
-	/* Assume that the firmware will never report inner CSUM_OK unless outer
-	 * L4 headers were successfully parsed. FW will always report zero UDP
-	 * checksum as CSUM_OK.
-	 */
+	 
 	if (rxd->rxd.flags & PCIE_DESC_RX_TCP_CSUM_OK ||
 	    rxd->rxd.flags & PCIE_DESC_RX_UDP_CSUM_OK) {
 		__skb_incr_checksum_unnecessary(skb);
@@ -787,9 +739,7 @@ nfp_nfdk_parse_meta(struct net_device *netdev, struct nfp_meta_parsed *meta,
 			break;
 #ifdef CONFIG_NFP_NET_IPSEC
 		case NFP_NET_META_IPSEC:
-			/* Note: IPsec packet could have zero saidx, so need add 1
-			 * to indicate packet is IPsec packet within driver.
-			 */
+			 
 			meta->ipsec_saidx = get_unaligned_be32(data) + 1;
 			data += 4;
 			break;
@@ -811,16 +761,12 @@ nfp_nfdk_rx_drop(const struct nfp_net_dp *dp, struct nfp_net_r_vector *r_vec,
 {
 	u64_stats_update_begin(&r_vec->rx_sync);
 	r_vec->rx_drops++;
-	/* If we have both skb and rxbuf the replacement buffer allocation
-	 * must have failed, count this as an alloc failure.
-	 */
+	 
 	if (skb && rxbuf)
 		r_vec->rx_replace_buf_alloc_fail++;
 	u64_stats_update_end(&r_vec->rx_sync);
 
-	/* skb is build based on the frag, free_skb() would free the frag
-	 * so to be able to reuse it we need an extra ref.
-	 */
+	 
 	if (skb && rxbuf && skb->head == rxbuf->frag)
 		page_ref_inc(virt_to_head_page(rxbuf->frag));
 	if (rxbuf)
@@ -838,7 +784,7 @@ static bool nfp_nfdk_xdp_complete(struct nfp_net_tx_ring *tx_ring)
 	bool done_all;
 	int todo;
 
-	/* Work out how many descriptors have been transmitted */
+	 
 	qcp_rd_p = nfp_net_read_tx_cmpl(tx_ring, dp);
 	if (qcp_rd_p == tx_ring->qcp_rd_p)
 		return true;
@@ -863,9 +809,7 @@ static bool nfp_nfdk_xdp_complete(struct nfp_net_tx_ring *tx_ring)
 			goto next;
 		}
 
-		/* Two successive txbufs are used to stash virtual and dma
-		 * address respectively, recycle and clean them here.
-		 */
+		 
 		nfp_nfdk_rx_give_one(dp, rx_ring,
 				     (void *)NFDK_TX_BUF_PTR(txbuf[0].val),
 				     txbuf[1].dma_addr);
@@ -874,7 +818,7 @@ static bool nfp_nfdk_xdp_complete(struct nfp_net_tx_ring *tx_ring)
 		step = 2;
 
 		u64_stats_update_begin(&r_vec->tx_sync);
-		/* Note: tx_bytes not accumulated. */
+		 
 		r_vec->tx_pkts++;
 		u64_stats_update_end(&r_vec->tx_sync);
 next:
@@ -906,14 +850,11 @@ nfp_nfdk_tx_xdp_buf(struct nfp_net_dp *dp, struct nfp_net_rx_ring *rx_ring,
 	dma_addr_t dma_addr;
 	int wr_idx;
 
-	/* Reject if xdp_adjust_tail grow packet beyond DMA area */
+	 
 	if (pkt_len + dma_off > dma_map_sz)
 		return false;
 
-	/* Make sure there's still at least one block available after
-	 * aligning to block boundary, so that the txds used below
-	 * won't wrap around the tx_ring.
-	 */
+	 
 	if (unlikely(nfp_net_tx_full(tx_ring, NFDK_TX_DESC_STOP_CNT))) {
 		if (!*completed) {
 			nfp_nfdk_xdp_complete(tx_ring);
@@ -927,7 +868,7 @@ nfp_nfdk_tx_xdp_buf(struct nfp_net_dp *dp, struct nfp_net_rx_ring *rx_ring,
 		}
 	}
 
-	/* Check if cross block boundary */
+	 
 	n_descs = nfp_nfdk_headlen_to_segs(pkt_len);
 	if ((round_down(tx_ring->wr_p, NFDK_TX_DESC_BLOCK_CNT) !=
 	     round_down(tx_ring->wr_p + n_descs, NFDK_TX_DESC_BLOCK_CNT)) ||
@@ -951,12 +892,12 @@ nfp_nfdk_tx_xdp_buf(struct nfp_net_dp *dp, struct nfp_net_rx_ring *rx_ring,
 
 	txbuf[0].val = (unsigned long)rxbuf->frag | NFDK_TX_BUF_INFO_SOP;
 	txbuf[1].dma_addr = rxbuf->dma_addr;
-	/* Note: pkt len not stored */
+	 
 
 	dma_sync_single_for_device(dp->dev, rxbuf->dma_addr + dma_off,
 				   pkt_len, DMA_BIDIRECTIONAL);
 
-	/* Build TX descriptor */
+	 
 	txd = &tx_ring->ktxds[wr_idx];
 	dma_len = pkt_len;
 	dma_addr = rxbuf->dma_addr + dma_off;
@@ -966,7 +907,7 @@ nfp_nfdk_tx_xdp_buf(struct nfp_net_dp *dp, struct nfp_net_rx_ring *rx_ring,
 	else
 		type = NFDK_DESC_TX_TYPE_GATHER;
 
-	/* FIELD_PREP() implicitly truncates to chunk */
+	 
 	dma_len -= 1;
 	dlen_type = FIELD_PREP(NFDK_DESC_TX_DMA_LEN_HEAD,
 			       dma_len > NFDK_DESC_TX_DMA_LEN_HEAD ?
@@ -995,7 +936,7 @@ nfp_nfdk_tx_xdp_buf(struct nfp_net_dp *dp, struct nfp_net_rx_ring *rx_ring,
 
 	(txd - 1)->dma_len_type = cpu_to_le16(dlen_type | NFDK_DESC_TX_EOP);
 
-	/* Metadata desc */
+	 
 	txd->raw = 0;
 	txd++;
 
@@ -1010,17 +951,7 @@ nfp_nfdk_tx_xdp_buf(struct nfp_net_dp *dp, struct nfp_net_rx_ring *rx_ring,
 	return true;
 }
 
-/**
- * nfp_nfdk_rx() - receive up to @budget packets on @rx_ring
- * @rx_ring:   RX ring to receive from
- * @budget:    NAPI budget
- *
- * Note, this function is separated out from the napi poll function to
- * more cleanly separate packet receive code from other bookkeeping
- * functions performed in the napi poll function.
- *
- * Return: Number of packets received.
- */
+ 
 static int nfp_nfdk_rx(struct nfp_net_rx_ring *rx_ring, int budget)
 {
 	struct nfp_net_r_vector *r_vec = rx_ring->r_vec;
@@ -1057,9 +988,7 @@ static int nfp_nfdk_rx(struct nfp_net_rx_ring *rx_ring, int budget)
 		if (!(rxd->rxd.meta_len_dd & PCIE_DESC_RX_DD))
 			break;
 
-		/* Memory barrier to ensure that we won't do other reads
-		 * before the DD bit.
-		 */
+		 
 		dma_rmb();
 
 		memset(&meta, 0, sizeof(meta));
@@ -1068,18 +997,7 @@ static int nfp_nfdk_rx(struct nfp_net_rx_ring *rx_ring, int budget)
 		pkts_polled++;
 
 		rxbuf =	&rx_ring->rxbufs[idx];
-		/*         < meta_len >
-		 *  <-- [rx_offset] -->
-		 *  ---------------------------------------------------------
-		 * | [XX] |  metadata  |             packet           | XXXX |
-		 *  ---------------------------------------------------------
-		 *         <---------------- data_len --------------->
-		 *
-		 * The rx_offset is fixed for all packets, the meta_len can vary
-		 * on a packet by packet basis. If rx_offset is set to zero
-		 * (_RX_OFFSET_DYNAMIC) metadata starts at the beginning of the
-		 * buffer and is immediately followed by the packet (no [XX]).
-		 */
+		 
 		meta_len = rxd->rxd.meta_len_dd & PCIE_DESC_RX_META_LEN_MASK;
 		data_len = le16_to_cpu(rxd->rxd.data_len);
 		pkt_len = data_len - meta_len;
@@ -1091,7 +1009,7 @@ static int nfp_nfdk_rx(struct nfp_net_rx_ring *rx_ring, int budget)
 			pkt_off += dp->rx_offset;
 		meta_off = pkt_off - meta_len;
 
-		/* Stats update */
+		 
 		u64_stats_update_begin(&r_vec->rx_sync);
 		r_vec->rx_pkts++;
 		r_vec->rx_bytes += pkt_len;
@@ -1252,13 +1170,7 @@ static int nfp_nfdk_rx(struct nfp_net_rx_ring *rx_ring, int budget)
 	return pkts_polled;
 }
 
-/**
- * nfp_nfdk_poll() - napi poll function
- * @napi:    NAPI structure
- * @budget:  NAPI budget
- *
- * Return: number of packets polled.
- */
+ 
 int nfp_nfdk_poll(struct napi_struct *napi, int budget)
 {
 	struct nfp_net_r_vector *r_vec =
@@ -1307,8 +1219,7 @@ int nfp_nfdk_poll(struct napi_struct *napi, int budget)
 	return pkts_polled;
 }
 
-/* Control device data path
- */
+ 
 
 bool
 nfp_nfdk_ctrl_tx_one(struct nfp_net *nn, struct nfp_net_r_vector *r_vec,
@@ -1332,7 +1243,7 @@ nfp_nfdk_ctrl_tx_one(struct nfp_net *nn, struct nfp_net_r_vector *r_vec,
 		goto err_free;
 	}
 
-	/* Don't bother counting frags, assume the worst */
+	 
 	if (unlikely(nfp_net_tx_full(tx_ring, NFDK_TX_DESC_STOP_CNT))) {
 		u64_stats_update_begin(&r_vec->tx_sync);
 		r_vec->tx_busy++;
@@ -1360,7 +1271,7 @@ nfp_nfdk_ctrl_tx_one(struct nfp_net *nn, struct nfp_net_r_vector *r_vec,
 	if (nfp_nfdk_tx_maybe_close_block(tx_ring, skb))
 		goto err_free;
 
-	/* DMA map all */
+	 
 	wr_idx = D_IDX(tx_ring, tx_ring->wr_p);
 	txd = &tx_ring->ktxds[wr_idx];
 	txbuf = &tx_ring->ktxbufs[wr_idx];
@@ -1409,7 +1320,7 @@ nfp_nfdk_ctrl_tx_one(struct nfp_net *nn, struct nfp_net_r_vector *r_vec,
 
 	(txd - 1)->dma_len_type = cpu_to_le16(dlen_type | NFDK_DESC_TX_EOP);
 
-	/* Metadata desc */
+	 
 	txd->raw = cpu_to_le64(metadata);
 	txd++;
 
@@ -1491,9 +1402,7 @@ nfp_ctrl_rx_one(struct nfp_net *nn, struct nfp_net_dp *dp,
 	if (!(rxd->rxd.meta_len_dd & PCIE_DESC_RX_DD))
 		return false;
 
-	/* Memory barrier to ensure that we won't do other reads
-	 * before the DD bit.
-	 */
+	 
 	dma_rmb();
 
 	rx_ring->rd_p++;
@@ -1510,7 +1419,7 @@ nfp_ctrl_rx_one(struct nfp_net *nn, struct nfp_net_dp *dp,
 		pkt_off += dp->rx_offset;
 	meta_off = pkt_off - meta_len;
 
-	/* Stats update */
+	 
 	u64_stats_update_begin(&r_vec->rx_sync);
 	r_vec->rx_pkts++;
 	r_vec->rx_bytes += pkt_len;

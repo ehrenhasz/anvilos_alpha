@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// mt8183-afe-clk.c  --  Mediatek 8183 afe clock ctrl
-//
-// Copyright (c) 2018 MediaTek Inc.
-// Author: KaiChieh Chuang <kaichieh.chuang@mediatek.com>
+
+
+
+
+
+
 
 #include <linux/clk.h>
 
@@ -26,7 +26,7 @@ enum {
 	CLK_MUX_AUDIO,
 	CLK_MUX_AUDIOINTBUS,
 	CLK_TOP_SYSPLL_D2_D4,
-	/* apll related mux */
+	 
 	CLK_TOP_MUX_AUD_1,
 	CLK_TOP_APLL1_CK,
 	CLK_TOP_MUX_AUD_2,
@@ -227,7 +227,7 @@ int mt8183_afe_disable_clock(struct mtk_base_afe *afe)
 	return 0;
 }
 
-/* apll */
+ 
 static int apll1_mux_setting(struct mtk_base_afe *afe, bool enable)
 {
 	struct mt8183_afe_private *afe_priv = afe->platform_priv;
@@ -249,7 +249,7 @@ static int apll1_mux_setting(struct mtk_base_afe *afe, bool enable)
 			goto ERR_SELECT_CLK_TOP_MUX_AUD_1;
 		}
 
-		/* 180.6336 / 8 = 22.5792MHz */
+		 
 		ret = clk_prepare_enable(afe_priv->clk[CLK_TOP_MUX_AUD_ENG1]);
 		if (ret) {
 			dev_err(afe->dev, "%s clk_prepare_enable %s fail %d\n",
@@ -323,7 +323,7 @@ static int apll2_mux_setting(struct mtk_base_afe *afe, bool enable)
 			goto ERR_SELECT_CLK_TOP_MUX_AUD_2;
 		}
 
-		/* 196.608 / 8 = 24.576MHz */
+		 
 		ret = clk_prepare_enable(afe_priv->clk[CLK_TOP_MUX_AUD_ENG2]);
 		if (ret) {
 			dev_err(afe->dev, "%s clk_prepare_enable %s fail %d\n",
@@ -381,7 +381,7 @@ int mt8183_apll1_enable(struct mtk_base_afe *afe)
 	struct mt8183_afe_private *afe_priv = afe->platform_priv;
 	int ret;
 
-	/* setting for APLL */
+	 
 	apll1_mux_setting(afe, true);
 
 	ret = clk_prepare_enable(afe_priv->clk[CLK_APLL22M]);
@@ -435,7 +435,7 @@ int mt8183_apll2_enable(struct mtk_base_afe *afe)
 	struct mt8183_afe_private *afe_priv = afe->platform_priv;
 	int ret;
 
-	/* setting for APLL */
+	 
 	apll2_mux_setting(afe, true);
 
 	ret = clk_prepare_enable(afe_priv->clk[CLK_APLL24M]);
@@ -502,7 +502,7 @@ int mt8183_get_apll_by_name(struct mtk_base_afe *afe, const char *name)
 		return MT8183_APLL2;
 }
 
-/* mck */
+ 
 struct mt8183_mck_div {
 	int m_sel_id;
 	int div_clk_id;
@@ -549,11 +549,11 @@ int mt8183_mck_enable(struct mtk_base_afe *afe, int mck_id, int rate)
 	int div_clk_id = mck_div[mck_id].div_clk_id;
 	int ret;
 
-	/* i2s5 mck not support */
+	 
 	if (mck_id == MT8183_I2S5_MCK)
 		return 0;
 
-	/* select apll */
+	 
 	if (m_sel_id >= 0) {
 		ret = clk_prepare_enable(afe_priv->clk[m_sel_id]);
 		if (ret) {
@@ -571,7 +571,7 @@ int mt8183_mck_enable(struct mtk_base_afe *afe, int mck_id, int rate)
 		}
 	}
 
-	/* enable div, set rate */
+	 
 	ret = clk_prepare_enable(afe_priv->clk[div_clk_id]);
 	if (ret) {
 		dev_err(afe->dev, "%s(), clk_prepare_enable %s fail %d\n",
@@ -604,7 +604,7 @@ void mt8183_mck_disable(struct mtk_base_afe *afe, int mck_id)
 	int m_sel_id = mck_div[mck_id].m_sel_id;
 	int div_clk_id = mck_div[mck_id].div_clk_id;
 
-	/* i2s5 mck not support */
+	 
 	if (mck_id == MT8183_I2S5_MCK)
 		return;
 

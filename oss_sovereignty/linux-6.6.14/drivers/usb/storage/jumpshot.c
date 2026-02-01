@@ -1,37 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for Lexar "Jumpshot" Compact Flash reader
- *
- * jumpshot driver v0.1:
- *
- * First release
- *
- * Current development and maintenance by:
- *   (c) 2000 Jimmie Mayfield (mayfield+usb@sackheads.org)
- *
- *   Many thanks to Robert Baruch for the SanDisk SmartMedia reader driver
- *   which I used as a template for this driver.
- *
- *   Some bugfixes and scatter-gather code by Gregory P. Smith 
- *   (greg-usb@electricrain.com)
- *
- *   Fix for media change by Joerg Schneider (js@joergschneider.com)
- *
- * Developed with the assistance of:
- *
- *   (C) 2002 Alan Stern <stern@rowland.org>
- */
+
  
- /*
-  * This driver attempts to support the Lexar Jumpshot USB CompactFlash 
-  * reader.  Like many other USB CompactFlash readers, the Jumpshot contains
-  * a USB-to-ATA chip. 
-  *
-  * This driver supports reading and writing.  If you're truly paranoid,
-  * however, you can force the driver into a write-protected state by setting
-  * the WP enable bits in jumpshot_handle_mode_sense.  See the comments
-  * in that routine.
-  */
+ 
+  
 
 #include <linux/errno.h>
 #include <linux/module.h>
@@ -53,9 +23,7 @@ MODULE_AUTHOR("Jimmie Mayfield <mayfield+usb@sackheads.org>");
 MODULE_LICENSE("GPL");
 MODULE_IMPORT_NS(USB_STORAGE);
 
-/*
- * The table of devices
- */
+ 
 #define UNUSUAL_DEV(id_vendor, id_product, bcdDeviceMin, bcdDeviceMax, \
 		    vendorName, productName, useProtocol, useTransport, \
 		    initFunction, flags) \
@@ -64,15 +32,13 @@ MODULE_IMPORT_NS(USB_STORAGE);
 
 static struct usb_device_id jumpshot_usb_ids[] = {
 #	include "unusual_jumpshot.h"
-	{ }		/* Terminating entry */
+	{ }		 
 };
 MODULE_DEVICE_TABLE(usb, jumpshot_usb_ids);
 
 #undef UNUSUAL_DEV
 
-/*
- * The flags table
- */
+ 
 #define UNUSUAL_DEV(idVendor, idProduct, bcdDeviceMin, bcdDeviceMax, \
 		    vendor_name, product_name, use_protocol, use_transport, \
 		    init_function, Flags) \
@@ -86,20 +52,20 @@ MODULE_DEVICE_TABLE(usb, jumpshot_usb_ids);
 
 static struct us_unusual_dev jumpshot_unusual_dev_list[] = {
 #	include "unusual_jumpshot.h"
-	{ }		/* Terminating entry */
+	{ }		 
 };
 
 #undef UNUSUAL_DEV
 
 
 struct jumpshot_info {
-   unsigned long   sectors;     /* total sector count */
-   unsigned long   ssize;       /* sector size in bytes */
+   unsigned long   sectors;      
+   unsigned long   ssize;        
 
-   /* the following aren't used yet */
+    
    unsigned char   sense_key;
-   unsigned long   sense_asc;   /* additional sense code */
-   unsigned long   sense_ascq;  /* additional sense code qualifier */
+   unsigned long   sense_asc;    
+   unsigned long   sense_ascq;   
 };
 
 static inline int jumpshot_bulk_read(struct us_data *us,
@@ -135,7 +101,7 @@ static int jumpshot_get_status(struct us_data  *us)
 	if (!us)
 		return USB_STOR_TRANSPORT_ERROR;
 
-	// send the setup
+	 
 	rc = usb_stor_ctrl_transfer(us, us->recv_ctrl_pipe,
 				   0, 0xA0, 0, 7, us->iobuf, 1);
 
@@ -163,19 +129,19 @@ static int jumpshot_read_data(struct us_data *us,
 	unsigned int sg_offset = 0;
 	struct scatterlist *sg = NULL;
 
-	// we're working in LBA mode.  according to the ATA spec, 
-	// we can support up to 28-bit addressing.  I don't know if Jumpshot
-	// supports beyond 24-bit addressing.  It's kind of hard to test 
-	// since it requires > 8GB CF card.
+	 
+	
+	
+	
 
 	if (sector > 0x0FFFFFFF)
 		return USB_STOR_TRANSPORT_ERROR;
 
 	totallen = sectors * info->ssize;
 
-	// Since we don't read more than 64 KB at a time, we have to create
-	// a bounce buffer and move the data a piece at a time between the
-	// bounce buffer and the actual transfer buffer.
+	
+	
+	
 
 	alloclen = min(totallen, 65536u);
 	buffer = kmalloc(alloclen, GFP_NOIO);
@@ -183,8 +149,8 @@ static int jumpshot_read_data(struct us_data *us,
 		return USB_STOR_TRANSPORT_ERROR;
 
 	do {
-		// loop, never allocate or transfer more than 64k at once
-		// (min(128k, 255*info->ssize) is the real limit)
+		
+		
 		len = min(totallen, alloclen);
 		thistime = (len / info->ssize) & 0xff;
 
@@ -197,20 +163,20 @@ static int jumpshot_read_data(struct us_data *us,
 		command[5] = 0xE0 | ((sector >> 24) & 0x0F);
 		command[6] = 0x20;
 
-		// send the setup + command
+		
 		result = usb_stor_ctrl_transfer(us, us->send_ctrl_pipe,
 					       0, 0x20, 0, 1, command, 7);
 		if (result != USB_STOR_XFER_GOOD)
 			goto leave;
 
-		// read the result
+		
 		result = jumpshot_bulk_read(us, buffer, len);
 		if (result != USB_STOR_XFER_GOOD)
 			goto leave;
 
 		usb_stor_dbg(us, "%d bytes\n", len);
 
-		// Store the data in the transfer buffer
+		
 		usb_stor_access_xfer_buf(buffer, len, us->srb,
 				 &sg, &sg_offset, TO_XFER_BUF);
 
@@ -240,19 +206,19 @@ static int jumpshot_write_data(struct us_data *us,
 	unsigned int sg_offset = 0;
 	struct scatterlist *sg = NULL;
 
-	// we're working in LBA mode.  according to the ATA spec, 
-	// we can support up to 28-bit addressing.  I don't know if Jumpshot
-	// supports beyond 24-bit addressing.  It's kind of hard to test 
-	// since it requires > 8GB CF card.
-	//
+	
+	
+	
+	
+	
 	if (sector > 0x0FFFFFFF)
 		return USB_STOR_TRANSPORT_ERROR;
 
 	totallen = sectors * info->ssize;
 
-	// Since we don't write more than 64 KB at a time, we have to create
-	// a bounce buffer and move the data a piece at a time between the
-	// bounce buffer and the actual transfer buffer.
+	
+	
+	
 
 	alloclen = min(totallen, 65536u);
 	buffer = kmalloc(alloclen, GFP_NOIO);
@@ -260,13 +226,13 @@ static int jumpshot_write_data(struct us_data *us,
 		return USB_STOR_TRANSPORT_ERROR;
 
 	do {
-		// loop, never allocate or transfer more than 64k at once
-		// (min(128k, 255*info->ssize) is the real limit)
+		
+		
 
 		len = min(totallen, alloclen);
 		thistime = (len / info->ssize) & 0xff;
 
-		// Get the data from the transfer buffer
+		
 		usb_stor_access_xfer_buf(buffer, len, us->srb,
 				&sg, &sg_offset, FROM_XFER_BUF);
 
@@ -279,26 +245,26 @@ static int jumpshot_write_data(struct us_data *us,
 		command[5] = 0xE0 | ((sector >> 24) & 0x0F);
 		command[6] = 0x30;
 
-		// send the setup + command
+		
 		result = usb_stor_ctrl_transfer(us, us->send_ctrl_pipe,
 			0, 0x20, 0, 1, command, 7);
 		if (result != USB_STOR_XFER_GOOD)
 			goto leave;
 
-		// send the data
+		
 		result = jumpshot_bulk_write(us, buffer, len);
 		if (result != USB_STOR_XFER_GOOD)
 			goto leave;
 
-		// read the result.  apparently the bulk write can complete
-		// before the jumpshot drive is finished writing.  so we loop
-		// here until we get a good return code
+		
+		
+		
 		waitcount = 0;
 		do {
 			result = jumpshot_get_status(us);
 			if (result != USB_STOR_TRANSPORT_GOOD) {
-				// I have not experimented to find the smallest value.
-				//
+				
+				
 				msleep(50); 
 			}
 		} while ((result != USB_STOR_TRANSPORT_GOOD) && (waitcount < 10));
@@ -334,7 +300,7 @@ static int jumpshot_id_device(struct us_data *us,
 	if (!reply)
 		return USB_STOR_TRANSPORT_ERROR;
 
-	// send the setup
+	
 	rc = usb_stor_ctrl_transfer(us, us->send_ctrl_pipe,
 				   0, 0x20, 0, 6, command, 2);
 
@@ -344,7 +310,7 @@ static int jumpshot_id_device(struct us_data *us,
 		goto leave;
 	}
 
-	// read the reply
+	
 	rc = jumpshot_bulk_read(us, reply, 512);
 	if (rc != USB_STOR_XFER_GOOD) {
 		rc = USB_STOR_TRANSPORT_ERROR;
@@ -404,16 +370,16 @@ static int jumpshot_handle_mode_sense(struct us_data *us,
 
 	memset(ptr, 0, 8);
 	if (sense_6) {
-		ptr[2] = 0x00;		// WP enable: 0x80
+		ptr[2] = 0x00;		
 		i = 4;
 	} else {
-		ptr[3] = 0x00;		// WP enable: 0x80
+		ptr[3] = 0x00;		
 		i = 8;
 	}
 
 	switch (page_code) {
 	   case 0x0:
-		// vendor-specific mode
+		
 		info->sense_key = 0x05;
 		info->sense_asc = 0x24;
 		info->sense_ascq = 0x00;
@@ -463,14 +429,14 @@ static int jumpshot_handle_mode_sense(struct us_data *us,
 
 static void jumpshot_info_destructor(void *extra)
 {
-	// this routine is a placeholder...
-	// currently, we don't allocate any extra blocks so we're okay
+	
+	
 }
 
 
 
-// Transport for the Lexar 'Jumpshot'
-//
+
+
 static int jumpshot_transport(struct scsi_cmnd *srb, struct us_data *us)
 {
 	struct jumpshot_info *info;
@@ -499,7 +465,7 @@ static int jumpshot_transport(struct scsi_cmnd *srb, struct us_data *us)
 	}
 
 	if (srb->cmnd[0] == READ_CAPACITY) {
-		info->ssize = 0x200;  // hard coded 512 byte sectors as per ATA spec
+		info->ssize = 0x200;  
 
 		rc = jumpshot_get_status(us);
 		if (rc != USB_STOR_TRANSPORT_GOOD)
@@ -512,8 +478,8 @@ static int jumpshot_transport(struct scsi_cmnd *srb, struct us_data *us)
 		usb_stor_dbg(us, "READ_CAPACITY:  %ld sectors, %ld bytes per sector\n",
 			     info->sectors, info->ssize);
 
-		// build the reply
-		//
+		
+		
 		((__be32 *) ptr)[0] = cpu_to_be32(info->sectors - 1);
 		((__be32 *) ptr)[1] = cpu_to_be32(info->ssize);
 		usb_stor_set_xfer_buf(ptr, 8, srb);
@@ -538,8 +504,8 @@ static int jumpshot_transport(struct scsi_cmnd *srb, struct us_data *us)
 	}
 
 	if (srb->cmnd[0] == READ_12) {
-		// I don't think we'll ever see a READ_12 but support it anyway...
-		//
+		
+		
 		block = ((u32)(srb->cmnd[2]) << 24) | ((u32)(srb->cmnd[3]) << 16) |
 			((u32)(srb->cmnd[4]) <<  8) | ((u32)(srb->cmnd[5]));
 
@@ -563,8 +529,8 @@ static int jumpshot_transport(struct scsi_cmnd *srb, struct us_data *us)
 	}
 
 	if (srb->cmnd[0] == WRITE_12) {
-		// I don't think we'll ever see a WRITE_12 but support it anyway...
-		//
+		
+		
 		block = ((u32)(srb->cmnd[2]) << 24) | ((u32)(srb->cmnd[3]) << 16) |
 			((u32)(srb->cmnd[4]) <<  8) | ((u32)(srb->cmnd[5]));
 
@@ -607,23 +573,14 @@ static int jumpshot_transport(struct scsi_cmnd *srb, struct us_data *us)
 	}
 
 	if (srb->cmnd[0] == ALLOW_MEDIUM_REMOVAL) {
-		/*
-		 * sure.  whatever.  not like we can stop the user from popping
-		 * the media out of the device (no locking doors, etc)
-		 */
+		 
 		return USB_STOR_TRANSPORT_GOOD;
 	}
 
 	if (srb->cmnd[0] == START_STOP) {
-		/*
-		 * this is used by sd.c'check_scsidisk_media_change to detect
-		 * media change
-		 */
+		 
 		usb_stor_dbg(us, "START_STOP\n");
-		/*
-		 * the first jumpshot_id_device after a media change returns
-		 * an error (determined experimentally)
-		 */
+		 
 		rc = jumpshot_id_device(us, info);
 		if (rc == USB_STOR_TRANSPORT_GOOD) {
 			info->sense_key = NO_SENSE;

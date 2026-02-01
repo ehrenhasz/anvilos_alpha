@@ -1,37 +1,4 @@
-/*
- * Copyright (c) 2004 Topspin Communications.  All rights reserved.
- * Copyright (c) 2005, 2006, 2007 Cisco Systems, Inc. All rights reserved.
- * Copyright (c) 2005, 2006, 2007, 2008 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2004 Voltaire, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/gfp.h>
 #include <linux/export.h>
@@ -42,7 +9,7 @@
 #include "mlx4.h"
 #include "icm.h"
 
-/* QP to support BF should have bits 6,7 cleared */
+ 
 #define MLX4_BF_QP_SKIP_MASK	0xc0
 #define MLX4_MAX_BF_QP_RANGE	0x40
 
@@ -71,15 +38,15 @@ void mlx4_qp_event(struct mlx4_dev *dev, u32 qpn, int event_type)
 		return;
 	}
 
-	/* Need to call mlx4_put_qp() in event handler */
+	 
 	qp->event(qp, event_type);
 }
 
-/* used for INIT/CLOSE port logic */
+ 
 static int is_master_qp0(struct mlx4_dev *dev, struct mlx4_qp *qp, int *real_qp0, int *proxy_qp0)
 {
-	/* this procedure is called after we already know we are on the master */
-	/* qp0 is either the proxy qp0, or the real qp0 */
+	 
+	 
 	u32 pf_proxy_offset = dev->phys_caps.base_proxy_sqpn + 8 * mlx4_master_func_num(dev);
 	*proxy_qp0 = qp->qpn >= pf_proxy_offset && qp->qpn <= pf_proxy_offset + 1;
 
@@ -257,7 +224,7 @@ int mlx4_qp_reserve_range(struct mlx4_dev *dev, int cnt, int align,
 	u64 out_param;
 	int err;
 
-	/* Turn off all unsupported QP allocation flags */
+	 
 	flags &= dev->caps.alloc_res_qp_mask;
 
 	if (mlx4_is_mfunc(dev)) {
@@ -609,14 +576,7 @@ static int mlx4_create_zones(struct mlx4_dev *dev,
 		goto free_bitmap;
 
 	last_offset = dev->caps.reserved_qps_cnt[MLX4_QP_REGION_FW];
-	/*  We have a single zone for the A0 steering QPs area of the FW. This area
-	 *  needs to be split into subareas. One set of subareas is for RSS QPs
-	 *  (in which qp number bits 6 and/or 7 are set); the other set of subareas
-	 *  is for RAW_ETH QPs, which require that both bits 6 and 7 are zero.
-	 *  Currently, the values returned by the FW (A0 steering area starting qp number
-	 *  and A0 steering area size) are such that there are only two subareas -- one
-	 *  for RSS and one for RAW_ETH.
-	 */
+	 
 	for (k = MLX4_QP_TABLE_ZONE_RSS + 1; k < sizeof(*bitmap)/sizeof((*bitmap)[0]);
 	     k++) {
 		int size;
@@ -624,11 +584,7 @@ static int mlx4_create_zones(struct mlx4_dev *dev,
 		u32 bf_mask;
 		u32 requested_size;
 
-		/* Assuming MLX4_BF_QP_SKIP_MASK is consecutive ones, this calculates
-		 * a mask of all LSB bits set until (and not including) the first
-		 * set bit of  MLX4_BF_QP_SKIP_MASK. For example, if MLX4_BF_QP_SKIP_MASK
-		 * is 0xc0, bf_mask will be 0x3f.
-		 */
+		 
 		bf_mask = (MLX4_BF_QP_SKIP_MASK & ~(MLX4_BF_QP_SKIP_MASK - 1)) - 1;
 		requested_size = min((u32)MLX4_QP_TABLE_RAW_ETH_SIZE, bf_mask + 1);
 
@@ -646,10 +602,10 @@ static int mlx4_create_zones(struct mlx4_dev *dev,
 			if (last_offset & MLX4_BF_QP_SKIP_MASK)
 				last_offset = candidate_offset;
 
-			/* From this point, the BF bits are 0 */
+			 
 
 			if (last_offset > max_table_offset) {
-				/* need to skip */
+				 
 				size = -1;
 			} else {
 				size = min3(max_table_offset - last_offset,
@@ -663,9 +619,7 @@ static int mlx4_create_zones(struct mlx4_dev *dev,
 						bf_mask - (last_offset & bf_mask),
 						requested_size);
 
-					/*  We will not take this path if last_offset was
-					 *  already set above to candidate_offset
-					 */
+					 
 					if (candidate_size > size) {
 						last_offset = candidate_offset;
 						size = candidate_size;
@@ -675,10 +629,7 @@ static int mlx4_create_zones(struct mlx4_dev *dev,
 		}
 
 		if (size > 0) {
-			/* mlx4_bitmap_alloc_range will find a contiguous range of "size"
-			 * QPs in which both bits 6 and 7 are zero, because we pass it the
-			 * MLX4_BF_SKIP_MASK).
-			 */
+			 
 			offset = mlx4_bitmap_alloc_range(
 					*bitmap + MLX4_QP_TABLE_ZONE_RSS,
 					size, 1,
@@ -695,9 +646,7 @@ static int mlx4_create_zones(struct mlx4_dev *dev,
 					       roundup_pow_of_two(size) - 1, 0,
 					       roundup_pow_of_two(size) - size);
 		} else {
-			/* Add an empty bitmap, we'll allocate from different zones (since
-			 * at least one is reserved)
-			 */
+			 
 			err = mlx4_bitmap_init(*bitmap + k, 1,
 					       MLX4_QP_TABLE_RAW_ETH_SIZE - 1, 0,
 					       0);
@@ -780,20 +729,14 @@ int mlx4_init_qp_table(struct mlx4_dev *dev)
 	if (mlx4_is_slave(dev))
 		return 0;
 
-	/* We reserve 2 extra QPs per port for the special QPs.  The
-	 * block of special QPs must be aligned to a multiple of 8, so
-	 * round up.
-	 *
-	 * We also reserve the MSB of the 24-bit QP number to indicate
-	 * that a QP is an XRC QP.
-	 */
+	 
 	for (k = 0; k <= MLX4_QP_REGION_BOTTOM; k++)
 		fixed_reserved_from_bot_rv += dev->caps.reserved_qps_cnt[k];
 
 	if (fixed_reserved_from_bot_rv < max_table_offset)
 		fixed_reserved_from_bot_rv = max_table_offset;
 
-	/* We reserve at least 1 extra for bitmaps that we don't have enough space for*/
+	 
 	bottom_reserved_for_rss_bitmap =
 		roundup_pow_of_two(fixed_reserved_from_bot_rv + 1);
 	dev->phys_caps.base_sqpn = ALIGN(bottom_reserved_for_rss_bitmap, 8);
@@ -822,16 +765,7 @@ int mlx4_init_qp_table(struct mlx4_dev *dev)
 		}
 	}
 
-       /* Reserve 8 real SQPs in both native and SRIOV modes.
-	* In addition, in SRIOV mode, reserve 8 proxy SQPs per function
-	* (for all PFs and VFs), and 8 corresponding tunnel QPs.
-	* Each proxy SQP works opposite its own tunnel QP.
-	*
-	* The QPs are arranged as follows:
-	* a. 8 real SQPs
-	* b. All the proxy SQPs (8 per function)
-	* c. All the tunnel QPs (8 per function)
-	*/
+        
 	reserved_from_bot = mlx4_num_reserved_sqps(dev);
 	if (reserved_from_bot + reserved_from_top > dev->caps.num_qps) {
 		mlx4_err(dev, "Number of reserved QPs is higher than number of QPs\n");
@@ -847,12 +781,11 @@ int mlx4_init_qp_table(struct mlx4_dev *dev)
 		return err;
 
 	if (mlx4_is_mfunc(dev)) {
-		/* for PPF use */
+		 
 		dev->phys_caps.base_proxy_sqpn = dev->phys_caps.base_sqpn + 8;
 		dev->phys_caps.base_tunnel_sqpn = dev->phys_caps.base_sqpn + 8 + 8 * MLX4_MFUNC_MAX;
 
-		/* In mfunc, calculate proxy and tunnel qp offsets for the PF here,
-		 * since the PF does not call mlx4_slave_caps */
+		 
 		dev->caps.spec_qps = kcalloc(dev->caps.num_ports,
 					     sizeof(*dev->caps.spec_qps),
 					     GFP_KERNEL);

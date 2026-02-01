@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
-* Copyright (C) 2012 Invensense, Inc.
-*/
+
+ 
 
 #include <linux/pm_runtime.h>
 
@@ -14,11 +12,7 @@ static unsigned int inv_scan_query_mpu6050(struct iio_dev *indio_dev)
 	struct inv_mpu6050_state  *st = iio_priv(indio_dev);
 	unsigned int mask;
 
-	/*
-	 * If the MPU6050 is just used as a trigger, then the scan mask
-	 * is not allocated so we simply enable the temperature channel
-	 * as a dummy and bail out.
-	 */
+	 
 	if (!indio_dev->active_scan_mask) {
 		st->chip_config.temp_fifo_enable = true;
 		return INV_MPU6050_SENSOR_TEMP;
@@ -61,7 +55,7 @@ static unsigned int inv_scan_query_mpu9x50(struct iio_dev *indio_dev)
 
 	mask = inv_scan_query_mpu6050(indio_dev);
 
-	/* no magnetometer if i2c auxiliary bus is used */
+	 
 	if (st->magn_disabled)
 		return mask;
 
@@ -96,7 +90,7 @@ static unsigned int inv_compute_skip_samples(const struct inv_mpu6050_state *st)
 {
 	unsigned int skip_samples = 0;
 
-	/* mag first sample is always not ready, skip it */
+	 
 	if (st->chip_config.magn_fifo_enable)
 		skip_samples = 1;
 
@@ -109,14 +103,14 @@ int inv_mpu6050_prepare_fifo(struct inv_mpu6050_state *st, bool enable)
 	int ret;
 
 	if (enable) {
-		/* reset timestamping */
+		 
 		inv_sensors_timestamp_reset(&st->timestamp);
-		/* reset FIFO */
+		 
 		d = st->chip_config.user_ctrl | INV_MPU6050_BIT_FIFO_RST;
 		ret = regmap_write(st->map, st->reg->user_ctrl, d);
 		if (ret)
 			return ret;
-		/* enable sensor output to FIFO */
+		 
 		d = 0;
 		if (st->chip_config.gyro_fifo_enable)
 			d |= INV_MPU6050_BITS_GYRO_OUT;
@@ -129,12 +123,12 @@ int inv_mpu6050_prepare_fifo(struct inv_mpu6050_state *st, bool enable)
 		ret = regmap_write(st->map, st->reg->fifo_en, d);
 		if (ret)
 			return ret;
-		/* enable FIFO reading */
+		 
 		d = st->chip_config.user_ctrl | INV_MPU6050_BIT_FIFO_EN;
 		ret = regmap_write(st->map, st->reg->user_ctrl, d);
 		if (ret)
 			return ret;
-		/* enable interrupt */
+		 
 		ret = regmap_write(st->map, st->reg->int_enable,
 				   INV_MPU6050_BIT_DATA_RDY_EN);
 	} else {
@@ -144,7 +138,7 @@ int inv_mpu6050_prepare_fifo(struct inv_mpu6050_state *st, bool enable)
 		ret = regmap_write(st->map, st->reg->fifo_en, 0);
 		if (ret)
 			return ret;
-		/* restore user_ctrl for disabling FIFO reading */
+		 
 		ret = regmap_write(st->map, st->reg->user_ctrl,
 				   st->chip_config.user_ctrl);
 	}
@@ -152,11 +146,7 @@ int inv_mpu6050_prepare_fifo(struct inv_mpu6050_state *st, bool enable)
 	return ret;
 }
 
-/**
- *  inv_mpu6050_set_enable() - enable chip functions.
- *  @indio_dev:	Device driver instance.
- *  @enable: enable/disable
- */
+ 
 static int inv_mpu6050_set_enable(struct iio_dev *indio_dev, bool enable)
 {
 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
@@ -169,10 +159,7 @@ static int inv_mpu6050_set_enable(struct iio_dev *indio_dev, bool enable)
 		result = pm_runtime_resume_and_get(pdev);
 		if (result)
 			return result;
-		/*
-		 * In case autosuspend didn't trigger, turn off first not
-		 * required sensors.
-		 */
+		 
 		result = inv_mpu6050_switch_engine(st, false, ~scan);
 		if (result)
 			goto error_power_off;
@@ -198,11 +185,7 @@ error_power_off:
 	return result;
 }
 
-/**
- * inv_mpu_data_rdy_trigger_set_state() - set data ready interrupt state
- * @trig: Trigger instance
- * @state: Desired trigger state
- */
+ 
 static int inv_mpu_data_rdy_trigger_set_state(struct iio_trigger *trig,
 					      bool state)
 {

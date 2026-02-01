@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Microchip PCI1XXXX I2C adapter driver for PCIe Switch
- * which has I2C controller in one of its downstream functions
- *
- * Copyright (C) 2021 - 2022 Microchip Technology Inc.
- *
- * Authors: Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
- *          Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/delay.h>
@@ -22,7 +14,7 @@
 #define SMBUS_MAST_CORE_ADDR_BASE		0x00000
 #define SMBUS_MAST_SYS_REG_ADDR_BASE		0x01000
 
-/* SMB register space. */
+ 
 #define SMB_CORE_CTRL_REG_OFF	(SMBUS_MAST_CORE_ADDR_BASE + 0x00)
 
 #define SMB_CORE_CTRL_ESO		BIT(6)
@@ -44,10 +36,7 @@
 
 #define SMB_CORE_SR_HOLD_TIME_REG_OFF	(SMBUS_MAST_CORE_ADDR_BASE + 0x18)
 
-/*
- * SR_HOLD_TIME_XK_TICKS field will indicate the number of ticks of the
- * baud clock required to program 'Hold Time' at X KHz.
- */
+ 
 #define SR_HOLD_TIME_100K_TICKS		150
 #define SR_HOLD_TIME_400K_TICKS		20
 #define SR_HOLD_TIME_1000K_TICKS	12
@@ -60,19 +49,12 @@
 
 #define SMB_CORE_IDLE_SCALING_REG_OFF	(SMBUS_MAST_CORE_ADDR_BASE + 0x24)
 
-/*
- * FAIR_BUS_IDLE_MIN_XK_TICKS field will indicate the number of ticks of
- * the baud clock required to program 'fair idle delay' at X KHz. Fair idle
- * delay establishes the MCTP T(IDLE_DELAY) period.
- */
+ 
 #define FAIR_BUS_IDLE_MIN_100K_TICKS		992
 #define FAIR_BUS_IDLE_MIN_400K_TICKS		500
 #define FAIR_BUS_IDLE_MIN_1000K_TICKS		500
 
-/*
- * FAIR_IDLE_DELAY_XK_TICKS field will indicate the number of ticks of the
- * baud clock required to satisfy the fairness protocol at X KHz.
- */
+ 
 #define FAIR_IDLE_DELAY_100K_TICKS	963
 #define FAIR_IDLE_DELAY_400K_TICKS	156
 #define FAIR_IDLE_DELAY_1000K_TICKS	156
@@ -99,18 +81,12 @@
 
 #define SMB_CORE_BUS_CLK_REG_OFF	(SMBUS_MAST_CORE_ADDR_BASE + 0x2C)
 
-/*
- * BUS_CLK_XK_LOW_PERIOD_TICKS field defines the number of I2C Baud Clock
- * periods that make up the low phase of the I2C/SMBus bus clock at X KHz.
- */
+ 
 #define BUS_CLK_100K_LOW_PERIOD_TICKS		156
 #define BUS_CLK_400K_LOW_PERIOD_TICKS		41
 #define BUS_CLK_1000K_LOW_PERIOD_TICKS		15
 
-/*
- * BUS_CLK_XK_HIGH_PERIOD_TICKS field defines the number of I2C Baud Clock
- * periods that make up the high phase of the I2C/SMBus bus clock at X KHz.
- */
+ 
 #define BUS_CLK_100K_HIGH_PERIOD_TICKS	154
 #define BUS_CLK_400K_HIGH_PERIOD_TICKS	35
 #define BUS_CLK_1000K_HIGH_PERIOD_TICKS	14
@@ -124,51 +100,29 @@
 
 #define SMB_CORE_CLK_SYNC_REG_OFF	(SMBUS_MAST_CORE_ADDR_BASE + 0x3C)
 
-/*
- * CLK_SYNC_XK defines the number of clock cycles to sync up to the external
- * clock before comparing the internal and external clocks for clock stretching
- * at X KHz.
- */
+ 
 #define CLK_SYNC_100K			4
 #define CLK_SYNC_400K			4
 #define CLK_SYNC_1000K			4
 
 #define SMB_CORE_DATA_TIMING_REG_OFF	(SMBUS_MAST_CORE_ADDR_BASE + 0x40)
 
-/*
- *
- * FIRST_START_HOLD_XK_TICKS will indicate the number of ticks of the baud
- * clock required to program 'FIRST_START_HOLD' timer at X KHz. This timer
- * determines the SCLK hold time following SDAT driven low during the first
- * START bit in a transfer.
- */
+ 
 #define FIRST_START_HOLD_100K_TICKS	23
 #define FIRST_START_HOLD_400K_TICKS	8
 #define FIRST_START_HOLD_1000K_TICKS	12
 
-/*
- * STOP_SETUP_XK_TICKS will indicate the number of ticks of the baud clock
- * required to program 'STOP_SETUP' timer at X KHz. This timer determines the
- * SDAT setup time from the rising edge of SCLK for a STOP condition.
- */
+ 
 #define STOP_SETUP_100K_TICKS		150
 #define STOP_SETUP_400K_TICKS		20
 #define STOP_SETUP_1000K_TICKS		12
 
-/*
- * RESTART_SETUP_XK_TICKS will indicate the number of ticks of the baud clock
- * required to program 'RESTART_SETUP' timer at X KHz. This timer determines the
- * SDAT setup time from the rising edge of SCLK for a repeated START condition.
- */
+ 
 #define RESTART_SETUP_100K_TICKS	156
 #define RESTART_SETUP_400K_TICKS	20
 #define RESTART_SETUP_1000K_TICKS	12
 
-/*
- * DATA_HOLD_XK_TICKS will indicate the number of ticks of the baud clock
- * required to program 'DATA_HOLD' timer at X KHz. This timer determines the
- * SDAT hold time following SCLK driven low.
- */
+ 
 #define DATA_HOLD_100K_TICKS		12
 #define DATA_HOLD_400K_TICKS		2
 #define DATA_HOLD_1000K_TICKS		2
@@ -185,37 +139,22 @@
 
 #define SMB_CORE_TO_SCALING_REG_OFF	(SMBUS_MAST_CORE_ADDR_BASE + 0x44)
 
-/*
- * BUS_IDLE_MIN_XK_TICKS defines Bus Idle Minimum Time.
- * Bus Idle Minimum time = BUS_IDLE_MIN[7:0] x Baud_Clock_Period x
- * (BUS_IDLE_MIN_XK_TICKS[7] ? 4,1)
- */
+ 
 #define BUS_IDLE_MIN_100K_TICKS		36UL
 #define BUS_IDLE_MIN_400K_TICKS		10UL
 #define BUS_IDLE_MIN_1000K_TICKS	4UL
 
-/*
- * CTRL_CUM_TIME_OUT_XK_TICKS defines SMBus Controller Cumulative Time-Out.
- * SMBus Controller Cumulative Time-Out duration =
- * CTRL_CUM_TIME_OUT_XK_TICKS[7:0] x Baud_Clock_Period x 2048
- */
+ 
 #define CTRL_CUM_TIME_OUT_100K_TICKS		76
 #define CTRL_CUM_TIME_OUT_400K_TICKS		76
 #define CTRL_CUM_TIME_OUT_1000K_TICKS		76
 
-/*
- * TARGET_CUM_TIME_OUT_XK_TICKS defines SMBus Target Cumulative Time-Out duration.
- * SMBus Target Cumulative Time-Out duration = TARGET_CUM_TIME_OUT_XK_TICKS[7:0] x
- * Baud_Clock_Period x 4096
- */
+ 
 #define TARGET_CUM_TIME_OUT_100K_TICKS	95
 #define TARGET_CUM_TIME_OUT_400K_TICKS	95
 #define TARGET_CUM_TIME_OUT_1000K_TICKS	95
 
-/*
- * CLOCK_HIGH_TIME_OUT_XK defines Clock High time out period.
- * Clock High time out period = CLOCK_HIGH_TIME_OUT_XK[7:0] x Baud_Clock_Period x 8
- */
+ 
 #define CLOCK_HIGH_TIME_OUT_100K_TICKS	97
 #define CLOCK_HIGH_TIME_OUT_400K_TICKS	97
 #define CLOCK_HIGH_TIME_OUT_1000K_TICKS	97
@@ -312,11 +251,11 @@
 
 #define PCI1XXXX_I2C_TIMEOUT_MS		1000
 
-/* General Purpose Register. */
+ 
 #define SMB_GPR_REG		(SMBUS_MAST_CORE_ADDR_BASE + 0x1000 + 0x0c00 + \
 				0x00)
 
-/* Lock Register. */
+ 
 #define SMB_GPR_LOCK_REG	(SMBUS_MAST_CORE_ADDR_BASE + 0x1000 + 0x0000 + \
 				0x00A0)
 
@@ -397,11 +336,7 @@ static void pci1xxxx_i2c_send_start_stop(struct pci1xxxx_i2c *i2c, bool start)
 	writeb(regval, p);
 }
 
-/*
- * When accessing the core control reg, we should not do a read modified write
- * as they are write '1' to clear bits. Instead we need to write with the
- * specific bits that needs to be set.
- */
+ 
 static void pci1xxxx_i2c_set_clear_FW_ACK(struct pci1xxxx_i2c *i2c, bool set)
 {
 	u8 regval;
@@ -426,11 +361,7 @@ static void pci1xxxx_i2c_buffer_write(struct pci1xxxx_i2c *i2c, u8 slaveaddr,
 		memcpy_toio(p, buf, transferlen);
 }
 
-/*
- * When accessing the core control reg, we should not do a read modified write
- * as there are write '1' to clear bits. Instead we need to write with the
- * specific bits that needs to be set.
- */
+ 
 static void pci1xxxx_i2c_enable_ESO(struct pci1xxxx_i2c *i2c)
 {
 	writeb(SMB_CORE_CTRL_ESO, i2c->i2c_base + SMB_CORE_CTRL_REG_OFF);
@@ -524,10 +455,7 @@ static irqreturn_t pci1xxxx_i2c_isr(int irq, void *dev)
 	u16 reg1;
 	u8 reg3;
 
-	/*
-	 *  Read the SMBus interrupt status register to see if the
-	 *  DMA_TERM interrupt has caused this callback.
-	 */
+	 
 	reg1 = readw(p1);
 
 	if (reg1 & I2C_BUF_MSTR_INTR_MASK) {
@@ -712,10 +640,7 @@ static void pci1xxxx_i2c_init(struct pci1xxxx_i2c *i2c)
 
 	ret = set_sys_lock(i2c);
 	if (ret == -EPERM) {
-		/*
-		 * Configure I2C Fast Mode as default frequency if unable
-		 * to acquire sys lock.
-		 */
+		 
 		regval = 0;
 	} else {
 		regval = readl(p1);
@@ -744,19 +669,13 @@ static void pci1xxxx_i2c_init(struct pci1xxxx_i2c *i2c)
 	i2c->flags |= I2C_FLAGS_DIRECT_MODE;
 	pci1xxxx_i2c_set_mode(i2c);
 
-	/*
-	 * Added as a precaution since BUF_EMPTY in status register
-	 * also trigered an Interrupt.
-	 */
+	 
 	writeb(STA_BUF_EMPTY, p2);
 
-	/* Configure core I2c control registers. */
+	 
 	pci1xxxx_i2c_configure_core_reg(i2c, true);
 
-	/*
-	 * Enable pull-up for the SMB alert pin which is just used for
-	 * wakeup right now.
-	 */
+	 
 	pci1xxxx_i2c_configure_smbalert_pin(i2c, true);
 }
 
@@ -764,10 +683,10 @@ static void pci1xxxx_i2c_clear_flags(struct pci1xxxx_i2c *i2c)
 {
 	u8 regval;
 
-	/* Reset the internal buffer counters. */
+	 
 	pci1xxxx_i2c_reset_counters(i2c);
 
-	/* Clear low level interrupts. */
+	 
 	regval = COMPLETION_MNAKX | COMPLETION_IDLE | COMPLETION_MDONE;
 	writeb(regval, i2c->i2c_base + SMB_CORE_COMPLETION_REG_OFF3);
 	reinit_completion(&i2c->i2c_xfer_done);
@@ -789,40 +708,21 @@ static int pci1xxxx_i2c_read(struct pci1xxxx_i2c *i2c, u8 slaveaddr,
 	u32 regval;
 	u16 count;
 
-	/* Enable I2C host controller by setting the ESO bit in the CONTROL REG. */
+	 
 	pci1xxxx_i2c_enable_ESO(i2c);
 	pci1xxxx_i2c_clear_flags(i2c);
 	pci1xxxx_config_nw_layer_intr(i2c, INTR_MSK_DMA_TERM, true);
 	pci1xxxx_i2c_config_high_level_intr(i2c, I2C_BUF_MSTR_INTR_MASK, true);
 
-	/*
-	 * The I2C transfer could be more than 128 bytes. Our Core is
-	 * capable of only sending 128 at a time.
-	 * As far as the I2C read is concerned, initailly send the
-	 * read slave address along with the number of bytes to read in
-	 * ReadCount. After sending the slave address the interrupt
-	 * is generated. On seeing the ACK for the slave address, reverse the
-	 * buffer direction and run the DMA to initiate Read from slave.
-	 */
+	 
 	for (count = 0; count < total_len; count += transferlen) {
 
-		/*
-		 * Before start of any transaction clear the existing
-		 * START/STOP conditions.
-		 */
+		 
 		writeb(0, p1);
 		remainingbytes = total_len - count;
 		transferlen = min_t(u16, remainingbytes, SMBUS_BUF_MAX_SIZE);
 
-		/*
-		 * Send STOP bit for the last chunk in the transaction.
-		 * For I2C read transaction of more than BUF_SIZE, NACK should
-		 * only be sent for the last read.
-		 * Hence a bit FW_ACK is set for all the read chunks except for
-		 * the last chunk. For the last chunk NACK should be sent and
-		 * FW_ACK is cleared Send STOP only when I2C_FLAGS_STOP bit is
-		 * set in the flags and only for the last transaction.
-		 */
+		 
 		if ((count + transferlen >= total_len) &&
 		    (i2c->flags & I2C_FLAGS_STOP)) {
 			pci1xxxx_i2c_set_clear_FW_ACK(i2c, false);
@@ -831,21 +731,18 @@ static int pci1xxxx_i2c_read(struct pci1xxxx_i2c *i2c, u8 slaveaddr,
 			pci1xxxx_i2c_set_clear_FW_ACK(i2c, true);
 		}
 
-		/* Send START bit for the first transaction. */
+		 
 		if (count == 0) {
 			pci1xxxx_i2c_set_transfer_dir(i2c, I2C_DIRN_WRITE);
 			pci1xxxx_i2c_send_start_stop(i2c, 1);
 
-			/* Write I2c buffer with just the slave addr. */
+			 
 			pci1xxxx_i2c_buffer_write(i2c, slaveaddr, 0, NULL);
 
-			/* Set the count. Readcount is the transfer bytes. */
+			 
 			pci1xxxx_i2c_set_count(i2c, 1, 1, transferlen);
 
-			/*
-			 * Set the Auto_start_read bit so that the HW itself
-			 * will take care of the read phase.
-			 */
+			 
 			pci1xxxx_i2c_config_asr(i2c, true);
 			if (i2c->flags & I2C_FLAGS_SMB_BLK_READ)
 				pci1xxxx_i2c_set_readm(i2c, true);
@@ -856,23 +753,23 @@ static int pci1xxxx_i2c_read(struct pci1xxxx_i2c *i2c, u8 slaveaddr,
 			pci1xxxx_i2c_set_transfer_dir(i2c, I2C_DIRN_READ);
 		}
 
-		/* Start the DMA. */
+		 
 		pci1xxxx_i2c_start_DMA(i2c);
 
-		/* Wait for the DMA_TERM interrupt. */
+		 
 		time_left = wait_for_completion_timeout(&i2c->i2c_xfer_done,
 			    msecs_to_jiffies(PCI1XXXX_I2C_TIMEOUT_MS));
 		if (time_left == 0) {
-			/* Reset the I2C core to release the bus lock. */
+			 
 			pci1xxxx_i2c_init(i2c);
 			retval = -ETIMEDOUT;
 			goto cleanup;
 		}
 
-		/* Read the completion reg to know the reason for DMA_TERM. */
+		 
 		regval = readb(p2);
 
-		/* Slave did not respond. */
+		 
 		if (regval & COMPLETION_MNAKX) {
 			writeb(COMPLETION_MNAKX, p2);
 			retval = -ETIMEDOUT;
@@ -889,7 +786,7 @@ static int pci1xxxx_i2c_read(struct pci1xxxx_i2c *i2c, u8 slaveaddr,
 	}
 
 cleanup:
-	/* Disable all the interrupts. */
+	 
 	pci1xxxx_config_nw_layer_intr(i2c, INTR_MSK_DMA_TERM, false);
 	pci1xxxx_i2c_config_high_level_intr(i2c, I2C_BUF_MSTR_INTR_MASK, false);
 	pci1xxxx_i2c_config_asr(i2c, false);
@@ -909,40 +806,31 @@ static int pci1xxxx_i2c_write(struct pci1xxxx_i2c *i2c, u8 slaveaddr,
 	u32 regval;
 	u16 count;
 
-	/* Enable I2C host controller by setting the ESO bit in the CONTROL REG. */
+	 
 	pci1xxxx_i2c_enable_ESO(i2c);
 
-	/* Set the Buffer direction. */
+	 
 	pci1xxxx_i2c_set_transfer_dir(i2c, I2C_DIRN_WRITE);
 	pci1xxxx_config_nw_layer_intr(i2c, INTR_MSK_DMA_TERM, true);
 	pci1xxxx_i2c_config_high_level_intr(i2c, I2C_BUF_MSTR_INTR_MASK, true);
 
-	/*
-	 * The i2c transfer could be more than 128 bytes. Our Core is
-	 * capable of only sending 128 at a time.
-	 */
+	 
 	for (count = 0; count < total_len; count += transferlen) {
-		/*
-		 * Before start of any transaction clear the existing
-		 * START/STOP conditions.
-		 */
+		 
 		writeb(0, p1);
 		pci1xxxx_i2c_clear_flags(i2c);
 		remainingbytes = total_len - count;
 
-		/* If it is the starting of the transaction send START. */
+		 
 		if (count == 0) {
 			pci1xxxx_i2c_send_start_stop(i2c, 1);
 
-			/* -1 for the slave address. */
+			 
 			transferlen = min_t(u16, SMBUS_BUF_MAX_SIZE - 1,
 					    remainingbytes);
 			pci1xxxx_i2c_buffer_write(i2c, slaveaddr,
 						  transferlen, &buf[count]);
-			/*
-			 * The actual number of bytes written on the I2C bus
-			 * is including the slave address.
-			 */
+			 
 			actualwritelen = transferlen + 1;
 		} else {
 			transferlen = min_t(u16, SMBUS_BUF_MAX_SIZE, remainingbytes);
@@ -952,23 +840,18 @@ static int pci1xxxx_i2c_write(struct pci1xxxx_i2c *i2c, u8 slaveaddr,
 
 		pci1xxxx_i2c_set_count(i2c, actualwritelen, actualwritelen, 0);
 
-		/*
-		 * Send STOP only when I2C_FLAGS_STOP bit is set in the flags and
-		 * only for the last transaction.
-		 */
+		 
 		if (remainingbytes <= transferlen &&
 		   (i2c->flags & I2C_FLAGS_STOP))
 			pci1xxxx_i2c_send_start_stop(i2c, 0);
 
 		pci1xxxx_i2c_start_DMA(i2c);
 
-		/*
-		 * Wait for the DMA_TERM interrupt.
-		 */
+		 
 		time_left = wait_for_completion_timeout(&i2c->i2c_xfer_done,
 			    msecs_to_jiffies(PCI1XXXX_I2C_TIMEOUT_MS));
 		if (time_left == 0) {
-			/* Reset the I2C core to release the bus lock. */
+			 
 			pci1xxxx_i2c_init(i2c);
 			retval = -ETIMEDOUT;
 			goto cleanup;
@@ -982,7 +865,7 @@ static int pci1xxxx_i2c_write(struct pci1xxxx_i2c *i2c, u8 slaveaddr,
 		}
 	}
 cleanup:
-	/* Disable all the interrupts. */
+	 
 	pci1xxxx_config_nw_layer_intr(i2c, INTR_MSK_DMA_TERM, false);
 	pci1xxxx_i2c_config_high_level_intr(i2c, I2C_BUF_MSTR_INTR_MASK, false);
 
@@ -1001,10 +884,7 @@ static int pci1xxxx_i2c_xfer(struct i2c_adapter *adap,
 	for (i = 0; i < num; i++) {
 		slaveaddr = i2c_8bit_addr_from_msg(&msgs[i]);
 
-		/*
-		 * Send the STOP bit if the transfer is the final one or
-		 * if the I2C_M_STOP flag is set.
-		 */
+		 
 		if ((i == num - 1) || (msgs[i].flags & I2C_M_STOP))
 			i2c->flags |= I2C_FLAGS_STOP;
 		else
@@ -1033,9 +913,7 @@ static int pci1xxxx_i2c_xfer(struct i2c_adapter *adap,
 	return num;
 }
 
-/*
- * List of supported functions by the driver.
- */
+ 
 static u32 pci1xxxx_i2c_get_funcs(struct i2c_adapter *adap)
 {
 	return I2C_FUNC_I2C | I2C_FUNC_PROTOCOL_MANGLING |
@@ -1072,24 +950,18 @@ static int pci1xxxx_i2c_suspend(struct device *dev)
 
 	i2c_mark_adapter_suspended(&i2c->adap);
 
-	/*
-	 * If the system is put into 'suspend' state when the I2C transfer is in
-	 * progress, wait until the transfer completes.
-	 */
+	 
 	while (i2c->i2c_xfer_in_progress)
 		msleep(20);
 
 	pci1xxxx_i2c_config_high_level_intr(i2c, SMBALERT_WAKE_INTR_MASK, true);
 
-	/*
-	 * Enable the PERST_DIS bit to mask the PERST from resetting the core
-	 * registers.
-	 */
+	 
 	regval = readl(p);
 	regval |= PERI_SMBUS_D3_RESET_DIS;
 	writel(regval, p);
 
-	/* Enable PCI wake in the PMCSR register. */
+	 
 	device_set_wakeup_enable(dev, true);
 	pci_wake_from_d3(pdev, true);
 
@@ -1146,10 +1018,7 @@ static int pci1xxxx_i2c_probe_pci(struct pci_dev *pdev,
 
 	pci_set_master(pdev);
 
-	/*
-	 * We are getting the base address of the SMB core. SMB core uses
-	 * BAR0 and size is 32K.
-	 */
+	 
 	ret = pcim_iomap_regions(pdev, BIT(0), pci_name(pdev));
 	if (ret < 0)
 		return ret;

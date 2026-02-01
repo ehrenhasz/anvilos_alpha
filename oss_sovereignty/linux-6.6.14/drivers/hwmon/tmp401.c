@@ -1,22 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* tmp401.c
- *
- * Copyright (C) 2007,2008 Hans de Goede <hdegoede@redhat.com>
- * Preliminary tmp411 support by:
- * Gabriel Konat, Sander Leget, Wouter Willems
- * Copyright (C) 2009 Andre Prendel <andre.prendel@gmx.de>
- *
- * Cleanup and support for TMP431 and TMP432 by Guenter Roeck
- * Copyright (c) 2013 Guenter Roeck <linux@roeck-us.net>
- */
 
-/*
- * Driver for the Texas Instruments TMP401 SMBUS temperature sensor IC.
- *
- * Note this IC is in some aspect similar to the LM90, but it has quite a
- * few differences too, for example the local temp has a higher resolution
- * and thus has 16 bits registers for its value and limit instead of 8 bits.
- */
+ 
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/err.h>
@@ -28,16 +13,13 @@
 #include <linux/regmap.h>
 #include <linux/slab.h>
 
-/* Addresses to scan */
+ 
 static const unsigned short normal_i2c[] = { 0x48, 0x49, 0x4a, 0x4c, 0x4d,
 	0x4e, 0x4f, I2C_CLIENT_END };
 
 enum chips { tmp401, tmp411, tmp431, tmp432, tmp435 };
 
-/*
- * The TMP401 registers, note some registers have different addresses for
- * reading and writing
- */
+ 
 #define TMP401_STATUS				0x02
 #define TMP401_CONFIG				0x03
 #define TMP401_CONVERSION_RATE			0x04
@@ -48,19 +30,19 @@ enum chips { tmp401, tmp411, tmp431, tmp432, tmp435 };
 #define TMP401_DEVICE_ID_REG			0xFF
 
 static const u8 TMP401_TEMP_MSB[7][3] = {
-	{ 0x00, 0x01, 0x23 },	/* temp */
-	{ 0x06, 0x08, 0x16 },	/* low limit */
-	{ 0x05, 0x07, 0x15 },	/* high limit */
-	{ 0x20, 0x19, 0x1a },	/* therm (crit) limit */
-	{ 0x30, 0x34, 0x00 },	/* lowest */
-	{ 0x32, 0xf6, 0x00 },	/* highest */
+	{ 0x00, 0x01, 0x23 },	 
+	{ 0x06, 0x08, 0x16 },	 
+	{ 0x05, 0x07, 0x15 },	 
+	{ 0x20, 0x19, 0x1a },	 
+	{ 0x30, 0x34, 0x00 },	 
+	{ 0x32, 0xf6, 0x00 },	 
 };
 
-/* [0] = fault, [1] = low, [2] = high, [3] = therm/crit */
+ 
 static const u8 TMP432_STATUS_REG[] = {
 	0x1b, 0x36, 0x35, 0x37 };
 
-/* Flags */
+ 
 #define TMP401_CONFIG_RANGE			BIT(2)
 #define TMP401_CONFIG_SHUTDOWN			BIT(6)
 #define TMP401_STATUS_LOCAL_CRIT		BIT(0)
@@ -71,12 +53,12 @@ static const u8 TMP432_STATUS_REG[] = {
 #define TMP401_STATUS_LOCAL_LOW			BIT(5)
 #define TMP401_STATUS_LOCAL_HIGH		BIT(6)
 
-/* On TMP432, each status has its own register */
+ 
 #define TMP432_STATUS_LOCAL			BIT(0)
 #define TMP432_STATUS_REMOTE1			BIT(1)
 #define TMP432_STATUS_REMOTE2			BIT(2)
 
-/* Manufacturer / Device ID's */
+ 
 #define TMP401_MANUFACTURER_ID			0x55
 #define TMP401_DEVICE_ID			0x11
 #define TMP411A_DEVICE_ID			0x12
@@ -86,9 +68,7 @@ static const u8 TMP432_STATUS_REG[] = {
 #define TMP432_DEVICE_ID			0x32
 #define TMP435_DEVICE_ID			0x35
 
-/*
- * Driver data (common to all clients)
- */
+ 
 
 static const struct i2c_device_id tmp401_id[] = {
 	{ "tmp401", tmp401 },
@@ -100,9 +80,7 @@ static const struct i2c_device_id tmp401_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, tmp401_id);
 
-/*
- * Client data (each client gets its own)
- */
+ 
 
 struct tmp401_data {
 	struct i2c_client *client;
@@ -112,7 +90,7 @@ struct tmp401_data {
 
 	bool extended_range;
 
-	/* hwmon API configuration data */
+	 
 	u32 chip_channel_config[4];
 	struct hwmon_channel_info chip_info;
 	u32 temp_channel_config[4];
@@ -121,19 +99,19 @@ struct tmp401_data {
 	struct hwmon_chip_info chip;
 };
 
-/* regmap */
+ 
 
 static bool tmp401_regmap_is_volatile(struct device *dev, unsigned int reg)
 {
 	switch (reg) {
-	case 0:			/* local temp msb */
-	case 1:			/* remote temp msb */
-	case 2:			/* status */
-	case 0x10:		/* remote temp lsb */
-	case 0x15:		/* local temp lsb */
-	case 0x1b:		/* status (tmp432) */
-	case 0x23 ... 0x24:	/* remote temp 2 msb / lsb */
-	case 0x30 ... 0x37:	/* lowest/highest temp; status (tmp432) */
+	case 0:			 
+	case 1:			 
+	case 2:			 
+	case 0x10:		 
+	case 0x15:		 
+	case 0x1b:		 
+	case 0x23 ... 0x24:	 
+	case 0x30 ... 0x37:	 
 		return true;
 	default:
 		return false;
@@ -147,20 +125,20 @@ static int tmp401_reg_read(void *context, unsigned int reg, unsigned int *val)
 	int regval;
 
 	switch (reg) {
-	case 0:			/* local temp msb */
-	case 1:			/* remote temp msb */
-	case 5:			/* local temp high limit msb */
-	case 6:			/* local temp low limit msb */
-	case 7:			/* remote temp ligh limit msb */
-	case 8:			/* remote temp low limit msb */
-	case 0x15:		/* remote temp 2 high limit msb */
-	case 0x16:		/* remote temp 2 low limit msb */
-	case 0x23:		/* remote temp 2 msb */
-	case 0x30:		/* local temp minimum, tmp411 */
-	case 0x32:		/* local temp maximum, tmp411 */
-	case 0x34:		/* remote temp minimum, tmp411 */
-	case 0xf6:		/* remote temp maximum, tmp411 (really 0x36) */
-		/* work around register overlap between TMP411 and TMP432 */
+	case 0:			 
+	case 1:			 
+	case 5:			 
+	case 6:			 
+	case 7:			 
+	case 8:			 
+	case 0x15:		 
+	case 0x16:		 
+	case 0x23:		 
+	case 0x30:		 
+	case 0x32:		 
+	case 0x34:		 
+	case 0xf6:		 
+		 
 		if (reg == 0xf6)
 			reg = 0x36;
 		regval = i2c_smbus_read_word_swapped(client, reg);
@@ -168,7 +146,7 @@ static int tmp401_reg_read(void *context, unsigned int reg, unsigned int *val)
 			return regval;
 		*val = regval;
 		break;
-	case 0x19:		/* critical limits, 8-bit registers */
+	case 0x19:		 
 	case 0x1a:
 	case 0x20:
 		regval = i2c_smbus_read_byte_data(client, reg);
@@ -185,29 +163,29 @@ static int tmp401_reg_read(void *context, unsigned int reg, unsigned int *val)
 			*val = regval;
 			break;
 		}
-		/* simulate TMP432 status registers */
+		 
 		regval = i2c_smbus_read_byte_data(client, TMP401_STATUS);
 		if (regval < 0)
 			return regval;
 		*val = 0;
 		switch (reg) {
-		case 0x1b:	/* open / fault */
+		case 0x1b:	 
 			if (regval & TMP401_STATUS_REMOTE_OPEN)
 				*val |= BIT(1);
 			break;
-		case 0x35:	/* high limit */
+		case 0x35:	 
 			if (regval & TMP401_STATUS_LOCAL_HIGH)
 				*val |= BIT(0);
 			if (regval & TMP401_STATUS_REMOTE_HIGH)
 				*val |= BIT(1);
 			break;
-		case 0x36:	/* low limit */
+		case 0x36:	 
 			if (regval & TMP401_STATUS_LOCAL_LOW)
 				*val |= BIT(0);
 			if (regval & TMP401_STATUS_REMOTE_LOW)
 				*val |= BIT(1);
 			break;
-		case 0x37:	/* therm / crit limit */
+		case 0x37:	 
 			if (regval & TMP401_STATUS_LOCAL_CRIT)
 				*val |= BIT(0);
 			if (regval & TMP401_STATUS_REMOTE_CRIT)
@@ -231,22 +209,22 @@ static int tmp401_reg_write(void *context, unsigned int reg, unsigned int val)
 	struct i2c_client *client = data->client;
 
 	switch (reg) {
-	case 0x05:		/* local temp high limit msb */
-	case 0x06:		/* local temp low limit msb */
-	case 0x07:		/* remote temp ligh limit msb */
-	case 0x08:		/* remote temp low limit msb */
-		reg += 6;	/* adjust for register write address */
+	case 0x05:		 
+	case 0x06:		 
+	case 0x07:		 
+	case 0x08:		 
+		reg += 6;	 
 		fallthrough;
-	case 0x15:		/* remote temp 2 high limit msb */
-	case 0x16:		/* remote temp 2 low limit msb */
+	case 0x15:		 
+	case 0x16:		 
 		return i2c_smbus_write_word_swapped(client, reg, val);
-	case 0x19:		/* critical limits, 8-bit registers */
+	case 0x19:		 
 	case 0x1a:
 	case 0x20:
 		return i2c_smbus_write_byte_data(client, reg, val >> 8);
 	case TMP401_CONVERSION_RATE:
 	case TMP401_CONFIG:
-		reg += 6;	/* adjust for register write address */
+		reg += 6;	 
 		fallthrough;
 	default:
 		return i2c_smbus_write_byte_data(client, reg, val);
@@ -262,7 +240,7 @@ static const struct regmap_config tmp401_regmap_config = {
 	.reg_write = tmp401_reg_write,
 };
 
-/* temperature conversion */
+ 
 
 static int tmp401_register_to_temp(u16 reg, bool extended)
 {
@@ -286,7 +264,7 @@ static u16 tmp401_temp_to_register(long temp, bool extended, int zbits)
 	return DIV_ROUND_CLOSEST(temp * (1 << (8 - zbits)), 1000) << zbits;
 }
 
-/* hwmon API functions */
+ 
 
 static const u8 tmp401_temp_reg_index[] = {
 	[hwmon_temp_input] = 0,
@@ -424,14 +402,7 @@ static int tmp401_set_convrate(struct regmap *regmap, long val)
 {
 	int rate;
 
-	/*
-	 * For valid rates, interval can be calculated as
-	 *	interval = (1 << (7 - rate)) * 125;
-	 * Rounded rate is therefore
-	 *	rate = 7 - __fls(interval * 4 / (125 * 3));
-	 * Use clamp_val() to avoid overflows, and to ensure valid input
-	 * for __fls.
-	 */
+	 
 	val = clamp_val(val, 125, 16000);
 	rate = 7 - __fls(val * 4 / (125 * 3));
 	return regmap_write(regmap, TMP401_CONVERSION_RATE, rate);
@@ -453,10 +424,7 @@ static int tmp401_chip_write(struct device *dev, u32 attr, int channel, long val
 			err = -EINVAL;
 			break;
 		}
-		/*
-		 * Reset history by writing any value to any of the
-		 * minimum/maximum registers (0x30-0x37).
-		 */
+		 
 		err = regmap_write(regmap, 0x30, 0);
 		break;
 	default:
@@ -538,7 +506,7 @@ static const struct hwmon_ops tmp401_ops = {
 	.write = tmp401_write,
 };
 
-/* chip initialization, detect, probe */
+ 
 
 static int tmp401_init_client(struct tmp401_data *data)
 {
@@ -548,12 +516,12 @@ static int tmp401_init_client(struct tmp401_data *data)
 	u32 val = 0;
 	s32 nfactor = 0;
 
-	/* Set conversion rate to 2 Hz */
+	 
 	ret = regmap_write(regmap, TMP401_CONVERSION_RATE, 5);
 	if (ret < 0)
 		return ret;
 
-	/* Start conversions (disable shutdown if necessary) */
+	 
 	ret = regmap_read(regmap, TMP401_CONFIG, &config);
 	if (ret < 0)
 		return ret;
@@ -562,7 +530,7 @@ static int tmp401_init_client(struct tmp401_data *data)
 	config &= ~TMP401_CONFIG_SHUTDOWN;
 
 	if (of_property_read_bool(data->client->dev.of_node, "ti,extended-range-enable")) {
-		/* Enable measurement over extended temperature range */
+		 
 		config |= TMP401_CONFIG_RANGE;
 	}
 
@@ -617,7 +585,7 @@ static int tmp401_detect(struct i2c_client *client,
 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -ENODEV;
 
-	/* Detect and identify the chip */
+	 
 	reg = i2c_smbus_read_byte_data(client, TMP401_MANUFACTURER_ID_REG);
 	if (reg != TMP401_MANUFACTURER_ID)
 		return -ENODEV;
@@ -667,7 +635,7 @@ static int tmp401_detect(struct i2c_client *client,
 		return -ENODEV;
 
 	reg = i2c_smbus_read_byte_data(client, TMP401_CONVERSION_RATE);
-	/* Datasheet says: 0x1-0x6 */
+	 
 	if (reg > 15)
 		return -ENODEV;
 
@@ -699,7 +667,7 @@ static int tmp401_probe(struct i2c_client *client)
 	if (IS_ERR(data->regmap))
 		return PTR_ERR(data->regmap);
 
-	/* initialize configuration data */
+	 
 	data->chip.ops = &tmp401_ops;
 	data->chip.info = data->info;
 
@@ -735,7 +703,7 @@ static int tmp401_probe(struct i2c_client *client)
 			HWMON_T_MAX_ALARM | HWMON_T_CRIT_ALARM | HWMON_T_FAULT;
 	}
 
-	/* Initialize the TMP401 chip */
+	 
 	status = tmp401_init_client(data);
 	if (status < 0)
 		return status;

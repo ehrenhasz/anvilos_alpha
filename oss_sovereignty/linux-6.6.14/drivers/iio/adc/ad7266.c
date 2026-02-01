@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AD7266/65 SPI ADC driver
- *
- * Copyright 2012 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -36,12 +32,7 @@ struct ad7266_state {
 	bool			fixed_addr;
 	struct gpio_desc	*gpios[3];
 
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache lines.
-	 * The buffer needs to be large enough to hold two samples (4 bytes) and
-	 * the naturally aligned timestamp (8 bytes).
-	 */
+	 
 	struct {
 		__be16 sample[2];
 		s64 timestamp;
@@ -50,13 +41,13 @@ struct ad7266_state {
 
 static int ad7266_wakeup(struct ad7266_state *st)
 {
-	/* Any read with >= 2 bytes will wake the device */
+	 
 	return spi_read(st->spi, &st->data.sample[0], 2);
 }
 
 static int ad7266_powerdown(struct ad7266_state *st)
 {
-	/* Any read with < 2 bytes will powerdown the device */
+	 
 	return spi_read(st->spi, &st->data.sample[0], 1);
 }
 
@@ -413,10 +404,10 @@ static int ad7266_probe(struct spi_device *spi)
 
 		st->vref_mv = ret / 1000;
 	} else {
-		/* Any other error indicates that the regulator does exist */
+		 
 		if (PTR_ERR(st->reg) != -ENODEV)
 			return PTR_ERR(st->reg);
-		/* Use internal reference */
+		 
 		st->vref_mv = 2500;
 	}
 
@@ -450,15 +441,15 @@ static int ad7266_probe(struct spi_device *spi)
 
 	ad7266_init_channels(indio_dev);
 
-	/* wakeup */
+	 
 	st->single_xfer[0].rx_buf = &st->data.sample[0];
 	st->single_xfer[0].len = 2;
 	st->single_xfer[0].cs_change = 1;
-	/* conversion */
+	 
 	st->single_xfer[1].rx_buf = st->data.sample;
 	st->single_xfer[1].len = 4;
 	st->single_xfer[1].cs_change = 1;
-	/* powerdown */
+	 
 	st->single_xfer[2].tx_buf = &st->data.sample[0];
 	st->single_xfer[2].len = 1;
 

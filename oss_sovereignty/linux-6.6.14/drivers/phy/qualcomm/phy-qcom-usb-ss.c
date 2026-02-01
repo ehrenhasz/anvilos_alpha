@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2012-2014,2017 The Linux Foundation. All rights reserved.
- * Copyright (c) 2018-2020, Linaro Limited
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -22,7 +19,7 @@
 #define PHY_CTRL2			0x74
 #define PHY_CTRL4			0x7C
 
-/* PHY_CTRL bits */
+ 
 #define REF_PHY_EN			BIT(0)
 #define LANE0_PWR_ON			BIT(2)
 #define SWI_PCS_CLK_SEL			BIT(4)
@@ -166,7 +163,7 @@ static int qcom_ssphy_init_reset(struct ssphy_priv *priv)
 	}
 
 	if (priv->reset_com) {
-		/* if reset_com is present, reset_phy is no longer optional */
+		 
 		priv->reset_phy = devm_reset_control_get_exclusive(priv->dev, "phy");
 		if (IS_ERR(priv->reset_phy)) {
 			dev_err(priv->dev, "Failed to get reset control phy\n");

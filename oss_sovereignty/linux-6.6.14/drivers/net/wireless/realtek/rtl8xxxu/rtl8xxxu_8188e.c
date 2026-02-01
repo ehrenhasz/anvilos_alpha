@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * RTL8XXXU mac80211 USB driver - 8188e specific subdriver
- *
- * Copyright (c) 2014 - 2016 Jes Sorensen <Jes.Sorensen@gmail.com>
- *
- * Portions, notably calibration code:
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- * This driver was written as a replacement for the vendor provided
- * rtl8723au driver. As the Realtek 8xxx chips are very similar in
- * their programming interface, I have started adding support for
- * additional 8xxx chips like the 8192cu, 8188cus, etc.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -247,7 +235,7 @@ static const struct rtl8xxxu_rfregval rtl8188eu_radioa_init_table[] = {
 	{0xc8, 0x00076c06}, {0xc9, 0x00000000},
 	{0xca, 0x00080000}, {0xdf, 0x00000180},
 	{0xef, 0x000001a0}, {0x51, 0x0006b27d},
-	{0x52, 0x0007e49d},	/* Set to 0x0007e4dd for SDIO */
+	{0x52, 0x0007e49d},	 
 	{0x53, 0x00000073}, {0x56, 0x00051ff3},
 	{0x35, 0x00000086}, {0x35, 0x00000186},
 	{0x35, 0x00000286}, {0x36, 0x00001c25},
@@ -286,41 +274,41 @@ static const struct rtl8xxxu_rfregval rtl8188eu_radioa_init_table[] = {
 #define TX_RPT2_ITEM_SIZE	8
 
 static const u8 retry_penalty[PERENTRY][RETRYSIZE + 1] = {
-	{5, 4, 3, 2, 0, 3}, /* 92 , idx=0 */
-	{6, 5, 4, 3, 0, 4}, /* 86 , idx=1 */
-	{6, 5, 4, 2, 0, 4}, /* 81 , idx=2 */
-	{8, 7, 6, 4, 0, 6}, /* 75 , idx=3 */
-	{10, 9, 8, 6, 0, 8}, /* 71 , idx=4 */
-	{10, 9, 8, 4, 0, 8}, /* 66 , idx=5 */
-	{10, 9, 8, 2, 0, 8}, /* 62 , idx=6 */
-	{10, 9, 8, 0, 0, 8}, /* 59 , idx=7 */
-	{18, 17, 16, 8, 0, 16}, /* 53 , idx=8 */
-	{26, 25, 24, 16, 0, 24}, /* 50 , idx=9 */
-	{34, 33, 32, 24, 0, 32}, /* 47 , idx=0x0a */
-	{34, 31, 28, 20, 0, 32}, /* 43 , idx=0x0b */
-	{34, 31, 27, 18, 0, 32}, /* 40 , idx=0x0c */
-	{34, 31, 26, 16, 0, 32}, /* 37 , idx=0x0d */
-	{34, 30, 22, 16, 0, 32}, /* 32 , idx=0x0e */
-	{34, 30, 24, 16, 0, 32}, /* 26 , idx=0x0f */
-	{49, 46, 40, 16, 0, 48}, /* 20 , idx=0x10 */
-	{49, 45, 32, 0, 0, 48}, /* 17 , idx=0x11 */
-	{49, 45, 22, 18, 0, 48}, /* 15 , idx=0x12 */
-	{49, 40, 24, 16, 0, 48}, /* 12 , idx=0x13 */
-	{49, 32, 18, 12, 0, 48}, /* 9 , idx=0x14 */
-	{49, 22, 18, 14, 0, 48}, /* 6 , idx=0x15 */
-	{49, 16, 16, 0, 0, 48} /* 3, idx=0x16 */
+	{5, 4, 3, 2, 0, 3},  
+	{6, 5, 4, 3, 0, 4},  
+	{6, 5, 4, 2, 0, 4},  
+	{8, 7, 6, 4, 0, 6},  
+	{10, 9, 8, 6, 0, 8},  
+	{10, 9, 8, 4, 0, 8},  
+	{10, 9, 8, 2, 0, 8},  
+	{10, 9, 8, 0, 0, 8},  
+	{18, 17, 16, 8, 0, 16},  
+	{26, 25, 24, 16, 0, 24},  
+	{34, 33, 32, 24, 0, 32},  
+	{34, 31, 28, 20, 0, 32},  
+	{34, 31, 27, 18, 0, 32},  
+	{34, 31, 26, 16, 0, 32},  
+	{34, 30, 22, 16, 0, 32},  
+	{34, 30, 24, 16, 0, 32},  
+	{49, 46, 40, 16, 0, 48},  
+	{49, 45, 32, 0, 0, 48},  
+	{49, 45, 22, 18, 0, 48},  
+	{49, 40, 24, 16, 0, 48},  
+	{49, 32, 18, 12, 0, 48},  
+	{49, 22, 18, 14, 0, 48},  
+	{49, 16, 16, 0, 0, 48}  
 };
 
 static const u8 pt_penalty[RETRYSIZE + 1] = {34, 31, 30, 24, 0, 32};
 
 static const u8 retry_penalty_idx_normal[2][RATESIZE] = {
-	{ /* RSSI>TH */
+	{  
 		4, 4, 4, 5,
 		4, 4, 5, 7, 7, 7, 8, 0x0a,
 		4, 4, 4, 4, 6, 0x0a, 0x0b, 0x0d,
 		5, 5, 7, 7, 8, 0x0b, 0x0d, 0x0f
 	},
-	{ /* RSSI<TH */
+	{  
 		0x0a, 0x0a, 0x0b, 0x0c,
 		0x0a, 0x0a, 0x0b, 0x0c, 0x0d, 0x10, 0x13, 0x13,
 		0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x11, 0x13, 0x13,
@@ -329,13 +317,13 @@ static const u8 retry_penalty_idx_normal[2][RATESIZE] = {
 };
 
 static const u8 retry_penalty_idx_cut_i[2][RATESIZE] = {
-	{ /* RSSI>TH */
+	{  
 		4, 4, 4, 5,
 		4, 4, 5, 7, 7, 7, 8, 0x0a,
 		4, 4, 4, 4, 6, 0x0a, 0x0b, 0x0d,
 		5, 5, 7, 7, 8, 0x0b, 0x0d, 0x0f
 	},
-	{ /* RSSI<TH */
+	{  
 		0x0a, 0x0a, 0x0b, 0x0c,
 		0x0a, 0x0a, 0x0b, 0x0c, 0x0d, 0x10, 0x13, 0x13,
 		0x06, 0x07, 0x08, 0x0d, 0x0e, 0x11, 0x11, 0x11,
@@ -388,7 +376,7 @@ static const u8 dropping_necessary[RATESIZE] = {
 static const u8 pending_for_rate_up_fail[5] = {2, 10, 24, 40, 60};
 
 static const u16 dynamic_tx_rpt_timing[6] = {
-	0x186a, 0x30d4, 0x493e, 0x61a8, 0x7a12, 0x927c /* 200ms-1200ms */
+	0x186a, 0x30d4, 0x493e, 0x61a8, 0x7a12, 0x927c  
 };
 
 enum rtl8188e_tx_rpt_timing {
@@ -417,12 +405,7 @@ static int rtl8188eu_identify_chip(struct rtl8xxxu_priv *priv)
 		return -EOPNOTSUPP;
 	}
 
-	/*
-	 * TODO: At a glance, I cut requires a different firmware,
-	 * different initialisation tables, and no software rate
-	 * control. The vendor driver is not configured to handle
-	 * I cut chips by default. Are there any in the wild?
-	 */
+	 
 	if (priv->chip_cut == 8) {
 		dev_info(dev, "RTL8188EU cut I is not supported. Please complain about it at linux-wireless@vger.kernel.org.\n");
 		return -EOPNOTSUPP;
@@ -489,10 +472,7 @@ static void rtl8188eu_config_channel(struct ieee80211_hw *hw)
 		val32 |= FPGA_RF_MODE;
 		rtl8xxxu_write32(priv, REG_FPGA1_RF_MODE, val32);
 
-		/*
-		 * Set Control channel to upper or lower. These settings
-		 * are required only for 40MHz
-		 */
+		 
 		val32 = rtl8xxxu_read32(priv, REG_CCK0_SYSTEM);
 		val32 &= ~CCK0_SIDEBAND;
 		if (!sec_ch_above)
@@ -500,7 +480,7 @@ static void rtl8188eu_config_channel(struct ieee80211_hw *hw)
 		rtl8xxxu_write32(priv, REG_CCK0_SYSTEM, val32);
 
 		val32 = rtl8xxxu_read32(priv, REG_OFDM1_LSTF);
-		val32 &= ~OFDM_LSTF_PRIME_CH_MASK; /* 0xc00 */
+		val32 &= ~OFDM_LSTF_PRIME_CH_MASK;  
 		if (sec_ch_above)
 			val32 |= OFDM_LSTF_PRIME_CH_LOW;
 		else
@@ -604,9 +584,7 @@ static void rtl8188eu_init_phy_bb(struct rtl8xxxu_priv *priv)
 	val16 |= SYS_FUNC_BB_GLB_RSTN | SYS_FUNC_BBRSTB | SYS_FUNC_DIO_RF;
 	rtl8xxxu_write16(priv, REG_SYS_FUNC, val16);
 
-	/*
-	 * Per vendor driver, run power sequence before init of RF
-	 */
+	 
 	val8 = RF_ENABLE | RF_RSTB | RF_SDMRSTB;
 	rtl8xxxu_write8(priv, REG_RF_CTRL, val8);
 
@@ -628,23 +606,23 @@ static int rtl8188eu_iqk_path_a(struct rtl8xxxu_priv *priv)
 	u32 reg_eac, reg_e94, reg_e9c;
 	int result = 0;
 
-	/* Path A IQK setting */
+	 
 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_A, 0x10008c1c);
 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_A, 0x30008c1c);
 
 	rtl8xxxu_write32(priv, REG_TX_IQK_PI_A, 0x8214032a);
 	rtl8xxxu_write32(priv, REG_RX_IQK_PI_A, 0x28160000);
 
-	/* LO calibration setting */
+	 
 	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x00462911);
 
-	/* One shot, path A LOK & IQK */
+	 
 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf9000000);
 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf8000000);
 
 	mdelay(10);
 
-	/* Check failed */
+	 
 	reg_eac = rtl8xxxu_read32(priv, REG_RX_POWER_AFTER_IQK_A_2);
 	reg_e94 = rtl8xxxu_read32(priv, REG_TX_POWER_BEFORE_IQK_A);
 	reg_e9c = rtl8xxxu_read32(priv, REG_TX_POWER_AFTER_IQK_A);
@@ -662,43 +640,43 @@ static int rtl8188eu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
 	u32 reg_ea4, reg_eac, reg_e94, reg_e9c, val32;
 	int result = 0;
 
-	/* Leave IQK mode */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_FPGA0_IQK);
 	u32p_replace_bits(&val32, 0, 0xffffff00);
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, val32);
 
-	/* Enable path A PA in TX IQK mode */
+	 
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_WE_LUT, 0x800a0);
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_RCK_OS, 0x30000);
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G1, 0x0000f);
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G2, 0xf117b);
 
-	/* Enter IQK mode */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_FPGA0_IQK);
 	u32p_replace_bits(&val32, 0x808000, 0xffffff00);
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, val32);
 
-	/* TX IQK setting */
+	 
 	rtl8xxxu_write32(priv, REG_TX_IQK, 0x01007c00);
 	rtl8xxxu_write32(priv, REG_RX_IQK, 0x81004800);
 
-	/* path-A IQK setting */
+	 
 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_A, 0x10008c1c);
 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_A, 0x30008c1c);
 
 	rtl8xxxu_write32(priv, REG_TX_IQK_PI_A, 0x82160804);
 	rtl8xxxu_write32(priv, REG_RX_IQK_PI_A, 0x28160000);
 
-	/* LO calibration setting */
+	 
 	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x0046a911);
 
-	/* One shot, path A LOK & IQK */
+	 
 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf9000000);
 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf8000000);
 
 	mdelay(10);
 
-	/* Check failed */
+	 
 	reg_eac = rtl8xxxu_read32(priv, REG_RX_POWER_AFTER_IQK_A_2);
 	reg_e94 = rtl8xxxu_read32(priv, REG_TX_POWER_BEFORE_IQK_A);
 	reg_e9c = rtl8xxxu_read32(priv, REG_TX_POWER_AFTER_IQK_A);
@@ -714,7 +692,7 @@ static int rtl8188eu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
 		(reg_e94 & 0x03ff0000) | ((reg_e9c >> 16) & 0x03ff);
 	rtl8xxxu_write32(priv, REG_TX_IQK, val32);
 
-	/* Modify RX IQK mode table */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_FPGA0_IQK);
 	u32p_replace_bits(&val32, 0, 0xffffff00);
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, val32);
@@ -724,25 +702,25 @@ static int rtl8188eu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G1, 0x0000f);
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G2, 0xf7ffa);
 
-	/* Enter IQK mode */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_FPGA0_IQK);
 	u32p_replace_bits(&val32, 0x808000, 0xffffff00);
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, val32);
 
-	/* IQK setting */
+	 
 	rtl8xxxu_write32(priv, REG_RX_IQK, 0x01004800);
 
-	/* Path A IQK setting */
+	 
 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_A, 0x30008c1c);
 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_A, 0x10008c1c);
 
 	rtl8xxxu_write32(priv, REG_TX_IQK_PI_A, 0x82160c05);
 	rtl8xxxu_write32(priv, REG_RX_IQK_PI_A, 0x28160c05);
 
-	/* LO calibration setting */
+	 
 	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x0046a911);
 
-	/* One shot, path A LOK & IQK */
+	 
 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf9000000);
 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf8000000);
 
@@ -791,13 +769,10 @@ static void rtl8188eu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
 		REG_FPGA0_XB_RF_INT_OE, REG_CCK0_AFE_SETTING
 	};
 
-	/*
-	 * Note: IQ calibration must be performed after loading
-	 *       PHY_REG.txt , and radio_a, radio_b.txt
-	 */
+	 
 
 	if (t == 0) {
-		/* Save ADDA parameters, turn Path A ADDA on */
+		 
 		rtl8xxxu_save_regs(priv, adda_regs, priv->adda_backup,
 				   RTL8XXXU_ADDA_REGS);
 		rtl8xxxu_save_mac_regs(priv, iqk_mac_regs, priv->mac_backup);
@@ -813,12 +788,12 @@ static void rtl8188eu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
 	}
 
 	if (!priv->pi_enabled) {
-		/* Switch BB to PI mode to do IQ Calibration. */
+		 
 		rtl8xxxu_write32(priv, REG_FPGA0_XA_HSSI_PARM1, 0x01000100);
 		rtl8xxxu_write32(priv, REG_FPGA0_XB_HSSI_PARM1, 0x01000100);
 	}
 
-	/* MAC settings */
+	 
 	rtl8xxxu_mac_calibration(priv, iqk_mac_regs, priv->mac_backup);
 
 	val32 = rtl8xxxu_read32(priv, REG_CCK0_AFE_SETTING);
@@ -843,10 +818,10 @@ static void rtl8188eu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
 	val32 &= ~BIT(10);
 	rtl8xxxu_write32(priv, REG_FPGA0_XB_RF_INT_OE, val32);
 
-	/* Page B init */
+	 
 	rtl8xxxu_write32(priv, REG_CONFIG_ANT_A, 0x0f600000);
 
-	/* IQ calibration setting */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_FPGA0_IQK);
 	u32p_replace_bits(&val32, 0x808000, 0xffffff00);
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, val32);
@@ -886,7 +861,7 @@ static void rtl8188eu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
 	if (!path_a_ok)
 		dev_dbg(dev, "%s: Path A RX IQK failed!\n", __func__);
 
-	/* Back to BB mode, load original value */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_FPGA0_IQK);
 	u32p_replace_bits(&val32, 0, 0xffffff00);
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, val32);
@@ -895,26 +870,26 @@ static void rtl8188eu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
 		return;
 
 	if (!priv->pi_enabled) {
-		/* Switch back BB to SI mode after finishing IQ Calibration */
+		 
 		rtl8xxxu_write32(priv, REG_FPGA0_XA_HSSI_PARM1, 0x01000000);
 		rtl8xxxu_write32(priv, REG_FPGA0_XB_HSSI_PARM1, 0x01000000);
 	}
 
-	/* Reload ADDA power saving parameters */
+	 
 	rtl8xxxu_restore_regs(priv, adda_regs, priv->adda_backup,
 			      RTL8XXXU_ADDA_REGS);
 
-	/* Reload MAC parameters */
+	 
 	rtl8xxxu_restore_mac_regs(priv, iqk_mac_regs, priv->mac_backup);
 
-	/* Reload BB parameters */
+	 
 	rtl8xxxu_restore_regs(priv, iqk_bb_regs,
 			      priv->bb_backup, RTL8XXXU_BB_REGS);
 
-	/* Restore RX initial gain */
+	 
 	rtl8xxxu_write32(priv, REG_FPGA0_XA_LSSI_PARM, 0x00032ed3);
 
-	/* Load 0xe30 IQC default value */
+	 
 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_A, 0x01008c00);
 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_A, 0x01008c00);
 }
@@ -922,7 +897,7 @@ static void rtl8188eu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
 static void rtl8188eu_phy_iq_calibrate(struct rtl8xxxu_priv *priv)
 {
 	struct device *dev = &priv->udev->dev;
-	int result[4][8];	/* last is final result */
+	int result[4][8];	 
 	int i, candidate;
 	bool path_a_ok;
 	u32 reg_e94, reg_e9c, reg_ea4, reg_eac;
@@ -1022,7 +997,7 @@ static int rtl8188e_emu_to_active(struct rtl8xxxu_priv *priv)
 	u16 val16;
 	int count, ret = 0;
 
-	/* wait till 0x04[17] = 1 power ready*/
+	 
 	for (count = RTL8XXXU_MAX_REG_POLL; count; count--) {
 		val32 = rtl8xxxu_read32(priv, REG_APS_FSMCO);
 		if (val32 & BIT(17))
@@ -1036,27 +1011,27 @@ static int rtl8188e_emu_to_active(struct rtl8xxxu_priv *priv)
 		goto exit;
 	}
 
-	/* reset baseband */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_SYS_FUNC);
 	val8 &= ~(SYS_FUNC_BBRSTB | SYS_FUNC_BB_GLB_RSTN);
 	rtl8xxxu_write8(priv, REG_SYS_FUNC, val8);
 
-	/*0x24[23] = 2b'01 schmit trigger */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_AFE_XTAL_CTRL);
 	val32 |= BIT(23);
 	rtl8xxxu_write32(priv, REG_AFE_XTAL_CTRL, val32);
 
-	/* 0x04[15] = 0 disable HWPDN (control by DRV)*/
+	 
 	val16 = rtl8xxxu_read16(priv, REG_APS_FSMCO);
 	val16 &= ~APS_FSMCO_HW_POWERDOWN;
 	rtl8xxxu_write16(priv, REG_APS_FSMCO, val16);
 
-	/*0x04[12:11] = 2b'00 disable WL suspend*/
+	 
 	val16 = rtl8xxxu_read16(priv, REG_APS_FSMCO);
 	val16 &= ~(APS_FSMCO_HW_SUSPEND | APS_FSMCO_PCIE);
 	rtl8xxxu_write16(priv, REG_APS_FSMCO, val16);
 
-	/* set, then poll until 0 */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_APS_FSMCO);
 	val32 |= APS_FSMCO_MAC_ENABLE;
 	rtl8xxxu_write32(priv, REG_APS_FSMCO, val32);
@@ -1075,7 +1050,7 @@ static int rtl8188e_emu_to_active(struct rtl8xxxu_priv *priv)
 		goto exit;
 	}
 
-	/* LDO normal mode*/
+	 
 	val8 = rtl8xxxu_read8(priv, REG_LPLDO_CTRL);
 	val8 &= ~BIT(4);
 	rtl8xxxu_write8(priv, REG_LPLDO_CTRL, val8);
@@ -1088,12 +1063,12 @@ static int rtl8188eu_active_to_emu(struct rtl8xxxu_priv *priv)
 {
 	u8 val8;
 
-	/* Turn off RF */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_RF_CTRL);
 	val8 &= ~RF_ENABLE;
 	rtl8xxxu_write8(priv, REG_RF_CTRL, val8);
 
-	/* LDO Sleep mode */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_LPLDO_CTRL);
 	val8 |= BIT(4);
 	rtl8xxxu_write8(priv, REG_LPLDO_CTRL, val8);
@@ -1122,7 +1097,7 @@ static int rtl8188eu_emu_to_disabled(struct rtl8xxxu_priv *priv)
 	val8 &= ~BIT(4);
 	rtl8xxxu_write8(priv, REG_GPIO_MUXCFG + 1, val8);
 
-	/* Set USB suspend enable local register 0xfe10[4]=1 */
+	 
 	val8 = rtl8xxxu_read8(priv, 0xfe10);
 	val8 |= BIT(4);
 	rtl8xxxu_write8(priv, 0xfe10, val8);
@@ -1142,7 +1117,7 @@ static int rtl8188eu_active_to_lps(struct rtl8xxxu_priv *priv)
 
 	retry = 100;
 	retval = -EBUSY;
-	/* Poll 32 bit wide REG_SCH_TX_CMD for 0 to ensure no TX is pending. */
+	 
 	do {
 		val32 = rtl8xxxu_read32(priv, REG_SCH_TX_CMD);
 		if (!val32) {
@@ -1157,14 +1132,14 @@ static int rtl8188eu_active_to_lps(struct rtl8xxxu_priv *priv)
 		goto out;
 	}
 
-	/* Disable CCK and OFDM, clock gated */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_SYS_FUNC);
 	val8 &= ~SYS_FUNC_BBRSTB;
 	rtl8xxxu_write8(priv, REG_SYS_FUNC, val8);
 
 	udelay(2);
 
-	/* Reset MAC TRX */
+	 
 	val16 = rtl8xxxu_read16(priv, REG_CR);
 	val16 |= 0xff;
 	val16 &= ~(CR_MAC_TX_ENABLE | CR_MAC_RX_ENABLE | CR_SECURITY_ENABLE);
@@ -1189,15 +1164,7 @@ static int rtl8188eu_power_on(struct rtl8xxxu_priv *priv)
 	if (ret)
 		goto exit;
 
-	/*
-	 * Enable MAC DMA/WMAC/SCHEDULE/SEC block
-	 * Set CR bit10 to enable 32k calibration.
-	 * We do not set CR_MAC_TX_ENABLE | CR_MAC_RX_ENABLE here
-	 * due to a hardware bug in the 88E, requiring those to be
-	 * set after REG_TRXFF_BNDY is set. If not the RXFF bundary
-	 * will get set to a larger buffer size than the real buffer
-	 * size.
-	 */
+	 
 	val16 = (CR_HCI_TXDMA_ENABLE | CR_HCI_RXDMA_ENABLE |
 		 CR_TXDMA_ENABLE | CR_RXDMA_ENABLE |
 		 CR_PROTOCOL_ENABLE | CR_SCHEDULE_ENABLE |
@@ -1219,24 +1186,24 @@ static void rtl8188eu_power_off(struct rtl8xxxu_priv *priv)
 	val8 &= ~TX_REPORT_CTRL_TIMER_ENABLE;
 	rtl8xxxu_write8(priv, REG_TX_REPORT_CTRL, val8);
 
-	/* Turn off RF */
+	 
 	rtl8xxxu_write8(priv, REG_RF_CTRL, 0x00);
 
 	rtl8188eu_active_to_lps(priv);
 
-	/* Reset Firmware if running in RAM */
+	 
 	if (rtl8xxxu_read8(priv, REG_MCU_FW_DL) & MCU_FW_RAM_SEL)
 		rtl8xxxu_firmware_self_reset(priv);
 
-	/* Reset MCU */
+	 
 	val16 = rtl8xxxu_read16(priv, REG_SYS_FUNC);
 	val16 &= ~SYS_FUNC_CPU_ENABLE;
 	rtl8xxxu_write16(priv, REG_SYS_FUNC, val16);
 
-	/* Reset MCU ready status */
+	 
 	rtl8xxxu_write8(priv, REG_MCU_FW_DL, 0x00);
 
-	/* 32K_CTRL looks to be very 8188e specific */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_32K_CTRL);
 	val8 &= ~BIT(0);
 	rtl8xxxu_write8(priv, REG_32K_CTRL, val8);
@@ -1244,7 +1211,7 @@ static void rtl8188eu_power_off(struct rtl8xxxu_priv *priv)
 	rtl8188eu_active_to_emu(priv);
 	rtl8188eu_emu_to_disabled(priv);
 
-	/* Reset MCU IO Wrapper */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_RSV_CTRL + 1);
 	val8 &= ~BIT(3);
 	rtl8xxxu_write8(priv, REG_RSV_CTRL + 1, val8);
@@ -1253,9 +1220,9 @@ static void rtl8188eu_power_off(struct rtl8xxxu_priv *priv)
 	val8 |= BIT(3);
 	rtl8xxxu_write8(priv, REG_RSV_CTRL + 1, val8);
 
-	/* Vendor driver refers to GPIO_IN */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_GPIO_PIN_CTRL);
-	/* Vendor driver refers to GPIO_OUT */
+	 
 	rtl8xxxu_write8(priv, REG_GPIO_PIN_CTRL + 1, val8);
 	rtl8xxxu_write8(priv, REG_GPIO_PIN_CTRL + 2, 0xff);
 
@@ -1264,10 +1231,7 @@ static void rtl8188eu_power_off(struct rtl8xxxu_priv *priv)
 	val8 = rtl8xxxu_read8(priv, REG_GPIO_IO_SEL + 1);
 	rtl8xxxu_write8(priv, REG_GPIO_IO_SEL + 1, val8 | 0x0f);
 
-	/*
-	 * Set LNA, TRSW, EX_PA Pin to output mode
-	 * Referred to as REG_BB_PAD_CTRL in 8188eu vendor driver
-	 */
+	 
 	rtl8xxxu_write32(priv, REG_PAD_CTRL1, 0x00080808);
 
 	rtl8xxxu_write8(priv, REG_RSV_CTRL, 0x00);
@@ -1297,7 +1261,7 @@ static void rtl8188e_disable_rf(struct rtl8xxxu_priv *priv)
 	val32 &= ~OFDM_RF_PATH_TX_MASK;
 	rtl8xxxu_write32(priv, REG_OFDM0_TRX_PATH_ENABLE, val32);
 
-	/* Power down RF module */
+	 
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_AC, 0);
 
 	rtl8188eu_active_to_emu(priv);
@@ -1307,26 +1271,22 @@ static void rtl8188e_usb_quirks(struct rtl8xxxu_priv *priv)
 {
 	u16 val16;
 
-	/*
-	 * Technically this is not a USB quirk, but a chip quirk.
-	 * This has to be done after REG_TRXFF_BNDY is set, see
-	 * rtl8188eu_power_on() for details.
-	 */
+	 
 	val16 = rtl8xxxu_read16(priv, REG_CR);
 	val16 |= (CR_MAC_TX_ENABLE | CR_MAC_RX_ENABLE);
 	rtl8xxxu_write16(priv, REG_CR, val16);
 
 	rtl8xxxu_gen2_usb_quirks(priv);
 
-	/* Pre-TX enable WEP/TKIP security */
+	 
 	rtl8xxxu_write8(priv, REG_EARLY_MODE_CONTROL_8188E + 3, 0x01);
 }
 
 static s8 rtl8188e_cck_rssi(struct rtl8xxxu_priv *priv, struct rtl8723au_phy_stats *phy_stats)
 {
-	/* only use lna 0/1/2/3/7 */
+	 
 	static const s8 lna_gain_table_0[8] = {17, -1, -13, -29, -32, -35, -38, -41};
-	/* only use lna 3/7 */
+	 
 	static const s8 lna_gain_table_1[8] = {29, 20, 12, 3, -6, -15, -24, -33};
 
 	u8 cck_agc_rpt = phy_stats->cck_agc_rpt_ofdm_cfosho_a;
@@ -1337,9 +1297,9 @@ static s8 rtl8188e_cck_rssi(struct rtl8xxxu_priv *priv, struct rtl8723au_phy_sta
 	lna_idx = u8_get_bits(cck_agc_rpt, CCK_AGC_RPT_LNA_IDX_MASK);
 	vga_idx = u8_get_bits(cck_agc_rpt, CCK_AGC_RPT_VGA_IDX_MASK);
 
-	if (priv->chip_cut >= 8) /* cut I */ /* SMIC */
+	if (priv->chip_cut >= 8)    
 		lna_gain = lna_gain_table_0[lna_idx];
-	else /* TSMC */
+	else  
 		lna_gain = lna_gain_table_1[lna_idx];
 
 	rx_pwr_all = lna_gain - (2 * vga_idx);
@@ -1380,7 +1340,7 @@ static void rtl8188e_set_tx_rpt_timing(struct rtl8xxxu_ra_info *ra, u8 timing)
 			break;
 
 	if (timing == DEFAULT_TIMING) {
-		idx = 0; /* 200ms */
+		idx = 0;  
 	} else if (timing == INCREASE_TIMING) {
 		if (idx < 5)
 			idx++;
@@ -1463,7 +1423,7 @@ static void rtl8188e_rate_up(struct rtl8xxxu_ra_info *ra)
 			ra->rate_sgi = 1;
 		else if (!ra->sgi_enable)
 			ra->rate_sgi = 0;
-	} else { /* rate_id > ra->highest_rate */
+	} else {  
 		rate_id = highest_rate;
 	}
 
@@ -1504,7 +1464,7 @@ static void rtl8188e_rate_decision(struct rtl8xxxu_ra_info *ra)
 		return;
 	}
 
-	if (priv->chip_cut == 8) { /* cut I */
+	if (priv->chip_cut == 8) {  
 		retry_penalty_idx_0 = retry_penalty_idx_cut_i[0];
 		retry_penalty_idx_1 = retry_penalty_idx_cut_i[1];
 		retry_penalty_up_idx = retry_penalty_up_idx_cut_i;
@@ -1521,13 +1481,13 @@ static void rtl8188e_rate_decision(struct rtl8xxxu_ra_info *ra)
 		ra->ra_pending_counter = 0;
 	}
 
-	/* Start RA decision */
+	 
 	if (ra->pre_rate > ra->highest_rate)
 		rate_id = ra->highest_rate;
 	else
 		rate_id = ra->pre_rate;
 
-	/* rate down */
+	 
 	if (ra->rssi_sta_ra > rssi_threshold[rate_id])
 		penalty_id1 = retry_penalty_idx_0[rate_id];
 	else
@@ -1541,7 +1501,7 @@ static void rtl8188e_rate_decision(struct rtl8xxxu_ra_info *ra)
 	else
 		ra->nsc_down = 0;
 
-	/* rate up */
+	 
 	penalty_id2 = retry_penalty_up_idx[rate_id];
 
 	for (i = 0; i < 5; i++)
@@ -1571,7 +1531,7 @@ static void rtl8188e_rate_decision(struct rtl8xxxu_ra_info *ra)
 		ra->dynamic_tx_rpt_timing_counter = 0;
 
 	if (ra->dynamic_tx_rpt_timing_counter >= 4) {
-		/* Rate didn't change 4 times, extend RPT timing */
+		 
 		rtl8188e_set_tx_rpt_timing(ra, INCREASE_TIMING);
 		ra->dynamic_tx_rpt_timing_counter = 0;
 	}
@@ -1632,9 +1592,9 @@ static void rtl8188e_power_training_try_state(struct rtl8xxxu_ra_info *ra)
 
 	ra->pt_pre_rate = ra->decision_rate;
 
-	/* TODO: implement the "false alarm" statistics for this */
-	/* Disable power training when noisy environment */
-	/* if (p_dm_odm->is_disable_power_training) { */
+	 
+	 
+	 
 	if (1) {
 		ra->pt_stage = 0;
 		ra->ra_stage = 0;
@@ -1696,9 +1656,7 @@ void rtl8188e_handle_ra_tx_report2(struct rtl8xxxu_priv *priv, struct sk_buff *s
 
 	dev_dbg(dev, "%s: len: %d items: %d\n", __func__, tx_rpt_len, items);
 
-	/* We only use macid 0, so only the first item is relevant.
-	 * AP mode will use more of them if it's ever implemented.
-	 */
+	 
 	if (!priv->vif || priv->vif->type == NL80211_IFTYPE_STATION)
 		items = 1;
 
@@ -1723,7 +1681,7 @@ void rtl8188e_handle_ra_tx_report2(struct rtl8xxxu_priv *priv, struct sk_buff *s
 					rtl8188e_rate_decision(ra);
 				else if (ra->ra_stage == 5)
 					rtl8188e_power_training_try_state(ra);
-				else /* ra->ra_stage == 6 */
+				else  
 					rtl8188e_power_training_decision(ra);
 
 				if (ra->ra_stage <= 5)
@@ -1758,7 +1716,7 @@ static void rtl8188e_arfb_refresh(struct rtl8xxxu_ra_info *ra)
 
 	ra->ra_use_rate = ra->rate_mask;
 
-	/* Highest rate */
+	 
 	if (ra->ra_use_rate) {
 		for (i = RATESIZE; i >= 0; i--) {
 			if (ra->ra_use_rate & BIT(i)) {
@@ -1770,7 +1728,7 @@ static void rtl8188e_arfb_refresh(struct rtl8xxxu_ra_info *ra)
 		ra->highest_rate = 0;
 	}
 
-	/* Lowest rate */
+	 
 	if (ra->ra_use_rate) {
 		for (i = 0; i < RATESIZE; i++) {
 			if (ra->ra_use_rate & BIT(i)) {
@@ -1884,10 +1842,7 @@ struct rtl8xxxu_fileops rtl8188eu_fops = {
 	.gen2_thermal_meter = 1,
 	.adda_1t_init = 0x0b1b25a0,
 	.adda_1t_path_on = 0x0bdb25a0,
-	/*
-	 * Use 9K for 8188e normal chip
-	 * Max RX buffer = 10K - max(TxReportSize(64*8), WOLPattern(16*24))
-	 */
+	 
 	.trxff_boundary = 0x25ff,
 	.pbp_rx = PBP_PAGE_SIZE_128,
 	.pbp_tx = PBP_PAGE_SIZE_128,

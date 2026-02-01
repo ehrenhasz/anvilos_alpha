@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Arche Platform driver to control APB.
- *
- * Copyright 2014-2015 Google Inc.
- * Copyright 2014-2015 Linaro Ltd.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -22,7 +17,7 @@
 static void apb_bootret_deassert(struct device *dev);
 
 struct arche_apb_ctrl_drvdata {
-	/* Control GPIO signals to and from AP <=> AP Bridges */
+	 
 	struct gpio_desc *resetn;
 	struct gpio_desc *boot_ret;
 	struct gpio_desc *pwroff;
@@ -42,14 +37,12 @@ struct arche_apb_ctrl_drvdata {
 	struct pinctrl *pinctrl;
 	struct pinctrl_state *pin_default;
 
-	/* V2: SPI Bus control  */
+	 
 	struct gpio_desc *spi_en;
 	bool spi_en_polarity_high;
 };
 
-/*
- * Note that these low level api's are active high
- */
+ 
 static inline void deassert_reset(struct gpio_desc *gpio)
 {
 	gpiod_set_raw_value(gpio, 1);
@@ -60,9 +53,7 @@ static inline void assert_reset(struct gpio_desc *gpio)
 	gpiod_set_raw_value(gpio, 0);
 }
 
-/*
- * Note: Please do not modify the below sequence, as it is as per the spec
- */
+ 
 static int coldboot_seq(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -73,13 +64,13 @@ static int coldboot_seq(struct platform_device *pdev)
 	    apb->state == ARCHE_PLATFORM_STATE_ACTIVE)
 		return 0;
 
-	/* Hold APB in reset state */
+	 
 	assert_reset(apb->resetn);
 
 	if (apb->state == ARCHE_PLATFORM_STATE_FW_FLASHING && apb->spi_en)
 		devm_gpiod_put(dev, apb->spi_en);
 
-	/* Enable power to APB */
+	 
 	if (!IS_ERR(apb->vcore)) {
 		ret = regulator_enable(apb->vcore);
 		if (ret) {
@@ -98,13 +89,13 @@ static int coldboot_seq(struct platform_device *pdev)
 
 	apb_bootret_deassert(dev);
 
-	/* On DB3 clock was not mandatory */
+	 
 	if (apb->clk_en)
 		gpiod_set_value(apb->clk_en, 1);
 
 	usleep_range(100, 200);
 
-	/* deassert reset to APB : Active-low signal */
+	 
 	deassert_reset(apb->resetn);
 
 	apb->state = ARCHE_PLATFORM_STATE_ACTIVE;
@@ -151,7 +142,7 @@ static int fw_flashing_seq(struct platform_device *pdev)
 		}
 	}
 
-	/* for flashing device should be in reset state */
+	 
 	assert_reset(apb->resetn);
 	apb->state = ARCHE_PLATFORM_STATE_FW_FLASHING;
 
@@ -166,10 +157,7 @@ static int standby_boot_seq(struct platform_device *pdev)
 	if (apb->init_disabled)
 		return 0;
 
-	/*
-	 * Even if it is in OFF state,
-	 * then we do not want to change the state
-	 */
+	 
 	if (apb->state == ARCHE_PLATFORM_STATE_STANDBY ||
 	    apb->state == ARCHE_PLATFORM_STATE_OFF)
 		return 0;
@@ -177,15 +165,9 @@ static int standby_boot_seq(struct platform_device *pdev)
 	if (apb->state == ARCHE_PLATFORM_STATE_FW_FLASHING && apb->spi_en)
 		devm_gpiod_put(dev, apb->spi_en);
 
-	/*
-	 * As per WDM spec, do nothing
-	 *
-	 * Pasted from WDM spec,
-	 *  - A falling edge on POWEROFF_L is detected (a)
-	 *  - WDM enters standby mode, but no output signals are changed
-	 */
+	 
 
-	/* TODO: POWEROFF_L is input to WDM module  */
+	 
 	apb->state = ARCHE_PLATFORM_STATE_STANDBY;
 	return 0;
 }
@@ -201,7 +183,7 @@ static void poweroff_seq(struct platform_device *pdev)
 	if (apb->state == ARCHE_PLATFORM_STATE_FW_FLASHING && apb->spi_en)
 		devm_gpiod_put(dev, apb->spi_en);
 
-	/* disable the clock */
+	 
 	if (apb->clk_en)
 		gpiod_set_value(apb->clk_en, 0);
 
@@ -211,11 +193,11 @@ static void poweroff_seq(struct platform_device *pdev)
 	if (!IS_ERR(apb->vio) && regulator_is_enabled(apb->vio) > 0)
 		regulator_disable(apb->vio);
 
-	/* As part of exit, put APB back in reset state */
+	 
 	assert_reset(apb->resetn);
 	apb->state = ARCHE_PLATFORM_STATE_OFF;
 
-	/* TODO: May have to send an event to SVC about this exit */
+	 
 }
 
 static void apb_bootret_deassert(struct device *dev)
@@ -278,10 +260,7 @@ static ssize_t state_store(struct device *dev,
 		if (apb->state == ARCHE_PLATFORM_STATE_FW_FLASHING)
 			return count;
 
-		/*
-		 * First we want to make sure we power off everything
-		 * and then enter FW flashing state
-		 */
+		 
 		poweroff_seq(pdev);
 		ret = fw_flashing_seq(pdev);
 	} else {
@@ -334,7 +313,7 @@ static int apb_ctrl_get_devtree_data(struct platform_device *pdev,
 		return ret;
 	}
 
-	/* It's not mandatory to support power management interface */
+	 
 	apb->pwroff = devm_gpiod_get_optional(dev, "pwr-off", GPIOD_IN);
 	if (IS_ERR(apb->pwroff)) {
 		ret = PTR_ERR(apb->pwroff);
@@ -342,7 +321,7 @@ static int apb_ctrl_get_devtree_data(struct platform_device *pdev,
 		return ret;
 	}
 
-	/* Do not make clock mandatory as of now (for DB3) */
+	 
 	apb->clk_en = devm_gpiod_get_optional(dev, "clock-en", GPIOD_OUT_LOW);
 	if (IS_ERR(apb->clk_en)) {
 		ret = PTR_ERR(apb->clk_en);
@@ -357,7 +336,7 @@ static int apb_ctrl_get_devtree_data(struct platform_device *pdev,
 		return ret;
 	}
 
-	/* Regulators are optional, as we may have fixed supply coming in */
+	 
 	apb->vcore = devm_regulator_get(dev, "vcore");
 	if (IS_ERR(apb->vcore))
 		dev_warn(dev, "no core regulator found\n");
@@ -377,7 +356,7 @@ static int apb_ctrl_get_devtree_data(struct platform_device *pdev,
 		return PTR_ERR(apb->pin_default);
 	}
 
-	/* Only applicable for platform >= V2 */
+	 
 	if (of_property_read_bool(pdev->dev.of_node, "gb,spi-en-active-high"))
 		apb->spi_en_polarity_high = true;
 
@@ -400,15 +379,15 @@ static int arche_apb_ctrl_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Initially set APB to OFF state */
+	 
 	apb->state = ARCHE_PLATFORM_STATE_OFF;
-	/* Check whether device needs to be enabled on boot */
+	 
 	if (of_property_read_bool(pdev->dev.of_node, "arche,init-disable"))
 		apb->init_disabled = true;
 
 	platform_set_drvdata(pdev, apb);
 
-	/* Create sysfs interface to allow user to change state dynamically */
+	 
 	ret = device_create_file(dev, &dev_attr_state);
 	if (ret) {
 		dev_err(dev, "failed to create state file in sysfs\n");
@@ -428,29 +407,13 @@ static void arche_apb_ctrl_remove(struct platform_device *pdev)
 
 static int __maybe_unused arche_apb_ctrl_suspend(struct device *dev)
 {
-	/*
-	 * If timing profile permits, we may shutdown bridge
-	 * completely
-	 *
-	 * TODO: sequence ??
-	 *
-	 * Also, need to make sure we meet precondition for unipro suspend
-	 * Precondition: Definition ???
-	 */
+	 
 	return 0;
 }
 
 static int __maybe_unused arche_apb_ctrl_resume(struct device *dev)
 {
-	/*
-	 * At least for ES2 we have to meet the delay requirement between
-	 * unipro switch and AP bridge init, depending on whether bridge is in
-	 * OFF state or standby state.
-	 *
-	 * Based on whether bridge is in standby or OFF state we may have to
-	 * assert multiple signals. Please refer to WDM spec, for more info.
-	 *
-	 */
+	 
 	return 0;
 }
 

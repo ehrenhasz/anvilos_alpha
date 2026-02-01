@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2012-2014, 2018-2019 Intel Corporation
- * Copyright (C) 2017 Intel Deutschland GmbH
- */
+
+ 
 #include <linux/leds.h>
 #include "iwl-io.h"
 #include "iwl-csr.h"
@@ -98,10 +95,7 @@ void iwl_mvm_leds_sync(struct iwl_mvm *mvm)
 	if (!(mvm->init_status & IWL_MVM_INIT_STATUS_LEDS_INIT_COMPLETE))
 		return;
 
-	/*
-	 * if we control through the register, we're doing it
-	 * even when the firmware isn't up, so no need to sync
-	 */
+	 
 	if (mvm->trans->trans_cfg->device_family < IWL_DEVICE_FAMILY_8000)
 		return;
 

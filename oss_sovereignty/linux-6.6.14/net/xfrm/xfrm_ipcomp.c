@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * IP Payload Compression Protocol (IPComp) - RFC3173.
- *
- * Copyright (c) 2003 James Morris <jmorris@intercode.com.au>
- * Copyright (c) 2003-2008 Herbert Xu <herbert@gondor.apana.org.au>
- *
- * Todo:
- *   - Tunable compression parameters.
- *   - Compression stats.
- *   - Adaptive compression.
- */
+
+ 
 
 #include <linux/crypto.h>
 #include <linux/err.h>
@@ -102,7 +92,7 @@ int ipcomp_input(struct xfrm_state *x, struct sk_buff *skb)
 
 	skb->ip_summed = CHECKSUM_NONE;
 
-	/* Remove ipcomp header and decompress original payload */
+	 
 	ipch = (void *)skb->data;
 	nexthdr = ipch->nexthdr;
 
@@ -159,7 +149,7 @@ int ipcomp_output(struct xfrm_state *x, struct sk_buff *skb)
 	struct ipcomp_data *ipcd = x->data;
 
 	if (skb->len < ipcd->threshold) {
-		/* Don't bother compressing */
+		 
 		goto out_ok;
 	}
 
@@ -172,7 +162,7 @@ int ipcomp_output(struct xfrm_state *x, struct sk_buff *skb)
 		goto out_ok;
 	}
 
-	/* Install ipcomp header, convert into ipcomp datagram. */
+	 
 	ipch = ip_comp_hdr(skb);
 	ipch->nexthdr = *skb_mac_header(skb);
 	ipch->flags = 0;
@@ -267,7 +257,7 @@ static struct crypto_comp * __percpu *ipcomp_alloc_tfms(const char *alg_name)
 	list_for_each_entry(pos, &ipcomp_tfms_list, list) {
 		struct crypto_comp *tfm;
 
-		/* This can be any valid CPU ID so we don't need locking. */
+		 
 		tfm = this_cpu_read(*pos->tfms);
 
 		if (!strcmp(crypto_comp_name(tfm), alg_name)) {

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2019 Mellanox Technologies. */
+
+ 
 
 #include <linux/netdevice.h>
 #include <net/nexthop.h>
@@ -37,16 +37,7 @@ bool mlx5_lag_is_multipath(struct mlx5_core_dev *dev)
 	return ldev && __mlx5_lag_is_multipath(ldev);
 }
 
-/**
- * mlx5_lag_set_port_affinity
- *
- * @ldev: lag device
- * @port:
- *     0 - set normal affinity.
- *     1 - set affinity to port 1.
- *     2 - set affinity to port 2.
- *
- **/
+ 
 static void mlx5_lag_set_port_affinity(struct mlx5_lag *ldev,
 				       enum mlx5_lag_port_affinity port)
 {
@@ -154,15 +145,15 @@ static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev, unsigned long event,
 	struct fib_info *fi = fen_info->fi;
 	struct lag_mp *mp = &ldev->lag_mp;
 
-	/* Handle delete event */
+	 
 	if (event == FIB_EVENT_ENTRY_DEL) {
-		/* stop track */
+		 
 		if (mp->fib.mfi == fi)
 			mp->fib.mfi = NULL;
 		return;
 	}
 
-	/* Handle multipath entry with lower priority value */
+	 
 	if (mp->fib.mfi && mp->fib.mfi != fi &&
 	    (mp->fib.dst != fen_info->dst || mp->fib.dst_len != fen_info->dst_len) &&
 	    fi->fib_priority >= mp->fib.priority)
@@ -171,7 +162,7 @@ static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev, unsigned long event,
 	nh_dev0 = mlx5_lag_get_next_fib_dev(ldev, fi, NULL);
 	nh_dev1 = mlx5_lag_get_next_fib_dev(ldev, fi, nh_dev0);
 
-	/* Handle add/replace event */
+	 
 	if (!nh_dev0) {
 		if (mp->fib.dst == fen_info->dst && mp->fib.dst_len == fen_info->dst_len)
 			mp->fib.mfi = NULL;
@@ -196,7 +187,7 @@ static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev, unsigned long event,
 		return;
 	}
 
-	/* First time we see multipath route */
+	 
 	if (!mp->fib.mfi && !__mlx5_lag_is_active(ldev)) {
 		struct lag_tracker tracker;
 
@@ -215,16 +206,16 @@ static void mlx5_lag_fib_nexthop_event(struct mlx5_lag *ldev,
 {
 	struct lag_mp *mp = &ldev->lag_mp;
 
-	/* Check the nh event is related to the route */
+	 
 	if (!mp->fib.mfi || mp->fib.mfi != fi)
 		return;
 
-	/* nh added/removed */
+	 
 	if (event == FIB_EVENT_NH_DEL) {
 		int i = mlx5_lag_dev_get_netdev_idx(ldev, fib_nh->fib_nh_dev);
 
 		if (i >= 0) {
-			i = (i + 1) % 2 + 1; /* peer port */
+			i = (i + 1) % 2 + 1;  
 			mlx5_lag_set_port_affinity(ldev, i);
 		}
 	} else if (event == FIB_EVENT_NH_ADD &&
@@ -240,7 +231,7 @@ static void mlx5_lag_fib_update(struct work_struct *work)
 	struct mlx5_lag *ldev = fib_work->ldev;
 	struct fib_nh *fib_nh;
 
-	/* Protect internal structures from changes */
+	 
 	rtnl_lock();
 	switch (fib_work->event) {
 	case FIB_EVENT_ENTRY_REPLACE:
@@ -311,9 +302,7 @@ static int mlx5_lag_fib_event(struct notifier_block *nb,
 		if (!fib_work)
 			return NOTIFY_DONE;
 		fib_work->fen_info = *fen_info;
-		/* Take reference on fib_info to prevent it from being
-		 * freed while work is queued. Release it afterwards.
-		 */
+		 
 		fib_info_hold(fib_work->fen_info.fi);
 		break;
 	case FIB_EVENT_NH_ADD:
@@ -337,9 +326,7 @@ static int mlx5_lag_fib_event(struct notifier_block *nb,
 
 void mlx5_lag_mp_reset(struct mlx5_lag *ldev)
 {
-	/* Clear mfi, as it might become stale when a route delete event
-	 * has been missed, see mlx5_lag_fib_route_event().
-	 */
+	 
 	ldev->lag_mp.fib.mfi = NULL;
 }
 
@@ -348,9 +335,7 @@ int mlx5_lag_mp_init(struct mlx5_lag *ldev)
 	struct lag_mp *mp = &ldev->lag_mp;
 	int err;
 
-	/* always clear mfi, as it might become stale when a route delete event
-	 * has been missed
-	 */
+	 
 	mp->fib.mfi = NULL;
 
 	if (mp->fib_nb.notifier_call)

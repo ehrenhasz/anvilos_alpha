@@ -1,17 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
 
-/* SNI RM driver
- *
- * Copyright (C) 2001 by James.Bottomley@HansenPartnership.com
-**-----------------------------------------------------------------------------
-**
-**
-**-----------------------------------------------------------------------------
- */
 
-/*
- * Based on lasi700.c
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

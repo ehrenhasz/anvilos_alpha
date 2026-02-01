@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * xfrm_state.c
- *
- * Changes:
- *	Mitsuru KANDA @USAGI
- * 	Kazunori MIYAZAWA @USAGI
- * 	Kunihiro Ishiguro <kunihiro@ipinfusion.com>
- * 		IPv6 support
- * 	YOSHIFUJI Hideaki @USAGI
- * 		Split up af-specific functions
- *	Derek Atkins <derek@ihtfp.com>
- *		Add UDP Encapsulation
- *
- */
+
+ 
 
 #include <linux/compat.h>
 #include <linux/workqueue.h>
@@ -37,12 +24,7 @@
 
 static void xfrm_state_gc_task(struct work_struct *work);
 
-/* Each xfrm_state may be linked to two tables:
-
-   1. Hash table by (spi,daddr,ah/esp) to find SA by SPI. (input,ctl)
-   2. Hash table by (daddr,family,reqid) to find what SAs exist for given
-      destination/tunnel endpoint. (output)
- */
+ 
 
 static unsigned int xfrm_state_hashmax __read_mostly = 1 * 1024 * 1024;
 static struct kmem_cache *xfrm_state_cache __ro_after_init;
@@ -97,7 +79,7 @@ static unsigned int xfrm_seq_hash(struct net *net, u32 seq)
 		}                                                          \
 									   \
 		if (!_x || _x->xso.type == XFRM_DEV_OFFLOAD_PACKET)        \
-			/* SAD is empty or consist from HW SAs only */     \
+			      \
 			hlist_add_head_rcu(_n, _h);                        \
 		else                                                       \
 			hlist_add_before_rcu(_n, &_x->by);                 \
@@ -581,10 +563,7 @@ static enum hrtimer_restart xfrm_timer_handler(struct hrtimer *me)
 			x->curlft.add_time - now;
 		if (tmo <= 0) {
 			if (x->xflags & XFRM_SOFT_EXPIRE) {
-				/* enter hard expire without soft expire first?!
-				 * setting a new date could trigger this.
-				 * workaround: fix x->curflt.add_time by below:
-				 */
+				 
 				x->curlft.add_time = now - x->saved_tmo - 1;
 				tmo = x->lft.hard_add_expires_seconds - x->saved_tmo;
 			} else
@@ -722,10 +701,7 @@ int __xfrm_state_delete(struct xfrm_state *x)
 
 		xfrm_dev_state_delete(x);
 
-		/* All xfrm_state objects are created by xfrm_state_alloc.
-		 * The xfrm_state_alloc call gives a reference, and that
-		 * is what we are dropping here.
-		 */
+		 
 		xfrm_state_put(x);
 		err = 0;
 	}
@@ -921,7 +897,7 @@ __xfrm6_init_tempsel(struct xfrm_selector *sel, const struct flowi *fl)
 {
 	const struct flowi6 *fl6 = &fl->u.ip6;
 
-	/* Initialize temporary selector matching only to current session. */
+	 
 	*(struct in6_addr *)&sel->daddr = fl6->daddr;
 	*(struct in6_addr *)&sel->saddr = fl6->saddr;
 	sel->dport = xfrm_flowi_dport(fl, &fl6->uli);
@@ -987,18 +963,14 @@ static struct xfrm_state *__xfrm_state_lookup_all(struct net *net, u32 mark,
 #ifdef CONFIG_XFRM_OFFLOAD
 		if (xdo->type == XFRM_DEV_OFFLOAD_PACKET) {
 			if (x->xso.type != XFRM_DEV_OFFLOAD_PACKET)
-				/* HW states are in the head of list, there is
-				 * no need to iterate further.
-				 */
+				 
 				break;
 
-			/* Packet offload: both policy and SA should
-			 * have same device.
-			 */
+			 
 			if (xdo->dev != x->xso.dev)
 				continue;
 		} else if (x->xso.type == XFRM_DEV_OFFLOAD_PACKET)
-			/* Skip HW policy for SW lookups */
+			 
 			continue;
 #endif
 		if (x->props.family != family ||
@@ -1096,17 +1068,7 @@ static void xfrm_state_look_at(struct xfrm_policy *pol, struct xfrm_state *x,
 			       struct xfrm_state **best, int *acq_in_progress,
 			       int *error)
 {
-	/* Resolution logic:
-	 * 1. There is a valid state with matching selector. Done.
-	 * 2. Valid state with inappropriate selector. Skip.
-	 *
-	 * Entering area of "sysdeps".
-	 *
-	 * 3. If state is not valid, selector is temporary, it selects
-	 *    only session which triggered previous resolution. Key
-	 *    manager will do something to install a state with proper
-	 *    selector.
-	 */
+	 
 	if (x->km.state == XFRM_STATE_VALID) {
 		if ((x->sel.family &&
 		     (x->sel.family != family ||
@@ -1161,18 +1123,14 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
 #ifdef CONFIG_XFRM_OFFLOAD
 		if (pol->xdo.type == XFRM_DEV_OFFLOAD_PACKET) {
 			if (x->xso.type != XFRM_DEV_OFFLOAD_PACKET)
-				/* HW states are in the head of list, there is
-				 * no need to iterate further.
-				 */
+				 
 				break;
 
-			/* Packet offload: both policy and SA should
-			 * have same device.
-			 */
+			 
 			if (pol->xdo.dev != x->xso.dev)
 				continue;
 		} else if (x->xso.type == XFRM_DEV_OFFLOAD_PACKET)
-			/* Skip HW policy for SW lookups */
+			 
 			continue;
 #endif
 		if (x->props.family == encap_family &&
@@ -1195,18 +1153,14 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
 #ifdef CONFIG_XFRM_OFFLOAD
 		if (pol->xdo.type == XFRM_DEV_OFFLOAD_PACKET) {
 			if (x->xso.type != XFRM_DEV_OFFLOAD_PACKET)
-				/* HW states are in the head of list, there is
-				 * no need to iterate further.
-				 */
+				 
 				break;
 
-			/* Packet offload: both policy and SA should
-			 * have same device.
-			 */
+			 
 			if (pol->xdo.dev != x->xso.dev)
 				continue;
 		} else if (x->xso.type == XFRM_DEV_OFFLOAD_PACKET)
-			/* Skip HW policy for SW lookups */
+			 
 			continue;
 #endif
 		if (x->props.family == encap_family &&
@@ -1236,10 +1190,7 @@ found:
 		}
 
 		c.net = net;
-		/* If the KMs have no listeners (yet...), avoid allocating an SA
-		 * for each and every packet - garbage collection might not
-		 * handle the flood.
-		 */
+		 
 		if (!km_is_alive(&c)) {
 			error = -ESRCH;
 			goto out;
@@ -1250,8 +1201,7 @@ found:
 			error = -ENOMEM;
 			goto out;
 		}
-		/* Initialize temporary state matching only
-		 * to current session. */
+		 
 		xfrm_init_tempstate(x, fl, tmpl, daddr, saddr, family);
 		memcpy(&x->mark, &pol->mark, sizeof(x->mark));
 		x->if_id = if_id;
@@ -1454,7 +1404,7 @@ static void __xfrm_state_insert(struct xfrm_state *x)
 	xfrm_hash_grow_check(net, x->bydst.next != NULL);
 }
 
-/* net->xfrm.xfrm_state_lock is held */
+ 
 static void __xfrm_state_bump_genids(struct xfrm_state *xnew)
 {
 	struct net *net = xs_net(xnew);
@@ -1488,7 +1438,7 @@ void xfrm_state_insert(struct xfrm_state *x)
 }
 EXPORT_SYMBOL(xfrm_state_insert);
 
-/* net->xfrm.xfrm_state_lock is held */
+ 
 static struct xfrm_state *__find_acq_core(struct net *net,
 					  const struct xfrm_mark *m,
 					  unsigned short family, u8 mode,
@@ -1823,10 +1773,9 @@ struct xfrm_state *xfrm_state_migrate(struct xfrm_state *x,
 	memcpy(&xc->id.daddr, &m->new_daddr, sizeof(xc->id.daddr));
 	memcpy(&xc->props.saddr, &m->new_saddr, sizeof(xc->props.saddr));
 
-	/* add state */
+	 
 	if (xfrm_addr_equal(&x->id.daddr, &m->new_daddr, m->new_family)) {
-		/* a care is needed when the destination address of the
-		   state is to be updated as it is a part of triplet */
+		 
 		xfrm_state_insert(xc);
 	} else {
 		if (xfrm_state_add(xc) < 0)
@@ -2001,7 +1950,7 @@ EXPORT_SYMBOL(xfrm_find_acq);
 
 #ifdef CONFIG_XFRM_SUB_POLICY
 #if IS_ENABLED(CONFIG_IPV6)
-/* distribution counting sort function for xfrm_state and xfrm_tmpl */
+ 
 static void
 __xfrm6_sort(void **dst, void **src, int n,
 	     int (*cmp)(const void *p), int maxclass)
@@ -2026,14 +1975,7 @@ __xfrm6_sort(void **dst, void **src, int n,
 	}
 }
 
-/* Rule for xfrm_state:
- *
- * rule 1: select IPsec transport except AH
- * rule 2: select MIPv6 RO or inbound trigger
- * rule 3: select IPsec transport AH
- * rule 4: select IPsec tunnel
- * rule 5: others
- */
+ 
 static int __xfrm6_state_sort_cmp(const void *p)
 {
 	const struct xfrm_state *v = p;
@@ -2056,13 +1998,7 @@ static int __xfrm6_state_sort_cmp(const void *p)
 	return 5;
 }
 
-/* Rule for xfrm_tmpl:
- *
- * rule 1: select IPsec transport
- * rule 2: select MIPv6 RO or inbound trigger
- * rule 3: select IPsec tunnel
- * rule 4: others
- */
+ 
 static int __xfrm6_tmpl_sort_cmp(const void *p)
 {
 	const struct xfrm_tmpl *v = p;
@@ -2094,7 +2030,7 @@ __xfrm6_sort(void **dst, void **src, int n,
 	for (i = 0; i < n; i++)
 		dst[i] = src[i];
 }
-#endif /* CONFIG_IPV6 */
+#endif  
 
 void
 xfrm_tmpl_sort(struct xfrm_tmpl **dst, struct xfrm_tmpl **src, int n,
@@ -2125,7 +2061,7 @@ xfrm_state_sort(struct xfrm_state **dst, struct xfrm_state **src, int n,
 }
 #endif
 
-/* Silly enough, but I'm lazy to build resolution list */
+ 
 
 static struct xfrm_state *__xfrm_find_acq_byseq(struct net *net, u32 mark, u32 seq)
 {
@@ -2176,7 +2112,7 @@ int verify_spi_info(u8 proto, u32 min, u32 max, struct netlink_ext_ack *extack)
 		break;
 
 	case IPPROTO_COMP:
-		/* IPCOMP spi is 16-bits. */
+		 
 		if (max >= 0x10000) {
 			NL_SET_ERR_MSG(extack, "IPCOMP SPI must be <= 65535");
 			return -EINVAL;
@@ -2397,10 +2333,7 @@ void km_state_expired(struct xfrm_state *x, int hard, u32 portid)
 }
 
 EXPORT_SYMBOL(km_state_expired);
-/*
- * We send to all registered managers regardless of failure
- * We are happy with one success
-*/
+ 
 int km_query(struct xfrm_state *x, struct xfrm_tmpl *t, struct xfrm_policy *pol)
 {
 	int err = -EINVAL, acqret;
@@ -2726,7 +2659,7 @@ void xfrm_flush_gc(void)
 }
 EXPORT_SYMBOL(xfrm_flush_gc);
 
-/* Temporarily located here until net/xfrm/xfrm_tunnel.c is created */
+ 
 void xfrm_state_delete_tunnel(struct xfrm_state *x)
 {
 	if (x->tunnel) {
@@ -3020,8 +2953,7 @@ void xfrm_audit_state_replay_overflow(struct xfrm_state *x,
 	if (audit_buf == NULL)
 		return;
 	xfrm_audit_helper_pktinfo(skb, x->props.family, audit_buf);
-	/* don't record the sequence number because it's inherent in this kind
-	 * of audit message */
+	 
 	spi = ntohl(x->id.spi);
 	audit_log_format(audit_buf, " spi=%u(0x%x)", spi, spi);
 	audit_log_end(audit_buf);
@@ -3093,4 +3025,4 @@ void xfrm_audit_state_icvfail(struct xfrm_state *x,
 	audit_log_end(audit_buf);
 }
 EXPORT_SYMBOL_GPL(xfrm_audit_state_icvfail);
-#endif /* CONFIG_AUDITSYSCALL */
+#endif  

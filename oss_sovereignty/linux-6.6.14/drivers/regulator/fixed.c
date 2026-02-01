@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * fixed.c
- *
- * Copyright 2008 Wolfson Microelectronics PLC.
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- *
- * Copyright (c) 2009 Nokia Corporation
- * Roger Quadros <ext-roger.quadros@nokia.com>
- *
- * This is useful for systems with mixed controllable and
- * non-controllable regulators, as well as for allowing testing on
- * systems with no controllable regulators.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/mutex.h>
@@ -106,15 +93,7 @@ static int reg_is_enabled(struct regulator_dev *rdev)
 }
 
 
-/**
- * of_get_fixed_voltage_config - extract fixed_voltage_config structure info
- * @dev: device requesting for fixed_voltage_config
- * @desc: regulator description
- *
- * Populates fixed_voltage_config structure by extracting data from device
- * tree node, returns a pointer to the populated structure of NULL if memory
- * alloc fails.
- */
+ 
 static struct fixed_voltage_config *
 of_get_fixed_voltage_config(struct device *dev,
 			    const struct regulator_desc *desc)
@@ -244,32 +223,16 @@ static int reg_fixed_voltage_probe(struct platform_device *pdev)
 
 	drvdata->desc.fixed_uV = config->microvolts;
 
-	/*
-	 * The signal will be inverted by the GPIO core if flagged so in the
-	 * descriptor.
-	 */
+	 
 	if (config->enabled_at_boot)
 		gflags = GPIOD_OUT_HIGH;
 	else
 		gflags = GPIOD_OUT_LOW;
 
-	/*
-	 * Some fixed regulators share the enable line between two
-	 * regulators which makes it necessary to get a handle on the
-	 * same descriptor for two different consumers. This will get
-	 * the GPIO descriptor, but only the first call will initialize
-	 * it so any flags such as inversion or open drain will only
-	 * be set up by the first caller and assumed identical on the
-	 * next caller.
-	 *
-	 * FIXME: find a better way to deal with this.
-	 */
+	 
 	gflags |= GPIOD_FLAGS_BIT_NONEXCLUSIVE;
 
-	/*
-	 * Do not use devm* here: the regulator core takes over the
-	 * lifecycle management of the GPIO descriptor.
-	 */
+	 
 	cfg.ena_gpiod = gpiod_get_optional(&pdev->dev, NULL, gflags);
 	if (IS_ERR(cfg.ena_gpiod))
 		return dev_err_probe(&pdev->dev, PTR_ERR(cfg.ena_gpiod),

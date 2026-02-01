@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * USB ConnectTech WhiteHEAT driver
- *
- *	Copyright (C) 2002
- *	    Connect Tech Inc.
- *
- *	Copyright (C) 1999 - 2001
- *	    Greg Kroah-Hartman (greg@kroah.com)
- *
- * See Documentation/usb/usb-serial.rst for more information on using this
- * driver
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -28,11 +17,9 @@
 #include <linux/serial.h>
 #include <linux/usb/serial.h>
 #include <linux/usb/ezusb.h>
-#include "whiteheat.h"			/* WhiteHEAT specific commands */
+#include "whiteheat.h"			 
 
-/*
- * Version Information
- */
+ 
 #define DRIVER_AUTHOR "Greg Kroah-Hartman <greg@kroah.com>, Stuart MacDonald <stuartm@connecttech.com>"
 #define DRIVER_DESC "USB ConnectTech WhiteHEAT driver"
 
@@ -40,38 +27,32 @@
 #define CONNECT_TECH_FAKE_WHITE_HEAT_ID	0x0001
 #define CONNECT_TECH_WHITE_HEAT_ID	0x8001
 
-/*
-   ID tables for whiteheat are unusual, because we want to different
-   things for different versions of the device.  Eventually, this
-   will be doable from a single table.  But, for now, we define two
-   separate ID tables, and then a third table that combines them
-   just for the purpose of exporting the autoloading information.
-*/
+ 
 static const struct usb_device_id id_table_std[] = {
 	{ USB_DEVICE(CONNECT_TECH_VENDOR_ID, CONNECT_TECH_WHITE_HEAT_ID) },
-	{ }						/* Terminating entry */
+	{ }						 
 };
 
 static const struct usb_device_id id_table_prerenumeration[] = {
 	{ USB_DEVICE(CONNECT_TECH_VENDOR_ID, CONNECT_TECH_FAKE_WHITE_HEAT_ID) },
-	{ }						/* Terminating entry */
+	{ }						 
 };
 
 static const struct usb_device_id id_table_combined[] = {
 	{ USB_DEVICE(CONNECT_TECH_VENDOR_ID, CONNECT_TECH_WHITE_HEAT_ID) },
 	{ USB_DEVICE(CONNECT_TECH_VENDOR_ID, CONNECT_TECH_FAKE_WHITE_HEAT_ID) },
-	{ }						/* Terminating entry */
+	{ }						 
 };
 
 MODULE_DEVICE_TABLE(usb, id_table_combined);
 
 
-/* function prototypes for the Connect Tech WhiteHEAT prerenumeration device */
+ 
 static int  whiteheat_firmware_download(struct usb_serial *serial,
 					const struct usb_device_id *id);
 static int  whiteheat_firmware_attach(struct usb_serial *serial);
 
-/* function prototypes for the Connect Tech WhiteHEAT serial converter */
+ 
 static int  whiteheat_attach(struct usb_serial *serial);
 static void whiteheat_release(struct usb_serial *serial);
 static int  whiteheat_port_probe(struct usb_serial_port *port);
@@ -134,18 +115,16 @@ struct whiteheat_command_private {
 	struct mutex		mutex;
 	__u8			port_running;
 	__u8			command_finished;
-	wait_queue_head_t	wait_command; /* for handling sleeping whilst
-						 waiting for a command to
-						 finish */
+	wait_queue_head_t	wait_command;  
 	__u8			result_buffer[64];
 };
 
 struct whiteheat_private {
-	__u8			mcr;		/* FIXME: no locking on mcr */
+	__u8			mcr;		 
 };
 
 
-/* local function prototypes */
+ 
 static int start_command_port(struct usb_serial *serial);
 static void stop_command_port(struct usb_serial *serial);
 static void command_port_write_callback(struct urb *urb);
@@ -165,27 +144,13 @@ static int firm_report_tx_done(struct usb_serial_port *port);
 
 
 #define COMMAND_PORT		4
-#define COMMAND_TIMEOUT		(2*HZ)	/* 2 second timeout for a command */
+#define COMMAND_TIMEOUT		(2*HZ)	 
 #define	COMMAND_TIMEOUT_MS	2000
 
 
-/*****************************************************************************
- * Connect Tech's White Heat prerenumeration driver functions
- *****************************************************************************/
+ 
 
-/* steps to download the firmware to the WhiteHEAT device:
- - hold the reset (by writing to the reset bit of the CPUCS register)
- - download the VEND_AX.HEX file to the chip using VENDOR_REQUEST-ANCHOR_LOAD
- - release the reset (by writing to the CPUCS register)
- - download the WH.HEX file for all addresses greater than 0x1b3f using
-   VENDOR_REQUEST-ANCHOR_EXTERNAL_RAM_LOAD
- - hold the reset
- - download the WH.HEX file for all addresses less than 0x1b40 using
-   VENDOR_REQUEST_ANCHOR_LOAD
- - release the reset
- - device renumerated itself and comes up as new device id with all
-   firmware download completed.
-*/
+ 
 static int whiteheat_firmware_download(struct usb_serial *serial,
 					const struct usb_device_id *id)
 {
@@ -203,14 +168,12 @@ static int whiteheat_firmware_download(struct usb_serial *serial,
 
 static int whiteheat_firmware_attach(struct usb_serial *serial)
 {
-	/* We want this device to fail to have a driver assigned to it */
+	 
 	return 1;
 }
 
 
-/*****************************************************************************
- * Connect Tech's White Heat serial driver functions
- *****************************************************************************/
+ 
 
 static int whiteheat_attach(struct usb_serial *serial)
 {
@@ -236,11 +199,7 @@ static int whiteheat_attach(struct usb_serial *serial)
 	result = kmalloc(sizeof(*hw_info) + 1, GFP_KERNEL);
 	if (!result)
 		goto no_result_buffer;
-	/*
-	 * When the module is reloaded the firmware is still there and
-	 * the endpoints are still in the usb core unchanged. This is the
-	 * unlinking bug in disguise. Same for the call below.
-	 */
+	 
 	usb_clear_halt(serial->dev, pipe);
 	ret = usb_bulk_msg(serial->dev, pipe, command, 2,
 						&alen, COMMAND_TIMEOUT_MS);
@@ -256,7 +215,7 @@ static int whiteheat_attach(struct usb_serial *serial)
 
 	pipe = usb_rcvbulkpipe(serial->dev,
 				command_port->bulk_in_endpointAddress);
-	/* See the comment on the usb_clear_halt() above */
+	 
 	usb_clear_halt(serial->dev, pipe);
 	ret = usb_bulk_msg(serial->dev, pipe, result,
 			sizeof(*hw_info) + 1, &alen, COMMAND_TIMEOUT_MS);
@@ -297,7 +256,7 @@ static int whiteheat_attach(struct usb_serial *serial)
 	return 0;
 
 no_firmware:
-	/* Firmware likely not running */
+	 
 	dev_err(&serial->dev->dev,
 		"%s: Unable to retrieve firmware version, try replugging\n",
 		serial->type->description);
@@ -323,7 +282,7 @@ static void whiteheat_release(struct usb_serial *serial)
 {
 	struct usb_serial_port *command_port;
 
-	/* free up our private data for our command port */
+	 
 	command_port = serial->port[COMMAND_PORT];
 	kfree(usb_get_serial_port_data(command_port));
 }
@@ -357,7 +316,7 @@ static int whiteheat_open(struct tty_struct *tty, struct usb_serial_port *port)
 	if (retval)
 		goto exit;
 
-	/* send an open port command */
+	 
 	retval = firm_open(port);
 	if (retval) {
 		stop_command_port(port->serial);
@@ -374,7 +333,7 @@ static int whiteheat_open(struct tty_struct *tty, struct usb_serial_port *port)
 	if (tty)
 		firm_setup_port(tty);
 
-	/* Work around HCD bugs */
+	 
 	usb_clear_halt(port->serial->dev, port->read_urb->pipe);
 	usb_clear_halt(port->serial->dev, port->write_urb->pipe);
 
@@ -457,9 +416,7 @@ static int whiteheat_break_ctl(struct tty_struct *tty, int break_state)
 }
 
 
-/*****************************************************************************
- * Connect Tech's White Heat callback routines
- *****************************************************************************/
+ 
 static void command_port_write_callback(struct urb *urb)
 {
 	int status = urb->status;
@@ -505,8 +462,7 @@ static void command_port_read_callback(struct urb *urb)
 		command_info->command_finished = WHITEHEAT_CMD_FAILURE;
 		wake_up(&command_info->wait_command);
 	} else if (data[0] == WHITEHEAT_EVENT) {
-		/* These are unsolicited reports from the firmware, hence no
-		   waiting command to wakeup */
+		 
 		dev_dbg(&urb->dev->dev, "%s - event received\n", __func__);
 	} else if ((data[0] == WHITEHEAT_GET_DTR_RTS) &&
 		(urb->actual_length - 1 <= sizeof(command_info->result_buffer))) {
@@ -517,7 +473,7 @@ static void command_port_read_callback(struct urb *urb)
 	} else
 		dev_dbg(&urb->dev->dev, "%s - bad reply from firmware\n", __func__);
 
-	/* Continue trying to always read */
+	 
 	result = usb_submit_urb(command_port->read_urb, GFP_ATOMIC);
 	if (result)
 		dev_dbg(&urb->dev->dev, "%s - failed resubmitting read urb, error %d\n",
@@ -525,9 +481,7 @@ static void command_port_read_callback(struct urb *urb)
 }
 
 
-/*****************************************************************************
- * Connect Tech's White Heat firmware interface
- *****************************************************************************/
+ 
 static int firm_send_command(struct usb_serial_port *port, __u8 command,
 						__u8 *data, __u8 datasize)
 {
@@ -560,7 +514,7 @@ static int firm_send_command(struct usb_serial_port *port, __u8 command,
 		goto exit;
 	}
 
-	/* wait for the command to complete */
+	 
 	t = wait_event_timeout(command_info->wait_command,
 		(bool)command_info->command_finished, COMMAND_TIMEOUT);
 	if (!t)
@@ -626,7 +580,7 @@ static void firm_setup_port(struct tty_struct *tty)
 	port_settings.bits = tty_get_char_size(cflag);
 	dev_dbg(dev, "%s - data bits = %d\n", __func__, port_settings.bits);
 
-	/* determine the parity */
+	 
 	if (cflag & PARENB)
 		if (cflag & CMSPAR)
 			if (cflag & PARODD)
@@ -642,14 +596,14 @@ static void firm_setup_port(struct tty_struct *tty)
 		port_settings.parity = WHITEHEAT_PAR_NONE;
 	dev_dbg(dev, "%s - parity = %c\n", __func__, port_settings.parity);
 
-	/* figure out the stop bits requested */
+	 
 	if (cflag & CSTOPB)
 		port_settings.stop = 2;
 	else
 		port_settings.stop = 1;
 	dev_dbg(dev, "%s - stop bits = %d\n", __func__, port_settings.stop);
 
-	/* figure out the flow control settings */
+	 
 	if (cflag & CRTSCTS)
 		port_settings.hflow = (WHITEHEAT_HFLOW_CTS |
 						WHITEHEAT_HFLOW_RTS);
@@ -661,7 +615,7 @@ static void firm_setup_port(struct tty_struct *tty)
 	    (port_settings.hflow & WHITEHEAT_HFLOW_DSR) ? "DSR" : "",
 	    (port_settings.hflow & WHITEHEAT_HFLOW_DTR) ? "DTR" : "");
 
-	/* determine software flow control */
+	 
 	if (I_IXOFF(tty))
 		port_settings.sflow = WHITEHEAT_SFLOW_RXTX;
 	else
@@ -672,18 +626,18 @@ static void firm_setup_port(struct tty_struct *tty)
 	port_settings.xoff = STOP_CHAR(tty);
 	dev_dbg(dev, "%s - XON = %2x, XOFF = %2x\n", __func__, port_settings.xon, port_settings.xoff);
 
-	/* get the baud rate wanted */
+	 
 	baud = tty_get_baud_rate(tty);
 	port_settings.baud = cpu_to_le32(baud);
 	dev_dbg(dev, "%s - baud rate = %u\n", __func__, baud);
 
-	/* fixme: should set validated settings */
+	 
 	tty_encode_baud_rate(tty, baud, baud);
 
-	/* handle any settings that aren't specified in the tty structure */
+	 
 	port_settings.lloop = 0;
 
-	/* now send the message to the device */
+	 
 	firm_send_command(port, WHITEHEAT_SETUP_PORT,
 			(__u8 *)&port_settings, sizeof(port_settings));
 }
@@ -753,9 +707,7 @@ static int firm_report_tx_done(struct usb_serial_port *port)
 }
 
 
-/*****************************************************************************
- * Connect Tech's White Heat utility functions
- *****************************************************************************/
+ 
 static int start_command_port(struct usb_serial *serial)
 {
 	struct usb_serial_port *command_port;
@@ -766,7 +718,7 @@ static int start_command_port(struct usb_serial *serial)
 	command_info = usb_get_serial_port_data(command_port);
 	mutex_lock(&command_info->mutex);
 	if (!command_info->port_running) {
-		/* Work around HCD bugs */
+		 
 		usb_clear_halt(serial->dev, command_port->read_urb->pipe);
 
 		retval = usb_submit_urb(command_port->read_urb, GFP_KERNEL);

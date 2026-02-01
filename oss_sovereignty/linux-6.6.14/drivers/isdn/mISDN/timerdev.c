@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * general timer device for using in ISDN stacks
- *
- * Author	Karsten Keil <kkeil@novell.com>
- *
- * Copyright 2008  by Karsten Keil <kkeil@novell.com>
- */
+
+ 
 
 #include <linux/poll.h>
 #include <linux/vmalloc.h>
@@ -30,7 +23,7 @@ struct mISDNtimerdev {
 	struct list_head	expired;
 	wait_queue_head_t	wait;
 	u_int			work;
-	spinlock_t		lock; /* protect lists */
+	spinlock_t		lock;  
 };
 
 struct mISDNtimer {
@@ -76,7 +69,7 @@ mISDN_close(struct inode *ino, struct file *filep)
 		spin_unlock_irq(&dev->lock);
 		timer_shutdown_sync(&timer->tl);
 		spin_lock_irq(&dev->lock);
-		/* it might have been moved to ->expired */
+		 
 		list_del(&timer->list);
 		kfree(timer);
 	}

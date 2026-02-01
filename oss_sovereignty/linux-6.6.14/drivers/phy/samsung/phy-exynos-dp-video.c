@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung Exynos SoC series Display Port PHY driver
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- * Author: Jingoo Han <jg1.han@samsung.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/io.h>
@@ -30,7 +25,7 @@ static int exynos_dp_video_phy_power_on(struct phy *phy)
 {
 	struct exynos_dp_video_phy *state = phy_get_drvdata(phy);
 
-	/* Disable power isolation on DP-PHY */
+	 
 	return regmap_update_bits(state->regs, state->drvdata->phy_ctrl_offset,
 				  EXYNOS4_PHY_ENABLE, EXYNOS4_PHY_ENABLE);
 }
@@ -39,7 +34,7 @@ static int exynos_dp_video_phy_power_off(struct phy *phy)
 {
 	struct exynos_dp_video_phy *state = phy_get_drvdata(phy);
 
-	/* Enable power isolation on DP-PHY */
+	 
 	return regmap_update_bits(state->regs, state->drvdata->phy_ctrl_offset,
 				  EXYNOS4_PHY_ENABLE, 0);
 }
@@ -83,7 +78,7 @@ static int exynos_dp_video_phy_probe(struct platform_device *pdev)
 
 	state->regs = syscon_node_to_regmap(dev->parent->of_node);
 	if (IS_ERR(state->regs))
-		/* Backwards compatible way */
+		 
 		state->regs = syscon_regmap_lookup_by_phandle(dev->of_node,
 							      "samsung,pmu-syscon");
 	if (IS_ERR(state->regs)) {

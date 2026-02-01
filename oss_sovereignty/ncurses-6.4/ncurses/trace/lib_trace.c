@@ -1,47 +1,8 @@
-/****************************************************************************
- * Copyright 2018-2021,2022 Thomas E. Dickey                                *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- *     and: Juergen Pfeifer                                                 *
- ****************************************************************************/
+ 
 
-/*
- *	lib_trace.c - Tracing/Debugging routines
- *
- * The _tracef() function is originally from pcurses (by Pavel Curtis) in 1982.
- * pcurses allowed one to enable/disable tracing using traceon() and traceoff()
- * functions.  ncurses provides a trace() function which allows one to
- * selectively enable or disable several tracing features.
- */
+ 
 
 #include <curses.priv.h>
 #include <tic.h>
@@ -50,7 +11,7 @@
 
 MODULE_ID("$Id: lib_trace.c,v 1.101 2022/09/17 14:57:02 tom Exp $")
 
-NCURSES_EXPORT_VAR(unsigned) _nc_tracing = 0; /* always define this */
+NCURSES_EXPORT_VAR(unsigned) _nc_tracing = 0;  
 
 #ifdef TRACE
 
@@ -92,7 +53,7 @@ NCURSES_EXPORT_VAR(long) _nc_outchars = 0;
 #define MyPath		_nc_globals.trace_fname
 #define MyLevel		_nc_globals.trace_level
 #define MyNested	_nc_globals.nested_tracef
-#endif /* TRACE */
+#endif  
 
 #if USE_REENTRANT
 #define Locked(statement) { \
@@ -157,18 +118,15 @@ curses_trace(unsigned tracelevel)
 	    if (_nc_access(MyPath, W_OK) < 0
 		|| (MyFD = safe_open3(MyPath, SAFE_MODE, 0600)) < 0
 		|| (MyFP = fdopen(MyFD, BIN_W)) == 0) {
-		;		/* EMPTY */
+		;		 
 	    }
 	}
 	Locked(_nc_tracing = tracelevel);
-	/* Try to set line-buffered mode, or (failing that) unbuffered,
-	 * so that the trace-output gets flushed automatically at the
-	 * end of each line.  This is useful in case the program dies.
-	 */
+	 
 	if (MyFP != 0) {
-#if HAVE_SETVBUF		/* ANSI */
+#if HAVE_SETVBUF		 
 	    (void) setvbuf(MyFP, (char *) 0, _IOLBF, (size_t) 0);
-#elif HAVE_SETBUF /* POSIX */
+#elif HAVE_SETBUF  
 	    (void) setbuffer(MyFP, (char *) 0);
 #endif
 	}
@@ -196,7 +154,7 @@ curses_trace(unsigned tracelevel)
 	}
     } else if (tracelevel == 0) {
 	if (MyFP != 0) {
-	    MyFD = dup(MyFD);	/* allow reopen of same file */
+	    MyFD = dup(MyFD);	 
 	    fclose(MyFP);
 	    MyFP = 0;
 	}
@@ -232,7 +190,7 @@ _nc_va_tracef(const char *fmt, va_list ap)
     FILE *fp = MyFP;
 
 #ifdef TRACE
-    /* verbose-trace in the command-line utilities relies on this */
+     
     if (fp == 0 && !MyInit && _nc_tracing >= DEBUG_LEVEL(1))
 	fp = stderr;
 #endif
@@ -255,15 +213,7 @@ _nc_va_tracef(const char *fmt, va_list ap)
 
     if (doit != 0 && fp != 0) {
 #ifdef USE_PTHREADS
-	/*
-	 * TRACE_ICALLS is "really" needed to show normal use with threaded
-	 * applications, since anything can be running during a napms(),
-	 * making it appear in the hierarchical trace as it other functions
-	 * are being called.
-	 *
-	 * Rather than add the complication of a per-thread stack, just
-	 * show the thread-id in each line of the trace.
-	 */
+	 
 # if USE_WEAK_SYMBOLS
 	if ((pthread_self))
 # endif
@@ -299,7 +249,7 @@ _tracef(const char *fmt, ...)
     va_end(ap);
 }
 
-/* Trace 'bool' return-values */
+ 
 NCURSES_EXPORT(NCURSES_BOOL)
 _nc_retrace_bool(int code)
 {
@@ -307,7 +257,7 @@ _nc_retrace_bool(int code)
     return code;
 }
 
-/* Trace 'char' return-values */
+ 
 NCURSES_EXPORT(char)
 _nc_retrace_char(int code)
 {
@@ -315,7 +265,7 @@ _nc_retrace_char(int code)
     return (char) code;
 }
 
-/* Trace 'int' return-values */
+ 
 NCURSES_EXPORT(int)
 _nc_retrace_int(int code)
 {
@@ -323,7 +273,7 @@ _nc_retrace_int(int code)
     return code;
 }
 
-/* Trace 'unsigned' return-values */
+ 
 NCURSES_EXPORT(unsigned)
 _nc_retrace_unsigned(unsigned code)
 {
@@ -331,7 +281,7 @@ _nc_retrace_unsigned(unsigned code)
     return code;
 }
 
-/* Trace 'char*' return-values */
+ 
 NCURSES_EXPORT(char *)
 _nc_retrace_ptr(char *code)
 {
@@ -339,7 +289,7 @@ _nc_retrace_ptr(char *code)
     return code;
 }
 
-/* Trace 'const char*' return-values */
+ 
 NCURSES_EXPORT(const char *)
 _nc_retrace_cptr(const char *code)
 {
@@ -347,7 +297,7 @@ _nc_retrace_cptr(const char *code)
     return code;
 }
 
-/* Trace 'NCURSES_CONST void*' return-values */
+ 
 NCURSES_EXPORT(NCURSES_CONST void *)
 _nc_retrace_cvoid_ptr(NCURSES_CONST void *code)
 {
@@ -355,7 +305,7 @@ _nc_retrace_cvoid_ptr(NCURSES_CONST void *code)
     return code;
 }
 
-/* Trace 'void*' return-values */
+ 
 NCURSES_EXPORT(void *)
 _nc_retrace_void_ptr(void *code)
 {
@@ -363,7 +313,7 @@ _nc_retrace_void_ptr(void *code)
     return code;
 }
 
-/* Trace 'SCREEN *' return-values */
+ 
 NCURSES_EXPORT(SCREEN *)
 _nc_retrace_sp(SCREEN *code)
 {
@@ -371,7 +321,7 @@ _nc_retrace_sp(SCREEN *code)
     return code;
 }
 
-/* Trace 'WINDOW *' return-values */
+ 
 NCURSES_EXPORT(WINDOW *)
 _nc_retrace_win(WINDOW *code)
 {
@@ -413,13 +363,7 @@ _nc_fmt_funcptr(char *target, const char *source, size_t size)
 }
 
 #if USE_REENTRANT
-/*
- * Check if the given trace-mask is enabled.
- *
- * This function may be called from within one of the functions that fills
- * in parameters for _tracef(), but in that case we do not want to lock the
- * mutex, since it is already locked.
- */
+ 
 NCURSES_EXPORT(int)
 _nc_use_tracef(unsigned mask)
 {
@@ -429,23 +373,20 @@ _nc_use_tracef(unsigned mask)
     if (!MyNested++) {
 	if ((result = (_nc_tracing & (mask))) != 0
 	    && _nc_try_global(tracef) == 0) {
-	    /* we will call _nc_locked_tracef(), no nesting so far */
+	     
 	} else {
-	    /* we will not call _nc_locked_tracef() */
+	     
 	    MyNested = 0;
 	}
     } else {
-	/* we may call _nc_locked_tracef(), but with nested_tracef > 0 */
+	 
 	result = (_nc_tracing & (mask));
     }
     _nc_unlock_global(tst_tracef);
     return result;
 }
 
-/*
- * We call this if _nc_use_tracef() returns true, which means we must unlock
- * the tracef mutex.
- */
+ 
 NCURSES_EXPORT(void)
 _nc_locked_tracef(const char *fmt, ...)
 {
@@ -459,6 +400,6 @@ _nc_locked_tracef(const char *fmt, ...)
 	_nc_unlock_global(tracef);
     }
 }
-#endif /* USE_REENTRANT */
+#endif  
 
-#endif /* TRACE */
+#endif  

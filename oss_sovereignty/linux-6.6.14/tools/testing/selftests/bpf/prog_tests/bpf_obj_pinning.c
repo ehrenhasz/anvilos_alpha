@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2023 Meta Platforms, Inc. and affiliates. */
+
+ 
 #define _GNU_SOURCE
 #include <test_progs.h>
 #include <bpf/btf.h>
@@ -42,60 +42,50 @@ static void bpf_obj_pinning_detached(void)
 	int zero = 0, src_value, dst_value, err;
 	const char *map_name = "fsmount_map";
 
-	/* A bunch of below UAPI calls are constructed based on reading:
-	 * https://brauner.io/2023/02/28/mounting-into-mount-namespaces.html
-	 */
+	 
 
-	/* create VFS context */
+	 
 	fs_fd = sys_fsopen("bpf", 0);
 	if (!ASSERT_GE(fs_fd, 0, "fs_fd"))
 		goto cleanup;
 
-	/* instantiate FS object */
+	 
 	err = sys_fsconfig(fs_fd, FSCONFIG_CMD_CREATE, NULL, NULL, 0);
 	if (!ASSERT_OK(err, "fs_create"))
 		goto cleanup;
 
-	/* create O_PATH fd for detached mount */
+	 
 	mnt_fd = sys_fsmount(fs_fd, 0, 0);
 	if (!ASSERT_GE(mnt_fd, 0, "mnt_fd"))
 		goto cleanup;
 
-	/* If we wanted to expose detached mount in the file system, we'd do
-	 * something like below. But the whole point is that we actually don't
-	 * even have to expose BPF FS in the file system to be able to work
-	 * (pin/get objects) with it.
-	 *
-	 * err = sys_move_mount(mnt_fd, "", -EBADF, mnt_path, MOVE_MOUNT_F_EMPTY_PATH);
-	 * if (!ASSERT_OK(err, "move_mount"))
-	 *	goto cleanup;
-	 */
+	 
 
-	/* create BPF map to pin */
+	 
 	map_fd = bpf_map_create(BPF_MAP_TYPE_ARRAY, map_name, 4, 4, 1, NULL);
 	if (!ASSERT_GE(map_fd, 0, "map_fd"))
 		goto cleanup;
 
-	/* pin BPF map into detached BPF FS through mnt_fd */
+	 
 	pin_opts.file_flags = BPF_F_PATH_FD;
 	pin_opts.path_fd = mnt_fd;
 	err = bpf_obj_pin_opts(map_fd, map_name, &pin_opts);
 	if (!ASSERT_OK(err, "map_pin"))
 		goto cleanup;
 
-	/* get BPF map from detached BPF FS through mnt_fd */
+	 
 	get_opts.file_flags = BPF_F_PATH_FD;
 	get_opts.path_fd = mnt_fd;
 	map_fd2 = bpf_obj_get_opts(map_name, &get_opts);
 	if (!ASSERT_GE(map_fd2, 0, "map_get"))
 		goto cleanup;
 
-	/* update map through one FD */
+	 
 	src_value = 0xcafebeef;
 	err = bpf_map_update_elem(map_fd, &zero, &src_value, 0);
 	ASSERT_OK(err, "map_update");
 
-	/* check values written/read through different FDs do match */
+	 
 	dst_value = 0;
 	err = bpf_map_lookup_elem(map_fd2, &zero, &dst_value);
 	ASSERT_OK(err, "map_lookup");
@@ -133,17 +123,17 @@ static void validate_pin(int map_fd, const char *map_name, int src_value,
 
 	switch (path_kind) {
 	case PATH_STR_ABS:
-		/* absolute path */
+		 
 		pin_path = abs_path;
 		break;
 	case PATH_STR_REL:
-		/* cwd + relative path */
+		 
 		ASSERT_OK_PTR(getcwd(old_cwd, sizeof(old_cwd)), "getcwd");
 		ASSERT_OK(chdir("/sys/fs/bpf"), "chdir");
 		pin_path = map_name;
 		break;
 	case PATH_FD_REL:
-		/* dir fd + relative path */
+		 
 		pin_opts.file_flags = BPF_F_PATH_FD;
 		pin_opts.path_fd = open("/sys/fs/bpf", O_PATH);
 		ASSERT_GE(pin_opts.path_fd, 0, "path_fd");
@@ -151,11 +141,11 @@ static void validate_pin(int map_fd, const char *map_name, int src_value,
 		break;
 	}
 
-	/* pin BPF map using specified path definition */
+	 
 	err = bpf_obj_pin_opts(map_fd, pin_path, &pin_opts);
 	ASSERT_OK(err, "obj_pin");
 
-	/* cleanup */
+	 
 	if (path_kind == PATH_FD_REL && pin_opts.path_fd >= 0)
 		close(pin_opts.path_fd);
 	if (old_cwd[0])
@@ -165,11 +155,11 @@ static void validate_pin(int map_fd, const char *map_name, int src_value,
 	if (!ASSERT_GE(map_fd2, 0, "map_get"))
 		goto cleanup;
 
-	/* update map through one FD */
+	 
 	err = bpf_map_update_elem(map_fd, &zero, &src_value, 0);
 	ASSERT_OK(err, "map_update");
 
-	/* check values written/read through different FDs do match */
+	 
 	dst_value = 0;
 	err = bpf_map_lookup_elem(map_fd2, &zero, &dst_value);
 	ASSERT_OK(err, "map_lookup");
@@ -189,7 +179,7 @@ static void validate_get(int map_fd, const char *map_name, int src_value,
 	int zero = 0, dst_value, map_fd2, err;
 
 	snprintf(abs_path, sizeof(abs_path), "/sys/fs/bpf/%s", map_name);
-	/* pin BPF map using specified path definition */
+	 
 	err = bpf_obj_pin(map_fd, abs_path);
 	if (!ASSERT_OK(err, "pin_map"))
 		return;
@@ -198,17 +188,17 @@ static void validate_get(int map_fd, const char *map_name, int src_value,
 
 	switch (path_kind) {
 	case PATH_STR_ABS:
-		/* absolute path */
+		 
 		pin_path = abs_path;
 		break;
 	case PATH_STR_REL:
-		/* cwd + relative path */
+		 
 		ASSERT_OK_PTR(getcwd(old_cwd, sizeof(old_cwd)), "getcwd");
 		ASSERT_OK(chdir("/sys/fs/bpf"), "chdir");
 		pin_path = map_name;
 		break;
 	case PATH_FD_REL:
-		/* dir fd + relative path */
+		 
 		get_opts.file_flags = BPF_F_PATH_FD;
 		get_opts.path_fd = open("/sys/fs/bpf", O_PATH);
 		ASSERT_GE(get_opts.path_fd, 0, "path_fd");
@@ -220,17 +210,17 @@ static void validate_get(int map_fd, const char *map_name, int src_value,
 	if (!ASSERT_GE(map_fd2, 0, "map_get"))
 		goto cleanup;
 
-	/* cleanup */
+	 
 	if (path_kind == PATH_FD_REL && get_opts.path_fd >= 0)
 		close(get_opts.path_fd);
 	if (old_cwd[0])
 		ASSERT_OK(chdir(old_cwd), "restore_cwd");
 
-	/* update map through one FD */
+	 
 	err = bpf_map_update_elem(map_fd, &zero, &src_value, 0);
 	ASSERT_OK(err, "map_update");
 
-	/* check values written/read through different FDs do match */
+	 
 	dst_value = 0;
 	err = bpf_map_lookup_elem(map_fd2, &zero, &dst_value);
 	ASSERT_OK(err, "map_lookup");
@@ -246,7 +236,7 @@ static void bpf_obj_pinning_mounted(enum path_kind path_kind)
 	const char *map_name = "mounted_map";
 	int map_fd;
 
-	/* create BPF map to pin */
+	 
 	map_fd = bpf_map_create(BPF_MAP_TYPE_ARRAY, map_name, 4, 4, 1, NULL);
 	if (!ASSERT_GE(map_fd, 0, "map_fd"))
 		return;

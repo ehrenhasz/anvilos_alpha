@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/syscalls.h>
 #include <linux/slab.h>
 #include <linux/fs.h>
@@ -23,12 +23,7 @@ static long do_sys_name_to_handle(const struct path *path,
 	int handle_dwords, handle_bytes;
 	struct file_handle *handle = NULL;
 
-	/*
-	 * We need to make sure whether the file system support decoding of
-	 * the file handle if decodeable file handle was requested.
-	 * Otherwise, even empty export_operations are sufficient to opt-in
-	 * to encoding FIDs.
-	 */
+	 
 	if (!path->dentry->d_sb->s_export_op ||
 	    (!(fh_flags & EXPORT_FH_FID) &&
 	     !path->dentry->d_sb->s_export_op->fh_to_dentry))
@@ -45,34 +40,27 @@ static long do_sys_name_to_handle(const struct path *path,
 	if (!handle)
 		return -ENOMEM;
 
-	/* convert handle size to multiple of sizeof(u32) */
+	 
 	handle_dwords = f_handle.handle_bytes >> 2;
 
-	/* we ask for a non connectable maybe decodeable file handle */
+	 
 	retval = exportfs_encode_fh(path->dentry,
 				    (struct fid *)handle->f_handle,
 				    &handle_dwords, fh_flags);
 	handle->handle_type = retval;
-	/* convert handle size to bytes */
+	 
 	handle_bytes = handle_dwords * sizeof(u32);
 	handle->handle_bytes = handle_bytes;
 	if ((handle->handle_bytes > f_handle.handle_bytes) ||
 	    (retval == FILEID_INVALID) || (retval < 0)) {
-		/* As per old exportfs_encode_fh documentation
-		 * we could return ENOSPC to indicate overflow
-		 * But file system returned 255 always. So handle
-		 * both the values
-		 */
+		 
 		if (retval == FILEID_INVALID || retval == -ENOSPC)
 			retval = -EOVERFLOW;
-		/*
-		 * set the handle size to zero so we copy only
-		 * non variable part of the file_handle
-		 */
+		 
 		handle_bytes = 0;
 	} else
 		retval = 0;
-	/* copy the mount id */
+	 
 	if (put_user(real_mount(path->mnt)->mnt_id, mnt_id) ||
 	    copy_to_user(ufh, handle,
 			 sizeof(struct file_handle) + handle_bytes))
@@ -81,20 +69,7 @@ static long do_sys_name_to_handle(const struct path *path,
 	return retval;
 }
 
-/**
- * sys_name_to_handle_at: convert name to handle
- * @dfd: directory relative to which name is interpreted if not absolute
- * @name: name that should be converted to handle.
- * @handle: resulting file handle
- * @mnt_id: mount id of the file system containing the file
- * @flag: flag value to indicate whether to follow symlink or not
- *        and whether a decodable file handle is required.
- *
- * @handle->handle_size indicate the space available to store the
- * variable part of the file handle in bytes. If there is not
- * enough space, the field is updated to return the minimum
- * value required.
- */
+ 
 SYSCALL_DEFINE5(name_to_handle_at, int, dfd, const char __user *, name,
 		struct file_handle __user *, handle, int __user *, mnt_id,
 		int, flag)
@@ -154,7 +129,7 @@ static int do_handle_to_path(int mountdirfd, struct file_handle *handle,
 		retval = PTR_ERR(path->mnt);
 		goto out_err;
 	}
-	/* change the handle size to multiple of sizeof(u32) */
+	 
 	handle_dwords = handle->handle_bytes >> 2;
 	path->dentry = exportfs_decode_fh(path->mnt,
 					  (struct fid *)handle->f_handle,
@@ -178,11 +153,7 @@ static int handle_to_path(int mountdirfd, struct file_handle __user *ufh,
 	struct file_handle f_handle;
 	struct file_handle *handle = NULL;
 
-	/*
-	 * With handle we don't look at the execute bit on the
-	 * directory. Ideally we would like CAP_DAC_SEARCH.
-	 * But we don't have that
-	 */
+	 
 	if (!capable(CAP_DAC_READ_SEARCH)) {
 		retval = -EPERM;
 		goto out_err;
@@ -202,7 +173,7 @@ static int handle_to_path(int mountdirfd, struct file_handle __user *ufh,
 		retval = -ENOMEM;
 		goto out_err;
 	}
-	/* copy the full handle */
+	 
 	*handle = f_handle;
 	if (copy_from_user(&handle->f_handle,
 			   &ufh->f_handle,
@@ -248,17 +219,7 @@ static long do_handle_open(int mountdirfd, struct file_handle __user *ufh,
 	return retval;
 }
 
-/**
- * sys_open_by_handle_at: Open the file handle
- * @mountdirfd: directory file descriptor
- * @handle: file handle to be opened
- * @flags: open flags.
- *
- * @mountdirfd indicate the directory file descriptor
- * of the mount point. file handle is decoded relative
- * to the vfsmount pointed by the @mountdirfd. @flags
- * value is same as the open(2) flags.
- */
+ 
 SYSCALL_DEFINE3(open_by_handle_at, int, mountdirfd,
 		struct file_handle __user *, handle,
 		int, flags)
@@ -273,10 +234,7 @@ SYSCALL_DEFINE3(open_by_handle_at, int, mountdirfd,
 }
 
 #ifdef CONFIG_COMPAT
-/*
- * Exactly like fs/open.c:sys_open_by_handle_at(), except that it
- * doesn't set the O_LARGEFILE flag.
- */
+ 
 COMPAT_SYSCALL_DEFINE3(open_by_handle_at, int, mountdirfd,
 			     struct file_handle __user *, handle, int, flags)
 {

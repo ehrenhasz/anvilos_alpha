@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2023 MediaTek Inc. */
+
+ 
 
 #include <linux/module.h>
 #include <linux/firmware.h>
@@ -47,7 +47,7 @@ void mt792x_irq_tasklet(unsigned long data)
 		u32 intr_sw;
 
 		intr_sw = mt76_rr(dev, MT_MCU_CMD);
-		/* ack MCU2HOST_SW_INT_STA */
+		 
 		mt76_wr(dev, MT_MCU_CMD, intr_sw);
 		if (intr_sw & MT_MCU_CMD_WAKE_RX_PCIE) {
 			mask |= irq_map->rx.data_complete_mask;
@@ -107,13 +107,13 @@ static void mt792x_dma_prefetch(struct mt792x_dev *dev)
 
 int mt792x_dma_enable(struct mt792x_dev *dev)
 {
-	/* configure perfetch settings */
+	 
 	mt792x_dma_prefetch(dev);
 
-	/* reset dma idx */
+	 
 	mt76_wr(dev, MT_WFDMA0_RST_DTX_PTR, ~0);
 
-	/* configure delay interrupt */
+	 
 	mt76_wr(dev, MT_WFDMA0_PRI_DLY_INT_CFG0, 0);
 
 	mt76_set(dev, MT_WFDMA0_GLO_CFG,
@@ -129,7 +129,7 @@ int mt792x_dma_enable(struct mt792x_dev *dev)
 
 	mt76_set(dev, MT_WFDMA_DUMMY_CR, MT_WFDMA_NEED_REINIT);
 
-	/* enable interrupts for TX/RX rings */
+	 
 	mt76_connac_irq_enable(&dev->mt76,
 			       dev->irq_map->tx.all_complete_mask |
 			       dev->irq_map->rx.data_complete_mask |
@@ -151,7 +151,7 @@ mt792x_dma_reset(struct mt792x_dev *dev, bool force)
 	if (err)
 		return err;
 
-	/* reset hw queues */
+	 
 	for (i = 0; i < __MT_TXQ_MAX; i++)
 		mt76_queue_reset(dev, dev->mphy.q_tx[i]);
 
@@ -170,7 +170,7 @@ int mt792x_wpdma_reset(struct mt792x_dev *dev, bool force)
 {
 	int i, err;
 
-	/* clean up hw queues */
+	 
 	for (i = 0; i < ARRAY_SIZE(dev->mt76.phy.q_tx); i++)
 		mt76_queue_tx_cleanup(dev, dev->mphy.q_tx[i], true);
 
@@ -201,9 +201,9 @@ int mt792x_wpdma_reinit_cond(struct mt792x_dev *dev)
 	struct mt76_connac_pm *pm = &dev->pm;
 	int err;
 
-	/* check if the wpdma must be reinitialized */
+	 
 	if (mt792x_dma_need_reinit(dev)) {
-		/* disable interrutpts */
+		 
 		mt76_wr(dev, dev->irq_map->host_irq_enable, 0);
 		mt76_wr(dev, MT_PCIE_MAC_INT_ENABLE, 0x0);
 
@@ -213,7 +213,7 @@ int mt792x_wpdma_reinit_cond(struct mt792x_dev *dev)
 			return err;
 		}
 
-		/* enable interrutpts */
+		 
 		mt76_wr(dev, MT_PCIE_MAC_INT_ENABLE, 0xff);
 		pm->stats.lp_wake++;
 	}
@@ -224,7 +224,7 @@ EXPORT_SYMBOL_GPL(mt792x_wpdma_reinit_cond);
 
 int mt792x_dma_disable(struct mt792x_dev *dev, bool force)
 {
-	/* disable WFDMA0 */
+	 
 	mt76_clear(dev, MT_WFDMA0_GLO_CFG,
 		   MT_WFDMA0_GLO_CFG_TX_DMA_EN | MT_WFDMA0_GLO_CFG_RX_DMA_EN |
 		   MT_WFDMA0_GLO_CFG_CSR_DISP_BASE_PTR_CHAIN_EN |
@@ -237,13 +237,13 @@ int mt792x_dma_disable(struct mt792x_dev *dev, bool force)
 				 MT_WFDMA0_GLO_CFG_RX_DMA_BUSY, 0, 100, 1))
 		return -ETIMEDOUT;
 
-	/* disable dmashdl */
+	 
 	mt76_clear(dev, MT_WFDMA0_GLO_CFG_EXT0,
 		   MT_WFDMA0_CSR_TX_DMASHDL_ENABLE);
 	mt76_set(dev, MT_DMASHDL_SW_CONTROL, MT_DMASHDL_DMASHDL_BYPASS);
 
 	if (force) {
-		/* reset */
+		 
 		mt76_clear(dev, MT_WFDMA0_RST,
 			   MT_WFDMA0_RST_DMASHDL_ALL_RST |
 			   MT_WFDMA0_RST_LOGIC_RST);
@@ -259,7 +259,7 @@ EXPORT_SYMBOL_GPL(mt792x_dma_disable);
 
 void mt792x_dma_cleanup(struct mt792x_dev *dev)
 {
-	/* disable */
+	 
 	mt76_clear(dev, MT_WFDMA0_GLO_CFG,
 		   MT_WFDMA0_GLO_CFG_TX_DMA_EN |
 		   MT_WFDMA0_GLO_CFG_RX_DMA_EN |
@@ -272,7 +272,7 @@ void mt792x_dma_cleanup(struct mt792x_dev *dev)
 			    MT_WFDMA0_GLO_CFG_TX_DMA_BUSY |
 			    MT_WFDMA0_GLO_CFG_RX_DMA_BUSY, 0, 100, 1);
 
-	/* reset */
+	 
 	mt76_clear(dev, MT_WFDMA0_RST,
 		   MT_WFDMA0_RST_DMASHDL_ALL_RST |
 		   MT_WFDMA0_RST_LOGIC_RST);

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sun8i-ce-prng.c - hardware cryptographic offloader for
- * Allwinner H3/A64/H5/H2+/H6/R40 SoC
- *
- * Copyright (C) 2015-2020 Corentin Labbe <clabbe@baylibre.com>
- *
- * This file handle the PRNG
- *
- * You could find a link for the datasheet in Documentation/arch/arm/sunxi.rst
- */
+
+ 
 #include "sun8i-ce.h"
 #include <linux/dma-mapping.h>
 #include <linux/pm_runtime.h>
@@ -76,7 +67,7 @@ int sun8i_ce_prng_generate(struct crypto_rng *tfm, const u8 *src,
 		return -EINVAL;
 	}
 
-	/* we want dlen + seedsize rounded up to a multiple of PRNG_DATA_SIZE */
+	 
 	todo = dlen + ctx->slen + PRNG_DATA_SIZE * 2;
 	todo -= todo % PRNG_DATA_SIZE;
 
@@ -122,7 +113,7 @@ int sun8i_ce_prng_generate(struct crypto_rng *tfm, const u8 *src,
 	common = ce->variant->prng | CE_COMM_INT;
 	cet->t_common_ctl = cpu_to_le32(common);
 
-	/* recent CE (H6) need length in bytes, in word otherwise */
+	 
 	if (ce->variant->prng_t_dlen_in_bytes)
 		cet->t_dlen = cpu_to_le32(todo);
 	else

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * edma-pcm.c - eDMA PCM driver using dmaengine for AM3xxx, AM4xxx
- *
- * Copyright (C) 2014 Texas Instruments, Inc.
- *
- * Author: Peter Ujfalusi <peter.ujfalusi@ti.com>
- *
- * Based on: sound/soc/tegra/tegra_pcm.c
- */
+
+ 
 
 #include <linux/module.h>
 #include <sound/core.h>
@@ -28,7 +20,7 @@ static const struct snd_pcm_hardware edma_pcm_hardware = {
 	.period_bytes_min	= 32,
 	.period_bytes_max	= 64 * 1024,
 	.periods_min		= 2,
-	.periods_max		= 19, /* Limit by edma dmaengine driver */
+	.periods_max		= 19,  
 };
 
 static const struct snd_dmaengine_pcm_config edma_dmaengine_pcm_config = {

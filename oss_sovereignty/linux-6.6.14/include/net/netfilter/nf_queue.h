@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _NF_QUEUE_H
 #define _NF_QUEUE_H
 
@@ -8,25 +8,25 @@
 #include <linux/netfilter.h>
 #include <linux/skbuff.h>
 
-/* Each queued (to userspace) skbuff has one of these. */
+ 
 struct nf_queue_entry {
 	struct list_head	list;
 	struct sk_buff		*skb;
 	unsigned int		id;
-	unsigned int		hook_index;	/* index in hook_entries->hook[] */
+	unsigned int		hook_index;	 
 #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
 	struct net_device	*physin;
 	struct net_device	*physout;
 #endif
 	struct nf_hook_state	state;
-	u16			size; /* sizeof(entry) + saved route keys */
+	u16			size;  
 
-	/* extra space to store route keys */
+	 
 };
 
 #define nf_queue_entry_reroute(x) ((void *)x + sizeof(struct nf_queue_entry))
 
-/* Packet queuing */
+ 
 struct nf_queue_handler {
 	int		(*outfn)(struct nf_queue_entry *entry,
 				 unsigned int queuenum);
@@ -48,7 +48,7 @@ static inline void init_hashrandom(u32 *jhash_initval)
 
 static inline u32 hash_v4(const struct iphdr *iph, u32 initval)
 {
-	/* packets in either direction go into same queue */
+	 
 	if ((__force u32)iph->saddr < (__force u32)iph->daddr)
 		return jhash_3words((__force u32)iph->saddr,
 			(__force u32)iph->daddr, iph->protocol, initval);
@@ -127,4 +127,4 @@ nfqueue_hash(const struct sk_buff *skb, u16 queue, u16 queues_total, u8 family,
 int nf_queue(struct sk_buff *skb, struct nf_hook_state *state,
 	     unsigned int index, unsigned int verdict);
 
-#endif /* _NF_QUEUE_H */
+#endif  

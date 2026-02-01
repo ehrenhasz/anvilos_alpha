@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2013 - 2018 Intel Corporation. */
+ 
+ 
 
 #ifndef _FM10K_VF_H_
 #define _FM10K_VF_H_
@@ -8,7 +8,7 @@
 #include "fm10k_common.h"
 
 enum fm10k_vf_tlv_msg_id {
-	FM10K_VF_MSG_ID_TEST = 0,	/* msg ID reserved for testing */
+	FM10K_VF_MSG_ID_TEST = 0,	 
 	FM10K_VF_MSG_ID_MSIX,
 	FM10K_VF_MSG_ID_MAC_VLAN,
 	FM10K_VF_MSG_ID_LPORT_STATE,
@@ -48,4 +48,4 @@ extern const struct fm10k_tlv_attr fm10k_lport_state_msg_attr[];
 			  fm10k_lport_state_msg_attr, func)
 
 extern const struct fm10k_info fm10k_vf_info;
-#endif /* _FM10K_VF_H */
+#endif  

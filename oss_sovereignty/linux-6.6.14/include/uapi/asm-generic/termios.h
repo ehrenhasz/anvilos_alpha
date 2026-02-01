@@ -1,13 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _UAPI_ASM_GENERIC_TERMIOS_H
 #define _UAPI_ASM_GENERIC_TERMIOS_H
-/*
- * Most architectures have straight copies of the x86 code, with
- * varying levels of bug fixes on top. Usually it's a good idea
- * to use this generic version instead, but be careful to avoid
- * ABI changes.
- * New architectures should not provide their own version.
- */
+ 
 
 #include <asm/termbits.h>
 #include <asm/ioctls.h>
@@ -21,15 +15,15 @@ struct winsize {
 
 #define NCC 8
 struct termio {
-	unsigned short c_iflag;		/* input mode flags */
-	unsigned short c_oflag;		/* output mode flags */
-	unsigned short c_cflag;		/* control mode flags */
-	unsigned short c_lflag;		/* local mode flags */
-	unsigned char c_line;		/* line discipline */
-	unsigned char c_cc[NCC];	/* control characters */
+	unsigned short c_iflag;		 
+	unsigned short c_oflag;		 
+	unsigned short c_cflag;		 
+	unsigned short c_lflag;		 
+	unsigned char c_line;		 
+	unsigned char c_cc[NCC];	 
 };
 
-/* modem lines */
+ 
 #define TIOCM_LE	0x001
 #define TIOCM_DTR	0x002
 #define TIOCM_RTS	0x004
@@ -45,7 +39,7 @@ struct termio {
 #define TIOCM_OUT2	0x4000
 #define TIOCM_LOOP	0x8000
 
-/* ioctl (fd, TIOCSERGETLSR, &result) where result may be as below */
+ 
 
 
-#endif /* _UAPI_ASM_GENERIC_TERMIOS_H */
+#endif  

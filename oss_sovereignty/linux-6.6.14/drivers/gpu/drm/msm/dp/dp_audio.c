@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016-2020, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 
 #define pr_fmt(fmt)	"[drm-dp] %s: " fmt, __func__
@@ -129,7 +127,7 @@ static void dp_audio_stream_sdp(struct dp_audio_private *audio)
 	u32 value, new_value;
 	u8 parity_byte;
 
-	/* Config header and parity byte 1 */
+	 
 	value = dp_audio_get_header(catalog,
 			DP_AUDIO_SDP_STREAM, DP_AUDIO_SDP_HEADER_1);
 
@@ -143,7 +141,7 @@ static void dp_audio_stream_sdp(struct dp_audio_private *audio)
 	dp_audio_set_header(catalog, value,
 		DP_AUDIO_SDP_STREAM, DP_AUDIO_SDP_HEADER_1);
 
-	/* Config header and parity byte 2 */
+	 
 	value = dp_audio_get_header(catalog,
 			DP_AUDIO_SDP_STREAM, DP_AUDIO_SDP_HEADER_2);
 	new_value = value;
@@ -157,7 +155,7 @@ static void dp_audio_stream_sdp(struct dp_audio_private *audio)
 	dp_audio_set_header(catalog, value,
 		DP_AUDIO_SDP_STREAM, DP_AUDIO_SDP_HEADER_2);
 
-	/* Config header and parity byte 3 */
+	 
 	value = dp_audio_get_header(catalog,
 			DP_AUDIO_SDP_STREAM, DP_AUDIO_SDP_HEADER_3);
 
@@ -179,7 +177,7 @@ static void dp_audio_timestamp_sdp(struct dp_audio_private *audio)
 	u32 value, new_value;
 	u8 parity_byte;
 
-	/* Config header and parity byte 1 */
+	 
 	value = dp_audio_get_header(catalog,
 			DP_AUDIO_SDP_TIMESTAMP, DP_AUDIO_SDP_HEADER_1);
 
@@ -193,7 +191,7 @@ static void dp_audio_timestamp_sdp(struct dp_audio_private *audio)
 	dp_audio_set_header(catalog, value,
 		DP_AUDIO_SDP_TIMESTAMP, DP_AUDIO_SDP_HEADER_1);
 
-	/* Config header and parity byte 2 */
+	 
 	value = dp_audio_get_header(catalog,
 			DP_AUDIO_SDP_TIMESTAMP, DP_AUDIO_SDP_HEADER_2);
 
@@ -207,7 +205,7 @@ static void dp_audio_timestamp_sdp(struct dp_audio_private *audio)
 	dp_audio_set_header(catalog, value,
 		DP_AUDIO_SDP_TIMESTAMP, DP_AUDIO_SDP_HEADER_2);
 
-	/* Config header and parity byte 3 */
+	 
 	value = dp_audio_get_header(catalog,
 			DP_AUDIO_SDP_TIMESTAMP, DP_AUDIO_SDP_HEADER_3);
 
@@ -228,7 +226,7 @@ static void dp_audio_infoframe_sdp(struct dp_audio_private *audio)
 	u32 value, new_value;
 	u8 parity_byte;
 
-	/* Config header and parity byte 1 */
+	 
 	value = dp_audio_get_header(catalog,
 			DP_AUDIO_SDP_INFOFRAME, DP_AUDIO_SDP_HEADER_1);
 
@@ -242,7 +240,7 @@ static void dp_audio_infoframe_sdp(struct dp_audio_private *audio)
 	dp_audio_set_header(catalog, value,
 		DP_AUDIO_SDP_INFOFRAME, DP_AUDIO_SDP_HEADER_1);
 
-	/* Config header and parity byte 2 */
+	 
 	value = dp_audio_get_header(catalog,
 			DP_AUDIO_SDP_INFOFRAME, DP_AUDIO_SDP_HEADER_2);
 
@@ -256,7 +254,7 @@ static void dp_audio_infoframe_sdp(struct dp_audio_private *audio)
 	dp_audio_set_header(catalog, value,
 		DP_AUDIO_SDP_INFOFRAME, DP_AUDIO_SDP_HEADER_2);
 
-	/* Config header and parity byte 3 */
+	 
 	value = dp_audio_get_header(catalog,
 			DP_AUDIO_SDP_INFOFRAME, DP_AUDIO_SDP_HEADER_3);
 
@@ -277,7 +275,7 @@ static void dp_audio_copy_management_sdp(struct dp_audio_private *audio)
 	u32 value, new_value;
 	u8 parity_byte;
 
-	/* Config header and parity byte 1 */
+	 
 	value = dp_audio_get_header(catalog,
 			DP_AUDIO_SDP_COPYMANAGEMENT, DP_AUDIO_SDP_HEADER_1);
 
@@ -291,7 +289,7 @@ static void dp_audio_copy_management_sdp(struct dp_audio_private *audio)
 	dp_audio_set_header(catalog, value,
 		DP_AUDIO_SDP_COPYMANAGEMENT, DP_AUDIO_SDP_HEADER_1);
 
-	/* Config header and parity byte 2 */
+	 
 	value = dp_audio_get_header(catalog,
 			DP_AUDIO_SDP_COPYMANAGEMENT, DP_AUDIO_SDP_HEADER_2);
 
@@ -305,7 +303,7 @@ static void dp_audio_copy_management_sdp(struct dp_audio_private *audio)
 	dp_audio_set_header(catalog, value,
 		DP_AUDIO_SDP_COPYMANAGEMENT, DP_AUDIO_SDP_HEADER_2);
 
-	/* Config header and parity byte 3 */
+	 
 	value = dp_audio_get_header(catalog,
 			DP_AUDIO_SDP_COPYMANAGEMENT, DP_AUDIO_SDP_HEADER_3);
 
@@ -326,7 +324,7 @@ static void dp_audio_isrc_sdp(struct dp_audio_private *audio)
 	u32 value, new_value;
 	u8 parity_byte;
 
-	/* Config header and parity byte 1 */
+	 
 	value = dp_audio_get_header(catalog,
 			DP_AUDIO_SDP_ISRC, DP_AUDIO_SDP_HEADER_1);
 
@@ -340,7 +338,7 @@ static void dp_audio_isrc_sdp(struct dp_audio_private *audio)
 	dp_audio_set_header(catalog, value,
 		DP_AUDIO_SDP_ISRC, DP_AUDIO_SDP_HEADER_1);
 
-	/* Config header and parity byte 2 */
+	 
 	value = dp_audio_get_header(catalog,
 			DP_AUDIO_SDP_ISRC, DP_AUDIO_SDP_HEADER_2);
 
@@ -518,14 +516,7 @@ int dp_audio_hw_params(struct device *dev,
 	pdev = to_platform_device(dev);
 	dp_display = platform_get_drvdata(pdev);
 
-	/*
-	 * there could be cases where sound card can be opened even
-	 * before OR even when DP is not connected . This can cause
-	 * unclocked access as the audio subsystem relies on the DP
-	 * driver to maintain the correct state of clocks. To protect
-	 * such cases check for connection status and bail out if not
-	 * connected.
-	 */
+	 
 	if (!dp_display->power_on) {
 		rc = -EINVAL;
 		goto end;
@@ -564,19 +555,12 @@ static void dp_audio_shutdown(struct device *dev, void *data)
 		return;
 	}
 
-	/*
-	 * if audio was not enabled there is no need
-	 * to execute the shutdown and we can bail out early.
-	 * This also makes sure that we dont cause an unclocked
-	 * access when audio subsystem calls this without DP being
-	 * connected. is_connected cannot be used here as its set
-	 * to false earlier than this call
-	 */
+	 
 	if (!dp_display->audio_enabled)
 		return;
 
 	dp_audio_enable(audio, false);
-	/* signal the dp display to safely shutdown clocks */
+	 
 	dp_display_signal_audio_complete(dp_display);
 }
 

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  Copyright IBM Corp. 2001, 2012
- *  Author(s): Robert Burroughs
- *	       Eric Rossman (edrossma@us.ibm.com)
- *	       Cornelia Huck <cornelia.huck@de.ibm.com>
- *
- *  Hotplug & misc device support: Jochen Roehrig (roehrig@de.ibm.com)
- *  Major cleanup & driver split: Martin Schwidefsky <schwidefsky@de.ibm.com>
- *				  Ralph Wuerthner <rwuerthn@de.ibm.com>
- *  MSGTYPE restruct:		  Holger Dengler <hd@linux.vnet.ibm.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -32,9 +22,7 @@
 #include "zcrypt_msgtype6.h"
 #include "zcrypt_msgtype50.h"
 
-/*
- * Device attributes common for all crypto queue devices.
- */
+ 
 
 static ssize_t online_show(struct device *dev,
 			   struct device_attribute *attr,
@@ -157,12 +145,7 @@ int zcrypt_queue_put(struct zcrypt_queue *zq)
 }
 EXPORT_SYMBOL(zcrypt_queue_put);
 
-/**
- * zcrypt_queue_register() - Register a crypto queue device.
- * @zq: Pointer to a crypto queue device
- *
- * Register a crypto queue device. Returns 0 if successful.
- */
+ 
 int zcrypt_queue_register(struct zcrypt_queue *zq)
 {
 	struct zcrypt_card *zc;
@@ -172,7 +155,7 @@ int zcrypt_queue_register(struct zcrypt_queue *zq)
 	zc = dev_get_drvdata(&zq->queue->card->ap_dev.device);
 	zcrypt_card_get(zc);
 	zq->zcard = zc;
-	zq->online = 1;	/* New devices are online by default. */
+	zq->online = 1;	 
 
 	ZCRYPT_DBF_INFO("%s queue=%02x.%04x register online=1\n",
 			__func__, AP_QID_CARD(zq->queue->qid),
@@ -205,12 +188,7 @@ out:
 }
 EXPORT_SYMBOL(zcrypt_queue_register);
 
-/**
- * zcrypt_queue_unregister(): Unregister a crypto queue device.
- * @zq: Pointer to crypto queue device
- *
- * Unregister a crypto queue device.
- */
+ 
 void zcrypt_queue_unregister(struct zcrypt_queue *zq)
 {
 	struct zcrypt_card *zc;

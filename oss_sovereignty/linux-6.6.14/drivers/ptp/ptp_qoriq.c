@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * PTP 1588 clock for Freescale QorIQ 1588 timer
- *
- * Copyright (C) 2010 OMICRON electronics GmbH
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -19,11 +15,9 @@
 
 #include <linux/fsl/ptp_qoriq.h>
 
-/*
- * Register access functions
- */
+ 
 
-/* Caller must hold ptp_qoriq->lock. */
+ 
 static u64 tmr_cnt_read(struct ptp_qoriq *ptp_qoriq)
 {
 	struct ptp_qoriq_registers *regs = &ptp_qoriq->regs;
@@ -37,7 +31,7 @@ static u64 tmr_cnt_read(struct ptp_qoriq *ptp_qoriq)
 	return ns;
 }
 
-/* Caller must hold ptp_qoriq->lock. */
+ 
 static void tmr_cnt_write(struct ptp_qoriq *ptp_qoriq, u64 ns)
 {
 	struct ptp_qoriq_registers *regs = &ptp_qoriq->regs;
@@ -71,7 +65,7 @@ static void tmr_offset_write(struct ptp_qoriq *ptp_qoriq, u64 delta_ns)
 	ptp_qoriq->write(&regs->ctrl_regs->tmroff_h, hi);
 }
 
-/* Caller must hold ptp_qoriq->lock. */
+ 
 static void set_alarm(struct ptp_qoriq *ptp_qoriq)
 {
 	struct ptp_qoriq_registers *regs = &ptp_qoriq->regs;
@@ -89,7 +83,7 @@ static void set_alarm(struct ptp_qoriq *ptp_qoriq)
 	ptp_qoriq->write(&regs->alarm_regs->tmr_alarm1_h, hi);
 }
 
-/* Caller must hold ptp_qoriq->lock. */
+ 
 static void set_fipers(struct ptp_qoriq *ptp_qoriq)
 {
 	struct ptp_qoriq_registers *regs = &ptp_qoriq->regs;
@@ -151,9 +145,7 @@ int extts_clean_up(struct ptp_qoriq *ptp_qoriq, int index, bool update_event)
 }
 EXPORT_SYMBOL_GPL(extts_clean_up);
 
-/*
- * Interrupt service routine
- */
+ 
 
 irqreturn_t ptp_qoriq_isr(int irq, void *priv)
 {
@@ -195,9 +187,7 @@ irqreturn_t ptp_qoriq_isr(int irq, void *priv)
 }
 EXPORT_SYMBOL_GPL(ptp_qoriq_isr);
 
-/*
- * PTP clock operations
- */
+ 
 
 int ptp_qoriq_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 {
@@ -214,12 +204,7 @@ int ptp_qoriq_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 	tmr_add = ptp_qoriq->tmr_add;
 	adj = tmr_add;
 
-	/*
-	 * Calculate diff and round() to the nearest integer
-	 *
-	 * diff = adj * (ppb / 1000000000)
-	 *      = adj * scaled_ppm / 65536000000
-	 */
+	 
 	diff = mul_u64_u64_div_u64(adj, scaled_ppm, 32768000000);
 	diff = DIV64_U64_ROUND_UP(diff, 2);
 
@@ -238,9 +223,7 @@ int ptp_qoriq_adjtime(struct ptp_clock_info *ptp, s64 delta)
 
 	spin_lock_irqsave(&ptp_qoriq->lock, flags);
 
-	/* On LS1021A, eTSEC2 and eTSEC3 do not take into account the TMR_OFF
-	 * adjustment
-	 */
+	 
 	if (ptp_qoriq->etsec) {
 		now = tmr_cnt_read(ptp_qoriq);
 		now += delta;
@@ -362,18 +345,7 @@ static const struct ptp_clock_info ptp_qoriq_caps = {
 	.enable		= ptp_qoriq_enable,
 };
 
-/**
- * ptp_qoriq_nominal_freq - calculate nominal frequency according to
- *			    reference clock frequency
- *
- * @clk_src: reference clock frequency
- *
- * The nominal frequency is the desired clock frequency.
- * It should be less than the reference clock frequency.
- * It should be a factor of 1000MHz.
- *
- * Return the nominal frequency
- */
+ 
 static u32 ptp_qoriq_nominal_freq(u32 clk_src)
 {
 	u32 remainder = 0;
@@ -393,24 +365,7 @@ static u32 ptp_qoriq_nominal_freq(u32 clk_src)
 	return clk_src * 1000000;
 }
 
-/**
- * ptp_qoriq_auto_config - calculate a set of default configurations
- *
- * @ptp_qoriq: pointer to ptp_qoriq
- * @node: pointer to device_node
- *
- * If below dts properties are not provided, this function will be
- * called to calculate a set of default configurations for them.
- *   "fsl,tclk-period"
- *   "fsl,tmr-prsc"
- *   "fsl,tmr-add"
- *   "fsl,tmr-fiper1"
- *   "fsl,tmr-fiper2"
- *   "fsl,tmr-fiper3" (required only for DPAA2 and ENETC hardware)
- *   "fsl,max-adj"
- *
- * Return 0 if success
- */
+ 
 static int ptp_qoriq_auto_config(struct ptp_qoriq *ptp_qoriq,
 				 struct device_node *node)
 {
@@ -441,10 +396,7 @@ static int ptp_qoriq_auto_config(struct ptp_qoriq *ptp_qoriq,
 	ptp_qoriq->tclk_period = 1000000000UL / nominal_freq;
 	ptp_qoriq->tmr_prsc = DEFAULT_TMR_PRSC;
 
-	/* Calculate initial frequency compensation value for TMR_ADD register.
-	 * freq_comp = ceil(2^32 / freq_ratio)
-	 * freq_ratio = reference_clock_freq / nominal_freq
-	 */
+	 
 	freq_comp = ((u64)1 << 32) * nominal_freq;
 	freq_comp = div_u64_rem(freq_comp, clk_src, &remainder);
 	if (remainder)
@@ -455,9 +407,7 @@ static int ptp_qoriq_auto_config(struct ptp_qoriq *ptp_qoriq,
 	ptp_qoriq->tmr_fiper2 = DEFAULT_FIPER2_PERIOD - ptp_qoriq->tclk_period;
 	ptp_qoriq->tmr_fiper3 = DEFAULT_FIPER3_PERIOD - ptp_qoriq->tclk_period;
 
-	/* max_adj = 1000000000 * (freq_ratio - 1.0) - 1
-	 * freq_ratio = reference_clock_freq / nominal_freq
-	 */
+	 
 	max_adj = 1000000000ULL * (clk_src - nominal_freq);
 	max_adj = div_u64(max_adj, nominal_freq) - 1;
 	ptp_qoriq->caps.max_adj = max_adj;
@@ -521,7 +471,7 @@ int ptp_qoriq_init(struct ptp_qoriq *ptp_qoriq, void __iomem *base,
 		ptp_qoriq->write = qoriq_write_be;
 	}
 
-	/* The eTSEC uses differnt memory map with DPAA/ENETC */
+	 
 	if (of_device_is_compatible(node, "fsl,etsec-ptp")) {
 		ptp_qoriq->etsec = true;
 		ptp_qoriq->regs.ctrl_regs = base + ETSEC_CTRL_REGS_OFFSET;

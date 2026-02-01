@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2018 Solarflare Communications Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
- */
+
+ 
 
 #include "mcdi_port_common.h"
 #include "efx_common.h"
@@ -236,7 +229,7 @@ static u32 efx_get_mcdi_phy_flags(struct efx_nic *efx)
 	enum efx_phy_mode mode, supported;
 	u32 flags;
 
-	/* TODO: Advertise the capabilities supported by this PHY */
+	 
 	supported = 0;
 	if (phy_cfg->flags & (1 << MC_CMD_GET_PHY_CFG_OUT_TXDIS_LBN))
 		supported |= PHY_MODE_TX_DISABLED;
@@ -285,7 +278,7 @@ static void efx_mcdi_phy_decode_link(struct efx_nic *efx,
 {
 	switch (fcntl) {
 	case MC_CMD_FCNTL_AUTO:
-		WARN_ON(1);	/* This is not a link mode */
+		WARN_ON(1);	 
 		link_state->fc = EFX_FC_AUTO | EFX_FC_TX | EFX_FC_RX;
 		break;
 	case MC_CMD_FCNTL_BIDIR:
@@ -307,21 +300,7 @@ static void efx_mcdi_phy_decode_link(struct efx_nic *efx,
 	link_state->speed = speed;
 }
 
-/* The semantics of the ethtool FEC mode bitmask are not well defined,
- * particularly the meaning of combinations of bits.  Which means we get to
- * define our own semantics, as follows:
- * OFF overrides any other bits, and means "disable all FEC" (with the
- * exception of 25G KR4/CR4, where it is not possible to reject it if AN
- * partner requests it).
- * AUTO on its own means use cable requirements and link partner autoneg with
- * fw-default preferences for the cable type.
- * AUTO and either RS or BASER means use the specified FEC type if cable and
- * link partner support it, otherwise autoneg/fw-default.
- * RS or BASER alone means use the specified FEC type if cable and link partner
- * support it and either requests it, otherwise no FEC.
- * Both RS and BASER (whether AUTO or not) means use FEC if cable and link
- * partner support it, preferring RS to BASER.
- */
+ 
 static u32 ethtool_fec_caps_to_mcdi(u32 supported_cap, u32 ethtool_cap)
 {
 	u32 ret = 0;
@@ -348,11 +327,7 @@ static u32 ethtool_fec_caps_to_mcdi(u32 supported_cap, u32 ethtool_cap)
 	return ret;
 }
 
-/* Invert ethtool_fec_caps_to_mcdi.  There are two combinations that function
- * can never produce, (baser xor rs) and neither req; the implementation below
- * maps both of those to AUTO.  This should never matter, and it's not clear
- * what a better mapping would be anyway.
- */
+ 
 static u32 mcdi_fec_caps_to_ethtool(u32 caps, bool is_25g)
 {
 	bool rs = caps & (1 << MC_CMD_PHY_CAP_RS_FEC_LBN),
@@ -369,21 +344,17 @@ static u32 mcdi_fec_caps_to_ethtool(u32 caps, bool is_25g)
 	       (baser == baser_req && rs == rs_req ? 0 : ETHTOOL_FEC_AUTO);
 }
 
-/* Verify that the forced flow control settings (!EFX_FC_AUTO) are
- * supported by the link partner. Warn the user if this isn't the case
- */
+ 
 static void efx_mcdi_phy_check_fcntl(struct efx_nic *efx, u32 lpa)
 {
 	struct efx_mcdi_phy_data *phy_cfg = efx->phy_data;
 	u32 rmtadv;
 
-	/* The link partner capabilities are only relevant if the
-	 * link supports flow control autonegotiation
-	 */
+	 
 	if (~phy_cfg->supported_cap & (1 << MC_CMD_PHY_CAP_AN_LBN))
 		return;
 
-	/* If flow control autoneg is supported and enabled, then fine */
+	 
 	if (efx->wanted_fc & EFX_FC_AUTO)
 		return;
 
@@ -429,7 +400,7 @@ int efx_siena_mcdi_phy_probe(struct efx_nic *efx)
 	u32 caps;
 	int rc;
 
-	/* Initialise and populate phy_data */
+	 
 	phy_data = kzalloc(sizeof(*phy_data), GFP_KERNEL);
 	if (phy_data == NULL)
 		return -ENOMEM;
@@ -438,14 +409,14 @@ int efx_siena_mcdi_phy_probe(struct efx_nic *efx)
 	if (rc != 0)
 		goto fail;
 
-	/* Read initial link advertisement */
+	 
 	BUILD_BUG_ON(MC_CMD_GET_LINK_IN_LEN != 0);
 	rc = efx_siena_mcdi_rpc(efx, MC_CMD_GET_LINK, NULL, 0,
 				outbuf, sizeof(outbuf), NULL);
 	if (rc)
 		goto fail;
 
-	/* Fill out nic state */
+	 
 	efx->phy_data = phy_data;
 	efx->phy_type = phy_data->type;
 
@@ -465,7 +436,7 @@ int efx_siena_mcdi_phy_probe(struct efx_nic *efx)
 	else
 		phy_data->forced_cap = caps;
 
-	/* Assert that we can map efx -> mcdi loopback modes */
+	 
 	BUILD_BUG_ON(LOOPBACK_NONE != MC_CMD_LOOPBACK_NONE);
 	BUILD_BUG_ON(LOOPBACK_DATA != MC_CMD_LOOPBACK_DATA);
 	BUILD_BUG_ON(LOOPBACK_GMAC != MC_CMD_LOOPBACK_GMAC);
@@ -497,25 +468,21 @@ int efx_siena_mcdi_phy_probe(struct efx_nic *efx)
 	rc = efx_mcdi_loopback_modes(efx, &efx->loopback_modes);
 	if (rc != 0)
 		goto fail;
-	/* The MC indicates that LOOPBACK_NONE is a valid loopback mode,
-	 * but by convention we don't
-	 */
+	 
 	efx->loopback_modes &= ~(1 << LOOPBACK_NONE);
 
-	/* Set the initial link mode */
+	 
 	efx_mcdi_phy_decode_link(efx, &efx->link_state,
 				 MCDI_DWORD(outbuf, GET_LINK_OUT_LINK_SPEED),
 				 MCDI_DWORD(outbuf, GET_LINK_OUT_FLAGS),
 				 MCDI_DWORD(outbuf, GET_LINK_OUT_FCNTL));
 
-	/* Record the initial FEC configuration (or nearest approximation
-	 * representable in the ethtool configuration space)
-	 */
+	 
 	efx->fec_config = mcdi_fec_caps_to_ethtool(caps,
 						   efx->link_state.speed == 25000 ||
 						   efx->link_state.speed == 50000);
 
-	/* Default to Autonegotiated flow control if the PHY supports it */
+	 
 	efx->wanted_fc = EFX_FC_RX | EFX_FC_TX;
 	if (phy_data->supported_cap & (1 << MC_CMD_PHY_CAP_AN_LBN))
 		efx->wanted_fc |= EFX_FC_AUTO;
@@ -619,7 +586,7 @@ int efx_siena_mcdi_phy_get_fecparam(struct efx_nic *efx,
 				    struct ethtool_fecparam *fec)
 {
 	MCDI_DECLARE_BUF(outbuf, MC_CMD_GET_LINK_OUT_V2_LEN);
-	u32 caps, active, speed; /* MCDI format */
+	u32 caps, active, speed;  
 	bool is_25g = false;
 	size_t outlen;
 	int rc;
@@ -632,13 +599,13 @@ int efx_siena_mcdi_phy_get_fecparam(struct efx_nic *efx,
 	if (outlen < MC_CMD_GET_LINK_OUT_V2_LEN)
 		return -EOPNOTSUPP;
 
-	/* behaviour for 25G/50G links depends on 25G BASER bit */
+	 
 	speed = MCDI_DWORD(outbuf, GET_LINK_OUT_V2_LINK_SPEED);
 	is_25g = speed == 25000 || speed == 50000;
 
 	caps = MCDI_DWORD(outbuf, GET_LINK_OUT_V2_CAP);
 	fec->fec = mcdi_fec_caps_to_ethtool(caps, is_25g);
-	/* BASER is never supported on 100G */
+	 
 	if (speed == 100000)
 		fec->fec &= ~ETHTOOL_FEC_BASER;
 
@@ -657,9 +624,7 @@ int efx_siena_mcdi_phy_get_fecparam(struct efx_nic *efx,
 		netif_warn(efx, hw, efx->net_dev,
 			   "Firmware reports unrecognised FEC_TYPE %u\n",
 			   active);
-		/* We don't know what firmware has picked.  AUTO is as good a
-		 * "can't happen" value as any other.
-		 */
+		 
 		fec->active_fec = ETHTOOL_FEC_AUTO;
 		break;
 	}
@@ -667,9 +632,7 @@ int efx_siena_mcdi_phy_get_fecparam(struct efx_nic *efx,
 	return 0;
 }
 
-/* Basic validation to ensure that the caps we are going to attempt to set are
- * in fact supported by the adapter.  Note that 'no FEC' is always supported.
- */
+ 
 static int ethtool_fec_supported(u32 supported_cap, u32 ethtool_cap)
 {
 	if (ethtool_cap & ETHTOOL_FEC_OFF)
@@ -692,9 +655,7 @@ int efx_siena_mcdi_phy_set_fecparam(struct efx_nic *efx,
 	if (rc)
 		return rc;
 
-	/* Work out what efx_siena_mcdi_phy_set_link_ksettings() would produce from
-	 * saved advertising bits
-	 */
+	 
 	if (test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, efx->link_advertising))
 		caps = (ethtool_linkset_to_mcdi_cap(efx->link_advertising) |
 			1 << MC_CMD_PHY_CAP_AN_LBN);
@@ -707,7 +668,7 @@ int efx_siena_mcdi_phy_set_fecparam(struct efx_nic *efx,
 	if (rc)
 		return rc;
 
-	/* Record the new FEC setting for subsequent set_link calls */
+	 
 	efx->fec_config = fec->fec;
 	return 0;
 }
@@ -775,7 +736,7 @@ static int efx_mcdi_bist(struct efx_nic *efx, unsigned int bist_mode,
 	if (rc)
 		goto out;
 
-	/* Wait up to 10s for BIST to finish */
+	 
 	for (retry = 0; retry < 100; ++retry) {
 		BUILD_BUG_ON(MC_CMD_POLL_BIST_IN_LEN != 0);
 		rc = efx_siena_mcdi_rpc(efx, MC_CMD_POLL_BIST, NULL, 0,
@@ -796,7 +757,7 @@ static int efx_mcdi_bist(struct efx_nic *efx, unsigned int bist_mode,
 finished:
 	results[count++] = (status == MC_CMD_POLL_BIST_PASSED) ? 1 : -1;
 
-	/* SFT9001 specific cable diagnostics output */
+	 
 	if (efx->phy_type == PHY_TYPE_SFT9001B &&
 	    (bist_mode == MC_CMD_PHY_BIST_CABLE_SHORT ||
 	     bist_mode == MC_CMD_PHY_BIST_CABLE_LONG)) {
@@ -832,9 +793,7 @@ int efx_siena_mcdi_phy_run_tests(struct efx_nic *efx, int *results,
 		results += rc;
 	}
 
-	/* If we support both LONG and SHORT, then run each in response to
-	 * break or not. Otherwise, run the one we support
-	 */
+	 
 	mode = 0;
 	if (phy_cfg->flags & (1 << MC_CMD_GET_PHY_CFG_OUT_BIST_CABLE_SHORT_LBN)) {
 		if ((flags & ETH_TEST_FL_OFFLINE) &&
@@ -892,17 +851,7 @@ const char *efx_siena_mcdi_phy_test_name(struct efx_nic *efx,
 #define SFF_8436_NUM_PAGES	5
 #define SFF_DMT_LEVEL_OFFSET	94
 
-/** efx_mcdi_phy_get_module_eeprom_page() - Get a single page of module eeprom
- * @efx:	NIC context
- * @page:	EEPROM page number
- * @data:	Destination data pointer
- * @offset:	Offset in page to copy from in to data
- * @space:	Space available in data
- *
- * Return:
- *   >=0 - amount of data copied
- *   <0  - error
- */
+ 
 static int efx_mcdi_phy_get_module_eeprom_page(struct efx_nic *efx,
 					       unsigned int page,
 					       u8 *data, ssize_t offset,
@@ -959,14 +908,14 @@ static int efx_mcdi_phy_get_module_eeprom_byte(struct efx_nic *efx,
 
 static int efx_mcdi_phy_diag_type(struct efx_nic *efx)
 {
-	/* Page zero of the EEPROM includes the diagnostic type at byte 92. */
+	 
 	return efx_mcdi_phy_get_module_eeprom_byte(efx, 0,
 						   SFF_DIAG_TYPE_OFFSET);
 }
 
 static int efx_mcdi_phy_sff_8472_level(struct efx_nic *efx)
 {
-	/* Page zero of the EEPROM includes the DMT level at byte 94. */
+	 
 	return efx_mcdi_phy_get_module_eeprom_byte(efx, 0,
 						   SFF_DMT_LEVEL_OFFSET);
 }
@@ -978,9 +927,7 @@ static u32 efx_mcdi_phy_module_type(struct efx_nic *efx)
 	if (phy_data->media != MC_CMD_MEDIA_QSFP_PLUS)
 		return phy_data->media;
 
-	/* A QSFP+ NIC may actually have an SFP+ module attached.
-	 * The ID is page 0, byte 0.
-	 */
+	 
 	switch (efx_mcdi_phy_get_module_eeprom_byte(efx, 0, 0)) {
 	case 0x3:
 		return MC_CMD_MEDIA_SFP_PLUS;
@@ -1011,8 +958,8 @@ int efx_siena_mcdi_phy_get_module_eeprom(struct efx_nic *efx,
 		break;
 	case MC_CMD_MEDIA_QSFP_PLUS:
 		num_pages = SFF_8436_NUM_PAGES;
-		page = -1; /* We obtain the lower page by asking for -1. */
-		ignore_missing = true; /* Ignore missing pages after page 0. */
+		page = -1;  
+		ignore_missing = true;  
 		break;
 	default:
 		return -EOPNOTSUPP;
@@ -1063,13 +1010,11 @@ int efx_siena_mcdi_phy_get_module_info(struct efx_nic *efx, struct ethtool_modin
 	case MC_CMD_MEDIA_SFP_PLUS:
 		sff_8472_level = efx_mcdi_phy_sff_8472_level(efx);
 
-		/* If we can't read the diagnostics level we have none. */
+		 
 		if (sff_8472_level < 0)
 			return -EOPNOTSUPP;
 
-		/* Check if this module requires the (unsupported) address
-		 * change operation.
-		 */
+		 
 		diag_type = efx_mcdi_phy_diag_type(efx);
 
 		if (sff_8472_level == 0 ||
@@ -1106,14 +1051,14 @@ int efx_siena_mcdi_set_mac(struct efx_nic *efx)
 
 	BUILD_BUG_ON(MC_CMD_SET_MAC_OUT_LEN != 0);
 
-	/* This has no effect on EF10 */
+	 
 	ether_addr_copy(MCDI_PTR(cmdbytes, SET_MAC_IN_ADDR),
 			efx->net_dev->dev_addr);
 
 	MCDI_SET_DWORD(cmdbytes, SET_MAC_IN_MTU, efx_calc_mac_mtu(efx));
 	MCDI_SET_DWORD(cmdbytes, SET_MAC_IN_DRAIN, 0);
 
-	/* Set simple MAC filter for Siena */
+	 
 	MCDI_POPULATE_DWORD_1(cmdbytes, SET_MAC_IN_REJECT,
 			      SET_MAC_IN_REJECT_UNCST, efx->unicast_filter);
 
@@ -1179,7 +1124,7 @@ static int efx_mcdi_mac_stats(struct efx_nic *efx,
 
 	rc = efx_siena_mcdi_rpc_quiet(efx, MC_CMD_MAC_STATS, inbuf,
 				      sizeof(inbuf), NULL, 0, NULL);
-	/* Expect ENOENT if DMA queues have not been set up */
+	 
 	if (rc && (rc != -ENOENT || atomic_read(&efx->active_queues)))
 		efx_siena_mcdi_display_error(efx, MC_CMD_MAC_STATS,
 					     sizeof(inbuf), NULL, 0, rc);
@@ -1224,7 +1169,7 @@ int efx_siena_mcdi_mac_init_stats(struct efx_nic *efx)
 	if (!efx->num_mac_stats)
 		return 0;
 
-	/* Allocate buffer for stats */
+	 
 	rc = efx_siena_alloc_buffer(efx, &efx->stats_buffer,
 				    efx->num_mac_stats * sizeof(u64),
 				    GFP_KERNEL);
@@ -1270,10 +1215,7 @@ void efx_siena_mcdi_process_link_change(struct efx_nic *efx, efx_qword_t *ev)
 	fcntl = EFX_QWORD_FIELD(*ev, MCDI_EVENT_LINKCHANGE_FCNTL);
 	lpa = EFX_QWORD_FIELD(*ev, MCDI_EVENT_LINKCHANGE_LP_CAP);
 
-	/* efx->link_state is only modified by efx_mcdi_phy_get_link(),
-	 * which is only run after flushing the event queues. Therefore, it
-	 * is safe to modify the link state outside of the mac_lock here.
-	 */
+	 
 	efx_mcdi_phy_decode_link(efx, &efx->link_state, speed, flags, fcntl);
 
 	efx_mcdi_phy_check_fcntl(efx, lpa);

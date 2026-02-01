@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Ilitek ILI9322 TFT LCD drm_panel driver.
- *
- * This panel can be configured to support:
- * - 8-bit serial RGB interface
- * - 24-bit parallel RGB interface
- * - 8-bit ITU-R BT.601 interface
- * - 8-bit ITU-R BT.656 interface
- * - Up to 320RGBx240 dots resolution TFT LCD displays
- * - Scaling, brightness and contrast
- *
- * The scaling means that the display accepts a 640x480 or 720x480
- * input and rescales it to fit to the 320x240 display. So what we
- * present to the system is something else than what comes out on the
- * actual display.
- *
- * Copyright (C) 2017 Linus Walleij <linus.walleij@linaro.org>
- * Derived from drivers/drm/gpu/panel/panel-samsung-ld9040.c
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/gpio/consumer.h>
@@ -38,38 +20,26 @@
 #define ILI9322_CHIP_ID			0x00
 #define ILI9322_CHIP_ID_MAGIC		0x96
 
-/*
- * Voltage on the communication interface, from 0.7 (0x00)
- * to 1.32 (0x1f) times the VREG1OUT voltage in 2% increments.
- * 1.00 (0x0f) is the default.
- */
+ 
 #define ILI9322_VCOM_AMP		0x01
 
-/*
- * High voltage on the communication signals, from 0.37 (0x00) to
- * 1.0 (0x3f) times the VREGOUT1 voltage in 1% increments.
- * 0.83 (0x2e) is the default.
- */
+ 
 #define ILI9322_VCOM_HIGH		0x02
 
-/*
- * VREG1 voltage regulator from 3.6V (0x00) to 6.0V (0x18) in 0.1V
- * increments. 5.4V (0x12) is the default. This is the reference
- * voltage for the VCOM levels and the greyscale level.
- */
+ 
 #define ILI9322_VREG1_VOLTAGE		0x03
 
-/* Describes the incoming signal */
+ 
 #define ILI9322_ENTRY			0x06
-/* 0 = right-to-left, 1 = left-to-right (default), horizontal flip */
+ 
 #define ILI9322_ENTRY_HDIR		BIT(0)
-/* 0 = down-to-up, 1 = up-to-down (default), vertical flip  */
+ 
 #define ILI9322_ENTRY_VDIR		BIT(1)
-/* NTSC, PAL or autodetect */
+ 
 #define ILI9322_ENTRY_NTSC		(0 << 2)
 #define ILI9322_ENTRY_PAL		(1 << 2)
 #define ILI9322_ENTRY_AUTODETECT	(3 << 2)
-/* Input format */
+ 
 #define ILI9322_ENTRY_SERIAL_RGB_THROUGH (0 << 4)
 #define ILI9322_ENTRY_SERIAL_RGB_ALIGNED (1 << 4)
 #define ILI9322_ENTRY_SERIAL_RGB_DUMMY_320X240 (2 << 4)
@@ -83,15 +53,15 @@
 #define ILI9322_ENTRY_ITU_R_BT_656_720X360 (10 << 4)
 #define ILI9322_ENTRY_ITU_R_BT_656_640X320 (11 << 4)
 
-/* Power control */
+ 
 #define ILI9322_POW_CTRL		0x07
-#define ILI9322_POW_CTRL_STB		BIT(0) /* 0 = standby, 1 = normal */
-#define ILI9322_POW_CTRL_VGL		BIT(1) /* 0 = off, 1 = on  */
-#define ILI9322_POW_CTRL_VGH		BIT(2) /* 0 = off, 1 = on  */
-#define ILI9322_POW_CTRL_DDVDH		BIT(3) /* 0 = off, 1 = on  */
-#define ILI9322_POW_CTRL_VCOM		BIT(4) /* 0 = off, 1 = on  */
-#define ILI9322_POW_CTRL_VCL		BIT(5) /* 0 = off, 1 = on  */
-#define ILI9322_POW_CTRL_AUTO		BIT(6) /* 0 = interactive, 1 = auto */
+#define ILI9322_POW_CTRL_STB		BIT(0)  
+#define ILI9322_POW_CTRL_VGL		BIT(1)  
+#define ILI9322_POW_CTRL_VGH		BIT(2)  
+#define ILI9322_POW_CTRL_DDVDH		BIT(3)  
+#define ILI9322_POW_CTRL_VCOM		BIT(4)  
+#define ILI9322_POW_CTRL_VCL		BIT(5)  
+#define ILI9322_POW_CTRL_AUTO		BIT(6)  
 #define ILI9322_POW_CTRL_STANDBY	(ILI9322_POW_CTRL_VGL | \
 					 ILI9322_POW_CTRL_VGH | \
 					 ILI9322_POW_CTRL_DDVDH | \
@@ -101,32 +71,23 @@
 #define ILI9322_POW_CTRL_DEFAULT	(ILI9322_POW_CTRL_STANDBY | \
 					 ILI9322_POW_CTRL_STB)
 
-/* Vertical back porch bits 0..5 */
+ 
 #define ILI9322_VBP			0x08
 
-/* Horizontal back porch, 8 bits */
+ 
 #define ILI9322_HBP			0x09
 
-/*
- * Polarity settings:
- * 1 = positive polarity
- * 0 = negative polarity
- */
+ 
 #define ILI9322_POL			0x0a
-#define ILI9322_POL_DCLK		BIT(0) /* 1 default */
-#define ILI9322_POL_HSYNC		BIT(1) /* 0 default */
-#define ILI9322_POL_VSYNC		BIT(2) /* 0 default */
-#define ILI9322_POL_DE			BIT(3) /* 1 default */
-/*
- * 0 means YCBCR are ordered Cb0,Y0,Cr0,Y1,Cb2,Y2,Cr2,Y3 (default)
- *   in RGB mode this means RGB comes in RGBRGB
- * 1 means YCBCR are ordered Cr0,Y0,Cb0,Y1,Cr2,Y2,Cb2,Y3
- *   in RGB mode this means RGB comes in BGRBGR
- */
+#define ILI9322_POL_DCLK		BIT(0)  
+#define ILI9322_POL_HSYNC		BIT(1)  
+#define ILI9322_POL_VSYNC		BIT(2)  
+#define ILI9322_POL_DE			BIT(3)  
+ 
 #define ILI9322_POL_YCBCR_MODE		BIT(4)
-/* Formula A for YCbCR->RGB = 0, Formula B = 1 */
+ 
 #define ILI9322_POL_FORMULA		BIT(5)
-/* Reverse polarity: 0 = 0..255, 1 = 255..0 */
+ 
 #define ILI9322_POL_REV			BIT(6)
 
 #define ILI9322_IF_CTRL			0x0b
@@ -134,16 +95,12 @@
 #define ILI9322_IF_CTRL_HSYNC_VSYNC_DE	BIT(2)
 #define ILI9322_IF_CTRL_DE_ONLY		BIT(3)
 #define ILI9322_IF_CTRL_SYNC_DISABLED	(BIT(2) | BIT(3))
-#define ILI9322_IF_CTRL_LINE_INVERSION	BIT(0) /* Not set means frame inv */
+#define ILI9322_IF_CTRL_LINE_INVERSION	BIT(0)  
 
 #define ILI9322_GLOBAL_RESET		0x04
-#define ILI9322_GLOBAL_RESET_ASSERT	0x00 /* bit 0 = 0 -> reset */
+#define ILI9322_GLOBAL_RESET_ASSERT	0x00  
 
-/*
- * 4+4 bits of negative and positive gamma correction
- * Upper nybble, bits 4-7 are negative gamma
- * Lower nybble, bits 0-3 are positive gamma
- */
+ 
 #define ILI9322_GAMMA_1			0x10
 #define ILI9322_GAMMA_2			0x11
 #define ILI9322_GAMMA_3			0x12
@@ -153,14 +110,7 @@
 #define ILI9322_GAMMA_7			0x16
 #define ILI9322_GAMMA_8			0x17
 
-/*
- * enum ili9322_input - the format of the incoming signal to the panel
- *
- * The panel can be connected to various input streams and four of them can
- * be selected by electronic straps on the display. However it is possible
- * to select another mode or override the electronic default with this
- * setting.
- */
+ 
 enum ili9322_input {
 	ILI9322_INPUT_SRGB_THROUGH = 0x0,
 	ILI9322_INPUT_SRGB_ALIGNED = 0x1,
@@ -192,63 +142,7 @@ static const char * const ili9322_inputs[] = {
 	"8 bit ITU-R BT.656 640Y 320CbCr",
 };
 
-/**
- * struct ili9322_config - the system specific ILI9322 configuration
- * @width_mm: physical panel width [mm]
- * @height_mm: physical panel height [mm]
- * @flip_horizontal: flip the image horizontally (right-to-left scan)
- * (only in RGB and YUV modes)
- * @flip_vertical: flip the image vertically (down-to-up scan)
- * (only in RGB and YUV modes)
- * @input: the input/entry type used in this system, if this is set to
- * ILI9322_INPUT_UNKNOWN the driver will try to figure it out by probing
- * the hardware
- * @vreg1out_mv: the output in microvolts for the VREGOUT1 regulator used
- * to drive the physical display. Valid ranges are 3600 thru 6000 in 100
- * microvolt increments. If not specified, hardware defaults will be
- * used (4.5V).
- * @vcom_high_percent: the percentage of VREGOUT1 used for the peak
- * voltage on the communications link. Valid ranges are 37 thru 100
- * percent. If not specified, hardware defaults will be used (91%).
- * @vcom_amplitude_percent: the percentage of VREGOUT1 used for the
- * peak-to-peak amplitude of the communcation signals to the physical
- * display. Valid ranges are 70 thru 132 percent in increments if two
- * percent. Odd percentages will be truncated. If not specified, hardware
- * defaults will be used (114%).
- * @dclk_active_high: data/pixel clock active high, data will be clocked
- * in on the rising edge of the DCLK (this is usually the case).
- * @syncmode: The synchronization mode, what sync signals are emitted.
- * See the enum for details.
- * @de_active_high: DE (data entry) is active high
- * @hsync_active_high: HSYNC is active high
- * @vsync_active_high: VSYNC is active high
- * @gamma_corr_pos: a set of 8 nybbles describing positive
- * gamma correction for voltages V1 thru V8. Valid range 0..15
- * @gamma_corr_neg: a set of 8 nybbles describing negative
- * gamma correction for voltages V1 thru V8. Valid range 0..15
- *
- * These adjust what grayscale voltage will be output for input data V1 = 0,
- * V2 = 16, V3 = 48, V4 = 96, V5 = 160, V6 = 208, V7 = 240 and V8 = 255.
- * The curve is shaped like this:
- *
- *  ^
- *  |                                                        V8
- *  |                                                   V7
- *  |                                          V6
- *  |                               V5
- *  |                    V4
- *  |            V3
- *  |     V2
- *  | V1
- *  +----------------------------------------------------------->
- *    0   16     48      96         160        208      240  255
- *
- * The negative and postive gamma values adjust the V1 thru V8 up/down
- * according to the datasheet specifications. This is a property of the
- * physical display connected to the display controller and may vary.
- * If defined, both arrays must be supplied in full. If the properties
- * are not supplied, hardware defaults will be used.
- */
+ 
 struct ili9322_config {
 	u32 width_mm;
 	u32 height_mm;
@@ -294,7 +188,7 @@ static int ili9322_regmap_spi_write(void *context, const void *data,
 	struct spi_device *spi = to_spi_device(dev);
 	u8 buf[2];
 
-	/* Clear bit 7 to write */
+	 
 	memcpy(buf, data, 2);
 	buf[0] &= ~0x80;
 
@@ -309,7 +203,7 @@ static int ili9322_regmap_spi_read(void *context, const void *reg,
 	struct spi_device *spi = to_spi_device(dev);
 	u8 buf[1];
 
-	/* Set bit 7 to 1 to read */
+	 
 	memcpy(buf, reg, 1);
 	dev_dbg(dev, "READ: %02x reg size = %zu, val size = %zu\n",
 		buf[0], reg_size, val_size);
@@ -332,7 +226,7 @@ static bool ili9322_volatile_reg(struct device *dev, unsigned int reg)
 
 static bool ili9322_writeable_reg(struct device *dev, unsigned int reg)
 {
-	/* Just register 0 is read-only */
+	 
 	if (reg == 0x00)
 		return false;
 	return true;
@@ -353,7 +247,7 @@ static int ili9322_init(struct drm_panel *panel, struct ili9322 *ili)
 	int ret;
 	int i;
 
-	/* Reset display */
+	 
 	ret = regmap_write(ili->regmap, ILI9322_GLOBAL_RESET,
 			   ILI9322_GLOBAL_RESET_ASSERT);
 	if (ret) {
@@ -361,7 +255,7 @@ static int ili9322_init(struct drm_panel *panel, struct ili9322 *ili)
 		return ret;
 	}
 
-	/* Set up the main voltage regulator */
+	 
 	if (ili->vreg1out != U8_MAX) {
 		ret = regmap_write(ili->regmap, ILI9322_VREG1_VOLTAGE,
 				   ili->vreg1out);
@@ -390,7 +284,7 @@ static int ili9322_init(struct drm_panel *panel, struct ili9322 *ili)
 		}
 	}
 
-	/* Set up gamma correction */
+	 
 	for (i = 0; i < ARRAY_SIZE(ili->gamma); i++) {
 		ret = regmap_write(ili->regmap, ILI9322_GAMMA_1 + i,
 				   ili->gamma[i]);
@@ -402,10 +296,7 @@ static int ili9322_init(struct drm_panel *panel, struct ili9322 *ili)
 		}
 	}
 
-	/*
-	 * Polarity and inverted color order for RGB input.
-	 * None of this applies in the BT.656 mode.
-	 */
+	 
 	reg = 0;
 	if (ili->conf->dclk_active_high)
 		reg = ILI9322_POL_DCLK;
@@ -421,10 +312,7 @@ static int ili9322_init(struct drm_panel *panel, struct ili9322 *ili)
 		return ret;
 	}
 
-	/*
-	 * Set up interface control.
-	 * This is not used in the BT.656 mode (no H/Vsync or DE signals).
-	 */
+	 
 	reg = ili->conf->syncmode;
 	reg |= ILI9322_IF_CTRL_LINE_INVERSION;
 	ret = regmap_write(ili->regmap, ILI9322_IF_CTRL, reg);
@@ -433,9 +321,9 @@ static int ili9322_init(struct drm_panel *panel, struct ili9322 *ili)
 		return ret;
 	}
 
-	/* Set up the input mode */
+	 
 	reg = (ili->input << 4);
-	/* These are inverted, setting to 1 is the default, clearing flips */
+	 
 	if (!ili->conf->flip_horizontal)
 		reg |= ILI9322_ENTRY_HDIR;
 	if (!ili->conf->flip_vertical)
@@ -455,14 +343,12 @@ static int ili9322_init(struct drm_panel *panel, struct ili9322 *ili)
 	return 0;
 }
 
-/*
- * This power-on sequence if from the datasheet, page 57.
- */
+ 
 static int ili9322_power_on(struct ili9322 *ili)
 {
 	int ret;
 
-	/* Assert RESET */
+	 
 	gpiod_set_value(ili->reset_gpio, 1);
 
 	ret = regulator_bulk_enable(ARRAY_SIZE(ili->supplies), ili->supplies);
@@ -472,7 +358,7 @@ static int ili9322_power_on(struct ili9322 *ili)
 	}
 	msleep(20);
 
-	/* De-assert RESET */
+	 
 	gpiod_set_value(ili->reset_gpio, 0);
 
 	msleep(10);
@@ -538,7 +424,7 @@ static int ili9322_enable(struct drm_panel *panel)
 	return 0;
 }
 
-/* Serial RGB modes */
+ 
 static const struct drm_display_mode srgb_320x240_mode = {
 	.clock = 24535,
 	.hdisplay = 320,
@@ -565,7 +451,7 @@ static const struct drm_display_mode srgb_360x240_mode = {
 	.flags = 0,
 };
 
-/* This is the only mode listed for parallel RGB in the datasheet */
+ 
 static const struct drm_display_mode prgb_320x240_mode = {
 	.clock = 64000,
 	.hdisplay = 320,
@@ -579,7 +465,7 @@ static const struct drm_display_mode prgb_320x240_mode = {
 	.flags = 0,
 };
 
-/* YUV modes */
+ 
 static const struct drm_display_mode yuv_640x320_mode = {
 	.clock = 24540,
 	.hdisplay = 640,
@@ -606,7 +492,7 @@ static const struct drm_display_mode yuv_720x360_mode = {
 	.flags = 0,
 };
 
-/* BT.656 VGA mode, 640x480 */
+ 
 static const struct drm_display_mode itu_r_bt_656_640_mode = {
 	.clock = 24540,
 	.hdisplay = 640,
@@ -620,7 +506,7 @@ static const struct drm_display_mode itu_r_bt_656_640_mode = {
 	.flags = 0,
 };
 
-/* BT.656 D1 mode 720x480 */
+ 
 static const struct drm_display_mode itu_r_bt_656_720_mode = {
 	.clock = 27000,
 	.hdisplay = 720,
@@ -687,13 +573,10 @@ static int ili9322_get_modes(struct drm_panel *panel,
 		return -EINVAL;
 	}
 	drm_mode_set_name(mode);
-	/*
-	 * This is the preferred mode because most people are going
-	 * to want to use the display with VGA type graphics.
-	 */
+	 
 	mode->type = DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED;
 
-	/* Set up the polarity */
+	 
 	if (ili->conf->hsync_active_high)
 		mode->flags |= DRM_MODE_FLAG_PHSYNC;
 	else
@@ -707,7 +590,7 @@ static int ili9322_get_modes(struct drm_panel *panel,
 	mode->height_mm = ili->conf->height_mm;
 	drm_mode_probed_add(connector, mode);
 
-	return 1; /* Number of modes */
+	return 1;  
 }
 
 static const struct drm_panel_funcs ili9322_drm_funcs = {
@@ -736,10 +619,7 @@ static int ili9322_probe(struct spi_device *spi)
 
 	ili->dev = dev;
 
-	/*
-	 * Every new incarnation of this display must have a unique
-	 * data entry for the system in this driver.
-	 */
+	 
 	ili->conf = of_device_get_match_data(dev);
 	if (!ili->conf) {
 		dev_err(dev, "missing device configuration\n");
@@ -748,7 +628,7 @@ static int ili9322_probe(struct spi_device *spi)
 
 	val = ili->conf->vreg1out_mv;
 	if (!val) {
-		/* Default HW value, do not touch (should be 4.5V) */
+		 
 		ili->vreg1out = U8_MAX;
 	} else {
 		if (val < 3600) {
@@ -771,7 +651,7 @@ static int ili9322_probe(struct spi_device *spi)
 
 	val = ili->conf->vcom_high_percent;
 	if (!val) {
-		/* Default HW value, do not touch (should be 91%) */
+		 
 		ili->vcom_high = U8_MAX;
 	} else {
 		if (val < 37) {
@@ -789,7 +669,7 @@ static int ili9322_probe(struct spi_device *spi)
 
 	val = ili->conf->vcom_amplitude_percent;
 	if (!val) {
-		/* Default HW value, do not touch (should be 114%) */
+		 
 		ili->vcom_high = U8_MAX;
 	} else {
 		if (val < 70) {
@@ -801,7 +681,7 @@ static int ili9322_probe(struct spi_device *spi)
 			return -EINVAL;
 		}
 		val -= 70;
-		val >>= 1; /* Increments of 2% */
+		val >>= 1;  
 		dev_dbg(dev, "VCOM amplitude = 0x%02x\n", val);
 		ili->vcom_amplitude = val;
 	}
@@ -823,9 +703,9 @@ static int ili9322_probe(struct spi_device *spi)
 		dev_dbg(dev, "gamma V%d: 0x%02x\n", i + 1, gamma);
 	}
 
-	ili->supplies[0].supply = "vcc"; /* 2.7-3.6 V */
-	ili->supplies[1].supply = "iovcc"; /* 1.65-3.6V */
-	ili->supplies[2].supply = "vci"; /* 2.7-3.6V */
+	ili->supplies[0].supply = "vcc";  
+	ili->supplies[1].supply = "iovcc";  
+	ili->supplies[2].supply = "vci";  
 	ret = devm_regulator_bulk_get(dev, ARRAY_SIZE(ili->supplies),
 				      ili->supplies);
 	if (ret < 0)
@@ -874,14 +754,14 @@ static int ili9322_probe(struct spi_device *spi)
 		return -ENODEV;
 	}
 
-	/* Probe the system to find the display setting */
+	 
 	if (ili->conf->input == ILI9322_INPUT_UNKNOWN) {
 		ret = regmap_read(ili->regmap, ILI9322_ENTRY, &val);
 		if (ret) {
 			dev_err(dev, "can't get entry setting (%d)\n", ret);
 			return ret;
 		}
-		/* Input enum corresponds to HW setting */
+		 
 		ili->input = (val >> 4) & 0x0f;
 		if (ili->input >= ILI9322_INPUT_UNKNOWN)
 			ili->input = ILI9322_INPUT_UNKNOWN;
@@ -905,9 +785,7 @@ static void ili9322_remove(struct spi_device *spi)
 	drm_panel_remove(&ili->panel);
 }
 
-/*
- * The D-Link DIR-685 panel is marked LM918A01-1A SY-B4-091116-E0199
- */
+ 
 static const struct ili9322_config ili9322_dir_685 = {
 	.width_mm = 65,
 	.height_mm = 50,

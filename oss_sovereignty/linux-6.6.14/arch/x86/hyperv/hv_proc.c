@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/types.h>
 #include <linux/vmalloc.h>
 #include <linux/mm.h>
@@ -14,13 +14,10 @@
 
 #include <asm/trace/hyperv.h>
 
-/*
- * See struct hv_deposit_memory. The first u64 is partition ID, the rest
- * are GPAs.
- */
+ 
 #define HV_DEPOSIT_MAX (HV_HYP_PAGE_SIZE / sizeof(u64) - 1)
 
-/* Deposits exact number of pages. Must be called with interrupts enabled.  */
+ 
 int hv_call_deposit_pages(int node, u64 partition_id, u32 num_pages)
 {
 	struct page **pages, *page;
@@ -39,7 +36,7 @@ int hv_call_deposit_pages(int node, u64 partition_id, u32 num_pages)
 	if (!num_pages)
 		return 0;
 
-	/* One buffer for page pointers and counts */
+	 
 	page = alloc_page(GFP_KERNEL);
 	if (!page)
 		return -ENOMEM;
@@ -51,11 +48,11 @@ int hv_call_deposit_pages(int node, u64 partition_id, u32 num_pages)
 		return -ENOMEM;
 	}
 
-	/* Allocate all the pages before disabling interrupts */
+	 
 	i = 0;
 
 	while (num_pages) {
-		/* Find highest order we can actually allocate */
+		 
 		order = 31 - __builtin_clz(num_pages);
 
 		while (1) {
@@ -83,7 +80,7 @@ int hv_call_deposit_pages(int node, u64 partition_id, u32 num_pages)
 
 	input_page->partition_id = partition_id;
 
-	/* Populate gpa_page_list - these will fit on the input page */
+	 
 	for (i = 0, page_count = 0; i < num_allocations; ++i) {
 		base_pfn = page_to_pfn(pages[i]);
 		for (j = 0; j < counts[i]; ++j, ++page_count)
@@ -123,16 +120,12 @@ int hv_call_add_logical_proc(int node, u32 lp_index, u32 apic_id)
 	int ret = HV_STATUS_SUCCESS;
 	int pxm = node_to_pxm(node);
 
-	/*
-	 * When adding a logical processor, the hypervisor may return
-	 * HV_STATUS_INSUFFICIENT_MEMORY. When that happens, we deposit more
-	 * pages and retry.
-	 */
+	 
 	do {
 		local_irq_save(flags);
 
 		input = *this_cpu_ptr(hyperv_pcpu_input_arg);
-		/* We don't do anything with the output right now */
+		 
 		output = *this_cpu_ptr(hyperv_pcpu_output_arg);
 
 		input->lp_index = lp_index;
@@ -168,9 +161,9 @@ int hv_call_create_vp(int node, u64 partition_id, u32 vp_index, u32 flags)
 	int ret = HV_STATUS_SUCCESS;
 	int pxm = node_to_pxm(node);
 
-	/* Root VPs don't seem to need pages deposited */
+	 
 	if (partition_id != hv_current_partition_id) {
-		/* The value 90 is empirically determined. It may change. */
+		 
 		ret = hv_call_deposit_pages(node, partition_id, 90);
 		if (ret)
 			return ret;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Speed Select Interface: MMIO Interface
- * Copyright (c) 2019, Intel Corporation.
- * All rights reserved.
- *
- * Author: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -64,10 +58,7 @@ static long isst_if_mmio_rd_wr(u8 *cmd_ptr, int *write_only, int resume)
 	    io_reg->reg > punit_dev->mmio_range[1].end)
 		return -EINVAL;
 
-	/*
-	 * Ensure that operation is complete on a PCI device to avoid read
-	 * write race by using per PCI device mutex.
-	 */
+	 
 	mutex_lock(&punit_dev->mutex);
 	if (io_reg->read_write) {
 		writel(io_reg->value, punit_dev->punit_mmio+io_reg->reg);

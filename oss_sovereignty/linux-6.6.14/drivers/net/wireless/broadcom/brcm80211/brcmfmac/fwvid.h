@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (c) 2022 Broadcom Corporation
- */
+ 
+ 
 #ifndef FWVID_H_
 #define FWVID_H_
 
@@ -14,12 +12,12 @@ struct brcmf_fwvid_ops {
 	void (*detach)(struct brcmf_pub *drvr);
 };
 
-/* exported functions */
+ 
 int brcmf_fwvid_register_vendor(enum brcmf_fwvendor fwvid, struct module *mod,
 				const struct brcmf_fwvid_ops *ops);
 int brcmf_fwvid_unregister_vendor(enum brcmf_fwvendor fwvid, struct module *mod);
 
-/* core driver functions */
+ 
 int brcmf_fwvid_attach_ops(struct brcmf_pub *drvr);
 void brcmf_fwvid_detach_ops(struct brcmf_pub *drvr);
 const char *brcmf_fwvid_vendor_name(struct brcmf_pub *drvr);
@@ -44,4 +42,4 @@ static inline void brcmf_fwvid_detach(struct brcmf_pub *drvr)
 	brcmf_fwvid_detach_ops(drvr);
 }
 
-#endif /* FWVID_H_ */
+#endif  

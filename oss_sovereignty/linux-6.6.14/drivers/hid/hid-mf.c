@@ -1,24 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Force feedback support for Mayflash game controller adapters.
- *
- * These devices are manufactured by Mayflash but identify themselves
- * using the vendor ID of DragonRise Inc.
- *
- * Tested with:
- * 0079:1801 "DragonRise Inc. Mayflash PS3 Game Controller Adapter"
- * 0079:1803 "DragonRise Inc. Mayflash Wireless Sensor DolphinBar"
- * 0079:1843 "DragonRise Inc. Mayflash GameCube Game Controller Adapter"
- * 0079:1844 "DragonRise Inc. Mayflash GameCube Game Controller Adapter (v04)"
- *
- * The following adapters probably work too, but need to be tested:
- * 0079:1800 "DragonRise Inc. Mayflash WIIU Game Controller Adapter"
- *
- * Copyright (c) 2016-2017 Marcel Hasler <mahasler@gmail.com>
- */
 
-/*
- */
+ 
+
+ 
 
 #include <linux/input.h>
 #include <linux/slab.h>
@@ -71,7 +54,7 @@ static int mf_init(struct hid_device *hid)
 
 	int error;
 
-	/* Setup each of the four inputs */
+	 
 	list_for_each(report_ptr, report_list) {
 		report = list_entry(report_ptr, struct hid_report, list);
 
@@ -119,7 +102,7 @@ static int mf_probe(struct hid_device *hid, const struct hid_device_id *id)
 
 	dev_dbg(&hid->dev, "Mayflash HID hardware probe...\n");
 
-	/* Apply quirks as needed */
+	 
 	hid->quirks |= id->driver_data;
 
 	error = hid_parse(hid);
@@ -152,7 +135,7 @@ static const struct hid_device_id mf_devices[] = {
 	{ HID_USB_DEVICE(USB_VENDOR_ID_DRAGONRISE, USB_DEVICE_ID_DRAGONRISE_GAMECUBE1),
 		.driver_data = HID_QUIRK_MULTI_INPUT },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_DRAGONRISE, USB_DEVICE_ID_DRAGONRISE_GAMECUBE2),
-		.driver_data = 0 }, /* No quirk required */
+		.driver_data = 0 },  
 	{ HID_USB_DEVICE(USB_VENDOR_ID_DRAGONRISE, USB_DEVICE_ID_DRAGONRISE_GAMECUBE3),
 		.driver_data = HID_QUIRK_MULTI_INPUT },
 	{ }

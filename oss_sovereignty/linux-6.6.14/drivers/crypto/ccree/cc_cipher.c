@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2012-2019 ARM Limited (or its affiliates). */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -36,10 +36,10 @@ struct cc_cpp_key_info {
 };
 
 enum cc_key_type {
-	CC_UNPROTECTED_KEY,		/* User key */
-	CC_HW_PROTECTED_KEY,		/* HW (FDE) key */
-	CC_POLICY_PROTECTED_KEY,	/* CPP key */
-	CC_INVALID_PROTECTED_KEY	/* Invalid key */
+	CC_UNPROTECTED_KEY,		 
+	CC_HW_PROTECTED_KEY,		 
+	CC_POLICY_PROTECTED_KEY,	 
+	CC_INVALID_PROTECTED_KEY	 
 };
 
 struct cc_cipher_ctx {
@@ -171,7 +171,7 @@ static int cc_cipher_init(struct crypto_tfm *tfm)
 	if (ctx_p->cipher_mode == DRV_CIPHER_ESSIV) {
 		const char *name = crypto_tfm_alg_name(tfm);
 
-		/* Alloc hash tfm for essiv */
+		 
 		ctx_p->shash_tfm = crypto_alloc_shash("sha256", 0, 0);
 		if (IS_ERR(ctx_p->shash_tfm)) {
 			dev_err(dev, "Error allocating hash tfm for ESSIV.\n");
@@ -179,14 +179,12 @@ static int cc_cipher_init(struct crypto_tfm *tfm)
 		}
 		max_key_buf_size <<= 1;
 
-		/* Alloc fallabck tfm or essiv when key size != 256 bit */
+		 
 		ctx_p->fallback_tfm =
 			crypto_alloc_skcipher(name, 0, CRYPTO_ALG_NEED_FALLBACK | CRYPTO_ALG_ASYNC);
 
 		if (IS_ERR(ctx_p->fallback_tfm)) {
-			/* Note we're still allowing registration with no fallback since it's
-			 * better to have most modes supported than none at all.
-			 */
+			 
 			dev_warn(dev, "Error allocating fallback algo %s. Some modes may be available.\n",
 			       name);
 			ctx_p->fallback_tfm = NULL;
@@ -198,7 +196,7 @@ static int cc_cipher_init(struct crypto_tfm *tfm)
 	crypto_skcipher_set_reqsize(__crypto_skcipher_cast(tfm),
 				    sizeof(struct cipher_req_ctx) + fallback_req_size);
 
-	/* Allocate key buffer, cache line aligned */
+	 
 	ctx_p->user.key = kzalloc(max_key_buf_size, GFP_KERNEL);
 	if (!ctx_p->user.key)
 		goto free_fallback;
@@ -206,7 +204,7 @@ static int cc_cipher_init(struct crypto_tfm *tfm)
 	dev_dbg(dev, "Allocated key buffer in context. key=@%p\n",
 		ctx_p->user.key);
 
-	/* Map key buffer */
+	 
 	ctx_p->user.key_dma_addr = dma_map_single(dev, ctx_p->user.key,
 						  max_key_buf_size,
 						  DMA_TO_DEVICE);
@@ -243,20 +241,20 @@ static void cc_cipher_exit(struct crypto_tfm *tfm)
 		crypto_tfm_ctx(tfm), crypto_tfm_alg_name(tfm));
 
 	if (ctx_p->cipher_mode == DRV_CIPHER_ESSIV) {
-		/* Free hash tfm for essiv */
+		 
 		crypto_free_shash(ctx_p->shash_tfm);
 		ctx_p->shash_tfm = NULL;
 		crypto_free_skcipher(ctx_p->fallback_tfm);
 		ctx_p->fallback_tfm = NULL;
 	}
 
-	/* Unmap key buffer */
+	 
 	dma_unmap_single(dev, ctx_p->user.key_dma_addr, max_key_buf_size,
 			 DMA_TO_DEVICE);
 	dev_dbg(dev, "Unmapped key buffer key_dma_addr=%pad\n",
 		&ctx_p->user.key_dma_addr);
 
-	/* Free key buffer in context */
+	 
 	dev_dbg(dev, "Free key buffer in context. key=@%p\n", ctx_p->user.key);
 	kfree_sensitive(ctx_p->user.key);
 }
@@ -310,9 +308,9 @@ static int cc_cipher_sethkey(struct crypto_skcipher *sktfm, const u8 *key,
 		ctx_p, crypto_tfm_alg_name(tfm), keylen);
 	dump_byte_array("key", key, keylen);
 
-	/* STAT_PHASE_0: Init and sanity checks */
+	 
 
-	/* This check the size of the protected key token */
+	 
 	if (keylen != sizeof(hki)) {
 		dev_err(dev, "Unsupported protected key size %d.\n", keylen);
 		return -EINVAL;
@@ -320,9 +318,7 @@ static int cc_cipher_sethkey(struct crypto_skcipher *sktfm, const u8 *key,
 
 	memcpy(&hki, key, keylen);
 
-	/* The real key len for crypto op is the size of the HW key
-	 * referenced by the HW key slot, not the hardware key token
-	 */
+	 
 	keylen = hki.keylen;
 
 	if (validate_keys_sizes(ctx_p, keylen)) {
@@ -383,7 +379,7 @@ static int cc_cipher_sethkey(struct crypto_skcipher *sktfm, const u8 *key,
 		ctx_p->cpp.slot = cc_slot_to_cpp_key(hki.hw_key1);
 		if (ctx_p->flow_mode == S_DIN_to_AES)
 			ctx_p->cpp.alg = CC_CPP_AES;
-		else /* Must be SM4 since due to sethkey registration */
+		else  
 			ctx_p->cpp.alg = CC_CPP_SM4;
 		ctx_p->key_type = CC_POLICY_PROTECTED_KEY;
 		dev_dbg(dev, "policy protected key alg: %d slot: %d.\n",
@@ -413,7 +409,7 @@ static int cc_cipher_setkey(struct crypto_skcipher *sktfm, const u8 *key,
 		ctx_p, crypto_tfm_alg_name(tfm), keylen);
 	dump_byte_array("key", key, keylen);
 
-	/* STAT_PHASE_0: Init and sanity checks */
+	 
 
 	if (validate_keys_sizes(ctx_p, keylen)) {
 		dev_dbg(dev, "Invalid key size %d.\n", keylen);
@@ -422,7 +418,7 @@ static int cc_cipher_setkey(struct crypto_skcipher *sktfm, const u8 *key,
 
 	if (ctx_p->cipher_mode == DRV_CIPHER_ESSIV) {
 
-		/* We only support 256 bit ESSIV-CBC-AES keys */
+		 
 		if (keylen != AES_KEYSIZE_256)  {
 			unsigned int flags = crypto_tfm_get_flags(tfm) & CRYPTO_TFM_REQ_MASK;
 
@@ -438,18 +434,14 @@ static int cc_cipher_setkey(struct crypto_skcipher *sktfm, const u8 *key,
 			return -EINVAL;
 		}
 
-		/* Internal ESSIV key buffer is double sized */
+		 
 		max_key_buf_size <<= 1;
 	}
 
 	ctx_p->fallback_on = false;
 	ctx_p->key_type = CC_UNPROTECTED_KEY;
 
-	/*
-	 * Verify DES weak keys
-	 * Note that we're dropping the expanded key since the
-	 * HW does the expansion on its own.
-	 */
+	 
 	if (ctx_p->flow_mode == S_DIN_to_DES) {
 		if ((keylen == DES3_EDE_KEY_SIZE &&
 		     verify_skcipher_des3_key(sktfm, key)) ||
@@ -465,14 +457,14 @@ static int cc_cipher_setkey(struct crypto_skcipher *sktfm, const u8 *key,
 		return -EINVAL;
 	}
 
-	/* STAT_PHASE_1: Copy key to ctx */
+	 
 	dma_sync_single_for_cpu(dev, ctx_p->user.key_dma_addr,
 				max_key_buf_size, DMA_TO_DEVICE);
 
 	memcpy(ctx_p->user.key, key, keylen);
 
 	if (ctx_p->cipher_mode == DRV_CIPHER_ESSIV) {
-		/* sha256 for key2 - use sw implementation */
+		 
 		int err;
 
 		err = crypto_shash_tfm_digest(ctx_p->shash_tfm,
@@ -529,7 +521,7 @@ static void cc_setup_readiv_desc(struct crypto_tfm *tfm,
 	case DRV_CIPHER_CBC_CTS:
 	case DRV_CIPHER_CTR:
 	case DRV_CIPHER_OFB:
-		/* Read next IV */
+		 
 		hw_desc_init(&desc[*seq_size]);
 		set_dout_dlli(&desc[*seq_size], iv_dma_addr, ivsize, NS_BIT, 1);
 		set_cipher_config0(&desc[*seq_size], direction);
@@ -546,7 +538,7 @@ static void cc_setup_readiv_desc(struct crypto_tfm *tfm,
 		break;
 	case DRV_CIPHER_XTS:
 	case DRV_CIPHER_ESSIV:
-		/*  IV */
+		 
 		hw_desc_init(&desc[*seq_size]);
 		set_setup_mode(&desc[*seq_size], SETUP_WRITE_STATE1);
 		set_cipher_mode(&desc[*seq_size], cipher_mode);
@@ -583,7 +575,7 @@ static void cc_setup_state_desc(struct crypto_tfm *tfm,
 	case DRV_CIPHER_CBC_CTS:
 	case DRV_CIPHER_CTR:
 	case DRV_CIPHER_OFB:
-		/* Load IV */
+		 
 		hw_desc_init(&desc[*seq_size]);
 		set_din_type(&desc[*seq_size], DMA_DLLI, iv_dma_addr, ivsize,
 			     NS_BIT);
@@ -637,7 +629,7 @@ static void cc_setup_xex_state_desc(struct crypto_tfm *tfm,
 		if (cipher_mode == DRV_CIPHER_ESSIV)
 			key_len = SHA256_DIGEST_SIZE;
 
-		/* load XEX key */
+		 
 		hw_desc_init(&desc[*seq_size]);
 		set_cipher_mode(&desc[*seq_size], cipher_mode);
 		set_cipher_config0(&desc[*seq_size], direction);
@@ -655,7 +647,7 @@ static void cc_setup_xex_state_desc(struct crypto_tfm *tfm,
 		set_setup_mode(&desc[*seq_size], SETUP_LOAD_XEX_KEY);
 		(*seq_size)++;
 
-		/* Load IV */
+		 
 		hw_desc_init(&desc[*seq_size]);
 		set_setup_mode(&desc[*seq_size], SETUP_LOAD_STATE1);
 		set_cipher_mode(&desc[*seq_size], cipher_mode);
@@ -705,13 +697,13 @@ static void cc_setup_key_desc(struct crypto_tfm *tfm,
 	case DRV_CIPHER_CTR:
 	case DRV_CIPHER_OFB:
 	case DRV_CIPHER_ECB:
-		/* Load key */
+		 
 		hw_desc_init(&desc[*seq_size]);
 		set_cipher_mode(&desc[*seq_size], cipher_mode);
 		set_cipher_config0(&desc[*seq_size], direction);
 
 		if (cc_key_type(tfm) == CC_POLICY_PROTECTED_KEY) {
-			/* We use the AES key size coding for all CPP algs */
+			 
 			set_key_size_aes(&desc[*seq_size], key_len);
 			set_cpp_crypto_key(&desc[*seq_size], ctx_p->cpp.slot);
 			flow_mode = cc_out_flow_mode(ctx_p);
@@ -721,10 +713,7 @@ static void cc_setup_key_desc(struct crypto_tfm *tfm,
 					set_hw_crypto_key(&desc[*seq_size],
 							  ctx_p->hw.key1_slot);
 				} else {
-					/* CC_POLICY_UNPROTECTED_KEY
-					 * Invalid keys are filtered out in
-					 * sethkey()
-					 */
+					 
 					din_size = (key_len == 24) ?
 						AES_MAX_KEY_SIZE : key_len;
 
@@ -734,7 +723,7 @@ static void cc_setup_key_desc(struct crypto_tfm *tfm,
 				}
 				set_key_size_aes(&desc[*seq_size], key_len);
 			} else {
-				/*des*/
+				 
 				set_din_type(&desc[*seq_size], DMA_DLLI,
 					     key_dma_addr, key_len, NS_BIT);
 				set_key_size_des(&desc[*seq_size], key_len);
@@ -746,7 +735,7 @@ static void cc_setup_key_desc(struct crypto_tfm *tfm,
 		break;
 	case DRV_CIPHER_XTS:
 	case DRV_CIPHER_ESSIV:
-		/* Load AES key */
+		 
 		hw_desc_init(&desc[*seq_size]);
 		set_cipher_mode(&desc[*seq_size], cipher_mode);
 		set_cipher_config0(&desc[*seq_size], direction);
@@ -777,7 +766,7 @@ static void cc_setup_mlli_desc(struct crypto_tfm *tfm,
 	struct device *dev = drvdata_to_dev(ctx_p->drvdata);
 
 	if (req_ctx->dma_buf_type == CC_DMA_BUF_MLLI) {
-		/* bypass */
+		 
 		dev_dbg(dev, " bypass params addr %pad length 0x%X addr 0x%08X\n",
 			&req_ctx->mlli_params.mlli_dma_addr,
 			req_ctx->mlli_params.mlli_len,
@@ -806,7 +795,7 @@ static void cc_setup_flow_desc(struct crypto_tfm *tfm,
 	bool last_desc = (ctx_p->key_type == CC_POLICY_PROTECTED_KEY ||
 			  ctx_p->cipher_mode == DRV_CIPHER_ECB);
 
-	/* Process */
+	 
 	if (req_ctx->dma_buf_type == CC_DMA_BUF_DLLI) {
 		dev_dbg(dev, " data params addr %pad length 0x%X\n",
 			&sg_dma_address(src), nbytes);
@@ -865,7 +854,7 @@ static void cc_cipher_complete(struct device *dev, void *cc_req, int err)
 	unsigned int ivsize = crypto_skcipher_ivsize(sk_tfm);
 
 	if (err != -EINPROGRESS) {
-		/* Not a BACKLOG notification */
+		 
 		cc_unmap_cipher_request(dev, req_ctx, ivsize, src, dst);
 		memcpy(req->iv, req_ctx->iv, ivsize);
 		kfree_sensitive(req_ctx->iv);
@@ -897,7 +886,7 @@ static int cc_cipher_process(struct skcipher_request *req,
 		((direction == DRV_CRYPTO_DIRECTION_ENCRYPT) ?
 		"Encrypt" : "Decrypt"), req, iv, nbytes);
 
-	/* STAT_PHASE_0: Init and sanity checks */
+	 
 
 	if (validate_data_size(ctx_p, nbytes)) {
 		dev_dbg(dev, "Unsupported data size %d.\n", nbytes);
@@ -905,7 +894,7 @@ static int cc_cipher_process(struct skcipher_request *req,
 		goto exit_process;
 	}
 	if (nbytes == 0) {
-		/* No data to process is valid */
+		 
 		rc = 0;
 		goto exit_process;
 	}
@@ -921,30 +910,28 @@ static int cc_cipher_process(struct skcipher_request *req,
 			return crypto_skcipher_decrypt(subreq);
 	}
 
-	/* The IV we are handed may be allocated from the stack so
-	 * we must copy it to a DMAable buffer before use.
-	 */
+	 
 	req_ctx->iv = kmemdup(iv, ivsize, flags);
 	if (!req_ctx->iv) {
 		rc = -ENOMEM;
 		goto exit_process;
 	}
 
-	/* Setup request structure */
+	 
 	cc_req.user_cb = cc_cipher_complete;
 	cc_req.user_arg = req;
 
-	/* Setup CPP operation details */
+	 
 	if (ctx_p->key_type == CC_POLICY_PROTECTED_KEY) {
 		cc_req.cpp.is_cpp = true;
 		cc_req.cpp.alg = ctx_p->cpp.alg;
 		cc_req.cpp.slot = ctx_p->cpp.slot;
 	}
 
-	/* Setup request context */
+	 
 	req_ctx->gen_ctx.op_type = direction;
 
-	/* STAT_PHASE_1: Map buffers */
+	 
 
 	rc = cc_map_cipher_request(ctx_p->drvdata, req_ctx, ivsize, nbytes,
 				      req_ctx->iv, src, dst, flags);
@@ -953,29 +940,27 @@ static int cc_cipher_process(struct skcipher_request *req,
 		goto exit_process;
 	}
 
-	/* STAT_PHASE_2: Create sequence */
+	 
 
-	/* Setup state (IV)  */
+	 
 	cc_setup_state_desc(tfm, req_ctx, ivsize, nbytes, desc, &seq_len);
-	/* Setup MLLI line, if needed */
+	 
 	cc_setup_mlli_desc(tfm, req_ctx, dst, src, nbytes, req, desc, &seq_len);
-	/* Setup key */
+	 
 	cc_setup_key_desc(tfm, req_ctx, nbytes, desc, &seq_len);
-	/* Setup state (IV and XEX key)  */
+	 
 	cc_setup_xex_state_desc(tfm, req_ctx, ivsize, nbytes, desc, &seq_len);
-	/* Data processing */
+	 
 	cc_setup_flow_desc(tfm, req_ctx, dst, src, nbytes, desc, &seq_len);
-	/* Read next IV */
+	 
 	cc_setup_readiv_desc(tfm, req_ctx, ivsize, desc, &seq_len);
 
-	/* STAT_PHASE_3: Lock HW and push sequence */
+	 
 
 	rc = cc_send_request(ctx_p->drvdata, &cc_req, desc, seq_len,
 			     &req->base);
 	if (rc != -EINPROGRESS && rc != -EBUSY) {
-		/* Failed to send the request or request completed
-		 * synchronously
-		 */
+		 
 		cc_unmap_cipher_request(dev, req_ctx, ivsize, src, dst);
 	}
 
@@ -1005,7 +990,7 @@ static int cc_cipher_decrypt(struct skcipher_request *req)
 	return cc_cipher_process(req, DRV_CRYPTO_DIRECTION_DECRYPT);
 }
 
-/* Block cipher alg */
+ 
 static const struct cc_alg_template skcipher_algs[] = {
 	{
 		.name = "xts(paes)",
@@ -1134,10 +1119,7 @@ static const struct cc_alg_template skcipher_algs[] = {
 		.sec_func = true,
 	},
 	{
-		/* See https://www.mail-archive.com/linux-crypto@vger.kernel.org/msg40576.html
-		 * for the reason why this differs from the generic
-		 * implementation.
-		 */
+		 
 		.name = "xts(aes)",
 		.driver_name = "xts-aes-ccree",
 		.blocksize = 1,
@@ -1450,7 +1432,7 @@ int cc_cipher_free(struct cc_drvdata *drvdata)
 {
 	struct cc_crypto_alg *t_alg, *n;
 
-	/* Remove registered algs */
+	 
 	list_for_each_entry_safe(t_alg, n, &drvdata->alg_list, entry) {
 		crypto_unregister_skcipher(&t_alg->skcipher_alg);
 		list_del(&t_alg->entry);
@@ -1467,7 +1449,7 @@ int cc_cipher_alloc(struct cc_drvdata *drvdata)
 
 	INIT_LIST_HEAD(&drvdata->alg_list);
 
-	/* Linux crypto */
+	 
 	dev_dbg(dev, "Number of algorithms = %zu\n",
 		ARRAY_SIZE(skcipher_algs));
 	for (alg = 0; alg < ARRAY_SIZE(skcipher_algs); alg++) {

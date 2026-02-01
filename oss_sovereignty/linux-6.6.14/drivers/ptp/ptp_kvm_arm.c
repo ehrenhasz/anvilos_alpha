@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Virtual PTP 1588 clock for use with KVM guests
- *  Copyright (C) 2019 ARM Ltd.
- *  All Rights Reserved
- */
+
+ 
 
 #include <linux/arm-smccc.h>
 #include <linux/ptp_kvm.h>

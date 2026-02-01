@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2020 Bootlin
- * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -19,13 +16,13 @@
 #include <media/v4l2-image-sizes.h>
 #include <media/v4l2-mediabus.h>
 
-/* Clock rate */
+ 
 
 #define OV5648_XVCLK_RATE			24000000
 
-/* Register definitions */
+ 
 
-/* System */
+ 
 
 #define OV5648_SW_STANDBY_REG			0x100
 #define OV5648_SW_STANDBY_STREAM_ON		BIT(0)
@@ -102,7 +99,7 @@
 #define OV5648_SRB_CTRL_RESET_ARBITER_EN	BIT(1)
 #define OV5648_SRB_CTRL_SCLK_ARBITER_EN		BIT(0)
 
-/* Group Hold */
+ 
 
 #define OV5648_GROUP_ADR0_REG			0x3200
 #define OV5648_GROUP_ADR1_REG			0x3201
@@ -114,7 +111,7 @@
 #define OV5648_GROUP_LEN3_REG			0x3207
 #define OV5648_GROUP_ACCESS_REG			0x3208
 
-/* Exposure/gain/banding */
+ 
 
 #define OV5648_EXPOSURE_CTRL_HH_REG		0x3500
 #define OV5648_EXPOSURE_CTRL_HH(v)		(((v) & GENMASK(19, 16)) >> 16)
@@ -211,7 +208,7 @@
 #define OV5648_GAINF_ANA_NUM_REG		0x5a40
 #define OV5648_GAINF_DIG_GAIN_REG		0x5a41
 
-/* Timing */
+ 
 
 #define OV5648_CROP_START_X_H_REG		0x3800
 #define OV5648_CROP_START_X_H(v)		(((v) & GENMASK(11, 8)) >> 8)
@@ -278,7 +275,7 @@
 #define OV5648_TC21_FLIP_HORZ_SENSOR_EN		BIT(1)
 #define OV5648_TC21_BINNING_HORZ_EN		BIT(0)
 
-/* Strobe/exposure */
+ 
 
 #define OV5648_STROBE_REG			0x3b00
 #define OV5648_FREX_EXP_HH_REG			0x3b01
@@ -300,18 +297,18 @@
 #define OV5648_STROBE_WIDTH_HH_REG		0x3b0b
 #define OV5648_STROBE_WIDTH_H_REG		0x3b0c
 
-/* OTP */
+ 
 
 #define OV5648_OTP_DATA_REG_BASE		0x3d00
 #define OV5648_OTP_PROGRAM_CTRL_REG		0x3d80
 #define OV5648_OTP_LOAD_CTRL_REG		0x3d81
 
-/* PSRAM */
+ 
 
 #define OV5648_PSRAM_CTRL1_REG			0x3f01
 #define OV5648_PSRAM_CTRLF_REG			0x3f0f
 
-/* Black Level */
+ 
 
 #define OV5648_BLC_CTRL0_REG			0x4000
 #define OV5648_BLC_CTRL1_REG			0x4001
@@ -326,13 +323,13 @@
 #define OV5648_BLC_CTRL5_UPDATE_EN		BIT(1)
 #define OV5648_BLC_LEVEL_REG			0x4009
 
-/* Frame */
+ 
 
 #define OV5648_FRAME_CTRL_REG			0x4200
 #define OV5648_FRAME_ON_NUM_REG			0x4201
 #define OV5648_FRAME_OFF_NUM_REG		0x4202
 
-/* MIPI CSI-2 */
+ 
 
 #define OV5648_MIPI_CTRL0_REG			0x4800
 #define OV5648_MIPI_CTRL0_CLK_LANE_AUTOGATE	BIT(5)
@@ -387,7 +384,7 @@
 #define OV5648_MIPI_LP_GPIO_REG			0x483b
 #define OV5648_MIPI_SNR_PCLK_DIV_REG		0x4843
 
-/* ISP */
+ 
 
 #define OV5648_ISP_CTRL0_REG			0x5000
 #define OV5648_ISP_CTRL0_BLACK_CORRECT_EN	BIT(2)
@@ -459,7 +456,7 @@
 #define OV5648_ISP_WINDOW_WIN_Y_L_REG		0x5987
 #define OV5648_ISP_WINDOW_MAN_REG		0x5988
 
-/* White Balance */
+ 
 
 #define OV5648_AWB_CTRL_REG			0x5180
 #define OV5648_AWB_CTRL_FAST_AWB		BIT(6)
@@ -490,7 +487,7 @@
 #define OV5648_AWB_FRAME_COUNT_REG		0x518f
 #define OV5648_AWB_BASE_MAN_REG			0x51df
 
-/* Macros */
+ 
 
 #define ov5648_subdev_sensor(s) \
 	container_of(s, struct ov5648_sensor, subdev)
@@ -499,7 +496,7 @@
 	(&container_of((c)->handler, struct ov5648_sensor, \
 		       ctrls.handler)->subdev)
 
-/* Data structures */
+ 
 
 struct ov5648_register_value {
 	u16 address;
@@ -507,37 +504,7 @@ struct ov5648_register_value {
 	unsigned int delay_ms;
 };
 
-/*
- * PLL1 Clock Tree:
- *
- * +-< XVCLK
- * |
- * +-+ pll_pre_div (0x3037 [3:0], special values: 5: 1.5, 7: 2.5)
- *   |
- *   +-+ pll_mul (0x3036 [7:0])
- *     |
- *     +-+ sys_div (0x3035 [7:4])
- *       |
- *       +-+ mipi_div (0x3035 [3:0])
- *       | |
- *       | +-> MIPI_SCLK
- *       | |
- *       | +-+ mipi_phy_div (2)
- *       |   |
- *       |   +-> MIPI_CLK
- *       |
- *       +-+ root_div (0x3037 [4])
- *         |
- *         +-+ bit_div (0x3034 [3:0], 8 bits: 2, 10 bits: 2.5, other: 1)
- *           |
- *           +-+ sclk_div (0x3106 [3:2])
- *             |
- *             +-> SCLK
- *             |
- *             +-+ mipi_div (0x3035, 1: PCLK = SCLK)
- *               |
- *               +-> PCLK
- */
+ 
 
 struct ov5648_pll1_config {
 	unsigned int pll_pre_div;
@@ -548,23 +515,7 @@ struct ov5648_pll1_config {
 	unsigned int mipi_div;
 };
 
-/*
- * PLL2 Clock Tree:
- *
- * +-< XVCLK
- * |
- * +-+ plls_pre_div (0x303d [5:4], special values: 0: 1, 1: 1.5)
- *   |
- *   +-+ plls_div_r (0x303d [2])
- *     |
- *     +-+ plls_mul (0x303b [4:0])
- *       |
- *       +-+ sys_div (0x303c [3:0])
- *         |
- *         +-+ sel_div (0x303d [1:0], special values: 0: 1, 3: 2.5)
- *           |
- *           +-> ADCLK
- */
+ 
 
 struct ov5648_pll2_config {
 	unsigned int plls_pre_div;
@@ -574,16 +525,7 @@ struct ov5648_pll2_config {
 	unsigned int sel_div;
 };
 
-/*
- * General formulas for (array-centered) mode calculation:
- * - photo_array_width = 2624
- * - crop_start_x = (photo_array_width - output_size_x) / 2
- * - crop_end_x = crop_start_x + offset_x + output_size_x - 1
- *
- * - photo_array_height = 1956
- * - crop_start_y = (photo_array_height - output_size_y) / 2
- * - crop_end_y = crop_start_y + offset_y + output_size_y - 1
- */
+ 
 
 struct ov5648_mode {
 	unsigned int crop_start_x;
@@ -606,10 +548,10 @@ struct ov5648_mode {
 	unsigned int inc_y_odd;
 	unsigned int inc_y_even;
 
-	/* 8-bit frame interval followed by 10-bit frame interval. */
+	 
 	struct v4l2_fract frame_interval[2];
 
-	/* 8-bit config followed by 10-bit config. */
+	 
 	const struct ov5648_pll1_config *pll1_config[2];
 	const struct ov5648_pll2_config *pll2_config;
 
@@ -661,13 +603,9 @@ struct ov5648_sensor {
 	struct ov5648_ctrls ctrls;
 };
 
-/* Static definitions */
+ 
 
-/*
- * XVCLK = 24 MHz
- * SCLK  = 84 MHz
- * PCLK  = 84 MHz
- */
+ 
 static const struct ov5648_pll1_config ov5648_pll1_config_native_8_bits = {
 	.pll_pre_div	= 3,
 	.pll_mul	= 84,
@@ -677,11 +615,7 @@ static const struct ov5648_pll1_config ov5648_pll1_config_native_8_bits = {
 	.mipi_div	= 1,
 };
 
-/*
- * XVCLK = 24 MHz
- * SCLK  = 84 MHz
- * PCLK  = 84 MHz
- */
+ 
 static const struct ov5648_pll1_config ov5648_pll1_config_native_10_bits = {
 	.pll_pre_div	= 3,
 	.pll_mul	= 105,
@@ -691,10 +625,7 @@ static const struct ov5648_pll1_config ov5648_pll1_config_native_10_bits = {
 	.mipi_div	= 1,
 };
 
-/*
- * XVCLK = 24 MHz
- * ADCLK = 200 MHz
- */
+ 
 static const struct ov5648_pll2_config ov5648_pll2_config_native = {
 	.plls_pre_div	= 3,
 	.plls_div_r	= 1,
@@ -704,219 +635,219 @@ static const struct ov5648_pll2_config ov5648_pll2_config_native = {
 };
 
 static const struct ov5648_mode ov5648_modes[] = {
-	/* 2592x1944 */
+	 
 	{
-		/* Horizontal */
+		 
 		.crop_start_x	= 16,
 		.offset_x	= 0,
 		.output_size_x	= 2592,
 		.crop_end_x	= 2607,
 		.hts		= 2816,
 
-		/* Vertical */
+		 
 		.crop_start_y	= 6,
 		.offset_y	= 0,
 		.output_size_y	= 1944,
 		.crop_end_y	= 1949,
 		.vts		= 1984,
 
-		/* Subsample increase */
+		 
 		.inc_x_odd	= 1,
 		.inc_x_even	= 1,
 		.inc_y_odd	= 1,
 		.inc_y_even	= 1,
 
-		/* Frame Interval */
+		 
 		.frame_interval	= {
 			{ 1,	15 },
 			{ 1,	15 },
 		},
 
-		/* PLL */
+		 
 		.pll1_config	= {
 			&ov5648_pll1_config_native_8_bits,
 			&ov5648_pll1_config_native_10_bits,
 		},
 		.pll2_config	= &ov5648_pll2_config_native,
 	},
-	/* 1600x1200 (UXGA) */
+	 
 	{
-		/* Horizontal */
+		 
 		.crop_start_x	= 512,
 		.offset_x	= 0,
 		.output_size_x	= 1600,
 		.crop_end_x	= 2111,
 		.hts		= 2816,
 
-		/* Vertical */
+		 
 		.crop_start_y	= 378,
 		.offset_y	= 0,
 		.output_size_y	= 1200,
 		.crop_end_y	= 1577,
 		.vts		= 1984,
 
-		/* Subsample increase */
+		 
 		.inc_x_odd	= 1,
 		.inc_x_even	= 1,
 		.inc_y_odd	= 1,
 		.inc_y_even	= 1,
 
-		/* Frame Interval */
+		 
 		.frame_interval	= {
 			{ 1,	15 },
 			{ 1,	15 },
 		},
 
-		/* PLL */
+		 
 		.pll1_config	= {
 			&ov5648_pll1_config_native_8_bits,
 			&ov5648_pll1_config_native_10_bits,
 		},
 		.pll2_config	= &ov5648_pll2_config_native,
 	},
-	/* 1920x1080 (Full HD) */
+	 
 	{
-		/* Horizontal */
+		 
 		.crop_start_x	= 352,
 		.offset_x	= 0,
 		.output_size_x	= 1920,
 		.crop_end_x	= 2271,
 		.hts		= 2816,
 
-		/* Vertical */
+		 
 		.crop_start_y	= 438,
 		.offset_y	= 0,
 		.output_size_y	= 1080,
 		.crop_end_y	= 1517,
 		.vts		= 1984,
 
-		/* Subsample increase */
+		 
 		.inc_x_odd	= 1,
 		.inc_x_even	= 1,
 		.inc_y_odd	= 1,
 		.inc_y_even	= 1,
 
-		/* Frame Interval */
+		 
 		.frame_interval	= {
 			{ 1,	15 },
 			{ 1,	15 },
 		},
 
-		/* PLL */
+		 
 		.pll1_config	= {
 			&ov5648_pll1_config_native_8_bits,
 			&ov5648_pll1_config_native_10_bits,
 		},
 		.pll2_config	= &ov5648_pll2_config_native,
 	},
-	/* 1280x960 */
+	 
 	{
-		/* Horizontal */
+		 
 		.crop_start_x	= 16,
 		.offset_x	= 8,
 		.output_size_x	= 1280,
 		.crop_end_x	= 2607,
 		.hts		= 1912,
 
-		/* Vertical */
+		 
 		.crop_start_y	= 6,
 		.offset_y	= 6,
 		.output_size_y	= 960,
 		.crop_end_y	= 1949,
 		.vts		= 1496,
 
-		/* Binning */
+		 
 		.binning_x	= true,
 
-		/* Subsample increase */
+		 
 		.inc_x_odd	= 3,
 		.inc_x_even	= 1,
 		.inc_y_odd	= 3,
 		.inc_y_even	= 1,
 
-		/* Frame Interval */
+		 
 		.frame_interval	= {
 			{ 1,	30 },
 			{ 1,	30 },
 		},
 
-		/* PLL */
+		 
 		.pll1_config	= {
 			&ov5648_pll1_config_native_8_bits,
 			&ov5648_pll1_config_native_10_bits,
 		},
 		.pll2_config	= &ov5648_pll2_config_native,
 	},
-	/* 1280x720 (HD) */
+	 
 	{
-		/* Horizontal */
+		 
 		.crop_start_x	= 16,
 		.offset_x	= 8,
 		.output_size_x	= 1280,
 		.crop_end_x	= 2607,
 		.hts		= 1912,
 
-		/* Vertical */
+		 
 		.crop_start_y	= 254,
 		.offset_y	= 2,
 		.output_size_y	= 720,
 		.crop_end_y	= 1701,
 		.vts		= 1496,
 
-		/* Binning */
+		 
 		.binning_x	= true,
 
-		/* Subsample increase */
+		 
 		.inc_x_odd	= 3,
 		.inc_x_even	= 1,
 		.inc_y_odd	= 3,
 		.inc_y_even	= 1,
 
-		/* Frame Interval */
+		 
 		.frame_interval	= {
 			{ 1,	30 },
 			{ 1,	30 },
 		},
 
-		/* PLL */
+		 
 		.pll1_config	= {
 			&ov5648_pll1_config_native_8_bits,
 			&ov5648_pll1_config_native_10_bits,
 		},
 		.pll2_config	= &ov5648_pll2_config_native,
 	},
-	/* 640x480 (VGA) */
+	 
 	{
-		/* Horizontal */
+		 
 		.crop_start_x	= 0,
 		.offset_x	= 8,
 		.output_size_x	= 640,
 		.crop_end_x	= 2623,
 		.hts		= 1896,
 
-		/* Vertical */
+		 
 		.crop_start_y	= 0,
 		.offset_y	= 2,
 		.output_size_y	= 480,
 		.crop_end_y	= 1953,
 		.vts		= 984,
 
-		/* Binning */
+		 
 		.binning_x	= true,
 
-		/* Subsample increase */
+		 
 		.inc_x_odd	= 7,
 		.inc_x_even	= 1,
 		.inc_y_odd	= 7,
 		.inc_y_even	= 1,
 
-		/* Frame Interval */
+		 
 		.frame_interval	= {
 			{ 1,	30 },
 			{ 1,	30 },
 		},
 
-		/* PLL */
+		 
 		.pll1_config	= {
 			&ov5648_pll1_config_native_8_bits,
 			&ov5648_pll1_config_native_10_bits,
@@ -931,7 +862,7 @@ static const u32 ov5648_mbus_codes[] = {
 };
 
 static const struct ov5648_register_value ov5648_init_sequence[] = {
-	/* PSRAM */
+	 
 	{ OV5648_PSRAM_CTRL1_REG, 0x0d },
 	{ OV5648_PSRAM_CTRLF_REG, 0xf5 },
 };
@@ -961,7 +892,7 @@ static const u8 ov5648_test_pattern_bits[] = {
 	OV5648_ISP_CTRL3D_PATTERN_COLOR_SQUARES,
 };
 
-/* Input/Output */
+ 
 
 static int ov5648_read(struct ov5648_sensor *sensor, u16 address, u8 *value)
 {
@@ -1042,7 +973,7 @@ static int ov5648_update_bits(struct ov5648_sensor *sensor, u16 address,
 	return 0;
 }
 
-/* Sensor */
+ 
 
 static int ov5648_sw_reset(struct ov5648_sensor *sensor)
 {
@@ -1093,7 +1024,7 @@ static int ov5648_pad_configure(struct ov5648_sensor *sensor)
 {
 	int ret;
 
-	/* Configure pads as input. */
+	 
 
 	ret = ov5648_write(sensor, OV5648_PAD_OEN1_REG, 0);
 	if (ret)
@@ -1103,7 +1034,7 @@ static int ov5648_pad_configure(struct ov5648_sensor *sensor)
 	if (ret)
 		return ret;
 
-	/* Disable FREX pin. */
+	 
 
 	return ov5648_write(sensor, OV5648_PAD_PK_REG,
 			    OV5648_PAD_PK_DRIVE_STRENGTH_1X |
@@ -1134,7 +1065,7 @@ static int ov5648_black_level_configure(struct ov5648_sensor *sensor)
 {
 	int ret;
 
-	/* Up to 6 lines are available for black level calibration. */
+	 
 
 	ret = ov5648_write(sensor, OV5648_BLC_CTRL1_REG,
 			   OV5648_BLC_CTRL1_START_LINE(2));
@@ -1162,7 +1093,7 @@ static int ov5648_isp_configure(struct ov5648_sensor *sensor)
 	u8 bits;
 	int ret;
 
-	/* Enable black and white level correction. */
+	 
 	bits = OV5648_ISP_CTRL0_BLACK_CORRECT_EN |
 	       OV5648_ISP_CTRL0_WHITE_CORRECT_EN;
 
@@ -1170,20 +1101,20 @@ static int ov5648_isp_configure(struct ov5648_sensor *sensor)
 	if (ret)
 		return ret;
 
-	/* Enable AWB. */
+	 
 	ret = ov5648_write(sensor, OV5648_ISP_CTRL1_REG,
 			   OV5648_ISP_CTRL1_AWB_EN);
 	if (ret)
 		return ret;
 
-	/* Enable AWB gain and windowing. */
+	 
 	ret = ov5648_write(sensor, OV5648_ISP_CTRL2_REG,
 			   OV5648_ISP_CTRL2_WIN_EN |
 			   OV5648_ISP_CTRL2_AWB_GAIN_EN);
 	if (ret)
 		return ret;
 
-	/* Enable buffering and auto-binning. */
+	 
 	ret = ov5648_write(sensor, OV5648_ISP_CTRL3_REG,
 			   OV5648_ISP_CTRL3_BUF_EN |
 			   OV5648_ISP_CTRL3_BIN_AUTO_EN);
@@ -1199,14 +1130,14 @@ static int ov5648_isp_configure(struct ov5648_sensor *sensor)
 	if (ret)
 		return ret;
 
-	/* Enable post-binning filters. */
+	 
 	ret = ov5648_write(sensor, OV5648_ISP_CTRL4B_REG,
 			   OV5648_ISP_CTRL4B_POST_BIN_H_EN |
 			   OV5648_ISP_CTRL4B_POST_BIN_V_EN);
 	if (ret)
 		return ret;
 
-	/* Disable debanding and night mode. Debug bit seems necessary. */
+	 
 	ret = ov5648_write(sensor, OV5648_AEC_CTRL0_REG,
 			   OV5648_AEC_CTRL0_DEBUG |
 			   OV5648_AEC_CTRL0_START_SEL_EN);
@@ -1320,7 +1251,7 @@ static int ov5648_mode_configure(struct ov5648_sensor *sensor,
 {
 	int ret;
 
-	/* Crop Start X */
+	 
 
 	ret = ov5648_write(sensor, OV5648_CROP_START_X_H_REG,
 			   OV5648_CROP_START_X_H(mode->crop_start_x));
@@ -1332,7 +1263,7 @@ static int ov5648_mode_configure(struct ov5648_sensor *sensor,
 	if (ret)
 		return ret;
 
-	/* Offset X */
+	 
 
 	ret = ov5648_write(sensor, OV5648_OFFSET_X_H_REG,
 			   OV5648_OFFSET_X_H(mode->offset_x));
@@ -1344,7 +1275,7 @@ static int ov5648_mode_configure(struct ov5648_sensor *sensor,
 	if (ret)
 		return ret;
 
-	/* Output Size X */
+	 
 
 	ret = ov5648_write(sensor, OV5648_OUTPUT_SIZE_X_H_REG,
 			   OV5648_OUTPUT_SIZE_X_H(mode->output_size_x));
@@ -1356,7 +1287,7 @@ static int ov5648_mode_configure(struct ov5648_sensor *sensor,
 	if (ret)
 		return ret;
 
-	/* Crop End X */
+	 
 
 	ret = ov5648_write(sensor, OV5648_CROP_END_X_H_REG,
 			   OV5648_CROP_END_X_H(mode->crop_end_x));
@@ -1368,7 +1299,7 @@ static int ov5648_mode_configure(struct ov5648_sensor *sensor,
 	if (ret)
 		return ret;
 
-	/* Horizontal Total Size */
+	 
 
 	ret = ov5648_write(sensor, OV5648_HTS_H_REG, OV5648_HTS_H(mode->hts));
 	if (ret)
@@ -1378,7 +1309,7 @@ static int ov5648_mode_configure(struct ov5648_sensor *sensor,
 	if (ret)
 		return ret;
 
-	/* Crop Start Y */
+	 
 
 	ret = ov5648_write(sensor, OV5648_CROP_START_Y_H_REG,
 			   OV5648_CROP_START_Y_H(mode->crop_start_y));
@@ -1390,7 +1321,7 @@ static int ov5648_mode_configure(struct ov5648_sensor *sensor,
 	if (ret)
 		return ret;
 
-	/* Offset Y */
+	 
 
 	ret = ov5648_write(sensor, OV5648_OFFSET_Y_H_REG,
 			   OV5648_OFFSET_Y_H(mode->offset_y));
@@ -1402,7 +1333,7 @@ static int ov5648_mode_configure(struct ov5648_sensor *sensor,
 	if (ret)
 		return ret;
 
-	/* Output Size Y */
+	 
 
 	ret = ov5648_write(sensor, OV5648_OUTPUT_SIZE_Y_H_REG,
 			   OV5648_OUTPUT_SIZE_Y_H(mode->output_size_y));
@@ -1414,7 +1345,7 @@ static int ov5648_mode_configure(struct ov5648_sensor *sensor,
 	if (ret)
 		return ret;
 
-	/* Crop End Y */
+	 
 
 	ret = ov5648_write(sensor, OV5648_CROP_END_Y_H_REG,
 			   OV5648_CROP_END_Y_H(mode->crop_end_y));
@@ -1426,7 +1357,7 @@ static int ov5648_mode_configure(struct ov5648_sensor *sensor,
 	if (ret)
 		return ret;
 
-	/* Vertical Total Size */
+	 
 
 	ret = ov5648_write(sensor, OV5648_VTS_H_REG, OV5648_VTS_H(mode->vts));
 	if (ret)
@@ -1436,12 +1367,9 @@ static int ov5648_mode_configure(struct ov5648_sensor *sensor,
 	if (ret)
 		return ret;
 
-	/* Flip/Mirror/Binning */
+	 
 
-	/*
-	 * A debug bit is enabled by default and needs to be cleared for
-	 * subsampling to work.
-	 */
+	 
 	ret = ov5648_update_bits(sensor, OV5648_TC20_REG,
 				 OV5648_TC20_DEBUG |
 				 OV5648_TC20_BINNING_VERT_EN,
@@ -1469,7 +1397,7 @@ static int ov5648_mode_configure(struct ov5648_sensor *sensor,
 	if (ret)
 		return ret;
 
-	/* PLLs */
+	 
 
 	ret = ov5648_mode_pll1_configure(sensor, mode, mbus_code);
 	if (ret)
@@ -1479,7 +1407,7 @@ static int ov5648_mode_configure(struct ov5648_sensor *sensor,
 	if (ret)
 		return ret;
 
-	/* Extra registers */
+	 
 
 	if (mode->register_values) {
 		ret = ov5648_write_sequence(sensor, mode->register_values,
@@ -1514,7 +1442,7 @@ static unsigned long ov5648_mode_mipi_clk_rate(struct ov5648_sensor *sensor,
 	return pll1_rate / config->sys_div / config->mipi_div / 2;
 }
 
-/* Exposure */
+ 
 
 static int ov5648_exposure_auto_configure(struct ov5648_sensor *sensor,
 					  bool enable)
@@ -1571,7 +1499,7 @@ static int ov5648_exposure_value(struct ov5648_sensor *sensor,
 	return 0;
 }
 
-/* Gain */
+ 
 
 static int ov5648_gain_auto_configure(struct ov5648_sensor *sensor, bool enable)
 {
@@ -1616,7 +1544,7 @@ static int ov5648_gain_value(struct ov5648_sensor *sensor, u32 *gain)
 	return 0;
 }
 
-/* White Balance */
+ 
 
 static int ov5648_white_balance_auto_configure(struct ov5648_sensor *sensor,
 					       bool enable)
@@ -1653,7 +1581,7 @@ static int ov5648_white_balance_configure(struct ov5648_sensor *sensor,
 			    OV5648_GAIN_BLUE_MAN_L(blue_balance));
 }
 
-/* Flip */
+ 
 
 static int ov5648_flip_vert_configure(struct ov5648_sensor *sensor, bool enable)
 {
@@ -1673,7 +1601,7 @@ static int ov5648_flip_horz_configure(struct ov5648_sensor *sensor, bool enable)
 				  enable ? bits : 0);
 }
 
-/* Test Pattern */
+ 
 
 static int ov5648_test_pattern_configure(struct ov5648_sensor *sensor,
 					 unsigned int index)
@@ -1685,7 +1613,7 @@ static int ov5648_test_pattern_configure(struct ov5648_sensor *sensor,
 			    ov5648_test_pattern_bits[index]);
 }
 
-/* State */
+ 
 
 static int ov5648_state_mipi_configure(struct ov5648_sensor *sensor,
 				       const struct ov5648_mode *mode,
@@ -1758,7 +1686,7 @@ static int ov5648_state_configure(struct ov5648_sensor *sensor,
 	if (sensor->state.streaming)
 		return -EBUSY;
 
-	/* State will be configured at first power on otherwise. */
+	 
 	if (pm_runtime_enabled(sensor->dev) &&
 	    !pm_runtime_suspended(sensor->dev)) {
 		ret = ov5648_mode_configure(sensor, mode, mbus_code);
@@ -1788,7 +1716,7 @@ static int ov5648_state_init(struct ov5648_sensor *sensor)
 	return ret;
 }
 
-/* Sensor Base */
+ 
 
 static int ov5648_sensor_init(struct ov5648_sensor *sensor)
 {
@@ -1849,7 +1777,7 @@ static int ov5648_sensor_init(struct ov5648_sensor *sensor)
 		return ret;
 	}
 
-	/* Configure current mode. */
+	 
 	ret = ov5648_state_configure(sensor, sensor->state.mode,
 				     sensor->state.mbus_code);
 	if (ret) {
@@ -1862,18 +1790,12 @@ static int ov5648_sensor_init(struct ov5648_sensor *sensor)
 
 static int ov5648_sensor_power(struct ov5648_sensor *sensor, bool on)
 {
-	/* Keep initialized to zero for disable label. */
+	 
 	int ret = 0;
 
-	/*
-	 * General notes about the power sequence:
-	 * - power-down GPIO must be active (low) during power-on;
-	 * - reset GPIO state does not matter during power-on;
-	 * - XVCLK must be provided 1 ms before register access;
-	 * - 10 ms are needed between power-down deassert and register access.
-	 */
+	 
 
-	/* Note that regulator-and-GPIO-based power is untested. */
+	 
 	if (on) {
 		gpiod_set_value_cansleep(sensor->reset, 1);
 		gpiod_set_value_cansleep(sensor->powerdown, 1);
@@ -1901,7 +1823,7 @@ static int ov5648_sensor_power(struct ov5648_sensor *sensor, bool on)
 			goto disable;
 		}
 
-		/* According to OV5648 power up diagram. */
+		 
 		usleep_range(5000, 10000);
 
 		ret = clk_prepare_enable(sensor->xvclk);
@@ -1932,7 +1854,7 @@ disable:
 	return ret;
 }
 
-/* Controls */
+ 
 
 static int ov5648_g_volatile_ctrl(struct v4l2_ctrl *ctrl)
 {
@@ -1968,7 +1890,7 @@ static int ov5648_s_ctrl(struct v4l2_ctrl *ctrl)
 	bool enable;
 	int ret;
 
-	/* Wait for the sensor to be on before setting controls. */
+	 
 	if (pm_runtime_suspended(sensor->dev))
 		return 0;
 
@@ -2045,10 +1967,10 @@ static int ov5648_ctrls_init(struct ov5648_sensor *sensor)
 
 	v4l2_ctrl_handler_init(handler, 32);
 
-	/* Use our mutex for ctrl locking. */
+	 
 	handler->lock = &sensor->mutex;
 
-	/* Exposure */
+	 
 
 	ctrls->exposure_auto = v4l2_ctrl_new_std_menu(handler, ops,
 						      V4L2_CID_EXPOSURE_AUTO,
@@ -2060,7 +1982,7 @@ static int ov5648_ctrls_init(struct ov5648_sensor *sensor)
 
 	v4l2_ctrl_auto_cluster(2, &ctrls->exposure_auto, 1, true);
 
-	/* Gain */
+	 
 
 	ctrls->gain_auto =
 		v4l2_ctrl_new_std(handler, ops, V4L2_CID_AUTOGAIN, 0, 1, 1, 1);
@@ -2070,7 +1992,7 @@ static int ov5648_ctrls_init(struct ov5648_sensor *sensor)
 
 	v4l2_ctrl_auto_cluster(2, &ctrls->gain_auto, 0, true);
 
-	/* White Balance */
+	 
 
 	ctrls->white_balance_auto =
 		v4l2_ctrl_new_std(handler, ops, V4L2_CID_AUTO_WHITE_BALANCE, 0,
@@ -2086,18 +2008,18 @@ static int ov5648_ctrls_init(struct ov5648_sensor *sensor)
 
 	v4l2_ctrl_auto_cluster(3, &ctrls->white_balance_auto, 0, false);
 
-	/* Flip */
+	 
 
 	v4l2_ctrl_new_std(handler, ops, V4L2_CID_HFLIP, 0, 1, 1, 0);
 	v4l2_ctrl_new_std(handler, ops, V4L2_CID_VFLIP, 0, 1, 1, 0);
 
-	/* Test Pattern */
+	 
 
 	v4l2_ctrl_new_std_menu_items(handler, ops, V4L2_CID_TEST_PATTERN,
 				     ARRAY_SIZE(ov5648_test_pattern_menu) - 1,
 				     0, 0, ov5648_test_pattern_menu);
 
-	/* MIPI CSI-2 */
+	 
 
 	ctrls->link_freq =
 		v4l2_ctrl_new_int_menu(handler, NULL, V4L2_CID_LINK_FREQ,
@@ -2129,7 +2051,7 @@ error_ctrls:
 	return ret;
 }
 
-/* Subdev Video Operations */
+ 
 
 static int ov5648_s_stream(struct v4l2_subdev *subdev, int enable)
 {
@@ -2191,7 +2113,7 @@ static const struct v4l2_subdev_video_ops ov5648_subdev_video_ops = {
 	.s_frame_interval	= ov5648_g_frame_interval,
 };
 
-/* Subdev Pad Operations */
+ 
 
 static int ov5648_enum_mbus_code(struct v4l2_subdev *subdev,
 				 struct v4l2_subdev_state *sd_state,
@@ -2261,7 +2183,7 @@ static int ov5648_set_fmt(struct v4l2_subdev *subdev,
 		goto complete;
 	}
 
-	/* Try to find requested mbus code. */
+	 
 	for (index = 0; index < ARRAY_SIZE(ov5648_mbus_codes); index++) {
 		if (ov5648_mbus_codes[index] == mbus_format->code) {
 			mbus_code = mbus_format->code;
@@ -2269,11 +2191,11 @@ static int ov5648_set_fmt(struct v4l2_subdev *subdev,
 		}
 	}
 
-	/* Fallback to default. */
+	 
 	if (!mbus_code)
 		mbus_code = ov5648_mbus_codes[0];
 
-	/* Find the mode with nearest dimensions. */
+	 
 	mode = v4l2_find_nearest_size(ov5648_modes, ARRAY_SIZE(ov5648_modes),
 				      output_size_x, output_size_y,
 				      mbus_format->width, mbus_format->height);
@@ -2325,10 +2247,7 @@ static int ov5648_enum_frame_interval(struct v4l2_subdev *subdev,
 	if (interval_enum->index > 0)
 		return -EINVAL;
 
-	/*
-	 * Multiple modes with the same dimensions may have different frame
-	 * intervals, so look up each relevant mode.
-	 */
+	 
 	for (mode_index = 0, interval_index = 0;
 	     mode_index < ARRAY_SIZE(ov5648_modes); mode_index++) {
 		mode = &ov5648_modes[mode_index];
@@ -2454,7 +2373,7 @@ static int ov5648_probe(struct i2c_client *client)
 	sensor->dev = dev;
 	sensor->i2c_client = client;
 
-	/* Graph Endpoint */
+	 
 
 	handle = fwnode_graph_get_next_endpoint(dev_fwnode(dev), NULL);
 	if (!handle) {
@@ -2471,7 +2390,7 @@ static int ov5648_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/* GPIOs */
+	 
 
 	sensor->powerdown = devm_gpiod_get_optional(dev, "powerdown",
 						    GPIOD_OUT_HIGH);
@@ -2486,9 +2405,9 @@ static int ov5648_probe(struct i2c_client *client)
 		goto error_endpoint;
 	}
 
-	/* Regulators */
+	 
 
-	/* DVDD: digital core */
+	 
 	sensor->dvdd = devm_regulator_get(dev, "dvdd");
 	if (IS_ERR(sensor->dvdd)) {
 		dev_err(dev, "cannot get DVDD (digital core) regulator\n");
@@ -2496,7 +2415,7 @@ static int ov5648_probe(struct i2c_client *client)
 		goto error_endpoint;
 	}
 
-	/* DOVDD: digital I/O */
+	 
 	sensor->dovdd = devm_regulator_get(dev, "dovdd");
 	if (IS_ERR(sensor->dovdd)) {
 		dev_err(dev, "cannot get DOVDD (digital I/O) regulator\n");
@@ -2504,14 +2423,14 @@ static int ov5648_probe(struct i2c_client *client)
 		goto error_endpoint;
 	}
 
-	/* AVDD: analog */
+	 
 	sensor->avdd = devm_regulator_get_optional(dev, "avdd");
 	if (IS_ERR(sensor->avdd)) {
 		dev_info(dev, "no AVDD regulator provided, using internal\n");
 		sensor->avdd = NULL;
 	}
 
-	/* External Clock */
+	 
 
 	sensor->xvclk = devm_clk_get(dev, NULL);
 	if (IS_ERR(sensor->xvclk)) {
@@ -2527,7 +2446,7 @@ static int ov5648_probe(struct i2c_client *client)
 		goto error_endpoint;
 	}
 
-	/* Subdev, entity and pad */
+	 
 
 	subdev = &sensor->subdev;
 	v4l2_i2c_subdev_init(subdev, client, &ov5648_subdev_ops);
@@ -2542,11 +2461,11 @@ static int ov5648_probe(struct i2c_client *client)
 	if (ret)
 		goto error_entity;
 
-	/* Mutex */
+	 
 
 	mutex_init(&sensor->mutex);
 
-	/* Sensor */
+	 
 
 	ret = ov5648_ctrls_init(sensor);
 	if (ret)
@@ -2556,12 +2475,12 @@ static int ov5648_probe(struct i2c_client *client)
 	if (ret)
 		goto error_ctrls;
 
-	/* Runtime PM */
+	 
 
 	pm_runtime_enable(sensor->dev);
 	pm_runtime_set_suspended(sensor->dev);
 
-	/* V4L2 subdev register */
+	 
 
 	ret = v4l2_async_register_subdev_sensor(subdev);
 	if (ret)

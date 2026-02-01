@@ -1,9 +1,4 @@
-/*
- * Broadcom specific AMBA
- * Bus scanning
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #include "scan.h"
 #include "bcma_private.h"
@@ -115,7 +110,7 @@ static const char *bcma_device_name(const struct bcma_device_id *id)
 	const struct bcma_device_id_name *names;
 	int size, i;
 
-	/* search manufacturer specific names */
+	 
 	switch (id->manuf) {
 	case BCMA_MANUF_ARM:
 		names = bcma_arm_device_names;
@@ -277,7 +272,7 @@ static int bcma_get_next_core(struct bcma_bus *bus, u32 __iomem **eromptr,
 	s32 cia, cib;
 	u8 ports[2], wrappers[2];
 
-	/* get CIs */
+	 
 	cia = bcma_erom_get_ci(bus, eromptr);
 	if (cia < 0) {
 		bcma_erom_push_ent(eromptr);
@@ -289,7 +284,7 @@ static int bcma_get_next_core(struct bcma_bus *bus, u32 __iomem **eromptr,
 	if (cib < 0)
 		return -EILSEQ;
 
-	/* parse CIs */
+	 
 	core->id.class = (cia & SCAN_CIA_CLASS) >> SCAN_CIA_CLASS_SHIFT;
 	core->id.id = (cia & SCAN_CIA_ID) >> SCAN_CIA_ID_SHIFT;
 	core->id.manuf = (cia & SCAN_CIA_MANUF) >> SCAN_CIA_MANUF_SHIFT;
@@ -306,15 +301,15 @@ static int bcma_get_next_core(struct bcma_bus *bus, u32 __iomem **eromptr,
 		return -ENXIO;
 	}
 
-	/* check if component is a core at all */
+	 
 	if (wrappers[0] + wrappers[1] == 0) {
-		/* Some specific cores don't need wrappers */
+		 
 		switch (core->id.id) {
 		case BCMA_CORE_4706_MAC_GBIT_COMMON:
 		case BCMA_CORE_NS_CHIPCOMMON_B:
 		case BCMA_CORE_PMU:
 		case BCMA_CORE_GCI:
-		/* Not used yet: case BCMA_CORE_OOB_ROUTER: */
+		 
 			break;
 		default:
 			bcma_erom_skip_component(bus, eromptr);
@@ -342,19 +337,17 @@ static int bcma_get_next_core(struct bcma_bus *bus, u32 __iomem **eromptr,
 		return -ENODEV;
 	}
 
-	/* get & parse master ports */
+	 
 	for (i = 0; i < ports[0]; i++) {
 		s32 mst_port_d = bcma_erom_get_mst_port(bus, eromptr);
 		if (mst_port_d < 0)
 			return -EILSEQ;
 	}
 
-	/* First Slave Address Descriptor should be port 0:
-	 * the main register space for the core
-	 */
+	 
 	tmp = bcma_erom_get_addr_desc(bus, eromptr, SCAN_ADDR_TYPE_SLAVE, 0);
 	if (tmp == 0 || IS_ERR_VALUE_U32(tmp)) {
-		/* Try again to see if it is a bridge */
+		 
 		tmp = bcma_erom_get_addr_desc(bus, eromptr,
 					      SCAN_ADDR_TYPE_BRIDGE, 0);
 		if (tmp == 0 || IS_ERR_VALUE_U32(tmp)) {
@@ -366,16 +359,15 @@ static int bcma_get_next_core(struct bcma_bus *bus, u32 __iomem **eromptr,
 	}
 	core->addr = tmp;
 
-	/* get & parse slave ports */
+	 
 	k = 0;
 	for (i = 0; i < ports[1]; i++) {
 		for (j = 0; ; j++) {
 			tmp = bcma_erom_get_addr_desc(bus, eromptr,
 				SCAN_ADDR_TYPE_SLAVE, i);
 			if (IS_ERR_VALUE_U32(tmp)) {
-				/* no more entries for port _i_ */
-				/* pr_debug("erom: slave port %d "
-				 * "has %d descriptors\n", i, j); */
+				 
+				 
 				break;
 			} else if (k < ARRAY_SIZE(core->addr_s)) {
 				core->addr_s[k] = tmp;
@@ -384,15 +376,14 @@ static int bcma_get_next_core(struct bcma_bus *bus, u32 __iomem **eromptr,
 		}
 	}
 
-	/* get & parse master wrappers */
+	 
 	for (i = 0; i < wrappers[0]; i++) {
 		for (j = 0; ; j++) {
 			tmp = bcma_erom_get_addr_desc(bus, eromptr,
 				SCAN_ADDR_TYPE_MWRAP, i);
 			if (IS_ERR_VALUE_U32(tmp)) {
-				/* no more entries for port _i_ */
-				/* pr_debug("erom: master wrapper %d "
-				 * "has %d descriptors\n", i, j); */
+				 
+				 
 				break;
 			} else {
 				if (i == 0 && j == 0)
@@ -401,16 +392,15 @@ static int bcma_get_next_core(struct bcma_bus *bus, u32 __iomem **eromptr,
 		}
 	}
 
-	/* get & parse slave wrappers */
+	 
 	for (i = 0; i < wrappers[1]; i++) {
 		u8 hack = (ports[1] == 1) ? 0 : 1;
 		for (j = 0; ; j++) {
 			tmp = bcma_erom_get_addr_desc(bus, eromptr,
 				SCAN_ADDR_TYPE_SWRAP, i + hack);
 			if (IS_ERR_VALUE_U32(tmp)) {
-				/* no more entries for port _i_ */
-				/* pr_debug("erom: master wrapper %d "
-				 * has %d descriptors\n", i, j); */
+				 
+				 
 				break;
 			} else {
 				if (wrappers[0] == 0 && !i && !j)
@@ -460,7 +450,7 @@ int bcma_bus_scan(struct bcma_bus *bus)
 
 	int err, core_num = 0;
 
-	/* Skip if bus was already scanned (e.g. during early register) */
+	 
 	if (bus->nr_cores)
 		return 0;
 

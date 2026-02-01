@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021 Mellanox Technologies. */
+ 
+ 
 
 #ifndef __MLX5_IRQ_H__
 #define __MLX5_IRQ_H__
@@ -63,4 +63,4 @@ void mlx5_irq_affinity_irq_release(struct mlx5_core_dev *dev, struct mlx5_irq *i
 {
 }
 #endif
-#endif /* __MLX5_IRQ_H__ */
+#endif  

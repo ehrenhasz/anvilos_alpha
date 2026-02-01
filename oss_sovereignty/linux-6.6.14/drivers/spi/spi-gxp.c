@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Copyright (C) 2022 Hewlett-Packard Development Company, L.P. */
+
+ 
 
 #include <linux/iopoll.h>
 #include <linux/of.h>
@@ -302,7 +302,7 @@ static const struct gxp_spi_data gxp_spifi_data = {
 
 static const struct of_device_id gxp_spifi_match[] = {
 	{.compatible = "hpe,gxp-spifi", .data = &gxp_spifi_data },
-	{ /* null */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, gxp_spifi_match);
 

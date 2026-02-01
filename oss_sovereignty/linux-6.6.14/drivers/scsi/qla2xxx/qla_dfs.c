@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic Fibre Channel HBA Driver
- * Copyright (c)  2003-2014 QLogic Corporation
- */
+
+ 
 #include "qla_def.h"
 
 #include <linux/debugfs.h>
@@ -18,7 +15,7 @@ qla_dfs_rport_get(struct fc_port *fp, int attr_id, u64 *val)
 {
 	switch (attr_id) {
 	case QLA_DFS_RPORT_DEVLOSS_TMO:
-		/* Only supported for FC-NVMe devices that are registered. */
+		 
 		if (!(fp->nvme_flag & NVME_FLAG_REGISTERED))
 			return -EIO;
 		*val = fp->nvme_remote_port->dev_loss_tmo;
@@ -34,15 +31,15 @@ qla_dfs_rport_set(struct fc_port *fp, int attr_id, u64 val)
 {
 	switch (attr_id) {
 	case QLA_DFS_RPORT_DEVLOSS_TMO:
-		/* Only supported for FC-NVMe devices that are registered. */
+		 
 		if (!(fp->nvme_flag & NVME_FLAG_REGISTERED))
 			return -EIO;
 #if (IS_ENABLED(CONFIG_NVME_FC))
 		return nvme_fc_set_remoteport_devloss(fp->nvme_remote_port,
 						      val);
-#else /* CONFIG_NVME_FC */
+#else  
 		return -EINVAL;
-#endif /* CONFIG_NVME_FC */
+#endif  
 	default:
 		return -EINVAL;
 	}
@@ -64,12 +61,7 @@ DEFINE_DEBUGFS_ATTRIBUTE(qla_dfs_rport_##_attr##_fops,		\
 		qla_dfs_rport_##_attr##_get,			\
 		qla_dfs_rport_##_attr##_set, "%llu\n")
 
-/*
- * Wrapper for getting fc_port fields.
- *
- * _attr    : Attribute name.
- * _get_val : Accessor macro to retrieve the value.
- */
+ 
 #define DEFINE_QLA_DFS_RPORT_FIELD_GET(_attr, _get_val)			\
 static int qla_dfs_rport_field_##_attr##_get(void *data, u64 *val)	\
 {									\
@@ -261,7 +253,7 @@ qla_dfs_fw_resource_cnt_show(struct seq_file *s, void *unused)
 	}
 
 	if (ql2xenforce_iocb_limit) {
-		/* lock is not require. It's an estimate. */
+		 
 		iocbs_used = ha->base_qpair->fwres.iocbs_used;
 		exch_used = ha->base_qpair->fwres.exch_used;
 		for (i = 0; i < ha->max_qpairs; i++) {
@@ -354,7 +346,7 @@ qla_dfs_tgt_counters_show(struct seq_file *s, void *unused)
 	seq_printf(s, "num Q full sent = %lld\n",
 		num_q_full_sent);
 
-	/* DIF stats */
+	 
 	seq_printf(s, "DIF Inp Bytes = %lld\n",
 		vha->qla_stats.qla_dif_stats.dif_input_bytes);
 	seq_printf(s, "DIF Outp Bytes = %lld\n",
@@ -447,7 +439,7 @@ qla2x00_dfs_fce_open(struct inode *inode, struct file *file)
 
 	mutex_lock(&ha->fce_mutex);
 
-	/* Pause tracing to flush FCE buffers. */
+	 
 	rval = qla2x00_disable_fce_trace(vha, &ha->fce_wr, &ha->fce_rd);
 	if (rval)
 		ql_dbg(ql_dbg_user, vha, 0x705c,
@@ -472,7 +464,7 @@ qla2x00_dfs_fce_release(struct inode *inode, struct file *file)
 
 	mutex_lock(&ha->fce_mutex);
 
-	/* Re-enable FCE tracing. */
+	 
 	ha->flags.fce_enabled = 1;
 	memset(ha->fce, 0, fce_calc_size(ha->fce_bufs));
 	rval = qla2x00_enable_fce_trace(vha, ha->fce_dma, ha->fce_bufs,
@@ -505,35 +497,7 @@ qla_dfs_naqp_show(struct seq_file *s, void *unused)
 	return 0;
 }
 
-/*
- * Helper macros for setting up debugfs entries.
- * _name: The name of the debugfs entry
- * _ctx_struct: The context that was passed when creating the debugfs file
- *
- * QLA_DFS_SETUP_RD could be used when there is only a show function.
- * - show function take the name qla_dfs_<sysfs-name>_show
- *
- * QLA_DFS_SETUP_RW could be used when there are both show and write functions.
- * - show function take the name  qla_dfs_<sysfs-name>_show
- * - write function take the name qla_dfs_<sysfs-name>_write
- *
- * To have a new debugfs entry, do:
- * 1. Create a "struct dentry *" in the appropriate structure in the format
- * dfs_<sysfs-name>
- * 2. Setup debugfs entries using QLA_DFS_SETUP_RD / QLA_DFS_SETUP_RW
- * 3. Create debugfs file in qla2x00_dfs_setup() using QLA_DFS_CREATE_FILE
- * or QLA_DFS_ROOT_CREATE_FILE
- * 4. Remove debugfs file in qla2x00_dfs_remove() using QLA_DFS_REMOVE_FILE
- * or QLA_DFS_ROOT_REMOVE_FILE
- *
- * Example for creating "TEST" sysfs file:
- * 1. struct qla_hw_data { ... struct dentry *dfs_TEST; }
- * 2. QLA_DFS_SETUP_RD(TEST, scsi_qla_host_t);
- * 3. In qla2x00_dfs_setup():
- * QLA_DFS_CREATE_FILE(ha, TEST, 0600, ha->dfs_dir, vha);
- * 4. In qla2x00_dfs_remove():
- * QLA_DFS_REMOVE_FILE(ha, TEST);
- */
+ 
 #define QLA_DFS_SETUP_RD(_name, _ctx_struct)				\
 static int								\
 qla_dfs_##_name##_open(struct inode *inode, struct file *file)		\

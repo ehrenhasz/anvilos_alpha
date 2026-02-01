@@ -1,25 +1,4 @@
-/*
- * Copyright 2014 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include "amdgpu.h"
 #include "nbio/nbio_6_1_offset.h"
@@ -44,15 +23,7 @@ static void xgpu_ai_mailbox_set_valid(struct amdgpu_device *adev, bool val)
 	WREG8(AI_MAIBOX_CONTROL_TRN_OFFSET_BYTE, val ? 1 : 0);
 }
 
-/*
- * this peek_msg could *only* be called in IRQ routine becuase in IRQ routine
- * RCV_MSG_VALID filed of BIF_BX_PF0_MAILBOX_CONTROL must already be set to 1
- * by host.
- *
- * if called no in IRQ routine, this peek_msg cannot guaranteed to return the
- * correct value since it doesn't return the RCV_DW0 under the case that
- * RCV_MSG_VALID is set by host.
- */
+ 
 static enum idh_event xgpu_ai_mailbox_peek_msg(struct amdgpu_device *adev)
 {
 	return RREG32_NO_KIQ(SOC15_REG_OFFSET(NBIO, 0,
@@ -122,12 +93,7 @@ static void xgpu_ai_mailbox_trans_msg (struct amdgpu_device *adev,
 	int r;
 	uint8_t trn;
 
-	/* IMPORTANT:
-	 * clear TRN_MSG_VALID valid to clear host's RCV_MSG_ACK
-	 * and with host's RCV_MSG_ACK cleared hw automatically clear host's RCV_MSG_ACK
-	 * which lead to VF's TRN_MSG_ACK cleared, otherwise below xgpu_ai_poll_ack()
-	 * will return immediatly
-	 */
+	 
 	do {
 		xgpu_ai_mailbox_set_valid(adev, false);
 		trn = xgpu_ai_peek_ack(adev);
@@ -152,7 +118,7 @@ static void xgpu_ai_mailbox_trans_msg (struct amdgpu_device *adev,
 
 	xgpu_ai_mailbox_set_valid(adev, true);
 
-	/* start to poll ack */
+	 
 	r = xgpu_ai_poll_ack(adev);
 	if (r)
 		pr_err("Doesn't get ack from pf, continue\n");
@@ -167,7 +133,7 @@ static int xgpu_ai_send_access_requests(struct amdgpu_device *adev,
 
 	xgpu_ai_mailbox_trans_msg(adev, req, 0, 0, 0);
 
-	/* start to check msg if request is idh_req_gpu_init_access */
+	 
 	if (req == IDH_REQ_GPU_INIT_ACCESS ||
 		req == IDH_REQ_GPU_FINI_ACCESS ||
 		req == IDH_REQ_GPU_RESET_ACCESS) {
@@ -176,16 +142,16 @@ static int xgpu_ai_send_access_requests(struct amdgpu_device *adev,
 			pr_err("Doesn't get READY_TO_ACCESS_GPU from pf, give up\n");
 			return r;
 		}
-		/* Retrieve checksum from mailbox2 */
+		 
 		if (req == IDH_REQ_GPU_INIT_ACCESS || req == IDH_REQ_GPU_RESET_ACCESS) {
 			adev->virt.fw_reserve.checksum_key =
 				RREG32_NO_KIQ(SOC15_REG_OFFSET(NBIO, 0,
 					mmBIF_BX_PF0_MAILBOX_MSGBUF_RCV_DW2));
 		}
 	} else if (req == IDH_REQ_GPU_INIT_DATA){
-		/* Dummy REQ_GPU_INIT_DATA handling */
+		 
 		r = xgpu_ai_poll_msg(adev, IDH_REQ_GPU_INIT_DATA_READY);
-		/* version set to 0 since dummy */
+		 
 		adev->virt.req_init_data_ver = 0;	
 	}
 
@@ -255,10 +221,7 @@ static void xgpu_ai_mailbox_flr_work(struct work_struct *work)
 	struct amdgpu_device *adev = container_of(virt, struct amdgpu_device, virt);
 	int timeout = AI_MAILBOX_POLL_FLR_TIMEDOUT;
 
-	/* block amdgpu_gpu_recover till msg FLR COMPLETE received,
-	 * otherwise the mailbox msg will be ruined/reseted by
-	 * the VF FLR.
-	 */
+	 
 	if (atomic_cmpxchg(&adev->reset_domain->in_gpu_reset, 0, 1) != 0)
 		return;
 
@@ -280,7 +243,7 @@ flr_done:
 	atomic_set(&adev->reset_domain->in_gpu_reset, 0);
 	up_write(&adev->reset_domain->sem);
 
-	/* Trigger recovery for world switch failure if no TDR */
+	 
 	if (amdgpu_device_should_recover_gpu(adev)
 		&& (!amdgpu_device_has_job_running(adev) ||
 			adev->sdma_timeout == MAX_SCHEDULE_TIMEOUT)) {
@@ -326,10 +289,7 @@ static int xgpu_ai_mailbox_rcv_irq(struct amdgpu_device *adev,
 		case IDH_QUERY_ALIVE:
 			xgpu_ai_mailbox_send_ack(adev);
 			break;
-		/* READY_TO_ACCESS_GPU is fetched by kernel polling, IRQ can ignore
-		 * it byfar since that polling thread will handle it,
-		 * other msg like flr complete is not handled here.
-		 */
+		 
 		case IDH_CLR_MSG_BUF:
 		case IDH_FLR_NOTIFICATION_CMPL:
 		case IDH_READY_TO_ACCESS_GPU:

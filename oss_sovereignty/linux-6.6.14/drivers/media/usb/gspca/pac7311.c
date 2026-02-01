@@ -1,48 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *		Pixart PAC7311 library
- *		Copyright (C) 2005 Thomas Kaiser thomas@kaiser-linux.li
- *
- * V4L2 by Jean-Francois Moine <http://moinejf.free.fr>
- */
 
-/* Some documentation about various registers as determined by trial and error.
- *
- * Register page 1:
- *
- * Address	Description
- * 0x08		Unknown compressor related, must always be 8 except when not
- *		in 640x480 resolution and page 4 reg 2 <= 3 then set it to 9 !
- * 0x1b		Auto white balance related, bit 0 is AWB enable (inverted)
- *		bits 345 seem to toggle per color gains on/off (inverted)
- * 0x78		Global control, bit 6 controls the LED (inverted)
- * 0x80		Compression balance, interesting settings:
- *		0x01 Use this to allow the camera to switch to higher compr.
- *		     on the fly. Needed to stay within bandwidth @ 640x480@30
- *		0x1c From usb captures under Windows for 640x480
- *		0x2a Values >= this switch the camera to a lower compression,
- *		     using the same table for both luminance and chrominance.
- *		     This gives a sharper picture. Usable only at 640x480@ <
- *		     15 fps or 320x240 / 160x120. Note currently the driver
- *		     does not use this as the quality gain is small and the
- *		     generated JPG-s are only understood by v4l-utils >= 0.8.9
- *		0x3f From usb captures under Windows for 320x240
- *		0x69 From usb captures under Windows for 160x120
- *
- * Register page 4:
- *
- * Address	Description
- * 0x02		Clock divider 2-63, fps =~ 60 / val. Must be a multiple of 3 on
- *		the 7302, so one of 3, 6, 9, ..., except when between 6 and 12?
- * 0x0f		Master gain 1-245, low value = high gain
- * 0x10		Another gain 0-15, limited influence (1-2x gain I guess)
- * 0x21		Bitfield: 0-1 unused, 2-3 vflip/hflip, 4-5 unknown, 6-7 unused
- *		Note setting vflip disabled leads to a much lower image quality,
- *		so we always vflip, and tell userspace to flip it back
- * 0x27		Seems to toggle various gains on / off, Setting bit 7 seems to
- *		completely disable the analog amplification block. Set to 0x68
- *		for max gain, 0x14 for minimal gain.
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -50,18 +9,18 @@
 
 #include <linux/input.h>
 #include "gspca.h"
-/* Include pac common sof detection functions */
+ 
 #include "pac_common.h"
 
 #define PAC7311_GAIN_DEFAULT     122
-#define PAC7311_EXPOSURE_DEFAULT   3 /* 20 fps, avoid using high compr. */
+#define PAC7311_EXPOSURE_DEFAULT   3  
 
 MODULE_AUTHOR("Thomas Kaiser thomas@kaiser-linux.li");
 MODULE_DESCRIPTION("Pixart PAC7311");
 MODULE_LICENSE("GPL");
 
 struct sd {
-	struct gspca_dev gspca_dev;		/* !! must be the first item */
+	struct gspca_dev gspca_dev;		 
 
 	struct v4l2_ctrl *contrast;
 	struct v4l2_ctrl *hflip;
@@ -95,9 +54,9 @@ static const struct v4l2_pix_format vga_mode[] = {
 
 static const __u8 init_7311[] = {
 	0xff, 0x01,
-	0x78, 0x40,	/* Bit_0=start stream, Bit_6=LED */
-	0x78, 0x40,	/* Bit_0=start stream, Bit_6=LED */
-	0x78, 0x44,	/* Bit_0=start stream, Bit_6=LED */
+	0x78, 0x40,	 
+	0x78, 0x40,	 
+	0x78, 0x44,	 
 	0xff, 0x04,
 	0x27, 0x80,
 	0x28, 0xca,
@@ -108,8 +67,8 @@ static const __u8 init_7311[] = {
 };
 
 static const __u8 start_7311[] = {
-/*	index, len, [value]* */
-	0xff, 1,	0x01,		/* page 1 */
+ 
+	0xff, 1,	0x01,		 
 	0x02, 43,	0x48, 0x0a, 0x40, 0x08, 0x00, 0x00, 0x08, 0x00,
 			0x06, 0xff, 0x11, 0xff, 0x5a, 0x30, 0x90, 0x4c,
 			0x00, 0x07, 0x00, 0x0a, 0x10, 0x00, 0xa0, 0x10,
@@ -130,14 +89,14 @@ static const __u8 start_7311[] = {
 	0xa0, 4,	0x44, 0x44, 0x44, 0x04,
 	0xf0, 13,	0x01, 0x00, 0x00, 0x00, 0x22, 0x00, 0x20, 0x00,
 			0x3f, 0x00, 0x0a, 0x01, 0x00,
-	0xff, 1,	0x04,		/* page 4 */
-	0, LOAD_PAGE4,			/* load the page 4 */
+	0xff, 1,	0x04,		 
+	0, LOAD_PAGE4,			 
 	0x11, 1,	0x01,
-	0, END_OF_SEQUENCE		/* end of sequence */
+	0, END_OF_SEQUENCE		 
 };
 
 #define SKIP		0xaa
-/* page 4 - the value SKIP says skip the index - see reg_w_page() */
+ 
 static const __u8 page4_7311[] = {
 	SKIP, SKIP, 0x04, 0x54, 0x07, 0x2b, 0x09, 0x0f,
 	0x09, 0x00, SKIP, SKIP, 0x07, 0x00, 0x00, 0x62,
@@ -159,9 +118,9 @@ static void reg_w_buf(struct gspca_dev *gspca_dev,
 	memcpy(gspca_dev->usb_buf, buffer, len);
 	ret = usb_control_msg(gspca_dev->dev,
 			usb_sndctrlpipe(gspca_dev->dev, 0),
-			0,		/* request */
+			0,		 
 			USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
-			0,		/* value */
+			0,		 
 			index, gspca_dev->usb_buf, len,
 			500);
 	if (ret < 0) {
@@ -183,7 +142,7 @@ static void reg_w(struct gspca_dev *gspca_dev,
 	gspca_dev->usb_buf[0] = value;
 	ret = usb_control_msg(gspca_dev->dev,
 			usb_sndctrlpipe(gspca_dev->dev, 0),
-			0,			/* request */
+			0,			 
 			USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
 			0, index, gspca_dev->usb_buf, 1,
 			500);
@@ -203,7 +162,7 @@ static void reg_w_seq(struct gspca_dev *gspca_dev,
 	}
 }
 
-/* load the beginning of a page */
+ 
 static void reg_w_page(struct gspca_dev *gspca_dev,
 			const __u8 *page, int len)
 {
@@ -213,12 +172,12 @@ static void reg_w_page(struct gspca_dev *gspca_dev,
 	if (gspca_dev->usb_err < 0)
 		return;
 	for (index = 0; index < len; index++) {
-		if (page[index] == SKIP)		/* skip this index */
+		if (page[index] == SKIP)		 
 			continue;
 		gspca_dev->usb_buf[0] = page[index];
 		ret = usb_control_msg(gspca_dev->dev,
 				usb_sndctrlpipe(gspca_dev->dev, 0),
-				0,			/* request */
+				0,			 
 			USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
 				0, index, gspca_dev->usb_buf, 1,
 				500);
@@ -231,7 +190,7 @@ static void reg_w_page(struct gspca_dev *gspca_dev,
 	}
 }
 
-/* output a variable sequence */
+ 
 static void reg_w_var(struct gspca_dev *gspca_dev,
 			const __u8 *seq,
 			const __u8 *page4, unsigned int page4_len)
@@ -266,10 +225,10 @@ static void reg_w_var(struct gspca_dev *gspca_dev,
 			}
 		}
 	}
-	/* not reached */
+	 
 }
 
-/* this function is called at probe time for pac7311 */
+ 
 static int sd_config(struct gspca_dev *gspca_dev,
 			const struct usb_device_id *id)
 {
@@ -286,50 +245,42 @@ static void setcontrast(struct gspca_dev *gspca_dev, s32 val)
 {
 	reg_w(gspca_dev, 0xff, 0x04);
 	reg_w(gspca_dev, 0x10, val);
-	/* load registers to sensor (Bit 0, auto clear) */
+	 
 	reg_w(gspca_dev, 0x11, 0x01);
 }
 
 static void setgain(struct gspca_dev *gspca_dev, s32 val)
 {
-	reg_w(gspca_dev, 0xff, 0x04);			/* page 4 */
+	reg_w(gspca_dev, 0xff, 0x04);			 
 	reg_w(gspca_dev, 0x0e, 0x00);
 	reg_w(gspca_dev, 0x0f, gspca_dev->gain->maximum - val + 1);
 
-	/* load registers to sensor (Bit 0, auto clear) */
+	 
 	reg_w(gspca_dev, 0x11, 0x01);
 }
 
 static void setexposure(struct gspca_dev *gspca_dev, s32 val)
 {
-	reg_w(gspca_dev, 0xff, 0x04);			/* page 4 */
+	reg_w(gspca_dev, 0xff, 0x04);			 
 	reg_w(gspca_dev, 0x02, val);
 
-	/* load registers to sensor (Bit 0, auto clear) */
+	 
 	reg_w(gspca_dev, 0x11, 0x01);
 
-	/*
-	 * Page 1 register 8 must always be 0x08 except when not in
-	 *  640x480 mode and page 4 reg 2 <= 3 then it must be 9
-	 */
+	 
 	reg_w(gspca_dev, 0xff, 0x01);
 	if (gspca_dev->pixfmt.width != 640 && val <= 3)
 		reg_w(gspca_dev, 0x08, 0x09);
 	else
 		reg_w(gspca_dev, 0x08, 0x08);
 
-	/*
-	 * Page1 register 80 sets the compression balance, normally we
-	 * want / use 0x1c, but for 640x480@30fps we must allow the
-	 * camera to use higher compression or we may run out of
-	 * bandwidth.
-	 */
+	 
 	if (gspca_dev->pixfmt.width == 640 && val == 2)
 		reg_w(gspca_dev, 0x80, 0x01);
 	else
 		reg_w(gspca_dev, 0x80, 0x1c);
 
-	/* load registers to sensor (Bit 0, auto clear) */
+	 
 	reg_w(gspca_dev, 0x11, 0x01);
 }
 
@@ -337,16 +288,16 @@ static void sethvflip(struct gspca_dev *gspca_dev, s32 hflip, s32 vflip)
 {
 	__u8 data;
 
-	reg_w(gspca_dev, 0xff, 0x04);			/* page 4 */
+	reg_w(gspca_dev, 0xff, 0x04);			 
 	data = (hflip ? 0x04 : 0x00) |
 	       (vflip ? 0x08 : 0x00);
 	reg_w(gspca_dev, 0x21, data);
 
-	/* load registers to sensor (Bit 0, auto clear) */
+	 
 	reg_w(gspca_dev, 0x11, 0x01);
 }
 
-/* this function is called at probe and resume time for pac7311 */
+ 
 static int sd_init(struct gspca_dev *gspca_dev)
 {
 	reg_w_seq(gspca_dev, init_7311, sizeof(init_7311)/2);
@@ -362,10 +313,7 @@ static int sd_s_ctrl(struct v4l2_ctrl *ctrl)
 	gspca_dev->usb_err = 0;
 
 	if (ctrl->id == V4L2_CID_AUTOGAIN && ctrl->is_new && ctrl->val) {
-		/* when switching to autogain set defaults to make sure
-		   we are on a valid point of the autogain gain /
-		   exposure knee graph, and give this change time to
-		   take effect before doing autogain. */
+		 
 		gspca_dev->exposure->val    = PAC7311_EXPOSURE_DEFAULT;
 		gspca_dev->gain->val        = PAC7311_GAIN_DEFAULT;
 		sd->autogain_ignore_frames  = PAC_AUTOGAIN_IGNORE_FRAMES;
@@ -397,7 +345,7 @@ static const struct v4l2_ctrl_ops sd_ctrl_ops = {
 	.s_ctrl = sd_s_ctrl,
 };
 
-/* this function is called at probe time */
+ 
 static int sd_init_controls(struct gspca_dev *gspca_dev)
 {
 	struct sd *sd = (struct sd *) gspca_dev;
@@ -428,7 +376,7 @@ static int sd_init_controls(struct gspca_dev *gspca_dev)
 	return 0;
 }
 
-/* -- start the camera -- */
+ 
 static int sd_start(struct gspca_dev *gspca_dev)
 {
 	struct sd *sd = (struct sd *) gspca_dev;
@@ -442,19 +390,19 @@ static int sd_start(struct gspca_dev *gspca_dev)
 	setexposure(gspca_dev, v4l2_ctrl_g_ctrl(gspca_dev->exposure));
 	sethvflip(gspca_dev, v4l2_ctrl_g_ctrl(sd->hflip), 1);
 
-	/* set correct resolution */
+	 
 	switch (gspca_dev->cam.cam_mode[(int) gspca_dev->curr_mode].priv) {
-	case 2:					/* 160x120 */
+	case 2:					 
 		reg_w(gspca_dev, 0xff, 0x01);
 		reg_w(gspca_dev, 0x17, 0x20);
 		reg_w(gspca_dev, 0x87, 0x10);
 		break;
-	case 1:					/* 320x240 */
+	case 1:					 
 		reg_w(gspca_dev, 0xff, 0x01);
 		reg_w(gspca_dev, 0x17, 0x30);
 		reg_w(gspca_dev, 0x87, 0x11);
 		break;
-	case 0:					/* 640x480 */
+	case 0:					 
 		reg_w(gspca_dev, 0xff, 0x01);
 		reg_w(gspca_dev, 0x17, 0x00);
 		reg_w(gspca_dev, 0x87, 0x12);
@@ -465,7 +413,7 @@ static int sd_start(struct gspca_dev *gspca_dev)
 	sd->autogain_ignore_frames = 0;
 	atomic_set(&sd->avg_lum, -1);
 
-	/* start stream */
+	 
 	reg_w(gspca_dev, 0xff, 0x01);
 	reg_w(gspca_dev, 0x78, 0x05);
 
@@ -481,9 +429,9 @@ static void sd_stopN(struct gspca_dev *gspca_dev)
 	reg_w(gspca_dev, 0x2a, 0x0e);
 	reg_w(gspca_dev, 0xff, 0x01);
 	reg_w(gspca_dev, 0x3e, 0x20);
-	reg_w(gspca_dev, 0x78, 0x44); /* Bit_0=start stream, Bit_6=LED */
-	reg_w(gspca_dev, 0x78, 0x44); /* Bit_0=start stream, Bit_6=LED */
-	reg_w(gspca_dev, 0x78, 0x44); /* Bit_0=start stream, Bit_6=LED */
+	reg_w(gspca_dev, 0x78, 0x44);  
+	reg_w(gspca_dev, 0x78, 0x44);  
+	reg_w(gspca_dev, 0x78, 0x44);  
 }
 
 static void do_autogain(struct gspca_dev *gspca_dev)
@@ -505,32 +453,32 @@ static void do_autogain(struct gspca_dev *gspca_dev)
 		sd->autogain_ignore_frames = PAC_AUTOGAIN_IGNORE_FRAMES;
 }
 
-/* JPEG header, part 1 */
+ 
 static const unsigned char pac_jpeg_header1[] = {
-  0xff, 0xd8,		/* SOI: Start of Image */
+  0xff, 0xd8,		 
 
-  0xff, 0xc0,		/* SOF0: Start of Frame (Baseline DCT) */
-  0x00, 0x11,		/* length = 17 bytes (including this length field) */
-  0x08			/* Precision: 8 */
-  /* 2 bytes is placed here: number of image lines */
-  /* 2 bytes is placed here: samples per line */
+  0xff, 0xc0,		 
+  0x00, 0x11,		 
+  0x08			 
+   
+   
 };
 
-/* JPEG header, continued */
+ 
 static const unsigned char pac_jpeg_header2[] = {
-  0x03,			/* Number of image components: 3 */
-  0x01, 0x21, 0x00,	/* ID=1, Subsampling 1x1, Quantization table: 0 */
-  0x02, 0x11, 0x01,	/* ID=2, Subsampling 2x1, Quantization table: 1 */
-  0x03, 0x11, 0x01,	/* ID=3, Subsampling 2x1, Quantization table: 1 */
+  0x03,			 
+  0x01, 0x21, 0x00,	 
+  0x02, 0x11, 0x01,	 
+  0x03, 0x11, 0x01,	 
 
-  0xff, 0xda,		/* SOS: Start Of Scan */
-  0x00, 0x0c,		/* length = 12 bytes (including this length field) */
-  0x03,			/* number of components: 3 */
-  0x01, 0x00,		/* selector 1, table 0x00 */
-  0x02, 0x11,		/* selector 2, table 0x11 */
-  0x03, 0x11,		/* selector 3, table 0x11 */
-  0x00, 0x3f,		/* Spectral selection: 0 .. 63 */
-  0x00			/* Successive approximation: 0 */
+  0xff, 0xda,		 
+  0x00, 0x0c,		 
+  0x03,			 
+  0x01, 0x00,		 
+  0x02, 0x11,		 
+  0x03, 0x11,		 
+  0x00, 0x3f,		 
+  0x00			 
 };
 
 static void pac_start_frame(struct gspca_dev *gspca_dev,
@@ -552,10 +500,10 @@ static void pac_start_frame(struct gspca_dev *gspca_dev,
 		pac_jpeg_header2, sizeof(pac_jpeg_header2));
 }
 
-/* this function is run at interrupt level */
+ 
 static void sd_pkt_scan(struct gspca_dev *gspca_dev,
-			u8 *data,			/* isoc packet */
-			int len)			/* iso packet length */
+			u8 *data,			 
+			int len)			 
 {
 	struct sd *sd = (struct sd *) gspca_dev;
 	u8 *image;
@@ -565,16 +513,11 @@ static void sd_pkt_scan(struct gspca_dev *gspca_dev,
 	if (sof) {
 		int n, lum_offset, footer_length;
 
-		/*
-		 * 6 bytes after the FF D9 EOF marker a number of lumination
-		 * bytes are send corresponding to different parts of the
-		 * image, the 14th and 15th byte after the EOF seem to
-		 * correspond to the center of the image.
-		 */
+		 
 		lum_offset = 24 + sizeof pac_sof_marker;
 		footer_length = 26;
 
-		/* Finish decoding current frame */
+		 
 		n = (sof - data) - (footer_length + sizeof pac_sof_marker);
 		if (n < 0) {
 			gspca_dev->image_len += n;
@@ -592,7 +535,7 @@ static void sd_pkt_scan(struct gspca_dev *gspca_dev,
 		len -= n;
 		data = sof;
 
-		/* Get average lumination */
+		 
 		if (gspca_dev->last_packet_type == LAST_PACKET &&
 				n >= lum_offset)
 			atomic_set(&sd->avg_lum, data[-lum_offset] +
@@ -600,7 +543,7 @@ static void sd_pkt_scan(struct gspca_dev *gspca_dev,
 		else
 			atomic_set(&sd->avg_lum, -1);
 
-		/* Start the new frame with the jpeg header */
+		 
 		pac_start_frame(gspca_dev,
 			gspca_dev->pixfmt.height, gspca_dev->pixfmt.width);
 	}
@@ -609,8 +552,8 @@ static void sd_pkt_scan(struct gspca_dev *gspca_dev,
 
 #if IS_ENABLED(CONFIG_INPUT)
 static int sd_int_pkt_scan(struct gspca_dev *gspca_dev,
-			u8 *data,		/* interrupt packet data */
-			int len)		/* interrupt packet length */
+			u8 *data,		 
+			int len)		 
 {
 	int ret = -EINVAL;
 	u8 data0, data1;
@@ -652,7 +595,7 @@ static const struct sd_desc sd_desc = {
 #endif
 };
 
-/* -- module initialisation -- */
+ 
 static const struct usb_device_id device_table[] = {
 	{USB_DEVICE(0x093a, 0x2600)},
 	{USB_DEVICE(0x093a, 0x2601)},
@@ -664,7 +607,7 @@ static const struct usb_device_id device_table[] = {
 };
 MODULE_DEVICE_TABLE(usb, device_table);
 
-/* -- device connect -- */
+ 
 static int sd_probe(struct usb_interface *intf,
 			const struct usb_device_id *id)
 {

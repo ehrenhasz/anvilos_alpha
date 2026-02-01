@@ -1,31 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*  Atheros AR71xx built-in ethernet mac driver
- *
- *  Copyright (C) 2019 Oleksij Rempel <o.rempel@pengutronix.de>
- *
- *  List of authors contributed to this driver before mainlining:
- *  Alexander Couzens <lynxis@fe80.eu>
- *  Christian Lamparter <chunkeey@gmail.com>
- *  Chuanhong Guo <gch981213@gmail.com>
- *  Daniel F. Dickinson <cshored@thecshore.com>
- *  David Bauer <mail@david-bauer.net>
- *  Felix Fietkau <nbd@nbd.name>
- *  Gabor Juhos <juhosg@freemail.hu>
- *  Hauke Mehrtens <hauke@hauke-m.de>
- *  Johann Neuhauser <johann@it-neuhauser.de>
- *  John Crispin <john@phrozen.org>
- *  Jo-Philipp Wich <jo@mein.io>
- *  Koen Vandeputte <koen.vandeputte@ncentric.com>
- *  Lucian Cristian <lucian.cristian@gmail.com>
- *  Matt Merhar <mattmerhar@protonmail.com>
- *  Milan Krstic <milan.krstic@gmail.com>
- *  Petr Štetiar <ynezz@true.cz>
- *  Rosen Penev <rosenp@gmail.com>
- *  Stephen Walker <stephendwalker+github@gmail.com>
- *  Vittorio Gambaletta <openwrt@vittgam.net>
- *  Weijie Gao <hackpascal@gmail.com>
- *  Imre Kaloz <kaloz@openwrt.org>
- */
+
+ 
 
 #include <linux/if_vlan.h>
 #include <linux/mfd/syscon.h>
@@ -40,10 +14,7 @@
 #include <linux/io.h>
 #include <net/selftests.h>
 
-/* For our NAPI weight bigger does *NOT* mean better - it means more
- * D-cache misses and lots more wasted cycles than we'll ever
- * possibly gain from saving instructions.
- */
+ 
 #define AG71XX_NAPI_WEIGHT	32
 #define AG71XX_OOM_REFILL	(1 + HZ / 10)
 
@@ -66,15 +37,15 @@
 #define AG71XX_MDIO_DELAY	5
 #define AG71XX_MDIO_MAX_CLK	5000000
 
-/* Register offsets */
+ 
 #define AG71XX_REG_MAC_CFG1	0x0000
-#define MAC_CFG1_TXE		BIT(0)	/* Tx Enable */
-#define MAC_CFG1_STX		BIT(1)	/* Synchronize Tx Enable */
-#define MAC_CFG1_RXE		BIT(2)	/* Rx Enable */
-#define MAC_CFG1_SRX		BIT(3)	/* Synchronize Rx Enable */
-#define MAC_CFG1_TFC		BIT(4)	/* Tx Flow Control Enable */
-#define MAC_CFG1_RFC		BIT(5)	/* Rx Flow Control Enable */
-#define MAC_CFG1_SR		BIT(31)	/* Soft Reset */
+#define MAC_CFG1_TXE		BIT(0)	 
+#define MAC_CFG1_STX		BIT(1)	 
+#define MAC_CFG1_RXE		BIT(2)	 
+#define MAC_CFG1_SRX		BIT(3)	 
+#define MAC_CFG1_TFC		BIT(4)	 
+#define MAC_CFG1_RFC		BIT(5)	 
+#define MAC_CFG1_SR		BIT(31)	 
 #define MAC_CFG1_INIT	(MAC_CFG1_RXE | MAC_CFG1_TXE | \
 			 MAC_CFG1_SRX | MAC_CFG1_STX)
 
@@ -123,11 +94,11 @@
 #define AG71XX_REG_MAC_ADDR1	0x0040
 #define AG71XX_REG_MAC_ADDR2	0x0044
 #define AG71XX_REG_FIFO_CFG0	0x0048
-#define FIFO_CFG0_WTM		BIT(0)	/* Watermark Module */
-#define FIFO_CFG0_RXS		BIT(1)	/* Rx System Module */
-#define FIFO_CFG0_RXF		BIT(2)	/* Rx Fabric Module */
-#define FIFO_CFG0_TXS		BIT(3)	/* Tx System Module */
-#define FIFO_CFG0_TXF		BIT(4)	/* Tx Fabric Module */
+#define FIFO_CFG0_WTM		BIT(0)	 
+#define FIFO_CFG0_RXS		BIT(1)	 
+#define FIFO_CFG0_RXF		BIT(2)	 
+#define FIFO_CFG0_TXS		BIT(3)	 
+#define FIFO_CFG0_TXF		BIT(4)	 
 #define FIFO_CFG0_ALL	(FIFO_CFG0_WTM | FIFO_CFG0_RXS | FIFO_CFG0_RXF \
 			| FIFO_CFG0_TXS | FIFO_CFG0_TXF)
 #define FIFO_CFG0_INIT	(FIFO_CFG0_ALL << FIFO_CFG0_ENABLE_SHIFT)
@@ -138,24 +109,24 @@
 #define AG71XX_REG_FIFO_CFG2	0x0050
 #define AG71XX_REG_FIFO_CFG3	0x0054
 #define AG71XX_REG_FIFO_CFG4	0x0058
-#define FIFO_CFG4_DE		BIT(0)	/* Drop Event */
-#define FIFO_CFG4_DV		BIT(1)	/* RX_DV Event */
-#define FIFO_CFG4_FC		BIT(2)	/* False Carrier */
-#define FIFO_CFG4_CE		BIT(3)	/* Code Error */
-#define FIFO_CFG4_CR		BIT(4)	/* CRC error */
-#define FIFO_CFG4_LM		BIT(5)	/* Length Mismatch */
-#define FIFO_CFG4_LO		BIT(6)	/* Length out of range */
-#define FIFO_CFG4_OK		BIT(7)	/* Packet is OK */
-#define FIFO_CFG4_MC		BIT(8)	/* Multicast Packet */
-#define FIFO_CFG4_BC		BIT(9)	/* Broadcast Packet */
-#define FIFO_CFG4_DR		BIT(10)	/* Dribble */
-#define FIFO_CFG4_LE		BIT(11)	/* Long Event */
-#define FIFO_CFG4_CF		BIT(12)	/* Control Frame */
-#define FIFO_CFG4_PF		BIT(13)	/* Pause Frame */
-#define FIFO_CFG4_UO		BIT(14)	/* Unsupported Opcode */
-#define FIFO_CFG4_VT		BIT(15)	/* VLAN tag detected */
-#define FIFO_CFG4_FT		BIT(16)	/* Frame Truncated */
-#define FIFO_CFG4_UC		BIT(17)	/* Unicast Packet */
+#define FIFO_CFG4_DE		BIT(0)	 
+#define FIFO_CFG4_DV		BIT(1)	 
+#define FIFO_CFG4_FC		BIT(2)	 
+#define FIFO_CFG4_CE		BIT(3)	 
+#define FIFO_CFG4_CR		BIT(4)	 
+#define FIFO_CFG4_LM		BIT(5)	 
+#define FIFO_CFG4_LO		BIT(6)	 
+#define FIFO_CFG4_OK		BIT(7)	 
+#define FIFO_CFG4_MC		BIT(8)	 
+#define FIFO_CFG4_BC		BIT(9)	 
+#define FIFO_CFG4_DR		BIT(10)	 
+#define FIFO_CFG4_LE		BIT(11)	 
+#define FIFO_CFG4_CF		BIT(12)	 
+#define FIFO_CFG4_PF		BIT(13)	 
+#define FIFO_CFG4_UO		BIT(14)	 
+#define FIFO_CFG4_VT		BIT(15)	 
+#define FIFO_CFG4_FT		BIT(16)	 
+#define FIFO_CFG4_UC		BIT(17)	 
 #define FIFO_CFG4_INIT	(FIFO_CFG4_DE | FIFO_CFG4_DV | FIFO_CFG4_FC | \
 			 FIFO_CFG4_CE | FIFO_CFG4_CR | FIFO_CFG4_LM | \
 			 FIFO_CFG4_LO | FIFO_CFG4_OK | FIFO_CFG4_MC | \
@@ -164,26 +135,26 @@
 			 FIFO_CFG4_VT)
 
 #define AG71XX_REG_FIFO_CFG5	0x005c
-#define FIFO_CFG5_DE		BIT(0)	/* Drop Event */
-#define FIFO_CFG5_DV		BIT(1)	/* RX_DV Event */
-#define FIFO_CFG5_FC		BIT(2)	/* False Carrier */
-#define FIFO_CFG5_CE		BIT(3)	/* Code Error */
-#define FIFO_CFG5_LM		BIT(4)	/* Length Mismatch */
-#define FIFO_CFG5_LO		BIT(5)	/* Length Out of Range */
-#define FIFO_CFG5_OK		BIT(6)	/* Packet is OK */
-#define FIFO_CFG5_MC		BIT(7)	/* Multicast Packet */
-#define FIFO_CFG5_BC		BIT(8)	/* Broadcast Packet */
-#define FIFO_CFG5_DR		BIT(9)	/* Dribble */
-#define FIFO_CFG5_CF		BIT(10)	/* Control Frame */
-#define FIFO_CFG5_PF		BIT(11)	/* Pause Frame */
-#define FIFO_CFG5_UO		BIT(12)	/* Unsupported Opcode */
-#define FIFO_CFG5_VT		BIT(13)	/* VLAN tag detected */
-#define FIFO_CFG5_LE		BIT(14)	/* Long Event */
-#define FIFO_CFG5_FT		BIT(15)	/* Frame Truncated */
-#define FIFO_CFG5_16		BIT(16)	/* unknown */
-#define FIFO_CFG5_17		BIT(17)	/* unknown */
-#define FIFO_CFG5_SF		BIT(18)	/* Short Frame */
-#define FIFO_CFG5_BM		BIT(19)	/* Byte Mode */
+#define FIFO_CFG5_DE		BIT(0)	 
+#define FIFO_CFG5_DV		BIT(1)	 
+#define FIFO_CFG5_FC		BIT(2)	 
+#define FIFO_CFG5_CE		BIT(3)	 
+#define FIFO_CFG5_LM		BIT(4)	 
+#define FIFO_CFG5_LO		BIT(5)	 
+#define FIFO_CFG5_OK		BIT(6)	 
+#define FIFO_CFG5_MC		BIT(7)	 
+#define FIFO_CFG5_BC		BIT(8)	 
+#define FIFO_CFG5_DR		BIT(9)	 
+#define FIFO_CFG5_CF		BIT(10)	 
+#define FIFO_CFG5_PF		BIT(11)	 
+#define FIFO_CFG5_UO		BIT(12)	 
+#define FIFO_CFG5_VT		BIT(13)	 
+#define FIFO_CFG5_LE		BIT(14)	 
+#define FIFO_CFG5_FT		BIT(15)	 
+#define FIFO_CFG5_16		BIT(16)	 
+#define FIFO_CFG5_17		BIT(17)	 
+#define FIFO_CFG5_SF		BIT(18)	 
+#define FIFO_CFG5_BM		BIT(19)	 
 #define FIFO_CFG5_INIT	(FIFO_CFG5_DE | FIFO_CFG5_DV | FIFO_CFG5_FC | \
 			 FIFO_CFG5_CE | FIFO_CFG5_LO | FIFO_CFG5_OK | \
 			 FIFO_CFG5_MC | FIFO_CFG5_BC | FIFO_CFG5_DR | \
@@ -192,25 +163,25 @@
 			 FIFO_CFG5_17 | FIFO_CFG5_SF)
 
 #define AG71XX_REG_TX_CTRL	0x0180
-#define TX_CTRL_TXE		BIT(0)	/* Tx Enable */
+#define TX_CTRL_TXE		BIT(0)	 
 
 #define AG71XX_REG_TX_DESC	0x0184
 #define AG71XX_REG_TX_STATUS	0x0188
-#define TX_STATUS_PS		BIT(0)	/* Packet Sent */
-#define TX_STATUS_UR		BIT(1)	/* Tx Underrun */
-#define TX_STATUS_BE		BIT(3)	/* Bus Error */
+#define TX_STATUS_PS		BIT(0)	 
+#define TX_STATUS_UR		BIT(1)	 
+#define TX_STATUS_BE		BIT(3)	 
 
 #define AG71XX_REG_RX_CTRL	0x018c
-#define RX_CTRL_RXE		BIT(0)	/* Rx Enable */
+#define RX_CTRL_RXE		BIT(0)	 
 
 #define AG71XX_DMA_RETRY	10
 #define AG71XX_DMA_DELAY	1
 
 #define AG71XX_REG_RX_DESC	0x0190
 #define AG71XX_REG_RX_STATUS	0x0194
-#define RX_STATUS_PR		BIT(0)	/* Packet Received */
-#define RX_STATUS_OF		BIT(2)	/* Rx Overflow */
-#define RX_STATUS_BE		BIT(3)	/* Bus Error */
+#define RX_STATUS_PR		BIT(0)	 
+#define RX_STATUS_OF		BIT(2)	 
+#define RX_STATUS_BE		BIT(3)	 
 
 #define AG71XX_REG_INT_ENABLE	0x0198
 #define AG71XX_REG_INT_STATUS	0x019c
@@ -315,11 +286,11 @@ struct ag71xx_buf {
 };
 
 struct ag71xx_ring {
-	/* "Hot" fields in the data path. */
+	 
 	unsigned int curr;
 	unsigned int dirty;
 
-	/* "Cold" fields - not used in the data path. */
+	 
 	struct ag71xx_buf *buf;
 	u16 order;
 	u16 desc_split;
@@ -346,9 +317,7 @@ struct ag71xx_dcfg {
 };
 
 struct ag71xx {
-	/* Critical data related to the per-packet data path are clustered
-	 * early in this structure to help improve the D-cache footprint.
-	 */
+	 
 	struct ag71xx_ring rx_ring ____cacheline_aligned;
 	struct ag71xx_ring tx_ring ____cacheline_aligned;
 
@@ -361,7 +330,7 @@ struct ag71xx {
 	u32 msg_enable;
 	const struct ag71xx_dcfg *dcfg;
 
-	/* From this point onwards we're not looking at per-packet fields. */
+	 
 	void __iomem *mac_base;
 
 	struct ag71xx_desc *stop_desc;
@@ -408,7 +377,7 @@ static bool ag71xx_is(struct ag71xx *ag, enum ag71xx_type type)
 static void ag71xx_wr(struct ag71xx *ag, unsigned int reg, u32 value)
 {
 	iowrite32(value, ag->mac_base + reg);
-	/* flush write */
+	 
 	(void)ioread32(ag->mac_base + reg);
 }
 
@@ -423,7 +392,7 @@ static void ag71xx_sb(struct ag71xx *ag, unsigned int reg, u32 mask)
 
 	r = ag->mac_base + reg;
 	iowrite32(ioread32(r) | mask, r);
-	/* flush write */
+	 
 	(void)ioread32(r);
 }
 
@@ -433,7 +402,7 @@ static void ag71xx_cb(struct ag71xx *ag, unsigned int reg, u32 mask)
 
 	r = ag->mac_base + reg;
 	iowrite32(ioread32(r) & ~mask, r);
-	/* flush write */
+	 
 	(void)ioread32(r);
 }
 
@@ -584,7 +553,7 @@ static int ag71xx_mdio_mii_read(struct mii_bus *bus, int addr, int reg)
 
 	ag71xx_wr(ag, AG71XX_REG_MII_ADDR,
 		  ((addr & 0x1f) << MII_ADDR_SHIFT) | (reg & 0xff));
-	/* enable read mode */
+	 
 	ag71xx_wr(ag, AG71XX_REG_MII_CMD, MII_CMD_READ);
 
 	err = ag71xx_mdio_wait_busy(ag);
@@ -592,7 +561,7 @@ static int ag71xx_mdio_mii_read(struct mii_bus *bus, int addr, int reg)
 		return err;
 
 	val = ag71xx_rr(ag, AG71XX_REG_MII_STATUS);
-	/* disable read mode */
+	 
 	ag71xx_wr(ag, AG71XX_REG_MII_CMD, 0);
 
 	netif_dbg(ag, link, ag->ndev, "mii_read: addr=%04x, reg=%04x, value=%04x\n",
@@ -756,7 +725,7 @@ static void ag71xx_mdio_remove(struct ag71xx *ag)
 
 static void ag71xx_hw_stop(struct ag71xx *ag)
 {
-	/* disable all interrupts and stop the rx/tx engine */
+	 
 	ag71xx_wr(ag, AG71XX_REG_INT_ENABLE, 0);
 	ag71xx_wr(ag, AG71XX_REG_RX_CTRL, 0);
 	ag71xx_wr(ag, AG71XX_REG_TX_CTRL, 0);
@@ -883,26 +852,24 @@ static void ag71xx_dma_reset(struct ag71xx *ag)
 	u32 val;
 	int i;
 
-	/* stop RX and TX */
+	 
 	ag71xx_wr(ag, AG71XX_REG_RX_CTRL, 0);
 	ag71xx_wr(ag, AG71XX_REG_TX_CTRL, 0);
 
-	/* give the hardware some time to really stop all rx/tx activity
-	 * clearing the descriptors too early causes random memory corruption
-	 */
+	 
 	ag71xx_dma_wait_stop(ag);
 
-	/* clear descriptor addresses */
+	 
 	ag71xx_wr(ag, AG71XX_REG_TX_DESC, ag->stop_desc_dma);
 	ag71xx_wr(ag, AG71XX_REG_RX_DESC, ag->stop_desc_dma);
 
-	/* clear pending RX/TX interrupts */
+	 
 	for (i = 0; i < 256; i++) {
 		ag71xx_wr(ag, AG71XX_REG_RX_STATUS, RX_STATUS_PR);
 		ag71xx_wr(ag, AG71XX_REG_TX_STATUS, TX_STATUS_PS);
 	}
 
-	/* clear pending errors */
+	 
 	ag71xx_wr(ag, AG71XX_REG_RX_STATUS, RX_STATUS_BE | RX_STATUS_OF);
 	ag71xx_wr(ag, AG71XX_REG_TX_STATUS, TX_STATUS_BE | TX_STATUS_UR);
 
@@ -913,7 +880,7 @@ static void ag71xx_dma_reset(struct ag71xx *ag)
 
 	val = ag71xx_rr(ag, AG71XX_REG_TX_STATUS);
 
-	/* mask out reserved bits */
+	 
 	val &= ~0xff000000;
 
 	if (val)
@@ -925,16 +892,16 @@ static void ag71xx_hw_setup(struct ag71xx *ag)
 {
 	u32 init = MAC_CFG1_INIT;
 
-	/* setup MAC configuration registers */
+	 
 	ag71xx_wr(ag, AG71XX_REG_MAC_CFG1, init);
 
 	ag71xx_sb(ag, AG71XX_REG_MAC_CFG2,
 		  MAC_CFG2_PAD_CRC_EN | MAC_CFG2_LEN_CHECK);
 
-	/* setup max frame length to zero */
+	 
 	ag71xx_wr(ag, AG71XX_REG_MAC_MFL, 0);
 
-	/* setup FIFO configuration registers */
+	 
 	ag71xx_wr(ag, AG71XX_REG_FIFO_CFG0, FIFO_CFG0_INIT);
 	ag71xx_wr(ag, AG71XX_REG_FIFO_CFG1, ag->fifodata[0]);
 	ag71xx_wr(ag, AG71XX_REG_FIFO_CFG2, ag->fifodata[1]);
@@ -984,7 +951,7 @@ static void ag71xx_fast_reset(struct ag71xx *ag)
 	ag->tx_ring.dirty = 0;
 	netdev_reset_queue(ag->ndev);
 
-	/* setup max frame length */
+	 
 	ag71xx_wr(ag, AG71XX_REG_MAC_MFL,
 		  ag71xx_max_frame_len(ag->ndev->mtu));
 
@@ -997,10 +964,10 @@ static void ag71xx_fast_reset(struct ag71xx *ag)
 
 static void ag71xx_hw_start(struct ag71xx *ag)
 {
-	/* start RX engine */
+	 
 	ag71xx_wr(ag, AG71XX_REG_RX_CTRL, RX_CTRL_RXE);
 
-	/* enable interrupts */
+	 
 	ag71xx_wr(ag, AG71XX_REG_INT_ENABLE, AG71XX_INT_INIT);
 
 	netif_wake_queue(ag->ndev);
@@ -1162,7 +1129,7 @@ static void ag71xx_ring_tx_clean(struct ag71xx *ag)
 		ring->dirty++;
 	}
 
-	/* flush descriptors */
+	 
 	wmb();
 
 	netdev_completed_queue(ndev, pkts_compl, bytes_compl);
@@ -1185,7 +1152,7 @@ static void ag71xx_ring_tx_init(struct ag71xx *ag)
 		ring->buf[i].tx.skb = NULL;
 	}
 
-	/* flush descriptors */
+	 
 	wmb();
 
 	ring->curr = 0;
@@ -1270,7 +1237,7 @@ static int ag71xx_ring_rx_init(struct ag71xx *ag)
 		desc->ctrl = DESC_EMPTY;
 	}
 
-	/* flush descriptors */
+	 
 	wmb();
 
 	ring->curr = 0;
@@ -1303,7 +1270,7 @@ static int ag71xx_ring_rx_refill(struct ag71xx *ag)
 		count++;
 	}
 
-	/* flush descriptors */
+	 
 	wmb();
 
 	netif_dbg(ag, rx_status, ag->ndev, "%u rx descriptors refilled\n",
@@ -1434,7 +1401,7 @@ static int ag71xx_open(struct net_device *ndev)
 	ag->rx_buf_size =
 		SKB_DATA_ALIGN(max_frame_len + NET_SKB_PAD + NET_IP_ALIGN);
 
-	/* setup max frame length */
+	 
 	ag71xx_wr(ag, AG71XX_REG_MAC_MFL, max_frame_len);
 	ag71xx_hw_set_macaddr(ag, ndev->dev_addr);
 
@@ -1487,9 +1454,7 @@ static int ag71xx_fill_dma_desc(struct ag71xx_ring *ring, u32 addr, int len)
 		if (cur_len > split) {
 			cur_len = split;
 
-			/*  TX will hang if DMA transfers <= 4 bytes,
-			 * make sure next segment is more than 4 bytes long.
-			 */
+			 
 			if (len <= split + 4)
 				cur_len -= 4;
 		}
@@ -1501,7 +1466,7 @@ static int ag71xx_fill_dma_desc(struct ag71xx_ring *ring, u32 addr, int len)
 		if (len > 0)
 			cur_len |= DESC_MORE;
 
-		/* prevent early tx attempt of this descriptor */
+		 
 		if (!ndesc)
 			cur_len |= DESC_EMPTY;
 
@@ -1536,7 +1501,7 @@ static netdev_tx_t ag71xx_hard_start_xmit(struct sk_buff *skb,
 	i = ring->curr & ring_mask;
 	desc = ag71xx_ring_desc(ring, i);
 
-	/* setup descriptor fields */
+	 
 	n = ag71xx_fill_dma_desc(ring, (u32)dma_addr,
 				 skb->len & ag->dcfg->desc_pktlen_mask);
 	if (n < 0)
@@ -1553,7 +1518,7 @@ static netdev_tx_t ag71xx_hard_start_xmit(struct sk_buff *skb,
 	desc->ctrl &= ~DESC_EMPTY;
 	ring->curr += n;
 
-	/* flush descriptor */
+	 
 	wmb();
 
 	ring_min = 2;
@@ -1567,7 +1532,7 @@ static netdev_tx_t ag71xx_hard_start_xmit(struct sk_buff *skb,
 
 	netif_dbg(ag, tx_queued, ndev, "packet injected into TX queue\n");
 
-	/* enable TX engine */
+	 
 	ag71xx_wr(ag, AG71XX_REG_TX_CTRL, TX_CTRL_TXE);
 
 	return NETDEV_TX_OK;
@@ -1717,7 +1682,7 @@ static int ag71xx_poll(struct napi_struct *napi, int limit)
 		ag71xx_wr(ag, AG71XX_REG_RX_STATUS, RX_STATUS_OF);
 		ndev->stats.rx_fifo_errors++;
 
-		/* restart RX */
+		 
 		ag71xx_wr(ag, AG71XX_REG_RX_CTRL, RX_CTRL_RXE);
 	}
 
@@ -1734,7 +1699,7 @@ static int ag71xx_poll(struct napi_struct *napi, int limit)
 
 		napi_complete(napi);
 
-		/* enable interrupts */
+		 
 		ag71xx_int_enable(ag, AG71XX_INT_POLL);
 		return rx_done;
 	}

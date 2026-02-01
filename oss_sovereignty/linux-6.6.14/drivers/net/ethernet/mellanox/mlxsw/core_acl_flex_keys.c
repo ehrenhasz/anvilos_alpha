@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2017-2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -9,13 +9,7 @@
 #include "item.h"
 #include "core_acl_flex_keys.h"
 
-/* For the purpose of the driver, define an internal storage scratchpad
- * that will be used to store key/mask values. For each defined element type
- * define an internal storage geometry.
- *
- * When adding new elements, MLXSW_AFK_ELEMENT_STORAGE_SIZE must be increased
- * accordingly.
- */
+ 
 static const struct mlxsw_afk_element_info mlxsw_afk_element_infos[] = {
 	MLXSW_AFK_ELEMENT_INFO_U32(SRC_SYS_PORT, 0x00, 16, 16),
 	MLXSW_AFK_ELEMENT_INFO_BUF(DMAC_32_47, 0x04, 2),
@@ -107,9 +101,7 @@ struct mlxsw_afk_key_info {
 	struct list_head list;
 	unsigned int ref_count;
 	unsigned int blocks_count;
-	int element_to_block[MLXSW_AFK_ELEMENT_MAX]; /* index is element, value
-						      * is index inside "blocks"
-						      */
+	int element_to_block[MLXSW_AFK_ELEMENT_MAX];  
 	struct mlxsw_afk_element_usage elusage;
 	const struct mlxsw_afk_block *blocks[];
 };
@@ -183,7 +175,7 @@ static void mlxsw_afk_picker_subtract_hits(struct mlxsw_afk *mlxsw_afk,
 static int mlxsw_afk_picker_most_hits_get(struct mlxsw_afk *mlxsw_afk,
 					  struct mlxsw_afk_picker *picker)
 {
-	int most_index = -EINVAL; /* Should never happen to return this */
+	int most_index = -EINVAL;  
 	int most_hits = 0;
 	int i;
 
@@ -230,18 +222,7 @@ static int mlxsw_afk_picker(struct mlxsw_afk *mlxsw_afk,
 	if (!picker)
 		return -ENOMEM;
 
-	/* Since the same elements could be present in multiple blocks,
-	 * we must find out optimal block list in order to make the
-	 * block count as low as possible.
-	 *
-	 * First, we count hits. We go over all available blocks and count
-	 * how many of requested elements are covered by each.
-	 *
-	 * Then in loop, we find block with most hits and add it to
-	 * output key_info. Then we have to subtract this block hits so
-	 * the next iteration will find most suitable block for
-	 * the rest of requested elements.
-	 */
+	 
 
 	mlxsw_afk_element_usage_for_each(element, elusage)
 		mlxsw_afk_picker_count_hits(mlxsw_afk, picker, element);
@@ -406,7 +387,7 @@ void mlxsw_afk_values_add_buf(struct mlxsw_afk_element_values *values,
 				&mlxsw_afk_element_infos[element];
 	const struct mlxsw_item *storage_item = &elinfo->item;
 
-	if (!memchr_inv(mask_value, 0, len)) /* If mask is zero */
+	if (!memchr_inv(mask_value, 0, len))  
 		return;
 	if (WARN_ON(elinfo->type != MLXSW_AFK_ELEMENT_TYPE_BUF) ||
 	    WARN_ON(elinfo->item.size.bytes != len))

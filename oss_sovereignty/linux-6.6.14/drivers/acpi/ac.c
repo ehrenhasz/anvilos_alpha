@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  acpi_ac.c - ACPI AC Adapter Driver (Revision: 27)
- *
- *  Copyright (C) 2001, 2002 Andy Grover <andrew.grover@intel.com>
- *  Copyright (C) 2001, 2002 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
- */
+
+ 
 
 #define pr_fmt(fmt) "ACPI: AC: " fmt
 
@@ -71,7 +66,7 @@ struct acpi_ac {
 
 #define to_acpi_ac(x) power_supply_get_drvdata(x)
 
-/* AC Adapter Management */
+ 
 static int acpi_ac_get_state(struct acpi_ac *ac)
 {
 	acpi_status status = AE_OK;
@@ -97,7 +92,7 @@ static int acpi_ac_get_state(struct acpi_ac *ac)
 	return 0;
 }
 
-/* sysfs I/F */
+ 
 static int get_ac_property(struct power_supply *psy,
 			   enum power_supply_property psp,
 			   union power_supply_propval *val)
@@ -125,7 +120,7 @@ static enum power_supply_property ac_props[] = {
 	POWER_SUPPLY_PROP_ONLINE,
 };
 
-/* Driver Model */
+ 
 static void acpi_ac_notify(acpi_handle handle, u32 event, void *data)
 {
 	struct acpi_device *device = data;
@@ -142,13 +137,7 @@ static void acpi_ac_notify(acpi_handle handle, u32 event, void *data)
 	case ACPI_AC_NOTIFY_STATUS:
 	case ACPI_NOTIFY_BUS_CHECK:
 	case ACPI_NOTIFY_DEVICE_CHECK:
-		/*
-		 * A buggy BIOS may notify AC first and then sleep for
-		 * a specific time before doing actual operations in the
-		 * EC event handler (_Qxx). This will cause the AC state
-		 * reported by the ACPI event to be incorrect, so wait for a
-		 * specific time for the EC event handler to make progress.
-		 */
+		 
 		if (ac_sleep_before_get_state_ms > 0)
 			msleep(ac_sleep_before_get_state_ms);
 
@@ -167,13 +156,7 @@ static int acpi_ac_battery_notify(struct notifier_block *nb,
 	struct acpi_ac *ac = container_of(nb, struct acpi_ac, battery_nb);
 	struct acpi_bus_event *event = (struct acpi_bus_event *)data;
 
-	/*
-	 * On HP Pavilion dv6-6179er AC status notifications aren't triggered
-	 * when adapter is plugged/unplugged. However, battery status
-	 * notifications are triggered when battery starts charging or
-	 * discharging. Re-reading AC status triggers lost AC notifications,
-	 * if AC status has changed.
-	 */
+	 
 	if (strcmp(event->device_class, ACPI_BATTERY_CLASS) == 0 &&
 	    event->type == ACPI_BATTERY_NOTIFY_STATUS)
 		acpi_ac_get_state(ac);
@@ -193,17 +176,17 @@ static int __init ac_only_quirk(const struct dmi_system_id *d)
 	return 0;
 }
 
-/* Please keep this list alphabetically sorted */
+ 
 static const struct dmi_system_id ac_dmi_table[]  __initconst = {
 	{
-		/* Kodlix GK45 returning incorrect state */
+		 
 		.callback = ac_only_quirk,
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "GK45"),
 		},
 	},
 	{
-		/* Lenovo Thinkpad e530, see comment in acpi_ac_notify() */
+		 
 		.callback = thinkpad_e530_quirk,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),

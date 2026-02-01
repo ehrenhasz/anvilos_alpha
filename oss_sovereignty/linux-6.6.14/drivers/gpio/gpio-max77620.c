@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MAXIM MAX77620 GPIO driver
- *
- * Copyright (c) 2016, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/interrupt.h>
@@ -18,7 +14,7 @@ struct max77620_gpio {
 	struct gpio_chip	gpio_chip;
 	struct regmap		*rmap;
 	struct device		*dev;
-	struct mutex		buslock; /* irq_bus_lock */
+	struct mutex		buslock;  
 	unsigned int		irq_type[MAX77620_GPIO_NR];
 	bool			irq_enabled[MAX77620_GPIO_NR];
 };
@@ -269,11 +265,7 @@ static int max77620_gpio_irq_init_hw(struct gpio_chip *gc)
 	unsigned int i;
 	int err;
 
-	/*
-	 * GPIO interrupts may be left ON after bootloader, hence let's
-	 * pre-initialize hardware to the expected state by disabling all
-	 * the interrupts.
-	 */
+	 
 	for (i = 0; i < MAX77620_GPIO_NR; i++) {
 		err = regmap_update_bits(gpio->rmap, GPIO_REG_ADDR(i),
 					 MAX77620_CNFG_GPIO_INT_MASK, 0);
@@ -322,7 +314,7 @@ static int max77620_gpio_probe(struct platform_device *pdev)
 
 	girq = &mgpio->gpio_chip.irq;
 	gpio_irq_chip_set_chip(girq, &max77620_gpio_irqchip);
-	/* This will let us handle the parent IRQ in the driver */
+	 
 	girq->parent_handler = NULL;
 	girq->num_parents = 0;
 	girq->parents = NULL;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* RSA asymmetric public-key algorithm [RFC3447]
- *
- * Copyright (c) 2015, Intel Corporation
- * Authors: Tadeusz Struk <tadeusz.struk@intel.com>
- */
+
+ 
 
 #include <linux/fips.h>
 #include <linux/module.h>
@@ -24,33 +20,24 @@ struct rsa_mpi_key {
 	MPI qinv;
 };
 
-/*
- * RSAEP function [RFC3447 sec 5.1.1]
- * c = m^e mod n;
- */
+ 
 static int _rsa_enc(const struct rsa_mpi_key *key, MPI c, MPI m)
 {
-	/* (1) Validate 0 <= m < n */
+	 
 	if (mpi_cmp_ui(m, 0) < 0 || mpi_cmp(m, key->n) >= 0)
 		return -EINVAL;
 
-	/* (2) c = m^e mod n */
+	 
 	return mpi_powm(c, m, key->e, key->n);
 }
 
-/*
- * RSADP function [RFC3447 sec 5.1.2]
- * m_1 = c^dP mod p;
- * m_2 = c^dQ mod q;
- * h = (m_1 - m_2) * qInv mod p;
- * m = m_2 + q * h;
- */
+ 
 static int _rsa_dec_crt(const struct rsa_mpi_key *key, MPI m_or_m1_or_h, MPI c)
 {
 	MPI m2, m12_or_qh;
 	int ret = -ENOMEM;
 
-	/* (1) Validate 0 <= c < n */
+	 
 	if (mpi_cmp_ui(c, 0) < 0 || mpi_cmp(c, key->n) >= 0)
 		return -EINVAL;
 
@@ -59,21 +46,21 @@ static int _rsa_dec_crt(const struct rsa_mpi_key *key, MPI m_or_m1_or_h, MPI c)
 	if (!m2 || !m12_or_qh)
 		goto err_free_mpi;
 
-	/* (2i) m_1 = c^dP mod p */
+	 
 	ret = mpi_powm(m_or_m1_or_h, c, key->dp, key->p);
 	if (ret)
 		goto err_free_mpi;
 
-	/* (2i) m_2 = c^dQ mod q */
+	 
 	ret = mpi_powm(m2, c, key->dq, key->q);
 	if (ret)
 		goto err_free_mpi;
 
-	/* (2iii) h = (m_1 - m_2) * qInv mod p */
+	 
 	mpi_sub(m12_or_qh, m_or_m1_or_h, m2);
 	mpi_mulm(m_or_m1_or_h, m12_or_qh, key->qinv, key->p);
 
-	/* (2iv) m = m_2 + q * h */
+	 
 	mpi_mul(m12_or_qh, key->q, m_or_m1_or_h);
 	mpi_addm(m_or_m1_or_h, m2, m12_or_qh, key->n);
 
@@ -209,12 +196,12 @@ static int rsa_check_exponent_fips(MPI e)
 {
 	MPI e_max = NULL;
 
-	/* check if odd */
+	 
 	if (!mpi_test_bit(e, 0)) {
 		return -EINVAL;
 	}
 
-	/* check if 2^16 < e < 2^256. */
+	 
 	if (mpi_cmp_ui(e, 65536) <= 0) {
 		return -EINVAL;
 	}
@@ -240,7 +227,7 @@ static int rsa_set_pub_key(struct crypto_akcipher *tfm, const void *key,
 	struct rsa_key raw_key = {0};
 	int ret;
 
-	/* Free the old MPI key if any */
+	 
 	rsa_free_mpi_key(mpi_key);
 
 	ret = rsa_parse_pub_key(&raw_key, key, keylen);
@@ -279,7 +266,7 @@ static int rsa_set_priv_key(struct crypto_akcipher *tfm, const void *key,
 	struct rsa_key raw_key = {0};
 	int ret;
 
-	/* Free the old MPI key if any */
+	 
 	rsa_free_mpi_key(mpi_key);
 
 	ret = rsa_parse_priv_key(&raw_key, key, keylen);

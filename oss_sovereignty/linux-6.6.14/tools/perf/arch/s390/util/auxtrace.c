@@ -11,8 +11,8 @@
 #include "../../util/evsel.h"
 #include "../../util/record.h"
 
-#define PERF_EVENT_CPUM_SF		0xB0000 /* Event: Basic-sampling */
-#define PERF_EVENT_CPUM_SF_DIAG		0xBD000 /* Event: Combined-sampling */
+#define PERF_EVENT_CPUM_SF		0xB0000  
+#define PERF_EVENT_CPUM_SF_DIAG		0xBD000  
 #define DEFAULT_AUX_PAGES		128
 #define DEFAULT_FREQ			4000
 
@@ -53,14 +53,7 @@ cpumsf_recording_options(struct auxtrace_record *ar __maybe_unused,
 
 	opts->full_auxtrace = true;
 
-	/*
-	 * The AUX buffer size should be set properly to avoid
-	 * overflow of samples if it is not set explicitly.
-	 * DEFAULT_AUX_PAGES is an proper size when sampling frequency
-	 * is DEFAULT_FREQ. It is expected to hold about 1/2 second
-	 * of sampling data. The size used for AUX buffer will scale
-	 * according to the specified frequency and DEFAULT_FREQ.
-	 */
+	 
 	if (!opts->auxtrace_mmap_pages) {
 		if (opts->user_freq != UINT_MAX)
 			factor = (opts->user_freq + DEFAULT_FREQ
@@ -80,10 +73,7 @@ cpumsf_parse_snapshot_options(struct auxtrace_record *itr __maybe_unused,
 	return 0;
 }
 
-/*
- * auxtrace_record__init is called when perf record
- * check if the event really need auxtrace
- */
+ 
 struct auxtrace_record *auxtrace_record__init(struct evlist *evlist,
 					      int *err)
 {
@@ -106,7 +96,7 @@ struct auxtrace_record *auxtrace_record__init(struct evlist *evlist,
 	if (!diagnose)
 		return NULL;
 
-	/* sampling in diagnose mode. alloc aux buffer */
+	 
 	aux = zalloc(sizeof(*aux));
 	if (aux == NULL) {
 		*err = -ENOMEM;

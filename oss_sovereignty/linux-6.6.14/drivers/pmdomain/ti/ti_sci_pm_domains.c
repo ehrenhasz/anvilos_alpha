@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI SCI Generic Power Domain Driver
- *
- * Copyright (C) 2015-2017 Texas Instruments Incorporated - http://www.ti.com/
- *	J Keerthy <j-keerthy@ti.com>
- *	Dave Gerlach <d-gerlach@ti.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/module.h>
@@ -16,14 +10,7 @@
 #include <linux/soc/ti/ti_sci_protocol.h>
 #include <dt-bindings/soc/ti,sci_pm_domain.h>
 
-/**
- * struct ti_sci_genpd_provider: holds common TI SCI genpd provider data
- * @ti_sci: handle to TI SCI protocol driver that provides ops to
- *	    communicate with system control processor.
- * @dev: pointer to dev for the driver for devm allocs
- * @pd_list: list of all the power domains on the device
- * @data: onecell data for genpd core
- */
+ 
 struct ti_sci_genpd_provider {
 	const struct ti_sci_handle *ti_sci;
 	struct device *dev;
@@ -31,16 +18,7 @@ struct ti_sci_genpd_provider {
 	struct genpd_onecell_data data;
 };
 
-/**
- * struct ti_sci_pm_domain: TI specific data needed for power domain
- * @idx: index of the device that identifies it with the system
- *	 control processor.
- * @exclusive: Permissions for exclusive request or shared request of the
- *	       device.
- * @pd: generic_pm_domain for use with the genpd framework
- * @node: link for the genpd list
- * @parent: link to the parent TI SCI genpd provider
- */
+ 
 struct ti_sci_pm_domain {
 	int idx;
 	u8 exclusive;
@@ -51,10 +29,7 @@ struct ti_sci_pm_domain {
 
 #define genpd_to_ti_sci_pd(gpd) container_of(gpd, struct ti_sci_pm_domain, pd)
 
-/*
- * ti_sci_pd_power_off(): genpd power down hook
- * @domain: pointer to the powerdomain to power off
- */
+ 
 static int ti_sci_pd_power_off(struct generic_pm_domain *domain)
 {
 	struct ti_sci_pm_domain *pd = genpd_to_ti_sci_pd(domain);
@@ -63,10 +38,7 @@ static int ti_sci_pd_power_off(struct generic_pm_domain *domain)
 	return ti_sci->ops.dev_ops.put_device(ti_sci, pd->idx);
 }
 
-/*
- * ti_sci_pd_power_on(): genpd power up hook
- * @domain: pointer to the powerdomain to power on
- */
+ 
 static int ti_sci_pd_power_on(struct generic_pm_domain *domain)
 {
 	struct ti_sci_pm_domain *pd = genpd_to_ti_sci_pd(domain);
@@ -79,11 +51,7 @@ static int ti_sci_pd_power_on(struct generic_pm_domain *domain)
 		return ti_sci->ops.dev_ops.get_device(ti_sci, pd->idx);
 }
 
-/*
- * ti_sci_pd_xlate(): translation service for TI SCI genpds
- * @genpdspec: DT identification data for the genpd
- * @data: genpd core data for all the powerdomains on the device
- */
+ 
 static struct generic_pm_domain *ti_sci_pd_xlate(
 					struct of_phandle_args *genpdspec,
 					void *data)
@@ -137,7 +105,7 @@ static int ti_sci_pm_domain_probe(struct platform_device *pdev)
 
 	INIT_LIST_HEAD(&pd_provider->pd_list);
 
-	/* Find highest device ID used for power domains */
+	 
 	for_each_node_with_property(np, "power-domains") {
 		index = 0;
 

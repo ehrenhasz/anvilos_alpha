@@ -1,27 +1,4 @@
-/*
- * STMicroelectronics st_lsm6dsx i2c controller driver
- *
- * i2c controller embedded in lsm6dx series can connect up to four
- * slave devices using accelerometer sensor as trigger for i2c
- * read/write operations. Current implementation relies on SLV0 channel
- * for slave configuration and SLV{1,2,3} to read data and push them into
- * the hw FIFO
- *
- * Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- *
- */
+ 
 #include <linux/module.h>
 #include <linux/regmap.h>
 #include <linux/iio/iio.h>
@@ -37,7 +14,7 @@
 #define ST_LS6DSX_READ_OP_MASK			GENMASK(2, 0)
 
 static const struct st_lsm6dsx_ext_dev_settings st_lsm6dsx_ext_dev_table[] = {
-	/* LIS2MDL */
+	 
 	{
 		.i2c_addr = { 0x1e },
 		.wai = {
@@ -60,7 +37,7 @@ static const struct st_lsm6dsx_ext_dev_settings st_lsm6dsx_ext_dev_table[] = {
 			.fs_avl[0] = {
 				.gain = 1500,
 				.val = 0x0,
-			}, /* 1500 uG/LSB */
+			},  
 			.fs_len = 1,
 		},
 		.temp_comp = {
@@ -88,7 +65,7 @@ static const struct st_lsm6dsx_ext_dev_settings st_lsm6dsx_ext_dev_table[] = {
 			.len = 6,
 		},
 	},
-	/* LIS3MDL */
+	 
 	{
 		.i2c_addr = { 0x1e },
 		.wai = {
@@ -119,19 +96,19 @@ static const struct st_lsm6dsx_ext_dev_settings st_lsm6dsx_ext_dev_table[] = {
 			.fs_avl[0] = {
 				.gain = 146,
 				.val = 0x00,
-			}, /* 4000 uG/LSB */
+			},  
 			.fs_avl[1] = {
 				.gain = 292,
 				.val = 0x01,
-			}, /* 8000 uG/LSB */
+			},  
 			.fs_avl[2] = {
 				.gain = 438,
 				.val = 0x02,
-			}, /* 12000 uG/LSB */
+			},  
 			.fs_avl[3] = {
 				.gain = 584,
 				.val = 0x03,
-			}, /* 16000 uG/LSB */
+			},  
 			.fs_len = 4,
 		},
 		.pwr_table = {
@@ -160,16 +137,12 @@ static void st_lsm6dsx_shub_wait_complete(struct st_lsm6dsx_hw *hw)
 
 	sensor = iio_priv(hw->iio_devs[ST_LSM6DSX_ID_ACC]);
 	odr = (hw->enable_mask & BIT(ST_LSM6DSX_ID_ACC)) ? sensor->odr : 12500;
-	/* set 10ms as minimum timeout for i2c slave configuration */
+	 
 	timeout = max_t(u32, 2000000U / odr + 1, 10);
 	msleep(timeout);
 }
 
-/*
- * st_lsm6dsx_shub_read_output - read i2c controller register
- *
- * Read st_lsm6dsx i2c controller register
- */
+ 
 int st_lsm6dsx_shub_read_output(struct st_lsm6dsx_hw *hw, u8 *data, int len)
 {
 	const struct st_lsm6dsx_shub_settings *hub_settings;
@@ -195,11 +168,7 @@ out:
 	return err;
 }
 
-/*
- * st_lsm6dsx_shub_write_reg - write i2c controller register
- *
- * Write st_lsm6dsx i2c controller register
- */
+ 
 static int st_lsm6dsx_shub_write_reg(struct st_lsm6dsx_hw *hw, u8 addr,
 				     u8 *data, int len)
 {
@@ -247,7 +216,7 @@ static int st_lsm6dsx_shub_master_enable(struct st_lsm6dsx_sensor *sensor,
 	unsigned int data;
 	int err;
 
-	/* enable acc sensor as trigger */
+	 
 	err = st_lsm6dsx_sensor_set_enable(sensor, enable);
 	if (err < 0)
 		return err;
@@ -273,12 +242,7 @@ out:
 	return err;
 }
 
-/*
- * st_lsm6dsx_shub_read - read data from slave device register
- *
- * Read data from slave device register. SLV0 is used for
- * one-shot read operation
- */
+ 
 static int
 st_lsm6dsx_shub_read(struct st_lsm6dsx_sensor *sensor, u8 addr,
 		     u8 *data, int len)
@@ -292,7 +256,7 @@ st_lsm6dsx_shub_read(struct st_lsm6dsx_sensor *sensor, u8 addr,
 	hub_settings = &hw->settings->shub_settings;
 	slv_addr = ST_LSM6DSX_SLV_ADDR(0, hub_settings->slv0_addr);
 	aux_sens = &hw->settings->shub_settings.aux_sens;
-	/* do not overwrite aux_sens */
+	 
 	if (slv_addr + 2 == aux_sens->addr)
 		slv_config = ST_LSM6DSX_SHIFT_VAL(3, aux_sens->mask);
 
@@ -325,12 +289,7 @@ st_lsm6dsx_shub_read(struct st_lsm6dsx_sensor *sensor, u8 addr,
 					 sizeof(config));
 }
 
-/*
- * st_lsm6dsx_shub_write - write data to slave device register
- *
- * Write data from slave device register. SLV0 is used for
- * one-shot write operation
- */
+ 
 static int
 st_lsm6dsx_shub_write(struct st_lsm6dsx_sensor *sensor, u8 addr,
 		      u8 *data, int len)
@@ -436,7 +395,7 @@ st_lsm6dsx_shub_set_odr(struct st_lsm6dsx_sensor *sensor, u32 odr)
 					       val);
 }
 
-/* use SLV{1,2,3} for FIFO read operations */
+ 
 static int
 st_lsm6dsx_shub_config_channels(struct st_lsm6dsx_sensor *sensor,
 				bool enable)
@@ -831,7 +790,7 @@ st_lsm6dsx_shub_check_wai(struct st_lsm6dsx_hw *hw, u8 *i2c_addr,
 	hub_settings = &hw->settings->shub_settings;
 	aux_sens = &hw->settings->shub_settings.aux_sens;
 	slv_addr = ST_LSM6DSX_SLV_ADDR(0, hub_settings->slv0_addr);
-	/* do not overwrite aux_sens */
+	 
 	if (slv_addr + 2 == aux_sens->addr)
 		slv_config = ST_LSM6DSX_SHIFT_VAL(3, aux_sens->mask);
 
@@ -839,7 +798,7 @@ st_lsm6dsx_shub_check_wai(struct st_lsm6dsx_hw *hw, u8 *i2c_addr,
 		if (!settings->i2c_addr[i])
 			continue;
 
-		/* read wai slave register */
+		 
 		config[0] = (settings->i2c_addr[i] << 1) | 0x1;
 		config[1] = settings->wai.addr;
 		config[2] = 0x1 | slv_config;
@@ -870,7 +829,7 @@ st_lsm6dsx_shub_check_wai(struct st_lsm6dsx_hw *hw, u8 *i2c_addr,
 		break;
 	}
 
-	/* reset SLV0 channel */
+	 
 	config[0] = hub_settings->pause;
 	config[1] = 0;
 	config[2] = slv_config;

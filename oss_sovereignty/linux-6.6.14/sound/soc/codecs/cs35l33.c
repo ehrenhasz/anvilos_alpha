@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cs35l33.c -- CS35L33 ALSA SoC audio driver
- *
- * Copyright 2016 Cirrus Logic, Inc.
- *
- * Author: Paul Handrigan <paul.handrigan@cirrus.com>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/kernel.h>
@@ -117,7 +111,7 @@ static bool cs35l33_volatile_register(struct device *dev, unsigned int reg)
 static bool cs35l33_writeable_register(struct device *dev, unsigned int reg)
 {
 	switch (reg) {
-	/* these are read only registers */
+	 
 	case CS35L33_DEVID_AB:
 	case CS35L33_DEVID_CD:
 	case CS35L33_DEVID_E:
@@ -274,14 +268,14 @@ static int cs35l33_sdout_event(struct snd_soc_dapm_widget *w,
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
 		if (priv->is_tdm_mode) {
-			/* set sdout_3st_i2s and reset pdn_tdm */
+			 
 			val = CS35L33_SDOUT_3ST_I2S;
-			/* reset sdout_3st_tdm */
+			 
 			val2 = 0;
 		} else {
-			/* reset sdout_3st_i2s and set pdn_tdm */
+			 
 			val = CS35L33_PDN_TDM;
-			/* set sdout_3st_tdm */
+			 
 			val2 = CS35L33_SDOUT_3ST_TDM;
 		}
 		dev_dbg(component->dev, "SDOUT turned on\n");
@@ -396,7 +390,7 @@ struct cs35l33_mclk_div {
 };
 
 static const struct cs35l33_mclk_div cs35l33_mclk_coeffs[] = {
-	/* MCLK, Sample Rate, adsp_rate, int_fs_ratio */
+	 
 	{5644800, 11025, 0x4, CS35L33_INT_FS_RATE},
 	{5644800, 22050, 0x8, CS35L33_INT_FS_RATE},
 	{5644800, 44100, 0xC, CS35L33_INT_FS_RATE},
@@ -456,10 +450,7 @@ static int cs35l33_set_dai_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_DSP_A:
-		/*
-		 * tdm mode in cs35l33 resembles dsp-a mode very
-		 * closely, it is dsp-a with fsync shifted left by half bclk
-		 */
+		 
 		priv->is_tdm_mode = true;
 		dev_dbg(component->dev, "Audio port in TDM mode\n");
 		break;
@@ -557,7 +548,7 @@ static int cs35l33_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
 	if (slot_width != 8)
 		return -EINVAL;
 
-	/* scan rx_mask for aud slot */
+	 
 	slot = ffs(rx_mask) - 1;
 	if (slot >= 0) {
 		regmap_update_bits(priv->regmap, CS35L33_RX_AUD,
@@ -565,26 +556,23 @@ static int cs35l33_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
 		dev_dbg(component->dev, "Audio starts from slots %d", slot);
 	}
 
-	/*
-	 * scan tx_mask: vmon(2 slots); imon (2 slots);
-	 * vpmon (1 slot) vbstmon (1 slot)
-	 */
+	 
 	slot = ffs(tx_mask) - 1;
 	slot_num = 0;
 
 	for (i = 0; i < 2 ; i++) {
-		/* disable vpmon/vbstmon: enable later if set in tx_mask */
+		 
 		regmap_update_bits(priv->regmap, CS35L33_TX_VPMON + i,
 			CS35L33_X_STATE | CS35L33_X_LOC, CS35L33_X_STATE
 			| CS35L33_X_LOC);
 	}
 
-	/* disconnect {vp,vbst}_mon routes: eanble later if set in tx_mask*/
+	 
 	snd_soc_dapm_del_routes(dapm, cs35l33_vp_vbst_mon_route,
 		ARRAY_SIZE(cs35l33_vp_vbst_mon_route));
 
 	while (slot >= 0) {
-		/* configure VMON_TX_LOC */
+		 
 		if (slot_num == 0) {
 			regmap_update_bits(priv->regmap, CS35L33_TX_VMON,
 				CS35L33_X_STATE | CS35L33_X_LOC, slot);
@@ -592,7 +580,7 @@ static int cs35l33_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
 				slot, slot + 1);
 		}
 
-		/* configure IMON_TX_LOC */
+		 
 		if (slot_num == 3) {
 			regmap_update_bits(priv->regmap, CS35L33_TX_IMON,
 				CS35L33_X_STATE | CS35L33_X_LOC, slot);
@@ -600,7 +588,7 @@ static int cs35l33_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
 				slot, slot + 1);
 		}
 
-		/* configure VPMON_TX_LOC */
+		 
 		if (slot_num == 4) {
 			regmap_update_bits(priv->regmap, CS35L33_TX_VPMON,
 				CS35L33_X_STATE | CS35L33_X_LOC, slot);
@@ -609,7 +597,7 @@ static int cs35l33_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
 			dev_dbg(component->dev, "VPMON enabled in slots %d", slot);
 		}
 
-		/* configure VBSTMON_TX_LOC */
+		 
 		if (slot_num == 5) {
 			regmap_update_bits(priv->regmap, CS35L33_TX_VBSTMON,
 				CS35L33_X_STATE | CS35L33_X_LOC, slot);
@@ -619,7 +607,7 @@ static int cs35l33_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
 				"VBSTMON enabled in slots %d", slot);
 		}
 
-		/* Enable the relevant tx slot */
+		 
 		reg = CS35L33_TX_EN4 - (slot/8);
 		bit_pos = slot - ((slot / 8) * (8));
 		regmap_update_bits(priv->regmap, reg,
@@ -747,7 +735,7 @@ static int cs35l33_set_bst_ipk(struct snd_soc_component *component, unsigned int
 	struct cs35l33_private *cs35l33 = snd_soc_component_get_drvdata(component);
 	int ret = 0, steps = 0;
 
-	/* Boost current in uA */
+	 
 	if (bst > 3600000 || bst < 1850000) {
 		dev_err(component->dev, "Invalid boost current %d\n", bst);
 		ret = -EINVAL;
@@ -786,7 +774,7 @@ static int cs35l33_probe(struct snd_soc_component *component)
 				CS35L33_ALIVE_WD_DIS2,
 				CS35L33_ALIVE_WD_DIS2);
 
-	/* Set Platform Data */
+	 
 	regmap_update_bits(cs35l33->regmap, CS35L33_BST_CTL1,
 		CS35L33_BST_CTL_MASK, cs35l33->pdata.boost_ctl);
 	regmap_update_bits(cs35l33->regmap, CS35L33_CLASSD_CTL,
@@ -806,17 +794,14 @@ static int cs35l33_probe(struct snd_soc_component *component)
 			CS35L33_DIGSFT, 0);
 	}
 
-	/* update IMON scaling rate if different from default of 0x8 */
+	 
 	if (cs35l33->pdata.imon_adc_scale != 0x8)
 		snd_soc_component_update_bits(component, CS35L33_ADC_CTL,
 			CS35L33_IMON_SCALE, cs35l33->pdata.imon_adc_scale);
 
 	cs35l33_set_hg_data(component, &(cs35l33->pdata));
 
-	/*
-	 * unmask important interrupts that causes the chip to enter
-	 * speaker safe mode and hence deserves user attention
-	 */
+	 
 	regmap_update_bits(cs35l33->regmap, CS35L33_INT_MASK_1,
 		CS35L33_M_OTE | CS35L33_M_OTW | CS35L33_M_AMP_SHORT |
 		CS35L33_M_CAL_ERR, 0);
@@ -899,7 +884,7 @@ static int __maybe_unused cs35l33_runtime_suspend(struct device *dev)
 
 	dev_dbg(dev, "%s\n", __func__);
 
-	/* redo the calibration in next power up */
+	 
 	cs35l33->amp_cal = false;
 
 	regcache_cache_only(cs35l33->regmap, true);
@@ -970,16 +955,14 @@ static irqreturn_t cs35l33_irq_thread(int irq, void *data)
 	regmap_read(cs35l33->regmap, CS35L33_INT_MASK_2, &mask2);
 	regmap_read(cs35l33->regmap, CS35L33_INT_MASK_1, &mask1);
 
-	/* Check to see if the unmasked bits are active,
-	 *  if not then exit.
-	 */
+	 
 	if (!(sticky_val1 & ~mask1) && !(sticky_val2 & ~mask2))
 		return IRQ_NONE;
 
 	regmap_read(cs35l33->regmap, CS35L33_INT_STATUS_1,
 		&current_val);
 
-	/* handle the interrupts */
+	 
 
 	if (sticky_val1 & CS35L33_AMP_SHORT) {
 		dev_crit(component->dev, "Amp short error\n");
@@ -1002,7 +985,7 @@ static irqreturn_t cs35l33_irq_thread(int irq, void *data)
 	if (sticky_val1 & CS35L33_CAL_ERR) {
 		dev_err(component->dev, "Cal error\n");
 
-		/* redo the calibration in next power up */
+		 
 		cs35l33->amp_cal = false;
 
 		if (!(current_val & CS35L33_CAL_ERR)) {
@@ -1101,10 +1084,10 @@ static int cs35l33_of_get_pdata(struct device *dev,
 		if ((val32 == 0x0) || (val32 == 0x7) || (val32 == 0x6))
 			pdata->imon_adc_scale = val32;
 		else
-			/* use default value */
+			 
 			pdata->imon_adc_scale = 0x8;
 	} else {
-		/* use default value */
+		 
 		pdata->imon_adc_scale = 0x8;
 	}
 
@@ -1163,7 +1146,7 @@ static int cs35l33_i2c_probe(struct i2c_client *i2c_client)
 	if (ret != 0)
 		dev_warn(&i2c_client->dev, "Failed to request IRQ: %d\n", ret);
 
-	/* We could issue !RST or skip it based on AMP topology */
+	 
 	cs35l33->reset_gpio = devm_gpiod_get_optional(&i2c_client->dev,
 			"reset", GPIOD_OUT_HIGH);
 	if (IS_ERR(cs35l33->reset_gpio)) {
@@ -1186,7 +1169,7 @@ static int cs35l33_i2c_probe(struct i2c_client *i2c_client)
 	msleep(CS35L33_BOOT_DELAY);
 	regcache_cache_only(cs35l33->regmap, false);
 
-	/* initialize codec */
+	 
 	devid = cirrus_read_device_id(cs35l33->regmap, CS35L33_DEVID_AB);
 	if (devid < 0) {
 		ret = devid;
@@ -1219,7 +1202,7 @@ static int cs35l33_i2c_probe(struct i2c_client *i2c_client)
 		goto err_enable;
 	}
 
-	/* disable mclk and tdm */
+	 
 	regmap_update_bits(cs35l33->regmap, CS35L33_CLK_CTL,
 		CS35L33_MCLKDIS | CS35L33_SDOUT_3ST_TDM,
 		CS35L33_MCLKDIS | CS35L33_SDOUT_3ST_TDM);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Kirkwood thermal sensor driver
- *
- * Copyright (C) 2012 Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
- */
+
+ 
 #include <linux/device.h>
 #include <linux/err.h>
 #include <linux/io.h>
@@ -18,7 +14,7 @@
 #define KIRKWOOD_THERMAL_TEMP_OFFSET	10
 #define KIRKWOOD_THERMAL_TEMP_MASK	0x1FF
 
-/* Kirkwood Thermal Sensor Dev Structure */
+ 
 struct kirkwood_thermal_priv {
 	void __iomem *sensor;
 };
@@ -31,16 +27,12 @@ static int kirkwood_get_temp(struct thermal_zone_device *thermal,
 
 	reg = readl_relaxed(priv->sensor);
 
-	/* Valid check */
+	 
 	if (!((reg >> KIRKWOOD_THERMAL_VALID_OFFSET) &
 	    KIRKWOOD_THERMAL_VALID_MASK))
 		return -EIO;
 
-	/*
-	 * Calculate temperature. According to Marvell internal
-	 * documentation the formula for this is:
-	 * Celsius = (322-reg)/1.3625
-	 */
+	 
 	reg = (reg >> KIRKWOOD_THERMAL_TEMP_OFFSET) &
 		KIRKWOOD_THERMAL_TEMP_MASK;
 	*temp = ((3220000000UL - (10000000UL * reg)) / 13625);

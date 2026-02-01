@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2023 Cornelis Networks, Inc.
- */
+ 
+ 
 #ifndef _HFI1_PINNING_H
 #define _HFI1_PINNING_H
 
@@ -17,4 +15,4 @@ int hfi1_add_pages_to_sdma_packet(struct user_sdma_request *req,
 				  struct user_sdma_iovec *iovec,
 				  u32 *pkt_data_remaining);
 
-#endif /* _HFI1_PINNING_H */
+#endif  

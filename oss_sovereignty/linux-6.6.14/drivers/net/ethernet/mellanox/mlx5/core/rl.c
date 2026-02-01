@@ -1,40 +1,10 @@
-/*
- * Copyright (c) 2013-2016, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/mlx5/driver.h>
 #include "mlx5_core.h"
 
-/* Scheduling element fw management */
+ 
 int mlx5_create_scheduling_element_cmd(struct mlx5_core_dev *dev, u8 hierarchy,
 				       void *ctx, u32 *element_id)
 {
@@ -104,11 +74,7 @@ static bool mlx5_rl_are_equal_raw(struct mlx5_rl_entry *entry, void *rl_in,
 		entry->uid == uid);
 }
 
-/* Finds an entry where we can register the given rate
- * If the rate already exists, return the entry where it is registered,
- * otherwise return the first available entry.
- * If the table is full, return NULL
- */
+ 
 static struct mlx5_rl_entry *find_rl_entry(struct mlx5_rl_table *table,
 					   void *rl_in, u16 uid, bool dedicated)
 {
@@ -190,9 +156,7 @@ static int mlx5_rl_table_get(struct mlx5_rl_table *table)
 	if (!table->rl_entry)
 		return -ENOMEM;
 
-	/* The index represents the index in HW rate limit table
-	 * Index 0 is reserved for unlimited rate
-	 */
+	 
 	for (i = 0; i < table->max_size; i++)
 		table->rl_entry[i].index = i + 1;
 
@@ -217,7 +181,7 @@ static void mlx5_rl_table_free(struct mlx5_core_dev *dev, struct mlx5_rl_table *
 	if (!table->rl_entry)
 		return;
 
-	/* Clear all configured rates */
+	 
 	for (i = 0; i < table->max_size; i++)
 		if (table->rl_entry[i].refcount)
 			mlx5_set_pp_rate_limit_cmd(dev, &table->rl_entry[i], false);
@@ -268,7 +232,7 @@ int mlx5_rl_add_rate_raw(struct mlx5_core_dev *dev, void *rl_in, u16 uid,
 		goto rl_err;
 	}
 	if (!entry->refcount) {
-		/* new rate limit */
+		 
 		memcpy(entry->rl_raw, rl_in, sizeof(entry->rl_raw));
 		entry->uid = uid;
 		err = mlx5_set_pp_rate_limit_cmd(dev, entry, true);
@@ -336,7 +300,7 @@ void mlx5_rl_remove_rate(struct mlx5_core_dev *dev, struct mlx5_rate_limit *rl)
 	struct mlx5_rl_table *table = &dev->priv.rl_table;
 	struct mlx5_rl_entry *entry = NULL;
 
-	/* 0 is a reserved value for unlimited rate */
+	 
 	if (rl->rate == 0)
 		return;
 
@@ -373,7 +337,7 @@ int mlx5_init_rl_table(struct mlx5_core_dev *dev)
 
 	mutex_init(&table->rl_lock);
 
-	/* First entry is reserved for unlimited rate */
+	 
 	table->max_size = MLX5_CAP_QOS(dev, packet_pacing_rate_table_size) - 1;
 	table->max_rate = MLX5_CAP_QOS(dev, packet_pacing_max_rate);
 	table->min_rate = MLX5_CAP_QOS(dev, packet_pacing_min_rate);

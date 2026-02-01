@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Color space converter library
- *
- * Copyright (c) 2013 Texas Instruments Inc.
- *
- * David Griego, <dagriego@biglakesoftware.com>
- * Dale Farnsworth, <dale@farnsworth.org>
- * Archit Taneja, <archit@ti.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/io.h>
@@ -19,10 +11,7 @@
 
 #include "csc.h"
 
-/*
- * 12 coefficients in the order:
- * a0, b0, c0, a1, b1, c1, a2, b2, c2, d0, d1, d2
- */
+ 
 struct quantization {
 	u16	coeff[12];
 };
@@ -42,18 +31,18 @@ struct csc_coeffs {
 	struct encoding_direction r2y;
 };
 
-/* default colorspace coefficients */
+ 
 static struct csc_coeffs csc_coeffs = {
 	.y2r = {
 		.r601 = {
 			.limited = {
-				{	/* SDTV */
+				{	 
 				0x0400, 0x0000, 0x057D, 0x0400, 0x1EA7, 0x1D35,
 				0x0400, 0x06EF, 0x1FFE, 0x0D40, 0x0210, 0x0C88,
 				}
 			},
 			.full = {
-				{	/* SDTV */
+				{	 
 				0x04A8, 0x1FFE, 0x0662, 0x04A8, 0x1E6F, 0x1CBF,
 				0x04A8, 0x0812, 0x1FFF, 0x0C84, 0x0220, 0x0BAC,
 				}
@@ -61,13 +50,13 @@ static struct csc_coeffs csc_coeffs = {
 		},
 		.r709 = {
 			.limited = {
-				{	/* HDTV */
+				{	 
 				0x0400, 0x0000, 0x0629, 0x0400, 0x1F45, 0x1E2B,
 				0x0400, 0x0742, 0x0000, 0x0CEC, 0x0148, 0x0C60,
 				}
 			},
 			.full = {
-				{	/* HDTV */
+				{	 
 				0x04A8, 0x0000, 0x072C, 0x04A8, 0x1F26, 0x1DDE,
 				0x04A8, 0x0873, 0x0000, 0x0C20, 0x0134, 0x0B7C,
 				}
@@ -77,13 +66,13 @@ static struct csc_coeffs csc_coeffs = {
 	.r2y = {
 		.r601 = {
 			.limited = {
-				{	/* SDTV */
+				{	 
 				0x0132, 0x0259, 0x0075, 0x1F50, 0x1EA5, 0x020B,
 				0x020B, 0x1E4A, 0x1FAB, 0x0000, 0x0200, 0x0200,
 				}
 			},
 			.full = {
-				{	/* SDTV */
+				{	 
 				0x0107, 0x0204, 0x0064, 0x1F68, 0x1ED6, 0x01C2,
 				0x01C2, 0x1E87, 0x1FB7, 0x0040, 0x0200, 0x0200,
 				}
@@ -91,13 +80,13 @@ static struct csc_coeffs csc_coeffs = {
 		},
 		.r709 = {
 			.limited = {
-				{	/* HDTV */
+				{	 
 				0x00DA, 0x02DC, 0x004A, 0x1F88, 0x1E6C, 0x020C,
 				0x020C, 0x1E24, 0x1FD0, 0x0000, 0x0200, 0x0200,
 				}
 			},
 			.full = {
-				{	/* HDTV */
+				{	 
 				0x00bb, 0x0275, 0x003f, 0x1f99, 0x1ea5, 0x01c2,
 				0x01c2, 0x1e67, 0x1fd7, 0x0040, 0x0200, 0x0200,
 				}
@@ -133,9 +122,7 @@ void csc_set_coeff_bypass(struct csc_data *csc, u32 *csc_reg5)
 }
 EXPORT_SYMBOL(csc_set_coeff_bypass);
 
-/*
- * set the color space converter coefficient shadow register values
- */
+ 
 void csc_set_coeff(struct csc_data *csc, u32 *csc_reg0,
 		   struct v4l2_format *src_fmt, struct v4l2_format *dst_fmt)
 {
@@ -178,12 +165,9 @@ void csc_set_coeff(struct csc_data *csc, u32 *csc_reg0,
 
 	if (v4l2_is_format_yuv(src_finfo) &&
 	    v4l2_is_format_rgb(dst_finfo)) {
-		/* Y2R */
+		 
 
-		/*
-		 * These are not the standard default values but are
-		 * set this way for historical compatibility
-		 */
+		 
 		if (src_ycbcr_enc == V4L2_YCBCR_ENC_DEFAULT)
 			src_ycbcr_enc = V4L2_YCBCR_ENC_601;
 
@@ -201,17 +185,14 @@ void csc_set_coeff(struct csc_data *csc, u32 *csc_reg0,
 			else
 				coeff = csc_coeffs.y2r.r709.limited.coeff;
 		} else {
-			/* Should never reach this, but it keeps gcc happy */
+			 
 			coeff = csc_coeffs.y2r.r601.full.coeff;
 		}
 	} else if (v4l2_is_format_rgb(src_finfo) &&
 		   v4l2_is_format_yuv(dst_finfo)) {
-		/* R2Y */
+		 
 
-		/*
-		 * These are not the standard default values but are
-		 * set this way for historical compatibility
-		 */
+		 
 		if (dst_ycbcr_enc == V4L2_YCBCR_ENC_DEFAULT)
 			dst_ycbcr_enc = V4L2_YCBCR_ENC_601;
 
@@ -229,7 +210,7 @@ void csc_set_coeff(struct csc_data *csc, u32 *csc_reg0,
 			else
 				coeff = csc_coeffs.r2y.r709.limited.coeff;
 		} else {
-			/* Should never reach this, but it keeps gcc happy */
+			 
 			coeff = csc_coeffs.r2y.r601.full.coeff;
 		}
 	} else {

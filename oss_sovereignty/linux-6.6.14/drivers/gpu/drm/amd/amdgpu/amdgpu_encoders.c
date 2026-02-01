@@ -1,28 +1,4 @@
-/*
- * Copyright 2007-8 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- */
+ 
 
 #include <drm/amdgpu_drm.h>
 #include "amdgpu.h"
@@ -42,7 +18,7 @@ amdgpu_link_encoder_connector(struct drm_device *dev)
 	struct amdgpu_encoder *amdgpu_encoder;
 
 	drm_connector_list_iter_begin(dev, &iter);
-	/* walk the list and link encoders to connectors */
+	 
 	drm_for_each_connector_iter(connector, &iter) {
 		amdgpu_connector = to_amdgpu_connector(connector);
 		list_for_each_entry(encoder, &dev->mode_config.encoder_list, head) {
@@ -210,9 +186,7 @@ bool amdgpu_dig_monitor_is_duallink(struct drm_encoder *encoder,
 	struct amdgpu_connector_atom_dig *dig_connector;
 
 	connector = amdgpu_get_connector_for_encoder(encoder);
-	/* if we don't have an active device yet, just use one of
-	 * the connectors tied to the encoder.
-	 */
+	 
 	if (!connector)
 		connector = amdgpu_get_connector_for_encoder_init(encoder);
 	amdgpu_connector = to_amdgpu_connector(connector);
@@ -221,7 +195,7 @@ bool amdgpu_dig_monitor_is_duallink(struct drm_encoder *encoder,
 	case DRM_MODE_CONNECTOR_DVII:
 	case DRM_MODE_CONNECTOR_HDMIB:
 		if (amdgpu_connector->use_digital) {
-			/* HDMI 1.3 supports up to 340 Mhz over single link */
+			 
 			if (connector->display_info.is_hdmi) {
 				if (pixel_clock > 340000)
 					return true;
@@ -243,7 +217,7 @@ bool amdgpu_dig_monitor_is_duallink(struct drm_encoder *encoder,
 		    (dig_connector->dp_sink_type == CONNECTOR_OBJECT_ID_eDP))
 			return false;
 		else {
-			/* HDMI 1.3 supports up to 340 Mhz over single link */
+			 
 			if (connector->display_info.is_hdmi) {
 				if (pixel_clock > 340000)
 					return true;

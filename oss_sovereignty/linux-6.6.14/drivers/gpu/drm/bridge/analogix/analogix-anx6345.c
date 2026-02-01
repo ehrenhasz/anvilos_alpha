@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2016, Analogix Semiconductor.
- * Copyright(c) 2017, Icenowy Zheng <icenowy@aosc.io>
- *
- * Based on anx7808 driver obtained from chromeos with copyright:
- * Copyright(c) 2013, Google Inc.
- */
+ 
+ 
 #include <linux/delay.h>
 #include <linux/err.h>
 #include <linux/gpio/consumer.h>
@@ -31,8 +25,8 @@
 #include "analogix-i2c-dptx.h"
 #include "analogix-i2c-txcommon.h"
 
-#define POLL_DELAY		50000 /* us */
-#define POLL_TIMEOUT		5000000 /* us */
+#define POLL_DELAY		50000  
+#define POLL_TIMEOUT		5000000  
 
 #define I2C_IDX_DPTX		0
 #define I2C_IDX_TXCOM		1
@@ -53,9 +47,9 @@ struct anx6345 {
 	struct regulator *dvdd12;
 	struct regulator *dvdd25;
 	struct gpio_desc *gpiod_reset;
-	struct mutex lock;	/* protect EDID access */
+	struct mutex lock;	 
 
-	/* I2C Slave addresses of ANX6345 are mapped as DPTX and SYS */
+	 
 	struct i2c_client *i2c_clients[I2C_NUM_ADDRESSES];
 	struct regmap *map[I2C_NUM_ADDRESSES];
 
@@ -129,7 +123,7 @@ static int anx6345_dp_link_training(struct anx6345 *anx6345)
 	if (err)
 		return err;
 
-	/* Get DPCD info */
+	 
 	err = drm_dp_dpcd_read(&anx6345->aux, DP_DPCD_REV,
 			       &anx6345->dpcd, DP_RECEIVER_CAP_SIZE);
 	if (err < 0) {
@@ -137,16 +131,13 @@ static int anx6345_dp_link_training(struct anx6345 *anx6345)
 		return err;
 	}
 
-	/* Clear channel x SERDES power down */
+	 
 	err = anx6345_clear_bits(anx6345->map[I2C_IDX_DPTX],
 				 SP_DP_ANALOG_POWER_DOWN_REG, SP_CH0_PD);
 	if (err)
 		return err;
 
-	/*
-	 * Power up the sink (DP_SET_POWER register is only available on DPCD
-	 * v1.1 and later).
-	 */
+	 
 	if (anx6345->dpcd[DP_DPCD_REV] >= 0x11) {
 		err = drm_dp_dpcd_readb(&anx6345->aux, DP_SET_POWER, &dpcd[0]);
 		if (err < 0) {
@@ -165,15 +156,11 @@ static int anx6345_dp_link_training(struct anx6345 *anx6345)
 			return err;
 		}
 
-		/*
-		 * According to the DP 1.1 specification, a "Sink Device must
-		 * exit the power saving state within 1 ms" (Section 2.5.3.1,
-		 * Table 5-52, "Sink Control Field" (register 0x600).
-		 */
+		 
 		usleep_range(1000, 2000);
 	}
 
-	/* Possibly enable downspread on the sink */
+	 
 	err = regmap_write(anx6345->map[I2C_IDX_DPTX],
 			   SP_DP_DOWNSPREAD_CTRL1_REG, 0);
 	if (err)
@@ -181,7 +168,7 @@ static int anx6345_dp_link_training(struct anx6345 *anx6345)
 
 	if (anx6345->dpcd[DP_MAX_DOWNSPREAD] & DP_MAX_DOWNSPREAD_0_5) {
 		DRM_DEBUG("Enable downspread on the sink\n");
-		/* 4000PPM */
+		 
 		err = regmap_write(anx6345->map[I2C_IDX_DPTX],
 				   SP_DP_DOWNSPREAD_CTRL1_REG, 8);
 		if (err)
@@ -197,7 +184,7 @@ static int anx6345_dp_link_training(struct anx6345 *anx6345)
 			return err;
 	}
 
-	/* Set the lane count and the link rate on the sink */
+	 
 	if (drm_dp_enhanced_frame_cap(anx6345->dpcd))
 		err = anx6345_set_bits(anx6345->map[I2C_IDX_DPTX],
 				       SP_DP_SYSTEM_CTRL_BASE + 4,
@@ -233,7 +220,7 @@ static int anx6345_dp_link_training(struct anx6345 *anx6345)
 		return err;
 	}
 
-	/* Start training on the source */
+	 
 	err = regmap_write(anx6345->map[I2C_IDX_DPTX], SP_DP_LT_CTRL_REG,
 			   SP_LT_EN);
 	if (err)
@@ -249,7 +236,7 @@ static int anx6345_tx_initialization(struct anx6345 *anx6345)
 {
 	int err, i;
 
-	/* FIXME: colordepth is hardcoded for now */
+	 
 	err = regmap_write(anx6345->map[I2C_IDX_TXCOM], SP_VID_CTRL2_REG,
 			   SP_IN_BPC_6BIT << SP_IN_BPC_SHIFT);
 	if (err)
@@ -275,7 +262,7 @@ static int anx6345_tx_initialization(struct anx6345 *anx6345)
 	if (err)
 		return err;
 
-	/* Force HPD */
+	 
 	err = anx6345_set_bits(anx6345->map[I2C_IDX_DPTX],
 			       SP_DP_SYSTEM_CTRL_BASE + 3,
 			       SP_HPD_FORCE | SP_HPD_CTRL);
@@ -283,14 +270,14 @@ static int anx6345_tx_initialization(struct anx6345 *anx6345)
 		return err;
 
 	for (i = 0; i < 4; i++) {
-		/* 4 lanes */
+		 
 		err = regmap_write(anx6345->map[I2C_IDX_DPTX],
 				   SP_DP_LANE0_LT_CTRL_REG + i, 0);
 		if (err)
 			return err;
 	}
 
-	/* Reset AUX */
+	 
 	err = anx6345_set_bits(anx6345->map[I2C_IDX_TXCOM],
 			       SP_RESET_CTRL2_REG, SP_AUX_RST);
 	if (err)
@@ -304,7 +291,7 @@ static void anx6345_poweron(struct anx6345 *anx6345)
 {
 	int err;
 
-	/* Ensure reset is asserted before starting power on sequence */
+	 
 	gpiod_set_value_cansleep(anx6345->gpiod_reset, 1);
 	usleep_range(1000, 2000);
 
@@ -315,7 +302,7 @@ static void anx6345_poweron(struct anx6345 *anx6345)
 		return;
 	}
 
-	/* T1 - delay between VDD12 and VDD25 should be 0-2ms */
+	 
 	usleep_range(1000, 2000);
 
 	err = regulator_enable(anx6345->dvdd25);
@@ -325,14 +312,12 @@ static void anx6345_poweron(struct anx6345 *anx6345)
 		return;
 	}
 
-	/* T2 - delay between RESETN and all power rail stable,
-	 * should be 2-5ms
-	 */
+	 
 	usleep_range(2000, 5000);
 
 	gpiod_set_value_cansleep(anx6345->gpiod_reset, 0);
 
-	/* Power on registers module */
+	 
 	anx6345_set_bits(anx6345->map[I2C_IDX_TXCOM], SP_POWERDOWN_CTRL_REG,
 			 SP_HDCP_PD | SP_AUDIO_PD | SP_VIDEO_PD | SP_LINK_PD);
 	anx6345_clear_bits(anx6345->map[I2C_IDX_TXCOM], SP_POWERDOWN_CTRL_REG,
@@ -382,7 +367,7 @@ static int anx6345_start(struct anx6345 *anx6345)
 	if (!anx6345->powered)
 		anx6345_poweron(anx6345);
 
-	/* Power on needed modules */
+	 
 	err = anx6345_clear_bits(anx6345->map[I2C_IDX_TXCOM],
 				SP_POWERDOWN_CTRL_REG,
 				SP_VIDEO_PD | SP_LINK_PD);
@@ -401,10 +386,7 @@ static int anx6345_start(struct anx6345 *anx6345)
 		return err;
 	}
 
-	/*
-	 * This delay seems to help keep the hardware in a good state. Without
-	 * it, there are times where it fails silently.
-	 */
+	 
 	usleep_range(10000, 15000);
 
 	return 0;
@@ -419,13 +401,13 @@ static int anx6345_config_dp_output(struct anx6345 *anx6345)
 	if (err)
 		return err;
 
-	/* Enable DP output */
+	 
 	err = anx6345_set_bits(anx6345->map[I2C_IDX_TXCOM], SP_VID_CTRL1_REG,
 			       SP_VIDEO_EN);
 	if (err)
 		return err;
 
-	/* Force stream valid */
+	 
 	return anx6345_set_bits(anx6345->map[I2C_IDX_DPTX],
 			       SP_DP_SYSTEM_CTRL_BASE + 3,
 			       SP_STRM_FORCE | SP_STRM_CTRL);
@@ -484,7 +466,7 @@ static int anx6345_get_modes(struct drm_connector *connector)
 
 	num_modes += drm_add_edid_modes(connector, anx6345->edid);
 
-	/* Driver currently supports only 6bpc */
+	 
 	connector->display_info.bpc = 6;
 
 unlock:
@@ -533,7 +515,7 @@ static int anx6345_bridge_attach(struct drm_bridge *bridge,
 		return -ENODEV;
 	}
 
-	/* Register aux channel */
+	 
 	anx6345->aux.name = "DP-AUX";
 	anx6345->aux.dev = &anx6345->client->dev;
 	anx6345->aux.drm_dev = bridge->dev;
@@ -592,7 +574,7 @@ anx6345_bridge_mode_valid(struct drm_bridge *bridge,
 	if (mode->flags & DRM_MODE_FLAG_INTERLACE)
 		return MODE_NO_INTERLACE;
 
-	/* Max 1200p at 5.4 Ghz, one lane */
+	 
 	if (mode->clock > 154000)
 		return MODE_CLOCK_HIGH;
 
@@ -603,7 +585,7 @@ static void anx6345_bridge_disable(struct drm_bridge *bridge)
 {
 	struct anx6345 *anx6345 = bridge_to_anx6345(bridge);
 
-	/* Power off all modules except configuration registers access */
+	 
 	anx6345_set_bits(anx6345->map[I2C_IDX_TXCOM], SP_POWERDOWN_CTRL_REG,
 			 SP_HDCP_PD | SP_AUDIO_PD | SP_VIDEO_PD | SP_LINK_PD);
 	if (anx6345->panel)
@@ -718,7 +700,7 @@ static int anx6345_i2c_probe(struct i2c_client *client)
 	if (err)
 		DRM_DEBUG("No panel found\n");
 
-	/* 1.2V digital core power regulator  */
+	 
 	anx6345->dvdd12 = devm_regulator_get(dev, "dvdd12");
 	if (IS_ERR(anx6345->dvdd12)) {
 		if (PTR_ERR(anx6345->dvdd12) != -EPROBE_DEFER)
@@ -727,7 +709,7 @@ static int anx6345_i2c_probe(struct i2c_client *client)
 		return PTR_ERR(anx6345->dvdd12);
 	}
 
-	/* 2.5V digital core power regulator  */
+	 
 	anx6345->dvdd25 = devm_regulator_get(dev, "dvdd25");
 	if (IS_ERR(anx6345->dvdd25)) {
 		if (PTR_ERR(anx6345->dvdd25) != -EPROBE_DEFER)
@@ -736,14 +718,14 @@ static int anx6345_i2c_probe(struct i2c_client *client)
 		return PTR_ERR(anx6345->dvdd25);
 	}
 
-	/* GPIO for chip reset */
+	 
 	anx6345->gpiod_reset = devm_gpiod_get(dev, "reset", GPIOD_OUT_LOW);
 	if (IS_ERR(anx6345->gpiod_reset)) {
 		DRM_ERROR("Reset gpio not found\n");
 		return PTR_ERR(anx6345->gpiod_reset);
 	}
 
-	/* Map slave addresses of ANX6345 */
+	 
 	for (i = 0; i < I2C_NUM_ADDRESSES; i++) {
 		if (anx6345_i2c_addresses[i] >> 1 != client->addr)
 			anx6345->i2c_clients[i] = i2c_new_dummy_device(client->adapter,
@@ -768,7 +750,7 @@ static int anx6345_i2c_probe(struct i2c_client *client)
 		}
 	}
 
-	/* Look for supported chip ID */
+	 
 	anx6345_poweron(anx6345);
 	if (anx6345_get_chip_id(anx6345)) {
 		anx6345->bridge.funcs = &anx6345_bridge_funcs;
@@ -800,13 +782,13 @@ static void anx6345_i2c_remove(struct i2c_client *client)
 
 static const struct i2c_device_id anx6345_id[] = {
 	{ "anx6345", 0 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, anx6345_id);
 
 static const struct of_device_id anx6345_match_table[] = {
 	{ .compatible = "analogix,anx6345", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, anx6345_match_table);
 

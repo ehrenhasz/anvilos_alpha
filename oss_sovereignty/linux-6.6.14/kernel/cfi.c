@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Clang Control Flow Integrity (CFI) error handling.
- *
- * Copyright (C) 2022 Google LLC
- */
+
+ 
 
 #include <linux/cfi.h>
 
@@ -44,7 +40,7 @@ static bool is_trap(unsigned long addr, s32 *start, s32 *end)
 }
 
 #ifdef CONFIG_MODULES
-/* Populates `kcfi_trap(_end)?` fields in `struct module`. */
+ 
 void module_cfi_finalize(const Elf_Ehdr *hdr, const Elf_Shdr *sechdrs,
 			 struct module *mod)
 {
@@ -81,12 +77,12 @@ static bool is_module_cfi_trap(unsigned long addr)
 
 	return found;
 }
-#else /* CONFIG_MODULES */
+#else  
 static inline bool is_module_cfi_trap(unsigned long addr)
 {
 	return false;
 }
-#endif /* CONFIG_MODULES */
+#endif  
 
 extern s32 __start___kcfi_traps[];
 extern s32 __stop___kcfi_traps[];
@@ -98,4 +94,4 @@ bool is_cfi_trap(unsigned long addr)
 
 	return is_module_cfi_trap(addr);
 }
-#endif /* CONFIG_ARCH_USES_CFI_TRAPS */
+#endif  

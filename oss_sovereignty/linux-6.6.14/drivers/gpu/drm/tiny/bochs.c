@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -19,7 +19,7 @@
 
 #include <video/vga.h>
 
-/* ---------------------------------------------------------------------- */
+ 
 
 #define VBE_DISPI_IOPORT_INDEX           0x01CE
 #define VBE_DISPI_IOPORT_DATA            0x01CF
@@ -62,7 +62,7 @@ module_param(defy, int, 0444);
 MODULE_PARM_DESC(defx, "default x resolution");
 MODULE_PARM_DESC(defy, "default y resolution");
 
-/* ---------------------------------------------------------------------- */
+ 
 
 enum bochs_types {
 	BOCHS_QEMU_STDVGA,
@@ -71,7 +71,7 @@ enum bochs_types {
 };
 
 struct bochs_device {
-	/* hw */
+	 
 	void __iomem   *mmio;
 	int            ioports;
 	void __iomem   *fb_map;
@@ -79,7 +79,7 @@ struct bochs_device {
 	unsigned long  fb_size;
 	unsigned long  qext_size;
 
-	/* mode */
+	 
 	u16 xres;
 	u16 yres;
 	u16 yres_virtual;
@@ -87,13 +87,13 @@ struct bochs_device {
 	u32 bpp;
 	struct edid *edid;
 
-	/* drm */
+	 
 	struct drm_device *dev;
 	struct drm_simple_display_pipe pipe;
 	struct drm_connector connector;
 };
 
-/* ---------------------------------------------------------------------- */
+ 
 
 static void bochs_vga_writeb(struct bochs_device *bochs, u16 ioport, u8 val)
 {
@@ -178,7 +178,7 @@ static int bochs_get_edid_block(void *data, u8 *buf,
 	struct bochs_device *bochs = data;
 	size_t i, start = block * EDID_LENGTH;
 
-	if (start + len > 0x400 /* vga register offset */)
+	if (start + len > 0x400  )
 		return -1;
 
 	for (i = 0; i < len; i++)
@@ -194,7 +194,7 @@ static int bochs_hw_load_edid(struct bochs_device *bochs)
 	if (!bochs->mmio)
 		return -1;
 
-	/* check header to detect whenever edid support is enabled in qemu */
+	 
 	bochs_get_edid_block(bochs, header, 0, ARRAY_SIZE(header));
 	if (drm_edid_header_is_valid(header) != 8)
 		return -1;
@@ -216,7 +216,7 @@ static int bochs_hw_init(struct drm_device *dev)
 	u16 id;
 
 	if (pdev->resource[2].flags & IORESOURCE_MEM) {
-		/* mmio bar with vga and bochs registers present */
+		 
 		if (pci_request_region(pdev, 2, "bochs-drm") != 0) {
 			DRM_ERROR("Cannot request mmio region\n");
 			return -EBUSY;
@@ -294,7 +294,7 @@ static void bochs_hw_fini(struct drm_device *dev)
 {
 	struct bochs_device *bochs = dev->dev_private;
 
-	/* TODO: shot down existing vram mappings */
+	 
 
 	if (bochs->mmio)
 		iounmap(bochs->mmio);
@@ -309,11 +309,11 @@ static void bochs_hw_fini(struct drm_device *dev)
 static void bochs_hw_blank(struct bochs_device *bochs, bool blank)
 {
 	DRM_DEBUG_DRIVER("hw_blank %d\n", blank);
-	/* enable color bit (so VGA_IS1_RC access works) */
+	 
 	bochs_vga_writeb(bochs, VGA_MIS_W, VGA_MIS_COLOR);
-	/* discard ar_flip_flop */
+	 
 	(void)bochs_vga_readb(bochs, VGA_IS1_RC);
-	/* blank or unblank; we need only update index and set 0x20 */
+	 
 	bochs_vga_writeb(bochs, VGA_ATT_W, blank ? 0 : 0x20);
 }
 
@@ -374,7 +374,7 @@ static void bochs_hw_setformat(struct bochs_device *bochs, const struct drm_form
 		bochs_hw_set_big_endian(bochs);
 		break;
 	default:
-		/* should not happen */
+		 
 		DRM_ERROR("%s: Huh? Got framebuffer format 0x%x",
 			  __func__, format->format);
 		break;
@@ -408,7 +408,7 @@ static void bochs_hw_setbase(struct bochs_device *bochs, int x, int y, int strid
 	drm_dev_exit(idx);
 }
 
-/* ---------------------------------------------------------------------- */
+ 
 
 static const uint32_t bochs_formats[] = {
 	DRM_FORMAT_XRGB8888,
@@ -426,7 +426,7 @@ static void bochs_plane_update(struct bochs_device *bochs, struct drm_plane_stat
 	gbo = drm_gem_vram_of_gem(state->fb->obj[0]);
 	gpu_addr = drm_gem_vram_offset(gbo);
 	if (WARN_ON_ONCE(gpu_addr < 0))
-		return; /* Bug: we didn't pin the BO to VRAM in prepare_fb. */
+		return;  
 
 	bochs_hw_setbase(bochs,
 			 state->crtc_x,
@@ -563,8 +563,8 @@ static int bochs_kms_init(struct bochs_device *bochs)
 	return 0;
 }
 
-/* ---------------------------------------------------------------------- */
-/* drm interface                                                          */
+ 
+ 
 
 static int bochs_load(struct drm_device *dev)
 {
@@ -609,8 +609,8 @@ static const struct drm_driver bochs_driver = {
 	DRM_GEM_VRAM_DRIVER,
 };
 
-/* ---------------------------------------------------------------------- */
-/* pm interface                                                           */
+ 
+ 
 
 #ifdef CONFIG_PM_SLEEP
 static int bochs_pm_suspend(struct device *dev)
@@ -633,8 +633,8 @@ static const struct dev_pm_ops bochs_pm_ops = {
 				bochs_pm_resume)
 };
 
-/* ---------------------------------------------------------------------- */
-/* pci interface                                                          */
+ 
+ 
 
 static int bochs_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
@@ -712,7 +712,7 @@ static const struct pci_device_id bochs_pci_tbl[] = {
 		.subdevice   = PCI_ANY_ID,
 		.driver_data = BOCHS_SIMICS,
 	},
-	{ /* end of list */ }
+	{   }
 };
 
 static struct pci_driver bochs_pci_driver = {
@@ -723,8 +723,8 @@ static struct pci_driver bochs_pci_driver = {
 	.driver.pm =    &bochs_pm_ops,
 };
 
-/* ---------------------------------------------------------------------- */
-/* module init/exit                                                       */
+ 
+ 
 
 drm_module_pci_driver_if_modeset(bochs_pci_driver, bochs_modeset);
 

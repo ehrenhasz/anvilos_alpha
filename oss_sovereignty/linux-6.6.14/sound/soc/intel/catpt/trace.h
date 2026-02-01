@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2020 Intel Corporation. All rights reserved.
- *
- * Author: Cezary Rojewski <cezary.rojewski@intel.com>
- */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM intel_catpt
@@ -74,9 +70,9 @@ TRACE_EVENT_CONDITION(catpt_ipc_payload,
 				   __get_dynamic_array_len(buf), false))
 );
 
-#endif /* __SND_SOC_INTEL_CATPT_TRACE_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #define TRACE_INCLUDE_FILE trace

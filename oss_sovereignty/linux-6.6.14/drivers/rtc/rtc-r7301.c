@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * EPSON TOYOCOM RTC-7301SF/DG Driver
- *
- * Copyright (c) 2016 Akinobu Mita <akinobu.mita@gmail.com>
- *
- * Based on rtc-rp5c01.c
- *
- * Datasheet: http://www5.epsondevice.com/en/products/parallel/rtc7301sf.html
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/kernel.h>
@@ -20,29 +12,29 @@
 
 #define DRV_NAME "rtc-r7301"
 
-#define RTC7301_1_SEC		0x0	/* Bank 0 and Band 1 */
-#define RTC7301_10_SEC		0x1	/* Bank 0 and Band 1 */
+#define RTC7301_1_SEC		0x0	 
+#define RTC7301_10_SEC		0x1	 
 #define RTC7301_AE		BIT(3)
-#define RTC7301_1_MIN		0x2	/* Bank 0 and Band 1 */
-#define RTC7301_10_MIN		0x3	/* Bank 0 and Band 1 */
-#define RTC7301_1_HOUR		0x4	/* Bank 0 and Band 1 */
-#define RTC7301_10_HOUR		0x5	/* Bank 0 and Band 1 */
-#define RTC7301_DAY_OF_WEEK	0x6	/* Bank 0 and Band 1 */
-#define RTC7301_1_DAY		0x7	/* Bank 0 and Band 1 */
-#define RTC7301_10_DAY		0x8	/* Bank 0 and Band 1 */
-#define RTC7301_1_MONTH		0x9	/* Bank 0 */
-#define RTC7301_10_MONTH	0xa	/* Bank 0 */
-#define RTC7301_1_YEAR		0xb	/* Bank 0 */
-#define RTC7301_10_YEAR		0xc	/* Bank 0 */
-#define RTC7301_100_YEAR	0xd	/* Bank 0 */
-#define RTC7301_1000_YEAR	0xe	/* Bank 0 */
-#define RTC7301_ALARM_CONTROL	0xe	/* Bank 1 */
+#define RTC7301_1_MIN		0x2	 
+#define RTC7301_10_MIN		0x3	 
+#define RTC7301_1_HOUR		0x4	 
+#define RTC7301_10_HOUR		0x5	 
+#define RTC7301_DAY_OF_WEEK	0x6	 
+#define RTC7301_1_DAY		0x7	 
+#define RTC7301_10_DAY		0x8	 
+#define RTC7301_1_MONTH		0x9	 
+#define RTC7301_10_MONTH	0xa	 
+#define RTC7301_1_YEAR		0xb	 
+#define RTC7301_10_YEAR		0xc	 
+#define RTC7301_100_YEAR	0xd	 
+#define RTC7301_1000_YEAR	0xe	 
+#define RTC7301_ALARM_CONTROL	0xe	 
 #define RTC7301_ALARM_CONTROL_AIE	BIT(0)
 #define RTC7301_ALARM_CONTROL_AF	BIT(1)
-#define RTC7301_TIMER_CONTROL	0xe	/* Bank 2 */
+#define RTC7301_TIMER_CONTROL	0xe	 
 #define RTC7301_TIMER_CONTROL_TIE	BIT(0)
 #define RTC7301_TIMER_CONTROL_TF	BIT(1)
-#define RTC7301_CONTROL		0xf	/* All banks */
+#define RTC7301_CONTROL		0xf	 
 #define RTC7301_CONTROL_BUSY		BIT(0)
 #define RTC7301_CONTROL_STOP		BIT(1)
 #define RTC7301_CONTROL_BANK_SEL_0	BIT(2)
@@ -184,7 +176,7 @@ static void rtc7301_write_time(struct rtc7301_priv *priv, struct rtc_time *tm,
 	rtc7301_write(priv, tm->tm_mday % 10, RTC7301_1_DAY);
 	rtc7301_write(priv, tm->tm_mday / 10, RTC7301_10_DAY);
 
-	/* Don't care for alarm register */
+	 
 	rtc7301_write(priv, alarm ? RTC7301_AE : tm->tm_wday,
 		      RTC7301_DAY_OF_WEEK);
 

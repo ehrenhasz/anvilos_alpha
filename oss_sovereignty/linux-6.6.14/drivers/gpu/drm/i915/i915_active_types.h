@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2019 Intel Corporation
- */
+ 
 
 #ifndef _I915_ACTIVE_TYPES_H_
 #define _I915_ACTIVE_TYPES_H_
@@ -30,7 +26,7 @@ struct i915_active {
 	struct active_node *cache;
 	struct rb_root tree;
 
-	/* Preallocated "exclusive" node */
+	 
 	struct i915_active_fence excl;
 
 	unsigned long flags;
@@ -44,4 +40,4 @@ struct i915_active {
 	struct llist_head preallocated_barriers;
 };
 
-#endif /* _I915_ACTIVE_TYPES_H_ */
+#endif  

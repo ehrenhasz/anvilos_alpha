@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016-2017 Lucas Stach, Pengutronix
- */
+
+ 
 
 #include <drm/drm_fourcc.h>
 #include <linux/clk.h>
@@ -162,18 +160,10 @@ void ipu_prg_disable(struct ipu_soc *ipu)
 }
 EXPORT_SYMBOL_GPL(ipu_prg_disable);
 
-/*
- * The channel configuartion functions below are not thread safe, as they
- * must be only called from the atomic commit path in the DRM driver, which
- * is properly serialized.
- */
+ 
 static int ipu_prg_ipu_to_prg_chan(int ipu_chan)
 {
-	/*
-	 * This isn't clearly documented in the RM, but IPU to PRG channel
-	 * assignment is fixed, as only with this mapping the control signals
-	 * match up.
-	 */
+	 
 	switch (ipu_chan) {
 	case IPUV3_CHANNEL_MEM_BG_SYNC:
 		return 0;
@@ -190,7 +180,7 @@ static int ipu_prg_get_pre(struct ipu_prg *prg, int prg_chan)
 {
 	int i, ret;
 
-	/* channel 0 is special as it is hardwired to one of the PREs */
+	 
 	if (prg_chan == 0) {
 		ret = ipu_pre_get(prg->pres[0]);
 		if (ret)
@@ -207,13 +197,13 @@ static int ipu_prg_get_pre(struct ipu_prg *prg, int prg_chan)
 
 			prg->chan[prg_chan].used_pre = i;
 
-			/* configure the PRE to PRG channel mux */
+			 
 			shift = (i == 1) ? 12 : 14;
 			mux = (prg->id << 1) | (prg_chan - 1);
 			regmap_update_bits(prg->iomuxc_gpr, IOMUXC_GPR5,
 					   0x3 << shift, mux << shift);
 
-			/* check other mux, must not point to same channel */
+			 
 			shift = (i == 1) ? 14 : 12;
 			regmap_read(prg->iomuxc_gpr, IOMUXC_GPR5, &val);
 			if (((val >> shift) & 0x3) == mux) {
@@ -315,18 +305,18 @@ int ipu_prg_channel_configure(struct ipuv3_channel *ipu_chan,
 	writel(val, prg->regs + IPU_PRG_BADDR(prg_chan));
 
 	val = readl(prg->regs + IPU_PRG_CTL);
-	/* config AXI ID */
+	 
 	val &= ~(IPU_PRG_CTL_SOFT_ARID_MASK <<
 		 IPU_PRG_CTL_SOFT_ARID_SHIFT(prg_chan));
 	val |= IPU_PRG_CTL_SOFT_ARID(prg_chan, axi_id);
-	/* enable channel */
+	 
 	val &= ~IPU_PRG_CTL_BYPASS(prg_chan);
 	writel(val, prg->regs + IPU_PRG_CTL);
 
 	val = IPU_PRG_REG_UPDATE_REG_UPDATE;
 	writel(val, prg->regs + IPU_PRG_REG_UPDATE);
 
-	/* wait for both double buffers to be filled */
+	 
 	readl_poll_timeout(prg->regs + IPU_PRG_STATUS, val,
 			   (val & IPU_PRG_STATUS_BUFFER0_READY(prg_chan)) &&
 			   (val & IPU_PRG_STATUS_BUFFER1_READY(prg_chan)),
@@ -399,12 +389,12 @@ static int ipu_prg_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* init to free running mode */
+	 
 	val = readl(prg->regs + IPU_PRG_CTL);
 	val |= IPU_PRG_CTL_SHADOW_EN;
 	writel(val, prg->regs + IPU_PRG_CTL);
 
-	/* disable address threshold */
+	 
 	writel(0xffffffff, prg->regs + IPU_PRG_THD);
 
 	pm_runtime_set_active(dev);
@@ -466,7 +456,7 @@ static const struct dev_pm_ops prg_pm_ops = {
 
 static const struct of_device_id ipu_prg_dt_ids[] = {
 	{ .compatible = "fsl,imx6qp-prg", },
-	{ /* sentinel */ },
+	{   },
 };
 
 struct platform_driver ipu_prg_drv = {

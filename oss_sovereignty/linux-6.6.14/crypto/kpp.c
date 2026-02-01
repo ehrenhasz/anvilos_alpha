@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Key-agreement Protocol Primitives (KPP)
- *
- * Copyright (c) 2016, Intel Corporation
- * Authors: Salvatore Benedetto <salvatore.benedetto@intel.com>
- */
+
+ 
 
 #include <crypto/internal/kpp.h>
 #include <linux/cryptouser.h>

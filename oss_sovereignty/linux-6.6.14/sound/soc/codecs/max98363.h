@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (c) 2022 Analog Devices Inc. */
+ 
+ 
 
 #ifndef _MAX98363_H
 #define _MAX98363_H
@@ -20,11 +20,11 @@
 #define MAX98363_R2042_DSP_CFG			0x2042
 #define MAX98363_R21FF_REV_ID			0x21FF
 
-/* MAX98363_R2021_ERR_MON_CTRL */
+ 
 #define MAX98363_SPKMON_SHIFT			(3)
 #define MAX98363_CLOCK_MON_SHIFT		(0)
 
-/* MAX98363_R2042_DSP_CFG */
+ 
 #define MAX98363_AMP_DSP_CFG_RMP_SHIFT		(3)
 
 struct max98363_priv {

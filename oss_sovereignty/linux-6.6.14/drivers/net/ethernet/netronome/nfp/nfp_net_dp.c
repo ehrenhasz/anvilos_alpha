@@ -1,19 +1,11 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2015-2019 Netronome Systems, Inc. */
+
+ 
 
 #include "nfp_app.h"
 #include "nfp_net_dp.h"
 #include "nfp_net_xsk.h"
 
-/**
- * nfp_net_rx_alloc_one() - Allocate and map page frag for RX
- * @dp:		NFP Net data path struct
- * @dma_addr:	Pointer to storage for DMA address (output param)
- *
- * This function will allcate a new page frag, map it for DMA.
- *
- * Return: allocated page frag or NULL on failure.
- */
+ 
 void *nfp_net_rx_alloc_one(struct nfp_net_dp *dp, dma_addr_t *dma_addr)
 {
 	void *frag;
@@ -41,14 +33,7 @@ void *nfp_net_rx_alloc_one(struct nfp_net_dp *dp, dma_addr_t *dma_addr)
 	return frag;
 }
 
-/**
- * nfp_net_tx_ring_init() - Fill in the boilerplate for a TX ring
- * @tx_ring:  TX ring structure
- * @dp:	      NFP Net data path struct
- * @r_vec:    IRQ vector servicing this ring
- * @idx:      Ring index
- * @is_xdp:   Is this an XDP TX ring?
- */
+ 
 static void
 nfp_net_tx_ring_init(struct nfp_net_tx_ring *tx_ring, struct nfp_net_dp *dp,
 		     struct nfp_net_r_vector *r_vec, unsigned int idx,
@@ -66,12 +51,7 @@ nfp_net_tx_ring_init(struct nfp_net_tx_ring *tx_ring, struct nfp_net_dp *dp,
 	tx_ring->qcp_q = nn->tx_bar + NFP_QCP_QUEUE_OFF(tx_ring->qcidx);
 }
 
-/**
- * nfp_net_rx_ring_init() - Fill in the boilerplate for a RX ring
- * @rx_ring:  RX ring structure
- * @r_vec:    IRQ vector servicing this ring
- * @idx:      Ring index
- */
+ 
 static void
 nfp_net_rx_ring_init(struct nfp_net_rx_ring *rx_ring,
 		     struct nfp_net_r_vector *r_vec, unsigned int idx)
@@ -86,23 +66,16 @@ nfp_net_rx_ring_init(struct nfp_net_rx_ring *rx_ring,
 	rx_ring->qcp_fl = nn->rx_bar + NFP_QCP_QUEUE_OFF(rx_ring->fl_qcidx);
 }
 
-/**
- * nfp_net_rx_ring_reset() - Reflect in SW state of freelist after disable
- * @rx_ring:	RX ring structure
- *
- * Assumes that the device is stopped, must be idempotent.
- */
+ 
 void nfp_net_rx_ring_reset(struct nfp_net_rx_ring *rx_ring)
 {
 	unsigned int wr_idx, last_idx;
 
-	/* wr_p == rd_p means ring was never fed FL bufs.  RX rings are always
-	 * kept at cnt - 1 FL bufs.
-	 */
+	 
 	if (rx_ring->wr_p == 0 && rx_ring->rd_p == 0)
 		return;
 
-	/* Move the empty entry to the end of the list */
+	 
 	wr_idx = D_IDX(rx_ring, rx_ring->wr_p);
 	last_idx = rx_ring->cnt - 1;
 	if (rx_ring->r_vec->xsk_pool) {
@@ -119,15 +92,7 @@ void nfp_net_rx_ring_reset(struct nfp_net_rx_ring *rx_ring)
 	rx_ring->rd_p = 0;
 }
 
-/**
- * nfp_net_rx_ring_bufs_free() - Free any buffers currently on the RX ring
- * @dp:		NFP Net data path struct
- * @rx_ring:	RX ring to remove buffers from
- *
- * Assumes that the device is stopped and buffers are in [0, ring->cnt - 1)
- * entries.  After device is disabled nfp_net_rx_ring_reset() must be called
- * to restore required ring geometry.
- */
+ 
 static void
 nfp_net_rx_ring_bufs_free(struct nfp_net_dp *dp,
 			  struct nfp_net_rx_ring *rx_ring)
@@ -138,10 +103,7 @@ nfp_net_rx_ring_bufs_free(struct nfp_net_dp *dp,
 		return;
 
 	for (i = 0; i < rx_ring->cnt - 1; i++) {
-		/* NULL skb can only happen when initial filling of the ring
-		 * fails to allocate enough buffers and calls here to free
-		 * already allocated ones.
-		 */
+		 
 		if (!rx_ring->rxbufs[i].frag)
 			continue;
 
@@ -152,11 +114,7 @@ nfp_net_rx_ring_bufs_free(struct nfp_net_dp *dp,
 	}
 }
 
-/**
- * nfp_net_rx_ring_bufs_alloc() - Fill RX ring with buffers (don't give to FW)
- * @dp:		NFP Net data path struct
- * @rx_ring:	RX ring to remove buffers from
- */
+ 
 static int
 nfp_net_rx_ring_bufs_alloc(struct nfp_net_dp *dp,
 			   struct nfp_net_rx_ring *rx_ring)
@@ -244,10 +202,7 @@ void nfp_net_tx_rings_free(struct nfp_net_dp *dp)
 	kfree(dp->tx_rings);
 }
 
-/**
- * nfp_net_rx_ring_free() - Free resources allocated to a RX ring
- * @rx_ring:  RX ring to free
- */
+ 
 static void nfp_net_rx_ring_free(struct nfp_net_rx_ring *rx_ring)
 {
 	struct nfp_net_r_vector *r_vec = rx_ring->r_vec;
@@ -273,13 +228,7 @@ static void nfp_net_rx_ring_free(struct nfp_net_rx_ring *rx_ring)
 	rx_ring->size = 0;
 }
 
-/**
- * nfp_net_rx_ring_alloc() - Allocate resource for a RX ring
- * @dp:	      NFP Net data path struct
- * @rx_ring:  RX ring to allocate
- *
- * Return: 0 on success, negative errno otherwise.
- */
+ 
 static int
 nfp_net_rx_ring_alloc(struct nfp_net_dp *dp, struct nfp_net_rx_ring *rx_ring)
 {
@@ -383,7 +332,7 @@ void
 nfp_net_rx_ring_hw_cfg_write(struct nfp_net *nn,
 			     struct nfp_net_rx_ring *rx_ring, unsigned int idx)
 {
-	/* Write the DMA address, size and MSI-X info to the device */
+	 
 	nn_writeq(nn, NFP_NET_CFG_RXR_ADDR(idx), rx_ring->dma);
 	nn_writeb(nn, NFP_NET_CFG_RXR_SZ(idx), ilog2(rx_ring->cnt));
 	nn_writeb(nn, NFP_NET_CFG_RXR_VEC(idx), rx_ring->r_vec->irq_entry);

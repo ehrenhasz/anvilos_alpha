@@ -1,8 +1,4 @@
-/*
- * Copyright (C) 2017 Spreadtrum Communications Inc.
- *
- * SPDX-License-Identifier: GPL-2.0
- */
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -25,7 +21,7 @@
 #define SPRD_DMA_CHN_REG_LENGTH		0x40
 #define SPRD_DMA_MEMCPY_MIN_SIZE	64
 
-/* DMA global registers definition */
+ 
 #define SPRD_DMA_GLB_PAUSE		0x0
 #define SPRD_DMA_GLB_FRAG_WAIT		0x4
 #define SPRD_DMA_GLB_REQ_PEND0_EN	0x8
@@ -41,7 +37,7 @@
 #define SPRD_DMA_GLB_REQ_UID(uid)	(0x4 * ((uid) - 1))
 #define SPRD_DMA_GLB_REQ_UID_OFFSET	0x2000
 
-/* DMA channel registers definition */
+ 
 #define SPRD_DMA_CHN_PAUSE		0x0
 #define SPRD_DMA_CHN_REQ		0x4
 #define SPRD_DMA_CHN_CFG		0x8
@@ -59,7 +55,7 @@
 #define SPRD_DMA_CHN_SRC_BLK_STEP	0x38
 #define SPRD_DMA_CHN_DES_BLK_STEP	0x3c
 
-/* SPRD_DMA_GLB_2STAGE_GRP register definition */
+ 
 #define SPRD_DMA_GLB_2STAGE_EN		BIT(24)
 #define SPRD_DMA_GLB_CHN_INT_MASK	GENMASK(23, 20)
 #define SPRD_DMA_GLB_DEST_INT		BIT(22)
@@ -73,7 +69,7 @@
 #define SPRD_DMA_GLB_DEST_CHN_OFFSET	8
 #define SPRD_DMA_GLB_SRC_CHN_MASK	GENMASK(5, 0)
 
-/* SPRD_DMA_CHN_INTC register definition */
+ 
 #define SPRD_DMA_INT_MASK		GENMASK(4, 0)
 #define SPRD_DMA_INT_CLR_OFFSET		24
 #define SPRD_DMA_FRAG_INT_EN		BIT(0)
@@ -82,27 +78,27 @@
 #define SPRD_DMA_LIST_INT_EN		BIT(3)
 #define SPRD_DMA_CFG_ERR_INT_EN		BIT(4)
 
-/* SPRD_DMA_CHN_CFG register definition */
+ 
 #define SPRD_DMA_CHN_EN			BIT(0)
 #define SPRD_DMA_LINKLIST_EN		BIT(4)
 #define SPRD_DMA_WAIT_BDONE_OFFSET	24
 #define SPRD_DMA_DONOT_WAIT_BDONE	1
 
-/* SPRD_DMA_CHN_REQ register definition */
+ 
 #define SPRD_DMA_REQ_EN			BIT(0)
 
-/* SPRD_DMA_CHN_PAUSE register definition */
+ 
 #define SPRD_DMA_PAUSE_EN		BIT(0)
 #define SPRD_DMA_PAUSE_STS		BIT(2)
 #define SPRD_DMA_PAUSE_CNT		0x2000
 
-/* DMA_CHN_WARP_* register definition */
+ 
 #define SPRD_DMA_HIGH_ADDR_MASK		GENMASK(31, 28)
 #define SPRD_DMA_LOW_ADDR_MASK		GENMASK(31, 0)
 #define SPRD_DMA_WRAP_ADDR_MASK		GENMASK(27, 0)
 #define SPRD_DMA_HIGH_ADDR_OFFSET	4
 
-/* SPRD_DMA_CHN_INTC register definition */
+ 
 #define SPRD_DMA_FRAG_INT_STS		BIT(16)
 #define SPRD_DMA_BLK_INT_STS		BIT(17)
 #define SPRD_DMA_TRSC_INT_STS		BIT(18)
@@ -113,7 +109,7 @@
 	 SPRD_DMA_TRSC_INT_STS | SPRD_DMA_LIST_INT_STS |	\
 	 SPRD_DMA_CFGERR_INT_STS)
 
-/* SPRD_DMA_CHN_FRG_LEN register definition */
+ 
 #define SPRD_DMA_SRC_DATAWIDTH_OFFSET	30
 #define SPRD_DMA_DES_DATAWIDTH_OFFSET	28
 #define SPRD_DMA_SWT_MODE_OFFSET	26
@@ -126,27 +122,27 @@
 #define SPRD_DMA_LLIST_END		BIT(19)
 #define SPRD_DMA_FRG_LEN_MASK		GENMASK(16, 0)
 
-/* SPRD_DMA_CHN_BLK_LEN register definition */
+ 
 #define SPRD_DMA_BLK_LEN_MASK		GENMASK(16, 0)
 
-/* SPRD_DMA_CHN_TRSC_LEN register definition */
+ 
 #define SPRD_DMA_TRSC_LEN_MASK		GENMASK(27, 0)
 
-/* SPRD_DMA_CHN_TRSF_STEP register definition */
+ 
 #define SPRD_DMA_DEST_TRSF_STEP_OFFSET	16
 #define SPRD_DMA_SRC_TRSF_STEP_OFFSET	0
 #define SPRD_DMA_TRSF_STEP_MASK		GENMASK(15, 0)
 
-/* SPRD DMA_SRC_BLK_STEP register definition */
+ 
 #define SPRD_DMA_LLIST_HIGH_MASK	GENMASK(31, 28)
 #define SPRD_DMA_LLIST_HIGH_SHIFT	28
 
-/* define DMA channel mode & trigger mode mask */
+ 
 #define SPRD_DMA_CHN_MODE_MASK		GENMASK(7, 0)
 #define SPRD_DMA_TRG_MODE_MASK		GENMASK(7, 0)
 #define SPRD_DMA_INT_TYPE_MASK		GENMASK(7, 0)
 
-/* define the DMA transfer step type */
+ 
 #define SPRD_DMA_NONE_STEP		0
 #define SPRD_DMA_BYTE_STEP		1
 #define SPRD_DMA_SHORT_STEP		2
@@ -155,7 +151,7 @@
 
 #define SPRD_DMA_SOFTWARE_UID		0
 
-/* dma data width values */
+ 
 enum sprd_dma_datawidth {
 	SPRD_DMA_DATAWIDTH_1_BYTE,
 	SPRD_DMA_DATAWIDTH_2_BYTES,
@@ -163,7 +159,7 @@ enum sprd_dma_datawidth {
 	SPRD_DMA_DATAWIDTH_8_BYTES,
 };
 
-/* dma channel hardware configuration */
+ 
 struct sprd_dma_chn_hw {
 	u32 pause;
 	u32 req;
@@ -183,14 +179,14 @@ struct sprd_dma_chn_hw {
 	u32 des_blk_step;
 };
 
-/* dma request description */
+ 
 struct sprd_dma_desc {
 	struct virt_dma_desc	vd;
 	struct sprd_dma_chn_hw	chn_hw;
 	enum dma_transfer_direction dir;
 };
 
-/* dma channel description */
+ 
 struct sprd_dma_chn {
 	struct virt_dma_chan	vc;
 	void __iomem		*chn_base;
@@ -204,7 +200,7 @@ struct sprd_dma_chn {
 	struct sprd_dma_desc	*cur_desc;
 };
 
-/* SPRD dma device */
+ 
 struct sprd_dma_dev {
 	struct dma_device	dma_dev;
 	void __iomem		*glb_base;
@@ -266,10 +262,7 @@ static int sprd_dma_enable(struct sprd_dma_dev *sdev)
 	if (ret)
 		return ret;
 
-	/*
-	 * The ashb_clk is optional and only for AGCP DMA controller, so we
-	 * need add one condition to check if the ashb_clk need enable.
-	 */
+	 
 	if (!IS_ERR(sdev->ashb_clk))
 		ret = clk_prepare_enable(sdev->ashb_clk);
 
@@ -280,9 +273,7 @@ static void sprd_dma_disable(struct sprd_dma_dev *sdev)
 {
 	clk_disable_unprepare(sdev->clk);
 
-	/*
-	 * Need to check if we need disable the optional ashb_clk for AGCP DMA.
-	 */
+	 
 	if (!IS_ERR(sdev->ashb_clk))
 		clk_disable_unprepare(sdev->ashb_clk);
 }
@@ -494,7 +485,7 @@ static void sprd_dma_set_pending(struct sprd_dma_chn *schan, bool enable)
 	if (schan->dev_id == SPRD_DMA_SOFTWARE_UID)
 		return;
 
-	/* The DMA request id always starts from 0. */
+	 
 	req_id = schan->dev_id - 1;
 
 	if (req_id < 32) {
@@ -541,17 +532,11 @@ static void sprd_dma_start(struct sprd_dma_chn *schan)
 	list_del(&vd->node);
 	schan->cur_desc = to_sprd_dma_desc(vd);
 
-	/*
-	 * Set 2-stage configuration if the channel starts one 2-stage
-	 * transfer.
-	 */
+	 
 	if (schan->chn_mode && sprd_dma_set_2stage_config(schan))
 		return;
 
-	/*
-	 * Copy the DMA configuration from DMA descriptor to this hardware
-	 * channel.
-	 */
+	 
 	sprd_dma_set_chn_config(schan, schan->cur_desc);
 	sprd_dma_set_uid(schan);
 	sprd_dma_set_pending(schan, true);
@@ -613,12 +598,12 @@ static irqreturn_t dma_irq_handle(int irq, void *dev_id)
 		req_type = sprd_dma_get_req_type(schan);
 		sprd_dma_clear_int(schan);
 
-		/* cyclic mode schedule callback */
+		 
 		cyclic = schan->linklist.phy_addr ? true : false;
 		if (cyclic == true) {
 			vchan_cyclic_callback(&sdesc->vd);
 		} else {
-			/* Check if the dma request descriptor is done. */
+			 
 			trans_done = sprd_dma_check_trans_done(sdesc, int_type,
 							       req_type);
 			if (trans_done == true) {
@@ -765,10 +750,7 @@ static int sprd_dma_fill_desc(struct dma_chan *chan,
 			return src_step;
 		}
 
-		/*
-		 * For 2-stage transfer, destination channel step can not be 0,
-		 * since destination device is AON IRAM.
-		 */
+		 
 		if (chn_mode == SPRD_DMA_DST_CHN0 ||
 		    chn_mode == SPRD_DMA_DST_CHN1)
 			dst_step = src_step;
@@ -797,20 +779,13 @@ static int sprd_dma_fill_desc(struct dma_chan *chan,
 
 	hw->cfg = SPRD_DMA_DONOT_WAIT_BDONE << SPRD_DMA_WAIT_BDONE_OFFSET;
 
-	/*
-	 * wrap_ptr and wrap_to will save the high 4 bits source address and
-	 * destination address.
-	 */
+	 
 	hw->wrap_ptr = (src >> SPRD_DMA_HIGH_ADDR_OFFSET) & SPRD_DMA_HIGH_ADDR_MASK;
 	hw->wrap_to = (dst >> SPRD_DMA_HIGH_ADDR_OFFSET) & SPRD_DMA_HIGH_ADDR_MASK;
 	hw->src_addr = src & SPRD_DMA_LOW_ADDR_MASK;
 	hw->des_addr = dst & SPRD_DMA_LOW_ADDR_MASK;
 
-	/*
-	 * If the src step and dst step both are 0 or both are not 0, that means
-	 * we can not enable the fix mode. If one is 0 and another one is not,
-	 * we can enable the fix mode.
-	 */
+	 
 	if ((src_step != 0 && dst_step != 0) || (src_step | dst_step) == 0) {
 		fix_en = 0;
 	} else {
@@ -840,19 +815,16 @@ static int sprd_dma_fill_desc(struct dma_chan *chan,
 	temp |= (src_step & SPRD_DMA_TRSF_STEP_MASK) << SPRD_DMA_SRC_TRSF_STEP_OFFSET;
 	hw->trsf_step = temp;
 
-	/* link-list configuration */
+	 
 	if (schan->linklist.phy_addr) {
 		hw->cfg |= SPRD_DMA_LINKLIST_EN;
 
-		/* link-list index */
+		 
 		temp = sglen ? (sg_index + 1) % sglen : 0;
 
-		/* Next link-list configuration's physical address offset */
+		 
 		temp = temp * sizeof(*hw) + SPRD_DMA_CHN_SRC_ADDR;
-		/*
-		 * Set the link-list pointer point to next link-list
-		 * configuration's physical address.
-		 */
+		 
 		llist_ptr = schan->linklist.phy_addr + temp;
 		hw->llist_ptr = lower_32_bits(llist_ptr);
 		hw->src_blk_step = (upper_32_bits(llist_ptr) << SPRD_DMA_LLIST_HIGH_SHIFT) &
@@ -978,10 +950,7 @@ sprd_dma_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 		schan->linklist.wrap_addr = 0;
 	}
 
-	/*
-	 * Set channel mode, interrupt mode and trigger mode for 2-stage
-	 * transfer.
-	 */
+	 
 	schan->chn_mode =
 		(flags >> SPRD_DMA_CHN_MODE_SHIFT) & SPRD_DMA_CHN_MODE_MASK;
 	schan->trg_mode =
@@ -1010,11 +979,7 @@ sprd_dma_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 			start_dst = dst;
 		}
 
-		/*
-		 * The link-list mode needs at least 2 link-list
-		 * configurations. If there is only one sg, it doesn't
-		 * need to fill the link-list configuration.
-		 */
+		 
 		if (sglen < 2)
 			break;
 
@@ -1117,7 +1082,7 @@ static int sprd_dma_probe(struct platform_device *pdev)
 	u32 chn_count;
 	int ret, i;
 
-	/* Parse new and deprecated dma-channels properties */
+	 
 	ret = device_property_read_u32(&pdev->dev, "dma-channels", &chn_count);
 	if (ret)
 		ret = device_property_read_u32(&pdev->dev, "#dma-channels",
@@ -1139,18 +1104,12 @@ static int sprd_dma_probe(struct platform_device *pdev)
 		return PTR_ERR(sdev->clk);
 	}
 
-	/* ashb clock is optional for AGCP DMA */
+	 
 	sdev->ashb_clk = devm_clk_get(&pdev->dev, "ashb_eb");
 	if (IS_ERR(sdev->ashb_clk))
 		dev_warn(&pdev->dev, "no optional ashb eb clock\n");
 
-	/*
-	 * We have three DMA controllers: AP DMA, AON DMA and AGCP DMA. For AGCP
-	 * DMA controller, it can or do not request the irq, which will save
-	 * system power without resuming system by DMA interrupts if AGCP DMA
-	 * does not request the irq. Thus the DMA interrupts property should
-	 * be optional.
-	 */
+	 
 	sdev->irq = platform_get_irq(pdev, 0);
 	if (sdev->irq > 0) {
 		ret = devm_request_irq(&pdev->dev, sdev->irq, dma_irq_handle,
@@ -1187,7 +1146,7 @@ static int sprd_dma_probe(struct platform_device *pdev)
 		dma_chn = &sdev->channels[i];
 		dma_chn->chn_num = i;
 		dma_chn->cur_desc = NULL;
-		/* get each channel's registers base address. */
+		 
 		dma_chn->chn_base = sdev->glb_base + SPRD_DMA_CHN_REG_OFFSET +
 				    SPRD_DMA_CHN_REG_LENGTH * i;
 
@@ -1239,7 +1198,7 @@ static int sprd_dma_remove(struct platform_device *pdev)
 
 	pm_runtime_get_sync(&pdev->dev);
 
-	/* explicitly free the irq */
+	 
 	if (sdev->irq > 0)
 		devm_free_irq(&pdev->dev, sdev->irq, sdev);
 

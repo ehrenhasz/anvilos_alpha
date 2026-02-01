@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics 2018 - All Rights Reserved
- * Author: Ludovic Barre <ludovic.barre@st.com> for STMicroelectronics.
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
 #include <linux/dmaengine.h>
@@ -119,10 +116,7 @@ struct stm32_qspi {
 	u32 dcr_reg;
 	unsigned long status_timeout;
 
-	/*
-	 * to protect device configuration, could be different between
-	 * 2 flash access (bk1, bk2)
-	 */
+	 
 	struct mutex lock;
 };
 
@@ -135,7 +129,7 @@ static irqreturn_t stm32_qspi_irq(int irq, void *dev_id)
 	sr = readl_relaxed(qspi->io_base + QSPI_SR);
 
 	if (cr & CR_SMIE && sr & SR_SMF) {
-		/* disable irq */
+		 
 		cr &= ~CR_SMIE;
 		writel_relaxed(cr, qspi->io_base + QSPI_CR);
 		complete(&qspi->match_completion);
@@ -144,7 +138,7 @@ static irqreturn_t stm32_qspi_irq(int irq, void *dev_id)
 	}
 
 	if (sr & (SR_TEF | SR_TCF)) {
-		/* disable irq */
+		 
 		cr &= ~CR_TCIE & ~CR_TEIE;
 		writel_relaxed(cr, qspi->io_base + QSPI_CR);
 		complete(&qspi->data_completion);
@@ -229,10 +223,7 @@ static int stm32_qspi_tx_dma(struct stm32_qspi *qspi,
 		dma_ch = qspi->dma_chtx;
 	}
 
-	/*
-	 * spi_map_buf return -EINVAL if the buffer is not DMA-able
-	 * (DMA-able: in vmalloc | kmap | virt_addr_valid)
-	 */
+	 
 	err = spi_controller_dma_map_mem_op_data(qspi->ctrl, op, &sgt);
 	if (err)
 		return err;
@@ -322,7 +313,7 @@ static int stm32_qspi_wait_cmd(struct stm32_qspi *qspi)
 	}
 
 out:
-	/* clear flags */
+	 
 	writel_relaxed(FCR_CTCF | FCR_CTEF, qspi->io_base + QSPI_FCR);
 	if (!err)
 		err = stm32_qspi_wait_nobusy(qspi);
@@ -407,17 +398,11 @@ static int stm32_qspi_send(struct spi_device *spi, const struct spi_mem_op *op)
 
 	err = stm32_qspi_tx(qspi, op);
 
-	/*
-	 * Abort in:
-	 * -error case
-	 * -read memory map: prefetching must be stopped if we read the last
-	 *  byte of device (device size - fifo size). like device size is not
-	 *  knows, the prefetching is always stop.
-	 */
+	 
 	if (err || err_poll_status || qspi->fmode == CCR_FMODE_MM)
 		goto abort;
 
-	/* wait end of tx in indirect mode */
+	 
 	err = stm32_qspi_wait_cmd(qspi);
 	if (err)
 		goto abort;
@@ -428,7 +413,7 @@ abort:
 	cr = readl_relaxed(qspi->io_base + QSPI_CR) | CR_ABORT;
 	writel_relaxed(cr, qspi->io_base + QSPI_CR);
 
-	/* wait clear of abort bit by hw */
+	 
 	timeout = readl_relaxed_poll_timeout_atomic(qspi->io_base + QSPI_CR,
 						    cr, !(cr & CR_ABORT), 1,
 						    STM32_ABT_TIMEOUT_US);
@@ -505,7 +490,7 @@ static int stm32_qspi_dirmap_create(struct spi_mem_dirmap_desc *desc)
 	if (desc->info.op_tmpl.data.dir == SPI_MEM_DATA_OUT)
 		return -EOPNOTSUPP;
 
-	/* should never happen, as mm_base == null is an error probe exit condition */
+	 
 	if (!qspi->mm_base && desc->info.op_tmpl.data.dir == SPI_MEM_DATA_IN)
 		return -EOPNOTSUPP;
 
@@ -528,10 +513,7 @@ static ssize_t stm32_qspi_dirmap_read(struct spi_mem_dirmap_desc *desc,
 		return ret;
 
 	mutex_lock(&qspi->lock);
-	/* make a local copy of desc op_tmpl and complete dirmap rdesc
-	 * spi_mem_op template with offs, len and *buf in  order to get
-	 * all needed transfer information into struct spi_mem_op
-	 */
+	 
 	memcpy(&op, &desc->info.op_tmpl, sizeof(struct spi_mem_op));
 	dev_dbg(qspi->dev, "%s len = 0x%zx offs = 0x%llx buf = 0x%p\n", __func__, len, offs, buf);
 
@@ -584,17 +566,13 @@ static int stm32_qspi_transfer_one_message(struct spi_controller *ctrl,
 			transfer->rx_buf, transfer->rx_nbits,
 			transfer->len, transfer->dummy_data);
 
-		/*
-		 * QSPI hardware supports dummy bytes transfer.
-		 * If current transfer is dummy byte, merge it with the next
-		 * transfer in order to take into account QSPI block constraint
-		 */
+		 
 		if (transfer->dummy_data) {
 			op.dummy.buswidth = transfer->tx_nbits;
 			op.dummy.nbytes = transfer->len;
 			dummy_bytes = transfer->len;
 
-			/* if happens, means that message is not correctly built */
+			 
 			if (list_is_last(&transfer->transfer_list, &msg->transfers)) {
 				ret = -EINVAL;
 				goto end_of_transfer;
@@ -675,10 +653,7 @@ static int stm32_qspi_setup(struct spi_device *spi)
 	mutex_lock(&qspi->lock);
 	qspi->cr_reg = CR_APMS | 3 << CR_FTHRES_SHIFT | CR_SSHIFT | CR_EN;
 
-	/*
-	 * Dual flash mode is only enable in case SPI_TX_OCTAL and SPI_TX_OCTAL
-	 * are both set in spi->mode and "cs-gpios" properties is found in DT
-	 */
+	 
 	if (mode == (SPI_TX_OCTAL | SPI_RX_OCTAL)) {
 		qspi->cr_reg |= CR_DFM;
 		dev_dbg(qspi->dev, "Dual flash mode enable");
@@ -686,7 +661,7 @@ static int stm32_qspi_setup(struct spi_device *spi)
 
 	writel_relaxed(qspi->cr_reg, qspi->io_base + QSPI_CR);
 
-	/* set dcr fsize to max address */
+	 
 	qspi->dcr_reg = DCR_FSIZE_MASK;
 	writel_relaxed(qspi->dcr_reg, qspi->io_base + QSPI_DCR);
 	mutex_unlock(&qspi->lock);
@@ -755,10 +730,7 @@ static void stm32_qspi_dma_free(struct stm32_qspi *qspi)
 		dma_release_channel(qspi->dma_chrx);
 }
 
-/*
- * no special host constraint, so use default spi_mem_default_supports_op
- * to check supported mode.
- */
+ 
 static const struct spi_controller_mem_ops stm32_qspi_mem_ops = {
 	.exec_op	= stm32_qspi_exec_op,
 	.dirmap_create	= stm32_qspi_dirmap_create,
@@ -872,7 +844,7 @@ static int stm32_qspi_probe(struct platform_device *pdev)
 
 err_pm_runtime_free:
 	pm_runtime_get_sync(qspi->dev);
-	/* disable qspi */
+	 
 	writel_relaxed(0, qspi->io_base + QSPI_CR);
 	mutex_destroy(&qspi->lock);
 	pm_runtime_put_noidle(qspi->dev);
@@ -893,7 +865,7 @@ static void stm32_qspi_remove(struct platform_device *pdev)
 
 	pm_runtime_get_sync(qspi->dev);
 	spi_unregister_master(qspi->ctrl);
-	/* disable qspi */
+	 
 	writel_relaxed(0, qspi->io_base + QSPI_CR);
 	stm32_qspi_dma_free(qspi);
 	mutex_destroy(&qspi->lock);

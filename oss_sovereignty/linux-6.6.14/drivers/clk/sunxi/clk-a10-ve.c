@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2015 Chen-Yu Tsai
- *
- * Chen-Yu Tsai <wens@csie.org>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -20,9 +16,7 @@ static DEFINE_SPINLOCK(ve_lock);
 #define SUN4I_VE_DIVIDER_WIDTH	3
 #define SUN4I_VE_RESET		0
 
-/*
- * sunxi_ve_reset... - reset bit in ve clk registers handling
- */
+ 
 
 struct ve_reset_data {
 	void __iomem			*reg;

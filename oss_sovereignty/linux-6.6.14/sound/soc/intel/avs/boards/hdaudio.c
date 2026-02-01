@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2021-2022 Intel Corporation. All rights reserved.
-//
-// Authors: Cezary Rojewski <cezary.rojewski@intel.com>
-//          Amadeusz Slawinski <amadeuszx.slawinski@linux.intel.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -67,7 +67,7 @@ static int avs_create_dai_links(struct device *dev, struct hda_codec *codec, int
 	return 0;
 }
 
-/* Should be aligned with SectionPCM's name from topology */
+ 
 #define FEDAI_NAME_PREFIX "HDMI"
 
 static struct snd_pcm *
@@ -99,7 +99,7 @@ static int avs_card_late_probe(struct snd_soc_card *card)
 	struct snd_soc_acpi_mach *mach = dev_get_platdata(card->dev);
 	struct hda_codec *codec = mach->pdata;
 	struct hda_pcm *hpcm;
-	/* Topology pcm indexing is 1-based */
+	 
 	int i = 1;
 
 	list_for_each_entry(hpcm, &codec->pcm_list_head, list) {
@@ -180,7 +180,7 @@ static int avs_hdaudio_probe(struct platform_device *pdev)
 	mach = dev_get_platdata(dev);
 	codec = mach->pdata;
 
-	/* codec may be unloaded before card's probe() fires */
+	 
 	if (!device_is_registered(&codec->core.dev))
 		return -ENODEV;
 

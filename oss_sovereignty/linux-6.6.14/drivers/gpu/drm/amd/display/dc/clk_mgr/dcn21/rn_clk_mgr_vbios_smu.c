@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-16 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "core_types.h"
 #include "clk_mgr_internal.h"
@@ -70,11 +47,7 @@
 #define VBIOSSMC_Result_CmdRejectedPrereq         0xFD
 #define VBIOSSMC_Result_CmdRejectedBusy           0xFC
 
-/*
- * Function to be used instead of REG_WAIT macro because the wait ends when
- * the register is NOT EQUAL to zero, and because the translation in msg_if.h
- * won't work with REG_WAIT.
- */
+ 
 static uint32_t rn_smu_wait_for_response(struct clk_mgr_internal *clk_mgr, unsigned int delay_us, unsigned int max_retries)
 {
 	uint32_t res_val = VBIOSSMC_Status_BUSY;
@@ -109,20 +82,20 @@ static int rn_vbios_smu_send_msg_with_param(struct clk_mgr_internal *clk_mgr,
 		return -1;
 	}
 
-	/* First clear response register */
+	 
 	REG_WRITE(MP1_SMN_C2PMSG_91, VBIOSSMC_Status_BUSY);
 
-	/* Set the parameter register for the SMU message, unit is Mhz */
+	 
 	REG_WRITE(MP1_SMN_C2PMSG_83, param);
 
-	/* Trigger the message transaction by writing the message ID */
+	 
 	REG_WRITE(MP1_SMN_C2PMSG_67, msg_id);
 
 	result = rn_smu_wait_for_response(clk_mgr, 10, 200000);
 
 	ASSERT(result == VBIOSSMC_Result_OK || result == VBIOSSMC_Result_UnknownCmd);
 
-	/* Actual dispclk set is returned in the parameter register */
+	 
 	return REG_READ(MP1_SMN_C2PMSG_83);
 }
 
@@ -141,7 +114,7 @@ int rn_vbios_smu_set_dispclk(struct clk_mgr_internal *clk_mgr, int requested_dis
 	struct dc *dc = clk_mgr->base.ctx->dc;
 	struct dmcu *dmcu = dc->res_pool->dmcu;
 
-	/*  Unit of SMU msg parameter is Mhz */
+	 
 	actual_dispclk_set_mhz = rn_vbios_smu_send_msg_with_param(
 			clk_mgr,
 			VBIOSSMC_MSG_SetDispclkFreq,
@@ -153,7 +126,7 @@ int rn_vbios_smu_set_dispclk(struct clk_mgr_internal *clk_mgr, int requested_dis
 					actual_dispclk_set_mhz / 7);
 	}
 
-	// pmfw always set clock more than or equal requested clock
+	 
 	ASSERT(actual_dispclk_set_mhz >= khz_to_mhz_ceil(requested_dispclk_khz));
 
 	return actual_dispclk_set_mhz * 1000;
@@ -168,7 +141,7 @@ int rn_vbios_smu_set_dprefclk(struct clk_mgr_internal *clk_mgr)
 			VBIOSSMC_MSG_SetDprefclkFreq,
 			khz_to_mhz_ceil(clk_mgr->base.dprefclk_khz));
 
-	/* TODO: add code for programing DP DTO, currently this is down by command table */
+	 
 
 	return actual_dprefclk_set_mhz * 1000;
 }
@@ -265,6 +238,6 @@ int rn_vbios_smu_is_periodic_retraining_disabled(struct clk_mgr_internal *clk_mg
 	return rn_vbios_smu_send_msg_with_param(
 			clk_mgr,
 			VBIOSSMC_MSG_IsPeriodicRetrainingDisabled,
-			1);	// if PMFW doesn't support this message, assume retraining is disabled
-				// so we only use most optimal watermark if we know retraining is enabled.
+			1);	 
+				
 }

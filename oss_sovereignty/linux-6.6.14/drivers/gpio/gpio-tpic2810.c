@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015-2023 Texas Instruments Incorporated - https://www.ti.com/
- *	Andrew Davis <afd@ti.com>
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/i2c.h>
@@ -11,13 +8,7 @@
 
 #define TPIC2810_WS_COMMAND 0x44
 
-/**
- * struct tpic2810 - GPIO driver data
- * @chip: GPIO controller chip
- * @client: I2C device pointer
- * @buffer: Buffer for device register
- * @lock: Protects write sequences
- */
+ 
 struct tpic2810 {
 	struct gpio_chip chip;
 	struct i2c_client *client;
@@ -30,21 +21,21 @@ static void tpic2810_set(struct gpio_chip *chip, unsigned offset, int value);
 static int tpic2810_get_direction(struct gpio_chip *chip,
 				  unsigned offset)
 {
-	/* This device always output */
+	 
 	return GPIO_LINE_DIRECTION_OUT;
 }
 
 static int tpic2810_direction_input(struct gpio_chip *chip,
 				    unsigned offset)
 {
-	/* This device is output only */
+	 
 	return -EINVAL;
 }
 
 static int tpic2810_direction_output(struct gpio_chip *chip,
 				     unsigned offset, int value)
 {
-	/* This device always output */
+	 
 	tpic2810_set(chip, offset, value);
 	return 0;
 }
@@ -94,7 +85,7 @@ static const struct gpio_chip template_chip = {
 
 static const struct of_device_id tpic2810_of_match_table[] = {
 	{ .compatible = "ti,tpic2810" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, tpic2810_of_match_table);
 
@@ -118,7 +109,7 @@ static int tpic2810_probe(struct i2c_client *client)
 
 static const struct i2c_device_id tpic2810_id_table[] = {
 	{ "tpic2810", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, tpic2810_id_table);
 

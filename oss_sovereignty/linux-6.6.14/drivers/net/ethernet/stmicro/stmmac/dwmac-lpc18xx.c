@@ -1,12 +1,4 @@
-/*
- * DWMAC glue for NXP LPC18xx/LPC43xx Ethernet
- *
- * Copyright (C) 2015 Joachim Eastwood <manabian@gmail.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/mfd/syscon.h>
 #include <linux/module.h>
@@ -19,7 +11,7 @@
 
 #include "stmmac_platform.h"
 
-/* Register defines for CREG syscon */
+ 
 #define LPC18XX_CREG_CREG6			0x12c
 # define LPC18XX_CREG_CREG6_ETHMODE_MASK	0x7
 # define LPC18XX_CREG_CREG6_ETHMODE_MII		0x0

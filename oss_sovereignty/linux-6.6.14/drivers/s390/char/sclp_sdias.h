@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * SCLP "store data in absolute storage"
- *
- * Copyright IBM Corp. 2003, 2013
- */
+ 
+ 
 
 #ifndef SCLP_SDIAS_H
 #define SCLP_SDIAS_H
@@ -44,4 +40,4 @@ struct sdias_sccb {
 	struct sdias_evbuf	evbuf;
 } __packed;
 
-#endif /* SCLP_SDIAS_H */
+#endif  

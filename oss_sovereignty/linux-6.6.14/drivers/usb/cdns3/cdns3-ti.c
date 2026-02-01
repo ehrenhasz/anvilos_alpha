@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * cdns3-ti.c - TI specific Glue layer for Cadence USB Controller
- *
- * Copyright (C) 2019 Texas Instruments Incorporated - https://www.ti.com
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -17,7 +13,7 @@
 #include <linux/pm_runtime.h>
 #include <linux/property.h>
 
-/* USB Wrapper register offsets */
+ 
 #define USBSS_PID		0x0
 #define	USBSS_W1		0x4
 #define USBSS_STATIC_CONFIG	0x8
@@ -27,7 +23,7 @@
 #define	USBSS_DEBUG_LINK_STATE	0x18
 #define	USBSS_DEVICE_CTRL	0x1c
 
-/* Wrapper 1 register bits */
+ 
 #define USBSS_W1_PWRUP_RST		BIT(0)
 #define USBSS_W1_OVERCURRENT_SEL	BIT(8)
 #define USBSS_W1_MODESTRAP_SEL		BIT(9)
@@ -36,7 +32,7 @@
 #define USBSS_W1_MODESTRAP_SHIFT	17
 #define USBSS_W1_USB2_ONLY		BIT(19)
 
-/* Static config register bits */
+ 
 #define USBSS1_STATIC_PLL_REF_SEL_MASK	GENMASK(8, 5)
 #define USBSS1_STATIC_PLL_REF_SEL_SHIFT	5
 #define USBSS1_STATIC_LOOPBACK_MODE_MASK	GENMASK(4, 3)
@@ -45,7 +41,7 @@
 #define USBSS1_STATIC_VBUS_SEL_SHIFT	1
 #define USBSS1_STATIC_LANE_REVERSE	BIT(0)
 
-/* Modestrap modes */
+ 
 enum modestrap_mode { USBSS_MODESTRAP_MODE_NONE,
 		      USBSS_MODESTRAP_MODE_HOST,
 		      USBSS_MODESTRAP_MODE_PERIPHERAL};
@@ -59,7 +55,7 @@ struct cdns_ti {
 	struct clk *lpm_clk;
 };
 
-static const int cdns_ti_rate_table[] = {	/* in KHZ */
+static const int cdns_ti_rate_table[] = {	 
 	9600,
 	10000,
 	12000,
@@ -122,7 +118,7 @@ static int cdns_ti_probe(struct platform_device *pdev)
 	}
 
 	rate = clk_get_rate(data->usb2_refclk);
-	rate /= 1000;	/* To KHz */
+	rate /= 1000;	 
 	for (i = 0; i < ARRAY_SIZE(cdns_ti_rate_table); i++) {
 		if (cdns_ti_rate_table[i] == rate)
 			break;
@@ -142,12 +138,12 @@ static int cdns_ti_probe(struct platform_device *pdev)
 		goto err;
 	}
 
-	/* assert RESET */
+	 
 	reg = cdns_ti_readl(data, USBSS_W1);
 	reg &= ~USBSS_W1_PWRUP_RST;
 	cdns_ti_writel(data, USBSS_W1, reg);
 
-	/* set static config */
+	 
 	reg = cdns_ti_readl(data, USBSS_STATIC_CONFIG);
 	reg &= ~USBSS1_STATIC_PLL_REF_SEL_MASK;
 	reg |= rate_code << USBSS1_STATIC_PLL_REF_SEL_SHIFT;
@@ -160,19 +156,19 @@ static int cdns_ti_probe(struct platform_device *pdev)
 	cdns_ti_writel(data, USBSS_STATIC_CONFIG, reg);
 	reg = cdns_ti_readl(data, USBSS_STATIC_CONFIG);
 
-	/* set USB2_ONLY mode if requested */
+	 
 	reg = cdns_ti_readl(data, USBSS_W1);
 	data->usb2_only = device_property_read_bool(dev, "ti,usb2-only");
 	if (data->usb2_only)
 		reg |= USBSS_W1_USB2_ONLY;
 
-	/* set default modestrap */
+	 
 	reg |= USBSS_W1_MODESTRAP_SEL;
 	reg &= ~USBSS_W1_MODESTRAP_MASK;
 	reg |= USBSS_MODESTRAP_MODE_NONE << USBSS_W1_MODESTRAP_SHIFT;
 	cdns_ti_writel(data, USBSS_W1, reg);
 
-	/* de-assert RESET */
+	 
 	reg |= USBSS_W1_PWRUP_RST;
 	cdns_ti_writel(data, USBSS_W1, reg);
 

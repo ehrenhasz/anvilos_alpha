@@ -1,23 +1,19 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2018 MediaTek Inc.
- * Author: Houlong Wei <houlong.wei@mediatek.com>
- *
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_GCE_MT8173_H
 #define _DT_BINDINGS_GCE_MT8173_H
 
-/* GCE HW thread priority */
+ 
 #define CMDQ_THR_PRIO_LOWEST	0
 #define CMDQ_THR_PRIO_HIGHEST	1
 
-/* GCE SUBSYS */
+ 
 #define SUBSYS_1400XXXX		1
 #define SUBSYS_1401XXXX		2
 #define SUBSYS_1402XXXX		3
 
-/* GCE HW EVENT */
+ 
 #define CMDQ_EVENT_DISP_OVL0_SOF		11
 #define CMDQ_EVENT_DISP_OVL1_SOF		12
 #define CMDQ_EVENT_DISP_RDMA0_SOF		13

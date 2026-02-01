@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* WMI driver for Xiaomi Laptops */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/input.h>
@@ -66,13 +66,13 @@ static void xiaomi_wmi_notify(struct wmi_device *wdev, union acpi_object *dummy)
 }
 
 static const struct wmi_device_id xiaomi_wmi_id_table[] = {
-	// { XIAOMI_DEVICE(XIAOMI_KEY_FN_ESC_0, KEY_FN_ESC) },
-	// { XIAOMI_DEVICE(XIAOMI_KEY_FN_ESC_1, KEY_FN_ESC) },
+	
+	
 	{ XIAOMI_DEVICE(XIAOMI_KEY_FN_FN, KEY_PROG1) },
-	// { XIAOMI_DEVICE(XIAOMI_KEY_CAPSLOCK, KEY_CAPSLOCK) },
+	
 	{ XIAOMI_DEVICE(XIAOMI_KEY_FN_F7, KEY_CUT) },
 
-	/* Terminating entry */
+	 
 	{ }
 };
 

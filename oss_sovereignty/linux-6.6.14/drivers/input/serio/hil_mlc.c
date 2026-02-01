@@ -1,56 +1,4 @@
-/*
- * HIL MLC state machine and serio interface driver
- *
- * Copyright (c) 2001 Brian S. Julin
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. The name of the author may not be used to endorse or promote products
- *    derived from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL").
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- *
- * References:
- * HP-HIL Technical Reference Manual.  Hewlett Packard Product No. 45918A
- *
- *
- *	Driver theory of operation:
- *
- *	Some access methods and an ISR is defined by the sub-driver
- *	(e.g. hp_sdc_mlc.c).  These methods are expected to provide a
- *	few bits of logic in addition to raw access to the HIL MLC,
- *	specifically, the ISR, which is entirely registered by the
- *	sub-driver and invoked directly, must check for record
- *	termination or packet match, at which point a semaphore must
- *	be cleared and then the hil_mlcs_tasklet must be scheduled.
- *
- *	The hil_mlcs_tasklet processes the state machine for all MLCs
- *	each time it runs, checking each MLC's progress at the current
- *	node in the state machine, and moving the MLC to subsequent nodes
- *	in the state machine when appropriate.  It will reschedule
- *	itself if output is pending.  (This rescheduling should be replaced
- *	at some point with a sub-driver-specific mechanism.)
- *
- *	A timer task prods the tasklet once per second to prevent
- *	hangups when attached devices do not return expected data
- *	and to initiate probes of the loop for new devices.
- */
+ 
 
 #include <linux/hil_mlc.h>
 #include <linux/errno.h>
@@ -80,9 +28,9 @@ static void hil_mlcs_process(unsigned long unused);
 static DECLARE_TASKLET_DISABLED_OLD(hil_mlcs_tasklet, hil_mlcs_process);
 
 
-/* #define HIL_MLC_DEBUG */
+ 
 
-/********************** Device info/instance management **********************/
+ 
 
 static void hil_mlc_clear_di_map(hil_mlc *mlc, int val)
 {
@@ -109,7 +57,7 @@ static int hil_mlc_match_di_scratch(hil_mlc *mlc)
 	for (idx = 0; idx < HIL_MLC_DEVMEM; idx++) {
 		int j, found = 0;
 
-		/* In-use slots are not eligible. */
+		 
 		for (j = 0; j < 7 ; j++)
 			if (mlc->di_map[j] == idx)
 				found++;
@@ -128,9 +76,7 @@ static int hil_mlc_find_free_di(hil_mlc *mlc)
 {
 	int idx;
 
-	/* TODO: Pick all-zero slots first, failing that,
-	 * randomize the slot picked among those eligible.
-	 */
+	 
 	for (idx = 0; idx < HIL_MLC_DEVMEM; idx++) {
 		int j, found = 0;
 
@@ -142,7 +88,7 @@ static int hil_mlc_find_free_di(hil_mlc *mlc)
 			break;
 	}
 
-	return idx; /* Note: It is guaranteed at least one above will match */
+	return idx;  
 }
 
 static inline void hil_mlc_clean_serio_map(hil_mlc *mlc)
@@ -202,13 +148,13 @@ static void hil_mlc_send_polls(hil_mlc *mlc)
 	}
 }
 
-/*************************** State engine *********************************/
+ 
 
-#define HILSEN_SCHED	0x000100	/* Schedule the tasklet		*/
-#define HILSEN_BREAK	0x000200	/* Wait until next pass		*/
-#define HILSEN_UP	0x000400	/* relative node#, decrement	*/
-#define HILSEN_DOWN	0x000800	/* relative node#, increment	*/
-#define HILSEN_FOLLOW	0x001000	/* use retval as next node#	*/
+#define HILSEN_SCHED	0x000100	 
+#define HILSEN_BREAK	0x000200	 
+#define HILSEN_UP	0x000400	 
+#define HILSEN_DOWN	0x000800	 
+#define HILSEN_FOLLOW	0x001000	 
 
 #define HILSEN_MASK	0x0000ff
 #define HILSEN_START	0
@@ -271,7 +217,7 @@ static int hilse_match(hil_mlc *mlc, int unused)
 	return 1;
 }
 
-/* An LCV used to prevent runaway loops, forces 5 second sleep when reset. */
+ 
 static int hilse_init_lcv(hil_mlc *mlc, int unused)
 {
 	time64_t now = ktime_get_seconds();
@@ -299,7 +245,7 @@ static int hilse_set_lcv(hil_mlc *mlc, int val)
 }
 #endif
 
-/* Management of the discovered device index (zero based, -1 means no devs) */
+ 
 static int hilse_set_ddi(hil_mlc *mlc, int val)
 {
 	mlc->ddi = val;
@@ -333,15 +279,11 @@ static int hilse_take_idd(hil_mlc *mlc, int unused)
 {
 	int i;
 
-	/* Help the state engine:
-	 * Is this a real IDD response or just an echo?
-	 *
-	 * Real IDD response does not start with a command.
-	 */
+	 
 	if (mlc->ipacket[0] & HIL_PKT_CMD)
 		goto bail;
 
-	/* Should have the command echoed further down. */
+	 
 	for (i = 1; i < 16; i++) {
 		if (((mlc->ipacket[i] & HIL_PKT_ADDR_MASK) ==
 		     (mlc->ipacket[0] & HIL_PKT_ADDR_MASK)) &&
@@ -352,7 +294,7 @@ static int hilse_take_idd(hil_mlc *mlc, int unused)
 	if (i > 15)
 		goto bail;
 
-	/* And the rest of the packets should still be clear. */
+	 
 	while (++i < 16)
 		if (mlc->ipacket[i])
 			break;
@@ -364,7 +306,7 @@ static int hilse_take_idd(hil_mlc *mlc, int unused)
 		mlc->di_scratch.idd[i] =
 			mlc->ipacket[i] & HIL_PKT_DATA_MASK;
 
-	/* Next step is to see if RSC supported */
+	 
 	if (mlc->di_scratch.idd[1] & HIL_IDD_HEADER_RSC)
 		return HILSEN_NEXT;
 
@@ -376,7 +318,7 @@ static int hilse_take_idd(hil_mlc *mlc, int unused)
  bail:
 	mlc->ddi--;
 
-	return -1; /* This should send us off to ACF */
+	return -1;  
 }
 
 static int hilse_take_rsc(hil_mlc *mlc, int unused)
@@ -387,7 +329,7 @@ static int hilse_take_rsc(hil_mlc *mlc, int unused)
 		mlc->di_scratch.rsc[i] =
 			mlc->ipacket[i] & HIL_PKT_DATA_MASK;
 
-	/* Next step is to see if EXD supported (IDD has already been read) */
+	 
 	if (mlc->di_scratch.idd[1] & HIL_IDD_HEADER_EXD)
 		return HILSEN_NEXT;
 
@@ -402,7 +344,7 @@ static int hilse_take_exd(hil_mlc *mlc, int unused)
 		mlc->di_scratch.exd[i] =
 			mlc->ipacket[i] & HIL_PKT_DATA_MASK;
 
-	/* Next step is to see if RNM supported. */
+	 
 	if (mlc->di_scratch.exd[0] & HIL_EXD_HEADER_RNM)
 		return HILSEN_NEXT;
 
@@ -460,12 +402,12 @@ static int hilse_operate(hil_mlc *mlc, int repoll)
 
 static const struct hilse_node hil_mlc_se[HILSEN_END] = {
 
-	/* 0  HILSEN_START */
+	 
 	FUNC(hilse_init_lcv, 0,	HILSEN_NEXT,	HILSEN_SLEEP,	0)
 
-	/* 1  HILSEN_RESTART */
+	 
 	FUNC(hilse_inc_lcv, 10,	HILSEN_NEXT,	HILSEN_START,  0)
-	OUT(HIL_CTRL_ONLY)			/* Disable APE */
+	OUT(HIL_CTRL_ONLY)			 
 	CTS
 
 #define TEST_PACKET(x) \
@@ -477,53 +419,49 @@ static const struct hilse_node hil_mlc_se[HILSEN_END] = {
 	OUT(HIL_DO_ALTER_CTRL | HIL_CTRL_TEST | TEST_PACKET(0xa))
 	EXPECT(HIL_ERR_INT | TEST_PACKET(0xa),
 	       2000,		HILSEN_NEXT,	HILSEN_RESTART,	HILSEN_RESTART)
-	OUT(HIL_CTRL_ONLY | 0)			/* Disable test mode */
+	OUT(HIL_CTRL_ONLY | 0)			 
 
-	/* 9  HILSEN_DHR */
+	 
 	FUNC(hilse_init_lcv, 0,	HILSEN_NEXT,	HILSEN_SLEEP,	0)
 
-	/* 10 HILSEN_DHR2 */
+	 
 	FUNC(hilse_inc_lcv, 10,	HILSEN_NEXT,	HILSEN_START,	0)
 	FUNC(hilse_set_ddi, -1,	HILSEN_NEXT,	0,		0)
 	OUT(HIL_PKT_CMD | HIL_CMD_DHR)
 	IN(300000,		HILSEN_DHR2,	HILSEN_DHR2,	HILSEN_NEXT)
 
-	/* 14 HILSEN_IFC */
+	 
 	OUT(HIL_PKT_CMD | HIL_CMD_IFC)
 	EXPECT(HIL_PKT_CMD | HIL_CMD_IFC | HIL_ERR_INT,
 	       20000,		HILSEN_DISC,	HILSEN_DHR2,	HILSEN_NEXT )
 
-	/* If devices are there, they weren't in PUP or other loopback mode.
-	 * We're more concerned at this point with restoring operation
-	 * to devices than discovering new ones, so we try to salvage
-	 * the loop configuration by closing off the loop.
-	 */
+	 
 
-	/* 16 HILSEN_HEAL0 */
+	 
 	FUNC(hilse_dec_ddi, 0,	HILSEN_NEXT,	HILSEN_ACF,	0)
 	FUNC(hilse_inc_ddi, 0,	HILSEN_NEXT,	0,		0)
 
-	/* 18 HILSEN_HEAL */
+	 
 	OUT_LAST(HIL_CMD_ELB)
 	EXPECT_LAST(HIL_CMD_ELB | HIL_ERR_INT,
 		    20000,	HILSEN_REPOLL,	HILSEN_DSR,	HILSEN_NEXT)
 	FUNC(hilse_dec_ddi, 0,	HILSEN_HEAL,	HILSEN_NEXT,	0)
 
-	/* 21 HILSEN_ACF */
+	 
 	FUNC(hilse_init_lcv, 0,	HILSEN_NEXT,	HILSEN_DOZE,	0)
 
-	/* 22 HILSEN_ACF2 */
+	 
 	FUNC(hilse_inc_lcv, 10,	HILSEN_NEXT,	HILSEN_START,	0)
 	OUT(HIL_PKT_CMD | HIL_CMD_ACF | 1)
 	IN(20000,		HILSEN_NEXT,	HILSEN_DSR,	HILSEN_NEXT)
 
-	/* 25 HILSEN_DISC0 */
+	 
 	OUT_DISC(HIL_PKT_CMD | HIL_CMD_ELB)
 	EXPECT_DISC(HIL_PKT_CMD | HIL_CMD_ELB | HIL_ERR_INT,
 	       20000,		HILSEN_NEXT,	HILSEN_DSR,	HILSEN_DSR)
 
-	/* Only enter here if response just received */
-	/* 27 HILSEN_DISC */
+	 
+	 
 	OUT_DISC(HIL_PKT_CMD | HIL_CMD_IDD)
 	EXPECT_DISC(HIL_PKT_CMD | HIL_CMD_IDD | HIL_ERR_INT,
 	       20000,		HILSEN_NEXT,	HILSEN_DSR,	HILSEN_START)
@@ -542,16 +480,16 @@ static const struct hilse_node hil_mlc_se[HILSEN_END] = {
 	       30000,		HILSEN_NEXT,	HILSEN_DSR,	HILSEN_DSR)
 	FUNC(hilse_take_rnm, 0, HILSEN_MATCH,	0,		0)
 
-	/* 40 HILSEN_MATCH */
-	FUNC(hilse_match, 0,	HILSEN_NEXT,	HILSEN_NEXT,	/* TODO */ 0)
+	 
+	FUNC(hilse_match, 0,	HILSEN_NEXT,	HILSEN_NEXT,	  0)
 
-	/* 41 HILSEN_OPERATE */
+	 
 	OUT(HIL_PKT_CMD | HIL_CMD_POL)
 	EXPECT(HIL_PKT_CMD | HIL_CMD_POL | HIL_ERR_INT,
 	       20000,		HILSEN_NEXT,	HILSEN_DSR,	HILSEN_NEXT)
 	FUNC(hilse_operate, 0,	HILSEN_OPERATE,	HILSEN_IFC,	HILSEN_NEXT)
 
-	/* 44 HILSEN_PROBE */
+	 
 	OUT_LAST(HIL_PKT_CMD | HIL_CMD_EPT)
 	IN(10000,		HILSEN_DISC,	HILSEN_DSR,	HILSEN_NEXT)
 	OUT_DISC(HIL_PKT_CMD | HIL_CMD_ELB)
@@ -561,23 +499,23 @@ static const struct hilse_node hil_mlc_se[HILSEN_END] = {
 	OUT_LAST(HIL_PKT_CMD | HIL_CMD_ELB)
 	IN(10000,		HILSEN_OPERATE,	HILSEN_DSR,	HILSEN_DSR)
 
-	/* 52 HILSEN_DSR */
+	 
 	FUNC(hilse_set_ddi, -1,	HILSEN_NEXT,	0,		0)
 	OUT(HIL_PKT_CMD | HIL_CMD_DSR)
 	IN(20000,		HILSEN_DHR,	HILSEN_DHR,	HILSEN_IFC)
 
-	/* 55 HILSEN_REPOLL */
+	 
 	OUT(HIL_PKT_CMD | HIL_CMD_RPL)
 	EXPECT(HIL_PKT_CMD | HIL_CMD_RPL | HIL_ERR_INT,
 	       20000,		HILSEN_NEXT,	HILSEN_DSR,	HILSEN_NEXT)
 	FUNC(hilse_operate, 1,	HILSEN_OPERATE,	HILSEN_IFC,	HILSEN_PROBE)
 
-	/* 58 HILSEN_IFCACF */
+	 
 	OUT(HIL_PKT_CMD | HIL_CMD_IFC)
 	EXPECT(HIL_PKT_CMD | HIL_CMD_IFC | HIL_ERR_INT,
 	       20000,		HILSEN_ACF2,	HILSEN_DHR2,	HILSEN_HEAL)
 
-	/* 60 HILSEN_END */
+	 
 };
 
 static inline void hilse_setup_input(hil_mlc *mlc, const struct hilse_node *node)
@@ -611,7 +549,7 @@ static inline void hilse_setup_input(hil_mlc *mlc, const struct hilse_node *node
 
 #ifdef HIL_MLC_DEBUG
 static int doze;
-static int seidx; /* For debug */
+static int seidx;  
 #endif
 
 static int hilse_donode(hil_mlc *mlc)
@@ -649,7 +587,7 @@ static int hilse_donode(hil_mlc *mlc)
 	case HILSE_EXPECT_DISC:
 	case HILSE_EXPECT:
 	case HILSE_IN:
-		/* Already set up from previous HILSE_OUT_* */
+		 
 		write_lock_irqsave(&mlc->lock, flags);
 		rc = mlc->in(mlc, node->arg);
 		if (rc == 2)  {
@@ -685,7 +623,7 @@ static int hilse_donode(hil_mlc *mlc)
 		pack = node->object.packet;
 	out:
 		if (!mlc->istarted) {
-			/* Prepare to receive input */
+			 
 			if ((node + 1)->act & HILSE_IN)
 				hilse_setup_input(mlc, node + 1);
 		}
@@ -765,7 +703,7 @@ static int hilse_donode(hil_mlc *mlc)
 	return 0;
 }
 
-/******************** tasklet context functions **************************/
+ 
 static void hil_mlcs_process(unsigned long unused)
 {
 	struct list_head *tmp;
@@ -785,24 +723,24 @@ static void hil_mlcs_process(unsigned long unused)
 	read_unlock(&hil_mlcs_lock);
 }
 
-/************************* Keepalive timer task *********************/
+ 
 
 static void hil_mlcs_timer(struct timer_list *unused)
 {
 	if (hil_mlc_stop) {
-		/* could not send packet - stop immediately. */
+		 
 		pr_warn(PREFIX "HIL seems stuck - Disabling HIL MLC.\n");
 		return;
 	}
 
 	hil_mlcs_probe = 1;
 	tasklet_schedule(&hil_mlcs_tasklet);
-	/* Re-insert the periodic task. */
+	 
 	if (!timer_pending(&hil_mlcs_kicker))
 		mod_timer(&hil_mlcs_kicker, jiffies + HZ);
 }
 
-/******************** user/kernel context functions **********************/
+ 
 
 static int hil_mlc_serio_write(struct serio *serio, unsigned char c)
 {
@@ -821,7 +759,7 @@ static int hil_mlc_serio_write(struct serio *serio, unsigned char c)
 		((hil_packet)c) << (8 * (3 - mlc->serio_oidx[map->didx]));
 
 	if (mlc->serio_oidx[map->didx] >= 3) {
-		/* for now only commands */
+		 
 		if (!(mlc->serio_opacket[map->didx] & HIL_PKT_CMD))
 			return -EIO;
 		switch (mlc->serio_opacket[map->didx] & HIL_PKT_DATA_MASK) {
@@ -902,7 +840,7 @@ static void hil_mlc_serio_close(struct serio *serio)
 
 	serio_set_drvdata(serio, NULL);
 	serio->drv = NULL;
-	/* TODO wake up interruptable */
+	 
 }
 
 static const struct serio_device_id hil_mlc_serio_id = {
@@ -948,7 +886,7 @@ int hil_mlc_register(hil_mlc *mlc)
 		snprintf(mlc_serio->name, sizeof(mlc_serio->name)-1, "HIL_SERIO%d", i);
 		snprintf(mlc_serio->phys, sizeof(mlc_serio->phys)-1, "HIL%d", i);
 		mlc_serio->id			= hil_mlc_serio_id;
-		mlc_serio->id.id		= i; /* HIL port no. */
+		mlc_serio->id.id		= i;  
 		mlc_serio->write		= hil_mlc_serio_write;
 		mlc_serio->open			= hil_mlc_serio_open;
 		mlc_serio->close		= hil_mlc_serio_close;
@@ -985,7 +923,7 @@ int hil_mlc_unregister(hil_mlc *mlc)
 		if (list_entry(tmp, hil_mlc, list) == mlc)
 			goto found;
 
-	/* not found in list */
+	 
 	write_unlock_irqrestore(&hil_mlcs_lock, flags);
 	tasklet_schedule(&hil_mlcs_tasklet);
 	return -ENODEV;
@@ -1003,7 +941,7 @@ int hil_mlc_unregister(hil_mlc *mlc)
 	return 0;
 }
 
-/**************************** Module interface *************************/
+ 
 
 static int __init hil_mlc_init(void)
 {

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Qualcomm SM8150 interconnect IDs
- *
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef __DT_BINDINGS_INTERCONNECT_QCOM_SM8150_H
 #define __DT_BINDINGS_INTERCONNECT_QCOM_SM8150_H

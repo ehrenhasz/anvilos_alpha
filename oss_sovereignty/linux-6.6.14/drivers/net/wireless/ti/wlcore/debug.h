@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This file is part of wl12xx
- *
- * Copyright (C) 2011 Texas Instruments. All rights reserved.
- * Copyright (C) 2008-2009 Nokia Corporation
- *
- * Contact: Luciano Coelho <coelho@ti.com>
- */
+ 
+ 
 
 #ifndef __DEBUG_H__
 #define __DEBUG_H__
@@ -59,7 +52,7 @@ extern u32 wl12xx_debug_level;
 #define wl1271_info(fmt, arg...) \
 	pr_info(DRIVER_PREFIX fmt "\n", ##arg)
 
-/* define the debug macro differently if dynamic debug is supported */
+ 
 #if defined(CONFIG_DYNAMIC_DEBUG)
 #define wl1271_debug(level, fmt, arg...) \
 	do { \
@@ -95,4 +88,4 @@ extern u32 wl12xx_debug_level;
 					true);				      \
 	} while (0)
 
-#endif /* __DEBUG_H__ */
+#endif  

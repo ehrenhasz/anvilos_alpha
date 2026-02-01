@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright 2014 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+
+ 
 
 #include "amdgpu_amdkfd.h"
 #include "amd_pcie.h"
@@ -36,9 +16,7 @@
 #include "amdgpu_umc.h"
 #include "amdgpu_reset.h"
 
-/* Total memory size in system memory and all GPU VRAM. Used to
- * estimate worst case amount of memory to reserve for page tables
- */
+ 
 uint64_t amdgpu_amdkfd_total_mem_size;
 
 static bool kfd_initialized;
@@ -76,35 +54,15 @@ void amdgpu_amdkfd_device_probe(struct amdgpu_device *adev)
 	adev->kfd.dev = kgd2kfd_probe(adev, vf);
 }
 
-/**
- * amdgpu_doorbell_get_kfd_info - Report doorbell configuration required to
- *                                setup amdkfd
- *
- * @adev: amdgpu_device pointer
- * @aperture_base: output returning doorbell aperture base physical address
- * @aperture_size: output returning doorbell aperture size in bytes
- * @start_offset: output returning # of doorbell bytes reserved for amdgpu.
- *
- * amdgpu and amdkfd share the doorbell aperture. amdgpu sets it up,
- * takes doorbells required for its own rings and reports the setup to amdkfd.
- * amdgpu reserved doorbells are at the start of the doorbell aperture.
- */
+ 
 static void amdgpu_doorbell_get_kfd_info(struct amdgpu_device *adev,
 					 phys_addr_t *aperture_base,
 					 size_t *aperture_size,
 					 size_t *start_offset)
 {
-	/*
-	 * The first num_kernel_doorbells are used by amdgpu.
-	 * amdkfd takes whatever's left in the aperture.
-	 */
+	 
 	if (adev->enable_mes) {
-		/*
-		 * With MES enabled, we only need to initialize
-		 * the base address. The size and offset are
-		 * not initialized as AMDGPU manages the whole
-		 * doorbell space.
-		 */
+		 
 		*aperture_base = adev->doorbell.base;
 		*aperture_size = 0;
 		*start_offset = 0;
@@ -159,17 +117,13 @@ void amdgpu_amdkfd_device_init(struct amdgpu_device *adev)
 			.enable_mes = adev->enable_mes,
 		};
 
-		/* this is going to have a few of the MSBs set that we need to
-		 * clear
-		 */
+		 
 		bitmap_complement(gpu_resources.cp_queue_bitmap,
 				  adev->gfx.mec_bitmap[0].queue_bitmap,
 				  KGD_MAX_QUEUES);
 
-		/* According to linux/bitmap.h we shouldn't use bitmap_clear if
-		 * nbits is not compile time constant
-		 */
-		last_valid_bit = 1 /* only first MEC can have compute queues */
+		 
+		last_valid_bit = 1  
 				* adev->gfx.mec.num_pipe_per_mec
 				* adev->gfx.mec.num_queue_per_pipe;
 		for (i = last_valid_bit; i < KGD_MAX_QUEUES; ++i)
@@ -180,14 +134,7 @@ void amdgpu_amdkfd_device_init(struct amdgpu_device *adev)
 				&gpu_resources.doorbell_aperture_size,
 				&gpu_resources.doorbell_start_offset);
 
-		/* Since SOC15, BIF starts to statically use the
-		 * lower 12 bits of doorbell addresses for routing
-		 * based on settings in registers like
-		 * SDMA0_DOORBELL_RANGE etc..
-		 * In order to route a doorbell to CP engine, the lower
-		 * 12 bits of its address has to be outside the range
-		 * set for SDMA, VCN, and IH blocks.
-		 */
+		 
 		if (adev->asic_type >= CHIP_VEGA10) {
 			gpu_resources.non_cp_doorbells_start =
 					adev->doorbell_index.first_non_cp;
@@ -291,7 +238,7 @@ int amdgpu_amdkfd_alloc_gtt_mem(struct amdgpu_device *adev, size_t size,
 		return r;
 	}
 
-	/* map the buffer */
+	 
 	r = amdgpu_bo_reserve(bo, true);
 	if (r) {
 		dev_err(adev->dev, "(%d) failed to reserve bo for amdkfd\n", r);
@@ -460,7 +407,7 @@ uint64_t amdgpu_amdkfd_get_gpu_clock_counter(struct amdgpu_device *adev)
 
 uint32_t amdgpu_amdkfd_get_max_engine_clock_in_mhz(struct amdgpu_device *adev)
 {
-	/* the sclk is in quantas of 10kHz */
+	 
 	if (adev->pm.dpm_enabled)
 		return amdgpu_dpm_get_sclk(adev, false) / 100;
 	else
@@ -506,19 +453,19 @@ int amdgpu_amdkfd_get_dmabuf_info(struct amdgpu_device *adev, int dma_buf_fd,
 		return PTR_ERR(dma_buf);
 
 	if (dma_buf->ops != &amdgpu_dmabuf_ops)
-		/* Can't handle non-graphics buffers */
+		 
 		goto out_put;
 
 	obj = dma_buf->priv;
 	if (obj->dev->driver != adev_to_drm(adev)->driver)
-		/* Can't handle buffers from different drivers */
+		 
 		goto out_put;
 
 	adev = drm_to_adev(obj->dev);
 	bo = gem_to_amdgpu_bo(obj);
 	if (!(bo->preferred_domains & (AMDGPU_GEM_DOMAIN_VRAM |
 				    AMDGPU_GEM_DOMAIN_GTT)))
-		/* Only VRAM and GTT BOs are supported */
+		 
 		goto out_put;
 
 	r = 0;
@@ -574,7 +521,7 @@ int amdgpu_amdkfd_get_xgmi_bandwidth_mbytes(struct amdgpu_device *dst,
 	if (src)
 		peer_adev = src;
 
-	/* num links returns 0 for indirect peers since indirect route is unknown. */
+	 
 	num_links = is_min ? 1 : amdgpu_xgmi_get_num_links(adev, peer_adev);
 	if (num_links < 0) {
 		DRM_ERROR("amdgpu: failed to get xgmi num links between node %d and %d. ret = %d\n",
@@ -583,7 +530,7 @@ int amdgpu_amdkfd_get_xgmi_bandwidth_mbytes(struct amdgpu_device *dst,
 		num_links = 0;
 	}
 
-	/* Aldebaran xGMI DPM is defeatured so assume x16 x 25Gbps for bandwidth. */
+	 
 	return (num_links * 16 * 25000)/BITS_PER_BYTE;
 }
 
@@ -681,7 +628,7 @@ int amdgpu_amdkfd_submit_ib(struct amdgpu_device *adev,
 	ib->gpu_addr = gpu_addr;
 	ib->ptr = ib_cmd;
 	ib->length_dw = ib_len;
-	/* This works for NO_HWS. TODO: need to handle without knowing VMID */
+	 
 	job->vmid = vmid;
 	job->num_ibs = 1;
 
@@ -692,7 +639,7 @@ int amdgpu_amdkfd_submit_ib(struct amdgpu_device *adev,
 		goto err_ib_sched;
 	}
 
-	/* Drop the initial kref_init count (see drm_sched_main as example) */
+	 
 	dma_fence_put(f);
 	ret = dma_fence_wait(f, false);
 
@@ -704,9 +651,7 @@ err:
 
 void amdgpu_amdkfd_set_compute_idle(struct amdgpu_device *adev, bool idle)
 {
-	/* Temporary workaround to fix issues observed in some
-	 * compute applications when GFXOFF is enabled on GFX11.
-	 */
+	 
 	if (IP_VERSION_MAJ(adev->ip_versions[GC_HWIP][0]) == 11) {
 		pr_debug("GFXOFF is %s\n", idle ? "enabled" : "disabled");
 		amdgpu_gfx_off_ctrl(adev, idle);
@@ -773,12 +718,12 @@ int amdgpu_amdkfd_send_close_event_drain_irq(struct amdgpu_device *adev,
 {
 	int ret;
 
-	/* Device or IH ring is not ready so bail. */
+	 
 	ret = amdgpu_ih_wait_on_checkpoint_process_ts(adev, &adev->irq.ih);
 	if (ret)
 		return ret;
 
-	/* Send payload to fence KFD interrupts */
+	 
 	amdgpu_amdkfd_interrupt(adev, payload);
 
 	return 0;

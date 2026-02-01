@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * 8250_lpss.c - Driver for UART on Intel Braswell and various other Intel SoCs
- *
- * Copyright (C) 2016 Intel Corporation
- * Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/module.h>
@@ -34,7 +29,7 @@
 #define PCI_DEVICE_ID_INTEL_BDW_UART1	0x9ce3
 #define PCI_DEVICE_ID_INTEL_BDW_UART2	0x9ce4
 
-/* Intel LPSS specific registers */
+ 
 
 #define BYT_PRV_CLK			0x800
 #define BYT_PRV_CLK_EN			BIT(0)
@@ -58,7 +53,7 @@ struct lpss8250 {
 	struct dw8250_port_data data;
 	struct lpss8250_board *board;
 
-	/* DMA parameters */
+	 
 	struct dw_dma_chip dma_chip;
 	struct dw_dma_slave dma_param;
 	u8 dma_maxburst;
@@ -79,22 +74,17 @@ static void byt_set_termios(struct uart_port *p, struct ktermios *termios,
 	unsigned long m, n;
 	u32 reg;
 
-	/* Gracefully handle the B0 case: fall back to B9600 */
+	 
 	fuart = fuart ? fuart : 9600 * 16;
 
-	/* Get Fuart closer to Fref */
+	 
 	fuart *= rounddown_pow_of_two(fref / fuart);
 
-	/*
-	 * For baud rates 0.5M, 1M, 1.5M, 2M, 2.5M, 3M, 3.5M and 4M the
-	 * dividers must be adjusted.
-	 *
-	 * uartclk = (m / n) * 100 MHz, where m <= n
-	 */
+	 
 	rational_best_approximation(fuart, fref, w, w, &m, &n);
 	p->uartclk = fuart;
 
-	/* Reset the clock */
+	 
 	reg = (m << BYT_PRV_CLK_M_VAL_SHIFT) | (n << BYT_PRV_CLK_N_VAL_SHIFT);
 	writel(reg, p->membase + BYT_PRV_CLK);
 	reg |= BYT_PRV_CLK_EN | BYT_PRV_CLK_UPDATE;
@@ -107,7 +97,7 @@ static unsigned int byt_get_mctrl(struct uart_port *port)
 {
 	unsigned int ret = serial8250_do_get_mctrl(port);
 
-	/* Force DCD and DSR signals to permanently be reported as active */
+	 
 	ret |= TIOCM_CAR | TIOCM_DSR;
 
 	return ret;
@@ -147,7 +137,7 @@ static int byt_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
 	port->set_termios = byt_set_termios;
 	port->get_mctrl = byt_get_mctrl;
 
-	/* Disable TX counter interrupts */
+	 
 	writel(BYT_TX_OVF_INT_MASK, port->membase + BYT_TX_OVF_INT);
 
 	return 0;
@@ -157,7 +147,7 @@ static void byt_serial_exit(struct lpss8250 *lpss)
 {
 	struct dw_dma_slave *param = &lpss->dma_param;
 
-	/* Paired with pci_get_slot() in the byt_serial_setup() above */
+	 
 	put_device(param->dma_dev);
 }
 
@@ -166,12 +156,7 @@ static int ehl_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
 	struct uart_8250_dma *dma = &lpss->data.dma;
 	struct uart_8250_port *up = up_to_u8250p(port);
 
-	/*
-	 * This simply makes the checks in the 8250_port to try the DMA
-	 * channel request which in turn uses the magic of ACPI tables
-	 * parsing (see drivers/dma/acpi-dma.c for the details) and
-	 * matching with the registered General Purpose DMA controllers.
-	 */
+	 
 	up->dma = dma;
 
 	lpss->dma_maxburst = 16;
@@ -215,14 +200,14 @@ static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
 	if (!chip->regs)
 		return;
 
-	/* Falling back to PIO mode if DMA probing fails */
+	 
 	ret = dw_dma_probe(chip);
 	if (ret)
 		return;
 
 	pci_try_set_mwi(pdev);
 
-	/* Special DMA address for UART */
+	 
 	dma->rx_dma_addr = 0xfffff000;
 	dma->tx_dma_addr = 0xfffff000;
 
@@ -246,10 +231,10 @@ static void qrk_serial_exit_dma(struct lpss8250 *lpss)
 
 	pci_iounmap(to_pci_dev(chip->dev), chip->regs);
 }
-#else	/* CONFIG_SERIAL_8250_DMA */
+#else	 
 static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port) {}
 static void qrk_serial_exit_dma(struct lpss8250 *lpss) {}
-#endif	/* !CONFIG_SERIAL_8250_DMA */
+#endif	 
 
 static int qrk_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
 {

@@ -1,4 +1,4 @@
-/* Common tests */
+ 
 {
 	"map_kptr: BPF_ST imm != 0",
 	.insns = {
@@ -153,7 +153,7 @@
 	.result = REJECT,
 	.errstr = "variable untrusted_ptr_ access var_off=(0x0; 0x7) disallowed",
 },
-/* Tests for unreferened PTR_TO_BTF_ID */
+ 
 {
 	"map_kptr: unref: reject btf_struct_ids_match == false",
 	.insns = {
@@ -290,7 +290,7 @@
 	.result = REJECT,
 	.errstr = "off=0 kptr isn't referenced kptr",
 },
-/* Tests for referenced PTR_TO_BTF_ID */
+ 
 {
 	"map_kptr: ref: loaded pointer marked as untrusted",
 	.insns = {

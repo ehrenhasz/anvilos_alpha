@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/edac.h>
 #include <linux/interrupt.h>
@@ -24,7 +22,7 @@
 #define LLCC_LB_CNT_MASK                GENMASK(31, 28)
 #define LLCC_LB_CNT_SHIFT               28
 
-/* Mask and shift macros */
+ 
 #define ECC_DB_ERR_COUNT_MASK           GENMASK(4, 0)
 #define ECC_DB_ERR_WAYS_MASK            GENMASK(31, 16)
 #define ECC_DB_ERR_WAYS_SHIFT           BIT(4)
@@ -91,10 +89,7 @@ static int qcom_llcc_core_setup(struct llcc_drv_data *drv, struct regmap *llcc_b
 	u32 sb_err_threshold;
 	int ret;
 
-	/*
-	 * Configure interrupt enable registers such that Tag, Data RAM related
-	 * interrupts are propagated to interrupt controller for servicing
-	 */
+	 
 	ret = regmap_update_bits(llcc_bcast_regmap, drv->edac_reg_offset->cmn_interrupt_2_enable,
 				 TRP0_INTERRUPT_ENABLE,
 				 TRP0_INTERRUPT_ENABLE);
@@ -124,7 +119,7 @@ static int qcom_llcc_core_setup(struct llcc_drv_data *drv, struct regmap *llcc_b
 	return ret;
 }
 
-/* Clear the error interrupt and counter registers */
+ 
 static int
 qcom_llcc_clear_error_status(int err_type, struct llcc_drv_data *drv)
 {
@@ -202,7 +197,7 @@ static void get_reg_offsets(struct llcc_drv_data *drv, int err_type,
 	}
 }
 
-/* Dump Syndrome registers data for Tag RAM, Data RAM bit errors*/
+ 
 static int
 dump_syn_reg_values(struct llcc_drv_data *drv, u32 bank, int err_type)
 {
@@ -293,7 +288,7 @@ static irqreturn_t llcc_ecc_irq_handler(int irq, void *edev_ctl)
 	u32 drp_error, trp_error, i;
 	int ret;
 
-	/* Iterate over the banks and look for Tag RAM or Data RAM errors */
+	 
 	for (i = 0; i < drv->num_banks; i++) {
 		ret = regmap_read(drv->regmaps[i], drv->edac_reg_offset->drp_interrupt_status,
 				  &drp_error);
@@ -346,7 +341,7 @@ static int qcom_llcc_edac_probe(struct platform_device *pdev)
 	if (rc)
 		return rc;
 
-	/* Allocate edac control info */
+	 
 	edev_ctl = edac_device_alloc_ctl_info(0, "qcom-llcc", 1, "bank",
 					      llcc_driv_data->num_banks, 1,
 					      NULL, 0,
@@ -361,10 +356,10 @@ static int qcom_llcc_edac_probe(struct platform_device *pdev)
 	edev_ctl->ctl_name = "llcc";
 	edev_ctl->panic_on_ue = LLCC_ERP_PANIC_ON_UE;
 
-	/* Check if LLCC driver has passed ECC IRQ */
+	 
 	ecc_irq = llcc_driv_data->ecc_irq;
 	if (ecc_irq > 0) {
-		/* Use interrupt mode if IRQ is available */
+		 
 		rc = devm_request_irq(dev, ecc_irq, llcc_ecc_irq_handler,
 			      IRQF_TRIGGER_HIGH, "llcc_ecc", edev_ctl);
 		if (!rc) {
@@ -373,7 +368,7 @@ static int qcom_llcc_edac_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Fall back to polling mode otherwise */
+	 
 	edev_ctl->poll_msec = ECC_POLL_MSEC;
 	edev_ctl->edac_check = llcc_ecc_check;
 	edac_op_state = EDAC_OPSTATE_POLL;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2022 Paulo Alcantara <palcantara@suse.de>
- */
+
+ 
 
 #include "cifsproto.h"
 #include "cifs_debug.h"
@@ -9,15 +7,7 @@
 #include "fs_context.h"
 #include "dfs.h"
 
-/**
- * dfs_parse_target_referral - set fs context for dfs target referral
- *
- * @full_path: full path in UNC format.
- * @ref: dfs referral pointer.
- * @ctx: smb3 fs context pointer.
- *
- * Return zero if dfs referral was parsed correctly, otherwise non-zero.
- */
+ 
 int dfs_parse_target_referral(const char *full_path, const struct dfs_info3_param *ref,
 			      struct smb3_fs_context *ctx)
 {
@@ -33,7 +23,7 @@ int dfs_parse_target_referral(const char *full_path, const struct dfs_info3_para
 
 	if (strlen(full_path) - ref->path_consumed) {
 		prepath = full_path + ref->path_consumed;
-		/* skip initial delimiter */
+		 
 		if (*prepath == '/' || *prepath == '\\')
 			prepath++;
 	}
@@ -65,12 +55,7 @@ static int get_session(struct cifs_mount_ctx *mnt_ctx, const char *full_path)
 	return rc;
 }
 
-/*
- * Track individual DFS referral servers used by new DFS mount.
- *
- * On success, their lifetime will be shared by final tcon (dfs_ses_list).
- * Otherwise, they will be put by dfs_put_root_smb_sessions() in cifs_mount().
- */
+ 
 static int add_root_smb_session(struct cifs_mount_ctx *mnt_ctx)
 {
 	struct smb3_fs_context *ctx = mnt_ctx->fs_ctx;
@@ -90,7 +75,7 @@ static int add_root_smb_session(struct cifs_mount_ctx *mnt_ctx)
 		root_ses->ses = ses;
 		list_add_tail(&root_ses->list, &mnt_ctx->dfs_ses_list);
 	}
-	/* Select new DFS referral server so that new referrals go through it */
+	 
 	ctx->dfs_root_ses = ses;
 	return 0;
 }
@@ -263,12 +248,7 @@ out:
 	return rc;
 }
 
-/*
- * If @ctx->dfs_automount, then update @ctx->dstaddr earlier with the DFS root
- * server from where we'll start following any referrals.  Otherwise rely on the
- * value provided by mount(2) as the user might not have dns_resolver key set up
- * and therefore failing to upcall to resolve UNC hostname under @ctx->source.
- */
+ 
 static int update_fs_context_dstaddr(struct smb3_fs_context *ctx)
 {
 	struct sockaddr *addr = (struct sockaddr *)&ctx->dstaddr;
@@ -299,13 +279,7 @@ int dfs_mount_share(struct cifs_mount_ctx *mnt_ctx, bool *isdfs)
 		return rc;
 
 	ctx->dfs_root_ses = mnt_ctx->ses;
-	/*
-	 * If called with 'nodfs' mount option, then skip DFS resolving.  Otherwise unconditionally
-	 * try to get an DFS referral (even cached) to determine whether it is an DFS mount.
-	 *
-	 * Skip prefix path to provide support for DFS referrals from w2k8 servers which don't seem
-	 * to respond with PATH_NOT_COVERED to requests that include the prefix.
-	 */
+	 
 	if (!nodfs) {
 		rc = dfs_get_referral(mnt_ctx, ctx->UNC + 1, NULL, NULL);
 		if (rc) {
@@ -327,7 +301,7 @@ int dfs_mount_share(struct cifs_mount_ctx *mnt_ctx, bool *isdfs)
 	return __dfs_mount_share(mnt_ctx);
 }
 
-/* Update dfs referral path of superblock */
+ 
 static int update_server_fullpath(struct TCP_Server_Info *server, struct cifs_sb_info *cifs_sb,
 				  const char *target)
 {
@@ -380,7 +354,7 @@ static int target_share_matches_server(struct TCP_Server_Info *server, char *sha
 	*target_match = true;
 	extract_unc_hostname(share, &dfs_host, &dfs_host_len);
 
-	/* Check if hostnames or addresses match */
+	 
 	cifs_server_lock(server);
 	if (dfs_host_len != strlen(server->hostname) ||
 	    strncasecmp(dfs_host, server->hostname, dfs_host_len)) {
@@ -460,7 +434,7 @@ static int __tree_connect_dfs_target(const unsigned int xid, struct cifs_tcon *t
 		goto out;
 	}
 
-	/* Try to tree connect to all dfs targets */
+	 
 	for (; tit; tit = dfs_cache_get_next_tgt(tl, tit)) {
 		const char *target = dfs_cache_get_tgt_name(tit);
 		DFS_CACHE_TGT_LIST(ntl);
@@ -469,7 +443,7 @@ static int __tree_connect_dfs_target(const unsigned int xid, struct cifs_tcon *t
 		kfree(prefix);
 		share = prefix = NULL;
 
-		/* Check if share matches with tcp ses */
+		 
 		rc = dfs_cache_get_tgt_share(server->leaf_fullpath + 1, tit, &share, &prefix);
 		if (rc) {
 			cifs_dbg(VFS, "%s: failed to parse target share: %d\n", __func__, rc);
@@ -493,12 +467,7 @@ static int __tree_connect_dfs_target(const unsigned int xid, struct cifs_tcon *t
 			break;
 		}
 
-		/*
-		 * If no dfs referrals were returned from link target, then just do a TREE_CONNECT
-		 * to it.  Otherwise, cache the dfs referral and then mark current tcp ses for
-		 * reconnect so either the demultiplex thread or the echo worker will reconnect to
-		 * newly resolved target.
-		 */
+		 
 		if (dfs_cache_find(xid, root_ses, cifs_sb->local_nls, cifs_remap(cifs_sb), target,
 				   NULL, &ntl)) {
 			rc = ops->tree_connect(xid, tcon->ses, tree, tcon, cifs_sb->local_nls);
@@ -507,7 +476,7 @@ static int __tree_connect_dfs_target(const unsigned int xid, struct cifs_tcon *t
 
 			rc = cifs_update_super_prepath(cifs_sb, prefix);
 		} else {
-			/* Target is another dfs share */
+			 
 			rc = update_server_fullpath(server, cifs_sb, target);
 			dfs_cache_free_tgts(tl);
 
@@ -541,10 +510,7 @@ static int tree_connect_dfs_target(const unsigned int xid, struct cifs_tcon *tco
 		if (!rc || rc != -EREMOTE)
 			break;
 	} while (rc = -ELOOP, ++num_links < MAX_NESTED_LINKS);
-	/*
-	 * If we couldn't tree connect to any targets from last referral path, then
-	 * retry it from newly resolved dfs referral.
-	 */
+	 
 	if (rc && server->leaf_fullpath != old_fullpath)
 		cifs_signal_cifsd_for_reconnect(server, true);
 
@@ -563,7 +529,7 @@ int cifs_tree_connect(const unsigned int xid, struct cifs_tcon *tcon, const stru
 	struct dfs_info3_param ref = {0};
 	char *tree;
 
-	/* only send once per connect */
+	 
 	spin_lock(&tcon->tc_lock);
 	if (tcon->status == TID_GOOD) {
 		spin_unlock(&tcon->tc_lock);
@@ -597,10 +563,7 @@ int cifs_tree_connect(const unsigned int xid, struct cifs_tcon *tcon, const stru
 	if (!IS_ERR(sb))
 		cifs_sb = CIFS_SB(sb);
 
-	/*
-	 * Tree connect to last share in @tcon->tree_name whether dfs super or
-	 * cached dfs referral was not found.
-	 */
+	 
 	if (!cifs_sb || !server->leaf_fullpath ||
 	    dfs_cache_noreq_find(server->leaf_fullpath + 1, &ref, &tl)) {
 		rc = ops->tree_connect(xid, tcon->ses, tcon->tree_name, tcon,

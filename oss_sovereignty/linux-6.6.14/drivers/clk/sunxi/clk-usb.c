@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2013-2015 Emilio López
- *
- * Emilio López <emilio@elopez.com.ar>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -15,9 +11,7 @@
 #include <linux/spinlock.h>
 
 
-/*
- * sunxi_usb_reset... - reset bits in usb clk registers handling
- */
+ 
 
 struct usb_reset_data {
 	void __iomem			*reg;
@@ -73,9 +67,7 @@ static const struct reset_control_ops sunxi_usb_reset_ops = {
 	.deassert	= sunxi_usb_reset_deassert,
 };
 
-/**
- * sunxi_usb_clk_setup() - Setup function for usb gate clocks
- */
+ 
 
 #define SUNXI_USB_MAX_SIZE 32
 
@@ -106,7 +98,7 @@ static void __init sunxi_usb_clk_setup(struct device_node *node,
 	if (!clk_parent)
 		return;
 
-	/* Worst-case size approximation and memory allocation */
+	 
 	qty = find_last_bit((unsigned long *)&data->clk_mask,
 			    SUNXI_USB_MAX_SIZE);
 
@@ -132,12 +124,12 @@ static void __init sunxi_usb_clk_setup(struct device_node *node,
 		j++;
 	}
 
-	/* Adjust to the real max */
+	 
 	clk_data->clk_num = i;
 
 	of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
 
-	/* Register a reset controller for usb with reset bits */
+	 
 	if (data->reset_mask == 0)
 		return;
 

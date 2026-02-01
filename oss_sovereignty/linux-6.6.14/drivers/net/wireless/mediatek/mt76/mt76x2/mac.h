@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- */
+ 
+ 
 
 #ifndef __MT76x2_MAC_H
 #define __MT76x2_MAC_H

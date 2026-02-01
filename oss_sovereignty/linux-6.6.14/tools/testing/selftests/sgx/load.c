@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*  Copyright(c) 2016-20 Intel Corporation. */
+
+ 
 
 #include <assert.h>
 #include <elf.h>
@@ -130,10 +130,7 @@ static bool encl_ioc_add_pages(struct encl *encl, struct encl_segment *seg)
 	return true;
 }
 
-/*
- * Parse the enclave code's symbol table to locate and return address of
- * the provided symbol
- */
+ 
 uint64_t encl_get_entry(struct encl *encl, const char *symbol)
 {
 	Elf64_Sym *symtab = NULL;
@@ -229,7 +226,7 @@ bool encl_load(const char *path, struct encl *encl, unsigned long heap_size)
 	ehdr = encl->bin;
 	phdr_tbl = encl->bin + ehdr->e_phoff;
 
-	encl->nr_segments = 1; /* one for the heap */
+	encl->nr_segments = 1;  
 
 	for (i = 0; i < ehdr->e_phnum; i++) {
 		Elf64_Phdr *phdr = &phdr_tbl[i];
@@ -348,10 +345,7 @@ bool encl_build(struct encl *encl)
 	if (!encl_ioc_create(encl))
 		return false;
 
-	/*
-	 * Pages must be added before mapping VMAs because their permissions
-	 * cap the VMA permissions.
-	 */
+	 
 	for (i = 0; i < encl->nr_segments; i++) {
 		struct encl_segment *seg = &encl->segment_tbl[i];
 

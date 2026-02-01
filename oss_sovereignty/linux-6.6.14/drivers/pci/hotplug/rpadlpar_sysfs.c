@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Interface for Dynamic Logical Partitioning of I/O Slots on
- * RPA-compliant PPC64 platform.
- *
- * John Rose <johnrose@austin.ibm.com>
- * October 2003
- *
- * Copyright (C) 2003 IBM.
- */
+
+ 
 #include <linux/kobject.h>
 #include <linux/string.h>
 #include <linux/pci.h>
@@ -18,9 +10,7 @@
 
 #define DLPAR_KOBJ_NAME       "control"
 
-/* Those two have no quotes because they are passed to __ATTR() which
- * stringifies the argument (yuck !)
- */
+ 
 #define ADD_SLOT_ATTR_NAME    add_slot
 #define REMOVE_SLOT_ATTR_NAME remove_slot
 

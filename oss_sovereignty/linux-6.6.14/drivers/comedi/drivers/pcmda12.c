@@ -1,48 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * pcmda12.c
- * Driver for Winsystems PC-104 based PCM-D/A-12 8-channel AO board.
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 2006 Calin A. Culianu <calin@ajvar.org>
- */
 
-/*
- * Driver: pcmda12
- * Description: A driver for the Winsystems PCM-D/A-12
- * Devices: [Winsystems] PCM-D/A-12 (pcmda12)
- * Author: Calin Culianu <calin@ajvar.org>
- * Updated: Fri, 13 Jan 2006 12:01:01 -0500
- * Status: works
- *
- * A driver for the relatively straightforward-to-program PCM-D/A-12.
- * This board doesn't support commands, and the only way to set its
- * analog output range is to jumper the board. As such,
- * comedi_data_write() ignores the range value specified.
- *
- * The board uses 16 consecutive I/O addresses starting at the I/O port
- * base address. Each address corresponds to the LSB then MSB of a
- * particular channel from 0-7.
- *
- * Note that the board is not ISA-PNP capable and thus needs the I/O
- * port comedi_config parameter.
- *
- * Note that passing a nonzero value as the second config option will
- * enable "simultaneous xfer" mode for this board, in which AO writes
- * will not take effect until a subsequent read of any AO channel. This
- * is so that one can speed up programming by preloading all AO registers
- * with values before simultaneously setting them to take effect with one
- * read command.
- *
- * Configuration Options:
- *   [0] - I/O port base address
- *   [1] - Do Simultaneous Xfer (see description)
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/comedi/comedidev.h>
 
-/* AI range is not configurable, it's set by jumpers on the board */
+ 
 static const struct comedi_lrange pcmda12_ranges = {
 	3, {
 		UNI_RANGE(5),
@@ -71,10 +35,7 @@ static int pcmda12_ao_insn_write(struct comedi_device *dev,
 		outb(val & 0xff, ioreg);
 		outb((val >> 8) & 0xff, ioreg + 1);
 
-		/*
-		 * Initiate transfer if not in simultaneaous xfer
-		 * mode by reading one of the AO registers.
-		 */
+		 
 		if (!devpriv->simultaneous_xfer_mode)
 			inb(ioreg);
 	}
@@ -90,10 +51,7 @@ static int pcmda12_ao_insn_read(struct comedi_device *dev,
 {
 	struct pcmda12_private *devpriv = dev->private;
 
-	/*
-	 * Initiate simultaneaous xfer mode by reading one of the
-	 * AO registers. All analog outputs will then be updated.
-	 */
+	 
 	if (devpriv->simultaneous_xfer_mode)
 		inb(dev->iobase);
 
@@ -109,7 +67,7 @@ static void pcmda12_ao_reset(struct comedi_device *dev,
 		outb(0, dev->iobase + (i * 2));
 		outb(0, dev->iobase + (i * 2) + 1);
 	}
-	/* Initiate transfer by reading one of the AO registers. */
+	 
 	inb(dev->iobase);
 }
 

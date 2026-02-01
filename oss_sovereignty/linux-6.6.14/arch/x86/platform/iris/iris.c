@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Eurobraille/Iris power off support.
- *
- * Eurobraille's Iris machine is a PC with no APM or ACPI support.
- * It is shutdown by a special I/O sequence which this module provides.
- *
- *  Copyright (C) Shérab <Sebastien.Hinderer@ens-lyon.org>
- */
+
+ 
 
 #include <linux/moduleparam.h>
 #include <linux/module.h>
@@ -20,9 +13,9 @@
 #define IRIS_GIO_BASE		0x340
 #define IRIS_GIO_INPUT		IRIS_GIO_BASE
 #define IRIS_GIO_OUTPUT		(IRIS_GIO_BASE + 1)
-#define IRIS_GIO_PULSE		0x80 /* First byte to send */
-#define IRIS_GIO_REST		0x00 /* Second byte to send */
-#define IRIS_GIO_NODEV		0xff /* Likely not an Iris */
+#define IRIS_GIO_PULSE		0x80  
+#define IRIS_GIO_REST		0x00  
+#define IRIS_GIO_NODEV		0xff  
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Sébastien Hinderer <Sebastien.Hinderer@ens-lyon.org>");
@@ -42,12 +35,7 @@ static void iris_power_off(void)
 	outb(IRIS_GIO_REST, IRIS_GIO_OUTPUT);
 }
 
-/*
- * Before installing the power_off handler, try to make sure the OS is
- * running on an Iris.  Since Iris does not support DMI, this is done
- * by reading its input port and seeing whether the read value is
- * meaningful.
- */
+ 
 static int iris_probe(struct platform_device *pdev)
 {
 	unsigned char status = inb(IRIS_GIO_INPUT);

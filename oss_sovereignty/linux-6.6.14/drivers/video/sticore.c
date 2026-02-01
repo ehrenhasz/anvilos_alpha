@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/drivers/video/console/sticore.c -
- *	core code for console driver using HP's STI firmware
- *
- *	Copyright (C) 2000 Philipp Rumpf <prumpf@tux.org>
- *	Copyright (C) 2001-2023 Helge Deller <deller@gmx.de>
- *	Copyright (C) 2001-2002 Thomas Bogendoerfer <tsbogend@alpha.franken.de>
- *
- * TODO:
- * - call STI in virtual mode rather than in real mode
- * - screen blanking with state_mgmt() in text mode STI ?
- * - try to make it work on m68k hp workstations ;)
- *
- */
+
+ 
 
 #define pr_fmt(fmt) "%s: " fmt, KBUILD_MODNAME
 
@@ -37,7 +24,7 @@
 
 static struct sti_struct *default_sti __read_mostly;
 
-/* number of STI ROMS found and their ptrs to each struct */
+ 
 static int num_sti_roms __read_mostly;
 static struct sti_struct *sti_roms[MAX_STI_ROMS] __read_mostly;
 
@@ -46,7 +33,7 @@ static void *store_sti_val(struct sti_struct *sti, void *ptr, unsigned long val)
 	u32 *ptr32 = ptr;
 
 	if (IS_ENABLED(CONFIG_64BIT) && sti->do_call64) {
-		/* used for 64-bit STI ROM */
+		 
 		unsigned long *ptr64 = ptr;
 
 		ptr64 = PTR_ALIGN(ptr64, sizeof(void *));
@@ -54,7 +41,7 @@ static void *store_sti_val(struct sti_struct *sti, void *ptr, unsigned long val)
 		return ptr64;
 	}
 
-	/* used for 32-bit STI ROM */
+	 
 	*ptr32++ = val;
 	return ptr32;
 }
@@ -62,18 +49,7 @@ static void *store_sti_val(struct sti_struct *sti, void *ptr, unsigned long val)
 #define store_sti_ptr(sti, dest, ptr)	\
 		store_sti_val(sti, dest, STI_PTR(ptr))
 
-/* The colour indices used by STI are
- *   0 - Black
- *   1 - White
- *   2 - Red
- *   3 - Yellow/Brown
- *   4 - Green
- *   5 - Cyan
- *   6 - Blue
- *   7 - Magenta
- *
- * So we have the same colours as VGA (basically one bit each for R, G, B),
- * but have to translate them, anyway. */
+ 
 
 static const u8 col_trans[8] = {
         0, 6, 4, 5,
@@ -105,7 +81,7 @@ static int sti_init_graph(struct sti_struct *sti)
 	spin_lock_irqsave(&sti->lock, flags);
 
 	memset(inptr, 0, sizeof(*inptr));
-	inptr->text_planes = 3; /* # of text planes (max 3 for STI) */
+	inptr->text_planes = 3;  
 	memset(inptr_ext, 0, sizeof(*inptr_ext));
 	store_sti_ptr(sti, &inptr->ext_ptr, inptr_ext);
 	outptr->errno = 0;
@@ -175,10 +151,10 @@ sti_putc(struct sti_struct *sti, int c, int y, int x,
 		spin_lock_irqsave(&sti->lock, flags);
 		inptr = &inptr_default;
 		if (IS_ENABLED(CONFIG_64BIT) && !sti->do_call64) {
-			/* copy below 4G if calling 32-bit on LP64 kernel */
+			 
 			inptr = &sti->sti_data->font_inptr;
 			*inptr = inptr_default;
-			/* skip first 4 bytes for 32-bit STI call */
+			 
 			inptr = (void *)(((unsigned long)inptr) + sizeof(u32));
 		}
 		ret = sti_call(sti, sti->font_unpmv, &default_font_flags,
@@ -216,7 +192,7 @@ sti_set(struct sti_struct *sti, int src_y, int src_x,
 		spin_lock_irqsave(&sti->lock, flags);
 		inptr = &inptr_default;
 		if (IS_ENABLED(CONFIG_64BIT) && !sti->do_call64) {
-			/* copy below 4G if calling 32-bit on LP64 kernel */
+			 
 			inptr = &sti->sti_data->blkmv_inptr;
 			*inptr = inptr_default;
 		}
@@ -249,7 +225,7 @@ sti_clear(struct sti_struct *sti, int src_y, int src_x,
 		spin_lock_irqsave(&sti->lock, flags);
 		inptr = &inptr_default;
 		if (IS_ENABLED(CONFIG_64BIT) && !sti->do_call64) {
-			/* copy below 4G if calling 32-bit on LP64 kernel */
+			 
 			inptr = &sti->sti_data->blkmv_inptr;
 			*inptr = inptr_default;
 		}
@@ -285,7 +261,7 @@ sti_bmove(struct sti_struct *sti, int src_y, int src_x,
 		spin_lock_irqsave(&sti->lock, flags);
 		inptr = &inptr_default;
 		if (IS_ENABLED(CONFIG_64BIT) && !sti->do_call64) {
-			/* copy below 4G if calling 32-bit on LP64 kernel */
+			 
 			inptr = &sti->sti_data->blkmv_inptr;
 			*inptr = inptr_default;
 		}
@@ -305,7 +281,7 @@ static void sti_rom_copy(unsigned long base, unsigned long count, void *dest)
 {
 	unsigned long dest_start = (unsigned long) dest;
 
-	/* this still needs to be revisited (see arch/parisc/mm/init.c:246) ! */
+	 
 	while (count >= 4) {
 		count -= 4;
 		*(u32 *)dest = gsc_readl(base);
@@ -336,12 +312,7 @@ static int __init sti_setup(char *str)
 	return 1;
 }
 
-/*	Assuming the machine has multiple STI consoles (=graphic cards) which
- *	all get detected by sticon, the user may define with the linux kernel
- *	parameter sti=<x> which of them will be the initial boot-console.
- *	<x> is a number between 0 and MAX_STI_ROMS, with 0 as the default
- *	STI screen.
- */
+ 
 __setup("sti=", sti_setup);
 #endif
 
@@ -354,13 +325,7 @@ static int font_index,
 #ifndef MODULE
 static int sti_font_setup(char *str)
 {
-	/*
-	 * The default font can be selected in various ways.
-	 * a) sti_font=VGA8x16, sti_font=10x20, sti_font=10*20 selects
-	 *    an built-in Linux framebuffer font.
-	 * b) sti_font=<index>, where index is (1..x) with 1 selecting
-	 *    the first HP STI ROM built-in font..
-	 */
+	 
 
 	if (*str >= '0' && *str <= '9') {
 		char *x;
@@ -372,30 +337,13 @@ static int sti_font_setup(char *str)
 			font_index = simple_strtoul(str, NULL, 0);
 		}
 	} else {
-		font_name = str;	/* fb font name */
+		font_name = str;	 
 	}
 
 	return 1;
 }
 
-/*	The optional linux kernel parameter "sti_font" defines which font
- *	should be used by the sticon driver to draw characters to the screen.
- *	Possible values are:
- *	- sti_font=<fb_fontname>:
- *		<fb_fontname> is the name of one of the linux-kernel built-in
- *		framebuffer font names (e.g. VGA8x16, SUN22x18).
- *		This is only available if the fonts have been statically compiled
- *		in with e.g. the CONFIG_FONT_8x16 or CONFIG_FONT_SUN12x22 options.
- *	- sti_font=<number>	(<number> = 1,2,3,...)
- *		most STI ROMs have built-in HP specific fonts, which can be selected
- *		by giving the desired number to the sticon driver.
- *		NOTE: This number is machine and STI ROM dependend.
- *	- sti_font=<height>x<width>  (e.g. sti_font=16x8)
- *		<height> and <width> gives hints to the height and width of the
- *		font which the user wants. The sticon driver will try to use
- *		a font with this height and width, but if no suitable font is
- *		found, sticon will use the default 8x8 font.
- */
+ 
 __setup("sti_font=", sti_font_setup);
 #endif
 
@@ -415,7 +363,7 @@ static void sti_dump_globcfg(struct sti_struct *sti)
 		glob_cfg->offscreen_x, glob_cfg->offscreen_y,
 		glob_cfg->total_x, glob_cfg->total_y);
 
-	/* dump extended cfg */
+	 
 	pr_debug("monitor %d\n"
 		"in friendly mode: %d\n"
 		"power consumption %d watts\n"
@@ -450,7 +398,7 @@ static int sti_init_glob_cfg(struct sti_struct *sti, unsigned long rom_address,
 	int i, size;
 
 	if (sti->sti_mem_request < 256)
-		sti->sti_mem_request = 256; /* STI default */
+		sti->sti_mem_request = 256;  
 
 	size = sizeof(struct sti_all_data) + sti->sti_mem_request - 256;
 
@@ -495,7 +443,7 @@ static int sti_init_glob_cfg(struct sti_struct *sti, unsigned long rom_address,
 			sti->regions[i].region_desc.cache,
 			sti->regions[i].region_desc.last);
 
-		/* last entry reached ? */
+		 
 		if (sti->regions[i].region_desc.last)
 			break;
 	}
@@ -504,7 +452,7 @@ static int sti_init_glob_cfg(struct sti_struct *sti, unsigned long rom_address,
 	for (i = 0; i < STI_REGION_MAX; i++)
 		ptr = store_sti_val(sti, ptr, sti->regions_phys[i]);
 
-	*(s32 *)ptr = 0;	/* set reent_lvl */
+	*(s32 *)ptr = 0;	 
 	ptr += sizeof(s32);
 	ptr = store_sti_ptr(sti, ptr, save_addr);
 	ptr = store_sti_ptr(sti, ptr, glob_cfg_ext);
@@ -618,7 +566,7 @@ static struct sti_cooked_font *sti_select_font(struct sti_cooked_rom *rom)
 	struct sti_cooked_font *font;
 	int i;
 
-	/* check for framebuffer-font first */
+	 
 	if (!font_index) {
 		font = sti_select_fbfont(rom, font_name);
 		if (font)
@@ -728,7 +676,7 @@ void sti_font_convert_bytemode(struct sti_struct *sti, struct sti_cooked_font *f
 		*p = *q++;
 		p += 4;
 	}
-	/* store new ptr to byte-mode font and delete old font */
+	 
 	f->raw = (struct sti_rom_font *) (n + 3);
 	kfree(old_font);
 }
@@ -789,7 +737,7 @@ static struct sti_rom *sti_get_wmode_rom(unsigned long address)
 	struct sti_rom *raw;
 	unsigned long size;
 
-	/* read the ROM size directly from the struct in ROM */
+	 
 	size = gsc_readl(address + offsetof(struct sti_rom,last_addr));
 
 	raw = kmalloc(size, STI_LOWMEM);
@@ -868,7 +816,7 @@ static int sti_read_rom(int wordmode, struct sti_struct *sti,
 	sti->graphics_id[0] = raw->graphics_id[0];
 	sti->graphics_id[1] = raw->graphics_id[1];
 
-	/* check if the ROM routines in this card are compatible */
+	 
 	if (wordmode || sti->graphics_id[1] != 0x09A02587)
 		goto ok;
 
@@ -876,7 +824,7 @@ static int sti_read_rom(int wordmode, struct sti_struct *sti,
 
 	switch (sti->graphics_id[0]) {
 	case S9000_ID_HCRX:
-		/* HyperA or HyperB ? */
+		 
 		if (revno == 0x8408 || revno == 0x840b)
 			goto msg_not_supported;
 		break;
@@ -895,7 +843,7 @@ msg_not_supported:
 	pr_warn("Sorry, this GSC/STI card is not yet supported.\n");
 	pr_warn("Please see https://parisc.wiki.kernel.org/"
 		"index.php/Graphics_howto for more info.\n");
-	/* fall through */
+	 
 out_err:
 	kfree(raw);
 	kfree(cooked);
@@ -922,7 +870,7 @@ static struct sti_struct *sti_try_rom_generic(unsigned long address,
 	spin_lock_init(&sti->lock);
 
 test_rom:
-	/* pdc_add_valid() works only on 32-bit kernels */
+	 
 	if ((!IS_ENABLED(CONFIG_64BIT) ||
 	     (boot_cpu_data.pdc.capabilities & PDC_MODEL_OS32)) &&
 	    pdc_add_valid(address)) {
@@ -931,14 +879,13 @@ test_rom:
 
 	sig = gsc_readl(address);
 
-	/* check for a PCI ROM structure */
+	 
 	if ((le32_to_cpu(sig)==0xaa55)) {
 		unsigned int i, rm_offset;
 		u32 *rm;
 		i = gsc_readl(address+0x04);
 		if (i != 1) {
-			/* The ROM could have multiple architecture
-			 * dependent images (e.g. i386, parisc,...) */
+			 
 			pr_warn("PCI ROM is not a STI ROM type image (0x%8x)\n", i);
 			goto out_err;
 		}
@@ -950,7 +897,7 @@ test_rom:
 			le16_to_cpu(i>>16)*512/1024);
 		rm_offset = le16_to_cpu(i & 0xffff);
 		if (rm_offset) {
-			/* read 16 bytes from the pci region mapper array */
+			 
 			rm = (u32*) &sti->rm_entry;
 			*rm++ = gsc_readl(address+rm_offset+0x00);
 			*rm++ = gsc_readl(address+rm_offset+0x04);
@@ -981,11 +928,9 @@ test_rom:
 		goto out_err;
 
 	if (sti_init_glob_cfg(sti, address, hpa))
-		goto out_err; /* not enough memory */
+		goto out_err;  
 
-	/* disable STI PCI ROM. ROM and card RAM overlap and
-	 * leaving it enabled would force HPMCs
-	 */
+	 
 	if (sti->pd) {
 		unsigned long rom_base;
 		rom_base = pci_resource_start(sti->pd, PCI_ROM_RESOURCE);
@@ -1020,11 +965,7 @@ static void sticore_check_for_default_sti(struct sti_struct *sti, char *path)
 		default_sti = sti;
 }
 
-/*
- * on newer systems PDC gives the address of the ROM
- * in the additional address field addr[1] while on
- * older Systems the PDC stores it in page0->proc_sti
- */
+ 
 static int __init sticore_pa_init(struct parisc_device *dev)
 {
 	struct sti_struct *sti = NULL;
@@ -1084,7 +1025,7 @@ static int sticore_pci_init(struct pci_dev *pd, const struct pci_device_id *ent)
 		pr_warn("Unable to handle STI device '%s'\n", pci_name(pd));
 		return -ENODEV;
 	}
-#endif /* CONFIG_PCI */
+#endif  
 
 	return 0;
 }
@@ -1102,7 +1043,7 @@ static struct pci_device_id sti_pci_tbl[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_HP, PCI_DEVICE_ID_HP_VISUALIZE_FX4) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_HP, PCI_DEVICE_ID_HP_VISUALIZE_FX2) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_HP, PCI_DEVICE_ID_HP_VISUALIZE_FXE) },
-	{ 0, } /* terminate list */
+	{ 0, }  
 };
 MODULE_DEVICE_TABLE(pci, sti_pci_tbl);
 
@@ -1127,9 +1068,7 @@ static struct parisc_driver pa_sti_driver __refdata = {
 };
 
 
-/*
- * sti_init_roms() - detects all STI ROMs and stores them in sti_roms[]
- */
+ 
 
 static int sticore_initialized __read_mostly;
 
@@ -1143,20 +1082,17 @@ static void sti_init_roms(void)
 	pr_info("STI GSC/PCI core graphics driver "
 			STI_DRIVERVERSION "\n");
 
-	/* Register drivers for native & PCI cards */
+	 
 	register_parisc_driver(&pa_sti_driver);
 	WARN_ON(pci_register_driver(&pci_sti_driver));
 
-	/* if we didn't find the given default sti, take the first one */
+	 
 	if (!default_sti)
 		default_sti = sti_roms[0];
 
 }
 
-/*
- * index = 0 gives default sti
- * index > 0 gives other stis in detection order
- */
+ 
 struct sti_struct * sti_get_rom(unsigned int index)
 {
 	if (!sticore_initialized)
@@ -1183,7 +1119,7 @@ int sti_call(const struct sti_struct *sti, unsigned long func,
 	unsigned long _glob_cfg = STI_PTR(glob_cfg);
 	int ret;
 
-	/* Check for overflow when using 32bit STI on 64bit kernel. */
+	 
 	if (WARN_ONCE(IS_ENABLED(CONFIG_64BIT) && !sti->do_call64 &&
 		      (upper_32_bits(_flags) || upper_32_bits(_inptr) ||
 		      upper_32_bits(_outptr) || upper_32_bits(_glob_cfg)),

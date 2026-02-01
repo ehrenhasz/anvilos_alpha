@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Functions and macros to control the flowcontroller
- *
- * Copyright (c) 2010-2012, NVIDIA Corporation. All rights reserved.
- */
+ 
+ 
 
 #ifndef __SOC_TEGRA_FLOWCTRL_H__
 #define __SOC_TEGRA_FLOWCTRL_H__
@@ -66,6 +62,6 @@ static inline void flowctrl_cpu_suspend_enter(unsigned int cpuid)
 static inline void flowctrl_cpu_suspend_exit(unsigned int cpuid)
 {
 }
-#endif /* CONFIG_SOC_TEGRA_FLOWCTRL */
-#endif /* __ASSEMBLY */
-#endif /* __SOC_TEGRA_FLOWCTRL_H__ */
+#endif  
+#endif  
+#endif  

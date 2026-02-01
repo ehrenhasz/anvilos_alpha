@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2012 GCT Semiconductor, Inc. All rights reserved. */
+ 
+ 
 
 #ifndef _NETLINK_K_H
 #define _NETLINK_K_H
@@ -13,4 +13,4 @@ struct sock *netlink_init(int unit,
 int netlink_send(struct sock *sock, int group, u16 type, void *msg, int len,
 		 struct net_device *dev);
 
-#endif /* _NETLINK_K_H_ */
+#endif  

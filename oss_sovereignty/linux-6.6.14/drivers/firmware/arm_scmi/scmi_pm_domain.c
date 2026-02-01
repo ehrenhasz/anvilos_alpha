@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SCMI Generic power domain support.
- *
- * Copyright (C) 2018-2021 ARM Ltd.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/io.h>

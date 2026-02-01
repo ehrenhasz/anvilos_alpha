@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * USB4 port device
- *
- * Copyright (C) 2021, Intel Corporation
- * Author: Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #include <linux/pm_runtime.h>
 #include <linux/component.h>
@@ -136,7 +131,7 @@ static ssize_t offline_store(struct device *dev,
 	if (val == usb4->offline)
 		goto out_unlock;
 
-	/* Offline mode works only for ports that are not connected */
+	 
 	if (tb_port_has_remote(port)) {
 		ret = -EBUSY;
 		goto out_unlock;
@@ -187,7 +182,7 @@ static ssize_t rescan_store(struct device *dev,
 		goto out_rpm;
 	}
 
-	/* Must be in offline mode already */
+	 
 	if (!usb4->offline) {
 		ret = -EINVAL;
 		goto out_unlock;
@@ -218,10 +213,7 @@ static umode_t service_attr_is_visible(struct kobject *kobj,
 	struct device *dev = kobj_to_dev(kobj);
 	struct usb4_port *usb4 = tb_to_usb4_port_device(dev);
 
-	/*
-	 * Always need some platform help to cycle the modes so that
-	 * retimers can be accessed through the sideband.
-	 */
+	 
 	return usb4->can_offline ? attr->mode : 0;
 }
 
@@ -249,13 +241,7 @@ struct device_type usb4_port_device_type = {
 	.release = usb4_port_device_release,
 };
 
-/**
- * usb4_port_device_add() - Add USB4 port device
- * @port: Lane 0 adapter port to add the USB4 port
- *
- * Creates and registers a USB4 port device for @port. Returns the new
- * USB4 port device pointer or ERR_PTR() in case of error.
- */
+ 
 struct usb4_port *usb4_port_device_add(struct tb_port *port)
 {
 	struct usb4_port *usb4;
@@ -297,13 +283,7 @@ struct usb4_port *usb4_port_device_add(struct tb_port *port)
 	return usb4;
 }
 
-/**
- * usb4_port_device_remove() - Removes USB4 port device
- * @usb4: USB4 port device
- *
- * Unregisters the USB4 port device from the system. The device will be
- * released when the last reference is dropped.
- */
+ 
 void usb4_port_device_remove(struct usb4_port *usb4)
 {
 	if (dev_fwnode(&usb4->dev))
@@ -311,12 +291,7 @@ void usb4_port_device_remove(struct usb4_port *usb4)
 	device_unregister(&usb4->dev);
 }
 
-/**
- * usb4_port_device_resume() - Resumes USB4 port device
- * @usb4: USB4 port device
- *
- * Used to resume USB4 port device after sleep state.
- */
+ 
 int usb4_port_device_resume(struct usb4_port *usb4)
 {
 	return usb4->offline ? usb4_port_offline(usb4) : 0;

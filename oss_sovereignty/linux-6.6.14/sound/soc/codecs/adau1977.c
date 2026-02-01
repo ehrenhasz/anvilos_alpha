@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ADAU1977/ADAU1978/ADAU1979 driver
- *
- * Copyright 2014 Analog Devices Inc.
- *  Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -226,12 +221,7 @@ static int adau1977_reset(struct adau1977 *adau1977)
 {
 	int ret;
 
-	/*
-	 * The reset bit is obviously volatile, but we need to be able to cache
-	 * the other bits in the register, so we can't just mark the whole
-	 * register as volatile. Since this is the only place where we'll ever
-	 * touch the reset bit just bypass the cache for this operation.
-	 */
+	 
 	regcache_cache_bypass(adau1977->regmap, true);
 	ret = regmap_write(adau1977->regmap, ADAU1977_REG_POWER,
 			ADAU1977_POWER_RESET);
@@ -240,10 +230,7 @@ static int adau1977_reset(struct adau1977 *adau1977)
 	return ret;
 }
 
-/*
- * Returns the appropriate setting for ths FS field in the CTRL0 register
- * depending on the rate.
- */
+ 
 static int adau1977_lookup_fs(unsigned int rate)
 {
 	if (rate >= 8000 && rate <= 12000)
@@ -265,11 +252,7 @@ static int adau1977_lookup_mcs(struct adau1977 *adau1977, unsigned int rate,
 {
 	unsigned int mcs;
 
-	/*
-	 * rate = sysclk / (512 * mcs_lut[mcs]) * 2**fs
-	 * => mcs_lut[mcs] = sysclk / (512 * rate) * 2**fs
-	 * => mcs_lut[mcs] = sysclk / ((512 / 2**fs) * rate)
-	 */
+	 
 
 	rate *= 512 >> fs;
 
@@ -278,7 +261,7 @@ static int adau1977_lookup_mcs(struct adau1977 *adau1977, unsigned int rate,
 
 	mcs = adau1977->sysclk / rate;
 
-	/* The factors configured by MCS are 1, 2, 3, 4, 6 */
+	 
 	if (mcs < 1 || mcs > 6 || mcs == 5)
 		return -EINVAL;
 
@@ -345,7 +328,7 @@ static int adau1977_hw_params(struct snd_pcm_substream *substream,
 			return -EINVAL;
 		}
 
-		/* In TDM mode there is a fixed slot width */
+		 
 		if (adau1977->slot_width)
 			slot_width = adau1977->slot_width;
 
@@ -437,13 +420,7 @@ static int adau1977_power_enable(struct adau1977 *adau1977)
 	if (ret)
 		goto err_disable_dvdd;
 
-	/*
-	 * The PLL register is not affected by the software reset. It is
-	 * possible that the value of the register was changed to the
-	 * default value while we were in cache only mode. In this case
-	 * regcache_sync will skip over it and we have to manually sync
-	 * it.
-	 */
+	 
 	ret = regmap_read(adau1977->regmap, ADAU1977_REG_PLL, &val);
 	if (ret)
 		goto err_disable_dvdd;
@@ -502,7 +479,7 @@ static int adau1977_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
 	int ret;
 
 	if (slots == 0) {
-		/* 0 = No fixed slot width */
+		 
 		adau1977->slot_width = 0;
 		adau1977->max_clock_provider_fs = 192000;
 		return regmap_update_bits(adau1977->regmap,
@@ -532,7 +509,7 @@ static int adau1977_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
 		ctrl1 = ADAU1977_SAI_CTRL1_SLOT_WIDTH_16;
 		break;
 	case 24:
-		/* We can only generate 16 bit or 32 bit wide slots */
+		 
 		if (adau1977->clock_provider)
 			return -EINVAL;
 		ctrl1 = ADAU1977_SAI_CTRL1_SLOT_WIDTH_24;
@@ -593,7 +570,7 @@ static int adau1977_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
 
 	adau1977->slot_width = width;
 
-	/* In clock provider mode the maximum bitclock is 24.576 MHz */
+	 
 	adau1977->max_clock_provider_fs = min(192000, 24576000 / width / slots);
 
 	return 0;
@@ -772,7 +749,7 @@ static const unsigned int adau1977_rates[] = {
 #define ADAU1977_RATE_CONSTRAINT_MASK_32000 0x001f
 #define ADAU1977_RATE_CONSTRAINT_MASK_44100 0x03e0
 #define ADAU1977_RATE_CONSTRAINT_MASK_48000 0x7c00
-/* All rates >= 32000 */
+ 
 #define ADAU1977_RATE_CONSTRAINT_MASK_LRCLK 0x739c
 
 static bool adau1977_check_sysclk(unsigned int mclk, unsigned int base_freq)

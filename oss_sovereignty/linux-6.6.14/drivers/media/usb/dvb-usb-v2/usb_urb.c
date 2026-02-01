@@ -1,17 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-/* usb-urb.c is part of the DVB USB library.
- *
- * Copyright (C) 2004-6 Patrick Boettcher (patrick.boettcher@posteo.de)
- * see dvb-usb-init.c for copyright information.
- *
- * This file keeps functions for initializing and handling the
- * BULK and ISOC USB data transfers in a generic way.
- * Can be used for DVB-only and also, that's the plan, for
- * Hybrid USB devices (analog and DVB).
- */
+
+ 
 #include "dvb_usb_common.h"
 
-/* URB stuff for streaming */
+ 
 
 int usb_urb_reconfig(struct usb_data_stream *stream,
 		struct usb_data_stream_properties *props);
@@ -31,14 +22,14 @@ static void usb_urb_complete(struct urb *urb)
 			urb->number_of_packets, urb->error_count);
 
 	switch (urb->status) {
-	case 0:         /* success */
-	case -ETIMEDOUT:    /* NAK */
+	case 0:          
+	case -ETIMEDOUT:     
 		break;
-	case -ECONNRESET:   /* kill */
+	case -ECONNRESET:    
 	case -ENOENT:
 	case -ESHUTDOWN:
 		return;
-	default:        /* error */
+	default:         
 		dev_dbg_ratelimited(&stream->udev->dev,
 				"%s: urb completion failed=%d\n",
 				__func__, urb->status);
@@ -81,7 +72,7 @@ int usb_urb_killv2(struct usb_data_stream *stream)
 	int i;
 	for (i = 0; i < stream->urbs_submitted; i++) {
 		dev_dbg(&stream->udev->dev, "%s: kill urb=%d\n", __func__, i);
-		/* stop the URB */
+		 
 		usb_kill_urb(stream->urb_list[i]);
 	}
 	stream->urbs_submitted = 0;
@@ -124,7 +115,7 @@ static int usb_urb_free_urbs(struct usb_data_stream *stream)
 		if (stream->urb_list[i]) {
 			dev_dbg(&stream->udev->dev, "%s: free urb=%d\n",
 					__func__, i);
-			/* free the URBs */
+			 
 			usb_free_urb(stream->urb_list[i]);
 		}
 	}
@@ -137,7 +128,7 @@ static int usb_urb_alloc_bulk_urbs(struct usb_data_stream *stream)
 {
 	int i, j;
 
-	/* allocate the URBs */
+	 
 	for (i = 0; i < stream->props.count; i++) {
 		dev_dbg(&stream->udev->dev, "%s: alloc urb=%d\n", __func__, i);
 		stream->urb_list[i] = usb_alloc_urb(0, GFP_ATOMIC);
@@ -164,7 +155,7 @@ static int usb_urb_alloc_isoc_urbs(struct usb_data_stream *stream)
 {
 	int i, j;
 
-	/* allocate the URBs */
+	 
 	for (i = 0; i < stream->props.count; i++) {
 		struct urb *urb;
 		int frame_offset = 0;
@@ -255,7 +246,7 @@ int usb_urb_reconfig(struct usb_data_stream *stream,
 	if (!props)
 		return 0;
 
-	/* check allocated buffers are large enough for the request */
+	 
 	if (props->type == USB_BULK) {
 		buf_size = stream->props.u.bulk.buffersize;
 	} else if (props->type == USB_ISOC) {
@@ -273,7 +264,7 @@ int usb_urb_reconfig(struct usb_data_stream *stream,
 		return -EINVAL;
 	}
 
-	/* check if all fields are same */
+	 
 	if (stream->props.type == props->type &&
 			stream->props.count == props->count &&
 			stream->props.endpoint == props->endpoint) {

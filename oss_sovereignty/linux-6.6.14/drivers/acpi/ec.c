@@ -1,19 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  ec.c - ACPI Embedded Controller Driver (v3)
- *
- *  Copyright (C) 2001-2015 Intel Corporation
- *    Author: 2014, 2015 Lv Zheng <lv.zheng@intel.com>
- *            2006, 2007 Alexey Starikovskiy <alexey.y.starikovskiy@intel.com>
- *            2006       Denis Sadykov <denis.m.sadykov@intel.com>
- *            2004       Luming Yu <luming.yu@intel.com>
- *            2001, 2002 Andy Grover <andrew.grover@intel.com>
- *            2001, 2002 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
- *  Copyright (C) 2008      Alexey Starikovskiy <astarikovskiy@suse.de>
- */
 
-/* Uncomment next line to get verbose printout */
-/* #define DEBUG */
+ 
+
+ 
+ 
 #define pr_fmt(fmt) "ACPI: EC: " fmt
 
 #include <linux/kernel.h>
@@ -35,46 +24,19 @@
 #define ACPI_EC_CLASS			"embedded_controller"
 #define ACPI_EC_DEVICE_NAME		"Embedded Controller"
 
-/* EC status register */
-#define ACPI_EC_FLAG_OBF	0x01	/* Output buffer full */
-#define ACPI_EC_FLAG_IBF	0x02	/* Input buffer full */
-#define ACPI_EC_FLAG_CMD	0x08	/* Input buffer contains a command */
-#define ACPI_EC_FLAG_BURST	0x10	/* burst mode */
-#define ACPI_EC_FLAG_SCI	0x20	/* EC-SCI occurred */
+ 
+#define ACPI_EC_FLAG_OBF	0x01	 
+#define ACPI_EC_FLAG_IBF	0x02	 
+#define ACPI_EC_FLAG_CMD	0x08	 
+#define ACPI_EC_FLAG_BURST	0x10	 
+#define ACPI_EC_FLAG_SCI	0x20	 
 
-/*
- * The SCI_EVT clearing timing is not defined by the ACPI specification.
- * This leads to lots of practical timing issues for the host EC driver.
- * The following variations are defined (from the target EC firmware's
- * perspective):
- * STATUS: After indicating SCI_EVT edge triggered IRQ to the host, the
- *         target can clear SCI_EVT at any time so long as the host can see
- *         the indication by reading the status register (EC_SC). So the
- *         host should re-check SCI_EVT after the first time the SCI_EVT
- *         indication is seen, which is the same time the query request
- *         (QR_EC) is written to the command register (EC_CMD). SCI_EVT set
- *         at any later time could indicate another event. Normally such
- *         kind of EC firmware has implemented an event queue and will
- *         return 0x00 to indicate "no outstanding event".
- * QUERY: After seeing the query request (QR_EC) written to the command
- *        register (EC_CMD) by the host and having prepared the responding
- *        event value in the data register (EC_DATA), the target can safely
- *        clear SCI_EVT because the target can confirm that the current
- *        event is being handled by the host. The host then should check
- *        SCI_EVT right after reading the event response from the data
- *        register (EC_DATA).
- * EVENT: After seeing the event response read from the data register
- *        (EC_DATA) by the host, the target can clear SCI_EVT. As the
- *        target requires time to notice the change in the data register
- *        (EC_DATA), the host may be required to wait additional guarding
- *        time before checking the SCI_EVT again. Such guarding may not be
- *        necessary if the host is notified via another IRQ.
- */
+ 
 #define ACPI_EC_EVT_TIMING_STATUS	0x00
 #define ACPI_EC_EVT_TIMING_QUERY	0x01
 #define ACPI_EC_EVT_TIMING_EVENT	0x02
 
-/* EC commands */
+ 
 enum ec_command {
 	ACPI_EC_COMMAND_READ = 0x80,
 	ACPI_EC_COMMAND_WRITE = 0x81,
@@ -83,28 +45,27 @@ enum ec_command {
 	ACPI_EC_COMMAND_QUERY = 0x84,
 };
 
-#define ACPI_EC_DELAY		500	/* Wait 500ms max. during EC ops */
-#define ACPI_EC_UDELAY_GLK	1000	/* Wait 1ms max. to get global lock */
-#define ACPI_EC_UDELAY_POLL	550	/* Wait 1ms for EC transaction polling */
-#define ACPI_EC_CLEAR_MAX	100	/* Maximum number of events to query
-					 * when trying to clear the EC */
-#define ACPI_EC_MAX_QUERIES	16	/* Maximum number of parallel queries */
+#define ACPI_EC_DELAY		500	 
+#define ACPI_EC_UDELAY_GLK	1000	 
+#define ACPI_EC_UDELAY_POLL	550	 
+#define ACPI_EC_CLEAR_MAX	100	 
+#define ACPI_EC_MAX_QUERIES	16	 
 
 enum {
-	EC_FLAGS_QUERY_ENABLED,		/* Query is enabled */
-	EC_FLAGS_EVENT_HANDLER_INSTALLED,	/* Event handler installed */
-	EC_FLAGS_EC_HANDLER_INSTALLED,	/* OpReg handler installed */
-	EC_FLAGS_EC_REG_CALLED,		/* OpReg ACPI _REG method called */
-	EC_FLAGS_QUERY_METHODS_INSTALLED, /* _Qxx handlers installed */
-	EC_FLAGS_STARTED,		/* Driver is started */
-	EC_FLAGS_STOPPED,		/* Driver is stopped */
-	EC_FLAGS_EVENTS_MASKED,		/* Events masked */
+	EC_FLAGS_QUERY_ENABLED,		 
+	EC_FLAGS_EVENT_HANDLER_INSTALLED,	 
+	EC_FLAGS_EC_HANDLER_INSTALLED,	 
+	EC_FLAGS_EC_REG_CALLED,		 
+	EC_FLAGS_QUERY_METHODS_INSTALLED,  
+	EC_FLAGS_STARTED,		 
+	EC_FLAGS_STOPPED,		 
+	EC_FLAGS_EVENTS_MASKED,		 
 };
 
-#define ACPI_EC_COMMAND_POLL		0x01 /* Available for command byte */
-#define ACPI_EC_COMMAND_COMPLETE	0x02 /* Completed last byte */
+#define ACPI_EC_COMMAND_POLL		0x01  
+#define ACPI_EC_COMMAND_COMPLETE	0x02  
 
-/* ec.c is compiled in acpi namespace so this shows up as acpi.ec_delay param */
+ 
 static unsigned int ec_delay __read_mostly = ACPI_EC_DELAY;
 module_param(ec_delay, uint, 0644);
 MODULE_PARM_DESC(ec_delay, "Timeout(ms) waited until an EC command completes");
@@ -123,11 +84,7 @@ MODULE_PARM_DESC(ec_polling_guard, "Guard time(us) between EC accesses in pollin
 
 static unsigned int ec_event_clearing __read_mostly = ACPI_EC_EVT_TIMING_QUERY;
 
-/*
- * If the number of false interrupts per one transaction exceeds
- * this threshold, will think there is a GPE storm happened and
- * will disable the GPE for normal transaction.
- */
+ 
 static unsigned int ec_storm_threshold  __read_mostly = 8;
 module_param(ec_storm_threshold, uint, 0644);
 MODULE_PARM_DESC(ec_storm_threshold, "Maxim false GPE numbers not considered as GPE storm");
@@ -180,18 +137,13 @@ static bool boot_ec_is_ecdt;
 static struct workqueue_struct *ec_wq;
 static struct workqueue_struct *ec_query_wq;
 
-static int EC_FLAGS_CORRECT_ECDT; /* Needs ECDT port address correction */
-static int EC_FLAGS_TRUST_DSDT_GPE; /* Needs DSDT GPE as correction setting */
-static int EC_FLAGS_CLEAR_ON_RESUME; /* Needs acpi_ec_clear() on boot/resume */
+static int EC_FLAGS_CORRECT_ECDT;  
+static int EC_FLAGS_TRUST_DSDT_GPE;  
+static int EC_FLAGS_CLEAR_ON_RESUME;  
 
-/* --------------------------------------------------------------------------
- *                           Logging/Debugging
- * -------------------------------------------------------------------------- */
+ 
 
-/*
- * Splitters used by the developers to track the boundary of the EC
- * handling processes.
- */
+ 
 #ifdef DEBUG
 #define EC_DBG_SEP	" "
 #define EC_DBG_DRV	"+++++"
@@ -228,9 +180,7 @@ static int EC_FLAGS_CLEAR_ON_RESUME; /* Needs acpi_ec_clear() on boot/resume */
 #define ec_dbg_ref(ec, fmt, ...) \
 	ec_dbg_raw("%lu: " fmt, ec->reference_count, ## __VA_ARGS__)
 
-/* --------------------------------------------------------------------------
- *                           Device Flags
- * -------------------------------------------------------------------------- */
+ 
 
 static bool acpi_ec_started(struct acpi_ec *ec)
 {
@@ -240,22 +190,10 @@ static bool acpi_ec_started(struct acpi_ec *ec)
 
 static bool acpi_ec_event_enabled(struct acpi_ec *ec)
 {
-	/*
-	 * There is an OSPM early stage logic. During the early stages
-	 * (boot/resume), OSPMs shouldn't enable the event handling, only
-	 * the EC transactions are allowed to be performed.
-	 */
+	 
 	if (!test_bit(EC_FLAGS_QUERY_ENABLED, &ec->flags))
 		return false;
-	/*
-	 * However, disabling the event handling is experimental for late
-	 * stage (suspend), and is controlled by the boot parameter of
-	 * "ec_freeze_events":
-	 * 1. true:  The EC event handling is disabled before entering
-	 *           the noirq stage.
-	 * 2. false: The EC event handling is automatically disabled as
-	 *           soon as the EC driver is stopped.
-	 */
+	 
 	if (ec_freeze_events)
 		return acpi_ec_started(ec);
 	else
@@ -267,9 +205,7 @@ static bool acpi_ec_flushed(struct acpi_ec *ec)
 	return ec->reference_count == 1;
 }
 
-/* --------------------------------------------------------------------------
- *                           EC Registers
- * -------------------------------------------------------------------------- */
+ 
 
 static inline u8 acpi_ec_read_status(struct acpi_ec *ec)
 {
@@ -330,9 +266,7 @@ static const char *acpi_ec_cmd_string(u8 cmd)
 #define acpi_ec_cmd_string(cmd)		"UNDEF"
 #endif
 
-/* --------------------------------------------------------------------------
- *                           GPE Registers
- * -------------------------------------------------------------------------- */
+ 
 
 static inline bool acpi_ec_gpe_status_set(struct acpi_ec *ec)
 {
@@ -351,11 +285,7 @@ static inline void acpi_ec_enable_gpe(struct acpi_ec *ec, bool open)
 		acpi_set_gpe(NULL, ec->gpe, ACPI_GPE_ENABLE);
 	}
 	if (acpi_ec_gpe_status_set(ec)) {
-		/*
-		 * On some platforms, EN=1 writes cannot trigger GPE. So
-		 * software need to manually trigger a pseudo GPE event on
-		 * EN=1 writes.
-		 */
+		 
 		ec_dbg_raw("Polling quirk");
 		advance_transaction(ec, false);
 	}
@@ -371,9 +301,7 @@ static inline void acpi_ec_disable_gpe(struct acpi_ec *ec, bool close)
 	}
 }
 
-/* --------------------------------------------------------------------------
- *                           Transaction Management
- * -------------------------------------------------------------------------- */
+ 
 
 static void acpi_ec_submit_request(struct acpi_ec *ec)
 {
@@ -422,17 +350,7 @@ static void acpi_ec_unmask_events(struct acpi_ec *ec)
 	}
 }
 
-/*
- * acpi_ec_submit_flushable_request() - Increase the reference count unless
- *                                      the flush operation is not in
- *                                      progress
- * @ec: the EC device
- *
- * This function must be used before taking a new action that should hold
- * the reference count.  If this function returns false, then the action
- * must be discarded or it will prevent the flush operation from being
- * completed.
- */
+ 
 static bool acpi_ec_submit_flushable_request(struct acpi_ec *ec)
 {
 	if (!acpi_ec_started(ec))
@@ -443,10 +361,7 @@ static bool acpi_ec_submit_flushable_request(struct acpi_ec *ec)
 
 static void acpi_ec_submit_event(struct acpi_ec *ec)
 {
-	/*
-	 * It is safe to mask the events here, because acpi_ec_close_event()
-	 * will run at least once after this.
-	 */
+	 
 	acpi_ec_mask_events(ec);
 	if (!acpi_ec_event_enabled(ec))
 		return;
@@ -458,13 +373,7 @@ static void acpi_ec_submit_event(struct acpi_ec *ec)
 		   acpi_ec_cmd_string(ACPI_EC_COMMAND_QUERY));
 
 	ec->event_state = EC_EVENT_IN_PROGRESS;
-	/*
-	 * If events_to_process is greater than 0 at this point, the while ()
-	 * loop in acpi_ec_event_handler() is still running and incrementing
-	 * events_to_process will cause it to invoke acpi_ec_submit_query() once
-	 * more, so it is not necessary to queue up the event work to start the
-	 * same loop again.
-	 */
+	 
 	if (ec->events_to_process++ > 0)
 		return;
 
@@ -492,10 +401,7 @@ static inline void __acpi_ec_enable_event(struct acpi_ec *ec)
 {
 	if (!test_and_set_bit(EC_FLAGS_QUERY_ENABLED, &ec->flags))
 		ec_log_drv("event unblocked");
-	/*
-	 * Unconditionally invoke this once after enabling the event
-	 * handling mechanism to detect the pending events.
-	 */
+	 
 	advance_transaction(ec, false);
 }
 
@@ -505,10 +411,7 @@ static inline void __acpi_ec_disable_event(struct acpi_ec *ec)
 		ec_log_drv("event blocked");
 }
 
-/*
- * Process _Q events that might have accumulated in the EC.
- * Run with locked ec mutex.
- */
+ 
 static void acpi_ec_clear(struct acpi_ec *ec)
 {
 	int i;
@@ -532,7 +435,7 @@ static void acpi_ec_enable_event(struct acpi_ec *ec)
 		__acpi_ec_enable_event(ec);
 	spin_unlock_irqrestore(&ec->lock, flags);
 
-	/* Drain additional events if hardware requires that */
+	 
 	if (EC_FLAGS_CLEAR_ON_RESUME)
 		acpi_ec_clear(ec);
 }
@@ -540,8 +443,8 @@ static void acpi_ec_enable_event(struct acpi_ec *ec)
 #ifdef CONFIG_PM_SLEEP
 static void __acpi_ec_flush_work(void)
 {
-	flush_workqueue(ec_wq); /* flush ec->work */
-	flush_workqueue(ec_query_wq); /* flush queries */
+	flush_workqueue(ec_wq);  
+	flush_workqueue(ec_query_wq);  
 }
 
 static void acpi_ec_disable_event(struct acpi_ec *ec)
@@ -552,22 +455,19 @@ static void acpi_ec_disable_event(struct acpi_ec *ec)
 	__acpi_ec_disable_event(ec);
 	spin_unlock_irqrestore(&ec->lock, flags);
 
-	/*
-	 * When ec_freeze_events is true, we need to flush events in
-	 * the proper position before entering the noirq stage.
-	 */
+	 
 	__acpi_ec_flush_work();
 }
 
 void acpi_ec_flush_work(void)
 {
-	/* Without ec_wq there is nothing to flush. */
+	 
 	if (!ec_wq)
 		return;
 
 	__acpi_ec_flush_work();
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static bool acpi_ec_guard_event(struct acpi_ec *ec)
 {
@@ -575,18 +475,7 @@ static bool acpi_ec_guard_event(struct acpi_ec *ec)
 	bool guarded;
 
 	spin_lock_irqsave(&ec->lock, flags);
-	/*
-	 * If firmware SCI_EVT clearing timing is "event", we actually
-	 * don't know when the SCI_EVT will be cleared by firmware after
-	 * evaluating _Qxx, so we need to re-check SCI_EVT after waiting an
-	 * acceptable period.
-	 *
-	 * The guarding period is applicable if the event state is not
-	 * EC_EVENT_READY, but otherwise if the current transaction is of the
-	 * ACPI_EC_COMMAND_QUERY type, the guarding should have elapsed already
-	 * and it should not be applied to let the transaction transition into
-	 * the ACPI_EC_COMMAND_POLL state immediately.
-	 */
+	 
 	guarded = ec_event_clearing == ACPI_EC_EVT_TIMING_EVENT &&
 		ec->event_state != EC_EVENT_READY &&
 		(!ec->curr || ec->curr->command != ACPI_EC_COMMAND_QUERY);
@@ -649,7 +538,7 @@ static void acpi_ec_spurious_interrupt(struct acpi_ec *ec, struct transaction *t
 	if (t->irq_count < ec_storm_threshold)
 		++t->irq_count;
 
-	/* Trigger if the threshold is 0 too. */
+	 
 	if (t->irq_count == ec_storm_threshold)
 		acpi_ec_mask_events(ec);
 }
@@ -664,10 +553,7 @@ static void advance_transaction(struct acpi_ec *ec, bool interrupt)
 
 	status = acpi_ec_read_status(ec);
 
-	/*
-	 * Another IRQ or a guarded polling mode advancement is detected,
-	 * the next QR_EC submission is then allowed.
-	 */
+	 
 	if (!t || !(t->flags & ACPI_EC_COMMAND_POLL)) {
 		if (ec_event_clearing == ACPI_EC_EVT_TIMING_EVENT &&
 		    ec->event_state == EC_EVENT_COMPLETE)
@@ -724,24 +610,15 @@ static int ec_guard(struct acpi_ec *ec)
 	unsigned long guard = usecs_to_jiffies(ec->polling_guard);
 	unsigned long timeout = ec->timestamp + guard;
 
-	/* Ensure guarding period before polling EC status */
+	 
 	do {
 		if (ec->busy_polling) {
-			/* Perform busy polling */
+			 
 			if (ec_transaction_completed(ec))
 				return 0;
 			udelay(jiffies_to_usecs(guard));
 		} else {
-			/*
-			 * Perform wait polling
-			 * 1. Wait the transaction to be completed by the
-			 *    GPE handler after the transaction enters
-			 *    ACPI_EC_COMMAND_POLL state.
-			 * 2. A special guarding logic is also required
-			 *    for event clearing mode "event" before the
-			 *    transaction enters ACPI_EC_COMMAND_POLL
-			 *    state.
-			 */
+			 
 			if (!ec_transaction_polled(ec) &&
 			    !acpi_ec_guard_event(ec))
 				break;
@@ -757,7 +634,7 @@ static int ec_guard(struct acpi_ec *ec)
 static int ec_poll(struct acpi_ec *ec)
 {
 	unsigned long flags;
-	int repeat = 5; /* number of command restarts */
+	int repeat = 5;  
 
 	while (repeat--) {
 		unsigned long delay = jiffies +
@@ -783,15 +660,15 @@ static int acpi_ec_transaction_unlocked(struct acpi_ec *ec,
 	unsigned long tmp;
 	int ret = 0;
 
-	/* start transaction */
+	 
 	spin_lock_irqsave(&ec->lock, tmp);
-	/* Enable GPE for command processing (IBF=0/OBF=1) */
+	 
 	if (!acpi_ec_submit_flushable_request(ec)) {
 		ret = -EINVAL;
 		goto unlock;
 	}
 	ec_dbg_ref(ec, "Increase command");
-	/* following two actions should be kept atomic */
+	 
 	ec->curr = t;
 	ec_dbg_req("Command(%s) started", acpi_ec_cmd_string(t->command));
 	start_transaction(ec);
@@ -804,7 +681,7 @@ static int acpi_ec_transaction_unlocked(struct acpi_ec *ec,
 		acpi_ec_unmask_events(ec);
 	ec_dbg_req("Command(%s) stopped", acpi_ec_cmd_string(t->command));
 	ec->curr = NULL;
-	/* Disable GPE for command processing (IBF=0/OBF=1) */
+	 
 	acpi_ec_complete_request(ec);
 	ec_dbg_ref(ec, "Decrease command");
 unlock:
@@ -925,7 +802,7 @@ int ec_transaction(u8 command,
 }
 EXPORT_SYMBOL(ec_transaction);
 
-/* Get the handle to the EC device */
+ 
 acpi_handle ec_get_handle(void)
 {
 	if (!first_ec)
@@ -941,7 +818,7 @@ static void acpi_ec_start(struct acpi_ec *ec, bool resuming)
 	spin_lock_irqsave(&ec->lock, flags);
 	if (!test_and_set_bit(EC_FLAGS_STARTED, &ec->flags)) {
 		ec_dbg_drv("Starting EC");
-		/* Enable GPE for event processing (SCI_EVT=1) */
+		 
 		if (!resuming) {
 			acpi_ec_submit_request(ec);
 			ec_dbg_ref(ec, "Increase driver");
@@ -973,7 +850,7 @@ static void acpi_ec_stop(struct acpi_ec *ec, bool suspending)
 		spin_unlock_irqrestore(&ec->lock, flags);
 		wait_event(ec->wait, acpi_ec_stopped(ec));
 		spin_lock_irqsave(&ec->lock, flags);
-		/* Disable GPE for event processing (SCI_EVT=1) */
+		 
 		if (!suspending) {
 			acpi_ec_complete_request(ec);
 			ec_dbg_ref(ec, "Decrease driver");
@@ -1016,24 +893,19 @@ void acpi_ec_block_transactions(void)
 		return;
 
 	mutex_lock(&ec->mutex);
-	/* Prevent transactions from being carried out */
+	 
 	acpi_ec_stop(ec, true);
 	mutex_unlock(&ec->mutex);
 }
 
 void acpi_ec_unblock_transactions(void)
 {
-	/*
-	 * Allow transactions to happen again (this function is called from
-	 * atomic context during wakeup, so we don't need to acquire the mutex).
-	 */
+	 
 	if (first_ec)
 		acpi_ec_start(first_ec, true);
 }
 
-/* --------------------------------------------------------------------------
-                                Event Management
-   -------------------------------------------------------------------------- */
+ 
 static struct acpi_ec_query_handler *
 acpi_ec_get_query_handler_by_value(struct acpi_ec *ec, u8 value)
 {
@@ -1098,12 +970,7 @@ static void acpi_ec_remove_query_handlers(struct acpi_ec *ec,
 
 	mutex_lock(&ec->mutex);
 	list_for_each_entry_safe(handler, tmp, &ec->list, node) {
-		/*
-		 * When remove_all is false, only remove custom query handlers
-		 * which have handler->func set. This is done to preserve query
-		 * handlers discovered thru ACPI, as they should continue handling
-		 * EC queries.
-		 */
+		 
 		if (remove_all || (handler->func && handler->query_bit == query_bit)) {
 			list_del_init(&handler->node);
 			list_add(&handler->node, &free_list);
@@ -1173,11 +1040,7 @@ static int acpi_ec_submit_query(struct acpi_ec *ec)
 	if (!q)
 		return -ENOMEM;
 
-	/*
-	 * Query the EC to find out which _Qxx method we need to evaluate.
-	 * Note that successful completion of the query causes the ACPI_EC_SCI
-	 * bit to be cleared (and thus clearing the interrupt source).
-	 */
+	 
 	result = acpi_ec_transaction(ec, &q->transaction);
 	if (result)
 		goto err_exit;
@@ -1193,13 +1056,7 @@ static int acpi_ec_submit_query(struct acpi_ec *ec)
 		goto err_exit;
 	}
 
-	/*
-	 * It is reported that _Qxx are evaluated in a parallel way on Windows:
-	 * https://bugzilla.kernel.org/show_bug.cgi?id=94411
-	 *
-	 * Put this log entry before queue_work() to make it appear in the log
-	 * before any other messages emitted during workqueue handling.
-	 */
+	 
 	ec_dbg_evt("Query(0x%02x) scheduled", value);
 
 	spin_lock_irq(&ec->lock);
@@ -1235,11 +1092,7 @@ static void acpi_ec_event_handler(struct work_struct *work)
 		ec->events_to_process--;
 	}
 
-	/*
-	 * Before exit, make sure that the it will be possible to queue up the
-	 * event handling work again regardless of whether or not the query
-	 * queued up above is processed successfully.
-	 */
+	 
 	if (ec_event_clearing == ACPI_EC_EVT_TIMING_EVENT) {
 		bool guard_timeout;
 
@@ -1253,7 +1106,7 @@ static void acpi_ec_event_handler(struct work_struct *work)
 
 		spin_lock_irq(&ec->lock);
 
-		/* Take care of SCI_EVT unless someone else is doing that. */
+		 
 		if (guard_timeout && !ec->curr)
 			advance_transaction(ec, false);
 	} else {
@@ -1269,18 +1122,7 @@ static void acpi_ec_event_handler(struct work_struct *work)
 
 static void clear_gpe_and_advance_transaction(struct acpi_ec *ec, bool interrupt)
 {
-	/*
-	 * Clear GPE_STS upfront to allow subsequent hardware GPE_STS 0->1
-	 * changes to always trigger a GPE interrupt.
-	 *
-	 * GPE STS is a W1C register, which means:
-	 *
-	 * 1. Software can clear it without worrying about clearing the other
-	 *    GPEs' STS bits when the hardware sets them in parallel.
-	 *
-	 * 2. As long as software can ensure only clearing it when it is set,
-	 *    hardware won't set it in parallel.
-	 */
+	 
 	if (ec->gpe >= 0 && acpi_ec_gpe_status_set(ec))
 		acpi_clear_gpe(NULL, ec->gpe);
 
@@ -1311,9 +1153,7 @@ static irqreturn_t acpi_ec_irq_handler(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/* --------------------------------------------------------------------------
- *                           Address Space Management
- * -------------------------------------------------------------------------- */
+ 
 
 static acpi_status
 acpi_ec_space_handler(u32 function, acpi_physical_address address,
@@ -1353,9 +1193,7 @@ acpi_ec_space_handler(u32 function, acpi_physical_address address,
 	}
 }
 
-/* --------------------------------------------------------------------------
- *                             Driver Interface
- * -------------------------------------------------------------------------- */
+ 
 
 static acpi_status
 ec_parse_io_ports(struct acpi_resource *resource, void *context);
@@ -1412,7 +1250,7 @@ ec_parse_device(acpi_handle handle, u32 Level, void *context, void **retval)
 	unsigned long long tmp = 0;
 	struct acpi_ec *ec = context;
 
-	/* clear addr values, ec_parse_io_ports depend on it */
+	 
 	ec->command_addr = ec->data_addr = 0;
 
 	status = acpi_walk_resources(handle, METHOD_NAME__CRS,
@@ -1422,17 +1260,14 @@ ec_parse_device(acpi_handle handle, u32 Level, void *context, void **retval)
 	if (ec->data_addr == 0 || ec->command_addr == 0)
 		return AE_OK;
 
-	/* Get GPE bit assignment (EC events). */
-	/* TODO: Add support for _GPE returning a package */
+	 
+	 
 	status = acpi_evaluate_integer(handle, "_GPE", NULL, &tmp);
 	if (ACPI_SUCCESS(status))
 		ec->gpe = tmp;
-	/*
-	 * Errors are non-fatal, allowing for ACPI Reduced Hardware
-	 * platforms which use GpioInt instead of GPE.
-	 */
+	 
 
-	/* Use the global lock for all EC transactions? */
+	 
 	tmp = 0;
 	acpi_evaluate_integer(handle, "_GLK", NULL, &tmp);
 	ec->global_lock = tmp;
@@ -1462,23 +1297,7 @@ static bool install_gpio_irq_event_handler(struct acpi_ec *ec)
 			   "ACPI EC", ec) >= 0;
 }
 
-/**
- * ec_install_handlers - Install service callbacks and register query methods.
- * @ec: Target EC.
- * @device: ACPI device object corresponding to @ec.
- * @call_reg: If _REG should be called to notify OpRegion availability
- *
- * Install a handler for the EC address space type unless it has been installed
- * already.  If @device is not NULL, also look for EC query methods in the
- * namespace and register them, and install an event (either GPE or GPIO IRQ)
- * handler for the EC, if possible.
- *
- * Return:
- * -ENODEV if the address space handler cannot be installed, which means
- *  "unable to handle transactions",
- * -EPROBE_DEFER if GPIO IRQ acquisition needs to be deferred,
- * or 0 (success) otherwise.
- */
+ 
 static int ec_install_handlers(struct acpi_ec *ec, struct acpi_device *device,
 			       bool call_reg)
 {
@@ -1509,12 +1328,9 @@ static int ec_install_handlers(struct acpi_ec *ec, struct acpi_device *device,
 		return 0;
 
 	if (ec->gpe < 0) {
-		/* ACPI reduced hardware platforms use a GpioInt from _CRS. */
+		 
 		int irq = acpi_dev_gpio_irq_get(device, 0);
-		/*
-		 * Bail out right away for deferred probing or complete the
-		 * initialization regardless of any other errors.
-		 */
+		 
 		if (irq == -EPROBE_DEFER)
 			return -EPROBE_DEFER;
 		else if (irq >= 0)
@@ -1522,7 +1338,7 @@ static int ec_install_handlers(struct acpi_ec *ec, struct acpi_device *device,
 	}
 
 	if (!test_bit(EC_FLAGS_QUERY_METHODS_INSTALLED, &ec->flags)) {
-		/* Find and register all query methods */
+		 
 		acpi_walk_namespace(ACPI_TYPE_METHOD, ec->handle, 1,
 				    acpi_ec_register_query_methods,
 				    NULL, ec, NULL);
@@ -1540,12 +1356,9 @@ static int ec_install_handlers(struct acpi_ec *ec, struct acpi_device *device,
 			set_bit(EC_FLAGS_EVENT_HANDLER_INSTALLED, &ec->flags);
 			acpi_ec_leave_noirq(ec);
 		}
-		/*
-		 * Failures to install an event handler are not fatal, because
-		 * the EC can be polled for events.
-		 */
+		 
 	}
-	/* EC is fully operational, allow queries */
+	 
 	acpi_ec_enable_event(ec);
 
 	return 0;
@@ -1561,17 +1374,7 @@ static void ec_remove_handlers(struct acpi_ec *ec)
 		clear_bit(EC_FLAGS_EC_HANDLER_INSTALLED, &ec->flags);
 	}
 
-	/*
-	 * Stops handling the EC transactions after removing the operation
-	 * region handler. This is required because _REG(DISCONNECT)
-	 * invoked during the removal can result in new EC transactions.
-	 *
-	 * Flushes the EC requests and thus disables the GPE before
-	 * removing the GPE handler. This is required by the current ACPICA
-	 * GPE core. ACPICA GPE core will automatically disable a GPE when
-	 * it is indicated but there is no way to handle it. So the drivers
-	 * must disable the GPEs prior to removing the GPE handlers.
-	 */
+	 
 	acpi_ec_stop(ec, false);
 
 	if (test_bit(EC_FLAGS_EVENT_HANDLER_INSTALLED, &ec->flags)) {
@@ -1599,7 +1402,7 @@ static int acpi_ec_setup(struct acpi_ec *ec, struct acpi_device *device, bool ca
 	if (ret)
 		return ret;
 
-	/* First EC capable of handling transactions */
+	 
 	if (!first_ec)
 		first_ec = ec;
 
@@ -1626,7 +1429,7 @@ static int acpi_ec_add(struct acpi_device *device)
 
 	if (boot_ec && (boot_ec->handle == device->handle ||
 	    !strcmp(acpi_device_hid(device), ACPI_ECDT_HID))) {
-		/* Fast path: this device corresponds to the boot EC. */
+		 
 		ec = boot_ec;
 	} else {
 		acpi_status status;
@@ -1643,12 +1446,7 @@ static int acpi_ec_add(struct acpi_device *device)
 
 		if (boot_ec && ec->command_addr == boot_ec->command_addr &&
 		    ec->data_addr == boot_ec->data_addr) {
-			/*
-			 * Trust PNP0C09 namespace location rather than ECDT ID.
-			 * But trust ECDT GPE rather than _GPE because of ASUS
-			 * quirks. So do not change boot_ec->gpe to ec->gpe,
-			 * except when the TRUST_DSDT_GPE quirk is set.
-			 */
+			 
 			boot_ec->handle = ec->handle;
 
 			if (EC_FLAGS_TRUST_DSDT_GPE)
@@ -1679,7 +1477,7 @@ static int acpi_ec_add(struct acpi_device *device)
 	ret = !!request_region(ec->command_addr, 1, "EC cmd");
 	WARN(!ret, "Could not request EC cmd io port 0x%lx", ec->command_addr);
 
-	/* Reprobe devices depending on the EC */
+	 
 	acpi_dev_clear_dependencies(device);
 
 	acpi_handle_debug(ec->handle, "enumerated.\n");
@@ -1717,11 +1515,7 @@ ec_parse_io_ports(struct acpi_resource *resource, void *context)
 	if (resource->type != ACPI_RESOURCE_TYPE_IO)
 		return AE_OK;
 
-	/*
-	 * The first address region returned is the data port, and
-	 * the second address region returned is the status/command
-	 * port.
-	 */
+	 
 	if (ec->data_addr == 0)
 		ec->data_addr = resource->data.io.minimum;
 	else if (ec->command_addr == 0)
@@ -1738,23 +1532,14 @@ static const struct acpi_device_id ec_device_ids[] = {
 	{"", 0},
 };
 
-/*
- * This function is not Windows-compatible as Windows never enumerates the
- * namespace EC before the main ACPI device enumeration process. It is
- * retained for historical reason and will be deprecated in the future.
- */
+ 
 void __init acpi_ec_dsdt_probe(void)
 {
 	struct acpi_ec *ec;
 	acpi_status status;
 	int ret;
 
-	/*
-	 * If a platform has ECDT, there is no need to proceed as the
-	 * following probe is not a part of the ACPI device enumeration,
-	 * executing _STA is not safe, and thus this probe may risk of
-	 * picking up an invalid EC device.
-	 */
+	 
 	if (boot_ec)
 		return;
 
@@ -1762,23 +1547,14 @@ void __init acpi_ec_dsdt_probe(void)
 	if (!ec)
 		return;
 
-	/*
-	 * At this point, the namespace is initialized, so start to find
-	 * the namespace objects.
-	 */
+	 
 	status = acpi_get_devices(ec_device_ids[0].id, ec_parse_device, ec, NULL);
 	if (ACPI_FAILURE(status) || !ec->handle) {
 		acpi_ec_free(ec);
 		return;
 	}
 
-	/*
-	 * When the DSDT EC is available, always re-configure boot EC to
-	 * have _REG evaluated. _REG can only be evaluated after the
-	 * namespace initialization.
-	 * At this point, the GPE is not fully initialized, so do not to
-	 * handle the events.
-	 */
+	 
 	ret = acpi_ec_setup(ec, NULL, true);
 	if (ret) {
 		acpi_ec_free(ec);
@@ -1791,30 +1567,18 @@ void __init acpi_ec_dsdt_probe(void)
 			 "Boot DSDT EC used to handle transactions\n");
 }
 
-/*
- * acpi_ec_ecdt_start - Finalize the boot ECDT EC initialization.
- *
- * First, look for an ACPI handle for the boot ECDT EC if acpi_ec_add() has not
- * found a matching object in the namespace.
- *
- * Next, in case the DSDT EC is not functioning, it is still necessary to
- * provide a functional ECDT EC to handle events, so add an extra device object
- * to represent it (see https://bugzilla.kernel.org/show_bug.cgi?id=115021).
- *
- * This is useful on platforms with valid ECDT and invalid DSDT EC settings,
- * like ASUS X550ZE (see https://bugzilla.kernel.org/show_bug.cgi?id=196847).
- */
+ 
 static void __init acpi_ec_ecdt_start(void)
 {
 	struct acpi_table_ecdt *ecdt_ptr;
 	acpi_handle handle;
 	acpi_status status;
 
-	/* Bail out if a matching EC has been found in the namespace. */
+	 
 	if (!boot_ec || boot_ec->handle != ACPI_ROOT_OBJECT)
 		return;
 
-	/* Look up the object pointed to from the ECDT in the namespace. */
+	 
 	status = acpi_get_table(ACPI_SIG_ECDT, 1,
 				(struct acpi_table_header **)&ecdt_ptr);
 	if (ACPI_FAILURE(status))
@@ -1824,30 +1588,14 @@ static void __init acpi_ec_ecdt_start(void)
 	if (ACPI_SUCCESS(status)) {
 		boot_ec->handle = handle;
 
-		/* Add a special ACPI device object to represent the boot EC. */
+		 
 		acpi_bus_register_early_device(ACPI_BUS_TYPE_ECDT_EC);
 	}
 
 	acpi_put_table((struct acpi_table_header *)ecdt_ptr);
 }
 
-/*
- * On some hardware it is necessary to clear events accumulated by the EC during
- * sleep. These ECs stop reporting GPEs until they are manually polled, if too
- * many events are accumulated. (e.g. Samsung Series 5/9 notebooks)
- *
- * https://bugzilla.kernel.org/show_bug.cgi?id=44161
- *
- * Ideally, the EC should also be instructed NOT to accumulate events during
- * sleep (which Windows seems to do somehow), but the interface to control this
- * behaviour is not known at this time.
- *
- * Models known to be affected are Samsung 530Uxx/535Uxx/540Uxx/550Pxx/900Xxx,
- * however it is very likely that other Samsung models are affected.
- *
- * On systems which don't accumulate _Q events during sleep, this extra check
- * should be harmless.
- */
+ 
 static int ec_clear_on_resume(const struct dmi_system_id *id)
 {
 	pr_debug("Detected system needing EC poll on resume.\n");
@@ -1856,11 +1604,7 @@ static int ec_clear_on_resume(const struct dmi_system_id *id)
 	return 0;
 }
 
-/*
- * Some ECDTs contain wrong register addresses.
- * MSI MS-171F
- * https://bugzilla.kernel.org/show_bug.cgi?id=12461
- */
+ 
 static int ec_correct_ecdt(const struct dmi_system_id *id)
 {
 	pr_debug("Detected system needing ECDT address correction.\n");
@@ -1868,11 +1612,7 @@ static int ec_correct_ecdt(const struct dmi_system_id *id)
 	return 0;
 }
 
-/*
- * Some ECDTs contain wrong GPE setting, but they share the same port addresses
- * with DSDT EC, don't duplicate the DSDT EC with ECDT EC in this case.
- * https://bugzilla.kernel.org/show_bug.cgi?id=209989
- */
+ 
 static int ec_honor_dsdt_gpe(const struct dmi_system_id *id)
 {
 	pr_debug("Detected system needing DSDT GPE setting.\n");
@@ -1882,10 +1622,7 @@ static int ec_honor_dsdt_gpe(const struct dmi_system_id *id)
 
 static const struct dmi_system_id ec_dmi_table[] __initconst = {
 	{
-		/*
-		 * MSI MS-171F
-		 * https://bugzilla.kernel.org/show_bug.cgi?id=12461
-		 */
+		 
 		.callback = ec_correct_ecdt,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Micro-Star"),
@@ -1893,10 +1630,7 @@ static const struct dmi_system_id ec_dmi_table[] __initconst = {
 		},
 	},
 	{
-		/*
-		 * HP Pavilion Gaming Laptop 15-cx0xxx
-		 * https://bugzilla.kernel.org/show_bug.cgi?id=209989
-		 */
+		 
 		.callback = ec_honor_dsdt_gpe,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
@@ -1904,9 +1638,7 @@ static const struct dmi_system_id ec_dmi_table[] __initconst = {
 		},
 	},
 	{
-		/*
-		 * HP Pavilion Gaming Laptop 15-cx0041ur
-		 */
+		 
 		.callback = ec_honor_dsdt_gpe,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
@@ -1914,10 +1646,7 @@ static const struct dmi_system_id ec_dmi_table[] __initconst = {
 		},
 	},
 	{
-		/*
-		 * HP Pavilion Gaming Laptop 15-dk1xxx
-		 * https://github.com/systemd/systemd/issues/28942
-		 */
+		 
 		.callback = ec_honor_dsdt_gpe,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
@@ -1925,9 +1654,7 @@ static const struct dmi_system_id ec_dmi_table[] __initconst = {
 		},
 	},
 	{
-		/*
-		 * HP 250 G7 Notebook PC
-		 */
+		 
 		.callback = ec_honor_dsdt_gpe,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
@@ -1935,10 +1662,7 @@ static const struct dmi_system_id ec_dmi_table[] __initconst = {
 		},
 	},
 	{
-		/*
-		 * Samsung hardware
-		 * https://bugzilla.kernel.org/show_bug.cgi?id=44161
-		 */
+		 
 		.callback = ec_clear_on_resume,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "SAMSUNG ELECTRONICS CO., LTD."),
@@ -1954,7 +1678,7 @@ void __init acpi_ec_ecdt_probe(void)
 	acpi_status status;
 	int ret;
 
-	/* Generate a boot ec context. */
+	 
 	dmi_check_system(ec_dmi_table);
 	status = acpi_get_table(ACPI_SIG_ECDT, 1,
 				(struct acpi_table_header **)&ecdt_ptr);
@@ -1962,10 +1686,7 @@ void __init acpi_ec_ecdt_probe(void)
 		return;
 
 	if (!ecdt_ptr->control.address || !ecdt_ptr->data.address) {
-		/*
-		 * Asus X50GL:
-		 * https://bugzilla.kernel.org/show_bug.cgi?id=11880
-		 */
+		 
 		goto out;
 	}
 
@@ -1981,19 +1702,13 @@ void __init acpi_ec_ecdt_probe(void)
 		ec->data_addr = ecdt_ptr->data.address;
 	}
 
-	/*
-	 * Ignore the GPE value on Reduced Hardware platforms.
-	 * Some products have this set to an erroneous value.
-	 */
+	 
 	if (!acpi_gbl_reduced_hardware)
 		ec->gpe = ecdt_ptr->gpe;
 
 	ec->handle = ACPI_ROOT_OBJECT;
 
-	/*
-	 * At this point, the namespace is not initialized, so do not find
-	 * the namespace objects, or handle the events.
-	 */
+	 
 	ret = acpi_ec_setup(ec, NULL, false);
 	if (ret) {
 		acpi_ec_free(ec);
@@ -2024,10 +1739,7 @@ static int acpi_ec_suspend_noirq(struct device *dev)
 {
 	struct acpi_ec *ec = acpi_driver_data(to_acpi_device(dev));
 
-	/*
-	 * The SCI handler doesn't run at this point, so the GPE can be
-	 * masked at the low level without side effects.
-	 */
+	 
 	if (ec_no_wakeup && test_bit(EC_FLAGS_STARTED, &ec->flags) &&
 	    ec->gpe >= 0 && ec->reference_count >= 1)
 		acpi_set_gpe(NULL, ec->gpe, ACPI_GPE_DISABLE);
@@ -2084,27 +1796,14 @@ bool acpi_ec_dispatch_gpe(void)
 	if (!first_ec)
 		return acpi_any_gpe_status_set(U32_MAX);
 
-	/*
-	 * Report wakeup if the status bit is set for any enabled GPE other
-	 * than the EC one.
-	 */
+	 
 	if (acpi_any_gpe_status_set(first_ec->gpe))
 		return true;
 
-	/*
-	 * Cancel the SCI wakeup and process all pending events in case there
-	 * are any wakeup ones in there.
-	 *
-	 * Note that if any non-EC GPEs are active at this point, the SCI will
-	 * retrigger after the rearming in acpi_s2idle_wake(), so no events
-	 * should be missed by canceling the wakeup here.
-	 */
+	 
 	pm_system_cancel_wakeup();
 
-	/*
-	 * Dispatch the EC GPE in-band, but do not report wakeup in any case
-	 * to allow the caller to process events properly after that.
-	 */
+	 
 	spin_lock_irq(&first_ec->lock);
 
 	if (acpi_ec_gpe_status_set(first_ec)) {
@@ -2121,7 +1820,7 @@ bool acpi_ec_dispatch_gpe(void)
 
 	pm_pr_dbg("ACPI EC GPE dispatched\n");
 
-	/* Drain EC work. */
+	 
 	do {
 		acpi_ec_flush_work();
 
@@ -2136,7 +1835,7 @@ bool acpi_ec_dispatch_gpe(void)
 
 	return false;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct dev_pm_ops acpi_ec_pm = {
 	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(acpi_ec_suspend_noirq, acpi_ec_resume_noirq)
@@ -2250,22 +1949,19 @@ void __init acpi_ec_init(void)
 	if (result)
 		return;
 
-	/*
-	 * Disable EC wakeup on following systems to prevent periodic
-	 * wakeup from EC GPE.
-	 */
+	 
 	if (dmi_check_system(acpi_ec_no_wakeup)) {
 		ec_no_wakeup = true;
 		pr_debug("Disabling EC wakeup on suspend-to-idle\n");
 	}
 
-	/* Driver must be registered after acpi_ec_init_workqueues(). */
+	 
 	acpi_bus_register_driver(&acpi_ec_driver);
 
 	acpi_ec_ecdt_start();
 }
 
-/* EC driver currently not unloadable */
+ 
 #if 0
 static void __exit acpi_ec_exit(void)
 {
@@ -2273,4 +1969,4 @@ static void __exit acpi_ec_exit(void)
 	acpi_bus_unregister_driver(&acpi_ec_driver);
 	acpi_ec_destroy_workqueues();
 }
-#endif	/* 0 */
+#endif	 

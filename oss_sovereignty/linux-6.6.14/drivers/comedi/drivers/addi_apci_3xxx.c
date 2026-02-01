@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * addi_apci_3xxx.c
- * Copyright (C) 2004,2005  ADDI-DATA GmbH for the source code of this module.
- * Project manager: S. Weber
- *
- *	ADDI-DATA GmbH
- *	Dieselstrasse 3
- *	D-77833 Ottersweier
- *	Tel: +19(0)7223/9493-0
- *	Fax: +49(0)7223/9493-92
- *	http://www.addi-data.com
- *	info@addi-data.com
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -351,10 +339,10 @@ static irqreturn_t apci3xxx_irq_handler(int irq, void *d)
 	unsigned int status;
 	unsigned int val;
 
-	/* Test if interrupt occur */
+	 
 	status = readl(dev->mmio + 16);
 	if ((status & 0x2) == 0x2) {
-		/* Reset the interrupt */
+		 
 		writel(status, dev->mmio + 16);
 
 		val = readl(dev->mmio + 28);
@@ -387,29 +375,29 @@ static int apci3xxx_ai_setup(struct comedi_device *dev, unsigned int chanspec)
 	if (apci3xxx_ai_started(dev))
 		return -EBUSY;
 
-	/* Clear the FIFO */
+	 
 	writel(0x10000, dev->mmio + 12);
 
-	/* Get and save the delay mode */
+	 
 	delay_mode = readl(dev->mmio + 4);
 	delay_mode &= 0xfffffef0;
 
-	/* Channel configuration selection */
+	 
 	writel(delay_mode, dev->mmio + 4);
 
-	/* Make the configuration */
+	 
 	val = (range & 3) | ((range >> 2) << 6) |
 	      ((aref == AREF_DIFF) << 7);
 	writel(val, dev->mmio + 0);
 
-	/* Channel selection */
+	 
 	writel(delay_mode | 0x100, dev->mmio + 4);
 	writel(chan, dev->mmio + 0);
 
-	/* Restore delay mode */
+	 
 	writel(delay_mode, dev->mmio + 4);
 
-	/* Set the number of sequence to 1 */
+	 
 	writel(1, dev->mmio + 48);
 
 	return 0;
@@ -441,15 +429,15 @@ static int apci3xxx_ai_insn_read(struct comedi_device *dev,
 		return ret;
 
 	for (i = 0; i < insn->n; i++) {
-		/* Start the conversion */
+		 
 		writel(0x80000, dev->mmio + 8);
 
-		/* Wait the EOS */
+		 
 		ret = comedi_timeout(dev, s, insn, apci3xxx_ai_eoc, 0);
 		if (ret)
 			return ret;
 
-		/* Read the analog value */
+		 
 		data[i] = readl(dev->mmio + 28);
 	}
 
@@ -465,9 +453,9 @@ static int apci3xxx_ai_ns_to_timer(struct comedi_device *dev,
 	unsigned int timer;
 	int time_base;
 
-	/* time_base: 0 = ns, 1 = us, 2 = ms */
+	 
 	for (time_base = 0; time_base < 3; time_base++) {
-		/* skip unsupported time bases */
+		 
 		if (!(board->ai_conv_units & (1 << time_base)))
 			continue;
 
@@ -514,7 +502,7 @@ static int apci3xxx_ai_cmdtest(struct comedi_device *dev,
 	int err = 0;
 	unsigned int arg;
 
-	/* Step 1 : check if triggers are trivially valid */
+	 
 
 	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW);
 	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_FOLLOW);
@@ -525,16 +513,16 @@ static int apci3xxx_ai_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 1;
 
-	/* Step 2a : make sure trigger sources are unique */
+	 
 
 	err |= comedi_check_trigger_is_unique(cmd->stop_src);
 
-	/* Step 2b : and mutually compatible */
+	 
 
 	if (err)
 		return 2;
 
-	/* Step 3: check if arguments are trivially valid */
+	 
 
 	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
 	err |= comedi_check_trigger_arg_is(&cmd->scan_begin_arg, 0);
@@ -545,13 +533,13 @@ static int apci3xxx_ai_cmdtest(struct comedi_device *dev,
 
 	if (cmd->stop_src == TRIG_COUNT)
 		err |= comedi_check_trigger_arg_min(&cmd->stop_arg, 1);
-	else	/* TRIG_NONE */
+	else	 
 		err |= comedi_check_trigger_arg_is(&cmd->stop_arg, 0);
 
 	if (err)
 		return 3;
 
-	/* step 4: fix up any arguments */
+	 
 
 	arg = cmd->convert_arg;
 	err |= apci3xxx_ai_ns_to_timer(dev, &arg, cmd->flags);
@@ -574,13 +562,13 @@ static int apci3xxx_ai_cmd(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* Set the convert timing unit */
+	 
 	writel(devpriv->ai_time_base, dev->mmio + 36);
 
-	/* Set the convert timing */
+	 
 	writel(devpriv->ai_timer, dev->mmio + 32);
 
-	/* Start the conversion */
+	 
 	writel(0x180000, dev->mmio + 8);
 
 	return 0;
@@ -618,13 +606,13 @@ static int apci3xxx_ao_insn_write(struct comedi_device *dev,
 	for (i = 0; i < insn->n; i++) {
 		unsigned int val = data[i];
 
-		/* Set the range selection */
+		 
 		writel(range, dev->mmio + 96);
 
-		/* Write the analog value to the selected channel */
+		 
 		writel((val << 8) | chan, dev->mmio + 100);
 
-		/* Wait the end of transfer */
+		 
 		ret = comedi_timeout(dev, s, insn, apci3xxx_ao_eoc, 0);
 		if (ret)
 			return ret;
@@ -669,17 +657,13 @@ static int apci3xxx_dio_insn_config(struct comedi_device *dev,
 	unsigned int mask = 0;
 	int ret;
 
-	/*
-	 * Port 0 (channels 0-7) are always inputs
-	 * Port 1 (channels 8-15) are always outputs
-	 * Port 2 (channels 16-23) are programmable i/o
-	 */
+	 
 	if (data[0] != INSN_CONFIG_DIO_QUERY) {
-		/* ignore all other instructions for ports 0 and 1 */
+		 
 		if (chan < 16)
 			return -EINVAL;
 
-		/* changing any channel in port 2 changes the entire port */
+		 
 		mask = 0xff0000;
 	}
 
@@ -687,7 +671,7 @@ static int apci3xxx_dio_insn_config(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* update port 2 configuration */
+	 
 	outl((s->io_bits >> 24) & 0xff, dev->iobase + 224);
 
 	return insn->n;
@@ -726,24 +710,24 @@ static int apci3xxx_reset(struct comedi_device *dev)
 	unsigned int val;
 	int i;
 
-	/* Disable the interrupt */
+	 
 	disable_irq(dev->irq);
 
-	/* Clear the start command */
+	 
 	writel(0, dev->mmio + 8);
 
-	/* Reset the interrupt flags */
+	 
 	val = readl(dev->mmio + 16);
 	writel(val, dev->mmio + 16);
 
-	/* clear the EOS */
+	 
 	readl(dev->mmio + 20);
 
-	/* Clear the FIFO */
+	 
 	for (i = 0; i < 16; i++)
 		val = readl(dev->mmio + 28);
 
-	/* Enable the interrupt */
+	 
 	enable_irq(dev->irq);
 
 	return 0;
@@ -796,7 +780,7 @@ static int apci3xxx_auto_attach(struct comedi_device *dev,
 
 	subdev = 0;
 
-	/* Analog Input subdevice */
+	 
 	if (board->ai_n_chan) {
 		s = &dev->subdevices[subdev];
 		s->type		= COMEDI_SUBD_AI;
@@ -806,24 +790,7 @@ static int apci3xxx_auto_attach(struct comedi_device *dev,
 		s->range_table	= &apci3xxx_ai_range;
 		s->insn_read	= apci3xxx_ai_insn_read;
 		if (dev->irq) {
-			/*
-			 * FIXME: The hardware supports multiple scan modes
-			 * but the original addi-data driver only supported
-			 * reading a single channel with interrupts. Need a
-			 * proper datasheet to fix this.
-			 *
-			 * The following scan modes are supported by the
-			 * hardware:
-			 *   1) Single software scan
-			 *   2) Single hardware triggered scan
-			 *   3) Continuous software scan
-			 *   4) Continuous software scan with timer delay
-			 *   5) Continuous hardware triggered scan
-			 *   6) Continuous hardware triggered scan with timer
-			 *      delay
-			 *
-			 * For now, limit the chanlist to a single channel.
-			 */
+			 
 			dev->read_subdev = s;
 			s->subdev_flags	|= SDF_CMD_READ;
 			s->len_chanlist	= 1;
@@ -835,7 +802,7 @@ static int apci3xxx_auto_attach(struct comedi_device *dev,
 		subdev++;
 	}
 
-	/* Analog Output subdevice */
+	 
 	if (board->has_ao) {
 		s = &dev->subdevices[subdev];
 		s->type		= COMEDI_SUBD_AO;
@@ -852,7 +819,7 @@ static int apci3xxx_auto_attach(struct comedi_device *dev,
 		subdev++;
 	}
 
-	/* Digital Input subdevice */
+	 
 	if (board->has_dig_in) {
 		s = &dev->subdevices[subdev];
 		s->type		= COMEDI_SUBD_DI;
@@ -865,7 +832,7 @@ static int apci3xxx_auto_attach(struct comedi_device *dev,
 		subdev++;
 	}
 
-	/* Digital Output subdevice */
+	 
 	if (board->has_dig_out) {
 		s = &dev->subdevices[subdev];
 		s->type		= COMEDI_SUBD_DO;
@@ -878,14 +845,14 @@ static int apci3xxx_auto_attach(struct comedi_device *dev,
 		subdev++;
 	}
 
-	/* TTL Digital I/O subdevice */
+	 
 	if (board->has_ttl_io) {
 		s = &dev->subdevices[subdev];
 		s->type		= COMEDI_SUBD_DIO;
 		s->subdev_flags	= SDF_READABLE | SDF_WRITABLE;
 		s->n_chan	= 24;
 		s->maxdata	= 1;
-		s->io_bits	= 0xff;	/* channels 0-7 are always outputs */
+		s->io_bits	= 0xff;	 
 		s->range_table	= &range_digital;
 		s->insn_config	= apci3xxx_dio_insn_config;
 		s->insn_bits	= apci3xxx_dio_insn_bits;

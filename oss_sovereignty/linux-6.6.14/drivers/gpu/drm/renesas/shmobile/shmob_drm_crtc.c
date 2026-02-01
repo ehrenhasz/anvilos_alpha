@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * shmob_drm_crtc.c  --  SH Mobile DRM CRTCs
- *
- * Copyright (C) 2012 Renesas Electronics Corporation
- *
- * Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/clk.h>
@@ -30,13 +24,9 @@
 #include "shmob_drm_plane.h"
 #include "shmob_drm_regs.h"
 
-/*
- * TODO: panel support
- */
+ 
 
-/* -----------------------------------------------------------------------------
- * Clock management
- */
+ 
 
 static int shmob_drm_clk_on(struct shmob_drm_device *sdev)
 {
@@ -57,9 +47,7 @@ static void shmob_drm_clk_off(struct shmob_drm_device *sdev)
 		clk_disable_unprepare(sdev->clock);
 }
 
-/* -----------------------------------------------------------------------------
- * CRTC
- */
+ 
 
 static void shmob_drm_crtc_setup_geometry(struct shmob_drm_crtc *scrtc)
 {
@@ -81,7 +69,7 @@ static void shmob_drm_crtc_setup_geometry(struct shmob_drm_crtc *scrtc)
 
 	if (idata->interface >= SHMOB_DRM_IFACE_SYS8A &&
 	    idata->interface <= SHMOB_DRM_IFACE_SYS24) {
-		/* Setup SYS bus. */
+		 
 		value = (idata->sys.cs_setup << LDMT2R_CSUP_SHIFT)
 		      | (idata->sys.vsync_active_high ? LDMT2R_RSV : 0)
 		      | (idata->sys.vsync_dir_input ? LDMT2R_VSEL : 0)
@@ -97,12 +85,12 @@ static void shmob_drm_crtc_setup_geometry(struct shmob_drm_crtc *scrtc)
 		lcdc_write(sdev, LDMT3R, value);
 	}
 
-	value = ((mode->hdisplay / 8) << 16)			/* HDCN */
-	      | (mode->htotal / 8);				/* HTCN */
+	value = ((mode->hdisplay / 8) << 16)			 
+	      | (mode->htotal / 8);				 
 	lcdc_write(sdev, LDHCNR, value);
 
-	value = (((mode->hsync_end - mode->hsync_start) / 8) << 16) /* HSYNW */
-	      | (mode->hsync_start / 8);			/* HSYNP */
+	value = (((mode->hsync_end - mode->hsync_start) / 8) << 16)  
+	      | (mode->hsync_start / 8);			 
 	lcdc_write(sdev, LDHSYNR, value);
 
 	value = ((mode->hdisplay & 7) << 24) | ((mode->htotal & 7) << 16)
@@ -110,12 +98,12 @@ static void shmob_drm_crtc_setup_geometry(struct shmob_drm_crtc *scrtc)
 	      | (mode->hsync_start & 7);
 	lcdc_write(sdev, LDHAJR, value);
 
-	value = ((mode->vdisplay) << 16)			/* VDLN */
-	      | mode->vtotal;					/* VTLN */
+	value = ((mode->vdisplay) << 16)			 
+	      | mode->vtotal;					 
 	lcdc_write(sdev, LDVLNR, value);
 
-	value = ((mode->vsync_end - mode->vsync_start) << 16)	/* VSYNW */
-	      | mode->vsync_start;				/* VSYNP */
+	value = ((mode->vsync_end - mode->vsync_start) << 16)	 
+	      | mode->vsync_start;				 
 	lcdc_write(sdev, LDVSYNR, value);
 }
 
@@ -130,7 +118,7 @@ static void shmob_drm_crtc_start_stop(struct shmob_drm_crtc *scrtc, bool start)
 	else
 		lcdc_write(sdev, LDCNT2R, value & ~LDCNT2R_DO);
 
-	/* Wait until power is applied/stopped. */
+	 
 	while (1) {
 		value = lcdc_read(sdev, LDPMR) & LDPMR_LPS;
 		if ((start && value) || (!start && !value))
@@ -140,18 +128,12 @@ static void shmob_drm_crtc_start_stop(struct shmob_drm_crtc *scrtc, bool start)
 	}
 
 	if (!start) {
-		/* Stop the dot clock. */
+		 
 		lcdc_write(sdev, LDDCKSTPR, LDDCKSTPR_DCKSTP);
 	}
 }
 
-/*
- * shmob_drm_crtc_start - Configure and start the LCDC
- * @scrtc: the SH Mobile CRTC
- *
- * Configure and start the LCDC device. External devices (clocks, MERAM, panels,
- * ...) are not touched by this function.
- */
+ 
 static void shmob_drm_crtc_start(struct shmob_drm_crtc *scrtc)
 {
 	struct drm_crtc *crtc = &scrtc->crtc;
@@ -170,28 +152,26 @@ static void shmob_drm_crtc_start(struct shmob_drm_crtc *scrtc)
 	if (WARN_ON(format == NULL))
 		return;
 
-	/* Enable clocks before accessing the hardware. */
+	 
 	ret = shmob_drm_clk_on(sdev);
 	if (ret < 0)
 		return;
 
-	/* Reset and enable the LCDC. */
+	 
 	lcdc_write(sdev, LDCNT2R, lcdc_read(sdev, LDCNT2R) | LDCNT2R_BR);
 	lcdc_wait_bit(sdev, LDCNT2R, LDCNT2R_BR, 0);
 	lcdc_write(sdev, LDCNT2R, LDCNT2R_ME);
 
-	/* Stop the LCDC first and disable all interrupts. */
+	 
 	shmob_drm_crtc_start_stop(scrtc, false);
 	lcdc_write(sdev, LDINTR, 0);
 
-	/* Configure power supply, dot clocks and start them. */
+	 
 	lcdc_write(sdev, LDPMR, 0);
 
 	value = sdev->lddckr;
 	if (idata->clk_div) {
-		/* FIXME: sh7724 can only use 42, 48, 54 and 60 for the divider
-		 * denominator.
-		 */
+		 
 		lcdc_write(sdev, LDDCKPAT1R, 0);
 		lcdc_write(sdev, LDDCKPAT2R, (1 << (idata->clk_div / 2)) - 1);
 
@@ -205,12 +185,12 @@ static void shmob_drm_crtc_start(struct shmob_drm_crtc *scrtc)
 	lcdc_write(sdev, LDDCKSTPR, 0);
 	lcdc_wait_bit(sdev, LDDCKSTPR, ~0, 0);
 
-	/* TODO: Setup SYS panel */
+	 
 
-	/* Setup geometry, format, frame buffer memory and operation mode. */
+	 
 	shmob_drm_crtc_setup_geometry(scrtc);
 
-	/* TODO: Handle YUV colorspaces. Hardcode REC709 for now. */
+	 
 	lcdc_write(sdev, LDDFR, format->lddfr | LDDFR_CF1);
 	lcdc_write(sdev, LDMLSR, scrtc->line_size);
 	lcdc_write(sdev, LDSA1R, scrtc->dma[0]);
@@ -218,7 +198,7 @@ static void shmob_drm_crtc_start(struct shmob_drm_crtc *scrtc)
 		lcdc_write(sdev, LDSA2R, scrtc->dma[1]);
 	lcdc_write(sdev, LDSM1R, 0);
 
-	/* Word and long word swap. */
+	 
 	switch (format->fourcc) {
 	case DRM_FORMAT_RGB565:
 	case DRM_FORMAT_NV21:
@@ -240,13 +220,13 @@ static void shmob_drm_crtc_start(struct shmob_drm_crtc *scrtc)
 	}
 	lcdc_write(sdev, LDDDSR, value);
 
-	/* Setup planes. */
+	 
 	drm_for_each_legacy_plane(plane, dev) {
 		if (plane->crtc == crtc)
 			shmob_drm_plane_setup(plane);
 	}
 
-	/* Enable the display output. */
+	 
 	lcdc_write(sdev, LDCNT1R, LDCNT1R_DE);
 
 	shmob_drm_crtc_start_stop(scrtc, true);
@@ -262,13 +242,13 @@ static void shmob_drm_crtc_stop(struct shmob_drm_crtc *scrtc)
 	if (!scrtc->started)
 		return;
 
-	/* Stop the LCDC. */
+	 
 	shmob_drm_crtc_start_stop(scrtc, false);
 
-	/* Disable the display output. */
+	 
 	lcdc_write(sdev, LDCNT1R, 0);
 
-	/* Stop clocks. */
+	 
 	shmob_drm_clk_off(sdev);
 
 	scrtc->started = false;
@@ -444,7 +424,7 @@ static void shmob_drm_crtc_enable_vblank(struct shmob_drm_device *sdev,
 	unsigned long flags;
 	u32 ldintr;
 
-	/* Be careful not to acknowledge any pending interrupt. */
+	 
 	spin_lock_irqsave(&sdev->irq_lock, flags);
 	ldintr = lcdc_read(sdev, LDINTR) | LDINTR_STATUS_MASK;
 	if (enable)
@@ -520,9 +500,7 @@ int shmob_drm_crtc_create(struct shmob_drm_device *sdev)
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * Encoder
- */
+ 
 
 #define to_shmob_encoder(e) \
 	container_of(e, struct shmob_drm_encoder, encoder)
@@ -555,7 +533,7 @@ static bool shmob_drm_encoder_mode_fixup(struct drm_encoder *encoder,
 		return false;
 	}
 
-	/* The flat panel mode is fixed, just copy it to the adjusted mode. */
+	 
 	panel_mode = list_first_entry(&connector->modes,
 				      struct drm_display_mode, head);
 	drm_mode_copy(adjusted_mode, panel_mode);
@@ -565,19 +543,19 @@ static bool shmob_drm_encoder_mode_fixup(struct drm_encoder *encoder,
 
 static void shmob_drm_encoder_mode_prepare(struct drm_encoder *encoder)
 {
-	/* No-op, everything is handled in the CRTC code. */
+	 
 }
 
 static void shmob_drm_encoder_mode_set(struct drm_encoder *encoder,
 				       struct drm_display_mode *mode,
 				       struct drm_display_mode *adjusted_mode)
 {
-	/* No-op, everything is handled in the CRTC code. */
+	 
 }
 
 static void shmob_drm_encoder_mode_commit(struct drm_encoder *encoder)
 {
-	/* No-op, everything is handled in the CRTC code. */
+	 
 }
 
 static const struct drm_encoder_helper_funcs encoder_helper_funcs = {
@@ -607,9 +585,7 @@ int shmob_drm_encoder_create(struct shmob_drm_device *sdev)
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * Connector
- */
+ 
 
 #define to_shmob_connector(c) \
 	container_of(c, struct shmob_drm_connector, connector)

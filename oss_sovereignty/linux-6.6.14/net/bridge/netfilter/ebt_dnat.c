@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  ebt_dnat
- *
- *	Authors:
- *	Bart De Schuymer <bdschuym@pandora.be>
- *
- *  June, 2002
- *
- */
+
+ 
 #include <linux/module.h>
 #include <net/sock.h>
 #include "../br_private.h"
@@ -46,7 +38,7 @@ ebt_dnat_tg(struct sk_buff *skb, const struct xt_action_param *par)
 			break;
 		}
 
-		if (!dev) /* NF_BR_LOCAL_OUT */
+		if (!dev)  
 			return info->target;
 
 		if (ether_addr_equal(info->mac, dev->dev_addr))

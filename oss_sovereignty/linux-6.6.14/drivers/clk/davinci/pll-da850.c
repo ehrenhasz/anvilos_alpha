@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PLL clock descriptions for TI DA850/OMAP-L138/AM18XX
- *
- * Copyright (C) 2018 David Lechner <david@lechnology.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk-provider.h>
@@ -39,12 +35,7 @@ static const struct davinci_pll_clk_info da850_pll0_info = {
 		 PLL_HAS_EXTCLKSRC,
 };
 
-/*
- * NB: Technically, the clocks flagged as SYSCLK_FIXED_DIV are "fixed ratio",
- * meaning that we could change the divider as long as we keep the correct
- * ratio between all of the clocks, but we don't support that because there is
- * currently not a need for it.
- */
+ 
 
 SYSCLK(1, pll0_sysclk1, pll0_pllen, 5, SYSCLK_FIXED_DIV);
 SYSCLK(2, pll0_sysclk2, pll0_pllen, 5, SYSCLK_FIXED_DIV);

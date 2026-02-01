@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2010 Google, Inc.
- * Author: Erik Gilling <konkers@android.com>
- *
- * Copyright (C) 2011-2013 NVIDIA Corporation
- */
+
+ 
 
 #include "../dev.h"
 #include "../debug.h"

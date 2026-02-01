@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LTRF216A Ambient Light Sensor
- *
- * Copyright (C) 2022 Collabora, Ltd.
- * Author: Shreeya Patel <shreeya.patel@collabora.com>
- *
- * Copyright (C) 2021 Lite-On Technology Corp (Singapore)
- * Author: Shi Zhigang <Zhigang.Shi@liteon.com>
- *
- * IIO driver for LTRF216A (7-bit I2C slave address 0x53).
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -68,12 +58,7 @@ static const int ltrf216a_int_time_reg[][2] = {
 	{  25, 0x40 },
 };
 
-/*
- * Window Factor is needed when the device is under Window glass
- * with coated tinted ink. This is to compensate for the light loss
- * due to the lower transmission rate of the window glass and helps
- * in calculating lux.
- */
+ 
 #define LTRF216A_WIN_FAC	1
 
 struct ltrf216a_data {
@@ -82,10 +67,7 @@ struct ltrf216a_data {
 	u32 int_time;
 	u16 int_time_fac;
 	u8 als_gain_fac;
-	/*
-	 * Protects regmap accesses and makes sure integration time
-	 * remains constant during the measurement of lux.
-	 */
+	 
 	struct mutex lock;
 };
 
@@ -105,10 +87,10 @@ static void ltrf216a_reset(struct iio_dev *indio_dev)
 {
 	struct ltrf216a_data *data = iio_priv(indio_dev);
 
-	/* reset sensor, chip fails to respond to this, so ignore any errors */
+	 
 	regmap_write(data->regmap, LTRF216A_MAIN_CTRL, LTRF216A_ALS_RESET_MASK);
 
-	/* reset time */
+	 
 	usleep_range(1000, 2000);
 }
 
@@ -118,7 +100,7 @@ static int ltrf216a_enable(struct iio_dev *indio_dev)
 	struct device *dev = &data->client->dev;
 	int ret;
 
-	/* enable sensor */
+	 
 	ret = regmap_set_bits(data->regmap,
 			      LTRF216A_MAIN_CTRL, LTRF216A_ALS_ENABLE_MASK);
 	if (ret) {
@@ -126,7 +108,7 @@ static int ltrf216a_enable(struct iio_dev *indio_dev)
 		return ret;
 	}
 
-	/* sleep for one integration cycle after enabling the device */
+	 
 	msleep(ltrf216a_int_time_reg[0][0]);
 
 	return 0;
@@ -446,7 +428,7 @@ static int ltrf216a_probe(struct i2c_client *client)
 	if (ret)
 		return ret;
 
-	/* reset sensor, chip fails to respond to this, so ignore any errors */
+	 
 	ltrf216a_reset(indio_dev);
 
 	ret = regmap_reinit_cache(data->regmap, &ltrf216a_regmap_config);

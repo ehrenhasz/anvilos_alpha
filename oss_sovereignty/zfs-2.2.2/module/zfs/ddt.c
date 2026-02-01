@@ -1,29 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2009, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2016 by Delphix. All rights reserved.
- * Copyright (c) 2022 by Pawel Jakub Dawidek
- */
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/spa.h>
@@ -42,9 +19,7 @@
 static kmem_cache_t *ddt_cache;
 static kmem_cache_t *ddt_entry_cache;
 
-/*
- * Enable/disable prefetching of dedup-ed blocks which are going to be freed.
- */
+ 
 int zfs_dedup_prefetch = 0;
 
 static const ddt_ops_t *const ddt_ops[DDT_TYPES] = {
@@ -127,9 +102,7 @@ ddt_object_load(ddt_t *ddt, enum ddt_type type, enum ddt_class class)
 	if (error != 0)
 		return (error);
 
-	/*
-	 * Seed the cached statistics.
-	 */
+	 
 	error = ddt_object_info(ddt, type, class, &doi);
 	if (error)
 		return (error);
@@ -160,9 +133,7 @@ ddt_object_sync(ddt_t *ddt, enum ddt_type type, enum ddt_class class,
 	    sizeof (uint64_t), sizeof (ddt_histogram_t) / sizeof (uint64_t),
 	    &ddt->ddt_histogram[type][class], tx) == 0);
 
-	/*
-	 * Cache DDT statistics; this is the only time they'll change.
-	 */
+	 
 	VERIFY(ddt_object_info(ddt, type, class, &doi) == 0);
 	VERIFY(ddt_object_count(ddt, type, class, &count) == 0);
 
@@ -269,10 +240,7 @@ ddt_bp_fill(const ddt_phys_t *ddp, blkptr_t *bp, uint64_t txg)
 	BP_SET_BIRTH(bp, txg, ddp->ddp_phys_birth);
 }
 
-/*
- * The bp created via this function may be used for repairs and scrub, but it
- * will be missing the salt / IV required to do a full decrypting read.
- */
+ 
 void
 ddt_bp_create(enum zio_checksum checksum,
     const ddt_key_t *ddk, const ddt_phys_t *ddp, blkptr_t *bp)
@@ -348,10 +316,7 @@ ddt_phys_free(ddt_t *ddt, ddt_key_t *ddk, ddt_phys_t *ddp, uint64_t txg)
 
 	ddt_bp_create(ddt->ddt_checksum, ddk, ddp, &blk);
 
-	/*
-	 * We clear the dedup bit so that zio_free() will actually free the
-	 * space, rather than just decrementing the refcount in the DDT.
-	 */
+	 
 	BP_SET_DEDUP(&blk, 0);
 
 	ddt_phys_clear(ddp);
@@ -422,7 +387,7 @@ ddt_stat_add(ddt_stat_t *dst, const ddt_stat_t *src, uint64_t neg)
 	uint64_t *d = (uint64_t *)dst;
 	uint64_t *d_end = (uint64_t *)(dst + 1);
 
-	ASSERT(neg == 0 || neg == -1ULL);	/* add or subtract */
+	ASSERT(neg == 0 || neg == -1ULL);	 
 
 	for (int i = 0; i < d_end - d; i++)
 		d[i] += (s[i] ^ neg) - neg;
@@ -477,7 +442,7 @@ ddt_histogram_empty(const ddt_histogram_t *ddh)
 void
 ddt_get_dedup_object_stats(spa_t *spa, ddt_object_t *ddo_total)
 {
-	/* Sum the statistics we cached in ddt_object_sync(). */
+	 
 	for (enum zio_checksum c = 0; c < ZIO_CHECKSUM_FUNCTIONS; c++) {
 		ddt_t *ddt = spa->spa_ddt[c];
 		for (enum ddt_type type = 0; type < DDT_TYPES; type++) {
@@ -492,7 +457,7 @@ ddt_get_dedup_object_stats(spa_t *spa, ddt_object_t *ddo_total)
 		}
 	}
 
-	/* ... and compute the averages. */
+	 
 	if (ddo_total->ddo_count != 0) {
 		ddo_total->ddo_dspace /= ddo_total->ddo_count;
 		ddo_total->ddo_mspace /= ddo_total->ddo_count;
@@ -535,7 +500,7 @@ ddt_get_dedup_dspace(spa_t *spa)
 
 	memset(&dds_total, 0, sizeof (ddt_stat_t));
 
-	/* Calculate and cache the stats */
+	 
 	ddt_get_dedup_stats(spa, &dds_total);
 	spa->spa_dedup_dspace = dds_total.dds_ref_dsize - dds_total.dds_dsize;
 	return (spa->spa_dedup_dspace);
@@ -561,7 +526,7 @@ ddt_compress(void *src, uchar_t *dst, size_t s_len, size_t d_len)
 	zio_compress_info_t *ci = &zio_compress_table[cpfunc];
 	size_t c_len;
 
-	ASSERT(d_len >= s_len + 1);	/* no compression plus version byte */
+	ASSERT(d_len >= s_len + 1);	 
 
 	c_len = ci->ci_compress(src, dst, s_len, d_len - 1, ci->ci_level);
 
@@ -716,8 +681,8 @@ ddt_lookup(ddt_t *ddt, const blkptr_t *bp, boolean_t add)
 	ASSERT(dde->dde_loaded == B_FALSE);
 	ASSERT(dde->dde_loading == B_TRUE);
 
-	dde->dde_type = type;	/* will be DDT_TYPES if no entry found */
-	dde->dde_class = class;	/* will be DDT_CLASSES if no entry found */
+	dde->dde_type = type;	 
+	dde->dde_class = class;	 
 	dde->dde_loaded = B_TRUE;
 	dde->dde_loading = B_FALSE;
 
@@ -738,11 +703,7 @@ ddt_prefetch(spa_t *spa, const blkptr_t *bp)
 	if (!zfs_dedup_prefetch || bp == NULL || !BP_GET_DEDUP(bp))
 		return;
 
-	/*
-	 * We only remove the DDT once all tables are empty and only
-	 * prefetch dedup blocks when there are entries in the DDT.
-	 * Thus no locking is required as the DDT can't disappear on us.
-	 */
+	 
 	ddt = ddt_select(spa, bp);
 	ddt_key_fill(&dde.dde_key, bp);
 
@@ -753,9 +714,7 @@ ddt_prefetch(spa_t *spa, const blkptr_t *bp)
 	}
 }
 
-/*
- * Opaque struct used for ddt_key comparison
- */
+ 
 #define	DDT_KEY_CMP_LEN	(sizeof (ddt_key_t) / sizeof (uint16_t))
 
 typedef struct ddt_key_cmp {
@@ -845,9 +804,7 @@ ddt_load(spa_t *spa)
 			}
 		}
 
-		/*
-		 * Seed the cached histograms.
-		 */
+		 
 		memcpy(&ddt->ddt_histogram_cache, ddt->ddt_histogram,
 		    sizeof (ddt->ddt_histogram));
 		spa->spa_dedup_dspace = ~0ULL;
@@ -909,11 +866,7 @@ ddt_repair_start(ddt_t *ddt, const blkptr_t *bp)
 
 	for (enum ddt_type type = 0; type < DDT_TYPES; type++) {
 		for (enum ddt_class class = 0; class < DDT_CLASSES; class++) {
-			/*
-			 * We can only do repair if there are multiple copies
-			 * of the block.  For anything in the UNIQUE class,
-			 * there's definitely only one copy, so don't even try.
-			 */
+			 
 			if (class != DDT_CLASS_UNIQUE &&
 			    ddt_object_lookup(ddt, type, class, dde) == 0)
 				return (dde);
@@ -1023,10 +976,7 @@ ddt_sync_entry(ddt_t *ddt, ddt_entry_t *dde, dmu_tx_t *tx, uint64_t txg)
 			continue;
 		}
 		if (p == DDT_PHYS_DITTO) {
-			/*
-			 * Note, we no longer create DDT-DITTO blocks, but we
-			 * don't want to leak any written by older software.
-			 */
+			 
 			ddt_phys_free(ddt, ddk, ddp, txg);
 			continue;
 		}
@@ -1035,7 +985,7 @@ ddt_sync_entry(ddt_t *ddt, ddt_entry_t *dde, dmu_tx_t *tx, uint64_t txg)
 		total_refcnt += ddp->ddp_refcnt;
 	}
 
-	/* We do not create new DDT-DITTO blocks. */
+	 
 	ASSERT0(dde->dde_phys[DDT_PHYS_DITTO].ddp_phys_birth);
 	if (total_refcnt > 1)
 		nclass = DDT_CLASS_DUPLICATE;
@@ -1056,13 +1006,7 @@ ddt_sync_entry(ddt_t *ddt, ddt_entry_t *dde, dmu_tx_t *tx, uint64_t txg)
 			ddt_object_create(ddt, ntype, nclass, tx);
 		VERIFY(ddt_object_update(ddt, ntype, nclass, dde, tx) == 0);
 
-		/*
-		 * If the class changes, the order that we scan this bp
-		 * changes.  If it decreases, we could miss it, so
-		 * scan it right now.  (This covers both class changing
-		 * while we are doing ddt_walk(), and when we are
-		 * traversing.)
-		 */
+		 
 		if (nclass < oclass) {
 			dsl_scan_ddt_entry(dp->dp_scan,
 			    ddt->ddt_checksum, dde, tx);
@@ -1128,12 +1072,7 @@ ddt_sync(spa_t *spa, uint64_t txg)
 	rio = zio_root(spa, NULL, NULL,
 	    ZIO_FLAG_CANFAIL | ZIO_FLAG_SPECULATIVE | ZIO_FLAG_SELF_HEAL);
 
-	/*
-	 * This function may cause an immediate scan of ddt blocks (see
-	 * the comment above dsl_scan_ddt() for details). We set the
-	 * scan's root zio here so that we can wait for any scan IOs in
-	 * addition to the regular ddt IOs.
-	 */
+	 
 	ASSERT3P(scn->scn_zio_root, ==, NULL);
 	scn->scn_zio_root = rio;
 
@@ -1181,14 +1120,7 @@ ddt_walk(spa_t *spa, ddt_bookmark_t *ddb, ddt_entry_t *dde)
 	return (SET_ERROR(ENOENT));
 }
 
-/*
- * This function is used by Block Cloning (brt.c) to increase reference
- * counter for the DDT entry if the block is already in DDT.
- *
- * Return false if the block, despite having the D bit set, is not present
- * in the DDT. Currently this is not possible but might be in the future.
- * See the comment below.
- */
+ 
 boolean_t
 ddt_addref(spa_t *spa, const blkptr_t *bp)
 {
@@ -1210,29 +1142,13 @@ ddt_addref(spa_t *spa, const blkptr_t *bp)
 
 		ddp = &dde->dde_phys[BP_GET_NDVAS(bp)];
 
-		/*
-		 * This entry already existed (dde_type is real), so it must
-		 * have refcnt >0 at the start of this txg. We are called from
-		 * brt_pending_apply(), before frees are issued, so the refcnt
-		 * can't be lowered yet. Therefore, it must be >0. We assert
-		 * this because if the order of BRT and DDT interactions were
-		 * ever to change and the refcnt was ever zero here, then
-		 * likely further action is required to fill out the DDT entry,
-		 * and this is a place that is likely to be missed in testing.
-		 */
+		 
 		ASSERT3U(ddp->ddp_refcnt, >, 0);
 
 		ddt_phys_addref(ddp);
 		result = B_TRUE;
 	} else {
-		/*
-		 * At the time of implementating this if the block has the
-		 * DEDUP flag set it must exist in the DEDUP table, but
-		 * there are many advocates that want ability to remove
-		 * entries from DDT with refcnt=1. If this will happen,
-		 * we may have a block with the DEDUP set, but which doesn't
-		 * have a corresponding entry in the DDT. Be ready.
-		 */
+		 
 		ASSERT3S(dde->dde_class, ==, DDT_CLASSES);
 		ddt_remove(ddt, dde);
 		result = B_FALSE;

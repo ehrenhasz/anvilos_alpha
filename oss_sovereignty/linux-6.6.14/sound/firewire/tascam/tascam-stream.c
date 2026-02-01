@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tascam-stream.c - a part of driver for TASCAM FireWire series
- *
- * Copyright (c) 2015 Takashi Sakamoto
- */
+
+ 
 
 #include <linux/delay.h>
 #include "tascam.h"
@@ -30,11 +26,11 @@ static int get_clock(struct snd_tscm *tscm, u32 *data)
 		if (*data & CLOCK_STATUS_MASK)
 			break;
 
-		// In intermediate state after changing clock status.
+		
 		msleep(50);
 	}
 
-	// Still in the intermediate state.
+	
 	if (trial >= 5)
 		return -EAGAIN;
 
@@ -55,15 +51,15 @@ static int set_clock(struct snd_tscm *tscm, unsigned int rate,
 
 	if (rate > 0) {
 		data &= 0x000000ff;
-		/* Base rate. */
+		 
 		if ((rate % 44100) == 0) {
 			data |= 0x00000100;
-			/* Multiplier. */
+			 
 			if (rate / 44100 == 2)
 				data |= 0x00008000;
 		} else if ((rate % 48000) == 0) {
 			data |= 0x00000200;
-			/* Multiplier. */
+			 
 			if (rate / 48000 == 2)
 				data |= 0x00008000;
 		} else {
@@ -105,7 +101,7 @@ int snd_tscm_stream_get_rate(struct snd_tscm *tscm, unsigned int *rate)
 
 	data = (data & 0xff000000) >> 24;
 
-	/* Check base rate. */
+	 
 	if ((data & 0x0f) == 0x01)
 		*rate = 44100;
 	else if ((data & 0x0f) == 0x02)
@@ -113,7 +109,7 @@ int snd_tscm_stream_get_rate(struct snd_tscm *tscm, unsigned int *rate)
 	else
 		return -EAGAIN;
 
-	/* Check multiplier. */
+	 
 	if ((data & 0xf0) == 0x80)
 		*rate *= 2;
 	else if ((data & 0xf0) != 0x00)
@@ -179,7 +175,7 @@ static int set_stream_formats(struct snd_tscm *tscm, unsigned int rate)
 	__be32 reg;
 	int err;
 
-	// Set an option for unknown purpose.
+	
 	reg = cpu_to_be32(0x00200000);
 	err = snd_fw_transaction(tscm->unit, TCODE_WRITE_QUADLET_REQUEST,
 				 TSCM_ADDR_BASE + TSCM_OFFSET_SET_OPTION,
@@ -204,7 +200,7 @@ static void finish_session(struct snd_tscm *tscm)
 			   TSCM_ADDR_BASE + TSCM_OFFSET_ISOC_RX_ON,
 			   &reg, sizeof(reg), 0);
 
-	// Unregister channels.
+	
 	reg = cpu_to_be32(0x00000000);
 	snd_fw_transaction(tscm->unit, TCODE_WRITE_QUADLET_REQUEST,
 			   TSCM_ADDR_BASE + TSCM_OFFSET_ISOC_TX_CH,
@@ -224,7 +220,7 @@ static int begin_session(struct snd_tscm *tscm)
 	__be32 reg;
 	int err;
 
-	// Register the isochronous channel for transmitting stream.
+	
 	reg = cpu_to_be32(tscm->tx_resources.channel);
 	err = snd_fw_transaction(tscm->unit, TCODE_WRITE_QUADLET_REQUEST,
 				 TSCM_ADDR_BASE + TSCM_OFFSET_ISOC_TX_CH,
@@ -232,7 +228,7 @@ static int begin_session(struct snd_tscm *tscm)
 	if (err < 0)
 		return err;
 
-	// Unknown.
+	
 	reg = cpu_to_be32(0x00000002);
 	err = snd_fw_transaction(tscm->unit, TCODE_WRITE_QUADLET_REQUEST,
 				 TSCM_ADDR_BASE + TSCM_OFFSET_UNKNOWN,
@@ -240,7 +236,7 @@ static int begin_session(struct snd_tscm *tscm)
 	if (err < 0)
 		return err;
 
-	// Register the isochronous channel for receiving stream.
+	
 	reg = cpu_to_be32(tscm->rx_resources.channel);
 	err = snd_fw_transaction(tscm->unit, TCODE_WRITE_QUADLET_REQUEST,
 				 TSCM_ADDR_BASE + TSCM_OFFSET_ISOC_RX_CH,
@@ -262,7 +258,7 @@ static int begin_session(struct snd_tscm *tscm)
 	if (err < 0)
 		return err;
 
-	// Set an option for unknown purpose.
+	
 	reg = cpu_to_be32(0x00002000);
 	err = snd_fw_transaction(tscm->unit, TCODE_WRITE_QUADLET_REQUEST,
 				 TSCM_ADDR_BASE + TSCM_OFFSET_SET_OPTION,
@@ -270,7 +266,7 @@ static int begin_session(struct snd_tscm *tscm)
 	if (err < 0)
 		return err;
 
-	// Start multiplexing PCM samples on packets.
+	
 	reg = cpu_to_be32(0x00000001);
 	return snd_fw_transaction(tscm->unit,
 				  TCODE_WRITE_QUADLET_REQUEST,
@@ -364,7 +360,7 @@ int snd_tscm_stream_init_duplex(struct snd_tscm *tscm)
 	return err;
 }
 
-// At bus reset, streaming is stopped and some registers are clear.
+
 void snd_tscm_stream_update_duplex(struct snd_tscm *tscm)
 {
 	amdtp_domain_stop(&tscm->domain);
@@ -373,8 +369,8 @@ void snd_tscm_stream_update_duplex(struct snd_tscm *tscm)
 	amdtp_stream_pcm_abort(&tscm->rx_stream);
 }
 
-// This function should be called before starting streams or after stopping
-// streams.
+
+
 void snd_tscm_stream_destroy_duplex(struct snd_tscm *tscm)
 {
 	amdtp_domain_destroy(&tscm->domain);
@@ -481,13 +477,13 @@ int snd_tscm_stream_start_duplex(struct snd_tscm *tscm, unsigned int rate)
 		else
 			tx_init_skip_cycles = 0;
 
-		// MEMO: Just after starting packet streaming, it transfers packets without any
-		// event. Enough after receiving the sequence of packets, it multiplexes events into
-		// the packet. However, just after changing sampling transfer frequency, it stops
-		// multiplexing during packet transmission. Enough after, it restarts multiplexing
-		// again. The device ignores presentation time expressed by the value of syt field
-		// of CIP header in received packets. The sequence of the number of data blocks per
-		// packet is important for media clock recovery.
+		
+		
+		
+		
+		
+		
+		
 		err = amdtp_domain_start(&tscm->domain, tx_init_skip_cycles, true, true);
 		if (err < 0)
 			goto error;
@@ -531,13 +527,13 @@ int snd_tscm_stream_lock_try(struct snd_tscm *tscm)
 
 	spin_lock_irq(&tscm->lock);
 
-	/* user land lock this */
+	 
 	if (tscm->dev_lock_count < 0) {
 		err = -EBUSY;
 		goto end;
 	}
 
-	/* this is the first time */
+	 
 	if (tscm->dev_lock_count++ == 0)
 		snd_tscm_stream_lock_changed(tscm);
 	err = 0;

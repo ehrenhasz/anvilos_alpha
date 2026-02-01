@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* -*- linux-c -*- ------------------------------------------------------- *
- *
- *   Copyright (C) 1991, 1992 Linus Torvalds
- *   Copyright 2007-2008 rPath, Inc. - All Rights Reserved
- *
- * ----------------------------------------------------------------------- */
 
-/*
- * arch/x86/boot/cpu.c
- *
- * Check for obligatory CPU features and abort if the features are not
- * present.
- */
+ 
+
+ 
 
 #include "boot.h"
 #include "cpustr.h"
@@ -39,7 +29,7 @@ static void show_cap_strs(u32 *err_flags)
 		for (j = 0; j < 32; j++) {
 			if (msg_strs[0] < i ||
 			    (msg_strs[0] == i && msg_strs[1] < j)) {
-				/* Skip to the next string */
+				 
 				msg_strs += 2;
 				while (*msg_strs++)
 					;

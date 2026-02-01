@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2017, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/mlx5/driver.h>
@@ -38,7 +8,7 @@
 #include "mlx5_core.h"
 #include "lib/mpfs.h"
 
-/* HW L2 Table (MPFS) management */
+ 
 static int set_l2table_entry_cmd(struct mlx5_core_dev *dev, u32 index, u8 *mac)
 {
 	u32 in[MLX5_ST_SZ_DW(set_l2_table_entry_in)] = {};
@@ -62,16 +32,16 @@ static int del_l2table_entry_cmd(struct mlx5_core_dev *dev, u32 index)
 	return mlx5_cmd_exec_in(dev, delete_l2_table_entry, in);
 }
 
-/* UC L2 table hash node */
+ 
 struct l2table_node {
 	struct l2addr_node node;
-	u32                index; /* index in HW l2 table */
+	u32                index;  
 	int                ref_count;
 };
 
 struct mlx5_mpfs {
 	struct hlist_head    hash[MLX5_L2_ADDR_HASH_SIZE];
-	struct mutex         lock; /* Synchronize l2 table access */
+	struct mutex         lock;  
 	u32                  size;
 	unsigned long        *bitmap;
 };

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- */
+
+ 
 
 #include "efct_driver.h"
 #include "efct_hw.h"
@@ -45,23 +42,23 @@ efct_scsi_io_alloc(struct efct_node *node)
 		return NULL;
 	}
 
-	/* initialize refcount */
+	 
 	kref_init(&io->ref);
 	io->release = _efct_scsi_io_free;
 
-	/* set generic fields */
+	 
 	io->efct = efct;
 	io->node = node;
 	kref_get(&node->ref);
 
-	/* set type and name */
+	 
 	io->io_type = EFCT_IO_TYPE_IO;
 	io->display_name = "scsi_io";
 
 	io->cmd_ini = false;
 	io->cmd_tgt = true;
 
-	/* Add to node's active_ios list */
+	 
 	INIT_LIST_HEAD(&io->list_entry);
 	spin_lock_irqsave(&node->active_ios_lock, flags);
 	list_add(&io->list_entry, &node->active_ios);
@@ -129,16 +126,13 @@ efct_target_io_cb(struct efct_hw_io *hio, u32 length, int status,
 		return;
 	}
 
-	/* Call target server completion */
+	 
 	cb = io->scsi_tgt_cb;
 
-	/* Clear the callback before invoking the callback */
+	 
 	io->scsi_tgt_cb = NULL;
 
-	/* if status was good, and auto-good-response was set,
-	 * then callback target-server with IO_CMPL_RSP_SENT,
-	 * otherwise send IO_CMPL
-	 */
+	 
 	if (status == 0 && io->auto_resp)
 		flags |= EFCT_SCSI_IO_CMPL_RSP_SENT;
 	else
@@ -171,19 +165,19 @@ efct_target_io_cb(struct efct_hw_io *hio, u32 length, int status,
 			scsi_stat = EFCT_SCSI_STATUS_NO_IO;
 			break;
 		default:
-			/*we have seen 0x0d(TX_DMA_FAILED err)*/
+			 
 			scsi_stat = EFCT_SCSI_STATUS_ERROR;
 			break;
 		}
 		break;
 
 	case SLI4_FC_WCQE_STATUS_TARGET_WQE_TIMEOUT:
-		/* target IO timed out */
+		 
 		scsi_stat = EFCT_SCSI_STATUS_TIMEDOUT_AND_ABORTED;
 		break;
 
 	case SLI4_FC_WCQE_STATUS_SHUTDOWN:
-		/* Target IO cancelled by HW */
+		 
 		scsi_stat = EFCT_SCSI_STATUS_SHUTDOWN;
 		break;
 
@@ -206,7 +200,7 @@ efct_scsi_build_sgls(struct efct_hw *hw, struct efct_hw_io *hio,
 	u32 i;
 	struct efct *efct = hw->os;
 
-	/* Initialize HW SGL */
+	 
 	rc = efct_hw_io_init_sges(hw, hio, type);
 	if (rc) {
 		efc_log_err(efct, "efct_hw_io_init_sges failed: %d\n", rc);
@@ -214,7 +208,7 @@ efct_scsi_build_sgls(struct efct_hw *hw, struct efct_hw_io *hio,
 	}
 
 	for (i = 0; i < sgl_count; i++) {
-		/* Add data SGE */
+		 
 		rc = efct_hw_io_add_sge(hw, hio, sgl[i].addr, sgl[i].len);
 		if (rc) {
 			efc_log_err(efct, "add sge failed cnt=%d rc=%d\n",
@@ -272,9 +266,7 @@ efct_scsi_io_dispatch_hw_io(struct efct_io *io, struct efct_hw_io *hio)
 	int rc = 0;
 	struct efct *efct = io->efct;
 
-	/* Got a HW IO;
-	 * update ini/tgt_task_tag with HW IO info and dispatch
-	 */
+	 
 	io->hio = hio;
 	if (io->cmd_tgt)
 		io->tgt_task_tag = hio->indicator;
@@ -284,7 +276,7 @@ efct_scsi_io_dispatch_hw_io(struct efct_io *io, struct efct_hw_io *hio)
 
 	hio->eq = io->hw_priv;
 
-	/* Copy WQ steering */
+	 
 	switch (io->wq_steering) {
 	case EFCT_SCSI_WQ_STEERING_CLASS >> EFCT_SCSI_WQ_STEERING_SHIFT:
 		hio->wq_steering = EFCT_HW_WQ_STEERING_CLASS;
@@ -339,18 +331,7 @@ efct_scsi_io_dispatch_no_hw_io(struct efct_io *io)
 		hio_to_abort = io->io_to_abort->hio;
 
 		if (!hio_to_abort) {
-			/*
-			 * If "IO to abort" does not have an
-			 * associated HW IO, immediately make callback with
-			 * success. The command must have been sent to
-			 * the backend, but the data phase has not yet
-			 * started, so we don't have a HW IO.
-			 *
-			 * Note: since the backend shims should be
-			 * taking a reference on io_to_abort, it should not
-			 * be possible to have been completed and freed by
-			 * the backend before the abort got here.
-			 */
+			 
 			scsi_io_printf(io, "IO: not active\n");
 			((efct_hw_done_t)io->hw_cb)(io->hio, 0,
 					SLI4_FC_WCQE_STATUS_SUCCESS, 0, io);
@@ -358,7 +339,7 @@ efct_scsi_io_dispatch_no_hw_io(struct efct_io *io)
 			break;
 		}
 
-		/* HW IO is valid, abort it */
+		 
 		scsi_io_printf(io, "aborting\n");
 		rc = efct_hw_io_abort(&io->efct->hw, hio_to_abort,
 				      io->send_abts, io->hw_cb, io);
@@ -412,10 +393,7 @@ efct_scsi_dispatch_pending(struct efct *efct)
 	} else {
 		hio = efct_hw_io_alloc(&efct->hw);
 		if (!hio) {
-			/*
-			 * No HW IO available.Put IO back on
-			 * the front of pending list
-			 */
+			 
 			list_add(&xport->io_pending_list, &io->io_pending_link);
 			io = NULL;
 		} else {
@@ -423,28 +401,20 @@ efct_scsi_dispatch_pending(struct efct *efct)
 		}
 	}
 
-	/* Must drop the lock before dispatching the IO */
+	 
 	spin_unlock_irqrestore(&xport->io_pending_lock, flags);
 
 	if (!io)
 		return NULL;
 
-	/*
-	 * We pulled an IO off the pending list,
-	 * and either got an HW IO or don't need one
-	 */
+	 
 	atomic_sub_return(1, &xport->io_pending_count);
 	if (!hio)
 		status = efct_scsi_io_dispatch_no_hw_io(io);
 	else
 		status = efct_scsi_io_dispatch_hw_io(io, hio);
 	if (status) {
-		/*
-		 * Invoke the HW callback, but do so in the
-		 * separate execution context,provided by the
-		 * NOP mailbox completion processing context
-		 * by using efct_hw_async_call()
-		 */
+		 
 		if (efct_hw_async_call(&efct->hw,
 				       efct_scsi_check_pending_async_cb, io)) {
 			efc_log_debug(efct, "call hw async failed\n");
@@ -463,9 +433,9 @@ efct_scsi_check_pending(struct efct *efct)
 	unsigned long flags = 0;
 	int dispatch = 0;
 
-	/* Guard against recursion */
+	 
 	if (atomic_add_return(1, &xport->io_pending_recursing)) {
-		/* This function is already running.  Decrement and return. */
+		 
 		atomic_sub_return(1, &xport->io_pending_recursing);
 		return;
 	}
@@ -478,20 +448,13 @@ efct_scsi_check_pending(struct efct *efct)
 		return;
 	}
 
-	/*
-	 * If nothing was removed from the list,
-	 * we might be in a case where we need to abort an
-	 * active IO and the abort is on the pending list.
-	 * Look for an abort we can dispatch.
-	 */
+	 
 
 	spin_lock_irqsave(&xport->io_pending_lock, flags);
 
 	list_for_each_entry(io, &xport->io_pending_list, io_pending_link) {
 		if (io->io_type == EFCT_IO_TYPE_ABORT && io->io_to_abort->hio) {
-			/* This IO has a HW IO, so it is
-			 * active.  Dispatch the abort.
-			 */
+			 
 			dispatch = 1;
 			list_del_init(&io->io_pending_link);
 			atomic_sub_return(1, &xport->io_pending_count);
@@ -523,25 +486,14 @@ efct_scsi_io_dispatch(struct efct_io *io, void *cb)
 
 	io->hw_cb = cb;
 
-	/*
-	 * if this IO already has a HW IO, then this is either
-	 * not the first phase of the IO. Send it to the HW.
-	 */
+	 
 	if (io->hio)
 		return efct_scsi_io_dispatch_hw_io(io, io->hio);
 
-	/*
-	 * We don't already have a HW IO associated with the IO. First check
-	 * the pending list. If not empty, add IO to the tail and process the
-	 * pending list.
-	 */
+	 
 	spin_lock_irqsave(&xport->io_pending_lock, flags);
 	if (!list_empty(&xport->io_pending_list)) {
-		/*
-		 * If this is a low latency request,
-		 * the put at the front of the IO pending
-		 * queue, otherwise put it at the end of the queue.
-		 */
+		 
 		if (io->low_latency) {
 			INIT_LIST_HEAD(&io->io_pending_link);
 			list_add(&xport->io_pending_list, &io->io_pending_link);
@@ -554,19 +506,16 @@ efct_scsi_io_dispatch(struct efct_io *io, void *cb)
 		atomic_add_return(1, &xport->io_pending_count);
 		atomic_add_return(1, &xport->io_total_pending);
 
-		/* process pending list */
+		 
 		efct_scsi_check_pending(efct);
 		return 0;
 	}
 	spin_unlock_irqrestore(&xport->io_pending_lock, flags);
 
-	/*
-	 * We don't have a HW IO associated with the IO and there's nothing
-	 * on the pending list. Attempt to allocate a HW IO and dispatch it.
-	 */
+	 
 	hio = efct_hw_io_alloc(&io->efct->hw);
 	if (!hio) {
-		/* Couldn't get a HW IO. Save this IO on the pending list */
+		 
 		spin_lock_irqsave(&xport->io_pending_lock, flags);
 		INIT_LIST_HEAD(&io->io_pending_link);
 		list_add_tail(&io->io_pending_link, &xport->io_pending_list);
@@ -577,7 +526,7 @@ efct_scsi_io_dispatch(struct efct_io *io, void *cb)
 		return 0;
 	}
 
-	/* We successfully allocated a HW IO; dispatch to HW */
+	 
 	return efct_scsi_io_dispatch_hw_io(io, hio);
 }
 
@@ -590,12 +539,7 @@ efct_scsi_io_dispatch_abort(struct efct_io *io, void *cb)
 
 	io->hw_cb = cb;
 
-	/*
-	 * For aborts, we don't need a HW IO, but we still want
-	 * to pass through the pending list to preserve ordering.
-	 * Thus, if the pending list is not empty, add this abort
-	 * to the pending list and process the pending list.
-	 */
+	 
 	spin_lock_irqsave(&xport->io_pending_lock, flags);
 	if (!list_empty(&xport->io_pending_list)) {
 		INIT_LIST_HEAD(&io->io_pending_link);
@@ -604,13 +548,13 @@ efct_scsi_io_dispatch_abort(struct efct_io *io, void *cb)
 		atomic_add_return(1, &xport->io_pending_count);
 		atomic_add_return(1, &xport->io_total_pending);
 
-		/* process pending list */
+		 
 		efct_scsi_check_pending(efct);
 		return 0;
 	}
 	spin_unlock_irqrestore(&xport->io_pending_lock, flags);
 
-	/* nothing on pending list, dispatch abort */
+	 
 	return efct_scsi_io_dispatch_no_hw_io(io);
 }
 
@@ -646,9 +590,7 @@ efct_scsi_xfer_data(struct efct_io *io, u32 flags,
 	io->iparam.fcp_tgt.cs_ctl = io->cs_ctl;
 	io->iparam.fcp_tgt.timeout = io->timeout;
 
-	/* if this is the last data phase and there is no residual, enable
-	 * auto-good-response
-	 */
+	 
 	if (enable_ar && (flags & EFCT_SCSI_LAST_DATAPHASE) && residual == 0 &&
 	    ((io->transferred + io->wire_len) == io->exp_xfer_len) &&
 	    (!(flags & EFCT_SCSI_NO_AUTO_RESPONSE))) {
@@ -658,15 +600,13 @@ efct_scsi_xfer_data(struct efct_io *io, u32 flags,
 		io->auto_resp = false;
 	}
 
-	/* save this transfer length */
+	 
 	io->xfer_req = io->wire_len;
 
-	/* Adjust the transferred count to account for overrun
-	 * when the residual is calculated in efct_scsi_send_resp
-	 */
+	 
 	io->transferred += residual;
 
-	/* Adjust the SGL size if there is overrun */
+	 
 
 	if (residual) {
 		struct efct_scsi_sgl  *sgl_ptr = &io->sgl[sgl_count - 1];
@@ -686,7 +626,7 @@ efct_scsi_xfer_data(struct efct_io *io, u32 flags,
 		}
 	}
 
-	/* Set latency and WQ steering */
+	 
 	io->low_latency = (flags & EFCT_SCSI_LOW_LATENCY) != 0;
 	io->wq_steering = (flags & EFCT_SCSI_WQ_STEERING_MASK) >>
 				EFCT_SCSI_WQ_STEERING_SHIFT;
@@ -734,7 +674,7 @@ efct_scsi_send_resp(struct efct_io *io, u32 flags,
 {
 	struct efct *efct;
 	int residual;
-	/* Always try auto resp */
+	 
 	bool auto_resp = true;
 	u8 scsi_status = 0;
 	u16 scsi_status_qualifier = 0;
@@ -765,7 +705,7 @@ efct_scsi_send_resp(struct efct_io *io, u32 flags,
 	io->iparam.fcp_tgt.cs_ctl = io->cs_ctl;
 	io->iparam.fcp_tgt.timeout = io->timeout;
 
-	/* Set low latency queueing request */
+	 
 	io->low_latency = (flags & EFCT_SCSI_LOW_LATENCY) != 0;
 	io->wq_steering = (flags & EFCT_SCSI_WQ_STEERING_MASK) >>
 				EFCT_SCSI_WQ_STEERING_SHIFT;
@@ -793,13 +733,9 @@ efct_scsi_send_resp(struct efct_io *io, u32 flags,
 		fcprsp->resp.fr_retry_delay =
 			cpu_to_be16(scsi_status_qualifier);
 
-		/* set residual status if necessary */
+		 
 		if (residual != 0) {
-			/* FCP: if data transferred is less than the
-			 * amount expected, then this is an underflow.
-			 * If data transferred would have been greater
-			 * than the amount expected this is an overflow
-			 */
+			 
 			if (residual > 0) {
 				fcprsp->resp.fr_flags |= FCP_RESID_UNDER;
 				fcprsp->ext.fr_resid =	cpu_to_be32(residual);
@@ -843,7 +779,7 @@ efct_target_bls_resp_cb(struct efct_hw_io *hio,	u32 length, int status,
 
 	efct = io->efct;
 
-	/* BLS isn't really a "SCSI" concept, but use SCSI status */
+	 
 	if (status) {
 		io_error_log(io, "s=%#x x=%#x\n", status, ext_status);
 		bls_status = EFCT_SCSI_STATUS_ERROR;
@@ -858,7 +794,7 @@ efct_target_bls_resp_cb(struct efct_hw_io *hio,	u32 length, int status,
 		io->bls_cb = NULL;
 		io->bls_cb_arg = NULL;
 
-		/* invoke callback */
+		 
 		bls_cb(io, bls_status, 0, bls_cb_arg);
 	}
 
@@ -876,7 +812,7 @@ efct_target_send_bls_resp(struct efct_io *io,
 	struct fc_ba_acc *acc;
 	int rc;
 
-	/* fill out IO structure with everything needed to send BA_ACC */
+	 
 	memset(&io->iparam, 0, sizeof(io->iparam));
 	bls->ox_id = io->init_task_tag;
 	bls->rx_id = io->abort_rx_id;
@@ -891,16 +827,16 @@ efct_target_send_bls_resp(struct efct_io *io,
 	acc->ba_rx_id = cpu_to_be16(bls->rx_id);
 	acc->ba_high_seq_cnt = cpu_to_be16(U16_MAX);
 
-	/* generic io fields have already been populated */
+	 
 
-	/* set type and BLS-specific fields */
+	 
 	io->io_type = EFCT_IO_TYPE_BLS_RESP;
 	io->display_name = "bls_rsp";
 	io->hio_type = EFCT_HW_BLS_ACC;
 	io->bls_cb = cb;
 	io->bls_cb_arg = arg;
 
-	/* dispatch IO */
+	 
 	rc = efct_hw_bls_send(efct, FC_RCTL_BA_ACC, bls,
 			      efct_target_bls_resp_cb, io);
 	return rc;
@@ -924,13 +860,13 @@ efct_bls_send_rjt(struct efct_io *io, struct fc_frame_header *hdr)
 	struct fc_ba_rjt *acc;
 	int rc;
 
-	/* fill out BLS Response-specific fields */
+	 
 	io->io_type = EFCT_IO_TYPE_BLS_RESP;
 	io->display_name = "ba_rjt";
 	io->hio_type = EFCT_HW_BLS_RJT;
 	io->init_task_tag = be16_to_cpu(hdr->fh_ox_id);
 
-	/* fill out iparam fields */
+	 
 	memset(&io->iparam, 0, sizeof(io->iparam));
 	bls->ox_id = be16_to_cpu(hdr->fh_ox_id);
 	bls->rx_id = be16_to_cpu(hdr->fh_rx_id);
@@ -1001,7 +937,7 @@ efct_scsi_send_tmf_resp(struct efct_io *io,
 		return rc;
 	}
 
-	/* populate the FCP TMF response */
+	 
 	fcprsp = io->rspbuf.virt;
 	memset(fcprsp, 0, sizeof(*fcprsp));
 
@@ -1068,7 +1004,7 @@ efct_target_abort_cb(struct efct_hw_io *hio, u32 length, int status,
 			scsi_status = EFCT_SCSI_STATUS_ABORT_IN_PROGRESS;
 			break;
 		default:
-			/*we have seen 0x15 (abort in progress)*/
+			 
 			scsi_status = EFCT_SCSI_STATUS_ERROR;
 			break;
 		}
@@ -1080,11 +1016,11 @@ efct_target_abort_cb(struct efct_hw_io *hio, u32 length, int status,
 		scsi_status = EFCT_SCSI_STATUS_ERROR;
 		break;
 	}
-	/* invoke callback */
+	 
 	abort_cb(io->io_to_abort, scsi_status, 0, abort_cb_arg);
 
 done:
-	/* done with IO to abort,efct_ref_get(): efct_scsi_tgt_abort_io() */
+	 
 	kref_put(&io->io_to_abort->ref, io->io_to_abort->release);
 
 	efct_io_pool_io_free(efct->xport->io_pool, io);
@@ -1104,18 +1040,14 @@ efct_scsi_tgt_abort_io(struct efct_io *io, efct_scsi_io_cb_t cb, void *arg)
 	efct = io->efct;
 	xport = efct->xport;
 
-	/* take a reference on IO being aborted */
+	 
 	if (kref_get_unless_zero(&io->ref) == 0) {
-		/* command no longer active */
+		 
 		scsi_io_printf(io, "command no longer active\n");
 		return -EIO;
 	}
 
-	/*
-	 * allocate a new IO to send the abort request. Use efct_io_alloc()
-	 * directly, as we need an IO object that will not fail allocation
-	 * due to allocations being disabled (in efct_scsi_io_alloc())
-	 */
+	 
 	abort_io = efct_io_pool_io_alloc(efct->xport->io_pool);
 	if (!abort_io) {
 		atomic_add_return(1, &xport->io_alloc_failed_count);
@@ -1123,12 +1055,12 @@ efct_scsi_tgt_abort_io(struct efct_io *io, efct_scsi_io_cb_t cb, void *arg)
 		return -EIO;
 	}
 
-	/* Save the target server callback and argument */
-	/* set generic fields */
+	 
+	 
 	abort_io->cmd_tgt = true;
 	abort_io->node = io->node;
 
-	/* set type and abort-specific fields */
+	 
 	abort_io->io_type = EFCT_IO_TYPE_ABORT;
 	abort_io->display_name = "tgt_abort";
 	abort_io->io_to_abort = io;
@@ -1136,7 +1068,7 @@ efct_scsi_tgt_abort_io(struct efct_io *io, efct_scsi_io_cb_t cb, void *arg)
 	abort_io->abort_cb = cb;
 	abort_io->abort_cb_arg = arg;
 
-	/* now dispatch IO */
+	 
 	rc = efct_scsi_io_dispatch_abort(abort_io, efct_target_abort_cb);
 	if (rc)
 		kref_put(&io->ref, io->release);

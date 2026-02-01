@@ -1,34 +1,8 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2010 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-/*
- * Copyright (c) 2012 by Delphix. All rights reserved.
- */
+ 
+ 
+ 
 
-/*
- * Common routines used by zfs and zpool property management.
- */
+ 
 
 #include <sys/zio.h>
 #include <sys/spa.h>
@@ -74,14 +48,7 @@ static boolean_t
 zfs_mod_supported_prop(const char *name, zfs_type_t type,
     const struct zfs_mod_supported_features *sfeatures)
 {
-/*
- * The zfs module spa_feature_table[], whether in-kernel or in libzpool,
- * always supports all the properties. libzfs needs to query the running
- * module, via sysfs, to determine which properties are supported.
- *
- * The equivalent _can_ be done on FreeBSD by way of the sysctl
- * tree, but this has not been done yet.
- */
+ 
 #if defined(_KERNEL) || defined(LIB_ZPOOL_BUILD) || defined(__FreeBSD__)
 	(void) name, (void) type, (void) sfeatures;
 	return (B_TRUE);
@@ -174,9 +141,7 @@ zprop_register_hidden(int prop, const char *name, zprop_type_t type,
 }
 
 
-/*
- * A comparison function we can use to order indexes into property tables.
- */
+ 
 static int
 zprop_compare(const void *arg1, const void *arg2)
 {
@@ -193,12 +158,7 @@ zprop_compare(const void *arg1, const void *arg2)
 	return (p1ro ? -1 : 1);
 }
 
-/*
- * Iterate over all properties in the given property table, calling back
- * into the specified function for each property. We will continue to
- * iterate until we either reach the end or the callback function returns
- * something other than ZPROP_CONT.
- */
+ 
 int
 zprop_iter_common(zprop_func func, void *cb, boolean_t show_all,
     boolean_t ordered, zfs_type_t type)
@@ -357,9 +317,7 @@ zprop_index_to_string(int prop, uint64_t index, const char **string,
 	return (-1);
 }
 
-/*
- * Return a random valid property value.  Used by ztest.
- */
+ 
 uint64_t
 zprop_random_value(int prop, uint64_t seed, zfs_type_t type)
 {
@@ -389,13 +347,7 @@ zprop_values(int prop, zfs_type_t type)
 	return (prop_tbl[prop].pd_values);
 }
 
-/*
- * Returns TRUE if the property applies to any of the given dataset types.
- *
- * If headcheck is set, the check is being made against the head dataset
- * type of a snapshot which requires to return B_TRUE when the property
- * is only valid for snapshots.
- */
+ 
 boolean_t
 zprop_valid_for_type(int prop, zfs_type_t type, boolean_t headcheck)
 {
@@ -411,10 +363,7 @@ zprop_valid_for_type(int prop, zfs_type_t type, boolean_t headcheck)
 	return ((prop_tbl[prop].pd_types & type) != 0);
 }
 
-/*
- * For user property names, we allow all lowercase alphanumeric characters, plus
- * a few useful punctuation characters.
- */
+ 
 int
 zprop_valid_char(char c)
 {
@@ -425,10 +374,7 @@ zprop_valid_char(char c)
 
 #ifndef _KERNEL
 
-/*
- * Determines the minimum width for the column, and indicates whether it's fixed
- * or not.  Only string columns are non-fixed.
- */
+ 
 size_t
 zprop_width(int prop, boolean_t *fixed, zfs_type_t type)
 {
@@ -448,27 +394,16 @@ zprop_width(int prop, boolean_t *fixed, zfs_type_t type)
 
 	*fixed = !pd->pd_always_flex;
 
-	/*
-	 * Start with the width of the column name.
-	 */
+	 
 	ret = strlen(pd->pd_colname);
 
-	/*
-	 * For fixed-width values, make sure the width is large enough to hold
-	 * any possible value.
-	 */
+	 
 	switch (pd->pd_proptype) {
 	case PROP_TYPE_NUMBER:
-		/*
-		 * The maximum length of a human-readable number is 5 characters
-		 * ("20.4M", for example).
-		 */
+		 
 		if (ret < 5)
 			ret = 5;
-		/*
-		 * 'health' is handled specially because it's a number
-		 * internally, but displayed as a fixed 8 character string.
-		 */
+		 
 		if (type == ZFS_TYPE_POOL && prop == ZPOOL_PROP_HEALTH)
 			ret = 8;
 		break;
@@ -491,14 +426,14 @@ zprop_width(int prop, boolean_t *fixed, zfs_type_t type)
 #endif
 
 #if defined(_KERNEL)
-/* Common routines to initialize property tables */
+ 
 EXPORT_SYMBOL(zprop_register_impl);
 EXPORT_SYMBOL(zprop_register_string);
 EXPORT_SYMBOL(zprop_register_number);
 EXPORT_SYMBOL(zprop_register_index);
 EXPORT_SYMBOL(zprop_register_hidden);
 
-/* Common routines for zfs and zpool property management */
+ 
 EXPORT_SYMBOL(zprop_iter_common);
 EXPORT_SYMBOL(zprop_name_to_prop);
 EXPORT_SYMBOL(zprop_string_to_index);

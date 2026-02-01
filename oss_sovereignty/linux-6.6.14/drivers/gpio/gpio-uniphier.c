@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (C) 2017 Socionext Inc.
-//   Author: Masahiro Yamada <yamada.masahiro@socionext.com>
+
+
+
+
 
 #include <linux/bits.h>
 #include <linux/gpio/driver.h>
@@ -16,12 +16,12 @@
 
 #define UNIPHIER_GPIO_IRQ_MAX_NUM	24
 
-#define UNIPHIER_GPIO_PORT_DATA		0x0	/* data */
-#define UNIPHIER_GPIO_PORT_DIR		0x4	/* direction (1:in, 0:out) */
-#define UNIPHIER_GPIO_IRQ_EN		0x90	/* irq enable */
-#define UNIPHIER_GPIO_IRQ_MODE		0x94	/* irq mode (1: both edge) */
-#define UNIPHIER_GPIO_IRQ_FLT_EN	0x98	/* noise filter enable */
-#define UNIPHIER_GPIO_IRQ_FLT_CYC	0x9c	/* noise filter clock cycle */
+#define UNIPHIER_GPIO_PORT_DATA		0x0	 
+#define UNIPHIER_GPIO_PORT_DIR		0x4	 
+#define UNIPHIER_GPIO_IRQ_EN		0x90	 
+#define UNIPHIER_GPIO_IRQ_MODE		0x94	 
+#define UNIPHIER_GPIO_IRQ_FLT_EN	0x98	 
+#define UNIPHIER_GPIO_IRQ_FLT_CYC	0x9c	 
 
 struct uniphier_gpio_priv {
 	struct gpio_chip chip;
@@ -38,10 +38,7 @@ static unsigned int uniphier_gpio_bank_to_reg(unsigned int bank)
 
 	reg = (bank + 1) * 8;
 
-	/*
-	 * Unfortunately, the GPIO port registers are not contiguous because
-	 * offset 0x90-0x9f is used for IRQ.  Add 0x10 when crossing the region.
-	 */
+	 
 	if (reg >= UNIPHIER_GPIO_IRQ_EN)
 		reg += 0x10;
 
@@ -167,10 +164,7 @@ static int uniphier_gpio_to_irq(struct gpio_chip *chip, unsigned int offset)
 	fwspec.fwnode = of_node_to_fwnode(chip->parent->of_node);
 	fwspec.param_count = 2;
 	fwspec.param[0] = offset - UNIPHIER_GPIO_IRQ_OFFSET;
-	/*
-	 * IRQ_TYPE_NONE is rejected by the parent irq domain. Set LEVEL_HIGH
-	 * temporarily. Anyway, ->irq_set_type() will override it later.
-	 */
+	 
 	fwspec.param[1] = IRQ_TYPE_LEVEL_HIGH;
 
 	return irq_create_fwspec_mapping(&fwspec);
@@ -208,7 +202,7 @@ static int uniphier_gpio_irq_set_type(struct irq_data *data, unsigned int type)
 	}
 
 	uniphier_gpio_reg_update(priv, UNIPHIER_GPIO_IRQ_MODE, mask, val);
-	/* To enable both edge detection, the noise filter must be enabled. */
+	 
 	uniphier_gpio_reg_update(priv, UNIPHIER_GPIO_IRQ_FLT_EN, mask, val);
 
 	return irq_chip_set_type_parent(data, type);
@@ -275,7 +269,7 @@ static int uniphier_gpio_irq_domain_alloc(struct irq_domain *domain,
 	if (ret < 0)
 		return ret;
 
-	/* parent is UniPhier AIDET */
+	 
 	parent_fwspec.fwnode = domain->parent->fwnode;
 	parent_fwspec.param_count = 2;
 	parent_fwspec.param[0] = ret;
@@ -320,13 +314,7 @@ static const struct irq_domain_ops uniphier_gpio_irq_domain_ops = {
 
 static void uniphier_gpio_hw_init(struct uniphier_gpio_priv *priv)
 {
-	/*
-	 * Due to the hardware design, the noise filter must be enabled to
-	 * detect both edge interrupts.  This filter is intended to remove the
-	 * noise from the irq lines.  It does not work for GPIO input, so GPIO
-	 * debounce is not supported.  Unfortunately, the filter period is
-	 * shared among all irq lines.  Just choose a sensible period here.
-	 */
+	 
 	writel(0xff, priv->regs + UNIPHIER_GPIO_IRQ_FLT_CYC);
 }
 
@@ -476,7 +464,7 @@ static const struct dev_pm_ops uniphier_gpio_pm_ops = {
 
 static const struct of_device_id uniphier_gpio_match[] = {
 	{ .compatible = "socionext,uniphier-gpio" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, uniphier_gpio_match);
 

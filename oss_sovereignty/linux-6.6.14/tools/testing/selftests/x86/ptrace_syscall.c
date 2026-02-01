@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 
 #include <sys/ptrace.h>
@@ -15,7 +15,7 @@
 #include <asm/ptrace-abi.h>
 #include <sys/auxv.h>
 
-/* Bitness-agnostic defines for user_regs_struct fields. */
+ 
 #ifdef __x86_64__
 # define user_syscall_nr	orig_rax
 # define user_arg0		rdi
@@ -49,9 +49,7 @@ extern void sys32_helper(struct syscall_args32 *, void *);
 extern void int80_and_ret(void);
 #endif
 
-/*
- * Helper to invoke int80 with controlled regs and capture the final regs.
- */
+ 
 static void do_full_int80(struct syscall_args32 *args)
 {
 #ifdef __x86_64__
@@ -70,11 +68,7 @@ static void do_full_int80(struct syscall_args32 *args)
 #ifdef __i386__
 static void (*vsyscall32)(void);
 
-/*
- * Nasty helper to invoke AT_SYSINFO (i.e. __kernel_vsyscall) with
- * controlled regs and capture the final regs.  This is so nasty that it
- * crashes my copy of gdb :)
- */
+ 
 static void do_full_vsyscall32(struct syscall_args32 *args)
 {
 	sys32_helper(args, vsyscall32);
@@ -139,7 +133,7 @@ static void empty_handler(int sig, siginfo_t *si, void *ctx_void)
 static void test_sys32_regs(void (*do_syscall)(struct syscall_args32 *))
 {
 	struct syscall_args32 args = {
-		.nr = 224,	/* gettid */
+		.nr = 224,	 
 		.arg0 = 10, .arg1 = 11, .arg2 = 12,
 		.arg3 = 13, .arg4 = 14, .arg5 = 15,
 	};
@@ -157,7 +151,7 @@ static void test_sys32_regs(void (*do_syscall)(struct syscall_args32 *))
 
 	sethandler(SIGUSR1, empty_handler, 0);
 
-	args.nr = 37;	/* kill */
+	args.nr = 37;	 
 	args.arg0 = getpid();
 	args.arg1 = SIGUSR1;
 	do_syscall(&args);
@@ -194,7 +188,7 @@ static void test_ptrace_syscall_restart(void)
 
 	int status;
 
-	/* Wait for SIGSTOP. */
+	 
 	if (waitpid(chld, &status, 0) != chld || !WIFSTOPPED(status))
 		err(1, "waitpid");
 
@@ -221,12 +215,7 @@ static void test_ptrace_syscall_restart(void)
 	printf("[RUN]\tRestart the syscall (ip = 0x%lx)\n",
 	       (unsigned long)regs.user_ip);
 
-	/*
-	 * This does exactly what it appears to do if syscall is int80 or
-	 * SYSCALL64.  For SYSCALL32 or SYSENTER, though, this is highly
-	 * magical.  It needs to work so that ptrace and syscall restart
-	 * work as expected.
-	 */
+	 
 	regs.user_ax = regs.user_syscall_nr;
 	regs.user_ip -= 2;
 	if (ptrace(PTRACE_SETREGS, chld, 0, &regs) != 0)
@@ -315,7 +304,7 @@ static void test_restart_under_ptrace(void)
 
 	int status;
 
-	/* Wait for SIGSTOP. */
+	 
 	if (waitpid(chld, &status, 0) != chld || !WIFSTOPPED(status))
 		err(1, "waitpid");
 
@@ -326,7 +315,7 @@ static void test_restart_under_ptrace(void)
 		err(1, "PTRACE_SYSCALL");
 	wait_trap(chld);
 
-	/* We should be stopped at pause(2) entry. */
+	 
 
 	if (ptrace(PTRACE_GETREGS, chld, 0, &regs) != 0)
 		err(1, "PTRACE_GETREGS");
@@ -341,10 +330,10 @@ static void test_restart_under_ptrace(void)
 		printf("[OK]\tInitial nr and args are correct\n");
 	}
 
-	/* Interrupt it. */
+	 
 	kill(chld, SIGUSR1);
 
-	/* Advance.  We should be stopped at exit. */
+	 
 	printf("[RUN]\tSYSCALL\n");
 	if (ptrace(PTRACE_SYSCALL, chld, 0, 0) != 0)
 		err(1, "PTRACE_SYSCALL");
@@ -364,11 +353,11 @@ static void test_restart_under_ptrace(void)
 		       (long)regs.user_ax);
 	}
 
-	/* Poke the regs back in.  This must not break anything. */
+	 
 	if (ptrace(PTRACE_SETREGS, chld, 0, &regs) != 0)
 		err(1, "PTRACE_SETREGS");
 
-	/* Catch the (ignored) SIGUSR1. */
+	 
 	if (ptrace(PTRACE_CONT, chld, 0, 0) != 0)
 		err(1, "PTRACE_CONT");
 	if (waitpid(chld, &status, 0) != chld)
@@ -380,13 +369,13 @@ static void test_restart_under_ptrace(void)
 		printf("[OK]\tChild got SIGUSR1\n");
 	}
 
-	/* The next event should be pause(2) again. */
+	 
 	printf("[RUN]\tStep again\n");
 	if (ptrace(PTRACE_SYSCALL, chld, 0, 0) != 0)
 		err(1, "PTRACE_SYSCALL");
 	wait_trap(chld);
 
-	/* We should be stopped at pause(2) entry. */
+	 
 
 	if (ptrace(PTRACE_GETREGS, chld, 0, &regs) != 0)
 		err(1, "PTRACE_GETREGS");
@@ -401,7 +390,7 @@ static void test_restart_under_ptrace(void)
 		printf("[OK]\tpause(2) restarted correctly\n");
 	}
 
-	/* Kill it. */
+	 
 	kill(chld, SIGKILL);
 	if (waitpid(chld, &status, 0) != chld)
 		err(1, "waitpid");

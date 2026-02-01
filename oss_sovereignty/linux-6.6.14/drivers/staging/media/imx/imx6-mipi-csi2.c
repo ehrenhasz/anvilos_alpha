@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * MIPI CSI-2 Receiver Subdev for Freescale i.MX6 SOC.
- *
- * Copyright (c) 2012-2017 Mentor Graphics Inc.
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
 #include <linux/io.h>
@@ -19,19 +15,13 @@
 #include <media/v4l2-subdev.h>
 #include "imx-media.h"
 
-/*
- * there must be 5 pads: 1 input pad from sensor, and
- * the 4 virtual channel output pads
- */
+ 
 #define CSI2_SINK_PAD       0
 #define CSI2_NUM_SINK_PADS  1
 #define CSI2_NUM_SRC_PADS   4
 #define CSI2_NUM_PADS       5
 
-/*
- * The default maximum bit-rate per lane in Mbps, if the
- * source subdev does not provide V4L2_CID_LINK_FREQ.
- */
+ 
 #define CSI2_DEFAULT_MAX_MBPS 849
 
 struct csi2_dev {
@@ -41,14 +31,14 @@ struct csi2_dev {
 	struct media_pad       pad[CSI2_NUM_PADS];
 	struct clk             *dphy_clk;
 	struct clk             *pllref_clk;
-	struct clk             *pix_clk; /* what is this? */
+	struct clk             *pix_clk;  
 	void __iomem           *base;
 
 	struct v4l2_subdev	*remote;
 	unsigned int		remote_pad;
 	unsigned short		data_lanes;
 
-	/* lock to protect all members below */
+	 
 	struct mutex lock;
 
 	struct v4l2_mbus_framefmt format_mbus;
@@ -60,7 +50,7 @@ struct csi2_dev {
 
 #define DEVICE_NAME "imx6-mipi-csi2"
 
-/* Register offsets */
+ 
 #define CSI2_VERSION            0x000
 #define CSI2_N_LANES            0x004
 #define CSI2_PHY_SHUTDOWNZ      0x008
@@ -83,11 +73,7 @@ struct csi2_dev {
 #define PHY_TESTCLK		BIT(1)
 #define CSI2_PHY_TST_CTRL1      0x034
 #define PHY_TESTEN		BIT(16)
-/*
- * i.MX CSI2IPU Gasket registers follow. The CSI2IPU gasket is
- * not part of the MIPI CSI-2 core, but its registers fall in the
- * same register map range.
- */
+ 
 #define CSI2IPU_GASKET		0xf00
 #define CSI2IPU_YUV422_YUYV	BIT(2)
 
@@ -101,33 +87,7 @@ static inline struct csi2_dev *notifier_to_dev(struct v4l2_async_notifier *n)
 	return container_of(n, struct csi2_dev, notifier);
 }
 
-/*
- * The required sequence of MIPI CSI-2 startup as specified in the i.MX6
- * reference manual is as follows:
- *
- * 1. Deassert presetn signal (global reset).
- *        It's not clear what this "global reset" signal is (maybe APB
- *        global reset), but in any case this step would be probably
- *        be carried out during driver load in csi2_probe().
- *
- * 2. Configure MIPI Camera Sensor to put all Tx lanes in LP-11 state.
- *        This must be carried out by the MIPI sensor's s_power(ON) subdev
- *        op.
- *
- * 3. D-PHY initialization.
- * 4. CSI2 Controller programming (Set N_LANES, deassert PHY_SHUTDOWNZ,
- *    deassert PHY_RSTZ, deassert CSI2_RESETN).
- * 5. Read the PHY status register (PHY_STATE) to confirm that all data and
- *    clock lanes of the D-PHY are in LP-11 state.
- * 6. Configure the MIPI Camera Sensor to start transmitting a clock on the
- *    D-PHY clock lane.
- * 7. CSI2 Controller programming - Read the PHY status register (PHY_STATE)
- *    to confirm that the D-PHY is receiving a clock on the D-PHY clock lane.
- *
- * All steps 3 through 7 are carried out by csi2_s_stream(ON) here. Step
- * 6 is accomplished by calling the source subdev's s_stream(ON) between
- * steps 5 and 7.
- */
+ 
 
 static void csi2_enable(struct csi2_dev *csi2, bool enable)
 {
@@ -150,31 +110,27 @@ static void csi2_set_lanes(struct csi2_dev *csi2, unsigned int lanes)
 static void dw_mipi_csi2_phy_write(struct csi2_dev *csi2,
 				   u32 test_code, u32 test_data)
 {
-	/* Clear PHY test interface */
+	 
 	writel(PHY_TESTCLR, csi2->base + CSI2_PHY_TST_CTRL0);
 	writel(0x0, csi2->base + CSI2_PHY_TST_CTRL1);
 	writel(0x0, csi2->base + CSI2_PHY_TST_CTRL0);
 
-	/* Raise test interface strobe signal */
+	 
 	writel(PHY_TESTCLK, csi2->base + CSI2_PHY_TST_CTRL0);
 
-	/* Configure address write on falling edge and lower strobe signal */
+	 
 	writel(PHY_TESTEN | test_code, csi2->base + CSI2_PHY_TST_CTRL1);
 	writel(0x0, csi2->base + CSI2_PHY_TST_CTRL0);
 
-	/* Configure data write on rising edge and raise strobe signal */
+	 
 	writel(test_data, csi2->base + CSI2_PHY_TST_CTRL1);
 	writel(PHY_TESTCLK, csi2->base + CSI2_PHY_TST_CTRL0);
 
-	/* Clear strobe signal */
+	 
 	writel(0x0, csi2->base + CSI2_PHY_TST_CTRL0);
 }
 
-/*
- * This table is based on the table documented at
- * https://community.nxp.com/docs/DOC-94312. It assumes
- * a 27MHz D-PHY pll reference clock.
- */
+ 
 static const struct {
 	u32 max_mbps;
 	u32 hsfreqrange_sel;
@@ -223,16 +179,13 @@ static int csi2_dphy_init(struct csi2_dev *csi2)
 	return 0;
 }
 
-/*
- * Waits for ultra-low-power state on D-PHY clock lane. This is currently
- * unused and may not be needed at all, but keep around just in case.
- */
+ 
 static int __maybe_unused csi2_dphy_wait_ulp(struct csi2_dev *csi2)
 {
 	u32 reg;
 	int ret;
 
-	/* wait for ULP on clock lane */
+	 
 	ret = readl_poll_timeout(csi2->base + CSI2_PHY_STATE, reg,
 				 !(reg & PHY_RXULPSCLKNOT), 0, 500000);
 	if (ret) {
@@ -240,7 +193,7 @@ static int __maybe_unused csi2_dphy_wait_ulp(struct csi2_dev *csi2)
 		return ret;
 	}
 
-	/* wait until no errors on bus */
+	 
 	ret = readl_poll_timeout(csi2->base + CSI2_ERR1, reg,
 				 reg == 0x0, 0, 500000);
 	if (ret) {
@@ -251,7 +204,7 @@ static int __maybe_unused csi2_dphy_wait_ulp(struct csi2_dev *csi2)
 	return 0;
 }
 
-/* Waits for low-power LP-11 state on data and clock lanes. */
+ 
 static void csi2_dphy_wait_stopstate(struct csi2_dev *csi2, unsigned int lanes)
 {
 	u32 mask, reg;
@@ -267,7 +220,7 @@ static void csi2_dphy_wait_stopstate(struct csi2_dev *csi2, unsigned int lanes)
 	}
 }
 
-/* Wait for active clock on the clock lane. */
+ 
 static int csi2_dphy_wait_clock_lane(struct csi2_dev *csi2)
 {
 	u32 reg;
@@ -284,7 +237,7 @@ static int csi2_dphy_wait_clock_lane(struct csi2_dev *csi2)
 	return 0;
 }
 
-/* Setup the i.MX CSI2IPU Gasket */
+ 
 static void csi2ipu_gasket_init(struct csi2_dev *csi2)
 {
 	u32 reg = 0;
@@ -347,10 +300,10 @@ static int csi2_start(struct csi2_dev *csi2)
 	if (ret)
 		return ret;
 
-	/* setup the gasket */
+	 
 	csi2ipu_gasket_init(csi2);
 
-	/* Step 3 */
+	 
 	ret = csi2_dphy_init(csi2);
 	if (ret)
 		goto err_disable_clk;
@@ -359,24 +312,24 @@ static int csi2_start(struct csi2_dev *csi2)
 	if (ret)
 		goto err_disable_clk;
 
-	/* Step 4 */
+	 
 	csi2_set_lanes(csi2, lanes);
 	csi2_enable(csi2, true);
 
-	/* Step 5 */
+	 
 	ret = v4l2_subdev_call(csi2->src_sd, video, pre_streamon,
 			       V4L2_SUBDEV_PRE_STREAMON_FL_MANUAL_LP);
 	if (ret && ret != -ENOIOCTLCMD)
 		goto err_assert_reset;
 	csi2_dphy_wait_stopstate(csi2, lanes);
 
-	/* Step 6 */
+	 
 	ret = v4l2_subdev_call(csi2->src_sd, video, s_stream, 1);
 	ret = (ret && ret != -ENOIOCTLCMD) ? ret : 0;
 	if (ret)
 		goto err_stop_lp11;
 
-	/* Step 7 */
+	 
 	ret = csi2_dphy_wait_clock_lane(csi2);
 	if (ret)
 		goto err_stop_upstream;
@@ -396,7 +349,7 @@ err_disable_clk:
 
 static void csi2_stop(struct csi2_dev *csi2)
 {
-	/* stop upstream */
+	 
 	v4l2_subdev_call(csi2->src_sd, video, s_stream, 0);
 	v4l2_subdev_call(csi2->src_sd, video, post_streamoff);
 
@@ -404,9 +357,7 @@ static void csi2_stop(struct csi2_dev *csi2)
 	clk_disable_unprepare(csi2->pix_clk);
 }
 
-/*
- * V4L2 subdev operations.
- */
+ 
 
 static int csi2_s_stream(struct v4l2_subdev *sd, int enable)
 {
@@ -429,10 +380,7 @@ static int csi2_s_stream(struct v4l2_subdev *sd, int enable)
 		goto out;
 	}
 
-	/*
-	 * enable/disable streaming only if stream_count is
-	 * going from 0 to 1 / 1 to 0.
-	 */
+	 
 	if (csi2->stream_count != !enable)
 		goto update_count;
 
@@ -542,7 +490,7 @@ static int csi2_set_fmt(struct v4l2_subdev *sd,
 		goto out;
 	}
 
-	/* Output pads mirror active input pad, no limits on input pads */
+	 
 	if (sdformat->pad != CSI2_SINK_PAD)
 		sdformat->format = csi2->format_mbus;
 
@@ -558,14 +506,14 @@ static int csi2_registered(struct v4l2_subdev *sd)
 {
 	struct csi2_dev *csi2 = sd_to_dev(sd);
 
-	/* set a default mbus format  */
+	 
 	return imx_media_init_mbus_fmt(&csi2->format_mbus,
 				      IMX_MEDIA_DEF_PIX_WIDTH,
 				      IMX_MEDIA_DEF_PIX_HEIGHT, 0,
 				      V4L2_FIELD_NONE, NULL);
 }
 
-/* --------------- CORE OPS --------------- */
+ 
 
 static int csi2_log_status(struct v4l2_subdev *sd)
 {
@@ -826,7 +774,7 @@ static void csi2_remove(struct platform_device *pdev)
 
 static const struct of_device_id csi2_dt_ids[] = {
 	{ .compatible = "fsl,imx6-mipi-csi2", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, csi2_dt_ids);
 

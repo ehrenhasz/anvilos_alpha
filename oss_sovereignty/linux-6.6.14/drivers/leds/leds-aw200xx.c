@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Awinic AW20036/AW20054/AW20072 LED driver
- *
- * Copyright (c) 2023, SberDevices. All Rights Reserved.
- *
- * Author: Martin Kurbanov <mmkurbanov@sberdevices.ru>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -25,10 +19,10 @@
 #define AW200XX_IMAX_MAX_uA              160000
 #define AW200XX_IMAX_MIN_uA              3300
 
-/* Page 0 */
+ 
 #define AW200XX_REG_PAGE0_BASE 0xc000
 
-/* Select page register */
+ 
 #define AW200XX_REG_PAGE       0xF0
 #define AW200XX_PAGE_MASK      (GENMASK(7, 6) | GENMASK(2, 0))
 #define AW200XX_PAGE_SHIFT     0
@@ -45,54 +39,45 @@
 #define AW200XX_PAGE4 4
 #define AW200XX_PAGE5 5
 
-/* Chip ID register */
+ 
 #define AW200XX_REG_IDR       AW200XX_REG(AW200XX_PAGE0, 0x00)
 #define AW200XX_IDR_CHIPID    0x18
 
-/* Sleep mode register */
+ 
 #define AW200XX_REG_SLPCR     AW200XX_REG(AW200XX_PAGE0, 0x01)
 #define AW200XX_SLPCR_ACTIVE  0x00
 
-/* Reset register */
+ 
 #define AW200XX_REG_RSTR      AW200XX_REG(AW200XX_PAGE0, 0x02)
 #define AW200XX_RSTR_RESET    0x01
 
-/* Global current configuration register */
+ 
 #define AW200XX_REG_GCCR        AW200XX_REG(AW200XX_PAGE0, 0x03)
 #define AW200XX_GCCR_IMAX_MASK  GENMASK(7, 4)
 #define AW200XX_GCCR_IMAX(x)    ((x) << 4)
 #define AW200XX_GCCR_ALLON      BIT(3)
 
-/* Fast clear display control register */
+ 
 #define AW200XX_REG_FCD       AW200XX_REG(AW200XX_PAGE0, 0x04)
 #define AW200XX_FCD_CLEAR     0x01
 
-/* Display size configuration */
+ 
 #define AW200XX_REG_DSIZE          AW200XX_REG(AW200XX_PAGE0, 0x80)
 #define AW200XX_DSIZE_COLUMNS_MAX  12
 
 #define AW200XX_LED2REG(x, columns) \
 	((x) + (((x) / (columns)) * (AW200XX_DSIZE_COLUMNS_MAX - (columns))))
 
-/* DIM current configuration register on page 1 */
+ 
 #define AW200XX_REG_DIM_PAGE1(x, columns) \
 	AW200XX_REG(AW200XX_PAGE1, AW200XX_LED2REG(x, columns))
 
-/*
- * DIM current configuration register (page 4).
- * The even address for current DIM configuration.
- * The odd address for current FADE configuration
- */
+ 
 #define AW200XX_REG_DIM(x, columns) \
 	AW200XX_REG(AW200XX_PAGE4, AW200XX_LED2REG(x, columns) * 2)
 #define AW200XX_REG_DIM2FADE(x) ((x) + 1)
 
-/*
- * Duty ratio of display scan (see p.15 of datasheet for formula):
- *   duty = (592us / 600.5us) * (1 / (display_rows + 1))
- *
- * Multiply to 1000 (MILLI) to improve the accuracy of calculations.
- */
+ 
 #define AW200XX_DUTY_RATIO(rows) \
 	(((592UL * USEC_PER_SEC) / 600500UL) * (MILLI / (rows)) / MILLI)
 
@@ -215,17 +200,7 @@ static u32 aw200xx_imax_from_global(const struct aw200xx *const chip,
 {
 	u64 led_imax_uA;
 
-	/*
-	 * The output current of each LED (see p.14 of datasheet for formula):
-	 *   Iled = Imax * (dim / 63) * ((fade + 1) / 256) * duty
-	 *
-	 * The value of duty is determined by the following formula:
-	 *   duty = (592us / 600.5us) * (1 / (display_rows + 1))
-	 *
-	 * Calculated for the maximum values of fade and dim.
-	 * We divide by 1000 because we earlier multiplied by 1000 to improve
-	 * accuracy when calculating the duty.
-	 */
+	 
 	led_imax_uA = global_imax_uA * AW200XX_DUTY_RATIO(chip->display_rows);
 	do_div(led_imax_uA, MILLI);
 
@@ -237,7 +212,7 @@ static u32 aw200xx_imax_to_global(const struct aw200xx *const chip,
 {
 	u32 duty = AW200XX_DUTY_RATIO(chip->display_rows);
 
-	/* The output current of each LED (see p.14 of datasheet for formula) */
+	 
 	return (led_imax_uA * 1000U) / duty;
 }
 
@@ -246,36 +221,7 @@ static u32 aw200xx_imax_to_global(const struct aw200xx *const chip,
 #define AW200XX_IMAX_BASE_VAL1      0
 #define AW200XX_IMAX_BASE_VAL2      8
 
-/*
- * The AW200XX has a 4-bit register (GCCR) to configure the global current,
- * which ranges from 3.3mA to 160mA. The following table indicates the values
- * of the global current, divided into two parts:
- *
- * +-----------+-----------------+-----------+-----------------+
- * | reg value | global max (mA) | reg value | global max (mA) |
- * +-----------+-----------------+-----------+-----------------+
- * | 0         | 10              | 8         | 3.3             |
- * | 1         | 20              | 9         | 6.7             |
- * | 2         | 30              | 10        | 10              |
- * | 3         | 40              | 11        | 13.3            |
- * | 4         | 60              | 12        | 20              |
- * | 5         | 80              | 13        | 26.7            |
- * | 6         | 120             | 14        | 40              |
- * | 7         | 160             | 15        | 53.3            |
- * +-----------+-----------------+-----------+-----------------+
- *
- * The left part  with a multiplier of 10, and the right part  with a multiplier
- * of 3.3.
- * So we have two formulas to calculate the global current:
- *   for the left part of the table:
- *     imax = coefficient * 10
- *
- *   for the right part of the table:
- *     imax = coefficient * 3.3
- *
- * The coefficient table consists of the following values:
- *   1, 2, 3, 4, 6, 8, 12, 16.
- */
+ 
 static int aw200xx_set_imax(const struct aw200xx *const chip,
 			    u32 led_imax_uA)
 {
@@ -288,7 +234,7 @@ static int aw200xx_set_imax(const struct aw200xx *const chip,
 	for (i = 0; i < ARRAY_SIZE(coeff_table); i++) {
 		u32 imax;
 
-		/* select closest ones */
+		 
 		imax = coeff_table[i] * AW200XX_IMAX_MULTIPLIER1;
 		if (g_imax_uA >= imax && imax > cur_imax) {
 			cur_imax = imax;
@@ -523,7 +469,7 @@ static int aw200xx_probe(struct i2c_client *client)
 
 	mutex_init(&chip->mutex);
 
-	/* Need a lock now since after call aw200xx_probe_fw, sysfs nodes created */
+	 
 	mutex_lock(&chip->mutex);
 
 	ret = aw200xx_chip_reset(chip);

@@ -1,13 +1,4 @@
-/*-*- linux-c -*-
- *  linux/drivers/video/savage/savage_accel.c -- Hardware Acceleration
- *
- *      Copyright (C) 2004 Antonino Daplas<adaplas@pol.net>
- *      All Rights Reserved
- *
- *  This file is subject to the terms and conditions of the GNU General Public
- *  License. See the file COPYING in the main directory of this archive for
- *  more details.
- */
+ 
 #include <linux/kernel.h>
 #include <linux/string.h>
 #include <linux/fb.h>
@@ -16,8 +7,8 @@
 #include "savagefb.h"
 
 static u32 savagefb_rop[] = {
-	0xCC, /* ROP_COPY */
-	0x5A  /* ROP_XOR  */
+	0xCC,  
+	0x5A   
 };
 
 int savagefb_sync(struct fb_info *info)

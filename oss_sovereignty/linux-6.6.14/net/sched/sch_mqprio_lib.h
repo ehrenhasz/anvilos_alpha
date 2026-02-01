@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __SCH_MQPRIO_LIB_H
 #define __SCH_MQPRIO_LIB_H
 

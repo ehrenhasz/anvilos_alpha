@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2018 BayLibre, SAS
- * Author: Maxime Jourdan <mjourdan@baylibre.com>
- *
- * VDEC_1 is a video decoding block that allows decoding of
- * MPEG 1/2/4, H.263, H.264, MJPEG, VC1
- */
+
+ 
 
 #include <linux/firmware.h>
 #include <linux/clk.h>
@@ -14,7 +8,7 @@
 #include "vdec_helpers.h"
 #include "dos_regs.h"
 
-/* AO Registers */
+ 
 #define AO_RTI_GEN_PWR_SLEEP0	0xe8
 #define AO_RTI_GEN_PWR_ISO0	0xec
 	#define GEN_PWR_VDEC_1 (BIT(3) | BIT(2))
@@ -116,7 +110,7 @@ static void vdec_1_conf_esparser(struct amvdec_session *sess)
 {
 	struct amvdec_core *core = sess->core;
 
-	/* VDEC_1 specific ESPARSER stuff */
+	 
 	amvdec_write_dos(core, DOS_GEN_CTRL0, 0);
 	amvdec_write_dos(core, VLD_MEM_VIFIFO_BUF_CNTL, 1);
 	amvdec_clear_dos_bits(core, VLD_MEM_VIFIFO_BUF_CNTL, 1);
@@ -142,15 +136,15 @@ static int vdec_1_stop(struct amvdec_session *sess)
 	amvdec_write_dos(core, DOS_SW_RESET0, 0);
 	amvdec_read_dos(core, DOS_SW_RESET0);
 
-	/* enable vdec1 isolation */
+	 
 	if (core->platform->revision == VDEC_REVISION_SM1)
 		regmap_update_bits(core->regmap_ao, AO_RTI_GEN_PWR_ISO0,
 				   GEN_PWR_VDEC_1_SM1, GEN_PWR_VDEC_1_SM1);
 	else
 		regmap_write(core->regmap_ao, AO_RTI_GEN_PWR_ISO0, 0xc0);
-	/* power off vdec1 memories */
+	 
 	amvdec_write_dos(core, DOS_MEM_PD_VDEC, 0xffffffff);
-	/* power off vdec1 */
+	 
 	if (core->platform->revision == VDEC_REVISION_SM1)
 		regmap_update_bits(core->regmap_ao, AO_RTI_GEN_PWR_SLEEP0,
 				   GEN_PWR_VDEC_1_SM1, GEN_PWR_VDEC_1_SM1);
@@ -172,13 +166,13 @@ static int vdec_1_start(struct amvdec_session *sess)
 	struct amvdec_core *core = sess->core;
 	struct amvdec_codec_ops *codec_ops = sess->fmt_out->codec_ops;
 
-	/* Configure the vdec clk to the maximum available */
+	 
 	clk_set_rate(core->vdec_1_clk, 666666666);
 	ret = clk_prepare_enable(core->vdec_1_clk);
 	if (ret)
 		return ret;
 
-	/* Enable power for VDEC_1 */
+	 
 	if (core->platform->revision == VDEC_REVISION_SM1)
 		regmap_update_bits(core->regmap_ao, AO_RTI_GEN_PWR_SLEEP0,
 				   GEN_PWR_VDEC_1_SM1, 0);
@@ -187,21 +181,21 @@ static int vdec_1_start(struct amvdec_session *sess)
 				   GEN_PWR_VDEC_1, 0);
 	usleep_range(10, 20);
 
-	/* Reset VDEC1 */
+	 
 	amvdec_write_dos(core, DOS_SW_RESET0, 0xfffffffc);
 	amvdec_write_dos(core, DOS_SW_RESET0, 0x00000000);
 
 	amvdec_write_dos(core, DOS_GCLK_EN0, 0x3ff);
 
-	/* enable VDEC Memories */
+	 
 	amvdec_write_dos(core, DOS_MEM_PD_VDEC, 0);
-	/* Remove VDEC1 Isolation */
+	 
 	if (core->platform->revision == VDEC_REVISION_SM1)
 		regmap_update_bits(core->regmap_ao, AO_RTI_GEN_PWR_ISO0,
 				   GEN_PWR_VDEC_1_SM1, 0);
 	else
 		regmap_write(core->regmap_ao, AO_RTI_GEN_PWR_ISO0, 0);
-	/* Reset DOS top registers */
+	 
 	amvdec_write_dos(core, DOS_VDEC_MCRCC_STALL_CTRL, 0);
 
 	amvdec_write_dos(core, GCLK_EN, 0x3ff);
@@ -217,19 +211,19 @@ static int vdec_1_start(struct amvdec_session *sess)
 	if (ret)
 		goto stop;
 
-	/* Enable IRQ */
+	 
 	amvdec_write_dos(core, ASSIST_MBOX1_CLR_REG, 1);
 	amvdec_write_dos(core, ASSIST_MBOX1_MASK, 1);
 
-	/* Enable 2-plane output */
+	 
 	if (sess->pixfmt_cap == V4L2_PIX_FMT_NV12M)
 		amvdec_write_dos_bits(core, MDEC_PIC_DC_CTRL, BIT(17));
 	else
 		amvdec_clear_dos_bits(core, MDEC_PIC_DC_CTRL, BIT(17));
 
-	/* Enable firmware processor */
+	 
 	amvdec_write_dos(core, MPSR, 1);
-	/* Let the firmware settle */
+	 
 	usleep_range(10, 20);
 
 	return 0;

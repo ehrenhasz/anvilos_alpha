@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2020 The Linux Foundation. All rights reserved.
- *
- * lpass_hdmi.h - Definitions for the QTi LPASS HDMI
- */
+ 
+ 
 
 #ifndef __LPASS_HDMI_H__
 #define __LPASS_HDMI_H__
@@ -99,4 +95,4 @@ struct lpass_vbit_ctrl {
 
 extern const struct snd_soc_dai_ops asoc_qcom_lpass_hdmi_dai_ops;
 
-#endif /* __LPASS_HDMI_H__ */
+#endif  

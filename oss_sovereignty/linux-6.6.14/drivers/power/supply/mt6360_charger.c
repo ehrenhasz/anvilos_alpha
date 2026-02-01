@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2021 MediaTek Inc.
- */
+
+ 
 
 #include <linux/devm-helpers.h>
 #include <linux/init.h>
@@ -32,73 +30,73 @@
 #define MT6360_PMU_CHG_CTRL19	0x361
 #define MT6360_PMU_FOD_STAT	0x3E7
 
-/* MT6360_PMU_CHG_CTRL1 */
+ 
 #define MT6360_FSLP_SHFT	(3)
 #define MT6360_FSLP_MASK	BIT(MT6360_FSLP_SHFT)
 #define MT6360_OPA_MODE_SHFT	(0)
 #define MT6360_OPA_MODE_MASK	BIT(MT6360_OPA_MODE_SHFT)
-/* MT6360_PMU_CHG_CTRL2 */
+ 
 #define MT6360_IINLMTSEL_SHFT	(2)
 #define MT6360_IINLMTSEL_MASK	GENMASK(3, 2)
-/* MT6360_PMU_CHG_CTRL3 */
+ 
 #define MT6360_IAICR_SHFT	(2)
 #define MT6360_IAICR_MASK	GENMASK(7, 2)
 #define MT6360_ILIM_EN_MASK	BIT(0)
-/* MT6360_PMU_CHG_CTRL4 */
+ 
 #define MT6360_VOREG_SHFT	(1)
 #define MT6360_VOREG_MASK	GENMASK(7, 1)
-/* MT6360_PMU_CHG_CTRL5 */
+ 
 #define MT6360_VOBST_MASK	GENMASK(7, 2)
-/* MT6360_PMU_CHG_CTRL6 */
+ 
 #define MT6360_VMIVR_SHFT      (1)
 #define MT6360_VMIVR_MASK      GENMASK(7, 1)
-/* MT6360_PMU_CHG_CTRL7 */
+ 
 #define MT6360_ICHG_SHFT	(2)
 #define MT6360_ICHG_MASK	GENMASK(7, 2)
-/* MT6360_PMU_CHG_CTRL8 */
+ 
 #define MT6360_IPREC_SHFT	(0)
 #define MT6360_IPREC_MASK	GENMASK(3, 0)
-/* MT6360_PMU_CHG_CTRL9 */
+ 
 #define MT6360_IEOC_SHFT	(4)
 #define MT6360_IEOC_MASK	GENMASK(7, 4)
-/* MT6360_PMU_CHG_CTRL10 */
+ 
 #define MT6360_OTG_OC_MASK	GENMASK(3, 0)
-/* MT6360_PMU_DEVICE_TYPE */
+ 
 #define MT6360_USBCHGEN_MASK	BIT(7)
-/* MT6360_PMU_USB_STATUS1 */
+ 
 #define MT6360_USB_STATUS_SHFT	(4)
 #define MT6360_USB_STATUS_MASK	GENMASK(6, 4)
-/* MT6360_PMU_CHG_STAT */
+ 
 #define MT6360_CHG_STAT_SHFT	(6)
 #define MT6360_CHG_STAT_MASK	GENMASK(7, 6)
 #define MT6360_VBAT_LVL_MASK	BIT(5)
-/* MT6360_PMU_CHG_CTRL19 */
+ 
 #define MT6360_VINOVP_SHFT	(5)
 #define MT6360_VINOVP_MASK	GENMASK(6, 5)
-/* MT6360_PMU_FOD_STAT */
+ 
 #define MT6360_CHRDET_EXT_MASK	BIT(4)
 
-/* uV */
+ 
 #define MT6360_VMIVR_MIN	3900000
 #define MT6360_VMIVR_MAX	13400000
 #define MT6360_VMIVR_STEP	100000
-/* uA */
+ 
 #define MT6360_ICHG_MIN		100000
 #define MT6360_ICHG_MAX		5000000
 #define MT6360_ICHG_STEP	100000
-/* uV */
+ 
 #define MT6360_VOREG_MIN	3900000
 #define MT6360_VOREG_MAX	4710000
 #define MT6360_VOREG_STEP	10000
-/* uA */
+ 
 #define MT6360_AICR_MIN		100000
 #define MT6360_AICR_MAX		3250000
 #define MT6360_AICR_STEP	50000
-/* uA */
+ 
 #define MT6360_IPREC_MIN	100000
 #define MT6360_IPREC_MAX	850000
 #define MT6360_IPREC_STEP	50000
-/* uA */
+ 
 #define MT6360_IEOC_MIN		100000
 #define MT6360_IEOC_MAX		850000
 #define MT6360_IEOC_STEP	50000
@@ -239,15 +237,15 @@ static int mt6360_charger_get_charge_type(struct mt6360_chg_info *mci,
 
 	chg_stat = (regval & MT6360_CHG_STAT_MASK) >> MT6360_CHG_STAT_SHFT;
 	switch (chg_stat) {
-	case 0x01: /* Charge in Progress */
+	case 0x01:  
 		if (regval & MT6360_VBAT_LVL_MASK)
 			type = POWER_SUPPLY_CHARGE_TYPE_FAST;
 		else
 			type = POWER_SUPPLY_CHARGE_TYPE_TRICKLE;
 		break;
-	case 0x00: /* Not Charging */
-	case 0x02: /* Charge Done */
-	case 0x03: /* Charge Fault */
+	case 0x00:  
+	case 0x02:  
+	case 0x03:  
 	default:
 		type = POWER_SUPPLY_CHARGE_TYPE_NONE;
 		break;
@@ -615,7 +613,7 @@ static irqreturn_t mt6360_pmu_attach_i_handler(int irq, void *data)
 		goto out;
 	}
 	last_usb_type = mci->psy_usb_type;
-	/* Plug in */
+	 
 	ret = regmap_read(mci->regmap, MT6360_PMU_USB_STATUS1, &usb_status);
 	if (ret < 0)
 		goto out;
@@ -738,7 +736,7 @@ static u32 mt6360_vinovp_trans_to_sel(u32 val)
 	u32 vinovp_tbl[] = { 5500000, 6500000, 11000000, 14500000 };
 	int i;
 
-	/* Select the smaller and equal supported value */
+	 
 	for (i = 0; i < ARRAY_SIZE(vinovp_tbl)-1; i++) {
 		if (val < vinovp_tbl[i+1])
 			break;

@@ -1,12 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 1998-2008 VIA Technologies, Inc. All Rights Reserved.
- * Copyright 2001-2008 S3 Graphics, Inc. All Rights Reserved.
- * Copyright 2010 Florian Tobias Schandinat <FlorianSchandinat@gmx.de>
- */
-/*
- * basic modesetting functions
- */
+ 
+ 
+ 
 
 #ifndef __VIA_MODESETTING_H__
 #define __VIA_MODESETTING_H__
@@ -43,4 +37,4 @@ void via_set_secondary_pitch(u32 pitch);
 void via_set_primary_color_depth(u8 depth);
 void via_set_secondary_color_depth(u8 depth);
 
-#endif /* __VIA_MODESETTING_H__ */
+#endif  

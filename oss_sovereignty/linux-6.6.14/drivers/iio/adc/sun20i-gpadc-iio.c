@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * GPADC driver for sunxi platforms (D1, T113-S3 and R329)
- * Copyright (c) 2023 Maksim Kiselev <bigunclemax@gmail.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -19,7 +16,7 @@
 
 #define SUN20I_GPADC_DRIVER_NAME	"sun20i-gpadc"
 
-/* Register map definition */
+ 
 #define SUN20I_GPADC_SR			0x00
 #define SUN20I_GPADC_CTRL		0x04
 #define SUN20I_GPADC_CS_EN		0x08
@@ -48,14 +45,7 @@ struct sun20i_gpadc_iio {
 	void __iomem		*regs;
 	struct completion	completion;
 	int			last_channel;
-	/*
-	 * Lock to protect the device state during a potential concurrent
-	 * read access from userspace. Reading a raw value requires a sequence
-	 * of register writes, then a wait for a completion callback,
-	 * and finally a register read, during which userspace could issue
-	 * another read request. This lock protects a read access from
-	 * ocurring before another one has finished.
-	 */
+	 
 	struct mutex		lock;
 };
 
@@ -72,33 +62,27 @@ static int sun20i_gpadc_adc_read(struct sun20i_gpadc_iio *info,
 	if (info->last_channel != chan->channel) {
 		info->last_channel = chan->channel;
 
-		/* enable the analog input channel */
+		 
 		writel(SUN20I_GPADC_CS_EN_ADC_CH(chan->channel),
 		       info->regs + SUN20I_GPADC_CS_EN);
 
-		/* enable the data irq for input channel */
+		 
 		writel(SUN20I_GPADC_DATA_INTC_CH_DATA_IRQ_EN(chan->channel),
 		       info->regs + SUN20I_GPADC_DATA_INTC);
 	}
 
-	/* enable the ADC function */
+	 
 	ctrl = readl(info->regs + SUN20I_GPADC_CTRL);
 	ctrl |= FIELD_PREP(SUN20I_GPADC_CTRL_ADC_EN_MASK, 1);
 	writel(ctrl, info->regs + SUN20I_GPADC_CTRL);
 
-	/*
-	 * According to the datasheet maximum acquire time(TACQ) can be
-	 * (65535+1)/24Mhz and conversion time(CONV_TIME) is always constant
-	 * and equal to 14/24Mhz, so (TACQ+CONV_TIME) <= 2.73125ms.
-	 * A 10ms delay should be enough to make sure an interrupt occurs in
-	 * normal conditions. If it doesn't occur, then there is a timeout.
-	 */
+	 
 	if (!wait_for_completion_timeout(&info->completion, msecs_to_jiffies(10))) {
 		ret = -ETIMEDOUT;
 		goto err_unlock;
 	}
 
-	/* read the ADC data */
+	 
 	*val = readl(info->regs + SUN20I_GPADC_CH_DATA(chan->channel));
 
 err_unlock:
@@ -117,7 +101,7 @@ static int sun20i_gpadc_read_raw(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_RAW:
 		return sun20i_gpadc_adc_read(info, chan, val);
 	case IIO_CHAN_INFO_SCALE:
-		/* value in mv = 1800mV / 4096 raw */
+		 
 		*val = 1800;
 		*val2 = 12;
 		return IIO_VAL_FRACTIONAL_LOG2;
@@ -130,7 +114,7 @@ static irqreturn_t sun20i_gpadc_irq_handler(int irq, void *data)
 {
 	struct sun20i_gpadc_iio *info = data;
 
-	/* clear data interrupt status register */
+	 
 	writel(GENMASK(31, 0), info->regs + SUN20I_GPADC_DATA_INTS);
 
 	complete(&info->completion);
@@ -258,7 +242,7 @@ static int sun20i_gpadc_probe(struct platform_device *pdev)
 
 static const struct of_device_id sun20i_gpadc_of_id[] = {
 	{ .compatible = "allwinner,sun20i-d1-gpadc" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, sun20i_gpadc_of_id);
 

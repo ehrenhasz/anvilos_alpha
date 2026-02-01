@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019, Linaro Limited
+
+
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -26,15 +26,13 @@
 #define WCD934X_RATES_MASK (SNDRV_PCM_RATE_8000 | SNDRV_PCM_RATE_16000 |\
 			    SNDRV_PCM_RATE_32000 | SNDRV_PCM_RATE_48000 |\
 			    SNDRV_PCM_RATE_96000 | SNDRV_PCM_RATE_192000)
-/* Fractional Rates */
+ 
 #define WCD934X_FRAC_RATES_MASK (SNDRV_PCM_RATE_44100 | SNDRV_PCM_RATE_88200 |\
 				 SNDRV_PCM_RATE_176400)
 #define WCD934X_FORMATS_S16_S24_LE (SNDRV_PCM_FMTBIT_S16_LE | \
 				    SNDRV_PCM_FMTBIT_S24_LE)
 
-/* slave port water mark level
- *   (0: 6bytes, 1: 9bytes, 2: 12 bytes, 3: 15 bytes)
- */
+ 
 #define SLAVE_PORT_WATER_MARK_6BYTES	0
 #define SLAVE_PORT_WATER_MARK_9BYTES	1
 #define SLAVE_PORT_WATER_MARK_12BYTES	2
@@ -55,11 +53,11 @@
 #define WCD934X_MCLK_CLK_12P288MHZ	12288000
 #define WCD934X_MCLK_CLK_9P6MHZ		9600000
 
-/* Only valid for 9.6 MHz mclk */
+ 
 #define WCD9XXX_DMIC_SAMPLE_RATE_2P4MHZ 2400000
 #define WCD9XXX_DMIC_SAMPLE_RATE_4P8MHZ 4800000
 
-/* Only valid for 12.288 MHz mclk */
+ 
 #define WCD9XXX_DMIC_SAMPLE_RATE_4P096MHZ 4096000
 
 #define WCD934X_DMIC_CLK_DIV_2		0x0
@@ -87,16 +85,14 @@
 #define WCD934X_SLIM_TX_CH(p) \
 	{.port = p, .shift = p,}
 
-/* Feature masks to distinguish codec version */
+ 
 #define DSD_DISABLED_MASK   0
 #define SLNQ_DISABLED_MASK  1
 
 #define DSD_DISABLED   BIT(DSD_DISABLED_MASK)
 #define SLNQ_DISABLED  BIT(SLNQ_DISABLED_MASK)
 
-/* As fine version info cannot be retrieved before wcd probe.
- * Define three coarse versions for possible future use before wcd probe.
- */
+ 
 #define WCD_VERSION_WCD9340_1_0     0x400
 #define WCD_VERSION_WCD9341_1_0     0x410
 #define WCD_VERSION_WCD9340_1_1     0x401
@@ -132,18 +128,18 @@
 	} \
 }
 
-/* Z value defined in milliohm */
+ 
 #define WCD934X_ZDET_VAL_32             32000
 #define WCD934X_ZDET_VAL_400            400000
 #define WCD934X_ZDET_VAL_1200           1200000
 #define WCD934X_ZDET_VAL_100K           100000000
-/* Z floating defined in ohms */
+ 
 #define WCD934X_ZDET_FLOATING_IMPEDANCE 0x0FFFFFFE
 
 #define WCD934X_ZDET_NUM_MEASUREMENTS   900
 #define WCD934X_MBHC_GET_C1(c)          ((c & 0xC000) >> 14)
 #define WCD934X_MBHC_GET_X1(x)          (x & 0x3FFF)
-/* Z value compared in milliOhm */
+ 
 #define WCD934X_MBHC_IS_SECOND_RAMP_REQUIRED(z) ((z > 400000) || (z < 32000))
 #define WCD934X_MBHC_ZDET_CONST         (86 * 16384)
 #define WCD934X_MBHC_MOISTURE_RREF      R_24_KOHM
@@ -319,10 +315,10 @@ enum {
 	INTERP_HPHR,
 	INTERP_LO1,
 	INTERP_LO2,
-	INTERP_LO3_NA, /* LO3 not avalible in Tavil */
+	INTERP_LO3_NA,  
 	INTERP_LO4_NA,
-	INTERP_SPKR1, /*INT7 WSA Speakers via soundwire */
-	INTERP_SPKR2, /*INT8 WSA Speakers via soundwire */
+	INTERP_SPKR1,  
+	INTERP_SPKR2,  
 	INTERP_MAX,
 };
 
@@ -390,8 +386,8 @@ static const struct wcd934x_slim_ch wcd934x_tx_chs[WCD934X_TX_MAX] = {
 };
 
 static const struct wcd934x_slim_ch wcd934x_rx_chs[WCD934X_RX_MAX] = {
-	WCD934X_SLIM_RX_CH(0),	 /* 16 */
-	WCD934X_SLIM_RX_CH(1),	 /* 17 */
+	WCD934X_SLIM_RX_CH(0),	  
+	WCD934X_SLIM_RX_CH(1),	  
 	WCD934X_SLIM_RX_CH(2),
 	WCD934X_SLIM_RX_CH(3),
 	WCD934X_SLIM_RX_CH(4),
@@ -405,14 +401,14 @@ static const struct wcd934x_slim_ch wcd934x_rx_chs[WCD934X_RX_MAX] = {
 	WCD934X_SLIM_RX_CH(12),
 };
 
-/* Codec supports 2 IIR filters */
+ 
 enum {
 	IIR0 = 0,
 	IIR1,
 	IIR_MAX,
 };
 
-/* Each IIR has 5 Filter Stages */
+ 
 enum {
 	BAND1 = 0,
 	BAND2,
@@ -423,14 +419,14 @@ enum {
 };
 
 enum {
-	COMPANDER_1, /* HPH_L */
-	COMPANDER_2, /* HPH_R */
-	COMPANDER_3, /* LO1_DIFF */
-	COMPANDER_4, /* LO2_DIFF */
-	COMPANDER_5, /* LO3_SE - not used in Tavil */
-	COMPANDER_6, /* LO4_SE - not used in Tavil */
-	COMPANDER_7, /* SWR SPK CH1 */
-	COMPANDER_8, /* SWR SPK CH2 */
+	COMPANDER_1,  
+	COMPANDER_2,  
+	COMPANDER_3,  
+	COMPANDER_4,  
+	COMPANDER_5,  
+	COMPANDER_6,  
+	COMPANDER_7,  
+	COMPANDER_8,  
 	COMPANDER_MAX,
 };
 
@@ -564,7 +560,7 @@ struct wcd934x_codec {
 	int comp_enabled[COMPANDER_MAX];
 	int sysclk_users;
 	struct mutex sysclk_mutex;
-	/* mbhc module */
+	 
 	struct wcd_mbhc *mbhc;
 	struct wcd_mbhc_config mbhc_cfg;
 	struct wcd_mbhc_intr intr_ids;
@@ -591,7 +587,7 @@ static const DECLARE_TLV_DB_SCALE(line_gain, 0, 7, 1);
 static const DECLARE_TLV_DB_SCALE(analog_gain, 0, 25, 1);
 static const DECLARE_TLV_DB_SCALE(ear_pa_gain, 0, 150, 0);
 
-/* Cutoff frequency for high pass filter */
+ 
 static const char * const cf_text[] = {
 	"CF_NEG_3DB_4HZ", "CF_NEG_3DB_75HZ", "CF_NEG_3DB_150HZ"
 };
@@ -1301,20 +1297,14 @@ static int wcd934x_enable_ana_bias_and_sysclk(struct wcd934x_codec *wcd)
 	regmap_update_bits(wcd->regmap, WCD934X_ANA_BIAS,
 			   WCD934X_ANA_PRECHRG_EN_MASK,
 			   WCD934X_ANA_PRECHRG_EN);
-	/*
-	 * 1ms delay is required after pre-charge is enabled
-	 * as per HW requirement
-	 */
+	 
 	usleep_range(1000, 1100);
 	regmap_update_bits(wcd->regmap, WCD934X_ANA_BIAS,
 			   WCD934X_ANA_PRECHRG_EN_MASK, 0);
 	regmap_update_bits(wcd->regmap, WCD934X_ANA_BIAS,
 			   WCD934X_ANA_PRECHRG_MODE_MASK, 0);
 
-	/*
-	 * In data clock contrl register is changed
-	 * to CLK_SYS_MCLK_PRG
-	 */
+	 
 
 	regmap_update_bits(wcd->regmap, WCD934X_CLK_SYS_MCLK_PRG,
 			   WCD934X_EXT_CLK_BUF_EN_MASK,
@@ -1337,10 +1327,7 @@ static int wcd934x_enable_ana_bias_and_sysclk(struct wcd934x_codec *wcd)
 			   WCD934X_MCLK_EN);
 	regmap_update_bits(wcd->regmap, WCD934X_CODEC_RPM_CLK_GATE,
 			   WCD934X_CODEC_RPM_CLK_GATE_MASK, 0x0);
-	/*
-	 * 10us sleep is required after clock is enabled
-	 * as per HW requirement
-	 */
+	 
 	usleep_range(10, 15);
 
 	wcd934x_set_sido_input_src(wcd, SIDO_SOURCE_RCO_BG);
@@ -1387,7 +1374,7 @@ static int __wcd934x_cdc_mclk_enable(struct wcd934x_codec *wcd, bool enable)
 		regmap_read(wcd->regmap, WCD934X_CDC_CLK_RST_CTRL_SWR_CONTROL,
 			    &val);
 
-		/* Don't disable clock if soundwire using it.*/
+		 
 		if (val & WCD934X_CDC_SWR_CLK_EN_MASK)
 			return 0;
 
@@ -1471,10 +1458,7 @@ static void wcd934x_enable_efuse_sensing(struct wcd934x_codec *wcd)
 			   WCD934X_CHIP_TIER_CTRL_EFUSE_CTL,
 			   WCD934X_EFUSE_SENSE_EN_MASK,
 			   WCD934X_EFUSE_SENSE_ENABLE);
-	/*
-	 * 5ms sleep required after enabling efuse control
-	 * before checking the status.
-	 */
+	 
 	usleep_range(5000, 5500);
 	wcd934x_set_sido_input_src(wcd, SIDO_SOURCE_RCO_BG);
 
@@ -1516,13 +1500,9 @@ static int wcd934x_set_prim_interpolator_rate(struct snd_soc_dai *dai,
 
 	list_for_each_entry(ch, &wcd->dai[dai->id].slim_ch_list, list) {
 		inp = ch->shift + INTn_1_INP_SEL_RX0;
-		/*
-		 * Loop through all interpolator MUX inputs and find out
-		 * to which interpolator input, the slim rx port
-		 * is connected
-		 */
+		 
 		for (j = 0; j < WCD934X_NUM_INTERPOLATORS; j++) {
-			/* Interpolators 5 and 6 are not aviliable in Tavil */
+			 
 			if (j == INTERP_LO3_NA || j == INTERP_LO4_NA)
 				continue;
 
@@ -1540,11 +1520,8 @@ static int wcd934x_set_prim_interpolator_rate(struct snd_soc_dai *dai,
 
 			if ((inp0_sel == inp) ||  (inp1_sel == inp) ||
 			    (inp2_sel == inp)) {
-				/* rate is in Hz */
-				/*
-				 * Ear and speaker primary path does not support
-				 * native sample rates
-				 */
+				 
+				 
 				if ((j == INTERP_EAR || j == INTERP_SPKR1 ||
 				     j == INTERP_SPKR2) && rate == 44100)
 					dev_err(wcd->dev,
@@ -1572,7 +1549,7 @@ static int wcd934x_set_mix_interpolator_rate(struct snd_soc_dai *dai,
 
 	list_for_each_entry(ch, &wcd->dai[dai->id].slim_ch_list, list) {
 		for (j = 0; j < WCD934X_NUM_INTERPOLATORS; j++) {
-			/* Interpolators 5 and 6 are not aviliable in Tavil */
+			 
 			if (j == INTERP_LO3_NA || j == INTERP_LO4_NA)
 				continue;
 			val = snd_soc_component_read(component,
@@ -1580,10 +1557,7 @@ static int wcd934x_set_mix_interpolator_rate(struct snd_soc_dai *dai,
 					WCD934X_CDC_RX_INP_MUX_RX_INT_SEL_MASK;
 
 			if (val == (ch->shift + INTn_2_INP_SEL_RX0)) {
-				/*
-				 * Ear mix path supports only 48, 96, 192,
-				 * 384KHz only
-				 */
+				 
 				if ((j == INTERP_EAR) &&
 				    (rate_val < 0x4 ||
 				     rate_val > 0x7)) {
@@ -1643,7 +1617,7 @@ static int wcd934x_set_decimator_rate(struct snd_soc_dai *dai,
 
 	list_for_each_entry(ch, &wcd->dai[dai->id].slim_ch_list, list) {
 		tx_port = ch->port;
-		/* Find the SB TX MUX input - which decimator is connected */
+		 
 		switch (tx_port) {
 		case 0 ...  3:
 			tx_port_reg = WCD934X_CDC_IF_ROUTER_TX_MUX_CFG0;
@@ -1726,7 +1700,7 @@ static int wcd934x_slim_set_hw_params(struct wcd934x_codec *wcd,
 	cfg->direction = direction;
 	cfg->port_mask = 0;
 
-	/* Configure slave interface device */
+	 
 	list_for_each_entry(ch, slim_ch_list, list) {
 		cfg->ch_count++;
 		payload |= 1 << ch->shift;
@@ -1741,7 +1715,7 @@ static int wcd934x_slim_set_hw_params(struct wcd934x_codec *wcd,
 	list_for_each_entry(ch, slim_ch_list, list) {
 		cfg->chs[i++] = ch->ch_num;
 		if (direction == SNDRV_PCM_STREAM_PLAYBACK) {
-			/* write to interface device */
+			 
 			ret = regmap_write(wcd->if_regmap,
 			   WCD934X_SLIM_PGD_RX_PORT_MULTI_CHNL_0(ch->port),
 			   payload);
@@ -1749,7 +1723,7 @@ static int wcd934x_slim_set_hw_params(struct wcd934x_codec *wcd,
 			if (ret < 0)
 				goto err;
 
-			/* configure the slave port for water mark and enable*/
+			 
 			ret = regmap_write(wcd->if_regmap,
 					WCD934X_SLIM_PGD_RX_PORT_CFG(ch->port),
 					WCD934X_SLIM_WATER_MARK_VAL);
@@ -1762,14 +1736,14 @@ static int wcd934x_slim_set_hw_params(struct wcd934x_codec *wcd,
 			if (ret < 0)
 				goto err;
 
-			/* ports 8,9 */
+			 
 			ret = regmap_write(wcd->if_regmap,
 				WCD934X_SLIM_PGD_TX_PORT_MULTI_CHNL_1(ch->port),
 				(payload & 0xFF00) >> 8);
 			if (ret < 0)
 				goto err;
 
-			/* configure the slave port for water mark and enable*/
+			 
 			ret = regmap_write(wcd->if_regmap,
 					WCD934X_SLIM_PGD_TX_PORT_CFG(ch->port),
 					WCD934X_SLIM_WATER_MARK_VAL);
@@ -2197,7 +2171,7 @@ static int wcd934x_get_micbias_val(struct device *dev, const char *micbias,
 		dev_err(dev, "%s value not found, using default\n", micbias);
 		mv = WCD934X_DEF_MICBIAS_MV;
 	} else {
-		/* convert it to milli volts */
+		 
 		mv = mv/1000;
 	}
 
@@ -2258,11 +2232,11 @@ static void wcd934x_hw_init(struct wcd934x_codec *wcd)
 {
 	struct regmap *rm = wcd->regmap;
 
-	/* set SPKR rate to FS_2P4_3P072 */
+	 
 	regmap_update_bits(rm, WCD934X_CDC_RX7_RX_PATH_CFG1, 0x08, 0x08);
 	regmap_update_bits(rm, WCD934X_CDC_RX8_RX_PATH_CFG1, 0x08, 0x08);
 
-	/* Take DMICs out of reset */
+	 
 	regmap_update_bits(rm, WCD934X_CPE_SS_DMIC_CFG, 0x80, 0x00);
 }
 
@@ -2404,7 +2378,7 @@ static bool wcd934x_mbhc_micb_en_status(struct snd_soc_component *component, int
 static void wcd934x_mbhc_hph_l_pull_up_control(struct snd_soc_component *component,
 					       enum mbhc_hs_pullup_iref pull_up_cur)
 {
-	/* Default pull up current to 2uA */
+	 
 	if (pull_up_cur < I_OFF || pull_up_cur > I_3P0_UA ||
 	    pull_up_cur == I_DEFAULT)
 		pull_up_cur = I_2P0_UA;
@@ -2541,7 +2515,7 @@ static void wcd934x_mbhc_micb_ramp_control(struct snd_soc_component *component,
 
 static int wcd934x_get_micb_vout_ctl_val(u32 micb_mv)
 {
-	/* min micbias voltage is 1V and maximum is 2.85V */
+	 
 	if (micb_mv < 1000 || micb_mv > 2850)
 		return -EINVAL;
 
@@ -2571,14 +2545,7 @@ static int wcd934x_mbhc_micb_adjust_voltage(struct snd_soc_component *component,
 		return -EINVAL;
 	}
 	mutex_lock(&wcd934x->micb_lock);
-	/*
-	 * If requested micbias voltage is same as current micbias
-	 * voltage, then just return. Otherwise, adjust voltage as
-	 * per requested value. If micbias is already enabled, then
-	 * to avoid slow micbias ramp-up or down enable pull-up
-	 * momentarily, change the micbias value and then re-enable
-	 * micbias.
-	 */
+	 
 	micb_en = snd_soc_component_read_field(component, micb_reg,
 						WCD934X_ANA_MICB_EN_MASK);
 	cur_vout_ctl = snd_soc_component_read_field(component, micb_reg,
@@ -2608,10 +2575,7 @@ static int wcd934x_mbhc_micb_adjust_voltage(struct snd_soc_component *component,
 		snd_soc_component_write_field(component, micb_reg,
 					      WCD934X_ANA_MICB_EN_MASK,
 					      WCD934X_MICB_ENABLE);
-		/*
-		 * Add 2ms delay as per HW requirement after enabling
-		 * micbias
-		 */
+		 
 		usleep_range(2000, 2100);
 	}
 exit:
@@ -2627,11 +2591,7 @@ static int wcd934x_mbhc_micb_ctrl_threshold_mic(struct snd_soc_component *compon
 
 	if (micb_num != MIC_BIAS_2)
 		return -EINVAL;
-	/*
-	 * If device tree micbias level is already above the minimum
-	 * voltage needed to detect threshold microphone, then do
-	 * not change the micbias, just return.
-	 */
+	 
 	if (wcd934x->micb2_mv >= WCD_MBHC_THR_HS_MICB_MV)
 		return 0;
 
@@ -2667,7 +2627,7 @@ static void wcd934x_mbhc_get_result_params(struct wcd934x_codec *wcd934x,
 	regmap_update_bits(wcd934x->regmap, WCD934X_ANA_MBHC_ZDET, 0x20, 0x00);
 	x1 = WCD934X_MBHC_GET_X1(val);
 	c1 = WCD934X_MBHC_GET_C1(val);
-	/* If ramp is not complete, give additional 5ms */
+	 
 	if ((c1 < 2) && x1)
 		usleep_range(5000, 5050);
 
@@ -2722,7 +2682,7 @@ static void wcd934x_mbhc_zdet_ramp(struct snd_soc_component *component,
 
 	if (!zl)
 		goto z_right;
-	/* Start impedance measurement for HPH_L */
+	 
 	regmap_update_bits(wcd934x->regmap, WCD934X_ANA_MBHC_ZDET, 0x80, 0x80);
 	wcd934x_mbhc_get_result_params(wcd934x, d1_a, zdet_param->noff, &zdet);
 	regmap_update_bits(wcd934x->regmap, WCD934X_ANA_MBHC_ZDET, 0x80, 0x00);
@@ -2732,7 +2692,7 @@ static void wcd934x_mbhc_zdet_ramp(struct snd_soc_component *component,
 z_right:
 	if (!zr)
 		return;
-	/* Start impedance measurement for HPH_R */
+	 
 	regmap_update_bits(wcd934x->regmap, WCD934X_ANA_MBHC_ZDET, 0x40, 0x40);
 	wcd934x_mbhc_get_result_params(wcd934x, d1_a, zdet_param->noff, &zdet);
 	regmap_update_bits(wcd934x->regmap, WCD934X_ANA_MBHC_ZDET, 0x40, 0x00);
@@ -2769,10 +2729,10 @@ static void wcd934x_wcd_mbhc_calc_impedance(struct snd_soc_component *component,
 	int zMono, z_diff1, z_diff2;
 	bool is_fsm_disable = false;
 	struct wcd934x_mbhc_zdet_param zdet_param[] = {
-		{4, 0, 4, 0x08, 0x14, 0x18}, /* < 32ohm */
-		{2, 0, 3, 0x18, 0x7C, 0x90}, /* 32ohm < Z < 400ohm */
-		{1, 4, 5, 0x18, 0x7C, 0x90}, /* 400ohm < Z < 1200ohm */
-		{1, 6, 7, 0x18, 0x7C, 0x90}, /* >1200ohm */
+		{4, 0, 4, 0x08, 0x14, 0x18},  
+		{2, 0, 3, 0x18, 0x7C, 0x90},  
+		{1, 4, 5, 0x18, 0x7C, 0x90},  
+		{1, 6, 7, 0x18, 0x7C, 0x90},  
 	};
 	struct wcd934x_mbhc_zdet_param *zdet_param_ptr = NULL;
 	s16 d1_a[][4] = {
@@ -2794,14 +2754,14 @@ static void wcd934x_wcd_mbhc_calc_impedance(struct snd_soc_component *component,
 		regmap_update_bits(wcd934x->regmap, WCD934X_ANA_MBHC_ELECT, 0x80, 0x00);
 	}
 
-	/* For NO-jack, disable L_DET_EN before Z-det measurements */
+	 
 	if (wcd934x->mbhc_cfg.hphl_swh)
 		regmap_update_bits(wcd934x->regmap, WCD934X_ANA_MBHC_MECH, 0x80, 0x00);
 
-	/* Turn off 100k pull down on HPHL */
+	 
 	regmap_update_bits(wcd934x->regmap, WCD934X_ANA_MBHC_MECH, 0x01, 0x00);
 
-	/* First get impedance on Left */
+	 
 	d1 = d1_a[1];
 	zdet_param_ptr = &zdet_param[1];
 	wcd934x_mbhc_zdet_ramp(component, zdet_param_ptr, &z1L, NULL, d1);
@@ -2809,7 +2769,7 @@ static void wcd934x_wcd_mbhc_calc_impedance(struct snd_soc_component *component,
 	if (!WCD934X_MBHC_IS_SECOND_RAMP_REQUIRED(z1L))
 		goto left_ch_impedance;
 
-	/* Second ramp for left ch */
+	 
 	if (z1L < WCD934X_ZDET_VAL_32) {
 		zdet_param_ptr = &zdet_param[0];
 		d1 = d1_a[0];
@@ -2836,14 +2796,14 @@ left_ch_impedance:
 	dev_info(component->dev, "%s: impedance on HPH_L = %d(ohms)\n",
 		__func__, *zl);
 
-	/* Start of right impedance ramp and calculation */
+	 
 	wcd934x_mbhc_zdet_ramp(component, zdet_param_ptr, NULL, &z1R, d1);
 	if (WCD934X_MBHC_IS_SECOND_RAMP_REQUIRED(z1R)) {
 		if (((z1R > WCD934X_ZDET_VAL_1200) &&
 			(zdet_param_ptr->noff == 0x6)) ||
 			((*zl) != WCD934X_ZDET_FLOATING_IMPEDANCE))
 			goto right_ch_impedance;
-		/* Second ramp for right ch */
+		 
 		if (z1R < WCD934X_ZDET_VAL_32) {
 			zdet_param_ptr = &zdet_param[0];
 			d1 = d1_a[0];
@@ -2868,7 +2828,7 @@ right_ch_impedance:
 	dev_err(component->dev, "%s: impedance on HPH_R = %d(ohms)\n",
 		__func__, *zr);
 
-	/* Mono/stereo detection */
+	 
 	if ((*zl == WCD934X_ZDET_FLOATING_IMPEDANCE) &&
 		(*zr == WCD934X_ZDET_FLOATING_IMPEDANCE)) {
 		dev_dbg(component->dev,
@@ -2900,7 +2860,7 @@ right_ch_impedance:
 				      WCD934X_HPHPA_GND_OVR_MASK, 0);
 	z1Ls /= 1000;
 	wcd934x_wcd_mbhc_qfuse_cal(component, &z1Ls, 0);
-	/* Parallel of left Z and 9 ohm pull down resistor */
+	 
 	zMono = ((*zl) * 9) / ((*zl) + 9);
 	z_diff1 = (z1Ls > zMono) ? (z1Ls - zMono) : (zMono - z1Ls);
 	z_diff2 = ((*zl) > z1Ls) ? ((*zl) - z1Ls) : (z1Ls - (*zl));
@@ -2918,10 +2878,10 @@ zdet_complete:
 	snd_soc_component_write(component, WCD934X_ANA_MBHC_BTN5, reg0);
 	snd_soc_component_write(component, WCD934X_ANA_MBHC_BTN6, reg1);
 	snd_soc_component_write(component, WCD934X_ANA_MBHC_BTN7, reg2);
-	/* Turn on 100k pull down on HPHL */
+	 
 	regmap_update_bits(wcd934x->regmap, WCD934X_ANA_MBHC_MECH, 0x01, 0x01);
 
-	/* For NO-jack, re-enable L_DET_EN after Z-det measurements */
+	 
 	if (wcd934x->mbhc_cfg.hphl_swh)
 		regmap_update_bits(wcd934x->regmap, WCD934X_ANA_MBHC_MECH, 0x80, 0x80);
 
@@ -3063,12 +3023,12 @@ static int wcd934x_comp_probe(struct snd_soc_component *component)
 	snd_soc_component_init_regmap(component, wcd->regmap);
 	wcd->component = component;
 
-	/* Class-H Init*/
+	 
 	wcd->clsh_ctrl = wcd_clsh_ctrl_alloc(component, wcd->version);
 	if (IS_ERR(wcd->clsh_ctrl))
 		return PTR_ERR(wcd->clsh_ctrl);
 
-	/* Default HPH Mode to Class-H Low HiFi */
+	 
 	wcd->hph_mode = CLS_H_LOHIFI;
 
 	wcd934x_comp_init(component);
@@ -3117,7 +3077,7 @@ static uint32_t get_iir_band_coeff(struct snd_soc_component *component,
 	u32 value = 0;
 	int reg, b2_reg;
 
-	/* Address does not automatically update if reading */
+	 
 	reg = WCD934X_CDC_SIDETONE_IIR0_IIR_COEF_B1_CTL + 16 * iir_idx;
 	b2_reg = WCD934X_CDC_SIDETONE_IIR0_IIR_COEF_B2_CTL + 16 * iir_idx;
 
@@ -3140,7 +3100,7 @@ static uint32_t get_iir_band_coeff(struct snd_soc_component *component,
 		((band_idx * BAND_MAX + coeff_idx)
 		* sizeof(uint32_t) + 3) & 0x7F);
 
-	/* Mask bits top 2 bits since they are reserved */
+	 
 	value |= (snd_soc_component_read(component, b2_reg) << 24);
 	return value;
 }
@@ -3153,7 +3113,7 @@ static void set_iir_band_coeff(struct snd_soc_component *component,
 	snd_soc_component_write(component, reg, (value & 0xFF));
 	snd_soc_component_write(component, reg, (value >> 8) & 0xFF);
 	snd_soc_component_write(component, reg, (value >> 16) & 0xFF);
-	/* Mask top 2 bits, 7-8 are reserved */
+	 
 	snd_soc_component_write(component, reg, (value >> 24) & 0x3F);
 }
 
@@ -3173,8 +3133,8 @@ static int wcd934x_put_iir_band_audio_mixer(
 
 	memcpy(&coeff[0], ucontrol->value.bytes.data, params->max);
 
-	/* Mask top bit it is reserved */
-	/* Updates addr automatically for each B2 write */
+	 
+	 
 	snd_soc_component_write(component, reg, (band_idx * BAND_MAX *
 						 sizeof(uint32_t)) & 0x7F);
 
@@ -3251,10 +3211,10 @@ static int wcd934x_compander_set(struct snd_kcontrol *kc,
 	sel = value ? WCD934X_HPH_GAIN_SRC_SEL_COMPANDER :
 		WCD934X_HPH_GAIN_SRC_SEL_REGISTER;
 
-	/* Any specific register configuration for compander */
+	 
 	switch (comp) {
 	case COMPANDER_1:
-		/* Set Gain Source Select based on compander enable/disable */
+		 
 		snd_soc_component_update_bits(component, WCD934X_HPH_L_EN,
 					      WCD934X_HPH_GAIN_SRC_SEL_MASK,
 					      sel);
@@ -3427,7 +3387,7 @@ static int wcd934x_int_dem_inp_mux_put(struct snd_kcontrol *kc,
 	else
 		return -EINVAL;
 
-	/* Set Look Ahead Delay */
+	 
 	if (val)
 		snd_soc_component_update_bits(component, reg,
 					      WCD934X_RX_DLY_ZN_EN_MASK,
@@ -3488,7 +3448,7 @@ static int wcd934x_dec_enum_put(struct snd_kcontrol *kcontrol,
 		return -EINVAL;
 	}
 
-	/* ADC: 0, DMIC: 1 */
+	 
 	mic_sel = val ? 0x0 : 0x1;
 	if (mic_sel_reg)
 		snd_soc_component_update_bits(comp, mic_sel_reg, BIT(7),
@@ -3852,7 +3812,7 @@ static int slim_tx_mixer_put(struct snd_kcontrol *kc,
 	int dai_id = widget->shift;
 	int port_id = mixer->shift;
 
-	/* only add to the list if value not set */
+	 
 	if (enable == wcd->tx_port_value[port_id])
 		return 0;
 
@@ -3972,7 +3932,7 @@ static const struct snd_kcontrol_new aif3_slim_cap_mixer[] = {
 };
 
 static const struct snd_kcontrol_new wcd934x_snd_controls[] = {
-	/* Gain Controls */
+	 
 	SOC_SINGLE_TLV("EAR PA Volume", WCD934X_ANA_EAR, 4, 4, 1, ear_pa_gain),
 	SOC_SINGLE_TLV("HPHL Volume", WCD934X_HPH_L_EN, 0, 24, 1, line_gain),
 	SOC_SINGLE_TLV("HPHR Volume", WCD934X_HPH_R_EN, 0, 24, 1, line_gain),
@@ -3987,7 +3947,7 @@ static const struct snd_kcontrol_new wcd934x_snd_controls[] = {
 	SOC_SINGLE_TLV("ADC4 Volume", WCD934X_ANA_AMIC4, 0, 20, 0, analog_gain),
 
 	SOC_SINGLE_S8_TLV("RX0 Digital Volume", WCD934X_CDC_RX0_RX_VOL_CTL,
-			  -84, 40, digital_gain), /* -84dB min - 40dB max */
+			  -84, 40, digital_gain),  
 	SOC_SINGLE_S8_TLV("RX1 Digital Volume", WCD934X_CDC_RX1_RX_VOL_CTL,
 			  -84, 40, digital_gain),
 	SOC_SINGLE_S8_TLV("RX2 Digital Volume", WCD934X_CDC_RX2_RX_VOL_CTL,
@@ -4262,7 +4222,7 @@ static int wcd934x_config_compander(struct snd_soc_component *comp,
 	int compander;
 	u16 comp_ctl0_reg, rx_path_cfg0_reg;
 
-	/* EAR does not have compander */
+	 
 	if (!interp_n)
 		return 0;
 
@@ -4275,7 +4235,7 @@ static int wcd934x_config_compander(struct snd_soc_component *comp,
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		/* Enable Compander Clock */
+		 
 		snd_soc_component_update_bits(comp, comp_ctl0_reg,
 					      WCD934X_COMP_CLK_EN_MASK,
 					      WCD934X_COMP_CLK_ENABLE);
@@ -4321,7 +4281,7 @@ static int wcd934x_codec_enable_interp_clk(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		/* Clk enable */
+		 
 		snd_soc_component_update_bits(comp, main_reg,
 					     WCD934X_RX_CLK_EN_MASK,
 					     WCD934X_RX_CLK_ENABLE);
@@ -4333,17 +4293,17 @@ static int wcd934x_codec_enable_interp_clk(struct snd_soc_dapm_widget *w,
 		wcd934x_config_compander(comp, interp_idx, event);
 		wcd934x_codec_hphdelay_lutbypass(comp, interp_idx, event);
 		wcd934x_codec_hd2_control(comp, interp_idx, event);
-		/* Clk Disable */
+		 
 		snd_soc_component_update_bits(comp, main_reg,
 					     WCD934X_RX_CLK_EN_MASK, 0);
-		/* Reset enable and disable */
+		 
 		snd_soc_component_update_bits(comp, main_reg,
 					      WCD934X_RX_RESET_MASK,
 					      WCD934X_RX_RESET_ENABLE);
 		snd_soc_component_update_bits(comp, main_reg,
 					      WCD934X_RX_RESET_MASK,
 					      WCD934X_RX_RESET_DISABLE);
-		/* Reset rate to 48K*/
+		 
 		snd_soc_component_update_bits(comp, main_reg,
 					      WCD934X_RX_PCM_RATE_MASK,
 					      WCD934X_RX_PCM_RATE_F_48K);
@@ -4368,7 +4328,7 @@ static int wcd934x_codec_enable_mix_path(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		/* Clk enable */
+		 
 		snd_soc_component_update_bits(comp, mix_reg,
 					      WCD934X_CDC_RX_MIX_CLK_EN_MASK,
 					      WCD934X_CDC_RX_MIX_CLK_ENABLE);
@@ -4392,22 +4352,22 @@ static int wcd934x_codec_set_iir_gain(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
-		/* B1 GAIN */
+		 
 		snd_soc_component_write(comp, reg,
 					snd_soc_component_read(comp, reg));
-		/* B2 GAIN */
+		 
 		reg++;
 		snd_soc_component_write(comp, reg,
 					snd_soc_component_read(comp, reg));
-		/* B3 GAIN */
+		 
 		reg++;
 		snd_soc_component_write(comp, reg,
 					snd_soc_component_read(comp, reg));
-		/* B4 GAIN */
+		 
 		reg++;
 		snd_soc_component_write(comp, reg,
 					snd_soc_component_read(comp, reg));
-		/* B5 GAIN */
+		 
 		reg++;
 		snd_soc_component_write(comp, reg,
 					snd_soc_component_read(comp, reg));
@@ -4446,7 +4406,7 @@ static int wcd934x_codec_ear_dac_event(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		/* Disable AutoChop timer during power up */
+		 
 		snd_soc_component_update_bits(comp,
 				      WCD934X_HPH_NEW_INT_HPH_TIMER1,
 				      WCD934X_HPH_AUTOCHOP_TIMER_EN_MASK, 0x0);
@@ -4474,7 +4434,7 @@ static int wcd934x_codec_hphl_dac_event(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		/* Read DEM INP Select */
+		 
 		dem_inp = snd_soc_component_read(comp,
 				   WCD934X_CDC_RX1_RX_PATH_SEC0) & 0x03;
 
@@ -4483,12 +4443,12 @@ static int wcd934x_codec_hphl_dac_event(struct snd_soc_dapm_widget *w,
 			return -EINVAL;
 		}
 		if (hph_mode != CLS_H_LP)
-			/* Ripple freq control enable */
+			 
 			snd_soc_component_update_bits(comp,
 					WCD934X_SIDO_NEW_VOUT_D_FREQ2,
 					WCD934X_SIDO_RIPPLE_FREQ_EN_MASK,
 					WCD934X_SIDO_RIPPLE_FREQ_ENABLE);
-		/* Disable AutoChop timer during power up */
+		 
 		snd_soc_component_update_bits(comp,
 				      WCD934X_HPH_NEW_INT_HPH_TIMER1,
 				      WCD934X_HPH_AUTOCHOP_TIMER_EN_MASK, 0x0);
@@ -4497,12 +4457,12 @@ static int wcd934x_codec_hphl_dac_event(struct snd_soc_dapm_widget *w,
 
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/* 1000us required as per HW requirement */
+		 
 		usleep_range(1000, 1100);
 		wcd_clsh_ctrl_set_state(wcd->clsh_ctrl, WCD_CLSH_EVENT_POST_PA,
 					WCD_CLSH_STATE_HPHL, hph_mode);
 		if (hph_mode != CLS_H_LP)
-			/* Ripple freq control disable */
+			 
 			snd_soc_component_update_bits(comp,
 					WCD934X_SIDO_NEW_VOUT_D_FREQ2,
 					WCD934X_SIDO_RIPPLE_FREQ_EN_MASK, 0x0);
@@ -4533,12 +4493,12 @@ static int wcd934x_codec_hphr_dac_event(struct snd_soc_dapm_widget *w,
 			return -EINVAL;
 		}
 		if (hph_mode != CLS_H_LP)
-			/* Ripple freq control enable */
+			 
 			snd_soc_component_update_bits(comp,
 					WCD934X_SIDO_NEW_VOUT_D_FREQ2,
 					WCD934X_SIDO_RIPPLE_FREQ_EN_MASK,
 					WCD934X_SIDO_RIPPLE_FREQ_ENABLE);
-		/* Disable AutoChop timer during power up */
+		 
 		snd_soc_component_update_bits(comp,
 				      WCD934X_HPH_NEW_INT_HPH_TIMER1,
 				      WCD934X_HPH_AUTOCHOP_TIMER_EN_MASK, 0x0);
@@ -4547,13 +4507,13 @@ static int wcd934x_codec_hphr_dac_event(struct snd_soc_dapm_widget *w,
 			     hph_mode);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/* 1000us required as per HW requirement */
+		 
 		usleep_range(1000, 1100);
 
 		wcd_clsh_ctrl_set_state(wcd->clsh_ctrl, WCD_CLSH_EVENT_POST_PA,
 					WCD_CLSH_STATE_HPHR, hph_mode);
 		if (hph_mode != CLS_H_LP)
-			/* Ripple freq control disable */
+			 
 			snd_soc_component_update_bits(comp,
 					WCD934X_SIDO_NEW_VOUT_D_FREQ2,
 					WCD934X_SIDO_RIPPLE_FREQ_EN_MASK, 0x0);
@@ -4594,37 +4554,33 @@ static int wcd934x_codec_enable_hphl_pa(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
-		/*
-		 * 7ms sleep is required after PA is enabled as per
-		 * HW requirement. If compander is disabled, then
-		 * 20ms delay is needed.
-		 */
+		 
 		usleep_range(20000, 20100);
 
 		snd_soc_component_update_bits(comp, WCD934X_HPH_L_TEST,
 					      WCD934X_HPH_OCP_DET_MASK,
 					      WCD934X_HPH_OCP_DET_ENABLE);
-		/* Remove Mute on primary path */
+		 
 		snd_soc_component_update_bits(comp, WCD934X_CDC_RX1_RX_PATH_CTL,
 				      WCD934X_RX_PATH_PGA_MUTE_EN_MASK,
 				      0);
-		/* Enable GM3 boost */
+		 
 		snd_soc_component_update_bits(comp, WCD934X_HPH_CNP_WG_CTL,
 					      WCD934X_HPH_GM3_BOOST_EN_MASK,
 					      WCD934X_HPH_GM3_BOOST_ENABLE);
-		/* Enable AutoChop timer at the end of power up */
+		 
 		snd_soc_component_update_bits(comp,
 				      WCD934X_HPH_NEW_INT_HPH_TIMER1,
 				      WCD934X_HPH_AUTOCHOP_TIMER_EN_MASK,
 				      WCD934X_HPH_AUTOCHOP_TIMER_ENABLE);
-		/* Remove mix path mute */
+		 
 		snd_soc_component_update_bits(comp,
 				WCD934X_CDC_RX1_RX_PATH_MIX_CTL,
 				WCD934X_CDC_RX_PGA_MUTE_EN_MASK, 0x00);
 		break;
 	case SND_SOC_DAPM_PRE_PMD:
 		wcd_mbhc_event_notify(wcd->mbhc, WCD_EVENT_POST_HPHL_PA_OFF);
-		/* Enable DSD Mute before PA disable */
+		 
 		snd_soc_component_update_bits(comp, WCD934X_HPH_L_TEST,
 					      WCD934X_HPH_OCP_DET_MASK,
 					      WCD934X_HPH_OCP_DET_DISABLE);
@@ -4637,10 +4593,7 @@ static int wcd934x_codec_enable_hphl_pa(struct snd_soc_dapm_widget *w,
 					      WCD934X_RX_PATH_PGA_MUTE_ENABLE);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/*
-		 * 5ms sleep is required after PA disable. If compander is
-		 * disabled, then 20ms delay is needed after PA disable.
-		 */
+		 
 		usleep_range(20000, 20100);
 		wcd_mbhc_event_notify(wcd->mbhc, WCD_EVENT_POST_HPHL_PA_OFF);
 		break;
@@ -4658,29 +4611,25 @@ static int wcd934x_codec_enable_hphr_pa(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
-		/*
-		 * 7ms sleep is required after PA is enabled as per
-		 * HW requirement. If compander is disabled, then
-		 * 20ms delay is needed.
-		 */
+		 
 		usleep_range(20000, 20100);
 		snd_soc_component_update_bits(comp, WCD934X_HPH_R_TEST,
 					      WCD934X_HPH_OCP_DET_MASK,
 					      WCD934X_HPH_OCP_DET_ENABLE);
-		/* Remove mute */
+		 
 		snd_soc_component_update_bits(comp, WCD934X_CDC_RX2_RX_PATH_CTL,
 					      WCD934X_RX_PATH_PGA_MUTE_EN_MASK,
 					      0);
-		/* Enable GM3 boost */
+		 
 		snd_soc_component_update_bits(comp, WCD934X_HPH_CNP_WG_CTL,
 					      WCD934X_HPH_GM3_BOOST_EN_MASK,
 					      WCD934X_HPH_GM3_BOOST_ENABLE);
-		/* Enable AutoChop timer at the end of power up */
+		 
 		snd_soc_component_update_bits(comp,
 				      WCD934X_HPH_NEW_INT_HPH_TIMER1,
 				      WCD934X_HPH_AUTOCHOP_TIMER_EN_MASK,
 				      WCD934X_HPH_AUTOCHOP_TIMER_ENABLE);
-		/* Remove mix path mute if it is enabled */
+		 
 		if ((snd_soc_component_read(comp,
 				      WCD934X_CDC_RX2_RX_PATH_MIX_CTL)) & 0x10)
 			snd_soc_component_update_bits(comp,
@@ -4702,10 +4651,7 @@ static int wcd934x_codec_enable_hphr_pa(struct snd_soc_dapm_widget *w,
 					      WCD934X_CDC_RX_PGA_MUTE_ENABLE);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/*
-		 * 5ms sleep is required after PA disable. If compander is
-		 * disabled, then 20ms delay is needed after PA disable.
-		 */
+		 
 		usleep_range(20000, 20100);
 		wcd_mbhc_event_notify(wcd->mbhc, WCD_EVENT_POST_HPHR_PA_OFF);
 		break;
@@ -4766,7 +4712,7 @@ static u8 wcd934x_get_dmic_clk_val(struct snd_soc_component *comp,
 	u32 div_factor;
 	u8 dmic_ctl_val;
 
-	/* Default value to return in case of error */
+	 
 	if (mclk_rate == WCD934X_MCLK_CLK_9P6MHZ)
 		dmic_ctl_val = WCD934X_DMIC_CLK_DIV_2;
 	else
@@ -5067,16 +5013,13 @@ static int wcd934x_codec_enable_dec(struct snd_soc_dapm_widget *w,
 			snd_soc_component_update_bits(comp, hpf_gate_reg,
 				      WCD934X_HPH_CUTOFF_FREQ_CHANGE_REQ_MASK,
 				      WCD934X_HPH_CUTOFF_FREQ_CHANGE_REQ);
-			/*
-			 * Minimum 1 clk cycle delay is required as per
-			 * HW spec.
-			 */
+			 
 			usleep_range(1000, 1010);
 			snd_soc_component_update_bits(comp, hpf_gate_reg,
 				      WCD934X_HPH_CUTOFF_FREQ_CHANGE_REQ_MASK,
 				      0);
 		}
-		/* apply gain after decimator is enabled */
+		 
 		snd_soc_component_write(comp, tx_gain_ctl_reg,
 					snd_soc_component_read(comp,
 							 tx_gain_ctl_reg));
@@ -5092,10 +5035,7 @@ static int wcd934x_codec_enable_dec(struct snd_soc_dapm_widget *w,
 			snd_soc_component_update_bits(comp, hpf_gate_reg,
 				      WCD934X_HPH_CUTOFF_FREQ_CHANGE_REQ_MASK,
 				      WCD934X_HPH_CUTOFF_FREQ_CHANGE_REQ);
-				/*
-				 * Minimum 1 clk cycle delay is required as per
-				 * HW spec.
-				 */
+				 
 			usleep_range(1000, 1010);
 			snd_soc_component_update_bits(comp, hpf_gate_reg,
 				      WCD934X_HPH_CUTOFF_FREQ_CHANGE_REQ_MASK,
@@ -5171,7 +5111,7 @@ static int wcd934x_codec_enable_micbias(struct snd_soc_dapm_widget *w,
 		wcd934x_micbias_control(component, micb_num, MICB_ENABLE, true);
 		break;
 	case SND_SOC_DAPM_POST_PMU:
-		/* 1 msec delay as per HW requirement */
+		 
 		usleep_range(1000, 1100);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
@@ -5183,7 +5123,7 @@ static int wcd934x_codec_enable_micbias(struct snd_soc_dapm_widget *w,
 }
 
 static const struct snd_soc_dapm_widget wcd934x_dapm_widgets[] = {
-	/* Analog Outputs */
+	 
 	SND_SOC_DAPM_OUTPUT("EAR"),
 	SND_SOC_DAPM_OUTPUT("HPHL"),
 	SND_SOC_DAPM_OUTPUT("HPHR"),
@@ -5519,7 +5459,7 @@ static const struct snd_soc_dapm_widget wcd934x_dapm_widgets[] = {
 			    wcd934x_codec_enable_mclk,
 			    SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
 
-	/* TX */
+	 
 	SND_SOC_DAPM_INPUT("AMIC1"),
 	SND_SOC_DAPM_INPUT("AMIC2"),
 	SND_SOC_DAPM_INPUT("AMIC3"),
@@ -5556,7 +5496,7 @@ static const struct snd_soc_dapm_widget wcd934x_dapm_widgets[] = {
 	SND_SOC_DAPM_MIXER("SLIM TX11", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("SLIM TX13", SND_SOC_NOPM, 0, 0, NULL, 0),
 
-	/* Digital Mic Inputs */
+	 
 	SND_SOC_DAPM_ADC_E("DMIC0", NULL, SND_SOC_NOPM, 0, 0,
 			   wcd934x_codec_enable_dmic,
 			   SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
@@ -5693,7 +5633,7 @@ static const struct snd_soc_dapm_widget wcd934x_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route wcd934x_audio_map[] = {
-	/* RX0-RX7 */
+	 
 	WCD934X_SLIM_RX_AIF_PATH(0),
 	WCD934X_SLIM_RX_AIF_PATH(1),
 	WCD934X_SLIM_RX_AIF_PATH(2),
@@ -5703,7 +5643,7 @@ static const struct snd_soc_dapm_route wcd934x_audio_map[] = {
 	WCD934X_SLIM_RX_AIF_PATH(6),
 	WCD934X_SLIM_RX_AIF_PATH(7),
 
-	/* RX0 Ear out */
+	 
 	WCD934X_INTERPOLATOR_PATH(0),
 	WCD934X_INTERPOLATOR_MIX2(0),
 	{"RX INT0 DEM MUX", "CLSH_DSM_OUT", "RX INT0 MIX2"},
@@ -5712,7 +5652,7 @@ static const struct snd_soc_dapm_route wcd934x_audio_map[] = {
 	{"EAR PA", NULL, "RX INT0 DAC"},
 	{"EAR", NULL, "EAR PA"},
 
-	/* RX1 Headphone left */
+	 
 	WCD934X_INTERPOLATOR_PATH(1),
 	WCD934X_INTERPOLATOR_MIX2(1),
 	{"RX INT1 MIX3", NULL, "RX INT1 MIX2"},
@@ -5722,7 +5662,7 @@ static const struct snd_soc_dapm_route wcd934x_audio_map[] = {
 	{"HPHL PA", NULL, "RX INT1 DAC"},
 	{"HPHL", NULL, "HPHL PA"},
 
-	/* RX2 Headphone right */
+	 
 	WCD934X_INTERPOLATOR_PATH(2),
 	WCD934X_INTERPOLATOR_MIX2(2),
 	{"RX INT2 MIX3", NULL, "RX INT2 MIX2"},
@@ -5732,7 +5672,7 @@ static const struct snd_soc_dapm_route wcd934x_audio_map[] = {
 	{"HPHR PA", NULL, "RX INT2 DAC"},
 	{"HPHR", NULL, "HPHR PA"},
 
-	/* RX3 HIFi LineOut1 */
+	 
 	WCD934X_INTERPOLATOR_PATH(3),
 	WCD934X_INTERPOLATOR_MIX2(3),
 	{"RX INT3 MIX3", NULL, "RX INT3 MIX2"},
@@ -5741,7 +5681,7 @@ static const struct snd_soc_dapm_route wcd934x_audio_map[] = {
 	{"LINEOUT1 PA", NULL, "RX INT3 DAC"},
 	{"LINEOUT1", NULL, "LINEOUT1 PA"},
 
-	/* RX4 HIFi LineOut2 */
+	 
 	WCD934X_INTERPOLATOR_PATH(4),
 	WCD934X_INTERPOLATOR_MIX2(4),
 	{"RX INT4 MIX3", NULL, "RX INT4 MIX2"},
@@ -5750,7 +5690,7 @@ static const struct snd_soc_dapm_route wcd934x_audio_map[] = {
 	{"LINEOUT2 PA", NULL, "RX INT4 DAC"},
 	{"LINEOUT2", NULL, "LINEOUT2 PA"},
 
-	/* RX7 Speaker Left Out PA */
+	 
 	WCD934X_INTERPOLATOR_PATH(7),
 	WCD934X_INTERPOLATOR_MIX2(7),
 	{"RX INT7 CHAIN", NULL, "RX INT7 MIX2"},
@@ -5759,7 +5699,7 @@ static const struct snd_soc_dapm_route wcd934x_audio_map[] = {
 	{"RX INT7 CHAIN", NULL, "SBOOST0_CLK"},
 	{"SPK1 OUT", NULL, "RX INT7 CHAIN"},
 
-	/* RX8 Speaker Right Out PA */
+	 
 	WCD934X_INTERPOLATOR_PATH(8),
 	{"RX INT8 CHAIN", NULL, "RX INT8 SEC MIX"},
 	{"RX INT8 CHAIN", NULL, "RX_BIAS"},
@@ -5767,7 +5707,7 @@ static const struct snd_soc_dapm_route wcd934x_audio_map[] = {
 	{"RX INT8 CHAIN", NULL, "SBOOST1_CLK"},
 	{"SPK2 OUT", NULL, "RX INT8 CHAIN"},
 
-	/* Tx */
+	 
 	{"AIF1 CAP", NULL, "AIF1_CAP Mixer"},
 	{"AIF2 CAP", NULL, "AIF2_CAP Mixer"},
 	{"AIF3 CAP", NULL, "AIF3_CAP Mixer"},
@@ -5926,7 +5866,7 @@ static int wcd934x_codec_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* set default rate 9P6MHz */
+	 
 	regmap_update_bits(wcd->regmap, WCD934X_CODEC_RPM_CLK_MCLK_CFG,
 			   WCD934X_CODEC_RPM_CLK_MCLK_CFG_MCLK_MASK,
 			   WCD934X_CODEC_RPM_CLK_MCLK_CFG_9P6MHZ);

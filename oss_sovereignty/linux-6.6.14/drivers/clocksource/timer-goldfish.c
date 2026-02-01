@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/interrupt.h>
 #include <linux/ioport.h>
@@ -33,10 +33,7 @@ static u64 goldfish_timer_read(struct clocksource *cs)
 	u32 time_low, time_high;
 	u64 ticks;
 
-	/*
-	 * time_low: get low bits of current time and update time_high
-	 * time_high: get high bits of time at last time_low read
-	 */
+	 
 	time_low = gf_ioread32(base + TIMER_TIME_LOW);
 	time_high = gf_ioread32(base + TIMER_TIME_HIGH);
 

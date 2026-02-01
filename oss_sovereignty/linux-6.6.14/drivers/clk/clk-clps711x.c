@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Cirrus Logic CLPS711X CLK driver
- *
- *  Copyright (C) 2014 Alexander Shiyan <shc_work@mail.ru>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/clkdev.h>
@@ -28,13 +24,13 @@ static const struct clk_div_table spi_div_table[] = {
 	{ .val = 1, .div = 8, },
 	{ .val = 2, .div = 2, },
 	{ .val = 3, .div = 1, },
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct clk_div_table timer_div_table[] = {
 	{ .val = 0, .div = 256, },
 	{ .val = 1, .div = 1, },
-	{ /* sentinel */ }
+	{   }
 };
 
 struct clps711x_clk {
@@ -60,7 +56,7 @@ static void __init clps711x_clk_init_dt(struct device_node *np)
 
 	spin_lock_init(&clps711x_clk->lock);
 
-	/* Read PLL multiplier value and sanity check */
+	 
 	tmp = readl(base + CLPS711X_PLLR) >> 24;
 	if (((tmp >= 10) && (tmp <= 50)) || !fref)
 		f_pll = DIV_ROUND_UP(CLPS711X_OSC_FREQ * tmp, 2);
@@ -93,15 +89,9 @@ static void __init clps711x_clk_init_dt(struct device_node *np)
 		f_tim = DIV_ROUND_CLOSEST(f_cpu, 144);
 
 	tmp = readl(base + CLPS711X_SYSCON1);
-	/* Timer1 in free running mode.
-	 * Counter will wrap around to 0xffff when it underflows
-	 * and will continue to count down.
-	 */
+	 
 	tmp &= ~(SYSCON1_TC1M | SYSCON1_TC1S);
-	/* Timer2 in prescale mode.
-	 * Value writen is automatically re-loaded when
-	 * the counter underflows.
-	 */
+	 
 	tmp |= SYSCON1_TC2M | SYSCON1_TC2S;
 	writel(tmp, base + CLPS711X_SYSCON1);
 

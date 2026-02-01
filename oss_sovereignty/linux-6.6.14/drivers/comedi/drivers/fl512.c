@@ -1,32 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * fl512.c
- * Anders Gnistrup <ex18@kalman.iau.dtu.dk>
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 2000 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Driver: fl512
- * Description: unknown
- * Author: Anders Gnistrup <ex18@kalman.iau.dtu.dk>
- * Devices: [unknown] FL512 (fl512)
- * Status: unknown
- *
- * Digital I/O is not supported.
- *
- * Configuration options:
- *   [0] - I/O port base address
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/comedi/comedidev.h>
 #include <linux/delay.h>
 
-/*
- * Register I/O map
- */
+ 
 #define FL512_AI_LSB_REG		0x02
 #define FL512_AI_MSB_REG		0x03
 #define FL512_AI_MUX_REG		0x02
@@ -60,7 +41,7 @@ static int fl512_ai_insn_read(struct comedi_device *dev,
 	for (i = 0; i < insn->n; i++) {
 		outb(0, dev->iobase + FL512_AI_START_CONV_REG);
 
-		/* XXX should test "done" flag instead of delay */
+		 
 		usleep_range(30, 100);
 
 		val = inb(dev->iobase + FL512_AI_LSB_REG);
@@ -85,7 +66,7 @@ static int fl512_ao_insn_write(struct comedi_device *dev,
 	for (i = 0; i < insn->n; i++) {
 		val = data[i];
 
-		/* write LSB, MSB then trigger conversion */
+		 
 		outb(val & 0x0ff, dev->iobase + FL512_AO_DATA_REG(chan));
 		outb((val >> 8) & 0xf, dev->iobase + FL512_AO_DATA_REG(chan));
 		inb(dev->iobase + FL512_AO_TRIG_REG(chan));
@@ -108,7 +89,7 @@ static int fl512_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	if (ret)
 		return ret;
 
-	/* Analog Input subdevice */
+	 
 	s = &dev->subdevices[0];
 	s->type		= COMEDI_SUBD_AI;
 	s->subdev_flags	= SDF_READABLE | SDF_GROUND;
@@ -117,7 +98,7 @@ static int fl512_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	s->range_table	= &range_fl512;
 	s->insn_read	= fl512_ai_insn_read;
 
-	/* Analog Output subdevice */
+	 
 	s = &dev->subdevices[1];
 	s->type		= COMEDI_SUBD_AO;
 	s->subdev_flags	= SDF_WRITABLE;

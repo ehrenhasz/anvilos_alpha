@@ -1,35 +1,6 @@
-/****************************************************************************
- * Copyright 2019-2020,2021 Thomas E. Dickey                                *
- * Copyright 1998-2011,2012 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Thomas E. Dickey                                                *
- ****************************************************************************/
+ 
 
 #include <curses.priv.h>
 
@@ -80,9 +51,7 @@ _nc_rootname(char *path)
     return result;
 }
 
-/*
- * Check if a string appears to be an absolute pathname.
- */
+ 
 NCURSES_EXPORT(bool)
 _nc_is_abs_path(const char *path)
 {
@@ -95,9 +64,7 @@ _nc_is_abs_path(const char *path)
     return is_pathname(path);
 }
 
-/*
- * Return index of the basename
- */
+ 
 NCURSES_EXPORT(unsigned)
 _nc_pathlast(const char *path)
 {
@@ -199,15 +166,12 @@ _nc_is_file_path(const char *path)
 	    setfsgid(getegid()); \
 	    errno = save_err
 #else
-#define lower_privileges()	/* nothing */
-#define resume_elevation()	/* nothing */
+#define lower_privileges()	 
+#define resume_elevation()	 
 #endif
 
 #ifndef USE_ROOT_ENVIRON
-/*
- * Returns true if we allow application to use environment variables that are
- * used for searching lists of directories, etc.
- */
+ 
 NCURSES_EXPORT(int)
 _nc_env_access(void)
 {
@@ -220,12 +184,10 @@ _nc_env_access(void)
     }
     return result;
 }
-#endif /* USE_ROOT_ENVIRON */
+#endif  
 
 #ifndef USE_ROOT_ACCESS
-/*
- * Limit privileges if possible; otherwise disallow access for updating files.
- */
+ 
 NCURSES_EXPORT(FILE *)
 _nc_safe_fopen(const char *path, const char *mode)
 {
@@ -257,4 +219,4 @@ _nc_safe_open3(const char *path, int flags, mode_t mode)
 #endif
     return result;
 }
-#endif /* USE_ROOT_ENVIRON */
+#endif  

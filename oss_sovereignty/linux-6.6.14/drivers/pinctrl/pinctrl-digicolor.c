@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Driver for Conexant Digicolor General Purpose Pin Mapping
- *
- * Author: Baruch Siach <baruch@tkos.co.il>
- *
- * Copyright (C) 2015 Paradox Innovation Ltd.
- *
- * TODO:
- * - GPIO interrupt support
- * - Pin pad configuration (pull up/down, strength)
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/init.h>
@@ -59,7 +49,7 @@ static const char *dc_get_group_name(struct pinctrl_dev *pctldev,
 {
 	struct dc_pinmap *pmap = pinctrl_dev_get_drvdata(pctldev);
 
-	/* Exactly one group per pin */
+	 
 	return pmap->desc->pins[selector].name;
 }
 
@@ -330,7 +320,7 @@ static int dc_pinctrl_probe(struct platform_device *pdev)
 
 static const struct of_device_id dc_pinctrl_ids[] = {
 	{ .compatible = "cnxt,cx92755-pinctrl" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver dc_pinctrl_driver = {

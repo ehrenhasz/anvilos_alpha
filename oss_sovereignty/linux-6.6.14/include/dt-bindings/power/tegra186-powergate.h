@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2015-2016, NVIDIA CORPORATION.  All rights reserved.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_POWER_TEGRA186_POWERGATE_H
 #define _DT_BINDINGS_POWER_TEGRA186_POWERGATE_H

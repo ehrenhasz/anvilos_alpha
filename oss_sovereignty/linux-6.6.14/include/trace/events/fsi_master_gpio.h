@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM fsi_master_gpio
@@ -166,6 +166,6 @@ TRACE_EVENT(fsi_master_gpio_cmd_same_addr,
 		__entry->master_idx)
 );
 
-#endif /* _TRACE_FSI_MASTER_GPIO_H */
+#endif  
 
 #include <trace/define_trace.h>

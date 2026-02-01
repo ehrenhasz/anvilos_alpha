@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
-    hwmon.h - part of lm_sensors, Linux kernel modules for hardware monitoring
-
-    This file declares helper functions for the sysfs class "hwmon",
-    for use by sensors drivers.
-
-    Copyright (C) 2005 Mark M. Hoffman <mhoffman@lightlink.com>
-
-*/
+ 
+ 
 
 #ifndef _HWMON_H_
 #define _HWMON_H_
@@ -358,51 +350,7 @@ enum hwmon_intrusion_attributes {
 #define HWMON_INTRUSION_ALARM		BIT(hwmon_intrusion_alarm)
 #define HWMON_INTRUSION_BEEP		BIT(hwmon_intrusion_beep)
 
-/**
- * struct hwmon_ops - hwmon device operations
- * @is_visible: Callback to return attribute visibility. Mandatory.
- *		Parameters are:
- *		@const void *drvdata:
- *			Pointer to driver-private data structure passed
- *			as argument to hwmon_device_register_with_info().
- *		@type:	Sensor type
- *		@attr:	Sensor attribute
- *		@channel:
- *			Channel number
- *		The function returns the file permissions.
- *		If the return value is 0, no attribute will be created.
- * @read:	Read callback for data attributes. Mandatory if readable
- *		data attributes are present.
- *		Parameters are:
- *		@dev:	Pointer to hardware monitoring device
- *		@type:	Sensor type
- *		@attr:	Sensor attribute
- *		@channel:
- *			Channel number
- *		@val:	Pointer to returned value
- *		The function returns 0 on success or a negative error number.
- * @read_string:
- *		Read callback for string attributes. Mandatory if string
- *		attributes are present.
- *		Parameters are:
- *		@dev:	Pointer to hardware monitoring device
- *		@type:	Sensor type
- *		@attr:	Sensor attribute
- *		@channel:
- *			Channel number
- *		@str:	Pointer to returned string
- *		The function returns 0 on success or a negative error number.
- * @write:	Write callback for data attributes. Mandatory if writeable
- *		data attributes are present.
- *		Parameters are:
- *		@dev:	Pointer to hardware monitoring device
- *		@type:	Sensor type
- *		@attr:	Sensor attribute
- *		@channel:
- *			Channel number
- *		@val:	Value to write
- *		The function returns 0 on success or a negative error number.
- */
+ 
 struct hwmon_ops {
 	umode_t (*is_visible)(const void *drvdata, enum hwmon_sensor_types type,
 			      u32 attr, int channel);
@@ -414,12 +362,7 @@ struct hwmon_ops {
 		     u32 attr, int channel, long val);
 };
 
-/**
- * struct hwmon_channel_info - Channel information
- * @type:	Channel type.
- * @config:	Pointer to NULL-terminated list of channel parameters.
- *		Use for per-channel attributes.
- */
+ 
 struct hwmon_channel_info {
 	enum hwmon_sensor_types type;
 	const u32 *config;
@@ -433,23 +376,16 @@ struct hwmon_channel_info {
 		}			\
 	})
 
-/**
- * struct hwmon_chip_info - Chip configuration
- * @ops:	Pointer to hwmon operations.
- * @info:	Null-terminated list of channel information.
- */
+ 
 struct hwmon_chip_info {
 	const struct hwmon_ops *ops;
 	const struct hwmon_channel_info * const *info;
 };
 
-/* hwmon_device_register() is deprecated */
+ 
 struct device *hwmon_device_register(struct device *dev);
 
-/*
- * hwmon_device_register_with_groups() and
- * devm_hwmon_device_register_with_groups() are deprecated.
- */
+ 
 struct device *
 hwmon_device_register_with_groups(struct device *dev, const char *name,
 				  void *drvdata,
@@ -481,15 +417,7 @@ int hwmon_notify_event(struct device *dev, enum hwmon_sensor_types type,
 char *hwmon_sanitize_name(const char *name);
 char *devm_hwmon_sanitize_name(struct device *dev, const char *name);
 
-/**
- * hwmon_is_bad_char - Is the char invalid in a hwmon name
- * @ch: the char to be considered
- *
- * hwmon_is_bad_char() can be used to determine if the given character
- * may not be used in a hwmon name.
- *
- * Returns true if the char is invalid, false otherwise.
- */
+ 
 static inline bool hwmon_is_bad_char(const char ch)
 {
 	switch (ch) {

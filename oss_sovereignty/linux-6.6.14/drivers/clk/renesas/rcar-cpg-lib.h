@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * R-Car Gen3 Clock Pulse Generator Library
- *
- * Copyright (C) 2015-2018 Glider bvba
- * Copyright (C) 2019 Renesas Electronics Corp.
- *
- * Based on clk-rcar-gen3.c
- *
- * Copyright (C) 2015 Renesas Electronics Corp.
- */
+ 
+ 
 
 #ifndef __CLK_RENESAS_RCAR_CPG_LIB_H__
 #define __CLK_RENESAS_RCAR_CPG_LIB_H__

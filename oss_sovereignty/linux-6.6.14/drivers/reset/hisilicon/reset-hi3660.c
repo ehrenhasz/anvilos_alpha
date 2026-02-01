@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2016-2017 Linaro Ltd.
- * Copyright (c) 2016-2017 HiSilicon Technologies Co., Ltd.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/mfd/syscon.h>
 #include <linux/module.h>
@@ -85,7 +82,7 @@ static int hi3660_reset_probe(struct platform_device *pdev)
 
 	rc->map = syscon_regmap_lookup_by_phandle(np, "hisilicon,rst-syscon");
 	if (rc->map == ERR_PTR(-ENODEV)) {
-		/* fall back to the deprecated compatible */
+		 
 		rc->map = syscon_regmap_lookup_by_phandle(np,
 							  "hisi,rst-syscon");
 	}

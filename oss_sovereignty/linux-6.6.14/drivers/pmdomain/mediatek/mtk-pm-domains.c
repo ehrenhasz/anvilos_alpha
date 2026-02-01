@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2020 Collabora Ltd.
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
 #include <linux/init.h>
@@ -70,7 +68,7 @@ static bool scpsys_domain_is_on(struct scpsys_domain *pd)
 	regmap_read(scpsys->base, pd->data->pwr_sta2nd_offs, &status2);
 	status2 &= pd->data->sta_mask;
 
-	/* A domain is on when both status bits are set. */
+	 
 	return status && status2;
 }
 
@@ -83,7 +81,7 @@ static int scpsys_sram_enable(struct scpsys_domain *pd)
 
 	regmap_clear_bits(scpsys->base, pd->data->ctl_offs, pd->data->sram_pdn_bits);
 
-	/* Either wait until SRAM_PDN_ACK all 1 or 0 */
+	 
 	ret = regmap_read_poll_timeout(scpsys->base, pd->data->ctl_offs, tmp,
 				       (tmp & pdn_ack) == 0, MTK_POLL_DELAY_US, MTK_POLL_TIMEOUT);
 	if (ret < 0)
@@ -112,7 +110,7 @@ static int scpsys_sram_disable(struct scpsys_domain *pd)
 
 	regmap_set_bits(scpsys->base, pd->data->ctl_offs, pd->data->sram_pdn_bits);
 
-	/* Either wait until SRAM_PDN_ACK all 1 or 0 */
+	 
 	return regmap_read_poll_timeout(scpsys->base, pd->data->ctl_offs, tmp,
 					(tmp & pdn_ack) == pdn_ack, MTK_POLL_DELAY_US,
 					MTK_POLL_TIMEOUT);
@@ -223,11 +221,11 @@ static int scpsys_power_on(struct generic_pm_domain *genpd)
 		regmap_clear_bits(scpsys->base, pd->data->ext_buck_iso_offs,
 				  pd->data->ext_buck_iso_mask);
 
-	/* subsys power on */
+	 
 	regmap_set_bits(scpsys->base, pd->data->ctl_offs, PWR_ON_BIT);
 	regmap_set_bits(scpsys->base, pd->data->ctl_offs, PWR_ON_2ND_BIT);
 
-	/* wait until PWR_ACK = 1 */
+	 
 	ret = readx_poll_timeout(scpsys_domain_is_on, pd, tmp, tmp, MTK_POLL_DELAY_US,
 				 MTK_POLL_TIMEOUT);
 	if (ret < 0)
@@ -283,14 +281,14 @@ static int scpsys_power_off(struct generic_pm_domain *genpd)
 
 	clk_bulk_disable_unprepare(pd->num_subsys_clks, pd->subsys_clks);
 
-	/* subsys power off */
+	 
 	regmap_set_bits(scpsys->base, pd->data->ctl_offs, PWR_ISO_BIT);
 	regmap_set_bits(scpsys->base, pd->data->ctl_offs, PWR_CLK_DIS_BIT);
 	regmap_clear_bits(scpsys->base, pd->data->ctl_offs, PWR_RST_B_BIT);
 	regmap_clear_bits(scpsys->base, pd->data->ctl_offs, PWR_ON_2ND_BIT);
 	regmap_clear_bits(scpsys->base, pd->data->ctl_offs, PWR_ON_BIT);
 
-	/* wait until PWR_ACK = 0 */
+	 
 	ret = readx_poll_timeout(scpsys_domain_is_on, pd, tmp, !tmp, MTK_POLL_DELAY_US,
 				 MTK_POLL_TIMEOUT);
 	if (ret < 0)
@@ -343,13 +341,7 @@ generic_pm_domain *scpsys_add_one_domain(struct scpsys *scpsys, struct device_no
 	pd->scpsys = scpsys;
 
 	if (MTK_SCPD_CAPS(pd, MTK_SCPD_DOMAIN_SUPPLY)) {
-		/*
-		 * Find regulator in current power domain node.
-		 * devm_regulator_get() finds regulator in a node and its child
-		 * node, so set of_node to current power domain node then change
-		 * back to original node after regulator is found for current
-		 * power domain node.
-		 */
+		 
 		scpsys->dev->of_node = node;
 		pd->supply = devm_regulator_get(scpsys->dev, "domain");
 		scpsys->dev->of_node = root_node;
@@ -375,7 +367,7 @@ generic_pm_domain *scpsys_add_one_domain(struct scpsys *scpsys, struct device_no
 
 	num_clks = of_clk_get_parent_count(node);
 	if (num_clks > 0) {
-		/* Calculate number of subsys_clks */
+		 
 		of_property_for_each_string(node, "clock-names", prop, clk_name) {
 			char *subsys;
 
@@ -422,12 +414,7 @@ generic_pm_domain *scpsys_add_one_domain(struct scpsys *scpsys, struct device_no
 		pd->subsys_clks[i].clk = clk;
 	}
 
-	/*
-	 * Initially turn on all domains to make the domains usable
-	 * with !CONFIG_PM and to get the hardware in sync with the
-	 * software.  The unused domains will be switched off during
-	 * late_init time.
-	 */
+	 
 	if (MTK_SCPD_CAPS(pd, MTK_SCPD_KEEP_DEFAULT_OFF)) {
 		if (scpsys_domain_is_on(pd))
 			dev_warn(scpsys->dev,
@@ -518,7 +505,7 @@ static int scpsys_add_subdomain(struct scpsys *scpsys, struct device_node *paren
 				child_pd->name);
 		}
 
-		/* recursive call to add all subdomains */
+		 
 		ret = scpsys_add_subdomain(scpsys, child);
 		if (ret)
 			goto err_put_node;
@@ -538,10 +525,7 @@ static void scpsys_remove_one_domain(struct scpsys_domain *pd)
 	if (scpsys_domain_is_on(pd))
 		scpsys_power_off(&pd->genpd);
 
-	/*
-	 * We're in the error cleanup already, so we only complain,
-	 * but won't emit another error on top of the original one.
-	 */
+	 
 	ret = pm_genpd_remove(&pd->genpd);
 	if (ret < 0)
 		dev_err(pd->scpsys->dev,

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 1991, 1992  Linus Torvalds
- *
- *  Added support for a Unix98-style ptmx device.
- *    -- C. Scott Ananian <cananian@alumni.princeton.edu>, 14-Jan-1998
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/errno.h>
@@ -60,7 +54,7 @@ static void pty_close(struct tty_struct *tty, struct file *filp)
 	spin_lock_irq(&tty->ctrl.lock);
 	tty->ctrl.packet = false;
 	spin_unlock_irq(&tty->ctrl.lock);
-	/* Review - krefs on tty_link ?? */
+	 
 	if (!tty->link)
 		return;
 	set_bit(TTY_OTHER_CLOSED, &tty->link->flags);
@@ -80,33 +74,14 @@ static void pty_close(struct tty_struct *tty, struct file *filp)
 	}
 }
 
-/*
- * The unthrottle routine is called by the line discipline to signal
- * that it can receive more characters.  For PTY's, the TTY_THROTTLED
- * flag is always set, to force the line discipline to always call the
- * unthrottle routine when there are fewer than TTY_THRESHOLD_UNTHROTTLE
- * characters in the queue.  This is necessary since each time this
- * happens, we need to wake up any sleeping processes that could be
- * (1) trying to send data to the pty, or (2) waiting in wait_until_sent()
- * for the pty buffer to be drained.
- */
+ 
 static void pty_unthrottle(struct tty_struct *tty)
 {
 	tty_wakeup(tty->link);
 	set_bit(TTY_THROTTLED, &tty->flags);
 }
 
-/**
- *	pty_write		-	write to a pty
- *	@tty: the tty we write from
- *	@buf: kernel buffer of data
- *	@c: bytes to write
- *
- *	Our "hardware" write method. Data is coming from the ldisc which
- *	may be in a non sleeping state. We simply throw this at the other
- *	end of the link as if we were an IRQ handler receiving stuff for
- *	the other side of the pty/tty pair.
- */
+ 
 
 static ssize_t pty_write(struct tty_struct *tty, const u8 *buf, size_t c)
 {
@@ -118,13 +93,7 @@ static ssize_t pty_write(struct tty_struct *tty, const u8 *buf, size_t c)
 	return tty_insert_flip_string_and_push_buffer(to->port, buf, c);
 }
 
-/**
- *	pty_write_room	-	write space
- *	@tty: tty we are writing from
- *
- *	Report how many bytes the ldisc can send into the queue for
- *	the other device.
- */
+ 
 
 static unsigned int pty_write_room(struct tty_struct *tty)
 {
@@ -133,7 +102,7 @@ static unsigned int pty_write_room(struct tty_struct *tty)
 	return tty_buffer_space_avail(tty->link->port);
 }
 
-/* Set the lock flag on a pty */
+ 
 static int pty_set_lock(struct tty_struct *tty, int __user *arg)
 {
 	int val;
@@ -154,7 +123,7 @@ static int pty_get_lock(struct tty_struct *tty, int __user *arg)
 	return put_user(locked, arg);
 }
 
-/* Set the packet mode on a pty */
+ 
 static int pty_set_pktmode(struct tty_struct *tty, int __user *arg)
 {
 	int pktmode;
@@ -176,7 +145,7 @@ static int pty_set_pktmode(struct tty_struct *tty, int __user *arg)
 	return 0;
 }
 
-/* Get the packet mode of a pty */
+ 
 static int pty_get_pktmode(struct tty_struct *tty, int __user *arg)
 {
 	int pktmode = tty->ctrl.packet;
@@ -184,7 +153,7 @@ static int pty_get_pktmode(struct tty_struct *tty, int __user *arg)
 	return put_user(pktmode, arg);
 }
 
-/* Send a signal to the slave */
+ 
 static int pty_signal(struct tty_struct *tty, int sig)
 {
 	struct pid *pgrp;
@@ -242,7 +211,7 @@ out:
 static void pty_set_termios(struct tty_struct *tty,
 			    const struct ktermios *old_termios)
 {
-	/* See if packet mode change of state. */
+	 
 	if (tty->link && tty->link->ctrl.packet) {
 		int extproc = (old_termios->c_lflag & EXTPROC) | L_EXTPROC(tty);
 		int old_flow = ((old_termios->c_iflag & IXON) &&
@@ -271,26 +240,19 @@ static void pty_set_termios(struct tty_struct *tty,
 	tty->termios.c_cflag |= (CS8 | CREAD);
 }
 
-/**
- *	pty_resize		-	resize event
- *	@tty: tty being resized
- *	@ws: window size being set.
- *
- *	Update the termios variables and send the necessary signals to
- *	peform a terminal resize correctly
- */
+ 
 
 static int pty_resize(struct tty_struct *tty,  struct winsize *ws)
 {
 	struct pid *pgrp, *rpgrp;
 	struct tty_struct *pty = tty->link;
 
-	/* For a PTY we need to lock the tty side */
+	 
 	mutex_lock(&tty->winsize_mutex);
 	if (!memcmp(ws, &tty->winsize, sizeof(*ws)))
 		goto done;
 
-	/* Signal the foreground process group of both ptys */
+	 
 	pgrp = tty_get_pgrp(tty);
 	rpgrp = tty_get_pgrp(pty);
 
@@ -303,22 +265,13 @@ static int pty_resize(struct tty_struct *tty,  struct winsize *ws)
 	put_pid(rpgrp);
 
 	tty->winsize = *ws;
-	pty->winsize = *ws;	/* Never used so will go away soon */
+	pty->winsize = *ws;	 
 done:
 	mutex_unlock(&tty->winsize_mutex);
 	return 0;
 }
 
-/**
- *	pty_start - start() handler
- *	pty_stop  - stop() handler
- *	@tty: tty being flow-controlled
- *
- *	Propagates the TIOCPKT status to the master pty.
- *
- *	NB: only the master pty can be in packet mode so only the slave
- *	    needs start()/stop() handlers
- */
+ 
 static void pty_start(struct tty_struct *tty)
 {
 	unsigned long flags;
@@ -345,17 +298,7 @@ static void pty_stop(struct tty_struct *tty)
 	}
 }
 
-/**
- *	pty_common_install		-	set up the pty pair
- *	@driver: the pty driver
- *	@tty: the tty being instantiated
- *	@legacy: true if this is BSD style
- *
- *	Perform the initial set up for the tty/pty pair. Called from the
- *	tty layer when the port is first opened.
- *
- *	Locking: the caller must hold the tty_mutex
- */
+ 
 static int pty_common_install(struct tty_driver *driver, struct tty_struct *tty,
 		bool legacy)
 {
@@ -364,7 +307,7 @@ static int pty_common_install(struct tty_driver *driver, struct tty_struct *tty,
 	int idx = tty->index;
 	int retval = -ENOMEM;
 
-	/* Opening the slave first has always returned -EIO */
+	 
 	if (driver->subtype != PTY_TYPE_MASTER)
 		return -EIO;
 
@@ -373,7 +316,7 @@ static int pty_common_install(struct tty_driver *driver, struct tty_struct *tty,
 	if (!ports[0] || !ports[1])
 		goto err;
 	if (!try_module_get(driver->other->owner)) {
-		/* This cannot in fact currently happen */
+		 
 		goto err;
 	}
 	o_tty = alloc_tty_struct(driver->other, idx);
@@ -384,8 +327,7 @@ static int pty_common_install(struct tty_driver *driver, struct tty_struct *tty,
 	lockdep_set_subclass(&o_tty->termios_rwsem, TTY_LOCK_SLAVE);
 
 	if (legacy) {
-		/* We always use new tty termios data so we can do this
-		   the easy way .. */
+		 
 		tty_init_termios(tty);
 		tty_init_termios(o_tty);
 
@@ -398,11 +340,9 @@ static int pty_common_install(struct tty_driver *driver, struct tty_struct *tty,
 		o_tty->termios = driver->other->init_termios;
 	}
 
-	/*
-	 * Everything allocated ... set up the o_tty structure.
-	 */
+	 
 	tty_driver_kref_get(driver->other);
-	/* Establish the links in both directions */
+	 
 	tty->link   = o_tty;
 	o_tty->link = tty;
 	tty_port_init(ports[0]);
@@ -433,7 +373,7 @@ static void pty_cleanup(struct tty_struct *tty)
 	tty_port_put(tty->port);
 }
 
-/* Traditional BSD devices */
+ 
 #ifdef CONFIG_LEGACY_PTYS
 
 static int pty_install(struct tty_driver *driver, struct tty_struct *tty)
@@ -454,17 +394,17 @@ static int pty_bsd_ioctl(struct tty_struct *tty,
 			 unsigned int cmd, unsigned long arg)
 {
 	switch (cmd) {
-	case TIOCSPTLCK: /* Set PT Lock (disallow slave open) */
+	case TIOCSPTLCK:  
 		return pty_set_lock(tty, (int __user *) arg);
-	case TIOCGPTLCK: /* Get PT Lock status */
+	case TIOCGPTLCK:  
 		return pty_get_lock(tty, (int __user *)arg);
-	case TIOCPKT: /* Set PT packet mode */
+	case TIOCPKT:  
 		return pty_set_pktmode(tty, (int __user *)arg);
-	case TIOCGPKT: /* Get PT packet mode */
+	case TIOCGPKT:  
 		return pty_get_pktmode(tty, (int __user *)arg);
-	case TIOCSIG:    /* Send signal to other side of pty */
+	case TIOCSIG:     
 		return pty_signal(tty, (int) arg);
-	case TIOCGPTN: /* TTY returns ENOTTY, but glibc expects EINVAL here */
+	case TIOCGPTN:  
 		return -EINVAL;
 	}
 	return -ENOIOCTLCMD;
@@ -474,10 +414,7 @@ static int pty_bsd_ioctl(struct tty_struct *tty,
 static long pty_bsd_compat_ioctl(struct tty_struct *tty,
 				 unsigned int cmd, unsigned long arg)
 {
-	/*
-	 * PTY ioctls don't require any special translation between 32-bit and
-	 * 64-bit userspace, they are already compatible.
-	 */
+	 
 	return pty_bsd_ioctl(tty, cmd, (unsigned long)compat_ptr(arg));
 }
 #else
@@ -485,16 +422,10 @@ static long pty_bsd_compat_ioctl(struct tty_struct *tty,
 #endif
 
 static int legacy_count = CONFIG_LEGACY_PTY_COUNT;
-/*
- * not really modular, but the easiest way to keep compat with existing
- * bootargs behaviour is to continue using module_param here.
- */
+ 
 module_param(legacy_count, int, 0);
 
-/*
- * The master side of a pty can do TIOCSPTLCK and thus
- * has pty_bsd_ioctl.
- */
+ 
 static const struct tty_operations master_pty_ops_bsd = {
 	.install = pty_install,
 	.open = pty_open,
@@ -585,20 +516,11 @@ static void __init legacy_pty_init(void)
 static inline void legacy_pty_init(void) { }
 #endif
 
-/* Unix98 devices */
+ 
 #ifdef CONFIG_UNIX98_PTYS
 static struct cdev ptmx_cdev;
 
-/**
- *	ptm_open_peer - open the peer of a pty
- *	@master: the open struct file of the ptmx device node
- *	@tty: the master of the pty being opened
- *	@flags: the flags for open
- *
- *	Provide a race free way for userspace to open the slave end of a pty
- *	(where they have the master fd and cannot access or trust the mount
- *	namespace /dev/pts was mounted inside).
- */
+ 
 int ptm_open_peer(struct file *master, struct tty_struct *tty, int flags)
 {
 	int fd;
@@ -615,7 +537,7 @@ int ptm_open_peer(struct file *master, struct tty_struct *tty, int flags)
 		goto err;
 	}
 
-	/* Compute the slave's path */
+	 
 	path.mnt = devpts_mntget(master, tty->driver_data);
 	if (IS_ERR(path.mnt)) {
 		retval = PTR_ERR(path.mnt);
@@ -643,17 +565,17 @@ static int pty_unix98_ioctl(struct tty_struct *tty,
 			    unsigned int cmd, unsigned long arg)
 {
 	switch (cmd) {
-	case TIOCSPTLCK: /* Set PT Lock (disallow slave open) */
+	case TIOCSPTLCK:  
 		return pty_set_lock(tty, (int __user *)arg);
-	case TIOCGPTLCK: /* Get PT Lock status */
+	case TIOCGPTLCK:  
 		return pty_get_lock(tty, (int __user *)arg);
-	case TIOCPKT: /* Set PT packet mode */
+	case TIOCPKT:  
 		return pty_set_pktmode(tty, (int __user *)arg);
-	case TIOCGPKT: /* Get PT packet mode */
+	case TIOCGPKT:  
 		return pty_get_pktmode(tty, (int __user *)arg);
-	case TIOCGPTN: /* Get PT Number */
+	case TIOCGPTN:  
 		return put_user(tty->index, (unsigned int __user *)arg);
-	case TIOCSIG:    /* Send signal to other side of pty */
+	case TIOCSIG:     
 		return pty_signal(tty, (int) arg);
 	}
 
@@ -664,10 +586,7 @@ static int pty_unix98_ioctl(struct tty_struct *tty,
 static long pty_unix98_compat_ioctl(struct tty_struct *tty,
 				 unsigned int cmd, unsigned long arg)
 {
-	/*
-	 * PTY ioctls don't require any special translation between 32-bit and
-	 * 64-bit userspace, they are already compatible.
-	 */
+	 
 	return pty_unix98_ioctl(tty, cmd,
 		cmd == TIOCSIG ? arg : (unsigned long)compat_ptr(arg));
 }
@@ -675,32 +594,16 @@ static long pty_unix98_compat_ioctl(struct tty_struct *tty,
 #define pty_unix98_compat_ioctl NULL
 #endif
 
-/**
- *	ptm_unix98_lookup	-	find a pty master
- *	@driver: ptm driver
- *	@file: unused
- *	@idx: tty index
- *
- *	Look up a pty master device. Called under the tty_mutex for now.
- *	This provides our locking.
- */
+ 
 
 static struct tty_struct *ptm_unix98_lookup(struct tty_driver *driver,
 		struct file *file, int idx)
 {
-	/* Master must be open via /dev/ptmx */
+	 
 	return ERR_PTR(-EIO);
 }
 
-/**
- *	pts_unix98_lookup	-	find a pty slave
- *	@driver: pts driver
- *	@file: file pointer to tty
- *	@idx: tty index
- *
- *	Look up a pty master device. Called under the tty_mutex for now.
- *	This provides our locking for the tty pointer.
- */
+ 
 
 static struct tty_struct *pts_unix98_lookup(struct tty_driver *driver,
 		struct file *file, int idx)
@@ -710,7 +613,7 @@ static struct tty_struct *pts_unix98_lookup(struct tty_driver *driver,
 	mutex_lock(&devpts_mutex);
 	tty = devpts_get_priv(file->f_path.dentry);
 	mutex_unlock(&devpts_mutex);
-	/* Master must be open before slave */
+	 
 	if (!tty)
 		return ERR_PTR(-EIO);
 	return tty;
@@ -721,7 +624,7 @@ static int pty_unix98_install(struct tty_driver *driver, struct tty_struct *tty)
 	return pty_common_install(driver, tty, false);
 }
 
-/* this is called once with whichever end is closed last */
+ 
 static void pty_unix98_remove(struct tty_driver *driver, struct tty_struct *tty)
 {
 	struct pts_fs_info *fsi;
@@ -775,17 +678,7 @@ static const struct tty_operations pty_unix98_ops = {
 	.cleanup = pty_cleanup,
 };
 
-/**
- *	ptmx_open		-	open a unix 98 pty master
- *	@inode: inode of device file
- *	@filp: file pointer to tty
- *
- *	Allocate a unix98 pty master device from the ptmx driver.
- *
- *	Locking: tty_mutex protects the init_dev work. tty->count should
- *		protect the rest.
- *		allocated_ptys_lock handles the list of free pty numbers
- */
+ 
 
 static int ptmx_open(struct inode *inode, struct file *filp)
 {
@@ -797,7 +690,7 @@ static int ptmx_open(struct inode *inode, struct file *filp)
 
 	nonseekable_open(inode, filp);
 
-	/* We refuse fsnotify events on ptmx, since it's a shared resource */
+	 
 	filp->f_mode |= FMODE_NONOTIFY;
 
 	retval = tty_alloc_file(filp);
@@ -810,7 +703,7 @@ static int ptmx_open(struct inode *inode, struct file *filp)
 		goto out_free_file;
 	}
 
-	/* find a device that is not in use. */
+	 
 	mutex_lock(&devpts_mutex);
 	index = devpts_new_index(fsi);
 	mutex_unlock(&devpts_mutex);
@@ -822,19 +715,15 @@ static int ptmx_open(struct inode *inode, struct file *filp)
 
 	mutex_lock(&tty_mutex);
 	tty = tty_init_dev(ptm_driver, index);
-	/* The tty returned here is locked so we can safely
-	   drop the mutex */
+	 
 	mutex_unlock(&tty_mutex);
 
 	retval = PTR_ERR(tty);
 	if (IS_ERR(tty))
 		goto out;
 
-	/*
-	 * From here on out, the tty is "live", and the index and
-	 * fsi will be killed/put by the tty_release()
-	 */
-	set_bit(TTY_PTY_LOCK, &tty->flags); /* LOCK THE SLAVE */
+	 
+	set_bit(TTY_PTY_LOCK, &tty->flags);  
 	tty->driver_data = fsi;
 
 	tty_add_file(tty, filp);
@@ -856,7 +745,7 @@ static int ptmx_open(struct inode *inode, struct file *filp)
 	return 0;
 err_release:
 	tty_unlock(tty);
-	// This will also put-ref the fsi
+	 
 	tty_release(inode, filp);
 	return retval;
 out:
@@ -923,7 +812,7 @@ static void __init unix98_pty_init(void)
 	if (tty_register_driver(pts_driver))
 		panic("Couldn't register Unix98 pts driver");
 
-	/* Now create the /dev/ptmx special device */
+	 
 	tty_default_fops(&ptmx_fops);
 	ptmx_fops.open = ptmx_open;
 

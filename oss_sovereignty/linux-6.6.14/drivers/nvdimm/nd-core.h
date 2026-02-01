@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2013-2015 Intel Corporation. All rights reserved.
- */
+ 
+ 
 #ifndef __ND_CORE_H__
 #define __ND_CORE_H__
 #include <linux/libnvdimm.h>
@@ -61,7 +59,7 @@ static inline unsigned long nvdimm_security_flags(
 		return 0;
 
 	flags = nvdimm->sec.ops->get_flags(nvdimm, ptype);
-	/* disabled, locked, unlocked, and overwrite are mutually exclusive */
+	 
 	dev_WARN_ONCE(&nvdimm->dev, hweight64(flags & state_flags) > 1,
 			"reported invalid security state: %#llx\n",
 			(unsigned long long) flags);
@@ -162,4 +160,4 @@ static inline void devm_nsio_disable(struct device *dev,
 {
 }
 #endif
-#endif /* __ND_CORE_H__ */
+#endif  

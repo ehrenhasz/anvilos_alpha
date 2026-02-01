@@ -1,17 +1,4 @@
-/*
- * SMI (Serial Memory Controller) device driver for Serial NOR Flash on
- * SPEAr platform
- * The serial nor interface is largely based on m25p80.c, however the SPI
- * interface has been replaced by SMI.
- *
- * Copyright © 2010 STMicroelectronics.
- * Ashish Priyadarshi
- * Shiraz Hashim <shiraz.linux.kernel@gmail.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -37,62 +24,62 @@
 #include <linux/of.h>
 #include <linux/of_address.h>
 
-/* SMI clock rate */
-#define SMI_MAX_CLOCK_FREQ	50000000 /* 50 MHz */
+ 
+#define SMI_MAX_CLOCK_FREQ	50000000  
 
-/* MAX time out to safely come out of a erase or write busy conditions */
+ 
 #define SMI_PROBE_TIMEOUT	(HZ / 10)
 #define SMI_MAX_TIME_OUT	(3 * HZ)
 
-/* timeout for command completion */
+ 
 #define SMI_CMD_TIMEOUT		(HZ / 10)
 
-/* registers of smi */
-#define SMI_CR1		0x0	/* SMI control register 1 */
-#define SMI_CR2		0x4	/* SMI control register 2 */
-#define SMI_SR		0x8	/* SMI status register */
-#define SMI_TR		0xC	/* SMI transmit register */
-#define SMI_RR		0x10	/* SMI receive register */
+ 
+#define SMI_CR1		0x0	 
+#define SMI_CR2		0x4	 
+#define SMI_SR		0x8	 
+#define SMI_TR		0xC	 
+#define SMI_RR		0x10	 
 
-/* defines for control_reg 1 */
-#define BANK_EN		(0xF << 0)	/* enables all banks */
-#define DSEL_TIME	(0x6 << 4)	/* Deselect time 6 + 1 SMI_CK periods */
-#define SW_MODE		(0x1 << 28)	/* enables SW Mode */
-#define WB_MODE		(0x1 << 29)	/* Write Burst Mode */
-#define FAST_MODE	(0x1 << 15)	/* Fast Mode */
-#define HOLD1		(0x1 << 16)	/* Clock Hold period selection */
+ 
+#define BANK_EN		(0xF << 0)	 
+#define DSEL_TIME	(0x6 << 4)	 
+#define SW_MODE		(0x1 << 28)	 
+#define WB_MODE		(0x1 << 29)	 
+#define FAST_MODE	(0x1 << 15)	 
+#define HOLD1		(0x1 << 16)	 
 
-/* defines for control_reg 2 */
-#define SEND		(0x1 << 7)	/* Send data */
-#define TFIE		(0x1 << 8)	/* Transmission Flag Interrupt Enable */
-#define WCIE		(0x1 << 9)	/* Write Complete Interrupt Enable */
-#define RD_STATUS_REG	(0x1 << 10)	/* reads status reg */
-#define WE		(0x1 << 11)	/* Write Enable */
+ 
+#define SEND		(0x1 << 7)	 
+#define TFIE		(0x1 << 8)	 
+#define WCIE		(0x1 << 9)	 
+#define RD_STATUS_REG	(0x1 << 10)	 
+#define WE		(0x1 << 11)	 
 
 #define TX_LEN_SHIFT	0
 #define RX_LEN_SHIFT	4
 #define BANK_SHIFT	12
 
-/* defines for status register */
-#define SR_WIP		0x1	/* Write in progress */
-#define SR_WEL		0x2	/* Write enable latch */
-#define SR_BP0		0x4	/* Block protect 0 */
-#define SR_BP1		0x8	/* Block protect 1 */
-#define SR_BP2		0x10	/* Block protect 2 */
-#define SR_SRWD		0x80	/* SR write protect */
-#define TFF		0x100	/* Transfer Finished Flag */
-#define WCF		0x200	/* Transfer Finished Flag */
-#define ERF1		0x400	/* Forbidden Write Request */
-#define ERF2		0x800	/* Forbidden Access */
+ 
+#define SR_WIP		0x1	 
+#define SR_WEL		0x2	 
+#define SR_BP0		0x4	 
+#define SR_BP1		0x8	 
+#define SR_BP2		0x10	 
+#define SR_SRWD		0x80	 
+#define TFF		0x100	 
+#define WCF		0x200	 
+#define ERF1		0x400	 
+#define ERF2		0x800	 
 
 #define WM_SHIFT	12
 
-/* flash opcodes */
-#define OPCODE_RDID	0x9f	/* Read JEDEC ID */
+ 
+#define OPCODE_RDID	0x9f	 
 
-/* Flash Device Ids maintenance section */
+ 
 
-/* data structure to maintain flash ids from different vendors */
+ 
 struct flash_device {
 	char *name;
 	u8 erase_cmd;
@@ -149,23 +136,11 @@ static struct flash_device flash_devices[] = {
 	FLASH_ID("mac 25l6405"   , 0xd8, 0x001720C2, 0x100, 0x10000, 0x800000),
 };
 
-/* Define spear specific structures */
+ 
 
 struct spear_snor_flash;
 
-/**
- * struct spear_smi - Structure for SMI Device
- *
- * @clk: functional clock
- * @status: current status register of SMI.
- * @clk_rate: functional clock rate of SMI (default: SMI_MAX_CLOCK_FREQ)
- * @lock: lock to prevent parallel access of SMI.
- * @io_base: base address for registers of SMI.
- * @pdev: platform device
- * @cmd_complete: queue to wait for command completion of NOR-flash.
- * @num_flashes: number of flashes actually present on board.
- * @flash: separate structure for each Serial NOR-flash attached to SMI.
- */
+ 
 struct spear_smi {
 	struct clk *clk;
 	u32 status;
@@ -178,20 +153,7 @@ struct spear_smi {
 	struct spear_snor_flash *flash[MAX_NUM_FLASH_CHIP];
 };
 
-/**
- * struct spear_snor_flash - Structure for Serial NOR Flash
- *
- * @bank: Bank number(0, 1, 2, 3) for each NOR-flash.
- * @dev_id: Device ID of NOR-flash.
- * @lock: lock to manage flash read, write and erase operations
- * @mtd: MTD info for each NOR-flash.
- * @num_parts: Total number of partition in each bank of NOR-flash.
- * @parts: Partition info for each bank of NOR-flash.
- * @page_size: Page size of NOR-flash.
- * @base_addr: Base address of NOR-flash.
- * @erase_cmd: erase command may vary on different flash types
- * @fast_mode: flash supports read in fast mode
- */
+ 
 struct spear_snor_flash {
 	u32 bank;
 	u32 dev_id;
@@ -210,41 +172,34 @@ static inline struct spear_snor_flash *get_flash_data(struct mtd_info *mtd)
 	return container_of(mtd, struct spear_snor_flash, mtd);
 }
 
-/**
- * spear_smi_read_sr - Read status register of flash through SMI
- * @dev: structure of SMI information.
- * @bank: bank to which flash is connected
- *
- * This routine will return the status register of the flash chip present at the
- * given bank.
- */
+ 
 static int spear_smi_read_sr(struct spear_smi *dev, u32 bank)
 {
 	int ret;
 	u32 ctrlreg1;
 
 	mutex_lock(&dev->lock);
-	dev->status = 0; /* Will be set in interrupt handler */
+	dev->status = 0;  
 
 	ctrlreg1 = readl(dev->io_base + SMI_CR1);
-	/* program smi in hw mode */
+	 
 	writel(ctrlreg1 & ~(SW_MODE | WB_MODE), dev->io_base + SMI_CR1);
 
-	/* performing a rsr instruction in hw mode */
+	 
 	writel((bank << BANK_SHIFT) | RD_STATUS_REG | TFIE,
 			dev->io_base + SMI_CR2);
 
-	/* wait for tff */
+	 
 	ret = wait_event_interruptible_timeout(dev->cmd_complete,
 			dev->status & TFF, SMI_CMD_TIMEOUT);
 
-	/* copy dev->status (lower 16 bits) in order to release lock */
+	 
 	if (ret > 0)
 		ret = dev->status & 0xffff;
 	else if (ret == 0)
 		ret = -ETIMEDOUT;
 
-	/* restore the ctrl regs state */
+	 
 	writel(ctrlreg1, dev->io_base + SMI_CR1);
 	writel(0, dev->io_base + SMI_CR2);
 	mutex_unlock(&dev->lock);
@@ -252,15 +207,7 @@ static int spear_smi_read_sr(struct spear_smi *dev, u32 bank)
 	return ret;
 }
 
-/**
- * spear_smi_wait_till_ready - wait till flash is ready
- * @dev: structure of SMI information.
- * @bank: flash corresponding to this bank
- * @timeout: timeout for busy wait condition
- *
- * This routine checks for WIP (write in progress) bit in Status register
- * If successful the routine returns 0 else -EBUSY
- */
+ 
 static int spear_smi_wait_till_ready(struct spear_smi *dev, u32 bank,
 		unsigned long timeout)
 {
@@ -272,7 +219,7 @@ static int spear_smi_wait_till_ready(struct spear_smi *dev, u32 bank,
 		status = spear_smi_read_sr(dev, bank);
 		if (status < 0) {
 			if (status == -ETIMEDOUT)
-				continue; /* try till finish */
+				continue;  
 			return status;
 		} else if (!(status & SR_WIP)) {
 			return 0;
@@ -285,14 +232,7 @@ static int spear_smi_wait_till_ready(struct spear_smi *dev, u32 bank,
 	return -EBUSY;
 }
 
-/**
- * spear_smi_int_handler - SMI Interrupt Handler.
- * @irq: irq number
- * @dev_id: structure of SMI device, embedded in dev_id.
- *
- * The handler clears all interrupt conditions and records the status in
- * dev->status which is used by the driver later.
- */
+ 
 static irqreturn_t spear_smi_int_handler(int irq, void *dev_id)
 {
 	u32 status = 0;
@@ -303,24 +243,19 @@ static irqreturn_t spear_smi_int_handler(int irq, void *dev_id)
 	if (unlikely(!status))
 		return IRQ_NONE;
 
-	/* clear all interrupt conditions */
+	 
 	writel(0, dev->io_base + SMI_SR);
 
-	/* copy the status register in dev->status */
+	 
 	dev->status |= status;
 
-	/* send the completion */
+	 
 	wake_up_interruptible(&dev->cmd_complete);
 
 	return IRQ_HANDLED;
 }
 
-/**
- * spear_smi_hw_init - initializes the smi controller.
- * @dev: structure of smi device
- *
- * this routine initializes the smi controller wit the default values
- */
+ 
 static void spear_smi_hw_init(struct spear_smi *dev)
 {
 	unsigned long rate = 0;
@@ -329,72 +264,55 @@ static void spear_smi_hw_init(struct spear_smi *dev)
 
 	rate = clk_get_rate(dev->clk);
 
-	/* functional clock of smi */
+	 
 	prescale = DIV_ROUND_UP(rate, dev->clk_rate);
 
-	/*
-	 * setting the standard values, fast mode, prescaler for
-	 * SMI_MAX_CLOCK_FREQ (50MHz) operation and bank enable
-	 */
+	 
 	val = HOLD1 | BANK_EN | DSEL_TIME | (prescale << 8);
 
 	mutex_lock(&dev->lock);
-	/* clear all interrupt conditions */
+	 
 	writel(0, dev->io_base + SMI_SR);
 
 	writel(val, dev->io_base + SMI_CR1);
 	mutex_unlock(&dev->lock);
 }
 
-/**
- * get_flash_index - match chip id from a flash list.
- * @flash_id: a valid nor flash chip id obtained from board.
- *
- * try to validate the chip id by matching from a list, if not found then simply
- * returns negative. In case of success returns index in to the flash devices
- * array.
- */
+ 
 static int get_flash_index(u32 flash_id)
 {
 	int index;
 
-	/* Matches chip-id to entire list of 'serial-nor flash' ids */
+	 
 	for (index = 0; index < ARRAY_SIZE(flash_devices); index++) {
 		if (flash_devices[index].device_id == flash_id)
 			return index;
 	}
 
-	/* Memory chip is not listed and not supported */
+	 
 	return -ENODEV;
 }
 
-/**
- * spear_smi_write_enable - Enable the flash to do write operation
- * @dev: structure of SMI device
- * @bank: enable write for flash connected to this bank
- *
- * Set write enable latch with Write Enable command.
- * Returns 0 on success.
- */
+ 
 static int spear_smi_write_enable(struct spear_smi *dev, u32 bank)
 {
 	int ret;
 	u32 ctrlreg1;
 
 	mutex_lock(&dev->lock);
-	dev->status = 0; /* Will be set in interrupt handler */
+	dev->status = 0;  
 
 	ctrlreg1 = readl(dev->io_base + SMI_CR1);
-	/* program smi in h/w mode */
+	 
 	writel(ctrlreg1 & ~SW_MODE, dev->io_base + SMI_CR1);
 
-	/* give the flash, write enable command */
+	 
 	writel((bank << BANK_SHIFT) | WE | TFIE, dev->io_base + SMI_CR2);
 
 	ret = wait_event_interruptible_timeout(dev->cmd_complete,
 			dev->status & TFF, SMI_CMD_TIMEOUT);
 
-	/* restore the ctrl regs state */
+	 
 	writel(ctrlreg1, dev->io_base + SMI_CR1);
 	writel(0, dev->io_base + SMI_CR2);
 
@@ -403,7 +321,7 @@ static int spear_smi_write_enable(struct spear_smi *dev, u32 bank)
 		dev_err(&dev->pdev->dev,
 			"smi controller failed on write enable\n");
 	} else if (ret > 0) {
-		/* check whether write mode status is set for required bank */
+		 
 		if (dev->status & (1 << (bank + WM_SHIFT)))
 			ret = 0;
 		else {
@@ -430,17 +348,7 @@ get_sector_erase_cmd(struct spear_snor_flash *flash, u32 offset)
 	return cmd;
 }
 
-/**
- * spear_smi_erase_sector - erase one sector of flash
- * @dev: structure of SMI information
- * @command: erase command to be send
- * @bank: bank to which this command needs to be send
- * @bytes: size of command
- *
- * Erase one sector of flash memory at offset ``offset'' which is any
- * address within the sector which should be erased.
- * Returns 0 if successful, non-zero otherwise.
- */
+ 
 static int spear_smi_erase_sector(struct spear_smi *dev,
 		u32 bank, u32 command, u32 bytes)
 {
@@ -460,7 +368,7 @@ static int spear_smi_erase_sector(struct spear_smi *dev,
 	ctrlreg1 = readl(dev->io_base + SMI_CR1);
 	writel((ctrlreg1 | SW_MODE) & ~WB_MODE, dev->io_base + SMI_CR1);
 
-	/* send command in sw mode */
+	 
 	writel(command, dev->io_base + SMI_TR);
 
 	writel((bank << BANK_SHIFT) | SEND | TFIE | (bytes << TX_LEN_SHIFT),
@@ -473,9 +381,9 @@ static int spear_smi_erase_sector(struct spear_smi *dev,
 		ret = -EIO;
 		dev_err(&dev->pdev->dev, "sector erase failed\n");
 	} else if (ret > 0)
-		ret = 0; /* success */
+		ret = 0;  
 
-	/* restore ctrl regs */
+	 
 	writel(ctrlreg1, dev->io_base + SMI_CR1);
 	writel(0, dev->io_base + SMI_CR2);
 
@@ -483,14 +391,7 @@ static int spear_smi_erase_sector(struct spear_smi *dev,
 	return ret;
 }
 
-/**
- * spear_mtd_erase - perform flash erase operation as requested by user
- * @mtd: Provides the memory characteristics
- * @e_info: Provides the erase information
- *
- * Erase an address range on the flash chip. The address range may extend
- * one or more erase sectors. Return an error is there is a problem erasing.
- */
+ 
 static int spear_mtd_erase(struct mtd_info *mtd, struct erase_info *e_info)
 {
 	struct spear_snor_flash *flash = get_flash_data(mtd);
@@ -512,10 +413,10 @@ static int spear_mtd_erase(struct mtd_info *mtd, struct erase_info *e_info)
 
 	mutex_lock(&flash->lock);
 
-	/* now erase sectors in loop */
+	 
 	while (len) {
 		command = get_sector_erase_cmd(flash, addr);
-		/* preparing the command for flash */
+		 
 		ret = spear_smi_erase_sector(dev, bank, command, 4);
 		if (ret) {
 			mutex_unlock(&flash->lock);
@@ -530,18 +431,7 @@ static int spear_mtd_erase(struct mtd_info *mtd, struct erase_info *e_info)
 	return 0;
 }
 
-/**
- * spear_mtd_read - performs flash read operation as requested by the user
- * @mtd: MTD information of the memory bank
- * @from: Address from which to start read
- * @len: Number of bytes to be read
- * @retlen: Fills the Number of bytes actually read
- * @buf: Fills this after reading
- *
- * Read an address range from the flash chip. The address range
- * may be any size provided it is within the physical boundaries.
- * Returns 0 on success, non zero otherwise
- */
+ 
 static int spear_mtd_read(struct mtd_info *mtd, loff_t from, size_t len,
 		size_t *retlen, u8 *buf)
 {
@@ -559,12 +449,12 @@ static int spear_mtd_read(struct mtd_info *mtd, loff_t from, size_t len,
 		return -EINVAL;
 	}
 
-	/* select address as per bank number */
+	 
 	src = flash->base_addr + from;
 
 	mutex_lock(&flash->lock);
 
-	/* wait till previous write/erase is done. */
+	 
 	ret = spear_smi_wait_till_ready(dev, flash->bank, SMI_MAX_TIME_OUT);
 	if (ret) {
 		mutex_unlock(&flash->lock);
@@ -572,7 +462,7 @@ static int spear_mtd_read(struct mtd_info *mtd, loff_t from, size_t len,
 	}
 
 	mutex_lock(&dev->lock);
-	/* put smi in hw mode not wbt mode */
+	 
 	ctrlreg1 = val = readl(dev->io_base + SMI_CR1);
 	val &= ~(SW_MODE | WB_MODE);
 	if (flash->fast_mode)
@@ -582,7 +472,7 @@ static int spear_mtd_read(struct mtd_info *mtd, loff_t from, size_t len,
 
 	memcpy_fromio(buf, src, len);
 
-	/* restore ctrl reg1 */
+	 
 	writel(ctrlreg1, dev->io_base + SMI_CR1);
 	mutex_unlock(&dev->lock);
 
@@ -592,13 +482,7 @@ static int spear_mtd_read(struct mtd_info *mtd, loff_t from, size_t len,
 	return 0;
 }
 
-/*
- * The purpose of this function is to ensure a memcpy_toio() with byte writes
- * only. Its structure is inspired from the ARM implementation of _memcpy_toio()
- * which also does single byte writes but cannot be used here as this is just an
- * implementation detail and not part of the API. Not mentioning the comment
- * stating that _memcpy_toio() should be optimized.
- */
+ 
 static void spear_smi_memcpy_toio_b(volatile void __iomem *dest,
 				    const void *src, size_t len)
 {
@@ -618,34 +502,23 @@ static inline int spear_smi_cpy_toio(struct spear_smi *dev, u32 bank,
 	int ret;
 	u32 ctrlreg1;
 
-	/* wait until finished previous write command. */
+	 
 	ret = spear_smi_wait_till_ready(dev, bank, SMI_MAX_TIME_OUT);
 	if (ret)
 		return ret;
 
-	/* put smi in write enable */
+	 
 	ret = spear_smi_write_enable(dev, bank);
 	if (ret)
 		return ret;
 
-	/* put smi in hw, write burst mode */
+	 
 	mutex_lock(&dev->lock);
 
 	ctrlreg1 = readl(dev->io_base + SMI_CR1);
 	writel((ctrlreg1 | WB_MODE) & ~SW_MODE, dev->io_base + SMI_CR1);
 
-	/*
-	 * In Write Burst mode (WB_MODE), the specs states that writes must be:
-	 * - incremental
-	 * - of the same size
-	 * The ARM implementation of memcpy_toio() will optimize the number of
-	 * I/O by using as much 4-byte writes as possible, surrounded by
-	 * 2-byte/1-byte access if:
-	 * - the destination is not 4-byte aligned
-	 * - the length is not a multiple of 4-byte.
-	 * Avoid this alternance of write access size by using our own 'byte
-	 * access' helper if at least one of the two conditions above is true.
-	 */
+	 
 	if (IS_ALIGNED(len, sizeof(u32)) &&
 	    IS_ALIGNED((uintptr_t)dest, sizeof(u32)))
 		memcpy_toio(dest, src, len);
@@ -658,19 +531,7 @@ static inline int spear_smi_cpy_toio(struct spear_smi *dev, u32 bank,
 	return 0;
 }
 
-/**
- * spear_mtd_write - performs write operation as requested by the user.
- * @mtd: MTD information of the memory bank.
- * @to:	Address to write.
- * @len: Number of bytes to be written.
- * @retlen: Number of bytes actually wrote.
- * @buf: Buffer from which the data to be taken.
- *
- * Write an address range to the flash chip. Data must be written in
- * flash_page_size chunks. The address range may be any size provided
- * it is within the physical boundaries.
- * Returns 0 on success, non zero otherwise
- */
+ 
 static int spear_mtd_write(struct mtd_info *mtd, loff_t to, size_t len,
 		size_t *retlen, const u8 *buf)
 {
@@ -688,13 +549,13 @@ static int spear_mtd_write(struct mtd_info *mtd, loff_t to, size_t len,
 		return -EINVAL;
 	}
 
-	/* select address as per bank number */
+	 
 	dest = flash->base_addr + to;
 	mutex_lock(&flash->lock);
 
 	page_offset = (u32)to % flash->page_size;
 
-	/* do if all the bytes fit onto one page */
+	 
 	if (page_offset + len <= flash->page_size) {
 		ret = spear_smi_cpy_toio(dev, flash->bank, dest, buf, len);
 		if (!ret)
@@ -702,7 +563,7 @@ static int spear_mtd_write(struct mtd_info *mtd, loff_t to, size_t len,
 	} else {
 		u32 i;
 
-		/* the size of data remaining on the first page */
+		 
 		page_size = flash->page_size - page_offset;
 
 		ret = spear_smi_cpy_toio(dev, flash->bank, dest, buf,
@@ -712,7 +573,7 @@ static int spear_mtd_write(struct mtd_info *mtd, loff_t to, size_t len,
 		else
 			*retlen += page_size;
 
-		/* write everything in pagesize chunks */
+		 
 		for (i = page_size; i < len; i += page_size) {
 			page_size = len - i;
 			if (page_size > flash->page_size)
@@ -733,15 +594,7 @@ err_write:
 	return ret;
 }
 
-/**
- * spear_smi_probe_flash - Detects the NOR Flash chip.
- * @dev: structure of SMI information.
- * @bank: bank on which flash must be probed
- *
- * This routine will check whether there exists a flash chip on a given memory
- * bank ID.
- * Return index of the probed flash in flash devices structure
- */
+ 
 static int spear_smi_probe_flash(struct spear_smi *dev, u32 bank)
 {
 	int ret;
@@ -753,19 +606,19 @@ static int spear_smi_probe_flash(struct spear_smi *dev, u32 bank)
 
 	mutex_lock(&dev->lock);
 
-	dev->status = 0; /* Will be set in interrupt handler */
-	/* put smi in sw mode */
+	dev->status = 0;  
+	 
 	val = readl(dev->io_base + SMI_CR1);
 	writel(val | SW_MODE, dev->io_base + SMI_CR1);
 
-	/* send readid command in sw mode */
+	 
 	writel(OPCODE_RDID, dev->io_base + SMI_TR);
 
 	val = (bank << BANK_SHIFT) | SEND | (1 << TX_LEN_SHIFT) |
 		(3 << RX_LEN_SHIFT) | TFIE;
 	writel(val, dev->io_base + SMI_CR2);
 
-	/* wait for TFF */
+	 
 	ret = wait_event_interruptible_timeout(dev->cmd_complete,
 			dev->status & TFF, SMI_CMD_TIMEOUT);
 	if (ret <= 0) {
@@ -773,13 +626,13 @@ static int spear_smi_probe_flash(struct spear_smi *dev, u32 bank)
 		goto err_probe;
 	}
 
-	/* get memory chip id */
+	 
 	val = readl(dev->io_base + SMI_RR);
 	val &= 0x00ffffff;
 	ret = get_flash_index(val);
 
 err_probe:
-	/* clear sw mode */
+	 
 	val = readl(dev->io_base + SMI_CR1);
 	writel(val & ~SW_MODE, dev->io_base + SMI_CR1);
 
@@ -811,11 +664,11 @@ static int spear_smi_probe_config_dt(struct platform_device *pdev,
 	if (!pdata->board_flash_info)
 		return -ENOMEM;
 
-	/* Fill structs for each subnode (flash device) */
+	 
 	for_each_child_of_node(np, pp) {
 		pdata->np[i] = pp;
 
-		/* Read base-addr and size from DT */
+		 
 		addr = of_get_property(pp, "reg", &len);
 		pdata->board_flash_info->mem_base = be32_to_cpup(&addr[0]);
 		pdata->board_flash_info->size = be32_to_cpup(&addr[1]);
@@ -865,13 +718,13 @@ static int spear_smi_setup_banks(struct platform_device *pdev,
 	flash->fast_mode = flash_info->fast_mode ? 1 : 0;
 	mutex_init(&flash->lock);
 
-	/* verify whether nor flash is really present on board */
+	 
 	flash_index = spear_smi_probe_flash(dev, bank);
 	if (flash_index < 0) {
 		dev_info(&dev->pdev->dev, "smi-nor%d not found\n", bank);
 		return flash_index;
 	}
-	/* map the memory for nor flash chip */
+	 
 	flash->base_addr = devm_ioremap(&pdev->dev, flash_info->mem_base,
 					flash_info->size);
 	if (!flash->base_addr)
@@ -923,15 +776,7 @@ static int spear_smi_setup_banks(struct platform_device *pdev,
 	return 0;
 }
 
-/**
- * spear_smi_probe - Entry routine
- * @pdev: platform device structure
- *
- * This is the first routine which gets invoked during booting and does all
- * initialization/allocation work. The routine looks for available memory banks,
- * and do proper init for any found one.
- * Returns 0 on success, non zero otherwise
- */
+ 
 static int spear_smi_probe(struct platform_device *pdev)
 {
 	struct device_node *np = pdev->dev.of_node;
@@ -1011,7 +856,7 @@ static int spear_smi_probe(struct platform_device *pdev)
 	spear_smi_hw_init(dev);
 	platform_set_drvdata(pdev, dev);
 
-	/* loop for each serial nor-flash which is connected to smi */
+	 
 	for (i = 0; i < dev->num_flashes; i++) {
 		ret = spear_smi_setup_banks(pdev, i, pdata->np[i]);
 		if (ret) {
@@ -1025,12 +870,7 @@ err:
 	return ret;
 }
 
-/**
- * spear_smi_remove - Exit routine
- * @pdev: platform device structure
- *
- * free all allocations and delete the partitions.
- */
+ 
 static int spear_smi_remove(struct platform_device *pdev)
 {
 	struct spear_smi *dev;
@@ -1039,13 +879,13 @@ static int spear_smi_remove(struct platform_device *pdev)
 
 	dev = platform_get_drvdata(pdev);
 
-	/* clean up for all nor flash */
+	 
 	for (i = 0; i < dev->num_flashes; i++) {
 		flash = dev->flash[i];
 		if (!flash)
 			continue;
 
-		/* clean up mtd stuff */
+		 
 		WARN_ON(mtd_device_unregister(&flash->mtd));
 	}
 

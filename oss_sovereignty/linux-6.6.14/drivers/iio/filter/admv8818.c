@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ADMV8818 driver
- *
- * Copyright 2021 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -18,7 +14,7 @@
 #include <linux/spi/spi.h>
 #include <linux/units.h>
 
-/* ADMV8818 Register Map */
+ 
 #define ADMV8818_REG_SPI_CONFIG_A		0x0
 #define ADMV8818_REG_SPI_CONFIG_B		0x1
 #define ADMV8818_REG_CHIPTYPE			0x3
@@ -44,7 +40,7 @@
 #define ADMV8818_REG_LUT127_SW			0x1FE
 #define ADMV8818_REG_LUT127_FILTER		0x1FF
 
-/* ADMV8818_REG_SPI_CONFIG_A Map */
+ 
 #define ADMV8818_SOFTRESET_N_MSK		BIT(7)
 #define ADMV8818_LSB_FIRST_N_MSK		BIT(6)
 #define ADMV8818_ENDIAN_N_MSK			BIT(5)
@@ -54,19 +50,19 @@
 #define ADMV8818_LSBFIRST_MSK			BIT(1)
 #define ADMV8818_SOFTRESET_MSK			BIT(0)
 
-/* ADMV8818_REG_SPI_CONFIG_B Map */
+ 
 #define ADMV8818_SINGLE_INSTRUCTION_MSK		BIT(7)
 #define ADMV8818_CSB_STALL_MSK			BIT(6)
 #define ADMV8818_MASTER_SLAVE_RB_MSK		BIT(5)
 #define ADMV8818_MASTER_SLAVE_TRANSFER_MSK	BIT(0)
 
-/* ADMV8818_REG_WR0_SW Map */
+ 
 #define ADMV8818_SW_IN_SET_WR0_MSK		BIT(7)
 #define ADMV8818_SW_OUT_SET_WR0_MSK		BIT(6)
 #define ADMV8818_SW_IN_WR0_MSK			GENMASK(5, 3)
 #define ADMV8818_SW_OUT_WR0_MSK			GENMASK(2, 0)
 
-/* ADMV8818_REG_WR0_FILTER Map */
+ 
 #define ADMV8818_HPF_WR0_MSK			GENMASK(7, 4)
 #define ADMV8818_LPF_WR0_MSK			GENMASK(3, 0)
 
@@ -86,7 +82,7 @@ struct admv8818_state {
 	struct regmap		*regmap;
 	struct clk		*clkin;
 	struct notifier_block	nb;
-	/* Protect against concurrent accesses to the device and data content*/
+	 
 	struct mutex		lock;
 	unsigned int		filter_mode;
 	u64			cf_hz;
@@ -153,7 +149,7 @@ static int __admv8818_hpf_select(struct admv8818_state *st, u64 freq)
 		}
 	}
 
-	/* Close HPF frequency gap between 12 and 12.5 GHz */
+	 
 	if (freq >= 12000 * HZ_PER_MHZ && freq <= 12500 * HZ_PER_MHZ) {
 		hpf_band = 3;
 		hpf_step = 15;

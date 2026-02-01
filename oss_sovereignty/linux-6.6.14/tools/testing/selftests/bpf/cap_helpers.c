@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "cap_helpers.h"
 
-/* Avoid including <sys/capability.h> from the libcap-devel package,
- * so directly declare them here and use them from glibc.
- */
+ 
 int capget(cap_user_header_t header, cap_user_data_t data);
 int capset(cap_user_header_t header, const cap_user_data_t data);
 

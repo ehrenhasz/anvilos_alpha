@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Support for Digigram Lola PCI-e boards
- *
- *  Copyright (c) 2011 Takashi Iwai <tiwai@suse.de>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -130,7 +126,7 @@ static void lola_proc_codec_read(struct snd_info_entry *entry,
 	}
 }
 
-/* direct codec access for debugging */
+ 
 static void lola_proc_codec_rw_write(struct snd_info_entry *entry,
 				     struct snd_info_buffer *buffer)
 {
@@ -153,9 +149,7 @@ static void lola_proc_codec_rw_read(struct snd_info_entry *entry,
 	snd_iprintf(buffer, "0x%x 0x%x\n", chip->debug_res, chip->debug_res_ex);
 }
 
-/*
- * dump some registers
- */
+ 
 static void lola_proc_regs_read(struct snd_info_entry *entry,
 				struct snd_info_buffer *buffer)
 {

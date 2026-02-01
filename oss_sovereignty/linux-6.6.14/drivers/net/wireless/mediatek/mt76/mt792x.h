@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/* Copyright (C) 2023 MediaTek Inc. */
+ 
+ 
 
 #ifndef __MT792X_H
 #define __MT792X_H
@@ -19,13 +19,13 @@
 #define MT792x_WTBL_RESERVED	(MT792x_WTBL_SIZE - 1)
 #define MT792x_WTBL_STA		(MT792x_WTBL_RESERVED - MT792x_MAX_INTERFACES)
 
-#define MT792x_CFEND_RATE_DEFAULT	0x49	/* OFDM 24M */
-#define MT792x_CFEND_RATE_11B		0x03	/* 11B LP, 11M */
+#define MT792x_CFEND_RATE_DEFAULT	0x49	 
+#define MT792x_CFEND_RATE_11B		0x03	 
 
 #define MT792x_FW_TAG_FEATURE	4
 #define MT792x_FW_CAP_CNM	BIT(7)
 
-/* NOTE: used to map mt76_rates. idx may change if firmware expands table */
+ 
 #define MT792x_BASIC_RATES_TBL	11
 
 #define MT792x_WATCHDOG_TIME	(HZ / 4)
@@ -64,7 +64,7 @@ enum {
 DECLARE_EWMA(avg_signal, 10, 8)
 
 struct mt792x_sta {
-	struct mt76_wcid wcid; /* must be first */
+	struct mt76_wcid wcid;  
 
 	struct mt792x_vif *vif;
 
@@ -81,7 +81,7 @@ struct mt792x_sta {
 DECLARE_EWMA(rssi, 10, 8);
 
 struct mt792x_vif {
-	struct mt76_vif mt76; /* must be first */
+	struct mt76_vif mt76;  
 
 	struct mt792x_sta sta;
 	struct mt792x_sta *wep_sta;
@@ -155,7 +155,7 @@ struct mt792x_hif_ops {
 };
 
 struct mt792x_dev {
-	union { /* must be first */
+	union {  
 		struct mt76_dev mt76;
 		struct mt76_phy mphy;
 	};
@@ -180,7 +180,7 @@ struct mt792x_dev {
 	const struct mt792x_irq_map *irq_map;
 
 	struct work_struct ipv6_ns_work;
-	/* IPv6 addresses for WoWLAN */
+	 
 	struct sk_buff_head ipv6_ns_list;
 
 	enum environment_cap country_ie_env;
@@ -324,7 +324,7 @@ static inline char *mt792x_patch_name(struct mt792x_dev *dev)
 
 int mt792x_load_firmware(struct mt792x_dev *dev);
 
-/* usb */
+ 
 #define MT_USB_TYPE_VENDOR	(USB_TYPE_VENDOR | 0x1f)
 #define MT_USB_TYPE_UHW_VENDOR	(USB_TYPE_VENDOR | 0x1e)
 int mt792xu_dma_init(struct mt792x_dev *dev, bool resume);
@@ -363,4 +363,4 @@ static inline u8 mt792x_acpi_get_flags(struct mt792x_phy *phy)
 }
 #endif
 
-#endif /* __MT7925_H */
+#endif  

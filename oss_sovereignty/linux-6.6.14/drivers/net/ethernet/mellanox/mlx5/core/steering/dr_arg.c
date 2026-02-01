@@ -1,26 +1,26 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+
 
 #include "dr_types.h"
 
 #define DR_ICM_MODIFY_HDR_GRANULARITY_4K 12
 
-/* modify-header arg pool */
+ 
 enum dr_arg_chunk_size {
 	DR_ARG_CHUNK_SIZE_1,
-	DR_ARG_CHUNK_SIZE_MIN = DR_ARG_CHUNK_SIZE_1, /* keep updated when changing */
+	DR_ARG_CHUNK_SIZE_MIN = DR_ARG_CHUNK_SIZE_1,  
 	DR_ARG_CHUNK_SIZE_2,
 	DR_ARG_CHUNK_SIZE_3,
 	DR_ARG_CHUNK_SIZE_4,
 	DR_ARG_CHUNK_SIZE_MAX,
 };
 
-/* argument pool area */
+ 
 struct dr_arg_pool {
 	enum dr_arg_chunk_size log_chunk_size;
 	struct mlx5dr_domain *dmn;
 	struct list_head free_list;
-	struct mutex mutex; /* protect arg pool */
+	struct mutex mutex;  
 };
 
 struct mlx5dr_arg_mgr {
@@ -56,7 +56,7 @@ static int dr_arg_pool_alloc_objs(struct dr_arg_pool *pool)
 	}
 
 	num_of_objects = (1 << (object_range - pool->log_chunk_size));
-	/* Only one devx object per range */
+	 
 	ret = mlx5dr_cmd_create_modify_header_arg(pool->dmn->mdev,
 						  object_range,
 						  pool->dmn->pdn,
@@ -159,7 +159,7 @@ static void dr_arg_pool_destroy(struct dr_arg_pool *pool)
 
 	list_for_each_entry_safe(arg_obj, tmp_arg, &pool->free_list, list_node) {
 		list_del(&arg_obj->list_node);
-		if (!arg_obj->obj_offset) /* the first in range */
+		if (!arg_obj->obj_offset)  
 			mlx5dr_cmd_destroy_modify_header_arg(pool->dmn->mdev, arg_obj->obj_id);
 		kfree(arg_obj);
 	}
@@ -204,7 +204,7 @@ struct mlx5dr_arg_obj *mlx5dr_arg_get_obj(struct mlx5dr_arg_mgr *mgr,
 		return NULL;
 	}
 
-	/* write it into the hw */
+	 
 	ret = mlx5dr_send_postsend_args(mgr->dmn,
 					mlx5dr_arg_get_obj_id(arg_obj),
 					num_of_actions, data);

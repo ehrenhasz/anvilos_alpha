@@ -1,29 +1,20 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Maximum size of each resync request */
+
+ 
 #define RESYNC_BLOCK_SIZE (64*1024)
 #define RESYNC_PAGES ((RESYNC_BLOCK_SIZE + PAGE_SIZE-1) / PAGE_SIZE)
 
-/*
- * Number of guaranteed raid bios in case of extreme VM load:
- */
+ 
 #define	NR_RAID_BIOS 256
 
-/* when we get a read error on a read-only array, we redirect to another
- * device without failing the first device, or trying to over-write to
- * correct the read error.  To keep track of bad blocks on a per-bio
- * level, we store IO_BLOCKED in the appropriate 'bios' pointer
- */
+ 
 #define IO_BLOCKED ((struct bio *)1)
-/* When we successfully write to a known bad-block, we need to remove the
- * bad-block marking which must be done from process context.  So we record
- * the success by setting devs[n].bio to IO_MADE_GOOD
- */
+ 
 #define IO_MADE_GOOD ((struct bio *)2)
 
 #define BIO_SPECIAL(bio) ((unsigned long)bio <= 2)
 #define MAX_PLUG_BIO 32
 
-/* for managing resync I/O pages */
+ 
 struct resync_pages {
 	void		*raid_bio;
 	struct page	*pages[RESYNC_PAGES];
@@ -83,22 +74,19 @@ static inline struct page *resync_fetch_page(struct resync_pages *rp,
 	return rp->pages[idx];
 }
 
-/*
- * 'strct resync_pages' stores actual pages used for doing the resync
- *  IO, and it is per-bio, so make .bi_private points to it.
- */
+ 
 static inline struct resync_pages *get_resync_pages(struct bio *bio)
 {
 	return bio->bi_private;
 }
 
-/* generally called after bio_reset() for reseting bvec */
+ 
 static void md_bio_reset_resync_pages(struct bio *bio, struct resync_pages *rp,
 			       int size)
 {
 	int idx = 0;
 
-	/* initialize bvec table again */
+	 
 	do {
 		struct page *page = resync_fetch_page(rp, idx);
 		int len = min_t(int, size, PAGE_SIZE);
@@ -124,7 +112,7 @@ static inline void raid1_submit_write(struct bio *bio)
 		bio_io_error(bio);
 	else if (unlikely(bio_op(bio) ==  REQ_OP_DISCARD &&
 			  !bdev_max_discard_sectors(bio->bi_bdev)))
-		/* Just ignore it */
+		 
 		bio_endio(bio);
 	else
 		submit_bio_noacct(bio);
@@ -136,10 +124,7 @@ static inline bool raid1_add_bio_to_plug(struct mddev *mddev, struct bio *bio,
 	struct raid1_plug_cb *plug = NULL;
 	struct blk_plug_cb *cb;
 
-	/*
-	 * If bitmap is not enabled, it's safe to submit the io directly, and
-	 * this can get optimal performance.
-	 */
+	 
 	if (!md_bitmap_enabled(mddev->bitmap)) {
 		raid1_submit_write(bio);
 		return true;
@@ -160,12 +145,7 @@ static inline bool raid1_add_bio_to_plug(struct mddev *mddev, struct bio *bio,
 	return true;
 }
 
-/*
- * current->bio_list will be set under submit_bio() context, in this case bitmap
- * io will be added to the list and wait for current io submission to finish,
- * while current io submission must wait for bitmap io to be done. In order to
- * avoid such deadlock, submit bitmap io asynchronously.
- */
+ 
 static inline void raid1_prepare_flush_writes(struct bitmap *bitmap)
 {
 	if (current->bio_list)

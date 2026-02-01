@@ -1,17 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/* Radio tuning for RTL8225 on RTL8187SE
- *
- * Copyright 2009 Larry Finger <Larry.Finger@lwfinger.net>
- * Copyright 2014 Andrea Merello <andrea.merello@gmail.com>
- *
- * Based on the r8180 and Realtek r8187se drivers, which are:
- * Copyright 2004-2005 Andrea Merello <andrea.merello@gmail.com>, et al.
- *
- * Also based on the rtl8187 driver, which is:
- * Copyright 2007 Michael Wu <flamingice@sourmilk.net>
- * Copyright 2007 Andrea Merello <andrea.merello@gmail.com>
- */
+
+ 
 
 #include <net/mac80211.h>
 
@@ -156,7 +145,7 @@ static void rtl8225se_write_zebra_agc(struct ieee80211_hw *dev)
 
 static void rtl8187se_write_ofdm_config(struct ieee80211_hw *dev)
 {
-	/* write OFDM_CONFIG table */
+	 
 	int i;
 
 	for (i = 0; i < 60; i++)
@@ -261,7 +250,7 @@ void rtl8225se_rf_init(struct ieee80211_hw *dev)
 	u8 d_cut = 0;
 	u8 tmp;
 
-	/* Page 1 */
+	 
 	rtl8187se_rf_writereg(dev, 0x00, 0x013F); mdelay(1);
 	rf23 = rtl8187se_rf_readreg(dev, 0x08); mdelay(1);
 	rf24 = rtl8187se_rf_readreg(dev, 0x09); mdelay(1);
@@ -271,7 +260,7 @@ void rtl8225se_rf_init(struct ieee80211_hw *dev)
 	wiphy_info(dev->wiphy, "RTL8225-SE version %s\n",
 		d_cut ? "D" : "not-D");
 
-	/* Page 0: reg 0 - 15 */
+	 
 	rtl8187se_rf_writereg(dev, 0x00, 0x009F); mdelay(1);
 	rtl8187se_rf_writereg(dev, 0x01, 0x06E0); mdelay(1);
 	rtl8187se_rf_writereg(dev, 0x02, 0x004D); mdelay(1);
@@ -288,7 +277,7 @@ void rtl8225se_rf_init(struct ieee80211_hw *dev)
 	rtl8187se_rf_writereg(dev, 0x0D, 0x08DF); mdelay(1);
 	rtl8187se_rf_writereg(dev, 0x0E, 0x0020); mdelay(1);
 	rtl8187se_rf_writereg(dev, 0x0F, 0x0990); mdelay(1);
-	/* page 1: reg 16-30 */
+	 
 	rtl8187se_rf_writereg(dev, 0x00, 0x013F); mdelay(1);
 	rtl8187se_rf_writereg(dev, 0x03, 0x0806); mdelay(1);
 	rtl8187se_rf_writereg(dev, 0x04, 0x03A7); mdelay(1);
@@ -337,7 +326,7 @@ void rtl8225se_rf_init(struct ieee80211_hw *dev)
 		rtl8187se_rf_writereg(dev, 0x0F, 0x0ACC);
 		mdelay(1);
 	}
-	/* page 0 */
+	 
 	rtl8187se_rf_writereg(dev, 0x00, 0x00BF); mdelay(1);
 	rtl8187se_rf_writereg(dev, 0x0D, 0x08DF); mdelay(1);
 	rtl8187se_rf_writereg(dev, 0x02, 0x004D); mdelay(1);
@@ -348,8 +337,8 @@ void rtl8225se_rf_init(struct ieee80211_hw *dev)
 	rtl8187se_rf_writereg(dev, 0x00, 0x009F); mdelay(1);
 	rtl8187se_rf_writereg(dev, 0x01, 0x0000); mdelay(1);
 	rtl8187se_rf_writereg(dev, 0x02, 0x0000); mdelay(1);
-	/* power save parameters */
-	/* TODO: move to dev.c */
+	 
+	 
 	rtl818x_iowrite8(priv, REG_ADDR1(0x024E),
 		 rtl818x_ioread8(priv, REG_ADDR1(0x24E)) & 0x9F);
 	rtl8225se_write_phy_cck(dev, 0x00, 0xC8);
@@ -359,7 +348,7 @@ void rtl8225se_rf_init(struct ieee80211_hw *dev)
 	rtl8225se_write_phy_cck(dev, 0x2F, 0x06);
 	rtl8225se_write_phy_cck(dev, 0x01, 0x46);
 
-	/* power control */
+	 
 	rtl818x_iowrite8(priv, &priv->map->TX_GAIN_CCK, 0x10);
 	rtl818x_iowrite8(priv, &priv->map->TX_GAIN_OFDM, 0x1B);
 
@@ -372,13 +361,13 @@ void rtl8225se_rf_init(struct ieee80211_hw *dev)
 
 	rtl8187se_write_ofdm_config(dev);
 
-	/* turn on RF */
+	 
 	rtl8187se_rf_writereg(dev, 0x00, 0x009F); udelay(500);
 	rtl8187se_rf_writereg(dev, 0x04, 0x0972); udelay(500);
-	/* turn on RF again */
+	 
 	rtl8187se_rf_writereg(dev, 0x00, 0x009F); udelay(500);
 	rtl8187se_rf_writereg(dev, 0x04, 0x0972); udelay(500);
-	/* turn on BB */
+	 
 	rtl8225se_write_phy_ofdm(dev, 0x10, 0x40);
 	rtl8225se_write_phy_ofdm(dev, 0x12, 0x40);
 
@@ -387,18 +376,18 @@ void rtl8225se_rf_init(struct ieee80211_hw *dev)
 
 void rtl8225se_rf_stop(struct ieee80211_hw *dev)
 {
-	/* checked for 8187se */
+	 
 	struct rtl8180_priv *priv = dev->priv;
 
-	/* turn off BB RXIQ matrix to cut off rx signal */
+	 
 	rtl8225se_write_phy_ofdm(dev, 0x10, 0x00);
 	rtl8225se_write_phy_ofdm(dev, 0x12, 0x00);
-	/* turn off RF */
+	 
 	rtl8187se_rf_writereg(dev, 0x04, 0x0000);
 	rtl8187se_rf_writereg(dev, 0x00, 0x0000);
 
 	usleep_range(1000, 5000);
-	/* turn off A/D and D/A */
+	 
 	rtl8180_set_anaparam(priv, RTL8225SE_ANAPARAM_OFF);
 	rtl8180_set_anaparam2(priv, RTL8225SE_ANAPARAM2_OFF);
 }

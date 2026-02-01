@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AD7303 Digital to analog converters driver
- *
- * Copyright 2013 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/module.h>
@@ -23,16 +19,7 @@
 
 #define AD7303_CMD_UPDATE_DAC	(0x3 << 8)
 
-/**
- * struct ad7303_state - driver instance specific data
- * @spi:		the device for this driver instance
- * @config:		cached config register value
- * @dac_cache:		current DAC raw value (chip does not support readback)
- * @vdd_reg:		reference to VDD regulator
- * @vref_reg:		reference to VREF regulator
- * @lock:		protect writes and cache updates
- * @data:		spi transfer buffer
- */
+ 
 
 struct ad7303_state {
 	struct spi_device *spi;
@@ -43,10 +30,7 @@ struct ad7303_state {
 	struct regulator *vref_reg;
 
 	struct mutex lock;
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 	__be16 data __aligned(IIO_DMA_MINALIGN);
 };
 
@@ -88,8 +72,7 @@ static ssize_t ad7303_write_dac_powerdown(struct iio_dev *indio_dev,
 	else
 		st->config &= ~AD7303_CFG_POWER_DOWN(chan->channel);
 
-	/* There is no noop cmd which allows us to only update the powerdown
-	 * mode, so just write one of the DAC channels again */
+	 
 	ad7303_write(st, chan->channel, st->dac_cache[chan->channel]);
 
 	mutex_unlock(&st->lock);
@@ -264,7 +247,7 @@ static int ad7303_probe(struct spi_device *spi)
 
 static const struct of_device_id ad7303_spi_of_match[] = {
 	{ .compatible = "adi,ad7303", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, ad7303_spi_of_match);
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: ISC
+
 
 #include "mt7615.h"
 
@@ -119,9 +119,7 @@ mt7615_pm_set(void *data, u64 val)
 		pm->stats.last_wake_event = jiffies;
 		pm->stats.last_doze_event = jiffies;
 	}
-	/* make sure the chip is awake here and ps_work is scheduled
-	 * just at end of the this routine.
-	 */
+	 
 	pm->enable = false;
 	mt76_connac_pm_wake(&dev->mphy, pm);
 
@@ -576,7 +574,7 @@ int mt7615_init_debugfs(struct mt7615_dev *dev)
 	if (is_mt7615(&dev->mt76)) {
 		debugfs_create_u32("dfs_hw_pattern", 0400, dir,
 				   &dev->hw_pattern);
-		/* test pattern knobs */
+		 
 		debugfs_create_u8("pattern_len", 0600, dir,
 				  &dev->radar_pattern.n_pulses);
 		debugfs_create_u32("pulse_period", 0600, dir,

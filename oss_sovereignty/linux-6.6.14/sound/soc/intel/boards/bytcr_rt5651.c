@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  bytcr_rt5651.c - ASoc Machine driver for Intel Byt CR platform
- *  (derived from bytcr_rt5640.c)
- *
- *  Copyright (C) 2015 Intel Corp
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/i2c.h>
@@ -65,7 +57,7 @@ enum {
 #define BYT_RT5651_DMIC_EN		BIT(16)
 #define BYT_RT5651_MCLK_EN		BIT(17)
 #define BYT_RT5651_MCLK_25MHZ		BIT(18)
-#define BYT_RT5651_SSP2_AIF2		BIT(19) /* default is using AIF1  */
+#define BYT_RT5651_SSP2_AIF2		BIT(19)  
 #define BYT_RT5651_SSP0_AIF1		BIT(20)
 #define BYT_RT5651_SSP0_AIF2		BIT(21)
 #define BYT_RT5651_HP_LR_SWAPPED	BIT(22)
@@ -77,7 +69,7 @@ enum {
 					 BYT_RT5651_OVCD_TH_2000UA | \
 					 BYT_RT5651_OVCD_SF_0P75)
 
-/* jack-detect-source + inv + dmic-en + ovcd-th + -sf + terminating entry */
+ 
 #define MAX_NO_PROPS 6
 
 struct byt_rt5651_private {
@@ -90,7 +82,7 @@ struct byt_rt5651_private {
 
 static const struct acpi_gpio_mapping *byt_rt5651_gpios;
 
-/* Default: jack-detect on JD1_1, internal mic on in2, headsetmic on in3 */
+ 
 static unsigned long byt_rt5651_quirk = BYT_RT5651_DEFAULT_QUIRKS |
 					BYT_RT5651_IN2_MAP;
 
@@ -142,7 +134,7 @@ static int byt_rt5651_prepare_and_enable_pll1(struct snd_soc_dai *codec_dai,
 {
 	int clk_id, clk_freq, ret;
 
-	/* Configure the PLL before selecting it */
+	 
 	if (!(byt_rt5651_quirk & BYT_RT5651_MCLK_EN)) {
 		clk_id = RT5651_PLL1_S_BCLK1;
 		clk_freq = rate * bclk_ratio;
@@ -195,11 +187,7 @@ static int platform_clock_control(struct snd_soc_dapm_widget *w,
 		}
 		ret = byt_rt5651_prepare_and_enable_pll1(codec_dai, 48000, 50);
 	} else {
-		/*
-		 * Set codec clock source to internal clock before
-		 * turning off the platform clock. Codec needs clock
-		 * for Jack detection and button press
-		 */
+		 
 		ret = snd_soc_dai_set_sysclk(codec_dai, RT5651_SCLK_S_RCCLK,
 					     48000 * 512,
 					     SND_SOC_CLOCK_IN);
@@ -251,7 +239,7 @@ static const struct snd_soc_dapm_route byt_rt5651_audio_map[] = {
 	{"Speaker", NULL, "Ext Amp Power"},
 	{"Line In", NULL, "Platform Clock"},
 
-	{"Headset Mic", NULL, "micbias1"}, /* lowercase for rt5651 */
+	{"Headset Mic", NULL, "micbias1"},  
 	{"Headphone", NULL, "HPOL"},
 	{"Headphone", NULL, "HPOR"},
 	{"Speaker", NULL, "LOUTL"},
@@ -382,7 +370,7 @@ static int byt_rt5651_quirk_cb(const struct dmi_system_id *id)
 
 static const struct dmi_system_id byt_rt5651_quirk_table[] = {
 	{
-		/* Chuwi Hi8 Pro (CWI513) */
+		 
 		.callback = byt_rt5651_quirk_cb,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Hampoo"),
@@ -394,7 +382,7 @@ static const struct dmi_system_id byt_rt5651_quirk_table[] = {
 					BYT_RT5651_MONO_SPEAKER),
 	},
 	{
-		/* Chuwi Vi8 Plus (CWI519) */
+		 
 		.callback = byt_rt5651_quirk_cb,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Hampoo"),
@@ -406,7 +394,7 @@ static const struct dmi_system_id byt_rt5651_quirk_table[] = {
 					BYT_RT5651_MONO_SPEAKER),
 	},
 	{
-		/* Complet Electro Serv MY8307 */
+		 
 		.callback = byt_rt5651_quirk_cb,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Complet Electro Serv"),
@@ -418,13 +406,11 @@ static const struct dmi_system_id byt_rt5651_quirk_table[] = {
 					BYT_RT5651_JD_NOT_INV),
 	},
 	{
-		/* I.T.Works TW701, Ployer Momo7w and Trekstor ST70416-6
-		 * (these all use the same mainboard) */
+		 
 		.callback = byt_rt5651_quirk_cb,
 		.matches = {
 			DMI_MATCH(DMI_BIOS_VENDOR, "INSYDE Corp."),
-			/* Partial match for all of itWORKS.G.WI71C.JGBMRBA,
-			 * TREK.G.WI71C.JGBMRBA0x and MOMO.G.WI71C.MABMRBA02 */
+			 
 			DMI_MATCH(DMI_BIOS_VERSION, ".G.WI71C."),
 		},
 		.driver_data = (void *)(BYT_RT5651_DEFAULT_QUIRKS |
@@ -433,12 +419,12 @@ static const struct dmi_system_id byt_rt5651_quirk_table[] = {
 					BYT_RT5651_MONO_SPEAKER),
 	},
 	{
-		/* Jumper EZpad 7 */
+		 
 		.callback = byt_rt5651_quirk_cb,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Jumper"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "EZpad"),
-			/* Jumper12x.WJ2012.bsBKRCP05 with the version dropped */
+			 
 			DMI_MATCH(DMI_BIOS_VERSION, "Jumper12x.WJ2012.bsBKRCP"),
 		},
 		.driver_data = (void *)(BYT_RT5651_DEFAULT_QUIRKS |
@@ -446,7 +432,7 @@ static const struct dmi_system_id byt_rt5651_quirk_table[] = {
 					BYT_RT5651_JD_NOT_INV),
 	},
 	{
-		/* KIANO SlimNote 14.2 */
+		 
 		.callback = byt_rt5651_quirk_cb,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "KIANO"),
@@ -456,7 +442,7 @@ static const struct dmi_system_id byt_rt5651_quirk_table[] = {
 					BYT_RT5651_IN1_IN2_MAP),
 	},
 	{
-		/* Minnowboard Max B3 */
+		 
 		.callback = byt_rt5651_quirk_cb,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Circuitco"),
@@ -465,7 +451,7 @@ static const struct dmi_system_id byt_rt5651_quirk_table[] = {
 		.driver_data = (void *)(BYT_RT5651_IN1_MAP),
 	},
 	{
-		/* Minnowboard Turbot */
+		 
 		.callback = byt_rt5651_quirk_cb,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "ADI"),
@@ -475,12 +461,12 @@ static const struct dmi_system_id byt_rt5651_quirk_table[] = {
 					BYT_RT5651_IN1_MAP),
 	},
 	{
-		/* Point of View mobii wintab p1006w (v1.0) */
+		 
 		.callback = byt_rt5651_pov_p1006w_quirk_cb,
 		.matches = {
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Insyde"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "BayTrail"),
-			/* Note 105b is Foxcon's USB/PCI vendor id */
+			 
 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "105B"),
 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "0E57"),
 		},
@@ -492,7 +478,7 @@ static const struct dmi_system_id byt_rt5651_quirk_table[] = {
 					BYT_RT5651_SSP0_AIF1),
 	},
 	{
-		/* VIOS LTH17 */
+		 
 		.callback = byt_rt5651_quirk_cb,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "VIOS"),
@@ -505,11 +491,11 @@ static const struct dmi_system_id byt_rt5651_quirk_table[] = {
 					BYT_RT5651_MCLK_EN),
 	},
 	{
-		/* Yours Y8W81 (and others using the same mainboard) */
+		 
 		.callback = byt_rt5651_quirk_cb,
 		.matches = {
 			DMI_MATCH(DMI_BIOS_VENDOR, "INSYDE Corp."),
-			/* Partial match for all devs with a W86C mainboard */
+			 
 			DMI_MATCH(DMI_BIOS_VERSION, ".F.W86C."),
 		},
 		.driver_data = (void *)(BYT_RT5651_DEFAULT_QUIRKS |
@@ -520,10 +506,7 @@ static const struct dmi_system_id byt_rt5651_quirk_table[] = {
 	{}
 };
 
-/*
- * Note this MUST be called before snd_soc_register_card(), so that the props
- * are in place before the codec component driver's probe function parses them.
- */
+ 
 static int byt_rt5651_add_codec_device_props(struct device *i2c_dev,
 					     struct byt_rt5651_private *priv)
 {
@@ -549,7 +532,7 @@ static int byt_rt5651_add_codec_device_props(struct device *i2c_dev,
 
 	fwnode = fwnode_create_software_node(props, NULL);
 	if (IS_ERR(fwnode)) {
-		/* put_device(i2c_dev) is handled in caller */
+		 
 		return PTR_ERR(fwnode);
 	}
 
@@ -572,7 +555,7 @@ static int byt_rt5651_init(struct snd_soc_pcm_runtime *runtime)
 
 	card->dapm.idle_bias_off = true;
 
-	/* Start with RC clk for jack-detect (we disable MCLK below) */
+	 
 	if (byt_rt5651_quirk & BYT_RT5651_MCLK_EN)
 		snd_soc_component_update_bits(codec, RT5651_GLB_CLK,
 			RT5651_SCLK_SRC_MASK, RT5651_SCLK_SRC_RCCLK);
@@ -625,14 +608,7 @@ static int byt_rt5651_init(struct snd_soc_pcm_runtime *runtime)
 		return ret;
 	}
 
-	/*
-	 * The firmware might enable the clock at boot (this information
-	 * may or may not be reflected in the enable clock register).
-	 * To change the rate we must disable the clock first to cover
-	 * these cases. Due to common clock framework restrictions that
-	 * do not allow to disable a clock that has not been enabled,
-	 * we need to enable the clock first.
-	 */
+	 
 	ret = clk_prepare_enable(priv->mclk);
 	if (!ret)
 		clk_disable_unprepare(priv->mclk);
@@ -683,26 +659,22 @@ static int byt_rt5651_codec_fixup(struct snd_soc_pcm_runtime *rtd,
 						SNDRV_PCM_HW_PARAM_CHANNELS);
 	int ret, bits;
 
-	/* The DSP will convert the FE rate to 48k, stereo */
+	 
 	rate->min = rate->max = 48000;
 	channels->min = channels->max = 2;
 
 	if ((byt_rt5651_quirk & BYT_RT5651_SSP0_AIF1) ||
 	    (byt_rt5651_quirk & BYT_RT5651_SSP0_AIF2)) {
-		/* set SSP0 to 16-bit */
+		 
 		params_set_format(params, SNDRV_PCM_FORMAT_S16_LE);
 		bits = 16;
 	} else {
-		/* set SSP2 to 24-bit */
+		 
 		params_set_format(params, SNDRV_PCM_FORMAT_S24_LE);
 		bits = 24;
 	}
 
-	/*
-	 * Default mode for SSP configuration is TDM 4 slot, override config
-	 * with explicit setting to I2S 2ch. The word length is set with
-	 * dai_set_tdm_slot() since there is no other API exposed
-	 */
+	 
 	ret = snd_soc_dai_set_fmt(asoc_rtd_to_cpu(rtd, 0),
 				  SND_SOC_DAIFMT_I2S     |
 				  SND_SOC_DAIFMT_NB_NF   |
@@ -784,8 +756,8 @@ static struct snd_soc_dai_link byt_rt5651_dais[] = {
 		.ops = &byt_rt5651_aif1_ops,
 		SND_SOC_DAILINK_REG(deepbuffer, dummy, platform),
 	},
-	/* CODEC<->CODEC link */
-	/* back ends */
+	 
+	 
 	{
 		.name = "SSP2-Codec",
 		.id = 0,
@@ -801,12 +773,12 @@ static struct snd_soc_dai_link byt_rt5651_dais[] = {
 	},
 };
 
-/* SoC card */
+ 
 static char byt_rt5651_codec_name[SND_ACPI_I2C_ID_LEN];
 #if !IS_ENABLED(CONFIG_SND_SOC_INTEL_USER_FRIENDLY_LONG_NAMES)
-static char byt_rt5651_long_name[50]; /* = "bytcr-rt5651-*-spk-*-mic[-swapped-hp]" */
+static char byt_rt5651_long_name[50];  
 #endif
-static char byt_rt5651_components[50]; /* = "cfg-spk:* cfg-mic:*" */
+static char byt_rt5651_components[50];  
 
 static int byt_rt5651_suspend(struct snd_soc_card *card)
 {
@@ -846,12 +818,12 @@ static int byt_rt5651_resume(struct snd_soc_card *card)
 	return 0;
 }
 
-/* use space before codec name to simplify card ID, and simplify driver name */
-#define SOF_CARD_NAME "bytcht rt5651" /* card name will be 'sof-bytcht rt5651' */
+ 
+#define SOF_CARD_NAME "bytcht rt5651"  
 #define SOF_DRIVER_NAME "SOF"
 
 #define CARD_NAME "bytcr-rt5651"
-#define DRIVER_NAME NULL /* card name will be used for driver name */
+#define DRIVER_NAME NULL  
 
 static struct snd_soc_card byt_rt5651_card = {
 	.name = CARD_NAME,
@@ -871,18 +843,14 @@ static struct snd_soc_card byt_rt5651_card = {
 static const struct acpi_gpio_params ext_amp_enable_gpios = { 0, 0, false };
 
 static const struct acpi_gpio_mapping cht_rt5651_gpios[] = {
-	/*
-	 * Some boards have I2cSerialBusV2, GpioIo, GpioInt as ACPI resources,
-	 * other boards may  have I2cSerialBusV2, GpioInt, GpioIo instead.
-	 * We want the GpioIo one for the ext-amp-enable-gpio.
-	 */
+	 
 	{ "ext-amp-enable-gpios", &ext_amp_enable_gpios, 1, ACPI_GPIO_QUIRK_ONLY_GPIOIO },
 	{ },
 };
 
-struct acpi_chan_package {   /* ACPICA seems to require 64 bit integers */
-	u64 aif_value;       /* 1: AIF1, 2: AIF2 */
-	u64 mclock_value;    /* usually 25MHz (0x17d7940), ignored */
+struct acpi_chan_package {    
+	u64 aif_value;        
+	u64 mclock_value;     
 };
 
 static int snd_byt_rt5651_mc_probe(struct platform_device *pdev)
@@ -904,11 +872,11 @@ static int snd_byt_rt5651_mc_probe(struct platform_device *pdev)
 	if (!priv)
 		return -ENOMEM;
 
-	/* register the soc card */
+	 
 	byt_rt5651_card.dev = dev;
 	snd_soc_card_set_drvdata(&byt_rt5651_card, priv);
 
-	/* fix index of codec dai */
+	 
 	for (i = 0; i < ARRAY_SIZE(byt_rt5651_dais); i++) {
 		if (!strcmp(byt_rt5651_dais[i].codecs->name,
 			    "i2c-10EC5651:00")) {
@@ -917,7 +885,7 @@ static int snd_byt_rt5651_mc_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* fixup codec name based on HID */
+	 
 	adev = acpi_dev_get_first_match_dev(mach->id, NULL, -1);
 	if (adev) {
 		snprintf(byt_rt5651_codec_name, sizeof(byt_rt5651_codec_name),
@@ -934,27 +902,18 @@ static int snd_byt_rt5651_mc_probe(struct platform_device *pdev)
 		return -EPROBE_DEFER;
 	priv->codec_dev = get_device(codec_dev);
 
-	/*
-	 * swap SSP0 if bytcr is detected
-	 * (will be overridden if DMI quirk is detected)
-	 */
+	 
 	if (soc_intel_is_byt()) {
 		if (mach->mach_params.acpi_ipc_irq_index == 0)
 			is_bytcr = true;
 	}
 
 	if (is_bytcr) {
-		/*
-		 * Baytrail CR platforms may have CHAN package in BIOS, try
-		 * to find relevant routing quirk based as done on Windows
-		 * platforms. We have to read the information directly from the
-		 * BIOS, at this stage the card is not created and the links
-		 * with the codec driver/pdata are non-existent
-		 */
+		 
 
 		struct acpi_chan_package chan_package = { 0 };
 
-		/* format specified: 2 64-bit integers */
+		 
 		struct acpi_buffer format = {sizeof("NN"), "NN"};
 		struct acpi_buffer state = {0, NULL};
 		struct snd_soc_acpi_package_context pkg_ctx;
@@ -985,12 +944,12 @@ static int snd_byt_rt5651_mc_probe(struct platform_device *pdev)
 		}
 
 		if (!pkg_found) {
-			/* no BIOS indications, assume SSP0-AIF2 connection */
+			 
 			byt_rt5651_quirk |= BYT_RT5651_SSP0_AIF2;
 		}
 	}
 
-	/* check quirks before creating card */
+	 
 	dmi_check_system(byt_rt5651_quirk_table);
 
 	if (quirk_override != -1) {
@@ -999,12 +958,12 @@ static int snd_byt_rt5651_mc_probe(struct platform_device *pdev)
 		byt_rt5651_quirk = quirk_override;
 	}
 
-	/* Must be called before register_card, also see declaration comment. */
+	 
 	ret_val = byt_rt5651_add_codec_device_props(codec_dev, priv);
 	if (ret_val)
 		goto err_device;
 
-	/* Cherry Trail devices use an external amplifier enable gpio */
+	 
 	if (soc_intel_is_cht() && !byt_rt5651_gpios)
 		byt_rt5651_gpios = cht_rt5651_gpios;
 
@@ -1063,10 +1022,7 @@ static int snd_byt_rt5651_mc_probe(struct platform_device *pdev)
 						"Failed to get MCLK from pmc_plt_clk_3\n");
 			goto err;
 		}
-		/*
-		 * Fall back to bit clock usage when clock is not
-		 * available likely due to missing dependencies.
-		 */
+		 
 		if (!priv->mclk)
 			byt_rt5651_quirk &= ~BYT_RT5651_MCLK_EN;
 	}
@@ -1089,7 +1045,7 @@ static int snd_byt_rt5651_mc_probe(struct platform_device *pdev)
 	byt_rt5651_card.long_name = byt_rt5651_long_name;
 #endif
 
-	/* override platform name, if required */
+	 
 	platform_name = mach->mach_params.platform;
 
 	ret_val = snd_soc_fixup_dai_links_platform_name(&byt_rt5651_card,
@@ -1099,7 +1055,7 @@ static int snd_byt_rt5651_mc_probe(struct platform_device *pdev)
 
 	sof_parent = snd_soc_acpi_sof_parent(dev);
 
-	/* set card and driver name */
+	 
 	if (sof_parent) {
 		byt_rt5651_card.name = SOF_CARD_NAME;
 		byt_rt5651_card.driver_name = SOF_DRIVER_NAME;
@@ -1108,7 +1064,7 @@ static int snd_byt_rt5651_mc_probe(struct platform_device *pdev)
 		byt_rt5651_card.driver_name = DRIVER_NAME;
 	}
 
-	/* set pm ops */
+	 
 	if (sof_parent)
 		dev->driver->pm = &snd_soc_pm_ops;
 

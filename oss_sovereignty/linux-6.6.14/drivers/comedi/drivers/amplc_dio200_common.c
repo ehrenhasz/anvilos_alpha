@@ -1,43 +1,27 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * comedi/drivers/amplc_dio200_common.c
- *
- * Common support code for "amplc_dio200" and "amplc_dio200_pci".
- *
- * Copyright (C) 2005-2013 MEV Ltd. <https://www.mev.co.uk/>
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1998,2000 David A. Schleef <ds@schleef.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
 #include <linux/comedi/comedidev.h>
-#include <linux/comedi/comedi_8255.h>	/* only for register defines */
+#include <linux/comedi/comedi_8255.h>	 
 #include <linux/comedi/comedi_8254.h>
 
 #include "amplc_dio200.h"
 
-/* 200 series registers */
+ 
 #define DIO200_IO_SIZE		0x20
 #define DIO200_PCIE_IO_SIZE	0x4000
-#define DIO200_CLK_SCE(x)	(0x18 + (x))	/* Group X/Y/Z clock sel reg */
-#define DIO200_GAT_SCE(x)	(0x1b + (x))	/* Group X/Y/Z gate sel reg */
-#define DIO200_INT_SCE		0x1e	/* Interrupt enable/status register */
-/* Extra registers for new PCIe boards */
-#define DIO200_ENHANCE		0x20	/* 1 to enable enhanced features */
-#define DIO200_VERSION		0x24	/* Hardware version register */
-#define DIO200_TS_CONFIG	0x600	/* Timestamp timer config register */
-#define DIO200_TS_COUNT		0x602	/* Timestamp timer count register */
+#define DIO200_CLK_SCE(x)	(0x18 + (x))	 
+#define DIO200_GAT_SCE(x)	(0x1b + (x))	 
+#define DIO200_INT_SCE		0x1e	 
+ 
+#define DIO200_ENHANCE		0x20	 
+#define DIO200_VERSION		0x24	 
+#define DIO200_TS_CONFIG	0x600	 
+#define DIO200_TS_COUNT		0x602	 
 
-/*
- * Functions for constructing value for DIO_200_?CLK_SCE and
- * DIO_200_?GAT_SCE registers:
- *
- * 'which' is: 0 for CTR-X1, CTR-Y1, CTR-Z1; 1 for CTR-X2, CTR-Y2 or CTR-Z2.
- * 'chan' is the channel: 0, 1 or 2.
- * 'source' is the signal source: 0 to 7, or 0 to 31 for "enhanced" boards.
- */
+ 
 static unsigned char clk_gat_sce(unsigned int which, unsigned int chan,
 				 unsigned int source)
 {
@@ -45,41 +29,35 @@ static unsigned char clk_gat_sce(unsigned int which, unsigned int chan,
 	       ((source & 030) << 3) | (source & 007);
 }
 
-/*
- * Periods of the internal clock sources in nanoseconds.
- */
+ 
 static const unsigned int clock_period[32] = {
-	[1] = 100,		/* 10 MHz */
-	[2] = 1000,		/* 1 MHz */
-	[3] = 10000,		/* 100 kHz */
-	[4] = 100000,		/* 10 kHz */
-	[5] = 1000000,		/* 1 kHz */
-	[11] = 50,		/* 20 MHz (enhanced boards) */
-	/* clock sources 12 and later reserved for enhanced boards */
+	[1] = 100,		 
+	[2] = 1000,		 
+	[3] = 10000,		 
+	[4] = 100000,		 
+	[5] = 1000000,		 
+	[11] = 50,		 
+	 
 };
 
-/*
- * Timestamp timer configuration register (for new PCIe boards).
- */
-#define TS_CONFIG_RESET		0x100	/* Reset counter to zero. */
-#define TS_CONFIG_CLK_SRC_MASK	0x0FF	/* Clock source. */
-#define TS_CONFIG_MAX_CLK_SRC	2	/* Maximum clock source value. */
+ 
+#define TS_CONFIG_RESET		0x100	 
+#define TS_CONFIG_CLK_SRC_MASK	0x0FF	 
+#define TS_CONFIG_MAX_CLK_SRC	2	 
 
-/*
- * Periods of the timestamp timer clock sources in nanoseconds.
- */
+ 
 static const unsigned int ts_clock_period[TS_CONFIG_MAX_CLK_SRC + 1] = {
-	1,			/* 1 nanosecond (but with 20 ns granularity). */
-	1000,			/* 1 microsecond. */
-	1000000,		/* 1 millisecond. */
+	1,			 
+	1000,			 
+	1000000,		 
 };
 
 struct dio200_subdev_8255 {
-	unsigned int ofs;		/* DIO base offset */
+	unsigned int ofs;		 
 };
 
 struct dio200_subdev_intr {
-	spinlock_t spinlock;	/* protects the 'active' flag */
+	spinlock_t spinlock;	 
 	unsigned int ofs;
 	unsigned int valid_isns;
 	unsigned int enabled_isns;
@@ -147,17 +125,17 @@ static unsigned int dio200_subdev_8254_offset(struct comedi_device *dev,
 	struct comedi_8254 *i8254 = s->private;
 	unsigned int offset;
 
-	/* get the offset that was passed to comedi_8254_*_init() */
+	 
 	if (dev->mmio)
 		offset = i8254->mmio - dev->mmio;
 	else
 		offset = i8254->iobase - dev->iobase;
 
-	/* remove the shift that was added for PCIe boards */
+	 
 	if (board->is_pcie)
 		offset >>= 3;
 
-	/* this offset now works for the dio200_{read,write} helpers */
+	 
 	return offset;
 }
 
@@ -170,10 +148,10 @@ static int dio200_subdev_intr_insn_bits(struct comedi_device *dev,
 	struct dio200_subdev_intr *subpriv = s->private;
 
 	if (board->has_int_sce) {
-		/* Just read the interrupt status register.  */
+		 
 		data[1] = dio200_read8(dev, subpriv->ofs) & subpriv->valid_isns;
 	} else {
-		/* No interrupt status register. */
+		 
 		data[0] = 0;
 	}
 
@@ -201,14 +179,14 @@ static void dio200_start_intr(struct comedi_device *dev,
 	unsigned int n;
 	unsigned int isn_bits;
 
-	/* Determine interrupt sources to enable. */
+	 
 	isn_bits = 0;
 	if (cmd->chanlist) {
 		for (n = 0; n < cmd->chanlist_len; n++)
 			isn_bits |= (1U << CR_CHAN(cmd->chanlist[n]));
 	}
 	isn_bits &= subpriv->valid_isns;
-	/* Enable interrupt sources. */
+	 
 	subpriv->enabled_isns = isn_bits;
 	if (board->has_int_sce)
 		dio200_write8(dev, subpriv->ofs, isn_bits);
@@ -271,16 +249,7 @@ static int dio200_handle_read_intr(struct comedi_device *dev,
 
 	spin_lock_irqsave(&subpriv->spinlock, flags);
 	if (board->has_int_sce) {
-		/*
-		 * Collect interrupt sources that have triggered and disable
-		 * them temporarily.  Loop around until no extra interrupt
-		 * sources have triggered, at which point, the valid part of
-		 * the interrupt status register will read zero, clearing the
-		 * cause of the interrupt.
-		 *
-		 * Mask off interrupt sources already seen to avoid infinite
-		 * loop in case of misconfiguration.
-		 */
+		 
 		cur_enabled = subpriv->enabled_isns;
 		while ((intstat = (dio200_read8(dev, subpriv->ofs) &
 				   subpriv->valid_isns & ~triggered)) != 0) {
@@ -289,34 +258,20 @@ static int dio200_handle_read_intr(struct comedi_device *dev,
 			dio200_write8(dev, subpriv->ofs, cur_enabled);
 		}
 	} else {
-		/*
-		 * No interrupt status register.  Assume the single interrupt
-		 * source has triggered.
-		 */
+		 
 		triggered = subpriv->enabled_isns;
 	}
 
 	if (triggered) {
-		/*
-		 * Some interrupt sources have triggered and have been
-		 * temporarily disabled to clear the cause of the interrupt.
-		 *
-		 * Reenable them NOW to minimize the time they are disabled.
-		 */
+		 
 		cur_enabled = subpriv->enabled_isns;
 		if (board->has_int_sce)
 			dio200_write8(dev, subpriv->ofs, cur_enabled);
 
 		if (subpriv->active) {
-			/*
-			 * The command is still active.
-			 *
-			 * Ignore interrupt sources that the command isn't
-			 * interested in (just in case there's a race
-			 * condition).
-			 */
+			 
 			if (triggered & subpriv->enabled_isns) {
-				/* Collect scan data. */
+				 
 				dio200_read_scan_intr(dev, s, triggered);
 			}
 		}
@@ -349,7 +304,7 @@ static int dio200_subdev_intr_cmdtest(struct comedi_device *dev,
 {
 	int err = 0;
 
-	/* Step 1 : check if triggers are trivially valid */
+	 
 
 	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW | TRIG_INT);
 	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_EXT);
@@ -360,17 +315,17 @@ static int dio200_subdev_intr_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 1;
 
-	/* Step 2a : make sure trigger sources are unique */
+	 
 
 	err |= comedi_check_trigger_is_unique(cmd->start_src);
 	err |= comedi_check_trigger_is_unique(cmd->stop_src);
 
-	/* Step 2b : and mutually compatible */
+	 
 
 	if (err)
 		return 2;
 
-	/* Step 3: check if arguments are trivially valid */
+	 
 
 	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
 	err |= comedi_check_trigger_arg_is(&cmd->scan_begin_arg, 0);
@@ -380,15 +335,15 @@ static int dio200_subdev_intr_cmdtest(struct comedi_device *dev,
 
 	if (cmd->stop_src == TRIG_COUNT)
 		err |= comedi_check_trigger_arg_min(&cmd->stop_arg, 1);
-	else	/* TRIG_NONE */
+	else	 
 		err |= comedi_check_trigger_arg_is(&cmd->stop_arg, 0);
 
 	if (err)
 		return 3;
 
-	/* step 4: fix up any arguments */
+	 
 
-	/* if (err) return 4; */
+	 
 
 	return 0;
 }
@@ -406,7 +361,7 @@ static int dio200_subdev_intr_cmd(struct comedi_device *dev,
 
 	if (cmd->start_src == TRIG_INT)
 		s->async->inttrig = dio200_inttrig_start_intr;
-	else	/* TRIG_NOW */
+	else	 
 		dio200_start_intr(dev, s);
 
 	spin_unlock_irqrestore(&subpriv->spinlock, flags);
@@ -431,7 +386,7 @@ static int dio200_subdev_intr_init(struct comedi_device *dev,
 	spin_lock_init(&subpriv->spinlock);
 
 	if (board->has_int_sce)
-		/* Disable interrupt sources. */
+		 
 		dio200_write8(dev, subpriv->ofs, 0);
 
 	s->type = COMEDI_SUBD_DI;
@@ -440,7 +395,7 @@ static int dio200_subdev_intr_init(struct comedi_device *dev,
 		s->n_chan = DIO200_MAX_ISNS;
 		s->len_chanlist = DIO200_MAX_ISNS;
 	} else {
-		/* No interrupt source register.  Support single channel. */
+		 
 		s->n_chan = 1;
 		s->len_chanlist = 1;
 	}
@@ -544,10 +499,7 @@ static int dio200_subdev_8254_init(struct comedi_device *dev,
 	unsigned int regshift;
 	int chan;
 
-	/*
-	 * PCIe boards need the offset shifted in order to get the
-	 * correct base address of the timer.
-	 */
+	 
 	if (board->is_pcie) {
 		offset <<= 3;
 		regshift = 3;
@@ -569,21 +521,15 @@ static int dio200_subdev_8254_init(struct comedi_device *dev,
 
 	i8254->insn_config = dio200_subdev_8254_config;
 
-	/*
-	 * There could be multiple timers so this driver does not
-	 * use dev->pacer to save the i8254 pointer. Instead,
-	 * comedi_8254_subdevice_init() saved the i8254 pointer in
-	 * s->private.  Mark the subdevice as having private data
-	 * to be automatically freed when the device is detached.
-	 */
+	 
 	comedi_set_spriv_auto_free(s);
 
-	/* Initialize channels. */
+	 
 	if (board->has_clk_gat_sce) {
 		for (chan = 0; chan < 3; chan++) {
-			/* Gate source 0 is VCC (logic 1). */
+			 
 			dio200_subdev_8254_set_gate_src(dev, s, chan, 0);
-			/* Clock source 0 is the dedicated clock input. */
+			 
 			dio200_subdev_8254_set_clock_src(dev, s, chan, 0);
 		}
 	}
@@ -598,7 +544,7 @@ static void dio200_subdev_8255_set_dir(struct comedi_device *dev,
 	int config;
 
 	config = I8255_CTRL_CW;
-	/* 1 in io_bits indicates output, 1 in config indicates input */
+	 
 	if (!(s->io_bits & 0x0000ff))
 		config |= I8255_CTRL_A_IO;
 	if (!(s->io_bits & 0x00ff00))
@@ -787,21 +733,21 @@ int amplc_dio200_common_attach(struct comedi_device *dev, unsigned int irq,
 		s = &dev->subdevices[n];
 		switch (board->sdtype[n]) {
 		case sd_8254:
-			/* counter subdevice (8254) */
+			 
 			ret = dio200_subdev_8254_init(dev, s,
 						      board->sdinfo[n]);
 			if (ret < 0)
 				return ret;
 			break;
 		case sd_8255:
-			/* digital i/o subdevice (8255) */
+			 
 			ret = dio200_subdev_8255_init(dev, s,
 						      board->sdinfo[n]);
 			if (ret < 0)
 				return ret;
 			break;
 		case sd_intr:
-			/* 'INTERRUPT' subdevice */
+			 
 			if (irq && !dev->read_subdev) {
 				ret = dio200_subdev_intr_init(dev, s,
 							      DIO200_INT_SCE,

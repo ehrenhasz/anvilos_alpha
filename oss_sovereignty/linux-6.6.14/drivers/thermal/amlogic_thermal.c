@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Amlogic Thermal Sensor Driver
- *
- * Copyright (C) 2017 Huan Biao <huan.biao@amlogic.com>
- * Copyright (C) 2019 Guillaume La Roque <glaroque@baylibre.com>
- *
- * Register value to celsius temperature formulas:
- *	Read_Val	    m * U
- * U = ---------, Uptat = ---------
- *	2^16		  1 + n * U
- *
- * Temperature = A * ( Uptat + u_efuse / 2^16 )- B
- *
- *  A B m n : calibration parameters
- *  u_efuse : fused calibration value, it's a signed 16 bits value
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -63,15 +48,7 @@
 #define TSENSOR_CALIB_OFFSET	1
 #define TSENSOR_CALIB_SHIFT	4
 
-/**
- * struct amlogic_thermal_soc_calib_data
- * @A: calibration parameters
- * @B: calibration parameters
- * @m: calibration parameters
- * @n: calibration parameters
- *
- * This structure is required for configuration of amlogic thermal driver.
- */
+ 
 struct amlogic_thermal_soc_calib_data {
 	int A;
 	int B;
@@ -79,13 +56,7 @@ struct amlogic_thermal_soc_calib_data {
 	int n;
 };
 
-/**
- * struct amlogic_thermal_data
- * @u_efuse_off: register offset to read fused calibration value
- * @calibration_parameters: calibration parameters structure pointer
- * @regmap_config: regmap config for the device
- * This structure is required for configuration of amlogic thermal driver.
- */
+ 
 struct amlogic_thermal_data {
 	int u_efuse_off;
 	const struct amlogic_thermal_soc_calib_data *calibration_parameters;
@@ -102,10 +73,7 @@ struct amlogic_thermal {
 	u32 trim_info;
 };
 
-/*
- * Calculate a temperature value from a temperature code.
- * The unit of the temperature is degree milliCelsius.
- */
+ 
 static int amlogic_thermal_code_to_millicelsius(struct amlogic_thermal *pdata,
 						int temp_code)
 {
@@ -231,7 +199,7 @@ static const struct of_device_id of_amlogic_thermal_match[] = {
 		.compatible = "amlogic,g12a-cpu-thermal",
 		.data = &amlogic_thermal_g12a_cpu_param,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_amlogic_thermal_match);
 

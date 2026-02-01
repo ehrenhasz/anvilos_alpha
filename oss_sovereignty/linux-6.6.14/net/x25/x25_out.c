@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	X.25 Packet Layer release 002
- *
- *	This is ALPHA test software. This code may break your machine,
- *	randomly fail to work with new releases, misbehave and/or generally
- *	screw up. It might even work.
- *
- *	This code REQUIRES 2.1.15 or higher
- *
- *	History
- *	X.25 001	Jonathan Naylor	Started coding.
- *	X.25 002	Jonathan Naylor	New timer architecture.
- *	2000-09-04	Henner Eisen	Prevented x25_output() skb leakage.
- *	2000-10-27	Henner Eisen	MSG_DONTWAIT for fragment allocation.
- *	2000-11-10	Henner Eisen	x25_send_iframe(): re-queued frames
- *					needed cleaned seq-number fields.
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/socket.h>
@@ -38,12 +22,7 @@ static int x25_pacsize_to_bytes(unsigned int pacsize)
 	return bytes;
 }
 
-/*
- *	This is where all X.25 information frames pass.
- *
- *      Returns the amount of user data bytes sent on success
- *      or a negative error code on failure.
- */
+ 
 int x25_output(struct sock *sk, struct sk_buff *skb)
 {
 	struct sk_buff *skbn;
@@ -56,7 +35,7 @@ int x25_output(struct sock *sk, struct sk_buff *skb)
 	int max_len = x25_pacsize_to_bytes(x25->facilities.pacsize_out);
 
 	if (skb->len - header_len > max_len) {
-		/* Save a copy of the Header */
+		 
 		skb_copy_from_linear_data(skb, header, header_len);
 		skb_pull(skb, header_len);
 
@@ -82,11 +61,11 @@ int x25_output(struct sock *sk, struct sk_buff *skb)
 
 			len = max_len > skb->len ? skb->len : max_len;
 
-			/* Copy the user data */
+			 
 			skb_copy_from_linear_data(skb, skb_put(skbn, len), len);
 			skb_pull(skb, len);
 
-			/* Duplicate the Header */
+			 
 			skb_push(skbn, header_len);
 			skb_copy_to_linear_data(skbn, header, header_len);
 
@@ -109,10 +88,7 @@ int x25_output(struct sock *sk, struct sk_buff *skb)
 	return sent;
 }
 
-/*
- *	This procedure is passed a buffer descriptor for an iframe. It builds
- *	the rest of the control part of the frame and then writes it out.
- */
+ 
 static void x25_send_iframe(struct sock *sk, struct sk_buff *skb)
 {
 	struct x25_sock *x25 = x25_sk(sk);
@@ -143,9 +119,7 @@ void x25_kick(struct sock *sk)
 	if (x25->state != X25_STATE_3)
 		return;
 
-	/*
-	 *	Transmit interrupt data.
-	 */
+	 
 	if (skb_peek(&x25->interrupt_out_queue) != NULL &&
 		!test_and_set_bit(X25_INTERRUPT_FLAG, &x25->flags)) {
 
@@ -169,10 +143,7 @@ void x25_kick(struct sock *sk)
 
 	x25->vs = start;
 
-	/*
-	 * Transmit data until either we're out of data to send or
-	 * the window is full.
-	 */
+	 
 
 	skb = skb_dequeue(&sk->sk_write_queue);
 
@@ -184,16 +155,12 @@ void x25_kick(struct sock *sk)
 
 		skb_set_owner_w(skbn, sk);
 
-		/*
-		 * Transmit the frame copy.
-		 */
+		 
 		x25_send_iframe(sk, skbn);
 
 		x25->vs = (x25->vs + 1) % modulus;
 
-		/*
-		 * Requeue the original data frame.
-		 */
+		 
 		skb_queue_tail(&x25->ack_queue, skb);
 
 	} while (x25->vs != end &&
@@ -205,10 +172,7 @@ void x25_kick(struct sock *sk)
 	x25_stop_timer(sk);
 }
 
-/*
- * The following routines are taken from page 170 of the 7th ARRL Computer
- * Networking Conference paper, as is the whole state machine.
- */
+ 
 
 void x25_enquiry_response(struct sock *sk)
 {

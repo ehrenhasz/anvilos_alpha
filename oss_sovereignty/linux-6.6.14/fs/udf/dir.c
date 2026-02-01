@@ -1,24 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * dir.c
- *
- * PURPOSE
- *  Directory handling routines for the OSTA-UDF(tm) filesystem.
- *
- * COPYRIGHT
- *  (C) 1998-2004 Ben Fennema
- *
- * HISTORY
- *
- *  10/05/98 dgb  Split directory operations into its own file
- *                Implemented directory reads via do_udf_readdir
- *  10/06/98      Made directory operations work!
- *  11/17/98      Rewrote directory to support ICBTAG_FLAG_AD_LONG
- *  11/25/98 blf  Rewrote directory handling (readdir+lookup) to support reading
- *                across blocks.
- *  12/12/98      Split out the lookup code to namei.c. bulk of directory
- *                code now in directory.c:udf_fileident_read.
- */
+
+ 
 
 #include "udfdecl.h"
 
@@ -52,14 +33,7 @@ static int udf_readdir(struct file *file, struct dir_context *ctx)
 	if (nf_pos >= dir->i_size)
 		goto out;
 
-	/*
-	 * Something changed since last readdir (either lseek was called or dir
-	 * changed)?  We need to verify the position correctly points at the
-	 * beginning of some dir entry so that the directory parsing code does
-	 * not get confused. Since UDF does not have any reliable way of
-	 * identifying beginning of dir entry (names are under user control),
-	 * we need to scan the directory from the beginning.
-	 */
+	 
 	if (!inode_eq_iversion(dir, file->f_version)) {
 		emit_pos = nf_pos;
 		nf_pos = 0;
@@ -79,11 +53,11 @@ static int udf_readdir(struct file *file, struct dir_context *ctx)
 		struct kernel_lb_addr tloc;
 		udf_pblk_t iblock;
 
-		/* Still not at offset where user asked us to read from? */
+		 
 		if (iter.pos < emit_pos)
 			continue;
 
-		/* Update file position only if we got past the current one */
+		 
 		pos_valid = true;
 		ctx->pos = (iter.pos >> 2) + 1;
 
@@ -128,7 +102,7 @@ out:
 	return ret;
 }
 
-/* readdir and lookup functions */
+ 
 const struct file_operations udf_dir_operations = {
 	.llseek			= generic_file_llseek,
 	.read			= generic_read_dir,

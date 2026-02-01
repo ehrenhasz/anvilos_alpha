@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * From setup-res.c, by:
- *	Dave Rusling (david.rusling@reo.mts.dec.com)
- *	David Mosberger (davidm@cs.arizona.edu)
- *	David Miller (davem@redhat.com)
- *	Ivan Kokshaysky (ink@jurassic.park.msu.ru)
- */
+
+ 
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/pci.h>
@@ -149,12 +143,7 @@ static struct pci_bus_region pci_high = {(pci_bus_addr_t) 0x100000000ULL,
 				(pci_bus_addr_t) 0xffffffffffffffffULL};
 #endif
 
-/*
- * @res contains CPU addresses.  Clip it so the corresponding bus addresses
- * on @bus are entirely within @region.  This is used to control the bus
- * addresses of resources we allocate, e.g., we may need a resource that
- * can be mapped by a 32-bit BAR.
- */
+ 
 static void pci_clip_resource_to_region(struct pci_bus *bus,
 					struct resource *res,
 					struct pci_bus_region *region)
@@ -195,12 +184,11 @@ static int pci_bus_alloc_from_region(struct pci_bus *bus, struct resource *res,
 		if (!r)
 			continue;
 
-		/* type_mask must match */
+		 
 		if ((res->flags ^ r->flags) & type_mask)
 			continue;
 
-		/* We cannot allocate a non-prefetching resource
-		   from a pre-fetching area */
+		 
 		if ((r->flags & IORESOURCE_PREFETCH) &&
 		    !(res->flags & IORESOURCE_PREFETCH))
 			continue;
@@ -208,22 +196,17 @@ static int pci_bus_alloc_from_region(struct pci_bus *bus, struct resource *res,
 		avail = *r;
 		pci_clip_resource_to_region(bus, &avail, region);
 
-		/*
-		 * "min" is typically PCIBIOS_MIN_IO or PCIBIOS_MIN_MEM to
-		 * protect badly documented motherboard resources, but if
-		 * this is an already-configured bridge window, its start
-		 * overrides "min".
-		 */
+		 
 		if (avail.start)
 			min_used = avail.start;
 
 		max = avail.end;
 
-		/* Don't bother if available space isn't large enough */
+		 
 		if (size > max - min_used + 1)
 			continue;
 
-		/* Ok, try it out.. */
+		 
 		ret = allocate_resource(r, res, size, min_used, max,
 					align, alignf, alignf_data);
 		if (ret == 0)
@@ -232,21 +215,7 @@ static int pci_bus_alloc_from_region(struct pci_bus *bus, struct resource *res,
 	return -ENOMEM;
 }
 
-/**
- * pci_bus_alloc_resource - allocate a resource from a parent bus
- * @bus: PCI bus
- * @res: resource to allocate
- * @size: size of resource to allocate
- * @align: alignment of resource to allocate
- * @min: minimum /proc/iomem address to allocate
- * @type_mask: IORESOURCE_* type flags
- * @alignf: resource alignment function
- * @alignf_data: data argument for resource alignment function
- *
- * Given the PCI bus a device resides on, the size, minimum address,
- * alignment and type, try to find an acceptable resource allocation
- * for a specific device resource.
- */
+ 
 int pci_bus_alloc_resource(struct pci_bus *bus, struct resource *res,
 		resource_size_t size, resource_size_t align,
 		resource_size_t min, unsigned long type_mask,
@@ -278,12 +247,7 @@ int pci_bus_alloc_resource(struct pci_bus *bus, struct resource *res,
 }
 EXPORT_SYMBOL(pci_bus_alloc_resource);
 
-/*
- * The @idx resource of @dev should be a PCI-PCI bridge window.  If this
- * resource fits inside a window of an upstream bridge, do nothing.  If it
- * overlaps an upstream window but extends outside it, clip the resource so
- * it fits completely inside.
- */
+ 
 bool pci_bus_clip_resource(struct pci_dev *dev, int idx)
 {
 	struct pci_bus *bus = dev->bus;
@@ -304,10 +268,10 @@ bool pci_bus_clip_resource(struct pci_dev *dev, int idx)
 		end = min(r->end, res->end);
 
 		if (start > end)
-			continue;	/* no overlap */
+			continue;	 
 
 		if (res->start == start && res->end == end)
-			return false;	/* no change */
+			return false;	 
 
 		res->start = start;
 		res->end = end;
@@ -325,21 +289,13 @@ void __weak pcibios_resource_survey_bus(struct pci_bus *bus) { }
 
 void __weak pcibios_bus_add_device(struct pci_dev *pdev) { }
 
-/**
- * pci_bus_add_device - start driver for a single device
- * @dev: device to add
- *
- * This adds add sysfs entries and start device drivers
- */
+ 
 void pci_bus_add_device(struct pci_dev *dev)
 {
 	struct device_node *dn = dev->dev.of_node;
 	int retval;
 
-	/*
-	 * Can not put in pci_device_add yet because resources
-	 * are not assigned yet for some devices.
-	 */
+	 
 	pcibios_bus_add_device(dev);
 	pci_fixup_device(pci_fixup_final, dev);
 	if (pci_is_bridge(dev))
@@ -357,26 +313,21 @@ void pci_bus_add_device(struct pci_dev *dev)
 }
 EXPORT_SYMBOL_GPL(pci_bus_add_device);
 
-/**
- * pci_bus_add_devices - start driver for PCI devices
- * @bus: bus to check for new devices
- *
- * Start driver for PCI devices and add some sysfs entries.
- */
+ 
 void pci_bus_add_devices(const struct pci_bus *bus)
 {
 	struct pci_dev *dev;
 	struct pci_bus *child;
 
 	list_for_each_entry(dev, &bus->devices, bus_list) {
-		/* Skip already-added devices */
+		 
 		if (pci_dev_is_added(dev))
 			continue;
 		pci_bus_add_device(dev);
 	}
 
 	list_for_each_entry(dev, &bus->devices, bus_list) {
-		/* Skip if device attach failed */
+		 
 		if (!pci_dev_is_added(dev))
 			continue;
 		child = dev->subordinate;
@@ -386,19 +337,7 @@ void pci_bus_add_devices(const struct pci_bus *bus)
 }
 EXPORT_SYMBOL(pci_bus_add_devices);
 
-/** pci_walk_bus - walk devices on/under bus, calling callback.
- *  @top      bus whose devices should be walked
- *  @cb       callback to be called for each device found
- *  @userdata arbitrary pointer to be passed to callback.
- *
- *  Walk the given bus, including any bridged devices
- *  on buses under this bus.  Call the provided callback
- *  on each device found.
- *
- *  We check the return of @cb each time. If it returns anything
- *  other than 0, we break out.
- *
- */
+ 
 void pci_walk_bus(struct pci_bus *top, int (*cb)(struct pci_dev *, void *),
 		  void *userdata)
 {
@@ -412,7 +351,7 @@ void pci_walk_bus(struct pci_bus *top, int (*cb)(struct pci_dev *, void *),
 	next = top->devices.next;
 	for (;;) {
 		if (next == &bus->devices) {
-			/* end of this bus, go up or finish */
+			 
 			if (bus == top)
 				break;
 			next = bus->self->bus_list.next;
@@ -421,7 +360,7 @@ void pci_walk_bus(struct pci_bus *top, int (*cb)(struct pci_dev *, void *),
 		}
 		dev = list_entry(next, struct pci_dev, bus_list);
 		if (dev->subordinate) {
-			/* this is a pci-pci bridge, do its devices next */
+			 
 			next = dev->subordinate->devices.next;
 			bus = dev->subordinate;
 		} else

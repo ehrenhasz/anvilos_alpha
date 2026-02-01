@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	kirkwood_freq.c: cpufreq driver for the Marvell kirkwood
- *
- *	Copyright (C) 2013 Andrew Lunn <andrew@lunn.ch>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -28,17 +24,10 @@ static struct priv
 #define STATE_CPU_FREQ 0x01
 #define STATE_DDR_FREQ 0x02
 
-/*
- * Kirkwood can swap the clock to the CPU between two clocks:
- *
- * - cpu clk
- * - ddr clk
- *
- * The frequencies are set at runtime before registering this table.
- */
+ 
 static struct cpufreq_frequency_table kirkwood_freq_table[] = {
-	{0, STATE_CPU_FREQ,	0}, /* CPU uses cpuclk */
-	{0, STATE_DDR_FREQ,	0}, /* CPU uses ddrclk */
+	{0, STATE_CPU_FREQ,	0},  
+	{0, STATE_DDR_FREQ,	0},  
 	{0, 0,			CPUFREQ_TABLE_END},
 };
 
@@ -55,7 +44,7 @@ static int kirkwood_cpufreq_target(struct cpufreq_policy *policy,
 
 	local_irq_disable();
 
-	/* Disable interrupts to the CPU */
+	 
 	reg = readl_relaxed(priv.base);
 	reg |= CPU_SW_INT_BLK;
 	writel_relaxed(reg, priv.base);
@@ -69,10 +58,10 @@ static int kirkwood_cpufreq_target(struct cpufreq_policy *policy,
 		break;
 	}
 
-	/* Wait-for-Interrupt, while the hardware changes frequency */
+	 
 	cpu_do_idle();
 
-	/* Enable interrupts to the CPU */
+	 
 	reg = readl_relaxed(priv.base);
 	reg &= ~CPU_SW_INT_BLK;
 	writel_relaxed(reg, priv.base);
@@ -82,7 +71,7 @@ static int kirkwood_cpufreq_target(struct cpufreq_policy *policy,
 	return 0;
 }
 
-/* Module init and exit code */
+ 
 static int kirkwood_cpufreq_cpu_init(struct cpufreq_policy *policy)
 {
 	cpufreq_generic_init(policy, kirkwood_freq_table, 5000);

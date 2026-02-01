@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NVMe over Fabrics TCP target.
- * Copyright (c) 2018 Lightbits Labs. All rights reserved.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/init.h>
@@ -19,7 +16,7 @@
 #include "nvmet.h"
 
 #define NVMET_TCP_DEF_INLINE_DATA_SIZE	(4 * PAGE_SIZE)
-#define NVMET_TCP_MAXH2CDATA		0x400000 /* 16M arbitrary limit */
+#define NVMET_TCP_MAXH2CDATA		0x400000  
 
 static int param_store_val(const char *str, int *val, int min, int max)
 {
@@ -46,21 +43,12 @@ static const struct kernel_param_ops set_param_ops = {
 	.get	= param_get_int,
 };
 
-/* Define the socket priority to use for connections were it is desirable
- * that the NIC consider performing optimized packet processing or filtering.
- * A non-zero value being sufficient to indicate general consideration of any
- * possible optimization.  Making it a module param allows for alternative
- * values that may be unique for some NIC implementations.
- */
+ 
 static int so_priority;
 device_param_cb(so_priority, &set_param_ops, &so_priority, 0644);
 MODULE_PARM_DESC(so_priority, "nvmet tcp socket optimize priority: Default 0");
 
-/* Define a time period (in usecs) that io_work() shall sample an activated
- * queue before determining it to be idle.  This optional module behavior
- * can enable NIC solutions that support socket optimized packet processing
- * using advanced interrupt moderation techniques.
- */
+ 
 static int idle_poll_period_usecs;
 device_param_cb(idle_poll_period_usecs, &set_param_ops,
 		&idle_poll_period_usecs, 0644);
@@ -112,7 +100,7 @@ struct nvmet_tcp_cmd {
 	struct list_head		entry;
 	struct llist_node		lentry;
 
-	/* send state */
+	 
 	u32				offset;
 	struct scatterlist		*cur_sg;
 	enum nvmet_tcp_send_state	state;
@@ -134,7 +122,7 @@ struct nvmet_tcp_queue {
 	struct nvmet_cq		nvme_cq;
 	struct nvmet_sq		nvme_sq;
 
-	/* send state */
+	 
 	struct nvmet_tcp_cmd	*cmds;
 	unsigned int		nr_cmds;
 	struct list_head	free_list;
@@ -143,14 +131,14 @@ struct nvmet_tcp_queue {
 	int			send_list_len;
 	struct nvmet_tcp_cmd	*snd_cmd;
 
-	/* recv state */
+	 
 	int			offset;
 	int			left;
 	enum nvmet_tcp_recv_state rcv_state;
 	struct nvmet_tcp_cmd	*cmd;
 	union nvme_tcp_pdu	pdu;
 
-	/* digest state */
+	 
 	bool			hdr_digest;
 	bool			data_digest;
 	struct ahash_request	*snd_hash;
@@ -198,7 +186,7 @@ static inline u16 nvmet_tcp_cmd_tag(struct nvmet_tcp_queue *queue,
 		struct nvmet_tcp_cmd *cmd)
 {
 	if (unlikely(!queue->nr_cmds)) {
-		/* We didn't allocate cmds yet, send 0xffff */
+		 
 		return USHRT_MAX;
 	}
 
@@ -553,11 +541,7 @@ static void nvmet_tcp_queue_response(struct nvmet_req *req)
 		sgl = &cmd->req.cmd->common.dptr.sgl;
 		len = le32_to_cpu(sgl->length);
 
-		/*
-		 * Wait for inline data before processing the response.
-		 * Avoid using helpers, this might happen before
-		 * nvmet_req_init is completed.
-		 */
+		 
 		if (queue->rcv_state == NVMET_TCP_RECV_PDU &&
 		    len && len <= cmd->req.port->inline_data_size &&
 		    nvme_is_write(cmd->req.cmd))
@@ -630,7 +614,7 @@ static int nvmet_try_send_data(struct nvmet_tcp_cmd *cmd, bool last_in_batch)
 		cmd->offset += ret;
 		cmd->wbytes_done += ret;
 
-		/* Done with sg?*/
+		 
 		if (cmd->offset == cmd->cur_sg->length) {
 			cmd->cur_sg = sg_next(cmd->cur_sg);
 			cmd->offset = 0;
@@ -912,7 +896,7 @@ static int nvmet_tcp_handle_icreq(struct nvmet_tcp_queue *queue)
 	iov.iov_len = sizeof(*icresp);
 	ret = kernel_sendmsg(queue->sock, &msg, &iov, 1, iov.iov_len);
 	if (ret < 0)
-		return ret; /* queue removal will cleanup */
+		return ret;  
 
 	queue->state = NVMET_TCP_Q_LIVE;
 	nvmet_prepare_receive_pdu(queue);
@@ -925,13 +909,7 @@ static void nvmet_tcp_handle_req_failure(struct nvmet_tcp_queue *queue,
 	size_t data_len = le32_to_cpu(req->cmd->common.dptr.sgl.length);
 	int ret;
 
-	/*
-	 * This command has not been processed yet, hence we are trying to
-	 * figure out if there is still pending data left to receive. If
-	 * we don't, we can simply prepare for the next pdu and bail out,
-	 * otherwise we will need to prepare a buffer and receive the
-	 * stale data before continuing forward.
-	 */
+	 
 	if (!nvme_is_write(cmd->req.cmd) || !data_len ||
 	    data_len > cmd->req.port->inline_data_size) {
 		nvmet_prepare_receive_pdu(queue);
@@ -972,7 +950,7 @@ static int nvmet_tcp_handle_h2c_data_pdu(struct nvmet_tcp_queue *queue)
 		pr_err("ttag %u unexpected data offset %u (expected %u)\n",
 			data->ttag, le32_to_cpu(data->data_offset),
 			cmd->rbytes_done);
-		/* FIXME: use path and transport errors */
+		 
 		nvmet_tcp_fatal_error(queue);
 		return -EPROTO;
 	}
@@ -987,7 +965,7 @@ static int nvmet_tcp_handle_h2c_data_pdu(struct nvmet_tcp_queue *queue)
 		     cmd->pdu_len == 0 ||
 		     cmd->pdu_len > NVMET_TCP_MAXH2CDATA)) {
 		pr_err("H2CData PDU len %u is invalid\n", cmd->pdu_len);
-		/* FIXME: use proper transport errors */
+		 
 		nvmet_tcp_fatal_error(queue);
 		return -EPROTO;
 	}
@@ -1032,7 +1010,7 @@ static int nvmet_tcp_done_recv_pdu(struct nvmet_tcp_queue *queue)
 
 	queue->cmd = nvmet_tcp_get_cmd(queue);
 	if (unlikely(!queue->cmd)) {
-		/* This should never happen */
+		 
 		pr_err("queue %d: out of commands (%d) send_list_len: %d, opcode: %d",
 			queue->idx, queue->nr_cmds, queue->send_list_len,
 			nvme_cmd->common.opcode);
@@ -1071,7 +1049,7 @@ static int nvmet_tcp_done_recv_pdu(struct nvmet_tcp_queue *queue)
 			nvmet_tcp_build_pdu_iovec(queue->cmd);
 			return 0;
 		}
-		/* send back R2T */
+		 
 		nvmet_tcp_queue_response(&queue->cmd->req);
 		goto out;
 	}
@@ -1103,7 +1081,7 @@ static inline bool nvmet_tcp_pdu_valid(u8 type)
 	case nvme_tcp_icreq:
 	case nvme_tcp_cmd:
 	case nvme_tcp_h2c_data:
-		/* fallthru */
+		 
 		return true;
 	}
 
@@ -1150,13 +1128,13 @@ recv:
 
 	if (queue->hdr_digest &&
 	    nvmet_tcp_verify_hdgst(queue, &queue->pdu, hdr->hlen)) {
-		nvmet_tcp_fatal_error(queue); /* fatal */
+		nvmet_tcp_fatal_error(queue);  
 		return -EPROTO;
 	}
 
 	if (queue->data_digest &&
 	    nvmet_tcp_check_ddgst(queue, &queue->pdu)) {
-		nvmet_tcp_fatal_error(queue); /* fatal */
+		nvmet_tcp_fatal_error(queue);  
 		return -EPROTO;
 	}
 
@@ -1345,10 +1323,7 @@ static void nvmet_tcp_io_work(struct work_struct *w)
 
 	} while (pending && ops < NVMET_TCP_IO_WORK_BUDGET);
 
-	/*
-	 * Requeue the worker if idle deadline period is in progress or any
-	 * ops activity was recorded during the do-while loop above.
-	 */
+	 
 	if (nvmet_tcp_check_queue_deadline(queue, ops) || pending)
 		queue_work_on(queue_cpu(queue), nvmet_tcp_wq, &queue->io_work);
 }
@@ -1466,7 +1441,7 @@ static void nvmet_tcp_uninit_data_in_cmds(struct nvmet_tcp_queue *queue)
 	}
 
 	if (!queue->nr_cmds && nvmet_tcp_need_data_in(&queue->connect)) {
-		/* failed in connect */
+		 
 		nvmet_req_uninit(&queue->connect.req);
 	}
 }
@@ -1497,7 +1472,7 @@ static void nvmet_tcp_release_queue_work(struct work_struct *w)
 
 	nvmet_tcp_restore_socket_callbacks(queue);
 	cancel_work_sync(&queue->io_work);
-	/* stop accepting incoming data */
+	 
 	queue->rcv_state = NVMET_TCP_RECV_ERR;
 
 	nvmet_tcp_uninit_data_in_cmds(queue);
@@ -1566,7 +1541,7 @@ static void nvmet_tcp_state_change(struct sock *sk)
 	case TCP_FIN_WAIT1:
 	case TCP_CLOSE_WAIT:
 	case TCP_CLOSE:
-		/* FALLTHRU */
+		 
 		nvmet_tcp_schedule_release_queue(queue);
 		break;
 	default:
@@ -1593,27 +1568,20 @@ static int nvmet_tcp_set_queue_sock(struct nvmet_tcp_queue *queue)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Cleanup whatever is sitting in the TCP transmit queue on socket
-	 * close. This is done to prevent stale data from being sent should
-	 * the network connection be restored before TCP times out.
-	 */
+	 
 	sock_no_linger(sock->sk);
 
 	if (so_priority > 0)
 		sock_set_priority(sock->sk, so_priority);
 
-	/* Set socket type of service */
+	 
 	if (inet->rcv_tos > 0)
 		ip_sock_set_tos(sock->sk, inet->rcv_tos);
 
 	ret = 0;
 	write_lock_bh(&sock->sk->sk_callback_lock);
 	if (sock->sk->sk_state != TCP_ESTABLISHED) {
-		/*
-		 * If the socket is already closing, don't even start
-		 * consuming it
-		 */
+		 
 		ret = -ENOTCONN;
 	} else {
 		sock->sk->sk_user_data = queue;
@@ -1829,10 +1797,7 @@ static void nvmet_tcp_remove_port(struct nvmet_port *nport)
 	port->sock->sk->sk_user_data = NULL;
 	write_unlock_bh(&port->sock->sk->sk_callback_lock);
 	cancel_work_sync(&port->accept_work);
-	/*
-	 * Destroy the remaining queues, which are not belong to any
-	 * controller yet.
-	 */
+	 
 	nvmet_tcp_destroy_port_queues(port);
 
 	sock_release(port->sock);
@@ -1856,7 +1821,7 @@ static u16 nvmet_tcp_install_queue(struct nvmet_sq *sq)
 		container_of(sq, struct nvmet_tcp_queue, nvme_sq);
 
 	if (sq->qid == 0) {
-		/* Let inflight controller teardown complete */
+		 
 		flush_workqueue(nvmet_wq);
 	}
 
@@ -1933,4 +1898,4 @@ module_init(nvmet_tcp_init);
 module_exit(nvmet_tcp_exit);
 
 MODULE_LICENSE("GPL v2");
-MODULE_ALIAS("nvmet-transport-3"); /* 3 == NVMF_TRTYPE_TCP */
+MODULE_ALIAS("nvmet-transport-3");  

@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2016-2021 HabanaLabs, Ltd.
- * All Rights Reserved.
- */
+
+ 
 
 #include "habanalabs.h"
 #include "../include/hw_ip/mmu/mmu_general.h"
@@ -705,7 +702,7 @@ static int device_va_to_pa(struct hl_device *hdev, u64 virt_addr, u32 size,
 		return -EINVAL;
 	}
 
-	/* Verify address is mapped */
+	 
 	mutex_lock(&ctx->mem_hash_lock);
 	hash_for_each(ctx->mem_hash, i, hnode, node) {
 		vm_type = hnode->ptr;
@@ -863,7 +860,7 @@ static ssize_t hl_data_read32(struct file *f, char __user *buf,
 	if (rc)
 		return rc;
 
-	val = value64; /* downcast back to 32 */
+	val = value64;  
 
 	sprintf(tmp_buf, "0x%08x\n", val);
 	return simple_read_from_buffer(buf, count, ppos, tmp_buf,
@@ -983,7 +980,7 @@ static ssize_t hl_dma_size_write(struct file *f, const char __user *buf,
 		return -EINVAL;
 	}
 
-	/* Free the previous allocation, if there was any */
+	 
 	entry->data_dma_blob_desc.size = 0;
 	vfree(entry->data_dma_blob_desc.data);
 
@@ -1028,7 +1025,7 @@ static ssize_t hl_monitor_dump_trigger(struct file *f, const char __user *buf,
 
 	size = sizeof(struct cpucp_monitor_dump);
 
-	/* Free the previous allocation, if there was any */
+	 
 	entry->mon_dump_blob_desc.size = 0;
 	vfree(entry->mon_dump_blob_desc.data);
 
@@ -1227,7 +1224,7 @@ static ssize_t hl_device_write(struct file *f, const char __user *buf,
 	struct hl_device *hdev = entry->hdev;
 	char data[30] = {0};
 
-	/* don't allow partial writes */
+	 
 	if (*ppos != 0)
 		return 0;
 
@@ -1911,13 +1908,7 @@ void hl_debugfs_remove_ctx_mem_hash(struct hl_device *hdev, struct hl_ctx *ctx)
 	mutex_unlock(&dev_entry->ctx_mem_hash_mutex);
 }
 
-/**
- * hl_debugfs_set_state_dump - register state dump making it accessible via
- *                             debugfs
- * @hdev: pointer to the device structure
- * @data: the actual dump data
- * @length: the length of the data
- */
+ 
 void hl_debugfs_set_state_dump(struct hl_device *hdev, char *data,
 					unsigned long length)
 {

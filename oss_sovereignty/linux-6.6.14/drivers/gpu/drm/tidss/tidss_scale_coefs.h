@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2018 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Jyri Sarha <jsarha@ti.com>
- */
+ 
+ 
 
 #ifndef __TIDSS_DISPC_COEF_H__
 #define __TIDSS_DISPC_COEF_H__

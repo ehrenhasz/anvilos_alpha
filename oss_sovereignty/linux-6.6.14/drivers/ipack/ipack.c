@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Industry-pack bus support functions.
- *
- * Copyright (C) 2011-2012 CERN (www.cern.ch)
- * Author: Samuel Iglesias Gonsalvez <siglesias@igalia.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -272,10 +267,7 @@ static u16 ipack_crc_byte(u16 crc, u8 c)
 	return crc;
 }
 
-/*
- * The algorithm in lib/crc-ccitt.c does not seem to apply since it uses the
- * opposite bit ordering.
- */
+ 
 static u8 ipack_calc_crc1(struct ipack_device *dev)
 {
 	u8 c;
@@ -355,10 +347,7 @@ static int ipack_device_read_id(struct ipack_device *dev)
 		return -ENOMEM;
 	}
 
-	/* Determine ID PROM Data Format.  If we find the ids "IPAC" or "IPAH"
-	 * we are dealing with a IndustryPack  format 1 device.  If we detect
-	 * "VITA4 " (16 bit big endian formatted) we are dealing with a
-	 * IndustryPack format 2 device */
+	 
 	if ((ioread8(idmem + 1) == 'I') &&
 			(ioread8(idmem + 3) == 'P') &&
 			(ioread8(idmem + 5) == 'A') &&
@@ -392,8 +381,7 @@ static int ipack_device_read_id(struct ipack_device *dev)
 		goto out;
 	}
 
-	/* Obtain the amount of memory required to store a copy of the complete
-	 * ID ROM contents */
+	 
 	dev->id = kmalloc(dev->id_avail, GFP_KERNEL);
 	if (!dev->id) {
 		ret = -ENOMEM;
@@ -406,7 +394,7 @@ static int ipack_device_read_id(struct ipack_device *dev)
 			dev->id[i] = ioread8(idmem + i);
 	}
 
-	/* now we can finally work with the copy */
+	 
 	switch (dev->id_format) {
 	case IPACK_ID_VERSION_1:
 		ipack_parse_id1(dev);
@@ -447,7 +435,7 @@ int ipack_device_init(struct ipack_device *dev)
 		return ret;
 	}
 
-	/* if the device supports 32 MHz operation, use it. */
+	 
 	if (dev->speed_32mhz) {
 		ret = dev->bus->ops->set_clockrate(dev, 32);
 		if (ret < 0)

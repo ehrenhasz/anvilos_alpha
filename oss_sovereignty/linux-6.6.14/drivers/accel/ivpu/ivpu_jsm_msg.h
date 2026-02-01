@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
+ 
+ 
 
 #ifndef __IVPU_JSM_MSG_H__
 #define __IVPU_JSM_MSG_H__

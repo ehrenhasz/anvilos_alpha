@@ -35,14 +35,11 @@ handle_exception:
 	pop %r14
 	pop %r15
 
-	/* Discard vector and error code. */
+	 
 	add $16, %rsp
 	iretq
 
-/*
- * Build the handle_exception wrappers which push the vector/error code on the
- * stack and an array of pointers to those wrappers.
- */
+ 
 .pushsection .rodata
 .globl idt_handlers
 idt_handlers:
@@ -53,7 +50,7 @@ idt_handlers:
 	.rept \to - \from + 1
 	.align 8
 
-	/* Fetch current address and append it to idt_handlers. */
+	 
 666 :
 .pushsection .rodata
 	.quad 666b

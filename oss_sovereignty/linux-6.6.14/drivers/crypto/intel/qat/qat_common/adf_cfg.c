@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2014 - 2020 Intel Corporation */
+
+ 
 #include <linux/mutex.h>
 #include <linux/slab.h>
 #include <linux/list.h>
@@ -54,16 +54,7 @@ static const struct seq_operations qat_dev_cfg_sops = {
 
 DEFINE_SEQ_ATTRIBUTE(qat_dev_cfg);
 
-/**
- * adf_cfg_dev_add() - Create an acceleration device configuration table.
- * @accel_dev:  Pointer to acceleration device.
- *
- * Function creates a configuration table for the given acceleration device.
- * The table stores device specific config values.
- * To be used by QAT device specific drivers.
- *
- * Return: 0 on success, error code otherwise.
- */
+ 
 int adf_cfg_dev_add(struct adf_accel_dev *accel_dev)
 {
 	struct adf_cfg_device_data *dev_cfg_data;
@@ -111,16 +102,7 @@ void adf_cfg_del_all(struct adf_accel_dev *accel_dev)
 	clear_bit(ADF_STATUS_CONFIGURED, &accel_dev->status);
 }
 
-/**
- * adf_cfg_dev_remove() - Clears acceleration device configuration table.
- * @accel_dev:  Pointer to acceleration device.
- *
- * Function removes configuration table from the given acceleration device
- * and frees all allocated memory.
- * To be used by QAT device specific drivers.
- *
- * Return: void
- */
+ 
 void adf_cfg_dev_remove(struct adf_accel_dev *accel_dev)
 {
 	struct adf_cfg_device_data *dev_cfg_data = accel_dev->cfg;
@@ -231,21 +213,7 @@ static int adf_cfg_key_val_get(struct adf_accel_dev *accel_dev,
 	return -ENODATA;
 }
 
-/**
- * adf_cfg_add_key_value_param() - Add key-value config entry to config table.
- * @accel_dev:  Pointer to acceleration device.
- * @section_name: Name of the section where the param will be added
- * @key: The key string
- * @val: Value pain for the given @key
- * @type: Type - string, int or address
- *
- * Function adds configuration key - value entry in the appropriate section
- * in the given acceleration device. If the key exists already, the value
- * is updated.
- * To be used by QAT device specific drivers.
- *
- * Return: 0 on success, error code otherwise.
- */
+ 
 int adf_cfg_add_key_value_param(struct adf_accel_dev *accel_dev,
 				const char *section_name,
 				const char *key, const void *val,
@@ -282,14 +250,7 @@ int adf_cfg_add_key_value_param(struct adf_accel_dev *accel_dev,
 	}
 	key_val->type = type;
 
-	/* Add the key-value pair as below policy:
-	 * 1. if the key doesn't exist, add it;
-	 * 2. if the key already exists with a different value then update it
-	 *    to the new value (the key is deleted and the newly created
-	 *    key_val containing the new value is added to the database);
-	 * 3. if the key exists with the same value, then return without doing
-	 *    anything (the newly created key_val is freed).
-	 */
+	 
 	if (!adf_cfg_key_val_get(accel_dev, section_name, key, temp_val)) {
 		if (strncmp(temp_val, key_val->val, sizeof(temp_val))) {
 			adf_cfg_keyval_remove(key, section);
@@ -306,17 +267,7 @@ int adf_cfg_add_key_value_param(struct adf_accel_dev *accel_dev,
 }
 EXPORT_SYMBOL_GPL(adf_cfg_add_key_value_param);
 
-/**
- * adf_cfg_section_add() - Add config section entry to config table.
- * @accel_dev:  Pointer to acceleration device.
- * @name: Name of the section
- *
- * Function adds configuration section where key - value entries
- * will be stored.
- * To be used by QAT device specific drivers.
- *
- * Return: 0 on success, error code otherwise.
- */
+ 
 int adf_cfg_section_add(struct adf_accel_dev *accel_dev, const char *name)
 {
 	struct adf_cfg_device_data *cfg = accel_dev->cfg;

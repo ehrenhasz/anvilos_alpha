@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * sm5502.h
- *
- * Copyright (c) 2014 Samsung Electronics Co., Ltd
- */
+ 
+ 
 
 #ifndef __LINUX_EXTCON_SM5502_H
 #define __LINUX_EXTCON_SM5502_H
 
-/* SM5502 registers */
+ 
 enum sm5502_reg {
 	SM5502_REG_DEVICE_ID = 0x01,
 	SM5502_REG_CONTROL,
@@ -72,7 +68,7 @@ enum sm5502_reg {
 	SM5502_REG_END,
 };
 
-/* Define SM5502 MASK/SHIFT constant */
+ 
 #define SM5502_REG_DEVICE_ID_VENDOR_SHIFT	0
 #define SM5502_REG_DEVICE_ID_VERSION_SHIFT	3
 #define SM5502_REG_DEVICE_ID_VENDOR_MASK	(0x3 << SM5502_REG_DEVICE_ID_VENDOR_SHIFT)
@@ -275,9 +271,9 @@ enum sm5502_reg {
 
 #define SM5502_REG_RESET_MASK			(0x1)
 
-/* SM5502 Interrupts */
+ 
 enum sm5502_irq {
-	/* INT1 */
+	 
 	SM5502_IRQ_INT1_ATTACH,
 	SM5502_IRQ_INT1_DETACH,
 	SM5502_IRQ_INT1_KP,
@@ -287,7 +283,7 @@ enum sm5502_irq {
 	SM5502_IRQ_INT1_OCP_EVENT,
 	SM5502_IRQ_INT1_OVP_OCP_DIS,
 
-	/* INT2 */
+	 
 	SM5502_IRQ_INT2_VBUS_DET,
 	SM5502_IRQ_INT2_REV_ACCE,
 	SM5502_IRQ_INT2_ADC_CHG,
@@ -313,9 +309,9 @@ enum sm5502_irq {
 #define SM5502_IRQ_INT2_STUCK_KEY_RCV_MASK	BIT(4)
 #define SM5502_IRQ_INT2_MHL_MASK		BIT(5)
 
-/* SM5504 Interrupts */
+ 
 enum sm5504_irq {
-	/* INT1 */
+	 
 	SM5504_IRQ_INT1_ATTACH,
 	SM5504_IRQ_INT1_DETACH,
 	SM5504_IRQ_INT1_CHG_DET,
@@ -324,7 +320,7 @@ enum sm5504_irq {
 	SM5504_IRQ_INT1_CONNECT,
 	SM5504_IRQ_INT1_ADC_CHG,
 
-	/* INT2 */
+	 
 	SM5504_IRQ_INT2_RID_CHG,
 	SM5504_IRQ_INT2_UVLO,
 	SM5504_IRQ_INT2_POR,
@@ -351,4 +347,4 @@ enum sm5504_irq {
 #define SM5504_IRQ_INT2_OCP_EVENT_MASK		BIT(6)
 #define SM5504_IRQ_INT2_OVP_OCP_EVENT_MASK	BIT(7)
 
-#endif /*  __LINUX_EXTCON_SM5502_H */
+#endif  

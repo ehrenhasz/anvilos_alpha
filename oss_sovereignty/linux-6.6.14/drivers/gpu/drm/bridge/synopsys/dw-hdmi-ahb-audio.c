@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * DesignWare HDMI audio driver
- *
- * Written and tested against the Designware HDMI Tx found in iMX6.
- */
+
+ 
 #include <linux/io.h>
 #include <linux/interrupt.h>
 #include <linux/module.h>
@@ -22,7 +18,7 @@
 
 #define DRIVER_NAME "dw-hdmi-ahb-audio"
 
-/* Provide some bits rather than bit offsets */
+ 
 enum {
 	HDMI_AHB_DMA_CONF0_SW_FIFO_RST = BIT(7),
 	HDMI_AHB_DMA_CONF0_EN_HLOCK = BIT(3),
@@ -80,37 +76,15 @@ struct dw_hdmi_channel_conf {
 	u8 ca;
 };
 
-/*
- * The default mapping of ALSA channels to HDMI channels and speaker
- * allocation bits.  Note that we can't do channel remapping here -
- * channels must be in the same order.
- *
- * Mappings for alsa-lib pcm/surround*.conf files:
- *
- *		Front	Sur4.0	Sur4.1	Sur5.0	Sur5.1	Sur7.1
- * Channels	2	4	6	6	6	8
- *
- * Our mapping from ALSA channel to CEA686D speaker name and HDMI channel:
- *
- *				Number of ALSA channels
- * ALSA Channel	2	3	4	5	6	7	8
- * 0		FL:0	=	=	=	=	=	=
- * 1		FR:1	=	=	=	=	=	=
- * 2			FC:3	RL:4	LFE:2	=	=	=
- * 3				RR:5	RL:4	FC:3	=	=
- * 4					RR:5	RL:4	=	=
- * 5						RR:5	=	=
- * 6							RC:6	=
- * 7							RLC/FRC	RLC/FRC
- */
+ 
 static struct dw_hdmi_channel_conf default_hdmi_channel_config[7] = {
-	{ 0x03, 0x00 },	/* FL,FR */
-	{ 0x0b, 0x02 },	/* FL,FR,FC */
-	{ 0x33, 0x08 },	/* FL,FR,RL,RR */
-	{ 0x37, 0x09 },	/* FL,FR,LFE,RL,RR */
-	{ 0x3f, 0x0b },	/* FL,FR,LFE,FC,RL,RR */
-	{ 0x7f, 0x0f },	/* FL,FR,LFE,FC,RL,RR,RC */
-	{ 0xff, 0x13 },	/* FL,FR,LFE,FC,RL,RR,[FR]RC,[FR]LC */
+	{ 0x03, 0x00 },	 
+	{ 0x0b, 0x02 },	 
+	{ 0x33, 0x08 },	 
+	{ 0x37, 0x09 },	 
+	{ 0x3f, 0x0b },	 
+	{ 0x7f, 0x0f },	 
+	{ 0xff, 0x13 },	 
 };
 
 struct snd_dw_hdmi {
@@ -140,16 +114,7 @@ static void dw_hdmi_writel(u32 val, void __iomem *ptr)
 	writeb_relaxed(val >> 24, ptr + 3);
 }
 
-/*
- * Convert to hardware format: The userspace buffer contains IEC958 samples,
- * with the PCUV bits in bits 31..28 and audio samples in bits 27..4.  We
- * need these to be in bits 27..24, with the IEC B bit in bit 28, and audio
- * samples in 23..0.
- *
- * Default preamble in bits 3..0: 8 = block start, 4 = even 2 = odd
- *
- * Ideally, we could do with having the data properly formatted in userspace.
- */
+ 
 static void dw_hdmi_reformat_iec958(struct snd_dw_hdmi *dw,
 	size_t offset, size_t bytes)
 {
@@ -239,14 +204,14 @@ static void dw_hdmi_start_dma(struct snd_dw_hdmi *dw)
 
 	dw->reformat(dw, offset, period);
 
-	/* Clear all irqs before enabling irqs and starting DMA */
+	 
 	writeb_relaxed(HDMI_IH_AHBDMAAUD_STAT0_ALL,
 		       base + HDMI_IH_AHBDMAAUD_STAT0);
 
 	start = dw->buf_addr + offset;
 	stop = start + period - 1;
 
-	/* Setup the hardware start/stop addresses */
+	 
 	dw_hdmi_writel(start, base + HDMI_AHB_DMA_STRADDR0);
 	dw_hdmi_writel(stop, base + HDMI_AHB_DMA_STPADDR0);
 
@@ -261,7 +226,7 @@ static void dw_hdmi_start_dma(struct snd_dw_hdmi *dw)
 
 static void dw_hdmi_stop_dma(struct snd_dw_hdmi *dw)
 {
-	/* Disable interrupts before disabling DMA */
+	 
 	writeb_relaxed(~0, dw->data.base + HDMI_AHB_DMA_MASK);
 	writeb_relaxed(HDMI_AHB_DMA_STOP_STOP, dw->data.base + HDMI_AHB_DMA_STOP);
 }
@@ -309,7 +274,7 @@ static const struct snd_pcm_hardware dw_hdmi_hw = {
 	.channels_max = 8,
 	.buffer_bytes_max = 1024 * 1024,
 	.period_bytes_min = 256,
-	.period_bytes_max = 8192,	/* ERR004323: must limit to 8k */
+	.period_bytes_max = 8192,	 
 	.periods_min = 2,
 	.periods_max = 16,
 	.fifo_size = 0,
@@ -341,22 +306,22 @@ static int dw_hdmi_open(struct snd_pcm_substream *substream)
 	if (ret < 0)
 		return ret;
 
-	/* Limit the buffer size to the size of the preallocated buffer */
+	 
 	ret = snd_pcm_hw_constraint_minmax(runtime,
 					   SNDRV_PCM_HW_PARAM_BUFFER_SIZE,
 					   0, substream->dma_buffer.bytes);
 	if (ret < 0)
 		return ret;
 
-	/* Clear FIFO */
+	 
 	writeb_relaxed(HDMI_AHB_DMA_CONF0_SW_FIFO_RST,
 		       base + HDMI_AHB_DMA_CONF0);
 
-	/* Configure interrupt polarities */
+	 
 	writeb_relaxed(~0, base + HDMI_AHB_DMA_POL);
 	writeb_relaxed(~0, base + HDMI_AHB_DMA_BUFFPOL);
 
-	/* Keep interrupts masked, and clear any pending */
+	 
 	writeb_relaxed(~0, base + HDMI_AHB_DMA_MASK);
 	writeb_relaxed(~0, base + HDMI_IH_AHBDMAAUD_STAT0);
 
@@ -365,7 +330,7 @@ static int dw_hdmi_open(struct snd_pcm_substream *substream)
 	if (ret)
 		return ret;
 
-	/* Un-mute done interrupt */
+	 
 	writeb_relaxed(HDMI_IH_MUTE_AHBDMAAUD_STAT0_ALL &
 		       ~HDMI_IH_MUTE_AHBDMAAUD_STAT0_DONE,
 		       base + HDMI_IH_MUTE_AHBDMAAUD_STAT0);
@@ -377,7 +342,7 @@ static int dw_hdmi_close(struct snd_pcm_substream *substream)
 {
 	struct snd_dw_hdmi *dw = substream->private_data;
 
-	/* Mute all interrupts */
+	 
 	writeb_relaxed(HDMI_IH_MUTE_AHBDMAAUD_STAT0_ALL,
 		       dw->data.base + HDMI_IH_MUTE_AHBDMAAUD_STAT0);
 
@@ -394,7 +359,7 @@ static int dw_hdmi_hw_free(struct snd_pcm_substream *substream)
 static int dw_hdmi_hw_params(struct snd_pcm_substream *substream,
 	struct snd_pcm_hw_params *params)
 {
-	/* Allocate the PCM runtime buffer, which is exposed to userspace. */
+	 
 	return snd_pcm_lib_alloc_vmalloc_buffer(substream,
 						params_buffer_bytes(params));
 }
@@ -405,7 +370,7 @@ static int dw_hdmi_prepare(struct snd_pcm_substream *substream)
 	struct snd_dw_hdmi *dw = substream->private_data;
 	u8 threshold, conf0, conf1, ca;
 
-	/* Setup as per 3.0.5 FSL 4.1.0 BSP */
+	 
 	switch (dw->revision) {
 	case 0x0a:
 		conf0 = HDMI_AHB_DMA_CONF0_BURST_MODE |
@@ -421,13 +386,13 @@ static int dw_hdmi_prepare(struct snd_pcm_substream *substream)
 		threshold = 128;
 		break;
 	default:
-		/* NOTREACHED */
+		 
 		return -EINVAL;
 	}
 
 	dw_hdmi_set_sample_rate(dw->data.hdmi, runtime->rate);
 
-	/* Minimum number of bytes in the fifo. */
+	 
 	runtime->hw.fifo_size = threshold * 32;
 
 	conf0 |= HDMI_AHB_DMA_CONF0_EN_HLOCK;
@@ -499,10 +464,7 @@ static snd_pcm_uframes_t dw_hdmi_pointer(struct snd_pcm_substream *substream)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct snd_dw_hdmi *dw = substream->private_data;
 
-	/*
-	 * We are unable to report the exact hardware position as
-	 * reading the 32-bit DMA position using 8-bit reads is racy.
-	 */
+	 
 	return bytes_to_frames(runtime, dw->buf_offset);
 }
 
@@ -564,10 +526,7 @@ static int snd_dw_hdmi_probe(struct platform_device *pdev)
 	strscpy(pcm->name, DRIVER_NAME, sizeof(pcm->name));
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &snd_dw_hdmi_ops);
 
-	/*
-	 * To support 8-channel 96kHz audio reliably, we need 512k
-	 * to satisfy alsa with our restricted period (ERR004323).
-	 */
+	 
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 			dev, 128 * 1024, 1024 * 1024);
 
@@ -592,10 +551,7 @@ static void snd_dw_hdmi_remove(struct platform_device *pdev)
 }
 
 #if defined(CONFIG_PM_SLEEP) && defined(IS_NOT_BROKEN)
-/*
- * This code is fine, but requires implementation in the dw_hdmi_trigger()
- * method which is currently missing as I have no way to test this.
- */
+ 
 static int snd_dw_hdmi_suspend(struct device *dev)
 {
 	struct snd_dw_hdmi *dw = dev_get_drvdata(dev);

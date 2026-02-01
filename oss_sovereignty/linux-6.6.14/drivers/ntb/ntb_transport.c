@@ -1,52 +1,4 @@
-/*
- * This file is provided under a dual BSD/GPLv2 license.  When using or
- *   redistributing this file, you may do so under either license.
- *
- *   GPL LICENSE SUMMARY
- *
- *   Copyright(c) 2012 Intel Corporation. All rights reserved.
- *   Copyright (C) 2015 EMC Corporation. All Rights Reserved.
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of version 2 of the GNU General Public License as
- *   published by the Free Software Foundation.
- *
- *   BSD LICENSE
- *
- *   Copyright(c) 2012 Intel Corporation. All rights reserved.
- *   Copyright (C) 2015 EMC Corporation. All Rights Reserved.
- *
- *   Redistribution and use in source and binary forms, with or without
- *   modification, are permitted provided that the following conditions
- *   are met:
- *
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copy
- *       notice, this list of conditions and the following disclaimer in
- *       the documentation and/or other materials provided with the
- *       distribution.
- *     * Neither the name of Intel Corporation nor the names of its
- *       contributors may be used to endorse or promote products derived
- *       from this software without specific prior written permission.
- *
- *   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *   "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *   A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- *   OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- *   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- *   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- *   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * PCIe NTB Transport Linux driver
- *
- * Contact Information:
- * Jon Mason <jon.mason@intel.com>
- */
+ 
 #include <linux/debugfs.h>
 #include <linux/delay.h>
 #include <linux/dmaengine.h>
@@ -101,13 +53,13 @@ MODULE_PARM_DESC(use_msi, "Use MSI interrupts instead of doorbells");
 
 static struct dentry *nt_debugfs_dir;
 
-/* Only two-ports NTB devices are supported */
+ 
 #define PIDX		NTB_DEF_PEER_IDX
 
 struct ntb_queue_entry {
-	/* ntb_queue list reference */
+	 
 	struct list_head entry;
-	/* pointers to data to be transferred */
+	 
 	void *cb_data;
 	void *buf;
 	unsigned int len;
@@ -139,7 +91,7 @@ struct ntb_transport_qp {
 	bool link_is_up;
 	bool active;
 
-	u8 qp_num;	/* Only 64 QP's are allowed.  0-63 */
+	u8 qp_num;	 
 	u64 qp_bit;
 
 	struct ntb_rx_info __iomem *rx_info;
@@ -162,7 +114,7 @@ struct ntb_transport_qp {
 	struct list_head rx_post_q;
 	struct list_head rx_pend_q;
 	struct list_head rx_free_q;
-	/* ntb_rx_q_lock: synchronize access to rx_XXXX_q */
+	 
 	spinlock_t ntb_rx_q_lock;
 	void *rx_buff;
 	unsigned int rx_index;
@@ -179,7 +131,7 @@ struct ntb_transport_qp {
 	struct dentry *debugfs_dir;
 	struct dentry *debugfs_stats;
 
-	/* Stats */
+	 
 	u64 rx_bytes;
 	u64 rx_pkts;
 	u64 rx_ring_empty;
@@ -351,12 +303,7 @@ static void ntb_transport_client_release(struct device *dev)
 	kfree(client_dev);
 }
 
-/**
- * ntb_transport_unregister_client_dev - Unregister NTB client device
- * @device_name: Name of NTB client device
- *
- * Unregister an NTB client device with the NTB transport layer
- */
+ 
 void ntb_transport_unregister_client_dev(char *device_name)
 {
 	struct ntb_transport_client_dev *client, *cd;
@@ -372,12 +319,7 @@ void ntb_transport_unregister_client_dev(char *device_name)
 }
 EXPORT_SYMBOL_GPL(ntb_transport_unregister_client_dev);
 
-/**
- * ntb_transport_register_client_dev - Register NTB client device
- * @device_name: Name of NTB client device
- *
- * Register an NTB client device with the NTB transport layer
- */
+ 
 int ntb_transport_register_client_dev(char *device_name)
 {
 	struct ntb_transport_client_dev *client_dev;
@@ -402,7 +344,7 @@ int ntb_transport_register_client_dev(char *device_name)
 
 		dev = &client_dev->dev;
 
-		/* setup and register client devices */
+		 
 		dev_set_name(dev, "%s%d", device_name, i);
 		dev->bus = &ntb_transport_bus;
 		dev->release = ntb_transport_client_release;
@@ -427,14 +369,7 @@ err:
 }
 EXPORT_SYMBOL_GPL(ntb_transport_register_client_dev);
 
-/**
- * ntb_transport_register_client - Register NTB client driver
- * @drv: NTB client driver to be registered
- *
- * Register an NTB client driver with the NTB transport layer
- *
- * RETURNS: An appropriate -ERRNO error value on error, or zero for success.
- */
+ 
 int ntb_transport_register_client(struct ntb_transport_client *drv)
 {
 	drv->driver.bus = &ntb_transport_bus;
@@ -446,14 +381,7 @@ int ntb_transport_register_client(struct ntb_transport_client *drv)
 }
 EXPORT_SYMBOL_GPL(ntb_transport_register_client);
 
-/**
- * ntb_transport_unregister_client - Unregister NTB client driver
- * @drv: NTB client driver to be unregistered
- *
- * Unregister an NTB client driver with the NTB transport layer
- *
- * RETURNS: An appropriate -ERRNO error value on error, or zero for success.
- */
+ 
 void ntb_transport_unregister_client(struct ntb_transport_client *drv)
 {
 	driver_unregister(&drv->driver);
@@ -642,16 +570,12 @@ static int ntb_transport_setup_qp_mw(struct ntb_transport_ctx *nt,
 
 	qp->remote_rx_info = qp->rx_buff + rx_size;
 
-	/* Due to housekeeping, there must be atleast 2 buffs */
+	 
 	qp->rx_max_frame = min(transport_mtu, rx_size / 2);
 	qp->rx_max_entry = rx_size / qp->rx_max_frame;
 	qp->rx_index = 0;
 
-	/*
-	 * Checking to see if we have more entries than the default.
-	 * We should add additional entries if that is the case so we
-	 * can be in sync with the transport frames.
-	 */
+	 
 	node = dev_to_node(&ndev->dev);
 	for (i = qp->rx_alloc_entry; i < qp->rx_max_entry; i++) {
 		entry = kzalloc_node(sizeof(*entry), GFP_KERNEL, node);
@@ -666,7 +590,7 @@ static int ntb_transport_setup_qp_mw(struct ntb_transport_ctx *nt,
 
 	qp->remote_rx_info->entry = qp->rx_max_entry - 1;
 
-	/* setup the hdr offsets with 0's */
+	 
 	for (i = 0; i < qp->rx_max_entry; i++) {
 		void *offset = (qp->rx_buff + qp->rx_max_frame * (i + 1) -
 				sizeof(struct ntb_payload_header));
@@ -822,12 +746,7 @@ static int ntb_alloc_mw_buffer(struct ntb_transport_mw *mw,
 	}
 	virt_addr = alloc_addr;
 
-	/*
-	 * we must ensure that the memory address allocated is BAR size
-	 * aligned in order for the XLAT register to take the value. This
-	 * is a requirement of the hardware. It is recommended to setup CMA
-	 * for BAR sizes equal or greater than 4MB.
-	 */
+	 
 	if (!IS_ALIGNED(dma_addr, align)) {
 		if (mw->alloc_size > mw->buff_size) {
 			virt_addr = PTR_ALIGN(alloc_addr, align);
@@ -871,14 +790,14 @@ static int ntb_set_mw(struct ntb_transport_ctx *nt, int num_mw,
 	xlat_size = round_up(size, xlat_align_size);
 	buff_size = round_up(size, xlat_align);
 
-	/* No need to re-setup */
+	 
 	if (mw->xlat_size == xlat_size)
 		return 0;
 
 	if (mw->buff_size)
 		ntb_free_mw(nt, num_mw);
 
-	/* Alloc memory for receiving data.  Must be aligned */
+	 
 	mw->xlat_size = xlat_size;
 	mw->buff_size = buff_size;
 	mw->alloc_size = buff_size;
@@ -897,7 +816,7 @@ static int ntb_set_mw(struct ntb_transport_ctx *nt, int num_mw,
 		}
 	}
 
-	/* Notify HW the memory location of the receive buffer */
+	 
 	rc = ntb_mw_set_trans(nt->ndev, PIDX, num_mw, mw->dma_addr,
 			      mw->xlat_size);
 	if (rc) {
@@ -980,7 +899,7 @@ static void ntb_transport_link_cleanup(struct ntb_transport_ctx *nt)
 
 	qp_bitmap_alloc = nt->qp_bitmap & ~nt->qp_bitmap_free;
 
-	/* Pass along the info to any clients */
+	 
 	for (i = 0; i < nt->qp_count; i++)
 		if (qp_bitmap_alloc & BIT_ULL(i)) {
 			qp = &nt->qp_vec[i];
@@ -995,10 +914,7 @@ static void ntb_transport_link_cleanup(struct ntb_transport_ctx *nt)
 	for (i = 0; i < nt->mw_count; i++)
 		ntb_free_mw(nt, i);
 
-	/* The scratchpad registers keep the values if the remote side
-	 * goes down, blast them now to give them a sane value the next
-	 * time they are accessed
-	 */
+	 
 	count = ntb_spad_count(nt->ndev);
 	for (i = 0; i < count; i++)
 		ntb_spad_write(nt->ndev, i, 0);
@@ -1032,7 +948,7 @@ static void ntb_transport_link_work(struct work_struct *work)
 	u32 val;
 	int rc = 0, i, spad;
 
-	/* send the local info, in the opposite order of the way we read it */
+	 
 
 	if (nt->use_msi) {
 		rc = ntb_msi_setup_mws(ndev);
@@ -1066,7 +982,7 @@ static void ntb_transport_link_work(struct work_struct *work)
 
 	ntb_peer_spad_write(ndev, PIDX, VERSION, NTB_TRANSPORT_VERSION);
 
-	/* Query the remote side for its info */
+	 
 	val = ntb_spad_read(ndev, VERSION);
 	dev_dbg(&pdev->dev, "Remote version = %d\n", val);
 	if (val != NTB_TRANSPORT_VERSION)
@@ -1116,7 +1032,7 @@ out1:
 	for (i = 0; i < nt->mw_count; i++)
 		ntb_free_mw(nt, i);
 
-	/* if there's an actual failure, we should just bail */
+	 
 	if (rc < 0)
 		return;
 
@@ -1141,10 +1057,10 @@ static void ntb_qp_link_work(struct work_struct *work)
 
 	ntb_peer_spad_write(nt->ndev, PIDX, QP_LINKS, val | BIT(qp->qp_num));
 
-	/* query remote spad for qp ready bits */
+	 
 	dev_dbg_ratelimited(&pdev->dev, "Remote QP link status = %x\n", val);
 
-	/* See if the remote side is up */
+	 
 	if (val & BIT(qp->qp_num)) {
 		dev_info(&pdev->dev, "qp %d: Link Up\n", qp->qp_num);
 		qp->link_is_up = true;
@@ -1209,7 +1125,7 @@ static int ntb_transport_init_queue(struct ntb_transport_ctx *nt,
 	tx_size -= sizeof(struct ntb_rx_info);
 	qp->rx_info = qp->tx_mw + tx_size;
 
-	/* Due to housekeeping, there must be atleast 2 buffs */
+	 
 	qp->tx_max_frame = min(transport_mtu, tx_size / 2);
 	qp->tx_max_entry = tx_size / qp->tx_max_frame;
 
@@ -1279,10 +1195,7 @@ static int ntb_transport_probe(struct ntb_client *self, struct ntb_dev *ndev)
 
 	nt->ndev = ndev;
 
-	/*
-	 * If we are using MSI, and have at least one extra memory window,
-	 * we will reserve the last MW for the MSI window.
-	 */
+	 
 	if (use_msi && mw_count > 1) {
 		rc = ntb_msi_init(ndev, ntb_transport_msi_desc_changed);
 		if (!rc) {
@@ -1293,7 +1206,7 @@ static int ntb_transport_probe(struct ntb_client *self, struct ntb_dev *ndev)
 
 	spad_count = ntb_spad_count(ndev);
 
-	/* Limit the MW's based on the availability of scratchpads */
+	 
 
 	if (spad_count < NTB_TRANSPORT_MIN_SPADS) {
 		nt->mw_count = 0;
@@ -1418,7 +1331,7 @@ static void ntb_transport_free(struct ntb_client *self, struct ntb_dev *ndev)
 
 	qp_bitmap_alloc = nt->qp_bitmap & ~nt->qp_bitmap_free;
 
-	/* verify that all the qp's are freed */
+	 
 	for (i = 0; i < nt->qp_count; i++) {
 		qp = &nt->qp_vec[i];
 		if (qp_bitmap_alloc & BIT_ULL(i))
@@ -1480,7 +1393,7 @@ static void ntb_rx_copy_callback(void *data,
 {
 	struct ntb_queue_entry *entry = data;
 
-	/* we need to check DMA results if we are using DMA */
+	 
 	if (res) {
 		enum dmaengine_tx_result dma_err = res->result;
 
@@ -1518,7 +1431,7 @@ static void ntb_memcpy_rx(struct ntb_queue_entry *entry, void *offset)
 
 	memcpy(buf, offset, len);
 
-	/* Ensure that the data is fully copied out before clearing the flag */
+	 
 	wmb();
 
 	ntb_rx_copy_callback(entry, NULL);
@@ -1698,9 +1611,7 @@ static void ntb_transport_rxc_db(unsigned long data)
 	dev_dbg(&qp->ndev->pdev->dev, "%s: doorbell %d received\n",
 		__func__, qp->qp_num);
 
-	/* Limit the number of packets processed in a single interrupt to
-	 * provide fairness to others
-	 */
+	 
 	for (i = 0; i < qp->rx_max_entry; i++) {
 		rc = ntb_process_rxc(qp);
 		if (rc)
@@ -1711,19 +1622,16 @@ static void ntb_transport_rxc_db(unsigned long data)
 		dma_async_issue_pending(qp->rx_dma_chan);
 
 	if (i == qp->rx_max_entry) {
-		/* there is more work to do */
+		 
 		if (qp->active)
 			tasklet_schedule(&qp->rxc_db_work);
 	} else if (ntb_db_read(qp->ndev) & BIT_ULL(qp->qp_num)) {
-		/* the doorbell bit is set: clear it */
+		 
 		ntb_db_clear(qp->ndev, BIT_ULL(qp->qp_num));
-		/* ntb_db_read ensures ntb_db_clear write is committed */
+		 
 		ntb_db_read(qp->ndev);
 
-		/* an interrupt may have arrived between finishing
-		 * ntb_process_rxc and clearing the doorbell bit:
-		 * there might be some more work to do.
-		 */
+		 
 		if (qp->active)
 			tasklet_schedule(&qp->rxc_db_work);
 	}
@@ -1736,7 +1644,7 @@ static void ntb_tx_copy_callback(void *data,
 	struct ntb_transport_qp *qp = entry->qp;
 	struct ntb_payload_header __iomem *hdr = entry->tx_hdr;
 
-	/* we need to check DMA results if we are using DMA */
+	 
 	if (res) {
 		enum dmaengine_tx_result dma_err = res->result;
 
@@ -1751,7 +1659,7 @@ static void ntb_tx_copy_callback(void *data,
 				qp->tx_mw + qp->tx_max_frame *
 				entry->tx_index;
 
-			/* resubmit via CPU */
+			 
 			ntb_memcpy_tx(entry, offset);
 			qp->tx_memcpy++;
 			return;
@@ -1770,10 +1678,7 @@ static void ntb_tx_copy_callback(void *data,
 	else
 		ntb_peer_db_set(qp->ndev, BIT_ULL(qp->qp_num));
 
-	/* The entry length can only be zero if the packet is intended to be a
-	 * "link down" or similar.  Since no payload is being sent in these
-	 * cases, there is nothing to add to the completion queue.
-	 */
+	 
 	if (entry->len > 0) {
 		qp->tx_bytes += entry->len;
 
@@ -1788,16 +1693,13 @@ static void ntb_tx_copy_callback(void *data,
 static void ntb_memcpy_tx(struct ntb_queue_entry *entry, void __iomem *offset)
 {
 #ifdef ARCH_HAS_NOCACHE_UACCESS
-	/*
-	 * Using non-temporal mov to improve performance on non-cached
-	 * writes, even though we aren't actually copying from user space.
-	 */
+	 
 	__copy_from_user_inatomic_nocache(offset, entry->buf, entry->len);
 #else
 	memcpy_toio(offset, entry->buf, entry->len);
 #endif
 
-	/* Ensure that the data is fully copied out before setting the flags */
+	 
 	wmb();
 
 	ntb_tx_copy_callback(entry, NULL);
@@ -1964,20 +1866,7 @@ static bool ntb_dma_filter_fn(struct dma_chan *chan, void *node)
 	return dev_to_node(&chan->dev->device) == (int)(unsigned long)node;
 }
 
-/**
- * ntb_transport_create_queue - Create a new NTB transport layer queue
- * @rx_handler: receive callback function
- * @tx_handler: transmit callback function
- * @event_handler: event callback function
- *
- * Create a new NTB transport layer queue and provide the queue with a callback
- * routine for both transmit and receive.  The receive callback routine will be
- * used to pass up data when the transport has received it on the queue.   The
- * transmit callback routine will be called when the transport has completed the
- * transmission of the data on the queue and the data is ready to be freed.
- *
- * RETURNS: pointer to newly created ntb_queue, NULL on error.
- */
+ 
 struct ntb_transport_qp *
 ntb_transport_create_queue(void *data, struct device *client_dev,
 			   const struct ntb_queue_handlers *handlers)
@@ -2003,7 +1892,7 @@ ntb_transport_create_queue(void *data, struct device *client_dev,
 	if (!free_queue)
 		goto err;
 
-	/* decrement free_queue to make it zero based */
+	 
 	free_queue--;
 
 	qp = &nt->qp_vec[free_queue];
@@ -2104,12 +1993,7 @@ err:
 }
 EXPORT_SYMBOL_GPL(ntb_transport_create_queue);
 
-/**
- * ntb_transport_free_queue - Frees NTB transport queue
- * @qp: NTB queue to be freed
- *
- * Frees NTB transport queue
- */
+ 
 void ntb_transport_free_queue(struct ntb_transport_qp *qp)
 {
 	struct pci_dev *pdev;
@@ -2125,14 +2009,10 @@ void ntb_transport_free_queue(struct ntb_transport_qp *qp)
 
 	if (qp->tx_dma_chan) {
 		struct dma_chan *chan = qp->tx_dma_chan;
-		/* Putting the dma_chan to NULL will force any new traffic to be
-		 * processed by the CPU instead of the DAM engine
-		 */
+		 
 		qp->tx_dma_chan = NULL;
 
-		/* Try to be nice and wait for any queued DMA engine
-		 * transactions to process before smashing it with a rock
-		 */
+		 
 		dma_sync_wait(chan, qp->last_cookie);
 		dmaengine_terminate_all(chan);
 
@@ -2145,14 +2025,10 @@ void ntb_transport_free_queue(struct ntb_transport_qp *qp)
 
 	if (qp->rx_dma_chan) {
 		struct dma_chan *chan = qp->rx_dma_chan;
-		/* Putting the dma_chan to NULL will force any new traffic to be
-		 * processed by the CPU instead of the DAM engine
-		 */
+		 
 		qp->rx_dma_chan = NULL;
 
-		/* Try to be nice and wait for any queued DMA engine
-		 * transactions to process before smashing it with a rock
-		 */
+		 
 		dma_sync_wait(chan, qp->last_cookie);
 		dmaengine_terminate_all(chan);
 		dma_release_channel(chan);
@@ -2192,16 +2068,7 @@ void ntb_transport_free_queue(struct ntb_transport_qp *qp)
 }
 EXPORT_SYMBOL_GPL(ntb_transport_free_queue);
 
-/**
- * ntb_transport_rx_remove - Dequeues enqueued rx packet
- * @qp: NTB queue to be freed
- * @len: pointer to variable to write enqueued buffers length
- *
- * Dequeues unused buffers from receive queue.  Should only be used during
- * shutdown of qp.
- *
- * RETURNS: NULL error value on error, or void* for success.
- */
+ 
 void *ntb_transport_rx_remove(struct ntb_transport_qp *qp, unsigned int *len)
 {
 	struct ntb_queue_entry *entry;
@@ -2223,18 +2090,7 @@ void *ntb_transport_rx_remove(struct ntb_transport_qp *qp, unsigned int *len)
 }
 EXPORT_SYMBOL_GPL(ntb_transport_rx_remove);
 
-/**
- * ntb_transport_rx_enqueue - Enqueue a new NTB queue entry
- * @qp: NTB transport layer queue the entry is to be enqueued on
- * @cb: per buffer pointer for callback function to use
- * @data: pointer to data buffer that incoming packets will be copied into
- * @len: length of the data buffer
- *
- * Enqueue a new receive buffer onto the transport queue into which a NTB
- * payload can be received into.
- *
- * RETURNS: An appropriate -ERRNO error value on error, or zero for success.
- */
+ 
 int ntb_transport_rx_enqueue(struct ntb_transport_qp *qp, void *cb, void *data,
 			     unsigned int len)
 {
@@ -2264,19 +2120,7 @@ int ntb_transport_rx_enqueue(struct ntb_transport_qp *qp, void *cb, void *data,
 }
 EXPORT_SYMBOL_GPL(ntb_transport_rx_enqueue);
 
-/**
- * ntb_transport_tx_enqueue - Enqueue a new NTB queue entry
- * @qp: NTB transport layer queue the entry is to be enqueued on
- * @cb: per buffer pointer for callback function to use
- * @data: pointer to data buffer that will be sent
- * @len: length of the data buffer
- *
- * Enqueue a new transmit buffer onto the transport queue from which a NTB
- * payload will be transmitted.  This assumes that a lock is being held to
- * serialize access to the qp.
- *
- * RETURNS: An appropriate -ERRNO error value on error, or zero for success.
- */
+ 
 int ntb_transport_tx_enqueue(struct ntb_transport_qp *qp, void *cb, void *data,
 			     unsigned int len)
 {
@@ -2286,7 +2130,7 @@ int ntb_transport_tx_enqueue(struct ntb_transport_qp *qp, void *cb, void *data,
 	if (!qp || !len)
 		return -EINVAL;
 
-	/* If the qp link is down already, just ignore. */
+	 
 	if (!qp->link_is_up)
 		return 0;
 
@@ -2313,12 +2157,7 @@ int ntb_transport_tx_enqueue(struct ntb_transport_qp *qp, void *cb, void *data,
 }
 EXPORT_SYMBOL_GPL(ntb_transport_tx_enqueue);
 
-/**
- * ntb_transport_link_up - Notify NTB transport of client readiness to use queue
- * @qp: NTB transport layer queue to be enabled
- *
- * Notify NTB transport layer of client readiness to use queue
- */
+ 
 void ntb_transport_link_up(struct ntb_transport_qp *qp)
 {
 	if (!qp)
@@ -2331,14 +2170,7 @@ void ntb_transport_link_up(struct ntb_transport_qp *qp)
 }
 EXPORT_SYMBOL_GPL(ntb_transport_link_up);
 
-/**
- * ntb_transport_link_down - Notify NTB transport to no longer enqueue data
- * @qp: NTB transport layer queue to be disabled
- *
- * Notify NTB transport layer of client's desire to no longer receive data on
- * transport queue specified.  It is the client's responsibility to ensure all
- * entries on queue are purged or otherwise handled appropriately.
- */
+ 
 void ntb_transport_link_down(struct ntb_transport_qp *qp)
 {
 	int val;
@@ -2359,14 +2191,7 @@ void ntb_transport_link_down(struct ntb_transport_qp *qp)
 }
 EXPORT_SYMBOL_GPL(ntb_transport_link_down);
 
-/**
- * ntb_transport_link_query - Query transport link state
- * @qp: NTB transport layer queue to be queried
- *
- * Query connectivity to the remote system of the NTB transport queue
- *
- * RETURNS: true for link up or false for link down
- */
+ 
 bool ntb_transport_link_query(struct ntb_transport_qp *qp)
 {
 	if (!qp)
@@ -2376,14 +2201,7 @@ bool ntb_transport_link_query(struct ntb_transport_qp *qp)
 }
 EXPORT_SYMBOL_GPL(ntb_transport_link_query);
 
-/**
- * ntb_transport_qp_num - Query the qp number
- * @qp: NTB transport layer queue to be queried
- *
- * Query qp number of the NTB transport queue
- *
- * RETURNS: a zero based number specifying the qp number
- */
+ 
 unsigned char ntb_transport_qp_num(struct ntb_transport_qp *qp)
 {
 	if (!qp)
@@ -2393,14 +2211,7 @@ unsigned char ntb_transport_qp_num(struct ntb_transport_qp *qp)
 }
 EXPORT_SYMBOL_GPL(ntb_transport_qp_num);
 
-/**
- * ntb_transport_max_size - Query the max payload size of a qp
- * @qp: NTB transport layer queue to be queried
- *
- * Query the maximum payload size permissible on the given qp
- *
- * RETURNS: the max payload size of a qp
- */
+ 
 unsigned int ntb_transport_max_size(struct ntb_transport_qp *qp)
 {
 	unsigned int max_size;
@@ -2416,7 +2227,7 @@ unsigned int ntb_transport_max_size(struct ntb_transport_qp *qp)
 	copy_align = max(rx_chan ? rx_chan->device->copy_align : 0,
 			 tx_chan ? tx_chan->device->copy_align : 0);
 
-	/* If DMA engine usage is possible, try to find the max size for that */
+	 
 	max_size = qp->tx_max_frame - sizeof(struct ntb_payload_header);
 	max_size = round_down(max_size, 1 << copy_align);
 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015 Broadcom Corporation
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/irqchip/chained_irq.h>
@@ -22,16 +20,16 @@
 
 #define IPROC_MSI_EQ_MASK              0x3f
 
-/* Max number of GIC interrupts */
+ 
 #define NR_HW_IRQS                     6
 
-/* Number of entries in each event queue */
+ 
 #define EQ_LEN                         64
 
-/* Size of each event queue memory region */
+ 
 #define EQ_MEM_REGION_SIZE             SZ_4K
 
-/* Size of each MSI address region */
+ 
 #define MSI_MEM_REGION_SIZE            SZ_4K
 
 enum iproc_msi_reg {
@@ -48,48 +46,14 @@ enum iproc_msi_reg {
 
 struct iproc_msi;
 
-/**
- * struct iproc_msi_grp - iProc MSI group
- *
- * One MSI group is allocated per GIC interrupt, serviced by one iProc MSI
- * event queue.
- *
- * @msi: pointer to iProc MSI data
- * @gic_irq: GIC interrupt
- * @eq: Event queue number
- */
+ 
 struct iproc_msi_grp {
 	struct iproc_msi *msi;
 	int gic_irq;
 	unsigned int eq;
 };
 
-/**
- * struct iproc_msi - iProc event queue based MSI
- *
- * Only meant to be used on platforms without MSI support integrated into the
- * GIC.
- *
- * @pcie: pointer to iProc PCIe data
- * @reg_offsets: MSI register offsets
- * @grps: MSI groups
- * @nr_irqs: number of total interrupts connected to GIC
- * @nr_cpus: number of toal CPUs
- * @has_inten_reg: indicates the MSI interrupt enable register needs to be
- * set explicitly (required for some legacy platforms)
- * @bitmap: MSI vector bitmap
- * @bitmap_lock: lock to protect access to the MSI bitmap
- * @nr_msi_vecs: total number of MSI vectors
- * @inner_domain: inner IRQ domain
- * @msi_domain: MSI IRQ domain
- * @nr_eq_region: required number of 4K aligned memory region for MSI event
- * queues
- * @nr_msi_region: required number of 4K aligned address region for MSI posted
- * writes
- * @eq_cpu: pointer to allocated memory region for MSI event queues
- * @eq_dma: DMA address of MSI event queues
- * @msi_addr: MSI address
- */
+ 
 struct iproc_msi {
 	struct iproc_pcie *pcie;
 	const u16 (*reg_offsets)[IPROC_MSI_REG_SIZE];
@@ -175,23 +139,7 @@ static struct msi_domain_info iproc_msi_domain_info = {
 	.chip = &iproc_msi_irq_chip,
 };
 
-/*
- * In iProc PCIe core, each MSI group is serviced by a GIC interrupt and a
- * dedicated event queue.  Each MSI group can support up to 64 MSI vectors.
- *
- * The number of MSI groups varies between different iProc SoCs.  The total
- * number of CPU cores also varies.  To support MSI IRQ affinity, we
- * distribute GIC interrupts across all available CPUs.  MSI vector is moved
- * from one GIC interrupt to another to steer to the target CPU.
- *
- * Assuming:
- * - the number of MSI groups is M
- * - the number of CPU cores is N
- * - M is always a multiple of N
- *
- * Total number of raw MSI vectors = M * 64
- * Total number of supported MSI vectors = (M * 64) / N
- */
+ 
 static inline int hwirq_to_cpu(struct iproc_msi *msi, unsigned long hwirq)
 {
 	return (hwirq % msi->nr_cpus);
@@ -215,7 +163,7 @@ static int iproc_msi_irq_set_affinity(struct irq_data *data,
 	if (curr_cpu == target_cpu)
 		ret = IRQ_SET_MASK_OK_DONE;
 	else {
-		/* steer MSI to the target CPU */
+		 
 		data->hwirq = hwirq_to_canonical_hwirq(msi, data->hwirq) + target_cpu;
 		ret = IRQ_SET_MASK_OK;
 	}
@@ -255,10 +203,7 @@ static int iproc_msi_irq_domain_alloc(struct irq_domain *domain,
 
 	mutex_lock(&msi->bitmap_lock);
 
-	/*
-	 * Allocate 'nr_irqs' multiplied by 'nr_cpus' number of MSI vectors
-	 * each time
-	 */
+	 
 	hwirq = bitmap_find_free_region(msi->bitmap, msi->nr_msi_vecs,
 					order_base_2(msi->nr_cpus * nr_irqs));
 
@@ -311,11 +256,7 @@ static inline u32 decode_msi_hwirq(struct iproc_msi *msi, u32 eq, u32 head)
 	hwirq = readl(msg);
 	hwirq = (hwirq >> 5) + (hwirq & 0x1f);
 
-	/*
-	 * Since we have multiple hwirq mapped to a single MSI vector,
-	 * now we need to derive the hwirq at CPU0.  It can then be used to
-	 * mapped back to virq.
-	 */
+	 
 	return hwirq_to_canonical_hwirq(msi, hwirq);
 }
 
@@ -333,32 +274,20 @@ static void iproc_msi_handler(struct irq_desc *desc)
 	msi = grp->msi;
 	eq = grp->eq;
 
-	/*
-	 * iProc MSI event queue is tracked by head and tail pointers.  Head
-	 * pointer indicates the next entry (MSI data) to be consumed by SW in
-	 * the queue and needs to be updated by SW.  iProc MSI core uses the
-	 * tail pointer as the next data insertion point.
-	 *
-	 * Entries between head and tail pointers contain valid MSI data.  MSI
-	 * data is guaranteed to be in the event queue memory before the tail
-	 * pointer is updated by the iProc MSI core.
-	 */
+	 
 	head = iproc_msi_read_reg(msi, IPROC_MSI_EQ_HEAD,
 				  eq) & IPROC_MSI_EQ_MASK;
 	do {
 		tail = iproc_msi_read_reg(msi, IPROC_MSI_EQ_TAIL,
 					  eq) & IPROC_MSI_EQ_MASK;
 
-		/*
-		 * Figure out total number of events (MSI data) to be
-		 * processed.
-		 */
+		 
 		nr_events = (tail < head) ?
 			(EQ_LEN - (head - tail)) : (tail - head);
 		if (!nr_events)
 			break;
 
-		/* process all outstanding events */
+		 
 		while (nr_events--) {
 			hwirq = decode_msi_hwirq(msi, eq, head);
 			generic_handle_domain_irq(msi->inner_domain, hwirq);
@@ -367,16 +296,10 @@ static void iproc_msi_handler(struct irq_desc *desc)
 			head %= EQ_LEN;
 		}
 
-		/*
-		 * Now all outstanding events have been processed.  Update the
-		 * head pointer.
-		 */
+		 
 		iproc_msi_write_reg(msi, IPROC_MSI_EQ_HEAD, eq, head);
 
-		/*
-		 * Now go read the tail pointer again to see if there are new
-		 * outstanding events that came in during the above window.
-		 */
+		 
 	} while (true);
 
 	chained_irq_exit(chip, desc);
@@ -387,7 +310,7 @@ static void iproc_msi_enable(struct iproc_msi *msi)
 	int i, eq;
 	u32 val;
 
-	/* Program memory region for each event queue */
+	 
 	for (i = 0; i < msi->nr_eq_region; i++) {
 		dma_addr_t addr = msi->eq_dma + (i * EQ_MEM_REGION_SIZE);
 
@@ -397,7 +320,7 @@ static void iproc_msi_enable(struct iproc_msi *msi)
 				    upper_32_bits(addr));
 	}
 
-	/* Program address region for MSI posted writes */
+	 
 	for (i = 0; i < msi->nr_msi_region; i++) {
 		phys_addr_t addr = msi->msi_addr + (i * MSI_MEM_REGION_SIZE);
 
@@ -408,15 +331,12 @@ static void iproc_msi_enable(struct iproc_msi *msi)
 	}
 
 	for (eq = 0; eq < msi->nr_irqs; eq++) {
-		/* Enable MSI event queue */
+		 
 		val = IPROC_MSI_INTR_EN | IPROC_MSI_INT_N_EVENT |
 			IPROC_MSI_EQ_EN;
 		iproc_msi_write_reg(msi, IPROC_MSI_CTRL, eq, val);
 
-		/*
-		 * Some legacy platforms require the MSI interrupt enable
-		 * register to be set explicitly.
-		 */
+		 
 		if (msi->has_inten_reg) {
 			val = iproc_msi_read_reg(msi, IPROC_MSI_INTS_EN, eq);
 			val |= BIT(eq);
@@ -491,7 +411,7 @@ static int iproc_msi_irq_setup(struct iproc_msi *msi, unsigned int cpu)
 		irq_set_chained_handler_and_data(msi->grps[i].gic_irq,
 						 iproc_msi_handler,
 						 &msi->grps[i]);
-		/* Dedicate GIC interrupt to each CPU core */
+		 
 		if (alloc_cpumask_var(&mask, GFP_KERNEL)) {
 			cpumask_clear(mask);
 			cpumask_set_cpu(cpu, mask);
@@ -507,7 +427,7 @@ static int iproc_msi_irq_setup(struct iproc_msi *msi, unsigned int cpu)
 		}
 
 		if (ret) {
-			/* Free all configured/unconfigured IRQs */
+			 
 			iproc_msi_irq_free(msi, cpu);
 			return ret;
 		}
@@ -611,7 +531,7 @@ int iproc_msi_init(struct iproc_pcie *pcie, struct device_node *node)
 		msi->grps[i].eq = i;
 	}
 
-	/* Reserve memory for event queue and make sure memories are zeroed */
+	 
 	msi->eq_cpu = dma_alloc_coherent(pcie->dev,
 					 msi->nr_eq_region * EQ_MEM_REGION_SIZE,
 					 &msi->eq_dma, GFP_KERNEL);

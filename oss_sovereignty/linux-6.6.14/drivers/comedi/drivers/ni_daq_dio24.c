@@ -1,26 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Comedi driver for National Instruments PCMCIA DAQ-Card DIO-24
- * Copyright (C) 2002 Daniel Vecino Castel <dvecino@able.es>
- *
- * PCMCIA crap at end of file is adapted from dummy_cs.c 1.31
- * 2001/08/24 12:13:13 from the pcmcia package.
- * The initial developer of the pcmcia dummy_cs.c code is David A. Hinds
- * <dahinds@users.sourceforge.net>.  Portions created by David A. Hinds
- * are Copyright (C) 1999 David A. Hinds.  All Rights Reserved.
- */
 
-/*
- * Driver: ni_daq_dio24
- * Description: National Instruments PCMCIA DAQ-Card DIO-24
- * Author: Daniel Vecino Castel <dvecino@able.es>
- * Devices: [National Instruments] PCMCIA DAQ-Card DIO-24 (ni_daq_dio24)
- * Status: ?
- * Updated: Thu, 07 Nov 2002 21:53:06 -0800
- *
- * This is just a wrapper around the 8255.o driver to properly handle
- * the PCMCIA interface.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/comedi/comedi_pcmcia.h>
@@ -43,7 +24,7 @@ static int dio24_auto_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* 8255 dio */
+	 
 	s = &dev->subdevices[0];
 	return subdev_8255_init(dev, s, NULL, 0x00);
 }
@@ -61,7 +42,7 @@ static int dio24_cs_attach(struct pcmcia_device *link)
 }
 
 static const struct pcmcia_device_id dio24_cs_ids[] = {
-	PCMCIA_DEVICE_MANF_CARD(0x010b, 0x475c),	/* daqcard-dio24 */
+	PCMCIA_DEVICE_MANF_CARD(0x010b, 0x475c),	 
 	PCMCIA_DEVICE_NULL
 };
 MODULE_DEVICE_TABLE(pcmcia, dio24_cs_ids);

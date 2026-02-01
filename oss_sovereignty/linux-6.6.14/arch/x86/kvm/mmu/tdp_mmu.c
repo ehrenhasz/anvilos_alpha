@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include "mmu.h"
@@ -11,14 +11,14 @@
 #include <asm/cmpxchg.h>
 #include <trace/events/kvm.h>
 
-/* Initializes the TDP MMU for the VM, if enabled. */
+ 
 void kvm_mmu_init_tdp_mmu(struct kvm *kvm)
 {
 	INIT_LIST_HEAD(&kvm->arch.tdp_mmu_roots);
 	spin_lock_init(&kvm->arch.tdp_mmu_pages_lock);
 }
 
-/* Arbitrarily returns true so that this may be used in if statements. */
+ 
 static __always_inline bool kvm_lockdep_assert_mmu_lock_held(struct kvm *kvm,
 							     bool shared)
 {
@@ -32,22 +32,14 @@ static __always_inline bool kvm_lockdep_assert_mmu_lock_held(struct kvm *kvm,
 
 void kvm_mmu_uninit_tdp_mmu(struct kvm *kvm)
 {
-	/*
-	 * Invalidate all roots, which besides the obvious, schedules all roots
-	 * for zapping and thus puts the TDP MMU's reference to each root, i.e.
-	 * ultimately frees all roots.
-	 */
+	 
 	kvm_tdp_mmu_invalidate_all_roots(kvm);
 	kvm_tdp_mmu_zap_invalidated_roots(kvm);
 
 	WARN_ON(atomic64_read(&kvm->arch.tdp_mmu_pages));
 	WARN_ON(!list_empty(&kvm->arch.tdp_mmu_roots));
 
-	/*
-	 * Ensure that all the outstanding RCU callbacks to free shadow pages
-	 * can run before the VM is torn down.  Putting the last reference to
-	 * zapped roots will create new callbacks.
-	 */
+	 
 	rcu_barrier();
 }
 
@@ -57,14 +49,7 @@ static void tdp_mmu_free_sp(struct kvm_mmu_page *sp)
 	kmem_cache_free(mmu_page_header_cache, sp);
 }
 
-/*
- * This is called through call_rcu in order to free TDP page table memory
- * safely with respect to other kernel threads that may be operating on
- * the memory.
- * By only accessing TDP MMU page table memory in an RCU read critical
- * section, and freeing it after a grace period, lockless access to that
- * memory won't use it after it is freed.
- */
+ 
 static void tdp_mmu_free_sp_rcu_callback(struct rcu_head *head)
 {
 	struct kvm_mmu_page *sp = container_of(head, struct kvm_mmu_page,
@@ -81,11 +66,7 @@ void kvm_tdp_mmu_put_root(struct kvm *kvm, struct kvm_mmu_page *root,
 	if (!refcount_dec_and_test(&root->tdp_mmu_root_count))
 		return;
 
-	/*
-	 * The TDP MMU itself holds a reference to each root until the root is
-	 * explicitly invalidated, i.e. the final reference should be never be
-	 * put for a valid root.
-	 */
+	 
 	KVM_BUG_ON(!is_tdp_mmu_page(root) || !root->role.invalid, kvm);
 
 	spin_lock(&kvm->arch.tdp_mmu_pages_lock);
@@ -94,16 +75,7 @@ void kvm_tdp_mmu_put_root(struct kvm *kvm, struct kvm_mmu_page *root,
 	call_rcu(&root->rcu_head, tdp_mmu_free_sp_rcu_callback);
 }
 
-/*
- * Returns the next root after @prev_root (or the first root if @prev_root is
- * NULL).  A reference to the returned root is acquired, and the reference to
- * @prev_root is released (the caller obviously must hold a reference to
- * @prev_root if it's non-NULL).
- *
- * If @only_valid is true, invalid roots are skipped.
- *
- * Returns NULL if the end of tdp_mmu_roots was reached.
- */
+ 
 static struct kvm_mmu_page *tdp_mmu_next_root(struct kvm *kvm,
 					      struct kvm_mmu_page *prev_root,
 					      bool shared, bool only_valid)
@@ -137,16 +109,7 @@ static struct kvm_mmu_page *tdp_mmu_next_root(struct kvm *kvm,
 	return next_root;
 }
 
-/*
- * Note: this iterator gets and puts references to the roots it iterates over.
- * This makes it safe to release the MMU lock and yield within the loop, but
- * if exiting the loop early, the caller must drop the reference to the most
- * recent root. (Unless keeping a live reference is desirable.)
- *
- * If shared is set, this function is operating under the MMU lock in read
- * mode. In the unlikely event that this thread must free a root, the lock
- * will be temporarily dropped and reacquired in write mode.
- */
+ 
 #define __for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared, _only_valid)\
 	for (_root = tdp_mmu_next_root(_kvm, NULL, _shared, _only_valid);	\
 	     _root;								\
@@ -165,13 +128,7 @@ static struct kvm_mmu_page *tdp_mmu_next_root(struct kvm *kvm,
 		if (!kvm_lockdep_assert_mmu_lock_held(_kvm, _shared)) {		\
 		} else
 
-/*
- * Iterate over all TDP MMU roots.  Requires that mmu_lock be held for write,
- * the implication being that any flow that holds mmu_lock for read is
- * inherently yield-friendly and should use the yield-safe variant above.
- * Holding mmu_lock for write obviates the need for RCU protection as the list
- * is guaranteed to be stable.
- */
+ 
 #define for_each_tdp_mmu_root(_kvm, _root, _as_id)			\
 	list_for_each_entry(_root, &_kvm->arch.tdp_mmu_roots, link)	\
 		if (kvm_lockdep_assert_mmu_lock_held(_kvm, false) &&	\
@@ -225,10 +182,7 @@ hpa_t kvm_tdp_mmu_get_vcpu_root_hpa(struct kvm_vcpu *vcpu)
 
 	lockdep_assert_held_write(&kvm->mmu_lock);
 
-	/*
-	 * Check for an existing root before allocating a new one.  Note, the
-	 * role check prevents consuming an invalid root.
-	 */
+	 
 	for_each_tdp_mmu_root(kvm, root, kvm_mmu_role_as_id(role)) {
 		if (root->role.word == role.word &&
 		    kvm_tdp_mmu_get_root(root))
@@ -238,13 +192,7 @@ hpa_t kvm_tdp_mmu_get_vcpu_root_hpa(struct kvm_vcpu *vcpu)
 	root = tdp_mmu_alloc_sp(vcpu);
 	tdp_mmu_init_sp(root, NULL, 0, role);
 
-	/*
-	 * TDP MMU roots are kept until they are explicitly invalidated, either
-	 * by a memslot update or by the destruction of the VM.  Initialize the
-	 * refcount to two; one reference for the vCPU, and one reference for
-	 * the TDP MMU itself, which is held until the root is invalidated and
-	 * is ultimately put by kvm_tdp_mmu_zap_invalidated_roots().
-	 */
+	 
 	refcount_set(&root->tdp_mmu_root_count, 2);
 
 	spin_lock(&kvm->arch.tdp_mmu_pages_lock);
@@ -271,15 +219,7 @@ static void tdp_unaccount_mmu_page(struct kvm *kvm, struct kvm_mmu_page *sp)
 	atomic64_dec(&kvm->arch.tdp_mmu_pages);
 }
 
-/**
- * tdp_mmu_unlink_sp() - Remove a shadow page from the list of used pages
- *
- * @kvm: kvm instance
- * @sp: the page to be removed
- * @shared: This operation may not be running under the exclusive use of
- *	    the MMU lock and the operation must synchronize with other
- *	    threads that might be adding or removing pages.
- */
+ 
 static void tdp_mmu_unlink_sp(struct kvm *kvm, struct kvm_mmu_page *sp,
 			      bool shared)
 {
@@ -300,23 +240,7 @@ static void tdp_mmu_unlink_sp(struct kvm *kvm, struct kvm_mmu_page *sp,
 		spin_unlock(&kvm->arch.tdp_mmu_pages_lock);
 }
 
-/**
- * handle_removed_pt() - handle a page table removed from the TDP structure
- *
- * @kvm: kvm instance
- * @pt: the page removed from the paging structure
- * @shared: This operation may not be running under the exclusive use
- *	    of the MMU lock and the operation must synchronize with other
- *	    threads that might be modifying SPTEs.
- *
- * Given a page table that has been removed from the TDP paging structure,
- * iterates through the page table to clear SPTEs and free child page tables.
- *
- * Note that pt is passed in as a tdp_ptep_t, but it does not need RCU
- * protection. Since this thread removed it from the paging structure,
- * this thread will be responsible for ensuring the page is freed. Hence the
- * early rcu_dereferences in the function.
- */
+ 
 static void handle_removed_pt(struct kvm *kvm, tdp_ptep_t pt, bool shared)
 {
 	struct kvm_mmu_page *sp = sptep_to_sp(rcu_dereference(pt));
@@ -334,14 +258,7 @@ static void handle_removed_pt(struct kvm *kvm, tdp_ptep_t pt, bool shared)
 		u64 old_spte;
 
 		if (shared) {
-			/*
-			 * Set the SPTE to a nonpresent value that other
-			 * threads will not overwrite. If the SPTE was
-			 * already marked as removed then another thread
-			 * handling a page fault could overwrite it, so
-			 * set the SPTE until it is set from some other
-			 * value to the removed SPTE value.
-			 */
+			 
 			for (;;) {
 				old_spte = kvm_tdp_mmu_write_spte_atomic(sptep, REMOVED_SPTE);
 				if (!is_removed_spte(old_spte))
@@ -349,47 +266,12 @@ static void handle_removed_pt(struct kvm *kvm, tdp_ptep_t pt, bool shared)
 				cpu_relax();
 			}
 		} else {
-			/*
-			 * If the SPTE is not MMU-present, there is no backing
-			 * page associated with the SPTE and so no side effects
-			 * that need to be recorded, and exclusive ownership of
-			 * mmu_lock ensures the SPTE can't be made present.
-			 * Note, zapping MMIO SPTEs is also unnecessary as they
-			 * are guarded by the memslots generation, not by being
-			 * unreachable.
-			 */
+			 
 			old_spte = kvm_tdp_mmu_read_spte(sptep);
 			if (!is_shadow_present_pte(old_spte))
 				continue;
 
-			/*
-			 * Use the common helper instead of a raw WRITE_ONCE as
-			 * the SPTE needs to be updated atomically if it can be
-			 * modified by a different vCPU outside of mmu_lock.
-			 * Even though the parent SPTE is !PRESENT, the TLB
-			 * hasn't yet been flushed, and both Intel and AMD
-			 * document that A/D assists can use upper-level PxE
-			 * entries that are cached in the TLB, i.e. the CPU can
-			 * still access the page and mark it dirty.
-			 *
-			 * No retry is needed in the atomic update path as the
-			 * sole concern is dropping a Dirty bit, i.e. no other
-			 * task can zap/remove the SPTE as mmu_lock is held for
-			 * write.  Marking the SPTE as a removed SPTE is not
-			 * strictly necessary for the same reason, but using
-			 * the remove SPTE value keeps the shared/exclusive
-			 * paths consistent and allows the handle_changed_spte()
-			 * call below to hardcode the new value to REMOVED_SPTE.
-			 *
-			 * Note, even though dropping a Dirty bit is the only
-			 * scenario where a non-atomic update could result in a
-			 * functional bug, simply checking the Dirty bit isn't
-			 * sufficient as a fast page fault could read the upper
-			 * level SPTE before it is zapped, and then make this
-			 * target SPTE writable, resume the guest, and set the
-			 * Dirty bit between reading the SPTE above and writing
-			 * it here.
-			 */
+			 
 			old_spte = kvm_tdp_mmu_write_spte(sptep, old_spte,
 							  REMOVED_SPTE, level);
 		}
@@ -400,22 +282,7 @@ static void handle_removed_pt(struct kvm *kvm, tdp_ptep_t pt, bool shared)
 	call_rcu(&sp->rcu_head, tdp_mmu_free_sp_rcu_callback);
 }
 
-/**
- * handle_changed_spte - handle bookkeeping associated with an SPTE change
- * @kvm: kvm instance
- * @as_id: the address space of the paging structure the SPTE was a part of
- * @gfn: the base GFN that was mapped by the SPTE
- * @old_spte: The value of the SPTE before the change
- * @new_spte: The value of the SPTE after the change
- * @level: the level of the PT the SPTE is part of in the paging structure
- * @shared: This operation may not be running under the exclusive use of
- *	    the MMU lock and the operation must synchronize with other
- *	    threads that might be modifying SPTEs.
- *
- * Handle bookkeeping that might result from the modification of a SPTE.  Note,
- * dirty logging updates are handled in common code, not here (see make_spte()
- * and fast_pf_fix_direct_spte()).
- */
+ 
 static void handle_changed_spte(struct kvm *kvm, int as_id, gfn_t gfn,
 				u64 old_spte, u64 new_spte, int level,
 				bool shared)
@@ -430,15 +297,7 @@ static void handle_changed_spte(struct kvm *kvm, int as_id, gfn_t gfn,
 	WARN_ON_ONCE(level < PG_LEVEL_4K);
 	WARN_ON_ONCE(gfn & (KVM_PAGES_PER_HPAGE(level) - 1));
 
-	/*
-	 * If this warning were to trigger it would indicate that there was a
-	 * missing MMU notifier or a race with some notifier handler.
-	 * A present, leaf SPTE should never be directly replaced with another
-	 * present leaf SPTE pointing to a different PFN. A notifier handler
-	 * should be zapping the SPTE before the main MM's page table is
-	 * changed, or the SPTE should be zeroed, and the TLBs flushed by the
-	 * thread before replacement.
-	 */
+	 
 	if (was_leaf && is_leaf && pfn_changed) {
 		pr_err("Invalid SPTE change: cannot replace a present leaf\n"
 		       "SPTE with another present leaf SPTE mapping a\n"
@@ -446,10 +305,7 @@ static void handle_changed_spte(struct kvm *kvm, int as_id, gfn_t gfn,
 		       "as_id: %d gfn: %llx old_spte: %llx new_spte: %llx level: %d",
 		       as_id, gfn, old_spte, new_spte, level);
 
-		/*
-		 * Crash the host to prevent error propagation and guest data
-		 * corruption.
-		 */
+		 
 		BUG();
 	}
 
@@ -461,18 +317,9 @@ static void handle_changed_spte(struct kvm *kvm, int as_id, gfn_t gfn,
 	if (is_leaf)
 		check_spte_writable_invariants(new_spte);
 
-	/*
-	 * The only times a SPTE should be changed from a non-present to
-	 * non-present state is when an MMIO entry is installed/modified/
-	 * removed. In that case, there is nothing to do here.
-	 */
+	 
 	if (!was_present && !is_present) {
-		/*
-		 * If this change does not involve a MMIO SPTE or removed SPTE,
-		 * it is unexpected. Log the change, though it should not
-		 * impact the guest since both the former and current SPTEs
-		 * are nonpresent.
-		 */
+		 
 		if (WARN_ON_ONCE(!is_mmio_spte(old_spte) &&
 				 !is_mmio_spte(new_spte) &&
 				 !is_removed_spte(new_spte)))
@@ -493,12 +340,7 @@ static void handle_changed_spte(struct kvm *kvm, int as_id, gfn_t gfn,
 	    (!is_present || !is_dirty_spte(new_spte) || pfn_changed))
 		kvm_set_pfn_dirty(spte_to_pfn(old_spte));
 
-	/*
-	 * Recursively handle child PTs if the change removed a subtree from
-	 * the paging structure.  Note the WARN on the PFN changing without the
-	 * SPTE being converted to a hugepage (leaf) or being zapped.  Shadow
-	 * pages are kernel allocations and should never be migrated.
-	 */
+	 
 	if (was_present && !was_leaf &&
 	    (is_leaf || !is_present || WARN_ON_ONCE(pfn_changed)))
 		handle_removed_pt(kvm, spte_to_child_pt(old_spte, level), shared);
@@ -508,46 +350,19 @@ static void handle_changed_spte(struct kvm *kvm, int as_id, gfn_t gfn,
 		kvm_set_pfn_accessed(spte_to_pfn(old_spte));
 }
 
-/*
- * tdp_mmu_set_spte_atomic - Set a TDP MMU SPTE atomically
- * and handle the associated bookkeeping.  Do not mark the page dirty
- * in KVM's dirty bitmaps.
- *
- * If setting the SPTE fails because it has changed, iter->old_spte will be
- * refreshed to the current value of the spte.
- *
- * @kvm: kvm instance
- * @iter: a tdp_iter instance currently on the SPTE that should be set
- * @new_spte: The value the SPTE should be set to
- * Return:
- * * 0      - If the SPTE was set.
- * * -EBUSY - If the SPTE cannot be set. In this case this function will have
- *            no side-effects other than setting iter->old_spte to the last
- *            known value of the spte.
- */
+ 
 static inline int tdp_mmu_set_spte_atomic(struct kvm *kvm,
 					  struct tdp_iter *iter,
 					  u64 new_spte)
 {
 	u64 *sptep = rcu_dereference(iter->sptep);
 
-	/*
-	 * The caller is responsible for ensuring the old SPTE is not a REMOVED
-	 * SPTE.  KVM should never attempt to zap or manipulate a REMOVED SPTE,
-	 * and pre-checking before inserting a new SPTE is advantageous as it
-	 * avoids unnecessary work.
-	 */
+	 
 	WARN_ON_ONCE(iter->yielded || is_removed_spte(iter->old_spte));
 
 	lockdep_assert_held_read(&kvm->mmu_lock);
 
-	/*
-	 * Note, fast_pf_fix_direct_spte() can also modify TDP MMU SPTEs and
-	 * does not hold the mmu_lock.  On failure, i.e. if a different logical
-	 * CPU modified the SPTE, try_cmpxchg64() updates iter->old_spte with
-	 * the current value, so the caller operates on fresh data, e.g. if it
-	 * retries tdp_mmu_set_spte_atomic()
-	 */
+	 
 	if (!try_cmpxchg64(sptep, &iter->old_spte, new_spte))
 		return -EBUSY;
 
@@ -562,56 +377,27 @@ static inline int tdp_mmu_zap_spte_atomic(struct kvm *kvm,
 {
 	int ret;
 
-	/*
-	 * Freeze the SPTE by setting it to a special,
-	 * non-present value. This will stop other threads from
-	 * immediately installing a present entry in its place
-	 * before the TLBs are flushed.
-	 */
+	 
 	ret = tdp_mmu_set_spte_atomic(kvm, iter, REMOVED_SPTE);
 	if (ret)
 		return ret;
 
 	kvm_flush_remote_tlbs_gfn(kvm, iter->gfn, iter->level);
 
-	/*
-	 * No other thread can overwrite the removed SPTE as they must either
-	 * wait on the MMU lock or use tdp_mmu_set_spte_atomic() which will not
-	 * overwrite the special removed SPTE value. No bookkeeping is needed
-	 * here since the SPTE is going from non-present to non-present.  Use
-	 * the raw write helper to avoid an unnecessary check on volatile bits.
-	 */
+	 
 	__kvm_tdp_mmu_write_spte(iter->sptep, 0);
 
 	return 0;
 }
 
 
-/*
- * tdp_mmu_set_spte - Set a TDP MMU SPTE and handle the associated bookkeeping
- * @kvm:	      KVM instance
- * @as_id:	      Address space ID, i.e. regular vs. SMM
- * @sptep:	      Pointer to the SPTE
- * @old_spte:	      The current value of the SPTE
- * @new_spte:	      The new value that will be set for the SPTE
- * @gfn:	      The base GFN that was (or will be) mapped by the SPTE
- * @level:	      The level _containing_ the SPTE (its parent PT's level)
- *
- * Returns the old SPTE value, which _may_ be different than @old_spte if the
- * SPTE had voldatile bits.
- */
+ 
 static u64 tdp_mmu_set_spte(struct kvm *kvm, int as_id, tdp_ptep_t sptep,
 			    u64 old_spte, u64 new_spte, gfn_t gfn, int level)
 {
 	lockdep_assert_held_write(&kvm->mmu_lock);
 
-	/*
-	 * No thread should be using this function to set SPTEs to or from the
-	 * temporary removed SPTE value.
-	 * If operating under the MMU lock in read mode, tdp_mmu_set_spte_atomic
-	 * should be used. If operating under the MMU lock in write mode, the
-	 * use of the removed SPTE should not be necessary.
-	 */
+	 
 	WARN_ON_ONCE(is_removed_spte(old_spte) || is_removed_spte(new_spte));
 
 	old_spte = kvm_tdp_mmu_write_spte(sptep, old_spte, new_spte, level);
@@ -642,27 +428,14 @@ static inline void tdp_mmu_iter_set_spte(struct kvm *kvm, struct tdp_iter *iter,
 #define tdp_mmu_for_each_pte(_iter, _mmu, _start, _end)		\
 	for_each_tdp_pte(_iter, root_to_sp(_mmu->root.hpa), _start, _end)
 
-/*
- * Yield if the MMU lock is contended or this thread needs to return control
- * to the scheduler.
- *
- * If this function should yield and flush is set, it will perform a remote
- * TLB flush before yielding.
- *
- * If this function yields, iter->yielded is set and the caller must skip to
- * the next iteration, where tdp_iter_next() will reset the tdp_iter's walk
- * over the paging structures to allow the iterator to continue its traversal
- * from the paging structure root.
- *
- * Returns true if this function yielded.
- */
+ 
 static inline bool __must_check tdp_mmu_iter_cond_resched(struct kvm *kvm,
 							  struct tdp_iter *iter,
 							  bool flush, bool shared)
 {
 	WARN_ON_ONCE(iter->yielded);
 
-	/* Ensure forward progress has been made before yielding. */
+	 
 	if (iter->next_last_level_gfn == iter->yielded_gfn)
 		return false;
 
@@ -689,12 +462,7 @@ static inline bool __must_check tdp_mmu_iter_cond_resched(struct kvm *kvm,
 
 static inline gfn_t tdp_mmu_max_gfn_exclusive(void)
 {
-	/*
-	 * Bound TDP MMU walks at host.MAXPHYADDR.  KVM disallows memslots with
-	 * a gpa range that would exceed the max gfn, and KVM does not create
-	 * MMIO SPTEs for "impossible" gfns, instead sending such accesses down
-	 * the slow emulation path every time.
-	 */
+	 
 	return kvm_mmu_max_gfn() + 1;
 }
 
@@ -728,32 +496,14 @@ static void tdp_mmu_zap_root(struct kvm *kvm, struct kvm_mmu_page *root,
 			     bool shared)
 {
 
-	/*
-	 * The root must have an elevated refcount so that it's reachable via
-	 * mmu_notifier callbacks, which allows this path to yield and drop
-	 * mmu_lock.  When handling an unmap/release mmu_notifier command, KVM
-	 * must drop all references to relevant pages prior to completing the
-	 * callback.  Dropping mmu_lock with an unreachable root would result
-	 * in zapping SPTEs after a relevant mmu_notifier callback completes
-	 * and lead to use-after-free as zapping a SPTE triggers "writeback" of
-	 * dirty accessed bits to the SPTE's associated struct page.
-	 */
+	 
 	WARN_ON_ONCE(!refcount_read(&root->tdp_mmu_root_count));
 
 	kvm_lockdep_assert_mmu_lock_held(kvm, shared);
 
 	rcu_read_lock();
 
-	/*
-	 * To avoid RCU stalls due to recursively removing huge swaths of SPs,
-	 * split the zap into two passes.  On the first pass, zap at the 1gb
-	 * level, and then zap top-level SPs on the second pass.  "1gb" is not
-	 * arbitrary, as KVM must be able to zap a 1gb shadow page without
-	 * inducing a stall to allow in-place replacement with a 1gb hugepage.
-	 *
-	 * Because zapping a SP recurses on its children, stepping down to
-	 * PG_LEVEL_4K in the iterator itself is unnecessary.
-	 */
+	 
 	__tdp_mmu_zap_root(kvm, root, shared, PG_LEVEL_1G);
 	__tdp_mmu_zap_root(kvm, root, shared, root->role.level);
 
@@ -764,10 +514,7 @@ bool kvm_tdp_mmu_zap_sp(struct kvm *kvm, struct kvm_mmu_page *sp)
 {
 	u64 old_spte;
 
-	/*
-	 * This helper intentionally doesn't allow zapping a root shadow page,
-	 * which doesn't have a parent page table and thus no associated entry.
-	 */
+	 
 	if (WARN_ON_ONCE(!sp->ptep))
 		return false;
 
@@ -781,13 +528,7 @@ bool kvm_tdp_mmu_zap_sp(struct kvm *kvm, struct kvm_mmu_page *sp)
 	return true;
 }
 
-/*
- * If can_yield is true, will release the MMU lock and reschedule if the
- * scheduler needs the CPU or there is contention on the MMU lock. If this
- * function cannot yield, it will not release the MMU lock or reschedule and
- * the caller must ensure it does not supply too large a GFN range, or the
- * operation can cause a soft lockup.
- */
+ 
 static bool tdp_mmu_zap_leafs(struct kvm *kvm, struct kvm_mmu_page *root,
 			      gfn_t start, gfn_t end, bool can_yield, bool flush)
 {
@@ -816,18 +557,11 @@ static bool tdp_mmu_zap_leafs(struct kvm *kvm, struct kvm_mmu_page *root,
 
 	rcu_read_unlock();
 
-	/*
-	 * Because this flow zaps _only_ leaf SPTEs, the caller doesn't need
-	 * to provide RCU protection as no 'struct kvm_mmu_page' will be freed.
-	 */
+	 
 	return flush;
 }
 
-/*
- * Zap leaf SPTEs for the range of gfns, [start, end), for all roots. Returns
- * true if a TLB flush is needed before releasing the MMU lock, i.e. if one or
- * more SPTEs were zapped since the MMU lock was last acquired.
- */
+ 
 bool kvm_tdp_mmu_zap_leafs(struct kvm *kvm, gfn_t start, gfn_t end, bool flush)
 {
 	struct kvm_mmu_page *root;
@@ -842,26 +576,12 @@ void kvm_tdp_mmu_zap_all(struct kvm *kvm)
 {
 	struct kvm_mmu_page *root;
 
-	/*
-	 * Zap all roots, including invalid roots, as all SPTEs must be dropped
-	 * before returning to the caller.  Zap directly even if the root is
-	 * also being zapped by a worker.  Walking zapped top-level SPTEs isn't
-	 * all that expensive and mmu_lock is already held, which means the
-	 * worker has yielded, i.e. flushing the work instead of zapping here
-	 * isn't guaranteed to be any faster.
-	 *
-	 * A TLB flush is unnecessary, KVM zaps everything if and only the VM
-	 * is being destroyed or the userspace VMM has exited.  In both cases,
-	 * KVM_RUN is unreachable, i.e. no vCPUs will ever service the request.
-	 */
+	 
 	for_each_tdp_mmu_root_yield_safe(kvm, root, false)
 		tdp_mmu_zap_root(kvm, root, false);
 }
 
-/*
- * Zap all invalidated roots to ensure all SPTEs are dropped before the "fast
- * zap" completes.
- */
+ 
 void kvm_tdp_mmu_zap_invalidated_roots(struct kvm *kvm)
 {
 	struct kvm_mmu_page *root;
@@ -875,69 +595,29 @@ void kvm_tdp_mmu_zap_invalidated_roots(struct kvm *kvm)
 		root->tdp_mmu_scheduled_root_to_zap = false;
 		KVM_BUG_ON(!root->role.invalid, kvm);
 
-		/*
-		 * A TLB flush is not necessary as KVM performs a local TLB
-		 * flush when allocating a new root (see kvm_mmu_load()), and
-		 * when migrating a vCPU to a different pCPU.  Note, the local
-		 * TLB flush on reuse also invalidates paging-structure-cache
-		 * entries, i.e. TLB entries for intermediate paging structures,
-		 * that may be zapped, as such entries are associated with the
-		 * ASID on both VMX and SVM.
-		 */
+		 
 		tdp_mmu_zap_root(kvm, root, true);
 
-		/*
-		 * The referenced needs to be put *after* zapping the root, as
-		 * the root must be reachable by mmu_notifiers while it's being
-		 * zapped
-		 */
+		 
 		kvm_tdp_mmu_put_root(kvm, root, true);
 	}
 
 	read_unlock(&kvm->mmu_lock);
 }
 
-/*
- * Mark each TDP MMU root as invalid to prevent vCPUs from reusing a root that
- * is about to be zapped, e.g. in response to a memslots update.  The actual
- * zapping is done separately so that it happens with mmu_lock with read,
- * whereas invalidating roots must be done with mmu_lock held for write (unless
- * the VM is being destroyed).
- *
- * Note, kvm_tdp_mmu_zap_invalidated_roots() is gifted the TDP MMU's reference.
- * See kvm_tdp_mmu_get_vcpu_root_hpa().
- */
+ 
 void kvm_tdp_mmu_invalidate_all_roots(struct kvm *kvm)
 {
 	struct kvm_mmu_page *root;
 
-	/*
-	 * mmu_lock must be held for write to ensure that a root doesn't become
-	 * invalid while there are active readers (invalidating a root while
-	 * there are active readers may or may not be problematic in practice,
-	 * but it's uncharted territory and not supported).
-	 *
-	 * Waive the assertion if there are no users of @kvm, i.e. the VM is
-	 * being destroyed after all references have been put, or if no vCPUs
-	 * have been created (which means there are no roots), i.e. the VM is
-	 * being destroyed in an error path of KVM_CREATE_VM.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_PROVE_LOCKING) &&
 	    refcount_read(&kvm->users_count) && kvm->created_vcpus)
 		lockdep_assert_held_write(&kvm->mmu_lock);
 
-	/*
-	 * As above, mmu_lock isn't held when destroying the VM!  There can't
-	 * be other references to @kvm, i.e. nothing else can invalidate roots
-	 * or get/put references to roots.
-	 */
+	 
 	list_for_each_entry(root, &kvm->arch.tdp_mmu_roots, link) {
-		/*
-		 * Note, invalid roots can outlive a memslot update!  Invalid
-		 * roots must be *zapped* before the memslot update completes,
-		 * but a different task can acquire a reference and keep the
-		 * root alive after its been zapped.
-		 */
+		 
 		if (!root->role.invalid) {
 			root->tdp_mmu_scheduled_root_to_zap = true;
 			root->role.invalid = true;
@@ -945,10 +625,7 @@ void kvm_tdp_mmu_invalidate_all_roots(struct kvm *kvm)
 	}
 }
 
-/*
- * Installs a last-level SPTE to handle a TDP page fault.
- * (NPT/EPT violation/misconfiguration)
- */
+ 
 static int tdp_mmu_map_handle_target_level(struct kvm_vcpu *vcpu,
 					  struct kvm_page_fault *fault,
 					  struct tdp_iter *iter)
@@ -976,17 +653,13 @@ static int tdp_mmu_map_handle_target_level(struct kvm_vcpu *vcpu,
 		 !is_last_spte(iter->old_spte, iter->level))
 		kvm_flush_remote_tlbs_gfn(vcpu->kvm, iter->gfn, iter->level);
 
-	/*
-	 * If the page fault was caused by a write but the page is write
-	 * protected, emulation is needed. If the emulation was skipped,
-	 * the vCPU would have the same fault again.
-	 */
+	 
 	if (wrprot) {
 		if (fault->write)
 			ret = RET_PF_EMULATE;
 	}
 
-	/* If a MMIO SPTE is installed, the MMIO will need to be emulated. */
+	 
 	if (unlikely(is_mmio_spte(new_spte))) {
 		vcpu->stat.pf_mmio_spte_created++;
 		trace_mark_mmio_spte(rcu_dereference(iter->sptep), iter->gfn,
@@ -1000,18 +673,7 @@ static int tdp_mmu_map_handle_target_level(struct kvm_vcpu *vcpu,
 	return ret;
 }
 
-/*
- * tdp_mmu_link_sp - Replace the given spte with an spte pointing to the
- * provided page table.
- *
- * @kvm: kvm instance
- * @iter: a tdp_iter instance currently on the SPTE that should be set
- * @sp: The new TDP page table to install.
- * @shared: This operation is running under the MMU lock in read mode.
- *
- * Returns: 0 if the new page table was installed. Non-0 if the page table
- *          could not be installed (e.g. the atomic compare-exchange failed).
- */
+ 
 static int tdp_mmu_link_sp(struct kvm *kvm, struct tdp_iter *iter,
 			   struct kvm_mmu_page *sp, bool shared)
 {
@@ -1034,10 +696,7 @@ static int tdp_mmu_link_sp(struct kvm *kvm, struct tdp_iter *iter,
 static int tdp_mmu_split_huge_page(struct kvm *kvm, struct tdp_iter *iter,
 				   struct kvm_mmu_page *sp, bool shared);
 
-/*
- * Handle a TDP page fault (NPT/EPT violation/misconfiguration) by installing
- * page tables and SPTEs to translate the faulting guest physical address.
- */
+ 
 int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
 {
 	struct kvm_mmu *mmu = vcpu->arch.mmu;
@@ -1058,25 +717,19 @@ int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
 		if (fault->nx_huge_page_workaround_enabled)
 			disallowed_hugepage_adjust(fault, iter.old_spte, iter.level);
 
-		/*
-		 * If SPTE has been frozen by another thread, just give up and
-		 * retry, avoiding unnecessary page table allocation and free.
-		 */
+		 
 		if (is_removed_spte(iter.old_spte))
 			goto retry;
 
 		if (iter.level == fault->goal_level)
 			goto map_target_level;
 
-		/* Step down into the lower level page table if it exists. */
+		 
 		if (is_shadow_present_pte(iter.old_spte) &&
 		    !is_large_pte(iter.old_spte))
 			continue;
 
-		/*
-		 * The SPTE is either non-present or points to a huge page that
-		 * needs to be split.
-		 */
+		 
 		sp = tdp_mmu_alloc_sp(vcpu);
 		tdp_mmu_init_child_sp(sp, &iter);
 
@@ -1087,10 +740,7 @@ int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
 		else
 			r = tdp_mmu_link_sp(kvm, &iter, sp, true);
 
-		/*
-		 * Force the guest to retry if installing an upper level SPTE
-		 * failed, e.g. because a different task modified the SPTE.
-		 */
+		 
 		if (r) {
 			tdp_mmu_free_sp(sp);
 			goto retry;
@@ -1105,10 +755,7 @@ int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
 		}
 	}
 
-	/*
-	 * The walk aborted before reaching the target level, e.g. because the
-	 * iterator detected an upper level SPTE was frozen during traversal.
-	 */
+	 
 	WARN_ON_ONCE(iter.level == fault->goal_level);
 	goto retry;
 
@@ -1143,10 +790,7 @@ static __always_inline bool kvm_tdp_mmu_handle_gfn(struct kvm *kvm,
 	struct tdp_iter iter;
 	bool ret = false;
 
-	/*
-	 * Don't support rescheduling, none of the MMU notifiers that funnel
-	 * into this helper allow blocking; it'd be dead, wasteful code.
-	 */
+	 
 	for_each_tdp_mmu_root(kvm, root, range->slot->as_id) {
 		rcu_read_lock();
 
@@ -1159,20 +803,13 @@ static __always_inline bool kvm_tdp_mmu_handle_gfn(struct kvm *kvm,
 	return ret;
 }
 
-/*
- * Mark the SPTEs range of GFNs [start, end) unaccessed and return non-zero
- * if any of the GFNs in the range have been accessed.
- *
- * No need to mark the corresponding PFN as accessed as this call is coming
- * from the clear_young() or clear_flush_young() notifier, which uses the
- * return value to determine if the page has been accessed.
- */
+ 
 static bool age_gfn_range(struct kvm *kvm, struct tdp_iter *iter,
 			  struct kvm_gfn_range *range)
 {
 	u64 new_spte;
 
-	/* If we have a non-accessed entry we don't need to change the pte. */
+	 
 	if (!is_accessed_spte(iter->old_spte))
 		return false;
 
@@ -1183,10 +820,7 @@ static bool age_gfn_range(struct kvm *kvm, struct tdp_iter *iter,
 							 iter->level);
 		new_spte = iter->old_spte & ~shadow_accessed_mask;
 	} else {
-		/*
-		 * Capture the dirty status of the page, so that it doesn't get
-		 * lost when the SPTE is marked for access tracking.
-		 */
+		 
 		if (is_writable_pte(iter->old_spte))
 			kvm_set_pfn_dirty(spte_to_pfn(iter->old_spte));
 
@@ -1222,19 +856,14 @@ static bool set_spte_gfn(struct kvm *kvm, struct tdp_iter *iter,
 {
 	u64 new_spte;
 
-	/* Huge pages aren't expected to be modified without first being zapped. */
+	 
 	WARN_ON_ONCE(pte_huge(range->arg.pte) || range->start + 1 != range->end);
 
 	if (iter->level != PG_LEVEL_4K ||
 	    !is_shadow_present_pte(iter->old_spte))
 		return false;
 
-	/*
-	 * Note, when changing a read-only SPTE, it's not strictly necessary to
-	 * zero the SPTE before setting the new PFN, but doing so preserves the
-	 * invariant that the PFN of a present * leaf SPTE can never change.
-	 * See handle_changed_spte().
-	 */
+	 
 	tdp_mmu_iter_set_spte(kvm, iter, 0);
 
 	if (!pte_write(range->arg.pte)) {
@@ -1247,27 +876,14 @@ static bool set_spte_gfn(struct kvm *kvm, struct tdp_iter *iter,
 	return true;
 }
 
-/*
- * Handle the changed_pte MMU notifier for the TDP MMU.
- * data is a pointer to the new pte_t mapping the HVA specified by the MMU
- * notifier.
- * Returns non-zero if a flush is needed before releasing the MMU lock.
- */
+ 
 bool kvm_tdp_mmu_set_spte_gfn(struct kvm *kvm, struct kvm_gfn_range *range)
 {
-	/*
-	 * No need to handle the remote TLB flush under RCU protection, the
-	 * target SPTE _must_ be a leaf SPTE, i.e. cannot result in freeing a
-	 * shadow page. See the WARN on pfn_changed in handle_changed_spte().
-	 */
+	 
 	return kvm_tdp_mmu_handle_gfn(kvm, range, set_spte_gfn);
 }
 
-/*
- * Remove write access from all SPTEs at or above min_level that map GFNs
- * [start, end). Returns true if an SPTE has been changed and the TLBs need to
- * be flushed.
- */
+ 
 static bool wrprot_gfn_range(struct kvm *kvm, struct kvm_mmu_page *root,
 			     gfn_t start, gfn_t end, int min_level)
 {
@@ -1301,11 +917,7 @@ retry:
 	return spte_set;
 }
 
-/*
- * Remove write access from all the SPTEs mapping GFNs in the memslot. Will
- * only affect leaf SPTEs down to min_level.
- * Returns true if an SPTE has been changed and the TLBs need to be flushed.
- */
+ 
 bool kvm_tdp_mmu_wrprot_slot(struct kvm *kvm,
 			     const struct kvm_memory_slot *slot, int min_level)
 {
@@ -1346,15 +958,7 @@ static struct kvm_mmu_page *tdp_mmu_alloc_sp_for_split(struct kvm *kvm,
 {
 	struct kvm_mmu_page *sp;
 
-	/*
-	 * Since we are allocating while under the MMU lock we have to be
-	 * careful about GFP flags. Use GFP_NOWAIT to avoid blocking on direct
-	 * reclaim and to avoid making any filesystem callbacks (which can end
-	 * up invoking KVM MMU notifiers, resulting in a deadlock).
-	 *
-	 * If this allocation fails we drop the lock and retry with reclaim
-	 * allowed.
-	 */
+	 
 	sp = __tdp_mmu_alloc_sp_for_split(GFP_NOWAIT | __GFP_ACCOUNT);
 	if (sp)
 		return sp;
@@ -1379,7 +983,7 @@ static struct kvm_mmu_page *tdp_mmu_alloc_sp_for_split(struct kvm *kvm,
 	return sp;
 }
 
-/* Note, the caller is responsible for initializing @sp. */
+ 
 static int tdp_mmu_split_huge_page(struct kvm *kvm, struct tdp_iter *iter,
 				   struct kvm_mmu_page *sp, bool shared)
 {
@@ -1387,30 +991,16 @@ static int tdp_mmu_split_huge_page(struct kvm *kvm, struct tdp_iter *iter,
 	const int level = iter->level;
 	int ret, i;
 
-	/*
-	 * No need for atomics when writing to sp->spt since the page table has
-	 * not been linked in yet and thus is not reachable from any other CPU.
-	 */
+	 
 	for (i = 0; i < SPTE_ENT_PER_PAGE; i++)
 		sp->spt[i] = make_huge_page_split_spte(kvm, huge_spte, sp->role, i);
 
-	/*
-	 * Replace the huge spte with a pointer to the populated lower level
-	 * page table. Since we are making this change without a TLB flush vCPUs
-	 * will see a mix of the split mappings and the original huge mapping,
-	 * depending on what's currently in their TLB. This is fine from a
-	 * correctness standpoint since the translation will be the same either
-	 * way.
-	 */
+	 
 	ret = tdp_mmu_link_sp(kvm, iter, sp, shared);
 	if (ret)
 		goto out;
 
-	/*
-	 * tdp_mmu_link_sp_atomic() will handle subtracting the huge page we
-	 * are overwriting from the page stats. But we have to manually update
-	 * the page stats with the new present child pages.
-	 */
+	 
 	kvm_update_page_stats(kvm, level - 1, SPTE_ENT_PER_PAGE);
 
 out:
@@ -1429,17 +1019,7 @@ static int tdp_mmu_split_huge_pages_root(struct kvm *kvm,
 
 	rcu_read_lock();
 
-	/*
-	 * Traverse the page table splitting all huge pages above the target
-	 * level into one lower level. For example, if we encounter a 1GB page
-	 * we split it into 512 2MB pages.
-	 *
-	 * Since the TDP iterator uses a pre-order traversal, we are guaranteed
-	 * to visit an SPTE before ever visiting its children, which means we
-	 * will correctly recursively split huge pages that are more than one
-	 * level above the target level (e.g. splitting a 1GB to 512 2MB pages,
-	 * and then splitting each of those to 512 4KB pages).
-	 */
+	 
 	for_each_tdp_pte_min_level(iter, root, target_level + 1, start, end) {
 retry:
 		if (tdp_mmu_iter_cond_resched(kvm, &iter, false, shared))
@@ -1472,11 +1052,7 @@ retry:
 
 	rcu_read_unlock();
 
-	/*
-	 * It's possible to exit the loop having never used the last sp if, for
-	 * example, a vCPU doing HugePage NX splitting wins the race and
-	 * installs its own sp in place of the last sp we tried to split.
-	 */
+	 
 	if (sp)
 		tdp_mmu_free_sp(sp);
 
@@ -1484,9 +1060,7 @@ retry:
 }
 
 
-/*
- * Try to split all huge pages mapped by the TDP MMU down to the target level.
- */
+ 
 void kvm_tdp_mmu_try_split_huge_pages(struct kvm *kvm,
 				      const struct kvm_memory_slot *slot,
 				      gfn_t start, gfn_t end,
@@ -1506,13 +1080,7 @@ void kvm_tdp_mmu_try_split_huge_pages(struct kvm *kvm,
 	}
 }
 
-/*
- * Clear the dirty status of all the SPTEs mapping GFNs in the memslot. If
- * AD bits are enabled, this will involve clearing the dirty bit on each SPTE.
- * If AD bits are not enabled, this will require clearing the writable bit on
- * each SPTE. Returns true if an SPTE has been changed and the TLBs need to
- * be flushed.
- */
+ 
 static bool clear_dirty_gfn_range(struct kvm *kvm, struct kvm_mmu_page *root,
 			   gfn_t start, gfn_t end)
 {
@@ -1546,13 +1114,7 @@ retry:
 	return spte_set;
 }
 
-/*
- * Clear the dirty status of all the SPTEs mapping GFNs in the memslot. If
- * AD bits are enabled, this will involve clearing the dirty bit on each SPTE.
- * If AD bits are not enabled, this will require clearing the writable bit on
- * each SPTE. Returns true if an SPTE has been changed and the TLBs need to
- * be flushed.
- */
+ 
 bool kvm_tdp_mmu_clear_dirty_slot(struct kvm *kvm,
 				  const struct kvm_memory_slot *slot)
 {
@@ -1568,13 +1130,7 @@ bool kvm_tdp_mmu_clear_dirty_slot(struct kvm *kvm,
 	return spte_set;
 }
 
-/*
- * Clears the dirty status of all the 4k SPTEs mapping GFNs for which a bit is
- * set in mask, starting at gfn. The given memslot is expected to contain all
- * the GFNs represented by set bits in the mask. If AD bits are enabled,
- * clearing the dirty status will involve clearing the dirty bit on each SPTE
- * or, if AD bits are not enabled, clearing the writable bit on each SPTE.
- */
+ 
 static void clear_dirty_pt_masked(struct kvm *kvm, struct kvm_mmu_page *root,
 				  gfn_t gfn, unsigned long mask, bool wrprot)
 {
@@ -1616,13 +1172,7 @@ static void clear_dirty_pt_masked(struct kvm *kvm, struct kvm_mmu_page *root,
 	rcu_read_unlock();
 }
 
-/*
- * Clears the dirty status of all the 4k SPTEs mapping GFNs for which a bit is
- * set in mask, starting at gfn. The given memslot is expected to contain all
- * the GFNs represented by set bits in the mask. If AD bits are enabled,
- * clearing the dirty status will involve clearing the dirty bit on each SPTE
- * or, if AD bits are not enabled, clearing the writable bit on each SPTE.
- */
+ 
 void kvm_tdp_mmu_clear_dirty_pt_masked(struct kvm *kvm,
 				       struct kvm_memory_slot *slot,
 				       gfn_t gfn, unsigned long mask,
@@ -1654,21 +1204,11 @@ retry:
 		    !is_shadow_present_pte(iter.old_spte))
 			continue;
 
-		/*
-		 * Don't zap leaf SPTEs, if a leaf SPTE could be replaced with
-		 * a large page size, then its parent would have been zapped
-		 * instead of stepping down.
-		 */
+		 
 		if (is_last_spte(iter.old_spte, iter.level))
 			continue;
 
-		/*
-		 * If iter.gfn resides outside of the slot, i.e. the page for
-		 * the current level overlaps but is not contained by the slot,
-		 * then the SPTE can't be made huge.  More importantly, trying
-		 * to query that info from slot->arch.lpage_info will cause an
-		 * out-of-bounds access.
-		 */
+		 
 		if (iter.gfn < start || iter.gfn >= end)
 			continue;
 
@@ -1677,7 +1217,7 @@ retry:
 		if (max_mapping_level < iter.level)
 			continue;
 
-		/* Note, a successful atomic zap also does a remote TLB flush. */
+		 
 		if (tdp_mmu_zap_spte_atomic(kvm, &iter))
 			goto retry;
 	}
@@ -1685,10 +1225,7 @@ retry:
 	rcu_read_unlock();
 }
 
-/*
- * Zap non-leaf SPTEs (and free their associated page tables) which could
- * be replaced by huge pages, for GFNs within the slot.
- */
+ 
 void kvm_tdp_mmu_zap_collapsible_sptes(struct kvm *kvm,
 				       const struct kvm_memory_slot *slot)
 {
@@ -1700,11 +1237,7 @@ void kvm_tdp_mmu_zap_collapsible_sptes(struct kvm *kvm,
 		zap_collapsible_spte_range(kvm, root, slot);
 }
 
-/*
- * Removes write access on the last level SPTE mapping this GFN and unsets the
- * MMU-writable bit to ensure future writes continue to be intercepted.
- * Returns true if an SPTE was set and a TLB flush is needed.
- */
+ 
 static bool write_protect_gfn(struct kvm *kvm, struct kvm_mmu_page *root,
 			      gfn_t gfn, int min_level)
 {
@@ -1736,11 +1269,7 @@ static bool write_protect_gfn(struct kvm *kvm, struct kvm_mmu_page *root,
 	return spte_set;
 }
 
-/*
- * Removes write access on the last level SPTE mapping this GFN and unsets the
- * MMU-writable bit to ensure future writes continue to be intercepted.
- * Returns true if an SPTE was set and a TLB flush is needed.
- */
+ 
 bool kvm_tdp_mmu_write_protect_gfn(struct kvm *kvm,
 				   struct kvm_memory_slot *slot, gfn_t gfn,
 				   int min_level)
@@ -1755,12 +1284,7 @@ bool kvm_tdp_mmu_write_protect_gfn(struct kvm *kvm,
 	return spte_set;
 }
 
-/*
- * Return the level of the lowest level SPTE added to sptes.
- * That SPTE may be non-present.
- *
- * Must be called between kvm_tdp_mmu_walk_lockless_{begin,end}.
- */
+ 
 int kvm_tdp_mmu_get_walk(struct kvm_vcpu *vcpu, u64 addr, u64 *sptes,
 			 int *root_level)
 {
@@ -1779,17 +1303,7 @@ int kvm_tdp_mmu_get_walk(struct kvm_vcpu *vcpu, u64 addr, u64 *sptes,
 	return leaf;
 }
 
-/*
- * Returns the last level spte pointer of the shadow page walk for the given
- * gpa, and sets *spte to the spte value. This spte may be non-preset. If no
- * walk could be performed, returns NULL and *spte does not contain valid data.
- *
- * Contract:
- *  - Must be called between kvm_tdp_mmu_walk_lockless_{begin,end}.
- *  - The returned sptep must not be used after kvm_tdp_mmu_walk_lockless_end.
- *
- * WARNING: This function is only intended to be called during fast_page_fault.
- */
+ 
 u64 *kvm_tdp_mmu_fast_pf_get_last_sptep(struct kvm_vcpu *vcpu, u64 addr,
 					u64 *spte)
 {
@@ -1803,15 +1317,6 @@ u64 *kvm_tdp_mmu_fast_pf_get_last_sptep(struct kvm_vcpu *vcpu, u64 addr,
 		sptep = iter.sptep;
 	}
 
-	/*
-	 * Perform the rcu_dereference to get the raw spte pointer value since
-	 * we are passing it up to fast_page_fault, which is shared with the
-	 * legacy MMU and thus does not retain the TDP MMU-specific __rcu
-	 * annotation.
-	 *
-	 * This is safe since fast_page_fault obeys the contracts of this
-	 * function as well as all TDP MMU contracts around modifying SPTEs
-	 * outside of mmu_lock.
-	 */
+	 
 	return rcu_dereference(sptep);
 }

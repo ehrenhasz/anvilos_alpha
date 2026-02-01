@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * Copyright 2020 Google LLC.
- */
+
+ 
 
 #include <test_progs.h>
 #include <cgroup_helpers.h>
@@ -77,9 +75,7 @@ static void test_metadata_unused(void)
 	if (CHECK(err, "prog-holds-rodata", "errno: %d", err))
 		return;
 
-	/* Assert that we can access the metadata in skel and the values are
-	 * what we expect.
-	 */
+	 
 	if (CHECK(strncmp(obj->rodata->bpf_metadata_a, "foo",
 			  sizeof(obj->rodata->bpf_metadata_a)),
 		  "bpf_metadata_a", "expected \"foo\", value differ"))
@@ -88,7 +84,7 @@ static void test_metadata_unused(void)
 		  "expected 1, got %d", obj->rodata->bpf_metadata_b))
 		goto close_bpf_object;
 
-	/* Assert that binding metadata map to prog again succeeds. */
+	 
 	err = bpf_prog_bind_map(bpf_program__fd(obj->progs.prog),
 				bpf_map__fd(obj->maps.rodata), NULL);
 	CHECK(err, "rebind_map", "errno %d, expected 0", errno);
@@ -111,9 +107,7 @@ static void test_metadata_used(void)
 	if (CHECK(err, "prog-holds-rodata", "errno: %d", err))
 		return;
 
-	/* Assert that we can access the metadata in skel and the values are
-	 * what we expect.
-	 */
+	 
 	if (CHECK(strncmp(obj->rodata->bpf_metadata_a, "bar",
 			  sizeof(obj->rodata->bpf_metadata_a)),
 		  "metadata_a", "expected \"bar\", value differ"))
@@ -122,7 +116,7 @@ static void test_metadata_used(void)
 		  "expected 2, got %d", obj->rodata->bpf_metadata_b))
 		goto close_bpf_object;
 
-	/* Assert that binding metadata map to prog again succeeds. */
+	 
 	err = bpf_prog_bind_map(bpf_program__fd(obj->progs.prog),
 				bpf_map__fd(obj->maps.rodata), NULL);
 	CHECK(err, "rebind_map", "errno %d, expected 0", errno);

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014-2022, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -207,7 +205,7 @@ int tegra_xusb_pad_register(struct tegra_xusb_pad *pad,
 		struct device_node *np = tegra_xusb_pad_find_phy_node(pad, i);
 		struct tegra_xusb_lane *lane;
 
-		/* skip disabled lanes */
+		 
 		if (!np || !of_device_is_available(np)) {
 			of_node_put(np);
 			continue;
@@ -281,7 +279,7 @@ tegra_xusb_pad_create(struct tegra_xusb_padctl *padctl,
 		return ERR_PTR(err);
 	}
 
-	/* XXX move this into ->probe() to avoid string comparison */
+	 
 	if (strcmp(soc->name, "pcie") == 0)
 		padctl->pcie = pad;
 
@@ -323,14 +321,14 @@ static void tegra_xusb_lane_program(struct tegra_xusb_lane *lane)
 	const struct tegra_xusb_lane_soc *soc = lane->soc;
 	u32 value;
 
-	/* skip single function lanes */
+	 
 	if (soc->num_funcs < 2)
 		return;
 
 	if (lane->pad->ops->iddq_enable)
 		lane->pad->ops->iddq_enable(lane);
 
-	/* choose function */
+	 
 	value = padctl_readl(padctl, soc->offset);
 	value &= ~(soc->mask << soc->shift);
 	value |= lane->function << soc->shift;
@@ -667,12 +665,7 @@ static int tegra_xusb_setup_usb_role_switch(struct tegra_xusb_port *port)
 	};
 	int err = 0;
 
-	/*
-	 * USB role switch driver needs parent driver owner info. This is a
-	 * suboptimal solution. TODO: Need to revisit this in a follow-up patch
-	 * where an optimal solution is possible with changes to USB role
-	 * switch driver.
-	 */
+	 
 	port->dev.driver = devm_kzalloc(&port->dev,
 					sizeof(struct device_driver),
 					GFP_KERNEL);
@@ -700,10 +693,7 @@ static int tegra_xusb_setup_usb_role_switch(struct tegra_xusb_port *port)
 
 	lane = tegra_xusb_find_lane(port->padctl, "usb2", port->index);
 
-	/*
-	 * Assign phy dev to usb-phy dev. Host/device drivers can use phy
-	 * reference to retrieve usb-phy details.
-	 */
+	 
 	port->usb_phy.dev = &lane->pad->lanes[port->index]->dev;
 	port->usb_phy.dev->driver = port->dev.driver;
 	port->usb_phy.otg->usb_phy = &port->usb_phy;
@@ -716,7 +706,7 @@ static int tegra_xusb_setup_usb_role_switch(struct tegra_xusb_port *port)
 		return err;
 	}
 
-	/* populate connector entry */
+	 
 	of_platform_populate(port->dev.of_node, NULL, NULL, &port->dev);
 
 	return err;
@@ -760,7 +750,7 @@ static int tegra_xusb_usb2_port_parse_dt(struct tegra_xusb_usb2_port *usb2)
 		usb2->mode = USB_DR_MODE_HOST;
 	}
 
-	/* usb-role-switch property is mandatory for OTG/Peripheral modes */
+	 
 	if (usb2->mode == USB_DR_MODE_PERIPHERAL ||
 	    usb2->mode == USB_DR_MODE_OTG) {
 		if (of_property_read_bool(np, "usb-role-switch")) {
@@ -786,10 +776,7 @@ static int tegra_xusb_add_usb2_port(struct tegra_xusb_padctl *padctl,
 	struct device_node *np;
 	int err = 0;
 
-	/*
-	 * USB2 ports don't require additional properties, but if the port is
-	 * marked as disabled there is no reason to register it.
-	 */
+	 
 	np = tegra_xusb_find_port_node(padctl, "usb2", index);
 	if (!np || !of_device_is_available(np))
 		goto out;
@@ -902,7 +889,7 @@ void tegra_xusb_ulpi_port_release(struct tegra_xusb_port *port)
 
 static int tegra_xusb_hsic_port_parse_dt(struct tegra_xusb_hsic_port *hsic)
 {
-	/* XXX */
+	 
 	return 0;
 }
 
@@ -993,11 +980,7 @@ static int tegra_xusb_add_usb3_port(struct tegra_xusb_padctl *padctl,
 	struct device_node *np;
 	int err = 0;
 
-	/*
-	 * If there is no supplemental configuration in the device tree the
-	 * port is unusable. But it is valid to configure only a single port,
-	 * hence return 0 instead of an error to allow ports to be optional.
-	 */
+	 
 	np = tegra_xusb_find_port_node(padctl, "usb3", index);
 	if (!np || !of_device_is_available(np))
 		goto out;
@@ -1083,7 +1066,7 @@ static int tegra_xusb_update_usb3_fake_port(struct tegra_xusb_usb2_port *usb2)
 {
 	int fake;
 
-	/* Disable usb3_port_fake usage by default and assign if needed */
+	 
 	usb2->usb3_port_fake = -1;
 
 	if ((usb2->mode == USB_DR_MODE_OTG ||
@@ -1178,7 +1161,7 @@ static int tegra_xusb_padctl_probe(struct platform_device *pdev)
 	const struct of_device_id *match;
 	int err;
 
-	/* for backwards compatibility with old device trees */
+	 
 	np = of_get_child_by_name(np, "pads");
 	if (!np) {
 		dev_warn(&pdev->dev, "deprecated DT, using legacy driver\n");
@@ -1339,11 +1322,7 @@ struct tegra_xusb_padctl *tegra_xusb_padctl_get(struct device *dev)
 	if (!np)
 		return ERR_PTR(-EINVAL);
 
-	/*
-	 * This is slightly ugly. A better implementation would be to keep a
-	 * registry of pad controllers, but since there will almost certainly
-	 * only ever be one per SoC that would be a little overkill.
-	 */
+	 
 	pdev = of_find_device_by_node(np);
 	if (!pdev) {
 		of_node_put(np);

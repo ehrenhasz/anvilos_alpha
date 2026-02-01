@@ -1,18 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Tegra host1x Syncpoints
- *
- * Copyright (c) 2010-2013, NVIDIA Corporation.
- */
+
+ 
 
 #include <linux/io.h>
 
 #include "../dev.h"
 #include "../syncpt.h"
 
-/*
- * Write the current syncpoint value back to hw.
- */
+ 
 static void syncpt_restore(struct host1x_syncpt *sp)
 {
 	u32 min = host1x_syncpt_read_min(sp);
@@ -21,9 +15,7 @@ static void syncpt_restore(struct host1x_syncpt *sp)
 	host1x_sync_writel(host, min, HOST1X_SYNC_SYNCPT(sp->id));
 }
 
-/*
- * Write the current waitbase value back to hw.
- */
+ 
 static void syncpt_restore_wait_base(struct host1x_syncpt *sp)
 {
 #if HOST1X_HW < 7
@@ -34,9 +26,7 @@ static void syncpt_restore_wait_base(struct host1x_syncpt *sp)
 #endif
 }
 
-/*
- * Read waitbase value from hw.
- */
+ 
 static void syncpt_read_wait_base(struct host1x_syncpt *sp)
 {
 #if HOST1X_HW < 7
@@ -47,15 +37,13 @@ static void syncpt_read_wait_base(struct host1x_syncpt *sp)
 #endif
 }
 
-/*
- * Updates the last value read from hardware.
- */
+ 
 static u32 syncpt_load(struct host1x_syncpt *sp)
 {
 	struct host1x *host = sp->host;
 	u32 old, live;
 
-	/* Loop in case there's a race writing to min_val */
+	 
 	do {
 		old = host1x_syncpt_read_min(sp);
 		live = host1x_sync_readl(host, HOST1X_SYNC_SYNCPT(sp->id));
@@ -69,10 +57,7 @@ static u32 syncpt_load(struct host1x_syncpt *sp)
 	return live;
 }
 
-/*
- * Write a cpu syncpoint increment to the hardware, without touching
- * the cache.
- */
+ 
 static int syncpt_cpu_incr(struct host1x_syncpt *sp)
 {
 	struct host1x *host = sp->host;
@@ -89,17 +74,7 @@ static int syncpt_cpu_incr(struct host1x_syncpt *sp)
 	return 0;
 }
 
-/**
- * syncpt_assign_to_channel() - Assign syncpoint to channel
- * @sp: syncpoint
- * @ch: channel
- *
- * On chips with the syncpoint protection feature (Tegra186+), assign @sp to
- * @ch, preventing other channels from incrementing the syncpoints. If @ch is
- * NULL, unassigns the syncpoint.
- *
- * On older chips, do nothing.
- */
+ 
 static void syncpt_assign_to_channel(struct host1x_syncpt *sp,
 				  struct host1x_channel *ch)
 {
@@ -112,13 +87,7 @@ static void syncpt_assign_to_channel(struct host1x_syncpt *sp,
 #endif
 }
 
-/**
- * syncpt_enable_protection() - Enable syncpoint protection
- * @host: host1x instance
- *
- * On chips with the syncpoint protection feature (Tegra186+), enable this
- * feature. On older chips, do nothing.
- */
+ 
 static void syncpt_enable_protection(struct host1x *host)
 {
 #if HOST1X_HW >= 6

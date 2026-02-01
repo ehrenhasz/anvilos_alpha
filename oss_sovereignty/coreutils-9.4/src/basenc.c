@@ -1,20 +1,4 @@
-/* Base64, base32, and similar encoding/decoding strings or files.
-   Copyright (C) 2004-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>. */
-
-/* Written by Simon Josefsson <simon@josefsson.org>.  */
+ 
 
 #include <config.h>
 
@@ -585,32 +569,11 @@ z85_length (int len)
 static bool
 isz85 (char ch)
 {
-  return c_isalnum (ch) || strchr (".-:+=^!/*?&<>()[]{}@%$#", ch) != nullptr;
-}
-
-static char const z85_encoding[85] =
-  "0123456789"
-  "abcdefghijklmnopqrstuvwxyz"
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-  ".-:+=^!/*?&<>()[]{}@%$#";
-
-static void
-z85_encode (char const *restrict in, idx_t inlen,
-            char *restrict out, idx_t outlen)
-{
-  int i = 0;
-  unsigned char quad[4];
-  idx_t outidx = 0;
-
-  while (true)
-    {
-      if (inlen == 0)
-        {
-          /* no more input, exactly on 4 octet boundary. */
+  return c_isalnum (ch) || strchr (".-:+=^! 
           if (i == 0)
             return;
 
-          /* currently, there's no way to return an error in encoding.  */
+           
           error (EXIT_FAILURE, 0,
                  _("invalid input (length must be multiple of 4 characters)"));
         }
@@ -620,7 +583,7 @@ z85_encode (char const *restrict in, idx_t inlen,
           --inlen;
         }
 
-      /* Got a quad, encode it */
+       
       if (i == 4)
         {
           int_fast64_t val = quad[0];
@@ -631,10 +594,7 @@ z85_encode (char const *restrict in, idx_t inlen,
               int c = val % 85;
               val /= 85;
 
-              /* NOTE: if there is padding (which is trimmed by z85
-                 before outputting the result), the output buffer 'out'
-                 might not include enough allocated bytes for the padding,
-                 so don't store them. */
+               
               if (outidx + j < outlen)
                 out[j] = z85_encoding[c];
             }
@@ -664,30 +624,20 @@ z85_decode_ctx_init (struct base_decode_context *ctx)
 # define Z85_HI_CTX_TO_32BIT_VAL(ctx) \
   ((int_fast64_t) (ctx)->ctx.z85.octets[0] * 85 * 85 * 85 * 85 )
 
-/*
- 0 -  9:  0 1 2 3 4 5 6 7 8 9
- 10 - 19:  a b c d e f g h i j
- 20 - 29:  k l m n o p q r s t
- 30 - 39:  u v w x y z A B C D
- 40 - 49:  E F G H I J K L M N
- 50 - 59:  O P Q R S T U V W X
- 60 - 69:  Y Z . - : + = ^ ! /   #dummy comment to workaround syntax-check
- 70 - 79:  * ? & < > ( ) [ ] {
- 80 - 84:  } @ % $ #
-*/
+ 
 static signed char const z85_decoding[93] = {
-  68, -1,  84,  83, 82,  72, -1,               /* ! " # $ % & ' */
-  75, 76,  70,  65, -1,  63, 62, 69,           /* ( ) * + , - . / */
-  0,  1,   2,   3,  4,   5,  6,   7,  8,  9,   /* '0' to '9' */
-  64, -1,  73,  66, 74,  71, 81,               /* : ; < =  > ? @ */
-  36, 37,  38,  39, 40,  41, 42,  43, 44, 45,  /* 'A' to 'J' */
-  46, 47,  48,  49, 50,  51, 52,  53, 54, 55,  /* 'K' to 'T' */
-  56, 57,  58,  59, 60,  61,                   /* 'U' to 'Z' */
-  77,  -1, 78,  67,  -1,  -1,                  /* [ \ ] ^ _ ` */
-  10, 11,  12,  13, 14,  15, 16,  17, 18, 19,  /* 'a' to 'j' */
-  20, 21,  22,  23, 24,  25, 26,  27, 28, 29,  /* 'k' to 't' */
-  30, 31,  32,  33, 34,  35,                   /* 'u' to 'z' */
-  79, -1,  80                                  /* { | } */
+  68, -1,  84,  83, 82,  72, -1,                
+  75, 76,  70,  65, -1,  63, 62, 69,            
+  0,  1,   2,   3,  4,   5,  6,   7,  8,  9,    
+  64, -1,  73,  66, 74,  71, 81,                
+  36, 37,  38,  39, 40,  41, 42,  43, 44, 45,   
+  46, 47,  48,  49, 50,  51, 52,  53, 54, 55,   
+  56, 57,  58,  59, 60,  61,                    
+  77,  -1, 78,  67,  -1,  -1,                   
+  10, 11,  12,  13, 14,  15, 16,  17, 18, 19,   
+  20, 21,  22,  23, 24,  25, 26,  27, 28, 29,   
+  30, 31,  32,  33, 34,  35,                    
+  79, -1,  80                                   
 };
 
 static bool
@@ -695,19 +645,16 @@ z85_decode_ctx (struct base_decode_context *ctx,
                 char const *restrict in, idx_t inlen,
                 char *restrict out, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
+  bool ignore_lines = true;   
 
   *outlen = 0;
 
-  /* inlen==0 is request to flush output.
-     if there are dangling values - we are missing entries,
-     so return false - indicating an invalid input.  */
+   
   if (inlen == 0)
     {
       if (ctx->ctx.z85.i > 0)
         {
-          /* Z85 variant does not allow padding - input must
-             be a multiple of 5 - so return error.  */
+           
           return false;
         }
       return true;
@@ -721,29 +668,28 @@ z85_decode_ctx (struct base_decode_context *ctx,
           continue;
         }
 
-      /* z85 decoding */
+       
       unsigned char c = *in;
 
       if (c >= 33 && c <= 125)
         {
           signed char ch = z85_decoding[c - 33];
           if (ch < 0)
-            return false; /* garbage - return false */
+            return false;  
           c = ch;
         }
       else
-        return false; /* garbage - return false */
+        return false;  
 
       ++in;
 
       ctx->ctx.z85.octets[ctx->ctx.z85.i++] = c;
       if (ctx->ctx.z85.i == 5)
         {
-          /* decode the lowest 4 octets, then check for overflows.  */
+           
           int_fast64_t val = Z85_LO_CTX_TO_32BIT_VAL (ctx);
 
-          /* The Z85 spec and the reference implementation say nothing
-             about overflows. To be on the safe side, reject them.  */
+           
 
           val += Z85_HI_CTX_TO_32BIT_VAL (ctx);
           if ((val >> 24) & ~0xFF)
@@ -826,13 +772,11 @@ base2lsbf_decode_ctx (struct base_decode_context *ctx,
                       char const *restrict in, idx_t inlen,
                       char *restrict out, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
+  bool ignore_lines = true;   
 
   *outlen = 0;
 
-  /* inlen==0 is request to flush output.
-     if there is a dangling bit - we are missing some bits,
-     so return false - indicating an invalid input.  */
+   
   if (inlen == 0)
     return ctx->i == 0;
 
@@ -870,13 +814,11 @@ base2msbf_decode_ctx (struct base_decode_context *ctx,
                       char const *restrict in, idx_t inlen,
                       char *restrict out, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
+  bool ignore_lines = true;   
 
   *outlen = 0;
 
-  /* inlen==0 is request to flush output.
-     if there is a dangling bit - we are missing some bits,
-     so return false - indicating an invalid input.  */
+   
   if (inlen == 0)
     return ctx->i == 0;
 
@@ -911,7 +853,7 @@ base2msbf_decode_ctx (struct base_decode_context *ctx,
   return true;
 }
 
-#endif /* BASE_TYPE == 42, i.e., "basenc"*/
+#endif  
 
 
 
@@ -921,7 +863,7 @@ wrap_write (char const *buffer, idx_t len,
 {
   if (wrap_column == 0)
     {
-      /* Simple write. */
+       
       if (fwrite (buffer, 1, len, stdout) < len)
         write_error ();
     }
@@ -984,8 +926,7 @@ do_encode (FILE *in, char const *infile, FILE *out, idx_t wrap_column)
 
       if (sum > 0)
         {
-          /* Process input one block at a time.  Note that ENC_BLOCKSIZE
-             is sized so that no pad chars will appear in output. */
+           
           base_encode (inbuf, sum, outbuf, BASE_LENGTH (sum));
 
           wrap_write (outbuf, BASE_LENGTH (sum), wrap_column,
@@ -994,7 +935,7 @@ do_encode (FILE *in, char const *infile, FILE *out, idx_t wrap_column)
     }
   while (!feof (in) && !ferror (in) && sum == ENC_BLOCKSIZE);
 
-  /* When wrapping, terminate last line. */
+   
   if (wrap_column && current_column > 0 && fputc ('\n', out) == EOF)
     write_error ();
 
@@ -1047,10 +988,7 @@ do_decode (FILE *in, char const *infile, FILE *out, bool ignore_garbage)
         }
       while (sum < BASE_LENGTH (DEC_BLOCKSIZE) && !feof (in));
 
-      /* The following "loop" is usually iterated just once.
-         However, when it processes the final input buffer, we want
-         to iterate it one additional time, but with an indicator
-         telling it to flush what is in CTX.  */
+       
       for (int k = 0; k < 1 + !!feof (in); k++)
         {
           if (k == 1 && ctx.i == 0)
@@ -1077,11 +1015,11 @@ main (int argc, char **argv)
   FILE *input_fh;
   char const *infile;
 
-  /* True if --decode has been given and we should decode data. */
+   
   bool decode = false;
-  /* True if we should ignore non-base-alphabetic characters. */
+   
   bool ignore_garbage = false;
-  /* Wrap encoded data around the 76th column, by default. */
+   
   idx_t wrap_column = 76;
 
 #if BASE_TYPE == 42

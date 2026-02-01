@@ -3,14 +3,14 @@
 # Licensed under the Apache License 2.0 (the "License").  You may not use
 # this file except in compliance with the License.  You can obtain a copy
 # in the file LICENSE in the source distribution or at
-# https://www.openssl.org/source/license.html
+# https: 
 
 #
 # ====================================================================
 # Written by Andy Polyakov <appro@openssl.org> for the OpenSSL
 # project. The module is, however, dual licensed under OpenSSL and
 # CRYPTOGAMS licenses depending on where you obtain it. For further
-# details see http://www.openssl.org/~appro/cryptogams/.
+# details see http: 
 # ====================================================================
 #
 # March, June 2010
@@ -87,10 +87,10 @@
 #
 # Knights Landing achieves 1.09 cpb.
 #
-# [1] http://rt.openssl.org/Ticket/Display.html?id=2900&user=guest&pass=guest
+# [1] http: 
 
 # Generated once from
-# https://github.com/openssl/openssl/blob/5ffc3324/crypto/modes/asm/ghash-x86_64.pl
+# https: 
 # and modified for ICP. Modification are kept at a bare minimum to ease later
 # upstream merges.
 
@@ -102,7 +102,7 @@
 
 .text
 
-/* Windows userland links with OpenSSL */
+ 
 #if !defined (_WIN32) || defined (_KERNEL)
 ENTRY_ALIGN(gcm_gmult_clmul, 16)
 
@@ -157,7 +157,7 @@ ENTRY_ALIGN(gcm_gmult_clmul, 16)
 	RET
 .cfi_endproc
 SET_SIZE(gcm_gmult_clmul)
-#endif /* !_WIN32 || _KERNEL */
+#endif  
 
 ENTRY_ALIGN(gcm_init_htab_avx, 32)
 .cfi_startproc
@@ -165,8 +165,8 @@ ENTRY_ALIGN(gcm_init_htab_avx, 32)
 	vzeroupper
 
 	vmovdqu	(%rsi),%xmm2
-	// KCF/ICP stores H in network byte order with the hi qword first
-	// so we need to swap all bytes, not the 2 qwords.
+	 
+	 
 	vmovdqu	.Lbswap_mask(%rip),%xmm4
 	vpshufb	%xmm4,%xmm2,%xmm2
 
@@ -655,7 +655,7 @@ ENTRY_ALIGN(gcm_ghash_avx, 32)
 .cfi_endproc
 SET_SIZE(gcm_ghash_avx)
 
-#endif /* !_WIN32 || _KERNEL */
+#endif  
 
 SECTION_STATIC
 .balign	64
@@ -712,9 +712,9 @@ SET_OBJ(.Lrem_8bit)
 .byte	71,72,65,83,72,32,102,111,114,32,120,56,54,95,54,52,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 .balign	64
 
-/* Mark the stack non-executable. */
+ 
 #if defined(__linux__) && defined(__ELF__)
 .section .note.GNU-stack,"",%progbits
 #endif
 
-#endif /* defined(__x86_64__) && defined(HAVE_AVX) && defined(HAVE_AES) ... */
+#endif  

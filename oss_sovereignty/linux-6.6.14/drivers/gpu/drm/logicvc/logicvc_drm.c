@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2019-2022 Bootlin
- * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -37,7 +34,7 @@ static int logicvc_drm_gem_dma_dumb_create(struct drm_file *file_priv,
 {
 	struct logicvc_drm *logicvc = logicvc_drm(drm_dev);
 
-	/* Stride is always fixed to its configuration value. */
+	 
 	args->pitch = logicvc->config.row_stride * DIV_ROUND_UP(args->bpp, 8);
 
 	return drm_gem_dma_dumb_create_internal(file_priv, drm_dev, args);
@@ -70,10 +67,10 @@ static irqreturn_t logicvc_drm_irq_handler(int irq, void *data)
 	irqreturn_t ret = IRQ_NONE;
 	u32 stat = 0;
 
-	/* Get pending interrupt sources. */
+	 
 	regmap_read(logicvc->regmap, LOGICVC_INT_STAT_REG, &stat);
 
-	/* Clear all pending interrupt sources. */
+	 
 	regmap_write(logicvc->regmap, LOGICVC_INT_STAT_REG, stat);
 
 	if (stat & LOGICVC_INT_STAT_V_SYNC) {
@@ -317,11 +314,11 @@ static int logicvc_drm_probe(struct platform_device *pdev)
 		of_node_put(reserved_mem_node);
 	}
 
-	/* Get regmap from parent if available. */
+	 
 	if (of_node->parent)
 		regmap = syscon_node_to_regmap(of_node->parent);
 
-	/* Register our own regmap otherwise. */
+	 
 	if (IS_ERR_OR_NULL(regmap)) {
 		ret = of_address_to_resource(of_node, 0, &res);
 		if (ret) {

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  i2c-versatile.c
- *
- *  Copyright (C) 2006 ARM Ltd.
- *  written by Russell King, Deep Blue Solutions Ltd.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/i2c.h>

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NXP Wireless LAN device driver: station RX data handling
- *
- * Copyright 2011-2020 NXP
- */
+
+ 
 
 #include <uapi/linux/ipv6.h>
 #include <net/ndisc.h>
@@ -15,10 +11,7 @@
 #include "11n_aggr.h"
 #include "11n_rxreorder.h"
 
-/* This function checks if a frame is IPv4 ARP or IPv6 Neighbour advertisement
- * frame. If frame has both source and destination mac address as same, this
- * function drops such gratuitous frames.
- */
+ 
 static bool
 mwifiex_discard_gratuitous_arp(struct mwifiex_private *priv,
 			       struct sk_buff *skb)
@@ -55,19 +48,7 @@ mwifiex_discard_gratuitous_arp(struct mwifiex_private *priv,
 	return false;
 }
 
-/*
- * This function processes the received packet and forwards it
- * to kernel/upper layer.
- *
- * This function parses through the received packet and determines
- * if it is a debug packet or normal packet.
- *
- * For non-debug packets, the function chops off unnecessary leading
- * header bytes, reconstructs the packet as an ethernet frame or
- * 802.2/llc/snap frame as required, and sends it to kernel/upper layer.
- *
- * The completion callback is called after processing in complete.
- */
+ 
 int mwifiex_process_rx_packet(struct mwifiex_private *priv,
 			      struct sk_buff *skb)
 {
@@ -103,15 +84,7 @@ int mwifiex_process_rx_packet(struct mwifiex_private *priv,
 		      sizeof(rfc1042_header)) &&
 	      ntohs(rx_pkt_hdr->rfc1042_hdr.snap_type) != ETH_P_AARP &&
 	      ntohs(rx_pkt_hdr->rfc1042_hdr.snap_type) != ETH_P_IPX))) {
-		/*
-		 *  Replace the 803 header and rfc1042 header (llc/snap) with an
-		 *    EthernetII header, keep the src/dst and snap_type
-		 *    (ethertype).
-		 *  The firmware only passes up SNAP frames converting
-		 *    all RX Data from 802.11 to 802.2/LLC/SNAP frames.
-		 *  To create the Ethernet II, just move the src, dst address
-		 *    right before the snap_type.
-		 */
+		 
 		eth = (struct ethhdr *)
 			((u8 *) &rx_pkt_hdr->eth803_hdr
 			 + sizeof(rx_pkt_hdr->eth803_hdr) +
@@ -125,17 +98,15 @@ int mwifiex_process_rx_packet(struct mwifiex_private *priv,
 		memcpy(eth->h_dest, rx_pkt_hdr->eth803_hdr.h_dest,
 		       sizeof(eth->h_dest));
 
-		/* Chop off the rxpd + the excess memory from the 802.2/llc/snap
-		   header that was removed. */
+		 
 		hdr_chop = (u8 *) eth - (u8 *) local_rx_pd;
 	} else {
-		/* Chop off the rxpd */
+		 
 		hdr_chop = (u8 *) &rx_pkt_hdr->eth803_hdr -
 			(u8 *) local_rx_pd;
 	}
 
-	/* Chop off the leading header bytes so the it points to the start of
-	   either the reconstructed EthII frame or the 802.2/llc/snap frame */
+	 
 	skb_pull(skb, hdr_chop);
 
 	if (priv->hs2_enabled &&
@@ -151,7 +122,7 @@ int mwifiex_process_rx_packet(struct mwifiex_private *priv,
 		mwifiex_process_tdls_action_frame(priv, offset, rx_pkt_len);
 	}
 
-	/* Only stash RX bitrate for unicast packets. */
+	 
 	if (likely(!is_multicast_ether_addr(rx_pkt_hdr->eth803_hdr.h_dest))) {
 		priv->rxpd_rate = local_rx_pd->rx_rate;
 		priv->rxpd_htinfo = local_rx_pd->ht_info;
@@ -174,18 +145,7 @@ int mwifiex_process_rx_packet(struct mwifiex_private *priv,
 	return ret;
 }
 
-/*
- * This function processes the received buffer.
- *
- * The function looks into the RxPD and performs sanity tests on the
- * received buffer to ensure its a valid packet, before processing it
- * further. If the packet is determined to be aggregated, it is
- * de-aggregated accordingly. Non-unicast packets are sent directly to
- * the kernel/upper layers. Unicast packets are handed over to the
- * Rx reordering routine if 11n is enabled.
- *
- * The completion callback is called after processing in complete.
- */
+ 
 int mwifiex_process_sta_rx_packet(struct mwifiex_private *priv,
 				  struct sk_buff *skb)
 {
@@ -223,10 +183,7 @@ int mwifiex_process_sta_rx_packet(struct mwifiex_private *priv,
 		return ret;
 	}
 
-	/*
-	 * If the packet is not an unicast packet then send the packet
-	 * directly to os. Don't pass thru rx reordering
-	 */
+	 
 	if ((!IS_11N_ENABLED(priv) &&
 	     !(ISSUPP_TDLS_ENABLED(priv->adapter->fw_cap_info) &&
 	       !(local_rx_pd->flags & MWIFIEX_RXPD_FLAGS_TDLS_PACKET))) ||
@@ -257,7 +214,7 @@ int mwifiex_process_sta_rx_packet(struct mwifiex_private *priv,
 		       ETH_ALEN);
 	}
 
-	/* Reorder and send to OS */
+	 
 	ret = mwifiex_11n_rx_reorder_pkt(priv, seq_num, local_rx_pd->priority,
 					 ta, (u8) rx_pkt_type, skb);
 

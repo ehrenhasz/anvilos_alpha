@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2019,2023 NXP
- *
- * Implementation of the SCU IRQ functions using MU.
- *
- */
+
+ 
 
 #include <dt-bindings/firmware/imx/rsrc.h>
 #include <linux/firmware/imx/ipc.h>
@@ -49,7 +44,7 @@ struct scu_wakeup {
 	bool valid;
 };
 
-/* Sysfs functions */
+ 
 static struct kobject *wakeup_obj;
 static ssize_t wakeup_source_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf);
 static struct kobj_attribute wakeup_source_attr =
@@ -214,7 +209,7 @@ int imx_scu_enable_general_irq_channel(struct device *dev)
 	cl->dev = dev;
 	cl->rx_callback = imx_scu_irq_callback;
 
-	/* SCU general IRQ uses general interrupt channel 3 */
+	 
 	ch = mbox_request_channel_byname(cl, "gip3");
 	if (IS_ERR(ch)) {
 		ret = PTR_ERR(ch);
@@ -229,13 +224,13 @@ int imx_scu_enable_general_irq_channel(struct device *dev)
 				       "#mbox-cells", 0, &spec))
 		i = of_alias_get_id(spec.np, "mu");
 
-	/* use mu1 as general mu irq channel if failed */
+	 
 	if (i < 0)
 		i = 1;
 
 	mu_resource_id = IMX_SC_R_MU_0A + i;
 
-	/* Create directory under /sysfs/firmware */
+	 
 	wakeup_obj = kobject_create_and_add("scu_wakeup_source", firmware_kobj);
 	if (!wakeup_obj) {
 		ret = -ENOMEM;

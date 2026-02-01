@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * av7110_ca.c: CA and CI stuff
- *
- * Copyright (C) 1999-2002 Ralph  Metzler
- *                       & Marcus Metzler for convergence integrated media GmbH
- *
- * originally based on code by:
- * Copyright (C) 1998,1999 Christian Theiss <mistert@rz.fh-augsburg.de>
- *
- * the project's page is at https://linuxtv.org
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -47,7 +37,7 @@ void CI_handle(struct av7110 *av7110, u8 *data, u16 len)
 		}
 		break;
 	case CI_SWITCH_PRG_REPLY:
-		//av7110->ci_stat=data[1];
+		
 		break;
 	default:
 		break;
@@ -67,9 +57,7 @@ void ci_get_data(struct dvb_ringbuffer *cibuf, u8 *data, int len)
 }
 
 
-/******************************************************************************
- * CI link layer file ops
- ******************************************************************************/
+ 
 
 static int ci_ll_init(struct dvb_ringbuffer *cirbuf, struct dvb_ringbuffer *ciwbuf, int size)
 {

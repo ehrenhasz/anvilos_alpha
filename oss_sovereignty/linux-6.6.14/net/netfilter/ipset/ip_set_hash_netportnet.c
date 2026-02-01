@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2003-2013 Jozsef Kadlecsik <kadlec@netfilter.org> */
 
-/* Kernel module implementing an IP set type: the hash:ip,port,net type */
+ 
+
+ 
 
 #include <linux/jhash.h>
 #include <linux/module.h>
@@ -21,26 +21,26 @@
 #include <linux/netfilter/ipset/ip_set_hash.h>
 
 #define IPSET_TYPE_REV_MIN	0
-/*				0    Comments support added */
-/*				1    Forceadd support added */
-/*				2    skbinfo support added */
-#define IPSET_TYPE_REV_MAX	3 /* bucketsize, initval support added */
+ 
+ 
+ 
+#define IPSET_TYPE_REV_MAX	3  
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Oliver Smith <oliver@8.c.9.b.0.7.4.0.1.0.0.2.ip6.arpa>");
 IP_SET_MODULE_DESC("hash:net,port,net", IPSET_TYPE_REV_MIN, IPSET_TYPE_REV_MAX);
 MODULE_ALIAS("ip_set_hash:net,port,net");
 
-/* Type specific function prefix */
+ 
 #define HTYPE		hash_netportnet
 #define IP_SET_HASH_WITH_PROTO
 #define IP_SET_HASH_WITH_NETS
 #define IPSET_NET_COUNT 2
 #define IP_SET_HASH_WITH_NET0
 
-/* IPv4 variant */
+ 
 
-/* Member elements */
+ 
 struct hash_netportnet4_elem {
 	union {
 		__be32 ip[2];
@@ -56,7 +56,7 @@ struct hash_netportnet4_elem {
 	u8 proto;
 };
 
-/* Common functions */
+ 
 
 static bool
 hash_netportnet4_data_equal(const struct hash_netportnet4_elem *ip1,
@@ -333,7 +333,7 @@ hash_netportnet4_uadt(struct ip_set *set, struct nlattr *tb[],
 	return ret;
 }
 
-/* IPv6 variant */
+ 
 
 struct hash_netportnet6_elem {
 	union nf_inet_addr ip[2];
@@ -347,7 +347,7 @@ struct hash_netportnet6_elem {
 	u8 proto;
 };
 
-/* Common functions */
+ 
 
 static bool
 hash_netportnet6_data_equal(const struct hash_netportnet6_elem *ip1,

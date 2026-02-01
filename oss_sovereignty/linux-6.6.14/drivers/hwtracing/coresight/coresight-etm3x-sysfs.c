@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright(C) 2015 Linaro Limited. All rights reserved.
- * Author: Mathieu Poirier <mathieu.poirier@linaro.org>
- */
+
+ 
 
 #include <linux/pid_namespace.h>
 #include <linux/pm_runtime.h>
@@ -295,10 +292,7 @@ static ssize_t addr_idx_store(struct device *dev,
 	if (val >= drvdata->nr_addr_cmp)
 		return -EINVAL;
 
-	/*
-	 * Use spinlock to ensure index doesn't change while it gets
-	 * dereferenced multiple times within a spinlock block elsewhere.
-	 */
+	 
 	spin_lock(&drvdata->spinlock);
 	config->addr_idx = val;
 	spin_unlock(&drvdata->spinlock);
@@ -399,7 +393,7 @@ static ssize_t addr_range_store(struct device *dev,
 
 	if (sscanf(buf, "%lx %lx", &val1, &val2) != 2)
 		return -EINVAL;
-	/* Lower address comparator cannot have a higher address value */
+	 
 	if (val1 > val2)
 		return -EINVAL;
 
@@ -597,10 +591,7 @@ static ssize_t cntr_idx_store(struct device *dev,
 
 	if (val >= drvdata->nr_cntr)
 		return -EINVAL;
-	/*
-	 * Use spinlock to ensure index doesn't change while it gets
-	 * dereferenced multiple times within a spinlock block elsewhere.
-	 */
+	 
 	spin_lock(&drvdata->spinlock);
 	config->cntr_idx = val;
 	spin_unlock(&drvdata->spinlock);
@@ -1008,10 +999,7 @@ static ssize_t ctxid_idx_store(struct device *dev,
 	if (val >= drvdata->nr_ctxid_cmp)
 		return -EINVAL;
 
-	/*
-	 * Use spinlock to ensure index doesn't change while it gets
-	 * dereferenced multiple times within a spinlock block elsewhere.
-	 */
+	 
 	spin_lock(&drvdata->spinlock);
 	config->ctxid_idx = val;
 	spin_unlock(&drvdata->spinlock);
@@ -1027,10 +1015,7 @@ static ssize_t ctxid_pid_show(struct device *dev,
 	struct etm_drvdata *drvdata = dev_get_drvdata(dev->parent);
 	struct etm_config *config = &drvdata->config;
 
-	/*
-	 * Don't use contextID tracing if coming from a PID namespace.  See
-	 * comment in ctxid_pid_store().
-	 */
+	 
 	if (task_active_pid_ns(current) != &init_pid_ns)
 		return -EINVAL;
 
@@ -1050,15 +1035,7 @@ static ssize_t ctxid_pid_store(struct device *dev,
 	struct etm_drvdata *drvdata = dev_get_drvdata(dev->parent);
 	struct etm_config *config = &drvdata->config;
 
-	/*
-	 * When contextID tracing is enabled the tracers will insert the
-	 * value found in the contextID register in the trace stream.  But if
-	 * a process is in a namespace the PID of that process as seen from the
-	 * namespace won't be what the kernel sees, something that makes the
-	 * feature confusing and can potentially leak kernel only information.
-	 * As such refuse to use the feature if @current is not in the initial
-	 * PID namespace.
-	 */
+	 
 	if (task_active_pid_ns(current) != &init_pid_ns)
 		return -EINVAL;
 
@@ -1081,10 +1058,7 @@ static ssize_t ctxid_mask_show(struct device *dev,
 	struct etm_drvdata *drvdata = dev_get_drvdata(dev->parent);
 	struct etm_config *config = &drvdata->config;
 
-	/*
-	 * Don't use contextID tracing if coming from a PID namespace.  See
-	 * comment in ctxid_pid_store().
-	 */
+	 
 	if (task_active_pid_ns(current) != &init_pid_ns)
 		return -EINVAL;
 
@@ -1101,10 +1075,7 @@ static ssize_t ctxid_mask_store(struct device *dev,
 	struct etm_drvdata *drvdata = dev_get_drvdata(dev->parent);
 	struct etm_config *config = &drvdata->config;
 
-	/*
-	 * Don't use contextID tracing if coming from a PID namespace.  See
-	 * comment in ctxid_pid_store().
-	 */
+	 
 	if (task_active_pid_ns(current) != &init_pid_ns)
 		return -EINVAL;
 

@@ -1,39 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AIRcable USB Bluetooth Dongle Driver.
- *
- * Copyright (C) 2010 Johan Hovold <jhovold@gmail.com>
- * Copyright (C) 2006 Manuel Francisco Naranjo (naranjo.manuel@gmail.com)
- *
- * The device works as an standard CDC device, it has 2 interfaces, the first
- * one is for firmware access and the second is the serial one.
- * The protocol is very simply, there are two possibilities reading or writing.
- * When writing the first urb must have a Header that starts with 0x20 0x29 the
- * next two bytes must say how much data will be sent.
- * When reading the process is almost equal except that the header starts with
- * 0x00 0x20.
- *
- * The device simply need some stuff to understand data coming from the usb
- * buffer: The First and Second byte is used for a Header, the Third and Fourth
- * tells the  device the amount of information the package holds.
- * Packages are 60 bytes long Header Stuff.
- * When writing to the device the first two bytes of the header are 0x20 0x29
- * When reading the bytes are 0x00 0x20, or 0x00 0x10, there is an strange
- * situation, when too much data arrives to the device because it sends the data
- * but with out the header. I will use a simply hack to override this situation,
- * if there is data coming that does not contain any header, then that is data
- * that must go directly to the tty, as there is no documentation about if there
- * is any other control code, I will simply check for the first
- * one.
- *
- * I have taken some info from a Greg Kroah-Hartman article:
- * http://www.linuxjournal.com/article/6573
- * And from Linux Device Driver Kit CD, which is a great work, the authors taken
- * the work to recompile lots of information an knowledge in drivers development
- * and made it all available inside a cd.
- * URL: http://kernel.org/pub/linux/kernel/people/gregkh/ddk/
- *
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/tty.h>
@@ -43,11 +9,11 @@
 #include <linux/usb.h>
 #include <linux/usb/serial.h>
 
-/* Vendor and Product ID */
+ 
 #define AIRCABLE_VID		0x16CA
 #define AIRCABLE_USB_PID	0x1502
 
-/* Protocol Stuff */
+ 
 #define HCI_HEADER_LENGTH	0x4
 #define TX_HEADER_0		0x20
 #define TX_HEADER_1		0x29
@@ -55,14 +21,14 @@
 #define RX_HEADER_1		0x20
 #define HCI_COMPLETE_FRAME	64
 
-/* rx_flags */
+ 
 #define THROTTLED		0x01
 #define ACTUALLY_THROTTLED	0x02
 
 #define DRIVER_AUTHOR "Naranjo, Manuel Francisco <naranjo.manuel@gmail.com>, Johan Hovold <jhovold@gmail.com>"
 #define DRIVER_DESC "AIRcable USB Driver"
 
-/* ID table that will be registered with USB core */
+ 
 static const struct usb_device_id id_table[] = {
 	{ USB_DEVICE(AIRCABLE_VID, AIRCABLE_USB_PID) },
 	{ },
@@ -87,7 +53,7 @@ static int aircable_prepare_write_buffer(struct usb_serial_port *port,
 static int aircable_calc_num_ports(struct usb_serial *serial,
 					struct usb_serial_endpoints *epds)
 {
-	/* Ignore the first interface, which has no bulk endpoints. */
+	 
 	if (epds->num_bulk_out == 0) {
 		dev_dbg(&serial->interface->dev,
 			"ignoring interface with no bulk-out endpoints\n");

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2014-2016 Christoph Hellwig.
- */
+
+ 
 #include <linux/sunrpc/svc.h>
 #include <linux/exportfs.h>
 #include <linux/iomap.h>
@@ -27,7 +25,7 @@ nfsd4_block_encode_layoutget(struct xdr_stream *xdr,
 		return nfserr_toosmall;
 
 	*p++ = cpu_to_be32(len);
-	*p++ = cpu_to_be32(1);		/* we always return a single extent */
+	*p++ = cpu_to_be32(1);		 
 
 	p = xdr_encode_opaque_fixed(p, &b->vol_id,
 			sizeof(struct nfsd4_deviceid));
@@ -52,7 +50,7 @@ nfsd4_block_encode_volume(struct xdr_stream *xdr, struct pnfs_block_volume *b)
 			return -ETOOSMALL;
 
 		*p++ = cpu_to_be32(b->type);
-		*p++ = cpu_to_be32(1);	/* single signature */
+		*p++ = cpu_to_be32(1);	 
 		p = xdr_encode_hyper(p, b->simple.offset);
 		p = xdr_encode_opaque(p, b->simple.sig, b->simple.sig_len);
 		break;
@@ -83,9 +81,7 @@ nfsd4_block_encode_getdeviceinfo(struct xdr_stream *xdr,
 	int len = sizeof(__be32), ret, i;
 	__be32 *p;
 
-	/*
-	 * See paragraph 5 of RFC 8881 S18.40.3.
-	 */
+	 
 	if (!gdp->gd_maxcount) {
 		if (xdr_stream_encode_u32(xdr, 0) != XDR_UNIT)
 			return nfserr_resource;
@@ -103,10 +99,7 @@ nfsd4_block_encode_getdeviceinfo(struct xdr_stream *xdr,
 		len += ret;
 	}
 
-	/*
-	 * Fill in the overall length and number of volumes at the beginning
-	 * of the layout.
-	 */
+	 
 	*p++ = cpu_to_be32(len);
 	*p++ = cpu_to_be32(dev->nr_volumes);
 	return 0;

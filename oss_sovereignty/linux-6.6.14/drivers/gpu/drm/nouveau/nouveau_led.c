@@ -1,32 +1,6 @@
-/*
- * Copyright (C) 2016 Martin Peres
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial
- * portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE COPYRIGHT OWNER(S) AND/OR ITS SUPPLIERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
-/*
- * Authors:
- *  Martin Peres <martin.peres@free.fr>
- */
+ 
 
 #include <linux/leds.h>
 
@@ -57,18 +31,14 @@ nouveau_led_set_brightness(struct led_classdev *led, enum led_brightness value)
 	struct nouveau_drm *drm = nouveau_drm(drm_dev);
 	struct nvif_object *device = &drm->client.device.object;
 
-	u32 input_clk = 27e6; /* PDISPLAY.SOR[1].PWM is connected to the crystal */
-	u32 freq = 100; /* this is what nvidia uses and it should be good-enough */
+	u32 input_clk = 27e6;  
+	u32 freq = 100;  
 	u32 div, duty;
 
 	div = input_clk / freq;
 	duty = value * div / LED_FULL;
 
-	/* for now, this is safe to directly poke those registers because:
-	 *  - A: nvidia never puts the logo led to any other PWM controler
-	 *       than PDISPLAY.SOR[1].PWM.
-	 *  - B: nouveau does not touch these registers anywhere else
-	 */
+	 
 	nvif_wr32(device, 0x61c880, div);
 	nvif_wr32(device, 0x61c884, 0xc0000000 | duty);
 }
@@ -85,7 +55,7 @@ nouveau_led_init(struct drm_device *dev)
 	if (!gpio)
 		return 0;
 
-	/* check that there is a GPIO controlling the logo LED */
+	 
 	if (nvkm_gpio_find(gpio, 0, DCB_GPIO_LOGO_LED_PWM, 0xff, &logo_led))
 		return 0;
 

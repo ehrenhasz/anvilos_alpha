@@ -1,20 +1,4 @@
-/* env - run a program in a modified environment
-   Copyright (C) 1986-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Richard Mlynarik and David MacKenzie */
+ 
 
 #include <config.h>
 #include <stdio.h>
@@ -28,7 +12,7 @@
 #include "quote.h"
 #include "sig2str.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "env"
 
 #define AUTHORS \
@@ -36,47 +20,46 @@
   proper_name ("David MacKenzie"), \
   proper_name ("Assaf Gordon")
 
-/* Array of envvars to unset.  */
+ 
 static char const **usvars;
 static size_t usvars_alloc;
 static idx_t usvars_used;
 
-/* Annotate the output with extra info to aid the user.  */
+ 
 static bool dev_debug;
 
-/* Buffer and length of extracted envvars in -S strings.  */
+ 
 static char *varname;
 static idx_t vnlen;
 
-/* Possible actions on each signal.  */
+ 
 enum SIGNAL_MODE {
   UNCHANGED = 0,
-  DEFAULT,       /* Set to default handler (SIG_DFL).  */
-  DEFAULT_NOERR, /* Ditto, but ignore sigaction(2) errors.  */
-  IGNORE,        /* Set to ignore (SIG_IGN).  */
-  IGNORE_NOERR   /* Ditto, but ignore sigaction(2) errors.  */
+  DEFAULT,        
+  DEFAULT_NOERR,  
+  IGNORE,         
+  IGNORE_NOERR    
 };
 static enum SIGNAL_MODE *signals;
 
-/* Set of signals to block.  */
+ 
 static sigset_t block_signals;
 
-/* Set of signals to unblock.  */
+ 
 static sigset_t unblock_signals;
 
-/* Whether signal mask adjustment requested.  */
+ 
 static bool sig_mask_changed;
 
-/* Whether to list non default handling.  */
+ 
 static bool report_signal_handling;
 
-/* The isspace characters in the C locale.  */
+ 
 #define C_ISSPACE_CHARS " \t\n\v\f\r"
 
 static char const shortopts[] = "+C:iS:u:v0" C_ISSPACE_CHARS;
 
-/* For long options that have no equivalent short option, use a
-   non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
+ 
 enum
 {
   DEFAULT_SIGNAL_OPTION = CHAR_MAX + 1,
@@ -357,12 +340,10 @@ build_argv (char const *str, int extra_argc, int *argc)
   ss.sep = true;
   ss.argv[ss.argc] = 0;
 
-  /* In the following loop,
-     'break' causes the character 'newc' to be added to *dest,
-     'continue' skips the character.  */
+   
   while (*str)
     {
-      char newc = *str; /* Default: add the next character.  */
+      char newc = *str;  
 
       switch (*str)
         {
@@ -383,7 +364,7 @@ build_argv (char const *str, int extra_argc, int *argc)
           continue;
 
         case ' ': case '\t': case '\n': case '\v': case '\f': case '\r':
-          /* Start a new argument if outside quotes.  */
+           
           if (sq || dq)
             break;
           ss.sep = true;
@@ -393,37 +374,36 @@ build_argv (char const *str, int extra_argc, int *argc)
         case '#':
           if (!ss.sep)
             break;
-          goto eos; /* '#' as first char terminates the string.  */
+          goto eos;  
 
         case '\\':
-          /* Backslash inside single-quotes is not special, except \\
-             and \'.  */
+           
           if (sq && str[1] != '\\' && str[1] != '\'')
             break;
 
-          /* Skip the backslash and examine the next character.  */
+           
           newc = *++str;
           switch (newc)
             {
             case '"': case '#': case '$': case '\'': case '\\':
-              /* Pass escaped character as-is.  */
+               
               break;
 
             case '_':
               if (!dq)
                 {
-                  ++str;  /* '\_' outside double-quotes is arg separator.  */
+                  ++str;   
                   ss.sep = true;
                   continue;
                 }
-              newc = ' ';  /* '\_' inside double-quotes is space.  */
+              newc = ' ';   
               break;
 
             case 'c':
               if (dq)
                 error (EXIT_CANCELED, 0,
                        _("'\\c' must not appear in double-quoted -S string"));
-              goto eos; /* '\c' terminates the string.  */
+              goto eos;  
 
             case 'f': newc = '\f'; break;
             case 'n': newc = '\n'; break;
@@ -442,11 +422,11 @@ build_argv (char const *str, int extra_argc, int *argc)
           break;
 
         case '$':
-          /* ${VARNAME} are not expanded inside single-quotes.  */
+           
           if (sq)
             break;
 
-          /* Store the ${VARNAME} value.  */
+           
           {
             char *n = extract_varname (str);
             if (!n)
@@ -484,27 +464,7 @@ build_argv (char const *str, int extra_argc, int *argc)
   return splitbuf_finishup (&ss);
 }
 
-/* Process an "-S" string and create the corresponding argv array.
-   Update the given argc/argv parameters with the new argv.
-
-   Example: if executed as:
-      $ env -S"-i -C/tmp A=B" foo bar
-   The input argv is:
-      argv[0] = "env"
-      argv[1] = "-S-i -C/tmp A=B"
-      argv[2] = "foo"
-      argv[3] = "bar"
-      argv[4] = nullptr
-   This function will modify argv to be:
-      argv[0] = "env"
-      argv[1] = "-i"
-      argv[2] = "-C/tmp"
-      argv[3] = "A=B"
-      argv[4] = "foo"
-      argv[5] = "bar"
-      argv[6] = nullptr
-   argc will be updated from 4 to 6.
-   optind will be reset to 0 to force getopt_long to rescan all arguments.  */
+ 
 static void
 parse_split_string (char const *str, int *orig_optind,
                     int *orig_argc, char ***orig_argv)
@@ -512,10 +472,10 @@ parse_split_string (char const *str, int *orig_optind,
   int extra_argc = *orig_argc - *orig_optind, newargc;
   char **newargv = build_argv (str, extra_argc, &newargc);
 
-  /* Restore argv[0] - the 'env' executable name.  */
+   
   *newargv = (*orig_argv)[0];
 
-  /* Print parsed arguments.  */
+   
   if (dev_debug && 1 < newargc)
     {
       devmsg ("split -S:  %s\n", quote (str));
@@ -524,15 +484,14 @@ parse_split_string (char const *str, int *orig_optind,
         devmsg ("     &    %s\n", quote (newargv[i]));
     }
 
-  /* Add remaining arguments and terminating null from the original
-     command line.  */
+   
   memcpy (newargv + newargc, *orig_argv + *orig_optind,
           (extra_argc + 1) * sizeof *newargv);
 
-  /* Set new values for original getopt variables.  */
+   
   *orig_argc = newargc + extra_argc;
   *orig_argv = newargv;
-  *orig_optind = 0; /* Tell getopt to restart from first argument.  */
+  *orig_optind = 0;  
 }
 
 static void
@@ -544,9 +503,7 @@ parse_signal_action_params (char const *optarg, bool set_default)
 
   if (! optarg)
     {
-      /* Without an argument, reset all signals.
-         Some signals cannot be set to ignore or default (e.g., SIGKILL,
-         SIGSTOP on most OSes, and SIGCONT on AIX.) - so ignore errors.  */
+       
       for (int i = 1 ; i <= SIGNUM_BOUND; i++)
         if (sig2str (i, signame) == 0)
           signals[i] = set_default ? DEFAULT_NOERR : IGNORE_NOERR;
@@ -559,7 +516,7 @@ parse_signal_action_params (char const *optarg, bool set_default)
   while (opt_sig)
     {
       int signum = operand2sig (opt_sig, signame);
-      /* operand2sig accepts signal 0 (EXIT) - but we reject it.  */
+       
       if (signum == 0)
         error (0, 0, _("%s: invalid signal"), quote (opt_sig));
       if (signum <= 0)
@@ -626,13 +583,13 @@ parse_block_signal_params (char const *optarg, bool block)
 
   if (! optarg)
     {
-      /* Without an argument, reset all signals.  */
+       
       sigfillset (block ? &block_signals : &unblock_signals);
       sigemptyset (block ? &unblock_signals : &block_signals);
     }
   else if (! sig_mask_changed)
     {
-      /* Initialize the sets.  */
+       
       sigemptyset (&block_signals);
       sigemptyset (&unblock_signals);
     }
@@ -648,7 +605,7 @@ parse_block_signal_params (char const *optarg, bool block)
   while (opt_sig)
     {
       int signum = operand2sig (opt_sig, signame);
-      /* operand2sig accepts signal 0 (EXIT) - but we reject it.  */
+       
       if (signum == 0)
         error (0, 0, _("%s: invalid signal"), quote (opt_sig));
       if (signum <= 0)
@@ -666,7 +623,7 @@ parse_block_signal_params (char const *optarg, bool block)
 static void
 set_signal_proc_mask (void)
 {
-  /* Get the existing signal mask */
+   
   sigset_t set;
   char const *debug_act;
 
@@ -800,10 +757,7 @@ main (int argc, char **argv)
           parse_split_string (optarg, &optind, &argc, &argv);
           break;
         case ' ': case '\t': case '\n': case '\v': case '\f': case '\r':
-          /* These are undocumented options.  Attempt to detect
-             incorrect shebang usage with extraneous space, e.g.:
-                #!/usr/bin/env -i command
-             In which case argv[1] == "-i command".  */
+           
           error (0, 0, _("invalid option -- '%c'"), optc);
           error (0, 0, _("use -[v]S to pass options in shebang lines"));
           usage (EXIT_CANCELED);
@@ -860,7 +814,7 @@ main (int argc, char **argv)
 
   if (! program_specified)
     {
-      /* Print the environment and exit.  */
+       
       char *const *e = environ;
       while (*e)
         printf ("%s%c", *e++, opt_nul_terminate_output ? '\0' : '\n');

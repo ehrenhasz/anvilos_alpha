@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// PCM3060 SPI driver
-//
-// Copyright (C) 2018 Kirill Marinushkin <kmarinushkin@birdec.com>
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/spi/spi.h>
@@ -39,14 +39,14 @@ static const struct of_device_id pcm3060_of_match[] = {
 	{ },
 };
 MODULE_DEVICE_TABLE(of, pcm3060_of_match);
-#endif /* CONFIG_OF */
+#endif  
 
 static struct spi_driver pcm3060_spi_driver = {
 	.driver = {
 		.name = "pcm3060",
 #ifdef CONFIG_OF
 		.of_match_table = pcm3060_of_match,
-#endif /* CONFIG_OF */
+#endif  
 	},
 	.id_table = pcm3060_spi_id,
 	.probe = pcm3060_spi_probe,

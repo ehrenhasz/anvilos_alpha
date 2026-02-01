@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * RDMA Network Block Driver
- *
- * Copyright (c) 2022 1&1 IONOS SE. All rights reserved.
- */
+ 
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM rnbd_srv
 
@@ -198,7 +194,7 @@ TRACE_EVENT(process_msg_close,
 	)
 );
 
-#endif /* _TRACE_RNBD_SRV_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

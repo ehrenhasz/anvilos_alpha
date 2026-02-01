@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * r8a7795 Clock Pulse Generator / Module Standby and Software Reset
- *
- * Copyright (C) 2015 Glider bvba
- * Copyright (C) 2018-2019 Renesas Electronics Corp.
- *
- * Based on clk-rcar-gen3.c
- *
- * Copyright (C) 2015 Renesas Electronics Corp.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/init.h>
@@ -22,14 +13,14 @@
 #include "rcar-gen3-cpg.h"
 
 enum clk_ids {
-	/* Core Clock Outputs exported to DT */
+	 
 	LAST_DT_CORE_CLK = R8A7795_CLK_S0D12,
 
-	/* External Input Clocks */
+	 
 	CLK_EXTAL,
 	CLK_EXTALR,
 
-	/* Internal Core Clocks */
+	 
 	CLK_MAIN,
 	CLK_PLL0,
 	CLK_PLL1,
@@ -47,16 +38,16 @@ enum clk_ids {
 	CLK_RPCSRC,
 	CLK_RINT,
 
-	/* Module Clocks */
+	 
 	MOD_CLK_BASE
 };
 
 static struct cpg_core_clk r8a7795_core_clks[] __initdata = {
-	/* External Clock Inputs */
+	 
 	DEF_INPUT("extal",      CLK_EXTAL),
 	DEF_INPUT("extalr",     CLK_EXTALR),
 
-	/* Internal Core Clocks */
+	 
 	DEF_BASE(".main",       CLK_MAIN, CLK_TYPE_GEN3_MAIN, CLK_EXTAL),
 	DEF_BASE(".pll0",       CLK_PLL0, CLK_TYPE_GEN3_PLL0, CLK_MAIN),
 	DEF_BASE(".pll1",       CLK_PLL1, CLK_TYPE_GEN3_PLL1, CLK_MAIN),
@@ -76,7 +67,7 @@ static struct cpg_core_clk r8a7795_core_clks[] __initdata = {
 
 	DEF_GEN3_OSC(".r",      CLK_RINT,          CLK_EXTAL,      32),
 
-	/* Core Clock Outputs */
+	 
 	DEF_GEN3_Z("z",         R8A7795_CLK_Z,     CLK_TYPE_GEN3_Z,  CLK_PLL0, 2, 8),
 	DEF_GEN3_Z("z2",        R8A7795_CLK_Z2,    CLK_TYPE_GEN3_Z,  CLK_PLL2, 2, 0),
 	DEF_GEN3_Z("zg",        R8A7795_CLK_ZG,    CLK_TYPE_GEN3_ZG, CLK_PLL4, 4, 24),
@@ -289,63 +280,41 @@ static struct mssr_mod_clk r8a7795_mod_clks[] __initdata = {
 };
 
 static const unsigned int r8a7795_crit_mod_clks[] __initconst = {
-	MOD_CLK_ID(402),	/* RWDT */
-	MOD_CLK_ID(408),	/* INTC-AP (GIC) */
+	MOD_CLK_ID(402),	 
+	MOD_CLK_ID(408),	 
 };
 
-/*
- * CPG Clock Data
- */
+ 
 
-/*
- *   MD		EXTAL		PLL0	PLL1	PLL2	PLL3	PLL4	OSC
- * 14 13 19 17	(MHz)
- *-------------------------------------------------------------------------
- * 0  0  0  0	16.66 x 1	x180	x192	x144	x192	x144	/16
- * 0  0  0  1	16.66 x 1	x180	x192	x144	x128	x144	/16
- * 0  0  1  0	Prohibited setting
- * 0  0  1  1	16.66 x 1	x180	x192	x144	x192	x144	/16
- * 0  1  0  0	20    x 1	x150	x160	x120	x160	x120	/19
- * 0  1  0  1	20    x 1	x150	x160	x120	x106	x120	/19
- * 0  1  1  0	Prohibited setting
- * 0  1  1  1	20    x 1	x150	x160	x120	x160	x120	/19
- * 1  0  0  0	25    x 1	x120	x128	x96	x128	x96	/24
- * 1  0  0  1	25    x 1	x120	x128	x96	x84	x96	/24
- * 1  0  1  0	Prohibited setting
- * 1  0  1  1	25    x 1	x120	x128	x96	x128	x96	/24
- * 1  1  0  0	33.33 / 2	x180	x192	x144	x192	x144	/32
- * 1  1  0  1	33.33 / 2	x180	x192	x144	x128	x144	/32
- * 1  1  1  0	Prohibited setting
- * 1  1  1  1	33.33 / 2	x180	x192	x144	x192	x144	/32
- */
+ 
 #define CPG_PLL_CONFIG_INDEX(md)	((((md) & BIT(14)) >> 11) | \
 					 (((md) & BIT(13)) >> 11) | \
 					 (((md) & BIT(19)) >> 18) | \
 					 (((md) & BIT(17)) >> 17))
 
 static const struct rcar_gen3_cpg_pll_config cpg_pll_configs[16] __initconst = {
-	/* EXTAL div	PLL1 mult/div	PLL3 mult/div	OSC prediv */
+	 
 	{ 1,		192,	1,	192,	1,	16,	},
 	{ 1,		192,	1,	128,	1,	16,	},
-	{ 0, /* Prohibited setting */				},
+	{ 0,  				},
 	{ 1,		192,	1,	192,	1,	16,	},
 	{ 1,		160,	1,	160,	1,	19,	},
 	{ 1,		160,	1,	106,	1,	19,	},
-	{ 0, /* Prohibited setting */				},
+	{ 0,  				},
 	{ 1,		160,	1,	160,	1,	19,	},
 	{ 1,		128,	1,	128,	1,	24,	},
 	{ 1,		128,	1,	84,	1,	24,	},
-	{ 0, /* Prohibited setting */				},
+	{ 0,  				},
 	{ 1,		128,	1,	128,	1,	24,	},
 	{ 2,		192,	1,	192,	1,	32,	},
 	{ 2,		192,	1,	128,	1,	32,	},
-	{ 0, /* Prohibited setting */				},
+	{ 0,  				},
 	{ 2,		192,	1,	192,	1,	32,	},
 };
 
 static const struct soc_device_attribute r8a7795_denylist[] __initconst = {
 	{ .soc_id = "r8a7795", .revision = "ES1.*" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int __init r8a7795_cpg_mssr_init(struct device *dev)
@@ -354,12 +323,7 @@ static int __init r8a7795_cpg_mssr_init(struct device *dev)
 	u32 cpg_mode;
 	int error;
 
-	/*
-	 * We panic here to ensure removed SoCs and clk updates are always in
-	 * sync to avoid overclocking damages. The panic can only be seen with
-	 * commandline args 'earlycon keep_bootcon'. But these SoCs were for
-	 * developers only anyhow.
-	 */
+	 
 	if (soc_device_match(r8a7795_denylist))
 		panic("SoC not supported anymore!\n");
 
@@ -377,22 +341,22 @@ static int __init r8a7795_cpg_mssr_init(struct device *dev)
 }
 
 const struct cpg_mssr_info r8a7795_cpg_mssr_info __initconst = {
-	/* Core Clocks */
+	 
 	.core_clks = r8a7795_core_clks,
 	.num_core_clks = ARRAY_SIZE(r8a7795_core_clks),
 	.last_dt_core_clk = LAST_DT_CORE_CLK,
 	.num_total_core_clks = MOD_CLK_BASE,
 
-	/* Module Clocks */
+	 
 	.mod_clks = r8a7795_mod_clks,
 	.num_mod_clks = ARRAY_SIZE(r8a7795_mod_clks),
 	.num_hw_mod_clks = 12 * 32,
 
-	/* Critical Module Clocks */
+	 
 	.crit_mod_clks = r8a7795_crit_mod_clks,
 	.num_crit_mod_clks = ARRAY_SIZE(r8a7795_crit_mod_clks),
 
-	/* Callbacks */
+	 
 	.init = r8a7795_cpg_mssr_init,
 	.cpg_clk_register = rcar_gen3_cpg_clk_register,
 };

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2017 Icenowy Zheng <icenowy@aosc.xyz>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -18,10 +16,7 @@
 
 #include "ccu-sun50i-h6-r.h"
 
-/*
- * Information about AR100 and AHB/APB clocks in R_CCU are gathered from
- * clock definitions in the BSP source code.
- */
+ 
 
 static const char * const ar100_r_apb2_parents[] = { "osc24M", "osc32k",
 						     "iosc", "pll-periph0" };
@@ -75,13 +70,7 @@ static struct ccu_div r_apb2_clk = {
 	},
 };
 
-/*
- * Information about the gate/resets are gathered from the clock header file
- * in the BSP source code, although most of them are unused. The existence
- * of the hardware block is verified with "3.1 Memory Mapping" chapter in
- * "Allwinner H6 V200 User Manual V1.1"; and the parent APB buses are verified
- * with "3.3.2.1 System Bus Tree" chapter inthe same document.
- */
+ 
 static SUNXI_CCU_GATE(r_apb1_timer_clk,	"r-apb1-timer",	"r-apb1",
 		      0x11c, BIT(0), 0);
 static SUNXI_CCU_GATE(r_apb1_twd_clk,	"r-apb1-twd",	"r-apb1",
@@ -101,29 +90,24 @@ static SUNXI_CCU_GATE(r_apb1_w1_clk,	"r-apb1-w1",	"r-apb1",
 static SUNXI_CCU_GATE(r_apb1_rtc_clk,	"r-apb1-rtc",	"r-apb1",
 		      0x20c, BIT(0), CLK_IGNORE_UNUSED);
 
-/* Information of IR(RX) mod clock is gathered from BSP source code */
+ 
 static const char * const r_mod0_default_parents[] = { "osc32k", "osc24M" };
 static SUNXI_CCU_MP_WITH_MUX_GATE(ir_clk, "ir",
 				  r_mod0_default_parents, 0x1c0,
-				  0, 5,		/* M */
-				  8, 2,		/* P */
-				  24, 1,	/* mux */
-				  BIT(31),	/* gate */
+				  0, 5,		 
+				  8, 2,		 
+				  24, 1,	 
+				  BIT(31),	 
 				  0);
 
-/*
- * BSP didn't use the 1-wire function at all now, and the information about
- * this mod clock is guessed from the IR mod clock above. The existence of
- * this mod clock is proven by BSP clock header, and the dividers are verified
- * by contents in the 1-wire related chapter of the User Manual.
- */
+ 
 
 static SUNXI_CCU_MP_WITH_MUX_GATE(w1_clk, "w1",
 				  r_mod0_default_parents, 0x1e0,
-				  0, 5,		/* M */
-				  8, 2,		/* P */
-				  24, 1,	/* mux */
-				  BIT(31),	/* gate */
+				  0, 5,		 
+				  8, 2,		 
+				  24, 1,	 
+				  BIT(31),	 
 				  0);
 
 static struct ccu_common *sun50i_h6_r_ccu_clks[] = {

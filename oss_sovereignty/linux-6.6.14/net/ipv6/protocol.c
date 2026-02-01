@@ -1,21 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the  BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		PF_INET6 protocol dispatch tables.
- *
- * Authors:	Pedro Roque	<roque@di.fc.ul.pt>
- */
 
-/*
- *      Changes:
- *
- *      Vince Laviano (vince@cs.stanford.edu)       16 May 2001
- *      - Removed unused variable 'inet6_protocol_base'
- *      - Modified inet6_del_protocol() to correctly maintain copy bit.
- */
+ 
+
+ 
 #include <linux/module.h>
 #include <linux/netdevice.h>
 #include <linux/spinlock.h>

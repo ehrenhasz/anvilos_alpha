@@ -1,10 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2020 ARM Limited */
+ 
+ 
 
-/*
- * Below definitions may be found in kernel headers, However, they are
- * redefined here to decouple the MTE selftests compilations from them.
- */
+ 
 #ifndef SEGV_MTEAERR
 #define	SEGV_MTEAERR	8
 #endif
@@ -34,7 +31,7 @@
 #define	PR_MTE_TAG_SHIFT	3
 #endif
 
-/* MTE Hardware feature definitions below. */
+ 
 #define MT_TAG_SHIFT		56
 #define MT_TAG_MASK		0xFUL
 #define MT_FREE_TAG		0x0UL

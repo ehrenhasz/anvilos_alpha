@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/ceph/ceph_debug.h>
 
@@ -7,7 +7,7 @@
 
 #include <linux/ceph/buffer.h>
 #include <linux/ceph/decode.h>
-#include <linux/ceph/libceph.h> /* for kvmalloc */
+#include <linux/ceph/libceph.h>  
 
 struct ceph_buffer *ceph_buffer_new(size_t len, gfp_t gfp)
 {

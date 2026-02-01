@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) B.A.T.M.A.N. contributors:
- *
- * Simon Wunderlich, Marek Lindner
- */
+
+ 
 
 #include "hash.h"
 #include "main.h"
@@ -11,7 +8,7 @@
 #include <linux/lockdep.h>
 #include <linux/slab.h>
 
-/* clears the hash */
+ 
 static void batadv_hash_init(struct batadv_hashtable *hash)
 {
 	u32 i;
@@ -24,10 +21,7 @@ static void batadv_hash_init(struct batadv_hashtable *hash)
 	atomic_set(&hash->generation, 0);
 }
 
-/**
- * batadv_hash_destroy() - Free only the hashtable and the hash itself
- * @hash: hash object to destroy
- */
+ 
 void batadv_hash_destroy(struct batadv_hashtable *hash)
 {
 	kfree(hash->list_locks);
@@ -35,12 +29,7 @@ void batadv_hash_destroy(struct batadv_hashtable *hash)
 	kfree(hash);
 }
 
-/**
- * batadv_hash_new() - Allocates and clears the hashtable
- * @size: number of hash buckets to allocate
- *
- * Return: newly allocated hashtable, NULL on errors
- */
+ 
 struct batadv_hashtable *batadv_hash_new(u32 size)
 {
 	struct batadv_hashtable *hash;
@@ -69,11 +58,7 @@ free_hash:
 	return NULL;
 }
 
-/**
- * batadv_hash_set_lock_class() - Set specific lockdep class for hash spinlocks
- * @hash: hash object to modify
- * @key: lockdep class key address
- */
+ 
 void batadv_hash_set_lock_class(struct batadv_hashtable *hash,
 				struct lock_class_key *key)
 {

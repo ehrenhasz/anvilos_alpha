@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright © 2018 Intel Corporation.
- *
- * Authors: Gayatri Kammela <gayatri.kammela@intel.com>
- *	    Sohil Mehta <sohil.mehta@intel.com>
- *	    Jacob Pan <jacob.jun.pan@linux.intel.com>
- *	    Lu Baolu <baolu.lu@linux.intel.com>
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/dmar.h>
@@ -130,10 +123,7 @@ static int iommu_regset_show(struct seq_file *m, void *unused)
 		seq_printf(m, "IOMMU: %s Register Base Address: %llx\n",
 			   iommu->name, drhd->reg_base_addr);
 		seq_puts(m, "Name\t\t\tOffset\t\tContents\n");
-		/*
-		 * Publish the contents of the 64-bit hardware registers
-		 * by adding the offset to the pointer (virtual address).
-		 */
+		 
 		raw_spin_lock_irqsave(&iommu->register_lock, flag);
 		for (i = 0 ; i < ARRAY_SIZE(iommu_regs_32); i++) {
 			value = dmar_readl(iommu->reg + iommu_regs_32[i].offset);
@@ -167,11 +157,7 @@ static inline void print_tbl_walk(struct seq_file *m)
 		   tbl_wlk->rt_entry->lo, tbl_wlk->ctx_entry->hi,
 		   tbl_wlk->ctx_entry->lo);
 
-	/*
-	 * A legacy mode DMAR doesn't support PASID, hence default it to -1
-	 * indicating that it's invalid. Also, default all PASID related fields
-	 * to 0.
-	 */
+	 
 	if (!tbl_wlk->pasid_tbl_entry)
 		seq_printf(m, "%-6d\t0x%016llx:0x%016llx:0x%016llx\n", -1,
 			   (u64)0, (u64)0, (u64)0);
@@ -224,19 +210,7 @@ static void ctx_tbl_walk(struct seq_file *m, struct intel_iommu *iommu, u16 bus)
 	for (devfn = 0; devfn < 256; devfn++) {
 		struct tbl_walk tbl_wlk = {0};
 
-		/*
-		 * Scalable mode root entry points to upper scalable mode
-		 * context table and lower scalable mode context table. Each
-		 * scalable mode context table has 128 context entries where as
-		 * legacy mode context table has 256 context entries. So in
-		 * scalable mode, the context entries for former 128 devices are
-		 * in the lower scalable mode context table, while the latter
-		 * 128 devices are in the upper scalable mode context table.
-		 * In scalable mode, when devfn > 127, iommu_context_addr()
-		 * automatically refers to upper scalable mode context table and
-		 * hence the caller doesn't have to worry about differences
-		 * between scalable mode and non scalable mode.
-		 */
+		 
 		context = iommu_context_addr(iommu, bus, devfn, 0);
 		if (!context)
 			return;
@@ -270,11 +244,7 @@ static void root_tbl_walk(struct seq_file *m, struct intel_iommu *iommu)
 		   (u64)virt_to_phys(iommu->root_entry));
 	seq_puts(m, "B.D.F\tRoot_entry\t\t\t\tContext_entry\t\t\t\tPASID\tPASID_table_entry\n");
 
-	/*
-	 * No need to check if the root entry is present or not because
-	 * iommu_context_addr() performs the same check before returning
-	 * context entry.
-	 */
+	 
 	for (bus = 0; bus < 256; bus++)
 		ctx_tbl_walk(m, iommu, bus);
 	spin_unlock(&iommu->lock);
@@ -357,7 +327,7 @@ static int __show_device_domain_translation(struct device *dev, void *data)
 	pgtable_walk_level(m, domain->pgd, domain->agaw + 2, 0, path);
 	seq_putc(m, '\n');
 
-	/* Don't iterate */
+	 
 	return 1;
 }
 
@@ -367,17 +337,7 @@ static int show_device_domain_translation(struct device *dev, void *data)
 
 	group = iommu_group_get(dev);
 	if (group) {
-		/*
-		 * The group->mutex is held across the callback, which will
-		 * block calls to iommu_attach/detach_group/device. Hence,
-		 * the domain of the device will not change during traversal.
-		 *
-		 * All devices in an iommu group share a single domain, hence
-		 * we only dump the domain of the first device. Even though,
-		 * this code still possibly races with the iommu_unmap()
-		 * interface. This could be solved by RCU-freeing the page
-		 * table pages in the iommu_unmap() path.
-		 */
+		 
 		iommu_group_for_each_dev(group, data,
 					 __show_device_domain_translation);
 		iommu_group_put(group);
@@ -503,11 +463,7 @@ static void ir_tbl_posted_entry_show(struct seq_file *m,
 	raw_spin_unlock_irqrestore(&irq_2_ir_lock, flags);
 }
 
-/*
- * For active IOMMUs go through the Interrupt remapping
- * table and print valid entries in a table format for
- * Remapped and Posted Interrupts.
- */
+ 
 static int ir_translation_struct_show(struct seq_file *m, void *unused)
 {
 	struct dmar_drhd_unit *drhd;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2020 NXP
- */
+
+ 
 
 #include <linux/mfd/syscon.h>
 #include <linux/of.h>
@@ -36,7 +34,7 @@ static int __init imx_soc_device_init(void)
 	int ret;
 	int i;
 
-	/* Return early if this is running on devices with different SoCs */
+	 
 	if (!__mxc_cpu_type)
 		return 0;
 

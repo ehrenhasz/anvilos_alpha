@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * FB driver for Two KS0108 LCD controllers in AGM1264K-FL display
- *
- * Copyright (C) 2014 ololoshka2871
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -14,8 +10,8 @@
 
 #include "fbtft.h"
 
-/* Uncomment text line to use negative image on display */
-/*#define NEGATIVE*/
+ 
+ 
 
 #define WHITE		0xff
 #define BLACK		0
@@ -23,7 +19,7 @@
 #define DRVNAME		"fb_agm1264k-fl"
 #define WIDTH		64
 #define HEIGHT		64
-#define TOTALWIDTH	(WIDTH * 2)	 /* because 2 x ks0108 in one display */
+#define TOTALWIDTH	(WIDTH * 2)	  
 #define FPS			20
 
 #define EPIN		gpio.wr
@@ -32,7 +28,7 @@
 #define CS0			gpio.aux[0]
 #define CS1			gpio.aux[1]
 
-/* diffusing error (Floyd-Steinberg) */
+ 
 #define DIFFUSING_MATRIX_WIDTH	2
 #define DIFFUSING_MATRIX_HEIGHT	2
 
@@ -68,16 +64,16 @@ static int init_display(struct fbtft_par *par)
 	par->fbtftops.reset(par);
 
 	for (i = 0; i < 2; ++i) {
-		write_reg(par, i, 0x3f); /* display on */
-		write_reg(par, i, 0x40); /* set x to 0 */
-		write_reg(par, i, 0xb0); /* set page to 0 */
-		write_reg(par, i, 0xc0); /* set start line to 0 */
+		write_reg(par, i, 0x3f);  
+		write_reg(par, i, 0x40);  
+		write_reg(par, i, 0xb0);  
+		write_reg(par, i, 0xc0);  
 	}
 
 	return 0;
 }
 
-/* Check if all necessary GPIOS defined */
+ 
 static int verify_gpios(struct fbtft_par *par)
 {
 	int i;
@@ -124,21 +120,21 @@ request_gpios_match(struct fbtft_par *par, const struct fbtft_gpio *gpio)
 		"%s('%s')\n", __func__, gpio->name);
 
 	if (strcasecmp(gpio->name, "wr") == 0) {
-		/* left ks0108 E pin */
+		 
 		par->EPIN = gpio->gpio;
 		return GPIOD_OUT_LOW;
 	} else if (strcasecmp(gpio->name, "cs0") == 0) {
-		/* left ks0108 controller pin */
+		 
 		par->CS0 = gpio->gpio;
 		return GPIOD_OUT_HIGH;
 	} else if (strcasecmp(gpio->name, "cs1") == 0) {
-		/* right ks0108 controller pin */
+		 
 		par->CS1 = gpio->gpio;
 		return GPIOD_OUT_HIGH;
 	}
 
-	/* if write (rw = 0) e(1->0) perform write */
-	/* if read (rw = 1) e(0->1) set data on D0-7*/
+	 
+	 
 	else if (strcasecmp(gpio->name, "rw") == 0) {
 		par->RW = gpio->gpio;
 		return GPIOD_OUT_LOW;
@@ -147,10 +143,7 @@ request_gpios_match(struct fbtft_par *par, const struct fbtft_gpio *gpio)
 	return FBTFT_GPIO_NO_MATCH;
 }
 
-/* This function oses to enter commands
- * first byte - destination controller 0 or 1
- * following - commands
- */
+ 
 static void write_reg8_bus8(struct fbtft_par *par, int len, ...)
 {
 	va_list args;
@@ -178,18 +171,18 @@ static void write_reg8_bus8(struct fbtft_par *par, int len, ...)
 		return;
 	}
 
-	/* select chip */
+	 
 	if (*buf) {
-		/* cs1 */
+		 
 		gpiod_set_value(par->CS0, 0);
 		gpiod_set_value(par->CS1, 1);
 	} else {
-		/* cs0 */
+		 
 		gpiod_set_value(par->CS0, 1);
 		gpiod_set_value(par->CS1, 0);
 	}
 
-	gpiod_set_value(par->RS, 0); /* RS->0 (command mode) */
+	gpiod_set_value(par->RS, 0);  
 	len--;
 
 	if (len) {
@@ -213,7 +206,7 @@ static struct
 	int xs, ys_page, xe, ye_page;
 } addr_win;
 
-/* save display writing zone */
+ 
 static void set_addr_win(struct fbtft_par *par, int xs, int ys, int xe, int ye)
 {
 	addr_win.xs = xs;
@@ -248,20 +241,20 @@ static void iterate_diffusion_matrix(u32 xres, u32 yres, int x,
 {
 	u16 i, j;
 
-	/* diffusion matrix row */
+	 
 	for (i = 0; i < DIFFUSING_MATRIX_WIDTH; ++i)
-		/* diffusion matrix column */
+		 
 		for (j = 0; j < DIFFUSING_MATRIX_HEIGHT; ++j) {
 			signed short *write_pos;
 			signed char coeff;
 
-			/* skip pixels out of zone */
+			 
 			if (x + i < 0 || x + i >= xres || y + j >= yres)
 				continue;
 			write_pos = &convert_buf[(y + j) * xres + x + i];
 			coeff = diffusing_matrix[i][j];
 			if (-1 == coeff) {
-				/* pixel itself */
+				 
 				*write_pos = pixel;
 			} else {
 				signed short p = *write_pos + error * coeff;
@@ -282,14 +275,14 @@ static int write_vmem(struct fbtft_par *par, size_t offset, size_t len)
 	int x, y;
 	int ret = 0;
 
-	/* buffer to convert RGB565 -> grayscale16 -> Dithered image 1bpp */
+	 
 	signed short *convert_buf = kmalloc_array(par->info->var.xres *
 		par->info->var.yres, sizeof(signed short), GFP_NOIO);
 
 	if (!convert_buf)
 		return -ENOMEM;
 
-	/* converting to grayscale16 */
+	 
 	for (x = 0; x < par->info->var.xres; ++x)
 		for (y = 0; y < par->info->var.yres; ++y) {
 			u16 pixel = vmem16[y *  par->info->var.xres + x];
@@ -301,12 +294,12 @@ static int write_vmem(struct fbtft_par *par, size_t offset, size_t len)
 			if (pixel > 255)
 				pixel = 255;
 
-			/* gamma-correction by table */
+			 
 			convert_buf[y *  par->info->var.xres + x] =
 				(signed short)gamma_correction_table[pixel];
 		}
 
-	/* Image Dithering */
+	 
 	for (x = 0; x < par->info->var.xres; ++x)
 		for (y = 0; y < par->info->var.yres; ++y) {
 			signed short pixel =
@@ -315,13 +308,13 @@ static int write_vmem(struct fbtft_par *par, size_t offset, size_t len)
 			signed short error_w = pixel - WHITE;
 			signed short error;
 
-			/* what color close? */
+			 
 			if (abs(error_b) >= abs(error_w)) {
-				/* white */
+				 
 				error = error_w;
 				pixel = 0xff;
 			} else {
-				/* black */
+				 
 				error = error_b;
 				pixel = 0;
 			}
@@ -334,9 +327,9 @@ static int write_vmem(struct fbtft_par *par, size_t offset, size_t len)
 						 pixel, error);
 		}
 
-	/* 1 string = 2 pages */
+	 
 	for (y = addr_win.ys_page; y <= addr_win.ye_page; ++y) {
-		/* left half of display */
+		 
 		if (addr_win.xs < par->info->var.xres / 2) {
 			construct_line_bitmap(par, buf, convert_buf,
 					      addr_win.xs,
@@ -344,21 +337,19 @@ static int write_vmem(struct fbtft_par *par, size_t offset, size_t len)
 
 			len = par->info->var.xres / 2 - addr_win.xs;
 
-			/* select left side (sc0)
-			 * set addr
-			 */
+			 
 			write_reg(par, 0x00, BIT(6) | (u8)addr_win.xs);
 			write_reg(par, 0x00, (0x17 << 3) | (u8)y);
 
-			/* write bitmap */
-			gpiod_set_value(par->RS, 1); /* RS->1 (data mode) */
+			 
+			gpiod_set_value(par->RS, 1);  
 			ret = par->fbtftops.write(par, buf, len);
 			if (ret < 0)
 				dev_err(par->info->device,
 					"write failed and returned: %d\n",
 					ret);
 		}
-		/* right half of display */
+		 
 		if (addr_win.xe >= par->info->var.xres / 2) {
 			construct_line_bitmap(par, buf,
 					      convert_buf,
@@ -367,14 +358,12 @@ static int write_vmem(struct fbtft_par *par, size_t offset, size_t len)
 
 			len = addr_win.xe + 1 - par->info->var.xres / 2;
 
-			/* select right side (sc1)
-			 * set addr
-			 */
+			 
 			write_reg(par, 0x01, BIT(6));
 			write_reg(par, 0x01, (0x17 << 3) | (u8)y);
 
-			/* write bitmap */
-			gpiod_set_value(par->RS, 1); /* RS->1 (data mode) */
+			 
+			gpiod_set_value(par->RS, 1);  
 			par->fbtftops.write(par, buf, len);
 			if (ret < 0)
 				dev_err(par->info->device,
@@ -395,20 +384,20 @@ static int write(struct fbtft_par *par, void *buf, size_t len)
 	fbtft_par_dbg_hex(DEBUG_WRITE, par, par->info->device, u8, buf, len,
 			  "%s(len=%zu): ", __func__, len);
 
-	gpiod_set_value(par->RW, 0); /* set write mode */
+	gpiod_set_value(par->RW, 0);  
 
 	while (len--) {
 		u8 i, data;
 
 		data = *(u8 *)buf++;
 
-		/* set data bus */
+		 
 		for (i = 0; i < 8; ++i)
 			gpiod_set_value(par->gpio.db[i], data & (1 << i));
-		/* set E */
+		 
 		gpiod_set_value(par->EPIN, 0);
 		udelay(5);
-		/* unset E - write */
+		 
 		gpiod_set_value(par->EPIN, 1);
 		udelay(1);
 	}

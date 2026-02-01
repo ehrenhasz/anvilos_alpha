@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2019-2022 Bootlin
- * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- */
+
+ 
 
 #include <linux/types.h>
 
@@ -50,7 +47,7 @@ int logicvc_mode_init(struct logicvc_drm *logicvc)
 
 	preferred_depth = layer_primary->formats->depth;
 
-	/* DRM counts alpha in depth, our driver doesn't. */
+	 
 	if (layer_primary->formats->alpha)
 		preferred_depth += 8;
 

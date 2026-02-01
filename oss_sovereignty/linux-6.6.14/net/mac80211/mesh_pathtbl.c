@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2008, 2009 open80211s Ltd.
- * Author:     Luis Carlos Cobo <luisca@cozybit.com>
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/list.h>
@@ -20,7 +17,7 @@ static void mesh_path_free_rcu(struct mesh_table *tbl, struct mesh_path *mpath);
 
 static u32 mesh_table_hash(const void *addr, u32 len, u32 seed)
 {
-	/* Use last four bytes of hw addr as hash index */
+	 
 	return jhash_1word(__get_unaligned_cpu32((u8 *)addr + 2), seed);
 }
 
@@ -91,9 +88,7 @@ static void mesh_table_init(struct mesh_table *tbl)
 	spin_lock_init(&tbl->gates_lock);
 	spin_lock_init(&tbl->walk_lock);
 
-	/* rhashtable_init() may fail only in case of wrong
-	 * mesh_rht_params
-	 */
+	 
 	WARN_ON(rhashtable_init(&tbl->rhead, &mesh_rht_params));
 }
 
@@ -103,14 +98,7 @@ static void mesh_table_free(struct mesh_table *tbl)
 				    mesh_path_rht_free, tbl);
 }
 
-/**
- * mesh_path_assign_nexthop - update mesh path next hop
- *
- * @mpath: mesh path to update
- * @sta: next hop to assign
- *
- * Locking: mpath->state_lock must be held when calling this function
- */
+ 
 void mesh_path_assign_nexthop(struct mesh_path *mpath, struct sta_info *sta)
 {
 	struct sk_buff *skb;
@@ -143,24 +131,23 @@ static void prepare_for_gate(struct sk_buff *skb, char *dst_addr,
 	mshdr = (struct ieee80211s_hdr *) (skb->data + hdrlen);
 
 	if (!(mshdr->flags & MESH_FLAGS_AE)) {
-		/* size of the fixed part of the mesh header */
+		 
 		mesh_hdrlen = 6;
 
-		/* make room for the two extended addresses */
+		 
 		skb_push(skb, 2 * ETH_ALEN);
 		memmove(skb->data, hdr, hdrlen + mesh_hdrlen);
 
 		hdr = (struct ieee80211_hdr *) skb->data;
 
-		/* we preserve the previous mesh header and only add
-		 * the new addresses */
+		 
 		mshdr = (struct ieee80211s_hdr *) (skb->data + hdrlen);
 		mshdr->flags = MESH_FLAGS_AE_A5_A6;
 		memcpy(mshdr->eaddr1, hdr->addr3, ETH_ALEN);
 		memcpy(mshdr->eaddr2, hdr->addr4, ETH_ALEN);
 	}
 
-	/* update next hop */
+	 
 	hdr = (struct ieee80211_hdr *) skb->data;
 	rcu_read_lock();
 	next_hop = rcu_dereference(gate_mpath->next_hop)->sta.addr;
@@ -170,23 +157,7 @@ static void prepare_for_gate(struct sk_buff *skb, char *dst_addr,
 	memcpy(hdr->addr3, dst_addr, ETH_ALEN);
 }
 
-/**
- * mesh_path_move_to_queue - Move or copy frames from one mpath queue to another
- *
- * This function is used to transfer or copy frames from an unresolved mpath to
- * a gate mpath.  The function also adds the Address Extension field and
- * updates the next hop.
- *
- * If a frame already has an Address Extension field, only the next hop and
- * destination addresses are updated.
- *
- * The gate mpath must be an active mpath with a valid mpath->next_hop.
- *
- * @gate_mpath: An active mpath the frames will be sent to (i.e. the gate)
- * @from_mpath: The failed mpath
- * @copy: When true, copy all the frames to the new mpath queue.  When false,
- * move them.
- */
+ 
 static void mesh_path_move_to_queue(struct mesh_path *gate_mpath,
 				    struct mesh_path *from_mpath,
 				    bool copy)
@@ -254,15 +225,7 @@ static struct mesh_path *mpath_lookup(struct mesh_table *tbl, const u8 *dst,
 	return mpath;
 }
 
-/**
- * mesh_path_lookup - look up a path in the mesh path table
- * @sdata: local subif
- * @dst: hardware address (ETH_ALEN length) of destination
- *
- * Returns: pointer to the mesh path structure, or NULL if not found
- *
- * Locking: must be called within a read rcu section.
- */
+ 
 struct mesh_path *
 mesh_path_lookup(struct ieee80211_sub_if_data *sdata, const u8 *dst)
 {
@@ -297,40 +260,21 @@ __mesh_path_lookup_by_idx(struct mesh_table *tbl, int idx)
 	return mpath;
 }
 
-/**
- * mesh_path_lookup_by_idx - look up a path in the mesh path table by its index
- * @idx: index
- * @sdata: local subif, or NULL for all entries
- *
- * Returns: pointer to the mesh path structure, or NULL if not found.
- *
- * Locking: must be called within a read rcu section.
- */
+ 
 struct mesh_path *
 mesh_path_lookup_by_idx(struct ieee80211_sub_if_data *sdata, int idx)
 {
 	return __mesh_path_lookup_by_idx(&sdata->u.mesh.mesh_paths, idx);
 }
 
-/**
- * mpp_path_lookup_by_idx - look up a path in the proxy path table by its index
- * @idx: index
- * @sdata: local subif, or NULL for all entries
- *
- * Returns: pointer to the proxy path structure, or NULL if not found.
- *
- * Locking: must be called within a read rcu section.
- */
+ 
 struct mesh_path *
 mpp_path_lookup_by_idx(struct ieee80211_sub_if_data *sdata, int idx)
 {
 	return __mesh_path_lookup_by_idx(&sdata->u.mesh.mpp_paths, idx);
 }
 
-/**
- * mesh_path_add_gate - add the given mpath to a mesh gate to our path table
- * @mpath: gate path to add to table
- */
+ 
 int mesh_path_add_gate(struct mesh_path *mpath)
 {
 	struct mesh_table *tbl;
@@ -363,11 +307,7 @@ err_rcu:
 	return err;
 }
 
-/**
- * mesh_gate_del - remove a mesh gate from the list of known gates
- * @tbl: table which holds our list of known gates
- * @mpath: gate mpath
- */
+ 
 static void mesh_gate_del(struct mesh_table *tbl, struct mesh_path *mpath)
 {
 	lockdep_assert_held(&mpath->state_lock);
@@ -385,10 +325,7 @@ static void mesh_gate_del(struct mesh_table *tbl, struct mesh_path *mpath)
 		  mpath->dst, mpath->sdata->u.mesh.num_gates);
 }
 
-/**
- * mesh_gate_num - number of gates known to this interface
- * @sdata: subif data
- */
+ 
 int mesh_gate_num(struct ieee80211_sub_if_data *sdata)
 {
 	return sdata->u.mesh.num_gates;
@@ -485,7 +422,7 @@ void mesh_fast_tx_cache(struct ieee80211_sub_if_data *sdata,
 		return;
 
 	if ((meshhdr->flags & MESH_FLAGS_AE) == MESH_FLAGS_AE_A5_A6) {
-		/* This is required to keep the mppath alive */
+		 
 		mppath = mpp_path_lookup(sdata, meshhdr->eaddr1);
 		if (!mppath)
 			return;
@@ -496,16 +433,13 @@ void mesh_fast_tx_cache(struct ieee80211_sub_if_data *sdata,
 		return;
 	}
 
-	/* rate limit, in case fast xmit can't be enabled */
+	 
 	if (mppath->fast_tx_check == jiffies)
 		return;
 
 	mppath->fast_tx_check = jiffies;
 
-	/*
-	 * Same use of the sta lock as in ieee80211_check_fast_xmit, in order
-	 * to protect against concurrent sta key updates.
-	 */
+	 
 	spin_lock_bh(&sta->lock);
 	key = rcu_access_pointer(sta->ptk[sta->ptk_idx]);
 	if (!key)
@@ -573,10 +507,7 @@ void mesh_fast_tx_cache(struct ieee80211_sub_if_data *sdata,
 		goto unlock_cache;
 	}
 
-	/*
-	 * replace any previous entry in the hash table, in case we're
-	 * replacing it with a different type (e.g. mpath -> mpp)
-	 */
+	 
 	if (unlikely(prev)) {
 		rhashtable_replace_fast(&cache->rht, &prev->rhash,
 					&entry->rhash, fast_tx_rht_params);
@@ -654,15 +585,7 @@ void mesh_fast_tx_flush_addr(struct ieee80211_sub_if_data *sdata,
 	spin_unlock_bh(&cache->walk_lock);
 }
 
-/**
- * mesh_path_add - allocate and add a new path to the mesh path table
- * @dst: destination address of the path (ETH_ALEN length)
- * @sdata: local subif
- *
- * Returns: 0 on success
- *
- * State: the initial state of the new path is set to 0
- */
+ 
 struct mesh_path *mesh_path_add(struct ieee80211_sub_if_data *sdata,
 				const u8 *dst)
 {
@@ -670,7 +593,7 @@ struct mesh_path *mesh_path_add(struct ieee80211_sub_if_data *sdata,
 	struct mesh_path *mpath, *new_mpath;
 
 	if (ether_addr_equal(dst, sdata->vif.addr))
-		/* never add ourselves as neighbours */
+		 
 		return ERR_PTR(-ENOTSUPP);
 
 	if (is_multicast_ether_addr(dst))
@@ -713,7 +636,7 @@ int mpp_path_add(struct ieee80211_sub_if_data *sdata,
 	int ret;
 
 	if (ether_addr_equal(dst, sdata->vif.addr))
-		/* never add ourselves as neighbours */
+		 
 		return -ENOTSUPP;
 
 	if (is_multicast_ether_addr(dst))
@@ -745,14 +668,7 @@ int mpp_path_add(struct ieee80211_sub_if_data *sdata,
 }
 
 
-/**
- * mesh_plink_broken - deactivates paths and sends perr when a link breaks
- *
- * @sta: broken peer link
- *
- * This function must be called from the rate control algorithm if enough
- * delivery errors suggest that a peer link is no longer usable.
- */
+ 
 void mesh_plink_broken(struct sta_info *sta)
 {
 	struct ieee80211_sub_if_data *sdata = sta->sdata;
@@ -805,17 +721,7 @@ static void __mesh_path_del(struct mesh_table *tbl, struct mesh_path *mpath)
 	mesh_path_free_rcu(tbl, mpath);
 }
 
-/**
- * mesh_path_flush_by_nexthop - Deletes mesh paths if their next hop matches
- *
- * @sta: mesh peer to match
- *
- * RCU notes: this function is called when a mesh plink transitions from
- * PLINK_ESTAB to any other state, since PLINK_ESTAB state is the only one that
- * allows path creation. This will happen before the sta can be freed (because
- * sta_info_destroy() calls this) so any reader in a rcu read block will be
- * protected against the plink disappearing.
- */
+ 
 void mesh_path_flush_by_nexthop(struct sta_info *sta)
 {
 	struct ieee80211_sub_if_data *sdata = sta->sdata;
@@ -858,29 +764,14 @@ static void table_flush_by_iface(struct mesh_table *tbl)
 	spin_unlock_bh(&tbl->walk_lock);
 }
 
-/**
- * mesh_path_flush_by_iface - Deletes all mesh paths associated with a given iface
- *
- * This function deletes both mesh paths as well as mesh portal paths.
- *
- * @sdata: interface data to match
- *
- */
+ 
 void mesh_path_flush_by_iface(struct ieee80211_sub_if_data *sdata)
 {
 	table_flush_by_iface(&sdata->u.mesh.mesh_paths);
 	table_flush_by_iface(&sdata->u.mesh.mpp_paths);
 }
 
-/**
- * table_path_del - delete a path from the mesh or mpp table
- *
- * @tbl: mesh or mpp path table
- * @sdata: local subif
- * @addr: dst address (ETH_ALEN length)
- *
- * Returns: 0 if successful
- */
+ 
 static int table_path_del(struct mesh_table *tbl,
 			  struct ieee80211_sub_if_data *sdata,
 			  const u8 *addr)
@@ -900,19 +791,12 @@ static int table_path_del(struct mesh_table *tbl,
 }
 
 
-/**
- * mesh_path_del - delete a mesh path from the table
- *
- * @addr: dst address (ETH_ALEN length)
- * @sdata: local subif
- *
- * Returns: 0 if successful
- */
+ 
 int mesh_path_del(struct ieee80211_sub_if_data *sdata, const u8 *addr)
 {
 	int err;
 
-	/* flush relevant mpp entries first */
+	 
 	mpp_flush_by_proxy(sdata, addr);
 
 	err = table_path_del(&sdata->u.mesh.mesh_paths, sdata, addr);
@@ -920,14 +804,7 @@ int mesh_path_del(struct ieee80211_sub_if_data *sdata, const u8 *addr)
 	return err;
 }
 
-/**
- * mesh_path_tx_pending - sends pending frames in a mesh path queue
- *
- * @mpath: mesh path to activate
- *
- * Locking: the state_lock of the mpath structure must NOT be held when calling
- * this function.
- */
+ 
 void mesh_path_tx_pending(struct mesh_path *mpath)
 {
 	if (mpath->flags & MESH_PATH_ACTIVE)
@@ -935,16 +812,7 @@ void mesh_path_tx_pending(struct mesh_path *mpath)
 				&mpath->frame_queue);
 }
 
-/**
- * mesh_path_send_to_gates - sends pending frames to all known mesh gates
- *
- * @mpath: mesh path whose queue will be emptied
- *
- * If there is only one gate, the frames are transferred from the failed mpath
- * queue to that gate's queue.  If there are more than one gates, the frames
- * are copied from each gate to the next.  After frames are copied, the
- * mpath queues are emptied onto the transmission queue.
- */
+ 
 int mesh_path_send_to_gates(struct mesh_path *mpath)
 {
 	struct ieee80211_sub_if_data *sdata = mpath->sdata;
@@ -978,14 +846,7 @@ int mesh_path_send_to_gates(struct mesh_path *mpath)
 	return (from_mpath == mpath) ? -EHOSTUNREACH : 0;
 }
 
-/**
- * mesh_path_discard_frame - discard a frame whose path could not be resolved
- *
- * @skb: frame to discard
- * @sdata: network subif the frame was to be sent through
- *
- * Locking: the function must me called within a rcu_read_lock region
- */
+ 
 void mesh_path_discard_frame(struct ieee80211_sub_if_data *sdata,
 			     struct sk_buff *skb)
 {
@@ -993,13 +854,7 @@ void mesh_path_discard_frame(struct ieee80211_sub_if_data *sdata,
 	sdata->u.mesh.mshstats.dropped_frames_no_route++;
 }
 
-/**
- * mesh_path_flush_pending - free the pending queue of a mesh path
- *
- * @mpath: mesh path whose queue has to be freed
- *
- * Locking: the function must me called within a rcu_read_lock region
- */
+ 
 void mesh_path_flush_pending(struct mesh_path *mpath)
 {
 	struct sk_buff *skb;
@@ -1008,14 +863,7 @@ void mesh_path_flush_pending(struct mesh_path *mpath)
 		mesh_path_discard_frame(mpath->sdata, skb);
 }
 
-/**
- * mesh_path_fix_nexthop - force a specific next hop for a mesh path
- *
- * @mpath: the mesh path to modify
- * @next_hop: the next hop to force
- *
- * Locking: this function must be called holding mpath->state_lock
- */
+ 
 void mesh_path_fix_nexthop(struct mesh_path *mpath, struct sta_info *next_hop)
 {
 	spin_lock_bh(&mpath->state_lock);
@@ -1029,7 +877,7 @@ void mesh_path_fix_nexthop(struct mesh_path *mpath, struct sta_info *next_hop)
 	mesh_fast_tx_flush_mpath(mpath);
 	spin_unlock_bh(&mpath->state_lock);
 	ewma_mesh_fail_avg_init(&next_hop->mesh->fail_avg);
-	/* init it at a low value - 0 start is tricky */
+	 
 	ewma_mesh_fail_avg_add(&next_hop->mesh->fail_avg, 1);
 	mesh_path_tx_pending(mpath);
 }

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2020 InvenSense, Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/device.h>
@@ -18,12 +16,7 @@ static int inv_icm42600_i2c_bus_setup(struct inv_icm42600_state *st)
 	unsigned int mask, val;
 	int ret;
 
-	/*
-	 * setup interface registers
-	 * This register write to REG_INTF_CONFIG6 enables a spike filter that
-	 * is impacting the line and can prevent the I2C ACK to be seen by the
-	 * controller. So we don't test the return value.
-	 */
+	 
 	regmap_update_bits(st->map, INV_ICM42600_REG_INTF_CONFIG6,
 			   INV_ICM42600_INTF_CONFIG6_MASK,
 			   INV_ICM42600_INTF_CONFIG6_I3C_EN);
@@ -33,7 +26,7 @@ static int inv_icm42600_i2c_bus_setup(struct inv_icm42600_state *st)
 	if (ret)
 		return ret;
 
-	/* set slew rates for I2C and SPI */
+	 
 	mask = INV_ICM42600_DRIVE_CONFIG_I2C_MASK |
 	       INV_ICM42600_DRIVE_CONFIG_SPI_MASK;
 	val = INV_ICM42600_DRIVE_CONFIG_I2C(INV_ICM42600_SLEW_RATE_12_36NS) |
@@ -43,7 +36,7 @@ static int inv_icm42600_i2c_bus_setup(struct inv_icm42600_state *st)
 	if (ret)
 		return ret;
 
-	/* disable SPI bus */
+	 
 	return regmap_update_bits(st->map, INV_ICM42600_REG_INTF_CONFIG0,
 				  INV_ICM42600_INTF_CONFIG0_UI_SIFS_CFG_MASK,
 				  INV_ICM42600_INTF_CONFIG0_UI_SIFS_CFG_SPI_DIS);

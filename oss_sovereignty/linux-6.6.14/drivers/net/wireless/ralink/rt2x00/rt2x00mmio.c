@@ -1,14 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-	Copyright (C) 2004 - 2009 Ivo van Doorn <IvDoorn@gmail.com>
-	<http://rt2x00.serialmonkey.com>
 
- */
+ 
 
-/*
-	Module: rt2x00mmio
-	Abstract: rt2x00 generic mmio device routines.
- */
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/kernel.h>
@@ -18,9 +11,7 @@
 #include "rt2x00.h"
 #include "rt2x00mmio.h"
 
-/*
- * Register access.
- */
+ 
 int rt2x00mmio_regbusy_read(struct rt2x00_dev *rt2x00dev,
 			    const unsigned int offset,
 			    const struct rt2x00_field32 field,
@@ -61,23 +52,16 @@ bool rt2x00mmio_rxdone(struct rt2x00_dev *rt2x00dev)
 		if (rt2x00dev->ops->lib->get_entry_state(entry))
 			break;
 
-		/*
-		 * Fill in desc fields of the skb descriptor
-		 */
+		 
 		skbdesc = get_skb_frame_desc(entry->skb);
 		skbdesc->desc = entry_priv->desc;
 		skbdesc->desc_len = entry->queue->desc_size;
 
-		/*
-		 * DMA is already done, notify rt2x00lib that
-		 * it finished successfully.
-		 */
+		 
 		rt2x00lib_dmastart(entry);
 		rt2x00lib_dmadone(entry);
 
-		/*
-		 * Send the frame to rt2x00lib for further processing.
-		 */
+		 
 		rt2x00lib_rxdone(entry, GFP_ATOMIC);
 	}
 
@@ -94,9 +78,7 @@ void rt2x00mmio_flush_queue(struct data_queue *queue, bool drop)
 }
 EXPORT_SYMBOL_GPL(rt2x00mmio_flush_queue);
 
-/*
- * Device initialization handlers.
- */
+ 
 static int rt2x00mmio_alloc_queue_dma(struct rt2x00_dev *rt2x00dev,
 				      struct data_queue *queue)
 {
@@ -105,18 +87,14 @@ static int rt2x00mmio_alloc_queue_dma(struct rt2x00_dev *rt2x00dev,
 	dma_addr_t dma;
 	unsigned int i;
 
-	/*
-	 * Allocate DMA memory for descriptor and buffer.
-	 */
+	 
 	addr = dma_alloc_coherent(rt2x00dev->dev,
 				  queue->limit * queue->desc_size, &dma,
 				  GFP_KERNEL);
 	if (!addr)
 		return -ENOMEM;
 
-	/*
-	 * Initialize all queue entries to contain valid addresses.
-	 */
+	 
 	for (i = 0; i < queue->limit; i++) {
 		entry_priv = queue->entries[i].priv_data;
 		entry_priv->desc = addr + i * queue->desc_size;
@@ -144,18 +122,14 @@ int rt2x00mmio_initialize(struct rt2x00_dev *rt2x00dev)
 	struct data_queue *queue;
 	int status;
 
-	/*
-	 * Allocate DMA
-	 */
+	 
 	queue_for_each(rt2x00dev, queue) {
 		status = rt2x00mmio_alloc_queue_dma(rt2x00dev, queue);
 		if (status)
 			goto exit;
 	}
 
-	/*
-	 * Register interrupt handler.
-	 */
+	 
 	status = request_irq(rt2x00dev->irq,
 			     rt2x00dev->ops->lib->irq_handler,
 			     IRQF_SHARED, rt2x00dev->name, rt2x00dev);
@@ -179,22 +153,16 @@ void rt2x00mmio_uninitialize(struct rt2x00_dev *rt2x00dev)
 {
 	struct data_queue *queue;
 
-	/*
-	 * Free irq line.
-	 */
+	 
 	free_irq(rt2x00dev->irq, rt2x00dev);
 
-	/*
-	 * Free DMA
-	 */
+	 
 	queue_for_each(rt2x00dev, queue)
 		rt2x00mmio_free_queue_dma(rt2x00dev, queue);
 }
 EXPORT_SYMBOL_GPL(rt2x00mmio_uninitialize);
 
-/*
- * rt2x00mmio module information.
- */
+ 
 MODULE_AUTHOR(DRV_PROJECT);
 MODULE_VERSION(DRV_VERSION);
 MODULE_DESCRIPTION("rt2x00 mmio library");

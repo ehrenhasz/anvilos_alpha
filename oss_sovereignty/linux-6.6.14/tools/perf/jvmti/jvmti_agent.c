@@ -1,28 +1,6 @@
-/*
- * jvmti_agent.c: JVMTI agent interface
- *
- * Adapted from the Oprofile code in opagent.c:
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * Copyright 2007 OProfile authors
- * Jens Wilke
- * Daniel Hansel
- * Copyright IBM Corporation 2007
- */
+ 
 #include <sys/types.h>
-#include <sys/stat.h> /* for mkdir() */
+#include <sys/stat.h>  
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
@@ -33,7 +11,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <sys/mman.h>
-#include <syscall.h> /* for gettid() */
+#include <syscall.h>  
 #include <err.h>
 #include <linux/kernel.h>
 
@@ -70,7 +48,7 @@ static int get_e_machine(struct jitheader *hdr)
 	if (sret != sizeof(id))
 		goto error;
 
-	/* check ELF signature */
+	 
 	if (id[0] != 0x7f || id[1] != 'E' || id[2] != 'L' || id[3] != 'F')
 		goto error;
 
@@ -202,17 +180,7 @@ perf_open_marker_file(int fd)
 	if (pgsz == -1)
 		return -1;
 
-	/*
-	 * we mmap the jitdump to create an MMAP RECORD in perf.data file.
-	 * The mmap is captured either live (perf record running when we mmap)
-	 * or  in deferred mode, via /proc/PID/maps
-	 * the MMAP record is used as a marker of a jitdump file for more meta
-	 * data info about the jitted code. Perf report/annotate detect this
-	 * special filename and process the jitdump file.
-	 *
-	 * mapping must be PROT_EXEC to ensure it is captured by perf record
-	 * even when not using -d option
-	 */
+	 
 	marker_addr = mmap(NULL, pgsz, PROT_READ|PROT_EXEC, MAP_PRIVATE, fd, 0);
 	return (marker_addr == MAP_FAILED) ? -1 : 0;
 }
@@ -252,9 +220,7 @@ void *jvmti_open(void)
 
 	init_arch_timestamp();
 
-	/*
-	 * check if clockid is supported
-	 */
+	 
 	if (!perf_get_timestamp()) {
 		if (use_arch_timestamp)
 			warnx("jvmti: arch timestamp not supported");
@@ -264,15 +230,11 @@ void *jvmti_open(void)
 
 	memset(&header, 0, sizeof(header));
 
-	/*
-	 * jitdump file dir
-	 */
+	 
 	if (create_jit_cache_dir() < 0)
 		return NULL;
 
-	/*
-	 * jitdump file name
-	 */
+	 
 	ret = snprintf(dump_path, PATH_MAX, "%s/jit-%i.dump", jit_path, getpid());
 	if (ret >= PATH_MAX) {
 		warnx("jvmti: cannot generate jitdump file full path because"
@@ -285,9 +247,7 @@ void *jvmti_open(void)
 	if (fd == -1)
 		return NULL;
 
-	/*
-	 * create perf.data maker for the jitdump file
-	 */
+	 
 	if (perf_open_marker_file(fd)) {
 		warnx("jvmti: failed to create marker file");
 		return NULL;
@@ -365,7 +325,7 @@ jvmti_write_code(void *agent, char const *sym,
 	FILE *fp = agent;
 	int ret = -1;
 
-	/* don't care about 0 length function, no samples */
+	 
 	if (size == 0)
 		return 0;
 
@@ -389,15 +349,10 @@ jvmti_write_code(void *agent, char const *sym,
 	if (code)
 		rec.p.total_size += size;
 
-	/*
-	 * If JVM is multi-threaded, multiple concurrent calls to agent
-	 * may be possible, so protect file writes
-	 */
+	 
 	flockfile(fp);
 
-	/*
-	 * get code index inside lock to avoid race condition
-	 */
+	 
 	rec.code_index = code_generation++;
 
 	ret = fwrite_unlocked(&rec, sizeof(rec), 1, fp);
@@ -424,9 +379,7 @@ jvmti_write_debug_info(void *agent, uint64_t code,
 	FILE *fp = agent;
 	int i;
 
-	/*
-	 * no entry to write
-	 */
+	 
 	if (!nr_lines)
 		return 0;
 
@@ -445,21 +398,12 @@ jvmti_write_debug_info(void *agent, uint64_t code,
 	rec.code_addr   = (uint64_t)(uintptr_t)code;
 	rec.nr_entry    = nr_lines;
 
-	/*
-	 * on disk source line info layout:
-	 * uint64_t : addr
-	 * int      : line number
-	 * int      : column discriminator
-	 * file[]   : source file name
-	 */
+	 
 	size += nr_lines * sizeof(struct debug_entry);
 	size += flen;
 	rec.p.total_size = size;
 
-	/*
-	 * If JVM is multi-threaded, multiple concurrent calls to agent
-	 * may be possible, so protect file writes
-	 */
+	 
 	flockfile(fp);
 
 	sret = fwrite_unlocked(&rec, sizeof(rec), 1, fp);

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * wm5102.c  --  WM5102 ALSA SoC Audio driver
- *
- * Copyright 2012 Wolfson Microelectronics plc
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -2074,7 +2068,7 @@ static int wm5102_probe(struct platform_device *pdev)
 	if (ret != 0)
 		return ret;
 
-	/* This may return -EPROBE_DEFER, so do this early on */
+	 
 	ret = arizona_jack_codec_dev_probe(&wm5102->core, &pdev->dev);
 	if (ret)
 		return ret;
@@ -2089,7 +2083,7 @@ static int wm5102_probe(struct platform_device *pdev)
 			 ARIZONA_IRQ_FLL2_LOCK, ARIZONA_IRQ_FLL2_CLOCK_OK,
 			 &wm5102->fll[1]);
 
-	/* SR2 fixed at 8kHz, SR3 fixed at 16kHz */
+	 
 	regmap_update_bits(arizona->regmap, ARIZONA_SAMPLE_RATE_2,
 			   ARIZONA_SAMPLE_RATE_2_MASK, 0x11);
 	regmap_update_bits(arizona->regmap, ARIZONA_SAMPLE_RATE_3,
@@ -2098,7 +2092,7 @@ static int wm5102_probe(struct platform_device *pdev)
 	for (i = 0; i < ARRAY_SIZE(wm5102_dai); i++)
 		arizona_init_dai(&wm5102->core, i);
 
-	/* Latch volume update bits */
+	 
 	for (i = 0; i < ARRAY_SIZE(wm5102_digital_vu); i++)
 		regmap_update_bits(arizona->regmap, wm5102_digital_vu[i],
 				   WM5102_DIG_VU, WM5102_DIG_VU);

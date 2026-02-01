@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * helper functions for Asus Xonar cards
- *
- * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <sound/core.h>
@@ -49,7 +45,7 @@ static void xonar_ext_power_gpio_changed(struct oxygen *chip)
 		} else {
 			dev_crit(chip->card->dev,
 				   "Hey! Don't unplug the power cable!\n");
-			/* TODO: stop PCMs */
+			 
 		}
 	}
 }

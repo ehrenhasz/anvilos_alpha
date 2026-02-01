@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * V4L2 controls framework Request API implementation.
- *
- * Copyright (C) 2018-2021  Hans Verkuil <hverkuil-cisco@xs4all.nl>
- */
+
+ 
 
 #define pr_fmt(fmt) "v4l2-ctrls: " fmt
 
@@ -15,7 +11,7 @@
 
 #include "v4l2-ctrls-priv.h"
 
-/* Initialize the request-related fields in a control handler */
+ 
 void v4l2_ctrl_handler_init_request(struct v4l2_ctrl_handler *hdl)
 {
 	INIT_LIST_HEAD(&hdl->requests);
@@ -24,26 +20,16 @@ void v4l2_ctrl_handler_init_request(struct v4l2_ctrl_handler *hdl)
 	media_request_object_init(&hdl->req_obj);
 }
 
-/* Free the request-related fields in a control handler */
+ 
 void v4l2_ctrl_handler_free_request(struct v4l2_ctrl_handler *hdl)
 {
 	struct v4l2_ctrl_handler *req, *next_req;
 
-	/*
-	 * Do nothing if this isn't the main handler or the main
-	 * handler is not used in any request.
-	 *
-	 * The main handler can be identified by having a NULL ops pointer in
-	 * the request object.
-	 */
+	 
 	if (hdl->req_obj.ops || list_empty(&hdl->requests))
 		return;
 
-	/*
-	 * If the main handler is freed and it is used by handler objects in
-	 * outstanding requests, then unbind and put those objects before
-	 * freeing the main handler.
-	 */
+	 
 	list_for_each_entry_safe(req, next_req, &hdl->requests, requests) {
 		media_request_object_unbind(&req->req_obj);
 		media_request_object_put(&req->req_obj);
@@ -69,7 +55,7 @@ static int v4l2_ctrl_request_clone(struct v4l2_ctrl_handler *hdl,
 		struct v4l2_ctrl *ctrl = ref->ctrl;
 		struct v4l2_ctrl_ref *new_ref;
 
-		/* Skip refs inherited from other devices */
+		 
 		if (ref->from_other_dev)
 			continue;
 		err = handler_new_ref(hdl, ctrl, &new_ref, false, true);
@@ -184,17 +170,7 @@ v4l2_ctrls_find_req_obj(struct v4l2_ctrl_handler *hdl,
 	obj = media_request_object_find(req, &req_ops, hdl);
 	if (obj)
 		return obj;
-	/*
-	 * If there are no controls in this completed request,
-	 * then that can only happen if:
-	 *
-	 * 1) no controls were present in the queued request, and
-	 * 2) v4l2_ctrl_request_complete() could not allocate a
-	 *    control handler object to store the completed state in.
-	 *
-	 * So return ENOMEM to indicate that there was an out-of-memory
-	 * error.
-	 */
+	 
 	if (!set)
 		return ERR_PTR(-ENOMEM);
 
@@ -331,16 +307,12 @@ void v4l2_ctrl_request_complete(struct media_request *req,
 	if (!req || !main_hdl)
 		return;
 
-	/*
-	 * Note that it is valid if nothing was found. It means
-	 * that this request doesn't have any controls and so just
-	 * wants to leave the controls unchanged.
-	 */
+	 
 	obj = media_request_object_find(req, &req_ops, main_hdl);
 	if (!obj) {
 		int ret;
 
-		/* Create a new request so the driver can return controls */
+		 
 		hdl = kzalloc(sizeof(*hdl), GFP_KERNEL);
 		if (!hdl)
 			return;
@@ -365,7 +337,7 @@ void v4l2_ctrl_request_complete(struct media_request *req,
 
 		if (ctrl->flags & V4L2_CTRL_FLAG_VOLATILE) {
 			v4l2_ctrl_lock(master);
-			/* g_volatile_ctrl will update the current control values */
+			 
 			for (i = 0; i < master->ncontrols; i++)
 				cur_to_new(master->cluster[i]);
 			call_op(master, g_volatile_ctrl);
@@ -376,7 +348,7 @@ void v4l2_ctrl_request_complete(struct media_request *req,
 		if (ref->p_req_valid)
 			continue;
 
-		/* Copy the current control value into the request */
+		 
 		v4l2_ctrl_lock(ctrl);
 		cur_to_req(ref);
 		v4l2_ctrl_unlock(ctrl);
@@ -406,11 +378,7 @@ int v4l2_ctrl_request_setup(struct media_request *req,
 	if (WARN_ON(req->state != MEDIA_REQUEST_STATE_QUEUED))
 		return -EBUSY;
 
-	/*
-	 * Note that it is valid if nothing was found. It means
-	 * that this request doesn't have any controls and so just
-	 * wants to leave the controls unchanged.
-	 */
+	 
 	obj = media_request_object_find(req, &req_ops, main_hdl);
 	if (!obj)
 		return 0;
@@ -429,10 +397,7 @@ int v4l2_ctrl_request_setup(struct media_request *req,
 		bool have_new_data = false;
 		int i;
 
-		/*
-		 * Skip if this control was already handled by a cluster.
-		 * Skip button controls and read-only controls.
-		 */
+		 
 		if (ref->req_done || (ctrl->flags & V4L2_CTRL_FLAG_READ_ONLY))
 			continue;
 
@@ -467,22 +432,12 @@ int v4l2_ctrl_request_setup(struct media_request *req,
 				r->req_done = true;
 			}
 		}
-		/*
-		 * For volatile autoclusters that are currently in auto mode
-		 * we need to discover if it will be set to manual mode.
-		 * If so, then we have to copy the current volatile values
-		 * first since those will become the new manual values (which
-		 * may be overwritten by explicit new values from this set
-		 * of controls).
-		 */
+		 
 		if (master->is_auto && master->has_volatiles &&
 		    !is_cur_manual(master)) {
 			s32 new_auto_val = *master->p_new.p_s32;
 
-			/*
-			 * If the new value == the manual value, then copy
-			 * the current volatile values.
-			 */
+			 
 			if (new_auto_val == master->manual_mode_value)
 				update_from_auto_cluster(master);
 		}

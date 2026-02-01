@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  leds-blinkm.c
- *  (c) Jan-Simon Möller (dl9pf@gmx.de)
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -16,7 +13,7 @@
 #include <linux/leds.h>
 #include <linux/delay.h>
 
-/* Addresses to scan - BlinkM is on 0x09 by default*/
+ 
 static const unsigned short normal_i2c[] = { 0x09, I2C_CLIENT_END };
 
 static int blinkm_transfer_hw(struct i2c_client *client, int cmd);
@@ -33,43 +30,43 @@ struct blinkm_led {
 struct blinkm_data {
 	struct i2c_client *i2c_client;
 	struct mutex update_lock;
-	/* used for led class interface */
+	 
 	struct blinkm_led blinkm_leds[3];
-	/* used for "blinkm" sysfs interface */
-	u8 red;			/* color red */
-	u8 green;		/* color green */
-	u8 blue;		/* color blue */
-	/* next values to use for transfer */
-	u8 next_red;			/* color red */
-	u8 next_green;		/* color green */
-	u8 next_blue;		/* color blue */
-	/* internal use */
-	u8 args[7];		/* set of args for transmission */
-	u8 i2c_addr;		/* i2c addr */
-	u8 fw_ver;		/* firmware version */
-	/* used, but not from userspace */
-	u8 hue;			/* HSB  hue */
-	u8 saturation;		/* HSB  saturation */
-	u8 brightness;		/* HSB  brightness */
-	u8 next_hue;			/* HSB  hue */
-	u8 next_saturation;		/* HSB  saturation */
-	u8 next_brightness;		/* HSB  brightness */
-	/* currently unused / todo */
-	u8 fade_speed;		/* fade speed     1 - 255 */
-	s8 time_adjust;		/* time adjust -128 - 127 */
-	u8 fade:1;		/* fade on = 1, off = 0 */
-	u8 rand:1;		/* rand fade mode on = 1 */
-	u8 script_id;		/* script ID */
-	u8 script_repeats;	/* repeats of script */
-	u8 script_startline;	/* line to start */
+	 
+	u8 red;			 
+	u8 green;		 
+	u8 blue;		 
+	 
+	u8 next_red;			 
+	u8 next_green;		 
+	u8 next_blue;		 
+	 
+	u8 args[7];		 
+	u8 i2c_addr;		 
+	u8 fw_ver;		 
+	 
+	u8 hue;			 
+	u8 saturation;		 
+	u8 brightness;		 
+	u8 next_hue;			 
+	u8 next_saturation;		 
+	u8 next_brightness;		 
+	 
+	u8 fade_speed;		 
+	s8 time_adjust;		 
+	u8 fade:1;		 
+	u8 rand:1;		 
+	u8 script_id;		 
+	u8 script_repeats;	 
+	u8 script_startline;	 
 };
 
-/* Colors */
+ 
 #define RED   0
 #define GREEN 1
 #define BLUE  2
 
-/* mapping command names to cmd chars - see datasheet */
+ 
 #define BLM_GO_RGB            0
 #define BLM_FADE_RGB          1
 #define BLM_FADE_HSB          2
@@ -82,22 +79,13 @@ struct blinkm_data {
 #define BLM_GET_CUR_RGB       9
 #define BLM_WRITE_SCRIPT_LINE 10
 #define BLM_READ_SCRIPT_LINE  11
-#define BLM_SET_SCRIPT_LR     12	/* Length & Repeats */
+#define BLM_SET_SCRIPT_LR     12	 
 #define BLM_SET_ADDR          13
 #define BLM_GET_ADDR          14
 #define BLM_GET_FW_VER        15
 #define BLM_SET_STARTUP_PARAM 16
 
-/* BlinkM Commands
- *  as extracted out of the datasheet:
- *
- *  cmdchar = command (ascii)
- *  cmdbyte = command in hex
- *  nr_args = number of arguments (to send)
- *  nr_ret  = number of return values (to read)
- *  dir = direction (0 = read, 1 = write, 2 = both)
- *
- */
+ 
 static const struct {
 	char cmdchar;
 	u8 cmdbyte;
@@ -105,7 +93,7 @@ static const struct {
 	u8 nr_ret;
 	u8 dir:2;
 } blinkm_cmds[17] = {
-  /* cmdchar, cmdbyte, nr_args, nr_ret,  dir */
+   
 	{ 'n', 0x6e, 3, 0, 1},
 	{ 'c', 0x63, 3, 0, 1},
 	{ 'h', 0x68, 3, 0, 1},
@@ -183,7 +171,7 @@ static int store_color_common(struct device *dev, const char *buf, int color)
 	dev_dbg(dev, "next_red = %d, next_green = %d, next_blue = %d\n",
 			data->next_red, data->next_green, data->next_blue);
 
-	/* if mode ... */
+	 
 	ret = blinkm_transfer_hw(client, BLM_GO_RGB);
 	if (ret < 0) {
 		dev_err(dev, "BlinkM: can't set RGB\n");
@@ -265,7 +253,7 @@ static ssize_t test_store(struct device *dev, struct device_attribute *attr,
 	int ret;
 	client = to_i2c_client(dev);
 
-	/*test */
+	 
 	ret = blinkm_test_run(client);
 	if (ret < 0)
 		return ret;
@@ -275,7 +263,7 @@ static ssize_t test_store(struct device *dev, struct device_attribute *attr,
 
 static DEVICE_ATTR_RW(test);
 
-/* TODO: HSB, fade, timeadj, script ... */
+ 
 
 static struct attribute *blinkm_attrs[] = {
 	&dev_attr_red.attr,
@@ -295,16 +283,16 @@ static int blinkm_write(struct i2c_client *client, int cmd, u8 *arg)
 	int result;
 	int i;
 	int arglen = blinkm_cmds[cmd].nr_args;
-	/* write out cmd to blinkm - always / default step */
+	 
 	result = i2c_smbus_write_byte(client, blinkm_cmds[cmd].cmdbyte);
 	if (result < 0)
 		return result;
-	/* no args to write out */
+	 
 	if (arglen == 0)
 		return 0;
 
 	for (i = 0; i < arglen; i++) {
-		/* repeat for arglen */
+		 
 		result = i2c_smbus_write_byte(client, arg[i]);
 		if (result < 0)
 			return result;
@@ -318,7 +306,7 @@ static int blinkm_read(struct i2c_client *client, int cmd, u8 *arg)
 	int i;
 	int retlen = blinkm_cmds[cmd].nr_ret;
 	for (i = 0; i < retlen; i++) {
-		/* repeat for retlen */
+		 
 		result = i2c_smbus_read_byte(client);
 		if (result < 0)
 			return result;
@@ -330,26 +318,16 @@ static int blinkm_read(struct i2c_client *client, int cmd, u8 *arg)
 
 static int blinkm_transfer_hw(struct i2c_client *client, int cmd)
 {
-	/* the protocol is simple but non-standard:
-	 * e.g.  cmd 'g' (= 0x67) for "get device address"
-	 * - which defaults to 0x09 - would be the sequence:
-	 *   a) write 0x67 to the device (byte write)
-	 *   b) read the value (0x09) back right after (byte read)
-	 *
-	 * Watch out for "unfinished" sequences (i.e. not enough reads
-	 * or writes after a command. It will make the blinkM misbehave.
-	 * Sequence is key here.
-	 */
+	 
 
-	/* args / return are in private data struct */
+	 
 	struct blinkm_data *data = i2c_get_clientdata(client);
 
-	/* We start hardware transfers which are not to be
-	 * mixed with other commands. Aquire a lock now. */
+	 
 	if (mutex_lock_interruptible(&data->update_lock) < 0)
 		return -EAGAIN;
 
-	/* switch cmd - usually write before reads */
+	 
 	switch (cmd) {
 	case BLM_FADE_RAND_RGB:
 	case BLM_GO_RGB:
@@ -412,9 +390,9 @@ static int blinkm_transfer_hw(struct i2c_client *client, int cmd)
 		dev_err(&client->dev, "BlinkM: unknown command %d\n", cmd);
 		mutex_unlock(&data->update_lock);
 		return -EINVAL;
-	}			/* end switch(cmd) */
+	}			 
 
-	/* transfers done, unlock */
+	 
 	mutex_unlock(&data->update_lock);
 	return 0;
 }
@@ -422,25 +400,25 @@ static int blinkm_transfer_hw(struct i2c_client *client, int cmd)
 static int blinkm_led_common_set(struct led_classdev *led_cdev,
 				 enum led_brightness value, int color)
 {
-	/* led_brightness is 0, 127 or 255 - we just use it here as-is */
+	 
 	struct blinkm_led *led = cdev_to_blmled(led_cdev);
 	struct blinkm_data *data = i2c_get_clientdata(led->i2c_client);
 
 	switch (color) {
 	case RED:
-		/* bail out if there's no change */
+		 
 		if (data->next_red == (u8) value)
 			return 0;
 		data->next_red = (u8) value;
 		break;
 	case GREEN:
-		/* bail out if there's no change */
+		 
 		if (data->next_green == (u8) value)
 			return 0;
 		data->next_green = (u8) value;
 		break;
 	case BLUE:
-		/* bail out if there's no change */
+		 
 		if (data->next_blue == (u8) value)
 			return 0;
 		data->next_blue = (u8) value;
@@ -516,7 +494,7 @@ static int blinkm_test_run(struct i2c_client *client)
 	return 0;
 }
 
-/* Return 0 if detection is successful, -ENODEV otherwise */
+ 
 static int blinkm_detect(struct i2c_client *client, struct i2c_board_info *info)
 {
 	struct i2c_adapter *adapter = client->adapter;
@@ -529,10 +507,10 @@ static int blinkm_detect(struct i2c_client *client, struct i2c_board_info *info)
 				     | I2C_FUNC_SMBUS_WRITE_BYTE))
 		return -ENODEV;
 
-	/* Now, we do the remaining detection. Simple for now. */
-	/* We might need more guards to protect other i2c slaves */
+	 
+	 
 
-	/* make sure the blinkM is balanced (read/writes) */
+	 
 	while (count > 0) {
 		ret = blinkm_write(client, BLM_GET_ADDR, NULL);
 		if (ret)
@@ -547,11 +525,11 @@ static int blinkm_detect(struct i2c_client *client, struct i2c_board_info *info)
 		count--;
 	}
 
-	/* Step 1: Read BlinkM address back  -  cmd_char 'a' */
+	 
 	ret = blinkm_write(client, BLM_GET_ADDR, NULL);
 	if (ret < 0)
 		return ret;
-	usleep_range(20000, 30000);	/* allow a small delay */
+	usleep_range(20000, 30000);	 
 	ret = blinkm_read(client, BLM_GET_ADDR, tmpargs);
 	if (ret < 0)
 		return ret;
@@ -580,17 +558,16 @@ static int blinkm_probe(struct i2c_client *client)
 	}
 
 	data->i2c_addr = 0x08;
-	/* i2c addr  - use fake addr of 0x08 initially (real is 0x09) */
+	 
 	data->fw_ver = 0xfe;
-	/* firmware version - use fake until we read real value
-	 * (currently broken - BlinkM confused!) */
+	 
 	data->script_id = 0x01;
 	data->i2c_client = client;
 
 	i2c_set_clientdata(client, data);
 	mutex_init(&data->update_lock);
 
-	/* Register sysfs hooks */
+	 
 	err = sysfs_create_group(&client->dev.kobj, &blinkm_group);
 	if (err < 0) {
 		dev_err(&client->dev, "couldn't register sysfs group\n");
@@ -598,7 +575,7 @@ static int blinkm_probe(struct i2c_client *client)
 	}
 
 	for (i = 0; i < 3; i++) {
-		/* RED = 0, GREEN = 1, BLUE = 2 */
+		 
 		led[i] = &data->blinkm_leds[i];
 		led[i]->i2c_client = client;
 		led[i]->id = i;
@@ -656,10 +633,10 @@ static int blinkm_probe(struct i2c_client *client)
 				goto failblue;
 			}
 			break;
-		}		/* end switch */
-	}			/* end for */
+		}		 
+	}			 
 
-	/* Initialize the blinkm */
+	 
 	blinkm_init_hw(client);
 
 	return 0;
@@ -682,11 +659,11 @@ static void blinkm_remove(struct i2c_client *client)
 	int ret = 0;
 	int i;
 
-	/* make sure no workqueue entries are pending */
+	 
 	for (i = 0; i < 3; i++)
 		led_classdev_unregister(&data->blinkm_leds[i].led_cdev);
 
-	/* reset rgb */
+	 
 	data->next_red = 0x00;
 	data->next_green = 0x00;
 	data->next_blue = 0x00;
@@ -694,7 +671,7 @@ static void blinkm_remove(struct i2c_client *client)
 	if (ret < 0)
 		dev_err(&client->dev, "Failure in blinkm_remove ignored. Continuing.\n");
 
-	/* reset hsb */
+	 
 	data->next_hue = 0x00;
 	data->next_saturation = 0x00;
 	data->next_brightness = 0x00;
@@ -702,13 +679,13 @@ static void blinkm_remove(struct i2c_client *client)
 	if (ret < 0)
 		dev_err(&client->dev, "Failure in blinkm_remove ignored. Continuing.\n");
 
-	/* red fade to off */
+	 
 	data->next_red = 0xff;
 	ret = blinkm_transfer_hw(client, BLM_GO_RGB);
 	if (ret < 0)
 		dev_err(&client->dev, "Failure in blinkm_remove ignored. Continuing.\n");
 
-	/* off */
+	 
 	data->next_red = 0x00;
 	ret = blinkm_transfer_hw(client, BLM_FADE_RGB);
 	if (ret < 0)
@@ -724,7 +701,7 @@ static const struct i2c_device_id blinkm_id[] = {
 
 MODULE_DEVICE_TABLE(i2c, blinkm_id);
 
-  /* This is the driver that will be inserted */
+   
 static struct i2c_driver blinkm_driver = {
 	.class = I2C_CLASS_HWMON,
 	.driver = {

@@ -1,16 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  HID driver for some a4tech "special" devices
- *
- *  Copyright (c) 1999 Andreas Gal
- *  Copyright (c) 2000-2005 Vojtech Pavlik <vojtech@suse.cz>
- *  Copyright (c) 2005 Michael Haboustak <mike-@cinci.rr.com> for Concept2, Inc
- *  Copyright (c) 2006-2007 Jiri Kosina
- *  Copyright (c) 2008 Jiri Slaby
- */
 
-/*
- */
+ 
+
+ 
 
 #include <linux/device.h>
 #include <linux/input.h>
@@ -39,13 +30,7 @@ static int a4_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 
 	if (a4->quirks & A4_2WHEEL_MOUSE_HACK_B8 &&
 	    usage->hid == A4_WHEEL_ORIENTATION) {
-		/*
-		 * We do not want to have this usage mapped to anything as it's
-		 * nonstandard and doesn't really behave like an HID report.
-		 * It's only selecting the orientation (vertical/horizontal) of
-		 * the previous mouse wheel report. The input_events will be
-		 * generated once both reports are recorded in a4_event().
-		 */
+		 
 		return -1;
 	}
 

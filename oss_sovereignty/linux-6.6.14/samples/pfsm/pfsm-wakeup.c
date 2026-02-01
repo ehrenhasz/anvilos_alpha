@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * TPS6594 PFSM userspace example
- *
- * Copyright (C) 2023 BayLibre Incorporated - https://www.baylibre.com/
- *
- * This example shows how to use PFSMs from a userspace application,
- * on TI j721s2 platform. The PMIC is armed to be triggered by a RTC
- * alarm to execute state transition (RETENTION to ACTIVE).
- */
+
+ 
 
 #include <fcntl.h>
 #include <stdio.h>
@@ -49,7 +41,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	/* Read RTC date/time */
+	 
 	ret = ioctl(fd_rtc, RTC_RD_TIME, &rtc_tm);
 	if (ret < 0) {
 		perror("Failed to read RTC date/time.");
@@ -59,7 +51,7 @@ int main(int argc, char *argv[])
 	       rtc_tm.tm_mday, rtc_tm.tm_mon + 1, rtc_tm.tm_year + 1900,
 	       rtc_tm.tm_hour, rtc_tm.tm_min, rtc_tm.tm_sec);
 
-	/* Set RTC alarm to ALARM_DELTA_SEC sec in the future, and check for rollover */
+	 
 	rtc_tm.tm_sec += ALARM_DELTA_SEC;
 	if (rtc_tm.tm_sec >= 60) {
 		rtc_tm.tm_sec %= 60;
@@ -77,7 +69,7 @@ int main(int argc, char *argv[])
 		goto out;
 	}
 
-	/* Enable alarm interrupts */
+	 
 	ret = ioctl(fd_rtc, RTC_AIE_ON, 0);
 	if (ret < 0) {
 		perror("Failed to enable alarm interrupts.");
@@ -85,10 +77,7 @@ int main(int argc, char *argv[])
 	}
 	printf("Waiting %d seconds for alarm...\n", ALARM_DELTA_SEC);
 
-	/*
-	 * Set RETENTION state with options for PMIC_C/B/A respectively.
-	 * Since PMIC_A is master, it should be the last one to be configured.
-	 */
+	 
 	pmic_opt.ddr_retention = 1;
 	for (i = PMIC_NB - 1 ; i >= 0 ; i--) {
 		printf("Set RETENTION state for PMIC_%d.\n", i);
@@ -100,7 +89,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	/* This blocks until the alarm ring causes an interrupt */
+	 
 	ret = read(fd_rtc, &data, sizeof(unsigned long));
 	if (ret < 0)
 		perror("Failed to get RTC alarm.");
@@ -110,7 +99,7 @@ int main(int argc, char *argv[])
 out_reset:
 	ioctl(fd_rtc, RTC_AIE_OFF, 0);
 
-	/* Set ACTIVE state for PMIC_A */
+	 
 	ioctl(fd_pfsm[0], PMIC_SET_ACTIVE_STATE, 0);
 
 out:

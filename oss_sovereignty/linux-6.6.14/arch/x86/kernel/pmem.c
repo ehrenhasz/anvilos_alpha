@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2015, Christoph Hellwig.
- * Copyright (c) 2015, Intel Corporation.
- */
+
+ 
 #include <linux/platform_device.h>
 #include <linux/init.h>
 #include <linux/ioport.h>
@@ -22,10 +19,7 @@ static __init int register_e820_pmem(void)
 	if (rc <= 0)
 		return 0;
 
-	/*
-	 * See drivers/nvdimm/e820.c for the implementation, this is
-	 * simply here to trigger the module to load on demand.
-	 */
+	 
 	pdev = platform_device_alloc("e820_pmem", -1);
 
 	rc = platform_device_add(pdev);

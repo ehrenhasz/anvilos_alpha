@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
@@ -54,7 +54,7 @@ int gzip_decompress_to_file(const char *input, int output_fd)
 		switch (ret) {
 		case Z_NEED_DICT:
 			ret = Z_DATA_ERROR;
-			/* fall through */
+			 
 		case Z_DATA_ERROR:
 		case Z_MEM_ERROR:
 			goto out;

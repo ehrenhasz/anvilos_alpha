@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2015 Free Electrons
- * Copyright (C) 2015 NextThing Co
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
@@ -211,7 +206,7 @@ static struct sun4i_layer *sun4i_layer_init_one(struct drm_device *drm,
 		modifiers = NULL;
 	}
 
-	/* possible crtcs are set later */
+	 
 	ret = drm_universal_plane_init(drm, &layer->plane, 0,
 				       &sun4i_backend_layer_funcs,
 				       formats, formats_len,
@@ -238,7 +233,7 @@ struct drm_plane **sun4i_layers_init(struct drm_device *drm,
 	struct sun4i_backend *backend = engine_to_sun4i_backend(engine);
 	int i;
 
-	/* We need to have a sentinel at the need, hence the overallocation */
+	 
 	planes = devm_kcalloc(drm->dev, SUN4I_BACKEND_NUM_LAYERS + 1,
 			      sizeof(*planes), GFP_KERNEL);
 	if (!planes)

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) STMicroelectronics SA 2014
- * Author: Benjamin Gaignard <benjamin.gaignard@st.com> for STMicroelectronics.
- */
+ 
+ 
 
 #ifndef _STI_DRV_H_
 #define _STI_DRV_H_
@@ -13,14 +10,7 @@ struct drm_device;
 struct drm_property;
 struct sti_compositor;
 
-/**
- * STI drm private structure
- * This structure is stored as private in the drm_device
- *
- * @compo:                 compositor
- * @plane_zorder_property: z-order property for CRTC planes
- * @drm_dev:               drm device
- */
+ 
 struct sti_private {
 	struct sti_compositor *compo;
 	struct drm_property *plane_zorder_property;

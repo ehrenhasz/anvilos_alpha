@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright © 2017 Keith Packard <keithp@keithp.com>
- */
+ 
+ 
 
 #ifndef _DRM_LEASE_H_
 #define _DRM_LEASE_H_
@@ -34,4 +32,4 @@ int drm_mode_get_lease_ioctl(struct drm_device *dev,
 int drm_mode_revoke_lease_ioctl(struct drm_device *dev,
 				void *data, struct drm_file *file_priv);
 
-#endif /* _DRM_LEASE_H_ */
+#endif  

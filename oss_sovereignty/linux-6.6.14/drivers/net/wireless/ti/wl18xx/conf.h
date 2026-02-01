@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This file is part of wl18xx
- *
- * Copyright (C) 2011 Texas Instruments Inc.
- */
+ 
+ 
 
 #ifndef __WL18XX_CONF_H__
 #define __WL18XX_CONF_H__
@@ -31,12 +27,12 @@ struct wl18xx_mac_and_phy_params {
 
 	u8 low_band_component;
 
-	/* Bit 0: One Hot, Bit 1: Control Enable, Bit 2: 1.8V, Bit 3: 3V */
+	 
 	u8 low_band_component_type;
 
 	u8 high_band_component;
 
-	/* Bit 0: One Hot, Bit 1: Control Enable, Bit 2: 1.8V, Bit 3: 3V */
+	 
 	u8 high_band_component_type;
 	u8 number_of_assembled_ant2_4;
 	u8 number_of_assembled_ant5;
@@ -63,16 +59,16 @@ struct wl18xx_mac_and_phy_params {
 	u8 clock_valid_on_wake_up;
 	u8 secondary_clock_setting_time;
 	u8 board_type;
-	/* enable point saturation */
+	 
 	u8 psat;
-	/* low/medium/high Tx power in dBm for STA-HP BG */
+	 
 	s8 low_power_val;
 	s8 med_power_val;
 	s8 high_power_val;
 	s8 per_sub_band_tx_trace_loss[WL18XX_TRACE_LOSS_GAPS_TX];
 	s8 per_sub_band_rx_trace_loss[WL18XX_TRACE_LOSS_GAPS_RX];
 	u8 tx_rf_margin;
-	/* low/medium/high Tx power in dBm for other role */
+	 
 	s8 low_power_val_2nd;
 	s8 med_power_val_2nd;
 	s8 high_power_val_2nd;
@@ -81,45 +77,37 @@ struct wl18xx_mac_and_phy_params {
 } __packed;
 
 enum wl18xx_ht_mode {
-	/* Default - use MIMO, fallback to SISO20 */
+	 
 	HT_MODE_DEFAULT = 0,
 
-	/* Wide - use SISO40 */
+	 
 	HT_MODE_WIDE = 1,
 
-	/* Use SISO20 */
+	 
 	HT_MODE_SISO20 = 2,
 };
 
 struct wl18xx_ht_settings {
-	/* DEFAULT / WIDE / SISO20 */
+	 
 	u8 mode;
 } __packed;
 
 struct conf_ap_sleep_settings {
-	/* Duty Cycle (20-80% of staying Awake) for IDLE AP
-	 * (0: disable)
-	 */
+	 
 	u8 idle_duty_cycle;
-	/* Duty Cycle (20-80% of staying Awake) for Connected AP
-	 * (0: disable)
-	 */
+	 
 	u8 connected_duty_cycle;
-	/* Maximum stations that are allowed to be connected to AP
-	 *  (255: no limit)
-	 */
+	 
 	u8 max_stations_thresh;
-	/* Timeout till enabling the Sleep Mechanism after data stops
-	 * [unit: 100 msec]
-	 */
+	 
 	u8 idle_conn_thresh;
 } __packed;
 
 struct wl18xx_priv_conf {
-	/* Module params structures */
+	 
 	struct wl18xx_ht_settings ht;
 
-	/* this structure is copied wholesale to FW */
+	 
 	struct wl18xx_mac_and_phy_params phy;
 
 	struct conf_ap_sleep_settings ap_sleep;
@@ -128,7 +116,7 @@ struct wl18xx_priv_conf {
 enum wl18xx_sg_params {
 	WL18XX_CONF_SG_PARAM_0 = 0,
 
-	/* Configuration Parameters */
+	 
 	WL18XX_CONF_SG_ANTENNA_CONFIGURATION,
 	WL18XX_CONF_SG_ZIGBEE_COEX,
 	WL18XX_CONF_SG_TIME_SYNC,
@@ -156,23 +144,23 @@ enum wl18xx_sg_params {
 	WL18XX_CONF_SG_PARAM_24,
 	WL18XX_CONF_SG_PARAM_25,
 
-	/* Active Scan Parameters */
+	 
 	WL18XX_CONF_SG_AUTO_SCAN_PROBE_REQ,
 	WL18XX_CONF_SG_ACTIVE_SCAN_DURATION_FACTOR_HV3,
 
 	WL18XX_CONF_SG_PARAM_28,
 
-	/* Passive Scan Parameters */
+	 
 	WL18XX_CONF_SG_PARAM_29,
 	WL18XX_CONF_SG_PARAM_30,
 	WL18XX_CONF_SG_PASSIVE_SCAN_DURATION_FACTOR_HV3,
 
-	/* Passive Scan in Dual Antenna Parameters */
+	 
 	WL18XX_CONF_SG_CONSECUTIVE_HV3_IN_PASSIVE_SCAN,
 	WL18XX_CONF_SG_BEACON_HV3_COLL_TH_IN_PASSIVE_SCAN,
 	WL18XX_CONF_SG_TX_RX_PROTECT_BW_IN_PASSIVE_SCAN,
 
-	/* General Parameters */
+	 
 	WL18XX_CONF_SG_STA_FORCE_PS_IN_BT_SCO,
 	WL18XX_CONF_SG_PARAM_36,
 	WL18XX_CONF_SG_BEACON_MISS_PERCENT,
@@ -188,7 +176,7 @@ enum wl18xx_sg_params {
 	WL18XX_CONF_SG_GEMINI_PARAM_47,
 	WL18XX_CONF_SG_STA_CONNECTION_PROTECTION_TIME,
 
-	/* AP Parameters */
+	 
 	WL18XX_CONF_SG_AP_BEACON_MISS_TX,
 	WL18XX_CONF_SG_PARAM_50,
 	WL18XX_CONF_SG_AP_BEACON_WINDOW_INTERVAL,
@@ -196,7 +184,7 @@ enum wl18xx_sg_params {
 	WL18XX_CONF_SG_PARAM_53,
 	WL18XX_CONF_SG_PARAM_54,
 
-	/* CTS Diluting Parameters */
+	 
 	WL18XX_CONF_SG_CTS_DILUTED_BAD_RX_PACKETS_TH,
 	WL18XX_CONF_SG_CTS_CHOP_IN_DUAL_ANT_SCO_MASTER,
 
@@ -215,4 +203,4 @@ enum wl18xx_sg_params {
 	WL18XX_CONF_SG_PARAMS_ALL = 0xff
 };
 
-#endif /* __WL18XX_CONF_H__ */
+#endif  

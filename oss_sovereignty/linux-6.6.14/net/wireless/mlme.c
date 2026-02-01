@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * cfg80211 MLME SAP interface
- *
- * Copyright (c) 2009, Jouni Malinen <j@w1.fi>
- * Copyright (c) 2015		Intel Deutschland GmbH
- * Copyright (C) 2019-2020, 2022 Intel Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -52,7 +46,7 @@ void cfg80211_rx_assoc_resp(struct net_device *dev,
 			continue;
 		cr.links[link_id].bssid = data->links[link_id].bss->bssid;
 		cr.links[link_id].addr = data->links[link_id].addr;
-		/* need to have local link addresses for MLO connections */
+		 
 		WARN_ON(cr.ap_mld_addr &&
 			!is_valid_ether_addr(cr.links[link_id].addr));
 
@@ -72,12 +66,7 @@ void cfg80211_rx_assoc_resp(struct net_device *dev,
 
 	trace_cfg80211_send_rx_assoc(dev, data);
 
-	/*
-	 * This is a bit of a hack, we don't notify userspace of
-	 * a (re-)association reply if we tried to send a reassoc
-	 * and got a reject -- we only try again with an assoc
-	 * frame instead of reassoc.
-	 */
+	 
 	if (cfg80211_sme_rx_assoc_resp(wdev, cr.status)) {
 		for (link_id = 0; link_id < ARRAY_SIZE(data->links); link_id++) {
 			struct cfg80211_bss *bss = data->links[link_id].bss;
@@ -92,7 +81,7 @@ void cfg80211_rx_assoc_resp(struct net_device *dev,
 	}
 
 	nl80211_send_rx_assoc(rdev, dev, data);
-	/* update current_bss etc., consumes the bss reference */
+	 
 	__cfg80211_connect_result(dev, &cr, cr.status == WLAN_STATUS_SUCCESS);
 }
 EXPORT_SYMBOL(cfg80211_rx_assoc_resp);
@@ -257,7 +246,7 @@ void cfg80211_michael_mic_failure(struct net_device *dev, const u8 *addr,
 }
 EXPORT_SYMBOL(cfg80211_michael_mic_failure);
 
-/* some MLME handling for userspace SME */
+ 
 int cfg80211_mlme_auth(struct cfg80211_registered_device *rdev,
 		       struct net_device *dev,
 		       struct cfg80211_auth_request *req)
@@ -291,7 +280,7 @@ int cfg80211_mlme_auth(struct cfg80211_registered_device *rdev,
 	return rdev_auth(rdev, dev, req);
 }
 
-/*  Do a logical ht_capa &= ht_capa_mask.  */
+ 
 void cfg80211_oper_and_ht_capa(struct ieee80211_ht_cap *ht_capa,
 			       const struct ieee80211_ht_cap *ht_capa_mask)
 {
@@ -308,7 +297,7 @@ void cfg80211_oper_and_ht_capa(struct ieee80211_ht_cap *ht_capa,
 		p1[i] &= p2[i];
 }
 
-/*  Do a logical vht_capa &= vht_capa_mask.  */
+ 
 void cfg80211_oper_and_vht_capa(struct ieee80211_vht_cap *vht_capa,
 				const struct ieee80211_vht_cap *vht_capa_mask)
 {
@@ -325,7 +314,7 @@ void cfg80211_oper_and_vht_capa(struct ieee80211_vht_cap *vht_capa,
 		p1[i] &= p2[i];
 }
 
-/* Note: caller must cfg80211_put_bss() regardless of result */
+ 
 int cfg80211_mlme_assoc(struct cfg80211_registered_device *rdev,
 			struct net_device *dev,
 			struct cfg80211_assoc_request *req)
@@ -437,7 +426,7 @@ int cfg80211_mlme_disassoc(struct cfg80211_registered_device *rdev,
 	if (err)
 		return err;
 
-	/* driver should have reported the disassoc */
+	 
 	WARN_ON(wdev->connected);
 	return 0;
 }
@@ -562,14 +551,7 @@ int cfg80211_mlme_register_mgmt(struct wireless_dev *wdev, u32 snd_portid,
 		return -EINVAL;
 	}
 
-	/*
-	 * To support Pre Association Security Negotiation (PASN), registration
-	 * for authentication frames should be supported. However, as some
-	 * versions of the user space daemons wrongly register to all types of
-	 * authentication frames (which might result in unexpected behavior)
-	 * allow such registration if the request is for a specific
-	 * authentication algorithm number.
-	 */
+	 
 	if (wdev->iftype == NL80211_IFTYPE_STATION &&
 	    (frame_type & IEEE80211_FCTL_STYPE) == IEEE80211_STYPE_AUTH &&
 	    !(match_data && match_len >= 2)) {
@@ -693,18 +675,14 @@ static bool cfg80211_allowed_random_address(struct wireless_dev *wdev,
 {
 	if (ieee80211_is_auth(mgmt->frame_control) ||
 	    ieee80211_is_deauth(mgmt->frame_control)) {
-		/* Allow random TA to be used with authentication and
-		 * deauthentication frames if the driver has indicated support.
-		 */
+		 
 		if (wiphy_ext_feature_isset(
 			    wdev->wiphy,
 			    NL80211_EXT_FEATURE_AUTH_AND_DEAUTH_RANDOM_TA))
 			return true;
 	} else if (ieee80211_is_action(mgmt->frame_control) &&
 		   mgmt->u.action.category == WLAN_CATEGORY_PUBLIC) {
-		/* Allow random TA to be used with Public Action frames if the
-		 * driver has indicated support.
-		 */
+		 
 		if (!wdev->connected &&
 		    wiphy_ext_feature_isset(
 			    wdev->wiphy,
@@ -754,10 +732,7 @@ int cfg80211_mlme_mgmt_tx(struct cfg80211_registered_device *rdev,
 
 		switch (wdev->iftype) {
 		case NL80211_IFTYPE_ADHOC:
-			/*
-			 * check for IBSS DA must be done by driver as
-			 * cfg80211 doesn't track the stations
-			 */
+			 
 			if (!wdev->u.ibss.current_bss ||
 			    !ether_addr_equal(wdev->u.ibss.current_bss->pub.bssid,
 					      mgmt->bssid)) {
@@ -772,7 +747,7 @@ int cfg80211_mlme_mgmt_tx(struct cfg80211_registered_device *rdev,
 				break;
 			}
 
-			/* FIXME: MLD may address this differently */
+			 
 
 			if (!ether_addr_equal(wdev->u.client.connected_addr,
 					      mgmt->bssid)) {
@@ -780,7 +755,7 @@ int cfg80211_mlme_mgmt_tx(struct cfg80211_registered_device *rdev,
 				break;
 			}
 
-			/* for station, check that DA is the AP */
+			 
 			if (!ether_addr_equal(wdev->u.client.connected_addr,
 					      mgmt->da)) {
 				err = -ENOTCONN;
@@ -801,16 +776,10 @@ int cfg80211_mlme_mgmt_tx(struct cfg80211_registered_device *rdev,
 				err = -EINVAL;
 				break;
 			}
-			/*
-			 * check for mesh DA must be done by driver as
-			 * cfg80211 doesn't track the stations
-			 */
+			 
 			break;
 		case NL80211_IFTYPE_P2P_DEVICE:
-			/*
-			 * fall through, P2P device only supports
-			 * public action frames
-			 */
+			 
 		case NL80211_IFTYPE_NAN:
 		default:
 			err = -EOPNOTSUPP;
@@ -826,7 +795,7 @@ int cfg80211_mlme_mgmt_tx(struct cfg80211_registered_device *rdev,
 	    !cfg80211_allowed_random_address(wdev, mgmt))
 		return -EINVAL;
 
-	/* Transmit the management frame as requested by user space */
+	 
 	return rdev_mgmt_tx(rdev, wdev, params, cookie);
 }
 
@@ -869,9 +838,9 @@ bool cfg80211_rx_mgmt_ext(struct wireless_dev *wdev,
 		if (memcmp(reg->match, data, reg->match_len))
 			continue;
 
-		/* found match! */
+		 
 
-		/* Indicate the received Action frame to user space */
+		 
 		if (nl80211_send_mgmt(rdev, wdev, reg->nlportid, info,
 				      GFP_ATOMIC))
 			continue;
@@ -968,7 +937,7 @@ void cfg80211_dfs_channels_update_work(struct work_struct *work)
 	}
 	rtnl_unlock();
 
-	/* reschedule if there are other channels waiting to be cleared again */
+	 
 	if (check_again)
 		queue_delayed_work(cfg80211_wq, &rdev->dfs_update_channels_wk,
 				   next_time);
@@ -983,10 +952,7 @@ void __cfg80211_radar_event(struct wiphy *wiphy,
 
 	trace_cfg80211_radar_event(wiphy, chandef, offchan);
 
-	/* only set the chandef supplied channel to unavailable, in
-	 * case the radar is detected on only one of multiple channels
-	 * spanned by the chandef.
-	 */
+	 
 	cfg80211_set_dfs_state(wiphy, chandef, NL80211_DFS_UNAVAILABLE);
 
 	if (offchan)
@@ -1010,7 +976,7 @@ void cfg80211_cac_event(struct net_device *netdev,
 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wiphy);
 	unsigned long timeout;
 
-	/* not yet supported */
+	 
 	if (wdev->valid_links)
 		return;
 
@@ -1139,11 +1105,11 @@ cfg80211_start_background_radar_detection(struct cfg80211_registered_device *rde
 				     NL80211_EXT_FEATURE_RADAR_BACKGROUND))
 		return -EOPNOTSUPP;
 
-	/* Offchannel chain already locked by another wdev */
+	 
 	if (rdev->background_radar_wdev && rdev->background_radar_wdev != wdev)
 		return -EBUSY;
 
-	/* CAC already in progress on the offchannel chain */
+	 
 	if (rdev->background_radar_wdev == wdev &&
 	    delayed_work_pending(&rdev->background_cac_done_wk))
 		return -EBUSY;
@@ -1157,7 +1123,7 @@ cfg80211_start_background_radar_detection(struct cfg80211_registered_device *rde
 		cac_time_ms = IEEE80211_DFS_MIN_CAC_TIME_MS;
 
 	rdev->background_radar_chandef = *chandef;
-	rdev->background_radar_wdev = wdev; /* Get offchain ownership */
+	rdev->background_radar_wdev = wdev;  
 
 	__cfg80211_background_cac_event(rdev, wdev, chandef,
 					NL80211_RADAR_CAC_STARTED);
@@ -1178,7 +1144,7 @@ void cfg80211_stop_background_radar_detection(struct wireless_dev *wdev)
 		return;
 
 	rdev_set_radar_background(rdev, NULL);
-	rdev->background_radar_wdev = NULL; /* Release offchain ownership */
+	rdev->background_radar_wdev = NULL;  
 
 	__cfg80211_background_cac_event(rdev, wdev,
 					&rdev->background_radar_chandef,

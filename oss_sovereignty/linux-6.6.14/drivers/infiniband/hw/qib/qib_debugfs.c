@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2013 - 2017 Intel Corporation.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
 #include <linux/kernel.h>
@@ -88,7 +58,7 @@ static void *_opcode_stats_seq_next(struct seq_file *s, void *v, loff_t *pos)
 
 static void _opcode_stats_seq_stop(struct seq_file *s, void *v)
 {
-	/* nothing allocated */
+	 
 }
 
 static int _opcode_stats_seq_show(struct seq_file *s, void *v)
@@ -144,7 +114,7 @@ static void *_ctx_stats_seq_next(struct seq_file *s, void *v, loff_t *pos)
 
 static void _ctx_stats_seq_stop(struct seq_file *s, void *v)
 {
-	/* nothing allocated */
+	 
 }
 
 static int _ctx_stats_seq_show(struct seq_file *s, void *v)
@@ -186,7 +156,7 @@ static void *_qp_stats_seq_start(struct seq_file *s, loff_t *pos)
 
 	iter = rvt_qp_iter_init(s->private, 0, NULL);
 
-	/* stop calls rcu_read_unlock */
+	 
 	rcu_read_lock();
 
 	if (!iter)

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AXI clkgen driver
- *
- * Copyright 2012-2013 Analog Devices Inc.
- *  Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/clk-provider.h>
@@ -171,7 +166,7 @@ again:
 		}
 	}
 
-	/* Lets see if we find a better setting in fractional mode */
+	 
 	if (fract_shift == 0) {
 		fract_shift = 3;
 		goto again;

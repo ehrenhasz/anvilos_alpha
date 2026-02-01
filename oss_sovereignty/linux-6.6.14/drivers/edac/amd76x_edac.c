@@ -1,16 +1,4 @@
-/*
- * AMD 76x Memory Controller kernel module
- * (C) 2003 Linux Networx (http://lnxi.com)
- * This file may be distributed under the terms of the
- * GNU General Public License.
- *
- * Written by Thayne Harbaugh
- * Based on work by Dan Hollis <goemon at anime dot net> and others.
- *	http://www.anime.net/~goemon/linux-ecc/
- *
- * $Id: edac_amd76x.c,v 1.4.2.5 2005/10/05 00:43:44 dsp_llnl Exp $
- *
- */
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -30,44 +18,13 @@
 #define AMD76X_NR_CSROWS 8
 #define AMD76X_NR_DIMMS  4
 
-/* AMD 76x register addresses - device 0 function 0 - PCI bridge */
+ 
 
-#define AMD76X_ECC_MODE_STATUS	0x48	/* Mode and status of ECC (32b)
-					 *
-					 * 31:16 reserved
-					 * 15:14 SERR enabled: x1=ue 1x=ce
-					 * 13    reserved
-					 * 12    diag: disabled, enabled
-					 * 11:10 mode: dis, EC, ECC, ECC+scrub
-					 *  9:8  status: x1=ue 1x=ce
-					 *  7:4  UE cs row
-					 *  3:0  CE cs row
-					 */
+#define AMD76X_ECC_MODE_STATUS	0x48	 
 
-#define AMD76X_DRAM_MODE_STATUS	0x58	/* DRAM Mode and status (32b)
-					 *
-					 * 31:26 clock disable 5 - 0
-					 * 25    SDRAM init
-					 * 24    reserved
-					 * 23    mode register service
-					 * 22:21 suspend to RAM
-					 * 20    burst refresh enable
-					 * 19    refresh disable
-					 * 18    reserved
-					 * 17:16 cycles-per-refresh
-					 * 15:8  reserved
-					 *  7:0  x4 mode enable 7 - 0
-					 */
+#define AMD76X_DRAM_MODE_STATUS	0x58	 
 
-#define AMD76X_MEM_BASE_ADDR	0xC0	/* Memory base address (8 x 32b)
-					 *
-					 * 31:23 chip-select base
-					 * 22:16 reserved
-					 * 15:7  chip-select mask
-					 *  6:3  reserved
-					 *  2:1  address mode
-					 *  0    chip-select enable
-					 */
+#define AMD76X_MEM_BASE_ADDR	0xC0	 
 
 struct amd76x_error_info {
 	u32 ecc_mode_status;
@@ -91,14 +48,7 @@ static const struct amd76x_dev_info amd76x_devs[] = {
 
 static struct edac_pci_ctl_info *amd76x_pci;
 
-/**
- *	amd76x_get_error_info	-	fetch error information
- *	@mci: Memory controller
- *	@info: Info to fill in
- *
- *	Fetch and store the AMD76x ECC status. Clear pending status
- *	on the chip so that further errors will be reported
- */
+ 
 static void amd76x_get_error_info(struct mem_ctl_info *mci,
 				struct amd76x_error_info *info)
 {
@@ -117,16 +67,7 @@ static void amd76x_get_error_info(struct mem_ctl_info *mci,
 				 (u32) BIT(9), (u32) BIT(9));
 }
 
-/**
- *	amd76x_process_error_info	-	Error check
- *	@mci: Memory controller
- *	@info: Previously fetched information from chip
- *	@handle_errors: 1 if we should do recovery
- *
- *	Process the chip state and decide if an error has occurred.
- *	A return of 1 indicates an error. Also if handle_errors is true
- *	then attempt to handle and clean up after the error
- */
+ 
 static int amd76x_process_error_info(struct mem_ctl_info *mci,
 				struct amd76x_error_info *info,
 				int handle_errors)
@@ -136,9 +77,7 @@ static int amd76x_process_error_info(struct mem_ctl_info *mci,
 
 	error_found = 0;
 
-	/*
-	 *      Check for an uncorrectable error
-	 */
+	 
 	if (info->ecc_mode_status & BIT(8)) {
 		error_found = 1;
 
@@ -151,9 +90,7 @@ static int amd76x_process_error_info(struct mem_ctl_info *mci,
 		}
 	}
 
-	/*
-	 *      Check for a correctable error
-	 */
+	 
 	if (info->ecc_mode_status & BIT(9)) {
 		error_found = 1;
 
@@ -169,13 +106,7 @@ static int amd76x_process_error_info(struct mem_ctl_info *mci,
 	return error_found;
 }
 
-/**
- *	amd76x_check	-	Poll the controller
- *	@mci: Memory controller
- *
- *	Called by the poll handlers this function reads the status
- *	from the controller and checks for errors.
- */
+ 
 static void amd76x_check(struct mem_ctl_info *mci)
 {
 	struct amd76x_error_info info;
@@ -195,7 +126,7 @@ static void amd76x_init_csrows(struct mem_ctl_info *mci, struct pci_dev *pdev,
 		csrow = mci->csrows[index];
 		dimm = csrow->channels[0]->dimm;
 
-		/* find the DRAM Chip Select Base address and mask */
+		 
 		pci_read_config_dword(pdev,
 				AMD76X_MEM_BASE_ADDR + (index * 4), &mba);
 
@@ -216,15 +147,7 @@ static void amd76x_init_csrows(struct mem_ctl_info *mci, struct pci_dev *pdev,
 	}
 }
 
-/**
- *	amd76x_probe1	-	Perform set up for detected device
- *	@pdev; PCI device detected
- *	@dev_idx: Device type index
- *
- *	We have found an AMD76x and now need to set up the memory
- *	controller status reporting. We configure and set up the
- *	memory controller reporting and claim the device.
- */
+ 
 static int amd76x_probe1(struct pci_dev *pdev, int dev_idx)
 {
 	static const enum edac_type ems_modes[] = {
@@ -267,17 +190,15 @@ static int amd76x_probe1(struct pci_dev *pdev, int dev_idx)
 	mci->ctl_page_to_phys = NULL;
 
 	amd76x_init_csrows(mci, pdev, ems_modes[ems_mode]);
-	amd76x_get_error_info(mci, &discard);	/* clear counters */
+	amd76x_get_error_info(mci, &discard);	 
 
-	/* Here we assume that we will never see multiple instances of this
-	 * type of memory controller.  The ID is therefore hardcoded to 0.
-	 */
+	 
 	if (edac_mc_add_mc(mci)) {
 		edac_dbg(3, "failed edac_mc_add_mc()\n");
 		goto fail;
 	}
 
-	/* allocating generic PCI control info */
+	 
 	amd76x_pci = edac_pci_create_generic_ctl(&pdev->dev, EDAC_MOD_STR);
 	if (!amd76x_pci) {
 		printk(KERN_WARNING
@@ -288,7 +209,7 @@ static int amd76x_probe1(struct pci_dev *pdev, int dev_idx)
 			__func__);
 	}
 
-	/* get this far and it's successful */
+	 
 	edac_dbg(3, "success\n");
 	return 0;
 
@@ -297,24 +218,17 @@ fail:
 	return -ENODEV;
 }
 
-/* returns count (>= 0), or negative on error */
+ 
 static int amd76x_init_one(struct pci_dev *pdev,
 			   const struct pci_device_id *ent)
 {
 	edac_dbg(0, "\n");
 
-	/* don't need to call pci_enable_device() */
+	 
 	return amd76x_probe1(pdev, ent->driver_data);
 }
 
-/**
- *	amd76x_remove_one	-	driver shutdown
- *	@pdev: PCI device being handed back
- *
- *	Called when the driver is unloaded. Find the matching mci
- *	structure for the device then delete the mci and free the
- *	resources.
- */
+ 
 static void amd76x_remove_one(struct pci_dev *pdev)
 {
 	struct mem_ctl_info *mci;
@@ -339,7 +253,7 @@ static const struct pci_device_id amd76x_pci_tbl[] = {
 	 AMD761},
 	{
 	 0,
-	 }			/* 0 terminated list. */
+	 }			 
 };
 
 MODULE_DEVICE_TABLE(pci, amd76x_pci_tbl);
@@ -353,7 +267,7 @@ static struct pci_driver amd76x_driver = {
 
 static int __init amd76x_init(void)
 {
-       /* Ensure that the OPSTATE is set correctly for POLL or NMI */
+        
        opstate_init();
 
 	return pci_register_driver(&amd76x_driver);

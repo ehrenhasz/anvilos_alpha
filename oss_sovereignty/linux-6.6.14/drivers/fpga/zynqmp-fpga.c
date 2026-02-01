@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2019 Xilinx, Inc.
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/fpga/fpga-mgr.h>
@@ -12,14 +10,10 @@
 #include <linux/string.h>
 #include <linux/firmware/xlnx-zynqmp.h>
 
-/* Constant Definitions */
+ 
 #define IXR_FPGA_DONE_MASK	BIT(3)
 
-/**
- * struct zynqmp_fpga_priv - Private data structure
- * @dev:	Device data structure
- * @flags:	flags which is used to identify the bitfile type
- */
+ 
 struct zynqmp_fpga_priv {
 	struct device *dev;
 	u32 flags;
@@ -54,7 +48,7 @@ static int zynqmp_fpga_ops_write(struct fpga_manager *mgr,
 
 	memcpy(kbuf, buf, size);
 
-	wmb(); /* ensure all writes are done before initiate FW call */
+	wmb();  
 
 	if (priv->flags & FPGA_MGR_PARTIAL_RECONFIG)
 		eemi_flags |= XILINX_ZYNQMP_PM_FPGA_PARTIAL;

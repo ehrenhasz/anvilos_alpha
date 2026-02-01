@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * lnbp21.c - driver for lnb supply and control ic lnbp21
- *
- * Copyright (C) 2006, 2009 Oliver Endriss <o.endriss@gmx.de>
- * Copyright (C) 2009 Igor M. Liplianin <liplianin@netup.ru>
- *
- * the project's page is at https://linuxtv.org
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/errno.h>
 #include <linux/init.h>
@@ -101,10 +94,10 @@ static int lnbp21_set_tone(struct dvb_frontend *fe,
 
 static void lnbp21_release(struct dvb_frontend *fe)
 {
-	/* LNBP power off */
+	 
 	lnbp21_set_voltage(fe, SEC_VOLTAGE_OFF);
 
-	/* free data */
+	 
 	kfree(fe->sec_priv);
 	fe->sec_priv = NULL;
 }
@@ -117,31 +110,31 @@ static struct dvb_frontend *lnbx2x_attach(struct dvb_frontend *fe,
 	if (!lnbp21)
 		return NULL;
 
-	/* default configuration */
+	 
 	lnbp21->config = config;
 	lnbp21->i2c = i2c;
 	lnbp21->i2c_addr = i2c_addr;
 	fe->sec_priv = lnbp21;
 
-	/* bits which should be forced to '1' */
+	 
 	lnbp21->override_or = override_set;
 
-	/* bits which should be forced to '0' */
+	 
 	lnbp21->override_and = ~override_clear;
 
-	/* detect if it is present or not */
+	 
 	if (lnbp21_set_voltage(fe, SEC_VOLTAGE_OFF)) {
 		kfree(lnbp21);
 		return NULL;
 	}
 
-	/* install release callback */
+	 
 	fe->ops.release_sec = lnbp21_release;
 
-	/* override frontend ops */
+	 
 	fe->ops.set_voltage = lnbp21_set_voltage;
 	fe->ops.enable_high_lnb_voltage = lnbp21_enable_high_lnb_voltage;
-	if (!(override_clear & LNBH24_TEN)) /*22kHz logic controlled by demod*/
+	if (!(override_clear & LNBH24_TEN))  
 		fe->ops.set_tone = lnbp21_set_tone;
 	printk(KERN_INFO "LNBx2x attached on addr=%x\n", lnbp21->i2c_addr);
 

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL8723E_REG_H__
 #define __RTL8723E_REG_H__
@@ -502,8 +502,8 @@
 #define	IMR_OCPINT					BIT(1)
 #define	IMR_WLANOFF					BIT(0)
 
-/* 8723E series PCIE Host IMR/ISR bit */
-/* IMR DW0 Bit 0-31 */
+ 
+ 
 #define	PHIMR_TIMEOUT2					BIT(31)
 #define	PHIMR_TIMEOUT1					BIT(30)
 #define	PHIMR_PSTIMEOUT				BIT(29)
@@ -537,7 +537,7 @@
 #define	PHIMR_RDU						BIT(1)
 #define	PHIMR_ROK						BIT(0)
 
-/* PCIE Host Interrupt Status Extension bit */
+ 
 #define	PHIMR_BCNDMAINT7				BIT(23)
 #define	PHIMR_BCNDMAINT6				BIT(22)
 #define	PHIMR_BCNDMAINT5				BIT(21)
@@ -546,12 +546,12 @@
 #define	PHIMR_BCNDOK6					BIT(18)
 #define	PHIMR_BCNDOK5					BIT(17)
 #define	PHIMR_BCNDOK4					BIT(16)
-/* bit12-15: RSVD */
+ 
 #define	PHIMR_TXERR					BIT(11)
 #define	PHIMR_RXERR					BIT(10)
 #define	PHIMR_TXFOVW					BIT(9)
 #define	PHIMR_RXFOVW					BIT(8)
-/* bit2-7: RSVD */
+ 
 #define	PHIMR_OCPINT					BIT(1)
 
 #define	HWSET_MAX_SIZE				256
@@ -2086,13 +2086,13 @@
 #define	TCHECK_TXSTATUS			500
 #define	TUPDATE_RXCOUNTER		100
 
-/* 2 EFUSE_TEST (For RTL8723 partially) */
+ 
 #define EFUSE_SEL(x)					(((x) & 0x3) << 8)
 #define EFUSE_SEL_MASK				0x300
 #define EFUSE_WIFI_SEL_0				0x0
-/* Enable GPIO[9] as WiFi HW PDn source*/
+ 
 #define	WL_HWPDN_EN					BIT(0)
-/* WiFi HW PDn polarity control*/
+ 
 #define	WL_HWPDN_SL					BIT(1)
 
 #endif

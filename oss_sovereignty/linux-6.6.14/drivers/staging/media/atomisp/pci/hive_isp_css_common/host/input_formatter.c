@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2010-2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include "system_global.h"
 
@@ -25,7 +13,7 @@
 
 #ifndef __INLINE_INPUT_FORMATTER__
 #include "input_formatter_private.h"
-#endif /* __INLINE_INPUT_FORMATTER__ */
+#endif  
 
 static const unsigned int input_formatter_alignment[N_INPUT_FORMATTER_ID] = {
 	ISP_VEC_ALIGN, ISP_VEC_ALIGN, HIVE_ISP_CTRL_DATA_BYTES
@@ -52,7 +40,7 @@ const u8 HIVE_IF_SWITCH_CODE[N_INPUT_FORMATTER_ID] = {
 	HIVE_INPUT_SWITCH_SELECT_STR_TO_MEM
 };
 
-/* MW Should be part of system_global.h, where we have the main enumeration */
+ 
 static const bool HIVE_IF_BIN_COPY[N_INPUT_FORMATTER_ID] = {
 	false, false, false, true
 };
@@ -68,10 +56,7 @@ void input_formatter_rst(
 	addr = HIVE_IF_SRST_ADDRESS[ID];
 	rst = HIVE_IF_SRST_MASK[ID];
 
-	/* TEMPORARY HACK: THIS RESET BREAKS THE METADATA FEATURE
-	 * WICH USES THE STREAM2MEMRY BLOCK.
-	 * MUST BE FIXED PROPERLY
-	 */
+	 
 	if (!HIVE_IF_BIN_COPY[ID]) {
 		input_formatter_reg_store(ID, addr, rst);
 	}
@@ -93,7 +78,7 @@ void input_formatter_set_fifo_blocking_mode(
 {
 	assert(ID < N_INPUT_FORMATTER_ID);
 
-	/* cnd_input_formatter_reg_store() */
+	 
 	if (!HIVE_IF_BIN_COPY[ID]) {
 		input_formatter_reg_store(ID,
 					  HIVE_IF_BLOCK_FIFO_NO_REQ_ADDRESS, enable);
@@ -108,7 +93,7 @@ void input_formatter_get_switch_state(
 	assert(ID < N_INPUT_FORMATTER_ID);
 	assert(state);
 
-	/* We'll change this into an intelligent function to get switch info per IF */
+	 
 	(void)ID;
 
 	state->if_input_switch_lut_reg[0] = gp_device_reg_load(GP_DEVICE0_ID,
@@ -141,10 +126,7 @@ void input_formatter_get_state(
 {
 	assert(ID < N_INPUT_FORMATTER_ID);
 	assert(state);
-	/*
-		state->reset = input_formatter_reg_load(ID,
-			HIVE_IF_RESET_ADDRESS);
-	 */
+	 
 	state->start_line = input_formatter_reg_load(ID,
 			    HIVE_IF_START_LINE_ADDRESS);
 	state->start_column = input_formatter_reg_load(ID,
@@ -181,7 +163,7 @@ void input_formatter_get_state(
 					HIVE_IF_BLOCK_FIFO_NO_REQ_ADDRESS);
 	state->ver_deinterleaving = input_formatter_reg_load(ID,
 				    HIVE_IF_V_DEINTERLEAVING_ADDRESS);
-	/* FSM */
+	 
 	state->fsm_sync_status = input_formatter_reg_load(ID,
 				 HIVE_IF_FSM_SYNC_STATUS);
 	state->fsm_sync_counter = input_formatter_reg_load(ID,

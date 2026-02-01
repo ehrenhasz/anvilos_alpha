@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2021 Intel Corporation. All rights reserved. */
+
+ 
 #include <linux/platform_device.h>
 #include <linux/module.h>
 #include <linux/device.h>
@@ -17,22 +17,19 @@ struct cxl_cxims_data {
 	u64 xormaps[] __counted_by(nr_maps);
 };
 
-/*
- * Find a targets entry (n) in the host bridge interleave list.
- * CXL Specification 3.0 Table 9-22
- */
+ 
 static int cxl_xor_calc_n(u64 hpa, struct cxl_cxims_data *cximsd, int iw,
 			  int ig)
 {
 	int i = 0, n = 0;
 	u8 eiw;
 
-	/* IW: 2,4,6,8,12,16 begin building 'n' using xormaps */
+	 
 	if (iw != 3) {
 		for (i = 0; i < cximsd->nr_maps; i++)
 			n |= (hweight64(hpa & cximsd->xormaps[i]) & 1) << i;
 	}
-	/* IW: 3,6,12 add a modulo calculation to 'n' */
+	 
 	if (!is_power_of_2(iw)) {
 		if (ways_to_eiw(iw, &eiw))
 			return -1;
@@ -59,7 +56,7 @@ static struct cxl_dport *cxl_hb_xor(struct cxl_root_decoder *cxlrd, int pos)
 
 	hpa = cxlrd->res->start + pos * ig;
 
-	/* Entry (n) is 0 for no interleave (iw == 1) */
+	 
 	if (iw != 1)
 		n = cxl_xor_calc_n(hpa, cximsd, iw, ig);
 
@@ -90,16 +87,16 @@ static int cxl_parse_cxims(union acpi_subtable_headers *header, void *arg,
 	if (rc)
 		return rc;
 
-	/* Does this CXIMS entry apply to the given CXL Window? */
+	 
 	if (hbig != cxld->interleave_granularity)
 		return 0;
 
-	/* IW 1,3 do not use xormaps and skip this parsing entirely */
+	 
 	if (is_power_of_2(cxld->interleave_ways))
-		/* 2, 4, 8, 16 way */
+		 
 		nr_maps = ilog2(cxld->interleave_ways);
 	else
-		/* 6, 12 way */
+		 
 		nr_maps = ilog2(cxld->interleave_ways / 3);
 
 	if (cxims->nr_xormaps < nr_maps) {
@@ -183,10 +180,7 @@ static int cxl_acpi_cfmws_verify(struct device *dev,
 	return 0;
 }
 
-/*
- * Note, @dev must be the first member, see 'struct cxl_chbs_context'
- * and mock_acpi_table_parse_cedt()
- */
+ 
 struct cxl_cfmws_context {
 	struct device *dev;
 	struct cxl_port *root_port;
@@ -242,7 +236,7 @@ static int cxl_parse_cfmws(union acpi_subtable_headers *header, void *arg,
 	res->end = cfmws->base_hpa + cfmws->window_size - 1;
 	res->flags = IORESOURCE_MEM;
 
-	/* add to the local resource tracking to establish a sort order */
+	 
 	rc = insert_resource(cxl_res, res);
 	if (rc)
 		goto err_insert;
@@ -264,10 +258,7 @@ static int cxl_parse_cfmws(union acpi_subtable_headers *header, void *arg,
 		.end = res->end,
 	};
 	cxld->interleave_ways = ways;
-	/*
-	 * Minimize the x1 granularity to advertise support for any
-	 * valid region granularity
-	 */
+	 
 	if (ways == 1)
 		ig = CXL_DECODER_MIN_GRANULARITY;
 	cxld->interleave_granularity = ig;
@@ -326,7 +317,7 @@ __mock struct acpi_device *to_cxl_host_bridge(struct device *host,
 	return NULL;
 }
 
-/* Note, @dev is used by mock_acpi_table_parse_cedt() */
+ 
 struct cxl_chbs_context {
 	struct device *dev;
 	unsigned long long uid;
@@ -419,11 +410,7 @@ static int add_host_bridge_dport(struct device *match, void *arg)
 	pci_root = acpi_pci_find_root(hb->handle);
 	bridge = pci_root->bus->bridge;
 
-	/*
-	 * In RCH mode, bind the component regs base to the dport. In
-	 * VH mode it will be bound to the CXL host bridge's port
-	 * object later in add_host_bridge_uport().
-	 */
+	 
 	if (ctx.cxl_version == ACPI_CEDT_CHBS_VERSION_CXL11) {
 		dev_dbg(match, "RCRB found for UID %lld: %pa\n", ctx.uid,
 			&ctx.base);
@@ -440,10 +427,7 @@ static int add_host_bridge_dport(struct device *match, void *arg)
 	return 0;
 }
 
-/*
- * A host bridge is a dport to a CFMWS decode and it is a uport to the
- * dport (PCIe Root Ports) in the host bridge.
- */
+ 
 static int add_host_bridge_uport(struct device *match, void *arg)
 {
 	struct cxl_port *root_port = arg;
@@ -567,25 +551,7 @@ static void remove_cxl_resources(void *data)
 	}
 }
 
-/**
- * add_cxl_resources() - reflect CXL fixed memory windows in iomem_resource
- * @cxl_res: A standalone resource tree where each CXL window is a sibling
- *
- * Walk each CXL window in @cxl_res and add it to iomem_resource potentially
- * expanding its boundaries to ensure that any conflicting resources become
- * children. If a window is expanded it may then conflict with a another window
- * entry and require the window to be truncated or trimmed. Consider this
- * situation:
- *
- * |-- "CXL Window 0" --||----- "CXL Window 1" -----|
- * |--------------- "System RAM" -------------|
- *
- * ...where platform firmware has established as System RAM resource across 2
- * windows, but has left some portion of window 1 for dynamic CXL region
- * provisioning. In this case "Window 0" will span the entirety of the "System
- * RAM" span, and "CXL Window 1" is truncated to the remaining tail past the end
- * of that "System RAM" resource.
- */
+ 
 static int add_cxl_resources(struct resource *cxl_res)
 {
 	struct resource *res, *new, *next;
@@ -600,10 +566,7 @@ static int add_cxl_resources(struct resource *cxl_res)
 		new->flags = IORESOURCE_MEM;
 		new->desc = IORES_DESC_CXL;
 
-		/*
-		 * Record the public resource in the private cxl_res tree for
-		 * later removal.
-		 */
+		 
 		cxl_set_public_resource(res, new);
 
 		insert_resource_expand_to_fit(&iomem_resource, new);
@@ -698,16 +661,10 @@ static int cxl_acpi_probe(struct platform_device *pdev)
 	if (rc)
 		return rc;
 
-	/*
-	 * Populate the root decoders with their related iomem resource,
-	 * if present
-	 */
+	 
 	device_for_each_child(&root_port->dev, cxl_res, pair_cxl_resource);
 
-	/*
-	 * Root level scanned with host-bridge as dports, now scan host-bridges
-	 * for their role as CXL uports to their CXL-capable PCIe Root Ports.
-	 */
+	 
 	rc = bus_for_each_dev(adev->dev.bus, NULL, root_port,
 			      add_host_bridge_uport);
 	if (rc < 0)
@@ -719,7 +676,7 @@ static int cxl_acpi_probe(struct platform_device *pdev)
 	if (rc < 0)
 		return rc;
 
-	/* In case PCI is scanned before ACPI re-trigger memdev attach */
+	 
 	cxl_bus_rescan();
 	return 0;
 }
@@ -756,7 +713,7 @@ static void __exit cxl_acpi_exit(void)
 	cxl_bus_drain();
 }
 
-/* load before dax_hmem sees 'Soft Reserved' CXL ranges */
+ 
 subsys_initcall(cxl_acpi_init);
 module_exit(cxl_acpi_exit);
 MODULE_LICENSE("GPL v2");

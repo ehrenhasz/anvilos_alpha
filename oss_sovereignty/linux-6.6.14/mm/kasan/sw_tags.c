@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file contains core software tag-based KASAN code.
- *
- * Copyright (c) 2018 Google, Inc.
- * Author: Andrey Konovalov <andreyknvl@google.com>
- */
+
+ 
 
 #define pr_fmt(fmt) "kasan: " fmt
 
@@ -48,18 +43,7 @@ void __init kasan_init_sw_tags(void)
 		kasan_stack_collection_enabled() ? "on" : "off");
 }
 
-/*
- * If a preemption happens between this_cpu_read and this_cpu_write, the only
- * side effect is that we'll give a few allocated in different contexts objects
- * the same tag. Since tag-based KASAN is meant to be used a probabilistic
- * bug-detection debug feature, this doesn't have significant negative impact.
- *
- * Ideally the tags use strong randomness to prevent any attempts to predict
- * them during explicit exploit attempts. But strong randomness is expensive,
- * and we did an intentional trade-off to use a PRNG. This non-atomic RMW
- * sequence has in fact positive effect, since interrupts that randomly skew
- * PRNG at unpredictable points do only good.
- */
+ 
 u8 kasan_random_tag(void)
 {
 	u32 state = this_cpu_read(prng_state);
@@ -85,23 +69,7 @@ bool kasan_check_range(const void *addr, size_t size, bool write,
 
 	tag = get_tag((const void *)addr);
 
-	/*
-	 * Ignore accesses for pointers tagged with 0xff (native kernel
-	 * pointer tag) to suppress false positives caused by kmap.
-	 *
-	 * Some kernel code was written to account for archs that don't keep
-	 * high memory mapped all the time, but rather map and unmap particular
-	 * pages when needed. Instead of storing a pointer to the kernel memory,
-	 * this code saves the address of the page structure and offset within
-	 * that page for later use. Those pages are then mapped and unmapped
-	 * with kmap/kunmap when necessary and virt_to_page is used to get the
-	 * virtual address of the page. For arm64 (that keeps the high memory
-	 * mapped all the time), kmap is turned into a page_address call.
-
-	 * The issue is that with use of the page_address + virt_to_page
-	 * sequence the top byte value of the original pointer gets lost (gets
-	 * set to KASAN_TAG_KERNEL (0xFF)).
-	 */
+	 
 	if (tag == KASAN_TAG_KERNEL)
 		return true;
 

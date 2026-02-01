@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Helpers for IOMMU drivers implementing SVA
- */
+
+ 
 #include <linux/mmu_context.h>
 #include <linux/mutex.h>
 #include <linux/sched/mm.h>
@@ -11,7 +9,7 @@
 
 static DEFINE_MUTEX(iommu_sva_lock);
 
-/* Allocate a PASID for the mm within range (inclusive) */
+ 
 static int iommu_sva_alloc_pasid(struct mm_struct *mm, struct device *dev)
 {
 	ioasid_t pasid;
@@ -21,7 +19,7 @@ static int iommu_sva_alloc_pasid(struct mm_struct *mm, struct device *dev)
 		return -EBUSY;
 
 	mutex_lock(&iommu_sva_lock);
-	/* Is a PASID already associated with this mm? */
+	 
 	if (mm_valid_pasid(mm)) {
 		if (mm->pasid >= dev->iommu->max_pasids)
 			ret = -EOVERFLOW;
@@ -40,29 +38,14 @@ out:
 	return ret;
 }
 
-/**
- * iommu_sva_bind_device() - Bind a process address space to a device
- * @dev: the device
- * @mm: the mm to bind, caller must hold a reference to mm_users
- *
- * Create a bond between device and address space, allowing the device to
- * access the mm using the PASID returned by iommu_sva_get_pasid(). If a
- * bond already exists between @device and @mm, an additional internal
- * reference is taken. Caller must call iommu_sva_unbind_device()
- * to release each reference.
- *
- * iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA) must be called first, to
- * initialize the required SVA features.
- *
- * On error, returns an ERR_PTR value.
- */
+ 
 struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
 {
 	struct iommu_domain *domain;
 	struct iommu_sva *handle;
 	int ret;
 
-	/* Allocate mm->pasid if necessary. */
+	 
 	ret = iommu_sva_alloc_pasid(mm, dev);
 	if (ret)
 		return ERR_PTR(ret);
@@ -72,7 +55,7 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
 		return ERR_PTR(-ENOMEM);
 
 	mutex_lock(&iommu_sva_lock);
-	/* Search for an existing domain. */
+	 
 	domain = iommu_get_domain_for_dev_pasid(dev, mm->pasid,
 						IOMMU_DOMAIN_SVA);
 	if (IS_ERR(domain)) {
@@ -85,7 +68,7 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
 		goto out;
 	}
 
-	/* Allocate a new domain and set it on device pasid. */
+	 
 	domain = iommu_sva_domain_alloc(dev, mm);
 	if (!domain) {
 		ret = -ENOMEM;
@@ -113,14 +96,7 @@ out_unlock:
 }
 EXPORT_SYMBOL_GPL(iommu_sva_bind_device);
 
-/**
- * iommu_sva_unbind_device() - Remove a bond created with iommu_sva_bind_device
- * @handle: the handle returned by iommu_sva_bind_device()
- *
- * Put reference to a bond between device and address space. The device should
- * not be issuing any more transaction for this PASID. All outstanding page
- * requests for this PASID must have been flushed to the IOMMU.
- */
+ 
 void iommu_sva_unbind_device(struct iommu_sva *handle)
 {
 	struct iommu_domain *domain = handle->domain;
@@ -145,9 +121,7 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
 }
 EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
 
-/*
- * I/O page fault handler for SVA
- */
+ 
 enum iommu_page_response_code
 iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
 {
@@ -169,7 +143,7 @@ iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
 
 	vma = vma_lookup(mm, prm->addr);
 	if (!vma)
-		/* Unmapped area */
+		 
 		goto out_put_mm;
 
 	if (prm->perm & IOMMU_FAULT_PERM_READ)
@@ -189,7 +163,7 @@ iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
 		fault_flags |= FAULT_FLAG_USER;
 
 	if (access_flags & ~vma->vm_flags)
-		/* Access fault */
+		 
 		goto out_put_mm;
 
 	ret = handle_mm_fault(vma, prm->addr, fault_flags, NULL);

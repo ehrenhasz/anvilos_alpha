@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MIPI Camera Control Interface (CCI) register access helpers.
- *
- * Copyright (C) 2023 Hans de Goede <hansg@kernel.org>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/delay.h>

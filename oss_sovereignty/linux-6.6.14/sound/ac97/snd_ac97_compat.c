@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (C) 2016 Robert Jarzmik <robert.jarzmik@free.fr>
- */
+
+ 
 
 #include <linux/list.h>
 #include <linux/slab.h>

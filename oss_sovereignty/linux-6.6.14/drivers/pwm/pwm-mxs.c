@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2012 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -54,11 +52,7 @@ static int mxs_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	unsigned long long c;
 	unsigned int pol_bits;
 
-	/*
-	 * If the PWM channel is disabled, make sure to turn on the
-	 * clock before calling clk_get_rate() and writing to the
-	 * registers. Otherwise, just keep it enabled.
-	 */
+	 
 	if (!pwm_is_enabled(pwm)) {
 		ret = clk_prepare_enable(mxs->clk);
 		if (ret)
@@ -85,12 +79,7 @@ static int mxs_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	do_div(c, state->period);
 	duty_cycles = c;
 
-	/*
-	 * The data sheet the says registers must be written to in
-	 * this order (ACTIVEn, then PERIODn). Also, the new settings
-	 * only take effect at the beginning of a new period, avoiding
-	 * glitches.
-	 */
+	 
 
 	pol_bits = state->polarity == PWM_POLARITY_NORMAL ?
 		PERIOD_POLARITY_NORMAL : PERIOD_POLARITY_INVERSE;
@@ -101,10 +90,7 @@ static int mxs_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 
 	if (state->enabled) {
 		if (!pwm_is_enabled(pwm)) {
-			/*
-			 * The clock was enabled above. Just enable
-			 * the channel in the control register.
-			 */
+			 
 			writel(1 << pwm->hwpwm, mxs->base + PWM_CTRL + SET);
 		}
 	} else {
@@ -145,7 +131,7 @@ static int mxs_pwm_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* FIXME: Only do this if the PWM isn't already running */
+	 
 	ret = stmp_reset_block(mxs->base);
 	if (ret)
 		return dev_err_probe(&pdev->dev, ret, "failed to reset PWM\n");
@@ -161,7 +147,7 @@ static int mxs_pwm_probe(struct platform_device *pdev)
 
 static const struct of_device_id mxs_pwm_dt_ids[] = {
 	{ .compatible = "fsl,imx23-pwm", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mxs_pwm_dt_ids);
 

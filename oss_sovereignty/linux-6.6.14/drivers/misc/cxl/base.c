@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2014 IBM Corp.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/rcupdate.h>
@@ -11,7 +9,7 @@
 #include <linux/of_platform.h>
 #include "cxl.h"
 
-/* protected by rcu */
+ 
 static struct cxl_calls *cxl_calls;
 
 atomic_t cxl_use_count = ATOMIC_INIT(0);
@@ -36,11 +34,11 @@ static inline void cxl_calls_put(struct cxl_calls *calls)
 {
 	BUG_ON(calls != cxl_calls);
 
-	/* we don't need to rcu this, as we hold a reference to the module */
+	 
 	module_put(cxl_calls->owner);
 }
 
-#else /* !defined CONFIG_CXL_MODULE */
+#else  
 
 static inline struct cxl_calls *cxl_calls_get(void)
 {
@@ -49,9 +47,9 @@ static inline struct cxl_calls *cxl_calls_get(void)
 
 static inline void cxl_calls_put(struct cxl_calls *calls) { }
 
-#endif /* CONFIG_CXL_MODULE */
+#endif  
 
-/* AFU refcount management */
+ 
 struct cxl_afu *cxl_afu_get(struct cxl_afu *afu)
 {
 	return (get_device(&afu->dev) == NULL) ? NULL : afu;
@@ -109,9 +107,7 @@ static int __init cxl_base_init(void)
 	struct platform_device *dev;
 	int count = 0;
 
-	/*
-	 * Scan for compatible devices in guest only
-	 */
+	 
 	if (cpu_has_feature(CPU_FTR_HVMODE))
 		return 0;
 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef SELFTEST_ENGINE_H
 #define SELFTEST_ENGINE_H

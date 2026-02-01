@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Intel Corporation
- * Author: Johannes Berg <johannes@sipsolutions.net>
- */
+
+ 
 #include <linux/types.h>
 #include <linux/slab.h>
 #include <linux/logic_iomem.h>
@@ -81,7 +78,7 @@ static void real_iounmap(volatile void __iomem *addr)
 	WARN(1, "invalid iounmap for addr 0x%llx\n",
 	     (unsigned long long)(uintptr_t __force)addr);
 }
-#endif /* CONFIG_INDIRECT_IOMEM_FALLBACK */
+#endif  
 
 void __iomem *ioremap(phys_addr_t offset, size_t size)
 {
@@ -213,7 +210,7 @@ static void real_memcpy_toio(volatile void __iomem *addr, const void *buffer,
 	WARN(1, "Invalid memcpy_toio at address 0x%llx\n",
 	     (unsigned long long)(uintptr_t __force)addr);
 }
-#endif /* CONFIG_INDIRECT_IOMEM_FALLBACK */
+#endif  
 
 #define MAKE_OP(op, sz) 						\
 u##sz __raw_read ## op(const volatile void __iomem *addr)		\

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #define _GNU_SOURCE
 #include <linux/compiler.h>
@@ -20,7 +20,7 @@
 #include "../progs/test_user_ringbuf.h"
 
 static const long c_sample_size = sizeof(struct sample) + BPF_RINGBUF_HDR_SZ;
-static const long c_ringbuf_size = 1 << 12; /* 1 small page */
+static const long c_ringbuf_size = 1 << 12;  
 static const long c_max_entries = c_ringbuf_size / c_sample_size;
 
 static void drain_current_samples(void)
@@ -32,7 +32,7 @@ static int write_samples(struct user_ring_buffer *ringbuf, uint32_t num_samples)
 {
 	int i, err = 0;
 
-	/* Write some number of samples to the ring buffer. */
+	 
 	for (i = 0; i < num_samples; i++) {
 		struct sample *entry;
 		int read;
@@ -49,9 +49,7 @@ static int write_samples(struct user_ring_buffer *ringbuf, uint32_t num_samples)
 
 		read = snprintf(entry->comm, sizeof(entry->comm), "%u", i);
 		if (read <= 0) {
-			/* Assert on the error path to avoid spamming logs with
-			 * mostly success messages.
-			 */
+			 
 			ASSERT_GT(read, 0, "snprintf_comm");
 			err = read;
 			user_ring_buffer__discard(ringbuf, entry);
@@ -107,7 +105,7 @@ static void test_user_ringbuf_mappings(void)
 		return;
 
 	rb_fd = bpf_map__fd(skel->maps.user_ringbuf);
-	/* cons_pos can be mapped R/O, can't add +X with mprotect. */
+	 
 	mmap_ptr = mmap(NULL, page_size, PROT_READ, MAP_SHARED, rb_fd, 0);
 	ASSERT_OK_PTR(mmap_ptr, "ro_cons_pos");
 	ASSERT_ERR(mprotect(mmap_ptr, page_size, PROT_WRITE), "write_cons_pos_protect");
@@ -117,7 +115,7 @@ static void test_user_ringbuf_mappings(void)
 	ASSERT_ERR(err, "wr_prod_pos_err");
 	ASSERT_OK(munmap(mmap_ptr, page_size), "unmap_ro_cons");
 
-	/* prod_pos can be mapped RW, can't add +X with mprotect. */
+	 
 	mmap_ptr = mmap(NULL, page_size, PROT_READ | PROT_WRITE, MAP_SHARED,
 			rb_fd, page_size);
 	ASSERT_OK_PTR(mmap_ptr, "rw_prod_pos");
@@ -126,7 +124,7 @@ static void test_user_ringbuf_mappings(void)
 	ASSERT_ERR(err, "wr_prod_pos_err");
 	ASSERT_OK(munmap(mmap_ptr, page_size), "unmap_rw_prod");
 
-	/* data pages can be mapped RW, can't add +X with mprotect. */
+	 
 	mmap_ptr = mmap(NULL, page_size, PROT_WRITE, MAP_SHARED, rb_fd,
 			2 * page_size);
 	ASSERT_OK_PTR(mmap_ptr, "rw_data");
@@ -152,7 +150,7 @@ static int load_skel_create_ringbufs(struct user_ringbuf_success **skel_out,
 	if (!skel)
 		return err;
 
-	/* only trigger BPF program for current process */
+	 
 	skel->bss->pid = getpid();
 
 	if (kern_ringbuf_out) {
@@ -209,19 +207,19 @@ static void manually_write_test_invalid_sample(struct user_ringbuf_success *skel
 
 	ASSERT_EQ(skel->bss->read, 0, "num_samples_before_bad_sample");
 
-	/* Map the producer_pos as RW. */
+	 
 	producer_pos_ptr = mmap(NULL, page_size, PROT_READ | PROT_WRITE,
 				MAP_SHARED, rb_fd, page_size);
 	ASSERT_OK_PTR(producer_pos_ptr, "producer_pos_ptr");
 
-	/* Map the data pages as RW. */
+	 
 	data_ptr = mmap(NULL, page_size, PROT_WRITE, MAP_SHARED, rb_fd, 2 * page_size);
 	ASSERT_OK_PTR(data_ptr, "rw_data");
 
 	memset(data_ptr, 0, BPF_RINGBUF_HDR_SZ);
 	*(__u32 *)data_ptr = size;
 
-	/* Synchronizes with smp_load_acquire() in __bpf_user_ringbuf_peek() in the kernel. */
+	 
 	smp_store_release(producer_pos_ptr, producer_pos + BPF_RINGBUF_HDR_SZ);
 
 	drain_current_samples();
@@ -339,7 +337,7 @@ static void test_user_ringbuf_post_alignment_autoadjust(void)
 	if (!ASSERT_OK(err, "ringbuf_align_autoadjust_skel"))
 		return;
 
-	/* libbpf should automatically round any sample up to an 8-byte alignment. */
+	 
 	sample = user_ring_buffer__reserve(ringbuf, sizeof(*sample) + 1);
 	ASSERT_OK_PTR(sample, "reserve_autoaligned");
 	user_ring_buffer__submit(ringbuf, sample);
@@ -384,7 +382,7 @@ static void test_user_ringbuf_discards_properly_ignored(void)
 	ASSERT_EQ(skel->bss->read, 0, "num_samples_read_before");
 
 	while (1) {
-		/* Write samples until the buffer is full. */
+		 
 		token = user_ring_buffer__reserve(ringbuf, sizeof(*token));
 		if (!token)
 			break;
@@ -396,14 +394,12 @@ static void test_user_ringbuf_discards_properly_ignored(void)
 	if (!ASSERT_GE(num_discarded, 0, "num_discarded"))
 		goto cleanup;
 
-	/* Should not read any samples, as they are all discarded. */
+	 
 	ASSERT_EQ(skel->bss->read, 0, "num_pre_kick");
 	drain_current_samples();
 	ASSERT_EQ(skel->bss->read, 0, "num_post_kick");
 
-	/* Now that the ring buffer has been drained, we should be able to
-	 * reserve another token.
-	 */
+	 
 	token = user_ring_buffer__reserve(ringbuf, sizeof(*token));
 
 	if (!ASSERT_OK_PTR(token, "new_token"))
@@ -435,9 +431,7 @@ static void test_user_ringbuf_loop(void)
 			? c_max_entries : remaining_samples;
 		err = write_samples(ringbuf, curr_samples);
 		if (err != 0) {
-			/* Assert inside of if statement to avoid flooding logs
-			 * on the success path.
-			 */
+			 
 			ASSERT_OK(err, "write_samples");
 			goto cleanup;
 		}
@@ -461,9 +455,7 @@ static int send_test_message(struct user_ring_buffer *ringbuf,
 
 	msg = user_ring_buffer__reserve(ringbuf, sizeof(*msg));
 	if (!msg) {
-		/* Assert on the error path to avoid spamming logs with mostly
-		 * success messages.
-		 */
+		 
 		ASSERT_OK_PTR(msg, "reserve_msg");
 		return -ENOMEM;
 	}
@@ -548,7 +540,7 @@ static void test_user_ringbuf_msg_protocol(void)
 
 		err = send_test_message(user_ringbuf, op, operand_64, operand_32);
 		if (err) {
-			/* Only assert on a failure to avoid spamming success logs. */
+			 
 			ASSERT_OK(err, "send_test_message");
 			goto cleanup;
 		}
@@ -587,9 +579,7 @@ cleanup:
 
 static void *kick_kernel_cb(void *arg)
 {
-	/* Kick the kernel, causing it to drain the ring buffer and then wake
-	 * up the test thread waiting on epoll.
-	 */
+	 
 	syscall(__NR_prlimit64);
 
 	return NULL;
@@ -616,7 +606,7 @@ static void test_user_ringbuf_blocking_reserve(void)
 	ASSERT_EQ(skel->bss->read, 0, "num_samples_read_before");
 
 	while (1) {
-		/* Write samples until the buffer is full. */
+		 
 		token = user_ring_buffer__reserve(ringbuf, sizeof(*token));
 		if (!token)
 			break;
@@ -630,10 +620,10 @@ static void test_user_ringbuf_blocking_reserve(void)
 	if (!ASSERT_GE(num_written, 0, "num_written"))
 		goto cleanup;
 
-	/* Should not have read any samples until the kernel is kicked. */
+	 
 	ASSERT_EQ(skel->bss->read, 0, "num_pre_kick");
 
-	/* We correctly time out after 1 second, without a sample. */
+	 
 	token = user_ring_buffer__reserve_blocking(ringbuf, sizeof(*token), 1000);
 	if (!ASSERT_EQ(token, NULL, "pre_kick_timeout_token"))
 		goto cleanup;
@@ -642,10 +632,7 @@ static void test_user_ringbuf_blocking_reserve(void)
 	if (!ASSERT_EQ(err, 0, "deferred_kick_thread\n"))
 		goto cleanup;
 
-	/* After spawning another thread that asychronously kicks the kernel to
-	 * drain the messages, we're able to block and successfully get a
-	 * sample once we receive an event notification.
-	 */
+	 
 	token = user_ring_buffer__reserve_blocking(ringbuf, sizeof(*token), 10000);
 
 	if (!ASSERT_OK_PTR(token, "block_token"))

@@ -53,7 +53,7 @@ static void nft_chain_filter_ipv4_fini(void)
 #else
 static inline void nft_chain_filter_ipv4_init(void) {}
 static inline void nft_chain_filter_ipv4_fini(void) {}
-#endif /* CONFIG_NF_TABLES_IPV4 */
+#endif  
 
 #ifdef CONFIG_NF_TABLES_ARP
 static unsigned int nft_do_chain_arp(void *priv, struct sk_buff *skb,
@@ -92,7 +92,7 @@ static void nft_chain_filter_arp_fini(void)
 #else
 static inline void nft_chain_filter_arp_init(void) {}
 static inline void nft_chain_filter_arp_fini(void) {}
-#endif /* CONFIG_NF_TABLES_ARP */
+#endif  
 
 #ifdef CONFIG_NF_TABLES_IPV6
 static unsigned int nft_do_chain_ipv6(void *priv,
@@ -137,7 +137,7 @@ static void nft_chain_filter_ipv6_fini(void)
 #else
 static inline void nft_chain_filter_ipv6_init(void) {}
 static inline void nft_chain_filter_ipv6_fini(void) {}
-#endif /* CONFIG_NF_TABLES_IPV6 */
+#endif  
 
 #ifdef CONFIG_NF_TABLES_INET
 static unsigned int nft_do_chain_inet(void *priv, struct sk_buff *skb,
@@ -169,7 +169,7 @@ static unsigned int nft_do_chain_inet_ingress(void *priv, struct sk_buff *skb,
 
 	switch (skb->protocol) {
 	case htons(ETH_P_IP):
-		/* Original hook is NFPROTO_NETDEV and NF_NETDEV_INGRESS. */
+		 
 		ingress_state.pf = NFPROTO_IPV4;
 		ingress_state.hook = NF_INET_INGRESS;
 		nft_set_pktinfo(&pkt, skb, &ingress_state);
@@ -224,7 +224,7 @@ static void nft_chain_filter_inet_fini(void)
 #else
 static inline void nft_chain_filter_inet_init(void) {}
 static inline void nft_chain_filter_inet_fini(void) {}
-#endif /* CONFIG_NF_TABLES_IPV6 */
+#endif  
 
 #if IS_ENABLED(CONFIG_NF_TABLES_BRIDGE)
 static unsigned int
@@ -281,7 +281,7 @@ static void nft_chain_filter_bridge_fini(void)
 #else
 static inline void nft_chain_filter_bridge_init(void) {}
 static inline void nft_chain_filter_bridge_fini(void) {}
-#endif /* CONFIG_NF_TABLES_BRIDGE */
+#endif  
 
 #ifdef CONFIG_NF_TABLES_NETDEV
 static unsigned int nft_do_chain_netdev(void *priv, struct sk_buff *skb,
@@ -344,12 +344,7 @@ static void nft_netdev_event(unsigned long event, struct net_device *dev,
 		return;
 	}
 
-	/* UNREGISTER events are also happening on netns exit.
-	 *
-	 * Although nf_tables core releases all tables/chains, only this event
-	 * handler provides guarantee that hook->ops.dev is still accessible,
-	 * so we cannot skip exiting net namespaces.
-	 */
+	 
 	__nft_release_basechain(ctx);
 }
 
@@ -419,7 +414,7 @@ static void nft_chain_filter_netdev_fini(void)
 #else
 static inline int nft_chain_filter_netdev_init(void) { return 0; }
 static inline void nft_chain_filter_netdev_fini(void) {}
-#endif /* CONFIG_NF_TABLES_NETDEV */
+#endif  
 
 int __init nft_chain_filter_init(void)
 {

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * multi.c -- Multifunction Composite driver
- *
- * Copyright (C) 2008 David Brownell
- * Copyright (C) 2008 Nokia Corporation
- * Copyright (C) 2009 Samsung Electronics
- * Author: Michal Nazarewicz (mina86@mina86.com)
- */
+
+ 
 
 
 #include <linux/kernel.h>
@@ -42,10 +35,10 @@ USB_GADGET_COMPOSITE_OPTIONS();
 
 USB_ETHERNET_MODULE_PARAMETERS();
 
-/***************************** Device Descriptor ****************************/
+ 
 
-#define MULTI_VENDOR_NUM	0x1d6b	/* Linux Foundation */
-#define MULTI_PRODUCT_NUM	0x0104	/* Multifunction Composite Gadget */
+#define MULTI_VENDOR_NUM	0x1d6b	 
+#define MULTI_PRODUCT_NUM	0x0104	 
 
 
 enum {
@@ -63,13 +56,13 @@ static struct usb_device_descriptor device_desc = {
 	.bLength =		sizeof device_desc,
 	.bDescriptorType =	USB_DT_DEVICE,
 
-	/* .bcdUSB = DYNAMIC */
+	 
 
-	.bDeviceClass =		USB_CLASS_MISC /* 0xEF */,
+	.bDeviceClass =		USB_CLASS_MISC  ,
 	.bDeviceSubClass =	2,
 	.bDeviceProtocol =	1,
 
-	/* Vendor and product id can be overridden by module parameters.  */
+	 
 	.idVendor =		cpu_to_le16(MULTI_VENDOR_NUM),
 	.idProduct =		cpu_to_le16(MULTI_PRODUCT_NUM),
 };
@@ -87,12 +80,12 @@ static struct usb_string strings_dev[] = {
 	[USB_GADGET_SERIAL_IDX].s = "",
 	[MULTI_STRING_RNDIS_CONFIG_IDX].s = "Multifunction with RNDIS",
 	[MULTI_STRING_CDC_CONFIG_IDX].s   = "Multifunction with CDC ECM",
-	{  } /* end of list */
+	{  }  
 };
 
 static struct usb_gadget_strings *dev_strings[] = {
 	&(struct usb_gadget_strings){
-		.language	= 0x0409,	/* en-us */
+		.language	= 0x0409,	 
 		.strings	= strings_dev,
 	},
 	NULL,
@@ -101,7 +94,7 @@ static struct usb_gadget_strings *dev_strings[] = {
 
 
 
-/****************************** Configurations ******************************/
+ 
 
 static struct fsg_module_parameters fsg_mod_data = { .stall = 1 };
 #ifdef CONFIG_USB_GADGET_DEBUG_FILES
@@ -110,20 +103,17 @@ static unsigned int fsg_num_buffers = CONFIG_USB_GADGET_STORAGE_NUM_BUFFERS;
 
 #else
 
-/*
- * Number of buffers we will use.
- * 2 is usually enough for good buffering pipeline
- */
+ 
 #define fsg_num_buffers	CONFIG_USB_GADGET_STORAGE_NUM_BUFFERS
 
-#endif /* CONFIG_USB_GADGET_DEBUG_FILES */
+#endif  
 
-FSG_MODULE_PARAMETERS(/* no prefix */, fsg_mod_data);
+FSG_MODULE_PARAMETERS( , fsg_mod_data);
 
 static struct usb_function_instance *fi_acm;
 static struct usb_function_instance *fi_msg;
 
-/********** RNDIS **********/
+ 
 
 #ifdef USB_ETH_RNDIS
 static struct usb_function_instance *fi_rndis;
@@ -205,7 +195,7 @@ static int rndis_config_register(struct usb_composite_dev *cdev)
 #endif
 
 
-/********** CDC ECM **********/
+ 
 
 #ifdef CONFIG_USB_G_MULTI_CDC
 static struct usb_function_instance *fi_ecm;
@@ -230,7 +220,7 @@ static int cdc_do_config(struct usb_configuration *c)
 	if (ret < 0)
 		goto err_func_ecm;
 
-	/* implicit port_num is zero */
+	 
 	f_acm_multi = usb_get_function(fi_acm);
 	if (IS_ERR(f_acm_multi)) {
 		ret = PTR_ERR(f_acm_multi);
@@ -289,7 +279,7 @@ static int cdc_config_register(struct usb_composite_dev *cdev)
 
 
 
-/****************************** Gadget Bind ******************************/
+ 
 
 static int multi_bind(struct usb_composite_dev *cdev)
 {
@@ -341,12 +331,7 @@ static int multi_bind(struct usb_composite_dev *cdev)
 #endif
 
 #if (defined CONFIG_USB_G_MULTI_CDC && defined USB_ETH_RNDIS)
-	/*
-	 * If both ecm and rndis are selected then:
-	 *	1) rndis borrows the net interface from ecm
-	 *	2) since the interface is shared it must not be bound
-	 *	twice - in ecm's _and_ rndis' binds, so do it here.
-	 */
+	 
 	gether_set_gadget(ecm_opts->net, cdev->gadget);
 	status = gether_register_netdev(ecm_opts->net);
 	if (status)
@@ -356,14 +341,14 @@ static int multi_bind(struct usb_composite_dev *cdev)
 	ecm_opts->bound = true;
 #endif
 
-	/* set up serial link layer */
+	 
 	fi_acm = usb_get_function_instance("acm");
 	if (IS_ERR(fi_acm)) {
 		status = PTR_ERR(fi_acm);
 		goto fail0;
 	}
 
-	/* set up mass storage function */
+	 
 	fi_msg = usb_get_function_instance("mass_storage");
 	if (IS_ERR(fi_msg)) {
 		status = PTR_ERR(fi_msg);
@@ -389,7 +374,7 @@ static int multi_bind(struct usb_composite_dev *cdev)
 	fsg_common_set_inquiry_string(fsg_opts->common, config.vendor_name,
 				      config.product_name);
 
-	/* allocate string IDs */
+	 
 	status = usb_string_ids_tab(cdev, strings_dev);
 	if (unlikely(status < 0))
 		goto fail_string_ids;
@@ -408,7 +393,7 @@ static int multi_bind(struct usb_composite_dev *cdev)
 		otg_desc[1] = NULL;
 	}
 
-	/* register configurations */
+	 
 	status = rndis_config_register(cdev);
 	if (unlikely(status < 0))
 		goto fail_otg_desc;
@@ -418,12 +403,12 @@ static int multi_bind(struct usb_composite_dev *cdev)
 		goto fail_otg_desc;
 	usb_composite_overwrite_options(cdev, &coverwrite);
 
-	/* we're done */
+	 
 	dev_info(&gadget->dev, DRIVER_DESC "\n");
 	return 0;
 
 
-	/* error recovery */
+	 
 fail_otg_desc:
 	kfree(otg_desc[0]);
 	otg_desc[0] = NULL;
@@ -477,7 +462,7 @@ static int multi_unbind(struct usb_composite_dev *cdev)
 }
 
 
-/****************************** Some noise ******************************/
+ 
 
 
 static struct usb_composite_driver multi_driver = {

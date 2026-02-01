@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "misc.h"
 
 static unsigned long fs;
 static inline void set_fs(unsigned long seg)
 {
-	fs = seg << 4;  /* shift it back */
+	fs = seg << 4;   
 }
 typedef unsigned long addr_t;
 static inline char rdfs8(addr_t addr)

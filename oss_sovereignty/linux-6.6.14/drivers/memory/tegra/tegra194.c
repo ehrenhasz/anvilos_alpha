@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017-2021 NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <soc/tegra/mc.h>
 

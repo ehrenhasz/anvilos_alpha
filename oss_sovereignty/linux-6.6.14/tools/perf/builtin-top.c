@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * builtin-top.c
- *
- * Builtin top command: Display a continuously updated profile of
- * any workload, CPU or specific PID.
- *
- * Copyright (C) 2008, Red Hat Inc, Ingo Molnar <mingo@redhat.com>
- *		 2011, Red Hat Inc, Arnaldo Carvalho de Melo <acme@redhat.com>
- *
- * Improvements and fixes by:
- *
- *   Arjan van de Ven <arjan@linux.intel.com>
- *   Yanmin Zhang <yanmin.zhang@intel.com>
- *   Wu Fengguang <fengguang.wu@intel.com>
- *   Mike Galbraith <efault@gmx.de>
- *   Paul Mackerras <paulus@samba.org>
- */
+
+ 
 #include "builtin.h"
 
 #include "perf.h"
@@ -126,9 +110,7 @@ static int perf_top__parse_source(struct perf_top *top, struct hist_entry *he)
 	map = he->ms.map;
 	dso = map__dso(map);
 
-	/*
-	 * We can't annotate with just /proc/kallsyms
-	 */
+	 
 	if (dso->symtab_type == DSO_BINARY_TYPE__KALLSYMS && !dso__is_kcore(dso)) {
 		pr_err("Can't annotate %s: No vmlinux file was found in the "
 		       "path\n", sym->name);
@@ -219,10 +201,7 @@ static void perf_top__record_precise_ip(struct perf_top *top,
 	annotation__unlock(notes);
 
 	if (unlikely(err)) {
-		/*
-		 * This function is now called with he->hists->lock held.
-		 * Release it before going to sleep.
-		 */
+		 
 		mutex_unlock(&he->hists->lock);
 
 		if (err == -ERANGE && !map__erange_warned(he->ms.map))
@@ -285,10 +264,7 @@ static void perf_top__resort_hists(struct perf_top *t)
 	evlist__for_each_entry(evlist, pos) {
 		struct hists *hists = evsel__hists(pos);
 
-		/*
-		 * unlink existing entries so that they can be linked
-		 * in a correct order in hists__match() below.
-		 */
+		 
 		hists__unlink(hists);
 
 		if (evlist->enabled) {
@@ -302,7 +278,7 @@ static void perf_top__resort_hists(struct perf_top *t)
 
 		hists__collapse_resort(hists, NULL);
 
-		/* Non-group events are considered as leader */
+		 
 		if (symbol_conf.event_group && !evsel__is_group_leader(pos)) {
 			struct hists *leader_hists = evsel__hists(evsel__leader(pos));
 
@@ -398,7 +374,7 @@ static void perf_top__prompt_symbol(struct perf_top *top, const char *msg)
 	struct rb_node *next;
 	size_t dummy = 0;
 
-	/* zero counters of active symbol */
+	 
 	if (syme) {
 		__zero_source_counters(syme);
 		top->sym_filter_entry = NULL;
@@ -527,7 +503,7 @@ static bool perf_top__handle_keypress(struct perf_top *top, int c)
 			break;
 		case 'E':
 			if (top->evlist->core.nr_entries > 1) {
-				/* Select 0 as the default event: */
+				 
 				int counter = 0;
 
 				fprintf(stderr, "\nAvailable events:");
@@ -623,11 +599,7 @@ static void *display_thread_tui(void *arg)
 	};
 	int ret;
 
-	/* In order to read symbols from other namespaces perf to  needs to call
-	 * setns(2).  This isn't permitted if the struct_fs has multiple users.
-	 * unshare(2) the fs so that we may continue to setns into namespaces
-	 * that we're observing.
-	 */
+	 
 	unshare(CLONE_FS);
 
 	prctl(PR_SET_NAME, "perf-top-UI", 0, 0, 0);
@@ -635,11 +607,7 @@ static void *display_thread_tui(void *arg)
 repeat:
 	perf_top__sort_new_samples(top);
 
-	/*
-	 * Initialize the uid_filter_str, in the future the TUI will allow
-	 * Zooming in/out UIDs. For now just use whatever the user passed
-	 * via --uid.
-	 */
+	 
 	evlist__for_each_entry(top->evlist, pos) {
 		struct hists *hists = evsel__hists(pos);
 		hists->uid_filter_str = top->record_opts.target.uid_str;
@@ -678,11 +646,7 @@ static void *display_thread(void *arg)
 	struct perf_top *top = arg;
 	int delay_msecs, c;
 
-	/* In order to read symbols from other namespaces perf to  needs to call
-	 * setns(2).  This isn't permitted if the struct_fs has multiple users.
-	 * unshare(2) the fs so that we may continue to setns into namespaces
-	 * that we're observing.
-	 */
+	 
 	unshare(CLONE_FS);
 
 	prctl(PR_SET_NAME, "perf-top-UI", 0, 0, 0);
@@ -692,17 +656,14 @@ static void *display_thread(void *arg)
 repeat:
 	delay_msecs = top->delay_secs * MSEC_PER_SEC;
 	set_term_quiet_input(&save);
-	/* trash return*/
+	 
 	clearerr(stdin);
 	if (poll(&stdin_poll, 1, 0) > 0)
 		getc(stdin);
 
 	while (!done) {
 		perf_top__print_sym_table(top);
-		/*
-		 * Either timeout expired or we got an EINTR due to SIGWINCH,
-		 * refresh screen in both cases.
-		 */
+		 
 		switch (poll(&stdin_poll, 1, delay_msecs)) {
 		case 0:
 			continue;
@@ -798,17 +759,7 @@ static void perf_event__process_sample(struct perf_tool *tool,
 
 	if (al.sym == NULL && al.map != NULL) {
 		const char *msg = "Kernel samples will not be resolved.\n";
-		/*
-		 * As we do lazy loading of symtabs we only will know if the
-		 * specified vmlinux file is invalid when we actually have a
-		 * hit in kernel space and then try to load it. So if we get
-		 * here and there are _no_ symbols in the DSO backing the
-		 * kernel map, bail out.
-		 *
-		 * We may never get here, for instance, if we use -K/
-		 * --hide-kernel-symbols, even if the user specifies an
-		 * invalid --vmlinux ;-)
-		 */
+		 
 		if (!machine->kptr_restrict_warned && !top->vmlinux_warned &&
 		    __map__is_kernel(al.map) && map__has_symbols(al.map)) {
 			if (symbol_conf.vmlinux_name) {
@@ -927,23 +878,7 @@ static void perf_top__mmap_read(struct perf_top *top)
 	}
 }
 
-/*
- * Check per-event overwrite term.
- * perf top should support consistent term for all events.
- * - All events don't have per-event term
- *   E.g. "cpu/cpu-cycles/,cpu/instructions/"
- *   Nothing change, return 0.
- * - All events have same per-event term
- *   E.g. "cpu/cpu-cycles,no-overwrite/,cpu/instructions,no-overwrite/
- *   Using the per-event setting to replace the opts->overwrite if
- *   they are different, then return 0.
- * - Events have different per-event term
- *   E.g. "cpu/cpu-cycles,overwrite/,cpu/instructions,no-overwrite/"
- *   Return -1
- * - Some of the event set per-event term, but some not.
- *   E.g. "cpu/cpu-cycles/,cpu/instructions,no-overwrite/"
- *   Return -1
- */
+ 
 static int perf_top__overwrite_check(struct perf_top *top)
 {
 	struct record_opts *opts = &top->record_opts;
@@ -961,21 +896,21 @@ static int perf_top__overwrite_check(struct perf_top *top)
 				set = term->val.overwrite ? 1 : 0;
 		}
 
-		/* no term for current and previous event (likely) */
+		 
 		if ((overwrite < 0) && (set < 0))
 			continue;
 
-		/* has term for both current and previous event, compare */
+		 
 		if ((overwrite >= 0) && (set >= 0) && (overwrite != set))
 			return -1;
 
-		/* no term for current event but has term for previous one */
+		 
 		if ((overwrite >= 0) && (set < 0))
 			return -1;
 
-		/* has term for current event */
+		 
 		if ((overwrite < 0) && (set >= 0)) {
-			/* if it's first event, set overwrite */
+			 
 			if (evsel == evlist__first(evlist))
 				overwrite = set;
 			else
@@ -999,7 +934,7 @@ static int perf_top_overwrite_fallback(struct perf_top *top,
 	if (!opts->overwrite)
 		return 0;
 
-	/* only fall back when first event fails */
+	 
 	if (evsel != evlist__first(evlist))
 		return 0;
 
@@ -1030,16 +965,7 @@ try_again:
 		if (evsel__open(counter, top->evlist->core.user_requested_cpus,
 				     top->evlist->core.threads) < 0) {
 
-			/*
-			 * Specially handle overwrite fall back.
-			 * Because perf top is the only tool which has
-			 * overwrite mode by default, support
-			 * both overwrite and non-overwrite mode, and
-			 * require consistent mode for all events.
-			 *
-			 * May move it to generic code with more tools
-			 * have similar attribute.
-			 */
+			 
 			if (perf_missing_features.write_backward &&
 			    perf_top_overwrite_fallback(top, counter))
 				goto try_again;
@@ -1118,9 +1044,7 @@ static void *process_thread(void *arg)
 	return NULL;
 }
 
-/*
- * Allow only 'top->delay_secs' seconds behind samples.
- */
+ 
 static int should_drop(struct ordered_event *qevent, struct perf_top *top)
 {
 	union perf_event *event = qevent->event;
@@ -1186,10 +1110,7 @@ static int deliver_event(struct ordered_events *qe,
 		break;
 	case PERF_RECORD_MISC_GUEST_USER:
 		++top->guest_us_samples;
-		/*
-		 * TODO: we don't process guest user from host side
-		 * except simple counting.
-		 */
+		 
 		goto next_event;
 	default:
 		if (event->header.type == PERF_RECORD_SAMPLE)
@@ -1306,14 +1227,7 @@ static int __cmd_top(struct perf_top *top)
 	top->session->evlist = top->evlist;
 	perf_session__set_id_hdr_size(top->session);
 
-	/*
-	 * When perf is starting the traced process, all the events (apart from
-	 * group members) have enable_on_exec=1 set, so don't spoil it by
-	 * prematurely enabling them.
-	 *
-	 * XXX 'top' still doesn't start workloads like record, trace, but should,
-	 * so leave the check here.
-	 */
+	 
         if (!target__none(&opts->target))
 		evlist__enable(top->evlist);
 
@@ -1339,7 +1253,7 @@ static int __cmd_top(struct perf_top *top)
 		}
 	}
 
-	/* Wait for a minimal set of events before starting the snapshot */
+	 
 	evlist__poll(top->evlist, 100);
 
 	perf_top__mmap_read(top);
@@ -1384,9 +1298,7 @@ parse_callchain_opt(const struct option *opt, const char *arg, int unset)
 	callchain->enabled = !unset;
 	callchain->record_mode = CALLCHAIN_FP;
 
-	/*
-	 * --no-call-graph
-	 */
+	 
 	if (unset) {
 		symbol_conf.use_callchain = false;
 		callchain->record_mode = CALLCHAIN_NONE;
@@ -1433,17 +1345,11 @@ int cmd_top(int argc, const char **argv)
 			.mmap_pages	= UINT_MAX,
 			.user_freq	= UINT_MAX,
 			.user_interval	= ULLONG_MAX,
-			.freq		= 4000, /* 4 KHz */
+			.freq		= 4000,  
 			.target		= {
 				.uses_mmap   = true,
 			},
-			/*
-			 * FIXME: This will lose PERF_RECORD_MMAP and other metadata
-			 * when we pause, fix that and reenable. Probably using a
-			 * separate evlist with a dummy event, i.e. a non-overwrite
-			 * ring buffer just for metadata events, while PERF_RECORD_SAMPLE
-			 * stays in overwrite mode. -acme
-			 * */
+			 
 			.overwrite	= 0,
 			.sample_time	= true,
 			.sample_time_set = true,
@@ -1621,16 +1527,10 @@ int cmd_top(int argc, const char **argv)
 	status = perf_config(perf_top_config, &top);
 	if (status)
 		return status;
-	/*
-	 * Since the per arch annotation init routine may need the cpuid, read
-	 * it here, since we are not getting this from the perf.data header.
-	 */
+	 
 	status = perf_env__read_cpuid(&perf_env);
 	if (status) {
-		/*
-		 * Some arches do not provide a get_cpuid(), so just use pr_debug, otherwise
-		 * warn the user explicitly.
-		 */
+		 
 		eprintf(status == ENOSYS ? 1 : 0, verbose,
 			"Couldn't read the cpuid for this machine: %s\n",
 			str_error_r(errno, errbuf, sizeof(errbuf)));
@@ -1677,7 +1577,7 @@ int cmd_top(int argc, const char **argv)
 		goto out_delete_evlist;
 
 	if (symbol_conf.report_hierarchy) {
-		/* disable incompatible options */
+		 
 		symbol_conf.event_group = false;
 		symbol_conf.cumulate_callchain = false;
 
@@ -1717,7 +1617,7 @@ int cmd_top(int argc, const char **argv)
 		symbol_conf.show_branchflag_count = true;
 
 	sort__mode = SORT_MODE__TOP;
-	/* display thread wants entries to be collapsed in a different tree */
+	 
 	perf_hpp_list.need_collapse = 1;
 
 	if (top.use_stdio)

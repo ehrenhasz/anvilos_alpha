@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * I2C access for DA9052 PMICs.
- *
- * Copyright(c) 2011 Dialog Semiconductor Ltd.
- *
- * Author: David Dajun Chen <dchen@diasemi.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -19,7 +13,7 @@
 #include <linux/mfd/da9052/reg.h>
 
 
-/* I2C safe register check */
+ 
 static inline bool i2c_safe_reg(unsigned char reg)
 {
 	switch (reg) {
@@ -46,12 +40,7 @@ static inline bool i2c_safe_reg(unsigned char reg)
 	}
 }
 
-/*
- * There is an issue with DA9052 and DA9053_AA/BA/BB PMIC where the PMIC
- * gets lockup up or fails to respond following a system reset.
- * This fix is to follow any read or write with a dummy read to a safe
- * register.
- */
+ 
 static int da9052_i2c_fix(struct da9052 *da9052, unsigned char reg)
 {
 	int val;
@@ -61,7 +50,7 @@ static int da9052_i2c_fix(struct da9052 *da9052, unsigned char reg)
 	case DA9053_AA:
 	case DA9053_BA:
 	case DA9053_BB:
-		/* A dummy read to a safe register address. */
+		 
 		if (!i2c_safe_reg(reg))
 			return regmap_read(da9052->regmap,
 					   DA9052_PARK_REGISTER,
@@ -69,20 +58,14 @@ static int da9052_i2c_fix(struct da9052 *da9052, unsigned char reg)
 		break;
 	case DA9053_BC:
 	default:
-		/*
-		 * For other chips parking of I2C register
-		 * to a safe place is not required.
-		 */
+		 
 		break;
 	}
 
 	return 0;
 }
 
-/*
- * According to errata item 24, multiwrite mode should be avoided
- * in order to prevent register data corruption after power-down.
- */
+ 
 static int da9052_i2c_disable_multiwrite(struct da9052 *da9052)
 {
 	int reg_val, ret;
@@ -119,7 +102,7 @@ static const struct of_device_id dialog_dt_ids[] = {
 	{ .compatible = "dlg,da9053-ba", .data = &da9052_i2c_id[2] },
 	{ .compatible = "dlg,da9053-bb", .data = &da9052_i2c_id[3] },
 	{ .compatible = "dlg,da9053-bc", .data = &da9052_i2c_id[4] },
-	{ /* sentinel */ }
+	{   }
 };
 #endif
 

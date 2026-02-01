@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * sl28cpld GPIO driver
- *
- * Copyright 2020 Michael Walle <michael@walle.cc>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/gpio/driver.h>
@@ -15,17 +11,17 @@
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 
-/* GPIO flavor */
+ 
 #define GPIO_REG_DIR	0x00
 #define GPIO_REG_OUT	0x01
 #define GPIO_REG_IN	0x02
 #define GPIO_REG_IE	0x03
 #define GPIO_REG_IP	0x04
 
-/* input-only flavor */
+ 
 #define GPI_REG_IN	0x00
 
-/* output-only flavor */
+ 
 #define GPO_REG_OUT	0x00
 
 enum sl28cpld_gpio_type {
@@ -116,10 +112,10 @@ static int sl28cpld_gpio_probe(struct platform_device *pdev)
 	case SL28CPLD_GPIO:
 		config.reg_dat_base = base + GPIO_REG_IN;
 		config.reg_set_base = base + GPIO_REG_OUT;
-		/* reg_dir_out_base might be zero */
+		 
 		config.reg_dir_out_base = GPIO_REGMAP_ADDR(base + GPIO_REG_DIR);
 
-		/* This type supports interrupts */
+		 
 		ret = sl28cpld_gpio_irq_init(pdev, base, &config);
 		if (ret)
 			return ret;

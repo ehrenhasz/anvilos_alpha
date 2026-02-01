@@ -1,17 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 
-/* Definitions for RTL8187SE hardware
- *
- * Copyright 2009 Larry Finger <Larry.Finger@lwfinger.net>
- * Copyright 2014 Andrea Merello <andrea.merello@gmail.com>
- *
- * Based on the r8180 and Realtek r8187se drivers, which are:
- * Copyright 2004-2005 Andrea Merello <andrea.merello@gmail.com>, et al.
- *
- * Also based on the rtl8187 driver, which is:
- * Copyright 2007 Michael Wu <flamingice@sourmilk.net>
- * Copyright 2007 Andrea Merello <andrea.merello@gmail.com>
- */
+ 
 
 #ifndef RTL8187SE_RTL8225_H
 #define RTL8187SE_RTL8225_H
@@ -19,9 +8,9 @@
 #define RTL8225SE_ANAPARAM_ON	0xb0054d00
 #define RTL8225SE_ANAPARAM2_ON	0x000004c6
 
-/* all off except PLL */
+ 
 #define RTL8225SE_ANAPARAM_OFF	0xb0054dec
-/* all on including PLL */
+ 
 #define RTL8225SE_ANAPARAM_OFF2	0xb0054dfc
 
 #define RTL8225SE_ANAPARAM2_OFF	0x00ff04c6
@@ -55,4 +44,4 @@ void rtl8225se_rf_conf_erp(struct ieee80211_hw *dev,
 				  struct ieee80211_bss_conf *info);
 void rtl8225se_rf_init(struct ieee80211_hw *dev);
 
-#endif /* RTL8187SE_RTL8225_H */
+#endif  

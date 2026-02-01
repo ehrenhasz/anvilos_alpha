@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
-/*
- * Sample code to test CAP protocol
- *
- * Copyright(c) 2016 Google Inc. All rights reserved.
- * Copyright(c) 2016 Linaro Ltd. All rights reserved.
- */
+
+ 
 
 #include <stdio.h>
 #include <string.h>
@@ -32,7 +27,7 @@ int main(int argc, char *argv[])
 	char *capdev;
 	int fd, ret;
 
-	/* Make sure arguments are correct */
+	 
 	if (argc != 2) {
 		printf("\nUsage: ./firmware <Path of the gb-cap-X dev>\n");
 		return 0;
@@ -48,7 +43,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	/* Get UID */
+	 
 	printf("Get UID\n");
 
 	ret = ioctl(fd, CAP_IOC_GET_ENDPOINT_UID, &uid);
@@ -60,7 +55,7 @@ int main(int argc, char *argv[])
 
 	printf("UID received: 0x%llx\n", *(unsigned long long int *)(uid.uid));
 
-	/* Get certificate */
+	 
 	printf("Get IMS certificate\n");
 
 	ret = ioctl(fd, CAP_IOC_GET_IMS_CERTIFICATE, &cert);
@@ -72,7 +67,7 @@ int main(int argc, char *argv[])
 
 	printf("IMS Certificate size: %d\n", cert.cert_size);
 
-	/* Authenticate */
+	 
 	printf("Authenticate module\n");
 
 	memcpy(authenticate.uid, uid.uid, 8);

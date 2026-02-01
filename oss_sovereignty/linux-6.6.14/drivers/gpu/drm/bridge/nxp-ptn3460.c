@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NXP PTN3460 DP/LVDS bridge driver
- *
- * Copyright (C) 2013 Google, Inc.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -91,7 +87,7 @@ static int ptn3460_select_edid(struct ptn3460_bridge *ptn_bridge)
 	int ret;
 	char val;
 
-	/* Load the selected edid into SRAM (accessed at PTN3460_EDID_ADDR) */
+	 
 	ret = ptn3460_write_byte(ptn_bridge, PTN3460_EDID_SRAM_LOAD_ADDR,
 			ptn_bridge->edid_emulation);
 	if (ret) {
@@ -99,7 +95,7 @@ static int ptn3460_select_edid(struct ptn3460_bridge *ptn_bridge)
 		return ret;
 	}
 
-	/* Enable EDID emulation and select the desired EDID */
+	 
 	val = 1 << PTN3460_EDID_ENABLE_EMULATION |
 		ptn_bridge->edid_emulation << PTN3460_EDID_EMULATION_SELECTION;
 
@@ -126,11 +122,7 @@ static void ptn3460_pre_enable(struct drm_bridge *bridge)
 	usleep_range(10, 20);
 	gpiod_set_value(ptn_bridge->gpio_rst_n, 1);
 
-	/*
-	 * There's a bug in the PTN chip where it falsely asserts hotplug before
-	 * it is fully functional. We're forced to wait for the maximum start up
-	 * time specified in the chip's datasheet to make sure we're really up.
-	 */
+	 
 	msleep(90);
 
 	ret = ptn3460_select_edid(ptn_bridge);
@@ -218,7 +210,7 @@ static int ptn3460_bridge_attach(struct drm_bridge *bridge,
 	struct ptn3460_bridge *ptn_bridge = bridge_to_ptn3460(bridge);
 	int ret;
 
-	/* Let this driver create connector if requested */
+	 
 	ret = drm_bridge_attach(bridge->encoder, ptn_bridge->panel_bridge,
 				bridge, flags | DRM_BRIDGE_ATTACH_NO_CONNECTOR);
 	if (ret < 0)
@@ -284,10 +276,7 @@ static int ptn3460_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/*
-	 * Request the reset pin low to avoid the bridge being
-	 * initialized prematurely
-	 */
+	 
 	ptn_bridge->gpio_rst_n = devm_gpiod_get(&client->dev, "reset",
 						GPIOD_OUT_LOW);
 	if (IS_ERR(ptn_bridge->gpio_rst_n)) {

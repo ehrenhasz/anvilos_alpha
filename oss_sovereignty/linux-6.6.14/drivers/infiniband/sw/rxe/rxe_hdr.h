@@ -1,30 +1,24 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright (c) 2016 Mellanox Technologies Ltd. All rights reserved.
- * Copyright (c) 2015 System Fabric Works, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef RXE_HDR_H
 #define RXE_HDR_H
 
-/* extracted information about a packet carried in an sk_buff struct fits in
- * the skbuff cb array. Must be at most 48 bytes. stored in control block of
- * sk_buff for received packets.
- */
+ 
 struct rxe_pkt_info {
-	struct rxe_dev		*rxe;		/* device that owns packet */
-	struct rxe_qp		*qp;		/* qp that owns packet */
-	struct rxe_send_wqe	*wqe;		/* send wqe */
-	u8			*hdr;		/* points to bth */
-	u32			mask;		/* useful info about pkt */
-	u32			psn;		/* bth psn of packet */
-	u16			pkey_index;	/* partition of pkt */
-	u16			paylen;		/* length of bth - icrc */
-	u8			port_num;	/* port pkt received on */
-	u8			opcode;		/* bth opcode of packet */
+	struct rxe_dev		*rxe;		 
+	struct rxe_qp		*qp;		 
+	struct rxe_send_wqe	*wqe;		 
+	u8			*hdr;		 
+	u32			mask;		 
+	u32			psn;		 
+	u16			pkey_index;	 
+	u16			paylen;		 
+	u8			port_num;	 
+	u8			opcode;		 
 };
 
-/* Macros should be used only for received skb */
+ 
 static inline struct rxe_pkt_info *SKB_TO_PKT(struct sk_buff *skb)
 {
 	BUILD_BUG_ON(sizeof(struct rxe_pkt_info) > sizeof(skb->cb));
@@ -36,28 +30,12 @@ static inline struct sk_buff *PKT_TO_SKB(struct rxe_pkt_info *pkt)
 	return container_of((void *)pkt, struct sk_buff, cb);
 }
 
-/*
- * IBA header types and methods
- *
- * Some of these are for reference and completeness only since
- * rxe does not currently support RD transport
- * most of this could be moved into IB core. ib_pack.h has
- * part of this but is incomplete
- *
- * Header specific routines to insert/extract values to/from headers
- * the routines that are named __hhh_(set_)fff() take a pointer to a
- * hhh header and get(set) the fff field. The routines named
- * hhh_(set_)fff take a packet info struct and find the
- * header and field based on the opcode in the packet.
- * Conversion to/from network byte order from cpu order is also done.
- */
+ 
 
 #define RXE_ICRC_SIZE		(4)
 #define RXE_MAX_HDR_LENGTH	(80)
 
-/******************************************************************************
- * Base Transport Header
- ******************************************************************************/
+ 
 struct rxe_bth {
 	u8			opcode;
 	u8			flags;
@@ -422,9 +400,7 @@ static inline void bth_init(struct rxe_pkt_info *pkt, u8 opcode, int se,
 	bth->apsn = cpu_to_be32(psn);
 }
 
-/******************************************************************************
- * Reliable Datagram Extended Transport Header
- ******************************************************************************/
+ 
 struct rxe_rdeth {
 	__be32			een;
 };
@@ -457,9 +433,7 @@ static inline void rdeth_set_een(struct rxe_pkt_info *pkt, u32 een)
 		rxe_opcode[pkt->opcode].offset[RXE_RDETH], een);
 }
 
-/******************************************************************************
- * Datagram Extended Transport Header
- ******************************************************************************/
+ 
 struct rxe_deth {
 	__be32			qkey;
 	__be32			sqp;
@@ -520,9 +494,7 @@ static inline void deth_set_sqp(struct rxe_pkt_info *pkt, u32 sqp)
 		rxe_opcode[pkt->opcode].offset[RXE_DETH], sqp);
 }
 
-/******************************************************************************
- * RDMA Extended Transport Header
- ******************************************************************************/
+ 
 struct rxe_reth {
 	__be64			va;
 	__be32			rkey;
@@ -607,16 +579,14 @@ static inline void reth_set_len(struct rxe_pkt_info *pkt, u32 len)
 		rxe_opcode[pkt->opcode].offset[RXE_RETH], len);
 }
 
-/******************************************************************************
- * FLUSH Extended Transport Header
- ******************************************************************************/
+ 
 
 struct rxe_feth {
 	__be32 bits;
 };
 
-#define FETH_PLT_MASK		(0x0000000f) /* bits 3-0 */
-#define FETH_SEL_MASK		(0x00000030) /* bits 5-4 */
+#define FETH_PLT_MASK		(0x0000000f)  
+#define FETH_SEL_MASK		(0x00000030)  
 #define FETH_SEL_SHIFT		(4U)
 
 static inline u32 __feth_plt(void *arg)
@@ -653,9 +623,7 @@ static inline void feth_init(struct rxe_pkt_info *pkt, u8 type, u8 level)
 	feth->bits = cpu_to_be32(bits);
 }
 
-/******************************************************************************
- * Atomic Extended Transport Header
- ******************************************************************************/
+ 
 struct rxe_atmeth {
 	__be64			va;
 	__be32			rkey;
@@ -767,9 +735,7 @@ static inline void atmeth_set_comp(struct rxe_pkt_info *pkt, u64 comp)
 		rxe_opcode[pkt->opcode].offset[RXE_ATMETH], comp);
 }
 
-/******************************************************************************
- * Ack Extended Transport Header
- ******************************************************************************/
+ 
 struct rxe_aeth {
 	__be32			smsn;
 };
@@ -846,9 +812,7 @@ static inline void aeth_set_msn(struct rxe_pkt_info *pkt, u32 msn)
 		rxe_opcode[pkt->opcode].offset[RXE_AETH], msn);
 }
 
-/******************************************************************************
- * Atomic Ack Extended Transport Header
- ******************************************************************************/
+ 
 struct rxe_atmack {
 	__be64			orig;
 };
@@ -879,9 +843,7 @@ static inline void atmack_set_orig(struct rxe_pkt_info *pkt, u64 orig)
 		rxe_opcode[pkt->opcode].offset[RXE_ATMACK], orig);
 }
 
-/******************************************************************************
- * Immediate Extended Transport Header
- ******************************************************************************/
+ 
 struct rxe_immdt {
 	__be32			imm;
 };
@@ -912,9 +874,7 @@ static inline void immdt_set_imm(struct rxe_pkt_info *pkt, __be32 imm)
 		rxe_opcode[pkt->opcode].offset[RXE_IMMDT], imm);
 }
 
-/******************************************************************************
- * Invalidate Extended Transport Header
- ******************************************************************************/
+ 
 struct rxe_ieth {
 	__be32			rkey;
 };
@@ -974,4 +934,4 @@ static inline size_t payload_size(struct rxe_pkt_info *pkt)
 		- bth_pad(pkt) - RXE_ICRC_SIZE;
 }
 
-#endif /* RXE_HDR_H */
+#endif  

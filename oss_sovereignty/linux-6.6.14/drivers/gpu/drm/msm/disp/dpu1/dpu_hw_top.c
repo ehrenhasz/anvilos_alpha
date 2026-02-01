@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2015-2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include "dpu_hwio.h"
 #include "dpu_hw_catalog.h"
@@ -40,7 +39,7 @@ static void dpu_hw_setup_split_pipe(struct dpu_hw_mdp *mdp,
 	if (cfg->en) {
 		if (cfg->mode == INTF_MODE_CMD) {
 			lower_pipe = FLD_SPLIT_DISPLAY_CMD;
-			/* interface controlling sw trigger */
+			 
 			if (cfg->intf == INTF_2)
 				lower_pipe |= FLD_INTF_1_SW_TRG_MUX;
 			else
@@ -171,13 +170,13 @@ static void dpu_hw_setup_vsync_source(struct dpu_hw_mdp *mdp,
 		DPU_REG_WRITE(c, wd_load_value,
 			CALCULATE_WD_LOAD_VALUE(cfg->frame_rate));
 
-		DPU_REG_WRITE(c, wd_ctl, BIT(0)); /* clear timer */
+		DPU_REG_WRITE(c, wd_ctl, BIT(0));  
 		reg = DPU_REG_READ(c, wd_ctl2);
-		reg |= BIT(8);		/* enable heartbeat timer */
-		reg |= BIT(0);		/* enable WD timer */
+		reg |= BIT(8);		 
+		reg |= BIT(0);		 
 		DPU_REG_WRITE(c, wd_ctl2, reg);
 
-		/* make sure that timers are enabled/disabled for vsync state */
+		 
 		wmb();
 	}
 }
@@ -284,9 +283,7 @@ struct dpu_hw_mdp *dpu_hw_mdptop_init(const struct dpu_mdp_cfg *cfg,
 	mdp->hw.blk_addr = addr + cfg->base;
 	mdp->hw.log_mask = DPU_DBG_MASK_TOP;
 
-	/*
-	 * Assign ops
-	 */
+	 
 	mdp->caps = cfg;
 	_setup_mdp_ops(&mdp->ops, mdp->caps->features);
 

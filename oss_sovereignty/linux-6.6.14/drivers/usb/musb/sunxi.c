@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Allwinner sun4i MUSB Glue Layer
- *
- * Copyright (C) 2015 Hans de Goede <hdegoede@redhat.com>
- *
- * Based on code from
- * Allwinner Technology Co., Ltd. <www.allwinnertech.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -25,10 +18,7 @@
 #include <linux/workqueue.h>
 #include "musb_core.h"
 
-/*
- * Register offsets, note sunxi musb has a different layout then most
- * musb implementations, we translate the layout in musb_readb & friends.
- */
+ 
 #define SUNXI_MUSB_POWER			0x0040
 #define SUNXI_MUSB_DEVCTL			0x0041
 #define SUNXI_MUSB_INDEX			0x0042
@@ -53,10 +43,10 @@
 #define SUNXI_MUSB_RXHUBPORT			0x009f
 #define SUNXI_MUSB_CONFIGDATA			0x00c0
 
-/* VEND0 bits */
+ 
 #define SUNXI_MUSB_VEND0_PIO_MODE		0
 
-/* flags */
+ 
 #define SUNXI_MUSB_FL_ENABLED			0
 #define SUNXI_MUSB_FL_HOSTMODE			1
 #define SUNXI_MUSB_FL_HOSTMODE_PEND		2
@@ -74,7 +64,7 @@ struct sunxi_musb_cfg {
 	bool no_configdata;
 };
 
-/* Our read/write methods need access and do not get passed in a musb ref :| */
+ 
 static struct musb *sunxi_musb;
 
 struct sunxi_glue {
@@ -93,7 +83,7 @@ struct sunxi_glue {
 	struct notifier_block	host_nb;
 };
 
-/* phy_power_on / off may sleep, so we use a workqueue  */
+ 
 static void sunxi_musb_work(struct work_struct *work)
 {
 	struct sunxi_glue *glue = container_of(work, struct sunxi_glue, work);
@@ -183,7 +173,7 @@ static irqreturn_t sunxi_musb_interrupt(int irq, void *__hci)
 		writeb(musb->int_usb, musb->mregs + SUNXI_MUSB_INTRUSB);
 
 	if ((musb->int_usb & MUSB_INTR_RESET) && !is_host_active(musb)) {
-		/* ep0 FADDR must be 0 when (re)entering peripheral mode */
+		 
 		musb_ep_select(musb->mregs, 0);
 		musb_writeb(musb->mregs, MUSB_FADDR, 0);
 	}
@@ -246,7 +236,7 @@ static int sunxi_musb_init(struct musb *musb)
 
 	writeb(SUNXI_MUSB_VEND0_PIO_MODE, musb->mregs + SUNXI_MUSB_VEND0);
 
-	/* Register notifier before calling phy_init() */
+	 
 	ret = devm_extcon_register_notifier(glue->dev, glue->extcon,
 					EXTCON_USB_HOST, &glue->host_nb);
 	if (ret)
@@ -258,7 +248,7 @@ static int sunxi_musb_init(struct musb *musb)
 
 	musb->isr = sunxi_musb_interrupt;
 
-	/* Stop the musb-core from doing runtime pm (not supported on sunxi) */
+	 
 	pm_runtime_get(musb->controller);
 
 	return 0;
@@ -304,7 +294,7 @@ static void sunxi_musb_enable(struct musb *musb)
 
 	glue->musb = musb;
 
-	/* musb_core does not call us in a balanced manner */
+	 
 	if (test_and_set_bit(SUNXI_MUSB_FL_ENABLED, &glue->flags))
 		return;
 
@@ -361,10 +351,7 @@ static int sunxi_musb_set_mode(struct musb *musb, u8 mode)
 	if (musb->port1_status & USB_PORT_STAT_ENABLE)
 		musb_root_disconnect(musb);
 
-	/*
-	 * phy_set_mode may sleep, and we're called with a spinlock held,
-	 * so let sunxi_musb_work deal with it.
-	 */
+	 
 	glue->phy_mode = new_mode;
 	set_bit(SUNXI_MUSB_FL_PHY_MODE_PEND, &glue->flags);
 	schedule_work(&glue->work);
@@ -376,25 +363,14 @@ static int sunxi_musb_recover(struct musb *musb)
 {
 	struct sunxi_glue *glue = dev_get_drvdata(musb->controller->parent);
 
-	/*
-	 * Schedule a phy_set_mode with the current glue->phy_mode value,
-	 * this will force end the current session.
-	 */
+	 
 	set_bit(SUNXI_MUSB_FL_PHY_MODE_PEND, &glue->flags);
 	schedule_work(&glue->work);
 
 	return 0;
 }
 
-/*
- * sunxi musb register layout
- * 0x00 - 0x17	fifo regs, 1 long per fifo
- * 0x40 - 0x57	generic control regs (power - frame)
- * 0x80 - 0x8f	ep control regs (addressed through hw_ep->regs, indexed)
- * 0x90 - 0x97	fifo control regs (indexed)
- * 0x98 - 0x9f	multipoint / busctl regs (indexed)
- * 0xc0		configdata reg
- */
+ 
 
 static u32 sunxi_musb_fifo_offset(u8 epnum)
 {
@@ -406,7 +382,7 @@ static u32 sunxi_musb_ep_offset(u8 epnum, u16 offset)
 	WARN_ONCE(offset != 0,
 		  "sunxi_musb_ep_offset called with non 0 offset\n");
 
-	return 0x80; /* indexed, so ignore epnum */
+	return 0x80;  
 }
 
 static u32 sunxi_musb_busctl_offset(u8 epnum, u16 offset)
@@ -419,7 +395,7 @@ static u8 sunxi_musb_readb(void __iomem *addr, u32 offset)
 	struct sunxi_glue *glue;
 
 	if (addr == sunxi_musb->mregs) {
-		/* generic control or fifo control reg access */
+		 
 		switch (offset) {
 		case MUSB_FADDR:
 			return readb(addr + SUNXI_MUSB_FADDR);
@@ -432,16 +408,16 @@ static u8 sunxi_musb_readb(void __iomem *addr, u32 offset)
 		case MUSB_INDEX:
 			return readb(addr + SUNXI_MUSB_INDEX);
 		case MUSB_TESTMODE:
-			return 0; /* No testmode on sunxi */
+			return 0;  
 		case MUSB_DEVCTL:
 			return readb(addr + SUNXI_MUSB_DEVCTL);
 		case MUSB_TXFIFOSZ:
 			return readb(addr + SUNXI_MUSB_TXFIFOSZ);
 		case MUSB_RXFIFOSZ:
 			return readb(addr + SUNXI_MUSB_RXFIFOSZ);
-		case MUSB_CONFIGDATA + 0x10: /* See musb_read_configdata() */
+		case MUSB_CONFIGDATA + 0x10:  
 			glue = dev_get_drvdata(sunxi_musb->controller->parent);
-			/* A33 saves a reg, and we get to hardcode this */
+			 
 			if (test_bit(SUNXI_MUSB_FL_NO_CONFIGDATA,
 				     &glue->flags))
 				return 0xde;
@@ -451,14 +427,14 @@ static u8 sunxi_musb_readb(void __iomem *addr, u32 offset)
 			dev_warn(sunxi_musb->controller->parent,
 				"sunxi-musb does not have ULPI bus control register\n");
 			return 0;
-		/* Offset for these is fixed by sunxi_musb_busctl_offset() */
+		 
 		case SUNXI_MUSB_TXFUNCADDR:
 		case SUNXI_MUSB_TXHUBADDR:
 		case SUNXI_MUSB_TXHUBPORT:
 		case SUNXI_MUSB_RXFUNCADDR:
 		case SUNXI_MUSB_RXHUBADDR:
 		case SUNXI_MUSB_RXHUBPORT:
-			/* multipoint / busctl reg access */
+			 
 			return readb(addr + offset);
 		default:
 			dev_err(sunxi_musb->controller->parent,
@@ -466,8 +442,8 @@ static u8 sunxi_musb_readb(void __iomem *addr, u32 offset)
 			return 0;
 		}
 	} else if (addr == (sunxi_musb->mregs + 0x80)) {
-		/* ep control reg access */
-		/* sunxi has a 2 byte hole before the txtype register */
+		 
+		 
 		if (offset >= MUSB_TXTYPE)
 			offset += 2;
 		return readb(addr + offset);
@@ -482,7 +458,7 @@ static u8 sunxi_musb_readb(void __iomem *addr, u32 offset)
 static void sunxi_musb_writeb(void __iomem *addr, unsigned offset, u8 data)
 {
 	if (addr == sunxi_musb->mregs) {
-		/* generic control or fifo control reg access */
+		 
 		switch (offset) {
 		case MUSB_FADDR:
 			return writeb(data, addr + SUNXI_MUSB_FADDR);
@@ -509,14 +485,14 @@ static void sunxi_musb_writeb(void __iomem *addr, unsigned offset, u8 data)
 			dev_warn(sunxi_musb->controller->parent,
 				"sunxi-musb does not have ULPI bus control register\n");
 			return;
-		/* Offset for these is fixed by sunxi_musb_busctl_offset() */
+		 
 		case SUNXI_MUSB_TXFUNCADDR:
 		case SUNXI_MUSB_TXHUBADDR:
 		case SUNXI_MUSB_TXHUBPORT:
 		case SUNXI_MUSB_RXFUNCADDR:
 		case SUNXI_MUSB_RXHUBADDR:
 		case SUNXI_MUSB_RXHUBPORT:
-			/* multipoint / busctl reg access */
+			 
 			return writeb(data, addr + offset);
 		default:
 			dev_err(sunxi_musb->controller->parent,
@@ -524,7 +500,7 @@ static void sunxi_musb_writeb(void __iomem *addr, unsigned offset, u8 data)
 			return;
 		}
 	} else if (addr == (sunxi_musb->mregs + 0x80)) {
-		/* ep control reg access */
+		 
 		if (offset >= MUSB_TXTYPE)
 			offset += 2;
 		return writeb(data, addr + offset);
@@ -538,7 +514,7 @@ static void sunxi_musb_writeb(void __iomem *addr, unsigned offset, u8 data)
 static u16 sunxi_musb_readw(void __iomem *addr, u32 offset)
 {
 	if (addr == sunxi_musb->mregs) {
-		/* generic control or fifo control reg access */
+		 
 		switch (offset) {
 		case MUSB_INTRTX:
 			return readw(addr + SUNXI_MUSB_INTRTX);
@@ -555,14 +531,14 @@ static u16 sunxi_musb_readw(void __iomem *addr, u32 offset)
 		case MUSB_RXFIFOADD:
 			return readw(addr + SUNXI_MUSB_RXFIFOADD);
 		case MUSB_HWVERS:
-			return 0; /* sunxi musb version is not known */
+			return 0;  
 		default:
 			dev_err(sunxi_musb->controller->parent,
 				"Error unknown readw offset %u\n", offset);
 			return 0;
 		}
 	} else if (addr == (sunxi_musb->mregs + 0x80)) {
-		/* ep control reg access */
+		 
 		return readw(addr + offset);
 	}
 
@@ -575,7 +551,7 @@ static u16 sunxi_musb_readw(void __iomem *addr, u32 offset)
 static void sunxi_musb_writew(void __iomem *addr, unsigned offset, u16 data)
 {
 	if (addr == sunxi_musb->mregs) {
-		/* generic control or fifo control reg access */
+		 
 		switch (offset) {
 		case MUSB_INTRTX:
 			return writew(data, addr + SUNXI_MUSB_INTRTX);
@@ -597,7 +573,7 @@ static void sunxi_musb_writew(void __iomem *addr, unsigned offset, u16 data)
 			return;
 		}
 	} else if (addr == (sunxi_musb->mregs + 0x80)) {
-		/* ep control reg access */
+		 
 		return writew(data, addr + offset);
 	}
 
@@ -630,7 +606,7 @@ static const struct musb_platform_ops sunxi_musb_ops = {
 
 #define SUNXI_MUSB_RAM_BITS	11
 
-/* Allwinner OTG supports up to 5 endpoints */
+ 
 static struct musb_fifo_cfg sunxi_musb_mode_cfg_5eps[] = {
 	MUSB_EP_FIFO_SINGLE(1, FIFO_TX, 512),
 	MUSB_EP_FIFO_SINGLE(1, FIFO_RX, 512),
@@ -644,7 +620,7 @@ static struct musb_fifo_cfg sunxi_musb_mode_cfg_5eps[] = {
 	MUSB_EP_FIFO_SINGLE(5, FIFO_RX, 512),
 };
 
-/* H3/V3s OTG supports only 4 endpoints */
+ 
 static struct musb_fifo_cfg sunxi_musb_mode_cfg_4eps[] = {
 	MUSB_EP_FIFO_SINGLE(1, FIFO_TX, 512),
 	MUSB_EP_FIFO_SINGLE(1, FIFO_RX, 512),
@@ -661,7 +637,7 @@ static const struct musb_hdrc_config sunxi_musb_hdrc_config_5eps = {
 	.fifo_cfg_size  = ARRAY_SIZE(sunxi_musb_mode_cfg_5eps),
 	.multipoint	= true,
 	.dyn_fifo	= true,
-	/* Two FIFOs per endpoint, plus ep_0. */
+	 
 	.num_eps	= (ARRAY_SIZE(sunxi_musb_mode_cfg_5eps) / 2) + 1,
 	.ram_bits	= SUNXI_MUSB_RAM_BITS,
 };
@@ -671,7 +647,7 @@ static const struct musb_hdrc_config sunxi_musb_hdrc_config_4eps = {
 	.fifo_cfg_size  = ARRAY_SIZE(sunxi_musb_mode_cfg_4eps),
 	.multipoint	= true,
 	.dyn_fifo	= true,
-	/* Two FIFOs per endpoint, plus ep_0. */
+	 
 	.num_eps	= (ARRAY_SIZE(sunxi_musb_mode_cfg_4eps) / 2) + 1,
 	.ram_bits	= SUNXI_MUSB_RAM_BITS,
 };

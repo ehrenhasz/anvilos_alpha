@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2020 The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _ATH11K_THERMAL_
 #define _ATH11K_THERMAL_
@@ -17,11 +15,9 @@ struct ath11k_thermal {
 	struct thermal_cooling_device *cdev;
 	struct completion wmi_sync;
 
-	/* protected by conf_mutex */
+	 
 	u32 throttle_state;
-	/* temperature value in Celsius degree
-	 * protected by data_lock
-	 */
+	 
 	int temperature;
 };
 
@@ -51,4 +47,4 @@ static inline void ath11k_thermal_event_temperature(struct ath11k *ar,
 }
 
 #endif
-#endif /* _ATH11K_THERMAL_ */
+#endif  

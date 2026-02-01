@@ -1,28 +1,10 @@
-/* Test of <errno.h> substitute.
-   Copyright (C) 2008-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2008.  */
+ 
 
 #include <config.h>
 
 #include <errno.h>
 
-/* Verify that the POSIX mandated errno values exist and can be used as
-   initializers outside of a function.
-   The variable names happen to match the Linux/x86 error numbers.  */
+ 
 int e1 = EPERM;
 int e2 = ENOENT;
 int e3 = ESRCH;
@@ -101,17 +83,15 @@ int e125 = ECANCELED;
 int e130 = EOWNERDEAD;
 int e131 = ENOTRECOVERABLE;
 
-/* Don't verify that these errno values are all different, except for possibly
-   EWOULDBLOCK == EAGAIN.  Even Linux/x86 does not pass this check: it has
-   ENOTSUP == EOPNOTSUPP.  */
+ 
 
 int
 main ()
 {
-  /* Verify that errno can be assigned.  */
+   
   errno = EOVERFLOW;
 
-  /* snprintf() callers want to distinguish EINVAL and EOVERFLOW.  */
+   
   if (errno == EINVAL)
     return 1;
 

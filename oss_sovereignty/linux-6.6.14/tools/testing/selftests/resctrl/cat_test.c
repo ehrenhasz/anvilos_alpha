@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cache Allocation Technology (CAT) test
- *
- * Copyright (C) 2018 Intel Corporation
- *
- * Authors:
- *    Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>,
- *    Fenghua Yu <fenghua.yu@intel.com>
- */
+
+ 
 #include "resctrl.h"
 #include <unistd.h>
 
@@ -17,17 +9,13 @@
 #define MAX_DIFF_PERCENT	4
 #define MAX_DIFF		1000000
 
-/*
- * Change schemata. Write schemata to specified
- * con_mon grp, mon_grp in resctrl FS.
- * Run 5 times in order to get average values.
- */
+ 
 static int cat_setup(struct resctrl_val_param *p)
 {
 	char schemata[64];
 	int ret = 0;
 
-	/* Run NUM_OF_RUNS times */
+	 
 	if (p->num_of_runs >= NUM_OF_RUNS)
 		return END_OF_TESTS;
 
@@ -64,10 +52,7 @@ static int check_results(struct resctrl_val_param *param, size_t span)
 			token_array[fields++] = token;
 			token = strtok(NULL, ":\t");
 		}
-		/*
-		 * Discard the first value which is inaccurate due to monitoring
-		 * setup transition phase.
-		 */
+		 
 		if (runs > 0)
 			sum_llc_perf_miss += strtoul(token_array[3], NULL, 0);
 		runs++;
@@ -98,20 +83,20 @@ int cat_perf_miss_val(int cpu_no, int n, char *cache_type)
 	char pipe_message;
 	size_t span;
 
-	/* Get default cbm mask for L3/L2 cache */
+	 
 	ret = get_cbm_mask(cache_type, cbm_mask);
 	if (ret)
 		return ret;
 
 	long_mask = strtoul(cbm_mask, NULL, 16);
 
-	/* Get L3/L2 cache size */
+	 
 	ret = get_cache_size(cpu_no, cache_type, &cache_size);
 	if (ret)
 		return ret;
 	ksft_print_msg("Cache size :%lu\n", cache_size);
 
-	/* Get max number of bits from default-cabm mask */
+	 
 	count_of_bits = count_bits(long_mask);
 
 	if (!n)
@@ -124,7 +109,7 @@ int cat_perf_miss_val(int cpu_no, int n, char *cache_type)
 		return -1;
 	}
 
-	/* Get core id from same socket for running another thread */
+	 
 	sibling_cpu_no = get_core_sibling(cpu_no);
 	if (sibling_cpu_no < 0)
 		return -1;
@@ -138,9 +123,7 @@ int cat_perf_miss_val(int cpu_no, int n, char *cache_type)
 	l_mask = long_mask >> n;
 	l_mask_1 = ~l_mask & long_mask;
 
-	/* Set param values for parent thread which will be allocated bitmask
-	 * with (max_bits - n) bits
-	 */
+	 
 	span = cache_size * (count_of_bits - n) / count_of_bits;
 	strcpy(param.ctrlgrp, "c2");
 	strcpy(param.mongrp, "m2");
@@ -156,9 +139,7 @@ int cat_perf_miss_val(int cpu_no, int n, char *cache_type)
 	fflush(stdout);
 	bm_pid = fork();
 
-	/* Set param values for child thread which will be allocated bitmask
-	 * with n bits
-	 */
+	 
 	if (bm_pid == 0) {
 		param.mask = l_mask_1;
 		strcpy(param.ctrlgrp, "c1");
@@ -176,22 +157,19 @@ int cat_perf_miss_val(int cpu_no, int n, char *cache_type)
 		ret = check_results(&param, span);
 
 	if (bm_pid == 0) {
-		/* Tell parent that child is ready */
+		 
 		close(pipefd[0]);
 		pipe_message = 1;
 		if (write(pipefd[1], &pipe_message, sizeof(pipe_message)) <
 		    sizeof(pipe_message))
-			/*
-			 * Just print the error message.
-			 * Let while(1) run and wait for itself to be killed.
-			 */
+			 
 			perror("# failed signaling parent process");
 
 		close(pipefd[1]);
 		while (1)
 			;
 	} else {
-		/* Parent waits for child to be ready. */
+		 
 		close(pipefd[1]);
 		pipe_message = 0;
 		while (pipe_message != 1) {

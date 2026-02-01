@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Freescale MXS Low Resolution Analog-to-Digital Converter driver
- *
- * Copyright (c) 2012 DENX Software Engineering, GmbH.
- * Copyright (c) 2017 Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
- *
- * Authors:
- *  Marek Vasut <marex@denx.de>
- *  Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -119,7 +110,7 @@ static struct mfd_cell mx28_cells[] = {
 static const struct of_device_id mxs_lradc_dt_ids[] = {
 	{ .compatible = "fsl,imx23-lradc", .data = (void *)IMX23_LRADC, },
 	{ .compatible = "fsl,imx28-lradc", .data = (void *)IMX28_LRADC, },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mxs_lradc_dt_ids);
 
@@ -172,7 +163,7 @@ static int mxs_lradc_probe(struct platform_device *pdev)
 					MXS_LRADC_TOUCHSCREEN_5WIRE;
 				break;
 			}
-			fallthrough;	/* to an error message for i.MX23 */
+			fallthrough;	 
 		default:
 			dev_err(&pdev->dev,
 				"Unsupported number of touchscreen wires (%d)\n"

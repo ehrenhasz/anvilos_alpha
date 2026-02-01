@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022-2023 Qualcomm Innovation Center, Inc. All rights reserved.
- * Copyright (c) 2015-2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include "dpu_hwio.h"
 #include "dpu_hw_catalog.h"
@@ -113,7 +110,7 @@ static void dpu_hw_intf_setup_timing_engine(struct dpu_hw_intf *ctx,
 	u32 data_width;
 	bool dp_intf = false;
 
-	/* read interface_cfg */
+	 
 	intf_cfg = DPU_REG_READ(c, INTF_CONFIG);
 
 	if (ctx->cap->type == INTF_DP)
@@ -132,7 +129,7 @@ static void dpu_hw_intf_setup_timing_engine(struct dpu_hw_intf *ctx,
 	hsync_start_x = p->h_back_porch + p->hsync_pulse_width;
 	hsync_end_x = hsync_period - p->h_front_porch - 1;
 
-	if (p->width != p->xres) { /* border fill added */
+	if (p->width != p->xres) {  
 		active_h_start = hsync_start_x;
 		active_h_end = active_h_start + p->xres - 1;
 	} else {
@@ -140,7 +137,7 @@ static void dpu_hw_intf_setup_timing_engine(struct dpu_hw_intf *ctx,
 		active_h_end = 0;
 	}
 
-	if (p->height != p->yres) { /* border fill added */
+	if (p->height != p->yres) {  
 		active_v_start = display_v_start;
 		active_v_end = active_v_start + (p->yres * hsync_period) - 1;
 	} else {
@@ -161,11 +158,7 @@ static void dpu_hw_intf_setup_timing_engine(struct dpu_hw_intf *ctx,
 	hsync_ctl = (hsync_period << 16) | p->hsync_pulse_width;
 	display_hctl = (hsync_end_x << 16) | hsync_start_x;
 
-	/*
-	 * DATA_HCTL_EN controls data timing which can be different from
-	 * video timing. It is recommended to enable it for all cases, except
-	 * if compression is enabled in 1 pixel per clock mode
-	 */
+	 
 	if (p->wide_bus_en)
 		intf_cfg2 |= INTF_CFG2_DATABUS_WIDEN | INTF_CFG2_DATA_HCTL_EN;
 
@@ -177,7 +170,7 @@ static void dpu_hw_intf_setup_timing_engine(struct dpu_hw_intf *ctx,
 	display_data_hctl = (hsync_data_end_x << 16) | hsync_data_start_x;
 
 	if (dp_intf) {
-		/* DP timing adjustment */
+		 
 		display_v_start += p->hsync_pulse_width + p->h_back_porch;
 		display_v_end   -= p->h_front_porch;
 
@@ -193,9 +186,9 @@ static void dpu_hw_intf_setup_timing_engine(struct dpu_hw_intf *ctx,
 	}
 
 	den_polarity = 0;
-	polarity_ctl = (den_polarity << 2) | /*  DEN Polarity  */
-		(p->vsync_polarity << 1) | /* VSYNC Polarity */
-		(p->hsync_polarity << 0);  /* HSYNC Polarity */
+	polarity_ctl = (den_polarity << 2) |  
+		(p->vsync_polarity << 1) |  
+		(p->hsync_polarity << 0);   
 
 	if (!DPU_FORMAT_IS_YUV(fmt))
 		panel_format = (fmt->bits[C0_G_Y] |
@@ -203,7 +196,7 @@ static void dpu_hw_intf_setup_timing_engine(struct dpu_hw_intf *ctx,
 				(fmt->bits[C2_R_Cr] << 4) |
 				(0x21 << 8));
 	else
-		/* Interface treats all the pixel data in RGB888 format */
+		 
 		panel_format = (COLOR_8BIT |
 				(COLOR_8BIT << 2) |
 				(COLOR_8BIT << 4) |
@@ -238,7 +231,7 @@ static void dpu_hw_intf_enable_timing_engine(
 		u8 enable)
 {
 	struct dpu_hw_blk_reg_map *c = &intf->hw;
-	/* Note: Display interface select is handled in top block hw layer */
+	 
 	DPU_REG_WRITE(c, INTF_TIMING_ENGINE_EN, enable != 0);
 }
 
@@ -249,10 +242,7 @@ static void dpu_hw_intf_setup_prg_fetch(
 	struct dpu_hw_blk_reg_map *c = &intf->hw;
 	int fetch_enable;
 
-	/*
-	 * Fetch should always be outside the active lines. If the fetching
-	 * is programmed within active region, hardware behavior is unknown.
-	 */
+	 
 
 	fetch_enable = DPU_REG_READ(c, INTF_CONFIG);
 	if (fetch->enable) {
@@ -339,7 +329,7 @@ static int dpu_hw_intf_enable_te(struct dpu_hw_intf *intf,
 
 	c = &intf->hw;
 
-	cfg = BIT(19); /* VSYNC_COUNTER_EN */
+	cfg = BIT(19);  
 	if (te->hw_vsync_mode)
 		cfg |= BIT(20);
 
@@ -377,13 +367,7 @@ static void dpu_hw_intf_setup_autorefresh_config(struct dpu_hw_intf *intf,
 	DPU_REG_WRITE(c, INTF_TEAR_AUTOREFRESH_CONFIG, refresh_cfg);
 }
 
-/*
- * dpu_hw_intf_get_autorefresh_config - Get autorefresh config from HW
- * @intf:        DPU intf structure
- * @frame_count: Used to return the current frame count from hw
- *
- * Returns: True if autorefresh enabled, false if disabled.
- */
+ 
 static bool dpu_hw_intf_get_autorefresh_config(struct dpu_hw_intf *intf,
 		u32 *frame_count)
 {
@@ -475,18 +459,11 @@ static void dpu_hw_intf_disable_autorefresh(struct dpu_hw_intf *intf,
 	struct dpu_hw_pp_vsync_info info;
 	int trial = 0;
 
-	/* If autorefresh is already disabled, we have nothing to do */
+	 
 	if (!dpu_hw_intf_get_autorefresh_config(intf, NULL))
 		return;
 
-	/*
-	 * If autorefresh is enabled, disable it and make sure it is safe to
-	 * proceed with current frame commit/push. Sequence followed is,
-	 * 1. Disable TE
-	 * 2. Disable autorefresh config
-	 * 4. Poll for frame transfer ongoing to be false
-	 * 5. Enable TE back
-	 */
+	 
 
 	dpu_hw_intf_connect_external_te(intf, false);
 	dpu_hw_intf_setup_autorefresh_config(intf, 0, false);
@@ -566,9 +543,7 @@ struct dpu_hw_intf *dpu_hw_intf_init(const struct dpu_intf_cfg *cfg,
 	c->hw.blk_addr = addr + cfg->base;
 	c->hw.log_mask = DPU_DBG_MASK_INTF;
 
-	/*
-	 * Assign ops
-	 */
+	 
 	c->idx = cfg->id;
 	c->cap = cfg;
 	_setup_intf_ops(&c->ops, c->cap->features, mdss_rev);

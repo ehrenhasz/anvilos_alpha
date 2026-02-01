@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright The Asahi Linux Contributors
- */
+
+ 
 
 #include <linux/acpi.h>
 #include "debug.h"

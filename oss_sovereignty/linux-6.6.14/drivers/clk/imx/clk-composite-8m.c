@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2018 NXP
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/errno.h>
@@ -128,7 +126,7 @@ static int imx8m_divider_determine_rate(struct clk_hw *hw,
 	int prediv_value;
 	int div_value;
 
-	/* if read only, just return current value */
+	 
 	if (divider->flags & CLK_DIVIDER_READ_ONLY) {
 		u32 val;
 
@@ -177,10 +175,7 @@ static int imx8m_clk_composite_mux_set_parent(struct clk_hw *hw, u8 index)
 	reg &= ~(mux->mask << mux->shift);
 	val = val << mux->shift;
 	reg |= val;
-	/*
-	 * write twice to make sure non-target interface
-	 * SEL_A/B point the same clk input.
-	 */
+	 
 	writel(reg, mux->reg);
 	writel(reg, mux->reg);
 
@@ -256,7 +251,7 @@ struct clk_hw *__imx8m_clk_hw_composite(const char *name,
 	div->lock = &imx_ccm_lock;
 	div->flags = CLK_DIVIDER_ROUND_CLOSEST;
 
-	/* skip registering the gate ops if M4 is enabled */
+	 
 	if (!mcore_booted) {
 		gate = kzalloc(sizeof(*gate), GFP_KERNEL);
 		if (!gate)

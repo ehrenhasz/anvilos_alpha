@@ -1,26 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Force feedback support for Betop based devices
- *
- *  The devices are distributed under various names and the same USB device ID
- *  can be used in both adapters and actual game controllers.
- *
- *  0x11c2:0x2208 "BTP2185 BFM mode Joystick"
- *   - tested with BTP2185 BFM Mode.
- *
- *  0x11C0:0x5506 "BTP2185 PC mode Joystick"
- *   - tested with BTP2185 PC Mode.
- *
- *  0x8380:0x1850 "BTP2185 V2 PC mode USB Gamepad"
- *   - tested with BTP2185 PC Mode with another version.
- *
- *  0x20bc:0x5500 "BTP2185 V2 BFM mode Joystick"
- *   - tested with BTP2171s.
- *  Copyright (c) 2014 Huang Bo <huangbobupt@163.com>
- */
 
-/*
- */
+ 
+
+ 
 
 
 #include <linux/input.h>
@@ -77,14 +58,7 @@ static int betopff_init(struct hid_device *hid)
 	}
 
 	report = list_first_entry(report_list, struct hid_report, list);
-	/*
-	 * Actually there are 4 fields for 4 Bytes as below:
-	 * -----------------------------------------
-	 * Byte0  Byte1  Byte2	  Byte3
-	 * 0x00   0x00   left_motor right_motor
-	 * -----------------------------------------
-	 * Do init them with default value.
-	 */
+	 
 	if (report->maxfield < 4) {
 		hid_err(hid, "not enough fields in the report: %d\n",
 				report->maxfield);

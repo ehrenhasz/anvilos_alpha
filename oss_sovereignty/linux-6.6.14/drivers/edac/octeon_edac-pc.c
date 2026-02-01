@@ -1,13 +1,4 @@
-/*
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 2012 Cavium, Inc.
- *
- * Copyright (C) 2009 Wind River Systems,
- *   written by Ralf Baechle <ralf@linux-mips.org>
- */
+ 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -30,11 +21,7 @@ struct co_cache_error {
 	struct edac_device_ctl_info *ed;
 };
 
-/**
- * EDAC CPU cache error callback
- *
- * @event: non-zero if unrecoverable.
- */
+ 
 static int  co_cache_error_event(struct notifier_block *this,
 	unsigned long event, void *ptr)
 {
@@ -71,7 +58,7 @@ static int  co_cache_error_event(struct notifier_block *this,
 		else
 			edac_device_handle_ce(p->ed, cpu, 0, "dcache");
 
-		/* Clear the error indication */
+		 
 		if (OCTEON_IS_OCTEON2())
 			write_octeon_c0_dcacheerr(1);
 		else

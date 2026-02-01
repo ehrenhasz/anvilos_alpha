@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
 
-  Broadcom B43 wireless driver
-
-  PHY workarounds.
-
-  Copyright (c) 2005-2007 Stefano Brivio <stefano.brivio@polimi.it>
-  Copyright (c) 2005-2007 Michael Buesch <m@bues.ch>
-
-
-*/
+ 
 
 #include "b43.h"
 #include "main.h"
@@ -41,11 +31,11 @@ void b43_wa_initgains(struct b43_wldev *dev)
 		b43_phy_write(dev, 0x00BA, 0x3ED5);
 }
 
-static void b43_wa_rssi_lt(struct b43_wldev *dev) /* RSSI lookup table */
+static void b43_wa_rssi_lt(struct b43_wldev *dev)  
 {
 	int i;
 
-	if (0 /* FIXME: For APHY.rev=2 this might be needed */) {
+	if (0  ) {
 		for (i = 0; i < 8; i++)
 			b43_ofdmtab_write16(dev, B43_OFDMTAB_RSSI, i, i + 8);
 		for (i = 8; i < 16; i++)
@@ -70,7 +60,7 @@ static void b43_wa_analog(struct b43_wldev *dev)
 	}
 }
 
-static void b43_wa_fft(struct b43_wldev *dev) /* Fine frequency table */
+static void b43_wa_fft(struct b43_wldev *dev)  
 {
 	int i;
 
@@ -79,7 +69,7 @@ static void b43_wa_fft(struct b43_wldev *dev) /* Fine frequency table */
 				    b43_tab_finefreqg[i]);
 }
 
-static void b43_wa_nft(struct b43_wldev *dev) /* Noise figure table */
+static void b43_wa_nft(struct b43_wldev *dev)  
 {
 	struct b43_phy *phy = &dev->phy;
 	int i;
@@ -94,7 +84,7 @@ static void b43_wa_nft(struct b43_wldev *dev) /* Noise figure table */
 					    b43_tab_noiseg2[i]);
 }
 
-static void b43_wa_rt(struct b43_wldev *dev) /* Rotor table */
+static void b43_wa_rt(struct b43_wldev *dev)  
 {
 	int i;
 
@@ -110,7 +100,7 @@ static void b43_write_nst(struct b43_wldev *dev, const u16 *nst)
 		b43_ofdmtab_write16(dev, B43_OFDMTAB_NOISESCALE, i, nst[i]);
 }
 
-static void b43_wa_nst(struct b43_wldev *dev) /* Noise scale table */
+static void b43_wa_nst(struct b43_wldev *dev)  
 {
 	struct b43_phy *phy = &dev->phy;
 
@@ -124,7 +114,7 @@ static void b43_wa_nst(struct b43_wldev *dev) /* Noise scale table */
 	}
 }
 
-static void b43_wa_art(struct b43_wldev *dev) /* ADV retard table */
+static void b43_wa_art(struct b43_wldev *dev)  
 {
 	int i;
 
@@ -133,7 +123,7 @@ static void b43_wa_art(struct b43_wldev *dev) /* ADV retard table */
 				i, b43_tab_retard[i]);
 }
 
-static void b43_wa_msst(struct b43_wldev *dev) /* Min sigma square table */
+static void b43_wa_msst(struct b43_wldev *dev)  
 {
 	struct b43_phy *phy = &dev->phy;
 	int i;
@@ -283,10 +273,10 @@ static void b43_wa_altagc(struct b43_wldev *dev)
 		b43_phy_mask(dev, B43_PHY_OFDM(0x26), ~0x0003);
 		b43_phy_mask(dev, B43_PHY_OFDM(0x26), ~0x1000);
 	}
-	b43_phy_read(dev, B43_PHY_VERSION_OFDM); /* Dummy read */
+	b43_phy_read(dev, B43_PHY_VERSION_OFDM);  
 }
 
-static void b43_wa_tr_ltov(struct b43_wldev *dev) /* TR Lookup Table Original Values */
+static void b43_wa_tr_ltov(struct b43_wldev *dev)  
 {
 	b43_gtab_write(dev, B43_GTAB_ORIGTR, 0, 0x7654);
 }
@@ -335,7 +325,7 @@ void b43_wa_all(struct b43_wldev *dev)
 
 	if (phy->type == B43_PHYTYPE_G) {
 		switch (phy->rev) {
-		case 1://XXX review rev1
+		case 1:
 			b43_wa_crs_ed(dev);
 			b43_wa_crs_thr(dev);
 			b43_wa_crs_blank(dev);
@@ -368,7 +358,7 @@ void b43_wa_all(struct b43_wldev *dev)
 			B43_WARN_ON(1);
 		}
 		b43_wa_boards_g(dev);
-	} else { /* No N PHY support so far, LP PHY is in phy_lp.c */
+	} else {  
 		B43_WARN_ON(1);
 	}
 

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 - 2022 Beijing WangXun Technology Co., Ltd. */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/iopoll.h>
@@ -20,9 +20,9 @@ int ngbe_eeprom_chksum_hostif(struct wx *wx)
 	buffer.hdr.req.buf_lenh = 0;
 	buffer.hdr.req.buf_lenl = 0;
 	buffer.hdr.req.checksum = NGBE_FW_CMD_DEFAULT_CHECKSUM;
-	/* convert offset from words to bytes */
+	 
 	buffer.address = 0;
-	/* one word */
+	 
 	buffer.length = 0;
 
 	status = wx_host_interface_command(wx, (u32 *)&buffer, sizeof(buffer),
@@ -40,7 +40,7 @@ static int ngbe_reset_misc(struct wx *wx)
 {
 	wx_reset_misc(wx);
 	if (wx->gpio_ctrl) {
-		/* gpio0 is used to power on/off control*/
+		 
 		wr32(wx, NGBE_GPIO_DDR, 0x1);
 		ngbe_sfp_modules_txrx_powerctl(wx, false);
 	}
@@ -49,24 +49,17 @@ static int ngbe_reset_misc(struct wx *wx)
 
 void ngbe_sfp_modules_txrx_powerctl(struct wx *wx, bool swi)
 {
-	/* gpio0 is used to power on control . 0 is on */
+	 
 	wr32(wx, NGBE_GPIO_DR, swi ? 0 : NGBE_GPIO_DR_0);
 }
 
-/**
- *  ngbe_reset_hw - Perform hardware reset
- *  @wx: pointer to hardware structure
- *
- *  Resets the hardware by resetting the transmit and receive units, masks
- *  and clears all interrupts, perform a PHY reset, and perform a link (MAC)
- *  reset.
- **/
+ 
 int ngbe_reset_hw(struct wx *wx)
 {
 	u32 val = 0;
 	int ret = 0;
 
-	/* Call wx stop to disable tx/rx and clear interrupts */
+	 
 	ret = wx_stop_adapter(wx);
 	if (ret != 0)
 		return ret;
@@ -85,10 +78,10 @@ int ngbe_reset_hw(struct wx *wx)
 	}
 	ngbe_reset_misc(wx);
 
-	/* Store the permanent mac address */
+	 
 	wx_get_mac_addr(wx, wx->mac.perm_addr);
 
-	/* reset num_rar_entries to 128 */
+	 
 	wx->mac.num_rar_entries = NGBE_RAR_ENTRIES;
 	wx_init_rx_addrs(wx);
 	pci_set_master(wx->pdev);

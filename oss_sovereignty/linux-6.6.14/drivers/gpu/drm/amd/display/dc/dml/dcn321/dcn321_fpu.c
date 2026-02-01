@@ -1,28 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+
+ 
 
 #include "clk_mgr.h"
 #include "resource.h"
@@ -139,8 +116,8 @@ struct _vcs_dpi_soc_bounding_box_st dcn3_21_soc = {
 	.pct_ideal_sdp_bw_after_urgent = 90.0,
 	.pct_ideal_fabric_bw_after_urgent = 67.0,
 	.pct_ideal_dram_sdp_bw_after_urgent_pixel_only = 20.0,
-	.pct_ideal_dram_sdp_bw_after_urgent_pixel_and_vm = 60.0, // N/A, for now keep as is until DML implemented
-	.pct_ideal_dram_sdp_bw_after_urgent_vm_only = 30.0, // N/A, for now keep as is until DML implemented
+	.pct_ideal_dram_sdp_bw_after_urgent_pixel_and_vm = 60.0, 
+	.pct_ideal_dram_sdp_bw_after_urgent_vm_only = 30.0, 
 	.pct_ideal_dram_bw_after_urgent_strobe = 67.0,
 	.max_avg_sdp_bw_use_normal_percent = 80.0,
 	.max_avg_fabric_bw_use_normal_percent = 60.0,
@@ -256,9 +233,7 @@ static void swap_table_entries(struct _vcs_dpi_voltage_scaling_st *first_entry,
 	*second_entry = temp_entry;
 }
 
-/*
- * sort_entries_with_same_bw - Sort entries sharing the same bandwidth by DCFCLK
- */
+ 
 static void sort_entries_with_same_bw(struct _vcs_dpi_voltage_scaling_st *table, unsigned int *num_entries)
 {
 	unsigned int start_index = 0;
@@ -290,10 +265,7 @@ static void sort_entries_with_same_bw(struct _vcs_dpi_voltage_scaling_st *table,
 	}
 }
 
-/*
- * remove_inconsistent_entries - Ensure entries with the same bandwidth have MEMCLK and FCLK monotonically increasing
- *                               and remove entries that do not follow this order
- */
+ 
 static void remove_inconsistent_entries(struct _vcs_dpi_voltage_scaling_st *table, unsigned int *num_entries)
 {
 	for (int i = 0; i < (*num_entries - 1); i++) {
@@ -305,21 +277,14 @@ static void remove_inconsistent_entries(struct _vcs_dpi_voltage_scaling_st *tabl
 	}
 }
 
-/*
- * override_max_clk_values - Overwrite the max clock frequencies with the max DC mode timings
- * Input:
- *	max_clk_limit - struct containing the desired clock timings
- * Output:
- *	curr_clk_limit  - struct containing the timings that need to be overwritten
- * Return: 0 upon success, non-zero for failure
- */
+ 
 static int override_max_clk_values(struct clk_limit_table_entry *max_clk_limit,
 		struct clk_limit_table_entry *curr_clk_limit)
 {
 	if (NULL == max_clk_limit || NULL == curr_clk_limit)
-		return -1; //invalid parameters
+		return -1; 
 
-	//only overwrite if desired max clock frequency is initialized
+	
 	if (max_clk_limit->dcfclk_mhz != 0)
 		curr_clk_limit->dcfclk_mhz = max_clk_limit->dcfclk_mhz;
 
@@ -395,7 +360,7 @@ static int build_synthetic_soc_states(bool disable_dc_mode_overwrite, struct clk
 	}
 
 	if (!disable_dc_mode_overwrite) {
-		//Overwrite max frequencies with max DC mode frequencies for DC mode systems
+		
 		override_max_clk_values(&bw_params->dc_mode_limit, &max_clk_data);
 		num_uclk_dpms = num_dc_uclk_dpms;
 		num_fclk_dpms = num_dc_fclk_dpms;
@@ -430,7 +395,7 @@ static int build_synthetic_soc_states(bool disable_dc_mode_overwrite, struct clk
 	entry.phyclk_d18_mhz = dcn3_21_soc.clock_limits[0].phyclk_d18_mhz;
 	entry.phyclk_d32_mhz = dcn3_21_soc.clock_limits[0].phyclk_d32_mhz;
 
-	// Insert all the DCFCLK STAs
+	
 	for (i = 0; i < num_dcfclk_stas; i++) {
 		entry.dcfclk_mhz = dcfclk_sta_targets[i];
 		entry.fabricclk_mhz = 0;
@@ -441,7 +406,7 @@ static int build_synthetic_soc_states(bool disable_dc_mode_overwrite, struct clk
 		dcn321_insert_entry_into_table_sorted(table, num_entries, &entry);
 	}
 
-	// Insert the max DCFCLK
+	
 	entry.dcfclk_mhz = max_clk_data.dcfclk_mhz;
 	entry.fabricclk_mhz = 0;
 	entry.dram_speed_mts = 0;
@@ -450,7 +415,7 @@ static int build_synthetic_soc_states(bool disable_dc_mode_overwrite, struct clk
 	entry.net_bw_in_kbytes_sec = calculate_net_bw_in_kbytes_sec(&entry);
 	dcn321_insert_entry_into_table_sorted(table, num_entries, &entry);
 
-	// Insert the UCLK DPMS
+	
 	for (i = 0; i < num_uclk_dpms; i++) {
 		entry.dcfclk_mhz = 0;
 		entry.fabricclk_mhz = 0;
@@ -461,7 +426,7 @@ static int build_synthetic_soc_states(bool disable_dc_mode_overwrite, struct clk
 		dcn321_insert_entry_into_table_sorted(table, num_entries, &entry);
 	}
 
-	// If FCLK is coarse grained, insert individual DPMs.
+	
 	if (num_fclk_dpms > 2) {
 		for (i = 0; i < num_fclk_dpms; i++) {
 			entry.dcfclk_mhz = 0;
@@ -473,7 +438,7 @@ static int build_synthetic_soc_states(bool disable_dc_mode_overwrite, struct clk
 			dcn321_insert_entry_into_table_sorted(table, num_entries, &entry);
 		}
 	}
-	// If FCLK fine grained, only insert max
+	
 	else {
 		entry.dcfclk_mhz = 0;
 		entry.fabricclk_mhz = max_clk_data.fclk_mhz;
@@ -484,11 +449,11 @@ static int build_synthetic_soc_states(bool disable_dc_mode_overwrite, struct clk
 		dcn321_insert_entry_into_table_sorted(table, num_entries, &entry);
 	}
 
-	// At this point, the table contains all "points of interest" based on
-	// DPMs from PMFW, and STAs.  Table is sorted by BW, and all clock
-	// ratios (by derate, are exact).
+	
+	
+	
 
-	// Remove states that require higher clocks than are supported
+	
 	for (i = *num_entries - 1; i >= 0 ; i--) {
 		if (table[i].dcfclk_mhz > max_clk_data.dcfclk_mhz ||
 				table[i].fabricclk_mhz > max_clk_data.fclk_mhz ||
@@ -496,7 +461,7 @@ static int build_synthetic_soc_states(bool disable_dc_mode_overwrite, struct clk
 			remove_entry_from_table_at_index(table, num_entries, i);
 	}
 
-	// Insert entry with all max dc limits without bandwitch matching
+	
 	if (!disable_dc_mode_overwrite) {
 		struct _vcs_dpi_voltage_scaling_st max_dc_limits_entry = entry;
 
@@ -513,12 +478,12 @@ static int build_synthetic_soc_states(bool disable_dc_mode_overwrite, struct clk
 
 
 
-	// At this point, the table only contains supported points of interest
-	// it could be used as is, but some states may be redundant due to
-	// coarse grained nature of some clocks, so we want to round up to
-	// coarse grained DPMs and remove duplicates.
+	
+	
+	
+	
 
-	// Round up UCLKs
+	
 	for (i = *num_entries - 1; i >= 0 ; i--) {
 		for (j = 0; j < num_uclk_dpms; j++) {
 			if (bw_params->clk_table.entries[j].memclk_mhz * 16 >= table[i].dram_speed_mts) {
@@ -528,7 +493,7 @@ static int build_synthetic_soc_states(bool disable_dc_mode_overwrite, struct clk
 		}
 	}
 
-	// If FCLK is coarse grained, round up to next DPMs
+	
 	if (num_fclk_dpms > 2) {
 		for (i = *num_entries - 1; i >= 0 ; i--) {
 			for (j = 0; j < num_fclk_dpms; j++) {
@@ -539,7 +504,7 @@ static int build_synthetic_soc_states(bool disable_dc_mode_overwrite, struct clk
 			}
 		}
 	}
-	// Otherwise, round up to minimum.
+	
 	else {
 		for (i = *num_entries - 1; i >= 0 ; i--) {
 			if (table[i].fabricclk_mhz < min_fclk_mhz) {
@@ -548,14 +513,14 @@ static int build_synthetic_soc_states(bool disable_dc_mode_overwrite, struct clk
 		}
 	}
 
-	// Round DCFCLKs up to minimum
+	
 	for (i = *num_entries - 1; i >= 0 ; i--) {
 		if (table[i].dcfclk_mhz < min_dcfclk_mhz) {
 			table[i].dcfclk_mhz = min_dcfclk_mhz;
 		}
 	}
 
-	// Remove duplicate states, note duplicate states are always neighbouring since table is sorted.
+	
 	i = 0;
 	while (i < *num_entries - 1) {
 		if (table[i].dcfclk_mhz == table[i + 1].dcfclk_mhz &&
@@ -566,7 +531,7 @@ static int build_synthetic_soc_states(bool disable_dc_mode_overwrite, struct clk
 			i++;
 	}
 
-	// Fix up the state indicies
+	
 	for (i = *num_entries - 1; i >= 0 ; i--) {
 		table[i].state = i;
 	}
@@ -596,24 +561,14 @@ static void dcn321_get_optimal_dcfclk_fclk_for_uclk(unsigned int uclk_mts,
 		(dcn3_21_soc.return_bus_width_bytes * (dcn3_21_soc.max_avg_sdp_bw_use_normal_percent / 100));
 }
 
-/** dcn321_update_bw_bounding_box
- * This would override some dcn3_2 ip_or_soc initial parameters hardcoded from spreadsheet
- * with actual values as per dGPU SKU:
- * -with passed few options from dc->config
- * -with dentist_vco_frequency from Clk Mgr (currently hardcoded, but might need to get it from PM FW)
- * -with passed latency values (passed in ns units) in dc-> bb override for debugging purposes
- * -with passed latencies from VBIOS (in 100_ns units) if available for certain dGPU SKU
- * -with number of DRAM channels from VBIOS (which differ for certain dGPU SKU of the same ASIC)
- * -clocks levels with passed clk_table entries from Clk Mgr as reported by PM FW for different
- *  clocks (which might differ for certain dGPU SKU of the same ASIC)
- */
+ 
 void dcn321_update_bw_bounding_box_fpu(struct dc *dc, struct clk_bw_params *bw_params)
 {
 	dc_assert_fp_enabled();
-	/* Overrides from dc->config options */
+	 
 	dcn3_21_ip.clamp_min_dcfclk = dc->config.clamp_min_dcfclk;
 
-	/* Override from passed dc->bb_overrides if available*/
+	 
 	if ((int)(dcn3_21_soc.sr_exit_time_us * 1000) != dc->bb_overrides.sr_exit_time_ns
 			&& dc->bb_overrides.sr_exit_time_ns) {
 		dcn3_21_soc.sr_exit_time_us = dc->bb_overrides.sr_exit_time_ns / 1000.0;
@@ -653,7 +608,7 @@ void dcn321_update_bw_bounding_box_fpu(struct dc *dc, struct clk_bw_params *bw_p
 			dc->bb_overrides.dummy_clock_change_latency_ns / 1000.0;
 	}
 
-	/* Override from VBIOS if VBIOS bb_info available */
+	 
 	if (dc->ctx->dc_bios->funcs->get_soc_bb_info) {
 		struct bp_soc_bb_info bb_info = {0};
 
@@ -672,7 +627,7 @@ void dcn321_update_bw_bounding_box_fpu(struct dc *dc, struct clk_bw_params *bw_p
 		}
 	}
 
-	/* Override from VBIOS for num_chan */
+	 
 	if (dc->ctx->dc_bios->vram_info.num_chans) {
 		dcn3_21_soc.num_chans = dc->ctx->dc_bios->vram_info.num_chans;
 		dcn3_21_soc.mall_allocated_for_dcn_mbytes = (double)(dcn32_calc_num_avail_chans_for_mall(dc,
@@ -682,16 +637,16 @@ void dcn321_update_bw_bounding_box_fpu(struct dc *dc, struct clk_bw_params *bw_p
 	if (dc->ctx->dc_bios->vram_info.dram_channel_width_bytes)
 		dcn3_21_soc.dram_channel_width_bytes = dc->ctx->dc_bios->vram_info.dram_channel_width_bytes;
 
-	/* DML DSC delay factor workaround */
+	 
 	dcn3_21_ip.dsc_delay_factor_wa = dc->debug.dsc_delay_factor_wa_x1000 / 1000.0;
 
 	dcn3_21_ip.min_prefetch_in_strobe_us = dc->debug.min_prefetch_in_strobe_ns / 1000.0;
 
-	/* Override dispclk_dppclk_vco_speed_mhz from Clk Mgr */
+	 
 	dcn3_21_soc.dispclk_dppclk_vco_speed_mhz = dc->clk_mgr->dentist_vco_freq_khz / 1000.0;
 	dc->dml.soc.dispclk_dppclk_vco_speed_mhz = dc->clk_mgr->dentist_vco_freq_khz / 1000.0;
 
-	/* Overrides Clock levelsfrom CLK Mgr table entries as reported by PM FW */
+	 
 	if (dc->debug.use_legacy_soc_bb_mechanism) {
 		unsigned int i = 0, j = 0, num_states = 0;
 
@@ -724,24 +679,24 @@ void dcn321_update_bw_bounding_box_fpu(struct dc *dc, struct clk_bw_params *bw_p
 			max_phyclk_mhz = dcn3_21_soc.clock_limits[0].phyclk_mhz;
 
 		if (max_dcfclk_mhz > dcfclk_sta_targets[num_dcfclk_sta_targets-1]) {
-			// If max DCFCLK is greater than the max DCFCLK STA target, insert into the DCFCLK STA target array
+			
 			dcfclk_sta_targets[num_dcfclk_sta_targets] = max_dcfclk_mhz;
 			num_dcfclk_sta_targets++;
 		} else if (max_dcfclk_mhz < dcfclk_sta_targets[num_dcfclk_sta_targets-1]) {
-			// If max DCFCLK is less than the max DCFCLK STA target, cap values and remove duplicates
+			
 			for (i = 0; i < num_dcfclk_sta_targets; i++) {
 				if (dcfclk_sta_targets[i] > max_dcfclk_mhz) {
 					dcfclk_sta_targets[i] = max_dcfclk_mhz;
 					break;
 				}
 			}
-			// Update size of array since we "removed" duplicates
+			
 			num_dcfclk_sta_targets = i + 1;
 		}
 
 		num_uclk_states = bw_params->clk_table.num_entries;
 
-		// Calculate optimal dcfclk for each uclk
+		
 		for (i = 0; i < num_uclk_states; i++) {
 			dcn321_get_optimal_dcfclk_fclk_for_uclk(bw_params->clk_table.entries[i].memclk_mhz * 16,
 					&optimal_dcfclk_for_uclk[i], NULL);
@@ -750,7 +705,7 @@ void dcn321_update_bw_bounding_box_fpu(struct dc *dc, struct clk_bw_params *bw_p
 			}
 		}
 
-		// Calculate optimal uclk for each dcfclk sta target
+		
 		for (i = 0; i < num_dcfclk_sta_targets; i++) {
 			for (j = 0; j < num_uclk_states; j++) {
 				if (dcfclk_sta_targets[i] < optimal_dcfclk_for_uclk[j]) {
@@ -763,7 +718,7 @@ void dcn321_update_bw_bounding_box_fpu(struct dc *dc, struct clk_bw_params *bw_p
 
 		i = 0;
 		j = 0;
-		// create the final dcfclk and uclk table
+		
 		while (i < num_dcfclk_sta_targets && j < num_uclk_states && num_states < DC__VOLTAGE_STATES) {
 			if (dcfclk_sta_targets[i] < optimal_dcfclk_for_uclk[j] && i < num_dcfclk_sta_targets) {
 				dcfclk_mhz[num_states] = dcfclk_sta_targets[i];
@@ -795,13 +750,13 @@ void dcn321_update_bw_bounding_box_fpu(struct dc *dc, struct clk_bw_params *bw_p
 			dcn3_21_soc.clock_limits[i].dcfclk_mhz = dcfclk_mhz[i];
 			dcn3_21_soc.clock_limits[i].fabricclk_mhz = dcfclk_mhz[i];
 
-			/* Fill all states with max values of all these clocks */
+			 
 			dcn3_21_soc.clock_limits[i].dispclk_mhz = max_dispclk_mhz;
 			dcn3_21_soc.clock_limits[i].dppclk_mhz  = max_dppclk_mhz;
 			dcn3_21_soc.clock_limits[i].phyclk_mhz  = max_phyclk_mhz;
 			dcn3_21_soc.clock_limits[i].dscclk_mhz  = max_dispclk_mhz / 3;
 
-			/* Populate from bw_params for DTBCLK, SOCCLK */
+			 
 			if (i > 0) {
 				if (!bw_params->clk_table.entries[i].dtbclk_mhz) {
 					dcn3_21_soc.clock_limits[i].dtbclk_mhz  = dcn3_21_soc.clock_limits[i-1].dtbclk_mhz;
@@ -822,8 +777,8 @@ void dcn321_update_bw_bounding_box_fpu(struct dc *dc, struct clk_bw_params *bw_p
 			else
 				dcn3_21_soc.clock_limits[i].dram_speed_mts = dram_speed_mts[i];
 
-			/* These clocks cannot come from bw_params, always fill from dcn3_21_soc[0] */
-			/* PHYCLK_D18, PHYCLK_D32 */
+			 
+			 
 			dcn3_21_soc.clock_limits[i].phyclk_d18_mhz = dcn3_21_soc.clock_limits[0].phyclk_d18_mhz;
 			dcn3_21_soc.clock_limits[i].phyclk_d32_mhz = dcn3_21_soc.clock_limits[0].phyclk_d32_mhz;
 		}
@@ -832,7 +787,7 @@ void dcn321_update_bw_bounding_box_fpu(struct dc *dc, struct clk_bw_params *bw_p
 			dcn3_21_soc.clock_limits, &dcn3_21_soc.num_states);
 	}
 
-	/* Re-init DML with updated bb */
+	 
 	dml_init_instance(&dc->dml, &dcn3_21_soc, &dcn3_21_ip, DML_PROJECT_DCN32);
 	if (dc->current_state)
 		dml_init_instance(&dc->current_state->bw_ctx.dml, &dcn3_21_soc, &dcn3_21_ip, DML_PROJECT_DCN32);

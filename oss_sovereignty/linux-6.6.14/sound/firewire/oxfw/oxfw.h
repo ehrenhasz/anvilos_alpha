@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * oxfw.h - a part of driver for OXFW970/971 based devices
- *
- * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
- */
+ 
+ 
 
 #include <linux/device.h>
 #include <linux/firewire.h>
@@ -33,28 +29,28 @@
 #include "../cmp.h"
 
 enum snd_oxfw_quirk {
-	// Postpone transferring packets during handling asynchronous transaction. As a result,
-	// next isochronous packet includes more events than one packet can include.
+	
+	
 	SND_OXFW_QUIRK_JUMBO_PAYLOAD = 0x01,
-	// The dbs field of CIP header in tx packet is wrong.
+	
 	SND_OXFW_QUIRK_WRONG_DBS = 0x02,
-	// Blocking transmission mode is used.
+	
 	SND_OXFW_QUIRK_BLOCKING_TRANSMISSION = 0x04,
-	// Stanton SCS1.d and SCS1.m support unique transaction.
+	
 	SND_OXFW_QUIRK_SCS_TRANSACTION = 0x08,
-	// Apogee Duet FireWire ignores data blocks in packet with NO_INFO for audio data
-	// processing, while output level meter moves. Any value in syt field of packet takes
-	// the device to process audio data even if the value is invalid in a point of
-	// IEC 61883-1/6.
+	
+	
+	
+	
 	SND_OXFW_QUIRK_IGNORE_NO_INFO_PACKET = 0x10,
-	// Loud Technologies Mackie Onyx 1640i seems to configure OXFW971 ASIC so that it decides
-	// event frequency according to events in received isochronous packets. The device looks to
-	// performs media clock recovery voluntarily. In the recovery, the packets with NO_INFO
-	// are ignored, thus driver should transfer packets with timestamp.
+	
+	
+	
+	
 	SND_OXFW_QUIRK_VOLUNTARY_RECOVERY = 0x20,
 };
 
-/* This is an arbitrary number for convinience. */
+ 
 #define	SND_OXFW_STREAM_FORMAT_ENTRIES	10
 struct snd_oxfw {
 	struct snd_card *card;
@@ -62,7 +58,7 @@ struct snd_oxfw {
 	struct mutex mutex;
 	spinlock_t lock;
 
-	// The combination of snd_oxfw_quirk enumeration-constants.
+	
 	unsigned int quirks;
 	bool has_output;
 	bool has_input;
@@ -87,10 +83,7 @@ struct snd_oxfw {
 	struct amdtp_domain domain;
 };
 
-/*
- * AV/C Stream Format Information Specification 1.1 Working Draft
- * (Apr 2005, 1394TA)
- */
+ 
 int avc_stream_set_format(struct fw_unit *unit, enum avc_general_plug_dir dir,
 			  unsigned int pid, u8 *format, unsigned int len);
 int avc_stream_get_format(struct fw_unit *unit,
@@ -112,10 +105,7 @@ avc_stream_get_format_list(struct fw_unit *unit,
 	return avc_stream_get_format(unit, dir, pid, buf, len, eid);
 }
 
-/*
- * AV/C Digital Interface Command Set General Specification 4.2
- * (Sep 2004, 1394TA)
- */
+ 
 int avc_general_inquiry_sig_fmt(struct fw_unit *unit, unsigned int rate,
 				enum avc_general_plug_dir dir,
 				unsigned short pid);

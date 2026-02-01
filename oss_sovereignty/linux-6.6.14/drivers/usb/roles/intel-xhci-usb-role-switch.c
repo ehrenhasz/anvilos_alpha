@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Intel XHCI (Cherry Trail, Broxton and others) USB OTG role switch driver
- *
- * Copyright (c) 2016-2017 Hans de Goede <hdegoede@redhat.com>
- *
- * Loosely based on android x86 kernel code which is:
- *
- * Copyright (C) 2014 Intel Corp.
- *
- * Author: Wu, Hao
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -22,7 +12,7 @@
 #include <linux/property.h>
 #include <linux/usb/role.h>
 
-/* register definition */
+ 
 #define DUAL_ROLE_CFG0			0x68
 #define SW_VBUS_VALID			BIT(24)
 #define SW_IDPIN_EN			BIT(21)
@@ -61,11 +51,7 @@ static int intel_xhci_usb_set_role(struct usb_role_switch *sw,
 	u32 glk, val;
 	u32 drd_config = DRD_CONFIG_DYNAMIC;
 
-	/*
-	 * On many CHT devices ACPI event (_AEI) handlers read / modify /
-	 * write the cfg0 register, just like we do. Take the ACPI lock
-	 * to avoid us racing with the AML code.
-	 */
+	 
 	status = acpi_acquire_global_lock(ACPI_WAIT_FOREVER, &glk);
 	if (ACPI_FAILURE(status) && status != AE_NOT_CONFIGURED) {
 		dev_err(data->dev, "Error could not acquire lock\n");
@@ -74,12 +60,7 @@ static int intel_xhci_usb_set_role(struct usb_role_switch *sw,
 
 	pm_runtime_get_sync(data->dev);
 
-	/*
-	 * Set idpin value as requested.
-	 * Since some devices rely on firmware setting DRD_CONFIG and
-	 * SW_SWITCH_EN bits to be zero for role switch,
-	 * do not set these bits for those devices.
-	 */
+	 
 	val = readl(data->base + DUAL_ROLE_CFG0);
 	switch (role) {
 	case USB_ROLE_NONE:
@@ -107,10 +88,10 @@ static int intel_xhci_usb_set_role(struct usb_role_switch *sw,
 
 	acpi_release_global_lock(glk);
 
-	/* In most case it takes about 600ms to finish mode switching */
+	 
 	timeout = jiffies + msecs_to_jiffies(DUAL_ROLE_CFG1_POLL_TIMEOUT);
 
-	/* Polling on CFG1 register to confirm mode switch.*/
+	 
 	do {
 		val = readl(data->base + DUAL_ROLE_CFG1);
 		if (!!(val & HOST_MODE) == (role == USB_ROLE_HOST)) {
@@ -118,7 +99,7 @@ static int intel_xhci_usb_set_role(struct usb_role_switch *sw,
 			return 0;
 		}
 
-		/* Interval for polling is set to about 5 - 10 ms */
+		 
 		usleep_range(5000, 10000);
 	} while (time_before(jiffies, timeout));
 

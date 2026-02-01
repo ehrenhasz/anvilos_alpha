@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LCD panel driver for Sharp LS037V7DW01
- *
- * Copyright (C) 2013 Texas Instruments
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -24,11 +19,11 @@ struct panel_drv_data {
 
 	struct omap_video_timings videomode;
 
-	struct gpio_desc *resb_gpio;	/* low = reset active min 20 us */
-	struct gpio_desc *ini_gpio;	/* high = power on */
-	struct gpio_desc *mo_gpio;	/* low = 480x640, high = 240x320 */
-	struct gpio_desc *lr_gpio;	/* high = conventional horizontal scanning */
-	struct gpio_desc *ud_gpio;	/* high = conventional vertical scanning */
+	struct gpio_desc *resb_gpio;	 
+	struct gpio_desc *ini_gpio;	 
+	struct gpio_desc *mo_gpio;	 
+	struct gpio_desc *lr_gpio;	 
+	struct gpio_desc *ud_gpio;	 
 };
 
 static const struct omap_video_timings sharp_ls_timings = {
@@ -104,7 +99,7 @@ static int sharp_ls_enable(struct omap_dss_device *dssdev)
 		return r;
 	}
 
-	/* wait couple of vsyncs until enabling the LCD */
+	 
 	msleep(50);
 
 	if (ddata->resb_gpio)
@@ -132,7 +127,7 @@ static void sharp_ls_disable(struct omap_dss_device *dssdev)
 	if (ddata->resb_gpio)
 		gpiod_set_value_cansleep(ddata->resb_gpio, 0);
 
-	/* wait at least 5 vsyncs after disabling the LCD */
+	 
 
 	msleep(100);
 
@@ -214,27 +209,27 @@ static int sharp_ls_probe_of(struct platform_device *pdev)
 		return dev_err_probe(&pdev->dev, PTR_ERR(ddata->vcc),
 				     "failed to get regulator\n");
 
-	/* lcd INI */
+	 
 	r = sharp_ls_get_gpio_of(&pdev->dev, 0, 0, "enable", &ddata->ini_gpio);
 	if (r)
 		return r;
 
-	/* lcd RESB */
+	 
 	r = sharp_ls_get_gpio_of(&pdev->dev, 0, 0, "reset", &ddata->resb_gpio);
 	if (r)
 		return r;
 
-	/* lcd MO */
+	 
 	r = sharp_ls_get_gpio_of(&pdev->dev, 0, 0, "mode", &ddata->mo_gpio);
 	if (r)
 		return r;
 
-	/* lcd LR */
+	 
 	r = sharp_ls_get_gpio_of(&pdev->dev, 1, 1, "mode", &ddata->lr_gpio);
 	if (r)
 		return r;
 
-	/* lcd UD */
+	 
 	r = sharp_ls_get_gpio_of(&pdev->dev, 2, 1, "mode", &ddata->ud_gpio);
 	if (r)
 		return r;

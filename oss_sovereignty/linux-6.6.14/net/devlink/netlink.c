@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2016 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2016 Jiri Pirko <jiri@mellanox.com>
- */
+
+ 
 
 #include <net/genetlink.h>
 #include <net/sock.h>
@@ -231,7 +228,7 @@ static int devlink_nl_inst_iter_dumpit(struct sk_buff *msg,
 
 		state->instance++;
 
-		/* restart sub-object walk for the next instance */
+		 
 		state->idx = 0;
 	}
 
@@ -357,19 +354,19 @@ static const struct genl_small_ops devlink_nl_small_ops[40] = {
 		.cmd = DEVLINK_CMD_DPIPE_TABLE_GET,
 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
 		.doit = devlink_nl_cmd_dpipe_table_get,
-		/* can be retrieved by unprivileged users */
+		 
 	},
 	{
 		.cmd = DEVLINK_CMD_DPIPE_ENTRIES_GET,
 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
 		.doit = devlink_nl_cmd_dpipe_entries_get,
-		/* can be retrieved by unprivileged users */
+		 
 	},
 	{
 		.cmd = DEVLINK_CMD_DPIPE_HEADERS_GET,
 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
 		.doit = devlink_nl_cmd_dpipe_headers_get,
-		/* can be retrieved by unprivileged users */
+		 
 	},
 	{
 		.cmd = DEVLINK_CMD_DPIPE_TABLE_COUNTERS_SET,
@@ -387,7 +384,7 @@ static const struct genl_small_ops devlink_nl_small_ops[40] = {
 		.cmd = DEVLINK_CMD_RESOURCE_DUMP,
 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
 		.doit = devlink_nl_cmd_resource_dump,
-		/* can be retrieved by unprivileged users */
+		 
 	},
 	{
 		.cmd = DEVLINK_CMD_RELOAD,
@@ -407,7 +404,7 @@ static const struct genl_small_ops devlink_nl_small_ops[40] = {
 		.doit = devlink_nl_cmd_port_param_get_doit,
 		.dumpit = devlink_nl_cmd_port_param_get_dumpit,
 		.internal_flags = DEVLINK_NL_FLAG_NEED_PORT,
-		/* can be retrieved by unprivileged users */
+		 
 	},
 	{
 		.cmd = DEVLINK_CMD_PORT_PARAM_SET,
@@ -503,7 +500,7 @@ static const struct genl_small_ops devlink_nl_small_ops[40] = {
 		.doit = devlink_nl_cmd_selftests_run,
 		.flags = GENL_ADMIN_PERM,
 	},
-	/* -- No new ops here! Use split ops going forward! -- */
+	 
 };
 
 struct genl_family devlink_nl_family __ro_after_init = {

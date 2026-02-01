@@ -1,48 +1,13 @@
-/*
- * CDDL HEADER START
- *
- * This file and its contents are supplied under the terms of the
- * Common Development and Distribution License ("CDDL"), version 1.0.
- * You may only use this file in accordance with the terms of version
- * 1.0 of the CDDL.
- *
- * A full copy of the text of the CDDL should have accompanied this
- * source.  A copy of the CDDL is also available via the Internet at
- * http://www.illumos.org/license/CDDL.
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2013, 2016 by Delphix. All rights reserved.
- */
+ 
 
 #include <sys/blkptr.h>
 #include <sys/zfs_context.h>
 #include <sys/zio.h>
 #include <sys/zio_compress.h>
 
-/*
- * Embedded-data Block Pointers
- *
- * Normally, block pointers point (via their DVAs) to a block which holds data.
- * If the data that we need to store is very small, this is an inefficient
- * use of space, because a block must be at minimum 1 sector (typically 512
- * bytes or 4KB).  Additionally, reading these small blocks tends to generate
- * more random reads.
- *
- * Embedded-data Block Pointers allow small pieces of data (the "payload",
- * up to 112 bytes) to be stored in the block pointer itself, instead of
- * being pointed to.  The "Pointer" part of this name is a bit of a
- * misnomer, as nothing is pointed to.
- *
- * BP_EMBEDDED_TYPE_DATA block pointers allow highly-compressible data to
- * be embedded in the block pointer.  The logic for this is handled in
- * the SPA, by the zio pipeline.  Therefore most code outside the zio
- * pipeline doesn't need special-cases to handle these block pointers.
- *
- * See spa.h for details on the exact layout of embedded block pointers.
- */
+ 
 
 void
 encode_embedded_bp_compressed(blkptr_t *bp, void *data,
@@ -65,14 +30,11 @@ encode_embedded_bp_compressed(blkptr_t *bp, void *data,
 	BPE_SET_LSIZE(bp, uncompressed_size);
 	BPE_SET_PSIZE(bp, compressed_size);
 
-	/*
-	 * Encode the byte array into the words of the block pointer.
-	 * First byte goes into low bits of first word (little endian).
-	 */
+	 
 	for (int i = 0; i < compressed_size; i++) {
 		BF64_SET(w, (i % sizeof (w)) * NBBY, NBBY, data8[i]);
 		if (i % sizeof (w) == sizeof (w) - 1) {
-			/* we've reached the end of a word */
+			 
 			ASSERT3P(bp64, <, bp + 1);
 			*bp64 = w;
 			bp64++;
@@ -81,15 +43,12 @@ encode_embedded_bp_compressed(blkptr_t *bp, void *data,
 			w = 0;
 		}
 	}
-	/* write last partial word */
+	 
 	if (bp64 < (uint64_t *)(bp + 1))
 		*bp64 = w;
 }
 
-/*
- * buf must be at least BPE_GET_PSIZE(bp) bytes long (which will never be
- * more than BPE_PAYLOAD_SIZE bytes).
- */
+ 
 void
 decode_embedded_bp_compressed(const blkptr_t *bp, void *buf)
 {
@@ -102,13 +61,10 @@ decode_embedded_bp_compressed(const blkptr_t *bp, void *buf)
 
 	psize = BPE_GET_PSIZE(bp);
 
-	/*
-	 * Decode the words of the block pointer into the byte array.
-	 * Low bits of first word are the first byte (little endian).
-	 */
+	 
 	for (int i = 0; i < psize; i++) {
 		if (i % sizeof (w) == 0) {
-			/* beginning of a word */
+			 
 			ASSERT3P(bp64, <, bp + 1);
 			w = *bp64;
 			bp64++;
@@ -119,12 +75,7 @@ decode_embedded_bp_compressed(const blkptr_t *bp, void *buf)
 	}
 }
 
-/*
- * Fill in the buffer with the (decompressed) payload of the embedded
- * blkptr_t.  Takes into account compression and byteorder (the payload is
- * treated as a stream of bytes).
- * Return 0 on success, or ENOSPC if it won't fit in the buffer.
- */
+ 
 int
 decode_embedded_bp(const blkptr_t *bp, void *buf, int buflen)
 {

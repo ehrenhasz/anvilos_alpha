@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  QLogic FCoE Offload Driver
- *  Copyright (c) 2016-2018 Cavium Inc.
- */
+
+ 
 #include "qedf_dbg.h"
 #include <linux/vmalloc.h>
 
@@ -145,7 +142,7 @@ qedf_uevent_emit(struct Scsi_Host *shost, u32 code, char *msg)
 			sprintf(event_string, "GRCDUMP=%u", shost->host_no);
 		break;
 	default:
-		/* do nothing */
+		 
 		break;
 	}
 

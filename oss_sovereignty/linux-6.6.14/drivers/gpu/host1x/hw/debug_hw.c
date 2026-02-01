@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2010 Google, Inc.
- * Author: Erik Gilling <konkers@android.com>
- *
- * Copyright (C) 2011-2013 NVIDIA Corporation
- */
+
+ 
 
 #include "../dev.h"
 #include "../debug.h"
@@ -160,16 +155,12 @@ static void show_gather(struct output *o, dma_addr_t phys_addr,
 			unsigned int words, struct host1x_cdma *cdma,
 			dma_addr_t pin_addr, u32 *map_addr)
 {
-	/* Map dmaget cursor to corresponding mem handle */
+	 
 	u32 offset = phys_addr - pin_addr;
 	unsigned int data_count = 0, i;
 	u32 payload = INVALID_PAYLOAD;
 
-	/*
-	 * Sometimes we're given different hardware address to the same
-	 * page - in these cases the offset will get an invalid number and
-	 * we just have to bail out.
-	 */
+	 
 	if (offset > HOST1X_DEBUG_MAX_PAGE_OFFSET) {
 		host1x_debug_output(o, "[address mismatch]\n");
 		return;

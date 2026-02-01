@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * null_blk device driver tracepoints.
- *
- * Copyright (C) 2020 Western Digital Corporation or its affiliates.
- */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM nullb
@@ -68,12 +64,12 @@ TRACE_EVENT(nullb_report_zones,
 		      __print_disk_name(__entry->disk), __entry->nr_zones)
 );
 
-#endif /* _TRACE_NULLB_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE trace
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2003 - 2009 NetXen, Inc.
- * Copyright (C) 2009 - QLogic Corporation.
- * All rights reserved.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/delay.h>
@@ -87,7 +83,7 @@ netxen_nic_get_link_ksettings(struct net_device *dev,
 	int check_sfp_module = 0;
 	u32 supported, advertising;
 
-	/* read which mode */
+	 
 	if (adapter->ahw.port_type == NETXEN_NIC_GBE) {
 		supported = (SUPPORTED_10baseT_Half |
 				   SUPPORTED_10baseT_Full |
@@ -485,7 +481,7 @@ netxen_nic_get_pauseparam(struct net_device *dev,
 	if (adapter->ahw.port_type == NETXEN_NIC_GBE) {
 		if ((port < 0) || (port >= NETXEN_NIU_MAX_GBE_PORTS))
 			return;
-		/* get flow control settings */
+		 
 		val = NXRD32(adapter, NETXEN_NIU_GB_MAC_CONFIG_0(port));
 		pause->rx_pause = netxen_gb_get_rx_flowctl(val);
 		val = NXRD32(adapter, NETXEN_NIU_GB_PAUSE_CTL);
@@ -527,15 +523,15 @@ netxen_nic_set_pauseparam(struct net_device *dev,
 	__u32 val;
 	int port = adapter->physical_port;
 
-	/* not supported */
+	 
 	if (pause->autoneg)
 		return -EINVAL;
 
-	/* read mode */
+	 
 	if (adapter->ahw.port_type == NETXEN_NIC_GBE) {
 		if ((port < 0) || (port >= NETXEN_NIU_MAX_GBE_PORTS))
 			return -EIO;
-		/* set flow control */
+		 
 		val = NXRD32(adapter, NETXEN_NIU_GB_MAC_CONFIG_0(port));
 
 		if (pause->rx_pause)
@@ -545,7 +541,7 @@ netxen_nic_set_pauseparam(struct net_device *dev,
 
 		NXWR32(adapter, NETXEN_NIU_GB_MAC_CONFIG_0(port),
 				val);
-		/* set autoneg */
+		 
 		val = NXRD32(adapter, NETXEN_NIU_GB_PAUSE_CTL);
 		switch (port) {
 		case 0:
@@ -640,7 +636,7 @@ netxen_nic_diag_test(struct net_device *dev, struct ethtool_test *eth_test,
 	memset(data, 0, sizeof(uint64_t) * NETXEN_NIC_TEST_LEN);
 	if ((data[0] = netxen_nic_reg_test(dev)))
 		eth_test->flags |= ETH_TEST_FL_FAILED;
-	/* link test */
+	 
 	if ((data[1] = (u64) netxen_nic_test_link(dev)))
 		eth_test->flags |= ETH_TEST_FL_FAILED;
 }
@@ -729,11 +725,7 @@ netxen_nic_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 	return 0;
 }
 
-/*
- * Set the coalescing parameters. Currently only normal is supported.
- * If rx_coalesce_usecs == 0 or rx_max_coalesced_frames == 0 then set the
- * firmware coalescing to default.
- */
+ 
 static int netxen_set_intr_coalesce(struct net_device *netdev,
 				    struct ethtool_coalesce *ethcoal,
 				    struct kernel_ethtool_coalesce *kernel_coal,
@@ -747,10 +739,7 @@ static int netxen_set_intr_coalesce(struct net_device *netdev,
 	if (adapter->is_up != NETXEN_ADAPTER_UP_MAGIC)
 		return -EINVAL;
 
-	/*
-	* Return Error if unsupported values or
-	* unsupported parameters are set.
-	*/
+	 
 	if (ethcoal->rx_coalesce_usecs > 0xffff ||
 		ethcoal->rx_max_coalesced_frames > 0xffff ||
 		ethcoal->tx_coalesce_usecs > 0xffff ||
@@ -822,7 +811,7 @@ netxen_get_dump_flag(struct net_device *netdev, struct ethtool_dump *dump)
 	return 0;
 }
 
-/* Fw dump levels */
+ 
 static const u32 FW_DUMP_LEVELS[] = { 0x3, 0x7, 0xf, 0x1f, 0x3f, 0x7f, 0xff };
 
 static int
@@ -894,21 +883,21 @@ netxen_get_dump_data(struct net_device *netdev, struct ethtool_dump *dump,
 		netdev_info(netdev, "Dump not available\n");
 		return -EINVAL;
 	}
-	/* Copy template header first */
+	 
 	copy_sz = mdump->md_template_size;
 	hdr_ptr = (u32 *) mdump->md_template;
 	data = buffer;
 	for (i = 0; i < copy_sz/sizeof(u32); i++)
 		*data++ = cpu_to_le32(*hdr_ptr++);
 
-	/* Copy captured dump data */
+	 
 	memcpy(buffer + copy_sz,
 		mdump->md_capture_buff + mdump->md_template_size,
 			mdump->md_capture_size);
 	dump->len = copy_sz + mdump->md_capture_size;
 	dump->flag = mdump->md_capture_mask;
 
-	/* Free dump area once data has been captured */
+	 
 	vfree(mdump->md_capture_buff);
 	mdump->md_capture_buff = NULL;
 	adapter->fw_mdump_rdy = 0;

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * SM3 secure hash, as specified by OSCCA GM/T 0004-2012 SM3 and described
- * at https://datatracker.ietf.org/doc/html/draft-sca-cfrg-sm3-02
- *
- * Copyright (C) 2017 ARM Limited or its affiliates.
- * Copyright (C) 2017 Gilad Ben-Yossef <gilad@benyossef.com>
- * Copyright (C) 2021 Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
- */
+ 
+ 
 
 #include <linux/module.h>
 #include <asm/unaligned.h>
@@ -31,10 +24,7 @@ static const u32 ____cacheline_aligned K[64] = {
 	0xa7a879d8, 0x4f50f3b1, 0x9ea1e762, 0x3d43cec5
 };
 
-/*
- * Transform the message X which consists of 16 32-bit-words. See
- * GM/T 004-2012 for details.
- */
+ 
 #define R(i, a, b, c, d, e, f, g, h, t, w1, w2)			\
 	do {							\
 		ss1 = rol32((rol32((a), 12) + (e) + (t)), 7);	\
@@ -57,7 +47,7 @@ static const u32 ____cacheline_aligned K[64] = {
 #define GG1(x, y, z)  FF1(x, y, z)
 #define GG2(x, y, z)  ((x & y) | (~x & z))
 
-/* Message expansion */
+ 
 #define P0(x) ((x) ^ rol32((x), 9) ^ rol32((x), 17))
 #define P1(x) ((x) ^ rol32((x), 15) ^ rol32((x), 23))
 #define I(i)  (W[i] = get_unaligned_be32(data + i * 4))
@@ -236,7 +226,7 @@ void sm3_final(struct sm3_state *sctx, u8 *out)
 	for (i = 0; i < 8; i++)
 		put_unaligned_be32(sctx->state[i], digest++);
 
-	/* Zeroize sensitive information. */
+	 
 	memzero_explicit(W, sizeof(W));
 	memzero_explicit(sctx, sizeof(*sctx));
 }

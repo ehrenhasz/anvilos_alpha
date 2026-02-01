@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- */
+ 
+ 
 
 #ifndef _RQ_ENET_DESC_H_
 #define _RQ_ENET_DESC_H_
 
-/* Ethernet receive queue descriptor: 16B */
+ 
 struct rq_enet_desc {
 	__le64 address;
 	__le16 length_type;
@@ -44,4 +41,4 @@ static inline void rq_enet_desc_dec(struct rq_enet_desc *desc,
 		RQ_ENET_TYPE_MASK);
 }
 
-#endif /* _RQ_ENET_DESC_H_ */
+#endif  

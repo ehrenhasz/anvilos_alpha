@@ -1,26 +1,4 @@
-/*
- * Copyright 2013 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #define nv50_ram(p) container_of((p), struct nv50_ram, base)
 #include "ram.h"
 #include "ramseq.h"
@@ -92,7 +70,7 @@ nv50_ram_timing_calc(struct nv50_ram *ram, u32 *timing)
 		break;
 	}
 
-	/* XXX: N=1 is not proper statistics */
+	 
 	if (device->chipset == 0xa0) {
 		unkt3b = 0x19 + ram->base.next->bios.rammap_00_16_40;
 		timing[6] = (0x2d + T(CL) - T(CWL) +
@@ -125,11 +103,11 @@ nv50_ram_timing_calc(struct nv50_ram *ram, u32 *timing)
 	timing[5] = T(RFC) << 24 |
 		    max_t(u8, T(RCDRD), T(RCDWR)) << 16 |
 		    T(RP);
-	/* Timing 6 is already done above */
+	 
 	timing[7] = (cur7 & 0xff00ffff) | (T(CL) - 1) << 16;
 	timing[8] = (cur8 & 0xffffff00);
 
-	/* XXX: P.version == 1 only has DDR2 and GDDR3? */
+	 
 	if (ram->base.type == NVKM_RAM_TYPE_DDR2) {
 		timing[5] |= (T(CL) + 3) << 8;
 		timing[8] |= (T(CL) - 4);
@@ -158,7 +136,7 @@ nv50_ram_timing_read(struct nv50_ram *ram, u32 *timing)
 	for (i = 0; i <= 8; i++)
 		timing[i] = nvkm_rd32(device, 0x100220 + (i * 4));
 
-	/* Derive the bare minimum for the MR calculation to succeed */
+	 
 	cfg->timing_ver = 0x10;
 	T(CL) = (timing[3] & 0xff) + 1;
 
@@ -235,7 +213,7 @@ nv50_ram_calc(struct nvkm_ram *base, u32 freq)
 	next->freq = freq;
 	ram->base.next = next;
 
-	/* lookup closest matching performance table entry for frequency */
+	 
 	i = 0;
 	do {
 		data = nvbios_perfEp(bios, i++, &ver, &hdr, &cnt,
@@ -249,7 +227,7 @@ nv50_ram_calc(struct nvkm_ram *base, u32 freq)
 
 	nvbios_rammapEp_from_perf(bios, data, hdr, &next->bios);
 
-	/* locate specific data set for the attached memory */
+	 
 	strap = nvbios_ramcfg_index(subdev);
 	if (strap >= cnt) {
 		nvkm_error(subdev, "invalid ramcfg strap\n");
@@ -263,7 +241,7 @@ nv50_ram_calc(struct nvkm_ram *base, u32 freq)
 		return -EINVAL;
 	}
 
-	/* lookup memory timings, if bios says they're present */
+	 
 	if (next->bios.ramcfg_timing != 0xff) {
 		data = nvbios_timingEp(bios, next->bios.ramcfg_timing,
 					&ver, &hdr, &cnt, &len, &next->bios);
@@ -282,7 +260,7 @@ nv50_ram_calc(struct nvkm_ram *base, u32 freq)
 	if (ret)
 		return ret;
 
-	/* Determine ram-specific MR values */
+	 
 	ram->base.mr[0] = ram_rd32(hwsq, mr[0]);
 	ram->base.mr[1] = ram_rd32(hwsq, mr[1]);
 	ram->base.mr[2] = ram_rd32(hwsq, mr[2]);
@@ -304,25 +282,25 @@ nv50_ram_calc(struct nvkm_ram *base, u32 freq)
 	if (subdev->device->chipset <= 0x96 && !next->bios.ramcfg_00_03_02)
 		ram_mask(hwsq, 0x100710, 0x00000200, 0x00000000);
 
-	/* Always disable this bit during reclock */
+	 
 	ram_mask(hwsq, 0x100200, 0x00000800, 0x00000000);
 
 	ram_wait_vblank(hwsq);
 	ram_wr32(hwsq, 0x611200, 0x00003300);
-	ram_wr32(hwsq, 0x002504, 0x00000001); /* block fifo */
+	ram_wr32(hwsq, 0x002504, 0x00000001);  
 	ram_nsec(hwsq, 8000);
-	ram_setf(hwsq, 0x10, 0x00); /* disable fb */
-	ram_wait(hwsq, 0x00, 0x01); /* wait for fb disabled */
+	ram_setf(hwsq, 0x10, 0x00);  
+	ram_wait(hwsq, 0x00, 0x01);  
 	ram_nsec(hwsq, 2000);
 
 	if (next->bios.timing_10_ODT)
 		nv50_ram_gpio(hwsq, 0x2e, 1);
 
-	ram_wr32(hwsq, 0x1002d4, 0x00000001); /* precharge */
-	ram_wr32(hwsq, 0x1002d0, 0x00000001); /* refresh */
-	ram_wr32(hwsq, 0x1002d0, 0x00000001); /* refresh */
-	ram_wr32(hwsq, 0x100210, 0x00000000); /* disable auto-refresh */
-	ram_wr32(hwsq, 0x1002dc, 0x00000001); /* enable self-refresh */
+	ram_wr32(hwsq, 0x1002d4, 0x00000001);  
+	ram_wr32(hwsq, 0x1002d0, 0x00000001);  
+	ram_wr32(hwsq, 0x1002d0, 0x00000001);  
+	ram_wr32(hwsq, 0x100210, 0x00000000);  
+	ram_wr32(hwsq, 0x1002dc, 0x00000001);  
 
 	ret = nvbios_pll_parse(bios, 0x004008, &mpll);
 	mpll.vco2.max_freq = 0;
@@ -336,7 +314,7 @@ nv50_ram_calc(struct nvkm_ram *base, u32 freq)
 	if (ret < 0)
 		return ret;
 
-	/* XXX: 750MHz seems rather arbitrary */
+	 
 	if (freq <= 750000) {
 		r100da0 = 0x00000010;
 		r004008 = 0x90000000;
@@ -348,38 +326,37 @@ nv50_ram_calc(struct nvkm_ram *base, u32 freq)
 	r004008 |= (mpll.bias_p << 19) | (P << 22) | (P << 16);
 
 	ram_mask(hwsq, 0x00c040, 0xc000c000, 0x0000c000);
-	/* XXX: Is rammap_00_16_40 the DLL bit we've seen in GT215? Why does
-	 * it have a different rammap bit from DLLoff? */
+	 
 	ram_mask(hwsq, 0x004008, 0x00004200, 0x00000200 |
 			next->bios.rammap_00_16_40 << 14);
 	ram_mask(hwsq, 0x00400c, 0x0000ffff, (N1 << 8) | M1);
 	ram_mask(hwsq, 0x004008, 0x91ff0000, r004008);
 
-	/* XXX: GDDR3 only? */
+	 
 	if (subdev->device->chipset >= 0x92)
 		ram_wr32(hwsq, 0x100da0, r100da0);
 
 	nv50_ram_gpio(hwsq, 0x18, !next->bios.ramcfg_FBVDDQ);
-	ram_nsec(hwsq, 64000); /*XXX*/
-	ram_nsec(hwsq, 32000); /*XXX*/
+	ram_nsec(hwsq, 64000);  
+	ram_nsec(hwsq, 32000);  
 
 	ram_mask(hwsq, 0x004008, 0x00002200, 0x00002000);
 
-	ram_wr32(hwsq, 0x1002dc, 0x00000000); /* disable self-refresh */
-	ram_wr32(hwsq, 0x1002d4, 0x00000001); /* disable self-refresh */
-	ram_wr32(hwsq, 0x100210, 0x80000000); /* enable auto-refresh */
+	ram_wr32(hwsq, 0x1002dc, 0x00000000);  
+	ram_wr32(hwsq, 0x1002d4, 0x00000001);  
+	ram_wr32(hwsq, 0x100210, 0x80000000);  
 
 	ram_nsec(hwsq, 12000);
 
 	switch (ram->base.type) {
 	case NVKM_RAM_TYPE_DDR2:
-		ram_nuke(hwsq, mr[0]); /* force update */
+		ram_nuke(hwsq, mr[0]);  
 		ram_mask(hwsq, mr[0], 0x000, 0x000);
 		break;
 	case NVKM_RAM_TYPE_GDDR3:
-		ram_nuke(hwsq, mr[1]); /* force update */
+		ram_nuke(hwsq, mr[1]);  
 		ram_wr32(hwsq, mr[1], ram->base.mr[1]);
-		ram_nuke(hwsq, mr[0]); /* force update */
+		ram_nuke(hwsq, mr[0]);  
 		ram_wr32(hwsq, mr[0], ram->base.mr[0]);
 		break;
 	default:
@@ -400,7 +377,7 @@ nv50_ram_calc(struct nvkm_ram *base, u32 freq)
 		ram_mask(hwsq, 0x10021c, 0x00010000, 0x00000000);
 	ram_mask(hwsq, 0x100200, 0x00001000, !next->bios.ramcfg_00_04_02 << 12);
 
-	/* XXX: A lot of this could be "chipset"/"ram type" specific stuff */
+	 
 	unk710  = ram_rd32(hwsq, 0x100710) & ~0x00000100;
 	unk714  = ram_rd32(hwsq, 0x100714) & ~0xf0000020;
 	unk718  = ram_rd32(hwsq, 0x100718) & ~0x00000100;
@@ -438,8 +415,7 @@ nv50_ram_calc(struct nvkm_ram *base, u32 freq)
 	ram_mask(hwsq, 0x100718, 0xffffffff, unk718);
 	ram_mask(hwsq, 0x100710, 0xffffffff, unk710);
 
-	/* XXX: G94 does not even test these regs in trace. Harmless we do it,
-	 * but why is it omitted? */
+	 
 	if (next->bios.rammap_00_16_20) {
 		ram_wr32(hwsq, 0x1005a0, next->bios.ramcfg_00_07 << 16 |
 					 next->bios.ramcfg_00_06 << 8 |
@@ -455,14 +431,14 @@ nv50_ram_calc(struct nvkm_ram *base, u32 freq)
 	if (!next->bios.timing_10_ODT)
 		nv50_ram_gpio(hwsq, 0x2e, 0);
 
-	/* Reset DLL */
+	 
 	if (!next->bios.ramcfg_DLLoff)
 		nvkm_sddr2_dll_reset(hwsq);
 
-	ram_setf(hwsq, 0x10, 0x01); /* enable fb */
-	ram_wait(hwsq, 0x00, 0x00); /* wait for fb enabled */
+	ram_setf(hwsq, 0x10, 0x01);  
+	ram_wait(hwsq, 0x00, 0x00);  
 	ram_wr32(hwsq, 0x611200, 0x00003330);
-	ram_wr32(hwsq, 0x002504, 0x00000000); /* un-block fifo */
+	ram_wr32(hwsq, 0x002504, 0x00000000);  
 
 	if (next->bios.rammap_00_17_02)
 		ram_mask(hwsq, 0x100200, 0x00000800, 0x00000800);
@@ -543,8 +519,8 @@ nv50_ram_ctor(const struct nvkm_ram_func *func,
 {
 	struct nvkm_device *device = fb->subdev.device;
 	struct nvkm_bios *bios = device->bios;
-	const u32 rsvd_head = ( 256 * 1024); /* vga memory */
-	const u32 rsvd_tail = (1024 * 1024); /* vbios etc */
+	const u32 rsvd_head = ( 256 * 1024);  
+	const u32 rsvd_tail = (1024 * 1024);  
 	u64 size = nvkm_rd32(device, 0x10020c);
 	enum nvkm_ram_type type = NVKM_RAM_TYPE_UNKNOWN;
 	int ret;

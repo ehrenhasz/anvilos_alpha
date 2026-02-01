@@ -5,9 +5,7 @@ void preserce_ptr_sz_fn(long x) {}
 
 #define __bpf_aligned __attribute__((aligned(8)))
 
-/*
- * KERNEL
- */
+ 
 
 struct core_reloc_kernel_output {
 	int valid[10];
@@ -16,9 +14,7 @@ struct core_reloc_kernel_output {
 	bool local_task_struct_matches;
 };
 
-/*
- * MODULE
- */
+ 
 
 struct core_reloc_module_output {
 	long long len;
@@ -28,31 +24,27 @@ struct core_reloc_module_output {
 	bool buf_exists;
 	bool len_exists;
 	bool off_exists;
-	/* we have test_progs[-flavor], so cut flavor part */
+	 
 	char comm[sizeof("test_progs")];
 	int comm_len;
 };
 
-/*
- * FLAVORS
- */
+ 
 struct core_reloc_flavors {
 	int a;
 	int b;
 	int c;
 };
 
-/* this is not a flavor, as it doesn't have triple underscore */
+ 
 struct core_reloc_flavors__err_wrong_name {
 	int a;
 	int b;
 	int c;
 };
 
-/*
- * NESTING
- */
-/* original set up, used to record relocations in BPF program */
+ 
+ 
 struct core_reloc_nesting_substruct {
 	int a;
 };
@@ -70,7 +62,7 @@ struct core_reloc_nesting {
 	} b;
 };
 
-/* inlined anonymous struct/union instead of named structs in original */
+ 
 struct core_reloc_nesting___anon_embed {
 	int __just_for_padding;
 	union {
@@ -85,7 +77,7 @@ struct core_reloc_nesting___anon_embed {
 	} b;
 };
 
-/* different mix of nested structs/unions than in original */
+ 
 struct core_reloc_nesting___struct_union_mixup {
 	int __a;
 	struct {
@@ -105,7 +97,7 @@ struct core_reloc_nesting___struct_union_mixup {
 	} b;
 };
 
-/* extra anon structs/unions, but still valid a.a.a and b.b.b accessors */
+ 
 struct core_reloc_nesting___extra_nesting {
 	int __padding;
 	struct {
@@ -133,20 +125,19 @@ struct core_reloc_nesting___extra_nesting {
 	};
 };
 
-/* three flavors of same struct with different structure but same layout for
- * a.a.a and b.b.b, thus successfully resolved and relocatable */
+ 
 struct core_reloc_nesting___dup_compat_types {
 	char __just_for_padding;
-	/* 3 more bytes of padding */
+	 
 	struct {
 		struct {
-			int a; /* offset 4 */
+			int a;  
 		} a;
 	} a;
 	long long __more_padding;
 	struct {
 		struct {
-			int b; /* offset 16 */
+			int b;  
 		} b;
 	} b;
 };
@@ -157,7 +148,7 @@ struct core_reloc_nesting___dup_compat_types__2 {
 		int __trickier_noop[0];
 		struct {
 			char __some_more_noops[0];
-			int a; /* offset 4 */
+			int a;  
 		} a;
 	} a;
 	int __more_padding;
@@ -165,7 +156,7 @@ struct core_reloc_nesting___dup_compat_types__2 {
 		struct {
 			struct {
 				int __critical_padding;
-				int b; /* offset 16 */
+				int b;  
 			} b;
 			int __does_not_matter;
 		};
@@ -177,10 +168,10 @@ struct core_reloc_nesting___dup_compat_types__3 {
 	char __correct_padding[4];
 	struct {
 		struct {
-			int a; /* offset 4 */
+			int a;  
 		} a;
 	} a;
-	/* 8 byte padding due to next struct's alignment */
+	 
 	struct {
 		struct {
 			int b;
@@ -188,7 +179,7 @@ struct core_reloc_nesting___dup_compat_types__3 {
 	} b __attribute__((aligned(16)));
 };
 
-/* b.b.b field is missing */
+ 
 struct core_reloc_nesting___err_missing_field {
 	struct {
 		struct {
@@ -202,7 +193,7 @@ struct core_reloc_nesting___err_missing_field {
 	} b;
 };
 
-/* b.b.b field is an array of integers instead of plain int */
+ 
 struct core_reloc_nesting___err_array_field {
 	struct {
 		struct {
@@ -216,7 +207,7 @@ struct core_reloc_nesting___err_array_field {
 	} b;
 };
 
-/* middle b container is missing */
+ 
 struct core_reloc_nesting___err_missing_container {
 	struct {
 		struct {
@@ -228,7 +219,7 @@ struct core_reloc_nesting___err_missing_container {
 	} b;
 };
 
-/* middle b container is referenced through pointer instead of being embedded */
+ 
 struct core_reloc_nesting___err_nonstruct_container {
 	struct {
 		struct {
@@ -242,7 +233,7 @@ struct core_reloc_nesting___err_nonstruct_container {
 	} b;
 };
 
-/* middle b container is an array of structs instead of plain struct */
+ 
 struct core_reloc_nesting___err_array_container {
 	struct {
 		struct {
@@ -256,16 +247,16 @@ struct core_reloc_nesting___err_array_container {
 	} b;
 };
 
-/* two flavors of same struct with incompatible layout for b.b.b */
+ 
 struct core_reloc_nesting___err_dup_incompat_types__1 {
 	struct {
 		struct {
-			int a; /* offset 0 */
+			int a;  
 		} a;
 	} a;
 	struct {
 		struct {
-			int b; /* offset 4 */
+			int b;  
 		} b;
 	} b;
 };
@@ -273,18 +264,18 @@ struct core_reloc_nesting___err_dup_incompat_types__1 {
 struct core_reloc_nesting___err_dup_incompat_types__2 {
 	struct {
 		struct {
-			int a; /* offset 0 */
+			int a;  
 		} a;
 	} a;
 	int __extra_padding;
 	struct {
 		struct {
-			int b; /* offset 8 (!) */
+			int b;  
 		} b;
 	} b;
 };
 
-/* two flavors of same struct having one of a.a.a and b.b.b, but not both */
+ 
 struct core_reloc_nesting___err_partial_match_dups__a {
 	struct {
 		struct {
@@ -307,7 +298,7 @@ struct core_reloc_nesting___err_too_deep {
 			int a;
 		} a;
 	} a;
-	/* 65 levels of nestedness for b.b.b */
+	 
 	struct {
 		struct {
 			struct { struct { struct { struct { struct {
@@ -322,7 +313,7 @@ struct core_reloc_nesting___err_too_deep {
 			struct { struct { struct { struct { struct {
 			struct { struct { struct { struct { struct {
 			struct { struct { struct { struct { struct {
-				/* this one is one too much */
+				 
 				struct {
 					int b;
 				};
@@ -342,9 +333,7 @@ struct core_reloc_nesting___err_too_deep {
 	} b;
 };
 
-/*
- * ARRAYS
- */
+ 
 struct core_reloc_arrays_output {
 	int a2;
 	char b123;
@@ -366,7 +355,7 @@ struct core_reloc_arrays {
 	struct core_reloc_arrays_substruct f[][2];
 };
 
-/* bigger array dimensions */
+ 
 struct core_reloc_arrays___diff_arr_dim {
 	int a[7];
 	char b[3][4][5];
@@ -375,7 +364,7 @@ struct core_reloc_arrays___diff_arr_dim {
 	struct core_reloc_arrays_substruct f[1][3];
 };
 
-/* different size of array's value (struct) */
+ 
 struct core_reloc_arrays___diff_arr_val_sz {
 	int a[5];
 	char b[2][3][4];
@@ -401,7 +390,7 @@ struct core_reloc_arrays___equiv_zero_sz_arr {
 	char b[2][3][4];
 	struct core_reloc_arrays_substruct c[3];
 	struct core_reloc_arrays_substruct d[1][2];
-	/* equivalent to flexible array */
+	 
 	struct core_reloc_arrays_substruct f[][2];
 };
 
@@ -410,12 +399,12 @@ struct core_reloc_arrays___fixed_arr {
 	char b[2][3][4];
 	struct core_reloc_arrays_substruct c[3];
 	struct core_reloc_arrays_substruct d[1][2];
-	/* not a flexible array anymore, but within access bounds */
+	 
 	struct core_reloc_arrays_substruct f[1][2];
 };
 
 struct core_reloc_arrays___err_too_small {
-	int a[2]; /* this one is too small */
+	int a[2];  
 	char b[2][3][4];
 	struct core_reloc_arrays_substruct c[3];
 	struct core_reloc_arrays_substruct d[1][2];
@@ -424,14 +413,14 @@ struct core_reloc_arrays___err_too_small {
 
 struct core_reloc_arrays___err_too_shallow {
 	int a[5];
-	char b[2][3]; /* this one lacks one dimension */
+	char b[2][3];  
 	struct core_reloc_arrays_substruct c[3];
 	struct core_reloc_arrays_substruct d[1][2];
 	struct core_reloc_arrays_substruct f[][2];
 };
 
 struct core_reloc_arrays___err_non_array {
-	int a; /* not an array */
+	int a;  
 	char b[2][3][4];
 	struct core_reloc_arrays_substruct c[3];
 	struct core_reloc_arrays_substruct d[1][2];
@@ -441,13 +430,13 @@ struct core_reloc_arrays___err_non_array {
 struct core_reloc_arrays___err_wrong_val_type {
 	int a[5];
 	char b[2][3][4];
-	int c[3]; /* value is not a struct */
+	int c[3];  
 	struct core_reloc_arrays_substruct d[1][2];
 	struct core_reloc_arrays_substruct f[][2];
 };
 
 struct core_reloc_arrays___err_bad_zero_sz_arr {
-	/* zero-sized array, but not at the end */
+	 
 	struct core_reloc_arrays_substruct f[0][2];
 	int a[5];
 	char b[2][3][4];
@@ -455,9 +444,7 @@ struct core_reloc_arrays___err_bad_zero_sz_arr {
 	struct core_reloc_arrays_substruct d[1][2];
 };
 
-/*
- * PRIMITIVES
- */
+ 
 enum core_reloc_primitives_enum {
 	A = 0,
 	B = 1,
@@ -479,11 +466,11 @@ struct core_reloc_primitives___diff_enum_def {
 	enum {
 		X = 100,
 		Y = 200,
-	} c __bpf_aligned; /* inline enum def with differing set of values */
+	} c __bpf_aligned;  
 };
 
 struct core_reloc_primitives___diff_func_proto {
-	void (*f)(int) __bpf_aligned; /* incompatible function prototype */
+	void (*f)(int) __bpf_aligned;  
 	void *d __bpf_aligned;
 	enum core_reloc_primitives_enum c __bpf_aligned;
 	int b;
@@ -491,7 +478,7 @@ struct core_reloc_primitives___diff_func_proto {
 };
 
 struct core_reloc_primitives___diff_ptr_type {
-	const char * const d __bpf_aligned; /* different pointee type + modifiers */
+	const char * const d __bpf_aligned;  
 	char a __bpf_aligned;
 	int b;
 	enum core_reloc_primitives_enum c;
@@ -501,14 +488,14 @@ struct core_reloc_primitives___diff_ptr_type {
 struct core_reloc_primitives___err_non_enum {
 	char a[1];
 	int b;
-	int c; /* int instead of enum */
+	int c;  
 	void *d __bpf_aligned;
 	int (*f)(const char *) __bpf_aligned;
 };
 
 struct core_reloc_primitives___err_non_int {
 	char a[1];
-	int *b __bpf_aligned; /* ptr instead of int */
+	int *b __bpf_aligned;  
 	enum core_reloc_primitives_enum c __bpf_aligned;
 	void *d __bpf_aligned;
 	int (*f)(const char *) __bpf_aligned;
@@ -518,13 +505,11 @@ struct core_reloc_primitives___err_non_ptr {
 	char a[1];
 	int b;
 	enum core_reloc_primitives_enum c;
-	int d; /* int instead of ptr */
+	int d;  
 	int (*f)(const char *) __bpf_aligned;
 };
 
-/*
- * MODS
- */
+ 
 struct core_reloc_mods_output {
 	int a, b, c, d, e, f, g, h;
 };
@@ -554,7 +539,7 @@ struct core_reloc_mods {
 	core_reloc_mods_substruct_t h;
 };
 
-/* a/b, c/d, e/f, and g/h pairs are swapped */
+ 
 struct core_reloc_mods___mod_swap {
 	int b;
 	int_t a;
@@ -582,7 +567,7 @@ typedef const char * const volatile fancy_char_ptr_t __bpf_aligned;
 
 typedef core_reloc_mods_substruct_t core_reloc_mods_substruct_tt;
 
-/* we need more typedefs */
+ 
 struct core_reloc_mods___typedefs {
 	core_reloc_mods_substruct_tt g;
 	core_reloc_mods_substruct_tt h;
@@ -594,22 +579,18 @@ struct core_reloc_mods___typedefs {
 	int3_t a;
 };
 
-/*
- * PTR_AS_ARR
- */
+ 
 struct core_reloc_ptr_as_arr {
 	int a;
 };
 
 struct core_reloc_ptr_as_arr___diff_sz {
-	int :32; /* padding */
+	int :32;  
 	char __some_more_padding;
 	int a;
 };
 
-/*
- * INTS
- */
+ 
 struct core_reloc_ints {
 	uint8_t		u8_field;
 	int8_t		s8_field;
@@ -621,7 +602,7 @@ struct core_reloc_ints {
 	int64_t		s64_field;
 };
 
-/* signed/unsigned types swap */
+ 
 struct core_reloc_ints___reverse_sign {
 	int8_t		u8_field;
 	uint8_t		s8_field;
@@ -634,7 +615,7 @@ struct core_reloc_ints___reverse_sign {
 };
 
 struct core_reloc_ints___bool {
-	bool		u8_field; /* bool instead of uint8 */
+	bool		u8_field;  
 	int8_t		s8_field;
 	uint16_t	u16_field;
 	int16_t		s16_field;
@@ -644,9 +625,7 @@ struct core_reloc_ints___bool {
 	int64_t		s64_field;
 };
 
-/*
- * MISC
- */
+ 
 struct core_reloc_misc_output {
 	int a, b, c;
 };
@@ -661,7 +640,7 @@ struct core_reloc_misc___b {
 	int b2;
 };
 
-/* this one extends core_reloc_misc_extensible struct from BPF prog */
+ 
 struct core_reloc_misc_extensible {
 	int a;
 	int b;
@@ -669,9 +648,7 @@ struct core_reloc_misc_extensible {
 	int d;
 };
 
-/*
- * FIELD EXISTENCE
- */
+ 
 struct core_reloc_existence_output {
 	int a_exists;
 	int a_value;
@@ -709,10 +686,8 @@ struct core_reloc_existence___wrong_field_defs {
 	int s;
 };
 
-/*
- * BITFIELDS
- */
-/* bitfield read results, all as plain integers */
+ 
+ 
 struct core_reloc_bitfields_output {
 	int64_t		ub1;
 	int64_t		ub2;
@@ -724,46 +699,46 @@ struct core_reloc_bitfields_output {
 };
 
 struct core_reloc_bitfields {
-	/* unsigned bitfields */
+	 
 	uint8_t		ub1: 1;
 	uint8_t		ub2: 2;
 	uint32_t	ub7: 7;
-	/* signed bitfields */
+	 
 	int8_t		sb4: 4;
 	int32_t		sb20: 20;
-	/* non-bitfields */
+	 
 	uint32_t	u32;
 	int32_t		s32;
 };
 
-/* different bit sizes (both up and down) */
+ 
 struct core_reloc_bitfields___bit_sz_change {
-	/* unsigned bitfields */
-	uint16_t	ub1: 3;		/*  1 ->  3 */
-	uint32_t	ub2: 20;	/*  2 -> 20 */
-	uint8_t		ub7: 1;		/*  7 ->  1 */
-	/* signed bitfields */
-	int8_t		sb4: 1;		/*  4 ->  1 */
-	int32_t		sb20: 30;	/* 20 -> 30 */
-	/* non-bitfields */
-	uint16_t	u32;			/* 32 -> 16 */
-	int64_t		s32 __bpf_aligned;	/* 32 -> 64 */
+	 
+	uint16_t	ub1: 3;		 
+	uint32_t	ub2: 20;	 
+	uint8_t		ub7: 1;		 
+	 
+	int8_t		sb4: 1;		 
+	int32_t		sb20: 30;	 
+	 
+	uint16_t	u32;			 
+	int64_t		s32 __bpf_aligned;	 
 };
 
-/* turn bitfield into non-bitfield and vice versa */
+ 
 struct core_reloc_bitfields___bitfield_vs_int {
-	uint64_t	ub1;		/*  3 -> 64 non-bitfield */
-	uint8_t		ub2;		/* 20 ->  8 non-bitfield */
-	int64_t		ub7 __bpf_aligned;	/*  7 -> 64 non-bitfield signed */
-	int64_t		sb4 __bpf_aligned;	/*  4 -> 64 non-bitfield signed */
-	uint64_t	sb20 __bpf_aligned;	/* 20 -> 16 non-bitfield unsigned */
-	int32_t		u32: 20;		/* 32 non-bitfield -> 20 bitfield */
-	uint64_t	s32: 60 __bpf_aligned;	/* 32 non-bitfield -> 60 bitfield */
+	uint64_t	ub1;		 
+	uint8_t		ub2;		 
+	int64_t		ub7 __bpf_aligned;	 
+	int64_t		sb4 __bpf_aligned;	 
+	uint64_t	sb20 __bpf_aligned;	 
+	int32_t		u32: 20;		 
+	uint64_t	s32: 60 __bpf_aligned;	 
 };
 
 struct core_reloc_bitfields___just_big_enough {
 	uint64_t	ub1: 4;
-	uint64_t	ub2: 60; /* packed tightly */
+	uint64_t	ub2: 60;  
 	uint32_t	ub7;
 	uint32_t	sb4;
 	uint32_t	sb20;
@@ -773,7 +748,7 @@ struct core_reloc_bitfields___just_big_enough {
 
 struct core_reloc_bitfields___err_too_big_bitfield {
 	uint64_t	ub1: 4;
-	uint64_t	ub2: 61; /* packed tightly */
+	uint64_t	ub2: 61;  
 	uint32_t	ub7;
 	uint32_t	sb4;
 	uint32_t	sb20;
@@ -781,9 +756,7 @@ struct core_reloc_bitfields___err_too_big_bitfield {
 	uint32_t	s32;
 } __attribute__((packed)) ;
 
-/*
- * SIZE
- */
+ 
 struct core_reloc_size_output {
 	int int_sz;
 	int int_off;
@@ -833,11 +806,9 @@ struct core_reloc_size___diff_offs {
 	int int_field;
 };
 
-/* Error case of two candidates with the fields (int_field) at the same
- * offset, but with differing final relocation values: size 4 vs size 1
- */
+ 
 struct core_reloc_size___err_ambiguous1 {
-	/* int at offset 0 */
+	 
 	int int_field;
 
 	struct { int x; } struct_field;
@@ -849,7 +820,7 @@ struct core_reloc_size___err_ambiguous1 {
 };
 
 struct core_reloc_size___err_ambiguous2 {
-	/* char at offset 0 */
+	 
 	char int_field;
 
 	struct { int x; } struct_field;
@@ -860,9 +831,7 @@ struct core_reloc_size___err_ambiguous2 {
 	float float_field;
 };
 
-/*
- * TYPE EXISTENCE, MATCH & SIZE
- */
+ 
 struct core_reloc_type_based_output {
 	bool struct_exists;
 	bool complex_struct_exists;
@@ -963,11 +932,11 @@ struct core_reloc_type_based {
 	arr_typedef f13;
 };
 
-/* no types in target */
+ 
 struct core_reloc_type_based___all_missing {
 };
 
-/* different member orders, enum variant values, signedness, etc */
+ 
 struct a_struct___diff {
 	int x;
 	int a;
@@ -1029,7 +998,7 @@ struct core_reloc_type_based___diff {
 	arr_typedef___diff f12;
 };
 
-/* different type sizes, extra modifiers, anon vs named enums, etc */
+ 
 struct a_struct___diff_sz {
 	long x;
 	int y;
@@ -1078,46 +1047,46 @@ struct core_reloc_type_based___diff_sz {
 	arr_typedef___diff_sz f11;
 };
 
-/* incompatibilities between target and local types */
-union a_struct___incompat { /* union instead of struct */
+ 
+union a_struct___incompat {  
 	int x;
 };
 
-struct a_union___incompat { /* struct instead of union */
+struct a_union___incompat {  
 	int y;
 	int z;
 };
 
-/* typedef to union, not to struct */
+ 
 typedef union a_struct___incompat named_struct_typedef___incompat;
 
-/* typedef to void pointer, instead of struct */
+ 
 typedef void *anon_struct_typedef___incompat;
 
-/* extra pointer indirection */
+ 
 typedef struct {
 	int a, b, c;
 } **struct_ptr_typedef___incompat;
 
-/* typedef of a struct with int, instead of int */
+ 
 typedef struct { int x; } int_typedef___incompat;
 
-/* typedef to func_proto, instead of enum */
+ 
 typedef int (*enum_typedef___incompat)(void);
 
-/* pointer to char instead of void */
+ 
 typedef char *void_ptr_typedef___incompat;
 
-/* void return type instead of int */
+ 
 typedef void (*func_proto_typedef___incompat)(long);
 
-/* multi-dimensional array instead of a single-dimensional */
+ 
 typedef int arr_typedef___incompat[20][2];
 
 struct core_reloc_type_based___incompat {
 	union a_struct___incompat f1;
 	struct a_union___incompat f2;
-	/* the only valid one is enum, to check that something still succeeds */
+	 
 	enum an_enum f3;
 	named_struct_typedef___incompat f4;
 	anon_struct_typedef___incompat f5;
@@ -1129,7 +1098,7 @@ struct core_reloc_type_based___incompat {
 	arr_typedef___incompat f11;
 };
 
-/* func_proto with incompatible signature */
+ 
 typedef void (*func_proto_typedef___fn_wrong_ret1)(long);
 typedef int * (*func_proto_typedef___fn_wrong_ret2)(long);
 typedef struct { int x; } int_struct_typedef;
@@ -1139,7 +1108,7 @@ typedef int (*func_proto_typedef___fn_wrong_arg_cnt1)(long, long);
 typedef int (*func_proto_typedef___fn_wrong_arg_cnt2)(void);
 
 struct core_reloc_type_based___fn_wrong_args {
-	/* one valid type to make sure relos still work */
+	 
 	struct a_struct f1;
 	func_proto_typedef___fn_wrong_ret1 f2;
 	func_proto_typedef___fn_wrong_ret2 f3;
@@ -1149,9 +1118,7 @@ struct core_reloc_type_based___fn_wrong_args {
 	func_proto_typedef___fn_wrong_arg_cnt2 f7;
 };
 
-/*
- * TYPE ID MAPPING (LOCAL AND TARGET)
- */
+ 
 struct core_reloc_type_id_output {
 	int local_anon_struct;
 	int local_anon_union;
@@ -1187,12 +1154,10 @@ struct core_reloc_type_id {
 };
 
 struct core_reloc_type_id___missing_targets {
-	/* nothing */
+	 
 };
 
-/*
- * ENUMERATOR VALUE EXISTENCE AND VALUE RELOCATION
- */
+ 
 struct core_reloc_enumval_output {
 	bool named_val1_exists;
 	bool named_val2_exists;
@@ -1255,7 +1220,7 @@ struct core_reloc_enum64val {
 	enum named_signed_enum64 f2;
 };
 
-/* differing enumerator values */
+ 
 enum named_enum___diff {
 	NAMED_ENUM_VAL1___diff = 101,
 	NAMED_ENUM_VAL2___diff = 202,
@@ -1290,7 +1255,7 @@ struct core_reloc_enum64val___diff {
 	enum named_signed_enum64___diff f2;
 };
 
-/* missing (optional) third enum value */
+ 
 enum named_enum___val3_missing {
 	NAMED_ENUM_VAL1___val3_missing = 111,
 	NAMED_ENUM_VAL2___val3_missing = 222,
@@ -1321,7 +1286,7 @@ struct core_reloc_enum64val___val3_missing {
 	enum named_signed_enum64___val3_missing f2;
 };
 
-/* missing (mandatory) second enum value, should fail */
+ 
 enum named_enum___err_missing {
 	NAMED_ENUM_VAL1___err_missing = 1,
 	NAMED_ENUM_VAL3___err_missing = 3,

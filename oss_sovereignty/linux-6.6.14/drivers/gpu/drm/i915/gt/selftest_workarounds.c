@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2018 Intel Corporation
- */
+
+ 
 
 #include "gem/i915_gem_internal.h"
 #include "gem/i915_gem_pm.h"
@@ -213,7 +211,7 @@ static int check_whitelist(struct intel_context *ce)
 
 	err = 0;
 	i915_gem_object_lock(results, NULL);
-	intel_wedge_on_timeout(&wedge, engine->gt, HZ / 5) /* safety net! */
+	intel_wedge_on_timeout(&wedge, engine->gt, HZ / 5)  
 		err = i915_gem_object_set_to_cpu_domain(results, false);
 
 	if (intel_gt_is_wedged(engine->gt))
@@ -261,7 +259,7 @@ static int do_engine_reset(struct intel_engine_cs *engine)
 
 static int do_guc_reset(struct intel_engine_cs *engine)
 {
-	/* Currently a no-op as the reset is handled by GuC */
+	 
 	return 0;
 }
 
@@ -325,7 +323,7 @@ static int check_whitelist_across_reset(struct intel_engine_cs *engine,
 	if (err)
 		goto out_spin;
 
-	/* Ensure the spinner hasn't aborted */
+	 
 	if (i915_request_completed(rq)) {
 		pr_err("%s spinner failed to start\n", name);
 		err = -ETIMEDOUT;
@@ -335,7 +333,7 @@ static int check_whitelist_across_reset(struct intel_engine_cs *engine,
 	with_intel_runtime_pm(engine->uncore->rpm, wakeref)
 		err = reset(engine);
 
-	/* Ensure the reset happens and kills the engine */
+	 
 	if (err == 0)
 		err = intel_selftest_wait_for_rq(rq);
 
@@ -530,7 +528,7 @@ static int check_dirty_whitelist(struct intel_context *ce)
 			continue;
 
 		if (timestamp(engine, reg))
-			continue; /* timestamps are expected to autoincrement */
+			continue;  
 
 		ro_reg = ro_register(reg);
 
@@ -557,7 +555,7 @@ retry:
 			goto out_unmap_batch;
 		}
 
-		/* Clear non priv flags */
+		 
 		reg &= RING_FORCE_TO_NONPRIV_ADDRESS_MASK;
 
 		srm = MI_STORE_REGISTER_MEM;
@@ -568,7 +566,7 @@ retry:
 		pr_debug("%s: Writing garbage to %x\n",
 			 engine->name, reg);
 
-		/* SRM original */
+		 
 		*cs++ = srm;
 		*cs++ = reg;
 		*cs++ = lower_32_bits(addr);
@@ -576,12 +574,12 @@ retry:
 
 		idx = 1;
 		for (v = 0; v < ARRAY_SIZE(values); v++) {
-			/* LRI garbage */
+			 
 			*cs++ = MI_LOAD_REGISTER_IMM(1);
 			*cs++ = reg;
 			*cs++ = values[v];
 
-			/* SRM result */
+			 
 			*cs++ = srm;
 			*cs++ = reg;
 			*cs++ = lower_32_bits(addr + sizeof(u32) * idx);
@@ -589,12 +587,12 @@ retry:
 			idx++;
 		}
 		for (v = 0; v < ARRAY_SIZE(values); v++) {
-			/* LRI garbage */
+			 
 			*cs++ = MI_LOAD_REGISTER_IMM(1);
 			*cs++ = reg;
 			*cs++ = ~values[v];
 
-			/* SRM result */
+			 
 			*cs++ = srm;
 			*cs++ = reg;
 			*cs++ = lower_32_bits(addr + sizeof(u32) * idx);
@@ -603,7 +601,7 @@ retry:
 		}
 		GEM_BUG_ON(idx * sizeof(u32) > scratch->size);
 
-		/* LRM original -- don't leave garbage in the context! */
+		 
 		*cs++ = lrm;
 		*cs++ = reg;
 		*cs++ = lower_32_bits(addr);
@@ -622,7 +620,7 @@ retry:
 			goto out_unmap_scratch;
 		}
 
-		if (engine->emit_init_breadcrumb) { /* Be nice if we hang */
+		if (engine->emit_init_breadcrumb) {  
 			err = engine->emit_init_breadcrumb(rq);
 			if (err)
 				goto err_request;
@@ -654,7 +652,7 @@ err_request:
 
 		GEM_BUG_ON(values[ARRAY_SIZE(values) - 1] != 0xffffffff);
 		if (!ro_reg) {
-			/* detect write masking */
+			 
 			rsvd = results[ARRAY_SIZE(values)];
 			if (!rsvd) {
 				pr_err("%s: Unable to write to whitelisted register %x\n",
@@ -759,9 +757,9 @@ static int live_dirty_whitelist(void *arg)
 	struct intel_engine_cs *engine;
 	enum intel_engine_id id;
 
-	/* Can the user write to the whitelisted registers? */
+	 
 
-	if (GRAPHICS_VER(gt->i915) < 7) /* minimum requirement for LRI, SRM, LRM */
+	if (GRAPHICS_VER(gt->i915) < 7)  
 		return 0;
 
 	for_each_engine(engine, gt, id) {
@@ -791,7 +789,7 @@ static int live_reset_whitelist(void *arg)
 	enum intel_engine_id id;
 	int err = 0;
 
-	/* If we reset the gpu, we should not lose the RING_NONPRIV */
+	 
 	igt_global_reset_lock(gt);
 
 	for_each_engine(engine, gt, id) {
@@ -869,7 +867,7 @@ static int read_whitelisted_registers(struct intel_context *ce,
 		u64 offset = i915_vma_offset(results) + sizeof(u32) * i;
 		u32 reg = i915_mmio_reg_offset(engine->whitelist.list[i].reg);
 
-		/* Clear non priv flags */
+		 
 		reg &= RING_FORCE_TO_NONPRIV_ADDRESS_MASK;
 
 		*cs++ = srm;
@@ -908,7 +906,7 @@ static int scrub_whitelisted_registers(struct intel_context *ce)
 		if (ro_register(reg))
 			continue;
 
-		/* Clear non priv flags */
+		 
 		reg &= RING_FORCE_TO_NONPRIV_ADDRESS_MASK;
 
 		*cs++ = reg;
@@ -925,7 +923,7 @@ static int scrub_whitelisted_registers(struct intel_context *ce)
 		goto err_unpin;
 	}
 
-	if (engine->emit_init_breadcrumb) { /* Be nice if we hang */
+	if (engine->emit_init_breadcrumb) {  
 		err = engine->emit_init_breadcrumb(rq);
 		if (err)
 			goto err_request;
@@ -935,7 +933,7 @@ static int scrub_whitelisted_registers(struct intel_context *ce)
 	if (err)
 		goto err_request;
 
-	/* Perform the writes from an unprivileged "user" batch */
+	 
 	err = engine->emit_bb_start(rq, i915_vma_offset(batch), 0, 0);
 
 err_request:
@@ -972,10 +970,10 @@ static bool find_reg(struct drm_i915_private *i915,
 
 static bool pardon_reg(struct drm_i915_private *i915, i915_reg_t reg)
 {
-	/* Alas, we must pardon some whitelists. Mistakes already made */
+	 
 	static const struct regmask pardon[] = {
 		{ GEN9_CTX_PREEMPT_REG, 9 },
-		{ _MMIO(0xb118), 9 }, /* GEN8_L3SQCREG4 */
+		{ _MMIO(0xb118), 9 },  
 	};
 
 	return find_reg(i915, reg, pardon, ARRAY_SIZE(pardon));
@@ -995,7 +993,7 @@ static bool result_eq(struct intel_engine_cs *engine,
 
 static bool writeonly_reg(struct drm_i915_private *i915, i915_reg_t reg)
 {
-	/* Some registers do not seem to behave and our writes unreadable */
+	 
 	static const struct regmask wo[] = {
 		{ GEN9_SLICE_COMMON_ECO_CHICKEN1, 9 },
 	};
@@ -1064,10 +1062,7 @@ static int live_isolated_whitelist(void *arg)
 	enum intel_engine_id id;
 	int i, err = 0;
 
-	/*
-	 * Check that a write into a whitelist register works, but
-	 * invisible to a second context.
-	 */
+	 
 
 	if (!intel_engines_has_context_isolation(gt->i915))
 		return 0;
@@ -1110,22 +1105,22 @@ static int live_isolated_whitelist(void *arg)
 			break;
 		}
 
-		/* Read default values */
+		 
 		err = read_whitelisted_registers(ce[0], client[0].scratch[0]);
 		if (err)
 			goto err_ce;
 
-		/* Try to overwrite registers (should only affect ctx0) */
+		 
 		err = scrub_whitelisted_registers(ce[0]);
 		if (err)
 			goto err_ce;
 
-		/* Read values from ctx1, we expect these to be defaults */
+		 
 		err = read_whitelisted_registers(ce[1], client[1].scratch[0]);
 		if (err)
 			goto err_ce;
 
-		/* Verify that both reads return the same default values */
+		 
 		err = check_whitelisted_registers(engine,
 						  client[0].scratch[0],
 						  client[1].scratch[0],
@@ -1133,12 +1128,12 @@ static int live_isolated_whitelist(void *arg)
 		if (err)
 			goto err_ce;
 
-		/* Read back the updated values in ctx0 */
+		 
 		err = read_whitelisted_registers(ce[0], client[0].scratch[1]);
 		if (err)
 			goto err_ce;
 
-		/* User should be granted privilege to overwhite regs */
+		 
 		err = check_whitelisted_registers(engine,
 						  client[0].scratch[0],
 						  client[0].scratch[1],
@@ -1313,7 +1308,7 @@ live_engine_reset_workarounds(void *arg)
 			goto err;
 		}
 
-		/* Ensure the spinner hasn't aborted */
+		 
 		if (i915_request_completed(rq)) {
 			ret = -ETIMEDOUT;
 			goto skip;
@@ -1329,7 +1324,7 @@ live_engine_reset_workarounds(void *arg)
 			}
 		}
 
-		/* Ensure the reset happens and kills the engine */
+		 
 		if (ret == 0)
 			ret = intel_selftest_wait_for_rq(rq);
 

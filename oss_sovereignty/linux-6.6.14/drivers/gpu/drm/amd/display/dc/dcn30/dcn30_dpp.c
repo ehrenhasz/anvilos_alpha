@@ -1,27 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 #include "core_types.h"
@@ -48,9 +25,9 @@ void dpp30_read_state(struct dpp *dpp_base, struct dcn_dpp_state *s)
 	REG_GET(DPP_CONTROL,
 			DPP_CLOCK_ENABLE, &s->is_enabled);
 
-	// TODO: Implement for DCN3
+	
 }
-/*program post scaler scs block in dpp CM*/
+ 
 void dpp3_program_post_csc(
 		struct dpp *dpp_base,
 		enum dc_color_space color_space,
@@ -85,10 +62,7 @@ void dpp3_program_post_csc(
 		regval = tbl_entry->regval;
 	}
 
-	/* determine which CSC matrix (icsc or coma) we are using
-	 * currently.  select the alternate set to double buffer
-	 * the CSC update so CSC is updated on frame boundary
-	 */
+	 
 	REG_GET(CM_POST_CSC_CONTROL,
 			CM_POST_CSC_MODE_CURRENT, &cur_select);
 
@@ -124,7 +98,7 @@ void dpp3_program_post_csc(
 }
 
 
-/*CNVC degam unit has read only LUTs*/
+ 
 void dpp3_set_pre_degam(struct dpp *dpp_base, enum dc_transfer_func_predefined tr)
 {
 	struct dcn3_dpp *dpp = TO_DCN30_DPP(dpp_base);
@@ -134,7 +108,7 @@ void dpp3_set_pre_degam(struct dpp *dpp_base, enum dc_transfer_func_predefined t
 	switch (tr) {
 	case TRANSFER_FUNCTION_LINEAR:
 	case TRANSFER_FUNCTION_UNITY:
-		pre_degam_en = 0; //bypass
+		pre_degam_en = 0; 
 		break;
 	case TRANSFER_FUNCTION_SRGB:
 		degamma_lut_selection = 0;
@@ -245,7 +219,7 @@ void dpp3_cnv_setup (
 		break;
 	case SURFACE_PIXEL_FORMAT_GRPH_ARGB16161616:
 	case SURFACE_PIXEL_FORMAT_GRPH_ABGR16161616:
-		pixel_format = 26; /* ARGB16161616_UNORM */
+		pixel_format = 26;  
 		break;
 	case SURFACE_PIXEL_FORMAT_GRPH_ARGB16161616F:
 		pixel_format = 24;
@@ -294,7 +268,7 @@ void dpp3_cnv_setup (
 		break;
 	}
 
-	/* Set default color space based on format if none is given. */
+	 
 	color_space = input_color_space ? input_color_space : color_space;
 
 	if (is_2bit == 1 && alpha_2bit_lut != NULL) {
@@ -320,7 +294,7 @@ void dpp3_cnv_setup (
 			PRE_REALPHA_EN, realpha_en,
 			PRE_REALPHA_ABLND_EN, realpha_ablnd_en);
 
-	/* If input adjustment exists, program the ICSC with those values. */
+	 
 	if (input_csc_color_matrix.enable_adjustment == true) {
 		for (i = 0; i < 12; i++)
 			tbl_entry.regval[i] = input_csc_color_matrix.matrix[i];
@@ -369,7 +343,7 @@ void dpp3_set_cursor_attributes(
 			CUR0_ROM_EN, cur_rom_en);
 
 	if (color_format == CURSOR_MODE_MONO) {
-		/* todo: clarify what to program these to */
+		 
 		REG_UPDATE(CURSOR0_COLOR0,
 				CUR0_COLOR0, 0x00000000);
 		REG_UPDATE(CURSOR0_COLOR1,
@@ -397,11 +371,7 @@ bool dpp3_get_optimal_number_of_taps(
 		scl_data->viewport.width > dpp->ctx->dc->debug.max_downscale_src_width)
 		return false;
 
-	/*
-	 * Set default taps if none are provided
-	 * From programming guide: taps = min{ ceil(2*H_RATIO,1), 8} for downscaling
-	 * taps = 4 for upscaling
-	 */
+	 
 	if (in_taps->h_taps == 0) {
 		if (dc_fixpt_ceil(scl_data->ratios.horz) > 1)
 			scl_data->taps.h_taps = min(2 * dc_fixpt_ceil(scl_data->ratios.horz), 8);
@@ -429,16 +399,16 @@ bool dpp3_get_optimal_number_of_taps(
 		else
 			scl_data->taps.h_taps_c = 4;
 	} else if ((in_taps->h_taps_c % 2) != 0 && in_taps->h_taps_c != 1)
-		/* Only 1 and even h_taps_c are supported by hw */
+		 
 		scl_data->taps.h_taps_c = in_taps->h_taps_c - 1;
 	else
 		scl_data->taps.h_taps_c = in_taps->h_taps_c;
 
-	/*Ensure we can support the requested number of vtaps*/
+	 
 	min_taps_y = dc_fixpt_ceil(scl_data->ratios.vert);
 	min_taps_c = dc_fixpt_ceil(scl_data->ratios.vert_c);
 
-	/* Use LB_MEMORY_CONFIG_3 for 4:2:0 */
+	 
 	if ((scl_data->format == PIXEL_FORMAT_420BPP8) || (scl_data->format == PIXEL_FORMAT_420BPP10))
 		lb_config = LB_MEMORY_CONFIG_3;
 	else
@@ -447,7 +417,7 @@ bool dpp3_get_optimal_number_of_taps(
 	dpp->caps->dscl_calc_lb_num_partitions(
 			scl_data, lb_config, &num_part_y, &num_part_c);
 
-	/* MAX_V_TAPS = MIN (NUM_LINES - MAX(CEILING(V_RATIO,1)-2, 0), 8) */
+	 
 	if (dc_fixpt_ceil(scl_data->ratios.vert) > 2)
 		max_taps_y = num_part_y - (dc_fixpt_ceil(scl_data->ratios.vert) - 2);
 	else
@@ -495,37 +465,37 @@ static void dpp3_deferred_update(struct dpp *dpp_base)
 
 	if (dpp_base->deferred_reg_writes.bits.disable_gamcor) {
 		REG_GET(CM_GAMCOR_CONTROL, CM_GAMCOR_MODE_CURRENT, &bypass_state);
-		if (bypass_state == 0) {	// only program if bypass was latched
+		if (bypass_state == 0) {	
 			REG_UPDATE(CM_MEM_PWR_CTRL, GAMCOR_MEM_PWR_FORCE, 3);
 		} else
-			ASSERT(0); // LUT select was updated again before vupdate
+			ASSERT(0); 
 		dpp_base->deferred_reg_writes.bits.disable_gamcor = false;
 	}
 
 	if (dpp_base->deferred_reg_writes.bits.disable_blnd_lut) {
 		REG_GET(CM_BLNDGAM_CONTROL, CM_BLNDGAM_MODE_CURRENT, &bypass_state);
-		if (bypass_state == 0) {	// only program if bypass was latched
+		if (bypass_state == 0) {	
 			REG_UPDATE(CM_MEM_PWR_CTRL, BLNDGAM_MEM_PWR_FORCE, 3);
 		} else
-			ASSERT(0); // LUT select was updated again before vupdate
+			ASSERT(0); 
 		dpp_base->deferred_reg_writes.bits.disable_blnd_lut = false;
 	}
 
 	if (dpp_base->deferred_reg_writes.bits.disable_3dlut) {
 		REG_GET(CM_3DLUT_MODE, CM_3DLUT_MODE_CURRENT, &bypass_state);
-		if (bypass_state == 0) {	// only program if bypass was latched
+		if (bypass_state == 0) {	
 			REG_UPDATE(CM_MEM_PWR_CTRL2, HDR3DLUT_MEM_PWR_FORCE, 3);
 		} else
-			ASSERT(0); // LUT select was updated again before vupdate
+			ASSERT(0); 
 		dpp_base->deferred_reg_writes.bits.disable_3dlut = false;
 	}
 
 	if (dpp_base->deferred_reg_writes.bits.disable_shaper) {
 		REG_GET(CM_SHAPER_CONTROL, CM_SHAPER_MODE_CURRENT, &bypass_state);
-		if (bypass_state == 0) {	// only program if bypass was latched
+		if (bypass_state == 0) {	
 			REG_UPDATE(CM_MEM_PWR_CTRL2, SHAPER_MEM_PWR_FORCE, 3);
 		} else
-			ASSERT(0); // LUT select was updated again before vupdate
+			ASSERT(0); 
 		dpp_base->deferred_reg_writes.bits.disable_shaper = false;
 	}
 }
@@ -657,7 +627,7 @@ static void dcn3_dpp_cm_get_reg_field(
 	reg->masks.exp_resion_start_segment = dpp->tf_mask->CM_BLNDGAM_RAMA_EXP_REGION_START_SEGMENT_B;
 }
 
-/*program blnd lut RAM A*/
+ 
 static void dpp3_program_blnd_luta_settings(
 		struct dpp *dpp_base,
 		const struct pwl_params *params)
@@ -685,7 +655,7 @@ static void dpp3_program_blnd_luta_settings(
 	cm_helper_program_gamcor_xfer_func(dpp->base.ctx, params, &gam_regs);
 }
 
-/*program blnd lut RAM B*/
+ 
 static void dpp3_program_blnd_lutb_settings(
 		struct dpp *dpp_base,
 		const struct pwl_params *params)
@@ -854,7 +824,7 @@ static void dpp3_configure_shaper_lut(
 	REG_SET(CM_SHAPER_LUT_INDEX, 0, CM_SHAPER_LUT_INDEX, 0);
 }
 
-/*program shaper RAM A*/
+ 
 
 static void dpp3_program_shaper_luta_settings(
 		struct dpp *dpp_base,
@@ -1005,7 +975,7 @@ static void dpp3_program_shaper_luta_settings(
 		CM_SHAPER_RAMA_EXP_REGION33_NUM_SEGMENTS, curve[1].segments_num);
 }
 
-/*program shaper RAM B*/
+ 
 static void dpp3_program_shaper_lutb_settings(
 		struct dpp *dpp_base,
 		const struct pwl_params *params)
@@ -1240,11 +1210,7 @@ static enum dc_lut_mode get3dlut_config(
 
 	return mode;
 }
-/*
- * select ramA or ramB, or bypass
- * select color channel size 10 or 12 bits
- * select 3dlut size 17x17x17 or 9x9x9
- */
+ 
 static void dpp3_set_3dlut_mode(
 		struct dpp *dpp_base,
 		enum dc_lut_mode mode,
@@ -1312,9 +1278,7 @@ static void dpp3_set3dlut_ram12(
 	}
 }
 
-/*
- * load selected lut with 10 bits color channels
- */
+ 
 static void dpp3_set3dlut_ram10(
 		struct dpp *dpp_base,
 		const struct dc_rgb *lut,

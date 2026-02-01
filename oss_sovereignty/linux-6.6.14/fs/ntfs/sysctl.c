@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * sysctl.c - Code for sysctl handling in NTFS Linux kernel driver. Part of
- *	      the Linux-NTFS project. Adapted from the old NTFS driver,
- *	      Copyright (C) 1997 Martin von Löwis, Régis Duchesne
- *
- * Copyright (c) 2002-2005 Anton Altaparmakov
- */
+
+ 
 
 #ifdef DEBUG
 
@@ -19,27 +13,22 @@
 #include "sysctl.h"
 #include "debug.h"
 
-/* Definition of the ntfs sysctl. */
+ 
 static struct ctl_table ntfs_sysctls[] = {
 	{
 		.procname	= "ntfs-debug",
-		.data		= &debug_msgs,		/* Data pointer and size. */
+		.data		= &debug_msgs,		 
 		.maxlen		= sizeof(debug_msgs),
-		.mode		= 0644,			/* Mode, proc handler. */
+		.mode		= 0644,			 
 		.proc_handler	= proc_dointvec
 	},
 	{}
 };
 
-/* Storage for the sysctls header. */
+ 
 static struct ctl_table_header *sysctls_root_table;
 
-/**
- * ntfs_sysctl - add or remove the debug sysctl
- * @add:	add (1) or remove (0) the sysctl
- *
- * Add or remove the debug sysctl. Return 0 on success or -errno on error.
- */
+ 
 int ntfs_sysctl(int add)
 {
 	if (add) {
@@ -55,5 +44,5 @@ int ntfs_sysctl(int add)
 	return 0;
 }
 
-#endif /* CONFIG_SYSCTL */
-#endif /* DEBUG */
+#endif  
+#endif  

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- */
+ 
+ 
 
 #ifndef _VNIC_WQ_H_
 #define _VNIC_WQ_H_
@@ -12,28 +9,28 @@
 #include "vnic_dev.h"
 #include "vnic_cq.h"
 
-/* Work queue control */
+ 
 struct vnic_wq_ctrl {
-	u64 ring_base;			/* 0x00 */
-	u32 ring_size;			/* 0x08 */
+	u64 ring_base;			 
+	u32 ring_size;			 
 	u32 pad0;
-	u32 posted_index;		/* 0x10 */
+	u32 posted_index;		 
 	u32 pad1;
-	u32 cq_index;			/* 0x18 */
+	u32 cq_index;			 
 	u32 pad2;
-	u32 enable;			/* 0x20 */
+	u32 enable;			 
 	u32 pad3;
-	u32 running;			/* 0x28 */
+	u32 running;			 
 	u32 pad4;
-	u32 fetch_index;		/* 0x30 */
+	u32 fetch_index;		 
 	u32 pad5;
-	u32 dca_value;			/* 0x38 */
+	u32 dca_value;			 
 	u32 pad6;
-	u32 error_interrupt_enable;	/* 0x40 */
+	u32 error_interrupt_enable;	 
 	u32 pad7;
-	u32 error_interrupt_offset;	/* 0x48 */
+	u32 error_interrupt_offset;	 
 	u32 pad8;
-	u32 error_status;		/* 0x50 */
+	u32 error_status;		 
 	u32 pad9;
 };
 
@@ -45,14 +42,14 @@ struct vnic_wq_buf {
 	unsigned int index;
 	int sop;
 	void *desc;
-	uint64_t wr_id; /* Cookie */
-	uint8_t cq_entry; /* Gets completion event from hw */
-	uint8_t desc_skip_cnt; /* Num descs to occupy */
-	uint8_t compressed_send; /* Both hdr and payload in one desc */
+	uint64_t wr_id;  
+	uint8_t cq_entry;  
+	uint8_t desc_skip_cnt;  
+	uint8_t compressed_send;  
 	struct vnic_wq_buf *prev;
 };
 
-/* Break the vnic_wq_buf allocations into blocks of 32/64 entries */
+ 
 #define VNIC_WQ_BUF_MIN_BLK_ENTRIES 32
 #define VNIC_WQ_BUF_DFLT_BLK_ENTRIES 64
 #define VNIC_WQ_BUF_BLK_ENTRIES(entries) \
@@ -67,7 +64,7 @@ struct vnic_wq_buf {
 struct vnic_wq {
 	unsigned int index;
 	struct vnic_dev *vdev;
-	struct vnic_wq_ctrl __iomem *ctrl;              /* memory-mapped */
+	struct vnic_wq_ctrl __iomem *ctrl;               
 	struct vnic_dev_ring ring;
 	struct vnic_wq_buf *bufs[VNIC_WQ_BUF_BLKS_MAX];
 	struct vnic_wq_buf *to_use;
@@ -89,13 +86,13 @@ struct devcmd2_controller {
 
 static inline unsigned int vnic_wq_desc_avail(struct vnic_wq *wq)
 {
-	/* how many does SW own? */
+	 
 	return wq->ring.desc_avail;
 }
 
 static inline unsigned int vnic_wq_desc_used(struct vnic_wq *wq)
 {
-	/* how many does HW own? */
+	 
 	return wq->ring.desc_count - wq->ring.desc_avail - 1;
 }
 
@@ -106,11 +103,7 @@ static inline void *vnic_wq_next_desc(struct vnic_wq *wq)
 
 static inline void vnic_wq_doorbell(struct vnic_wq *wq)
 {
-	/* Adding write memory barrier prevents compiler and/or CPU
-	 * reordering, thus avoiding descriptor posting before
-	 * descriptor is initialized. Otherwise, hardware can read
-	 * stale descriptor fields.
-	 */
+	 
 	wmb();
 	iowrite32(wq->to_use->index, &wq->ctrl->posted_index);
 }
@@ -180,4 +173,4 @@ void enic_wq_init_start(struct vnic_wq *wq, unsigned int cq_index,
 			unsigned int error_interrupt_enable,
 			unsigned int error_interrupt_offset);
 
-#endif /* _VNIC_WQ_H_ */
+#endif  

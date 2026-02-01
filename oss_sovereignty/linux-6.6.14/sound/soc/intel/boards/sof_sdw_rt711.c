@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2020 Intel Corporation
 
-/*
- *  sof_sdw_rt711 - Helpers to handle RT711 from generic machine driver
- */
+
+
+ 
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -17,10 +15,7 @@
 #include <sound/jack.h>
 #include "sof_sdw_common.h"
 
-/*
- * Note this MUST be called before snd_soc_register_card(), so that the props
- * are in place before the codec component driver's probe function parses them.
- */
+ 
 static int rt711_add_codec_device_props(struct device *sdw_dev)
 {
 	struct property_entry props[MAX_NO_PROPS] = {};
@@ -48,7 +43,7 @@ static const struct snd_soc_dapm_widget rt711_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route rt711_map[] = {
-	/* Headphones */
+	 
 	{ "Headphone", NULL, "rt711 HP" },
 	{ "rt711 MIC2", NULL, "Headset Mic" },
 };
@@ -158,10 +153,7 @@ int sof_sdw_rt711_init(struct snd_soc_card *card,
 	struct device *sdw_dev;
 	int ret;
 
-	/*
-	 * headset should be initialized once.
-	 * Do it with dai link for playback.
-	 */
+	 
 	if (!playback)
 		return 0;
 

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include "core.h"
 #include "dp_tx.h"
@@ -156,13 +153,7 @@ int ath12k_dp_tx(struct ath12k *ar, struct ath12k_vif *arvif,
 
 	pool_id = skb_get_queue_mapping(skb) & (ATH12K_HW_MAX_QUEUES - 1);
 
-	/* Let the default ring selection be based on current processor
-	 * number, where one of the 3 tcl rings are selected based on
-	 * the smp_processor_id(). In case that ring
-	 * is full/busy, we resort to other available rings.
-	 * If all rings are full, we drop the packet.
-	 * TODO: Add throttling logic when all rings are full
-	 */
+	 
 	ring_selector = ab->hw_params->hw_ops->get_ring_selector(skb);
 
 tcl_ring_sel:
@@ -231,11 +222,11 @@ tcl_ring_sel:
 		}
 		break;
 	case HAL_TCL_ENCAP_TYPE_ETHERNET:
-		/* no need to encap */
+		 
 		break;
 	case HAL_TCL_ENCAP_TYPE_802_3:
 	default:
-		/* TODO: Take care of other encap modes as well */
+		 
 		ret = -EINVAL;
 		atomic_inc(&ab->soc_stats.tx_err.misc_fail);
 		goto fail_remove_tx_buf;
@@ -293,19 +284,13 @@ tcl_ring_sel:
 
 	hal_tcl_desc = ath12k_hal_srng_src_get_next_entry(ab, tcl_ring);
 	if (!hal_tcl_desc) {
-		/* NOTE: It is highly unlikely we'll be running out of tcl_ring
-		 * desc because the desc is directly enqueued onto hw queue.
-		 */
+		 
 		ath12k_hal_srng_access_end(ab, tcl_ring);
 		ab->soc_stats.tx_err.desc_na[ti.ring_id]++;
 		spin_unlock_bh(&tcl_ring->lock);
 		ret = -ENOMEM;
 
-		/* Checking for available tcl descriptors in another ring in
-		 * case of failure due to full tcl ring now, is better than
-		 * checking this ring earlier for each pkt tx.
-		 * Restart ring selection if some rings are not checked yet.
-		 */
+		 
 		if (ring_map != (BIT(ab->hw_params->max_tx_ring) - 1) &&
 		    ab->hw_params->tcl_ring_retry) {
 			tcl_ring_retry = true;
@@ -434,9 +419,7 @@ ath12k_dp_tx_process_htt_tx_complete(struct ath12k_base *ab,
 		ath12k_dp_tx_free_txbuf(ab, msdu, mac_id, tx_ring);
 		break;
 	case HAL_WBM_REL_HTT_TX_COMP_STATUS_MEC_NOTIFY:
-		/* This event is to be handled only when the driver decides to
-		 * use WDS offload functionality.
-		 */
+		 
 		break;
 	default:
 		ath12k_warn(ab, "Unknown htt tx status %d\n", wbm_status);
@@ -453,7 +436,7 @@ static void ath12k_dp_tx_complete_msdu(struct ath12k *ar,
 	struct ath12k_skb_cb *skb_cb;
 
 	if (WARN_ON_ONCE(ts->buf_rel_source != HAL_WBM_REL_SRC_MODULE_TQM)) {
-		/* Must not happen */
+		 
 		return;
 	}
 
@@ -479,7 +462,7 @@ static void ath12k_dp_tx_complete_msdu(struct ath12k *ar,
 	info = IEEE80211_SKB_CB(msdu);
 	memset(&info->status, 0, sizeof(info->status));
 
-	/* skip tx rate update from ieee80211_status*/
+	 
 	info->status.rates[0].idx = -1;
 
 	if (ts->status == HAL_WBM_TQM_REL_REASON_FRAME_ACKED &&
@@ -494,10 +477,7 @@ static void ath12k_dp_tx_complete_msdu(struct ath12k *ar,
 	    (info->flags & IEEE80211_TX_CTL_NO_ACK))
 		info->flags |= IEEE80211_TX_STAT_NOACK_TRANSMITTED;
 
-	/* NOTE: Tx rate status reporting. Tx completion status does not have
-	 * necessary information (for example nss) to build the tx rate.
-	 * Might end up reporting it out-of-band from HTT stats.
-	 */
+	 
 
 	ieee80211_tx_status(ar->hw, msdu);
 
@@ -560,7 +540,7 @@ void ath12k_dp_tx_completion_handler(struct ath12k_base *ab, int ring_id)
 
 	if (ath12k_hal_srng_dst_peek(ab, status_ring) &&
 	    (ATH12K_TX_COMPL_NEXT(tx_ring->tx_status_head) == tx_ring->tx_status_tail)) {
-		/* TODO: Process pending tx_status messages when kfifo_is_full() */
+		 
 		ath12k_warn(ab, "Unable to process some of the tx_status ring desc because status_fifo is full\n");
 	}
 
@@ -578,12 +558,12 @@ void ath12k_dp_tx_completion_handler(struct ath12k_base *ab, int ring_id)
 		ath12k_dp_tx_status_parse(ab, tx_status, &ts);
 
 		if (le32_get_bits(tx_status->info0, HAL_WBM_COMPL_TX_INFO0_CC_DONE)) {
-			/* HW done cookie conversion */
+			 
 			desc_va = ((u64)le32_to_cpu(tx_status->buf_va_hi) << 32 |
 				   le32_to_cpu(tx_status->buf_va_lo));
 			tx_desc = (struct ath12k_tx_desc_info *)((unsigned long)desc_va);
 		} else {
-			/* SW does cookie conversion to VA */
+			 
 			desc_id = le32_get_bits(tx_status->buf_va_hi,
 						BUFFER_ADDR_INFO1_SW_COOKIE);
 
@@ -597,9 +577,7 @@ void ath12k_dp_tx_completion_handler(struct ath12k_base *ab, int ring_id)
 		msdu = tx_desc->skb;
 		mac_id = tx_desc->mac_id;
 
-		/* Release descriptor as soon as extracting necessary info
-		 * to reduce contention
-		 */
+		 
 		ath12k_dp_tx_release_txbuf(dp, tx_desc, tx_desc->pool_id);
 		if (ts.buf_rel_source == HAL_WBM_REL_SRC_MODULE_FW) {
 			ath12k_dp_tx_process_htt_tx_complete(ab,
@@ -630,9 +608,7 @@ ath12k_dp_tx_get_ring_id_type(struct ath12k_base *ab,
 
 	switch (ring_type) {
 	case HAL_RXDMA_BUF:
-		/* for some targets, host fills rx buffer to fw and fw fills to
-		 * rxbuf ring for each rxdma
-		 */
+		 
 		if (!ab->hw_params->rx_mac_buf_ring) {
 			if (!(ring_id == HAL_SRNG_SW2RXDMA_BUF0 ||
 			      ring_id == HAL_SRNG_SW2RXDMA_BUF1)) {
@@ -1200,9 +1176,7 @@ int ath12k_dp_tx_htt_tx_monitor_mode_ring_config(struct ath12k *ar, bool reset)
 
 	ring_id = dp->tx_mon_buf_ring.refill_buf_ring.ring_id;
 
-	/* TODO: Need to set upstream/downstream tlv filters
-	 * here
-	 */
+	 
 
 	if (ab->hw_params->rxdma1_enable) {
 		ret = ath12k_dp_tx_htt_tx_filter_setup(ar->ab, ring_id, 0,

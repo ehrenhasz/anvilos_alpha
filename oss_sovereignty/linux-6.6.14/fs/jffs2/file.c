@@ -1,14 +1,4 @@
-/*
- * JFFS2 -- Journalling Flash File System, Version 2.
- *
- * Copyright © 2001-2007 Red Hat, Inc.
- * Copyright © 2004-2010 David Woodhouse <dwmw2@infradead.org>
- *
- * Created by David Woodhouse <dwmw2@infradead.org>
- *
- * For licensing information, see the file 'LICENCE' in this directory.
- *
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -40,7 +30,7 @@ int jffs2_fsync(struct file *filp, loff_t start, loff_t end, int datasync)
 		return ret;
 
 	inode_lock(inode);
-	/* Trigger GC to flush any pending writes for this inode */
+	 
 	jffs2_flush_wbuf_gc(c, inode->i_ino);
 	inode_unlock(inode);
 
@@ -60,7 +50,7 @@ const struct file_operations jffs2_file_operations =
 	.splice_write = iter_file_splice_write,
 };
 
-/* jffs2_file_inode_operations */
+ 
 
 const struct inode_operations jffs2_file_inode_operations =
 {
@@ -90,7 +80,7 @@ static int jffs2_do_readpage_nolock (struct inode *inode, struct page *pg)
 	BUG_ON(!PageLocked(pg));
 
 	pg_buf = kmap(pg);
-	/* FIXME: Can kmap fail? */
+	 
 
 	ret = jffs2_read_inode_range(c, f, pg_buf, pg->index << PAGE_SHIFT,
 				     PAGE_SIZE);
@@ -142,7 +132,7 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
 	jffs2_dbg(1, "%s()\n", __func__);
 
 	if (pos > inode->i_size) {
-		/* Make new hole frag from old EOF to new position */
+		 
 		struct jffs2_raw_inode ri;
 		struct jffs2_full_dnode *fn;
 		uint32_t alloc_len;
@@ -205,11 +195,7 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
 		mutex_unlock(&f->sem);
 	}
 
-	/*
-	 * While getting a page and reading data in, lock c->alloc_sem until
-	 * the page is Uptodate. Otherwise GC task may attempt to read the same
-	 * page in read_cache_page(), which causes a deadlock.
-	 */
+	 
 	mutex_lock(&c->alloc_sem);
 	pg = grab_cache_page_write_begin(mapping, index);
 	if (!pg) {
@@ -218,11 +204,7 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
 	}
 	*pagep = pg;
 
-	/*
-	 * Read in the page if it wasn't already present. Cannot optimize away
-	 * the whole page write case until jffs2_write_end can handle the
-	 * case of a short-copy.
-	 */
+	 
 	if (!PageUptodate(pg)) {
 		mutex_lock(&f->sem);
 		ret = jffs2_do_readpage_nolock(inode, pg);
@@ -245,9 +227,7 @@ static int jffs2_write_end(struct file *filp, struct address_space *mapping,
 			loff_t pos, unsigned len, unsigned copied,
 			struct page *pg, void *fsdata)
 {
-	/* Actually commit the write from the page cache page we're looking at.
-	 * For now, we write the full page out each time. It sucks, but it's simple
-	 */
+	 
 	struct inode *inode = mapping->host;
 	struct jffs2_inode_info *f = JFFS2_INODE_INFO(inode);
 	struct jffs2_sb_info *c = JFFS2_SB_INFO(inode->i_sb);
@@ -262,17 +242,11 @@ static int jffs2_write_end(struct file *filp, struct address_space *mapping,
 		  __func__, inode->i_ino, pg->index << PAGE_SHIFT,
 		  start, end, pg->flags);
 
-	/* We need to avoid deadlock with page_cache_read() in
-	   jffs2_garbage_collect_pass(). So the page must be
-	   up to date to prevent page_cache_read() from trying
-	   to re-lock it. */
+	 
 	BUG_ON(!PageUptodate(pg));
 
 	if (end == PAGE_SIZE) {
-		/* When writing out the end of a page, write out the
-		   _whole_ page. This helps to reduce the number of
-		   nodes in files which have many short writes, like
-		   syslog files. */
+		 
 		aligned_start = 0;
 	}
 
@@ -286,7 +260,7 @@ static int jffs2_write_end(struct file *filp, struct address_space *mapping,
 		return -ENOMEM;
 	}
 
-	/* Set the fields that the generic jffs2_write_inode_range() code can't find */
+	 
 	ri->ino = cpu_to_je32(inode->i_ino);
 	ri->mode = cpu_to_jemode(inode->i_mode);
 	ri->uid = cpu_to_je16(i_uid_read(inode));
@@ -294,8 +268,7 @@ static int jffs2_write_end(struct file *filp, struct address_space *mapping,
 	ri->isize = cpu_to_je32((uint32_t)inode->i_size);
 	ri->atime = ri->ctime = ri->mtime = cpu_to_je32(JFFS2_NOW());
 
-	/* In 2.4, it was already kmapped by generic_file_write(). Doesn't
-	   hurt to do it again. The alternative is ifdefs, which are ugly. */
+	 
 	kmap(pg);
 
 	ret = jffs2_write_inode_range(c, f, ri, page_address(pg) + aligned_start,
@@ -305,11 +278,11 @@ static int jffs2_write_end(struct file *filp, struct address_space *mapping,
 	kunmap(pg);
 
 	if (ret) {
-		/* There was an error writing. */
+		 
 		SetPageError(pg);
 	}
 
-	/* Adjust writtenlen for the padding we did, so we don't confuse our caller */
+	 
 	writtenlen -= min(writtenlen, (start - aligned_start));
 
 	if (writtenlen) {
@@ -325,9 +298,7 @@ static int jffs2_write_end(struct file *filp, struct address_space *mapping,
 	jffs2_free_raw_inode(ri);
 
 	if (start+writtenlen < end) {
-		/* generic_file_write has written more to the page cache than we've
-		   actually written to the medium. Mark the page !Uptodate so that
-		   it gets reread */
+		 
 		jffs2_dbg(1, "%s(): Not all bytes written. Marking page !uptodate\n",
 			__func__);
 		SetPageError(pg);

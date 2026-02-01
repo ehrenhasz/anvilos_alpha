@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2016-2019 HabanaLabs, Ltd.
- * All Rights Reserved.
- */
+
+ 
 
 #include "habanalabs.h"
 
@@ -41,7 +38,7 @@ static u32 fixup_flags_legacy_fw(struct hl_device *hdev, enum hwmon_sensor_types
 		break;
 
 	case hwmon_pwm:
-		/* enable bit was here from day 1, so no need to adjust */
+		 
 		flags = cpucp_flags;
 		break;
 
@@ -72,7 +69,7 @@ static u32 fixup_attr_legacy_fw(u32 attr)
 	return attr;
 }
 
-#endif /* !_HAS_HWMON_HWMON_T_ENABLE */
+#endif  
 
 static u32 adjust_hwmon_flags(struct hl_device *hdev, enum hwmon_sensor_types type, u32 cpucp_flags)
 {
@@ -82,10 +79,7 @@ static u32 adjust_hwmon_flags(struct hl_device *hdev, enum hwmon_sensor_types ty
 	use_cpucp_enum = (hdev->asic_prop.fw_app_cpu_boot_dev_sts0 &
 					CPU_BOOT_DEV_STS0_MAP_HWMON_EN) ? true : false;
 
-	/* If f/w is using it's own enum, we need to check if the properties values are aligned.
-	 * If not, it means we need to adjust the values to the new format that is used in the
-	 * kernel since 5.6 (enum values were incremented by 1 by adding a new enable value).
-	 */
+	 
 	if (use_cpucp_enum) {
 		switch (type) {
 		case hwmon_temp:
@@ -121,7 +115,7 @@ static u32 adjust_hwmon_flags(struct hl_device *hdev, enum hwmon_sensor_types ty
 			break;
 
 		case hwmon_pwm:
-			/* enable bit was here from day 1, so no need to adjust */
+			 
 			flags = cpucp_flags;
 			break;
 
@@ -367,7 +361,7 @@ static int hl_read(struct device *dev, enum hwmon_sensor_types type,
 		if (use_cpucp_enum)
 			rc = hl_get_pwm_info(hdev, channel, cpucp_attr, val);
 		else
-			/* no need for fixup as pwm was aligned from day 1 */
+			 
 			rc = hl_get_pwm_info(hdev, channel, attr, val);
 		break;
 	case hwmon_power:
@@ -437,7 +431,7 @@ static int hl_write(struct device *dev, enum hwmon_sensor_types type,
 		if (use_cpucp_enum)
 			hl_set_pwm_info(hdev, channel, cpucp_attr, val);
 		else
-			/* no need for fixup as pwm was aligned from day 1 */
+			 
 			hl_set_pwm_info(hdev, channel, attr, val);
 		break;
 	case hwmon_in:

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MTD Oops/Panic logger
- *
- * Copyright © 2007 Nokia Corporation. All rights reserved.
- *
- * Author: Richard Purdie <rpurdie@openedhand.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -22,7 +16,7 @@
 #include <linux/mtd/mtd.h>
 #include <linux/kmsg_dump.h>
 
-/* Maximum MTD partition size */
+ 
 #define MTDOOPS_MAX_MTD_SIZE (8 * 1024 * 1024)
 
 static unsigned long record_size = 4096;
@@ -40,8 +34,8 @@ module_param(dump_oops, int, 0600);
 MODULE_PARM_DESC(dump_oops,
 		"set to 1 to dump oopses, 0 to only dump panics (default 1)");
 
-#define MTDOOPS_KERNMSG_MAGIC_v1 0x5d005d00  /* Original */
-#define MTDOOPS_KERNMSG_MAGIC_v2 0x5d005e00  /* Adds the timestamp */
+#define MTDOOPS_KERNMSG_MAGIC_v1 0x5d005d00   
+#define MTDOOPS_KERNMSG_MAGIC_v2 0x5d005e00   
 
 struct mtdoops_hdr {
 	u32 seq;
@@ -101,7 +95,7 @@ static int mtdoops_erase_block(struct mtdoops_context *cxt, int offset)
 		return ret;
 	}
 
-	/* Mark pages as unused */
+	 
 	for (page = start_page; page < start_page + erase_pages; page++)
 		mark_page_unused(cxt, page);
 
@@ -113,7 +107,7 @@ static void mtdoops_erase(struct mtdoops_context *cxt)
 	struct mtd_info *mtd = cxt->mtd;
 	int i = 0, j, ret, mod;
 
-	/* We were unregistered */
+	 
 	if (!mtd)
 		return;
 
@@ -162,7 +156,7 @@ badblock:
 	goto badblock;
 }
 
-/* Scheduled work - when we can't proceed without erasing a block */
+ 
 static void mtdoops_workfunc_erase(struct work_struct *work)
 {
 	struct mtdoops_context *cxt =
@@ -184,10 +178,10 @@ static void mtdoops_inc_counter(struct mtdoops_context *cxt, int panic)
 			 cxt->nextpage, cxt->nextcount,
 			 panic ? "immediately" : "scheduled");
 		if (panic) {
-			/* In case of panic, erase immediately */
+			 
 			mtdoops_erase(cxt);
 		} else {
-			/* Otherwise, schedule work to erase it "nicely" */
+			 
 			schedule_work(&cxt->work_erase);
 		}
 	} else {
@@ -206,7 +200,7 @@ static void mtdoops_write(struct mtdoops_context *cxt, int panic)
 	if (test_and_set_bit(0, &cxt->oops_buf_busy))
 		return;
 
-	/* Add mtdoops header to the buffer */
+	 
 	hdr = (struct mtdoops_hdr *)cxt->oops_buf;
 	hdr->seq = cxt->nextcount;
 	hdr->magic = MTDOOPS_KERNMSG_MAGIC_v2;
@@ -253,7 +247,7 @@ static void find_next_position(struct mtdoops_context *cxt)
 	for (page = 0; page < cxt->oops_pages; page++) {
 		if (mtd_block_isbad(mtd, page * record_size))
 			continue;
-		/* Assume the page is used */
+		 
 		mark_page_used(cxt, page);
 		ret = mtd_read(mtd, page * record_size, sizeof(hdr),
 			       &retlen, (u_char *)&hdr);
@@ -304,7 +298,7 @@ static void mtdoops_do_dump(struct kmsg_dumper *dumper,
 			struct mtdoops_context, dump);
 	struct kmsg_dump_iter iter;
 
-	/* Only dump oopses if dump_oops is set */
+	 
 	if (reason == KMSG_DUMP_OOPS && !dump_oops)
 		return;
 
@@ -318,10 +312,10 @@ static void mtdoops_do_dump(struct kmsg_dumper *dumper,
 	clear_bit(0, &cxt->oops_buf_busy);
 
 	if (reason != KMSG_DUMP_OOPS) {
-		/* Panics must be written immediately */
+		 
 		mtdoops_write(cxt, 1);
 	} else {
-		/* For other cases, schedule work to write it "nicely" */
+		 
 		schedule_work(&cxt->work_write);
 	}
 }
@@ -354,7 +348,7 @@ static void mtdoops_notify_add(struct mtd_info *mtd)
 		return;
 	}
 
-	/* oops_page_used is a bit field */
+	 
 	cxt->oops_page_used =
 		vmalloc(array_size(sizeof(unsigned long),
 				   DIV_ROUND_UP(mtdoops_pages,
@@ -420,7 +414,7 @@ static int __init mtdoops_init(void)
 		return -EINVAL;
 	}
 
-	/* Setup the MTD device to use */
+	 
 	cxt->mtd_index = -1;
 	mtd_index = simple_strtoul(mtddev, &endp, 0);
 	if (*endp == '\0')

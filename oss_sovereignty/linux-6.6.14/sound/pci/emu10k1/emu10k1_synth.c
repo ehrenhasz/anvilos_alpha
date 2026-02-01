@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2000 Takashi Iwai <tiwai@suse.de>
- *
- *  Routines for control of EMU10K1 WaveTable synth
- */
+
+ 
 
 #include "emu10k1_synth_local.h"
 #include <linux/init.h>
@@ -13,9 +9,7 @@ MODULE_AUTHOR("Takashi Iwai");
 MODULE_DESCRIPTION("Routines for control of EMU10K1 WaveTable synth");
 MODULE_LICENSE("GPL");
 
-/*
- * create a new hardware dependent device for Emu10k1
- */
+ 
 static int snd_emu10k1_synth_probe(struct device *_dev)
 {
 	struct snd_seq_device *dev = to_seq_dev(_dev);
@@ -28,7 +22,7 @@ static int snd_emu10k1_synth_probe(struct device *_dev)
 		return -EINVAL;
 
 	if (arg->seq_ports <= 0)
-		return 0; /* nothing */
+		return 0;  
 	if (arg->max_voices < 1)
 		arg->max_voices = 1;
 	else if (arg->max_voices > 64)
@@ -43,12 +37,12 @@ static int snd_emu10k1_synth_probe(struct device *_dev)
 	emux->max_voices = arg->max_voices;
 	emux->num_ports = arg->seq_ports;
 	emux->memhdr = hw->memhdr;
-	/* maximum two ports */
+	 
 	emux->midi_ports = arg->seq_ports < 2 ? arg->seq_ports : 2;
-	/* audigy has two external midis */
+	 
 	emux->midi_devidx = hw->audigy ? 2 : 1;
 	emux->linear_panning = 0;
-	emux->hwdep_idx = 2; /* FIXED */
+	emux->hwdep_idx = 2;  
 
 	if (snd_emux_register(emux, dev->card, arg->index, "Emu10k1") < 0) {
 		snd_emux_free(emux);
@@ -72,7 +66,7 @@ static int snd_emu10k1_synth_remove(struct device *_dev)
 	struct snd_emu10k1 *hw;
 
 	if (dev->driver_data == NULL)
-		return 0; /* not registered actually */
+		return 0;  
 
 	emux = dev->driver_data;
 
@@ -86,9 +80,7 @@ static int snd_emu10k1_synth_remove(struct device *_dev)
 	return 0;
 }
 
-/*
- *  INIT part
- */
+ 
 
 static struct snd_seq_driver emu10k1_synth_driver = {
 	.driver = {

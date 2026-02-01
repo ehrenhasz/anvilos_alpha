@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Driver for the Texas Instruments DP83867 PHY
- *
- * Copyright (C) 2015 Texas Instruments Inc.
- */
+
+ 
 
 #include <linux/ethtool.h>
 #include <linux/kernel.h>
@@ -31,7 +28,7 @@
 #define DP83867_CFG3		0x1e
 #define DP83867_CTRL		0x1f
 
-/* Extended Registers */
+ 
 #define DP83867_FLD_THR_CFG	0x002e
 #define DP83867_CFG4		0x0031
 #define DP83867_CFG4_SGMII_ANEG_MASK (BIT(5) | BIT(6))
@@ -60,7 +57,7 @@
 #define DP83867_SW_RESET	BIT(15)
 #define DP83867_SW_RESTART	BIT(14)
 
-/* MICR Interrupt bits */
+ 
 #define MII_DP83867_MICR_AN_ERR_INT_EN		BIT(15)
 #define MII_DP83867_MICR_SPEED_CHNG_INT_EN	BIT(14)
 #define MII_DP83867_MICR_DUP_MODE_CHNG_INT_EN	BIT(13)
@@ -74,24 +71,24 @@
 #define MII_DP83867_MICR_POL_CHNG_INT_EN	BIT(1)
 #define MII_DP83867_MICR_JABBER_INT_EN		BIT(0)
 
-/* RGMIICTL bits */
+ 
 #define DP83867_RGMII_TX_CLK_DELAY_EN		BIT(1)
 #define DP83867_RGMII_RX_CLK_DELAY_EN		BIT(0)
 
-/* SGMIICTL bits */
+ 
 #define DP83867_SGMII_TYPE		BIT(14)
 
-/* RXFCFG bits*/
+ 
 #define DP83867_WOL_MAGIC_EN		BIT(0)
 #define DP83867_WOL_BCAST_EN		BIT(2)
 #define DP83867_WOL_UCAST_EN		BIT(4)
 #define DP83867_WOL_SEC_EN		BIT(5)
 #define DP83867_WOL_ENH_MAC		BIT(7)
 
-/* STRAP_STS1 bits */
+ 
 #define DP83867_STRAP_STS1_RESERVED		BIT(11)
 
-/* STRAP_STS2 bits */
+ 
 #define DP83867_STRAP_STS2_CLK_SKEW_TX_MASK	GENMASK(6, 4)
 #define DP83867_STRAP_STS2_CLK_SKEW_TX_SHIFT	4
 #define DP83867_STRAP_STS2_CLK_SKEW_RX_MASK	GENMASK(2, 0)
@@ -99,7 +96,7 @@
 #define DP83867_STRAP_STS2_CLK_SKEW_NONE	BIT(2)
 #define DP83867_STRAP_STS2_STRAP_FLD		BIT(10)
 
-/* PHY CTRL bits */
+ 
 #define DP83867_PHYCR_TX_FIFO_DEPTH_SHIFT	14
 #define DP83867_PHYCR_RX_FIFO_DEPTH_SHIFT	12
 #define DP83867_PHYCR_FIFO_DEPTH_MAX		0x03
@@ -108,7 +105,7 @@
 #define DP83867_PHYCR_RESERVED_MASK		BIT(11)
 #define DP83867_PHYCR_FORCE_LINK_GOOD		BIT(10)
 
-/* RGMIIDCTL bits */
+ 
 #define DP83867_RGMII_TX_CLK_DELAY_MAX		0xf
 #define DP83867_RGMII_TX_CLK_DELAY_SHIFT	4
 #define DP83867_RGMII_TX_CLK_DELAY_INV	(DP83867_RGMII_TX_CLK_DELAY_MAX + 1)
@@ -116,7 +113,7 @@
 #define DP83867_RGMII_RX_CLK_DELAY_SHIFT	0
 #define DP83867_RGMII_RX_CLK_DELAY_INV	(DP83867_RGMII_RX_CLK_DELAY_MAX + 1)
 
-/* IO_MUX_CFG bits */
+ 
 #define DP83867_IO_MUX_CFG_IO_IMPEDANCE_MASK	0x1f
 #define DP83867_IO_MUX_CFG_IO_IMPEDANCE_MAX	0x0
 #define DP83867_IO_MUX_CFG_IO_IMPEDANCE_MIN	0x1f
@@ -124,13 +121,13 @@
 #define DP83867_IO_MUX_CFG_CLK_O_SEL_MASK	(0x1f << 8)
 #define DP83867_IO_MUX_CFG_CLK_O_SEL_SHIFT	8
 
-/* PHY STS bits */
+ 
 #define DP83867_PHYSTS_1000			BIT(15)
 #define DP83867_PHYSTS_100			BIT(14)
 #define DP83867_PHYSTS_DUPLEX			BIT(13)
 #define DP83867_PHYSTS_LINK			BIT(10)
 
-/* CFG2 bits */
+ 
 #define DP83867_DOWNSHIFT_EN		(BIT(8) | BIT(9))
 #define DP83867_DOWNSHIFT_ATTEMPT_MASK	(BIT(10) | BIT(11))
 #define DP83867_DOWNSHIFT_1_COUNT_VAL	0
@@ -143,19 +140,19 @@
 #define DP83867_DOWNSHIFT_8_COUNT	8
 #define DP83867_SGMII_AUTONEG_EN	BIT(7)
 
-/* CFG3 bits */
+ 
 #define DP83867_CFG3_INT_OE			BIT(7)
 #define DP83867_CFG3_ROBUST_AUTO_MDIX		BIT(9)
 
-/* CFG4 bits */
+ 
 #define DP83867_CFG4_PORT_MIRROR_EN              BIT(0)
 
-/* FLD_THR_CFG */
+ 
 #define DP83867_FLD_THR_CFG_ENERGY_LOST_THR_MASK	0x7
 
 #define DP83867_LED_COUNT	4
 
-/* LED_DRV bits */
+ 
 #define DP83867_LED_DRV_EN(x)	BIT((x) * 4)
 #define DP83867_LED_DRV_VAL(x)	BIT((x) * 4 + 1)
 
@@ -492,9 +489,7 @@ static int dp83867_verify_rgmii_cfg(struct phy_device *phydev)
 {
 	struct dp83867_private *dp83867 = phydev->priv;
 
-	/* Existing behavior was to use default pin strapping delay in rgmii
-	 * mode, but rgmii should have meant no delay.  Warn existing users.
-	 */
+	 
 	if (phydev->interface == PHY_INTERFACE_MODE_RGMII) {
 		const u16 val = phy_read_mmd(phydev, DP83867_DEVADDR,
 					     DP83867_STRAP_STS2);
@@ -511,7 +506,7 @@ static int dp83867_verify_rgmii_cfg(struct phy_device *phydev)
 				    txskew, rxskew);
 	}
 
-	/* RX delay *must* be specified if internal delay of RX is used. */
+	 
 	if ((phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
 	     phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID) &&
 	     dp83867->rx_id_delay == DP83867_RGMII_RX_CLK_DELAY_INV) {
@@ -519,7 +514,7 @@ static int dp83867_verify_rgmii_cfg(struct phy_device *phydev)
 		return -EINVAL;
 	}
 
-	/* TX delay *must* be specified if internal delay of TX is used. */
+	 
 	if ((phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
 	     phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID) &&
 	     dp83867->tx_id_delay == DP83867_RGMII_TX_CLK_DELAY_INV) {
@@ -547,13 +542,13 @@ static int dp83867_of_init_io_impedance(struct phy_device *phydev)
 			return phydev_err_probe(phydev, ret,
 						"failed to get nvmem cell io_impedance_ctrl\n");
 
-		/* If no nvmem cell, check for the boolean properties. */
+		 
 		if (of_property_read_bool(of_node, "ti,max-output-impedance"))
 			dp83867->io_impedance = DP83867_IO_MUX_CFG_IO_IMPEDANCE_MAX;
 		else if (of_property_read_bool(of_node, "ti,min-output-impedance"))
 			dp83867->io_impedance = DP83867_IO_MUX_CFG_IO_IMPEDANCE_MIN;
 		else
-			dp83867->io_impedance = -1; /* leave at default */
+			dp83867->io_impedance = -1;  
 
 		return 0;
 	}
@@ -586,15 +581,13 @@ static int dp83867_of_init(struct phy_device *phydev)
 	if (!of_node)
 		return -ENODEV;
 
-	/* Optional configuration */
+	 
 	ret = of_property_read_u32(of_node, "ti,clk-output-sel",
 				   &dp83867->clk_output_sel);
-	/* If not set, keep default */
+	 
 	if (!ret) {
 		dp83867->set_clk_output = true;
-		/* Valid values are 0 to DP83867_CLK_O_SEL_REF_CLK or
-		 * DP83867_CLK_O_SEL_OFF.
-		 */
+		 
 		if (dp83867->clk_output_sel > DP83867_CLK_O_SEL_REF_CLK &&
 		    dp83867->clk_output_sel != DP83867_CLK_O_SEL_OFF) {
 			phydev_err(phydev, "ti,clk-output-sel value %u out of range\n",
@@ -674,36 +667,26 @@ static int dp83867_of_init(struct phy_device *phydev)
 	struct dp83867_private *dp83867 = phydev->priv;
 	u16 delay;
 
-	/* For non-OF device, the RX and TX ID values are either strapped
-	 * or take from default value. So, we init RX & TX ID values here
-	 * so that the RGMIIDCTL is configured correctly later in
-	 * dp83867_config_init();
-	 */
+	 
 	delay = phy_read_mmd(phydev, DP83867_DEVADDR, DP83867_RGMIIDCTL);
 	dp83867->rx_id_delay = delay & DP83867_RGMII_RX_CLK_DELAY_MAX;
 	dp83867->tx_id_delay = (delay >> DP83867_RGMII_TX_CLK_DELAY_SHIFT) &
 			       DP83867_RGMII_TX_CLK_DELAY_MAX;
 
-	/* Per datasheet, IO impedance is default to 50-ohm, so we set the
-	 * same here or else the default '0' means highest IO impedance
-	 * which is wrong.
-	 */
+	 
 	dp83867->io_impedance = DP83867_IO_MUX_CFG_IO_IMPEDANCE_MIN / 2;
 
-	/* For non-OF device, the RX and TX FIFO depths are taken from
-	 * default value. So, we init RX & TX FIFO depths here
-	 * so that it is configured correctly later in dp83867_config_init();
-	 */
+	 
 	dp83867->tx_fifo_depth = DP83867_PHYCR_FIFO_DEPTH_4_B_NIB;
 	dp83867->rx_fifo_depth = DP83867_PHYCR_FIFO_DEPTH_4_B_NIB;
 
 	return 0;
 }
-#endif /* CONFIG_OF_MDIO */
+#endif  
 
 static int dp83867_suspend(struct phy_device *phydev)
 {
-	/* Disable PHY Interrupts */
+	 
 	if (phy_interrupt_is_valid(phydev)) {
 		phydev->interrupts = PHY_INTERRUPT_DISABLED;
 		dp83867_config_intr(phydev);
@@ -714,7 +697,7 @@ static int dp83867_suspend(struct phy_device *phydev)
 
 static int dp83867_resume(struct phy_device *phydev)
 {
-	/* Enable PHY Interrupts */
+	 
 	if (phy_interrupt_is_valid(phydev)) {
 		phydev->interrupts = PHY_INTERRUPT_ENABLED;
 		dp83867_config_intr(phydev);
@@ -745,7 +728,7 @@ static int dp83867_config_init(struct phy_device *phydev)
 	int ret, val, bs;
 	u16 delay;
 
-	/* Force speed optimization for the PHY even if it strapped */
+	 
 	ret = phy_modify(phydev, DP83867_CFG2, DP83867_DOWNSHIFT_EN,
 			 DP83867_DOWNSHIFT_EN);
 	if (ret)
@@ -755,17 +738,14 @@ static int dp83867_config_init(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/* RX_DV/RX_CTRL strapped in mode 1 or mode 2 workaround */
+	 
 	if (dp83867->rxctrl_strap_quirk)
 		phy_clear_bits_mmd(phydev, DP83867_DEVADDR, DP83867_CFG4,
 				   BIT(7));
 
 	bs = phy_read_mmd(phydev, DP83867_DEVADDR, DP83867_STRAP_STS2);
 	if (bs & DP83867_STRAP_STS2_STRAP_FLD) {
-		/* When using strap to enable FLD, the ENERGY_LOST_FLD_THR will
-		 * be set to 0x2. This may causes the PHY link to be unstable -
-		 * the default value 0x1 need to be restored.
-		 */
+		 
 		ret = phy_modify_mmd(phydev, DP83867_DEVADDR,
 				     DP83867_FLD_THR_CFG,
 				     DP83867_FLD_THR_CFG_ENERGY_LOST_THR_MASK,
@@ -800,15 +780,7 @@ static int dp83867_config_init(struct phy_device *phydev)
 		if (val < 0)
 			return val;
 
-		/* The code below checks if "port mirroring" N/A MODE4 has been
-		 * enabled during power on bootstrap.
-		 *
-		 * Such N/A mode enabled by mistake can put PHY IC in some
-		 * internal testing mode and disable RGMII transmission.
-		 *
-		 * In this particular case one needs to check STRAP_STS1
-		 * register's bit 11 (marked as RESERVED).
-		 */
+		 
 
 		bs = phy_read_mmd(phydev, DP83867_DEVADDR, DP83867_STRAP_STS1);
 		if (bs & DP83867_STRAP_STS1_RESERVED)
@@ -818,13 +790,7 @@ static int dp83867_config_init(struct phy_device *phydev)
 		if (ret)
 			return ret;
 
-		/* If rgmii mode with no internal delay is selected, we do NOT use
-		 * aligned mode as one might expect.  Instead we use the PHY's default
-		 * based on pin strapping.  And the "mode 0" default is to *use*
-		 * internal delay with a value of 7 (2.00 ns).
-		 *
-		 * Set up RGMII delays
-		 */
+		 
 		val = phy_read_mmd(phydev, DP83867_DEVADDR, DP83867_RGMIICTL);
 
 		val &= ~(DP83867_RGMII_TX_CLK_DELAY_EN | DP83867_RGMII_RX_CLK_DELAY_EN);
@@ -850,19 +816,14 @@ static int dp83867_config_init(struct phy_device *phydev)
 			      delay);
 	}
 
-	/* If specified, set io impedance */
+	 
 	if (dp83867->io_impedance >= 0)
 		phy_modify_mmd(phydev, DP83867_DEVADDR, DP83867_IO_MUX_CFG,
 			       DP83867_IO_MUX_CFG_IO_IMPEDANCE_MASK,
 			       dp83867->io_impedance);
 
 	if (phydev->interface == PHY_INTERFACE_MODE_SGMII) {
-		/* For support SPEED_10 in SGMII mode
-		 * DP83867_10M_SGMII_RATE_ADAPT bit
-		 * has to be cleared by software. That
-		 * does not affect SPEED_100 and
-		 * SPEED_1000.
-		 */
+		 
 		ret = phy_modify_mmd(phydev, DP83867_DEVADDR,
 				     DP83867_10M_SGMII_CFG,
 				     DP83867_10M_SGMII_RATE_ADAPT_MASK,
@@ -870,10 +831,7 @@ static int dp83867_config_init(struct phy_device *phydev)
 		if (ret)
 			return ret;
 
-		/* After reset SGMII Autoneg timer is set to 2us (bits 6 and 5
-		 * are 01). That is not enough to finalize autoneg on some
-		 * devices. Increase this timer duration to maximum 16ms.
-		 */
+		 
 		ret = phy_modify_mmd(phydev, DP83867_DEVADDR,
 				     DP83867_CFG4,
 				     DP83867_CFG4_SGMII_ANEG_MASK,
@@ -883,27 +841,21 @@ static int dp83867_config_init(struct phy_device *phydev)
 			return ret;
 
 		val = phy_read_mmd(phydev, DP83867_DEVADDR, DP83867_SGMIICTL);
-		/* SGMII type is set to 4-wire mode by default.
-		 * If we place appropriate property in dts (see above)
-		 * switch on 6-wire mode.
-		 */
+		 
 		if (dp83867->sgmii_ref_clk_en)
 			val |= DP83867_SGMII_TYPE;
 		else
 			val &= ~DP83867_SGMII_TYPE;
 		phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_SGMIICTL, val);
 
-		/* This is a SW workaround for link instability if RX_CTRL is
-		 * not strapped to mode 3 or 4 in HW. This is required for SGMII
-		 * in addition to clearing bit 7, handled above.
-		 */
+		 
 		if (dp83867->rxctrl_strap_quirk)
 			phy_set_bits_mmd(phydev, DP83867_DEVADDR, DP83867_CFG4,
 					 BIT(8));
 	}
 
 	val = phy_read(phydev, DP83867_CFG3);
-	/* Enable Interrupt output INT_OE in CFG3 register */
+	 
 	if (phy_interrupt_is_valid(phydev))
 		val |= DP83867_CFG3_INT_OE;
 
@@ -913,7 +865,7 @@ static int dp83867_config_init(struct phy_device *phydev)
 	if (dp83867->port_mirroring != DP83867_PORT_MIRROING_KEEP)
 		dp83867_config_port_mirroring(phydev);
 
-	/* Clock output selection if muxing property is set */
+	 
 	if (dp83867->set_clk_output) {
 		u16 mask = DP83867_IO_MUX_CFG_CLK_O_DISABLE;
 
@@ -947,10 +899,7 @@ static int dp83867_phy_reset(struct phy_device *phydev)
 	if (err < 0)
 		return err;
 
-	/* Configure the DSP Feedforward Equalizer Configuration register to
-	 * improve short cable (< 1 meter) performance. This will not affect
-	 * long cable performance.
-	 */
+	 
 	err = phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_DSP_FFE_CFG,
 			    0x0e81);
 	if (err < 0)
@@ -967,17 +916,7 @@ static int dp83867_phy_reset(struct phy_device *phydev)
 
 static void dp83867_link_change_notify(struct phy_device *phydev)
 {
-	/* There is a limitation in DP83867 PHY device where SGMII AN is
-	 * only triggered once after the device is booted up. Even after the
-	 * PHY TPI is down and up again, SGMII AN is not triggered and
-	 * hence no new in-band message from PHY to MAC side SGMII.
-	 * This could cause an issue during power up, when PHY is up prior
-	 * to MAC. At this condition, once MAC side SGMII is up, MAC side
-	 * SGMII wouldn`t receive new in-band message from TI PHY with
-	 * correct link status, speed and duplex info.
-	 * Thus, implemented a SW solution here to retrigger SGMII Auto-Neg
-	 * whenever there is a link change.
-	 */
+	 
 	if (phydev->interface == PHY_INTERFACE_MODE_SGMII) {
 		int val = 0;
 
@@ -1006,7 +945,7 @@ dp83867_led_brightness_set(struct phy_device *phydev,
 	if (index >= DP83867_LED_COUNT)
 		return -EINVAL;
 
-	/* DRV_EN==1: output is DRV_VAL */
+	 
 	val = DP83867_LED_DRV_EN(index);
 
 	if (brightness)
@@ -1023,7 +962,7 @@ static struct phy_driver dp83867_driver[] = {
 		.phy_id		= DP83867_PHY_ID,
 		.phy_id_mask	= 0xfffffff0,
 		.name		= "TI DP83867",
-		/* PHY_GBIT_FEATURES */
+		 
 
 		.probe          = dp83867_probe,
 		.config_init	= dp83867_config_init,
@@ -1036,7 +975,7 @@ static struct phy_driver dp83867_driver[] = {
 		.get_wol	= dp83867_get_wol,
 		.set_wol	= dp83867_set_wol,
 
-		/* IRQ related */
+		 
 		.config_intr	= dp83867_config_intr,
 		.handle_interrupt = dp83867_handle_interrupt,
 

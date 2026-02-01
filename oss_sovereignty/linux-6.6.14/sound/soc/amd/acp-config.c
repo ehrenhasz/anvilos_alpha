@@ -1,14 +1,14 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license. When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2021 Advanced Micro Devices, Inc.
-//
-// Authors: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
-//
 
-/* ACP machine configuration module */
+
+
+
+
+
+
+
+
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bits.h>
@@ -69,7 +69,7 @@ int snd_amd_acp_find_config(struct pci_dev *pci)
 	u16 device = pci->device;
 	int i;
 
-	/* Do not enable FLAGS on older platforms with Rev id zero */
+	 
 	if (!pci->revision)
 		return 0;
 

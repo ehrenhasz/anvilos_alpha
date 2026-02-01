@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Management of Tx window, Tx resend, ACKs and out-of-sequence reception
- *
- * Copyright (C) 2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -17,9 +13,7 @@
 #include <net/af_rxrpc.h>
 #include "ar-internal.h"
 
-/*
- * Propose a PING ACK be sent.
- */
+ 
 void rxrpc_propose_ping(struct rxrpc_call *call, u32 serial,
 			enum rxrpc_propose_ack_trace why)
 {
@@ -34,9 +28,7 @@ void rxrpc_propose_ping(struct rxrpc_call *call, u32 serial,
 	}
 }
 
-/*
- * Propose a DELAY ACK be sent in the future.
- */
+ 
 void rxrpc_propose_delay_ACK(struct rxrpc_call *call, rxrpc_serial_t serial,
 			     enum rxrpc_propose_ack_trace why)
 {
@@ -63,9 +55,7 @@ void rxrpc_propose_delay_ACK(struct rxrpc_call *call, rxrpc_serial_t serial,
 	trace_rxrpc_propose_ack(call, why, RXRPC_ACK_DELAY, serial);
 }
 
-/*
- * Queue an ACK for immediate transmission.
- */
+ 
 void rxrpc_send_ACK(struct rxrpc_call *call, u8 ack_reason,
 		    rxrpc_serial_t serial, enum rxrpc_propose_ack_trace why)
 {
@@ -100,17 +90,13 @@ void rxrpc_send_ACK(struct rxrpc_call *call, u8 ack_reason,
 	rxrpc_put_txbuf(txb, rxrpc_txbuf_put_ack_tx);
 }
 
-/*
- * Handle congestion being detected by the retransmit timeout.
- */
+ 
 static void rxrpc_congestion_timeout(struct rxrpc_call *call)
 {
 	set_bit(RXRPC_CALL_RETRANS_TIMEOUT, &call->flags);
 }
 
-/*
- * Perform retransmission of NAK'd and unack'd packets.
- */
+ 
 void rxrpc_resend(struct rxrpc_call *call, struct sk_buff *ack_skb)
 {
 	struct rxrpc_ackpacket *ack = NULL;
@@ -137,9 +123,7 @@ void rxrpc_resend(struct rxrpc_call *call, struct sk_buff *ack_skb)
 	trace_rxrpc_resend(call, ack_skb);
 	txb = list_first_entry(&call->tx_buffer, struct rxrpc_txbuf, call_link);
 
-	/* Scan the soft ACK table without dropping the lock and resend any
-	 * explicitly NAK'd packets.
-	 */
+	 
 	if (ack_skb) {
 		ack = (void *)ack_skb->data + sizeof(struct rxrpc_wire_header);
 
@@ -152,7 +136,7 @@ void rxrpc_resend(struct rxrpc_call *call, struct sk_buff *ack_skb)
 			if (after(txb->seq, transmitted))
 				break;
 			if (after(txb->seq, seq))
-				continue; /* A new hard ACK probably came in */
+				continue;  
 			list_for_each_entry_from(txb, &call->tx_buffer, call_link) {
 				if (txb->seq == seq)
 					goto found_txb;
@@ -161,7 +145,7 @@ void rxrpc_resend(struct rxrpc_call *call, struct sk_buff *ack_skb)
 
 		found_txb:
 			if (after(ntohl(txb->wire.serial), call->acks_highest_serial))
-				continue; /* Ack point not yet reached */
+				continue;  
 
 			rxrpc_see_txbuf(txb, rxrpc_txbuf_see_unacked);
 
@@ -180,13 +164,7 @@ void rxrpc_resend(struct rxrpc_call *call, struct sk_buff *ack_skb)
 		}
 	}
 
-	/* Fast-forward through the Tx queue to the point the peer says it has
-	 * seen.  Anything between the soft-ACK table and that point will get
-	 * ACK'd or NACK'd in due course, so don't worry about it here; here we
-	 * need to consider retransmitting anything beyond that point.
-	 *
-	 * Note that ACK for a packet can beat the update of tx_transmitted.
-	 */
+	 
 	if (after_eq(READ_ONCE(call->acks_prev_seq), READ_ONCE(call->tx_transmitted)))
 		goto no_further_resend;
 
@@ -194,11 +172,11 @@ void rxrpc_resend(struct rxrpc_call *call, struct sk_buff *ack_skb)
 		if (before_eq(txb->seq, READ_ONCE(call->acks_prev_seq)))
 			continue;
 		if (after(txb->seq, READ_ONCE(call->tx_transmitted)))
-			break; /* Not transmitted yet */
+			break;  
 
 		if (ack && ack->reason == RXRPC_ACK_PING_RESPONSE &&
 		    before(ntohl(txb->wire.serial), ntohl(ack->serial)))
-			goto do_resend; /* Wasn't accounted for by a more recent ping. */
+			goto do_resend;  
 
 		if (ktime_after(txb->last_sent, max_age)) {
 			if (ktime_before(txb->last_sent, oldest))
@@ -225,10 +203,7 @@ no_resend:
 	if (unacked)
 		rxrpc_congestion_timeout(call);
 
-	/* If there was nothing that needed retransmission then it's likely
-	 * that an ACK got lost somewhere.  Send a ping to find out instead of
-	 * retransmitting data.
-	 */
+	 
 	if (list_empty(&retrans_queue)) {
 		rxrpc_reduce_call_timer(call, resend_at, jiffies,
 					rxrpc_timer_set_for_resend);
@@ -240,7 +215,7 @@ no_resend:
 		goto out;
 	}
 
-	/* Retransmit the queue */
+	 
 	while ((txb = list_first_entry_or_null(&retrans_queue,
 					       struct rxrpc_txbuf, tx_link))) {
 		list_del_init(&txb->tx_link);
@@ -251,10 +226,7 @@ out:
 	_leave("");
 }
 
-/*
- * Start transmitting the reply to a service.  This cancels the need to ACK the
- * request if we haven't yet done so.
- */
+ 
 static void rxrpc_begin_service_reply(struct rxrpc_call *call)
 {
 	unsigned long now = jiffies;
@@ -266,10 +238,7 @@ static void rxrpc_begin_service_reply(struct rxrpc_call *call)
 	trace_rxrpc_timer(call, rxrpc_timer_init_for_send_reply, now);
 }
 
-/*
- * Close the transmission phase.  After this point there is no more data to be
- * transmitted in the call.
- */
+ 
 static void rxrpc_close_tx_phase(struct rxrpc_call *call)
 {
 	_debug("________awaiting reply/ACK__________");
@@ -298,9 +267,7 @@ static bool rxrpc_tx_window_has_space(struct rxrpc_call *call)
 	return space > 0;
 }
 
-/*
- * Decant some if the sendmsg prepared queue into the transmission buffer.
- */
+ 
 static void rxrpc_decant_prepared_tx(struct rxrpc_call *call)
 {
 	struct rxrpc_txbuf *txb;
@@ -354,10 +321,7 @@ static void rxrpc_transmit_some_data(struct rxrpc_call *call)
 	}
 }
 
-/*
- * Ping the other end to fill our RTT cache and to retrieve the rwind
- * and MTU parameters.
- */
+ 
 static void rxrpc_send_initial_ping(struct rxrpc_call *call)
 {
 	if (call->peer->rtt_count < 3 ||
@@ -367,9 +331,7 @@ static void rxrpc_send_initial_ping(struct rxrpc_call *call)
 			       rxrpc_propose_ack_ping_for_params);
 }
 
-/*
- * Handle retransmission and deferred ACK/abort generation.
- */
+ 
 bool rxrpc_input_call_event(struct rxrpc_call *call, struct sk_buff *skb)
 {
 	unsigned long now, next, t;
@@ -379,7 +341,7 @@ bool rxrpc_input_call_event(struct rxrpc_call *call, struct sk_buff *skb)
 
 	rxrpc_see_call(call, rxrpc_call_see_input);
 
-	//printk("\n--------------------\n");
+	
 	_enter("{%d,%s,%lx}",
 	       call->debug_id, rxrpc_call_states[__rxrpc_call_state(call)],
 	       call->events);
@@ -387,7 +349,7 @@ bool rxrpc_input_call_event(struct rxrpc_call *call, struct sk_buff *skb)
 	if (__rxrpc_call_is_complete(call))
 		goto out;
 
-	/* Handle abort request locklessly, vs rxrpc_propose_abort(). */
+	 
 	abort_code = smp_load_acquire(&call->send_abort);
 	if (abort_code) {
 		rxrpc_abort_call(call, 0, call->send_abort, call->send_abort_err,
@@ -398,7 +360,7 @@ bool rxrpc_input_call_event(struct rxrpc_call *call, struct sk_buff *skb)
 	if (skb && skb->mark == RXRPC_SKB_MARK_ERROR)
 		goto out;
 
-	/* If we see our async-event poke, check for timeout trippage. */
+	 
 	now = jiffies;
 	t = READ_ONCE(call->expect_rx_by);
 	if (time_after_eq(now, t)) {
@@ -473,7 +435,7 @@ bool rxrpc_input_call_event(struct rxrpc_call *call, struct sk_buff *skb)
 	if (test_and_clear_bit(RXRPC_CALL_EV_INITIAL_PING, &call->events))
 		rxrpc_send_initial_ping(call);
 
-	/* Process events */
+	 
 	if (expired) {
 		if (test_bit(RXRPC_CALL_RX_HEARD, &call->flags) &&
 		    (int)call->conn->hi_serial - (int)call->rx_serial > 0) {
@@ -511,7 +473,7 @@ bool rxrpc_input_call_event(struct rxrpc_call *call, struct sk_buff *skb)
 				       rxrpc_propose_ack_input_data);
 	}
 
-	/* Make sure the timer is restarted */
+	 
 	if (!__rxrpc_call_is_complete(call)) {
 		next = call->expect_rx_by;
 

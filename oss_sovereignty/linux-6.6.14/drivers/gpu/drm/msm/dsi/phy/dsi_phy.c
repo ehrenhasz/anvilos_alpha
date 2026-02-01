@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/platform_device.h>
@@ -31,7 +29,7 @@ static void dsi_dphy_timing_calc_clk_zero(struct msm_dsi_dphy_timing *timing,
 	s32 tmax, tmin, clk_z;
 	s32 temp;
 
-	/* reset */
+	 
 	temp = 300 * coeff - ((timing->clk_prepare >> 1) + 1) * 2 * ui;
 	tmin = S_DIV_ROUND_UP(temp, ui) - 2;
 	if (tmin > 255) {
@@ -42,7 +40,7 @@ static void dsi_dphy_timing_calc_clk_zero(struct msm_dsi_dphy_timing *timing,
 		clk_z = linear_inter(tmax, tmin, pcnt, 0, true);
 	}
 
-	/* adjust */
+	 
 	temp = (timing->hs_rqst + timing->clk_prepare + clk_z) & 0x7;
 	timing->clk_zero = clk_z + 8 - temp;
 }
@@ -58,7 +56,7 @@ int msm_dsi_dphy_timing_calc(struct msm_dsi_dphy_timing *timing,
 	s32 pcnt1 = (bit_rate > 1200000000) ? 15 : 10;
 	s32 pcnt2 = 10;
 	s32 pcnt3 = (bit_rate > 180000000) ? 10 : 40;
-	s32 coeff = 1000; /* Precision, should avoid overflow */
+	s32 coeff = 1000;  
 	s32 temp;
 
 	if (!bit_rate || !esc_rate)
@@ -77,7 +75,7 @@ int msm_dsi_dphy_timing_calc(struct msm_dsi_dphy_timing *timing,
 	else
 		timing->hs_rqst = max_t(s32, 0, temp - 2);
 
-	/* Calculate clk_zero after clk_prepare and hs_rqst */
+	 
 	dsi_dphy_timing_calc_clk_zero(timing, ui, coeff, pcnt2);
 
 	temp = 105 * coeff + 12 * ui - 20 * coeff;
@@ -155,7 +153,7 @@ int msm_dsi_dphy_timing_calc_v2(struct msm_dsi_dphy_timing *timing,
 	s32 pcnt3 = 30;
 	s32 pcnt4 = 10;
 	s32 pcnt5 = 2;
-	s32 coeff = 1000; /* Precision, should avoid overflow */
+	s32 coeff = 1000;  
 	s32 hb_en, hb_en_ckln, pd_ckln, pd;
 	s32 val, val_ckln;
 	s32 temp;
@@ -271,7 +269,7 @@ int msm_dsi_dphy_timing_calc_v3(struct msm_dsi_dphy_timing *timing,
 	s32 pcnt3 = 30;
 	s32 pcnt4 = 10;
 	s32 pcnt5 = 2;
-	s32 coeff = 1000; /* Precision, should avoid overflow */
+	s32 coeff = 1000;  
 	s32 hb_en, hb_en_ckln;
 	s32 temp;
 
@@ -382,7 +380,7 @@ int msm_dsi_dphy_timing_calc_v4(struct msm_dsi_dphy_timing *timing,
 	s32 pcnt_hs_zero = 10;
 	s32 pcnt_hs_trail = 30;
 	s32 pcnt_hs_exit = 10;
-	s32 coeff = 1000; /* Precision, should avoid overflow */
+	s32 coeff = 1000;  
 	s32 hb_en;
 	s32 temp;
 
@@ -394,10 +392,7 @@ int msm_dsi_dphy_timing_calc_v4(struct msm_dsi_dphy_timing *timing,
 	ui = mult_frac(NSEC_PER_MSEC, coeff, bit_rate / 1000);
 	ui_x8 = ui << 3;
 
-	/* TODO: verify these calculations against latest downstream driver
-	 * everything except clk_post/clk_pre uses calculations from v3 based
-	 * on the downstream driver having the same calculations for v3 and v4
-	 */
+	 
 
 	temp = S_DIV_ROUND_UP(38 * coeff, ui_x8);
 	tmin = max_t(s32, temp, 0);
@@ -438,19 +433,13 @@ int msm_dsi_dphy_timing_calc_v4(struct msm_dsi_dphy_timing *timing,
 	tmax = 255;
 	timing->hs_exit = linear_inter(tmax, tmin, pcnt_hs_exit, 0, false);
 
-	/* recommended min
-	 * = roundup((mipi_min_ns + t_hs_trail_ns)/(16*bit_clk_ns), 0) - 1
-	 */
+	 
 	temp = 60 * coeff + 52 * ui + + (timing->hs_trail + 1) * ui_x8;
 	tmin = DIV_ROUND_UP(temp, 16 * ui) - 1;
 	tmax = 255;
 	timing->shared_timings.clk_post = linear_inter(tmax, tmin, 5, 0, false);
 
-	/* recommended min
-	 * val1 = (tlpx_ns + clk_prepare_ns + clk_zero_ns + hs_rqst_ns)
-	 * val2 = (16 * bit_clk_ns)
-	 * final = roundup(val1/val2, 0) - 1
-	 */
+	 
 	temp = 52 * coeff + (timing->clk_prepare + timing->clk_zero + 1) * ui_x8 + 54 * coeff;
 	tmin = DIV_ROUND_UP(temp, 16 * ui) - 1;
 	tmax = 255;
@@ -473,7 +462,7 @@ int msm_dsi_cphy_timing_calc_v4(struct msm_dsi_dphy_timing *timing,
 	const unsigned long esc_rate = clk_req->escclk_rate;
 	s32 ui, ui_x7;
 	s32 tmax, tmin;
-	s32 coeff = 1000; /* Precision, should avoid overflow */
+	s32 coeff = 1000;  
 	s32 temp;
 
 	if (!bit_rate || !esc_rate)
@@ -591,11 +580,7 @@ static const struct of_device_id dsi_phy_dt_match[] = {
 	{}
 };
 
-/*
- * Currently, we only support one SoC for each PHY type. When we have multiple
- * SoCs for the same PHY, we can try to make the index searching a bit more
- * clever.
- */
+ 
 static int dsi_phy_get_id(struct msm_dsi_phy *phy)
 {
 	struct platform_device *pdev = phy->pdev;
@@ -691,9 +676,7 @@ static int dsi_phy_driver_probe(struct platform_device *pdev)
 		return dev_err_probe(dev, PTR_ERR(phy->ahb_clk),
 				     "Unable to get ahb clk\n");
 
-	/* PLL init will call into clk_register which requires
-	 * register access, so we need to enable power and ahb clock.
-	 */
+	 
 	ret = dsi_phy_enable_resource(phy);
 	if (ret)
 		return ret;
@@ -771,12 +754,7 @@ int msm_dsi_phy_enable(struct msm_dsi_phy *phy,
 	memcpy(shared_timings, &phy->timing.shared_timings,
 	       sizeof(*shared_timings));
 
-	/*
-	 * Resetting DSI PHY silently changes its PLL registers to reset status,
-	 * which will confuse clock driver and result in wrong output rate of
-	 * link clocks. Restore PLL status if its PLL is being used as clock
-	 * source.
-	 */
+	 
 	if (phy->usecase != MSM_DSI_PHY_SLAVE) {
 		ret = msm_dsi_phy_pll_restore_state(phy);
 		if (ret) {
@@ -817,7 +795,7 @@ void msm_dsi_phy_set_usecase(struct msm_dsi_phy *phy,
 		phy->usecase = uc;
 }
 
-/* Returns true if we have to clear DSI_LANE_CTRL.HS_REQ_SEL_PHY */
+ 
 bool msm_dsi_phy_set_continuous_clock(struct msm_dsi_phy *phy, bool enable)
 {
 	if (!phy || !phy->cfg->ops.set_continuous_clock)
@@ -855,7 +833,7 @@ void msm_dsi_phy_snapshot(struct msm_disp_state *disp_state, struct msm_dsi_phy 
 			phy->base_size, phy->base,
 			"dsi%d_phy", phy->id);
 
-	/* Do not try accessing PLL registers if it is switched off */
+	 
 	if (phy->pll_on)
 		msm_disp_snapshot_add_block(disp_state,
 			phy->pll_size, phy->pll_base,

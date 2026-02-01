@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * SN Platform GRU Driver
- *
- *            Dump GRU State
- *
- *  Copyright (c) 2008 Silicon Graphics, Inc.  All Rights Reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/mm.h>
@@ -183,7 +177,7 @@ int gru_dump_chiplet_request(unsigned long arg)
 	if (copy_from_user(&req, (void __user *)arg, sizeof(req)))
 		return -EFAULT;
 
-	/* Currently, only dump by gid is implemented */
+	 
 	if (req.gid >= gru_max_gids)
 		return -EINVAL;
 	req.gid = array_index_nospec(req.gid, gru_max_gids);

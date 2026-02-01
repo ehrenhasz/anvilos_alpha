@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vDPA bus.
- *
- * Copyright (c) 2020, Red Hat. All rights reserved.
- *     Author: Jason Wang <jasowang@redhat.com>
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/idr.h>
@@ -17,7 +11,7 @@
 #include <linux/virtio_ids.h>
 
 static LIST_HEAD(mdev_head);
-/* A global mutex that protects vdpa management device and device level operations. */
+ 
 static DECLARE_RWSEM(vdpa_dev_lock);
 static DEFINE_IDA(vdpa_index_ida);
 
@@ -69,11 +63,11 @@ static int vdpa_dev_match(struct device *dev, struct device_driver *drv)
 {
 	struct vdpa_device *vdev = dev_to_vdpa(dev);
 
-	/* Check override first, and if set, only use the named driver */
+	 
 	if (vdev->driver_override)
 		return strcmp(vdev->driver_override, drv->name) == 0;
 
-	/* Currently devices must be supported by all vDPA bus drivers */
+	 
 	return 1;
 }
 
@@ -136,24 +130,7 @@ static void vdpa_release_dev(struct device *d)
 	kfree(vdev);
 }
 
-/**
- * __vdpa_alloc_device - allocate and initilaize a vDPA device
- * This allows driver to some prepartion after device is
- * initialized but before registered.
- * @parent: the parent device
- * @config: the bus operations that is supported by this device
- * @ngroups: number of groups supported by this device
- * @nas: number of address spaces supported by this device
- * @size: size of the parent structure that contains private data
- * @name: name of the vdpa device; optional.
- * @use_va: indicate whether virtual address must be used by this device
- *
- * Driver should use vdpa_alloc_device() wrapper macro instead of
- * using this directly.
- *
- * Return: Returns an error when parent/config/dma_dev is not set or fail to get
- *	   ida.
- */
+ 
 struct vdpa_device *__vdpa_alloc_device(struct device *parent,
 					const struct vdpa_config_ops *config,
 					unsigned int ngroups, unsigned int nas,
@@ -169,7 +146,7 @@ struct vdpa_device *__vdpa_alloc_device(struct device *parent,
 	if (!!config->dma_map != !!config->dma_unmap)
 		goto err;
 
-	/* It should only work for the device that use on-chip IOMMU */
+	 
 	if (use_va && !(config->dma_map || config->set_map))
 		goto err;
 
@@ -235,16 +212,7 @@ static int __vdpa_register_device(struct vdpa_device *vdev, u32 nvqs)
 	return device_add(&vdev->dev);
 }
 
-/**
- * _vdpa_register_device - register a vDPA device with vdpa lock held
- * Caller must have a succeed call of vdpa_alloc_device() before.
- * Caller must invoke this routine in the management device dev_add()
- * callback after setting up valid mgmtdev for this vdpa device.
- * @vdev: the vdpa device to be registered to vDPA bus
- * @nvqs: number of virtqueues supported by this device
- *
- * Return: Returns an error when fail to add device to vDPA bus
- */
+ 
 int _vdpa_register_device(struct vdpa_device *vdev, u32 nvqs)
 {
 	if (!vdev->mdev)
@@ -254,14 +222,7 @@ int _vdpa_register_device(struct vdpa_device *vdev, u32 nvqs)
 }
 EXPORT_SYMBOL_GPL(_vdpa_register_device);
 
-/**
- * vdpa_register_device - register a vDPA device
- * Callers must have a succeed call of vdpa_alloc_device() before.
- * @vdev: the vdpa device to be registered to vDPA bus
- * @nvqs: number of virtqueues supported by this device
- *
- * Return: Returns an error when fail to add to vDPA bus
- */
+ 
 int vdpa_register_device(struct vdpa_device *vdev, u32 nvqs)
 {
 	int err;
@@ -273,12 +234,7 @@ int vdpa_register_device(struct vdpa_device *vdev, u32 nvqs)
 }
 EXPORT_SYMBOL_GPL(vdpa_register_device);
 
-/**
- * _vdpa_unregister_device - unregister a vDPA device
- * Caller must invoke this routine as part of management device dev_del()
- * callback.
- * @vdev: the vdpa device to be unregisted from vDPA bus
- */
+ 
 void _vdpa_unregister_device(struct vdpa_device *vdev)
 {
 	lockdep_assert_held(&vdpa_dev_lock);
@@ -287,10 +243,7 @@ void _vdpa_unregister_device(struct vdpa_device *vdev)
 }
 EXPORT_SYMBOL_GPL(_vdpa_unregister_device);
 
-/**
- * vdpa_unregister_device - unregister a vDPA device
- * @vdev: the vdpa device to be unregisted from vDPA bus
- */
+ 
 void vdpa_unregister_device(struct vdpa_device *vdev)
 {
 	down_write(&vdpa_dev_lock);
@@ -299,13 +252,7 @@ void vdpa_unregister_device(struct vdpa_device *vdev)
 }
 EXPORT_SYMBOL_GPL(vdpa_unregister_device);
 
-/**
- * __vdpa_register_driver - register a vDPA device driver
- * @drv: the vdpa device driver to be registered
- * @owner: module owner of the driver
- *
- * Return: Returns an err when fail to do the registration
- */
+ 
 int __vdpa_register_driver(struct vdpa_driver *drv, struct module *owner)
 {
 	drv->driver.bus = &vdpa_bus;
@@ -315,25 +262,14 @@ int __vdpa_register_driver(struct vdpa_driver *drv, struct module *owner)
 }
 EXPORT_SYMBOL_GPL(__vdpa_register_driver);
 
-/**
- * vdpa_unregister_driver - unregister a vDPA device driver
- * @drv: the vdpa device driver to be unregistered
- */
+ 
 void vdpa_unregister_driver(struct vdpa_driver *drv)
 {
 	driver_unregister(&drv->driver);
 }
 EXPORT_SYMBOL_GPL(vdpa_unregister_driver);
 
-/**
- * vdpa_mgmtdev_register - register a vdpa management device
- *
- * @mdev: Pointer to vdpa management device
- * vdpa_mgmtdev_register() register a vdpa management device which supports
- * vdpa device management.
- * Return: Returns 0 on success or failure when required callback ops are not
- *         initialized.
- */
+ 
 int vdpa_mgmtdev_register(struct vdpa_mgmt_dev *mdev)
 {
 	if (!mdev->device || !mdev->ops || !mdev->ops->dev_add || !mdev->ops->dev_del)
@@ -363,7 +299,7 @@ void vdpa_mgmtdev_unregister(struct vdpa_mgmt_dev *mdev)
 
 	list_del(&mdev->list);
 
-	/* Filter out all the entries belong to this management device and delete it. */
+	 
 	bus_for_each_dev(&vdpa_bus, NULL, mdev, vdpa_match_remove);
 
 	up_write(&vdpa_dev_lock);
@@ -376,22 +312,13 @@ static void vdpa_get_config_unlocked(struct vdpa_device *vdev,
 {
 	const struct vdpa_config_ops *ops = vdev->config;
 
-	/*
-	 * Config accesses aren't supposed to trigger before features are set.
-	 * If it does happen we assume a legacy guest.
-	 */
+	 
 	if (!vdev->features_valid)
 		vdpa_set_features_unlocked(vdev, 0);
 	ops->get_config(vdev, offset, buf, len);
 }
 
-/**
- * vdpa_get_config - Get one or more device configuration fields.
- * @vdev: vdpa device to operate on
- * @offset: starting byte offset of the field
- * @buf: buffer pointer to read to
- * @len: length of the configuration fields in bytes
- */
+ 
 void vdpa_get_config(struct vdpa_device *vdev, unsigned int offset,
 		     void *buf, unsigned int len)
 {
@@ -401,13 +328,7 @@ void vdpa_get_config(struct vdpa_device *vdev, unsigned int offset,
 }
 EXPORT_SYMBOL_GPL(vdpa_get_config);
 
-/**
- * vdpa_set_config - Set one or more device configuration fields.
- * @vdev: vdpa device to operate on
- * @offset: starting byte offset of the field
- * @buf: buffer pointer to read from
- * @length: length of the configuration fields in bytes
- */
+ 
 void vdpa_set_config(struct vdpa_device *vdev, unsigned int offset,
 		     const void *buf, unsigned int length)
 {
@@ -420,9 +341,7 @@ EXPORT_SYMBOL_GPL(vdpa_set_config);
 static bool mgmtdev_handle_match(const struct vdpa_mgmt_dev *mdev,
 				 const char *busname, const char *devname)
 {
-	/* Bus name is optional for simulated management device, so ignore the
-	 * device with bus if bus attribute is provided.
-	 */
+	 
 	if ((busname && !mdev->device->bus) || (!busname && mdev->device->bus))
 		return false;
 
@@ -582,13 +501,7 @@ out:
 				 BIT_ULL(VDPA_ATTR_DEV_NET_CFG_MTU)     | \
 				 BIT_ULL(VDPA_ATTR_DEV_NET_CFG_MAX_VQP))
 
-/*
- * Bitmask for all per-device features: feature bits VIRTIO_TRANSPORT_F_START
- * through VIRTIO_TRANSPORT_F_END are unset, i.e. 0xfffffc000fffffff for
- * all 64bit features. If the features are extended beyond 64 bits, or new
- * "holes" are reserved for other type of features than per-device, this
- * macro would have to be updated.
- */
+ 
 #define VIRTIO_DEVICE_F_MASK (~0ULL << (VIRTIO_TRANSPORT_F_END + 1) | \
 			      ((1ULL << VIRTIO_TRANSPORT_F_START) - 1))
 
@@ -652,11 +565,7 @@ static int vdpa_nl_cmd_dev_add_set_doit(struct sk_buff *skb, struct genl_info *i
 		config.mask |= BIT_ULL(VDPA_ATTR_DEV_FEATURES);
 	}
 
-	/* Skip checking capability if user didn't prefer to configure any
-	 * device networking attributes. It is likely that user might have used
-	 * a device specific method to configure such attributes or using device
-	 * default attributes.
-	 */
+	 
 	if ((config.mask & VDPA_DEV_NET_ATTRS_MASK) &&
 	    !netlink_capable(skb, CAP_NET_ADMIN))
 		return -EPERM;
@@ -973,7 +882,7 @@ vdpa_dev_config_fill(struct vdpa_device *vdev, struct sk_buff *msg, u32 portid, 
 		goto msg_err;
 	}
 
-	/* only read driver features after the feature negotiation is done */
+	 
 	status = vdev->config->get_status(vdev);
 	if (status & VIRTIO_CONFIG_S_FEATURES_OK) {
 		features_driver = vdev->config->get_driver_features(vdev);
@@ -1248,7 +1157,7 @@ static const struct nla_policy vdpa_nl_policy[VDPA_ATTR_MAX + 1] = {
 	[VDPA_ATTR_DEV_NAME] = { .type = NLA_STRING },
 	[VDPA_ATTR_DEV_NET_CFG_MACADDR] = NLA_POLICY_ETH_ADDR,
 	[VDPA_ATTR_DEV_NET_CFG_MAX_VQP] = { .type = NLA_U16 },
-	/* virtio spec 1.1 section 5.1.4.1 for valid MTU range */
+	 
 	[VDPA_ATTR_DEV_NET_CFG_MTU] = NLA_POLICY_MIN(NLA_U16, 68),
 	[VDPA_ATTR_DEV_QUEUE_INDEX] = { .type = NLA_U32 },
 	[VDPA_ATTR_DEV_FEATURES] = { .type = NLA_U64 },

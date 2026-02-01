@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/**************************************************************************
- * Copyright (c) 2011, Intel Corporation.
- * All Rights Reserved.
- *
- **************************************************************************/
 
-/* TODO
- * - Split functions by vbt type
- * - Make them all take drm_device
- * - Check ioremap failures
- */
+ 
+
+ 
 
 #include <drm/drm.h>
 
@@ -43,14 +35,14 @@ static void mid_get_fuse_settings(struct drm_device *dev)
 	pci_write_config_dword(pci_root, 0xD0, FB_REG06);
 	pci_read_config_dword(pci_root, 0xD4, &fuse_value);
 
-	/* FB_MIPI_DISABLE doesn't mean LVDS on with Medfield */
+	 
 	if (IS_MRST(dev))
 		dev_priv->iLVDS_enable = fuse_value & FB_MIPI_DISABLE;
 
 	DRM_INFO("internal display is %s\n",
 		 dev_priv->iLVDS_enable ? "LVDS display" : "MIPI display");
 
-	 /* Prevent runtime suspend at start*/
+	  
 	 if (dev_priv->iLVDS_enable) {
 		dev_priv->is_lvds_on = true;
 		dev_priv->is_mipi_on = false;
@@ -88,9 +80,7 @@ static void mid_get_fuse_settings(struct drm_device *dev)
 	pci_dev_put(pci_root);
 }
 
-/*
- *	Get the revison ID, B0:D2:F0;0x08
- */
+ 
 static void mid_get_pci_revID(struct drm_psb_private *dev_priv)
 {
 	uint32_t platform_rev_id = 0;
@@ -114,7 +104,7 @@ struct mid_vbt_header {
 	u8 revision;
 } __packed;
 
-/* The same for r0 and r1 */
+ 
 struct vbt_r0 {
 	struct mid_vbt_header vbt_header;
 	u8 size;
@@ -279,7 +269,7 @@ static void mid_get_vbt_data(struct drm_psb_private *dev_priv)
 					    0, PCI_DEVFN(2, 0));
 	int ret = -1;
 
-	/* Get the address of the platform config vbt */
+	 
 	pci_read_config_dword(pci_gfx_root, 0xFC, &addr);
 	pci_dev_put(pci_gfx_root);
 
@@ -288,7 +278,7 @@ static void mid_get_vbt_data(struct drm_psb_private *dev_priv)
 	if (!addr)
 		goto out;
 
-	/* get the virtual address of the vbt */
+	 
 	vbt_virtual = ioremap(addr, sizeof(vbt_header));
 	if (!vbt_virtual)
 		goto out;

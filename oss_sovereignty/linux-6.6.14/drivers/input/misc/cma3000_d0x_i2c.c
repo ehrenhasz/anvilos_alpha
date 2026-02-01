@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Implements I2C interface for VTI CMA300_D0x Accelerometer driver
- *
- * Copyright (C) 2010 Texas Instruments
- * Author: Hemanth V <hemanthv@ti.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -15,9 +15,7 @@ MODULE_DESCRIPTION("Serial flash driver for BCMA bus");
 
 static const char * const probes[] = { "bcm47xxpart", NULL };
 
-/**************************************************
- * Various helpers
- **************************************************/
+ 
 
 static void bcm47xxsflash_cmd(struct bcm47xxsflash *b47s, u32 opcode)
 {
@@ -62,9 +60,7 @@ static int bcm47xxsflash_poll(struct bcm47xxsflash *b47s, int timeout)
 	return -EBUSY;
 }
 
-/**************************************************
- * MTD ops
- **************************************************/
+ 
 
 static int bcm47xxsflash_erase(struct mtd_info *mtd, struct erase_info *erase)
 {
@@ -74,10 +70,7 @@ static int bcm47xxsflash_erase(struct mtd_info *mtd, struct erase_info *erase)
 	case BCM47XXSFLASH_TYPE_ST:
 		bcm47xxsflash_cmd(b47s, OPCODE_ST_WREN);
 		b47s->cc_write(b47s, BCMA_CC_FLASHADDR, erase->addr);
-		/* Newer flashes have "sub-sectors" which can be erased
-		 * independently with a new command: ST_SSE. The ST_SE command
-		 * erases 64KB just as before.
-		 */
+		 
 		if (b47s->blocksize < (64 * 1024))
 			bcm47xxsflash_cmd(b47s, OPCODE_ST_SSE);
 		else
@@ -98,11 +91,11 @@ static int bcm47xxsflash_read(struct mtd_info *mtd, loff_t from, size_t len,
 	struct bcm47xxsflash *b47s = mtd->priv;
 	size_t orig_len = len;
 
-	/* Check address range */
+	 
 	if ((from + len) > mtd->size)
 		return -EINVAL;
 
-	/* Read as much as possible using fast MMIO window */
+	 
 	if (from < BCM47XXSFLASH_WINDOW_SZ) {
 		size_t memcpy_len;
 
@@ -113,7 +106,7 @@ static int bcm47xxsflash_read(struct mtd_info *mtd, loff_t from, size_t len,
 		buf += memcpy_len;
 	}
 
-	/* Use indirect access for content out of the window */
+	 
 	for (; len; len--) {
 		b47s->cc_write(b47s, BCMA_CC_FLASHADDR, from++);
 		bcm47xxsflash_cmd(b47s, OPCODE_ST_READ4B);
@@ -131,27 +124,27 @@ static int bcm47xxsflash_write_st(struct mtd_info *mtd, u32 offset, size_t len,
 	struct bcm47xxsflash *b47s = mtd->priv;
 	int written = 0;
 
-	/* Enable writes */
+	 
 	bcm47xxsflash_cmd(b47s, OPCODE_ST_WREN);
 
-	/* Write first byte */
+	 
 	b47s->cc_write(b47s, BCMA_CC_FLASHADDR, offset);
 	b47s->cc_write(b47s, BCMA_CC_FLASHDATA, *buf++);
 
-	/* Program page */
+	 
 	if (b47s->bcma_cc->core->id.rev < 20) {
 		bcm47xxsflash_cmd(b47s, OPCODE_ST_PP);
-		return 1; /* 1B written */
+		return 1;  
 	}
 
-	/* Program page and set CSA (on newer chips we can continue writing) */
+	 
 	bcm47xxsflash_cmd(b47s, OPCODE_ST_CSA | OPCODE_ST_PP);
 	offset++;
 	len--;
 	written++;
 
 	while (len > 0) {
-		/* Page boundary, another function call is needed */
+		 
 		if ((offset & 0xFF) == 0)
 			break;
 
@@ -161,7 +154,7 @@ static int bcm47xxsflash_write_st(struct mtd_info *mtd, u32 offset, size_t len,
 		written++;
 	}
 
-	/* All done, drop CSA & poll */
+	 
 	b47s->cc_write(b47s, BCMA_CC_FLASHCTL, 0);
 	udelay(1);
 	if (bcm47xxsflash_poll(b47s, HZ / 10))
@@ -179,13 +172,13 @@ static int bcm47xxsflash_write_at(struct mtd_info *mtd, u32 offset, size_t len,
 	u32 byte = offset & mask;
 	int written = 0;
 
-	/* If we don't overwrite whole page, read it to the buffer first */
+	 
 	if (byte || (len < b47s->blocksize)) {
 		int err;
 
 		b47s->cc_write(b47s, BCMA_CC_FLASHADDR, page);
 		bcm47xxsflash_cmd(b47s, OPCODE_AT_BUF1_LOAD);
-		/* 250 us for AT45DB321B */
+		 
 		err = bcm47xxsflash_poll(b47s, HZ / 1000);
 		if (err) {
 			pr_err("Timeout reading page 0x%X info buffer\n", page);
@@ -193,9 +186,9 @@ static int bcm47xxsflash_write_at(struct mtd_info *mtd, u32 offset, size_t len,
 		}
 	}
 
-	/* Change buffer content with our data */
+	 
 	while (len > 0) {
-		/* Page boundary, another function call is needed */
+		 
 		if (byte == b47s->blocksize)
 			break;
 
@@ -206,7 +199,7 @@ static int bcm47xxsflash_write_at(struct mtd_info *mtd, u32 offset, size_t len,
 		written++;
 	}
 
-	/* Program page with the buffer content */
+	 
 	b47s->cc_write(b47s, BCMA_CC_FLASHADDR, page);
 	bcm47xxsflash_cmd(b47s, OPCODE_AT_BUF1_PROGRAM);
 
@@ -219,9 +212,7 @@ static int bcm47xxsflash_write(struct mtd_info *mtd, loff_t to, size_t len,
 	struct bcm47xxsflash *b47s = mtd->priv;
 	int written;
 
-	/* Writing functions can return without writing all passed data, for
-	 * example when the hardware is too old or when we git page boundary.
-	 */
+	 
 	while (len > 0) {
 		switch (b47s->type) {
 		case BCM47XXSFLASH_TYPE_ST:
@@ -267,9 +258,7 @@ static void bcm47xxsflash_fill_mtd(struct bcm47xxsflash *b47s,
 	mtd->_write = bcm47xxsflash_write;
 }
 
-/**************************************************
- * BCMA
- **************************************************/
+ 
 
 static int bcm47xxsflash_bcma_cc_read(struct bcm47xxsflash *b47s, u16 offset)
 {
@@ -309,16 +298,7 @@ static int bcm47xxsflash_bcma_probe(struct platform_device *pdev)
 	b47s->cc_read = bcm47xxsflash_bcma_cc_read;
 	b47s->cc_write = bcm47xxsflash_bcma_cc_write;
 
-	/*
-	 * On old MIPS devices cache was magically invalidated when needed,
-	 * allowing us to use cached access and gain some performance. Trying
-	 * the same on ARM based BCM53573 results in flash corruptions, we need
-	 * to use uncached access for it.
-	 *
-	 * It may be arch specific, but right now there is only 1 ARM SoC using
-	 * this driver, so let's follow Broadcom's reference code and check
-	 * ChipCommon revision.
-	 */
+	 
 	if (b47s->bcma_cc->core->id.rev == 54)
 		b47s->window = ioremap(res->start, resource_size(res));
 	else
@@ -375,8 +355,6 @@ static struct platform_driver bcma_sflash_driver = {
 	},
 };
 
-/**************************************************
- * Init
- **************************************************/
+ 
 
 module_platform_driver(bcma_sflash_driver);

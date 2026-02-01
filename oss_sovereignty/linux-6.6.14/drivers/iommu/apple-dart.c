@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Apple DART (Device Address Resolution Table) IOMMU driver
- *
- * Copyright (C) 2021 The Asahi Linux Contributors
- *
- * Based on arm/arm-smmu/arm-ssmu.c and arm/arm-smmu-v3/arm-smmu-v3.c
- *  Copyright (C) 2013 ARM Limited
- *  Copyright (C) 2015 ARM Limited
- * and on exynos-iommu.c
- *  Copyright (c) 2011,2016 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/atomic.h>
 #include <linux/bitfield.h>
@@ -38,7 +28,7 @@
 #define DART_MAX_TTBR 4
 #define MAX_DARTS_PER_DEVICE 2
 
-/* Common registers */
+ 
 
 #define DART_PARAMS1 0x00
 #define DART_PARAMS1_PAGE_SHIFT GENMASK(27, 24)
@@ -46,7 +36,7 @@
 #define DART_PARAMS2 0x04
 #define DART_PARAMS2_BYPASS_SUPPORT BIT(0)
 
-/* T8020/T6000 registers */
+ 
 
 #define DART_T8020_STREAM_COMMAND 0x20
 #define DART_T8020_STREAM_COMMAND_BUSY BIT(2)
@@ -85,7 +75,7 @@
 #define DART_T8020_TTBR_ADDR_FIELD_SHIFT 0
 #define DART_T8020_TTBR_SHIFT 12
 
-/* T8110 registers */
+ 
 
 #define DART_T8110_PARAMS3 0x08
 #define DART_T8110_PARAMS3_PA_WIDTH GENMASK(29, 24)
@@ -184,22 +174,7 @@ struct apple_dart_hw {
 	int ttbr_count;
 };
 
-/*
- * Private structure associated with each DART device.
- *
- * @dev: device struct
- * @hw: SoC-specific hardware data
- * @regs: mapped MMIO region
- * @irq: interrupt number, can be shared with other DARTs
- * @clks: clocks associated with this DART
- * @num_clks: number of @clks
- * @lock: lock for hardware operations involving this dart
- * @pgsize: pagesize supported by this DART
- * @supports_bypass: indicates if this DART supports bypass mode
- * @force_bypass: force bypass mode due to pagesize mismatch?
- * @sid2group: maps stream ids to iommu_groups
- * @iommu: iommu core device
- */
+ 
 struct apple_dart {
 	struct device *dev;
 	const struct apple_dart_hw *hw;
@@ -226,21 +201,7 @@ struct apple_dart {
 	u32 save_ttbr[DART_MAX_STREAMS][DART_MAX_TTBR];
 };
 
-/*
- * Convenience struct to identify streams.
- *
- * The normal variant is used inside apple_dart_master_cfg which isn't written
- * to concurrently.
- * The atomic variant is used inside apple_dart_domain where we have to guard
- * against races from potential parallel calls to attach/detach_device.
- * Note that even inside the atomic variant the apple_dart pointer is not
- * protected: This pointer is initialized once under the domain init mutex
- * and never changed again afterwards. Devices with different dart pointers
- * cannot be attached to the same domain.
- *
- * @dart dart pointer
- * @sid stream id bitmap
- */
+ 
 struct apple_dart_stream_map {
 	struct apple_dart *dart;
 	DECLARE_BITMAP(sidmap, DART_MAX_STREAMS);
@@ -250,15 +211,7 @@ struct apple_dart_atomic_stream_map {
 	atomic_long_t sidmap[BITS_TO_LONGS(DART_MAX_STREAMS)];
 };
 
-/*
- * This structure is attached to each iommu domain handled by a DART.
- *
- * @pgtbl_ops: pagetable ops allocated by io-pgtable
- * @finalized: true if the domain has been completely initialized
- * @init_lock: protects domain initialization
- * @stream_maps: streams attached to this domain (valid for DMA/UNMANAGED only)
- * @domain: core iommu domain pointer
- */
+ 
 struct apple_dart_domain {
 	struct io_pgtable_ops *pgtbl_ops;
 
@@ -269,26 +222,12 @@ struct apple_dart_domain {
 	struct iommu_domain domain;
 };
 
-/*
- * This structure is attached to devices with dev_iommu_priv_set() on of_xlate
- * and contains a list of streams bound to this device.
- * So far the worst case seen is a single device with two streams
- * from different darts, such that this simple static array is enough.
- *
- * @streams: streams for this device
- */
+ 
 struct apple_dart_master_cfg {
 	struct apple_dart_stream_map stream_maps[MAX_DARTS_PER_DEVICE];
 };
 
-/*
- * Helper macro to iterate over apple_dart_master_cfg.stream_maps and
- * apple_dart_domain.stream_maps
- *
- * @i int used as loop variable
- * @base pointer to base struct (apple_dart_master_cfg or apple_dart_domain)
- * @stream pointer to the apple_dart_streams struct for each loop iteration
- */
+ 
 #define for_each_stream_map(i, base, stream_map)                               \
 	for (i = 0, stream_map = &(base)->stream_maps[0];                      \
 	     i < MAX_DARTS_PER_DEVICE && stream_map->dart;                     \
@@ -466,11 +405,11 @@ static int apple_dart_hw_reset(struct apple_dart *dart)
 	apple_dart_hw_disable_dma(&stream_map);
 	apple_dart_hw_clear_all_ttbrs(&stream_map);
 
-	/* enable all streams globally since TCR is used to control isolation */
+	 
 	for (i = 0; i < BITS_TO_U32(dart->num_streams); i++)
 		writel(U32_MAX, dart->regs + dart->hw->enable_streams + 4 * i);
 
-	/* clear any pending errors before the interrupt is unmasked */
+	 
 	writel(readl(dart->regs + dart->hw->error), dart->regs + dart->hw->error);
 
 	if (dart->hw->type == DART_T8110)
@@ -731,7 +670,7 @@ static struct iommu_domain *apple_dart_domain_alloc(unsigned int type)
 
 	mutex_init(&dart_domain->init_lock);
 
-	/* no need to allocate pgtbl_ops or do any other finalization steps */
+	 
 	if (type == IOMMU_DOMAIN_IDENTITY || type == IOMMU_DOMAIN_BLOCKED)
 		dart_domain->finalized = true;
 
@@ -814,12 +753,7 @@ static void apple_dart_release_group(void *iommu_data)
 static int apple_dart_merge_master_cfg(struct apple_dart_master_cfg *dst,
 				       struct apple_dart_master_cfg *src)
 {
-	/*
-	 * We know that this function is only called for groups returned from
-	 * pci_device_group and that all Apple Silicon platforms never spread
-	 * PCIe devices from the same bus across multiple DARTs such that we can
-	 * just assume that both src and dst only have the same single DART.
-	 */
+	 
 	if (src->stream_maps[1].dart)
 		return -EINVAL;
 	if (dst->stream_maps[1].dart)
@@ -922,7 +856,7 @@ static int apple_dart_def_domain_type(struct device *dev)
 }
 
 #ifndef CONFIG_PCIE_APPLE_MSI_DOORBELL_ADDR
-/* Keep things compiling when CONFIG_PCI_APPLE isn't selected */
+ 
 #define CONFIG_PCIE_APPLE_MSI_DOORBELL_ADDR	0
 #endif
 #define DOORBELL_ADDR	(CONFIG_PCIE_APPLE_MSI_DOORBELL_ADDR & PAGE_MASK)
@@ -954,7 +888,7 @@ static const struct iommu_ops apple_dart_iommu_ops = {
 	.of_xlate = apple_dart_of_xlate,
 	.def_domain_type = apple_dart_def_domain_type,
 	.get_resv_regions = apple_dart_get_resv_regions,
-	.pgsize_bitmap = -1UL, /* Restricted during dart probe */
+	.pgsize_bitmap = -1UL,  
 	.owner = THIS_MODULE,
 	.default_domain_ops = &(const struct iommu_domain_ops) {
 		.attach_dev	= apple_dart_attach_dev,
@@ -982,7 +916,7 @@ static irqreturn_t apple_dart_t8020_irq(int irq, void *dev)
 	if (!(error & DART_T8020_ERROR_FLAG))
 		return IRQ_NONE;
 
-	/* there should only be a single bit set but let's use == to be sure */
+	 
 	if (error_code == DART_T8020_ERROR_READ_FAULT)
 		fault_name = "READ FAULT";
 	else if (error_code == DART_T8020_ERROR_WRITE_FAULT)
@@ -1019,7 +953,7 @@ static irqreturn_t apple_dart_t8110_irq(int irq, void *dev)
 	if (!(error & DART_T8110_ERROR_FLAG))
 		return IRQ_NONE;
 
-	/* there should only be a single bit set but let's use == to be sure */
+	 
 	if (error_code == DART_T8110_ERROR_READ_FAULT)
 		fault_name = "READ FAULT";
 	else if (error_code == DART_T8110_ERROR_WRITE_FAULT)

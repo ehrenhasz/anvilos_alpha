@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// soc-link.c
-//
-// Copyright (C) 2019 Renesas Electronics Corp.
-// Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-//
+
+
+
+
+
+
+
 #include <sound/soc.h>
 #include <sound/soc-link.h>
 
@@ -12,11 +12,11 @@
 static inline int _soc_link_ret(struct snd_soc_pcm_runtime *rtd,
 				const char *func, int ret)
 {
-	/* Positive, Zero values are not errors */
+	 
 	if (ret >= 0)
 		return ret;
 
-	/* Negative values might be errors */
+	 
 	switch (ret) {
 	case -EPROBE_DEFER:
 	case -ENOTSUPP:
@@ -30,10 +30,7 @@ static inline int _soc_link_ret(struct snd_soc_pcm_runtime *rtd,
 	return ret;
 }
 
-/*
- * We might want to check substream by using list.
- * In such case, we can update these macros.
- */
+ 
 #define soc_link_mark_push(rtd, substream, tgt)		((rtd)->mark_##tgt = substream)
 #define soc_link_mark_pop(rtd, substream, tgt)		((rtd)->mark_##tgt = NULL)
 #define soc_link_mark_match(rtd, substream, tgt)	((rtd)->mark_##tgt == substream)
@@ -74,7 +71,7 @@ int snd_soc_link_startup(struct snd_pcm_substream *substream)
 	    rtd->dai_link->ops->startup)
 		ret = rtd->dai_link->ops->startup(substream);
 
-	/* mark substream if succeeded */
+	 
 	if (ret == 0)
 		soc_link_mark_push(rtd, substream, startup);
 
@@ -93,7 +90,7 @@ void snd_soc_link_shutdown(struct snd_pcm_substream *substream,
 	    rtd->dai_link->ops->shutdown)
 		rtd->dai_link->ops->shutdown(substream);
 
-	/* remove marked substream */
+	 
 	soc_link_mark_pop(rtd, substream, startup);
 }
 
@@ -119,7 +116,7 @@ int snd_soc_link_hw_params(struct snd_pcm_substream *substream,
 	    rtd->dai_link->ops->hw_params)
 		ret = rtd->dai_link->ops->hw_params(substream, params);
 
-	/* mark substream if succeeded */
+	 
 	if (ret == 0)
 		soc_link_mark_push(rtd, substream, hw_params);
 
@@ -137,7 +134,7 @@ void snd_soc_link_hw_free(struct snd_pcm_substream *substream, int rollback)
 	    rtd->dai_link->ops->hw_free)
 		rtd->dai_link->ops->hw_free(substream);
 
-	/* remove marked substream */
+	 
 	soc_link_mark_pop(rtd, substream, hw_params);
 }
 

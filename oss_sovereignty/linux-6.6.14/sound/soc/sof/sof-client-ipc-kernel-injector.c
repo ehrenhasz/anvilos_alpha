@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2023 Google Inc. All rights reserved.
-//
-// Author: Curtis Malainey <cujomalainey@chromium.org>
-//
+
+
+
+
+
+
 
 #include <linux/auxiliary_bus.h>
 #include <linux/debugfs.h>
@@ -97,7 +97,7 @@ static int sof_msg_inject_probe(struct auxiliary_device *auxdev,
 	struct sof_msg_inject_priv *priv;
 	size_t alloc_size;
 
-	/* allocate memory for client data */
+	 
 	priv = devm_kzalloc(&auxdev->dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;
@@ -115,7 +115,7 @@ static int sof_msg_inject_probe(struct auxiliary_device *auxdev,
 						    debugfs_root, cdev,
 						    &sof_kernel_msg_inject_fops);
 
-	/* enable runtime PM */
+	 
 	pm_runtime_set_autosuspend_delay(dev, SOF_IPC_CLIENT_SUSPEND_DELAY_MS);
 	pm_runtime_use_autosuspend(dev);
 	pm_runtime_set_active(dev);
@@ -142,12 +142,7 @@ static const struct auxiliary_device_id sof_msg_inject_client_id_table[] = {
 };
 MODULE_DEVICE_TABLE(auxiliary, sof_msg_inject_client_id_table);
 
-/*
- * No need for driver pm_ops as the generic pm callbacks in the auxiliary bus
- * type are enough to ensure that the parent SOF device resumes to bring the DSP
- * back to D0.
- * Driver name will be set based on KBUILD_MODNAME.
- */
+ 
 static struct auxiliary_driver sof_msg_inject_client_drv = {
 	.probe = sof_msg_inject_probe,
 	.remove = sof_msg_inject_remove,

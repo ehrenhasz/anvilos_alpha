@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2017-18 Linaro Limited
-//
-// Based on msm-rng.c and downstream driver
+
+
+
+
 
 #include <crypto/internal/rng.h>
 #include <linux/acpi.h>
@@ -14,13 +14,13 @@
 #include <linux/of.h>
 #include <linux/platform_device.h>
 
-/* Device specific register offsets */
+ 
 #define PRNG_DATA_OUT		0x0000
 #define PRNG_STATUS		0x0004
 #define PRNG_LFSR_CFG		0x0100
 #define PRNG_CONFIG		0x0104
 
-/* Device specific register masks and config values */
+ 
 #define PRNG_LFSR_CFG_MASK	0x0000ffff
 #define PRNG_LFSR_CFG_CLOCKS	0x0000dddd
 #define PRNG_CONFIG_HW_ENABLE	BIT(1)
@@ -47,7 +47,7 @@ static int qcom_rng_read(struct qcom_rng *rng, u8 *data, unsigned int max)
 	u32 val;
 	int ret;
 
-	/* read random data from hardware */
+	 
 	do {
 		ret = readl_poll_timeout(rng->base + PRNG_STATUS, val,
 					 val & PRNG_STATUS_DATA_AVAIL,
@@ -64,7 +64,7 @@ static int qcom_rng_read(struct qcom_rng *rng, u8 *data, unsigned int max)
 			data += WORD_SZ;
 			currsize += WORD_SZ;
 		} else {
-			/* copy only remaining bytes */
+			 
 			memcpy(data, &val, max - currsize);
 			break;
 		}
@@ -110,7 +110,7 @@ static int qcom_rng_enable(struct qcom_rng *rng)
 	if (ret)
 		return ret;
 
-	/* Enable PRNG only if it is not already enabled */
+	 
 	val = readl_relaxed(rng->base + PRNG_CONFIG);
 	if (val & PRNG_CONFIG_HW_ENABLE)
 		goto already_enabled;

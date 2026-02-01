@@ -1,9 +1,4 @@
-/*
- * IPv4 specific functions of netfilter core
- *
- * Rusty Russell (C) 2000 -- This code is GPL.
- * Patrick McHardy (C) 2006-2012
- */
+ 
 #include <linux/kernel.h>
 #include <linux/netfilter.h>
 #include <linux/netfilter_ipv4.h>
@@ -16,7 +11,7 @@
 #include <net/ip.h>
 #include <net/netfilter/nf_queue.h>
 
-/* route_me_harder function, used by iptable_nat, iptable_mangle + ip_queue */
+ 
 int ip_route_me_harder(struct net *net, struct sock *sk, struct sk_buff *skb, unsigned int addr_type)
 {
 	const struct iphdr *iph = ip_hdr(skb);
@@ -38,9 +33,7 @@ int ip_route_me_harder(struct net *net, struct sock *sk, struct sk_buff *skb, un
 	else
 		saddr = 0;
 
-	/* some non-standard hacks like ipt_REJECT.c:send_reset() can cause
-	 * packets with foreign saddr to appear on the NF_INET_LOCAL_OUT hook.
-	 */
+	 
 	fl4.daddr = iph->daddr;
 	fl4.saddr = saddr;
 	fl4.flowi4_tos = RT_TOS(iph->tos);
@@ -53,7 +46,7 @@ int ip_route_me_harder(struct net *net, struct sock *sk, struct sk_buff *skb, un
 	if (IS_ERR(rt))
 		return PTR_ERR(rt);
 
-	/* Drop old route. */
+	 
 	skb_dst_drop(skb);
 	skb_dst_set(skb, &rt->dst);
 
@@ -72,7 +65,7 @@ int ip_route_me_harder(struct net *net, struct sock *sk, struct sk_buff *skb, un
 	}
 #endif
 
-	/* Change in oif may mean change in hh_len. */
+	 
 	hh_len = skb_dst(skb)->dev->hard_header_len;
 	if (skb_headroom(skb) < hh_len &&
 	    pskb_expand_head(skb, HH_DATA_ALIGN(hh_len - skb_headroom(skb)),

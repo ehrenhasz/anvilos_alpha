@@ -1,15 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ffs-test.c -- user mode filesystem api for usb composite function
- *
- * Copyright (C) 2010 Samsung Electronics
- *                    Author: Michal Nazarewicz <mina86@mina86.com>
- */
 
-/* $(CROSS_COMPILE)cc -Wall -Wextra -g -o ffs-test ffs-test.c -lpthread */
+ 
+
+ 
 
 
-#define _DEFAULT_SOURCE /* for endian.h */
+#define _DEFAULT_SOURCE  
 
 #include <endian.h>
 #include <errno.h>
@@ -29,13 +24,9 @@
 #include "../../include/uapi/linux/usb/functionfs.h"
 
 
-/******************** Little Endian Handling ********************************/
+ 
 
-/*
- * cpu_to_le16/32 are used when initializing structures, a context where a
- * function call is not allowed. To solve this, we code cpu_to_le16/32 in a way
- * that allows them to be used when initializing structures.
- */
+ 
 
 #if __BYTE_ORDER == __LITTLE_ENDIAN
 #define cpu_to_le16(x)  (x)
@@ -50,7 +41,7 @@
 #define le32_to_cpu(x)  le32toh(x)
 #define le16_to_cpu(x)  le16toh(x)
 
-/******************** Messages and Errors ***********************************/
+ 
 
 static const char argv0[] = "ffs-test";
 
@@ -104,7 +95,7 @@ static void _msg(unsigned level, const char *fmt, ...)
 	} while (0)
 
 
-/******************** Descriptors and Strings *******************************/
+ 
 
 static const struct {
 	struct usb_functionfs_descs_head_v2 header;
@@ -145,14 +136,14 @@ static const struct {
 			.bDescriptorType = USB_DT_ENDPOINT,
 			.bEndpointAddress = 1 | USB_DIR_IN,
 			.bmAttributes = USB_ENDPOINT_XFER_BULK,
-			/* .wMaxPacketSize = autoconfiguration (kernel) */
+			 
 		},
 		.source = {
 			.bLength = sizeof descriptors.fs_descs.source,
 			.bDescriptorType = USB_DT_ENDPOINT,
 			.bEndpointAddress = 2 | USB_DIR_OUT,
 			.bmAttributes = USB_ENDPOINT_XFER_BULK,
-			/* .wMaxPacketSize = autoconfiguration (kernel) */
+			 
 		},
 	},
 	.hs_count = cpu_to_le32(3),
@@ -177,7 +168,7 @@ static const struct {
 			.bEndpointAddress = 2 | USB_DIR_OUT,
 			.bmAttributes = USB_ENDPOINT_XFER_BULK,
 			.wMaxPacketSize = cpu_to_le16(512),
-			.bInterval = 1, /* NAK every 1 uframe */
+			.bInterval = 1,  
 		},
 	},
 	.ss_count = cpu_to_le32(5),
@@ -209,7 +200,7 @@ static const struct {
 			.bEndpointAddress = 2 | USB_DIR_OUT,
 			.bmAttributes = USB_ENDPOINT_XFER_BULK,
 			.wMaxPacketSize = cpu_to_le16(1024),
-			.bInterval = 1, /* NAK every 1 uframe */
+			.bInterval = 1,  
 		},
 		.source_comp = {
 			.bLength = USB_DT_SS_EP_COMP_SIZE,
@@ -226,7 +217,7 @@ static size_t descs_to_legacy(void **legacy, const void *descriptors_v2)
 	const unsigned char *descs_end, *descs_start;
 	__u32 length, fs_count = 0, hs_count = 0, count;
 
-	/* Read v2 header */
+	 
 	{
 		const struct {
 			const struct usb_functionfs_descs_head_v2 header;
@@ -269,10 +260,7 @@ static size_t descs_to_legacy(void **legacy, const void *descriptors_v2)
 #undef GET_NEXT_COUNT_IF_FLAG
 	}
 
-	/*
-	 * Find the end of FS and HS USB descriptors.  SS descriptors
-	 * are ignored since legacy format does not support them.
-	 */
+	 
 	descs_end = descs_start;
 	do {
 		if (length < *descs_end)
@@ -281,7 +269,7 @@ static size_t descs_to_legacy(void **legacy, const void *descriptors_v2)
 		descs_end += *descs_end;
 	} while (--count);
 
-	/* Allocate legacy descriptors and copy the data. */
+	 
 	{
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -321,7 +309,7 @@ static const struct {
 		.lang_count = cpu_to_le32(1),
 	},
 	.lang0 = {
-		cpu_to_le16(0x0409), /* en-us */
+		cpu_to_le16(0x0409),  
 		STR_INTERFACE_,
 	},
 };
@@ -329,7 +317,7 @@ static const struct {
 #define STR_INTERFACE strings.lang0.str1
 
 
-/******************** Files and Threads Handling ****************************/
+ 
 
 struct thread;
 
@@ -395,11 +383,11 @@ static void cleanup_thread(void *arg)
 		return;
 	t->fd = -1;
 
-	/* test the FIFO ioctls (non-ep0 code paths) */
+	 
 	if (t != threads) {
 		ret = ioctl(fd, FUNCTIONFS_FIFO_STATUS);
 		if (ret < 0) {
-			/* ENODEV reported after disconnect */
+			 
 			if (errno != ENODEV)
 				err("%s: get fifo status", t->filename);
 		} else if (ret) {
@@ -442,7 +430,7 @@ static void *start_thread_helper(void *arg)
 		}
 
 		if (ret > 0) {
-			/* nop */
+			 
 		} else if (!ret) {
 			debug("%s: %s: EOF", name, op);
 			break;
@@ -491,9 +479,9 @@ static ssize_t write_wrap(struct thread *t, const void *buf, size_t nbytes)
 }
 
 
-/******************** Empty/Fill buffer routines ****************************/
+ 
 
-/* 0 -- stream of zeros, 1 -- i % 63, 2 -- pipe */
+ 
 enum pattern { PAT_ZERO, PAT_SEQ, PAT_PIPE };
 static enum pattern pattern;
 
@@ -573,7 +561,7 @@ invalid:
 }
 
 
-/******************** Endpoints routines ************************************/
+ 
 
 static void handle_setup(const struct usb_ctrlrequest *setup)
 {
@@ -654,7 +642,7 @@ legacy:
 }
 
 
-/******************** Main **************************************************/
+ 
 
 int main(int argc, char **argv)
 {

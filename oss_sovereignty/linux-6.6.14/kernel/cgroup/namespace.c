@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "cgroup-internal.h"
 
 #include <linux/sched/task.h>
@@ -7,7 +7,7 @@
 #include <linux/proc_ns.h>
 
 
-/* cgroup namespaces */
+ 
 
 static struct ucounts *inc_cgroup_namespaces(struct user_namespace *ns)
 {
@@ -62,7 +62,7 @@ struct cgroup_namespace *copy_cgroup_ns(unsigned long flags,
 		return old_ns;
 	}
 
-	/* Allow only sysadmin to create cgroup namespace. */
+	 
 	if (!ns_capable(user_ns, CAP_SYS_ADMIN))
 		return ERR_PTR(-EPERM);
 
@@ -70,7 +70,7 @@ struct cgroup_namespace *copy_cgroup_ns(unsigned long flags,
 	if (!ucounts)
 		return ERR_PTR(-ENOSPC);
 
-	/* It is not safe to take cgroup_mutex here */
+	 
 	spin_lock_irq(&css_set_lock);
 	cset = task_css_set(current);
 	get_css_set(cset);
@@ -104,7 +104,7 @@ static int cgroupns_install(struct nsset *nsset, struct ns_common *ns)
 	    !ns_capable(cgroup_ns->user_ns, CAP_SYS_ADMIN))
 		return -EPERM;
 
-	/* Don't need to do anything if we are attaching to our own cgroupns. */
+	 
 	if (cgroup_ns == nsproxy->cgroup_ns)
 		return 0;
 

@@ -1,31 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2020 MediaTek Inc.
- *
- * Author: Chao Hao <chao.hao@mediatek.com>
- * Author: Yong Wu <yong.wu@mediatek.com>
- */
+ 
+ 
 #ifndef _DT_BINDINGS_MEMORY_MT8192_LARB_PORT_H_
 #define _DT_BINDINGS_MEMORY_MT8192_LARB_PORT_H_
 
 #include <dt-bindings/memory/mtk-memory-port.h>
 
-/*
- * MM IOMMU supports 16GB dma address.
- *
- * The address will preassign like this:
- *
- * modules    dma-address-region	larbs-ports
- * disp         0 ~ 4G                   larb0/1
- * vcodec      4G ~ 8G                  larb4/5/7
- * cam/mdp     8G ~ 12G             larb2/9/11/13/14/16/17/18/19/20
- * CCU0    0x4000_0000 ~ 0x43ff_ffff     larb13: port 9/10
- * CCU1    0x4400_0000 ~ 0x47ff_ffff     larb14: port 4/5
- *
- * larb3/6/8/10/12/15 is null.
- */
+ 
 
-/* larb0 */
+ 
 #define M4U_PORT_L0_DISP_POSTMASK0		MTK_M4U_ID(0, 0)
 #define M4U_PORT_L0_OVL_RDMA0_HDR		MTK_M4U_ID(0, 1)
 #define M4U_PORT_L0_OVL_RDMA0			MTK_M4U_ID(0, 2)
@@ -33,7 +15,7 @@
 #define M4U_PORT_L0_DISP_WDMA0			MTK_M4U_ID(0, 4)
 #define M4U_PORT_L0_DISP_FAKE0			MTK_M4U_ID(0, 5)
 
-/* larb1 */
+ 
 #define M4U_PORT_L1_OVL_2L_RDMA0_HDR		MTK_M4U_ID(1, 0)
 #define M4U_PORT_L1_OVL_2L_RDMA2_HDR		MTK_M4U_ID(1, 1)
 #define M4U_PORT_L1_OVL_2L_RDMA0		MTK_M4U_ID(1, 2)
@@ -43,16 +25,16 @@
 #define M4U_PORT_L1_DISP_UFBC_WDMA0		MTK_M4U_ID(1, 6)
 #define M4U_PORT_L1_DISP_FAKE1			MTK_M4U_ID(1, 7)
 
-/* larb2 */
+ 
 #define M4U_PORT_L2_MDP_RDMA0			MTK_M4U_ID(2, 0)
 #define M4U_PORT_L2_MDP_RDMA1			MTK_M4U_ID(2, 1)
 #define M4U_PORT_L2_MDP_WROT0			MTK_M4U_ID(2, 2)
 #define M4U_PORT_L2_MDP_WROT1			MTK_M4U_ID(2, 3)
 #define M4U_PORT_L2_MDP_DISP_FAKE0		MTK_M4U_ID(2, 4)
 
-/* larb3: null */
+ 
 
-/* larb4 */
+ 
 #define M4U_PORT_L4_VDEC_MC_EXT			MTK_M4U_ID(4, 0)
 #define M4U_PORT_L4_VDEC_UFO_EXT		MTK_M4U_ID(4, 1)
 #define M4U_PORT_L4_VDEC_PP_EXT			MTK_M4U_ID(4, 2)
@@ -65,7 +47,7 @@
 #define M4U_PORT_L4_VDEC_AVC_MV_EXT		MTK_M4U_ID(4, 9)
 #define M4U_PORT_L4_VDEC_RG_CTRL_DMA_EXT	MTK_M4U_ID(4, 10)
 
-/* larb5 */
+ 
 #define M4U_PORT_L5_VDEC_LAT0_VLD_EXT		MTK_M4U_ID(5, 0)
 #define M4U_PORT_L5_VDEC_LAT0_VLD2_EXT		MTK_M4U_ID(5, 1)
 #define M4U_PORT_L5_VDEC_LAT0_AVC_MV_EXT	MTK_M4U_ID(5, 2)
@@ -75,9 +57,9 @@
 #define M4U_PORT_L5_VDEC_LAT0_RG_CTRL_DMA_EXT	MTK_M4U_ID(5, 6)
 #define M4U_PORT_L5_VDEC_UFO_ENC_EXT		MTK_M4U_ID(5, 7)
 
-/* larb6: null */
+ 
 
-/* larb7 */
+ 
 #define M4U_PORT_L7_VENC_RCPU			MTK_M4U_ID(7, 0)
 #define M4U_PORT_L7_VENC_REC			MTK_M4U_ID(7, 1)
 #define M4U_PORT_L7_VENC_BSDMA			MTK_M4U_ID(7, 2)
@@ -94,9 +76,9 @@
 #define M4U_PORT_L7_VENC_SUB_R_LUMA		MTK_M4U_ID(7, 13)
 #define M4U_PORT_L7_VENC_SUB_W_LUMA		MTK_M4U_ID(7, 14)
 
-/* larb8: null */
+ 
 
-/* larb9 */
+ 
 #define M4U_PORT_L9_IMG_IMGI_D1			MTK_M4U_ID(9, 0)
 #define M4U_PORT_L9_IMG_IMGBI_D1		MTK_M4U_ID(9, 1)
 #define M4U_PORT_L9_IMG_DMGI_D1			MTK_M4U_ID(9, 2)
@@ -113,9 +95,9 @@
 #define M4U_PORT_L9_IMG_UFBC_W0			MTK_M4U_ID(9, 13)
 #define M4U_PORT_L9_IMG_UFBC_R0			MTK_M4U_ID(9, 14)
 
-/* larb10: null */
+ 
 
-/* larb11 */
+ 
 #define M4U_PORT_L11_IMG_IMGI_D1		MTK_M4U_ID(11, 0)
 #define M4U_PORT_L11_IMG_IMGBI_D1		MTK_M4U_ID(11, 1)
 #define M4U_PORT_L11_IMG_DMGI_D1		MTK_M4U_ID(11, 2)
@@ -143,9 +125,9 @@
 #define M4U_PORT_L11_IMG_MFB_WDMA0		MTK_M4U_ID(11, 24)
 #define M4U_PORT_L11_IMG_MFB_WDMA1		MTK_M4U_ID(11, 25)
 
-/* larb12: null */
+ 
 
-/* larb13 */
+ 
 #define M4U_PORT_L13_CAM_MRAWI			MTK_M4U_ID(13, 0)
 #define M4U_PORT_L13_CAM_MRAWO0			MTK_M4U_ID(13, 1)
 #define M4U_PORT_L13_CAM_MRAWO1			MTK_M4U_ID(13, 2)
@@ -159,7 +141,7 @@
 #define M4U_PORT_L13_CAM_CCUO			MTK_M4U_ID(13, 10)
 #define M4U_PORT_L13_CAM_FAKE			MTK_M4U_ID(13, 11)
 
-/* larb14 */
+ 
 #define M4U_PORT_L14_CAM_RESERVE1		MTK_M4U_ID(14, 0)
 #define M4U_PORT_L14_CAM_RESERVE2		MTK_M4U_ID(14, 1)
 #define M4U_PORT_L14_CAM_RESERVE3		MTK_M4U_ID(14, 2)
@@ -167,9 +149,9 @@
 #define M4U_PORT_L14_CAM_CCUI			MTK_M4U_ID(14, 4)
 #define M4U_PORT_L14_CAM_CCUO			MTK_M4U_ID(14, 5)
 
-/* larb15: null */
+ 
 
-/* larb16 */
+ 
 #define M4U_PORT_L16_CAM_IMGO_R1_A		MTK_M4U_ID(16, 0)
 #define M4U_PORT_L16_CAM_RRZO_R1_A		MTK_M4U_ID(16, 1)
 #define M4U_PORT_L16_CAM_CQI_R1_A		MTK_M4U_ID(16, 2)
@@ -188,7 +170,7 @@
 #define M4U_PORT_L16_CAM_AAHO_R1_A		MTK_M4U_ID(16, 15)
 #define M4U_PORT_L16_CAM_LSCI_R1_A		MTK_M4U_ID(16, 16)
 
-/* larb17 */
+ 
 #define M4U_PORT_L17_CAM_IMGO_R1_B		MTK_M4U_ID(17, 0)
 #define M4U_PORT_L17_CAM_RRZO_R1_B		MTK_M4U_ID(17, 1)
 #define M4U_PORT_L17_CAM_CQI_R1_B		MTK_M4U_ID(17, 2)
@@ -207,7 +189,7 @@
 #define M4U_PORT_L17_CAM_AAHO_R1_B		MTK_M4U_ID(17, 15)
 #define M4U_PORT_L17_CAM_LSCI_R1_B		MTK_M4U_ID(17, 16)
 
-/* larb18 */
+ 
 #define M4U_PORT_L18_CAM_IMGO_R1_C		MTK_M4U_ID(18, 0)
 #define M4U_PORT_L18_CAM_RRZO_R1_C		MTK_M4U_ID(18, 1)
 #define M4U_PORT_L18_CAM_CQI_R1_C		MTK_M4U_ID(18, 2)
@@ -226,13 +208,13 @@
 #define M4U_PORT_L18_CAM_AAHO_R1_C		MTK_M4U_ID(18, 15)
 #define M4U_PORT_L18_CAM_LSCI_R1_C		MTK_M4U_ID(18, 16)
 
-/* larb19 */
+ 
 #define M4U_PORT_L19_IPE_DVS_RDMA		MTK_M4U_ID(19, 0)
 #define M4U_PORT_L19_IPE_DVS_WDMA		MTK_M4U_ID(19, 1)
 #define M4U_PORT_L19_IPE_DVP_RDMA		MTK_M4U_ID(19, 2)
 #define M4U_PORT_L19_IPE_DVP_WDMA		MTK_M4U_ID(19, 3)
 
-/* larb20 */
+ 
 #define M4U_PORT_L20_IPE_FDVT_RDA		MTK_M4U_ID(20, 0)
 #define M4U_PORT_L20_IPE_FDVT_RDB		MTK_M4U_ID(20, 1)
 #define M4U_PORT_L20_IPE_FDVT_WRA		MTK_M4U_ID(20, 2)

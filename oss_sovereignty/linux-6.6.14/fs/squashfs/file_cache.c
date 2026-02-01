@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013
- * Phillip Lougher <phillip@squashfs.org.uk>
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/vfs.h>
@@ -17,7 +14,7 @@
 #include "squashfs_fs_i.h"
 #include "squashfs.h"
 
-/* Read separately compressed datablock and memcopy into page cache */
+ 
 int squashfs_readpage_block(struct page *page, u64 block, int bsize, int expected)
 {
 	struct inode *i = page->mapping->host;

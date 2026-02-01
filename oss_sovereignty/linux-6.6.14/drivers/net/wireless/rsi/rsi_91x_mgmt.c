@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2014 Redpine Signals Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/timer.h>
@@ -264,12 +250,7 @@ static struct bootup_params_9116 boot_params_9116_40 = {
 
 static u16 mcs[] = {13, 26, 39, 52, 78, 104, 117, 130};
 
-/**
- * rsi_set_default_parameters() - This function sets default parameters.
- * @common: Pointer to the driver private structure.
- *
- * Return: none
- */
+ 
 static void rsi_set_default_parameters(struct rsi_common *common)
 {
 	common->band = NL80211_BAND_2GHZ;
@@ -280,10 +261,10 @@ static void rsi_set_default_parameters(struct rsi_common *common)
 	common->fsm_state = FSM_CARD_NOT_READY;
 	common->iface_down = true;
 	common->endpoint = EP_2GHZ_20MHZ;
-	common->driver_mode = 1; /* End to end mode */
-	common->lp_ps_handshake_mode = 0; /* Default no handShake mode*/
-	common->ulp_ps_handshake_mode = 2; /* Default PKT handShake mode*/
-	common->rf_power_val = 0; /* Default 1.9V */
+	common->driver_mode = 1;  
+	common->lp_ps_handshake_mode = 0;  
+	common->ulp_ps_handshake_mode = 2;  
+	common->rf_power_val = 0;  
 	common->wlan_rf_power_mode = 0;
 	common->obm_ant_sel_val = 2;
 	common->beacon_interval = RSI_BEACON_INTERVAL;
@@ -310,13 +291,7 @@ void init_bgscan_params(struct rsi_common *common)
 	common->bgscan.passive_scan_duration = RSI_PASSIVE_SCAN_TIME;
 }
 
-/**
- * rsi_set_contention_vals() - This function sets the contention values for the
- *			       backoff procedure.
- * @common: Pointer to the driver private structure.
- *
- * Return: None.
- */
+ 
 static void rsi_set_contention_vals(struct rsi_common *common)
 {
 	u8 ii = 0;
@@ -331,15 +306,7 @@ static void rsi_set_contention_vals(struct rsi_common *common)
 	}
 }
 
-/**
- * rsi_send_internal_mgmt_frame() - This function sends management frames to
- *				    firmware.Also schedules packet to queue
- *				    for transmission.
- * @common: Pointer to the driver private structure.
- * @skb: Pointer to the socket buffer structure.
- *
- * Return: 0 on success, -1 on failure.
- */
+ 
 static int rsi_send_internal_mgmt_frame(struct rsi_common *common,
 					struct sk_buff *skb)
 {
@@ -360,13 +327,7 @@ static int rsi_send_internal_mgmt_frame(struct rsi_common *common,
 	return 0;
 }
 
-/**
- * rsi_load_radio_caps() - This function is used to send radio capabilities
- *			   values to firmware.
- * @common: Pointer to the driver private structure.
- *
- * Return: 0 on success, corresponding negative error code on failure.
- */
+ 
 static int rsi_load_radio_caps(struct rsi_common *common)
 {
 	struct rsi_radio_caps *radio_caps;
@@ -472,14 +433,7 @@ static int rsi_load_radio_caps(struct rsi_common *common)
 	return rsi_send_internal_mgmt_frame(common, skb);
 }
 
-/**
- * rsi_mgmt_pkt_to_core() - This function is the entry point for Mgmt module.
- * @common: Pointer to the driver private structure.
- * @msg: Pointer to received packet.
- * @msg_len: Length of the received packet.
- *
- * Return: 0 on success, -1 on failure.
- */
+ 
 static int rsi_mgmt_pkt_to_core(struct rsi_common *common,
 				u8 *msg,
 				s32 msg_len)
@@ -518,20 +472,7 @@ static int rsi_mgmt_pkt_to_core(struct rsi_common *common,
 	return 0;
 }
 
-/**
- * rsi_hal_send_sta_notify_frame() - This function sends the station notify
- *				     frame to firmware.
- * @common: Pointer to the driver private structure.
- * @opmode: Operating mode of device.
- * @notify_event: Notification about station connection.
- * @bssid: bssid.
- * @qos_enable: Qos is enabled.
- * @aid: Aid (unique for all STA).
- * @sta_id: station id.
- * @vif: Pointer to the ieee80211_vif structure.
- *
- * Return: status: 0 on success, corresponding negative error code on failure.
- */
+ 
 int rsi_hal_send_sta_notify_frame(struct rsi_common *common, enum opmode opmode,
 				  u8 notify_event, const unsigned char *bssid,
 				  u8 qos_enable, u16 aid, u16 sta_id,
@@ -596,18 +537,7 @@ int rsi_hal_send_sta_notify_frame(struct rsi_common *common, enum opmode opmode,
 	return status;
 }
 
-/**
- * rsi_send_aggregation_params_frame() - This function sends the ampdu
- *					 indication frame to firmware.
- * @common: Pointer to the driver private structure.
- * @tid: traffic identifier.
- * @ssn: ssn.
- * @buf_size: buffer size.
- * @event: notification about station connection.
- * @sta_id: station id.
- *
- * Return: 0 on success, corresponding negative error code on failure.
- */
+ 
 int rsi_send_aggregation_params_frame(struct rsi_common *common,
 				      u16 tid,
 				      u16 ssn,
@@ -654,13 +584,7 @@ int rsi_send_aggregation_params_frame(struct rsi_common *common,
 	return rsi_send_internal_mgmt_frame(common, skb);
 }
 
-/**
- * rsi_program_bb_rf() - This function starts base band and RF programming.
- *			 This is called after initial configurations are done.
- * @common: Pointer to the driver private structure.
- *
- * Return: 0 on success, corresponding negative error code on failure.
- */
+ 
 static int rsi_program_bb_rf(struct rsi_common *common)
 {
 	struct sk_buff *skb;
@@ -698,16 +622,7 @@ static int rsi_program_bb_rf(struct rsi_common *common)
 	return rsi_send_internal_mgmt_frame(common, skb);
 }
 
-/**
- * rsi_set_vap_capabilities() - This function send vap capability to firmware.
- * @common: Pointer to the driver private structure.
- * @mode: Operating mode of device.
- * @mac_addr: MAC address
- * @vap_id: Rate information - offset and mask
- * @vap_status: VAP status - ADD, DELETE or UPDATE
- *
- * Return: 0 on success, corresponding negative error code on failure.
- */
+ 
 int rsi_set_vap_capabilities(struct rsi_common *common,
 			     enum opmode mode,
 			     u8 *mac_addr,
@@ -777,19 +692,7 @@ int rsi_set_vap_capabilities(struct rsi_common *common,
 	return rsi_send_internal_mgmt_frame(common, skb);
 }
 
-/**
- * rsi_hal_load_key() - This function is used to load keys within the firmware.
- * @common: Pointer to the driver private structure.
- * @data: Pointer to the key data.
- * @key_len: Key length to be loaded.
- * @key_type: Type of key: GROUP/PAIRWISE.
- * @key_id: Key index.
- * @cipher: Type of cipher used.
- * @sta_id: Station id.
- * @vif: Pointer to the ieee80211_vif structure.
- *
- * Return: 0 on success, -1 on failure.
- */
+ 
 int rsi_hal_load_key(struct rsi_common *common,
 		     u8 *data,
 		     u16 key_len,
@@ -859,11 +762,7 @@ int rsi_hal_load_key(struct rsi_common *common,
 	return rsi_send_internal_mgmt_frame(common, skb);
 }
 
-/*
- * This function sends the common device configuration parameters to device.
- * This frame includes the useful information to make device works on
- * specific operating mode.
- */
+ 
 static int rsi_send_common_dev_params(struct rsi_common *common)
 {
 	struct sk_buff *skb;
@@ -906,12 +805,7 @@ static int rsi_send_common_dev_params(struct rsi_common *common)
 	return rsi_send_internal_mgmt_frame(common, skb);
 }
 
-/*
- * rsi_load_bootup_params() - This function send bootup params to the firmware.
- * @common: Pointer to the driver private structure.
- *
- * Return: 0 on success, corresponding error code on failure.
- */
+ 
 static int rsi_load_bootup_params(struct rsi_common *common)
 {
 	struct sk_buff *skb;
@@ -954,10 +848,7 @@ static int rsi_load_bootup_params(struct rsi_common *common)
 		}
 	}
 
-	/**
-	 * Bit{0:11} indicates length of the Packet
-	 * Bit{12:15} indicates host queue number
-	 */
+	 
 	boot_params->desc_word[0] = cpu_to_le16(sizeof(struct bootup_params) |
 				    (RSI_WIFI_MGMT_Q << 12));
 	boot_params->desc_word[1] = cpu_to_le16(BOOTUP_PARAMS_REQUEST);
@@ -1011,13 +902,7 @@ static int rsi_load_9116_bootup_params(struct rsi_common *common)
 	return rsi_send_internal_mgmt_frame(common, skb);
 }
 
-/**
- * rsi_send_reset_mac() - This function prepares reset MAC request and sends an
- *			  internal management frame to indicate it to firmware.
- * @common: Pointer to the driver private structure.
- *
- * Return: 0 on success, corresponding error code on failure.
- */
+ 
 static int rsi_send_reset_mac(struct rsi_common *common)
 {
 	struct sk_buff *skb;
@@ -1049,13 +934,7 @@ static int rsi_send_reset_mac(struct rsi_common *common)
 	return rsi_send_internal_mgmt_frame(common, skb);
 }
 
-/**
- * rsi_band_check() - This function programs the band
- * @common: Pointer to the driver private structure.
- * @curchan: Pointer to the current channel structure.
- *
- * Return: 0 on success, corresponding error code on failure.
- */
+ 
 int rsi_band_check(struct rsi_common *common,
 		   struct ieee80211_channel *curchan)
 {
@@ -1110,13 +989,7 @@ int rsi_band_check(struct rsi_common *common,
 	return status;
 }
 
-/**
- * rsi_set_channel() - This function programs the channel.
- * @common: Pointer to the driver private structure.
- * @channel: Channel value to be set.
- *
- * Return: 0 on success, corresponding error code on failure.
- */
+ 
 int rsi_set_channel(struct rsi_common *common,
 		    struct ieee80211_channel *channel)
 {
@@ -1168,13 +1041,7 @@ int rsi_set_channel(struct rsi_common *common,
 	return rsi_send_internal_mgmt_frame(common, skb);
 }
 
-/**
- * rsi_send_radio_params_update() - This function sends the radio
- *				parameters update to device
- * @common: Pointer to the driver private structure.
- *
- * Return: 0 on success, corresponding error code on failure.
- */
+ 
 int rsi_send_radio_params_update(struct rsi_common *common)
 {
 	struct rsi_mac_frame *cmd_frame;
@@ -1204,7 +1071,7 @@ int rsi_send_radio_params_update(struct rsi_common *common)
 	return rsi_send_internal_mgmt_frame(common, skb);
 }
 
-/* This function programs the threshold. */
+ 
 int rsi_send_vap_dynamic_update(struct rsi_common *common)
 {
 	struct sk_buff *skb;
@@ -1227,7 +1094,7 @@ int rsi_send_vap_dynamic_update(struct rsi_common *common)
 					cpu_to_le32(common->rts_threshold);
 
 	if (common->wow_flags & RSI_WOW_ENABLED) {
-		/* Beacon miss threshold */
+		 
 		dynamic_frame->desc_dword3.token =
 					cpu_to_le16(RSI_BCN_MISS_THRESHOLD);
 		dynamic_frame->frame_body.keep_alive_period =
@@ -1237,20 +1104,14 @@ int rsi_send_vap_dynamic_update(struct rsi_common *common)
 					cpu_to_le16(RSI_DEF_KEEPALIVE);
 	}
 
-	dynamic_frame->desc_dword3.sta_id = 0; /* vap id */
+	dynamic_frame->desc_dword3.sta_id = 0;  
 
 	skb_put(skb, sizeof(struct rsi_dynamic_s));
 
 	return rsi_send_internal_mgmt_frame(common, skb);
 }
 
-/**
- * rsi_compare() - This function is used to compare two integers
- * @a: pointer to the first integer
- * @b: pointer to the second integer
- *
- * Return: 0 if both are equal, -1 if the first is smaller, else 1
- */
+ 
 static int rsi_compare(const void *a, const void *b)
 {
 	u16 _a = *(const u16 *)(a);
@@ -1265,13 +1126,7 @@ static int rsi_compare(const void *a, const void *b)
 	return 0;
 }
 
-/**
- * rsi_map_rates() - This function is used to map selected rates to hw rates.
- * @rate: The standard rate to be mapped.
- * @offset: Offset that will be returned.
- *
- * Return: 0 if it is a mcs rate, else 1
- */
+ 
 static bool rsi_map_rates(u16 rate, int *offset)
 {
 	int kk;
@@ -1291,16 +1146,7 @@ static bool rsi_map_rates(u16 rate, int *offset)
 	return true;
 }
 
-/**
- * rsi_send_auto_rate_request() - This function is to set rates for connection
- *				  and send autorate request to firmware.
- * @common: Pointer to the driver private structure.
- * @sta: mac80211 station.
- * @sta_id: station id.
- * @vif: Pointer to the ieee80211_vif structure.
- *
- * Return: 0 on success, corresponding error code on failure.
- */
+ 
 static int rsi_send_auto_rate_request(struct rsi_common *common,
 				      struct ieee80211_sta *sta,
 				      u16 sta_id,
@@ -1363,7 +1209,7 @@ static int rsi_send_auto_rate_request(struct rsi_common *common,
 			is_sgi = true;
 	}
 
-	/* Limit to any rates administratively configured by cfg80211 */
+	 
 	configured_rates = common->rate_config[band].configured_mask ?: 0xffffffff;
 	rate_bitmap &= configured_rates;
 
@@ -1403,7 +1249,7 @@ static int rsi_send_auto_rate_request(struct rsi_common *common,
 
 	sort(selected_rates, jj, sizeof(u16), &rsi_compare, NULL);
 
-	/* mapping the rates to RSI rates */
+	 
 	for (ii = 0; ii < jj; ii++) {
 		if (rsi_map_rates(selected_rates[ii], &kk)) {
 			auto_rate->supported_rates[ii] =
@@ -1414,7 +1260,7 @@ static int rsi_send_auto_rate_request(struct rsi_common *common,
 		}
 	}
 
-	/* loading HT rates in the bottom half of the auto rate table */
+	 
 	if (is_ht) {
 		for (ii = rate_offset, kk = ARRAY_SIZE(rsi_mcsrates) - 1;
 		     ii < rate_offset + 2 * ARRAY_SIZE(rsi_mcsrates); ii++) {
@@ -1450,23 +1296,7 @@ static int rsi_send_auto_rate_request(struct rsi_common *common,
 	return rsi_send_internal_mgmt_frame(common, skb);
 }
 
-/**
- * rsi_inform_bss_status() - This function informs about bss status with the
- *			     help of sta notify params by sending an internal
- *			     management frame to firmware.
- * @common: Pointer to the driver private structure.
- * @opmode: Operating mode of device.
- * @status: Bss status type.
- * @addr: Address of the register.
- * @qos_enable: Qos is enabled.
- * @aid: Aid (unique for all STAs).
- * @sta: mac80211 station.
- * @sta_id: station id.
- * @assoc_cap: capabilities.
- * @vif: Pointer to the ieee80211_vif structure.
- *
- * Return: None.
- */
+ 
 void rsi_inform_bss_status(struct rsi_common *common,
 			   enum opmode opmode,
 			   u8 status,
@@ -1508,13 +1338,7 @@ void rsi_inform_bss_status(struct rsi_common *common,
 	}
 }
 
-/**
- * rsi_eeprom_read() - This function sends a frame to read the mac address
- *		       from the eeprom.
- * @common: Pointer to the driver private structure.
- *
- * Return: 0 on success, -1 on failure.
- */
+ 
 static int rsi_eeprom_read(struct rsi_common *common)
 {
 	struct rsi_eeprom_read_frame *mgmt_frame;
@@ -1533,18 +1357,18 @@ static int rsi_eeprom_read(struct rsi_common *common)
 	memset(skb->data, 0, FRAME_DESC_SZ);
 	mgmt_frame = (struct rsi_eeprom_read_frame *)skb->data;
 
-	/* FrameType */
+	 
 	rsi_set_len_qno(&mgmt_frame->len_qno, 0, RSI_WIFI_MGMT_Q);
 	mgmt_frame->pkt_type = EEPROM_READ;
 
-	/* Number of bytes to read */
+	 
 	mgmt_frame->pkt_info =
 		cpu_to_le32((adapter->eeprom.length << RSI_EEPROM_LEN_OFFSET) &
 			    RSI_EEPROM_LEN_MASK);
 	mgmt_frame->pkt_info |= cpu_to_le32((3 << RSI_EEPROM_HDR_SIZE_OFFSET) &
 					    RSI_EEPROM_HDR_SIZE_MASK);
 
-	/* Address to read */
+	 
 	mgmt_frame->eeprom_offset = cpu_to_le32(adapter->eeprom.offset);
 
 	skb_put(skb, FRAME_DESC_SZ);
@@ -1552,14 +1376,7 @@ static int rsi_eeprom_read(struct rsi_common *common)
 	return rsi_send_internal_mgmt_frame(common, skb);
 }
 
-/**
- * rsi_send_block_unblock_frame() - This function sends a frame to block/unblock
- *                                  data queues in the firmware
- *
- * @common: Pointer to the driver private structure.
- * @block_event: Event block if true, unblock if false
- * returns 0 on success, -1 on failure.
- */
+ 
 int rsi_send_block_unblock_frame(struct rsi_common *common, bool block_event)
 {
 	struct rsi_block_unblock_data *mgmt_frame;
@@ -1596,14 +1413,7 @@ int rsi_send_block_unblock_frame(struct rsi_common *common, bool block_event)
 	return rsi_send_internal_mgmt_frame(common, skb);
 }
 
-/**
- * rsi_send_rx_filter_frame() - Sends a frame to filter the RX packets
- *
- * @common: Pointer to the driver private structure.
- * @rx_filter_word: Flags of filter packets
- *
- * Returns 0 on success, -1 on failure.
- */
+ 
 int rsi_send_rx_filter_frame(struct rsi_common *common, u16 rx_filter_word)
 {
 	struct rsi_mac_frame *cmd_frame;
@@ -1726,15 +1536,7 @@ static int rsi_send_w9116_features(struct rsi_common *common)
 	return rsi_send_internal_mgmt_frame(common, skb);
 }
 
-/**
- * rsi_set_antenna() - This function send antenna configuration request
- *		       to device
- *
- * @common: Pointer to the driver private structure.
- * @antenna: bitmap for tx antenna selection
- *
- * Return: 0 on Success, negative error code on failure
- */
+ 
 int rsi_set_antenna(struct rsi_common *common, u8 antenna)
 {
 	struct rsi_ant_sel_frame *ant_sel_frame;
@@ -1862,9 +1664,7 @@ int rsi_send_bgscan_params(struct rsi_common *common, int enable)
 	return rsi_send_internal_mgmt_frame(common, skb);
 }
 
-/* This function sends the probe request to be used by firmware in
- * background scan
- */
+ 
 int rsi_send_bgscan_probe_req(struct rsi_common *common,
 			      struct ieee80211_vif *vif)
 {
@@ -1926,13 +1726,7 @@ int rsi_send_bgscan_probe_req(struct rsi_common *common,
 	return rsi_send_internal_mgmt_frame(common, skb);
 }
 
-/**
- * rsi_handle_ta_confirm_type() - This function handles the confirm frames.
- * @common: Pointer to the driver private structure.
- * @msg: Pointer to received packet.
- *
- * Return: 0 on success, -1 on failure.
- */
+ 
 static int rsi_handle_ta_confirm_type(struct rsi_common *common,
 				      u8 *msg)
 {
@@ -2149,7 +1943,7 @@ int rsi_handle_card_ready(struct rsi_common *common, u8 *msg)
 			memcpy(common->mac_addr, &msg[20], ETH_ALEN);
 			rsi_dbg(INIT_ZONE, "MAC Addr %pM", common->mac_addr);
 		}
-		/* Get usb buffer status register address */
+		 
 		common->priv->usb_buffer_status_reg = *(u32 *)&msg[8];
 		rsi_dbg(INFO_ZONE, "USB buffer status register = %x\n",
 			common->priv->usb_buffer_status_reg);
@@ -2174,14 +1968,7 @@ int rsi_handle_card_ready(struct rsi_common *common, u8 *msg)
 	return 0;
 }
 
-/**
- * rsi_mgmt_pkt_recv() - This function processes the management packets
- *			 received from the hardware.
- * @common: Pointer to the driver private structure.
- * @msg: Pointer to the received packet.
- *
- * Return: 0 on success, -1 on failure.
- */
+ 
 int rsi_mgmt_pkt_recv(struct rsi_common *common, u8 *msg)
 {
 	s32 msg_len = (le16_to_cpu(*(__le16 *)&msg[0]) & 0x0fff);

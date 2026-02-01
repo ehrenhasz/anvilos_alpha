@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Facebook */
+
+ 
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
@@ -54,7 +54,7 @@ int xyz(void *ctx)
 {
 	int whatever;
 
-	/* use sleepable helper, custom handler should set sleepable flag */
+	 
 	bpf_copy_from_user(&whatever, sizeof(whatever), NULL);
 	xyz_called = true;
 	return 0;

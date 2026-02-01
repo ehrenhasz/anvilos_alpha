@@ -1,21 +1,6 @@
-/* provide consistent interface to getgroups for systems that don't allow N==0
+ 
 
-   Copyright (C) 1996, 1999, 2003, 2006-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* written by Jim Meyering */
+ 
 
 #include <config.h>
 
@@ -27,8 +12,7 @@
 
 #if !HAVE_GETGROUPS
 
-/* Provide a stub that fails with ENOSYS, since there is no group
-   information available on mingw.  */
+ 
 int
 getgroups (_GL_UNUSED int n, _GL_UNUSED GETGROUPS_T *groups)
 {
@@ -36,34 +20,20 @@ getgroups (_GL_UNUSED int n, _GL_UNUSED GETGROUPS_T *groups)
   return -1;
 }
 
-#else /* HAVE_GETGROUPS */
+#else  
 
 # undef getgroups
 # ifndef GETGROUPS_ZERO_BUG
 #  define GETGROUPS_ZERO_BUG 0
 # endif
 
-/* On OS X 10.6 and later, use the usual getgroups, not the one
-   supplied when _DARWIN_C_SOURCE is defined.  _DARWIN_C_SOURCE is
-   normally defined, since it means "conform to POSIX, but add
-   non-POSIX extensions even if that violates the POSIX namespace
-   rules", which is what we normally want.  But with getgroups there
-   is an inconsistency, and _DARWIN_C_SOURCE means "change getgroups()
-   so that it no longer works right".  The BUGS section of compat(5)
-   says that the behavior is dubious if you compile different sections
-   of a program with different _DARWIN_C_SOURCE settings, so fix only
-   the offending symbol.  */
+ 
 # ifdef __APPLE__
 int posix_getgroups (int, gid_t []) __asm ("_getgroups");
 #  define getgroups posix_getgroups
 # endif
 
-/* On at least NeXTstep 3.2, getgroups (0, NULL) always fails.
-   On other systems, it returns the number of supplemental
-   groups for the process.  This function handles that special case
-   and lets the system-provided function handle all others.  However,
-   it can fail with ENOMEM if memory is tight.  It is unspecified
-   whether the effective group id is included in the list.  */
+ 
 
 int
 rpl_getgroups (int n, gid_t *group)
@@ -105,9 +75,7 @@ rpl_getgroups (int n, gid_t *group)
   n = 20;
   while (1)
     {
-      /* No need to worry about address arithmetic overflow here,
-         since the ancient systems that we're running on have low
-         limits on the number of secondary groups.  */
+       
       gbuf = malloc (n * sizeof *gbuf);
       if (!gbuf)
         return -1;
@@ -122,4 +90,4 @@ rpl_getgroups (int n, gid_t *group)
   return n_groups;
 }
 
-#endif /* HAVE_GETGROUPS */
+#endif  

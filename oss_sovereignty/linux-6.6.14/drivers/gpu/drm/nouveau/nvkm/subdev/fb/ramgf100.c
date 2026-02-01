@@ -1,26 +1,4 @@
-/*
- * Copyright 2013 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #define gf100_ram(p) container_of((p), struct gf100_ram, base)
 #include "ram.h"
 #include "ramfuc.h"
@@ -143,7 +121,7 @@ gf100_ram_calc(struct nvkm_ram *base, u32 freq)
 	int N1, M1, P;
 	int ret;
 
-	/* lookup memory config data relevant to the target frequency */
+	 
 	rammap.data = nvbios_rammapEm(bios, freq / 1000, &ver, &rammap.size,
 				      &cnt, &ramcfg.size, &cfg);
 	if (!rammap.data || ver != 0x10 || rammap.size < 0x0e) {
@@ -151,7 +129,7 @@ gf100_ram_calc(struct nvkm_ram *base, u32 freq)
 		return -EINVAL;
 	}
 
-	/* locate specific data set for the attached memory */
+	 
 	strap = nvbios_ramcfg_index(subdev);
 	if (strap >= cnt) {
 		nvkm_error(subdev, "invalid ramcfg strap\n");
@@ -164,7 +142,7 @@ gf100_ram_calc(struct nvkm_ram *base, u32 freq)
 		return -EINVAL;
 	}
 
-	/* lookup memory timings, if bios says they're present */
+	 
 	strap = nvbios_rd08(bios, ramcfg.data + 0x01);
 	if (strap != 0xff) {
 		timing.data = nvbios_timingEe(bios, strap, &ver, &timing.size,
@@ -181,10 +159,10 @@ gf100_ram_calc(struct nvkm_ram *base, u32 freq)
 	if (ret)
 		return ret;
 
-	/* determine current mclk configuration */
-	from = !!(ram_rd32(fuc, 0x1373f0) & 0x00000002); /*XXX: ok? */
+	 
+	from = !!(ram_rd32(fuc, 0x1373f0) & 0x00000002);  
 
-	/* determine target mclk configuration */
+	 
 	if (!(ram_rd32(fuc, 0x137300) & 0x00000100))
 		ref = nvkm_clk_read(clk, nv_clk_src_sppll0);
 	else
@@ -195,7 +173,7 @@ gf100_ram_calc(struct nvkm_ram *base, u32 freq)
 
 	ram_mask(fuc, 0x137360, 0x00000002, 0x00000000);
 
-	if ((ram_rd32(fuc, 0x132000) & 0x00000002) || 0 /*XXX*/) {
+	if ((ram_rd32(fuc, 0x132000) & 0x00000002) || 0  ) {
 		ram_nuke(fuc, 0x132000);
 		ram_mask(fuc, 0x132000, 0x00000002, 0x00000002);
 		ram_mask(fuc, 0x132000, 0x00000002, 0x00000000);
@@ -207,11 +185,11 @@ gf100_ram_calc(struct nvkm_ram *base, u32 freq)
 		ram_mask(fuc, 0x10fe20, 0x00000002, 0x00000000);
 	}
 
-// 0x00020034 // 0x0000000a
+ 
 	ram_wr32(fuc, 0x132100, 0x00000001);
 
 	if (mode == 1 && from == 0) {
-		/* calculate refpll */
+		 
 		ret = gt215_pll_calc(subdev, &ram->refpll, ram->mempll.refclk,
 				     &N1, NULL, &M1, &P);
 		if (ret <= 0) {
@@ -226,7 +204,7 @@ gf100_ram_calc(struct nvkm_ram *base, u32 freq)
 		ram_wr32(fuc, 0x10fe20, 0x20010001);
 		ram_wait(fuc, 0x137390, 0x00020000, 0x00020000, 64000);
 
-		/* calculate mempll */
+		 
 		ret = gt215_pll_calc(subdev, &ram->mempll, freq,
 				     &N1, NULL, &M1, &P);
 		if (ret <= 0) {
@@ -261,16 +239,16 @@ gf100_ram_calc(struct nvkm_ram *base, u32 freq)
 	}
 
 	if (from == 0) {
-// 0x00020039 // 0x000000ba
+ 
 	}
 
-// 0x0002003a // 0x00000002
+ 
 	ram_wr32(fuc, 0x100b0c, 0x00080012);
-// 0x00030014 // 0x00000000 // 0x02b5f070
-// 0x00030014 // 0x00010000 // 0x02b5f070
+ 
+ 
 	ram_wr32(fuc, 0x611200, 0x00003300);
-// 0x00020034 // 0x0000000a
-// 0x00030020 // 0x00000001 // 0x00000000
+ 
+ 
 
 	ram_mask(fuc, 0x10f200, 0x00000800, 0x00000000);
 	ram_wr32(fuc, 0x10f210, 0x00000000);
@@ -300,7 +278,7 @@ gf100_ram_calc(struct nvkm_ram *base, u32 freq)
 		ram_wr32(fuc, 0x1373f0, 0x00000003);
 		ram_wr32(fuc, 0x137310, 0x81201616);
 		ram_wr32(fuc, 0x132100, 0x00000001);
-// 0x00020039 // 0x000000ba
+ 
 		ram_wr32(fuc, 0x10f830, 0x00300017);
 		ram_wr32(fuc, 0x1373f0, 0x00000001);
 		ram_wr32(fuc, 0x10f824, 0x00007e77);
@@ -330,8 +308,8 @@ gf100_ram_calc(struct nvkm_ram *base, u32 freq)
 		ram_nsec(fuc, 1000);
 		ram_wr32(fuc, 0x10f830, 0x01300017);
 		ram_wr32(fuc, 0x10f830, 0x00300017);
-// 0x00030020 // 0x00000000 // 0x00000000
-// 0x00020034 // 0x0000000b
+ 
+ 
 		ram_wr32(fuc, 0x100b0c, 0x00080028);
 		ram_wr32(fuc, 0x611200, 0x00003330);
 	} else {
@@ -348,7 +326,7 @@ gf100_ram_calc(struct nvkm_ram *base, u32 freq)
 		ram_wr32(fuc, 0x10f050, 0xff000090);
 		ram_wr32(fuc, 0x1373ec, 0x00030404);
 		ram_wr32(fuc, 0x1373f0, 0x00000002);
-	// 0x00020039 // 0x00000011
+	 
 		ram_wr32(fuc, 0x132100, 0x00000001);
 		ram_wr32(fuc, 0x1373f8, 0x00002000);
 		ram_nsec(fuc, 2000);
@@ -382,8 +360,8 @@ gf100_ram_calc(struct nvkm_ram *base, u32 freq)
 
 		ram_nsec(fuc, 1000);
 		ram_wr32(fuc, 0x10f800, 0x00001804);
-	// 0x00030020 // 0x00000000 // 0x00000000
-	// 0x00020034 // 0x0000000b
+	 
+	 
 		ram_wr32(fuc, 0x13d8f4, 0x00000000);
 		ram_wr32(fuc, 0x100b0c, 0x00080028);
 		ram_wr32(fuc, 0x611200, 0x00003330);
@@ -395,7 +373,7 @@ gf100_ram_calc(struct nvkm_ram *base, u32 freq)
 	}
 
 	ram_mask(fuc, 0x10f200, 0x00000800, 0x00000800);
-// 0x00020016 // 0x00000000
+ 
 
 	if (mode == 0)
 		ram_mask(fuc, 0x132000, 0x00000001, 0x00000000);
@@ -445,7 +423,7 @@ gf100_ram_init(struct nvkm_ram *base)
 		return 0;
 	}
 
-	/* prepare for ddr link training, and load training patterns */
+	 
 	for (i = 0; i < 0x30; i++) {
 		nvkm_wr32(device, 0x10f968, 0x00000000 | (i << 8));
 		nvkm_wr32(device, 0x10f96c, 0x00000000 | (i << 8));
@@ -494,8 +472,8 @@ gf100_ram_ctor(const struct nvkm_ram_func *func, struct nvkm_fb *fb,
 	struct nvkm_subdev *subdev = &fb->subdev;
 	struct nvkm_device *device = subdev->device;
 	struct nvkm_bios *bios = device->bios;
-	const u32 rsvd_head = ( 256 * 1024); /* vga memory */
-	const u32 rsvd_tail = (1024 * 1024); /* vbios etc */
+	const u32 rsvd_head = ( 256 * 1024);  
+	const u32 rsvd_tail = (1024 * 1024);  
 	enum nvkm_ram_type type = nvkm_fb_bios_memtype(bios);
 	u32 fbps = nvkm_rd32(device, 0x022438);
 	u64 total = 0, lcomm = ~0, lower, ubase, usize;
@@ -529,29 +507,23 @@ gf100_ram_ctor(const struct nvkm_ram_func *func, struct nvkm_fb *fb,
 
 	nvkm_mm_fini(&ram->vram);
 
-	/* Some GPUs are in what's known as a "mixed memory" configuration.
-	 *
-	 * This is either where some FBPs have more memory than the others,
-	 * or where LTCs have been disabled on a FBP.
-	 */
+	 
 	if (lower != total) {
-		/* The common memory amount is addressed normally. */
+		 
 		ret = nvkm_mm_init(&ram->vram, NVKM_RAM_MM_NORMAL,
 				   rsvd_head >> NVKM_RAM_MM_SHIFT,
 				   (lower - rsvd_head) >> NVKM_RAM_MM_SHIFT, 1);
 		if (ret)
 			return ret;
 
-		/* And the rest is much higher in the physical address
-		 * space, and may not be usable for certain operations.
-		 */
+		 
 		ret = nvkm_mm_init(&ram->vram, NVKM_RAM_MM_MIXED,
 				   ubase >> NVKM_RAM_MM_SHIFT,
 				   (usize - rsvd_tail) >> NVKM_RAM_MM_SHIFT, 1);
 		if (ret)
 			return ret;
 	} else {
-		/* GPUs without mixed-memory are a lot nicer... */
+		 
 		ret = nvkm_mm_init(&ram->vram, NVKM_RAM_MM_NORMAL,
 				   rsvd_head >> NVKM_RAM_MM_SHIFT,
 				   (total - rsvd_head - rsvd_tail) >>

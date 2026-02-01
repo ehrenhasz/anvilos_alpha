@@ -1,17 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// ALSA SoC Texas Instruments TAS2781 Audio Smart Amplifier
-//
-// Copyright (C) 2022 - 2023 Texas Instruments Incorporated
-// https://www.ti.com
-//
-// The TAS2781 driver implements a flexible and configurable
-// algo coefficient setting for one, two, or even multiple
-// TAS2781 chips.
-//
-// Author: Shenghao Ding <shenghao-ding@ti.com>
-// Author: Kevin Lu <kevin-lu@ti.com>
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/crc8.h>
 #include <linux/firmware.h>
@@ -45,17 +45,7 @@ static const struct of_device_id tasdevice_of_match[] = {
 MODULE_DEVICE_TABLE(of, tasdevice_of_match);
 #endif
 
-/**
- * tas2781_digital_getvol - get the volum control
- * @kcontrol: control pointer
- * @ucontrol: User data
- * Customer Kcontrol for tas2781 is primarily for regmap booking, paging
- * depends on internal regmap mechanism.
- * tas2781 contains book and page two-level register map, especially
- * book switching will set the register BXXP00R7F, after switching to the
- * correct book, then leverage the mechanism for paging to access the
- * register.
- */
+ 
 static int tas2781_digital_getvol(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
@@ -236,7 +226,7 @@ static int tasdevice_create_control(struct tasdevice_priv *tas_priv)
 		goto out;
 	}
 
-	/* Create a mixer item for selecting the active profile */
+	 
 	name = devm_kzalloc(tas_priv->dev, SNDRV_CTL_ELEM_ID_NAME_MAXLEN,
 		GFP_KERNEL);
 	if (!name) {
@@ -323,9 +313,7 @@ static int tasdevice_dsp_create_ctrls(
 	int mix_index = 0;
 	int ret;
 
-	/* Alloc kcontrol via devm_kzalloc, which don't manually
-	 * free the kcontrol
-	 */
+	 
 	dsp_ctrls = devm_kcalloc(tas_priv->dev, nr_controls,
 		sizeof(dsp_ctrls[0]), GFP_KERNEL);
 	if (!dsp_ctrls) {
@@ -333,7 +321,7 @@ static int tasdevice_dsp_create_ctrls(
 		goto out;
 	}
 
-	/* Create a mixer item for selecting the active profile */
+	 
 	prog_name = devm_kzalloc(tas_priv->dev,
 		SNDRV_CTL_ELEM_ID_NAME_MAXLEN, GFP_KERNEL);
 	conf_name = devm_kzalloc(tas_priv->dev, SNDRV_CTL_ELEM_ID_NAME_MAXLEN,
@@ -398,9 +386,7 @@ static void tasdevice_fw_ready(const struct firmware *fmw,
 
 	tas_priv->fw_state = TASDEVICE_DSP_FW_ALL_OK;
 
-	/* If calibrated data occurs error, dsp will still works with default
-	 * calibrated data inside algo.
-	 */
+	 
 	for (i = 0; i < tas_priv->ndev; i++) {
 		scnprintf(tas_priv->cal_binaryname[i], 64, "%s_cal_0x%02x.bin",
 			tas_priv->dev_name, tas_priv->tasdevice[i].dev_addr);
@@ -416,7 +402,7 @@ static void tasdevice_fw_ready(const struct firmware *fmw,
 	tas_priv->cur_prog = 0;
 out:
 	if (tas_priv->fw_state == TASDEVICE_DSP_FW_FAIL) {
-		/*If DSP FW fail, kcontrol won't be created */
+		 
 		tasdevice_config_info_remove(tas_priv);
 		tasdevice_dsp_remove(tas_priv);
 	}
@@ -432,12 +418,12 @@ static int tasdevice_dapm_event(struct snd_soc_dapm_widget *w,
 	struct tasdevice_priv *tas_priv = snd_soc_component_get_drvdata(codec);
 	int state = 0;
 
-	/* Codec Lock Hold */
+	 
 	mutex_lock(&tas_priv->codec_lock);
 	if (event == SND_SOC_DAPM_PRE_PMD)
 		state = 1;
 	tasdevice_tuning_switch(tas_priv, state);
-	/* Codec Lock Release*/
+	 
 	mutex_unlock(&tas_priv->codec_lock);
 
 	return 0;

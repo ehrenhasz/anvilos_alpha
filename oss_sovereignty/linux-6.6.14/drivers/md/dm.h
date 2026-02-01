@@ -1,11 +1,4 @@
-/*
- * Internal header file for device mapper
- *
- * Copyright (C) 2001, 2002 Sistina Software
- * Copyright (C) 2004-2006 Red Hat, Inc. All rights reserved.
- *
- * This file is released under the LGPL.
- */
+ 
 
 #ifndef DM_INTERNAL_H
 #define DM_INTERNAL_H
@@ -24,20 +17,14 @@
 
 #include "dm-stats.h"
 
-/*
- * Suspend feature flags
- */
+ 
 #define DM_SUSPEND_LOCKFS_FLAG		(1 << 0)
 #define DM_SUSPEND_NOFLUSH_FLAG		(1 << 1)
 
-/*
- * Status feature flags
- */
+ 
 #define DM_STATUS_NOFLUSH_FLAG		(1 << 0)
 
-/*
- * List of devices that a metadevice uses and should open/close.
- */
+ 
 struct dm_dev_internal {
 	struct list_head list;
 	refcount_t count;
@@ -49,11 +36,7 @@ struct dm_md_mempools;
 struct dm_target_io;
 struct dm_io;
 
-/*
- *---------------------------------------------------------------
- * Internal table functions.
- *---------------------------------------------------------------
- */
+ 
 void dm_table_event_callback(struct dm_table *t,
 			     void (*fn)(void *), void *context);
 struct dm_target *dm_table_find_target(struct dm_table *t, sector_t sector);
@@ -82,25 +65,16 @@ struct target_type *dm_get_immutable_target_type(struct mapped_device *md);
 
 int dm_setup_md_queue(struct mapped_device *md, struct dm_table *t);
 
-/*
- * To check whether the target type is bio-based or not (request-based).
- */
+ 
 #define dm_target_bio_based(t) ((t)->type->map != NULL)
 
-/*
- * To check whether the target type is request-based or not (bio-based).
- */
+ 
 #define dm_target_request_based(t) ((t)->type->clone_and_map_rq != NULL)
 
-/*
- * To check whether the target type is a hybrid (capable of being
- * either request-based or bio-based).
- */
+ 
 #define dm_target_hybrid(t) (dm_target_bio_based(t) && dm_target_request_based(t))
 
-/*
- * Zoned targets related functions.
- */
+ 
 int dm_set_zones_restrictions(struct dm_table *t, struct request_queue *q);
 void dm_zone_endio(struct dm_io *io, struct bio *clone);
 #ifdef CONFIG_BLK_DEV_ZONED
@@ -122,11 +96,7 @@ static inline int dm_zone_map_bio(struct dm_target_io *tio)
 }
 #endif
 
-/*
- *---------------------------------------------------------------
- * A registry of target types.
- *---------------------------------------------------------------
- */
+ 
 int dm_target_init(void);
 void dm_target_exit(void);
 struct target_type *dm_get_target_type(const char *name);
@@ -136,67 +106,46 @@ int dm_target_iterate(void (*iter_func)(struct target_type *tt,
 
 int dm_split_args(int *argc, char ***argvp, char *input);
 
-/*
- * Is this mapped_device being deleted?
- */
+ 
 int dm_deleting_md(struct mapped_device *md);
 
-/*
- * Is this mapped_device suspended?
- */
+ 
 int dm_suspended_md(struct mapped_device *md);
 
-/*
- * Internal suspend and resume methods.
- */
+ 
 int dm_suspended_internally_md(struct mapped_device *md);
 void dm_internal_suspend_fast(struct mapped_device *md);
 void dm_internal_resume_fast(struct mapped_device *md);
 void dm_internal_suspend_noflush(struct mapped_device *md);
 void dm_internal_resume(struct mapped_device *md);
 
-/*
- * Test if the device is scheduled for deferred remove.
- */
+ 
 int dm_test_deferred_remove_flag(struct mapped_device *md);
 
-/*
- * Try to remove devices marked for deferred removal.
- */
+ 
 void dm_deferred_remove(void);
 
-/*
- * The device-mapper can be driven through one of two interfaces;
- * ioctl or filesystem, depending which patch you have applied.
- */
+ 
 int dm_interface_init(void);
 void dm_interface_exit(void);
 
-/*
- * sysfs interface
- */
+ 
 int dm_sysfs_init(struct mapped_device *md);
 void dm_sysfs_exit(struct mapped_device *md);
 struct kobject *dm_kobject(struct mapped_device *md);
 struct mapped_device *dm_get_from_kobject(struct kobject *kobj);
 
-/*
- * The kobject helper
- */
+ 
 void dm_kobject_release(struct kobject *kobj);
 
-/*
- * Targets for linear and striped mappings
- */
+ 
 int dm_linear_init(void);
 void dm_linear_exit(void);
 
 int dm_stripe_init(void);
 void dm_stripe_exit(void);
 
-/*
- * mapped_device operations
- */
+ 
 void dm_destroy(struct mapped_device *md);
 void dm_destroy_immediate(struct mapped_device *md);
 int dm_open_count(struct mapped_device *md);
@@ -216,14 +165,10 @@ void dm_io_exit(void);
 int dm_kcopyd_init(void);
 void dm_kcopyd_exit(void);
 
-/*
- * Mempool operations
- */
+ 
 void dm_free_md_mempools(struct dm_md_mempools *pools);
 
-/*
- * Various helpers
- */
+ 
 unsigned int dm_get_reserved_bio_based_ios(void);
 
 #define DM_HASH_LOCKS_MAX 64

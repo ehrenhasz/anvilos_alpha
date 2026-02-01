@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-// Copyright (c) 2019 MediaTek Inc.
+
+
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -100,7 +100,7 @@ static int mt6660_codec_classd_event(struct snd_soc_dapm_widget *w,
 	case SND_SOC_DAPM_PRE_PMU:
 		dev_dbg(component->dev,
 			"%s: before classd turn on\n", __func__);
-		/* config to adaptive mode */
+		 
 		ret = snd_soc_component_update_bits(component,
 			MT6660_REG_BST_CTRL, 0x03, 0x03);
 		if (ret < 0) {
@@ -109,7 +109,7 @@ static int mt6660_codec_classd_event(struct snd_soc_dapm_widget *w,
 		}
 		break;
 	case SND_SOC_DAPM_POST_PMU:
-		/* voltage sensing enable */
+		 
 		ret = snd_soc_component_update_bits(component,
 			MT6660_REG_RESV7, 0x04, 0x04);
 		if (ret < 0) {
@@ -121,7 +121,7 @@ static int mt6660_codec_classd_event(struct snd_soc_dapm_widget *w,
 		break;
 	case SND_SOC_DAPM_PRE_PMD:
 		dev_dbg(component->dev, "Amp off\n");
-		/* voltage sensing disable */
+		 
 		ret = snd_soc_component_update_bits(component,
 			MT6660_REG_RESV7, 0x04, 0x00);
 		if (ret < 0) {
@@ -129,7 +129,7 @@ static int mt6660_codec_classd_event(struct snd_soc_dapm_widget *w,
 				"disable voltage sensing fail\n");
 			return ret;
 		}
-		/* pop-noise improvement 1 */
+		 
 		ret = snd_soc_component_update_bits(component,
 			MT6660_REG_RESV10, 0x10, 0x10);
 		if (ret < 0) {
@@ -141,7 +141,7 @@ static int mt6660_codec_classd_event(struct snd_soc_dapm_widget *w,
 	case SND_SOC_DAPM_POST_PMD:
 		dev_dbg(component->dev,
 			"%s: after classd turn off\n", __func__);
-		/* pop-noise improvement 2 */
+		 
 		ret = snd_soc_component_update_bits(component,
 			MT6660_REG_RESV10, 0x10, 0x00);
 		if (ret < 0) {
@@ -149,7 +149,7 @@ static int mt6660_codec_classd_event(struct snd_soc_dapm_widget *w,
 				"pop-noise improvement 2 fail\n");
 			return ret;
 		}
-		/* config to off mode */
+		 
 		ret = snd_soc_component_update_bits(component,
 			MT6660_REG_BST_CTRL, 0x03, 0x00);
 		if (ret < 0) {
@@ -322,7 +322,7 @@ static const struct snd_soc_component_driver mt6660_component_driver = {
 	.dapm_routes = mt6660_component_dapm_routes,
 	.num_dapm_routes = ARRAY_SIZE(mt6660_component_dapm_routes),
 
-	.idle_bias_on = false, /* idle_bias_off = true */
+	.idle_bias_on = false,  
 	.endianness = 1,
 };
 
@@ -403,11 +403,11 @@ static struct snd_soc_dai_driver mt6660_codec_dai = {
 		.rates = STUB_RATES,
 		.formats = STUB_FORMATS,
 	},
-	/* dai properties */
+	 
 	.symmetric_rate = 1,
 	.symmetric_channels = 1,
 	.symmetric_sample_bits = 1,
-	/* dai operations */
+	 
 	.ops = &mt6660_component_aif_ops,
 };
 
@@ -431,7 +431,7 @@ static int _mt6660_chip_sw_reset(struct mt6660_chip *chip)
 {
 	int ret;
 
-	/* turn on main pll first, then trigger reset */
+	 
 	ret = regmap_write(chip->regmap, MT6660_REG_SYSTEM_CTRL, 0x00);
 	if (ret < 0)
 		return ret;
@@ -479,25 +479,25 @@ static int mt6660_i2c_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/* chip reset first */
+	 
 	ret = _mt6660_chip_sw_reset(chip);
 	if (ret < 0) {
 		dev_err(chip->dev, "chip reset fail\n");
 		goto probe_fail;
 	}
-	/* chip power on */
+	 
 	ret = _mt6660_chip_power_on(chip, 1);
 	if (ret < 0) {
 		dev_err(chip->dev, "chip power on 2 fail\n");
 		goto probe_fail;
 	}
-	/* chip devid check */
+	 
 	ret = _mt6660_chip_id_check(chip);
 	if (ret < 0) {
 		dev_err(chip->dev, "chip id check fail\n");
 		goto probe_fail;
 	}
-	/* chip revision get */
+	 
 	ret = _mt6660_read_chip_revision(chip);
 	if (ret < 0) {
 		dev_err(chip->dev, "read chip revision fail\n");

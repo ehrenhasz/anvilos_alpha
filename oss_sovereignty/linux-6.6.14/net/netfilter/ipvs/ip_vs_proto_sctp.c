@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/ip.h>
 #include <linux/sctp.h>
@@ -56,17 +56,11 @@ sctp_conn_schedule(struct netns_ipvs *ipvs, int af, struct sk_buff *skb,
 		int ignored;
 
 		if (ip_vs_todrop(ipvs)) {
-			/*
-			 * It seems that we are very loaded.
-			 * We have to drop this packet :(
-			 */
+			 
 			*verdict = NF_DROP;
 			return 0;
 		}
-		/*
-		 * Let the virtual server select a real server for the
-		 * incoming connection, and create a connection entry.
-		 */
+		 
 		*cpp = ip_vs_schedule(svc, skb, pd, &ignored, iph);
 		if (!*cpp && ignored <= 0) {
 			if (!ignored)
@@ -76,7 +70,7 @@ sctp_conn_schedule(struct netns_ipvs *ipvs, int af, struct sk_buff *skb,
 			return 0;
 		}
 	}
-	/* NF_ACCEPT */
+	 
 	return 1;
 }
 
@@ -100,29 +94,29 @@ sctp_snat_handler(struct sk_buff *skb, struct ip_vs_protocol *pp,
 		return 1;
 #endif
 
-	/* csum_check requires unshared skb */
+	 
 	if (skb_ensure_writable(skb, sctphoff + sizeof(*sctph)))
 		return 0;
 
 	if (unlikely(cp->app != NULL)) {
 		int ret;
 
-		/* Some checks before mangling */
+		 
 		if (!sctp_csum_check(cp->af, skb, pp))
 			return 0;
 
-		/* Call application helper if needed */
+		 
 		ret = ip_vs_app_pkt_out(cp, skb, iph);
 		if (ret == 0)
 			return 0;
-		/* ret=2: csum update is needed after payload mangling */
+		 
 		if (ret == 2)
 			payload_csum = true;
 	}
 
 	sctph = (void *) skb_network_header(skb) + sctphoff;
 
-	/* Only update csum if we really have to */
+	 
 	if (sctph->source != cp->vport || payload_csum ||
 	    skb->ip_summed == CHECKSUM_PARTIAL) {
 		sctph->source = cp->vport;
@@ -147,29 +141,29 @@ sctp_dnat_handler(struct sk_buff *skb, struct ip_vs_protocol *pp,
 		return 1;
 #endif
 
-	/* csum_check requires unshared skb */
+	 
 	if (skb_ensure_writable(skb, sctphoff + sizeof(*sctph)))
 		return 0;
 
 	if (unlikely(cp->app != NULL)) {
 		int ret;
 
-		/* Some checks before mangling */
+		 
 		if (!sctp_csum_check(cp->af, skb, pp))
 			return 0;
 
-		/* Call application helper if needed */
+		 
 		ret = ip_vs_app_pkt_in(cp, skb, iph);
 		if (ret == 0)
 			return 0;
-		/* ret=2: csum update is needed after payload mangling */
+		 
 		if (ret == 2)
 			payload_csum = true;
 	}
 
 	sctph = (void *) skb_network_header(skb) + sctphoff;
 
-	/* Only update csum if we really have to */
+	 
 	if (sctph->dest != cp->dport || payload_csum ||
 	    (skb->ip_summed == CHECKSUM_PARTIAL &&
 	     !(skb_dst(skb)->dev->features & NETIF_F_SCTP_CRC))) {
@@ -201,7 +195,7 @@ sctp_csum_check(int af, struct sk_buff *skb, struct ip_vs_protocol *pp)
 	val = sctp_compute_cksum(skb, sctphoff);
 
 	if (val != cmp) {
-		/* CRC failure, dump it. */
+		 
 		IP_VS_DBG_RL_PKT(0, af, pp, skb, 0,
 				"Failed checksum for");
 		return 0;
@@ -210,7 +204,7 @@ sctp_csum_check(int af, struct sk_buff *skb, struct ip_vs_protocol *pp)
 }
 
 enum ipvs_sctp_event_t {
-	IP_VS_SCTP_DATA = 0,		/* DATA, SACK, HEARTBEATs */
+	IP_VS_SCTP_DATA = 0,		 
 	IP_VS_SCTP_INIT,
 	IP_VS_SCTP_INIT_ACK,
 	IP_VS_SCTP_COOKIE_ECHO,
@@ -223,7 +217,7 @@ enum ipvs_sctp_event_t {
 	IP_VS_SCTP_EVENT_LAST
 };
 
-/* RFC 2960, 3.2 Chunk Field Descriptions */
+ 
 static __u8 sctp_events[] = {
 	[SCTP_CID_DATA]			= IP_VS_SCTP_DATA,
 	[SCTP_CID_INIT]			= IP_VS_SCTP_INIT,
@@ -242,30 +236,7 @@ static __u8 sctp_events[] = {
 	[SCTP_CID_SHUTDOWN_COMPLETE]	= IP_VS_SCTP_SHUTDOWN_COMPLETE,
 };
 
-/* SCTP States:
- * See RFC 2960, 4. SCTP Association State Diagram
- *
- * New states (not in diagram):
- * - INIT1 state: use shorter timeout for dropped INIT packets
- * - REJECTED state: use shorter timeout if INIT is rejected with ABORT
- * - INIT, COOKIE_SENT, COOKIE_REPLIED, COOKIE states: for better debugging
- *
- * The states are as seen in real server. In the diagram, INIT1, INIT,
- * COOKIE_SENT and COOKIE_REPLIED processing happens in CLOSED state.
- *
- * States as per packets from client (C) and server (S):
- *
- * Setup of client connection:
- * IP_VS_SCTP_S_INIT1: First C:INIT sent, wait for S:INIT-ACK
- * IP_VS_SCTP_S_INIT: Next C:INIT sent, wait for S:INIT-ACK
- * IP_VS_SCTP_S_COOKIE_SENT: S:INIT-ACK sent, wait for C:COOKIE-ECHO
- * IP_VS_SCTP_S_COOKIE_REPLIED: C:COOKIE-ECHO sent, wait for S:COOKIE-ACK
- *
- * Setup of server connection:
- * IP_VS_SCTP_S_COOKIE_WAIT: S:INIT sent, wait for C:INIT-ACK
- * IP_VS_SCTP_S_COOKIE: C:INIT-ACK sent, wait for S:COOKIE-ECHO
- * IP_VS_SCTP_S_COOKIE_ECHOED: S:COOKIE-ECHO sent, wait for C:COOKIE-ACK
- */
+ 
 
 #define sNO IP_VS_SCTP_S_NONE
 #define sI1 IP_VS_SCTP_S_INIT1
@@ -284,50 +255,50 @@ static __u8 sctp_events[] = {
 
 static const __u8 sctp_states
 	[IP_VS_DIR_LAST][IP_VS_SCTP_EVENT_LAST][IP_VS_SCTP_S_LAST] = {
-	{ /* INPUT */
-/*        sNO, sI1, sIN, sCS, sCR, sCW, sCO, sCE, sES, sSS, sSR, sSA, sRJ, sCL*/
-/* d   */{sES, sI1, sIN, sCS, sCR, sCW, sCO, sCE, sES, sSS, sSR, sSA, sRJ, sCL},
-/* i   */{sI1, sIN, sIN, sCS, sCR, sCW, sCO, sCE, sES, sSS, sSR, sSA, sIN, sIN},
-/* i_a */{sCW, sCW, sCW, sCS, sCR, sCO, sCO, sCE, sES, sSS, sSR, sSA, sRJ, sCL},
-/* c_e */{sCR, sIN, sIN, sCR, sCR, sCW, sCO, sCE, sES, sSS, sSR, sSA, sRJ, sCL},
-/* c_a */{sES, sI1, sIN, sCS, sCR, sCW, sCO, sES, sES, sSS, sSR, sSA, sRJ, sCL},
-/* s   */{sSR, sI1, sIN, sCS, sCR, sCW, sCO, sCE, sSR, sSS, sSR, sSA, sRJ, sCL},
-/* s_a */{sCL, sIN, sIN, sCS, sCR, sCW, sCO, sCE, sES, sCL, sSR, sCL, sRJ, sCL},
-/* s_c */{sCL, sCL, sCL, sCS, sCR, sCW, sCO, sCE, sES, sSS, sSR, sCL, sRJ, sCL},
-/* err */{sCL, sI1, sIN, sCS, sCR, sCW, sCO, sCL, sES, sSS, sSR, sSA, sRJ, sCL},
-/* ab  */{sCL, sCL, sCL, sCL, sCL, sRJ, sCL, sCL, sCL, sCL, sCL, sCL, sCL, sCL},
+	{  
+ 
+ {sES, sI1, sIN, sCS, sCR, sCW, sCO, sCE, sES, sSS, sSR, sSA, sRJ, sCL},
+ {sI1, sIN, sIN, sCS, sCR, sCW, sCO, sCE, sES, sSS, sSR, sSA, sIN, sIN},
+ {sCW, sCW, sCW, sCS, sCR, sCO, sCO, sCE, sES, sSS, sSR, sSA, sRJ, sCL},
+ {sCR, sIN, sIN, sCR, sCR, sCW, sCO, sCE, sES, sSS, sSR, sSA, sRJ, sCL},
+ {sES, sI1, sIN, sCS, sCR, sCW, sCO, sES, sES, sSS, sSR, sSA, sRJ, sCL},
+ {sSR, sI1, sIN, sCS, sCR, sCW, sCO, sCE, sSR, sSS, sSR, sSA, sRJ, sCL},
+ {sCL, sIN, sIN, sCS, sCR, sCW, sCO, sCE, sES, sCL, sSR, sCL, sRJ, sCL},
+ {sCL, sCL, sCL, sCS, sCR, sCW, sCO, sCE, sES, sSS, sSR, sCL, sRJ, sCL},
+ {sCL, sI1, sIN, sCS, sCR, sCW, sCO, sCL, sES, sSS, sSR, sSA, sRJ, sCL},
+ {sCL, sCL, sCL, sCL, sCL, sRJ, sCL, sCL, sCL, sCL, sCL, sCL, sCL, sCL},
 	},
-	{ /* OUTPUT */
-/*        sNO, sI1, sIN, sCS, sCR, sCW, sCO, sCE, sES, sSS, sSR, sSA, sRJ, sCL*/
-/* d   */{sES, sI1, sIN, sCS, sCR, sCW, sCO, sCE, sES, sSS, sSR, sSA, sRJ, sCL},
-/* i   */{sCW, sCW, sCW, sCW, sCW, sCW, sCW, sCW, sES, sCW, sCW, sCW, sCW, sCW},
-/* i_a */{sCS, sCS, sCS, sCS, sCR, sCW, sCO, sCE, sES, sSS, sSR, sSA, sRJ, sCL},
-/* c_e */{sCE, sCE, sCE, sCE, sCE, sCE, sCE, sCE, sES, sSS, sSR, sSA, sRJ, sCL},
-/* c_a */{sES, sES, sES, sES, sES, sES, sES, sES, sES, sSS, sSR, sSA, sRJ, sCL},
-/* s   */{sSS, sSS, sSS, sSS, sSS, sSS, sSS, sSS, sSS, sSS, sSR, sSA, sRJ, sCL},
-/* s_a */{sSA, sSA, sSA, sSA, sSA, sCW, sCO, sCE, sES, sSA, sSA, sSA, sRJ, sCL},
-/* s_c */{sCL, sI1, sIN, sCS, sCR, sCW, sCO, sCE, sES, sSS, sSR, sSA, sRJ, sCL},
-/* err */{sCL, sCL, sCL, sCL, sCL, sCW, sCO, sCE, sES, sSS, sSR, sSA, sRJ, sCL},
-/* ab  */{sCL, sRJ, sCL, sCL, sCL, sCL, sCL, sCL, sCL, sCL, sCL, sCL, sCL, sCL},
+	{  
+ 
+ {sES, sI1, sIN, sCS, sCR, sCW, sCO, sCE, sES, sSS, sSR, sSA, sRJ, sCL},
+ {sCW, sCW, sCW, sCW, sCW, sCW, sCW, sCW, sES, sCW, sCW, sCW, sCW, sCW},
+ {sCS, sCS, sCS, sCS, sCR, sCW, sCO, sCE, sES, sSS, sSR, sSA, sRJ, sCL},
+ {sCE, sCE, sCE, sCE, sCE, sCE, sCE, sCE, sES, sSS, sSR, sSA, sRJ, sCL},
+ {sES, sES, sES, sES, sES, sES, sES, sES, sES, sSS, sSR, sSA, sRJ, sCL},
+ {sSS, sSS, sSS, sSS, sSS, sSS, sSS, sSS, sSS, sSS, sSR, sSA, sRJ, sCL},
+ {sSA, sSA, sSA, sSA, sSA, sCW, sCO, sCE, sES, sSA, sSA, sSA, sRJ, sCL},
+ {sCL, sI1, sIN, sCS, sCR, sCW, sCO, sCE, sES, sSS, sSR, sSA, sRJ, sCL},
+ {sCL, sCL, sCL, sCL, sCL, sCW, sCO, sCE, sES, sSS, sSR, sSA, sRJ, sCL},
+ {sCL, sRJ, sCL, sCL, sCL, sCL, sCL, sCL, sCL, sCL, sCL, sCL, sCL, sCL},
 	},
-	{ /* INPUT-ONLY */
-/*        sNO, sI1, sIN, sCS, sCR, sCW, sCO, sCE, sES, sSS, sSR, sSA, sRJ, sCL*/
-/* d   */{sES, sI1, sIN, sCS, sCR, sES, sCO, sCE, sES, sSS, sSR, sSA, sRJ, sCL},
-/* i   */{sI1, sIN, sIN, sIN, sIN, sIN, sCO, sCE, sES, sSS, sSR, sSA, sIN, sIN},
-/* i_a */{sCE, sCE, sCE, sCE, sCE, sCE, sCO, sCE, sES, sSS, sSR, sSA, sRJ, sCL},
-/* c_e */{sES, sES, sES, sES, sES, sES, sCO, sCE, sES, sSS, sSR, sSA, sRJ, sCL},
-/* c_a */{sES, sI1, sIN, sES, sES, sCW, sES, sES, sES, sSS, sSR, sSA, sRJ, sCL},
-/* s   */{sSR, sI1, sIN, sCS, sCR, sCW, sCO, sCE, sSR, sSS, sSR, sSA, sRJ, sCL},
-/* s_a */{sCL, sIN, sIN, sCS, sCR, sCW, sCO, sCE, sCL, sCL, sSR, sCL, sRJ, sCL},
-/* s_c */{sCL, sCL, sCL, sCL, sCL, sCW, sCO, sCE, sES, sSS, sCL, sCL, sRJ, sCL},
-/* err */{sCL, sI1, sIN, sCS, sCR, sCW, sCO, sCE, sES, sSS, sSR, sSA, sRJ, sCL},
-/* ab  */{sCL, sCL, sCL, sCL, sCL, sRJ, sCL, sCL, sCL, sCL, sCL, sCL, sCL, sCL},
+	{  
+ 
+ {sES, sI1, sIN, sCS, sCR, sES, sCO, sCE, sES, sSS, sSR, sSA, sRJ, sCL},
+ {sI1, sIN, sIN, sIN, sIN, sIN, sCO, sCE, sES, sSS, sSR, sSA, sIN, sIN},
+ {sCE, sCE, sCE, sCE, sCE, sCE, sCO, sCE, sES, sSS, sSR, sSA, sRJ, sCL},
+ {sES, sES, sES, sES, sES, sES, sCO, sCE, sES, sSS, sSR, sSA, sRJ, sCL},
+ {sES, sI1, sIN, sES, sES, sCW, sES, sES, sES, sSS, sSR, sSA, sRJ, sCL},
+ {sSR, sI1, sIN, sCS, sCR, sCW, sCO, sCE, sSR, sSS, sSR, sSA, sRJ, sCL},
+ {sCL, sIN, sIN, sCS, sCR, sCW, sCO, sCE, sCL, sCL, sSR, sCL, sRJ, sCL},
+ {sCL, sCL, sCL, sCL, sCL, sCW, sCO, sCE, sES, sSS, sCL, sCL, sRJ, sCL},
+ {sCL, sI1, sIN, sCS, sCR, sCW, sCO, sCE, sES, sSS, sSR, sSA, sRJ, sCL},
+ {sCL, sCL, sCL, sCL, sCL, sRJ, sCL, sCL, sCL, sCL, sCL, sCL, sCL, sCL},
 	},
 };
 
 #define IP_VS_SCTP_MAX_RTO	((60 + 1) * HZ)
 
-/* Timeout table[state] */
+ 
 static const int sctp_timeouts[IP_VS_SCTP_S_LAST + 1] = {
 	[IP_VS_SCTP_S_NONE]			= 2 * HZ,
 	[IP_VS_SCTP_S_INIT1]			= (0 + 3 + 1) * HZ,
@@ -395,17 +366,7 @@ set_sctp_state(struct ip_vs_proto_data *pd, struct ip_vs_conn *cp,
 		return;
 
 	chunk_type = sch->type;
-	/*
-	 * Section 3: Multiple chunks can be bundled into one SCTP packet
-	 * up to the MTU size, except for the INIT, INIT ACK, and
-	 * SHUTDOWN COMPLETE chunks. These chunks MUST NOT be bundled with
-	 * any other chunk in a packet.
-	 *
-	 * Section 3.3.7: DATA chunks MUST NOT be bundled with ABORT. Control
-	 * chunks (except for INIT, INIT ACK, and SHUTDOWN COMPLETE) MAY be
-	 * bundled with an ABORT, but they MUST be placed before the ABORT
-	 * in the SCTP packet or they will be ignored by the receiver.
-	 */
+	 
 	if ((sch->type == SCTP_CID_COOKIE_ECHO) ||
 	    (sch->type == SCTP_CID_COOKIE_ACK)) {
 		int clen = ntohs(sch->length);
@@ -421,9 +382,7 @@ set_sctp_state(struct ip_vs_proto_data *pd, struct ip_vs_conn *cp,
 	event = (chunk_type < sizeof(sctp_events)) ?
 		sctp_events[chunk_type] : IP_VS_SCTP_DATA;
 
-	/* Update direction to INPUT_ONLY if necessary
-	 * or delete NO_OUTPUT flag if output packet detected
-	 */
+	 
 	if (cp->flags & IP_VS_CONN_F_NOOUTPUT) {
 		if (direction == IP_VS_DIR_OUTPUT)
 			cp->flags &= ~IP_VS_CONN_F_NOOUTPUT;
@@ -466,7 +425,7 @@ set_sctp_state(struct ip_vs_proto_data *pd, struct ip_vs_conn *cp,
 	}
 	if (likely(pd))
 		cp->timeout = pd->timeout_table[cp->state = next_state];
-	else	/* What to do ? */
+	else	 
 		cp->timeout = sctp_timeouts[cp->state = next_state];
 }
 
@@ -523,10 +482,10 @@ static int sctp_app_conn_bind(struct ip_vs_conn *cp)
 	struct ip_vs_app *inc;
 	int result = 0;
 
-	/* Default binding: bind app only for NAT */
+	 
 	if (IP_VS_FWD_METHOD(cp) != IP_VS_CONN_F_MASQ)
 		return 0;
-	/* Lookup application incarnations and bind the right one */
+	 
 	hash = sctp_app_hashkey(cp->vport);
 
 	list_for_each_entry_rcu(inc, &ipvs->sctp_apps[hash], p_list) {
@@ -552,10 +511,7 @@ static int sctp_app_conn_bind(struct ip_vs_conn *cp)
 	return result;
 }
 
-/* ---------------------------------------------
- *   timeouts is netns related now.
- * ---------------------------------------------
- */
+ 
 static int __ip_vs_sctp_init(struct netns_ipvs *ipvs, struct ip_vs_proto_data *pd)
 {
 	ip_vs_init_hash_table(ipvs->sctp_apps, SCTP_APP_TAB_SIZE);

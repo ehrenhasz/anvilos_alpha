@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <signal.h>
 #include <stdbool.h>
 #include <string.h>
@@ -149,7 +149,7 @@ int ui_browser__input_window(const char *title, const char *text, char *input,
 
 		mutex_unlock(&ui__lock);
 
-		/* XXX more graceful overflow handling needed */
+		 
 		if (len == sizeof(buf) - 1) {
 			ui_helpline__push("maximum size of symbol name reached!");
 			key = K_ENTER;

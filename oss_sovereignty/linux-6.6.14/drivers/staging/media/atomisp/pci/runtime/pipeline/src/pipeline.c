@@ -1,23 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2010 - 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include "hmm.h"
 
 #include "ia_css_debug.h"
-#include "sw_event_global.h"		/* encode_sw_event */
-#include "sp.h"			/* cnd_sp_irq_enable() */
+#include "sw_event_global.h"		 
+#include "sp.h"			 
 #include "assert_support.h"
 #include "sh_css_sp.h"
 #include "ia_css_pipeline.h"
@@ -28,15 +16,11 @@
 #define PIPELINE_SP_THREAD_EMPTY_TOKEN          (0x0)
 #define PIPELINE_SP_THREAD_RESERVED_TOKEN       (0x1)
 
-/*******************************************************
-*** Static variables
-********************************************************/
+ 
 static unsigned int pipeline_num_to_sp_thread_map[IA_CSS_PIPELINE_NUM_MAX];
 static unsigned int pipeline_sp_thread_list[SH_CSS_MAX_SP_THREADS];
 
-/*******************************************************
-*** Static functions
-********************************************************/
+ 
 static void pipeline_init_sp_thread_map(void);
 static void pipeline_map_num_to_sp_thread(unsigned int pipe_num);
 static void pipeline_unmap_num_to_sp_thread(unsigned int pipe_num);
@@ -54,9 +38,7 @@ static void ia_css_pipeline_set_zoom_stage(struct ia_css_pipeline *pipeline);
 static void ia_css_pipeline_configure_inout_port(struct ia_css_pipeline *me,
 	bool continuous);
 
-/*******************************************************
-*** Public functions
-********************************************************/
+ 
 void ia_css_pipeline_init(void)
 {
 	pipeline_init_sp_thread_map();
@@ -99,12 +81,7 @@ void ia_css_pipeline_map(unsigned int pipe_num, bool map)
 	IA_CSS_LEAVE_PRIVATE("void");
 }
 
-/* @brief destroy a pipeline
- *
- * @param[in] pipeline
- * @return    None
- *
- */
+ 
 void ia_css_pipeline_destroy(struct ia_css_pipeline *pipeline)
 {
 	assert(pipeline);
@@ -118,13 +95,13 @@ void ia_css_pipeline_destroy(struct ia_css_pipeline *pipeline)
 
 	IA_CSS_LOG("pipe_num = %d", pipeline->pipe_num);
 
-	/* Free the pipeline number */
+	 
 	ia_css_pipeline_clean(pipeline);
 
 	IA_CSS_LEAVE_PRIVATE("void");
 }
 
-/* Run a pipeline and wait till it completes. */
+ 
 void ia_css_pipeline_start(enum ia_css_pipe_id pipe_id,
 			   struct ia_css_pipeline *pipeline)
 {
@@ -146,7 +123,7 @@ void ia_css_pipeline_start(enum ia_css_pipe_id pipe_id,
 	if (!sh_css_sp_is_running()) {
 		ia_css_debug_dtrace(IA_CSS_DEBUG_TRACE,
 				    "ia_css_pipeline_start() error,leaving\n");
-		/* queues are invalid*/
+		 
 		return;
 	}
 	ia_css_bufq_enqueue_psys_event(IA_CSS_PSYS_SW_EVENT_START_STREAM,
@@ -158,10 +135,7 @@ void ia_css_pipeline_start(enum ia_css_pipe_id pipe_id,
 			    "ia_css_pipeline_start() leave: return_void\n");
 }
 
-/*
- * @brief Query the SP thread ID.
- * Refer to "sh_css_internal.h" for details.
- */
+ 
 bool ia_css_pipeline_get_sp_thread_id(unsigned int key, unsigned int *val)
 {
 	IA_CSS_ENTER("key=%d, val=%p", key, val);
@@ -209,14 +183,13 @@ int ia_css_pipeline_request_stop(struct ia_css_pipeline *pipeline)
 			    pipeline);
 	pipeline->stop_requested = true;
 
-	/* Send stop event to the sp*/
-	/* This needs improvement, stop on all the pipes available
-	 * in the stream*/
+	 
+	 
 	ia_css_pipeline_get_sp_thread_id(pipeline->pipe_num, &thread_id);
 	if (!sh_css_sp_is_running()) {
 		ia_css_debug_dtrace(IA_CSS_DEBUG_TRACE,
 				    "ia_css_pipeline_request_stop() leaving\n");
-		/* queues are invalid */
+		 
 		return -EBUSY;
 	}
 	ia_css_bufq_enqueue_psys_event(IA_CSS_PSYS_SW_EVENT_STOP_STREAM,
@@ -257,17 +230,7 @@ void ia_css_pipeline_clean(struct ia_css_pipeline *pipeline)
 	IA_CSS_LEAVE_PRIVATE("void");
 }
 
-/* @brief Add a stage to pipeline.
- *
- * @param       pipeline      Pointer to the pipeline to be added to.
- * @param[in]   stage_desc    The description of the stage
- * @param[out]	stage         The successor of the stage.
- * @return      0 or error code upon error.
- *
- * Add a new stage to a non-NULL pipeline.
- * The stage consists of an ISP binary or firmware and input and
- * output arguments.
-*/
+ 
 int ia_css_pipeline_create_and_add_stage(
     struct ia_css_pipeline *pipeline,
     struct ia_css_pipeline_stage_desc *stage_desc,
@@ -276,7 +239,7 @@ int ia_css_pipeline_create_and_add_stage(
 	struct ia_css_pipeline_stage *last, *new_stage = NULL;
 	int err;
 
-	/* other arguments can be NULL */
+	 
 	assert(pipeline);
 	assert(stage_desc);
 	last = pipeline->stages;
@@ -291,18 +254,16 @@ int ia_css_pipeline_create_and_add_stage(
 		return -EINVAL;
 	}
 
-	/* Find the last stage */
+	 
 	while (last && last->next)
 		last = last->next;
 
-	/* if in_frame is not set, we use the out_frame from the previous
-	 * stage, if no previous stage, it's an error.
-	 */
+	 
 	if ((stage_desc->sp_func == IA_CSS_PIPELINE_NO_FUNC)
 	    && (!stage_desc->in_frame)
 	    && (!stage_desc->firmware)
 	    && (!stage_desc->binary->online)) {
-		/* Do this only for ISP stages*/
+		 
 		if (last && last->args.out_frame[0])
 			stage_desc->in_frame = last->args.out_frame[0];
 
@@ -310,7 +271,7 @@ int ia_css_pipeline_create_and_add_stage(
 			return -EINVAL;
 	}
 
-	/* Create the new stage */
+	 
 	err = pipeline_stage_create(stage_desc, &new_stage);
 	if (err) {
 		ia_css_debug_dtrace(IA_CSS_DEBUG_TRACE,
@@ -323,7 +284,7 @@ int ia_css_pipeline_create_and_add_stage(
 	else
 		pipeline->stages = new_stage;
 
-	/* Output the new stage */
+	 
 	if (stage)
 		*stage = new_stage;
 
@@ -420,7 +381,7 @@ int ia_css_pipeline_get_output_stage(
 			    "ia_css_pipeline_get_output_stage() enter:\n");
 
 	*stage = NULL;
-	/* First find acceleration firmware at end of pipe */
+	 
 	for (s = pipeline->stages; s; s = s->next) {
 		if (s->firmware && s->mode == mode &&
 		    s->firmware->info.isp.sp.enable.output)
@@ -428,17 +389,13 @@ int ia_css_pipeline_get_output_stage(
 	}
 	if (*stage)
 		return 0;
-	/* If no firmware, find binary in pipe */
+	 
 	return ia_css_pipeline_get_stage(pipeline, mode, stage);
 }
 
 bool ia_css_pipeline_has_stopped(struct ia_css_pipeline *pipeline)
 {
-	/* Android compilation files if made an local variable
-	stack size on android is limited to 2k and this structure
-	is around 2.5K, in place of static malloc can be done but
-	if this call is made too often it will lead to fragment memory
-	versus a fixed allocation */
+	 
 	static struct sh_css_sp_group sp_group;
 	unsigned int thread_id;
 	const struct ia_css_fw_info *fw;
@@ -480,22 +437,9 @@ bool ia_css_pipeline_is_mapped(unsigned int key)
 	return ret;
 }
 
-/*******************************************************
-*** Static functions
-********************************************************/
+ 
 
-/* Pipeline:
- * To organize the several different binaries for each type of mode,
- * we use a pipeline. A pipeline contains a number of stages, each with
- * their own binary and frame pointers.
- * When stages are added to a pipeline, output frames that are not passed
- * from outside are automatically allocated.
- * When input frames are not passed from outside, each stage will use the
- * output frame of the previous stage as input (the full resolution output,
- * not the viewfinder output).
- * Pipelines must be cleaned and re-created when settings of the binaries
- * change.
- */
+ 
 static void pipeline_stage_destroy(struct ia_css_pipeline_stage *stage)
 {
 	unsigned int i;
@@ -529,7 +473,7 @@ static void pipeline_map_num_to_sp_thread(unsigned int pipe_num)
 	unsigned int i;
 	bool found_sp_thread = false;
 
-	/* pipe is not mapped to any thread */
+	 
 	assert(pipeline_num_to_sp_thread_map[pipe_num]
 	       == (unsigned int)PIPELINE_NUM_UNMAPPED);
 
@@ -544,12 +488,8 @@ static void pipeline_map_num_to_sp_thread(unsigned int pipe_num)
 		}
 	}
 
-	/* Make sure a mapping is found */
-	/* I could do:
-		assert(i < SH_CSS_MAX_SP_THREADS);
-
-		But the below is more descriptive.
-	*/
+	 
+	 
 	assert(found_sp_thread);
 }
 
@@ -577,7 +517,7 @@ static int pipeline_stage_create(
 	const struct ia_css_fw_info *firmware;
 	unsigned int i;
 
-	/* Verify input parameters*/
+	 
 	if (!(stage_desc->in_frame) && !(stage_desc->firmware)
 	    && (stage_desc->binary) && !(stage_desc->binary->online)) {
 		err = -EINVAL;
@@ -630,9 +570,7 @@ static int pipeline_stage_create(
 			stage->out_frame_allocated[i] = true;
 		}
 	}
-	/* VF frame is not needed in case of need_pp
-	   However, the capture binary needs a vf frame to write to.
-	 */
+	 
 	if (!vf_frame) {
 		if ((binary && binary->vf_frame_info.res.width) ||
 		    (firmware && firmware->info.isp.sp.enable.vf_veceven)
@@ -645,7 +583,7 @@ static int pipeline_stage_create(
 		}
 	} else if (vf_frame && binary && binary->vf_frame_info.res.width
 		   && !firmware) {
-		/* only mark as allocated if buffer pointer available */
+		 
 		if (vf_frame->data != mmgr_NULL)
 			stage->vf_frame_allocated = true;
 	}
@@ -699,23 +637,23 @@ static void ia_css_pipeline_set_zoom_stage(struct ia_css_pipeline *pipeline)
 
 	assert(pipeline);
 	if (pipeline->pipe_id == IA_CSS_PIPE_ID_PREVIEW) {
-		/* in preview pipeline, vf_pp stage should do zoom */
+		 
 		err = ia_css_pipeline_get_stage(pipeline, IA_CSS_BINARY_MODE_VF_PP, &stage);
 		if (!err)
 			stage->enable_zoom = true;
 	} else if (pipeline->pipe_id == IA_CSS_PIPE_ID_CAPTURE) {
-		/* in capture pipeline, capture_pp stage should do zoom */
+		 
 		err = ia_css_pipeline_get_stage(pipeline, IA_CSS_BINARY_MODE_CAPTURE_PP,
 						&stage);
 		if (!err)
 			stage->enable_zoom = true;
 	} else if (pipeline->pipe_id == IA_CSS_PIPE_ID_VIDEO) {
-		/* in video pipeline, video stage should do zoom */
+		 
 		err = ia_css_pipeline_get_stage(pipeline, IA_CSS_BINARY_MODE_VIDEO, &stage);
 		if (!err)
 			stage->enable_zoom = true;
 	} else if (pipeline->pipe_id == IA_CSS_PIPE_ID_YUVPP) {
-		/* in yuvpp pipeline, first yuv_scaler stage should do zoom */
+		 
 		err = ia_css_pipeline_get_stage(pipeline, IA_CSS_BINARY_MODE_CAPTURE_PP,
 						&stage);
 		if (!err)
@@ -740,7 +678,7 @@ ia_css_pipeline_configure_inout_port(struct ia_css_pipeline *me,
 					    (uint8_t)SH_CSS_PORT_OUTPUT,
 					    (uint8_t)SH_CSS_HOST_TYPE, 1);
 		break;
-	case IA_CSS_PIPE_ID_COPY: /*Copy pipe ports configured to "offline" mode*/
+	case IA_CSS_PIPE_ID_COPY:  
 		SH_CSS_PIPE_PORT_CONFIG_SET(me->inout_port_config,
 					    (uint8_t)SH_CSS_PORT_INPUT,
 					    (uint8_t)SH_CSS_HOST_TYPE, 1);

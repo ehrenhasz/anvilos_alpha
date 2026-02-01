@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2019-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef ATH12K_DBRING_H
 #define ATH12K_DBRING_H
@@ -42,7 +39,7 @@ struct ath12k_dbring_cap {
 struct ath12k_dbring {
 	struct dp_srng refill_srng;
 	struct idr bufs_idr;
-	/* Protects bufs_idr */
+	 
 	spinlock_t idr_lock;
 	dma_addr_t tp_addr;
 	dma_addr_t hp_addr;
@@ -77,4 +74,4 @@ int ath12k_dbring_get_cap(struct ath12k_base *ab,
 			  struct ath12k_dbring_cap *db_cap);
 void ath12k_dbring_srng_cleanup(struct ath12k *ar, struct ath12k_dbring *ring);
 void ath12k_dbring_buf_cleanup(struct ath12k *ar, struct ath12k_dbring *ring);
-#endif /* ATH12K_DBRING_H */
+#endif  

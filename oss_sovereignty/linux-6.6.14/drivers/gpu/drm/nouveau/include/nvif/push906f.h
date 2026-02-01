@@ -5,16 +5,16 @@
 #include <nvhw/class/cl906f.h>
 
 #ifndef PUSH906F_SUBC
-// Host methods
+
 #define PUSH906F_SUBC_NV906F	0
 
-// Twod
+
 #define PUSH906F_SUBC_NV902D	3
 
-// MemoryToMemoryFormat
+
 #define PUSH906F_SUBC_NV9039	4
 
-// DmaCopy
+
 #define PUSH906F_SUBC_NV90B5	4
 #define PUSH906F_SUBC_NVA0B5	4
 #endif

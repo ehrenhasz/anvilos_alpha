@@ -1,8 +1,4 @@
-/*
- * ds1307.h - platform_data for the ds1307 (and variants) rtc driver
- * (C) Copyright 2012 by Wolfram Sang, Pengutronix e.K.
- * same license as the driver
- */
+ 
 
 #ifndef _LINUX_DS1307_H
 #define _LINUX_DS1307_H
@@ -19,4 +15,4 @@ struct ds1307_platform_data {
 	u8 trickle_charger_setup;
 };
 
-#endif /* _LINUX_DS1307_H */
+#endif  

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef _PKEYS_X86_H
 #define _PKEYS_X86_H
@@ -24,7 +24,7 @@
 #endif
 
 #define NR_PKEYS		16
-#define NR_RESERVED_PKEYS	2 /* pkey-0 and exec-only-pkey */
+#define NR_RESERVED_PKEYS	2  
 #define PKEY_BITS_PER_PKEY	2
 #define HPAGE_SIZE		(1UL<<21)
 #define PAGE_SIZE		4096
@@ -32,7 +32,7 @@
 
 static inline void __page_o_noops(void)
 {
-	/* 8-bytes of instruction * 512 bytes = 1 page */
+	 
 	asm(".rept 512 ; nopl 0x7eeeeeee(%eax) ; .endr");
 }
 
@@ -62,9 +62,9 @@ static inline void __write_pkey_reg(u64 pkey_reg)
 	assert(pkey_reg == __read_pkey_reg());
 }
 
-/* Intel-defined CPU features, CPUID level 0x00000007:0 (ecx) */
-#define X86_FEATURE_PKU        (1<<3) /* Protection Keys for Userspace */
-#define X86_FEATURE_OSPKE      (1<<4) /* OS Protection Keys Enable */
+ 
+#define X86_FEATURE_PKU        (1<<3)  
+#define X86_FEATURE_OSPKE      (1<<4)  
 
 static inline int cpu_has_pkeys(void)
 {
@@ -118,7 +118,7 @@ int pkey_reg_xstate_offset(void)
 	unsigned long XSTATE_CPUID = 0xd;
 	int leaf;
 
-	/* assume that XSTATE_PKEY is set in XCR0 */
+	 
 	leaf = XSTATE_PKEY_BIT;
 	{
 		__cpuid_count(XSTATE_CPUID, leaf, eax, ebx, ecx, edx);
@@ -156,4 +156,4 @@ void *malloc_pkey_with_mprotect_subpage(long size, int prot, u16 pkey)
 	return PTR_ERR_ENOTSUP;
 }
 
-#endif /* _PKEYS_X86_H */
+#endif  

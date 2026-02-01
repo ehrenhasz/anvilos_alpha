@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
@@ -9,10 +9,10 @@ SEC("fmod_ret/hid_bpf_device_event")
 int BPF_PROG(hid_y_event, struct hid_bpf_ctx *hctx)
 {
 	s16 y;
-	__u8 *data = hid_bpf_get_data(hctx, 0 /* offset */, 9 /* size */);
+	__u8 *data = hid_bpf_get_data(hctx, 0  , 9  );
 
 	if (!data)
-		return 0; /* EPERM check */
+		return 0;  
 
 	bpf_printk("event: size: %d", hctx->size);
 	bpf_printk("incoming event: %02x %02x %02x",
@@ -55,10 +55,10 @@ SEC("fmod_ret/hid_bpf_device_event")
 int BPF_PROG(hid_x_event, struct hid_bpf_ctx *hctx)
 {
 	s16 x;
-	__u8 *data = hid_bpf_get_data(hctx, 0 /* offset */, 9 /* size */);
+	__u8 *data = hid_bpf_get_data(hctx, 0  , 9  );
 
 	if (!data)
-		return 0; /* EPERM check */
+		return 0;  
 
 	x = data[1] | (data[2] << 8);
 
@@ -72,10 +72,10 @@ int BPF_PROG(hid_x_event, struct hid_bpf_ctx *hctx)
 SEC("fmod_ret/hid_bpf_rdesc_fixup")
 int BPF_PROG(hid_rdesc_fixup, struct hid_bpf_ctx *hctx)
 {
-	__u8 *data = hid_bpf_get_data(hctx, 0 /* offset */, 4096 /* size */);
+	__u8 *data = hid_bpf_get_data(hctx, 0  , 4096  );
 
 	if (!data)
-		return 0; /* EPERM check */
+		return 0;  
 
 	bpf_printk("rdesc: %02x %02x %02x",
 		   data[0],
@@ -90,19 +90,7 @@ int BPF_PROG(hid_rdesc_fixup, struct hid_bpf_ctx *hctx)
 		   data[7],
 		   data[8]);
 
-	/*
-	 * The original report descriptor contains:
-	 *
-	 * 0x05, 0x01,                    //   Usage Page (Generic Desktop)      30
-	 * 0x16, 0x01, 0x80,              //   Logical Minimum (-32767)          32
-	 * 0x26, 0xff, 0x7f,              //   Logical Maximum (32767)           35
-	 * 0x09, 0x30,                    //   Usage (X)                         38
-	 * 0x09, 0x31,                    //   Usage (Y)                         40
-	 *
-	 * So byte 39 contains Usage X and byte 41 Usage Y.
-	 *
-	 * We simply swap the axes here.
-	 */
+	 
 	data[39] = 0x31;
 	data[41] = 0x30;
 

@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Ingenic JZ4760 CODEC driver
-//
-// Copyright (C) 2021, Christophe Branchereau <cbranchereau@gmail.com>
-// Copyright (C) 2021, Paul Cercueil <paul@crapouillou.net>
+
+
+
+
+
+
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -22,16 +22,16 @@
 #define ICDC_RGADW_OFFSET		0x00
 #define ICDC_RGDATA_OFFSET		0x04
 
-/* ICDC internal register access control register(RGADW) */
+ 
 #define ICDC_RGADW_RGWR			BIT(16)
 #define	ICDC_RGADW_RGADDR_MASK		GENMASK(14, 8)
 #define	ICDC_RGADW_RGDIN_MASK		GENMASK(7, 0)
 
-/* ICDC internal register data output register (RGDATA)*/
+ 
 #define ICDC_RGDATA_IRQ			BIT(8)
 #define ICDC_RGDATA_RGDOUT_MASK		GENMASK(7, 0)
 
-/* Internal register space, accessed through regmap */
+ 
 enum {
 	JZ4760_CODEC_REG_SR,
 	JZ4760_CODEC_REG_AICR,
@@ -158,7 +158,7 @@ enum {
 #define REG_MIX2_DAC_MIX_MASK		GENMASK(7, 6)
 #define REG_MIX2_GOMIX_MASK		GENMASK(4, 0)
 
-/* codec private data */
+ 
 struct jz_codec {
 	struct device *dev;
 	struct regmap *regmap;
@@ -174,7 +174,7 @@ static int jz4760_codec_set_bias_level(struct snd_soc_component *codec,
 
 	switch (level) {
 	case SND_SOC_BIAS_PREPARE:
-		/* Reset all interrupt flags. */
+		 
 		regmap_write(regmap, JZ4760_CODEC_REG_IFR, REG_IFR_ALL_MASK);
 
 		regmap_clear_bits(regmap, JZ4760_CODEC_REG_PMR1, REG_PMR1_SB);
@@ -200,11 +200,7 @@ static int jz4760_codec_startup(struct snd_pcm_substream *substream,
 	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(codec);
 	int ret = 0;
 
-	/*
-	 * SYSCLK output from the codec to the AIC is required to keep the
-	 * DMA transfer going during playback when all audible outputs have
-	 * been disabled.
-	 */
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 		ret = snd_soc_dapm_force_enable_pin(dapm, "SYSCLK");
 	return ret;
@@ -237,7 +233,7 @@ static int jz4760_codec_pcm_trigger(struct snd_pcm_substream *substream,
 	case SNDRV_PCM_TRIGGER_STOP:
 	case SNDRV_PCM_TRIGGER_SUSPEND:
 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
-		/* do nothing */
+		 
 		break;
 	default:
 		ret = -EINVAL;
@@ -273,7 +269,7 @@ static int jz4760_codec_mute_stream(struct snd_soc_dai *dai, int mute, int direc
 			return err;
 		}
 
-		/* clear GUP/GDO flag */
+		 
 		regmap_write(jz_codec->regmap, JZ4760_CODEC_REG_IFR, gain_bit);
 	}
 
@@ -282,16 +278,16 @@ static int jz4760_codec_mute_stream(struct snd_soc_dai *dai, int mute, int direc
 	return 0;
 }
 
-/* unit: 0.01dB */
+ 
 static const DECLARE_TLV_DB_MINMAX_MUTE(dac_tlv, -3100, 100);
 static const DECLARE_TLV_DB_SCALE(adc_tlv, 0, 100, 0);
 static const DECLARE_TLV_DB_MINMAX(out_tlv, -2500, 100);
 static const DECLARE_TLV_DB_SCALE(linein_tlv, -2500, 100, 0);
 static const DECLARE_TLV_DB_MINMAX(mixer_tlv, -3100, 0);
 
-/* Unconditional controls. */
+ 
 static const struct snd_kcontrol_new jz4760_codec_snd_controls[] = {
-	/* record gain control */
+	 
 	SOC_DOUBLE_R_TLV("PCM Capture Volume",
 			 JZ4760_CODEC_REG_GCR9, JZ4760_CODEC_REG_GCR8,
 			 REG_GCR_GAIN_OFFSET, REG_GCR_GAIN_MAX, 0, adc_tlv),
@@ -357,13 +353,13 @@ static int hpout_event(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		/* unmute HP */
+		 
 		regmap_clear_bits(jz_codec->regmap, JZ4760_CODEC_REG_CR1,
 				  REG_CR1_HP_MUTE);
 		break;
 
 	case SND_SOC_DAPM_POST_PMU:
-		/* wait for ramp-up complete (RUP) */
+		 
 		err = regmap_read_poll_timeout(jz_codec->regmap,
 					       JZ4760_CODEC_REG_IFR,
 					       val, val & REG_IFR_RUP,
@@ -373,14 +369,14 @@ static int hpout_event(struct snd_soc_dapm_widget *w,
 			return err;
 		}
 
-		/* clear RUP flag */
+		 
 		regmap_set_bits(jz_codec->regmap, JZ4760_CODEC_REG_IFR,
 				REG_IFR_RUP);
 
 		break;
 
 	case SND_SOC_DAPM_POST_PMD:
-		/* mute HP */
+		 
 		regmap_set_bits(jz_codec->regmap, JZ4760_CODEC_REG_CR1,
 				REG_CR1_HP_MUTE);
 
@@ -393,7 +389,7 @@ static int hpout_event(struct snd_soc_dapm_widget *w,
 			return err;
 		}
 
-		/* clear RDO flag */
+		 
 		regmap_set_bits(jz_codec->regmap, JZ4760_CODEC_REG_IFR,
 				REG_IFR_RDO);
 
@@ -521,7 +517,7 @@ static const struct snd_soc_dapm_widget jz4760_codec_dapm_widgets[] = {
 	SND_SOC_DAPM_OUTPUT("SYSCLK"),
 };
 
-/* Unconditional routes. */
+ 
 static const struct snd_soc_dapm_route jz4760_codec_dapm_routes[] = {
 	{ "Mic 1", NULL, "MIC1P" },
 	{ "Mic Diff", NULL, "MIC1N" },
@@ -575,50 +571,50 @@ static void jz4760_codec_codec_init_regs(struct snd_soc_component *codec)
 	struct jz_codec *jz_codec = snd_soc_component_get_drvdata(codec);
 	struct regmap *regmap = jz_codec->regmap;
 
-	/* Collect updates for later sending. */
+	 
 	regcache_cache_only(regmap, true);
 
-	/* default Amp output to PCM */
+	 
 	regmap_set_bits(regmap, JZ4760_CODEC_REG_CR1, REG_CR1_OUTSEL_MASK);
 
-	/* Disable stereo mic */
+	 
 	regmap_clear_bits(regmap, JZ4760_CODEC_REG_CR3,
 			  BIT(REG_CR3_MICSTEREO_OFFSET));
 
-	/* Set mic 1 as default source for ADC */
+	 
 	regmap_clear_bits(regmap, JZ4760_CODEC_REG_CR3,
 			  REG_CR3_ADC_INSEL_MASK);
 
-	/* ADC/DAC: serial + i2s */
+	 
 	regmap_set_bits(regmap, JZ4760_CODEC_REG_AICR,
 			REG_AICR_ADC_SERIAL | REG_AICR_ADC_I2S |
 			REG_AICR_DAC_SERIAL | REG_AICR_DAC_I2S);
 
-	/* The generated IRQ is a high level */
+	 
 	regmap_clear_bits(regmap, JZ4760_CODEC_REG_ICR, REG_ICR_INT_FORM_MASK);
 	regmap_update_bits(regmap, JZ4760_CODEC_REG_ICR, REG_ICR_ALL_MASK,
 			   REG_ICR_JACK_MASK | REG_ICR_RUP_MASK |
 			   REG_ICR_RDO_MASK  | REG_ICR_GUP_MASK |
 			   REG_ICR_GDO_MASK);
 
-	/* 12M oscillator */
+	 
 	regmap_clear_bits(regmap, JZ4760_CODEC_REG_CCR1, REG_CCR1_CRYSTAL_MASK);
 
-	/* 0: 16ohm/220uF, 1: 10kohm/1uF */
+	 
 	regmap_clear_bits(regmap, JZ4760_CODEC_REG_CR1, REG_CR1_HP_LOAD);
 
-	/* default to NOMAD */
+	 
 	regmap_set_bits(jz_codec->regmap, JZ4760_CODEC_REG_CR2,
 			REG_CR2_DAC_NOMAD);
 
-	/* disable automatic gain */
+	 
 	regmap_clear_bits(regmap, JZ4760_CODEC_REG_AGC1, REG_AGC1_EN);
 
-	/* Independent L/R DAC gain control */
+	 
 	regmap_clear_bits(regmap, JZ4760_CODEC_REG_GCR5,
 			  REG_GCR_RL);
 
-	/* Send collected updates. */
+	 
 	regcache_cache_only(regmap, false);
 	regcache_sync(regmap);
 }
@@ -786,7 +782,7 @@ static int jz4760_codec_reg_read(void *context, unsigned int reg,
 	tmp |= FIELD_PREP(ICDC_RGADW_RGADDR_MASK, reg);
 	writel(tmp, codec->base + ICDC_RGADW_OFFSET);
 
-	/* wait 6+ cycles */
+	 
 	for (i = 0; i < 6; i++)
 		*val = readl(codec->base + ICDC_RGDATA_OFFSET) &
 			ICDC_RGDATA_RGDOUT_MASK;
@@ -876,7 +872,7 @@ static int jz4760_codec_probe(struct platform_device *pdev)
 
 static const struct of_device_id jz4760_codec_of_matches[] = {
 	{ .compatible = "ingenic,jz4760-codec", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, jz4760_codec_of_matches);
 

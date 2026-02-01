@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/errno.h>
 #include <linux/gfp.h>
 #include <linux/kernel.h>
@@ -18,12 +18,7 @@ static unsigned int list_count;
 
 static struct resource *target_resource;
 
-/*
- * If arch is not happy with system "iomem_resource" being used for
- * the region allocation it can provide it's own view by creating specific
- * Xen resource with unused regions of guest physical address space provided
- * by the hypervisor.
- */
+ 
 int __weak __init arch_xen_unpopulated_init(struct resource **res)
 {
 	*res = &iomem_resource;
@@ -57,10 +52,7 @@ static int fill_list(unsigned int nr_pages)
 		goto err_resource;
 	}
 
-	/*
-	 * Reserve the region previously allocated from Xen resource to avoid
-	 * re-using it by someone else.
-	 */
+	 
 	if (target_resource != &iomem_resource) {
 		tmp_res = kzalloc(sizeof(*tmp_res), GFP_KERNEL);
 		if (!tmp_res) {
@@ -96,15 +88,7 @@ static int fill_list(unsigned int nr_pages)
 	pgmap->owner = res;
 
 #ifdef CONFIG_XEN_HAVE_PVMMU
-        /*
-         * memremap will build page tables for the new memory so
-         * the p2m must contain invalid entries so the correct
-         * non-present PTEs will be written.
-         *
-         * If a failure occurs, the original (identity) p2m entries
-         * are not restored since this region is now known not to
-         * conflict with any devices.
-         */
+         
 	if (!xen_feature(XENFEAT_auto_translated_physmap)) {
 		xen_pfn_t pfn = PFN_DOWN(res->start);
 
@@ -149,22 +133,13 @@ err_resource:
 	return ret;
 }
 
-/**
- * xen_alloc_unpopulated_pages - alloc unpopulated pages
- * @nr_pages: Number of pages
- * @pages: pages returned
- * @return 0 on success, error otherwise
- */
+ 
 int xen_alloc_unpopulated_pages(unsigned int nr_pages, struct page **pages)
 {
 	unsigned int i;
 	int ret = 0;
 
-	/*
-	 * Fallback to default behavior if we do not have any suitable resource
-	 * to allocate required region from and as the result we won't be able to
-	 * construct pages.
-	 */
+	 
 	if (!target_resource)
 		return xen_alloc_ballooned_pages(nr_pages, pages);
 
@@ -206,11 +181,7 @@ out:
 }
 EXPORT_SYMBOL(xen_alloc_unpopulated_pages);
 
-/**
- * xen_free_unpopulated_pages - return unpopulated pages
- * @nr_pages: Number of pages
- * @pages: pages to return
- */
+ 
 void xen_free_unpopulated_pages(unsigned int nr_pages, struct page **pages)
 {
 	unsigned int i;

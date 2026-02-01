@@ -1,35 +1,6 @@
-/****************************************************************************
- * Copyright 2018-2020,2021 Thomas E. Dickey                                *
- * Copyright 1998-2012,2013 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Thomas E. Dickey        1997-on                                 *
- ****************************************************************************/
+ 
 
 #include <curses.priv.h>
 #include <ctype.h>
@@ -46,10 +17,7 @@ typedef enum {
 #define VA_FLOAT(type) fval = va_arg(ap, type)
 #define VA_POINT(type) pval = (void *)va_arg(ap, type)
 
-/*
- * Scan a variable-argument list for printf to determine the number of
- * characters that would be emitted.
- */
+ 
 static int
 _nc_printf_length(const char *fmt, va_list ap)
 {
@@ -74,7 +42,7 @@ _nc_printf_length(const char *fmt, va_list ap)
 	if (*fmt == '%') {
 	    static char dummy[] = "";
 	    PRINTF state = Flags;
-	    char *pval = dummy;	/* avoid const-cast */
+	    char *pval = dummy;	 
 	    double fval = 0.0;
 	    int done = FALSE;
 	    int ival = 0;
@@ -124,17 +92,17 @@ _nc_printf_length(const char *fmt, va_list ap)
 		} else if (isalpha(UChar(*fmt))) {
 		    done = TRUE;
 		    switch (*fmt) {
-		    case 'Z':	/* FALLTHRU */
-		    case 'h':	/* FALLTHRU */
-		    case 'l':	/* FALLTHRU */
+		    case 'Z':	 
+		    case 'h':	 
+		    case 'l':	 
 			done = FALSE;
 			type = *fmt;
 			break;
-		    case 'i':	/* FALLTHRU */
-		    case 'd':	/* FALLTHRU */
-		    case 'u':	/* FALLTHRU */
-		    case 'x':	/* FALLTHRU */
-		    case 'X':	/* FALLTHRU */
+		    case 'i':	 
+		    case 'd':	 
+		    case 'u':	 
+		    case 'x':	 
+		    case 'X':	 
 			if (type == 'l')
 			    VA_INTGR(long);
 			else if (type == 'Z')
@@ -143,11 +111,11 @@ _nc_printf_length(const char *fmt, va_list ap)
 			    VA_INTGR(int);
 			used = 'i';
 			break;
-		    case 'f':	/* FALLTHRU */
-		    case 'e':	/* FALLTHRU */
-		    case 'E':	/* FALLTHRU */
-		    case 'g':	/* FALLTHRU */
-		    case 'G':	/* FALLTHRU */
+		    case 'f':	 
+		    case 'e':	 
+		    case 'E':	 
+		    case 'g':	 
+		    case 'G':	 
 			VA_FLOAT(double);
 			used = 'f';
 			break;
@@ -215,9 +183,7 @@ _nc_printf_length(const char *fmt, va_list ap)
 #define my_buffer _nc_globals.safeprint_buf
 #define my_length _nc_globals.safeprint_used
 
-/*
- * Wrapper for vsprintf that allocates a buffer big enough to hold the result.
- */
+ 
 NCURSES_EXPORT(char *)
 NCURSES_SP_NAME(_nc_printf_string) (NCURSES_SP_DCLx
 				    const char *fmt,
@@ -262,7 +228,7 @@ NCURSES_SP_NAME(_nc_printf_string) (NCURSES_SP_DCLx
 
 	if (my_buffer != NULL) {
 # if HAVE_VSNPRINTF
-	    /* SUSv2, 1997 */
+	     
 	    int used;
 	    while ((used = vsnprintf(my_buffer, my_length, fmt, ap))
 		   >= (int) my_length) {
@@ -270,13 +236,13 @@ NCURSES_SP_NAME(_nc_printf_string) (NCURSES_SP_DCLx
 		my_buffer = typeRealloc(char, my_length, my_buffer);
 	    }
 # else
-	    /* ISO/ANSI C, 1989 */
+	     
 	    vsprintf(my_buffer, fmt, ap);
 # endif
 	    result = my_buffer;
 	}
 #endif
-    } else if (my_buffer != NULL) {	/* see _nc_freeall() */
+    } else if (my_buffer != NULL) {	 
 	free(my_buffer);
 	my_buffer = NULL;
 	my_length = 0;

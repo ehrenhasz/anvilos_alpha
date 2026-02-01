@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_DDI_H__
 #define __INTEL_DDI_H__
@@ -78,4 +76,4 @@ void intel_ddi_update_active_dpll(struct intel_atomic_state *state,
 				  struct intel_encoder *encoder,
 				  struct intel_crtc *crtc);
 
-#endif /* __INTEL_DDI_H__ */
+#endif  

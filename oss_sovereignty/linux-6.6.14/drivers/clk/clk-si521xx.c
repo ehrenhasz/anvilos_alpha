@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Skyworks Si521xx PCIe clock generator driver
- *
- * The following series can be supported:
- *   - Si52144 - 4x DIFF
- *   - Si52146 - 6x DIFF
- *   - Si52147 - 9x DIFF
- * Currently tested:
- *   - Si52144
- *
- * Copyright (C) 2022 Marek Vasut <marex@denx.de>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitrev.h>
@@ -21,7 +10,7 @@
 #include <linux/of.h>
 #include <linux/regmap.h>
 
-/* OE1 and OE2 register */
+ 
 #define SI521XX_REG_OE(n)			(((n) & 0x1) + 1)
 #define SI521XX_REG_ID				0x3
 #define SI521XX_REG_ID_PROG			GENMASK(7, 4)
@@ -37,16 +26,16 @@
 #define SI521XX_REG_DA_AMP(UV)			\
 	FIELD_PREP(SI521XX_REG_DA_AMP_MASK,	\
 		   ((UV) - SI521XX_REG_DA_AMP_MIN) / SI521XX_REG_DA_AMP_STEP)
-#define SI521XX_REG_DA_UNKNOWN			BIT(3)	/* Always set */
+#define SI521XX_REG_DA_UNKNOWN			BIT(3)	 
 
-/* Count of populated OE bits in control register ref, 1 and 2 */
+ 
 #define SI521XX_OE_MAP(cr1, cr2)	(((cr2) << 8) | (cr1))
 #define SI521XX_OE_MAP_GET_OE(oe, map)	(((map) >> (((oe) - 1) * 8)) & 0xff)
 
 #define SI521XX_DIFF_MULT	4
 #define SI521XX_DIFF_DIV	1
 
-/* Supported Skyworks Si521xx models. */
+ 
 enum si521xx_model {
 	SI52144 = 0x44,
 	SI52146 = 0x46,
@@ -70,9 +59,7 @@ struct si521xx {
 	u8			pll_amplitude;
 };
 
-/*
- * Si521xx i2c regmap
- */
+ 
 static const struct regmap_range si521xx_readable_ranges[] = {
 	regmap_reg_range(SI521XX_REG_OE(0), SI521XX_REG_DA),
 };
@@ -134,11 +121,7 @@ static int si521xx_regmap_i2c_read(void *context, unsigned int reg,
 	if (ret != 2)
 		return -EIO;
 
-	/*
-	 * Byte 0 is transfer length, which is always 1 due
-	 * to BCP register programming to 1 in si521xx_probe(),
-	 * ignore it and use data from Byte 1.
-	 */
+	 
 	*val = rxdata[1];
 	return 0;
 }
@@ -178,11 +161,7 @@ static long si521xx_diff_round_rate(struct clk_hw *hw, unsigned long rate,
 static int si521xx_diff_set_rate(struct clk_hw *hw, unsigned long rate,
 				 unsigned long parent_rate)
 {
-	/*
-	 * We must report success but we can do so unconditionally because
-	 * si521xx_diff_round_rate returns values that ensure this call is a
-	 * nop.
-	 */
+	 
 
 	return 0;
 }
@@ -222,10 +201,10 @@ static int si521xx_get_common_config(struct si521xx *si)
 	unsigned int amp;
 	int ret;
 
-	/* Set defaults */
+	 
 	si->pll_amplitude = SI521XX_REG_DA_AMP(SI521XX_REG_DA_AMP_DEFAULT);
 
-	/* Output clock amplitude */
+	 
 	ret = of_property_read_u32(np, "skyworks,out-amplitude-microvolt",
 				   &amp);
 	if (!ret) {
@@ -242,7 +221,7 @@ static int si521xx_get_common_config(struct si521xx *si)
 
 static void si521xx_update_config(struct si521xx *si)
 {
-	/* If amplitude is non-default, update it. */
+	 
 	if (si->pll_amplitude == SI521XX_REG_DA_AMP(SI521XX_REG_DA_AMP_DEFAULT))
 		return;
 
@@ -297,7 +276,7 @@ static int si521xx_probe(struct i2c_client *client)
 	i2c_set_clientdata(client, si);
 	si->client = client;
 
-	/* Fetch common configuration from DT (if specified) */
+	 
 	ret = si521xx_get_common_config(si);
 	if (ret)
 		return ret;
@@ -308,12 +287,12 @@ static int si521xx_probe(struct i2c_client *client)
 		return dev_err_probe(&client->dev, PTR_ERR(si->regmap),
 				     "Failed to allocate register map\n");
 
-	/* Always read back 1 Byte via I2C */
+	 
 	ret = i2c_master_send(client, data, ARRAY_SIZE(data));
 	if (ret < 0)
 		return ret;
 
-	/* Register clock */
+	 
 	for (i = 0; i < hweight16(chip_info); i++) {
 		memset(&init, 0, sizeof(init));
 		snprintf(name, sizeof(name), "DIFF%d", i);

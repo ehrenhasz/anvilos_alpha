@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * rt298.h  --  RT298 ALSA SoC audio driver
- *
- * Copyright 2011 Realtek Microelectronics
- * Author: Johnny Hsu <johnnyhsu@realtek.com>
- */
+ 
+ 
 
 #ifndef __RT298_H__
 #define __RT298_H__
@@ -41,7 +36,7 @@
 
 #define RT298_MUTE_SFT					7
 
-/* Verb commands */
+ 
 #define RT298_GET_PARAM(NID, PARAM) VERB_CMD(AC_VERB_PARAMETERS, NID, PARAM)
 #define RT298_SET_POWER(NID) VERB_CMD(AC_VERB_SET_POWER_STATE, NID, 0)
 #define RT298_SET_AUDIO_POWER RT298_SET_POWER(RT298_AUDIO_FUNCTION_GROUP)
@@ -129,7 +124,7 @@
 #define RT298_UNSOLICITED_MIC1\
 	VERB_CMD(AC_VERB_SET_UNSOLICITED_ENABLE, RT298_MIC1, 0)
 
-/* Index registers */
+ 
 #define RT298_A_BIAS_CTRL1	0x01
 #define RT298_A_BIAS_CTRL2	0x02
 #define RT298_POWER_CTRL1	0x03
@@ -156,38 +151,38 @@
 #define RT298_DEPOP_CTRL4	0x69
 #define RT298_IRQ_FLAG_CTRL	0x7c
 
-/* SPDIF (0x06) */
+ 
 #define RT298_SPDIF_SEL_SFT	0
 #define RT298_SPDIF_SEL_PCM0	0
 #define RT298_SPDIF_SEL_PCM1	1
 #define RT298_SPDIF_SEL_SPOUT	2
 #define RT298_SPDIF_SEL_PP	3
 
-/* RECMIX (0x0b) */
+ 
 #define RT298_M_REC_BEEP_SFT	0
 #define RT298_M_REC_LINE1_SFT	1
 #define RT298_M_REC_MIC1_SFT	2
 #define RT298_M_REC_I2S_SFT	3
 
-/* Front (0x0c) */
+ 
 #define RT298_M_FRONT_DAC_SFT	0
 #define RT298_M_FRONT_REC_SFT	1
 
-/* SPK-OUT (0x14) */
+ 
 #define RT298_M_SPK_MUX_SFT	14
 #define RT298_SPK_SEL_MASK	0x1
 #define RT298_SPK_SEL_SFT	0
 #define RT298_SPK_SEL_F		0
 #define RT298_SPK_SEL_S		1
 
-/* HP-OUT (0x21) */
+ 
 #define RT298_M_HP_MUX_SFT	14
 #define RT298_HP_SEL_MASK	0x1
 #define RT298_HP_SEL_SFT	0
 #define RT298_HP_SEL_F		0
 #define RT298_HP_SEL_S		1
 
-/* ADC (0x22) (0x23) */
+ 
 #define RT298_ADC_SEL_MASK	0x7
 #define RT298_ADC_SEL_SFT	0
 #define RT298_ADC_SEL_SURR	0
@@ -207,5 +202,5 @@ enum {
 	RT298_AIFS,
 };
 
-#endif /* __RT298_H__ */
+#endif  
 

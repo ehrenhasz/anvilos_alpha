@@ -1,11 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  QLogic FCoE Offload Driver
- *  Copyright (c) 2016-2018 Cavium Inc.
- */
+
+ 
 #include "qedf.h"
 
-/* It's assumed that the lock is held when calling this function. */
+ 
 static int qedf_initiate_els(struct qedf_rport *fcport, unsigned int op,
 	void *data, uint32_t data_len,
 	void (*cb_func)(struct qedf_els_cb_arg *cb_arg),
@@ -74,7 +71,7 @@ static int qedf_initiate_els(struct qedf_rport *fcport, unsigned int op,
 	els_req->cb_arg = cb_arg;
 	els_req->data_xfer_len = data_len;
 
-	/* Record which cpu this request is associated with */
+	 
 	els_req->cpu = smp_processor_id();
 
 	mp_req = (struct qedf_mp_req *)&(els_req->mp_req);
@@ -87,7 +84,7 @@ static int qedf_initiate_els(struct qedf_rport *fcport, unsigned int op,
 		rc = 0;
 	}
 
-	/* Fill ELS Payload */
+	 
 	if ((op >= ELS_LS_RJT) && (op <= ELS_AUTH_ELS)) {
 		memcpy(mp_req->req_buf, data, data_len);
 	} else {
@@ -101,7 +98,7 @@ static int qedf_initiate_els(struct qedf_rport *fcport, unsigned int op,
 	if (rc)
 		goto els_err;
 
-	/* Fill FC header */
+	 
 	fc_hdr = &(mp_req->req_fc_hdr);
 
 	did = fcport->rdata->ids.port_id;
@@ -111,7 +108,7 @@ static int qedf_initiate_els(struct qedf_rport *fcport, unsigned int op,
 			   FC_TYPE_ELS, FC_FC_FIRST_SEQ | FC_FC_END_SEQ |
 			   FC_FC_SEQ_INIT, 0);
 
-	/* Obtain exchange id */
+	 
 	xid = els_req->xid;
 
 	spin_lock_irqsave(&fcport->rport_lock, flags);
@@ -120,15 +117,15 @@ static int qedf_initiate_els(struct qedf_rport *fcport, unsigned int op,
 	sqe = &fcport->sq[sqe_idx];
 	memset(sqe, 0, sizeof(struct fcoe_wqe));
 
-	/* Initialize task context for this IO request */
+	 
 	task = qedf_get_task_mem(&qedf->tasks, xid);
 	qedf_init_mp_task(els_req, task, sqe);
 
-	/* Put timer on els request */
+	 
 	if (timer_msec)
 		qedf_cmd_timer_set(qedf, els_req, timer_msec);
 
-	/* Ring doorbell */
+	 
 	QEDF_INFO(&(qedf->dbg_ctx), QEDF_LOG_ELS, "Ringing doorbell for ELS "
 		   "req\n");
 	qedf_ring_doorbell(fcport);
@@ -159,9 +156,7 @@ void qedf_process_els_compl(struct qedf_ctx *qedf, struct fcoe_cqe *cqe,
 
 	fcport = els_req->fcport;
 
-	/* When flush is active,
-	 * let the cmds be completed from the cleanup context
-	 */
+	 
 	if (test_bit(QEDF_RPORT_IN_TARGET_RESET, &fcport->flags) ||
 		test_bit(QEDF_RPORT_IN_LUN_RESET, &fcport->flags)) {
 		QEDF_INFO(&qedf->dbg_ctx, QEDF_LOG_IO,
@@ -172,14 +167,14 @@ void qedf_process_els_compl(struct qedf_ctx *qedf, struct fcoe_cqe *cqe,
 
 	clear_bit(QEDF_CMD_OUTSTANDING, &els_req->flags);
 
-	/* Kill the ELS timer */
+	 
 	cancel_delayed_work(&els_req->timeout_work);
 
-	/* Get ELS response length from CQE */
+	 
 	mp_info = &cqe->cqe_info.midpath_info;
 	els_req->mp_req.resp_len = mp_info->data_placement_size;
 
-	/* Parse ELS response */
+	 
 	if ((els_req->cb_func) && (els_req->cb_arg)) {
 		els_req->cb_func(els_req->cb_arg);
 		els_req->cb_arg = NULL;
@@ -213,27 +208,18 @@ static void qedf_rrq_compl(struct qedf_els_cb_arg *cb_arg)
 		   " orig xid = 0x%x, rrq_xid = 0x%x, refcount=%d\n",
 		   orig_io_req, orig_io_req->xid, rrq_req->xid, refcount);
 
-	/*
-	 * This should return the aborted io_req to the command pool. Note that
-	 * we need to check the refcound in case the original request was
-	 * flushed but we get a completion on this xid.
-	 */
+	 
 	if (orig_io_req && refcount > 0)
 		kref_put(&orig_io_req->refcount, qedf_release_cmd);
 
 out_free:
-	/*
-	 * Release a reference to the rrq request if we timed out as the
-	 * rrq completion handler is called directly from the timeout handler
-	 * and not from els_compl where the reference would have normally been
-	 * released.
-	 */
+	 
 	if (rrq_req->event == QEDF_IOREQ_EV_ELS_TMO)
 		kref_put(&rrq_req->refcount, qedf_release_cmd);
 	kfree(cb_arg);
 }
 
-/* Assumes kref is already held by caller */
+ 
 int qedf_send_rrq(struct qedf_ioreq *aborted_io_req)
 {
 
@@ -263,7 +249,7 @@ int qedf_send_rrq(struct qedf_ioreq *aborted_io_req)
 		return -EINVAL;
 	}
 
-	/* Check that fcport is still offloaded */
+	 
 	if (!test_bit(QEDF_RPORT_SESSION_READY, &fcport->flags)) {
 		QEDF_ERR(NULL, "fcport is no longer offloaded.\n");
 		return -EINVAL;
@@ -276,10 +262,7 @@ int qedf_send_rrq(struct qedf_ioreq *aborted_io_req)
 
 	qedf = fcport->qedf;
 
-	/*
-	 * Sanity check that we can send a RRQ to make sure that refcount isn't
-	 * 0
-	 */
+	 
 	refcount = kref_read(&aborted_io_req->refcount);
 	if (refcount != 1) {
 		QEDF_INFO(&qedf->dbg_ctx, QEDF_LOG_ELS,
@@ -336,20 +319,20 @@ static void qedf_process_l2_frame_compl(struct qedf_rport *fcport,
 
 	fh = (struct fc_frame_header *)fc_frame_header_get(fp);
 
-	/* Set the OXID we return to what libfc used */
+	 
 	if (l2_oxid != FC_XID_UNKNOWN)
 		fh->fh_ox_id = htons(l2_oxid);
 
-	/* Setup header fields */
+	 
 	fh->fh_r_ctl = FC_RCTL_ELS_REP;
 	fh->fh_type = FC_TYPE_ELS;
-	/* Last sequence, end sequence */
+	 
 	fh->fh_f_ctl[0] = 0x98;
 	hton24(fh->fh_d_id, lport->port_id);
 	hton24(fh->fh_s_id, fcport->rdata->ids.port_id);
 	fh->fh_rx_id = 0xffff;
 
-	/* Set frame attributes */
+	 
 	crc = fcoe_fc_crc(fp);
 	fc_frame_init(fp);
 	fr_dev(fp) = lport;
@@ -357,14 +340,11 @@ static void qedf_process_l2_frame_compl(struct qedf_rport *fcport,
 	fr_eof(fp) = FC_EOF_T;
 	fr_crc(fp) = cpu_to_le32(~crc);
 
-	/* Send completed request to libfc */
+	 
 	fc_exch_recv(lport, fp);
 }
 
-/*
- * In instances where an ELS command times out we may need to restart the
- * rport by logging out and then logging back in.
- */
+ 
 void qedf_restart_rport(struct qedf_rport *fcport)
 {
 	struct fc_lport *lport;
@@ -387,7 +367,7 @@ void qedf_restart_rport(struct qedf_rport *fcport)
 		return;
 	}
 
-	/* Set that we are now in reset */
+	 
 	set_bit(QEDF_RPORT_IN_RESET, &fcport->flags);
 	spin_unlock_irqrestore(&fcport->rport_lock, flags);
 
@@ -405,7 +385,7 @@ void qedf_restart_rport(struct qedf_rport *fcport)
 		fc_rport_logoff(rdata);
 		kref_put(&rdata->kref, fc_rport_destroy);
 		mutex_lock(&lport->disc.disc_mutex);
-		/* Recreate the rport and log back in */
+		 
 		rdata = fc_rport_create(lport, port_id);
 		mutex_unlock(&lport->disc.disc_mutex);
 		if (rdata)
@@ -434,10 +414,7 @@ static void qedf_l2_els_compl(struct qedf_els_cb_arg *cb_arg)
 		goto free_arg;
 	}
 
-	/*
-	 * If we are flushing the command just free the cb_arg as none of the
-	 * response data will be valid.
-	 */
+	 
 	if (els_req->event == QEDF_IOREQ_EV_ELS_FLUSH) {
 		QEDF_ERR(NULL, "els_req xid=0x%x event is flush.\n",
 			 els_req->xid);
@@ -450,19 +427,9 @@ static void qedf_l2_els_compl(struct qedf_els_cb_arg *cb_arg)
 	resp_len = mp_req->resp_len;
 	resp_buf = mp_req->resp_buf;
 
-	/*
-	 * If a middle path ELS command times out, don't try to return
-	 * the command but rather do any internal cleanup and then libfc
-	 * timeout the command and clean up its internal resources.
-	 */
+	 
 	if (els_req->event == QEDF_IOREQ_EV_ELS_TMO) {
-		/*
-		 * If ADISC times out, libfc will timeout the exchange and then
-		 * try to send a PLOGI which will timeout since the session is
-		 * still offloaded.  Force libfc to logout the session which
-		 * will offload the connection and allow the PLOGI response to
-		 * flow over the LL2 path.
-		 */
+		 
 		if (cb_arg->op == ELS_ADISC)
 			qedf_restart_rport(fcport);
 		return;
@@ -481,11 +448,11 @@ static void qedf_l2_els_compl(struct qedf_els_cb_arg *cb_arg)
 		return;
 	}
 
-	/* Copy frame header from firmware into fp */
+	 
 	fh = (struct fc_frame_header *)fc_frame_header_get(fp);
 	memcpy(fh, mp_fc_hdr, sizeof(struct fc_frame_header));
 
-	/* Copy payload from firmware into fp */
+	 
 	fc_payload = fc_frame_payload_get(fp, resp_len);
 	memcpy(fc_payload, resp_buf, resp_len);
 
@@ -571,14 +538,14 @@ static void qedf_srr_compl(struct qedf_els_cb_arg *cb_arg)
 		   " orig_io_xid=0x%x, rec_xid=0x%x, refcount=%d\n",
 		   orig_io_req, orig_io_req->xid, srr_req->xid, refcount);
 
-	/* If a SRR times out, simply free resources */
+	 
 	if (srr_req->event == QEDF_IOREQ_EV_ELS_TMO) {
 		QEDF_ERR(&qedf->dbg_ctx,
 			 "ELS timeout rec_xid=0x%x.\n", srr_req->xid);
 		goto out_put;
 	}
 
-	/* Normalize response data into struct fc_frame */
+	 
 	mp_req = &(srr_req->mp_req);
 	mp_fc_hdr = &(mp_req->resp_fc_hdr);
 	resp_len = mp_req->resp_len;
@@ -591,11 +558,11 @@ static void qedf_srr_compl(struct qedf_els_cb_arg *cb_arg)
 		goto out_put;
 	}
 
-	/* Copy frame header from firmware into fp */
+	 
 	fh = (struct fc_frame_header *)fc_frame_header_get(fp);
 	memcpy(fh, mp_fc_hdr, sizeof(struct fc_frame_header));
 
-	/* Copy payload from firmware into fp */
+	 
 	fc_payload = fc_frame_payload_get(fp, resp_len);
 	memcpy(fc_payload, resp_buf, resp_len);
 
@@ -614,7 +581,7 @@ static void qedf_srr_compl(struct qedf_els_cb_arg *cb_arg)
 
 	fc_frame_free(fp);
 out_put:
-	/* Put reference for original command since SRR completed */
+	 
 	kref_put(&orig_io_req->refcount, qedf_release_cmd);
 out_free:
 	kfree(cb_arg);
@@ -637,7 +604,7 @@ static int qedf_send_srr(struct qedf_ioreq *orig_io_req, u32 offset, u8 r_ctl)
 
 	fcport = orig_io_req->fcport;
 
-	/* Check that fcport is still offloaded */
+	 
 	if (!test_bit(QEDF_RPORT_SESSION_READY, &fcport->flags)) {
 		QEDF_ERR(NULL, "fcport is no longer offloaded.\n");
 		return -EINVAL;
@@ -648,7 +615,7 @@ static int qedf_send_srr(struct qedf_ioreq *orig_io_req, u32 offset, u8 r_ctl)
 		return -EINVAL;
 	}
 
-	/* Take reference until SRR command completion */
+	 
 	kref_get(&orig_io_req->refcount);
 
 	qedf = fcport->qedf;
@@ -683,11 +650,11 @@ srr_err:
 		QEDF_ERR(&(qedf->dbg_ctx), "SRR failed - release orig_io_req"
 			  "=0x%x\n", orig_io_req->xid);
 		kfree(cb_arg);
-		/* If we fail to queue SRR, send ABTS to orig_io */
+		 
 		qedf_initiate_abts(orig_io_req, true);
 		kref_put(&orig_io_req->refcount, qedf_release_cmd);
 	} else
-		/* Tell other threads that SRR is in progress */
+		 
 		set_bit(QEDF_CMD_SRR_SENT, &orig_io_req->flags);
 
 	return rc;
@@ -715,7 +682,7 @@ static void qedf_initiate_seq_cleanup(struct qedf_ioreq *orig_io_req,
 		return;
 	}
 
-	/* Get reference for cleanup request */
+	 
 	kref_get(&orig_io_req->refcount);
 
 	orig_io_req->cmd_type = QEDF_SEQ_CLEANUP;
@@ -748,14 +715,14 @@ void qedf_process_seq_cleanup_compl(struct qedf_ctx *qedf,
 
 	cb_arg = io_req->cb_arg;
 
-	/* If we timed out just free resources */
+	 
 	if (io_req->event == QEDF_IOREQ_EV_ELS_TMO || !cqe) {
 		QEDF_ERR(&qedf->dbg_ctx,
 			 "cqe is NULL or timeout event (0x%x)", io_req->event);
 		goto free;
 	}
 
-	/* Kill the timer we put on the request */
+	 
 	cancel_delayed_work_sync(&io_req->timeout_work);
 
 	rc = qedf_send_srr(io_req, cb_arg->offset, cb_arg->r_ctl);
@@ -795,30 +762,22 @@ static bool qedf_requeue_io_req(struct qedf_ioreq *orig_io_req)
 
 	new_io_req->sc_cmd = orig_io_req->sc_cmd;
 
-	/*
-	 * This keeps the sc_cmd struct from being returned to the tape
-	 * driver and being requeued twice. We do need to put a reference
-	 * for the original I/O request since we will not do a SCSI completion
-	 * for it.
-	 */
+	 
 	orig_io_req->sc_cmd = NULL;
 	kref_put(&orig_io_req->refcount, qedf_release_cmd);
 
 	spin_lock_irqsave(&fcport->rport_lock, flags);
 
-	/* kref for new command released in qedf_post_io_req on error */
+	 
 	if (qedf_post_io_req(fcport, new_io_req)) {
 		QEDF_ERR(&(fcport->qedf->dbg_ctx), "Unable to post io_req\n");
-		/* Return SQE to pool */
+		 
 		atomic_inc(&fcport->free_sqes);
 	} else {
 		QEDF_INFO(&(fcport->qedf->dbg_ctx), QEDF_LOG_ELS,
 		    "Reissued SCSI command from  orig_xid=0x%x on "
 		    "new_xid=0x%x.\n", orig_io_req->xid, new_io_req->xid);
-		/*
-		 * Abort the original I/O but do not return SCSI command as
-		 * it has been reissued on another OX_ID.
-		 */
+		 
 		spin_unlock_irqrestore(&fcport->rport_lock, flags);
 		qedf_initiate_abts(orig_io_req, false);
 		goto out;
@@ -870,7 +829,7 @@ static void qedf_rec_compl(struct qedf_els_cb_arg *cb_arg)
 		   " orig_io_xid=0x%x, rec_xid=0x%x, refcount=%d\n",
 		   orig_io_req, orig_io_req->xid, rec_req->xid, refcount);
 
-	/* If a REC times out, free resources */
+	 
 	if (rec_req->event == QEDF_IOREQ_EV_ELS_TMO) {
 		QEDF_ERR(&qedf->dbg_ctx,
 			 "Got TMO event, orig_io_req %p orig_io_xid=0x%x.\n",
@@ -878,7 +837,7 @@ static void qedf_rec_compl(struct qedf_els_cb_arg *cb_arg)
 		goto out_put;
 	}
 
-	/* Normalize response data into struct fc_frame */
+	 
 	mp_req = &(rec_req->mp_req);
 	mp_fc_hdr = &(mp_req->resp_fc_hdr);
 	resp_len = mp_req->resp_len;
@@ -891,11 +850,11 @@ static void qedf_rec_compl(struct qedf_els_cb_arg *cb_arg)
 		goto out_put;
 	}
 
-	/* Copy frame header from firmware into fp */
+	 
 	fh = (struct fc_frame_header *)fc_frame_header_get(fp);
 	memcpy(fh, mp_fc_hdr, sizeof(struct fc_frame_header));
 
-	/* Copy payload from firmware into fp */
+	 
 	fc_payload = fc_frame_payload_get(fp, resp_len);
 	memcpy(fc_payload, resp_buf, resp_len);
 
@@ -910,12 +869,7 @@ static void qedf_rec_compl(struct qedf_els_cb_arg *cb_arg)
 		QEDF_INFO(&(qedf->dbg_ctx), QEDF_LOG_ELS,
 		    "Received LS_RJT for REC: er_reason=0x%x, "
 		    "er_explan=0x%x.\n", rjt->er_reason, rjt->er_explan);
-		/*
-		 * The following response(s) mean that we need to reissue the
-		 * request on another exchange.  We need to do this without
-		 * informing the upper layers lest it cause an application
-		 * error.
-		 */
+		 
 		if ((rjt->er_reason == ELS_RJT_LOGIC ||
 		    rjt->er_reason == ELS_RJT_UNAB) &&
 		    rjt->er_explan == ELS_EXPL_OXID_RXID) {
@@ -941,7 +895,7 @@ static void qedf_rec_compl(struct qedf_els_cb_arg *cb_arg)
 			    orig_io_req->xid);
 			goto out_free_frame;
 		}
-		/* SCSI write case */
+		 
 		if (sc_cmd->sc_data_direction == DMA_TO_DEVICE) {
 			if (offset == orig_io_req->data_xfer_len) {
 				QEDF_INFO(&(qedf->dbg_ctx), QEDF_LOG_ELS,
@@ -953,10 +907,10 @@ static void qedf_rec_compl(struct qedf_els_cb_arg *cb_arg)
 				QEDF_INFO(&(qedf->dbg_ctx), QEDF_LOG_ELS,
 				    "WRITE - XFER_RDY/DATA lost.\n");
 				r_ctl = FC_RCTL_DD_DATA_DESC;
-				/* Use data from warning CQE instead of REC */
+				 
 				offset = orig_io_req->tx_buf_off;
 			}
-		/* SCSI read case */
+		 
 		} else {
 			if (orig_io_req->rx_buf_off ==
 			    orig_io_req->data_xfer_len) {
@@ -968,10 +922,7 @@ static void qedf_rec_compl(struct qedf_els_cb_arg *cb_arg)
 			} else {
 				QEDF_INFO(&(qedf->dbg_ctx), QEDF_LOG_ELS,
 				    "READ - DATA lost.\n");
-				/*
-				 * For read case we always set the offset to 0
-				 * for sequence recovery task.
-				 */
+				 
 				offset = 0;
 				r_ctl = FC_RCTL_DD_SOL_DATA;
 			}
@@ -986,13 +937,13 @@ static void qedf_rec_compl(struct qedf_els_cb_arg *cb_arg)
 out_free_frame:
 	fc_frame_free(fp);
 out_put:
-	/* Put reference for original command since REC completed */
+	 
 	kref_put(&orig_io_req->refcount, qedf_release_cmd);
 out_free:
 	kfree(cb_arg);
 }
 
-/* Assumes kref is already held by caller */
+ 
 int qedf_send_rec(struct qedf_ioreq *orig_io_req)
 {
 
@@ -1012,7 +963,7 @@ int qedf_send_rec(struct qedf_ioreq *orig_io_req)
 
 	fcport = orig_io_req->fcport;
 
-	/* Check that fcport is still offloaded */
+	 
 	if (!test_bit(QEDF_RPORT_SESSION_READY, &fcport->flags)) {
 		QEDF_ERR(NULL, "fcport is no longer offloaded.\n");
 		return -EINVAL;
@@ -1023,7 +974,7 @@ int qedf_send_rec(struct qedf_ioreq *orig_io_req)
 		return -EINVAL;
 	}
 
-	/* Take reference until REC command completion */
+	 
 	kref_get(&orig_io_req->refcount);
 
 	qedf = fcport->qedf;

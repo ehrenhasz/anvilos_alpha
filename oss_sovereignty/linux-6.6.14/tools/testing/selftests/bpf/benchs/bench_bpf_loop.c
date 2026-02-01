@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 
 #include <argp.h>
 #include "bench.h"
 #include "bpf_loop_bench.skel.h"
 
-/* BPF triggering benchmarks */
+ 
 static struct ctx {
 	struct bpf_loop_bench *skel;
 } ctx;
@@ -39,7 +39,7 @@ static error_t parse_arg(int key, char *arg, struct argp_state *state)
 	return 0;
 }
 
-/* exported into benchmark runner */
+ 
 const struct argp bench_bpf_loop_argp = {
 	.options = opts,
 	.parser = parse_arg,
@@ -56,7 +56,7 @@ static void validate(void)
 static void *producer(void *input)
 {
 	while (true)
-		/* trigger the bpf program */
+		 
 		syscall(__NR_getpgid);
 
 	return NULL;

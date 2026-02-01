@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Watchdog driver for the wm831x PMICs
- *
- * Copyright (C) 2009 Wolfson Microelectronics
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -31,11 +27,10 @@ struct wm831x_wdt_drvdata {
 	int update_state;
 };
 
-/* We can't use the sub-second values here but they're included
- * for completeness.  */
+ 
 static struct {
-	unsigned int time;  /* Seconds */
-	u16 val;            /* WDOG_TO value */
+	unsigned int time;   
+	u16 val;             
 } wm831x_wdt_cfgs[] = {
 	{  1, 2 },
 	{  2, 3 },
@@ -43,7 +38,7 @@ static struct {
 	{  8, 5 },
 	{ 16, 6 },
 	{ 32, 7 },
-	{ 33, 7 },  /* Actually 32.768s so include both, others round down */
+	{ 33, 7 },   
 };
 
 static int wm831x_wdt_start(struct watchdog_device *wdt_dev)
@@ -215,7 +210,7 @@ static int wm831x_wdt_probe(struct platform_device *pdev)
 	else
 		wm831x_wdt->timeout = wm831x_wdt_cfgs[i].time;
 
-	/* Apply any configuration */
+	 
 	if (chip_pdata)
 		pdata = chip_pdata->watchdog;
 	else

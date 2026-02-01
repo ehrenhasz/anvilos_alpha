@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Greybus Lights protocol driver.
- *
- * Copyright 2015 Google Inc.
- * Copyright 2015 Linaro Ltd.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/leds.h>
@@ -142,12 +137,12 @@ static int __gb_lights_flash_brightness_set(struct gb_channel *channel)
 {
 	u32 intensity;
 
-	/* If the channel is flash we need to get the attached torch channel */
+	 
 	if (channel->mode & GB_CHANNEL_MODE_FLASH)
 		channel = get_channel_from_mode(channel->light,
 						GB_CHANNEL_MODE_TORCH);
 
-	/* For not flash we need to convert brightness to intensity */
+	 
 	intensity = channel->intensity_uA.min +
 			(channel->intensity_uA.step * channel->led->brightness);
 
@@ -286,7 +281,7 @@ static int channel_attr_groups_set(struct gb_channel *channel,
 	if (!size)
 		return 0;
 
-	/* Set attributes based in the channel flags */
+	 
 	channel->attrs = kcalloc(size + 1, sizeof(*channel->attrs), GFP_KERNEL);
 	if (!channel->attrs)
 		return -ENOMEM;
@@ -394,14 +389,11 @@ static int __gb_lights_led_brightness_set(struct gb_channel *channel)
 	else
 		channel->active = false;
 
-	/* we need to keep module alive when turning to active state */
+	 
 	if (!old_active && channel->active)
 		goto out_unlock;
 
-	/*
-	 * on the other hand if going to inactive we still hold a reference and
-	 * need to put it, so we could go to suspend.
-	 */
+	 
 	if (old_active && !channel->active)
 		gb_pm_runtime_put_autosuspend(bundle);
 
@@ -484,14 +476,11 @@ static int gb_blink_set(struct led_classdev *cdev, unsigned long *delay_on,
 	else
 		channel->active = false;
 
-	/* we need to keep module alive when turning to active state */
+	 
 	if (!old_active && channel->active)
 		goto out_unlock;
 
-	/*
-	 * on the other hand if going to inactive we still hold a reference and
-	 * need to put it, so we could go to suspend.
-	 */
+	 
 	if (old_active && !channel->active)
 		gb_pm_runtime_put_autosuspend(bundle);
 
@@ -514,7 +503,7 @@ static void gb_lights_led_operations_set(struct gb_channel *channel,
 }
 
 #if IS_REACHABLE(CONFIG_V4L2_FLASH_LED_CLASS)
-/* V4L2 specific helpers */
+ 
 static const struct v4l2_flash_ops v4l2_flash_ops;
 
 static void __gb_lights_channel_v4l2_config(struct led_flash_setting *channel_s,
@@ -523,7 +512,7 @@ static void __gb_lights_channel_v4l2_config(struct led_flash_setting *channel_s,
 	v4l2_s->min = channel_s->min;
 	v4l2_s->max = channel_s->max;
 	v4l2_s->step = channel_s->step;
-	/* For v4l2 val is the default value */
+	 
 	v4l2_s->val = channel_s->max;
 }
 
@@ -557,7 +546,7 @@ static int gb_lights_light_v4l2_register(struct gb_light *light)
 	snprintf(sd_cfg_ind.dev_name, sizeof(sd_cfg_ind.dev_name),
 		 "%s indicator", light->name);
 
-	/* Set the possible values to faults, in our case all faults */
+	 
 	sd_cfg.flash_faults = LED_FAULT_OVER_VOLTAGE | LED_FAULT_TIMEOUT |
 		LED_FAULT_OVER_TEMPERATURE | LED_FAULT_SHORT_CIRCUIT |
 		LED_FAULT_OVER_CURRENT | LED_FAULT_INDICATOR |
@@ -601,7 +590,7 @@ static void gb_lights_light_v4l2_unregister(struct gb_light *light)
 #endif
 
 #if IS_REACHABLE(CONFIG_LEDS_CLASS_FLASH)
-/* Flash specific operations */
+ 
 static int gb_lights_flash_intensity_set(struct led_classdev_flash *fcdev,
 					 u32 brightness)
 {
@@ -743,14 +732,14 @@ static int __gb_lights_channel_torch_attach(struct gb_channel *channel,
 {
 	char *name;
 
-	/* we can only attach torch to a flash channel */
+	 
 	if (!(channel->mode & GB_CHANNEL_MODE_FLASH))
 		return 0;
 
-	/* Move torch brightness to the destination */
+	 
 	channel->led->max_brightness = channel_torch->led->max_brightness;
 
-	/* append mode name to flash name */
+	 
 	name = kasprintf(GFP_KERNEL, "%s_%s", channel->led->name,
 			 channel_torch->mode_name);
 	if (!name)
@@ -781,7 +770,7 @@ static int __gb_lights_flash_led_register(struct gb_channel *channel)
 	fset->step = channel->intensity_uA.step;
 	fset->val = channel->intensity_uA.max;
 
-	/* Only the flash mode have the timeout constraints settings */
+	 
 	if (channel->mode & GB_CHANNEL_MODE_FLASH) {
 		fset = &fled->timeout;
 		fset->min = channel->timeout_us.min;
@@ -790,10 +779,7 @@ static int __gb_lights_flash_led_register(struct gb_channel *channel)
 		fset->val = channel->timeout_us.max;
 	}
 
-	/*
-	 * If light have torch mode channel, this channel will be the led
-	 * classdev of the registered above flash classdev
-	 */
+	 
 	channel_torch = get_channel_from_mode(channel->light,
 					      GB_CHANNEL_MODE_TORCH);
 	if (channel_torch) {
@@ -838,22 +824,16 @@ static int gb_lights_channel_flash_config(struct gb_channel *channel)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Intensity constraints for flash related modes: flash, torch,
-	 * indicator.  They will be needed for v4l2 registration.
-	 */
+	 
 	fset = &channel->intensity_uA;
 	fset->min = le32_to_cpu(conf.intensity_min_uA);
 	fset->max = le32_to_cpu(conf.intensity_max_uA);
 	fset->step = le32_to_cpu(conf.intensity_step_uA);
 
-	/*
-	 * On flash type, max brightness is set as the number of intensity steps
-	 * available.
-	 */
+	 
 	channel->led->max_brightness = (fset->max - fset->min) / fset->step;
 
-	/* Only the flash mode have the timeout constraints settings */
+	 
 	if (channel->mode & GB_CHANNEL_MODE_FLASH) {
 		fset = &channel->timeout_us;
 		fset->min = le32_to_cpu(conf.timeout_min_us);
@@ -899,14 +879,11 @@ static int __gb_lights_led_register(struct gb_channel *channel)
 
 static int gb_lights_channel_register(struct gb_channel *channel)
 {
-	/* Normal LED channel, just register in led classdev and we are done */
+	 
 	if (!is_channel_flash(channel))
 		return __gb_lights_led_register(channel);
 
-	/*
-	 * Flash Type need more work, register flash classdev, indicator as
-	 * flash classdev, torch will be led classdev of the flash classdev.
-	 */
+	 
 	if (!(channel->mode & GB_CHANNEL_MODE_TORCH))
 		return __gb_lights_flash_led_register(channel);
 
@@ -928,7 +905,7 @@ static void __gb_lights_led_unregister(struct gb_channel *channel)
 
 static void gb_lights_channel_unregister(struct gb_channel *channel)
 {
-	/* The same as register, handle channels differently */
+	 
 	if (!is_channel_flash(channel)) {
 		__gb_lights_led_unregister(channel);
 		return;
@@ -986,11 +963,7 @@ static int gb_lights_channel_config(struct gb_light *light,
 
 	gb_lights_led_operations_set(channel, cdev);
 
-	/*
-	 * If it is not a flash related channel (flash, torch or indicator) we
-	 * are done here. If not, continue and fetch flash related
-	 * configurations.
-	 */
+	 
 	if (!is_channel_flash(channel))
 		return ret;
 
@@ -1032,7 +1005,7 @@ static int gb_lights_light_config(struct gb_lights *glights, u8 id)
 	if (!light->channels)
 		return -ENOMEM;
 
-	/* First we collect all the configurations for all channels */
+	 
 	for (i = 0; i < light->channels_count; i++) {
 		light->channels[i].id = i;
 		ret = gb_lights_channel_config(light, &light->channels[i]);
@@ -1048,11 +1021,7 @@ static int gb_lights_light_register(struct gb_light *light)
 	int ret;
 	int i;
 
-	/*
-	 * Then, if everything went ok in getting configurations, we register
-	 * the classdev, flash classdev and v4l2 subsystem, if a flash device is
-	 * found.
-	 */
+	 
 	for (i = 0; i < light->channels_count; i++) {
 		ret = gb_lights_channel_register(&light->channels[i]);
 		if (ret < 0)
@@ -1291,25 +1260,22 @@ static int gb_lights_probe(struct gb_bundle *bundle,
 
 	greybus_set_drvdata(bundle, glights);
 
-	/* We aren't ready to receive an incoming request yet */
+	 
 	ret = gb_connection_enable_tx(connection);
 	if (ret)
 		goto error_connection_destroy;
 
-	/*
-	 * Setup all the lights devices over this connection, if anything goes
-	 * wrong tear down all lights
-	 */
+	 
 	ret = gb_lights_create_all(glights);
 	if (ret < 0)
 		goto error_connection_disable;
 
-	/* We are ready to receive an incoming request now, enable RX as well */
+	 
 	ret = gb_connection_enable(connection);
 	if (ret)
 		goto error_connection_disable;
 
-	/* Enable & register lights */
+	 
 	ret = gb_lights_register_all(glights);
 	if (ret < 0)
 		goto error_connection_disable;

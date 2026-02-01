@@ -1,20 +1,4 @@
-/* Test of vasnprintf() and asnprintf() functions.
-   Copyright (C) 2007-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2007.  */
+ 
 
 #include <config.h>
 
@@ -60,7 +44,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
         free (result);
     }
 
-  /* Note: This test assumes IEEE 754 representation of 'double' floats.  */
+   
   for (size = 0; size <= 8; size++)
     {
       size_t length;
@@ -70,13 +54,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
       length = size;
       result = my_asnprintf (buf, &length, "%2.0f", 1.6314159265358979e+125);
       ASSERT (result != NULL);
-      /* The exact result and the result on glibc systems is
-         163141592653589790215729350939528493057529598899734151772468186268423257777068536614838678161083520756952076273094236944990208
-         On Cygwin, the result is
-         163141592653589790215729350939528493057529600000000000000000000000000000000000000000000000000000000000000000000000000000000000
-         On HP-UX 11.31 / hppa and IRIX 6.5, the result is
-         163141592653589790000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-       */
+       
       ASSERT (strlen (result) == 126);
       ASSERT (memcmp (result, "163141592653589790", 18) == 0);
       ASSERT (length == 126);

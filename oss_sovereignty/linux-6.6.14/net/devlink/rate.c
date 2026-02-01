@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2016 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2016 Jiri Pirko <jiri@mellanox.com>
- */
+
+ 
 
 #include "devl_internal.h"
 
@@ -54,7 +51,7 @@ devlink_rate_node_get_from_attrs(struct devlink *devlink, struct nlattr **attrs)
 		return ERR_PTR(-EINVAL);
 	rate_node_name = nla_data(attrs[DEVLINK_ATTR_RATE_NODE_NAME]);
 	len = strlen(rate_node_name);
-	/* Name cannot be empty or decimal number */
+	 
 	if (!len || strspn(rate_node_name, "0123456789") == len)
 		return ERR_PTR(-EINVAL);
 
@@ -307,7 +304,7 @@ devlink_nl_rate_parent_node_set(struct devlink_rate *devlink_rate,
 			return err;
 
 		if (devlink_rate->parent)
-			/* we're reassigning to other parent in this case */
+			 
 			refcount_dec(&devlink_rate->parent->refcnt);
 
 		refcount_inc(&parent->refcnt);
@@ -575,15 +572,7 @@ int devlink_rate_nodes_check(struct devlink *devlink, u16 mode,
 	return 0;
 }
 
-/**
- * devl_rate_node_create - create devlink rate node
- * @devlink: devlink instance
- * @priv: driver private data
- * @node_name: name of the resulting node
- * @parent: parent devlink_rate struct
- *
- * Create devlink rate object of type node
- */
+ 
 struct devlink_rate *
 devl_rate_node_create(struct devlink *devlink, void *priv, char *node_name,
 		      struct devlink_rate *parent)
@@ -620,14 +609,7 @@ devl_rate_node_create(struct devlink *devlink, void *priv, char *node_name,
 }
 EXPORT_SYMBOL_GPL(devl_rate_node_create);
 
-/**
- * devl_rate_leaf_create - create devlink rate leaf
- * @devlink_port: devlink port object to create rate object on
- * @priv: driver private data
- * @parent: parent devlink_rate struct
- *
- * Create devlink rate object of type leaf on provided @devlink_port.
- */
+ 
 int devl_rate_leaf_create(struct devlink_port *devlink_port, void *priv,
 			  struct devlink_rate *parent)
 {
@@ -660,13 +642,7 @@ int devl_rate_leaf_create(struct devlink_port *devlink_port, void *priv,
 }
 EXPORT_SYMBOL_GPL(devl_rate_leaf_create);
 
-/**
- * devl_rate_leaf_destroy - destroy devlink rate leaf
- *
- * @devlink_port: devlink port linked to the rate object
- *
- * Destroy the devlink rate object of type leaf on provided @devlink_port.
- */
+ 
 void devl_rate_leaf_destroy(struct devlink_port *devlink_port)
 {
 	struct devlink_rate *devlink_rate = devlink_port->devlink_rate;
@@ -684,13 +660,7 @@ void devl_rate_leaf_destroy(struct devlink_port *devlink_port)
 }
 EXPORT_SYMBOL_GPL(devl_rate_leaf_destroy);
 
-/**
- * devl_rate_nodes_destroy - destroy all devlink rate nodes on device
- * @devlink: devlink instance
- *
- * Unset parent for all rate objects and destroy all rate nodes
- * on specified device.
- */
+ 
 void devl_rate_nodes_destroy(struct devlink *devlink)
 {
 	static struct devlink_rate *devlink_rate, *tmp;

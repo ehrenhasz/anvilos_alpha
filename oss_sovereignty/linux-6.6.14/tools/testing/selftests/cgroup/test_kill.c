@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #include <errno.h>
 #include <linux/limits.h>
@@ -13,11 +13,7 @@
 #include "../pidfd/pidfd.h"
 #include "cgroup_util.h"
 
-/*
- * Kill the given cgroup and wait for the inotify signal.
- * If there are no events in 10 seconds, treat this as an error.
- * Then check that the cgroup is in the desired state.
- */
+ 
 static int cg_kill_wait(const char *cgroup)
 {
 	int fd, ret = -1;
@@ -39,10 +35,7 @@ out:
 	return ret;
 }
 
-/*
- * A simple process running in a sleep loop until being
- * re-parented.
- */
+ 
 static int child_fn(const char *cgroup, void *arg)
 {
 	int ppid = getppid();
@@ -95,21 +88,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * The test creates the following hierarchy:
- *       A
- *    / / \ \
- *   B  E  I K
- *  /\  |
- * C  D F
- *      |
- *      G
- *      |
- *      H
- *
- * with a process in C, H and 3 processes in K.
- * Then it tries to kill the whole tree.
- */
+ 
 static int test_cgkill_tree(const char *root)
 {
 	pid_t pids[5];
@@ -167,19 +146,14 @@ static int test_cgkill_tree(const char *root)
 	pids[3] = cg_run_nowait(cgroup[9], child_fn, NULL);
 	pids[4] = cg_run_nowait(cgroup[9], child_fn, NULL);
 
-	/*
-	 * Wait until all child processes will enter
-	 * corresponding cgroups.
-	 */
+	 
 
 	if (cg_wait_for_proc_count(cgroup[2], 1) ||
 	    cg_wait_for_proc_count(cgroup[7], 1) ||
 	    cg_wait_for_proc_count(cgroup[9], 3))
 		goto cleanup;
 
-	/*
-	 * Kill A and check that we get an empty notification.
-	 */
+	 
 	if (cg_kill_wait(cgroup[0]))
 		goto cleanup;
 
@@ -216,9 +190,7 @@ static int forkbomb_fn(const char *cgroup, void *arg)
 	return getppid() == ppid;
 }
 
-/*
- * The test runs a fork bomb in a cgroup and tries to kill it.
- */
+ 
 static int test_cgkill_forkbomb(const char *root)
 {
 	int ret = KSFT_FAIL;

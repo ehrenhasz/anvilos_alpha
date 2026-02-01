@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright(c) 2022 Intel Corporation */
+ 
+ 
 #ifndef _ICP_QAT_FW_COMP_H_
 #define _ICP_QAT_FW_COMP_H_
 #include "icp_qat_fw.h"

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * s3c24xx/s3c64xx SoC series Camera Interface (CAMIF) driver
- *
- * Copyright (C) 2012 Sylwester Nawrocki <sylvester.nawrocki@gmail.com>
- * Copyright (C) 2012 Tomasz Figa <tomasz.figa@gmail.com>
- */
+
+ 
 #define pr_fmt(fmt) "%s:%d " fmt, __func__, __LINE__
 
 #include <linux/bug.h>
@@ -33,9 +28,9 @@
 #include "camif-core.h"
 
 static char *camif_clocks[CLK_MAX_NUM] = {
-	/* HCLK CAMIF clock */
+	 
 	[CLK_GATE]	= "camif",
-	/* CAMIF / external camera sensor master clock */
+	 
 	[CLK_CAM]	= "camera",
 };
 
@@ -90,12 +85,7 @@ static const struct camif_fmt camif_formats[] = {
 	}
 };
 
-/**
- * s3c_camif_find_format() - lookup camif color format by fourcc or an index
- * @vp: video path (DMA) description (codec/preview)
- * @pixelformat: fourcc to match, ignored if null
- * @index: index to the camif_formats array, ignored if negative
- */
+ 
 const struct camif_fmt *s3c_camif_find_format(struct camif_vp *vp,
 					      const u32 *pixelformat,
 					      int index)
@@ -220,7 +210,7 @@ static int camif_register_sensor(struct camif_dev *camif)
 
 	v4l2_info(v4l2_dev, "registered sensor subdevice %s\n", sd->name);
 
-	/* Get initial pixel format and set it at the camif sink pad */
+	 
 	format.pad = 0;
 	ret = v4l2_subdev_call(sd, pad, get_fmt, NULL, &format);
 
@@ -294,9 +284,7 @@ static void camif_unregister_media_entities(struct camif_dev *camif)
 	camif_unregister_sensor(camif);
 }
 
-/*
- * Media device
- */
+ 
 static int camif_media_dev_init(struct camif_dev *camif)
 {
 	struct media_device *md = &camif->media_dev;
@@ -365,11 +353,7 @@ err:
 	return ret;
 }
 
-/*
- * The CAMIF device has two relatively independent data processing paths
- * that can source data from memory or the common camera input frontend.
- * Register interrupts for each data processing path (camif_vp).
- */
+ 
 static int camif_request_irqs(struct platform_device *pdev,
 			      struct camif_dev *camif)
 {
@@ -447,11 +431,7 @@ static int s3c_camif_probe(struct platform_device *pdev)
 
 	dev_info(dev, "sensor clock frequency: %lu\n",
 		 clk_get_rate(camif->clock[CLK_CAM]));
-	/*
-	 * Set initial pixel format, resolution and crop rectangle.
-	 * Must be done before a sensor subdev is registered as some
-	 * settings are overrode with values from sensor subdev.
-	 */
+	 
 	s3c_camif_set_defaults(camif);
 
 	pm_runtime_enable(dev);
@@ -529,7 +509,7 @@ static int s3c_camif_runtime_resume(struct device *dev)
 	struct camif_dev *camif = dev_get_drvdata(dev);
 
 	clk_enable(camif->clock[CLK_GATE]);
-	/* null op on s3c244x */
+	 
 	clk_enable(camif->clock[CLK_CAM]);
 	return 0;
 }
@@ -538,7 +518,7 @@ static int s3c_camif_runtime_suspend(struct device *dev)
 {
 	struct camif_dev *camif = dev_get_drvdata(dev);
 
-	/* null op on s3c244x */
+	 
 	clk_disable(camif->clock[CLK_CAM]);
 
 	clk_disable(camif->clock[CLK_GATE]);
@@ -611,7 +591,7 @@ static const struct platform_device_id s3c_camif_driver_ids[] = {
 		.name		= "s3c6410-camif",
 		.driver_data	= (unsigned long)&s3c6410_camif_drvdata,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(platform, s3c_camif_driver_ids);
 

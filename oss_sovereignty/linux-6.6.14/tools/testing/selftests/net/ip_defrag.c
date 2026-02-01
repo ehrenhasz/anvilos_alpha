@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define _GNU_SOURCE
 
@@ -30,16 +30,16 @@ const struct in6_addr addr6 = IN6ADDR_LOOPBACK_INIT;
 #define IP6_HLEN	(sizeof(struct ip6_hdr))
 #define UDP_HLEN	(sizeof(struct udphdr))
 
-/* IPv6 fragment header lenth. */
+ 
 #define FRAG_HLEN	8
 
 static int payload_len;
 static int max_frag_len;
 
-#define MSG_LEN_MAX	10000	/* Max UDP payload length. */
+#define MSG_LEN_MAX	10000	 
 
-#define IP4_MF		(1u << 13)  /* IPv4 MF flag. */
-#define IP6_MF		(1)  /* IPv6 MF flag. */
+#define IP4_MF		(1u << 13)   
+#define IP6_MF		(1)   
 
 #define CSUM_MANGLED_0 (0xffff)
 
@@ -50,7 +50,7 @@ static int msg_counter;
 static int frag_counter;
 static unsigned int seed;
 
-/* Receive a UDP packet. Validate it matches udp_payload. */
+ 
 static void recv_validate_udp(int fd_udp)
 {
 	ssize_t ret;
@@ -61,7 +61,7 @@ static void recv_validate_udp(int fd_udp)
 
 	if (cfg_overlap) {
 		if (ret == -1 && (errno == ETIMEDOUT || errno == EAGAIN))
-			return;  /* OK */
+			return;   
 		if (!cfg_permissive) {
 			if (ret != -1)
 				error(1, 0, "recv: expected timeout; got %d",
@@ -157,7 +157,7 @@ static void send_fragment(int fd_raw, struct sockaddr *addr, socklen_t alen,
 		struct ip6_hdr *ip6hdr = (struct ip6_hdr *)ip_frame;
 		struct ip6_frag *fraghdr = (struct ip6_frag *)(ip_frame + IP6_HLEN);
 		if (payload_len - payload_offset <= max_frag_len && offset > 0) {
-			/* This is the last fragment. */
+			 
 			frag_len = FRAG_HLEN + payload_len - payload_offset;
 			fraghdr->ip6f_offlg = htons(offset);
 		} else {
@@ -175,7 +175,7 @@ static void send_fragment(int fd_raw, struct sockaddr *addr, socklen_t alen,
 	} else {
 		struct ip *iphdr = (struct ip *)ip_frame;
 		if (payload_len - payload_offset <= max_frag_len && offset > 0) {
-			/* This is the last fragment. */
+			 
 			frag_len = IP4_HLEN + payload_len - payload_offset;
 			iphdr->ip_off = htons(offset / 8);
 		} else {
@@ -209,18 +209,12 @@ static void send_udp_frags(int fd_raw, struct sockaddr *addr,
 	int offset;
 	int frag_len;
 
-	/* Send the UDP datagram using raw IP fragments: the 0th fragment
-	 * has the UDP header; other fragments are pieces of udp_payload
-	 * split in chunks of frag_len size.
-	 *
-	 * Odd fragments (1st, 3rd, 5th, etc.) are sent out first, then
-	 * even fragments (0th, 2nd, etc.) are sent out.
-	 */
+	 
 	if (ipv6) {
 		struct ip6_frag *fraghdr = (struct ip6_frag *)(ip_frame + IP6_HLEN);
 		((struct sockaddr_in6 *)addr)->sin6_port = 0;
 		memset(ip6hdr, 0, sizeof(*ip6hdr));
-		ip6hdr->ip6_flow = htonl(6<<28);  /* Version. */
+		ip6hdr->ip6_flow = htonl(6<<28);   
 		ip6hdr->ip6_nxt = IPPROTO_FRAGMENT;
 		ip6hdr->ip6_hops = 255;
 		ip6hdr->ip6_src = addr6;
@@ -241,7 +235,7 @@ static void send_udp_frags(int fd_raw, struct sockaddr *addr,
 		iphdr->ip_sum = 0;
 	}
 
-	/* Occasionally test in-order fragments. */
+	 
 	if (!cfg_overlap && (rand() % 100 < 15)) {
 		offset = 0;
 		while (offset < (UDP_HLEN + payload_len)) {
@@ -251,7 +245,7 @@ static void send_udp_frags(int fd_raw, struct sockaddr *addr,
 		return;
 	}
 
-	/* Occasionally test IPv4 "runs" (see net/ipv4/ip_fragment.c) */
+	 
 	if (!cfg_overlap && (rand() % 100 < 20) &&
 			(payload_len > 9 * max_frag_len)) {
 		offset = 6 * max_frag_len;
@@ -272,27 +266,20 @@ static void send_udp_frags(int fd_raw, struct sockaddr *addr,
 		return;
 	}
 
-	/* Odd fragments. */
+	 
 	offset = max_frag_len;
 	while (offset < (UDP_HLEN + payload_len)) {
 		send_fragment(fd_raw, addr, alen, offset, ipv6);
-		/* IPv4 ignores duplicates, so randomly send a duplicate. */
+		 
 		if (rand() % 100 == 1)
 			send_fragment(fd_raw, addr, alen, offset, ipv6);
 		offset += 2 * max_frag_len;
 	}
 
 	if (cfg_overlap) {
-		/* Send an extra random fragment.
-		 *
-		 * Duplicates and some fragments completely inside
-		 * previously sent fragments are dropped/ignored. So
-		 * random offset and frag_len can result in a dropped
-		 * fragment instead of a dropped queue/packet. Thus we
-		 * hard-code offset and frag_len.
-		 */
+		 
 		if (max_frag_len * 4 < payload_len || max_frag_len < 16) {
-			/* not enough payload for random offset and frag_len. */
+			 
 			offset = 8;
 			frag_len = UDP_HLEN + max_frag_len;
 		} else {
@@ -301,8 +288,8 @@ static void send_udp_frags(int fd_raw, struct sockaddr *addr,
 		}
 		if (ipv6) {
 			struct ip6_frag *fraghdr = (struct ip6_frag *)(ip_frame + IP6_HLEN);
-			/* sendto() returns EINVAL if offset + frag_len is too small. */
-			/* In IPv6 if !!(frag_len % 8), the fragment is dropped. */
+			 
+			 
 			frag_len &= ~0x7;
 			fraghdr->ip6f_offlg = htons(offset / 8 | IP6_MF);
 			ip6hdr->ip6_plen = htons(frag_len);
@@ -320,11 +307,11 @@ static void send_udp_frags(int fd_raw, struct sockaddr *addr,
 		frag_counter++;
 	}
 
-	/* Event fragments. */
+	 
 	offset = 0;
 	while (offset < (UDP_HLEN + payload_len)) {
 		send_fragment(fd_raw, addr, alen, offset, ipv6);
-		/* IPv4 ignores duplicates, so randomly send a duplicate. */
+		 
 		if (rand() % 100 == 1)
 			send_fragment(fd_raw, addr, alen, offset, ipv6);
 		offset += 2 * max_frag_len;
@@ -334,19 +321,16 @@ static void send_udp_frags(int fd_raw, struct sockaddr *addr,
 static void run_test(struct sockaddr *addr, socklen_t alen, bool ipv6)
 {
 	int fd_tx_raw, fd_rx_udp;
-	/* Frag queue timeout is set to one second in the calling script;
-	 * socket timeout should be just a bit longer to avoid tests interfering
-	 * with each other.
-	 */
+	 
 	struct timeval tv = { .tv_sec = 1, .tv_usec = 10 };
 	int idx;
 	int min_frag_len = 8;
 
-	/* Initialize the payload. */
+	 
 	for (idx = 0; idx < MSG_LEN_MAX; ++idx)
 		udp_payload[idx] = idx % 256;
 
-	/* Open sockets. */
+	 
 	fd_tx_raw = socket(addr->sa_family, SOCK_RAW, IPPROTO_RAW);
 	if (fd_tx_raw == -1)
 		error(1, errno, "socket tx_raw");
@@ -356,7 +340,7 @@ static void run_test(struct sockaddr *addr, socklen_t alen, bool ipv6)
 		error(1, errno, "socket rx_udp");
 	if (bind(fd_rx_udp, addr, alen))
 		error(1, errno, "bind");
-	/* Fail fast. */
+	 
 	if (setsockopt(fd_rx_udp, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)))
 		error(1, errno, "setsockopt rcv timeout");
 
@@ -366,22 +350,13 @@ static void run_test(struct sockaddr *addr, socklen_t alen, bool ipv6)
 			printf("payload_len: %d\n", payload_len);
 
 		if (cfg_overlap) {
-			/* With overlaps, one send/receive pair below takes
-			 * at least one second (== timeout) to run, so there
-			 * is not enough test time to run a nested loop:
-			 * the full overlap test takes 20-30 seconds.
-			 */
+			 
 			max_frag_len = min_frag_len +
 				rand() % (1500 - FRAG_HLEN - min_frag_len);
 			send_udp_frags(fd_tx_raw, addr, alen, ipv6);
 			recv_validate_udp(fd_rx_udp);
 		} else {
-			/* Without overlaps, each packet reassembly (== one
-			 * send/receive pair below) takes very little time to
-			 * run, so we can easily afford more thourough testing
-			 * with a nested loop: the full non-overlap test takes
-			 * less than one second).
-			 */
+			 
 			max_frag_len = min_frag_len;
 			do {
 				send_udp_frags(fd_tx_raw, addr, alen, ipv6);
@@ -392,7 +367,7 @@ static void run_test(struct sockaddr *addr, socklen_t alen, bool ipv6)
 		}
 	}
 
-	/* Cleanup. */
+	 
 	if (close(fd_tx_raw))
 		error(1, errno, "close tx_raw");
 	if (close(fd_rx_udp))
@@ -414,7 +389,7 @@ static void run_test_v4(void)
 	addr.sin_port = htons(cfg_port);
 	addr.sin_addr = addr4;
 
-	run_test((void *)&addr, sizeof(addr), false /* !ipv6 */);
+	run_test((void *)&addr, sizeof(addr), false  );
 }
 
 static void run_test_v6(void)
@@ -425,7 +400,7 @@ static void run_test_v6(void)
 	addr.sin6_port = htons(cfg_port);
 	addr.sin6_addr = addr6;
 
-	run_test((void *)&addr, sizeof(addr), true /* ipv6 */);
+	run_test((void *)&addr, sizeof(addr), true  );
 }
 
 static void parse_opts(int argc, char **argv)
@@ -460,7 +435,7 @@ int main(int argc, char **argv)
 	parse_opts(argc, argv);
 	seed = time(NULL);
 	srand(seed);
-	/* Print the seed to track/reproduce potential failures. */
+	 
 	printf("seed = %d\n", seed);
 
 	if (cfg_do_ipv4)

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Author: Aleksa Sarai <cyphar@cyphar.com>
- * Copyright (C) 2018-2019 SUSE LLC.
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <fcntl.h>
@@ -17,50 +14,24 @@
 #include "../kselftest.h"
 #include "helpers.h"
 
-/*
- * Construct a test directory with the following structure:
- *
- * root/
- * |-- procexe -> /proc/self/exe
- * |-- procroot -> /proc/self/root
- * |-- root/
- * |-- mnt/ [mountpoint]
- * |   |-- self -> ../mnt/
- * |   `-- absself -> /mnt/
- * |-- etc/
- * |   `-- passwd
- * |-- creatlink -> /newfile3
- * |-- reletc -> etc/
- * |-- relsym -> etc/passwd
- * |-- absetc -> /etc/
- * |-- abssym -> /etc/passwd
- * |-- abscheeky -> /cheeky
- * `-- cheeky/
- *     |-- absself -> /
- *     |-- self -> ../../root/
- *     |-- garbageself -> /../../root/
- *     |-- passwd -> ../cheeky/../cheeky/../etc/../etc/passwd
- *     |-- abspasswd -> /../cheeky/../cheeky/../etc/../etc/passwd
- *     |-- dotdotlink -> ../../../../../../../../../../../../../../etc/passwd
- *     `-- garbagelink -> /../../../../../../../../../../../../../../etc/passwd
- */
+ 
 int setup_testdir(void)
 {
 	int dfd, tmpfd;
 	char dirname[] = "/tmp/ksft-openat2-testdir.XXXXXX";
 
-	/* Unshare and make /tmp a new directory. */
+	 
 	E_unshare(CLONE_NEWNS);
 	E_mount("", "/tmp", "", MS_PRIVATE, "");
 
-	/* Make the top-level directory. */
+	 
 	if (!mkdtemp(dirname))
 		ksft_exit_fail_msg("setup_testdir: failed to create tmpdir\n");
 	dfd = open(dirname, O_PATH | O_DIRECTORY);
 	if (dfd < 0)
 		ksft_exit_fail_msg("setup_testdir: failed to open tmpdir\n");
 
-	/* A sub-directory which is actually used for tests. */
+	 
 	E_mkdirat(dfd, "root", 0755);
 	tmpfd = openat(dfd, "root", O_PATH | O_DIRECTORY);
 	if (tmpfd < 0)
@@ -72,7 +43,7 @@ int setup_testdir(void)
 	E_symlinkat("/proc/self/root", dfd, "procroot");
 	E_mkdirat(dfd, "root", 0755);
 
-	/* There is no mountat(2), so use chdir. */
+	 
 	E_mkdirat(dfd, "mnt", 0755);
 	E_fchdir(dfd);
 	E_mount("tmpfs", "./mnt", "tmpfs", MS_NOSUID | MS_NODEV, "");
@@ -133,8 +104,8 @@ void test_openat2_opath_tests(void)
 	E_asprintf(&hardcoded_fdpath, "self/fd/%d", hardcoded_fd);
 
 	struct basic_test tests[] = {
-		/** RESOLVE_BENEATH **/
-		/* Attempts to cross dirfd should be blocked. */
+		 
+		 
 		{ .name = "[beneath] jump to /",
 		  .path = "/",			.how.resolve = RESOLVE_BENEATH,
 		  .out.err = -EXDEV,		.pass = false },
@@ -162,7 +133,7 @@ void test_openat2_opath_tests(void)
 		{ .name = "[beneath] chained garbage links to $root",
 		  .path = "abscheeky/garbageself", .how.resolve = RESOLVE_BENEATH,
 		  .out.err = -EXDEV,		.pass = false },
-		/* Only relative paths that stay inside dirfd should work. */
+		 
 		{ .name = "[beneath] ordinary path to 'root'",
 		  .path = "root",		.how.resolve = RESOLVE_BENEATH,
 		  .out.path = "root",		.pass = true },
@@ -193,7 +164,7 @@ void test_openat2_opath_tests(void)
 		{ .name = "[beneath] chained cheeky absolute path outside $root",
 		  .path = "abscheeky/abspasswd", .how.resolve = RESOLVE_BENEATH,
 		  .out.err = -EXDEV,		.pass = false },
-		/* Tricky paths should fail. */
+		 
 		{ .name = "[beneath] tricky '..'-chained symlink outside $root",
 		  .path = "cheeky/dotdotlink",	.how.resolve = RESOLVE_BENEATH,
 		  .out.err = -EXDEV,		.pass = false },
@@ -207,8 +178,8 @@ void test_openat2_opath_tests(void)
 		  .path = "abscheeky/garbagelink", .how.resolve = RESOLVE_BENEATH,
 		  .out.err = -EXDEV,		.pass = false },
 
-		/** RESOLVE_IN_ROOT **/
-		/* All attempts to cross the dirfd will be scoped-to-root. */
+		 
+		 
 		{ .name = "[in_root] jump to /",
 		  .path = "/",			.how.resolve = RESOLVE_IN_ROOT,
 		  .out.path = NULL,		.pass = true },
@@ -281,7 +252,7 @@ void test_openat2_opath_tests(void)
 		{ .name = "[in_root] tricky absolute path + absolute + garbage link outside $root",
 		  .path = "/../../../../abscheeky/garbagelink", .how.resolve = RESOLVE_IN_ROOT,
 		  .out.path = "etc/passwd",	.pass = true },
-		/* O_CREAT should handle trailing symlinks correctly. */
+		 
 		{ .name = "[in_root] O_CREAT of relative path inside $root",
 		  .path = "newfile1",		.how.flags = O_CREAT,
 						.how.mode = 0700,
@@ -298,8 +269,8 @@ void test_openat2_opath_tests(void)
 						.how.resolve = RESOLVE_IN_ROOT,
 		  .out.path = "newfile3",	.pass = true },
 
-		/** RESOLVE_NO_XDEV **/
-		/* Crossing *down* into a mountpoint is disallowed. */
+		 
+		 
 		{ .name = "[no_xdev] cross into $mnt",
 		  .path = "mnt",		.how.resolve = RESOLVE_NO_XDEV,
 		  .out.err = -EXDEV,		.pass = false },
@@ -309,7 +280,7 @@ void test_openat2_opath_tests(void)
 		{ .name = "[no_xdev] cross into $mnt/.",
 		  .path = "mnt/.",		.how.resolve = RESOLVE_NO_XDEV,
 		  .out.err = -EXDEV,		.pass = false },
-		/* Crossing *up* out of a mountpoint is disallowed. */
+		 
 		{ .name = "[no_xdev] goto mountpoint root",
 		  .dir = "mnt", .path = ".",	.how.resolve = RESOLVE_NO_XDEV,
 		  .out.path = "mnt",		.pass = true },
@@ -325,7 +296,7 @@ void test_openat2_opath_tests(void)
 		{ .name = "[no_xdev] temporary absolute symlink cross up",
 		  .dir = "mnt", .path = "absself", .how.resolve = RESOLVE_NO_XDEV,
 		  .out.err = -EXDEV,		.pass = false },
-		/* Jumping to "/" is ok, but later components cannot cross. */
+		 
 		{ .name = "[no_xdev] jump to / directly",
 		  .dir = "mnt", .path = "/",	.how.resolve = RESOLVE_NO_XDEV,
 		  .out.path = "/",		.pass = true },
@@ -338,24 +309,24 @@ void test_openat2_opath_tests(void)
 		{ .name = "[no_xdev] jump to / then tmp",
 		  .path = "/tmp",		.how.resolve = RESOLVE_NO_XDEV,
 		  .out.err = -EXDEV,		.pass = false },
-		/* Magic-links are blocked since they can switch vfsmounts. */
+		 
 		{ .name = "[no_xdev] cross through magic-link to self/root",
 		  .dir = "/proc", .path = "self/root", 	.how.resolve = RESOLVE_NO_XDEV,
 		  .out.err = -EXDEV,			.pass = false },
 		{ .name = "[no_xdev] cross through magic-link to self/cwd",
 		  .dir = "/proc", .path = "self/cwd",	.how.resolve = RESOLVE_NO_XDEV,
 		  .out.err = -EXDEV,			.pass = false },
-		/* Except magic-link jumps inside the same vfsmount. */
+		 
 		{ .name = "[no_xdev] jump through magic-link to same procfs",
 		  .dir = "/proc", .path = hardcoded_fdpath, .how.resolve = RESOLVE_NO_XDEV,
 		  .out.path = "/proc",			    .pass = true, },
 
-		/** RESOLVE_NO_MAGICLINKS **/
-		/* Regular symlinks should work. */
+		 
+		 
 		{ .name = "[no_magiclinks] ordinary relative symlink",
 		  .path = "relsym",		.how.resolve = RESOLVE_NO_MAGICLINKS,
 		  .out.path = "etc/passwd",	.pass = true },
-		/* Magic-links should not work. */
+		 
 		{ .name = "[no_magiclinks] symlink to magic-link",
 		  .path = "procexe",		.how.resolve = RESOLVE_NO_MAGICLINKS,
 		  .out.err = -ELOOP,		.pass = false },
@@ -377,8 +348,8 @@ void test_openat2_opath_tests(void)
 						 .how.resolve = RESOLVE_NO_MAGICLINKS,
 		  .out.err = -ELOOP,		.pass = false },
 
-		/** RESOLVE_NO_SYMLINKS **/
-		/* Normal paths should work. */
+		 
+		 
 		{ .name = "[no_symlinks] ordinary path to '.'",
 		  .path = ".",			.how.resolve = RESOLVE_NO_SYMLINKS,
 		  .out.path = NULL,		.pass = true },
@@ -391,7 +362,7 @@ void test_openat2_opath_tests(void)
 		{ .name = "[no_symlinks] ordinary path to 'etc/passwd'",
 		  .path = "etc/passwd",		.how.resolve = RESOLVE_NO_SYMLINKS,
 		  .out.path = "etc/passwd",	.pass = true },
-		/* Regular symlinks are blocked. */
+		 
 		{ .name = "[no_symlinks] relative symlink target",
 		  .path = "relsym",		.how.resolve = RESOLVE_NO_SYMLINKS,
 		  .out.err = -ELOOP,		.pass = false },
@@ -413,7 +384,7 @@ void test_openat2_opath_tests(void)
 		{ .name = "[no_symlinks] cheeky absolute + absolute symlink",
 		  .path = "abscheeky/absself",	.how.resolve = RESOLVE_NO_SYMLINKS,
 		  .out.err = -ELOOP,		.pass = false },
-		/* Trailing symlinks with NO_FOLLOW. */
+		 
 		{ .name = "[no_symlinks] relative symlink with O_NOFOLLOW",
 		  .path = "relsym",		.how.flags = O_NOFOLLOW,
 						.how.resolve = RESOLVE_NO_SYMLINKS,
@@ -451,7 +422,7 @@ void test_openat2_opath_tests(void)
 			goto skip;
 		}
 
-		/* Auto-set O_PATH. */
+		 
 		if (!(test->how.flags & O_CREAT))
 			test->how.flags |= O_PATH;
 
@@ -510,7 +481,7 @@ int main(int argc, char **argv)
 	ksft_print_header();
 	ksft_set_plan(NUM_TESTS);
 
-	/* NOTE: We should be checking for CAP_SYS_ADMIN here... */
+	 
 	if (geteuid() != 0)
 		ksft_exit_skip("all tests require euid == 0\n");
 

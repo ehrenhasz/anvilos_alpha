@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/module.h>
 #include <linux/errno.h>
 #include <linux/socket.h>
@@ -101,10 +101,10 @@ static int gue6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 	guehdr = (struct guehdr *)&udp_hdr(skb)[1];
 
 	switch (guehdr->version) {
-	case 0: /* Full GUE header present */
+	case 0:  
 		break;
 	case 1: {
-		/* Direct encasulation of IPv4 or IPv6 */
+		 
 		skb_set_transport_header(skb, -(int)sizeof(struct icmp6hdr));
 
 		switch (((struct iphdr *)guehdr)->version) {
@@ -121,7 +121,7 @@ static int gue6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 			goto out;
 		}
 	}
-	default: /* Undefined version */
+	default:  
 		return -EOPNOTSUPP;
 	}
 
@@ -137,10 +137,7 @@ static int gue6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 	if (validate_gue_flags(guehdr, optlen))
 		return -EINVAL;
 
-	/* Handling exceptions for direct UDP encapsulation in GUE would lead to
-	 * recursion. Besides, this kind of encapsulation can't even be
-	 * configured currently. Discard this.
-	 */
+	 
 	if (guehdr->proto_ctype == IPPROTO_UDP ||
 	    guehdr->proto_ctype == IPPROTO_UDPLITE)
 		return -EOPNOTSUPP;

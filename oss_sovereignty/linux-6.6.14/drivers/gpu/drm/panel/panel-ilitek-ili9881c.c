@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2017-2018, Bootlin
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -315,7 +313,7 @@ static const struct ili9881c_instr k101_im2byl02_init[] = {
 	ILI9881C_COMMAND_INSTR(0x31, 0x00),
 	ILI9881C_COMMAND_INSTR(0x32, 0x00),
 	ILI9881C_COMMAND_INSTR(0x33, 0x00),
-	ILI9881C_COMMAND_INSTR(0x34, 0x00), /* GPWR1/2 non overlap time 2.62us */
+	ILI9881C_COMMAND_INSTR(0x34, 0x00),  
 	ILI9881C_COMMAND_INSTR(0x35, 0x00),
 	ILI9881C_COMMAND_INSTR(0x36, 0x00),
 	ILI9881C_COMMAND_INSTR(0x37, 0x00),
@@ -392,19 +390,19 @@ static const struct ili9881c_instr k101_im2byl02_init[] = {
 	ILI9881C_COMMAND_INSTR(0x89, 0x0E),
 	ILI9881C_COMMAND_INSTR(0x8A, 0x02),
 	ILI9881C_SWITCH_PAGE_INSTR(4),
-	ILI9881C_COMMAND_INSTR(0x3B, 0xC0), /* ILI4003D sel */
-	ILI9881C_COMMAND_INSTR(0x6C, 0x15), /* Set VCORE voltage = 1.5V */
-	ILI9881C_COMMAND_INSTR(0x6E, 0x2A), /* di_pwr_reg=0 for power mode 2A, VGH clamp 18V */
-	ILI9881C_COMMAND_INSTR(0x6F, 0x33), /* pumping ratio VGH=5x VGL=-3x */
-	ILI9881C_COMMAND_INSTR(0x8D, 0x1B), /* VGL clamp -10V */
-	ILI9881C_COMMAND_INSTR(0x87, 0xBA), /* ESD */
-	ILI9881C_COMMAND_INSTR(0x3A, 0x24), /* POWER SAVING */
+	ILI9881C_COMMAND_INSTR(0x3B, 0xC0),  
+	ILI9881C_COMMAND_INSTR(0x6C, 0x15),  
+	ILI9881C_COMMAND_INSTR(0x6E, 0x2A),  
+	ILI9881C_COMMAND_INSTR(0x6F, 0x33),  
+	ILI9881C_COMMAND_INSTR(0x8D, 0x1B),  
+	ILI9881C_COMMAND_INSTR(0x87, 0xBA),  
+	ILI9881C_COMMAND_INSTR(0x3A, 0x24),  
 	ILI9881C_COMMAND_INSTR(0x26, 0x76),
 	ILI9881C_COMMAND_INSTR(0xB2, 0xD1),
 	ILI9881C_SWITCH_PAGE_INSTR(1),
-	ILI9881C_COMMAND_INSTR(0x22, 0x0A), /* BGR, SS */
-	ILI9881C_COMMAND_INSTR(0x31, 0x00), /* Zigzag type3 inversion */
-	ILI9881C_COMMAND_INSTR(0x40, 0x53), /* ILI4003D sel */
+	ILI9881C_COMMAND_INSTR(0x22, 0x0A),  
+	ILI9881C_COMMAND_INSTR(0x31, 0x00),  
+	ILI9881C_COMMAND_INSTR(0x40, 0x53),  
 	ILI9881C_COMMAND_INSTR(0x43, 0x66),
 	ILI9881C_COMMAND_INSTR(0x53, 0x4C),
 	ILI9881C_COMMAND_INSTR(0x50, 0x87),
@@ -414,45 +412,45 @@ static const struct ili9881c_instr k101_im2byl02_init[] = {
 	ILI9881C_COMMAND_INSTR(0x62, 0x0C),
 	ILI9881C_COMMAND_INSTR(0x63, 0x00),
 	ILI9881C_COMMAND_INSTR(0xA0, 0x00),
-	ILI9881C_COMMAND_INSTR(0xA1, 0x13), /* VP251 */
-	ILI9881C_COMMAND_INSTR(0xA2, 0x23), /* VP247 */
-	ILI9881C_COMMAND_INSTR(0xA3, 0x14), /* VP243 */
-	ILI9881C_COMMAND_INSTR(0xA4, 0x16), /* VP239 */
-	ILI9881C_COMMAND_INSTR(0xA5, 0x29), /* VP231 */
-	ILI9881C_COMMAND_INSTR(0xA6, 0x1E), /* VP219 */
-	ILI9881C_COMMAND_INSTR(0xA7, 0x1D), /* VP203 */
-	ILI9881C_COMMAND_INSTR(0xA8, 0x86), /* VP175 */
-	ILI9881C_COMMAND_INSTR(0xA9, 0x1E), /* VP144 */
-	ILI9881C_COMMAND_INSTR(0xAA, 0x29), /* VP111 */
-	ILI9881C_COMMAND_INSTR(0xAB, 0x74), /* VP80 */
-	ILI9881C_COMMAND_INSTR(0xAC, 0x19), /* VP52 */
-	ILI9881C_COMMAND_INSTR(0xAD, 0x17), /* VP36 */
-	ILI9881C_COMMAND_INSTR(0xAE, 0x4B), /* VP24 */
-	ILI9881C_COMMAND_INSTR(0xAF, 0x20), /* VP16 */
-	ILI9881C_COMMAND_INSTR(0xB0, 0x26), /* VP12 */
-	ILI9881C_COMMAND_INSTR(0xB1, 0x4C), /* VP8 */
-	ILI9881C_COMMAND_INSTR(0xB2, 0x5D), /* VP4 */
-	ILI9881C_COMMAND_INSTR(0xB3, 0x3F), /* VP0 */
-	ILI9881C_COMMAND_INSTR(0xC0, 0x00), /* VN255 GAMMA N */
-	ILI9881C_COMMAND_INSTR(0xC1, 0x13), /* VN251 */
-	ILI9881C_COMMAND_INSTR(0xC2, 0x23), /* VN247 */
-	ILI9881C_COMMAND_INSTR(0xC3, 0x14), /* VN243 */
-	ILI9881C_COMMAND_INSTR(0xC4, 0x16), /* VN239 */
-	ILI9881C_COMMAND_INSTR(0xC5, 0x29), /* VN231 */
-	ILI9881C_COMMAND_INSTR(0xC6, 0x1E), /* VN219 */
-	ILI9881C_COMMAND_INSTR(0xC7, 0x1D), /* VN203 */
-	ILI9881C_COMMAND_INSTR(0xC8, 0x86), /* VN175 */
-	ILI9881C_COMMAND_INSTR(0xC9, 0x1E), /* VN144 */
-	ILI9881C_COMMAND_INSTR(0xCA, 0x29), /* VN111 */
-	ILI9881C_COMMAND_INSTR(0xCB, 0x74), /* VN80 */
-	ILI9881C_COMMAND_INSTR(0xCC, 0x19), /* VN52 */
-	ILI9881C_COMMAND_INSTR(0xCD, 0x17), /* VN36 */
-	ILI9881C_COMMAND_INSTR(0xCE, 0x4B), /* VN24 */
-	ILI9881C_COMMAND_INSTR(0xCF, 0x20), /* VN16 */
-	ILI9881C_COMMAND_INSTR(0xD0, 0x26), /* VN12 */
-	ILI9881C_COMMAND_INSTR(0xD1, 0x4C), /* VN8 */
-	ILI9881C_COMMAND_INSTR(0xD2, 0x5D), /* VN4 */
-	ILI9881C_COMMAND_INSTR(0xD3, 0x3F), /* VN0 */
+	ILI9881C_COMMAND_INSTR(0xA1, 0x13),  
+	ILI9881C_COMMAND_INSTR(0xA2, 0x23),  
+	ILI9881C_COMMAND_INSTR(0xA3, 0x14),  
+	ILI9881C_COMMAND_INSTR(0xA4, 0x16),  
+	ILI9881C_COMMAND_INSTR(0xA5, 0x29),  
+	ILI9881C_COMMAND_INSTR(0xA6, 0x1E),  
+	ILI9881C_COMMAND_INSTR(0xA7, 0x1D),  
+	ILI9881C_COMMAND_INSTR(0xA8, 0x86),  
+	ILI9881C_COMMAND_INSTR(0xA9, 0x1E),  
+	ILI9881C_COMMAND_INSTR(0xAA, 0x29),  
+	ILI9881C_COMMAND_INSTR(0xAB, 0x74),  
+	ILI9881C_COMMAND_INSTR(0xAC, 0x19),  
+	ILI9881C_COMMAND_INSTR(0xAD, 0x17),  
+	ILI9881C_COMMAND_INSTR(0xAE, 0x4B),  
+	ILI9881C_COMMAND_INSTR(0xAF, 0x20),  
+	ILI9881C_COMMAND_INSTR(0xB0, 0x26),  
+	ILI9881C_COMMAND_INSTR(0xB1, 0x4C),  
+	ILI9881C_COMMAND_INSTR(0xB2, 0x5D),  
+	ILI9881C_COMMAND_INSTR(0xB3, 0x3F),  
+	ILI9881C_COMMAND_INSTR(0xC0, 0x00),  
+	ILI9881C_COMMAND_INSTR(0xC1, 0x13),  
+	ILI9881C_COMMAND_INSTR(0xC2, 0x23),  
+	ILI9881C_COMMAND_INSTR(0xC3, 0x14),  
+	ILI9881C_COMMAND_INSTR(0xC4, 0x16),  
+	ILI9881C_COMMAND_INSTR(0xC5, 0x29),  
+	ILI9881C_COMMAND_INSTR(0xC6, 0x1E),  
+	ILI9881C_COMMAND_INSTR(0xC7, 0x1D),  
+	ILI9881C_COMMAND_INSTR(0xC8, 0x86),  
+	ILI9881C_COMMAND_INSTR(0xC9, 0x1E),  
+	ILI9881C_COMMAND_INSTR(0xCA, 0x29),  
+	ILI9881C_COMMAND_INSTR(0xCB, 0x74),  
+	ILI9881C_COMMAND_INSTR(0xCC, 0x19),  
+	ILI9881C_COMMAND_INSTR(0xCD, 0x17),  
+	ILI9881C_COMMAND_INSTR(0xCE, 0x4B),  
+	ILI9881C_COMMAND_INSTR(0xCF, 0x20),  
+	ILI9881C_COMMAND_INSTR(0xD0, 0x26),  
+	ILI9881C_COMMAND_INSTR(0xD1, 0x4C),  
+	ILI9881C_COMMAND_INSTR(0xD2, 0x5D),  
+	ILI9881C_COMMAND_INSTR(0xD3, 0x3F),  
 };
 
 static const struct ili9881c_instr tl050hdv35_init[] = {
@@ -835,17 +833,7 @@ static inline struct ili9881c *panel_to_ili9881c(struct drm_panel *panel)
 	return container_of(panel, struct ili9881c, panel);
 }
 
-/*
- * The panel seems to accept some private DCS commands that map
- * directly to registers.
- *
- * It is organised by page, with each page having its own set of
- * registers, and the first page looks like it's holding the standard
- * DCS commands.
- *
- * So before any attempt at sending a command or data, we have to be
- * sure if we're in the right page or not.
- */
+ 
 static int ili9881c_switch_page(struct ili9881c *ctx, u8 page)
 {
 	u8 buf[4] = { 0xff, 0x98, 0x81, page };
@@ -876,13 +864,13 @@ static int ili9881c_prepare(struct drm_panel *panel)
 	unsigned int i;
 	int ret;
 
-	/* Power the panel */
+	 
 	ret = regulator_enable(ctx->power);
 	if (ret)
 		return ret;
 	msleep(5);
 
-	/* And reset it */
+	 
 	gpiod_set_value(ctx->reset, 1);
 	msleep(20);
 
@@ -1037,10 +1025,7 @@ static int ili9881c_get_modes(struct drm_panel *panel,
 	connector->display_info.width_mm = mode->width_mm;
 	connector->display_info.height_mm = mode->height_mm;
 
-	/*
-	 * TODO: Remove once all drm drivers call
-	 * drm_connector_set_orientation_from_panel()
-	 */
+	 
 	drm_connector_set_panel_orientation(connector, ctx->orientation);
 
 	return 1;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * RSA padding templates.
- *
- * Copyright (c) 2015  Intel Corporation
- */
+
+ 
 
 #include <crypto/algapi.h>
 #include <crypto/akcipher.h>
@@ -16,12 +12,10 @@
 #include <linux/random.h>
 #include <linux/scatterlist.h>
 
-/*
- * Hash algorithm OIDs plus ASN.1 DER wrappings [RFC4880 sec 5.2.2].
- */
+ 
 static const u8 rsa_digest_info_md5[] = {
 	0x30, 0x20, 0x30, 0x0c, 0x06, 0x08,
-	0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x02, 0x05, /* OID */
+	0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x02, 0x05,  
 	0x05, 0x00, 0x04, 0x10
 };
 
@@ -116,7 +110,7 @@ static int pkcs1pad_set_pub_key(struct crypto_akcipher *tfm, const void *key,
 	if (err)
 		return err;
 
-	/* Find out new modulus size from rsa implementation */
+	 
 	err = crypto_akcipher_maxsize(ctx->child);
 	if (err > PAGE_SIZE)
 		return -ENOTSUPP;
@@ -137,7 +131,7 @@ static int pkcs1pad_set_priv_key(struct crypto_akcipher *tfm, const void *key,
 	if (err)
 		return err;
 
-	/* Find out new modulus size from rsa implementation */
+	 
 	err = crypto_akcipher_maxsize(ctx->child);
 	if (err > PAGE_SIZE)
 		return -ENOTSUPP;
@@ -150,11 +144,7 @@ static unsigned int pkcs1pad_get_max_size(struct crypto_akcipher *tfm)
 {
 	struct pkcs1pad_ctx *ctx = akcipher_tfm_ctx(tfm);
 
-	/*
-	 * The maximum destination buffer size for the encrypt/sign operations
-	 * will be the same as for RSA, even though it's smaller for
-	 * decrypt/verify.
-	 */
+	 
 
 	return ctx->key_size;
 }
@@ -186,7 +176,7 @@ static int pkcs1pad_encrypt_sign_complete(struct akcipher_request *req, int err)
 	len = req_ctx->child_req.dst_len;
 	pad_len = ctx->key_size - len;
 
-	/* Four billion to one */
+	 
 	if (likely(!pad_len))
 		goto out;
 
@@ -260,7 +250,7 @@ static int pkcs1pad_encrypt(struct akcipher_request *req)
 	akcipher_request_set_callback(&req_ctx->child_req, req->base.flags,
 			pkcs1pad_encrypt_sign_complete_cb, req);
 
-	/* Reuse output buffer */
+	 
 	akcipher_request_set_crypt(&req_ctx->child_req, req_ctx->in_sg,
 				   req->dst, ctx->key_size - 1, req->dst_len);
 
@@ -291,7 +281,7 @@ static int pkcs1pad_decrypt_complete(struct akcipher_request *req, int err)
 	out_buf = req_ctx->out_buf;
 	if (dst_len == ctx->key_size) {
 		if (out_buf[0] != 0x00)
-			/* Decrypted value had no leading 0 byte */
+			 
 			goto done;
 
 		dst_len--;
@@ -359,7 +349,7 @@ static int pkcs1pad_decrypt(struct akcipher_request *req)
 	akcipher_request_set_callback(&req_ctx->child_req, req->base.flags,
 			pkcs1pad_decrypt_complete_cb, req);
 
-	/* Reuse input buffer, output to a new buffer */
+	 
 	akcipher_request_set_crypt(&req_ctx->child_req, req->src,
 				   req_ctx->out_sg, req->src_len,
 				   ctx->key_size);
@@ -417,7 +407,7 @@ static int pkcs1pad_sign(struct akcipher_request *req)
 	akcipher_request_set_callback(&req_ctx->child_req, req->base.flags,
 			pkcs1pad_encrypt_sign_complete_cb, req);
 
-	/* Reuse output buffer */
+	 
 	akcipher_request_set_crypt(&req_ctx->child_req, req_ctx->in_sg,
 				   req->dst, ctx->key_size - 1, req->dst_len);
 
@@ -453,7 +443,7 @@ static int pkcs1pad_verify_complete(struct akcipher_request *req, int err)
 	out_buf = req_ctx->out_buf;
 	if (dst_len == ctx->key_size) {
 		if (out_buf[0] != 0x00)
-			/* Decrypted value had no leading 0 byte */
+			 
 			goto done;
 
 		dst_len--;
@@ -489,12 +479,12 @@ static int pkcs1pad_verify_complete(struct akcipher_request *req, int err)
 		req->dst_len = dst_len - pos;
 		goto done;
 	}
-	/* Extract appended digest. */
+	 
 	sg_pcopy_to_buffer(req->src,
 			   sg_nents_for_len(req->src, sig_size + digest_size),
 			   req_ctx->out_buf + ctx->key_size,
 			   digest_size, sig_size);
-	/* Do the actual verification step. */
+	 
 	if (memcmp(req_ctx->out_buf + ctx->key_size, out_buf + pos,
 		   digest_size) != 0)
 		err = -EKEYREJECTED;
@@ -517,14 +507,7 @@ out:
 	akcipher_request_complete(req, err);
 }
 
-/*
- * The verify operation is here for completeness similar to the verification
- * defined in RFC2313 section 10.2 except that block type 0 is not accepted,
- * as in RFC2437.  RFC2437 section 9.2 doesn't define any operation to
- * retrieve the DigestInfo from a signature, instead the user is expected
- * to call the sign operation to generate the expected signature and compare
- * signatures instead of the message-digests.
- */
+ 
 static int pkcs1pad_verify(struct akcipher_request *req)
 {
 	struct crypto_akcipher *tfm = crypto_akcipher_reqtfm(req);
@@ -549,7 +532,7 @@ static int pkcs1pad_verify(struct akcipher_request *req)
 	akcipher_request_set_callback(&req_ctx->child_req, req->base.flags,
 			pkcs1pad_verify_complete_cb, req);
 
-	/* Reuse input buffer, output to a new buffer */
+	 
 	akcipher_request_set_crypt(&req_ctx->child_req, req->src,
 				   req_ctx->out_sg, sig_size, ctx->key_size);
 

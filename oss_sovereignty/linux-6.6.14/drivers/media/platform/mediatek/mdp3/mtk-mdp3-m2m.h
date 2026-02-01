@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
- */
+ 
+ 
 
 #ifndef __MTK_MDP3_M2M_H__
 #define __MTK_MDP3_M2M_H__
@@ -36,7 +33,7 @@ struct mdp_m2m_ctx {
 	u32				frame_count[MDP_M2M_MAX];
 
 	struct mdp_frameparam		curr_param;
-	/* synchronization protect for mdp m2m context */
+	 
 	struct mutex			ctx_lock;
 };
 
@@ -44,4 +41,4 @@ int mdp_m2m_device_register(struct mdp_dev *mdp);
 void mdp_m2m_device_unregister(struct mdp_dev *mdp);
 void mdp_m2m_job_finish(struct mdp_m2m_ctx *ctx);
 
-#endif  /* __MTK_MDP3_M2M_H__ */
+#endif   

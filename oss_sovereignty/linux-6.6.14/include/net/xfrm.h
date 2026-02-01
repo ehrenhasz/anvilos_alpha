@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _NET_XFRM_H
 #define _NET_XFRM_H
 
@@ -56,66 +56,7 @@
 #endif
 
 
-/* Organization of SPD aka "XFRM rules"
-   ------------------------------------
-
-   Basic objects:
-   - policy rule, struct xfrm_policy (=SPD entry)
-   - bundle of transformations, struct dst_entry == struct xfrm_dst (=SA bundle)
-   - instance of a transformer, struct xfrm_state (=SA)
-   - template to clone xfrm_state, struct xfrm_tmpl
-
-   SPD is plain linear list of xfrm_policy rules, ordered by priority.
-   (To be compatible with existing pfkeyv2 implementations,
-   many rules with priority of 0x7fffffff are allowed to exist and
-   such rules are ordered in an unpredictable way, thanks to bsd folks.)
-
-   Lookup is plain linear search until the first match with selector.
-
-   If "action" is "block", then we prohibit the flow, otherwise:
-   if "xfrms_nr" is zero, the flow passes untransformed. Otherwise,
-   policy entry has list of up to XFRM_MAX_DEPTH transformations,
-   described by templates xfrm_tmpl. Each template is resolved
-   to a complete xfrm_state (see below) and we pack bundle of transformations
-   to a dst_entry returned to requestor.
-
-   dst -. xfrm  .-> xfrm_state #1
-    |---. child .-> dst -. xfrm .-> xfrm_state #2
-                     |---. child .-> dst -. xfrm .-> xfrm_state #3
-                                      |---. child .-> NULL
-
-   Bundles are cached at xrfm_policy struct (field ->bundles).
-
-
-   Resolution of xrfm_tmpl
-   -----------------------
-   Template contains:
-   1. ->mode		Mode: transport or tunnel
-   2. ->id.proto	Protocol: AH/ESP/IPCOMP
-   3. ->id.daddr	Remote tunnel endpoint, ignored for transport mode.
-      Q: allow to resolve security gateway?
-   4. ->id.spi          If not zero, static SPI.
-   5. ->saddr		Local tunnel endpoint, ignored for transport mode.
-   6. ->algos		List of allowed algos. Plain bitmask now.
-      Q: ealgos, aalgos, calgos. What a mess...
-   7. ->share		Sharing mode.
-      Q: how to implement private sharing mode? To add struct sock* to
-      flow id?
-
-   Having this template we search through SAD searching for entries
-   with appropriate mode/proto/algo, permitted by selector.
-   If no appropriate entry found, it is requested from key manager.
-
-   PROBLEMS:
-   Q: How to find all the bundles referring to a physical path for
-      PMTU discovery? Seems, dst should contain list of all parents...
-      and enter to infinite locking hierarchy disaster.
-      No! It is easier, we will not search for them, let them find us.
-      We add genid to each dst plus pointer to genid of raw IP route,
-      pmtu disc will update pmtu on raw IP route and increase its genid.
-      dst_check() will see this for top level and trigger resyncing
-      metrics. Plus, it will be made via sk->sk_dst_cache. Solved.
- */
+ 
 
 struct xfrm_state_walk {
 	struct list_head	all;
@@ -158,7 +99,7 @@ struct xfrm_mode {
 	u8 flags;
 };
 
-/* Flags for xfrm_mode. */
+ 
 enum {
 	XFRM_MODE_FLAG_TUNNEL = 1,
 };
@@ -169,7 +110,7 @@ enum xfrm_replay_mode {
 	XFRM_REPLAY_MODE_ESN,
 };
 
-/* Full description of state of transformer. */
+ 
 struct xfrm_state {
 	possible_net_t		xs_net;
 	union {
@@ -191,10 +132,10 @@ struct xfrm_state {
 
 	u32			genid;
 
-	/* Key manager bits */
+	 
 	struct xfrm_state_walk	km;
 
-	/* Parameters of this state. */
+	 
 	struct {
 		u32		reqid;
 		u8		mode;
@@ -211,54 +152,52 @@ struct xfrm_state {
 
 	struct xfrm_lifetime_cfg lft;
 
-	/* Data for transformer */
+	 
 	struct xfrm_algo_auth	*aalg;
 	struct xfrm_algo	*ealg;
 	struct xfrm_algo	*calg;
 	struct xfrm_algo_aead	*aead;
 	const char		*geniv;
 
-	/* mapping change rate limiting */
+	 
 	__be16 new_mapping_sport;
-	u32 new_mapping;	/* seconds */
-	u32 mapping_maxage;	/* seconds for input SA */
+	u32 new_mapping;	 
+	u32 mapping_maxage;	 
 
-	/* Data for encapsulator */
+	 
 	struct xfrm_encap_tmpl	*encap;
 	struct sock __rcu	*encap_sk;
 
-	/* Data for care-of address */
+	 
 	xfrm_address_t	*coaddr;
 
-	/* IPComp needs an IPIP tunnel for handling uncompressed packets */
+	 
 	struct xfrm_state	*tunnel;
 
-	/* If a tunnel, number of users + 1 */
+	 
 	atomic_t		tunnel_users;
 
-	/* State for replay detection */
+	 
 	struct xfrm_replay_state replay;
 	struct xfrm_replay_state_esn *replay_esn;
 
-	/* Replay detection state at the time we sent the last notification */
+	 
 	struct xfrm_replay_state preplay;
 	struct xfrm_replay_state_esn *preplay_esn;
 
-	/* replay detection mode */
+	 
 	enum xfrm_replay_mode    repl_mode;
-	/* internal flag that only holds state for delayed aevent at the
-	 * moment
-	*/
+	 
 	u32			xflags;
 
-	/* Replay detection notification settings */
+	 
 	u32			replay_maxage;
 	u32			replay_maxdiff;
 
-	/* Replay detection notification timer */
+	 
 	struct timer_list	rtimer;
 
-	/* Statistics */
+	 
 	struct xfrm_stats	stats;
 
 	struct xfrm_lifetime_cur curlft;
@@ -266,16 +205,15 @@ struct xfrm_state {
 
 	struct xfrm_dev_offload xso;
 
-	/* used to fix curlft->add_time when changing date */
+	 
 	long		saved_tmo;
 
-	/* Last used time */
+	 
 	time64_t		lastused;
 
 	struct page_frag xfrag;
 
-	/* Reference to data common to all the instances of this
-	 * transformer. */
+	 
 	const struct xfrm_type	*type;
 	struct xfrm_mode	inner_mode;
 	struct xfrm_mode	inner_mode_iaf;
@@ -283,11 +221,10 @@ struct xfrm_state {
 
 	const struct xfrm_type_offload	*type_offload;
 
-	/* Security context */
+	 
 	struct xfrm_sec_ctx	*security;
 
-	/* Private data of this transformer, format is opaque,
-	 * interpreted by xfrm_type methods. */
+	 
 	void			*data;
 };
 
@@ -296,7 +233,7 @@ static inline struct net *xs_net(struct xfrm_state *x)
 	return read_pnet(&x->xs_net);
 }
 
-/* xflags - make enum if more show up */
+ 
 #define XFRM_TIME_DEFER	1
 #define XFRM_SOFT_EXPIRE 2
 
@@ -309,7 +246,7 @@ enum {
 	XFRM_STATE_DEAD
 };
 
-/* callback structure passed from either netlink or pfkey */
+ 
 struct km_event {
 	union {
 		u32 hard;
@@ -463,34 +400,29 @@ static inline const struct xfrm_mode *xfrm_ip2inner_mode(struct xfrm_state *x, i
 }
 
 struct xfrm_tmpl {
-/* id in template is interpreted as:
- * daddr - destination of tunnel, may be zero for transport mode.
- * spi   - zero to acquire spi. Not zero if spi is static, then
- *	   daddr must be fixed too.
- * proto - AH/ESP/IPCOMP
- */
+ 
 	struct xfrm_id		id;
 
-/* Source address of tunnel. Ignored, if it is not a tunnel. */
+ 
 	xfrm_address_t		saddr;
 
 	unsigned short		encap_family;
 
 	u32			reqid;
 
-/* Mode: transport, tunnel etc. */
+ 
 	u8			mode;
 
-/* Sharing mode: unique, this session only, this user only etc. */
+ 
 	u8			share;
 
-/* May skip this transfomration if no SA is found */
+ 
 	u8			optional;
 
-/* Skip aalgos/ealgos/calgos checks. */
+ 
 	u8			allalgs;
 
-/* Bit mask of algos allowed for acquisition */
+ 
 	u32			aalgos;
 	u32			ealgos;
 	u32			calgos;
@@ -521,7 +453,7 @@ struct xfrm_policy {
 	struct hlist_node	bydst;
 	struct hlist_node	byidx;
 
-	/* This lock only affects elements except for entry. */
+	 
 	rwlock_t		lock;
 	refcount_t		refcnt;
 	u32			pos;
@@ -577,15 +509,15 @@ struct xfrm_migrate {
 };
 
 #define XFRM_KM_TIMEOUT                30
-/* what happened */
+ 
 #define XFRM_REPLAY_UPDATE	XFRM_AE_CR
 #define XFRM_REPLAY_TIMEOUT	XFRM_AE_CE
 
-/* default aevent timeout in units of 100ms */
+ 
 #define XFRM_AE_ETIME			10
-/* Async Event timer multiplier */
+ 
 #define XFRM_AE_ETH_M			10
-/* default seq threshold size */
+ 
 #define XFRM_AE_SEQT_SIZE		2
 
 struct xfrm_mgr {
@@ -622,15 +554,11 @@ struct xfrm_tunnel_skb_cb {
 
 #define XFRM_TUNNEL_SKB_CB(__skb) ((struct xfrm_tunnel_skb_cb *)&((__skb)->cb[0]))
 
-/*
- * This structure is used for the duration where packets are being
- * transformed by IPsec.  As soon as the packet leaves IPsec the
- * area beyond the generic IP part may be overwritten.
- */
+ 
 struct xfrm_skb_cb {
 	struct xfrm_tunnel_skb_cb header;
 
-        /* Sequence number for replay protection. */
+         
 	union {
 		struct {
 			__u32 low;
@@ -645,42 +573,36 @@ struct xfrm_skb_cb {
 
 #define XFRM_SKB_CB(__skb) ((struct xfrm_skb_cb *)&((__skb)->cb[0]))
 
-/*
- * This structure is used by the afinfo prepare_input/prepare_output functions
- * to transmit header information to the mode input/output functions.
- */
+ 
 struct xfrm_mode_skb_cb {
 	struct xfrm_tunnel_skb_cb header;
 
-	/* Copied from header for IPv4, always set to zero and DF for IPv6. */
+	 
 	__be16 id;
 	__be16 frag_off;
 
-	/* IP header length (excluding options or extension headers). */
+	 
 	u8 ihl;
 
-	/* TOS for IPv4, class for IPv6. */
+	 
 	u8 tos;
 
-	/* TTL for IPv4, hop limitfor IPv6. */
+	 
 	u8 ttl;
 
-	/* Protocol for IPv4, NH for IPv6. */
+	 
 	u8 protocol;
 
-	/* Option length for IPv4, zero for IPv6. */
+	 
 	u8 optlen;
 
-	/* Used by IPv6 only, zero for IPv4. */
+	 
 	u8 flow_lbl[3];
 };
 
 #define XFRM_MODE_SKB_CB(__skb) ((struct xfrm_mode_skb_cb *)&((__skb)->cb[0]))
 
-/*
- * This structure is used by the input processing to locate the SPI and
- * related information.
- */
+ 
 struct xfrm_spi_skb_cb {
 	struct xfrm_tunnel_skb_cb header;
 
@@ -779,7 +701,7 @@ static inline void xfrm_audit_state_icvfail(struct xfrm_state *x,
 				     struct sk_buff *skb, u8 proto)
 {
 }
-#endif /* CONFIG_AUDITSYSCALL */
+#endif  
 
 static inline void xfrm_pol_hold(struct xfrm_policy *policy)
 {
@@ -834,8 +756,8 @@ static inline bool addr_match(const void *token1, const void *token2,
 	unsigned int pdw;
 	unsigned int pbi;
 
-	pdw = prefixlen >> 5;	  /* num of whole u32 in prefix */
-	pbi = prefixlen &  0x1f;  /* num of bits in incomplete u32 in prefix */
+	pdw = prefixlen >> 5;	   
+	pbi = prefixlen &  0x1f;   
 
 	if (pdw)
 		if (memcmp(a1, a2, pdw << 2))
@@ -855,7 +777,7 @@ static inline bool addr_match(const void *token1, const void *token2,
 
 static inline bool addr4_match(__be32 a1, __be32 a2, u8 prefixlen)
 {
-	/* C99 6.5.7 (3): u32 << 32 is undefined behaviour */
+	 
 	if (sizeof(long) == 4 && prefixlen == 0)
 		return true;
 	return !((a1 ^ a2) & htonl(~0UL << (32 - prefixlen)));
@@ -883,7 +805,7 @@ __be16 xfrm_flowi_sport(const struct flowi *fl, const union flowi_uli *uli)
 		port = htons(ntohl(uli->gre_key) >> 16);
 		break;
 	default:
-		port = 0;	/*XXX*/
+		port = 0;	 
 	}
 	return port;
 }
@@ -907,7 +829,7 @@ __be16 xfrm_flowi_dport(const struct flowi *fl, const union flowi_uli *uli)
 		port = htons(ntohl(uli->gre_key) & 0xffff);
 		break;
 	default:
-		port = 0;	/*XXX*/
+		port = 0;	 
 	}
 	return port;
 }
@@ -916,9 +838,7 @@ bool xfrm_selector_match(const struct xfrm_selector *sel,
 			 const struct flowi *fl, unsigned short family);
 
 #ifdef CONFIG_SECURITY_NETWORK_XFRM
-/*	If neither has a context --> match
- * 	Otherwise, both must have a context and the sids, doi, alg must match
- */
+ 
 static inline bool xfrm_sec_ctx_match(struct xfrm_sec_ctx *s1, struct xfrm_sec_ctx *s2)
 {
 	return ((!s1 && !s2) ||
@@ -934,17 +854,7 @@ static inline bool xfrm_sec_ctx_match(struct xfrm_sec_ctx *s1, struct xfrm_sec_c
 }
 #endif
 
-/* A struct encoding bundle of transformations to apply to some set of flow.
- *
- * xdst->child points to the next element of bundle.
- * dst->xfrm  points to an instanse of transformer.
- *
- * Due to unfortunate limitations of current routing cache, which we
- * have no time to fix, it mirrors struct rtable and bound to the same
- * routing key, including saddr,daddr. However, we can have many of
- * bundles differing by session id. All the bundles grow from a parent
- * policy rule.
- */
+ 
 struct xfrm_dst {
 	union {
 		struct dst_entry	dst;
@@ -1005,22 +915,22 @@ static inline void xfrm_dst_destroy(struct xfrm_dst *xdst)
 void xfrm_dst_ifdown(struct dst_entry *dst, struct net_device *dev);
 
 struct xfrm_if_parms {
-	int link;		/* ifindex of underlying L2 interface */
-	u32 if_id;		/* interface identifyer */
+	int link;		 
+	u32 if_id;		 
 	bool collect_md;
 };
 
 struct xfrm_if {
-	struct xfrm_if __rcu *next;	/* next interface in list */
-	struct net_device *dev;		/* virtual device associated with interface */
-	struct net *net;		/* netns for packet i/o */
-	struct xfrm_if_parms p;		/* interface parms */
+	struct xfrm_if __rcu *next;	 
+	struct net_device *dev;		 
+	struct net *net;		 
+	struct xfrm_if_parms p;		 
 
 	struct gro_cells gro_cells;
 };
 
 struct xfrm_offload {
-	/* Output sequence number for replay protection on offloading. */
+	 
 	struct {
 		__u32 low;
 		__u32 hi;
@@ -1033,7 +943,7 @@ struct xfrm_offload {
 #define	CRYPTO_FALLBACK		8
 #define	XFRM_GSO_SEGMENT	16
 #define	XFRM_GRO		32
-/* 64 is free */
+ 
 #define	XFRM_DEV_RESUME		128
 #define	XFRM_XMIT		256
 
@@ -1148,9 +1058,7 @@ static inline bool __xfrm_check_dev_nopolicy(struct sk_buff *skb,
 					     int dir, unsigned short family)
 {
 	if (dir != XFRM_POLICY_OUT && family == AF_INET) {
-		/* same dst may be used for traffic originating from
-		 * devices with different policy settings.
-		 */
+		 
 		return IPCB(skb)->flags & IPSKB_NOPOLICY;
 	}
 	return skb_dst(skb) && (skb_dst(skb)->flags & DST_NOPOLICY);
@@ -1429,7 +1337,7 @@ static inline bool xfrm_id_proto_valid(u8 proto)
 	}
 }
 
-/* IPSEC_PROTO_ANY only matches 3 IPsec protocols, 0 could match all. */
+ 
 static inline int xfrm_id_proto_match(u8 proto, u8 userproto)
 {
 	return (!userproto || proto == userproto ||
@@ -1438,9 +1346,7 @@ static inline int xfrm_id_proto_match(u8 proto, u8 userproto)
 						  proto == IPPROTO_COMP)));
 }
 
-/*
- * xfrm algorithm information
- */
+ 
 struct xfrm_algo_aead_info {
 	char *geniv;
 	u16 icv_truncbits;
@@ -1475,7 +1381,7 @@ struct xfrm_algo_desc {
 	struct sadb_alg desc;
 };
 
-/* XFRM protocol handlers.  */
+ 
 struct xfrm4_protocol {
 	int (*handler)(struct sk_buff *skb);
 	int (*input_handler)(struct sk_buff *skb, int nexthdr, __be32 spi,
@@ -1499,7 +1405,7 @@ struct xfrm6_protocol {
 	int priority;
 };
 
-/* XFRM tunnel handlers.  */
+ 
 struct xfrm_tunnel {
 	int (*handler)(struct sk_buff *skb);
 	int (*cb_handler)(struct sk_buff *skb, int err);
@@ -1623,9 +1529,9 @@ static inline void xfrm_state_sort(struct xfrm_state **d, struct xfrm_state **s,
 #endif
 
 struct xfrmk_sadinfo {
-	u32 sadhcnt; /* current hash bkts */
-	u32 sadhmcnt; /* max allowed hash bkts */
-	u32 sadcnt; /* current running count */
+	u32 sadhcnt;  
+	u32 sadhmcnt;  
+	u32 sadcnt;  
 };
 
 struct xfrmk_spdinfo {
@@ -2127,15 +2033,15 @@ extern const int xfrm_msg_min[XFRM_NR_MSGTYPES];
 extern const struct nla_policy xfrma_policy[XFRMA_MAX+1];
 
 struct xfrm_translator {
-	/* Allocate frag_list and put compat translation there */
+	 
 	int (*alloc_compat)(struct sk_buff *skb, const struct nlmsghdr *src);
 
-	/* Allocate nlmsg with 64-bit translaton of received 32-bit message */
+	 
 	struct nlmsghdr *(*rcv_msg_compat)(const struct nlmsghdr *nlh,
 			int maxtype, const struct nla_policy *policy,
 			struct netlink_ext_ack *extack);
 
-	/* Translate 32-bit user_policy from sockptr */
+	 
 	int (*xlate_user_policy_sockptr)(u8 **pdata32, int optlen);
 
 	struct module *owner;
@@ -2188,4 +2094,4 @@ static inline int register_xfrm_interface_bpf(void)
 
 #endif
 
-#endif	/* _NET_XFRM_H */
+#endif	 

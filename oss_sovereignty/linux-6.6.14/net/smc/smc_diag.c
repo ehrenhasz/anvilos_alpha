@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Shared Memory Communications over RDMA (SMC-R) and RoCE
- *
- * Monitoring SMC transport protocol sockets
- *
- * Copyright IBM Corp. 2016
- *
- * Author(s):  Ursula Braun <ubraun@linux.vnet.ibm.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -267,5 +259,5 @@ static void __exit smc_diag_exit(void)
 module_init(smc_diag_init);
 module_exit(smc_diag_exit);
 MODULE_LICENSE("GPL");
-MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_NETLINK, NETLINK_SOCK_DIAG, 43 /* AF_SMC */);
+MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_NETLINK, NETLINK_SOCK_DIAG, 43  );
 MODULE_ALIAS_GENL_FAMILY(SMCR_GENL_FAMILY_NAME);

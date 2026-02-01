@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/delay.h>
 #include <linux/module.h>
 #include <linux/kthread.h>
@@ -24,16 +24,7 @@ static unsigned int bm_std;
 
 static bool ok_to_run;
 
-/*
- * This gets called in a loop recording the time it took to write
- * the tracepoint. What it writes is the time statistics of the last
- * tracepoint write. As there is nothing to write the first time
- * it simply writes "START". As the first write is cold cache and
- * the rest is hot, we save off that time in bm_first and it is
- * reported as "first", which is shown in the second write to the
- * tracepoint. The "first" field is written within the statics from
- * then on but never changes.
- */
+ 
 static void trace_do_benchmark(void)
 {
 	u64 start;
@@ -45,7 +36,7 @@ static void trace_do_benchmark(void)
 	unsigned int avg;
 	unsigned int std = 0;
 
-	/* Only run if the tracepoint is actually active */
+	 
 	if (!trace_benchmark_event_enabled() || !tracing_is_on())
 		return;
 
@@ -59,10 +50,7 @@ static void trace_do_benchmark(void)
 
 	delta = stop - start;
 
-	/*
-	 * The first read is cold cached, keep it separate from the
-	 * other calculations.
-	 */
+	 
 	if (bm_cnt == 1) {
 		bm_first = delta;
 		scnprintf(bm_str, BENCHMARK_EVENT_STRLEN,
@@ -77,11 +65,7 @@ static void trace_do_benchmark(void)
 	if (!bm_min || delta < bm_min)
 		bm_min = delta;
 
-	/*
-	 * When bm_cnt is greater than UINT_MAX, it breaks the statistics
-	 * accounting. Freeze the statistics when that happens.
-	 * We should have enough data for the avg and stddev anyway.
-	 */
+	 
 	if (bm_cnt > UINT_MAX) {
 		scnprintf(bm_str, BENCHMARK_EVENT_STRLEN,
 		    "last=%llu first=%llu max=%llu min=%llu ** avg=%u std=%d std^2=%lld",
@@ -94,10 +78,7 @@ static void trace_do_benchmark(void)
 
 
 	if (bm_cnt > 1) {
-		/*
-		 * Apply Welford's method to calculate standard deviation:
-		 * s^2 = 1 / (n * (n-1)) * (n * \Sum (x_i)^2 - (\Sum x_i)^2)
-		 */
+		 
 		stddev = (u64)bm_cnt * bm_totalsq - bm_total * bm_total;
 		do_div(stddev, (u32)bm_cnt);
 		do_div(stddev, (u32)bm_cnt - 1);
@@ -110,17 +91,7 @@ static void trace_do_benchmark(void)
 
 	if (stddev > 0) {
 		int i = 0;
-		/*
-		 * stddev is the square of standard deviation but
-		 * we want the actually number. Use the average
-		 * as our seed to find the std.
-		 *
-		 * The next try is:
-		 *  x = (x + N/x) / 2
-		 *
-		 * Where N is the squared number to find the square
-		 * root of.
-		 */
+		 
 		seed = avg;
 		do {
 			last_seed = seed;
@@ -146,35 +117,21 @@ static void trace_do_benchmark(void)
 
 static int benchmark_event_kthread(void *arg)
 {
-	/* sleep a bit to make sure the tracepoint gets activated */
+	 
 	msleep(100);
 
 	while (!kthread_should_stop()) {
 
 		trace_do_benchmark();
 
-		/*
-		 * We don't go to sleep, but let others run as well.
-		 * This is basically a "yield()" to let any task that
-		 * wants to run, schedule in, but if the CPU is idle,
-		 * we'll keep burning cycles.
-		 *
-		 * Note the tasks_rcu_qs() version of cond_resched() will
-		 * notify synchronize_rcu_tasks() that this thread has
-		 * passed a quiescent state for rcu_tasks. Otherwise
-		 * this thread will never voluntarily schedule which would
-		 * block synchronize_rcu_tasks() indefinitely.
-		 */
+		 
 		cond_resched_tasks_rcu_qs();
 	}
 
 	return 0;
 }
 
-/*
- * When the benchmark tracepoint is enabled, it calls this
- * function and the thread that calls the tracepoint is created.
- */
+ 
 int trace_benchmark_reg(void)
 {
 	if (!ok_to_run) {
@@ -192,11 +149,7 @@ int trace_benchmark_reg(void)
 	return 0;
 }
 
-/*
- * When the benchmark tracepoint is disabled, it calls this
- * function and the thread that calls the tracepoint is deleted
- * and all the numbers are reset.
- */
+ 
 void trace_benchmark_unreg(void)
 {
 	if (!bm_event_thread)
@@ -212,7 +165,7 @@ void trace_benchmark_unreg(void)
 	bm_max = 0;
 	bm_min = 0;
 	bm_cnt = 0;
-	/* These don't need to be reset but reset them anyway */
+	 
 	bm_first = 0;
 	bm_std = 0;
 	bm_avg = 0;

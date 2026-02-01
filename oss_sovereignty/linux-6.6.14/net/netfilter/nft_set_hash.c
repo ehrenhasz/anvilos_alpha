@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2008-2014 Patrick McHardy <kaber@trash.net>
- *
- * Development of this code funded by Astaro AG (http://www.astaro.com/)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -18,7 +14,7 @@
 #include <linux/netfilter/nf_tables.h>
 #include <net/netfilter/nf_tables_core.h>
 
-/* We target a hash table size of 4, element hint is 75% of final size */
+ 
 #define NFT_RHASH_ELEMENT_HINT 3
 
 struct nft_rhash {
@@ -142,7 +138,7 @@ static bool nft_rhash_update(struct nft_set *set, const u32 *key,
 	if (IS_ERR(prev))
 		goto err2;
 
-	/* Another cpu may race to insert the element with the same key */
+	 
 	if (prev) {
 		nft_set_elem_destroy(set, he, true);
 		atomic_dec(&set->nelems);
@@ -343,7 +339,7 @@ static void nft_rhash_gc(struct work_struct *work)
 			goto try_later;
 		}
 
-		/* Ruleset has been updated, try later. */
+		 
 		if (READ_ONCE(nft_net->gc_seq) != gc_seq) {
 			nft_trans_gc_destroy(gc);
 			gc = NULL;
@@ -372,7 +368,7 @@ dead_elem:
 	gc = nft_trans_gc_catchall_async(gc, gc_seq);
 
 try_later:
-	/* catchall list iteration requires rcu read side lock. */
+	 
 	rhashtable_walk_stop(&hti);
 	rhashtable_walk_exit(&hti);
 
@@ -446,7 +442,7 @@ static void nft_rhash_destroy(const struct nft_ctx *ctx,
 				    (void *)&rhash_ctx);
 }
 
-/* Number of buckets is stored in u32, so cap our result to 1U<<31 */
+ 
 #define NFT_MAX_BUCKETS (1U << 31)
 
 static u32 nft_hash_buckets(u32 size)

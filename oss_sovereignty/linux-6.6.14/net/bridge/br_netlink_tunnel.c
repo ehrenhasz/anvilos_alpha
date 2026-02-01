@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Bridge per vlan tunnel port dst_metadata netlink control interface
- *
- *	Authors:
- *	Roopa Prabhu		<roopa@cumulusnetworks.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -20,10 +15,10 @@
 
 static size_t __get_vlan_tinfo_size(void)
 {
-	return nla_total_size(0) + /* nest IFLA_BRIDGE_VLAN_TUNNEL_INFO */
-		  nla_total_size(sizeof(u32)) + /* IFLA_BRIDGE_VLAN_TUNNEL_ID */
-		  nla_total_size(sizeof(u16)) + /* IFLA_BRIDGE_VLAN_TUNNEL_VID */
-		  nla_total_size(sizeof(u16)); /* IFLA_BRIDGE_VLAN_TUNNEL_FLAGS */
+	return nla_total_size(0) +  
+		  nla_total_size(sizeof(u32)) +  
+		  nla_total_size(sizeof(u16)) +  
+		  nla_total_size(sizeof(u16));  
 }
 
 bool vlan_tunid_inrange(const struct net_bridge_vlan *v_curr,
@@ -40,9 +35,9 @@ static int __get_num_vlan_tunnel_infos(struct net_bridge_vlan_group *vg)
 	struct net_bridge_vlan *v, *vtbegin = NULL, *vtend = NULL;
 	int num_tinfos = 0;
 
-	/* Count number of vlan infos */
+	 
 	list_for_each_entry_rcu(v, &vg->vlan_list, vlist) {
-		/* only a context, bridge vlan not activated */
+		 
 		if (!br_vlan_should_use(v) || !v->tinfo.tunnel_id)
 			continue;
 
@@ -122,7 +117,7 @@ static int br_fill_vlan_tinfo_range(struct sk_buff *skb,
 	int err;
 
 	if (vtend && (vtend->vid - vtbegin->vid) > 0) {
-		/* add range to skb */
+		 
 		err = br_fill_vlan_tinfo(skb, vtbegin->vid,
 					 vtbegin->tinfo.tunnel_id,
 					 BRIDGE_VLAN_INFO_RANGE_BEGIN);
@@ -153,9 +148,9 @@ int br_fill_vlan_tunnel_info(struct sk_buff *skb,
 	struct net_bridge_vlan *v;
 	int err;
 
-	/* Count number of vlan infos */
+	 
 	list_for_each_entry_rcu(v, &vg->vlan_list, vlist) {
-		/* only a context, bridge vlan not activated */
+		 
 		if (!br_vlan_should_use(v))
 			continue;
 
@@ -253,7 +248,7 @@ int br_parse_vlan_tunnel_info(struct nlattr *attr,
 	return 0;
 }
 
-/* send a notification if v_curr can't enter the range and start a new one */
+ 
 static void __vlan_tunnel_handle_range(const struct net_bridge_port *p,
 				       struct net_bridge_vlan **v_start,
 				       struct net_bridge_vlan **v_end,
@@ -278,7 +273,7 @@ static void __vlan_tunnel_handle_range(const struct net_bridge_port *p,
 
 	br_vlan_notify(p->br, p, (*v_start)->vid, (*v_end)->vid, RTM_NEWVLAN);
 out_init:
-	/* we start a range only if there are any changes to notify about */
+	 
 	*v_start = curr_change ? v : NULL;
 	*v_end = *v_start;
 }

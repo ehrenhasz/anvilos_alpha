@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * bdc_dbg.h - header for the BDC debug functions
- *
- * Copyright (C) 2014 Broadcom Corporation
- *
- * Author: Ashwini Pahuja
- */
+ 
+ 
 #ifndef __LINUX_BDC_DBG_H__
 #define __LINUX_BDC_DBG_H__
 
@@ -28,5 +22,5 @@ static inline void bdc_dbg_bd_list(struct bdc *bdc, struct bdc_ep *ep)
 
 static inline void bdc_dump_epsts(struct bdc *bdc)
 { }
-#endif /* CONFIG_USB_GADGET_VERBOSE */
-#endif /* __LINUX_BDC_DBG_H__ */
+#endif  
+#endif  

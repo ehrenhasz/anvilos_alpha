@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2023 Isovalent */
+
+ 
 
 #include <sys/random.h>
 #include <argp.h>
@@ -7,15 +7,15 @@
 #include "bpf_hashmap_lookup.skel.h"
 #include "bpf_util.h"
 
-/* BPF triggering benchmarks */
+ 
 static struct ctx {
 	struct bpf_hashmap_lookup *skel;
 } ctx;
 
-/* only available to kernel, so define it here */
+ 
 #define BPF_MAX_LOOPS (1<<23)
 
-#define MAX_KEY_SIZE 1024 /* the size of the key map */
+#define MAX_KEY_SIZE 1024  
 
 static struct {
 	__u32 key_size;
@@ -128,7 +128,7 @@ static void validate(void)
 static void *producer(void *input)
 {
 	while (true) {
-		/* trigger the bpf program */
+		 
 		syscall(__NR_getpgid);
 	}
 	return NULL;
@@ -145,7 +145,7 @@ static inline void patch_key(u32 i, u32 *key)
 #else
 	*key = __builtin_bswap32(i + 1);
 #endif
-	/* the rest of key is random */
+	 
 }
 
 static void setup(void)
@@ -183,7 +183,7 @@ static void setup(void)
 		exit(1);
 	}
 
-	/* fill in the hash_map */
+	 
 	map_fd = bpf_map__fd(ctx.skel->maps.hash_map_bench);
 	for (u64 i = 0; i < args.nr_entries; i++) {
 		patch_key(i, ctx.skel->bss->key);
@@ -251,7 +251,7 @@ static void hashmap_report_final(struct bench_res res[], int res_cnt)
 			continue;
 
 		if (env.quiet) {
-			/* we expect only one cpu to be present */
+			 
 			if (env.affinity)
 				printf("%.3lf\n", events_mean);
 			else

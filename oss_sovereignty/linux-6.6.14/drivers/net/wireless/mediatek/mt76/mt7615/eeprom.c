@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2019 MediaTek Inc.
- *
- * Author: Ryder Lee <ryder.lee@mediatek.com>
- *         Felix Fietkau <nbd@nbd.name>
- */
+
+ 
 
 #include <linux/of.h>
 #include "mt7615.h"
@@ -104,20 +100,20 @@ mt7615_eeprom_parse_hw_band_cap(struct mt7615_dev *dev)
 	u8 val, *eeprom = dev->mt76.eeprom.data;
 
 	if (is_mt7663(&dev->mt76)) {
-		/* dual band */
+		 
 		dev->mphy.cap.has_2ghz = true;
 		dev->mphy.cap.has_5ghz = true;
 		return;
 	}
 
 	if (is_mt7622(&dev->mt76)) {
-		/* 2GHz only */
+		 
 		dev->mphy.cap.has_2ghz = true;
 		return;
 	}
 
 	if (is_mt7611(&dev->mt76)) {
-		/* 5GHz only */
+		 
 		dev->mphy.cap.has_5ghz = true;
 		return;
 	}
@@ -155,7 +151,7 @@ static void mt7615_eeprom_parse_hw_cap(struct mt7615_dev *dev)
 	} else {
 		u32 val;
 
-		/* read tx-rx mask from eeprom */
+		 
 		val = mt76_rr(dev, MT_TOP_STRAP_STA);
 		max_nss = val & MT_TOP_3NSS ? 3 : 4;
 
@@ -204,7 +200,7 @@ int mt7615_eeprom_get_target_power_index(struct mt7615_dev *dev,
 	if (chain_idx > 3)
 		return -EINVAL;
 
-	/* TSSI disabled */
+	 
 	if (mt7615_ext_pa_enabled(dev, chan->band)) {
 		if (chan->band == NL80211_BAND_2GHZ)
 			return MT_EE_EXT_PA_2G_TARGET_POWER;
@@ -212,7 +208,7 @@ int mt7615_eeprom_get_target_power_index(struct mt7615_dev *dev,
 			return MT_EE_EXT_PA_5G_TARGET_POWER;
 	}
 
-	/* TSSI enabled */
+	 
 	if (chan->band == NL80211_BAND_2GHZ) {
 		index = MT_EE_TX0_2G_TARGET_POWER + chain_idx * 6;
 	} else {
@@ -242,7 +238,7 @@ int mt7615_eeprom_get_target_power_index(struct mt7615_dev *dev,
 int mt7615_eeprom_get_power_delta_index(struct mt7615_dev *dev,
 					enum nl80211_band band)
 {
-	/* assume the first rate has the highest power offset */
+	 
 	if (is_mt7663(&dev->mt76)) {
 		if (band == NL80211_BAND_2GHZ)
 			return MT_EE_TX0_5G_G0_TARGET_POWER;

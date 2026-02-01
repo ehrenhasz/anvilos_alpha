@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for the OV7251 camera sensor.
- *
- * Copyright (c) 2017-2018, The Linux Foundation. All rights reserved.
- * Copyright (c) 2017-2018, Linaro Ltd.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -101,10 +96,7 @@ struct ov7251_pll2_cfg {
 	unsigned int adc_div;
 };
 
-/*
- * Rubbish ordering, but only PLL1 needs to have a separate configuration per
- * link frequency and the array member needs to be last.
- */
+ 
 struct ov7251_pll_cfgs {
 	const struct ov7251_pll2_cfg *pll2;
 	const struct ov7251_pll1_cfg *pll1[];
@@ -149,13 +141,13 @@ struct ov7251 {
 	struct v4l2_ctrl *hblank;
 	struct v4l2_ctrl *vblank;
 
-	/* Cached register values */
+	 
 	u8 aec_pk_manual;
 	u8 pre_isp_00;
 	u8 timing_format1;
 	u8 timing_format2;
 
-	struct mutex lock; /* lock to protect power state, ctrls and mode */
+	struct mutex lock;  
 	bool power_on;
 
 	struct gpio_desc *enable_gpio;
@@ -292,14 +284,14 @@ static const struct reg_value ov7251_setting_vga_30fps[] = {
 	{ 0x3805, 0x8b },
 	{ 0x3806, 0x01 },
 	{ 0x3807, 0xeb },
-	{ 0x3808, 0x02 }, /* width high */
-	{ 0x3809, 0x80 }, /* width low */
-	{ 0x380a, 0x01 }, /* height high */
-	{ 0x380b, 0xe0 }, /* height low */
-	{ 0x380c, 0x03 }, /* total horiz timing high */
-	{ 0x380d, 0xa0 }, /* total horiz timing low */
-	{ 0x380e, 0x06 }, /* total vertical timing high */
-	{ 0x380f, 0xbc }, /* total vertical timing low */
+	{ 0x3808, 0x02 },  
+	{ 0x3809, 0x80 },  
+	{ 0x380a, 0x01 },  
+	{ 0x380b, 0xe0 },  
+	{ 0x380c, 0x03 },  
+	{ 0x380d, 0xa0 },  
+	{ 0x380e, 0x06 },  
+	{ 0x380f, 0xbc },  
 	{ 0x3810, 0x00 },
 	{ 0x3811, 0x04 },
 	{ 0x3812, 0x00 },
@@ -420,14 +412,14 @@ static const struct reg_value ov7251_setting_vga_60fps[] = {
 	{ 0x3805, 0x8b },
 	{ 0x3806, 0x01 },
 	{ 0x3807, 0xeb },
-	{ 0x3808, 0x02 }, /* width high */
-	{ 0x3809, 0x80 }, /* width low */
-	{ 0x380a, 0x01 }, /* height high */
-	{ 0x380b, 0xe0 }, /* height low */
-	{ 0x380c, 0x03 }, /* total horiz timing high */
-	{ 0x380d, 0xa0 }, /* total horiz timing low */
-	{ 0x380e, 0x03 }, /* total vertical timing high */
-	{ 0x380f, 0x5c }, /* total vertical timing low */
+	{ 0x3808, 0x02 },  
+	{ 0x3809, 0x80 },  
+	{ 0x380a, 0x01 },  
+	{ 0x380b, 0xe0 },  
+	{ 0x380c, 0x03 },  
+	{ 0x380d, 0xa0 },  
+	{ 0x380e, 0x03 },  
+	{ 0x380f, 0x5c },  
 	{ 0x3810, 0x00 },
 	{ 0x3811, 0x04 },
 	{ 0x3812, 0x00 },
@@ -548,14 +540,14 @@ static const struct reg_value ov7251_setting_vga_90fps[] = {
 	{ 0x3805, 0x8b },
 	{ 0x3806, 0x01 },
 	{ 0x3807, 0xeb },
-	{ 0x3808, 0x02 }, /* width high */
-	{ 0x3809, 0x80 }, /* width low */
-	{ 0x380a, 0x01 }, /* height high */
-	{ 0x380b, 0xe0 }, /* height low */
-	{ 0x380c, 0x03 }, /* total horiz timing high */
-	{ 0x380d, 0xa0 }, /* total horiz timing low */
-	{ 0x380e, 0x02 }, /* total vertical timing high */
-	{ 0x380f, 0x3c }, /* total vertical timing low */
+	{ 0x3808, 0x02 },  
+	{ 0x3809, 0x80 },  
+	{ 0x380a, 0x01 },  
+	{ 0x380b, 0xe0 },  
+	{ 0x380c, 0x03 },  
+	{ 0x380d, 0xa0 },  
+	{ 0x380e, 0x02 },  
+	{ 0x380f, 0x3c },  
 	{ 0x3810, 0x00 },
 	{ 0x3811, 0x04 },
 	{ 0x3812, 0x00 },
@@ -685,9 +677,7 @@ static int ov7251_regulators_enable(struct ov7251 *ov7251)
 {
 	int ret;
 
-	/* OV7251 power up sequence requires core regulator
-	 * to be enabled not earlier than io regulator
-	 */
+	 
 
 	ret = regulator_enable(ov7251->io_regulator);
 	if (ret < 0) {
@@ -868,9 +858,9 @@ static int ov7251_set_exposure(struct ov7251 *ov7251, s32 exposure)
 	u8 val[3];
 
 	reg = OV7251_AEC_EXPO_0;
-	val[0] = (exposure & 0xf000) >> 12; /* goes to OV7251_AEC_EXPO_0 */
-	val[1] = (exposure & 0x0ff0) >> 4;  /* goes to OV7251_AEC_EXPO_1 */
-	val[2] = (exposure & 0x000f) << 4;  /* goes to OV7251_AEC_EXPO_2 */
+	val[0] = (exposure & 0xf000) >> 12;  
+	val[1] = (exposure & 0x0ff0) >> 4;   
+	val[2] = (exposure & 0x000f) << 4;   
 
 	return ov7251_write_seq_regs(ov7251, reg, val, 3);
 }
@@ -881,8 +871,8 @@ static int ov7251_set_gain(struct ov7251 *ov7251, s32 gain)
 	u8 val[2];
 
 	reg = OV7251_AEC_AGC_ADJ_0;
-	val[0] = (gain & 0x0300) >> 8; /* goes to OV7251_AEC_AGC_ADJ_0 */
-	val[1] = gain & 0xff;          /* goes to OV7251_AEC_AGC_ADJ_1 */
+	val[0] = (gain & 0x0300) >> 8;  
+	val[1] = gain & 0xff;           
 
 	return ov7251_write_seq_regs(ov7251, reg, val, 2);
 }
@@ -924,7 +914,7 @@ static int ov7251_set_power_on(struct device *dev)
 
 	gpiod_set_value_cansleep(ov7251->enable_gpio, 1);
 
-	/* wait at least 65536 external clock cycles */
+	 
 	wait_us = DIV_ROUND_UP(65536 * 1000,
 			       DIV_ROUND_UP(ov7251->xclk_freq, 1000));
 	usleep_range(wait_us, wait_us + 1000);
@@ -1028,7 +1018,7 @@ static int ov7251_s_ctrl(struct v4l2_ctrl *ctrl)
 					     struct ov7251, ctrls);
 	int ret;
 
-	/* If VBLANK is altered we need to update exposure to compensate */
+	 
 	if (ctrl->id == V4L2_CID_VBLANK) {
 		int exposure_max;
 
@@ -1042,7 +1032,7 @@ static int ov7251_s_ctrl(struct v4l2_ctrl *ctrl)
 					     exposure_max));
 	}
 
-	/* v4l2_ctrl_lock() locks our mutex */
+	 
 
 	if (!pm_runtime_get_if_in_use(ov7251->dev))
 		return 0;
@@ -1465,7 +1455,7 @@ static int ov7251_check_hwcfg(struct ov7251 *ov7251)
 
 	endpoint = fwnode_graph_get_next_endpoint(fwnode, NULL);
 	if (!endpoint)
-		return -EPROBE_DEFER; /* could be provided by cio2-bridge */
+		return -EPROBE_DEFER;  
 
 	ret = v4l2_fwnode_endpoint_alloc_parse(endpoint, &bus_cfg);
 	fwnode_handle_put(endpoint);
@@ -1617,17 +1607,13 @@ static int ov7251_probe(struct i2c_client *client)
 	if (ret)
 		return ret;
 
-	/* get system clock (xclk) */
+	 
 	ov7251->xclk = devm_clk_get_optional(dev, NULL);
 	if (IS_ERR(ov7251->xclk))
 		return dev_err_probe(dev, PTR_ERR(ov7251->xclk),
 				     "could not get xclk");
 
-	/*
-	 * We could have either a 24MHz or 19.2MHz clock rate from either DT or
-	 * ACPI. We also need to support the IPU3 case which will have both an
-	 * external clock AND a clock-frequency property.
-	 */
+	 
 	ret = fwnode_property_read_u32(dev_fwnode(dev), "clock-frequency",
 				       &rate);
 	if (ret && !ov7251->xclk)
@@ -1789,7 +1775,7 @@ static const struct dev_pm_ops ov7251_pm_ops = {
 
 static const struct of_device_id ov7251_of_match[] = {
 	{ .compatible = "ovti,ov7251" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ov7251_of_match);
 

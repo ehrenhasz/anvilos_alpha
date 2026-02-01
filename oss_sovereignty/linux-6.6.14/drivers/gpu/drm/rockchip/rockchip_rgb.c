@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) Fuzhou Rockchip Electronics Co.Ltd
- * Author:
- *      Sandy Huang <hjc@rock-chips.com>
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/media-bus-format.h>
@@ -99,7 +95,7 @@ struct rockchip_rgb *rockchip_rgb_init(struct device *dev,
 		if (of_property_read_u32(endpoint, "reg", &endpoint_id))
 			endpoint_id = 0;
 
-		/* if subdriver (> 0) or error case (< 0), ignore entry */
+		 
 		if (rockchip_drm_endpoint_is_subdriver(endpoint) != 0)
 			continue;
 
@@ -114,7 +110,7 @@ struct rockchip_rgb *rockchip_rgb_init(struct device *dev,
 
 	of_node_put(port);
 
-	/* if the rgb output is not connected to anything, just return */
+	 
 	if (!child_count)
 		return NULL;
 

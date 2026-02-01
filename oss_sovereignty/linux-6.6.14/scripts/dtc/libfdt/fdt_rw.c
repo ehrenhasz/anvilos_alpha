@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause)
-/*
- * libfdt - Flat Device Tree manipulation
- * Copyright (C) 2006 David Gibson, IBM Corporation.
- */
+
+ 
 #include "libfdt_env.h"
 
 #include <fdt.h>
@@ -94,7 +91,7 @@ static int fdt_splice_struct_(void *fdt, void *p,
 	return 0;
 }
 
-/* Must only be used to roll back in case of error */
+ 
 static void fdt_del_last_string_(void *fdt, const char *s)
 {
 	int newlen = strlen(s) + 1;
@@ -115,15 +112,7 @@ static int fdt_splice_string_(void *fdt, int newlen)
 	return 0;
 }
 
-/**
- * fdt_find_add_string_() - Find or allocate a string
- *
- * @fdt: pointer to the device tree to check/adjust
- * @s: string to find/add
- * @allocated: Set to 0 if the string was found, 1 if not found and so
- *	allocated. Ignored if can_assume(NO_ROLLBACK)
- * @return offset of string in the string table (whether found or added)
- */
+ 
 static int fdt_find_add_string_(void *fdt, const char *s, int *allocated)
 {
 	char *strtab = (char *)fdt + fdt_off_dt_strings(fdt);
@@ -137,7 +126,7 @@ static int fdt_find_add_string_(void *fdt, const char *s, int *allocated)
 
 	p = fdt_find_string_(strtab, fdt_size_dt_strings(fdt), s);
 	if (p)
-		/* found it */
+		 
 		return (p - strtab);
 
 	new = strtab + fdt_size_dt_strings(fdt);
@@ -220,7 +209,7 @@ static int fdt_add_property_(void *fdt, int nodeoffset, const char *name,
 
 	err = fdt_splice_struct_(fdt, *prop, 0, proplen);
 	if (err) {
-		/* Delete the string if we failed to add it */
+		 
 		if (!can_assume(NO_ROLLBACK) && allocated)
 			fdt_del_last_string_(fdt, name);
 		return err;
@@ -348,9 +337,9 @@ int fdt_add_subnode_namelen(void *fdt, int parentoffset,
 	else if (offset != -FDT_ERR_NOTFOUND)
 		return offset;
 
-	/* Try to place the new node after the parent's properties */
+	 
 	tag = fdt_next_tag(fdt, parentoffset, &nextoffset);
-	/* the fdt_subnode_offset_namelen() should ensure this never hits */
+	 
 	if (!can_assume(LIBFDT_FLAWLESS) && (tag != FDT_BEGIN_NODE))
 		return -FDT_ERR_INTERNAL;
 	do {
@@ -444,7 +433,7 @@ int fdt_open_into(const void *fdt, void *buf, int bufsize)
 
 	if (can_assume(LIBFDT_ORDER) ||
 	    !fdt_blocks_misordered_(fdt, mem_rsv_size, struct_size)) {
-		/* no further work necessary */
+		 
 		err = fdt_move(fdt, buf, bufsize);
 		if (err)
 			return err;
@@ -454,18 +443,18 @@ int fdt_open_into(const void *fdt, void *buf, int bufsize)
 		return 0;
 	}
 
-	/* Need to reorder */
+	 
 	newsize = FDT_ALIGN(sizeof(struct fdt_header), 8) + mem_rsv_size
 		+ struct_size + fdt_size_dt_strings(fdt);
 
 	if (bufsize < newsize)
 		return -FDT_ERR_NOSPACE;
 
-	/* First attempt to build converted tree at beginning of buffer */
+	 
 	tmp = buf;
-	/* But if that overlaps with the old tree... */
+	 
 	if (((tmp + newsize) > fdtstart) && (tmp < fdtend)) {
-		/* Try right after the old tree instead */
+		 
 		tmp = (char *)(uintptr_t)fdtend;
 		if ((tmp + newsize) > ((char *)buf + bufsize))
 			return -FDT_ERR_NOSPACE;

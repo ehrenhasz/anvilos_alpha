@@ -1,26 +1,4 @@
-/*
- * Copyright 2015 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs <bskeggs@redhat.com>
- */
+ 
 #include "priv.h"
 
 #include <core/pci.h>
@@ -28,7 +6,7 @@
 static int
 g84_pcie_version_supported(struct nvkm_pci *pci)
 {
-	/* g84 and g86 report wrong information about what they support */
+	 
 	return 1;
 }
 
@@ -102,20 +80,11 @@ g84_pcie_set_link(struct nvkm_pci *pci, enum nvkm_pcie_speed speed, u8 width)
 void
 g84_pci_init(struct nvkm_pci *pci)
 {
-	/* The following only concerns PCIe cards. */
+	 
 	if (!pci_is_pcie(pci->pdev))
 		return;
 
-	/* Tag field is 8-bit long, regardless of EXT_TAG.
-	 * However, if EXT_TAG is disabled, only the lower 5 bits of the tag
-	 * field should be used, limiting the number of request to 32.
-	 *
-	 * Apparently, 0x041c stores some limit on the number of requests
-	 * possible, so if EXT_TAG is disabled, limit that requests number to
-	 * 32
-	 *
-	 * Fixes fdo#86537
-	 */
+	 
 	if (nvkm_pci_rd32(pci, 0x007c) & 0x00000020)
 		nvkm_pci_mask(pci, 0x0080, 0x00000100, 0x00000100);
 	else

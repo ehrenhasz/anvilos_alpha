@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe host controller driver for Kirin Phone SoCs
- *
- * Copyright (C) 2017 HiSilicon Electronics Co., Ltd.
- *		https://www.huawei.com
- *
- * Author: Xiaowei Song <songxiaowei@huawei.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/compiler.h>
@@ -30,18 +23,18 @@
 
 #define to_kirin_pcie(x) dev_get_drvdata((x)->dev)
 
-/* PCIe ELBI registers */
+ 
 #define SOC_PCIECTRL_CTRL0_ADDR		0x000
 #define SOC_PCIECTRL_CTRL1_ADDR		0x004
 #define PCIE_ELBI_SLV_DBI_ENABLE	(0x1 << 21)
 
-/* info located in APB */
+ 
 #define PCIE_APP_LTSSM_ENABLE	0x01c
 #define PCIE_APB_PHY_STATUS0	0x400
 #define PCIE_LINKUP_ENABLE	(0x8020)
 #define PCIE_LTSSM_ENABLE_BIT	(0x1 << 11)
 
-/* info located in sysctrl */
+ 
 #define SCTRL_PCIE_CMOS_OFFSET	0x60
 #define SCTRL_PCIE_CMOS_BIT	0x10
 #define SCTRL_PCIE_ISO_OFFSET	0x44
@@ -52,16 +45,7 @@
 #define PCIE_DEBOUNCE_PARAM	0xF0F400
 #define PCIE_OE_BYPASS		(0x3 << 28)
 
-/*
- * Max number of connected PCI slots at an external PCI bridge
- *
- * This is used on HiKey 970, which has a PEX 8606 bridge with 4 connected
- * lanes (lane 0 upstream, and the other three lanes, one connected to an
- * in-board Ethernet adapter and the other two connected to M.2 and mini
- * PCI slots.
- *
- * Each slot has a different clock source and uses a separate PERST# pin.
- */
+ 
 #define MAX_PCI_SLOTS		3
 
 enum pcie_kirin_phy_type {
@@ -75,30 +59,27 @@ struct kirin_pcie {
 	struct dw_pcie	*pci;
 	struct regmap   *apb;
 	struct phy	*phy;
-	void		*phy_priv;	/* only for PCIE_KIRIN_INTERNAL_PHY */
+	void		*phy_priv;	 
 
-	/* DWC PERST# */
+	 
 	int		gpio_id_dwc_perst;
 
-	/* Per-slot PERST# */
+	 
 	int		num_slots;
 	int		gpio_id_reset[MAX_PCI_SLOTS];
 	const char	*reset_names[MAX_PCI_SLOTS];
 
-	/* Per-slot clkreq */
+	 
 	int		n_gpio_clkreq;
 	int		gpio_id_clkreq[MAX_PCI_SLOTS];
 	const char	*clkreq_names[MAX_PCI_SLOTS];
 };
 
-/*
- * Kirin 960 PHY. Can't be split into a PHY driver without changing the
- * DT schema.
- */
+ 
 
 #define REF_CLK_FREQ			100000000
 
-/* PHY info located in APB */
+ 
 #define PCIE_APB_PHY_CTRL0	0x0
 #define PCIE_APB_PHY_CTRL1	0x4
 #define PCIE_APB_PHY_STATUS0   0x400
@@ -107,11 +88,11 @@ struct kirin_pcie {
 #define PHY_PWR_DOWN_BIT	BIT(22)
 #define PHY_RST_ACK_BIT		BIT(16)
 
-/* peri_crg ctrl */
+ 
 #define CRGCTRL_PCIE_ASSERT_OFFSET	0x88
 #define CRGCTRL_PCIE_ASSERT_BIT		0x8c000000
 
-/* Time for delay */
+ 
 #define REF_2_PERST_MIN		21000
 #define REF_2_PERST_MAX		25000
 #define PERST_2_ACCESS_MIN	10000
@@ -135,7 +116,7 @@ struct hi3660_pcie_phy {
 	struct clk	*aux_clk;
 };
 
-/* Registers in PCIePHY */
+ 
 static inline void kirin_apb_phy_writel(struct hi3660_pcie_phy *hi3660_pcie_phy,
 					u32 val, u32 reg)
 {
@@ -180,7 +161,7 @@ static int hi3660_pcie_phy_get_resource(struct hi3660_pcie_phy *phy)
 	struct device *dev = phy->dev;
 	struct platform_device *pdev;
 
-	/* registers */
+	 
 	pdev = container_of(dev, struct platform_device, dev);
 
 	phy->base = devm_platform_ioremap_resource_byname(pdev, "phy");
@@ -288,7 +269,7 @@ static int hi3660_pcie_phy_power_on(struct kirin_pcie *pcie)
 	struct hi3660_pcie_phy *phy = pcie->phy_priv;
 	int ret;
 
-	/* Power supply for Host */
+	 
 	regmap_write(phy->sysctrl,
 		     SCTRL_PCIE_CMOS_OFFSET, SCTRL_PCIE_CMOS_BIT);
 	usleep_range(TIME_CMOS_MIN, TIME_CMOS_MAX);
@@ -299,7 +280,7 @@ static int hi3660_pcie_phy_power_on(struct kirin_pcie *pcie)
 	if (ret)
 		return ret;
 
-	/* ISO disable, PCIeCtrl, PHY assert and clk gate clear */
+	 
 	regmap_write(phy->sysctrl,
 		     SCTRL_PCIE_ISO_OFFSET, SCTRL_PCIE_ISO_BIT);
 	regmap_write(phy->crgctrl,
@@ -343,7 +324,7 @@ static int hi3660_pcie_phy_power_off(struct kirin_pcie *pcie)
 {
 	struct hi3660_pcie_phy *phy = pcie->phy_priv;
 
-	/* Drop power supply for Host */
+	 
 	regmap_write(phy->sysctrl, SCTRL_PCIE_CMOS_OFFSET, 0x00);
 
 	hi3660_pcie_phy_clk_ctrl(phy, false);
@@ -351,9 +332,7 @@ static int hi3660_pcie_phy_power_off(struct kirin_pcie *pcie)
 	return 0;
 }
 
-/*
- * The non-PHY part starts here
- */
+ 
 
 static const struct regmap_config pcie_kirin_regmap_conf = {
 	.name = "kirin_pcie_apb",
@@ -369,7 +348,7 @@ static int kirin_pcie_get_gpio_enable(struct kirin_pcie *pcie,
 	char name[32];
 	int ret, i;
 
-	/* This is an optional property */
+	 
 	ret = gpiod_count(dev, "hisilicon,clken");
 	if (ret < 0)
 		return 0;
@@ -465,7 +444,7 @@ static long kirin_pcie_get_resource(struct kirin_pcie *kirin_pcie,
 	if (IS_ERR(kirin_pcie->apb))
 		return PTR_ERR(kirin_pcie->apb);
 
-	/* pcie internal PERST# gpio */
+	 
 	kirin_pcie->gpio_id_dwc_perst = of_get_named_gpio(dev->of_node,
 							  "reset-gpios", 0);
 	if (kirin_pcie->gpio_id_dwc_perst == -EPROBE_DEFER) {
@@ -479,7 +458,7 @@ static long kirin_pcie_get_resource(struct kirin_pcie *kirin_pcie,
 	if (ret)
 		return ret;
 
-	/* Parse OF children */
+	 
 	for_each_available_child_of_node(node, child) {
 		ret = kirin_pcie_parse_port(kirin_pcie, pdev, child);
 		if (ret)
@@ -554,7 +533,7 @@ static int kirin_pcie_add_bus(struct pci_bus *bus)
 	if (!kirin_pcie->num_slots)
 		return 0;
 
-	/* Send PERST# to each slot */
+	 
 	for (i = 0; i < kirin_pcie->num_slots; i++) {
 		ret = gpio_direction_output(kirin_pcie->gpio_id_reset[i], 1);
 		if (ret) {
@@ -612,7 +591,7 @@ static int kirin_pcie_start_link(struct dw_pcie *pci)
 {
 	struct kirin_pcie *kirin_pcie = to_kirin_pcie(pci);
 
-	/* assert LTSSM enable */
+	 
 	regmap_write(kirin_pcie->apb, PCIE_APP_LTSSM_ENABLE,
 		     PCIE_LTSSM_ENABLE_BIT);
 
@@ -723,7 +702,7 @@ static int kirin_pcie_power_on(struct platform_device *pdev,
 			goto err;
 	}
 
-	/* perst assert Endpoint */
+	 
 	usleep_range(REF_2_PERST_MIN, REF_2_PERST_MAX);
 
 	if (!gpio_request(kirin_pcie->gpio_id_dwc_perst, "pcie_perst_bridge")) {

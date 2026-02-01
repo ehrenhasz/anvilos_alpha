@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * DRV260X haptics driver family
- *
- * Author: Dan Murphy <dmurphy@ti.com>
- *
- * Copyright:   (C) 2014 Texas Instruments, Inc.
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/input.h>
@@ -57,7 +51,7 @@
 
 #define DRV260X_GO_BIT				0x01
 
-/* Library Selection */
+ 
 #define DRV260X_LIB_SEL_MASK		0x07
 #define DRV260X_LIB_SEL_RAM			0x0
 #define DRV260X_LIB_SEL_OD			0x1
@@ -70,7 +64,7 @@
 #define DRV260X_LIB_SEL_HIZ_EN		0x01
 #define DRV260X_LIB_SEL_HIZ_DIS		0
 
-/* Mode register */
+ 
 #define DRV260X_STANDBY				(1 << 6)
 #define DRV260X_STANDBY_MASK		0x40
 #define DRV260X_INTERNAL_TRIGGER	0x00
@@ -82,7 +76,7 @@
 #define DRV260X_DIAGNOSTICS			0x06
 #define DRV260X_AUTO_CAL			0x07
 
-/* Audio to Haptics Control */
+ 
 #define DRV260X_AUDIO_HAPTICS_PEAK_10MS		(0 << 2)
 #define DRV260X_AUDIO_HAPTICS_PEAK_20MS		(1 << 2)
 #define DRV260X_AUDIO_HAPTICS_PEAK_30MS		(2 << 2)
@@ -93,13 +87,13 @@
 #define DRV260X_AUDIO_HAPTICS_FILTER_150HZ	0x02
 #define DRV260X_AUDIO_HAPTICS_FILTER_200HZ	0x03
 
-/* Min/Max Input/Output Voltages */
+ 
 #define DRV260X_AUDIO_HAPTICS_MIN_IN_VOLT	0x19
 #define DRV260X_AUDIO_HAPTICS_MAX_IN_VOLT	0x64
 #define DRV260X_AUDIO_HAPTICS_MIN_OUT_VOLT	0x19
 #define DRV260X_AUDIO_HAPTICS_MAX_OUT_VOLT	0xFF
 
-/* Feedback register */
+ 
 #define DRV260X_FB_REG_ERM_MODE			0x7f
 #define DRV260X_FB_REG_LRA_MODE			(1 << 7)
 
@@ -122,11 +116,11 @@
 #define DRV260X_BEMF_GAIN_2		(2 << 0)
 #define DRV260X_BEMF_GAIN_3		(3 << 0)
 
-/* Control 1 register */
+ 
 #define DRV260X_AC_CPLE_EN			(1 << 5)
 #define DRV260X_STARTUP_BOOST		(1 << 7)
 
-/* Control 2 register */
+ 
 
 #define DRV260X_IDISS_TIME_45		0
 #define DRV260X_IDISS_TIME_75		(1 << 0)
@@ -147,7 +141,7 @@
 #define DRV260X_UNIDIR_IN			(0 << 7)
 #define DRV260X_BIDIR_IN			(1 << 7)
 
-/* Control 3 Register */
+ 
 #define DRV260X_LRA_OPEN_LOOP		(1 << 0)
 #define DRV260X_ANALOG_IN			(1 << 1)
 #define DRV260X_LRA_DRV_MODE		(1 << 2)
@@ -159,26 +153,13 @@
 #define DRV260X_NG_THRESH_4			(2 << 6)
 #define DRV260X_NG_THRESH_8			(3 << 6)
 
-/* Control 4 Register */
+ 
 #define DRV260X_AUTOCAL_TIME_150MS		(0 << 4)
 #define DRV260X_AUTOCAL_TIME_250MS		(1 << 4)
 #define DRV260X_AUTOCAL_TIME_500MS		(2 << 4)
 #define DRV260X_AUTOCAL_TIME_1000MS		(3 << 4)
 
-/**
- * struct drv260x_data -
- * @input_dev: Pointer to the input device
- * @client: Pointer to the I2C client
- * @regmap: Register map of the device
- * @work: Work item used to off load the enable/disable of the vibration
- * @enable_gpio: Pointer to the gpio used for enable/disabling
- * @regulator: Pointer to the regulator for the IC
- * @magnitude: Magnitude of the vibration event
- * @mode: The operating mode of the IC (LRA_NO_CAL, ERM or LRA)
- * @library: The vibration library to be used
- * @rated_voltage: The rated_voltage of the actuator
- * @overdrive_voltage: The over drive voltage of the actuator
-**/
+ 
 struct drv260x_data {
 	struct input_dev *input_dev;
 	struct i2c_client *client;
@@ -196,12 +177,7 @@ struct drv260x_data {
 #define DRV260X_DEF_RATED_VOLT		0x90
 #define DRV260X_DEF_OD_CLAMP_VOLT	0x90
 
-/*
- * Rated and Overdriver Voltages:
- * Calculated using the formula r = v * 255 / 5.6
- * where r is what will be written to the register
- * and v is the rated or overdriver voltage of the actuator
- */
+ 
 static int drv260x_calculate_voltage(unsigned int voltage)
 {
 	return (voltage * 255 / 5600);
@@ -213,7 +189,7 @@ static void drv260x_worker(struct work_struct *work)
 	int error;
 
 	gpiod_set_value(haptics->enable_gpio, 1);
-	/* Data sheet says to wait 250us before trying to communicate */
+	 
 	udelay(250);
 
 	error = regmap_write(haptics->regmap,
@@ -237,7 +213,7 @@ static int drv260x_haptics_play(struct input_dev *input, void *data,
 
 	haptics->mode = DRV260X_LRA_NO_CAL_MODE;
 
-	/* Scale u16 magnitude into u8 register value */
+	 
 	if (effect->u.rumble.strong_magnitude > 0)
 		haptics->magnitude = effect->u.rumble.strong_magnitude >> 8;
 	else if (effect->u.rumble.weak_magnitude > 0)
@@ -385,7 +361,7 @@ static int drv260x_init(struct drv260x_data *haptics)
 			return error;
 		}
 
-		/* No need to set GO bit here */
+		 
 		return 0;
 	}
 

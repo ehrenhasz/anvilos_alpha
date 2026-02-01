@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * perf iostat
- *
- * Copyright (C) 2020, Intel Corporation
- *
- * Authors: Alexander Antonov <alexander.antonov@linux.intel.com>
- */
+ 
+ 
 
 #ifndef _IOSTAT_H
 #define _IOSTAT_H
@@ -44,4 +38,4 @@ void iostat_print_counters(struct evlist *evlist,
 			   struct perf_stat_config *config, struct timespec *ts,
 			   char *prefix, iostat_print_counter_t print_cnt_cb, void *arg);
 
-#endif /* _IOSTAT_H */
+#endif  

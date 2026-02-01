@@ -1,22 +1,4 @@
-/* Create a pipe, with specific opening flags.
-   Copyright (C) 2009-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-/* Specification.  */
+ 
 #include <unistd.h>
 
 #include <errno.h>
@@ -29,7 +11,7 @@
 #endif
 
 #if defined _WIN32 && ! defined __CYGWIN__
-/* Native Windows API.  */
+ 
 
 # include <io.h>
 
@@ -38,20 +20,10 @@
 int
 pipe2 (int fd[2], int flags)
 {
-  /* Mingw _pipe() corrupts fd on failure; also, if we succeed at
-     creating the pipe but later fail at changing fcntl, we want
-     to leave fd unchanged: http://austingroupbugs.net/view.php?id=467  */
-  int tmp[2];
-  tmp[0] = fd[0];
-  tmp[1] = fd[1];
-
-#if HAVE_PIPE2
-# undef pipe2
-  /* Try the system call first, if it exists.  (We may be running with a glibc
-     that has the function but with an older kernel that lacks it.)  */
+   
   {
-    /* Cache the information whether the system call really exists.  */
-    static int have_pipe2_really; /* 0 = unknown, 1 = yes, -1 = no */
+     
+    static int have_pipe2_really;  
     if (have_pipe2_really >= 0)
       {
         int result = pipe2 (fd, flags);
@@ -65,7 +37,7 @@ pipe2 (int fd[2], int flags)
   }
 #endif
 
-  /* Check the supported flags.  */
+   
   if ((flags & ~(O_CLOEXEC | O_NONBLOCK | O_BINARY | O_TEXT)) != 0)
     {
       errno = EINVAL;
@@ -73,7 +45,7 @@ pipe2 (int fd[2], int flags)
     }
 
 #if defined _WIN32 && ! defined __CYGWIN__
-/* Native Windows API.  */
+ 
 
   if (_pipe (fd, 4096, flags & ~O_NONBLOCK) < 0)
     {
@@ -82,9 +54,7 @@ pipe2 (int fd[2], int flags)
       return -1;
     }
 
-  /* O_NONBLOCK handling.
-     On native Windows platforms, O_NONBLOCK is defined by gnulib.  Use the
-     functions defined by the gnulib module 'nonblocking'.  */
+   
 # if GNULIB_defined_O_NONBLOCK
   if (flags & O_NONBLOCK)
     {
@@ -101,17 +71,14 @@ pipe2 (int fd[2], int flags)
   return 0;
 
 #else
-/* Unix API.  */
+ 
 
   if (pipe (fd) < 0)
     return -1;
 
-  /* POSIX <https://pubs.opengroup.org/onlinepubs/9699919799/functions/pipe.html>
-     says that initially, the O_NONBLOCK and FD_CLOEXEC flags are cleared on
-     both fd[0] and fd[1].  */
+   
 
-  /* O_NONBLOCK handling.
-     On Unix platforms, O_NONBLOCK is defined by the system.  Use fcntl().  */
+   
   if (flags & O_NONBLOCK)
     {
       int fcntl_flags;

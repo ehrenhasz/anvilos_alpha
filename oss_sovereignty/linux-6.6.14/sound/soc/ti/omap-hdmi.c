@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * omap-hdmi-audio.c -- OMAP4+ DSS HDMI audio support library
- *
- * Copyright (C) 2014 Texas Instruments Incorporated - https://www.ti.com
- *
- * Author: Jyri Sarha <jsarha@ti.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -65,10 +59,7 @@ static int hdmi_dai_startup(struct snd_pcm_substream *substream,
 {
 	struct hdmi_audio_data *ad = card_drvdata_substream(substream);
 	int ret;
-	/*
-	 * Make sure that the period bytes are multiple of the DMA packet size.
-	 * Largest packet size we use is 32 32-bit words = 128 bytes
-	 */
+	 
 	ret = snd_pcm_hw_constraint_step(substream->runtime, 0,
 					 SNDRV_PCM_HW_PARAM_PERIOD_BYTES, 128);
 	if (ret < 0) {
@@ -125,16 +116,14 @@ static int hdmi_dai_hw_params(struct snd_pcm_substream *substream,
 
 	ad->dss_audio.iec = iec;
 	ad->dss_audio.cea = cea;
-	/*
-	 * fill the IEC-60958 channel status word
-	 */
-	/* initialize the word bytes */
+	 
+	 
 	memset(iec->status, 0, sizeof(iec->status));
 
-	/* specify IEC-60958-3 (commercial use) */
+	 
 	iec->status[0] &= ~IEC958_AES0_PROFESSIONAL;
 
-	/* specify that the audio is LPCM*/
+	 
 	iec->status[0] &= ~IEC958_AES0_NONAUDIO;
 
 	iec->status[0] |= IEC958_AES0_CON_NOT_COPYRIGHT;
@@ -174,14 +163,10 @@ static int hdmi_dai_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* specify the clock accuracy */
+	 
 	iec->status[3] |= IEC958_AES3_CON_CLOCK_1000PPM;
 
-	/*
-	 * specify the word length. The same word length value can mean
-	 * two different lengths. Hence, we need to specify the maximum
-	 * word length as well.
-	 */
+	 
 	switch (params_format(params)) {
 	case SNDRV_PCM_FORMAT_S16_LE:
 		iec->status[4] |= IEC958_AES4_CON_WORDLEN_20_16;
@@ -196,9 +181,7 @@ static int hdmi_dai_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/*
-	 * Fill the CEA-861 audio infoframe (see spec for details)
-	 */
+	 
 
 	cea->db1_ct_cc = (params_channels(params) - 1)
 		& CEA861_AUDIO_INFOFRAME_DB1CC;
@@ -207,7 +190,7 @@ static int hdmi_dai_hw_params(struct snd_pcm_substream *substream,
 	cea->db2_sf_ss = CEA861_AUDIO_INFOFRAME_DB2SF_FROM_STREAM;
 	cea->db2_sf_ss |= CEA861_AUDIO_INFOFRAME_DB2SS_FROM_STREAM;
 
-	cea->db3 = 0; /* not used, all zeros */
+	cea->db3 = 0;  
 
 	if (params_channels(params) == 2)
 		cea->db4_ca = 0x0;
@@ -221,7 +204,7 @@ static int hdmi_dai_hw_params(struct snd_pcm_substream *substream,
 	else
 		cea->db5_dminh_lsv = CEA861_AUDIO_INFOFRAME_DB5_DM_INH_PROHIBITED;
 
-	/* the expression is trivial but makes clear what we are doing */
+	 
 	cea->db5_dminh_lsv |= (0 & CEA861_AUDIO_INFOFRAME_DB5_LSV);
 
 	return ad->ops->audio_config(ad->dssdev, &ad->dss_audio);

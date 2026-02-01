@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Driver for IDT/Renesas 79RC3243x Interrupt Controller  */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/gpio/driver.h>
@@ -53,7 +53,7 @@ static int idt_gpio_irq_set_type(struct irq_data *d, unsigned int flow_type)
 	unsigned long flags;
 	u32 ilevel;
 
-	/* hardware only supports level triggered */
+	 
 	if (sense == IRQ_TYPE_NONE || (sense & IRQ_TYPE_EDGE_BOTH))
 		return -EINVAL;
 
@@ -115,7 +115,7 @@ static int idt_gpio_irq_init_hw(struct gpio_chip *gc)
 {
 	struct idt_gpio_ctrl *ctrl = gpiochip_get_data(gc);
 
-	/* Mask interrupts. */
+	 
 	ctrl->mask_cache = 0xffffffff;
 	writel(ctrl->mask_cache, ctrl->pic + IDT_PIC_IRQ_MASK);
 

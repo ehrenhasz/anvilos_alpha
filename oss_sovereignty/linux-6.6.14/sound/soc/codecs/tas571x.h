@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * TAS571x amplifier audio driver
- *
- * Copyright (C) 2015 Google, Inc.
- */
+ 
+ 
 
 #ifndef _TAS571X_H
 #define _TAS571X_H
 
-/* device registers */
+ 
 #define TAS571X_CLK_CTRL_REG		0x00
 #define TAS571X_DEV_ID_REG		0x01
 #define TAS571X_ERR_STATUS_REG		0x02
@@ -35,7 +31,7 @@
 #define TAS571X_IC_DELAY_CH3_REG	0x13
 #define TAS571X_IC_DELAY_CH4_REG	0x14
 
-#define TAS571X_PWM_CH_SDN_GROUP_REG	0x19	/* N/A on TAS5717, TAS5719 */
+#define TAS571X_PWM_CH_SDN_GROUP_REG	0x19	 
 #define TAS571X_PWM_CH1_SDN_MASK	(1<<0)
 #define TAS571X_PWM_CH2_SDN_SHIFT	(1<<1)
 #define TAS571X_PWM_CH3_SDN_SHIFT	(1<<2)
@@ -48,7 +44,7 @@
 #define TAS571X_CH4_SRC_SELECT_REG	0x21
 #define TAS571X_PWM_MUX_REG		0x25
 
-/* 20-byte biquad registers */
+ 
 #define TAS5707_CH1_BQ0_REG		0x29
 #define TAS5707_CH1_BQ1_REG		0x2a
 #define TAS5707_CH1_BQ2_REG		0x2b
@@ -104,4 +100,4 @@
 #define TAS5717_CH2_LEFT_CH_MIX_REG	0x76
 #define TAS5717_CH2_RIGHT_CH_MIX_REG	0x77
 
-#endif /* _TAS571X_H */
+#endif  

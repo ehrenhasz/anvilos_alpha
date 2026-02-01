@@ -1,25 +1,4 @@
-/*
- * Copyright (C) 2013, NVIDIA Corporation.  All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sub license,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -41,97 +20,54 @@
 #include <drm/drm_mipi_dsi.h>
 #include <drm/drm_panel.h>
 
-/**
- * struct panel_desc - Describes a simple panel.
- */
+ 
 struct panel_desc {
-	/**
-	 * @modes: Pointer to array of fixed modes appropriate for this panel.
-	 *
-	 * If only one mode then this can just be the address of the mode.
-	 * NOTE: cannot be used with "timings" and also if this is specified
-	 * then you cannot override the mode in the device tree.
-	 */
+	 
 	const struct drm_display_mode *modes;
 
-	/** @num_modes: Number of elements in modes array. */
+	 
 	unsigned int num_modes;
 
-	/**
-	 * @timings: Pointer to array of display timings
-	 *
-	 * NOTE: cannot be used with "modes" and also these will be used to
-	 * validate a device tree override if one is present.
-	 */
+	 
 	const struct display_timing *timings;
 
-	/** @num_timings: Number of elements in timings array. */
+	 
 	unsigned int num_timings;
 
-	/** @bpc: Bits per color. */
+	 
 	unsigned int bpc;
 
-	/** @size: Structure containing the physical size of this panel. */
+	 
 	struct {
-		/**
-		 * @size.width: Width (in mm) of the active display area.
-		 */
+		 
 		unsigned int width;
 
-		/**
-		 * @size.height: Height (in mm) of the active display area.
-		 */
+		 
 		unsigned int height;
 	} size;
 
-	/** @delay: Structure containing various delay values for this panel. */
+	 
 	struct {
-		/**
-		 * @delay.prepare: Time for the panel to become ready.
-		 *
-		 * The time (in milliseconds) that it takes for the panel to
-		 * become ready and start receiving video data
-		 */
+		 
 		unsigned int prepare;
 
-		/**
-		 * @delay.enable: Time for the panel to display a valid frame.
-		 *
-		 * The time (in milliseconds) that it takes for the panel to
-		 * display the first valid frame after starting to receive
-		 * video data.
-		 */
+		 
 		unsigned int enable;
 
-		/**
-		 * @delay.disable: Time for the panel to turn the display off.
-		 *
-		 * The time (in milliseconds) that it takes for the panel to
-		 * turn the display off (no content is visible).
-		 */
+		 
 		unsigned int disable;
 
-		/**
-		 * @delay.unprepare: Time to power down completely.
-		 *
-		 * The time (in milliseconds) that it takes for the panel
-		 * to power itself down completely.
-		 *
-		 * This time is used to prevent a future "prepare" from
-		 * starting until at least this many milliseconds has passed.
-		 * If at prepare time less time has passed since unprepare
-		 * finished, the driver waits for the remaining time.
-		 */
+		 
 		unsigned int unprepare;
 	} delay;
 
-	/** @bus_format: See MEDIA_BUS_FMT_... defines. */
+	 
 	u32 bus_format;
 
-	/** @bus_flags: See DRM_BUS_FLAG_... defines. */
+	 
 	u32 bus_flags;
 
-	/** @connector_type: LVDS, eDP, DSI, DPI, etc. */
+	 
 	int connector_type;
 };
 
@@ -246,16 +182,11 @@ static int panel_simple_get_non_edid_modes(struct panel_simple *panel,
 		}
 	}
 
-	/* Only add timings if override was not there or failed to validate */
+	 
 	if (num == 0 && panel->desc->num_timings)
 		num = panel_simple_get_timings_modes(panel, connector);
 
-	/*
-	 * Only add fixed modes if timings/override added no mode.
-	 *
-	 * We should only ever have either the display timings specified
-	 * or a fixed mode. Anything else is rather bogus.
-	 */
+	 
 	WARN_ON(panel->desc->num_timings && panel->desc->num_modes);
 	if (num == 0)
 		num = panel_simple_get_display_modes(panel, connector);
@@ -319,7 +250,7 @@ static int panel_simple_unprepare(struct drm_panel *panel)
 	struct panel_simple *p = to_panel_simple(panel);
 	int ret;
 
-	/* Unpreparing when already unprepared is a no-op */
+	 
 	if (!p->prepared)
 		return 0;
 
@@ -358,7 +289,7 @@ static int panel_simple_prepare(struct drm_panel *panel)
 	struct panel_simple *p = to_panel_simple(panel);
 	int ret;
 
-	/* Preparing when already prepared is a no-op */
+	 
 	if (p->prepared)
 		return 0;
 
@@ -394,7 +325,7 @@ static int panel_simple_get_modes(struct drm_panel *panel,
 	struct panel_simple *p = to_panel_simple(panel);
 	int num = 0;
 
-	/* probe EDID if a DDC bus is available */
+	 
 	if (p->ddc) {
 		pm_runtime_get_sync(panel->dev);
 
@@ -408,13 +339,10 @@ static int panel_simple_get_modes(struct drm_panel *panel,
 		pm_runtime_put_autosuspend(panel->dev);
 	}
 
-	/* add hard-coded panel modes */
+	 
 	num += panel_simple_get_non_edid_modes(p, connector);
 
-	/*
-	 * TODO: Remove once all drm drivers call
-	 * drm_connector_set_orientation_from_panel()
-	 */
+	 
 	drm_connector_set_panel_orientation(connector, p->orientation);
 
 	return num;
@@ -488,13 +416,13 @@ static int panel_dpi_probe(struct device *dev,
 	of_property_read_u32(np, "width-mm", &desc->size.width);
 	of_property_read_u32(np, "height-mm", &desc->size.height);
 
-	/* Extract bus_flags from display_timing */
+	 
 	bus_flags = 0;
 	vm.flags = timing->flags;
 	drm_bus_flags_from_videomode(&vm, &bus_flags);
 	desc->bus_flags = bus_flags;
 
-	/* We do not know the connector for the DT node, so guess it */
+	 
 	desc->connector_type = DRM_MODE_CONNECTOR_DPI;
 
 	panel->desc = desc;
@@ -591,7 +519,7 @@ static int panel_simple_probe(struct device *dev, const struct panel_desc *desc)
 	}
 
 	if (desc == &panel_dpi) {
-		/* Handle the generic panel-dpi binding */
+		 
 		err = panel_dpi_probe(dev, panel);
 		if (err)
 			goto free_ddc;
@@ -602,7 +530,7 @@ static int panel_simple_probe(struct device *dev, const struct panel_desc *desc)
 	}
 
 	connector_type = desc->connector_type;
-	/* Catch common mistakes for panels. */
+	 
 	switch (connector_type) {
 	case 0:
 		dev_warn(dev, "Specify missing connector_type\n");
@@ -657,12 +585,7 @@ static int panel_simple_probe(struct device *dev, const struct panel_desc *desc)
 
 	dev_set_drvdata(dev, panel);
 
-	/*
-	 * We use runtime PM for prepare / unprepare since those power the panel
-	 * on and off and those can be very slow operations. This is important
-	 * to optimize powering the panel on briefly to read the EDID before
-	 * fully enabling the panel.
-	 */
+	 
 	pm_runtime_enable(dev);
 	pm_runtime_set_autosuspend_delay(dev, 1000);
 	pm_runtime_use_autosuspend(dev);
@@ -1351,7 +1274,7 @@ static const struct panel_desc cdtech_s043wq26h_ct7 = {
 	.bus_flags = DRM_BUS_FLAG_PIXDATA_DRIVE_POSEDGE,
 };
 
-/* S070PWS19HP-FC21 2017/04/22 */
+ 
 static const struct drm_display_mode cdtech_s070pws19hp_fc21_mode = {
 	.clock = 51200,
 	.hdisplay = 1024,
@@ -1378,7 +1301,7 @@ static const struct panel_desc cdtech_s070pws19hp_fc21 = {
 	.connector_type = DRM_MODE_CONNECTOR_DPI,
 };
 
-/* S070SWV29HG-DC44 2017/09/21 */
+ 
 static const struct drm_display_mode cdtech_s070swv29hg_dc44_mode = {
 	.clock = 33300,
 	.hdisplay = 800,
@@ -1727,10 +1650,7 @@ static const struct drm_display_mode edt_etm043080dh6gp_mode = {
 	.hsync_end = 480 + 8 + 4,
 	.htotal = 480 + 8 + 4 + 41,
 
-	/*
-	 * IWG22M: Y resolution changed for "dc_linuxfb" module crashing while
-	 * fb_align
-	 */
+	 
 
 	.vdisplay = 288,
 	.vsync_start = 288 + 2,
@@ -1971,7 +1891,7 @@ static const struct panel_desc foxlink_fl500wvr00_a0t = {
 };
 
 static const struct drm_display_mode frida_frd350h54004_modes[] = {
-	{ /* 60 Hz */
+	{  
 		.clock = 6000,
 		.hdisplay = 320,
 		.hsync_start = 320 + 44,
@@ -1983,7 +1903,7 @@ static const struct drm_display_mode frida_frd350h54004_modes[] = {
 		.vtotal = 240 + 2 + 6 + 2,
 		.flags = DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC,
 	},
-	{ /* 50 Hz */
+	{  
 		.clock = 5400,
 		.hdisplay = 320,
 		.hsync_start = 320 + 56,
@@ -2085,11 +2005,7 @@ static const struct display_timing hannstar_hsd070pww1_timing = {
 	.hactive = { 1280, 1280, 1280 },
 	.hfront_porch = { 1, 1, 10 },
 	.hback_porch = { 1, 1, 10 },
-	/*
-	 * According to the data sheet, the minimum horizontal blanking interval
-	 * is 54 clocks (1 + 52 + 1), but tests with a Nitrogen6X have shown the
-	 * minimum working horizontal blanking interval to be 60 clocks.
-	 */
+	 
 	.hsync_len = { 58, 158, 661 },
 	.vactive = { 800, 800, 800 },
 	.vfront_porch = { 1, 1, 10 },
@@ -2430,10 +2346,10 @@ static const struct panel_desc innolux_g156hce_l01 = {
 		.height = 194,
 	},
 	.delay = {
-		.prepare = 1,		/* T1+T2 */
-		.enable = 450,		/* T5 */
-		.disable = 200,		/* T6 */
-		.unprepare = 10,	/* T3+T7 */
+		.prepare = 1,		 
+		.enable = 450,		 
+		.disable = 200,		 
+		.unprepare = 10,	 
 	},
 	.bus_format = MEDIA_BUS_FMT_RGB888_1X7X4_SPWG,
 	.bus_flags = DRM_BUS_FLAG_DE_HIGH,
@@ -3122,11 +3038,7 @@ static const struct panel_desc olimex_lcd_olinuxino_43ts = {
 	.bus_format = MEDIA_BUS_FMT_RGB888_1X24,
 };
 
-/*
- * 800x480 CVT. The panel appears to be quite accepting, at least as far as
- * pixel clocks, but this is the timing that was being used in the Adafruit
- * installation instructions.
- */
+ 
 static const struct drm_display_mode ontat_yx700wv03_mode = {
 	.clock = 29500,
 	.hdisplay = 800,
@@ -3140,10 +3052,7 @@ static const struct drm_display_mode ontat_yx700wv03_mode = {
 	.flags = DRM_MODE_FLAG_NVSYNC | DRM_MODE_FLAG_NHSYNC,
 };
 
-/*
- * Specification at:
- * https://www.adafruit.com/images/product-files/2406/c3163.pdf
- */
+ 
 static const struct panel_desc ontat_yx700wv03 = {
 	.modes = &ontat_yx700wv03_mode,
 	.num_modes = 1,
@@ -3173,8 +3082,8 @@ static const struct panel_desc ortustech_com37h3m = {
 	.num_modes = 1,
 	.bpc = 8,
 	.size = {
-		.width = 56,	/* 56.16mm */
-		.height = 75,	/* 74.88mm */
+		.width = 56,	 
+		.height = 75,	 
 	},
 	.bus_format = MEDIA_BUS_FMT_RGB888_1X24,
 	.bus_flags = DRM_BUS_FLAG_DE_HIGH | DRM_BUS_FLAG_PIXDATA_SAMPLE_NEGEDGE |
@@ -3307,7 +3216,7 @@ static const struct panel_desc qd43003c0_40 = {
 };
 
 static const struct drm_display_mode qishenglong_gopher2b_lcd_modes[] = {
-	{ /* 60 Hz */
+	{  
 		.clock = 10800,
 		.hdisplay = 480,
 		.hsync_start = 480 + 77,
@@ -3319,7 +3228,7 @@ static const struct drm_display_mode qishenglong_gopher2b_lcd_modes[] = {
 		.vtotal = 272 + 16 + 10 + 2,
 		.flags = DRM_MODE_FLAG_NVSYNC | DRM_MODE_FLAG_NHSYNC,
 	},
-	{ /* 50 Hz */
+	{  
 		.clock = 10800,
 		.hdisplay = 480,
 		.hsync_start = 480 + 17,
@@ -3529,8 +3438,8 @@ static const struct panel_desc sharp_lq070y3dg3b = {
 	.num_modes = 1,
 	.bpc = 8,
 	.size = {
-		.width = 152,	/* 152.4mm */
-		.height = 91,	/* 91.4mm */
+		.width = 152,	 
+		.height = 91,	 
 	},
 	.bus_format = MEDIA_BUS_FMT_RGB888_1X24,
 	.bus_flags = DRM_BUS_FLAG_DE_HIGH | DRM_BUS_FLAG_PIXDATA_SAMPLE_NEGEDGE |
@@ -3586,7 +3495,7 @@ static const struct panel_desc sharp_lq101k1ly04 = {
 };
 
 static const struct drm_display_mode sharp_ls020b1dd01d_modes[] = {
-	{ /* 50 Hz */
+	{  
 		.clock = 3000,
 		.hdisplay = 240,
 		.hsync_start = 240 + 58,
@@ -3598,7 +3507,7 @@ static const struct drm_display_mode sharp_ls020b1dd01d_modes[] = {
 		.vtotal = 160 + 24 + 10 + 6,
 		.flags = DRM_MODE_FLAG_PHSYNC | DRM_MODE_FLAG_NVSYNC,
 	},
-	{ /* 60 Hz */
+	{  
 		.clock = 3000,
 		.hdisplay = 240,
 		.hsync_start = 240 + 8,
@@ -3866,13 +3775,13 @@ static const struct drm_display_mode ti_nspire_classic_lcd_mode[] = {
 static const struct panel_desc ti_nspire_classic_lcd_panel = {
 	.modes = ti_nspire_classic_lcd_mode,
 	.num_modes = 1,
-	/* The grayscale panel has 8 bit for the color .. Y (black) */
+	 
 	.bpc = 8,
 	.size = {
 		.width = 71,
 		.height = 53,
 	},
-	/* This is the grayscale bus format */
+	 
 	.bus_format = MEDIA_BUS_FMT_Y8_1X8,
 	.bus_flags = DRM_BUS_FLAG_PIXDATA_SAMPLE_NEGEDGE,
 };
@@ -4517,11 +4426,11 @@ static const struct of_device_id platform_of_match[] = {
 		.compatible = "yes-optoelectronics,ytc700tlag-05-201c",
 		.data = &yes_optoelectronics_ytc700tlag_05_201c,
 	}, {
-		/* Must be the last entry */
+		 
 		.compatible = "panel-dpi",
 		.data = &panel_dpi,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, platform_of_match);
@@ -4797,7 +4706,7 @@ static const struct of_device_id dsi_of_match[] = {
 		.compatible = "osddisplays,osd101t2045-53ts",
 		.data = &osd101t2045_53ts
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, dsi_of_match);

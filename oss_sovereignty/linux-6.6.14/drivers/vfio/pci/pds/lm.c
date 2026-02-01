@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2023 Advanced Micro Devices, Inc. */
+
+ 
 
 #include <linux/anon_inodes.h>
 #include <linux/file.h>
@@ -23,12 +23,12 @@ pds_vfio_get_lm_file(const struct file_operations *fops, int flags, u64 size)
 	if (!size)
 		return NULL;
 
-	/* Alloc file structure */
+	 
 	lm_file = kzalloc(sizeof(*lm_file), GFP_KERNEL);
 	if (!lm_file)
 		return NULL;
 
-	/* Create file */
+	 
 	lm_file->filep =
 		anon_inode_getfile("pds_vfio_lm", fops, lm_file, flags);
 	if (IS_ERR(lm_file->filep))
@@ -37,10 +37,10 @@ pds_vfio_get_lm_file(const struct file_operations *fops, int flags, u64 size)
 	stream_open(lm_file->filep->f_inode, lm_file->filep);
 	mutex_init(&lm_file->lock);
 
-	/* prevent file from being released before we are done with it */
+	 
 	get_file(lm_file->filep);
 
-	/* Allocate memory for file pages */
+	 
 	npages = DIV_ROUND_UP_ULL(size, PAGE_SIZE);
 	pages = kmalloc_array(npages, sizeof(*pages), GFP_KERNEL);
 	if (!pages)
@@ -62,7 +62,7 @@ pds_vfio_get_lm_file(const struct file_operations *fops, int flags, u64 size)
 		p += PAGE_SIZE;
 	}
 
-	/* Create scatterlist of file pages to use for DMA mapping later */
+	 
 	if (sg_alloc_table_from_pages(&lm_file->sg_table, pages, npages, 0,
 				      size, GFP_KERNEL))
 		goto out_free_page_mem;
@@ -95,7 +95,7 @@ static void pds_vfio_put_lm_file(struct pds_vfio_lm_file *lm_file)
 	lm_file->size = 0;
 	lm_file->alloc_size = 0;
 
-	/* Free scatter list of file pages */
+	 
 	sg_free_table(&lm_file->sg_table);
 
 	kvfree(lm_file->page_mem);
@@ -105,7 +105,7 @@ static void pds_vfio_put_lm_file(struct pds_vfio_lm_file *lm_file)
 
 	mutex_unlock(&lm_file->lock);
 
-	/* allow file to be released since we are done with it */
+	 
 	fput(lm_file->filep);
 }
 
@@ -134,7 +134,7 @@ static struct page *pds_vfio_get_file_page(struct pds_vfio_lm_file *lm_file,
 	struct scatterlist *sg;
 	unsigned int i;
 
-	/* All accesses are sequential */
+	 
 	if (offset < lm_file->last_offset || !lm_file->last_offset_sg) {
 		lm_file->last_offset = 0;
 		lm_file->last_offset_sg = lm_file->sg_table.sgl;
@@ -237,7 +237,7 @@ static int pds_vfio_get_save_file(struct pds_vfio_pci_device *pds_vfio)
 	u64 size;
 	int err;
 
-	/* Get live migration state size in this state */
+	 
 	err = pds_vfio_get_lm_state_size_cmd(pds_vfio, &size);
 	if (err) {
 		dev_err(dev, "failed to get save status: %pe\n", ERR_PTR(err));

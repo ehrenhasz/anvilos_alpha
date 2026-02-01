@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/drivers/pinctrl/pinmux-falcon.c
- *  based on linux/drivers/pinctrl/pinmux-pxa910.c
- *
- *  Copyright (C) 2012 Thomas Langer <thomas.langer@lantiq.com>
- *  Copyright (C) 2012 John Crispin <john@phrozen.org>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/export.h>
@@ -23,17 +17,17 @@
 
 #include <lantiq_soc.h>
 
-/* Multiplexer Control Register */
+ 
 #define LTQ_PADC_MUX(x)         (x * 0x4)
-/* Pull Up Enable Register */
+ 
 #define LTQ_PADC_PUEN		0x80
-/* Pull Down Enable Register */
+ 
 #define LTQ_PADC_PDEN		0x84
-/* Slew Rate Control Register */
+ 
 #define LTQ_PADC_SRC		0x88
-/* Drive Current Control Register */
+ 
 #define LTQ_PADC_DCC		0x8C
-/* Pad Control Availability Register */
+ 
 #define LTQ_PADC_AVAIL          0xF0
 
 #define pad_r32(p, reg)		ltq_r32(p + reg)
@@ -103,7 +97,7 @@ static void lantiq_load_pin_desc(struct pinctrl_pin_desc *d, int bank, int len)
 }
 
 static struct ltq_mfp_pin falcon_mfp[] = {
-	/*	pin		f0	f1	f2	f3 */
+	 
 	MFP_FALCON(GPIO0,	RST,	GPIO,   NONE,   NONE),
 	MFP_FALCON(GPIO1,	GPIO,	GPIO,   NONE,   NONE),
 	MFP_FALCON(GPIO2,	GPIO,	GPIO,   NONE,   NONE),
@@ -224,7 +218,7 @@ static struct ltq_pmx_func falcon_funcs[] = {
 
 
 
-/* ---------  pinconf related code --------- */
+ 
 static int falcon_pinconf_group_get(struct pinctrl_dev *pctrldev,
 				unsigned group, unsigned long *config)
 {
@@ -313,7 +307,7 @@ static int falcon_pinconf_set(struct pinctrl_dev *pctrldev,
 		pad_w32(mem, BIT(PORT_PIN(pin)), reg);
 		if (!(pad_r32(mem, reg) & BIT(PORT_PIN(pin))))
 			return -ENOTSUPP;
-	} /* for each config */
+	}  
 
 	return 0;
 }
@@ -404,7 +398,7 @@ static struct ltq_pinmux_info falcon_info = {
 
 
 
-/* --------- register the pinctrl layer --------- */
+ 
 
 int pinctrl_falcon_get_range_size(int id)
 {
@@ -429,7 +423,7 @@ static int pinctrl_falcon_probe(struct platform_device *pdev)
 	int pad_count = 0;
 	int ret = 0;
 
-	/* load and remap the pad resources of the different banks */
+	 
 	for_each_compatible_node(np, NULL, "lantiq,pad-falcon") {
 		const __be32 *bank = of_get_property(np, "lantiq,bank", NULL);
 		struct resource res;

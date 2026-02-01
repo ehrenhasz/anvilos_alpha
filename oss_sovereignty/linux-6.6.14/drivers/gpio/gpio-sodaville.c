@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  GPIO interface for Intel Sodaville SoCs.
- *
- *  Copyright (c) 2010, 2011 Intel Corporation
- *
- *  Author: Hans J. Koch <hjk@linutronix.de>
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/gpio/driver.h>
@@ -133,7 +127,7 @@ static int sdv_register_irqsupport(struct sdv_gpio_chip_data *sd,
 	if (sd->irq_base < 0)
 		return sd->irq_base;
 
-	/* mask + ACK all interrupt sources */
+	 
 	writel(0, sd->gpio_pub_base + GPIO_INT);
 	writel((1 << 11) - 1, sd->gpio_pub_base + GPSTR);
 
@@ -143,11 +137,7 @@ static int sdv_register_irqsupport(struct sdv_gpio_chip_data *sd,
 	if (ret)
 		return ret;
 
-	/*
-	 * This gpio irq controller latches level irqs. Testing shows that if
-	 * we unmask & ACK the IRQ before the source of the interrupt is gone
-	 * then the interrupt is active again.
-	 */
+	 
 	sd->gc = devm_irq_alloc_generic_chip(&pdev->dev, "sdv-gpio", 1,
 					     sd->irq_base,
 					     sd->gpio_pub_base,

@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2015 - 2023 Beijing WangXun Technology Co., Ltd. */
+
+ 
 
 #include <linux/pcs/pcs-xpcs.h>
 #include <linux/mdio.h>
 #include "pcs-xpcs.h"
 
-/* VR_XS_PMA_MMD */
+ 
 #define TXGBE_PMA_MMD			0x8020
 #define TXGBE_TX_GENCTL1		0x11
 #define TXGBE_TX_GENCTL1_VBOOST_LVL	GENMASK(10, 8)
@@ -128,7 +128,7 @@ static int txgbe_pcs_poll_power_up(struct dw_xpcs *xpcs)
 {
 	int val, ret;
 
-	/* Wait xpcs power-up good */
+	 
 	ret = read_poll_timeout(xpcs_read_vpcs, val,
 				(val & DW_PSEQ_ST) == DW_PSEQ_ST_GOOD,
 				10000, 1000000, false,
@@ -145,7 +145,7 @@ static int txgbe_pma_init_done(struct dw_xpcs *xpcs)
 
 	xpcs_write_vpcs(xpcs, DW_VR_XS_PCS_DIG_CTRL1, DW_VR_RST | DW_EN_VSMMD1);
 
-	/* wait pma initialization done */
+	 
 	ret = read_poll_timeout(xpcs_read_vpcs, val, !(val & DW_VR_RST),
 				100000, 10000000, false,
 				xpcs, DW_VR_XS_PCS_DIG_CTRL1);
@@ -159,7 +159,7 @@ static bool txgbe_xpcs_mode_quirk(struct dw_xpcs *xpcs)
 {
 	int ret;
 
-	/* When txgbe do LAN reset, PCS will change to default 10GBASE-R mode */
+	 
 	ret = xpcs_read(xpcs, MDIO_MMD_PCS, MDIO_CTRL2);
 	ret &= MDIO_PCS_CTRL2_TYPE;
 	if ((ret == MDIO_PCS_CTRL2_10GBR &&

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  HID driver for quirky Macally devices
- *
- *  Copyright (c) 2019 Alex Henrie <alexhenrie24@gmail.com>
- */
+
+ 
 
 #include <linux/hid.h>
 #include <linux/module.h>
@@ -14,10 +10,7 @@ MODULE_AUTHOR("Alex Henrie <alexhenrie24@gmail.com>");
 MODULE_DESCRIPTION("Macally devices");
 MODULE_LICENSE("GPL");
 
-/*
- * The Macally ikey keyboard says that its logical and usage maximums are both
- * 101, but the power key is 102 and the equals key is 103
- */
+ 
 static __u8 *macally_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 				 unsigned int *rsize)
 {

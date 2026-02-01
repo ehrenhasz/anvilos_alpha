@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * I2C IIO driver for Bosch BMA400 triaxial acceleration sensor.
- *
- * Copyright 2019 Dan Robertson <dan@dlrobertson.com>
- *
- * I2C address is either 0x14 or 0x15 depending on SDO
- */
+
+ 
 #include <linux/i2c.h>
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>

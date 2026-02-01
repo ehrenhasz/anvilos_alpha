@@ -1,40 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * drivers/pwm/pwm-tegra.c
- *
- * Tegra pulse-width-modulation controller driver
- *
- * Copyright (c) 2010-2020, NVIDIA Corporation.
- * Based on arch/arm/plat-mxc/pwm.c by Sascha Hauer <s.hauer@pengutronix.de>
- *
- * Overview of Tegra Pulse Width Modulator Register:
- * 1. 13-bit: Frequency division (SCALE)
- * 2. 8-bit : Pulse division (DUTY)
- * 3. 1-bit : Enable bit
- *
- * The PWM clock frequency is divided by 256 before subdividing it based
- * on the programmable frequency division value to generate the required
- * frequency for PWM output. The maximum output frequency that can be
- * achieved is (max rate of source clock) / 256.
- * e.g. if source clock rate is 408 MHz, maximum output frequency can be:
- * 408 MHz/256 = 1.6 MHz.
- * This 1.6 MHz frequency can further be divided using SCALE value in PWM.
- *
- * PWM pulse width: 8 bits are usable [23:16] for varying pulse width.
- * To achieve 100% duty cycle, program Bit [24] of this register to
- * 1’b1. In which case the other bits [23:16] are set to don't care.
- *
- * Limitations:
- * -	When PWM is disabled, the output is driven to inactive.
- * -	It does not allow the current PWM period to complete and
- *	stops abruptly.
- *
- * -	If the register is reconfigured while PWM is running,
- *	it does not complete the currently running period.
- *
- * -	If the user input duty is beyond acceptible limits,
- *	-EINVAL is returned.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -60,7 +25,7 @@
 struct tegra_pwm_soc {
 	unsigned int num_channels;
 
-	/* Maximum IP frequency for given SoCs */
+	 
 	unsigned long max_frequency;
 };
 
@@ -103,96 +68,51 @@ static int tegra_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	u32 val = 0;
 	int err;
 
-	/*
-	 * Convert from duty_ns / period_ns to a fixed number of duty ticks
-	 * per (1 << PWM_DUTY_WIDTH) cycles and make sure to round to the
-	 * nearest integer during division.
-	 */
+	 
 	c *= (1 << PWM_DUTY_WIDTH);
 	c = DIV_ROUND_CLOSEST_ULL(c, period_ns);
 
 	val = (u32)c << PWM_DUTY_SHIFT;
 
-	/*
-	 *  min period = max clock limit >> PWM_DUTY_WIDTH
-	 */
+	 
 	if (period_ns < pc->min_period_ns)
 		return -EINVAL;
 
-	/*
-	 * Compute the prescaler value for which (1 << PWM_DUTY_WIDTH)
-	 * cycles at the PWM clock rate will take period_ns nanoseconds.
-	 *
-	 * num_channels: If single instance of PWM controller has multiple
-	 * channels (e.g. Tegra210 or older) then it is not possible to
-	 * configure separate clock rates to each of the channels, in such
-	 * case the value stored during probe will be referred.
-	 *
-	 * If every PWM controller instance has one channel respectively, i.e.
-	 * nums_channels == 1 then only the clock rate can be modified
-	 * dynamically (e.g. Tegra186 or Tegra194).
-	 */
+	 
 	if (pc->soc->num_channels == 1) {
-		/*
-		 * Rate is multiplied with 2^PWM_DUTY_WIDTH so that it matches
-		 * with the maximum possible rate that the controller can
-		 * provide. Any further lower value can be derived by setting
-		 * PFM bits[0:12].
-		 *
-		 * required_clk_rate is a reference rate for source clock and
-		 * it is derived based on user requested period. By setting the
-		 * source clock rate as required_clk_rate, PWM controller will
-		 * be able to configure the requested period.
-		 */
+		 
 		required_clk_rate = DIV_ROUND_UP_ULL((u64)NSEC_PER_SEC << PWM_DUTY_WIDTH,
 						     period_ns);
 
 		if (required_clk_rate > clk_round_rate(pc->clk, required_clk_rate))
-			/*
-			 * required_clk_rate is a lower bound for the input
-			 * rate; for lower rates there is no value for PWM_SCALE
-			 * that yields a period less than or equal to the
-			 * requested period. Hence, for lower rates, double the
-			 * required_clk_rate to get a clock rate that can meet
-			 * the requested period.
-			 */
+			 
 			required_clk_rate *= 2;
 
 		err = dev_pm_opp_set_rate(pc->dev, required_clk_rate);
 		if (err < 0)
 			return -EINVAL;
 
-		/* Store the new rate for further references */
+		 
 		pc->clk_rate = clk_get_rate(pc->clk);
 	}
 
-	/* Consider precision in PWM_SCALE_WIDTH rate calculation */
+	 
 	rate = mul_u64_u64_div_u64(pc->clk_rate, period_ns,
 				   (u64)NSEC_PER_SEC << PWM_DUTY_WIDTH);
 
-	/*
-	 * Since the actual PWM divider is the register's frequency divider
-	 * field plus 1, we need to decrement to get the correct value to
-	 * write to the register.
-	 */
+	 
 	if (rate > 0)
 		rate--;
 	else
 		return -EINVAL;
 
-	/*
-	 * Make sure that the rate will fit in the register's frequency
-	 * divider field.
-	 */
+	 
 	if (rate >> PWM_SCALE_WIDTH)
 		return -EINVAL;
 
 	val |= rate << PWM_SCALE_SHIFT;
 
-	/*
-	 * If the PWM channel is disabled, make sure to turn on the clock
-	 * before writing the register. Otherwise, keep it enabled.
-	 */
+	 
 	if (!pwm_is_enabled(pwm)) {
 		err = pm_runtime_resume_and_get(pc->dev);
 		if (err)
@@ -202,9 +122,7 @@ static int tegra_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 
 	pwm_writel(pc, pwm->hwpwm, val);
 
-	/*
-	 * If the PWM is not enabled, turn the clock off again to save power.
-	 */
+	 
 	if (!pwm_is_enabled(pwm))
 		pm_runtime_put(pc->dev);
 
@@ -302,21 +220,17 @@ static int tegra_pwm_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Set maximum frequency of the IP */
+	 
 	ret = dev_pm_opp_set_rate(pc->dev, pc->soc->max_frequency);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "Failed to set max frequency: %d\n", ret);
 		goto put_pm;
 	}
 
-	/*
-	 * The requested and configured frequency may differ due to
-	 * clock register resolutions. Get the configured frequency
-	 * so that PWM period can be calculated more accurately.
-	 */
+	 
 	pc->clk_rate = clk_get_rate(pc->clk);
 
-	/* Set minimum limit of PWM period for the IP */
+	 
 	pc->min_period_ns =
 	    (NSEC_PER_SEC / (pc->soc->max_frequency >> PWM_DUTY_WIDTH)) + 1;
 

@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
-/*
- * Copyright(c) 2020 Intel Corporation.
- *
- */
 
-/*
- * This file contains HFI1 support for IPOIB SDMA functionality
- */
+ 
+
+ 
 
 #include <linux/log2.h>
 #include <linux/circ_buf.h>
@@ -17,7 +12,7 @@
 #include "ipoib.h"
 #include "trace_tx.h"
 
-/* Add a convenience helper */
+ 
 #define CIRC_ADD(val, add, size) (((val) + (add)) & ((size) - 1))
 #define CIRC_NEXT(val, size) CIRC_ADD(val, 1, size)
 #define CIRC_PREV(val, size) CIRC_ADD(val, -1, size)
@@ -90,20 +85,11 @@ static void hfi1_ipoib_check_queue_stopped(struct hfi1_ipoib_txq *txq)
 {
 	struct net_device *dev = txq->priv->netdev;
 
-	/* If shutting down just return as queue state is irrelevant */
+	 
 	if (unlikely(dev->reg_state != NETREG_REGISTERED))
 		return;
 
-	/*
-	 * When the queue has been drained to less than half full it will be
-	 * restarted.
-	 * The size of the txreq ring is fixed at initialization.
-	 * The tx queue len can be adjusted upward while the interface is
-	 * running.
-	 * The tx queue len can be large enough to overflow the txreq_ring.
-	 * Use the minimum of the current tx_queue_len or the rings max txreqs
-	 * to protect against ring overflow.
-	 */
+	 
 	if (hfi1_ipoib_used(txq) < hfi1_ipoib_ring_lwat(txq) &&
 	    atomic_xchg(&txq->tx_ring.ring_full, 0)) {
 		trace_hfi1_txq_xmit_unstopped(txq);
@@ -163,7 +149,7 @@ static int hfi1_ipoib_poll_tx_ring(struct napi_struct *napi, int budget)
 
 	trace_hfi1_txq_poll(txq);
 	for (work_done = 0; work_done < budget; work_done++) {
-		/* See hfi1_ipoib_sdma_complete() */
+		 
 		if (!smp_load_acquire(&tx->complete))
 			break;
 		tx->complete = 0;
@@ -174,7 +160,7 @@ static int hfi1_ipoib_poll_tx_ring(struct napi_struct *napi, int budget)
 	}
 	tx_ring->complete_txreqs += work_done;
 
-	/* Finished freeing tx items so store the head value. */
+	 
 	smp_store_release(&tx_ring->head, head);
 
 	hfi1_ipoib_check_queue_stopped(txq);
@@ -191,7 +177,7 @@ static void hfi1_ipoib_sdma_complete(struct sdma_txreq *txreq, int status)
 
 	trace_hfi1_txq_complete(tx->txq);
 	tx->sdma_status = status;
-	/* see hfi1_ipoib_poll_tx_ring */
+	 
 	smp_store_release(&tx->complete, 1);
 	napi_schedule_irqoff(&tx->txq->napi);
 }
@@ -241,7 +227,7 @@ static int hfi1_ipoib_build_tx_desc(struct ipoib_txreq *tx,
 	if (unlikely(ret))
 		return ret;
 
-	/* add pbc + headers */
+	 
 	ret = sdma_txadd_kvaddr(dd,
 				txreq,
 				sdma_hdr,
@@ -249,7 +235,7 @@ static int hfi1_ipoib_build_tx_desc(struct ipoib_txreq *tx,
 	if (unlikely(ret))
 		return ret;
 
-	/* add the ulp payload */
+	 
 	return hfi1_ipoib_build_ulp_payload(tx, txp);
 }
 
@@ -276,10 +262,10 @@ static void hfi1_ipoib_build_ib_tx_headers(struct ipoib_txreq *tx,
 
 	pad_cnt = -skb->len & 3;
 
-	/* Includes ICRC */
+	 
 	payload_dwords = ((skb->len + pad_cnt) >> 2) + SIZE_OF_CRC;
 
-	/* header size in dwords LRH+BTH+DETH = (8+12+8)/4. */
+	 
 	txp->hdr_dwords = 7;
 
 	if (rdma_ah_get_ah_flags(ah_attr) & IB_AH_GRH) {
@@ -315,26 +301,26 @@ static void hfi1_ipoib_build_ib_tx_headers(struct ipoib_txreq *tx,
 		}
 	}
 
-	/* Includes ICRC */
+	 
 	dwords = txp->hdr_dwords + payload_dwords;
 
-	/* Build the lrh */
+	 
 	sdma_hdr->hdr.hdr_type = HFI1_PKT_TYPE_9B;
 	hfi1_make_ib_hdr(&sdma_hdr->hdr.ibh, lrh0, dwords, dlid, slid);
 
-	/* Build the bth */
+	 
 	bth0 = (IB_OPCODE_UD_SEND_ONLY << 24) | (pad_cnt << 20) | priv->pkey;
 
 	ohdr->bth[0] = cpu_to_be32(bth0);
 	ohdr->bth[1] = cpu_to_be32(txp->dqpn);
 	ohdr->bth[2] = cpu_to_be32(mask_psn((u32)txp->txq->tx_ring.sent_txreqs));
 
-	/* Build the deth */
+	 
 	ohdr->u.ud.deth[0] = cpu_to_be32(priv->qkey);
 	ohdr->u.ud.deth[1] = cpu_to_be32((txp->entropy <<
 					  HFI1_IPOIB_ENTROPY_SHIFT) | sqpn);
 
-	/* Construct the pbc. */
+	 
 	sdma_hdr->pbc =
 		cpu_to_le64(create_pbc(ppd,
 				       ib_is_sc5(txp->flow.sc5) <<
@@ -360,9 +346,9 @@ static struct ipoib_txreq *hfi1_ipoib_send_dma_common(struct net_device *dev,
 		u32 head;
 
 		if (hfi1_ipoib_used(txq) >= hfi1_ipoib_ring_hwat(txq))
-			/* This shouldn't happen with a stopped queue */
+			 
 			return ERR_PTR(-ENOMEM);
-		/* See hfi1_ipoib_poll_tx_ring() */
+		 
 		head = smp_load_acquire(&tx_ring->head);
 		tx_ring->avail =
 			min_t(u32, hfi1_ipoib_ring_hwat(txq),
@@ -373,7 +359,7 @@ static struct ipoib_txreq *hfi1_ipoib_send_dma_common(struct net_device *dev,
 	tx = hfi1_txreq_from_idx(tx_ring, tail);
 	trace_hfi1_txq_alloc_tx(txq);
 
-	/* so that we can test if the sdma descriptors are there */
+	 
 	tx->txreq.num_desc = 0;
 	tx->txq = txq;
 	tx->skb = skb;
@@ -425,7 +411,7 @@ static int hfi1_ipoib_flush_tx_list(struct net_device *dev,
 	int ret = 0;
 
 	if (!list_empty(&txq->tx_list)) {
-		/* Flush the current list */
+		 
 		ret = hfi1_ipoib_submit_tx_list(dev, txq);
 
 		if (unlikely(ret))
@@ -478,7 +464,7 @@ static int hfi1_ipoib_send_dma_single(struct net_device *dev,
 
 	tx_ring = &txq->tx_ring;
 	trace_hfi1_tx_consume(tx, tx_ring->tail);
-	/* consume tx */
+	 
 	smp_store_release(&tx_ring->tail, CIRC_NEXT(tx_ring->tail, tx_ring->max_items));
 	ret = hfi1_ipoib_submit_tx(txq, tx);
 	if (likely(!ret)) {
@@ -495,7 +481,7 @@ tx_ok:
 	if (ret == -EBUSY || ret == -ECOMM)
 		goto tx_ok;
 
-	/* mark complete and kick napi tx */
+	 
 	smp_store_release(&tx->complete, 1);
 	napi_schedule(&tx->txq->napi);
 
@@ -512,7 +498,7 @@ static int hfi1_ipoib_send_dma_list(struct net_device *dev,
 	struct hfi1_ipoib_circ_buf *tx_ring;
 	struct ipoib_txreq *tx;
 
-	/* Has the flow change ? */
+	 
 	if (txq->flow.as_int != txp->flow.as_int) {
 		int ret;
 
@@ -541,7 +527,7 @@ static int hfi1_ipoib_send_dma_list(struct net_device *dev,
 
 	tx_ring = &txq->tx_ring;
 	trace_hfi1_tx_consume(tx, tx_ring->tail);
-	/* consume tx */
+	 
 	smp_store_release(&tx_ring->tail, CIRC_NEXT(tx_ring->tail, tx_ring->max_items));
 	list_add_tail(&tx->txreq.list, &txq->tx_list);
 
@@ -602,14 +588,7 @@ int hfi1_ipoib_send(struct net_device *dev,
 	return hfi1_ipoib_send_dma_single(dev, skb,  &txp);
 }
 
-/*
- * hfi1_ipoib_sdma_sleep - ipoib sdma sleep function
- *
- * This function gets called from sdma_send_txreq() when there are not enough
- * sdma descriptors available to send the packet. It adds Tx queue's wait
- * structure to sdma engine's dmawait list to be woken up when descriptors
- * become available.
- */
+ 
 static int hfi1_ipoib_sdma_sleep(struct sdma_engine *sde,
 				 struct iowait_work *wait,
 				 struct sdma_txreq *txreq,
@@ -628,7 +607,7 @@ static int hfi1_ipoib_sdma_sleep(struct sdma_engine *sde,
 		}
 
 		if (list_empty(&txreq->list))
-			/* came from non-list submit */
+			 
 			list_add_tail(&txreq->list, &txq->tx_list);
 		if (list_empty(&txq->wait.list)) {
 			struct hfi1_ibport *ibp = &sde->ppd->ibport_data;
@@ -649,12 +628,7 @@ static int hfi1_ipoib_sdma_sleep(struct sdma_engine *sde,
 	return -EINVAL;
 }
 
-/*
- * hfi1_ipoib_sdma_wakeup - ipoib sdma wakeup function
- *
- * This function gets called when SDMA descriptors becomes available and Tx
- * queue's wait structure was previously added to sdma engine's dmawait list.
- */
+ 
 static void hfi1_ipoib_sdma_wakeup(struct iowait *wait, int reason)
 {
 	struct hfi1_ipoib_txq *txq =
@@ -687,10 +661,7 @@ int hfi1_ipoib_txreq_init(struct hfi1_ipoib_dev_priv *priv)
 	struct hfi1_ipoib_circ_buf *tx_ring;
 	int i, j;
 
-	/*
-	 * Ring holds 1 less than tx_ring_size
-	 * Round up to next power of 2 in order to hold at least tx_queue_len
-	 */
+	 
 	tx_ring_size = roundup_pow_of_two(dev->tx_queue_len + 1);
 	tx_item_size = roundup_pow_of_two(sizeof(struct ipoib_txreq));
 

@@ -1,13 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/* hypercalls: Check the ARM64's psuedo-firmware bitmap register interface.
- *
- * The test validates the basic hypercall functionalities that are exposed
- * via the psuedo-firmware bitmap register. This includes the registers'
- * read/write behavior before and after the VM has started, and if the
- * hypercalls are properly masked or unmasked to the guest when disabled or
- * enabled from the KVM userspace, respectively.
- */
+
+ 
 #include <errno.h>
 #include <linux/arm-smccc.h>
 #include <asm/kvm.h>
@@ -17,14 +10,14 @@
 
 #define FW_REG_ULIMIT_VAL(max_feat_bit) (GENMASK(max_feat_bit, 0))
 
-/* Last valid bits of the bitmapped firmware registers */
+ 
 #define KVM_REG_ARM_STD_BMAP_BIT_MAX		0
 #define KVM_REG_ARM_STD_HYP_BMAP_BIT_MAX	0
 #define KVM_REG_ARM_VENDOR_HYP_BMAP_BIT_MAX	1
 
 struct kvm_fw_reg_info {
-	uint64_t reg;		/* Register definition */
-	uint64_t max_feat_bit;	/* Bit that represents the upper limit of the feature-map */
+	uint64_t reg;		 
+	uint64_t max_feat_bit;	 
 };
 
 #define FW_REG_INFO(r)			\
@@ -61,28 +54,28 @@ struct test_hvc_info {
 	}
 
 static const struct test_hvc_info hvc_info[] = {
-	/* KVM_REG_ARM_STD_BMAP */
+	 
 	TEST_HVC_INFO(ARM_SMCCC_TRNG_VERSION, 0),
 	TEST_HVC_INFO(ARM_SMCCC_TRNG_FEATURES, ARM_SMCCC_TRNG_RND64),
 	TEST_HVC_INFO(ARM_SMCCC_TRNG_GET_UUID, 0),
 	TEST_HVC_INFO(ARM_SMCCC_TRNG_RND32, 0),
 	TEST_HVC_INFO(ARM_SMCCC_TRNG_RND64, 0),
 
-	/* KVM_REG_ARM_STD_HYP_BMAP */
+	 
 	TEST_HVC_INFO(ARM_SMCCC_ARCH_FEATURES_FUNC_ID, ARM_SMCCC_HV_PV_TIME_FEATURES),
 	TEST_HVC_INFO(ARM_SMCCC_HV_PV_TIME_FEATURES, ARM_SMCCC_HV_PV_TIME_ST),
 	TEST_HVC_INFO(ARM_SMCCC_HV_PV_TIME_ST, 0),
 
-	/* KVM_REG_ARM_VENDOR_HYP_BMAP */
+	 
 	TEST_HVC_INFO(ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID,
 			ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID),
 	TEST_HVC_INFO(ARM_SMCCC_VENDOR_HYP_CALL_UID_FUNC_ID, 0),
 	TEST_HVC_INFO(ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID, KVM_PTP_VIRT_COUNTER),
 };
 
-/* Feed false hypercall info to test the KVM behavior */
+ 
 static const struct test_hvc_info false_hvc_info[] = {
-	/* Feature support check against a different family of hypercalls */
+	 
 	TEST_HVC_INFO(ARM_SMCCC_TRNG_FEATURES, ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID),
 	TEST_HVC_INFO(ARM_SMCCC_ARCH_FEATURES_FUNC_ID, ARM_SMCCC_TRNG_RND64),
 	TEST_HVC_INFO(ARM_SMCCC_HV_PV_TIME_FEATURES, ARM_SMCCC_TRNG_RND64),
@@ -172,13 +165,13 @@ static void test_fw_regs_before_vm_start(struct kvm_vcpu *vcpu)
 	for (i = 0; i < ARRAY_SIZE(fw_reg_info); i++) {
 		const struct kvm_fw_reg_info *reg_info = &fw_reg_info[i];
 
-		/* First 'read' should be an upper limit of the features supported */
+		 
 		vcpu_get_reg(vcpu, reg_info->reg, &val);
 		TEST_ASSERT(val == FW_REG_ULIMIT_VAL(reg_info->max_feat_bit),
 			"Expected all the features to be set for reg: 0x%lx; expected: 0x%lx; read: 0x%lx\n",
 			reg_info->reg, FW_REG_ULIMIT_VAL(reg_info->max_feat_bit), val);
 
-		/* Test a 'write' by disabling all the features of the register map */
+		 
 		ret = __vcpu_set_reg(vcpu, reg_info->reg, 0);
 		TEST_ASSERT(ret == 0,
 			"Failed to clear all the features of reg: 0x%lx; ret: %d\n",
@@ -188,10 +181,7 @@ static void test_fw_regs_before_vm_start(struct kvm_vcpu *vcpu)
 		TEST_ASSERT(val == 0,
 			"Expected all the features to be cleared for reg: 0x%lx\n", reg_info->reg);
 
-		/*
-		 * Test enabling a feature that's not supported.
-		 * Avoid this check if all the bits are occupied.
-		 */
+		 
 		if (reg_info->max_feat_bit < 63) {
 			ret = __vcpu_set_reg(vcpu, reg_info->reg, BIT(reg_info->max_feat_bit + 1));
 			TEST_ASSERT(ret != 0 && errno == EINVAL,
@@ -210,20 +200,13 @@ static void test_fw_regs_after_vm_start(struct kvm_vcpu *vcpu)
 	for (i = 0; i < ARRAY_SIZE(fw_reg_info); i++) {
 		const struct kvm_fw_reg_info *reg_info = &fw_reg_info[i];
 
-		/*
-		 * Before starting the VM, the test clears all the bits.
-		 * Check if that's still the case.
-		 */
+		 
 		vcpu_get_reg(vcpu, reg_info->reg, &val);
 		TEST_ASSERT(val == 0,
 			"Expected all the features to be cleared for reg: 0x%lx\n",
 			reg_info->reg);
 
-		/*
-		 * Since the VM has run at least once, KVM shouldn't allow modification of
-		 * the registers and should return EBUSY. Set the registers and check for
-		 * the expected errno.
-		 */
+		 
 		ret = __vcpu_set_reg(vcpu, reg_info->reg, FW_REG_ULIMIT_VAL(reg_info->max_feat_bit));
 		TEST_ASSERT(ret != 0 && errno == EBUSY,
 		"Unexpected behavior or return value (%d) while setting a feature while VM is running for reg: 0x%lx\n",
@@ -248,7 +231,7 @@ static void test_guest_stage(struct kvm_vm **vm, struct kvm_vcpu **vcpu)
 
 	pr_debug("Stage: %d\n", prev_stage);
 
-	/* Sync the stage early, the VM might be freed below. */
+	 
 	stage++;
 	sync_global_to_guest(*vm, stage);
 
@@ -257,7 +240,7 @@ static void test_guest_stage(struct kvm_vm **vm, struct kvm_vcpu **vcpu)
 		test_fw_regs_after_vm_start(*vcpu);
 		break;
 	case TEST_STAGE_HVC_IFACE_FEAT_DISABLED:
-		/* Start a new VM so that all the features are now enabled by default */
+		 
 		kvm_vm_free(*vm);
 		*vm = test_vm_create(vcpu);
 		break;

@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// rc-main.c - Remote Controller core module
-//
-// Copyright (C) 2009-2010 by Mauro Carvalho Chehab
+
+
+
+
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -17,7 +17,7 @@
 #include <linux/module.h>
 #include "rc-core-priv.h"
 
-/* Sizes are in bytes, 256 bytes allows for 32 entries on x64 */
+ 
 #define IR_TAB_MIN_SIZE	256
 #define IR_TAB_MAX_SIZE	8192
 
@@ -79,12 +79,12 @@ static const struct {
 	[RC_PROTO_XBOX_DVD] = { .name = "xbox-dvd", .repeat_period = 64 },
 };
 
-/* Used to keep track of known keymaps */
+ 
 static LIST_HEAD(rc_map_list);
 static DEFINE_SPINLOCK(rc_map_lock);
 static struct led_trigger *led_feedback;
 
-/* Used to keep track of rc devices */
+ 
 static DEFINE_IDA(rc_ida);
 
 static struct rc_map_list *seek_rc_map(const char *name)
@@ -116,7 +116,7 @@ struct rc_map *rc_map_get(const char *name)
 			pr_err("Couldn't load IR keymap %s\n", name);
 			return NULL;
 		}
-		msleep(20);	/* Give some time for IR to register */
+		msleep(20);	 
 
 		map = seek_rc_map(name);
 	}
@@ -158,20 +158,12 @@ static struct rc_map_list empty_map = {
 	.map = {
 		.scan     = empty,
 		.size     = ARRAY_SIZE(empty),
-		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
+		.rc_proto = RC_PROTO_UNKNOWN,	 
 		.name     = RC_MAP_EMPTY,
 	}
 };
 
-/**
- * scancode_to_u64() - converts scancode in &struct input_keymap_entry
- * @ke: keymap entry containing scancode to be converted.
- * @scancode: pointer to the location where converted scancode should
- *	be stored.
- *
- * This function is a version of input_scancode_to_scalar specialized for
- * rc-core.
- */
+ 
 static int scancode_to_u64(const struct input_keymap_entry *ke, u64 *scancode)
 {
 	switch (ke->len) {
@@ -198,19 +190,7 @@ static int scancode_to_u64(const struct input_keymap_entry *ke, u64 *scancode)
 	return 0;
 }
 
-/**
- * ir_create_table() - initializes a scancode table
- * @dev:	the rc_dev device
- * @rc_map:	the rc_map to initialize
- * @name:	name to assign to the table
- * @rc_proto:	ir type to assign to the new table
- * @size:	initial size of the table
- *
- * This routine will initialize the rc_map and will allocate
- * memory to hold at least the specified number of elements.
- *
- * return:	zero on success or a negative error code
- */
+ 
 static int ir_create_table(struct rc_dev *dev, struct rc_map *rc_map,
 			   const char *name, u64 rc_proto, size_t size)
 {
@@ -232,13 +212,7 @@ static int ir_create_table(struct rc_dev *dev, struct rc_map *rc_map,
 	return 0;
 }
 
-/**
- * ir_free_table() - frees memory allocated by a scancode table
- * @rc_map:	the table whose mappings need to be freed
- *
- * This routine will free memory alloctaed for key mappings used by given
- * scancode table.
- */
+ 
 static void ir_free_table(struct rc_map *rc_map)
 {
 	rc_map->size = 0;
@@ -248,17 +222,7 @@ static void ir_free_table(struct rc_map *rc_map)
 	rc_map->scan = NULL;
 }
 
-/**
- * ir_resize_table() - resizes a scancode table if necessary
- * @dev:	the rc_dev device
- * @rc_map:	the rc_map to resize
- * @gfp_flags:	gfp flags to use when allocating memory
- *
- * This routine will shrink the rc_map if it has lots of
- * unused entries and grow it if it is full.
- *
- * return:	zero on success or a negative error code
- */
+ 
 static int ir_resize_table(struct rc_dev *dev, struct rc_map *rc_map,
 			   gfp_t gfp_flags)
 {
@@ -268,7 +232,7 @@ static int ir_resize_table(struct rc_dev *dev, struct rc_map *rc_map,
 	struct rc_map_table *newscan;
 
 	if (rc_map->size == rc_map->len) {
-		/* All entries in use -> grow keytable */
+		 
 		if (rc_map->alloc >= IR_TAB_MAX_SIZE)
 			return -ENOMEM;
 
@@ -277,7 +241,7 @@ static int ir_resize_table(struct rc_dev *dev, struct rc_map *rc_map,
 	}
 
 	if ((rc_map->len * 3 < rc_map->size) && (oldalloc > IR_TAB_MIN_SIZE)) {
-		/* Less than 1/3 of entries in use -> shrink keytable */
+		 
 		newalloc /= 2;
 		dev_dbg(&dev->dev, "Shrinking table to %u bytes\n", newalloc);
 	}
@@ -297,19 +261,7 @@ static int ir_resize_table(struct rc_dev *dev, struct rc_map *rc_map,
 	return 0;
 }
 
-/**
- * ir_update_mapping() - set a keycode in the scancode->keycode table
- * @dev:	the struct rc_dev device descriptor
- * @rc_map:	scancode table to be adjusted
- * @index:	index of the mapping that needs to be updated
- * @new_keycode: the desired keycode
- *
- * This routine is used to update scancode->keycode mapping at given
- * position.
- *
- * return:	previous keycode assigned to the mapping
- *
- */
+ 
 static unsigned int ir_update_mapping(struct rc_dev *dev,
 				      struct rc_map *rc_map,
 				      unsigned int index,
@@ -318,7 +270,7 @@ static unsigned int ir_update_mapping(struct rc_dev *dev,
 	int old_keycode = rc_map->scan[index].keycode;
 	int i;
 
-	/* Did the user wish to remove the mapping? */
+	 
 	if (new_keycode == KEY_RESERVED || new_keycode == KEY_UNKNOWN) {
 		dev_dbg(&dev->dev, "#%d: Deleting scan 0x%04llx\n",
 			index, rc_map->scan[index].scancode);
@@ -335,9 +287,9 @@ static unsigned int ir_update_mapping(struct rc_dev *dev,
 	}
 
 	if (old_keycode != KEY_RESERVED) {
-		/* A previous mapping was updated... */
+		 
 		__clear_bit(old_keycode, dev->input_dev->keybit);
-		/* ... but another scancode might use the same keycode */
+		 
 		for (i = 0; i < rc_map->len; i++) {
 			if (rc_map->scan[i].keycode == old_keycode) {
 				__set_bit(old_keycode, dev->input_dev->keybit);
@@ -345,62 +297,41 @@ static unsigned int ir_update_mapping(struct rc_dev *dev,
 			}
 		}
 
-		/* Possibly shrink the keytable, failure is not a problem */
+		 
 		ir_resize_table(dev, rc_map, GFP_ATOMIC);
 	}
 
 	return old_keycode;
 }
 
-/**
- * ir_establish_scancode() - set a keycode in the scancode->keycode table
- * @dev:	the struct rc_dev device descriptor
- * @rc_map:	scancode table to be searched
- * @scancode:	the desired scancode
- * @resize:	controls whether we allowed to resize the table to
- *		accommodate not yet present scancodes
- *
- * This routine is used to locate given scancode in rc_map.
- * If scancode is not yet present the routine will allocate a new slot
- * for it.
- *
- * return:	index of the mapping containing scancode in question
- *		or -1U in case of failure.
- */
+ 
 static unsigned int ir_establish_scancode(struct rc_dev *dev,
 					  struct rc_map *rc_map,
 					  u64 scancode, bool resize)
 {
 	unsigned int i;
 
-	/*
-	 * Unfortunately, some hardware-based IR decoders don't provide
-	 * all bits for the complete IR code. In general, they provide only
-	 * the command part of the IR code. Yet, as it is possible to replace
-	 * the provided IR with another one, it is needed to allow loading
-	 * IR tables from other remotes. So, we support specifying a mask to
-	 * indicate the valid bits of the scancodes.
-	 */
+	 
 	if (dev->scancode_mask)
 		scancode &= dev->scancode_mask;
 
-	/* First check if we already have a mapping for this ir command */
+	 
 	for (i = 0; i < rc_map->len; i++) {
 		if (rc_map->scan[i].scancode == scancode)
 			return i;
 
-		/* Keytable is sorted from lowest to highest scancode */
+		 
 		if (rc_map->scan[i].scancode >= scancode)
 			break;
 	}
 
-	/* No previous mapping found, we might need to grow the table */
+	 
 	if (rc_map->size == rc_map->len) {
 		if (!resize || ir_resize_table(dev, rc_map, GFP_ATOMIC))
 			return -1U;
 	}
 
-	/* i is the proper index to insert our new keycode */
+	 
 	if (i < rc_map->len)
 		memmove(&rc_map->scan[i + 1], &rc_map->scan[i],
 			(rc_map->len - i) * sizeof(struct rc_map_table));
@@ -411,16 +342,7 @@ static unsigned int ir_establish_scancode(struct rc_dev *dev,
 	return i;
 }
 
-/**
- * ir_setkeycode() - set a keycode in the scancode->keycode table
- * @idev:	the struct input_dev device descriptor
- * @ke:		Input keymap entry
- * @old_keycode: result
- *
- * This routine is used to handle evdev EVIOCSKEY ioctl.
- *
- * return:	-EINVAL if the keycode could not be inserted, otherwise zero.
- */
+ 
 static int ir_setkeycode(struct input_dev *idev,
 			 const struct input_keymap_entry *ke,
 			 unsigned int *old_keycode)
@@ -459,15 +381,7 @@ out:
 	return retval;
 }
 
-/**
- * ir_setkeytable() - sets several entries in the scancode->keycode table
- * @dev:	the struct rc_dev device descriptor
- * @from:	the struct rc_map to copy entries from
- *
- * This routine is used to handle table initialization.
- *
- * return:	-ENOMEM if all keycodes could not be inserted, otherwise zero.
- */
+ 
 static int ir_setkeytable(struct rc_dev *dev, const struct rc_map *from)
 {
 	struct rc_map *rc_map = &dev->rc_map;
@@ -509,16 +423,7 @@ static int rc_map_cmp(const void *key, const void *elt)
 	return 0;
 }
 
-/**
- * ir_lookup_by_scancode() - locate mapping by scancode
- * @rc_map:	the struct rc_map to search
- * @scancode:	scancode to look for in the table
- *
- * This routine performs binary search in RC keykeymap table for
- * given scancode.
- *
- * return:	index in the table, -1U if not found
- */
+ 
 static unsigned int ir_lookup_by_scancode(const struct rc_map *rc_map,
 					  u64 scancode)
 {
@@ -532,15 +437,7 @@ static unsigned int ir_lookup_by_scancode(const struct rc_map *rc_map,
 		return res - rc_map->scan;
 }
 
-/**
- * ir_getkeycode() - get a keycode from the scancode->keycode table
- * @idev:	the struct input_dev device descriptor
- * @ke:		Input keymap entry
- *
- * This routine is used to handle evdev EVIOCGKEY ioctl.
- *
- * return:	always returns zero.
- */
+ 
 static int ir_getkeycode(struct input_dev *idev,
 			 struct input_keymap_entry *ke)
 {
@@ -572,11 +469,7 @@ static int ir_getkeycode(struct input_dev *idev,
 		ke->len = sizeof(entry->scancode);
 		memcpy(ke->scancode, &entry->scancode, sizeof(entry->scancode));
 	} else if (!(ke->flags & INPUT_KEYMAP_BY_INDEX)) {
-		/*
-		 * We do not really know the valid range of scancodes
-		 * so let's respond with KEY_RESERVED to anything we
-		 * do not have mapping for [yet].
-		 */
+		 
 		ke->index = index;
 		ke->keycode = KEY_RESERVED;
 	} else {
@@ -591,17 +484,7 @@ out:
 	return retval;
 }
 
-/**
- * rc_g_keycode_from_table() - gets the keycode that corresponds to a scancode
- * @dev:	the struct rc_dev descriptor of the device
- * @scancode:	the scancode to look for
- *
- * This routine is used by drivers which need to convert a scancode to a
- * keycode. Normally it should not be used since drivers should have no
- * interest in keycodes.
- *
- * return:	the corresponding keycode, or KEY_RESERVED
- */
+ 
 u32 rc_g_keycode_from_table(struct rc_dev *dev, u64 scancode)
 {
 	struct rc_map *rc_map = &dev->rc_map;
@@ -625,14 +508,7 @@ u32 rc_g_keycode_from_table(struct rc_dev *dev, u64 scancode)
 }
 EXPORT_SYMBOL_GPL(rc_g_keycode_from_table);
 
-/**
- * ir_do_keyup() - internal function to signal the release of a keypress
- * @dev:	the struct rc_dev descriptor of the device
- * @sync:	whether or not to call input_sync
- *
- * This function is used internally to release a keypress, it must be
- * called with keylock held.
- */
+ 
 static void ir_do_keyup(struct rc_dev *dev, bool sync)
 {
 	if (!dev->keypressed)
@@ -647,13 +523,7 @@ static void ir_do_keyup(struct rc_dev *dev, bool sync)
 	dev->keypressed = false;
 }
 
-/**
- * rc_keyup() - signals the release of a keypress
- * @dev:	the struct rc_dev descriptor of the device
- *
- * This routine is used to signal that a key has been released on the
- * remote control.
- */
+ 
 void rc_keyup(struct rc_dev *dev)
 {
 	unsigned long flags;
@@ -664,43 +534,20 @@ void rc_keyup(struct rc_dev *dev)
 }
 EXPORT_SYMBOL_GPL(rc_keyup);
 
-/**
- * ir_timer_keyup() - generates a keyup event after a timeout
- *
- * @t:		a pointer to the struct timer_list
- *
- * This routine will generate a keyup event some time after a keydown event
- * is generated when no further activity has been detected.
- */
+ 
 static void ir_timer_keyup(struct timer_list *t)
 {
 	struct rc_dev *dev = from_timer(dev, t, timer_keyup);
 	unsigned long flags;
 
-	/*
-	 * ir->keyup_jiffies is used to prevent a race condition if a
-	 * hardware interrupt occurs at this point and the keyup timer
-	 * event is moved further into the future as a result.
-	 *
-	 * The timer will then be reactivated and this function called
-	 * again in the future. We need to exit gracefully in that case
-	 * to allow the input subsystem to do its auto-repeat magic or
-	 * a keyup event might follow immediately after the keydown.
-	 */
+	 
 	spin_lock_irqsave(&dev->keylock, flags);
 	if (time_is_before_eq_jiffies(dev->keyup_jiffies))
 		ir_do_keyup(dev, true);
 	spin_unlock_irqrestore(&dev->keylock, flags);
 }
 
-/**
- * ir_timer_repeat() - generates a repeat event after a timeout
- *
- * @t:		a pointer to the struct timer_list
- *
- * This routine will generate a soft repeat event every REP_PERIOD
- * milliseconds.
- */
+ 
 static void ir_timer_repeat(struct timer_list *t)
 {
 	struct rc_dev *dev = from_timer(dev, t, timer_repeat);
@@ -726,14 +573,7 @@ static unsigned int repeat_period(int protocol)
 	return protocols[protocol].repeat_period;
 }
 
-/**
- * rc_repeat() - signals that a key is still pressed
- * @dev:	the struct rc_dev descriptor of the device
- *
- * This routine is used by IR decoders when a repeat message which does
- * not include the necessary bits to reproduce the scancode has been
- * received.
- */
+ 
 void rc_repeat(struct rc_dev *dev)
 {
 	unsigned long flags;
@@ -766,17 +606,7 @@ void rc_repeat(struct rc_dev *dev)
 }
 EXPORT_SYMBOL_GPL(rc_repeat);
 
-/**
- * ir_do_keydown() - internal function to process a keypress
- * @dev:	the struct rc_dev descriptor of the device
- * @protocol:	the protocol of the keypress
- * @scancode:   the scancode of the keypress
- * @keycode:    the keycode of the keypress
- * @toggle:     the toggle value of the keypress
- *
- * This function is used internally to register a keypress, it must be
- * called with keylock held.
- */
+ 
 static void ir_do_keydown(struct rc_dev *dev, enum rc_proto protocol,
 			  u64 scancode, u32 keycode, u8 toggle)
 {
@@ -806,7 +636,7 @@ static void ir_do_keydown(struct rc_dev *dev, enum rc_proto protocol,
 	dev->last_keycode = keycode;
 
 	if (new_event && keycode != KEY_RESERVED) {
-		/* Register a keypress */
+		 
 		dev->keypressed = true;
 
 		dev_dbg(&dev->dev, "%s: key down event, key 0x%04x, protocol 0x%04x, scancode 0x%08llx\n",
@@ -816,12 +646,7 @@ static void ir_do_keydown(struct rc_dev *dev, enum rc_proto protocol,
 		led_trigger_event(led_feedback, LED_FULL);
 	}
 
-	/*
-	 * For CEC, start sending repeat messages as soon as the first
-	 * repeated message is sent, as long as REP_DELAY = 0 and REP_PERIOD
-	 * is non-zero. Otherwise, the input layer will generate repeat
-	 * messages.
-	 */
+	 
 	if (!new_event && keycode != KEY_RESERVED &&
 	    dev->allowed_protocols == RC_PROTO_BIT_CEC &&
 	    !timer_pending(&dev->timer_repeat) &&
@@ -835,17 +660,7 @@ static void ir_do_keydown(struct rc_dev *dev, enum rc_proto protocol,
 	input_sync(dev->input_dev);
 }
 
-/**
- * rc_keydown() - generates input event for a key press
- * @dev:	the struct rc_dev descriptor of the device
- * @protocol:	the protocol for the keypress
- * @scancode:	the scancode for the keypress
- * @toggle:     the toggle value (protocol dependent, if the protocol doesn't
- *              support toggle values, this should be set to zero)
- *
- * This routine is used to signal that a key has been pressed on the
- * remote control.
- */
+ 
 void rc_keydown(struct rc_dev *dev, enum rc_proto protocol, u64 scancode,
 		u8 toggle)
 {
@@ -864,18 +679,7 @@ void rc_keydown(struct rc_dev *dev, enum rc_proto protocol, u64 scancode,
 }
 EXPORT_SYMBOL_GPL(rc_keydown);
 
-/**
- * rc_keydown_notimeout() - generates input event for a key press without
- *                          an automatic keyup event at a later time
- * @dev:	the struct rc_dev descriptor of the device
- * @protocol:	the protocol for the keypress
- * @scancode:	the scancode for the keypress
- * @toggle:     the toggle value (protocol dependent, if the protocol doesn't
- *              support toggle values, this should be set to zero)
- *
- * This routine is used to signal that a key has been pressed on the
- * remote control. The driver must manually call rc_keyup() at a later stage.
- */
+ 
 void rc_keydown_notimeout(struct rc_dev *dev, enum rc_proto protocol,
 			  u64 scancode, u8 toggle)
 {
@@ -888,36 +692,21 @@ void rc_keydown_notimeout(struct rc_dev *dev, enum rc_proto protocol,
 }
 EXPORT_SYMBOL_GPL(rc_keydown_notimeout);
 
-/**
- * rc_validate_scancode() - checks that a scancode is valid for a protocol.
- *	For nec, it should do the opposite of ir_nec_bytes_to_scancode()
- * @proto:	protocol
- * @scancode:	scancode
- */
+ 
 bool rc_validate_scancode(enum rc_proto proto, u32 scancode)
 {
 	switch (proto) {
-	/*
-	 * NECX has a 16-bit address; if the lower 8 bits match the upper
-	 * 8 bits inverted, then the address would match regular nec.
-	 */
+	 
 	case RC_PROTO_NECX:
 		if ((((scancode >> 16) ^ ~(scancode >> 8)) & 0xff) == 0)
 			return false;
 		break;
-	/*
-	 * NEC32 has a 16 bit address and 16 bit command. If the lower 8 bits
-	 * of the command match the upper 8 bits inverted, then it would
-	 * be either NEC or NECX.
-	 */
+	 
 	case RC_PROTO_NEC32:
 		if ((((scancode >> 8) ^ ~scancode) & 0xff) == 0)
 			return false;
 		break;
-	/*
-	 * If the customer code (top 32-bit) is 0x800f, it is MCE else it
-	 * is regular mode-6a 32 bit
-	 */
+	 
 	case RC_PROTO_RC6_MCE:
 		if ((scancode & 0xffff0000) != 0x800f0000)
 			return false;
@@ -933,14 +722,7 @@ bool rc_validate_scancode(enum rc_proto proto, u32 scancode)
 	return true;
 }
 
-/**
- * rc_validate_filter() - checks that the scancode and mask are valid and
- *			  provides sensible defaults
- * @dev:	the struct rc_dev descriptor of the device
- * @filter:	the scancode and mask
- *
- * return:	0 or -EINVAL if the filter is not valid
- */
+ 
 static int rc_validate_filter(struct rc_dev *dev,
 			      struct rc_scancode_filter *filter)
 {
@@ -958,9 +740,7 @@ static int rc_validate_filter(struct rc_dev *dev,
 	filter->data &= mask;
 	filter->mask &= mask;
 
-	/*
-	 * If we have to raw encode the IR for wakeup, we cannot have a mask
-	 */
+	 
 	if (dev->encode_wakeup && filter->mask != 0 && filter->mask != mask)
 		return -EINVAL;
 
@@ -1016,7 +796,7 @@ static void ir_close(struct input_dev *idev)
 	rc_close(rdev);
 }
 
-/* class for /sys/class/rc */
+ 
 static char *rc_devnode(const struct device *dev, umode_t *mode)
 {
 	return kasprintf(GFP_KERNEL, "rc/%s", dev_name(dev));
@@ -1027,11 +807,7 @@ static struct class rc_class = {
 	.devnode	= rc_devnode,
 };
 
-/*
- * These are the protocol textual descriptions that are
- * used by the sysfs protocols file. Note that the order
- * of the entries is relevant.
- */
+ 
 static const struct {
 	u64	type;
 	const char	*name;
@@ -1068,12 +844,7 @@ static const struct {
 	{ RC_PROTO_BIT_XBOX_DVD, "xbox-dvd",	NULL			},
 };
 
-/**
- * struct rc_filter_attribute - Device attribute relating to a filter type.
- * @attr:	Device attribute.
- * @type:	Filter type.
- * @mask:	false for filter value, true for filter mask.
- */
+ 
 struct rc_filter_attribute {
 	struct device_attribute		attr;
 	enum rc_filter_type		type;
@@ -1088,20 +859,7 @@ struct rc_filter_attribute {
 		.mask = (_mask),					\
 	}
 
-/**
- * show_protocols() - shows the current IR protocol(s)
- * @device:	the device descriptor
- * @mattr:	the device attribute struct
- * @buf:	a pointer to the output buffer
- *
- * This routine is a callback routine for input read the IR protocol type(s).
- * it is triggered by reading /sys/class/rc/rc?/protocols.
- * It returns the protocol names of supported protocols.
- * Enabled protocols are printed in brackets.
- *
- * dev->lock is taken to guard against races between
- * store_protocols and show_protocols.
- */
+ 
 static ssize_t show_protocols(struct device *device,
 			      struct device_attribute *mattr, char *buf)
 {
@@ -1144,18 +902,7 @@ static ssize_t show_protocols(struct device *device,
 	return tmp + 1 - buf;
 }
 
-/**
- * parse_protocol_change() - parses a protocol change request
- * @dev:	rc_dev device
- * @protocols:	pointer to the bitmask of current protocols
- * @buf:	pointer to the buffer with a list of changes
- *
- * Writing "+proto" will add a protocol to the protocol mask.
- * Writing "-proto" will remove a protocol from protocol mask.
- * Writing "proto" will enable only "proto".
- * Writing "none" will disable all protocols.
- * Returns the number of changes performed or a negative error code.
- */
+ 
 static int parse_protocol_change(struct rc_dev *dev, u64 *protocols,
 				 const char *buf)
 {
@@ -1258,21 +1005,7 @@ void ir_raw_load_modules(u64 *protocols)
 	}
 }
 
-/**
- * store_protocols() - changes the current/wakeup IR protocol(s)
- * @device:	the device descriptor
- * @mattr:	the device attribute struct
- * @buf:	a pointer to the input buffer
- * @len:	length of the input buffer
- *
- * This routine is for changing the IR protocol type.
- * It is triggered by writing to /sys/class/rc/rc?/[wakeup_]protocols.
- * See parse_protocol_change() for the valid commands.
- * Returns @len on success or a negative error code.
- *
- * dev->lock is taken to guard against races between
- * store_protocols and show_protocols.
- */
+ 
 static ssize_t store_protocols(struct device *device,
 			       struct device_attribute *mattr,
 			       const char *buf, size_t len)
@@ -1320,13 +1053,7 @@ static ssize_t store_protocols(struct device *device,
 			(long long)new_protocols);
 	}
 
-	/*
-	 * If a protocol change was attempted the filter may need updating, even
-	 * if the actual protocol mask hasn't changed (since the driver may have
-	 * cleared the filter).
-	 * Try setting the same filter with the new protocol (if any).
-	 * Fall back to clearing the filter.
-	 */
+	 
 	if (dev->s_filter && filter->mask) {
 		if (new_protocols)
 			rc = dev->s_filter(dev, filter);
@@ -1347,23 +1074,7 @@ out:
 	return rc;
 }
 
-/**
- * show_filter() - shows the current scancode filter value or mask
- * @device:	the device descriptor
- * @attr:	the device attribute struct
- * @buf:	a pointer to the output buffer
- *
- * This routine is a callback routine to read a scancode filter value or mask.
- * It is triggered by reading /sys/class/rc/rc?/[wakeup_]filter[_mask].
- * It prints the current scancode filter value or mask of the appropriate filter
- * type in hexadecimal into @buf and returns the size of the buffer.
- *
- * Bits of the filter value corresponding to set bits in the filter mask are
- * compared against input scancodes and non-matching scancodes are discarded.
- *
- * dev->lock is taken to guard against races between
- * store_filter and show_filter.
- */
+ 
 static ssize_t show_filter(struct device *device,
 			   struct device_attribute *attr,
 			   char *buf)
@@ -1389,25 +1100,7 @@ static ssize_t show_filter(struct device *device,
 	return sprintf(buf, "%#x\n", val);
 }
 
-/**
- * store_filter() - changes the scancode filter value
- * @device:	the device descriptor
- * @attr:	the device attribute struct
- * @buf:	a pointer to the input buffer
- * @len:	length of the input buffer
- *
- * This routine is for changing a scancode filter value or mask.
- * It is triggered by writing to /sys/class/rc/rc?/[wakeup_]filter[_mask].
- * Returns -EINVAL if an invalid filter value for the current protocol was
- * specified or if scancode filtering is not supported by the driver, otherwise
- * returns @len.
- *
- * Bits of the filter value corresponding to set bits in the filter mask are
- * compared against input scancodes and non-matching scancodes are discarded.
- *
- * dev->lock is taken to guard against races between
- * store_filter and show_filter.
- */
+ 
 static ssize_t store_filter(struct device *device,
 			    struct device_attribute *attr,
 			    const char *buf, size_t len)
@@ -1447,10 +1140,7 @@ static ssize_t store_filter(struct device *device,
 		new_filter.data = val;
 
 	if (fattr->type == RC_FILTER_WAKEUP) {
-		/*
-		 * Refuse to set a filter unless a protocol is enabled
-		 * and the filter is valid for that protocol
-		 */
+		 
 		if (dev->wakeup_protocol != RC_PROTO_UNKNOWN)
 			ret = rc_validate_filter(dev, &new_filter);
 		else
@@ -1462,7 +1152,7 @@ static ssize_t store_filter(struct device *device,
 
 	if (fattr->type == RC_FILTER_NORMAL && !dev->enabled_protocols &&
 	    val) {
-		/* refuse to set a filter unless a protocol is enabled */
+		 
 		ret = -EINVAL;
 		goto unlock;
 	}
@@ -1478,20 +1168,7 @@ unlock:
 	return (ret < 0) ? ret : len;
 }
 
-/**
- * show_wakeup_protocols() - shows the wakeup IR protocol
- * @device:	the device descriptor
- * @mattr:	the device attribute struct
- * @buf:	a pointer to the output buffer
- *
- * This routine is a callback routine for input read the IR protocol type(s).
- * it is triggered by reading /sys/class/rc/rc?/wakeup_protocols.
- * It returns the protocol names of supported protocols.
- * The enabled protocols are printed in brackets.
- *
- * dev->lock is taken to guard against races between
- * store_wakeup_protocols and show_wakeup_protocols.
- */
+ 
 static ssize_t show_wakeup_protocols(struct device *device,
 				     struct device_attribute *mattr,
 				     char *buf)
@@ -1528,20 +1205,7 @@ static ssize_t show_wakeup_protocols(struct device *device,
 	return tmp + 1 - buf;
 }
 
-/**
- * store_wakeup_protocols() - changes the wakeup IR protocol(s)
- * @device:	the device descriptor
- * @mattr:	the device attribute struct
- * @buf:	a pointer to the input buffer
- * @len:	length of the input buffer
- *
- * This routine is for changing the IR protocol type.
- * It is triggered by writing to /sys/class/rc/rc?/wakeup_protocols.
- * Returns @len on success or a negative error code.
- *
- * dev->lock is taken to guard against races between
- * store_wakeup_protocols and show_wakeup_protocols.
- */
+ 
 static ssize_t store_wakeup_protocols(struct device *device,
 				      struct device_attribute *mattr,
 				      const char *buf, size_t len)
@@ -1635,9 +1299,7 @@ static int rc_dev_uevent(const struct device *device, struct kobj_uevent_env *en
 	return ret;
 }
 
-/*
- * Static device attribute struct with the sysfs attributes for IR's
- */
+ 
 static struct device_attribute dev_attr_ro_protocols =
 __ATTR(protocols, 0444, show_protocols, NULL);
 static struct device_attribute dev_attr_rw_protocols =
@@ -1745,8 +1407,7 @@ void rc_free_device(struct rc_dev *dev)
 
 	put_device(&dev->dev);
 
-	/* kfree(dev) will be called by the callback function
-	   rc_dev_release() */
+	 
 
 	module_put(THIS_MODULE);
 }
@@ -1815,13 +1476,13 @@ static int rc_prepare_rx_device(struct rc_dev *dev)
 		dev->enabled_protocols = rc_proto;
 	}
 
-	/* Keyboard events */
+	 
 	set_bit(EV_KEY, dev->input_dev->evbit);
 	set_bit(EV_REP, dev->input_dev->evbit);
 	set_bit(EV_MSC, dev->input_dev->evbit);
 	set_bit(MSC_SCAN, dev->input_dev->mscbit);
 
-	/* Pointer/mouse events */
+	 
 	set_bit(INPUT_PROP_POINTING_STICK, dev->input_dev->propbit);
 	set_bit(EV_REL, dev->input_dev->evbit);
 	set_bit(REL_X, dev->input_dev->relbit);
@@ -1849,27 +1510,18 @@ static int rc_setup_rx_device(struct rc_dev *dev)
 {
 	int rc;
 
-	/* rc_open will be called here */
+	 
 	rc = input_register_device(dev->input_dev);
 	if (rc)
 		return rc;
 
-	/*
-	 * Default delay of 250ms is too short for some protocols, especially
-	 * since the timeout is currently set to 250ms. Increase it to 500ms,
-	 * to avoid wrong repetition of the keycodes. Note that this must be
-	 * set after the call to input_register_device().
-	 */
+	 
 	if (dev->allowed_protocols == RC_PROTO_BIT_CEC)
 		dev->input_dev->rep[REP_DELAY] = 0;
 	else
 		dev->input_dev->rep[REP_DELAY] = 500;
 
-	/*
-	 * As a repeat event on protocols like RC-5 and NEC take as long as
-	 * 110/114ms, using 33ms as a repeat period is not the right thing
-	 * to do.
-	 */
+	 
 	dev->input_dev->rep[REP_PERIOD] = 125;
 
 	return 0;
@@ -1940,12 +1592,7 @@ int rc_register_device(struct rc_dev *dev)
 		 dev->device_name ?: "Unspecified device", path ?: "N/A");
 	kfree(path);
 
-	/*
-	 * once the input device is registered in rc_setup_rx_device,
-	 * userspace can open the input device and rc_open() will be called
-	 * as a result. This results in driver code being allowed to submit
-	 * keycodes with rc_keydown, so lirc must be registered first.
-	 */
+	 
 	if (dev->allowed_protocols != RC_PROTO_BIT_CEC) {
 		rc = lirc_register(dev);
 		if (rc < 0)
@@ -2032,10 +1679,7 @@ void rc_unregister_device(struct rc_dev *dev)
 
 	rc_free_rx_device(dev);
 
-	/*
-	 * lirc device should be freed with dev->registered = false, so
-	 * that userspace polling will get notified.
-	 */
+	 
 	if (dev->allowed_protocols != RC_PROTO_BIT_CEC)
 		lirc_unregister(dev);
 
@@ -2049,9 +1693,7 @@ void rc_unregister_device(struct rc_dev *dev)
 
 EXPORT_SYMBOL_GPL(rc_unregister_device);
 
-/*
- * Init/exit code for the module. Basically, creates/removes /sys/class/rc
- */
+ 
 
 static int __init rc_core_init(void)
 {

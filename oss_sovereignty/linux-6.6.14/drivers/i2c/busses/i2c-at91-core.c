@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  i2c Support for Atmel's AT91 Two-Wire Interface (TWI)
- *
- *  Copyright (C) 2011 Weinmann Medical GmbH
- *  Author: Nikolaus Voss <n.voss@weinmann.de>
- *
- *  Evolved from original work by:
- *  Copyright (C) 2004 Rick Bronson
- *  Converted to 2.6 by Andrew Victor <andrew@sanpeople.com>
- *
- *  Borrowed heavily from original work by:
- *  Copyright (C) 2000 Philip Edelbrock <phil@stimpy.netroedge.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -104,7 +92,7 @@ static const struct platform_device_id at91_twi_devtypes[] = {
 		.name = "i2c-at91sam9g10",
 		.driver_data = (unsigned long) &at91sam9g10_config,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 
@@ -130,7 +118,7 @@ static struct at91_twi_pdata sama5d2_config = {
 	.has_dig_filtr = true,
 	.has_adv_dig_filtr = true,
 	.has_ana_filtr = true,
-	.has_clear_cmd = false,	/* due to errata, CLEAR cmd is not working */
+	.has_clear_cmd = false,	 
 };
 
 static struct at91_twi_pdata sam9x60_config = {
@@ -174,7 +162,7 @@ static const struct of_device_id atmel_twi_dt_ids[] = {
 		.compatible = "microchip,sam9x60-i2c",
 		.data = &sam9x60_config,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, atmel_twi_dt_ids);

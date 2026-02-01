@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2017 NXP
- *
- * The code contained herein is licensed under the GNU General Public
- * License. You may obtain a copy of the GNU General Public License
- * Version 2 or later at the following locations:
- *
- * https://www.opensource.org/licenses/gpl-license.html
- * https://www.gnu.org/copyleft/gpl.html
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of_platform.h>
@@ -79,11 +70,11 @@ static int imx_audmix_fe_hw_params(struct snd_pcm_substream *substream,
 	u32 channels = params_channels(params);
 	int ret, dir;
 
-	/* For playback the AUDMIX is consumer, and for record is provider */
+	 
 	fmt |= tx ? SND_SOC_DAIFMT_BP_FP : SND_SOC_DAIFMT_BC_FC;
 	dir  = tx ? SND_SOC_CLOCK_OUT : SND_SOC_CLOCK_IN;
 
-	/* set DAI configuration */
+	 
 	ret = snd_soc_dai_set_fmt(asoc_rtd_to_cpu(rtd, 0), fmt);
 	if (ret) {
 		dev_err(dev, "failed to set cpu dai fmt: %d\n", ret);
@@ -96,10 +87,7 @@ static int imx_audmix_fe_hw_params(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
-	/*
-	 * Per datasheet, AUDMIX expects 8 slots and 32 bits
-	 * for every slot in TDM mode.
-	 */
+	 
 	ret = snd_soc_dai_set_tdm_slot(asoc_rtd_to_cpu(rtd, 0), BIT(channels) - 1,
 				       BIT(channels) - 1, 8, 32);
 	if (ret)
@@ -120,10 +108,10 @@ static int imx_audmix_be_hw_params(struct snd_pcm_substream *substream,
 	if (!tx)
 		return 0;
 
-	/* For playback the AUDMIX is consumer */
+	 
 	fmt |= SND_SOC_DAIFMT_BC_FC;
 
-	/* set AUDMIX DAI configuration */
+	 
 	ret = snd_soc_dai_set_fmt(asoc_rtd_to_cpu(rtd, 0), fmt);
 	if (ret)
 		dev_err(dev, "failed to set AUDMIX DAI fmt: %d\n", ret);
@@ -206,7 +194,7 @@ static int imx_audmix_probe(struct platform_device *pdev)
 	for (i = 0; i < num_dai; i++) {
 		struct snd_soc_dai_link_component *dlc;
 
-		/* for CPU x 2 */
+		 
 		dlc = devm_kcalloc(&pdev->dev, 2, sizeof(*dlc), GFP_KERNEL);
 		if (!dlc)
 			return -ENOMEM;
@@ -241,10 +229,7 @@ static int imx_audmix_probe(struct platform_device *pdev)
 				return -ENOMEM;
 		}
 
-		/*
-		 * CPU == Platform
-		 * platform is using soc-generic-dmaengine-pcm
-		 */
+		 
 		priv->dai[i].cpus	=
 		priv->dai[i].platforms	= &dlc[0];
 		priv->dai[i].codecs	= &asoc_dummy_dlc;
@@ -263,7 +248,7 @@ static int imx_audmix_probe(struct platform_device *pdev)
 		priv->dai[i].ignore_pmdown_time = 1;
 		priv->dai[i].ops = &imx_audmix_fe_ops;
 
-		/* Add AUDMIX Backend */
+		 
 		be_name = devm_kasprintf(&pdev->dev, GFP_KERNEL,
 					 "audmix-%d", i);
 		be_pb = devm_kasprintf(&pdev->dev, GFP_KERNEL,

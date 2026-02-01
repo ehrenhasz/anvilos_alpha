@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2003-2008 Takahiro Hirofuchi
- */
+
+ 
 
 #include <linux/kthread.h>
 #include <linux/slab.h>
@@ -91,7 +89,7 @@ static int vhci_send_cmd_submit(struct vhci_device *vdev)
 		if (urb->num_sgs)
 			urb->transfer_flags |= URB_DMA_MAP_SG;
 
-		/* 1. setup usbip_header */
+		 
 		setup_cmd_submit_pdu(&pdu_header, urb);
 		usbip_header_correct_endian(&pdu_header, 1);
 		iovnum = 0;
@@ -101,7 +99,7 @@ static int vhci_send_cmd_submit(struct vhci_device *vdev)
 		txsize += sizeof(pdu_header);
 		iovnum++;
 
-		/* 2. setup transfer buffer */
+		 
 		if (!usb_pipein(urb->pipe) && urb->transfer_buffer_length > 0) {
 			if (urb->num_sgs &&
 				      !usb_endpoint_xfer_isoc(&urb->ep->desc)) {
@@ -119,7 +117,7 @@ static int vhci_send_cmd_submit(struct vhci_device *vdev)
 			txsize += urb->transfer_buffer_length;
 		}
 
-		/* 3. setup iso_packet_descriptor */
+		 
 		if (usb_pipetype(urb->pipe) == PIPE_ISOCHRONOUS) {
 			ssize_t len = 0;
 
@@ -147,7 +145,7 @@ static int vhci_send_cmd_submit(struct vhci_device *vdev)
 		}
 
 		kfree(iov);
-		/* This is only for isochronous case */
+		 
 		kfree(iso_buffer);
 		iso_buffer = NULL;
 
@@ -203,7 +201,7 @@ static int vhci_send_cmd_unlink(struct vhci_device *vdev)
 
 		usbip_dbg_vhci_tx("setup cmd unlink, %lu\n", unlink->seqnum);
 
-		/* 1. setup usbip_header */
+		 
 		pdu_header.base.command = USBIP_CMD_UNLINK;
 		pdu_header.base.seqnum  = unlink->seqnum;
 		pdu_header.base.devid	= vdev->devid;

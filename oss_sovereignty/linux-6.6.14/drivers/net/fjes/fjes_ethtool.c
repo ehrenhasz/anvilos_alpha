@@ -1,10 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  FUJITSU Extended Socket Network Device driver
- *  Copyright (c) 2015 FUJITSU LIMITED
- */
 
-/* ethtool support for fjes */
+ 
+
+ 
 
 #include <linux/vmalloc.h>
 #include <linux/netdevice.h>
@@ -168,7 +165,7 @@ static int fjes_get_link_ksettings(struct net_device *netdev,
 	ecmd->base.duplex = DUPLEX_FULL;
 	ecmd->base.autoneg = AUTONEG_DISABLE;
 	ecmd->base.port = PORT_NONE;
-	ecmd->base.speed = 20000;	/* 20Gb/s */
+	ecmd->base.speed = 20000;	 
 
 	return 0;
 }
@@ -190,14 +187,14 @@ static void fjes_get_regs(struct net_device *netdev,
 
 	regs->version = 1;
 
-	/* Information registers */
+	 
 	regs_buff[0] = rd32(XSCT_OWNER_EPID);
 	regs_buff[1] = rd32(XSCT_MAX_EP);
 
-	/* Device Control registers */
+	 
 	regs_buff[4] = rd32(XSCT_DCTL);
 
-	/* Command Control registers */
+	 
 	regs_buff[8] = rd32(XSCT_CR);
 	regs_buff[9] = rd32(XSCT_CS);
 	regs_buff[10] = rd32(XSCT_SHSTSAL);
@@ -211,7 +208,7 @@ static void fjes_get_regs(struct net_device *netdev,
 	regs_buff[18] = rd32(XSCT_RESPBAL);
 	regs_buff[19] = rd32(XSCT_RESPBAH);
 
-	/* Interrupt Control registers */
+	 
 	regs_buff[32] = rd32(XSCT_IS);
 	regs_buff[33] = rd32(XSCT_IMS);
 	regs_buff[34] = rd32(XSCT_IMC);
@@ -231,7 +228,7 @@ static int fjes_set_dump(struct net_device *netdev, struct ethtool_dump *dump)
 
 		hw->debug_mode = dump->flag;
 
-		/* enable debug mode */
+		 
 		mutex_lock(&hw->hw_info.lock);
 		ret = fjes_hw_start_debug(hw);
 		mutex_unlock(&hw->hw_info.lock);
@@ -242,7 +239,7 @@ static int fjes_set_dump(struct net_device *netdev, struct ethtool_dump *dump)
 		if (!hw->debug_mode)
 			return -EPERM;
 
-		/* disable debug mode */
+		 
 		mutex_lock(&hw->hw_info.lock);
 		ret = fjes_hw_stop_debug(hw);
 		mutex_unlock(&hw->hw_info.lock);

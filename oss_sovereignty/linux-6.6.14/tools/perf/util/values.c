@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -252,11 +252,11 @@ static void perf_read_values__display_raw(FILE *fp,
 	int width, pidwidth, tidwidth, namewidth, rawwidth, countwidth;
 	int i, j;
 
-	tidwidth = 3; /* TID */
-	pidwidth = 3; /* PID */
-	namewidth = 4; /* "Name" */
-	rawwidth = 3; /* "Raw" */
-	countwidth = 5; /* "Count" */
+	tidwidth = 3;  
+	pidwidth = 3;  
+	namewidth = 4;  
+	rawwidth = 3;  
+	countwidth = 5;  
 
 	for (i = 0; i < values->threads; i++) {
 		width = snprintf(NULL, 0, "%d", values->pid[i]);

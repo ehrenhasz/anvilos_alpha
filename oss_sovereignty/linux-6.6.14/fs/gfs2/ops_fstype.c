@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2008 Red Hat, Inc.  All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -44,11 +41,7 @@
 #define DO 0
 #define UNDO 1
 
-/**
- * gfs2_tune_init - Fill a gfs2_tune structure with default values
- * @gt: tune
- *
- */
+ 
 
 static void gfs2_tune_init(struct gfs2_tune *gt)
 {
@@ -144,15 +137,7 @@ fail:
 	return NULL;
 }
 
-/**
- * gfs2_check_sb - Check superblock
- * @sdp: the filesystem
- * @silent: Don't print a message if the check fails
- *
- * Checks the version code of the FS is one that we understand how to
- * read and that the sizes of the various on-disk structures have not
- * changed.
- */
+ 
 
 static int gfs2_check_sb(struct gfs2_sbd *sdp, int silent)
 {
@@ -217,24 +202,7 @@ static void gfs2_sb_in(struct gfs2_sbd *sdp, const void *buf)
 	memcpy(&s->s_uuid, str->sb_uuid, 16);
 }
 
-/**
- * gfs2_read_super - Read the gfs2 super block from disk
- * @sdp: The GFS2 super block
- * @sector: The location of the super block
- * @silent: Don't print a message if the check fails
- *
- * This uses the bio functions to read the super block from disk
- * because we want to be 100% sure that we never read cached data.
- * A super block is read twice only during each GFS2 mount and is
- * never written to by the filesystem. The first time its read no
- * locks are held, and the only details which are looked at are those
- * relating to the locking protocol. Once locking is up and working,
- * the sb is read again under the lock to establish the location of
- * the master directory (contains pointers to journals etc) and the
- * root directory.
- *
- * Returns: 0 on success or error
- */
+ 
 
 static int gfs2_read_super(struct gfs2_sbd *sdp, sector_t sector, int silent)
 {
@@ -271,12 +239,7 @@ static int gfs2_read_super(struct gfs2_sbd *sdp, sector_t sector, int silent)
 	return gfs2_check_sb(sdp, silent);
 }
 
-/**
- * gfs2_read_sb - Read super block
- * @sdp: The GFS2 superblock
- * @silent: Don't print message if mount fails
- *
- */
+ 
 
 static int gfs2_read_sb(struct gfs2_sbd *sdp, int silent)
 {
@@ -310,16 +273,12 @@ static int gfs2_read_sb(struct gfs2_sbd *sdp, int silent)
 			        sizeof(struct gfs2_quota_change);
 	sdp->sd_blocks_per_bitmap = (sdp->sd_sb.sb_bsize -
 				     sizeof(struct gfs2_meta_header))
-		* GFS2_NBBY; /* not the rgrp bitmap, subsequent bitmaps only */
+		* GFS2_NBBY;  
 
-	/*
-	 * We always keep at least one block reserved for revokes in
-	 * transactions.  This greatly simplifies allocating additional
-	 * revoke blocks.
-	 */
+	 
 	atomic_set(&sdp->sd_log_revokes_available, sdp->sd_ldptrs);
 
-	/* Compute maximum reservation required to add a entry to a directory */
+	 
 
 	hash_blocks = DIV_ROUND_UP(sizeof(u64) * BIT(GFS2_DIR_MAX_DEPTH),
 			     sdp->sd_jbsize);
@@ -367,7 +326,7 @@ static int init_names(struct gfs2_sbd *sdp, int silent)
 	proto = sdp->sd_args.ar_lockproto;
 	table = sdp->sd_args.ar_locktable;
 
-	/*  Try to autodetect  */
+	 
 
 	if (!proto[0] || !table[0]) {
 		error = gfs2_read_super(sdp, GFS2_SB_ADDR >> sdp->sd_fsb2bb_shift, silent);
@@ -459,7 +418,7 @@ static int gfs2_lookup_root(struct super_block *sb, struct dentry **dptr,
 	struct inode *inode;
 
 	inode = gfs2_inode_lookup(sb, DT_DIR, no_addr, 0,
-				  GFS2_BLKST_FREE /* ignore */);
+				  GFS2_BLKST_FREE  );
 	if (IS_ERR(inode)) {
 		fs_err(sdp, "can't read in %s inode: %ld\n", name, PTR_ERR(inode));
 		return PTR_ERR(inode);
@@ -506,7 +465,7 @@ static int init_sb(struct gfs2_sbd *sdp, int silent)
 		BUG();
 	}
 
-	/* Set up the buffer cache and SB for real */
+	 
 	if (sdp->sd_sb.sb_bsize < bdev_logical_block_size(sb->s_bdev)) {
 		ret = -EINVAL;
 		fs_err(sdp, "FS block size (%u) is too small for device "
@@ -523,13 +482,13 @@ static int init_sb(struct gfs2_sbd *sdp, int silent)
 	}
 	sb_set_blocksize(sb, sdp->sd_sb.sb_bsize);
 
-	/* Get the root inode */
+	 
 	no_addr = sdp->sd_sb.sb_root_dir.no_addr;
 	ret = gfs2_lookup_root(sb, &sdp->sd_root_dir, no_addr, "root");
 	if (ret)
 		goto out;
 
-	/* Get the master inode */
+	 
 	no_addr = sdp->sd_sb.sb_master_dir.no_addr;
 	ret = gfs2_lookup_root(sb, &sdp->sd_master_dir, no_addr, "master");
 	if (ret) {
@@ -555,13 +514,7 @@ static void gfs2_others_may_mount(struct gfs2_sbd *sdp)
 	kobject_uevent_env(&sdp->sd_kobj, KOBJ_CHANGE, envp);
 }
 
-/**
- * gfs2_jindex_hold - Grab a lock on the jindex
- * @sdp: The GFS2 superblock
- * @ji_gh: the holder for the jindex glock
- *
- * Returns: errno
- */
+ 
 
 static int gfs2_jindex_hold(struct gfs2_sbd *sdp, struct gfs2_holder *ji_gh)
 {
@@ -629,16 +582,7 @@ static int gfs2_jindex_hold(struct gfs2_sbd *sdp, struct gfs2_holder *ji_gh)
 	return error;
 }
 
-/**
- * init_statfs - look up and initialize master and local (per node) statfs inodes
- * @sdp: The GFS2 superblock
- *
- * This should be called after the jindex is initialized in init_journal() and
- * before gfs2_journal_recovery() is called because we need to be able to write
- * to these inodes during recovery.
- *
- * Returns: errno
- */
+ 
 static int init_statfs(struct gfs2_sbd *sdp)
 {
 	int error = 0;
@@ -664,8 +608,7 @@ static int init_statfs(struct gfs2_sbd *sdp)
 		goto put_statfs;
 	}
 
-	/* For each jid, lookup the corresponding local statfs inode in the
-	 * per_node metafs directory and save it in the sdp->sd_sc_inodes_list. */
+	 
 	list_for_each_entry(jd, &sdp->sd_jindex_list, jd_list) {
 		struct local_statfs_inode *lsi =
 			kmalloc(sizeof(struct local_statfs_inode), GFP_NOFS);
@@ -698,7 +641,7 @@ static int init_statfs(struct gfs2_sbd *sdp)
 		fs_err(sdp, "can't lock local \"sc\" file: %d\n", error);
 		goto free_local;
 	}
-	/* read in the local statfs buffer - other nodes don't change it. */
+	 
 	error = gfs2_meta_inode_buffer(ip, &sdp->sd_sc_bh);
 	if (error) {
 		fs_err(sdp, "Cannot read in local statfs: %d\n", error);
@@ -717,7 +660,7 @@ out:
 	return error;
 }
 
-/* Uninitialize and free up memory used by the list of statfs inodes */
+ 
 static void uninit_statfs(struct gfs2_sbd *sdp)
 {
 	if (!sdp->sd_args.ar_spectator) {
@@ -745,7 +688,7 @@ static int init_journal(struct gfs2_sbd *sdp, int undo)
 		return PTR_ERR(sdp->sd_jindex);
 	}
 
-	/* Load in the journal index special file */
+	 
 
 	error = gfs2_jindex_hold(sdp, &ji_gh);
 	if (error) {
@@ -808,12 +751,12 @@ static int init_journal(struct gfs2_sbd *sdp, int undo)
 		atomic_set(&sdp->sd_log_thresh1, 2*sdp->sd_jdesc->jd_blocks/5);
 		atomic_set(&sdp->sd_log_thresh2, 4*sdp->sd_jdesc->jd_blocks/5);
 
-		/* Map the extents for this journal's blocks */
+		 
 		gfs2_map_journal_extents(sdp, sdp->sd_jdesc);
 	}
 	trace_gfs2_log_blocks(sdp, atomic_read(&sdp->sd_log_blks_free));
 
-	/* Lookup statfs inodes here so journal recovery can use them. */
+	 
 	error = init_statfs(sdp);
 	if (error)
 		goto fail_jinode_gh;
@@ -855,7 +798,7 @@ static int init_journal(struct gfs2_sbd *sdp, int undo)
 fail_statfs:
 	uninit_statfs(sdp);
 fail_jinode_gh:
-	/* A withdraw may have done dq/uninit so now we need to check it */
+	 
 	if (!sdp->sd_args.ar_spectator &&
 	    gfs2_holder_initialized(&sdp->sd_jinode_gh))
 		gfs2_glock_dq_uninit(&sdp->sd_jinode_gh);
@@ -887,7 +830,7 @@ static int init_inodes(struct gfs2_sbd *sdp, int undo)
 	if (error)
 		goto fail;
 
-	/* Read in the resource index inode */
+	 
 	sdp->sd_rindex = gfs2_lookup_simple(master, "rindex");
 	if (IS_ERR(sdp->sd_rindex)) {
 		error = PTR_ERR(sdp->sd_rindex);
@@ -896,17 +839,14 @@ static int init_inodes(struct gfs2_sbd *sdp, int undo)
 	}
 	sdp->sd_rindex_uptodate = 0;
 
-	/* Read in the quota inode */
+	 
 	sdp->sd_quota_inode = gfs2_lookup_simple(master, "quota");
 	if (IS_ERR(sdp->sd_quota_inode)) {
 		error = PTR_ERR(sdp->sd_quota_inode);
 		fs_err(sdp, "can't get quota file inode: %d\n", error);
 		goto fail_rindex;
 	}
-	/*
-	 * i_rwsem on quota files is special. Since this inode is hidden system
-	 * file, we are safe to define locking ourselves.
-	 */
+	 
 	lockdep_set_class(&sdp->sd_quota_inode->i_rwsem,
 			  &gfs2_quota_imutex_key);
 
@@ -989,13 +929,7 @@ static const struct lm_lockops nolock_ops = {
 	.lm_tokens = &nolock_tokens,
 };
 
-/**
- * gfs2_lm_mount - mount a locking protocol
- * @sdp: the filesystem
- * @silent: if 1, don't complain if the FS isn't a GFS2 fs
- *
- * Returns: errno
- */
+ 
 
 static int gfs2_lm_mount(struct gfs2_sbd *sdp, int silent)
 {
@@ -1042,7 +976,7 @@ static int gfs2_lm_mount(struct gfs2_sbd *sdp, int silent)
 			break;
 		case Opt_id:
 		case Opt_nodir:
-			/* Obsolete, but left for backward compat purposes */
+			 
 			break;
 		case Opt_first:
 			ret = match_int(&tmp[0], &option);
@@ -1146,13 +1080,7 @@ void gfs2_destroy_threads(struct gfs2_sbd *sdp)
 	}
 }
 
-/**
- * gfs2_fill_super - Read in superblock
- * @sb: The VFS superblock
- * @fc: Mount options and flags
- *
- * Returns: -errno
- */
+ 
 static int gfs2_fill_super(struct super_block *sb, struct fs_context *fc)
 {
 	struct gfs2_args *args = fc->fs_private;
@@ -1188,8 +1116,7 @@ static int gfs2_fill_super(struct super_block *sb, struct fs_context *fc)
 	sb->s_time_gran = 1;
 	sb->s_maxbytes = MAX_LFS_FILESIZE;
 
-	/* Set up the buffer cache and fill in some fake block size values
-	   to allow us to read-in the on-disk superblock. */
+	 
 	sdp->sd_sb.sb_bsize = sb_min_blocksize(sb, GFS2_BASIC_BLOCK);
 	sdp->sd_sb.sb_bsize_shift = sb->s_blocksize_bits;
 	sdp->sd_fsb2bb_shift = sdp->sd_sb.sb_bsize_shift -
@@ -1236,7 +1163,7 @@ static int gfs2_fill_super(struct super_block *sb, struct fs_context *fc)
 	if (error)
 		goto fail_locking;
 
-	/* Turn rgrplvb on by default if fs format is recent enough */
+	 
 	if (!sdp->sd_args.ar_got_rgrplvb && sdp->sd_sb.sb_fs_format > 1801)
 		sdp->sd_args.ar_rgrplvb = 1;
 
@@ -1244,14 +1171,7 @@ static int gfs2_fill_super(struct super_block *sb, struct fs_context *fc)
 	if (error)
 		goto fail_sb;
 
-	/*
-	 * If user space has failed to join the cluster or some similar
-	 * failure has occurred, then the journal id will contain a
-	 * negative (error) number. This will then be returned to the
-	 * caller (of the mount syscall). We do this even for spectator
-	 * mounts (which just write a jid of 0 to indicate "ok" even though
-	 * the jid is unused in the spectator case)
-	 */
+	 
 	if (sdp->sd_lockstruct.ls_jid < 0) {
 		error = sdp->sd_lockstruct.ls_jid;
 		sdp->sd_lockstruct.ls_jid = 0;
@@ -1331,12 +1251,7 @@ fail_free:
 	return error;
 }
 
-/**
- * gfs2_get_tree - Get the GFS2 superblock and root directory
- * @fc: The filesystem context
- *
- * Returns: 0 or -errno on error
- */
+ 
 static int gfs2_get_tree(struct fs_context *fc)
 {
 	struct gfs2_args *args = fc->fs_private;
@@ -1444,13 +1359,13 @@ static const struct fs_parameter_spec gfs2_fs_parameters[] = {
 	fsparam_flag_no("barrier",            Opt_barrier),
 	fsparam_flag_no("rgrplvb",            Opt_rgrplvb),
 	fsparam_flag_no("loccookie",          Opt_loccookie),
-	/* quota can be a flag or an enum so it gets special treatment */
+	 
 	fsparam_flag_no("quota",	      Opt_quota_flag),
 	fsparam_enum("quota",		      Opt_quota, gfs2_param_quota),
 	{}
 };
 
-/* Parse a single mount parameter */
+ 
 static int gfs2_parse_param(struct fs_context *fc, struct fs_parameter *param)
 {
 	struct gfs2_args *args = fc->fs_private;
@@ -1475,13 +1390,13 @@ static int gfs2_parse_param(struct fs_context *fc, struct fs_parameter *param)
 		args->ar_spectator = 1;
 		break;
 	case Opt_ignore_local_fs:
-		/* Retained for backwards compat only */
+		 
 		break;
 	case Opt_localflocks:
 		args->ar_localflocks = 1;
 		break;
 	case Opt_localcaching:
-		/* Retained for backwards compat only */
+		 
 		break;
 	case Opt_debug:
 		if (result.boolean && args->ar_errors == GFS2_ERRORS_PANIC)
@@ -1489,7 +1404,7 @@ static int gfs2_parse_param(struct fs_context *fc, struct fs_parameter *param)
 		args->ar_debug = result.boolean;
 		break;
 	case Opt_upgrade:
-		/* Retained for backwards compat only */
+		 
 		break;
 	case Opt_acl:
 		args->ar_posix_acl = result.boolean;
@@ -1504,7 +1419,7 @@ static int gfs2_parse_param(struct fs_context *fc, struct fs_parameter *param)
 		args->ar_suiddir = result.boolean;
 		break;
 	case Opt_data:
-		/* The uint_32 result maps directly to GFS2_DATA_* */
+		 
 		args->ar_data = result.uint_32;
 		break;
 	case Opt_meta:
@@ -1644,7 +1559,7 @@ static const struct fs_context_operations gfs2_context_ops = {
 	.reconfigure = gfs2_reconfigure,
 };
 
-/* Set up the filesystem mount context */
+ 
 static int gfs2_init_fs_context(struct fs_context *fc)
 {
 	struct gfs2_args *args;
@@ -1730,26 +1645,7 @@ static int gfs2_meta_init_fs_context(struct fs_context *fc)
 	return 0;
 }
 
-/**
- * gfs2_evict_inodes - evict inodes cooperatively
- * @sb: the superblock
- *
- * When evicting an inode with a zero link count, we are trying to upgrade the
- * inode's iopen glock from SH to EX mode in order to determine if we can
- * delete the inode.  The other nodes are supposed to evict the inode from
- * their caches if they can, and to poke the inode's inode glock if they cannot
- * do so.  Either behavior allows gfs2_upgrade_iopen_glock() to proceed
- * quickly, but if the other nodes are not cooperating, the lock upgrading
- * attempt will time out.  Since inodes are evicted sequentially, this can add
- * up quickly.
- *
- * Function evict_inodes() tries to keep the s_inode_list_lock list locked over
- * a long time, which prevents other inodes from being evicted concurrently.
- * This precludes the cooperative behavior we are looking for.  This special
- * version of evict_inodes() avoids that.
- *
- * Modeled after drop_pagecache_sb().
- */
+ 
 static void gfs2_evict_inodes(struct super_block *sb)
 {
 	struct inode *inode, *toput_inode = NULL;
@@ -1797,11 +1693,7 @@ static void gfs2_kill_sb(struct super_block *sb)
 
 	gfs2_evict_inodes(sb);
 
-	/*
-	 * Flush and then drain the delete workqueue here (via
-	 * destroy_workqueue()) to ensure that any delete work that
-	 * may be running will also see the SDF_KILL flag.
-	 */
+	 
 	set_bit(SDF_KILL, &sdp->sd_flags);
 	gfs2_flush_delete_work(sdp);
 	destroy_workqueue(sdp->sd_delete_wq);

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * User-space helper to sort the output of /sys/kernel/debug/page_owner
- *
- * Example use:
- * cat /sys/kernel/debug/page_owner > page_owner_full.txt
- * ./page_owner_sort page_owner_full.txt sorted_page_owner.txt
- * Or sort by total memory:
- * ./page_owner_sort -m page_owner_full.txt sorted_page_owner.txt
- *
- * See Documentation/mm/page_owner.rst
-*/
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,7 +20,7 @@
 
 struct block_list {
 	char *txt;
-	char *comm; // task command name
+	char *comm; 
 	char *stacktrace;
 	__u64 ts_nsec;
 	__u64 free_ts_nsec;
@@ -105,7 +95,7 @@ int read_block(char *buf, char *ext_buf, int buf_size, FILE *fin)
 	char *curr = buf, *const buf_end = buf + buf_size;
 
 	while (buf_end - curr > 1 && fgets(curr, buf_end - curr, fin)) {
-		if (*curr == '\n') { /* empty line */
+		if (*curr == '\n') {  
 			return curr - buf;
 		}
 		if (!strncmp(curr, "PFN", 3)) {
@@ -115,7 +105,7 @@ int read_block(char *buf, char *ext_buf, int buf_size, FILE *fin)
 		curr += strlen(curr);
 	}
 
-	return -1; /* EOF or no space left in buf. */
+	return -1;  
 }
 
 static int compare_txt(const void *p1, const void *p2)
@@ -584,7 +574,7 @@ static bool parse_sort_args(const char *arg_str)
 {
 	int size = 0;
 
-	if (sc.size != 0) { /* reset sort_condition */
+	if (sc.size != 0) {  
 		free(sc.signs);
 		free(sc.cmps);
 		size = 0;
@@ -806,7 +796,7 @@ int main(int argc, char **argv)
 		goto out_free_ts;
 
 	fstat(fileno(fin), &st);
-	max_size = st.st_size / 100; /* hack ... */
+	max_size = st.st_size / 100;  
 
 	list = malloc(max_size * sizeof(*list));
 	buf = malloc(BUF_SIZE);

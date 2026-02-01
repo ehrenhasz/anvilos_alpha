@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * USB Wishbone-Serial adapter driver
- *
- * Copyright (C) 2013 Wesley W. Terpstra <w.terpstra@gsi.de>
- * Copyright (C) 2013 GSI Helmholtz Centre for Heavy Ion Research GmbH
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/tty.h>
@@ -21,25 +16,20 @@ static const struct usb_device_id id_table[] = {
 };
 MODULE_DEVICE_TABLE(usb, id_table);
 
-/*
- * Etherbone must be told that a new stream has begun before data arrives.
- * This is necessary to restart the negotiation of Wishbone bus parameters.
- * Similarly, when the stream ends, Etherbone must be told so that the cycle
- * line can be driven low in the case that userspace failed to do so.
- */
+ 
 static int usb_gsi_openclose(struct usb_serial_port *port, int value)
 {
 	struct usb_device *dev = port->serial->dev;
 
 	return usb_control_msg(
 		dev,
-		usb_sndctrlpipe(dev, 0), /* Send to EP0OUT */
+		usb_sndctrlpipe(dev, 0),  
 		GSI_VENDOR_OPENCLOSE,
 		USB_DIR_OUT|USB_TYPE_VENDOR|USB_RECIP_INTERFACE,
-		value, /* wValue = device is open(1) or closed(0) */
+		value,  
 		port->serial->interface->cur_altsetting->desc.bInterfaceNumber,
-		NULL, 0,  /* There is no data stage */
-		5000); /* Timeout till operation fails */
+		NULL, 0,   
+		5000);  
 }
 
 static int wishbone_serial_open(struct tty_struct *tty,

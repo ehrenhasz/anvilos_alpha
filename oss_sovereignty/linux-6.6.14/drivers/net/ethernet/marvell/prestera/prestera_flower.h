@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/* Copyright (c) 2020-2021 Marvell International Ltd. All rights reserved. */
+ 
+ 
 
 #ifndef _PRESTERA_FLOWER_H_
 #define _PRESTERA_FLOWER_H_
@@ -22,4 +22,4 @@ void prestera_flower_template_cleanup(struct prestera_flow_block *block);
 int prestera_flower_prio_get(struct prestera_flow_block *block, u32 chain_index,
 			     u32 *prio_min, u32 *prio_max);
 
-#endif /* _PRESTERA_FLOWER_H_ */
+#endif  

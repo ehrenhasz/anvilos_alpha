@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2023 Advanced Micro Devices, Inc */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/pci.h>
@@ -59,9 +59,7 @@ bool pdsc_is_fw_running(struct pdsc *pdsc)
 	pdsc->last_fw_time = jiffies;
 	pdsc->last_hb = ioread32(&pdsc->info_regs->fw_heartbeat);
 
-	/* Firmware is useful only if the running bit is set and
-	 * fw_status != 0xff (bad PCI read)
-	 */
+	 
 	return (pdsc->fw_status != 0xff) &&
 		(pdsc->fw_status & PDS_CORE_FW_STS_F_RUNNING);
 }
@@ -71,9 +69,7 @@ bool pdsc_is_fw_good(struct pdsc *pdsc)
 	bool fw_running = pdsc_is_fw_running(pdsc);
 	u8 gen;
 
-	/* Make sure to update the cached fw_status by calling
-	 * pdsc_is_fw_running() before getting the generation
-	 */
+	 
 	gen = pdsc->fw_status & PDS_CORE_FW_STS_F_GENERATION;
 
 	return fw_running && gen == pdsc->fw_generation;
@@ -257,17 +253,13 @@ static int pdsc_identify(struct pdsc *pdsc)
 	int n;
 
 	drv.drv_type = cpu_to_le32(PDS_DRIVER_LINUX);
-	/* Catching the return quiets a Wformat-truncation complaint */
+	 
 	n = snprintf(drv.driver_ver_str, sizeof(drv.driver_ver_str),
 		     "%s %s", PDS_CORE_DRV_NAME, utsname()->release);
 	if (n > sizeof(drv.driver_ver_str))
 		dev_dbg(pdsc->dev, "release name truncated, don't care\n");
 
-	/* Next let's get some info about the device
-	 * We use the devcmd_lock at this level in order to
-	 * get safe access to the cmd_regs->data before anyone
-	 * else can mess it up
-	 */
+	 
 	mutex_lock(&pdsc->devcmd_lock);
 
 	sz = min_t(size_t, sizeof(drv), sizeof(pdsc->cmd_regs->data));
@@ -314,7 +306,7 @@ int pdsc_dev_init(struct pdsc *pdsc)
 	unsigned int nintrs;
 	int err;
 
-	/* Initial init and reset of device */
+	 
 	pdsc_init_devinfo(pdsc);
 	pdsc->devcmd_timeout = PDS_CORE_DEVCMD_TIMEOUT;
 
@@ -328,11 +320,11 @@ int pdsc_dev_init(struct pdsc *pdsc)
 
 	pdsc_debugfs_add_ident(pdsc);
 
-	/* Now we can reserve interrupts */
+	 
 	nintrs = le32_to_cpu(pdsc->dev_ident.nintrs);
 	nintrs = min_t(unsigned int, num_online_cpus(), nintrs);
 
-	/* Get intr_info struct array for tracking */
+	 
 	pdsc->intr_info = kcalloc(nintrs, sizeof(*pdsc->intr_info), GFP_KERNEL);
 	if (!pdsc->intr_info) {
 		err = -ENOMEM;

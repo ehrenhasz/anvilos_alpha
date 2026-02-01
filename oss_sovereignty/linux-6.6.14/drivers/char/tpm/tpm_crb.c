@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Intel Corporation
- *
- * Authors:
- * Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
- *
- * Maintained by: <tpmdd-devel@lists.sourceforge.net>
- *
- * This device driver implements the TPM interface as defined in
- * the TCG CRB 2.0 TPM specification.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/highmem.h>
@@ -153,22 +143,7 @@ static int crb_try_pluton_doorbell(struct crb_priv *priv, bool wait_for_complete
 	return 0;
 }
 
-/**
- * __crb_go_idle - request tpm crb device to go the idle state
- *
- * @dev:  crb device
- * @priv: crb private data
- *
- * Write CRB_CTRL_REQ_GO_IDLE to TPM_CRB_CTRL_REQ
- * The device should respond within TIMEOUT_C by clearing the bit.
- * Anyhow, we do not wait here as a consequent CMD_READY request
- * will be handled correctly even if idle was not completed.
- *
- * The function does nothing for devices with ACPI-start method
- * or SMC-start method.
- *
- * Return: 0 always
- */
+ 
 static int __crb_go_idle(struct device *dev, struct crb_priv *priv)
 {
 	int rc;
@@ -185,8 +160,8 @@ static int __crb_go_idle(struct device *dev, struct crb_priv *priv)
 		return rc;
 
 	if (!crb_wait_for_reg_32(&priv->regs_t->ctrl_req,
-				 CRB_CTRL_REQ_GO_IDLE/* mask */,
-				 0, /* value */
+				 CRB_CTRL_REQ_GO_IDLE ,
+				 0,  
 				 TPM2_TIMEOUT_C)) {
 		dev_warn(dev, "goIdle timed out\n");
 		return -ETIME;
@@ -203,21 +178,7 @@ static int crb_go_idle(struct tpm_chip *chip)
 	return __crb_go_idle(dev, priv);
 }
 
-/**
- * __crb_cmd_ready - request tpm crb device to enter ready state
- *
- * @dev:  crb device
- * @priv: crb private data
- *
- * Write CRB_CTRL_REQ_CMD_READY to TPM_CRB_CTRL_REQ
- * and poll till the device acknowledge it by clearing the bit.
- * The device should respond within TIMEOUT_C.
- *
- * The function does nothing for devices with ACPI-start method
- * or SMC-start method.
- *
- * Return: 0 on success -ETIME on timeout;
- */
+ 
 static int __crb_cmd_ready(struct device *dev, struct crb_priv *priv)
 {
 	int rc;
@@ -234,8 +195,8 @@ static int __crb_cmd_ready(struct device *dev, struct crb_priv *priv)
 		return rc;
 
 	if (!crb_wait_for_reg_32(&priv->regs_t->ctrl_req,
-				 CRB_CTRL_REQ_CMD_READY /* mask */,
-				 0, /* value */
+				 CRB_CTRL_REQ_CMD_READY  ,
+				 0,  
 				 TPM2_TIMEOUT_C)) {
 		dev_warn(dev, "cmdReady timed out\n");
 		return -ETIME;
@@ -322,22 +283,15 @@ static int crb_recv(struct tpm_chip *chip, u8 *buf, size_t count)
 	struct crb_priv *priv = dev_get_drvdata(&chip->dev);
 	unsigned int expected;
 
-	/* A sanity check that the upper layer wants to get at least the header
-	 * as that is the minimum size for any TPM response.
-	 */
+	 
 	if (count < TPM_HEADER_SIZE)
 		return -EIO;
 
-	/* If this bit is set, according to the spec, the TPM is in
-	 * unrecoverable condition.
-	 */
+	 
 	if (ioread32(&priv->regs_t->ctrl_sts) & CRB_CTRL_STS_ERROR)
 		return -EIO;
 
-	/* Read the first 8 bytes in order to get the length of the response.
-	 * We read exactly a quad word in order to make sure that the remaining
-	 * reads will be aligned.
-	 */
+	 
 	memcpy_fromio(buf, priv->rsp, 8);
 
 	expected = be32_to_cpup((__be32 *)&buf[2]);
@@ -367,11 +321,7 @@ static int crb_do_acpi_start(struct tpm_chip *chip)
 }
 
 #ifdef CONFIG_ARM64
-/*
- * This is a TPM Command Response Buffer start method that invokes a
- * Secure Monitor Call to requrest the firmware to execute or cancel
- * a TPM 2.0 command.
- */
+ 
 static int tpm_crb_smc_start(struct device *dev, unsigned long func_id)
 {
 	struct arm_smccc_res res;
@@ -399,9 +349,7 @@ static int crb_send(struct tpm_chip *chip, u8 *buf, size_t len)
 	struct crb_priv *priv = dev_get_drvdata(&chip->dev);
 	int rc = 0;
 
-	/* Zero the cancel register so that the next command will not get
-	 * canceled.
-	 */
+	 
 	iowrite32(0, &priv->regs_t->ctrl_cancel);
 
 	if (len > priv->cmd_size) {
@@ -410,19 +358,16 @@ static int crb_send(struct tpm_chip *chip, u8 *buf, size_t len)
 		return -E2BIG;
 	}
 
-	/* Seems to be necessary for every command */
+	 
 	if (priv->sm == ACPI_TPM2_COMMAND_BUFFER_WITH_PLUTON)
 		__crb_cmd_ready(&chip->dev, priv);
 
 	memcpy_toio(priv->cmd, buf, len);
 
-	/* Make sure that cmd is populated before issuing start. */
+	 
 	wmb();
 
-	/* The reason for the extra quirk is that the PTT in 4th Gen Core CPUs
-	 * report only ACPI start but in practice seems to require both
-	 * CRB start, hence invoking CRB start method if hid == MSFT0101.
-	 */
+	 
 	if ((priv->sm == ACPI_TPM2_COMMAND_BUFFER) ||
 	    (priv->sm == ACPI_TPM2_MEMORY_MAPPED) ||
 	    (!strcmp(priv->hid, "MSFT0101")))
@@ -508,7 +453,7 @@ static void __iomem *crb_map_res(struct device *dev, struct resource *iores,
 		.flags	= IORESOURCE_MEM,
 	};
 
-	/* Detect a 64 bit address on a 32 bit system */
+	 
 	if (start != new_res.start)
 		return IOMEM_ERR_PTR(-EINVAL);
 
@@ -524,11 +469,7 @@ static void __iomem *crb_map_res(struct device *dev, struct resource *iores,
 	return *iobase_ptr + (new_res.start - iores->start);
 }
 
-/*
- * Work around broken BIOSs that return inconsistent values from the ACPI
- * region vs the registers. Trust the ACPI region. Such broken systems
- * probably cannot send large TPM commands since the buffer will be truncated.
- */
+ 
 static u64 crb_fixup_cmd_size(struct device *dev, struct resource *io_res,
 			      u64 start, u64 size)
 {
@@ -563,10 +504,7 @@ static int crb_map_io(struct acpi_device *device, struct crb_priv *priv,
 	u32 rsp_size;
 	int ret;
 
-	/*
-	 * Pluton sometimes does not define ACPI memory regions.
-	 * Mapping is then done in crb_map_pluton
-	 */
+	 
 	if (priv->sm != ACPI_TPM2_COMMAND_BUFFER_WITH_PLUTON) {
 		INIT_LIST_HEAD(&acpi_resource_list);
 		ret = acpi_dev_get_resources(device, &acpi_resource_list,
@@ -605,10 +543,7 @@ static int crb_map_io(struct acpi_device *device, struct crb_priv *priv,
 	if (IS_ERR(priv->regs_t))
 		return PTR_ERR(priv->regs_t);
 
-	/* The ACPI IO region starts at the head area and continues to include
-	 * the control area, as one nice sane region except for some older
-	 * stuff that puts the control area outside the ACPI IO region.
-	 */
+	 
 	if ((priv->sm == ACPI_TPM2_COMMAND_BUFFER) ||
 	    (priv->sm == ACPI_TPM2_MEMORY_MAPPED)) {
 		if (iores &&
@@ -623,10 +558,7 @@ static int crb_map_io(struct acpi_device *device, struct crb_priv *priv,
 	if (ret)
 		return ret;
 
-	/*
-	 * PTT HW bug w/a: wake up the device to access
-	 * possibly not retained registers.
-	 */
+	 
 	ret = __crb_cmd_ready(dev, priv);
 	if (ret)
 		goto out_relinquish_locality;
@@ -684,9 +616,7 @@ static int crb_map_io(struct acpi_device *device, struct crb_priv *priv,
 		goto out;
 	}
 
-	/* According to the PTP specification, overlapping command and response
-	 * buffer sizes must be identical.
-	 */
+	 
 	if (cmd_size != rsp_size) {
 		dev_err(dev, FW_BUG "overlapping command and response buffer sizes are not identical");
 		ret = -EINVAL;
@@ -743,7 +673,7 @@ static int crb_acpi_add(struct acpi_device *device)
 		return -EINVAL;
 	}
 
-	/* Should the FIFO driver handle this? */
+	 
 	sm = buf->start_method;
 	if (sm == ACPI_TPM2_MEMORY_MAPPED) {
 		rc = -ENODEV;
@@ -806,13 +736,7 @@ static int crb_acpi_add(struct acpi_device *device)
 		goto out;
 
 #ifdef CONFIG_X86
-	/* A quirk for https://www.amd.com/en/support/kb/faq/pa-410 */
-	if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD &&
-	    priv->sm != ACPI_TPM2_COMMAND_BUFFER_WITH_PLUTON) {
-		dev_info(dev, "Disabling hwrng\n");
-		chip->flags |= TPM_CHIP_FLAG_HWRNG_DISABLED;
-	}
-#endif /* CONFIG_X86 */
+	 
 
 	rc = tpm_chip_register(chip);
 

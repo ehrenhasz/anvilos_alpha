@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Texas Instruments TMP103 SMBus temperature sensor driver
- * Copyright (C) 2014 Heiko Schocher <hs@denx.de>
- *
- * Based on:
- * Texas Instruments TMP102 SMBus temperature sensor driver
- *
- * Copyright (C) 2010 Steven King <sfking@fdwdc.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>

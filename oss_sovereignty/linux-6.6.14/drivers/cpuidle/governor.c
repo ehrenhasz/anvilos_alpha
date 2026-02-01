@@ -1,12 +1,4 @@
-/*
- * governor.c - governor support
- *
- * (C) 2006-2007 Venkatesh Pallipadi <venkatesh.pallipadi@intel.com>
- *               Shaohua Li <shaohua.li@intel.com>
- *               Adam Belay <abelay@novell.com>
- *
- * This code is licenced under the GPL.
- */
+ 
 
 #include <linux/cpu.h>
 #include <linux/cpuidle.h>
@@ -22,12 +14,7 @@ LIST_HEAD(cpuidle_governors);
 struct cpuidle_governor *cpuidle_curr_governor;
 struct cpuidle_governor *cpuidle_prev_governor;
 
-/**
- * cpuidle_find_governor - finds a governor of the specified name
- * @str: the name
- *
- * Must be called with cpuidle_lock acquired.
- */
+ 
 struct cpuidle_governor *cpuidle_find_governor(const char *str)
 {
 	struct cpuidle_governor *gov;
@@ -39,11 +26,7 @@ struct cpuidle_governor *cpuidle_find_governor(const char *str)
 	return NULL;
 }
 
-/**
- * cpuidle_switch_governor - changes the governor
- * @gov: the new target governor
- * Must be called with cpuidle_lock acquired.
- */
+ 
 int cpuidle_switch_governor(struct cpuidle_governor *gov)
 {
 	struct cpuidle_device *dev;
@@ -72,10 +55,7 @@ int cpuidle_switch_governor(struct cpuidle_governor *gov)
 	return 0;
 }
 
-/**
- * cpuidle_register_governor - registers a governor
- * @gov: the governor
- */
+ 
 int cpuidle_register_governor(struct cpuidle_governor *gov)
 {
 	int ret = -EEXIST;
@@ -102,10 +82,7 @@ int cpuidle_register_governor(struct cpuidle_governor *gov)
 	return ret;
 }
 
-/**
- * cpuidle_governor_latency_req - Compute a latency constraint for CPU
- * @cpu: Target CPU
- */
+ 
 s64 cpuidle_governor_latency_req(unsigned int cpu)
 {
 	struct device *device = get_cpu_device(cpu);

@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2022 Intel Corporation. All rights reserved.
+
+
+
+
+
+
 
 #include <linux/firmware.h>
 #include "sof-priv.h"
@@ -20,7 +20,7 @@ static int ipc3_fw_ext_man_get_version(struct snd_sof_dev *sdev,
 	memcpy(&sdev->fw_ready.version, &v->version, sizeof(v->version));
 	sdev->fw_ready.flags = v->flags;
 
-	/* log ABI versions and check FW compatibility */
+	 
 	return sof_ipc3_validate_fw_version(sdev);
 }
 
@@ -71,7 +71,7 @@ static int ipc3_fw_ext_man_get_config_data(struct snd_sof_dev *sdev,
 	int ret = 0;
 	int i;
 
-	/* calculate elements counter */
+	 
 	elems_size = config->hdr.size - sizeof(struct sof_ext_man_elem_header);
 	elems_counter = elems_size / sizeof(struct sof_config_elem);
 
@@ -83,10 +83,10 @@ static int ipc3_fw_ext_man_get_config_data(struct snd_sof_dev *sdev,
 			i, elem->token, elem->value);
 		switch (elem->token) {
 		case SOF_EXT_MAN_CONFIG_EMPTY:
-			/* unused memory space is zero filled - mapped to EMPTY elements */
+			 
 			break;
 		case SOF_EXT_MAN_CONFIG_IPC_MSG_SIZE:
-			/* TODO: use ipc msg size from config data */
+			 
 			break;
 		case SOF_EXT_MAN_CONFIG_MEMORY_USAGE_SCAN:
 			if (sdev->first_boot && elem->value)
@@ -115,22 +115,15 @@ static ssize_t ipc3_fw_ext_man_size(struct snd_sof_dev *sdev, const struct firmw
 
 	head = (struct sof_ext_man_header *)fw->data;
 
-	/*
-	 * assert fw size is big enough to contain extended manifest header,
-	 * it prevents from reading unallocated memory from `head` in following
-	 * step.
-	 */
+	 
 	if (fw->size < sizeof(*head))
 		return -EINVAL;
 
-	/*
-	 * When fw points to extended manifest,
-	 * then first u32 must be equal SOF_EXT_MAN_MAGIC_NUMBER.
-	 */
+	 
 	if (head->magic == SOF_EXT_MAN_MAGIC_NUMBER)
 		return head->full_size;
 
-	/* otherwise given fw don't have an extended manifest */
+	 
 	dev_dbg(sdev->dev, "Unexpected extended manifest magic number: %#x\n",
 		head->magic);
 	return 0;
@@ -150,11 +143,11 @@ static size_t sof_ipc3_fw_parse_ext_man(struct snd_sof_dev *sdev)
 	remaining = head->full_size - head->header_size;
 	ext_man_size = ipc3_fw_ext_man_size(sdev, fw);
 
-	/* Assert firmware starts with extended manifest */
+	 
 	if (ext_man_size <= 0)
 		return ext_man_size;
 
-	/* incompatible version */
+	 
 	if (SOF_EXT_MAN_VERSION_INCOMPATIBLE(SOF_EXT_MAN_VERSION,
 					     head->header_version)) {
 		dev_err(sdev->dev,
@@ -163,7 +156,7 @@ static size_t sof_ipc3_fw_parse_ext_man(struct snd_sof_dev *sdev)
 		return -EINVAL;
 	}
 
-	/* get first extended manifest element header */
+	 
 	iptr = (uintptr_t)fw->data + head->header_size;
 
 	while (remaining > sizeof(*elem_hdr)) {
@@ -180,7 +173,7 @@ static size_t sof_ipc3_fw_parse_ext_man(struct snd_sof_dev *sdev)
 			return -EINVAL;
 		}
 
-		/* process structure data */
+		 
 		switch (elem_hdr->type) {
 		case SOF_EXT_MAN_ELEM_FW_VERSION:
 			ret = ipc3_fw_ext_man_get_version(sdev, elem_hdr);
@@ -226,7 +219,7 @@ static size_t sof_ipc3_fw_parse_ext_man(struct snd_sof_dev *sdev)
 	return ext_man_size;
 }
 
-/* generic module parser for mmaped DSPs */
+ 
 static int sof_ipc3_parse_module_memcpy(struct snd_sof_dev *sdev,
 					struct snd_sof_mod_hdr *module)
 {
@@ -240,16 +233,16 @@ static int sof_ipc3_parse_module_memcpy(struct snd_sof_dev *sdev,
 
 	block = (struct snd_sof_blk_hdr *)((u8 *)module + sizeof(*module));
 
-	/* module->size doesn't include header size */
+	 
 	remaining = module->size;
 	for (count = 0; count < module->num_blocks; count++) {
-		/* check for wrap */
+		 
 		if (remaining < sizeof(*block)) {
 			dev_err(sdev->dev, "not enough data remaining\n");
 			return -EINVAL;
 		}
 
-		/* minus header size of block */
+		 
 		remaining -= sizeof(*block);
 
 		if (block->size == 0) {
@@ -263,7 +256,7 @@ static int sof_ipc3_parse_module_memcpy(struct snd_sof_dev *sdev,
 		switch (block->type) {
 		case SOF_FW_BLK_TYPE_RSRVD0:
 		case SOF_FW_BLK_TYPE_ROM...SOF_FW_BLK_TYPE_RSRVD14:
-			continue;	/* not handled atm */
+			continue;	 
 		case SOF_FW_BLK_TYPE_IRAM:
 		case SOF_FW_BLK_TYPE_DRAM:
 		case SOF_FW_BLK_TYPE_SRAM:
@@ -278,7 +271,7 @@ static int sof_ipc3_parse_module_memcpy(struct snd_sof_dev *sdev,
 		dev_dbg(sdev->dev, "block %d type %#x size %#x ==>  offset %#x\n",
 			count, block->type, block->size, offset);
 
-		/* checking block->size to avoid unaligned access */
+		 
 		if (block->size % sizeof(u32)) {
 			dev_err(sdev->dev, "%s: invalid block size %#x\n",
 				__func__, block->size);
@@ -297,9 +290,9 @@ static int sof_ipc3_parse_module_memcpy(struct snd_sof_dev *sdev,
 			return -EINVAL;
 		}
 
-		/* minus body size of block */
+		 
 		remaining -= block->size;
-		/* next block */
+		 
 		block = (struct snd_sof_blk_hdr *)((u8 *)block + sizeof(*block)
 			+ block->size);
 	}
@@ -329,27 +322,27 @@ static int sof_ipc3_load_fw_to_dsp(struct snd_sof_dev *sdev)
 		dev_dbg(sdev->dev, "Using custom module loading\n");
 	}
 
-	/* parse each module */
+	 
 	module = (struct snd_sof_mod_hdr *)(fw->data + payload_offset + sizeof(*header));
 	remaining = fw->size - sizeof(*header) - payload_offset;
-	/* check for wrap */
+	 
 	if (remaining > fw->size) {
 		dev_err(sdev->dev, "%s: fw size smaller than header size\n", __func__);
 		return -EINVAL;
 	}
 
 	for (count = 0; count < header->num_modules; count++) {
-		/* check for wrap */
+		 
 		if (remaining < sizeof(*module)) {
 			dev_err(sdev->dev, "%s: not enough data for a module\n",
 				__func__);
 			return -EINVAL;
 		}
 
-		/* minus header size of module */
+		 
 		remaining -= sizeof(*module);
 
-		/* module */
+		 
 		ret = load_module(sdev, module);
 		if (ret < 0) {
 			dev_err(sdev->dev, "%s: invalid module %d\n", __func__, count);
@@ -361,7 +354,7 @@ static int sof_ipc3_load_fw_to_dsp(struct snd_sof_dev *sdev)
 			return -EINVAL;
 		}
 
-		/* minus body size of module */
+		 
 		remaining -=  module->size;
 		module = (struct snd_sof_mod_hdr *)((u8 *)module +
 			 sizeof(*module) + module->size);
@@ -383,16 +376,16 @@ static int sof_ipc3_validate_firmware(struct snd_sof_dev *sdev)
 		return -EINVAL;
 	}
 
-	/* Read the header information from the data pointer */
+	 
 	header = (struct snd_sof_fw_header *)(fw->data + payload_offset);
 
-	/* verify FW sig */
+	 
 	if (strncmp(header->sig, SND_SOF_FW_SIG, SND_SOF_FW_SIG_SIZE) != 0) {
 		dev_err(sdev->dev, "invalid firmware signature\n");
 		return -EINVAL;
 	}
 
-	/* check size is valid */
+	 
 	if (fw_size != header->file_size + sizeof(*header)) {
 		dev_err(sdev->dev,
 			"invalid filesize mismatch got 0x%zx expected 0x%zx\n",

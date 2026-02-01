@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Sync File validation framework and debug information
- *
- * Copyright (C) 2012 Google, Inc.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include "sync_debug.h"
@@ -175,11 +171,7 @@ static __init int sync_debugfs_init(void)
 {
 	dbgfs = debugfs_create_dir("sync", NULL);
 
-	/*
-	 * The debugfs files won't ever get removed and thus, there is
-	 * no need to protect it against removal races. The use of
-	 * debugfs_create_file_unsafe() is actually safe here.
-	 */
+	 
 	debugfs_create_file_unsafe("info", 0444, dbgfs, NULL,
 				   &sync_info_debugfs_fops);
 	debugfs_create_file_unsafe("sw_sync", 0644, dbgfs, NULL,

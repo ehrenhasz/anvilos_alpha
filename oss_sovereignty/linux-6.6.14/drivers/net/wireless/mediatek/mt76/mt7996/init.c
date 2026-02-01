@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2022 MediaTek Inc.
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/of.h>
@@ -53,18 +51,18 @@ static void mt7996_led_set_config(struct led_classdev *led_cdev,
 	mphy = container_of(led_cdev, struct mt76_phy, leds.cdev);
 	dev = container_of(mphy->dev, struct mt7996_dev, mt76);
 
-	/* select TX blink mode, 2: only data frames */
+	 
 	mt76_rmw_field(dev, MT_TMAC_TCR0(0), MT_TMAC_TCR0_TX_BLINK, 2);
 
-	/* enable LED */
+	 
 	mt76_wr(dev, MT_LED_EN(0), 1);
 
-	/* set LED Tx blink on/off time */
+	 
 	val = FIELD_PREP(MT_LED_TX_BLINK_ON_MASK, delay_on) |
 	      FIELD_PREP(MT_LED_TX_BLINK_OFF_MASK, delay_off);
 	mt76_wr(dev, MT_LED_TX_BLINK(0), val);
 
-	/* control LED */
+	 
 	val = MT_LED_CTRL_BLINK_MODE | MT_LED_CTRL_KICK;
 	if (mphy->leds.al)
 		val |= MT_LED_CTRL_POLARITY;
@@ -236,10 +234,10 @@ mt7996_mac_init_band(struct mt7996_dev *dev, u8 band)
 {
 	u32 mask, set;
 
-	/* clear estimated value of EIFS for Rx duration & OBSS time */
+	 
 	mt76_wr(dev, MT_WF_RMAC_RSVD0(band), MT_WF_RMAC_RSVD0_EIFS_CLR);
 
-	/* clear backoff time for Rx duration  */
+	 
 	mt76_clear(dev, MT_WF_RMAC_MIB_AIRTIME1(band),
 		   MT_WF_RMAC_MIB_NONQOSD_BACKOFF);
 	mt76_clear(dev, MT_WF_RMAC_MIB_AIRTIME3(band),
@@ -247,13 +245,13 @@ mt7996_mac_init_band(struct mt7996_dev *dev, u8 band)
 	mt76_clear(dev, MT_WF_RMAC_MIB_AIRTIME4(band),
 		   MT_WF_RMAC_MIB_QOS23_BACKOFF);
 
-	/* clear backoff time and set software compensation for OBSS time */
+	 
 	mask = MT_WF_RMAC_MIB_OBSS_BACKOFF | MT_WF_RMAC_MIB_ED_OFFSET;
 	set = FIELD_PREP(MT_WF_RMAC_MIB_OBSS_BACKOFF, 0) |
 	      FIELD_PREP(MT_WF_RMAC_MIB_ED_OFFSET, 4);
 	mt76_rmw(dev, MT_WF_RMAC_MIB_AIRTIME0(band), mask, set);
 
-	/* filter out non-resp frames and get instanstaeous signal reporting */
+	 
 	mask = MT_WTBLOFF_RSCR_RCPI_MODE | MT_WTBLOFF_RSCR_RCPI_PARAM;
 	set = FIELD_PREP(MT_WTBLOFF_RSCR_RCPI_MODE, 0) |
 	      FIELD_PREP(MT_WTBLOFF_RSCR_RCPI_PARAM, 0x3);
@@ -290,12 +288,12 @@ void mt7996_mac_init(struct mt7996_dev *dev)
 		mt76_rmw_field(dev, i, MT_LED_GPIO_SEL_MASK, 4);
 	}
 
-	/* txs report queue */
+	 
 	mt76_rmw_field(dev, MT_DMA_TCRF1(0), MT_DMA_TCRF1_QIDX, 0);
 	mt76_rmw_field(dev, MT_DMA_TCRF1(1), MT_DMA_TCRF1_QIDX, 6);
 	mt76_rmw_field(dev, MT_DMA_TCRF1(2), MT_DMA_TCRF1_QIDX, 0);
 
-	/* rro module init */
+	 
 	mt7996_mcu_set_rro(dev, UNI_RRO_SET_PLATFORM_TYPE, 2);
 	mt7996_mcu_set_rro(dev, UNI_RRO_SET_BYPASS_MODE, 3);
 	mt7996_mcu_set_rro(dev, UNI_RRO_SET_TXFREE_PATH, 1);
@@ -320,12 +318,12 @@ int mt7996_txbf_init(struct mt7996_dev *dev)
 			return ret;
 	}
 
-	/* trigger sounding packets */
+	 
 	ret = mt7996_mcu_set_txbf(dev, BF_SOUNDING_ON);
 	if (ret)
 		return ret;
 
-	/* enable eBF */
+	 
 	return mt7996_mcu_set_txbf(dev, BF_HW_EN_UPDATE);
 }
 
@@ -366,9 +364,7 @@ static int mt7996_register_phy(struct mt7996_dev *dev, struct mt7996_phy *phy,
 
 	mac_ofs = band == MT_BAND2 ? MT_EE_MAC_ADDR3 : MT_EE_MAC_ADDR2;
 	memcpy(mphy->macaddr, dev->mt76.eeprom.data + mac_ofs, ETH_ALEN);
-	/* Make the extra PHY MAC address local without overlapping with
-	 * the usual MAC address allocation scheme on multiple virtual interfaces
-	 */
+	 
 	if (!is_valid_ether_addr(mphy->macaddr)) {
 		memcpy(mphy->macaddr, dev->mt76.eeprom.data + MT_EE_MAC_ADDR,
 		       ETH_ALEN);
@@ -379,7 +375,7 @@ static int mt7996_register_phy(struct mt7996_dev *dev, struct mt7996_phy *phy,
 	}
 	mt76_eeprom_override(mphy);
 
-	/* init wiphy according to mphy and phy */
+	 
 	mt7996_init_wiphy(mphy->hw);
 	ret = mt76_connac_init_tx_queues(phy->mt76,
 					 MT_TXQ_ID(band),
@@ -466,7 +462,7 @@ static int mt7996_init_hardware(struct mt7996_dev *dev)
 	if (ret < 0)
 		return ret;
 
-	/* Beacon and mgmt frames should occupy wcid 0 */
+	 
 	idx = mt76_wcid_alloc(dev->mt76.wcid_mask, MT7996_WTBL_STA);
 	if (idx)
 		return -ENOSPC;
@@ -542,7 +538,7 @@ mt7996_set_stream_he_txbf_caps(struct mt7996_phy *phy,
 	    IEEE80211_HE_PHY_CAP4_BEAMFORMEE_MAX_STS_ABOVE_80MHZ_4;
 	elem->phy_cap_info[4] |= c;
 
-	/* do not support NG16 due to spec D4.0 changes subcarrier idx */
+	 
 	c = IEEE80211_HE_PHY_CAP6_CODEBOOK_SIZE_42_SU |
 	    IEEE80211_HE_PHY_CAP6_CODEBOOK_SIZE_75_MU;
 
@@ -554,7 +550,7 @@ mt7996_set_stream_he_txbf_caps(struct mt7996_phy *phy,
 	if (sts < 2)
 		return;
 
-	/* the maximum cap is 4 x 3, (Nr, Nc) = (3, 2) */
+	 
 	elem->phy_cap_info[7] |= min_t(int, sts - 1, 2) << 3;
 
 	if (vif != NL80211_IFTYPE_AP)
@@ -871,7 +867,7 @@ int mt7996_register_device(struct mt7996_dev *dev)
 
 	mt7996_init_wiphy(hw);
 
-	/* init led callbacks */
+	 
 	if (IS_ENABLED(CONFIG_MT76_LEDS)) {
 		dev->mphy.leds.cdev.brightness_set = mt7996_led_set_brightness;
 		dev->mphy.leds.cdev.blink_set = mt7996_led_set_blink;

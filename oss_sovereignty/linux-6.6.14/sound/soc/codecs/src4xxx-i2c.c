@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Driver for SRC4XXX codecs
-//
-// Copyright 2021-2022 Deqx Pty Ltd
-// Author: Matt Flax <flatmax@flatmax.com>
+
+
+
+
+
+
 
 #include <linux/i2c.h>
 #include <linux/mod_devicetable.h>

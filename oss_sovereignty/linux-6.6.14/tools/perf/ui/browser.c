@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "../util/string2.h"
 #include "../util/config.h"
 #include "libslang.h"
@@ -359,12 +359,7 @@ int ui_browser__refresh(struct ui_browser *browser)
 	return 0;
 }
 
-/*
- * Here we're updating nr_entries _after_ we started browsing, i.e.  we have to
- * forget about any reference to any entry in the underlying data structure,
- * that is why we do a SEEK_SET. Think about 'perf top' in the hists browser
- * after an output_resort and hist decay.
- */
+ 
 void ui_browser__update_nr_entries(struct ui_browser *browser, u32 nr_entries)
 {
 	off_t offset = nr_entries - browser->nr_entries;
@@ -576,7 +571,7 @@ static int ui_browser__color_config(const char *var, const char *value,
 	char *fg = NULL, *bg;
 	int i;
 
-	/* same dir for all commands */
+	 
 	if (!strstarts(var, "colors.") != 0)
 		return 0;
 

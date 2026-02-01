@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ngene-cards.c: nGene PCIe bridge driver - card specific info
- *
- * Copyright (C) 2005-2007 Micronas
- *
- * Copyright (C) 2008-2009 Ralph Metzler <rjkm@metzlerbros.de>
- *                         Modifications for new nGene firmware,
- *                         support for EEPROM-copying,
- *                         support for new dual DVB-S2 card prototype
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -19,7 +10,7 @@
 
 #include "ngene.h"
 
-/* demods/tuners */
+ 
 #include "stv6110x.h"
 #include "stv090x.h"
 #include "lnbh24.h"
@@ -37,9 +28,9 @@
 #include "stv6111.h"
 #include "lnbh25.h"
 
-/****************************************************************************/
-/* I2C transfer functions used for demod/tuner probing***********************/
-/****************************************************************************/
+ 
+ 
+ 
 
 static int i2c_io(struct i2c_adapter *adapter, u8 adr,
 		  u8 *wbuf, u32 wlen, u8 *rbuf, u32 rlen)
@@ -101,13 +92,13 @@ static int i2c_read_reg(struct i2c_adapter *adapter, u8 adr, u8 reg, u8 *val)
 	return i2c_read_regs(adapter, adr, reg, val, 1);
 }
 
-/****************************************************************************/
-/* Demod/tuner attachment ***************************************************/
-/****************************************************************************/
+ 
+ 
+ 
 
 static struct i2c_adapter *i2c_adapter_from_chan(struct ngene_channel *chan)
 {
-	/* tuner 1+2: i2c adapter #0, tuner 3+4: i2c adapter #1 */
+	 
 	if (chan->number < 2)
 		return &chan->dev->channel[0].i2c_adapter;
 
@@ -237,15 +228,11 @@ static int tuner_attach_tda18212(struct ngene_channel *chan, u32 dmdtype)
 	};
 	u8 addr = (chan->number & 1) ? 0x63 : 0x60;
 
-	/*
-	 * due to a hardware quirk with the I2C gate on the stv0367+tda18212
-	 * combo, the tda18212 must be probed by reading it's id _twice_ when
-	 * cold started, or it very likely will fail.
-	 */
+	 
 	if (dmdtype == DEMOD_TYPE_STV0367)
 		tuner_tda18212_ping(chan, i2c, addr);
 
-	/* perform tuner probe/init/attach */
+	 
 	client = dvb_module_probe("tda18212", NULL, i2c, addr, &config);
 	if (!client)
 		goto err;
@@ -294,7 +281,7 @@ static int demod_attach_stv0900(struct ngene_channel *chan)
 		return -ENODEV;
 	}
 
-	/* store channel info */
+	 
 	if (feconf->tuner_i2c_lock)
 		chan->fe->analog_demod_priv = chan;
 
@@ -340,10 +327,7 @@ static int demod_attach_stv0910(struct ngene_channel *chan,
 		return -ENODEV;
 	}
 
-	/*
-	 * attach lnbh25 - leftshift by one as the lnbh25 driver expects 8bit
-	 * i2c addresses
-	 */
+	 
 	lnbcfg.i2c_address = (((chan->number & 1) ? 0x0d : 0x0c) << 1);
 	if (!dvb_attach(lnbh25_attach, chan->fe, &lnbcfg, i2c)) {
 		lnbcfg.i2c_address = (((chan->number & 1) ? 0x09 : 0x08) << 1);
@@ -401,7 +385,7 @@ static int demod_attach_cxd28xx(struct ngene_channel *chan,
 	struct device *pdev = &chan->dev->pci_dev->dev;
 	struct cxd2841er_config cfg;
 
-	/* the cxd2841er driver expects 8bit/shifted I2C addresses */
+	 
 	cfg.i2c_addr = ((chan->number & 1) ? 0x6d : 0x6c) << 1;
 
 	cfg.xtal = osc24 ? SONY_XTAL_24000 : SONY_XTAL_20500;
@@ -409,7 +393,7 @@ static int demod_attach_cxd28xx(struct ngene_channel *chan,
 		CXD2841ER_NO_WAIT_LOCK | CXD2841ER_NO_AGCNEG |
 		CXD2841ER_TSBITS | CXD2841ER_TS_SERIAL;
 
-	/* attach frontend */
+	 
 	chan->fe = dvb_attach(cxd2841er_attach_t_c, &cfg, i2c);
 
 	if (!chan->fe) {
@@ -506,9 +490,9 @@ static int demod_attach_drxk(struct ngene_channel *chan,
 	return 0;
 }
 
-/****************************************************************************/
-/* XO2 related lists and functions ******************************************/
-/****************************************************************************/
+ 
+ 
+ 
 
 static char *xo2names[] = {
 	"DUAL DVB-S2",
@@ -540,26 +524,20 @@ static int init_xo2(struct ngene_channel *chan, struct i2c_adapter *i2c)
 		i2c_write_reg(i2c, addr, 0x08, 0x00);
 		msleep(100);
 	}
-	/* Enable tuner power, disable pll, reset demods */
+	 
 	i2c_write_reg(i2c, addr, 0x08, 0x04);
 	usleep_range(2000, 3000);
-	/* Release demod resets */
+	 
 	i2c_write_reg(i2c, addr, 0x08, 0x07);
 
-	/*
-	 * speed: 0=55,1=75,2=90,3=104 MBit/s
-	 * Note: The ngene hardware must be run at 75 MBit/s compared
-	 * to more modern ddbridge hardware which runs at 90 MBit/s,
-	 * else there will be issues with the data transport and non-
-	 * working secondary/slave demods/tuners.
-	 */
+	 
 	i2c_write_reg(i2c, addr, 0x09, 1);
 
 	i2c_write_reg(i2c, addr, 0x0a, 0x01);
 	i2c_write_reg(i2c, addr, 0x0b, 0x01);
 
 	usleep_range(2000, 3000);
-	/* Start XO2 PLL */
+	 
 	i2c_write_reg(i2c, addr, 0x08, 0x87);
 
 	return 0;
@@ -587,9 +565,9 @@ static int port_has_xo2(struct i2c_adapter *i2c, u8 *type, u8 *id)
 	return 0;
 }
 
-/****************************************************************************/
-/* Probing and port/channel handling ****************************************/
-/****************************************************************************/
+ 
+ 
+ 
 
 static int cineS2_probe(struct ngene_channel *chan)
 {
@@ -654,12 +632,12 @@ static int cineS2_probe(struct ngene_channel *chan)
 	} else if (port_has_stv0900(i2c, chan->number)) {
 		chan->demod_type = DEMOD_TYPE_STV090X;
 		fe_conf = chan->dev->card_info->fe_config[chan->number];
-		/* demod found, attach it */
+		 
 		rc = demod_attach_stv0900(chan);
 		if (rc < 0 || chan->number < 2)
 			return rc;
 
-		/* demod #2: reprogram outputs DPN1 & DPN2 */
+		 
 		i2c_msg.addr = fe_conf->address;
 		i2c_msg.len = 3;
 		buf[0] = 0xf1;
@@ -697,7 +675,7 @@ static int cineS2_probe(struct ngene_channel *chan)
 
 static struct lgdt330x_config aver_m780 = {
 	.demod_chip    = LGDT3303,
-	.serial_mpeg   = 0x00, /* PARALLEL */
+	.serial_mpeg   = 0x00,  
 	.clock_polarity_flip = 1,
 };
 
@@ -705,9 +683,7 @@ static struct mt2131_config m780_tunerconfig = {
 	0xc0 >> 1
 };
 
-/* A single func to attach the demo and tuner, rather than
- * use two sep funcs like the current design mandates.
- */
+ 
 static int demod_attach_lg330x(struct ngene_channel *chan)
 {
 	struct device *pdev = &chan->dev->pci_dev->dev;
@@ -757,9 +733,9 @@ static int tuner_attach_dtt7520x(struct ngene_channel *chan)
 	return 0;
 }
 
-/****************************************************************************/
-/* EEPROM TAGS **************************************************************/
-/****************************************************************************/
+ 
+ 
+ 
 
 #define MICNG_EE_START      0x0100
 #define MICNG_EE_END        0x0FF0
@@ -767,19 +743,18 @@ static int tuner_attach_dtt7520x(struct ngene_channel *chan)
 #define MICNG_EETAG_END0    0x0000
 #define MICNG_EETAG_END1    0xFFFF
 
-/* 0x0001 - 0x000F reserved for housekeeping */
-/* 0xFFFF - 0xFFFE reserved for housekeeping */
+ 
+ 
 
-/* Micronas assigned tags
-   EEProm tags for hardware support */
+ 
 
-#define MICNG_EETAG_DRXD1_OSCDEVIATION  0x1000  /* 2 Bytes data */
-#define MICNG_EETAG_DRXD2_OSCDEVIATION  0x1001  /* 2 Bytes data */
+#define MICNG_EETAG_DRXD1_OSCDEVIATION  0x1000   
+#define MICNG_EETAG_DRXD2_OSCDEVIATION  0x1001   
 
-#define MICNG_EETAG_MT2060_1_1STIF      0x1100  /* 2 Bytes data */
-#define MICNG_EETAG_MT2060_2_1STIF      0x1101  /* 2 Bytes data */
+#define MICNG_EETAG_MT2060_1_1STIF      0x1100   
+#define MICNG_EETAG_MT2060_2_1STIF      0x1101   
 
-/* Tag range for OEMs */
+ 
 
 #define MICNG_EETAG_OEM_FIRST  0xC000
 #define MICNG_EETAG_OEM_LAST   0xFFEF
@@ -884,10 +859,7 @@ static int WriteEEProm(struct i2c_adapter *adapter,
 
 	if (Length > EETag[2])
 		return -EINVAL;
-	/* Note: We write the data one byte at a time to avoid
-	   issues with page sizes. (which are different for
-	   each manufacture and eeprom size)
-	 */
+	 
 	Addr += sizeof(u16) + 1;
 	for (i = 0; i < Length; i++, Addr++) {
 		status = i2c_write_eeprom(adapter, 0x50, Addr, data[i]);
@@ -895,7 +867,7 @@ static int WriteEEProm(struct i2c_adapter *adapter,
 		if (status)
 			break;
 
-		/* Poll for finishing write cycle */
+		 
 		retry = 10;
 		while (retry) {
 			u8 Tmp;
@@ -963,9 +935,9 @@ static s16 osc_deviation(void *priv, s16 deviation, int flag)
 	return (s16) data;
 }
 
-/****************************************************************************/
-/* Switch control (I2C gates, etc.) *****************************************/
-/****************************************************************************/
+ 
+ 
+ 
 
 
 static struct stv090x_config fe_cineS2 = {
@@ -1100,16 +1072,16 @@ static const struct ngene_info ngene_info_m780 = {
 	.type           = NGENE_APP,
 	.name           = "Aver M780 ATSC/QAM-B",
 
-	/* Channel 0 is analog, which is currently unsupported */
+	 
 	.io_type        = { NGENE_IO_NONE, NGENE_IO_TSIN },
 	.demod_attach   = { NULL, demod_attach_lg330x },
 
-	/* Ensure these are NULL else the frame will call them (as funcs) */
+	 
 	.tuner_attach   = { NULL, NULL, NULL, NULL },
 	.fe_config      = { NULL, &aver_m780 },
 	.avf            = { 0 },
 
-	/* A custom electrical interface config for the demod to bridge */
+	 
 	.tsf		= { 4, 4 },
 	.fw_version	= 15,
 };
@@ -1146,20 +1118,20 @@ static const struct ngene_info ngene_info_terratec = {
 	.i2c_access     = 1,
 };
 
-/****************************************************************************/
+ 
 
 
 
-/****************************************************************************/
-/* PCI Subsystem ID *********************************************************/
-/****************************************************************************/
+ 
+ 
+ 
 
 #define NGENE_ID(_subvend, _subdev, _driverdata) { \
 	.vendor = NGENE_VID, .device = NGENE_PID, \
 	.subvendor = _subvend, .subdevice = _subdev, \
 	.driver_data = (unsigned long) &_driverdata }
 
-/****************************************************************************/
+ 
 
 static const struct pci_device_id ngene_id_tbl[] = {
 	NGENE_ID(0x18c3, 0xab04, ngene_info_cineS2),
@@ -1177,9 +1149,9 @@ static const struct pci_device_id ngene_id_tbl[] = {
 };
 MODULE_DEVICE_TABLE(pci, ngene_id_tbl);
 
-/****************************************************************************/
-/* Init/Exit ****************************************************************/
-/****************************************************************************/
+ 
+ 
+ 
 
 static pci_ers_result_t ngene_error_detected(struct pci_dev *dev,
 					     pci_channel_state_t state)
@@ -1220,7 +1192,7 @@ static struct pci_driver ngene_pci_driver = {
 
 static __init int module_init_ngene(void)
 {
-	/* pr_*() since we don't have a device to use with dev_*() yet */
+	 
 	pr_info("nGene PCIE bridge driver, Copyright (C) 2005-2007 Micronas\n");
 
 	return pci_register_driver(&ngene_pci_driver);

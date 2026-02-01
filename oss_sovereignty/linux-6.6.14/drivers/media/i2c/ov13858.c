@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2017 Intel Corporation.
+
+
 
 #include <linux/acpi.h>
 #include <linux/i2c.h>
@@ -21,7 +21,7 @@
 #define OV13858_REG_SOFTWARE_RST	0x0103
 #define OV13858_SOFTWARE_RST		0x01
 
-/* PLL1 generates PCLK and MIPI_PHY_CLK */
+ 
 #define OV13858_REG_PLL1_CTRL_0		0x0300
 #define OV13858_REG_PLL1_CTRL_1		0x0301
 #define OV13858_REG_PLL1_CTRL_2		0x0302
@@ -29,7 +29,7 @@
 #define OV13858_REG_PLL1_CTRL_4		0x0304
 #define OV13858_REG_PLL1_CTRL_5		0x0305
 
-/* PLL2 generates DAC_CLK, SCLK and SRAM_CLK */
+ 
 #define OV13858_REG_PLL2_CTRL_B		0x030b
 #define OV13858_REG_PLL2_CTRL_C		0x030c
 #define OV13858_REG_PLL2_CTRL_D		0x030d
@@ -39,48 +39,48 @@
 #define OV13858_REG_MIPI_SC_CTRL0	0x3016
 #define OV13858_REG_MIPI_SC_CTRL1	0x3022
 
-/* Chip ID */
+ 
 #define OV13858_REG_CHIP_ID		0x300a
 #define OV13858_CHIP_ID			0x00d855
 
-/* V_TIMING internal */
+ 
 #define OV13858_REG_VTS			0x380e
-#define OV13858_VTS_30FPS		0x0c8e /* 30 fps */
-#define OV13858_VTS_60FPS		0x0648 /* 60 fps */
+#define OV13858_VTS_30FPS		0x0c8e  
+#define OV13858_VTS_60FPS		0x0648  
 #define OV13858_VTS_MAX			0x7fff
 
-/* HBLANK control - read only */
+ 
 #define OV13858_PPL_270MHZ		2244
 #define OV13858_PPL_540MHZ		4488
 
-/* Exposure control */
+ 
 #define OV13858_REG_EXPOSURE		0x3500
 #define OV13858_EXPOSURE_MIN		4
 #define OV13858_EXPOSURE_STEP		1
 #define OV13858_EXPOSURE_DEFAULT	0x640
 
-/* Analog gain control */
+ 
 #define OV13858_REG_ANALOG_GAIN		0x3508
 #define OV13858_ANA_GAIN_MIN		0
 #define OV13858_ANA_GAIN_MAX		0x1fff
 #define OV13858_ANA_GAIN_STEP		1
 #define OV13858_ANA_GAIN_DEFAULT	0x80
 
-/* Digital gain control */
+ 
 #define OV13858_REG_B_MWB_GAIN		0x5100
 #define OV13858_REG_G_MWB_GAIN		0x5102
 #define OV13858_REG_R_MWB_GAIN		0x5104
 #define OV13858_DGTL_GAIN_MIN		0
-#define OV13858_DGTL_GAIN_MAX		16384	/* Max = 16 X */
-#define OV13858_DGTL_GAIN_DEFAULT	1024	/* Default gain = 1 X */
-#define OV13858_DGTL_GAIN_STEP		1	/* Each step = 1/1024 */
+#define OV13858_DGTL_GAIN_MAX		16384	 
+#define OV13858_DGTL_GAIN_DEFAULT	1024	 
+#define OV13858_DGTL_GAIN_STEP		1	 
 
-/* Test Pattern Control */
+ 
 #define OV13858_REG_TEST_PATTERN	0x4503
 #define OV13858_TEST_PATTERN_ENABLE	BIT(7)
 #define OV13858_TEST_PATTERN_MASK	0xfc
 
-/* Number of frames to skip */
+ 
 #define OV13858_NUM_OF_SKIP_FRAMES	2
 
 struct ov13858_reg {
@@ -93,34 +93,34 @@ struct ov13858_reg_list {
 	const struct ov13858_reg *regs;
 };
 
-/* Link frequency config */
+ 
 struct ov13858_link_freq_config {
 	u32 pixels_per_line;
 
-	/* PLL registers for this link frequency */
+	 
 	struct ov13858_reg_list reg_list;
 };
 
-/* Mode : resolution and related config&values */
+ 
 struct ov13858_mode {
-	/* Frame width */
+	 
 	u32 width;
-	/* Frame height */
+	 
 	u32 height;
 
-	/* V-timing */
+	 
 	u32 vts_def;
 	u32 vts_min;
 
-	/* Index of Link frequency config to be used */
+	 
 	u32 link_freq_index;
-	/* Default register values */
+	 
 	struct ov13858_reg_list reg_list;
 };
 
-/* 4224x3136 needs 1080Mbps/lane, 4 lanes */
+ 
 static const struct ov13858_reg mipi_data_rate_1080mbps[] = {
-	/* PLL1 registers */
+	 
 	{OV13858_REG_PLL1_CTRL_0, 0x07},
 	{OV13858_REG_PLL1_CTRL_1, 0x01},
 	{OV13858_REG_PLL1_CTRL_2, 0xc2},
@@ -128,7 +128,7 @@ static const struct ov13858_reg mipi_data_rate_1080mbps[] = {
 	{OV13858_REG_PLL1_CTRL_4, 0x00},
 	{OV13858_REG_PLL1_CTRL_5, 0x01},
 
-	/* PLL2 registers */
+	 
 	{OV13858_REG_PLL2_CTRL_B, 0x05},
 	{OV13858_REG_PLL2_CTRL_C, 0x01},
 	{OV13858_REG_PLL2_CTRL_D, 0x0e},
@@ -139,12 +139,9 @@ static const struct ov13858_reg mipi_data_rate_1080mbps[] = {
 	{OV13858_REG_MIPI_SC_CTRL1, 0x01},
 };
 
-/*
- * 2112x1568, 2112x1188, 1056x784 need 540Mbps/lane,
- * 4 lanes
- */
+ 
 static const struct ov13858_reg mipi_data_rate_540mbps[] = {
-	/* PLL1 registers */
+	 
 	{OV13858_REG_PLL1_CTRL_0, 0x07},
 	{OV13858_REG_PLL1_CTRL_1, 0x01},
 	{OV13858_REG_PLL1_CTRL_2, 0xc2},
@@ -152,7 +149,7 @@ static const struct ov13858_reg mipi_data_rate_540mbps[] = {
 	{OV13858_REG_PLL1_CTRL_4, 0x00},
 	{OV13858_REG_PLL1_CTRL_5, 0x01},
 
-	/* PLL2 registers */
+	 
 	{OV13858_REG_PLL2_CTRL_B, 0x05},
 	{OV13858_REG_PLL2_CTRL_C, 0x01},
 	{OV13858_REG_PLL2_CTRL_D, 0x0e},
@@ -935,17 +932,14 @@ static const char * const ov13858_test_pattern_menu[] = {
 	"Vertical Color Bar Type 4"
 };
 
-/* Configurations for supported link frequencies */
+ 
 #define OV13858_NUM_OF_LINK_FREQS	2
 #define OV13858_LINK_FREQ_540MHZ	540000000ULL
 #define OV13858_LINK_FREQ_270MHZ	270000000ULL
 #define OV13858_LINK_FREQ_INDEX_0	0
 #define OV13858_LINK_FREQ_INDEX_1	1
 
-/*
- * pixel_rate = link_freq * data-rate * nr_of_lanes / bits_per_sample
- * data rate => double data rate; number of lanes => 4; bits per pixel => 10
- */
+ 
 static u64 link_freq_to_pixel_rate(u64 f)
 {
 	f *= 2 * 4;
@@ -954,13 +948,13 @@ static u64 link_freq_to_pixel_rate(u64 f)
 	return f;
 }
 
-/* Menu items for LINK_FREQ V4L2 control */
+ 
 static const s64 link_freq_menu_items[OV13858_NUM_OF_LINK_FREQS] = {
 	OV13858_LINK_FREQ_540MHZ,
 	OV13858_LINK_FREQ_270MHZ
 };
 
-/* Link frequency configs */
+ 
 static const struct ov13858_link_freq_config
 			link_freq_configs[OV13858_NUM_OF_LINK_FREQS] = {
 	{
@@ -979,7 +973,7 @@ static const struct ov13858_link_freq_config
 	}
 };
 
-/* Mode configs */
+ 
 static const struct ov13858_mode supported_modes[] = {
 	{
 		.width = 4224,
@@ -1032,26 +1026,26 @@ struct ov13858 {
 	struct media_pad pad;
 
 	struct v4l2_ctrl_handler ctrl_handler;
-	/* V4L2 Controls */
+	 
 	struct v4l2_ctrl *link_freq;
 	struct v4l2_ctrl *pixel_rate;
 	struct v4l2_ctrl *vblank;
 	struct v4l2_ctrl *hblank;
 	struct v4l2_ctrl *exposure;
 
-	/* Current mode */
+	 
 	const struct ov13858_mode *cur_mode;
 
-	/* Mutex for serialized access */
+	 
 	struct mutex mutex;
 
-	/* Streaming on/off */
+	 
 	bool streaming;
 };
 
 #define to_ov13858(_sd)	container_of(_sd, struct ov13858, sd)
 
-/* Read registers up to 4 at a time */
+ 
 static int ov13858_read_reg(struct ov13858 *ov13858, u16 reg, u32 len,
 			    u32 *val)
 {
@@ -1066,13 +1060,13 @@ static int ov13858_read_reg(struct ov13858 *ov13858, u16 reg, u32 len,
 		return -EINVAL;
 
 	data_be_p = (u8 *)&data_be;
-	/* Write register address */
+	 
 	msgs[0].addr = client->addr;
 	msgs[0].flags = 0;
 	msgs[0].len = 2;
 	msgs[0].buf = (u8 *)&reg_addr_be;
 
-	/* Read data from register */
+	 
 	msgs[1].addr = client->addr;
 	msgs[1].flags = I2C_M_RD;
 	msgs[1].len = len;
@@ -1087,7 +1081,7 @@ static int ov13858_read_reg(struct ov13858 *ov13858, u16 reg, u32 len,
 	return 0;
 }
 
-/* Write registers up to 4 at a time */
+ 
 static int ov13858_write_reg(struct ov13858 *ov13858, u16 reg, u32 len,
 			     u32 __val)
 {
@@ -1116,7 +1110,7 @@ static int ov13858_write_reg(struct ov13858 *ov13858, u16 reg, u32 len,
 	return 0;
 }
 
-/* Write a list of registers */
+ 
 static int ov13858_write_regs(struct ov13858 *ov13858,
 			      const struct ov13858_reg *regs, u32 len)
 {
@@ -1146,7 +1140,7 @@ static int ov13858_write_reg_list(struct ov13858 *ov13858,
 	return ov13858_write_regs(ov13858, r_list->regs, r_list->num_of_regs);
 }
 
-/* Open sub-device */
+ 
 static int ov13858_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
 	struct ov13858 *ov13858 = to_ov13858(sd);
@@ -1156,13 +1150,13 @@ static int ov13858_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 
 	mutex_lock(&ov13858->mutex);
 
-	/* Initialize try_fmt */
+	 
 	try_fmt->width = ov13858->cur_mode->width;
 	try_fmt->height = ov13858->cur_mode->height;
 	try_fmt->code = MEDIA_BUS_FMT_SGRBG10_1X10;
 	try_fmt->field = V4L2_FIELD_NONE;
 
-	/* No crop or compose */
+	 
 	mutex_unlock(&ov13858->mutex);
 
 	return 0;
@@ -1217,10 +1211,10 @@ static int ov13858_set_ctrl(struct v4l2_ctrl *ctrl)
 	s64 max;
 	int ret;
 
-	/* Propagate change of current control to all related controls */
+	 
 	switch (ctrl->id) {
 	case V4L2_CID_VBLANK:
-		/* Update max exposure while meeting expected vblanking */
+		 
 		max = ov13858->cur_mode->height + ctrl->val - 8;
 		__v4l2_ctrl_modify_range(ov13858->exposure,
 					 ov13858->exposure->minimum,
@@ -1228,10 +1222,7 @@ static int ov13858_set_ctrl(struct v4l2_ctrl *ctrl)
 		break;
 	}
 
-	/*
-	 * Applying V4L2 control value only happens
-	 * when power is up for streaming
-	 */
+	 
 	if (!pm_runtime_get_if_in_use(&client->dev))
 		return 0;
 
@@ -1250,7 +1241,7 @@ static int ov13858_set_ctrl(struct v4l2_ctrl *ctrl)
 					ctrl->val << 4);
 		break;
 	case V4L2_CID_VBLANK:
-		/* Update VTS that meets expected vertical blanking */
+		 
 		ret = ov13858_write_reg(ov13858, OV13858_REG_VTS,
 					OV13858_REG_VALUE_16BIT,
 					ov13858->cur_mode->height
@@ -1279,7 +1270,7 @@ static int ov13858_enum_mbus_code(struct v4l2_subdev *sd,
 				  struct v4l2_subdev_state *sd_state,
 				  struct v4l2_subdev_mbus_code_enum *code)
 {
-	/* Only one bayer order(GRBG) is supported */
+	 
 	if (code->index > 0)
 		return -EINVAL;
 
@@ -1362,7 +1353,7 @@ ov13858_set_pad_format(struct v4l2_subdev *sd,
 
 	mutex_lock(&ov13858->mutex);
 
-	/* Only one raw bayer(GRBG) order is supported */
+	 
 	if (fmt->format.code != MEDIA_BUS_FMT_SGRBG10_1X10)
 		fmt->format.code = MEDIA_BUS_FMT_SGRBG10_1X10;
 
@@ -1381,7 +1372,7 @@ ov13858_set_pad_format(struct v4l2_subdev *sd,
 		pixel_rate = link_freq_to_pixel_rate(link_freq);
 		__v4l2_ctrl_s_ctrl_int64(ov13858->pixel_rate, pixel_rate);
 
-		/* Update limits and set FPS to default */
+		 
 		vblank_def = ov13858->cur_mode->vts_def -
 			     ov13858->cur_mode->height;
 		vblank_min = ov13858->cur_mode->vts_min -
@@ -1410,14 +1401,14 @@ static int ov13858_get_skip_frames(struct v4l2_subdev *sd, u32 *frames)
 	return 0;
 }
 
-/* Start streaming */
+ 
 static int ov13858_start_streaming(struct ov13858 *ov13858)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&ov13858->sd);
 	const struct ov13858_reg_list *reg_list;
 	int ret, link_freq_index;
 
-	/* Get out of from software reset */
+	 
 	ret = ov13858_write_reg(ov13858, OV13858_REG_SOFTWARE_RST,
 				OV13858_REG_VALUE_08BIT, OV13858_SOFTWARE_RST);
 	if (ret) {
@@ -1426,7 +1417,7 @@ static int ov13858_start_streaming(struct ov13858 *ov13858)
 		return ret;
 	}
 
-	/* Setup PLL */
+	 
 	link_freq_index = ov13858->cur_mode->link_freq_index;
 	reg_list = &link_freq_configs[link_freq_index].reg_list;
 	ret = ov13858_write_reg_list(ov13858, reg_list);
@@ -1435,7 +1426,7 @@ static int ov13858_start_streaming(struct ov13858 *ov13858)
 		return ret;
 	}
 
-	/* Apply default values of current mode */
+	 
 	reg_list = &ov13858->cur_mode->reg_list;
 	ret = ov13858_write_reg_list(ov13858, reg_list);
 	if (ret) {
@@ -1443,7 +1434,7 @@ static int ov13858_start_streaming(struct ov13858 *ov13858)
 		return ret;
 	}
 
-	/* Apply customized values from user */
+	 
 	ret =  __v4l2_ctrl_handler_setup(ov13858->sd.ctrl_handler);
 	if (ret)
 		return ret;
@@ -1453,7 +1444,7 @@ static int ov13858_start_streaming(struct ov13858 *ov13858)
 				 OV13858_MODE_STREAMING);
 }
 
-/* Stop streaming */
+ 
 static int ov13858_stop_streaming(struct ov13858 *ov13858)
 {
 	return ov13858_write_reg(ov13858, OV13858_REG_MODE_SELECT,
@@ -1477,10 +1468,7 @@ static int ov13858_set_stream(struct v4l2_subdev *sd, int enable)
 		if (ret < 0)
 			goto err_unlock;
 
-		/*
-		 * Apply default & customized values
-		 * and then start streaming.
-		 */
+		 
 		ret = ov13858_start_streaming(ov13858);
 		if (ret)
 			goto err_rpm_put;
@@ -1533,7 +1521,7 @@ error:
 	return ret;
 }
 
-/* Verify chip ID */
+ 
 static int ov13858_identify_module(struct ov13858 *ov13858)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&ov13858->sd);
@@ -1590,7 +1578,7 @@ static const struct v4l2_subdev_internal_ops ov13858_internal_ops = {
 	.open = ov13858_open,
 };
 
-/* Initialize control handlers */
+ 
 static int ov13858_init_controls(struct ov13858 *ov13858)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&ov13858->sd);
@@ -1623,7 +1611,7 @@ static int ov13858_init_controls(struct ov13858 *ov13858)
 
 	pixel_rate_max = link_freq_to_pixel_rate(link_freq_menu_items[0]);
 	pixel_rate_min = link_freq_to_pixel_rate(link_freq_menu_items[1]);
-	/* By default, PIXEL_RATE is read only */
+	 
 	ov13858->pixel_rate = v4l2_ctrl_new_std(ctrl_hdlr, &ov13858_ctrl_ops,
 						V4L2_CID_PIXEL_RATE,
 						pixel_rate_min, pixel_rate_max,
@@ -1656,7 +1644,7 @@ static int ov13858_init_controls(struct ov13858 *ov13858)
 			  OV13858_ANA_GAIN_MIN, OV13858_ANA_GAIN_MAX,
 			  OV13858_ANA_GAIN_STEP, OV13858_ANA_GAIN_DEFAULT);
 
-	/* Digital gain */
+	 
 	v4l2_ctrl_new_std(ctrl_hdlr, &ov13858_ctrl_ops, V4L2_CID_DIGITAL_GAIN,
 			  OV13858_DGTL_GAIN_MIN, OV13858_DGTL_GAIN_MAX,
 			  OV13858_DGTL_GAIN_STEP, OV13858_DGTL_GAIN_DEFAULT);
@@ -1712,31 +1700,31 @@ static int ov13858_probe(struct i2c_client *client)
 	if (!ov13858)
 		return -ENOMEM;
 
-	/* Initialize subdev */
+	 
 	v4l2_i2c_subdev_init(&ov13858->sd, client, &ov13858_subdev_ops);
 
-	/* Check module identity */
+	 
 	ret = ov13858_identify_module(ov13858);
 	if (ret) {
 		dev_err(&client->dev, "failed to find sensor: %d\n", ret);
 		return ret;
 	}
 
-	/* Set default mode to max resolution */
+	 
 	ov13858->cur_mode = &supported_modes[0];
 
 	ret = ov13858_init_controls(ov13858);
 	if (ret)
 		return ret;
 
-	/* Initialize subdev */
+	 
 	ov13858->sd.internal_ops = &ov13858_internal_ops;
 	ov13858->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE |
 			     V4L2_SUBDEV_FL_HAS_EVENTS;
 	ov13858->sd.entity.ops = &ov13858_subdev_entity_ops;
 	ov13858->sd.entity.function = MEDIA_ENT_F_CAM_SENSOR;
 
-	/* Initialize source pad */
+	 
 	ov13858->pad.flags = MEDIA_PAD_FL_SOURCE;
 	ret = media_entity_pads_init(&ov13858->sd.entity, 1, &ov13858->pad);
 	if (ret) {
@@ -1748,10 +1736,7 @@ static int ov13858_probe(struct i2c_client *client)
 	if (ret < 0)
 		goto error_media_entity;
 
-	/*
-	 * Device is already turned on by i2c-core with ACPI domain PM.
-	 * Enable runtime PM and turn off the device.
-	 */
+	 
 	pm_runtime_set_active(&client->dev);
 	pm_runtime_enable(&client->dev);
 	pm_runtime_idle(&client->dev);
@@ -1794,7 +1779,7 @@ static const struct dev_pm_ops ov13858_pm_ops = {
 #ifdef CONFIG_ACPI
 static const struct acpi_device_id ov13858_acpi_ids[] = {
 	{"OVTID858"},
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(acpi, ov13858_acpi_ids);

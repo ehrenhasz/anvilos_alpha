@@ -1,21 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * generic arrays
- */
+
+ 
 
 #include <linux/slab.h>
 #include <sound/core.h>
 #include <sound/hdaudio.h>
 
-/**
- * snd_array_new - get a new element from the given array
- * @array: the array object
- *
- * Get a new element from the given array.  If it exceeds the
- * pre-allocated array size, re-allocate the array.
- *
- * Returns NULL if allocation failed.
- */
+ 
 void *snd_array_new(struct snd_array *array)
 {
 	if (snd_BUG_ON(!array->elem_size))
@@ -38,10 +28,7 @@ void *snd_array_new(struct snd_array *array)
 }
 EXPORT_SYMBOL_GPL(snd_array_new);
 
-/**
- * snd_array_free - free the given array elements
- * @array: the array object
- */
+ 
 void snd_array_free(struct snd_array *array)
 {
 	kfree(array->list);

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * STMicroelectronics sensors i2c library driver
- *
- * Copyright 2012-2013 STMicroelectronics Inc.
- *
- * Denis Ciocca <denis.ciocca@st.com>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/kernel.h>
@@ -28,13 +22,7 @@ static const struct regmap_config st_sensors_i2c_regmap_multiread_bit_config = {
 	.read_flag_mask = ST_SENSORS_I2C_MULTIREAD,
 };
 
-/*
- * st_sensors_i2c_configure() - configure I2C interface
- * @indio_dev: IIO device reference.
- * @client: i2c client reference.
- *
- * Return: 0 on success, else a negative error code.
- */
+ 
 int st_sensors_i2c_configure(struct iio_dev *indio_dev,
 			     struct i2c_client *client)
 {

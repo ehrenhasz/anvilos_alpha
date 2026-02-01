@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Sony MemoryStick Pro storage support
- *
- *  Copyright (C) 2007 Alex Dubov <oakad@yahoo.com>
- *
- * Special thanks to Carlos Corbacho for providing various MemoryStick cards
- * that made this driver possible.
- */
+
+ 
 
 #include <linux/blk-mq.h>
 #include <linux/idr.h>
@@ -156,9 +149,7 @@ struct mspro_block_data {
 					     struct memstick_request **mrq);
 
 
-	/* Default request setup function for data access method preferred by
-	 * this host instance.
-	 */
+	 
 	void                  (*setup_transfer)(struct memstick_dev *card,
 						u64 offset, size_t length);
 
@@ -175,7 +166,7 @@ static DEFINE_MUTEX(mspro_block_disk_lock);
 
 static int mspro_block_complete_req(struct memstick_dev *card, int error);
 
-/*** Block device ***/
+ 
 
 static void mspro_block_bd_free_disk(struct gendisk *disk)
 {
@@ -207,7 +198,7 @@ static const struct block_device_operations ms_block_bdops = {
 	.free_disk	= mspro_block_bd_free_disk,
 };
 
-/*** Information ***/
+ 
 
 static struct mspro_sys_attr *mspro_from_sysfs_attr(struct attribute *attr)
 {
@@ -437,14 +428,9 @@ static sysfs_show_t mspro_block_attr_show(unsigned char tag)
 	}
 }
 
-/*** Protocol handlers ***/
+ 
 
-/*
- * Functions prefixed with "h_" are protocol callbacks. They can be called from
- * interrupt context. Return value of 0 means that request processing is still
- * ongoing, while special error value of -EAGAIN means that current request is
- * finished (and request processor should come back some time later).
- */
+ 
 
 static int h_mspro_block_req_init(struct memstick_dev *card,
 				  struct memstick_request **mrq)
@@ -586,15 +572,9 @@ has_int_reg:
 	}
 }
 
-/*** Transfer setup functions for different access methods. ***/
+ 
 
-/** Setup data transfer request for SET_CMD TPC with arguments in card
- *  registers.
- *
- *  @card    Current media instance
- *  @offset  Target data offset in bytes
- *  @length  Required transfer length in bytes.
- */
+ 
 static void h_mspro_block_setup_cmd(struct memstick_dev *card, u64 offset,
 				    size_t length)
 {
@@ -602,7 +582,7 @@ static void h_mspro_block_setup_cmd(struct memstick_dev *card, u64 offset,
 	struct mspro_param_register param = {
 		.system = msb->system,
 		.data_count = cpu_to_be16((uint16_t)(length / msb->page_size)),
-		/* ISO C90 warning precludes direct initialization for now. */
+		 
 		.data_address = 0,
 		.tpc_param = 0
 	};
@@ -616,7 +596,7 @@ static void h_mspro_block_setup_cmd(struct memstick_dev *card, u64 offset,
 			  &param, sizeof(param));
 }
 
-/*** Data transfer ***/
+ 
 
 static int mspro_block_issue_req(struct memstick_dev *card)
 {
@@ -675,7 +655,7 @@ static int mspro_block_complete_req(struct memstick_dev *card, int error)
 		error);
 
 	if (msb->block_req) {
-		/* Nothing to do - not really an error */
+		 
 		if (error == -EAGAIN)
 			error = 0;
 
@@ -779,7 +759,7 @@ static blk_status_t mspro_queue_rq(struct blk_mq_hw_ctx *hctx,
 	return BLK_STS_OK;
 }
 
-/*** Initialization ***/
+ 
 
 static int mspro_block_wait_for_ced(struct memstick_dev *card)
 {
@@ -890,10 +870,7 @@ try_again:
 	return rc;
 }
 
-/* Memory allocated for attributes by this function should be freed by
- * mspro_block_data_clear, no matter if the initialization process succeeded
- * or failed.
- */
+ 
 static int mspro_block_read_attributes(struct memstick_dev *card)
 {
 	struct mspro_block_data *msb = memstick_get_drvdata(card);
@@ -901,11 +878,7 @@ static int mspro_block_read_attributes(struct memstick_dev *card)
 	struct mspro_sys_attr *s_attr = NULL;
 	unsigned char *buffer = NULL;
 	int cnt, rc, attr_count;
-	/* While normally physical device offsets, represented here by
-	 * attr_offset and attr_len will be of large numeric types, we can be
-	 * sure, that attributes are close enough to the beginning of the
-	 * device, to save ourselves some trouble.
-	 */
+	 
 	unsigned int addr, attr_offset = 0, attr_len = msb->page_size;
 
 	attr = kmalloc(msb->page_size, GFP_KERNEL);
@@ -1337,7 +1310,7 @@ out_free:
 out_unlock:
 	mutex_unlock(&host->lock);
 
-#endif /* CONFIG_MEMSTICK_UNSAFE_RESUME */
+#endif  
 
 	blk_mq_start_hw_queues(msb->queue);
 	return rc;
@@ -1348,7 +1321,7 @@ out_unlock:
 #define mspro_block_suspend NULL
 #define mspro_block_resume NULL
 
-#endif /* CONFIG_PM */
+#endif  
 
 static struct memstick_device_id mspro_block_id_tbl[] = {
 	{MEMSTICK_MATCH_ALL, MEMSTICK_TYPE_PRO, MEMSTICK_CATEGORY_STORAGE_DUO,

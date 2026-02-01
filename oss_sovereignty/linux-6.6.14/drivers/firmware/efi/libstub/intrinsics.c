@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/efi.h>
 #include <asm/efi.h>
@@ -29,12 +29,7 @@ void *memset(void *dst, int c, size_t len)
 	return dst;
 }
 
-/**
- * memcmp - Compare two areas of memory
- * @cs: One area of memory
- * @ct: Another area of memory
- * @count: The size of the area.
- */
+ 
 #undef memcmp
 int memcmp(const void *cs, const void *ct, size_t count)
 {

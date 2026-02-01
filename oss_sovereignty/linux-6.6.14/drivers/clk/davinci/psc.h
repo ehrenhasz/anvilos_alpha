@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Clock driver for TI Davinci PSC controllers
- *
- * Copyright (C) 2018 David Lechner <david@lechnology.com>
- */
+ 
+ 
 
 #ifndef __CLK_DAVINCI_PSC_H__
 #define __CLK_DAVINCI_PSC_H__
@@ -11,11 +7,11 @@
 #include <linux/clk-provider.h>
 #include <linux/types.h>
 
-/* PSC quirk flags */
-#define LPSC_ALWAYS_ENABLED	BIT(0) /* never disable this clock */
-#define LPSC_SET_RATE_PARENT	BIT(1) /* propagate set_rate to parent clock */
-#define LPSC_FORCE		BIT(2) /* requires MDCTL FORCE bit */
-#define LPSC_LOCAL_RESET	BIT(3) /* acts as reset provider */
+ 
+#define LPSC_ALWAYS_ENABLED	BIT(0)  
+#define LPSC_SET_RATE_PARENT	BIT(1)  
+#define LPSC_FORCE		BIT(2)  
+#define LPSC_LOCAL_RESET	BIT(3)  
 
 struct davinci_lpsc_clkdev_info {
 	const char *con_id;
@@ -48,15 +44,7 @@ static const struct davinci_lpsc_clkdev_info n[] __initconst = {	\
 	{ }								\
 }
 
-/**
- * davinci_lpsc_clk_info - LPSC module-specific clock information
- * @name: the clock name
- * @parent: the parent clock name
- * @cdevs: optional array of clkdev lookup table info
- * @md: the local module domain (LPSC id)
- * @pd: the power domain id
- * @flags: bitmask of LPSC_* flags
- */
+ 
 struct davinci_lpsc_clk_info {
 	const char *name;
 	const char *parent;
@@ -86,7 +74,7 @@ int of_davinci_psc_clk_init(struct device *dev,
 			    u8 num_clks,
 			    void __iomem *base);
 
-/* Device-specific data */
+ 
 
 struct davinci_psc_init_data {
 	struct clk_bulk_data *parent_clks;
@@ -104,4 +92,4 @@ extern const struct davinci_psc_init_data da850_psc1_init_data;
 extern const struct davinci_psc_init_data of_da850_psc0_init_data;
 extern const struct davinci_psc_init_data of_da850_psc1_init_data;
 #endif
-#endif /* __CLK_DAVINCI_PSC_H__ */
+#endif  

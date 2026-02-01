@@ -1,25 +1,4 @@
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "umc_v8_10.h"
 #include "amdgpu_ras.h"
 #include "amdgpu_umc.h"
@@ -87,7 +66,7 @@ static int umc_v8_10_clear_error_count_per_channel(struct amdgpu_device *adev,
 	ecc_err_cnt_addr =
 		SOC15_REG_OFFSET(UMC, 0, regUMCCH0_0_GeccErrCnt);
 
-	/* clear error count */
+	 
 	WREG32_PCIE((ecc_err_cnt_addr + umc_reg_offset) * 4,
 			UMC_V8_10_CE_CNT_INIT);
 
@@ -107,13 +86,11 @@ static void umc_v8_10_query_correctable_error_count(struct amdgpu_device *adev,
 	uint64_t mc_umc_status;
 	uint32_t mc_umc_status_addr;
 
-	/* UMC 8_10 registers */
+	 
 	mc_umc_status_addr =
 		SOC15_REG_OFFSET(UMC, 0, regMCA_UMC_UMC0_MCUMC_STATUST0);
 
-	/* Rely on MCUMC_STATUS for correctable error counter
-	 * MCUMC_STATUS is a 64 bit register
-	 */
+	 
 	mc_umc_status = RREG64_PCIE((mc_umc_status_addr + umc_reg_offset) * 4);
 	if (REG_GET_FIELD(mc_umc_status, MCA_UMC_UMC0_MCUMC_STATUST0, Val) == 1 &&
 	    REG_GET_FIELD(mc_umc_status, MCA_UMC_UMC0_MCUMC_STATUST0, CECC) == 1)
@@ -129,7 +106,7 @@ static void umc_v8_10_query_uncorrectable_error_count(struct amdgpu_device *adev
 
 	mc_umc_status_addr = SOC15_REG_OFFSET(UMC, 0, regMCA_UMC_UMC0_MCUMC_STATUST0);
 
-	/* Check the MCUMC_STATUS. */
+	 
 	mc_umc_status = RREG64_PCIE((mc_umc_status_addr + umc_reg_offset) * 4);
 	if ((REG_GET_FIELD(mc_umc_status, MCA_UMC_UMC0_MCUMC_STATUST0, Val) == 1) &&
 	    (REG_GET_FIELD(mc_umc_status, MCA_UMC_UMC0_MCUMC_STATUST0, Deferred) == 1 ||
@@ -175,13 +152,11 @@ static uint32_t umc_v8_10_get_col_bit(uint32_t channel_num)
 		if (channel_num == umc_v8_10_channelnum_map_colbit_table[t].channel_num)
 			return umc_v8_10_channelnum_map_colbit_table[t].col_bit;
 
-	/* Failed to get col_bit. */
+	 
 	return U32_MAX;
 }
 
-/*
- * Mapping normal address to soc physical address in swizzle mode.
- */
+ 
 static int umc_v8_10_swizzle_mode_na_to_pa(struct amdgpu_device *adev,
 					uint32_t channel_idx,
 					uint64_t na, uint64_t *soc_pa)
@@ -218,16 +193,16 @@ static void umc_v8_10_convert_error_address(struct amdgpu_device *adev,
 					umc_inst * adev->umc.channel_inst_num +
 					ch_inst];
 
-	/* the lowest lsb bits should be ignored */
+	 
 	addr_lsb = REG_GET_FIELD(mc_umc_status, MCA_UMC_UMC0_MCUMC_STATUST0, AddrLsb);
 	err_addr &= ~((0x1ULL << addr_lsb) - 1);
 	na_err_addr_base = err_addr & ~(0x3ULL << UMC_V8_10_NA_C5_BIT);
 
-	/* loop for all possibilities of [C6 C5] in normal address. */
+	 
 	for (col = 0; col < UMC_V8_10_NA_COL_2BITS_POWER_OF_2_NUM; col++) {
 		na_err_addr = na_err_addr_base | (col << UMC_V8_10_NA_C5_BIT);
 
-		/* Mapping normal error address to retired soc physical address. */
+		 
 		ret = umc_v8_10_swizzle_mode_na_to_pa(adev, channel_index,
 						na_err_addr, &retired_page_addr);
 		if (ret) {
@@ -260,12 +235,12 @@ static int umc_v8_10_query_error_address(struct amdgpu_device *adev,
 		return 0;
 
 	if (!err_data->err_addr) {
-		/* clear umc status */
+		 
 		WREG64_PCIE((mc_umc_status_addr + umc_reg_offset) * 4, 0x0ULL);
 		return 0;
 	}
 
-	/* calculate error address if ue error is detected */
+	 
 	if (REG_GET_FIELD(mc_umc_status, MCA_UMC_UMC0_MCUMC_STATUST0, Val) == 1 &&
 	    REG_GET_FIELD(mc_umc_status, MCA_UMC_UMC0_MCUMC_STATUST0, AddrV) == 1 &&
 	    REG_GET_FIELD(mc_umc_status, MCA_UMC_UMC0_MCUMC_STATUST0, UECC) == 1) {
@@ -278,7 +253,7 @@ static int umc_v8_10_query_error_address(struct amdgpu_device *adev,
 					ch_inst, umc_inst, node_inst, mc_umc_status);
 	}
 
-	/* clear umc status */
+	 
 	WREG64_PCIE((mc_umc_status_addr + umc_reg_offset) * 4, 0x0ULL);
 
 	return 0;
@@ -307,11 +282,11 @@ static int umc_v8_10_err_cnt_init_per_channel(struct amdgpu_device *adev,
 
 	ecc_err_cnt_sel = RREG32_PCIE((ecc_err_cnt_sel_addr + umc_reg_offset) * 4);
 
-	/* set ce error interrupt type to APIC based interrupt */
+	 
 	ecc_err_cnt_sel = REG_SET_FIELD(ecc_err_cnt_sel, UMCCH0_0_GeccErrCntSel,
 					GeccErrInt, 0x1);
 	WREG32_PCIE((ecc_err_cnt_sel_addr + umc_reg_offset) * 4, ecc_err_cnt_sel);
-	/* set error count to initial value */
+	 
 	WREG32_PCIE((ecc_err_cnt_addr + umc_reg_offset) * 4, UMC_V8_10_CE_CNT_INIT);
 
 	return 0;
@@ -325,10 +300,7 @@ static void umc_v8_10_err_cnt_init(struct amdgpu_device *adev)
 
 static bool umc_v8_10_query_ras_poison_mode(struct amdgpu_device *adev)
 {
-	/*
-	 * Force return true, because UMCCH0_0_GeccCtrl
-	 * is not accessible from host side
-	 */
+	 
 	return true;
 }
 
@@ -345,7 +317,7 @@ static void umc_v8_10_ecc_info_query_correctable_error_count(struct amdgpu_devic
 				  umc_inst * adev->umc.channel_inst_num +
 				  ch_inst;
 
-	/* check the MCUMC_STATUS */
+	 
 	mc_umc_status = ras->umc_ecc.ecc[eccinfo_table_idx].mca_umc_status;
 	if (REG_GET_FIELD(mc_umc_status, MCA_UMC_UMC0_MCUMC_STATUST0, Val) == 1 &&
 	    REG_GET_FIELD(mc_umc_status, MCA_UMC_UMC0_MCUMC_STATUST0, CECC) == 1) {
@@ -366,7 +338,7 @@ static void umc_v8_10_ecc_info_query_uncorrectable_error_count(struct amdgpu_dev
 				  umc_inst * adev->umc.channel_inst_num +
 				  ch_inst;
 
-	/* check the MCUMC_STATUS */
+	 
 	mc_umc_status = ras->umc_ecc.ecc[eccinfo_table_idx].mca_umc_status;
 	if ((REG_GET_FIELD(mc_umc_status, MCA_UMC_UMC0_MCUMC_STATUST0, Val) == 1) &&
 	    (REG_GET_FIELD(mc_umc_status, MCA_UMC_UMC0_MCUMC_STATUST0, Deferred) == 1 ||
@@ -422,7 +394,7 @@ static int umc_v8_10_ecc_info_query_error_address(struct amdgpu_device *adev,
 	if (!err_data->err_addr)
 		return 0;
 
-	/* calculate error address if ue error is detected */
+	 
 	if (REG_GET_FIELD(mc_umc_status, MCA_UMC_UMC0_MCUMC_STATUST0, Val) == 1 &&
 	    REG_GET_FIELD(mc_umc_status, MCA_UMC_UMC0_MCUMC_STATUST0, AddrV) == 1 &&
 	    (REG_GET_FIELD(mc_umc_status, MCA_UMC_UMC0_MCUMC_STATUST0, UECC) == 1)) {

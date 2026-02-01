@@ -1,78 +1,23 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * KUnit test for the linear_ranges helper.
- *
- * Copyright (C) 2020, ROHM Semiconductors.
- * Author: Matti Vaittinen <matti.vaittien@fi.rohmeurope.com>
- */
+
+ 
 #include <kunit/test.h>
 
 #include <linux/linear_range.h>
 
-/* First things first. I deeply dislike unit-tests. I have seen all the hell
- * breaking loose when people who think the unit tests are "the silver bullet"
- * to kill bugs get to decide how a company should implement testing strategy...
- *
- * Believe me, it may get _really_ ridiculous. It is tempting to think that
- * walking through all the possible execution branches will nail down 100% of
- * bugs. This may lead to ideas about demands to get certain % of "test
- * coverage" - measured as line coverage. And that is one of the worst things
- * you can do.
- *
- * Ask people to provide line coverage and they do. I've seen clever tools
- * which generate test cases to test the existing functions - and by default
- * these tools expect code to be correct and just generate checks which are
- * passing when ran against current code-base. Run this generator and you'll get
- * tests that do not test code is correct but just verify nothing changes.
- * Problem is that testing working code is pointless. And if it is not
- * working, your test must not assume it is working. You won't catch any bugs
- * by such tests. What you can do is to generate a huge amount of tests.
- * Especially if you were are asked to proivde 100% line-coverage x_x. So what
- * does these tests - which are not finding any bugs now - do?
- *
- * They add inertia to every future development. I think it was Terry Pratchet
- * who wrote someone having same impact as thick syrup has to chronometre.
- * Excessive amount of unit-tests have this effect to development. If you do
- * actually find _any_ bug from code in such environment and try fixing it...
- * ...chances are you also need to fix the test cases. In sunny day you fix one
- * test. But I've done refactoring which resulted 500+ broken tests (which had
- * really zero value other than proving to managers that we do do "quality")...
- *
- * After this being said - there are situations where UTs can be handy. If you
- * have algorithms which take some input and should produce output - then you
- * can implement few, carefully selected simple UT-cases which test this. I've
- * previously used this for example for netlink and device-tree data parsing
- * functions. Feed some data examples to functions and verify the output is as
- * expected. I am not covering all the cases but I will see the logic should be
- * working.
- *
- * Here we also do some minor testing. I don't want to go through all branches
- * or test more or less obvious things - but I want to see the main logic is
- * working. And I definitely don't want to add 500+ test cases that break when
- * some simple fix is done x_x. So - let's only add few, well selected tests
- * which ensure as much logic is good as possible.
- */
+ 
 
-/*
- * Test Range 1:
- * selectors:	2	3	4	5	6
- * values (5):	10	20	30	40	50
- *
- * Test Range 2:
- * selectors:	7	8	9	10
- * values (4):	100	150	200	250
- */
+ 
 
 #define RANGE1_MIN 10
 #define RANGE1_MIN_SEL 2
 #define RANGE1_STEP 10
 
-/* 2, 3, 4, 5, 6 */
+ 
 static const unsigned int range1_sels[] = { RANGE1_MIN_SEL, RANGE1_MIN_SEL + 1,
 					    RANGE1_MIN_SEL + 2,
 					    RANGE1_MIN_SEL + 3,
 					    RANGE1_MIN_SEL + 4 };
-/* 10, 20, 30, 40, 50 */
+ 
 static const unsigned int range1_vals[] = { RANGE1_MIN, RANGE1_MIN +
 					    RANGE1_STEP,
 					    RANGE1_MIN + RANGE1_STEP * 2,
@@ -83,11 +28,11 @@ static const unsigned int range1_vals[] = { RANGE1_MIN, RANGE1_MIN +
 #define RANGE2_MIN_SEL 7
 #define RANGE2_STEP 50
 
-/*  7, 8, 9, 10 */
+ 
 static const unsigned int range2_sels[] = { RANGE2_MIN_SEL, RANGE2_MIN_SEL + 1,
 					    RANGE2_MIN_SEL + 2,
 					    RANGE2_MIN_SEL + 3 };
-/* 100, 150, 200, 250 */
+ 
 static const unsigned int range2_vals[] = { RANGE2_MIN, RANGE2_MIN +
 					    RANGE2_STEP,
 					    RANGE2_MIN + RANGE2_STEP * 2,
@@ -188,10 +133,7 @@ static void range_test_get_selector_low(struct kunit *test)
 		KUNIT_EXPECT_TRUE(test, found);
 	}
 
-	/*
-	 * Seek value greater than range max => get_selector_*_low should
-	 * return Ok - but set found to false as value is not in range
-	 */
+	 
 	ret = linear_range_get_selector_low_array(&testr[0], 2,
 					range2_vals[RANGE2_NUM_VALS - 1] + 1,
 					&sel, &found);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2008 Patrick McHardy <kaber@trash.net>
- *
- * Development of this code funded by Astaro AG (http://www.astaro.com/)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -122,7 +118,7 @@ static noinline void __nft_trace_verdict(const struct nft_pktinfo *pkt,
 		break;
 	case NF_STOLEN:
 		type = NFT_TRACETYPE_RULE;
-		/* can't access skb->nf_trace; use copy */
+		 
 		break;
 	default:
 		type = NFT_TRACETYPE_RULE;
@@ -236,7 +232,7 @@ static void expr_call_ops_eval(const struct nft_expr *expr,
 	X(e, nft_objref_map_eval);
 #undef  X
 indirect_call:
-#endif /* CONFIG_RETPOLINE */
+#endif  
 	expr->ops->eval(expr, regs, pkt);
 }
 

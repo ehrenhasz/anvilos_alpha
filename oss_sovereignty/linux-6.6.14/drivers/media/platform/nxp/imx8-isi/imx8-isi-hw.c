@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019-2020 NXP
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -23,9 +21,7 @@ static inline void mxc_isi_write(struct mxc_isi_pipe *pipe, u32 reg, u32 val)
 	writel(val, pipe->regs + reg);
 }
 
-/* -----------------------------------------------------------------------------
- * Buffers & M2M operation
- */
+ 
 
 void mxc_isi_channel_set_inbuf(struct mxc_isi_pipe *pipe, dma_addr_t dma_addr)
 {
@@ -94,9 +90,7 @@ void mxc_isi_channel_m2m_start(struct mxc_isi_pipe *pipe)
 	mxc_isi_write(pipe, CHNL_MEM_RD_CTRL, val);
 }
 
-/* -----------------------------------------------------------------------------
- * Pipeline configuration
- */
+ 
 
 static u32 mxc_isi_channel_scaling_ratio(unsigned int from, unsigned int to,
 					 u32 *dec)
@@ -141,12 +135,7 @@ static void mxc_isi_channel_set_scaling(struct mxc_isi_pipe *pipe,
 	val |= CHNL_IMG_CTRL_DEC_X(ilog2(decx))
 	    |  CHNL_IMG_CTRL_DEC_Y(ilog2(decy));
 
-	/*
-	 * Contrary to what the documentation states, YCBCR_MODE does not
-	 * control conversion between YCbCr and RGB, but whether the scaler
-	 * operates in YUV mode or in RGB mode. It must be set when the scaler
-	 * input is YUV.
-	 */
+	 
 	if (encoding == MXC_ISI_ENC_YUV)
 		val |= CHNL_IMG_CTRL_YCBCR_MODE;
 
@@ -189,18 +178,15 @@ static void mxc_isi_channel_set_crop(struct mxc_isi_pipe *pipe,
 	mxc_isi_write(pipe, CHNL_IMG_CTRL, val);
 }
 
-/*
- * A2,A1,      B1, A3,     B3, B2,
- * C2, C1,     D1, C3,     D3, D2
- */
+ 
 static const u32 mxc_isi_yuv2rgb_coeffs[6] = {
-	/* YUV -> RGB */
+	 
 	0x0000012a, 0x012a0198, 0x0730079c,
 	0x0204012a, 0x01f00000, 0x01800180
 };
 
 static const u32 mxc_isi_rgb2yuv_coeffs[6] = {
-	/* RGB->YUV */
+	 
 	0x00810041, 0x07db0019, 0x007007b6,
 	0x07a20070, 0x001007ee, 0x00800080
 };
@@ -224,17 +210,17 @@ static void mxc_isi_channel_set_csc(struct mxc_isi_pipe *pipe,
 
 	if (in_encoding == MXC_ISI_ENC_YUV &&
 	    out_encoding == MXC_ISI_ENC_RGB) {
-		/* YUV2RGB */
+		 
 		coeffs = mxc_isi_yuv2rgb_coeffs;
-		/* YCbCr enable???  */
+		 
 		val |= CHNL_IMG_CTRL_CSC_MODE(CHNL_IMG_CTRL_CSC_MODE_YCBCR2RGB);
 	} else if (in_encoding == MXC_ISI_ENC_RGB &&
 		   out_encoding == MXC_ISI_ENC_YUV) {
-		/* RGB2YUV */
+		 
 		coeffs = mxc_isi_rgb2yuv_coeffs;
 		val |= CHNL_IMG_CTRL_CSC_MODE(CHNL_IMG_CTRL_CSC_MODE_RGB2YCBCR);
 	} else {
-		/* Bypass CSC */
+		 
 		cscen = false;
 		val |= CHNL_IMG_CTRL_CSC_BYPASS;
 	}
@@ -314,35 +300,25 @@ static void mxc_isi_channel_set_control(struct mxc_isi_pipe *pipe,
 		 CHNL_CTRL_BLANK_PXL_MASK | CHNL_CTRL_SRC_TYPE_MASK |
 		 CHNL_CTRL_MIPI_VC_ID_MASK | CHNL_CTRL_SRC_INPUT_MASK);
 
-	/*
-	 * If no scaling or color space conversion is needed, bypass the
-	 * channel.
-	 */
+	 
 	if (bypass)
 		val |= CHNL_CTRL_CHNL_BYPASS;
 
-	/* Chain line buffers if needed. */
+	 
 	if (pipe->chained)
 		val |= CHNL_CTRL_CHAIN_BUF(CHNL_CTRL_CHAIN_BUF_2_CHAIN);
 
 	val |= CHNL_CTRL_BLANK_PXL(0xff);
 
-	/* Input source (including VC configuration for CSI-2) */
+	 
 	if (input == MXC_ISI_INPUT_MEM) {
-		/*
-		 * The memory input is connected to the last port of the
-		 * crossbar switch, after all pixel link inputs. The SRC_INPUT
-		 * field controls the input selection and must be set
-		 * accordingly, despite being documented as ignored when using
-		 * the memory input in the i.MX8MP reference manual, and
-		 * reserved in the i.MX8MN reference manual.
-		 */
+		 
 		val |= CHNL_CTRL_SRC_TYPE(CHNL_CTRL_SRC_TYPE_MEMORY);
 		val |= CHNL_CTRL_SRC_INPUT(pipe->isi->pdata->num_ports);
 	} else {
 		val |= CHNL_CTRL_SRC_TYPE(CHNL_CTRL_SRC_TYPE_DEVICE);
 		val |= CHNL_CTRL_SRC_INPUT(input);
-		val |= CHNL_CTRL_MIPI_VC_ID(0); /* FIXME: For CSI-2 only */
+		val |= CHNL_CTRL_MIPI_VC_ID(0);  
 	}
 
 	mxc_isi_write(pipe, CHNL_CTRL, val);
@@ -361,23 +337,23 @@ void mxc_isi_channel_config(struct mxc_isi_pipe *pipe,
 	bool csc_bypass;
 	bool scaler_bypass;
 
-	/* Input frame size */
+	 
 	mxc_isi_write(pipe, CHNL_IMG_CFG,
 		      CHNL_IMG_CFG_HEIGHT(in_size->height) |
 		      CHNL_IMG_CFG_WIDTH(in_size->width));
 
-	/* Scaling */
+	 
 	mxc_isi_channel_set_scaling(pipe, in_encoding, in_size, scale,
 				    &scaler_bypass);
 	mxc_isi_channel_set_crop(pipe, scale, crop);
 
-	/* CSC */
+	 
 	mxc_isi_channel_set_csc(pipe, in_encoding, out_encoding, &csc_bypass);
 
-	/* Output buffer management */
+	 
 	mxc_isi_channel_set_panic_threshold(pipe);
 
-	/* Channel control */
+	 
 	mxc_isi_channel_set_control(pipe, input, csc_bypass && scaler_bypass);
 }
 
@@ -399,7 +375,7 @@ void mxc_isi_channel_set_output_format(struct mxc_isi_pipe *pipe,
 {
 	u32 val;
 
-	/* set outbuf format */
+	 
 	dev_dbg(pipe->isi->dev, "output format %p4cc", &format->pixelformat);
 
 	val = mxc_isi_read(pipe, CHNL_IMG_CTRL);
@@ -407,14 +383,12 @@ void mxc_isi_channel_set_output_format(struct mxc_isi_pipe *pipe,
 	val |= CHNL_IMG_CTRL_FORMAT(info->isi_out_format);
 	mxc_isi_write(pipe, CHNL_IMG_CTRL, val);
 
-	/* line pitch */
+	 
 	mxc_isi_write(pipe, CHNL_OUT_BUF_PITCH,
 		      format->plane_fmt[0].bytesperline);
 }
 
-/* -----------------------------------------------------------------------------
- * IRQ
- */
+ 
 
 u32 mxc_isi_channel_irq_status(struct mxc_isi_pipe *pipe, bool clear)
 {
@@ -442,17 +416,17 @@ static void mxc_isi_channel_irq_enable(struct mxc_isi_pipe *pipe)
 		CHNL_IER_AXI_WR_ERR_V_EN |
 		CHNL_IER_AXI_WR_ERR_Y_EN;
 
-	/* Y/U/V overflow enable */
+	 
 	val |= ier_reg->oflw_y_buf_en.mask |
 	       ier_reg->oflw_u_buf_en.mask |
 	       ier_reg->oflw_v_buf_en.mask;
 
-	/* Y/U/V excess overflow enable */
+	 
 	val |= ier_reg->excs_oflw_y_buf_en.mask |
 	       ier_reg->excs_oflw_u_buf_en.mask |
 	       ier_reg->excs_oflw_v_buf_en.mask;
 
-	/* Y/U/V panic enable */
+	 
 	val |= ier_reg->panic_y_buf_en.mask |
 	       ier_reg->panic_u_buf_en.mask |
 	       ier_reg->panic_v_buf_en.mask;
@@ -466,9 +440,7 @@ static void mxc_isi_channel_irq_disable(struct mxc_isi_pipe *pipe)
 	mxc_isi_write(pipe, CHNL_IER, 0);
 }
 
-/* -----------------------------------------------------------------------------
- * Init, deinit, enable, disable
- */
+ 
 
 static void mxc_isi_channel_sw_reset(struct mxc_isi_pipe *pipe, bool enable_clk)
 {
@@ -533,9 +505,7 @@ void mxc_isi_channel_disable(struct mxc_isi_pipe *pipe)
 	mutex_unlock(&pipe->lock);
 }
 
-/* -----------------------------------------------------------------------------
- * Resource management & chaining
- */
+ 
 int mxc_isi_channel_acquire(struct mxc_isi_pipe *pipe,
 			    mxc_isi_pipe_irq_t irq_handler, bool bypass)
 {
@@ -549,11 +519,7 @@ int mxc_isi_channel_acquire(struct mxc_isi_pipe *pipe,
 		goto unlock;
 	}
 
-	/*
-	 * Make sure the resources we need are available. The output buffer is
-	 * always needed to operate the channel, the line buffer is needed only
-	 * when the channel isn't in bypass mode.
-	 */
+	 
 	resources = MXC_ISI_CHANNEL_RES_OUTPUT_BUF
 		  | (!bypass ? MXC_ISI_CHANNEL_RES_LINE_BUF : 0);
 	if ((pipe->available_res & resources) != resources) {
@@ -561,7 +527,7 @@ int mxc_isi_channel_acquire(struct mxc_isi_pipe *pipe,
 		goto unlock;
 	}
 
-	/* Acquire the channel resources. */
+	 
 	pipe->acquired_res = resources;
 	pipe->available_res &= ~resources;
 	pipe->irq_handler = irq_handler;
@@ -583,32 +549,22 @@ void mxc_isi_channel_release(struct mxc_isi_pipe *pipe)
 	mutex_unlock(&pipe->lock);
 }
 
-/*
- * We currently support line buffer chaining only, for handling images with a
- * width larger than 2048 pixels.
- *
- * TODO: Support secondary line buffer for downscaling YUV420 images.
- */
+ 
 int mxc_isi_channel_chain(struct mxc_isi_pipe *pipe, bool bypass)
 {
-	/* Channel chaining requires both line and output buffer. */
+	 
 	const u8 resources = MXC_ISI_CHANNEL_RES_OUTPUT_BUF
 			   | MXC_ISI_CHANNEL_RES_LINE_BUF;
 	struct mxc_isi_pipe *chained_pipe = pipe + 1;
 	int ret = 0;
 
-	/*
-	 * If buffer chaining is required, make sure this channel is not the
-	 * last one, otherwise there's no 'next' channel to chain with. This
-	 * should be prevented by checks in the set format handlers, but let's
-	 * be defensive.
-	 */
+	 
 	if (WARN_ON(pipe->id == pipe->isi->pdata->num_channels - 1))
 		return -EINVAL;
 
 	mutex_lock(&chained_pipe->lock);
 
-	/* Safety checks. */
+	 
 	if (WARN_ON(pipe->chained || chained_pipe->chained_res)) {
 		ret = -EINVAL;
 		goto unlock;

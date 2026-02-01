@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2014 Broadcom Corporation
+
+
 
 #include <linux/kernel.h>
 #include <linux/err.h>
@@ -15,16 +15,13 @@
 #define PLL_VCO_HIGH_SHIFT 19
 #define PLL_VCO_LOW_SHIFT  30
 
-/*
- * PLL MACRO_SELECT modes 0 to 5 choose pre-calculated PLL output frequencies
- * from a look-up table. Mode 7 allows user to manipulate PLL clock dividers
- */
+ 
 #define PLL_USER_MODE 7
 
-/* number of delay loops waiting for PLL to lock */
+ 
 #define LOCK_DELAY 100
 
-/* number of VCO frequency bands */
+ 
 #define NUM_FREQ_BANDS 8
 
 #define NUM_KP_BANDS 3
@@ -92,10 +89,7 @@ static int pll_calc_param(unsigned long target_rate,
 	residual = target_rate - (ndiv_int * parent_rate);
 	residual <<= 20;
 
-	/*
-	 * Add half of the divisor so the result will be rounded to closest
-	 * instead of rounded down.
-	 */
+	 
 	residual += (parent_rate / 2);
 	ndiv_frac = div64_u64((u64)residual, (u64)parent_rate);
 
@@ -111,10 +105,7 @@ static int pll_calc_param(unsigned long target_rate,
 	return 0;
 }
 
-/*
- * Based on the target frequency, find a match from the VCO frequency parameter
- * table and return its index
- */
+ 
 static int pll_get_rate_index(struct iproc_pll *pll, unsigned int target_rate)
 {
 	int i;
@@ -190,12 +181,12 @@ static void __pll_disable(struct iproc_pll *pll)
 	}
 
 	if (pll->pwr_base) {
-		/* latch input value so core power can be shut down */
+		 
 		val = readl(pll->pwr_base + ctrl->aon.offset);
 		val |= 1 << ctrl->aon.iso_shift;
 		iproc_pll_write(pll, pll->pwr_base, ctrl->aon.offset, val);
 
-		/* power down the core */
+		 
 		val &= ~(bit_mask(ctrl->aon.pwr_width) << ctrl->aon.pwr_shift);
 		iproc_pll_write(pll, pll->pwr_base, ctrl->aon.offset, val);
 	}
@@ -213,14 +204,14 @@ static int __pll_enable(struct iproc_pll *pll)
 	}
 
 	if (pll->pwr_base) {
-		/* power up the PLL and make sure it's not latched */
+		 
 		val = readl(pll->pwr_base + ctrl->aon.offset);
 		val |= bit_mask(ctrl->aon.pwr_width) << ctrl->aon.pwr_shift;
 		val &= ~(1 << ctrl->aon.iso_shift);
 		iproc_pll_write(pll, pll->pwr_base, ctrl->aon.offset, val);
 	}
 
-	/* certain PLLs also need to be ungated from the ASIU top level */
+	 
 	if (ctrl->flags & IPROC_CLK_PLL_ASIU) {
 		val = readl(pll->asiu_base + ctrl->asiu.offset);
 		val |= (1 << ctrl->asiu.en_shift);
@@ -268,11 +259,7 @@ static void __pll_bring_out_reset(struct iproc_pll *pll, unsigned int kp,
 	iproc_pll_write(pll, pll->control_base, reset->offset, val);
 }
 
-/*
- * Determines if the change to be applied to the PLL is minor (just an update
- * or the fractional divider). If so, then we can avoid going through a
- * disruptive reset and lock sequence.
- */
+ 
 static bool pll_fractional_change_only(struct iproc_pll *pll,
 				       struct iproc_pll_vco_param *vco)
 {
@@ -281,7 +268,7 @@ static bool pll_fractional_change_only(struct iproc_pll *pll,
 	u32 ndiv_int;
 	unsigned int pdiv;
 
-	/* PLL needs to be locked */
+	 
 	val = readl(pll->status_base + ctrl->status.offset);
 	if ((val & (1 << ctrl->status.shift)) == 0)
 		return false;
@@ -314,16 +301,13 @@ static int pll_set_rate(struct iproc_clk *clk, struct iproc_pll_vco_param *vco,
 	unsigned long ref_freq;
 	const char *clk_name = clk_hw_get_name(&clk->hw);
 
-	/*
-	 * reference frequency = parent frequency / PDIV
-	 * If PDIV = 0, then it becomes a multiplier (x2)
-	 */
+	 
 	if (vco->pdiv == 0)
 		ref_freq = parent_rate * 2;
 	else
 		ref_freq = parent_rate / vco->pdiv;
 
-	/* determine Ki and Kp index based on target VCO frequency */
+	 
 	if (rate >= VCO_LOW && rate < VCO_HIGH) {
 		ki = 4;
 		kp_index = KP_BAND_MID;
@@ -352,7 +336,7 @@ static int pll_set_rate(struct iproc_clk *clk, struct iproc_pll_vco_param *vco,
 	}
 
 	if (pll_fractional_change_only(clk->pll, vco)) {
-		/* program fractional part of NDIV */
+		 
 		if (ctrl->flags & IPROC_CLK_PLL_HAS_NDIV_FRAC) {
 			val = readl(pll->control_base + ctrl->ndiv_frac.offset);
 			val &= ~(bit_mask(ctrl->ndiv_frac.width) <<
@@ -364,10 +348,10 @@ static int pll_set_rate(struct iproc_clk *clk, struct iproc_pll_vco_param *vco,
 		}
 	}
 
-	/* put PLL in reset */
+	 
 	__pll_put_in_reset(pll);
 
-	/* set PLL in user mode before modifying PLL controls */
+	 
 	if (ctrl->flags & IPROC_CLK_PLL_USER_MODE_ON) {
 		val = readl(pll->control_base + ctrl->macro_mode.offset);
 		val &= ~(bit_mask(ctrl->macro_mode.width) <<
@@ -391,13 +375,13 @@ static int pll_set_rate(struct iproc_clk *clk, struct iproc_pll_vco_param *vco,
 
 	iproc_pll_write(pll, pll->control_base, ctrl->vco_ctrl.l_offset, val);
 
-	/* program integer part of NDIV */
+	 
 	val = readl(pll->control_base + ctrl->ndiv_int.offset);
 	val &= ~(bit_mask(ctrl->ndiv_int.width) << ctrl->ndiv_int.shift);
 	val |= vco->ndiv_int << ctrl->ndiv_int.shift;
 	iproc_pll_write(pll, pll->control_base, ctrl->ndiv_int.offset, val);
 
-	/* program fractional part of NDIV */
+	 
 	if (ctrl->flags & IPROC_CLK_PLL_HAS_NDIV_FRAC) {
 		val = readl(pll->control_base + ctrl->ndiv_frac.offset);
 		val &= ~(bit_mask(ctrl->ndiv_frac.width) <<
@@ -407,7 +391,7 @@ static int pll_set_rate(struct iproc_clk *clk, struct iproc_pll_vco_param *vco,
 				val);
 	}
 
-	/* program PDIV */
+	 
 	val = readl(pll->control_base + ctrl->pdiv.offset);
 	val &= ~(bit_mask(ctrl->pdiv.width) << ctrl->pdiv.shift);
 	val |= vco->pdiv << ctrl->pdiv.shift;
@@ -458,16 +442,12 @@ static unsigned long iproc_pll_recalc_rate(struct clk_hw *hw,
 	if (parent_rate == 0)
 		return 0;
 
-	/* PLL needs to be locked */
+	 
 	val = readl(pll->status_base + ctrl->status.offset);
 	if ((val & (1 << ctrl->status.shift)) == 0)
 		return 0;
 
-	/*
-	 * PLL output frequency =
-	 *
-	 * ((ndiv_int + ndiv_frac / 2^20) * (parent clock rate / pdiv)
-	 */
+	 
 	val = readl(pll->control_base + ctrl->ndiv_int.offset);
 	ndiv_int = (val >> ctrl->ndiv_int.shift) &
 		bit_mask(ctrl->ndiv_int.width);
@@ -529,7 +509,7 @@ static int iproc_pll_determine_rate(struct clk_hw *hw,
 			best_diff = diff;
 			best_idx = i;
 		}
-		/* break now if perfect match */
+		 
 		if (diff == 0)
 			break;
 	}
@@ -579,12 +559,12 @@ static int iproc_clk_enable(struct clk_hw *hw)
 	struct iproc_pll *pll = clk->pll;
 	u32 val;
 
-	/* channel enable is active low */
+	 
 	val = readl(pll->control_base + ctrl->enable.offset);
 	val &= ~(1 << ctrl->enable.enable_shift);
 	iproc_pll_write(pll, pll->control_base, ctrl->enable.offset, val);
 
-	/* also make sure channel is not held */
+	 
 	val = readl(pll->control_base + ctrl->enable.offset);
 	val &= ~(1 << ctrl->enable.hold_shift);
 	iproc_pll_write(pll, pll->control_base, ctrl->enable.offset, val);
@@ -694,10 +674,7 @@ static const struct clk_ops iproc_clk_ops = {
 	.set_rate = iproc_clk_set_rate,
 };
 
-/*
- * Some PLLs require the PLL SW override bit to be set before changes can be
- * applied to the PLL
- */
+ 
 static void iproc_pll_sw_cfg(struct iproc_pll *pll)
 {
 	const struct iproc_pll_ctrl *ctrl = pll->ctrl;
@@ -748,10 +725,10 @@ void iproc_pll_clk_setup(struct device_node *node,
 	if (WARN_ON(!pll->control_base))
 		goto err_pll_iomap;
 
-	/* Some SoCs do not require the pwr_base, thus failing is not fatal */
+	 
 	pll->pwr_base = of_iomap(node, 1);
 
-	/* some PLLs require gating control at the top ASIU level */
+	 
 	if (pll_ctrl->flags & IPROC_CLK_PLL_ASIU) {
 		pll->asiu_base = of_iomap(node, 2);
 		if (WARN_ON(!pll->asiu_base))
@@ -759,16 +736,14 @@ void iproc_pll_clk_setup(struct device_node *node,
 	}
 
 	if (pll_ctrl->flags & IPROC_CLK_PLL_SPLIT_STAT_CTRL) {
-		/* Some SoCs have a split status/control.  If this does not
-		 * exist, assume they are unified.
-		 */
+		 
 		pll->status_base = of_iomap(node, 2);
 		if (!pll->status_base)
 			goto err_status_iomap;
 	} else
 		pll->status_base = pll->control_base;
 
-	/* initialize and register the PLL itself */
+	 
 	pll->ctrl = pll_ctrl;
 
 	iclk = &iclk_array[0];
@@ -801,7 +776,7 @@ void iproc_pll_clk_setup(struct device_node *node,
 	clk_data->hws[0] = &iclk->hw;
 	parent_name = clk_name;
 
-	/* now initialize and register all leaf clocks */
+	 
 	for (i = 1; i < num_clks; i++) {
 		memset(&init, 0, sizeof(init));
 

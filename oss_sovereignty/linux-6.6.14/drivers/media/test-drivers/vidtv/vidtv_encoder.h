@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Vidtv serves as a reference DVB driver and helps validate the existing APIs
- * in the media subsystem. It can also aid developers working on userspace
- * applications.
- *
- * This file contains a generic encoder type that can provide data for a stream
- *
- * Copyright (C) 2020 Daniel W. S. Almeida
- */
+ 
+ 
 
 #ifndef VIDTV_ENCODER_H
 #define VIDTV_ENCODER_H
@@ -15,7 +7,7 @@
 #include <linux/types.h>
 
 enum vidtv_encoder_id {
-	/* add IDs here when implementing new encoders */
+	 
 	S302M,
 };
 
@@ -28,7 +20,7 @@ struct vidtv_access_unit {
 	struct vidtv_access_unit *next;
 };
 
-/* Some musical notes, used by a tone generator. Values are in Hz */
+ 
 enum musical_notes {
 	NOTE_SILENT = 0,
 
@@ -95,35 +87,7 @@ enum musical_notes {
 	NOTE_C_7 = 2093
 };
 
-/**
- * struct vidtv_encoder - A generic encoder type.
- * @id: So we can cast to a concrete implementation when needed.
- * @name: Usually the same as the stream name.
- * @encoder_buf: The encoder internal buffer for the access units.
- * @encoder_buf_sz: The encoder buffer size, in bytes
- * @encoder_buf_offset: Our byte position in the encoder buffer.
- * @sample_count: How many samples we have encoded in total.
- * @access_units: encoder payload units, used for clock references
- * @src_buf: The source of raw data to be encoded, encoder might set a
- * default if null.
- * @src_buf_sz: size of @src_buf.
- * @src_buf_offset: Our position in the source buffer.
- * @is_video_encoder: Whether this a video encoder (as opposed to audio)
- * @ctx: Encoder-specific state.
- * @stream_id: Examples: Audio streams (0xc0-0xdf), Video streams
- * (0xe0-0xef).
- * @es_pid: The TS PID to use for the elementary stream in this encoder.
- * @encode: Prepare enough AUs for the given amount of time.
- * @clear: Clear the encoder output.
- * @sync: Attempt to synchronize with this encoder.
- * @sampling_rate_hz: The sampling rate (or fps, if video) used.
- * @last_sample_cb: Called when the encoder runs out of data.This is
- *		    so the source can read data in a
- *		    piecemeal fashion instead of having to
- *		    provide it all at once.
- * @destroy: Destroy this encoder, freeing allocated resources.
- * @next: Next in the chain
- */
+ 
 struct vidtv_encoder {
 	enum vidtv_encoder_id id;
 	char *name;
@@ -162,4 +126,4 @@ struct vidtv_encoder {
 	struct vidtv_encoder *next;
 };
 
-#endif /* VIDTV_ENCODER_H */
+#endif  

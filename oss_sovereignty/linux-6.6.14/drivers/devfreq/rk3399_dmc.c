@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016, Fuzhou Rockchip Electronics Co., Ltd.
- * Author: Lin Huang <hl@rock-chips.com>
- */
+
+ 
 
 #include <linux/arm-smccc.h>
 #include <linux/bitfield.h>
@@ -94,23 +91,14 @@ static int rk3399_dmcfreq_target(struct device *dev, unsigned long *freq,
 
 	mutex_lock(&dmcfreq->lock);
 
-	/*
-	 * Ensure power-domain transitions don't interfere with ARM Trusted
-	 * Firmware power-domain idling.
-	 */
+	 
 	err = rockchip_pmu_block();
 	if (err) {
 		dev_err(dev, "Failed to block PMU: %d\n", err);
 		goto out_unlock;
 	}
 
-	/*
-	 * Some idle parameters may be based on the DDR controller clock, which
-	 * is half of the DDR frequency.
-	 * pd_idle and standby_idle are based on the controller clock cycle.
-	 * sr_idle_cycle, sr_mc_gate_idle_cycle, and srpd_lite_idle_cycle
-	 * are based on the 1024 controller clock cycle
-	 */
+	 
 	ddrcon_mhz = target_rate / USEC_PER_SEC / 2;
 
 	u32p_replace_bits(&odt_pd_arg1,
@@ -151,20 +139,13 @@ static int rk3399_dmcfreq_target(struct device *dev, unsigned long *freq,
 		if (target_rate >= dmcfreq->odt_dis_freq)
 			odt_pd_arg2 |= RK3399_SET_ODT_PD_2_ODT_ENABLE;
 
-		/*
-		 * This makes a SMC call to the TF-A to set the DDR PD
-		 * (power-down) timings and to enable or disable the
-		 * ODT (on-die termination) resistors.
-		 */
+		 
 		arm_smccc_smc(ROCKCHIP_SIP_DRAM_FREQ, odt_pd_arg0, odt_pd_arg1,
 			      ROCKCHIP_SIP_CONFIG_DRAM_SET_ODT_PD, odt_pd_arg2,
 			      0, 0, 0, &res);
 	}
 
-	/*
-	 * If frequency scaling from low to high, adjust voltage first.
-	 * If frequency scaling from high to low, adjust frequency first.
-	 */
+	 
 	if (old_clk_rate < target_rate) {
 		err = regulator_set_voltage(dmcfreq->vdd_center, target_volt,
 					    target_volt);
@@ -184,15 +165,10 @@ static int rk3399_dmcfreq_target(struct device *dev, unsigned long *freq,
 		goto out;
 	}
 
-	/*
-	 * Check the dpll rate,
-	 * There only two result we will get,
-	 * 1. Ddr frequency scaling fail, we still get the old rate.
-	 * 2. Ddr frequency scaling sucessful, we get the rate we set.
-	 */
+	 
 	dmcfreq->rate = clk_get_rate(dmcfreq->dmc_clk);
 
-	/* If get the incorrect rate, set voltage to old value. */
+	 
 	if (dmcfreq->rate != target_rate) {
 		dev_err(dev, "Got wrong frequency, Request %lu, Current %lu\n",
 			target_rate, dmcfreq->rate);
@@ -289,10 +265,7 @@ static int rk3399_dmcfreq_of_props(struct rk3399_dmcfreq *data,
 {
 	int ret = 0;
 
-	/*
-	 * These are all optional, and serve as minimum bounds. Give them large
-	 * (i.e., never "disabled") values if the DT doesn't specify one.
-	 */
+	 
 	data->pd_idle_dis_freq =
 		data->sr_idle_dis_freq =
 		data->sr_mc_gate_idle_dis_freq =
@@ -404,10 +377,7 @@ no_pmu:
 		      ROCKCHIP_SIP_CONFIG_DRAM_INIT,
 		      0, 0, 0, 0, &res);
 
-	/*
-	 * We add a devfreq driver to our parent since it has a device tree node
-	 * with operating points.
-	 */
+	 
 	if (devm_pm_opp_of_add_table(dev)) {
 		dev_err(dev, "Invalid operating-points in device tree.\n");
 		ret = -EINVAL;

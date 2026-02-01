@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ltc2496.c - Driver for Analog Devices/Linear Technology LTC2496 ADC
- *
- * Based on ltc2497.c which has
- * Copyright (C) 2017 Analog Devices Inc.
- *
- * Licensed under the GPL-2.
- *
- * Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/2496fc.pdf
- */
+
+ 
 
 #include <linux/spi/spi.h>
 #include <linux/iio/iio.h>
@@ -20,14 +11,11 @@
 #include "ltc2497.h"
 
 struct ltc2496_driverdata {
-	/* this must be the first member */
+	 
 	struct ltc2497core_driverdata common_ddata;
 	struct spi_device *spi;
 
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 	unsigned char rxbuf[3] __aligned(IIO_DMA_MINALIGN);
 	unsigned char txbuf[3];
 };

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2021 Intel Corporation
- */
+ 
+ 
 
 #ifndef _INTEL_QP_TABLES_H_
 #define _INTEL_QP_TABLES_H_

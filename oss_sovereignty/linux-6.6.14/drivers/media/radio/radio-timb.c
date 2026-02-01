@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * radio-timb.c Timberdale FPGA Radio driver
- * Copyright (c) 2009 Intel Corporation
- */
+
+ 
 
 #include <linux/io.h>
 #include <media/v4l2-ioctl.h>

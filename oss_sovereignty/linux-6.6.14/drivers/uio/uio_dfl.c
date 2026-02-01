@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Generic DFL driver for Userspace I/O devicess
- *
- * Copyright (C) 2021 Intel Corporation, Inc.
- */
+
+ 
 #include <linux/dfl.h>
 #include <linux/errno.h>
 #include <linux/module.h>
@@ -34,7 +30,7 @@ static int uio_dfl_probe(struct dfl_device *ddev)
 			+ PAGE_SIZE - 1) & PAGE_MASK;
 	uiomem->name = r->name;
 
-	/* Irq is yet to be supported */
+	 
 	uioinfo->irq = UIO_IRQ_NONE;
 
 	ret = devm_uio_register_device(dev, uioinfo);

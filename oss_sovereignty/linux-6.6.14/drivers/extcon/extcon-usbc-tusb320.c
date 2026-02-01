@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * drivers/extcon/extcon-tusb320.c - TUSB320 extcon driver
- *
- * Copyright (C) 2020 National Instruments Corporation
- * Author: Michael Auchter <michael.auchter@ni.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/extcon-provider.h>
@@ -120,11 +115,11 @@ static int tusb320_set_mode(struct tusb320_priv *priv, enum tusb320_mode mode)
 {
 	int ret;
 
-	/* Mode cannot be changed while cable is attached */
+	 
 	if (priv->state != TUSB320_ATTACHED_STATE_NONE)
 		return -EBUSY;
 
-	/* Write mode */
+	 
 	ret = regmap_write_bits(priv->regmap, TUSB320_REGA,
 		TUSB320_REGA_MODE_SELECT_MASK << TUSB320_REGA_MODE_SELECT_SHIFT,
 		mode << TUSB320_REGA_MODE_SELECT_SHIFT);
@@ -140,7 +135,7 @@ static int tusb320l_set_mode(struct tusb320_priv *priv, enum tusb320_mode mode)
 {
 	int ret;
 
-	/* Disable CC state machine */
+	 
 	ret = regmap_write_bits(priv->regmap, TUSB320_REGA,
 		TUSB320L_REGA_DISABLE_TERM, 1);
 	if (ret) {
@@ -149,7 +144,7 @@ static int tusb320l_set_mode(struct tusb320_priv *priv, enum tusb320_mode mode)
 		return ret;
 	}
 
-	/* Write mode */
+	 
 	ret = regmap_write_bits(priv->regmap, TUSB320_REGA,
 		TUSB320_REGA_MODE_SELECT_MASK << TUSB320_REGA_MODE_SELECT_SHIFT,
 		mode << TUSB320_REGA_MODE_SELECT_SHIFT);
@@ -160,7 +155,7 @@ static int tusb320l_set_mode(struct tusb320_priv *priv, enum tusb320_mode mode)
 
 	msleep(5);
 err:
-	/* Re-enable CC state machine */
+	 
 	ret = regmap_write_bits(priv->regmap, TUSB320_REGA,
 		TUSB320L_REGA_DISABLE_TERM, 0);
 	if (ret)
@@ -174,7 +169,7 @@ static int tusb320_reset(struct tusb320_priv *priv)
 {
 	int ret;
 
-	/* Set mode to default (follow PORT pin) */
+	 
 	ret = priv->ops->set_mode(priv, TUSB320_MODE_PORT);
 	if (ret && ret != -EBUSY) {
 		dev_err(priv->dev,
@@ -182,7 +177,7 @@ static int tusb320_reset(struct tusb320_priv *priv)
 		return ret;
 	}
 
-	/* Perform soft reset */
+	 
 	ret = regmap_write_bits(priv->regmap, TUSB320_REGA,
 			TUSB320_REGA_I2C_SOFT_RESET, 1);
 	if (ret) {
@@ -191,7 +186,7 @@ static int tusb320_reset(struct tusb320_priv *priv)
 		return ret;
 	}
 
-	/* Wait for chip to go through reset */
+	 
 	msleep(95);
 
 	return 0;
@@ -221,7 +216,7 @@ static int tusb320_set_adv_pwr_mode(struct tusb320_priv *priv)
 		mode = TUSB320_REG8_CURRENT_MODE_ADVERTISE_15A;
 	else if (priv->pwr_opmode == TYPEC_PWR_MODE_3_0A)
 		mode = TUSB320_REG8_CURRENT_MODE_ADVERTISE_30A;
-	else	/* No other mode is supported. */
+	else	 
 		return -EINVAL;
 
 	return regmap_write_bits(priv->regmap, TUSB320_REG8,
@@ -314,10 +309,7 @@ static void tusb320_typec_irq_handler(struct tusb320_priv *priv, u8 reg9)
 		data_role = TYPEC_DEVICE;
 		break;
 	case TUSB320_ATTACHED_STATE_ACC:
-		/*
-		 * Accessory detected. For debug accessories, just make some
-		 * qualified guesses as to the role for lack of a better option.
-		 */
+		 
 		if (accessory == TUSB320_REG8_ACCESSORY_CONNECTED_AUDIO ||
 		    accessory == TUSB320_REG8_ACCESSORY_CONNECTED_ACHRG) {
 			typec_mode = TYPEC_MODE_AUDIO;
@@ -366,7 +358,7 @@ static void tusb320_typec_irq_handler(struct tusb320_priv *priv, u8 reg9)
 		typec_set_pwr_opmode(port, TYPEC_PWR_MODE_1_5A);
 	else if (mode == TUSB320_REG8_CURRENT_MODE_DETECT_HI)
 		typec_set_pwr_opmode(port, TYPEC_PWR_MODE_3_0A);
-	else	/* Charge through accessory */
+	else	 
 		typec_set_pwr_opmode(port, TYPEC_PWR_MODE_USB);
 }
 
@@ -385,10 +377,7 @@ static irqreturn_t tusb320_state_update_handler(struct tusb320_priv *priv,
 
 	tusb320_extcon_irq_handler(priv, reg);
 
-	/*
-	 * Type-C support is optional. Only call the Type-C handler if a
-	 * port had been registered previously.
-	 */
+	 
 	if (priv->port)
 		tusb320_typec_irq_handler(priv, reg);
 
@@ -440,19 +429,19 @@ static int tusb320_typec_probe(struct i2c_client *client,
 	const char *cap_str;
 	int ret;
 
-	/* The Type-C connector is optional, for backward compatibility. */
+	 
 	connector = device_get_named_child_node(&client->dev, "connector");
 	if (!connector)
 		return 0;
 
-	/* Type-C connector found. */
+	 
 	ret = typec_get_fw_cap(&priv->cap, connector);
 	if (ret)
 		goto err_put;
 
 	priv->port_type = priv->cap.type;
 
-	/* This goes into register 0x8 field CURRENT_MODE_ADVERTISE */
+	 
 	ret = fwnode_property_read_string(connector, "typec-power-opmode", &cap_str);
 	if (ret)
 		goto err_put;
@@ -463,7 +452,7 @@ static int tusb320_typec_probe(struct i2c_client *client,
 
 	priv->pwr_opmode = ret;
 
-	/* Initialize the hardware with the devicetree settings. */
+	 
 	ret = tusb320_set_adv_pwr_mode(priv);
 	if (ret)
 		goto err_put;
@@ -482,7 +471,7 @@ static int tusb320_typec_probe(struct i2c_client *client,
 		goto err_put;
 	}
 
-	/* Find any optional USB role switch that needs reporting to */
+	 
 	priv->role_sw = fwnode_usb_role_switch_get(connector);
 	if (IS_ERR(priv->role_sw)) {
 		ret = PTR_ERR(priv->role_sw);
@@ -554,18 +543,15 @@ static int tusb320_probe(struct i2c_client *client)
 	if (ret)
 		return ret;
 
-	/* update initial state */
+	 
 	tusb320_state_update_handler(priv, true);
 
-	/* Reset chip to its default state */
+	 
 	ret = tusb320_reset(priv);
 	if (ret)
 		dev_warn(priv->dev, "failed to reset chip: %d\n", ret);
 	else
-		/*
-		 * State and polarity might change after a reset, so update
-		 * them again and make sure the interrupt status bit is cleared.
-		 */
+		 
 		tusb320_state_update_handler(priv, true);
 
 	ret = devm_request_threaded_irq(priv->dev, client->irq, NULL,

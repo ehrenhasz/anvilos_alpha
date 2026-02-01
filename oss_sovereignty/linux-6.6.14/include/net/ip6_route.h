@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _NET_IP6_ROUTE_H
 #define _NET_IP6_ROUTE_H
 
@@ -26,7 +26,7 @@ struct route_info {
 				reserved_h:3;
 #endif
 	__be32			lifetime;
-	__u8			prefix[];	/* 0,8 or 16 */
+	__u8			prefix[];	 
 };
 
 #define RT6_LOOKUP_F_IFACE		0x00000001
@@ -38,22 +38,13 @@ struct route_info {
 #define RT6_LOOKUP_F_IGNORE_LINKSTATE	0x00000040
 #define RT6_LOOKUP_F_DST_NOREF		0x00000080
 
-/* We do not (yet ?) support IPv6 jumbograms (RFC 2675)
- * Unlike IPv4, hdr->seg_len doesn't include the IPv6 header
- */
+ 
 #define IP6_MAX_MTU (0xFFFF + sizeof(struct ipv6hdr))
 
-/*
- * rt6_srcprefs2flags() and rt6_flags2srcprefs() translate
- * between IPV6_ADDR_PREFERENCES socket option values
- *	IPV6_PREFER_SRC_TMP    = 0x1
- *	IPV6_PREFER_SRC_PUBLIC = 0x2
- *	IPV6_PREFER_SRC_COA    = 0x4
- * and above RT6_LOOKUP_F_SRCPREF_xxx flags.
- */
+ 
 static inline int rt6_srcprefs2flags(unsigned int srcprefs)
 {
-	/* No need to bitmask because srcprefs have only 3 bits. */
+	 
 	return srcprefs << 3;
 }
 
@@ -68,12 +59,10 @@ static inline bool rt6_need_strict(const struct in6_addr *daddr)
 		(IPV6_ADDR_MULTICAST | IPV6_ADDR_LINKLOCAL | IPV6_ADDR_LOOPBACK);
 }
 
-/* fib entries using a nexthop object can not be coalesced into
- * a multipath route
- */
+ 
 static inline bool rt6_qualify_for_ecmp(const struct fib6_info *f6i)
 {
-	/* the RTF_ADDRCONF flag filters out RA's */
+	 
 	return !(f6i->fib6_flags & RTF_ADDRCONF) && !f6i->nh &&
 		f6i->fib6_nh->fib_nh_gw_family;
 }
@@ -94,9 +83,7 @@ static inline struct dst_entry *ip6_route_output(struct net *net,
 	return ip6_route_output_flags(net, sk, fl6, 0);
 }
 
-/* Only conditionally release dst if flags indicates
- * !RT6_LOOKUP_F_DST_NOREF or dst is in uncached_list.
- */
+ 
 static inline void ip6_rt_put_flags(struct rt6_info *rt, int flags)
 {
 	if (!(flags & RT6_LOOKUP_F_DST_NOREF) ||
@@ -161,10 +148,7 @@ struct fib6_info *addrconf_f6i_alloc(struct net *net, struct inet6_dev *idev,
 struct rt6_info *ip6_dst_alloc(struct net *net, struct net_device *dev,
 			       int flags);
 
-/*
- *	support functions for ND
- *
- */
+ 
 struct fib6_info *rt6_get_dflt_router(struct net *net,
 				     const struct in6_addr *addr,
 				     struct net_device *dev);
@@ -218,9 +202,7 @@ static inline const struct rt6_info *skb_rt6_info(const struct sk_buff *skb)
 	return rt6;
 }
 
-/*
- *	Store a destination cache entry in a socket
- */
+ 
 static inline void ip6_dst_store(struct sock *sk, struct dst_entry *dst,
 				 const struct in6_addr *daddr,
 				 const struct in6_addr *saddr)

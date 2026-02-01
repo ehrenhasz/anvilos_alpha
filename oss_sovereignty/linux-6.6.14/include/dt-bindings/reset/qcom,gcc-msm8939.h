@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2020 Linaro Limited
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_RESET_MSM_GCC_8939_H
 #define _DT_BINDINGS_RESET_MSM_GCC_8939_H

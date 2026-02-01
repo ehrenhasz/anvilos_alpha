@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2019-2021, Intel Corporation. */
+
+ 
 
 #include "ice.h"
 #include "ice_lib.h"
@@ -10,14 +10,7 @@
 #include "ice_devlink.h"
 #include "ice_tc_lib.h"
 
-/**
- * ice_eswitch_add_vf_sp_rule - add adv rule with VF's VSI index
- * @pf: pointer to PF struct
- * @vf: pointer to VF struct
- *
- * This function adds advanced rule that forwards packets with
- * VF's VSI index to the corresponding switchdev ctrl VSI queue.
- */
+ 
 static int
 ice_eswitch_add_vf_sp_rule(struct ice_pf *pf, struct ice_vf *vf)
 {
@@ -54,13 +47,7 @@ ice_eswitch_add_vf_sp_rule(struct ice_pf *pf, struct ice_vf *vf)
 	return err;
 }
 
-/**
- * ice_eswitch_del_vf_sp_rule - delete adv rule with VF's VSI index
- * @vf: pointer to the VF struct
- *
- * Delete the advanced rule that was used to forward packets with the VF's VSI
- * index to the corresponding switchdev ctrl VSI queue.
- */
+ 
 static void ice_eswitch_del_vf_sp_rule(struct ice_vf *vf)
 {
 	if (!vf->repr)
@@ -69,13 +56,7 @@ static void ice_eswitch_del_vf_sp_rule(struct ice_vf *vf)
 	ice_rem_adv_rule_by_id(&vf->pf->hw, &vf->repr->sp_rule);
 }
 
-/**
- * ice_eswitch_setup_env - configure switchdev HW filters
- * @pf: pointer to PF struct
- *
- * This function adds HW filters configuration specific for switchdev
- * mode.
- */
+ 
 static int ice_eswitch_setup_env(struct ice_pf *pf)
 {
 	struct ice_vsi *uplink_vsi = pf->switchdev.uplink_vsi;
@@ -131,17 +112,7 @@ err_def_rx:
 	return -ENODEV;
 }
 
-/**
- * ice_eswitch_remap_rings_to_vectors - reconfigure rings of switchdev ctrl VSI
- * @pf: pointer to PF struct
- *
- * In switchdev number of allocated Tx/Rx rings is equal.
- *
- * This function fills q_vectors structures associated with representor and
- * move each ring pairs to port representor netdevs. Each port representor
- * will have dedicated 1 Tx/Rx ring pair, so number of rings pair is equal to
- * number of VFs.
- */
+ 
 static void ice_eswitch_remap_rings_to_vectors(struct ice_pf *pf)
 {
 	struct ice_vsi *vsi = pf->switchdev.control_vsi;
@@ -171,9 +142,7 @@ static void ice_eswitch_remap_rings_to_vectors(struct ice_pf *pf)
 		tx_ring->q_vector = q_vector;
 		tx_ring->next = NULL;
 		tx_ring->netdev = repr->netdev;
-		/* In switchdev mode, from OS stack perspective, there is only
-		 * one queue for given netdev, so it needs to be indexed as 0.
-		 */
+		 
 		tx_ring->q_index = 0;
 
 		q_vector->num_ring_rx = 1;
@@ -186,11 +155,7 @@ static void ice_eswitch_remap_rings_to_vectors(struct ice_pf *pf)
 	}
 }
 
-/**
- * ice_eswitch_release_reprs - clear PR VSIs configuration
- * @pf: poiner to PF struct
- * @ctrl_vsi: pointer to switchdev control VSI
- */
+ 
 static void
 ice_eswitch_release_reprs(struct ice_pf *pf, struct ice_vsi *ctrl_vsi)
 {
@@ -202,7 +167,7 @@ ice_eswitch_release_reprs(struct ice_pf *pf, struct ice_vsi *ctrl_vsi)
 	ice_for_each_vf(pf, bkt, vf) {
 		struct ice_vsi *vsi = vf->repr->src_vsi;
 
-		/* Skip VFs that aren't configured */
+		 
 		if (!vf->repr->dst)
 			continue;
 
@@ -217,10 +182,7 @@ ice_eswitch_release_reprs(struct ice_pf *pf, struct ice_vsi *ctrl_vsi)
 	}
 }
 
-/**
- * ice_eswitch_setup_reprs - configure port reprs to run in switchdev mode
- * @pf: pointer to PF struct
- */
+ 
 static int ice_eswitch_setup_reprs(struct ice_pf *pf)
 {
 	struct ice_vsi *ctrl_vsi = pf->switchdev.control_vsi;
@@ -295,10 +257,7 @@ err:
 	return -ENODEV;
 }
 
-/**
- * ice_eswitch_update_repr - reconfigure VF port representor
- * @vsi: VF VSI for which port representor is configured
- */
+ 
 void ice_eswitch_update_repr(struct ice_vsi *vsi)
 {
 	struct ice_pf *pf = vsi->back;
@@ -325,13 +284,7 @@ void ice_eswitch_update_repr(struct ice_vsi *vsi)
 	}
 }
 
-/**
- * ice_eswitch_port_start_xmit - callback for packets transmit
- * @skb: send buffer
- * @netdev: network interface device structure
- *
- * Returns NETDEV_TX_OK if sent, else an error code
- */
+ 
 netdev_tx_t
 ice_eswitch_port_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 {
@@ -358,11 +311,7 @@ ice_eswitch_port_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 	return ice_start_xmit(skb, netdev);
 }
 
-/**
- * ice_eswitch_set_target_vsi - set switchdev context in Tx context descriptor
- * @skb: pointer to send buffer
- * @off: pointer to offload struct
- */
+ 
 void
 ice_eswitch_set_target_vsi(struct sk_buff *skb,
 			   struct ice_tx_offload_params *off)
@@ -381,13 +330,7 @@ ice_eswitch_set_target_vsi(struct sk_buff *skb,
 	}
 }
 
-/**
- * ice_eswitch_release_env - clear switchdev HW filters
- * @pf: pointer to PF struct
- *
- * This function removes HW filters configuration specific for switchdev
- * mode and restores default legacy mode settings.
- */
+ 
 static void ice_eswitch_release_env(struct ice_pf *pf)
 {
 	struct ice_vsi *uplink_vsi = pf->switchdev.uplink_vsi;
@@ -406,11 +349,7 @@ static void ice_eswitch_release_env(struct ice_pf *pf)
 				       ICE_FWD_TO_VSI);
 }
 
-/**
- * ice_eswitch_vsi_setup - configure switchdev control VSI
- * @pf: pointer to PF structure
- * @pi: pointer to port_info structure
- */
+ 
 static struct ice_vsi *
 ice_eswitch_vsi_setup(struct ice_pf *pf, struct ice_port_info *pi)
 {
@@ -423,10 +362,7 @@ ice_eswitch_vsi_setup(struct ice_pf *pf, struct ice_port_info *pi)
 	return ice_vsi_setup(pf, &params);
 }
 
-/**
- * ice_eswitch_napi_del - remove NAPI handle for all port representors
- * @pf: pointer to PF structure
- */
+ 
 static void ice_eswitch_napi_del(struct ice_pf *pf)
 {
 	struct ice_vf *vf;
@@ -438,10 +374,7 @@ static void ice_eswitch_napi_del(struct ice_pf *pf)
 		netif_napi_del(&vf->repr->q_vector->napi);
 }
 
-/**
- * ice_eswitch_napi_enable - enable NAPI for all port representors
- * @pf: pointer to PF structure
- */
+ 
 static void ice_eswitch_napi_enable(struct ice_pf *pf)
 {
 	struct ice_vf *vf;
@@ -453,10 +386,7 @@ static void ice_eswitch_napi_enable(struct ice_pf *pf)
 		napi_enable(&vf->repr->q_vector->napi);
 }
 
-/**
- * ice_eswitch_napi_disable - disable NAPI for all port representors
- * @pf: pointer to PF structure
- */
+ 
 static void ice_eswitch_napi_disable(struct ice_pf *pf)
 {
 	struct ice_vf *vf;
@@ -468,10 +398,7 @@ static void ice_eswitch_napi_disable(struct ice_pf *pf)
 		napi_disable(&vf->repr->q_vector->napi);
 }
 
-/**
- * ice_eswitch_enable_switchdev - configure eswitch in switchdev mode
- * @pf: pointer to PF structure
- */
+ 
 static int ice_eswitch_enable_switchdev(struct ice_pf *pf)
 {
 	struct ice_vsi *ctrl_vsi, *uplink_vsi;
@@ -525,10 +452,7 @@ err_vsi:
 	return -ENODEV;
 }
 
-/**
- * ice_eswitch_disable_switchdev - disable switchdev resources
- * @pf: pointer to PF structure
- */
+ 
 static void ice_eswitch_disable_switchdev(struct ice_pf *pf)
 {
 	struct ice_vsi *ctrl_vsi = pf->switchdev.control_vsi;
@@ -541,12 +465,7 @@ static void ice_eswitch_disable_switchdev(struct ice_pf *pf)
 	ice_repr_rem_from_all_vfs(pf);
 }
 
-/**
- * ice_eswitch_mode_set - set new eswitch mode
- * @devlink: pointer to devlink structure
- * @mode: eswitch mode to switch to
- * @extack: pointer to extack structure
- */
+ 
 int
 ice_eswitch_mode_set(struct devlink *devlink, u16 mode,
 		     struct netlink_ext_ack *extack)
@@ -590,11 +509,7 @@ ice_eswitch_mode_set(struct devlink *devlink, u16 mode,
 	return 0;
 }
 
-/**
- * ice_eswitch_mode_get - get current eswitch mode
- * @devlink: pointer to devlink structure
- * @mode: output parameter for current eswitch mode
- */
+ 
 int ice_eswitch_mode_get(struct devlink *devlink, u16 *mode)
 {
 	struct ice_pf *pf = devlink_priv(devlink);
@@ -603,22 +518,13 @@ int ice_eswitch_mode_get(struct devlink *devlink, u16 *mode)
 	return 0;
 }
 
-/**
- * ice_is_eswitch_mode_switchdev - check if eswitch mode is set to switchdev
- * @pf: pointer to PF structure
- *
- * Returns true if eswitch mode is set to DEVLINK_ESWITCH_MODE_SWITCHDEV,
- * false otherwise.
- */
+ 
 bool ice_is_eswitch_mode_switchdev(struct ice_pf *pf)
 {
 	return pf->eswitch_mode == DEVLINK_ESWITCH_MODE_SWITCHDEV;
 }
 
-/**
- * ice_eswitch_release - cleanup eswitch
- * @pf: pointer to PF structure
- */
+ 
 void ice_eswitch_release(struct ice_pf *pf)
 {
 	if (pf->eswitch_mode == DEVLINK_ESWITCH_MODE_LEGACY)
@@ -628,10 +534,7 @@ void ice_eswitch_release(struct ice_pf *pf)
 	pf->switchdev.is_running = false;
 }
 
-/**
- * ice_eswitch_configure - configure eswitch
- * @pf: pointer to PF structure
- */
+ 
 int ice_eswitch_configure(struct ice_pf *pf)
 {
 	int status;
@@ -647,10 +550,7 @@ int ice_eswitch_configure(struct ice_pf *pf)
 	return 0;
 }
 
-/**
- * ice_eswitch_start_all_tx_queues - start Tx queues of all port representors
- * @pf: pointer to PF structure
- */
+ 
 static void ice_eswitch_start_all_tx_queues(struct ice_pf *pf)
 {
 	struct ice_vf *vf;
@@ -667,10 +567,7 @@ static void ice_eswitch_start_all_tx_queues(struct ice_pf *pf)
 	}
 }
 
-/**
- * ice_eswitch_stop_all_tx_queues - stop Tx queues of all port representors
- * @pf: pointer to PF structure
- */
+ 
 void ice_eswitch_stop_all_tx_queues(struct ice_pf *pf)
 {
 	struct ice_vf *vf;
@@ -687,10 +584,7 @@ void ice_eswitch_stop_all_tx_queues(struct ice_pf *pf)
 	}
 }
 
-/**
- * ice_eswitch_rebuild - rebuild eswitch
- * @pf: pointer to PF structure
- */
+ 
 int ice_eswitch_rebuild(struct ice_pf *pf)
 {
 	struct ice_vsi *ctrl_vsi = pf->switchdev.control_vsi;

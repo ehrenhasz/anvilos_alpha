@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Data structs */
+
+ 
 
 static const u16 asEqCoefsZeros[50] = {
 	0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
@@ -32,7 +32,7 @@ static const u16 asEqCoefsPipes[64] = {
 	0x0000, 0x0000
 };
 
-/* More coef sets can be found in the win2k "inf" file. */
+ 
 static const auxxEqCoeffSet_t asEqCoefsNormal = {
 	.LeftCoefs = {
 		      0x7e60, 0xc19e, 0x0001, 0x0002, 0x0001,
@@ -73,20 +73,20 @@ static const u16 eq_gains_normal[20] = {
 	0x3e96, 0x3e96, 0x3e96, 0x3e96, 0x3e96
 };
 
-/* _rodatab60 */
+ 
 static const u16 eq_gains_zero[10] = {
 	0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
 	0x0000, 0x0000, 0x0000, 0x0000, 0x0000
 };
 
-/* _rodatab7c:  ProgramPipe */
+ 
 static const u16 eq_gains_current[12] = {
 	0x7fff, 0x7fff, 0x7fff, 0x7fff, 0x7fff, 0x7fff, 0x7fff, 0x7fff,
 	0x7fff,
 	0x7fff, 0x7fff, 0x7fff
 };
 
-/* _rodatab78 */
+ 
 static const u16 eq_states_zero[2] = { 0x0000, 0x0000 };
 
 static const u16 asEqOutStateZeros[48] = {
@@ -104,7 +104,7 @@ static const u16 asEqOutStateZeros[48] = {
 	0x0000, 0x0000, 0x0000, 0x0000
 };
 
-/*_rodataba0:*/
+ 
 static const u16 eq_levels[64] = {
 	0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
 	0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,

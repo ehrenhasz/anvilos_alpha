@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2015 Free Electrons
- * Copyright (C) 2015 NextThing Co
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+ 
+ 
 
 #ifndef _SUN4I_LAYER_H_
 #define _SUN4I_LAYER_H_
@@ -39,4 +34,4 @@ state_to_sun4i_layer_state(struct drm_plane_state *state)
 struct drm_plane **sun4i_layers_init(struct drm_device *drm,
 				     struct sunxi_engine *engine);
 
-#endif /* _SUN4I_LAYER_H_ */
+#endif  

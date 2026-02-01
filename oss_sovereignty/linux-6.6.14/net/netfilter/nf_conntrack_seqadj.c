@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/types.h>
 #include <linux/netfilter.h>
 #include <net/tcp.h>
@@ -71,7 +71,7 @@ void nf_ct_tcp_seqadj_set(struct sk_buff *skb,
 }
 EXPORT_SYMBOL_GPL(nf_ct_tcp_seqadj_set);
 
-/* Adjust one found SACK option including checksum correction */
+ 
 static void nf_ct_sack_block_adjust(struct sk_buff *skb,
 				    struct tcphdr *tcph,
 				    unsigned int sackoff,
@@ -113,7 +113,7 @@ static void nf_ct_sack_block_adjust(struct sk_buff *skb,
 	}
 }
 
-/* TCP SACK sequence number adjustment */
+ 
 static unsigned int nf_ct_sack_adjust(struct sk_buff *skb,
 				      unsigned int protoff,
 				      struct nf_conn *ct,
@@ -133,7 +133,7 @@ static unsigned int nf_ct_sack_adjust(struct sk_buff *skb,
 	dir = CTINFO2DIR(ctinfo);
 
 	while (optoff < optend) {
-		/* Usually: option, length. */
+		 
 		unsigned char *op = skb->data + optoff;
 
 		switch (op[0]) {
@@ -143,7 +143,7 @@ static unsigned int nf_ct_sack_adjust(struct sk_buff *skb,
 			optoff++;
 			continue;
 		default:
-			/* no partial options */
+			 
 			if (optoff + 1 == optend ||
 			    optoff + op[1] > optend ||
 			    op[1] < 2)
@@ -160,7 +160,7 @@ static unsigned int nf_ct_sack_adjust(struct sk_buff *skb,
 	return 1;
 }
 
-/* TCP sequence number adjustment.  Returns 1 on success, 0 on failure */
+ 
 int nf_ct_seq_adjust(struct sk_buff *skb,
 		     struct nf_conn *ct, enum ip_conntrack_info ctinfo,
 		     unsigned int protoff)

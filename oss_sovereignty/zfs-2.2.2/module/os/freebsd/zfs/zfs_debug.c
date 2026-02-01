@@ -1,27 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2014 by Delphix. All rights reserved.
- */
+ 
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/kstat.h>
@@ -36,21 +14,10 @@ typedef struct zfs_dbgmsg {
 static list_t zfs_dbgmsgs;
 static uint_t zfs_dbgmsg_size = 0;
 static kmutex_t zfs_dbgmsgs_lock;
-uint_t zfs_dbgmsg_maxsize = 4<<20; /* 4MB */
+uint_t zfs_dbgmsg_maxsize = 4<<20;  
 static kstat_t *zfs_dbgmsg_kstat;
 
-/*
- * Internal ZFS debug messages are enabled by default.
- *
- * # Print debug messages as they're logged
- * dtrace -n 'zfs-dbgmsg { print(stringof(arg0)); }'
- *
- * # Print all logged dbgmsg entries
- * sysctl kstat.zfs.misc.dbgmsg
- *
- * # Disable the kernel debug message log.
- * sysctl vfs.zfs.dbgmsg_enable=0
- */
+ 
 int zfs_dbgmsg_enable = B_TRUE;
 
 static int
@@ -140,9 +107,7 @@ zfs_dbgmsg_fini(void)
 {
 	if (zfs_dbgmsg_kstat)
 		kstat_delete(zfs_dbgmsg_kstat);
-	/*
-	 * TODO - decide how to make this permanent
-	 */
+	 
 #ifdef _KERNEL
 	mutex_enter(&zfs_dbgmsgs_lock);
 	zfs_dbgmsg_purge(0);
@@ -175,11 +140,7 @@ __zfs_dbgmsg(char *buf)
 void
 __set_error(const char *file, const char *func, int line, int err)
 {
-	/*
-	 * To enable this:
-	 *
-	 * $ echo 512 >/sys/module/zfs/parameters/zfs_flags
-	 */
+	 
 	if (zfs_flags & ZFS_DEBUG_SET_ERROR)
 		__dprintf(B_FALSE, file, func, line, "error %lu", (ulong_t)err);
 }
@@ -199,12 +160,10 @@ __dprintf(boolean_t dprint, const char *file, const char *func,
 	size = 1024;
 	buf = kmem_alloc(size, KM_SLEEP);
 
-	/*
-	 * Get rid of annoying prefix to filename.
-	 */
+	 
 	newfile = strrchr(file, '/');
 	if (newfile != NULL) {
-		newfile = newfile + 1; /* Get rid of leading / */
+		newfile = newfile + 1;  
 	} else {
 		newfile = file;
 	}
@@ -217,9 +176,7 @@ __dprintf(boolean_t dprint, const char *file, const char *func,
 		va_end(adx);
 	}
 
-	/*
-	 * Get rid of trailing newline.
-	 */
+	 
 	nl = strrchr(buf, '\n');
 	if (nl != NULL)
 		*nl = '\0';
@@ -243,7 +200,7 @@ zfs_dbgmsg_print(const char *tag)
 		(void) printf("%s\n", zdm->zdm_msg);
 	mutex_exit(&zfs_dbgmsgs_lock);
 }
-#endif /* _KERNEL */
+#endif  
 
 ZFS_MODULE_PARAM(zfs, zfs_, dbgmsg_enable, INT, ZMOD_RW,
 	"Enable ZFS debug message log");

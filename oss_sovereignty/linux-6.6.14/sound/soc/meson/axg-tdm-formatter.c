@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-//
-// Copyright (c) 2018 BayLibre, SAS.
-// Author: Jerome Brunet <jbrunet@baylibre.com>
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -34,21 +34,14 @@ int axg_tdm_formatter_set_channel_masks(struct regmap *map,
 	u32 val[AXG_TDM_NUM_LANES];
 	int i, j, k;
 
-	/*
-	 * We need to mimick the slot distribution used by the HW to keep the
-	 * channel placement consistent regardless of the number of channel
-	 * in the stream. This is why the odd algorithm below is used.
-	 */
+	 
 	memset(val, 0, sizeof(*val) * AXG_TDM_NUM_LANES);
 
-	/*
-	 * Distribute the channels of the stream over the available slots
-	 * of each TDM lane. We need to go over the 32 slots ...
-	 */
+	 
 	for (i = 0; (i < 32) && ch; i += 2) {
-		/* ... of all the lanes ... */
+		 
 		for (j = 0; j < AXG_TDM_NUM_LANES; j++) {
-			/* ... then distribute the channels in pairs */
+			 
 			for (k = 0; k < 2; k++) {
 				if ((BIT(i + k) & ts->mask[j]) && ch) {
 					val[j] |= BIT(i + k);
@@ -58,11 +51,7 @@ int axg_tdm_formatter_set_channel_masks(struct regmap *map,
 		}
 	}
 
-	/*
-	 * If we still have channel left at the end of the process, it means
-	 * the stream has more channels than we can accommodate and we should
-	 * have caught this earlier.
-	 */
+	 
 	if (WARN_ON(ch != 0)) {
 		pr_err("channel mask error\n");
 		return -EINVAL;
@@ -83,46 +72,29 @@ static int axg_tdm_formatter_enable(struct axg_tdm_formatter *formatter)
 	bool invert;
 	int ret;
 
-	/* Do nothing if the formatter is already enabled */
+	 
 	if (formatter->enabled)
 		return 0;
 
-	/*
-	 * On the g12a (and possibly other SoCs), when a stream using
-	 * multiple lanes is restarted, it will sometimes not start
-	 * from the first lane, but randomly from another used one.
-	 * The result is an unexpected and random channel shift.
-	 *
-	 * The hypothesis is that an HW counter is not properly reset
-	 * and the formatter simply starts on the lane it stopped
-	 * before. Unfortunately, there does not seems to be a way to
-	 * reset this through the registers of the block.
-	 *
-	 * However, the g12a has indenpendent reset lines for each audio
-	 * devices. Using this reset before each start solves the issue.
-	 */
+	 
 	ret = reset_control_reset(formatter->reset);
 	if (ret)
 		return ret;
 
-	/*
-	 * If sclk is inverted, it means the bit should latched on the
-	 * rising edge which is what our HW expects. If not, we need to
-	 * invert it before the formatter.
-	 */
+	 
 	invert = axg_tdm_sclk_invert(ts->iface->fmt);
 	ret = clk_set_phase(formatter->sclk, invert ? 0 : 180);
 	if (ret)
 		return ret;
 
-	/* Setup the stream parameter in the formatter */
+	 
 	ret = formatter->drv->ops->prepare(formatter->map,
 					   formatter->drv->quirks,
 					   formatter->stream);
 	if (ret)
 		return ret;
 
-	/* Enable the signal clocks feeding the formatter */
+	 
 	ret = clk_prepare_enable(formatter->sclk);
 	if (ret)
 		return ret;
@@ -133,7 +105,7 @@ static int axg_tdm_formatter_enable(struct axg_tdm_formatter *formatter)
 		return ret;
 	}
 
-	/* Finally, actually enable the formatter */
+	 
 	formatter->drv->ops->enable(formatter->map);
 	formatter->enabled = true;
 
@@ -142,7 +114,7 @@ static int axg_tdm_formatter_enable(struct axg_tdm_formatter *formatter)
 
 static void axg_tdm_formatter_disable(struct axg_tdm_formatter *formatter)
 {
-	/* Do nothing if the formatter is already disabled */
+	 
 	if (!formatter->enabled)
 		return;
 
@@ -159,7 +131,7 @@ static int axg_tdm_formatter_attach(struct axg_tdm_formatter *formatter)
 
 	mutex_lock(&ts->lock);
 
-	/* Catch up if the stream is already running when we attach */
+	 
 	if (ts->ready) {
 		ret = axg_tdm_formatter_enable(formatter);
 		if (ret) {
@@ -191,25 +163,21 @@ static int axg_tdm_formatter_power_up(struct axg_tdm_formatter *formatter,
 	struct axg_tdm_stream *ts = formatter->drv->ops->get_stream(w);
 	int ret;
 
-	/*
-	 * If we don't get a stream at this stage, it would mean that the
-	 * widget is powering up but is not attached to any backend DAI.
-	 * It should not happen, ever !
-	 */
+	 
 	if (WARN_ON(!ts))
 		return -ENODEV;
 
-	/* Clock our device */
+	 
 	ret = clk_prepare_enable(formatter->pclk);
 	if (ret)
 		return ret;
 
-	/* Reparent the bit clock to the TDM interface */
+	 
 	ret = clk_set_parent(formatter->sclk_sel, ts->iface->sclk);
 	if (ret)
 		goto disable_pclk;
 
-	/* Reparent the sample clock to the TDM interface */
+	 
 	ret = clk_set_parent(formatter->lrclk_sel, ts->iface->lrclk);
 	if (ret)
 		goto disable_pclk;
@@ -289,33 +257,33 @@ int axg_tdm_formatter_probe(struct platform_device *pdev)
 		return PTR_ERR(formatter->map);
 	}
 
-	/* Peripharal clock */
+	 
 	formatter->pclk = devm_clk_get(dev, "pclk");
 	if (IS_ERR(formatter->pclk))
 		return dev_err_probe(dev, PTR_ERR(formatter->pclk), "failed to get pclk\n");
 
-	/* Formatter bit clock */
+	 
 	formatter->sclk = devm_clk_get(dev, "sclk");
 	if (IS_ERR(formatter->sclk))
 		return dev_err_probe(dev, PTR_ERR(formatter->sclk), "failed to get sclk\n");
 
-	/* Formatter sample clock */
+	 
 	formatter->lrclk = devm_clk_get(dev, "lrclk");
 	if (IS_ERR(formatter->lrclk))
 		return dev_err_probe(dev, PTR_ERR(formatter->lrclk), "failed to get lrclk\n");
 
-	/* Formatter bit clock input multiplexer */
+	 
 	formatter->sclk_sel = devm_clk_get(dev, "sclk_sel");
 	if (IS_ERR(formatter->sclk_sel))
 		return dev_err_probe(dev, PTR_ERR(formatter->sclk_sel), "failed to get sclk_sel\n");
 
-	/* Formatter sample clock input multiplexer */
+	 
 	formatter->lrclk_sel = devm_clk_get(dev, "lrclk_sel");
 	if (IS_ERR(formatter->lrclk_sel))
 		return dev_err_probe(dev, PTR_ERR(formatter->lrclk_sel),
 				     "failed to get lrclk_sel\n");
 
-	/* Formatter dedicated reset line */
+	 
 	formatter->reset = devm_reset_control_get_optional_exclusive(dev, NULL);
 	if (IS_ERR(formatter->reset))
 		return dev_err_probe(dev, PTR_ERR(formatter->reset), "failed to get reset\n");
@@ -333,7 +301,7 @@ int axg_tdm_stream_start(struct axg_tdm_stream *ts)
 	mutex_lock(&ts->lock);
 	ts->ready = true;
 
-	/* Start all the formatters attached to the stream */
+	 
 	list_for_each_entry(formatter, &ts->formatter_list, list) {
 		ret = axg_tdm_formatter_enable(formatter);
 		if (ret) {
@@ -355,7 +323,7 @@ void axg_tdm_stream_stop(struct axg_tdm_stream *ts)
 	mutex_lock(&ts->lock);
 	ts->ready = false;
 
-	/* Stop all the formatters attached to the stream */
+	 
 	list_for_each_entry(formatter, &ts->formatter_list, list) {
 		axg_tdm_formatter_disable(formatter);
 	}
@@ -381,11 +349,7 @@ EXPORT_SYMBOL_GPL(axg_tdm_stream_alloc);
 
 void axg_tdm_stream_free(struct axg_tdm_stream *ts)
 {
-	/*
-	 * If the list is not empty, it would mean that one of the formatter
-	 * widget is still powered and attached to the interface while we
-	 * are removing the TDM DAI. It should not be possible
-	 */
+	 
 	WARN_ON(!list_empty(&ts->formatter_list));
 	mutex_destroy(&ts->lock);
 	kfree(ts);

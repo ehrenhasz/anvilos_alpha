@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Copyright (c) 2021-2022 NXP. */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -11,7 +11,7 @@
 #define LYNX_28G_NUM_LANE			8
 #define LYNX_28G_NUM_PLL			2
 
-/* General registers per SerDes block */
+ 
 #define LYNX_28G_PCC8				0x10a0
 #define LYNX_28G_PCC8_SGMII			0x1
 #define LYNX_28G_PCC8_SGMII_DIS			0x0
@@ -23,7 +23,7 @@
 
 #define LYNX_28G_LNa_PCC_OFFSET(lane)		(4 * (LYNX_28G_NUM_LANE - (lane->id) - 1))
 
-/* Per PLL registers */
+ 
 #define LYNX_28G_PLLnRSTCTL(pll)		(0x400 + (pll) * 0x100 + 0x0)
 #define LYNX_28G_PLLnRSTCTL_DIS(rstctl)		(((rstctl) & BIT(24)) >> 24)
 #define LYNX_28G_PLLnRSTCTL_LOCK(rstctl)	(((rstctl) & BIT(23)) >> 23)
@@ -42,8 +42,8 @@
 #define LYNX_28G_PLLnCR1_FRATE_5G_25GVCO	0x10000000
 #define LYNX_28G_PLLnCR1_FRATE_10G_20GVCO	0x6000000
 
-/* Per SerDes lane registers */
-/* Lane a General Control Register */
+ 
+ 
 #define LYNX_28G_LNaGCR0(lane)			(0x800 + (lane) * 0x100 + 0x0)
 #define LYNX_28G_LNaGCR0_PROTO_SEL_MSK		GENMASK(7, 3)
 #define LYNX_28G_LNaGCR0_PROTO_SEL_SGMII	0x8
@@ -52,13 +52,13 @@
 #define LYNX_28G_LNaGCR0_IF_WIDTH_10_BIT	0x0
 #define LYNX_28G_LNaGCR0_IF_WIDTH_20_BIT	0x2
 
-/* Lane a Tx Reset Control Register */
+ 
 #define LYNX_28G_LNaTRSTCTL(lane)		(0x800 + (lane) * 0x100 + 0x20)
 #define LYNX_28G_LNaTRSTCTL_HLT_REQ		BIT(27)
 #define LYNX_28G_LNaTRSTCTL_RST_DONE		BIT(30)
 #define LYNX_28G_LNaTRSTCTL_RST_REQ		BIT(31)
 
-/* Lane a Tx General Control Register */
+ 
 #define LYNX_28G_LNaTGCR0(lane)			(0x800 + (lane) * 0x100 + 0x24)
 #define LYNX_28G_LNaTGCR0_USE_PLLF		0x0
 #define LYNX_28G_LNaTGCR0_USE_PLLS		BIT(28)
@@ -70,14 +70,14 @@
 
 #define LYNX_28G_LNaTECR0(lane)			(0x800 + (lane) * 0x100 + 0x30)
 
-/* Lane a Rx Reset Control Register */
+ 
 #define LYNX_28G_LNaRRSTCTL(lane)		(0x800 + (lane) * 0x100 + 0x40)
 #define LYNX_28G_LNaRRSTCTL_HLT_REQ		BIT(27)
 #define LYNX_28G_LNaRRSTCTL_RST_DONE		BIT(30)
 #define LYNX_28G_LNaRRSTCTL_RST_REQ		BIT(31)
 #define LYNX_28G_LNaRRSTCTL_CDR_LOCK		BIT(12)
 
-/* Lane a Rx General Control Register */
+ 
 #define LYNX_28G_LNaRGCR0(lane)			(0x800 + (lane) * 0x100 + 0x44)
 #define LYNX_28G_LNaRGCR0_USE_PLLF		0x0
 #define LYNX_28G_LNaRGCR0_USE_PLLS		BIT(28)
@@ -127,9 +127,7 @@ struct lynx_28g_lane {
 struct lynx_28g_priv {
 	void __iomem *base;
 	struct device *dev;
-	/* Serialize concurrent access to registers shared between lanes,
-	 * like PCCn
-	 */
+	 
 	spinlock_t pcc_lock;
 	struct lynx_28g_pll pll[LYNX_28G_NUM_PLL];
 	struct lynx_28g_lane lane[LYNX_28G_NUM_LANE];
@@ -241,7 +239,7 @@ static void lynx_28g_cleanup_lane(struct lynx_28g_lane *lane)
 	u32 lane_offset = LYNX_28G_LNa_PCC_OFFSET(lane);
 	struct lynx_28g_priv *priv = lane->priv;
 
-	/* Cleanup the protocol configuration registers of the current protocol */
+	 
 	switch (lane->interface) {
 	case PHY_INTERFACE_MODE_10GBASER:
 		lynx_28g_rmw(priv, LYNX_28G_PCCC,
@@ -267,26 +265,26 @@ static void lynx_28g_lane_set_sgmii(struct lynx_28g_lane *lane)
 
 	lynx_28g_cleanup_lane(lane);
 
-	/* Setup the lane to run in SGMII */
+	 
 	lynx_28g_rmw(priv, LYNX_28G_PCC8,
 		     LYNX_28G_PCC8_SGMII << lane_offset,
 		     GENMASK(3, 0) << lane_offset);
 
-	/* Setup the protocol select and SerDes parallel interface width */
+	 
 	lynx_28g_lane_rmw(lane, LNaGCR0, PROTO_SEL_SGMII, PROTO_SEL_MSK);
 	lynx_28g_lane_rmw(lane, LNaGCR0, IF_WIDTH_10_BIT, IF_WIDTH_MSK);
 
-	/* Switch to the PLL that works with this interface type */
+	 
 	pll = lynx_28g_pll_get(priv, PHY_INTERFACE_MODE_SGMII);
 	lynx_28g_lane_set_pll(lane, pll);
 
-	/* Choose the portion of clock net to be used on this lane */
+	 
 	lynx_28g_lane_set_nrate(lane, pll, PHY_INTERFACE_MODE_SGMII);
 
-	/* Enable the SGMII PCS */
+	 
 	lynx_28g_lane_rmw(lane, SGMIIaCR1, SGPCS_EN, SGPCS_MSK);
 
-	/* Configure the appropriate equalization parameters for the protocol */
+	 
 	iowrite32(0x00808006, priv->base + LYNX_28G_LNaTECR0(lane->id));
 	iowrite32(0x04310000, priv->base + LYNX_28G_LNaRGCR1(lane->id));
 	iowrite32(0x9f800000, priv->base + LYNX_28G_LNaRECR0(lane->id));
@@ -303,26 +301,26 @@ static void lynx_28g_lane_set_10gbaser(struct lynx_28g_lane *lane)
 
 	lynx_28g_cleanup_lane(lane);
 
-	/* Enable the SXGMII lane */
+	 
 	lynx_28g_rmw(priv, LYNX_28G_PCCC,
 		     LYNX_28G_PCCC_10GBASER << lane_offset,
 		     GENMASK(3, 0) << lane_offset);
 
-	/* Setup the protocol select and SerDes parallel interface width */
+	 
 	lynx_28g_lane_rmw(lane, LNaGCR0, PROTO_SEL_XFI, PROTO_SEL_MSK);
 	lynx_28g_lane_rmw(lane, LNaGCR0, IF_WIDTH_20_BIT, IF_WIDTH_MSK);
 
-	/* Switch to the PLL that works with this interface type */
+	 
 	pll = lynx_28g_pll_get(priv, PHY_INTERFACE_MODE_10GBASER);
 	lynx_28g_lane_set_pll(lane, pll);
 
-	/* Choose the portion of clock net to be used on this lane */
+	 
 	lynx_28g_lane_set_nrate(lane, pll, PHY_INTERFACE_MODE_10GBASER);
 
-	/* Disable the SGMII PCS */
+	 
 	lynx_28g_lane_rmw(lane, SGMIIaCR1, SGPCS_DIS, SGPCS_MSK);
 
-	/* Configure the appropriate equalization parameters for the protocol */
+	 
 	iowrite32(0x10808307, priv->base + LYNX_28G_LNaTECR0(lane->id));
 	iowrite32(0x10000000, priv->base + LYNX_28G_LNaRGCR1(lane->id));
 	iowrite32(0x00000000, priv->base + LYNX_28G_LNaRECR0(lane->id));
@@ -339,11 +337,11 @@ static int lynx_28g_power_off(struct phy *phy)
 	if (!lane->powered_up)
 		return 0;
 
-	/* Issue a halt request */
+	 
 	lynx_28g_lane_rmw(lane, LNaTRSTCTL, HLT_REQ, HLT_REQ);
 	lynx_28g_lane_rmw(lane, LNaRRSTCTL, HLT_REQ, HLT_REQ);
 
-	/* Wait until the halting process is complete */
+	 
 	do {
 		trstctl = lynx_28g_lane_read(lane, LNaTRSTCTL);
 		rrstctl = lynx_28g_lane_read(lane, LNaRRSTCTL);
@@ -363,11 +361,11 @@ static int lynx_28g_power_on(struct phy *phy)
 	if (lane->powered_up)
 		return 0;
 
-	/* Issue a reset request on the lane */
+	 
 	lynx_28g_lane_rmw(lane, LNaTRSTCTL, RST_REQ, RST_REQ);
 	lynx_28g_lane_rmw(lane, LNaRRSTCTL, RST_REQ, RST_REQ);
 
-	/* Wait until the reset sequence is completed */
+	 
 	do {
 		trstctl = lynx_28g_lane_read(lane, LNaTRSTCTL);
 		rrstctl = lynx_28g_lane_read(lane, LNaRRSTCTL);
@@ -395,9 +393,7 @@ static int lynx_28g_set_mode(struct phy *phy, enum phy_mode mode, int submode)
 	if (!lynx_28g_supports_interface(priv, submode))
 		return -EOPNOTSUPP;
 
-	/* If the lane is powered up, put the lane into the halt state while
-	 * the reconfiguration is being done.
-	 */
+	 
 	if (powered_up)
 		lynx_28g_power_off(phy);
 
@@ -421,7 +417,7 @@ static int lynx_28g_set_mode(struct phy *phy, enum phy_mode mode, int submode)
 out:
 	spin_unlock(&priv->pcc_lock);
 
-	/* Power up the lane if necessary */
+	 
 	if (powered_up)
 		lynx_28g_power_on(phy);
 
@@ -447,13 +443,10 @@ static int lynx_28g_init(struct phy *phy)
 {
 	struct lynx_28g_lane *lane = phy_get_drvdata(phy);
 
-	/* Mark the fact that the lane was init */
+	 
 	lane->init = true;
 
-	/* SerDes lanes are powered on at boot time.  Any lane that is managed
-	 * by this driver will get powered down at init time aka at dpaa2-eth
-	 * probe time.
-	 */
+	 
 	lane->powered_up = true;
 	lynx_28g_power_off(phy);
 
@@ -489,16 +482,16 @@ static void lynx_28g_pll_read_configuration(struct lynx_28g_priv *priv)
 		switch (LYNX_28G_PLLnCR1_FRATE_SEL(pll->cr1)) {
 		case LYNX_28G_PLLnCR1_FRATE_5G_10GVCO:
 		case LYNX_28G_PLLnCR1_FRATE_5G_25GVCO:
-			/* 5GHz clock net */
+			 
 			__set_bit(PHY_INTERFACE_MODE_1000BASEX, pll->supported);
 			__set_bit(PHY_INTERFACE_MODE_SGMII, pll->supported);
 			break;
 		case LYNX_28G_PLLnCR1_FRATE_10G_20GVCO:
-			/* 10.3125GHz clock net */
+			 
 			__set_bit(PHY_INTERFACE_MODE_10GBASER, pll->supported);
 			break;
 		default:
-			/* 6GHz, 12.890625GHz, 8GHz */
+			 
 			break;
 		}
 	}

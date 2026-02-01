@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * R-Car Display Unit CRTCs
- *
- * Copyright (C) 2013-2015 Renesas Electronics Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+ 
+ 
 
 #ifndef __RCAR_DU_CRTC_H__
 #define __RCAR_DU_CRTC_H__
@@ -22,28 +16,7 @@
 struct rcar_du_group;
 struct rcar_du_vsp;
 
-/**
- * struct rcar_du_crtc - the CRTC, representing a DU superposition processor
- * @crtc: base DRM CRTC
- * @dev: the DU device
- * @clock: the CRTC functional clock
- * @extclock: external pixel dot clock (optional)
- * @mmio_offset: offset of the CRTC registers in the DU MMIO block
- * @index: CRTC hardware index
- * @initialized: whether the CRTC has been initialized and clocks enabled
- * @dsysr: cached value of the DSYSR register
- * @vblank_enable: whether vblank events are enabled on this CRTC
- * @event: event to post when the pending page flip completes
- * @flip_wait: wait queue used to signal page flip completion
- * @vblank_lock: protects vblank_wait and vblank_count
- * @vblank_wait: wait queue used to signal vertical blanking
- * @vblank_count: number of vertical blanking interrupts to wait for
- * @group: CRTC group this CRTC belongs to
- * @cmm: CMM associated with this CRTC
- * @vsp: VSP feeding video to this CRTC
- * @vsp_pipe: index of the VSP pipeline feeding video to this CRTC
- * @writeback: the writeback connector
- */
+ 
 struct rcar_du_crtc {
 	struct drm_crtc crtc;
 
@@ -78,12 +51,7 @@ struct rcar_du_crtc {
 #define to_rcar_crtc(c)		container_of(c, struct rcar_du_crtc, crtc)
 #define wb_to_rcar_crtc(c)	container_of(c, struct rcar_du_crtc, writeback)
 
-/**
- * struct rcar_du_crtc_state - Driver-specific CRTC state
- * @state: base DRM CRTC state
- * @crc: CRC computation configuration
- * @outputs: bitmask of the outputs (enum rcar_du_output) driven by this CRTC
- */
+ 
 struct rcar_du_crtc_state {
 	struct drm_crtc_state state;
 
@@ -100,4 +68,4 @@ void rcar_du_crtc_finish_page_flip(struct rcar_du_crtc *rcrtc);
 
 void rcar_du_crtc_dsysr_clr_set(struct rcar_du_crtc *rcrtc, u32 clr, u32 set);
 
-#endif /* __RCAR_DU_CRTC_H__ */
+#endif  

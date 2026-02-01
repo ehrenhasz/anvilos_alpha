@@ -1,29 +1,6 @@
-/* A substitute for ISO C99 <wctype.h>, for platforms that lack it.
+ 
 
-   Copyright (C) 2006-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible and Paul Eggert.  */
-
-/*
- * ISO C 99 <wctype.h> for platforms that lack it.
- * <https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/wctype.h.html>
- *
- * iswctype, towctrans, towlower, towupper, wctrans, wctype,
- * wctrans_t, and wctype_t are not yet implemented.
- */
+ 
 
 #if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
@@ -32,41 +9,33 @@
 
 #if (defined __MINGW32__ && defined __CTYPE_H_SOURCED__)
 
-/* Special invocation convention:
-   - With MinGW 3.22, when <ctype.h> includes <wctype.h>, only some part of
-     <wctype.h> is being processed, which doesn't include the idempotency
-     guard.   */
+ 
 
 #@INCLUDE_NEXT@ @NEXT_WCTYPE_H@
 
 #else
-/* Normal invocation convention.  */
+ 
 
 #ifndef _@GUARD_PREFIX@_WCTYPE_H
 
-/* This file uses _GL_INLINE_HEADER_BEGIN, _GL_INLINE, GNULIB_POSIXCHECK,
-   HAVE_RAW_DECL_*.  */
+ 
 #if !_GL_CONFIG_H_INCLUDED
  #error "Please include config.h first."
 #endif
 
 #if @HAVE_WINT_T@
-/* Solaris 2.5 has a bug: <wchar.h> must be included before <wctype.h>.  */
+ 
 # include <wchar.h>
 #endif
 
-/* Native Windows (mingw, MSVC) have declarations of towupper, towlower, and
-   isw* functions in <ctype.h>, <wchar.h> as well as in <wctype.h>.  Include
-   <ctype.h>, <wchar.h> in advance to avoid rpl_ prefix being added to the
-   declarations.  */
+ 
 #if defined _WIN32 && ! defined __CYGWIN__
 # include <ctype.h>
 # include <wchar.h>
 #endif
 
-/* Include the original <wctype.h> if it exists.
-   BeOS 5 has the functions but no <wctype.h>.  */
-/* The include_next requires a split double-inclusion guard.  */
+ 
+ 
 #if @HAVE_WCTYPE_H@
 # @INCLUDE_NEXT@ @NEXT_WCTYPE_H@
 #endif
@@ -79,15 +48,13 @@ _GL_INLINE_HEADER_BEGIN
 # define _GL_WCTYPE_INLINE _GL_INLINE
 #endif
 
-/* The definitions of _GL_FUNCDECL_RPL etc. are copied here.  */
+ 
 
-/* The definition of _GL_ARG_NONNULL is copied here.  */
+ 
 
-/* The definition of _GL_WARN_ON_USE is copied here.  */
+ 
 
-/* Solaris 2.6 <wctype.h> includes <widec.h> which includes <euc.h> which
-   #defines a number of identifiers in the application namespace.  Revert
-   these #defines.  */
+ 
 #ifdef __sun
 # undef multibyte
 # undef eucw1
@@ -98,16 +65,14 @@ _GL_INLINE_HEADER_BEGIN
 # undef scrw3
 #endif
 
-/* Define wint_t and WEOF.  (Also done in wchar.in.h.)  */
+ 
 #if !@HAVE_WINT_T@ && !defined wint_t
 # define wint_t int
 # ifndef WEOF
 #  define WEOF -1
 # endif
 #else
-/* mingw and MSVC define wint_t as 'unsigned short' in <crtdefs.h> or
-   <stddef.h>.  This is too small: ISO C 99 section 7.24.1.(2) says that
-   wint_t must be "unchanged by default argument promotions".  Override it.  */
+ 
 # if @GNULIBHEADERS_OVERRIDE_WINT_T@
 #  if !GNULIB_defined_wint_t
 #   if @HAVE_CRTDEFS_H@
@@ -129,16 +94,10 @@ typedef unsigned int rpl_wint_t;
 
 #if !GNULIB_defined_wctype_functions
 
-/* FreeBSD 4.4 to 4.11 has <wctype.h> but lacks the functions.
-   Linux libc5 has <wctype.h> and the functions but they are broken.
-   mingw and MSVC have <wctype.h> and the functions but they take a wchar_t
-   as argument, not an rpl_wint_t.  Additionally, the mingw iswprint function
-   is broken.
-   Assume all 11 functions (all isw* except iswblank) are implemented the
-   same way, or not at all.  */
+ 
 # if ! @HAVE_ISWCNTRL@ || @REPLACE_ISWCNTRL@
 
-#  if @GNULIBHEADERS_OVERRIDE_WINT_T@ /* implies @REPLACE_ISWCNTRL@ */
+#  if @GNULIBHEADERS_OVERRIDE_WINT_T@  
 
 _GL_WCTYPE_INLINE int
 rpl_iswalnum (wint_t wc)
@@ -264,11 +223,7 @@ rpl_towupper (wint_t wc)
 
 #  else
 
-/* IRIX 5.3 has macros but no functions, its isw* macros refer to an
-   undefined variable _ctmp_ and to <ctype.h> macros like _P, and they
-   refer to system functions like _iswctype that are not in the
-   standard C library.  Rather than try to get ancient buggy
-   implementations like this to work, just disable them.  */
+ 
 #   undef iswalnum
 #   undef iswalpha
 #   undef iswblank
@@ -284,7 +239,7 @@ rpl_towupper (wint_t wc)
 #   undef towlower
 #   undef towupper
 
-/* Linux libc5 has <wctype.h> and the functions but they are broken.  */
+ 
 #   if @REPLACE_ISWCNTRL@
 #    if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #     define iswalnum rpl_iswalnum
@@ -470,10 +425,10 @@ towupper
 #  endif
 
 # else
-/* Only some of the functions are missing or broken.  */
+ 
 
 #  if @GNULIB_ISWBLANK@ && (! @HAVE_ISWBLANK@ || @REPLACE_ISWBLANK@)
-/* Only the iswblank function is missing.  */
+ 
 #   if @REPLACE_ISWBLANK@
 #    if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #     define iswblank rpl_iswblank
@@ -508,18 +463,7 @@ _GL_FUNCDECL_RPL (iswxdigit, int, (wint_t wc));
 
 # if defined __MINGW32__ && !@GNULIBHEADERS_OVERRIDE_WINT_T@
 
-/* On native Windows, wchar_t is uint16_t, and wint_t is uint32_t.
-   The functions towlower and towupper are implemented in the MSVCRT library
-   to take a wchar_t argument and return a wchar_t result.  mingw declares
-   these functions to take a wint_t argument and return a wint_t result.
-   This means that:
-   1. When the user passes an argument outside the range 0x0000..0xFFFF, the
-      function will look only at the lower 16 bits.  This is allowed according
-      to POSIX.
-   2. The return value is returned in the lower 16 bits of the result register.
-      The upper 16 bits are random: whatever happened to be in that part of the
-      result register.  We need to fix this by adding a zero-extend from
-      wchar_t to wint_t after the call.  */
+ 
 
 _GL_WCTYPE_INLINE wint_t
 rpl_towlower (wint_t wc)
@@ -539,7 +483,7 @@ rpl_towupper (wint_t wc)
 #   define towupper rpl_towupper
 #  endif
 
-# endif /* __MINGW32__ && !@GNULIBHEADERS_OVERRIDE_WINT_T@ */
+# endif  
 
 # define GNULIB_defined_wctype_functions 1
 #endif
@@ -642,7 +586,7 @@ typedef void *rpl_wctype_t;
 # endif
 #endif
 
-/* Get a descriptor for a wide character property.  */
+ 
 #if @GNULIB_WCTYPE@
 # if @REPLACE_WCTYPE@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -670,9 +614,7 @@ _GL_WARN_ON_USE (wctype, "wctype is unportable - "
 # endif
 #endif
 
-/* Test whether a wide character has a given property.
-   The argument WC must be either a wchar_t value or WEOF.
-   The argument DESC must have been returned by the wctype() function.  */
+ 
 #if @GNULIB_ISWCTYPE@
 # if @GNULIBHEADERS_OVERRIDE_WINT_T@ || @REPLACE_WCTYPE@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -724,7 +666,7 @@ typedef void *rpl_wctrans_t;
 # endif
 #endif
 
-/* Get a descriptor for a wide character case conversion.  */
+ 
 #if @GNULIB_WCTRANS@
 # if @REPLACE_WCTRANS@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -752,9 +694,7 @@ _GL_WARN_ON_USE (wctrans, "wctrans is unportable - "
 # endif
 #endif
 
-/* Perform a given case conversion on a wide character.
-   The argument WC must be either a wchar_t value or WEOF.
-   The argument DESC must have been returned by the wctrans() function.  */
+ 
 #if @GNULIB_TOWCTRANS@
 # if @REPLACE_WCTRANS@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -782,6 +722,6 @@ _GL_WARN_ON_USE (towctrans, "towctrans is unportable - "
 
 _GL_INLINE_HEADER_END
 
-#endif /* _@GUARD_PREFIX@_WCTYPE_H */
-#endif /* _@GUARD_PREFIX@_WCTYPE_H */
+#endif  
+#endif  
 #endif

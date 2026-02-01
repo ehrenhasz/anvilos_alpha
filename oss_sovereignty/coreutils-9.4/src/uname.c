@@ -1,21 +1,4 @@
-/* uname -- print system information
-
-   Copyright (C) 1989-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by David MacKenzie <djm@gnu.ai.mit.edu> */
+ 
 
 #include <config.h>
 #include <stdio.h>
@@ -29,16 +12,16 @@
 
 #if HAVE_SYS_SYSCTL_H && ! defined __GLIBC__ && ! defined __APPLE__
 # if HAVE_SYS_PARAM_H
-#  include <sys/param.h> /* needed for OpenBSD 3.0 */
+#  include <sys/param.h>  
 # endif
 # include <sys/sysctl.h>
 # ifdef HW_MODEL
 #  ifdef HW_MACHINE_ARCH
-/* E.g., FreeBSD 4.5, NetBSD 1.5.2 */
+ 
 #   define UNAME_HARDWARE_PLATFORM HW_MODEL
 #   define UNAME_PROCESSOR HW_MACHINE_ARCH
 #  else
-/* E.g., OpenBSD 3.0 */
+ 
 #   define UNAME_PROCESSOR HW_MODEL
 #  endif
 # endif
@@ -48,45 +31,45 @@
 #include "quote.h"
 #include "uname.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME (uname_mode == UNAME_UNAME ? "uname" : "arch")
 
 #define AUTHORS proper_name ("David MacKenzie")
 #define ARCH_AUTHORS "David MacKenzie", "Karel Zak"
 
-/* Values that are bitwise or'd into 'toprint'. */
-/* Kernel name. */
+ 
+ 
 #define PRINT_KERNEL_NAME 1
 
-/* Node name on a communications network. */
+ 
 #define PRINT_NODENAME 2
 
-/* Kernel release. */
+ 
 #define PRINT_KERNEL_RELEASE 4
 
-/* Kernel version. */
+ 
 #define PRINT_KERNEL_VERSION 8
 
-/* Machine hardware name. */
+ 
 #define PRINT_MACHINE 16
 
-/* Processor type. */
+ 
 #define PRINT_PROCESSOR 32
 
-/* Hardware platform.  */
+ 
 #define PRINT_HARDWARE_PLATFORM 64
 
-/* Operating system.  */
+ 
 #define PRINT_OPERATING_SYSTEM 128
 
 static struct option const uname_long_options[] =
 {
   {"all", no_argument, nullptr, 'a'},
   {"kernel-name", no_argument, nullptr, 's'},
-  {"sysname", no_argument, nullptr, 's'},	/* Obsolescent.  */
+  {"sysname", no_argument, nullptr, 's'},	 
   {"nodename", no_argument, nullptr, 'n'},
   {"kernel-release", no_argument, nullptr, 'r'},
-  {"release", no_argument, nullptr, 'r'},  /* Obsolescent.  */
+  {"release", no_argument, nullptr, 'r'},   
   {"kernel-version", no_argument, nullptr, 'v'},
   {"machine", no_argument, nullptr, 'm'},
   {"processor", no_argument, nullptr, 'p'},

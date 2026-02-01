@@ -1,35 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2017 Free Electrons
- * Copyright (C) 2017 NextThing Co
- *
- * Author: Boris Brezillon <boris.brezillon@free-electrons.com>
- */
+
+ 
 
 #include <linux/slab.h>
 
 #include "internals.h"
 
-/*
- * Special Micron status bit 3 indicates that the block has been
- * corrected by on-die ECC and should be rewritten.
- */
+ 
 #define NAND_ECC_STATUS_WRITE_RECOMMENDED	BIT(3)
 
-/*
- * On chips with 8-bit ECC and additional bit can be used to distinguish
- * cases where a errors were corrected without needing a rewrite
- *
- * Bit 4 Bit 3 Bit 0 Description
- * ----- ----- ----- -----------
- * 0     0     0     No Errors
- * 0     0     1     Multiple uncorrected errors
- * 0     1     0     4 - 6 errors corrected, recommend rewrite
- * 0     1     1     Reserved
- * 1     0     0     1 - 3 errors corrected
- * 1     0     1     Reserved
- * 1     1     0     7 - 8 errors corrected, recommend rewrite
- */
+ 
 #define NAND_ECC_STATUS_MASK		(BIT(4) | BIT(3) | BIT(0))
 #define NAND_ECC_STATUS_UNCORRECTABLE	BIT(0)
 #define NAND_ECC_STATUS_4_6_CORRECTED	BIT(3)
@@ -73,9 +52,7 @@ static int micron_nand_setup_read_retry(struct nand_chip *chip, int retry_mode)
 	return nand_set_features(chip, ONFI_FEATURE_ADDR_READ_RETRY, feature);
 }
 
-/*
- * Configure chip properties from Micron vendor-specific ONFI table
- */
+ 
 static int micron_nand_onfi_init(struct nand_chip *chip)
 {
 	struct nand_parameters *p = &chip->parameters;
@@ -202,25 +179,9 @@ static int micron_nand_on_die_ecc_status_4(struct nand_chip *chip, u8 status,
 		return 0;
 	}
 
-	/*
-	 * The internal ECC doesn't tell us the number of bitflips that have
-	 * been corrected, but tells us if it recommends to rewrite the block.
-	 * If it's the case, we need to read the page in raw mode and compare
-	 * its content to the corrected version to extract the actual number of
-	 * bitflips.
-	 * But before we do that, we must make sure we have all OOB bytes read
-	 * in non-raw mode, even if the user did not request those bytes.
-	 */
+	 
 	if (!oob_required) {
-		/*
-		 * We first check which operation is supported by the controller
-		 * before running it. This trick makes it possible to support
-		 * all controllers, even the most constraints, without almost
-		 * any performance hit.
-		 *
-		 * TODO: could be enhanced to avoid repeating the same check
-		 * over and over in the fast path.
-		 */
+		 
 		if (!nand_has_exec_op(chip) ||
 		    !nand_read_data_op(chip, chip->oob_poi, mtd->oobsize, false,
 				       true))
@@ -276,10 +237,7 @@ static int micron_nand_on_die_ecc_status_8(struct nand_chip *chip, u8 status)
 {
 	struct mtd_info *mtd = nand_to_mtd(chip);
 
-	/*
-	 * With 8/512 we have more information but still don't know precisely
-	 * how many bit-flips were seen.
-	 */
+	 
 	switch (status & NAND_ECC_STATUS_MASK) {
 	case NAND_ECC_STATUS_UNCORRECTABLE:
 		mtd->ecc_stats.failed++;
@@ -289,11 +247,11 @@ static int micron_nand_on_die_ecc_status_8(struct nand_chip *chip, u8 status)
 		return 3;
 	case NAND_ECC_STATUS_4_6_CORRECTED:
 		mtd->ecc_stats.corrected += 6;
-		/* rewrite recommended */
+		 
 		return 6;
 	case NAND_ECC_STATUS_7_8_CORRECTED:
 		mtd->ecc_stats.corrected += 8;
-		/* rewrite recommended */
+		 
 		return 8;
 	default:
 		return 0;
@@ -321,14 +279,7 @@ micron_nand_read_page_on_die_ecc(struct nand_chip *chip, uint8_t *buf,
 	if (ret)
 		goto out;
 
-	/*
-	 * We first check which operation is supported by the controller before
-	 * running it. This trick makes it possible to support all controllers,
-	 * even the most constraints, without almost any performance hit.
-	 *
-	 * TODO: could be enhanced to avoid repeating the same check over and
-	 * over in the fast path.
-	 */
+	 
 	if (!nand_has_exec_op(chip) ||
 	    !nand_read_data_op(chip, buf, mtd->writesize, false, true))
 		use_datain = true;
@@ -382,35 +333,20 @@ micron_nand_write_page_on_die_ecc(struct nand_chip *chip, const uint8_t *buf,
 }
 
 enum {
-	/* The NAND flash doesn't support on-die ECC */
+	 
 	MICRON_ON_DIE_UNSUPPORTED,
 
-	/*
-	 * The NAND flash supports on-die ECC and it can be
-	 * enabled/disabled by a set features command.
-	 */
+	 
 	MICRON_ON_DIE_SUPPORTED,
 
-	/*
-	 * The NAND flash supports on-die ECC, and it cannot be
-	 * disabled.
-	 */
+	 
 	MICRON_ON_DIE_MANDATORY,
 };
 
 #define MICRON_ID_INTERNAL_ECC_MASK	GENMASK(1, 0)
 #define MICRON_ID_ECC_ENABLED		BIT(7)
 
-/*
- * Try to detect if the NAND support on-die ECC. To do this, we enable
- * the feature, and read back if it has been enabled as expected. We
- * also check if it can be disabled, because some Micron NANDs do not
- * allow disabling the on-die ECC and we don't support such NANDs for
- * now.
- *
- * This function also has the side effect of disabling on-die ECC if
- * it had been left enabled by the firmware/bootloader.
- */
+ 
 static int micron_supports_on_die_ecc(struct nand_chip *chip)
 {
 	const struct nand_ecc_props *requirements =
@@ -424,25 +360,16 @@ static int micron_supports_on_die_ecc(struct nand_chip *chip)
 	if (nanddev_bits_per_cell(&chip->base) != 1)
 		return MICRON_ON_DIE_UNSUPPORTED;
 
-	/*
-	 * We only support on-die ECC of 4/512 or 8/512
-	 */
+	 
 	if  (requirements->strength != 4 && requirements->strength != 8)
 		return MICRON_ON_DIE_UNSUPPORTED;
 
-	/* 0x2 means on-die ECC is available. */
+	 
 	if (chip->id.len != 5 ||
 	    (chip->id.data[4] & MICRON_ID_INTERNAL_ECC_MASK) != 0x2)
 		return MICRON_ON_DIE_UNSUPPORTED;
 
-	/*
-	 * It seems that there are devices which do not support ECC officially.
-	 * At least the MT29F2G08ABAGA / MT29F2G08ABBGA devices supports
-	 * enabling the ECC feature but don't reflect that to the READ_ID table.
-	 * So we have to guarantee that we disable the ECC feature directly
-	 * after we did the READ_ID table command. Later we can evaluate the
-	 * ECC_ENABLE support.
-	 */
+	 
 	ret = micron_nand_on_die_ecc_setup(chip, true);
 	if (ret)
 		return MICRON_ON_DIE_UNSUPPORTED;
@@ -465,9 +392,7 @@ static int micron_supports_on_die_ecc(struct nand_chip *chip)
 	if (id[4] & MICRON_ID_ECC_ENABLED)
 		return MICRON_ON_DIE_MANDATORY;
 
-	/*
-	 * We only support on-die ECC of 4/512 or 8/512
-	 */
+	 
 	if  (requirements->strength != 4 && requirements->strength != 8)
 		return MICRON_ON_DIE_UNSUPPORTED;
 
@@ -520,14 +445,7 @@ static int micron_nand_init(struct nand_chip *chip)
 			micron->ecc.enabled = true;
 		}
 
-		/*
-		 * In case of 4bit on-die ECC, we need a buffer to store a
-		 * page dumped in raw mode so that we can compare its content
-		 * to the same page after ECC correction happened and extract
-		 * the real number of bitflips from this comparison.
-		 * That's not needed for 8-bit ECC, because the status expose
-		 * a better approximation of the number of bitflips in a page.
-		 */
+		 
 		if (requirements->strength == 4) {
 			micron->ecc.rawbuf = kmalloc(mtd->writesize +
 						     mtd->oobsize,
@@ -583,11 +501,7 @@ static void micron_nand_cleanup(struct nand_chip *chip)
 static void micron_fixup_onfi_param_page(struct nand_chip *chip,
 					 struct nand_onfi_params *p)
 {
-	/*
-	 * MT29F1G08ABAFAWP-ITE:F and possibly others report 00 00 for the
-	 * revision number field of the ONFI parameter page. Assume ONFI
-	 * version 1.0 if the revision number is 00 00.
-	 */
+	 
 	if (le16_to_cpu(p->revision) == 0)
 		p->revision = cpu_to_le16(ONFI_VERSION_1_0);
 }

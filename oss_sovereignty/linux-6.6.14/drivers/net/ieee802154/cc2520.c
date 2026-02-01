@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Driver for TI CC2520 802.15.4 Wireless-PAN Networking controller
- *
- * Copyright (C) 2014 Varka Bhadram <varkab@cdac.in>
- *		      Md.Jamal Mohiuddin <mjmohiuddin@cdac.in>
- *		      P Sowjanya <sowjanyap@cdac.in>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/gpio/consumer.h>
@@ -39,17 +34,17 @@
 
 #define	CC2520_FREG_MASK	0x3F
 
-/* status byte values */
+ 
 #define	CC2520_STATUS_XOSC32M_STABLE	BIT(7)
 #define	CC2520_STATUS_RSSI_VALID	BIT(6)
 #define	CC2520_STATUS_TX_UNDERFLOW	BIT(3)
 
-/* IEEE-802.15.4 defined constants (2.4 GHz logical channels) */
+ 
 #define	CC2520_MINCHANNEL		11
 #define	CC2520_MAXCHANNEL		26
 #define	CC2520_CHANNEL_SPACING		5
 
-/* command strobes */
+ 
 #define	CC2520_CMD_SNOP			0x00
 #define	CC2520_CMD_IBUFLD		0x02
 #define	CC2520_CMD_SIBUFEX		0x03
@@ -99,7 +94,7 @@
 #define	CC2520_CMD_REGISTER_READ	0x80
 #define	CC2520_CMD_REGISTER_WRITE	0xC0
 
-/* status registers */
+ 
 #define	CC2520_CHIPID			0x40
 #define	CC2520_VERSION			0x42
 #define	CC2520_EXTCLOCK			0x44
@@ -132,7 +127,7 @@
 #define	CC2520_ACTBIST			0x7C
 #define	CC2520_RAMBIST			0x7E
 
-/* frame registers */
+ 
 #define	CC2520_FRMFILT0			0x00
 #define	CC2520_FRMFILT1			0x01
 #define	CC2520_SRCMATCH			0x02
@@ -185,34 +180,34 @@
 #define	CC2520_RXFIFOCNT		0x3E
 #define	CC2520_TXFIFOCNT		0x3F
 
-/* CC2520_FRMFILT0 */
+ 
 #define FRMFILT0_FRAME_FILTER_EN	BIT(0)
 #define FRMFILT0_PAN_COORDINATOR	BIT(1)
 
-/* CC2520_FRMCTRL0 */
+ 
 #define FRMCTRL0_AUTOACK		BIT(5)
 #define FRMCTRL0_AUTOCRC		BIT(6)
 
-/* CC2520_FRMCTRL1 */
+ 
 #define FRMCTRL1_SET_RXENMASK_ON_TX	BIT(0)
 #define FRMCTRL1_IGNORE_TX_UNDERF	BIT(1)
 
-/* Driver private information */
+ 
 struct cc2520_private {
-	struct spi_device *spi;		/* SPI device structure */
-	struct ieee802154_hw *hw;	/* IEEE-802.15.4 device */
-	u8 *buf;			/* SPI TX/Rx data buffer */
-	struct mutex buffer_mutex;	/* SPI buffer mutex */
-	bool is_tx;			/* Flag for sync b/w Tx and Rx */
-	bool amplified;			/* Flag for CC2591 */
-	struct gpio_desc *fifo_pin;	/* FIFO GPIO pin number */
-	struct work_struct fifop_irqwork;/* Workqueue for FIFOP */
-	spinlock_t lock;		/* Lock for is_tx*/
-	struct completion tx_complete;	/* Work completion for Tx */
-	bool promiscuous;               /* Flag for promiscuous mode */
+	struct spi_device *spi;		 
+	struct ieee802154_hw *hw;	 
+	u8 *buf;			 
+	struct mutex buffer_mutex;	 
+	bool is_tx;			 
+	bool amplified;			 
+	struct gpio_desc *fifo_pin;	 
+	struct work_struct fifop_irqwork; 
+	spinlock_t lock;		 
+	struct completion tx_complete;	 
+	bool promiscuous;                
 };
 
-/* Generic Functions */
+ 
 static int
 cc2520_cmd_strobe(struct cc2520_private *priv, u8 cmd)
 {
@@ -377,9 +372,7 @@ cc2520_write_txfifo(struct cc2520_private *priv, u8 pkt_len, u8 *data, u8 len)
 {
 	int status;
 
-	/* length byte must include FCS even
-	 * if it is calculated in the hardware
-	 */
+	 
 	int len_byte = pkt_len;
 
 	struct spi_message msg;
@@ -478,9 +471,7 @@ cc2520_tx(struct ieee802154_hw *hw, struct sk_buff *skb)
 	u8 status = 0;
 	u8 pkt_len;
 
-	/* In promiscuous mode we disable AUTOCRC so we can get the raw CRC
-	 * values on RX. This means we need to manually add the CRC on TX.
-	 */
+	 
 	if (priv->promiscuous) {
 		u16 crc = crc_ccitt(0, skb->data, skb->len);
 
@@ -538,13 +529,11 @@ static int cc2520_rx(struct cc2520_private *priv)
 	u8 len = 0, lqi = 0, bytes = 1;
 	struct sk_buff *skb;
 
-	/* Read single length byte from the radio. */
+	 
 	cc2520_read_rxfifo(priv, &len, bytes);
 
 	if (!ieee802154_is_valid_psdu_len(len)) {
-		/* Corrupted frame received, clear frame buffer by
-		 * reading entire buffer.
-		 */
+		 
 		dev_dbg(&priv->spi->dev, "corrupted frame received\n");
 		len = IEEE802154_MTU;
 	}
@@ -559,34 +548,21 @@ static int cc2520_rx(struct cc2520_private *priv)
 		return -EINVAL;
 	}
 
-	/* In promiscuous mode, we configure the radio to include the
-	 * CRC (AUTOCRC==0) and we pass on the packet unconditionally. If not
-	 * in promiscuous mode, we check the CRC here, but leave the
-	 * RSSI/LQI/CRC_OK bytes as they will get removed in the mac layer.
-	 */
+	 
 	if (!priv->promiscuous) {
 		bool crc_ok;
 
-		/* Check if the CRC is valid. With AUTOCRC set, the most
-		 * significant bit of the last byte returned from the CC2520
-		 * is CRC_OK flag. See section 20.3.4 of the datasheet.
-		 */
+		 
 		crc_ok = skb->data[len - 1] & BIT(7);
 
-		/* If we failed CRC drop the packet in the driver layer. */
+		 
 		if (!crc_ok) {
 			dev_dbg(&priv->spi->dev, "CRC check failed\n");
 			kfree_skb(skb);
 			return -EINVAL;
 		}
 
-		/* To calculate LQI, the lower 7 bits of the last byte (the
-		 * correlation value provided by the radio) must be scaled to
-		 * the range 0-255. According to section 20.6, the correlation
-		 * value ranges from 50-110. Ideally this would be calibrated
-		 * per hardware design, but we use roughly the datasheet values
-		 * to get close enough while avoiding floating point.
-		 */
+		 
 		lqi = skb->data[len - 1] & 0x7f;
 		if (lqi < 50)
 			lqi = 50;
@@ -621,7 +597,7 @@ cc2520_ed(struct ieee802154_hw *hw, u8 *level)
 	if (ret)
 		return ret;
 
-	/* level = RSSI(rssi) - OFFSET [dBm] : offset is 76dBm */
+	 
 	*level = rssi - RSSI_OFFSET;
 
 	return 0;
@@ -799,7 +775,7 @@ cc2520_set_promiscuous_mode(struct ieee802154_hw *hw, bool on)
 	cc2520_read_register(priv, CC2520_FRMFILT0, &frmfilt0);
 
 	if (on) {
-		/* Disable automatic ACK, automatic CRC, and frame filtering. */
+		 
 		cc2520_write_register(priv, CC2520_FRMCTRL0, 0);
 		frmfilt0 &= ~FRMFILT0_FRAME_FILTER_EN;
 	} else {
@@ -835,7 +811,7 @@ static int cc2520_register(struct cc2520_private *priv)
 	priv->hw->extra_tx_headroom = 0;
 	ieee802154_random_extended_addr(&priv->hw->phy->perm_extended_addr);
 
-	/* We do support only 2.4 Ghz */
+	 
 	priv->hw->phy->supported.channels[0] = 0x7FFF800;
 	priv->hw->flags = IEEE802154_HW_TX_OMIT_CKSUM | IEEE802154_HW_AFILT |
 			  IEEE802154_HW_PROMISCUOUS;
@@ -938,12 +914,7 @@ static int cc2520_hw_init(struct cc2520_private *priv)
 
 	dev_vdbg(&priv->spi->dev, "oscillator brought up\n");
 
-	/* If the CC2520 is connected to a CC2591 amplifier, we must both
-	 * configure GPIOs on the CC2520 to correctly configure the CC2591
-	 * and change a couple settings of the CC2520 to work with the
-	 * amplifier. See section 8 page 17 of TI application note AN065.
-	 * http://www.ti.com/lit/an/swra229a/swra229a.pdf
-	 */
+	 
 	if (priv->amplified) {
 		ret = cc2520_write_register(priv, CC2520_AGCCTRL1, 0x16);
 		if (ret)
@@ -970,12 +941,9 @@ static int cc2520_hw_init(struct cc2520_private *priv)
 			goto err_ret;
 	}
 
-	/* Registers default value: section 28.1 in Datasheet */
+	 
 
-	/* Set the CCA threshold to -50 dBm. This seems to have been copied
-	 * from the TinyOS CC2520 driver and is much higher than the -84 dBm
-	 * threshold suggested in the datasheet.
-	 */
+	 
 	ret = cc2520_write_register(priv, CC2520_CCACTRL0, 0x1A);
 	if (ret)
 		goto err_ret;
@@ -1012,7 +980,7 @@ static int cc2520_hw_init(struct cc2520_private *priv)
 	if (ret)
 		goto err_ret;
 
-	/* Configure registers correctly for this driver. */
+	 
 	ret = cc2520_write_register(priv, CC2520_FRMCTRL1,
 				    FRMCTRL1_SET_RXENMASK_ON_TX |
 				    FRMCTRL1_IGNORE_TX_UNDERF);
@@ -1045,8 +1013,8 @@ static int cc2520_probe(struct spi_device *spi)
 
 	spi_set_drvdata(spi, priv);
 
-	/* CC2591 front end for CC2520 */
-	/* Assumption that CC2591 is not connected */
+	 
+	 
 	priv->amplified = false;
 	if (device_property_read_bool(&spi->dev, "amplified"))
 		priv->amplified = true;
@@ -1063,7 +1031,7 @@ static int cc2520_probe(struct spi_device *spi)
 	spin_lock_init(&priv->lock);
 	init_completion(&priv->tx_complete);
 
-	/* Request all the gpio's */
+	 
 	priv->fifo_pin = devm_gpiod_get(&spi->dev, "fifo", GPIOD_IN);
 	if (IS_ERR(priv->fifo_pin)) {
 		dev_err(&spi->dev, "fifo gpio is not valid\n");
@@ -1116,7 +1084,7 @@ static int cc2520_probe(struct spi_device *spi)
 	if (ret)
 		goto err_hw_init;
 
-	/* Set up fifop interrupt */
+	 
 	ret = devm_request_irq(&spi->dev,
 			       gpiod_to_irq(fifop),
 			       cc2520_fifop_isr,
@@ -1128,7 +1096,7 @@ static int cc2520_probe(struct spi_device *spi)
 		goto err_hw_init;
 	}
 
-	/* Set up sfd interrupt */
+	 
 	ret = devm_request_irq(&spi->dev,
 			       gpiod_to_irq(sfd),
 			       cc2520_sfd_isr,
@@ -1175,7 +1143,7 @@ static const struct of_device_id cc2520_of_ids[] = {
 };
 MODULE_DEVICE_TABLE(of, cc2520_of_ids);
 
-/* SPI driver structure */
+ 
 static struct spi_driver cc2520_driver = {
 	.driver = {
 		.name = "cc2520",

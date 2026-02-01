@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Syncpoint dma_fence implementation
- *
- * Copyright (c) 2020, NVIDIA Corporation.
- */
+
+ 
 
 #include <linux/dma-fence.h>
 #include <linux/file.h>
@@ -37,31 +33,19 @@ static bool host1x_syncpt_fence_enable_signaling(struct dma_fence *f)
 	if (host1x_syncpt_is_expired(sf->sp, sf->threshold))
 		return false;
 
-	/* Reference for interrupt path. */
+	 
 	dma_fence_get(f);
 
-	/*
-	 * The dma_fence framework requires the fence driver to keep a
-	 * reference to any fences for which 'enable_signaling' has been
-	 * called (and that have not been signalled).
-	 *
-	 * We cannot currently always guarantee that all fences get signalled
-	 * or cancelled. As such, for such situations, set up a timeout, so
-	 * that long-lasting fences will get reaped eventually.
-	 */
+	 
 	if (sf->timeout) {
-		/* Reference for timeout path. */
+		 
 		dma_fence_get(f);
 		schedule_delayed_work(&sf->timeout_work, msecs_to_jiffies(30000));
 	}
 
 	host1x_intr_add_fence_locked(sf->sp->host, sf);
 
-	/*
-	 * The fence may get signalled at any time after the above call,
-	 * so we need to initialize all state used by signalling
-	 * before it.
-	 */
+	 
 
 	return true;
 }
@@ -75,19 +59,13 @@ static const struct dma_fence_ops host1x_syncpt_fence_ops = {
 void host1x_fence_signal(struct host1x_syncpt_fence *f)
 {
 	if (atomic_xchg(&f->signaling, 1)) {
-		/*
-		 * Already on timeout path, but we removed the fence before
-		 * timeout path could, so drop interrupt path reference.
-		 */
+		 
 		dma_fence_put(&f->base);
 		return;
 	}
 
 	if (f->timeout && cancel_delayed_work(&f->timeout_work)) {
-		/*
-		 * We know that the timeout path will not be entered.
-		 * Safe to drop the timeout path's reference now.
-		 */
+		 
 		dma_fence_put(&f->base);
 	}
 
@@ -102,17 +80,14 @@ static void do_fence_timeout(struct work_struct *work)
 		container_of(dwork, struct host1x_syncpt_fence, timeout_work);
 
 	if (atomic_xchg(&f->signaling, 1)) {
-		/* Already on interrupt path, drop timeout path reference if any. */
+		 
 		if (f->timeout)
 			dma_fence_put(&f->base);
 		return;
 	}
 
 	if (host1x_intr_remove_fence(f->sp->host, f)) {
-		/*
-		 * Managed to remove fence from queue, so it's safe to drop
-		 * the interrupt path's reference.
-		 */
+		 
 		dma_fence_put(&f->base);
 	}
 

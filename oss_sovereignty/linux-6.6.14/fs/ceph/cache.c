@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Ceph cache definitions.
- *
- *  Copyright (C) 2013 by Adfin Solutions, Inc. All Rights Reserved.
- *  Written by Milosz Tanski (milosz@adfin.com)
- */
+
+ 
 
 #include <linux/ceph/ceph_debug.h>
 
@@ -17,15 +12,15 @@ void ceph_fscache_register_inode_cookie(struct inode *inode)
 	struct ceph_inode_info *ci = ceph_inode(inode);
 	struct ceph_fs_client *fsc = ceph_inode_to_client(inode);
 
-	/* No caching for filesystem? */
+	 
 	if (!fsc->fscache)
 		return;
 
-	/* Regular files only */
+	 
 	if (!S_ISREG(inode->i_mode))
 		return;
 
-	/* Only new inodes! */
+	 
 	if (!(inode->i_state & I_NEW))
 		return;
 

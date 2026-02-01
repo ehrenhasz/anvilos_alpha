@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define CREATE_TRACE_POINTS
 #include <trace/events/mmap_lock.h>
 
@@ -19,25 +19,14 @@ EXPORT_TRACEPOINT_SYMBOL(mmap_lock_released);
 
 #ifdef CONFIG_MEMCG
 
-/*
- * Our various events all share the same buffer (because we don't want or need
- * to allocate a set of buffers *per event type*), so we need to protect against
- * concurrent _reg() and _unreg() calls, and count how many _reg() calls have
- * been made.
- */
+ 
 static DEFINE_MUTEX(reg_lock);
-static int reg_refcount; /* Protected by reg_lock. */
+static int reg_refcount;  
 
-/*
- * Size of the buffer for memcg path names. Ignoring stack trace support,
- * trace_events_hist.c uses MAX_FILTER_STR_VAL for this, so we also use it.
- */
+ 
 #define MEMCG_PATH_BUF_SIZE MAX_FILTER_STR_VAL
 
-/*
- * How many contexts our trace events might be called in: normal, softirq, irq,
- * and NMI.
- */
+ 
 #define CONTEXT_COUNT 4
 
 struct memcg_path {
@@ -52,7 +41,7 @@ static DEFINE_PER_CPU(struct memcg_path, memcg_paths) = {
 
 static char **tmp_bufs;
 
-/* Called with reg_lock held. */
+ 
 static void free_memcg_path_bufs(void)
 {
 	struct memcg_path *memcg_path;
@@ -66,7 +55,7 @@ static void free_memcg_path_bufs(void)
 		rcu_assign_pointer(memcg_path->buf, NULL);
 	}
 
-	/* Wait for inflight memcg_path_buf users to finish. */
+	 
 	synchronize_rcu();
 
 	old = tmp_bufs;
@@ -85,7 +74,7 @@ int trace_mmap_lock_reg(void)
 
 	mutex_lock(&reg_lock);
 
-	/* If the refcount is going 0->1, proceed with allocating buffers. */
+	 
 	if (reg_refcount++)
 		goto out;
 
@@ -99,7 +88,7 @@ int trace_mmap_lock_reg(void)
 		if (new == NULL)
 			goto out_fail_free;
 		rcu_assign_pointer(per_cpu_ptr(&memcg_paths, cpu)->buf, new);
-		/* Don't need to wait for inflights, they'd have gotten NULL. */
+		 
 	}
 
 out:
@@ -109,7 +98,7 @@ out:
 out_fail_free:
 	free_memcg_path_bufs();
 out_fail:
-	/* Since we failed, undo the earlier ref increment. */
+	 
 	--reg_refcount;
 
 	mutex_unlock(&reg_lock);
@@ -120,7 +109,7 @@ void trace_mmap_lock_unreg(void)
 {
 	mutex_lock(&reg_lock);
 
-	/* If the refcount is going 1->0, proceed with freeing buffers. */
+	 
 	if (--reg_refcount)
 		goto out;
 
@@ -166,7 +155,7 @@ static inline void put_memcg_path_buf(void)
 		local_unlock(&memcg_paths.lock);                               \
 	} while (0)
 
-#else /* !CONFIG_MEMCG */
+#else  
 
 int trace_mmap_lock_reg(void)
 {
@@ -180,22 +169,11 @@ void trace_mmap_lock_unreg(void)
 #define TRACE_MMAP_LOCK_EVENT(type, mm, ...)                                   \
 	trace_mmap_lock_##type(mm, "", ##__VA_ARGS__)
 
-#endif /* CONFIG_MEMCG */
+#endif  
 
 #ifdef CONFIG_TRACING
 #ifdef CONFIG_MEMCG
-/*
- * Write the given mm_struct's memcg path to a percpu buffer, and return a
- * pointer to it. If the path cannot be determined, or no buffer was available
- * (because the trace event is being unregistered), NULL is returned.
- *
- * Note: buffers are allocated per-cpu to avoid locking, so preemption must be
- * disabled by the caller before calling us, and re-enabled only after the
- * caller is done with the pointer.
- *
- * The caller must call put_memcg_path_buf() once the buffer is no longer
- * needed. This must be done while preemption is still disabled.
- */
+ 
 static const char *get_mm_memcg_path(struct mm_struct *mm)
 {
 	char *buf = NULL;
@@ -218,12 +196,9 @@ out:
 	return buf;
 }
 
-#endif /* CONFIG_MEMCG */
+#endif  
 
-/*
- * Trace calls must be in a separate file, as otherwise there's a circular
- * dependency between linux/mmap_lock.h and trace/events/mmap_lock.h.
- */
+ 
 
 void __mmap_lock_do_trace_start_locking(struct mm_struct *mm, bool write)
 {
@@ -243,4 +218,4 @@ void __mmap_lock_do_trace_released(struct mm_struct *mm, bool write)
 	TRACE_MMAP_LOCK_EVENT(released, mm, write);
 }
 EXPORT_SYMBOL(__mmap_lock_do_trace_released);
-#endif /* CONFIG_TRACING */
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2008  by Karsten Keil <kkeil@novell.com>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/types.h>
@@ -25,7 +23,7 @@ static DEFINE_RWLOCK(bp_lock);
 
 static void mISDN_dev_release(struct device *dev)
 {
-	/* nothing to do: the device is part of its parent's data structure */
+	 
 }
 
 static ssize_t id_show(struct device *dev,
@@ -91,7 +89,7 @@ static ssize_t name_show(struct device *dev,
 }
 static DEVICE_ATTR_RO(name);
 
-#if 0 /* hangs */
+#if 0  
 static ssize_t name_set(struct device *dev, struct device_attribute *attr,
 			const char *buf, size_t count)
 {
@@ -255,7 +253,7 @@ mISDN_unregister_device(struct mISDNdevice *dev) {
 	if (debug & DEBUG_CORE)
 		printk(KERN_DEBUG "mISDN_unregister %s %d\n",
 		       dev_name(&dev->dev), dev->id);
-	/* sysfs_remove_link(&dev->dev.kobj, "device"); */
+	 
 	device_del(&dev->dev);
 	dev_set_drvdata(&dev->dev, NULL);
 

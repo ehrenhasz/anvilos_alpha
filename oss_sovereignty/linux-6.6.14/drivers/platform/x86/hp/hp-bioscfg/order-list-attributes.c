@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Functions corresponding to ordered list type attributes under
- * BIOS ORDERED LIST GUID for use with hp-bioscfg driver.
- *
- * Copyright (c) 2022 HP Development Company, L.P.
- */
+
+ 
 
 #include "bioscfg.h"
 
@@ -37,19 +32,10 @@ static int replace_char_str(u8 *buffer, char *repl_char, char *repl_with)
 	return 0;
 }
 
-/**
- * validate_ordered_list_input() -
- * Validate input of current_value against possible values
- *
- * @instance: The instance on which input is validated
- * @buf: Input value
- */
+ 
 static int validate_ordered_list_input(int instance, char *buf)
 {
-	/* validation is done by BIOS. This validation function will
-	 * convert semicolon to commas. BIOS uses commas as
-	 * separators when reporting ordered-list values.
-	 */
+	 
 	return replace_char_str(buf, SEMICOLON_SEP, COMMA_SEP);
 }
 
@@ -110,7 +96,7 @@ int hp_alloc_ordered_list_data(void)
 	return 0;
 }
 
-/* Expected Values types associated with each element */
+ 
 static const acpi_object_type expected_order_types[] = {
 	[NAME]	= ACPI_TYPE_STRING,
 	[VALUE] = ACPI_TYPE_STRING,
@@ -168,7 +154,7 @@ static int hp_populate_ordered_list_elements_from_package(union acpi_object *ord
 			continue;
 		}
 
-		/* Check that both expected and read object type match */
+		 
 		if (expected_order_types[eloc] != order_obj[elem].type) {
 			pr_err("Error expected type %d for elem %d, but got type %d instead\n",
 			       expected_order_types[eloc], elem, order_obj[elem].type);
@@ -176,7 +162,7 @@ static int hp_populate_ordered_list_elements_from_package(union acpi_object *ord
 			return -EIO;
 		}
 
-		/* Assign appropriate element value to corresponding field*/
+		 
 		switch (eloc) {
 		case VALUE:
 			strscpy(ordered_list_data->current_value,
@@ -206,13 +192,7 @@ static int hp_populate_ordered_list_elements_from_package(union acpi_object *ord
 			}
 			ordered_list_data->common.prerequisites_size = int_value;
 
-			/*
-			 * This step is needed to keep the expected
-			 * element list pointing to the right obj[elem].type
-			 * when the size is zero. PREREQUISITES
-			 * object is omitted by BIOS when the size is
-			 * zero.
-			 */
+			 
 			if (int_value == 0)
 				eloc++;
 			break;
@@ -247,22 +227,13 @@ static int hp_populate_ordered_list_elements_from_package(union acpi_object *ord
 			}
 			ordered_list_data->elements_size = int_value;
 
-			/*
-			 * This step is needed to keep the expected
-			 * element list pointing to the right obj[elem].type
-			 * when the size is zero. ORD_LIST_ELEMENTS
-			 * object is omitted by BIOS when the size is
-			 * zero.
-			 */
+			 
 			if (int_value == 0)
 				eloc++;
 			break;
 		case ORD_LIST_ELEMENTS:
 
-			/*
-			 * Ordered list data is stored in hex and comma separated format
-			 * Convert the data and split it to show each element
-			 */
+			 
 			ret = hp_convert_hexstr_to_str(str_value, value_len, &tmpstr, &tmp_len);
 			if (ret)
 				goto exit_list;
@@ -297,14 +268,7 @@ exit_list:
 	return 0;
 }
 
-/**
- * hp_populate_ordered_list_package_data() -
- * Populate all properties of an instance under ordered_list attribute
- *
- * @order_obj: ACPI object with ordered_list data
- * @instance_id: The instance to enumerate
- * @attr_name_kobj: The parent kernel object
- */
+ 
 int hp_populate_ordered_list_package_data(union acpi_object *order_obj, int instance_id,
 					  struct kobject *attr_name_kobj)
 {
@@ -331,22 +295,9 @@ static int hp_populate_ordered_list_elements_from_buffer(u8 *buffer_ptr, u32 *bu
 	struct ordered_list_data *ordered_list_data = &bioscfg_drv.ordered_list_data[instance_id];
 	int ret = 0;
 
-	/*
-	 * Only data relevant to this driver and its functionality is
-	 * read. BIOS defines the order in which each * element is
-	 * read. Element 0 data is not relevant to this
-	 * driver hence it is ignored. For clarity, all element names
-	 * (DISPLAY_IN_UI) which defines the order in which is read
-	 * and the name matches the variable where the data is stored.
-	 *
-	 * In earlier implementation, reported errors were ignored
-	 * causing the data to remain uninitialized. It is not
-	 * possible to determine if data read from BIOS is valid or
-	 * not. It is for this reason functions may return a error
-	 * without validating the data itself.
-	 */
+	 
 
-	// VALUE:
+	
 	ret = hp_get_string_from_buffer(&buffer_ptr, buffer_size, ordered_list_data->current_value,
 					sizeof(ordered_list_data->current_value));
 	if (ret < 0)
@@ -354,23 +305,23 @@ static int hp_populate_ordered_list_elements_from_buffer(u8 *buffer_ptr, u32 *bu
 
 	replace_char_str(ordered_list_data->current_value, COMMA_SEP, SEMICOLON_SEP);
 
-	// COMMON:
+	
 	ret = hp_get_common_data_from_buffer(&buffer_ptr, buffer_size,
 					     &ordered_list_data->common);
 	if (ret < 0)
 		goto buffer_exit;
 
-	// ORD_LIST_SIZE:
+	
 	ret = hp_get_integer_from_buffer(&buffer_ptr, buffer_size,
 					 &ordered_list_data->elements_size);
 
 	if (ordered_list_data->elements_size > MAX_ELEMENTS_SIZE) {
-		/* Report a message and limit elements size to maximum value */
+		 
 		pr_warn("Ordered List size value exceeded the maximum number of elements supported or data may be malformed\n");
 		ordered_list_data->elements_size = MAX_ELEMENTS_SIZE;
 	}
 
-	// ORD_LIST_ELEMENTS:
+	
 	for (values = 0; values < ordered_list_data->elements_size; values++) {
 		ret = hp_get_string_from_buffer(&buffer_ptr, buffer_size,
 						ordered_list_data->elements[values],
@@ -383,15 +334,7 @@ buffer_exit:
 	return ret;
 }
 
-/**
- * hp_populate_ordered_list_buffer_data() - Populate all properties of an
- * instance under ordered list attribute
- *
- * @buffer_ptr: Buffer pointer
- * @buffer_size: Buffer size
- * @instance_id: The instance to enumerate
- * @attr_name_kobj: The parent kernel object
- */
+ 
 int hp_populate_ordered_list_buffer_data(u8 *buffer_ptr, u32 *buffer_size, int instance_id,
 					 struct kobject *attr_name_kobj)
 {
@@ -400,7 +343,7 @@ int hp_populate_ordered_list_buffer_data(u8 *buffer_ptr, u32 *buffer_size, int i
 
 	ordered_list_data->attr_name_kobj = attr_name_kobj;
 
-	/* Populate ordered list elements */
+	 
 	ret = hp_populate_ordered_list_elements_from_buffer(buffer_ptr, buffer_size,
 							    instance_id);
 	if (ret < 0)
@@ -416,11 +359,7 @@ int hp_populate_ordered_list_buffer_data(u8 *buffer_ptr, u32 *buffer_size, int i
 	return sysfs_create_group(attr_name_kobj, &ordered_list_attr_group);
 }
 
-/**
- * hp_exit_ordered_list_attributes() - Clear all attribute data
- *
- * Clears all data allocated for this group of attributes
- */
+ 
 void hp_exit_ordered_list_attributes(void)
 {
 	int instance_id;

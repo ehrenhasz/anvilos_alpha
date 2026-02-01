@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "priv.h"
 #include "cgrp.h"
 #include "chan.h"
@@ -67,7 +45,7 @@ gf100_chan_unbind(struct nvkm_chan *chan)
 	struct nvkm_fifo *fifo = chan->cgrp->runl->fifo;
 	struct nvkm_device *device = fifo->engine.subdev.device;
 
-	/*TODO: Is this cargo-culted, or necessary? RM does *something* here... Why? */
+	 
 	gf100_fifo_intr_engine(fifo);
 
 	nvkm_wr32(device, 0x003000 + (chan->id * 8), 0x00000000);
@@ -102,8 +80,8 @@ gf100_chan_ramfc_write(struct nvkm_chan *chan, u64 offset, u64 length, u32 devm,
 	nvkm_wo32(chan->inst, 0xa8, 0x1f1f1f1f);
 	nvkm_wo32(chan->inst, 0xac, 0x0000001f);
 	nvkm_wo32(chan->inst, 0xb8, 0xf8000000);
-	nvkm_wo32(chan->inst, 0xf8, 0x10003080); /* 0x002310 */
-	nvkm_wo32(chan->inst, 0xfc, 0x10000010); /* 0x002350 */
+	nvkm_wo32(chan->inst, 0xf8, 0x10003080);  
+	nvkm_wo32(chan->inst, 0xfc, 0x10000010);  
 	nvkm_done(chan->inst);
 	return 0;
 }
@@ -234,7 +212,7 @@ gf100_engn_mmu_fault_trigger(struct nvkm_engn *engn)
 	spin_unlock(&fifo->lock);
 }
 
-/*TODO: clean all this up. */
+ 
 struct gf100_engn_status {
 	bool busy;
 	bool save;
@@ -300,7 +278,7 @@ gf100_engn_sw = {
 
 static const struct nvkm_bitfield
 gf100_runq_intr_0_names[] = {
-/*	{ 0x00008000, "" }	seen with null ib push */
+ 
 	{ 0x00200000, "ILLEGAL_MTHD" },
 	{ 0x00800000, "EMPTY_SUBC" },
 	{}
@@ -338,7 +316,7 @@ gf100_runq_intr(struct nvkm_runq *runq, struct nvkm_runl *null)
 			   runq->id, show, msg, chid, chan ? chan->inst->addr : 0,
 			   chan ? chan->name : "unknown", subc, mthd, data);
 
-		/*TODO: use proper procedure for clearing each exception / debug output */
+		 
 		if ((stat & 0xc67fe000) && chan)
 			nvkm_chan_error(chan, true);
 		nvkm_chan_put(&chan, flags);
@@ -355,8 +333,8 @@ gf100_runq_init(struct nvkm_runq *runq)
 	struct nvkm_device *device = runq->fifo->engine.subdev.device;
 
 	nvkm_mask(device, 0x04013c + (runq->id * 0x2000), 0x10000100, 0x00000000);
-	nvkm_wr32(device, 0x040108 + (runq->id * 0x2000), 0xffffffff); /* INTR */
-	nvkm_wr32(device, 0x04010c + (runq->id * 0x2000), 0xfffffeff); /* INTREN */
+	nvkm_wr32(device, 0x040108 + (runq->id * 0x2000), 0xffffffff);  
+	nvkm_wr32(device, 0x04010c + (runq->id * 0x2000), 0xfffffeff);  
 }
 
 static const struct nvkm_runq_func
@@ -543,11 +521,11 @@ gf100_fifo_mmu_fault_recover(struct nvkm_fifo *fifo, struct nvkm_fault_data *inf
 	unsigned long flags;
 	char ct[8] = "HUB/";
 
-	/* Lookup engine by MMU fault ID. */
+	 
 	nvkm_runl_foreach(runl, fifo) {
 		engn = nvkm_runl_find_engn(engn, runl, engn->fault == info->engine);
 		if (engn) {
-			/* Fault triggered by CTXSW_TIMEOUT recovery procedure. */
+			 
 			if (engn->func->mmu_fault_triggered &&
 			    engn->func->mmu_fault_triggered(engn)) {
 				nvkm_runl_rc_engn(runl, engn);
@@ -569,7 +547,7 @@ gf100_fifo_mmu_fault_recover(struct nvkm_fifo *fifo, struct nvkm_fault_data *inf
 	}
 	ea = nvkm_enum_find(fifo->func->mmu_fault->access, info->access);
 
-	/* Handle BAR faults. */
+	 
 	if (ee && ee->data2) {
 		switch (ee->data2) {
 		case NVKM_SUBDEV_BAR:
@@ -597,7 +575,7 @@ gf100_fifo_mmu_fault_recover(struct nvkm_fifo *fifo, struct nvkm_fault_data *inf
 		   info->reason, er ? er->name : "",
 		   chan ? chan->id : -1, info->inst, chan ? chan->name : "unknown");
 
-	/* Handle host/engine faults. */
+	 
 	if (chan)
 		nvkm_runl_rc_cgrp(chan->cgrp);
 
@@ -623,13 +601,13 @@ gf100_fifo_intr_ctxsw_timeout(struct nvkm_fifo *fifo, u32 engm)
 	int id, id2;
 
 	nvkm_runl_foreach(runl, fifo) {
-		/* Stop the runlist, and go through all engines serving it. */
+		 
 		nvkm_runl_block(runl);
 		nvkm_runl_foreach_engn_cond(engn, runl, engm & BIT(engn->id)) {
-			/* Determine what channel (group) the engine is on. */
+			 
 			id = engn->func->cxid(engn, &cgid);
 			if (id >= 0) {
-				/* Trigger MMU fault on any engine(s) on that channel (group). */
+				 
 				nvkm_runl_foreach_engn_cond(engn2, runl, engn2->func->cxid) {
 					id2 = engn2->func->cxid(engn2, &cgid2);
 					if (cgid2 == cgid && id2 == id)
@@ -637,7 +615,7 @@ gf100_fifo_intr_ctxsw_timeout(struct nvkm_fifo *fifo, u32 engm)
 				}
 			}
 		}
-		nvkm_runl_allow(runl); /* HW will keep runlist blocked via ERROR_SCHED_DISABLE. */
+		nvkm_runl_allow(runl);  
 	}
 }
 
@@ -648,7 +626,7 @@ gf100_fifo_intr_sched_ctxsw(struct nvkm_fifo *fifo)
 	struct nvkm_engn *engn;
 	u32 engm = 0;
 
-	/* Look for any engines that are busy, and awaiting chsw ack. */
+	 
 	nvkm_runl_foreach(runl, fifo) {
 		nvkm_runl_foreach_engn_cond(engn, runl, engn->func->chsw) {
 			if (WARN_ON(engn->fault < 0) || !engn->func->chsw(engn))
@@ -874,18 +852,18 @@ gf100_fifo_init_pbdmas(struct nvkm_fifo *fifo, u32 mask)
 {
 	struct nvkm_device *device = fifo->engine.subdev.device;
 
-	/* Enable PBDMAs. */
+	 
 	nvkm_wr32(device, 0x000204, mask);
 	nvkm_wr32(device, 0x002204, mask);
 
-	/* Assign engines to PBDMAs. */
+	 
 	if ((mask & 7) == 7) {
-		nvkm_wr32(device, 0x002208, ~(1 << 0)); /* PGRAPH */
-		nvkm_wr32(device, 0x00220c, ~(1 << 1)); /* PVP */
-		nvkm_wr32(device, 0x002210, ~(1 << 1)); /* PMSPP */
-		nvkm_wr32(device, 0x002214, ~(1 << 1)); /* PMSVLD */
-		nvkm_wr32(device, 0x002218, ~(1 << 2)); /* PCE0 */
-		nvkm_wr32(device, 0x00221c, ~(1 << 1)); /* PCE1 */
+		nvkm_wr32(device, 0x002208, ~(1 << 0));  
+		nvkm_wr32(device, 0x00220c, ~(1 << 1));  
+		nvkm_wr32(device, 0x002210, ~(1 << 1));  
+		nvkm_wr32(device, 0x002214, ~(1 << 1));  
+		nvkm_wr32(device, 0x002218, ~(1 << 2));  
+		nvkm_wr32(device, 0x00221c, ~(1 << 1));  
 	}
 
 	nvkm_mask(device, 0x002a04, 0xbfffffff, 0xbfffffff);
@@ -901,7 +879,7 @@ gf100_fifo_init(struct nvkm_fifo *fifo)
 
 	nvkm_wr32(device, 0x002100, 0xffffffff);
 	nvkm_wr32(device, 0x002140, 0x7fffffff);
-	nvkm_wr32(device, 0x002628, 0x00000001); /* ENGINE_INTR_EN */
+	nvkm_wr32(device, 0x002628, 0x00000001);  
 }
 
 static int
@@ -929,7 +907,7 @@ gf100_fifo_runq_nr(struct nvkm_fifo *fifo)
 	struct nvkm_device *device = fifo->engine.subdev.device;
 	u32 save;
 
-	/* Determine number of PBDMAs by checking valid enable bits. */
+	 
 	save = nvkm_mask(device, 0x000204, 0xffffffff, 0xffffffff);
 	save = nvkm_mask(device, 0x000204, 0xffffffff, save);
 	return hweight32(save);

@@ -1,21 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  HID driver for Saitek devices.
- *
- *  PS1000 (USB gamepad):
- *  Fixes the HID report descriptor by removing a non-existent axis and
- *  clearing the constant bit on the input reports for buttons and d-pad.
- *  (This module is based on "hid-ortek".)
- *  Copyright (c) 2012 Andreas Hübner
- *
- *  R.A.T.7, R.A.T.9, M.M.O.7 (USB gaming mice):
- *  Fixes the mode button which cycles through three constantly pressed
- *  buttons. All three press events are mapped to one button and the
- *  missing release event is generated immediately.
- */
 
-/*
- */
+ 
+
+ 
 
 #include <linux/device.h>
 #include <linux/hid.h>
@@ -78,11 +64,11 @@ static __u8 *saitek_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 
 		hid_info(hdev, "Fixing up Saitek PS1000 report descriptor\n");
 
-		/* convert spurious axis to a "noop" Logical Minimum (0) */
+		 
 		rdesc[20] = 0x15;
 		rdesc[21] = 0x00;
 
-		/* clear constant bit on buttons and d-pad */
+		 
 		rdesc[95] = 0x02;
 		rdesc[111] = 0x02;
 
@@ -96,7 +82,7 @@ static int saitek_raw_event(struct hid_device *hdev,
 	struct saitek_sc *ssc = hid_get_drvdata(hdev);
 
 	if (ssc->quirks & SAITEK_RELEASE_MODE_RAT7 && size == 7) {
-		/* R.A.T.7 uses bits 13, 14, 15 for the mode */
+		 
 		int mode = -1;
 		if (raw_data[1] & 0x01)
 			mode = 0;
@@ -105,20 +91,20 @@ static int saitek_raw_event(struct hid_device *hdev,
 		else if (raw_data[1] & 0x04)
 			mode = 2;
 
-		/* clear mode bits */
+		 
 		raw_data[1] &= ~0x07;
 
 		if (mode != ssc->mode) {
 			hid_dbg(hdev, "entered mode %d\n", mode);
 			if (ssc->mode != -1) {
-				/* use bit 13 as the mode button */
+				 
 				raw_data[1] |= 0x04;
 			}
 			ssc->mode = mode;
 		}
 	} else if (ssc->quirks & SAITEK_RELEASE_MODE_MMO7 && size == 8) {
 
-		/* M.M.O.7 uses bits 8, 22, 23 for the mode */
+		 
 		int mode = -1;
 		if (raw_data[1] & 0x80)
 			mode = 0;
@@ -127,17 +113,14 @@ static int saitek_raw_event(struct hid_device *hdev,
 		else if (raw_data[2] & 0x02)
 			mode = 2;
 
-		/* clear mode bits */
+		 
 		raw_data[1] &= ~0x80;
 		raw_data[2] &= ~0x03;
 
 		if (mode != ssc->mode) {
 			hid_dbg(hdev, "entered mode %d\n", mode);
 			if (ssc->mode != -1) {
-				/* use bit 8 as the mode button, bits 22
-				 * and 23 do not represent buttons
-				 * according to the HID report descriptor
-				 */
+				 
 				raw_data[1] |= 0x80;
 			}
 			ssc->mode = mode;
@@ -161,7 +144,7 @@ static int saitek_event(struct hid_device *hdev, struct hid_field *field,
 
 		input_report_key(input, usage->code, 1);
 
-		/* report missing release event */
+		 
 		input_report_key(input, usage->code, 0);
 
 		return 1;

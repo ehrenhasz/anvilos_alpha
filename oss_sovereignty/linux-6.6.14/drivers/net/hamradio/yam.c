@@ -1,31 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*****************************************************************************/
 
-/*
- *    yam.c  -- YAM radio modem driver.
- *
- *      Copyright (C) 1998 Frederic Rible F1OAT (frible@teaser.fr)
- *      Adapted from baycom.c driver written by Thomas Sailer (sailer@ife.ee.ethz.ch)
- *
- *  Please note that the GPL allows you to use the driver, NOT the radio.
- *  In order to use the radio, you need a license from the communications
- *  authority of your country.
- *
- *  History:
- *   0.0 F1OAT 06.06.98  Begin of work with baycom.c source code V 0.3
- *   0.1 F1OAT 07.06.98  Add timer polling routine for channel arbitration
- *   0.2 F6FBB 08.06.98  Added delay after FPGA programming
- *   0.3 F6FBB 29.07.98  Delayed PTT implementation for dupmode=2
- *   0.4 F6FBB 30.07.98  Added TxTail, Slottime and Persistence
- *   0.5 F6FBB 01.08.98  Shared IRQs, /proc/net and network statistics
- *   0.6 F6FBB 25.08.98  Added 1200Bds format
- *   0.7 F6FBB 12.09.98  Added to the kernel configuration
- *   0.8 F6FBB 14.10.98  Fixed slottime/persistence timing bug
- *       OK1ZIA 2.09.01  Fixed "kfree_skb on hard IRQ" 
- *                       using dev_kfree_skb_any(). (important in 2.4 kernel)
- */
+ 
 
-/*****************************************************************************/
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -58,13 +36,13 @@
 
 #include <linux/yam.h>
 
-/* --------------------------------------------------------------------- */
+ 
 
 static const char yam_drvname[] = "yam";
 static const char yam_drvinfo[] __initconst = KERN_INFO \
 	"YAM driver version 0.8 by F1OAT/F6FBB\n";
 
-/* --------------------------------------------------------------------- */
+ 
 
 #define FIRMWARE_9600	"yam/9600.bin"
 #define FIRMWARE_1200	"yam/1200.bin"
@@ -75,7 +53,7 @@ static const char yam_drvinfo[] __initconst = KERN_INFO \
 #define NR_PORTS	4
 #define YAM_MAGIC	0xF10A7654
 
-/* Transmitter states */
+ 
 
 #define TX_OFF		0
 #define TX_HEAD		1
@@ -86,12 +64,12 @@ static const char yam_drvinfo[] __initconst = KERN_INFO \
 
 #define YAM_MAX_FRAME	1024
 
-#define DEFAULT_BITRATE	9600			/* bps */
-#define DEFAULT_HOLDD	10			/* sec */
-#define DEFAULT_TXD	300			/* ms */
-#define DEFAULT_TXTAIL	10			/* ms */
-#define DEFAULT_SLOT	100			/* ms */
-#define DEFAULT_PERS	64			/* 0->255 */
+#define DEFAULT_BITRATE	9600			 
+#define DEFAULT_HOLDD	10			 
+#define DEFAULT_TXD	300			 
+#define DEFAULT_TXTAIL	10			 
+#define DEFAULT_SLOT	100			 
+#define DEFAULT_PERS	64			 
 
 struct yam_port {
 	int magic;
@@ -106,15 +84,15 @@ struct yam_port {
 	int nb_rxint;
 	int nb_mdint;
 
-	/* Parameters section */
+	 
 
-	int txd;				/* tx delay */
-	int holdd;				/* duplex ptt delay */
-	int txtail;				/* txtail delay */
-	int slot;				/* slottime */
-	int pers;				/* persistence */
+	int txd;				 
+	int holdd;				 
+	int txtail;				 
+	int slot;				 
+	int pers;				 
 
-	/* Tx section */
+	 
 
 	int tx_state;
 	int tx_count;
@@ -122,9 +100,9 @@ struct yam_port {
 	unsigned char tx_buf[YAM_MAX_FRAME];
 	int tx_len;
 	int tx_crcl, tx_crch;
-	struct sk_buff_head send_queue;		/* Packets awaiting transmission */
+	struct sk_buff_head send_queue;		 
 
-	/* Rx section */
+	 
 
 	int dcd;
 	unsigned char rx_buf[YAM_MAX_FRAME];
@@ -144,7 +122,7 @@ static struct yam_mcs *yam_data;
 
 static DEFINE_TIMER(yam_timer, NULL);
 
-/* --------------------------------------------------------------------- */
+ 
 
 #define RBR(iobase)	(iobase+0)
 #define THR(iobase)	(iobase+0)
@@ -161,40 +139,40 @@ static DEFINE_TIMER(yam_timer, NULL);
 
 #define YAM_EXTENT	8
 
-/* Interrupt Identification Register Bit Masks */
+ 
 #define IIR_NOPEND	1
 #define IIR_MSR		0
 #define IIR_TX		2
 #define IIR_RX		4
 #define IIR_LSR		6
-#define IIR_TIMEOUT	12			/* Fifo mode only */
+#define IIR_TIMEOUT	12			 
 
 #define IIR_MASK	0x0F
 
-/* Interrupt Enable Register Bit Masks */
-#define IER_RX		1			/* enable rx interrupt */
-#define IER_TX		2			/* enable tx interrupt */
-#define IER_LSR		4			/* enable line status interrupts */
-#define IER_MSR		8			/* enable modem status interrupts */
+ 
+#define IER_RX		1			 
+#define IER_TX		2			 
+#define IER_LSR		4			 
+#define IER_MSR		8			 
 
-/* Modem Control Register Bit Masks */
-#define MCR_DTR		0x01			/* DTR output */
-#define MCR_RTS		0x02			/* RTS output */
-#define MCR_OUT1	0x04			/* OUT1 output (not accessible in RS232) */
-#define MCR_OUT2	0x08			/* Master Interrupt enable (must be set on PCs) */
-#define MCR_LOOP	0x10			/* Loopback enable */
+ 
+#define MCR_DTR		0x01			 
+#define MCR_RTS		0x02			 
+#define MCR_OUT1	0x04			 
+#define MCR_OUT2	0x08			 
+#define MCR_LOOP	0x10			 
 
-/* Modem Status Register Bit Masks */
-#define MSR_DCTS	0x01			/* Delta CTS input */
-#define MSR_DDSR	0x02			/* Delta DSR */
-#define MSR_DRIN	0x04			/* Delta RI */
-#define MSR_DDCD	0x08			/* Delta DCD */
-#define MSR_CTS		0x10			/* CTS input */
-#define MSR_DSR		0x20			/* DSR input */
-#define MSR_RING	0x40			/* RI  input */
-#define MSR_DCD		0x80			/* DCD input */
+ 
+#define MSR_DCTS	0x01			 
+#define MSR_DDSR	0x02			 
+#define MSR_DRIN	0x04			 
+#define MSR_DDCD	0x08			 
+#define MSR_CTS		0x10			 
+#define MSR_DSR		0x20			 
+#define MSR_RING	0x40			 
+#define MSR_DCD		0x80			 
 
-/* line status register bit mask */
+ 
 #define LSR_RXC		0x01
 #define LSR_OE		0x02
 #define LSR_PE		0x04
@@ -203,7 +181,7 @@ static DEFINE_TIMER(yam_timer, NULL);
 #define LSR_THRE	0x20
 #define LSR_TSRE	0x40
 
-/* Line Control Register Bit Masks */
+ 
 #define LCR_DLAB	0x80
 #define LCR_BREAK	0x40
 #define LCR_PZERO	0x28
@@ -216,23 +194,21 @@ static DEFINE_TIMER(yam_timer, NULL);
 #define LCR_BIT7	0x01
 #define LCR_BIT8	0x03
 
-/* YAM Modem <-> UART Port mapping */
+ 
 
-#define TX_RDY		MSR_DCTS		/* transmitter ready to send */
-#define RX_DCD		MSR_DCD			/* carrier detect */
-#define RX_FLAG		MSR_RING		/* hdlc flag received */
-#define FPGA_DONE	MSR_DSR			/* FPGA is configured */
-#define PTT_ON		(MCR_RTS|MCR_OUT2)	/* activate PTT */
-#define PTT_OFF		(MCR_DTR|MCR_OUT2)	/* release PTT */
+#define TX_RDY		MSR_DCTS		 
+#define RX_DCD		MSR_DCD			 
+#define RX_FLAG		MSR_RING		 
+#define FPGA_DONE	MSR_DSR			 
+#define PTT_ON		(MCR_RTS|MCR_OUT2)	 
+#define PTT_OFF		(MCR_DTR|MCR_OUT2)	 
 
-#define ENABLE_RXINT	IER_RX			/* enable uart rx interrupt during rx */
-#define ENABLE_TXINT	IER_MSR			/* enable uart ms interrupt during tx */
-#define ENABLE_RTXINT	(IER_RX|IER_MSR)	/* full duplex operations */
+#define ENABLE_RXINT	IER_RX			 
+#define ENABLE_TXINT	IER_MSR			 
+#define ENABLE_RTXINT	(IER_RX|IER_MSR)	 
 
 
-/*************************************************************************
-* CRC Tables
-************************************************************************/
+ 
 
 static const unsigned char chktabl[256] =
 {0x00, 0x89, 0x12, 0x9b, 0x24, 0xad, 0x36, 0xbf, 0x48, 0xc1, 0x5a, 0xd3, 0x6c, 0xe5, 0x7e,
@@ -273,9 +249,7 @@ static const unsigned char chktabh[256] =
  0xf7, 0xe6, 0xd4, 0xc5, 0xb1, 0xa0, 0x92, 0x83, 0x7b, 0x6a, 0x58, 0x49, 0x3d, 0x2c, 0x1e,
  0x0f};
 
-/*************************************************************************
-* FPGA functions
-************************************************************************/
+ 
 
 static void delay(int ms)
 {
@@ -284,9 +258,7 @@ static void delay(int ms)
 		cpu_relax();
 }
 
-/*
- * reset FPGA
- */
+ 
 
 static void fpga_reset(int iobase)
 {
@@ -298,17 +270,15 @@ static void fpga_reset(int iobase)
 	outb(LCR_BIT5, LCR(iobase));
 	inb(LSR(iobase));
 	inb(MSR(iobase));
-	/* turn off FPGA supply voltage */
+	 
 	outb(MCR_OUT1 | MCR_OUT2, MCR(iobase));
 	delay(100);
-	/* turn on FPGA supply voltage again */
+	 
 	outb(MCR_DTR | MCR_RTS | MCR_OUT1 | MCR_OUT2, MCR(iobase));
 	delay(100);
 }
 
-/*
- * send one byte to FPGA
- */
+ 
 
 static int fpga_write(int iobase, unsigned char wrd)
 {
@@ -329,11 +299,7 @@ static int fpga_write(int iobase, unsigned char wrd)
 	return 0;
 }
 
-/*
- * predef should be 0 for loading user defined mcs
- * predef should be YAM_1200 for loading predef 1200 mcs
- * predef should be YAM_9600 for loading predef 9600 mcs
- */
+ 
 static unsigned char *add_mcs(unsigned char *bits, int bitrate,
 			      unsigned int predef)
 {
@@ -375,7 +341,7 @@ static unsigned char *add_mcs(unsigned char *bits, int bitrate,
 		return NULL;
 	}
 
-	/* If it already exists, replace the bit data */
+	 
 	p = yam_data;
 	while (p) {
 		if (p->bitrate == bitrate) {
@@ -385,7 +351,7 @@ static unsigned char *add_mcs(unsigned char *bits, int bitrate,
 		p = p->next;
 	}
 
-	/* Allocate a new mcs */
+	 
 	if ((p = kmalloc(sizeof(struct yam_mcs), GFP_KERNEL)) == NULL) {
 		release_firmware(fw);
 		return NULL;
@@ -410,21 +376,18 @@ static unsigned char *get_mcs(int bitrate)
 		p = p->next;
 	}
 
-	/* Load predefined mcs data */
+	 
 	switch (bitrate) {
 	case 1200:
-		/* setting predef as YAM_1200 for loading predef 1200 mcs */
+		 
 		return add_mcs(NULL, bitrate, YAM_1200);
 	default:
-		/* setting predef as YAM_9600 for loading predef 9600 mcs */
+		 
 		return add_mcs(NULL, bitrate, YAM_9600);
 	}
 }
 
-/*
- * download bitstream to FPGA
- * data is contained in bits[] array in yam1200.h resp. yam9600.h
- */
+ 
 
 static int fpga_download(int iobase, int bitrate)
 {
@@ -439,23 +402,21 @@ static int fpga_download(int iobase, int bitrate)
 	for (i = 0; i < YAM_FPGA_SIZE; i++) {
 		if (fpga_write(iobase, pbits[i])) {
 			printk(KERN_ERR "yam: error in write cycle\n");
-			return -1;			/* write... */
+			return -1;			 
 		}
 	}
 
 	fpga_write(iobase, 0xFF);
-	rc = inb(MSR(iobase));		/* check DONE signal */
+	rc = inb(MSR(iobase));		 
 
-	/* Needed for some hardwares */
+	 
 	delay(50);
 
 	return (rc & MSR_DSR) ? 0 : -1;
 }
 
 
-/************************************************************************
-* Serial port init 
-************************************************************************/
+ 
 
 static void yam_set_uart(struct net_device *dev)
 {
@@ -470,18 +431,18 @@ static void yam_set_uart(struct net_device *dev)
 	outb(PTT_OFF, MCR(dev->base_addr));
 	outb(0x00, FCR(dev->base_addr));
 
-	/* Flush pending irq */
+	 
 
 	inb(RBR(dev->base_addr));
 	inb(MSR(dev->base_addr));
 
-	/* Enable rx irq */
+	 
 
 	outb(ENABLE_RTXINT, IER(dev->base_addr));
 }
 
 
-/* --------------------------------------------------------------------- */
+ 
 
 enum uart {
 	c_uart_unknown, c_uart_8250,
@@ -499,17 +460,17 @@ static enum uart yam_check_uart(unsigned int iobase)
 	{c_uart_16450, c_uart_unknown, c_uart_16550, c_uart_16550A};
 
 	b1 = inb(MCR(iobase));
-	outb(b1 | 0x10, MCR(iobase));	/* loopback mode */
+	outb(b1 | 0x10, MCR(iobase));	 
 	b2 = inb(MSR(iobase));
 	outb(0x1a, MCR(iobase));
 	b3 = inb(MSR(iobase)) & 0xf0;
-	outb(b1, MCR(iobase));		/* restore old values */
+	outb(b1, MCR(iobase));		 
 	outb(b2, MSR(iobase));
 	if (b3 != 0x90)
 		return c_uart_unknown;
 	inb(RBR(iobase));
 	inb(RBR(iobase));
-	outb(0x01, FCR(iobase));	/* enable FIFOs */
+	outb(0x01, FCR(iobase));	 
 	u = uart_tab[(inb(IIR(iobase)) >> 6) & 3];
 	if (u == c_uart_16450) {
 		outb(0x5a, SCR(iobase));
@@ -522,17 +483,15 @@ static enum uart yam_check_uart(unsigned int iobase)
 	return u;
 }
 
-/******************************************************************************
-* Rx Section
-******************************************************************************/
+ 
 static inline void yam_rx_flag(struct net_device *dev, struct yam_port *yp)
 {
 	if (yp->dcd && yp->rx_len >= 3 && yp->rx_len < YAM_MAX_FRAME) {
-		int pkt_len = yp->rx_len - 2 + 1;	/* -CRC + kiss */
+		int pkt_len = yp->rx_len - 2 + 1;	 
 		struct sk_buff *skb;
 
 		if ((yp->rx_crch & yp->rx_crcl) != 0xFF) {
-			/* Bad crc */
+			 
 		} else {
 			if (!(skb = dev_alloc_skb(pkt_len))) {
 				printk(KERN_WARNING "%s: memory squeeze, dropping packet\n", dev->name);
@@ -540,7 +499,7 @@ static inline void yam_rx_flag(struct net_device *dev, struct yam_port *yp)
 			} else {
 				unsigned char *cp;
 				cp = skb_put(skb, pkt_len);
-				*cp++ = 0;		/* KISS kludge */
+				*cp++ = 0;		 
 				memcpy(cp, yp->rx_buf, pkt_len - 1);
 				skb->protocol = ax25_type_trans(skb, dev);
 				netif_rx(skb);
@@ -563,9 +522,7 @@ static inline void yam_rx_byte(struct net_device *dev, struct yam_port *yp, unsi
 	}
 }
 
-/********************************************************************************
-* TX Section
-********************************************************************************/
+ 
 
 static void ptt_on(struct net_device *dev)
 {
@@ -607,25 +564,25 @@ static void yam_arbitrate(struct net_device *dev)
 	if (yp->magic != YAM_MAGIC || yp->tx_state != TX_OFF ||
 	    skb_queue_empty(&yp->send_queue))
 		return;
-	/* tx_state is TX_OFF and there is data to send */
+	 
 
 	if (yp->dupmode) {
-		/* Full duplex mode, don't wait */
+		 
 		yam_start_tx(dev, yp);
 		return;
 	}
 	if (yp->dcd) {
-		/* DCD on, wait slotime ... */
+		 
 		yp->slotcnt = yp->slot / 10;
 		return;
 	}
-	/* Is slottime passed ? */
+	 
 	if ((--yp->slotcnt) > 0)
 		return;
 
 	yp->slotcnt = yp->slot / 10;
 
-	/* is random > persist ? */
+	 
 	if (get_random_u8() > yp->pers)
 		return;
 
@@ -662,11 +619,11 @@ static void yam_tx_byte(struct net_device *dev, struct yam_port *yp)
 			}
 			yp->tx_state = TX_DATA;
 			if (skb->data[0] != 0) {
-/*                              do_kiss_params(s, skb->data, skb->len); */
+ 
 				dev_kfree_skb_any(skb);
 				break;
 			}
-			yp->tx_len = skb->len - 1;	/* strip KISS byte */
+			yp->tx_len = skb->len - 1;	 
 			if (yp->tx_len >= YAM_MAX_FRAME || yp->tx_len < 2) {
 				dev_kfree_skb_any(skb);
 				break;
@@ -721,9 +678,7 @@ static void yam_tx_byte(struct net_device *dev, struct yam_port *yp)
 	}
 }
 
-/***********************************************************************************
-* ISR routine
-************************************************************************************/
+ 
 
 static irqreturn_t yam_interrupt(int irq, void *dev_id)
 {
@@ -829,7 +784,7 @@ static const struct seq_operations yam_seqops = {
 #endif
 
 
-/* --------------------------------------------------------------------- */
+ 
 
 static int yam_open(struct net_device *dev)
 {
@@ -874,7 +829,7 @@ static int yam_open(struct net_device *dev)
 	
 	yp->slotcnt = yp->slot / 10;
 
-	/* Reset overruns for all ports - FPGA programming makes overruns */
+	 
 	for (i = 0; i < NR_PORTS; i++) {
 		struct net_device *yam_dev = yam_devs[i];
 
@@ -891,7 +846,7 @@ out_release_base:
 	return ret;
 }
 
-/* --------------------------------------------------------------------- */
+ 
 
 static int yam_close(struct net_device *dev)
 {
@@ -901,12 +856,10 @@ static int yam_close(struct net_device *dev)
 	if (!dev)
 		return -EINVAL;
 
-	/*
-	 * disable interrupts
-	 */
+	 
 	outb(0, IER(dev->base_addr));
 	outb(1, MCR(dev->base_addr));
-	/* Remove IRQ handler if last */
+	 
 	free_irq(dev->irq,dev);
 	release_region(dev->base_addr, YAM_EXTENT);
 	netif_stop_queue(dev);
@@ -918,7 +871,7 @@ static int yam_close(struct net_device *dev)
 	return 0;
 }
 
-/* --------------------------------------------------------------------- */
+ 
 
 static int yam_siocdevprivate(struct net_device *dev, struct ifreq *ifr, void __user *data, int cmd)
 {
@@ -942,11 +895,11 @@ static int yam_siocdevprivate(struct net_device *dev, struct ifreq *ifr, void __
 	switch (ioctl_cmd) {
 
 	case SIOCYAMRESERVED:
-		return -EINVAL;			/* unused */
+		return -EINVAL;			 
 
 	case SIOCYAMSMCS:
 		if (netif_running(dev))
-			return -EINVAL;		/* Cannot change this parameter when up */
+			return -EINVAL;		 
 		ym = memdup_user(data, sizeof(struct yamdrv_ioctl_mcs));
 		if (IS_ERR(ym))
 			return PTR_ERR(ym);
@@ -954,7 +907,7 @@ static int yam_siocdevprivate(struct net_device *dev, struct ifreq *ifr, void __
 			kfree(ym);
 			return -EINVAL;
 		}
-		/* setting predef as 0 for loading userdefined mcs data */
+		 
 		add_mcs(ym->bits, ym->bitrate, 0);
 		kfree(ym);
 		break;
@@ -968,13 +921,13 @@ static int yam_siocdevprivate(struct net_device *dev, struct ifreq *ifr, void __
 		if (yi.cmd != SIOCYAMSCFG)
 			return -EINVAL;
 		if ((yi.cfg.mask & YAM_IOBASE) && netif_running(dev))
-			return -EINVAL;		/* Cannot change this parameter when up */
+			return -EINVAL;		 
 		if ((yi.cfg.mask & YAM_IRQ) && netif_running(dev))
-			return -EINVAL;		/* Cannot change this parameter when up */
+			return -EINVAL;		 
 		if ((yi.cfg.mask & YAM_BITRATE) && netif_running(dev))
-			return -EINVAL;		/* Cannot change this parameter when up */
+			return -EINVAL;		 
 		if ((yi.cfg.mask & YAM_BAUDRATE) && netif_running(dev))
-			return -EINVAL;		/* Cannot change this parameter when up */
+			return -EINVAL;		 
 
 		if (yi.cfg.mask & YAM_IOBASE) {
 			yp->iobase = yi.cfg.iobase;
@@ -1054,18 +1007,18 @@ static int yam_siocdevprivate(struct net_device *dev, struct ifreq *ifr, void __
 	return 0;
 }
 
-/* --------------------------------------------------------------------- */
+ 
 
 static int yam_set_mac_address(struct net_device *dev, void *addr)
 {
 	struct sockaddr *sa = (struct sockaddr *) addr;
 
-	/* addr is an AX.25 shifted ASCII mac address */
+	 
 	dev_addr_set(dev, sa->sa_data);
 	return 0;
 }
 
-/* --------------------------------------------------------------------- */
+ 
 
 static const struct net_device_ops yam_netdev_ops = {
 	.ndo_open	     = yam_open,
@@ -1151,7 +1104,7 @@ static int __init yam_init_driver(void)
 	return err;
 }
 
-/* --------------------------------------------------------------------- */
+ 
 
 static void __exit yam_cleanup_driver(void)
 {
@@ -1176,7 +1129,7 @@ static void __exit yam_cleanup_driver(void)
 	remove_proc_entry("yam", init_net.proc_net);
 }
 
-/* --------------------------------------------------------------------- */
+ 
 
 MODULE_AUTHOR("Frederic Rible F1OAT frible@teaser.fr");
 MODULE_DESCRIPTION("Yam amateur radio modem driver");
@@ -1187,5 +1140,5 @@ MODULE_FIRMWARE(FIRMWARE_9600);
 module_init(yam_init_driver);
 module_exit(yam_cleanup_driver);
 
-/* --------------------------------------------------------------------- */
+ 
 

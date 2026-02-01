@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/of.h>
 #include <linux/platform_device.h>
@@ -118,9 +116,7 @@ static int msm_hdmi_phy_pll_init(struct platform_device *pdev,
 	case MSM_HDMI_PHY_8996:
 		ret = msm_hdmi_pll_8996_init(pdev);
 		break;
-	/*
-	 * we don't have PLL support for these, don't report an error for now
-	 */
+	 
 	case MSM_HDMI_PHY_8x60:
 	case MSM_HDMI_PHY_8x74:
 	default:

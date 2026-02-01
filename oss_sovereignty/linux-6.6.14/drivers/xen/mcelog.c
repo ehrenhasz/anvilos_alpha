@@ -1,36 +1,4 @@
-/******************************************************************************
- * mcelog.c
- * Driver for receiving and transferring machine check error infomation
- *
- * Copyright (c) 2012 Intel Corporation
- * Author: Liu, Jinsong <jinsong.liu@intel.com>
- * Author: Jiang, Yunhong <yunhong.jiang@intel.com>
- * Author: Ke, Liping <liping.ke@intel.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation; or, when distributed
- * separately from the Linux kernel or incorporated into other
- * software packages, subject to the following license:
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this source file (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy, modify,
- * merge, publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
+ 
 
 #define pr_fmt(fmt) "xen_mcelog: " fmt
 
@@ -66,8 +34,8 @@ static struct xen_mce_log xen_mcelog = {
 };
 
 static DEFINE_SPINLOCK(xen_mce_chrdev_state_lock);
-static int xen_mce_chrdev_open_count;	/* #times opened */
-static int xen_mce_chrdev_open_exclu;	/* already open exclusive? */
+static int xen_mce_chrdev_open_count;	 
+static int xen_mce_chrdev_open_exclu;	 
 
 static DECLARE_WAIT_QUEUE_HEAD(xen_mce_chrdev_wait);
 
@@ -114,7 +82,7 @@ static ssize_t xen_mce_chrdev_read(struct file *filp, char __user *ubuf,
 
 	num = xen_mcelog.next;
 
-	/* Only supports full reads right now */
+	 
 	err = -EINVAL;
 	if (*off != 0 || usize < XEN_MCE_LOG_LEN*sizeof(struct xen_mce))
 		goto out;
@@ -191,20 +159,14 @@ static struct miscdevice xen_mce_chrdev_device = {
 	&xen_mce_chrdev_ops,
 };
 
-/*
- * Caller should hold the mcelog_lock
- */
+ 
 static void xen_mce_log(struct xen_mce *mce)
 {
 	unsigned entry;
 
 	entry = xen_mcelog.next;
 
-	/*
-	 * When the buffer fills up discard new entries.
-	 * Assume that the earlier errors are the more
-	 * interesting ones:
-	 */
+	 
 	if (entry >= XEN_MCE_LOG_LEN) {
 		set_bit(XEN_MCE_OVERFLOW,
 			(unsigned long *)&xen_mcelog.flags);
@@ -283,7 +245,7 @@ static int convert_log(struct mc_info *mi)
 			m.tsc = mc_bank->mc_tsc;
 			m.bank = mc_bank->mc_bank;
 			m.finished = 1;
-			/*log this record*/
+			 
 			xen_mce_log(&m);
 		}
 		mic = x86_mcinfo_next(mic);
@@ -328,24 +290,24 @@ static int mc_queue_handle(uint32_t flags)
 	return ret;
 }
 
-/* virq handler for machine check error info*/
+ 
 static void xen_mce_work_fn(struct work_struct *work)
 {
 	int err;
 
 	mutex_lock(&mcelog_lock);
 
-	/* urgent mc_info */
+	 
 	err = mc_queue_handle(XEN_MC_URGENT);
 	if (err)
 		pr_err("Failed to handle urgent mc_info queue, continue handling nonurgent mc_info queue anyway\n");
 
-	/* nonurgent mc_info */
+	 
 	err = mc_queue_handle(XEN_MC_NONURGENT);
 	if (err)
 		pr_err("Failed to handle nonurgent mc_info queue\n");
 
-	/* wake processes polling /dev/mcelog */
+	 
 	wake_up_interruptible(&xen_mce_chrdev_wait);
 
 	mutex_unlock(&mcelog_lock);
@@ -365,7 +327,7 @@ static int bind_virq_for_mce(void)
 
 	memset(&mc_op, 0, sizeof(struct xen_mc));
 
-	/* Fetch physical CPU Numbers */
+	 
 	mc_op.cmd = XEN_MC_physcpuinfo;
 	set_xen_guest_handle(mc_op.u.mc_physcpuinfo.info, g_physinfo);
 	ret = HYPERVISOR_mca(&mc_op);
@@ -374,7 +336,7 @@ static int bind_virq_for_mce(void)
 		return ret;
 	}
 
-	/* Fetch each CPU Physical Info for later reference*/
+	 
 	ncpus = mc_op.u.mc_physcpuinfo.ncpus;
 	g_physinfo = kcalloc(ncpus, sizeof(struct mcinfo_logical_cpu),
 			     GFP_KERNEL);
@@ -403,11 +365,11 @@ static int __init xen_late_init_mcelog(void)
 {
 	int ret;
 
-	/* Only DOM0 is responsible for MCE logging */
+	 
 	if (!xen_initial_domain())
 		return -ENODEV;
 
-	/* register character device /dev/mcelog for xen mcelog */
+	 
 	ret = misc_register(&xen_mce_chrdev_device);
 	if (ret)
 		return ret;

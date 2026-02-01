@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2009-2013, The Linux Foundation. All rights reserved.
- * Copyright (c) 2010, Google Inc.
- *
- * Original authors: Code Aurora Forum
- *
- * Author: Dima Zavin <dima@android.com>
- *  - Largely rewritten from original to not be an i2c driver.
- */
+
+ 
 
 #define pr_fmt(fmt) "%s: " fmt, __func__
 
@@ -21,21 +14,21 @@
 #include <linux/slab.h>
 #include <linux/ssbi.h>
 
-/* SSBI 2.0 controller registers */
+ 
 #define SSBI2_CMD			0x0008
 #define SSBI2_RD			0x0010
 #define SSBI2_STATUS			0x0014
 #define SSBI2_MODE2			0x001C
 
-/* SSBI_CMD fields */
+ 
 #define SSBI_CMD_RDWRN			(1 << 24)
 
-/* SSBI_STATUS fields */
+ 
 #define SSBI_STATUS_RD_READY		(1 << 2)
 #define SSBI_STATUS_READY		(1 << 1)
 #define SSBI_STATUS_MCHN_BUSY		(1 << 0)
 
-/* SSBI_MODE2 fields */
+ 
 #define SSBI_MODE2_REG_ADDR_15_8_SHFT	0x04
 #define SSBI_MODE2_REG_ADDR_15_8_MASK	(0x7f << SSBI_MODE2_REG_ADDR_15_8_SHFT)
 
@@ -43,15 +36,15 @@
 	(((MD) & 0x0F) | ((((AD) >> 8) << SSBI_MODE2_REG_ADDR_15_8_SHFT) & \
 	SSBI_MODE2_REG_ADDR_15_8_MASK))
 
-/* SSBI PMIC Arbiter command registers */
+ 
 #define SSBI_PA_CMD			0x0000
 #define SSBI_PA_RD_STATUS		0x0004
 
-/* SSBI_PA_CMD fields */
+ 
 #define SSBI_PA_CMD_RDWRN		(1 << 24)
-#define SSBI_PA_CMD_ADDR_MASK		0x7fff /* REG_ADDR_7_0, REG_ADDR_8_14*/
+#define SSBI_PA_CMD_ADDR_MASK		0x7fff  
 
-/* SSBI_PA_RD_STATUS fields */
+ 
 #define SSBI_PA_RD_STATUS_TRANS_DONE	(1 << 27)
 #define SSBI_PA_RD_STATUS_TRANS_DENIED	(1 << 26)
 
@@ -82,15 +75,7 @@ static inline void ssbi_writel(struct ssbi *ssbi, u32 val, u32 reg)
 	writel(val, ssbi->base + reg);
 }
 
-/*
- * Via private exchange with one of the original authors, the hardware
- * should generally finish a transaction in about 5us.  The worst
- * case, is when using the arbiter and both other CPUs have just
- * started trying to use the SSBI bus will result in a time of about
- * 20us.  It should never take longer than this.
- *
- * As such, this wait merely spins, with a udelay.
- */
+ 
 static int ssbi_wait_mask(struct ssbi *ssbi, u32 set_mask, u32 clr_mask)
 {
 	u32 timeout = SSBI_TIMEOUT_US;
@@ -163,10 +148,7 @@ err:
 	return ret;
 }
 
-/*
- * See ssbi_wait_mask for an explanation of the time and the
- * busywait.
- */
+ 
 static inline int
 ssbi_pa_transfer(struct ssbi *ssbi, u32 cmd, u8 *data)
 {

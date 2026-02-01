@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cherryview/Braswell pinctrl driver
- *
- * Copyright (C) 2014, 2020 Intel Corporation
- * Author: Mika Westerberg <mika.westerberg@linux.intel.com>
- *
- * This driver is based on the original Cherryview GPIO driver by
- *   Ning Li <ning.li@intel.com>
- *   Alan Cox <alan@linux.intel.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/dmi.h>
@@ -77,11 +68,7 @@ struct intel_pad_context {
 
 #define CHV_INVALID_HWIRQ	(~0U)
 
-/**
- * struct intel_community_context - community context for Cherryview
- * @intr_lines: Mapping between 16 HW interrupt wires and GPIO offset (in GPIO number space)
- * @saved_intmask: Interrupt mask saved for system sleep
- */
+ 
 struct intel_community_context {
 	unsigned int intr_lines[16];
 	u32 saved_intmask;
@@ -187,20 +174,17 @@ static const unsigned southwest_i2c6_pins[] = { 47, 51 };
 static const unsigned southwest_i2c_nfc_pins[] = { 49, 52 };
 static const unsigned southwest_spi3_pins[] = { 76, 79, 80, 81, 82 };
 
-/* Some of LPE I2S TXD pins need to have OE inversion set */
+ 
 static const unsigned int southwest_lpe_altfuncs[] = {
-	PINMODE(1, 1), PINMODE(1, 0), PINMODE(1, 0), PINMODE(1, 0), /* 30, 31, 32, 33 */
-	PINMODE(1, 1), PINMODE(1, 0), PINMODE(1, 0), PINMODE(1, 0), /* 34, 35, 36, 37 */
-	PINMODE(1, 0), PINMODE(1, 0), PINMODE(1, 0), PINMODE(1, 1), /* 92, 94, 96, 97 */
+	PINMODE(1, 1), PINMODE(1, 0), PINMODE(1, 0), PINMODE(1, 0),  
+	PINMODE(1, 1), PINMODE(1, 0), PINMODE(1, 0), PINMODE(1, 0),  
+	PINMODE(1, 0), PINMODE(1, 0), PINMODE(1, 0), PINMODE(1, 1),  
 };
 
-/*
- * Two spi3 chipselects are available in different mode than the main spi3
- * functionality, which is using mode 2.
- */
+ 
 static const unsigned int southwest_spi3_altfuncs[] = {
-	PINMODE(3, 0), PINMODE(2, 0), PINMODE(3, 0), PINMODE(2, 0), /* 76, 79, 80, 81 */
-	PINMODE(2, 0),						    /* 82 */
+	PINMODE(3, 0), PINMODE(2, 0), PINMODE(3, 0), PINMODE(2, 0),  
+	PINMODE(2, 0),						     
 };
 
 static const struct intel_pingroup southwest_groups[] = {
@@ -235,10 +219,7 @@ static const char * const southwest_i2c6_groups[] = { "i2c6_grp" };
 static const char * const southwest_i2c_nfc_groups[] = { "i2c_nfc_grp" };
 static const char * const southwest_spi3_groups[] = { "spi3_grp" };
 
-/*
- * Only do pinmuxing for certain LPSS devices for now. Rest of the pins are
- * enabled only as GPIOs.
- */
+ 
 static const struct intel_function southwest_functions[] = {
 	FUNCTION("uart0", southwest_uart0_groups),
 	FUNCTION("uart1", southwest_uart1_groups),
@@ -266,10 +247,7 @@ static const struct intel_padgroup southwest_gpps[] = {
 	CHV_GPP(90, 97),
 };
 
-/*
- * Southwest community can generate GPIO interrupts only for the first 8
- * interrupts. The upper half (8-15) can only be used to trigger GPEs.
- */
+ 
 static const struct intel_community southwest_communities[] = {
 	CHV_COMMUNITY(southwest_gpps, 8, 0x91),
 };
@@ -360,10 +338,7 @@ static const struct intel_padgroup north_gpps[] = {
 	CHV_GPP(60, 72),
 };
 
-/*
- * North community can generate GPIO interrupts only for the first 8
- * interrupts. The upper half (8-15) can only be used to trigger GPEs.
- */
+ 
 static const struct intel_community north_communities[] = {
 	CHV_COMMUNITY(north_gpps, 8, 0x92),
 };
@@ -557,15 +532,7 @@ static const struct intel_pinctrl_soc_data *chv_soc_data[] = {
 	NULL
 };
 
-/*
- * Lock to serialize register accesses
- *
- * Due to a silicon issue, a shared lock must be used to prevent
- * concurrent accesses across the 4 GPIO controllers.
- *
- * See Intel Atom Z8000 Processor Series Specification Update (Rev. 005),
- * errata #CHT34, for further information.
- */
+ 
 static DEFINE_RAW_SPINLOCK(chv_lock);
 
 static u32 chv_pctrl_readl(struct intel_pinctrl *pctrl, unsigned int offset)
@@ -580,7 +547,7 @@ static void chv_pctrl_writel(struct intel_pinctrl *pctrl, unsigned int offset, u
 	const struct intel_community *community = &pctrl->communities[0];
 	void __iomem *reg = community->regs + offset;
 
-	/* Write and simple read back to confirm the bus transferring done */
+	 
 	writel(value, reg);
 	readl(reg);
 }
@@ -606,12 +573,12 @@ static void chv_writel(struct intel_pinctrl *pctrl, unsigned int pin, unsigned i
 {
 	void __iomem *reg = chv_padreg(pctrl, pin, offset);
 
-	/* Write and simple read back to confirm the bus transferring done */
+	 
 	writel(value, reg);
 	readl(reg);
 }
 
-/* When Pad Cfg is locked, driver can only change GPIOTXState or GPIORXState */
+ 
 static bool chv_pad_locked(struct intel_pinctrl *pctrl, unsigned int offset)
 {
 	return chv_readl(pctrl, offset, CHV_PADCTRL1) & CHV_PADCTRL1_CFGLOCK;
@@ -670,7 +637,7 @@ static int chv_pinmux_set_mux(struct pinctrl_dev *pctldev,
 
 	raw_spin_lock_irqsave(&chv_lock, flags);
 
-	/* Check first that the pad is not locked */
+	 
 	for (i = 0; i < grp->grp.npins; i++) {
 		if (chv_pad_locked(pctrl, grp->grp.pins[i])) {
 			raw_spin_unlock_irqrestore(&chv_lock, flags);
@@ -685,25 +652,25 @@ static int chv_pinmux_set_mux(struct pinctrl_dev *pctldev,
 		bool invert_oe;
 		u32 value;
 
-		/* Check if there is pin-specific config */
+		 
 		if (grp->modes)
 			mode = grp->modes[i];
 		else
 			mode = grp->mode;
 
-		/* Extract OE inversion */
+		 
 		invert_oe = mode & PINMODE_INVERT_OE;
 		mode &= ~PINMODE_INVERT_OE;
 
 		value = chv_readl(pctrl, pin, CHV_PADCTRL0);
-		/* Disable GPIO mode */
+		 
 		value &= ~CHV_PADCTRL0_GPIOEN;
-		/* Set to desired mode */
+		 
 		value &= ~CHV_PADCTRL0_PMODE_MASK;
 		value |= mode << CHV_PADCTRL0_PMODE_SHIFT;
 		chv_writel(pctrl, pin, CHV_PADCTRL0, value);
 
-		/* Update for invert_oe */
+		 
 		value = chv_readl(pctrl, pin, CHV_PADCTRL1) & ~CHV_PADCTRL1_INVRXTX_MASK;
 		if (invert_oe)
 			value |= CHV_PADCTRL1_INVRXTX_TXENABLE;
@@ -724,12 +691,7 @@ static void chv_gpio_clear_triggering(struct intel_pinctrl *pctrl,
 	u32 invrxtx_mask = CHV_PADCTRL1_INVRXTX_MASK;
 	u32 value;
 
-	/*
-	 * One some devices the GPIO should output the inverted value from what
-	 * device-drivers / ACPI code expects (inverted external buffer?). The
-	 * BIOS makes this work by setting the CHV_PADCTRL1_INVRXTX_TXDATA flag,
-	 * preserve this flag if the pin is already setup as GPIO.
-	 */
+	 
 	value = chv_readl(pctrl, offset, CHV_PADCTRL0);
 	if (value & CHV_PADCTRL0_GPIOEN)
 		invrxtx_mask &= ~CHV_PADCTRL1_INVRXTX_TXDATA;
@@ -753,7 +715,7 @@ static int chv_gpio_request_enable(struct pinctrl_dev *pctldev,
 	if (chv_pad_locked(pctrl, offset)) {
 		value = chv_readl(pctrl, offset, CHV_PADCTRL0);
 		if (!(value & CHV_PADCTRL0_GPIOEN)) {
-			/* Locked so cannot enable */
+			 
 			raw_spin_unlock_irqrestore(&chv_lock, flags);
 			return -EBUSY;
 		}
@@ -761,7 +723,7 @@ static int chv_gpio_request_enable(struct pinctrl_dev *pctldev,
 		struct intel_community_context *cctx = &pctrl->context.communities[0];
 		int i;
 
-		/* Reset the interrupt mapping */
+		 
 		for (i = 0; i < ARRAY_SIZE(cctx->intr_lines); i++) {
 			if (cctx->intr_lines[i] == offset) {
 				cctx->intr_lines[i] = CHV_INVALID_HWIRQ;
@@ -769,22 +731,19 @@ static int chv_gpio_request_enable(struct pinctrl_dev *pctldev,
 			}
 		}
 
-		/* Disable interrupt generation */
+		 
 		chv_gpio_clear_triggering(pctrl, offset);
 
 		value = chv_readl(pctrl, offset, CHV_PADCTRL0);
 
-		/*
-		 * If the pin is in HiZ mode (both TX and RX buffers are
-		 * disabled) we turn it to be input now.
-		 */
+		 
 		if ((value & CHV_PADCTRL0_GPIOCFG_MASK) ==
 		     (CHV_PADCTRL0_GPIOCFG_HIZ << CHV_PADCTRL0_GPIOCFG_SHIFT)) {
 			value &= ~CHV_PADCTRL0_GPIOCFG_MASK;
 			value |= CHV_PADCTRL0_GPIOCFG_GPI << CHV_PADCTRL0_GPIOCFG_SHIFT;
 		}
 
-		/* Switch to a GPIO mode */
+		 
 		value |= CHV_PADCTRL0_GPIOEN;
 		chv_writel(pctrl, offset, CHV_PADCTRL0, value);
 	}
@@ -945,7 +904,7 @@ static int chv_config_set_pull(struct intel_pinctrl *pctrl, unsigned int pin,
 
 		switch (arg) {
 		case 1000:
-			/* For 1k there is only pull up */
+			 
 			pull = CHV_PADCTRL0_TERM_1K << CHV_PADCTRL0_TERM_SHIFT;
 			break;
 		case 5000:
@@ -1252,16 +1211,7 @@ static void chv_gpio_irq_unmask(struct irq_data *d)
 
 static unsigned chv_gpio_irq_startup(struct irq_data *d)
 {
-	/*
-	 * Check if the interrupt has been requested with 0 as triggering
-	 * type. In that case it is assumed that the current values
-	 * programmed to the hardware are used (e.g BIOS configured
-	 * defaults).
-	 *
-	 * In that case ->irq_set_type() will never be called so we need to
-	 * read back the values from hardware now, set correct flow handler
-	 * and update mappings before the interrupt is being used.
-	 */
+	 
 	if (irqd_get_trigger_type(d) == IRQ_TYPE_NONE) {
 		struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
 		struct intel_pinctrl *pctrl = gpiochip_get_data(gc);
@@ -1316,23 +1266,14 @@ static int chv_gpio_set_intr_line(struct intel_pinctrl *pctrl, unsigned int pin)
 		return 0;
 	}
 
-	/*
-	 * The interrupt line selected by the BIOS is already in use by
-	 * another pin, this is a known BIOS bug found on several models.
-	 * But this may also be caused by Linux deciding to use a pin as
-	 * IRQ which was not expected to be used as such by the BIOS authors,
-	 * so log this at info level only.
-	 */
+	 
 	dev_info(dev, "interrupt line %u is used by both pin %u and pin %u\n", intsel,
 		 cctx->intr_lines[intsel], pin);
 
 	if (chv_pad_locked(pctrl, pin))
 		return -EBUSY;
 
-	/*
-	 * The BIOS fills the interrupt lines from 0 counting up, start at
-	 * the other end to find a free interrupt line to workaround this.
-	 */
+	 
 	for (i = community->nirqs - 1; i >= 0; i--) {
 		if (cctx->intr_lines[i] == CHV_INVALID_HWIRQ)
 			break;
@@ -1366,19 +1307,7 @@ static int chv_gpio_irq_type(struct irq_data *d, unsigned int type)
 		return ret;
 	}
 
-	/*
-	 * Pins which can be used as shared interrupt are configured in
-	 * BIOS. Driver trusts BIOS configurations and assigns different
-	 * handler according to the irq type.
-	 *
-	 * Driver needs to save the mapping between each pin and
-	 * its interrupt line.
-	 * 1. If the pin cfg is locked in BIOS:
-	 *	Trust BIOS has programmed IntWakeCfg bits correctly,
-	 *	driver just needs to save the mapping.
-	 * 2. If the pin cfg is not locked in BIOS:
-	 *	Driver programs the IntWakeCfg bits and save the mapping.
-	 */
+	 
 	if (!chv_pad_locked(pctrl, hwirq)) {
 		value = chv_readl(pctrl, hwirq, CHV_PADCTRL1);
 		value &= ~CHV_PADCTRL1_INTWAKECFG_MASK;
@@ -1445,7 +1374,7 @@ static void chv_gpio_irq_handler(struct irq_desc *desc)
 		offset = cctx->intr_lines[intr_line];
 		if (offset == CHV_INVALID_HWIRQ) {
 			dev_warn_once(dev, "interrupt on unmapped interrupt line %u\n", intr_line);
-			/* Some boards expect hwirq 0 to trigger in this case */
+			 
 			offset = 0;
 		}
 
@@ -1455,56 +1384,9 @@ static void chv_gpio_irq_handler(struct irq_desc *desc)
 	chained_irq_exit(chip, desc);
 }
 
-/*
- * Certain machines seem to hardcode Linux IRQ numbers in their ACPI
- * tables. Since we leave GPIOs that are not capable of generating
- * interrupts out of the irqdomain the numbering will be different and
- * cause devices using the hardcoded IRQ numbers fail. In order not to
- * break such machines we will only mask pins from irqdomain if the machine
- * is not listed below.
- */
+ 
 static const struct dmi_system_id chv_no_valid_mask[] = {
-	/* See https://bugzilla.kernel.org/show_bug.cgi?id=194945 */
-	{
-		.ident = "Intel_Strago based Chromebooks (All models)",
-		.matches = {
-			DMI_MATCH(DMI_SYS_VENDOR, "GOOGLE"),
-			DMI_MATCH(DMI_PRODUCT_FAMILY, "Intel_Strago"),
-		},
-	},
-	{
-		.ident = "HP Chromebook 11 G5 (Setzer)",
-		.matches = {
-			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
-			DMI_MATCH(DMI_PRODUCT_NAME, "Setzer"),
-		},
-	},
-	{
-		.ident = "Acer Chromebook R11 (Cyan)",
-		.matches = {
-			DMI_MATCH(DMI_SYS_VENDOR, "GOOGLE"),
-			DMI_MATCH(DMI_PRODUCT_NAME, "Cyan"),
-		},
-	},
-	{
-		.ident = "Samsung Chromebook 3 (Celes)",
-		.matches = {
-			DMI_MATCH(DMI_SYS_VENDOR, "GOOGLE"),
-			DMI_MATCH(DMI_PRODUCT_NAME, "Celes"),
-		},
-	},
-	{}
-};
-
-static void chv_init_irq_valid_mask(struct gpio_chip *chip,
-				    unsigned long *valid_mask,
-				    unsigned int ngpios)
-{
-	struct intel_pinctrl *pctrl = gpiochip_get_data(chip);
-	const struct intel_community *community = &pctrl->communities[0];
-	int i;
-
-	/* Do not add GPIOs that can only generate GPEs to the IRQ domain */
+	 
 	for (i = 0; i < pctrl->soc->npins; i++) {
 		const struct pinctrl_pin_desc *desc;
 		u32 intsel;
@@ -1525,22 +1407,13 @@ static int chv_gpio_irq_init_hw(struct gpio_chip *chip)
 	struct intel_pinctrl *pctrl = gpiochip_get_data(chip);
 	const struct intel_community *community = &pctrl->communities[0];
 
-	/*
-	 * The same set of machines in chv_no_valid_mask[] have incorrectly
-	 * configured GPIOs that generate spurious interrupts so we use
-	 * this same list to apply another quirk for them.
-	 *
-	 * See also https://bugzilla.kernel.org/show_bug.cgi?id=197953.
-	 */
+	 
 	if (!pctrl->chip.irq.init_valid_mask) {
-		/*
-		 * Mask all interrupts the community is able to generate
-		 * but leave the ones that can only generate GPEs unmasked.
-		 */
+		 
 		chv_pctrl_writel(pctrl, CHV_INTMASK, GENMASK(31, community->nirqs));
 	}
 
-	/* Clear all interrupts */
+	 
 	chv_pctrl_writel(pctrl, CHV_INTSTAT, 0xffff);
 
 	return 0;
@@ -1779,11 +1652,7 @@ static int chv_pinctrl_resume_noirq(struct device *dev)
 
 	raw_spin_lock_irqsave(&chv_lock, flags);
 
-	/*
-	 * Mask all interrupts before restoring per-pin configuration
-	 * registers because we don't know in which state BIOS left them
-	 * upon exiting suspend.
-	 */
+	 
 	chv_pctrl_writel(pctrl, CHV_INTMASK, 0x0000);
 
 	for (i = 0; i < pctrl->soc->npins; i++) {
@@ -1795,7 +1664,7 @@ static int chv_pinctrl_resume_noirq(struct device *dev)
 		if (chv_pad_locked(pctrl, desc->number))
 			continue;
 
-		/* Only restore if our saved state differs from the current */
+		 
 		val = chv_readl(pctrl, desc->number, CHV_PADCTRL0);
 		val &= ~CHV_PADCTRL0_GPIORXSTATE;
 		if (ctx->padctrl0 != val) {
@@ -1812,10 +1681,7 @@ static int chv_pinctrl_resume_noirq(struct device *dev)
 		}
 	}
 
-	/*
-	 * Now that all pins are restored to known state, we can restore
-	 * the interrupt mask register as well.
-	 */
+	 
 	chv_pctrl_writel(pctrl, CHV_INTSTAT, 0xffff);
 	chv_pctrl_writel(pctrl, CHV_INTMASK, cctx->saved_intmask);
 

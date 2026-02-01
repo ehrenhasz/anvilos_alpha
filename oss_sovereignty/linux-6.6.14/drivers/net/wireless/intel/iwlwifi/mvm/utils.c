@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2012-2014, 2018-2023 Intel Corporation
- * Copyright (C) 2013-2014 Intel Mobile Communications GmbH
- * Copyright (C) 2015-2017 Intel Deutschland GmbH
- */
+
+ 
 #include <net/mac80211.h>
 
 #include "iwl-debug.h"
@@ -14,10 +10,7 @@
 #include "fw/api/rs.h"
 #include "fw/img.h"
 
-/*
- * Will return 0 even if the cmd failed when RFKILL is asserted unless
- * CMD_WANT_SKB is set in cmd->flags.
- */
+ 
 int iwl_mvm_send_cmd(struct iwl_mvm *mvm, struct iwl_host_cmd *cmd)
 {
 	int ret;
@@ -27,28 +20,17 @@ int iwl_mvm_send_cmd(struct iwl_mvm *mvm, struct iwl_host_cmd *cmd)
 		return -EIO;
 #endif
 
-	/*
-	 * Synchronous commands from this op-mode must hold
-	 * the mutex, this ensures we don't try to send two
-	 * (or more) synchronous commands at a time.
-	 */
+	 
 	if (!(cmd->flags & CMD_ASYNC))
 		lockdep_assert_held(&mvm->mutex);
 
 	ret = iwl_trans_send_cmd(mvm->trans, cmd);
 
-	/*
-	 * If the caller wants the SKB, then don't hide any problems, the
-	 * caller might access the response buffer which will be NULL if
-	 * the command failed.
-	 */
+	 
 	if (cmd->flags & CMD_WANT_SKB)
 		return ret;
 
-	/*
-	 * Silently ignore failures if RFKILL is asserted or
-	 * we are in suspend\resume process
-	 */
+	 
 	if (!ret || ret == -ERFKILL || ret == -EHOSTDOWN)
 		return 0;
 	return ret;
@@ -67,9 +49,7 @@ int iwl_mvm_send_cmd_pdu(struct iwl_mvm *mvm, u32 id,
 	return iwl_mvm_send_cmd(mvm, &cmd);
 }
 
-/*
- * We assume that the caller set the status to the success value
- */
+ 
 int iwl_mvm_send_cmd_status(struct iwl_mvm *mvm, struct iwl_host_cmd *cmd,
 			    u32 *status)
 {
@@ -84,10 +64,7 @@ int iwl_mvm_send_cmd_status(struct iwl_mvm *mvm, struct iwl_host_cmd *cmd,
 		return -EIO;
 #endif
 
-	/*
-	 * Only synchronous commands can wait for status,
-	 * we use WANT_SKB so the caller can't.
-	 */
+	 
 	if (WARN_ONCE(cmd->flags & (CMD_ASYNC | CMD_WANT_SKB),
 		      "cmd flags %x", cmd->flags))
 		return -EINVAL;
@@ -96,10 +73,7 @@ int iwl_mvm_send_cmd_status(struct iwl_mvm *mvm, struct iwl_host_cmd *cmd,
 
 	ret = iwl_trans_send_cmd(mvm->trans, cmd);
 	if (ret == -ERFKILL) {
-		/*
-		 * The command failed because of RFKILL, don't update
-		 * the status, leave it as success and return 0.
-		 */
+		 
 		return 0;
 	} else if (ret) {
 		return ret;
@@ -120,9 +94,7 @@ int iwl_mvm_send_cmd_status(struct iwl_mvm *mvm, struct iwl_host_cmd *cmd,
 	return ret;
 }
 
-/*
- * We assume that the caller set the status to the sucess value
- */
+ 
 int iwl_mvm_send_cmd_pdu_status(struct iwl_mvm *mvm, u32 id, u16 len,
 				const void *data, u32 *status)
 {
@@ -146,7 +118,7 @@ int iwl_mvm_legacy_hw_idx_to_mac80211_idx(u32 rate_n_flags,
 		return is_LB ? rate + IWL_FIRST_OFDM_RATE :
 			rate;
 
-	/* CCK is not allowed in HB */
+	 
 	return is_LB ? rate : -1;
 }
 
@@ -157,7 +129,7 @@ int iwl_mvm_legacy_rate_to_mac80211_idx(u32 rate_n_flags,
 	int idx;
 	int band_offset = 0;
 
-	/* Legacy rate format, search for match in table */
+	 
 	if (band != NL80211_BAND_2GHZ)
 		band_offset = IWL_FIRST_OFDM_RATE;
 	for (idx = band_offset; idx < IWL_RATE_COUNT_LEGACY; idx++)
@@ -170,9 +142,7 @@ int iwl_mvm_legacy_rate_to_mac80211_idx(u32 rate_n_flags,
 u8 iwl_mvm_mac80211_idx_to_hwrate(const struct iwl_fw *fw, int rate_idx)
 {
 	if (iwl_fw_lookup_cmd_ver(fw, TX_CMD, 0) > 8)
-		/* In the new rate legacy rates are indexed:
-		 * 0 - 3 for CCK and 0 - 7 for OFDM.
-		 */
+		 
 		return (rate_idx >= IWL_FIRST_OFDM_RATE ?
 			rate_idx - IWL_FIRST_OFDM_RATE :
 			rate_idx);
@@ -206,25 +176,17 @@ void iwl_mvm_rx_fw_error(struct iwl_mvm *mvm, struct iwl_rx_cmd_buffer *rxb)
 		le64_to_cpu(err_resp->timestamp));
 }
 
-/*
- * Returns the first antenna as ANT_[ABC], as defined in iwl-config.h.
- * The parameter should also be a combination of ANT_[ABC].
- */
+ 
 u8 first_antenna(u8 mask)
 {
-	BUILD_BUG_ON(ANT_A != BIT(0)); /* using ffs is wrong if not */
-	if (WARN_ON_ONCE(!mask)) /* ffs will return 0 if mask is zeroed */
+	BUILD_BUG_ON(ANT_A != BIT(0));  
+	if (WARN_ON_ONCE(!mask))  
 		return BIT(0);
 	return BIT(ffs(mask) - 1);
 }
 
 #define MAX_ANT_NUM 2
-/*
- * Toggles between TX antennas to send the probe request on.
- * Receives the bitmask of valid TX antennas and the *index* used
- * for the last TX, and returns the next valid *index* to use.
- * In order to set it in the tx_cmd, must do BIT(idx).
- */
+ 
 u8 iwl_mvm_next_antenna(struct iwl_mvm *mvm, u8 valid, u8 last_idx)
 {
 	u8 ind = last_idx;
@@ -240,16 +202,7 @@ u8 iwl_mvm_next_antenna(struct iwl_mvm *mvm, u8 valid, u8 last_idx)
 	return last_idx;
 }
 
-/**
- * iwl_mvm_send_lq_cmd() - Send link quality command
- * @mvm: Driver data.
- * @lq: Link quality command to send.
- *
- * The link quality command is sent as the last step of station creation.
- * This is the special case in which init is set and we call a callback in
- * this case to clear the state indicating that station creation is in
- * progress.
- */
+ 
 int iwl_mvm_send_lq_cmd(struct iwl_mvm *mvm, struct iwl_lq_cmd *lq)
 {
 	struct iwl_host_cmd cmd = {
@@ -266,17 +219,7 @@ int iwl_mvm_send_lq_cmd(struct iwl_mvm *mvm, struct iwl_lq_cmd *lq)
 	return iwl_mvm_send_cmd(mvm, &cmd);
 }
 
-/**
- * iwl_mvm_update_smps - Get a request to change the SMPS mode
- * @mvm: Driver data.
- * @vif: Pointer to the ieee80211_vif structure
- * @req_type: The part of the driver who call for a change.
- * @smps_request: The request to change the SMPS mode.
- * @link_id: for MLO link_id, otherwise 0 (deflink)
- *
- * Get a requst to change the SMPS mode,
- * and change it according to all other requests in the driver.
- */
+ 
 void iwl_mvm_update_smps(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 			 enum iwl_mvm_smps_type_request req_type,
 			 enum ieee80211_smps_mode smps_request,
@@ -288,7 +231,7 @@ void iwl_mvm_update_smps(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 
 	lockdep_assert_held(&mvm->mutex);
 
-	/* SMPS is irrelevant for NICs that don't have at least 2 RX antenna */
+	 
 	if (num_of_ant(iwl_mvm_get_valid_rx_ant(mvm)) == 1)
 		return;
 
@@ -312,7 +255,7 @@ void iwl_mvm_update_smps(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 			smps_mode = IEEE80211_SMPS_DYNAMIC;
 	}
 
-	/* SMPS is disabled in eSR */
+	 
 	if (mvmvif->esr_active)
 		smps_mode = IEEE80211_SMPS_OFF;
 
@@ -355,10 +298,7 @@ int iwl_mvm_request_statistics(struct iwl_mvm *mvm, bool clear)
 	};
 	int ret;
 
-	/* From version 15 - STATISTICS_NOTIFICATION, the reply for
-	 * STATISTICS_CMD is empty, and the response is with
-	 * STATISTICS_NOTIFICATION notification
-	 */
+	 
 	if (iwl_fw_lookup_notif_ver(mvm->fw, LEGACY_GROUP,
 				    STATISTICS_NOTIFICATION, 0) < 15) {
 		cmd.flags = CMD_WANT_SKB;
@@ -385,9 +325,7 @@ int iwl_mvm_request_statistics(struct iwl_mvm *mvm, bool clear)
 			return ret;
 		}
 
-		/* 200ms should be enough for FW to collect data from all
-		 * LMACs and send STATISTICS_NOTIFICATION to host
-		 */
+		 
 		ret = iwl_wait_notification(&mvm->notif_wait, &stats_wait, HZ / 5);
 		if (ret)
 			return ret;
@@ -473,7 +411,7 @@ void iwl_mvm_send_low_latency_cmd(struct iwl_mvm *mvm,
 		return;
 
 	if (low_latency) {
-		/* currently we don't care about the direction */
+		 
 		cmd.low_latency_rx = 1;
 		cmd.low_latency_tx = 1;
 	}
@@ -663,10 +601,7 @@ unsigned int iwl_mvm_get_wd_timeout(struct iwl_mvm *mvm,
 		mvm->trans->trans_cfg->base_params->wd_timeout;
 
 	if (!iwl_fw_dbg_trigger_enabled(mvm->fw, FW_DBG_TRIGGER_TXQ_TIMERS)) {
-		/*
-		 * We can't know when the station is asleep or awake, so we
-		 * must disable the queue hang detection.
-		 */
+		 
 		if (fw_has_capa(&mvm->fw->ucode_capa,
 				IWL_UCODE_TLV_CAPA_STA_PM_NOTIF) &&
 		    vif && vif->type == NL80211_IFTYPE_AP)
@@ -792,7 +727,7 @@ static void iwl_mvm_tcm_iter(void *_data, u8 *mac, struct ieee80211_vif *vif)
 	}
 
 	if (prev != low_latency) {
-		/* this sends traffic load and updates quota as well */
+		 
 		iwl_mvm_update_low_latency(mvm, vif, low_latency,
 					   LOW_LATENCY_TRAFFIC);
 	} else {
@@ -828,7 +763,7 @@ static void iwl_mvm_tcm_uapsd_nonagg_detected_wk(struct work_struct *wk)
 	if (mvm->tcm.data[mvmvif->id].opened_rx_ba_sessions)
 		return;
 
-	/* remember that this AP is broken */
+	 
 	memcpy(mvm->uapsd_noagg_bssids[mvm->uapsd_noagg_bssid_write_idx].addr,
 	       vif->bss_conf.bssid, ETH_ALEN);
 	mvm->uapsd_noagg_bssid_write_idx++;
@@ -882,20 +817,13 @@ static void iwl_mvm_check_uapsd_agg_expected_tpt(struct iwl_mvm *mvm,
 		return;
 
 	if (iwl_mvm_has_new_rx_api(mvm)) {
-		tpt = 8 * bytes; /* kbps */
+		tpt = 8 * bytes;  
 		do_div(tpt, elapsed);
-		rate *= 1000; /* kbps */
+		rate *= 1000;  
 		if (tpt < 22 * rate / 100)
 			return;
 	} else {
-		/*
-		 * the rate here is actually the threshold, in 100Kbps units,
-		 * so do the needed conversion from bytes to 100Kbps:
-		 * 100kb = bits / (100 * 1000),
-		 * 100kbps = 100kb / (msecs / 1000) ==
-		 *           (bits / (100 * 1000)) / (msecs / 1000) ==
-		 *           bits / (100 * msecs)
-		 */
+		 
 		tpt = (8 * bytes);
 		do_div(tpt, elapsed * 100);
 		if (tpt < rate)
@@ -965,14 +893,14 @@ static unsigned long iwl_mvm_calc_tcm_stats(struct iwl_mvm *mvm,
 			vo_vi_pkts += mdata->rx.pkts[ac] +
 				      mdata->tx.pkts[ac];
 
-		/* enable immediately with enough packets but defer disabling */
+		 
 		if (vo_vi_pkts > IWL_MVM_TCM_LOWLAT_ENABLE_THRESH)
 			mvm->tcm.result.low_latency[mac] = true;
 		else if (handle_ll)
 			mvm->tcm.result.low_latency[mac] = false;
 
 		if (handle_ll) {
-			/* clear old data */
+			 
 			memset(&mdata->rx.pkts, 0, sizeof(mdata->rx.pkts));
 			memset(&mdata->tx.pkts, 0, sizeof(mdata->tx.pkts));
 		}
@@ -981,7 +909,7 @@ static unsigned long iwl_mvm_calc_tcm_stats(struct iwl_mvm *mvm,
 		if (!mvm->tcm.result.low_latency[mac] && handle_uapsd)
 			iwl_mvm_check_uapsd_agg_expected_tpt(mvm, uapsd_elapsed,
 							     mac);
-		/* clear old data */
+		 
 		if (handle_uapsd)
 			mdata->uapsd_nonagg_detect.rx_bytes = 0;
 		memset(&mdata->rx.airtime, 0, sizeof(mdata->rx.airtime));
@@ -996,32 +924,13 @@ static unsigned long iwl_mvm_calc_tcm_stats(struct iwl_mvm *mvm,
 		mvm->tcm.result.band_load[i] = band_load;
 	}
 
-	/*
-	 * If the current load isn't low we need to force re-evaluation
-	 * in the TCM period, so that we can return to low load if there
-	 * was no traffic at all (and thus iwl_mvm_recalc_tcm didn't get
-	 * triggered by traffic).
-	 */
+	 
 	if (load != IWL_MVM_TRAFFIC_LOW)
 		return MVM_TCM_PERIOD;
-	/*
-	 * If low-latency is active we need to force re-evaluation after
-	 * (the longer) MVM_LL_PERIOD, so that we can disable low-latency
-	 * when there's no traffic at all.
-	 */
+	 
 	if (low_latency)
 		return MVM_LL_PERIOD;
-	/*
-	 * Otherwise, we don't need to run the work struct because we're
-	 * in the default "idle" state - traffic indication is low (which
-	 * also covers the "no traffic" case) and low-latency is disabled
-	 * so there's no state that may need to be disabled when there's
-	 * no traffic at all.
-	 *
-	 * Note that this has no impact on the regular scheduling of the
-	 * updates triggered by traffic - those happen whenever one of the
-	 * two timeouts expire (if there's traffic at all.)
-	 */
+	 
 	return 0;
 }
 
@@ -1047,13 +956,13 @@ void iwl_mvm_recalc_tcm(struct iwl_mvm *mvm)
 	}
 
 	spin_lock(&mvm->tcm.lock);
-	/* re-check if somebody else won the recheck race */
+	 
 	if (!mvm->tcm.paused && time_after(ts, mvm->tcm.ts + MVM_TCM_PERIOD)) {
-		/* calculate statistics */
+		 
 		unsigned long work_delay = iwl_mvm_calc_tcm_stats(mvm, ts,
 								  handle_uapsd);
 
-		/* the memset needs to be visible before the timestamp */
+		 
 		smp_mb();
 		mvm->tcm.ts = ts;
 		if (work_delay)
@@ -1101,14 +1010,11 @@ void iwl_mvm_resume_tcm(struct iwl_mvm *mvm)
 		if (mvm->tcm.result.low_latency[mac])
 			low_latency = true;
 	}
-	/* The TCM data needs to be reset before "paused" flag changes */
+	 
 	smp_mb();
 	mvm->tcm.paused = false;
 
-	/*
-	 * if the current load is not low or low latency is active, force
-	 * re-evaluation to cover the case of no traffic.
-	 */
+	 
 	if (mvm->tcm.result.global_load > IWL_MVM_TRAFFIC_LOW)
 		schedule_delayed_work(&mvm->tcm.work, MVM_TCM_PERIOD);
 	else if (low_latency)
@@ -1150,7 +1056,7 @@ void iwl_mvm_get_sync_time(struct iwl_mvm *mvm, int clock_type,
 
 	lockdep_assert_held(&mvm->mutex);
 
-	/* Disable power save when reading GP2 */
+	 
 	ps_disabled = mvm->ps_disabled;
 	if (!ps_disabled) {
 		mvm->ps_disabled = true;
@@ -1170,10 +1076,7 @@ void iwl_mvm_get_sync_time(struct iwl_mvm *mvm, int clock_type,
 	}
 }
 
-/* Find if at least two links from different vifs use same channel
- * FIXME: consider having a refcount array in struct iwl_mvm_vif for
- * used phy_ctxt ids.
- */
+ 
 bool iwl_mvm_have_links_same_channel(struct iwl_mvm_vif *vif1,
 				     struct iwl_mvm_vif *vif2)
 {
@@ -1193,7 +1096,7 @@ bool iwl_mvm_vif_is_active(struct iwl_mvm_vif *mvmvif)
 {
 	unsigned int i;
 
-	/* FIXME: can it fail when phy_ctxt is assigned? */
+	 
 	for_each_mvm_vif_valid_link(mvmvif, i) {
 		if (mvmvif->link[i]->phy_ctxt &&
 		    mvmvif->link[i]->phy_ctxt->id < NUM_PHY_CTX)

@@ -1,15 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* LME2510 remote control
- *
- * Copyright (C) 2010 Malcolm Priestley (tvboxspy@gmail.com)
- */
+
+ 
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
 
 static struct rc_map_table lme2510_rc[] = {
-	/* Type 1 - 26 buttons */
+	 
 	{ 0xef12ba45, KEY_NUMERIC_0 },
 	{ 0xef12a05f, KEY_NUMERIC_1 },
 	{ 0xef12af50, KEY_NUMERIC_2 },
@@ -36,7 +33,7 @@ static struct rc_map_table lme2510_rc[] = {
 	{ 0xef12e718, KEY_RECORD },
 	{ 0xef12f807, KEY_EPG },
 	{ 0xef12fe01, KEY_STOP },
-	/* Type 2 - 20 buttons */
+	 
 	{ 0xff40ea15, KEY_NUMERIC_0 },
 	{ 0xff40f708, KEY_NUMERIC_1 },
 	{ 0xff40f609, KEY_NUMERIC_2 },
@@ -48,16 +45,16 @@ static struct rc_map_table lme2510_rc[] = {
 	{ 0xff40ee11, KEY_NUMERIC_8 },
 	{ 0xff40ed12, KEY_NUMERIC_9 },
 	{ 0xff40ff00, KEY_POWER },
-	{ 0xff40fb04, KEY_MEDIA_REPEAT}, /* Recall */
-	{ 0xff40e51a, KEY_PAUSE }, /* Timeshift */
-	{ 0xff40fd02, KEY_VOLUMEUP }, /* 2 x -/+ Keys not marked */
-	{ 0xff40f906, KEY_VOLUMEDOWN }, /* Volume defined as right hand*/
+	{ 0xff40fb04, KEY_MEDIA_REPEAT},  
+	{ 0xff40e51a, KEY_PAUSE },  
+	{ 0xff40fd02, KEY_VOLUMEUP },  
+	{ 0xff40f906, KEY_VOLUMEDOWN },  
 	{ 0xff40fe01, KEY_CHANNELUP },
 	{ 0xff40fa05, KEY_CHANNELDOWN },
 	{ 0xff40eb14, KEY_ZOOM },
 	{ 0xff40e718, KEY_RECORD },
 	{ 0xff40e916, KEY_STOP },
-	/* Type 3 - 20 buttons */
+	 
 	{ 0xff00e31c, KEY_NUMERIC_0 },
 	{ 0xff00f807, KEY_NUMERIC_1 },
 	{ 0xff00ea15, KEY_NUMERIC_2 },
@@ -69,10 +66,10 @@ static struct rc_map_table lme2510_rc[] = {
 	{ 0xff00e718, KEY_NUMERIC_8 },
 	{ 0xff00a15e, KEY_NUMERIC_9 },
 	{ 0xff00ba45, KEY_POWER },
-	{ 0xff00bb44, KEY_MEDIA_REPEAT}, /* Recall */
-	{ 0xff00b54a, KEY_PAUSE }, /* Timeshift */
-	{ 0xff00b847, KEY_VOLUMEUP }, /* 2 x -/+ Keys not marked */
-	{ 0xff00bc43, KEY_VOLUMEDOWN }, /* Volume defined as right hand*/
+	{ 0xff00bb44, KEY_MEDIA_REPEAT},  
+	{ 0xff00b54a, KEY_PAUSE },  
+	{ 0xff00b847, KEY_VOLUMEUP },  
+	{ 0xff00bc43, KEY_VOLUMEDOWN },  
 	{ 0xff00b946, KEY_CHANNELUP },
 	{ 0xff00bf40, KEY_CHANNELDOWN },
 	{ 0xff00f708, KEY_ZOOM },

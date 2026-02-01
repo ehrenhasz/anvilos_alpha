@@ -1,32 +1,4 @@
-/*
- * \file drm_ioc32.c
- *
- * 32-bit ioctl compatibility routines for the DRM.
- *
- * \author Paul Mackerras <paulus@samba.org>
- *
- * Copyright (C) Paul Mackerras 2005.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
+ 
 #include <linux/compat.h>
 #include <linux/ratelimit.h>
 #include <linux/export.h>
@@ -77,15 +49,15 @@
 #define DRM_IOCTL_MODE_ADDFB232		DRM_IOWR(0xb8, drm_mode_fb_cmd232_t)
 
 typedef struct drm_version_32 {
-	int version_major;	  /* Major version */
-	int version_minor;	  /* Minor version */
-	int version_patchlevel;	   /* Patch level */
-	u32 name_len;		  /* Length of name buffer */
-	u32 name;		  /* Name of driver */
-	u32 date_len;		  /* Length of date buffer */
-	u32 date;		  /* User-space buffer to hold date */
-	u32 desc_len;		  /* Length of desc buffer */
-	u32 desc;		  /* User-space buffer to hold desc */
+	int version_major;	   
+	int version_minor;	   
+	int version_patchlevel;	    
+	u32 name_len;		   
+	u32 name;		   
+	u32 date_len;		   
+	u32 date;		   
+	u32 desc_len;		   
+	u32 desc;		   
 } drm_version32_t;
 
 static int compat_drm_version(struct file *file, unsigned int cmd,
@@ -125,8 +97,8 @@ static int compat_drm_version(struct file *file, unsigned int cmd,
 }
 
 typedef struct drm_unique32 {
-	u32 unique_len;	/* Length of unique */
-	u32 unique;	/* Unique name for driver instantiation */
+	u32 unique_len;	 
+	u32 unique;	 
 } drm_unique32_t;
 
 static int compat_drm_getunique(struct file *file, unsigned int cmd,
@@ -159,18 +131,18 @@ static int compat_drm_getunique(struct file *file, unsigned int cmd,
 static int compat_drm_setunique(struct file *file, unsigned int cmd,
 				unsigned long arg)
 {
-	/* it's dead */
+	 
 	return -EINVAL;
 }
 
 #if IS_ENABLED(CONFIG_DRM_LEGACY)
 typedef struct drm_map32 {
-	u32 offset;		/* Requested physical address (0 for SAREA) */
-	u32 size;		/* Requested physical size (bytes) */
-	enum drm_map_type type;	/* Type of memory to map */
-	enum drm_map_flags flags;	/* Flags */
-	u32 handle;		/* User-space: "Handle" to pass to mmap() */
-	int mtrr;		/* MTRR slot used */
+	u32 offset;		 
+	u32 size;		 
+	enum drm_map_type type;	 
+	enum drm_map_flags flags;	 
+	u32 handle;		 
+	int mtrr;		 
 } drm_map32_t;
 
 static int compat_drm_getmap(struct file *file, unsigned int cmd,
@@ -250,12 +222,12 @@ static int compat_drm_rmmap(struct file *file, unsigned int cmd,
 #endif
 
 typedef struct drm_client32 {
-	int idx;	/* Which client desired? */
-	int auth;	/* Is client authenticated? */
-	u32 pid;	/* Process ID */
-	u32 uid;	/* User ID */
-	u32 magic;	/* Magic */
-	u32 iocs;	/* Ioctl count */
+	int idx;	 
+	int auth;	 
+	u32 pid;	 
+	u32 uid;	 
+	u32 magic;	 
+	u32 iocs;	 
 } drm_client32_t;
 
 static int compat_drm_getclient(struct file *file, unsigned int cmd,
@@ -302,7 +274,7 @@ static int compat_drm_getstats(struct file *file, unsigned int cmd,
 {
 	drm_stats32_t __user *argp = (void __user *)arg;
 
-	/* getstats is defunct, just clear */
+	 
 	if (clear_user(argp, sizeof(drm_stats32_t)))
 		return -EFAULT;
 	return 0;
@@ -310,12 +282,12 @@ static int compat_drm_getstats(struct file *file, unsigned int cmd,
 
 #if IS_ENABLED(CONFIG_DRM_LEGACY)
 typedef struct drm_buf_desc32 {
-	int count;		 /* Number of buffers of this size */
-	int size;		 /* Size in bytes */
-	int low_mark;		 /* Low water mark */
-	int high_mark;		 /* High water mark */
+	int count;		  
+	int size;		  
+	int low_mark;		  
+	int high_mark;		  
 	int flags;
-	u32 agp_start;		 /* Start address in the AGP aperture */
+	u32 agp_start;		  
 } drm_buf_desc32_t;
 
 static int compat_drm_addbufs(struct file *file, unsigned int cmd,
@@ -368,7 +340,7 @@ static int compat_drm_markbufs(struct file *file, unsigned int cmd,
 }
 
 typedef struct drm_buf_info32 {
-	int count;		/**< Entries in list */
+	int count;		 
 	u32 list;
 } drm_buf_info32_t;
 
@@ -418,16 +390,16 @@ static int compat_drm_infobufs(struct file *file, unsigned int cmd,
 }
 
 typedef struct drm_buf_pub32 {
-	int idx;		/**< Index into the master buffer list */
-	int total;		/**< Buffer size */
-	int used;		/**< Amount of buffer in use (for DMA) */
-	u32 address;		/**< Address of buffer */
+	int idx;		 
+	int total;		 
+	int used;		 
+	u32 address;		 
 } drm_buf_pub32_t;
 
 typedef struct drm_buf_map32 {
-	int count;		/**< Length of the buffer list */
-	u32 virtual;		/**< Mmap'd area in user-virtual */
-	u32 list;		/**< Buffer information */
+	int count;		 
+	u32 virtual;		 
+	u32 list;		 
 } drm_buf_map32_t;
 
 static int map_one_buf32(void *data, int idx, unsigned long virtual,
@@ -502,8 +474,8 @@ static int compat_drm_freebufs(struct file *file, unsigned int cmd,
 }
 
 typedef struct drm_ctx_priv_map32 {
-	unsigned int ctx_id;	 /**< Context requesting private mapping */
-	u32 handle;		/**< Handle of map */
+	unsigned int ctx_id;	  
+	u32 handle;		 
 } drm_ctx_priv_map32_t;
 
 static int compat_drm_setsareactx(struct file *file, unsigned int cmd,
@@ -575,16 +547,16 @@ static int compat_drm_resctx(struct file *file, unsigned int cmd,
 }
 
 typedef struct drm_dma32 {
-	int context;		  /**< Context handle */
-	int send_count;		  /**< Number of buffers to send */
-	u32 send_indices;	  /**< List of handles to buffers */
-	u32 send_sizes;		  /**< Lengths of data to send */
-	enum drm_dma_flags flags;		  /**< Flags */
-	int request_count;	  /**< Number of buffers requested */
-	int request_size;	  /**< Desired size for buffers */
-	u32 request_indices;	  /**< Buffer information */
+	int context;		   
+	int send_count;		   
+	u32 send_indices;	   
+	u32 send_sizes;		   
+	enum drm_dma_flags flags;		   
+	int request_count;	   
+	int request_size;	   
+	u32 request_indices;	   
 	u32 request_sizes;
-	int granted_count;	  /**< Number of buffers granted */
+	int granted_count;	   
 } drm_dma32_t;
 
 static int compat_drm_dma(struct file *file, unsigned int cmd,
@@ -621,7 +593,7 @@ static int compat_drm_dma(struct file *file, unsigned int cmd,
 #if IS_ENABLED(CONFIG_DRM_LEGACY)
 #if IS_ENABLED(CONFIG_AGP)
 typedef struct drm_agp_mode32 {
-	u32 mode;	/**< AGP mode */
+	u32 mode;	 
 } drm_agp_mode32_t;
 
 static int compat_drm_agp_enable(struct file *file, unsigned int cmd,
@@ -641,12 +613,12 @@ typedef struct drm_agp_info32 {
 	int agp_version_major;
 	int agp_version_minor;
 	u32 mode;
-	u32 aperture_base;	/* physical address */
-	u32 aperture_size;	/* bytes */
-	u32 memory_allowed;	/* bytes */
+	u32 aperture_base;	 
+	u32 aperture_size;	 
+	u32 memory_allowed;	 
 	u32 memory_used;
 
-	/* PCI information */
+	 
 	unsigned short id_vendor;
 	unsigned short id_device;
 } drm_agp_info32_t;
@@ -679,10 +651,10 @@ static int compat_drm_agp_info(struct file *file, unsigned int cmd,
 }
 
 typedef struct drm_agp_buffer32 {
-	u32 size;	/**< In bytes -- will round to page boundary */
-	u32 handle;	/**< Used for binding / unbinding */
-	u32 type;	/**< Type of memory to allocate */
-	u32 physical;	/**< Physical used by i810 */
+	u32 size;	 
+	u32 handle;	 
+	u32 type;	 
+	u32 physical;	 
 } drm_agp_buffer32_t;
 
 static int compat_drm_agp_alloc(struct file *file, unsigned int cmd,
@@ -728,8 +700,8 @@ static int compat_drm_agp_free(struct file *file, unsigned int cmd,
 }
 
 typedef struct drm_agp_binding32 {
-	u32 handle;	/**< From drm_agp_buffer */
-	u32 offset;	/**< In bytes -- will round to page boundary */
+	u32 handle;	 
+	u32 offset;	 
 } drm_agp_binding32_t;
 
 static int compat_drm_agp_bind(struct file *file, unsigned int cmd,
@@ -760,11 +732,11 @@ static int compat_drm_agp_unbind(struct file *file, unsigned int cmd,
 	return drm_ioctl_kernel(file, drm_legacy_agp_unbind_ioctl, &request,
 				DRM_AUTH|DRM_MASTER|DRM_ROOT_ONLY);
 }
-#endif /* CONFIG_AGP */
+#endif  
 
 typedef struct drm_scatter_gather32 {
-	u32 size;	/**< In bytes -- will round to page boundary */
-	u32 handle;	/**< Used for mapping / unmapping */
+	u32 size;	 
+	u32 handle;	 
 } drm_scatter_gather32_t;
 
 static int compat_drm_sg_alloc(struct file *file, unsigned int cmd,
@@ -782,7 +754,7 @@ static int compat_drm_sg_alloc(struct file *file, unsigned int cmd,
 	if (err)
 		return err;
 
-	/* XXX not sure about the handle conversion here... */
+	 
 	if (put_user(request.handle >> PAGE_SHIFT, &argp->handle))
 		return -EFAULT;
 
@@ -808,14 +780,14 @@ typedef struct drm_update_draw32 {
 	drm_drawable_t handle;
 	unsigned int type;
 	unsigned int num;
-	/* 64-bit version has a 32-bit pad here */
-	u64 data;	/**< Pointer */
+	 
+	u64 data;	 
 } __attribute__((packed)) drm_update_draw32_t;
 
 static int compat_drm_update_draw(struct file *file, unsigned int cmd,
 				  unsigned long arg)
 {
-	/* update_draw is defunct */
+	 
 	return 0;
 }
 #endif
@@ -954,20 +926,7 @@ static struct {
 #endif
 };
 
-/**
- * drm_compat_ioctl - 32bit IOCTL compatibility handler for DRM drivers
- * @filp: file this ioctl is called on
- * @cmd: ioctl cmd number
- * @arg: user argument
- *
- * Compatibility handler for 32 bit userspace running on 64 kernels. All actual
- * IOCTL handling is forwarded to drm_ioctl(), while marshalling structures as
- * appropriate. Note that this only handles DRM core IOCTLs, if the driver has
- * botched IOCTL itself, it must handle those by wrapping this function.
- *
- * Returns:
- * Zero on success, negative error code on failure.
- */
+ 
 long drm_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
 	unsigned int nr = DRM_IOCTL_NR(cmd);
@@ -976,10 +935,7 @@ long drm_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	drm_ioctl_compat_t *fn;
 	int ret;
 
-	/* Assume that ioctls without an explicit compat routine will just
-	 * work.  This may not always be a good assumption, but it's better
-	 * than always failing.
-	 */
+	 
 	if (nr >= ARRAY_SIZE(drm_compat_ioctls))
 		return drm_ioctl(filp, cmd, arg);
 

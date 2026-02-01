@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* 
- *  Copyright 10/16/2005 Tilman Kranz <tilde@tk-sls.de>
- *  Creative Audio MIDI, for the CA0106 Driver
- *  Version: 0.0.1
- *
- *  Changelog:
- *    See ca_midi.c
- */
+ 
+ 
 
 #include <linux/spinlock.h>
 #include <sound/rawmidi.h>
@@ -44,7 +37,7 @@ struct snd_ca_midi {
 	unsigned char (*read)(struct snd_ca_midi *midi, int idx);
 	void (*write)(struct snd_ca_midi *midi, int data, int idx);
 
-	/* get info from dev_id */
+	 
 	struct snd_card *(*get_dev_id_card)(void *dev_id);
 	int (*get_dev_id_port)(void *dev_id);
 };

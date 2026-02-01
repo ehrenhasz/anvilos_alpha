@@ -1,35 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * USB RedRat3 IR Transceiver rc-core driver
- *
- * Copyright (c) 2011 by Jarod Wilson <jarod@redhat.com>
- *  based heavily on the work of Stephen Cox, with additional
- *  help from RedRat Ltd.
- *
- * This driver began life based on an old version of the first-generation
- * lirc_mceusb driver from the lirc 0.7.2 distribution. It was then
- * significantly rewritten by Stephen Cox with the aid of RedRat Ltd's
- * Chris Dodge.
- *
- * The driver was then ported to rc-core and significantly rewritten again,
- * by Jarod, using the in-kernel mceusb driver as a guide, after an initial
- * port effort was started by Stephen.
- *
- * TODO LIST:
- * - fix lirc not showing repeats properly
- * --
- *
- * The RedRat3 is a USB transceiver with both send & receive,
- * with 2 separate sensors available for receive to enable
- * both good long range reception for general use, and good
- * short range reception when required for learning a signal.
- *
- * http://www.redrat.co.uk/
- *
- * It uses its own little protocol to communicate, the required
- * parts of which are embedded within this driver.
- * --
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/device.h>
@@ -40,65 +10,65 @@
 #include <linux/usb/input.h>
 #include <media/rc-core.h>
 
-/* Driver Information */
+ 
 #define DRIVER_AUTHOR "Jarod Wilson <jarod@redhat.com>"
 #define DRIVER_AUTHOR2 "The Dweller, Stephen Cox"
 #define DRIVER_DESC "RedRat3 USB IR Transceiver Driver"
 #define DRIVER_NAME "redrat3"
 
-/* bulk data transfer types */
+ 
 #define RR3_ERROR		0x01
 #define RR3_MOD_SIGNAL_IN	0x20
 #define RR3_MOD_SIGNAL_OUT	0x21
 
-/* Get the RR firmware version */
+ 
 #define RR3_FW_VERSION		0xb1
 #define RR3_FW_VERSION_LEN	64
-/* Send encoded signal bulk-sent earlier*/
+ 
 #define RR3_TX_SEND_SIGNAL	0xb3
 #define RR3_SET_IR_PARAM	0xb7
 #define RR3_GET_IR_PARAM	0xb8
-/* Blink the red LED on the device */
+ 
 #define RR3_BLINK_LED		0xb9
-/* Read serial number of device */
+ 
 #define RR3_READ_SER_NO		0xba
 #define RR3_SER_NO_LEN		4
-/* Start capture with the RC receiver */
+ 
 #define RR3_RC_DET_ENABLE	0xbb
-/* Stop capture with the RC receiver */
+ 
 #define RR3_RC_DET_DISABLE	0xbc
-/* Start capture with the wideband receiver */
+ 
 #define RR3_MODSIG_CAPTURE     0xb2
-/* Return the status of RC detector capture */
+ 
 #define RR3_RC_DET_STATUS	0xbd
-/* Reset redrat */
+ 
 #define RR3_RESET		0xa0
 
-/* Max number of lengths in the signal. */
+ 
 #define RR3_IR_IO_MAX_LENGTHS	0x01
-/* Periods to measure mod. freq. */
+ 
 #define RR3_IR_IO_PERIODS_MF	0x02
-/* Size of memory for main signal data */
+ 
 #define RR3_IR_IO_SIG_MEM_SIZE	0x03
-/* Delta value when measuring lengths */
+ 
 #define RR3_IR_IO_LENGTH_FUZZ	0x04
-/* Timeout for end of signal detection */
+ 
 #define RR3_IR_IO_SIG_TIMEOUT	0x05
-/* Minimum value for pause recognition. */
+ 
 #define RR3_IR_IO_MIN_PAUSE	0x06
 
-/* Clock freq. of EZ-USB chip */
+ 
 #define RR3_CLK			24000000
-/* Clock periods per timer count */
+ 
 #define RR3_CLK_PER_COUNT	12
-/* (RR3_CLK / RR3_CLK_PER_COUNT) */
+ 
 #define RR3_CLK_CONV_FACTOR	2000000
-/* USB bulk-in wideband IR data endpoint address */
+ 
 #define RR3_WIDE_IN_EP_ADDR	0x81
-/* USB bulk-in narrowband IR data endpoint address */
+ 
 #define RR3_NARROW_IN_EP_ADDR	0x82
 
-/* Size of the fixed-length portion of the signal */
+ 
 #define RR3_DRIVER_MAXLENS	255
 #define RR3_MAX_SIG_SIZE	512
 #define RR3_TIME_UNIT		50
@@ -107,7 +77,7 @@
 #define RR3_RX_MIN_TIMEOUT	5
 #define RR3_RX_MAX_TIMEOUT	2000
 
-/* The 8051's CPUCS Register address */
+ 
 #define RR3_CPUCS_REG_ADDR	0x7f92
 
 #define USB_RR3USB_VENDOR_ID	0x112a
@@ -115,35 +85,17 @@
 #define USB_RR3IIUSB_PRODUCT_ID	0x0005
 
 
-/*
- * The redrat3 encodes an IR signal as set of different lengths and a set
- * of indices into those lengths. This sets how much two lengths must
- * differ before they are considered distinct, the value is specified
- * in microseconds.
- * Default 5, value 0 to 127.
- */
+ 
 static int length_fuzz = 5;
 module_param(length_fuzz, uint, 0644);
 MODULE_PARM_DESC(length_fuzz, "Length Fuzz (0-127)");
 
-/*
- * When receiving a continuous ir stream (for example when a user is
- * holding a button down on a remote), this specifies the minimum size
- * of a space when the redrat3 sends a irdata packet to the host. Specified
- * in milliseconds. Default value 18ms.
- * The value can be between 2 and 30 inclusive.
- */
+ 
 static int minimum_pause = 18;
 module_param(minimum_pause, uint, 0644);
 MODULE_PARM_DESC(minimum_pause, "Minimum Pause in ms (2-30)");
 
-/*
- * The carrier frequency is measured during the first pulse of the IR
- * signal. The larger the number of periods used To measure, the more
- * accurate the result is likely to be, however some signals have short
- * initial pulses, so in some case it may be necessary to reduce this value.
- * Default 8, value 1 to 255.
- */
+ 
 static int periods_measure_carrier = 8;
 module_param(periods_measure_carrier, uint, 0644);
 MODULE_PARM_DESC(periods_measure_carrier, "Number of Periods to Measure Carrier (1-255)");
@@ -154,7 +106,7 @@ struct redrat3_header {
 	__be16 transfer_type;
 } __packed;
 
-/* sending and receiving irdata */
+ 
 struct redrat3_irdata {
 	struct redrat3_header header;
 	__be32 pause;
@@ -165,65 +117,65 @@ struct redrat3_irdata {
 	__be16 max_sig_size;
 	__be16 sig_size;
 	__u8 no_repeats;
-	__be16 lens[RR3_DRIVER_MAXLENS]; /* not aligned */
+	__be16 lens[RR3_DRIVER_MAXLENS];  
 	__u8 sigdata[RR3_MAX_SIG_SIZE];
 } __packed;
 
-/* firmware errors */
+ 
 struct redrat3_error {
 	struct redrat3_header header;
 	__be16 fw_error;
 } __packed;
 
-/* table of devices that work with this driver */
+ 
 static const struct usb_device_id redrat3_dev_table[] = {
-	/* Original version of the RedRat3 */
+	 
 	{USB_DEVICE(USB_RR3USB_VENDOR_ID, USB_RR3USB_PRODUCT_ID)},
-	/* Second Version/release of the RedRat3 - RetRat3-II */
+	 
 	{USB_DEVICE(USB_RR3USB_VENDOR_ID, USB_RR3IIUSB_PRODUCT_ID)},
-	{}			/* Terminating entry */
+	{}			 
 };
 
-/* Structure to hold all of our device specific stuff */
+ 
 struct redrat3_dev {
-	/* core device bits */
+	 
 	struct rc_dev *rc;
 	struct device *dev;
 
-	/* led control */
+	 
 	struct led_classdev led;
 	atomic_t flash;
 	struct usb_ctrlrequest flash_control;
 	struct urb *flash_urb;
 	u8 flash_in_buf;
 
-	/* learning */
+	 
 	bool wideband;
 	struct usb_ctrlrequest learn_control;
 	struct urb *learn_urb;
 	u8 learn_buf;
 
-	/* save off the usb device pointer */
+	 
 	struct usb_device *udev;
 
-	/* the receive endpoint */
+	 
 	struct usb_endpoint_descriptor *ep_narrow;
-	/* the buffer to receive data */
+	 
 	void *bulk_in_buf;
-	/* urb used to read ir data */
+	 
 	struct urb *narrow_urb;
 	struct urb *wide_urb;
 
-	/* the send endpoint */
+	 
 	struct usb_endpoint_descriptor *ep_out;
 
-	/* usb dma */
+	 
 	dma_addr_t dma_in;
 
-	/* Is the device currently transmitting?*/
+	 
 	bool transmitting;
 
-	/* store for current packet */
+	 
 	struct redrat3_irdata irdata;
 	u16 bytes_read;
 
@@ -243,7 +195,7 @@ static void redrat3_dump_fw_error(struct redrat3_dev *rr3, int code)
 		pr_cont("No Error\n");
 		break;
 
-	/* Codes 0x20 through 0x2f are IR Firmware Errors */
+	 
 	case 0x20:
 		pr_cont("Initial signal pulse not long enough to measure carrier frequency\n");
 		break;
@@ -263,15 +215,12 @@ static void redrat3_dump_fw_error(struct redrat3_dev *rr3, int code)
 		pr_cont("Insufficient memory available for IrDa signal data memory allocation\n");
 		break;
 
-	/* Codes 0x30 through 0x3f are USB Firmware Errors */
+	 
 	case 0x30:
 		pr_cont("Insufficient memory available for bulk transfer structure\n");
 		break;
 
-	/*
-	 * Other error codes... These are primarily errors that can occur in
-	 * the control messages sent to the redrat
-	 */
+	 
 	case 0x40:
 		if (!rr3->transmitting)
 			pr_cont("Signal capture has been terminated\n");
@@ -301,28 +250,18 @@ static u32 redrat3_val_to_mod_freq(struct redrat3_irdata *irdata)
 	return mod_freq;
 }
 
-/* this function scales down the figures for the same result... */
+ 
 static u32 redrat3_len_to_us(u32 length)
 {
 	u32 biglen = length * 1000;
 	u32 divisor = (RR3_CLK_CONV_FACTOR) / 1000;
 	u32 result = (u32) (biglen / divisor);
 
-	/* don't allow zero lengths to go back, breaks lirc */
+	 
 	return result ? result : 1;
 }
 
-/*
- * convert us back into redrat3 lengths
- *
- * length * 1000   length * 1000000
- * ------------- = ---------------- = micro
- * rr3clk / 1000       rr3clk
-
- * 6 * 2       4 * 3        micro * rr3clk          micro * rr3clk / 1000
- * ----- = 4   ----- = 6    -------------- = len    ---------------------
- *   3           2             1000000                    1000
- */
+ 
 static u32 redrat3_us_to_len(u32 microsec)
 {
 	u32 result;
@@ -332,7 +271,7 @@ static u32 redrat3_us_to_len(u32 microsec)
 	divisor = (RR3_CLK_CONV_FACTOR / 1000);
 	result = (u32)(microsec * divisor) / 1000;
 
-	/* don't allow zero lengths to go back, breaks lirc */
+	 
 	return result ? result : 1;
 }
 
@@ -356,20 +295,20 @@ static void redrat3_process_ir_data(struct redrat3_dev *rr3)
 		ir_raw_event_store(rr3->rc, &ev);
 	}
 
-	/* process each rr3 encoded byte into an int */
+	 
 	sig_size = be16_to_cpu(rr3->irdata.sig_size);
 	for (i = 0; i < sig_size; i++) {
 		offset = rr3->irdata.sigdata[i];
 		val = get_unaligned_be16(&rr3->irdata.lens[offset]);
 
-		/* we should always get pulse/space/pulse/space samples */
+		 
 		if (i % 2)
 			rawir.pulse = false;
 		else
 			rawir.pulse = true;
 
 		rawir.duration = redrat3_len_to_us(val);
-		/* cap the value to IR_MAX_DURATION */
+		 
 		rawir.duration = (rawir.duration > IR_MAX_DURATION) ?
 				 IR_MAX_DURATION : rawir.duration;
 
@@ -378,7 +317,7 @@ static void redrat3_process_ir_data(struct redrat3_dev *rr3)
 		ir_raw_event_store_with_filter(rr3->rc, &rawir);
 	}
 
-	/* add a trailing space */
+	 
 	rawir.pulse = false;
 	rawir.timeout = true;
 	rawir.duration = rr3->rc->timeout;
@@ -390,7 +329,7 @@ static void redrat3_process_ir_data(struct redrat3_dev *rr3)
 	ir_raw_event_handle(rr3->rc);
 }
 
-/* Util fn to send rr3 cmds */
+ 
 static int redrat3_send_cmd(int cmd, struct redrat3_dev *rr3)
 {
 	struct usb_device *udev;
@@ -418,7 +357,7 @@ static int redrat3_send_cmd(int cmd, struct redrat3_dev *rr3)
 	return res;
 }
 
-/* Enables the long range detector and starts async receive */
+ 
 static int redrat3_enable_detector(struct redrat3_dev *rr3)
 {
 	struct device *dev = rr3->dev;
@@ -469,7 +408,7 @@ static inline void redrat3_delete(struct redrat3_dev *rr3,
 static u32 redrat3_get_timeout(struct redrat3_dev *rr3)
 {
 	__be32 *tmp;
-	u32 timeout = MS_TO_US(150); /* a sane default, if things go haywire */
+	u32 timeout = MS_TO_US(150);  
 	int len, ret, pipe;
 
 	len = sizeof(*tmp);
@@ -600,7 +539,7 @@ static void redrat3_read_packet_start(struct redrat3_dev *rr3, unsigned len)
 	struct redrat3_header *header = rr3->bulk_in_buf;
 	unsigned pktlen, pkttype;
 
-	/* grab the Length and type of transfer */
+	 
 	pktlen = be16_to_cpu(header->length);
 	pkttype = be16_to_cpu(header->transfer_type);
 
@@ -649,7 +588,7 @@ static void redrat3_read_packet_continue(struct redrat3_dev *rr3, unsigned len)
 				 be16_to_cpu(rr3->irdata.header.length));
 }
 
-/* gather IR data from incoming urb, process it when we have enough */
+ 
 static int redrat3_get_ir_data(struct redrat3_dev *rr3, unsigned len)
 {
 	struct device *dev = rr3->dev;
@@ -668,10 +607,10 @@ static int redrat3_get_ir_data(struct redrat3_dev *rr3, unsigned len)
 
 	if (rr3->bytes_read < be16_to_cpu(rr3->irdata.header.length) +
 						sizeof(struct redrat3_header))
-		/* we're still accumulating data */
+		 
 		return 0;
 
-	/* if we get here, we've got IR data to decode */
+	 
 	pkttype = be16_to_cpu(rr3->irdata.header.transfer_type);
 	if (pkttype == RR3_MOD_SIGNAL_IN)
 		redrat3_process_ir_data(rr3);
@@ -684,7 +623,7 @@ out:
 	return ret;
 }
 
-/* callback function from USB when async USB request has completed */
+ 
 static void redrat3_handle_async(struct urb *urb)
 {
 	struct redrat3_dev *rr3 = urb->context;
@@ -701,7 +640,7 @@ static void redrat3_handle_async(struct urb *urb)
 		}
 
 		if (!ret) {
-			/* no error, prepare to read more */
+			 
 			ret = usb_submit_urb(urb, GFP_ATOMIC);
 			if (ret)
 				dev_err(rr3->dev, "Failed to resubmit urb: %d",
@@ -727,7 +666,7 @@ static u16 mod_freq_to_val(unsigned int mod_freq)
 {
 	int mult = 6000000;
 
-	/* Clk used in mod. freq. generation is CLK24/4. */
+	 
 	return 65536 - (mult / mod_freq);
 }
 
@@ -765,7 +704,7 @@ static int redrat3_transmit_ir(struct rc_dev *rcdev, unsigned *txbuf,
 	if (count > RR3_MAX_SIG_SIZE - RR3_TX_TRAILER_LEN)
 		return -EINVAL;
 
-	/* rr3 will disable rc detector on transmit */
+	 
 	rr3->transmitting = true;
 
 	sample_lens = kcalloc(RR3_DRIVER_MAXLENS,
@@ -795,8 +734,7 @@ static int redrat3_transmit_ir(struct rc_dev *rcdev, unsigned *txbuf,
 			dev_dbg(dev, "txbuf[%d]=%u, pos %d, enc %u\n",
 				i, txbuf[i], curlencheck, cur_sample_len);
 			if (curlencheck < RR3_DRIVER_MAXLENS) {
-				/* now convert the value to a proper
-				 * rr3 value.. */
+				 
 				sample_lens[curlencheck] = cur_sample_len;
 				put_unaligned_be16(cur_sample_len,
 						&irdata->lens[curlencheck]);
@@ -814,7 +752,7 @@ static int redrat3_transmit_ir(struct rc_dev *rcdev, unsigned *txbuf,
 
 	sendbuf_len = offsetof(struct redrat3_irdata,
 					sigdata[count + RR3_TX_TRAILER_LEN]);
-	/* fill in our packet header */
+	 
 	irdata->header.length = cpu_to_be16(sendbuf_len -
 						sizeof(struct redrat3_header));
 	irdata->header.transfer_type = cpu_to_be16(RR3_MOD_SIGNAL_OUT);
@@ -828,7 +766,7 @@ static int redrat3_transmit_ir(struct rc_dev *rcdev, unsigned *txbuf,
 			    sendbuf_len, &ret_len, 10000);
 	dev_dbg(dev, "sent %d bytes, (ret %d)\n", ret_len, ret);
 
-	/* now tell the hardware to transmit what we sent it */
+	 
 	pipe = usb_rcvctrlpipe(rr3->udev, 0);
 	ret = usb_control_msg(rr3->udev, pipe, RR3_TX_SEND_SIGNAL,
 			      USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
@@ -844,7 +782,7 @@ out:
 	kfree(sample_lens);
 
 	rr3->transmitting = false;
-	/* rr3 re-enables rc detector because it was enabled before */
+	 
 
 	return ret;
 }
@@ -987,7 +925,7 @@ static int redrat3_dev_probe(struct usb_interface *intf,
 
 	uhi = intf->cur_altsetting;
 
-	/* find our bulk-in and bulk-out endpoints */
+	 
 	for (i = 0; i < uhi->desc.bNumEndpoints; ++i) {
 		ep = &uhi->endpoint[i].desc;
 		addr = ep->bEndpointAddress;
@@ -998,7 +936,7 @@ static int redrat3_dev_probe(struct usb_interface *intf,
 		     USB_ENDPOINT_XFER_BULK)) {
 			dev_dbg(dev, "found bulk-in endpoint at 0x%02x\n",
 				ep->bEndpointAddress);
-			/* data comes in on 0x82, 0x81 is for learning */
+			 
 			if (ep->bEndpointAddress == RR3_NARROW_IN_EP_ADDR)
 				ep_narrow = ep;
 			if (ep->bEndpointAddress == RR3_WIDE_IN_EP_ADDR)
@@ -1021,7 +959,7 @@ static int redrat3_dev_probe(struct usb_interface *intf,
 		goto no_endpoints;
 	}
 
-	/* allocate memory for our device state and initialize it */
+	 
 	rr3 = kzalloc(sizeof(*rr3), GFP_KERNEL);
 	if (!rr3)
 		goto no_endpoints;
@@ -1031,7 +969,7 @@ static int redrat3_dev_probe(struct usb_interface *intf,
 	rr3->ep_out = ep_out;
 	rr3->udev = udev;
 
-	/* set up bulk-in endpoint */
+	 
 	rr3->narrow_urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!rr3->narrow_urb)
 		goto redrat_free;
@@ -1063,7 +1001,7 @@ static int redrat3_dev_probe(struct usb_interface *intf,
 	redrat3_reset(rr3);
 	redrat3_get_firmware_rev(rr3);
 
-	/* default.. will get overridden by any sends with a freq defined */
+	 
 	rr3->carrier = 38000;
 
 	atomic_set(&rr3->flash, 0);
@@ -1071,12 +1009,12 @@ static int redrat3_dev_probe(struct usb_interface *intf,
 	if (!rr3->flash_urb)
 		goto redrat_free;
 
-	/* learn urb */
+	 
 	rr3->learn_urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!rr3->learn_urb)
 		goto redrat_free;
 
-	/* setup packet is 'c0 b2 0000 0000 0001' */
+	 
 	rr3->learn_control.bRequestType = 0xc0;
 	rr3->learn_control.bRequest = RR3_MODSIG_CAPTURE;
 	rr3->learn_control.wLength = cpu_to_le16(1);
@@ -1086,7 +1024,7 @@ static int redrat3_dev_probe(struct usb_interface *intf,
 			&rr3->learn_buf, sizeof(rr3->learn_buf),
 			redrat3_learn_complete, rr3);
 
-	/* setup packet is 'c0 b9 0000 0000 0001' */
+	 
 	rr3->flash_control.bRequestType = 0xc0;
 	rr3->flash_control.bRequest = RR3_BLINK_LED;
 	rr3->flash_control.wLength = cpu_to_le16(1);
@@ -1096,7 +1034,7 @@ static int redrat3_dev_probe(struct usb_interface *intf,
 			&rr3->flash_in_buf, sizeof(rr3->flash_in_buf),
 			redrat3_led_complete, rr3);
 
-	/* led control */
+	 
 	rr3->led.name = "redrat3:red:feedback";
 	rr3->led.default_trigger = "rc-feedback";
 	rr3->led.brightness_set = redrat3_brightness_set;
@@ -1110,12 +1048,12 @@ static int redrat3_dev_probe(struct usb_interface *intf,
 		goto led_free;
 	}
 
-	/* might be all we need to do? */
+	 
 	retval = redrat3_enable_detector(rr3);
 	if (retval < 0)
 		goto led_free;
 
-	/* we can register the device now, as it is ready */
+	 
 	usb_set_intfdata(intf, rr3);
 
 	return 0;

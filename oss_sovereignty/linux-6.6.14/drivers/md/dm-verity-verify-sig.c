@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2019 Microsoft Corporation.
- *
- * Author:  Jaskaran Singh Khurana <jaskarankhurana@linux.microsoft.com>
- *
- */
+
+ 
 #include <linux/device-mapper.h>
 #include <linux/verification.h>
 #include <keys/user-type.h>
@@ -93,16 +88,7 @@ int verity_verify_sig_parse_opt_args(struct dm_arg_set *as,
 	return ret;
 }
 
-/*
- * verify_verify_roothash - Verify the root hash of the verity hash device
- *			     using builtin trusted keys.
- *
- * @root_hash: For verity, the roothash/data to be verified.
- * @root_hash_len: Size of the roothash/data to be verified.
- * @sig_data: The trusted signature that verifies the roothash/data.
- * @sig_len: Size of the signature.
- *
- */
+ 
 int verity_verify_root_hash(const void *root_hash, size_t root_hash_len,
 			    const void *sig_data, size_t sig_len)
 {

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic iSCSI HBA Driver
- * Copyright (c)  2003-2013 QLogic Corporation
- */
+
+ 
 
 #include "ql4_def.h"
 #include "ql4_glbl.h"
@@ -53,17 +50,17 @@ qla4_8xxx_sysfs_write_fw_dump(struct file *filep, struct kobject *kobj,
 
 	switch (reading) {
 	case 0:
-		/* clear dump collection flags */
+		 
 		if (test_and_clear_bit(AF_82XX_DUMP_READING, &ha->flags)) {
 			clear_bit(AF_82XX_FW_DUMPED, &ha->flags);
-			/* Reload minidump template */
+			 
 			qla4xxx_alloc_fw_dump(ha);
 			DEBUG2(ql4_printk(KERN_INFO, ha,
 					  "Firmware template reloaded\n"));
 		}
 		break;
 	case 1:
-		/* Set flag to read dump */
+		 
 		if (test_bit(AF_82XX_FW_DUMPED, &ha->flags) &&
 		    !test_bit(AF_82XX_DUMP_READING, &ha->flags)) {
 			set_bit(AF_82XX_DUMP_READING, &ha->flags);
@@ -73,7 +70,7 @@ qla4_8xxx_sysfs_write_fw_dump(struct file *filep, struct kobject *kobj,
 		}
 		break;
 	case 2:
-		/* Reset HBA and collect FW dump */
+		 
 		ha->isp_ops->idc_lock(ha);
 		dev_state = qla4_8xxx_rd_direct(ha, QLA8XXX_CRB_DEV_STATE);
 		if (dev_state == QLA8XXX_DEV_READY) {
@@ -97,7 +94,7 @@ qla4_8xxx_sysfs_write_fw_dump(struct file *filep, struct kobject *kobj,
 		ha->isp_ops->idc_unlock(ha);
 		break;
 	default:
-		/* do nothing */
+		 
 		break;
 	}
 
@@ -148,7 +145,7 @@ void qla4_8xxx_free_sysfs_attr(struct scsi_qla_host *ha)
 				      iter->attr);
 }
 
-/* Scsi_Host attributes. */
+ 
 static ssize_t
 qla4xxx_fw_version_show(struct device *dev,
 			struct device_attribute *attr, char *buf)

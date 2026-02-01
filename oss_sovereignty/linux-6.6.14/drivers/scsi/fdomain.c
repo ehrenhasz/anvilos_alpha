@@ -1,83 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Future Domain TMC-16x0 and TMC-3260 SCSI host adapters
- * Copyright 2019 Ondrej Zary
- *
- * Original driver by
- * Rickard E. Faith, faith@cs.unc.edu
- *
- * Future Domain BIOS versions supported for autodetect:
- *    2.0, 3.0, 3.2, 3.4 (1.0), 3.5 (2.0), 3.6, 3.61
- * Chips supported:
- *    TMC-1800, TMC-18C50, TMC-18C30, TMC-36C70
- * Boards supported:
- *    Future Domain TMC-1650, TMC-1660, TMC-1670, TMC-1680, TMC-1610M/MER/MEX
- *    Future Domain TMC-3260 (PCI)
- *    Quantum ISA-200S, ISA-250MG
- *    Adaptec AHA-2920A (PCI) [BUT *NOT* AHA-2920C -- use aic7xxx instead]
- *    IBM ?
- *
- * NOTE:
- *
- * The Adaptec AHA-2920C has an Adaptec AIC-7850 chip on it.
- * Use the aic7xxx driver for this board.
- *
- * The Adaptec AHA-2920A has a Future Domain chip on it, so this is the right
- * driver for that card.  Unfortunately, the boxes will probably just say
- * "2920", so you'll have to look on the card for a Future Domain logo, or a
- * letter after the 2920.
- *
- * If you have a TMC-8xx or TMC-9xx board, then this is not the driver for
- * your board.
- *
- * DESCRIPTION:
- *
- * This is the Linux low-level SCSI driver for Future Domain TMC-1660/1680
- * TMC-1650/1670, and TMC-3260 SCSI host adapters.  The 1650 and 1670 have a
- * 25-pin external connector, whereas the 1660 and 1680 have a SCSI-2 50-pin
- * high-density external connector.  The 1670 and 1680 have floppy disk
- * controllers built in.  The TMC-3260 is a PCI bus card.
- *
- * Future Domain's older boards are based on the TMC-1800 chip, and this
- * driver was originally written for a TMC-1680 board with the TMC-1800 chip.
- * More recently, boards are being produced with the TMC-18C50 and TMC-18C30
- * chips.
- *
- * Please note that the drive ordering that Future Domain implemented in BIOS
- * versions 3.4 and 3.5 is the opposite of the order (currently) used by the
- * rest of the SCSI industry.
- *
- *
- * REFERENCES USED:
- *
- * "TMC-1800 SCSI Chip Specification (FDC-1800T)", Future Domain Corporation,
- * 1990.
- *
- * "Technical Reference Manual: 18C50 SCSI Host Adapter Chip", Future Domain
- * Corporation, January 1992.
- *
- * "LXT SCSI Products: Specifications and OEM Technical Manual (Revision
- * B/September 1991)", Maxtor Corporation, 1991.
- *
- * "7213S product Manual (Revision P3)", Maxtor Corporation, 1992.
- *
- * "Draft Proposed American National Standard: Small Computer System
- * Interface - 2 (SCSI-2)", Global Engineering Documents. (X3T9.2/86-109,
- * revision 10h, October 17, 1991)
- *
- * Private communications, Drew Eckhardt (drew@cs.colorado.edu) and Eric
- * Youngdale (ericy@cais.com), 1992.
- *
- * Private communication, Tuong Le (Future Domain Engineering department),
- * 1994. (Disk geometry computations for Future Domain BIOS version 3.4, and
- * TMC-18C30 detection.)
- *
- * Hogan, Thom. The Programmer's PC Sourcebook. Microsoft Press, 1988. Page
- * 60 (2.39: Disk Partition Table Layout).
- *
- * "18C30 Technical Reference Manual", Future Domain Corporation, 1993, page
- * 6-1.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -90,16 +12,9 @@
 #include <scsi/scsi_host.h>
 #include "fdomain.h"
 
-/*
- * FIFO_COUNT: The host adapter has an 8K cache (host adapters based on the
- * 18C30 chip have a 2k cache).  When this many 512 byte blocks are filled by
- * the SCSI device, an interrupt will be raised.  Therefore, this could be as
- * low as 0, or as high as 16.  Note, however, that values which are too high
- * or too low seem to prevent any interrupts from occurring, and thereby lock
- * up the machine.
- */
-#define FIFO_COUNT	2	/* Number of 512 byte blocks before INTR */
-#define PARITY_MASK	ACTL_PAREN	/* Parity enabled, 0 = disabled */
+ 
+#define FIFO_COUNT	2	 
+#define PARITY_MASK	ACTL_PAREN	 
 
 enum chip_type {
 	unknown		= 0x00,
@@ -125,7 +40,7 @@ static inline void fdomain_make_bus_idle(struct fdomain *fd)
 	outb(0, fd->base + REG_BCTL);
 	outb(0, fd->base + REG_MCTL);
 	if (fd->chip == tmc18c50 || fd->chip == tmc18c30)
-		/* Clear forced intr. */
+		 
 		outb(ACTL_RESET | ACTL_CLRFIRQ | PARITY_MASK,
 		     fd->base + REG_ACTL);
 	else
@@ -139,20 +54,20 @@ static enum chip_type fdomain_identify(int port)
 	switch (id) {
 	case 0x6127:
 		return tmc1800;
-	case 0x60e9: /* 18c50 or 18c30 */
+	case 0x60e9:  
 		break;
 	default:
 		return unknown;
 	}
 
-	/* Try to toggle 32-bit mode. This only works on an 18c30 chip. */
+	 
 	outb(CFG2_32BIT, port + REG_CFG2);
 	if ((inb(port + REG_CFG2) & CFG2_32BIT)) {
 		outb(0, port + REG_CFG2);
 		if ((inb(port + REG_CFG2) & CFG2_32BIT) == 0)
 			return tmc18c30;
 	}
-	/* If that failed, we are an 18c50. */
+	 
 	return tmc18c50;
 }
 
@@ -188,16 +103,16 @@ static int fdomain_select(struct Scsi_Host *sh, int target)
 	outb(BCTL_BUSEN | BCTL_SEL, fd->base + REG_BCTL);
 	outb(BIT(sh->this_id) | BIT(target), fd->base + REG_SCSI_DATA_NOACK);
 
-	/* Stop arbitration and enable parity */
+	 
 	outb(PARITY_MASK, fd->base + REG_ACTL);
 
-	timeout = 350;	/* 350 msec */
+	timeout = 350;	 
 
 	do {
 		status = inb(fd->base + REG_BSTAT);
 		if (status & BSTAT_BSY) {
-			/* Enable SCSI Bus */
-			/* (on error, should make bus idle with 0) */
+			 
+			 
 			outb(BCTL_BUSEN, fd->base + REG_BCTL);
 			return 0;
 		}
@@ -238,7 +153,7 @@ static void fdomain_read_data(struct scsi_cmnd *cmd)
 static void fdomain_write_data(struct scsi_cmnd *cmd)
 {
 	struct fdomain *fd = shost_priv(cmd->device->host);
-	/* 8k FIFO for pre-tmc18c30 chips, 2k FIFO for tmc18c30 */
+	 
 	int FIFO_Size = fd->chip == tmc18c30 ? 0x800 : 0x2000;
 	unsigned char *virt, *ptr;
 	size_t offset, len;
@@ -288,19 +203,19 @@ static void fdomain_work(struct work_struct *work)
 		outb(BCTL_BUSEN | BCTL_SEL, fd->base + REG_BCTL);
 		outb(BIT(cmd->device->host->this_id) | BIT(scmd_id(cmd)),
 		     fd->base + REG_SCSI_DATA_NOACK);
-		/* Stop arbitration and enable parity */
+		 
 		outb(ACTL_IRQEN | PARITY_MASK, fd->base + REG_ACTL);
 		goto out;
 	} else if (scsi_pointer->phase & in_selection) {
 		status = inb(fd->base + REG_BSTAT);
 		if (!(status & BSTAT_BSY)) {
-			/* Try again, for slow devices */
+			 
 			if (fdomain_select(cmd->device->host, scmd_id(cmd))) {
 				set_host_byte(cmd, DID_NO_CONNECT);
 				fdomain_finish_cmd(fd);
 				goto out;
 			}
-			/* Stop arbitration and enable parity */
+			 
 			outb(ACTL_IRQEN | PARITY_MASK, fd->base + REG_ACTL);
 		}
 		scsi_pointer->phase = in_other;
@@ -309,36 +224,36 @@ static void fdomain_work(struct work_struct *work)
 		goto out;
 	}
 
-	/* fdomain_scsi_pointer(cur_cmd)->phase == in_other: this is the body of the routine */
+	 
 	status = inb(fd->base + REG_BSTAT);
 
 	if (status & BSTAT_REQ) {
 		switch (status & (BSTAT_MSG | BSTAT_CMD | BSTAT_IO)) {
-		case BSTAT_CMD:	/* COMMAND OUT */
+		case BSTAT_CMD:	 
 			outb(cmd->cmnd[scsi_pointer->sent_command++],
 			     fd->base + REG_SCSI_DATA);
 			break;
-		case 0:	/* DATA OUT -- tmc18c50/tmc18c30 only */
+		case 0:	 
 			if (fd->chip != tmc1800 && !scsi_pointer->have_data_in) {
 				scsi_pointer->have_data_in = -1;
 				outb(ACTL_IRQEN | ACTL_FIFOWR | ACTL_FIFOEN |
 				     PARITY_MASK, fd->base + REG_ACTL);
 			}
 			break;
-		case BSTAT_IO:	/* DATA IN -- tmc18c50/tmc18c30 only */
+		case BSTAT_IO:	 
 			if (fd->chip != tmc1800 && !scsi_pointer->have_data_in) {
 				scsi_pointer->have_data_in = 1;
 				outb(ACTL_IRQEN | ACTL_FIFOEN | PARITY_MASK,
 				     fd->base + REG_ACTL);
 			}
 			break;
-		case BSTAT_CMD | BSTAT_IO:	/* STATUS IN */
+		case BSTAT_CMD | BSTAT_IO:	 
 			scsi_pointer->Status = inb(fd->base + REG_SCSI_DATA);
 			break;
-		case BSTAT_MSG | BSTAT_CMD:	/* MESSAGE OUT */
+		case BSTAT_MSG | BSTAT_CMD:	 
 			outb(MESSAGE_REJECT, fd->base + REG_SCSI_DATA);
 			break;
-		case BSTAT_MSG | BSTAT_CMD | BSTAT_IO:	/* MESSAGE IN */
+		case BSTAT_MSG | BSTAT_CMD | BSTAT_IO:	 
 			scsi_pointer->Message = inb(fd->base + REG_SCSI_DATA);
 			if (scsi_pointer->Message == COMMAND_COMPLETE)
 				++done;
@@ -359,10 +274,10 @@ static void fdomain_work(struct work_struct *work)
 		}
 	}
 
-	if (scsi_pointer->have_data_in == -1) /* DATA OUT */
+	if (scsi_pointer->have_data_in == -1)  
 		fdomain_write_data(cmd);
 
-	if (scsi_pointer->have_data_in == 1) /* DATA IN */
+	if (scsi_pointer->have_data_in == 1)  
 		fdomain_read_data(cmd);
 
 	if (done) {
@@ -387,14 +302,14 @@ static irqreturn_t fdomain_irq(int irq, void *dev_id)
 {
 	struct fdomain *fd = dev_id;
 
-	/* Is it our IRQ? */
+	 
 	if ((inb(fd->base + REG_ASTAT) & ASTAT_IRQ) == 0)
 		return IRQ_NONE;
 
 	outb(0, fd->base + REG_ICTL);
 
-	/* We usually have one spurious interrupt after each command. */
-	if (!fd->cur_cmd)	/* Spurious interrupt */
+	 
+	if (!fd->cur_cmd)	 
 		return IRQ_NONE;
 
 	schedule_work(&fd->work);
@@ -421,13 +336,13 @@ static int fdomain_queue(struct Scsi_Host *sh, struct scsi_cmnd *cmd)
 
 	fdomain_make_bus_idle(fd);
 
-	/* Start arbitration */
+	 
 	outb(0, fd->base + REG_ICTL);
-	outb(0, fd->base + REG_BCTL);	/* Disable data drivers */
-	/* Set our id bit */
+	outb(0, fd->base + REG_BCTL);	 
+	 
 	outb(BIT(cmd->device->host->this_id), fd->base + REG_SCSI_DATA_NOACK);
 	outb(ICTL_ARB, fd->base + REG_ICTL);
-	/* Start arbitration */
+	 
 	outb(ACTL_ARB | ACTL_IRQEN | PARITY_MASK, fd->base + REG_ACTL);
 
 	spin_unlock_irqrestore(sh->host_lock, flags);
@@ -449,7 +364,7 @@ static int fdomain_abort(struct scsi_cmnd *cmd)
 	fdomain_make_bus_idle(fd);
 	fdomain_scsi_pointer(fd->cur_cmd)->phase |= aborted;
 
-	/* Aborts are not done well. . . */
+	 
 	set_host_byte(fd->cur_cmd, DID_ABORT);
 	fdomain_finish_cmd(fd);
 	spin_unlock_irqrestore(sh->host_lock, flags);
@@ -474,20 +389,20 @@ static int fdomain_biosparam(struct scsi_device *sdev,
 {
 	unsigned char *p = scsi_bios_ptable(bdev);
 
-	if (p && p[65] == 0xaa && p[64] == 0x55 /* Partition table valid */
-	    && p[4]) {	 /* Partition type */
-		geom[0] = p[5] + 1;	/* heads */
-		geom[1] = p[6] & 0x3f;	/* sectors */
+	if (p && p[65] == 0xaa && p[64] == 0x55  
+	    && p[4]) {	  
+		geom[0] = p[5] + 1;	 
+		geom[1] = p[6] & 0x3f;	 
 	} else {
 		if (capacity >= 0x7e0000) {
-			geom[0] = 255;	/* heads */
-			geom[1] = 63;	/* sectors */
+			geom[0] = 255;	 
+			geom[1] = 63;	 
 		} else if (capacity >= 0x200000) {
-			geom[0] = 128;	/* heads */
-			geom[1] = 63;	/* sectors */
+			geom[0] = 128;	 
+			geom[1] = 63;	 
 		} else {
-			geom[0] = 64;	/* heads */
-			geom[1] = 32;	/* sectors */
+			geom[0] = 64;	 
+			geom[1] = 32;	 
 		}
 	}
 	geom[2] = sector_div(capacity, geom[0] * geom[1]);
@@ -600,7 +515,7 @@ static int fdomain_resume(struct device *dev)
 }
 
 static SIMPLE_DEV_PM_OPS(fdomain_pm_ops, NULL, fdomain_resume);
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 MODULE_AUTHOR("Ondrej Zary, Rickard E. Faith");
 MODULE_DESCRIPTION("Future Domain TMC-16x0/TMC-3260 SCSI driver");

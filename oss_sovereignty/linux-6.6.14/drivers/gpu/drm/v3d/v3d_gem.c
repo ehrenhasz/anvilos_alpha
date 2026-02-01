@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Copyright (C) 2014-2018 Broadcom */
+
+ 
 
 #include <linux/device.h>
 #include <linux/dma-mapping.h>
@@ -21,23 +21,16 @@
 static void
 v3d_init_core(struct v3d_dev *v3d, int core)
 {
-	/* Set OVRTMUOUT, which means that the texture sampler uniform
-	 * configuration's tmu output type field is used, instead of
-	 * using the hardware default behavior based on the texture
-	 * type.  If you want the default behavior, you can still put
-	 * "2" in the indirect texture state's output_type field.
-	 */
+	 
 	if (v3d->ver < 40)
 		V3D_CORE_WRITE(core, V3D_CTL_MISCCFG, V3D_MISCCFG_OVRTMUOUT);
 
-	/* Whenever we flush the L2T cache, we always want to flush
-	 * the whole thing.
-	 */
+	 
 	V3D_CORE_WRITE(core, V3D_CTL_L2TFLSTA, 0);
 	V3D_CORE_WRITE(core, V3D_CTL_L2TFLEND, ~0);
 }
 
-/* Sets invariant state for the HW. */
+ 
 static void
 v3d_init_hw_state(struct v3d_dev *v3d)
 {
@@ -82,9 +75,7 @@ v3d_reset_by_bridge(struct v3d_dev *v3d)
 				 V3D_TOP_GR_BRIDGE_SW_INIT_0_V3D_CLK_108_SW_INIT);
 		V3D_BRIDGE_WRITE(V3D_TOP_GR_BRIDGE_SW_INIT_0, 0);
 
-		/* GFXH-1383: The SW_INIT may cause a stray write to address 0
-		 * of the unit, so reset it to its power-on value here.
-		 */
+		 
 		V3D_WRITE(V3D_HUB_AXICFG, V3D_HUB_AXICFG_MAX_LEN_MASK);
 	} else {
 		WARN_ON_ONCE(V3D_GET_FIELD(version,
@@ -116,7 +107,7 @@ v3d_reset(struct v3d_dev *v3d)
 		      V3D_CORE_READ(0, V3D_ERR_STAT));
 	trace_v3d_reset_begin(dev);
 
-	/* XXX: only needed for safe powerdown, not reset. */
+	 
 	if (false)
 		v3d_idle_axi(v3d, 0);
 
@@ -147,9 +138,7 @@ v3d_flush_l3(struct v3d_dev *v3d)
 	}
 }
 
-/* Invalidates the (read-only) L2C cache.  This was the L2 cache for
- * uniforms and instructions on V3D 3.2.
- */
+ 
 static void
 v3d_invalidate_l2c(struct v3d_dev *v3d, int core)
 {
@@ -161,17 +150,11 @@ v3d_invalidate_l2c(struct v3d_dev *v3d, int core)
 		       V3D_L2CACTL_L2CENA);
 }
 
-/* Invalidates texture L2 cachelines */
+ 
 static void
 v3d_flush_l2t(struct v3d_dev *v3d, int core)
 {
-	/* While there is a busy bit (V3D_L2TCACTL_L2TFLS), we don't
-	 * need to wait for completion before dispatching the job --
-	 * L2T accesses will be stalled until the flush has completed.
-	 * However, we do need to make sure we don't try to trigger a
-	 * new flush while the L2_CLEAN queue is trying to
-	 * synchronously clean after a job.
-	 */
+	 
 	mutex_lock(&v3d->cache_clean_lock);
 	V3D_CORE_WRITE(core, V3D_CTL_L2TCACTL,
 		       V3D_L2TCACTL_L2TFLS |
@@ -179,14 +162,7 @@ v3d_flush_l2t(struct v3d_dev *v3d, int core)
 	mutex_unlock(&v3d->cache_clean_lock);
 }
 
-/* Cleans texture L1 and L2 cachelines (writing back dirty data).
- *
- * For cleaning, which happens from the CACHE_CLEAN queue after CSD has
- * executed, we need to make sure that the clean is done before
- * signaling job completion.  So, we synchronously wait before
- * returning, and we make sure that L2 invalidates don't happen in the
- * meantime to confuse our are-we-done checks.
- */
+ 
 void
 v3d_clean_caches(struct v3d_dev *v3d)
 {
@@ -216,7 +192,7 @@ v3d_clean_caches(struct v3d_dev *v3d)
 	trace_v3d_cache_clean_end(dev);
 }
 
-/* Invalidates the slice caches.  These are read-only caches. */
+ 
 static void
 v3d_invalidate_slices(struct v3d_dev *v3d, int core)
 {
@@ -230,24 +206,14 @@ v3d_invalidate_slices(struct v3d_dev *v3d, int core)
 void
 v3d_invalidate_caches(struct v3d_dev *v3d)
 {
-	/* Invalidate the caches from the outside in.  That way if
-	 * another CL's concurrent use of nearby memory were to pull
-	 * an invalidated cacheline back in, we wouldn't leave stale
-	 * data in the inner cache.
-	 */
+	 
 	v3d_flush_l3(v3d);
 	v3d_invalidate_l2c(v3d, 0);
 	v3d_flush_l2t(v3d, 0);
 	v3d_invalidate_slices(v3d, 0);
 }
 
-/* Takes the reservation lock on all the BOs being referenced, so that
- * at queue submit time we can update the reservations.
- *
- * We don't lock the RCL the tile alloc/state BOs, or overflow memory
- * (all of which are on exec->unref_list).  They're entirely private
- * to v3d, so we don't attach dma-buf fences to them.
- */
+ 
 static int
 v3d_lock_bo_reservations(struct v3d_job *job,
 			 struct ww_acquire_ctx *acquire_ctx)
@@ -276,22 +242,7 @@ fail:
 	return ret;
 }
 
-/**
- * v3d_lookup_bos() - Sets up job->bo[] with the GEM objects
- * referenced by the job.
- * @dev: DRM device
- * @file_priv: DRM file for this fd
- * @job: V3D job being set up
- * @bo_handles: GEM handles
- * @bo_count: Number of GEM handles passed in
- *
- * The command validator needs to reference BOs by their index within
- * the submitted job's BO list.  This does the validation of the job's
- * BO list and reference counting for the lifetime of the job.
- *
- * Note that this function doesn't need to unreference the BOs on
- * failure, because that will happen at v3d_exec_cleanup() time.
- */
+ 
 static int
 v3d_lookup_bos(struct drm_device *dev,
 	       struct drm_file *file_priv,
@@ -302,9 +253,7 @@ v3d_lookup_bos(struct drm_device *dev,
 	job->bo_count = bo_count;
 
 	if (!job->bo_count) {
-		/* See comment on bo_index for why we have to check
-		 * this.
-		 */
+		 
 		DRM_DEBUG("Rendering requires BOs\n");
 		return -EINVAL;
 	}
@@ -380,16 +329,14 @@ v3d_wait_bo_ioctl(struct drm_device *dev, void *data,
 	ret = drm_gem_dma_resv_wait(file_priv, args->handle,
 				    true, timeout_jiffies);
 
-	/* Decrement the user's timeout, in case we got interrupted
-	 * such that the ioctl will be restarted.
-	 */
+	 
 	delta_ns = ktime_to_ns(ktime_sub(ktime_get(), start));
 	if (delta_ns < args->timeout_ns)
 		args->timeout_ns -= delta_ns;
 	else
 		args->timeout_ns = 0;
 
-	/* Asked to wait beyond the jiffie/scheduler precision? */
+	 
 	if (ret == -ETIME && args->timeout_ns)
 		ret = -EAGAIN;
 
@@ -435,7 +382,7 @@ v3d_job_init(struct v3d_dev *v3d, struct drm_file *file_priv,
 				}
 				ret = drm_sched_job_add_syncobj_dependency(&job->base, file_priv, in.handle, 0);
 
-				// TODO: Investigate why this was filtered out for the IOCTL.
+				
 				if (ret && ret != -ENOENT)
 					goto fail_deps;
 			}
@@ -443,7 +390,7 @@ v3d_job_init(struct v3d_dev *v3d, struct drm_file *file_priv,
 	} else {
 		ret = drm_sched_job_add_syncobj_dependency(&job->base, file_priv, in_sync, 0);
 
-		// TODO: Investigate why this was filtered out for the IOCTL.
+		
 		if (ret && ret != -ENOENT)
 			goto fail_deps;
 	}
@@ -468,7 +415,7 @@ v3d_push_job(struct v3d_job *job)
 
 	job->done_fence = dma_fence_get(&job->base.s_fence->finished);
 
-	/* put by scheduler job completion */
+	 
 	kref_get(&job->refcount);
 
 	drm_sched_entity_push_job(&job->base);
@@ -487,15 +434,15 @@ v3d_attach_fences_and_unlock_reservation(struct drm_file *file_priv,
 	int i;
 
 	for (i = 0; i < job->bo_count; i++) {
-		/* XXX: Use shared fences for read-only objects. */
+		 
 		dma_resv_add_fence(job->bo[i]->resv, job->done_fence,
 				   DMA_RESV_USAGE_WRITE);
 	}
 
 	drm_gem_unlock_reservations(job->bo, job->bo_count, acquire_ctx);
 
-	/* Update the return sync object for the job */
-	/* If it only supports a single signal semaphore*/
+	 
+	 
 	if (!has_multisync) {
 		sync_out = drm_syncobj_find(file_priv, out_sync);
 		if (sync_out) {
@@ -505,7 +452,7 @@ v3d_attach_fences_and_unlock_reservation(struct drm_file *file_priv,
 		return;
 	}
 
-	/* If multiple semaphores extension is supported */
+	 
 	if (se->out_sync_count) {
 		for (i = 0; i < se->out_sync_count; i++) {
 			drm_syncobj_replace_fence(se->out_syncs[i].syncobj,
@@ -577,9 +524,7 @@ fail:
 	return ret;
 }
 
-/* Get data for multiple binary semaphores synchronization. Parse syncobj
- * to be signaled when job completes (out_sync).
- */
+ 
 static int
 v3d_get_multisync_submit_deps(struct drm_file *file_priv,
 			      struct drm_v3d_extension __user *ext,
@@ -608,9 +553,7 @@ v3d_get_multisync_submit_deps(struct drm_file *file_priv,
 	return 0;
 }
 
-/* Whenever userspace sets ioctl extensions, v3d_get_extensions parses data
- * according to the extension id (name).
- */
+ 
 static int
 v3d_get_extensions(struct drm_file *file_priv,
 		   u64 ext_handles,
@@ -645,18 +588,7 @@ v3d_get_extensions(struct drm_file *file_priv,
 	return 0;
 }
 
-/**
- * v3d_submit_cl_ioctl() - Submits a job (frame) to the V3D.
- * @dev: DRM device
- * @data: ioctl argument
- * @file_priv: DRM file for this fd
- *
- * This is the main entrypoint for userspace to submit a 3D frame to
- * the GPU.  Userspace provides the binner command list (if
- * applicable), and the kernel sets up the render command list to draw
- * to the framebuffer described in the ioctl, using the command lists
- * that the 3D engine's binner will produce.
- */
+ 
 int
 v3d_submit_cl_ioctl(struct drm_device *dev, void *data,
 		    struct drm_file *file_priv)
@@ -802,15 +734,7 @@ fail:
 	return ret;
 }
 
-/**
- * v3d_submit_tfu_ioctl() - Submits a TFU (texture formatting) job to the V3D.
- * @dev: DRM device
- * @data: ioctl argument
- * @file_priv: DRM file for this fd
- *
- * Userspace provides the register setup for the TFU, which we don't
- * need to validate since the TFU is behind the MMU.
- */
+ 
 int
 v3d_submit_tfu_ioctl(struct drm_device *dev, void *data,
 		     struct drm_file *file_priv)
@@ -895,15 +819,7 @@ fail:
 	return ret;
 }
 
-/**
- * v3d_submit_csd_ioctl() - Submits a CSD (texture formatting) job to the V3D.
- * @dev: DRM device
- * @data: ioctl argument
- * @file_priv: DRM file for this fd
- *
- * Userspace provides the register setup for the CSD, which we don't
- * need to validate since the CSD is behind the MMU.
- */
+ 
 int
 v3d_submit_csd_ioctl(struct drm_device *dev, void *data,
 		     struct drm_file *file_priv)
@@ -1031,10 +947,7 @@ v3d_gem_init(struct drm_device *dev)
 	if (ret)
 		return ret;
 
-	/* Note: We don't allocate address 0.  Various bits of HW
-	 * treat 0 as special, such as the occlusion query counters
-	 * where 0 means "disabled".
-	 */
+	 
 	drm_mm_init(&v3d->mm, 1, pt_size / sizeof(u32) - 1);
 
 	v3d->pt = dma_alloc_wc(v3d->drm.dev, pt_size,
@@ -1067,9 +980,7 @@ v3d_gem_destroy(struct drm_device *dev)
 
 	v3d_sched_fini(v3d);
 
-	/* Waiting for jobs to finish would need to be done before
-	 * unregistering V3D.
-	 */
+	 
 	WARN_ON(v3d->bin_job);
 	WARN_ON(v3d->render_job);
 

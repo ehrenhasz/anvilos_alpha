@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * taskstats.c - Export per-task statistics to userland
- *
- * Copyright (C) Shailabh Nagar, IBM Corp. 2006
- *           (C) Balbir Singh,   IBM Corp. 2006
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/taskstats_kern.h>
@@ -23,10 +18,7 @@
 #include <linux/atomic.h>
 #include <linux/sched/cputime.h>
 
-/*
- * Maximum length of a cpumask that can be specified in
- * the TASKSTATS_CMD_ATTR_REGISTER/DEREGISTER_CPUMASK attribute
- */
+ 
 #define TASKSTATS_CPUMASK_MAXLEN	(100+6*NR_CPUS)
 
 static DEFINE_PER_CPU(__u32, taskstats_seqnum);
@@ -69,9 +61,7 @@ static int prepare_reply(struct genl_info *info, u8 cmd, struct sk_buff **skbp,
 	struct sk_buff *skb;
 	void *reply;
 
-	/*
-	 * If new attributes are added, please revisit this allocation
-	 */
+	 
 	skb = genlmsg_new(size, GFP_KERNEL);
 	if (!skb)
 		return -ENOMEM;
@@ -91,9 +81,7 @@ static int prepare_reply(struct genl_info *info, u8 cmd, struct sk_buff **skbp,
 	return 0;
 }
 
-/*
- * Send taskstats data in @skb to listener with nl_pid @pid
- */
+ 
 static int send_reply(struct sk_buff *skb, struct genl_info *info)
 {
 	struct genlmsghdr *genlhdr = nlmsg_data(nlmsg_hdr(skb));
@@ -104,9 +92,7 @@ static int send_reply(struct sk_buff *skb, struct genl_info *info)
 	return genlmsg_reply(skb, info);
 }
 
-/*
- * Send taskstats data in @skb to listeners registered for @cpu's exit data
- */
+ 
 static void send_cpu_listeners(struct sk_buff *skb,
 					struct listener_list *listeners)
 {
@@ -143,7 +129,7 @@ static void send_cpu_listeners(struct sk_buff *skb,
 	if (!delcount)
 		return;
 
-	/* Delete invalidated entries */
+	 
 	down_write(&listeners->sem);
 	list_for_each_entry_safe(s, tmp, &listeners->list, list) {
 		if (!s->valid) {
@@ -156,11 +142,11 @@ static void send_cpu_listeners(struct sk_buff *skb,
 
 static void exe_add_tsk(struct taskstats *stats, struct task_struct *tsk)
 {
-	/* No idea if I'm allowed to access that here, now. */
+	 
 	struct file *exe_file = get_task_exe_file(tsk);
 
 	if (exe_file) {
-		/* Following cp_new_stat64() in stat.c . */
+		 
 		stats->ac_exe_dev =
 			huge_encode_dev(exe_file->f_inode->i_sb->s_dev);
 		stats->ac_exe_inode = exe_file->f_inode->i_ino;
@@ -176,25 +162,20 @@ static void fill_stats(struct user_namespace *user_ns,
 		       struct task_struct *tsk, struct taskstats *stats)
 {
 	memset(stats, 0, sizeof(*stats));
-	/*
-	 * Each accounting subsystem adds calls to its functions to
-	 * fill in relevant parts of struct taskstsats as follows
-	 *
-	 *	per-task-foo(stats, tsk);
-	 */
+	 
 
 	delayacct_add_tsk(stats, tsk);
 
-	/* fill in basic acct fields */
+	 
 	stats->version = TASKSTATS_VERSION;
 	stats->nvcsw = tsk->nvcsw;
 	stats->nivcsw = tsk->nivcsw;
 	bacct_add_tsk(user_ns, pid_ns, stats, tsk);
 
-	/* fill in extended acct fields */
+	 
 	xacct_add_tsk(stats, tsk);
 
-	/* add executable info */
+	 
 	exe_add_tsk(stats, tsk);
 }
 
@@ -218,10 +199,7 @@ static int fill_stats_for_tgid(pid_t tgid, struct taskstats *stats)
 	u64 delta, utime, stime;
 	u64 start_time;
 
-	/*
-	 * Add additional stats from live tasks except zombie thread group
-	 * leaders who are already counted with the dead tasks
-	 */
+	 
 	rcu_read_lock();
 	first = find_task_by_vpid(tgid);
 
@@ -238,17 +216,12 @@ static int fill_stats_for_tgid(pid_t tgid, struct taskstats *stats)
 	do {
 		if (tsk->exit_state)
 			continue;
-		/*
-		 * Accounting subsystem can call its functions here to
-		 * fill in relevant parts of struct taskstsats as follows
-		 *
-		 *	per-task-foo(stats, tsk);
-		 */
+		 
 		delayacct_add_tsk(stats, tsk);
 
-		/* calculate task elapsed time in nsec */
+		 
 		delta = start_time - tsk->start_time;
-		/* Convert to micro seconds */
+		 
 		do_div(delta, NSEC_PER_USEC);
 		stats->ac_etime += delta;
 
@@ -266,10 +239,7 @@ out:
 	rcu_read_unlock();
 
 	stats->version = TASKSTATS_VERSION;
-	/*
-	 * Accounting subsystems can also add calls here to modify
-	 * fields of taskstats.
-	 */
+	 
 	return rc;
 }
 
@@ -281,12 +251,7 @@ static void fill_tgid_exit(struct task_struct *tsk)
 	if (!tsk->signal->stats)
 		goto ret;
 
-	/*
-	 * Each accounting subsystem calls its functions here to
-	 * accumalate its per-task stats for tsk, into the per-tgid structure
-	 *
-	 *	per-task-foo(tsk->signal->stats, tsk);
-	 */
+	 
 	delayacct_add_tsk(tsk->signal->stats, tsk);
 ret:
 	spin_unlock_irqrestore(&tsk->sighand->siglock, flags);
@@ -330,12 +295,12 @@ static int add_del_listener(pid_t pid, const struct cpumask *mask, int isadd)
 			s = NULL;
 exists:
 			up_write(&listeners->sem);
-			kfree(s); /* nop if NULL */
+			kfree(s);  
 		}
 		return 0;
 	}
 
-	/* Deregister or cleanup */
+	 
 cleanup:
 	for_each_cpu(cpu, mask) {
 		listeners = &per_cpu(listener_array, cpu);
@@ -574,21 +539,18 @@ static struct taskstats *taskstats_tgid_alloc(struct task_struct *tsk)
 	struct signal_struct *sig = tsk->signal;
 	struct taskstats *stats_new, *stats;
 
-	/* Pairs with smp_store_release() below. */
+	 
 	stats = smp_load_acquire(&sig->stats);
 	if (stats || thread_group_empty(tsk))
 		return stats;
 
-	/* No problem if kmem_cache_zalloc() fails */
+	 
 	stats_new = kmem_cache_zalloc(taskstats_cache, GFP_KERNEL);
 
 	spin_lock_irq(&tsk->sighand->siglock);
 	stats = sig->stats;
 	if (!stats) {
-		/*
-		 * Pairs with smp_store_release() above and order the
-		 * kmem_cache_zalloc().
-		 */
+		 
 		smp_store_release(&sig->stats, stats_new);
 		stats = stats_new;
 		stats_new = NULL;
@@ -601,7 +563,7 @@ static struct taskstats *taskstats_tgid_alloc(struct task_struct *tsk)
 	return stats;
 }
 
-/* Send pid data out on exit */
+ 
 void taskstats_exit(struct task_struct *tsk, int group_dead)
 {
 	int rc;
@@ -614,16 +576,14 @@ void taskstats_exit(struct task_struct *tsk, int group_dead)
 	if (!family_registered)
 		return;
 
-	/*
-	 * Size includes space for nested attributes
-	 */
+	 
 	size = taskstats_packet_size();
 
 	is_thread_group = !!taskstats_tgid_alloc(tsk);
 	if (is_thread_group) {
-		/* PID + STATS + TGID + STATS */
+		 
 		size = 2 * size;
-		/* fill the tsk->signal->stats structure */
+		 
 		fill_tgid_exit(tsk);
 	}
 
@@ -644,9 +604,7 @@ void taskstats_exit(struct task_struct *tsk, int group_dead)
 	if (group_dead)
 		stats->ac_flag |= AGROUP;
 
-	/*
-	 * Doesn't matter if tsk is the leader or the last group member leaving
-	 */
+	 
 	if (!is_thread_group || !group_dead)
 		goto send;
 
@@ -692,7 +650,7 @@ static struct genl_family family __ro_after_init = {
 	.netnsok	= true,
 };
 
-/* Needed early in initialization */
+ 
 void __init taskstats_init_early(void)
 {
 	unsigned int i;
@@ -717,8 +675,5 @@ static int __init taskstats_init(void)
 	return 0;
 }
 
-/*
- * late initcall ensures initialization of statistics collection
- * mechanisms precedes initialization of the taskstats interface
- */
+ 
 late_initcall(taskstats_init);

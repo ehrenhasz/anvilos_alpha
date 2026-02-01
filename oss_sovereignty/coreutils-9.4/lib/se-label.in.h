@@ -1,26 +1,9 @@
-/* Replacement <selinux/label.h> for platforms that lack it.
-   Copyright 2020-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Paul Eggert.  */
+ 
 
 #ifndef SELINUX_LABEL_H
 #define SELINUX_LABEL_H
 
-/* This file uses _GL_INLINE_HEADER_BEGIN, _GL_INLINE,
-   _GL_ATTRIBUTE_MAYBE_UNUSED.  */
+ 
 #if !_GL_CONFIG_H_INCLUDED
  #error "Please include config.h first."
 #endif
@@ -33,11 +16,9 @@ _GL_INLINE_HEADER_BEGIN
 # define SE_LABEL_INLINE _GL_INLINE
 #endif
 
-/* _GL_ATTRIBUTE_MAYBE_UNUSED declares that it is not a programming mistake if
-   the entity is not used.  The compiler should not warn if the entity is not
-   used.  */
+ 
 #ifndef _GL_ATTRIBUTE_MAYBE_UNUSED
-# if 0 /* no GCC or clang version supports this yet */
+# if 0  
 #  define _GL_ATTRIBUTE_MAYBE_UNUSED [[__maybe_unused__]]
 # elif defined __GNUC__ || defined __clang__
 #  define _GL_ATTRIBUTE_MAYBE_UNUSED __attribute__ ((__unused__))

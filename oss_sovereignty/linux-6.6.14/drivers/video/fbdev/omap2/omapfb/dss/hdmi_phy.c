@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HDMI PHY
- *
- * Copyright (C) 2013 Texas Instruments Incorporated
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/err.h>
@@ -134,23 +130,14 @@ int hdmi_phy_configure(struct hdmi_phy_data *phy, unsigned long hfbitclk,
 {
 	u8 freqout;
 
-	/*
-	 * Read address 0 in order to get the SCP reset done completed
-	 * Dummy access performed to make sure reset is done
-	 */
+	 
 	hdmi_read_reg(phy->base, HDMI_TXPHY_TX_CTRL);
 
-	/*
-	 * In OMAP5+, the HFBITCLK must be divided by 2 before issuing the
-	 * HDMI_PHYPWRCMD_LDOON command.
-	 */
+	 
 	if (phy_feat->bist_ctrl)
 		REG_FLD_MOD(phy->base, HDMI_TXPHY_BIST_CONTROL, 1, 11, 11);
 
-	/*
-	 * If the hfbitclk != lfbitclk, it means the lfbitclk was configured
-	 * to be used for TMDS.
-	 */
+	 
 	if (hfbitclk != lfbitclk)
 		freqout = 0;
 	else if (hfbitclk / 10 < phy_feat->max_phy)
@@ -158,16 +145,13 @@ int hdmi_phy_configure(struct hdmi_phy_data *phy, unsigned long hfbitclk,
 	else
 		freqout = 2;
 
-	/*
-	 * Write to phy address 0 to configure the clock
-	 * use HFBITCLK write HDMI_TXPHY_TX_CONTROL_FREQOUT field
-	 */
+	 
 	REG_FLD_MOD(phy->base, HDMI_TXPHY_TX_CTRL, freqout, 31, 30);
 
-	/* Write to phy address 1 to start HDMI line (TXVALID and TMDSCLKEN) */
+	 
 	hdmi_write_reg(phy->base, HDMI_TXPHY_DIGITAL_CTRL, 0xF0000000);
 
-	/* Setup max LDO voltage */
+	 
 	if (phy_feat->ldo_voltage)
 		REG_FLD_MOD(phy->base, HDMI_TXPHY_POWER_CTRL, 0xB, 3, 0);
 

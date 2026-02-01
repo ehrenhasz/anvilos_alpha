@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2018 Intel Corporation. */
+
+ 
 
 #include <linux/bpf_trace.h>
 #include <net/xdp_sock_drv.h>
@@ -50,7 +50,7 @@ static int ixgbe_xsk_pool_enable(struct ixgbe_adapter *adapter,
 	if (if_running) {
 		ixgbe_txrx_ring_enable(adapter, qid);
 
-		/* Kick start the NAPI context so that receiving will start */
+		 
 		err = ixgbe_xsk_wakeup(adapter->netdev, qid, XDP_WAKEUP_RX);
 		if (err) {
 			clear_bit(qid, adapter->af_xdp_zc_qps);
@@ -156,7 +156,7 @@ bool ixgbe_alloc_rx_buffers_zc(struct ixgbe_ring *rx_ring, u16 count)
 	dma_addr_t dma;
 	bool ok = true;
 
-	/* nothing to do */
+	 
 	if (!count)
 		return true;
 
@@ -173,9 +173,7 @@ bool ixgbe_alloc_rx_buffers_zc(struct ixgbe_ring *rx_ring, u16 count)
 
 		dma = xsk_buff_xdp_get_dma(bi->xdp);
 
-		/* Refresh the desc even if buffer_addrs didn't change
-		 * because each write-back erases this info.
-		 */
+		 
 		rx_desc->read.pkt_addr = cpu_to_le64(dma);
 
 		rx_desc++;
@@ -187,7 +185,7 @@ bool ixgbe_alloc_rx_buffers_zc(struct ixgbe_ring *rx_ring, u16 count)
 			i -= rx_ring->count;
 		}
 
-		/* clear the length for the next_to_use descriptor */
+		 
 		rx_desc->wb.upper.length = 0;
 
 		count--;
@@ -198,11 +196,7 @@ bool ixgbe_alloc_rx_buffers_zc(struct ixgbe_ring *rx_ring, u16 count)
 	if (rx_ring->next_to_use != i) {
 		rx_ring->next_to_use = i;
 
-		/* Force memory writes to complete before letting h/w
-		 * know there are new descriptors to fetch.  (Only
-		 * applicable for weak-ordered memory model archs,
-		 * such as IA-64).
-		 */
+		 
 		wmb();
 		writel(i, rx_ring->tail);
 	}
@@ -219,7 +213,7 @@ static struct sk_buff *ixgbe_construct_skb_zc(struct ixgbe_ring *rx_ring,
 
 	net_prefetch(xdp->data_meta);
 
-	/* allocate a skb to store the frags */
+	 
 	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, totalsize,
 			       GFP_ATOMIC | __GFP_NOWARN);
 	if (unlikely(!skb))
@@ -261,7 +255,7 @@ int ixgbe_clean_rx_irq_zc(struct ixgbe_q_vector *q_vector,
 		struct ixgbe_rx_buffer *bi;
 		unsigned int size;
 
-		/* return some buffers to hardware, one at a time is too slow */
+		 
 		if (cleaned_count >= IXGBE_RX_BUFFER_WRITE) {
 			failure = failure ||
 				  !ixgbe_alloc_rx_buffers_zc(rx_ring,
@@ -274,10 +268,7 @@ int ixgbe_clean_rx_irq_zc(struct ixgbe_q_vector *q_vector,
 		if (!size)
 			break;
 
-		/* This memory barrier is needed to keep us from reading
-		 * any other fields out of the rx_desc until we know the
-		 * descriptor has been written back
-		 */
+		 
 		dma_rmb();
 
 		bi = &rx_ring->rx_buffer_info[rx_ring->next_to_clean];
@@ -327,7 +318,7 @@ int ixgbe_clean_rx_irq_zc(struct ixgbe_q_vector *q_vector,
 		continue;
 
 construct_skb:
-		/* XDP_PASS path */
+		 
 		skb = ixgbe_construct_skb_zc(rx_ring, bi->xdp);
 		if (!skb) {
 			rx_ring->rx_stats.alloc_rx_buff_failed++;
@@ -426,7 +417,7 @@ static bool ixgbe_xmit_zc(struct ixgbe_ring *xdp_ring, unsigned int budget)
 		tx_desc = IXGBE_TX_DESC(xdp_ring, xdp_ring->next_to_use);
 		tx_desc->read.buffer_addr = cpu_to_le64(dma);
 
-		/* put descriptor type bits */
+		 
 		cmd_type = IXGBE_ADVTXD_DTYP_DATA |
 			   IXGBE_ADVTXD_DCMD_DEXT |
 			   IXGBE_ADVTXD_DCMD_IFCS;
@@ -494,7 +485,7 @@ bool ixgbe_clean_xdp_tx_irq(struct ixgbe_q_vector *q_vector,
 			tx_desc = IXGBE_TX_DESC(tx_ring, 0);
 		}
 
-		/* issue prefetch for next Tx descriptor */
+		 
 		prefetch(tx_desc);
 	}
 

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * IIO driver for Texas Instruments ADS7924 ADC, 12-bit, 4-Channels, I2C
- *
- * Author: Hugo Villeneuve <hvilleneuve@dimonoff.com>
- * Copyright 2022 DimOnOff
- *
- * based on iio/adc/ti-ads1015.c
- * Copyright (c) 2016, Intel Corporation.
- *
- * Datasheet: https://www.ti.com/lit/gpn/ads7924
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -29,7 +19,7 @@
 #define ADS7924_BITS		12
 #define ADS7924_DATA_SHIFT	 4
 
-/* Registers. */
+ 
 #define ADS7924_MODECNTRL_REG	0x00
 #define ADS7924_INTCNTRL_REG	0x01
 #define ADS7924_DATA0_U_REG	0x02
@@ -54,11 +44,7 @@
 #define ADS7924_PWRCONFIG_REG	0x15
 #define ADS7924_RESET_REG	0x16
 
-/*
- * Register address INC bit: when set to '1', the register address is
- * automatically incremented after every register read which allows convenient
- * reading of multiple registers. Set INC to '0' when reading a single register.
- */
+ 
 #define ADS7924_AUTO_INCREMENT_BIT	BIT(7)
 
 #define ADS7924_MODECNTRL_MODE_MASK	GENMASK(7, 2)
@@ -71,15 +57,15 @@
 #define ADS7924_CFG_INTPOL_MASK		BIT(ADS7924_CFG_INTPOL_BIT)
 #define ADS7924_CFG_INTTRIG_MASK	BIT(ADS7924_CFG_INTTRIG_BIT)
 
-/* Interrupt pin polarity */
+ 
 #define ADS7924_CFG_INTPOL_LOW		0
 #define ADS7924_CFG_INTPOL_HIGH		1
 
-/* Interrupt pin signaling */
+ 
 #define ADS7924_CFG_INTTRIG_LEVEL	0
 #define ADS7924_CFG_INTTRIG_EDGE	1
 
-/* Mode control values */
+ 
 #define ADS7924_MODECNTRL_IDLE			0x00
 #define ADS7924_MODECNTRL_AWAKE			0x20
 #define ADS7924_MODECNTRL_MANUAL_SINGLE		0x30
@@ -94,26 +80,13 @@
 
 #define ADS7924_PWRUPTIME_MASK	GENMASK(4, 0)
 
-/*
- * The power-up time is allowed to elapse whenever the device has been shutdown
- * in idle mode. Power-up time can allow external circuits, such as an
- * operational amplifier, between the MUXOUT and ADCIN pins to turn on.
- * The nominal time programmed by the PUTIME[4:0] register bits is given by:
- *     t PU = PWRUPTIME[4:0] × 2 μs
- * If a power-up time is not required, set the bits to '0' to effectively bypass.
- */
-#define ADS7924_PWRUPTIME_US 0 /* Bypass (0us). */
+ 
+#define ADS7924_PWRUPTIME_US 0  
 
-/*
- * Acquisition Time according to ACQTIME[4:0] register bits.
- * The Acquisition Time is given by:
- *     t ACQ = (ACQTIME[4:0] × 2 μs) + 6 μs
- * Using default value of 0 for ACQTIME[4:0] results in a minimum acquisition
- * time of 6us.
- */
+ 
 #define ADS7924_ACQTIME_US 6
 
-/* The conversion time is always 4μs and cannot be programmed by the user. */
+ 
 #define ADS7924_CONVTIME_US 4
 
 #define ADS7924_TOTAL_CONVTIME_US (ADS7924_PWRUPTIME_US + ADS7924_ACQTIME_US + \
@@ -134,20 +107,13 @@ struct ads7924_data {
 	struct regmap *regmap;
 	struct regulator *vref_reg;
 
-	/* GPIO descriptor for device hard-reset pin. */
+	 
 	struct gpio_desc *reset_gpio;
 
-	/*
-	 * Protects ADC ops, e.g: concurrent sysfs/buffered
-	 * data reads, configuration updates
-	 */
+	 
 	struct mutex lock;
 
-	/*
-	 * Set to true when the ADC is switched to the continuous-conversion
-	 * mode and exits from a power-down state. This flag is used to avoid
-	 * getting the stale result from the conversion register.
-	 */
+	 
 	bool conv_invalid;
 };
 
@@ -202,7 +168,7 @@ static int ads7924_get_adc_result(struct ads7924_data *data,
 		int conv_time;
 
 		conv_time = ADS7924_TOTAL_CONVTIME_US;
-		/* Allow 10% for internal clock inaccuracy. */
+		 
 		conv_time += conv_time / 10;
 		usleep_range(conv_time, conv_time + 1);
 		data->conv_invalid = false;
@@ -239,7 +205,7 @@ static int ads7924_read_raw(struct iio_dev *indio_dev,
 		if (vref_uv < 0)
 			return vref_uv;
 
-		*val =  vref_uv / 1000; /* Convert reg voltage to mV */
+		*val =  vref_uv / 1000;  
 		*val2 = ADS7924_BITS;
 		return IIO_VAL_FRACTIONAL_LOG2;
 	default:
@@ -290,11 +256,7 @@ static int ads7924_set_conv_mode(struct ads7924_data *data, int mode)
 	unsigned int mode_field;
 	struct device *dev = data->dev;
 
-	/*
-	 * When switching between modes, be sure to first select the Awake mode
-	 * and then switch to the desired mode. This procedure ensures the
-	 * internal control logic is properly synchronized.
-	 */
+	 
 	if (mode != ADS7924_MODECNTRL_IDLE) {
 		mode_field = FIELD_PREP(ADS7924_MODECNTRL_MODE_MASK,
 					ADS7924_MODECNTRL_AWAKE);
@@ -325,17 +287,14 @@ static int ads7924_reset(struct iio_dev *indio_dev)
 	struct ads7924_data *data = iio_priv(indio_dev);
 
 	if (data->reset_gpio) {
-		gpiod_set_value(data->reset_gpio, 1); /* Assert. */
-		/* Educated guess: assert time not specified in datasheet... */
+		gpiod_set_value(data->reset_gpio, 1);  
+		 
 		mdelay(100);
-		gpiod_set_value(data->reset_gpio, 0); /* Deassert. */
+		gpiod_set_value(data->reset_gpio, 0);  
 		return 0;
 	}
 
-	/*
-	 * A write of 10101010 to this register will generate a
-	 * software reset of the ADS7924.
-	 */
+	 
 	return regmap_write(data->regmap, ADS7924_RESET_REG, 0b10101010);
 };
 
@@ -365,7 +324,7 @@ static int ads7924_probe(struct i2c_client *client)
 
 	data->dev = dev;
 
-	/* Initialize the reset GPIO as output with an initial value of 0. */
+	 
 	data->reset_gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
 	if (IS_ERR(data->reset_gpio))
 		return dev_err_probe(dev, PTR_ERR(data->reset_gpio),
@@ -420,7 +379,7 @@ static int ads7924_probe(struct i2c_client *client)
 		return dev_err_probe(dev, ret,
 				     "failed to add idle mode action\n");
 
-	/* Use minimum signal acquire time. */
+	 
 	ret = regmap_update_bits(data->regmap, ADS7924_ACQCONFIG_REG,
 				 ADS7924_ACQTIME_MASK,
 				 FIELD_PREP(ADS7924_ACQTIME_MASK, 0));
@@ -428,7 +387,7 @@ static int ads7924_probe(struct i2c_client *client)
 		return dev_err_probe(dev, ret,
 				     "failed to configure signal acquire time\n");
 
-	/* Disable power-up time. */
+	 
 	ret = regmap_update_bits(data->regmap, ADS7924_PWRCONFIG_REG,
 				 ADS7924_PWRUPTIME_MASK,
 				 FIELD_PREP(ADS7924_PWRUPTIME_MASK, 0));

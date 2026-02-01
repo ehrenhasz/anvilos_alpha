@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/bpf.h>
 
 #include <bpf/bpf_helpers.h>
@@ -48,9 +48,9 @@ SEC("tc")
 int entry(struct __sk_buff *skb)
 {
 	bpf_tail_call_static(skb, &jmp_table, 0);
-	/* Check multi-prog update. */
+	 
 	bpf_tail_call_static(skb, &jmp_table, 2);
-	/* Check tail call limit. */
+	 
 	bpf_tail_call_static(skb, &jmp_table, 3);
 	return 3;
 }

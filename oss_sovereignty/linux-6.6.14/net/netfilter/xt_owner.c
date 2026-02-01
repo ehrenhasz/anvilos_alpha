@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Kernel module to match various things tied to sockets associated with
- * locally generated outgoing packets.
- *
- * (C) 2000 Marc Boucher <marc@mbsi.ca>
- *
- * Copyright © CC Computer Consultants GmbH, 2007 - 2008
- */
+
+ 
 #include <linux/module.h>
 #include <linux/skbuff.h>
 #include <linux/file.h>
@@ -25,14 +18,12 @@ static int owner_check(const struct xt_mtchk_param *par)
 	if (info->match & ~XT_OWNER_MASK)
 		return -EINVAL;
 
-	/* Only allow the common case where the userns of the writer
-	 * matches the userns of the network namespace.
-	 */
+	 
 	if ((info->match & (XT_OWNER_UID|XT_OWNER_GID)) &&
 	    (current_user_ns() != net->user_ns))
 		return -EINVAL;
 
-	/* Ensure the uids are valid */
+	 
 	if (info->match & XT_OWNER_UID) {
 		kuid_t uid_min = make_kuid(net->user_ns, info->uid_min);
 		kuid_t uid_max = make_kuid(net->user_ns, info->uid_max);
@@ -44,7 +35,7 @@ static int owner_check(const struct xt_mtchk_param *par)
 		}
 	}
 
-	/* Ensure the gids are valid */
+	 
 	if (info->match & XT_OWNER_GID) {
 		kgid_t gid_min = make_kgid(net->user_ns, info->gid_min);
 		kgid_t gid_max = make_kgid(net->user_ns, info->gid_max);
@@ -70,10 +61,7 @@ owner_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	if (!sk || !sk->sk_socket || !net_eq(net, sock_net(sk)))
 		return (info->match ^ info->invert) == 0;
 	else if (info->match & info->invert & XT_OWNER_SOCKET)
-		/*
-		 * Socket exists but user wanted ! --socket-exists.
-		 * (Single ampersands intended.)
-		 */
+		 
 		return false;
 
 	read_lock_bh(&sk->sk_callback_lock);

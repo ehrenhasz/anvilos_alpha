@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <errno.h>
 #include <inttypes.h>
 #include "builtin.h"
 #include "perf.h"
 
-#include "util/evlist.h" // for struct evsel_str_handler
+#include "util/evlist.h" 
 #include "util/evsel.h"
 #include "util/symbol.h"
 #include "util/thread.h"
@@ -45,7 +45,7 @@
 static struct perf_session *session;
 static struct target target;
 
-/* based on kernel/lockdep.c */
+ 
 #define LOCKHASH_BITS		12
 #define LOCKHASH_SIZE		(1UL << LOCKHASH_BITS)
 
@@ -169,7 +169,7 @@ static struct thread_stat *thread_stat_findnew_first(u32 tid)
 	return st;
 }
 
-/* build simple key function one is bigger than two */
+ 
 #define SINGLE_KEY(member)						\
 	static int lock_stat_key_ ## member(struct lock_stat *one,	\
 					 struct lock_stat *two)		\
@@ -196,21 +196,17 @@ static int lock_stat_key_wait_time_min(struct lock_stat *one,
 }
 
 struct lock_key {
-	/*
-	 * name: the value for specify by user
-	 * this should be simpler than raw name of member
-	 * e.g. nr_acquired -> acquired, wait_time_total -> wait_total
-	 */
+	 
 	const char		*name;
-	/* header: the string printed on the header line */
+	 
 	const char		*header;
-	/* len: the printing width of the field */
+	 
 	int			len;
-	/* key: a pointer to function to compare two lock stats for sorting */
+	 
 	int			(*key)(struct lock_stat*, struct lock_stat*);
-	/* print: a pointer to function to print a given lock stats */
+	 
 	void			(*print)(struct lock_key*, struct lock_stat*);
-	/* list: list entry to link this */
+	 
 	struct list_head	list;
 };
 
@@ -228,7 +224,7 @@ static void lock_stat_key_print_time(unsigned long long nsec, int len)
 		{ 0, NULL },
 	};
 
-	/* for CSV output */
+	 
 	if (len == 0) {
 		fprintf(lock_output, "%llu", nsec);
 		return;
@@ -281,8 +277,8 @@ static const char		*sort_key = "acquired";
 
 static int			(*compare)(struct lock_stat *, struct lock_stat *);
 
-static struct rb_root		sorted; /* place to store intermediate data */
-static struct rb_root		result;	/* place to store sorted data */
+static struct rb_root		sorted;  
+static struct rb_root		result;	 
 
 static LIST_HEAD(lock_keys);
 static const char		*output_fields;
@@ -297,7 +293,7 @@ static struct lock_key report_keys[] = {
 	DEF_KEY_LOCK(wait_max, "max wait", wait_time_max, 12),
 	DEF_KEY_LOCK(wait_min, "min wait", wait_time_min, 12),
 
-	/* extra comparisons much complicated should be here */
+	 
 	{ }
 };
 
@@ -308,7 +304,7 @@ static struct lock_key contention_keys[] = {
 	DEF_KEY_LOCK(wait_min, "min wait", wait_time_min, 12),
 	DEF_KEY_LOCK(avg_wait, "avg wait", avg_wait_time, 12),
 
-	/* extra comparisons much complicated should be here */
+	 
 	{ }
 };
 
@@ -324,7 +320,7 @@ static int select_key(bool contention)
 		if (!strcmp(keys[i].name, sort_key)) {
 			compare = keys[i].key;
 
-			/* selected key should be in the output fields */
+			 
 			if (list_empty(&keys[i].list))
 				list_add_tail(&keys[i].list, &lock_keys);
 
@@ -348,7 +344,7 @@ static int add_output_field(bool contention, char *name)
 		if (strcmp(keys[i].name, name))
 			continue;
 
-		/* prevent double link */
+		 
 		if (list_empty(&keys[i].list))
 			list_add_tail(&keys[i].list, &lock_keys);
 
@@ -368,7 +364,7 @@ static int setup_output_field(bool contention, const char *str)
 	if (contention)
 		keys = contention_keys;
 
-	/* no output field given: use all of them */
+	 
 	if (str == NULL) {
 		for (i = 0; keys[i].name; i++)
 			list_add_tail(&keys[i].list, &lock_keys);
@@ -460,7 +456,7 @@ static void insert_to_result(struct lock_stat *st,
 	rb_insert_color(&st->rb, &result);
 }
 
-/* returns left most element of result, and erase it */
+ 
 static struct lock_stat *pop_from_result(void)
 {
 	struct rb_node *node = result.rb_node;
@@ -532,19 +528,7 @@ bool match_callstack_filter(struct machine *machine, u64 *callstack)
 	for (int i = 0; i < max_stack_depth; i++) {
 		struct callstack_filter *filter;
 
-		/*
-		 * In powerpc, the callchain saved by kernel always includes
-		 * first three entries as the NIP (next instruction pointer),
-		 * LR (link register), and the contents of LR save area in the
-		 * second stack frame. In certain scenarios its possible to have
-		 * invalid kernel instruction addresses in either LR or the second
-		 * stack frame's LR. In that case, kernel will store that address as
-		 * zero.
-		 *
-		 * The below check will continue to look into callstack,
-		 * incase first or second callstack index entry has 0
-		 * address for powerpc.
-		 */
+		 
 		if (!callstack || (!callstack[i] && (strcmp(arch, "powerpc") ||
 						(i != 1 && i != 2))))
 			break;
@@ -563,27 +547,27 @@ bool match_callstack_filter(struct machine *machine, u64 *callstack)
 }
 
 struct trace_lock_handler {
-	/* it's used on CONFIG_LOCKDEP */
+	 
 	int (*acquire_event)(struct evsel *evsel,
 			     struct perf_sample *sample);
 
-	/* it's used on CONFIG_LOCKDEP && CONFIG_LOCK_STAT */
+	 
 	int (*acquired_event)(struct evsel *evsel,
 			      struct perf_sample *sample);
 
-	/* it's used on CONFIG_LOCKDEP && CONFIG_LOCK_STAT */
+	 
 	int (*contended_event)(struct evsel *evsel,
 			       struct perf_sample *sample);
 
-	/* it's used on CONFIG_LOCKDEP */
+	 
 	int (*release_event)(struct evsel *evsel,
 			     struct perf_sample *sample);
 
-	/* it's used when CONFIG_LOCKDEP is off */
+	 
 	int (*contention_begin_event)(struct evsel *evsel,
 				      struct perf_sample *sample);
 
-	/* it's used when CONFIG_LOCKDEP is off */
+	 
 	int (*contention_end_event)(struct evsel *evsel,
 				    struct perf_sample *sample);
 };
@@ -709,7 +693,7 @@ static int report_lock_acquire_event(struct evsel *evsel,
 	case SEQ_STATE_ACQUIRING:
 	case SEQ_STATE_CONTENDED:
 broken:
-		/* broken lock sequence */
+		 
 		if (!ls->broken) {
 			ls->broken = 1;
 			bad_hist[BROKEN_ACQUIRE]++;
@@ -758,7 +742,7 @@ static int report_lock_acquired_event(struct evsel *evsel,
 
 	switch (seq->state) {
 	case SEQ_STATE_UNINITIALIZED:
-		/* orphan event, do nothing */
+		 
 		return 0;
 	case SEQ_STATE_ACQUIRING:
 		break;
@@ -773,7 +757,7 @@ static int report_lock_acquired_event(struct evsel *evsel,
 	case SEQ_STATE_RELEASED:
 	case SEQ_STATE_ACQUIRED:
 	case SEQ_STATE_READ_ACQUIRED:
-		/* broken lock sequence */
+		 
 		if (!ls->broken) {
 			ls->broken = 1;
 			bad_hist[BROKEN_ACQUIRED]++;
@@ -823,7 +807,7 @@ static int report_lock_contended_event(struct evsel *evsel,
 
 	switch (seq->state) {
 	case SEQ_STATE_UNINITIALIZED:
-		/* orphan event, do nothing */
+		 
 		return 0;
 	case SEQ_STATE_ACQUIRING:
 		break;
@@ -831,7 +815,7 @@ static int report_lock_contended_event(struct evsel *evsel,
 	case SEQ_STATE_ACQUIRED:
 	case SEQ_STATE_READ_ACQUIRED:
 	case SEQ_STATE_CONTENDED:
-		/* broken lock sequence */
+		 
 		if (!ls->broken) {
 			ls->broken = 1;
 			bad_hist[BROKEN_CONTENDED]++;
@@ -895,7 +879,7 @@ static int report_lock_release_event(struct evsel *evsel,
 	case SEQ_STATE_ACQUIRING:
 	case SEQ_STATE_CONTENDED:
 	case SEQ_STATE_RELEASED:
-		/* broken lock sequence */
+		 
 		if (!ls->broken) {
 			ls->broken = 1;
 			bad_hist[BROKEN_RELEASE]++;
@@ -941,7 +925,7 @@ static int lock_contention_caller(struct evsel *evsel, struct perf_sample *sampl
 	int skip = 0;
 	int ret;
 
-	/* lock names will be replaced to task name later */
+	 
 	if (show_thread_stats)
 		return -1;
 
@@ -951,7 +935,7 @@ static int lock_contention_caller(struct evsel *evsel, struct perf_sample *sampl
 
 	cursor = get_tls_callchain_cursor();
 
-	/* use caller function name from the callchain */
+	 
 	ret = thread__resolve_callchain(thread, cursor, evsel, sample,
 					NULL, NULL, max_stack_depth);
 	if (ret != 0) {
@@ -969,7 +953,7 @@ static int lock_contention_caller(struct evsel *evsel, struct perf_sample *sampl
 		if (node == NULL)
 			break;
 
-		/* skip first few entries - for lock functions */
+		 
 		if (++skip <= stack_skip)
 			goto next;
 
@@ -1000,7 +984,7 @@ static u64 callchain_id(struct evsel *evsel, struct perf_sample *sample)
 		return -1;
 
 	cursor = get_tls_callchain_cursor();
-	/* use caller function name from the callchain */
+	 
 	ret = thread__resolve_callchain(thread, cursor, evsel, sample,
 					NULL, NULL, max_stack_depth);
 	thread__put(thread);
@@ -1017,7 +1001,7 @@ static u64 callchain_id(struct evsel *evsel, struct perf_sample *sample)
 		if (node == NULL)
 			break;
 
-		/* skip first few entries - for lock functions */
+		 
 		if (++skip <= stack_skip)
 			goto next;
 
@@ -1075,11 +1059,11 @@ static int report_lock_contention_begin_event(struct evsel *evsel,
 	if (!kmap_loaded) {
 		unsigned long *addrs;
 
-		/* make sure it loads the kernel map to find lock symbols */
+		 
 		map__load(machine__kernel_map(machine));
 		kmap_loaded = true;
 
-		/* convert (kernel) symbols to addresses */
+		 
 		for (i = 0; i < filters.nr_syms; i++) {
 			sym = machine__find_kernel_symbol_by_name(machine,
 								  filters.syms[i],
@@ -1185,16 +1169,12 @@ static int report_lock_contention_begin_event(struct evsel *evsel,
 	case SEQ_STATE_ACQUIRED:
 		break;
 	case SEQ_STATE_CONTENDED:
-		/*
-		 * It can have nested contention begin with mutex spinning,
-		 * then we would use the original contention begin event and
-		 * ignore the second one.
-		 */
+		 
 		goto end;
 	case SEQ_STATE_ACQUIRING:
 	case SEQ_STATE_READ_ACQUIRED:
 	case SEQ_STATE_RELEASED:
-		/* broken lock sequence */
+		 
 		if (!ls->broken) {
 			ls->broken = 1;
 			bad_hist[BROKEN_CONTENDED]++;
@@ -1258,7 +1238,7 @@ static int report_lock_contention_end_event(struct evsel *evsel,
 	case SEQ_STATE_ACQUIRED:
 	case SEQ_STATE_READ_ACQUIRED:
 	case SEQ_STATE_RELEASED:
-		/* broken lock sequence */
+		 
 		if (!ls->broken) {
 			ls->broken = 1;
 			bad_hist[BROKEN_ACQUIRED]++;
@@ -1278,8 +1258,8 @@ end:
 	return 0;
 }
 
-/* lock oriented handlers */
-/* TODO: handlers for CPU oriented, thread oriented */
+ 
+ 
 static struct trace_lock_handler report_lock_ops  = {
 	.acquire_event		= report_lock_acquire_event,
 	.acquired_event		= report_lock_acquired_event,
@@ -1341,7 +1321,7 @@ static int evsel__process_contention_end(struct evsel *evsel, struct perf_sample
 
 static void print_bad_events(int bad, int total)
 {
-	/* Output for debug, this have to be removed */
+	 
 	int i;
 	int broken = 0;
 	const char *name[4] =
@@ -1361,7 +1341,7 @@ static void print_bad_events(int bad, int total)
 		fprintf(lock_output, " %10s: %d\n", name[i], bad_hist[i]);
 }
 
-/* TODO: various way to print, coloring, nano or milli sec */
+ 
 static void print_result(void)
 {
 	struct lock_stat *st;
@@ -1387,13 +1367,13 @@ static void print_result(void)
 		bzero(cut_name, 20);
 
 		if (strlen(st->name) < 20) {
-			/* output raw name */
+			 
 			const char *name = st->name;
 
 			if (show_thread_stats) {
 				struct thread *t;
 
-				/* st->addr contains tid of thread */
+				 
 				t = perf_session__findnew(session, st->addr);
 				name = thread__comm_str(t);
 			}
@@ -1405,7 +1385,7 @@ static void print_result(void)
 			cut_name[17] = '.';
 			cut_name[18] = '.';
 			cut_name[19] = '\0';
-			/* cut off name for saving output style */
+			 
 			fprintf(lock_output, "%20s ", cut_name);
 		}
 
@@ -1490,10 +1470,10 @@ static int dump_info(void)
 }
 
 static const struct evsel_str_handler lock_tracepoints[] = {
-	{ "lock:lock_acquire",	 evsel__process_lock_acquire,   }, /* CONFIG_LOCKDEP */
-	{ "lock:lock_acquired",	 evsel__process_lock_acquired,  }, /* CONFIG_LOCKDEP, CONFIG_LOCK_STAT */
-	{ "lock:lock_contended", evsel__process_lock_contended, }, /* CONFIG_LOCKDEP, CONFIG_LOCK_STAT */
-	{ "lock:lock_release",	 evsel__process_lock_release,   }, /* CONFIG_LOCKDEP */
+	{ "lock:lock_acquire",	 evsel__process_lock_acquire,   },  
+	{ "lock:lock_acquired",	 evsel__process_lock_acquired,  },  
+	{ "lock:lock_contended", evsel__process_lock_contended, },  
+	{ "lock:lock_release",	 evsel__process_lock_release,   },  
 };
 
 static const struct evsel_str_handler contention_tracepoints[] = {
@@ -1511,7 +1491,7 @@ static int process_event_update(struct perf_tool *tool,
 	if (ret < 0)
 		return ret;
 
-	/* this can return -EEXIST since we call it for each evsel */
+	 
 	perf_session__set_tracepoints_handlers(session, lock_tracepoints);
 	perf_session__set_tracepoints_handlers(session, contention_tracepoints);
 	return 0;
@@ -1591,7 +1571,7 @@ static const struct {
 	{ LCB_F_PERCPU | LCB_F_WRITE,	"pcpu-sem:W",	"percpu-rwsem" },
 	{ LCB_F_MUTEX,			"mutex",	"mutex" },
 	{ LCB_F_MUTEX | LCB_F_SPIN,	"mutex",	"mutex" },
-	/* alias for get_type_flag() */
+	 
 	{ LCB_F_MUTEX | LCB_F_SPIN,	"mutex-spin",	"mutex" },
 };
 
@@ -1818,7 +1798,7 @@ static void print_lock_stat(struct lock_contention *con, struct lock_stat *st)
 
 static void print_footer_stdio(int total, int bad, struct lock_contention_fails *fails)
 {
-	/* Output for debug, this have to be removed */
+	 
 	int broken = fails->task + fails->stack + fails->time + fails->data;
 
 	if (!use_bpf)
@@ -1842,7 +1822,7 @@ static void print_footer_stdio(int total, int bad, struct lock_contention_fails 
 static void print_footer_csv(int total, int bad, struct lock_contention_fails *fails,
 			     const char *sep)
 {
-	/* Output for debug, this have to be removed */
+	 
 	if (use_bpf)
 		bad = fails->task + fails->stack + fails->time + fails->data;
 
@@ -1900,14 +1880,14 @@ static void print_contention_result(struct lock_contention *con)
 	}
 
 	if (print_nr_entries) {
-		/* update the total/bad stats */
+		 
 		while ((st = pop_from_result())) {
 			total += use_bpf ? st->nr_contended : 1;
 			if (st->broken)
 				bad++;
 		}
 	}
-	/* some entries are collected but hidden by the callstack filter */
+	 
 	total += con->nr_filtered;
 
 	print_footer(total, bad, &con->fails);
@@ -1972,7 +1952,7 @@ static int __cmd_report(bool display_info)
 		goto out_delete;
 
 	setup_pager();
-	if (display_info) /* used for info subcommand */
+	if (display_info)  
 		err = dump_info();
 	else {
 		combine_result();
@@ -2015,9 +1995,9 @@ static int check_lock_contention_options(const struct option *options,
 	}
 
 	if (symbol_conf.field_sep) {
-		if (strstr(symbol_conf.field_sep, ":") || /* part of type flags */
-		    strstr(symbol_conf.field_sep, "+") || /* part of caller offset */
-		    strstr(symbol_conf.field_sep, ".")) { /* can be in a symbol name */
+		if (strstr(symbol_conf.field_sep, ":") ||  
+		    strstr(symbol_conf.field_sep, "+") ||  
+		    strstr(symbol_conf.field_sep, ".")) {  
 			pr_err("Cannot use the separator that is already used\n");
 			parse_options_usage(usage, options, "x", 1);
 			return -1;
@@ -2144,7 +2124,7 @@ static int __cmd_contention(int argc, const char **argv)
 		int i;
 		struct lock_key *keys = contention_keys;
 
-		/* do not align output in CSV format */
+		 
 		for (i = 0; keys[i].name; i++)
 			keys[i].len = 0;
 	}
@@ -2154,7 +2134,7 @@ static int __cmd_contention(int argc, const char **argv)
 		if (argc)
 			evlist__start_workload(con.evlist);
 
-		/* wait for signal */
+		 
 		pause();
 
 		lock_contention_stop();
@@ -2225,7 +2205,7 @@ setup_args:
 	else
 		nr_tracepoints = ARRAY_SIZE(contention_tracepoints);
 
-	/* factor of 2 is for -e in front of each tracepoint */
+	 
 	rec_argc += 2 * nr_tracepoints;
 
 	rec_argv = calloc(rec_argc + 1, sizeof(char *));
@@ -2406,10 +2386,7 @@ static int parse_lock_addr(const struct option *opt __maybe_unused, const char *
 			continue;
 		}
 
-		/*
-		 * At this moment, we don't have kernel symbols.  Save the symbols
-		 * in a separate list and resolve them to addresses later.
-		 */
+		 
 		if (!add_lock_sym(tok)) {
 			ret = -1;
 			break;
@@ -2494,7 +2471,7 @@ int cmd_lock(int argc, const char **argv)
 		    "key for sorting (acquired / contended / avg_wait / wait_total / wait_max / wait_min)"),
 	OPT_STRING('F', "field", &output_fields, NULL,
 		    "output fields (acquired / contended / avg_wait / wait_total / wait_max / wait_min)"),
-	/* TODO: type */
+	 
 	OPT_BOOLEAN('c', "combine-locks", &combine_locks,
 		    "combine locks in the same class"),
 	OPT_BOOLEAN('t', "threads", &show_thread_stats,
@@ -2587,7 +2564,7 @@ int cmd_lock(int argc, const char **argv)
 		}
 		rc = __cmd_report(false);
 	} else if (!strcmp(argv[0], "script")) {
-		/* Aliased to 'perf script' */
+		 
 		rc = cmd_script(argc, argv);
 	} else if (!strcmp(argv[0], "info")) {
 		if (argc) {
@@ -2596,7 +2573,7 @@ int cmd_lock(int argc, const char **argv)
 			if (argc)
 				usage_with_options(info_usage, info_options);
 		}
-		/* recycling report_lock_ops */
+		 
 		trace_handler = &report_lock_ops;
 		rc = __cmd_report(true);
 	} else if (strlen(argv[0]) > 2 && strstarts("contention", argv[0])) {

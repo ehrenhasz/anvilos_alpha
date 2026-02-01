@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Xen dma-buf functionality for gntdev.
- *
- * DMA buffer implementation is based on drivers/gpu/drm/drm_prime.c.
- *
- * Copyright (c) 2018 Oleksandr Andrushchenko, EPAM Systems Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -32,25 +26,25 @@ struct gntdev_dmabuf {
 
 	union {
 		struct {
-			/* Exported buffers are reference counted. */
+			 
 			struct kref refcount;
 
 			struct gntdev_priv *priv;
 			struct gntdev_grant_map *map;
 		} exp;
 		struct {
-			/* Granted references of the imported buffer. */
+			 
 			grant_ref_t *refs;
-			/* Scatter-gather table of the imported buffer. */
+			 
 			struct sg_table *sgt;
-			/* dma-buf attachment of the imported buffer. */
+			 
 			struct dma_buf_attachment *attach;
 		} imp;
 	} u;
 
-	/* Number of pages this buffer has. */
+	 
 	int nr_pages;
-	/* Pages of this buffer. */
+	 
 	struct page **pages;
 };
 
@@ -66,25 +60,21 @@ struct gntdev_dmabuf_attachment {
 };
 
 struct gntdev_dmabuf_priv {
-	/* List of exported DMA buffers. */
+	 
 	struct list_head exp_list;
-	/* List of wait objects. */
+	 
 	struct list_head exp_wait_list;
-	/* List of imported DMA buffers. */
+	 
 	struct list_head imp_list;
-	/* This is the lock which protects dma_buf_xxx lists. */
+	 
 	struct mutex lock;
-	/*
-	 * We reference this file while exporting dma-bufs, so
-	 * the grant device context is not destroyed while there are
-	 * external users alive.
-	 */
+	 
 	struct file *filp;
 };
 
-/* DMA buffer export support. */
+ 
 
-/* Implementation of wait for exported DMA buffer to be released. */
+ 
 
 static void dmabuf_exp_release(struct kref *kref);
 
@@ -103,7 +93,7 @@ dmabuf_exp_wait_obj_new(struct gntdev_dmabuf_priv *priv,
 
 	mutex_lock(&priv->lock);
 	list_add(&obj->next, &priv->exp_wait_list);
-	/* Put our reference and wait for gntdev_dmabuf's release to fire. */
+	 
 	kref_put(&gntdev_dmabuf->u.exp.refcount, dmabuf_exp_release);
 	mutex_unlock(&priv->lock);
 	return obj;
@@ -166,20 +156,12 @@ static int dmabuf_exp_wait_released(struct gntdev_dmabuf_priv *priv, int fd,
 	int ret;
 
 	pr_debug("Will wait for dma-buf with fd %d\n", fd);
-	/*
-	 * Try to find the DMA buffer: if not found means that
-	 * either the buffer has already been released or file descriptor
-	 * provided is wrong.
-	 */
+	 
 	gntdev_dmabuf = dmabuf_exp_wait_obj_get_dmabuf(priv, fd);
 	if (IS_ERR(gntdev_dmabuf))
 		return PTR_ERR(gntdev_dmabuf);
 
-	/*
-	 * gntdev_dmabuf still exists and is reference count locked by us now,
-	 * so prepare to wait: allocate wait object and add it to the wait list,
-	 * so we can find it on release.
-	 */
+	 
 	obj = dmabuf_exp_wait_obj_new(priv, gntdev_dmabuf);
 	if (IS_ERR(obj))
 		return PTR_ERR(obj);
@@ -189,7 +171,7 @@ static int dmabuf_exp_wait_released(struct gntdev_dmabuf_priv *priv, int fd,
 	return ret;
 }
 
-/* DMA buffer export support. */
+ 
 
 static struct sg_table *
 dmabuf_pages_to_sgt(struct page **pages, unsigned int nr_pages)
@@ -267,14 +249,11 @@ dmabuf_exp_ops_map_dma_buf(struct dma_buf_attachment *attach,
 	if (dir == DMA_NONE || !gntdev_dmabuf_attach)
 		return ERR_PTR(-EINVAL);
 
-	/* Return the cached mapping when possible. */
+	 
 	if (gntdev_dmabuf_attach->dir == dir)
 		return gntdev_dmabuf_attach->sgt;
 
-	/*
-	 * Two mappings with different directions for the same attachment are
-	 * not allowed.
-	 */
+	 
 	if (gntdev_dmabuf_attach->dir != DMA_NONE)
 		return ERR_PTR(-EBUSY);
 
@@ -300,7 +279,7 @@ static void dmabuf_exp_ops_unmap_dma_buf(struct dma_buf_attachment *attach,
 					 struct sg_table *sgt,
 					 enum dma_data_direction dir)
 {
-	/* Not implemented. The unmap is done at dmabuf_exp_ops_detach(). */
+	 
 }
 
 static void dmabuf_exp_release(struct kref *kref)
@@ -319,7 +298,7 @@ static void dmabuf_exp_remove_map(struct gntdev_priv *priv,
 {
 	mutex_lock(&priv->lock);
 	list_del(&map->next);
-	gntdev_put_map(NULL /* already removed */, map);
+	gntdev_put_map(NULL  , map);
 	mutex_unlock(&priv->lock);
 }
 
@@ -467,7 +446,7 @@ static int dmabuf_exp_from_refs(struct gntdev_priv *priv, int flags,
 	args.dmabuf_priv = priv->dmabuf_priv;
 	args.count = map->count;
 	args.pages = map->pages;
-	args.fd = -1; /* Shut up unnecessary gcc warning for i386 */
+	args.fd = -1;  
 
 	ret = dmabuf_exp_from_pages(&args);
 	if (ret < 0)
@@ -481,7 +460,7 @@ out:
 	return ret;
 }
 
-/* DMA buffer import support. */
+ 
 
 static int
 dmabuf_imp_grant_foreign_access(struct page **pages, u32 *refs,
@@ -606,7 +585,7 @@ dmabuf_imp_to_refs(struct gntdev_dmabuf_priv *priv, struct device *dev,
 		goto fail_detach;
 	}
 
-	/* Check that we have zero offset. */
+	 
 	if (sgt->sgl->offset) {
 		ret = ERR_PTR(-EINVAL);
 		pr_debug("DMA buffer has %d bytes offset, user-space expects 0\n",
@@ -614,7 +593,7 @@ dmabuf_imp_to_refs(struct gntdev_dmabuf_priv *priv, struct device *dev,
 		goto fail_unmap;
 	}
 
-	/* Check number of pages that imported buffer has. */
+	 
 	if (attach->dmabuf->size != gntdev_dmabuf->nr_pages << PAGE_SHIFT) {
 		ret = ERR_PTR(-EINVAL);
 		pr_debug("DMA buffer has %zu pages, user-space expects %d\n",
@@ -624,15 +603,11 @@ dmabuf_imp_to_refs(struct gntdev_dmabuf_priv *priv, struct device *dev,
 
 	gntdev_dmabuf->u.imp.sgt = sgt;
 
-	/* Now convert sgt to array of pages and check for page validity. */
+	 
 	i = 0;
 	for_each_sgtable_page(sgt, &sg_iter, 0) {
 		struct page *page = sg_page_iter_page(&sg_iter);
-		/*
-		 * Check if page is valid: this can happen if we are given
-		 * a page from VRAM or other resources which are not backed
-		 * by a struct page.
-		 */
+		 
 		if (!pfn_valid(page_to_pfn(page))) {
 			ret = ERR_PTR(-EINVAL);
 			goto fail_unmap;
@@ -668,10 +643,7 @@ fail_put:
 	return ret;
 }
 
-/*
- * Find the hyper dma-buf by its file descriptor and remove
- * it from the buffer's list.
- */
+ 
 static struct gntdev_dmabuf *
 dmabuf_imp_find_unlink(struct gntdev_dmabuf_priv *priv, int fd)
 {
@@ -726,7 +698,7 @@ static void dmabuf_imp_release_all(struct gntdev_dmabuf_priv *priv)
 		dmabuf_imp_release(priv, gntdev_dmabuf->fd);
 }
 
-/* DMA buffer IOCTL support. */
+ 
 
 long gntdev_ioctl_dmabuf_exp_from_refs(struct gntdev_priv *priv, int use_ptemod,
 				       struct ioctl_gntdev_dmabuf_exp_from_refs __user *u)

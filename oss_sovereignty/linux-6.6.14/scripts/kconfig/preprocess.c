@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (C) 2018 Masahiro Yamada <yamada.masahiro@socionext.com>
+
+
+
 
 #include <ctype.h>
 #include <stdarg.h>
@@ -30,9 +30,7 @@ static void __attribute__((noreturn)) pperror(const char *format, ...)
 	exit(1);
 }
 
-/*
- * Environment variables
- */
+ 
 static LIST_HEAD(env_list);
 
 struct env {
@@ -60,7 +58,7 @@ static void env_del(struct env *e)
 	free(e);
 }
 
-/* The returned pointer must be freed when done */
+ 
 static char *env_expand(const char *name)
 {
 	struct env *e;
@@ -78,10 +76,7 @@ static char *env_expand(const char *name)
 	if (!value)
 		return NULL;
 
-	/*
-	 * We need to remember all referenced environment variables.
-	 * They will be written out to include/config/auto.conf.cmd
-	 */
+	 
 	env_add(name, value);
 
 	return xstrdup(value);
@@ -99,9 +94,7 @@ void env_write_dep(FILE *f, const char *autoconfig_name)
 	}
 }
 
-/*
- * Built-in functions
- */
+ 
 struct function {
 	const char *name;
 	unsigned int min_args;
@@ -158,13 +151,13 @@ static char *do_shell(int argc, char *argv[])
 	if (nread == sizeof(buf))
 		nread--;
 
-	/* remove trailing new lines */
+	 
 	while (nread > 0 && buf[nread - 1] == '\n')
 		nread--;
 
 	buf[nread] = 0;
 
-	/* replace a new line with a space */
+	 
 	for (i = 0; i < nread; i++) {
 		if (buf[i] == '\n')
 			buf[i] = ' ';
@@ -188,7 +181,7 @@ static char *do_warning_if(int argc, char *argv[])
 }
 
 static const struct function function_table[] = {
-	/* Name		MIN	MAX	Function */
+	 
 	{ "error-if",	2,	2,	do_error_if },
 	{ "filename",	0,	0,	do_filename },
 	{ "info",	1,	1,	do_info },
@@ -223,9 +216,7 @@ static char *function_expand(const char *name, int argc, char *argv[])
 	return NULL;
 }
 
-/*
- * Variables (and user-defined functions)
- */
+ 
 static LIST_HEAD(variable_list);
 
 struct variable {
@@ -285,7 +276,7 @@ void variable_add(const char *name, const char *value,
 
 	v = variable_lookup(name);
 	if (v) {
-		/* For defined variables, += inherits the existing flavor */
+		 
 		if (flavor == VAR_APPEND) {
 			flavor = v->flavor;
 			append = true;
@@ -293,7 +284,7 @@ void variable_add(const char *name, const char *value,
 			free(v->value);
 		}
 	} else {
-		/* For undefined variables, += assumes the recursive flavor */
+		 
 		if (flavor == VAR_APPEND)
 			flavor = VAR_RECURSIVE;
 
@@ -337,12 +328,7 @@ void variable_all_del(void)
 		variable_del(v);
 }
 
-/*
- * Evaluate a clause with arguments.  argc/argv are arguments from the upper
- * function call.
- *
- * Returned string must be freed when done
- */
+ 
 static char *eval_clause(const char *str, size_t len, int argc, char *argv[])
 {
 	char *tmp, *name, *res, *endptr, *prev, *p;
@@ -354,11 +340,7 @@ static char *eval_clause(const char *str, size_t len, int argc, char *argv[])
 
 	tmp = xstrndup(str, len);
 
-	/*
-	 * If variable name is '1', '2', etc.  It is generally an argument
-	 * from a user-function call (i.e. local-scope variable).  If not
-	 * available, then look-up global-scope variables.
-	 */
+	 
 	n = strtoul(tmp, &endptr, 10);
 	if (!*endptr && n > 0 && n <= argc) {
 		res = xstrdup(argv[n - 1]);
@@ -367,20 +349,7 @@ static char *eval_clause(const char *str, size_t len, int argc, char *argv[])
 
 	prev = p = tmp;
 
-	/*
-	 * Split into tokens
-	 * The function name and arguments are separated by a comma.
-	 * For example, if the function call is like this:
-	 *   $(foo,$(x),$(y))
-	 *
-	 * The input string for this helper should be:
-	 *   foo,$(x),$(y)
-	 *
-	 * and split into:
-	 *   new_argv[0] = 'foo'
-	 *   new_argv[1] = '$(x)'
-	 *   new_argv[2] = '$(y)'
-	 */
+	 
 	while (*p) {
 		if (nest == 0 && *p == ',') {
 			*p = 0;
@@ -401,29 +370,24 @@ static char *eval_clause(const char *str, size_t len, int argc, char *argv[])
 		pperror("too many function arguments");
 	new_argv[new_argc++] = prev;
 
-	/*
-	 * Shift arguments
-	 * new_argv[0] represents a function name or a variable name.  Put it
-	 * into 'name', then shift the rest of the arguments.  This simplifies
-	 * 'const' handling.
-	 */
+	 
 	name = expand_string_with_args(new_argv[0], argc, argv);
 	new_argc--;
 	for (i = 0; i < new_argc; i++)
 		new_argv[i] = expand_string_with_args(new_argv[i + 1],
 						      argc, argv);
 
-	/* Search for variables */
+	 
 	res = variable_expand(name, new_argc, new_argv);
 	if (res)
 		goto free;
 
-	/* Look for built-in functions */
+	 
 	res = function_expand(name, new_argc, new_argv);
 	if (res)
 		goto free;
 
-	/* Last, try environment variable */
+	 
 	if (new_argc == 0) {
 		res = env_expand(name);
 		if (res)
@@ -441,29 +405,14 @@ free_tmp:
 	return res;
 }
 
-/*
- * Expand a string that follows '$'
- *
- * For example, if the input string is
- *     ($(FOO)$($(BAR)))$(BAZ)
- * this helper evaluates
- *     $($(FOO)$($(BAR)))
- * and returns a new string containing the expansion (note that the string is
- * recursively expanded), also advancing 'str' to point to the next character
- * after the corresponding closing parenthesis, in this case, *str will be
- *     $(BAR)
- */
+ 
 static char *expand_dollar_with_args(const char **str, int argc, char *argv[])
 {
 	const char *p = *str;
 	const char *q;
 	int nest = 0;
 
-	/*
-	 * In Kconfig, variable/function references always start with "$(".
-	 * Neither single-letter variables as in $A nor curly braces as in ${CC}
-	 * are supported.  '$' not followed by '(' loses its special meaning.
-	 */
+	 
 	if (*p != '(') {
 		*str = p;
 		return xstrdup("$");
@@ -484,7 +433,7 @@ static char *expand_dollar_with_args(const char **str, int argc, char *argv[])
 	if (!*q)
 		pperror("unterminated reference to '%s': missing ')'", p);
 
-	/* Advance 'str' to after the expanded initial portion of the string */
+	 
 	*str = q + 1;
 
 	return eval_clause(p, q - p, argc, argv);
@@ -533,7 +482,7 @@ static char *__expand_string(const char **str, bool (*is_end)(char c),
 	out = xrealloc(out, out_len);
 	strncat(out, in, in_len);
 
-	/* Advance 'str' to the end character */
+	 
 	*str = p;
 
 	return out;
@@ -544,11 +493,7 @@ static bool is_end_of_str(char c)
 	return !c;
 }
 
-/*
- * Expand variables and functions in the given string.  Undefined variables
- * expand to an empty string.
- * The returned string must be freed when done.
- */
+ 
 static char *expand_string_with_args(const char *in, int argc, char *argv[])
 {
 	return __expand_string(&in, is_end_of_str, argc, argv);
@@ -564,13 +509,7 @@ static bool is_end_of_token(char c)
 	return !(isalnum(c) || c == '_' || c == '-');
 }
 
-/*
- * Expand variables in a token.  The parsing stops when a token separater
- * (in most cases, it is a whitespace) is encountered.  'str' is updated to
- * point to the next character.
- *
- * The returned string must be freed when done.
- */
+ 
 char *expand_one_token(const char **str)
 {
 	return __expand_string(str, is_end_of_token, 0, NULL);

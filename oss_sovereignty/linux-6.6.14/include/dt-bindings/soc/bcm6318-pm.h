@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
+ 
 
 #ifndef __DT_BINDINGS_BMIPS_BCM6318_PM_H
 #define __DT_BINDINGS_BMIPS_BCM6318_PM_H
@@ -14,4 +14,4 @@
 #define BCM6318_POWER_DOMAIN_SW1P0	8
 #define BCM6318_POWER_DOMAIN_PAD	9
 
-#endif /* __DT_BINDINGS_BMIPS_BCM6318_PM_H */
+#endif  

@@ -1,15 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  cb710/cb710-mmc.h
- *
- *  Copyright by Michał Mirosław, 2008-2009
- */
+ 
+ 
 #ifndef LINUX_CB710_MMC_H
 #define LINUX_CB710_MMC_H
 
 #include <linux/cb710.h>
 
-/* per-MMC-reader structure */
+ 
 struct cb710_mmc_reader {
 	struct tasklet_struct finish_req_tasklet;
 	struct mmc_request *mrq;
@@ -17,7 +13,7 @@ struct cb710_mmc_reader {
 	unsigned char last_power_mode;
 };
 
-/* some device struct walking */
+ 
 
 static inline struct mmc_host *cb710_slot_to_mmc(struct cb710_slot *slot)
 {
@@ -30,7 +26,7 @@ static inline struct cb710_slot *cb710_mmc_to_slot(struct mmc_host *mmc)
 	return cb710_pdev_to_slot(pdev);
 }
 
-/* registers (this might be all wrong ;) */
+ 
 
 #define CB710_MMC_DATA_PORT		0x00
 
@@ -39,7 +35,7 @@ static inline struct cb710_slot *cb710_mmc_to_slot(struct mmc_host *mmc)
 #define CB710_MMC_CONFIG1_PORT		0x05
 #define   CB710_MMC_C1_4BIT_DATA_BUS		0x40
 #define CB710_MMC_CONFIG2_PORT		0x06
-#define   CB710_MMC_C2_READ_PIO_SIZE_MASK	0x0F	/* N-1 */
+#define   CB710_MMC_C2_READ_PIO_SIZE_MASK	0x0F	 
 #define CB710_MMC_CONFIG3_PORT		0x07
 
 #define CB710_MMC_CONFIGB_PORT		0x08
@@ -97,4 +93,4 @@ static inline struct cb710_slot *cb710_mmc_to_slot(struct mmc_host *mmc)
 #define CB710_MMC_RESPONSE2_PORT	0x28
 #define CB710_MMC_RESPONSE3_PORT	0x2C
 
-#endif /* LINUX_CB710_MMC_H */
+#endif  

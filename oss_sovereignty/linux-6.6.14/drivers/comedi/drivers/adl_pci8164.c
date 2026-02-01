@@ -1,21 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * comedi/drivers/adl_pci8164.c
- *
- * Hardware comedi driver for PCI-8164 Adlink card
- * Copyright (C) 2004 Michel Lachine <mike@mikelachaine.ca>
- */
 
-/*
- * Driver: adl_pci8164
- * Description: Driver for the Adlink PCI-8164 4 Axes Motion Control board
- * Devices: [ADLink] PCI-8164 (adl_pci8164)
- * Author: Michel Lachaine <mike@mikelachaine.ca>
- * Status: experimental
- * Updated: Mon, 14 Apr 2008 15:10:32 +0100
- *
- * Configuration Options: not applicable, uses PCI auto config
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -73,7 +59,7 @@ static int adl_pci8164_auto_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* read MSTS register / write CMD register for each axis (channel) */
+	 
 	s = &dev->subdevices[0];
 	s->type		= COMEDI_SUBD_PROC;
 	s->subdev_flags	= SDF_READABLE | SDF_WRITABLE;
@@ -84,7 +70,7 @@ static int adl_pci8164_auto_attach(struct comedi_device *dev,
 	s->insn_write	= adl_pci8164_insn_write;
 	s->private	= (void *)PCI8164_CMD_MSTS_REG;
 
-	/* read SSTS register / write OTP register for each axis (channel) */
+	 
 	s = &dev->subdevices[1];
 	s->type		= COMEDI_SUBD_PROC;
 	s->subdev_flags	= SDF_READABLE | SDF_WRITABLE;
@@ -95,7 +81,7 @@ static int adl_pci8164_auto_attach(struct comedi_device *dev,
 	s->insn_write	= adl_pci8164_insn_write;
 	s->private	= (void *)PCI8164_OTP_SSTS_REG;
 
-	/* read/write BUF0 register for each axis (channel) */
+	 
 	s = &dev->subdevices[2];
 	s->type		= COMEDI_SUBD_PROC;
 	s->subdev_flags	= SDF_READABLE | SDF_WRITABLE;
@@ -106,7 +92,7 @@ static int adl_pci8164_auto_attach(struct comedi_device *dev,
 	s->insn_write	= adl_pci8164_insn_write;
 	s->private	= (void *)PCI8164_BUF0_REG;
 
-	/* read/write BUF1 register for each axis (channel) */
+	 
 	s = &dev->subdevices[3];
 	s->type		= COMEDI_SUBD_PROC;
 	s->subdev_flags	= SDF_READABLE | SDF_WRITABLE;

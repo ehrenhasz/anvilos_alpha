@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <dt-bindings/leds/rt4831-backlight.h>
 #include <linux/backlight.h>
@@ -95,7 +95,7 @@ static int rt4831_parse_backlight_properties(struct rt4831_priv *priv,
 	unsigned int val = 0;
 	int ret;
 
-	/* common properties */
+	 
 	ret = device_property_read_u32(dev, "max-brightness", &brightness);
 	if (ret)
 		brightness = RT4831_BLMAX_BRIGHTNESS;
@@ -108,7 +108,7 @@ static int rt4831_parse_backlight_properties(struct rt4831_priv *priv,
 
 	bl_props->brightness = min_t(u32, brightness, bl_props->max_brightness);
 
-	/* vendor properties */
+	 
 	if (device_property_read_bool(dev, "richtek,pwm-enable"))
 		val = RT4831_BLPWMEN_MASK;
 
@@ -126,18 +126,7 @@ static int rt4831_parse_backlight_properties(struct rt4831_priv *priv,
 	if (ret)
 		return ret;
 
-	/*
-	 * This OCP level is used to protect and limit the inductor current.
-	 * If inductor peak current reach the level, low-side MOSFET will be
-	 * turned off. Meanwhile, the output channel current may be limited.
-	 * To match the configured channel current, the inductor chosen must
-	 * be higher than the OCP level.
-	 *
-	 * Not like the OVP level, the default 21V can be used in the most
-	 * application. But if the chosen OCP level is smaller than needed,
-	 * it will also affect the backlight channel output current to be
-	 * smaller than the register setting.
-	 */
+	 
 	ret = device_property_read_u32(dev, "richtek,bled-ocp-microamp",
 				       &ocp_uA);
 	if (!ret) {

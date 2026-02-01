@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IMG Pistachio USB PHY driver
- *
- * Copyright (C) 2015 Google, Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Sysctrl clock implementation for ux500 platform.
- *
- * Copyright (C) 2013 ST-Ericsson SA
- * Author: Ulf Hansson <ulf.hansson@linaro.org>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/mfd/abx500/ab8500-sysctrl.h>
@@ -30,7 +25,7 @@ struct clk_sysctrl {
 	unsigned long enable_delay_us;
 };
 
-/* Sysctrl clock operations. */
+ 
 
 static int clk_sysctrl_prepare(struct clk_hw *hw)
 {
@@ -144,12 +139,12 @@ static struct clk *clk_reg_sysctrl(struct device *dev,
 	if (!clk)
 		return ERR_PTR(-ENOMEM);
 
-	/* set main clock registers */
+	 
 	clk->reg_sel[0] = reg_sel[0];
 	clk->reg_bits[0] = reg_bits[0];
 	clk->reg_mask[0] = reg_mask[0];
 
-	/* handle clocks with more than one parent */
+	 
 	for (i = 1; i < num_parents; i++) {
 		clk->reg_sel[i] = reg_sel[i];
 		clk->reg_bits[i] = reg_bits[i];

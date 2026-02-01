@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * vsp1_entity.h  --  R-Car VSP1 Base Entity
- *
- * Copyright (C) 2013-2014 Renesas Electronics Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+ 
+ 
 #ifndef __VSP1_ENTITY_H__
 #define __VSP1_ENTITY_H__
 
@@ -38,23 +32,9 @@ enum vsp1_entity_type {
 	VSP1_ENTITY_WPF,
 };
 
-#define VSP1_ENTITY_MAX_INPUTS		5	/* For the BRU */
+#define VSP1_ENTITY_MAX_INPUTS		5	 
 
-/*
- * struct vsp1_route - Entity routing configuration
- * @type: Entity type this routing entry is associated with
- * @index: Entity index this routing entry is associated with
- * @reg: Output routing configuration register
- * @inputs: Target node value for each input
- * @output: Target node value for entity output
- *
- * Each $vsp1_route entry describes routing configuration for the entity
- * specified by the entry's @type and @index. @reg indicates the register that
- * holds output routing configuration for the entity, and the @inputs array
- * store the target node value for each input of the entity. The @output field
- * stores the target node value of the entity output when used as a source for
- * histogram generation.
- */
+ 
 struct vsp1_route {
 	enum vsp1_entity_type type;
 	unsigned int index;
@@ -63,20 +43,7 @@ struct vsp1_route {
 	unsigned int output;
 };
 
-/**
- * struct vsp1_entity_operations - Entity operations
- * @destroy:	Destroy the entity.
- * @configure_stream:	Setup the hardware parameters for the stream which do
- *			not vary between frames (pipeline, formats). Note that
- *			the vsp1_dl_list argument is only valid for display
- *			pipeline and will be NULL for mem-to-mem pipelines.
- * @configure_frame:	Configure the runtime parameters for each frame.
- * @configure_partition: Configure partition specific parameters.
- * @max_width:	Return the max supported width of data that the entity can
- *		process in a single operation.
- * @partition:	Process the partition construction based on this entity's
- *		configuration.
- */
+ 
 struct vsp1_entity_operations {
 	void (*destroy)(struct vsp1_entity *);
 	void (*configure_stream)(struct vsp1_entity *, struct vsp1_pipeline *,
@@ -117,7 +84,7 @@ struct vsp1_entity {
 	struct v4l2_subdev subdev;
 	struct v4l2_subdev_state *config;
 
-	struct mutex lock;	/* Protects the pad config */
+	struct mutex lock;	 
 };
 
 static inline struct vsp1_entity *to_vsp1_entity(struct v4l2_subdev *subdev)
@@ -189,4 +156,4 @@ int vsp1_subdev_enum_frame_size(struct v4l2_subdev *subdev,
 				unsigned int min_w, unsigned int min_h,
 				unsigned int max_w, unsigned int max_h);
 
-#endif /* __VSP1_ENTITY_H__ */
+#endif  

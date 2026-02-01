@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * DFS referral cache routines
- *
- * Copyright (c) 2018-2019 Paulo Alcantara <palcantara@suse.de>
- */
+ 
+ 
 
 #ifndef _CIFS_DFS_CACHE_H
 #define _CIFS_DFS_CACHE_H
@@ -102,4 +98,4 @@ static inline int dfs_cache_get_ttl(void)
 	return atomic_read(&dfs_cache_ttl);
 }
 
-#endif /* _CIFS_DFS_CACHE_H */
+#endif  

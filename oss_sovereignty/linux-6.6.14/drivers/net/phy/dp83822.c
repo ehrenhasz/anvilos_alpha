@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Driver for the Texas Instruments DP83822, DP83825 and DP83826 PHYs.
- *
- * Copyright (C) 2017 Texas Instruments Inc.
- */
+
+ 
 
 #include <linux/ethtool.h>
 #include <linux/etherdevice.h>
@@ -34,25 +31,25 @@
 #define MII_DP83822_GENCFG	0x465
 #define MII_DP83822_SOR1	0x467
 
-/* GENCFG */
+ 
 #define DP83822_SIG_DET_LOW	BIT(0)
 
-/* Control Register 2 bits */
+ 
 #define DP83822_FX_ENABLE	BIT(14)
 
 #define DP83822_HW_RESET	BIT(15)
 #define DP83822_SW_RESET	BIT(14)
 
-/* PHY STS bits */
+ 
 #define DP83822_PHYSTS_DUPLEX			BIT(2)
 #define DP83822_PHYSTS_10			BIT(1)
 #define DP83822_PHYSTS_LINK			BIT(0)
 
-/* PHYSCR Register Fields */
-#define DP83822_PHYSCR_INT_OE		BIT(0) /* Interrupt Output Enable */
-#define DP83822_PHYSCR_INTEN		BIT(1) /* Interrupt Enable */
+ 
+#define DP83822_PHYSCR_INT_OE		BIT(0)  
+#define DP83822_PHYSCR_INTEN		BIT(1)  
 
-/* MISR1 bits */
+ 
 #define DP83822_RX_ERR_HF_INT_EN	BIT(0)
 #define DP83822_FALSE_CARRIER_HF_INT_EN	BIT(1)
 #define DP83822_ANEG_COMPLETE_INT_EN	BIT(2)
@@ -62,7 +59,7 @@
 #define DP83822_ENERGY_DET_INT_EN	BIT(6)
 #define DP83822_LINK_QUAL_INT_EN	BIT(7)
 
-/* MISR2 bits */
+ 
 #define DP83822_JABBER_DET_INT_EN	BIT(0)
 #define DP83822_WOL_PKT_INT_EN		BIT(1)
 #define DP83822_SLEEP_MODE_INT_EN	BIT(2)
@@ -72,7 +69,7 @@
 #define DP83822_ANEG_ERR_INT_EN		BIT(6)
 #define DP83822_EEE_ERROR_CHANGE_INT_EN	BIT(7)
 
-/* INT_STAT1 bits */
+ 
 #define DP83822_WOL_INT_EN	BIT(4)
 #define DP83822_WOL_INT_STAT	BIT(12)
 
@@ -80,26 +77,26 @@
 #define	MII_DP83822_RXSOP2	0x04a6
 #define	MII_DP83822_RXSOP3	0x04a7
 
-/* WoL Registers */
+ 
 #define	MII_DP83822_WOL_CFG	0x04a0
 #define	MII_DP83822_WOL_STAT	0x04a1
 #define	MII_DP83822_WOL_DA1	0x04a2
 #define	MII_DP83822_WOL_DA2	0x04a3
 #define	MII_DP83822_WOL_DA3	0x04a4
 
-/* WoL bits */
+ 
 #define DP83822_WOL_MAGIC_EN	BIT(0)
 #define DP83822_WOL_SECURE_ON	BIT(5)
 #define DP83822_WOL_EN		BIT(7)
 #define DP83822_WOL_INDICATION_SEL BIT(8)
 #define DP83822_WOL_CLR_INDICATION BIT(11)
 
-/* RCSR bits */
+ 
 #define DP83822_RGMII_MODE_EN	BIT(9)
 #define DP83822_RX_CLK_SHIFT	BIT(12)
 #define DP83822_TX_CLK_SHIFT	BIT(11)
 
-/* SOR1 mode */
+ 
 #define DP83822_STRAP_MODE1	0
 #define DP83822_STRAP_MODE2	BIT(0)
 #define DP83822_STRAP_MODE3	BIT(1)
@@ -133,9 +130,7 @@ static int dp83822_set_wol(struct phy_device *phydev,
 		if (!is_valid_ether_addr(mac))
 			return -EINVAL;
 
-		/* MAC addresses start with byte 5, but stored in mac[0].
-		 * 822 PHYs store bytes 4|5, 2|3, 0|1
-		 */
+		 
 		phy_write_mmd(phydev, DP83822_DEVADDR, MII_DP83822_WOL_DA1,
 			      (mac[1] << 8) | mac[0]);
 		phy_write_mmd(phydev, DP83822_DEVADDR, MII_DP83822_WOL_DA2,
@@ -165,7 +160,7 @@ static int dp83822_set_wol(struct phy_device *phydev,
 			value &= ~DP83822_WOL_SECURE_ON;
 		}
 
-		/* Clear any pending WoL interrupt */
+		 
 		phy_read(phydev, MII_DP83822_MISR2);
 
 		value |= DP83822_WOL_EN | DP83822_WOL_INDICATION_SEL |
@@ -212,7 +207,7 @@ static void dp83822_get_wol(struct phy_device *phydev,
 		wol->wolopts |= WAKE_MAGICSECURE;
 	}
 
-	/* WoL is not enabled so set wolopts to 0 */
+	 
 	if (!(value & DP83822_WOL_EN))
 		wol->wolopts = 0;
 }
@@ -233,7 +228,7 @@ static int dp83822_config_intr(struct phy_device *phydev)
 				DP83822_ENERGY_DET_INT_EN |
 				DP83822_LINK_QUAL_INT_EN);
 
-		/* Private data pointer is NULL on DP83825/26 */
+		 
 		if (!dp83822 || !dp83822->fx_enabled)
 			misr_status |= DP83822_ANEG_COMPLETE_INT_EN |
 				       DP83822_DUP_MODE_CHANGE_INT_EN |
@@ -254,7 +249,7 @@ static int dp83822_config_intr(struct phy_device *phydev)
 				DP83822_PAGE_RX_INT_EN |
 				DP83822_EEE_ERROR_CHANGE_INT_EN);
 
-		/* Private data pointer is NULL on DP83825/26 */
+		 
 		if (!dp83822 || !dp83822->fx_enabled)
 			misr_status |= DP83822_ANEG_ERR_INT_EN |
 				       DP83822_WOL_PKT_INT_EN;
@@ -293,13 +288,7 @@ static irqreturn_t dp83822_handle_interrupt(struct phy_device *phydev)
 	bool trigger_machine = false;
 	int irq_status;
 
-	/* The MISR1 and MISR2 registers are holding the interrupt status in
-	 * the upper half (15:8), while the lower half (7:0) is used for
-	 * controlling the interrupt enable state of those individual interrupt
-	 * sources. To determine the possible interrupt sources, just read the
-	 * MISR* register and use it directly to know which interrupts have
-	 * been enabled previously or not.
-	 */
+	 
 	irq_status = phy_read(phydev, MII_DP83822_MISR1);
 	if (irq_status < 0) {
 		phy_error(phydev);
@@ -422,7 +411,7 @@ static int dp83822_config_init(struct phy_device *phydev)
 		if (err < 0)
 			return err;
 
-		/* Only allow advertising what this PHY supports */
+		 
 		linkmode_and(phydev->advertising, phydev->advertising,
 			     phydev->supported);
 
@@ -439,7 +428,7 @@ static int dp83822_config_init(struct phy_device *phydev)
 		linkmode_set_bit(ETHTOOL_LINK_MODE_100baseFX_Half_BIT,
 				 phydev->advertising);
 
-		/* Auto neg is not supported in fiber mode */
+		 
 		bmcr = phy_read(phydev, MII_BMCR);
 		if (bmcr < 0)
 			return bmcr;
@@ -455,7 +444,7 @@ static int dp83822_config_init(struct phy_device *phydev)
 		linkmode_clear_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
 				   phydev->advertising);
 
-		/* Setup fiber advertisement */
+		 
 		err = phy_modify_changed(phydev, MII_ADVERTISE,
 					 MII_DP83822_FIBER_ADVERTISE,
 					 MII_DP83822_FIBER_ADVERTISE);
@@ -496,10 +485,7 @@ static int dp83822_of_init(struct phy_device *phydev)
 	struct dp83822_private *dp83822 = phydev->priv;
 	struct device *dev = &phydev->mdio.dev;
 
-	/* Signal detection for the PHY is only enabled if the FX_EN and the
-	 * SD_EN pins are strapped. Signal detection can only enabled if FX_EN
-	 * is strapped otherwise signal detection is disabled for the PHY.
-	 */
+	 
 	if (dp83822->fx_enabled && dp83822->fx_sd_enable)
 		dp83822->fx_signal_det_low = device_property_present(dev,
 								     "ti,link-loss-low");
@@ -514,7 +500,7 @@ static int dp83822_of_init(struct phy_device *phydev)
 {
 	return 0;
 }
-#endif /* CONFIG_OF_MDIO */
+#endif  
 
 static int dp83822_read_straps(struct phy_device *phydev)
 {
@@ -597,7 +583,7 @@ static int dp83822_resume(struct phy_device *phydev)
 	{							\
 		PHY_ID_MATCH_MODEL(_id),			\
 		.name		= (_name),			\
-		/* PHY_BASIC_FEATURES */			\
+		 			\
 		.probe          = dp83822_probe,		\
 		.soft_reset	= dp83822_phy_reset,		\
 		.config_init	= dp83822_config_init,		\
@@ -614,7 +600,7 @@ static int dp83822_resume(struct phy_device *phydev)
 	{							\
 		PHY_ID_MATCH_MODEL(_id),			\
 		.name		= (_name),			\
-		/* PHY_BASIC_FEATURES */			\
+		 			\
 		.soft_reset	= dp83822_phy_reset,		\
 		.config_init	= dp8382x_config_init,		\
 		.get_wol = dp83822_get_wol,			\

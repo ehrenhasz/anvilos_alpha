@@ -1,19 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Broadcom
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of_address.h>
 #include <linux/platform_device.h>
 #include <linux/thermal.h>
 
-/*
- * In stingray thermal IO memory,
- * Total Number of available TMONs MASK is at offset 0
- * temperature registers BASE is at 4 byte offset.
- * Each TMON temperature register size is 4.
- */
+ 
 #define SR_TMON_TEMP_BASE(id)   ((id) * 0x4)
 
 #define SR_TMON_MAX_LIST        6
@@ -80,7 +73,7 @@ static int sr_thermal_probe(struct platform_device *pdev)
 		if (!(sr_tmon_list & BIT(i)))
 			continue;
 
-		/* Flush temperature registers */
+		 
 		writel(0, sr_thermal->regs + SR_TMON_TEMP_BASE(i));
 		tmon->tmon_id = i;
 		tmon->priv = sr_thermal;

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Amlogic Meson-AXG Clock Controller Driver
- *
- * Copyright (c) 2016 Baylibre SAS.
- * Author: Michael Turquette <mturquette@baylibre.com>
- *
- * Copyright (c) 2018 Amlogic, inc.
- * Author: Qiufang Dai <qiufang.dai@amlogic.com>
- */
+
+ 
 #include <linux/clk-provider.h>
 #include <linux/platform_device.h>
 #include <linux/reset-controller.h>
@@ -21,10 +13,7 @@
 #include <dt-bindings/clock/axg-aoclkc.h>
 #include <dt-bindings/reset/axg-aoclkc.h>
 
-/*
- * AO Configuration Clock registers offsets
- * Register offsets from the data sheet must be multiplied by 4.
- */
+ 
 #define AO_RTI_PWR_CNTL_REG1	0x0C
 #define AO_RTI_PWR_CNTL_REG0	0x10
 #define AO_RTI_GEN_CNTL_REG0	0x40

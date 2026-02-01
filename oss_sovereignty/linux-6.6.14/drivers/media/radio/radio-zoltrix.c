@@ -1,51 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Zoltrix Radio Plus driver
- * Copyright 1998 C. van Schaik <carl@leg.uct.ac.za>
- *
- * BUGS
- *  Due to the inconsistency in reading from the signal flags
- *  it is difficult to get an accurate tuned signal.
- *
- *  It seems that the card is not linear to 0 volume. It cuts off
- *  at a low volume, and it is not possible (at least I have not found)
- *  to get fine volume control over the low volume range.
- *
- *  Some code derived from code by Romolo Manfredini
- *				   romolo@bicnet.it
- *
- * 1999-05-06 - (C. van Schaik)
- *	      - Make signal strength and stereo scans
- *		kinder to cpu while in delay
- * 1999-01-05 - (C. van Schaik)
- *	      - Changed tuning to 1/160Mhz accuracy
- *	      - Added stereo support
- *		(card defaults to stereo)
- *		(can explicitly force mono on the card)
- *		(can detect if station is in stereo)
- *	      - Added unmute function
- *	      - Reworked ioctl functions
- * 2002-07-15 - Fix Stereo typo
- *
- * 2006-07-24 - Converted to V4L2 API
- *		by Mauro Carvalho Chehab <mchehab@kernel.org>
- *
- * Converted to the radio-isa framework by Hans Verkuil <hans.verkuil@cisco.com>
- *
- * Note that this is the driver for the Zoltrix Radio Plus.
- * This driver does not work for the Zoltrix Radio Plus 108 or the
- * Zoltrix Radio Plus for Windows.
- *
- * Fully tested with the Keene USB FM Transmitter and the v4l2-compliance tool.
- */
 
-#include <linux/module.h>	/* Modules                        */
-#include <linux/init.h>		/* Initdata                       */
-#include <linux/ioport.h>	/* request_region		  */
-#include <linux/delay.h>	/* udelay, msleep                 */
-#include <linux/videodev2.h>	/* kernel radio structs           */
+ 
+
+#include <linux/module.h>	 
+#include <linux/init.h>		 
+#include <linux/ioport.h>	 
+#include <linux/delay.h>	 
+#include <linux/videodev2.h>	 
 #include <linux/mutex.h>
-#include <linux/io.h>		/* outb, outb_p                   */
+#include <linux/io.h>		 
 #include <linux/slab.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-ioctl.h>
@@ -93,7 +55,7 @@ static int zoltrix_s_mute_volume(struct radio_isa_card *isa, bool mute, int vol)
 	if (mute || vol == 0) {
 		outb(0, isa->io);
 		outb(0, isa->io);
-		inb(isa->io + 3);            /* Zoltrix needs to be read to confirm */
+		inb(isa->io + 3);             
 		return 0;
 	}
 
@@ -103,7 +65,7 @@ static int zoltrix_s_mute_volume(struct radio_isa_card *isa, bool mute, int vol)
 	return 0;
 }
 
-/* tunes the radio to the desired frequency */
+ 
 static int zoltrix_s_frequency(struct radio_isa_card *isa, u32 freq)
 {
 	struct zoltrix *zol = container_of(isa, struct zoltrix, isa);
@@ -125,7 +87,7 @@ static int zoltrix_s_frequency(struct radio_isa_card *isa, u32 freq)
 
 	outb(0, isa->io);
 	outb(0, isa->io);
-	inb(isa->io + 3);            /* Zoltrix needs to be read to confirm */
+	inb(isa->io + 3);             
 
 	outb(0x40, isa->io);
 	outb(0xc0, isa->io);
@@ -149,7 +111,7 @@ static int zoltrix_s_frequency(struct radio_isa_card *isa, u32 freq)
 		}
 		bitmask *= 2;
 	}
-	/* termination sequence */
+	 
 	outb(0x80, isa->io);
 	outb(0xc0, isa->io);
 	outb(0x40, isa->io);
@@ -160,13 +122,13 @@ static int zoltrix_s_frequency(struct radio_isa_card *isa, u32 freq)
 	return zoltrix_s_mute_volume(isa, zol->muted, zol->curvol);
 }
 
-/* Get signal strength */
+ 
 static u32 zoltrix_g_rxsubchans(struct radio_isa_card *isa)
 {
 	struct zoltrix *zol = container_of(isa, struct zoltrix, isa);
 	int a, b;
 
-	outb(0x00, isa->io);         /* This stuff I found to do nothing */
+	outb(0x00, isa->io);          
 	outb(zol->curvol, isa->io);
 	msleep(20);
 
@@ -183,7 +145,7 @@ static u32 zoltrix_g_signal(struct radio_isa_card *isa)
 	struct zoltrix *zol = container_of(isa, struct zoltrix, isa);
 	int a, b;
 
-	outb(0x00, isa->io);         /* This stuff I found to do nothing */
+	outb(0x00, isa->io);          
 	outb(zol->curvol, isa->io);
 	msleep(20);
 
@@ -194,7 +156,7 @@ static u32 zoltrix_g_signal(struct radio_isa_card *isa)
 	if (a != b)
 		return 0;
 
-	/* I found this out by playing with a binary scanner on the card io */
+	 
 	return (a == 0xcf || a == 0xdf || a == 0xef) ? 0xffff : 0;
 }
 

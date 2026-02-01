@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include "test_util.h"
 #include "kvm_util.h"
 #include "processor.h"
@@ -12,7 +12,7 @@
 
 static void guest_ud_handler(struct ex_regs *regs)
 {
-	/* Loop on the ud2 until guest state is made invalid. */
+	 
 }
 
 static void guest_code(void)
@@ -34,11 +34,7 @@ static void __run_vcpu_with_invalid_state(struct kvm_vcpu *vcpu)
 
 static void run_vcpu_with_invalid_state(struct kvm_vcpu *vcpu)
 {
-	/*
-	 * Always run twice to verify KVM handles the case where _KVM_ queues
-	 * an exception with invalid state and then exits to userspace, i.e.
-	 * that KVM doesn't explode if userspace ignores the initial error.
-	 */
+	 
 	__run_vcpu_with_invalid_state(vcpu);
 	__run_vcpu_with_invalid_state(vcpu);
 }
@@ -91,11 +87,7 @@ static void sigalrm_handler(int sig)
 
 	vcpu_events_get(vcpu, &events);
 
-	/*
-	 * If an exception is pending, attempt KVM_RUN with invalid guest,
-	 * otherwise rearm the timer and keep doing so until the timer fires
-	 * between KVM queueing an exception and re-entering the guest.
-	 */
+	 
 	if (events.exception.pending) {
 		set_invalid_guest_state(vcpu);
 		run_vcpu_with_invalid_state(vcpu);
@@ -120,21 +112,11 @@ int main(int argc, char *argv[])
 
 	vm_install_exception_handler(vm, UD_VECTOR, guest_ud_handler);
 
-	/*
-	 * Stuff invalid guest state for L2 by making TR unusuable.  The next
-	 * KVM_RUN should induce a TRIPLE_FAULT in L2 as KVM doesn't support
-	 * emulating invalid guest state for L2.
-	 */
+	 
 	set_invalid_guest_state(vcpu);
 	run_vcpu_with_invalid_state(vcpu);
 
-	/*
-	 * Verify KVM also handles the case where userspace gains control while
-	 * an exception is pending and stuffs invalid state.  Run with valid
-	 * guest state and a timer firing every 200us, and attempt to enter the
-	 * guest with invalid state when the handler interrupts KVM with an
-	 * exception pending.
-	 */
+	 
 	clear_invalid_guest_state(vcpu);
 	TEST_ASSERT(signal(SIGALRM, sigalrm_handler) != SIG_ERR,
 		    "Failed to register SIGALRM handler, errno = %d (%s)",

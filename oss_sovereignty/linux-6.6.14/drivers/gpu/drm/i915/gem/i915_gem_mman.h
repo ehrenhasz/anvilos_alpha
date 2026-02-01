@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2019 Intel Corporation
- */
+ 
 
 #ifndef __I915_GEM_MMAN_H__
 #define __I915_GEM_MMAN_H__

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* QLogic qed NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/types.h>
 #include <asm/byteorder.h>
@@ -51,7 +48,7 @@ struct qed_cb_ll2_info {
 	u32 rx_size;
 	u8 handle;
 
-	/* Lock protecting LL2 buffer lists in sleepless context */
+	 
 	spinlock_t lock;
 	struct list_head list;
 
@@ -70,13 +67,7 @@ static u8 qed_ll2_handle_to_stats_id(struct qed_hwfn *p_hwfn,
 {
 	u8 stats_id;
 
-	/* For legacy (RAM based) queues, the stats_id will be set as the
-	 * queue_id. Otherwise (context based queue), it will be set to
-	 * the "abs_pf_id" offset from the end of the RAM based queue IDs.
-	 * If the final value exceeds the total counters amount, return
-	 * INVALID value to indicate that the stats for this connection should
-	 * be disabled.
-	 */
+	 
 	if (ll2_queue_type == QED_LL2_RX_TYPE_LEGACY)
 		stats_id = qid;
 	else
@@ -99,7 +90,7 @@ static void qed_ll2b_complete_tx_packet(void *cxt,
 	struct qed_dev *cdev = p_hwfn->cdev;
 	struct sk_buff *skb = cookie;
 
-	/* All we need to do is release the mapping */
+	 
 	dma_unmap_single(&p_hwfn->cdev->pdev->dev, first_frag_addr,
 			 skb_headlen(skb), DMA_TO_DEVICE);
 
@@ -188,16 +179,16 @@ static void qed_ll2b_complete_rx_packet(void *cxt,
 			       buffer->data, data->length.packet_length, false);
 	}
 
-	/* Determine if data is valid */
+	 
 	if (data->length.packet_length < ETH_HLEN)
 		reuse = true;
 
-	/* Allocate a replacement for buffer; Reuse upon failure */
+	 
 	if (!reuse)
 		rc = qed_ll2_alloc_buffer(p_hwfn->cdev, &new_data,
 					  &new_phys_addr);
 
-	/* If need to reuse or there's no replacement buffer, repost this */
+	 
 	if (rc)
 		goto out_post;
 	dma_unmap_single(&cdev->pdev->dev, buffer->phys_addr,
@@ -215,13 +206,11 @@ static void qed_ll2b_complete_rx_packet(void *cxt,
 	skb_put(skb, data->length.packet_length);
 	skb_checksum_none_assert(skb);
 
-	/* Get parital ethernet information instead of eth_type_trans(),
-	 * Since we don't have an associated net_device.
-	 */
+	 
 	skb_reset_mac_header(skb);
 	skb->protocol = eth_hdr(skb)->h_proto;
 
-	/* Pass SKB onward */
+	 
 	if (cdev->ll2->cbs && cdev->ll2->cbs->rx_cb) {
 		if (data->vlan)
 			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
@@ -237,7 +226,7 @@ static void qed_ll2b_complete_rx_packet(void *cxt,
 	}
 
 out_post1:
-	/* Update Buffer information and update FW producer */
+	 
 	buffer->data = new_data;
 	buffer->phys_addr = new_phys_addr;
 
@@ -636,7 +625,7 @@ qed_ll2_lb_rxq_handler_slowpath(struct qed_hwfn *p_hwfn,
 	if (ooo_opq->ooo_opcode != TCP_EVENT_DELETE_ISLES)
 		return false;
 
-	/* Need to make a flush */
+	 
 	cid = le32_to_cpu(ooo_opq->cid);
 	qed_ooo_release_connection_isles(p_hwfn, p_hwfn->p_ooo_info, cid);
 
@@ -690,7 +679,7 @@ static int qed_ll2_lb_rxq_handler(struct qed_hwfn *p_hwfn,
 		qed_ooo_save_history_entry(p_hwfn, p_hwfn->p_ooo_info, ooo_opq);
 		cid = le32_to_cpu(ooo_opq->cid);
 
-		/* Process delete isle first */
+		 
 		if (ooo_opq->drop_size)
 			qed_ooo_delete_isles(p_hwfn, p_hwfn->p_ooo_info, cid,
 					     ooo_opq->drop_isle,
@@ -699,7 +688,7 @@ static int qed_ll2_lb_rxq_handler(struct qed_hwfn *p_hwfn,
 		if (ooo_opq->ooo_opcode == TCP_EVENT_NOP)
 			continue;
 
-		/* Now process create/add/join isles */
+		 
 		if (unlikely(list_empty(&p_rx->active_descq))) {
 			DP_NOTICE(p_hwfn,
 				  "LL2 OOO RX chain has no submitted buffers\n"
@@ -791,7 +780,7 @@ qed_ooo_submit_tx_buffers(struct qed_hwfn *p_hwfn,
 	u8 bd_flags;
 	int rc;
 
-	/* Submit Tx buffers here */
+	 
 	while ((p_buffer = qed_ooo_get_ready_buffer(p_hwfn,
 						    p_hwfn->p_ooo_info))) {
 		l4_hdr_offset_w = 0;
@@ -967,7 +956,7 @@ static int qed_sp_ll2_rx_queue_start(struct qed_hwfn *p_hwfn,
 	u16 cqe_pbl_size;
 	int rc = 0;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = p_ll2_conn->cid;
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -1039,7 +1028,7 @@ static int qed_sp_ll2_tx_queue_start(struct qed_hwfn *p_hwfn,
 	else
 		p_ll2_conn->tx_stats_en = 1;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = p_ll2_conn->cid;
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -1123,7 +1112,7 @@ static int qed_sp_ll2_rx_queue_stop(struct qed_hwfn *p_hwfn,
 	struct qed_sp_init_data init_data;
 	int rc = -EINVAL;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = p_ll2_conn->cid;
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -1153,7 +1142,7 @@ static int qed_sp_ll2_tx_queue_stop(struct qed_hwfn *p_hwfn,
 
 	qed_db_recovery_del(p_hwfn->cdev, p_tx->doorbell_addr, &p_tx->db_msg);
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = p_ll2_conn->cid;
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -1245,7 +1234,7 @@ static int qed_ll2_acquire_connection_tx(struct qed_hwfn *p_hwfn,
 		goto out;
 
 	capacity = qed_chain_get_capacity(&p_ll2_info->tx_queue.txq_chain);
-	/* All bds_set elements are flexibily added. */
+	 
 	desc_size = struct_size(p_descq, bds_set,
 				p_ll2_info->input.tx_max_bds_per_packet);
 
@@ -1280,7 +1269,7 @@ qed_ll2_acquire_connection_ooo(struct qed_hwfn *p_hwfn,
 	if (p_ll2_info->input.conn_type != QED_LL2_TYPE_OOO)
 		return rc;
 
-	/* Correct number of requested OOO buffers if needed */
+	 
 	if (!p_ll2_info->input.rx_num_ooo_buffers) {
 		u16 num_desc = p_ll2_info->input.rx_num_desc;
 
@@ -1345,15 +1334,13 @@ static void _qed_ll2_calc_allowed_conns(struct qed_hwfn *p_hwfn,
 					struct qed_ll2_acquire_data *data,
 					u8 *start_idx, u8 *last_idx)
 {
-	/* LL2 queues handles will be split as follows:
-	 * First will be the legacy queues, and then the ctx based.
-	 */
+	 
 	if (data->input.rx_conn_type == QED_LL2_RX_TYPE_LEGACY) {
 		*start_idx = QED_LL2_LEGACY_CONN_BASE_PF;
 		*last_idx = *start_idx +
 			QED_MAX_NUM_OF_LEGACY_LL2_CONNS_PF;
 	} else {
-		/* QED_LL2_RX_TYPE_CTX */
+		 
 		*start_idx = QED_LL2_CTX_CONN_BASE_PF;
 		*last_idx = *start_idx +
 			QED_MAX_NUM_OF_CTX_LL2_CONNS_PF;
@@ -1388,7 +1375,7 @@ int qed_ll2_acquire_connection(void *cxt, struct qed_ll2_acquire_data *data)
 
 	_qed_ll2_calc_allowed_conns(p_hwfn, data, &first_idx, &last_idx);
 
-	/* Find a free connection to be used */
+	 
 	for (i = first_idx; i < last_idx; i++) {
 		mutex_lock(&p_hwfn->p_ll2_info[i].mutex);
 		if (p_hwfn->p_ll2_info[i].b_active) {
@@ -1426,7 +1413,7 @@ int qed_ll2_acquire_connection(void *cxt, struct qed_ll2_acquire_data *data)
 	else
 		p_ll2_info->main_func_queue = true;
 
-	/* Correct maximum number of Tx BDs */
+	 
 	p_tx_max = &p_ll2_info->input.tx_max_bds_per_packet;
 	if (*p_tx_max == 0)
 		*p_tx_max = CORE_LL2_TX_MAX_BDS_PER_PACKET;
@@ -1453,7 +1440,7 @@ int qed_ll2_acquire_connection(void *cxt, struct qed_ll2_acquire_data *data)
 	if (rc)
 		goto q_allocate_fail;
 
-	/* Register callbacks for the Rx/Tx queues */
+	 
 	if (data->input.conn_type == QED_LL2_TYPE_OOO) {
 		comp_rx_cb = qed_ll2_lb_rxq_completion;
 		comp_tx_cb = qed_ll2_lb_txq_completion;
@@ -1541,18 +1528,11 @@ static inline u8 qed_ll2_handle_to_queue_id(struct qed_hwfn *p_hwfn,
 	if (ll2_queue_type == QED_LL2_RX_TYPE_LEGACY)
 		return p_hwfn->hw_info.resc_start[QED_LL2_RAM_QUEUE] + handle;
 
-	/* QED_LL2_RX_TYPE_CTX
-	 * FW distinguishes between the legacy queues (ram based) and the
-	 * ctx based queues by the queue_id.
-	 * The first MAX_NUM_LL2_RX_RAM_QUEUES queues are legacy
-	 * and the queue ids above that are ctx base.
-	 */
+	 
 	qid = p_hwfn->hw_info.resc_start[QED_LL2_CTX_QUEUE] +
 	      MAX_NUM_LL2_RX_RAM_QUEUES;
 
-	/* See comment on the acquire connection for how the ll2
-	 * queues handles are divided.
-	 */
+	 
 	qid += (handle - QED_MAX_NUM_OF_LEGACY_LL2_CONNS_PF);
 
 	return qid;
@@ -1604,7 +1584,7 @@ int qed_ll2_establish_connection(void *cxt, u8 connection_handle)
 	INIT_LIST_HEAD(&p_tx->sending_descq);
 	spin_lock_init(&p_tx->lock);
 	capacity = qed_chain_get_capacity(&p_tx->txq_chain);
-	/* All bds_set elements are flexibily added. */
+	 
 	desc_size = struct_size(p_pkt, bds_set,
 				p_ll2_conn->input.tx_max_bds_per_packet);
 
@@ -1643,7 +1623,7 @@ int qed_ll2_establish_connection(void *cxt, u8 connection_handle)
 	p_ll2_conn->queue_id = qid;
 	p_ll2_conn->tx_stats_id = stats_id;
 
-	/* If there is no valid stats id for this connection, disable stats */
+	 
 	if (p_ll2_conn->tx_stats_id == QED_LL2_INVALID_STATS_ID) {
 		p_ll2_conn->tx_stats_en = 0;
 		DP_VERBOSE(p_hwfn,
@@ -1664,14 +1644,14 @@ int qed_ll2_establish_connection(void *cxt, u8 connection_handle)
 		    GET_GTT_REG_ADDR(GTT_BAR0_MAP_REG_TSDM_RAM,
 				     TSTORM_LL2_RX_PRODS, qid);
 	} else {
-		/* QED_LL2_RX_TYPE_CTX - using doorbell */
+		 
 		p_rx->ctx_based = 1;
 
 		p_rx->set_prod_addr = p_hwfn->doorbells +
 			p_hwfn->dpi_start_offset +
 			DB_ADDR_SHIFT(DQ_PWM_OFFSET_TCM_LL2_PROD_UPDATE);
 
-		/* prepare db data */
+		 
 		p_rx->db_data.icid = cpu_to_le16((u16)p_ll2_conn->cid);
 		SET_FIELD(p_rx->db_data.params,
 			  CORE_PWM_PROD_UPDATE_DATA_AGG_CMD, DB_AGG_CMD_SET);
@@ -1682,7 +1662,7 @@ int qed_ll2_establish_connection(void *cxt, u8 connection_handle)
 	p_tx->doorbell_addr = (u8 __iomem *)p_hwfn->doorbells +
 					    qed_db_addr(p_ll2_conn->cid,
 							DQ_DEMS_LEGACY);
-	/* prepare db data */
+	 
 	SET_FIELD(p_tx->db_msg.params, CORE_DB_DATA_DEST, DB_DEST_XCM);
 	SET_FIELD(p_tx->db_msg.params, CORE_DB_DATA_AGG_CMD, DB_AGG_CMD_SET);
 	SET_FIELD(p_tx->db_msg.params, CORE_DB_DATA_AGG_VAL_SEL,
@@ -1727,7 +1707,7 @@ static void qed_ll2_post_rx_buffer_notify_fw(struct qed_hwfn *p_hwfn,
 	bool b_notify_fw = false;
 	u16 bd_prod, cq_prod;
 
-	/* This handles the flushing of already posted buffers */
+	 
 	while (!list_empty(&p_rx->posting_descq)) {
 		p_posting_packet = list_first_entry(&p_rx->posting_descq,
 						    struct qed_ll2_rx_packet,
@@ -1737,7 +1717,7 @@ static void qed_ll2_post_rx_buffer_notify_fw(struct qed_hwfn *p_hwfn,
 		b_notify_fw = true;
 	}
 
-	/* This handles the supplied packet [if there is one] */
+	 
 	if (p_curp) {
 		list_add_tail(&p_curp->list_entry, &p_rx->active_descq);
 		b_notify_fw = true;
@@ -1749,12 +1729,10 @@ static void qed_ll2_post_rx_buffer_notify_fw(struct qed_hwfn *p_hwfn,
 	bd_prod = qed_chain_get_prod_idx(&p_rx->rxq_chain);
 	cq_prod = qed_chain_get_prod_idx(&p_rx->rcq_chain);
 	if (p_rx->ctx_based) {
-		/* update producer by giving a doorbell */
+		 
 		p_rx->db_data.prod.bd_prod = cpu_to_le16(bd_prod);
 		p_rx->db_data.prod.cqe_prod = cpu_to_le16(cq_prod);
-		/* Make sure chain element is updated before ringing the
-		 * doorbell
-		 */
+		 
 		dma_wmb();
 		DIRECT_REG_WR64(p_rx->set_prod_addr,
 				*((u64 *)&p_rx->db_data));
@@ -1762,9 +1740,7 @@ static void qed_ll2_post_rx_buffer_notify_fw(struct qed_hwfn *p_hwfn,
 		rx_prod.bd_prod = cpu_to_le16(bd_prod);
 		rx_prod.cqe_prod = cpu_to_le16(cq_prod);
 
-		/* Make sure chain element is updated before ringing the
-		 * doorbell
-		 */
+		 
 		dma_wmb();
 
 		DIRECT_REG_WR(p_rx->set_prod_addr, *((u32 *)&rx_prod));
@@ -1805,14 +1781,14 @@ int qed_ll2_post_rx_buffer(void *cxt,
 		}
 	}
 
-	/* If we're lacking entries, let's try to flush buffers to FW */
+	 
 	if (!p_curp || !p_curb) {
 		rc = -EBUSY;
 		p_curp = NULL;
 		goto out_notify;
 	}
 
-	/* We have an Rx packet we can fill */
+	 
 	DMA_REGPAIR_LE(p_curb->addr, addr);
 	p_curb->buff_length = cpu_to_le16(buf_len);
 	p_curp->rx_buf_addr = addr;
@@ -1821,7 +1797,7 @@ int qed_ll2_post_rx_buffer(void *cxt,
 	p_curp->buf_length = buf_len;
 	list_del(&p_curp->list_entry);
 
-	/* Check if we only want to enqueue this packet without informing FW */
+	 
 	if (!notify_fw) {
 		list_add_tail(&p_curp->list_entry, &p_rx->posting_descq);
 		goto out;
@@ -1930,7 +1906,7 @@ qed_ll2_prepare_tx_packet_set_bd(struct qed_hwfn *p_hwfn,
 	if (p_ll2->tx_queue.cur_send_frag_num == pkt->num_of_bds)
 		return;
 
-	/* Need to provide the packet with additional BDs for frags */
+	 
 	for (frag_idx = p_ll2->tx_queue.cur_send_frag_num;
 	     frag_idx < pkt->num_of_bds; frag_idx++) {
 		struct core_tx_bd **p_bd = &p_curp->bds_set[frag_idx].txq_bd;
@@ -1943,7 +1919,7 @@ qed_ll2_prepare_tx_packet_set_bd(struct qed_hwfn *p_hwfn,
 	}
 }
 
-/* This should be called while the Txq spinlock is being held */
+ 
 static void qed_ll2_tx_packet_notify(struct qed_hwfn *p_hwfn,
 				     struct qed_ll2_info *p_ll2_conn)
 {
@@ -1952,18 +1928,18 @@ static void qed_ll2_tx_packet_notify(struct qed_hwfn *p_hwfn,
 	struct qed_ll2_tx_packet *p_pkt = NULL;
 	u16 bd_prod;
 
-	/* If there are missing BDs, don't do anything now */
+	 
 	if (p_ll2_conn->tx_queue.cur_send_frag_num !=
 	    p_ll2_conn->tx_queue.cur_send_packet->bd_used)
 		return;
 
-	/* Push the current packet to the list and clean after it */
+	 
 	list_add_tail(&p_ll2_conn->tx_queue.cur_send_packet->list_entry,
 		      &p_ll2_conn->tx_queue.sending_descq);
 	p_ll2_conn->tx_queue.cur_send_packet = NULL;
 	p_ll2_conn->tx_queue.cur_send_frag_num = 0;
 
-	/* Notify FW of packet only if requested to */
+	 
 	if (!b_notify)
 		return;
 
@@ -1980,7 +1956,7 @@ static void qed_ll2_tx_packet_notify(struct qed_hwfn *p_hwfn,
 
 	p_tx->db_msg.spq_prod = cpu_to_le16(bd_prod);
 
-	/* Make sure the BDs data is updated before ringing the doorbell */
+	 
 	wmb();
 
 	DIRECT_REG_WR(p_tx->doorbell_addr, *((u32 *)&p_tx->db_msg));
@@ -2021,7 +1997,7 @@ int qed_ll2_prepare_tx_packet(void *cxt,
 		goto out;
 	}
 
-	/* Get entry, but only if we have tx elements for it */
+	 
 	if (unlikely(!list_empty(&p_tx->free_descq)))
 		p_curp = list_first_entry(&p_tx->free_descq,
 					  struct qed_ll2_tx_packet, list_entry);
@@ -2034,7 +2010,7 @@ int qed_ll2_prepare_tx_packet(void *cxt,
 		goto out;
 	}
 
-	/* Prepare packet and BD, and perhaps send a doorbell to FW */
+	 
 	qed_ll2_prepare_tx_packet_set(p_hwfn, p_tx, p_curp, pkt, notify_fw);
 
 	qed_ll2_prepare_tx_packet_set_bd(p_hwfn, p_ll2_conn, p_curp, pkt);
@@ -2070,7 +2046,7 @@ int qed_ll2_set_fragment_of_tx_packet(void *cxt,
 	if (unlikely(cur_send_frag_num >= p_cur_send_packet->bd_used))
 		return -EINVAL;
 
-	/* Fill the BD information, and possibly notify FW */
+	 
 	p_bd = p_cur_send_packet->bds_set[cur_send_frag_num].txq_bd;
 	DMA_REGPAIR_LE(p_bd->addr, addr);
 	p_bd->nbytes = cpu_to_le16(nbytes);
@@ -2103,10 +2079,10 @@ int qed_ll2_terminate_connection(void *cxt, u8 connection_handle)
 		goto out;
 	}
 
-	/* Stop Tx & Rx of connection, if needed */
+	 
 	if (QED_LL2_TX_REGISTERED(p_ll2_conn)) {
 		p_ll2_conn->tx_queue.b_cb_registered = false;
-		smp_wmb(); /* Make sure this is seen by ll2_lb_rxq_completion */
+		smp_wmb();  
 		rc = qed_sp_ll2_tx_queue_stop(p_hwfn, p_ll2_conn);
 		if (rc)
 			goto out;
@@ -2117,7 +2093,7 @@ int qed_ll2_terminate_connection(void *cxt, u8 connection_handle)
 
 	if (QED_LL2_RX_REGISTERED(p_ll2_conn)) {
 		p_ll2_conn->rx_queue.b_cb_registered = false;
-		smp_wmb(); /* Make sure this is seen by ll2_lb_rxq_completion */
+		smp_wmb();  
 
 		if (p_ll2_conn->rx_queue.ctx_based)
 			qed_db_recovery_del(p_hwfn->cdev,
@@ -2199,7 +2175,7 @@ int qed_ll2_alloc(struct qed_hwfn *p_hwfn)
 	struct qed_ll2_info *p_ll2_connections;
 	u8 i;
 
-	/* Allocate LL2's set struct */
+	 
 	p_ll2_connections = kcalloc(QED_MAX_NUM_OF_LL2_CONNECTIONS,
 				    sizeof(struct qed_ll2_info), GFP_KERNEL);
 	if (!p_ll2_connections) {
@@ -2479,7 +2455,7 @@ static int qed_ll2_stop(struct qed_dev *cdev)
 	if (QED_IS_ISCSI_PERSONALITY(p_hwfn) || QED_IS_NVMETCP_PERSONALITY(p_hwfn))
 		qed_ll2_stop_ooo(p_hwfn);
 
-	/* In CMT mode, LL2 is always started on engine 0 for a storage PF */
+	 
 	if (b_is_storage_eng1) {
 		rc2 = __qed_ll2_stop(QED_LEADING_HWFN(cdev));
 		if (rc2)
@@ -2538,7 +2514,7 @@ static int __qed_ll2_start(struct qed_hwfn *p_hwfn,
 		goto release_conn;
 	}
 
-	/* Post all Rx buffers to FW */
+	 
 	spin_lock_bh(&cdev->ll2->lock);
 	rx_cnt = cdev->ll2->rx_cnt;
 	list_for_each_entry_safe(buffer, tmp_buffer, &cdev->ll2->list, list) {
@@ -2588,17 +2564,14 @@ static int qed_ll2_start(struct qed_dev *cdev, struct qed_ll2_params *params)
 
 	WARN_ON(!cdev->ll2->cbs);
 
-	/* Initialize LL2 locks & lists */
+	 
 	INIT_LIST_HEAD(&cdev->ll2->list);
 	spin_lock_init(&cdev->ll2->lock);
 
 	cdev->ll2->rx_size = PRM_DMA_PAD_BYTES_NUM + ETH_HLEN +
 			     L1_CACHE_BYTES + params->mtu;
 
-	/* Allocate memory for LL2.
-	 * In CMT mode, in case of a storage PF which is affintized to engine 1,
-	 * LL2 is started also on engine 0 and thus we need twofold buffers.
-	 */
+	 
 	rx_num_desc = QED_LL2_RX_SIZE * (b_is_storage_eng1 ? 2 : 1);
 	DP_INFO(cdev, "Allocating %d LL2 buffers of size %08x bytes\n",
 		rx_num_desc, cdev->ll2->rx_size);
@@ -2626,9 +2599,7 @@ static int qed_ll2_start(struct qed_dev *cdev, struct qed_ll2_params *params)
 		goto err0;
 	}
 
-	/* In CMT mode, always need to start LL2 on engine 0 for a storage PF,
-	 * since broadcast/mutlicast packets are routed to engine 0.
-	 */
+	 
 	if (b_is_storage_eng1) {
 		rc = __qed_ll2_start(QED_LEADING_HWFN(cdev), params);
 		if (rc) {
@@ -2689,9 +2660,7 @@ static int qed_ll2_start_xmit(struct qed_dev *cdev, struct sk_buff *skb,
 		return -EINVAL;
 	}
 
-	/* Cache number of fragments from SKB since SKB may be freed by
-	 * the completion routine after calling qed_ll2_prepare_tx_packet()
-	 */
+	 
 	nr_frags = skb_shinfo(skb)->nr_frags;
 
 	if (unlikely(1 + nr_frags > CORE_LL2_TX_MAX_BDS_PER_PACKET)) {
@@ -2707,7 +2676,7 @@ static int qed_ll2_start_xmit(struct qed_dev *cdev, struct sk_buff *skb,
 		return -EINVAL;
 	}
 
-	/* Request HW to calculate IP csum */
+	 
 	if (!((vlan_get_protocol(skb) == htons(ETH_P_IPV6)) &&
 	      ipv6_hdr(skb)->nexthdr == NEXTHDR_IPV6))
 		flags |= BIT(CORE_TX_BD_DATA_IP_CSUM_SHIFT);
@@ -2729,11 +2698,7 @@ static int qed_ll2_start_xmit(struct qed_dev *cdev, struct sk_buff *skb,
 	    test_bit(QED_LL2_XMIT_FLAGS_FIP_DISCOVERY, &xmit_flags))
 		pkt.remove_stag = true;
 
-	/* qed_ll2_prepare_tx_packet() may actually send the packet if
-	 * there are no fragments in the skb and subsequently the completion
-	 * routine may run and free the SKB, so no dereferencing the SKB
-	 * beyond this point unless skb has any fragments.
-	 */
+	 
 	rc = qed_ll2_prepare_tx_packet(p_hwfn, cdev->ll2->handle,
 				       &pkt, 1);
 	if (unlikely(rc))
@@ -2757,9 +2722,7 @@ static int qed_ll2_start_xmit(struct qed_dev *cdev, struct sk_buff *skb,
 						       mapping,
 						       skb_frag_size(frag));
 
-		/* if failed not much to do here, partial packet has been posted
-		 * we can't free memory, will need to wait for completion
-		 */
+		 
 		if (unlikely(rc))
 			goto err2;
 	}
@@ -2787,7 +2750,7 @@ static int qed_ll2_stats(struct qed_dev *cdev, struct qed_ll2_stats *stats)
 		return rc;
 	}
 
-	/* In CMT mode, LL2 is always started on engine 0 for a storage PF */
+	 
 	if (b_is_storage_eng1) {
 		rc = __qed_ll2_get_stats(QED_LEADING_HWFN(cdev),
 					 cdev->ll2->handle, stats);

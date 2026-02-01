@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Input Power Event -> APM Bridge
- *
- *  Copyright (c) 2007 Richard Purdie
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -31,7 +27,7 @@ static void system_power_event(unsigned int keycode)
 static void apmpower_event(struct input_handle *handle, unsigned int type,
 			   unsigned int code, int value)
 {
-	/* only react on key down events */
+	 
 	if (value != 1)
 		return;
 

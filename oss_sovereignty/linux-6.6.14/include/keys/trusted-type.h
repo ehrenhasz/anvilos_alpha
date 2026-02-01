@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2010 IBM Corporation
- * Author: David Safford <safford@us.ibm.com>
- */
+ 
+ 
 
 #ifndef _KEYS_TRUSTED_TYPE_H
 #define _KEYS_TRUSTED_TYPE_H
@@ -49,25 +46,22 @@ struct trusted_key_options {
 };
 
 struct trusted_key_ops {
-	/*
-	 * flag to indicate if trusted key implementation supports migration
-	 * or not.
-	 */
+	 
 	unsigned char migratable;
 
-	/* Initialize key interface. */
+	 
 	int (*init)(void);
 
-	/* Seal a key. */
+	 
 	int (*seal)(struct trusted_key_payload *p, char *datablob);
 
-	/* Unseal a key. */
+	 
 	int (*unseal)(struct trusted_key_payload *p, char *datablob);
 
-	/* Optional: Get a randomized key. */
+	 
 	int (*get_random)(unsigned char *key, size_t key_len);
 
-	/* Exit key interface. */
+	 
 	void (*exit)(void);
 };
 
@@ -97,4 +91,4 @@ static inline void dump_payload(struct trusted_key_payload *p)
 }
 #endif
 
-#endif /* _KEYS_TRUSTED_TYPE_H */
+#endif  

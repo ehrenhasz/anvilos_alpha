@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * camss-csid.c
- *
- * Qualcomm MSM Camera Subsystem - CSID (CSI Decoder) Module
- *
- * Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
- * Copyright (C) 2015-2018 Linaro Ltd.
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/completion.h>
 #include <linux/interrupt.h>
@@ -25,7 +18,7 @@
 #include "camss-csid-gen1.h"
 #include "camss.h"
 
-/* offset of CSID registers in VFE region for VFE 480 */
+ 
 #define VFE_480_CSID_OFFSET 0x1200
 #define VFE_480_LITE_CSID_OFFSET 0x200
 
@@ -80,10 +73,7 @@ const struct csid_format *csid_get_fmt_entry(const struct csid_format *formats,
 	return &formats[0];
 }
 
-/*
- * csid_set_clock_rates - Calculate and set clock rates on CSID module
- * @csiphy: CSID device
- */
+ 
 static int csid_set_clock_rates(struct csid_device *csid)
 {
 	struct device *dev = csid->camss->dev;
@@ -121,8 +111,8 @@ static int csid_set_clock_rates(struct csid_device *csid)
 				return -EINVAL;
 			}
 
-			/* if sensor pixel clock is not available */
-			/* set highest possible CSID clock rate */
+			 
+			 
 			if (min_rate == 0)
 				j = clock->nfreqs - 1;
 
@@ -146,13 +136,7 @@ static int csid_set_clock_rates(struct csid_device *csid)
 	return 0;
 }
 
-/*
- * csid_set_power - Power on/off CSID module
- * @sd: CSID V4L2 subdevice
- * @on: Requested power state
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int csid_set_power(struct v4l2_subdev *sd, int on)
 {
 	struct csid_device *csid = v4l2_get_subdevdata(sd);
@@ -224,15 +208,7 @@ static int csid_set_power(struct v4l2_subdev *sd, int on)
 	return ret;
 }
 
-/*
- * csid_set_stream - Enable/disable streaming on CSID module
- * @sd: CSID V4L2 subdevice
- * @enable: Requested streaming state
- *
- * Main configuration of CSID module is also done here.
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int csid_set_stream(struct v4l2_subdev *sd, int enable)
 {
 	struct csid_device *csid = v4l2_get_subdevdata(sd);
@@ -259,15 +235,7 @@ static int csid_set_stream(struct v4l2_subdev *sd, int enable)
 	return 0;
 }
 
-/*
- * __csid_get_format - Get pointer to format structure
- * @csid: CSID device
- * @cfg: V4L2 subdev pad configuration
- * @pad: pad from which format is requested
- * @which: TRY or ACTIVE format
- *
- * Return pointer to TRY or ACTIVE format structure
- */
+ 
 static struct v4l2_mbus_framefmt *
 __csid_get_format(struct csid_device *csid,
 		  struct v4l2_subdev_state *sd_state,
@@ -281,14 +249,7 @@ __csid_get_format(struct csid_device *csid,
 	return &csid->fmt[pad];
 }
 
-/*
- * csid_try_format - Handle try format by pad subdev method
- * @csid: CSID device
- * @cfg: V4L2 subdev pad configuration
- * @pad: pad on which format is requested
- * @fmt: pointer to v4l2 format structure
- * @which: wanted subdev format
- */
+ 
 static void csid_try_format(struct csid_device *csid,
 			    struct v4l2_subdev_state *sd_state,
 			    unsigned int pad,
@@ -299,13 +260,13 @@ static void csid_try_format(struct csid_device *csid,
 
 	switch (pad) {
 	case MSM_CSID_PAD_SINK:
-		/* Set format on sink pad */
+		 
 
 		for (i = 0; i < csid->nformats; i++)
 			if (fmt->code == csid->formats[i].code)
 				break;
 
-		/* If not found, use UYVY as default */
+		 
 		if (i >= csid->nformats)
 			fmt->code = MEDIA_BUS_FMT_UYVY8_2X8;
 
@@ -319,22 +280,22 @@ static void csid_try_format(struct csid_device *csid,
 
 	case MSM_CSID_PAD_SRC:
 		if (csid->testgen_mode->cur.val == 0) {
-			/* Test generator is disabled, */
-			/* keep pad formats in sync */
+			 
+			 
 			u32 code = fmt->code;
 
 			*fmt = *__csid_get_format(csid, sd_state,
 						      MSM_CSID_PAD_SINK, which);
 			fmt->code = csid->ops->src_pad_code(csid, fmt->code, 0, code);
 		} else {
-			/* Test generator is enabled, set format on source */
-			/* pad to allow test generator usage */
+			 
+			 
 
 			for (i = 0; i < csid->nformats; i++)
 				if (csid->formats[i].code == fmt->code)
 					break;
 
-			/* If not found, use UYVY as default */
+			 
 			if (i >= csid->nformats)
 				fmt->code = MEDIA_BUS_FMT_UYVY8_2X8;
 
@@ -349,13 +310,7 @@ static void csid_try_format(struct csid_device *csid,
 	fmt->colorspace = V4L2_COLORSPACE_SRGB;
 }
 
-/*
- * csid_enum_mbus_code - Handle pixel format enumeration
- * @sd: CSID V4L2 subdevice
- * @cfg: V4L2 subdev pad configuration
- * @code: pointer to v4l2_subdev_mbus_code_enum structure
- * return -EINVAL or zero on success
- */
+ 
 static int csid_enum_mbus_code(struct v4l2_subdev *sd,
 			       struct v4l2_subdev_state *sd_state,
 			       struct v4l2_subdev_mbus_code_enum *code)
@@ -390,13 +345,7 @@ static int csid_enum_mbus_code(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * csid_enum_frame_size - Handle frame size enumeration
- * @sd: CSID V4L2 subdevice
- * @cfg: V4L2 subdev pad configuration
- * @fse: pointer to v4l2_subdev_frame_size_enum structure
- * return -EINVAL or zero on success
- */
+ 
 static int csid_enum_frame_size(struct v4l2_subdev *sd,
 				struct v4l2_subdev_state *sd_state,
 				struct v4l2_subdev_frame_size_enum *fse)
@@ -427,14 +376,7 @@ static int csid_enum_frame_size(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * csid_get_format - Handle get format by pads subdev method
- * @sd: CSID V4L2 subdevice
- * @cfg: V4L2 subdev pad configuration
- * @fmt: pointer to v4l2 subdev format structure
- *
- * Return -EINVAL or zero on success
- */
+ 
 static int csid_get_format(struct v4l2_subdev *sd,
 			   struct v4l2_subdev_state *sd_state,
 			   struct v4l2_subdev_format *fmt)
@@ -451,14 +393,7 @@ static int csid_get_format(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * csid_set_format - Handle set format by pads subdev method
- * @sd: CSID V4L2 subdevice
- * @cfg: V4L2 subdev pad configuration
- * @fmt: pointer to v4l2 subdev format structure
- *
- * Return -EINVAL or zero on success
- */
+ 
 static int csid_set_format(struct v4l2_subdev *sd,
 			   struct v4l2_subdev_state *sd_state,
 			   struct v4l2_subdev_format *fmt)
@@ -474,7 +409,7 @@ static int csid_set_format(struct v4l2_subdev *sd,
 	csid_try_format(csid, sd_state, fmt->pad, &fmt->format, fmt->which);
 	*format = fmt->format;
 
-	/* Propagate the format from sink to source pads */
+	 
 	if (fmt->pad == MSM_CSID_PAD_SINK) {
 		for (i = MSM_CSID_PAD_FIRST_SRC; i < MSM_CSID_PADS_NUM; ++i) {
 			format = __csid_get_format(csid, sd_state, i, fmt->which);
@@ -487,15 +422,7 @@ static int csid_set_format(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * csid_init_formats - Initialize formats on all pads
- * @sd: CSID V4L2 subdevice
- * @fh: V4L2 subdev file handle
- *
- * Initialize all pad formats with default values.
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int csid_init_formats(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
 	struct v4l2_subdev_format format = {
@@ -512,18 +439,12 @@ static int csid_init_formats(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 	return csid_set_format(sd, fh ? fh->state : NULL, &format);
 }
 
-/*
- * csid_set_test_pattern - Set test generator's pattern mode
- * @csid: CSID device
- * @value: desired test pattern mode
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int csid_set_test_pattern(struct csid_device *csid, s32 value)
 {
 	struct csid_testgen_config *tg = &csid->testgen;
 
-	/* If CSID is linked to CSIPHY, do not allow to enable test generator */
+	 
 	if (value && media_pad_remote_pad_first(&csid->pads[MSM_CSID_PAD_SINK]))
 		return -EBUSY;
 
@@ -532,12 +453,7 @@ static int csid_set_test_pattern(struct csid_device *csid, s32 value)
 	return csid->ops->configure_testgen_pattern(csid, value);
 }
 
-/*
- * csid_s_ctrl - Handle set control subdev method
- * @ctrl: pointer to v4l2 control structure
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int csid_s_ctrl(struct v4l2_ctrl *ctrl)
 {
 	struct csid_device *csid = container_of(ctrl->handler,
@@ -557,14 +473,7 @@ static const struct v4l2_ctrl_ops csid_ctrl_ops = {
 	.s_ctrl = csid_s_ctrl,
 };
 
-/*
- * msm_csid_subdev_init - Initialize CSID device structure and resources
- * @csid: CSID device
- * @res: CSID module resources table
- * @id: CSID module id
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 int msm_csid_subdev_init(struct camss *camss, struct csid_device *csid,
 			 const struct resources *res, u8 id)
 {
@@ -589,14 +498,11 @@ int msm_csid_subdev_init(struct camss *camss, struct csid_device *csid,
 	}
 	csid->ops->subdev_init(csid);
 
-	/* Memory */
+	 
 
 	if (camss->version == CAMSS_8250) {
-		/* for titan 480, CSID registers are inside the VFE region,
-		 * between the VFE "top" and "bus" registers. this requires
-		 * VFE to be initialized before CSID
-		 */
-		if (id >= 2) /* VFE/CSID lite */
+		 
+		if (id >= 2)  
 			csid->base = camss->vfe[id].base + VFE_480_LITE_CSID_OFFSET;
 		else
 			csid->base = camss->vfe[id].base + VFE_480_CSID_OFFSET;
@@ -606,7 +512,7 @@ int msm_csid_subdev_init(struct camss *camss, struct csid_device *csid,
 			return PTR_ERR(csid->base);
 	}
 
-	/* Interrupt */
+	 
 
 	ret = platform_get_irq_byname(pdev, res->interrupt[0]);
 	if (ret < 0)
@@ -623,7 +529,7 @@ int msm_csid_subdev_init(struct camss *camss, struct csid_device *csid,
 		return ret;
 	}
 
-	/* Clocks */
+	 
 
 	csid->nclocks = 0;
 	while (res->clock[csid->nclocks])
@@ -663,7 +569,7 @@ int msm_csid_subdev_init(struct camss *camss, struct csid_device *csid,
 			clock->freq[j] = res->clock_rate[i][j];
 	}
 
-	/* Regulator */
+	 
 	for (i = 0; i < ARRAY_SIZE(res->regulators); i++) {
 		if (res->regulators[i])
 			csid->num_supplies++;
@@ -691,11 +597,7 @@ int msm_csid_subdev_init(struct camss *camss, struct csid_device *csid,
 	return 0;
 }
 
-/*
- * msm_csid_get_csid_id - Get CSID HW module id
- * @entity: Pointer to CSID media entity structure
- * @id: Return CSID HW module id here
- */
+ 
 void msm_csid_get_csid_id(struct media_entity *entity, u8 *id)
 {
 	struct v4l2_subdev *sd = media_entity_to_v4l2_subdev(entity);
@@ -704,12 +606,7 @@ void msm_csid_get_csid_id(struct media_entity *entity, u8 *id)
 	*id = csid->id;
 }
 
-/*
- * csid_get_lane_assign - Calculate CSI2 lane assign configuration parameter
- * @lane_cfg - CSI2 lane configuration
- *
- * Return lane assign
- */
+ 
 static u32 csid_get_lane_assign(struct csiphy_lanes_cfg *lane_cfg)
 {
 	u32 lane_assign = 0;
@@ -721,15 +618,7 @@ static u32 csid_get_lane_assign(struct csiphy_lanes_cfg *lane_cfg)
 	return lane_assign;
 }
 
-/*
- * csid_link_setup - Setup CSID connections
- * @entity: Pointer to media entity structure
- * @local: Pointer to local pad
- * @remote: Pointer to remote pad
- * @flags: Link flags
- *
- * Return 0 on success
- */
+ 
 static int csid_link_setup(struct media_entity *entity,
 			   const struct media_pad *local,
 			   const struct media_pad *remote, u32 flags)
@@ -748,16 +637,16 @@ static int csid_link_setup(struct media_entity *entity,
 		sd = media_entity_to_v4l2_subdev(entity);
 		csid = v4l2_get_subdevdata(sd);
 
-		/* If test generator is enabled */
-		/* do not allow a link from CSIPHY to CSID */
+		 
+		 
 		if (csid->testgen_mode->cur.val != 0)
 			return -EBUSY;
 
 		sd = media_entity_to_v4l2_subdev(remote->entity);
 		csiphy = v4l2_get_subdevdata(sd);
 
-		/* If a sensor is not linked to CSIPHY */
-		/* do no allow a link from CSIPHY to CSID */
+		 
+		 
 		if (!csiphy->cfg.csi2)
 			return -EPERM;
 
@@ -767,7 +656,7 @@ static int csid_link_setup(struct media_entity *entity,
 		csid->phy.lane_cnt = lane_cfg->num_data;
 		csid->phy.lane_assign = csid_get_lane_assign(lane_cfg);
 	}
-	/* Decide which virtual channels to enable based on which source pads are enabled */
+	 
 	if (local->flags & MEDIA_PAD_FL_SOURCE) {
 		struct v4l2_subdev *sd = media_entity_to_v4l2_subdev(entity);
 		struct csid_device *csid = v4l2_get_subdevdata(sd);
@@ -819,13 +708,7 @@ static const struct media_entity_operations csid_media_ops = {
 	.link_validate = v4l2_subdev_link_validate,
 };
 
-/*
- * msm_csid_register_entity - Register subdev node for CSID module
- * @csid: CSID device
- * @v4l2_dev: V4L2 device
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 int msm_csid_register_entity(struct csid_device *csid,
 			     struct v4l2_device *v4l2_dev)
 {
@@ -896,10 +779,7 @@ free_ctrl:
 	return ret;
 }
 
-/*
- * msm_csid_unregister_entity - Unregister CSID module subdev node
- * @csid: CSID device
- */
+ 
 void msm_csid_unregister_entity(struct csid_device *csid)
 {
 	v4l2_device_unregister_subdev(&csid->subdev);

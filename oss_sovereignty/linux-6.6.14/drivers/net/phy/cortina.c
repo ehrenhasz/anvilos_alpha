@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *    Copyright 2017 NXP
- *
- *    CORTINA is a registered trademark of Cortina Systems, Inc.
- *
- */
+
+ 
 #include <linux/module.h>
 #include <linux/phy.h>
 
@@ -31,7 +26,7 @@ static int cortina_read_status(struct phy_device *phydev)
 	}
 
 	if (gpio_int_status & 0x8) {
-		/* up when edc_convergedS set */
+		 
 		phydev->speed = SPEED_10000;
 		phydev->duplex = DUPLEX_FULL;
 		phydev->link = 1;
@@ -48,7 +43,7 @@ static int cortina_probe(struct phy_device *phydev)
 	u32 phy_id = 0;
 	int id_lsb = 0, id_msb = 0;
 
-	/* Read device id from phy registers. */
+	 
 	id_lsb = cortina_read_reg(phydev, VILLA_GLOBAL_CHIP_ID_LSB);
 	if (id_lsb < 0)
 		return -ENXIO;
@@ -61,9 +56,7 @@ static int cortina_probe(struct phy_device *phydev)
 
 	phy_id |= id_msb;
 
-	/* Make sure the device tree binding matched the driver with the
-	 * right device.
-	 */
+	 
 	if (phy_id != phydev->drv->phy_id) {
 		phydev_err(phydev, "Error matching phy with %s driver\n",
 			   phydev->drv->name);

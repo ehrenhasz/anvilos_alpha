@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * A memslot-related performance benchmark.
- *
- * Copyright (C) 2021 Oracle and/or its affiliates.
- *
- * Basic guest setup / host vCPU thread code lifted from set_memory_region_test.
- */
+
+ 
 #include <pthread.h>
 #include <sched.h>
 #include <semaphore.h>
@@ -35,43 +29,15 @@
 #define MEM_TEST_GPA		(MEM_AUX_GPA + MEM_EXTRA_SIZE)
 #define MEM_TEST_SIZE		(MEM_SIZE - MEM_EXTRA_SIZE)
 
-/*
- * 32 MiB is max size that gets well over 100 iterations on 509 slots.
- * Considering that each slot needs to have at least one page up to
- * 8194 slots in use can then be tested (although with slightly
- * limited resolution).
- */
+ 
 #define MEM_SIZE_MAP		(SZ_32M + MEM_EXTRA_SIZE)
 #define MEM_TEST_MAP_SIZE	(MEM_SIZE_MAP - MEM_EXTRA_SIZE)
 
-/*
- * 128 MiB is min size that fills 32k slots with at least one page in each
- * while at the same time gets 100+ iterations in such test
- *
- * 2 MiB chunk size like a typical huge page
- */
+ 
 #define MEM_TEST_UNMAP_SIZE		SZ_128M
 #define MEM_TEST_UNMAP_CHUNK_SIZE	SZ_2M
 
-/*
- * For the move active test the middle of the test area is placed on
- * a memslot boundary: half lies in the memslot being moved, half in
- * other memslot(s).
- *
- * We have different number of memory slots, excluding the reserved
- * memory slot 0, on various architectures and configurations. The
- * memory size in this test is calculated by picking the maximal
- * last memory slot's memory size, with alignment to the largest
- * supported page size (64KB). In this way, the selected memory
- * size for this test is compatible with test_memslot_move_prepare().
- *
- * architecture   slots    memory-per-slot    memory-on-last-slot
- * --------------------------------------------------------------
- * x86-4KB        32763    16KB               160KB
- * arm64-4KB      32766    16KB               112KB
- * arm64-16KB     32766    16KB               112KB
- * arm64-64KB     8192     64KB               128KB
- */
+ 
 #define MEM_TEST_MOVE_SIZE		(3 * SZ_64K)
 #define MEM_TEST_MOVE_GPA_DEST		(MEM_GPA + MEM_SIZE)
 static_assert(MEM_TEST_MOVE_SIZE <= MEM_TEST_SIZE,
@@ -101,13 +67,7 @@ struct sync_area {
 	void *move_area_ptr;
 };
 
-/*
- * Technically, we need also for the atomic bool to be address-free, which
- * is recommended, but not strictly required, by C11 for lockless
- * implementations.
- * However, in practice both GCC and Clang fulfill this requirement on
- * all KVM-supported platforms.
- */
+ 
 static_assert(ATOMIC_BOOL_LOCK_FREE == 2, "atomic bool is not lockless");
 
 static sem_t vcpu_ready;
@@ -271,7 +231,7 @@ static uint64_t get_max_slots(struct vm_data *data, uint32_t host_page_size)
 		rempages = mempages % pages_per_slot;
 		if (check_slot_pages(host_page_size, guest_page_size,
 				     pages_per_slot, rempages))
-			return slots + 1;	/* slot 0 is reserved */
+			return slots + 1;	 
 	}
 
 	return 0;
@@ -363,7 +323,7 @@ static void launch_vm(struct vm_data *data)
 
 	pthread_create(&data->vcpu_thread, NULL, vcpu_worker, data);
 
-	/* Ensure the guest thread is spun up. */
+	 
 	wait_for_vcpu();
 }
 
@@ -406,12 +366,7 @@ static bool _guest_should_exit(void)
 
 #define guest_should_exit() unlikely(_guest_should_exit())
 
-/*
- * noinline so we can easily see how much time the host spends waiting
- * for the guest.
- * For the same reason use alarm() instead of polling clock_gettime()
- * to implement a wait timeout.
- */
+ 
 static noinline void host_perform_sync(struct sync_area *sync)
 {
 	alarm(2);
@@ -458,13 +413,7 @@ static void guest_code_test_memslot_move(void)
 		     ptr += page_size)
 			*(uint64_t *)ptr = MEM_TEST_VAL_1;
 
-		/*
-		 * No host sync here since the MMIO exits are so expensive
-		 * that the host would spend most of its time waiting for
-		 * the guest and so instead of measuring memslot move
-		 * performance we would measure the performance and
-		 * likelihood of MMIO exits
-		 */
+		 
 	}
 
 	GUEST_DONE();
@@ -513,15 +462,7 @@ static void guest_code_test_memslot_unmap(void)
 	while (1) {
 		uintptr_t ptr = MEM_TEST_GPA;
 
-		/*
-		 * We can afford to access (map) just a small number of pages
-		 * per host sync as otherwise the host will spend
-		 * a significant amount of its time waiting for the guest
-		 * (instead of doing unmap operations), so this will
-		 * effectively turn this test into a map performance test.
-		 *
-		 * Just access a single page to be on the safe side.
-		 */
+		 
 		*(uint64_t *)ptr = MEM_TEST_VAL_1;
 
 		if (!guest_perform_sync())
@@ -674,34 +615,17 @@ static void test_memslot_map_loop(struct vm_data *data, struct sync_area *sync)
 	uint32_t guest_page_size = data->vm->page_size;
 	uint64_t guest_pages = MEM_TEST_MAP_SIZE / guest_page_size;
 
-	/*
-	 * Unmap the second half of the test area while guest writes to (maps)
-	 * the first half.
-	 */
+	 
 	test_memslot_do_unmap(data, guest_pages / 2, guest_pages / 2);
 
-	/*
-	 * Wait for the guest to finish writing the first half of the test
-	 * area, verify the written value on the first and the last page of
-	 * this area and then unmap it.
-	 * Meanwhile, the guest is writing to (mapping) the second half of
-	 * the test area.
-	 */
+	 
 	host_perform_sync(sync);
 	test_memslot_map_unmap_check(data, 0, MEM_TEST_VAL_1);
 	test_memslot_map_unmap_check(data, guest_pages / 2 - 1, MEM_TEST_VAL_1);
 	test_memslot_do_unmap(data, 0, guest_pages / 2);
 
 
-	/*
-	 * Wait for the guest to finish writing the second half of the test
-	 * area and verify the written value on the first and the last page
-	 * of this area.
-	 * The area will be unmapped at the beginning of the next loop
-	 * iteration.
-	 * Meanwhile, the guest is writing to (mapping) the first half of
-	 * the test area.
-	 */
+	 
 	host_perform_sync(sync);
 	test_memslot_map_unmap_check(data, guest_pages / 2, MEM_TEST_VAL_2);
 	test_memslot_map_unmap_check(data, guest_pages - 1, MEM_TEST_VAL_2);
@@ -715,19 +639,13 @@ static void test_memslot_unmap_loop_common(struct vm_data *data,
 	uint64_t guest_pages = MEM_TEST_UNMAP_SIZE / guest_page_size;
 	uint64_t ctr;
 
-	/*
-	 * Wait for the guest to finish mapping page(s) in the first half
-	 * of the test area, verify the written value and then perform unmap
-	 * of this area.
-	 * Meanwhile, the guest is writing to (mapping) page(s) in the second
-	 * half of the test area.
-	 */
+	 
 	host_perform_sync(sync);
 	test_memslot_map_unmap_check(data, 0, MEM_TEST_VAL_1);
 	for (ctr = 0; ctr < guest_pages / 2; ctr += chunk)
 		test_memslot_do_unmap(data, ctr, chunk);
 
-	/* Likewise, but for the opposite host / guest areas */
+	 
 	host_perform_sync(sync);
 	test_memslot_map_unmap_check(data, guest_pages / 2, MEM_TEST_VAL_2);
 	for (ctr = guest_pages / 2; ctr < guest_pages; ctr += chunk)
@@ -1009,7 +927,7 @@ static bool parse_args(int argc, char *argv[],
 		return false;
 	}
 
-	/* Memory slot 0 is reserved */
+	 
 	if (targs->nslots == -1)
 		targs->nslots = max_mem_slots - 1;
 	else
@@ -1064,10 +982,7 @@ static bool test_loop(const struct test_data *data,
 	result.slottimens = timespec_to_ns(result.slot_runtime);
 	result.runtimens = timespec_to_ns(result.iter_runtime);
 
-	/*
-	 * Only rank the slot setup time for tests using the whole test memory
-	 * area so they are comparable
-	 */
+	 
 	if (!data->mem_size &&
 	    (!rbestslottime->slottimens ||
 	     result.slottimens < rbestslottime->slottimens))

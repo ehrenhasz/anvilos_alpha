@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ALSA SoC Texas Instruments TPA6130A2 headset stereo amplifier driver
- *
- * Copyright (C) Nokia Corporation
- *
- * Author: Peter Ujfalusi <peter.ujfalusi@ti.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/errno.h>
@@ -28,7 +22,7 @@ enum tpa_model {
 	TPA6140A2,
 };
 
-/* This struct is used to save the context */
+ 
 struct tpa6130a2_data {
 	struct device *dev;
 	struct regmap *regmap;
@@ -48,11 +42,11 @@ static int tpa6130a2_power(struct tpa6130a2_data *data, bool enable)
 				"Failed to enable supply: %d\n", ret);
 			return ret;
 		}
-		/* Power on */
+		 
 		if (data->power_gpio >= 0)
 			gpio_set_value(data->power_gpio, 1);
 
-		/* Sync registers */
+		 
 		regcache_cache_only(data->regmap, false);
 		ret = regcache_sync(data->regmap);
 		if (ret != 0) {
@@ -68,14 +62,11 @@ static int tpa6130a2_power(struct tpa6130a2_data *data, bool enable)
 			return ret;
 		}
 	} else {
-		/* Powered off device does not retain registers. While device
-		 * is off, any register updates (i.e. volume changes) should
-		 * happen in cache only.
-		 */
+		 
 		regcache_mark_dirty(data->regmap);
 		regcache_cache_only(data->regmap, true);
 
-		/* Power off */
+		 
 		if (data->power_gpio >= 0)
 			gpio_set_value(data->power_gpio, 0);
 
@@ -97,18 +88,15 @@ static int tpa6130a2_power_event(struct snd_soc_dapm_widget *w,
 	struct tpa6130a2_data *data = snd_soc_component_get_drvdata(c);
 
 	if (SND_SOC_DAPM_EVENT_ON(event)) {
-		/* Before widget power up: turn chip on, sync registers */
+		 
 		return tpa6130a2_power(data, true);
 	} else {
-		/* After widget power down: turn chip off */
+		 
 		return tpa6130a2_power(data, false);
 	}
 }
 
-/*
- * TPA6130 volume. From -59.5 to 4 dB with increasing step size when going
- * down in gain.
- */
+ 
 static const DECLARE_TLV_DB_RANGE(tpa6130_tlv,
 	0, 1, TLV_DB_SCALE_ITEM(-5950, 600, 0),
 	2, 3, TLV_DB_SCALE_ITEM(-5000, 250, 0),
@@ -290,13 +278,13 @@ static int tpa6130a2_probe(struct i2c_client *client)
 		return ret;
 
 
-	/* Read version */
+	 
 	regmap_read(data->regmap, TPA6130A2_REG_VERSION, &version);
 	version &= TPA6130A2_VERSION_MASK;
 	if ((version != 1) && (version != 2))
 		dev_warn(dev, "UNTESTED version detected (%d)\n", version);
 
-	/* Disable the chip */
+	 
 	ret = tpa6130a2_power(data, false);
 	if (ret != 0)
 		return ret;

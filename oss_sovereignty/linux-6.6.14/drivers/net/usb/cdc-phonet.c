@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * phonet.c -- USB CDC Phonet host driver
- *
- * Copyright (C) 2008-2009 Nokia Corporation. All rights reserved.
- *
- * Author: Rémi Denis-Courmont
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/mm.h>
@@ -42,9 +36,7 @@ struct usbpn_dev {
 static void tx_complete(struct urb *req);
 static void rx_complete(struct urb *req);
 
-/*
- * Network device callbacks
- */
+ 
 static netdev_tx_t usbpn_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct usbpn_dev *pnd = netdev_priv(dev);
@@ -150,7 +142,7 @@ static void rx_complete(struct urb *req)
 		if (!skb) {
 			skb = pnd->rx_skb = netdev_alloc_skb(dev, 12);
 			if (likely(skb)) {
-				/* Can't use pskb_pull() on page in IRQ */
+				 
 				skb_put_data(skb, page_address(page), 1);
 				skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
 						page, 1, req->actual_length,
@@ -164,7 +156,7 @@ static void rx_complete(struct urb *req)
 			page = NULL;
 		}
 		if (req->actual_length < PAGE_SIZE)
-			pnd->rx_skb = NULL; /* Last fragment */
+			pnd->rx_skb = NULL;  
 		else
 			skb = NULL;
 		spin_unlock_irqrestore(&pnd->rx_lock, flags);
@@ -293,15 +285,13 @@ static void usbpn_setup(struct net_device *dev)
 	dev->needs_free_netdev	= true;
 }
 
-/*
- * USB driver callbacks
- */
+ 
 static const struct usb_device_id usbpn_ids[] = {
 	{
 		.match_flags = USB_DEVICE_ID_MATCH_VENDOR
 			| USB_DEVICE_ID_MATCH_INT_CLASS
 			| USB_DEVICE_ID_MATCH_INT_SUBCLASS,
-		.idVendor = 0x0421, /* Nokia */
+		.idVendor = 0x0421,  
 		.bInterfaceClass = USB_CLASS_COMM,
 		.bInterfaceSubClass = 0xFE,
 	},
@@ -338,7 +328,7 @@ static int usbpn_probe(struct usb_interface *intf, const struct usb_device_id *i
 	data_intf = usb_ifnum_to_if(usbdev, union_header->bSlaveInterface0);
 	if (data_intf == NULL)
 		return -ENODEV;
-	/* Data interface has one inactive and one active setting */
+	 
 	if (data_intf->num_altsetting != 2)
 		return -EINVAL;
 	if (data_intf->altsetting[0].desc.bNumEndpoints == 0 &&
@@ -365,7 +355,7 @@ static int usbpn_probe(struct usb_interface *intf, const struct usb_device_id *i
 	pnd->data_intf = data_intf;
 	spin_lock_init(&pnd->tx_lock);
 	spin_lock_init(&pnd->rx_lock);
-	/* Endpoints */
+	 
 	if (usb_pipein(data_desc->endpoint[0].desc.bEndpointAddress)) {
 		pnd->rx_pipe = usb_rcvbulkpipe(usbdev,
 			data_desc->endpoint[0].desc.bEndpointAddress);
@@ -383,14 +373,14 @@ static int usbpn_probe(struct usb_interface *intf, const struct usb_device_id *i
 	if (err)
 		goto out;
 
-	/* Force inactive mode until the network device is brought UP */
+	 
 	usb_set_interface(usbdev, union_header->bSlaveInterface0,
 				!pnd->active_setting);
 	usb_set_intfdata(intf, pnd);
 
 	err = register_netdev(dev);
 	if (err) {
-		/* Set disconnected flag so that disconnect() returns early. */
+		 
 		pnd->disconnected = 1;
 		usb_driver_release_interface(&usbpn_driver, data_intf);
 		goto out;

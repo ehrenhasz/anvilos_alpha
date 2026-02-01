@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2016, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #ifndef __MLX5_EN_TC_H__
 #define __MLX5_EN_TC_H__
@@ -74,8 +44,8 @@ struct mlx5_flow_attr {
 	unsigned long tc_act_cookies[TCA_ACT_MAX_PRIO];
 	struct mlx5_fc *counter;
 	struct mlx5_modify_hdr *modify_hdr;
-	struct mlx5e_mod_hdr_handle *mh; /* attached mod header instance */
-	struct mlx5e_mod_hdr_handle *slow_mh; /* attached mod header instance for slow path */
+	struct mlx5e_mod_hdr_handle *mh;  
+	struct mlx5e_mod_hdr_handle *slow_mh;  
 	struct mlx5_ct_attr ct_attr;
 	struct mlx5e_sample_attr sample_attr;
 	struct mlx5e_meter_attr meter_attr;
@@ -89,7 +59,7 @@ struct mlx5_flow_attr {
 	u8 inner_match_level;
 	u8 outer_match_level;
 	u8 tun_ip_version;
-	int tunnel_id; /* mapped tunnel id */
+	int tunnel_id;  
 	u32 flags;
 	u32 exe_aso_type;
 	struct list_head list;
@@ -98,7 +68,7 @@ struct mlx5_flow_attr {
 	struct mlx5_flow_attr *branch_false;
 	struct mlx5_flow_attr *jumping_attr;
 	struct mlx5_flow_handle *act_id_restore_rule;
-	/* keep this union last */
+	 
 	union {
 		DECLARE_FLEX_ARRAY(struct mlx5_esw_flow_attr, esw_attr);
 		DECLARE_FLEX_ARRAY(struct mlx5_nic_flow_attr, nic_attr);
@@ -117,7 +87,7 @@ enum {
 	MLX5_ATTR_FLAG_MTU           = BIT(8),
 };
 
-/* Returns true if any of the flags that require skipping further TC/NF processing are set. */
+ 
 static inline bool
 mlx5e_tc_attr_flags_skip(u32 attr_flags)
 {
@@ -129,11 +99,11 @@ struct mlx5_rx_tun_attr {
 	union {
 		__be32 v4;
 		struct in6_addr v6;
-	} src_ip; /* Valid if decap_vport is not zero */
+	} src_ip;  
 	union {
 		__be32 v4;
 		struct in6_addr v6;
-	} dst_ip; /* Valid if decap_vport is not zero */
+	} dst_ip;  
 };
 
 #define MLX5E_TC_TABLE_CHAIN_TAG_BITS 16
@@ -161,10 +131,7 @@ struct tunnel_match_enc_opts {
 	struct flow_dissector_key_enc_opts mask;
 };
 
-/* Tunnel_id mapping is TUNNEL_INFO_BITS + ENC_OPTS_BITS.
- * Upper TUNNEL_INFO_BITS for general tunnel info.
- * Lower ENC_OPTS_BITS bits for enc_opts.
- */
+ 
 #define TUNNEL_INFO_BITS 12
 #define TUNNEL_INFO_BITS_MASK GENMASK(TUNNEL_INFO_BITS - 1, 0)
 #define ENC_OPTS_BITS 11
@@ -243,11 +210,11 @@ enum mlx5e_tc_attr_to_reg {
 };
 
 struct mlx5e_tc_attr_to_reg_mapping {
-	int mfield; /* rewrite field */
-	int moffset; /* bit offset of mfield */
-	int mlen; /* bits to rewrite/match */
+	int mfield;  
+	int moffset;  
+	int mlen;  
 
-	int soffset; /* byte offset of spec for match */
+	int soffset;  
 };
 
 extern struct mlx5e_tc_attr_to_reg_mapping mlx5e_tc_attr_to_reg_mappings[];
@@ -331,7 +298,7 @@ int mlx5e_set_fwd_to_int_port_actions(struct mlx5e_priv *priv,
 				      enum mlx5e_tc_int_port_type type,
 				      u32 *action,
 				      int out_index);
-#else /* CONFIG_MLX5_CLS_ACT */
+#else  
 static inline int  mlx5e_tc_nic_init(struct mlx5e_priv *priv) { return 0; }
 static inline void mlx5e_tc_nic_cleanup(struct mlx5e_priv *priv) {}
 static inline int mlx5e_tc_ht_init(struct rhashtable *tc_ht) { return 0; }
@@ -340,7 +307,7 @@ static inline int
 mlx5e_setup_tc_block_cb(enum tc_setup_type type, void *type_data, void *cb_priv)
 { return -EOPNOTSUPP; }
 
-#endif /* CONFIG_MLX5_CLS_ACT */
+#endif  
 
 struct mlx5_flow_attr *mlx5_alloc_flow_attr(enum mlx5_flow_namespace_type type);
 
@@ -352,7 +319,7 @@ void mlx5e_del_offloaded_nic_rule(struct mlx5e_priv *priv,
 				  struct mlx5_flow_handle *rule,
 				  struct mlx5_flow_attr *attr);
 
-#else /* CONFIG_MLX5_ESWITCH */
+#else  
 static inline int  mlx5e_tc_nic_init(struct mlx5e_priv *priv) { return 0; }
 static inline void mlx5e_tc_nic_cleanup(struct mlx5e_priv *priv) {}
 static inline int  mlx5e_tc_num_filters(struct mlx5e_priv *priv,
@@ -391,7 +358,7 @@ bool mlx5e_tc_update_skb(struct mlx5_cqe64 *cqe, struct sk_buff *skb,
 			 struct mlx5_tc_ct_priv *ct_priv,
 			 u32 zone_restore_id, u32 tunnel_id,
 			 struct mlx5e_tc_update_priv *tc_priv);
-#else /* CONFIG_MLX5_CLS_ACT */
+#else  
 static inline struct mlx5e_tc_table *mlx5e_tc_table_alloc(void) { return NULL; }
 static inline void mlx5e_tc_table_free(struct mlx5e_tc_table *tc) {}
 static inline bool mlx5e_cqe_regb_chain(struct mlx5_cqe64 *cqe)
@@ -406,4 +373,4 @@ int mlx5e_tc_action_miss_mapping_get(struct mlx5e_priv *priv, struct mlx5_flow_a
 void mlx5e_tc_action_miss_mapping_put(struct mlx5e_priv *priv, struct mlx5_flow_attr *attr,
 				      u32 act_miss_mapping);
 
-#endif /* __MLX5_EN_TC_H__ */
+#endif  

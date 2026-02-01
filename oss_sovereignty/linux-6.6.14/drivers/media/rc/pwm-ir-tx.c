@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2017 Sean Young <sean@mess.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

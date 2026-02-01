@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * E3C EC168 DVB USB driver
- *
- * Copyright (C) 2009 Antti Palosaari <crope@iki.fi>
- */
+ 
+ 
 
 #ifndef EC168_H
 #define EC168_H
@@ -14,10 +10,10 @@
 #define EC168_FIRMWARE "dvb-usb-ec168.fw"
 
 struct ec168_req {
-	u8  cmd;       /* [1] */
-	u16 value;     /* [2|3] */
-	u16 index;     /* [4|5] */
-	u16 size;      /* [6|7] */
+	u8  cmd;        
+	u16 value;      
+	u16 index;      
+	u16 size;       
 	u8  *data;
 };
 

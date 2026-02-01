@@ -1,28 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+
+ 
 #include <drm/drm_vblank.h>
 #include <drm/drm_atomic_helper.h>
 
@@ -45,7 +22,7 @@ void amdgpu_dm_crtc_handle_vblank(struct amdgpu_crtc *acrtc)
 
 	spin_lock_irqsave(&dev->event_lock, flags);
 
-	/* Send completion event for cursor-only commits */
+	 
 	if (acrtc->event && acrtc->pflip_status != AMDGPU_FLIP_SUBMITTED) {
 		drm_crtc_send_vblank_event(crtc, acrtc->event);
 		drm_crtc_vblank_put(crtc);
@@ -113,20 +90,9 @@ static void vblank_control_worker(struct work_struct *work)
 
 	DRM_DEBUG_KMS("Allow idle optimizations (MALL): %d\n", dm->active_vblank_irq_count == 0);
 
-	/*
-	 * Control PSR based on vblank requirements from OS
-	 *
-	 * If panel supports PSR SU, there's no need to disable PSR when OS is
-	 * submitting fast atomic commits (we infer this by whether the OS
-	 * requests vblank events). Fast atomic commits will simply trigger a
-	 * full-frame-update (FFU); a specific case of selective-update (SU)
-	 * where the SU region is the full hactive*vactive region. See
-	 * fill_dc_dirty_rects().
-	 */
+	 
 	if (vblank_work->stream && vblank_work->stream->link) {
-		/*
-		 * Prioritize replay, instead of psr
-		 */
+		 
 		if (vblank_work->stream->link->replay_settings.replay_feature_enabled)
 			amdgpu_dm_replay_enable(vblank_work->stream, false);
 		else if (vblank_work->enable) {
@@ -164,11 +130,11 @@ static inline int dm_set_vblank(struct drm_crtc *crtc, bool enable)
 		goto skip;
 
 	if (enable) {
-		/* vblank irq on -> Only need vupdate irq in vrr mode */
+		 
 		if (amdgpu_dm_crtc_vrr_active(acrtc_state))
 			rc = amdgpu_dm_crtc_set_vupdate_irq(crtc, true);
 	} else {
-		/* vblank irq off -> vupdate irq off */
+		 
 		rc = amdgpu_dm_crtc_set_vupdate_irq(crtc, false);
 	}
 
@@ -222,7 +188,7 @@ static void dm_crtc_destroy_state(struct drm_crtc *crtc,
 {
 	struct dm_crtc_state *cur = to_dm_crtc_state(state);
 
-	/* TODO Destroy dc_stream objects are stream object is flattened */
+	 
 	if (cur->stream)
 		dc_stream_release(cur->stream);
 
@@ -262,7 +228,7 @@ static struct drm_crtc_state *dm_crtc_duplicate_state(struct drm_crtc *crtc)
 	state->cm_is_degamma_srgb = cur->cm_is_degamma_srgb;
 	state->crc_skip_count = cur->crc_skip_count;
 	state->mpo_requested = cur->mpo_requested;
-	/* TODO Duplicate dc_stream after objects are stream object is flattened */
+	 
 
 	return &state->base;
 }
@@ -296,7 +262,7 @@ static int amdgpu_dm_crtc_late_register(struct drm_crtc *crtc)
 }
 #endif
 
-/* Implemented only the options currently available for the driver */
+ 
 static const struct drm_crtc_funcs amdgpu_dm_crtc_funcs = {
 	.reset = dm_crtc_reset_state,
 	.destroy = amdgpu_dm_crtc_destroy,
@@ -329,23 +295,19 @@ static int count_crtc_active_planes(struct drm_crtc_state *new_crtc_state)
 	drm_for_each_plane_mask(plane, state->dev, new_crtc_state->plane_mask) {
 		struct drm_plane_state *new_plane_state;
 
-		/* Cursor planes are "fake". */
+		 
 		if (plane->type == DRM_PLANE_TYPE_CURSOR)
 			continue;
 
 		new_plane_state = drm_atomic_get_new_plane_state(state, plane);
 
 		if (!new_plane_state) {
-			/*
-			 * The plane is enable on the CRTC and hasn't changed
-			 * state. This means that it previously passed
-			 * validation and is therefore enabled.
-			 */
+			 
 			num_active += 1;
 			continue;
 		}
 
-		/* We need a framebuffer to be considered enabled. */
+		 
 		num_active += (new_plane_state->fb != NULL);
 	}
 
@@ -393,22 +355,14 @@ static int dm_crtc_helper_atomic_check(struct drm_crtc *crtc,
 		return ret;
 	}
 
-	/*
-	 * We require the primary plane to be enabled whenever the CRTC is, otherwise
-	 * drm_mode_cursor_universal may end up trying to enable the cursor plane while all other
-	 * planes are disabled, which is not supported by the hardware. And there is legacy
-	 * userspace which stops using the HW cursor altogether in response to the resulting EINVAL.
-	 */
+	 
 	if (crtc_state->enable &&
 		!(crtc_state->plane_mask & drm_plane_mask(crtc->primary))) {
 		DRM_DEBUG_ATOMIC("Can't enable a CRTC without enabling the primary plane\n");
 		return -EINVAL;
 	}
 
-	/*
-	 * Only allow async flips for fast updates that don't change the FB
-	 * pitch, the DCC state, rotation, etc.
-	 */
+	 
 	if (crtc_state->async_flip &&
 	    dm_crtc_state->update_type != UPDATE_TYPE_FAST) {
 		drm_dbg_atomic(crtc->dev,
@@ -417,7 +371,7 @@ static int dm_crtc_helper_atomic_check(struct drm_crtc *crtc,
 		return -EINVAL;
 	}
 
-	/* In some use cases, like reset, no stream is attached */
+	 
 	if (!dm_crtc_state->stream)
 		return 0;
 
@@ -467,7 +421,7 @@ int amdgpu_dm_crtc_init(struct amdgpu_display_manager *dm,
 
 	drm_crtc_helper_add(&acrtc->base, &amdgpu_dm_crtc_helper_funcs);
 
-	/* Create (reset) the plane state */
+	 
 	if (acrtc->base.funcs->reset)
 		acrtc->base.funcs->reset(&acrtc->base);
 
@@ -480,9 +434,7 @@ int amdgpu_dm_crtc_init(struct amdgpu_display_manager *dm,
 
 	dm->adev->mode_info.crtcs[crtc_index] = acrtc;
 
-	/* Don't enable DRM CRTC degamma property for DCE since it doesn't
-	 * support programmable degamma anywhere.
-	 */
+	 
 	is_dcn = dm->adev->dm.dc->caps.color.dpp.dcn_arch;
 	drm_crtc_enable_color_mgmt(&acrtc->base, is_dcn ? MAX_COLOR_LUT_ENTRIES : 0,
 				   true, MAX_COLOR_LUT_ENTRIES);

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "../pci.h"
@@ -443,15 +443,15 @@ void rtl92c_set_fw_pwrmode_cmd(struct ieee80211_hw *hw, u8 mode)
 }
 EXPORT_SYMBOL(rtl92c_set_fw_pwrmode_cmd);
 
-#define BEACON_PG		0 /*->1*/
+#define BEACON_PG		0  
 #define PSPOLL_PG		2
 #define NULL_PG			3
-#define PROBERSP_PG		4 /*->5*/
+#define PROBERSP_PG		4  
 
 #define TOTAL_RESERVED_PKT_LEN	768
 
 static u8 reserved_page_packet[TOTAL_RESERVED_PKT_LEN] = {
-	/* page 0 beacon */
+	 
 	0x80, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF,
 	0xFF, 0xFF, 0x00, 0xE0, 0x4C, 0x76, 0x00, 0x42,
 	0x00, 0x40, 0x10, 0x10, 0x00, 0x03, 0x50, 0x08,
@@ -469,7 +469,7 @@ static u8 reserved_page_packet[TOTAL_RESERVED_PKT_LEN] = {
 	0x01, 0x70, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 
-	/* page 1 beacon */
+	 
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -487,7 +487,7 @@ static u8 reserved_page_packet[TOTAL_RESERVED_PKT_LEN] = {
 	0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 
-	/* page 2  ps-poll */
+	 
 	0xA4, 0x10, 0x01, 0xC0, 0x00, 0x40, 0x10, 0x10,
 	0x00, 0x03, 0x00, 0xE0, 0x4C, 0x76, 0x00, 0x42,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -505,7 +505,7 @@ static u8 reserved_page_packet[TOTAL_RESERVED_PKT_LEN] = {
 	0x80, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 
-	/* page 3  null */
+	 
 	0x48, 0x01, 0x00, 0x00, 0x00, 0x40, 0x10, 0x10,
 	0x00, 0x03, 0x00, 0xE0, 0x4C, 0x76, 0x00, 0x42,
 	0x00, 0x40, 0x10, 0x10, 0x00, 0x03, 0x00, 0x00,
@@ -523,7 +523,7 @@ static u8 reserved_page_packet[TOTAL_RESERVED_PKT_LEN] = {
 	0x80, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 
-	/* page 4  probe_resp */
+	 
 	0x50, 0x00, 0x00, 0x00, 0x00, 0x40, 0x10, 0x10,
 	0x00, 0x03, 0x00, 0xE0, 0x4C, 0x76, 0x00, 0x42,
 	0x00, 0x40, 0x10, 0x10, 0x00, 0x03, 0x00, 0x00,
@@ -541,7 +541,7 @@ static u8 reserved_page_packet[TOTAL_RESERVED_PKT_LEN] = {
 	0x01, 0x70, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 
-	/* page 5  probe_resp */
+	 
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -576,16 +576,12 @@ void rtl92c_set_fw_rsvdpagepkt(struct ieee80211_hw *hw,
 	u8 *p_pspoll;
 	u8 *nullfunc;
 	u8 *p_probersp;
-	/*---------------------------------------------------------
-				(1) beacon
-	---------------------------------------------------------*/
+	 
 	beacon = &reserved_page_packet[BEACON_PG * 128];
 	SET_80211_HDR_ADDRESS2(beacon, mac->mac_addr);
 	SET_80211_HDR_ADDRESS3(beacon, mac->bssid);
 
-	/*-------------------------------------------------------
-				(2) ps-poll
-	--------------------------------------------------------*/
+	 
 	p_pspoll = &reserved_page_packet[PSPOLL_PG * 128];
 	SET_80211_PS_POLL_AID(p_pspoll, (mac->assoc_id | 0xc000));
 	SET_80211_PS_POLL_BSSID(p_pspoll, mac->bssid);
@@ -593,9 +589,7 @@ void rtl92c_set_fw_rsvdpagepkt(struct ieee80211_hw *hw,
 
 	SET_H2CCMD_RSVDPAGE_LOC_PSPOLL(u1rsvdpageloc, PSPOLL_PG);
 
-	/*--------------------------------------------------------
-				(3) null data
-	---------------------------------------------------------*/
+	 
 	nullfunc = &reserved_page_packet[NULL_PG * 128];
 	SET_80211_HDR_ADDRESS1(nullfunc, mac->bssid);
 	SET_80211_HDR_ADDRESS2(nullfunc, mac->mac_addr);
@@ -603,9 +597,7 @@ void rtl92c_set_fw_rsvdpagepkt(struct ieee80211_hw *hw,
 
 	SET_H2CCMD_RSVDPAGE_LOC_NULL_DATA(u1rsvdpageloc, NULL_PG);
 
-	/*---------------------------------------------------------
-				(4) probe response
-	----------------------------------------------------------*/
+	 
 	p_probersp = &reserved_page_packet[PROBERSP_PG * 128];
 	SET_80211_HDR_ADDRESS1(p_probersp, mac->bssid);
 	SET_80211_HDR_ADDRESS2(p_probersp, mac->mac_addr);
@@ -666,7 +658,7 @@ static void rtl92c_set_p2p_ctw_period_cmd(struct ieee80211_hw *hw, u8 ctwindow)
 	rtl92c_fill_h2c_cmd(hw, H2C_P2P_PS_CTW_CMD, 1, u1_ctwindow_period);
 }
 
-/* refactored routine */
+ 
 static void set_noa_data(struct rtl_priv *rtlpriv,
 			 struct rtl_p2p_ps_info *p2pinfo,
 			 struct p2p_ps_offload_t *p2p_ps_offload)
@@ -674,22 +666,22 @@ static void set_noa_data(struct rtl_priv *rtlpriv,
 	int i;
 	u32	start_time, tsf_low;
 
-	/* hw only support 2 set of NoA */
+	 
 	for (i = 0 ; i < p2pinfo->noa_num ; i++) {
-		/* To control the reg setting for which NOA*/
+		 
 		rtl_write_byte(rtlpriv, 0x5cf, (i << 4));
 		if (i == 0)
 			p2p_ps_offload->noa0_en = 1;
 		else
 			p2p_ps_offload->noa1_en = 1;
 
-		/* config P2P NoA Descriptor Register */
+		 
 		rtl_write_dword(rtlpriv, 0x5E0,
 				p2pinfo->noa_duration[i]);
 		rtl_write_dword(rtlpriv, 0x5E4,
 				p2pinfo->noa_interval[i]);
 
-		/*Get Current TSF value */
+		 
 		tsf_low = rtl_read_dword(rtlpriv, REG_TSFTR);
 
 		start_time = p2pinfo->noa_start_time[i];
@@ -724,17 +716,17 @@ void rtl92c_set_p2p_ps_offload_cmd(struct ieee80211_hw *hw, u8 p2p_ps_state)
 	case P2P_PS_ENABLE:
 			rtl_dbg(rtlpriv, COMP_FW, DBG_LOUD,
 				"P2P_PS_ENABLE\n");
-			/* update CTWindow value. */
+			 
 			if (p2pinfo->ctwindow > 0) {
 				p2p_ps_offload->ctwindow_en = 1;
 				ctwindow = p2pinfo->ctwindow;
 				rtl92c_set_p2p_ctw_period_cmd(hw, ctwindow);
 			}
-			/* call refactored routine */
+			 
 			set_noa_data(rtlpriv, p2pinfo, p2p_ps_offload);
 
 			if ((p2pinfo->opp_ps == 1) || (p2pinfo->noa_num > 0)) {
-				/* rst p2p circuit */
+				 
 				rtl_write_byte(rtlpriv, REG_DUAL_TSF_RST,
 					       BIT(4));
 

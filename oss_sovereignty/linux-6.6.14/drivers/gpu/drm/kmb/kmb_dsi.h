@@ -1,7 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only
- *
- * Copyright © 2019-2020 Intel Corporation
- */
+ 
 
 #ifndef __KMB_DSI_H__
 #define __KMB_DSI_H__
@@ -9,13 +6,13 @@
 #include <drm/drm_encoder.h>
 #include <drm/drm_mipi_dsi.h>
 
-/* MIPI TX CFG */
+ 
 #define MIPI_TX_LANE_DATA_RATE_MBPS 891
 #define MIPI_TX_REF_CLK_KHZ         24000
 #define MIPI_TX_CFG_CLK_KHZ         24000
 #define MIPI_TX_BPP		    24
 
-/* DPHY Tx test codes*/
+ 
 #define TEST_CODE_FSM_CONTROL				0x03
 #define TEST_CODE_MULTIPLE_PHY_CTRL			0x0C
 #define TEST_CODE_PLL_PROPORTIONAL_CHARGE_PUMP_CTRL	0x0E
@@ -40,7 +37,7 @@
 #define TEST_CODE_SLEW_RATE_DDL_LOOP_CTRL		0xA3
 #define TEST_CODE_SLEW_RATE_DDL_CYCLES			0xA4
 
-/* DPHY params */
+ 
 #define PLL_N_MIN	0
 #define PLL_N_MAX	15
 #define PLL_M_MIN	62
@@ -55,7 +52,7 @@
 #define MIPI_D_LANES_PER_DPHY				2
 #define MIPI_CTRL_2LANE_MAX_MC_FIFO_LOC			255
 #define MIPI_CTRL_4LANE_MAX_MC_FIFO_LOC			511
-/* 2 Data Lanes per D-PHY */
+ 
 #define MIPI_DPHY_D_LANES				2
 #define MIPI_DPHY_DEFAULT_BIT_RATES			63
 
@@ -78,7 +75,7 @@ struct kmb_dsi {
 	int sys_clk_mhz;
 };
 
-/* DPHY Tx test codes */
+ 
 
 enum mipi_ctrl_num {
 	MIPI_CTRL0 = 0,
@@ -252,17 +249,17 @@ struct mipi_data_type_params {
 };
 
 struct mipi_tx_dsi_cfg {
-	u8 hfp_blank_en;	/* Horizontal front porch blanking enable */
-	u8 eotp_en;		/* End of transmission packet enable */
-	/* Last vertical front porch blanking mode */
+	u8 hfp_blank_en;	 
+	u8 eotp_en;		 
+	 
 	u8 lpm_last_vfp_line;
-	/* First vertical sync active blanking mode */
+	 
 	u8 lpm_first_vsa_line;
-	u8 sync_pulse_eventn;	/* Sync type */
-	u8 hfp_blanking;	/* Horizontal front porch blanking mode */
-	u8 hbp_blanking;	/* Horizontal back porch blanking mode */
-	u8 hsa_blanking;	/* Horizontal sync active blanking mode */
-	u8 v_blanking;		/* Vertical timing blanking mode */
+	u8 sync_pulse_eventn;	 
+	u8 hfp_blanking;	 
+	u8 hbp_blanking;	 
+	u8 hsa_blanking;	 
+	u8 v_blanking;		 
 };
 
 struct mipi_tx_frame_section_cfg {
@@ -303,12 +300,12 @@ struct mipi_tx_frame_sect_phcfg {
 
 struct mipi_tx_frame_cfg {
 	struct mipi_tx_frame_section_cfg *sections[MIPI_TX_FRAME_GEN_SECTIONS];
-	u32 hsync_width;	/* in pixels */
-	u32 h_backporch;	/* in pixels */
-	u32 h_frontporch;	/* in pixels */
-	u16 vsync_width;	/* in lines */
-	u16 v_backporch;	/* in lines */
-	u16 v_frontporch;	/* in lines */
+	u32 hsync_width;	 
+	u32 h_backporch;	 
+	u32 h_frontporch;	 
+	u16 vsync_width;	 
+	u16 v_backporch;	 
+	u16 v_frontporch;	 
 };
 
 struct mipi_tx_ctrl_cfg {
@@ -326,10 +323,10 @@ struct mipi_tx_ctrl_cfg {
 	u8 tx_wait_all_sect;
 };
 
-/* configuration structure for MIPI control */
+ 
 struct mipi_ctrl_cfg {
-	u8 active_lanes;	/* # active lanes per controller 2/4 */
-	u32 lane_rate_mbps;	/* MBPS */
+	u8 active_lanes;	 
+	u32 lane_rate_mbps;	 
 	u32 ref_clk_khz;
 	u32 cfg_clk_khz;
 	struct mipi_tx_ctrl_cfg tx_ctrl_cfg;
@@ -384,4 +381,4 @@ int kmb_dsi_mode_set(struct kmb_dsi *kmb_dsi, struct drm_display_mode *mode,
 int kmb_dsi_map_mmio(struct kmb_dsi *kmb_dsi);
 int kmb_dsi_clk_init(struct kmb_dsi *kmb_dsi);
 int kmb_dsi_encoder_init(struct drm_device *dev, struct kmb_dsi *kmb_dsi);
-#endif /* __KMB_DSI_H__ */
+#endif  

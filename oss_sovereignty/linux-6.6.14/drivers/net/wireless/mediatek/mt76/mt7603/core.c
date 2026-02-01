@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: ISC
+
 
 #include "mt7603.h"
 #include "../trace.h"

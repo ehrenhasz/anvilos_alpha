@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *		INETPEER - A storage for permanent information about peers
- *
- *  Authors:	Andrey V. Savochkin <saw@msu.ru>
- */
+ 
+ 
 
 #ifndef _NET_INETPEER_H
 #define _NET_INETPEER_H
@@ -16,7 +12,7 @@
 #include <net/ipv6.h>
 #include <linux/atomic.h>
 
-/* IPv4 address key for cache lookups */
+ 
 struct ipv4_addr_key {
 	__be32	addr;
 	int	vif;
@@ -38,23 +34,19 @@ struct inet_peer {
 	struct inetpeer_addr	daddr;
 
 	u32			metrics[RTAX_MAX];
-	u32			rate_tokens;	/* rate limiting for ICMP */
+	u32			rate_tokens;	 
 	u32			n_redirects;
 	unsigned long		rate_last;
-	/*
-	 * Once inet_peer is queued for deletion (refcnt == 0), following field
-	 * is not available: rid
-	 * We can share memory with rcu_head to help keep inet_peer small.
-	 */
+	 
 	union {
 		struct {
-			atomic_t			rid;		/* Frag reception counter */
+			atomic_t			rid;		 
 		};
 		struct rcu_head         rcu;
 	};
 
-	/* following fields might be frequently dirtied */
-	__u32			dtime;	/* the time of last use of not referenced entries */
+	 
+	__u32			dtime;	 
 	refcount_t		refcnt;
 };
 
@@ -94,7 +86,7 @@ static inline struct in6_addr *inetpeer_get_addr_v6(struct inetpeer_addr *iaddr)
 	return &iaddr->a6;
 }
 
-/* can be called with or without local BH being disabled */
+ 
 struct inet_peer *inet_getpeer(struct inet_peer_base *base,
 			       const struct inetpeer_addr *daddr,
 			       int create);
@@ -143,10 +135,10 @@ static inline int inetpeer_addr_cmp(const struct inetpeer_addr *a,
 	return 0;
 }
 
-/* can be called from BH context or outside */
+ 
 void inet_putpeer(struct inet_peer *p);
 bool inet_peer_xrlim_allow(struct inet_peer *peer, int timeout);
 
 void inetpeer_invalidate_tree(struct inet_peer_base *);
 
-#endif /* _NET_INETPEER_H */
+#endif  

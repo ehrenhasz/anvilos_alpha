@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2010-2013 Bluecherry, LLC <https://www.bluecherrydvr.com>
- *
- * Original author:
- * Ben Collins <bcollins@ubuntu.com>
- *
- * Additional work by:
- * John Brooks <john.brooks@bluecherry.net>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -62,7 +54,7 @@ static void solo_vin_config(struct solo_dev *solo_dev)
 	solo_reg_write(solo_dev, SOLO_VI_CH_FORMAT,
 		       SOLO_VI_FD_SEL_MASK(0) | SOLO_VI_PROG_MASK(0));
 
-	/* On 6110, initialize mozaic darkness strength */
+	 
 	if (solo_dev->type == SOLO_DEV_6010)
 		solo_reg_write(solo_dev, SOLO_VI_FMT_CFG, 0);
 	else
@@ -95,7 +87,7 @@ static void solo_vout_config_cursor(struct solo_dev *dev)
 {
 	int i;
 
-	/* Load (blank) cursor bitmap mask (2bpp) */
+	 
 	for (i = 0; i < 20; i++)
 		solo_reg_write(dev, SOLO_VO_CURSOR_MASK(i), 0);
 
@@ -133,7 +125,7 @@ static void solo_vout_config(struct solo_dev *solo_dev)
 		       SOLO_VO_H_LEN(solo_dev->video_hsize) |
 		       SOLO_VO_V_LEN(solo_dev->video_vsize));
 
-	/* Border & background colors */
+	 
 	solo_reg_write(solo_dev, SOLO_VO_BORDER_LINE_COLOR,
 		       (0xa0 << 24) | (0x88 << 16) | (0xa0 << 8) | 0x88);
 	solo_reg_write(solo_dev, SOLO_VO_BORDER_FILL_COLOR,
@@ -155,7 +147,7 @@ static void solo_vout_config(struct solo_dev *solo_dev)
 
 	solo_vout_config_cursor(solo_dev);
 
-	/* Enable channels we support */
+	 
 	solo_reg_write(solo_dev, SOLO_VI_CH_ENA,
 		       (1 << solo_dev->nr_chans) - 1);
 }
@@ -220,36 +212,33 @@ int solo_set_motion_block(struct solo_dev *solo_dev, u8 ch,
 	return ret;
 }
 
-/* First 8k is motion flag (512 bytes * 16). Following that is an 8k+8k
- * threshold and working table for each channel. At least that's what the
- * spec says. However, this code (taken from rdk) has some mystery 8k
- * block right after the flag area, before the first thresh table. */
+ 
 static void solo_motion_config(struct solo_dev *solo_dev)
 {
 	int i;
 
 	for (i = 0; i < solo_dev->nr_chans; i++) {
-		/* Clear motion flag area */
+		 
 		solo_dma_vin_region(solo_dev, i * SOLO_MOT_FLAG_SIZE, 0x0000,
 				    SOLO_MOT_FLAG_SIZE);
 
-		/* Clear working cache table */
+		 
 		solo_dma_vin_region(solo_dev, SOLO_MOT_FLAG_AREA +
 				    (i * SOLO_MOT_THRESH_SIZE * 2) +
 				    SOLO_MOT_THRESH_SIZE, 0x0000,
 				    SOLO_MOT_THRESH_SIZE);
 
-		/* Set default threshold table */
+		 
 		solo_set_motion_threshold(solo_dev, i, SOLO_DEF_MOT_THRESH);
 	}
 
-	/* Default motion settings */
+	 
 	solo_reg_write(solo_dev, SOLO_VI_MOT_ADR, SOLO_VI_MOTION_EN(0) |
 		       (SOLO_MOTION_EXT_ADDR(solo_dev) >> 16));
 	solo_reg_write(solo_dev, SOLO_VI_MOT_CTRL,
 		       SOLO_VI_MOTION_FRAME_COUNT(3) |
 		       SOLO_VI_MOTION_SAMPLE_LENGTH(solo_dev->video_hsize / 16)
-		       /* | SOLO_VI_MOTION_INTR_START_STOP */
+		        
 		       | SOLO_VI_MOTION_SAMPLE_COUNT(10));
 
 	solo_reg_write(solo_dev, SOLO_VI_MOTION_BORDER, 0);
@@ -293,7 +282,7 @@ void solo_disp_exit(struct solo_dev *solo_dev)
 		solo_reg_write(solo_dev, SOLO_VI_WIN_ON(i), 0);
 	}
 
-	/* Set default border */
+	 
 	for (i = 0; i < 5; i++)
 		solo_reg_write(solo_dev, SOLO_VO_BORDER_X(i), 0);
 

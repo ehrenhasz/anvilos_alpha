@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -42,32 +42,29 @@ static void test_send_signal_common(struct perf_event_attr *attr,
 		int old_prio;
 		volatile int j = 0;
 
-		/* install signal handler and notify parent */
+		 
 		ASSERT_NEQ(signal(SIGUSR1, sigusr1_handler), SIG_ERR, "signal");
 
-		close(pipe_c2p[0]); /* close read */
-		close(pipe_p2c[1]); /* close write */
+		close(pipe_c2p[0]);  
+		close(pipe_p2c[1]);  
 
-		/* boost with a high priority so we got a higher chance
-		 * that if an interrupt happens, the underlying task
-		 * is this process.
-		 */
+		 
 		errno = 0;
 		old_prio = getpriority(PRIO_PROCESS, 0);
 		ASSERT_OK(errno, "getpriority");
 		ASSERT_OK(setpriority(PRIO_PROCESS, 0, -20), "setpriority");
 
-		/* notify parent signal handler is installed */
+		 
 		ASSERT_EQ(write(pipe_c2p[1], buf, 1), 1, "pipe_write");
 
-		/* make sure parent enabled bpf program to send_signal */
+		 
 		ASSERT_EQ(read(pipe_p2c[0], buf, 1), 1, "pipe_read");
 
-		/* wait a little for signal handler */
+		 
 		for (int i = 0; i < 1000000000 && !sigusr1_received; i++) {
 			j /= i + j + 1;
 			if (!attr)
-				/* trigger the nanosleep tracepoint program. */
+				 
 				usleep(1);
 		}
 
@@ -75,10 +72,10 @@ static void test_send_signal_common(struct perf_event_attr *attr,
 		ASSERT_EQ(sigusr1_received, 1, "sigusr1_received");
 		ASSERT_EQ(write(pipe_c2p[1], buf, 1), 1, "pipe_write");
 
-		/* wait for parent notification and exit */
+		 
 		ASSERT_EQ(read(pipe_p2c[0], buf, 1), 1, "pipe_read");
 
-		/* restore the old priority */
+		 
 		ASSERT_OK(setpriority(PRIO_PROCESS, 0, old_prio), "setpriority");
 
 		close(pipe_c2p[1]);
@@ -86,8 +83,8 @@ static void test_send_signal_common(struct perf_event_attr *attr,
 		exit(0);
 	}
 
-	close(pipe_c2p[1]); /* close write */
-	close(pipe_p2c[0]); /* close read */
+	close(pipe_c2p[1]);  
+	close(pipe_p2c[0]);  
 
 	skel = test_send_signal_kern__open_and_load();
 	if (!ASSERT_OK_PTR(skel, "skel_open_and_load"))
@@ -100,8 +97,8 @@ static void test_send_signal_common(struct perf_event_attr *attr,
 			goto destroy_skel;
 		}
 	} else {
-		pmu_fd = syscall(__NR_perf_event_open, attr, pid, -1 /* cpu */,
-				 -1 /* group id */, 0 /* flags */);
+		pmu_fd = syscall(__NR_perf_event_open, attr, pid, -1  ,
+				 -1  , 0  );
 		if (!ASSERT_GE(pmu_fd, 0, "perf_event_open")) {
 			err = -1;
 			goto destroy_skel;
@@ -113,18 +110,18 @@ static void test_send_signal_common(struct perf_event_attr *attr,
 			goto disable_pmu;
 	}
 
-	/* wait until child signal handler installed */
+	 
 	ASSERT_EQ(read(pipe_c2p[0], buf, 1), 1, "pipe_read");
 
-	/* trigger the bpf send_signal */
+	 
 	skel->bss->signal_thread = signal_thread;
 	skel->bss->sig = SIGUSR1;
 	skel->bss->pid = pid;
 
-	/* notify child that bpf program can send_signal now */
+	 
 	ASSERT_EQ(write(pipe_p2c[1], buf, 1), 1, "pipe_write");
 
-	/* wait for result */
+	 
 	err = read(pipe_c2p[0], buf, 1);
 	if (!ASSERT_GE(err, 0, "reading pipe"))
 		goto disable_pmu;
@@ -135,7 +132,7 @@ static void test_send_signal_common(struct perf_event_attr *attr,
 
 	ASSERT_EQ(buf[0], '2', "incorrect result");
 
-	/* notify child safe to exit */
+	 
 	ASSERT_EQ(write(pipe_p2c[1], buf, 1), 1, "pipe_write");
 
 disable_pmu:
@@ -173,11 +170,9 @@ static void test_send_signal_nmi(bool signal_thread)
 	};
 	int pmu_fd;
 
-	/* Some setups (e.g. virtual machines) might run with hardware
-	 * perf events disabled. If this is the case, skip this test.
-	 */
-	pmu_fd = syscall(__NR_perf_event_open, &attr, 0 /* pid */,
-			 -1 /* cpu */, -1 /* group_fd */, 0 /* flags */);
+	 
+	pmu_fd = syscall(__NR_perf_event_open, &attr, 0  ,
+			 -1  , -1  , 0  );
 	if (pmu_fd == -1) {
 		if (errno == ENOENT) {
 			printf("%s:SKIP:no PERF_COUNT_HW_CPU_CYCLES\n",
@@ -185,7 +180,7 @@ static void test_send_signal_nmi(bool signal_thread)
 			test__skip();
 			return;
 		}
-		/* Let the test fail with a more informative message */
+		 
 	} else {
 		close(pmu_fd);
 	}

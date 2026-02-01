@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCI Express Downstream Port Containment services driver
- * Author: Keith Busch <keith.busch@intel.com>
- *
- * Copyright (C) 2016 Intel Corp.
- */
+
+ 
 
 #define dev_fmt(fmt) "DPC: " fmt
 
@@ -18,25 +13,25 @@
 #include "../pci.h"
 
 static const char * const rp_pio_error_string[] = {
-	"Configuration Request received UR Completion",	 /* Bit Position 0  */
-	"Configuration Request received CA Completion",	 /* Bit Position 1  */
-	"Configuration Request Completion Timeout",	 /* Bit Position 2  */
+	"Configuration Request received UR Completion",	  
+	"Configuration Request received CA Completion",	  
+	"Configuration Request Completion Timeout",	  
 	NULL,
 	NULL,
 	NULL,
 	NULL,
 	NULL,
-	"I/O Request received UR Completion",		 /* Bit Position 8  */
-	"I/O Request received CA Completion",		 /* Bit Position 9  */
-	"I/O Request Completion Timeout",		 /* Bit Position 10 */
+	"I/O Request received UR Completion",		  
+	"I/O Request received CA Completion",		  
+	"I/O Request Completion Timeout",		  
 	NULL,
 	NULL,
 	NULL,
 	NULL,
 	NULL,
-	"Memory Request received UR Completion",	 /* Bit Position 16 */
-	"Memory Request received CA Completion",	 /* Bit Position 17 */
-	"Memory Request Completion Timeout",		 /* Bit Position 18 */
+	"Memory Request received UR Completion",	  
+	"Memory Request received CA Completion",	  
+	"Memory Request Completion Timeout",		  
 };
 
 void pci_save_dpc_state(struct pci_dev *dev)
@@ -88,14 +83,7 @@ static bool dpc_completed(struct pci_dev *pdev)
 	return true;
 }
 
-/**
- * pci_dpc_recovered - whether DPC triggered and has recovered successfully
- * @pdev: PCI device
- *
- * Return true if DPC was triggered for @pdev and has recovered successfully.
- * Wait for recovery if it hasn't completed yet.  Called from the PCIe hotplug
- * driver to recognize and ignore Link Down/Up events caused by DPC.
- */
+ 
 bool pci_dpc_recovered(struct pci_dev *pdev)
 {
 	struct pci_host_bridge *host;
@@ -103,25 +91,18 @@ bool pci_dpc_recovered(struct pci_dev *pdev)
 	if (!pdev->dpc_cap)
 		return false;
 
-	/*
-	 * Synchronization between hotplug and DPC is not supported
-	 * if DPC is owned by firmware and EDR is not enabled.
-	 */
+	 
 	host = pci_find_host_bridge(pdev->bus);
 	if (!host->native_dpc && !IS_ENABLED(CONFIG_PCIE_EDR))
 		return false;
 
-	/*
-	 * Need a timeout in case DPC never completes due to failure of
-	 * dpc_wait_rp_inactive().  The spec doesn't mandate a time limit,
-	 * but reports indicate that DPC completes within 4 seconds.
-	 */
+	 
 	wait_event_timeout(dpc_completed_waitqueue, dpc_completed(pdev),
 			   msecs_to_jiffies(4000));
 
 	return test_and_clear_bit(PCI_DPC_RECOVERED, &pdev->priv_flags);
 }
-#endif /* CONFIG_HOTPLUG_PCI_PCIE */
+#endif  
 
 static int dpc_wait_rp_inactive(struct pci_dev *pdev)
 {
@@ -148,16 +129,10 @@ pci_ers_result_t dpc_reset_link(struct pci_dev *pdev)
 
 	set_bit(PCI_DPC_RECOVERING, &pdev->priv_flags);
 
-	/*
-	 * DPC disables the Link automatically in hardware, so it has
-	 * already been reset by the time we get here.
-	 */
+	 
 	cap = pdev->dpc_cap;
 
-	/*
-	 * Wait until the Link is inactive, then clear DPC Trigger Status
-	 * to allow the Port to leave DPC.
-	 */
+	 
 	if (!pcie_wait_for_link(pdev, false))
 		pci_info(pdev, "Data Link Layer Link Active not cleared in 1000 msec\n");
 
@@ -200,7 +175,7 @@ static void dpc_process_rp_pio_error(struct pci_dev *pdev)
 	pci_err(pdev, "RP PIO severity=%#010x, syserror=%#010x, exception=%#010x\n",
 		sev, syserr, exc);
 
-	/* Get First Error Pointer */
+	 
 	pci_read_config_word(pdev, cap + PCI_EXP_DPC_STATUS, &dpc_status);
 	first_error = (dpc_status & 0x1f00) >> 8;
 
@@ -280,7 +255,7 @@ void dpc_process_error(struct pci_dev *pdev)
 		 (ext_reason == 1) ? "software trigger" :
 				     "reserved error");
 
-	/* show RP PIO error detail information */
+	 
 	if (pdev->dpc_rp_extensions && reason == 3 && ext_reason == 0)
 		dpc_process_rp_pio_error(pdev);
 	else if (reason == 0 &&
@@ -298,7 +273,7 @@ static irqreturn_t dpc_handler(int irq, void *context)
 
 	dpc_process_error(pdev);
 
-	/* We configure DPC so it only triggers on ERR_FATAL */
+	 
 	pcie_do_recovery(pdev, pci_channel_io_frozen, dpc_reset_link);
 
 	return IRQ_HANDLED;
@@ -335,7 +310,7 @@ void pci_dpc_init(struct pci_dev *pdev)
 
 	pdev->dpc_rp_extensions = true;
 
-	/* Quirks may set dpc_rp_log_size if device or firmware is buggy */
+	 
 	if (!pdev->dpc_rp_log_size) {
 		pdev->dpc_rp_log_size =
 			(cap & PCI_EXP_DPC_RP_PIO_LOG_SIZE) >> 8;

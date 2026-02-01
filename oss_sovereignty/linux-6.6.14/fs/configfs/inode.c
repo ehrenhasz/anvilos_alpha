@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * inode.c - basic inode and dentry operations.
- *
- * Based on sysfs:
- * 	sysfs is Copyright (C) 2001, 2002, 2003 Patrick Mochel
- *
- * configfs Copyright (C) 2005 Oracle.  All rights reserved.
- *
- * Please see Documentation/filesystems/configfs.rst for more
- * information.
- */
+
+ 
 
 #undef DEBUG
 
@@ -46,11 +36,11 @@ int configfs_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 
 	sd_iattr = sd->s_iattr;
 	if (!sd_iattr) {
-		/* setting attributes for the first time, allocate now */
+		 
 		sd_iattr = kzalloc(sizeof(struct iattr), GFP_KERNEL);
 		if (!sd_iattr)
 			return -ENOMEM;
-		/* assign default attributes */
+		 
 		sd_iattr->ia_mode = sd->s_mode;
 		sd_iattr->ia_uid = GLOBAL_ROOT_UID;
 		sd_iattr->ia_gid = GLOBAL_ROOT_GID;
@@ -58,7 +48,7 @@ int configfs_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 			sd_iattr->ia_ctime = current_time(inode);
 		sd->s_iattr = sd_iattr;
 	}
-	/* attributes were changed atleast once in past */
+	 
 
 	error = simple_setattr(idmap, dentry, iattr);
 	if (error)
@@ -111,10 +101,7 @@ struct inode *configfs_new_inode(umode_t mode, struct configfs_dirent *sd,
 		inode->i_op = &configfs_inode_operations;
 
 		if (sd->s_iattr) {
-			/* sysfs_dirent has non-default attributes
-			 * get them for the new inode from persistent copy
-			 * in sysfs_dirent
-			 */
+			 
 			set_inode_attr(inode, sd->s_iattr);
 		} else
 			set_default_inode_attr(inode, mode);
@@ -134,24 +121,21 @@ static void configfs_set_inode_lock_class(struct configfs_dirent *sd,
 			lockdep_set_class(&inode->i_rwsem,
 					  &default_group_class[depth - 1]);
 		} else {
-			/*
-			 * In practice the maximum level of locking depth is
-			 * already reached. Just inform about possible reasons.
-			 */
+			 
 			pr_info("Too many levels of inodes for the locking correctness validator.\n");
 			pr_info("Spurious warnings may appear.\n");
 		}
 	}
 }
 
-#else /* CONFIG_LOCKDEP */
+#else  
 
 static void configfs_set_inode_lock_class(struct configfs_dirent *sd,
 					  struct inode *inode)
 {
 }
 
-#endif /* CONFIG_LOCKDEP */
+#endif  
 
 struct inode *configfs_create(struct dentry *dentry, umode_t mode)
 {
@@ -176,16 +160,14 @@ struct inode *configfs_create(struct dentry *dentry, umode_t mode)
 	return inode;
 }
 
-/*
- * Get the name for corresponding element represented by the given configfs_dirent
- */
+ 
 const unsigned char * configfs_get_name(struct configfs_dirent *sd)
 {
 	struct configfs_attribute *attr;
 
 	BUG_ON(!sd || !sd->s_element);
 
-	/* These always have a dentry, so use that */
+	 
 	if (sd->s_type & (CONFIGFS_DIR | CONFIGFS_ITEM_LINK))
 		return sd->s_dentry->d_name.name;
 
@@ -197,10 +179,7 @@ const unsigned char * configfs_get_name(struct configfs_dirent *sd)
 }
 
 
-/*
- * Unhashes the dentry corresponding to given configfs_dirent
- * Called with parent inode's i_mutex held.
- */
+ 
 void configfs_drop_dentry(struct configfs_dirent * sd, struct dentry * parent)
 {
 	struct dentry * dentry = sd->s_dentry;
@@ -223,7 +202,7 @@ void configfs_hash_and_remove(struct dentry * dir, const char * name)
 	struct configfs_dirent * parent_sd = dir->d_fsdata;
 
 	if (d_really_is_negative(dir))
-		/* no inode means this hasn't been made visible yet */
+		 
 		return;
 
 	inode_lock(d_inode(dir));

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later OR MIT */
+ 
 #ifndef DT_BINDINGS_AST2600_CLOCK_H
 #define DT_BINDINGS_AST2600_CLOCK_H
 
@@ -87,7 +87,7 @@
 #define ASPEED_CLK_MAC4RCLK		70
 #define ASPEED_CLK_I3C			71
 
-/* Only list resets here that are not part of a clock gate + reset pair */
+ 
 #define ASPEED_RESET_ADC		55
 #define ASPEED_RESET_JTAG_MASTER2	54
 

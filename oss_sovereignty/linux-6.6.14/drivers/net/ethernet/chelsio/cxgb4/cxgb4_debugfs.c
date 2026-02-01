@@ -1,36 +1,4 @@
-/*
- * This file is part of the Chelsio T4 Ethernet driver for Linux.
- *
- * Copyright (c) 2003-2014 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/seq_file.h>
 #include <linux/debugfs.h>
@@ -51,7 +19,7 @@
 #include "cudbg_lib.h"
 #include "cxgb4_tc_mqprio.h"
 
-/* generic seq_file support for showing a table of size rows x width. */
+ 
 static void *seq_tab_get_idx(struct seq_tab *tb, loff_t pos)
 {
 	pos -= tb->skip_first;
@@ -109,9 +77,7 @@ struct seq_tab *seq_open_tab(struct file *f, unsigned int rows,
 	return p;
 }
 
-/* Trim the size of a seq_tab to the supplied number of rows.  The operation is
- * irreversible.
- */
+ 
 static int seq_tab_trim(struct seq_tab *p, unsigned int new_rows)
 {
 	if (new_rows > p->rows)
@@ -164,12 +130,12 @@ static int cim_la_show_t6(struct seq_file *seq, void *v, int idx)
 		const u32 *p = v;
 
 		seq_printf(seq, "  %02x   %04x%04x %04x%04x %04x%04x %08x %08x %08x %08x %08x %08x\n",
-			   (p[9] >> 16) & 0xff,       /* Status */
-			   p[9] & 0xffff, p[8] >> 16, /* Inst */
-			   p[8] & 0xffff, p[7] >> 16, /* Data */
-			   p[7] & 0xffff, p[6] >> 16, /* PC */
-			   p[2], p[1], p[0],      /* LS0 Stat, Addr and Data */
-			   p[5], p[4], p[3]);     /* LS1 Stat, Addr and Data */
+			   (p[9] >> 16) & 0xff,        
+			   p[9] & 0xffff, p[8] >> 16,  
+			   p[8] & 0xffff, p[7] >> 16,  
+			   p[7] & 0xffff, p[6] >> 16,  
+			   p[2], p[1], p[0],       
+			   p[5], p[4], p[3]);      
 	}
 	return 0;
 }
@@ -206,7 +172,7 @@ static int cim_la_open(struct inode *inode, struct file *file)
 		return ret;
 
 	if (is_t6(adap->params.chip)) {
-		/* +1 to account for integer division of CIMLA_SIZE/10 */
+		 
 		p = seq_open_tab(file, (adap->params.cim_la_size / 10) + 1,
 				 10 * sizeof(u32), 1,
 				 cfg & UPDBGLACAPTPCONLY_F ?
@@ -727,18 +693,7 @@ static const struct file_operations ulprx_la_fops = {
 	.release = seq_release_private
 };
 
-/* Show the PM memory stats.  These stats include:
- *
- * TX:
- *   Read: memory read operation
- *   Write Bypass: cut-through
- *   Bypass + mem: cut-through and save copy
- *
- * RX:
- *   Read: memory read
- *   Write Bypass: cut-through
- *   Flush: payload trim or drop
- */
+ 
 static int pm_stats_show(struct seq_file *seq, void *v)
 {
 	static const char * const tx_pm_stats[] = {
@@ -767,10 +722,7 @@ static int pm_stats_show(struct seq_file *seq, void *v)
 			   rx_pm_stats[i], rx_cnt[i], rx_cyc[i]);
 
 	if (CHELSIO_CHIP_VERSION(adap->params.chip) > CHELSIO_T5) {
-		/* In T5 the granularity of the total wait is too fine.
-		 * It is not useful as it reaches the max value too fast.
-		 * Hence display this Input FIFO wait for T6 onwards.
-		 */
+		 
 		seq_printf(seq, "%13s %10s  %20s\n",
 			   " ", "Total wait", "Total Occupancy");
 		seq_printf(seq, "Tx FIFO wait  %10u  %20llu\n",
@@ -778,12 +730,10 @@ static int pm_stats_show(struct seq_file *seq, void *v)
 		seq_printf(seq, "Rx FIFO wait  %10u  %20llu\n",
 			   rx_cnt[i], rx_cyc[i]);
 
-		/* Skip index 6 as there is nothing useful ihere */
+		 
 		i += 2;
 
-		/* At index 7, a new stat for read latency (count, total wait)
-		 * is added.
-		 */
+		 
 		seq_printf(seq, "%13s %10s  %20s\n",
 			   " ", "Reads", "Total wait");
 		seq_printf(seq, "Tx latency    %10u  %20llu\n",
@@ -882,9 +832,7 @@ static int cctrl_tbl_show(struct seq_file *seq, void *v)
 }
 DEFINE_SHOW_ATTRIBUTE(cctrl_tbl);
 
-/* Format a value in a unit that differs from the value's native unit by the
- * given factor.
- */
+ 
 static char *unit_conv(char *buf, size_t len, unsigned int val,
 		       unsigned int factor)
 {
@@ -904,11 +852,11 @@ static int clk_show(struct seq_file *seq, void *v)
 {
 	char buf[32];
 	struct adapter *adap = seq->private;
-	unsigned int cclk_ps = 1000000000 / adap->params.vpd.cclk;  /* in ps */
+	unsigned int cclk_ps = 1000000000 / adap->params.vpd.cclk;   
 	u32 res = t4_read_reg(adap, TP_TIMER_RESOLUTION_A);
 	unsigned int tre = TIMERRESOLUTION_G(res);
 	unsigned int dack_re = DELAYEDACKRESOLUTION_G(res);
-	unsigned long long tp_tick_us = (cclk_ps << tre) / 1000000; /* in us */
+	unsigned long long tp_tick_us = (cclk_ps << tre) / 1000000;  
 
 	seq_printf(seq, "Core clock period: %s ns\n",
 		   unit_conv(buf, sizeof(buf), cclk_ps, 1000));
@@ -943,7 +891,7 @@ static int clk_show(struct seq_file *seq, void *v)
 }
 DEFINE_SHOW_ATTRIBUTE(clk);
 
-/* Firmware Device Log dump. */
+ 
 static const char * const devlog_level_strings[] = {
 	[FW_DEVLOG_LEVEL_EMERG]		= "EMERG",
 	[FW_DEVLOG_LEVEL_CRIT]		= "CRIT",
@@ -980,16 +928,14 @@ static const char * const devlog_facility_strings[] = {
 	[FW_DEVLOG_FACILITY_FOFCOE]	= "FOFCOE"
 };
 
-/* Information gathered by Device Log Open routine for the display routine.
- */
+ 
 struct devlog_info {
-	unsigned int nentries;		/* number of entries in log[] */
-	unsigned int first;		/* first [temporal] entry in log[] */
-	struct fw_devlog_e log[];	/* Firmware Device Log */
+	unsigned int nentries;		 
+	unsigned int first;		 
+	struct fw_devlog_e log[];	 
 };
 
-/* Dump a Firmaware Device Log entry.
- */
+ 
 static int devlog_show(struct seq_file *seq, void *v)
 {
 	if (v == SEQ_START_TOKEN)
@@ -1001,9 +947,7 @@ static int devlog_show(struct seq_file *seq, void *v)
 		unsigned long index;
 		struct fw_devlog_e *e;
 
-		/* Get a pointer to the log entry to display.  Skip unused log
-		 * entries.
-		 */
+		 
 		index = dinfo->first + fidx;
 		if (index >= dinfo->nentries)
 			index -= dinfo->nentries;
@@ -1011,10 +955,7 @@ static int devlog_show(struct seq_file *seq, void *v)
 		if (e->timestamp == 0)
 			return 0;
 
-		/* Print the message.  This depends on the firmware using
-		 * exactly the same formating strings as the kernel so we may
-		 * eventually have to put a format interpreter in here ...
-		 */
+		 
 		seq_printf(seq, "%10d  %15llu  %8s  %8s  ",
 			   be32_to_cpu(e->seqno),
 			   be64_to_cpu(e->timestamp),
@@ -1037,8 +978,7 @@ static int devlog_show(struct seq_file *seq, void *v)
 	return 0;
 }
 
-/* Sequential File Operations for Device Log.
- */
+ 
 static inline void *devlog_get_idx(struct devlog_info *dinfo, loff_t pos)
 {
 	if (pos > dinfo->nentries)
@@ -1075,9 +1015,7 @@ static const struct seq_operations devlog_seq_ops = {
 	.show  = devlog_show
 };
 
-/* Set up for reading the firmware's device log.  We read the entire log here
- * and then display it incrementally in devlog_show().
- */
+ 
 static int devlog_open(struct inode *inode, struct file *file)
 {
 	struct adapter *adap = inode->i_private;
@@ -1087,21 +1025,17 @@ static int devlog_open(struct inode *inode, struct file *file)
 	u32 fseqno;
 	int ret;
 
-	/* If we don't know where the log is we can't do anything.
-	 */
+	 
 	if (dparams->start == 0)
 		return -ENXIO;
 
-	/* Allocate the space to read in the firmware's device log and set up
-	 * for the iterated call to our display function.
-	 */
+	 
 	dinfo = __seq_open_private(file, &devlog_seq_ops,
 				   sizeof(*dinfo) + dparams->size);
 	if (!dinfo)
 		return -ENOMEM;
 
-	/* Record the basic log buffer information and read in the raw log.
-	 */
+	 
 	dinfo->nentries = (dparams->size / sizeof(struct fw_devlog_e));
 	dinfo->first = 0;
 	spin_lock(&adap->win0_lock);
@@ -1114,9 +1048,7 @@ static int devlog_open(struct inode *inode, struct file *file)
 		return ret;
 	}
 
-	/* Find the earliest (lowest Sequence Number) log entry in the
-	 * circular Device Log.
-	 */
+	 
 	for (fseqno = ~((u32)0), index = 0; index < dinfo->nentries; index++) {
 		struct fw_devlog_e *e = &dinfo->log[index];
 		__u32 seqno;
@@ -1141,16 +1073,7 @@ static const struct file_operations devlog_fops = {
 	.release = seq_release_private
 };
 
-/* Show Firmware Mailbox Command/Reply Log
- *
- * Note that we don't do any locking when dumping the Firmware Mailbox Log so
- * it's possible that we can catch things during a log update and therefore
- * see partially corrupted log entries.  But it's probably Good Enough(tm).
- * If we ever decide that we want to make sure that we're dumping a coherent
- * log, we'd need to perform locking in the mailbox logging and in
- * mboxlog_open() where we'd need to grab the entire mailbox log in one go
- * like we do for the Firmware Device Log.
- */
+ 
 static int mboxlog_show(struct seq_file *seq, void *v)
 {
 	struct adapter *adapter = seq->private;
@@ -1171,7 +1094,7 @@ static int mboxlog_show(struct seq_file *seq, void *v)
 		entry_idx -= log->size;
 	entry = mbox_cmd_log_entry(log, entry_idx);
 
-	/* skip over unused entries */
+	 
 	if (entry->timestamp == 0)
 		return 0;
 
@@ -1249,12 +1172,9 @@ static int mbox_show(struct seq_file *seq, void *v)
 	struct adapter *adap = seq->private - mbox;
 	void __iomem *addr = adap->regs + PF_REG(mbox, CIM_PF_MAILBOX_DATA_A);
 
-	/* For T4 we don't have a shadow copy of the Mailbox Control register.
-	 * And since reading that real register causes a side effect of
-	 * granting ownership, we're best of simply not reading it at all.
-	 */
+	 
 	if (is_t4(adap->params.chip)) {
-		i = 4; /* index of "<unread>" */
+		i = 4;  
 	} else {
 		unsigned int ctrl_reg = CIM_PF_MAILBOX_CTRL_SHADOW_COPY_A;
 		void __iomem *ctrl = adap->regs + PF_REG(mbox, ctrl_reg);
@@ -1391,23 +1311,7 @@ static unsigned int xdigit2int(unsigned char c)
 #define TRC_RSS_ENABLE 0x33
 #define TRC_RSS_DISABLE 0x13
 
-/* Set an MPS trace filter.  Syntax is:
- *
- * disable
- *
- * to disable tracing, or
- *
- * interface qid=<qid no> [snaplen=<val>] [minlen=<val>] [not] [<pattern>]...
- *
- * where interface is one of rxN, txN, or loopbackN, N = 0..3, qid can be one
- * of the NIC's response qid obtained from sge_qinfo and pattern has the form
- *
- * <pattern data>[/<pattern mask>][@<anchor>]
- *
- * Up to 2 filter patterns can be specified.  If 2 are supplied the first one
- * must be anchored at 0.  An omitted mask is taken as a mask of 1s, an omitted
- * anchor is taken as 0.
- */
+ 
 static ssize_t mps_trc_write(struct file *file, const char __user *buf,
 			     size_t count, loff_t *pos)
 {
@@ -1424,9 +1328,7 @@ static ssize_t mps_trc_write(struct file *file, const char __user *buf,
 	trcidx = (uintptr_t)ino->i_private & 3;
 	adap = ino->i_private - trcidx;
 
-	/* Don't accept input more than 1K, can't be anything valid except lots
-	 * of whitespace.  Well, use less.
-	 */
+	 
 	if (count > 1024)
 		return -EFBIG;
 	p = s = kzalloc(count + 1, GFP_USER);
@@ -1444,7 +1346,7 @@ static ssize_t mps_trc_write(struct file *file, const char __user *buf,
 	if (!enable)
 		goto apply;
 
-	/* enable or disable trace multi rss filter */
+	 
 	if (adap->trace_rss)
 		t4_write_reg(adap, MPS_TRC_CFG_A, TRC_RSS_ENABLE);
 	else
@@ -1452,7 +1354,7 @@ static ssize_t mps_trc_write(struct file *file, const char __user *buf,
 
 	memset(&tp, 0, sizeof(tp));
 	tp.port = TRC_PORT_NONE;
-	i = 0;	/* counts pattern nibbles */
+	i = 0;	 
 
 	while (p) {
 		while (isspace(*p))
@@ -1537,9 +1439,9 @@ inval:				count = -EINVAL;
 		if (!isxdigit(*word))
 			goto inval;
 
-		/* we have found a trace pattern */
-		if (i) {                            /* split pattern */
-			if (tp.skip_len)            /* too many splits */
+		 
+		if (i) {                             
+			if (tp.skip_len)             
 				goto inval;
 			tp.skip_ofst = i / 16;
 		}
@@ -1560,15 +1462,15 @@ inval:				count = -EINVAL;
 		if (*word == '/') {
 			word++;
 			while (isxdigit(*word)) {
-				if (j >= i)         /* mask longer than data */
+				if (j >= i)          
 					goto inval;
 				*mask = (*mask << 4) + xdigit2int(*word++);
 				if (++j % 8 == 0)
 					mask++;
 			}
-			if (i != j)                 /* mask shorter than data */
+			if (i != j)                  
 				goto inval;
-		} else {                            /* no mask, use all 1s */
+		} else {                             
 			for ( ; i - j >= 8; j += 8)
 				*mask++ = 0xffffffff;
 			if (i % 8)
@@ -1579,19 +1481,19 @@ inval:				count = -EINVAL;
 			ret = kstrtouint(end, 10, &j);
 			if (*end && *end != '\n')
 				goto inval;
-			if (j & 7)          /* doesn't start at multiple of 8 */
+			if (j & 7)           
 				goto inval;
 			j /= 8;
-			if (j < tp.skip_ofst)     /* overlaps earlier pattern */
+			if (j < tp.skip_ofst)      
 				goto inval;
-			if (j - tp.skip_ofst > 31)            /* skip too big */
+			if (j - tp.skip_ofst > 31)             
 				goto inval;
 			tp.skip_len = j - tp.skip_ofst;
 		}
 		if (i % 8) {
 			*data <<= (8 - i % 8) * 4;
 			*mask <<= (8 - i % 8) * 4;
-			i = (i + 15) & ~15;         /* 8-byte align */
+			i = (i + 15) & ~15;          
 		}
 	}
 
@@ -1704,12 +1606,9 @@ static int mps_tcam_show(struct seq_file *seq, void *v)
 		u16 ivlan = 0;
 
 		if (chip_ver > CHELSIO_T5) {
-			/* CtlCmdType - 0: Read, 1: Write
-			 * CtlTcamSel - 0: TCAM0, 1: TCAM1
-			 * CtlXYBitSel- 0: Y bit, 1: X bit
-			 */
+			 
 
-			/* Read tcamy */
+			 
 			ctl = CTLCMDTYPE_V(0) | CTLXYBITSEL_V(0);
 			if (idx < 256)
 				ctl |= CTLTCAMINDEX_V(idx) | CTLTCAMSEL_V(0);
@@ -1722,12 +1621,9 @@ static int mps_tcam_show(struct seq_file *seq, void *v)
 			tcamy |= t4_read_reg(adap, MPS_CLS_TCAM_DATA0_A);
 			data2 = t4_read_reg(adap, MPS_CLS_TCAM_DATA2_CTL_A);
 			lookup_type = DATALKPTYPE_G(data2);
-			/* 0 - Outer header, 1 - Inner header
-			 * [71:48] bit locations are overloaded for
-			 * outer vs. inner lookup types.
-			 */
+			 
 			if (lookup_type && (lookup_type != DATALKPTYPE_M)) {
-				/* Inner header VNI */
+				 
 				vniy = (data2 & DATAVIDH2_F) |
 				       (DATAVIDH1_G(data2) << 16) | VIDL_G(val);
 				dip_hit = data2 & DATADIPHIT_F;
@@ -1737,7 +1633,7 @@ static int mps_tcam_show(struct seq_file *seq, void *v)
 			}
 			port_num = DATAPORTNUM_G(data2);
 
-			/* Read tcamx. Change the control param */
+			 
 			vnix = 0;
 			ctl |= CTLXYBITSEL_V(1);
 			t4_write_reg(adap, MPS_CLS_TCAM_DATA2_CTL_A, ctl);
@@ -1746,7 +1642,7 @@ static int mps_tcam_show(struct seq_file *seq, void *v)
 			tcamx |= t4_read_reg(adap, MPS_CLS_TCAM_DATA0_A);
 			data2 = t4_read_reg(adap, MPS_CLS_TCAM_DATA2_CTL_A);
 			if (lookup_type && (lookup_type != DATALKPTYPE_M)) {
-				/* Inner header VNI mask */
+				 
 				vnix = (data2 & DATAVIDH2_F) |
 				       (DATAVIDH1_G(data2) << 16) | VIDL_G(val);
 			}
@@ -1810,7 +1706,7 @@ static int mps_tcam_show(struct seq_file *seq, void *v)
 
 		tcamxy2valmask(tcamx, tcamy, addr, &mask);
 		if (chip_ver > CHELSIO_T5) {
-			/* Inner header lookup */
+			 
 			if (lookup_type && (lookup_type != DATALKPTYPE_M)) {
 				seq_printf(seq,
 					   "%3u %pM %012llx %06x %06x    -    -   %3c      'I'  %4x   %3c   %#x%4u%4d",
@@ -1935,17 +1831,14 @@ static const struct file_operations mps_tcam_debugfs_fops = {
 	.release = seq_release,
 };
 
-/* Display various sensor information.
- */
+ 
 static int sensors_show(struct seq_file *seq, void *v)
 {
 	struct adapter *adap = seq->private;
 	u32 param[7], val[7];
 	int ret;
 
-	/* Note that if the sensors haven't been initialized and turned on
-	 * we'll get values of 0, so treat those as "<unknown>" ...
-	 */
+	 
 	param[0] = (FW_PARAMS_MNEM_V(FW_PARAMS_MNEM_DEV) |
 		    FW_PARAMS_PARAM_X_V(FW_PARAMS_PARAM_DEV_DIAG) |
 		    FW_PARAMS_PARAM_Y_V(FW_PARAM_DEV_DIAG_TMP));
@@ -1973,8 +1866,7 @@ DEFINE_SHOW_ATTRIBUTE(sensors);
 DEFINE_SHOW_ATTRIBUTE(clip_tbl);
 #endif
 
-/*RSS Table.
- */
+ 
 
 static int rss_show(struct seq_file *seq, void *v, int idx)
 {
@@ -2012,12 +1904,9 @@ static const struct file_operations rss_debugfs_fops = {
 	.release = seq_release_private
 };
 
-/* RSS Configuration.
- */
+ 
 
-/* Small utility function to return the strings "yes" or "no" if the supplied
- * argument is non-zero.
- */
+ 
 static const char *yesno(int x)
 {
 	static const char *yes = "yes";
@@ -2175,8 +2064,7 @@ static int rss_config_show(struct seq_file *seq, void *v)
 }
 DEFINE_SHOW_ATTRIBUTE(rss_config);
 
-/* RSS Secret Key.
- */
+ 
 
 static int rss_key_show(struct seq_file *seq, void *v)
 {
@@ -2232,8 +2120,7 @@ static const struct file_operations rss_key_debugfs_fops = {
 	.write   = rss_key_write
 };
 
-/* PF RSS Configuration.
- */
+ 
 
 struct rss_pf_conf {
 	u32 rss_pf_map;
@@ -2246,7 +2133,7 @@ static int rss_pf_config_show(struct seq_file *seq, void *v, int idx)
 	struct rss_pf_conf *pfconf;
 
 	if (v == SEQ_START_TOKEN) {
-		/* use the 0th entry to dump the PF Map Index Size */
+		 
 		pfconf = seq->private + offsetof(struct seq_tab, data);
 		seq_printf(seq, "PF Map Index Size = %d\n\n",
 			   LKPIDXSIZE_G(pfconf->rss_pf_map));
@@ -2315,8 +2202,7 @@ static const struct file_operations rss_pf_config_debugfs_fops = {
 	.release = seq_release_private
 };
 
-/* VF RSS Configuration.
- */
+ 
 
 struct rss_vf_conf {
 	u32 rss_vf_vfl;
@@ -2380,8 +2266,7 @@ static const struct file_operations rss_vf_config_debugfs_fops = {
 
 #ifdef CONFIG_CHELSIO_T4_DCB
 
-/* Data Center Briging information for each port.
- */
+ 
 static int dcb_info_show(struct seq_file *seq, void *v)
 {
 	struct adapter *adap = seq->private;
@@ -2488,7 +2373,7 @@ static int dcb_info_show(struct seq_file *seq, void *v)
 				const char *sel_name;
 
 				ap = &dcb->app_priority[app];
-				/* skip empty slots */
+				 
 				if (ap->protocolid == 0)
 					continue;
 				napps++;
@@ -2565,7 +2450,7 @@ static const struct file_operations dcb_info_debugfs_fops = {
 	.llseek  = seq_lseek,
 	.release = seq_release,
 };
-#endif /* CONFIG_CHELSIO_T4_DCB */
+#endif  
 
 static int resources_show(struct seq_file *seq, void *v)
 {
@@ -2593,11 +2478,7 @@ static int resources_show(struct seq_file *seq, void *v)
 }
 DEFINE_SHOW_ATTRIBUTE(resources);
 
-/**
- * ethqset2pinfo - return port_info of an Ethernet Queue Set
- * @adap: the adapter
- * @qset: Ethernet Queue Set
- */
+ 
 static inline struct port_info *ethqset2pinfo(struct adapter *adap, int qset)
 {
 	int pidx;
@@ -2610,7 +2491,7 @@ static inline struct port_info *ethqset2pinfo(struct adapter *adap, int qset)
 			return pi;
 	}
 
-	/* should never happen! */
+	 
 	BUG();
 	return NULL;
 }
@@ -3408,7 +3289,7 @@ static ssize_t blocked_fl_read(struct file *filp, char __user *ubuf,
 	const struct adapter *adap = filp->private_data;
 	char *buf;
 	ssize_t size = (adap->sge.egr_sz + 3) / 4 +
-			adap->sge.egr_sz / 32 + 2; /* includes ,/\n/\0 */
+			adap->sge.egr_sz / 32 + 2;  
 
 	buf = kzalloc(size, GFP_KERNEL);
 	if (!buf)
@@ -3483,7 +3364,7 @@ static int meminfo_show(struct seq_file *seq, void *v)
 	seq_putc(seq, '\n');
 	for (i = 0; i < meminfo.mem_c; i++) {
 		if (meminfo.mem[i].idx >= ARRAY_SIZE(cudbg_region))
-			continue;                        /* skip holes */
+			continue;                         
 		if (!meminfo.mem[i].limit)
 			meminfo.mem[i].limit =
 				i < meminfo.mem_c - 1 ?
@@ -3510,12 +3391,12 @@ static int meminfo_show(struct seq_file *seq, void *v)
 		   meminfo.p_structs, meminfo.p_structs_free_cnt);
 
 	for (i = 0; i < 4; i++)
-		/* For T6 these are MAC buffer groups */
+		 
 		seq_printf(seq, "Port %d using %u pages out of %u allocated\n",
 			   i, meminfo.port_used[i], meminfo.port_alloc[i]);
 
 	for (i = 0; i < adap->params.arch.nchan; i++)
-		/* For T6 these are MAC buffer groups */
+		 
 		seq_printf(seq,
 			   "Loopback %d using %u pages out of %u allocated\n",
 			   i, meminfo.loopback_used[i],
@@ -3752,15 +3633,14 @@ static int tp_stats_show(struct seq_file *seq, void *v)
 }
 DEFINE_SHOW_ATTRIBUTE(tp_stats);
 
-/* Add an array of Debug FS files.
- */
+ 
 void add_debugfs_files(struct adapter *adap,
 		       struct t4_debugfs_entry *files,
 		       unsigned int nfiles)
 {
 	int i;
 
-	/* debugfs support is best effort */
+	 
 	for (i = 0; i < nfiles; i++)
 		debugfs_create_file(files[i].name, files[i].mode,
 				    adap->debugfs_root,
@@ -3833,8 +3713,7 @@ int t4_setup_debugfs(struct adapter *adap)
 		{ "tp_stats", &tp_stats_fops, 0400, 0 },
 	};
 
-	/* Debug FS nodes common to all T5 and later adapters.
-	 */
+	 
 	static struct t4_debugfs_entry t5_debugfs_files[] = {
 		{ "obq_sge_rx_q0", &cim_obq_fops, 0400, 6 },
 		{ "obq_sge_rx_q1", &cim_obq_fops, 0400, 7 },

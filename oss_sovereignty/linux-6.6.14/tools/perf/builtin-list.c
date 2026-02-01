@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * builtin-list.c
- *
- * Builtin list command: list all event types
- *
- * Copyright (C) 2009, Thomas Gleixner <tglx@linutronix.de>
- * Copyright (C) 2008-2009, Red Hat Inc, Ingo Molnar <mingo@redhat.com>
- * Copyright (C) 2011, Red Hat Inc, Arnaldo Carvalho de Melo <acme@redhat.com>
- */
+
+ 
 #include "builtin.h"
 
 #include "util/print-events.h"
@@ -25,40 +17,31 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-/**
- * struct print_state - State and configuration passed to the default_print
- * functions.
- */
+ 
 struct print_state {
-	/**
-	 * @pmu_glob: Optionally restrict PMU and metric matching to PMU or
-	 * debugfs subsystem name.
-	 */
+	 
 	char *pmu_glob;
-	/** @event_glob: Optional pattern matching glob. */
+	 
 	char *event_glob;
-	/** @name_only: Print event or metric names only. */
+	 
 	bool name_only;
-	/** @desc: Print the event or metric description. */
+	 
 	bool desc;
-	/** @long_desc: Print longer event or metric description. */
+	 
 	bool long_desc;
-	/** @deprecated: Print deprecated events or metrics. */
+	 
 	bool deprecated;
-	/**
-	 * @detailed: Print extra information on the perf event such as names
-	 * and expressions used internally by events.
-	 */
+	 
 	bool detailed;
-	/** @metrics: Controls printing of metric and metric groups. */
+	 
 	bool metrics;
-	/** @metricgroups: Controls printing of metric and metric groups. */
+	 
 	bool metricgroups;
-	/** @last_topic: The last printed event topic. */
+	 
 	char *last_topic;
-	/** @last_metricgroups: The last printed metric group. */
+	 
 	char *last_metricgroups;
-	/** @visited_metrics: Metrics that are printed to avoid duplicates. */
+	 
 	struct strlist *visited_metrics;
 };
 
@@ -253,7 +236,7 @@ static void default_print_metric(void *ps,
 }
 
 struct json_print_state {
-	/** Should a separator be printed prior to the next item? */
+	 
 	bool need_sep;
 };
 
@@ -491,7 +474,7 @@ int cmd_list(int argc, const char **argv)
 	};
 
 	set_option_flag(list_options, 0, "raw-dump", PARSE_OPT_HIDDEN);
-	/* Hide hybrid flag for the more generic 'unit' flag. */
+	 
 	set_option_flag(list_options, 0, "cputype", PARSE_OPT_HIDDEN);
 
 	argc = parse_options(argc, argv, list_options, list_usage,

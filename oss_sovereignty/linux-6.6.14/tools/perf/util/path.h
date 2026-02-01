@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _PERF_PATH_H
 #define _PERF_PATH_H
 
@@ -14,4 +14,4 @@ bool is_regular_file(const char *file);
 bool is_directory(const char *base_path, const struct dirent *dent);
 bool is_executable_file(const char *base_path, const struct dirent *dent);
 
-#endif /* _PERF_PATH_H */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/cls_route.c	ROUTE4 classifier.
- *
- * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -19,13 +15,7 @@
 #include <net/pkt_cls.h>
 #include <net/tc_wrapper.h>
 
-/*
- * 1. For now we assume that route tags < 256.
- *    It allows to use direct table lookups, instead of hash tables.
- * 2. For now we assume that "from TAG" and "fromdev DEV" statements
- *    are mutually  exclusive.
- * 3. "to TAG from ANY" has higher priority, than "to ANY from XXX"
- */
+ 
 struct route4_fastmap {
 	struct route4_filter		*filter;
 	u32				id;
@@ -39,7 +29,7 @@ struct route4_head {
 };
 
 struct route4_bucket {
-	/* 16 FROM buckets + 16 IIF buckets + 1 wildcard bucket */
+	 
 	struct route4_filter __rcu	*ht[16 + 16 + 1];
 	struct rcu_head			rcu;
 };
@@ -79,7 +69,7 @@ route4_set_fastmap(struct route4_head *head, u32 id, int iif,
 {
 	int h = route4_fastmap_hash(id, iif);
 
-	/* fastmap updates must look atomic to aling id, iff, filter */
+	 
 	spin_lock_bh(&fastmap_lock);
 	head->fastmap[h].id = id;
 	head->fastmap[h].iif = iif;
@@ -331,21 +321,18 @@ static int route4_delete(struct tcf_proto *tp, void *arg, bool *last,
 	for (nf = rtnl_dereference(*fp); nf;
 	     fp = &nf->next, nf = rtnl_dereference(*fp)) {
 		if (nf == f) {
-			/* unlink it */
+			 
 			RCU_INIT_POINTER(*fp, rtnl_dereference(f->next));
 
-			/* Remove any fastmap lookups that might ref filter
-			 * notice we unlink'd the filter so we can't get it
-			 * back in the fastmap.
-			 */
+			 
 			route4_reset_fastmap(head);
 
-			/* Delete it */
+			 
 			tcf_unbind_filter(tp, &f->res);
 			tcf_exts_get_net(&f->exts);
 			tcf_queue_work(&f->rwork, route4_delete_filter_work);
 
-			/* Strip RTNL protected tree */
+			 
 			for (i = 0; i <= 32; i++) {
 				struct route4_filter *rt;
 
@@ -354,7 +341,7 @@ static int route4_delete(struct tcf_proto *tp, void *arg, bool *last,
 					goto out;
 			}
 
-			/* OK, session has no flows */
+			 
 			RCU_INIT_POINTER(head->table[to_hash(h)], NULL);
 			kfree_rcu(b, rcu);
 			break;

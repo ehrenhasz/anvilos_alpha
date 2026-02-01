@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/proc/inode.c
- *
- *  Copyright (C) 1991, 1992  Linus Torvalds
- */
+
+ 
 
 #include <linux/cache.h>
 #include <linux/time.h>
@@ -37,13 +33,13 @@ static void proc_evict_inode(struct inode *inode)
 	truncate_inode_pages_final(&inode->i_data);
 	clear_inode(inode);
 
-	/* Stop tracking associated processes */
+	 
 	if (ei->pid) {
 		proc_pid_evict_inode(ei);
 		ei->pid = NULL;
 	}
 
-	/* Let go of any associated proc directory entry */
+	 
 	de = ei->pde;
 	if (de) {
 		pde_put(de);
@@ -212,27 +208,13 @@ static void unuse_pde(struct proc_dir_entry *pde)
 		complete(pde->pde_unload_completion);
 }
 
-/*
- * At most 2 contexts can enter this function: the one doing the last
- * close on the descriptor and whoever is deleting PDE itself.
- *
- * First to enter calls ->proc_release hook and signals its completion
- * to the second one which waits and then does nothing.
- *
- * PDE is locked on entry, unlocked on exit.
- */
+ 
 static void close_pdeo(struct proc_dir_entry *pde, struct pde_opener *pdeo)
 	__releases(&pde->pde_unload_lock)
 {
-	/*
-	 * close() (proc_reg_release()) can't delete an entry and proceed:
-	 * ->release hook needs to be available at the right moment.
-	 *
-	 * rmmod (remove_proc_entry() et al) can't delete an entry and proceed:
-	 * "struct file" needs to be available at the right moment.
-	 */
+	 
 	if (pdeo->closing) {
-		/* somebody else is doing that, just wait */
+		 
 		DECLARE_COMPLETION_ONSTACK(c);
 		pdeo->c = &c;
 		spin_unlock(&pde->pde_unload_lock);
@@ -248,7 +230,7 @@ static void close_pdeo(struct proc_dir_entry *pde, struct pde_opener *pdeo)
 		pde->proc_ops->proc_release(file_inode(file), file);
 
 		spin_lock(&pde->pde_unload_lock);
-		/* Strictly after ->proc_release, see above. */
+		 
 		list_del(&pdeo->lh);
 		c = pdeo->c;
 		spin_unlock(&pde->pde_unload_lock);
@@ -261,12 +243,12 @@ static void close_pdeo(struct proc_dir_entry *pde, struct pde_opener *pdeo)
 void proc_entry_rundown(struct proc_dir_entry *de)
 {
 	DECLARE_COMPLETION_ONSTACK(c);
-	/* Wait until all existing callers into module are done. */
+	 
 	de->pde_unload_completion = &c;
 	if (atomic_add_return(BIAS, &de->in_use) != BIAS)
 		wait_for_completion(&c);
 
-	/* ->pde_openers list can't grow from now on. */
+	 
 
 	spin_lock(&de->pde_unload_lock);
 	while (!list_empty(&de->pde_openers)) {
@@ -504,17 +486,7 @@ static int proc_reg_open(struct inode *inode, struct file *file)
 		return rv;
 	}
 
-	/*
-	 * Ensure that
-	 * 1) PDE's ->release hook will be called no matter what
-	 *    either normally by close()/->release, or forcefully by
-	 *    rmmod/remove_proc_entry.
-	 *
-	 * 2) rmmod isn't blocked by opening file in /proc and sitting on
-	 *    the descriptor (including "rmmod foo </proc/foo" scenario).
-	 *
-	 * Save every "struct file" with custom ->release hook.
-	 */
+	 
 	if (!use_pde(pde))
 		return -ENOENT;
 
@@ -533,7 +505,7 @@ static int proc_reg_open(struct inode *inode, struct file *file)
 
 	if (release) {
 		if (rv == 0) {
-			/* To know what to release. */
+			 
 			pdeo->file = file;
 			pdeo->closing = false;
 			pdeo->c = NULL;

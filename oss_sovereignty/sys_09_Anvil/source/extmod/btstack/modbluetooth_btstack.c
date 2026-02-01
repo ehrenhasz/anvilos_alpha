@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2020 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include "py/runtime.h"
 #include "py/mperrno.h"
@@ -35,25 +11,25 @@
 
 #include "lib/btstack/src/btstack.h"
 
-#define DEBUG_printf(...) // printf("btstack: " __VA_ARGS__)
+#define DEBUG_printf(...) 
 
 #ifndef MICROPY_PY_BLUETOOTH_DEFAULT_GAP_NAME
 #define MICROPY_PY_BLUETOOTH_DEFAULT_GAP_NAME "MPY BTSTACK"
 #endif
 
-// How long to wait for a controller to init/deinit.
-// Some controllers can take up to 5-6 seconds in normal operation.
+
+
 static const uint32_t BTSTACK_INIT_DEINIT_TIMEOUT_MS = 15000;
 
-// We need to know the attribute handle for the GAP device name (see GAP_DEVICE_NAME_UUID)
-// so it can be put into the gatts_db before registering the services, and accessed
-// efficiently when requesting an attribute in att_read_callback.  Because this is the
-// first characteristic of the first service, it always has a handle value of 3.
+
+
+
+
 static const uint16_t BTSTACK_GAP_DEVICE_NAME_HANDLE = 3;
 
 volatile int mp_bluetooth_btstack_state = MP_BLUETOOTH_BTSTACK_STATE_OFF;
 
-// sm_set_authentication_requirements is set-only, so cache current value.
+
 #if MICROPY_PY_BLUETOOTH_ENABLE_PAIRING_BONDING
 static uint8_t mp_bluetooth_btstack_sm_auth_req = 0;
 #endif
@@ -91,18 +67,18 @@ static mp_obj_bluetooth_uuid_t create_mp_uuid(uint16_t uuid16, const uint8_t *uu
     }
     return result;
 }
-#endif // MICROPY_PY_BLUETOOTH_ENABLE_CENTRAL_MODE
+#endif 
 
 #if MICROPY_PY_BLUETOOTH_ENABLE_GATT_CLIENT
 typedef struct _mp_btstack_active_connection_t {
-    btstack_linked_item_t *next; // Must be first field to match btstack_linked_item.
+    btstack_linked_item_t *next; 
 
     uint16_t conn_handle;
 
-    // Read/write.
+    
     uint16_t pending_value_handle;
 
-    // Write only. Buffer must be retained until the operation completes.
+    
     uint8_t *pending_write_value;
     size_t pending_write_value_len;
 } mp_btstack_active_connection_t;
@@ -147,8 +123,8 @@ static void remove_active_connection(uint16_t conn_handle) {
 }
 #endif
 
-// This needs to be separate to btstack_packet_handler otherwise we get
-// dual-delivery of the HCI_EVENT_LE_META event.
+
+
 static void btstack_packet_handler_att_server(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size) {
     (void)channel;
     (void)size;
@@ -161,8 +137,8 @@ static void btstack_packet_handler_att_server(uint8_t packet_type, uint16_t chan
 
     if (event_type == ATT_EVENT_CONNECTED) {
         DEBUG_printf("  --> att connected\n");
-        // The ATT_EVENT_*CONNECTED events are fired for both peripheral and central role, with no way to tell which.
-        // So we use the HCI_EVENT_LE_META event directly in the main packet handler.
+        
+        
     } else if (event_type == ATT_EVENT_DISCONNECTED) {
         DEBUG_printf("  --> att disconnected\n");
     } else if (event_type == ATT_EVENT_HANDLE_VALUE_INDICATION_COMPLETE) {
@@ -173,12 +149,12 @@ static void btstack_packet_handler_att_server(uint8_t packet_type, uint16_t chan
         mp_bluetooth_gatts_on_indicate_complete(conn_handle, value_handle, status);
     } else if (event_type == ATT_EVENT_MTU_EXCHANGE_COMPLETE) {
         DEBUG_printf("  --> att mtu exchange complete\n");
-        // This is triggered in peripheral mode, when exchange initiated by us or remote.
+        
         uint16_t conn_handle = att_event_mtu_exchange_complete_get_handle(packet);
         uint16_t mtu = att_event_mtu_exchange_complete_get_MTU(packet);
         mp_bluetooth_gatts_on_mtu_exchanged(conn_handle, mtu);
     } else if (event_type == HCI_EVENT_LE_META || event_type == HCI_EVENT_DISCONNECTION_COMPLETE) {
-        // Ignore, duplicated by att_server.c.
+        
         DEBUG_printf("  --> hci att server event type: le_meta/disconnection (0x%02x)\n", event_type);
     } else {
         DEBUG_printf("  --> hci att server event type: unknown (0x%02x)\n", event_type);
@@ -186,7 +162,7 @@ static void btstack_packet_handler_att_server(uint8_t packet_type, uint16_t chan
 }
 
 #if MICROPY_BLUETOOTH_USE_ZEPHYR_STATIC_ADDRESS
-// During startup, the controller (e.g. Zephyr) might give us a static address that we can use.
+
 static uint8_t controller_static_addr[6] = {0};
 static bool controller_static_addr_available = false;
 
@@ -213,10 +189,10 @@ static void btstack_packet_handler_generic(uint8_t packet_type, uint16_t channel
                 hci_subevent_le_connection_complete_get_peer_address(packet, addr);
                 uint16_t irq_event;
                 if (hci_subevent_le_connection_complete_get_role(packet) == 0) {
-                    // Master role.
+                    
                     irq_event = MP_BLUETOOTH_IRQ_PERIPHERAL_CONNECT;
                 } else {
-                    // Slave role.
+                    
                     irq_event = MP_BLUETOOTH_IRQ_CENTRAL_CONNECT;
                 }
                 #if MICROPY_PY_BLUETOOTH_ENABLE_GATT_CLIENT
@@ -241,17 +217,17 @@ static void btstack_packet_handler_generic(uint8_t packet_type, uint16_t channel
         uint8_t state = btstack_event_state_get_state(packet);
         DEBUG_printf("  --> btstack event state 0x%02x\n", state);
         if (state == HCI_STATE_WORKING) {
-            // Signal that initialisation has completed.
+            
             mp_bluetooth_btstack_state = MP_BLUETOOTH_BTSTACK_STATE_ACTIVE;
         } else if (state == HCI_STATE_HALTING) {
-            // Signal that de-initialisation has begun.
+            
             mp_bluetooth_btstack_state = MP_BLUETOOTH_BTSTACK_STATE_HALTING;
         } else if (state == HCI_STATE_OFF) {
-            // Signal that de-initialisation has completed.
+            
             mp_bluetooth_btstack_state = MP_BLUETOOTH_BTSTACK_STATE_OFF;
         }
     } else if (event_type == BTSTACK_EVENT_POWERON_FAILED) {
-        // Signal that initialisation has failed.
+        
         mp_bluetooth_btstack_state = MP_BLUETOOTH_BTSTACK_STATE_OFF;
     } else if (event_type == HCI_EVENT_TRANSPORT_PACKET_SENT) {
         DEBUG_printf("  --> hci transport packet sent\n");
@@ -263,7 +239,7 @@ static void btstack_packet_handler_generic(uint8_t packet_type, uint16_t channel
             reverse_48(&packet[7], controller_static_addr);
             controller_static_addr_available = true;
         }
-        #endif // MICROPY_BLUETOOTH_USE_ZEPHYR_STATIC_ADDRESS
+        #endif 
     } else if (event_type == HCI_EVENT_COMMAND_STATUS) {
         DEBUG_printf("  --> hci command status\n");
     } else if (event_type == HCI_EVENT_NUMBER_OF_COMPLETED_PACKETS) {
@@ -274,7 +250,7 @@ static void btstack_packet_handler_generic(uint8_t packet_type, uint16_t channel
         DEBUG_printf("  --> hci vendor specific\n");
     } else if (event_type == SM_EVENT_AUTHORIZATION_RESULT ||
                event_type == SM_EVENT_PAIRING_COMPLETE ||
-               // event_type == GAP_EVENT_DEDICATED_BONDING_COMPLETED || // No conn_handle
+               
                event_type == HCI_EVENT_ENCRYPTION_CHANGE) {
         DEBUG_printf("  --> enc/auth/pair/bond change\n");
         #if MICROPY_PY_BLUETOOTH_ENABLE_PAIRING_BONDING
@@ -300,17 +276,17 @@ static void btstack_packet_handler_generic(uint8_t packet_type, uint16_t channel
             desc->sm_connection_authenticated,
             desc->sm_le_db_index != -1,
             desc->sm_actual_encryption_key_size);
-        #endif // MICROPY_PY_BLUETOOTH_ENABLE_PAIRING_BONDING
+        #endif 
     } else if (event_type == HCI_EVENT_DISCONNECTION_COMPLETE) {
         DEBUG_printf("  --> hci disconnect complete\n");
         uint16_t conn_handle = hci_event_disconnection_complete_get_connection_handle(packet);
         const hci_connection_t *conn = hci_connection_for_handle(conn_handle);
         uint16_t irq_event;
         if (conn == NULL || conn->role == 0) {
-            // Master role.
+            
             irq_event = MP_BLUETOOTH_IRQ_PERIPHERAL_DISCONNECT;
         } else {
-            // Slave role.
+            
             irq_event = MP_BLUETOOTH_IRQ_CENTRAL_DISCONNECT;
         }
         uint8_t addr[6] = {0};
@@ -329,10 +305,10 @@ static void btstack_packet_handler_generic(uint8_t packet_type, uint16_t channel
         uint8_t length = gap_event_advertising_report_get_data_length(packet);
         const uint8_t *data = gap_event_advertising_report_get_data(packet);
         mp_bluetooth_gap_on_scan_result(address_type, address, adv_event_type, rssi, data, length);
-    #endif // MICROPY_PY_BLUETOOTH_ENABLE_CENTRAL_MODE
+    #endif 
     #if MICROPY_PY_BLUETOOTH_ENABLE_GATT_CLIENT
     } else if (event_type == GATT_EVENT_MTU) {
-        // This is triggered in central mode.
+        
         DEBUG_printf("  --> gatt event mtu\n");
         uint16_t conn_handle = gatt_event_mtu_get_handle(packet);
         uint16_t mtu = gatt_event_mtu_get_MTU(packet);
@@ -366,7 +342,7 @@ static void btstack_packet_handler_generic(uint8_t packet_type, uint16_t channel
         m_del(uint8_t, conn->pending_write_value, conn->pending_write_value_len);
         conn->pending_write_value = NULL;
         conn->pending_write_value_len = 0;
-    #endif // MICROPY_PY_BLUETOOTH_ENABLE_GATT_CLIENT
+    #endif 
     } else {
         DEBUG_printf("  --> hci event type: unknown (0x%02x)\n", event_type);
     }
@@ -377,7 +353,7 @@ static btstack_packet_callback_registration_t hci_event_callback_registration = 
 };
 
 #if MICROPY_PY_BLUETOOTH_ENABLE_GATT_CLIENT
-// For when the handler is being used for service discovery.
+
 static void btstack_packet_handler_discover_services(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size) {
     (void)channel;
     (void)size;
@@ -400,7 +376,7 @@ static void btstack_packet_handler_discover_services(uint8_t packet_type, uint16
     }
 }
 
-// For when the handler is being used for characteristic discovery.
+
 static void btstack_packet_handler_discover_characteristics(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size) {
     (void)channel;
     (void)size;
@@ -423,7 +399,7 @@ static void btstack_packet_handler_discover_characteristics(uint8_t packet_type,
     }
 }
 
-// For when the handler is being used for descriptor discovery.
+
 static void btstack_packet_handler_discover_descriptors(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size) {
     (void)channel;
     (void)size;
@@ -446,7 +422,7 @@ static void btstack_packet_handler_discover_descriptors(uint8_t packet_type, uin
     }
 }
 
-// For when the handler is being used for a read query.
+
 static void btstack_packet_handler_read(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size) {
     (void)channel;
     (void)size;
@@ -475,7 +451,7 @@ static void btstack_packet_handler_read(uint8_t packet_type, uint16_t channel, u
     }
 }
 
-// For when the handler is being used for write-with-response.
+
 static void btstack_packet_handler_write_with_response(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size) {
     (void)channel;
     (void)size;
@@ -499,16 +475,16 @@ static void btstack_packet_handler_write_with_response(uint8_t packet_type, uint
         mp_bluetooth_gattc_on_read_write_status(MP_BLUETOOTH_IRQ_GATTC_WRITE_DONE, conn_handle, value_handle, status);
     }
 }
-#endif // MICROPY_PY_BLUETOOTH_ENABLE_GATT_CLIENT
+#endif 
 
 static btstack_timer_source_t btstack_init_deinit_timeout;
 
 static void btstack_init_deinit_timeout_handler(btstack_timer_source_t *ds) {
     (void)ds;
 
-    // Stop waiting for initialisation.
-    // This signals both the loops in mp_bluetooth_init and mp_bluetooth_deinit,
-    // as well as ports that run a polling loop.
+    
+    
+    
     mp_bluetooth_btstack_state = MP_BLUETOOTH_BTSTACK_STATE_TIMEOUT;
 }
 
@@ -538,7 +514,7 @@ static void set_random_address(void) {
         DEBUG_printf("set_random_address: Using static address supplied by controller.\n");
         gap_random_address_set(controller_static_addr);
     } else
-    #endif // MICROPY_BLUETOOTH_USE_ZEPHYR_STATIC_ADDRESS
+    #endif 
     {
         bd_addr_t static_addr;
 
@@ -557,15 +533,15 @@ static void set_random_address(void) {
             mp_event_wait_indefinite();
         }
 
-        #endif // MICROPY_BLUETOOTH_USE_MP_HAL_GET_MAC_STATIC_ADDRESS
-        // Mark it as STATIC (not RPA or NRPA).
+        #endif 
+        
         static_addr[0] |= 0xc0;
 
         DEBUG_printf("set_random_address: Address generated.\n");
         gap_random_address_set(static_addr);
     }
 
-    // Wait for the controller to accept this address.
+    
     while (true) {
         uint8_t addr_type;
         bd_addr_t addr;
@@ -584,7 +560,7 @@ static void set_random_address(void) {
 static void deinit_stack(void) {
     mp_bluetooth_btstack_state = MP_BLUETOOTH_BTSTACK_STATE_OFF;
 
-    // Deinitialise BTstack components.
+    
     sm_deinit();
     l2cap_deinit();
     hci_deinit();
@@ -601,7 +577,7 @@ int mp_bluetooth_init(void) {
         return 0;
     }
 
-    // Clean up if necessary.
+    
     mp_bluetooth_deinit();
 
     btstack_memory_init();
@@ -613,7 +589,7 @@ int mp_bluetooth_init(void) {
     MP_STATE_PORT(bluetooth_btstack_root_pointers) = m_new0(mp_bluetooth_btstack_root_pointers_t, 1);
     mp_bluetooth_gatts_db_create(&MP_STATE_PORT(bluetooth_btstack_root_pointers)->gatts_db);
 
-    // Set the default GAP device name.
+    
     const char *gap_name = MICROPY_PY_BLUETOOTH_DEFAULT_GAP_NAME;
     size_t gap_len = strlen(gap_name);
     mp_bluetooth_gatts_db_create_entry(MP_STATE_PORT(bluetooth_btstack_root_pointers)->gatts_db, BTSTACK_GAP_DEVICE_NAME_HANDLE, gap_len);
@@ -626,8 +602,8 @@ int mp_bluetooth_init(void) {
     le_device_db_init();
     sm_init();
 
-    // Set blank ER/IR keys to suppress BTstack warning.
-    // TODO handle this correctly.
+    
+    
     sm_key_t dummy_key;
     memset(dummy_key, 0, sizeof(dummy_key));
     sm_set_er(dummy_key);
@@ -636,42 +612,42 @@ int mp_bluetooth_init(void) {
     #if MICROPY_PY_BLUETOOTH_ENABLE_GATT_CLIENT
     gatt_client_init();
 
-    // We always require explicitly exchanging MTU with ble.gattc_exchange_mtu().
+    
     gatt_client_mtu_enable_auto_negotiation(false);
-    #endif // MICROPY_PY_BLUETOOTH_ENABLE_GATT_CLIENT
+    #endif 
 
-    // Register for HCI events.
+    
     hci_add_event_handler(&hci_event_callback_registration);
 
-    // Register for ATT server events.
+    
     att_server_register_packet_handler(&btstack_packet_handler_att_server);
 
-    // Set a timeout for HCI initialisation.
+    
     btstack_run_loop_set_timer(&btstack_init_deinit_timeout, BTSTACK_INIT_DEINIT_TIMEOUT_MS);
     btstack_run_loop_set_timer_handler(&btstack_init_deinit_timeout, btstack_init_deinit_timeout_handler);
     btstack_run_loop_add_timer(&btstack_init_deinit_timeout);
 
     DEBUG_printf("mp_bluetooth_init: waiting for stack startup\n");
 
-    // Either the HCI event will set state to ACTIVE, or the timeout will set it to TIMEOUT.
+    
     mp_bluetooth_btstack_port_start();
     while (mp_bluetooth_btstack_state == MP_BLUETOOTH_BTSTACK_STATE_STARTING) {
         mp_event_wait_indefinite();
     }
     btstack_run_loop_remove_timer(&btstack_init_deinit_timeout);
 
-    // Check for timeout.
+    
     if (mp_bluetooth_btstack_state != MP_BLUETOOTH_BTSTACK_STATE_ACTIVE) {
         DEBUG_printf("mp_bluetooth_init: stack startup timed out\n");
 
         bool timeout = mp_bluetooth_btstack_state == MP_BLUETOOTH_BTSTACK_STATE_TIMEOUT;
 
-        // Required to stop the polling loop.
+        
         mp_bluetooth_btstack_state = MP_BLUETOOTH_BTSTACK_STATE_OFF;
-        // Attempt a shutdown (may not do anything).
+        
         mp_bluetooth_btstack_port_deinit();
 
-        // Clean up BTstack.
+        
         deinit_stack();
 
         return timeout ? MP_ETIMEDOUT : MP_EINVAL;
@@ -679,26 +655,26 @@ int mp_bluetooth_init(void) {
 
     DEBUG_printf("mp_bluetooth_init: stack startup complete\n");
 
-    // At this point if the controller has its own public address, btstack will know this.
-    // However, if this is not available, then attempt to get a static address:
-    //  - For a Zephyr controller on nRF, a static address will be available during startup.
-    //  - Otherwise we ask the controller to generate a static address for us.
-    // In either case, calling gap_random_address_set will set the mode to STATIC, and then
-    // immediately set the address on the controller. We then wait until this address becomes available.
+    
+    
+    
+    
+    
+    
 
     if (!set_public_address()) {
         set_random_address();
     }
 
     #if MICROPY_PY_BLUETOOTH_ENABLE_GATT_CLIENT
-    // Enable GATT_EVENT_NOTIFICATION/GATT_EVENT_INDICATION for all connections and handles.
+    
     gatt_client_listen_for_characteristic_value_updates(&MP_STATE_PORT(bluetooth_btstack_root_pointers)->notification, &btstack_packet_handler_generic, GATT_CLIENT_ANY_CONNECTION, NULL);
-    #endif // MICROPY_PY_BLUETOOTH_ENABLE_GATT_CLIENT
+    #endif 
 
-    // Always include at least the standard GAP and GATT default services. A
-    // peripheral (likely a server) will almost always override this with its
-    // own services, but a central should get the default services, e.g. so
-    // the remote end can find out its GAP name.
+    
+    
+    
+    
     mp_bluetooth_gatts_register_service_begin(false);
     mp_bluetooth_gatts_register_service_end();
 
@@ -708,7 +684,7 @@ int mp_bluetooth_init(void) {
 void mp_bluetooth_deinit(void) {
     DEBUG_printf("mp_bluetooth_deinit\n");
 
-    // Nothing to do if not initialised.
+    
     if (!MP_STATE_PORT(bluetooth_btstack_root_pointers)) {
         return;
     }
@@ -716,24 +692,24 @@ void mp_bluetooth_deinit(void) {
     mp_bluetooth_gap_advertise_stop();
 
     #if MICROPY_PY_BLUETOOTH_ENABLE_GATT_CLIENT
-    // Remove our registration for notify/indicate.
+    
     gatt_client_stop_listening_for_characteristic_value_updates(&MP_STATE_PORT(bluetooth_btstack_root_pointers)->notification);
-    #endif // MICROPY_PY_BLUETOOTH_ENABLE_GATT_CLIENT
+    #endif 
 
-    // Set a timer that will forcibly set the state to TIMEOUT, which will stop the loop below.
+    
     btstack_run_loop_set_timer(&btstack_init_deinit_timeout, BTSTACK_INIT_DEINIT_TIMEOUT_MS);
     btstack_run_loop_add_timer(&btstack_init_deinit_timeout);
 
-    // This should result in a clean shutdown, which will set the state to OFF.
-    // On Unix this is blocking (it joins on the poll thread), on other ports the loop below will wait unil
-    // either timeout or clean shutdown.
+    
+    
+    
     mp_bluetooth_btstack_port_deinit();
     while (mp_bluetooth_btstack_state == MP_BLUETOOTH_BTSTACK_STATE_ACTIVE) {
         mp_event_wait_indefinite();
     }
     btstack_run_loop_remove_timer(&btstack_init_deinit_timeout);
 
-    // Clean up BTstack.
+    
     deinit_stack();
 
     DEBUG_printf("mp_bluetooth_deinit: complete\n");
@@ -761,7 +737,7 @@ void mp_bluetooth_set_address_mode(uint8_t addr_mode) {
         case MP_BLUETOOTH_ADDRESS_MODE_PUBLIC: {
             DEBUG_printf("mp_bluetooth_set_address_mode: public\n");
             if (!set_public_address()) {
-                // No public address available.
+                
                 mp_raise_OSError(MP_EINVAL);
             }
             break;
@@ -773,7 +749,7 @@ void mp_bluetooth_set_address_mode(uint8_t addr_mode) {
         }
         case MP_BLUETOOTH_ADDRESS_MODE_RPA:
         case MP_BLUETOOTH_ADDRESS_MODE_NRPA:
-            // Not yet supported.
+            
             mp_raise_OSError(MP_EINVAL);
     }
 }
@@ -809,7 +785,7 @@ void mp_bluetooth_set_le_secure(bool enabled) {
 void mp_bluetooth_set_io_capability(uint8_t capability) {
     sm_set_io_capabilities(capability);
 }
-#endif // MICROPY_PY_BLUETOOTH_ENABLE_PAIRING_BONDING
+#endif 
 
 size_t mp_bluetooth_gap_get_device_name(const uint8_t **buf) {
     const uint8_t *value = NULL;
@@ -836,15 +812,15 @@ int mp_bluetooth_gap_advertise_start(bool connectable, int32_t interval_us, cons
     bd_addr_t null_addr = {0};
 
     uint8_t direct_address_type = 0;
-    uint8_t channel_map = 0x07; // Use all three broadcast channels.
-    uint8_t filter_policy = 0x00; // None.
+    uint8_t channel_map = 0x07; 
+    uint8_t filter_policy = 0x00; 
 
     gap_advertisements_set_params(adv_int_min, adv_int_max, adv_type, direct_address_type, null_addr, channel_map, filter_policy);
 
-    // Copy the adv_data and sr_data into a persistent buffer (which is findable via the btstack root pointers).
+    
     size_t total_bytes = adv_data_len + sr_data_len;
     if (total_bytes > MP_STATE_PORT(bluetooth_btstack_root_pointers)->adv_data_alloc) {
-        // Resize if necessary.
+        
         MP_STATE_PORT(bluetooth_btstack_root_pointers)->adv_data = m_new(uint8_t, total_bytes);
         MP_STATE_PORT(bluetooth_btstack_root_pointers)->adv_data_alloc = total_bytes;
     }
@@ -884,9 +860,9 @@ int mp_bluetooth_gatts_register_service_begin(bool append) {
     }
 
     if (!append) {
-        // This will reset the DB.
-        // Because the DB is statically allocated, there's no problem with just re-initing it.
-        // Note this would be a memory leak if we enabled HAVE_MALLOC (there's no API to free the existing db).
+        
+        
+        
         att_db_util_init();
 
         att_db_util_add_service_uuid16(GAP_SERVICE_UUID);
@@ -902,8 +878,8 @@ int mp_bluetooth_gatts_register_service_begin(bool append) {
 }
 
 static uint16_t att_read_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t offset, uint8_t *buffer, uint16_t buffer_size) {
-    // Should return data length, 0 for error, or -1 for delayed response.
-    // For more details search "*att_read_callback*" in micropython/lib/btstack/doc/manual/docs/profiles.md
+    
+    
     (void)connection_handle;
     DEBUG_printf("att_read_callback (handle: %u, offset: %u, buffer: %p, size: %u)\n", att_handle, offset, buffer, buffer_size);
     mp_bluetooth_gatts_db_entry_t *entry = mp_bluetooth_gatts_db_lookup(MP_STATE_PORT(bluetooth_btstack_root_pointers)->gatts_db, att_handle);
@@ -912,9 +888,9 @@ static uint16_t att_read_callback(hci_con_handle_t connection_handle, uint16_t a
         return 0;
     }
 
-    // Allow Python code to override value (by using gatts_write), or deny (by returning false) the read.
-    // Note this will be a no-op if the ringbuffer implementation is being used, as the Python callback cannot
-    // be executed synchronously. This is currently always the case for btstack.
+    
+    
+    
     if ((buffer == NULL) && (buffer_size == 0)) {
         if (!mp_bluetooth_gatts_on_read_request(connection_handle, att_handle)) {
             DEBUG_printf("att_read_callback: read request denied\n");
@@ -933,10 +909,10 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
     mp_bluetooth_gatts_db_entry_t *entry = mp_bluetooth_gatts_db_lookup(MP_STATE_PORT(bluetooth_btstack_root_pointers)->gatts_db, att_handle);
     if (!entry) {
         DEBUG_printf("att_write_callback handle not found\n");
-        return 0; // TODO: Find status code for not-found.
+        return 0; 
     }
 
-    // TODO: Use `offset` arg.
+    
     size_t append_offset = 0;
     if (entry->append) {
         append_offset = entry->data_len;
@@ -946,7 +922,7 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
 
     uint16_t handle_uuid = att_uuid_for_handle(att_handle);
     if (handle_uuid != GATT_CLIENT_CHARACTERISTICS_CONFIGURATION) {
-        // Suppress the Python callback for writes to the CCCD.
+        
         mp_bluetooth_gatts_on_write(connection_handle, att_handle);
     }
 
@@ -957,7 +933,7 @@ static inline uint16_t get_uuid16(const mp_obj_bluetooth_uuid_t *uuid) {
     return (uuid->data[1] << 8) | uuid->data[0];
 }
 
-// Map MP_BLUETOOTH_CHARACTERISTIC_FLAG_ values to btstack read/write permission values.
+
 static void get_characteristic_permissions(uint16_t flags, uint16_t *read_permission, uint16_t *write_permission) {
     if (flags & MP_BLUETOOTH_CHARACTERISTIC_FLAG_READ_ENCRYPTED) {
         *read_permission = ATT_SECURITY_ENCRYPTED;
@@ -982,11 +958,11 @@ static void get_characteristic_permissions(uint16_t flags, uint16_t *read_permis
 
 int mp_bluetooth_gatts_register_service(mp_obj_bluetooth_uuid_t *service_uuid, mp_obj_bluetooth_uuid_t **characteristic_uuids, uint16_t *characteristic_flags, mp_obj_bluetooth_uuid_t **descriptor_uuids, uint16_t *descriptor_flags, uint8_t *num_descriptors, uint16_t *handles, size_t num_characteristics) {
     DEBUG_printf("mp_bluetooth_gatts_register_service\n");
-    // Note: btstack expects BE UUIDs (which it immediately convertes to LE).
-    // So we have to convert all our modbluetooth LE UUIDs to BE just for the att_db_util_add_* methods (using get_uuid16 above, and reverse_128 from btstackutil.h).
+    
+    
 
-    // TODO: btstack's att_db_util_add_* methods have no bounds checking or validation.
-    // Need some way to prevent additional services being added if we're out of space in the static buffer.
+    
+    
 
     if (service_uuid->type == MP_BLUETOOTH_UUID_TYPE_16) {
         att_db_util_add_service_uuid16(get_uuid16(service_uuid));
@@ -1016,9 +992,9 @@ int mp_bluetooth_gatts_register_service(mp_obj_bluetooth_uuid_t *service_uuid, m
             return MP_EINVAL;
         }
         mp_bluetooth_gatts_db_create_entry(MP_STATE_PORT(bluetooth_btstack_root_pointers)->gatts_db, handles[handle_index], MP_BLUETOOTH_DEFAULT_ATTR_LEN);
-        // If a NOTIFY or INDICATE characteristic is added, then we need to manage a value for the CCCD.
+        
         if (props & (ATT_PROPERTY_NOTIFY | ATT_PROPERTY_INDICATE)) {
-            // btstack automatically creates the CCCD as the next handle if the notify or indicate properties are set.
+            
             mp_bluetooth_gatts_db_create_entry(MP_STATE_PORT(bluetooth_btstack_root_pointers)->gatts_db, handles[handle_index] + 1, MP_BLUETOOTH_CCCD_LEN);
             int ret = mp_bluetooth_gatts_db_write(MP_STATE_PORT(bluetooth_btstack_root_pointers)->gatts_db, handles[handle_index] + 1, cccd_buf, sizeof(cccd_buf));
             if (ret) {
@@ -1072,8 +1048,8 @@ int mp_bluetooth_gatts_write(uint16_t value_handle, const uint8_t *value, size_t
     }
     if (send_update) {
         DEBUG_printf("  --> send_update\n");
-        // If a characteristic has notify or indicate set, then btstack automatically creates the CCCD as the next handle.
-        // So if the next handle is a CCCD, then this characteristic must have had notify/indicate set.
+        
+        
         uint16_t next_handle_uuid = att_uuid_for_handle(value_handle + 1);
         if (next_handle_uuid != GATT_CLIENT_CHARACTERISTICS_CONFIGURATION) {
             return MP_EINVAL;
@@ -1085,7 +1061,7 @@ int mp_bluetooth_gatts_write(uint16_t value_handle, const uint8_t *value, size_t
         return err;
     }
 
-    // Read the CCCD value. TODO: These should be per-connection.
+    
     const uint8_t *cccd;
     size_t cccd_len;
     err = mp_bluetooth_gatts_db_read(MP_STATE_PORT(bluetooth_btstack_root_pointers)->gatts_db, value_handle + 1, &cccd, &cccd_len);
@@ -1093,7 +1069,7 @@ int mp_bluetooth_gatts_write(uint16_t value_handle, const uint8_t *value, size_t
         return err;
     }
 
-    // Notify/indicate all active connections.
+    
     btstack_linked_list_iterator_t it;
     hci_connections_get_iterator(&it);
     while (btstack_linked_list_iterator_has_next(&it)) {
@@ -1128,8 +1104,8 @@ typedef struct {
     uint8_t value[];
 } notify_indicate_pending_op_t;
 
-// Called in response to a gatts_notify/indicate being unable to complete, which then calls
-// att_server_request_to_send_notification.
+
+
 static void btstack_notify_indicate_ready_handler(void *context) {
     MICROPY_PY_BLUETOOTH_ENTER
     notify_indicate_pending_op_t *pending_op = (notify_indicate_pending_op_t *)context;
@@ -1159,12 +1135,12 @@ int mp_bluetooth_gatts_notify_indicate(uint16_t conn_handle, uint16_t value_hand
     }
 
     if (!value) {
-        // NULL value means "use DB value".
+        
         mp_bluetooth_gatts_db_read(MP_STATE_PORT(bluetooth_btstack_root_pointers)->gatts_db, value_handle, &value, &value_len);
     }
 
-    // Even if a lower MTU is negotiated, btstack allows sending a larger
-    // notification/indication. Truncate at the MTU-3 (to match NimBLE).
+    
+    
     uint16_t current_mtu = att_server_get_mtu(conn_handle);
     if (current_mtu) {
         current_mtu -= 3;
@@ -1173,15 +1149,15 @@ int mp_bluetooth_gatts_notify_indicate(uint16_t conn_handle, uint16_t value_hand
 
     int err = ERROR_CODE_UNKNOWN_HCI_COMMAND;
 
-    // Attempt to send immediately. If it succeeds, btstack will copy the buffer.
+    
     MICROPY_PY_BLUETOOTH_ENTER
     switch (gatts_op) {
         case MP_BLUETOOTH_GATTS_OP_NOTIFY:
             err = att_server_notify(conn_handle, value_handle, value, value_len);
             break;
         case MP_BLUETOOTH_GATTS_OP_INDICATE:
-            // Indicate will raise ATT_EVENT_HANDLE_VALUE_INDICATION_COMPLETE when
-            // acknowledged (or timeout/error).
+            
+            
             err = att_server_indicate(conn_handle, value_handle, value, value_len);
             break;
     }
@@ -1190,7 +1166,7 @@ int mp_bluetooth_gatts_notify_indicate(uint16_t conn_handle, uint16_t value_hand
     if (err == BTSTACK_ACL_BUFFERS_FULL || err == ATT_HANDLE_VALUE_INDICATION_IN_PROGRESS) {
         DEBUG_printf("mp_bluetooth_gatts_notify_indicate: ACL buffer full / indication in progress, scheduling callback\n");
 
-        // Copy the value and ask btstack to let us know when it can be sent.
+        
         notify_indicate_pending_op_t *pending_op = m_tracked_calloc(1, sizeof(notify_indicate_pending_op_t) + value_len);
         pending_op->btstack_registration.context = pending_op;
         pending_op->btstack_registration.callback = &btstack_notify_indicate_ready_handler;
@@ -1267,7 +1243,7 @@ int mp_bluetooth_gap_passkey(uint16_t conn_handle, uint8_t action, mp_int_t pass
     return MP_EOPNOTSUPP;
 }
 
-#endif // MICROPY_PY_BLUETOOTH_ENABLE_PAIRING_BONDING
+#endif 
 
 #if MICROPY_PY_BLUETOOTH_ENABLE_CENTRAL_MODE
 static btstack_timer_source_t scan_duration_timeout;
@@ -1315,7 +1291,7 @@ int mp_bluetooth_gap_peripheral_connect(uint8_t addr_type, const uint8_t *addr, 
     uint16_t conn_interval_min = (min_conn_interval_us ? min_conn_interval_us : 10000) / 1250;
     uint16_t conn_interval_max = (max_conn_interval_us ? max_conn_interval_us : 30000) / 1250;
     uint16_t conn_latency = 4;
-    uint16_t supervision_timeout = duration_ms / 10; // default = 720
+    uint16_t supervision_timeout = duration_ms / 10; 
     uint16_t min_ce_length = 10000 / 625;
     uint16_t max_ce_length = 30000 / 625;
 
@@ -1331,7 +1307,7 @@ int mp_bluetooth_gap_peripheral_connect_cancel(void) {
     return btstack_error_to_errno(gap_connect_cancel());
 }
 
-#endif // MICROPY_PY_BLUETOOTH_ENABLE_CENTRAL_MODE
+#endif 
 
 #if MICROPY_PY_BLUETOOTH_ENABLE_GATT_CLIENT
 
@@ -1368,7 +1344,7 @@ int mp_bluetooth_gattc_discover_characteristics(uint16_t conn_handle, uint16_t s
     }
 
     gatt_client_service_t service = {
-        // Only start/end handles needed for gatt_client_discover_characteristics_for_service.
+        
         .start_group_handle = start_handle,
         .end_group_handle = end_handle,
         .uuid16 = 0,
@@ -1400,7 +1376,7 @@ int mp_bluetooth_gattc_discover_descriptors(uint16_t conn_handle, uint16_t start
     }
 
     gatt_client_characteristic_t characteristic = {
-        // Only value/end handles needed for gatt_client_discover_characteristic_descriptors.
+        
         .start_handle = 0,
         .value_handle = start_handle,
         .end_handle = end_handle,
@@ -1417,14 +1393,14 @@ int mp_bluetooth_gattc_read(uint16_t conn_handle, uint16_t value_handle) {
         return ERRNO_BLUETOOTH_NOT_ACTIVE;
     }
 
-    // There can only be a single pending GATT client operation per connection.
+    
     mp_btstack_active_connection_t *conn = find_active_connection(conn_handle);
     if (!conn) {
         DEBUG_printf("  --> no active connection %d\n", conn_handle);
         return MP_ENOTCONN;
     }
     if (conn->pending_value_handle != 0xffff) {
-        // There's either a read in progress, a write-with-response in progress, or a pending can-write-without-response request outstanding.
+        
         DEBUG_printf("--> busy\n");
         return MP_EALREADY;
     }
@@ -1444,16 +1420,16 @@ int mp_bluetooth_gattc_write(uint16_t conn_handle, uint16_t value_handle, const 
         return ERRNO_BLUETOOTH_NOT_ACTIVE;
     }
 
-    // Note: We should be distinguishing between gatt_client_write_value_of_characteristic vs
-    // gatt_client_write_characteristic_descriptor_using_descriptor_handle.
-    // However both are implemented using send_gatt_write_attribute_value_request under the hood,
-    // and we get the exact same event to the packet handler.
-    // Same story for the "without response" version.
+    
+    
+    
+    
+    
 
     int err;
 
     if (mode == MP_BLUETOOTH_WRITE_MODE_NO_RESPONSE) {
-        // Simplest case -- if the write can be dispatched directly, then the buffer is copied directly to the ACL buffer.
+        
         err = gatt_client_write_value_of_characteristic_without_response(conn_handle, value_handle, value_len, (uint8_t *)value);
         if (err != GATT_CLIENT_BUSY) {
             DEBUG_printf("--> can't send write-without-response %d\n", err);
@@ -1461,14 +1437,14 @@ int mp_bluetooth_gattc_write(uint16_t conn_handle, uint16_t value_handle, const 
         }
     }
 
-    // There can only be a single pending read/write request per connection.
+    
     mp_btstack_active_connection_t *conn = find_active_connection(conn_handle);
     if (!conn) {
         DEBUG_printf("  --> no active connection %d\n", conn_handle);
         return MP_ENOTCONN;
     }
     if (conn->pending_value_handle != 0xffff) {
-        // There's either a read in progress, a write-with-response in progress, or a pending can-write-without-response request outstanding.
+        
         DEBUG_printf("  --> busy\n");
         return MP_EALREADY;
     }
@@ -1479,15 +1455,15 @@ int mp_bluetooth_gattc_write(uint16_t conn_handle, uint16_t value_handle, const 
 
     if (mode == MP_BLUETOOTH_WRITE_MODE_NO_RESPONSE) {
         DEBUG_printf("  --> client busy\n");
-        // Raise the GATT_EVENT_CAN_WRITE_WITHOUT_RESPONSE event when
-        // write-without-response will succeed. The only way this fails is if
-        // there's an outstanding request (unlike for the server-equivalent,
-        // att_server_request_to_send_notification, which has a queue) but
-        // we've already checked that there isn't one.
+        
+        
+        
+        
+        
         err = gatt_client_request_can_write_without_response_event(&btstack_packet_handler_generic, conn_handle);
     } else if (mode == MP_BLUETOOTH_WRITE_MODE_WITH_RESPONSE) {
-        // Attempt to write immediately. This can fail if there's another
-        // client operation in progress (e.g. discover).
+        
+        
         err = gatt_client_write_value_of_characteristic(&btstack_packet_handler_write_with_response, conn_handle, value_handle, value_len, conn->pending_write_value);
     } else {
         return MP_EINVAL;
@@ -1495,8 +1471,8 @@ int mp_bluetooth_gattc_write(uint16_t conn_handle, uint16_t value_handle, const 
 
     if (err != ERROR_CODE_SUCCESS) {
         DEBUG_printf("--> write failed %d\n", err);
-        // We knew that there was no read/write in progress, but some other
-        // client operation is in progress, so release the pending state.
+        
+        
         m_del(uint8_t, conn->pending_write_value, value_len);
         conn->pending_write_value_len = 0;
         conn->pending_value_handle = 0xffff;
@@ -1512,7 +1488,7 @@ int mp_bluetooth_gattc_exchange_mtu(uint16_t conn_handle) {
 
     return 0;
 }
-#endif // MICROPY_PY_BLUETOOTH_ENABLE_GATT_CLIENT
+#endif 
 
 #if MICROPY_PY_BLUETOOTH_ENABLE_L2CAP_CHANNELS
 
@@ -1541,8 +1517,8 @@ int mp_bluetooth_l2cap_recvinto(uint16_t conn_handle, uint16_t cid, uint8_t *buf
     return MP_EOPNOTSUPP;
 }
 
-#endif // MICROPY_PY_BLUETOOTH_ENABLE_L2CAP_CHANNELS
+#endif 
 
 MP_REGISTER_ROOT_POINTER(struct _mp_bluetooth_btstack_root_pointers_t *bluetooth_btstack_root_pointers);
 
-#endif // MICROPY_PY_BLUETOOTH && MICROPY_BLUETOOTH_BTSTACK
+#endif 

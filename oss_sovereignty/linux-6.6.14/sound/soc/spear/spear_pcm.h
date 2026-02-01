@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2013, NVIDIA CORPORATION.  All rights reserved.
- */
+ 
+ 
 
 #ifndef __SPEAR_PCM_H__
 #define __SPEAR_PCM_H__

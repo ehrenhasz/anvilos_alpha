@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
+
+ 
 
 #include "ivpu_drv.h"
 #include "ivpu_fw.h"
@@ -680,7 +678,7 @@ static int ivpu_boot_d0i3_drive(struct ivpu_device *vdev, bool enable)
 
 static bool ivpu_tile_disable_check(u32 config)
 {
-	/* Allowed values: 0 or one bit from range 0-5 (6 tiles) */
+	 
 	if (config == 0)
 		return true;
 
@@ -772,7 +770,7 @@ static int ivpu_hw_40xx_d0i3_enable(struct ivpu_device *vdev)
 	if (ret)
 		ivpu_err(vdev, "Failed to enable D0i3: %d\n", ret);
 
-	udelay(5); /* VPU requires 5 us to complete the transition */
+	udelay(5);  
 
 	return ret;
 }
@@ -930,7 +928,7 @@ static void ivpu_hw_40xx_wdt_disable(struct ivpu_device *vdev)
 	REGV_WR32(VPU_40XX_CPU_SS_TIM_GEN_CONFIG, val);
 }
 
-/* Register indirect accesses */
+ 
 static u32 ivpu_hw_40xx_reg_pll_freq_get(struct ivpu_device *vdev)
 {
 	u32 pll_curr_ratio;
@@ -1004,7 +1002,7 @@ static void ivpu_hw_40xx_irq_disable(struct ivpu_device *vdev)
 
 static void ivpu_hw_40xx_irq_wdt_nce_handler(struct ivpu_device *vdev)
 {
-	/* TODO: For LNN hang consider engine reset instead of full recovery */
+	 
 	ivpu_pm_schedule_recovery(vdev);
 }
 
@@ -1019,7 +1017,7 @@ static void ivpu_hw_40xx_irq_noc_firewall_handler(struct ivpu_device *vdev)
 	ivpu_pm_schedule_recovery(vdev);
 }
 
-/* Handler for IRQs from VPU core (irqV) */
+ 
 static irqreturn_t ivpu_hw_40xx_irqv_handler(struct ivpu_device *vdev, int irq)
 {
 	u32 status = REGV_RD32(VPU_40XX_HOST_SS_ICB_STATUS_0) & ICB_0_IRQ_MASK;
@@ -1054,7 +1052,7 @@ static irqreturn_t ivpu_hw_40xx_irqv_handler(struct ivpu_device *vdev, int irq)
 	return ret;
 }
 
-/* Handler for IRQs from Buttress core (irqB) */
+ 
 static irqreturn_t ivpu_hw_40xx_irqb_handler(struct ivpu_device *vdev, int irq)
 {
 	bool schedule_recovery = false;
@@ -1107,7 +1105,7 @@ static irqreturn_t ivpu_hw_40xx_irqb_handler(struct ivpu_device *vdev, int irq)
 		schedule_recovery = true;
 	}
 
-	/* This must be done after interrupts are cleared at the source. */
+	 
 	REGB_WR32(VPU_40XX_BUTTRESS_INTERRUPT_STAT, status);
 
 	if (schedule_recovery)
@@ -1126,7 +1124,7 @@ static irqreturn_t ivpu_hw_40xx_irq_handler(int irq, void *ptr)
 	ret |= ivpu_hw_40xx_irqv_handler(vdev, irq);
 	ret |= ivpu_hw_40xx_irqb_handler(vdev, irq);
 
-	/* Re-enable global interrupts to re-trigger MSI for pending interrupts */
+	 
 	REGB_WR32(VPU_40XX_BUTTRESS_GLOBAL_INT_MASK, 0x0);
 
 	if (ret & IRQ_WAKE_THREAD)

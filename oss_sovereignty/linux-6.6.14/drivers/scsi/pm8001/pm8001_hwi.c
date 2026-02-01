@@ -1,42 +1,4 @@
-/*
- * PMC-Sierra SPC 8001 SAS/SATA based host adapters driver
- *
- * Copyright (c) 2008-2009 USI Co., Ltd.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- *
- */
+ 
  #include <linux/slab.h>
  #include "pm8001_sas.h"
  #include "pm8001_hwi.h"
@@ -44,10 +6,7 @@
  #include "pm8001_ctl.h"
  #include "pm80xx_tracepoints.h"
 
-/**
- * read_main_config_table - read the configure table and save it.
- * @pm8001_ha: our hba card information
- */
+ 
 static void read_main_config_table(struct pm8001_hba_info *pm8001_ha)
 {
 	void __iomem *address = pm8001_ha->main_cfg_tbl_addr;
@@ -72,11 +31,11 @@ static void read_main_config_table(struct pm8001_hba_info *pm8001_ha)
 	pm8001_ha->main_cfg_tbl.pm8001_tbl.hda_mode_flag	=
 		pm8001_mr32(address, MAIN_HDA_FLAGS_OFFSET);
 
-	/* read analog Setting offset from the configuration table */
+	 
 	pm8001_ha->main_cfg_tbl.pm8001_tbl.anolog_setup_table_offset =
 		pm8001_mr32(address, MAIN_ANALOG_SETUP_OFFSET);
 
-	/* read Error Dump Offset and Length */
+	 
 	pm8001_ha->main_cfg_tbl.pm8001_tbl.fatal_err_dump_offset0 =
 		pm8001_mr32(address, MAIN_FATAL_ERROR_RDUMP0_OFFSET);
 	pm8001_ha->main_cfg_tbl.pm8001_tbl.fatal_err_dump_length0 =
@@ -87,10 +46,7 @@ static void read_main_config_table(struct pm8001_hba_info *pm8001_ha)
 		pm8001_mr32(address, MAIN_FATAL_ERROR_RDUMP1_LENGTH);
 }
 
-/**
- * read_general_status_table - read the general status table and save it.
- * @pm8001_ha: our hba card information
- */
+ 
 static void read_general_status_table(struct pm8001_hba_info *pm8001_ha)
 {
 	void __iomem *address = pm8001_ha->general_stat_tbl_addr;
@@ -146,10 +102,7 @@ static void read_general_status_table(struct pm8001_hba_info *pm8001_ha)
 				pm8001_mr32(address, 0x60);
 }
 
-/**
- * read_inbnd_queue_table - read the inbound queue table and save it.
- * @pm8001_ha: our hba card information
- */
+ 
 static void read_inbnd_queue_table(struct pm8001_hba_info *pm8001_ha)
 {
 	int i;
@@ -163,10 +116,7 @@ static void read_inbnd_queue_table(struct pm8001_hba_info *pm8001_ha)
 	}
 }
 
-/**
- * read_outbnd_queue_table - read the outbound queue table and save it.
- * @pm8001_ha: our hba card information
- */
+ 
 static void read_outbnd_queue_table(struct pm8001_hba_info *pm8001_ha)
 {
 	int i;
@@ -180,10 +130,7 @@ static void read_outbnd_queue_table(struct pm8001_hba_info *pm8001_ha)
 	}
 }
 
-/**
- * init_default_table_values - init the default table.
- * @pm8001_ha: our hba card information
- */
+ 
 static void init_default_table_values(struct pm8001_hba_info *pm8001_ha)
 {
 	int i;
@@ -282,10 +229,7 @@ static void init_default_table_values(struct pm8001_hba_info *pm8001_ha)
 	}
 }
 
-/**
- * update_main_config_table - update the main default table to the HBA.
- * @pm8001_ha: our hba card information
- */
+ 
 static void update_main_config_table(struct pm8001_hba_info *pm8001_ha)
 {
 	void __iomem *address = pm8001_ha->main_cfg_tbl_addr;
@@ -337,11 +281,7 @@ static void update_main_config_table(struct pm8001_hba_info *pm8001_ha)
 		pm8001_ha->main_cfg_tbl.pm8001_tbl.fatal_err_interrupt);
 }
 
-/**
- * update_inbnd_queue_table - update the inbound queue table to the HBA.
- * @pm8001_ha: our hba card information
- * @number: entry in the queue
- */
+ 
 static void update_inbnd_queue_table(struct pm8001_hba_info *pm8001_ha,
 				     int number)
 {
@@ -359,11 +299,7 @@ static void update_inbnd_queue_table(struct pm8001_hba_info *pm8001_ha,
 		pm8001_ha->inbnd_q_tbl[number].ci_lower_base_addr);
 }
 
-/**
- * update_outbnd_queue_table - update the outbound queue table to the HBA.
- * @pm8001_ha: our hba card information
- * @number: entry in the queue
- */
+ 
 static void update_outbnd_queue_table(struct pm8001_hba_info *pm8001_ha,
 				      int number)
 {
@@ -383,21 +319,17 @@ static void update_outbnd_queue_table(struct pm8001_hba_info *pm8001_ha,
 		pm8001_ha->outbnd_q_tbl[number].interrup_vec_cnt_delay);
 }
 
-/**
- * pm8001_bar4_shift - function is called to shift BAR base address
- * @pm8001_ha : our hba card information
- * @shiftValue : shifting value in memory bar.
- */
+ 
 int pm8001_bar4_shift(struct pm8001_hba_info *pm8001_ha, u32 shiftValue)
 {
 	u32 regVal;
 	unsigned long start;
 
-	/* program the inbound AXI translation Lower Address */
+	 
 	pm8001_cw32(pm8001_ha, 1, SPC_IBW_AXI_TRANSLATION_LOW, shiftValue);
 
-	/* confirm the setting is written */
-	start = jiffies + HZ; /* 1 sec */
+	 
+	start = jiffies + HZ;  
 	do {
 		regVal = pm8001_cr32(pm8001_ha, 1, SPC_IBW_AXI_TRANSLATION_LOW);
 	} while ((regVal != shiftValue) && time_before(jiffies, start));
@@ -411,11 +343,7 @@ int pm8001_bar4_shift(struct pm8001_hba_info *pm8001_ha, u32 shiftValue)
 	return 0;
 }
 
-/**
- * mpi_set_phys_g3_with_ssc
- * @pm8001_ha: our hba card information
- * @SSCbit: set SSCbit to 0 to disable all phys ssc; 1 to enable all phys ssc.
- */
+ 
 static void mpi_set_phys_g3_with_ssc(struct pm8001_hba_info *pm8001_ha,
 				     u32 SSCbit)
 {
@@ -430,10 +358,7 @@ static void mpi_set_phys_g3_with_ssc(struct pm8001_hba_info *pm8001_ha,
 #define PHY_G3_WITH_SSC_BIT_SHIFT 13
 #define SNW3_PHY_CAPABILITIES_PARITY 31
 
-   /*
-    * Using shifted destination address 0x3_0000:0x1074 + 0x4000*N (N=0:3)
-    * Using shifted destination address 0x4_0000:0x1074 + 0x4000*(N-4) (N=4:7)
-    */
+    
 	spin_lock_irqsave(&pm8001_ha->lock, flags);
 	if (-1 == pm8001_bar4_shift(pm8001_ha,
 				SAS2_SETTINGS_LOCAL_PHY_0_3_SHIFT_ADDR)) {
@@ -445,7 +370,7 @@ static void mpi_set_phys_g3_with_ssc(struct pm8001_hba_info *pm8001_ha,
 		offset = SAS2_SETTINGS_LOCAL_PHY_0_3_OFFSET + 0x4000 * i;
 		pm8001_cw32(pm8001_ha, 2, offset, 0x80001501);
 	}
-	/* shift membase 3 for SAS2_SETTINGS_LOCAL_PHY 4 - 7 */
+	 
 	if (-1 == pm8001_bar4_shift(pm8001_ha,
 				SAS2_SETTINGS_LOCAL_PHY_4_7_SHIFT_ADDR)) {
 		spin_unlock_irqrestore(&pm8001_ha->lock, flags);
@@ -455,35 +380,17 @@ static void mpi_set_phys_g3_with_ssc(struct pm8001_hba_info *pm8001_ha,
 		offset = SAS2_SETTINGS_LOCAL_PHY_4_7_OFFSET + 0x4000 * (i-4);
 		pm8001_cw32(pm8001_ha, 2, offset, 0x80001501);
 	}
-	/*************************************************************
-	Change the SSC upspreading value to 0x0 so that upspreading is disabled.
-	Device MABC SMOD0 Controls
-	Address: (via MEMBASE-III):
-	Using shifted destination address 0x0_0000: with Offset 0xD8
-
-	31:28 R/W Reserved Do not change
-	27:24 R/W SAS_SMOD_SPRDUP 0000
-	23:20 R/W SAS_SMOD_SPRDDN 0000
-	19:0  R/W  Reserved Do not change
-	Upon power-up this register will read as 0x8990c016,
-	and I would like you to change the SAS_SMOD_SPRDUP bits to 0b0000
-	so that the written value will be 0x8090c016.
-	This will ensure only down-spreading SSC is enabled on the SPC.
-	*************************************************************/
+	 
 	pm8001_cr32(pm8001_ha, 2, 0xd8);
 	pm8001_cw32(pm8001_ha, 2, 0xd8, 0x8000C016);
 
-	/*set the shifted destination address to 0x0 to avoid error operation */
+	 
 	pm8001_bar4_shift(pm8001_ha, 0x0);
 	spin_unlock_irqrestore(&pm8001_ha->lock, flags);
 	return;
 }
 
-/**
- * mpi_set_open_retry_interval_reg
- * @pm8001_ha: our hba card information
- * @interval: interval time for each OPEN_REJECT (RETRY). The units are in 1us.
- */
+ 
 static void mpi_set_open_retry_interval_reg(struct pm8001_hba_info *pm8001_ha,
 					    u32 interval)
 {
@@ -500,7 +407,7 @@ static void mpi_set_open_retry_interval_reg(struct pm8001_hba_info *pm8001_ha,
 
 	value = interval & OPEN_RETRY_INTERVAL_REG_MASK;
 	spin_lock_irqsave(&pm8001_ha->lock, flags);
-	/* shift bar and set the OPEN_REJECT(RETRY) interval time of PHY 0 -3.*/
+	 
 	if (-1 == pm8001_bar4_shift(pm8001_ha,
 			     OPEN_RETRY_INTERVAL_PHY_0_3_SHIFT_ADDR)) {
 		spin_unlock_irqrestore(&pm8001_ha->lock, flags);
@@ -520,26 +427,22 @@ static void mpi_set_open_retry_interval_reg(struct pm8001_hba_info *pm8001_ha,
 		offset = OPEN_RETRY_INTERVAL_PHY_4_7_OFFSET + 0x4000 * (i-4);
 		pm8001_cw32(pm8001_ha, 2, offset, value);
 	}
-	/*set the shifted destination address to 0x0 to avoid error operation */
+	 
 	pm8001_bar4_shift(pm8001_ha, 0x0);
 	spin_unlock_irqrestore(&pm8001_ha->lock, flags);
 	return;
 }
 
-/**
- * mpi_init_check - check firmware initialization status.
- * @pm8001_ha: our hba card information
- */
+ 
 static int mpi_init_check(struct pm8001_hba_info *pm8001_ha)
 {
 	u32 max_wait_count;
 	u32 value;
 	u32 gst_len_mpistate;
-	/* Write bit0=1 to Inbound DoorBell Register to tell the SPC FW the
-	table is updated */
+	 
 	pm8001_cw32(pm8001_ha, 0, MSGU_IBDB_SET, SPC_MSGU_CFG_TABLE_UPDATE);
-	/* wait until Inbound DoorBell Clear Register toggled */
-	max_wait_count = 1 * 1000 * 1000;/* 1 sec */
+	 
+	max_wait_count = 1 * 1000 * 1000; 
 	do {
 		udelay(1);
 		value = pm8001_cr32(pm8001_ha, 0, MSGU_IBDB_SET);
@@ -548,62 +451,57 @@ static int mpi_init_check(struct pm8001_hba_info *pm8001_ha)
 
 	if (!max_wait_count)
 		return -1;
-	/* check the MPI-State for initialization */
+	 
 	gst_len_mpistate =
 		pm8001_mr32(pm8001_ha->general_stat_tbl_addr,
 		GST_GSTLEN_MPIS_OFFSET);
 	if (GST_MPI_STATE_INIT != (gst_len_mpistate & GST_MPI_STATE_MASK))
 		return -1;
-	/* check MPI Initialization error */
+	 
 	gst_len_mpistate = gst_len_mpistate >> 16;
 	if (0x0000 != gst_len_mpistate)
 		return -1;
 	return 0;
 }
 
-/**
- * check_fw_ready - The LLDD check if the FW is ready, if not, return error.
- * @pm8001_ha: our hba card information
- */
+ 
 static int check_fw_ready(struct pm8001_hba_info *pm8001_ha)
 {
 	u32 value, value1;
 	u32 max_wait_count;
-	/* check error state */
+	 
 	value = pm8001_cr32(pm8001_ha, 0, MSGU_SCRATCH_PAD_1);
 	value1 = pm8001_cr32(pm8001_ha, 0, MSGU_SCRATCH_PAD_2);
-	/* check AAP error */
+	 
 	if (SCRATCH_PAD1_ERR == (value & SCRATCH_PAD_STATE_MASK)) {
-		/* error state */
+		 
 		value = pm8001_cr32(pm8001_ha, 0, MSGU_SCRATCH_PAD_0);
 		return -1;
 	}
 
-	/* check IOP error */
+	 
 	if (SCRATCH_PAD2_ERR == (value1 & SCRATCH_PAD_STATE_MASK)) {
-		/* error state */
+		 
 		value1 = pm8001_cr32(pm8001_ha, 0, MSGU_SCRATCH_PAD_3);
 		return -1;
 	}
 
-	/* bit 4-31 of scratch pad1 should be zeros if it is not
-	in error state*/
+	 
 	if (value & SCRATCH_PAD1_STATE_MASK) {
-		/* error case */
+		 
 		pm8001_cr32(pm8001_ha, 0, MSGU_SCRATCH_PAD_0);
 		return -1;
 	}
 
-	/* bit 2, 4-31 of scratch pad2 should be zeros if it is not
-	in error state */
+	 
 	if (value1 & SCRATCH_PAD2_STATE_MASK) {
-		/* error case */
+		 
 		return -1;
 	}
 
-	max_wait_count = 1 * 1000 * 1000;/* 1 sec timeout */
+	max_wait_count = 1 * 1000 * 1000; 
 
-	/* wait until scratch pad 1 and 2 registers in ready state  */
+	 
 	do {
 		udelay(1);
 		value = pm8001_cr32(pm8001_ha, 0, MSGU_SCRATCH_PAD_1)
@@ -640,17 +538,13 @@ static void init_pci_device_addresses(struct pm8001_hba_info *pm8001_ha)
 		base_addr + pm8001_cr32(pm8001_ha, pcibar, offset + 0x20);
 }
 
-/**
- * pm8001_chip_init - the main init function that initialize whole PM8001 chip.
- * @pm8001_ha: our hba card information
- */
+ 
 static int pm8001_chip_init(struct pm8001_hba_info *pm8001_ha)
 {
 	u32 i = 0;
 	u16 deviceid;
 	pci_read_config_word(pm8001_ha->pdev, PCI_DEVICE_ID, &deviceid);
-	/* 8081 controllers need BAR shift to access MPI space
-	* as this is shared with BIOS data */
+	 
 	if (deviceid == 0x8081 || deviceid == 0x0042) {
 		if (-1 == pm8001_bar4_shift(pm8001_ha, GSM_SM_BASE)) {
 			pm8001_dbg(pm8001_ha, FAIL,
@@ -659,41 +553,37 @@ static int pm8001_chip_init(struct pm8001_hba_info *pm8001_ha)
 			return -1;
 		}
 	}
-	/* check the firmware status */
+	 
 	if (-1 == check_fw_ready(pm8001_ha)) {
 		pm8001_dbg(pm8001_ha, FAIL, "Firmware is not ready!\n");
 		return -EBUSY;
 	}
 
-	/* Initialize pci space address eg: mpi offset */
+	 
 	init_pci_device_addresses(pm8001_ha);
 	init_default_table_values(pm8001_ha);
 	read_main_config_table(pm8001_ha);
 	read_general_status_table(pm8001_ha);
 	read_inbnd_queue_table(pm8001_ha);
 	read_outbnd_queue_table(pm8001_ha);
-	/* update main config table ,inbound table and outbound table */
+	 
 	update_main_config_table(pm8001_ha);
 	for (i = 0; i < pm8001_ha->max_q_num; i++)
 		update_inbnd_queue_table(pm8001_ha, i);
 	for (i = 0; i < pm8001_ha->max_q_num; i++)
 		update_outbnd_queue_table(pm8001_ha, i);
-	/* 8081 controller donot require these operations */
+	 
 	if (deviceid != 0x8081 && deviceid != 0x0042) {
 		mpi_set_phys_g3_with_ssc(pm8001_ha, 0);
-		/* 7->130ms, 34->500ms, 119->1.5s */
+		 
 		mpi_set_open_retry_interval_reg(pm8001_ha, 119);
 	}
-	/* notify firmware update finished and check initialization status */
+	 
 	if (0 == mpi_init_check(pm8001_ha)) {
 		pm8001_dbg(pm8001_ha, INIT, "MPI initialize successful!\n");
 	} else
 		return -EBUSY;
-	/*This register is a 16-bit timer with a resolution of 1us. This is the
-	timer used for interrupt delay/coalescing in the PCIe Application Layer.
-	Zero is not a valid value. A value of 1 in the register will cause the
-	interrupts to be normal. A value greater than 1 will cause coalescing
-	delays.*/
+	 
 	pm8001_cw32(pm8001_ha, 1, 0x0033c0, 0x1);
 	pm8001_cw32(pm8001_ha, 1, 0x0033c4, 0x0);
 	return 0;
@@ -719,12 +609,11 @@ static int mpi_uninit_check(struct pm8001_hba_info *pm8001_ha)
 		}
 	}
 	init_pci_device_addresses(pm8001_ha);
-	/* Write bit1=1 to Inbound DoorBell Register to tell the SPC FW the
-	table is stop */
+	 
 	pm8001_cw32(pm8001_ha, 0, MSGU_IBDB_SET, SPC_MSGU_CFG_TABLE_RESET);
 
-	/* wait until Inbound DoorBell Clear Register toggled */
-	max_wait_count = 1 * 1000 * 1000;/* 1 sec */
+	 
+	max_wait_count = 1 * 1000 * 1000; 
 	do {
 		udelay(1);
 		value = pm8001_cr32(pm8001_ha, 0, MSGU_IBDB_SET);
@@ -737,9 +626,9 @@ static int mpi_uninit_check(struct pm8001_hba_info *pm8001_ha)
 		return -1;
 	}
 
-	/* check the MPI-State for termination in progress */
-	/* wait until Inbound DoorBell Clear Register toggled */
-	max_wait_count = 1 * 1000 * 1000;  /* 1 sec */
+	 
+	 
+	max_wait_count = 1 * 1000 * 1000;   
 	do {
 		udelay(1);
 		gst_len_mpistate =
@@ -757,10 +646,7 @@ static int mpi_uninit_check(struct pm8001_hba_info *pm8001_ha)
 	return 0;
 }
 
-/**
- * soft_reset_ready_check - Function to check FW is ready for soft reset.
- * @pm8001_ha: our hba card information
- */
+ 
 static u32 soft_reset_ready_check(struct pm8001_hba_info *pm8001_ha)
 {
 	u32 regVal, regVal1, regVal2;
@@ -768,14 +654,14 @@ static u32 soft_reset_ready_check(struct pm8001_hba_info *pm8001_ha)
 		pm8001_dbg(pm8001_ha, FAIL, "MPI state is not ready\n");
 		return -1;
 	}
-	/* read the scratch pad 2 register bit 2 */
+	 
 	regVal = pm8001_cr32(pm8001_ha, 0, MSGU_SCRATCH_PAD_2)
 		& SCRATCH_PAD2_FWRDY_RST;
 	if (regVal == SCRATCH_PAD2_FWRDY_RST) {
 		pm8001_dbg(pm8001_ha, INIT, "Firmware is ready for reset.\n");
 	} else {
 		unsigned long flags;
-		/* Trigger NMI twice via RB6 */
+		 
 		spin_lock_irqsave(&pm8001_ha->lock, flags);
 		if (-1 == pm8001_bar4_shift(pm8001_ha, RB6_ACCESS_REG)) {
 			spin_unlock_irqrestore(&pm8001_ha->lock, flags);
@@ -787,7 +673,7 @@ static u32 soft_reset_ready_check(struct pm8001_hba_info *pm8001_ha)
 		pm8001_cw32(pm8001_ha, 2, SPC_RB6_OFFSET,
 			RB6_MAGIC_NUMBER_RST);
 		pm8001_cw32(pm8001_ha, 2, SPC_RB6_OFFSET, RB6_MAGIC_NUMBER_RST);
-		/* wait for 100 ms */
+		 
 		mdelay(100);
 		regVal = pm8001_cr32(pm8001_ha, 0, MSGU_SCRATCH_PAD_2) &
 			SCRATCH_PAD2_FWRDY_RST;
@@ -810,29 +696,24 @@ static u32 soft_reset_ready_check(struct pm8001_hba_info *pm8001_ha)
 	return 0;
 }
 
-/**
- * pm8001_chip_soft_rst - soft reset the PM8001 chip, so that the clear all
- * the FW register status to the originated status.
- * @pm8001_ha: our hba card information
- */
+ 
 static int
 pm8001_chip_soft_rst(struct pm8001_hba_info *pm8001_ha)
 {
 	u32	regVal, toggleVal;
 	u32	max_wait_count;
 	u32	regVal1, regVal2, regVal3;
-	u32	signature = 0x252acbcd; /* for host scratch pad0 */
+	u32	signature = 0x252acbcd;  
 	unsigned long flags;
 
-	/* step1: Check FW is ready for soft reset */
+	 
 	if (soft_reset_ready_check(pm8001_ha) != 0) {
 		pm8001_dbg(pm8001_ha, FAIL, "FW is not ready\n");
 		return -1;
 	}
 
-	/* step 2: clear NMI status register on AAP1 and IOP, write the same
-	value to clear */
-	/* map 0x60000 to BAR4(0x20), BAR2(win) */
+	 
+	 
 	spin_lock_irqsave(&pm8001_ha->lock, flags);
 	if (-1 == pm8001_bar4_shift(pm8001_ha, MBIC_AAP1_ADDR_BASE)) {
 		spin_unlock_irqrestore(&pm8001_ha->lock, flags);
@@ -844,7 +725,7 @@ pm8001_chip_soft_rst(struct pm8001_hba_info *pm8001_ha)
 	pm8001_dbg(pm8001_ha, INIT, "MBIC - NMI Enable VPE0 (IOP)= 0x%x\n",
 		   regVal);
 	pm8001_cw32(pm8001_ha, 2, MBIC_NMI_ENABLE_VPE0_IOP, 0x0);
-	/* map 0x70000 to BAR4(0x20), BAR2(win) */
+	 
 	if (-1 == pm8001_bar4_shift(pm8001_ha, MBIC_IOP_ADDR_BASE)) {
 		spin_unlock_irqrestore(&pm8001_ha->lock, flags);
 		pm8001_dbg(pm8001_ha, FAIL, "Shift Bar4 to 0x%x failed\n",
@@ -875,17 +756,16 @@ pm8001_chip_soft_rst(struct pm8001_hba_info *pm8001_ha)
 	pm8001_dbg(pm8001_ha, INIT, "PCIE - Error Interrupt = 0x%x\n", regVal);
 	pm8001_cw32(pm8001_ha, 1, PCIE_ERROR_INTERRUPT, regVal);
 
-	/* read the scratch pad 1 register bit 2 */
+	 
 	regVal = pm8001_cr32(pm8001_ha, 0, MSGU_SCRATCH_PAD_1)
 		& SCRATCH_PAD1_RST;
 	toggleVal = regVal ^ SCRATCH_PAD1_RST;
 
-	/* set signature in host scratch pad0 register to tell SPC that the
-	host performs the soft reset */
+	 
 	pm8001_cw32(pm8001_ha, 0, MSGU_HOST_SCRATCH_PAD_0, signature);
 
-	/* read required registers for confirmming */
-	/* map 0x0700000 to BAR4(0x20), BAR2(win) */
+	 
+	 
 	if (-1 == pm8001_bar4_shift(pm8001_ha, GSM_ADDR_BASE)) {
 		spin_unlock_irqrestore(&pm8001_ha->lock, flags);
 		pm8001_dbg(pm8001_ha, FAIL, "Shift Bar4 to 0x%x failed\n",
@@ -896,25 +776,19 @@ pm8001_chip_soft_rst(struct pm8001_hba_info *pm8001_ha)
 		   "GSM 0x0(0x00007b88)-GSM Configuration and Reset = 0x%x\n",
 		   pm8001_cr32(pm8001_ha, 2, GSM_CONFIG_RESET));
 
-	/* step 3: host read GSM Configuration and Reset register */
+	 
 	regVal = pm8001_cr32(pm8001_ha, 2, GSM_CONFIG_RESET);
-	/* Put those bits to low */
-	/* GSM XCBI offset = 0x70 0000
-	0x00 Bit 13 COM_SLV_SW_RSTB 1
-	0x00 Bit 12 QSSP_SW_RSTB 1
-	0x00 Bit 11 RAAE_SW_RSTB 1
-	0x00 Bit 9 RB_1_SW_RSTB 1
-	0x00 Bit 8 SM_SW_RSTB 1
-	*/
+	 
+	 
 	regVal &= ~(0x00003b00);
-	/* host write GSM Configuration and Reset register */
+	 
 	pm8001_cw32(pm8001_ha, 2, GSM_CONFIG_RESET, regVal);
 	pm8001_dbg(pm8001_ha, INIT,
 		   "GSM 0x0 (0x00007b88 ==> 0x00004088) - GSM Configuration and Reset is set to = 0x%x\n",
 		   pm8001_cr32(pm8001_ha, 2, GSM_CONFIG_RESET));
 
-	/* step 4: */
-	/* disable GSM - Read Address Parity Check */
+	 
+	 
 	regVal1 = pm8001_cr32(pm8001_ha, 2, GSM_READ_ADDR_PARITY_CHECK);
 	pm8001_dbg(pm8001_ha, INIT,
 		   "GSM 0x700038 - Read Address Parity Check Enable = 0x%x\n",
@@ -924,7 +798,7 @@ pm8001_chip_soft_rst(struct pm8001_hba_info *pm8001_ha)
 		   "GSM 0x700038 - Read Address Parity Check Enable is set to = 0x%x\n",
 		   pm8001_cr32(pm8001_ha, 2, GSM_READ_ADDR_PARITY_CHECK));
 
-	/* disable GSM - Write Address Parity Check */
+	 
 	regVal2 = pm8001_cr32(pm8001_ha, 2, GSM_WRITE_ADDR_PARITY_CHECK);
 	pm8001_dbg(pm8001_ha, INIT,
 		   "GSM 0x700040 - Write Address Parity Check Enable = 0x%x\n",
@@ -934,7 +808,7 @@ pm8001_chip_soft_rst(struct pm8001_hba_info *pm8001_ha)
 		   "GSM 0x700040 - Write Address Parity Check Enable is set to = 0x%x\n",
 		   pm8001_cr32(pm8001_ha, 2, GSM_WRITE_ADDR_PARITY_CHECK));
 
-	/* disable GSM - Write Data Parity Check */
+	 
 	regVal3 = pm8001_cr32(pm8001_ha, 2, GSM_WRITE_DATA_PARITY_CHECK);
 	pm8001_dbg(pm8001_ha, INIT, "GSM 0x300048 - Write Data Parity Check Enable = 0x%x\n",
 		   regVal3);
@@ -943,9 +817,9 @@ pm8001_chip_soft_rst(struct pm8001_hba_info *pm8001_ha)
 		   "GSM 0x300048 - Write Data Parity Check Enable is set to = 0x%x\n",
 		   pm8001_cr32(pm8001_ha, 2, GSM_WRITE_DATA_PARITY_CHECK));
 
-	/* step 5: delay 10 usec */
+	 
 	udelay(10);
-	/* step 5-b: set GPIO-0 output control to tristate anyway */
+	 
 	if (-1 == pm8001_bar4_shift(pm8001_ha, GPIO_ADDR_BASE)) {
 		spin_unlock_irqrestore(&pm8001_ha->lock, flags);
 		pm8001_dbg(pm8001_ha, INIT, "Shift Bar4 to 0x%x failed\n",
@@ -955,12 +829,12 @@ pm8001_chip_soft_rst(struct pm8001_hba_info *pm8001_ha)
 	regVal = pm8001_cr32(pm8001_ha, 2, GPIO_GPIO_0_0UTPUT_CTL_OFFSET);
 	pm8001_dbg(pm8001_ha, INIT, "GPIO Output Control Register: = 0x%x\n",
 		   regVal);
-	/* set GPIO-0 output control to tri-state */
+	 
 	regVal &= 0xFFFFFFFC;
 	pm8001_cw32(pm8001_ha, 2, GPIO_GPIO_0_0UTPUT_CTL_OFFSET, regVal);
 
-	/* Step 6: Reset the IOP and AAP1 */
-	/* map 0x00000 to BAR4(0x20), BAR2(win) */
+	 
+	 
 	if (-1 == pm8001_bar4_shift(pm8001_ha, SPC_TOP_LEVEL_ADDR_BASE)) {
 		spin_unlock_irqrestore(&pm8001_ha->lock, flags);
 		pm8001_dbg(pm8001_ha, FAIL, "SPC Shift Bar4 to 0x%x failed\n",
@@ -973,17 +847,17 @@ pm8001_chip_soft_rst(struct pm8001_hba_info *pm8001_ha)
 	regVal &= ~(SPC_REG_RESET_PCS_IOP_SS | SPC_REG_RESET_PCS_AAP1_SS);
 	pm8001_cw32(pm8001_ha, 2, SPC_REG_RESET, regVal);
 
-	/* step 7: Reset the BDMA/OSSP */
+	 
 	regVal = pm8001_cr32(pm8001_ha, 2, SPC_REG_RESET);
 	pm8001_dbg(pm8001_ha, INIT, "Top Register before resetting BDMA/OSSP: = 0x%x\n",
 		   regVal);
 	regVal &= ~(SPC_REG_RESET_BDMA_CORE | SPC_REG_RESET_OSSP);
 	pm8001_cw32(pm8001_ha, 2, SPC_REG_RESET, regVal);
 
-	/* step 8: delay 10 usec */
+	 
 	udelay(10);
 
-	/* step 9: bring the BDMA and OSSP out of reset */
+	 
 	regVal = pm8001_cr32(pm8001_ha, 2, SPC_REG_RESET);
 	pm8001_dbg(pm8001_ha, INIT,
 		   "Top Register before bringing up BDMA/OSSP:= 0x%x\n",
@@ -991,11 +865,11 @@ pm8001_chip_soft_rst(struct pm8001_hba_info *pm8001_ha)
 	regVal |= (SPC_REG_RESET_BDMA_CORE | SPC_REG_RESET_OSSP);
 	pm8001_cw32(pm8001_ha, 2, SPC_REG_RESET, regVal);
 
-	/* step 10: delay 10 usec */
+	 
 	udelay(10);
 
-	/* step 11: reads and sets the GSM Configuration and Reset Register */
-	/* map 0x0700000 to BAR4(0x20), BAR2(win) */
+	 
+	 
 	if (-1 == pm8001_bar4_shift(pm8001_ha, GSM_ADDR_BASE)) {
 		spin_unlock_irqrestore(&pm8001_ha->lock, flags);
 		pm8001_dbg(pm8001_ha, FAIL, "SPC Shift Bar4 to 0x%x failed\n",
@@ -1006,43 +880,37 @@ pm8001_chip_soft_rst(struct pm8001_hba_info *pm8001_ha)
 		   "GSM 0x0 (0x00007b88)-GSM Configuration and Reset = 0x%x\n",
 		   pm8001_cr32(pm8001_ha, 2, GSM_CONFIG_RESET));
 	regVal = pm8001_cr32(pm8001_ha, 2, GSM_CONFIG_RESET);
-	/* Put those bits to high */
-	/* GSM XCBI offset = 0x70 0000
-	0x00 Bit 13 COM_SLV_SW_RSTB 1
-	0x00 Bit 12 QSSP_SW_RSTB 1
-	0x00 Bit 11 RAAE_SW_RSTB 1
-	0x00 Bit 9   RB_1_SW_RSTB 1
-	0x00 Bit 8   SM_SW_RSTB 1
-	*/
+	 
+	 
 	regVal |= (GSM_CONFIG_RESET_VALUE);
 	pm8001_cw32(pm8001_ha, 2, GSM_CONFIG_RESET, regVal);
 	pm8001_dbg(pm8001_ha, INIT, "GSM (0x00004088 ==> 0x00007b88) - GSM Configuration and Reset is set to = 0x%x\n",
 		   pm8001_cr32(pm8001_ha, 2, GSM_CONFIG_RESET));
 
-	/* step 12: Restore GSM - Read Address Parity Check */
+	 
 	regVal = pm8001_cr32(pm8001_ha, 2, GSM_READ_ADDR_PARITY_CHECK);
-	/* just for debugging */
+	 
 	pm8001_dbg(pm8001_ha, INIT,
 		   "GSM 0x700038 - Read Address Parity Check Enable = 0x%x\n",
 		   regVal);
 	pm8001_cw32(pm8001_ha, 2, GSM_READ_ADDR_PARITY_CHECK, regVal1);
 	pm8001_dbg(pm8001_ha, INIT, "GSM 0x700038 - Read Address Parity Check Enable is set to = 0x%x\n",
 		   pm8001_cr32(pm8001_ha, 2, GSM_READ_ADDR_PARITY_CHECK));
-	/* Restore GSM - Write Address Parity Check */
+	 
 	regVal = pm8001_cr32(pm8001_ha, 2, GSM_WRITE_ADDR_PARITY_CHECK);
 	pm8001_cw32(pm8001_ha, 2, GSM_WRITE_ADDR_PARITY_CHECK, regVal2);
 	pm8001_dbg(pm8001_ha, INIT,
 		   "GSM 0x700040 - Write Address Parity Check Enable is set to = 0x%x\n",
 		   pm8001_cr32(pm8001_ha, 2, GSM_WRITE_ADDR_PARITY_CHECK));
-	/* Restore GSM - Write Data Parity Check */
+	 
 	regVal = pm8001_cr32(pm8001_ha, 2, GSM_WRITE_DATA_PARITY_CHECK);
 	pm8001_cw32(pm8001_ha, 2, GSM_WRITE_DATA_PARITY_CHECK, regVal3);
 	pm8001_dbg(pm8001_ha, INIT,
 		   "GSM 0x700048 - Write Data Parity Check Enable is set to = 0x%x\n",
 		   pm8001_cr32(pm8001_ha, 2, GSM_WRITE_DATA_PARITY_CHECK));
 
-	/* step 13: bring the IOP and AAP1 out of reset */
-	/* map 0x00000 to BAR4(0x20), BAR2(win) */
+	 
+	 
 	if (-1 == pm8001_bar4_shift(pm8001_ha, SPC_TOP_LEVEL_ADDR_BASE)) {
 		spin_unlock_irqrestore(&pm8001_ha->lock, flags);
 		pm8001_dbg(pm8001_ha, FAIL, "Shift Bar4 to 0x%x failed\n",
@@ -1053,13 +921,12 @@ pm8001_chip_soft_rst(struct pm8001_hba_info *pm8001_ha)
 	regVal |= (SPC_REG_RESET_PCS_IOP_SS | SPC_REG_RESET_PCS_AAP1_SS);
 	pm8001_cw32(pm8001_ha, 2, SPC_REG_RESET, regVal);
 
-	/* step 14: delay 10 usec - Normal Mode */
+	 
 	udelay(10);
-	/* check Soft Reset Normal mode or Soft Reset HDA mode */
+	 
 	if (signature == SPC_SOFT_RESET_SIGNATURE) {
-		/* step 15 (Normal Mode): wait until scratch pad1 register
-		bit 2 toggled */
-		max_wait_count = 2 * 1000 * 1000;/* 2 sec */
+		 
+		max_wait_count = 2 * 1000 * 1000; 
 		do {
 			udelay(1);
 			regVal = pm8001_cr32(pm8001_ha, 0, MSGU_SCRATCH_PAD_1) &
@@ -1087,21 +954,20 @@ pm8001_chip_soft_rst(struct pm8001_hba_info *pm8001_ha)
 			return -1;
 		}
 
-		/* step 16 (Normal) - Clear ODMR and ODCR */
+		 
 		pm8001_cw32(pm8001_ha, 0, MSGU_ODCR, ODCR_CLEAR_ALL);
 		pm8001_cw32(pm8001_ha, 0, MSGU_ODMR, ODMR_CLEAR_ALL);
 
-		/* step 17 (Normal Mode): wait for the FW and IOP to get
-		ready - 1 sec timeout */
-		/* Wait for the SPC Configuration Table to be ready */
+		 
+		 
 		if (check_fw_ready(pm8001_ha) == -1) {
 			regVal = pm8001_cr32(pm8001_ha, 0, MSGU_SCRATCH_PAD_1);
-			/* return error if MPI Configuration Table not ready */
+			 
 			pm8001_dbg(pm8001_ha, INIT,
 				   "FW not ready SCRATCH_PAD1 = 0x%x\n",
 				   regVal);
 			regVal = pm8001_cr32(pm8001_ha, 0, MSGU_SCRATCH_PAD_2);
-			/* return error if MPI Configuration Table not ready */
+			 
 			pm8001_dbg(pm8001_ha, INIT,
 				   "FW not ready SCRATCH_PAD2 = 0x%x\n",
 				   regVal);
@@ -1130,23 +996,23 @@ static void pm8001_hw_chip_rst(struct pm8001_hba_info *pm8001_ha)
 	u32 regVal;
 	pm8001_dbg(pm8001_ha, INIT, "chip reset start\n");
 
-	/* do SPC chip reset. */
+	 
 	regVal = pm8001_cr32(pm8001_ha, 1, SPC_REG_RESET);
 	regVal &= ~(SPC_REG_RESET_DEVICE);
 	pm8001_cw32(pm8001_ha, 1, SPC_REG_RESET, regVal);
 
-	/* delay 10 usec */
+	 
 	udelay(10);
 
-	/* bring chip reset out of reset */
+	 
 	regVal = pm8001_cr32(pm8001_ha, 1, SPC_REG_RESET);
 	regVal |= SPC_REG_RESET_DEVICE;
 	pm8001_cw32(pm8001_ha, 1, SPC_REG_RESET, regVal);
 
-	/* delay 10 usec */
+	 
 	udelay(10);
 
-	/* wait for 20 msec until the firmware gets reloaded */
+	 
 	i = 20;
 	do {
 		mdelay(1);
@@ -1155,22 +1021,12 @@ static void pm8001_hw_chip_rst(struct pm8001_hba_info *pm8001_ha)
 	pm8001_dbg(pm8001_ha, INIT, "chip reset finished\n");
 }
 
-/**
- * pm8001_chip_iounmap - which mapped when initialized.
- * @pm8001_ha: our hba card information
- */
+ 
 void pm8001_chip_iounmap(struct pm8001_hba_info *pm8001_ha)
 {
 	s8 bar, logical = 0;
 	for (bar = 0; bar < PCI_STD_NUM_BARS; bar++) {
-		/*
-		** logical BARs for SPC:
-		** bar 0 and 1 - logical BAR0
-		** bar 2 and 3 - logical BAR1
-		** bar4 - logical BAR2
-		** bar5 - logical BAR3
-		** Skip the appropriate assignments:
-		*/
+		 
 		if ((bar == 1) || (bar == 3))
 			continue;
 		if (pm8001_ha->io_mem[logical].memvirtaddr) {
@@ -1181,10 +1037,7 @@ void pm8001_chip_iounmap(struct pm8001_hba_info *pm8001_ha)
 }
 
 #ifndef PM8001_USE_MSIX
-/**
- * pm8001_chip_intx_interrupt_enable - enable PM8001 chip interrupt
- * @pm8001_ha: our hba card information
- */
+ 
 static void
 pm8001_chip_intx_interrupt_enable(struct pm8001_hba_info *pm8001_ha)
 {
@@ -1192,10 +1045,7 @@ pm8001_chip_intx_interrupt_enable(struct pm8001_hba_info *pm8001_ha)
 	pm8001_cw32(pm8001_ha, 0, MSGU_ODCR, ODCR_CLEAR_ALL);
 }
 
-/**
- * pm8001_chip_intx_interrupt_disable - disable PM8001 chip interrupt
- * @pm8001_ha: our hba card information
- */
+ 
 static void
 pm8001_chip_intx_interrupt_disable(struct pm8001_hba_info *pm8001_ha)
 {
@@ -1204,11 +1054,7 @@ pm8001_chip_intx_interrupt_disable(struct pm8001_hba_info *pm8001_ha)
 
 #else
 
-/**
- * pm8001_chip_msix_interrupt_enable - enable PM8001 chip interrupt
- * @pm8001_ha: our hba card information
- * @int_vec_idx: interrupt number to enable
- */
+ 
 static void
 pm8001_chip_msix_interrupt_enable(struct pm8001_hba_info *pm8001_ha,
 	u32 int_vec_idx)
@@ -1223,11 +1069,7 @@ pm8001_chip_msix_interrupt_enable(struct pm8001_hba_info *pm8001_ha,
 
 }
 
-/**
- * pm8001_chip_msix_interrupt_disable - disable PM8001 chip interrupt
- * @pm8001_ha: our hba card information
- * @int_vec_idx: interrupt number to disable
- */
+ 
 static void
 pm8001_chip_msix_interrupt_disable(struct pm8001_hba_info *pm8001_ha,
 	u32 int_vec_idx)
@@ -1239,11 +1081,7 @@ pm8001_chip_msix_interrupt_disable(struct pm8001_hba_info *pm8001_ha,
 }
 #endif
 
-/**
- * pm8001_chip_interrupt_enable - enable PM8001 chip interrupt
- * @pm8001_ha: our hba card information
- * @vec: unused
- */
+ 
 static void
 pm8001_chip_interrupt_enable(struct pm8001_hba_info *pm8001_ha, u8 vec)
 {
@@ -1254,11 +1092,7 @@ pm8001_chip_interrupt_enable(struct pm8001_hba_info *pm8001_ha, u8 vec)
 #endif
 }
 
-/**
- * pm8001_chip_interrupt_disable - disable PM8001 chip interrupt
- * @pm8001_ha: our hba card information
- * @vec: unused
- */
+ 
 static void
 pm8001_chip_interrupt_disable(struct pm8001_hba_info *pm8001_ha, u8 vec)
 {
@@ -1269,27 +1103,21 @@ pm8001_chip_interrupt_disable(struct pm8001_hba_info *pm8001_ha, u8 vec)
 #endif
 }
 
-/**
- * pm8001_mpi_msg_free_get - get the free message buffer for transfer
- * inbound queue.
- * @circularQ: the inbound queue  we want to transfer to HBA.
- * @messageSize: the message size of this transfer, normally it is 64 bytes
- * @messagePtr: the pointer to message.
- */
+ 
 int pm8001_mpi_msg_free_get(struct inbound_queue_table *circularQ,
 			    u16 messageSize, void **messagePtr)
 {
 	u32 offset, consumer_index;
 	struct mpi_msg_hdr *msgHeader;
-	u8 bcCount = 1; /* only support single buffer */
+	u8 bcCount = 1;  
 
-	/* Checks is the requested message size can be allocated in this queue*/
+	 
 	if (messageSize > IOMB_SIZE_SPCV) {
 		*messagePtr = NULL;
 		return -1;
 	}
 
-	/* Stores the new consumer index */
+	 
 	consumer_index = pm8001_read_32(circularQ->ci_virt);
 	circularQ->consumer_index = cpu_to_le32(consumer_index);
 	if (((circularQ->producer_idx + bcCount) % PM8001_MPI_QUEUE) ==
@@ -1297,28 +1125,18 @@ int pm8001_mpi_msg_free_get(struct inbound_queue_table *circularQ,
 		*messagePtr = NULL;
 		return -1;
 	}
-	/* get memory IOMB buffer address */
+	 
 	offset = circularQ->producer_idx * messageSize;
-	/* increment to next bcCount element */
+	 
 	circularQ->producer_idx = (circularQ->producer_idx + bcCount)
 				% PM8001_MPI_QUEUE;
-	/* Adds that distance to the base of the region virtual address plus
-	the message header size*/
+	 
 	msgHeader = (struct mpi_msg_hdr *)(circularQ->base_virt	+ offset);
 	*messagePtr = ((void *)msgHeader) + sizeof(struct mpi_msg_hdr);
 	return 0;
 }
 
-/**
- * pm8001_mpi_build_cmd- build the message queue for transfer, update the PI to
- * FW to tell the fw to get this message from IOMB.
- * @pm8001_ha: our hba card information
- * @q_index: the index in the inbound queue we want to transfer to HBA.
- * @opCode: the operation code represents commands which LLDD and fw recognized.
- * @payload: the command payload of each operation command.
- * @nb: size in bytes of the command payload
- * @responseQueue: queue to interrupt on w/ command response (if any)
- */
+ 
 int pm8001_mpi_build_cmd(struct pm8001_hba_info *pm8001_ha,
 			 u32 q_index, u32 opCode, void *payload, size_t nb,
 			 u32 responseQueue)
@@ -1352,13 +1170,13 @@ int pm8001_mpi_build_cmd(struct pm8001_hba_info *pm8001_ha,
 		memset(pMessage + nb, 0, pm8001_ha->iomb_size -
 				(nb + sizeof(struct mpi_msg_hdr)));
 
-	/*Build the header*/
+	 
 	Header = ((1 << 31) | (hpriority << 30) | ((bc & 0x1f) << 24)
 		| ((responseQueue & 0x3F) << 16)
 		| ((category & 0xF) << 12) | (opCode & 0xFFF));
 
 	pm8001_write_32((pMessage - 4), 0, cpu_to_le32(Header));
-	/*Update the PI to the firmware*/
+	 
 	pm8001_cw32(pm8001_ha, circularQ->pi_pci_bar,
 		circularQ->pi_offset, circularQ->producer_idx);
 	pm8001_dbg(pm8001_ha, DEVIO,
@@ -1385,7 +1203,7 @@ u32 pm8001_mpi_msg_free_set(struct pm8001_hba_info *pm8001_ha, void *pMsg,
 			   "consumer_idx = %d msgHeader = %p\n",
 			   circularQ->consumer_idx, msgHeader);
 
-		/* Update the producer index from SPC */
+		 
 		producer_index = pm8001_read_32(circularQ->pi_virt);
 		circularQ->producer_index = cpu_to_le32(producer_index);
 		pm8001_dbg(pm8001_ha, FAIL,
@@ -1394,13 +1212,13 @@ u32 pm8001_mpi_msg_free_set(struct pm8001_hba_info *pm8001_ha, void *pMsg,
 			   circularQ->producer_index, msgHeader);
 		return 0;
 	}
-	/* free the circular queue buffer elements associated with the message*/
+	 
 	circularQ->consumer_idx = (circularQ->consumer_idx + bc)
 				% PM8001_MPI_QUEUE;
-	/* update the CI of outbound queue */
+	 
 	pm8001_cw32(pm8001_ha, circularQ->ci_pci_bar, circularQ->ci_offset,
 		circularQ->consumer_idx);
-	/* Update the producer index from SPC*/
+	 
 	producer_index = pm8001_read_32(circularQ->pi_virt);
 	circularQ->producer_index = cpu_to_le32(producer_index);
 	pm8001_dbg(pm8001_ha, IO, " CI=%d PI=%d\n",
@@ -1408,14 +1226,7 @@ u32 pm8001_mpi_msg_free_set(struct pm8001_hba_info *pm8001_ha, void *pMsg,
 	return 0;
 }
 
-/**
- * pm8001_mpi_msg_consume- get the MPI message from outbound queue
- * message table.
- * @pm8001_ha: our hba card information
- * @circularQ: the outbound queue  table.
- * @messagePtr1: the message contents of this outbound message.
- * @pBC: the message size.
- */
+ 
 u32 pm8001_mpi_msg_consume(struct pm8001_hba_info *pm8001_ha,
 			   struct outbound_queue_table *circularQ,
 			   void **messagePtr1, u8 *pBC)
@@ -1424,14 +1235,14 @@ u32 pm8001_mpi_msg_consume(struct pm8001_hba_info *pm8001_ha,
 	__le32	msgHeader_tmp;
 	u32 header_tmp;
 	do {
-		/* If there are not-yet-delivered messages ... */
+		 
 		if (le32_to_cpu(circularQ->producer_index)
 			!= circularQ->consumer_idx) {
-			/*Get the pointer to the circular queue buffer element*/
+			 
 			msgHeader = (struct mpi_msg_hdr *)
 				(circularQ->base_virt +
 				circularQ->consumer_idx * pm8001_ha->iomb_size);
-			/* read header */
+			 
 			header_tmp = pm8001_read_32(msgHeader);
 			msgHeader_tmp = cpu_to_le32(header_tmp);
 			pm8001_dbg(pm8001_ha, DEVIO,
@@ -1460,7 +1271,7 @@ u32 pm8001_mpi_msg_consume(struct pm8001_hba_info *pm8001_ha,
 							% PM8001_MPI_QUEUE;
 					msgHeader_tmp = 0;
 					pm8001_write_32(msgHeader, 0, 0);
-					/* update the CI of outbound queue */
+					 
 					pm8001_cw32(pm8001_ha,
 						circularQ->ci_pci_bar,
 						circularQ->ci_offset,
@@ -1473,7 +1284,7 @@ u32 pm8001_mpi_msg_consume(struct pm8001_hba_info *pm8001_ha,
 					0x1f)) % PM8001_MPI_QUEUE;
 				msgHeader_tmp = 0;
 				pm8001_write_32(msgHeader, 0, 0);
-				/* update the CI of outbound queue */
+				 
 				pm8001_cw32(pm8001_ha, circularQ->ci_pci_bar,
 					circularQ->ci_offset,
 					circularQ->consumer_idx);
@@ -1482,20 +1293,17 @@ u32 pm8001_mpi_msg_consume(struct pm8001_hba_info *pm8001_ha,
 		} else {
 			u32 producer_index;
 			void *pi_virt = circularQ->pi_virt;
-			/* spurious interrupt during setup if
-			 * kexec-ing and driver doing a doorbell access
-			 * with the pre-kexec oq interrupt setup
-			 */
+			 
 			if (!pi_virt)
 				break;
-			/* Update the producer index from SPC */
+			 
 			producer_index = pm8001_read_32(pi_virt);
 			circularQ->producer_index = cpu_to_le32(producer_index);
 		}
 	} while (le32_to_cpu(circularQ->producer_index) !=
 		circularQ->consumer_idx);
-	/* while we don't have any more not-yet-delivered message */
-	/* report empty */
+	 
+	 
 	return MPI_IO_STATUS_BUSY;
 }
 
@@ -1505,14 +1313,9 @@ void pm8001_work_fn(struct work_struct *work)
 	struct pm8001_device *pm8001_dev;
 	struct domain_device *dev;
 
-	/*
-	 * So far, all users of this stash an associated structure here.
-	 * If we get here, and this pointer is null, then the action
-	 * was cancelled. This nullification happens when the device
-	 * goes away.
-	 */
+	 
 	if (pw->handler != IO_FATAL_ERROR) {
-		pm8001_dev = pw->data; /* Most stash device structure */
+		pm8001_dev = pw->data;  
 		if ((pm8001_dev == NULL)
 		 || ((pw->handler != IO_XFER_ERROR_BREAK)
 			 && (pm8001_dev->dev_type == SAS_PHY_UNUSED))) {
@@ -1523,7 +1326,7 @@ void pm8001_work_fn(struct work_struct *work)
 
 	switch (pw->handler) {
 	case IO_XFER_ERROR_BREAK:
-	{	/* This one stashes the sas_task instead */
+	{	 
 		struct sas_task *t = (struct sas_task *)pm8001_dev;
 		struct pm8001_ccb_info *ccb;
 		struct pm8001_hba_info *pm8001_ha = pw->pm8001_ha;
@@ -1532,18 +1335,18 @@ void pm8001_work_fn(struct work_struct *work)
 		int i;
 
 		if (pm8001_query_task(t) == TMF_RESP_FUNC_SUCC)
-			break; /* Task still on lu */
+			break;  
 		spin_lock_irqsave(&pm8001_ha->lock, flags);
 
 		spin_lock_irqsave(&t->task_state_lock, flags1);
 		if (unlikely((t->task_state_flags & SAS_TASK_STATE_DONE))) {
 			spin_unlock_irqrestore(&t->task_state_lock, flags1);
 			spin_unlock_irqrestore(&pm8001_ha->lock, flags);
-			break; /* Task got completed by another */
+			break;  
 		}
 		spin_unlock_irqrestore(&t->task_state_lock, flags1);
 
-		/* Search for a possible ccb that matches the task */
+		 
 		for (i = 0; ccb = NULL, i < PM8001_MAX_CCB; i++) {
 			ccb = &pm8001_ha->ccb_info[i];
 			if ((ccb->ccb_tag != PM8001_INVALID_TAG) &&
@@ -1552,11 +1355,11 @@ void pm8001_work_fn(struct work_struct *work)
 		}
 		if (!ccb) {
 			spin_unlock_irqrestore(&pm8001_ha->lock, flags);
-			break; /* Task got freed by another */
+			break;  
 		}
 		ts = &t->task_status;
 		ts->resp = SAS_TASK_COMPLETE;
-		/* Force the midlayer to retry */
+		 
 		ts->stat = SAS_QUEUE_FULL;
 		pm8001_dev = ccb->device;
 		if (pm8001_dev)
@@ -1573,13 +1376,13 @@ void pm8001_work_fn(struct work_struct *work)
 		} else {
 			spin_unlock_irqrestore(&t->task_state_lock, flags1);
 			pm8001_ccb_task_free(pm8001_ha, ccb);
-			mb();/* in order to force CPU ordering */
+			mb(); 
 			spin_unlock_irqrestore(&pm8001_ha->lock, flags);
 			t->task_done(t);
 		}
 	}	break;
 	case IO_XFER_OPEN_RETRY_TIMEOUT:
-	{	/* This one stashes the sas_task instead */
+	{	 
 		struct sas_task *t = (struct sas_task *)pm8001_dev;
 		struct pm8001_ccb_info *ccb;
 		struct pm8001_hba_info *pm8001_ha = pw->pm8001_ha;
@@ -1604,14 +1407,14 @@ void pm8001_work_fn(struct work_struct *work)
 		if (unlikely((t->task_state_flags & SAS_TASK_STATE_DONE))) {
 			spin_unlock_irqrestore(&t->task_state_lock, flags1);
 			spin_unlock_irqrestore(&pm8001_ha->lock, flags);
-			if (ret == TMF_RESP_FUNC_SUCC) /* task on lu */
+			if (ret == TMF_RESP_FUNC_SUCC)  
 				(void)pm8001_abort_task(t);
-			break; /* Task got completed by another */
+			break;  
 		}
 
 		spin_unlock_irqrestore(&t->task_state_lock, flags1);
 
-		/* Search for a possible ccb that matches the task */
+		 
 		for (i = 0; ccb = NULL, i < PM8001_MAX_CCB; i++) {
 			ccb = &pm8001_ha->ccb_info[i];
 			if ((ccb->ccb_tag != PM8001_INVALID_TAG) &&
@@ -1620,17 +1423,17 @@ void pm8001_work_fn(struct work_struct *work)
 		}
 		if (!ccb) {
 			spin_unlock_irqrestore(&pm8001_ha->lock, flags);
-			if (ret == TMF_RESP_FUNC_SUCC) /* task on lu */
+			if (ret == TMF_RESP_FUNC_SUCC)  
 				(void)pm8001_abort_task(t);
-			break; /* Task got freed by another */
+			break;  
 		}
 
 		pm8001_dev = ccb->device;
 		dev = pm8001_dev->sas_device;
 
 		switch (ret) {
-		case TMF_RESP_FUNC_SUCC: /* task on lu */
-			ccb->open_retry = 1; /* Snub completion */
+		case TMF_RESP_FUNC_SUCC:  
+			ccb->open_retry = 1;  
 			spin_unlock_irqrestore(&pm8001_ha->lock, flags);
 			ret = pm8001_abort_task(t);
 			ccb->open_retry = 0;
@@ -1638,7 +1441,7 @@ void pm8001_work_fn(struct work_struct *work)
 			case TMF_RESP_FUNC_SUCC:
 			case TMF_RESP_FUNC_COMPLETE:
 				break;
-			default: /* device misbehavior */
+			default:  
 				ret = TMF_RESP_FUNC_FAILED;
 				pm8001_dbg(pm8001_ha, IO, "...Reset phy\n");
 				pm8001_I_T_nexus_reset(dev);
@@ -1646,12 +1449,12 @@ void pm8001_work_fn(struct work_struct *work)
 			}
 			break;
 
-		case TMF_RESP_FUNC_COMPLETE: /* task not on lu */
+		case TMF_RESP_FUNC_COMPLETE:  
 			spin_unlock_irqrestore(&pm8001_ha->lock, flags);
-			/* Do we need to abort the task locally? */
+			 
 			break;
 
-		default: /* device misbehavior */
+		default:  
 			spin_unlock_irqrestore(&pm8001_ha->lock, flags);
 			ret = TMF_RESP_FUNC_FAILED;
 			pm8001_dbg(pm8001_ha, IO, "...Reset phy\n");
@@ -1700,12 +1503,12 @@ void pm8001_work_fn(struct work_struct *work)
 						"dev is NULL\n");
 					continue;
 				}
-				/*complete sas task and update to top layer */
+				 
 				pm8001_ccb_task_free(pm8001_ha, ccb);
 				ts->resp = SAS_TASK_COMPLETE;
 				task->task_done(task);
 			} else if (ccb->ccb_tag != PM8001_INVALID_TAG) {
-				/* complete the internal commands/non-sas task */
+				 
 				pm8001_dev = ccb->device;
 				if (pm8001_dev->dcompletion) {
 					complete(pm8001_dev->dcompletion);
@@ -1715,7 +1518,7 @@ void pm8001_work_fn(struct work_struct *work)
 				pm8001_ccb_free(pm8001_ha, ccb);
 			}
 		}
-		/* Deregister all the device ids  */
+		 
 		for (i = 0; i < PM8001_MAX_DEVICES; i++) {
 			pm8001_dev = &pm8001_ha->devices[i];
 			device_id = pm8001_dev->device_id;
@@ -1755,17 +1558,7 @@ int pm8001_handle_event(struct pm8001_hba_info *pm8001_ha, void *data,
 	return ret;
 }
 
-/**
- * mpi_ssp_completion- process the event that FW response to the SSP request.
- * @pm8001_ha: our hba card information
- * @piomb: the message contents of this outbound message.
- *
- * When FW has completed a ssp request for example a IO request, after it has
- * filled the SG data with the data, it will trigger this event representing
- * that he has finished the job; please check the corresponding buffer.
- * So we will tell the caller who maybe waiting the result to tell upper layer
- * that the task has been finished.
- */
+ 
 static void
 mpi_ssp_completion(struct pm8001_hba_info *pm8001_ha, void *piomb)
 {
@@ -1784,7 +1577,7 @@ mpi_ssp_completion(struct pm8001_hba_info *pm8001_ha, void *piomb)
 	tag = le32_to_cpu(psspPayload->tag);
 	ccb = &pm8001_ha->ccb_info[tag];
 	if ((status == IO_ABORTED) && ccb->open_retry) {
-		/* Being completed by another */
+		 
 		ccb->open_retry = 0;
 		return;
 	}
@@ -1798,7 +1591,7 @@ mpi_ssp_completion(struct pm8001_hba_info *pm8001_ha, void *piomb)
 	if (unlikely(!t || !t->lldd_task || !t->dev))
 		return;
 	ts = &t->task_status;
-	/* Print sas address of IO failed device */
+	 
 	if ((status != IO_SUCCESS) && (status != IO_OVERFLOW) &&
 		(status != IO_UNDERFLOW))
 		pm8001_dbg(pm8001_ha, FAIL, "SAS Address of IO Failure Drive:%016llx\n",
@@ -1832,7 +1625,7 @@ mpi_ssp_completion(struct pm8001_hba_info *pm8001_ha, void *piomb)
 		ts->stat = SAS_ABORTED_TASK;
 		break;
 	case IO_UNDERFLOW:
-		/* SSP Completion with error */
+		 
 		pm8001_dbg(pm8001_ha, IO, "IO_UNDERFLOW,param = %d\n",
 			   param);
 		ts->resp = SAS_TASK_COMPLETE;
@@ -1850,7 +1643,7 @@ mpi_ssp_completion(struct pm8001_hba_info *pm8001_ha, void *piomb)
 		pm8001_dbg(pm8001_ha, IO, "IO_XFER_ERROR_BREAK\n");
 		ts->resp = SAS_TASK_COMPLETE;
 		ts->stat = SAS_OPEN_REJECT;
-		/* Force the midlayer to retry */
+		 
 		ts->open_rej_reason = SAS_OREJ_RSVD_RETRY;
 		break;
 	case IO_XFER_ERROR_PHY_NOT_READY:
@@ -1974,7 +1767,7 @@ mpi_ssp_completion(struct pm8001_hba_info *pm8001_ha, void *piomb)
 		break;
 	default:
 		pm8001_dbg(pm8001_ha, DEVIO, "Unknown status 0x%x\n", status);
-		/* not allowed case. Therefore, return failed status */
+		 
 		ts->resp = SAS_TASK_COMPLETE;
 		ts->stat = SAS_OPEN_REJECT;
 		break;
@@ -1992,12 +1785,12 @@ mpi_ssp_completion(struct pm8001_hba_info *pm8001_ha, void *piomb)
 	} else {
 		spin_unlock_irqrestore(&t->task_state_lock, flags);
 		pm8001_ccb_task_free(pm8001_ha, ccb);
-		mb();/* in order to force CPU ordering */
+		mb(); 
 		t->task_done(t);
 	}
 }
 
-/*See the comments for mpi_ssp_completion */
+ 
 static void mpi_ssp_event(struct pm8001_hba_info *pm8001_ha, void *piomb)
 {
 	struct sas_task *t;
@@ -2143,7 +1936,7 @@ static void mpi_ssp_event(struct pm8001_hba_info *pm8001_ha, void *piomb)
 		return;
 	default:
 		pm8001_dbg(pm8001_ha, DEVIO, "Unknown status 0x%x\n", event);
-		/* not allowed case. Therefore, return failed status */
+		 
 		ts->resp = SAS_TASK_COMPLETE;
 		ts->stat = SAS_DATA_OVERRUN;
 		break;
@@ -2159,12 +1952,12 @@ static void mpi_ssp_event(struct pm8001_hba_info *pm8001_ha, void *piomb)
 	} else {
 		spin_unlock_irqrestore(&t->task_state_lock, flags);
 		pm8001_ccb_task_free(pm8001_ha, ccb);
-		mb();/* in order to force CPU ordering */
+		mb(); 
 		t->task_done(t);
 	}
 }
 
-/*See the comments for mpi_ssp_completion */
+ 
 static void
 mpi_sata_completion(struct pm8001_hba_info *pm8001_ha, void *piomb)
 {
@@ -2216,7 +2009,7 @@ mpi_sata_completion(struct pm8001_hba_info *pm8001_ha, void *piomb)
 			   "status:0x%x, tag:0x%x, task::0x%p\n",
 			   status, tag, t);
 
-	/* Print sas address of IO failed device */
+	 
 	if ((status != IO_SUCCESS) && (status != IO_OVERFLOW) &&
 		(status != IO_UNDERFLOW)) {
 		if (!((t->dev->parent) &&
@@ -2305,9 +2098,9 @@ mpi_sata_completion(struct pm8001_hba_info *pm8001_ha, void *piomb)
 		if (pm8001_dev)
 			atomic_dec(&pm8001_dev->running_req);
 		break;
-		/* following cases are to do cases */
+		 
 	case IO_UNDERFLOW:
-		/* SATA Completion with error */
+		 
 		pm8001_dbg(pm8001_ha, IO, "IO_UNDERFLOW param = %d\n", param);
 		ts->resp = SAS_TASK_COMPLETE;
 		ts->stat = SAS_DATA_UNDERRUN;
@@ -2516,7 +2309,7 @@ mpi_sata_completion(struct pm8001_hba_info *pm8001_ha, void *piomb)
 		break;
 	default:
 		pm8001_dbg(pm8001_ha, DEVIO, "Unknown status 0x%x\n", status);
-		/* not allowed case. Therefore, return failed status */
+		 
 		ts->resp = SAS_TASK_COMPLETE;
 		ts->stat = SAS_DEV_NO_RESPONSE;
 		if (pm8001_dev)
@@ -2538,7 +2331,7 @@ mpi_sata_completion(struct pm8001_hba_info *pm8001_ha, void *piomb)
 	}
 }
 
-/*See the comments for mpi_ssp_completion */
+ 
 static void mpi_sata_event(struct pm8001_hba_info *pm8001_ha, void *piomb)
 {
 	struct sas_task *t;
@@ -2555,9 +2348,9 @@ static void mpi_sata_event(struct pm8001_hba_info *pm8001_ha, void *piomb)
 	if (event)
 		pm8001_dbg(pm8001_ha, FAIL, "SATA EVENT 0x%x\n", event);
 
-	/* Check if this is NCQ error */
+	 
 	if (event == IO_XFER_ERROR_ABORTED_NCQ_MODE) {
-		/* find device using device id */
+		 
 		pm8001_dev = pm8001_find_dev(pm8001_ha, dev_id);
 		if (pm8001_dev)
 			pm8001_handle_event(pm8001_ha,
@@ -2713,14 +2506,14 @@ static void mpi_sata_event(struct pm8001_hba_info *pm8001_ha, void *piomb)
 		break;
 	default:
 		pm8001_dbg(pm8001_ha, DEVIO, "Unknown status 0x%x\n", event);
-		/* not allowed case. Therefore, return failed status */
+		 
 		ts->resp = SAS_TASK_COMPLETE;
 		ts->stat = SAS_OPEN_TO;
 		break;
 	}
 }
 
-/*See the comments for mpi_ssp_completion */
+ 
 static void
 mpi_smp_completion(struct pm8001_hba_info *pm8001_ha, void *piomb)
 {
@@ -2886,7 +2679,7 @@ mpi_smp_completion(struct pm8001_hba_info *pm8001_ha, void *piomb)
 		pm8001_dbg(pm8001_ha, DEVIO, "Unknown status 0x%x\n", status);
 		ts->resp = SAS_TASK_COMPLETE;
 		ts->stat = SAS_DEV_NO_RESPONSE;
-		/* not allowed case. Therefore, return failed status */
+		 
 		break;
 	}
 	spin_lock_irqsave(&t->task_state_lock, flags);
@@ -2959,14 +2752,12 @@ pm8001_mpi_get_nvmd_resp(struct pm8001_hba_info *pm8001_ha, void *piomb)
 		pm8001_dbg(pm8001_ha, FAIL, "Get nvm data error %x\n",
 				dlen_status);
 		complete(pm8001_ha->nvmd_completion);
-		/* We should free tag during failure also, the tag is not being
-		 * freed by requesting path anywhere.
-		 */
+		 
 		pm8001_ccb_free(pm8001_ha, ccb);
 		return;
 	}
 	if (ir_tds_bn_dps_das_nvm & IPMode) {
-		/* indirect mode - IR bit set */
+		 
 		pm8001_dbg(pm8001_ha, MSG, "Get NVMD success, IR=1\n");
 		if ((ir_tds_bn_dps_das_nvm & NVMD_TYPE) == TWI_DEVICE) {
 			if (ir_tds_bn_dps_das_nvm == 0x80a80200) {
@@ -2983,27 +2774,22 @@ pm8001_mpi_get_nvmd_resp(struct pm8001_hba_info *pm8001_ha, void *piomb)
 			|| ((ir_tds_bn_dps_das_nvm & NVMD_TYPE) == IOP_RDUMP)) {
 			;
 		} else {
-			/* Should not be happened*/
+			 
 			pm8001_dbg(pm8001_ha, MSG,
 				   "(IR=1)Wrong Device type 0x%x\n",
 				   ir_tds_bn_dps_das_nvm);
 		}
-	} else /* direct mode */{
+	} else  {
 		pm8001_dbg(pm8001_ha, MSG,
 			   "Get NVMD success, IR=0, dataLen=%d\n",
 			   (dlen_status & NVMD_LEN) >> 24);
 	}
-	/* Though fw_control_context is freed below, usrAddr still needs
-	 * to be updated as this holds the response to the request function
-	 */
+	 
 	memcpy(fw_control_context->usrAddr,
 		pm8001_ha->memoryMap.region[NVMD].virt_ptr,
 		fw_control_context->len);
 	kfree(ccb->fw_control_context);
-	/* To avoid race condition, complete should be
-	 * called after the message is copied to
-	 * fw_control_context->usrAddr
-	 */
+	 
 	complete(pm8001_ha->nvmd_completion);
 	pm8001_dbg(pm8001_ha, MSG, "Get nvmd data complete!\n");
 	pm8001_ccb_free(pm8001_ha, ccb);
@@ -3036,17 +2822,7 @@ int pm8001_mpi_local_phy_ctl(struct pm8001_hba_info *pm8001_ha, void *piomb)
 	return 0;
 }
 
-/**
- * pm8001_bytes_dmaed - one of the interface function communication with libsas
- * @pm8001_ha: our hba card information
- * @i: which phy that received the event.
- *
- * when HBA driver received the identify done event or initiate FIS received
- * event(for SATA), it will invoke this function to notify the sas layer that
- * the sas toplogy has formed, please discover the whole sas domain,
- * while receive a broadcast(change) primitive just tell the sas
- * layer to discover the changed domain rather than the whole domain.
- */
+ 
 void pm8001_bytes_dmaed(struct pm8001_hba_info *pm8001_ha, int i)
 {
 	struct pm8001_phy *phy = &pm8001_ha->phy[i];
@@ -3061,7 +2837,7 @@ void pm8001_bytes_dmaed(struct pm8001_hba_info *pm8001_ha, int i)
 		id->initiator_bits = SAS_PROTOCOL_ALL;
 		id->target_bits = phy->identify.target_port_protocols;
 	} else if (phy->phy_type & PORT_TYPE_SATA) {
-		/*Nothing*/
+		 
 	}
 	pm8001_dbg(pm8001_ha, MSG, "phy %d byte dmaded.\n", i);
 
@@ -3069,7 +2845,7 @@ void pm8001_bytes_dmaed(struct pm8001_hba_info *pm8001_ha, int i)
 	sas_notify_port_event(sas_phy, PORTE_BYTES_DMAED, GFP_ATOMIC);
 }
 
-/* Get the link rate speed  */
+ 
 void pm8001_get_lrate_mode(struct pm8001_phy *phy, u8 link_rate)
 {
 	struct sas_phy *sas_phy = phy->sas_phy.phy;
@@ -3095,25 +2871,14 @@ void pm8001_get_lrate_mode(struct pm8001_phy *phy, u8 link_rate)
 	sas_phy->minimum_linkrate = phy->minimum_linkrate;
 }
 
-/**
- * pm8001_get_attached_sas_addr - extract/generate attached SAS address
- * @phy: pointer to asd_phy
- * @sas_addr: pointer to buffer where the SAS address is to be written
- *
- * This function extracts the SAS address from an IDENTIFY frame
- * received.  If OOB is SATA, then a SAS address is generated from the
- * HA tables.
- *
- * LOCKING: the frame_rcvd_lock needs to be held since this parses the frame
- * buffer.
- */
+ 
 void pm8001_get_attached_sas_addr(struct pm8001_phy *phy,
 	u8 *sas_addr)
 {
 	if (phy->sas_phy.frame_rcvd[0] == 0x34
 		&& phy->sas_phy.oob_mode == SATA_OOB_MODE) {
 		struct pm8001_hba_info *pm8001_ha = phy->sas_phy.ha->lldd_ha;
-		/* FIS device-to-host */
+		 
 		u64 addr = be64_to_cpu(*(__be64 *)pm8001_ha->sas_addr);
 		addr += phy->sas_phy.id;
 		*(__be64 *)sas_addr = cpu_to_be64(addr);
@@ -3124,16 +2889,7 @@ void pm8001_get_attached_sas_addr(struct pm8001_phy *phy,
 	}
 }
 
-/**
- * pm8001_hw_event_ack_req- For PM8001,some events need to acknowage to FW.
- * @pm8001_ha: our hba card information
- * @Qnum: the outbound queue message number.
- * @SEA: source of event to ack
- * @port_id: port id.
- * @phyId: phy id.
- * @param0: parameter 0.
- * @param1: parameter 1.
- */
+ 
 static void pm8001_hw_event_ack_req(struct pm8001_hba_info *pm8001_ha,
 	u32 Qnum, u32 SEA, u32 port_id, u32 phyId, u32 param0, u32 param1)
 {
@@ -3153,11 +2909,7 @@ static void pm8001_hw_event_ack_req(struct pm8001_hba_info *pm8001_ha,
 static int pm8001_chip_phy_ctl_req(struct pm8001_hba_info *pm8001_ha,
 	u32 phyId, u32 phy_op);
 
-/**
- * hw_event_sas_phy_up -FW tells me a SAS phy up event.
- * @pm8001_ha: our hba card information
- * @piomb: IO message buffer
- */
+ 
 static void
 hw_event_sas_phy_up(struct pm8001_hba_info *pm8001_ha, void *piomb)
 {
@@ -3226,15 +2978,11 @@ hw_event_sas_phy_up(struct pm8001_hba_info *pm8001_ha, void *piomb)
 	pm8001_get_attached_sas_addr(phy, phy->sas_phy.attached_sas_addr);
 	spin_unlock_irqrestore(&phy->sas_phy.frame_rcvd_lock, flags);
 	if (pm8001_ha->flags == PM8001F_RUN_TIME)
-		mdelay(200);/*delay a moment to wait disk to spinup*/
+		mdelay(200); 
 	pm8001_bytes_dmaed(pm8001_ha, phy_id);
 }
 
-/**
- * hw_event_sata_phy_up -FW tells me a SATA phy up event.
- * @pm8001_ha: our hba card information
- * @piomb: IO message buffer
- */
+ 
 static void
 hw_event_sata_phy_up(struct pm8001_hba_info *pm8001_ha, void *piomb)
 {
@@ -3275,11 +3023,7 @@ hw_event_sata_phy_up(struct pm8001_hba_info *pm8001_ha, void *piomb)
 	pm8001_bytes_dmaed(pm8001_ha, phy_id);
 }
 
-/**
- * hw_event_phy_down -we should notify the libsas the phy is down.
- * @pm8001_ha: our hba card information
- * @piomb: IO message buffer
- */
+ 
 static void
 hw_event_phy_down(struct pm8001_hba_info *pm8001_ha, void *piomb)
 {
@@ -3337,16 +3081,7 @@ hw_event_phy_down(struct pm8001_hba_info *pm8001_ha, void *piomb)
 	}
 }
 
-/**
- * pm8001_mpi_reg_resp -process register device ID response.
- * @pm8001_ha: our hba card information
- * @piomb: IO message buffer
- *
- * when sas layer find a device it will notify LLDD, then the driver register
- * the domain device to FW, this event is the return device ID which the FW
- * has assigned, from now, inter-communication with FW is no longer using the
- * SAS address, use device ID which FW assigned.
- */
+ 
 int pm8001_mpi_reg_resp(struct pm8001_hba_info *pm8001_ha, void *piomb)
 {
 	u32 status;
@@ -3422,11 +3157,7 @@ int pm8001_mpi_dereg_resp(struct pm8001_hba_info *pm8001_ha, void *piomb)
 	return 0;
 }
 
-/**
- * pm8001_mpi_fw_flash_update_resp - Response from FW for flash update command.
- * @pm8001_ha: our hba card information
- * @piomb: IO message buffer
- */
+ 
 int pm8001_mpi_fw_flash_update_resp(struct pm8001_hba_info *pm8001_ha,
 		void *piomb)
 {
@@ -3512,7 +3243,7 @@ int pm8001_mpi_task_abort_resp(struct pm8001_hba_info *pm8001_ha, void *piomb)
 	scp = le32_to_cpu(pPayload->scp);
 	ccb = &pm8001_ha->ccb_info[tag];
 	t = ccb->task;
-	pm8001_dev = ccb->device; /* retrieve device */
+	pm8001_dev = ccb->device;  
 
 	if (!t)	{
 		pm8001_dbg(pm8001_ha, FAIL, " TASK NULL. RETURNING !!!\n");
@@ -3549,11 +3280,7 @@ int pm8001_mpi_task_abort_resp(struct pm8001_hba_info *pm8001_ha, void *piomb)
 	return 0;
 }
 
-/**
- * mpi_hw_event -The hw event has come.
- * @pm8001_ha: our hba card information
- * @piomb: IO message buffer
- */
+ 
 static int mpi_hw_event(struct pm8001_hba_info *pm8001_ha, void *piomb)
 {
 	unsigned long flags;
@@ -3621,8 +3348,7 @@ static int mpi_hw_event(struct pm8001_hba_info *pm8001_ha, void *piomb)
 		sas_notify_port_event(sas_phy, PORTE_LINK_RESET_ERR,
 			GFP_ATOMIC);
 		break;
-	/* the broadcast change primitive received, tell the LIBSAS this event
-	to revalidate the sas domain*/
+	 
 	case HW_EVENT_BROADCAST_CHANGE:
 		pm8001_dbg(pm8001_ha, MSG, "HW_EVENT_BROADCAST_CHANGE\n");
 		pm8001_hw_event_ack_req(pm8001_ha, 0, HW_EVENT_BROADCAST_CHANGE,
@@ -3761,11 +3487,7 @@ static int mpi_hw_event(struct pm8001_hba_info *pm8001_ha, void *piomb)
 	return 0;
 }
 
-/**
- * process_one_iomb - process one outbound Queue memory block
- * @pm8001_ha: our hba card information
- * @piomb: IO message buffer
- */
+ 
 static void process_one_iomb(struct pm8001_hba_info *pm8001_ha, void *piomb)
 {
 	__le32 pHeader = *(__le32 *)piomb;
@@ -3818,11 +3540,11 @@ static void process_one_iomb(struct pm8001_hba_info *pm8001_ha, void *piomb)
 		break;
 	case OPC_OUB_DEV_HANDLE_ARRIV:
 		pm8001_dbg(pm8001_ha, MSG, "OPC_OUB_DEV_HANDLE_ARRIV\n");
-		/*This is for target*/
+		 
 		break;
 	case OPC_OUB_SSP_RECV_EVENT:
 		pm8001_dbg(pm8001_ha, MSG, "OPC_OUB_SSP_RECV_EVENT\n");
-		/*This is for target*/
+		 
 		break;
 	case OPC_OUB_DEV_INFO:
 		pm8001_dbg(pm8001_ha, MSG, "OPC_OUB_DEV_INFO\n");
@@ -3914,19 +3636,19 @@ static int process_oq(struct pm8001_hba_info *pm8001_ha, u8 vec)
 	do {
 		ret = pm8001_mpi_msg_consume(pm8001_ha, circularQ, &pMsg1, &bc);
 		if (MPI_IO_STATUS_SUCCESS == ret) {
-			/* process the outbound message */
+			 
 			process_one_iomb(pm8001_ha, (void *)(pMsg1 - 4));
-			/* free the message from the outbound circular buffer */
+			 
 			pm8001_mpi_msg_free_set(pm8001_ha, pMsg1,
 							circularQ, bc);
 		}
 		if (MPI_IO_STATUS_BUSY == ret) {
-			/* Update the producer index from SPC */
+			 
 			circularQ->producer_index =
 				cpu_to_le32(pm8001_read_32(circularQ->pi_virt));
 			if (le32_to_cpu(circularQ->producer_index) ==
 				circularQ->consumer_idx)
-				/* OQ is empty */
+				 
 				break;
 		}
 	} while (1);
@@ -3934,12 +3656,12 @@ static int process_oq(struct pm8001_hba_info *pm8001_ha, u8 vec)
 	return ret;
 }
 
-/* DMA_... to our direction translation. */
+ 
 static const u8 data_dir_flags[] = {
-	[DMA_BIDIRECTIONAL]	= DATA_DIR_BYRECIPIENT,	/* UNSPECIFIED */
-	[DMA_TO_DEVICE]		= DATA_DIR_OUT,		/* OUTBOUND */
-	[DMA_FROM_DEVICE]	= DATA_DIR_IN,		/* INBOUND */
-	[DMA_NONE]		= DATA_DIR_NONE,	/* NO TRANSFER */
+	[DMA_BIDIRECTIONAL]	= DATA_DIR_BYRECIPIENT,	 
+	[DMA_TO_DEVICE]		= DATA_DIR_OUT,		 
+	[DMA_FROM_DEVICE]	= DATA_DIR_IN,		 
+	[DMA_NONE]		= DATA_DIR_NONE,	 
 };
 void
 pm8001_chip_make_sg(struct scatterlist *scatter, int nr, void *prd)
@@ -3963,11 +3685,7 @@ static void build_smp_cmd(u32 deviceID, __le32 hTag, struct smp_req *psmp_cmd)
 	psmp_cmd->len_ip_ir = cpu_to_le32(1|(1 << 1));
 }
 
-/**
- * pm8001_chip_smp_req - send a SMP task to FW
- * @pm8001_ha: our hba card information.
- * @ccb: the ccb information this request used.
- */
+ 
 static int pm8001_chip_smp_req(struct pm8001_hba_info *pm8001_ha,
 	struct pm8001_ccb_info *ccb)
 {
@@ -3981,9 +3699,7 @@ static int pm8001_chip_smp_req(struct pm8001_hba_info *pm8001_ha,
 	u32 opc;
 
 	memset(&smp_cmd, 0, sizeof(smp_cmd));
-	/*
-	 * DMA-map SMP request, response buffers
-	 */
+	 
 	sg_req = &task->smp_task.smp_req;
 	elem = dma_map_sg(pm8001_ha->dev, sg_req, 1, DMA_TO_DEVICE);
 	if (!elem)
@@ -3997,7 +3713,7 @@ static int pm8001_chip_smp_req(struct pm8001_hba_info *pm8001_ha,
 		goto err_out;
 	}
 	resp_len = sg_dma_len(sg_resp);
-	/* must be in dwords */
+	 
 	if ((req_len & 0x3) || (resp_len & 0x3)) {
 		rc = -EINVAL;
 		goto err_out_2;
@@ -4030,11 +3746,7 @@ err_out:
 	return rc;
 }
 
-/**
- * pm8001_chip_ssp_io_req - send a SSP task to FW
- * @pm8001_ha: our hba card information.
- * @ccb: the ccb information this request used.
- */
+ 
 static int pm8001_chip_ssp_io_req(struct pm8001_hba_info *pm8001_ha,
 	struct pm8001_ccb_info *ccb)
 {
@@ -4048,8 +3760,7 @@ static int pm8001_chip_ssp_io_req(struct pm8001_hba_info *pm8001_ha,
 	memset(&ssp_cmd, 0, sizeof(ssp_cmd));
 	memcpy(ssp_cmd.ssp_iu.lun, task->ssp_task.LUN, 8);
 	ssp_cmd.dir_m_tlr =
-		cpu_to_le32(data_dir_flags[task->data_dir] << 8 | 0x0);/*0 for
-	SAS 1.1 compatible TLR*/
+		cpu_to_le32(data_dir_flags[task->data_dir] << 8 | 0x0); 
 	ssp_cmd.data_len = cpu_to_le32(task->total_xfer_len);
 	ssp_cmd.device_id = cpu_to_le32(pm8001_dev->device_id);
 	ssp_cmd.tag = cpu_to_le32(tag);
@@ -4057,7 +3768,7 @@ static int pm8001_chip_ssp_io_req(struct pm8001_hba_info *pm8001_ha,
 	memcpy(ssp_cmd.ssp_iu.cdb, task->ssp_task.cmd->cmnd,
 	       task->ssp_task.cmd->cmd_len);
 
-	/* fill in PRD (scatter/gather) table, if any */
+	 
 	if (task->num_scatter > 1) {
 		pm8001_chip_make_sg(task->scatter, ccb->n_elem, ccb->buf_prd);
 		phys_addr = ccb->ccb_dma_handle;
@@ -4098,18 +3809,18 @@ static int pm8001_chip_sata_req(struct pm8001_hba_info *pm8001_ha,
 	memset(&sata_cmd, 0, sizeof(sata_cmd));
 
 	if (task->data_dir == DMA_NONE && !task->ata_task.use_ncq) {
-		ATAP = 0x04;  /* no data*/
+		ATAP = 0x04;   
 		pm8001_dbg(pm8001_ha, IO, "no data\n");
 	} else if (likely(!task->ata_task.device_control_reg_update)) {
 		if (task->ata_task.use_ncq &&
 		    dev->sata_dev.class != ATA_DEV_ATAPI) {
-			ATAP = 0x07; /* FPDMA */
+			ATAP = 0x07;  
 			pm8001_dbg(pm8001_ha, IO, "FPDMA\n");
 		} else if (task->ata_task.dma_xfer) {
-			ATAP = 0x06; /* DMA */
+			ATAP = 0x06;  
 			pm8001_dbg(pm8001_ha, IO, "DMA\n");
 		} else {
-			ATAP = 0x05; /* PIO*/
+			ATAP = 0x05;  
 			pm8001_dbg(pm8001_ha, IO, "PIO\n");
 		}
 	}
@@ -4128,9 +3839,9 @@ static int pm8001_chip_sata_req(struct pm8001_hba_info *pm8001_ha,
 			    ((ATAP & 0x3f) << 10) | dir);
 	sata_cmd.sata_fis = task->ata_task.fis;
 	if (likely(!task->ata_task.device_control_reg_update))
-		sata_cmd.sata_fis.flags |= 0x80;/* C=1: update ATA cmd reg */
-	sata_cmd.sata_fis.flags &= 0xF0;/* PM_PORT field shall be 0 */
-	/* fill in PRD (scatter/gather) table, if any */
+		sata_cmd.sata_fis.flags |= 0x80; 
+	sata_cmd.sata_fis.flags &= 0xF0; 
+	 
 	if (task->num_scatter > 1) {
 		pm8001_chip_make_sg(task->scatter, ccb->n_elem, ccb->buf_prd);
 		phys_addr = ccb->ccb_dma_handle;
@@ -4154,11 +3865,7 @@ static int pm8001_chip_sata_req(struct pm8001_hba_info *pm8001_ha,
 				    sizeof(sata_cmd), 0);
 }
 
-/**
- * pm8001_chip_phy_start_req - start phy via PHY_START COMMAND
- * @pm8001_ha: our hba card information.
- * @phy_id: the phy id which we wanted to start up.
- */
+ 
 static int
 pm8001_chip_phy_start_req(struct pm8001_hba_info *pm8001_ha, u8 phy_id)
 {
@@ -4168,12 +3875,7 @@ pm8001_chip_phy_start_req(struct pm8001_hba_info *pm8001_ha, u8 phy_id)
 
 	memset(&payload, 0, sizeof(payload));
 	payload.tag = cpu_to_le32(tag);
-	/*
-	 ** [0:7]   PHY Identifier
-	 ** [8:11]  link rate 1.5G, 3G, 6G
-	 ** [12:13] link mode 01b SAS mode; 10b SATA mode; 11b both
-	 ** [14]    0b disable spin up hold; 1b enable spin up hold
-	 */
+	 
 	payload.ase_sh_lm_slr_phyid = cpu_to_le32(SPINHOLD_DISABLE |
 		LINKMODE_AUTO |	LINKRATE_15 |
 		LINKRATE_30 | LINKRATE_60 | phy_id);
@@ -4187,11 +3889,7 @@ pm8001_chip_phy_start_req(struct pm8001_hba_info *pm8001_ha, u8 phy_id)
 				    sizeof(payload), 0);
 }
 
-/**
- * pm8001_chip_phy_stop_req - start phy via PHY_STOP COMMAND
- * @pm8001_ha: our hba card information.
- * @phy_id: the phy id which we wanted to start up.
- */
+ 
 static int pm8001_chip_phy_stop_req(struct pm8001_hba_info *pm8001_ha,
 				    u8 phy_id)
 {
@@ -4207,9 +3905,7 @@ static int pm8001_chip_phy_stop_req(struct pm8001_hba_info *pm8001_ha,
 				    sizeof(payload), 0);
 }
 
-/*
- * see comments on pm8001_mpi_reg_resp.
- */
+ 
 static int pm8001_chip_reg_dev_req(struct pm8001_hba_info *pm8001_ha,
 	struct pm8001_device *pm8001_dev, u32 flag)
 {
@@ -4233,13 +3929,13 @@ static int pm8001_chip_reg_dev_req(struct pm8001_hba_info *pm8001_ha,
 
 	payload.tag = cpu_to_le32(ccb->ccb_tag);
 	if (flag == 1)
-		stp_sspsmp_sata = 0x02; /*direct attached sata */
+		stp_sspsmp_sata = 0x02;  
 	else {
 		if (pm8001_dev->dev_type == SAS_SATA_DEV)
-			stp_sspsmp_sata = 0x00; /* stp*/
+			stp_sspsmp_sata = 0x00;  
 		else if (pm8001_dev->dev_type == SAS_END_DEVICE ||
 			dev_is_expander(pm8001_dev->dev_type))
-			stp_sspsmp_sata = 0x01; /*ssp or smp*/
+			stp_sspsmp_sata = 0x01;  
 	}
 	if (parent_dev && dev_is_expander(parent_dev->dev_type))
 		phy_id = parent_dev->ex_dev.ex_phy->phy_id;
@@ -4267,9 +3963,7 @@ static int pm8001_chip_reg_dev_req(struct pm8001_hba_info *pm8001_ha,
 	return rc;
 }
 
-/*
- * see comments on pm8001_mpi_reg_resp.
- */
+ 
 int pm8001_chip_dereg_dev_req(struct pm8001_hba_info *pm8001_ha,
 	u32 device_id)
 {
@@ -4286,12 +3980,7 @@ int pm8001_chip_dereg_dev_req(struct pm8001_hba_info *pm8001_ha,
 				    sizeof(payload), 0);
 }
 
-/**
- * pm8001_chip_phy_ctl_req - support the local phy operation
- * @pm8001_ha: our hba card information.
- * @phyId: the phy id which we wanted to operate
- * @phy_op: the phy operation to request
- */
+ 
 static int pm8001_chip_phy_ctl_req(struct pm8001_hba_info *pm8001_ha,
 	u32 phyId, u32 phy_op)
 {
@@ -4321,11 +4010,7 @@ static u32 pm8001_chip_is_our_interrupt(struct pm8001_hba_info *pm8001_ha)
 #endif
 }
 
-/**
- * pm8001_chip_isr - PM8001 isr handler.
- * @pm8001_ha: our hba card information.
- * @vec: IRQ number
- */
+ 
 static irqreturn_t
 pm8001_chip_isr(struct pm8001_hba_info *pm8001_ha, u8 vec)
 {
@@ -4362,9 +4047,7 @@ static int send_task_abort(struct pm8001_hba_info *pm8001_ha, u32 opc,
 				    sizeof(task_abort), 0);
 }
 
-/*
- * pm8001_chip_abort_task - SAS abort task when error or exception happened.
- */
+ 
 int pm8001_chip_abort_task(struct pm8001_hba_info *pm8001_ha,
 	struct pm8001_ccb_info *ccb)
 {
@@ -4381,7 +4064,7 @@ int pm8001_chip_abort_task(struct pm8001_hba_info *pm8001_ha,
 	else if (pm8001_dev->dev_type == SAS_SATA_DEV)
 		opc = OPC_INB_SATA_ABORT;
 	else
-		opc = OPC_INB_SMP_ABORT;/* SMP */
+		opc = OPC_INB_SMP_ABORT; 
 	device_id = pm8001_dev->device_id;
 	rc = send_task_abort(pm8001_ha, opc, device_id, abort->type,
 			     abort->tag, ccb->ccb_tag);
@@ -4390,12 +4073,7 @@ int pm8001_chip_abort_task(struct pm8001_hba_info *pm8001_ha,
 	return rc;
 }
 
-/**
- * pm8001_chip_ssp_tm_req - built the task management command.
- * @pm8001_ha: our hba card information.
- * @ccb: the ccb information.
- * @tmf: task management function.
- */
+ 
 int pm8001_chip_ssp_tm_req(struct pm8001_hba_info *pm8001_ha,
 	struct pm8001_ccb_info *ccb, struct sas_tmf_task *tmf)
 {
@@ -4595,12 +4273,7 @@ int pm8001_chip_set_nvmd_req(struct pm8001_hba_info *pm8001_ha,
 	return rc;
 }
 
-/**
- * pm8001_chip_fw_flash_update_build - support the firmware update operation
- * @pm8001_ha: our hba card information.
- * @fw_flash_updata_info: firmware flash update param
- * @tag: Tag to apply to the payload
- */
+ 
 int
 pm8001_chip_fw_flash_update_build(struct pm8001_hba_info *pm8001_ha,
 	void *fw_flash_updata_info, u32 tag)
@@ -4688,7 +4361,7 @@ pm8001_get_gsm_dump(struct device *cdev, u32 length, char *buf)
 	direct_data = buf;
 	gsm_dump_offset = pm8001_ha->fatal_forensic_shift_offset;
 
-	/* check max is 1 Mbytes */
+	 
 	if ((length > 0x100000) || (gsm_dump_offset & 3) ||
 		((gsm_dump_offset + length) > 0x1000000))
 			return -EINVAL;
@@ -4701,7 +4374,7 @@ pm8001_get_gsm_dump(struct device *cdev, u32 length, char *buf)
 	work_offset = gsm_dump_offset & 0xFFFF0000;
 	offset = gsm_dump_offset & 0x0000FFFF;
 	gsm_dump_offset = work_offset;
-	/* adjust length to dword boundary */
+	 
 	rem = length & 3;
 	dw_length = length >> 2;
 
@@ -4739,10 +4412,10 @@ pm8001_get_gsm_dump(struct device *cdev, u32 length, char *buf)
 	if (rem != 0) {
 		value = pm8001_cr32(pm8001_ha, bar, (work_offset + offset) &
 						0x0000FFFF);
-		/* xfr for non_dw */
+		 
 		direct_data += sprintf(direct_data, "%08x ", value);
 	}
-	/* Shift back to BAR4 original address */
+	 
 	if (-1 == pm8001_bar4_shift(pm8001_ha, 0))
 			return -EIO;
 	pm8001_ha->fatal_forensic_shift_offset += 1024;

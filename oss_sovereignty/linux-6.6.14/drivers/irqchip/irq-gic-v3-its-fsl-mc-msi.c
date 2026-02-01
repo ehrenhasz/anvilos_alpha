@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Freescale Management Complex (MC) bus driver MSI support
- *
- * Copyright (C) 2015-2016 Freescale Semiconductor, Inc.
- * Author: German Rivera <German.Rivera@freescale.com>
- *
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/acpi_iort.h>
@@ -50,17 +44,12 @@ static int its_fsl_mc_msi_prepare(struct irq_domain *msi_domain,
 	if (!(mc_bus_dev->flags & FSL_MC_IS_DPRC))
 		return -EINVAL;
 
-	/*
-	 * Set the device Id to be passed to the GIC-ITS:
-	 *
-	 * NOTE: This device id corresponds to the IOMMU stream ID
-	 * associated with the DPRC object (ICID).
-	 */
+	 
 	info->scratchpad[0].ul = fsl_mc_msi_domain_get_msi_id(msi_domain,
 							      mc_bus_dev);
 	msi_info = msi_get_domain_info(msi_domain->parent);
 
-	/* Allocate at least 32 MSIs, and always as a power of 2 */
+	 
 	nvec = max_t(int, 32, roundup_pow_of_two(nvec));
 	return msi_info->ops->msi_prepare(msi_domain->parent, dev, nvec, info);
 }

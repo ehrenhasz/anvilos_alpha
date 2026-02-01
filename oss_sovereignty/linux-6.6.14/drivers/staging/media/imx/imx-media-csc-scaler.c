@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * i.MX IPUv3 IC PP mem2mem CSC/Scaler driver
- *
- * Copyright (C) 2011 Pengutronix, Sascha Hauer
- * Copyright (C) 2018 Pengutronix, Philipp Zabel
- */
+
+ 
 #include <linux/module.h>
 #include <linux/delay.h>
 #include <linux/fs.h>
@@ -40,12 +35,12 @@ struct ipu_csc_scaler_priv {
 
 	struct imx_media_dev		*md;
 
-	struct mutex			mutex;	/* mem2mem device mutex */
+	struct mutex			mutex;	 
 };
 
 #define vdev_to_priv(v) container_of(v, struct ipu_csc_scaler_priv, vdev)
 
-/* Per-queue, driver-specific private data */
+ 
 struct ipu_csc_scaler_q_data {
 	struct v4l2_pix_format		cur_fmt;
 	struct v4l2_rect		rect;
@@ -75,9 +70,7 @@ static struct ipu_csc_scaler_q_data *get_q_data(struct ipu_csc_scaler_ctx *ctx,
 		return &ctx->q_data[V4L2_M2M_DST];
 }
 
-/*
- * mem2mem callbacks
- */
+ 
 
 static void job_abort(void *_ctx)
 {
@@ -146,9 +139,7 @@ err:
 	v4l2_m2m_job_finish(priv->m2m_dev, ctx->fh.m2m_ctx);
 }
 
-/*
- * Video ioctls
- */
+ 
 static int ipu_csc_scaler_querycap(struct file *file, void *priv,
 				   struct v4l2_capability *cap)
 {
@@ -265,19 +256,19 @@ static int ipu_csc_scaler_s_fmt(struct file *file, void *priv,
 	q_data->cur_fmt.bytesperline = f->fmt.pix.bytesperline;
 	q_data->cur_fmt.sizeimage = f->fmt.pix.sizeimage;
 
-	/* Reset cropping/composing rectangle */
+	 
 	q_data->rect.left = 0;
 	q_data->rect.top = 0;
 	q_data->rect.width = q_data->cur_fmt.width;
 	q_data->rect.height = q_data->cur_fmt.height;
 
 	if (f->type == V4L2_BUF_TYPE_VIDEO_OUTPUT) {
-		/* Set colorimetry on the output queue */
+		 
 		q_data->cur_fmt.colorspace = f->fmt.pix.colorspace;
 		q_data->cur_fmt.ycbcr_enc = f->fmt.pix.ycbcr_enc;
 		q_data->cur_fmt.xfer_func = f->fmt.pix.xfer_func;
 		q_data->cur_fmt.quantization = f->fmt.pix.quantization;
-		/* Propagate colorimetry to the capture queue */
+		 
 		q_data = get_q_data(ctx, V4L2_BUF_TYPE_VIDEO_CAPTURE);
 		q_data->cur_fmt.colorspace = f->fmt.pix.colorspace;
 		q_data->cur_fmt.ycbcr_enc = f->fmt.pix.ycbcr_enc;
@@ -285,10 +276,7 @@ static int ipu_csc_scaler_s_fmt(struct file *file, void *priv,
 		q_data->cur_fmt.quantization = f->fmt.pix.quantization;
 	}
 
-	/*
-	 * TODO: Setting colorimetry on the capture queue is currently not
-	 * supported by the V4L2 API
-	 */
+	 
 
 	return 0;
 }
@@ -356,10 +344,7 @@ static int ipu_csc_scaler_s_selection(struct file *file, void *priv,
 
 	q_data = get_q_data(ctx, s->type);
 
-	/* The input's frame width to the IC must be a multiple of 8 pixels
-	 * When performing resizing the frame width must be multiple of burst
-	 * size - 8 or 16 pixels as defined by CB#_BURST_16 parameter.
-	 */
+	 
 	if (s->flags & V4L2_SEL_FLAG_GE)
 		s->r.width = round_up(s->r.width, 8);
 	if (s->flags & V4L2_SEL_FLAG_LE)
@@ -373,7 +358,7 @@ static int ipu_csc_scaler_s_selection(struct file *file, void *priv,
 	s->r.top = clamp_t(unsigned int, s->r.top, 0,
 			   q_data->cur_fmt.height - s->r.height);
 
-	/* V4L2_SEL_FLAG_KEEP_CONFIG is only valid for subdevices */
+	 
 	q_data->rect = s->r;
 
 	return 0;
@@ -411,9 +396,7 @@ static const struct v4l2_ioctl_ops ipu_csc_scaler_ioctl_ops = {
 	.vidioc_unsubscribe_event	= v4l2_event_unsubscribe,
 };
 
-/*
- * Queue operations
- */
+ 
 
 static int ipu_csc_scaler_queue_setup(struct vb2_queue *vq,
 				      unsigned int *nbuffers,
@@ -657,14 +640,14 @@ static int ipu_csc_scaler_s_ctrl(struct v4l2_ctrl *ctrl)
 
 		if (ipu_rot_mode_is_irt(rot_mode) !=
 		    ipu_rot_mode_is_irt(ctx->rot_mode)) {
-			/* Switch width & height to keep aspect ratio intact */
+			 
 			test_out.pix.width = out_fmt->height;
 			test_out.pix.height = out_fmt->width;
 		}
 
 		ipu_image_convert_adjust(&test_in, &test_out, ctx->rot_mode);
 
-		/* Check if output format needs to be changed */
+		 
 		if (test_in.pix.width != in_fmt->width ||
 		    test_in.pix.height != in_fmt->height ||
 		    test_in.pix.bytesperline != in_fmt->bytesperline ||
@@ -677,7 +660,7 @@ static int ipu_csc_scaler_s_ctrl(struct v4l2_ctrl *ctrl)
 				return -EBUSY;
 		}
 
-		/* Check if capture format needs to be changed */
+		 
 		if (test_out.pix.width != out_fmt->width ||
 		    test_out.pix.height != out_fmt->height ||
 		    test_out.pix.bytesperline != out_fmt->bytesperline ||
@@ -746,9 +729,7 @@ static const struct ipu_csc_scaler_q_data ipu_csc_scaler_q_data_default = {
 	},
 };
 
-/*
- * File operations
- */
+ 
 static int ipu_csc_scaler_open(struct file *file)
 {
 	struct ipu_csc_scaler_priv *priv = video_drvdata(file);

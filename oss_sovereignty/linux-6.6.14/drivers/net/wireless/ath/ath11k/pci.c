@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2019-2020 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2023 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/msi.h>
@@ -57,11 +54,11 @@ static u32 ath11k_pci_get_window_start(struct ath11k_base *ab, u32 offset)
 		return ATH11K_PCI_WINDOW_START;
 
 	if ((offset ^ HAL_SEQ_WCSS_UMAC_OFFSET) < ATH11K_PCI_WINDOW_RANGE_MASK)
-		/* if offset lies within DP register range, use 3rd window */
+		 
 		return 3 * ATH11K_PCI_WINDOW_START;
 	else if ((offset ^ HAL_SEQ_WCSS_UMAC_CE0_SRC_REG(ab)) <
 		 ATH11K_PCI_WINDOW_RANGE_MASK)
-		 /* if offset lies within CE register range, use 2nd window */
+		  
 		return 2 * ATH11K_PCI_WINDOW_START;
 	else
 		return ATH11K_PCI_WINDOW_START;
@@ -182,11 +179,11 @@ static void ath11k_pci_soc_global_reset(struct ath11k_base *ab)
 
 	ath11k_pcic_write32(ab, PCIE_SOC_GLOBAL_RESET, val);
 
-	/* TODO: exact time to sleep is uncertain */
+	 
 	delay = 10;
 	mdelay(delay);
 
-	/* Need to toggle V bit back otherwise stuck in reset status */
+	 
 	val &= ~PCIE_SOC_GLOBAL_RESET_V;
 
 	ath11k_pcic_write32(ab, PCIE_SOC_GLOBAL_RESET, val);
@@ -202,28 +199,24 @@ static void ath11k_pci_clear_dbg_registers(struct ath11k_base *ab)
 {
 	u32 val;
 
-	/* read cookie */
+	 
 	val = ath11k_pcic_read32(ab, PCIE_Q6_COOKIE_ADDR);
 	ath11k_dbg(ab, ATH11K_DBG_PCI, "pcie_q6_cookie_addr 0x%x\n", val);
 
 	val = ath11k_pcic_read32(ab, WLAON_WARM_SW_ENTRY);
 	ath11k_dbg(ab, ATH11K_DBG_PCI, "wlaon_warm_sw_entry 0x%x\n", val);
 
-	/* TODO: exact time to sleep is uncertain */
+	 
 	mdelay(10);
 
-	/* write 0 to WLAON_WARM_SW_ENTRY to prevent Q6 from
-	 * continuing warm path and entering dead loop.
-	 */
+	 
 	ath11k_pcic_write32(ab, WLAON_WARM_SW_ENTRY, 0);
 	mdelay(10);
 
 	val = ath11k_pcic_read32(ab, WLAON_WARM_SW_ENTRY);
 	ath11k_dbg(ab, ATH11K_DBG_PCI, "wlaon_warm_sw_entry 0x%x\n", val);
 
-	/* A read clear register. clear the register to prevent
-	 * Q6 from entering wrong code path.
-	 */
+	 
 	val = ath11k_pcic_read32(ab, WLAON_SOC_RESET_CAUSE_REG);
 	ath11k_dbg(ab, ATH11K_DBG_PCI, "soc reset cause %d\n", val);
 }
@@ -304,7 +297,7 @@ static void ath11k_pci_enable_ltssm(struct ath11k_base *ab)
 
 	val = ath11k_pcic_read32(ab, PCIE_PCIE_PARF_LTSSM);
 
-	/* PCIE link seems very unstable after the Hot Reset*/
+	 
 	for (i = 0; val != PARM_LTSSM_VALUE && i < 5; i++) {
 		if (val == 0xffffffff)
 			mdelay(5);
@@ -327,11 +320,7 @@ static void ath11k_pci_enable_ltssm(struct ath11k_base *ab)
 
 static void ath11k_pci_clear_all_intrs(struct ath11k_base *ab)
 {
-	/* This is a WAR for PCIE Hotreset.
-	 * When target receive Hotreset, but will set the interrupt.
-	 * So when download SBL again, SBL will open Interrupt and
-	 * receive it, and crash immediately.
-	 */
+	 
 	ath11k_pcic_write32(ab, PCIE_PCIE_INT_ALL_CLEAR, PCIE_INT_CLEAR_ALL);
 }
 
@@ -581,7 +570,7 @@ static void ath11k_pci_aspm_disable(struct ath11k_pci *ab_pci)
 		   u16_get_bits(ab_pci->link_ctl, PCI_EXP_LNKCTL_ASPM_L0S),
 		   u16_get_bits(ab_pci->link_ctl, PCI_EXP_LNKCTL_ASPM_L1));
 
-	/* disable L0s and L1 */
+	 
 	pcie_capability_clear_word(ab_pci->pdev, PCI_EXP_LNKCTL,
 				   PCI_EXP_LNKCTL_ASPMC);
 
@@ -606,9 +595,7 @@ static int ath11k_pci_power_up(struct ath11k_base *ab)
 	clear_bit(ATH11K_FLAG_DEVICE_INIT_DONE, &ab->dev_flags);
 	ath11k_pci_sw_reset(ab_pci->ab, true);
 
-	/* Disable ASPM during firmware download due to problems switching
-	 * to AMSS state.
-	 */
+	 
 	ath11k_pci_aspm_disable(ab_pci);
 
 	ath11k_pci_msi_enable(ab_pci);
@@ -629,7 +616,7 @@ static void ath11k_pci_power_down(struct ath11k_base *ab)
 {
 	struct ath11k_pci *ab_pci = ath11k_pci_priv(ab);
 
-	/* restore aspm in case firmware bootup fails */
+	 
 	ath11k_pci_aspm_restore(ab_pci);
 
 	ath11k_pci_force_wake(ab_pci->ab);
@@ -669,9 +656,7 @@ static int ath11k_pci_start(struct ath11k_base *ab)
 {
 	struct ath11k_pci *ab_pci = ath11k_pci_priv(ab);
 
-	/* TODO: for now don't restore ASPM in case of single MSI
-	 * vector as MHI register reading in M2 causes system hang.
-	 */
+	 
 	if (test_bit(ATH11K_FLAG_MULTI_MSI_VECTORS, &ab->dev_flags))
 		ath11k_pci_aspm_restore(ab_pci);
 	else
@@ -752,10 +737,7 @@ static int ath11k_pci_probe(struct pci_dev *pdev,
 	pci_set_drvdata(pdev, ab);
 	spin_lock_init(&ab_pci->window_lock);
 
-	/* Set fixed_mem_region to true for platforms support reserved memory
-	 * from DT. If memory is reserved from DT for FW, ath11k driver need not
-	 * allocate memory.
-	 */
+	 
 	ret = of_property_read_u32(ab->dev->of_node, "memory-region", &addr);
 	if (!ret)
 		set_bit(ATH11K_FLAG_FIXED_MEM_RGN, &ab->dev_flags);
@@ -884,11 +866,7 @@ unsupported_wcn6855_soc:
 		goto err_ce_free;
 	}
 
-	/* kernel may allocate a dummy vector before request_irq and
-	 * then allocate a real vector when request_irq is called.
-	 * So get msi_data here again to avoid spurious interrupt
-	 * as msi_data will configured to srngs.
-	 */
+	 
 	ret = ath11k_pci_config_msi_data(ab_pci);
 	if (ret) {
 		ath11k_err(ab, "failed to config msi_data: %d\n", ret);
@@ -1041,7 +1019,7 @@ module_exit(ath11k_pci_exit);
 MODULE_DESCRIPTION("Driver support for Qualcomm Technologies PCIe 802.11ax WLAN devices");
 MODULE_LICENSE("Dual BSD/GPL");
 
-/* firmware files */
+ 
 MODULE_FIRMWARE(ATH11K_FW_DIR "/QCA6390/hw2.0/*");
 MODULE_FIRMWARE(ATH11K_FW_DIR "/QCN9074/hw1.0/*");
 MODULE_FIRMWARE(ATH11K_FW_DIR "/WCN6855/hw2.0/*");

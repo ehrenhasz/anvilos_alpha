@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1+
-// Copyright (C) 2022, Linaro Ltd - Daniel Lezcano <daniel.lezcano@linaro.org>
+
+
 #define _GNU_SOURCE
 #include <errno.h>
 #include <stdio.h>
@@ -10,7 +10,7 @@
 #include "thermal_nl.h"
 
 static struct nla_policy thermal_genl_policy[THERMAL_GENL_ATTR_MAX + 1] = {
-	/* Thermal zone */
+	 
 	[THERMAL_GENL_ATTR_TZ]                  = { .type = NLA_NESTED },
 	[THERMAL_GENL_ATTR_TZ_ID]               = { .type = NLA_U32 },
 	[THERMAL_GENL_ATTR_TZ_TEMP]             = { .type = NLA_U32 },
@@ -23,11 +23,11 @@ static struct nla_policy thermal_genl_policy[THERMAL_GENL_ATTR_MAX + 1] = {
 	[THERMAL_GENL_ATTR_TZ_CDEV_WEIGHT]      = { .type = NLA_U32 },
 	[THERMAL_GENL_ATTR_TZ_NAME]             = { .type = NLA_STRING },
 
-	/* Governor(s) */
+	 
 	[THERMAL_GENL_ATTR_TZ_GOV]              = { .type = NLA_NESTED },
 	[THERMAL_GENL_ATTR_TZ_GOV_NAME]         = { .type = NLA_STRING },
 
-	/* Cooling devices */
+	 
 	[THERMAL_GENL_ATTR_CDEV]                = { .type = NLA_NESTED },
 	[THERMAL_GENL_ATTR_CDEV_ID]             = { .type = NLA_U32 },
 	[THERMAL_GENL_ATTR_CDEV_CUR_STATE]      = { .type = NLA_U32 },

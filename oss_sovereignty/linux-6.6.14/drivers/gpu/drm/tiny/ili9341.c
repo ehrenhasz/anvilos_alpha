@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * DRM driver for Ilitek ILI9341 panels
- *
- * Copyright 2018 David Lechner <david@lechnology.com>
- *
- * Based on mi0283qt.c:
- * Copyright 2016 Noralf Trønnes
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -79,20 +72,20 @@ static void yx240qv29_enable(struct drm_simple_display_pipe *pipe,
 	mipi_dbi_command(dbi, ILI9341_PUMPCTRL, 0x20);
 	mipi_dbi_command(dbi, ILI9341_DTCTRLB, 0x00, 0x00);
 
-	/* Power Control */
+	 
 	mipi_dbi_command(dbi, ILI9341_PWCTRL1, 0x23);
 	mipi_dbi_command(dbi, ILI9341_PWCTRL2, 0x10);
-	/* VCOM */
+	 
 	mipi_dbi_command(dbi, ILI9341_VMCTRL1, 0x3e, 0x28);
 	mipi_dbi_command(dbi, ILI9341_VMCTRL2, 0x86);
 
-	/* Memory Access Control */
+	 
 	mipi_dbi_command(dbi, MIPI_DCS_SET_PIXEL_FORMAT, MIPI_DCS_PIXEL_FMT_16BIT);
 
-	/* Frame Rate */
+	 
 	mipi_dbi_command(dbi, ILI9341_FRMCTR1, 0x00, 0x1b);
 
-	/* Gamma */
+	 
 	mipi_dbi_command(dbi, ILI9341_EN3GAM, 0x00);
 	mipi_dbi_command(dbi, MIPI_DCS_SET_GAMMA_CURVE, 0x01);
 	mipi_dbi_command(dbi, ILI9341_PGAMCTRL,
@@ -102,10 +95,10 @@ static void yx240qv29_enable(struct drm_simple_display_pipe *pipe,
 			 0x00, 0x0e, 0x14, 0x03, 0x11, 0x07, 0x31, 0xc1,
 			 0x48, 0x08, 0x0f, 0x0c, 0x31, 0x36, 0x0f);
 
-	/* DDRAM */
+	 
 	mipi_dbi_command(dbi, ILI9341_ETMOD, 0x07);
 
-	/* Display */
+	 
 	mipi_dbi_command(dbi, ILI9341_DISCTRL, 0x08, 0x82, 0x27, 0x00);
 	mipi_dbi_command(dbi, MIPI_DCS_EXIT_SLEEP_MODE);
 	msleep(100);

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
-/*
- * Copyright (c) 2020 Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/dma-buf.h>
 #include <linux/dma-resv.h>
@@ -31,7 +29,7 @@ int ib_umem_dmabuf_map_pages(struct ib_umem_dmabuf *umem_dmabuf)
 	if (IS_ERR(sgt))
 		return PTR_ERR(sgt);
 
-	/* modify the sg list in-place to match umem address and length */
+	 
 
 	start = ALIGN_DOWN(umem_dmabuf->umem.address, PAGE_SIZE);
 	end = ALIGN(umem_dmabuf->umem.address + umem_dmabuf->umem.length,
@@ -64,11 +62,7 @@ int ib_umem_dmabuf_map_pages(struct ib_umem_dmabuf *umem_dmabuf)
 	umem_dmabuf->sgt = sgt;
 
 wait_fence:
-	/*
-	 * Although the sg list is valid now, the content of the pages
-	 * may be not up-to-date. Wait for the exporter to finish
-	 * the migration.
-	 */
+	 
 	ret = dma_resv_wait_timeout(umem_dmabuf->attach->dmabuf->resv,
 				     DMA_RESV_USAGE_KERNEL,
 				     false, MAX_SCHEDULE_TIMEOUT);
@@ -87,7 +81,7 @@ void ib_umem_dmabuf_unmap_pages(struct ib_umem_dmabuf *umem_dmabuf)
 	if (!umem_dmabuf->sgt)
 		return;
 
-	/* retore the original sg list */
+	 
 	if (umem_dmabuf->first_sg) {
 		sg_dma_address(umem_dmabuf->first_sg) -=
 			umem_dmabuf->first_sg_offset;

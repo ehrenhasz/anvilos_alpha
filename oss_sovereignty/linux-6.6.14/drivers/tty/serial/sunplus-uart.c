@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Sunplus SoC UART driver
- *
- * Author: Hammer Hsieh <hammerh0314@gmail.com>
- *
- * Note1: This driver is 8250-like uart, but are not register compatible.
- *
- * Note2: On some buses, for preventing data incoherence, must do a read
- * for ensure write made it to hardware. In this driver, function startup
- * and shutdown did not do a read but only do a write directly. For what?
- * In Sunplus bus communication between memory bus and peripheral bus with
- * posted write, it will send a specific command after last write command
- * to make sure write done. Then memory bus identify the specific command
- * and send done signal back to master device. After master device received
- * done signal, then proceed next write command. It is no need to do a read
- * before write.
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/console.h>
 #include <linux/interrupt.h>
@@ -33,7 +17,7 @@
 #include <linux/tty_flip.h>
 #include <asm/irq.h>
 
-/* Register offsets */
+ 
 #define SUP_UART_DATA			0x00
 #define SUP_UART_LSR			0x04
 #define SUP_UART_MSR			0x08
@@ -45,30 +29,30 @@
 #define SUP_UART_TX_RESIDUE		0x20
 #define SUP_UART_RX_RESIDUE		0x24
 
-/* Line Status Register bits */
-#define SUP_UART_LSR_BC			BIT(5) /* break condition status */
-#define SUP_UART_LSR_FE			BIT(4) /* frame error status */
-#define SUP_UART_LSR_OE			BIT(3) /* overrun error status */
-#define SUP_UART_LSR_PE			BIT(2) /* parity error status */
-#define SUP_UART_LSR_RX			BIT(1) /* 1: receive fifo not empty */
-#define SUP_UART_LSR_TX			BIT(0) /* 1: transmit fifo is not full */
+ 
+#define SUP_UART_LSR_BC			BIT(5)  
+#define SUP_UART_LSR_FE			BIT(4)  
+#define SUP_UART_LSR_OE			BIT(3)  
+#define SUP_UART_LSR_PE			BIT(2)  
+#define SUP_UART_LSR_RX			BIT(1)  
+#define SUP_UART_LSR_TX			BIT(0)  
 #define SUP_UART_LSR_TX_NOT_FULL	1
 #define SUP_UART_LSR_BRK_ERROR_BITS	GENMASK(5, 2)
 
-/* Line Control Register bits */
-#define SUP_UART_LCR_SBC		BIT(5) /* select break condition */
+ 
+#define SUP_UART_LCR_SBC		BIT(5)  
 
-/* Modem Control Register bits */
-#define SUP_UART_MCR_RI			BIT(3) /* ring indicator */
-#define SUP_UART_MCR_DCD		BIT(2) /* data carrier detect */
+ 
+#define SUP_UART_MCR_RI			BIT(3)  
+#define SUP_UART_MCR_DCD		BIT(2)  
 
-/* Interrupt Status/Control Register bits */
-#define SUP_UART_ISC_RXM		BIT(5) /* RX interrupt enable */
-#define SUP_UART_ISC_TXM		BIT(4) /* TX interrupt enable */
-#define SUP_UART_ISC_RX			BIT(1) /* RX interrupt status */
-#define SUP_UART_ISC_TX			BIT(0) /* TX interrupt status */
+ 
+#define SUP_UART_ISC_RXM		BIT(5)  
+#define SUP_UART_ISC_TXM		BIT(4)  
+#define SUP_UART_ISC_RX			BIT(1)  
+#define SUP_UART_ISC_TX			BIT(0)  
 
-#define SUP_DUMMY_READ			BIT(16) /* drop bytes received on a !CREAD port */
+#define SUP_DUMMY_READ			BIT(16)  
 #define SUP_UART_NR			5
 
 struct sunplus_uart_port {
@@ -189,9 +173,9 @@ static void sunplus_break_ctl(struct uart_port *port, int ctl)
 	lcr = readl(port->membase + SUP_UART_LCR);
 
 	if (ctl)
-		lcr |= SUP_UART_LCR_SBC; /* start break */
+		lcr |= SUP_UART_LCR_SBC;  
 	else
-		lcr &= ~SUP_UART_LCR_SBC; /* stop break */
+		lcr &= ~SUP_UART_LCR_SBC;  
 
 	writel(lcr, port->membase + SUP_UART_LCR);
 
@@ -303,10 +287,7 @@ static int sunplus_startup(struct uart_port *port)
 		return ret;
 
 	spin_lock_irqsave(&port->lock, flags);
-	/* isc define Bit[7:4] int setting, Bit[3:0] int status
-	 * isc register will clean Bit[3:0] int status after read
-	 * only do a write to Bit[7:4] int setting
-	 */
+	 
 	isc |= SUP_UART_ISC_RXM;
 	writel(isc, port->membase + SUP_UART_ISC);
 	spin_unlock_irqrestore(&port->lock, flags);
@@ -319,11 +300,8 @@ static void sunplus_shutdown(struct uart_port *port)
 	unsigned long flags;
 
 	spin_lock_irqsave(&port->lock, flags);
-	/* isc define Bit[7:4] int setting, Bit[3:0] int status
-	 * isc register will clean Bit[3:0] int status after read
-	 * only do a write to Bit[7:4] int setting
-	 */
-	writel(0, port->membase + SUP_UART_ISC); /* disable all interrupt */
+	 
+	writel(0, port->membase + SUP_UART_ISC);  
 	spin_unlock_irqrestore(&port->lock, flags);
 
 	free_irq(port->irq, port);
@@ -339,7 +317,7 @@ static void sunplus_set_termios(struct uart_port *port,
 
 	baud = uart_get_baud_rate(port, termios, oldtermios, 0, port->uartclk / 16);
 
-	/* baud rate = uartclk / ((16 * divisor + 1) + divisor_ext) */
+	 
 	clk += baud >> 1;
 	div = clk / baud;
 	ext = div & 0x0F;
@@ -383,7 +361,7 @@ static void sunplus_set_termios(struct uart_port *port,
 	if (termios->c_iflag & (BRKINT | PARMRK))
 		port->read_status_mask |= SUP_UART_LSR_BC;
 
-	/* Characters to ignore */
+	 
 	port->ignore_status_mask = 0;
 	if (termios->c_iflag & IGNPAR)
 		port->ignore_status_mask |= SUP_UART_LSR_FE | SUP_UART_LSR_PE;
@@ -395,14 +373,14 @@ static void sunplus_set_termios(struct uart_port *port,
 			port->ignore_status_mask |= SUP_UART_LSR_OE;
 	}
 
-	/* Ignore all characters if CREAD is not set */
+	 
 	if ((termios->c_cflag & CREAD) == 0) {
 		port->ignore_status_mask |= SUP_DUMMY_READ;
-		/* flush rx data FIFO */
+		 
 		writel(0, port->membase + SUP_UART_RX_RESIDUE);
 	}
 
-	/* Settings for baud rate divisor and lcr */
+	 
 	writel(div_h, port->membase + SUP_UART_DIV_H);
 	writel(div_l, port->membase + SUP_UART_DIV_L);
 	writel(lcr, port->membase + SUP_UART_LCR);
@@ -445,7 +423,7 @@ static void wait_for_xmitr(struct uart_port *port)
 	unsigned int val;
 	int ret;
 
-	/* Wait while FIFO is full or timeout */
+	 
 	ret = readl_poll_timeout_atomic(port->membase + SUP_UART_LSR, val,
 					(val & SUP_UART_LSR_TX), 1, 10000);
 

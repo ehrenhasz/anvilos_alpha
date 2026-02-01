@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * R-Car LVDS Encoder
- *
- * Copyright (C) 2013-2018 Renesas Electronics Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -34,7 +28,7 @@
 
 struct rcar_lvds;
 
-/* Keep in sync with the LVDCR0.LVMD hardware register values. */
+ 
 enum rcar_lvds_mode {
 	RCAR_LVDS_MODE_JEIDA = 0,
 	RCAR_LVDS_MODE_MIRROR = 1,
@@ -47,11 +41,11 @@ enum rcar_lvds_link_type {
 	RCAR_LVDS_DUAL_LINK_ODD_EVEN_PIXELS = 2,
 };
 
-#define RCAR_LVDS_QUIRK_LANES		BIT(0)	/* LVDS lanes 1 and 3 inverted */
-#define RCAR_LVDS_QUIRK_GEN3_LVEN	BIT(1)	/* LVEN bit needs to be set on R8A77970/R8A7799x */
-#define RCAR_LVDS_QUIRK_PWD		BIT(2)	/* PWD bit available (all of Gen3 but E3) */
-#define RCAR_LVDS_QUIRK_EXT_PLL		BIT(3)	/* Has extended PLL */
-#define RCAR_LVDS_QUIRK_DUAL_LINK	BIT(4)	/* Supports dual-link operation */
+#define RCAR_LVDS_QUIRK_LANES		BIT(0)	 
+#define RCAR_LVDS_QUIRK_GEN3_LVEN	BIT(1)	 
+#define RCAR_LVDS_QUIRK_PWD		BIT(2)	 
+#define RCAR_LVDS_QUIRK_EXT_PLL		BIT(3)	 
+#define RCAR_LVDS_QUIRK_DUAL_LINK	BIT(4)	 
 
 struct rcar_lvds_device_info {
 	unsigned int gen;
@@ -71,9 +65,9 @@ struct rcar_lvds {
 
 	void __iomem *mmio;
 	struct {
-		struct clk *mod;		/* CPG module clock */
-		struct clk *extal;		/* External clock */
-		struct clk *dotclkin[2];	/* External DU clocks */
+		struct clk *mod;		 
+		struct clk *extal;		 
+		struct clk *dotclkin[2];	 
 	} clocks;
 
 	struct drm_bridge *companion;
@@ -93,9 +87,7 @@ static void rcar_lvds_write(struct rcar_lvds *lvds, u32 reg, u32 data)
 	iowrite32(data, lvds->mmio + reg);
 }
 
-/* -----------------------------------------------------------------------------
- * PLL Setup
- */
+ 
 
 static void rcar_lvds_pll_setup_gen2(struct rcar_lvds *lvds, unsigned int freq)
 {
@@ -153,46 +145,13 @@ static void rcar_lvds_d3_e3_pll_calc(struct rcar_lvds *lvds, struct clk *clk,
 	if (!clk)
 		return;
 
-	/*
-	 * The LVDS PLL is made of a pre-divider and a multiplier (strangely
-	 * enough called M and N respectively), followed by a post-divider E.
-	 *
-	 *         ,-----.         ,-----.     ,-----.         ,-----.
-	 * Fin --> | 1/M | -Fpdf-> | PFD | --> | VCO | -Fvco-> | 1/E | --> Fout
-	 *         `-----'     ,-> |     |     `-----'   |     `-----'
-	 *                     |   `-----'               |
-	 *                     |         ,-----.         |
-	 *                     `-------- | 1/N | <-------'
-	 *                               `-----'
-	 *
-	 * The clock output by the PLL is then further divided by a programmable
-	 * divider DIV to achieve the desired target frequency. Finally, an
-	 * optional fixed /7 divider is used to convert the bit clock to a pixel
-	 * clock (as LVDS transmits 7 bits per lane per clock sample).
-	 *
-	 *          ,-------.     ,-----.     |\
-	 * Fout --> | 1/DIV | --> | 1/7 | --> | |
-	 *          `-------'  |  `-----'     | | --> dot clock
-	 *                     `------------> | |
-	 *                                    |/
-	 *
-	 * The /7 divider is optional, it is enabled when the LVDS PLL is used
-	 * to drive the LVDS encoder, and disabled when  used to generate a dot
-	 * clock for the DU RGB output, without using the LVDS encoder.
-	 *
-	 * The PLL allowed input frequency range is 12 MHz to 192 MHz.
-	 */
+	 
 
 	fin = clk_get_rate(clk);
 	if (fin < 12000000 || fin > 192000000)
 		return;
 
-	/*
-	 * The comparison frequency range is 12 MHz to 24 MHz, which limits the
-	 * allowed values for the pre-divider M (normal range 1-8).
-	 *
-	 * Fpfd = Fin / M
-	 */
+	 
 	m_min = max_t(unsigned int, 1, DIV_ROUND_UP(fin, 24000000));
 	m_max = min_t(unsigned int, 8, fin / 12000000);
 
@@ -202,13 +161,7 @@ static void rcar_lvds_d3_e3_pll_calc(struct rcar_lvds *lvds, struct clk *clk,
 		unsigned int n_max;
 		unsigned int n;
 
-		/*
-		 * The VCO operating range is 900 Mhz to 1800 MHz, which limits
-		 * the allowed values for the multiplier N (normal range
-		 * 60-120).
-		 *
-		 * Fvco = Fin * N / M
-		 */
+		 
 		fpfd = fin / m;
 		n_min = max_t(unsigned int, 60, DIV_ROUND_UP(900000000, fpfd));
 		n_max = min_t(unsigned int, 120, 1800000000 / fpfd);
@@ -218,13 +171,7 @@ static void rcar_lvds_d3_e3_pll_calc(struct rcar_lvds *lvds, struct clk *clk,
 			unsigned int e_min;
 			unsigned int e;
 
-			/*
-			 * The output frequency is limited to 1039.5 MHz,
-			 * limiting again the allowed values for the
-			 * post-divider E (normal value 1, 2 or 4).
-			 *
-			 * Fout = Fvco / E
-			 */
+			 
 			fvco = fpfd * n;
 			e_min = fvco > 1039500000 ? 1 : 0;
 
@@ -233,11 +180,7 @@ static void rcar_lvds_d3_e3_pll_calc(struct rcar_lvds *lvds, struct clk *clk,
 				unsigned long diff;
 				unsigned int div;
 
-				/*
-				 * Finally we have a programable divider after
-				 * the PLL, followed by a an optional fixed /7
-				 * divider.
-				 */
+				 
 				fout = fvco / (1 << e) / div7;
 				div = max(1UL, DIV_ROUND_CLOSEST(fout, target));
 				diff = abs(fout / div - target);
@@ -295,19 +238,14 @@ static void rcar_lvds_pll_setup_d3_e3(struct rcar_lvds *lvds,
 	rcar_lvds_write(lvds, LVDPLLCR, lvdpllcr);
 
 	if (pll.div > 1)
-		/*
-		 * The DIVRESET bit is a misnomer, setting it to 1 deasserts the
-		 * divisor reset.
-		 */
+		 
 		rcar_lvds_write(lvds, LVDDIV, LVDDIV_DIVSEL |
 				LVDDIV_DIVRESET | LVDDIV_DIV(pll.div - 1));
 	else
 		rcar_lvds_write(lvds, LVDDIV, 0);
 }
 
-/* -----------------------------------------------------------------------------
- * Enable/disable
- */
+ 
 
 static enum rcar_lvds_mode rcar_lvds_get_lvds_mode(struct rcar_lvds *lvds,
 					const struct drm_connector *connector)
@@ -315,10 +253,7 @@ static enum rcar_lvds_mode rcar_lvds_get_lvds_mode(struct rcar_lvds *lvds,
 	const struct drm_display_info *info;
 	enum rcar_lvds_mode mode;
 
-	/*
-	 * There is no API yet to retrieve LVDS mode from a bridge, only panels
-	 * are supported.
-	 */
+	 
 	if (!lvds->panel)
 		return RCAR_LVDS_MODE_JEIDA;
 
@@ -364,18 +299,11 @@ static void rcar_lvds_enable(struct drm_bridge *bridge,
 	if (ret)
 		return;
 
-	/* Enable the companion LVDS encoder in dual-link mode. */
+	 
 	if (lvds->link_type != RCAR_LVDS_SINGLE_LINK && lvds->companion)
 		rcar_lvds_enable(lvds->companion, state, crtc, connector);
 
-	/*
-	 * Hardcode the channels and control signals routing for now.
-	 *
-	 * HSYNC -> CTRL0
-	 * VSYNC -> CTRL1
-	 * DISP  -> CTRL2
-	 * 0     -> CTRL3
-	 */
+	 
 	rcar_lvds_write(lvds, LVDCTRCR, LVDCTRCR_CTR3SEL_ZERO |
 			LVDCTRCR_CTR2SEL_DISP | LVDCTRCR_CTR1SEL_VSYNC |
 			LVDCTRCR_CTR0SEL_HSYNC);
@@ -393,23 +321,11 @@ static void rcar_lvds_enable(struct drm_bridge *bridge,
 		u32 lvdstripe = 0;
 
 		if (lvds->link_type != RCAR_LVDS_SINGLE_LINK) {
-			/*
-			 * By default we generate even pixels from the primary
-			 * encoder and odd pixels from the companion encoder.
-			 * Swap pixels around if the sink requires odd pixels
-			 * from the primary encoder and even pixels from the
-			 * companion encoder.
-			 */
+			 
 			bool swap_pixels = lvds->link_type ==
 				RCAR_LVDS_DUAL_LINK_ODD_EVEN_PIXELS;
 
-			/*
-			 * Configure vertical stripe since we are dealing with
-			 * an LVDS dual-link connection.
-			 *
-			 * ST_SWAP is reserved for the companion encoder, only
-			 * set it in the primary encoder.
-			 */
+			 
 			lvdstripe = LVDSTRIPE_ST_ON
 				  | (lvds->companion && swap_pixels ?
 				     LVDSTRIPE_ST_SWAP : 0);
@@ -417,13 +333,7 @@ static void rcar_lvds_enable(struct drm_bridge *bridge,
 		rcar_lvds_write(lvds, LVDSTRIPE, lvdstripe);
 	}
 
-	/*
-	 * PLL clock configuration on all instances but the companion in
-	 * dual-link mode.
-	 *
-	 * The extended PLL has been turned on by an explicit call to
-	 * rcar_lvds_pclk_enable() from the DU driver.
-	 */
+	 
 	if ((lvds->link_type == RCAR_LVDS_SINGLE_LINK || lvds->companion) &&
 	    !(lvds->info->quirks & RCAR_LVDS_QUIRK_EXT_PLL)) {
 		const struct drm_crtc_state *crtc_state =
@@ -434,7 +344,7 @@ static void rcar_lvds_enable(struct drm_bridge *bridge,
 		lvds->info->pll_setup(lvds, mode->clock * 1000);
 	}
 
-	/* Set the LVDS mode and select the input. */
+	 
 	lvdcr0 = rcar_lvds_get_lvds_mode(lvds, connector) << LVDCR0_LVMD_SHIFT;
 
 	if (lvds->bridge.encoder) {
@@ -444,48 +354,42 @@ static void rcar_lvds_enable(struct drm_bridge *bridge,
 
 	rcar_lvds_write(lvds, LVDCR0, lvdcr0);
 
-	/* Turn all the channels on. */
+	 
 	rcar_lvds_write(lvds, LVDCR1,
 			LVDCR1_CHSTBY(3) | LVDCR1_CHSTBY(2) |
 			LVDCR1_CHSTBY(1) | LVDCR1_CHSTBY(0) | LVDCR1_CLKSTBY);
 
 	if (lvds->info->gen < 3) {
-		/* Enable LVDS operation and turn the bias circuitry on. */
+		 
 		lvdcr0 |= LVDCR0_BEN | LVDCR0_LVEN;
 		rcar_lvds_write(lvds, LVDCR0, lvdcr0);
 	}
 
 	if (!(lvds->info->quirks & RCAR_LVDS_QUIRK_EXT_PLL)) {
-		/*
-		 * Turn the PLL on (simple PLL only, extended PLL is fully
-		 * controlled through LVDPLLCR).
-		 */
+		 
 		lvdcr0 |= LVDCR0_PLLON;
 		rcar_lvds_write(lvds, LVDCR0, lvdcr0);
 	}
 
 	if (lvds->info->quirks & RCAR_LVDS_QUIRK_PWD) {
-		/* Set LVDS normal mode. */
+		 
 		lvdcr0 |= LVDCR0_PWD;
 		rcar_lvds_write(lvds, LVDCR0, lvdcr0);
 	}
 
 	if (lvds->info->quirks & RCAR_LVDS_QUIRK_GEN3_LVEN) {
-		/*
-		 * Turn on the LVDS PHY. On D3, the LVEN and LVRES bit must be
-		 * set at the same time, so don't write the register yet.
-		 */
+		 
 		lvdcr0 |= LVDCR0_LVEN;
 		if (!(lvds->info->quirks & RCAR_LVDS_QUIRK_PWD))
 			rcar_lvds_write(lvds, LVDCR0, lvdcr0);
 	}
 
 	if (!(lvds->info->quirks & RCAR_LVDS_QUIRK_EXT_PLL)) {
-		/* Wait for the PLL startup delay (simple PLL only). */
+		 
 		usleep_range(100, 150);
 	}
 
-	/* Turn the output on. */
+	 
 	lvdcr0 |= LVDCR0_LVRES;
 	rcar_lvds_write(lvds, LVDCR0, lvdcr0);
 }
@@ -495,11 +399,7 @@ static void rcar_lvds_disable(struct drm_bridge *bridge)
 	struct rcar_lvds *lvds = bridge_to_rcar_lvds(bridge);
 	u32 lvdcr0;
 
-	/*
-	 * Clear the LVDCR0 bits in the order specified by the hardware
-	 * documentation, ending with a write of 0 to the full register to
-	 * clear all remaining bits.
-	 */
+	 
 	lvdcr0 = rcar_lvds_read(lvds, LVDCR0);
 
 	lvdcr0 &= ~LVDCR0_LVRES;
@@ -523,20 +423,18 @@ static void rcar_lvds_disable(struct drm_bridge *bridge)
 	rcar_lvds_write(lvds, LVDCR0, 0);
 	rcar_lvds_write(lvds, LVDCR1, 0);
 
-	/* The extended PLL is turned off in rcar_lvds_pclk_disable(). */
+	 
 	if (!(lvds->info->quirks & RCAR_LVDS_QUIRK_EXT_PLL))
 		rcar_lvds_write(lvds, LVDPLLCR, 0);
 
-	/* Disable the companion LVDS encoder in dual-link mode. */
+	 
 	if (lvds->link_type != RCAR_LVDS_SINGLE_LINK && lvds->companion)
 		rcar_lvds_disable(lvds->companion);
 
 	pm_runtime_put_sync(lvds->dev);
 }
 
-/* -----------------------------------------------------------------------------
- * Clock - D3/E3 only
- */
+ 
 
 int rcar_lvds_pclk_enable(struct drm_bridge *bridge, unsigned long freq,
 			  bool dot_clk_only)
@@ -577,9 +475,7 @@ void rcar_lvds_pclk_disable(struct drm_bridge *bridge, bool dot_clk_only)
 }
 EXPORT_SYMBOL_GPL(rcar_lvds_pclk_disable);
 
-/* -----------------------------------------------------------------------------
- * Bridge
- */
+ 
 
 static void rcar_lvds_atomic_enable(struct drm_bridge *bridge,
 				    struct drm_bridge_state *old_bridge_state)
@@ -600,16 +496,7 @@ static void rcar_lvds_atomic_disable(struct drm_bridge *bridge,
 {
 	struct rcar_lvds *lvds = bridge_to_rcar_lvds(bridge);
 
-	/*
-	 * For D3 and E3, disabling the LVDS encoder before the DU would stall
-	 * the DU, causing a vblank wait timeout when stopping the DU. This has
-	 * been traced to clearing the LVEN bit, but the exact reason is
-	 * unknown. Keep the encoder enabled, it will be disabled by an explicit
-	 * call to rcar_lvds_pclk_disable() from the DU driver.
-	 *
-	 * We could clear the LVRES bit already to disable the LVDS output, but
-	 * that's likely pointless.
-	 */
+	 
 	if (lvds->info->quirks & RCAR_LVDS_QUIRK_EXT_PLL)
 		return;
 
@@ -623,11 +510,7 @@ static bool rcar_lvds_mode_fixup(struct drm_bridge *bridge,
 	struct rcar_lvds *lvds = bridge_to_rcar_lvds(bridge);
 	int min_freq;
 
-	/*
-	 * The internal LVDS encoder has a restricted clock frequency operating
-	 * range, from 5MHz to 148.5MHz on D3 and E3, and from 31MHz to
-	 * 148.5MHz on all other platforms. Clamp the clock accordingly.
-	 */
+	 
 	min_freq = lvds->info->quirks & RCAR_LVDS_QUIRK_EXT_PLL ? 5000 : 31000;
 	adjusted_mode->clock = clamp(adjusted_mode->clock, min_freq, 148500);
 
@@ -672,9 +555,7 @@ bool rcar_lvds_is_connected(struct drm_bridge *bridge)
 }
 EXPORT_SYMBOL_GPL(rcar_lvds_is_connected);
 
-/* -----------------------------------------------------------------------------
- * Probe & Remove
- */
+ 
 
 static int rcar_lvds_parse_dt_companion(struct rcar_lvds *lvds)
 {
@@ -686,15 +567,12 @@ static int rcar_lvds_parse_dt_companion(struct rcar_lvds *lvds)
 	int dual_link;
 	int ret = 0;
 
-	/* Locate the companion LVDS encoder for dual-link operation, if any. */
+	 
 	companion = of_parse_phandle(dev->of_node, "renesas,companion", 0);
 	if (!companion)
 		return 0;
 
-	/*
-	 * Sanity check: the companion encoder must have the same compatible
-	 * string.
-	 */
+	 
 	match = of_match_device(dev->driver->of_match_table, dev);
 	if (!of_device_is_compatible(companion, match->compatible)) {
 		dev_err(dev, "Companion LVDS encoder is invalid\n");
@@ -702,12 +580,7 @@ static int rcar_lvds_parse_dt_companion(struct rcar_lvds *lvds)
 		goto done;
 	}
 
-	/*
-	 * We need to work out if the sink is expecting us to function in
-	 * dual-link mode. We do this by looking at the DT port nodes we are
-	 * connected to, if they are marked as expecting even pixels and
-	 * odd pixels than we need to enable vertical stripe output.
-	 */
+	 
 	port0 = of_graph_get_port_by_id(dev->of_node, 1);
 	port1 = of_graph_get_port_by_id(companion, 1);
 	dual_link = drm_of_lvds_get_dual_link_pixel_order(port0, port1);
@@ -722,12 +595,7 @@ static int rcar_lvds_parse_dt_companion(struct rcar_lvds *lvds)
 		lvds->link_type = RCAR_LVDS_DUAL_LINK_EVEN_ODD_PIXELS;
 		break;
 	default:
-		/*
-		 * Early dual-link bridge specific implementations populate the
-		 * timings field of drm_bridge. If the flag is set, we assume
-		 * that we are expected to generate even pixels from the primary
-		 * encoder, and odd pixels from the companion encoder.
-		 */
+		 
 		if (lvds->next_bridge->timings &&
 		    lvds->next_bridge->timings->dual_link)
 			lvds->link_type = RCAR_LVDS_DUAL_LINK_EVEN_ODD_PIXELS;
@@ -753,15 +621,7 @@ static int rcar_lvds_parse_dt_companion(struct rcar_lvds *lvds)
 	if (lvds->link_type == RCAR_LVDS_DUAL_LINK_ODD_EVEN_PIXELS)
 		dev_dbg(dev, "Data swapping required\n");
 
-	/*
-	 * FIXME: We should not be messing with the companion encoder private
-	 * data from the primary encoder, we should rather let the companion
-	 * encoder work things out on its own. However, the companion encoder
-	 * doesn't hold a reference to the primary encoder, and
-	 * drm_of_lvds_get_dual_link_pixel_order needs to be given references
-	 * to the output ports of both encoders, therefore leave it like this
-	 * for the time being.
-	 */
+	 
 	companion_lvds = bridge_to_rcar_lvds(lvds->companion);
 	companion_lvds->link_type = lvds->link_type;
 
@@ -793,12 +653,7 @@ static int rcar_lvds_parse_dt(struct rcar_lvds *lvds)
 		ret = rcar_lvds_parse_dt_companion(lvds);
 
 done:
-	/*
-	 * On D3/E3 the LVDS encoder provides a clock to the DU, which can be
-	 * used for the DPAD output even when the LVDS output is not connected.
-	 * Don't fail probe in that case as the DU will need the bridge to
-	 * control the clock.
-	 */
+	 
 	if (lvds->info->quirks & RCAR_LVDS_QUIRK_EXT_PLL)
 		return ret == -ENODEV ? 0 : ret;
 
@@ -829,9 +684,7 @@ static int rcar_lvds_get_clocks(struct rcar_lvds *lvds)
 	if (IS_ERR(lvds->clocks.mod))
 		return PTR_ERR(lvds->clocks.mod);
 
-	/*
-	 * LVDS encoders without an extended PLL have no external clock inputs.
-	 */
+	 
 	if (!(lvds->info->quirks & RCAR_LVDS_QUIRK_EXT_PLL))
 		return 0;
 
@@ -847,7 +700,7 @@ static int rcar_lvds_get_clocks(struct rcar_lvds *lvds)
 	if (IS_ERR(lvds->clocks.dotclkin[1]))
 		return PTR_ERR(lvds->clocks.dotclkin[1]);
 
-	/* At least one input to the PLL must be available. */
+	 
 	if (!lvds->clocks.extal && !lvds->clocks.dotclkin[0] &&
 	    !lvds->clocks.dotclkin[1]) {
 		dev_err(lvds->dev,
@@ -869,7 +722,7 @@ static const struct soc_device_attribute lvds_quirk_matches[] = {
 		.soc_id = "r8a7790", .revision = "ES1.*",
 		.data = &rcar_lvds_r8a7790es1_info,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static int rcar_lvds_probe(struct platform_device *pdev)

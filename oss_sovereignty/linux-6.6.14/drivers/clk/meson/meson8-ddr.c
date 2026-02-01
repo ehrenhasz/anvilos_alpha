@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Amlogic Meson8 DDR clock controller
- *
- * Copyright (C) 2019 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
- */
+
+ 
 
 #include <dt-bindings/clock/meson8-ddr-clkc.h>
 
@@ -113,11 +109,11 @@ static int meson8_ddr_clkc_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/* Populate regmap */
+	 
 	for (i = 0; i < ARRAY_SIZE(meson8_ddr_clk_regmaps); i++)
 		meson8_ddr_clk_regmaps[i]->map = regmap;
 
-	/* Register all clks */
+	 
 	for (i = 0; i < meson8_ddr_clk_hw_onecell_data.num; i++) {
 		hw = meson8_ddr_clk_hw_onecell_data.hws[i];
 
@@ -135,7 +131,7 @@ static int meson8_ddr_clkc_probe(struct platform_device *pdev)
 static const struct of_device_id meson8_ddr_clkc_match_table[] = {
 	{ .compatible = "amlogic,meson8-ddr-clkc" },
 	{ .compatible = "amlogic,meson8b-ddr-clkc" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver meson8_ddr_clkc_driver = {

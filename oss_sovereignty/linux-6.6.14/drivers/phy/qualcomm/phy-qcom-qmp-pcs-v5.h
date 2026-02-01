@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2017, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef QCOM_PHY_QMP_PCS_V5_H_
 #define QCOM_PHY_QMP_PCS_V5_H_
 
-/* Only for QMP V5 PHY - USB/PCIe PCS registers */
+ 
 #define QPHY_V5_PCS_SW_RESET				0x000
 #define QPHY_V5_PCS_PCS_STATUS1				0x014
 #define QPHY_V5_PCS_POWER_DOWN_CONTROL			0x040

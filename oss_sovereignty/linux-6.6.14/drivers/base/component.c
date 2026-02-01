@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Componentized device handling.
- */
+
+ 
 #include <linux/component.h>
 #include <linux/device.h>
 #include <linux/list.h>
@@ -10,31 +8,7 @@
 #include <linux/slab.h>
 #include <linux/debugfs.h>
 
-/**
- * DOC: overview
- *
- * The component helper allows drivers to collect a pile of sub-devices,
- * including their bound drivers, into an aggregate driver. Various subsystems
- * already provide functions to get hold of such components, e.g.
- * of_clk_get_by_name(). The component helper can be used when such a
- * subsystem-specific way to find a device is not available: The component
- * helper fills the niche of aggregate drivers for specific hardware, where
- * further standardization into a subsystem would not be practical. The common
- * example is when a logical device (e.g. a DRM display driver) is spread around
- * the SoC on various components (scanout engines, blending blocks, transcoders
- * for various outputs and so on).
- *
- * The component helper also doesn't solve runtime dependencies, e.g. for system
- * suspend and resume operations. See also :ref:`device links<device_link>`.
- *
- * Components are registered using component_add() and unregistered with
- * component_del(), usually from the driver's probe and disconnect functions.
- *
- * Aggregate drivers first assemble a component match list of what they need
- * using component_match_add(). This is then registered as an aggregate driver
- * using component_master_add_with_match(), and unregistered using
- * component_master_del().
- */
+ 
 
 struct component;
 
@@ -176,10 +150,7 @@ static int find_components(struct aggregate_device *adev)
 	size_t i;
 	int ret = 0;
 
-	/*
-	 * Scan the array of match functions and attach
-	 * any components which are found to this adev.
-	 */
+	 
 	for (i = 0; i < match->num; i++) {
 		struct component_match_array *mc = &match->compare[i];
 		struct component *c;
@@ -198,7 +169,7 @@ static int find_components(struct aggregate_device *adev)
 		dev_dbg(adev->parent, "found component %s, duplicate %u\n",
 			dev_name(c->dev), !!c->adev);
 
-		/* Attach this component to the adev */
+		 
 		match->compare[i].duplicate = !!c->adev;
 		match->compare[i].component = c;
 		c->adev = adev;
@@ -206,24 +177,18 @@ static int find_components(struct aggregate_device *adev)
 	return ret;
 }
 
-/* Detach component from associated aggregate_device */
+ 
 static void remove_component(struct aggregate_device *adev, struct component *c)
 {
 	size_t i;
 
-	/* Detach the component from this adev. */
+	 
 	for (i = 0; i < adev->match->num; i++)
 		if (adev->match->compare[i].component == c)
 			adev->match->compare[i].component = NULL;
 }
 
-/*
- * Try to bring up an aggregate device.  If component is NULL, we're interested
- * in this aggregate device, otherwise it's a component which must be present
- * to try and bring up the aggregate device.
- *
- * Returns 1 for successful bringup, 0 if not ready, or -ve errno.
- */
+ 
 static int try_to_bring_up_aggregate_device(struct aggregate_device *adev,
 	struct component *component)
 {
@@ -245,7 +210,7 @@ static int try_to_bring_up_aggregate_device(struct aggregate_device *adev,
 	if (!devres_open_group(adev->parent, adev, GFP_KERNEL))
 		return -ENOMEM;
 
-	/* Found all components */
+	 
 	ret = adev->ops->bind(adev->parent);
 	if (ret < 0) {
 		devres_release_group(adev->parent, NULL);
@@ -284,57 +249,28 @@ static void take_down_aggregate_device(struct aggregate_device *adev)
 	}
 }
 
-/**
- * component_compare_of - A common component compare function for of_node
- * @dev: component device
- * @data: @compare_data from component_match_add_release()
- *
- * A common compare function when compare_data is device of_node. e.g.
- * component_match_add_release(masterdev, &match, component_release_of,
- * component_compare_of, component_dev_of_node)
- */
+ 
 int component_compare_of(struct device *dev, void *data)
 {
 	return device_match_of_node(dev, data);
 }
 EXPORT_SYMBOL_GPL(component_compare_of);
 
-/**
- * component_release_of - A common component release function for of_node
- * @dev: component device
- * @data: @compare_data from component_match_add_release()
- *
- * About the example, Please see component_compare_of().
- */
+ 
 void component_release_of(struct device *dev, void *data)
 {
 	of_node_put(data);
 }
 EXPORT_SYMBOL_GPL(component_release_of);
 
-/**
- * component_compare_dev - A common component compare function for dev
- * @dev: component device
- * @data: @compare_data from component_match_add_release()
- *
- * A common compare function when compare_data is struce device. e.g.
- * component_match_add(masterdev, &match, component_compare_dev, component_dev)
- */
+ 
 int component_compare_dev(struct device *dev, void *data)
 {
 	return dev == data;
 }
 EXPORT_SYMBOL_GPL(component_compare_dev);
 
-/**
- * component_compare_dev_name - A common component compare function for device name
- * @dev: component device
- * @data: @compare_data from component_match_add_release()
- *
- * A common compare function when compare_data is device name string. e.g.
- * component_match_add(masterdev, &match, component_compare_dev_name,
- * "component_dev_name")
- */
+ 
 int component_compare_dev_name(struct device *dev, void *data)
 {
 	return device_match_name(dev, data);
@@ -422,26 +358,7 @@ static void __component_match_add(struct device *parent,
 	match->num++;
 }
 
-/**
- * component_match_add_release - add a component match entry with release callback
- * @parent: parent device of the aggregate driver
- * @matchptr: pointer to the list of component matches
- * @release: release function for @compare_data
- * @compare: compare function to match against all components
- * @compare_data: opaque pointer passed to the @compare function
- *
- * Adds a new component match to the list stored in @matchptr, which the
- * aggregate driver needs to function. The list of component matches pointed to
- * by @matchptr must be initialized to NULL before adding the first match. This
- * only matches against components added with component_add().
- *
- * The allocated match list in @matchptr is automatically released using devm
- * actions, where upon @release will be called to free any references held by
- * @compare_data, e.g. when @compare_data is a &device_node that must be
- * released with of_node_put().
- *
- * See also component_match_add() and component_match_add_typed().
- */
+ 
 void component_match_add_release(struct device *parent,
 	struct component_match **matchptr,
 	void (*release)(struct device *, void *),
@@ -452,23 +369,7 @@ void component_match_add_release(struct device *parent,
 }
 EXPORT_SYMBOL(component_match_add_release);
 
-/**
- * component_match_add_typed - add a component match entry for a typed component
- * @parent: parent device of the aggregate driver
- * @matchptr: pointer to the list of component matches
- * @compare_typed: compare function to match against all typed components
- * @compare_data: opaque pointer passed to the @compare function
- *
- * Adds a new component match to the list stored in @matchptr, which the
- * aggregate driver needs to function. The list of component matches pointed to
- * by @matchptr must be initialized to NULL before adding the first match. This
- * only matches against components added with component_add_typed().
- *
- * The allocated match list in @matchptr is automatically released using devm
- * actions.
- *
- * See also component_match_add_release() and component_match_add_typed().
- */
+ 
 void component_match_add_typed(struct device *parent,
 	struct component_match **matchptr,
 	int (*compare_typed)(struct device *, int, void *), void *compare_data)
@@ -497,18 +398,7 @@ static void free_aggregate_device(struct aggregate_device *adev)
 	kfree(adev);
 }
 
-/**
- * component_master_add_with_match - register an aggregate driver
- * @parent: parent device of the aggregate driver
- * @ops: callbacks for the aggregate driver
- * @match: component match list for the aggregate driver
- *
- * Registers a new aggregate driver consisting of the components added to @match
- * by calling one of the component_match_add() functions. Once all components in
- * @match are available, it will be assembled by calling
- * &component_master_ops.bind from @ops. Must be unregistered by calling
- * component_master_del().
- */
+ 
 int component_master_add_with_match(struct device *parent,
 	const struct component_master_ops *ops,
 	struct component_match *match)
@@ -516,7 +406,7 @@ int component_master_add_with_match(struct device *parent,
 	struct aggregate_device *adev;
 	int ret;
 
-	/* Reallocate the match array for its true size */
+	 
 	ret = component_match_realloc(match, match->num);
 	if (ret)
 		return ret;
@@ -530,7 +420,7 @@ int component_master_add_with_match(struct device *parent,
 	adev->match = match;
 
 	component_debugfs_add(adev);
-	/* Add to the list of available aggregate devices. */
+	 
 	mutex_lock(&component_mutex);
 	list_add(&adev->node, &aggregate_devices);
 
@@ -545,15 +435,7 @@ int component_master_add_with_match(struct device *parent,
 }
 EXPORT_SYMBOL_GPL(component_master_add_with_match);
 
-/**
- * component_master_del - unregister an aggregate driver
- * @parent: parent device of the aggregate driver
- * @ops: callbacks for the aggregate driver
- *
- * Unregisters an aggregate driver registered with
- * component_master_add_with_match(). If necessary the aggregate driver is first
- * disassembled by calling &component_master_ops.unbind from @ops.
- */
+ 
 void component_master_del(struct device *parent,
 	const struct component_master_ops *ops)
 {
@@ -578,19 +460,11 @@ static void component_unbind(struct component *component,
 		component->ops->unbind(component->dev, adev->parent, data);
 	component->bound = false;
 
-	/* Release all resources claimed in the binding of this component */
+	 
 	devres_release_group(component->dev, component);
 }
 
-/**
- * component_unbind_all - unbind all components of an aggregate driver
- * @parent: parent device of the aggregate driver
- * @data: opaque pointer, passed to all components
- *
- * Unbinds all components of the aggregate device by passing @data to their
- * &component_ops.unbind functions. Should be called from
- * &component_master_ops.unbind.
- */
+ 
 void component_unbind_all(struct device *parent, void *data)
 {
 	struct aggregate_device *adev;
@@ -603,7 +477,7 @@ void component_unbind_all(struct device *parent, void *data)
 	if (!adev)
 		return;
 
-	/* Unbind components in reverse order */
+	 
 	for (i = adev->match->num; i--; )
 		if (!adev->match->compare[i].duplicate) {
 			c = adev->match->compare[i].component;
@@ -617,19 +491,11 @@ static int component_bind(struct component *component, struct aggregate_device *
 {
 	int ret;
 
-	/*
-	 * Each component initialises inside its own devres group.
-	 * This allows us to roll-back a failed component without
-	 * affecting anything else.
-	 */
+	 
 	if (!devres_open_group(adev->parent, NULL, GFP_KERNEL))
 		return -ENOMEM;
 
-	/*
-	 * Also open a group for the device itself: this allows us
-	 * to release the resources claimed against the sub-device
-	 * at the appropriate moment.
-	 */
+	 
 	if (!devres_open_group(component->dev, component, GFP_KERNEL)) {
 		devres_release_group(adev->parent, NULL);
 		return -ENOMEM;
@@ -642,12 +508,7 @@ static int component_bind(struct component *component, struct aggregate_device *
 	if (!ret) {
 		component->bound = true;
 
-		/*
-		 * Close the component device's group so that resources
-		 * allocated in the binding are encapsulated for removal
-		 * at unbind.  Remove the group on the DRM device as we
-		 * can clean those resources up independently.
-		 */
+		 
 		devres_close_group(component->dev, NULL);
 		devres_remove_group(adev->parent, NULL);
 
@@ -665,15 +526,7 @@ static int component_bind(struct component *component, struct aggregate_device *
 	return ret;
 }
 
-/**
- * component_bind_all - bind all components of an aggregate driver
- * @parent: parent device of the aggregate driver
- * @data: opaque pointer, passed to all components
- *
- * Binds all components of the aggregate @dev by passing @data to their
- * &component_ops.bind functions. Should be called from
- * &component_master_ops.bind.
- */
+ 
 int component_bind_all(struct device *parent, void *data)
 {
 	struct aggregate_device *adev;
@@ -687,7 +540,7 @@ int component_bind_all(struct device *parent, void *data)
 	if (!adev)
 		return -EINVAL;
 
-	/* Bind components in match order */
+	 
 	for (i = 0; i < adev->match->num; i++)
 		if (!adev->match->compare[i].duplicate) {
 			c = adev->match->compare[i].component;
@@ -740,25 +593,7 @@ static int __component_add(struct device *dev, const struct component_ops *ops,
 	return ret < 0 ? ret : 0;
 }
 
-/**
- * component_add_typed - register a component
- * @dev: component device
- * @ops: component callbacks
- * @subcomponent: nonzero identifier for subcomponents
- *
- * Register a new component for @dev. Functions in @ops will be call when the
- * aggregate driver is ready to bind the overall driver by calling
- * component_bind_all(). See also &struct component_ops.
- *
- * @subcomponent must be nonzero and is used to differentiate between multiple
- * components registerd on the same device @dev. These components are match
- * using component_match_add_typed().
- *
- * The component needs to be unregistered at driver unload/disconnect by
- * calling component_del().
- *
- * See also component_add().
- */
+ 
 int component_add_typed(struct device *dev, const struct component_ops *ops,
 	int subcomponent)
 {
@@ -769,36 +604,14 @@ int component_add_typed(struct device *dev, const struct component_ops *ops,
 }
 EXPORT_SYMBOL_GPL(component_add_typed);
 
-/**
- * component_add - register a component
- * @dev: component device
- * @ops: component callbacks
- *
- * Register a new component for @dev. Functions in @ops will be called when the
- * aggregate driver is ready to bind the overall driver by calling
- * component_bind_all(). See also &struct component_ops.
- *
- * The component needs to be unregistered at driver unload/disconnect by
- * calling component_del().
- *
- * See also component_add_typed() for a variant that allows multipled different
- * components on the same device.
- */
+ 
 int component_add(struct device *dev, const struct component_ops *ops)
 {
 	return __component_add(dev, ops, 0);
 }
 EXPORT_SYMBOL_GPL(component_add);
 
-/**
- * component_del - unregister a component
- * @dev: component device
- * @ops: component callbacks
- *
- * Unregister a component added with component_add(). If the component is bound
- * into an aggregate driver, this will force the entire aggregate driver, including
- * all its components, to be unbound.
- */
+ 
 void component_del(struct device *dev, const struct component_ops *ops)
 {
 	struct component *c, *component = NULL;

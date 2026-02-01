@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  PCM DRM helpers
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/export.h>
 #include <linux/hdmi.h>
@@ -9,10 +7,10 @@
 #include <sound/pcm.h>
 #include <sound/pcm_drm_eld.h>
 
-#define SAD0_CHANNELS_MASK	GENMASK(2, 0) /* max number of channels - 1 */
-#define SAD0_FORMAT_MASK	GENMASK(6, 3) /* audio format */
+#define SAD0_CHANNELS_MASK	GENMASK(2, 0)  
+#define SAD0_FORMAT_MASK	GENMASK(6, 3)  
 
-#define SAD1_RATE_MASK		GENMASK(6, 0) /* bitfield of supported rates */
+#define SAD1_RATE_MASK		GENMASK(6, 0)  
 #define SAD1_RATE_32000_MASK	BIT(0)
 #define SAD1_RATE_44100_MASK	BIT(1)
 #define SAD1_RATE_48000_MASK	BIT(2)
@@ -66,7 +64,7 @@ static unsigned int sad_rate_mask(const u8 *sad)
 					 SAD1_RATE_176400_MASK,
 					 SAD1_RATE_192000_MASK);
 	default:
-		/* TODO adjust for other compressed formats as well */
+		 
 		return sad[1] & SAD1_RATE_MASK;
 	}
 }
@@ -84,7 +82,7 @@ static unsigned int sad_max_channels(const u8 *sad)
 	case HDMI_AUDIO_CODING_TYPE_MLP:
 		return 8;
 	default:
-		/* TODO adjust for other compressed formats as well */
+		 
 		return 1 + FIELD_GET(SAD0_CHANNELS_MASK, sad[0]);
 	}
 }
@@ -104,10 +102,7 @@ static int eld_limit_rates(struct snd_pcm_hw_params *params,
 		for (i = drm_eld_sad_count(eld); i > 0; i--, sad += 3) {
 			unsigned max_channels = sad_max_channels(sad);
 
-			/*
-			 * Exclude SADs which do not include the
-			 * requested number of channels.
-			 */
+			 
 			if (c->min <= max_channels)
 				rate_mask |= sad_rate_mask(sad);
 		}
@@ -130,7 +125,7 @@ static int eld_limit_channels(struct snd_pcm_hw_params *params,
 	if (sad) {
 		unsigned int rate_mask = 0;
 
-		/* Convert the rate interval to a mask */
+		 
 		r = hw_param_interval_c(params, SNDRV_PCM_HW_PARAM_RATE);
 		for (i = 0; i < ARRAY_SIZE(eld_rates); i++)
 			if (r->min <= eld_rates[i] && r->max >= eld_rates[i])

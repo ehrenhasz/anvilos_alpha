@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-	Mantis PCI bridge driver
 
-	Copyright (C) Manu Abraham (abraham.manu@gmail.com)
-
-*/
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -114,7 +109,7 @@ int mantis_pci_init(struct mantis_pci *mantis)
 	pci_set_drvdata(pdev, mantis);
 	return ret;
 
-	/* Error conditions */
+	 
 fail3:
 	dprintk(MANTIS_ERROR, 1, "ERROR: <%d> I/O unmap", ret);
 	if (mantis->mmio)

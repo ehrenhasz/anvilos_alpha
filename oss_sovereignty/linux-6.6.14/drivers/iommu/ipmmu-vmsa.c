@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * IOMMU API for Renesas VMSA-compatible IPMMU
- * Author: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- *
- * Copyright (C) 2014-2020 Renesas Electronics Corporation
- */
+
+ 
 
 #include <linux/bitmap.h>
 #include <linux/delay.h>
@@ -59,7 +54,7 @@ struct ipmmu_vmsa_device {
 	struct ipmmu_vmsa_device *root;
 	const struct ipmmu_features *features;
 	unsigned int num_ctx;
-	spinlock_t lock;			/* Protects ctx and domains[] */
+	spinlock_t lock;			 
 	DECLARE_BITMAP(ctx, IPMMU_CTX_MAX);
 	struct ipmmu_vmsa_domain *domains[IPMMU_CTX_MAX];
 	s8 utlb_ctx[IPMMU_UTLB_MAX];
@@ -76,7 +71,7 @@ struct ipmmu_vmsa_domain {
 	struct io_pgtable_ops *iop;
 
 	unsigned int context_id;
-	struct mutex mutex;			/* Protects mappings */
+	struct mutex mutex;			 
 };
 
 static struct ipmmu_vmsa_domain *to_vmsa_domain(struct iommu_domain *dom)
@@ -89,61 +84,57 @@ static struct ipmmu_vmsa_device *to_ipmmu(struct device *dev)
 	return dev_iommu_priv_get(dev);
 }
 
-#define TLB_LOOP_TIMEOUT		100	/* 100us */
+#define TLB_LOOP_TIMEOUT		100	 
 
-/* -----------------------------------------------------------------------------
- * Registers Definition
- */
+ 
 
 #define IM_NS_ALIAS_OFFSET		0x800
 
-/* MMU "context" registers */
-#define IMCTR				0x0000		/* R-Car Gen2/3 */
-#define IMCTR_INTEN			(1 << 2)	/* R-Car Gen2/3 */
-#define IMCTR_FLUSH			(1 << 1)	/* R-Car Gen2/3 */
-#define IMCTR_MMUEN			(1 << 0)	/* R-Car Gen2/3 */
+ 
+#define IMCTR				0x0000		 
+#define IMCTR_INTEN			(1 << 2)	 
+#define IMCTR_FLUSH			(1 << 1)	 
+#define IMCTR_MMUEN			(1 << 0)	 
 
-#define IMTTBCR				0x0008		/* R-Car Gen2/3 */
-#define IMTTBCR_EAE			(1 << 31)	/* R-Car Gen2/3 */
-#define IMTTBCR_SH0_INNER_SHAREABLE	(3 << 12)	/* R-Car Gen2 only */
-#define IMTTBCR_ORGN0_WB_WA		(1 << 10)	/* R-Car Gen2 only */
-#define IMTTBCR_IRGN0_WB_WA		(1 << 8)	/* R-Car Gen2 only */
-#define IMTTBCR_SL0_TWOBIT_LVL_1	(2 << 6)	/* R-Car Gen3 only */
-#define IMTTBCR_SL0_LVL_1		(1 << 4)	/* R-Car Gen2 only */
+#define IMTTBCR				0x0008		 
+#define IMTTBCR_EAE			(1 << 31)	 
+#define IMTTBCR_SH0_INNER_SHAREABLE	(3 << 12)	 
+#define IMTTBCR_ORGN0_WB_WA		(1 << 10)	 
+#define IMTTBCR_IRGN0_WB_WA		(1 << 8)	 
+#define IMTTBCR_SL0_TWOBIT_LVL_1	(2 << 6)	 
+#define IMTTBCR_SL0_LVL_1		(1 << 4)	 
 
-#define IMBUSCR				0x000c		/* R-Car Gen2 only */
-#define IMBUSCR_DVM			(1 << 2)	/* R-Car Gen2 only */
-#define IMBUSCR_BUSSEL_MASK		(3 << 0)	/* R-Car Gen2 only */
+#define IMBUSCR				0x000c		 
+#define IMBUSCR_DVM			(1 << 2)	 
+#define IMBUSCR_BUSSEL_MASK		(3 << 0)	 
 
-#define IMTTLBR0			0x0010		/* R-Car Gen2/3 */
-#define IMTTUBR0			0x0014		/* R-Car Gen2/3 */
+#define IMTTLBR0			0x0010		 
+#define IMTTUBR0			0x0014		 
 
-#define IMSTR				0x0020		/* R-Car Gen2/3 */
-#define IMSTR_MHIT			(1 << 4)	/* R-Car Gen2/3 */
-#define IMSTR_ABORT			(1 << 2)	/* R-Car Gen2/3 */
-#define IMSTR_PF			(1 << 1)	/* R-Car Gen2/3 */
-#define IMSTR_TF			(1 << 0)	/* R-Car Gen2/3 */
+#define IMSTR				0x0020		 
+#define IMSTR_MHIT			(1 << 4)	 
+#define IMSTR_ABORT			(1 << 2)	 
+#define IMSTR_PF			(1 << 1)	 
+#define IMSTR_TF			(1 << 0)	 
 
-#define IMMAIR0				0x0028		/* R-Car Gen2/3 */
+#define IMMAIR0				0x0028		 
 
-#define IMELAR				0x0030		/* R-Car Gen2/3, IMEAR on R-Car Gen2 */
-#define IMEUAR				0x0034		/* R-Car Gen3 only */
+#define IMELAR				0x0030		 
+#define IMEUAR				0x0034		 
 
-/* uTLB registers */
+ 
 #define IMUCTR(n)			((n) < 32 ? IMUCTR0(n) : IMUCTR32(n))
-#define IMUCTR0(n)			(0x0300 + ((n) * 16))		/* R-Car Gen2/3 */
-#define IMUCTR32(n)			(0x0600 + (((n) - 32) * 16))	/* R-Car Gen3 only */
-#define IMUCTR_TTSEL_MMU(n)		((n) << 4)	/* R-Car Gen2/3 */
-#define IMUCTR_FLUSH			(1 << 1)	/* R-Car Gen2/3 */
-#define IMUCTR_MMUEN			(1 << 0)	/* R-Car Gen2/3 */
+#define IMUCTR0(n)			(0x0300 + ((n) * 16))		 
+#define IMUCTR32(n)			(0x0600 + (((n) - 32) * 16))	 
+#define IMUCTR_TTSEL_MMU(n)		((n) << 4)	 
+#define IMUCTR_FLUSH			(1 << 1)	 
+#define IMUCTR_MMUEN			(1 << 0)	 
 
 #define IMUASID(n)			((n) < 32 ? IMUASID0(n) : IMUASID32(n))
-#define IMUASID0(n)			(0x0308 + ((n) * 16))		/* R-Car Gen2/3 */
-#define IMUASID32(n)			(0x0608 + (((n) - 32) * 16))	/* R-Car Gen3 only */
+#define IMUASID0(n)			(0x0308 + ((n) * 16))		 
+#define IMUASID32(n)			(0x0608 + (((n) - 32) * 16))	 
 
-/* -----------------------------------------------------------------------------
- * Root device handling
- */
+ 
 
 static struct platform_driver ipmmu_driver;
 
@@ -171,9 +162,7 @@ static struct ipmmu_vmsa_device *ipmmu_find_root(void)
 				      __ipmmu_check_device) == 0 ? root : NULL;
 }
 
-/* -----------------------------------------------------------------------------
- * Read/Write Access
- */
+ 
 
 static u32 ipmmu_read(struct ipmmu_vmsa_device *mmu, unsigned int offset)
 {
@@ -247,11 +236,9 @@ static void ipmmu_imuctr_write(struct ipmmu_vmsa_device *mmu,
 	ipmmu_write(mmu, ipmmu_utlb_reg(mmu, IMUCTR(utlb)), data);
 }
 
-/* -----------------------------------------------------------------------------
- * TLB and microTLB Management
- */
+ 
 
-/* Wait for any pending TLB invalidations to complete */
+ 
 static void ipmmu_tlb_sync(struct ipmmu_vmsa_domain *domain)
 {
 	u32 val;
@@ -274,22 +261,17 @@ static void ipmmu_tlb_invalidate(struct ipmmu_vmsa_domain *domain)
 	ipmmu_tlb_sync(domain);
 }
 
-/*
- * Enable MMU translation for the microTLB.
- */
+ 
 static void ipmmu_utlb_enable(struct ipmmu_vmsa_domain *domain,
 			      unsigned int utlb)
 {
 	struct ipmmu_vmsa_device *mmu = domain->mmu;
 
-	/*
-	 * TODO: Reference-count the microTLB as several bus masters can be
-	 * connected to the same microTLB.
-	 */
+	 
 
-	/* TODO: What should we set the ASID to ? */
+	 
 	ipmmu_imuasid_write(mmu, utlb, 0);
-	/* TODO: Do we need to flush the microTLB ? */
+	 
 	ipmmu_imuctr_write(mmu, utlb, IMUCTR_TTSEL_MMU(domain->context_id) |
 				      IMUCTR_FLUSH | IMUCTR_MMUEN);
 	mmu->utlb_ctx[utlb] = domain->context_id;
@@ -313,9 +295,7 @@ static const struct iommu_flush_ops ipmmu_flush_ops = {
 	.tlb_flush_walk = ipmmu_tlb_flush,
 };
 
-/* -----------------------------------------------------------------------------
- * Domain/Context Management
- */
+ 
 
 static int ipmmu_domain_allocate_context(struct ipmmu_vmsa_device *mmu,
 					 struct ipmmu_vmsa_domain *domain)
@@ -355,16 +335,12 @@ static void ipmmu_domain_setup_context(struct ipmmu_vmsa_domain *domain)
 	u64 ttbr;
 	u32 tmp;
 
-	/* TTBR0 */
+	 
 	ttbr = domain->cfg.arm_lpae_s1_cfg.ttbr;
 	ipmmu_ctx_write_root(domain, IMTTLBR0, ttbr);
 	ipmmu_ctx_write_root(domain, IMTTUBR0, ttbr >> 32);
 
-	/*
-	 * TTBCR
-	 * We use long descriptors and allocate the whole 32-bit VA space to
-	 * TTBR0.
-	 */
+	 
 	if (domain->mmu->features->twobit_imttbcr_sl0)
 		tmp = IMTTBCR_SL0_TWOBIT_LVL_1;
 	else
@@ -376,29 +352,20 @@ static void ipmmu_domain_setup_context(struct ipmmu_vmsa_domain *domain)
 
 	ipmmu_ctx_write_root(domain, IMTTBCR, IMTTBCR_EAE | tmp);
 
-	/* MAIR0 */
+	 
 	ipmmu_ctx_write_root(domain, IMMAIR0,
 			     domain->cfg.arm_lpae_s1_cfg.mair);
 
-	/* IMBUSCR */
+	 
 	if (domain->mmu->features->setup_imbuscr)
 		ipmmu_ctx_write_root(domain, IMBUSCR,
 				     ipmmu_ctx_read_root(domain, IMBUSCR) &
 				     ~(IMBUSCR_DVM | IMBUSCR_BUSSEL_MASK));
 
-	/*
-	 * IMSTR
-	 * Clear all interrupt flags.
-	 */
+	 
 	ipmmu_ctx_write_root(domain, IMSTR, ipmmu_ctx_read_root(domain, IMSTR));
 
-	/*
-	 * IMCTR
-	 * Enable the MMU and interrupt generation. The long-descriptor
-	 * translation table format doesn't use TEX remapping. Don't enable AF
-	 * software management as we have no use for it. Flush the TLB as
-	 * required when modifying the context registers.
-	 */
+	 
 	ipmmu_ctx_write_all(domain, IMCTR,
 			    IMCTR_INTEN | IMCTR_FLUSH | IMCTR_MMUEN);
 }
@@ -407,17 +374,7 @@ static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
 {
 	int ret;
 
-	/*
-	 * Allocate the page table operations.
-	 *
-	 * VMSA states in section B3.6.3 "Control of Secure or Non-secure memory
-	 * access, Long-descriptor format" that the NStable bit being set in a
-	 * table descriptor will result in the NStable and NS bits of all child
-	 * entries being ignored and considered as being set. The IPMMU seems
-	 * not to comply with this, as it generates a secure access page fault
-	 * if any of the NStable and NS bits isn't set when running in
-	 * non-secure mode.
-	 */
+	 
 	domain->cfg.quirks = IO_PGTABLE_QUIRK_ARM_NS;
 	domain->cfg.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K;
 	domain->cfg.ias = 32;
@@ -425,16 +382,11 @@ static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
 	domain->cfg.tlb = &ipmmu_flush_ops;
 	domain->io_domain.geometry.aperture_end = DMA_BIT_MASK(32);
 	domain->io_domain.geometry.force_aperture = true;
-	/*
-	 * TODO: Add support for coherent walk through CCI with DVM and remove
-	 * cache handling. For now, delegate it to the io-pgtable code.
-	 */
+	 
 	domain->cfg.coherent_walk = false;
 	domain->cfg.iommu_dev = domain->mmu->root->dev;
 
-	/*
-	 * Find an unused context.
-	 */
+	 
 	ret = ipmmu_domain_allocate_context(domain->mmu->root, domain);
 	if (ret < 0)
 		return ret;
@@ -458,20 +410,13 @@ static void ipmmu_domain_destroy_context(struct ipmmu_vmsa_domain *domain)
 	if (!domain->mmu)
 		return;
 
-	/*
-	 * Disable the context. Flush the TLB as required when modifying the
-	 * context registers.
-	 *
-	 * TODO: Is TLB flush really needed ?
-	 */
+	 
 	ipmmu_ctx_write_all(domain, IMCTR, IMCTR_FLUSH);
 	ipmmu_tlb_sync(domain);
 	ipmmu_domain_free_context(domain->mmu->root, domain->context_id);
 }
 
-/* -----------------------------------------------------------------------------
- * Fault Handling
- */
+ 
 
 static irqreturn_t ipmmu_domain_irq(struct ipmmu_vmsa_domain *domain)
 {
@@ -488,15 +433,10 @@ static irqreturn_t ipmmu_domain_irq(struct ipmmu_vmsa_domain *domain)
 	if (IS_ENABLED(CONFIG_64BIT))
 		iova |= (u64)ipmmu_ctx_read_root(domain, IMEUAR) << 32;
 
-	/*
-	 * Clear the error status flags. Unlike traditional interrupt flag
-	 * registers that must be cleared by writing 1, this status register
-	 * seems to require 0. The error address register must be read before,
-	 * otherwise its value will be 0.
-	 */
+	 
 	ipmmu_ctx_write_root(domain, IMSTR, 0);
 
-	/* Log fatal errors. */
+	 
 	if (status & IMSTR_MHIT)
 		dev_err_ratelimited(mmu->dev, "Multiple TLB hits @0x%lx\n",
 				    iova);
@@ -507,12 +447,7 @@ static irqreturn_t ipmmu_domain_irq(struct ipmmu_vmsa_domain *domain)
 	if (!(status & (IMSTR_PF | IMSTR_TF)))
 		return IRQ_NONE;
 
-	/*
-	 * Try to handle page faults and translation faults.
-	 *
-	 * TODO: We need to look up the faulty device based on the I/O VA. Use
-	 * the IOMMU device for now.
-	 */
+	 
 	if (!report_iommu_fault(&domain->io_domain, mmu->dev, iova, 0))
 		return IRQ_HANDLED;
 
@@ -532,9 +467,7 @@ static irqreturn_t ipmmu_irq(int irq, void *dev)
 
 	spin_lock_irqsave(&mmu->lock, flags);
 
-	/*
-	 * Check interrupts for all active contexts.
-	 */
+	 
 	for (i = 0; i < mmu->num_ctx; i++) {
 		if (!mmu->domains[i])
 			continue;
@@ -547,9 +480,7 @@ static irqreturn_t ipmmu_irq(int irq, void *dev)
 	return status;
 }
 
-/* -----------------------------------------------------------------------------
- * IOMMU Operations
- */
+ 
 
 static struct iommu_domain *ipmmu_domain_alloc(unsigned type)
 {
@@ -571,10 +502,7 @@ static void ipmmu_domain_free(struct iommu_domain *io_domain)
 {
 	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
 
-	/*
-	 * Free the domain resources. We assume that all devices have already
-	 * been detached.
-	 */
+	 
 	ipmmu_domain_destroy_context(domain);
 	free_io_pgtable_ops(domain->iop);
 	kfree(domain);
@@ -597,7 +525,7 @@ static int ipmmu_attach_device(struct iommu_domain *io_domain,
 	mutex_lock(&domain->mutex);
 
 	if (!domain->mmu) {
-		/* The domain hasn't been used yet, initialize it. */
+		 
 		domain->mmu = mmu;
 		ret = ipmmu_domain_init_context(domain);
 		if (ret < 0) {
@@ -608,10 +536,7 @@ static int ipmmu_attach_device(struct iommu_domain *io_domain,
 				 domain->context_id);
 		}
 	} else if (domain->mmu != mmu) {
-		/*
-		 * Something is wrong, we can't attach two devices using
-		 * different IOMMUs to the same domain.
-		 */
+		 
 		ret = -EINVAL;
 	} else
 		dev_info(dev, "Reusing IPMMU context %u\n", domain->context_id);
@@ -665,7 +590,7 @@ static phys_addr_t ipmmu_iova_to_phys(struct iommu_domain *io_domain,
 {
 	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
 
-	/* TODO: Is locking needed ? */
+	 
 
 	return domain->iop->iova_to_phys(domain->iop, iova);
 }
@@ -688,14 +613,14 @@ static const struct soc_device_attribute soc_needs_opt_in[] = {
 	{ .family = "R-Car Gen3", },
 	{ .family = "R-Car Gen4", },
 	{ .family = "RZ/G2", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct soc_device_attribute soc_denylist[] = {
 	{ .soc_id = "r8a774a1", },
 	{ .soc_id = "r8a7795", .revision = "ES2.*" },
 	{ .soc_id = "r8a7796", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static const char * const devices_allowlist[] = {
@@ -709,28 +634,25 @@ static bool ipmmu_device_is_allowed(struct device *dev)
 {
 	unsigned int i;
 
-	/*
-	 * R-Car Gen3/4 and RZ/G2 use the allow list to opt-in devices.
-	 * For Other SoCs, this returns true anyway.
-	 */
+	 
 	if (!soc_device_match(soc_needs_opt_in))
 		return true;
 
-	/* Check whether this SoC can use the IPMMU correctly or not */
+	 
 	if (soc_device_match(soc_denylist))
 		return false;
 
-	/* Check whether this device is a PCI device */
+	 
 	if (dev_is_pci(dev))
 		return true;
 
-	/* Check whether this device can work with the IPMMU */
+	 
 	for (i = 0; i < ARRAY_SIZE(devices_allowlist); i++) {
 		if (!strcmp(dev_name(dev), devices_allowlist[i]))
 			return true;
 	}
 
-	/* Otherwise, do not allow use of IPMMU */
+	 
 	return false;
 }
 
@@ -742,7 +664,7 @@ static int ipmmu_of_xlate(struct device *dev,
 
 	iommu_fwspec_add_ids(dev, spec->args, 1);
 
-	/* Initialize once - xlate() will call multiple times */
+	 
 	if (to_ipmmu(dev))
 		return 0;
 
@@ -754,15 +676,7 @@ static int ipmmu_init_arm_mapping(struct device *dev)
 	struct ipmmu_vmsa_device *mmu = to_ipmmu(dev);
 	int ret;
 
-	/*
-	 * Create the ARM mapping, used by the ARM DMA mapping core to allocate
-	 * VAs. This will allocate a corresponding IOMMU domain.
-	 *
-	 * TODO:
-	 * - Create one mapping per context (TLB).
-	 * - Make the mapping size configurable ? We currently use a 2GB mapping
-	 *   at a 1GB offset to ensure that NULL VAs will fault.
-	 */
+	 
 	if (!mmu->mapping) {
 		struct dma_iommu_mapping *mapping;
 
@@ -777,7 +691,7 @@ static int ipmmu_init_arm_mapping(struct device *dev)
 		mmu->mapping = mapping;
 	}
 
-	/* Attach the ARM VA mapping to the device. */
+	 
 	ret = arm_iommu_attach_device(dev, mmu->mapping);
 	if (ret < 0) {
 		dev_err(dev, "Failed to attach device to VA mapping\n");
@@ -797,9 +711,7 @@ static struct iommu_device *ipmmu_probe_device(struct device *dev)
 {
 	struct ipmmu_vmsa_device *mmu = to_ipmmu(dev);
 
-	/*
-	 * Only let through devices that have been verified in xlate()
-	 */
+	 
 	if (!mmu)
 		return ERR_PTR(-ENODEV);
 
@@ -868,15 +780,13 @@ static const struct iommu_ops ipmmu_ops = {
 	}
 };
 
-/* -----------------------------------------------------------------------------
- * Probe/remove and init
- */
+ 
 
 static void ipmmu_device_reset(struct ipmmu_vmsa_device *mmu)
 {
 	unsigned int i;
 
-	/* Disable all contexts. */
+	 
 	for (i = 0; i < mmu->num_ctx; ++i)
 		ipmmu_ctx_write(mmu, i, IMCTR, 0);
 }
@@ -884,7 +794,7 @@ static void ipmmu_device_reset(struct ipmmu_vmsa_device *mmu)
 static const struct ipmmu_features ipmmu_features_default = {
 	.use_ns_alias_offset = true,
 	.has_cache_leaf_nodes = false,
-	.number_of_contexts = 1, /* software only tested with one context */
+	.number_of_contexts = 1,  
 	.num_utlbs = 32,
 	.setup_imbuscr = true,
 	.twobit_imttbcr_sl0 = false,
@@ -970,7 +880,7 @@ static const struct of_device_id ipmmu_of_ids[] = {
 		.compatible = "renesas,rcar-gen4-ipmmu-vmsa",
 		.data = &ipmmu_features_rcar_gen4,
 	}, {
-		/* Terminator */
+		 
 	},
 };
 
@@ -996,46 +906,30 @@ static int ipmmu_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Map I/O memory and request IRQ. */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	mmu->base = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(mmu->base))
 		return PTR_ERR(mmu->base);
 
-	/*
-	 * The IPMMU has two register banks, for secure and non-secure modes.
-	 * The bank mapped at the beginning of the IPMMU address space
-	 * corresponds to the running mode of the CPU. When running in secure
-	 * mode the non-secure register bank is also available at an offset.
-	 *
-	 * Secure mode operation isn't clearly documented and is thus currently
-	 * not implemented in the driver. Furthermore, preliminary tests of
-	 * non-secure operation with the main register bank were not successful.
-	 * Offset the registers base unconditionally to point to the non-secure
-	 * alias space for now.
-	 */
+	 
 	if (mmu->features->use_ns_alias_offset)
 		mmu->base += IM_NS_ALIAS_OFFSET;
 
 	mmu->num_ctx = min(IPMMU_CTX_MAX, mmu->features->number_of_contexts);
 
-	/*
-	 * Determine if this IPMMU instance is a root device by checking for
-	 * the lack of has_cache_leaf_nodes flag or renesas,ipmmu-main property.
-	 */
+	 
 	if (!mmu->features->has_cache_leaf_nodes ||
 	    !of_property_present(pdev->dev.of_node, "renesas,ipmmu-main"))
 		mmu->root = mmu;
 	else
 		mmu->root = ipmmu_find_root();
 
-	/*
-	 * Wait until the root device has been registered for sure.
-	 */
+	 
 	if (!mmu->root)
 		return -EPROBE_DEFER;
 
-	/* Root devices have mandatory IRQs */
+	 
 	if (ipmmu_is_root(mmu)) {
 		irq = platform_get_irq(pdev, 0);
 		if (irq < 0)
@@ -1056,11 +950,7 @@ static int ipmmu_probe(struct platform_device *pdev)
 		}
 	}
 
-	/*
-	 * Register the IPMMU to the IOMMU subsystem in the following cases:
-	 * - R-Car Gen2 IPMMU (all devices registered)
-	 * - R-Car Gen3 IPMMU (leaf devices only - skip root IPMMU-MM device)
-	 */
+	 
 	if (!mmu->features->has_cache_leaf_nodes || !ipmmu_is_root(mmu)) {
 		ret = iommu_device_sysfs_add(&mmu->iommu, &pdev->dev, NULL,
 					     dev_name(&pdev->dev));
@@ -1072,11 +962,7 @@ static int ipmmu_probe(struct platform_device *pdev)
 			return ret;
 	}
 
-	/*
-	 * We can't create the ARM mapping here as it requires the bus to have
-	 * an IOMMU, which only happens when bus_set_iommu() is called in
-	 * ipmmu_init() after the probe function returns.
-	 */
+	 
 
 	platform_set_drvdata(pdev, mmu);
 
@@ -1101,7 +987,7 @@ static int ipmmu_resume_noirq(struct device *dev)
 	struct ipmmu_vmsa_device *mmu = dev_get_drvdata(dev);
 	unsigned int i;
 
-	/* Reset root MMU and restore contexts */
+	 
 	if (ipmmu_is_root(mmu)) {
 		ipmmu_device_reset(mmu);
 
@@ -1113,7 +999,7 @@ static int ipmmu_resume_noirq(struct device *dev)
 		}
 	}
 
-	/* Re-enable active micro-TLBs */
+	 
 	for (i = 0; i < mmu->features->num_utlbs; i++) {
 		if (mmu->utlb_ctx[i] == IPMMU_CTX_INVALID)
 			continue;
@@ -1130,7 +1016,7 @@ static const struct dev_pm_ops ipmmu_pm  = {
 #define DEV_PM_OPS	&ipmmu_pm
 #else
 #define DEV_PM_OPS	NULL
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static struct platform_driver ipmmu_driver = {
 	.driver = {

@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2022 Intel Corporation. All rights reserved.
-//
-// Author: Liam Girdwood <liam.r.girdwood@linux.intel.com>
+
+
+
+
+
 
 #include <linux/debugfs.h>
 #include <linux/sched/signal.h>
@@ -65,7 +65,7 @@ static int trace_filter_parse_entry(struct snd_sof_dev *sdev, const char *line,
 	int cnt = *counter;
 	u32 uuid_id;
 
-	/* ignore empty content */
+	 
 	ret = sscanf(line, " %n", &read);
 	if (!ret && read == len)
 		return len;
@@ -101,7 +101,7 @@ static int trace_filter_parse_entry(struct snd_sof_dev *sdev, const char *line,
 	if (ret)
 		return ret;
 
-	/* update counter only when parsing whole entry passed */
+	 
 	*counter = cnt;
 
 	return len;
@@ -117,11 +117,7 @@ static int trace_filter_parse(struct snd_sof_dev *sdev, char *string,
 	int entry_len;
 	int cnt = 0;
 
-	/*
-	 * Each entry contains at least 1, up to TRACE_FILTER_ELEMENTS_PER_ENTRY
-	 * IPC elements, depending on content. Calculate IPC elements capacity
-	 * for the input string where each element is set.
-	 */
+	 
 	while (entry) {
 		capacity += TRACE_FILTER_ELEMENTS_PER_ENTRY;
 		entry = strchr(entry + 1, entry_delimiter[0]);
@@ -130,7 +126,7 @@ static int trace_filter_parse(struct snd_sof_dev *sdev, char *string,
 	if (!*out)
 		return -ENOMEM;
 
-	/* split input string by ';', and parse each entry separately in trace_filter_parse_entry */
+	 
 	while ((entry = strsep(&string, entry_delimiter))) {
 		entry_len = trace_filter_parse_entry(sdev, entry, *out, capacity, &cnt);
 		if (entry_len < 0) {
@@ -237,7 +233,7 @@ static int debugfs_create_trace_filter(struct snd_sof_dev *sdev)
 
 	debugfs_create_file("filter", 0200, sdev->debugfs_root, dfse,
 			    &sof_dfs_trace_filter_fops);
-	/* add to dfsentry list */
+	 
 	list_add(&dfse->list, &sdev->dfsentry_list);
 
 	return 0;
@@ -248,7 +244,7 @@ static bool sof_dtrace_set_host_offset(struct sof_dtrace_priv *priv, u32 new_off
 	u32 host_offset = READ_ONCE(priv->host_offset);
 
 	if (host_offset != new_offset) {
-		/* This is a bit paranoid and unlikely that it is needed */
+		 
 		u32 ret = cmpxchg(&priv->host_offset, host_offset, new_offset);
 
 		if (ret == host_offset)
@@ -264,15 +260,11 @@ static size_t sof_dtrace_avail(struct snd_sof_dev *sdev,
 	struct sof_dtrace_priv *priv = sdev->fw_trace_data;
 	loff_t host_offset = READ_ONCE(priv->host_offset);
 
-	/*
-	 * If host offset is less than local pos, it means write pointer of
-	 * host DMA buffer has been wrapped. We should output the trace data
-	 * at the end of host DMA buffer at first.
-	 */
+	 
 	if (host_offset < pos)
 		return buffer_size - pos;
 
-	/* If there is available trace data now, it is unnecessary to wait. */
+	 
 	if (host_offset > pos)
 		return host_offset - pos;
 
@@ -286,26 +278,23 @@ static size_t sof_wait_dtrace_avail(struct snd_sof_dev *sdev, loff_t pos,
 	struct sof_dtrace_priv *priv = sdev->fw_trace_data;
 	wait_queue_entry_t wait;
 
-	/* data immediately available */
+	 
 	if (ret)
 		return ret;
 
 	if (priv->dtrace_draining && !trace_pos_update_expected(priv)) {
-		/*
-		 * tracing has ended and all traces have been
-		 * read by client, return EOF
-		 */
+		 
 		priv->dtrace_draining = false;
 		return 0;
 	}
 
-	/* wait for available trace data from FW */
+	 
 	init_waitqueue_entry(&wait, current);
 	set_current_state(TASK_INTERRUPTIBLE);
 	add_wait_queue(&priv->trace_sleep, &wait);
 
 	if (!signal_pending(current)) {
-		/* set timeout to max value, no error code */
+		 
 		schedule_timeout(MAX_SCHEDULE_TIMEOUT);
 	}
 	remove_wait_queue(&priv->trace_sleep, &wait);
@@ -324,49 +313,44 @@ static ssize_t dfsentry_dtrace_read(struct file *file, char __user *buffer,
 	size_t avail, buffer_size = dfse->size;
 	u64 lpos_64;
 
-	/* make sure we know about any failures on the DSP side */
+	 
 	priv->dtrace_error = false;
 
-	/* check pos and count */
+	 
 	if (lpos < 0)
 		return -EINVAL;
 	if (!count)
 		return 0;
 
-	/* check for buffer wrap and count overflow */
+	 
 	lpos_64 = lpos;
 	lpos = do_div(lpos_64, buffer_size);
 
-	/* get available count based on current host offset */
+	 
 	avail = sof_wait_dtrace_avail(sdev, lpos, buffer_size);
 	if (priv->dtrace_error) {
 		dev_err(sdev->dev, "trace IO error\n");
 		return -EIO;
 	}
 
-	/* no new trace data */
+	 
 	if (!avail)
 		return 0;
 
-	/* make sure count is <= avail */
+	 
 	if (count > avail)
 		count = avail;
 
-	/*
-	 * make sure that all trace data is available for the CPU as the trace
-	 * data buffer might be allocated from non consistent memory.
-	 * Note: snd_dma_buffer_sync() is called for normal audio playback and
-	 *	 capture streams also.
-	 */
+	 
 	snd_dma_buffer_sync(&priv->dmatb, SNDRV_DMA_SYNC_CPU);
-	/* copy available trace data to debugfs */
+	 
 	rem = copy_to_user(buffer, ((u8 *)(dfse->buf) + lpos), count);
 	if (rem)
 		return -EFAULT;
 
 	*ppos += count;
 
-	/* move debugfs reading position */
+	 
 	return count;
 }
 
@@ -376,7 +360,7 @@ static int dfsentry_dtrace_release(struct inode *inode, struct file *file)
 	struct snd_sof_dev *sdev = dfse->sdev;
 	struct sof_dtrace_priv *priv = sdev->fw_trace_data;
 
-	/* avoid duplicate traces at next open */
+	 
 	if (priv->dtrace_state != SOF_DTRACE_ENABLED)
 		sof_dtrace_set_host_offset(priv, 0);
 
@@ -437,13 +421,13 @@ static int ipc3_dtrace_enable(struct snd_sof_dev *sdev)
 	if (priv->dtrace_state == SOF_DTRACE_STOPPED)
 		goto start;
 
-	/* set IPC parameters */
+	 
 	params.hdr.cmd = SOF_IPC_GLB_TRACE_MSG;
-	/* PARAMS_EXT is only supported from ABI 3.7.0 onwards */
+	 
 	if (v->abi_version >= SOF_ABI_VER(3, 7, 0)) {
 		params.hdr.size = sizeof(struct sof_ipc_dma_trace_params_ext);
 		params.hdr.cmd |= SOF_IPC_TRACE_DMA_PARAMS_EXT;
-		params.timestamp_ns = ktime_get(); /* in nanosecond */
+		params.timestamp_ns = ktime_get();  
 	} else {
 		params.hdr.size = sizeof(struct sof_ipc_dma_trace_params);
 		params.hdr.cmd |= SOF_IPC_TRACE_DMA_PARAMS;
@@ -463,7 +447,7 @@ static int ipc3_dtrace_enable(struct snd_sof_dev *sdev)
 	}
 	dev_dbg(sdev->dev, "stream_tag: %d\n", params.stream_tag);
 
-	/* send IPC to the DSP */
+	 
 	priv->dtrace_state = SOF_DTRACE_INITIALIZING;
 	ret = sof_ipc_tx_message_no_reply(sdev->ipc, &params, sizeof(params));
 	if (ret < 0) {
@@ -493,7 +477,7 @@ static int ipc3_dtrace_init(struct snd_sof_dev *sdev)
 	struct sof_dtrace_priv *priv;
 	int ret;
 
-	/* dtrace is only supported with SOF_IPC */
+	 
 	if (sdev->pdata->ipc_type != SOF_IPC)
 		return -EOPNOTSUPP;
 
@@ -508,10 +492,10 @@ static int ipc3_dtrace_init(struct snd_sof_dev *sdev)
 
 	sdev->fw_trace_data = priv;
 
-	/* set false before start initialization */
+	 
 	priv->dtrace_state = SOF_DTRACE_DISABLED;
 
-	/* allocate trace page table buffer */
+	 
 	ret = snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, sdev->dev,
 				  PAGE_SIZE, &priv->dmatp);
 	if (ret < 0) {
@@ -519,7 +503,7 @@ static int ipc3_dtrace_init(struct snd_sof_dev *sdev)
 		return ret;
 	}
 
-	/* allocate trace data buffer */
+	 
 	ret = snd_dma_alloc_dir_pages(SNDRV_DMA_TYPE_DEV_SG, sdev->dev,
 				      DMA_FROM_DEVICE, DMA_BUF_SIZE_FOR_TRACE,
 				      &priv->dmatb);
@@ -528,7 +512,7 @@ static int ipc3_dtrace_init(struct snd_sof_dev *sdev)
 		goto page_err;
 	}
 
-	/* create compressed page table for audio firmware */
+	 
 	ret = snd_sof_create_page_table(sdev->dev, &priv->dmatb,
 					priv->dmatp.area, priv->dmatb.bytes);
 	if (ret < 0)
@@ -578,7 +562,7 @@ int ipc3_dtrace_posn_update(struct snd_sof_dev *sdev,
 	return 0;
 }
 
-/* an error has occurred within the DSP that prevents further trace */
+ 
 static void ipc3_dtrace_fw_crashed(struct snd_sof_dev *sdev)
 {
 	struct sof_dtrace_priv *priv = sdev->fw_trace_data;
@@ -605,10 +589,7 @@ static void ipc3_dtrace_release(struct snd_sof_dev *sdev, bool only_stop)
 		dev_err(sdev->dev, "Host dtrace trigger stop failed: %d\n", ret);
 	priv->dtrace_state = SOF_DTRACE_STOPPED;
 
-	/*
-	 * stop and free trace DMA in the DSP. TRACE_DMA_FREE is only supported from
-	 * ABI 3.20.0 onwards
-	 */
+	 
 	if (v->abi_version >= SOF_ABI_VER(3, 20, 0)) {
 		hdr.size = sizeof(hdr);
 		hdr.cmd = SOF_IPC_GLB_TRACE_MSG | SOF_IPC_TRACE_DMA_FREE;
@@ -646,7 +627,7 @@ static void ipc3_dtrace_free(struct snd_sof_dev *sdev)
 {
 	struct sof_dtrace_priv *priv = sdev->fw_trace_data;
 
-	/* release trace */
+	 
 	ipc3_dtrace_release(sdev, false);
 
 	if (priv->dma_trace_pages) {

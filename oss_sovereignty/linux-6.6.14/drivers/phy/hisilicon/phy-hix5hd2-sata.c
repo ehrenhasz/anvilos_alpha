@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2014 Linaro Ltd.
- * Copyright (c) 2014 HiSilicon Limited.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -78,7 +75,7 @@ static int hix5hd2_sata_phy_init(struct phy *phy)
 				   BIT(data[1]), BIT(data[1]));
 	}
 
-	/* reset phy */
+	 
 	val = readl_relaxed(priv->base + SATA_PHY0_CTLL);
 	val &= ~(MPLL_MULTIPLIER_MASK | REF_USE_PAD);
 	val |= MPLL_MULTIPLIER_50M << MPLL_MULTIPLIER_SHIFT |
@@ -102,7 +99,7 @@ static int hix5hd2_sata_phy_init(struct phy *phy)
 	       PREEMPH_GEN1 << PREEMPH_GEN1_SHIFT;
 	writel_relaxed(val, priv->base + SATA_PORT_PHYCTL2);
 
-	/* ensure PHYCTRL setting takes effect */
+	 
 	val = readl_relaxed(priv->base + SATA_PORT_PHYCTL);
 	val &= ~SPEED_MODE_MASK;
 	val |= SPEED_MODE_GEN1 << HALF_RATE_SHIFT |

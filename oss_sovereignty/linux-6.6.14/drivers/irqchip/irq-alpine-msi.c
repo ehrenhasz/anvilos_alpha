@@ -1,14 +1,4 @@
-/*
- * Annapurna Labs MSIX support services
- *
- * Copyright (C) 2016, Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Antoine Tenart <antoine.tenart@free-electrons.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -25,14 +15,14 @@
 #include <asm/irq.h>
 #include <asm/msi.h>
 
-/* MSIX message address format: local GIC target */
+ 
 #define ALPINE_MSIX_SPI_TARGET_CLUSTER0		BIT(16)
 
 struct alpine_msix_data {
 	spinlock_t msi_map_lock;
 	phys_addr_t addr;
-	u32 spi_first;		/* The SGI number that MSIs start */
-	u32 num_spis;		/* The number of SGIs for MSIs */
+	u32 spi_first;		 
+	u32 num_spis;		 
 	unsigned long *msi_map;
 };
 
@@ -244,13 +234,7 @@ static int alpine_msix_init(struct device_node *node,
 		goto err_priv;
 	}
 
-	/*
-	 * The 20 least significant bits of addr provide direct information
-	 * regarding the interrupt destination.
-	 *
-	 * To select the primary GIC as the target GIC, bits [18:17] must be set
-	 * to 0x0. In this case, bit 16 (SPI_TARGET_CLUSTER0) must be set.
-	 */
+	 
 	priv->addr = res.start & GENMASK_ULL(63,20);
 	priv->addr |= ALPINE_MSIX_SPI_TARGET_CLUSTER0;
 

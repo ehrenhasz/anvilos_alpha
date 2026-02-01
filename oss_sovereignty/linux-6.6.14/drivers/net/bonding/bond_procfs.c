@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/proc_fs.h>
 #include <linux/ethtool.h>
 #include <linux/export.h>
@@ -109,7 +109,7 @@ static void bond_info_show_master(struct seq_file *seq)
 		   bond->params.peer_notif_delay * bond->params.miimon);
 
 
-	/* ARP information */
+	 
 	if (bond->params.arp_interval > 0) {
 		int printed = 0;
 
@@ -308,9 +308,7 @@ void bond_remove_proc_entry(struct bonding *bond)
 	}
 }
 
-/* Create the bonding directory under /proc/net, if doesn't exist yet.
- * Caller must hold rtnl_lock.
- */
+ 
 void __net_init bond_create_proc_dir(struct bond_net *bn)
 {
 	if (!bn->proc_dir) {
@@ -321,8 +319,7 @@ void __net_init bond_create_proc_dir(struct bond_net *bn)
 	}
 }
 
-/* Destroy the bonding directory under /proc/net, if empty.
- */
+ 
 void __net_exit bond_destroy_proc_dir(struct bond_net *bn)
 {
 	if (bn->proc_dir) {

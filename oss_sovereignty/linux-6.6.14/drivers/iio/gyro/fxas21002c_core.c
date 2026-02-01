@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for NXP FXAS21002C Gyroscope - Core
- *
- * Copyright (C) 2019 Linaro Ltd.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/module.h>
@@ -112,20 +108,12 @@ static const int fxas21002c_odr_values[] = {
 	800, 400, 200, 100, 50, 25, 12, 12
 };
 
-/*
- * These values are taken from the low-pass filter cutoff frequency calculated
- * ODR * 0.lpf_values. So, for ODR = 800Hz with a lpf value = 0.32
- * => LPF cutoff frequency = 800 * 0.32 = 256 Hz
- */
+ 
 static const int fxas21002c_lpf_values[] = {
 	32, 16, 8
 };
 
-/*
- * These values are taken from the high-pass filter cutoff frequency calculated
- * ODR * 0.0hpf_values. So, for ODR = 800Hz with a hpf value = 0.018750
- * => HPF cutoff frequency = 800 * 0.018750 = 15 Hz
- */
+ 
 static const int fxas21002c_hpf_values[] = {
 	18750, 9625, 4875, 2475
 };
@@ -139,7 +127,7 @@ struct fxas21002c_data {
 	enum fxas21002c_mode_state mode;
 	enum fxas21002c_mode_state prev_mode;
 
-	struct mutex lock;		/* serialize data access */
+	struct mutex lock;		 
 	struct regmap *regmap;
 	struct regmap_field *regmap_fields[F_MAX_FIELDS];
 	struct iio_trigger *dready_trig;
@@ -149,10 +137,7 @@ struct fxas21002c_data {
 	struct regulator *vdd;
 	struct regulator *vddio;
 
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers live in their own cache lines.
-	 */
+	 
 	s16 buffer[8] __aligned(IIO_DMA_MINALIGN);
 };
 
@@ -236,7 +221,7 @@ static int fxas21002c_range_fs_from_value(struct fxas21002c_data *data,
 	unsigned int fs_double;
 	int ret;
 
-	/* We need to check if FS_DOUBLE is enabled to offset the value */
+	 
 	ret = regmap_field_read(data->regmap_fields[F_FS_DOUBLE], &fs_double);
 	if (ret < 0)
 		return ret;
@@ -320,7 +305,7 @@ static int fxas21002c_mode_set(struct fxas21002c_data *data,
 	if (ret < 0)
 		return ret;
 
-	/* if going to active wait the setup times */
+	 
 	if (mode == FXAS21002C_MODE_ACTIVE &&
 	    data->mode == FXAS21002C_MODE_STANDBY)
 		msleep_interruptible(FXAS21002C_STANDBY_ACTIVE_TIME_MS);
@@ -505,10 +490,7 @@ static int fxas21002c_lpf_set(struct fxas21002c_data *data, int bw)
 	if (bw_bits < 0)
 		return bw_bits;
 
-	/*
-	 * From table 33 of the device spec, for ODR = 25Hz and 12.5 value 0.08
-	 * is not allowed and for ODR = 12.5 value 0.16 is also not allowed
-	 */
+	 
 	ret = fxas21002c_odr_get(data, &odr);
 	if (ret < 0)
 		return -EINVAL;
@@ -768,7 +750,7 @@ static int fxas21002c_chip_init(struct fxas21002c_data *data)
 	if (ret < 0)
 		return ret;
 
-	/* Set ODR to 200HZ as default */
+	 
 	ret = fxas21002c_odr_set(data, 200);
 	if (ret < 0)
 		dev_err(dev, "failed to set ODR: %d\n", ret);

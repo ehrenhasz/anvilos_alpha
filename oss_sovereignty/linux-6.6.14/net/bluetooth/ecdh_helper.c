@@ -1,25 +1,4 @@
-/*
- * ECDH helper functions - KPP wrappings
- *
- * Copyright (C) 2017 Intel Corporation
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation;
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS.
- * IN NO EVENT SHALL THE COPYRIGHT HOLDER(S) AND AUTHOR(S) BE LIABLE FOR ANY
- * CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- *
- * ALL LIABILITY, INCLUDING LIABILITY FOR INFRINGEMENT OF ANY PATENTS,
- * COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS, RELATING TO USE OF THIS
- * SOFTWARE IS DISCLAIMED.
- */
+ 
 #include "ecdh_helper.h"
 
 #include <linux/scatterlist.h>
@@ -33,14 +12,7 @@ static inline void swap_digits(u64 *in, u64 *out, unsigned int ndigits)
 		out[i] = __swab64(in[ndigits - 1 - i]);
 }
 
-/* compute_ecdh_secret() - function assumes that the private key was
- *                         already set.
- * @tfm:          KPP tfm handle allocated with crypto_alloc_kpp().
- * @public_key:   pair's ecc public key.
- * secret:        memory where the ecdh computed shared secret will be saved.
- *
- * Return: zero on success; error code in case of error.
- */
+ 
 int compute_ecdh_secret(struct crypto_kpp *tfm, const u8 public_key[64],
 			u8 secret[32])
 {
@@ -60,8 +32,8 @@ int compute_ecdh_secret(struct crypto_kpp *tfm, const u8 public_key[64],
 		goto free_tmp;
 	}
 
-	swap_digits((u64 *)public_key, (u64 *)tmp, 4); /* x */
-	swap_digits((u64 *)&public_key[32], (u64 *)&tmp[32], 4); /* y */
+	swap_digits((u64 *)public_key, (u64 *)tmp, 4);  
+	swap_digits((u64 *)&public_key[32], (u64 *)&tmp[32], 4);  
 
 	sg_init_one(&src, tmp, 64);
 	sg_init_one(&dst, secret, 32);
@@ -87,17 +59,7 @@ free_tmp:
 	return err;
 }
 
-/* set_ecdh_privkey() - set or generate ecc private key.
- *
- * Function generates an ecc private key in the crypto subsystem when receiving
- * a NULL private key or sets the received key when not NULL.
- *
- * @tfm:           KPP tfm handle allocated with crypto_alloc_kpp().
- * @private_key:   user's ecc private key. When not NULL, the key is expected
- *                 in little endian format.
- *
- * Return: zero on success; error code in case of error.
- */
+ 
 int set_ecdh_privkey(struct crypto_kpp *tfm, const u8 private_key[32])
 {
 	u8 *buf, *tmp = NULL;
@@ -126,7 +88,7 @@ int set_ecdh_privkey(struct crypto_kpp *tfm, const u8 private_key[32])
 		goto free_all;
 
 	err = crypto_kpp_set_secret(tfm, buf, buf_len);
-	/* fall through */
+	 
 free_all:
 	kfree_sensitive(buf);
 free_tmp:
@@ -134,14 +96,7 @@ free_tmp:
 	return err;
 }
 
-/* generate_ecdh_public_key() - function assumes that the private key was
- *                              already set.
- *
- * @tfm:          KPP tfm handle allocated with crypto_alloc_kpp().
- * @public_key:   memory where the computed ecc public key will be saved.
- *
- * Return: zero on success; error code in case of error.
- */
+ 
 int generate_ecdh_public_key(struct crypto_kpp *tfm, u8 public_key[64])
 {
 	DECLARE_CRYPTO_WAIT(result);
@@ -171,11 +126,9 @@ int generate_ecdh_public_key(struct crypto_kpp *tfm, u8 public_key[64])
 	if (err < 0)
 		goto free_all;
 
-	/* The public key is handed back in little endian as expected by
-	 * the Security Manager Protocol.
-	 */
-	swap_digits((u64 *)tmp, (u64 *)public_key, 4); /* x */
-	swap_digits((u64 *)&tmp[32], (u64 *)&public_key[32], 4); /* y */
+	 
+	swap_digits((u64 *)tmp, (u64 *)public_key, 4);  
+	swap_digits((u64 *)&tmp[32], (u64 *)&public_key[32], 4);  
 
 free_all:
 	kpp_request_free(req);
@@ -184,13 +137,7 @@ free_tmp:
 	return err;
 }
 
-/* generate_ecdh_keys() - generate ecc key pair.
- *
- * @tfm:          KPP tfm handle allocated with crypto_alloc_kpp().
- * @public_key:   memory where the computed ecc public key will be saved.
- *
- * Return: zero on success; error code in case of error.
- */
+ 
 int generate_ecdh_keys(struct crypto_kpp *tfm, u8 public_key[64])
 {
 	int err;

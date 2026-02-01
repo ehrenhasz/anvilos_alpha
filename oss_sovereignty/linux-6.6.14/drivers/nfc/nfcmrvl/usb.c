@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Marvell NFC-over-USB driver: USB interface related functions
- *
- * Copyright (C) 2014, Marvell International Ltd.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/usb.h>
@@ -15,7 +11,7 @@
 static struct usb_device_id nfcmrvl_table[] = {
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x1286, 0x2046,
 					USB_CLASS_VENDOR_SPEC, 4, 1) },
-	{ }	/* Terminating entry */
+	{ }	 
 };
 
 MODULE_DEVICE_TABLE(usb, nfcmrvl_table);
@@ -32,7 +28,7 @@ struct nfcmrvl_usb_drv_data {
 	struct usb_anchor bulk_anchor;
 	struct usb_anchor deferred;
 	int tx_in_flight;
-	/* protects tx_in_flight */
+	 
 	spinlock_t txlock;
 	struct usb_endpoint_descriptor *bulk_tx_ep;
 	struct usb_endpoint_descriptor *bulk_rx_ep;
@@ -89,9 +85,7 @@ static void nfcmrvl_bulk_complete(struct urb *urb)
 
 	err = usb_submit_urb(urb, GFP_ATOMIC);
 	if (err) {
-		/* -EPERM: urb is being killed;
-		 * -ENODEV: device got disconnected
-		 */
+		 
 		if (err != -EPERM && err != -ENODEV)
 			nfc_err(&drv_data->udev->dev,
 				"urb %p failed to resubmit (%d)\n", urb, -err);
@@ -292,7 +286,7 @@ static int nfcmrvl_probe(struct usb_interface *intf,
 	struct usb_device *udev = interface_to_usbdev(intf);
 	struct nfcmrvl_platform_data config;
 
-	/* No configuration for USB */
+	 
 	memset(&config, 0, sizeof(config));
 	config.reset_n_io = -EINVAL;
 
@@ -402,7 +396,7 @@ static void nfcmrvl_play_deferred(struct nfcmrvl_usb_drv_data *drv_data)
 		usb_free_urb(urb);
 	}
 
-	/* Cleanup the rest deferred urbs. */
+	 
 	while ((urb = usb_get_from_anchor(&drv_data->deferred))) {
 		kfree(urb->setup_packet);
 		usb_free_urb(urb);

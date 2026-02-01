@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2021 Intel Corporation. All rights reserved. */
+
+ 
 #include <linux/libnvdimm.h>
 #include <asm/unaligned.h>
 #include <linux/device.h>
@@ -158,7 +158,7 @@ static int cxl_pmem_set_config_data(struct cxl_memdev_state *mds,
 	if (sizeof(*cmd) > buf_len)
 		return -EINVAL;
 
-	/* 4-byte status follows the input data in the payload */
+	 
 	if (size_add(struct_size(cmd, in_buf, cmd->in_length), 4) > buf_len)
 		return -EINVAL;
 
@@ -179,10 +179,7 @@ static int cxl_pmem_set_config_data(struct cxl_memdev_state *mds,
 
 	rc = cxl_internal_send_cmd(mds, &mbox_cmd);
 
-	/*
-	 * Set "firmware" status (4-packed bytes at the end of the input
-	 * payload.
-	 */
+	 
 	put_unaligned(0, (u32 *) &cmd->in_buf[cmd->in_length]);
 	kvfree(set_lsa);
 
@@ -216,10 +213,7 @@ static int cxl_pmem_ctl(struct nvdimm_bus_descriptor *nd_desc,
 			struct nvdimm *nvdimm, unsigned int cmd, void *buf,
 			unsigned int buf_len, int *cmd_rc)
 {
-	/*
-	 * No firmware response to translate, let the transport error
-	 * code take precedence.
-	 */
+	 
 	*cmd_rc = 0;
 
 	if (!nvdimm)
@@ -388,9 +382,7 @@ static int cxl_pmem_region_probe(struct device *dev)
 	ndr_desc.num_mappings = cxlr_pmem->nr_mappings;
 	ndr_desc.mapping = mappings;
 
-	/*
-	 * TODO enable CXL labels which skip the need for 'interleave-set cookie'
-	 */
+	 
 	nd_set->cookie1 =
 		nd_fletcher64(info, sizeof(*info) * cxlr_pmem->nr_mappings, 0);
 	nd_set->cookie2 = nd_set->cookie1;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
- /***************************************************************************
- *
- * Copyright (C) 2007-2008 SMSC
- *
- *****************************************************************************/
+
+  
 
 #include <linux/module.h>
 #include <linux/kmod.h>
@@ -55,7 +51,7 @@
 #define SUSPEND_ALLMODES		(SUSPEND_SUSPEND0 | SUSPEND_SUSPEND1 | \
 					 SUSPEND_SUSPEND2 | SUSPEND_SUSPEND3)
 
-#define SMSC95XX_NR_IRQS		(1) /* raise to 12 for GPIOs */
+#define SMSC95XX_NR_IRQS		(1)  
 #define PHY_HWIRQ			(SMSC95XX_NR_IRQS - 1)
 
 struct smsc95xx_priv {
@@ -136,8 +132,7 @@ static int __must_check smsc95xx_write_reg(struct usbnet *dev, u32 index,
 	return ret;
 }
 
-/* Loop until the read is completed with timeout
- * called with phy_mutex held */
+ 
 static int __must_check smsc95xx_phy_wait_not_busy(struct usbnet *dev)
 {
 	unsigned long start_time = jiffies;
@@ -147,7 +142,7 @@ static int __must_check smsc95xx_phy_wait_not_busy(struct usbnet *dev)
 	do {
 		ret = smsc95xx_read_reg(dev, MII_ADDR, &val);
 		if (ret < 0) {
-			/* Ignore -ENODEV error during disconnect() */
+			 
 			if (ret == -ENODEV)
 				return 0;
 			netdev_warn(dev->net, "Error reading MII_ACCESS\n");
@@ -173,14 +168,14 @@ static int smsc95xx_mdio_read(struct usbnet *dev, int phy_id, int idx)
 
 	mutex_lock(&dev->phy_mutex);
 
-	/* confirm MII not busy */
+	 
 	ret = smsc95xx_phy_wait_not_busy(dev);
 	if (ret < 0) {
 		netdev_warn(dev->net, "%s: MII is busy\n", __func__);
 		goto done;
 	}
 
-	/* set the address, index & direction (read from PHY) */
+	 
 	addr = mii_address_cmd(phy_id, idx, MII_READ_ | MII_BUSY_);
 	ret = smsc95xx_write_reg(dev, MII_ADDR, addr);
 	if (ret < 0) {
@@ -207,7 +202,7 @@ static int smsc95xx_mdio_read(struct usbnet *dev, int phy_id, int idx)
 done:
 	mutex_unlock(&dev->phy_mutex);
 
-	/* Ignore -ENODEV error during disconnect() */
+	 
 	if (ret == -ENODEV)
 		return 0;
 	return ret;
@@ -221,7 +216,7 @@ static void smsc95xx_mdio_write(struct usbnet *dev, int phy_id, int idx,
 
 	mutex_lock(&dev->phy_mutex);
 
-	/* confirm MII not busy */
+	 
 	ret = smsc95xx_phy_wait_not_busy(dev);
 	if (ret < 0) {
 		netdev_warn(dev->net, "%s: MII is busy\n", __func__);
@@ -236,7 +231,7 @@ static void smsc95xx_mdio_write(struct usbnet *dev, int phy_id, int idx,
 		goto done;
 	}
 
-	/* set the address, index & direction (write to PHY) */
+	 
 	addr = mii_address_cmd(phy_id, idx, MII_WRITE_ | MII_BUSY_);
 	ret = smsc95xx_write_reg(dev, MII_ADDR, addr);
 	if (ret < 0) {
@@ -280,10 +275,7 @@ static int smsc95xx_mdiobus_reset(struct mii_bus *bus)
 	if (ret < 0)
 		goto reset_out;
 
-	/* Driver has no knowledge at this point about the external PHY.
-	 * The 802.3 specifies that the reset process shall
-	 * be completed within 0.5 s.
-	 */
+	 
 	fsleep(500000);
 
 reset_out:
@@ -408,7 +400,7 @@ static int smsc95xx_write_eeprom(struct usbnet *dev, u32 offset, u32 length,
 	if (ret)
 		return ret;
 
-	/* Issue write/erase enable command */
+	 
 	val = E2P_CMD_BUSY_ | E2P_CMD_EWEN_;
 	ret = smsc95xx_write_reg(dev, E2P_CMD, val);
 	if (ret < 0) {
@@ -422,7 +414,7 @@ static int smsc95xx_write_eeprom(struct usbnet *dev, u32 offset, u32 length,
 
 	for (i = 0; i < length; i++) {
 
-		/* Fill data register */
+		 
 		val = data[i];
 		ret = smsc95xx_write_reg(dev, E2P_DATA, val);
 		if (ret < 0) {
@@ -430,7 +422,7 @@ static int smsc95xx_write_eeprom(struct usbnet *dev, u32 offset, u32 length,
 			return ret;
 		}
 
-		/* Send "write" command */
+		 
 		val = E2P_CMD_BUSY_ | E2P_CMD_WRITE_ | (offset & E2P_CMD_ADDR_);
 		ret = smsc95xx_write_reg(dev, E2P_CMD, val);
 		if (ret < 0) {
@@ -468,9 +460,7 @@ static int __must_check smsc95xx_write_reg_async(struct usbnet *dev, u16 index,
 	return ret;
 }
 
-/* returns hash bit number for given MAC address
- * example:
- * 01 00 5E 00 00 01 -> returns bit number 31 */
+ 
 static unsigned int smsc95xx_hash(char addr[ETH_ALEN])
 {
 	return (ether_crc(ETH_ALEN, addr) >> 26) & 0x3f;
@@ -521,7 +511,7 @@ static void smsc95xx_set_multicast(struct net_device *netdev)
 
 	spin_unlock_irqrestore(&pdata->mac_cr_lock, flags);
 
-	/* Initiate async writes, as we can't wait for completion here */
+	 
 	ret = smsc95xx_write_reg_async(dev, HASHH, pdata->hash_hi);
 	if (ret < 0)
 		netdev_warn(dev->net, "failed to initiate async write to HASHH\n");
@@ -628,7 +618,7 @@ static void smsc95xx_status(struct usbnet *dev, struct urb *urb)
 	local_irq_restore(flags);
 }
 
-/* Enable or disable Tx & Rx checksum offload engines */
+ 
 static int smsc95xx_set_features(struct net_device *netdev,
 	netdev_features_t features)
 {
@@ -689,7 +679,7 @@ static int smsc95xx_ethtool_set_eeprom(struct net_device *netdev,
 
 static int smsc95xx_ethtool_getregslen(struct net_device *netdev)
 {
-	/* all smsc95xx registers */
+	 
 	return COE_CR - ID_REV + sizeof(u32);
 }
 
@@ -805,26 +795,26 @@ static void smsc95xx_init_mac_address(struct usbnet *dev)
 {
 	u8 addr[ETH_ALEN];
 
-	/* maybe the boot loader passed the MAC address in devicetree */
+	 
 	if (!platform_get_ethdev_address(&dev->udev->dev, dev->net)) {
 		if (is_valid_ether_addr(dev->net->dev_addr)) {
-			/* device tree values are valid so use them */
+			 
 			netif_dbg(dev, ifup, dev->net, "MAC address read from the device tree\n");
 			return;
 		}
 	}
 
-	/* try reading mac address from EEPROM */
+	 
 	if (smsc95xx_read_eeprom(dev, EEPROM_MAC_OFFSET, ETH_ALEN, addr) == 0) {
 		eth_hw_addr_set(dev->net, addr);
 		if (is_valid_ether_addr(dev->net->dev_addr)) {
-			/* eeprom values are valid so use them */
+			 
 			netif_dbg(dev, ifup, dev->net, "MAC address read from EEPROM\n");
 			return;
 		}
 	}
 
-	/* no useful static MAC address found. generate a random one */
+	 
 	eth_hw_addr_random(dev->net);
 	netif_dbg(dev, ifup, dev->net, "MAC address set to eth_random_addr\n");
 }
@@ -843,14 +833,14 @@ static int smsc95xx_set_mac_address(struct usbnet *dev)
 	return smsc95xx_write_reg(dev, ADDRH, addr_hi);
 }
 
-/* starts the TX path */
+ 
 static int smsc95xx_start_tx_path(struct usbnet *dev)
 {
 	struct smsc95xx_priv *pdata = dev->driver_priv;
 	unsigned long flags;
 	int ret;
 
-	/* Enable Tx at MAC */
+	 
 	spin_lock_irqsave(&pdata->mac_cr_lock, flags);
 	pdata->mac_cr |= MAC_CR_TXEN_;
 	spin_unlock_irqrestore(&pdata->mac_cr_lock, flags);
@@ -859,11 +849,11 @@ static int smsc95xx_start_tx_path(struct usbnet *dev)
 	if (ret < 0)
 		return ret;
 
-	/* Enable Tx at SCSRs */
+	 
 	return smsc95xx_write_reg(dev, TX_CFG, TX_CFG_ON_);
 }
 
-/* Starts the Receive path */
+ 
 static int smsc95xx_start_rx_path(struct usbnet *dev)
 {
 	struct smsc95xx_priv *pdata = dev->driver_priv;
@@ -980,7 +970,7 @@ static int smsc95xx_reset(struct usbnet *dev)
 
 	read_buf &= ~HW_CFG_RXDOFF_;
 
-	/* set Rx data offset=2, Make IP header aligns on word boundary. */
+	 
 	read_buf |= NET_IP_ALIGN << 9;
 
 	ret = smsc95xx_write_reg(dev, HW_CFG, read_buf);
@@ -1003,14 +993,14 @@ static int smsc95xx_reset(struct usbnet *dev)
 		return ret;
 	netif_dbg(dev, ifup, dev->net, "ID_REV = 0x%08x\n", read_buf);
 
-	/* Configure GPIO pins as LED outputs */
+	 
 	write_buf = LED_GPIO_CFG_SPD_LED | LED_GPIO_CFG_LNK_LED |
 		LED_GPIO_CFG_FDX_LED;
 	ret = smsc95xx_write_reg(dev, LED_GPIO_CFG, write_buf);
 	if (ret < 0)
 		return ret;
 
-	/* Init Tx */
+	 
 	ret = smsc95xx_write_reg(dev, FLOW, 0);
 	if (ret < 0)
 		return ret;
@@ -1019,18 +1009,18 @@ static int smsc95xx_reset(struct usbnet *dev)
 	if (ret < 0)
 		return ret;
 
-	/* Don't need mac_cr_lock during initialisation */
+	 
 	ret = smsc95xx_read_reg(dev, MAC_CR, &pdata->mac_cr);
 	if (ret < 0)
 		return ret;
 
-	/* Init Rx */
-	/* Set Vlan */
+	 
+	 
 	ret = smsc95xx_write_reg(dev, VLAN1, (u32)ETH_P_8021Q);
 	if (ret < 0)
 		return ret;
 
-	/* Enable or disable checksum offload engines */
+	 
 	ret = smsc95xx_set_features(dev->net, dev->net->features);
 	if (ret < 0) {
 		netdev_warn(dev->net, "Failed to set checksum offload features\n");
@@ -1043,7 +1033,7 @@ static int smsc95xx_reset(struct usbnet *dev)
 	if (ret < 0)
 		return ret;
 
-	/* enable PHY interrupts */
+	 
 	read_buf |= INT_EP_CTL_PHY_INT_;
 
 	ret = smsc95xx_write_reg(dev, INT_EP_CTL, read_buf);
@@ -1112,13 +1102,7 @@ static int smsc95xx_bind(struct usbnet *dev, struct usb_interface *intf)
 
 	spin_lock_init(&pdata->mac_cr_lock);
 
-	/* LAN95xx devices do not alter the computed checksum of 0 to 0xffff.
-	 * RFC 2460, ipv6 UDP calculated checksum yields a result of zero must
-	 * be changed to 0xffff. RFC 768, ipv4 UDP computed checksum is zero,
-	 * it is transmitted as all ones. The zero transmitted checksum means
-	 * transmitter generated no checksum. Hence, enable csum offload only
-	 * for ipv4 packets.
-	 */
+	 
 	if (DEFAULT_TX_CSUM_ENABLE)
 		dev->net->features |= NETIF_F_IP_CSUM;
 	if (DEFAULT_RX_CSUM_ENABLE)
@@ -1129,12 +1113,12 @@ static int smsc95xx_bind(struct usbnet *dev, struct usb_interface *intf)
 
 	smsc95xx_init_mac_address(dev);
 
-	/* Init all registers */
+	 
 	ret = smsc95xx_reset(dev);
 	if (ret)
 		goto free_pdata;
 
-	/* create irq domain for use by PHY driver and GPIO consumers */
+	 
 	usb_make_path(dev->udev, usb_path, sizeof(usb_path));
 	pdata->irqfwnode = irq_domain_alloc_named_fwnode(usb_path);
 	if (!pdata->irqfwnode) {
@@ -1202,7 +1186,7 @@ static int smsc95xx_bind(struct usbnet *dev, struct usb_interface *intf)
 	pdata->phydev->irq = phy_irq;
 	pdata->phydev->is_internal = pdata->is_internal_phy;
 
-	/* detect device revision as different features may be available */
+	 
 	ret = smsc95xx_read_reg(dev, ID_REV, &val);
 	if (ret < 0)
 		goto unregister_mdio;
@@ -1295,7 +1279,7 @@ static int smsc95xx_link_ok(struct usbnet *dev)
 	struct smsc95xx_priv *pdata = dev->driver_priv;
 	int ret;
 
-	/* first, a dummy read, needed to latch some MII phys */
+	 
 	ret = smsc95xx_mdio_read(dev, pdata->phydev->mdio.addr, MII_BMSR);
 	if (ret < 0)
 		return ret;
@@ -1324,11 +1308,11 @@ static int smsc95xx_enter_suspend0(struct usbnet *dev)
 	if (ret < 0)
 		return ret;
 
-	/* clear wol status */
+	 
 	val &= ~PM_CTL_WUPS_;
 	val |= PM_CTL_WUPS_WOL_;
 
-	/* enable energy detection */
+	 
 	if (pdata->wolopts & WAKE_PHY)
 		val |= PM_CTL_WUPS_ED_;
 
@@ -1336,7 +1320,7 @@ static int smsc95xx_enter_suspend0(struct usbnet *dev)
 	if (ret < 0)
 		return ret;
 
-	/* read back PM_CTRL */
+	 
 	ret = smsc95xx_read_reg(dev, PM_CTRL, &val);
 	if (ret < 0)
 		return ret;
@@ -1352,14 +1336,12 @@ static int smsc95xx_enter_suspend1(struct usbnet *dev)
 	int ret, phy_id = pdata->phydev->mdio.addr;
 	u32 val;
 
-	/* reconfigure link pulse detection timing for
-	 * compatibility with non-standard link partners
-	 */
+	 
 	if (pdata->features & FEATURE_PHY_NLP_CROSSOVER)
 		smsc95xx_mdio_write(dev, phy_id, PHY_EDPD_CONFIG,
 				    PHY_EDPD_CONFIG_DEFAULT);
 
-	/* enable energy detect power-down mode */
+	 
 	ret = smsc95xx_mdio_read(dev, phy_id, PHY_MODE_CTRL_STS);
 	if (ret < 0)
 		return ret;
@@ -1368,7 +1350,7 @@ static int smsc95xx_enter_suspend1(struct usbnet *dev)
 
 	smsc95xx_mdio_write(dev, phy_id, PHY_MODE_CTRL_STS, ret);
 
-	/* enter SUSPEND1 mode */
+	 
 	ret = smsc95xx_read_reg(dev, PM_CTRL, &val);
 	if (ret < 0)
 		return ret;
@@ -1380,7 +1362,7 @@ static int smsc95xx_enter_suspend1(struct usbnet *dev)
 	if (ret < 0)
 		return ret;
 
-	/* clear wol status, enable energy detection */
+	 
 	val &= ~PM_CTL_WUPS_;
 	val |= (PM_CTL_WUPS_ED_ | PM_CTL_ED_EN_);
 
@@ -1441,7 +1423,7 @@ static int smsc95xx_enter_suspend3(struct usbnet *dev)
 	if (ret < 0)
 		return ret;
 
-	/* clear wol status */
+	 
 	val &= ~PM_CTL_WUPS_;
 	val |= PM_CTL_WUPS_WOL_;
 
@@ -1459,16 +1441,13 @@ static int smsc95xx_autosuspend(struct usbnet *dev, u32 link_up)
 	struct smsc95xx_priv *pdata = dev->driver_priv;
 
 	if (!netif_running(dev->net)) {
-		/* interface is ifconfig down so fully power down hw */
+		 
 		netdev_dbg(dev->net, "autosuspend entering SUSPEND2\n");
 		return smsc95xx_enter_suspend2(dev);
 	}
 
 	if (!link_up) {
-		/* link is down so enter EDPD mode, but only if device can
-		 * reliably resume from it.  This check should be redundant
-		 * as current FEATURE_REMOTE_WAKEUP parts also support
-		 * FEATURE_PHY_NLP_CROSSOVER but it's included for clarity */
+		 
 		if (!(pdata->features & FEATURE_PHY_NLP_CROSSOVER)) {
 			netdev_warn(dev->net, "EDPD not supported\n");
 			return -EBUSY;
@@ -1512,15 +1491,13 @@ static int smsc95xx_suspend(struct usb_interface *intf, pm_message_t message)
 		goto done;
 	}
 
-	/* if we get this far we're not autosuspending */
-	/* if no wol options set, or if link is down and we're not waking on
-	 * PHY activity, enter lowest power SUSPEND2 mode
-	 */
+	 
+	 
 	if (!(pdata->wolopts & SUPPORTED_WAKE) ||
 		!(link_up || (pdata->wolopts & WAKE_PHY))) {
 		netdev_info(dev->net, "entering SUSPEND2 mode\n");
 
-		/* disable energy detect (link up) & wake up events */
+		 
 		ret = smsc95xx_read_reg(dev, WUCSR, &val);
 		if (ret < 0)
 			goto done;
@@ -1546,9 +1523,7 @@ static int smsc95xx_suspend(struct usb_interface *intf, pm_message_t message)
 	}
 
 	if (pdata->wolopts & WAKE_PHY) {
-		/* if link is down then configure EDPD and enter SUSPEND1,
-		 * otherwise enter SUSPEND0 below
-		 */
+		 
 		if (!link_up) {
 			netdev_info(dev->net, "entering SUSPEND1 mode\n");
 			ret = smsc95xx_enter_suspend1(dev);
@@ -1654,7 +1629,7 @@ static int smsc95xx_suspend(struct usb_interface *intf, pm_message_t message)
 				goto done;
 		}
 
-		/* clear any pending pattern match packet status */
+		 
 		ret = smsc95xx_read_reg(dev, WUCSR, &val);
 		if (ret < 0)
 			goto done;
@@ -1667,7 +1642,7 @@ static int smsc95xx_suspend(struct usb_interface *intf, pm_message_t message)
 	}
 
 	if (pdata->wolopts & WAKE_MAGIC) {
-		/* clear any pending magic packet status */
+		 
 		ret = smsc95xx_read_reg(dev, WUCSR, &val);
 		if (ret < 0)
 			goto done;
@@ -1679,7 +1654,7 @@ static int smsc95xx_suspend(struct usb_interface *intf, pm_message_t message)
 			goto done;
 	}
 
-	/* enable/disable wakeup sources */
+	 
 	ret = smsc95xx_read_reg(dev, WUCSR, &val);
 	if (ret < 0)
 		goto done;
@@ -1704,14 +1679,14 @@ static int smsc95xx_suspend(struct usb_interface *intf, pm_message_t message)
 	if (ret < 0)
 		goto done;
 
-	/* enable wol wakeup source */
+	 
 	ret = smsc95xx_read_reg(dev, PM_CTRL, &val);
 	if (ret < 0)
 		goto done;
 
 	val |= PM_CTL_WOL_EN_;
 
-	/* phy energy detect wakeup source */
+	 
 	if (pdata->wolopts & WAKE_PHY)
 		val |= PM_CTL_ED_EN_;
 
@@ -1719,18 +1694,15 @@ static int smsc95xx_suspend(struct usb_interface *intf, pm_message_t message)
 	if (ret < 0)
 		goto done;
 
-	/* enable receiver to enable frame reception */
+	 
 	smsc95xx_start_rx_path(dev);
 
-	/* some wol options are enabled, so enter SUSPEND0 */
+	 
 	netdev_info(dev->net, "entering SUSPEND0 mode\n");
 	ret = smsc95xx_enter_suspend0(dev);
 
 done:
-	/*
-	 * TODO: resume() might need to handle the suspend failure
-	 * in system sleep
-	 */
+	 
 	if (ret && PMSG_IS_AUTO(message))
 		usbnet_resume(intf);
 
@@ -1752,13 +1724,13 @@ static int smsc95xx_resume(struct usb_interface *intf)
 
 	netdev_dbg(dev->net, "resume suspend_flags=0x%02x\n", suspend_flags);
 
-	/* do this first to ensure it's cleared even in error case */
+	 
 	pdata->suspend_flags = 0;
 
 	pdata->pm_task = current;
 
 	if (suspend_flags & SUSPEND_ALLMODES) {
-		/* clear wake-up sources */
+		 
 		ret = smsc95xx_read_reg(dev, WUCSR, &val);
 		if (ret < 0)
 			goto done;
@@ -1769,7 +1741,7 @@ static int smsc95xx_resume(struct usb_interface *intf)
 		if (ret < 0)
 			goto done;
 
-		/* clear wake-up status */
+		 
 		ret = smsc95xx_read_reg(dev, PM_CTRL, &val);
 		if (ret < 0)
 			goto done;
@@ -1817,7 +1789,7 @@ static void smsc95xx_rx_csum_offload(struct sk_buff *skb)
 
 static int smsc95xx_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 {
-	/* This check is no longer done by usbnet */
+	 
 	if (skb->len < dev->net->hard_header_len)
 		return 0;
 
@@ -1831,7 +1803,7 @@ static int smsc95xx_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 		skb_pull(skb, 4 + NET_IP_ALIGN);
 		packet = skb->data;
 
-		/* get the packet length */
+		 
 		size = (u16)((header & RX_STS_FL_) >> 16);
 		align_count = (4 - ((size + NET_IP_ALIGN) % 4)) % 4;
 
@@ -1858,18 +1830,18 @@ static int smsc95xx_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 					dev->net->stats.rx_length_errors++;
 			}
 		} else {
-			/* ETH_FRAME_LEN + 4(CRC) + 2(COE) + 4(Vlan) */
+			 
 			if (unlikely(size > (ETH_FRAME_LEN + 12))) {
 				netif_dbg(dev, rx_err, dev->net,
 					  "size err header=0x%08x\n", header);
 				return 0;
 			}
 
-			/* last frame in this batch */
+			 
 			if (skb->len == size) {
 				if (dev->net->features & NETIF_F_RXCSUM)
 					smsc95xx_rx_csum_offload(skb);
-				skb_trim(skb, skb->len - 4); /* remove fcs */
+				skb_trim(skb, skb->len - 4);  
 				skb->truesize = size + sizeof(struct sk_buff);
 
 				return 1;
@@ -1887,7 +1859,7 @@ static int smsc95xx_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 
 			if (dev->net->features & NETIF_F_RXCSUM)
 				smsc95xx_rx_csum_offload(ax_skb);
-			skb_trim(ax_skb, ax_skb->len - 4); /* remove fcs */
+			skb_trim(ax_skb, ax_skb->len - 4);  
 			ax_skb->truesize = size + sizeof(struct sk_buff);
 
 			usbnet_skb_return(dev, ax_skb);
@@ -1895,7 +1867,7 @@ static int smsc95xx_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 
 		skb_pull(skb, size);
 
-		/* padding bytes before the next frame starts */
+		 
 		if (skb->len)
 			skb_pull(skb, align_count);
 	}
@@ -1910,14 +1882,7 @@ static u32 smsc95xx_calc_csum_preamble(struct sk_buff *skb)
 	return (high_16 << 16) | low_16;
 }
 
-/* The TX CSUM won't work if the checksum lies in the last 4 bytes of the
- * transmission. This is fairly unlikely, only seems to trigger with some
- * short TCP ACK packets sent.
- *
- * Note, this calculation should probably check for the alignment of the
- * data as well, but a straight check for csum being in the last four bytes
- * of the packet should be ok for now.
- */
+ 
 static bool smsc95xx_can_tx_checksum(struct sk_buff *skb)
 {
        unsigned int len = skb->len - skb_checksum_start_offset(skb);
@@ -1935,14 +1900,12 @@ static struct sk_buff *smsc95xx_tx_fixup(struct usbnet *dev,
 	u32 tx_cmd_a, tx_cmd_b;
 	void *ptr;
 
-	/* We do not advertise SG, so skbs should be already linearized */
+	 
 	BUG_ON(skb_shinfo(skb)->nr_frags);
 
-	/* Make writable and expand header space by overhead if required */
+	 
 	if (skb_cow_head(skb, overhead)) {
-		/* Must deallocate here as returning NULL to indicate error
-		 * means the skb won't be deallocated in the caller.
-		 */
+		 
 		dev_kfree_skb_any(skb);
 		return NULL;
 	}
@@ -1952,8 +1915,7 @@ static struct sk_buff *smsc95xx_tx_fixup(struct usbnet *dev,
 
 	if (csum) {
 		if (!smsc95xx_can_tx_checksum(skb)) {
-			/* workaround - hardware tx checksum does not work
-			 * properly with extremely small packets */
+			 
 			long csstart = skb_checksum_start_offset(skb);
 			__wsum calc = csum_partial(skb->data + csstart,
 				skb->len - csstart, 0);
@@ -1988,7 +1950,7 @@ static int smsc95xx_manage_power(struct usbnet *dev, int on)
 	if (pdata->features & FEATURE_REMOTE_WAKEUP)
 		return 0;
 
-	/* this chip revision isn't capable of remote wakeup */
+	 
 	netdev_info(dev->net, "hardware isn't capable of remote wakeup\n");
 
 	if (on)
@@ -2015,101 +1977,101 @@ static const struct driver_info smsc95xx_info = {
 
 static const struct usb_device_id products[] = {
 	{
-		/* SMSC9500 USB Ethernet Device */
+		 
 		USB_DEVICE(0x0424, 0x9500),
 		.driver_info = (unsigned long) &smsc95xx_info,
 	},
 	{
-		/* SMSC9505 USB Ethernet Device */
+		 
 		USB_DEVICE(0x0424, 0x9505),
 		.driver_info = (unsigned long) &smsc95xx_info,
 	},
 	{
-		/* SMSC9500A USB Ethernet Device */
+		 
 		USB_DEVICE(0x0424, 0x9E00),
 		.driver_info = (unsigned long) &smsc95xx_info,
 	},
 	{
-		/* SMSC9505A USB Ethernet Device */
+		 
 		USB_DEVICE(0x0424, 0x9E01),
 		.driver_info = (unsigned long) &smsc95xx_info,
 	},
 	{
-		/* SMSC9512/9514 USB Hub & Ethernet Device */
+		 
 		USB_DEVICE(0x0424, 0xec00),
 		.driver_info = (unsigned long) &smsc95xx_info,
 	},
 	{
-		/* SMSC9500 USB Ethernet Device (SAL10) */
+		 
 		USB_DEVICE(0x0424, 0x9900),
 		.driver_info = (unsigned long) &smsc95xx_info,
 	},
 	{
-		/* SMSC9505 USB Ethernet Device (SAL10) */
+		 
 		USB_DEVICE(0x0424, 0x9901),
 		.driver_info = (unsigned long) &smsc95xx_info,
 	},
 	{
-		/* SMSC9500A USB Ethernet Device (SAL10) */
+		 
 		USB_DEVICE(0x0424, 0x9902),
 		.driver_info = (unsigned long) &smsc95xx_info,
 	},
 	{
-		/* SMSC9505A USB Ethernet Device (SAL10) */
+		 
 		USB_DEVICE(0x0424, 0x9903),
 		.driver_info = (unsigned long) &smsc95xx_info,
 	},
 	{
-		/* SMSC9512/9514 USB Hub & Ethernet Device (SAL10) */
+		 
 		USB_DEVICE(0x0424, 0x9904),
 		.driver_info = (unsigned long) &smsc95xx_info,
 	},
 	{
-		/* SMSC9500A USB Ethernet Device (HAL) */
+		 
 		USB_DEVICE(0x0424, 0x9905),
 		.driver_info = (unsigned long) &smsc95xx_info,
 	},
 	{
-		/* SMSC9505A USB Ethernet Device (HAL) */
+		 
 		USB_DEVICE(0x0424, 0x9906),
 		.driver_info = (unsigned long) &smsc95xx_info,
 	},
 	{
-		/* SMSC9500 USB Ethernet Device (Alternate ID) */
+		 
 		USB_DEVICE(0x0424, 0x9907),
 		.driver_info = (unsigned long) &smsc95xx_info,
 	},
 	{
-		/* SMSC9500A USB Ethernet Device (Alternate ID) */
+		 
 		USB_DEVICE(0x0424, 0x9908),
 		.driver_info = (unsigned long) &smsc95xx_info,
 	},
 	{
-		/* SMSC9512/9514 USB Hub & Ethernet Device (Alternate ID) */
+		 
 		USB_DEVICE(0x0424, 0x9909),
 		.driver_info = (unsigned long) &smsc95xx_info,
 	},
 	{
-		/* SMSC LAN9530 USB Ethernet Device */
+		 
 		USB_DEVICE(0x0424, 0x9530),
 		.driver_info = (unsigned long) &smsc95xx_info,
 	},
 	{
-		/* SMSC LAN9730 USB Ethernet Device */
+		 
 		USB_DEVICE(0x0424, 0x9730),
 		.driver_info = (unsigned long) &smsc95xx_info,
 	},
 	{
-		/* SMSC LAN89530 USB Ethernet Device */
+		 
 		USB_DEVICE(0x0424, 0x9E08),
 		.driver_info = (unsigned long) &smsc95xx_info,
 	},
 	{
-		/* Microchip's EVB-LAN8670-USB 10BASE-T1S Ethernet Device */
+		 
 		USB_DEVICE(0x184F, 0x0051),
 		.driver_info = (unsigned long)&smsc95xx_info,
 	},
-	{ },		/* END */
+	{ },		 
 };
 MODULE_DEVICE_TABLE(usb, products);
 

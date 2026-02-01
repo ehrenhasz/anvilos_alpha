@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Author(s)......: Holger Smolinski <Holger.Smolinski@de.ibm.com>
- *                  Volker Sameske <sameske@de.ibm.com>
- * Bugreports.to..: <Linux390@de.ibm.com>
- * Copyright IBM Corp. 1999, 2012
- */
+
+ 
 
 #include <linux/buffer_head.h>
 #include <linux/hdreg.h>
@@ -24,16 +19,13 @@ union label_t {
 	struct vtoc_cms_label cms;
 };
 
-/*
- * compute the block number from a
- * cyl-cyl-head-head structure
- */
+ 
 static sector_t cchh2blk(struct vtoc_cchh *ptr, struct hd_geometry *geo)
 {
 	sector_t cyl;
 	__u16 head;
 
-	/* decode cylinder and heads for large volumes */
+	 
 	cyl = ptr->hh & 0xFFF0;
 	cyl <<= 12;
 	cyl |= ptr->cc;
@@ -42,16 +34,13 @@ static sector_t cchh2blk(struct vtoc_cchh *ptr, struct hd_geometry *geo)
 	       head * geo->sectors;
 }
 
-/*
- * compute the block number from a
- * cyl-cyl-head-head-block structure
- */
+ 
 static sector_t cchhb2blk(struct vtoc_cchhb *ptr, struct hd_geometry *geo)
 {
 	sector_t cyl;
 	__u16 head;
 
-	/* decode cylinder and heads for large volumes */
+	 
 	cyl = ptr->hh & 0xFFF0;
 	cyl <<= 12;
 	cyl |= ptr->cc;
@@ -77,14 +66,7 @@ static int find_label(struct parsed_partitions *state,
 	int found = 0;
 	int i, testcount;
 
-	/* There a three places where we may find a valid label:
-	 * - on an ECKD disk it's block 2
-	 * - on an FBA disk it's block 1
-	 * - on an CMS formatted FBA disk it is sector 1, even if the block size
-	 *   is larger than 512 bytes (possible if the DIAG discipline is used)
-	 * If we have a valid info structure, then we know exactly which case we
-	 * have, otherwise we just search through all possebilities.
-	 */
+	 
 	if (info) {
 		if ((info->cu_type == 0x6310 && info->dev_type == 0x9336) ||
 		    (info->cu_type == 0x3880 && info->dev_type == 0x3370))
@@ -147,10 +129,7 @@ static int find_vol1_partitions(struct parsed_partitions *state,
 
 	snprintf(tmp, sizeof(tmp), "VOL1/%8s:", name);
 	strlcat(state->pp_buf, tmp, PAGE_SIZE);
-	/*
-	 * get start of VTOC from the disk label and then search for format1
-	 * and format8 labels
-	 */
+	 
 	secperblk = blocksize >> 9;
 	blk = cchhb2blk(&label->vol.vtoc, geo) + 1;
 	counter = 0;
@@ -158,7 +137,7 @@ static int find_vol1_partitions(struct parsed_partitions *state,
 	while (data != NULL) {
 		memcpy(&f1, data, sizeof(struct vtoc_format1_label));
 		put_dev_sector(sect);
-		/* skip FMT4 / FMT5 / FMT7 labels */
+		 
 		if (f1.DS1FMTID == _ascebc['4']
 		    || f1.DS1FMTID == _ascebc['5']
 		    || f1.DS1FMTID == _ascebc['7']
@@ -167,11 +146,11 @@ static int find_vol1_partitions(struct parsed_partitions *state,
 			data = read_part_sector(state, blk * secperblk, &sect);
 			continue;
 		}
-		/* only FMT1 and 8 labels valid at this point */
+		 
 		if (f1.DS1FMTID != _ascebc['1'] &&
 		    f1.DS1FMTID != _ascebc['8'])
 			break;
-		/* OK, we got valid partition data */
+		 
 		offset = cchh2blk(&f1.DS1EXT1.llimit, geo);
 		size  = cchh2blk(&f1.DS1EXT1.ulimit, geo) -
 			offset + geo->sectors;
@@ -211,13 +190,7 @@ static int find_lnx1_partitions(struct parsed_partitions *state,
 	if (label->lnx.ldl_version == 0xf2) {
 		size = label->lnx.formatted_blocks * secperblk;
 	} else {
-		/*
-		 * Formated w/o large volume support. If the sanity check
-		 * 'size based on geo == size based on nr_sectors' is true, then
-		 * we can safely assume that we know the formatted size of
-		 * the disk, otherwise we need additional information
-		 * that we can only get from a real DASD device.
-		 */
+		 
 		geo_size = geo->cylinders * geo->heads
 			* geo->sectors * secperblk;
 		size = nr_sectors;
@@ -229,10 +202,10 @@ static int find_lnx1_partitions(struct parsed_partitions *state,
 			if (!strcmp(info->type, "ECKD"))
 				if (geo_size < size)
 					size = geo_size;
-			/* else keep size based on nr_sectors */
+			 
 		}
 	}
-	/* first and only partition starts in the first block after the label */
+	 
 	offset = labelsect + secperblk;
 	put_partition(state, 1, offset, size - offset);
 	strlcat(state->pp_buf, "\n", PAGE_SIZE);
@@ -250,27 +223,19 @@ static int find_cms1_partitions(struct parsed_partitions *state,
 	char tmp[64];
 	int secperblk;
 
-	/*
-	 * VM style CMS1 labeled disk
-	 */
+	 
 	blocksize = label->cms.block_size;
 	secperblk = blocksize >> 9;
 	if (label->cms.disk_offset != 0) {
 		snprintf(tmp, sizeof(tmp), "CMS1/%8s(MDSK):", name);
 		strlcat(state->pp_buf, tmp, PAGE_SIZE);
-		/* disk is reserved minidisk */
+		 
 		offset = label->cms.disk_offset * secperblk;
 		size = (label->cms.block_count - 1) * secperblk;
 	} else {
 		snprintf(tmp, sizeof(tmp), "CMS1/%8s:", name);
 		strlcat(state->pp_buf, tmp, PAGE_SIZE);
-		/*
-		 * Special case for FBA devices:
-		 * If an FBA device is CMS formatted with blocksize > 512 byte
-		 * and the DIAG discipline is used, then the CMS label is found
-		 * in sector 1 instead of block 1. However, the partition is
-		 * still supposed to start in block 2.
-		 */
+		 
 		if (labelsect == 1)
 			offset = 2 * secperblk;
 		else
@@ -284,9 +249,7 @@ static int find_cms1_partitions(struct parsed_partitions *state,
 }
 
 
-/*
- * This is the main function, called by check.c
- */
+ 
 int ibm_partition(struct parsed_partitions *state)
 {
 	int (*fn)(struct gendisk *disk, dasd_information2_t *info);
@@ -321,7 +284,7 @@ int ibm_partition(struct parsed_partitions *state)
 	label = kmalloc(sizeof(union label_t), GFP_KERNEL);
 	if (label == NULL)
 		goto out_nolab;
-	/* set start if not filled by getgeo function e.g. virtblk */
+	 
 	geo->start = get_start_sect(bdev);
 	if (disk->fops->getgeo(bdev, geo))
 		goto out_freeall;
@@ -344,13 +307,7 @@ int ibm_partition(struct parsed_partitions *state)
 						   label, labelsect);
 		}
 	} else if (info) {
-		/*
-		 * ugly but needed for backward compatibility:
-		 * If the block device is a DASD (i.e. BIODASDINFO2 works),
-		 * then we claim it in any case, even though it has no valid
-		 * label. If it has the LDL format, then we simply define a
-		 * partition as if it had an LNX1 label.
-		 */
+		 
 		res = 1;
 		if (info->format == DASD_FORMAT_LDL) {
 			strlcat(state->pp_buf, "(nonl)", PAGE_SIZE);

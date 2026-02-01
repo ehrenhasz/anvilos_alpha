@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Multipath TCP
- *
- * Copyright (c) 2019, Intel Corporation.
- */
+
+ 
 #define pr_fmt(fmt) "MPTCP: " fmt
 
 #include <linux/kernel.h>
@@ -12,7 +9,7 @@
 
 #include "mib.h"
 
-/* path manager command handlers */
+ 
 
 int mptcp_pm_announce_addr(struct mptcp_sock *msk,
 			   const struct mptcp_addr_info *addr,
@@ -71,7 +68,7 @@ int mptcp_pm_remove_subflow(struct mptcp_sock *msk, const struct mptcp_rm_list *
 	return 0;
 }
 
-/* path manager event handlers */
+ 
 
 void mptcp_pm_new_connection(struct mptcp_sock *msk, const struct sock *ssk, int server_side)
 {
@@ -104,7 +101,7 @@ bool mptcp_pm_allow_new_subflow(struct mptcp_sock *msk)
 	pr_debug("msk=%p subflows=%d max=%d allow=%d", msk, pm->subflows,
 		 subflows_max, READ_ONCE(pm->accept_subflow));
 
-	/* try to avoid acquiring the lock below */
+	 
 	if (!READ_ONCE(pm->accept_subflow))
 		return false;
 
@@ -119,9 +116,7 @@ bool mptcp_pm_allow_new_subflow(struct mptcp_sock *msk)
 	return ret;
 }
 
-/* return true if the new status bit is currently cleared, that is, this event
- * can be server, eventually by an already scheduled work
- */
+ 
 static bool mptcp_pm_schedule_work(struct mptcp_sock *msk,
 				   enum mptcp_pm_status new_status)
 {
@@ -144,10 +139,7 @@ void mptcp_pm_fully_established(struct mptcp_sock *msk, const struct sock *ssk)
 
 	spin_lock_bh(&pm->lock);
 
-	/* mptcp_pm_fully_established() can be invoked by multiple
-	 * racing paths - accept() and check_fully_established()
-	 * be sure to serve this event only once.
-	 */
+	 
 	if (READ_ONCE(pm->work_pending) &&
 	    !(msk->pm.status & BIT(MPTCP_PM_ALREADY_ESTABLISHED)))
 		mptcp_pm_schedule_work(msk, MPTCP_PM_ESTABLISHED);
@@ -207,9 +199,7 @@ void mptcp_pm_subflow_check_next(struct mptcp_sock *msk, const struct sock *ssk,
 	if (update_subflows)
 		__mptcp_pm_close_subflow(msk);
 
-	/* Even if this subflow is not really established, tell the PM to try
-	 * to pick the next ones, if possible.
-	 */
+	 
 	if (mptcp_pm_nl_check_work_pending(msk))
 		mptcp_pm_schedule_work(msk, MPTCP_PM_SUBFLOW_ESTABLISHED);
 
@@ -327,7 +317,7 @@ void mptcp_pm_mp_fail_received(struct sock *sk, u64 fail_seq)
 	}
 }
 
-/* path manager helpers */
+ 
 
 bool mptcp_pm_add_addr_signal(struct mptcp_sock *msk, const struct sk_buff *skb,
 			      unsigned int opt_size, unsigned int remaining,
@@ -341,14 +331,11 @@ bool mptcp_pm_add_addr_signal(struct mptcp_sock *msk, const struct sk_buff *skb,
 
 	spin_lock_bh(&msk->pm.lock);
 
-	/* double check after the lock is acquired */
+	 
 	if (!mptcp_pm_should_add_signal(msk))
 		goto out_unlock;
 
-	/* always drop every other options for pure ack ADD_ADDR; this is a
-	 * plain dup-ack from TCP perspective. The other MPTCP-relevant info,
-	 * if any, will be carried by the 'original' TCP ack
-	 */
+	 
 	if (skb && skb_is_tcp_pure_ack(skb)) {
 		remaining += opt_size;
 		*drop_other_suboptions = true;
@@ -384,7 +371,7 @@ bool mptcp_pm_rm_addr_signal(struct mptcp_sock *msk, unsigned int remaining,
 
 	spin_lock_bh(&msk->pm.lock);
 
-	/* double check after the lock is acquired */
+	 
 	if (!mptcp_pm_should_rm_signal(msk))
 		goto out_unlock;
 
@@ -414,9 +401,7 @@ int mptcp_pm_get_local_id(struct mptcp_sock *msk, struct sock_common *skc)
 	if (WARN_ON_ONCE(!msk))
 		return -1;
 
-	/* The 0 ID mapping is defined by the first subflow, copied into the msk
-	 * addr
-	 */
+	 
 	mptcp_local_address((struct sock_common *)msk, &msk_local);
 	mptcp_local_address((struct sock_common *)skc, &skc_local);
 	if (mptcp_addresses_equal(&msk_local, &skc_local, false))
@@ -455,7 +440,7 @@ void mptcp_pm_subflow_chk_stale(const struct mptcp_sock *msk, struct sock *ssk)
 	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(ssk);
 	u32 rcv_tstamp = READ_ONCE(tcp_sk(ssk)->rcv_tstamp);
 
-	/* keep track of rtx periods with no progress */
+	 
 	if (!subflow->stale_count) {
 		subflow->stale_rcv_tstamp = rcv_tstamp;
 		subflow->stale_count++;
@@ -469,9 +454,7 @@ void mptcp_pm_subflow_chk_stale(const struct mptcp_sock *msk, struct sock *ssk)
 	}
 }
 
-/* if sk is ipv4 or ipv6_only allows only same-family local and remote addresses,
- * otherwise allow any matching local/remote pair
- */
+ 
 bool mptcp_pm_addr_families_match(const struct sock *sk,
 				  const struct mptcp_addr_info *loc,
 				  const struct mptcp_addr_info *rem)
@@ -510,9 +493,7 @@ void mptcp_pm_data_reset(struct mptcp_sock *msk)
 	if (pm_type == MPTCP_PM_TYPE_KERNEL) {
 		bool subflows_allowed = !!mptcp_pm_get_subflows_max(msk);
 
-		/* pm->work_pending must be only be set to 'true' when
-		 * pm->pm_type is set to MPTCP_PM_TYPE_KERNEL
-		 */
+		 
 		WRITE_ONCE(pm->work_pending,
 			   (!!mptcp_pm_get_local_addr_max(msk) &&
 			    subflows_allowed) ||

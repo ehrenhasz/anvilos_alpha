@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  SMB1 (CIFS) version specific operations
- *
- *  Copyright (c) 2012, Jeff Layton <jlayton@redhat.com>
- */
+
+ 
 
 #include <linux/pagemap.h>
 #include <linux/vfs.h>
@@ -15,16 +11,7 @@
 #include "cifs_unicode.h"
 #include "fs_context.h"
 
-/*
- * An NT cancel request header looks just like the original request except:
- *
- * The Command is SMB_COM_NT_CANCEL
- * The WordCount is zeroed out
- * The ByteCount is zeroed out
- *
- * This function mangles an existing request buffer into a
- * SMB_COM_NT_CANCEL request and then sends it.
- */
+ 
 static int
 send_nt_cancel(struct TCP_Server_Info *server, struct smb_rqst *rqst,
 	       struct mid_q_entry *mid)
@@ -32,7 +19,7 @@ send_nt_cancel(struct TCP_Server_Info *server, struct smb_rqst *rqst,
 	int rc = 0;
 	struct smb_hdr *in_buf = (struct smb_hdr *)rqst->rq_iov[0].iov_base;
 
-	/* -4 for RFC1001 length and +2 for BCC field */
+	 
 	in_buf->smb_buf_length = cpu_to_be32(sizeof(struct smb_hdr) - 4  + 2);
 	in_buf->Command = SMB_COM_NT_CANCEL;
 	in_buf->WordCount = 0;
@@ -45,11 +32,7 @@ send_nt_cancel(struct TCP_Server_Info *server, struct smb_rqst *rqst,
 		return rc;
 	}
 
-	/*
-	 * The response to this call was already factored into the sequence
-	 * number when the call went out, so we must adjust it back downward
-	 * after signing here.
-	 */
+	 
 	--server->sequence_number;
 	rc = smb_send(server, in_buf, be32_to_cpu(in_buf->smb_buf_length));
 	if (rc < 0)
@@ -80,7 +63,7 @@ static unsigned int
 cifs_read_data_length(char *buf, bool in_remaining)
 {
 	READ_RSP *rsp = (READ_RSP *)buf;
-	/* It's a bug reading remaining data for SMB1 packets */
+	 
 	WARN_ON(in_remaining);
 	return (le16_to_cpu(rsp->DataLengthHigh) << 16) +
 	       le16_to_cpu(rsp->DataLength);
@@ -138,27 +121,7 @@ cifs_get_credits(struct mid_q_entry *mid)
 	return 1;
 }
 
-/*
- * Find a free multiplex id (SMB mid). Otherwise there could be
- * mid collisions which might cause problems, demultiplexing the
- * wrong response to this request. Multiplex ids could collide if
- * one of a series requests takes much longer than the others, or
- * if a very large number of long lived requests (byte range
- * locks or FindNotify requests) are pending. No more than
- * 64K-1 requests can be outstanding at one time. If no
- * mids are available, return zero. A future optimization
- * could make the combination of mids and uid the key we use
- * to demultiplex on (rather than mid alone).
- * In addition to the above check, the cifs demultiplex
- * code already used the command code as a secondary
- * check of the frame and if signing is negotiated the
- * response would be discarded if the mid were the same
- * but the signature was wrong. Since the mid is not put in the
- * pending queue until later (when it is about to be dispatched)
- * we do have to limit the number of outstanding requests
- * to somewhat less than 64K-1 although it is hard to imagine
- * so many threads being in the vfs at one time.
- */
+ 
 static __u64
 cifs_get_next_mid(struct TCP_Server_Info *server)
 {
@@ -168,24 +131,16 @@ cifs_get_next_mid(struct TCP_Server_Info *server)
 
 	spin_lock(&server->mid_lock);
 
-	/* mid is 16 bit only for CIFS/SMB */
+	 
 	cur_mid = (__u16)((server->CurrentMid) & 0xffff);
-	/* we do not want to loop forever */
+	 
 	last_mid = cur_mid;
 	cur_mid++;
-	/* avoid 0xFFFF MID */
+	 
 	if (cur_mid == 0xffff)
 		cur_mid++;
 
-	/*
-	 * This nested loop looks more expensive than it is.
-	 * In practice the list of pending requests is short,
-	 * fewer than 50, and the mids are likely to be unique
-	 * on the first pass through the loop unless some request
-	 * takes longer than the 64 thousand requests before it
-	 * (and it would also have to have been a request that
-	 * did not time out).
-	 */
+	 
 	while (cur_mid != last_mid) {
 		struct mid_q_entry *mid_entry;
 		unsigned int num_mids;
@@ -199,22 +154,13 @@ cifs_get_next_mid(struct TCP_Server_Info *server)
 			++num_mids;
 			if (mid_entry->mid == cur_mid &&
 			    mid_entry->mid_state == MID_REQUEST_SUBMITTED) {
-				/* This mid is in use, try a different one */
+				 
 				collision = true;
 				break;
 			}
 		}
 
-		/*
-		 * if we have more than 32k mids in the list, then something
-		 * is very wrong. Possibly a local user is trying to DoS the
-		 * box by issuing long-running calls and SIGKILL'ing them. If
-		 * we get to 2^16 mids then we're in big trouble as this
-		 * function could loop forever.
-		 *
-		 * Go ahead and assign out the mid in this situation, but force
-		 * an eventual reconnect to clean out the pending_mid_q.
-		 */
+		 
 		if (num_mids > 32768)
 			reconnect = true;
 
@@ -234,12 +180,7 @@ cifs_get_next_mid(struct TCP_Server_Info *server)
 	return mid;
 }
 
-/*
-	return codes:
-		0	not a transact2, or all data present
-		>0	transact2 with that much data missing
-		-EINVAL	invalid transact2
- */
+ 
 static int
 check2ndT2(char *buf)
 {
@@ -251,9 +192,9 @@ check2ndT2(char *buf)
 	if (pSMB->Command != SMB_COM_TRANSACTION2)
 		return 0;
 
-	/* check for plausible wct, bcc and t2 data and parm sizes */
-	/* check for parm and data offset going beyond end of smb */
-	if (pSMB->WordCount != 10) { /* coalesce_t2 depends on this */
+	 
+	 
+	if (pSMB->WordCount != 10) {  
 		cifs_dbg(FYI, "Invalid transact2 word count\n");
 		return -EINVAL;
 	}
@@ -312,7 +253,7 @@ coalesce_t2(char *second_buf, struct smb_hdr *target_hdr)
 	}
 
 	if (remaining == 0) {
-		/* nothing to do, ignore */
+		 
 		cifs_dbg(FYI, "no more data remains\n");
 		return 0;
 	}
@@ -321,18 +262,18 @@ coalesce_t2(char *second_buf, struct smb_hdr *target_hdr)
 	if (remaining < total_in_src)
 		cifs_dbg(FYI, "transact2 2nd response contains too much data\n");
 
-	/* find end of first SMB data area */
+	 
 	data_area_of_tgt = (char *)&pSMBt->hdr.Protocol +
 				get_unaligned_le16(&pSMBt->t2_rsp.DataOffset);
 
-	/* validate target area */
+	 
 	data_area_of_src = (char *)&pSMBs->hdr.Protocol +
 				get_unaligned_le16(&pSMBs->t2_rsp.DataOffset);
 
 	data_area_of_tgt += total_in_tgt;
 
 	total_in_tgt += total_in_src;
-	/* is the result too big for the field? */
+	 
 	if (total_in_tgt > USHRT_MAX) {
 		cifs_dbg(FYI, "coalesced DataCount too large (%u)\n",
 			 total_in_tgt);
@@ -340,10 +281,10 @@ coalesce_t2(char *second_buf, struct smb_hdr *target_hdr)
 	}
 	put_unaligned_le16(total_in_tgt, &pSMBt->t2_rsp.DataCount);
 
-	/* fix up the BCC */
+	 
 	byte_count = get_bcc(target_hdr);
 	byte_count += total_in_src;
-	/* is the result too big for the field? */
+	 
 	if (byte_count > USHRT_MAX) {
 		cifs_dbg(FYI, "coalesced BCC too large (%u)\n", byte_count);
 		return -EPROTO;
@@ -352,7 +293,7 @@ coalesce_t2(char *second_buf, struct smb_hdr *target_hdr)
 
 	byte_count = be32_to_cpu(target_hdr->smb_buf_length);
 	byte_count += total_in_src;
-	/* don't allow buffer to overflow */
+	 
 	if (byte_count > CIFSMaxBufSize + MAX_CIFS_HDR_SIZE - 4) {
 		cifs_dbg(FYI, "coalesced BCC exceeds buffer size (%u)\n",
 			 byte_count);
@@ -360,16 +301,16 @@ coalesce_t2(char *second_buf, struct smb_hdr *target_hdr)
 	}
 	target_hdr->smb_buf_length = cpu_to_be32(byte_count);
 
-	/* copy second buffer into end of first buffer */
+	 
 	memcpy(data_area_of_tgt, data_area_of_src, total_in_src);
 
 	if (remaining != total_in_src) {
-		/* more responses to go */
+		 
 		cifs_dbg(FYI, "waiting for more secondary responses\n");
 		return 1;
 	}
 
-	/* we are done */
+	 
 	cifs_dbg(FYI, "found the last secondary response\n");
 	return 0;
 }
@@ -392,20 +333,20 @@ cifs_check_trans2(struct mid_q_entry *mid, struct TCP_Server_Info *server,
 		return false;
 	mid->multiRsp = true;
 	if (mid->resp_buf) {
-		/* merge response - fix up 1st*/
+		 
 		malformed = coalesce_t2(buf, mid->resp_buf);
 		if (malformed > 0)
 			return true;
-		/* All parts received or packet is malformed. */
+		 
 		mid->multiEnd = true;
 		dequeue_mid(mid, malformed);
 		return true;
 	}
 	if (!server->large_buf) {
-		/*FIXME: switch to already allocated largebuf?*/
+		 
 		cifs_dbg(VFS, "1st trans2 resp needs bigbuf\n");
 	} else {
-		/* Have first buffer */
+		 
 		mid->resp_buf = buf;
 		mid->large_buf = true;
 		server->bigbuf = NULL;
@@ -427,7 +368,7 @@ cifs_negotiate(const unsigned int xid,
 	int rc;
 	rc = CIFSSMBNegotiate(xid, ses, server);
 	if (rc == -EAGAIN) {
-		/* retry only once on 1st time connection */
+		 
 		set_credits(server, 1);
 		rc = CIFSSMBNegotiate(xid, ses, server);
 		if (rc == -EAGAIN)
@@ -443,7 +384,7 @@ cifs_negotiate_wsize(struct cifs_tcon *tcon, struct smb3_fs_context *ctx)
 	struct TCP_Server_Info *server = tcon->ses->server;
 	unsigned int wsize;
 
-	/* start with specified wsize, or default */
+	 
 	if (ctx->wsize)
 		wsize = ctx->wsize;
 	else if (tcon->unix_ext && (unix_cap & CIFS_UNIX_LARGE_WRITE_CAP))
@@ -451,21 +392,17 @@ cifs_negotiate_wsize(struct cifs_tcon *tcon, struct smb3_fs_context *ctx)
 	else
 		wsize = CIFS_DEFAULT_NON_POSIX_WSIZE;
 
-	/* can server support 24-bit write sizes? (via UNIX extensions) */
+	 
 	if (!tcon->unix_ext || !(unix_cap & CIFS_UNIX_LARGE_WRITE_CAP))
 		wsize = min_t(unsigned int, wsize, CIFS_MAX_RFC1002_WSIZE);
 
-	/*
-	 * no CAP_LARGE_WRITE_X or is signing enabled without CAP_UNIX set?
-	 * Limit it to max buffer offered by the server, minus the size of the
-	 * WRITEX header, not including the 4 byte RFC1001 length.
-	 */
+	 
 	if (!(server->capabilities & CAP_LARGE_WRITE_X) ||
 	    (!(server->capabilities & CAP_UNIX) && server->sign))
 		wsize = min_t(unsigned int, wsize,
 				server->maxBuf - sizeof(WRITE_REQ) + 4);
 
-	/* hard limit of CIFS_MAX_WSIZE */
+	 
 	wsize = min_t(unsigned int, wsize, CIFS_MAX_WSIZE);
 
 	return wsize;
@@ -478,18 +415,7 @@ cifs_negotiate_rsize(struct cifs_tcon *tcon, struct smb3_fs_context *ctx)
 	struct TCP_Server_Info *server = tcon->ses->server;
 	unsigned int rsize, defsize;
 
-	/*
-	 * Set default value...
-	 *
-	 * HACK alert! Ancient servers have very small buffers. Even though
-	 * MS-CIFS indicates that servers are only limited by the client's
-	 * bufsize for reads, testing against win98se shows that it throws
-	 * INVALID_PARAMETER errors if you try to request too large a read.
-	 * OS/2 just sends back short reads.
-	 *
-	 * If the server doesn't advertise CAP_LARGE_READ_X, then assume that
-	 * it can't handle a read request larger than its MaxBufferSize either.
-	 */
+	 
 	if (tcon->unix_ext && (unix_cap & CIFS_UNIX_LARGE_READ_CAP))
 		defsize = CIFS_DEFAULT_IOSIZE;
 	else if (server->capabilities & CAP_LARGE_READ_X)
@@ -499,14 +425,11 @@ cifs_negotiate_rsize(struct cifs_tcon *tcon, struct smb3_fs_context *ctx)
 
 	rsize = ctx->rsize ? ctx->rsize : defsize;
 
-	/*
-	 * no CAP_LARGE_READ_X? Then MS-CIFS states that we must limit this to
-	 * the client's MaxBufferSize.
-	 */
+	 
 	if (!(server->capabilities & CAP_LARGE_READ_X))
 		rsize = min_t(unsigned int, CIFSMaxBufSize, rsize);
 
-	/* hard limit of CIFS_MAX_RSIZE */
+	 
 	rsize = min_t(unsigned int, rsize, CIFS_MAX_RSIZE);
 
 	return rsize;
@@ -532,7 +455,7 @@ cifs_is_path_accessible(const unsigned int xid, struct cifs_tcon *tcon,
 		return -ENOMEM;
 
 	rc = CIFSSMBQPathInfo(xid, tcon, full_path, file_info,
-			      0 /* not legacy */, cifs_sb->local_nls,
+			      0  , cifs_sb->local_nls,
 			      cifs_remap(cifs_sb));
 
 	if (rc == -EOPNOTSUPP || rc == -EINVAL)
@@ -554,14 +477,10 @@ static int cifs_query_path_info(const unsigned int xid,
 	data->symlink = false;
 	data->adjust_tz = false;
 
-	/* could do find first instead but this returns more info */
-	rc = CIFSSMBQPathInfo(xid, tcon, full_path, &fi, 0 /* not legacy */, cifs_sb->local_nls,
+	 
+	rc = CIFSSMBQPathInfo(xid, tcon, full_path, &fi, 0  , cifs_sb->local_nls,
 			      cifs_remap(cifs_sb));
-	/*
-	 * BB optimize code so we do not make the above call when server claims
-	 * no NT SMB support and the above call failed at least once - set flag
-	 * in tcon or mount.
-	 */
+	 
 	if ((rc == -EOPNOTSUPP) || (rc == -EINVAL)) {
 		rc = SMBQueryInformation(xid, tcon, full_path, &fi, cifs_sb->local_nls,
 					 cifs_remap(cifs_sb));
@@ -589,7 +508,7 @@ static int cifs_query_path_info(const unsigned int xid,
 			.fid = &fid,
 		};
 
-		/* Need to check if this is a symbolic link or not */
+		 
 		tmprc = CIFS_open(xid, &oparms, &oplock, NULL);
 		if (tmprc == -EOPNOTSUPP)
 			data->symlink = true;
@@ -604,17 +523,7 @@ static int cifs_get_srv_inum(const unsigned int xid, struct cifs_tcon *tcon,
 			     struct cifs_sb_info *cifs_sb, const char *full_path,
 			     u64 *uniqueid, struct cifs_open_info_data *unused)
 {
-	/*
-	 * We can not use the IndexNumber field by default from Windows or
-	 * Samba (in ALL_INFO buf) but we can request it explicitly. The SNIA
-	 * CIFS spec claims that this value is unique within the scope of a
-	 * share, and the windows docs hint that it's actually unique
-	 * per-machine.
-	 *
-	 * There may be higher info levels that work but are there Windows
-	 * server or network appliances for which IndexNumber field is not
-	 * guaranteed unique?
-	 */
+	 
 	return CIFSGetSrvInodeNumber(xid, tcon, full_path, uniqueid,
 				     cifs_sb->local_nls,
 				     cifs_remap(cifs_sb));
@@ -801,7 +710,7 @@ smb_set_file_info(struct inode *inode, const char *full_path,
 	struct tcon_link *tlink = NULL;
 	struct cifs_tcon *tcon;
 
-	/* if the file is already open for write, just use that fileid */
+	 
 	open_file = find_writable_file(cinode, FIND_WR_FSUID_ONLY);
 	if (open_file) {
 		fid.netfid = open_file->fid.netfid;
@@ -915,25 +824,16 @@ cifs_queryfs(const unsigned int xid, struct cifs_tcon *tcon,
 
 	buf->f_type = CIFS_SUPER_MAGIC;
 
-	/*
-	 * We could add a second check for a QFS Unix capability bit
-	 */
+	 
 	if ((tcon->ses->capabilities & CAP_UNIX) &&
 	    (CIFS_POSIX_EXTENSIONS & le64_to_cpu(tcon->fsUnixInfo.Capability)))
 		rc = CIFSSMBQFSPosixInfo(xid, tcon, buf);
 
-	/*
-	 * Only need to call the old QFSInfo if failed on newer one,
-	 * e.g. by OS/2.
-	 **/
+	 
 	if (rc && (tcon->ses->capabilities & CAP_NT_SMBS))
 		rc = CIFSSMBQFSInfo(xid, tcon, buf);
 
-	/*
-	 * Some old Windows servers also do not support level 103, retry with
-	 * older level one if old server failed the previous call or we
-	 * bypassed it because we detected that this was an older LANMAN sess
-	 */
+	 
 	if (rc)
 		rc = SMBOldQFSInfo(xid, tcon, buf);
 	return rc;
@@ -967,7 +867,7 @@ cifs_unix_dfs_readlink(const unsigned int xid, struct cifs_tcon *tcon,
 			rc = -ENOMEM;
 	}
 	return rc;
-#else /* No DFS support */
+#else  
 	return -EREMOTE;
 #endif
 }
@@ -1052,10 +952,7 @@ cifs_make_node(unsigned int xid, struct inode *inode,
 	struct kvec iov[2];
 
 	if (tcon->unix_ext) {
-		/*
-		 * SMB1 Unix Extensions: requires server support but
-		 * works with all special files
-		 */
+		 
 		struct cifs_unix_set_info_args args = {
 			.mode	= mode & ~current_umask(),
 			.ctime	= NO_CHANGE_64,
@@ -1067,8 +964,8 @@ cifs_make_node(unsigned int xid, struct inode *inode,
 			args.uid = current_fsuid();
 			args.gid = current_fsgid();
 		} else {
-			args.uid = INVALID_UID; /* no change */
-			args.gid = INVALID_GID; /* no change */
+			args.uid = INVALID_UID;  
+			args.gid = INVALID_GID;  
 		}
 		rc = CIFSSMBUnixSetPathInfo(xid, tcon, full_path, &args,
 					    cifs_sb->local_nls,
@@ -1084,10 +981,7 @@ cifs_make_node(unsigned int xid, struct inode *inode,
 		return rc;
 	}
 
-	/*
-	 * SMB1 SFU emulation: should work with all servers, but only
-	 * support block and char device (no socket & fifo)
-	 */
+	 
 	if (!(cifs_sb->mnt_cifs_flags & CIFS_MOUNT_UNX_EMUL))
 		return rc;
 
@@ -1115,10 +1009,7 @@ cifs_make_node(unsigned int xid, struct inode *inode,
 	if (rc)
 		return rc;
 
-	/*
-	 * BB Do not bother to decode buf since no local inode yet to put
-	 * timestamps in, but we can reuse it safely.
-	 */
+	 
 
 	pdev = (struct win_dev *)&buf.fi;
 	io_parms.pid = current->tgid;
@@ -1143,7 +1034,7 @@ cifs_make_node(unsigned int xid, struct inode *inode,
 	tcon->ses->server->ops->close(xid, tcon, &fid);
 	d_drop(dentry);
 
-	/* FIXME: add code here to set EAs */
+	 
 
 	cifs_free_open_info(&buf);
 	return rc;
@@ -1230,7 +1121,7 @@ struct smb_version_operations smb1_operations = {
 #ifdef CONFIG_CIFS_XATTR
 	.query_all_EAs = CIFSSMBQAllEAs,
 	.set_EA = CIFSSMBSetEA,
-#endif /* CIFS_XATTR */
+#endif  
 	.get_acl = get_cifs_acl,
 	.get_acl_by_fid = get_cifs_acl_by_fid,
 	.set_acl = set_cifs_acl,

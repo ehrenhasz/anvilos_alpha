@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-   linear.c : Multiple Devices driver for Linux
-	      Copyright (C) 1994-96 Marc ZYNGIER
-	      <zyngier@ufr-info-p7.ibp.fr> or
-	      <maz@gloups.fdn.fr>
 
-   Linear mode management functions.
-
-*/
+ 
 
 #include <linux/blkdev.h>
 #include <linux/raid/md_u.h>
@@ -18,9 +10,7 @@
 #include "md.h"
 #include "md-linear.h"
 
-/*
- * find which device holds a particular offset
- */
+ 
 static inline struct dev_info *which_dev(struct mddev *mddev, sector_t sector)
 {
 	int lo, mid, hi;
@@ -30,9 +20,7 @@ static inline struct dev_info *which_dev(struct mddev *mddev, sector_t sector)
 	hi = mddev->raid_disks - 1;
 	conf = mddev->private;
 
-	/*
-	 * Binary Search
-	 */
+	 
 
 	while (hi > lo) {
 
@@ -102,9 +90,7 @@ static struct linear_conf *linear_conf(struct mddev *mddev, int raid_disks)
 		goto out;
 	}
 
-	/*
-	 * Here we calculate the device offsets.
-	 */
+	 
 	conf->disks[0].end_sector = conf->disks[0].rdev->sectors;
 
 	for (i = 1; i < raid_disks; i++)
@@ -112,17 +98,7 @@ static struct linear_conf *linear_conf(struct mddev *mddev, int raid_disks)
 			conf->disks[i-1].end_sector +
 			conf->disks[i].rdev->sectors;
 
-	/*
-	 * conf->raid_disks is copy of mddev->raid_disks. The reason to
-	 * keep a copy of mddev->raid_disks in struct linear_conf is,
-	 * mddev->raid_disks may not be consistent with pointers number of
-	 * conf->disks[] when it is updated in linear_add() and used to
-	 * iterate old conf->disks[] earray in linear_congested().
-	 * Here conf->raid_disks is always consitent with number of
-	 * pointers in conf->disks[] array, and mddev->private is updated
-	 * with rcu_assign_pointer() in linear_addr(), such race can be
-	 * avoided.
-	 */
+	 
 	conf->raid_disks = raid_disks;
 
 	return conf;
@@ -156,14 +132,7 @@ static int linear_run (struct mddev *mddev)
 
 static int linear_add(struct mddev *mddev, struct md_rdev *rdev)
 {
-	/* Adding a drive to a linear array allows the array to grow.
-	 * It is permitted if the new drive has a matching superblock
-	 * already on it, with raid_disk equal to raid_disks.
-	 * It is achieved by creating a new linear_private_data structure
-	 * and swapping it in in-place of the current one.
-	 * The current one is never freed until the array is stopped.
-	 * This avoids races.
-	 */
+	 
 	struct linear_conf *newconf, *oldconf;
 
 	if (rdev->saved_raid_disk != mddev->raid_disks)
@@ -177,12 +146,7 @@ static int linear_add(struct mddev *mddev, struct md_rdev *rdev)
 	if (!newconf)
 		return -ENOMEM;
 
-	/* newconf->raid_disks already keeps a copy of * the increased
-	 * value of mddev->raid_disks, WARN_ONCE() is just used to make
-	 * sure of this. It is possible that oldconf is still referenced
-	 * in linear_congested(), therefore kfree_rcu() is used to free
-	 * oldconf until no one uses it anymore.
-	 */
+	 
 	mddev_suspend(mddev);
 	oldconf = rcu_dereference_protected(mddev->private,
 			lockdep_is_held(&mddev->reconfig_mutex));
@@ -230,7 +194,7 @@ static bool linear_make_request(struct mddev *mddev, struct bio *bio)
 	}
 
 	if (unlikely(bio_end_sector(bio) > end_sector)) {
-		/* This bio crosses a device boundary, so we have to split it */
+		 
 		struct bio *split = bio_split(bio, end_sector - bio_sector,
 					      GFP_NOIO, &mddev->bio_set);
 		bio_chain(split, bio);
@@ -245,7 +209,7 @@ static bool linear_make_request(struct mddev *mddev, struct bio *bio)
 
 	if (unlikely((bio_op(bio) == REQ_OP_DISCARD) &&
 		     !bdev_max_discard_sectors(bio->bi_bdev))) {
-		/* Just ignore it */
+		 
 		bio_endio(bio);
 	} else {
 		if (mddev->gendisk)
@@ -315,6 +279,6 @@ module_init(linear_init);
 module_exit(linear_exit);
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Linear device concatenation personality for MD (deprecated)");
-MODULE_ALIAS("md-personality-1"); /* LINEAR - deprecated*/
+MODULE_ALIAS("md-personality-1");  
 MODULE_ALIAS("md-linear");
 MODULE_ALIAS("md-level--1");

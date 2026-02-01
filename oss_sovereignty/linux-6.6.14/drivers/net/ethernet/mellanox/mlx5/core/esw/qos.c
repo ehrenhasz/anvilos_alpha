@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+ 
 
 #include "eswitch.h"
 #include "esw/qos.h"
@@ -7,7 +7,7 @@
 #define CREATE_TRACE_POINTS
 #include "diag/qos_tracepoint.h"
 
-/* Minimum supported BW share value by the HW is 1 Mbit/sec */
+ 
 #define MLX5_MIN_BW_SHARE 1
 
 #define MLX5_RATE_TO_BW_SHARE(rate, divider, limit) \
@@ -115,9 +115,7 @@ static u32 esw_qos_calculate_min_rate_divider(struct mlx5_eswitch *esw,
 	if (max_guarantee)
 		return max_t(u32, max_guarantee / fw_max_bw_share, 1);
 
-	/* If vports min rate divider is 0 but their group has bw_share configured, then
-	 * need to set bw_share for vports to minimal value.
-	 */
+	 
 	if (!group_level && !max_guarantee && group && group->bw_share)
 		return 1;
 	return 0;
@@ -180,9 +178,7 @@ static int esw_qos_normalize_groups_min_rate(struct mlx5_eswitch *esw, u32 divid
 
 		group->bw_share = bw_share;
 
-		/* All the group's vports need to be set with default bw_share
-		 * to enable them with QOS
-		 */
+		 
 		err = esw_qos_normalize_vports_min_rate(esw, group, extack);
 
 		if (err)
@@ -232,9 +228,7 @@ static int esw_qos_set_vport_max_rate(struct mlx5_eswitch *esw, struct mlx5_vpor
 	if (max_rate == evport->qos.max_rate)
 		return 0;
 
-	/* If parent group has rate limit need to set to group
-	 * value when new max rate is 0.
-	 */
+	 
 	if (evport->qos.group && !max_rate)
 		act_max_rate = evport->qos.group->max_rate;
 
@@ -268,7 +262,7 @@ static int esw_qos_set_group_min_rate(struct mlx5_eswitch *esw, struct mlx5_esw_
 		group->min_rate = previous_min_rate;
 		NL_SET_ERR_MSG_MOD(extack, "E-Switch group min rate setting failed");
 
-		/* Attempt restoring previous configuration */
+		 
 		divider = esw_qos_calculate_min_rate_divider(esw, group, true);
 		if (esw_qos_normalize_groups_min_rate(esw, divider, extack))
 			NL_SET_ERR_MSG_MOD(extack, "E-Switch BW share restore failed");
@@ -294,9 +288,7 @@ static int esw_qos_set_group_max_rate(struct mlx5_eswitch *esw,
 
 	group->max_rate = max_rate;
 
-	/* Any unlimited vports in the group should be set
-	 * with the value of the group.
-	 */
+	 
 	mlx5_esw_for_each_vport(esw, i, vport) {
 		if (!vport->enabled || !vport->qos.enabled ||
 		    vport->qos.group != group || vport->qos.max_rate)
@@ -364,10 +356,7 @@ static int esw_qos_update_group_scheduling_element(struct mlx5_eswitch *esw,
 	vport->qos.group = new_group;
 	max_rate = vport->qos.max_rate ? vport->qos.max_rate : new_group->max_rate;
 
-	/* If vport is unlimited, we set the group's value.
-	 * Therefore, if the group is limited it will apply to
-	 * the vport as well and if not, vport will remain unlimited.
-	 */
+	 
 	err = esw_qos_vport_create_sched_element(esw, vport, max_rate, vport->qos.bw_share);
 	if (err) {
 		NL_SET_ERR_MSG_MOD(extack, "E-Switch vport group set failed.");
@@ -406,7 +395,7 @@ static int esw_qos_vport_update_group(struct mlx5_eswitch *esw,
 	if (err)
 		return err;
 
-	/* Recalculate bw share weights of old and new groups */
+	 
 	if (vport->qos.bw_share || new_group->bw_share) {
 		esw_qos_normalize_vports_min_rate(esw, curr_group, extack);
 		esw_qos_normalize_vports_min_rate(esw, new_group, extack);
@@ -615,9 +604,7 @@ static int esw_qos_get(struct mlx5_eswitch *esw, struct netlink_ext_ack *extack)
 	lockdep_assert_held(&esw->state_lock);
 
 	if (!refcount_inc_not_zero(&esw->qos.refcnt)) {
-		/* esw_qos_create() set refcount to 1 only on success.
-		 * No need to decrement on failure.
-		 */
+		 
 		err = esw_qos_create(esw, extack);
 	}
 
@@ -714,7 +701,7 @@ int mlx5_esw_qos_modify_vport_rate(struct mlx5_eswitch *esw, u16 vport_num, u32 
 
 	mutex_lock(&esw->state_lock);
 	if (!vport->qos.enabled) {
-		/* Eswitch QoS wasn't enabled yet. Enable it and vport QoS. */
+		 
 		err = esw_qos_vport_enable(esw, vport, rate_mbps, vport->qos.bw_share, NULL);
 	} else {
 		MLX5_SET(scheduling_context, ctx, max_average_bw, rate_mbps);
@@ -731,12 +718,9 @@ int mlx5_esw_qos_modify_vport_rate(struct mlx5_eswitch *esw, u16 vport_num, u32 
 	return err;
 }
 
-#define MLX5_LINKSPEED_UNIT 125000 /* 1Mbps in Bps */
+#define MLX5_LINKSPEED_UNIT 125000  
 
-/* Converts bytes per second value passed in a pointer into megabits per
- * second, rewriting last. If converted rate exceed link speed or is not a
- * fraction of Mbps - returns error.
- */
+ 
 static int esw_qos_devlink_rate_to_mbps(struct mlx5_core_dev *mdev, const char *name,
 					u64 *rate, struct netlink_ext_ack *extack)
 {
@@ -769,7 +753,7 @@ static int esw_qos_devlink_rate_to_mbps(struct mlx5_core_dev *mdev, const char *
 	return 0;
 }
 
-/* Eswitch devlink rate API */
+ 
 
 int mlx5_esw_devlink_rate_leaf_tx_share_set(struct devlink_rate *rate_leaf, void *priv,
 					    u64 tx_share, struct netlink_ext_ack *extack)

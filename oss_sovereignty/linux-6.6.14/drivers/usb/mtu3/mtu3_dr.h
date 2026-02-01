@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mtu3_dr.h - dual role switch and host glue layer header
- *
- * Copyright (C) 2016 MediaTek Inc.
- *
- * Author: Chunfeng Yun <chunfeng.yun@mediatek.com>
- */
+ 
+ 
 
 #ifndef _MTU3_DR_H_
 #define _MTU3_DR_H_
@@ -122,4 +116,4 @@ ssusb_set_force_mode(struct ssusb_mtk *ssusb, enum mtu3_dr_force_mode mode)
 
 #endif
 
-#endif		/* _MTU3_DR_H_ */
+#endif		 

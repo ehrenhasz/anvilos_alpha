@@ -1,47 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * comedi/drivers/das800.c
- * Driver for Keitley das800 series boards and compatibles
- * Copyright (C) 2000 Frank Mori Hess <fmhess@users.sourceforge.net>
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 2000 David A. Schleef <ds@schleef.org>
- */
-/*
- * Driver: das800
- * Description: Keithley Metrabyte DAS800 (& compatibles)
- * Author: Frank Mori Hess <fmhess@users.sourceforge.net>
- * Devices: [Keithley Metrabyte] DAS-800 (das-800), DAS-801 (das-801),
- * DAS-802 (das-802),
- * [Measurement Computing] CIO-DAS800 (cio-das800),
- * CIO-DAS801 (cio-das801), CIO-DAS802 (cio-das802),
- * CIO-DAS802/16 (cio-das802/16)
- * Status: works, cio-das802/16 untested - email me if you have tested it
- *
- * Configuration options:
- * [0] - I/O port base address
- * [1] - IRQ (optional, required for timed or externally triggered conversions)
- *
- * Notes:
- *	IRQ can be omitted, although the cmd interface will not work without it.
- *
- *	All entries in the channel/gain list must use the same gain and be
- *	consecutive channels counting upwards in channel number (these are
- *	hardware limitations.)
- *
- *	I've never tested the gain setting stuff since I only have a
- *	DAS-800 board with fixed gain.
- *
- *	The cio-das802/16 does not have a fifo-empty status bit!  Therefore
- *	only fifo-half-full transfers are possible with this card.
- *
- * cmd triggers supported:
- *	start_src:      TRIG_NOW | TRIG_EXT
- *	scan_begin_src: TRIG_FOLLOW
- *	scan_end_src:   TRIG_COUNT
- *	convert_src:    TRIG_TIMER | TRIG_EXT
- *	stop_src:       TRIG_NONE | TRIG_COUNT
- */
+
+ 
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -49,9 +8,9 @@
 #include <linux/comedi/comedidev.h>
 #include <linux/comedi/comedi_8254.h>
 
-#define N_CHAN_AI             8	/*  number of analog input channels */
+#define N_CHAN_AI             8	 
 
-/* Registers for the das800 */
+ 
 
 #define DAS800_LSB            0
 #define   FIFO_EMPTY            0x1
@@ -71,8 +30,8 @@
 #define   IRQ                   0x8
 #define   BUSY                  0x80
 #define DAS800_GAIN           3
-#define   CIO_FFOV              0x8   /* cio-das802/16 fifo overflow */
-#define   CIO_ENHF              0x90  /* cio-das802/16 fifo half full int ena */
+#define   CIO_FFOV              0x8    
+#define   CIO_ENHF              0x90   
 #define   CONTROL1              0x80
 #define   CONV_CONTROL          0xa0
 #define   SCAN_LIMITS           0xc0
@@ -203,26 +162,20 @@ static const struct das800_board das800_boards[] = {
 };
 
 struct das800_private {
-	unsigned int do_bits;	/* digital output bits */
+	unsigned int do_bits;	 
 };
 
 static void das800_ind_write(struct comedi_device *dev,
 			     unsigned int val, unsigned int reg)
 {
-	/*
-	 * Select dev->iobase + 2 to be desired register
-	 * then write to that register.
-	 */
+	 
 	outb(reg, dev->iobase + DAS800_GAIN);
 	outb(val, dev->iobase + 2);
 }
 
 static unsigned int das800_ind_read(struct comedi_device *dev, unsigned int reg)
 {
-	/*
-	 * Select dev->iobase + 7 to be desired register
-	 * then read from that register.
-	 */
+	 
 	outb(reg, dev->iobase + DAS800_GAIN);
 	return inb(dev->iobase + 7);
 }
@@ -234,12 +187,12 @@ static void das800_enable(struct comedi_device *dev)
 	unsigned long irq_flags;
 
 	spin_lock_irqsave(&dev->spinlock, irq_flags);
-	/*  enable fifo-half full interrupts for cio-das802/16 */
+	 
 	if (board->resolution == 16)
 		outb(CIO_ENHF, dev->iobase + DAS800_GAIN);
-	/* enable hardware triggering */
+	 
 	das800_ind_write(dev, CONV_HCEN, CONV_CONTROL);
-	/* enable card's interrupt */
+	 
 	das800_ind_write(dev, CONTROL1_INTE | devpriv->do_bits, CONTROL1);
 	spin_unlock_irqrestore(&dev->spinlock, irq_flags);
 }
@@ -249,7 +202,7 @@ static void das800_disable(struct comedi_device *dev)
 	unsigned long irq_flags;
 
 	spin_lock_irqsave(&dev->spinlock, irq_flags);
-	/* disable hardware triggering of conversions */
+	 
 	das800_ind_write(dev, 0x0, CONV_CONTROL);
 	spin_unlock_irqrestore(&dev->spinlock, irq_flags);
 }
@@ -295,7 +248,7 @@ static int das800_ai_do_cmdtest(struct comedi_device *dev,
 	const struct das800_board *board = dev->board_ptr;
 	int err = 0;
 
-	/* Step 1 : check if triggers are trivially valid */
+	 
 
 	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW | TRIG_EXT);
 	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_FOLLOW);
@@ -307,18 +260,18 @@ static int das800_ai_do_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 1;
 
-	/* Step 2a : make sure trigger sources are unique */
+	 
 
 	err |= comedi_check_trigger_is_unique(cmd->start_src);
 	err |= comedi_check_trigger_is_unique(cmd->convert_src);
 	err |= comedi_check_trigger_is_unique(cmd->stop_src);
 
-	/* Step 2b : and mutually compatible */
+	 
 
 	if (err)
 		return 2;
 
-	/* Step 3: check if arguments are trivially valid */
+	 
 
 	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
 
@@ -333,13 +286,13 @@ static int das800_ai_do_cmdtest(struct comedi_device *dev,
 
 	if (cmd->stop_src == TRIG_COUNT)
 		err |= comedi_check_trigger_arg_min(&cmd->stop_arg, 1);
-	else	/* TRIG_NONE */
+	else	 
 		err |= comedi_check_trigger_arg_is(&cmd->stop_arg, 0);
 
 	if (err)
 		return 3;
 
-	/* step 4: fix up any arguments */
+	 
 
 	if (cmd->convert_src == TRIG_TIMER) {
 		unsigned int arg = cmd->convert_arg;
@@ -351,7 +304,7 @@ static int das800_ai_do_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 4;
 
-	/* Step 5: check channel list if it exists */
+	 
 	if (cmd->chanlist && cmd->chanlist_len > 0)
 		err |= das800_ai_check_chanlist(dev, s, cmd);
 
@@ -377,19 +330,17 @@ static int das800_ai_do_cmd(struct comedi_device *dev,
 	das800_disable(dev);
 
 	spin_lock_irqsave(&dev->spinlock, irq_flags);
-	/* set scan limits */
+	 
 	das800_ind_write(dev, scan_chans, SCAN_LIMITS);
 	spin_unlock_irqrestore(&dev->spinlock, irq_flags);
 
-	/* set gain */
+	 
 	if (board->resolution == 12 && gain > 0)
 		gain += 0x7;
 	gain &= 0xf;
 	outb(gain, dev->iobase + DAS800_GAIN);
 
-	/* enable auto channel scan, send interrupts on end of conversion
-	 * and set clock source to internal or external
-	 */
+	 
 	conv_bits = 0;
 	conv_bits |= EACS | IEOC;
 	if (cmd->start_src == TRIG_EXT)
@@ -441,12 +392,9 @@ static irqreturn_t das800_interrupt(int irq, void *d)
 
 	spin_lock_irqsave(&dev->spinlock, irq_flags);
 	status = das800_ind_read(dev, CONTROL1) & STATUS2_HCEN;
-	/*
-	 * Don't release spinlock yet since we want to make sure
-	 * no one else disables hardware conversions.
-	 */
+	 
 
-	/* if hardware conversions are not enabled, then quit */
+	 
 	if (status == 0) {
 		spin_unlock_irqrestore(&dev->spinlock, irq_flags);
 		return IRQ_HANDLED;
@@ -458,7 +406,7 @@ static irqreturn_t das800_interrupt(int irq, void *d)
 			fifo_empty = !!(val & FIFO_EMPTY);
 			fifo_overflow = !!(val & FIFO_OVF);
 		} else {
-			/* cio-das802/16 has no fifo empty status bit */
+			 
 			fifo_empty = false;
 			fifo_overflow = !!(inb(dev->iobase + DAS800_GAIN) &
 						CIO_FFOV);
@@ -467,7 +415,7 @@ static irqreturn_t das800_interrupt(int irq, void *d)
 			break;
 
 		if (s->maxdata == 0x0fff)
-			val >>= 4;	/* 12-bit sample */
+			val >>= 4;	 
 
 		val &= s->maxdata;
 		comedi_buf_write_samples(s, &val, 1);
@@ -487,15 +435,12 @@ static irqreturn_t das800_interrupt(int irq, void *d)
 	}
 
 	if (!(async->events & COMEDI_CB_CANCEL_MASK)) {
-		/*
-		 * Re-enable card's interrupt.
-		 * We already have spinlock, so indirect addressing is safe
-		 */
+		 
 		das800_ind_write(dev, CONTROL1_INTE | devpriv->do_bits,
 				 CONTROL1);
 		spin_unlock_irqrestore(&dev->spinlock, irq_flags);
 	} else {
-		/* otherwise, stop taking data */
+		 
 		spin_unlock_irqrestore(&dev->spinlock, irq_flags);
 		das800_disable(dev);
 	}
@@ -531,12 +476,12 @@ static int das800_ai_insn_read(struct comedi_device *dev,
 
 	das800_disable(dev);
 
-	/* set multiplexer */
+	 
 	spin_lock_irqsave(&dev->spinlock, irq_flags);
 	das800_ind_write(dev, chan | devpriv->do_bits, CONTROL1);
 	spin_unlock_irqrestore(&dev->spinlock, irq_flags);
 
-	/* set gain / range */
+	 
 	if (s->maxdata == 0x0fff && range)
 		range += 0x7;
 	range &= 0xf;
@@ -545,7 +490,7 @@ static int das800_ai_insn_read(struct comedi_device *dev,
 	udelay(5);
 
 	for (i = 0; i < insn->n; i++) {
-		/* trigger conversion */
+		 
 		outb_p(0, dev->iobase + DAS800_MSB);
 
 		ret = comedi_timeout(dev, s, insn, das800_ai_eoc, 0);
@@ -554,7 +499,7 @@ static int das800_ai_insn_read(struct comedi_device *dev,
 
 		val = das800_ai_get_sample(dev);
 		if (s->maxdata == 0x0fff)
-			val >>= 4;	/* 12-bit sample */
+			val >>= 4;	 
 		data[i] = val & s->maxdata;
 	}
 
@@ -600,16 +545,7 @@ static const struct das800_board *das800_probe(struct comedi_device *dev)
 	int id_bits;
 	unsigned long irq_flags;
 
-	/*
-	 * The dev->board_ptr will be set by comedi_device_attach() if the
-	 * board name provided by the user matches a board->name in this
-	 * driver. If so, this function sanity checks the id_bits to verify
-	 * that the board is correct.
-	 *
-	 * If the dev->board_ptr is not set, the user is trying to attach
-	 * an unspecified board to this driver. In this case the id_bits
-	 * are used to 'probe' for the correct dev->board_ptr.
-	 */
+	 
 	spin_lock_irqsave(&dev->spinlock, irq_flags);
 	id_bits = das800_ind_read(dev, ID) & 0x3;
 	spin_unlock_irqrestore(&dev->spinlock, irq_flags);
@@ -681,7 +617,7 @@ static int das800_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	if (ret)
 		return ret;
 
-	/* Analog Input subdevice */
+	 
 	s = &dev->subdevices[0];
 	dev->read_subdev = s;
 	s->type		= COMEDI_SUBD_AI;
@@ -698,7 +634,7 @@ static int das800_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 		s->cancel	= das800_cancel;
 	}
 
-	/* Digital Input subdevice */
+	 
 	s = &dev->subdevices[1];
 	s->type		= COMEDI_SUBD_DI;
 	s->subdev_flags	= SDF_READABLE;
@@ -707,7 +643,7 @@ static int das800_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	s->range_table	= &range_digital;
 	s->insn_bits	= das800_di_insn_bits;
 
-	/* Digital Output subdevice */
+	 
 	s = &dev->subdevices[2];
 	s->type		= COMEDI_SUBD_DO;
 	s->subdev_flags	= SDF_WRITABLE;
@@ -718,7 +654,7 @@ static int das800_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 
 	das800_disable(dev);
 
-	/* initialize digital out channels */
+	 
 	spin_lock_irqsave(&dev->spinlock, irq_flags);
 	das800_ind_write(dev, CONTROL1_INTE | devpriv->do_bits, CONTROL1);
 	spin_unlock_irqrestore(&dev->spinlock, irq_flags);

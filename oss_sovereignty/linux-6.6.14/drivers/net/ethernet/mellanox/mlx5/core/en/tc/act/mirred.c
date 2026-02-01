@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+
 
 #include <linux/if_macvlan.h>
 #include <linux/if_vlan.h>
@@ -28,14 +28,7 @@ verify_uplink_forwarding(struct mlx5e_priv *priv,
 	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
 	struct mlx5e_rep_priv *rep_priv;
 
-	/* Forwarding non encapsulated traffic between
-	 * uplink ports is allowed only if
-	 * termination_table_raw_traffic cap is set.
-	 *
-	 * Input vport was stored attr->in_rep.
-	 * In LAG case, *priv* is the private data of
-	 * uplink which may be not the input vport.
-	 */
+	 
 	rep_priv = mlx5e_rep_to_rep_priv(attr->esw_attr->in_rep);
 
 	if (!(mlx5e_eswitch_uplink_rep(rep_priv->netdev) &&
@@ -114,10 +107,7 @@ tc_act_can_offload_mirred(struct mlx5e_tc_act_parse_state *parse_state,
 	esw_attr = attr->esw_attr;
 
 	if (!out_dev) {
-		/* out_dev is NULL when filters with
-		 * non-existing mirred device are replayed to
-		 * the driver.
-		 */
+		 
 		return false;
 	}
 
@@ -137,10 +127,7 @@ tc_act_can_offload_mirred(struct mlx5e_tc_act_parse_state *parse_state,
 	}
 
 	if (mlx5e_is_ft_flow(flow) && out_dev == priv->netdev) {
-		/* Ignore forward to self rules generated
-		 * by adding both mlx5 devs to the flow table
-		 * block on a normal nft offload setup.
-		 */
+		 
 		return false;
 	}
 
@@ -159,11 +146,7 @@ tc_act_can_offload_mirred(struct mlx5e_tc_act_parse_state *parse_state,
 		return true;
 
 	if (parse_attr->filter_dev != priv->netdev) {
-		/* All mlx5 devices are called to configure
-		 * high level device filters. Therefore, the
-		 * *attempt* to  install a filter on invalid
-		 * eswitch should not trigger an explicit error
-		 */
+		 
 		return false;
 	}
 
@@ -197,7 +180,7 @@ parse_mirred_encap(struct mlx5e_tc_act_parse_state *parse_state,
 	}
 	esw_attr->dests[esw_attr->out_count].flags |= MLX5_ESW_DEST_ENCAP;
 	esw_attr->out_count++;
-	/* attr->dests[].vport is resolved when we handle encap */
+	 
 
 	return 0;
 }

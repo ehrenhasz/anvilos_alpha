@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2014-2015 Hisilicon Limited.
- */
+
+ 
 
 #include "hns_dsaf_mac.h"
 #include "hns_dsaf_misc.h"
@@ -326,17 +324,7 @@ static void hns_dsaf_xge_srst_by_port_acpi(struct dsaf_device *dsaf_dev,
 				   HNS_XGE_RESET_FUNC, port, dereset);
 }
 
-/**
- * hns_dsaf_srst_chns - reset dsaf channels
- * @dsaf_dev: dsaf device struct pointer
- * @msk: xbar channels mask value:
- * @dereset: false - request reset , true - drop reset
- *
- * bit0-5 for xge0-5
- * bit6-11 for ppe0-5
- * bit12-17 for roce0-5
- * bit18-19 for com/dfx
- */
+ 
 static void
 hns_dsaf_srst_chns(struct dsaf_device *dsaf_dev, u32 msk, bool dereset)
 {
@@ -350,17 +338,7 @@ hns_dsaf_srst_chns(struct dsaf_device *dsaf_dev, u32 msk, bool dereset)
 	dsaf_write_sub(dsaf_dev, reg_addr, msk);
 }
 
-/**
- * hns_dsaf_srst_chns_acpi - reset dsaf channels
- * @dsaf_dev: dsaf device struct pointer
- * @msk: xbar channels mask value:
- * @dereset: false - request reset , true - drop reset
- *
- * bit0-5 for xge0-5
- * bit6-11 for ppe0-5
- * bit12-17 for roce0-5
- * bit18-19 for com/dfx
- */
+ 
 static void
 hns_dsaf_srst_chns_acpi(struct dsaf_device *dsaf_dev, u32 msk, bool dereset)
 {
@@ -400,13 +378,12 @@ static void hns_dsaf_ge_srst_by_port(struct dsaf_device *dsaf_dev, u32 port,
 		return;
 
 	if (!HNS_DSAF_IS_DEBUG(dsaf_dev)) {
-		/* DSAF_MAX_PORT_NUM is 6, but DSAF_GE_NUM is 8.
-		   We need check to prevent array overflow */
+		 
 		if (port >= DSAF_MAX_PORT_NUM)
 			return;
 		reg_val_1  = 0x1 << port;
 		port_rst_off = dsaf_dev->mac_cb[port]->port_rst_off;
-		/* there is difference between V1 and V2 in register.*/
+		 
 		reg_val_2 = AE_IS_VER1(dsaf_dev->dsaf_ver) ?
 				0x1041041 : 0x2082082;
 		reg_val_2 <<= port_rst_off;
@@ -504,11 +481,7 @@ static void hns_ppe_com_srst(struct dsaf_device *dsaf_dev, bool dereset)
 	dsaf_write_sub(dsaf_dev, reg_addr, reg_val);
 }
 
-/**
- * hns_mac_get_phy_if - get phy ifterface form serdes mode
- * @mac_cb: mac control block
- * retuen phy interface
- */
+ 
 static phy_interface_t hns_mac_get_phy_if(struct hns_mac_cb *mac_cb)
 {
 	u32 mode;
@@ -615,23 +588,18 @@ static int hns_mac_get_sfp_prsnt_acpi(struct hns_mac_cb *mac_cb, int *sfp_prsnt)
 	return 0;
 }
 
-/**
- * hns_mac_config_sds_loopback - set loop back for serdes
- * @mac_cb: mac control block
- * @en: enable or disable
- * return 0 == success
- */
+ 
 static int hns_mac_config_sds_loopback(struct hns_mac_cb *mac_cb, bool en)
 {
 	const u8 lane_id[] = {
-		0,	/* mac 0 -> lane 0 */
-		1,	/* mac 1 -> lane 1 */
-		2,	/* mac 2 -> lane 2 */
-		3,	/* mac 3 -> lane 3 */
-		2,	/* mac 4 -> lane 2 */
-		3,	/* mac 5 -> lane 3 */
-		0,	/* mac 6 -> lane 0 */
-		1	/* mac 7 -> lane 1 */
+		0,	 
+		1,	 
+		2,	 
+		3,	 
+		2,	 
+		3,	 
+		0,	 
+		1	 
 	};
 #define RX_CSR(lane, reg) ((0x4080 + (reg) * 0x0002 + (lane) * 0x0200) * 2)
 	u64 reg_offset = RX_CSR(lane_id[mac_cb->mac_id], 0);
@@ -652,10 +620,7 @@ static int hns_mac_config_sds_loopback(struct hns_mac_cb *mac_cb, bool en)
 
 		if (!AE_IS_VER1(mac_cb->dsaf_dev->dsaf_ver)) {
 #define HILINK_ACCESS_SEL_CFG		0x40008
-			/* hilink4 & hilink3 use the same xge training and
-			 * xge u adaptor. There is a hilink access sel cfg
-			 * register to select which one to be configed
-			 */
+			 
 			if ((!HNS_DSAF_IS_DEBUG(mac_cb->dsaf_dev)) &&
 			    (mac_cb->mac_id <= 3))
 				dsaf_write_syscon(mac_cb->serdes_ctrl,

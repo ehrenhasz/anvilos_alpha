@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * FB driver for the HX8357D LCD Controller
- * Copyright (C) 2015 Adafruit Industries
- *
- * Based on the HX8347D FB driver
- * Copyright (C) 2013 Christian Vogelgsang
- *
- * Based on driver code found here: https://github.com/watterott/r61505u-Adapter
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -26,50 +18,50 @@ static int init_display(struct fbtft_par *par)
 {
 	par->fbtftops.reset(par);
 
-	/* Reset things like Gamma */
+	 
 	write_reg(par, MIPI_DCS_SOFT_RESET);
 	usleep_range(5000, 7000);
 
-	/* setextc */
+	 
 	write_reg(par, HX8357D_SETC, 0xFF, 0x83, 0x57);
 	msleep(150);
 
-	/* setRGB which also enables SDO */
+	 
 	write_reg(par, HX8357_SETRGB, 0x00, 0x00, 0x06, 0x06);
 
-	/* -1.52V */
+	 
 	write_reg(par, HX8357D_SETCOM, 0x25);
 
-	/* Normal mode 70Hz, Idle mode 55 Hz */
+	 
 	write_reg(par, HX8357_SETOSC, 0x68);
 
-	/* Set Panel - BGR, Gate direction swapped */
+	 
 	write_reg(par, HX8357_SETPANEL, 0x05);
 
 	write_reg(par, HX8357_SETPWR1,
-		  0x00,  /* Not deep standby */
-		  0x15,  /* BT */
-		  0x1C,  /* VSPR */
-		  0x1C,  /* VSNR */
-		  0x83,  /* AP */
-		  0xAA);  /* FS */
+		  0x00,   
+		  0x15,   
+		  0x1C,   
+		  0x1C,   
+		  0x83,   
+		  0xAA);   
 
 	write_reg(par, HX8357D_SETSTBA,
-		  0x50,  /* OPON normal */
-		  0x50,  /* OPON idle */
-		  0x01,  /* STBA */
-		  0x3C,  /* STBA */
-		  0x1E,  /* STBA */
-		  0x08);  /* GEN */
+		  0x50,   
+		  0x50,   
+		  0x01,   
+		  0x3C,   
+		  0x1E,   
+		  0x08);   
 
 	write_reg(par, HX8357D_SETCYC,
-		  0x02,  /* NW 0x02 */
-		  0x40,  /* RTN */
-		  0x00,  /* DIV */
-		  0x2A,  /* DUM */
-		  0x2A,  /* DUM */
-		  0x0D,  /* GDON */
-		  0x78);  /* GDOFF */
+		  0x02,   
+		  0x40,   
+		  0x00,   
+		  0x2A,   
+		  0x2A,   
+		  0x0D,   
+		  0x78);   
 
 	write_reg(par, HX8357D_SETGAMMA,
 		  0x02,
@@ -107,22 +99,22 @@ static int init_display(struct fbtft_par *par)
 		  0x00,
 		  0x01);
 
-	/* 16 bit */
+	 
 	write_reg(par, MIPI_DCS_SET_PIXEL_FORMAT, 0x55);
 
 	write_reg(par, MIPI_DCS_SET_ADDRESS_MODE, 0xC0);
 
-	/* TE off */
+	 
 	write_reg(par, MIPI_DCS_SET_TEAR_ON, 0x00);
 
-	/* tear line */
+	 
 	write_reg(par, MIPI_DCS_SET_TEAR_SCANLINE, 0x00, 0x02);
 
-	/* Exit Sleep */
+	 
 	write_reg(par, MIPI_DCS_EXIT_SLEEP_MODE);
 	msleep(150);
 
-	/* display on */
+	 
 	write_reg(par, MIPI_DCS_SET_DISPLAY_ON);
 	usleep_range(5000, 7000);
 
@@ -132,12 +124,12 @@ static int init_display(struct fbtft_par *par)
 static void set_addr_win(struct fbtft_par *par, int xs, int ys, int xe, int ye)
 {
 	write_reg(par, MIPI_DCS_SET_COLUMN_ADDRESS,
-		  xs >> 8, xs & 0xff,  /* XSTART */
-		  xe >> 8, xe & 0xff); /* XEND */
+		  xs >> 8, xs & 0xff,   
+		  xe >> 8, xe & 0xff);  
 
 	write_reg(par, MIPI_DCS_SET_PAGE_ADDRESS,
-		  ys >> 8, ys & 0xff,  /* YSTART */
-		  ye >> 8, ye & 0xff); /* YEND */
+		  ys >> 8, ys & 0xff,   
+		  ye >> 8, ye & 0xff);  
 
 	write_reg(par, MIPI_DCS_WRITE_MEMORY_START);
 }
@@ -170,7 +162,7 @@ static int set_var(struct fbtft_par *par)
 
 	val |= (par->bgr ? HX8357D_MADCTL_RGB : HX8357D_MADCTL_BGR);
 
-	/* Memory Access Control */
+	 
 	write_reg(par, MIPI_DCS_SET_ADDRESS_MODE, val);
 
 	return 0;

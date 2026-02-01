@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <drm/drm_atomic.h>
 #include <drm/drm_damage_helper.h>
@@ -29,7 +26,7 @@ struct mdp4_plane {
 };
 #define to_mdp4_plane(x) container_of(x, struct mdp4_plane, base)
 
-/* MDP format helper functions */
+ 
 static inline
 enum mdp4_frame_format mdp4_get_frame_format(struct drm_framebuffer *fb)
 {
@@ -68,17 +65,17 @@ static void mdp4_plane_destroy(struct drm_plane *plane)
 	kfree(mdp4_plane);
 }
 
-/* helper to install properties which are common to planes and crtcs */
+ 
 static void mdp4_plane_install_properties(struct drm_plane *plane,
 		struct drm_mode_object *obj)
 {
-	// XXX
+	
 }
 
 static int mdp4_plane_set_property(struct drm_plane *plane,
 		struct drm_property *property, uint64_t val)
 {
-	// XXX
+	
 	return -EINVAL;
 }
 
@@ -141,7 +138,7 @@ static void mdp4_plane_atomic_update(struct drm_plane *plane,
 			new_state->crtc_w, new_state->crtc_h,
 			new_state->src_x,  new_state->src_y,
 			new_state->src_w, new_state->src_h);
-	/* atomic_check should have ensured that this doesn't fail */
+	 
 	WARN_ON(ret < 0);
 }
 
@@ -231,7 +228,7 @@ static int mdp4_plane_mode_set(struct drm_plane *plane,
 
 	frame_type = mdp4_get_frame_format(fb);
 
-	/* src values are in Q16 fixed point, convert to integer: */
+	 
 	src_x = src_x >> 16;
 	src_y = src_y >> 16;
 	src_w = src_w >> 16;
@@ -371,7 +368,7 @@ static const uint64_t supported_format_modifiers[] = {
 	DRM_FORMAT_MOD_INVALID
 };
 
-/* initialize plane */
+ 
 struct drm_plane *mdp4_plane_init(struct drm_device *dev,
 		enum mdp4_pipe pipe_id, bool private_plane)
 {

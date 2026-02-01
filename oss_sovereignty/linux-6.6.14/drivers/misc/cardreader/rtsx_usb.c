@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Driver for Realtek USB card reader
- *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Roger Tseng <rogerable@realtek.com>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/mutex.h>
@@ -127,7 +121,7 @@ static int rtsx_usb_seq_read_register(struct rtsx_ucr *ucr,
 	if (!data)
 		return -EINVAL;
 
-	/* 4-byte aligned part */
+	 
 	if (rsp_len) {
 		rtsx_usb_seq_cmd_hdr(ucr, addr, len, SEQ_READ);
 		ret = rtsx_usb_transfer_data(ucr,
@@ -143,7 +137,7 @@ static int rtsx_usb_seq_read_register(struct rtsx_ucr *ucr,
 			return ret;
 	}
 
-	/* unaligned part */
+	 
 	for (i = 0; i < res_len; i++) {
 		ret = rtsx_usb_read_register(ucr, addr + rsp_len + i,
 				data + rsp_len + i);
@@ -308,7 +302,7 @@ int rtsx_usb_get_card_status(struct rtsx_ucr *ucr, u16 *status)
 		ret = rtsx_usb_get_status_with_bulk(ucr, status);
 	}
 
-	/* usb_control_msg may return positive when success */
+	 
 	if (ret < 0)
 		return ret;
 
@@ -398,7 +392,7 @@ int rtsx_usb_switch_clock(struct rtsx_ucr *ucr, unsigned int card_clock,
 	}
 
 	if (initial_mode) {
-		/* We use 250k(around) here, in initial stage */
+		 
 		clk_divider = SD_CLK_DIVIDE_128;
 		card_clock = 30000000;
 	} else {
@@ -423,7 +417,7 @@ int rtsx_usb_switch_clock(struct rtsx_ucr *ucr, unsigned int card_clock,
 	if (card_clock == ucr->cur_clk)
 		return 0;
 
-	/* Converting clock value into internal settings: n and div */
+	 
 	n = card_clock - 2;
 	if ((card_clock <= 2) || (n > MAX_DIV_N))
 		return -EINVAL;
@@ -432,7 +426,7 @@ int rtsx_usb_switch_clock(struct rtsx_ucr *ucr, unsigned int card_clock,
 	if (mcu_cnt > 15)
 		mcu_cnt = 15;
 
-	/* Make sure that the SSC clock div_n is not less than MIN_DIV_N */
+	 
 
 	div = CLK_DIV_1;
 	while (n < MIN_DIV_N && div < CLK_DIV_4) {
@@ -472,7 +466,7 @@ int rtsx_usb_switch_clock(struct rtsx_ucr *ucr, unsigned int card_clock,
 	if (ret < 0)
 		return ret;
 
-	/* Wait SSC clock stable */
+	 
 	usleep_range(100, 1000);
 
 	ret = rtsx_usb_write_register(ucr, CLK_DIV, CLK_CHANGE, 0);
@@ -495,10 +489,7 @@ int rtsx_usb_card_exclusive_check(struct rtsx_ucr *ucr, int card)
 	};
 
 	ret = rtsx_usb_get_card_status(ucr, &val);
-	/*
-	 * If get status fails, return 0 (ok) for the exclusive check
-	 * and let the flow fail at somewhere else.
-	 */
+	 
 	if (ret)
 		return 0;
 
@@ -553,7 +544,7 @@ static int rtsx_usb_reset_chip(struct rtsx_ucr *ucr)
 	if (ret)
 		return ret;
 
-	/* config non-crystal mode */
+	 
 	rtsx_usb_read_register(ucr, CFG_MODE, &val);
 	if ((val & XTAL_FREE) || ((val & CLK_MODE_MASK) == CLK_MODE_NON_XTAL)) {
 		ret = rtsx_usb_write_phy_register(ucr, 0xC2, 0x7C);
@@ -571,7 +562,7 @@ static int rtsx_usb_init_chip(struct rtsx_ucr *ucr)
 
 	rtsx_usb_clear_fsm_err(ucr);
 
-	/* power on SSC */
+	 
 	ret = rtsx_usb_write_register(ucr,
 			FPDCTL, SSC_POWER_MASK, SSC_POWER_ON);
 	if (ret)
@@ -582,14 +573,14 @@ static int rtsx_usb_init_chip(struct rtsx_ucr *ucr)
 	if (ret)
 		return ret;
 
-	/* determine IC version */
+	 
 	ret = rtsx_usb_read_register(ucr, HW_VERSION, &val);
 	if (ret)
 		return ret;
 
 	ucr->ic_version = val & HW_VER_MASK;
 
-	/* determine package */
+	 
 	ret = rtsx_usb_read_register(ucr, CARD_SHARE_MODE, &val);
 	if (ret)
 		return ret;
@@ -602,7 +593,7 @@ static int rtsx_usb_init_chip(struct rtsx_ucr *ucr)
 		dev_dbg(&ucr->pusb_intf->dev, "Package: QFN24\n");
 	}
 
-	/* determine IC variations */
+	 
 	rtsx_usb_read_register(ucr, CFG_MODE_1, &val);
 	if (val & RTS5179) {
 		ucr->is_rts5179 = true;
@@ -650,12 +641,12 @@ static int rtsx_usb_probe(struct usb_interface *intf,
 
 	ucr->pusb_intf = intf;
 
-	/* initialize */
+	 
 	ret = rtsx_usb_init_chip(ucr);
 	if (ret)
 		goto out_init_fail;
 
-	/* initialize USB SG transfer timer */
+	 
 	timer_setup(&ucr->sg_timer, rtsx_usb_sg_timed_out, 0);
 
 	ret = mfd_add_hotplug_devices(&intf->dev, rtsx_usb_cells,
@@ -712,11 +703,11 @@ static int rtsx_usb_suspend(struct usb_interface *intf, pm_message_t message)
 			rtsx_usb_get_card_status(ucr, &val);
 			mutex_unlock(&ucr->dev_mutex);
 
-			/* Defer the autosuspend if card exists */
+			 
 			if (val & (SD_CD | MS_CD))
 				return -EAGAIN;
 		} else {
-			/* There is an ongoing operation*/
+			 
 			return -EAGAIN;
 		}
 	}
@@ -746,13 +737,13 @@ static int rtsx_usb_reset_resume(struct usb_interface *intf)
 	return 0;
 }
 
-#else /* CONFIG_PM */
+#else  
 
 #define rtsx_usb_suspend NULL
 #define rtsx_usb_resume NULL
 #define rtsx_usb_reset_resume NULL
 
-#endif /* CONFIG_PM */
+#endif  
 
 
 static int rtsx_usb_pre_reset(struct usb_interface *intf)

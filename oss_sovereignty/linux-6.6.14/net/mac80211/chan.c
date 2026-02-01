@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * mac80211 - channel management
- * Copyright 2020 - 2022 Intel Corporation
- */
+
+ 
 
 #include <linux/nl80211.h>
 #include <linux/export.h>
@@ -203,7 +200,7 @@ static enum nl80211_chan_width ieee80211_get_sta_bw(struct sta_info *sta,
 
 	link_sta = rcu_dereference(sta->link[link_id]);
 
-	/* no effect if this STA has no presence on this link */
+	 
 	if (!link_sta)
 		return NL80211_CHAN_WIDTH_20_NOHT;
 
@@ -220,15 +217,7 @@ static enum nl80211_chan_width ieee80211_get_sta_bw(struct sta_info *sta,
 	case IEEE80211_STA_RX_BW_80:
 		return NL80211_CHAN_WIDTH_80;
 	case IEEE80211_STA_RX_BW_160:
-		/*
-		 * This applied for both 160 and 80+80. since we use
-		 * the returned value to consider degradation of
-		 * ctx->conf.min_def, we have to make sure to take
-		 * the bigger one (NL80211_CHAN_WIDTH_160).
-		 * Otherwise we might try degrading even when not
-		 * needed, as the max required sta_bw returned (80+80)
-		 * might be smaller than the configured bw (160).
-		 */
+		 
 		return NL80211_CHAN_WIDTH_160;
 	case IEEE80211_STA_RX_BW_320:
 		return NL80211_CHAN_WIDTH_320;
@@ -284,11 +273,7 @@ ieee80211_get_chanctx_vif_max_required_bw(struct ieee80211_sub_if_data *sdata,
 			width = ieee80211_get_max_required_bw(sdata, link_id);
 			break;
 		case NL80211_IFTYPE_STATION:
-			/*
-			 * The ap's sta->bandwidth is not set yet at this
-			 * point, so take the width from the chandef, but
-			 * account also for TDLS peers
-			 */
+			 
 			width = max(link->conf->chandef.width,
 				    ieee80211_get_max_required_bw(sdata, link_id));
 			break;
@@ -337,7 +322,7 @@ ieee80211_get_chanctx_max_required_bw(struct ieee80211_local *local,
 		max_bw = max(max_bw, width);
 	}
 
-	/* use the configured bandwidth in case of monitor interface */
+	 
 	sdata = rcu_dereference(local->monitor_sdata);
 	if (sdata &&
 	    rcu_access_pointer(sdata->vif.bss_conf.chanctx_conf) == &ctx->conf)
@@ -348,11 +333,7 @@ ieee80211_get_chanctx_max_required_bw(struct ieee80211_local *local,
 	return max_bw;
 }
 
-/*
- * recalc the min required chan width of the channel context, which is
- * the max of min required widths of all the interfaces bound to this
- * channel context.
- */
+ 
 static u32
 _ieee80211_recalc_chanctx_min_def(struct ieee80211_local *local,
 				  struct ieee80211_chanctx *ctx,
@@ -363,7 +344,7 @@ _ieee80211_recalc_chanctx_min_def(struct ieee80211_local *local,
 
 	lockdep_assert_held(&local->chanctx_mtx);
 
-	/* don't optimize non-20MHz based and radar_enabled confs */
+	 
 	if (ctx->conf.def.width == NL80211_CHAN_WIDTH_5 ||
 	    ctx->conf.def.width == NL80211_CHAN_WIDTH_10 ||
 	    ctx->conf.def.width == NL80211_CHAN_WIDTH_1 ||
@@ -378,7 +359,7 @@ _ieee80211_recalc_chanctx_min_def(struct ieee80211_local *local,
 
 	max_bw = ieee80211_get_chanctx_max_required_bw(local, ctx, rsvd_for);
 
-	/* downgrade chandef up to max_bw */
+	 
 	min_def = ctx->conf.def;
 	while (min_def.width > max_bw)
 		ieee80211_chandef_downgrade(&min_def);
@@ -393,9 +374,7 @@ _ieee80211_recalc_chanctx_min_def(struct ieee80211_local *local,
 	return IEEE80211_CHANCTX_CHANGE_MIN_WIDTH;
 }
 
-/* calling this function is assuming that station vif is updated to
- * lates changes by calling ieee80211_link_update_chandef
- */
+ 
 static void ieee80211_chan_bw_change(struct ieee80211_local *local,
 				     struct ieee80211_chanctx *ctx,
 				     bool narrowed)
@@ -431,12 +410,11 @@ static void ieee80211_chan_bw_change(struct ieee80211_local *local,
 
 			new_sta_bw = ieee80211_sta_cur_vht_bw(link_sta);
 
-			/* nothing change */
+			 
 			if (new_sta_bw == link_sta->pub->bandwidth)
 				continue;
 
-			/* vif changed to narrow BW and narrow BW for station wasn't
-			 * requested or vise versa */
+			 
 			if ((new_sta_bw < link_sta->pub->bandwidth) == !narrowed)
 				continue;
 
@@ -448,11 +426,7 @@ static void ieee80211_chan_bw_change(struct ieee80211_local *local,
 	rcu_read_unlock();
 }
 
-/*
- * recalc the min required chan width of the channel context, which is
- * the max of min required widths of all the interfaces bound to this
- * channel context.
- */
+ 
 void ieee80211_recalc_chanctx_min_def(struct ieee80211_local *local,
 				      struct ieee80211_chanctx *ctx,
 				      struct ieee80211_link_data *rsvd_for)
@@ -462,12 +436,12 @@ void ieee80211_recalc_chanctx_min_def(struct ieee80211_local *local,
 	if (!changed)
 		return;
 
-	/* check is BW narrowed */
+	 
 	ieee80211_chan_bw_change(local, ctx, true);
 
 	drv_change_chanctx(local, ctx, changed);
 
-	/* check is BW wider */
+	 
 	ieee80211_chan_bw_change(local, ctx, false);
 }
 
@@ -479,7 +453,7 @@ static void _ieee80211_change_chanctx(struct ieee80211_local *local,
 {
 	u32 changed;
 
-	/* expected to handle only 20/40/80/160/320 channel widths */
+	 
 	switch (chandef->width) {
 	case NL80211_CHAN_WIDTH_20_NOHT:
 	case NL80211_CHAN_WIDTH_20:
@@ -493,10 +467,7 @@ static void _ieee80211_change_chanctx(struct ieee80211_local *local,
 		WARN_ON(1);
 	}
 
-	/* Check maybe BW narrowed - we do this _before_ calling recalc_chanctx_min_def
-	 * due to maybe not returning from it, e.g in case new context was added
-	 * first time with all parameters up to date.
-	 */
+	 
 	ieee80211_chan_bw_change(local, old_ctx, true);
 
 	if (cfg80211_chandef_identical(&ctx->conf.def, chandef)) {
@@ -508,7 +479,7 @@ static void _ieee80211_change_chanctx(struct ieee80211_local *local,
 
 	ctx->conf.def = *chandef;
 
-	/* check if min chanctx also changed */
+	 
 	changed = IEEE80211_CHANCTX_CHANGE_WIDTH |
 		  _ieee80211_recalc_chanctx_min_def(local, ctx, rsvd_for);
 	drv_change_chanctx(local, ctx, changed);
@@ -518,7 +489,7 @@ static void _ieee80211_change_chanctx(struct ieee80211_local *local,
 		ieee80211_hw_config(local, 0);
 	}
 
-	/* check is BW wider */
+	 
 	ieee80211_chan_bw_change(local, old_ctx, false);
 }
 
@@ -671,7 +642,7 @@ static int ieee80211_add_chanctx(struct ieee80211_local *local,
 	if (!local->use_chanctx)
 		local->hw.conf.radar_enabled = ctx->conf.radar_enabled;
 
-	/* turn idle off *before* setting channel -- some drivers need that */
+	 
 	changed = ieee80211_idle_off(local);
 	if (changed)
 		ieee80211_hw_config(local, changed);
@@ -722,9 +693,7 @@ static void ieee80211_del_chanctx(struct ieee80211_local *local,
 
 	if (!local->use_chanctx) {
 		struct cfg80211_chan_def *chandef = &local->_oper_chandef;
-		/* S1G doesn't have 20MHz, so get the correct width for the
-		 * current channel.
-		 */
+		 
 		if (chandef->chan->band == NL80211_BAND_S1GHZ)
 			chandef->width =
 				ieee80211_s1g_channel_width(chandef->chan);
@@ -734,9 +703,7 @@ static void ieee80211_del_chanctx(struct ieee80211_local *local,
 		chandef->freq1_offset = chandef->chan->freq_offset;
 		chandef->center_freq2 = 0;
 
-		/* NOTE: Disabling radar is only valid here for
-		 * single channel context. To be sure, check it ...
-		 */
+		 
 		WARN_ON(local->hw.conf.radar_enabled &&
 			!list_empty(&local->chanctx_list));
 
@@ -807,7 +774,7 @@ void ieee80211_recalc_chanctx_chantype(struct ieee80211_local *local,
 		return;
 	}
 
-	/* TDLS peers can sometimes affect the chandef width */
+	 
 	list_for_each_entry_rcu(sta, &local->sta_list, list) {
 		if (!sta->uploaded ||
 		    !test_sta_flag(sta, WLAN_STA_TDLS_WIDER_BW) ||
@@ -834,7 +801,7 @@ static void ieee80211_recalc_radar_chanctx(struct ieee80211_local *local,
 	bool radar_enabled;
 
 	lockdep_assert_held(&local->chanctx_mtx);
-	/* for ieee80211_is_radar_required */
+	 
 	lockdep_assert_held(&local->mtx);
 
 	radar_enabled = ieee80211_chanctx_radar_required(local, chanctx);
@@ -876,7 +843,7 @@ static int ieee80211_assign_link_chanctx(struct ieee80211_link_data *link,
 	}
 
 	if (new_ctx) {
-		/* recalc considering the link we'll use it for now */
+		 
 		ieee80211_recalc_chanctx_min_def(local, new_ctx, link);
 
 		ret = drv_assign_vif_chanctx(local, sdata, link->conf, new_ctx);
@@ -982,7 +949,7 @@ void ieee80211_recalc_smps_chanctx(struct ieee80211_local *local,
 		}
 	}
 
-	/* Disable SMPS for the monitor interface */
+	 
 	sdata = rcu_dereference(local->monitor_sdata);
 	if (sdata &&
 	    rcu_access_pointer(sdata->vif.bss_conf.chanctx_conf) == &chanctx->conf)
@@ -1025,12 +992,7 @@ __ieee80211_link_copy_chanctx_to_vlans(struct ieee80211_link_data *link,
 
 	lockdep_assert_held(&local->mtx);
 
-	/* Check that conf exists, even when clearing this function
-	 * must be called with the AP's channel context still there
-	 * as it would otherwise cause VLANs to have an invalid
-	 * channel context pointer for a while, possibly pointing
-	 * to a channel context that has already been freed.
-	 */
+	 
 	conf = rcu_dereference_protected(link_conf->chanctx_conf,
 					 lockdep_is_held(&local->chanctx_mtx));
 	WARN_ON(!conf);
@@ -1125,28 +1087,7 @@ int ieee80211_link_reserve_chanctx(struct ieee80211_link_data *link,
 			    (curr_ctx->replace_state ==
 			     IEEE80211_CHANCTX_WILL_BE_REPLACED) ||
 			    !list_empty(&curr_ctx->reserved_links)) {
-				/*
-				 * Another link already requested this context
-				 * for a reservation. Find another one hoping
-				 * all links assigned to it will also switch
-				 * soon enough.
-				 *
-				 * TODO: This needs a little more work as some
-				 * cases (more than 2 chanctx capable devices)
-				 * may fail which could otherwise succeed
-				 * provided some channel context juggling was
-				 * performed.
-				 *
-				 * Consider ctx1..3, link1..6, each ctx has 2
-				 * links. link1 and link2 from ctx1 request new
-				 * different chandefs starting 2 in-place
-				 * reserations with ctx4 and ctx5 replacing
-				 * ctx1 and ctx2 respectively. Next link5 and
-				 * link6 from ctx3 reserve ctx4. If link3 and
-				 * link4 remain on ctx2 as they are then this
-				 * fails unless `replace_ctx` from ctx5 is
-				 * replaced with ctx3.
-				 */
+				 
 				list_for_each_entry(ctx, &local->chanctx_list,
 						    list) {
 					if (ctx->replace_state !=
@@ -1161,10 +1102,7 @@ int ieee80211_link_reserve_chanctx(struct ieee80211_link_data *link,
 				}
 			}
 
-			/*
-			 * If that's true then all available contexts already
-			 * have reservations and cannot be used.
-			 */
+			 
 			if (!curr_ctx ||
 			    (curr_ctx->replace_state ==
 			     IEEE80211_CHANCTX_WILL_BE_REPLACED) ||
@@ -1526,21 +1464,9 @@ static int ieee80211_vif_use_reserved_switch(struct ieee80211_local *local)
 	lockdep_assert_held(&local->mtx);
 	lockdep_assert_held(&local->chanctx_mtx);
 
-	/*
-	 * If there are 2 independent pairs of channel contexts performing
-	 * cross-switch of their vifs this code will still wait until both are
-	 * ready even though it could be possible to switch one before the
-	 * other is ready.
-	 *
-	 * For practical reasons and code simplicity just do a single huge
-	 * switch.
-	 */
+	 
 
-	/*
-	 * Verify if the reservation is still feasible.
-	 *  - if it's not then disconnect
-	 *  - if it is but not all vifs necessary are ready then defer
-	 */
+	 
 
 	list_for_each_entry(ctx, &local->chanctx_list, list) {
 		struct ieee80211_link_data *link;
@@ -1616,10 +1542,7 @@ static int ieee80211_vif_use_reserved_switch(struct ieee80211_local *local)
 		goto err;
 	}
 
-	/*
-	 * All necessary vifs are ready. Perform the switch now depending on
-	 * reservations and driver capabilities.
-	 */
+	 
 
 	if (local->use_chanctx) {
 		if (n_vifs_switch > 0) {
@@ -1639,10 +1562,7 @@ static int ieee80211_vif_use_reserved_switch(struct ieee80211_local *local)
 			goto err;
 	}
 
-	/*
-	 * Update all structures, values and pointers to point to new channel
-	 * context(s).
-	 */
+	 
 	list_for_each_entry(ctx, &local->chanctx_list, list) {
 		struct ieee80211_link_data *link, *link_tmp;
 
@@ -1704,13 +1624,7 @@ static int ieee80211_vif_use_reserved_switch(struct ieee80211_local *local)
 			ieee80211_link_chanctx_reservation_complete(link);
 		}
 
-		/*
-		 * This context might have been a dependency for an already
-		 * ready re-assign reservation interface that was deferred. Do
-		 * not propagate error to the caller though. The in-place
-		 * reservation for originally requested interface has already
-		 * succeeded at this point.
-		 */
+		 
 		list_for_each_entry_safe(link, link_tmp, &ctx->reserved_links,
 					 reserved_chanctx_list) {
 			if (WARN_ON(ieee80211_link_has_in_place_reservation(link)))
@@ -1739,9 +1653,7 @@ static int ieee80211_vif_use_reserved_switch(struct ieee80211_local *local)
 		}
 	}
 
-	/*
-	 * Finally free old contexts
-	 */
+	 
 
 	list_for_each_entry_safe(ctx, ctx_tmp, &local->chanctx_list, list) {
 		if (ctx->replace_state != IEEE80211_CHANCTX_WILL_BE_REPLACED)
@@ -1806,7 +1718,7 @@ static void __ieee80211_link_release_channel(struct ieee80211_link_data *link)
 
 	link->radar_required = false;
 
-	/* Unreserving may ready an in-place reservation. */
+	 
 	if (use_reserved_switch)
 		ieee80211_vif_use_reserved_switch(local);
 }
@@ -1860,7 +1772,7 @@ int ieee80211_link_use_channel(struct ieee80211_link_data *link,
 
 	ret = ieee80211_assign_link_chanctx(link, ctx);
 	if (ret) {
-		/* if assign fails refcount stays the same */
+		 
 		if (ieee80211_chanctx_refcount(local, ctx) == 0)
 			ieee80211_free_chanctx(local, ctx);
 		goto out;
@@ -1909,17 +1821,7 @@ int ieee80211_link_use_reserved_context(struct ieee80211_link_data *link)
 		return ieee80211_link_use_reserved_assign(link);
 	}
 
-	/*
-	 * In-place reservation may need to be finalized now either if:
-	 *  a) sdata is taking part in the swapping itself and is the last one
-	 *  b) sdata has switched with a re-assign reservation to an existing
-	 *     context readying in-place switching of old_ctx
-	 *
-	 * In case of (b) do not propagate the error up because the requested
-	 * sdata already switched successfully. Just spill an extra warning.
-	 * The ieee80211_vif_use_reserved_switch() already stops all necessary
-	 * interfaces upon failure.
-	 */
+	 
 	if ((old_ctx &&
 	     old_ctx->replace_state == IEEE80211_CHANCTX_WILL_BE_REPLACED) ||
 	    new_ctx->replace_state == IEEE80211_CHANCTX_REPLACES_OTHER) {
@@ -1989,14 +1891,11 @@ int ieee80211_link_change_bandwidth(struct ieee80211_link_data *link,
 		}
 		break;
 	case IEEE80211_CHANCTX_WILL_BE_REPLACED:
-		/* TODO: Perhaps the bandwidth change could be treated as a
-		 * reservation itself? */
+		 
 		ret = -EBUSY;
 		goto out;
 	case IEEE80211_CHANCTX_REPLACES_OTHER:
-		/* channel context that is going to replace another channel
-		 * context doesn't really exist and shouldn't be assigned
-		 * anywhere yet */
+		 
 		WARN_ON(1);
 		break;
 	}

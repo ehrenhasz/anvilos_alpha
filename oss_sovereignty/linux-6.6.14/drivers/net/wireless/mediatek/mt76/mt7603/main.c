@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: ISC
+
 
 #include <linux/etherdevice.h>
 #include <linux/platform_device.h>
@@ -115,10 +115,10 @@ mt7603_remove_interface(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
 
 void mt7603_init_edcca(struct mt7603_dev *dev)
 {
-	/* Set lower signal level to -65dBm */
+	 
 	mt76_rmw_field(dev, MT_RXTD(8), MT_RXTD_8_LOWER_SIGNAL, 0x23);
 
-	/* clear previous energy detect monitor results */
+	 
 	mt76_rr(dev, MT_MIB_STAT_ED);
 
 	if (dev->ed_monitor)
@@ -187,7 +187,7 @@ mt7603_set_channel(struct ieee80211_hw *hw, struct cfg80211_chan_def *def)
 	ieee80211_queue_delayed_work(mt76_hw(dev), &dev->mphy.mac_work,
 				     msecs_to_jiffies(MT7603_WATCHDOG_TIME));
 
-	/* reset channel stats */
+	 
 	mt76_clear(dev, MT_MIB_CTL, MT_MIB_CTL_READ_CLR_DIS);
 	mt76_set(dev, MT_MIB_CTL,
 		 MT_MIB_CTL_CCA_NAV_TX | MT_MIB_CTL_PSCCA_TIME);
@@ -495,7 +495,7 @@ mt7603_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 	struct mt76_wcid *wcid = &msta->wcid;
 	int idx = key->keyidx;
 
-	/* fall back to sw encryption for unsupported ciphers */
+	 
 	switch (key->cipher) {
 	case WLAN_CIPHER_SUITE_TKIP:
 	case WLAN_CIPHER_SUITE_CCMP:
@@ -504,10 +504,7 @@ mt7603_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 		return -EOPNOTSUPP;
 	}
 
-	/*
-	 * The hardware does not support per-STA RX GTK, fall back
-	 * to software mode for these.
-	 */
+	 
 	if ((vif->type == NL80211_IFTYPE_ADHOC ||
 	     vif->type == NL80211_IFTYPE_MESH_POINT) &&
 	    (key->cipher == WLAN_CIPHER_SUITE_TKIP ||

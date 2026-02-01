@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * acl.c
- *
- * Copyright (C) 2004, 2008 Oracle.  All rights reserved.
- *
- * CREDITS:
- * Lots of code in this file is copy from linux/fs/ext3/acl.c.
- * Copyright (C) 2001-2003 Andreas Gruenbacher, <agruen@suse.de>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -27,9 +19,7 @@
 #include "xattr.h"
 #include "acl.h"
 
-/*
- * Convert from xattr value to acl struct.
- */
+ 
 static struct posix_acl *ocfs2_acl_from_xattr(const void *value, size_t size)
 {
 	int n, count;
@@ -71,9 +61,7 @@ static struct posix_acl *ocfs2_acl_from_xattr(const void *value, size_t size)
 	return acl;
 }
 
-/*
- * Convert acl struct to xattr value.
- */
+ 
 static void *ocfs2_acl_to_xattr(const struct posix_acl *acl, size_t *size)
 {
 	struct ocfs2_acl_entry *entry = NULL;
@@ -150,11 +138,7 @@ static struct posix_acl *ocfs2_get_acl_nolock(struct inode *inode,
 	return acl;
 }
 
-/*
- * Helper function to set i_mode in memory and disk. Some call paths
- * will not have di_bh or a journal handle to pass, in which case it
- * will create it's own.
- */
+ 
 static int ocfs2_acl_set_mode(struct inode *inode, struct buffer_head *di_bh,
 			      handle_t *handle, umode_t new_mode)
 {
@@ -208,9 +192,7 @@ out:
 	return ret;
 }
 
-/*
- * Set the access or default ACL of an inode.
- */
+ 
 static int ocfs2_set_acl(handle_t *handle,
 			 struct inode *inode,
 			 struct buffer_head *di_bh,
@@ -344,10 +326,7 @@ int ocfs2_acl_chmod(struct inode *inode, struct buffer_head *bh)
 	return ret;
 }
 
-/*
- * Initialize the ACLs of a new inode. If parent directory has default ACL,
- * then clone to new inode. Called from ocfs2_mknod.
- */
+ 
 int ocfs2_init_acl(handle_t *handle,
 		   struct inode *inode,
 		   struct inode *dir,

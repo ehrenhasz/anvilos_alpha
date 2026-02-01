@@ -1,18 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Samsung EXYNOS4x12 FIMC-IS (Imaging Subsystem) driver
- *
- * Copyright (C) 2011 - 2013 Samsung Electronics Co., Ltd.
- *
- * Authors: Younghwan Joo <yhwan.joo@samsung.com>
- *	    Sylwester Nawrocki <s.nawrocki@samsung.com>
- */
+ 
+ 
 #ifndef FIMC_IS_PARAM_H_
 #define FIMC_IS_PARAM_H_
 
 #include <linux/compiler.h>
 
-#define FIMC_IS_CONFIG_TIMEOUT		3000 /* ms */
+#define FIMC_IS_CONFIG_TIMEOUT		3000  
 #define IS_DEFAULT_WIDTH		1280
 #define IS_DEFAULT_HEIGHT		720
 
@@ -30,13 +23,13 @@
 #define DEFAULT_PREVIEW_VIDEO_FRAMERATE	30
 #define DEFAULT_CAPTURE_VIDEO_FRAMERATE	30
 
-#define FIMC_IS_REGION_VER		124 /* IS REGION VERSION 1.24 */
+#define FIMC_IS_REGION_VER		124  
 #define FIMC_IS_PARAM_SIZE		(FIMC_IS_REGION_SIZE + 1)
 #define FIMC_IS_MAGIC_NUMBER		0x01020304
-#define FIMC_IS_PARAM_MAX_SIZE		64 /* in bytes */
+#define FIMC_IS_PARAM_MAX_SIZE		64  
 #define FIMC_IS_PARAM_MAX_ENTRIES	(FIMC_IS_PARAM_MAX_SIZE / 4)
 
-/* The parameter bitmask bit definitions. */
+ 
 enum is_param_bit {
 	PARAM_GLOBAL_SHOTMODE,
 	PARAM_SENSOR_CONTROL,
@@ -48,7 +41,7 @@ enum is_param_bit {
 	PARAM_ISP_CONTROL,
 	PARAM_ISP_OTF_INPUT,
 	PARAM_ISP_DMA1_INPUT,
-	/* 10 */
+	 
 	PARAM_ISP_DMA2_INPUT,
 	PARAM_ISP_AA,
 	PARAM_ISP_FLASH,
@@ -59,7 +52,7 @@ enum is_param_bit {
 	PARAM_ISP_METERING,
 	PARAM_ISP_AFC,
 	PARAM_ISP_OTF_OUTPUT,
-	/* 20 */
+	 
 	PARAM_ISP_DMA1_OUTPUT,
 	PARAM_ISP_DMA2_OUTPUT,
 	PARAM_DRC_CONTROL,
@@ -70,7 +63,7 @@ enum is_param_bit {
 	PARAM_SCALERC_OTF_INPUT,
 	PARAM_SCALERC_IMAGE_EFFECT,
 	PARAM_SCALERC_INPUT_CROP,
-	/* 30 */
+	 
 	PARAM_SCALERC_OUTPUT_CROP,
 	PARAM_SCALERC_OTF_OUTPUT,
 	PARAM_SCALERC_DMA_OUTPUT,
@@ -81,7 +74,7 @@ enum is_param_bit {
 	PARAM_DIS_OTF_INPUT,
 	PARAM_DIS_OTF_OUTPUT,
 	PARAM_TDNR_CONTROL,
-	/* 40 */
+	 
 	PARAM_TDNR_OTF_INPUT,
 	PARAM_TDNR_1ST_FRAME,
 	PARAM_TDNR_OTF_OUTPUT,
@@ -92,7 +85,7 @@ enum is_param_bit {
 	PARAM_SCALERP_INPUT_CROP,
 	PARAM_SCALERP_OUTPUT_CROP,
 	PARAM_SCALERP_ROTATION,
-	/* 50 */
+	 
 	PARAM_SCALERP_FLIP,
 	PARAM_SCALERP_OTF_OUTPUT,
 	PARAM_SCALERP_DMA_OUTPUT,
@@ -102,11 +95,11 @@ enum is_param_bit {
 	PARAM_FD_CONFIG,
 };
 
-/* Interrupt map */
+ 
 #define	FIMC_IS_INT_GENERAL			0
 #define	FIMC_IS_INT_FRAME_DONE_ISP		1
 
-/* Input */
+ 
 
 #define CONTROL_COMMAND_STOP			0
 #define CONTROL_COMMAND_START			1
@@ -116,30 +109,30 @@ enum is_param_bit {
 
 #define CONTROL_ERROR_NONE			0
 
-/* OTF (On-The-Fly) input interface commands */
+ 
 #define OTF_INPUT_COMMAND_DISABLE		0
 #define OTF_INPUT_COMMAND_ENABLE		1
 
-/* OTF input interface color formats */
+ 
 enum oft_input_fmt {
-	OTF_INPUT_FORMAT_BAYER			= 0, /* 1 channel */
-	OTF_INPUT_FORMAT_YUV444			= 1, /* 3 channels */
-	OTF_INPUT_FORMAT_YUV422			= 2, /* 3 channels */
-	OTF_INPUT_FORMAT_YUV420			= 3, /* 3 channels */
+	OTF_INPUT_FORMAT_BAYER			= 0,  
+	OTF_INPUT_FORMAT_YUV444			= 1,  
+	OTF_INPUT_FORMAT_YUV422			= 2,  
+	OTF_INPUT_FORMAT_YUV420			= 3,  
 	OTF_INPUT_FORMAT_STRGEN_COLORBAR_BAYER	= 10,
 	OTF_INPUT_FORMAT_BAYER_DMA		= 11,
 };
 
 #define OTF_INPUT_ORDER_BAYER_GR_BG		0
 
-/* OTF input error codes */
-#define OTF_INPUT_ERROR_NONE			0 /* Input setting is done */
+ 
+#define OTF_INPUT_ERROR_NONE			0  
 
-/* DMA input commands */
+ 
 #define DMA_INPUT_COMMAND_DISABLE		0
 #define DMA_INPUT_COMMAND_ENABLE		1
 
-/* DMA input color formats */
+ 
 enum dma_input_fmt {
 	DMA_INPUT_FORMAT_BAYER			= 0,
 	DMA_INPUT_FORMAT_YUV444			= 1,
@@ -148,33 +141,30 @@ enum dma_input_fmt {
 };
 
 enum dma_input_order {
-	/* (for DMA_INPUT_PLANE_3) */
+	 
 	DMA_INPUT_ORDER_NO	= 0,
-	/* (only valid at DMA_INPUT_PLANE_2) */
+	 
 	DMA_INPUT_ORDER_CBCR	= 1,
-	/* (only valid at DMA_INPUT_PLANE_2) */
+	 
 	DMA_INPUT_ORDER_CRCB	= 2,
-	/* (only valid at DMA_INPUT_PLANE_1 & DMA_INPUT_FORMAT_YUV444) */
+	 
 	DMA_INPUT_ORDER_YCBCR	= 3,
-	/* (only valid at DMA_INPUT_FORMAT_YUV422 & DMA_INPUT_PLANE_1) */
+	 
 	DMA_INPUT_ORDER_YYCBCR	= 4,
-	/* (only valid at DMA_INPUT_FORMAT_YUV422 & DMA_INPUT_PLANE_1) */
+	 
 	DMA_INPUT_ORDER_YCBYCR	= 5,
-	/* (only valid at DMA_INPUT_FORMAT_YUV422 & DMA_INPUT_PLANE_1) */
+	 
 	DMA_INPUT_ORDER_YCRYCB	= 6,
-	/* (only valid at DMA_INPUT_FORMAT_YUV422 & DMA_INPUT_PLANE_1) */
+	 
 	DMA_INPUT_ORDER_CBYCRY	= 7,
-	/* (only valid at DMA_INPUT_FORMAT_YUV422 & DMA_INPUT_PLANE_1) */
+	 
 	DMA_INPUT_ORDER_CRYCBY	= 8,
-	/* (only valid at DMA_INPUT_FORMAT_BAYER) */
+	 
 	DMA_INPUT_ORDER_GR_BG	= 9
 };
 
-#define DMA_INPUT_ERROR_NONE			0 /* DMA input setting
-						     is done */
-/*
- * Data output parameter definitions
- */
+#define DMA_INPUT_ERROR_NONE			0  
+ 
 #define OTF_OUTPUT_CROP_DISABLE			0
 #define OTF_OUTPUT_CROP_ENABLE			1
 
@@ -190,7 +180,7 @@ enum otf_output_fmt {
 
 #define OTF_OUTPUT_ORDER_BAYER_GR_BG		0
 
-#define OTF_OUTPUT_ERROR_NONE			0 /* Output Setting is done */
+#define OTF_OUTPUT_ERROR_NONE			0  
 
 #define DMA_OUTPUT_COMMAND_DISABLE		0
 #define DMA_OUTPUT_COMMAND_ENABLE		1
@@ -205,55 +195,53 @@ enum dma_output_fmt {
 
 enum dma_output_order {
 	DMA_OUTPUT_ORDER_NO		= 0,
-	/* for DMA_OUTPUT_PLANE_3 */
+	 
 	DMA_OUTPUT_ORDER_CBCR		= 1,
-	/* only valid at DMA_INPUT_PLANE_2) */
+	 
 	DMA_OUTPUT_ORDER_CRCB		= 2,
-	/* only valid at DMA_OUTPUT_PLANE_2) */
+	 
 	DMA_OUTPUT_ORDER_YYCBCR		= 3,
-	/* only valid at DMA_OUTPUT_FORMAT_YUV422 & DMA_OUTPUT_PLANE_1 */
+	 
 	DMA_OUTPUT_ORDER_YCBYCR		= 4,
-	/* only valid at DMA_OUTPUT_FORMAT_YUV422 & DMA_OUTPUT_PLANE_1 */
+	 
 	DMA_OUTPUT_ORDER_YCRYCB		= 5,
-	/* only valid at DMA_OUTPUT_FORMAT_YUV422 & DMA_OUTPUT_PLANE_1 */
+	 
 	DMA_OUTPUT_ORDER_CBYCRY		= 6,
-	/* only valid at DMA_OUTPUT_FORMAT_YUV422 & DMA_OUTPUT_PLANE_1 */
+	 
 	DMA_OUTPUT_ORDER_CRYCBY		= 7,
-	/* only valid at DMA_OUTPUT_FORMAT_YUV422 & DMA_OUTPUT_PLANE_1 */
+	 
 	DMA_OUTPUT_ORDER_YCBCR		= 8,
-	/* only valid at DMA_OUTPUT_FORMAT_YUV444 & DMA_OUPUT_PLANE_1 */
+	 
 	DMA_OUTPUT_ORDER_CRYCB		= 9,
-	/* only valid at DMA_OUTPUT_FORMAT_YUV444 & DMA_OUPUT_PLANE_1 */
+	 
 	DMA_OUTPUT_ORDER_CRCBY		= 10,
-	/* only valid at DMA_OUTPUT_FORMAT_YUV444 & DMA_OUPUT_PLANE_1 */
+	 
 	DMA_OUTPUT_ORDER_CBYCR		= 11,
-	/* only valid at DMA_OUTPUT_FORMAT_YUV444 & DMA_OUPUT_PLANE_1 */
+	 
 	DMA_OUTPUT_ORDER_YCRCB		= 12,
-	/* only valid at DMA_OUTPUT_FORMAT_YUV444 & DMA_OUPUT_PLANE_1 */
+	 
 	DMA_OUTPUT_ORDER_CBCRY		= 13,
-	/* only valid at DMA_OUTPUT_FORMAT_YUV444 & DMA_OUPUT_PLANE_1 */
+	 
 	DMA_OUTPUT_ORDER_BGR		= 14,
-	/* only valid at DMA_OUTPUT_FORMAT_RGB */
+	 
 	DMA_OUTPUT_ORDER_GB_BG		= 15
-	/* only valid at DMA_OUTPUT_FORMAT_BAYER */
+	 
 };
 
-/* enum dma_output_notify_dma_done */
+ 
 #define DMA_OUTPUT_NOTIFY_DMA_DONE_DISABLE	0
 #define DMA_OUTPUT_NOTIFY_DMA_DONE_ENABLE	1
 
-/* DMA output error codes */
-#define DMA_OUTPUT_ERROR_NONE			0 /* DMA output setting
-						     is done */
+ 
+#define DMA_OUTPUT_ERROR_NONE			0  
 
-/* ----------------------  Global  ----------------------------------- */
-#define GLOBAL_SHOTMODE_ERROR_NONE		0 /* shot-mode setting
-						     is done */
-/* 3A lock commands */
+ 
+#define GLOBAL_SHOTMODE_ERROR_NONE		0  
+ 
 #define ISP_AA_COMMAND_START			0
 #define ISP_AA_COMMAND_STOP			1
 
-/* 3A lock target */
+ 
 #define ISP_AA_TARGET_AF			1
 #define ISP_AA_TARGET_AE			2
 #define ISP_AA_TARGET_AWB			4
@@ -269,40 +257,40 @@ enum isp_af_mode {
 	ISP_AF_MODE_SET_TOUCH_WINDOW		= 7
 };
 
-/* Face AF commands */
+ 
 #define ISP_AF_FACE_DISABLE			0
 #define ISP_AF_FACE_ENABLE			1
 
-/* AF range */
+ 
 #define ISP_AF_RANGE_NORMAL			0
 #define ISP_AF_RANGE_MACRO			1
 
-/* AF sleep */
+ 
 #define ISP_AF_SLEEP_OFF			0
 #define ISP_AF_SLEEP_ON				1
 
-/* Continuous AF commands */
+ 
 #define ISP_AF_CONTINUOUS_DISABLE		0
 #define ISP_AF_CONTINUOUS_ENABLE		1
 
-/* ISP AF error codes */
-#define ISP_AF_ERROR_NONE			0 /* AF mode change is done */
-#define ISP_AF_ERROR_NONE_LOCK_DONE		1 /* AF lock is done */
+ 
+#define ISP_AF_ERROR_NONE			0  
+#define ISP_AF_ERROR_NONE_LOCK_DONE		1  
 
-/* Flash commands */
+ 
 #define ISP_FLASH_COMMAND_DISABLE		0
-#define ISP_FLASH_COMMAND_MANUAL_ON		1 /* (forced flash) */
+#define ISP_FLASH_COMMAND_MANUAL_ON		1  
 #define ISP_FLASH_COMMAND_AUTO			2
-#define ISP_FLASH_COMMAND_TORCH			3 /* 3 sec */
+#define ISP_FLASH_COMMAND_TORCH			3  
 
-/* Flash red-eye commands */
+ 
 #define ISP_FLASH_REDEYE_DISABLE		0
 #define ISP_FLASH_REDEYE_ENABLE			1
 
-/* Flash error codes */
-#define ISP_FLASH_ERROR_NONE			0 /* Flash setting is done */
+ 
+#define ISP_FLASH_ERROR_NONE			0  
 
-/* --------------------------  AWB  ------------------------------------ */
+ 
 enum isp_awb_command {
 	ISP_AWB_COMMAND_AUTO			= 0,
 	ISP_AWB_COMMAND_ILLUMINATION		= 1,
@@ -316,10 +304,10 @@ enum isp_awb_illumination {
 	ISP_AWB_ILLUMINATION_FLUORESCENT	= 3
 };
 
-/* ISP AWN error codes */
-#define ISP_AWB_ERROR_NONE			0 /* AWB setting is done */
+ 
+#define ISP_AWB_ERROR_NONE			0  
 
-/* --------------------------  Effect  ----------------------------------- */
+ 
 enum isp_imageeffect_command {
 	ISP_IMAGE_EFFECT_DISABLE		= 0,
 	ISP_IMAGE_EFFECT_MONOCHROME		= 1,
@@ -328,17 +316,16 @@ enum isp_imageeffect_command {
 	ISP_IMAGE_EFFECT_SEPIA			= 4
 };
 
-/* Image effect error codes */
-#define ISP_IMAGE_EFFECT_ERROR_NONE		0 /* Image effect setting
-						     is done */
-/* ISO commands */
+ 
+#define ISP_IMAGE_EFFECT_ERROR_NONE		0  
+ 
 #define ISP_ISO_COMMAND_AUTO			0
 #define ISP_ISO_COMMAND_MANUAL			1
 
-/* ISO error codes */
-#define ISP_ISO_ERROR_NONE			0 /* ISO setting is done */
+ 
+#define ISP_ISO_ERROR_NONE			0  
 
-/* ISP adjust commands */
+ 
 #define ISP_ADJUST_COMMAND_AUTO			(0 << 0)
 #define ISP_ADJUST_COMMAND_MANUAL_CONTRAST	(1 << 0)
 #define ISP_ADJUST_COMMAND_MANUAL_SATURATION	(1 << 1)
@@ -348,12 +335,10 @@ enum isp_imageeffect_command {
 #define ISP_ADJUST_COMMAND_MANUAL_HUE		(1 << 5)
 #define ISP_ADJUST_COMMAND_MANUAL_ALL		0x7f
 
-/* ISP adjustment error codes */
-#define ISP_ADJUST_ERROR_NONE			0 /* Adjust setting is done */
+ 
+#define ISP_ADJUST_ERROR_NONE			0  
 
-/*
- *  Exposure metering
- */
+ 
 enum isp_metering_command {
 	ISP_METERING_COMMAND_AVERAGE	= 0,
 	ISP_METERING_COMMAND_SPOT	= 1,
@@ -361,12 +346,10 @@ enum isp_metering_command {
 	ISP_METERING_COMMAND_CENTER	= 3
 };
 
-/* ISP metering error codes */
-#define ISP_METERING_ERROR_NONE		0 /* Metering setting is done */
+ 
+#define ISP_METERING_ERROR_NONE		0  
 
-/*
- * AFC
- */
+ 
 enum isp_afc_command {
 	ISP_AFC_COMMAND_DISABLE		= 0,
 	ISP_AFC_COMMAND_AUTO		= 1,
@@ -376,7 +359,7 @@ enum isp_afc_command {
 #define ISP_AFC_MANUAL_50HZ		50
 #define ISP_AFC_MANUAL_60HZ		60
 
-/* ------------------------  SCENE MODE--------------------------------- */
+ 
 enum isp_scene_mode {
 	ISP_SCENE_NONE			= 0,
 	ISP_SCENE_PORTRAIT		= 1,
@@ -395,10 +378,10 @@ enum isp_scene_mode {
 	ISP_SCENE_CANDLE		= 14
 };
 
-/* AFC error codes */
-#define ISP_AFC_ERROR_NONE		0 /* AFC setting is done */
+ 
+#define ISP_AFC_ERROR_NONE		0  
 
-/* ----------------------------  FD  ------------------------------------- */
+ 
 enum fd_config_command {
 	FD_CONFIG_COMMAND_MAXIMUM_NUMBER	= 0x1,
 	FD_CONFIG_COMMAND_ROLL_ANGLE		= 0x2,
@@ -427,19 +410,19 @@ enum fd_config_yaw_angle {
 	FD_CONFIG_YAW_ANGLE_45_90		= 3,
 };
 
-/* Smile mode configuration */
+ 
 #define FD_CONFIG_SMILE_MODE_DISABLE		0
 #define FD_CONFIG_SMILE_MODE_ENABLE		1
 
-/* Blink mode configuration */
+ 
 #define FD_CONFIG_BLINK_MODE_DISABLE		0
 #define FD_CONFIG_BLINK_MODE_ENABLE		1
 
-/* Eyes detection configuration */
+ 
 #define FD_CONFIG_EYES_DETECT_DISABLE		0
 #define FD_CONFIG_EYES_DETECT_ENABLE		1
 
-/* Mouth detection configuration */
+ 
 #define FD_CONFIG_MOUTH_DETECT_DISABLE		0
 #define FD_CONFIG_MOUTH_DETECT_ENABLE		1
 
@@ -451,7 +434,7 @@ struct param_control {
 	u32 bypass;
 	u32 buffer_address;
 	u32 buffer_size;
-	u32 skip_frames; /* only valid at ISP */
+	u32 skip_frames;  
 	u32 reserved[FIMC_IS_PARAM_MAX_ENTRIES - 6];
 	u32 err;
 };
@@ -784,25 +767,25 @@ struct is_tune_gammacurve {
 };
 
 struct is_tune_isp {
-	/* Brightness level: range 0...100, default 7. */
+	 
 	u32 brightness_level;
-	/* Contrast level: range -127...127, default 0. */
+	 
 	s32 contrast_level;
-	/* Saturation level: range -127...127, default 0. */
+	 
 	s32 saturation_level;
 	s32 gamma_level;
 	struct is_tune_gammacurve gamma_curve[4];
-	/* Hue: range -127...127, default 0. */
+	 
 	s32 hue;
-	/* Sharpness blur: range -127...127, default 0. */
+	 
 	s32 sharpness_blur;
-	/* Despeckle : range -127~127, default : 0 */
+	 
 	s32 despeckle;
-	/* Edge color supression: range -127...127, default 0. */
+	 
 	s32 edge_color_supression;
-	/* Noise reduction: range -127...127, default 0. */
+	 
 	s32 noise_reduction;
-	/* (32 * 4 + 9) * 4 = 548 bytes */
+	 
 } __packed;
 
 struct is_tune_region {
@@ -908,7 +891,7 @@ struct is_region {
 	u32 shared[MAX_SHARED_COUNT];
 } __packed;
 
-/* Offset to the ISP DMA2 output buffer address array. */
+ 
 #define DMA2_OUTPUT_ADDR_ARRAY_OFFS \
 	(offsetof(struct is_region, shared) + 32 * sizeof(u32))
 
@@ -916,7 +899,7 @@ struct is_debug_frame_descriptor {
 	u32 sensor_frame_time;
 	u32 sensor_exposure_time;
 	s32 sensor_analog_gain;
-	/* monitor for AA */
+	 
 	u32 req_lei;
 
 	u32 next_next_lei_exp;
@@ -928,7 +911,7 @@ struct is_debug_frame_descriptor {
 	u32 dummy0;
 };
 
-#define MAX_FRAMEDESCRIPTOR_CONTEXT_NUM	(30*20)	/* 600 frames */
+#define MAX_FRAMEDESCRIPTOR_CONTEXT_NUM	(30*20)	 
 #define MAX_VERSION_DISPLAY_BUF	32
 
 struct is_share_region {
@@ -942,11 +925,11 @@ struct is_share_region {
 
 	u32 af_position;
 	u32 af_status;
-	/* 0 : SIRC_ISP_CAMERA_AUTOFOCUSMESSAGE_NOMESSAGE */
-	/* 1 : SIRC_ISP_CAMERA_AUTOFOCUSMESSAGE_REACHED */
-	/* 2 : SIRC_ISP_CAMERA_AUTOFOCUSMESSAGE_UNABLETOREACH */
-	/* 3 : SIRC_ISP_CAMERA_AUTOFOCUSMESSAGE_LOST */
-	/* default : unknown */
+	 
+	 
+	 
+	 
+	 
 	u32 af_scene_type;
 
 	u32 frame_descp_onoff_control;
@@ -966,10 +949,10 @@ struct is_share_region {
 } __packed;
 
 struct is_debug_control {
-	u32 write_point;	/* 0~ 500KB boundary */
-	u32 assert_flag;	/* 0: Not invoked, 1: Invoked */
-	u32 pabort_flag;	/* 0: Not invoked, 1: Invoked */
-	u32 dabort_flag;	/* 0: Not invoked, 1: Invoked */
+	u32 write_point;	 
+	u32 assert_flag;	 
+	u32 pabort_flag;	 
+	u32 dabort_flag;	 
 };
 
 struct sensor_open_extended {
@@ -977,12 +960,12 @@ struct sensor_open_extended {
 	u32 mclk;
 	u32 mipi_lane_num;
 	u32 mipi_speed;
-	/* Skip setfile loading when fast_open_sensor is not 0 */
+	 
 	u32 fast_open_sensor;
-	/* Activating sensor self calibration mode (6A3) */
+	 
 	u32 self_calibration_mode;
-	/* This field is to adjust I2c clock based on ACLK200 */
-	/* This value is varied in case of rev 0.2 */
+	 
+	 
 	u32 i2c_sclk;
 };
 

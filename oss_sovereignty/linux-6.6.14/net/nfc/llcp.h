@@ -1,10 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2011  Intel Corporation. All rights reserved.
- */
+ 
+ 
 
 enum llcp_state {
-	LLCP_CONNECTED = 1, /* wait_for_packet() wants that */
+	LLCP_CONNECTED = 1,  
 	LLCP_CONNECTING,
 	LLCP_CLOSED,
 	LLCP_BOUND,
@@ -68,16 +66,16 @@ struct nfc_llcp_local {
 	u8 lto;
 	u8 rw;
 	__be16 miux;
-	unsigned long local_wks;      /* Well known services */
-	unsigned long local_sdp;      /* Local services  */
-	unsigned long local_sap; /* Local SAPs, not available for discovery */
+	unsigned long local_wks;       
+	unsigned long local_sdp;       
+	unsigned long local_sap;  
 	atomic_t local_sdp_cnt[LLCP_SDP_NUM_SAP];
 
-	/* local */
+	 
 	u8 gb[NFC_MAX_GT_LEN];
 	u8 gb_len;
 
-	/* remote */
+	 
 	u8 remote_gb[NFC_MAX_GT_LEN];
 	u8 remote_gb_len;
 
@@ -93,7 +91,7 @@ struct nfc_llcp_local {
 	struct work_struct sdreq_timeout_work;
 	u8 sdreq_next_tid;
 
-	/* sockets array */
+	 
 	struct llcp_sock_list sockets;
 	struct llcp_sock_list connecting_sockets;
 	struct llcp_sock_list raw_sockets;
@@ -106,7 +104,7 @@ struct nfc_llcp_sock {
 	u32 target_idx;
 	u32 nfc_protocol;
 
-	/* Link parameters */
+	 
 	u8 ssap;
 	u8 dsap;
 	char *service_name;
@@ -115,20 +113,20 @@ struct nfc_llcp_sock {
 	__be16 miux;
 
 
-	/* Remote link parameters */
+	 
 	u8 remote_rw;
 	u16 remote_miu;
 
-	/* Link variables */
+	 
 	u8 send_n;
 	u8 send_ack_n;
 	u8 recv_n;
 	u8 recv_ack_n;
 
-	/* Is the remote peer ready to receive */
+	 
 	u8 remote_ready;
 
-	/* Reserved source SAP */
+	 
 	u8 reserved_ssap;
 
 	struct sk_buff_head tx_queue;
@@ -152,11 +150,11 @@ struct nfc_llcp_ui_cb {
 #define LLCP_SEQUENCE_SIZE 1
 #define LLCP_AGF_PDU_HEADER_SIZE 2
 
-/* LLCP versions: 1.1 is 1.0 plus SDP */
+ 
 #define LLCP_VERSION_10 0x10
 #define LLCP_VERSION_11 0x11
 
-/* LLCP PDU types */
+ 
 #define LLCP_PDU_SYMM     0x0
 #define LLCP_PDU_PAX      0x1
 #define LLCP_PDU_AGF      0x2
@@ -171,7 +169,7 @@ struct nfc_llcp_ui_cb {
 #define LLCP_PDU_RR       0xd
 #define LLCP_PDU_RNR      0xe
 
-/* Parameters TLV types */
+ 
 #define LLCP_TLV_VERSION 0x1
 #define LLCP_TLV_MIUX    0x2
 #define LLCP_TLV_WKS     0x3
@@ -183,14 +181,14 @@ struct nfc_llcp_ui_cb {
 #define LLCP_TLV_SDRES   0x9
 #define LLCP_TLV_MAX     0xa
 
-/* Well known LLCP SAP */
+ 
 #define LLCP_SAP_SDP   0x1
 #define LLCP_SAP_IP    0x2
 #define LLCP_SAP_OBEX  0x3
 #define LLCP_SAP_SNEP  0x4
 #define LLCP_SAP_MAX   0xff
 
-/* Disconnection reason code */
+ 
 #define LLCP_DM_DISC    0x00
 #define LLCP_DM_NOCONN  0x01
 #define LLCP_DM_NOBOUND 0x02
@@ -210,20 +208,20 @@ int nfc_llcp_queue_i_frames(struct nfc_llcp_sock *sock);
 void nfc_llcp_send_to_raw_sock(struct nfc_llcp_local *local,
 			       struct sk_buff *skb, u8 direction);
 
-/* Sock API */
+ 
 struct sock *nfc_llcp_sock_alloc(struct socket *sock, int type, gfp_t gfp, int kern);
 void nfc_llcp_sock_free(struct nfc_llcp_sock *sock);
 void nfc_llcp_accept_unlink(struct sock *sk);
 void nfc_llcp_accept_enqueue(struct sock *parent, struct sock *sk);
 struct sock *nfc_llcp_accept_dequeue(struct sock *sk, struct socket *newsock);
 
-/* TLV API */
+ 
 int nfc_llcp_parse_gb_tlv(struct nfc_llcp_local *local,
 			  const u8 *tlv_array, u16 tlv_array_len);
 int nfc_llcp_parse_connection_tlv(struct nfc_llcp_sock *sock,
 				  const u8 *tlv_array, u16 tlv_array_len);
 
-/* Commands API */
+ 
 void nfc_llcp_recv(void *data, struct sk_buff *skb, int err);
 u8 *nfc_llcp_build_tlv(u8 type, const u8 *value, u8 value_length, u8 *tlv_length);
 struct nfc_llcp_sdp_tlv *nfc_llcp_build_sdres_tlv(u8 tid, u8 sap);
@@ -247,6 +245,6 @@ int nfc_llcp_send_ui_frame(struct nfc_llcp_sock *sock, u8 ssap, u8 dsap,
 			   struct msghdr *msg, size_t len);
 int nfc_llcp_send_rr(struct nfc_llcp_sock *sock);
 
-/* Socket API */
+ 
 int __init nfc_llcp_sock_init(void);
 void nfc_llcp_sock_exit(void);

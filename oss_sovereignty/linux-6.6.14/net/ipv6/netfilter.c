@@ -1,9 +1,4 @@
-/*
- * IPv6 specific functions of netfilter core
- *
- * Rusty Russell (C) 2000 -- This code is GPL.
- * Patrick McHardy (C) 2006-2012
- */
+ 
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/ipv6.h>
@@ -54,7 +49,7 @@ int ip6_route_me_harder(struct net *net, struct sock *sk_partial, struct sk_buff
 		return err;
 	}
 
-	/* Drop old route. */
+	 
 	skb_dst_drop(skb);
 
 	skb_dst_set(skb, dst);
@@ -70,7 +65,7 @@ int ip6_route_me_harder(struct net *net, struct sock *sk_partial, struct sk_buff
 	}
 #endif
 
-	/* Change in oif may mean change in hh_len. */
+	 
 	hh_len = skb_dst(skb)->dev->hard_header_len;
 	if (skb_headroom(skb) < hh_len &&
 	    pskb_expand_head(skb, HH_DATA_ALIGN(hh_len - skb_headroom(skb)),
@@ -101,7 +96,7 @@ int __nf_ip6_route(struct net *net, struct dst_entry **dst,
 {
 	static const struct ipv6_pinfo fake_pinfo;
 	static const struct inet_sock fake_sk = {
-		/* makes ip6_route_output set RT6_LOOKUP_F_IFACE: */
+		 
 		.sk.sk_bound_dev_if = 1,
 		.pinet6 = (struct ipv6_pinfo *) &fake_pinfo,
 	};
@@ -175,7 +170,7 @@ int br_ip6_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
 			    skb_headroom(frag2) < (hlen + hroom + sizeof(struct frag_hdr)))
 				goto blackhole;
 
-			/* Partially cloned skb? */
+			 
 			if (skb_shared(frag2))
 				goto slow_path;
 		}
@@ -186,9 +181,7 @@ int br_ip6_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
 			goto blackhole;
 
 		for (;;) {
-			/* Prepare header of the next frame,
-			 * before previous one went down.
-			 */
+			 
 			if (iter.frag)
 				ip6_fraglist_prepare(skb, &iter);
 
@@ -208,10 +201,7 @@ int br_ip6_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
 		return err;
 	}
 slow_path:
-	/* This is a linearized skbuff, the original geometry is lost for us.
-	 * This may also be a clone skbuff, we could preserve the geometry for
-	 * the copies but probably not worth the effort.
-	 */
+	 
 	ip6_frag_init(skb, hlen, mtu, skb->dev->needed_tailroom,
 		      LL_RESERVED_SPACE(skb->dev), prevhdr, nexthdr, frag_id,
 		      &state);
@@ -264,9 +254,7 @@ int __init ipv6_netfilter_init(void)
 	return 0;
 }
 
-/* This can be called from inet6_init() on errors, so it cannot
- * be marked __exit. -DaveM
- */
+ 
 void ipv6_netfilter_fini(void)
 {
 	RCU_INIT_POINTER(nf_ipv6_ops, NULL);

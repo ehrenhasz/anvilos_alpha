@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * System Control Driver
- *
- * Copyright (C) 2012 Freescale Semiconductor, Inc.
- * Copyright (C) 2012 Linaro Ltd.
- *
- * Author: Dong Aisheng <dong.aisheng@linaro.org>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -69,7 +62,7 @@ static struct syscon *of_syscon_register(struct device_node *np, bool check_res)
 		goto err_map;
 	}
 
-	/* Parse the device's DT node for an endianness specification */
+	 
 	if (of_property_read_bool(np, "big-endian"))
 		syscon_config.val_format_endian = REGMAP_ENDIAN_BIG;
 	else if (of_property_read_bool(np, "little-endian"))
@@ -77,11 +70,7 @@ static struct syscon *of_syscon_register(struct device_node *np, bool check_res)
 	else if (of_property_read_bool(np, "native-endian"))
 		syscon_config.val_format_endian = REGMAP_ENDIAN_NATIVE;
 
-	/*
-	 * search for reg-io-width property in DT. If it is not provided,
-	 * default to 4 bytes. regmap_init_mmio will return an error if values
-	 * are invalid so there is no need to check them here.
-	 */
+	 
 	ret = of_property_read_u32(np, "reg-io-width", &reg_io_width);
 	if (ret)
 		reg_io_width = 4;
@@ -94,7 +83,7 @@ static struct syscon *of_syscon_register(struct device_node *np, bool check_res)
 	} else if (ret < 0) {
 		switch (ret) {
 		case -ENOENT:
-			/* Ignore missing hwlock, it's optional. */
+			 
 			break;
 		default:
 			pr_err("Failed to retrieve valid hwlock: %d\n", ret);
@@ -125,7 +114,7 @@ static struct syscon *of_syscon_register(struct device_node *np, bool check_res)
 		clk = of_clk_get(np, 0);
 		if (IS_ERR(clk)) {
 			ret = PTR_ERR(clk);
-			/* clock is optional */
+			 
 			if (ret != -ENOENT)
 				goto err_clk;
 		} else {
@@ -273,11 +262,7 @@ struct regmap *syscon_regmap_lookup_by_phandle_args(struct device_node *np,
 }
 EXPORT_SYMBOL_GPL(syscon_regmap_lookup_by_phandle_args);
 
-/*
- * It behaves the same as syscon_regmap_lookup_by_phandle() except where
- * there is no regmap phandle. In this case, instead of returning -ENODEV,
- * the function returns NULL.
- */
+ 
 struct regmap *syscon_regmap_lookup_by_phandle_optional(struct device_node *np,
 					const char *property)
 {

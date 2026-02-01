@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe host controller driver for HiSilicon STB SoCs
- *
- * Copyright (C) 2016-2017 HiSilicon Co., Ltd. http://www.hisilicon.com
- *
- * Authors: Ruqiang Ju <juruqiang@hisilicon.com>
- *          Jianguo Sun <sunjianguo1@huawei.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -172,7 +165,7 @@ static int histb_pcie_start_link(struct dw_pcie *pci)
 	struct histb_pcie *hipcie = to_histb_pcie(pci);
 	u32 regval;
 
-	/* assert LTSSM enable */
+	 
 	regval = histb_pcie_readl(hipcie, PCIE_SYS_CTRL7);
 	regval |= PCIE_APP_LTSSM_ENABLE;
 	histb_pcie_writel(hipcie, PCIE_SYS_CTRL7, regval);
@@ -188,7 +181,7 @@ static int histb_pcie_host_init(struct dw_pcie_rp *pp)
 
 	pp->bridge->ops = &histb_pci_ops;
 
-	/* PCIe RC work mode */
+	 
 	regval = histb_pcie_readl(hipcie, PCIE_SYS_CTRL0);
 	regval &= ~PCIE_DEVICE_TYPE_MASK;
 	regval |= PCIE_WM_RC;
@@ -226,7 +219,7 @@ static int histb_pcie_host_enable(struct dw_pcie_rp *pp)
 	struct device *dev = pci->dev;
 	int ret;
 
-	/* power on PCIe device if have */
+	 
 	if (hipcie->vpcie) {
 		ret = regulator_enable(hipcie->vpcie);
 		if (ret) {
@@ -394,10 +387,7 @@ static int histb_pcie_probe(struct platform_device *pdev)
 	if (IS_ERR(hipcie->phy)) {
 		dev_info(dev, "no pcie-phy found\n");
 		hipcie->phy = NULL;
-		/* fall through here!
-		 * if no pcie-phy found, phy init
-		 * should be done under boot!
-		 */
+		 
 	} else {
 		phy_init(hipcie->phy);
 	}

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #define _GNU_SOURCE
 
@@ -19,7 +19,7 @@
 #include "cgroup_util.h"
 #include "../clone3/clone3_selftests.h"
 
-/* Returns read len on success, or -errno on failure. */
+ 
 static ssize_t read_text(const char *path, char *buf, size_t max_len)
 {
 	ssize_t len;
@@ -38,7 +38,7 @@ static ssize_t read_text(const char *path, char *buf, size_t max_len)
 	return len < 0 ? -errno : len;
 }
 
-/* Returns written len on success, or -errno on failure. */
+ 
 static ssize_t write_text(const char *path, char *buf, ssize_t len)
 {
 	int fd;
@@ -82,7 +82,7 @@ char *cg_control(const char *cgroup, const char *control)
 	return ret;
 }
 
-/* Returns 0 on success, or -errno on failure. */
+ 
 int cg_read(const char *cgroup, const char *control, char *buf, size_t len)
 {
 	char path[PATH_MAX];
@@ -101,7 +101,7 @@ int cg_read_strcmp(const char *cgroup, const char *control,
 	char *buf;
 	int ret;
 
-	/* Handle the case of comparing against empty string */
+	 
 	if (!expected)
 		return -1;
 	else
@@ -172,7 +172,7 @@ long cg_read_lc(const char *cgroup, const char *control)
 	return cnt;
 }
 
-/* Returns 0 on success, or -errno on failure. */
+ 
 int cg_write(const char *cgroup, const char *control, char *buf)
 {
 	char path[PATH_MAX];
@@ -204,10 +204,7 @@ int cg_find_unified_root(char *root, size_t len)
 	if (read_text("/proc/self/mounts", buf, sizeof(buf)) <= 0)
 		return -1;
 
-	/*
-	 * Example:
-	 * cgroup /sys/fs/cgroup cgroup2 rw,seclabel,noexec,relatime 0 0
-	 */
+	 
 	for (fs = strtok(buf, delim); fs; fs = strtok(NULL, delim)) {
 		mount = strtok(NULL, delim);
 		type = strtok(NULL, delim);
@@ -259,7 +256,7 @@ int cg_killall(const char *cgroup)
 	char buf[PAGE_SIZE];
 	char *ptr = buf;
 
-	/* If cgroup.kill exists use it. */
+	 
 	if (!cg_write(cgroup, "cgroup.kill", "1"))
 		return 0;
 
@@ -357,11 +354,7 @@ pid_t clone_into_cgroup(int cgroup_fd)
 	};
 
 	pid = sys_clone3(&args, sizeof(struct __clone_args));
-	/*
-	 * Verify that this is a genuine test failure:
-	 * ENOSYS -> clone3() not available
-	 * E2BIG  -> CLONE_INTO_CGROUP not available
-	 */
+	 
 	if (pid < 0 && (errno == ENOSYS || errno == E2BIG))
 		goto pretend_enosys;
 
@@ -447,7 +440,7 @@ int cg_run_nowait(const char *cgroup,
 	if (pid > 0)
 		return pid;
 
-	/* Genuine test failure. */
+	 
 	if (pid < 0 && errno != ENOSYS)
 		return -1;
 
@@ -596,10 +589,7 @@ int clone_into_cgroup_run_wait(const char *cgroup)
 	if (pid == 0)
 		exit(EXIT_SUCCESS);
 
-	/*
-	 * We don't care whether this fails. We only care whether the initial
-	 * clone succeeded.
-	 */
+	 
 	(void)clone_reap(pid, WEXITED);
 	return 0;
 }

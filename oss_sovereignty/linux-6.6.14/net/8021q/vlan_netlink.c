@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *	VLAN netlink control interface
- *
- * 	Copyright (c) 2007 Patrick McHardy <kaber@trash.net>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
@@ -182,9 +178,7 @@ static int vlan_newlink(struct net *src_net, struct net_device *dev,
 	else if (dev->mtu > max_mtu)
 		return -EINVAL;
 
-	/* Note: If this initial vlan_changelink() fails, we need
-	 * to call vlan_dev_free_egress_priority() to free memory.
-	 */
+	 
 	err = vlan_changelink(dev, tb, data, extack);
 
 	if (!err)
@@ -199,7 +193,7 @@ static inline size_t vlan_qos_map_size(unsigned int n)
 {
 	if (n == 0)
 		return 0;
-	/* IFLA_VLAN_{EGRESS,INGRESS}_QOS + n * IFLA_VLAN_QOS_MAPPING */
+	 
 	return nla_total_size(sizeof(struct nlattr)) +
 	       nla_total_size(sizeof(struct ifla_vlan_qos_mapping)) * n;
 }
@@ -208,9 +202,9 @@ static size_t vlan_get_size(const struct net_device *dev)
 {
 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
 
-	return nla_total_size(2) +	/* IFLA_VLAN_PROTOCOL */
-	       nla_total_size(2) +	/* IFLA_VLAN_ID */
-	       nla_total_size(sizeof(struct ifla_vlan_flags)) + /* IFLA_VLAN_FLAGS */
+	return nla_total_size(2) +	 
+	       nla_total_size(2) +	 
+	       nla_total_size(sizeof(struct ifla_vlan_flags)) +  
 	       vlan_qos_map_size(vlan->nr_ingress_mappings) +
 	       vlan_qos_map_size(vlan->nr_egress_mappings);
 }

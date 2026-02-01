@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* System hash blacklist.
- *
- * Copyright (C) 2016 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define pr_fmt(fmt) "blacklist: "fmt
 #include <linux/module.h>
@@ -19,11 +15,7 @@
 #include <keys/system_keyring.h>
 #include "blacklist.h"
 
-/*
- * According to crypto/asymmetric_keys/x509_cert_parser.c:x509_note_pkey_algo(),
- * the size of the currently longest supported hash algorithm is 512 bits,
- * which translates into 128 hex characters.
- */
+ 
 #define MAX_HASH_LEN	128
 
 #define BLACKLIST_KEY_PERM (KEY_POS_SEARCH | KEY_POS_VIEW | \
@@ -39,15 +31,12 @@ extern __initconst const u8 revocation_certificate_list[];
 extern __initconst const unsigned long revocation_certificate_list_size;
 #endif
 
-/*
- * The description must be a type prefix, a colon and then an even number of
- * hex digits.  The hash is kept in the description.
- */
+ 
 static int blacklist_vet_description(const char *desc)
 {
 	int i, prefix_len, tbs_step = 0, bin_step = 0;
 
-	/* The following algorithm only works if prefix lengths match. */
+	 
 	BUILD_BUG_ON(sizeof(tbs_prefix) != sizeof(bin_prefix));
 	prefix_len = sizeof(tbs_prefix) - 1;
 	for (i = 0; *desc; desc++, i++) {
@@ -74,10 +63,10 @@ found_colon:
 			return -EINVAL;
 	}
 	if (*desc)
-		/* The hash is greater than MAX_HASH_LEN. */
+		 
 		return -ENOPKG;
 
-	/* Checks for an even number of hexadecimal characters. */
+	 
 	if (i == 0 || i & 1)
 		return -EINVAL;
 	return 0;
@@ -90,32 +79,22 @@ static int blacklist_key_instantiate(struct key *key,
 	int err;
 #endif
 
-	/* Sets safe default permissions for keys loaded by user space. */
+	 
 	key->perm = BLACKLIST_KEY_PERM;
 
-	/*
-	 * Skips the authentication step for builtin hashes, they are not
-	 * signed but still trusted.
-	 */
+	 
 	if (key->flags & (1 << KEY_FLAG_BUILTIN))
 		goto out;
 
 #ifdef CONFIG_SYSTEM_BLACKLIST_AUTH_UPDATE
-	/*
-	 * Verifies the description's PKCS#7 signature against the builtin
-	 * trusted keyring.
-	 */
+	 
 	err = verify_pkcs7_signature(key->description,
 			strlen(key->description), prep->data, prep->datalen,
 			NULL, VERIFYING_UNSPECIFIED_SIGNATURE, NULL, NULL);
 	if (err)
 		return err;
 #else
-	/*
-	 * It should not be possible to come here because the keyring doesn't
-	 * have KEY_USR_WRITE and the only other way to call this function is
-	 * for builtin hashes.
-	 */
+	 
 	WARN_ON_ONCE(1);
 	return -EPERM;
 #endif
@@ -175,10 +154,7 @@ static char *get_raw_hash(const u8 *hash, size_t hash_len,
 	return buffer;
 }
 
-/**
- * mark_raw_hash_blacklisted - Add a hash to the system blacklist
- * @hash: The hash as a hex string with a type prefix (eg. "tbs:23aa429783")
- */
+ 
 static int mark_raw_hash_blacklisted(const char *hash)
 {
 	key_ref_t key;
@@ -215,12 +191,7 @@ int mark_hash_blacklisted(const u8 *hash, size_t hash_len,
 	return err;
 }
 
-/**
- * is_hash_blacklisted - Determine if a hash is blacklisted
- * @hash: The hash to be checked as a binary blob
- * @hash_len: The length of the binary hash
- * @hash_type: Type of hash
- */
+ 
 int is_hash_blacklisted(const u8 *hash, size_t hash_len,
 		enum blacklist_hash_type hash_type)
 {
@@ -254,11 +225,7 @@ int is_binary_blacklisted(const u8 *hash, size_t hash_len)
 EXPORT_SYMBOL_GPL(is_binary_blacklisted);
 
 #ifdef CONFIG_SYSTEM_REVOCATION_LIST
-/**
- * add_key_to_revocation_list - Add a revocation certificate to the blacklist
- * @data: The data blob containing the certificate
- * @size: The size of data blob
- */
+ 
 int add_key_to_revocation_list(const char *data, size_t size)
 {
 	key_ref_t key;
@@ -281,10 +248,7 @@ int add_key_to_revocation_list(const char *data, size_t size)
 	return 0;
 }
 
-/**
- * is_key_on_revocation_list - Determine if the key for a PKCS#7 message is revoked
- * @pkcs7: The PKCS#7 message to check
- */
+ 
 int is_key_on_revocation_list(struct pkcs7_message *pkcs7)
 {
 	int ret;
@@ -307,18 +271,7 @@ static int restrict_link_for_blacklist(struct key *dest_keyring,
 	return -EOPNOTSUPP;
 }
 
-/*
- * Initialise the blacklist
- *
- * The blacklist_init() function is registered as an initcall via
- * device_initcall().  As a result if the blacklist_init() function fails for
- * any reason the kernel continues to execute.  While cleanly returning -ENODEV
- * could be acceptable for some non-critical kernel parts, if the blacklist
- * keyring fails to load it defeats the certificate/key based deny list for
- * signed modules.  If a critical piece of security functionality that users
- * expect to be present fails to initialize, panic()ing is likely the right
- * thing to do.
- */
+ 
 static int __init blacklist_init(void)
 {
 	const char *const *bl;
@@ -353,15 +306,11 @@ static int __init blacklist_init(void)
 	return 0;
 }
 
-/*
- * Must be initialised before we try and load the keys into the keyring.
- */
+ 
 device_initcall(blacklist_init);
 
 #ifdef CONFIG_SYSTEM_REVOCATION_LIST
-/*
- * Load the compiled-in list of revocation X.509 certificates.
- */
+ 
 static __init int load_revocation_certificate_list(void)
 {
 	if (revocation_certificate_list_size)

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2016-2019 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -37,8 +37,8 @@ struct mlxsw_m {
 	const struct mlxsw_bus_info *bus_info;
 	u8 base_mac[ETH_ALEN];
 	u8 max_ports;
-	u8 max_modules_per_slot; /* Maximum number of modules per-slot. */
-	u8 num_of_slots; /* Including the main board. */
+	u8 max_modules_per_slot;  
+	u8 num_of_slots;  
 	struct mlxsw_m_line_card **line_cards;
 };
 
@@ -261,11 +261,7 @@ mlxsw_m_port_create(struct mlxsw_m *mlxsw_m, u16 local_port, u8 slot_index,
 	mlxsw_m_port->local_port = local_port;
 	mlxsw_m_port->module = module;
 	mlxsw_m_port->slot_index = slot_index;
-	/* Add module offset for line card. Offset for main board iz zero.
-	 * For line card in slot #n offset is calculated as (#n - 1)
-	 * multiplied by maximum modules number, which could be found on a line
-	 * card.
-	 */
+	 
 	mlxsw_m_port->module_offset = mlxsw_m_port->slot_index ?
 				      (mlxsw_m_port->slot_index - 1) *
 				      mlxsw_m->max_modules_per_slot : 0;
@@ -304,7 +300,7 @@ static void mlxsw_m_port_remove(struct mlxsw_m *mlxsw_m, u16 local_port)
 {
 	struct mlxsw_m_port *mlxsw_m_port = mlxsw_m->ports[local_port];
 
-	unregister_netdev(mlxsw_m_port->dev); /* This calls ndo_stop */
+	unregister_netdev(mlxsw_m_port->dev);  
 	mlxsw_m->ports[local_port] = NULL;
 	free_netdev(mlxsw_m_port->dev);
 	mlxsw_core_port_fini(mlxsw_m->core, local_port);
@@ -324,18 +320,18 @@ static int mlxsw_m_port_module_map(struct mlxsw_m *mlxsw_m, u16 local_port,
 	int *module_to_port;
 	int err;
 
-	/* Fill out to local port mapping array */
+	 
 	err = mlxsw_m_port_module_info_get(mlxsw_m, local_port, &module,
 					   &width, &slot_index);
 	if (err)
 		return err;
 
-	/* Skip if line card has been already configured */
+	 
 	if (mlxsw_m->line_cards[slot_index]->active)
 		return 0;
 	if (!width)
 		return 0;
-	/* Skip, if port belongs to the cluster */
+	 
 	if (module == *last_module)
 		return 0;
 	*last_module = module;
@@ -372,15 +368,13 @@ static int mlxsw_m_linecards_init(struct mlxsw_m *mlxsw_m)
 
 	mlxsw_reg_mgpir_unpack(mgpir_pl, NULL, NULL, NULL, &num_of_modules,
 			       &mlxsw_m->num_of_slots);
-	/* If the system is modular, get the maximum number of modules per-slot.
-	 * Otherwise, get the maximum number of modules on the main board.
-	 */
+	 
 	if (mlxsw_m->num_of_slots)
 		mlxsw_m->max_modules_per_slot =
 			mlxsw_reg_mgpir_max_modules_per_slot_get(mgpir_pl);
 	else
 		mlxsw_m->max_modules_per_slot = num_of_modules;
-	/* Add slot for main board. */
+	 
 	mlxsw_m->num_of_slots += 1;
 
 	mlxsw_m->ports = kcalloc(max_ports, sizeof(*mlxsw_m->ports),
@@ -407,7 +401,7 @@ static int mlxsw_m_linecards_init(struct mlxsw_m *mlxsw_m)
 			goto err_kmalloc_array;
 		}
 
-		/* Invalidate the entries of module to local port mapping array. */
+		 
 		for (j = 0; j < mlxsw_m->max_modules_per_slot; j++)
 			mlxsw_m->line_cards[i]->module_to_port[j] = -1;
 	}
@@ -460,7 +454,7 @@ mlxsw_m_linecard_ports_create(struct mlxsw_m *mlxsw_m, u8 slot_index)
 						  slot_index, i);
 			if (err)
 				goto err_port_create;
-			/* Mark slot as active */
+			 
 			if (!mlxsw_m->line_cards[slot_index]->active)
 				mlxsw_m->line_cards[slot_index]->active = true;
 		}
@@ -473,7 +467,7 @@ err_port_create:
 		if (*module_to_port > 0 &&
 		    mlxsw_m_port_created(mlxsw_m, *module_to_port)) {
 			mlxsw_m_port_remove(mlxsw_m, *module_to_port);
-			/* Mark slot as inactive */
+			 
 			if (mlxsw_m->line_cards[slot_index]->active)
 				mlxsw_m->line_cards[slot_index]->active = false;
 		}
@@ -517,12 +511,12 @@ static int mlxsw_m_ports_create(struct mlxsw_m *mlxsw_m)
 {
 	int err;
 
-	/* Fill out module to local port mapping array */
+	 
 	err = mlxsw_m_ports_module_map(mlxsw_m);
 	if (err)
 		goto err_ports_module_map;
 
-	/* Create port objects for each valid entry */
+	 
 	err = mlxsw_m_linecard_ports_create(mlxsw_m, 0);
 	if (err)
 		goto err_linecard_ports_create;
@@ -563,10 +557,7 @@ static int mlxsw_m_fw_rev_validate(struct mlxsw_m *mlxsw_m)
 {
 	const struct mlxsw_fw_rev *rev = &mlxsw_m->bus_info->fw_rev;
 
-	/* Validate driver and FW are compatible.
-	 * Do not check major version, since it defines chip type, while
-	 * driver is supposed to support any type.
-	 */
+	 
 	if (mlxsw_core_fw_rev_minor_subminor_validate(rev, &mlxsw_m_fw_rev))
 		return 0;
 
@@ -585,16 +576,16 @@ mlxsw_m_got_active(struct mlxsw_core *mlxsw_core, u8 slot_index, void *priv)
 	int err;
 
 	linecard = mlxsw_m->line_cards[slot_index];
-	/* Skip if line card has been already configured during init */
+	 
 	if (linecard->active)
 		return;
 
-	/* Fill out module to local port mapping array */
+	 
 	err = mlxsw_m_ports_module_map(mlxsw_m);
 	if (err)
 		goto err_ports_module_map;
 
-	/* Create port objects for each valid entry */
+	 
 	err = mlxsw_m_linecard_ports_create(mlxsw_m, slot_index);
 	if (err) {
 		dev_err(mlxsw_m->bus_info->dev, "Failed to create port for line card at slot %d\n",

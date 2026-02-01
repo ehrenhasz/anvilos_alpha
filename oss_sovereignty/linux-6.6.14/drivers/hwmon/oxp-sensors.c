@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Platform driver for OneXPlayer, AOK ZOE, and Aya Neo Handhelds that expose
- * fan reading and control via hwmon sysfs.
- *
- * Old OXP boards have the same DMI strings and they are told apart by
- * the boot cpu vendor (Intel/AMD). Currently only AMD boards are
- * supported but the code is made to be simple to add other handheld
- * boards in the future.
- * Fan control is provided via pwm interface in the range [0-255].
- * Old AMD boards use [0-100] as range in the EC, the written value is
- * scaled to accommodate for that. Newer boards like the mini PRO and
- * AOK ZOE are not scaled but have the same EC layout.
- *
- * Copyright (C) 2022 Joaquín I. Aramendía <samsagax@gmail.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/dmi.h>
@@ -24,7 +10,7 @@
 #include <linux/platform_device.h>
 #include <linux/processor.h>
 
-/* Handle ACPI lock mechanism */
+ 
 static u32 oxp_mutex;
 
 #define ACPI_LOCK_DELAY_MS	500
@@ -52,15 +38,12 @@ enum oxp_board {
 
 static enum oxp_board board;
 
-/* Fan reading and PWM */
-#define OXP_SENSOR_FAN_REG		0x76 /* Fan reading is 2 registers long */
-#define OXP_SENSOR_PWM_ENABLE_REG	0x4A /* PWM enable is 1 register long */
-#define OXP_SENSOR_PWM_REG		0x4B /* PWM reading is 1 register long */
+ 
+#define OXP_SENSOR_FAN_REG		0x76  
+#define OXP_SENSOR_PWM_ENABLE_REG	0x4A  
+#define OXP_SENSOR_PWM_REG		0x4B  
 
-/* Turbo button takeover function
- * Older boards have different values and EC registers
- * for the same function
- */
+ 
 #define OXP_OLD_TURBO_SWITCH_REG	0x1E
 #define OXP_OLD_TURBO_TAKE_VAL		0x01
 #define OXP_OLD_TURBO_RETURN_VAL	0x00
@@ -136,7 +119,7 @@ static const struct dmi_system_id dmi_table[] = {
 	{},
 };
 
-/* Helper functions to handle EC read/write */
+ 
 static int read_from_ec(u8 reg, int size, long *val)
 {
 	int i;
@@ -176,7 +159,7 @@ static int write_to_ec(u8 reg, u8 value)
 	return ret;
 }
 
-/* Turbo button toggle functions */
+ 
 static int tt_toggle_enable(void)
 {
 	u8 reg;
@@ -219,7 +202,7 @@ static int tt_toggle_disable(void)
 	return write_to_ec(reg, val);
 }
 
-/* Callbacks for turbo toggle attribute */
+ 
 static umode_t tt_toggle_is_visible(struct kobject *kobj,
 				    struct attribute *attr, int n)
 {
@@ -284,7 +267,7 @@ static ssize_t tt_toggle_show(struct device *dev,
 
 static DEVICE_ATTR_RW(tt_toggle);
 
-/* PWM enable/disable functions */
+ 
 static int oxp_pwm_enable(void)
 {
 	return write_to_ec(OXP_SENSOR_PWM_ENABLE_REG, 0x01);
@@ -295,7 +278,7 @@ static int oxp_pwm_disable(void)
 	return write_to_ec(OXP_SENSOR_PWM_ENABLE_REG, 0x00);
 }
 
-/* Callbacks for hwmon interface */
+ 
 static umode_t oxp_ec_hwmon_is_visible(const void *drvdata,
 				       enum hwmon_sensor_types type, u32 attr, int channel)
 {
@@ -396,7 +379,7 @@ static int oxp_platform_write(struct device *dev, enum hwmon_sensor_types type,
 	return -EOPNOTSUPP;
 }
 
-/* Known sensors in the OXP EC controllers */
+ 
 static const struct hwmon_channel_info * const oxp_platform_sensors[] = {
 	HWMON_CHANNEL_INFO(fan,
 			   HWMON_F_INPUT),
@@ -431,7 +414,7 @@ static const struct hwmon_chip_info oxp_ec_chip_info = {
 	.info = oxp_platform_sensors,
 };
 
-/* Initialization logic */
+ 
 static int oxp_platform_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -457,13 +440,7 @@ static int __init oxp_platform_init(void)
 {
 	const struct dmi_system_id *dmi_entry;
 
-	/*
-	 * Have to check for AMD processor here because DMI strings are the
-	 * same between Intel and AMD boards, the only way to tell them apart
-	 * is the CPU.
-	 * Intel boards seem to have different EC registers and values to
-	 * read/write.
-	 */
+	 
 	dmi_entry = dmi_first_match(dmi_table);
 	if (!dmi_entry || boot_cpu_data.x86_vendor != X86_VENDOR_AMD)
 		return -ENODEV;

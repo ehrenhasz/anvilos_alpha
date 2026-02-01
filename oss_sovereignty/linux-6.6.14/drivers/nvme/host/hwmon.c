@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NVM Express hardware monitoring support
- * Copyright (c) 2019, Guenter Roeck
- */
+
+ 
 
 #include <linux/hwmon.h>
 #include <linux/units.h>
@@ -71,10 +68,7 @@ static int nvme_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
 	int temp;
 	int err;
 
-	/*
-	 * First handle attributes which don't require us to read
-	 * the smart log.
-	 */
+	 
 	switch (attr) {
 	case hwmon_temp_max:
 		return nvme_get_temp_thresh(data->ctrl, channel, false, val);

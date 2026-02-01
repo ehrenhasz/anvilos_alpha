@@ -1,55 +1,43 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * fs/f2fs/gc.h
- *
- * Copyright (c) 2012 Samsung Electronics Co., Ltd.
- *             http://www.samsung.com/
- */
-#define GC_THREAD_MIN_WB_PAGES		1	/*
-						 * a threshold to determine
-						 * whether IO subsystem is idle
-						 * or not
-						 */
-#define DEF_GC_THREAD_URGENT_SLEEP_TIME	500	/* 500 ms */
-#define DEF_GC_THREAD_MIN_SLEEP_TIME	30000	/* milliseconds */
+ 
+ 
+#define GC_THREAD_MIN_WB_PAGES		1	 
+#define DEF_GC_THREAD_URGENT_SLEEP_TIME	500	 
+#define DEF_GC_THREAD_MIN_SLEEP_TIME	30000	 
 #define DEF_GC_THREAD_MAX_SLEEP_TIME	60000
-#define DEF_GC_THREAD_NOGC_SLEEP_TIME	300000	/* wait 5 min */
+#define DEF_GC_THREAD_NOGC_SLEEP_TIME	300000	 
 
-/* choose candidates from sections which has age of more than 7 days */
+ 
 #define DEF_GC_THREAD_AGE_THRESHOLD		(60 * 60 * 24 * 7)
-#define DEF_GC_THREAD_CANDIDATE_RATIO		20	/* select 20% oldest sections as candidates */
-#define DEF_GC_THREAD_MAX_CANDIDATE_COUNT	10	/* select at most 10 sections as candidates */
-#define DEF_GC_THREAD_AGE_WEIGHT		60	/* age weight */
-#define DEFAULT_ACCURACY_CLASS			10000	/* accuracy class */
+#define DEF_GC_THREAD_CANDIDATE_RATIO		20	 
+#define DEF_GC_THREAD_MAX_CANDIDATE_COUNT	10	 
+#define DEF_GC_THREAD_AGE_WEIGHT		60	 
+#define DEFAULT_ACCURACY_CLASS			10000	 
 
-#define LIMIT_INVALID_BLOCK	40 /* percentage over total user space */
-#define LIMIT_FREE_BLOCK	40 /* percentage over invalid + free space */
+#define LIMIT_INVALID_BLOCK	40  
+#define LIMIT_FREE_BLOCK	40  
 
 #define DEF_GC_FAILED_PINNED_FILES	2048
 
-/* Search max. number of dirty segments to select a victim segment */
-#define DEF_MAX_VICTIM_SEARCH 4096 /* covers 8GB */
+ 
+#define DEF_MAX_VICTIM_SEARCH 4096  
 
-#define NR_GC_CHECKPOINT_SECS (3)	/* data/node/dentry sections */
+#define NR_GC_CHECKPOINT_SECS (3)	 
 
 struct f2fs_gc_kthread {
 	struct task_struct *f2fs_gc_task;
 	wait_queue_head_t gc_wait_queue_head;
 
-	/* for gc sleep time */
+	 
 	unsigned int urgent_sleep_time;
 	unsigned int min_sleep_time;
 	unsigned int max_sleep_time;
 	unsigned int no_gc_sleep_time;
 
-	/* for changing gc mode */
+	 
 	bool gc_wake;
 
-	/* for GC_MERGE mount option */
-	wait_queue_head_t fggc_wq;		/*
-						 * caller of f2fs_balance_fs()
-						 * will wait on this wait queue.
-						 */
+	 
+	wait_queue_head_t fggc_wq;		 
 };
 
 struct gc_inode_list {
@@ -58,24 +46,15 @@ struct gc_inode_list {
 };
 
 struct victim_entry {
-	struct rb_node rb_node;		/* rb node located in rb-tree */
-	unsigned long long mtime;	/* mtime of section */
-	unsigned int segno;		/* segment No. */
+	struct rb_node rb_node;		 
+	unsigned long long mtime;	 
+	unsigned int segno;		 
 	struct list_head list;
 };
 
-/*
- * inline functions
- */
+ 
 
-/*
- * On a Zoned device zone-capacity can be less than zone-size and if
- * zone-capacity is not aligned to f2fs segment size(2MB), then the segment
- * starting just before zone-capacity has some blocks spanning across the
- * zone-capacity, these blocks are not usable.
- * Such spanning segments can be in free list so calculate the sum of usable
- * blocks in currently free segments including normal and spanning segments.
- */
+ 
 static inline block_t free_segs_blk_count_zoned(struct f2fs_sb_info *sbi)
 {
 	block_t free_seg_blks = 0;
@@ -156,11 +135,7 @@ static inline bool has_enough_invalid_blocks(struct f2fs_sb_info *sbi)
 	block_t user_block_count = sbi->user_block_count;
 	block_t invalid_user_blocks = user_block_count -
 		written_block_count(sbi);
-	/*
-	 * Background GC is triggered with the following conditions.
-	 * 1. There are a number of invalid blocks.
-	 * 2. There is not enough free space.
-	 */
+	 
 	return (invalid_user_blocks >
 			limit_invalid_user_blocks(user_block_count) &&
 		free_user_blocks(sbi) <

@@ -1,23 +1,4 @@
-/* Make sure timers don't return early
- *              by: john stultz (johnstul@us.ibm.com)
- *		    John Stultz (john.stultz@linaro.org)
- *              (C) Copyright IBM 2012
- *              (C) Copyright Linaro 2013 2015
- *              Licensed under the GPLv2
- *
- *  To build:
- *	$ gcc nanosleep.c -o nanosleep -lrt
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- */
+ 
 
 #include <errno.h>
 #include <stdio.h>
@@ -76,7 +57,7 @@ char *clockstring(int clockid)
 	return "UNKNOWN_CLOCKID";
 }
 
-/* returns 1 if a <= b, 0 otherwise */
+ 
 static inline int in_order(struct timespec a, struct timespec b)
 {
 	if (a.tv_sec < b.tv_sec)
@@ -102,7 +83,7 @@ int nanosleep_test(int clockid, long long ns)
 {
 	struct timespec now, target, rel;
 
-	/* First check abs time */
+	 
 	if (clock_gettime(clockid, &now))
 		return UNSUPPORTED;
 	target = timespec_add(now, ns);
@@ -114,7 +95,7 @@ int nanosleep_test(int clockid, long long ns)
 	if (!in_order(target, now))
 		return -1;
 
-	/* Second check reltime */
+	 
 	clock_gettime(clockid, &now);
 	rel.tv_sec = 0;
 	rel.tv_nsec = 0;
@@ -138,7 +119,7 @@ int main(int argc, char **argv)
 
 	for (clockid = CLOCK_REALTIME; clockid < NR_CLOCKIDS; clockid++) {
 
-		/* Skip cputime clockids since nanosleep won't increment cputime */
+		 
 		if (clockid == CLOCK_PROCESS_CPUTIME_ID ||
 				clockid == CLOCK_THREAD_CPUTIME_ID ||
 				clockid == CLOCK_HWSPECIFIC) {

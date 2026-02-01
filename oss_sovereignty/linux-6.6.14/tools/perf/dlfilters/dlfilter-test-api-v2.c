@@ -1,26 +1,18 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Test v2 API for perf --dlfilter shared object
- * Copyright (c) 2023, Intel Corporation.
- */
+
+ 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 
-/*
- * Copy v2 API instead of including current API
- */
+ 
 #include <linux/perf_event.h>
 #include <linux/types.h>
 
-/*
- * The following macro can be used to determine if this header defines
- * perf_dlfilter_sample machine_pid and vcpu.
- */
+ 
 #define PERF_DLFILTER_HAS_MACHINE_PID
 
-/* Definitions for perf_dlfilter_sample flags */
+ 
 enum {
 	PERF_DLFILTER_FLAG_BRANCH	= 1ULL << 0,
 	PERF_DLFILTER_FLAG_CALL		= 1ULL << 1,
@@ -37,13 +29,11 @@ enum {
 	PERF_DLFILTER_FLAG_VMEXIT	= 1ULL << 12,
 };
 
-/*
- * perf sample event information (as per perf script and <linux/perf_event.h>)
- */
+ 
 struct perf_dlfilter_sample {
-	__u32 size; /* Size of this structure (for compatibility checking) */
-	__u16 ins_lat;		/* Refer PERF_SAMPLE_WEIGHT_TYPE in <linux/perf_event.h> */
-	__u16 p_stage_cyc;	/* Refer PERF_SAMPLE_WEIGHT_TYPE in <linux/perf_event.h> */
+	__u32 size;  
+	__u16 ins_lat;		 
+	__u16 p_stage_cyc;	 
 	__u64 ip;
 	__s32 pid;
 	__s32 tid;
@@ -52,80 +42,71 @@ struct perf_dlfilter_sample {
 	__u64 id;
 	__u64 stream_id;
 	__u64 period;
-	__u64 weight;		/* Refer PERF_SAMPLE_WEIGHT_TYPE in <linux/perf_event.h> */
-	__u64 transaction;	/* Refer PERF_SAMPLE_TRANSACTION in <linux/perf_event.h> */
-	__u64 insn_cnt;	/* For instructions-per-cycle (IPC) */
-	__u64 cyc_cnt;		/* For instructions-per-cycle (IPC) */
+	__u64 weight;		 
+	__u64 transaction;	 
+	__u64 insn_cnt;	 
+	__u64 cyc_cnt;		 
 	__s32 cpu;
-	__u32 flags;		/* Refer PERF_DLFILTER_FLAG_* above */
-	__u64 data_src;		/* Refer PERF_SAMPLE_DATA_SRC in <linux/perf_event.h> */
-	__u64 phys_addr;	/* Refer PERF_SAMPLE_PHYS_ADDR in <linux/perf_event.h> */
-	__u64 data_page_size;	/* Refer PERF_SAMPLE_DATA_PAGE_SIZE in <linux/perf_event.h> */
-	__u64 code_page_size;	/* Refer PERF_SAMPLE_CODE_PAGE_SIZE in <linux/perf_event.h> */
-	__u64 cgroup;		/* Refer PERF_SAMPLE_CGROUP in <linux/perf_event.h> */
-	__u8  cpumode;		/* Refer CPUMODE_MASK etc in <linux/perf_event.h> */
-	__u8  addr_correlates_sym; /* True => resolve_addr() can be called */
-	__u16 misc;		/* Refer perf_event_header in <linux/perf_event.h> */
-	__u32 raw_size;		/* Refer PERF_SAMPLE_RAW in <linux/perf_event.h> */
-	const void *raw_data;	/* Refer PERF_SAMPLE_RAW in <linux/perf_event.h> */
-	__u64 brstack_nr;	/* Number of brstack entries */
-	const struct perf_branch_entry *brstack; /* Refer <linux/perf_event.h> */
-	__u64 raw_callchain_nr;	/* Number of raw_callchain entries */
-	const __u64 *raw_callchain; /* Refer <linux/perf_event.h> */
+	__u32 flags;		 
+	__u64 data_src;		 
+	__u64 phys_addr;	 
+	__u64 data_page_size;	 
+	__u64 code_page_size;	 
+	__u64 cgroup;		 
+	__u8  cpumode;		 
+	__u8  addr_correlates_sym;  
+	__u16 misc;		 
+	__u32 raw_size;		 
+	const void *raw_data;	 
+	__u64 brstack_nr;	 
+	const struct perf_branch_entry *brstack;  
+	__u64 raw_callchain_nr;	 
+	const __u64 *raw_callchain;  
 	const char *event;
 	__s32 machine_pid;
 	__s32 vcpu;
 };
 
-/*
- * Address location (as per perf script)
- */
+ 
 struct perf_dlfilter_al {
-	__u32 size; /* Size of this structure (for compatibility checking) */
+	__u32 size;  
 	__u32 symoff;
 	const char *sym;
-	__u64 addr; /* Mapped address (from dso) */
+	__u64 addr;  
 	__u64 sym_start;
 	__u64 sym_end;
 	const char *dso;
-	__u8  sym_binding; /* STB_LOCAL, STB_GLOBAL or STB_WEAK, refer <elf.h> */
-	__u8  is_64_bit; /* Only valid if dso is not NULL */
-	__u8  is_kernel_ip; /* True if in kernel space */
+	__u8  sym_binding;  
+	__u8  is_64_bit;  
+	__u8  is_kernel_ip;  
 	__u32 buildid_size;
 	__u8 *buildid;
-	/* Below members are only populated by resolve_ip() */
-	__u8 filtered; /* True if this sample event will be filtered out */
+	 
+	__u8 filtered;  
 	const char *comm;
-	void *priv; /* Private data (v2 API) */
+	void *priv;  
 };
 
 struct perf_dlfilter_fns {
-	/* Return information about ip */
+	 
 	const struct perf_dlfilter_al *(*resolve_ip)(void *ctx);
-	/* Return information about addr (if addr_correlates_sym) */
+	 
 	const struct perf_dlfilter_al *(*resolve_addr)(void *ctx);
-	/* Return arguments from --dlarg option */
+	 
 	char **(*args)(void *ctx, int *dlargc);
-	/*
-	 * Return information about address (al->size must be set before
-	 * calling). Returns 0 on success, -1 otherwise. Call al_cleanup()
-	 * when 'al' data is no longer needed.
-	 */
+	 
 	__s32 (*resolve_address)(void *ctx, __u64 address, struct perf_dlfilter_al *al);
-	/* Return instruction bytes and length */
+	 
 	const __u8 *(*insn)(void *ctx, __u32 *length);
-	/* Return source file name and line number */
+	 
 	const char *(*srcline)(void *ctx, __u32 *line_number);
-	/* Return perf_event_attr, refer <linux/perf_event.h> */
+	 
 	struct perf_event_attr *(*attr)(void *ctx);
-	/* Read object code, return numbers of bytes read */
+	 
 	__s32 (*object_code)(void *ctx, __u64 ip, void *buf, __u32 len);
-	/*
-	 * If present (i.e. must check al_cleanup != NULL), call after
-	 * resolve_address() to free any associated resources. (v2 API)
-	 */
+	 
 	void (*al_cleanup)(void *ctx, struct perf_dlfilter_al *al);
-	/* Reserved */
+	 
 	void *(*reserved[119])(void *);
 };
 
@@ -290,7 +271,7 @@ static int check_address_al(void *ctx, const struct perf_dlfilter_sample *sample
 	CHECK(address_al.dso && al->dso);
 	CHECK(!strcmp(address_al.dso, al->dso));
 
-	/* al_cleanup() is v2 API so may not be present */
+	 
 	if (perf_dlfilter_fns.al_cleanup)
 		perf_dlfilter_fns.al_cleanup(ctx, &address_al);
 

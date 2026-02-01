@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * EDAC driver for Intel(R) Xeon(R) Skylake processors
- * Copyright (c) 2016, Intel Corporation.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/processor.h>
@@ -15,9 +12,7 @@
 
 #define EDAC_MOD_STR    "skx_edac"
 
-/*
- * Debug macros
- */
+ 
 #define skx_printk(level, fmt, arg...)			\
 	edac_printk(level, "skx", fmt, ##arg)
 
@@ -30,8 +25,8 @@ static u64 skx_tolm, skx_tohm;
 static int skx_num_sockets;
 static unsigned int nvdimm_count;
 
-#define	MASK26	0x3FFFFFF		/* Mask for 2^26 */
-#define MASK29	0x1FFFFFFF		/* Mask for 2^29 */
+#define	MASK26	0x3FFFFFF		 
+#define MASK29	0x1FFFFFFF		 
 
 static struct skx_dev *get_skx_dev(struct pci_bus *bus, u8 idx)
 {
@@ -58,11 +53,7 @@ struct munit {
 	enum munittype mtype;
 };
 
-/*
- * List of PCI device ids that we need together with some device
- * number and function numbers to tell which memory controller the
- * device belongs to.
- */
+ 
 static const struct munit skx_all_munits[] = {
 	{ 0x2054, { }, 1, 1, SAD_ALL },
 	{ 0x2055, { }, 1, 1, UTIL_ALL },
@@ -100,7 +91,7 @@ static int get_all_munits(const struct munit *m)
 		if (!d)
 			goto fail;
 
-		/* Be sure that the device is enabled */
+		 
 		if (unlikely(pci_enable_device(pdev) < 0)) {
 			skx_printk(KERN_ERR, "Couldn't enable device %04x:%04x\n",
 				   PCI_VENDOR_ID_INTEL, m->did);
@@ -129,12 +120,7 @@ static int get_all_munits(const struct munit *m)
 			d->util_all = pdev;
 			break;
 		case SAD:
-			/*
-			 * one of these devices per core, including cores
-			 * that don't exist on this SKU. Ignore any that
-			 * read a route table of zero, make sure all the
-			 * non-zero values match.
-			 */
+			 
 			pci_read_config_dword(pdev, 0xB4, &reg);
 			if (reg != 0) {
 				if (d->mcroute == 0) {
@@ -183,7 +169,7 @@ static int skx_get_dimm_config(struct mem_ctl_info *mci, struct res_config *cfg)
 	int i, j;
 	int ndimms;
 
-	/* Only the mcmtr on the first channel is effective */
+	 
 	pci_read_config_dword(imc->chan[0].cdev, 0x87c, &mcmtr);
 
 	for (i = 0; i < SKX_NUM_CHANNELS; i++) {
@@ -272,7 +258,7 @@ static bool skx_sad_decode(struct decoded_addr *res)
 	u64 limit, prev_limit;
 	int remote = 0;
 
-	/* Simple sanity check for I/O space or out of range */
+	 
 	if (addr >= skx_tohm || (addr >= skx_tolm && addr < BIT_ULL(32))) {
 		edac_dbg(0, "Address 0x%llx out of range\n", addr);
 		return false;
@@ -312,7 +298,7 @@ sad_found:
 
 	tgt = GET_BITFIELD(ilv, 4 * idx, 4 * idx + 3);
 
-	/* If point to another node, find it and start over */
+	 
 	if (SKX_ILV_REMOTE(tgt)) {
 		if (remote) {
 			edac_dbg(0, "Double remote!\n");
@@ -389,7 +375,7 @@ sad_found:
 #define	SKX_TAD_SKTWAYS(b)	(1 << GET_BITFIELD((b), 10, 11))
 #define	SKX_TAD_CHNWAYS(b)	(GET_BITFIELD((b), 8, 9) + 1)
 
-/* which bit used for both socket and channel interleave */
+ 
 static int skx_granularity[] = { 6, 8, 12, 30 };
 
 static u64 skx_do_interleave(u64 addr, int shift, int ways, u64 lowbits)
@@ -427,13 +413,13 @@ tad_found:
 	channel_addr = res->addr - SKX_TAD_OFFSET(chnilvoffset);
 
 	if (res->chanways == 3 && skt_interleave_bit > chn_interleave_bit) {
-		/* Must handle channel first, then socket */
+		 
 		channel_addr = skx_do_interleave(channel_addr, chn_interleave_bit,
 						 res->chanways, channel_addr);
 		channel_addr = skx_do_interleave(channel_addr, skt_interleave_bit,
 						 res->sktways, channel_addr);
 	} else {
-		/* Handle socket then channel. Preserve low bits from original address */
+		 
 		channel_addr = skx_do_interleave(channel_addr, skt_interleave_bit,
 						 res->sktways, res->addr);
 		channel_addr = skx_do_interleave(channel_addr, chn_interleave_bit,
@@ -556,7 +542,7 @@ static bool skx_mad_decode(struct decoded_addr *r)
 	if (dimm->close_pg) {
 		r->row = skx_bits(r->rank_address, dimm->rowbits, skx_close_row);
 		r->column = skx_bits(r->rank_address, dimm->colbits, skx_close_column);
-		r->column |= 0x400; /* C10 is autoprecharge, always set */
+		r->column |= 0x400;  
 		r->bank_address = skx_bank_bits(r->rank_address, 8, 9, dimm->bank_xor_enable, 22, 28);
 		r->bank_group = skx_bank_bits(r->rank_address, 6, 7, dimm->bank_xor_enable, 20, 21);
 	} else {
@@ -588,11 +574,7 @@ static struct notifier_block skx_mce_dec = {
 };
 
 #ifdef CONFIG_EDAC_DEBUG
-/*
- * Debug feature.
- * Exercise the address decode logic by writing an address to
- * /sys/kernel/debug/edac/skx_test/addr.
- */
+ 
 static struct dentry *skx_test;
 
 static int debugfs_u64_set(void *data, u64 val)
@@ -602,9 +584,9 @@ static int debugfs_u64_set(void *data, u64 val)
 	pr_warn_once("Fake error to 0x%llx injected via debugfs\n", val);
 
 	memset(&m, 0, sizeof(m));
-	/* ADDRV + MemRd + Unknown channel */
+	 
 	m.status = MCI_STATUS_ADDRV + 0x90;
-	/* One corrected error */
+	 
 	m.status |= BIT_ULL(MCI_STATUS_CEC_SHIFT);
 	m.addr = val;
 	skx_mce_check_error(NULL, 0, &m);
@@ -633,14 +615,9 @@ static void teardown_skx_debug(void)
 #else
 static inline void setup_skx_debug(void) {}
 static inline void teardown_skx_debug(void) {}
-#endif /*CONFIG_EDAC_DEBUG*/
+#endif  
 
-/*
- * skx_init:
- *	make sure we are running on the correct cpu model
- *	search for all the devices we need
- *	check which DIMMs are present.
- */
+ 
 static int __init skx_init(void)
 {
 	const struct x86_cpu_id *id;
@@ -725,7 +702,7 @@ static int __init skx_init(void)
 		skx_set_decode(skx_decode, skx_show_retry_rd_err_log);
 	}
 
-	/* Ensure that the OPSTATE is set correctly for POLL or NMI */
+	 
 	opstate_init();
 
 	setup_skx_debug();

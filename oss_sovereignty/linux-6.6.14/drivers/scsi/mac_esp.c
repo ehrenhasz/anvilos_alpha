@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* mac_esp.c: ESP front-end for Macintosh Quadra systems.
- *
- * Adapted from jazz_esp.c and the old mac_esp.c.
- *
- * The pseudo DMA algorithm is based on the one used in NetBSD.
- * See sys/arch/mac68k/obio/esp.c for some background information.
- *
- * Copyright (C) 2007-2008 Finn Thain
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -72,17 +64,17 @@ static inline u8 mac_esp_read8(struct esp *esp, unsigned long reg)
 
 static void mac_esp_reset_dma(struct esp *esp)
 {
-	/* Nothing to do. */
+	 
 }
 
 static void mac_esp_dma_drain(struct esp *esp)
 {
-	/* Nothing to do. */
+	 
 }
 
 static void mac_esp_dma_invalidate(struct esp *esp)
 {
-	/* Nothing to do. */
+	 
 }
 
 static int mac_esp_dma_error(struct esp *esp)
@@ -253,10 +245,7 @@ static irqreturn_t mac_scsi_esp_intr(int irq, void *dev_id)
 {
 	int got_intr;
 
-	/*
-	 * This is an edge triggered IRQ, so we have to be careful to
-	 * avoid missing a transition when it is shared by two ESP devices.
-	 */
+	 
 
 	do {
 		got_intr = 0;
@@ -346,9 +335,7 @@ static int esp_mac_probe(struct platform_device *dev)
 		nubus_writel(0x1d1, mep->pdma_regs);
 		break;
 	case MAC_SCSI_QUADRA3:
-		/* These quadras have a real DMA controller (the PSC) but we
-		 * don't know how to drive it so we must use PIO instead.
-		 */
+		 
 		esp->cfreq     = 25000000;
 		esp->regs      = (void __iomem *)MAC_ESP_REGS_QUADRA3;
 		mep->pdma_io   = NULL;
@@ -371,9 +358,7 @@ static int esp_mac_probe(struct platform_device *dev)
 
 	host->irq = IRQ_MAC_SCSI;
 
-	/* The request_irq() call is intended to succeed for the first device
-	 * and fail for the second device.
-	 */
+	 
 	err = request_irq(host->irq, mac_scsi_esp_intr, 0, "ESP", NULL);
 	spin_lock(&esp_chips_lock);
 	if (err < 0 && esp_chips[!dev->id] == NULL) {

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Copyright (c) 2018-2019 Hisilicon Limited. */
+
+ 
 
 #include <linux/device.h>
 #include <linux/sched/clock.h>
@@ -81,10 +81,7 @@ static const struct hclge_dbg_reg_type_info hclge_dbg_reg_info[] = {
 		       .cmd = HCLGE_OPC_DFX_TQP_REG } },
 };
 
-/* make sure: len(name) + interval >= maxlen(item data) + 2,
- * for example, name = "pkt_num"(len: 7), the prototype of item data is u32,
- * and print as "%u"(maxlen: 10), so the interval should be at least 5.
- */
+ 
 static void hclge_dbg_fill_content(char *content, u16 len,
 				   const struct hclge_dbg_item *items,
 				   const char **result, u16 size)
@@ -1204,12 +1201,10 @@ static int hclge_dbg_dump_qos_dscp_map(struct hclge_dev *hdev, char *buf,
 
 	pos += scnprintf(buf + pos, len - pos, "\nDSCP  PRIO  TC\n");
 
-	/* The low 32 dscp setting use bd0, high 32 dscp setting use bd1 */
+	 
 	for (i = 0; i < HNAE3_MAX_DSCP / HCLGE_DSCP_MAP_TC_BD_NUM; i++) {
 		j = i + HNAE3_MAX_DSCP / HCLGE_DSCP_MAP_TC_BD_NUM;
-		/* Each dscp setting has 4 bits, so each byte saves two dscp
-		 * setting
-		 */
+		 
 		dscp_tc[i] = req0[i >> 1] >> HCLGE_DSCP_TC_SHIFT(i);
 		dscp_tc[j] = req1[i >> 1] >> HCLGE_DSCP_TC_SHIFT(i);
 		dscp_tc[i] &= HCLGE_DBG_TC_MASK;
@@ -1543,19 +1538,19 @@ static int hclge_dbg_fd_tcam_read(struct hclge_dev *hdev, bool sel_x,
 			 "read result tcam key %s(%u):\n", sel_x ? "x" : "y",
 			 tcam_msg.loc);
 
-	/* tcam_data0 ~ tcam_data1 */
+	 
 	req = (__le32 *)req1->tcam_data;
 	for (i = 0; i < 2; i++)
 		pos += scnprintf(tcam_buf + pos, HCLGE_DBG_TCAM_BUF_SIZE - pos,
 				 "%08x\n", le32_to_cpu(*req++));
 
-	/* tcam_data2 ~ tcam_data7 */
+	 
 	req = (__le32 *)req2->tcam_data;
 	for (i = 0; i < 6; i++)
 		pos += scnprintf(tcam_buf + pos, HCLGE_DBG_TCAM_BUF_SIZE - pos,
 				 "%08x\n", le32_to_cpu(*req++));
 
-	/* tcam_data8 ~ tcam_data12 */
+	 
 	req = (__le32 *)req3->tcam_data;
 	for (i = 0; i < 5; i++)
 		pos += scnprintf(tcam_buf + pos, HCLGE_DBG_TCAM_BUF_SIZE - pos,
@@ -1651,7 +1646,7 @@ out:
 
 static int hclge_dbg_dump_fd_counter(struct hclge_dev *hdev, char *buf, int len)
 {
-	u8 func_num = pci_num_vf(hdev->pdev) + 1; /* pf and enabled vf num */
+	u8 func_num = pci_num_vf(hdev->pdev) + 1;  
 	struct hclge_fd_ad_cnt_read_cmd *req;
 	char str_id[HCLGE_DBG_ID_LEN];
 	struct hclge_desc desc;
@@ -1962,9 +1957,7 @@ static int hclge_dbg_dump_loopback(struct hclge_dev *hdev, char *buf, int len)
 	return 0;
 }
 
-/* hclge_dbg_dump_mac_tnl_status: print message about mac tnl interrupt
- * @hdev: pointer to struct hclge_dev
- */
+ 
 static int
 hclge_dbg_dump_mac_tnl_status(struct hclge_dev *hdev, char *buf, int len)
 {
@@ -2238,7 +2231,7 @@ static int hclge_dbg_dump_vlan_filter_config(struct hclge_dev *hdev, char *buf,
 	char content[HCLGE_DBG_VLAN_FLTR_INFO_LEN], str_id[HCLGE_DBG_ID_LEN];
 	const char *result[ARRAY_SIZE(vlan_filter_items)];
 	u8 i, j, vlan_fe, bypass, ingress, egress;
-	u8 func_num = pci_num_vf(hdev->pdev) + 1; /* pf and enabled vf num */
+	u8 func_num = pci_num_vf(hdev->pdev) + 1;  
 	int ret;
 
 	ret = hclge_get_vlan_filter_state(hdev, HCLGE_FILTER_TYPE_PORT, 0,
@@ -2291,7 +2284,7 @@ static int hclge_dbg_dump_vlan_offload_config(struct hclge_dev *hdev, char *buf,
 	char str_id[HCLGE_DBG_ID_LEN], str_pvid[HCLGE_DBG_ID_LEN];
 	const char *result[ARRAY_SIZE(vlan_offload_items)];
 	char content[HCLGE_DBG_VLAN_OFFLOAD_INFO_LEN];
-	u8 func_num = pci_num_vf(hdev->pdev) + 1; /* pf and enabled vf num */
+	u8 func_num = pci_num_vf(hdev->pdev) + 1;  
 	struct hclge_dbg_vlan_cfg vlan_cfg;
 	int ret;
 	u8 i, j;

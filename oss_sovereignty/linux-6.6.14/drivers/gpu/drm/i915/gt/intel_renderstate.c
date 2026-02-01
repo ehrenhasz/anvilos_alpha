@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2014 Intel Corporation
- */
+
+ 
 
 #include "gem/i915_gem_internal.h"
 
@@ -31,15 +29,7 @@ render_state_get_rodata(const struct intel_engine_cs *engine)
 	return NULL;
 }
 
-/*
- * Macro to add commands to auxiliary batch.
- * This macro only checks for page overflow before inserting the commands,
- * this is sufficient as the null state generator makes the final batch
- * with two passes to build command and state separately. At this point
- * the size of both are known and it compacts them by relocating the state
- * right after the commands taking care of alignment so we should sufficient
- * space below them for adding new commands.
- */
+ 
 #define OUT_BATCH(batch, i, val)				\
 	do {							\
 		if ((i) >= PAGE_SIZE / sizeof(u32))		\
@@ -95,22 +85,7 @@ static int render_state_setup(struct intel_renderstate *so,
 	so->aux_offset = i * sizeof(u32);
 
 	if (HAS_POOLED_EU(i915)) {
-		/*
-		 * We always program 3x6 pool config but depending upon which
-		 * subslice is disabled HW drops down to appropriate config
-		 * shown below.
-		 *
-		 * In the below table 2x6 config always refers to
-		 * fused-down version, native 2x6 is not available and can
-		 * be ignored
-		 *
-		 * SNo  subslices config                eu pool configuration
-		 * -----------------------------------------------------------
-		 * 1    3 subslices enabled (3x6)  -    0x00777000  (9+9)
-		 * 2    ss0 disabled (2x6)         -    0x00777000  (3+9)
-		 * 3    ss1 disabled (2x6)         -    0x00770000  (6+6)
-		 * 4    ss2 disabled (2x6)         -    0x00007000  (9+3)
-		 */
+		 
 		u32 eu_pool_config = 0x00777000;
 
 		OUT_BATCH(d, i, GEN9_MEDIA_POOL_STATE);
@@ -124,10 +99,7 @@ static int render_state_setup(struct intel_renderstate *so,
 	OUT_BATCH(d, i, MI_BATCH_BUFFER_END);
 	so->aux_size = i * sizeof(u32) - so->aux_offset;
 	so->aux_offset += so->batch_offset;
-	/*
-	 * Since we are sending length, we need to strictly conform to
-	 * all requirements. For Gen2 this must be a multiple of 8.
-	 */
+	 
 	so->aux_size = ALIGN(so->aux_size, 8);
 
 	ret = 0;
@@ -170,7 +142,7 @@ retry:
 	if (err)
 		goto err_fini;
 
-	/* return early if there's nothing to setup */
+	 
 	if (!err && !so->rodata)
 		return 0;
 

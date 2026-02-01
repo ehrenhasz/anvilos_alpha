@@ -1,23 +1,4 @@
-/* pselect - synchronous I/O multiplexing
-
-   Copyright 2011-2023 Free Software Foundation, Inc.
-
-   This file is part of gnulib.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* written by Paul Eggert */
+ 
 
 #include <config.h>
 
@@ -26,12 +7,7 @@
 #include <errno.h>
 #include <signal.h>
 
-/* Examine the size-NFDS file descriptor sets in RFDS, WFDS, and XFDS
-   to see whether some of their descriptors are ready for reading,
-   ready for writing, or have exceptions pending.  Wait for at most
-   TIMEOUT seconds, and use signal mask SIGMASK while waiting.  A null
-   pointer parameter stands for no descriptors, an infinite timeout,
-   or an unaffected signal mask.  */
+ 
 
 #if !HAVE_PSELECT
 
@@ -68,8 +44,7 @@ pselect (int nfds, fd_set *restrict rfds,
   else
     tvp = NULL;
 
-  /* Signal mask munging should be atomic, but this is the best we can
-     do in this emulation.  */
+   
   if (sigmask)
     pthread_sigmask (SIG_SETMASK, sigmask, &origmask);
 
@@ -85,7 +60,7 @@ pselect (int nfds, fd_set *restrict rfds,
   return select_result;
 }
 
-#else /* HAVE_PSELECT */
+#else  
 # include <unistd.h>
 # undef pselect
 
@@ -97,7 +72,7 @@ rpl_pselect (int nfds, fd_set *restrict rfds,
 {
   int i;
 
-  /* FreeBSD 8.2 has a bug: it does not always detect invalid fds.  */
+   
   if (nfds < 0 || nfds > FD_SETSIZE)
     {
       errno = EINVAL;

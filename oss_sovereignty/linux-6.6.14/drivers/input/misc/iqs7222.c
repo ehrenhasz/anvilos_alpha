@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Azoteq IQS7222A/B/C/D Capacitive Touch Controller
- *
- * Copyright (C) 2022 Jeff LaBundy <jeff@labundy.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/delay.h>
@@ -1456,19 +1452,7 @@ static int iqs7222_force_comms(struct iqs7222_private *iqs7222)
 	u8 msg_buf[] = { 0xFF, };
 	int ret;
 
-	/*
-	 * The device cannot communicate until it asserts its interrupt (RDY)
-	 * pin. Attempts to do so while RDY is deasserted return an ACK; how-
-	 * ever all write data is ignored, and all read data returns 0xEE.
-	 *
-	 * Unsolicited communication must be preceded by a special force com-
-	 * munication command, after which the device eventually asserts its
-	 * RDY pin and agrees to communicate.
-	 *
-	 * Regardless of whether communication is forced or the result of an
-	 * interrupt, the device automatically deasserts its RDY pin once it
-	 * detects an I2C stop condition, or a timeout expires.
-	 */
+	 
 	ret = gpiod_get_value_cansleep(iqs7222->irq_gpio);
 	if (ret < 0)
 		return ret;
@@ -1480,10 +1464,7 @@ static int iqs7222_force_comms(struct iqs7222_private *iqs7222)
 		if (ret >= 0)
 			ret = -EIO;
 
-		/*
-		 * The datasheet states that the host must wait to retry any
-		 * failed attempt to communicate over I2C.
-		 */
+		 
 		msleep(IQS7222_COMMS_RETRY_MS);
 		return ret;
 	}
@@ -1517,11 +1498,7 @@ static int iqs7222_read_burst(struct iqs7222_private *iqs7222,
 	else
 		*reg_buf = (u8)reg;
 
-	/*
-	 * The following loop protects against an edge case in which the RDY
-	 * pin is automatically deasserted just as the read is initiated. In
-	 * that case, the read must be retried using forced communication.
-	 */
+	 
 	for (i = 0; i < IQS7222_NUM_RETRIES; i++) {
 		ret = iqs7222_force_comms(iqs7222);
 		if (ret < 0)
@@ -1545,10 +1522,7 @@ static int iqs7222_read_burst(struct iqs7222_private *iqs7222,
 		break;
 	}
 
-	/*
-	 * The following delay ensures the device has deasserted the RDY pin
-	 * following the I2C stop condition.
-	 */
+	 
 	usleep_range(50, 100);
 
 	if (ret < 0)
@@ -1593,15 +1567,7 @@ static int iqs7222_write_burst(struct iqs7222_private *iqs7222,
 
 	memcpy(msg_buf + reg_len, val, val_len);
 
-	/*
-	 * The following loop protects against an edge case in which the RDY
-	 * pin is automatically asserted just before the force communication
-	 * command is sent.
-	 *
-	 * In that case, the subsequent I2C stop condition tricks the device
-	 * into preemptively deasserting the RDY pin and the command must be
-	 * sent again.
-	 */
+	 
 	for (i = 0; i < IQS7222_NUM_RETRIES; i++) {
 		ret = iqs7222_force_comms(iqs7222);
 		if (ret < 0)
@@ -1646,21 +1612,13 @@ static int iqs7222_ati_trigger(struct iqs7222_private *iqs7222)
 	u16 sys_setup;
 	int error, i;
 
-	/*
-	 * The reserved fields of the system setup register may have changed
-	 * as a result of other registers having been written. As such, read
-	 * the register's latest value to avoid unexpected behavior when the
-	 * register is written in the loop that follows.
-	 */
+	 
 	error = iqs7222_read_word(iqs7222, IQS7222_SYS_SETUP, &sys_setup);
 	if (error)
 		return error;
 
 	for (i = 0; i < IQS7222_NUM_RETRIES; i++) {
-		/*
-		 * Trigger ATI from streaming and normal-power modes so that
-		 * the RDY pin continues to be asserted during ATI.
-		 */
+		 
 		error = iqs7222_write_word(iqs7222, IQS7222_SYS_SETUP,
 					   sys_setup |
 					   IQS7222_SYS_SETUP_REDO_ATI);
@@ -1689,10 +1647,7 @@ static int iqs7222_ati_trigger(struct iqs7222_private *iqs7222)
 			if (sys_status & IQS7222_SYS_STATUS_ATI_ACTIVE)
 				continue;
 
-			/*
-			 * Use stream-in-touch mode if either slider reports
-			 * absolute position.
-			 */
+			 
 			sys_setup |= test_bit(EV_ABS, iqs7222->keypad->evbit)
 				   ? IQS7222_SYS_SETUP_INTF_MODE_TOUCH
 				   : IQS7222_SYS_SETUP_INTF_MODE_EVENT;
@@ -1717,16 +1672,7 @@ static int iqs7222_dev_init(struct iqs7222_private *iqs7222, int dir)
 	int comms_offset = dev_desc->comms_offset;
 	int error, i, j, k;
 
-	/*
-	 * Acknowledge reset before writing any registers in case the device
-	 * suffers a spurious reset during initialization. Because this step
-	 * may change the reserved fields of the second filter beta register,
-	 * its cache must be updated.
-	 *
-	 * Writing the second filter beta register, in turn, may clobber the
-	 * system status register. As such, the filter beta register pair is
-	 * written first to protect against this hazard.
-	 */
+	 
 	if (dir == WRITE) {
 		u16 reg = dev_desc->reg_grps[IQS7222_REG_GRP_FILT].base + 1;
 		u16 filt_setup;
@@ -1745,11 +1691,7 @@ static int iqs7222_dev_init(struct iqs7222_private *iqs7222, int dir)
 		iqs7222->filt_setup[1] |= (filt_setup & ~GENMASK(7, 0));
 	}
 
-	/*
-	 * Take advantage of the stop-bit disable function, if available, to
-	 * save the trouble of having to reopen a communication window after
-	 * each burst read or write.
-	 */
+	 
 	if (comms_offset) {
 		u16 comms_setup;
 
@@ -1972,14 +1914,7 @@ static int iqs7222_parse_props(struct iqs7222_private *iqs7222,
 		    iqs7222_props[i].reg_key != reg_key)
 			continue;
 
-		/*
-		 * Boolean register fields are one bit wide; they are forcibly
-		 * reset to provide a means to undo changes by a bootloader if
-		 * necessary.
-		 *
-		 * Scalar fields, on the other hand, are left untouched unless
-		 * their corresponding properties are present.
-		 */
+		 
 		if (reg_width == 1) {
 			if (invert)
 				setup[reg_offset] |= BIT(reg_shift);
@@ -2086,15 +2021,7 @@ static int iqs7222_parse_cycle(struct iqs7222_private *iqs7222,
 	unsigned int pins[9];
 	int error, count, i;
 
-	/*
-	 * Each channel shares a cycle with one other channel; the mapping of
-	 * channels to cycles is fixed. Properties defined for a cycle impact
-	 * both channels tied to the cycle.
-	 *
-	 * Unlike channels which are restricted to a select range of CRx pins
-	 * based on channel number, any cycle can claim any of the device's 9
-	 * CTx pins (CTx0-8).
-	 */
+	 
 	if (!fwnode_property_present(cycle_node, "azoteq,tx-enable"))
 		return 0;
 
@@ -2150,10 +2077,7 @@ static int iqs7222_parse_chan(struct iqs7222_private *iqs7222,
 
 	chan_setup[0] |= IQS7222_CHAN_SETUP_0_CHAN_EN;
 
-	/*
-	 * The reference channel function allows for differential measurements
-	 * and is only available in the case of IQS7222A or IQS7222C.
-	 */
+	 
 	if (dev_desc->reg_grps[IQS7222_REG_GRP_CHAN].num_col > 4 &&
 	    fwnode_property_present(chan_node, "azoteq,ref-select")) {
 		u16 *ref_setup;
@@ -2176,10 +2100,7 @@ static int iqs7222_parse_chan(struct iqs7222_private *iqs7222,
 
 		ref_setup = iqs7222->chan_setup[val];
 
-		/*
-		 * Configure the current channel as a follower of the selected
-		 * reference channel.
-		 */
+		 
 		chan_setup[0] |= IQS7222_CHAN_SETUP_0_REF_MODE_FOLLOW;
 		chan_setup[4] = val * 42 + 1048;
 
@@ -2201,10 +2122,7 @@ static int iqs7222_parse_chan(struct iqs7222_private *iqs7222,
 			return error;
 		}
 
-		/*
-		 * Configure the selected channel as a reference channel which
-		 * serves the current channel.
-		 */
+		 
 		ref_setup[0] |= IQS7222_CHAN_SETUP_0_REF_MODE_REF;
 		ref_setup[5] |= BIT(chan_index);
 
@@ -2214,19 +2132,12 @@ static int iqs7222_parse_chan(struct iqs7222_private *iqs7222,
 	} else if (dev_desc->reg_grps[IQS7222_REG_GRP_TPAD].num_row &&
 		   fwnode_property_present(chan_node,
 					   "azoteq,counts-filt-enable")) {
-		/*
-		 * In the case of IQS7222D, however, the reference mode field
-		 * is partially repurposed as a counts filter enable control.
-		 */
+		 
 		chan_setup[0] |= IQS7222_CHAN_SETUP_0_REF_MODE_REF;
 	}
 
 	if (fwnode_property_present(chan_node, "azoteq,rx-enable")) {
-		/*
-		 * Each channel can claim up to 4 CRx pins. The first half of
-		 * the channels can use CRx0-3, while the second half can use
-		 * CRx4-7.
-		 */
+		 
 		unsigned int pins[4];
 		int count;
 
@@ -2283,10 +2194,7 @@ static int iqs7222_parse_chan(struct iqs7222_private *iqs7222,
 						 "azoteq,timeout-press-ms",
 						 &val);
 		if (!error) {
-			/*
-			 * The IQS7222B employs a global pair of press timeout
-			 * registers as opposed to channel-specific registers.
-			 */
+			 
 			u16 *setup = dev_desc->reg_grps
 				     [IQS7222_REG_GRP_BTN].num_col > 2 ?
 				     &iqs7222->btn_setup[chan_index][2] :
@@ -2327,10 +2235,7 @@ static int iqs7222_parse_chan(struct iqs7222_private *iqs7222,
 		sys_setup[dev_desc->event_offset] |= event_enable;
 	}
 
-	/*
-	 * The following call handles a special pair of properties that apply
-	 * to a channel node, but reside within the button (event) group.
-	 */
+	 
 	return iqs7222_parse_props(iqs7222, chan_node, chan_index,
 				   IQS7222_REG_GRP_BTN,
 				   IQS7222_REG_KEY_DEBOUNCE);
@@ -2348,11 +2253,7 @@ static int iqs7222_parse_sldr(struct iqs7222_private *iqs7222,
 	u16 *sldr_setup = iqs7222->sldr_setup[sldr_index];
 	unsigned int chan_sel[4], val;
 
-	/*
-	 * Each slider can be spread across 3 to 4 channels. It is possible to
-	 * select only 2 channels, but doing so prevents the slider from using
-	 * the specified resolution.
-	 */
+	 
 	count = fwnode_property_count_u32(sldr_node, "azoteq,channel-select");
 	if (count < 0) {
 		dev_err(&client->dev, "Failed to count %s channels: %d\n",
@@ -2373,11 +2274,7 @@ static int iqs7222_parse_sldr(struct iqs7222_private *iqs7222,
 		return error;
 	}
 
-	/*
-	 * Resolution and top speed, if small enough, are packed into a single
-	 * register. Otherwise, each occupies its own register and the rest of
-	 * the slider-related register addresses are offset by one.
-	 */
+	 
 	reg_offset = dev_desc->sldr_res < U16_MAX ? 0 : 1;
 
 	sldr_setup[0] |= count;
@@ -2394,10 +2291,7 @@ static int iqs7222_parse_sldr(struct iqs7222_private *iqs7222,
 			return -EINVAL;
 		}
 
-		/*
-		 * The following fields indicate which channels participate in
-		 * the slider, as well as each channel's relative placement.
-		 */
+		 
 		sldr_setup[3 + reg_offset] |= BIT(chan_sel[i]);
 		sldr_setup[5 + reg_offset + i] = chan_sel[i] * 42 + 1080;
 	}
@@ -2481,11 +2375,7 @@ static int iqs7222_parse_sldr(struct iqs7222_private *iqs7222,
 			sldr_setup[0] |= dev_desc->wheel_enable;
 	}
 
-	/*
-	 * The absence of a register offset makes it safe to assume the device
-	 * supports gestures, each of which is first disabled until explicitly
-	 * enabled.
-	 */
+	 
 	if (!reg_offset)
 		for (i = 0; i < ARRAY_SIZE(iqs7222_sl_events); i++)
 			sldr_setup[9] &= ~iqs7222_sl_events[i].enable;
@@ -2499,10 +2389,7 @@ static int iqs7222_parse_sldr(struct iqs7222_private *iqs7222,
 		if (!event_node)
 			continue;
 
-		/*
-		 * Depending on the device, gestures are either offered using
-		 * one of two timing resolutions, or are not supported at all.
-		 */
+		 
 		if (reg_offset)
 			reg_key = IQS7222_REG_KEY_RESERVED;
 		else if (dev_desc->legacy_gesture &&
@@ -2514,11 +2401,7 @@ static int iqs7222_parse_sldr(struct iqs7222_private *iqs7222,
 		else
 			reg_key = iqs7222_sl_events[i].reg_key;
 
-		/*
-		 * The press/release event does not expose a direct GPIO link,
-		 * but one can be emulated by tying each of the participating
-		 * channels to the same GPIO.
-		 */
+		 
 		error = iqs7222_parse_event(iqs7222, event_node, sldr_index,
 					    IQS7222_REG_GRP_SLDR, reg_key,
 					    i ? iqs7222_sl_events[i].enable
@@ -2537,11 +2420,7 @@ static int iqs7222_parse_sldr(struct iqs7222_private *iqs7222,
 		if (!dev_desc->event_offset)
 			continue;
 
-		/*
-		 * The press/release event is determined based on whether the
-		 * coordinate field reports 0xFFFF and solely relies on touch
-		 * or proximity interrupts to be unmasked.
-		 */
+		 
 		if (i && !reg_offset)
 			*event_mask |= (IQS7222_EVENT_MASK_SLDR << sldr_index);
 		else if (sldr_setup[4 + reg_offset] == dev_desc->touch_link)
@@ -2550,10 +2429,7 @@ static int iqs7222_parse_sldr(struct iqs7222_private *iqs7222,
 			*event_mask |= IQS7222_EVENT_MASK_PROX;
 	}
 
-	/*
-	 * The following call handles a special pair of properties that shift
-	 * to make room for a wheel enable control in the case of IQS7222C.
-	 */
+	 
 	return iqs7222_parse_props(iqs7222, sldr_node, sldr_index,
 				   IQS7222_REG_GRP_SLDR,
 				   dev_desc->wheel_enable ?
@@ -2612,10 +2488,7 @@ static int iqs7222_parse_tpad(struct iqs7222_private *iqs7222,
 			return -EINVAL;
 		}
 
-		/*
-		 * The following fields indicate which channels participate in
-		 * the trackpad, as well as each channel's relative placement.
-		 */
+		 
 		tpad_setup[6] |= BIT(chan_sel[i]);
 		tpad_setup[8 + i] = chan_sel[i] * 34 + 1072;
 	}
@@ -2655,11 +2528,7 @@ static int iqs7222_parse_tpad(struct iqs7222_private *iqs7222,
 		if (!dev_desc->event_offset)
 			continue;
 
-		/*
-		 * The press/release event is determined based on whether the
-		 * coordinate fields report 0xFFFF and solely relies on touch
-		 * or proximity interrupts to be unmasked.
-		 */
+		 
 		if (i)
 			*event_mask |= IQS7222_EVENT_MASK_TPAD;
 		else if (tpad_setup[7] == dev_desc->touch_link)
@@ -2759,10 +2628,7 @@ static int iqs7222_parse_all(struct iqs7222_private *iqs7222)
 		if (reg_grps[IQS7222_REG_GRP_GPIO].num_row == 1)
 			continue;
 
-		/*
-		 * The IQS7222C and IQS7222D expose multiple GPIO and must be
-		 * informed as to which GPIO this group represents.
-		 */
+		 
 		for (j = 0; j < ARRAY_SIZE(iqs7222_gpio_links); j++)
 			gpio_setup[0] &= ~BIT(iqs7222_gpio_links[j]);
 
@@ -2829,13 +2695,7 @@ static int iqs7222_report(struct iqs7222_private *iqs7222)
 			continue;
 
 		for (j = 0; j < ARRAY_SIZE(iqs7222_kp_events); j++) {
-			/*
-			 * Proximity state begins at offset 2 and spills into
-			 * offset 3 for devices with more than 16 channels.
-			 *
-			 * Touch state begins at the first offset immediately
-			 * following proximity state.
-			 */
+			 
 			int k = 2 + j * (num_chan > 16 ? 2 : 1);
 			u16 state = le16_to_cpu(status[k + i / 16]);
 
@@ -2864,20 +2724,14 @@ static int iqs7222_report(struct iqs7222_private *iqs7222)
 		input_report_key(iqs7222->keypad, iqs7222->sl_code[i][0],
 				 sldr_pos < dev_desc->sldr_res);
 
-		/*
-		 * A maximum resolution indicates the device does not support
-		 * gestures, in which case the remaining fields are ignored.
-		 */
+		 
 		if (dev_desc->sldr_res == U16_MAX)
 			continue;
 
 		if (!(le16_to_cpu(status[1]) & IQS7222_EVENT_MASK_SLDR << i))
 			continue;
 
-		/*
-		 * Skip the press/release event, as it does not have separate
-		 * status fields and is handled separately.
-		 */
+		 
 		for (j = 1; j < ARRAY_SIZE(iqs7222_sl_events); j++) {
 			u16 mask = iqs7222_sl_events[j].mask;
 			u16 val = iqs7222_sl_events[j].val;
@@ -2909,10 +2763,7 @@ static int iqs7222_report(struct iqs7222_private *iqs7222)
 		if (!(le16_to_cpu(status[1]) & IQS7222_EVENT_MASK_TPAD))
 			continue;
 
-		/*
-		 * Skip the press/release event, as it does not have separate
-		 * status fields and is handled separately.
-		 */
+		 
 		for (j = 1; j < ARRAY_SIZE(iqs7222_tp_events); j++) {
 			u16 mask = iqs7222_tp_events[j].mask;
 			u16 val = iqs7222_tp_events[j].val;
@@ -2961,11 +2812,7 @@ static int iqs7222_probe(struct i2c_client *client)
 	iqs7222->keypad->name = client->name;
 	iqs7222->keypad->id.bustype = BUS_I2C;
 
-	/*
-	 * The RDY pin behaves as an interrupt, but must also be polled ahead
-	 * of unsolicited I2C communication. As such, it is first opened as a
-	 * GPIO and then passed to gpiod_to_irq() to register the interrupt.
-	 */
+	 
 	iqs7222->irq_gpio = devm_gpiod_get(&client->dev, "irq", GPIOD_IN);
 	if (IS_ERR(iqs7222->irq_gpio)) {
 		error = PTR_ERR(iqs7222->irq_gpio);

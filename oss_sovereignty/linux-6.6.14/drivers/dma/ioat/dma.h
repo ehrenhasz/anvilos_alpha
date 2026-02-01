@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright(c) 2004 - 2009 Intel Corporation. All rights reserved.
- */
+ 
+ 
 #ifndef IOATDMA_H
 #define IOATDMA_H
 
@@ -25,7 +23,7 @@
 
 #define chan_num(ch) ((int)((ch)->reg_base - (ch)->ioat_dma->reg_base) / 0x80)
 
-/* ioat hardware assumes at least two sources for raid operations */
+ 
 #define src_cnt_to_sw(x) ((x) + 2)
 #define src_cnt_to_hw(x) ((x) - 2)
 #define ndest_to_sw(x) ((x) + 1)
@@ -33,10 +31,7 @@
 #define src16_cnt_to_sw(x) ((x) + 9)
 #define src16_cnt_to_hw(x) ((x) - 9)
 
-/*
- * workaround for IOAT ver.3.0 null descriptor issue
- * (channel returns error when size is 0)
- */
+ 
 #define NULL_DESC_BUFFER_SIZE 1
 
 enum ioat_irq_mode {
@@ -46,20 +41,7 @@ enum ioat_irq_mode {
 	IOAT_INTX
 };
 
-/**
- * struct ioatdma_device - internal representation of a IOAT device
- * @pdev: PCI-Express device
- * @reg_base: MMIO register space base address
- * @completion_pool: DMA buffers for completion ops
- * @sed_hw_pool: DMA super descriptor pools
- * @dma_dev: embedded struct dma_device
- * @version: version of ioatdma device
- * @msix_entries: irq handlers
- * @idx: per channel data
- * @dca: direct cache access context
- * @irq_mode: interrupt mode (INTX, MSI, MSIX)
- * @cap: read DMA capabilities register
- */
+ 
 struct ioatdma_device {
 	struct pci_dev *pdev;
 	void __iomem *reg_base;
@@ -76,7 +58,7 @@ struct ioatdma_device {
 	u32 cap;
 	int chancnt;
 
-	/* shadow version for CB3.3 chan reset errata workaround */
+	 
 	u64 msixtba0;
 	u64 msixdata0;
 	u32 msixpba;
@@ -112,17 +94,7 @@ struct ioatdma_chan {
 	struct tasklet_struct cleanup_task;
 	struct kobject kobj;
 
-/* ioat v2 / v3 channel attributes
- * @xfercap_log; log2 of channel max transfer length (for fast division)
- * @head: allocated index
- * @issued: hardware notification point
- * @tail: cleanup index
- * @dmacount: identical to 'head' except for occasionally resetting to zero
- * @alloc_order: log2 of the number of allocated descriptors
- * @produce: number of descriptors to produce at submit time
- * @ring: software ring buffer implementation of hardware ring
- * @prep_lock: serializes descriptor preparation (producers)
- */
+ 
 	size_t xfercap_log;
 	u16 head;
 	u16 issued;
@@ -144,13 +116,7 @@ struct ioat_sysfs_entry {
 	ssize_t (*store)(struct dma_chan *, const char *, size_t);
 };
 
-/**
- * struct ioat_sed_ent - wrapper around super extended hardware descriptor
- * @hw: hardware SED
- * @dma: dma address for the SED
- * @parent: point to the dma descriptor that's the parent
- * @hw_pool: descriptor pool index
- */
+ 
 struct ioat_sed_ent {
 	struct ioat_sed_raw_descriptor *hw;
 	dma_addr_t dma;
@@ -158,21 +124,7 @@ struct ioat_sed_ent {
 	unsigned int hw_pool;
 };
 
-/**
- * struct ioat_ring_ent - wrapper around hardware descriptor
- * @hw: hardware DMA descriptor (for memcpy)
- * @xor: hardware xor descriptor
- * @xor_ex: hardware xor extension descriptor
- * @pq: hardware pq descriptor
- * @pq_ex: hardware pq extension descriptor
- * @pqu: hardware pq update descriptor
- * @raw: hardware raw (un-typed) descriptor
- * @txd: the generic software descriptor for all engines
- * @len: total transaction length for unmap
- * @result: asynchronous result of validate operations
- * @id: identifier for debug
- * @sed: pointer to super extended descriptor sw desc
- */
+ 
 
 struct ioat_ring_ent {
 	union {
@@ -206,7 +158,7 @@ static inline struct ioatdma_chan *to_ioat_chan(struct dma_chan *c)
 	return container_of(c, struct ioatdma_chan, dma_chan);
 }
 
-/* wrapper around hardware descriptor format + additional software fields */
+ 
 #ifdef DEBUG
 #define set_desc_id(desc, i) ((desc)->id = (i))
 #define desc_id(desc) ((desc)->id)
@@ -297,7 +249,7 @@ static inline bool is_ioat_suspended(unsigned long status)
 	return ((status & IOAT_CHANSTS_STATUS) == IOAT_CHANSTS_SUSPENDED);
 }
 
-/* channel was fatally programmed */
+ 
 static inline bool is_ioat_bug(unsigned long err)
 {
 	return !!err;
@@ -309,14 +261,14 @@ static inline u32 ioat_ring_size(struct ioatdma_chan *ioat_chan)
 	return 1 << ioat_chan->alloc_order;
 }
 
-/* count of descriptors in flight with the engine */
+ 
 static inline u16 ioat_ring_active(struct ioatdma_chan *ioat_chan)
 {
 	return CIRC_CNT(ioat_chan->head, ioat_chan->tail,
 			ioat_ring_size(ioat_chan));
 }
 
-/* count of descriptors pending submission to hardware */
+ 
 static inline u16 ioat_ring_pending(struct ioatdma_chan *ioat_chan)
 {
 	return CIRC_CNT(ioat_chan->head, ioat_chan->issued,
@@ -352,7 +304,7 @@ ioat_set_chainaddr(struct ioatdma_chan *ioat_chan, u64 addr)
 	       ioat_chan->reg_base + IOAT2_CHAINADDR_OFFSET_HIGH);
 }
 
-/* IOAT Prep functions */
+ 
 struct dma_async_tx_descriptor *
 ioat_dma_prep_memcpy_lock(struct dma_chan *c, dma_addr_t dma_dest,
 			   dma_addr_t dma_src, size_t len, unsigned long flags);
@@ -381,7 +333,7 @@ ioat_prep_pqxor_val(struct dma_chan *chan, dma_addr_t *src,
 		     unsigned int src_cnt, size_t len,
 		     enum sum_check_flags *result, unsigned long flags);
 
-/* IOAT Operation functions */
+ 
 irqreturn_t ioat_dma_do_interrupt(int irq, void *data);
 irqreturn_t ioat_dma_do_interrupt_msix(int irq, void *data);
 struct ioat_ring_ent **
@@ -397,11 +349,11 @@ void ioat_timer_event(struct timer_list *t);
 int ioat_check_space_lock(struct ioatdma_chan *ioat_chan, int num_descs);
 void ioat_issue_pending(struct dma_chan *chan);
 
-/* IOAT Init functions */
+ 
 bool is_bwd_ioat(struct pci_dev *pdev);
 struct dca_provider *ioat_dca_init(struct pci_dev *pdev, void __iomem *iobase);
 void ioat_kobject_add(struct ioatdma_device *ioat_dma, struct kobj_type *type);
 void ioat_kobject_del(struct ioatdma_device *ioat_dma);
 int ioat_dma_setup_interrupts(struct ioatdma_device *ioat_dma);
 void ioat_stop(struct ioatdma_chan *ioat_chan);
-#endif /* IOATDMA_H */
+#endif  

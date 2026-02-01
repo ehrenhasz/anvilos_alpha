@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * CPU-agnostic AMD IO page table allocator.
- *
- * Copyright (C) 2020 Advanced Micro Devices, Inc.
- * Author: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
- */
+
+ 
 
 #define pr_fmt(fmt)     "AMD-Vi: " fmt
 #define dev_fmt(fmt)    pr_fmt(fmt)
@@ -44,9 +39,7 @@ static const struct iommu_flush_ops v1_flush_ops = {
 	.tlb_add_page	= v1_tlb_add_page,
 };
 
-/*
- * Helper function to get the first pte of a large mapping
- */
+ 
 static u64 *first_pte_l7(u64 *pte, unsigned long *page_size,
 			 unsigned long *count)
 {
@@ -67,12 +60,7 @@ static u64 *first_pte_l7(u64 *pte, unsigned long *page_size,
 	return fpte;
 }
 
-/****************************************************************************
- *
- * The functions below are used the create the page table mappings for
- * unity mapped regions.
- *
- ****************************************************************************/
+ 
 
 static void free_pt_page(u64 *pt, struct list_head *freelist)
 {
@@ -87,19 +75,16 @@ static void free_pt_lvl(u64 *pt, struct list_head *freelist, int lvl)
 	int i;
 
 	for (i = 0; i < 512; ++i) {
-		/* PTE present? */
+		 
 		if (!IOMMU_PTE_PRESENT(pt[i]))
 			continue;
 
-		/* Large PTE? */
+		 
 		if (PM_PTE_LEVEL(pt[i]) == 0 ||
 		    PM_PTE_LEVEL(pt[i]) == 7)
 			continue;
 
-		/*
-		 * Free the next level. No need to look at l1 tables here since
-		 * they can only contain leaf PTEs; just free them directly.
-		 */
+		 
 		p = IOMMU_PTE_PAGE(pt[i]);
 		if (lvl > 2)
 			free_pt_lvl(p, freelist, lvl - 1);
@@ -136,18 +121,14 @@ void amd_iommu_domain_set_pgtable(struct protection_domain *domain,
 {
 	u64 pt_root;
 
-	/* lowest 3 bits encode pgtable mode */
+	 
 	pt_root = mode & 7;
 	pt_root |= (u64)root;
 
 	amd_iommu_domain_set_pt_root(domain, pt_root);
 }
 
-/*
- * This function is used to add another level to an IO page table. Adding
- * another level increases the size of the address space by 9 bits to a size up
- * to 64 bits.
- */
+ 
 static bool increase_address_space(struct protection_domain *domain,
 				   unsigned long address,
 				   gfp_t gfp)
@@ -176,10 +157,7 @@ static bool increase_address_space(struct protection_domain *domain,
 	amd_iommu_update_and_flush_device_table(domain);
 	amd_iommu_domain_flush_complete(domain);
 
-	/*
-	 * Device Table needs to be updated and flushed before the new root can
-	 * be published.
-	 */
+	 
 	amd_iommu_domain_set_pgtable(domain, pte, domain->iop.mode);
 
 	pte = NULL;
@@ -205,10 +183,7 @@ static u64 *alloc_pte(struct protection_domain *domain,
 	BUG_ON(!is_power_of_2(page_size));
 
 	while (address > PM_LEVEL_SIZE(domain->iop.mode)) {
-		/*
-		 * Return an error if there is no memory to update the
-		 * page-table.
-		 */
+		 
 		if (!increase_address_space(domain, address, gfp))
 			return NULL;
 	}
@@ -226,10 +201,7 @@ static u64 *alloc_pte(struct protection_domain *domain,
 		__pte     = *pte;
 		pte_level = PM_PTE_LEVEL(__pte);
 
-		/*
-		 * If we replace a series of large PTEs, we need
-		 * to tear down all of them.
-		 */
+		 
 		if (IOMMU_PTE_PRESENT(__pte) &&
 		    pte_level == PAGE_MODE_7_LEVEL) {
 			unsigned long count, i;
@@ -237,10 +209,7 @@ static u64 *alloc_pte(struct protection_domain *domain,
 
 			lpte = first_pte_l7(pte, NULL, &count);
 
-			/*
-			 * Unmap the replicated PTEs that still match the
-			 * original large mapping
-			 */
+			 
 			for (i = 0; i < count; ++i)
 				cmpxchg64(&lpte[i], __pte, 0ULL);
 
@@ -257,7 +226,7 @@ static u64 *alloc_pte(struct protection_domain *domain,
 
 			__npte = PM_LEVEL_PDE(level, iommu_virt_to_phys(page));
 
-			/* pte could have been changed somewhere. */
+			 
 			if (!try_cmpxchg64(pte, &__pte, __npte))
 				free_page((unsigned long)page);
 			else if (IOMMU_PTE_PRESENT(__pte))
@@ -266,7 +235,7 @@ static u64 *alloc_pte(struct protection_domain *domain,
 			continue;
 		}
 
-		/* No level skipping support yet */
+		 
 		if (pte_level != level)
 			return NULL;
 
@@ -283,10 +252,7 @@ static u64 *alloc_pte(struct protection_domain *domain,
 	return pte;
 }
 
-/*
- * This function checks if there is a PTE for a given dma address. If
- * there is one, it returns the pointer to it.
- */
+ 
 static u64 *fetch_pte(struct amd_io_pgtable *pgtable,
 		      unsigned long address,
 		      unsigned long *page_size)
@@ -305,31 +271,28 @@ static u64 *fetch_pte(struct amd_io_pgtable *pgtable,
 
 	while (level > 0) {
 
-		/* Not Present */
+		 
 		if (!IOMMU_PTE_PRESENT(*pte))
 			return NULL;
 
-		/* Large PTE */
+		 
 		if (PM_PTE_LEVEL(*pte) == PAGE_MODE_7_LEVEL ||
 		    PM_PTE_LEVEL(*pte) == PAGE_MODE_NONE)
 			break;
 
-		/* No level skipping support yet */
+		 
 		if (PM_PTE_LEVEL(*pte) != level)
 			return NULL;
 
 		level -= 1;
 
-		/* Walk to the next level */
+		 
 		pte	   = IOMMU_PTE_PAGE(*pte);
 		pte	   = &pte[PM_LEVEL_INDEX(level, address)];
 		*page_size = PTE_LEVEL_PAGE_SIZE(level);
 	}
 
-	/*
-	 * If we have a series of large PTEs, make
-	 * sure to return a pointer to the first one.
-	 */
+	 
 	if (PM_PTE_LEVEL(*pte) == PAGE_MODE_7_LEVEL)
 		pte = first_pte_l7(pte, page_size, NULL);
 
@@ -353,13 +316,7 @@ static void free_clear_pte(u64 *pte, u64 pteval, struct list_head *freelist)
 	free_sub_pt(pt, mode, freelist);
 }
 
-/*
- * Generic mapping functions. It maps a physical address into a DMA
- * address space. It allocates the page table pages if necessary.
- * In the future it can be extended to a generic mapping function
- * supporting all features of AMD IOMMU page tables like level skipping
- * and full 64 bit address spaces.
- */
+ 
 static int iommu_v1_map_pages(struct io_pgtable_ops *ops, unsigned long iova,
 			      phys_addr_t paddr, size_t pgsize, size_t pgcount,
 			      int prot, gfp_t gfp, size_t *mapped)
@@ -419,17 +376,13 @@ out:
 		unsigned long flags;
 
 		spin_lock_irqsave(&dom->lock, flags);
-		/*
-		 * Flush domain TLB(s) and wait for completion. Any Device-Table
-		 * Updates and flushing already happened in
-		 * increase_address_space().
-		 */
+		 
 		amd_iommu_domain_flush_tlb_pde(dom);
 		amd_iommu_domain_flush_complete(dom);
 		spin_unlock_irqrestore(&dom->lock, flags);
 	}
 
-	/* Everything flushed out, free pages now */
+	 
 	put_pages_list(&freelist);
 
 	return ret;
@@ -486,9 +439,7 @@ static phys_addr_t iommu_v1_iova_to_phys(struct io_pgtable_ops *ops, unsigned lo
 	return (__pte & ~offset_mask) | (iova & offset_mask);
 }
 
-/*
- * ----------------------------------------------------
- */
+ 
 static void v1_free_pgtable(struct io_pgtable *iop)
 {
 	struct amd_io_pgtable *pgtable = container_of(iop, struct amd_io_pgtable, iop);
@@ -500,16 +451,16 @@ static void v1_free_pgtable(struct io_pgtable *iop)
 
 	dom = container_of(pgtable, struct protection_domain, iop);
 
-	/* Page-table is not visible to IOMMU anymore, so free it */
+	 
 	BUG_ON(pgtable->mode < PAGE_MODE_NONE ||
 	       pgtable->mode > PAGE_MODE_6_LEVEL);
 
 	free_sub_pt(pgtable->root, pgtable->mode, &freelist);
 
-	/* Update data structure */
+	 
 	amd_iommu_domain_clr_pt_root(dom);
 
-	/* Make changes visible to IOMMUs */
+	 
 	amd_iommu_domain_update(dom);
 
 	put_pages_list(&freelist);

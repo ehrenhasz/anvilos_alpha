@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2013 Intel Corporation. All Rights Reserved.
- *
- * Adapted from the atomisp-ov5693 driver, with contributions from:
- *
- * Daniel Scally
- * Jean-Michel Hautbois
- * Fabian Wuthrich
- * Tsuchiya Yuto
- * Jordan Hand
- * Jake Day
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/clk.h>
@@ -28,7 +17,7 @@
 #include <media/v4l2-device.h>
 #include <media/v4l2-fwnode.h>
 
-/* System Control */
+ 
 #define OV5693_SW_RESET_REG			CCI_REG8(0x0103)
 #define OV5693_SW_STREAM_REG			CCI_REG8(0x0100)
 #define OV5693_START_STREAMING			0x01
@@ -36,17 +25,17 @@
 #define OV5693_SW_RESET				0x01
 
 #define OV5693_REG_CHIP_ID			CCI_REG16(0x300a)
-/* Yes, this is right. The datasheet for the OV5693 gives its ID as 0x5690 */
+ 
 #define OV5693_CHIP_ID				0x5690
 
-/* Exposure */
+ 
 #define OV5693_EXPOSURE_CTRL_REG		CCI_REG24(0x3500)
 #define OV5693_EXPOSURE_CTRL_MASK		GENMASK(19, 4)
 #define OV5693_INTEGRATION_TIME_MARGIN		8
 #define OV5693_EXPOSURE_MIN			1
 #define OV5693_EXPOSURE_STEP			1
 
-/* Analogue Gain */
+ 
 #define OV5693_GAIN_CTRL_REG			CCI_REG16(0x350a)
 #define OV5693_GAIN_CTRL_MASK			GENMASK(10, 4)
 #define OV5693_GAIN_MIN				1
@@ -54,7 +43,7 @@
 #define OV5693_GAIN_DEF				8
 #define OV5693_GAIN_STEP			1
 
-/* Digital Gain */
+ 
 #define OV5693_MWB_RED_GAIN_REG			CCI_REG16(0x3400)
 #define OV5693_MWB_GREEN_GAIN_REG		CCI_REG16(0x3402)
 #define OV5693_MWB_BLUE_GAIN_REG		CCI_REG16(0x3404)
@@ -65,7 +54,7 @@
 #define OV5693_DIGITAL_GAIN_DEF			1024
 #define OV5693_DIGITAL_GAIN_STEP		1
 
-/* Timing and Format */
+ 
 #define OV5693_CROP_START_X_REG			CCI_REG16(0x3800)
 #define OV5693_CROP_START_Y_REG			CCI_REG16(0x3802)
 #define OV5693_CROP_END_X_REG			CCI_REG16(0x3804)
@@ -98,7 +87,7 @@
 #define OV5693_ISP_CTRL2_REG			CCI_REG8(0x5002)
 #define OV5693_ISP_SCALE_ENABLE			BIT(7)
 
-/* Pixel Array */
+ 
 #define OV5693_NATIVE_WIDTH			2624
 #define OV5693_NATIVE_HEIGHT			1956
 #define OV5693_NATIVE_START_LEFT		0
@@ -110,14 +99,14 @@
 #define OV5693_MIN_CROP_WIDTH			2
 #define OV5693_MIN_CROP_HEIGHT			2
 
-/* Test Pattern */
+ 
 #define OV5693_TEST_PATTERN_REG			CCI_REG8(0x5e00)
 #define OV5693_TEST_PATTERN_ENABLE		BIT(7)
 #define OV5693_TEST_PATTERN_ROLLING		BIT(6)
 #define OV5693_TEST_PATTERN_RANDOM		0x01
 #define OV5693_TEST_PATTERN_BARS		0x00
 
-/* System Frequencies */
+ 
 #define OV5693_XVCLK_FREQ			19200000
 #define OV5693_LINK_FREQ_419_2MHZ		419200000
 #define OV5693_PIXEL_RATE			167680000
@@ -125,9 +114,9 @@
 #define to_ov5693_sensor(x) container_of(x, struct ov5693_device, sd)
 
 static const char * const ov5693_supply_names[] = {
-	"avdd",		/* Analog power */
-	"dovdd",	/* Digital I/O power */
-	"dvdd",		/* Digital circuit power */
+	"avdd",		 
+	"dovdd",	 
+	"dvdd",		 
 };
 
 #define OV5693_NUM_SUPPLIES	ARRAY_SIZE(ov5693_supply_names)
@@ -136,7 +125,7 @@ struct ov5693_device {
 	struct device *dev;
 	struct regmap *regmap;
 
-	/* Protect against concurrent changes to controls */
+	 
 	struct mutex lock;
 
 	struct gpio_desc *reset;
@@ -353,7 +342,7 @@ static const u8 ov5693_test_pattern_bits[] = {
 	OV5693_TEST_PATTERN_ROLLING,
 };
 
-/* V4L2 Controls Functions */
+ 
 
 static int ov5693_flip_vert_configure(struct ov5693_device *ov5693,
 				      bool enable)
@@ -395,7 +384,7 @@ static int ov5693_get_exposure(struct ov5693_device *ov5693, s32 *value)
 	if (ret)
 		return ret;
 
-	/* The lowest 4 bits are unsupported fractional bits */
+	 
 	*value = exposure >> 4;
 
 	return 0;
@@ -422,7 +411,7 @@ static int ov5693_get_gain(struct ov5693_device *ov5693, u32 *gain)
 	if (ret)
 		return ret;
 
-	/* As with exposure, the lowest 4 bits are fractional bits. */
+	 
 	*gain = value >> 4;
 
 	return ret;
@@ -479,7 +468,7 @@ static int ov5693_s_ctrl(struct v4l2_ctrl *ctrl)
 	    container_of(ctrl->handler, struct ov5693_device, ctrls.handler);
 	int ret = 0;
 
-	/* If VBLANK is altered we need to update exposure to compensate */
+	 
 	if (ctrl->id == V4L2_CID_VBLANK) {
 		int exposure_max;
 
@@ -493,7 +482,7 @@ static int ov5693_s_ctrl(struct v4l2_ctrl *ctrl)
 					     exposure_max));
 	}
 
-	/* Only apply changes to the controls if the device is powered up */
+	 
 	if (!pm_runtime_get_if_in_use(ov5693->dev))
 		return 0;
 
@@ -549,55 +538,55 @@ static const struct v4l2_ctrl_ops ov5693_ctrl_ops = {
 	.g_volatile_ctrl = ov5693_g_volatile_ctrl
 };
 
-/* System Control Functions */
+ 
 
 static int ov5693_mode_configure(struct ov5693_device *ov5693)
 {
 	const struct ov5693_mode *mode = &ov5693->mode;
 	int ret = 0;
 
-	/* Crop Start X */
+	 
 	cci_write(ov5693->regmap, OV5693_CROP_START_X_REG, mode->crop.left,
 		  &ret);
 
-	/* Offset X */
+	 
 	cci_write(ov5693->regmap, OV5693_OFFSET_START_X_REG, 0, &ret);
 
-	/* Output Size X */
+	 
 	cci_write(ov5693->regmap, OV5693_OUTPUT_SIZE_X_REG, mode->format.width,
 		  &ret);
 
-	/* Crop End X */
+	 
 	cci_write(ov5693->regmap, OV5693_CROP_END_X_REG,
 		  mode->crop.left + mode->crop.width, &ret);
 
-	/* Horizontal Total Size */
+	 
 	cci_write(ov5693->regmap, OV5693_TIMING_HTS_REG, OV5693_FIXED_PPL,
 		  &ret);
 
-	/* Crop Start Y */
+	 
 	cci_write(ov5693->regmap, OV5693_CROP_START_Y_REG, mode->crop.top,
 		  &ret);
 
-	/* Offset Y */
+	 
 	cci_write(ov5693->regmap, OV5693_OFFSET_START_Y_REG, 0, &ret);
 
-	/* Output Size Y */
+	 
 	cci_write(ov5693->regmap, OV5693_OUTPUT_SIZE_Y_REG, mode->format.height,
 		  &ret);
 
-	/* Crop End Y */
+	 
 	cci_write(ov5693->regmap, OV5693_CROP_END_Y_REG,
 		  mode->crop.top + mode->crop.height, &ret);
 
-	/* Subsample X increase */
+	 
 	cci_write(ov5693->regmap, OV5693_SUB_INC_X_REG,
 		  ((mode->inc_x_odd << 4) & 0xf0) | 0x01, &ret);
-	/* Subsample Y increase */
+	 
 	cci_write(ov5693->regmap, OV5693_SUB_INC_Y_REG,
 		  ((mode->inc_y_odd << 4) & 0xf0) | 0x01, &ret);
 
-	/* Binning */
+	 
 	cci_update_bits(ov5693->regmap, OV5693_FORMAT1_REG,
 			OV5693_FORMAT1_VBIN_EN,
 			mode->binning_y ? OV5693_FORMAT1_VBIN_EN : 0, &ret);
@@ -752,15 +741,11 @@ static int ov5693_detect(struct ov5693_device *ov5693)
 	return 0;
 }
 
-/* V4L2 Framework callbacks */
+ 
 
 static unsigned int __ov5693_calc_vts(u32 height)
 {
-	/*
-	 * We need to set a sensible default VTS for whatever format height we
-	 * happen to be given from set_fmt(). This function just targets
-	 * an even multiple of 30fps.
-	 */
+	 
 
 	unsigned int tgt_fps;
 
@@ -824,19 +809,13 @@ static int ov5693_set_fmt(struct v4l2_subdev *sd,
 
 	crop = __ov5693_get_pad_crop(ov5693, state, format->pad, format->which);
 
-	/*
-	 * Align to two to simplify the binning calculations below, and clamp
-	 * the requested format at the crop rectangle
-	 */
+	 
 	width = clamp_t(unsigned int, ALIGN(format->format.width, 2),
 			OV5693_MIN_CROP_WIDTH, crop->width);
 	height = clamp_t(unsigned int, ALIGN(format->format.height, 2),
 			 OV5693_MIN_CROP_HEIGHT, crop->height);
 
-	/*
-	 * We can only support setting either the dimensions of the crop rect
-	 * or those dimensions binned (separately) by a factor of two.
-	 */
+	 
 	hratio = clamp_t(unsigned int,
 			 DIV_ROUND_CLOSEST(crop->width, width), 1, 2);
 	vratio = clamp_t(unsigned int,
@@ -930,11 +909,7 @@ static int ov5693_set_selection(struct v4l2_subdev *sd,
 	if (sel->target != V4L2_SEL_TGT_CROP)
 		return -EINVAL;
 
-	/*
-	 * Clamp the boundaries of the crop rectangle to the size of the sensor
-	 * pixel array. Align to multiples of 2 to ensure Bayer pattern isn't
-	 * disrupted.
-	 */
+	 
 	rect.left = clamp(ALIGN(sel->r.left, 2), OV5693_NATIVE_START_LEFT,
 			  OV5693_NATIVE_WIDTH);
 	rect.top = clamp(ALIGN(sel->r.top, 2), OV5693_NATIVE_START_TOP,
@@ -944,7 +919,7 @@ static int ov5693_set_selection(struct v4l2_subdev *sd,
 	rect.height = clamp_t(unsigned int, ALIGN(sel->r.height, 2),
 			      OV5693_MIN_CROP_HEIGHT, OV5693_NATIVE_HEIGHT);
 
-	/* Make sure the crop rectangle isn't outside the bounds of the array */
+	 
 	rect.width = min_t(unsigned int, rect.width,
 			   OV5693_NATIVE_WIDTH - rect.left);
 	rect.height = min_t(unsigned int, rect.height,
@@ -953,10 +928,7 @@ static int ov5693_set_selection(struct v4l2_subdev *sd,
 	__crop = __ov5693_get_pad_crop(ov5693, state, sel->pad, sel->which);
 
 	if (rect.width != __crop->width || rect.height != __crop->height) {
-		/*
-		 * Reset the output image size if the crop rectangle size has
-		 * been modified.
-		 */
+		 
 		format = __ov5693_get_pad_format(ov5693, state, sel->pad,
 						 sel->which);
 		format->width = rect.width;
@@ -1025,7 +997,7 @@ static int ov5693_enum_mbus_code(struct v4l2_subdev *sd,
 				 struct v4l2_subdev_state *state,
 				 struct v4l2_subdev_mbus_code_enum *code)
 {
-	/* Only a single mbus format is supported */
+	 
 	if (code->index > 0)
 		return -EINVAL;
 
@@ -1074,7 +1046,7 @@ static const struct v4l2_subdev_ops ov5693_ops = {
 	.pad = &ov5693_pad_ops,
 };
 
-/* Sensor and Driver Configuration Functions */
+ 
 
 static int ov5693_init_controls(struct ov5693_device *ov5693)
 {
@@ -1090,27 +1062,27 @@ static int ov5693_init_controls(struct ov5693_device *ov5693)
 	if (ret)
 		return ret;
 
-	/* link freq */
+	 
 	ctrls->link_freq = v4l2_ctrl_new_int_menu(&ctrls->handler,
 						  NULL, V4L2_CID_LINK_FREQ,
 						  0, 0, link_freq_menu_items);
 	if (ctrls->link_freq)
 		ctrls->link_freq->flags |= V4L2_CTRL_FLAG_READ_ONLY;
 
-	/* pixel rate */
+	 
 	ctrls->pixel_rate = v4l2_ctrl_new_std(&ctrls->handler, NULL,
 					      V4L2_CID_PIXEL_RATE, 0,
 					      OV5693_PIXEL_RATE, 1,
 					      OV5693_PIXEL_RATE);
 
-	/* Exposure */
+	 
 	exposure_max = ov5693->mode.vts - OV5693_INTEGRATION_TIME_MARGIN;
 	ctrls->exposure = v4l2_ctrl_new_std(&ctrls->handler, ops,
 					    V4L2_CID_EXPOSURE,
 					    OV5693_EXPOSURE_MIN, exposure_max,
 					    OV5693_EXPOSURE_STEP, exposure_max);
 
-	/* Gain */
+	 
 	ctrls->analogue_gain = v4l2_ctrl_new_std(&ctrls->handler,
 						 ops, V4L2_CID_ANALOGUE_GAIN,
 						 OV5693_GAIN_MIN,
@@ -1125,7 +1097,7 @@ static int ov5693_init_controls(struct ov5693_device *ov5693)
 						OV5693_DIGITAL_GAIN_STEP,
 						OV5693_DIGITAL_GAIN_DEF);
 
-	/* Flip */
+	 
 	ctrls->hflip = v4l2_ctrl_new_std(&ctrls->handler, ops,
 					 V4L2_CID_HFLIP, 0, 1, 1, 0);
 
@@ -1159,7 +1131,7 @@ static int ov5693_init_controls(struct ov5693_device *ov5693)
 		goto err_free_handler;
 	}
 
-	/* set properties from fwnode (e.g. rotation, orientation) */
+	 
 	ret = v4l2_fwnode_device_parse(ov5693->dev, &props);
 	if (ret)
 		goto err_free_handler;
@@ -1169,7 +1141,7 @@ static int ov5693_init_controls(struct ov5693_device *ov5693)
 	if (ret)
 		goto err_free_handler;
 
-	/* Use same lock for controls as for everything else. */
+	 
 	ctrls->handler.lock = &ov5693->lock;
 	ov5693->sd.ctrl_handler = &ctrls->handler;
 
@@ -1229,7 +1201,7 @@ static int ov5693_check_hwcfg(struct ov5693_device *ov5693)
 
 	endpoint = fwnode_graph_get_next_endpoint(fwnode, NULL);
 	if (!endpoint)
-		return -EPROBE_DEFER; /* Could be provided by cio2-bridge */
+		return -EPROBE_DEFER;  
 
 	ret = v4l2_fwnode_endpoint_alloc_parse(endpoint, &bus_cfg);
 	fwnode_handle_put(endpoint);
@@ -1337,12 +1309,7 @@ static int ov5693_probe(struct i2c_client *client)
 	if (ret)
 		goto err_ctrl_handler_free;
 
-	/*
-	 * We need the driver to work in the event that pm runtime is disable in
-	 * the kernel, so power up and verify the chip now. In the event that
-	 * runtime pm is disabled this will leave the chip on, so that streaming
-	 * will work.
-	 */
+	 
 
 	ret = ov5693_sensor_powerup(ov5693);
 	if (ret)
@@ -1392,10 +1359,7 @@ static void ov5693_remove(struct i2c_client *client)
 	v4l2_ctrl_handler_free(&ov5693->ctrls.handler);
 	mutex_destroy(&ov5693->lock);
 
-	/*
-	 * Disable runtime PM. In case runtime PM is disabled in the kernel,
-	 * make sure to turn power off manually.
-	 */
+	 
 	pm_runtime_disable(&client->dev);
 	if (!pm_runtime_status_suspended(&client->dev))
 		ov5693_sensor_powerdown(ov5693);
@@ -1414,7 +1378,7 @@ MODULE_DEVICE_TABLE(acpi, ov5693_acpi_match);
 
 static const struct of_device_id ov5693_of_match[] = {
 	{ .compatible = "ovti,ov5693", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, ov5693_of_match);
 

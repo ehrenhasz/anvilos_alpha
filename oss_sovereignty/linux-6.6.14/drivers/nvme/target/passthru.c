@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NVMe Over Fabrics Target Passthrough command implementation.
- *
- * Copyright (c) 2017-2018 Western Digital Corporation or its
- * affiliates.
- * Copyright (c) 2019-2020, Eideticom Inc.
- *
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 
@@ -15,17 +8,12 @@
 
 MODULE_IMPORT_NS(NVME_TARGET_PASSTHRU);
 
-/*
- * xarray to maintain one passthru subsystem per nvme controller.
- */
+ 
 static DEFINE_XARRAY(passthru_subsystems);
 
 void nvmet_passthrough_override_cap(struct nvmet_ctrl *ctrl)
 {
-	/*
-	 * Multiple command set support can only be declared if the underlying
-	 * controller actually supports it.
-	 */
+	 
 	if (!nvme_multi_css(ctrl->subsys->passthru_ctrl))
 		ctrl->cap &= ~(1ULL << 43);
 }
@@ -97,18 +85,11 @@ static u16 nvmet_passthru_override_id_ctrl(struct nvmet_req *req)
 	id->cntlid = cpu_to_le16(ctrl->cntlid);
 	id->ver = cpu_to_le32(ctrl->subsys->ver);
 
-	/*
-	 * The passthru NVMe driver may have a limit on the number of segments
-	 * which depends on the host's memory fragementation. To solve this,
-	 * ensure mdts is limited to the pages equal to the number of segments.
-	 */
+	 
 	max_hw_sectors = min_not_zero(pctrl->max_segments << PAGE_SECTORS_SHIFT,
 				      pctrl->max_hw_sectors);
 
-	/*
-	 * nvmet_passthru_map_sg is limitted to using a single bio so limit
-	 * the mdts based on BIO_MAX_VECS as well
-	 */
+	 
 	max_hw_sectors = min_not_zero(BIO_MAX_VECS << PAGE_SECTORS_SHIFT,
 				      max_hw_sectors);
 
@@ -117,16 +98,13 @@ static u16 nvmet_passthru_override_id_ctrl(struct nvmet_req *req)
 	id->mdts = ilog2(max_hw_sectors) + 9 - page_shift;
 
 	id->acl = 3;
-	/*
-	 * We export aerl limit for the fabrics controller, update this when
-	 * passthru based aerl support is added.
-	 */
+	 
 	id->aerl = NVMET_ASYNC_EVENTS - 1;
 
-	/* emulate kas as most of the PCIe ctrl don't have a support for kas */
+	 
 	id->kas = cpu_to_le16(NVMET_KAS);
 
-	/* don't support host memory buffer */
+	 
 	id->hmpre = 0;
 	id->hmmin = 0;
 
@@ -134,35 +112,29 @@ static u16 nvmet_passthru_override_id_ctrl(struct nvmet_req *req)
 	id->cqes = min_t(__u8, ((0x4 << 4) | 0x4), id->cqes);
 	id->maxcmd = cpu_to_le16(NVMET_MAX_CMD);
 
-	/* don't support fuse commands */
+	 
 	id->fuses = 0;
 
-	id->sgls = cpu_to_le32(1 << 0); /* we always support SGLs */
+	id->sgls = cpu_to_le32(1 << 0);  
 	if (ctrl->ops->flags & NVMF_KEYED_SGLS)
 		id->sgls |= cpu_to_le32(1 << 2);
 	if (req->port->inline_data_size)
 		id->sgls |= cpu_to_le32(1 << 20);
 
-	/*
-	 * When passthru controller is setup using nvme-loop transport it will
-	 * export the passthru ctrl subsysnqn (PCIe NVMe ctrl) and will fail in
-	 * the nvme/host/core.c in the nvme_init_subsystem()->nvme_active_ctrl()
-	 * code path with duplicate ctr subsynqn. In order to prevent that we
-	 * mask the passthru-ctrl subsysnqn with the target ctrl subsysnqn.
-	 */
+	 
 	memcpy(id->subnqn, ctrl->subsysnqn, sizeof(id->subnqn));
 
-	/* use fabric id-ctrl values */
+	 
 	id->ioccsz = cpu_to_le32((sizeof(struct nvme_command) +
 				req->port->inline_data_size) / 16);
 	id->iorcsz = cpu_to_le32(sizeof(struct nvme_completion) / 16);
 
 	id->msdbd = ctrl->ops->msdbd;
 
-	/* Support multipath connections with fabrics */
+	 
 	id->cmic |= 1 << 1;
 
-	/* Disable reservations, see nvmet_parse_passthru_io_cmd() */
+	 
 	id->oncs &= cpu_to_le16(~NVME_CTRL_ONCS_RESERVATIONS);
 
 	status = nvmet_copy_to_sgl(req, 0, id, sizeof(struct nvme_id_ctrl));
@@ -192,11 +164,7 @@ static u16 nvmet_passthru_override_id_ns(struct nvmet_req *req)
 
 	id->flbas = id->flbas & ~(1 << 4);
 
-	/*
-	 * Presently the NVMEof target code does not support sending
-	 * metadata, so we must disable it here. This should be updated
-	 * once target starts supporting metadata.
-	 */
+	 
 	id->mc = 0;
 
 	if (req->sq->ctrl->subsys->clear_ids) {
@@ -334,11 +302,7 @@ static void nvmet_passthru_execute_cmd(struct nvmet_req *req)
 		}
 	}
 
-	/*
-	 * If a command needs post-execution fixups, or there are any
-	 * non-trivial effects, make sure to execute the command synchronously
-	 * in a workqueue so that nvme_passthru_end gets called.
-	 */
+	 
 	effects = nvme_command_effects(ctrl, ns, req->cmd->common.opcode);
 	if (req->p.use_workqueue ||
 	    (effects & ~(NVME_CMD_EFFECTS_CSUPP | NVME_CMD_EFFECTS_LBCC))) {
@@ -365,11 +329,7 @@ out:
 	nvmet_req_complete(req, status);
 }
 
-/*
- * We need to emulate set host behaviour to ensure that any requested
- * behaviour of the target's host matches the requested behaviour
- * of the device's host and fail otherwise.
- */
+ 
 static void nvmet_passthru_set_host_behaviour(struct nvmet_req *req)
 {
 	struct nvme_ctrl *ctrl = nvmet_req_subsys(req)->passthru_ctrl;
@@ -410,7 +370,7 @@ static u16 nvmet_setup_passthru_command(struct nvmet_req *req)
 
 u16 nvmet_parse_passthru_io_cmd(struct nvmet_req *req)
 {
-	/* Reject any commands with non-sgl flags set (ie. fused commands) */
+	 
 	if (req->cmd->common.flags & ~NVME_CMD_SGL_ALL)
 		return NVME_SC_INVALID_FIELD;
 
@@ -419,24 +379,14 @@ u16 nvmet_parse_passthru_io_cmd(struct nvmet_req *req)
 	case nvme_cmd_resv_report:
 	case nvme_cmd_resv_acquire:
 	case nvme_cmd_resv_release:
-		/*
-		 * Reservations cannot be supported properly because the
-		 * underlying device has no way of differentiating different
-		 * hosts that connect via fabrics. This could potentially be
-		 * emulated in the future if regular targets grow support for
-		 * this feature.
-		 */
+		 
 		return NVME_SC_INVALID_OPCODE | NVME_SC_DNR;
 	}
 
 	return nvmet_setup_passthru_command(req);
 }
 
-/*
- * Only features that are emulated or specifically allowed in the list  are
- * passed down to the controller. This function implements the allow list for
- * both get and set features.
- */
+ 
 static u16 nvmet_passthru_get_set_features(struct nvmet_req *req)
 {
 	switch (le32_to_cpu(req->cmd->features.fid)) {
@@ -460,23 +410,17 @@ static u16 nvmet_passthru_get_set_features(struct nvmet_req *req)
 		return nvmet_setup_passthru_command(req);
 
 	case NVME_FEAT_ASYNC_EVENT:
-		/* There is no support for forwarding ASYNC events */
+		 
 	case NVME_FEAT_IRQ_COALESCE:
 	case NVME_FEAT_IRQ_CONFIG:
-		/* The IRQ settings will not apply to the target controller */
+		 
 	case NVME_FEAT_HOST_MEM_BUF:
-		/*
-		 * Any HMB that's set will not be passed through and will
-		 * not work as expected
-		 */
+		 
 	case NVME_FEAT_SW_PROGRESS:
-		/*
-		 * The Pre-Boot Software Load Count doesn't make much
-		 * sense for a target to export
-		 */
+		 
 	case NVME_FEAT_RESV_MASK:
 	case NVME_FEAT_RESV_PERSIST:
-		/* No reservations, see nvmet_parse_passthru_io_cmd() */
+		 
 	default:
 		return NVME_SC_INVALID_OPCODE | NVME_SC_DNR;
 	}
@@ -484,13 +428,11 @@ static u16 nvmet_passthru_get_set_features(struct nvmet_req *req)
 
 u16 nvmet_parse_passthru_admin_cmd(struct nvmet_req *req)
 {
-	/* Reject any commands with non-sgl flags set (ie. fused commands) */
+	 
 	if (req->cmd->common.flags & ~NVME_CMD_SGL_ALL)
 		return NVME_SC_INVALID_FIELD;
 
-	/*
-	 * Passthru all vendor specific commands
-	 */
+	 
 	if (req->cmd->common.opcode >= nvme_admin_vendor_start)
 		return nvmet_setup_passthru_command(req);
 
@@ -499,11 +441,7 @@ u16 nvmet_parse_passthru_admin_cmd(struct nvmet_req *req)
 		req->execute = nvmet_execute_async_event;
 		return NVME_SC_SUCCESS;
 	case nvme_admin_keep_alive:
-		/*
-		 * Most PCIe ctrls don't support keep alive cmd, we route keep
-		 * alive to the non-passthru mode. In future please change this
-		 * code when PCIe ctrls with keep alive support available.
-		 */
+		 
 		req->execute = nvmet_execute_keep_alive;
 		return NVME_SC_SUCCESS;
 	case nvme_admin_set_features:
@@ -565,7 +503,7 @@ u16 nvmet_parse_passthru_admin_cmd(struct nvmet_req *req)
 	case nvme_admin_get_log_page:
 		return nvmet_setup_passthru_command(req);
 	default:
-		/* Reject commands not in the allowlist above */
+		 
 		return nvmet_report_invalid_opcode(req);
 	}
 }

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014 Traphandler
- * Copyright (C) 2014 Free Electrons
- * Copyright (C) 2014 Atmel
- *
- * Author: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
- * Author: Boris BREZILLON <boris.brezillon@free-electrons.com>
- */
+ 
+ 
 
 #ifndef DRM_ATMEL_HLCDC_H
 #define DRM_ATMEL_HLCDC_H
@@ -128,35 +121,7 @@
 
 #define ATMEL_HLCDC_MAX_LAYERS			6
 
-/**
- * Atmel HLCDC Layer registers layout structure
- *
- * Each HLCDC layer has its own register organization and a given register
- * can be placed differently on 2 different layers depending on its
- * capabilities.
- * This structure stores common registers layout for a given layer and is
- * used by HLCDC layer code to choose the appropriate register to write to
- * or to read from.
- *
- * For all fields, a value of zero means "unsupported".
- *
- * See Atmel's datasheet for a detailled description of these registers.
- *
- * @xstride: xstride registers
- * @pstride: pstride registers
- * @pos: position register
- * @size: displayed size register
- * @memsize: memory size register
- * @default_color: default color register
- * @chroma_key: chroma key register
- * @chroma_key_mask: chroma key mask register
- * @general_config: general layer config register
- * @sacler_config: scaler factors register
- * @phicoeffs: X/Y PHI coefficient registers
- * @disc_pos: discard area position register
- * @disc_size: discard area size register
- * @csc: color space conversion register
- */
+ 
 struct atmel_hlcdc_layer_cfg_layout {
 	int xstride[ATMEL_HLCDC_LAYER_MAX_PLANES];
 	int pstride[ATMEL_HLCDC_LAYER_MAX_PLANES];
@@ -177,20 +142,7 @@ struct atmel_hlcdc_layer_cfg_layout {
 	int csc;
 };
 
-/**
- * Atmel HLCDC DMA descriptor structure
- *
- * This structure is used by the HLCDC DMA engine to schedule a DMA transfer.
- *
- * The structure fields must remain in this specific order, because they're
- * used by the HLCDC DMA engine, which expect them in this order.
- * HLCDC DMA descriptors must be aligned on 64 bits.
- *
- * @addr: buffer DMA address
- * @ctrl: DMA transfer options
- * @next: next DMA descriptor to fetch
- * @self: descriptor DMA address
- */
+ 
 struct atmel_hlcdc_dma_channel_dscr {
 	dma_addr_t addr;
 	u32 ctrl;
@@ -198,9 +150,7 @@ struct atmel_hlcdc_dma_channel_dscr {
 	dma_addr_t self;
 } __aligned(sizeof(u64));
 
-/**
- * Atmel HLCDC layer types
- */
+ 
 enum atmel_hlcdc_layer_type {
 	ATMEL_HLCDC_NO_LAYER,
 	ATMEL_HLCDC_BASE_LAYER,
@@ -209,34 +159,13 @@ enum atmel_hlcdc_layer_type {
 	ATMEL_HLCDC_PP_LAYER,
 };
 
-/**
- * Atmel HLCDC Supported formats structure
- *
- * This structure list all the formats supported by a given layer.
- *
- * @nformats: number of supported formats
- * @formats: supported formats
- */
+ 
 struct atmel_hlcdc_formats {
 	int nformats;
 	u32 *formats;
 };
 
-/**
- * Atmel HLCDC Layer description structure
- *
- * This structure describes the capabilities provided by a given layer.
- *
- * @name: layer name
- * @type: layer type
- * @id: layer id
- * @regs_offset: offset of the layer registers from the HLCDC registers base
- * @cfgs_offset: CFGX registers offset from the layer registers base
- * @formats: supported formats
- * @layout: config registers layout
- * @max_width: maximum width supported by this layer (0 means unlimited)
- * @max_height: maximum height supported by this layer (0 means unlimited)
- */
+ 
 struct atmel_hlcdc_layer_desc {
 	const char *name;
 	enum atmel_hlcdc_layer_type type;
@@ -250,27 +179,13 @@ struct atmel_hlcdc_layer_desc {
 	int max_height;
 };
 
-/**
- * Atmel HLCDC Layer.
- *
- * A layer can be a DRM plane of a post processing layer used to render
- * HLCDC composition into memory.
- *
- * @desc: layer description
- * @regmap: pointer to the HLCDC regmap
- */
+ 
 struct atmel_hlcdc_layer {
 	const struct atmel_hlcdc_layer_desc *desc;
 	struct regmap *regmap;
 };
 
-/**
- * Atmel HLCDC Plane.
- *
- * @base: base DRM plane structure
- * @layer: HLCDC layer structure
- * @properties: pointer to the property definitions structure
- */
+ 
 struct atmel_hlcdc_plane {
 	struct drm_plane base;
 	struct atmel_hlcdc_layer layer;
@@ -288,25 +203,7 @@ atmel_hlcdc_layer_to_plane(struct atmel_hlcdc_layer *layer)
 	return container_of(layer, struct atmel_hlcdc_plane, layer);
 }
 
-/**
- * Atmel HLCDC Display Controller description structure.
- *
- * This structure describes the HLCDC IP capabilities and depends on the
- * HLCDC IP version (or Atmel SoC family).
- *
- * @min_width: minimum width supported by the Display Controller
- * @min_height: minimum height supported by the Display Controller
- * @max_width: maximum width supported by the Display Controller
- * @max_height: maximum height supported by the Display Controller
- * @max_spw: maximum vertical/horizontal pulse width
- * @max_vpw: maximum vertical back/front porch width
- * @max_hpw: maximum horizontal back/front porch width
- * @conflicting_output_formats: true if RGBXXX output formats conflict with
- *				each other.
- * @fixed_clksrc: true if clock source is fixed
- * @layers: a layer description table describing available layers
- * @nlayers: layer description table size
- */
+ 
 struct atmel_hlcdc_dc_desc {
 	int min_width;
 	int min_height;
@@ -321,18 +218,7 @@ struct atmel_hlcdc_dc_desc {
 	int nlayers;
 };
 
-/**
- * Atmel HLCDC Display Controller.
- *
- * @desc: HLCDC Display Controller description
- * @dscrpool: DMA coherent pool used to allocate DMA descriptors
- * @hlcdc: pointer to the atmel_hlcdc structure provided by the MFD device
- * @fbdev: framebuffer device attached to the Display Controller
- * @crtc: CRTC provided by the display controller
- * @planes: instantiated planes
- * @layers: active HLCDC layers
- * @suspend: used to store the HLCDC state when entering suspend
- */
+ 
 struct atmel_hlcdc_dc {
 	const struct atmel_hlcdc_dc_desc *desc;
 	struct dma_pool *dscrpool;
@@ -413,4 +299,4 @@ int atmel_hlcdc_crtc_create(struct drm_device *dev);
 int atmel_hlcdc_create_outputs(struct drm_device *dev);
 int atmel_hlcdc_encoder_get_bus_fmt(struct drm_encoder *encoder);
 
-#endif /* DRM_ATMEL_HLCDC_H */
+#endif  

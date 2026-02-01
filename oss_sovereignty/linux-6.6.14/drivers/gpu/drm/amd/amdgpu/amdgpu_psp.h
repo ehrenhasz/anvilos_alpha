@@ -1,27 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Author: Huang Rui
- *
- */
+ 
 #ifndef __AMDGPU_PSP_H__
 #define __AMDGPU_PSP_H__
 
@@ -82,12 +59,9 @@ enum psp_bootloader_cmd {
 
 enum psp_ring_type {
 	PSP_RING_TYPE__INVALID = 0,
-	/*
-	 * These values map to the way the PSP kernel identifies the
-	 * rings.
-	 */
-	PSP_RING_TYPE__UM = 1, /* User mode ring (formerly called RBI) */
-	PSP_RING_TYPE__KM = 2  /* Kernel mode ring (formerly called GPCOM) */
+	 
+	PSP_RING_TYPE__UM = 1,  
+	PSP_RING_TYPE__KM = 2   
 };
 
 struct psp_ring {
@@ -99,11 +73,11 @@ struct psp_ring {
 	uint32_t			ring_wptr;
 };
 
-/* More registers may will be supported */
+ 
 enum psp_reg_prog_id {
-	PSP_REG_IH_RB_CNTL        = 0,  /* register IH_RB_CNTL */
-	PSP_REG_IH_RB_CNTL_RING1  = 1,  /* register IH_RB_CNTL_RING1 */
-	PSP_REG_IH_RB_CNTL_RING2  = 2,  /* register IH_RB_CNTL_RING2 */
+	PSP_REG_IH_RB_CNTL        = 0,   
+	PSP_REG_IH_RB_CNTL_RING1  = 1,   
+	PSP_REG_IH_RB_CNTL_RING2  = 2,   
 	PSP_REG_LAST
 };
 
@@ -199,7 +173,7 @@ struct psp_ras_context {
 #define MEM_TRAIN_SYSTEM_SIGNATURE		0x54534942
 #define GDDR6_MEM_TRAINING_DATA_SIZE_IN_BYTES	0x1000
 #define GDDR6_MEM_TRAINING_OFFSET		0x8000
-/*Define the VRAM size that will be encroached by BIST training.*/
+ 
 #define GDDR6_MEM_TRAINING_ENCROACHED_SIZE	0x2000000
 
 enum psp_memory_training_init_flag {
@@ -220,19 +194,15 @@ enum psp_memory_training_ops {
 };
 
 struct psp_memory_training_context {
-	/*training data size*/
+	 
 	u64 train_data_size;
-	/*
-	 * sys_cache
-	 * cpu virtual address
-	 * system memory buffer that used to store the training data.
-	 */
+	 
 	void *sys_cache;
 
-	/*vram offset of the p2c training data*/
+	 
 	u64 p2c_train_data_offset;
 
-	/*vram offset of the c2p training data*/
+	 
 	u64 c2p_train_data_offset;
 	struct amdgpu_bo *c2p_bo;
 
@@ -241,7 +211,7 @@ struct psp_memory_training_context {
 	bool enable_mem_training;
 };
 
-/** PSP runtime DB **/
+ 
 #define PSP_RUNTIME_DB_SIZE_IN_BYTES		0x10000
 #define PSP_RUNTIME_DB_OFFSET			0x100000
 #define PSP_RUNTIME_DB_COOKIE_ID		0x0ed5
@@ -251,59 +221,59 @@ struct psp_memory_training_context {
 enum psp_runtime_entry_type {
 	PSP_RUNTIME_ENTRY_TYPE_INVALID		= 0x0,
 	PSP_RUNTIME_ENTRY_TYPE_TEST		= 0x1,
-	PSP_RUNTIME_ENTRY_TYPE_MGPU_COMMON	= 0x2,  /* Common mGPU runtime data */
-	PSP_RUNTIME_ENTRY_TYPE_MGPU_WAFL	= 0x3,  /* WAFL runtime data */
-	PSP_RUNTIME_ENTRY_TYPE_MGPU_XGMI	= 0x4,  /* XGMI runtime data */
-	PSP_RUNTIME_ENTRY_TYPE_BOOT_CONFIG	= 0x5,  /* Boot Config runtime data */
-	PSP_RUNTIME_ENTRY_TYPE_PPTABLE_ERR_STATUS = 0x6, /* SCPM validation data */
+	PSP_RUNTIME_ENTRY_TYPE_MGPU_COMMON	= 0x2,   
+	PSP_RUNTIME_ENTRY_TYPE_MGPU_WAFL	= 0x3,   
+	PSP_RUNTIME_ENTRY_TYPE_MGPU_XGMI	= 0x4,   
+	PSP_RUNTIME_ENTRY_TYPE_BOOT_CONFIG	= 0x5,   
+	PSP_RUNTIME_ENTRY_TYPE_PPTABLE_ERR_STATUS = 0x6,  
 };
 
-/* PSP runtime DB header */
+ 
 struct psp_runtime_data_header {
-	/* determine the existence of runtime db */
+	 
 	uint16_t cookie;
-	/* version of runtime db */
+	 
 	uint16_t version;
 };
 
-/* PSP runtime DB entry */
+ 
 struct psp_runtime_entry {
-	/* type of runtime db entry */
+	 
 	uint32_t entry_type;
-	/* offset of entry in bytes */
+	 
 	uint16_t offset;
-	/* size of entry in bytes */
+	 
 	uint16_t size;
 };
 
-/* PSP runtime DB directory */
+ 
 struct psp_runtime_data_directory {
-	/* number of valid entries */
+	 
 	uint16_t			entry_count;
-	/* db entries*/
+	 
 	struct psp_runtime_entry	entry_list[PSP_RUNTIME_DB_DIAG_ENTRY_MAX_COUNT];
 };
 
-/* PSP runtime DB boot config feature bitmask */
+ 
 enum psp_runtime_boot_cfg_feature {
 	BOOT_CFG_FEATURE_GECC                       = 0x1,
 	BOOT_CFG_FEATURE_TWO_STAGE_DRAM_TRAINING    = 0x2,
 };
 
-/* PSP run time DB SCPM authentication defines */
+ 
 enum psp_runtime_scpm_authentication {
 	SCPM_DISABLE                     = 0x0,
 	SCPM_ENABLE                      = 0x1,
 	SCPM_ENABLE_WITH_SCPM_ERR        = 0x2,
 };
 
-/* PSP runtime DB boot config entry */
+ 
 struct psp_runtime_boot_cfg_entry {
 	uint32_t boot_cfg_bitmask;
 	uint32_t reserved;
 };
 
-/* PSP runtime DB SCPM entry */
+ 
 struct psp_runtime_scpm_entry {
 	enum psp_runtime_scpm_authentication scpm_status;
 };
@@ -316,12 +286,12 @@ struct psp_context {
 	const struct psp_funcs		*funcs;
 	const struct ta_funcs		*ta_funcs;
 
-	/* firmware buffer */
+	 
 	struct amdgpu_bo		*fw_pri_bo;
 	uint64_t			fw_pri_mc_addr;
 	void				*fw_pri_buf;
 
-	/* sos firmware */
+	 
 	const struct firmware		*sos_fw;
 	struct psp_bin_desc		sys;
 	struct psp_bin_desc		sos;
@@ -334,37 +304,37 @@ struct psp_context {
 	struct psp_bin_desc		dbg_drv;
 	struct psp_bin_desc		ras_drv;
 
-	/* tmr buffer */
+	 
 	struct amdgpu_bo		*tmr_bo;
 	uint64_t			tmr_mc_addr;
 
-	/* asd firmware */
+	 
 	const struct firmware		*asd_fw;
 
-	/* toc firmware */
+	 
 	const struct firmware		*toc_fw;
 
-	/* cap firmware */
+	 
 	const struct firmware		*cap_fw;
 
-	/* fence buffer */
+	 
 	struct amdgpu_bo		*fence_buf_bo;
 	uint64_t			fence_buf_mc_addr;
 	void				*fence_buf;
 
-	/* cmd buffer */
+	 
 	struct amdgpu_bo		*cmd_buf_bo;
 	uint64_t			cmd_buf_mc_addr;
 	struct psp_gfx_cmd_resp		*cmd_buf_mem;
 
-	/* fence value associated with cmd buffer */
+	 
 	atomic_t			fence_value;
-	/* flag to mark whether gfx fw autoload is supported or not */
+	 
 	bool				autoload_supported;
-	/* flag to mark whether df cstate management centralized to PMFW */
+	 
 	bool				pmfw_centralized_cstate_management;
 
-	/* xgmi ta firmware and buffer */
+	 
 	const struct firmware		*ta_fw;
 	uint32_t			ta_fw_version;
 
@@ -384,7 +354,7 @@ struct psp_context {
 
 	uint32_t			boot_cfg_bitmask;
 
-	/* firmware upgrades supported */
+	 
 	bool				sup_pd_fw_up;
 	bool				sup_ifwi_up;
 

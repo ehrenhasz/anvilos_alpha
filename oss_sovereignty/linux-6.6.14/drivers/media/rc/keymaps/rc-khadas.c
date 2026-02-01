@@ -1,10 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (C) 2019 Christian Hewitt <christianshewitt@gmail.com>
 
-/*
- * Keytable for the Khadas VIM/EDGE SBC remote control
- */
+
+
+
+ 
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -19,7 +17,7 @@ static struct rc_map_table khadas[] = {
 	{ 0x07, KEY_OK },
 
 	{ 0x01, KEY_BACK },
-	{ 0x5b, KEY_MUTE }, // mouse
+	{ 0x5b, KEY_MUTE }, 
 	{ 0x13, KEY_MENU },
 
 	{ 0x58, KEY_VOLUMEDOWN },

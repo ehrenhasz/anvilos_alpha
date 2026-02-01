@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * COMBPHY driver for HiSilicon STB SoCs
- *
- * Copyright (C) 2016-2017 HiSilicon Co., Ltd. http://www.hisilicon.com
- *
- * Authors: Jianguo Sun <sunjianguo1@huawei.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -56,7 +50,7 @@ static void nano_register_write(struct histb_combphy_priv *priv,
 	void __iomem *reg = priv->mmio + COMBPHY_CFG_REG;
 	u32 val;
 
-	/* Set up address and data for the write */
+	 
 	val = readl(reg);
 	val &= ~COMBPHY_TEST_ADDR_MASK;
 	val |= addr << COMBPHY_TEST_ADDR_SHIFT;
@@ -64,7 +58,7 @@ static void nano_register_write(struct histb_combphy_priv *priv,
 	val |= data << COMBPHY_TEST_DATA_SHIFT;
 	writel(val, reg);
 
-	/* Flip strobe control to trigger the write */
+	 
 	val &= ~COMBPHY_TEST_WRITE;
 	writel(val, reg);
 	val |= COMBPHY_TEST_WRITE;
@@ -113,7 +107,7 @@ static int histb_combphy_init(struct phy *phy)
 	if (ret)
 		return ret;
 
-	/* Clear bypass bit to enable encoding/decoding */
+	 
 	val = readl(priv->mmio + COMBPHY_CFG_REG);
 	val &= ~COMBPHY_BYPASS_CODEC;
 	writel(val, priv->mmio + COMBPHY_CFG_REG);
@@ -124,15 +118,15 @@ static int histb_combphy_init(struct phy *phy)
 
 	reset_control_deassert(priv->por_rst);
 
-	/* Enable EP clock */
+	 
 	val = readl(priv->mmio + COMBPHY_CFG_REG);
 	val |= COMBPHY_CLKREF_OUT_OEN;
 	writel(val, priv->mmio + COMBPHY_CFG_REG);
 
-	/* Need to wait for EP clock stable */
+	 
 	mdelay(5);
 
-	/* Configure nano phy registers as suggested by vendor */
+	 
 	nano_register_write(priv, 0x1, 0x8);
 	nano_register_write(priv, 0xc, 0x9);
 	nano_register_write(priv, 0x1a, 0x4);
@@ -145,7 +139,7 @@ static int histb_combphy_exit(struct phy *phy)
 	struct histb_combphy_priv *priv = phy_get_drvdata(phy);
 	u32 val;
 
-	/* Disable EP clock */
+	 
 	val = readl(priv->mmio + COMBPHY_CFG_REG);
 	val &= ~COMBPHY_CLKREF_OUT_OEN;
 	writel(val, priv->mmio + COMBPHY_CFG_REG);

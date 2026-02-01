@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2019 Felix Fietkau <nbd@nbd.name>
- * Copyright (C) 2021-2022 Intel Corporation
- */
+
+ 
 
 #include <net/mac80211.h>
 #include "ieee80211_i.h"
@@ -10,45 +7,41 @@
 
 #define AVG_PKT_SIZE	1024
 
-/* Number of bits for an average sized packet */
+ 
 #define MCS_NBITS (AVG_PKT_SIZE << 3)
 
-/* Number of kilo-symbols (symbols * 1024) for a packet with (bps) bits per
- * symbol. We use k-symbols to avoid rounding in the _TIME macros below.
- */
+ 
 #define MCS_N_KSYMS(bps) DIV_ROUND_UP(MCS_NBITS << 10, (bps))
 
-/* Transmission time (in 1024 * usec) for a packet containing (ksyms) * 1024
- * symbols.
- */
+ 
 #define MCS_SYMBOL_TIME(sgi, ksyms)					\
 	(sgi ?								\
-	  ((ksyms) * 4 * 18) / 20 :		/* 3.6 us per sym */	\
-	  ((ksyms) * 4)			/* 4.0 us per sym */	\
+	  ((ksyms) * 4 * 18) / 20 :		 	\
+	  ((ksyms) * 4)			 	\
 	)
 
-/* Transmit duration for the raw data part of an average sized packet */
+ 
 #define MCS_DURATION(streams, sgi, bps) \
 	((u32)MCS_SYMBOL_TIME(sgi, MCS_N_KSYMS((streams) * (bps))))
 
 #define MCS_DURATION_S(shift, streams, sgi, bps)		\
 	((u16)((MCS_DURATION(streams, sgi, bps) >> shift)))
 
-/* These should match the values in enum nl80211_he_gi */
+ 
 #define HE_GI_08 0
 #define HE_GI_16 1
 #define HE_GI_32 2
 
-/* Transmission time (1024 usec) for a packet containing (ksyms) * k-symbols */
+ 
 #define HE_SYMBOL_TIME(gi, ksyms)					\
 	(gi == HE_GI_08 ?						\
-	 ((ksyms) * 16 * 17) / 20 :		/* 13.6 us per sym */	\
+	 ((ksyms) * 16 * 17) / 20 :		 	\
 	 (gi == HE_GI_16 ?						\
-	  ((ksyms) * 16 * 18) / 20 :		/* 14.4 us per sym */	\
-	  ((ksyms) * 16)			/* 16.0 us per sym */	\
+	  ((ksyms) * 16 * 18) / 20 :		 	\
+	  ((ksyms) * 16)			 	\
 	 ))
 
-/* Transmit duration for the raw data part of an average sized packet */
+ 
 #define HE_DURATION(streams, gi, bps) \
 	((u32)HE_SYMBOL_TIME(gi, MCS_N_KSYMS((streams) * (bps))))
 
@@ -60,12 +53,10 @@
 #define BW_80			2
 #define BW_160			3
 
-/*
- * Define group sort order: HT40 -> SGI -> #streams
- */
+ 
 #define IEEE80211_MAX_STREAMS		4
-#define IEEE80211_HT_STREAM_GROUPS	4 /* BW(=2) * SGI(=2) */
-#define IEEE80211_VHT_STREAM_GROUPS	8 /* BW(=4) * SGI(=2) */
+#define IEEE80211_HT_STREAM_GROUPS	4  
+#define IEEE80211_VHT_STREAM_GROUPS	8  
 
 #define IEEE80211_HE_MAX_STREAMS	8
 
@@ -91,7 +82,7 @@
 #define GROUP_SHIFT(duration)						\
 	_MAX(0, 16 - __builtin_clz(duration))
 
-/* MCS rate information for an MCS group */
+ 
 #define __MCS_GROUP(_streams, _sgi, _ht40, _s)				\
 	[HT_GROUP_IDX(_streams, _sgi, _ht40)] = {			\
 	.shift = _s,							\
@@ -385,13 +376,13 @@ ieee80211_calc_legacy_rate_duration(u16 bitrate, bool short_pre,
 	u32 duration;
 
 	if (cck) {
-		duration = 144 + 48; /* preamble + PLCP */
+		duration = 144 + 48;  
 		if (short_pre)
 			duration >>= 1;
 
-		duration += 10; /* SIFS */
+		duration += 10;  
 	} else {
-		duration = 20 + 16; /* premable + SIFS */
+		duration = 20 + 16;  
 	}
 
 	len <<= 3;
@@ -475,7 +466,7 @@ u32 ieee80211_calc_rx_airtime(struct ieee80211_hw *hw,
 		bool sp = status->enc_flags & RX_ENC_FLAG_SHORTPRE;
 		bool cck;
 
-		/* on 60GHz or sub-1GHz band, there are no legacy rates */
+		 
 		if (WARN_ON_ONCE(status->band == NL80211_BAND_60GHZ ||
 				 status->band == NL80211_BAND_S1GHZ))
 			return 0;
@@ -638,7 +629,7 @@ u32 ieee80211_calc_expected_tx_airtime(struct ieee80211_hw *hw,
 	u8 band = 0;
 	u16 rate;
 
-	len += 38; /* Ethernet header length */
+	len += 38;  
 
 	conf = rcu_dereference(vif->bss_conf.chanctx_conf);
 	if (conf) {
@@ -662,24 +653,17 @@ u32 ieee80211_calc_expected_tx_airtime(struct ieee80211_hw *hw,
 			return ieee80211_calc_rx_airtime(hw, &stat, len);
 
 		duration = ieee80211_get_rate_duration(hw, &stat, &overhead);
-		/*
-		 * Assume that HT/VHT transmission on any AC except VO will
-		 * use aggregation. Since we don't have reliable reporting
-		 * of aggregation length, assume an average size based on the
-		 * tx rate.
-		 * This will not be very accurate, but much better than simply
-		 * assuming un-aggregated tx in all cases.
-		 */
-		if (duration > 400 * 1024) /* <= VHT20 MCS2 1S */
+		 
+		if (duration > 400 * 1024)  
 			agg_shift = 1;
-		else if (duration > 250 * 1024) /* <= VHT20 MCS3 1S or MCS1 2S */
+		else if (duration > 250 * 1024)  
 			agg_shift = 2;
-		else if (duration > 150 * 1024) /* <= VHT20 MCS5 1S or MCS2 2S */
+		else if (duration > 150 * 1024)  
 			agg_shift = 3;
-		else if (duration > 70 * 1024) /* <= VHT20 MCS5 2S */
+		else if (duration > 70 * 1024)  
 			agg_shift = 4;
 		else if (stat.encoding != RX_ENC_HE ||
-			 duration > 20 * 1024) /* <= HE40 MCS6 2S */
+			 duration > 20 * 1024)  
 			agg_shift = 5;
 		else
 			agg_shift = 6;
@@ -695,9 +679,7 @@ u32 ieee80211_calc_expected_tx_airtime(struct ieee80211_hw *hw,
 	if (!conf)
 		return 0;
 
-	/* No station to get latest rate from, so calculate the worst-case
-	 * duration using the lowest configured basic rate.
-	 */
+	 
 	sband = hw->wiphy->bands[band];
 
 	basic_rates = vif->bss_conf.basic_rates;

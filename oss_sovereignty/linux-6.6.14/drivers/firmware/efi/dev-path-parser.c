@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * dev-path-parser.c - EFI Device Path parser
- * Copyright (C) 2016 Lukas Wunner <lukas@wunner.de>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License (version 2) as
- * published by the Free Software Foundation.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/efi.h>
@@ -76,22 +69,7 @@ static long __init parse_pci_path(const struct efi_dev_path *node,
 	return 0;
 }
 
-/*
- * Insert parsers for further node types here.
- *
- * Each parser takes a pointer to the @node and to the @parent (will be NULL
- * for the first device path node). If a device corresponding to @node was
- * found below @parent, its reference count should be incremented and the
- * device returned in @child.
- *
- * The return value should be 0 on success or a negative int on failure.
- * The special return values 0x01 (EFI_DEV_END_INSTANCE) and 0xFF
- * (EFI_DEV_END_ENTIRE) signal the end of the device path, only
- * parse_end_path() is supposed to return this.
- *
- * Be sure to validate the node length and contents before commencing the
- * search for a device.
- */
+ 
 
 static long __init parse_end_path(const struct efi_dev_path *node,
 				  struct device *parent, struct device **child)
@@ -108,42 +86,7 @@ static long __init parse_end_path(const struct efi_dev_path *node,
 	return node->header.sub_type;
 }
 
-/**
- * efi_get_device_by_path - find device by EFI Device Path
- * @node: EFI Device Path
- * @len: maximum length of EFI Device Path in bytes
- *
- * Parse a series of EFI Device Path nodes at @node and find the corresponding
- * device.  If the device was found, its reference count is incremented and a
- * pointer to it is returned.  The caller needs to drop the reference with
- * put_device() after use.  The @node pointer is updated to point to the
- * location immediately after the "End of Hardware Device Path" node.
- *
- * If another Device Path instance follows, @len is decremented by the number
- * of bytes consumed.  Otherwise @len is set to %0.
- *
- * If a Device Path node is malformed or its corresponding device is not found,
- * @node is updated to point to this offending node and an ERR_PTR is returned.
- *
- * If @len is initially %0, the function returns %NULL.  Thus, to iterate over
- * all instances in a path, the following idiom may be used:
- *
- *	while (!IS_ERR_OR_NULL(dev = efi_get_device_by_path(&node, &len))) {
- *		// do something with dev
- *		put_device(dev);
- *	}
- *	if (IS_ERR(dev))
- *		// report error
- *
- * Devices can only be found if they're already instantiated. Most buses
- * instantiate devices in the "subsys" initcall level, hence the earliest
- * initcall level in which this function should be called is "fs".
- *
- * Returns the device on success or
- *	%ERR_PTR(-ENODEV) if no device was found,
- *	%ERR_PTR(-EINVAL) if a node is malformed or exceeds @len,
- *	%ERR_PTR(-ENOTSUPP) if support for a node type is not yet implemented.
- */
+ 
 struct device * __init efi_get_device_by_path(const struct efi_dev_path **node,
 					      size_t *len)
 {

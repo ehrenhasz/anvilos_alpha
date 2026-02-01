@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2021 Gerhard Engleder <gerhard@engleder-embedded.com> */
+
+ 
 
 #include "tsnep.h"
 
 #include <net/pkt_sched.h>
 
-/* save one operation at the end for additional operation at list change */
+ 
 #define TSNEP_MAX_GCL_NUM (TSNEP_GCL_COUNT - 1)
 
 static int tsnep_validate_gcl(struct tc_taprio_qopt_offload *qopt)
@@ -48,7 +48,7 @@ static void tsnep_write_gcl_operation(struct tsnep_gcl *gcl, int index,
 	iowrite32(interval, addr + sizeof(u32));
 
 	if (flush) {
-		/* flush write with read access */
+		 
 		ioread32(addr);
 	}
 }
@@ -58,17 +58,7 @@ static u64 tsnep_change_duration(struct tsnep_gcl *gcl, int index)
 	u64 duration;
 	int count;
 
-	/* change needs to be triggered one or two operations before start of
-	 * new gate control list
-	 * - change is triggered at start of operation (minimum one operation)
-	 * - operation with adjusted interval is inserted on demand to exactly
-	 *   meet the start of the new gate control list (optional)
-	 *
-	 * additionally properties are read directly after start of previous
-	 * operation
-	 *
-	 * therefore, three operations needs to be considered for the limit
-	 */
+	 
 	duration = 0;
 	count = 3;
 	while (count) {
@@ -106,27 +96,18 @@ static void tsnep_write_gcl(struct tsnep_gcl *gcl,
 	}
 	gcl->count = qopt->num_entries;
 
-	/* calculate change limit; i.e., the time needed between enable and
-	 * start of new gate control list
-	 */
+	 
 
-	/* case 1: extend cycle time for change
-	 * - change duration of last operation
-	 * - cycle time extension
-	 */
+	 
 	extend = tsnep_change_duration(gcl, gcl->count - 1);
 	extend += gcl->cycle_time_extension;
 
-	/* case 2: cut cycle time for change
-	 * - maximum change duration
-	 */
+	 
 	cut = 0;
 	for (i = 0; i < gcl->count; i++)
 		cut = max(cut, tsnep_change_duration(gcl, i));
 
-	/* use maximum, because the actual case (extend or cut) can be
-	 * determined only after limit is known (chicken-and-egg problem)
-	 */
+	 
 	gcl->change_limit = max(extend, cut);
 }
 
@@ -159,16 +140,14 @@ static u64 tsnep_gcl_start_before(struct tsnep_gcl *gcl, u64 limit)
 static u64 tsnep_set_gcl_change(struct tsnep_gcl *gcl, int index, u64 change,
 				bool insert)
 {
-	/* previous operation triggers change and properties are evaluated at
-	 * start of operation
-	 */
+	 
 	if (index == 0)
 		index = gcl->count - 1;
 	else
 		index = index - 1;
 	change -= gcl->operation[index].interval;
 
-	/* optionally change to new list with additional operation in between */
+	 
 	if (insert) {
 		void __iomem *addr = gcl->addr +
 				     sizeof(struct tsnep_gcl_operation) * index;
@@ -186,7 +165,7 @@ static void tsnep_clean_gcl(struct tsnep_gcl *gcl)
 	u32 mask = TSNEP_GCL_LAST | TSNEP_GCL_MASK;
 	void __iomem *addr;
 
-	/* search for insert operation and reset properties */
+	 
 	for (i = 0; i < gcl->count; i++) {
 		if (gcl->operation[i].properties & ~mask) {
 			addr = gcl->addr +
@@ -206,10 +185,10 @@ static u64 tsnep_insert_gcl_operation(struct tsnep_gcl *gcl, int ref,
 	u32 properties;
 
 	properties = gcl->operation[ref].properties & TSNEP_GCL_MASK;
-	/* change to new list directly after inserted operation */
+	 
 	properties |= TSNEP_GCL_CHANGE;
 
-	/* last operation of list is reserved to insert operation */
+	 
 	tsnep_write_gcl_operation(gcl, TSNEP_GCL_COUNT - 1, properties,
 				  interval, false);
 
@@ -231,16 +210,16 @@ static u64 tsnep_cut_gcl(struct tsnep_gcl *gcl, u64 start, u64 cycle_time)
 	u64 sum = 0;
 	int i;
 
-	/* find operation which shall be cutted */
+	 
 	for (i = 0; i < gcl->count; i++) {
 		u64 sum_tmp = sum + gcl->operation[i].interval;
 		u64 interval;
 
-		/* sum up operations as long as cycle time is not exceeded */
+		 
 		if (sum_tmp > cycle_time)
 			break;
 
-		/* remaining interval must be big enough for hardware */
+		 
 		interval = cycle_time - sum_tmp;
 		if (interval > 0 && interval < TSNEP_GCL_MIN_INTERVAL)
 			break;
@@ -248,9 +227,7 @@ static u64 tsnep_cut_gcl(struct tsnep_gcl *gcl, u64 start, u64 cycle_time)
 		sum = sum_tmp;
 	}
 	if (sum == cycle_time) {
-		/* no need to cut operation itself or whole cycle
-		 * => change exactly at operation
-		 */
+		 
 		return tsnep_set_gcl_change(gcl, i, start + sum, false);
 	}
 	return tsnep_insert_gcl_operation(gcl, i, start + sum,
@@ -264,9 +241,7 @@ static int tsnep_enable_gcl(struct tsnep_adapter *adapter,
 	u64 timeout;
 	u64 limit;
 
-	/* estimate timeout limit after timeout enable, actually timeout limit
-	 * in hardware will be earlier than estimate so we are on the safe side
-	 */
+	 
 	tsnep_get_system_time(adapter, &system_time);
 	timeout = system_time + TSNEP_GC_TIMEOUT;
 
@@ -277,14 +252,12 @@ static int tsnep_enable_gcl(struct tsnep_adapter *adapter,
 
 	gcl->start_time = tsnep_gcl_start_after(gcl, limit);
 
-	/* gate control time register is only 32bit => time shall be in the near
-	 * future (no driver support for far future implemented)
-	 */
+	 
 	if ((gcl->start_time - system_time) >= U32_MAX)
 		return -EAGAIN;
 
 	if (curr) {
-		/* change gate control list */
+		 
 		u64 last;
 		u64 change;
 
@@ -305,7 +278,7 @@ static int tsnep_enable_gcl(struct tsnep_adapter *adapter,
 		gcl->change = true;
 		iowrite32(change & 0xFFFFFFFF, adapter->addr + TSNEP_GC_CHANGE);
 	} else {
-		/* start gate control list */
+		 
 		WARN_ON(gcl->start_time <= timeout);
 		gcl->change = false;
 		iowrite32(gcl->start_time & 0xFFFFFFFF,
@@ -326,7 +299,7 @@ static int tsnep_taprio(struct tsnep_adapter *adapter,
 		return -EOPNOTSUPP;
 
 	if (qopt->cmd == TAPRIO_CMD_DESTROY) {
-		/* disable gate control if active */
+		 
 		mutex_lock(&adapter->gate_control_lock);
 
 		if (adapter->gate_control_active) {
@@ -350,7 +323,7 @@ static int tsnep_taprio(struct tsnep_adapter *adapter,
 	gcl = &adapter->gcl[adapter->next_gcl];
 	tsnep_write_gcl(gcl, qopt);
 
-	/* select current gate control list if active */
+	 
 	if (adapter->gate_control_active) {
 		if (adapter->next_gcl == 0)
 			curr = &adapter->gcl[1];
@@ -361,9 +334,7 @@ static int tsnep_taprio(struct tsnep_adapter *adapter,
 	}
 
 	for (;;) {
-		/* start timeout which discards late enable, this helps ensuring
-		 * that start/change time are in the future at enable
-		 */
+		 
 		iowrite8(TSNEP_GC_ENABLE_TIMEOUT, adapter->addr + TSNEP_GC);
 
 		retval = tsnep_enable_gcl(adapter, gcl, curr);
@@ -373,24 +344,24 @@ static int tsnep_taprio(struct tsnep_adapter *adapter,
 			return retval;
 		}
 
-		/* enable gate control list */
+		 
 		if (adapter->next_gcl == 0)
 			iowrite8(TSNEP_GC_ENABLE_A, adapter->addr + TSNEP_GC);
 		else
 			iowrite8(TSNEP_GC_ENABLE_B, adapter->addr + TSNEP_GC);
 
-		/* done if timeout did not happen */
+		 
 		if (!(ioread32(adapter->addr + TSNEP_GC) &
 		      TSNEP_GC_TIMEOUT_SIGNAL))
 			break;
 
-		/* timeout is acknowledged with any enable */
+		 
 		iowrite8(TSNEP_GC_ENABLE_A, adapter->addr + TSNEP_GC);
 
 		if (curr)
 			tsnep_clean_gcl(curr);
 
-		/* retry because of timeout */
+		 
 	}
 
 	adapter->gate_control_active = true;
@@ -444,7 +415,7 @@ int tsnep_tc_init(struct tsnep_adapter *adapter)
 	if (!adapter->gate_control)
 		return 0;
 
-	/* open all gates */
+	 
 	iowrite8(TSNEP_GC_DISABLE, adapter->addr + TSNEP_GC);
 	iowrite32(TSNEP_GC_OPEN | TSNEP_GC_NEXT_OPEN, adapter->addr + TSNEP_GC);
 

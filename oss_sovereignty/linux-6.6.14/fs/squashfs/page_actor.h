@@ -1,10 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 #ifndef PAGE_ACTOR_H
 #define PAGE_ACTOR_H
-/*
- * Copyright (c) 2013
- * Phillip Lougher <phillip@squashfs.org.uk>
- */
+ 
 
 struct squashfs_page_actor {
 	union {

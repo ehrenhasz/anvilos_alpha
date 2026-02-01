@@ -1,33 +1,11 @@
-/* echo.c, derived from code echo.c in Bash.
-   Copyright (C) 1987-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include "system.h"
-#include "assure.h"
-
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "echo"
 
 #define AUTHORS \
   proper_name ("Brian Fox"), \
   proper_name ("Chet Ramey")
 
-/* If true, interpret backslash escapes by default.  */
+ 
 #ifndef DEFAULT_ECHO_TO_XPG
 enum { DEFAULT_ECHO_TO_XPG = false };
 #endif
@@ -35,8 +13,7 @@ enum { DEFAULT_ECHO_TO_XPG = false };
 void
 usage (int status)
 {
-  /* STATUS should always be EXIT_SUCCESS (unlike in most other
-     utilities which would call emit_try_help otherwise).  */
+   
   affirm (status == EXIT_SUCCESS);
 
   printf (_("\
@@ -154,9 +131,7 @@ main (int argc, char **argv)
         char const *temp = argv[0] + 1;
         size_t i;
 
-        /* If it appears that we are handling options, then make sure that
-           all of the options specified are actually valid.  Otherwise, the
-           string should just be echoed.  */
+         
 
         for (i = 0; temp[i]; i++)
           switch (temp[i])
@@ -170,8 +145,7 @@ main (int argc, char **argv)
         if (i == 0)
           goto just_echo;
 
-        /* All of the options in TEMP are valid options to ECHO.
-           Handle them. */
+         
         while (*temp)
           switch (*temp++)
             {

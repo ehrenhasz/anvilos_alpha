@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Wondermedia I2C Master Mode Driver
- *
- *  Copyright (C) 2012 Tony Prisk <linux@prisktech.co.nz>
- *
- *  Derived from GPLv2+ licensed source:
- *  - Copyright (C) 2008 WonderMedia Technologies, Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -35,7 +28,7 @@
 #define REG_SLAVE_DR	0x18
 #define REG_SLAVE_TR	0x1A
 
-/* REG_CR Bit fields */
+ 
 #define CR_TX_NEXT_ACK		0x0000
 #define CR_ENABLE		0x0001
 #define CR_TX_NEXT_NO_ACK	0x0002
@@ -43,7 +36,7 @@
 #define CR_CPU_RDY		0x0008
 #define SLAV_MODE_SEL		0x8000
 
-/* REG_TCR Bit fields */
+ 
 #define TCR_STANDARD_MODE	0x0000
 #define TCR_MASTER_WRITE	0x0000
 #define TCR_HS_MODE		0x2000
@@ -51,26 +44,26 @@
 #define TCR_FAST_MODE		0x8000
 #define TCR_SLAVE_ADDR_MASK	0x007F
 
-/* REG_ISR Bit fields */
+ 
 #define ISR_NACK_ADDR		0x0001
 #define ISR_BYTE_END		0x0002
 #define ISR_SCL_TIMEOUT		0x0004
 #define ISR_WRITE_ALL		0x0007
 
-/* REG_IMR Bit fields */
+ 
 #define IMR_ENABLE_ALL		0x0007
 
-/* REG_CSR Bit fields */
+ 
 #define CSR_RCV_NOT_ACK		0x0001
 #define CSR_RCV_ACK_MASK	0x0001
 #define CSR_READY_MASK		0x0002
 
-/* REG_TR */
+ 
 #define SCL_TIMEOUT(x)		(((x) & 0xFF) << 8)
 #define TR_STD			0x0064
 #define TR_HS			0x0019
 
-/* REG_MCR */
+ 
 #define MCR_APB_96M		7
 #define MCR_APB_166M		12
 
@@ -135,10 +128,7 @@ static int wmt_i2c_write(struct i2c_adapter *adap, struct i2c_msg *pmsg,
 	}
 
 	if (pmsg->len == 0) {
-		/*
-		 * We still need to run through the while (..) once, so
-		 * start at -1 and break out early from the loop
-		 */
+		 
 		xfer_len = -1;
 		writew(0, i2c_dev->base + REG_CDR);
 	} else {
@@ -325,7 +315,7 @@ static irqreturn_t wmt_i2c_isr(int irq, void *data)
 {
 	struct wmt_i2c_dev *i2c_dev = data;
 
-	/* save the status and write-clear it */
+	 
 	i2c_dev->cmd_status = readw(i2c_dev->base + REG_ISR);
 	writew(i2c_dev->cmd_status, i2c_dev->base + REG_ISR);
 
@@ -356,7 +346,7 @@ static int wmt_i2c_reset_hardware(struct wmt_i2c_dev *i2c_dev)
 	writew(ISR_WRITE_ALL, i2c_dev->base + REG_ISR);
 	writew(IMR_ENABLE_ALL, i2c_dev->base + REG_IMR);
 	writew(CR_ENABLE, i2c_dev->base + REG_CR);
-	readw(i2c_dev->base + REG_CSR);		/* read clear */
+	readw(i2c_dev->base + REG_CSR);		 
 	writew(ISR_WRITE_ALL, i2c_dev->base + REG_ISR);
 
 	if (i2c_dev->mode == I2C_MODE_STANDARD)
@@ -438,7 +428,7 @@ static void wmt_i2c_remove(struct platform_device *pdev)
 {
 	struct wmt_i2c_dev *i2c_dev = platform_get_drvdata(pdev);
 
-	/* Disable interrupts, clock and delete adapter */
+	 
 	writew(0, i2c_dev->base + REG_IMR);
 	clk_disable_unprepare(i2c_dev->clk);
 	i2c_del_adapter(&i2c_dev->adapter);
@@ -446,7 +436,7 @@ static void wmt_i2c_remove(struct platform_device *pdev)
 
 static const struct of_device_id wmt_i2c_dt_ids[] = {
 	{ .compatible = "wm,wm8505-i2c" },
-	{ /* Sentinel */ },
+	{   },
 };
 
 static struct platform_driver wmt_i2c_driver = {

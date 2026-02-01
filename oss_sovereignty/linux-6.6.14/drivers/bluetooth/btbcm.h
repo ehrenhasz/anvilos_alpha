@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *
- *  Bluetooth support for Broadcom devices
- *
- *  Copyright (C) 2015  Intel Corporation
- */
+ 
+ 
 
 #define BCM_UART_CLOCK_48MHZ	0x01
 #define BCM_UART_CLOCK_24MHZ	0x02

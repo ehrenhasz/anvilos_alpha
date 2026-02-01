@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Authors:
- * (C) 2015 Pengutronix, Alexander Aring <aar@pengutronix.de>
- * Copyright (c)  2015 Nordic Semiconductor. All Rights Reserved.
- */
+
+ 
 
 #include <net/6lowpan.h>
 
@@ -248,7 +243,7 @@ void lowpan_dev_debugfs_init(struct net_device *dev)
 	struct dentry *contexts;
 	int i;
 
-	/* creating the root */
+	 
 	ldev->iface_debugfs = debugfs_create_dir(dev->name, lowpan_debugfs);
 
 	contexts = debugfs_create_dir("contexts", ldev->iface_debugfs);

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef __UAPI_TC_CT_H
 #define __UAPI_TC_CT_H
 
@@ -9,22 +9,22 @@ enum {
 	TCA_CT_UNSPEC,
 	TCA_CT_PARMS,
 	TCA_CT_TM,
-	TCA_CT_ACTION,		/* u16 */
-	TCA_CT_ZONE,		/* u16 */
-	TCA_CT_MARK,		/* u32 */
-	TCA_CT_MARK_MASK,	/* u32 */
-	TCA_CT_LABELS,		/* u128 */
-	TCA_CT_LABELS_MASK,	/* u128 */
-	TCA_CT_NAT_IPV4_MIN,	/* be32 */
-	TCA_CT_NAT_IPV4_MAX,	/* be32 */
-	TCA_CT_NAT_IPV6_MIN,	/* struct in6_addr */
-	TCA_CT_NAT_IPV6_MAX,	/* struct in6_addr */
-	TCA_CT_NAT_PORT_MIN,	/* be16 */
-	TCA_CT_NAT_PORT_MAX,	/* be16 */
+	TCA_CT_ACTION,		 
+	TCA_CT_ZONE,		 
+	TCA_CT_MARK,		 
+	TCA_CT_MARK_MASK,	 
+	TCA_CT_LABELS,		 
+	TCA_CT_LABELS_MASK,	 
+	TCA_CT_NAT_IPV4_MIN,	 
+	TCA_CT_NAT_IPV4_MAX,	 
+	TCA_CT_NAT_IPV6_MIN,	 
+	TCA_CT_NAT_IPV6_MAX,	 
+	TCA_CT_NAT_PORT_MIN,	 
+	TCA_CT_NAT_PORT_MAX,	 
 	TCA_CT_PAD,
-	TCA_CT_HELPER_NAME,	/* string */
-	TCA_CT_HELPER_FAMILY,	/* u8 */
-	TCA_CT_HELPER_PROTO,	/* u8 */
+	TCA_CT_HELPER_NAME,	 
+	TCA_CT_HELPER_FAMILY,	 
+	TCA_CT_HELPER_PROTO,	 
 	__TCA_CT_MAX
 };
 
@@ -41,4 +41,4 @@ struct tc_ct {
 	tc_gen;
 };
 
-#endif /* __UAPI_TC_CT_H */
+#endif  

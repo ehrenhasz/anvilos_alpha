@@ -1,10 +1,4 @@
-/*
-  FUSE: Filesystem in Userspace
-  Copyright (C) 2001-2008  Miklos Szeredi <miklos@szeredi.hu>
-
-  This program can be distributed under the terms of the GNU GPL.
-  See the file COPYING.
-*/
+ 
 
 #include "fuse_i.h"
 
@@ -66,10 +60,7 @@ static void fuse_dentry_settime(struct dentry *dentry, u64 time)
 {
 	struct fuse_conn *fc = get_fuse_conn_super(dentry->d_sb);
 	bool delete = !time && fc->delete_stale;
-	/*
-	 * Mess with DCACHE_OP_DELETE because dput() will be faster without it.
-	 * Don't care about races, either way it's just an optimization
-	 */
+	 
 	if ((!delete && (dentry->d_flags & DCACHE_OP_DELETE)) ||
 	    (delete && !(dentry->d_flags & DCACHE_OP_DELETE))) {
 		spin_lock(&dentry->d_lock);
@@ -83,15 +74,9 @@ static void fuse_dentry_settime(struct dentry *dentry, u64 time)
 	__fuse_dentry_settime(dentry, time);
 }
 
-/*
- * FUSE caches dentries and attributes with separate timeout.  The
- * time in jiffies until the dentry/attributes are valid is stored in
- * dentry->d_fsdata and fuse_inode->i_time respectively.
- */
+ 
 
-/*
- * Calculate the time in jiffies until a dentry/attributes are valid
- */
+ 
 u64 fuse_time_to_jiffies(u64 sec, u32 nsec)
 {
 	if (sec || nsec) {
@@ -105,10 +90,7 @@ u64 fuse_time_to_jiffies(u64 sec, u32 nsec)
 		return 0;
 }
 
-/*
- * Set dentry and possibly attribute timeouts from the lookup/mk*
- * replies
- */
+ 
 void fuse_change_entry_timeout(struct dentry *entry, struct fuse_entry_out *o)
 {
 	fuse_dentry_settime(entry,
@@ -120,10 +102,7 @@ void fuse_invalidate_attr_mask(struct inode *inode, u32 mask)
 	set_mask_bits(&get_fuse_inode(inode)->inval_mask, 0, mask);
 }
 
-/*
- * Mark the attributes as stale, so that at the next call to
- * ->getattr() they will be fetched from userspace
- */
+ 
 void fuse_invalidate_attr(struct inode *inode)
 {
 	fuse_invalidate_attr_mask(inode, STATX_BASIC_STATS);
@@ -135,33 +114,20 @@ static void fuse_dir_changed(struct inode *dir)
 	inode_maybe_inc_iversion(dir, false);
 }
 
-/*
- * Mark the attributes as stale due to an atime change.  Avoid the invalidate if
- * atime is not used.
- */
+ 
 void fuse_invalidate_atime(struct inode *inode)
 {
 	if (!IS_RDONLY(inode))
 		fuse_invalidate_attr_mask(inode, STATX_ATIME);
 }
 
-/*
- * Just mark the entry as stale, so that a next attempt to look it up
- * will result in a new lookup call to userspace
- *
- * This is called when a dentry is about to become negative and the
- * timeout is unknown (unlink, rmdir, rename and in some cases
- * lookup)
- */
+ 
 void fuse_invalidate_entry_cache(struct dentry *entry)
 {
 	fuse_dentry_settime(entry, 0);
 }
 
-/*
- * Same as fuse_invalidate_entry_cache(), but also try to remove the
- * dentry from the hash
- */
+ 
 static void fuse_invalidate_entry(struct dentry *entry)
 {
 	d_invalidate(entry);
@@ -183,15 +149,7 @@ static void fuse_lookup_init(struct fuse_conn *fc, struct fuse_args *args,
 	args->out_args[0].value = outarg;
 }
 
-/*
- * Check whether the dentry is still valid
- *
- * If the entry validity timeout has expired and the dentry is
- * positive, try to redo the lookup.  If the lookup results in a
- * different inode, then let the VFS invalidate the dentry and redo
- * the lookup once more.  If the lookup results in the same inode,
- * then refresh the attributes, timeouts and mark the dentry valid.
- */
+ 
 static int fuse_dentry_revalidate(struct dentry *entry, unsigned int flags)
 {
 	struct inode *inode;
@@ -210,7 +168,7 @@ static int fuse_dentry_revalidate(struct dentry *entry, unsigned int flags)
 		struct fuse_forget_link *forget;
 		u64 attr_version;
 
-		/* For negative dentries, always do a fresh lookup */
+		 
 		if (!inode)
 			goto invalid;
 
@@ -232,7 +190,7 @@ static int fuse_dentry_revalidate(struct dentry *entry, unsigned int flags)
 				 &entry->d_name, &outarg);
 		ret = fuse_simple_request(fm, &args);
 		dput(parent);
-		/* Zero nodeid is same as -ENOENT */
+		 
 		if (!ret && !outarg.nodeid)
 			ret = -ENOENT;
 		if (!ret) {
@@ -300,11 +258,7 @@ static int fuse_dentry_delete(const struct dentry *dentry)
 	return time_before64(fuse_dentry_time(dentry), get_jiffies_64());
 }
 
-/*
- * Create a fuse_mount object with a new superblock (with path->dentry
- * as the root), and return that mount so it can be auto-mounted on
- * @path.
- */
+ 
 static struct vfsmount *fuse_dentry_automount(struct path *path)
 {
 	struct fs_context *fsc;
@@ -315,10 +269,10 @@ static struct vfsmount *fuse_dentry_automount(struct path *path)
 	if (IS_ERR(fsc))
 		return ERR_CAST(fsc);
 
-	/* Pass the FUSE inode of the mount for fuse_get_tree_submount() */
+	 
 	fsc->fs_private = mp_fi;
 
-	/* Create the submount */
+	 
 	mnt = fc_mount(fsc);
 	if (!IS_ERR(mnt))
 		mntget(mnt);
@@ -384,7 +338,7 @@ int fuse_lookup_name(struct super_block *sb, u64 nodeid, const struct qstr *name
 
 	fuse_lookup_init(fm->fc, &args, nodeid, name, outarg);
 	err = fuse_simple_request(fm, &args);
-	/* Zero nodeid is same as -ENOENT, but with valid timeout */
+	 
 	if (err || !outarg->nodeid)
 		goto out_put_forget;
 
@@ -473,7 +427,7 @@ static int get_security_context(struct dentry *entry, umode_t mode,
 	if (err) {
 		if (err != -EOPNOTSUPP)
 			goto out_err;
-		/* No LSM is supporting this security hook. Ignore error */
+		 
 		ctxlen = 0;
 		ctx = NULL;
 	}
@@ -538,9 +492,7 @@ static u32 fuse_ext_size(size_t size)
 	return FUSE_REC_ALIGN(sizeof(struct fuse_ext_header) + size);
 }
 
-/*
- * This adds just a single supplementary group that matches the parent's group.
- */
+ 
 static int get_create_supp_group(struct inode *dir, struct fuse_in_arg *ext)
 {
 	struct fuse_conn *fc = get_fuse_conn(dir);
@@ -599,12 +551,7 @@ static void free_ext_value(struct fuse_args *args)
 		kfree(args->in_args[args->ext_idx].value);
 }
 
-/*
- * Atomic create+open operation
- *
- * If the filesystem doesn't support this, then fall back to separate
- * 'mknod' + 'open' requests.
- */
+ 
 static int fuse_create_open(struct inode *dir, struct dentry *entry,
 			    struct file *file, unsigned int flags,
 			    umode_t mode, u32 opcode)
@@ -621,7 +568,7 @@ static int fuse_create_open(struct inode *dir, struct dentry *entry,
 	struct fuse_file *ff;
 	bool trunc = flags & O_TRUNC;
 
-	/* Userspace expects S_IFREG in create mode */
+	 
 	BUG_ON((mode & S_IFMT) != S_IFREG);
 
 	forget = fuse_alloc_forget();
@@ -739,7 +686,7 @@ static int fuse_atomic_open(struct inode *dir, struct dentry *entry,
 	if (!(flags & O_CREAT) || d_really_is_positive(entry))
 		goto no_open;
 
-	/* Only creates */
+	 
 	file->f_mode |= FMODE_CREATED;
 
 	if (fc->no_create)
@@ -763,9 +710,7 @@ no_open:
 	return finish_no_open(file, res);
 }
 
-/*
- * Code shared between mknod, mkdir, symlink and link
- */
+ 
 static int create_new_entry(struct fuse_mount *fm, struct fuse_args *args,
 			    struct inode *dir, struct dentry *entry,
 			    umode_t mode)
@@ -950,12 +895,7 @@ static void fuse_entry_unlinked(struct dentry *entry)
 
 	spin_lock(&fi->lock);
 	fi->attr_version = atomic64_inc_return(&fc->attr_version);
-	/*
-	 * If i_nlink == 0 then unlink doesn't make sense, yet this can
-	 * happen if userspace filesystem is careless.  It would be
-	 * difficult to enforce correct nlink usage so just ignore this
-	 * condition here
-	 */
+	 
 	if (S_ISDIR(inode->i_mode))
 		clear_nlink(inode);
 	else if (inode->i_nlink > 0)
@@ -1034,7 +974,7 @@ static int fuse_rename_common(struct inode *olddir, struct dentry *oldent,
 	args.in_args[2].value = newent->d_name.name;
 	err = fuse_simple_request(fm, &args);
 	if (!err) {
-		/* ctime changes */
+		 
 		fuse_update_ctime(d_inode(oldent));
 
 		if (flags & RENAME_EXCHANGE)
@@ -1044,15 +984,11 @@ static int fuse_rename_common(struct inode *olddir, struct dentry *oldent,
 		if (olddir != newdir)
 			fuse_dir_changed(newdir);
 
-		/* newent will end up negative */
+		 
 		if (!(flags & RENAME_EXCHANGE) && d_really_is_positive(newent))
 			fuse_entry_unlinked(newent);
 	} else if (err == -EINTR || err == -ENOENT) {
-		/* If request was interrupted, DEITY only knows if the
-		   rename actually took place.  If the invalidation
-		   fails (e.g. some process has CWD under the renamed
-		   directory), then there can be inconsistency between
-		   the dcache and the real filesystem.  Tough luck. */
+		 
 		fuse_invalidate_entry(oldent);
 		if (d_really_is_positive(newent))
 			fuse_invalidate_entry(newent);
@@ -1184,14 +1120,14 @@ static int fuse_do_statx(struct inode *inode, struct file *file,
 
 	memset(&inarg, 0, sizeof(inarg));
 	memset(&outarg, 0, sizeof(outarg));
-	/* Directories have separate file-handle space */
+	 
 	if (file && S_ISREG(inode->i_mode)) {
 		struct fuse_file *ff = file->private_data;
 
 		inarg.getattr_flags |= FUSE_GETATTR_FH;
 		inarg.fh = ff->fh;
 	}
-	/* For now leave sync hints as the default, request all stats. */
+	 
 	inarg.sx_flags = 0;
 	inarg.sx_mask = STATX_BASIC_STATS | STATX_BTIME;
 	args.opcode = FUSE_STATX;
@@ -1245,7 +1181,7 @@ static int fuse_do_getattr(struct inode *inode, struct kstat *stat,
 
 	memset(&inarg, 0, sizeof(inarg));
 	memset(&outarg, 0, sizeof(outarg));
-	/* Directories have separate file-handle space */
+	 
 	if (file && S_ISREG(inode->i_mode)) {
 		struct fuse_file *ff = file->private_data;
 
@@ -1289,7 +1225,7 @@ static int fuse_update_get_attr(struct inode *inode, struct file *file,
 	u32 cache_mask = fuse_get_cache_mask(inode);
 
 
-	/* FUSE only supports basic stats and possibly btime */
+	 
 	request_mask &= STATX_BASIC_STATS | STATX_BTIME;
 retry:
 	if (fc->no_statx)
@@ -1308,7 +1244,7 @@ retry:
 
 	if (sync) {
 		forget_all_cached_acls(inode);
-		/* Try statx if BTIME is requested */
+		 
 		if (!fc->no_statx && (request_mask & ~STATX_BASIC_STATS)) {
 			err = fuse_do_statx(inode, file, stat);
 			if (err == -ENOSYS) {
@@ -1416,19 +1352,7 @@ static inline bool fuse_permissible_uidgid(struct fuse_conn *fc)
 		gid_eq(cred->gid,  fc->group_id));
 }
 
-/*
- * Calling into a user-controlled filesystem gives the filesystem
- * daemon ptrace-like capabilities over the current process.  This
- * means, that the filesystem daemon is able to record the exact
- * filesystem operations performed, and can also control the behavior
- * of the requester process in otherwise impossible ways.  For example
- * it can delay the operation for arbitrary length of time allowing
- * DoS against the requester.
- *
- * For this reason only those processes can call into the filesystem,
- * for which the owner of the mount has ptrace privilege.  This
- * excludes processes started by other users, suid or sgid processes.
- */
+ 
 bool fuse_allow_current_process(struct fuse_conn *fc)
 {
 	bool allow;
@@ -1480,19 +1404,7 @@ static int fuse_perm_getattr(struct inode *inode, int mask)
 	return fuse_do_getattr(inode, NULL, NULL);
 }
 
-/*
- * Check permission.  The two basic access models of FUSE are:
- *
- * 1) Local access checking ('default_permissions' mount option) based
- * on file mode.  This is the plain old disk filesystem permission
- * modell.
- *
- * 2) "Remote" access checking, where server is responsible for
- * checking permission in each inode operation.  An exception to this
- * is if ->permission() was invoked from sys_access() in which case an
- * access request is sent.  Execute permission is still checked
- * locally based on file mode.
- */
+ 
 static int fuse_permission(struct mnt_idmap *idmap,
 			   struct inode *inode, int mask)
 {
@@ -1506,9 +1418,7 @@ static int fuse_permission(struct mnt_idmap *idmap,
 	if (!fuse_allow_current_process(fc))
 		return -EACCES;
 
-	/*
-	 * If attributes are needed, refresh them before proceeding
-	 */
+	 
 	if (fc->default_permissions ||
 	    ((mask & MAY_EXEC) && S_ISREG(inode->i_mode))) {
 		struct fuse_inode *fi = get_fuse_inode(inode);
@@ -1527,9 +1437,7 @@ static int fuse_permission(struct mnt_idmap *idmap,
 	if (fc->default_permissions) {
 		err = generic_permission(&nop_mnt_idmap, inode, mask);
 
-		/* If permission is denied, try to refresh file
-		   attributes.  This is also needed, because the root
-		   node will at first have no permissions */
+		 
 		if (err == -EACCES && !refreshed) {
 			err = fuse_perm_getattr(inode, mask);
 			if (!err)
@@ -1537,10 +1445,7 @@ static int fuse_permission(struct mnt_idmap *idmap,
 							 inode, mask);
 		}
 
-		/* Note: the opposite of the above test does not
-		   exist.  So if permissions are revoked this won't be
-		   noticed immediately, only after the attribute
-		   timeout has expired */
+		 
 	} else if (mask & (MAY_ACCESS | MAY_CHDIR)) {
 		err = fuse_access(inode, mask);
 	} else if ((mask & MAY_EXEC) && S_ISREG(inode->i_mode)) {
@@ -1669,7 +1574,7 @@ static long fuse_dir_ioctl(struct file *file, unsigned int cmd,
 {
 	struct fuse_conn *fc = get_fuse_conn(file->f_mapping->host);
 
-	/* FUSE_IOCTL_DIR only supported for API version >= 7.18 */
+	 
 	if (fc->minor < 18)
 		return -ENOTTY;
 
@@ -1690,19 +1595,19 @@ static long fuse_dir_compat_ioctl(struct file *file, unsigned int cmd,
 
 static bool update_mtime(unsigned ivalid, bool trust_local_mtime)
 {
-	/* Always update if mtime is explicitly set  */
+	 
 	if (ivalid & ATTR_MTIME_SET)
 		return true;
 
-	/* Or if kernel i_mtime is the official one */
+	 
 	if (trust_local_mtime)
 		return true;
 
-	/* If it's an open(O_TRUNC) or an ftruncate(), don't update */
+	 
 	if ((ivalid & ATTR_SIZE) && (ivalid & (ATTR_OPEN | ATTR_FILE)))
 		return false;
 
-	/* In all other cases update */
+	 
 	return true;
 }
 
@@ -1740,12 +1645,7 @@ static void iattr_to_fattr(struct fuse_conn *fc, struct iattr *iattr,
 	}
 }
 
-/*
- * Prevent concurrent writepages on inode
- *
- * This is done by adding a negative bias to the inode write counter
- * and waiting for all pending writes to finish.
- */
+ 
 void fuse_set_nowrite(struct inode *inode)
 {
 	struct fuse_inode *fi = get_fuse_inode(inode);
@@ -1759,12 +1659,7 @@ void fuse_set_nowrite(struct inode *inode)
 	wait_event(fi->page_waitq, fi->writectr == FUSE_NOWRITE);
 }
 
-/*
- * Allow writepages on inode
- *
- * Remove the bias from the writecounter and send any queued
- * writepages.
- */
+ 
 static void __fuse_release_nowrite(struct inode *inode)
 {
 	struct fuse_inode *fi = get_fuse_inode(inode);
@@ -1798,9 +1693,7 @@ static void fuse_setattr_fill(struct fuse_conn *fc, struct fuse_args *args,
 	args->out_args[0].value = outarg_p;
 }
 
-/*
- * Flush inode->i_mtime to the server
- */
+ 
 int fuse_flush_times(struct inode *inode, struct fuse_file *ff)
 {
 	struct fuse_mount *fm = get_fuse_mount(inode);
@@ -1828,14 +1721,7 @@ int fuse_flush_times(struct inode *inode, struct fuse_file *ff)
 	return fuse_simple_request(fm, &args);
 }
 
-/*
- * Set attributes, and at the same time refresh them.
- *
- * Truncation is slightly complicated, because the 'truncate' request
- * may fail, in which case we don't want to touch the mapping.
- * vmtruncate() doesn't allow for this case, so do the rlimit checking
- * and the actual truncation by hand.
- */
+ 
 int fuse_do_setattr(struct dentry *dentry, struct iattr *attr,
 		    struct file *file)
 {
@@ -1878,15 +1764,11 @@ int fuse_do_setattr(struct dentry *dentry, struct iattr *attr,
 	}
 
 	if (attr->ia_valid & ATTR_OPEN) {
-		/* This is coming from open(..., ... | O_TRUNC); */
+		 
 		WARN_ON(!(attr->ia_valid & ATTR_SIZE));
 		WARN_ON(attr->ia_size != 0);
 		if (fc->atomic_o_trunc) {
-			/*
-			 * No need to send request to userspace, since actual
-			 * truncation has already been done by OPEN.  But still
-			 * need to truncate page cache.
-			 */
+			 
 			i_size_write(inode, 0);
 			truncate_pagecache(inode, 0);
 			goto out;
@@ -1894,7 +1776,7 @@ int fuse_do_setattr(struct dentry *dentry, struct iattr *attr,
 		file = NULL;
 	}
 
-	/* Flush dirty data/metadata before non-truncate SETATTR */
+	 
 	if (is_wb &&
 	    attr->ia_valid &
 			(ATTR_MODE | ATTR_UID | ATTR_GID | ATTR_MTIME_SET |
@@ -1923,17 +1805,17 @@ int fuse_do_setattr(struct dentry *dentry, struct iattr *attr,
 		inarg.fh = ff->fh;
 	}
 
-	/* Kill suid/sgid for non-directory chown unconditionally */
+	 
 	if (fc->handle_killpriv_v2 && !S_ISDIR(inode->i_mode) &&
 	    attr->ia_valid & (ATTR_UID | ATTR_GID))
 		inarg.valid |= FATTR_KILL_SUIDGID;
 
 	if (attr->ia_valid & ATTR_SIZE) {
-		/* For mandatory locking in truncate */
+		 
 		inarg.valid |= FATTR_LOCKOWNER;
 		inarg.lock_owner = fuse_lock_owner_id(fc, current->files);
 
-		/* Kill suid/sgid for truncate only if no CAP_FSETID */
+		 
 		if (fc->handle_killpriv_v2 && !capable(CAP_FSETID))
 			inarg.valid |= FATTR_KILL_SUIDGID;
 	}
@@ -1953,33 +1835,30 @@ int fuse_do_setattr(struct dentry *dentry, struct iattr *attr,
 	}
 
 	spin_lock(&fi->lock);
-	/* the kernel maintains i_mtime locally */
+	 
 	if (trust_local_cmtime) {
 		if (attr->ia_valid & ATTR_MTIME)
 			inode->i_mtime = attr->ia_mtime;
 		if (attr->ia_valid & ATTR_CTIME)
 			inode_set_ctime_to_ts(inode, attr->ia_ctime);
-		/* FIXME: clear I_DIRTY_SYNC? */
+		 
 	}
 
 	fuse_change_attributes_common(inode, &outarg.attr, NULL,
 				      ATTR_TIMEOUT(&outarg),
 				      fuse_get_cache_mask(inode));
 	oldsize = inode->i_size;
-	/* see the comment in fuse_change_attributes() */
+	 
 	if (!is_wb || is_truncate)
 		i_size_write(inode, outarg.attr.size);
 
 	if (is_truncate) {
-		/* NOTE: this may release/reacquire fi->lock */
+		 
 		__fuse_release_nowrite(inode);
 	}
 	spin_unlock(&fi->lock);
 
-	/*
-	 * Only call invalidate_inode_pages2() after removing
-	 * FUSE_NOWRITE, otherwise fuse_launder_folio() would deadlock.
-	 */
+	 
 	if ((is_truncate || !is_wb) &&
 	    S_ISREG(inode->i_mode) && oldsize != outarg.attr.size) {
 		truncate_pagecache(inode, outarg.attr.size);
@@ -2022,17 +1901,9 @@ static int fuse_setattr(struct mnt_idmap *idmap, struct dentry *entry,
 		attr->ia_valid &= ~(ATTR_KILL_SUID | ATTR_KILL_SGID |
 				    ATTR_MODE);
 
-		/*
-		 * The only sane way to reliably kill suid/sgid is to do it in
-		 * the userspace filesystem
-		 *
-		 * This should be done on write(), truncate() and chown().
-		 */
+		 
 		if (!fc->handle_killpriv && !fc->handle_killpriv_v2) {
-			/*
-			 * ia_mode calculation may have used stale i_mode.
-			 * Refresh and recalculate.
-			 */
+			 
 			ret = fuse_do_getattr(inode, NULL, file);
 			if (ret)
 				return ret;
@@ -2053,14 +1924,11 @@ static int fuse_setattr(struct mnt_idmap *idmap, struct dentry *entry,
 
 	ret = fuse_do_setattr(entry, attr, file);
 	if (!ret) {
-		/*
-		 * If filesystem supports acls it may have updated acl xattrs in
-		 * the filesystem, so forget cached acls for the inode.
-		 */
+		 
 		if (fc->posix_acl)
 			forget_all_cached_acls(inode);
 
-		/* Directory mode changed, may need to revalidate access */
+		 
 		if (d_is_dir(entry) && (attr->ia_valid & ATTR_MODE))
 			fuse_invalidate_entry_cache(entry);
 	}
@@ -2079,10 +1947,7 @@ static int fuse_getattr(struct mnt_idmap *idmap,
 
 	if (!fuse_allow_current_process(fc)) {
 		if (!request_mask) {
-			/*
-			 * If user explicitly requested *nothing* then don't
-			 * error out, but return st_dev only.
-			 */
+			 
 			stat->result_mask = 0;
 			stat->dev = inode->i_sb->s_dev;
 			return 0;

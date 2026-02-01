@@ -1,21 +1,4 @@
-/* Test the getaddrinfo module.
-
-   Copyright (C) 2006-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Simon Josefsson.  */
+ 
 
 #include <config.h>
 
@@ -23,9 +6,7 @@
 
 #include "signature.h"
 SIGNATURE_CHECK (gai_strerror, char const *, (int));
-/* On native Windows, these two functions may have the __stdcall calling
-   convention.  But the SIGNATURE_CHECK works only for functions with __cdecl
-   calling convention.  */
+ 
 #if !(defined _WIN32 && !defined __CYGWIN__)
 SIGNATURE_CHECK (freeaddrinfo, void, (struct addrinfo *));
 SIGNATURE_CHECK (getaddrinfo, int, (char const *, char const *,
@@ -41,7 +22,7 @@ SIGNATURE_CHECK (getaddrinfo, int, (char const *, char const *,
 
 #include "sockets.h"
 
-/* Whether to print debugging messages.  */
+ 
 #define ENABLE_DEBUGGING 0
 
 #if ENABLE_DEBUGGING
@@ -50,7 +31,7 @@ SIGNATURE_CHECK (getaddrinfo, int, (char const *, char const *,
 # define dbgprintf if (0) printf
 #endif
 
-/* BeOS does not have AF_UNSPEC.  */
+ 
 #ifndef AF_UNSPEC
 # define AF_UNSPEC 0
 #endif
@@ -69,14 +50,13 @@ simple (char const *host, char const *service)
   int res;
   int err;
 
-  /* Once we skipped the test, do not try anything else */
+   
   if (skip)
     return 0;
 
   dbgprintf ("Finding %s service %s...\n", host, service);
 
-  /* This initializes "hints" but does not use it.  Is there a reason
-     for this?  If so, please fix this comment.  */
+   
   memset (&hints, 0, sizeof (hints));
   hints.ai_flags = AI_CANONNAME;
   hints.ai_family = AF_UNSPEC;
@@ -89,30 +69,25 @@ simple (char const *host, char const *service)
 
   if (res != 0)
     {
-      /* EAI_AGAIN is returned if no network is available. Don't fail
-         the test merely because someone is down the country on their
-         in-law's farm. */
+       
       if (res == EAI_AGAIN)
         {
           skip++;
           fprintf (stderr, "skipping getaddrinfo test: no network?\n");
           return 77;
         }
-      /* IRIX reports EAI_NONAME for "https".  Don't fail the test
-         merely because of this.  */
+       
       if (res == EAI_NONAME)
         return 0;
-      /* Solaris reports EAI_SERVICE for "http" and "https".  Don't
-         fail the test merely because of this.  */
+       
       if (res == EAI_SERVICE)
         return 0;
 #ifdef EAI_NODATA
-      /* AIX reports EAI_NODATA for "https".  Don't fail the test
-         merely because of this.  */
+       
       if (res == EAI_NODATA)
         return 0;
 #endif
-      /* Provide details if errno was set.  */
+       
       if (res == EAI_SYSTEM)
         fprintf (stderr, "system error: %s\n", strerror (err));
 

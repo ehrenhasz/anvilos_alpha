@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2021 Mellanox Technologies Ltd */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/mlx5/driver.h>
@@ -33,7 +33,7 @@ static int esw_create_legacy_vepa_table(struct mlx5_eswitch *esw)
 		return -EOPNOTSUPP;
 	}
 
-	/* num FTE 2, num FG 2 */
+	 
 	ft_attr.prio = LEGACY_VEPA_PRIO;
 	ft_attr.max_fte = 2;
 	ft_attr.autogroup.max_num_groups = 2;
@@ -107,13 +107,13 @@ static int esw_create_legacy_fdb_table(struct mlx5_eswitch *esw)
 	esw->fdb_table.legacy.fdb = fdb;
 	table_size = fdb->max_fte;
 
-	/* Addresses group : Full match unicast/multicast addresses */
+	 
 	MLX5_SET(create_flow_group_in, flow_group_in, match_criteria_enable,
 		 MLX5_MATCH_OUTER_HEADERS);
 	match_criteria = MLX5_ADDR_OF(create_flow_group_in, flow_group_in, match_criteria);
 	dmac = MLX5_ADDR_OF(fte_match_param, match_criteria, outer_headers.dmac_47_16);
 	MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, 0);
-	/* Preserve 2 entries for allmulti and promisc rules*/
+	 
 	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, table_size - 3);
 	eth_broadcast_addr(dmac);
 	g = mlx5_create_flow_group(fdb, flow_group_in);
@@ -124,7 +124,7 @@ static int esw_create_legacy_fdb_table(struct mlx5_eswitch *esw)
 	}
 	esw->fdb_table.legacy.addr_grp = g;
 
-	/* Allmulti group : One rule that forwards any mcast traffic */
+	 
 	MLX5_SET(create_flow_group_in, flow_group_in, match_criteria_enable,
 		 MLX5_MATCH_OUTER_HEADERS);
 	MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, table_size - 2);
@@ -139,9 +139,7 @@ static int esw_create_legacy_fdb_table(struct mlx5_eswitch *esw)
 	}
 	esw->fdb_table.legacy.allmulti_grp = g;
 
-	/* Promiscuous group :
-	 * One rule that forward all unmatched traffic from previous groups
-	 */
+	 
 	eth_zero_addr(dmac);
 	MLX5_SET(create_flow_group_in, flow_group_in, match_criteria_enable,
 		 MLX5_MATCH_MISC_PARAMETERS);
@@ -269,7 +267,7 @@ static int _mlx5_eswitch_set_vepa_locked(struct mlx5_eswitch *esw,
 	if (!spec)
 		return -ENOMEM;
 
-	/* Uplink rule forward uplink traffic to FDB */
+	 
 	misc = MLX5_ADDR_OF(fte_match_param, spec->match_value, misc_parameters);
 	MLX5_SET(fte_match_set_misc, misc, source_port, MLX5_VPORT_UPLINK);
 
@@ -288,7 +286,7 @@ static int _mlx5_eswitch_set_vepa_locked(struct mlx5_eswitch *esw,
 	}
 	esw->fdb_table.legacy.vepa_uplink_rule = flow_rule;
 
-	/* Star rule to forward all traffic to uplink vport */
+	 
 	memset(&dest, 0, sizeof(dest));
 	dest.type = MLX5_FLOW_DESTINATION_TYPE_VPORT;
 	dest.vport.num = MLX5_VPORT_UPLINK;
@@ -350,7 +348,7 @@ int esw_legacy_vport_acl_setup(struct mlx5_eswitch *esw, struct mlx5_vport *vpor
 {
 	int ret;
 
-	/* Only non manager vports need ACL in legacy mode */
+	 
 	if (mlx5_esw_is_manager_vport(esw, vport->vport))
 		return 0;
 
@@ -438,7 +436,7 @@ int mlx5_eswitch_set_vport_vlan(struct mlx5_eswitch *esw,
 	mutex_lock(&esw->state_lock);
 	if (esw->mode != MLX5_ESWITCH_LEGACY) {
 		if (!vlan)
-			goto unlock; /* compatibility with libvirt */
+			goto unlock;  
 
 		err = -EOPNOTSUPP;
 		goto unlock;

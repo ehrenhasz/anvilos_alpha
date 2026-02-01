@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
+
 #include <errno.h>
 #include <poll.h>
 #include <string.h>
@@ -43,7 +43,7 @@
 #define yerr(_ys, _code, _msg...)	__yerr(&(_ys)->err, _code, _msg)
 #define perr(_ys, _msg)			__yerr(&(_ys)->err, errno, _msg)
 
-/* -- Netlink boiler plate */
+ 
 static int
 ynl_err_walk_report_one(struct ynl_policy_nest *policy, unsigned int type,
 			char *str, int str_sz, int *n)
@@ -239,7 +239,7 @@ ynl_ext_ack_check(struct ynl_sock *ys, const struct nlmsghdr *nlh,
 		miss_attr[n] = '\0';
 	}
 
-	/* Implicitly depend on ys->err.code already set */
+	 
 	if (str)
 		yerr_msg(ys, "Kernel %s: '%s'%s%s%s",
 			 ys->err.code ? "error" : "warning",
@@ -302,7 +302,7 @@ mnl_cb_t ynl_cb_array[NLMSG_MIN_TYPE] = {
 	[NLMSG_OVERRUN]	= ynl_cb_noop,
 };
 
-/* Attribute validation */
+ 
 
 int ynl_attr_validate(struct ynl_parse_arg *yarg, const struct nlattr *attr)
 {
@@ -353,7 +353,7 @@ int ynl_attr_validate(struct ynl_parse_arg *yarg, const struct nlattr *attr)
 		     "Invalid attribute (u64 %s)", policy->name);
 		return -1;
 	case YNL_PT_FLAG:
-		/* Let flags grow into real attrs, why not.. */
+		 
 		break;
 	case YNL_PT_NEST:
 		if (!len || len >= sizeof(*attr))
@@ -382,7 +382,7 @@ int ynl_attr_validate(struct ynl_parse_arg *yarg, const struct nlattr *attr)
 	return 0;
 }
 
-/* Generic code */
+ 
 
 static void ynl_err_reset(struct ynl_sock *ys)
 {
@@ -475,7 +475,7 @@ int ynl_cb_null(const struct nlmsghdr *nlh, void *data)
 	return MNL_CB_ERROR;
 }
 
-/* Init/fini and genetlink boiler plate */
+ 
 static int
 ynl_get_family_info_mcast(struct ynl_sock *ys, const struct nlattr *mcasts)
 {
@@ -635,7 +635,7 @@ void ynl_sock_destroy(struct ynl_sock *ys)
 	free(ys);
 }
 
-/* YNL multicast handling */
+ 
 
 void ynl_ntf_free(struct ynl_ntf_base_type *ntf)
 {
@@ -734,9 +734,7 @@ int ynl_ntf_check(struct ynl_sock *ys)
 	int err;
 
 	do {
-		/* libmnl doesn't let us pass flags to the recv to make
-		 * it non-blocking so we need to poll() or peek() :|
-		 */
+		 
 		struct pollfd pfd = { };
 
 		pfd.fd = mnl_socket_get_fd(ys->sock);
@@ -760,7 +758,7 @@ int ynl_ntf_check(struct ynl_sock *ys)
 	return 0;
 }
 
-/* YNL specific helpers used by the auto-generated code */
+ 
 
 struct ynl_dump_list_type *YNL_LIST_END = (void *)(0xb4d123);
 

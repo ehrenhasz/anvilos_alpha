@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _PERF_TRACE_BEAUTY_H
 #define _PERF_TRACE_BEAUTY_H
 
@@ -64,22 +64,7 @@ extern struct strarray strarray__socket_families;
 
 extern struct strarray strarray__socket_level;
 
-/**
- * augmented_arg: extra payload for syscall pointer arguments
  
- * If perf_sample->raw_size is more than what a syscall sys_enter_FOO puts, then
- * its the arguments contents, so that we can show more than just a
- * pointer. This will be done initially with eBPF, the start of that is at the
- * tools/perf/util/bpf_skel/augmented_syscalls.bpf.c that will eventually be
- * done automagically caching the running kernel tracefs events data into an
- * eBPF C script, that then gets compiled and its .o file cached for subsequent
- * use. For char pointers like the ones for 'open' like syscalls its easy, for
- * the rest we should use DWARF or better, BTF, much more compact.
- *
- * @size: 8 if all we need is an integer, otherwise all of the augmented arg.
- * @int_arg: will be used for integer like pointer contents, like 'accept's 'upeer_addrlen'
- * @value: u64 aligned, for structs, pathnames
- */
 struct augmented_arg {
 	int  size;
 	int  int_arg;
@@ -88,19 +73,7 @@ struct augmented_arg {
 
 struct syscall_arg_fmt;
 
-/**
- * @val: value of syscall argument being formatted
- * @len: for tracepoint dynamic arrays, if fmt->nr_entries == 0, then its not a fixed array, look at arg->len
- * @args: All the args, use syscall_args__val(arg, nth) to access one
- * @augmented_args: Extra data that can be collected, for instance, with eBPF for expanding the pathname for open, etc
- * @augmented_args_size: augmented_args total payload size
- * @thread: tid state (maps, pid, tid, etc)
- * @trace: 'perf trace' internals: all threads, etc
- * @parm: private area, may be an strarray, for instance
- * @idx: syscall arg idx (is this the first?)
- * @mask: a syscall arg may mask another arg, see syscall_arg__scnprintf_futex_op
- * @show_string_prefix: When there is a common prefix in a string table, show it or not
- */
+ 
 
 struct syscall_arg {
 	unsigned long val;
@@ -253,4 +226,4 @@ void syscall_arg__set_ret_scnprintf(struct syscall_arg *arg,
 
 const char *arch_syscalls__strerrno(const char *arch, int err);
 
-#endif /* _PERF_TRACE_BEAUTY_H */
+#endif  

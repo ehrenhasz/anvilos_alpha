@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * D-Link DIR-685 router I2C-based Touchkeys input driver
- * Copyright (C) 2017 Linus Walleij <linus.walleij@linaro.org>
- *
- * This is a one-off touchkey controller based on the Cypress Semiconductor
- * CY8C214 MCU with some firmware in its internal 8KB flash. The circuit
- * board inside the router is named E119921
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -44,7 +37,7 @@ static irqreturn_t dir685_tk_irq_thread(int irq, void *data)
 	dev_dbg(tk->dev, "IN: %*ph\n", (int)sizeof(buf), buf);
 	key = be16_to_cpup((__be16 *) &buf[4]);
 
-	/* Figure out if any bits went high or low since last message */
+	 
 	changed = tk->cur_key ^ key;
 	for_each_set_bit(i, &changed, num_bits) {
 		dev_dbg(tk->dev, "key %d is %s\n", i,
@@ -52,7 +45,7 @@ static irqreturn_t dir685_tk_irq_thread(int irq, void *data)
 		input_report_key(tk->input, tk->codes[i], test_bit(i, &key));
 	}
 
-	/* Store currently down keys */
+	 
 	tk->cur_key = key;
 	input_sync(tk->input);
 
@@ -87,10 +80,7 @@ static int dir685_tk_probe(struct i2c_client *client)
 	tk->codes[3] = KEY_RIGHT;
 	tk->codes[4] = KEY_ENTER;
 	tk->codes[5] = KEY_WPS_BUTTON;
-	/*
-	 * This key appears in the vendor driver, but I have
-	 * not been able to activate it.
-	 */
+	 
 	tk->codes[6] = KEY_RESERVED;
 
 	__set_bit(EV_KEY, tk->input->evbit);
@@ -105,7 +95,7 @@ static int dir685_tk_probe(struct i2c_client *client)
 	if (err)
 		return err;
 
-	/* Set the brightness to max level */
+	 
 	err = i2c_master_send(client, bl_data, sizeof(bl_data));
 	if (err != sizeof(bl_data))
 		dev_warn(tk->dev, "error setting brightness level\n");

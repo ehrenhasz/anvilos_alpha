@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright 2014 Cisco Systems, Inc.  All rights reserved. */
+ 
+ 
 
 #ifndef __SNIC_TRC_H
 #define __SNIC_TRC_H
@@ -14,24 +14,24 @@ extern ssize_t simple_read_from_buffer(void __user *to,
 
 extern unsigned int snic_trace_max_pages;
 
-/* Global Data structure for trace to manage trace functionality */
+ 
 struct snic_trc_data {
-	u64	ts;		/* Time Stamp */
-	char	*fn;		/* Ptr to Function Name */
-	u32	hno;		/* SCSI Host ID */
-	u32	tag;		/* Command Tag */
+	u64	ts;		 
+	char	*fn;		 
+	u32	hno;		 
+	u32	tag;		 
 	u64 data[5];
 } __attribute__((__packed__));
 
-#define SNIC_TRC_ENTRY_SZ  64	/* in Bytes */
+#define SNIC_TRC_ENTRY_SZ  64	 
 
 struct snic_trc {
 	spinlock_t lock;
-	struct snic_trc_data *buf;	/* Trace Buffer */
-	u32	max_idx;		/* Max Index into trace buffer */
+	struct snic_trc_data *buf;	 
+	u32	max_idx;		 
 	u32	rd_idx;
 	u32	wr_idx;
-	bool	enable;			/* Control Variable for Tracing */
+	bool	enable;			 
 };
 
 int snic_trc_init(void);
@@ -60,7 +60,7 @@ snic_trace(char *fn, u16 hno, u32 tag, u64 d1, u64 d2, u64 d3, u64 d4, u64 d5)
 	tr_rec->data[2] = d3;
 	tr_rec->data[3] = d4;
 	tr_rec->data[4] = d5;
-	tr_rec->ts = jiffies; /* Update time stamp at last */
+	tr_rec->ts = jiffies;  
 }
 
 #define SNIC_TRC(_hno, _tag, d1, d2, d3, d4, d5)			\
@@ -90,7 +90,7 @@ snic_trace(char *fn, u16 hno, u32 tag, u64 d1, u64 d2, u64 d3, u64 d4, u64 d5)
 				 (u64)(d4),		\
 				 (u64)(d5));		\
 	} while (0)
-#endif /* end of CONFIG_SCSI_SNIC_DEBUG_FS */
+#endif  
 
 #define SNIC_TRC_CMD(sc)	\
 	((u64)sc->cmnd[0] << 56 | (u64)sc->cmnd[7] << 40 |	\
@@ -101,4 +101,4 @@ snic_trace(char *fn, u16 hno, u32 tag, u64 d1, u64 d2, u64 d3, u64 d4, u64 d5)
 #define SNIC_TRC_CMD_STATE_FLAGS(sc)	\
 	((u64) CMD_FLAGS(sc) << 32 | CMD_STATE(sc))
 
-#endif /* end of __SNIC_TRC_H */
+#endif  

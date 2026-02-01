@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// rt1015.c  --  RT1015 ALSA SoC audio amplifier driver
-//
-// Copyright 2019 Realtek Semiconductor Corp.
-//
-// Author: Jack Yu <jack.yu@realtek.com>
-//
-//
+
+
+
+
+
+
+
+
+
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -928,7 +928,7 @@ static int rt1015_set_tdm_slot(struct snd_soc_dai *dai,
 		goto _set_tdm_err_;
 	}
 
-	/* Rx slot configuration */
+	 
 	rx_slotnum = hweight_long(rx_mask);
 	if (rx_slotnum != 1) {
 		ret = -EINVAL;
@@ -936,10 +936,7 @@ static int rt1015_set_tdm_slot(struct snd_soc_dai *dai,
 		goto _set_tdm_err_;
 	}
 
-	/* This is an assumption that the system sends stereo audio to the amplifier typically.
-	 * And the stereo audio is placed in slot 0/2/4/6 as the starting slot.
-	 * The users could select the channel from L/R/L+R by "Mono LR Select" control.
-	 */
+	 
 	first_bit = __ffs(rx_mask);
 	switch (first_bit) {
 	case 0:
@@ -969,7 +966,7 @@ static int rt1015_set_tdm_slot(struct snd_soc_dai *dai,
 		goto _set_tdm_err_;
 	}
 
-	/* Tx slot configuration */
+	 
 	tx_slotnum = hweight_long(tx_mask);
 	if (tx_slotnum) {
 		ret = -EINVAL;

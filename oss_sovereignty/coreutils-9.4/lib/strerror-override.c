@@ -1,21 +1,4 @@
-/* strerror-override.c --- POSIX compatible system error routine
-
-   Copyright (C) 2010-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2010.  */
+ 
 
 #include <config.h>
 
@@ -23,7 +6,7 @@
 
 #include <errno.h>
 
-#if GNULIB_defined_EWINSOCK /* native Windows platforms */
+#if GNULIB_defined_EWINSOCK  
 # if HAVE_WINSOCK2_H
 #  include <winsock2.h>
 # endif
@@ -31,12 +14,11 @@
 
 #if !GNULIB_defined_strerror_override_macro
 
-/* If ERRNUM maps to an errno value defined by gnulib, return a string
-   describing the error.  Otherwise return NULL.  */
+ 
 const char *
 strerror_override (int errnum)
 {
-  /* These error messages are taken from glibc/sysdeps/gnu/errlist.c.  */
+   
   switch (errnum)
     {
 # if REPLACE_STRERROR_0
@@ -44,7 +26,7 @@ strerror_override (int errnum)
       return "Success";
 # endif
 
-# if GNULIB_defined_ESOCK /* native Windows platforms with older <errno.h> */
+# if GNULIB_defined_ESOCK  
     case EINPROGRESS:
       return "Operation now in progress";
     case EALREADY:
@@ -92,7 +74,7 @@ strerror_override (int errnum)
     case EWOULDBLOCK:
       return "Operation would block";
 # endif
-# if GNULIB_defined_ESTREAMS /* native Windows platforms with older <errno.h> */
+# if GNULIB_defined_ESTREAMS  
     case ETXTBSY:
       return "Text file busy";
     case ENODATA:
@@ -106,7 +88,7 @@ strerror_override (int errnum)
     case EOTHER:
       return "Other error";
 # endif
-# if GNULIB_defined_EWINSOCK /* native Windows platforms */
+# if GNULIB_defined_EWINSOCK  
     case ESOCKTNOSUPPORT:
       return "Socket type not supported";
     case EPFNOSUPPORT:
@@ -128,58 +110,58 @@ strerror_override (int errnum)
     case EREMOTE:
       return "Object is remote";
 #  if HAVE_WINSOCK2_H
-      /* WSA_INVALID_HANDLE maps to EBADF */
-      /* WSA_NOT_ENOUGH_MEMORY maps to ENOMEM */
-      /* WSA_INVALID_PARAMETER maps to EINVAL */
+       
+       
+       
     case WSA_OPERATION_ABORTED:
       return "Overlapped operation aborted";
     case WSA_IO_INCOMPLETE:
       return "Overlapped I/O event object not in signaled state";
     case WSA_IO_PENDING:
       return "Overlapped operations will complete later";
-      /* WSAEINTR maps to EINTR */
-      /* WSAEBADF maps to EBADF */
-      /* WSAEACCES maps to EACCES */
-      /* WSAEFAULT maps to EFAULT */
-      /* WSAEINVAL maps to EINVAL */
-      /* WSAEMFILE maps to EMFILE */
-      /* WSAEWOULDBLOCK maps to EWOULDBLOCK */
-      /* WSAEINPROGRESS maps to EINPROGRESS */
-      /* WSAEALREADY maps to EALREADY */
-      /* WSAENOTSOCK maps to ENOTSOCK */
-      /* WSAEDESTADDRREQ maps to EDESTADDRREQ */
-      /* WSAEMSGSIZE maps to EMSGSIZE */
-      /* WSAEPROTOTYPE maps to EPROTOTYPE */
-      /* WSAENOPROTOOPT maps to ENOPROTOOPT */
-      /* WSAEPROTONOSUPPORT maps to EPROTONOSUPPORT */
-      /* WSAESOCKTNOSUPPORT is ESOCKTNOSUPPORT */
-      /* WSAEOPNOTSUPP maps to EOPNOTSUPP */
-      /* WSAEPFNOSUPPORT is EPFNOSUPPORT */
-      /* WSAEAFNOSUPPORT maps to EAFNOSUPPORT */
-      /* WSAEADDRINUSE maps to EADDRINUSE */
-      /* WSAEADDRNOTAVAIL maps to EADDRNOTAVAIL */
-      /* WSAENETDOWN maps to ENETDOWN */
-      /* WSAENETUNREACH maps to ENETUNREACH */
-      /* WSAENETRESET maps to ENETRESET */
-      /* WSAECONNABORTED maps to ECONNABORTED */
-      /* WSAECONNRESET maps to ECONNRESET */
-      /* WSAENOBUFS maps to ENOBUFS */
-      /* WSAEISCONN maps to EISCONN */
-      /* WSAENOTCONN maps to ENOTCONN */
-      /* WSAESHUTDOWN is ESHUTDOWN */
-      /* WSAETOOMANYREFS is ETOOMANYREFS */
-      /* WSAETIMEDOUT maps to ETIMEDOUT */
-      /* WSAECONNREFUSED maps to ECONNREFUSED */
-      /* WSAELOOP maps to ELOOP */
-      /* WSAENAMETOOLONG maps to ENAMETOOLONG */
-      /* WSAEHOSTDOWN is EHOSTDOWN */
-      /* WSAEHOSTUNREACH maps to EHOSTUNREACH */
-      /* WSAENOTEMPTY maps to ENOTEMPTY */
-      /* WSAEPROCLIM is EPROCLIM */
-      /* WSAEUSERS is EUSERS */
-      /* WSAEDQUOT is EDQUOT */
-      /* WSAESTALE is ESTALE */
-      /* WSAEREMOTE is EREMOTE */
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
     case WSASYSNOTREADY:
       return "Network subsystem is unavailable";
     case WSAVERNOTSUPPORTED:
@@ -214,7 +196,7 @@ strerror_override (int errnum)
       return "Nonrecoverable error";
     case WSANO_DATA:
       return "Valid name, no data record of requested type";
-      /* WSA_QOS_* omitted */
+       
 #  endif
 # endif
 

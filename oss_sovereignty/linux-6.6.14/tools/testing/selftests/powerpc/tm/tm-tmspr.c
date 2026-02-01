@@ -1,27 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2015, Michael Neuling, IBM Corp.
- *
- * Original: Michael Neuling 3/4/2014
- * Modified: Rashmica Gupta 8/12/2015
- *
- * Check if any of the Transaction Memory SPRs get corrupted.
- * - TFIAR  - stores address of location of transaction failure
- * - TFHAR  - stores address of software failure handler (if transaction
- *   fails)
- * - TEXASR - lots of info about the transacion(s)
- *
- * (1) create more threads than cpus
- * (2) in each thread:
- * 	(a) set TFIAR and TFHAR a unique value
- * 	(b) loop for awhile, continually checking to see if
- * 	either register has been corrupted.
- *
- * (3) Loop:
- * 	(a) begin transaction
- *    	(b) abort transaction
- *	(c) check TEXASR to see if FS has been corrupted
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <stdio.h>
@@ -41,12 +19,12 @@ void tfiar_tfhar(void *in)
 	unsigned long tfhar, tfhar_rd, tfiar, tfiar_rd;
 	int i;
 
-	/* TFIAR: Last bit has to be high so userspace can read register */
+	 
 	tfiar = ((unsigned long)in) + 1;
 	tfiar += 2;
 	mtspr(SPRN_TFIAR, tfiar);
 
-	/* TFHAR: Last two bits are reserved */
+	 
 	tfhar = ((unsigned long)in);
 	tfhar &= ~0x3UL;
 	tfhar += 4;
@@ -75,11 +53,11 @@ void texasr(void *in)
 			"tabort. 0 ;"
 			"tend.;"
 
-			/* Abort handler */
+			 
 			"3: ;"
 			::: "memory");
 
-                /* Check the TEXASR */
+                 
                 result = mfspr(SPRN_TEXASR);
 		if ((result & TEXASR_FS) == 0) {
 			passed = 0;
@@ -98,20 +76,20 @@ int test_tmspr()
 	SKIP_IF(!have_htm());
 	SKIP_IF(htm_is_synthetic());
 
-	/* To cause some context switching */
+	 
 	thread_num = 10 * sysconf(_SC_NPROCESSORS_ONLN);
 
 	thread = malloc(thread_num * sizeof(pthread_t));
 	if (thread == NULL)
 		return EXIT_FAILURE;
 
-	/* Test TFIAR and TFHAR */
+	 
 	for (i = 0; i < thread_num; i += 2) {
 		if (pthread_create(&thread[i], NULL, (void *)tfiar_tfhar,
 				   (void *)i))
 			return EXIT_FAILURE;
 	}
-	/* Test TEXASR */
+	 
 	for (i = 1; i < thread_num; i += 2) {
 		if (pthread_create(&thread[i], NULL, (void *)texasr, (void *)i))
 			return EXIT_FAILURE;

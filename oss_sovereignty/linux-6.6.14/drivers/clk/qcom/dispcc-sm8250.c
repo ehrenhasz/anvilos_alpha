@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018-2020, 2022, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -192,13 +190,13 @@ static const struct clk_parent_data disp_cc_parent_data_6[] = {
 static const struct parent_map disp_cc_parent_map_7[] = {
 	{ P_BI_TCXO, 0 },
 	{ P_DISP_CC_PLL1_OUT_MAIN, 4 },
-	/* { P_DISP_CC_PLL1_OUT_EVEN, 5 }, */
+	 
 };
 
 static const struct clk_parent_data disp_cc_parent_data_7[] = {
 	{ .fw_name = "bi_tcxo" },
 	{ .hw = &disp_cc_pll1.clkr.hw },
-	/* { .hw = &disp_cc_pll1_out_even.clkr.hw }, */
+	 
 };
 
 static const struct freq_tbl ftbl_disp_cc_mdss_ahb_clk_src[] = {
@@ -1270,7 +1268,7 @@ static int disp_cc_sm8250_probe(struct platform_device *pdev)
 		return PTR_ERR(regmap);
 	}
 
-	/* Apply differences for SM8150 and SM8350 */
+	 
 	BUILD_BUG_ON(CLK_ALPHA_PLL_TYPE_TRION != CLK_ALPHA_PLL_TYPE_LUCID);
 	if (of_device_is_compatible(pdev->dev.of_node, "qcom,sc8180x-dispcc") ||
 	    of_device_is_compatible(pdev->dev.of_node, "qcom,sm8150-dispcc")) {
@@ -1325,10 +1323,7 @@ static int disp_cc_sm8250_probe(struct platform_device *pdev)
 		unsigned int i;
 		static bool offset_applied;
 
-		/*
-		 * note: trion == lucid, except for the prepare() op
-		 * only apply the offsets once (in case of deferred probe)
-		 */
+		 
 		if (!offset_applied) {
 			for (i = 0; i < ARRAY_SIZE(rcgs); i++)
 				rcgs[i]->cmd_rcgr -= 4;
@@ -1362,10 +1357,10 @@ static int disp_cc_sm8250_probe(struct platform_device *pdev)
 	clk_lucid_pll_configure(&disp_cc_pll0, regmap, &disp_cc_pll0_config);
 	clk_lucid_pll_configure(&disp_cc_pll1, regmap, &disp_cc_pll1_config);
 
-	/* Enable clock gating for MDP clocks */
+	 
 	regmap_update_bits(regmap, 0x8000, 0x10, 0x10);
 
-	/* DISP_CC_XO_CLK always-on */
+	 
 	regmap_update_bits(regmap, 0x605c, BIT(0), BIT(0));
 
 	ret = qcom_cc_really_probe(pdev, &disp_cc_sm8250_desc, regmap);

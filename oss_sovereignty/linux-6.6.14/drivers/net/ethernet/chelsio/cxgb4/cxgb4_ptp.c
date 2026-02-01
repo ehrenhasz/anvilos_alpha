@@ -1,38 +1,4 @@
-/*
- * cxgb4_ptp.c:Chelsio PTP support for T5/T6
- *
- * Copyright (c) 2003-2017 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Written by: Atul Gupta (atul.gupta@chelsio.com)
- */
+ 
 
 #include <linux/module.h>
 #include <linux/net_tstamp.h>
@@ -50,11 +16,7 @@
 #include "t4fw_api.h"
 #include "cxgb4_ptp.h"
 
-/**
- * cxgb4_ptp_is_ptp_tx - determine whether TX packet is PTP or not
- * @skb: skb of outgoing ptp request
- *
- */
+ 
 bool cxgb4_ptp_is_ptp_tx(struct sk_buff *skb)
 {
 	struct udphdr *uh;
@@ -76,11 +38,7 @@ bool is_ptp_enabled(struct sk_buff *skb, struct net_device *dev)
 		cxgb4_ptp_is_ptp_tx(skb));
 }
 
-/**
- * cxgb4_ptp_is_ptp_rx - determine whether RX packet is PTP or not
- * @skb: skb of incoming ptp request
- *
- */
+ 
 bool cxgb4_ptp_is_ptp_rx(struct sk_buff *skb)
 {
 	struct udphdr *uh = (struct udphdr *)(skb->data + ETH_HLEN +
@@ -90,12 +48,7 @@ bool cxgb4_ptp_is_ptp_rx(struct sk_buff *skb)
 		uh->source == htons(PTP_EVENT_PORT);
 }
 
-/**
- * cxgb4_ptp_read_hwstamp - read timestamp for TX event PTP message
- * @adapter: board private structure
- * @pi: port private structure
- *
- */
+ 
 void cxgb4_ptp_read_hwstamp(struct adapter *adapter, struct port_info *pi)
 {
 	struct skb_shared_hwtstamps *skb_ts = NULL;
@@ -117,13 +70,7 @@ void cxgb4_ptp_read_hwstamp(struct adapter *adapter, struct port_info *pi)
 	spin_unlock(&adapter->ptp_lock);
 }
 
-/**
- * cxgb4_ptprx_timestamping - Enable Timestamp for RX PTP event message
- * @pi: port private structure
- * @port: pot number
- * @mode: RX mode
- *
- */
+ 
 int cxgb4_ptprx_timestamping(struct port_info *pi, u8 port, u16 mode)
 {
 	struct adapter *adapter = pi->adapter;
@@ -193,16 +140,7 @@ int cxgb4_ptp_redirect_rx_packet(struct adapter *adapter, struct port_info *pi)
 	return err;
 }
 
-/**
- * cxgb4_ptp_adjfine - Adjust frequency of PHC cycle counter
- * @ptp: ptp clock structure
- * @scaled_ppm: Desired frequency in scaled parts per billion
- *
- * Adjust the frequency of the PHC cycle counter by the indicated amount from
- * the base frequency.
- *
- * Scaled parts per million is ppm with a 16-bit binary fractional field.
- */
+ 
 static int cxgb4_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 {
 	struct adapter *adapter = (struct adapter *)container_of(ptp,
@@ -231,13 +169,7 @@ static int cxgb4_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 	return err;
 }
 
-/**
- * cxgb4_ptp_fineadjtime - Shift the time of the hardware clock
- * @adapter: board private structure
- * @delta: Desired change in nanoseconds
- *
- * Adjust the timer by resetting the timecounter structure.
- */
+ 
 static int  cxgb4_ptp_fineadjtime(struct adapter *adapter, s64 delta)
 {
 	struct fw_ptp_cmd c;
@@ -262,13 +194,7 @@ static int  cxgb4_ptp_fineadjtime(struct adapter *adapter, s64 delta)
 	return err;
 }
 
-/**
- * cxgb4_ptp_adjtime - Shift the time of the hardware clock
- * @ptp: ptp clock structure
- * @delta: Desired change in nanoseconds
- *
- * Adjust the timer by resetting the timecounter structure.
- */
+ 
 static int cxgb4_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
 {
 	struct adapter *adapter =
@@ -305,14 +231,7 @@ static int cxgb4_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
 	return err;
 }
 
-/**
- * cxgb4_ptp_gettime - Reads the current time from the hardware clock
- * @ptp: ptp clock structure
- * @ts: timespec structure to hold the current time value
- *
- * Read the timecounter and return the correct value in ns after converting
- * it into a struct timespec.
- */
+ 
 static int cxgb4_ptp_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
 {
 	struct adapter *adapter = container_of(ptp, struct adapter,
@@ -323,19 +242,12 @@ static int cxgb4_ptp_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
 	ns |= (u64)t4_read_reg(adapter,
 			       T5_PORT_REG(0, MAC_PORT_PTP_SUM_HI_A)) << 32;
 
-	/* convert to timespec*/
+	 
 	*ts = ns_to_timespec64(ns);
 	return 0;
 }
 
-/**
- *  cxgb4_ptp_settime - Set the current time on the hardware clock
- *  @ptp: ptp clock structure
- *  @ts: timespec containing the new time for the cycle counter
- *
- *  Reset value to new base value instead of the kernel
- *  wall timer value.
- */
+ 
 static int cxgb4_ptp_settime(struct ptp_clock_info *ptp,
 			     const struct timespec64 *ts)
 {
@@ -383,15 +295,7 @@ static void cxgb4_init_ptp_timer(struct adapter *adapter)
 			"PTP: %s error %d\n", __func__, -err);
 }
 
-/**
- * cxgb4_ptp_enable - enable or disable an ancillary feature
- * @ptp: ptp clock structure
- * @request: Desired resource to enable or disable
- * @on: Caller passes one to enable or zero to disable
- *
- * Enable (or disable) ancillary features of the PHC subsystem.
- * Currently, no ancillary features are supported.
- */
+ 
 static int cxgb4_ptp_enable(struct ptp_clock_info __always_unused *ptp,
 			    struct ptp_clock_request __always_unused *request,
 			    int __always_unused on)
@@ -414,16 +318,11 @@ static const struct ptp_clock_info cxgb4_ptp_clock_info = {
 	.enable         = cxgb4_ptp_enable,
 };
 
-/**
- * cxgb4_ptp_init - initialize PTP for devices which support it
- * @adapter: board private structure
- *
- * This function performs the required steps for enabling PTP support.
- */
+ 
 void cxgb4_ptp_init(struct adapter *adapter)
 {
 	struct timespec64 now;
-	 /* no need to create a clock device if we already have one */
+	  
 	if (!IS_ERR_OR_NULL(adapter->ptp_clock))
 		return;
 
@@ -448,12 +347,7 @@ void cxgb4_ptp_init(struct adapter *adapter)
 	}
 }
 
-/**
- * cxgb4_ptp_stop - disable PTP device and stop the overflow check
- * @adapter: board private structure
- *
- * Stop the PTP support.
- */
+ 
 void cxgb4_ptp_stop(struct adapter *adapter)
 {
 	if (adapter->ptp_tx_skb) {

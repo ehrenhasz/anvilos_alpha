@@ -1,57 +1,4 @@
-/*
- * This file is provided under a dual BSD/GPLv2 license.  When using or
- * redistributing this file, you may do so under either license.
- *
- * GPL LICENSE SUMMARY
- *
- * Copyright(c) 2008 - 2011 Intel Corporation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
- * The full GNU General Public License is included in this distribution
- * in the file called LICENSE.GPL.
- *
- * BSD LICENSE
- *
- * Copyright(c) 2008 - 2011 Intel Corporation. All rights reserved.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in
- *     the documentation and/or other materials provided with the
- *     distribution.
- *   * Neither the name of Intel Corporation nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -93,7 +40,7 @@ static const struct pci_device_id isci_id_table[] = {
 
 MODULE_DEVICE_TABLE(pci, isci_id_table);
 
-/* linux isci specific settings */
+ 
 
 unsigned char no_outbound_task_to = 2;
 module_param(no_outbound_task_to, byte, 0);
@@ -181,16 +128,16 @@ static const struct scsi_host_template isci_sht = {
 
 static struct sas_domain_function_template isci_transport_ops  = {
 
-	/* The class calls these to notify the LLDD of an event. */
+	 
 	.lldd_port_formed	= isci_port_formed,
 	.lldd_port_deformed	= isci_port_deformed,
 
-	/* The class calls these when a device is found or gone. */
+	 
 	.lldd_dev_found		= isci_remote_device_found,
 	.lldd_dev_gone		= isci_remote_device_gone,
 
 	.lldd_execute_task	= isci_task_execute_task,
-	/* Task Management Functions. Must be called from process context. */
+	 
 	.lldd_abort_task	= isci_task_abort_task,
 	.lldd_abort_task_set	= isci_task_abort_task_set,
 	.lldd_clear_task_set	= isci_task_clear_task_set,
@@ -198,38 +145,26 @@ static struct sas_domain_function_template isci_transport_ops  = {
 	.lldd_lu_reset		= isci_task_lu_reset,
 	.lldd_query_task	= isci_task_query_task,
 
-	/* ata recovery called from ata-eh */
+	 
 	.lldd_ata_check_ready	= isci_ata_check_ready,
 
-	/* Port and Adapter management */
+	 
 	.lldd_clear_nexus_port	= isci_task_clear_nexus_port,
 	.lldd_clear_nexus_ha	= isci_task_clear_nexus_ha,
 
-	/* Phy management */
+	 
 	.lldd_control_phy	= isci_phy_control,
 
-	/* GPIO support */
+	 
 	.lldd_write_gpio	= isci_gpio_write,
 };
 
 
-/******************************************************************************
-* P R O T E C T E D  M E T H O D S
-******************************************************************************/
+ 
 
 
 
-/**
- * isci_register_sas_ha() - This method initializes various lldd
- *    specific members of the sas_ha struct and calls the libsas
- *    sas_register_ha() function.
- * @isci_host: This parameter specifies the lldd specific wrapper for the
- *    libsas sas_ha struct.
- *
- * This method returns an error code indicating success or failure. The user
- * should check for possible memory allocation error return otherwise, a zero
- * indicates success.
- */
+ 
 static int isci_register_sas_ha(struct isci_host *isci_host)
 {
 	int i;
@@ -314,10 +249,7 @@ static int isci_pci_init(struct pci_dev *pdev)
 
 static int num_controllers(struct pci_dev *pdev)
 {
-	/* bar size alone can tell us if we are running with a dual controller
-	 * part, no need to trust revision ids that might be under broken firmware
-	 * control
-	 */
+	 
 	resource_size_t scu_bar_size = pci_resource_len(pdev, SCI_SCU_BAR*2);
 	resource_size_t smu_bar_size = pci_resource_len(pdev, SCI_SMU_BAR*2);
 
@@ -334,10 +266,7 @@ static int isci_setup_interrupts(struct pci_dev *pdev)
 	struct isci_host *ihost;
 	struct isci_pci_info *pci_info = to_pci_info(pdev);
 
-	/*
-	 *  Determine the number of vectors associated with this
-	 *  PCI function.
-	 */
+	 
 	num_msix = num_controllers(pdev) * SCI_NUM_MSI_X_INT;
 
 	err = pci_alloc_irq_vectors(pdev, num_msix, num_msix, PCI_IRQ_MSIX);
@@ -349,7 +278,7 @@ static int isci_setup_interrupts(struct pci_dev *pdev)
 		irq_handler_t isr;
 
 		ihost = pci_info->hosts[id];
-		/* odd numbered vectors are error interrupts */
+		 
 		if (i & 1)
 			isr = isci_error_isr;
 		else
@@ -392,7 +321,7 @@ static void isci_user_parameters_get(struct sci_user_parameters *u)
 
 		u_phy->max_speed_generation = phy_gen;
 
-		/* we are not exporting these for now */
+		 
 		u_phy->align_insertion_frequency = 0x7f;
 		u_phy->in_connection_align_insertion_frequency = 0xff;
 		u_phy->notify_enable_spin_up_insertion_frequency = 0x33;
@@ -411,10 +340,7 @@ static enum sci_status sci_user_parameters_set(struct isci_host *ihost,
 {
 	u16 index;
 
-	/*
-	 * Validate the user parameters.  If they are not legal, then
-	 * return a failure.
-	 */
+	 
 	for (index = 0; index < SCI_MAX_PHYS; index++) {
 		struct sci_phy_user_params *u;
 
@@ -444,42 +370,38 @@ static enum sci_status sci_user_parameters_set(struct isci_host *ihost,
 
 static void sci_oem_defaults(struct isci_host *ihost)
 {
-	/* these defaults are overridden by the platform / firmware */
+	 
 	struct sci_user_parameters *user = &ihost->user_parameters;
 	struct sci_oem_params *oem = &ihost->oem_parameters;
 	int i;
 
-	/* Default to APC mode. */
+	 
 	oem->controller.mode_type = SCIC_PORT_AUTOMATIC_CONFIGURATION_MODE;
 
-	/* Default to APC mode. */
+	 
 	oem->controller.max_concurr_spin_up = 1;
 
-	/* Default to no SSC operation. */
+	 
 	oem->controller.do_enable_ssc = false;
 
-	/* Default to short cables on all phys. */
+	 
 	oem->controller.cable_selection_mask = 0;
 
-	/* Initialize all of the port parameter information to narrow ports. */
+	 
 	for (i = 0; i < SCI_MAX_PORTS; i++)
 		oem->ports[i].phy_mask = 0;
 
-	/* Initialize all of the phy parameter information. */
+	 
 	for (i = 0; i < SCI_MAX_PHYS; i++) {
-		/* Default to 3G (i.e. Gen 2). */
+		 
 		user->phys[i].max_speed_generation = SCIC_SDS_PARM_GEN2_SPEED;
 
-		/* the frequencies cannot be 0 */
+		 
 		user->phys[i].align_insertion_frequency = 0x7f;
 		user->phys[i].in_connection_align_insertion_frequency = 0xff;
 		user->phys[i].notify_enable_spin_up_insertion_frequency = 0x33;
 
-		/* Previous Vitesse based expanders had a arbitration issue that
-		 * is worked around by having the upper 32-bits of SAS address
-		 * with a value greater then the Vitesse company identifier.
-		 * Hence, usage of 0x5FCFFFFF.
-		 */
+		 
 		oem->phys[i].sas_address.low = 0x1 + ihost->id;
 		oem->phys[i].sas_address.high = 0x5FCFFFFF;
 	}
@@ -513,8 +435,8 @@ static struct isci_host *isci_host_alloc(struct pci_dev *pdev, int id)
 	tasklet_init(&ihost->completion_tasklet,
 		     isci_host_completion_routine, (unsigned long)ihost);
 
-	/* validate module parameters */
-	/* TODO: kill struct sci_user_parameters and reference directly */
+	 
+	 
 	sci_oem_defaults(ihost);
 	isci_user_parameters_get(&sci_user_params);
 	if (sci_user_parameters_set(ihost, &sci_user_params)) {
@@ -523,7 +445,7 @@ static struct isci_host *isci_host_alloc(struct pci_dev *pdev, int id)
 		return NULL;
 	}
 
-	/* sanity check platform (or 'firmware') oem parameters */
+	 
 	if (orom) {
 		if (id < 0 || id >= SCI_MAX_CONTROLLERS || id > orom->hdr.num_elements) {
 			dev_warn(&pdev->dev, "parsing firmware oem parameters failed\n");
@@ -533,7 +455,7 @@ static struct isci_host *isci_host_alloc(struct pci_dev *pdev, int id)
 		oem_version = orom->hdr.version;
 	}
 
-	/* validate oem parameters (platform, firmware, or built-in defaults) */
+	 
 	if (sci_oem_parameters_validate(&ihost->oem_parameters, oem_version)) {
 		dev_warn(&pdev->dev, "oem parameter validation failed\n");
 		return NULL;
@@ -579,7 +501,7 @@ static struct isci_host *isci_host_alloc(struct pci_dev *pdev, int id)
 	shost->max_lun = ~0;
 	shost->max_cmd_len = MAX_COMMAND_SIZE;
 
-	/* turn on DIF support */
+	 
 	scsi_host_set_prot(shost,
 			   SHOST_DIF_TYPE1_PROTECTION |
 			   SHOST_DIF_TYPE2_PROTECTION |
@@ -641,9 +563,7 @@ static int isci_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		source = "(firmware)";
 		orom = isci_request_firmware(pdev, fw);
 		if (!orom) {
-			/* TODO convert this to WARN_TAINT_ONCE once the
-			 * orom/efi parameter support is widely available
-			 */
+			 
 			dev_warn(&pdev->dev,
 				 "Loading user firmware failed, using default "
 				 "values\n");

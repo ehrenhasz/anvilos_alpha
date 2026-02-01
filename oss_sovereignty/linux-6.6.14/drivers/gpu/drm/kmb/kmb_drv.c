@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright © 2018-2020 Intel Corporation
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -60,7 +58,7 @@ static int kmb_initialize_clocks(struct kmb_drm_private *kmb, struct device *dev
 
 	ret =  kmb_dsi_clk_init(kmb->kmb_dsi);
 
-	/* Set LCD clock to 200 Mhz */
+	 
 	clk_set_rate(kmb->kmb_clk.clk_lcd, KMB_LCD_DEFAULT_CLK);
 	if (clk_get_rate(kmb->kmb_clk.clk_lcd) != KMB_LCD_DEFAULT_CLK) {
 		drm_err(&kmb->drm, "failed to set to clk_lcd to %d\n",
@@ -79,7 +77,7 @@ static int kmb_initialize_clocks(struct kmb_drm_private *kmb, struct device *dev
 		return -1;
 	}
 
-	/* Enable MSS_CAM_CLK_CTRL for MIPI TX and LCD */
+	 
 	regmap_update_bits(msscam, MSS_CAM_CLK_CTRL, 0x1fff, 0x1fff);
 	regmap_update_bits(msscam, MSS_CAM_RSTN_CTRL, 0xffffffff, 0xffffffff);
 	return 0;
@@ -115,27 +113,24 @@ static int kmb_hw_init(struct drm_device *drm, unsigned long flags)
 	int irq_lcd;
 	int ret = 0;
 
-	/* Map LCD MMIO registers */
+	 
 	kmb->lcd_mmio = kmb_map_mmio(drm, pdev, "lcd");
 	if (IS_ERR(kmb->lcd_mmio)) {
 		drm_err(&kmb->drm, "failed to map LCD registers\n");
 		return -ENOMEM;
 	}
 
-	/* Map MIPI MMIO registers */
+	 
 	ret = kmb_dsi_map_mmio(kmb->kmb_dsi);
 	if (ret)
 		return ret;
 
-	/* Enable display clocks */
+	 
 	kmb_initialize_clocks(kmb, &pdev->dev);
 
-	/* Register irqs here - section 17.3 in databook
-	 * lists LCD at 79 and 82 for MIPI under MSS CPU -
-	 * firmware has redirected 79 to A53 IRQ 33
-	 */
+	 
 
-	/* Allocate LCD interrupt resources */
+	 
 	irq_lcd = platform_get_irq(pdev, 0);
 	if (irq_lcd < 0) {
 		ret = irq_lcd;
@@ -143,7 +138,7 @@ static int kmb_hw_init(struct drm_device *drm, unsigned long flags)
 		goto setup_fail;
 	}
 
-	/* Get the optional framebuffer memory resource */
+	 
 	ret = of_reserved_mem_device_init(drm->dev);
 	if (ret && ret != -ENODEV)
 		return ret;
@@ -187,7 +182,7 @@ static int kmb_setup_mode_config(struct drm_device *drm)
 		return ret;
 	}
 	ret = kmb_dsi_encoder_init(drm, kmb->kmb_dsi);
-	/* Set the CRTC's port so that the encoder component can find it */
+	 
 	kmb->crtc.port = of_graph_get_port_by_id(drm->dev->of_node, 0);
 	ret = drm_vblank_init(drm, drm->mode_config.num_crtc);
 	if (ret < 0) {
@@ -213,12 +208,7 @@ static irqreturn_t handle_lcd_irq(struct drm_device *dev)
 	if (status & LCD_INT_EOF) {
 		kmb_write_lcd(kmb, LCD_INT_CLEAR, LCD_INT_EOF);
 
-		/* When disabling/enabling LCD layers, the change takes effect
-		 * immediately and does not wait for EOF (end of frame).
-		 * When kmb_plane_atomic_disable is called, mark the plane as
-		 * disabled but actually disable the plane when EOF irq is
-		 * being handled.
-		 */
+		 
 		for (plane_id = LAYER_0;
 				plane_id < KMB_MAX_PLANES; plane_id++) {
 			if (kmb->plane_status[plane_id].disable) {
@@ -235,10 +225,7 @@ static irqreturn_t handle_lcd_irq(struct drm_device *dev)
 				    LCD_CTRL_VL2_ENABLE |
 				    LCD_CTRL_GL1_ENABLE |
 				    LCD_CTRL_GL2_ENABLE))) {
-					/* If no LCD layers are using DMA,
-					 * then disable DMA pipelined AXI read
-					 * transactions.
-					 */
+					 
 					kmb_clr_bitmask_lcd(kmb, LCD_CONTROL,
 							    LCD_CTRL_PIPELINE_DMA);
 				}
@@ -247,7 +234,7 @@ static irqreturn_t handle_lcd_irq(struct drm_device *dev)
 			}
 		}
 		if (kmb->kmb_under_flow) {
-			/* DMA Recovery after underflow */
+			 
 			dma0_state = (kmb->layer_no == 0) ?
 			    LCD_VIDEO0_DMA0_STATE : LCD_VIDEO1_DMA0_STATE;
 			dma1_state = (kmb->layer_no == 0) ?
@@ -260,7 +247,7 @@ static irqreturn_t handle_lcd_irq(struct drm_device *dev)
 				val1 = kmb_read_lcd(kmb, dma1_state)
 				    & LCD_DMA_STATE_ACTIVE;
 			} while ((val || val1));
-			/* disable dma */
+			 
 			kmb_clr_bitmask_lcd(kmb,
 					    LCD_LAYERn_DMA_CFG(kmb->layer_no),
 					    LCD_DMA_LAYER_ENABLE);
@@ -271,17 +258,17 @@ static irqreturn_t handle_lcd_irq(struct drm_device *dev)
 	}
 
 	if (status & LCD_INT_LINE_CMP) {
-		/* clear line compare interrupt */
+		 
 		kmb_write_lcd(kmb, LCD_INT_CLEAR, LCD_INT_LINE_CMP);
 	}
 
 	if (status & LCD_INT_VERT_COMP) {
-		/* Read VSTATUS */
+		 
 		val = kmb_read_lcd(kmb, LCD_VSTATUS);
 		val = (val & LCD_VSTATUS_VERTICAL_STATUS_MASK);
 		switch (val) {
 		case LCD_VSTATUS_COMPARE_VSYNC:
-			/* Clear vertical compare interrupt */
+			 
 			kmb_write_lcd(kmb, LCD_INT_CLEAR, LCD_INT_VERT_COMP);
 			if (kmb->kmb_flush_done) {
 				kmb_set_bitmask_lcd(kmb,
@@ -303,7 +290,7 @@ static irqreturn_t handle_lcd_irq(struct drm_device *dev)
 		val =
 		    (status & LCD_INT_DMA_ERR &
 		     kmb_read_lcd(kmb, LCD_INT_ENABLE));
-		/* LAYER0 - VL0 */
+		 
 		if (val & (LAYER0_DMA_FIFO_UNDERFLOW |
 			   LAYER0_DMA_CB_FIFO_UNDERFLOW |
 			   LAYER0_DMA_CR_FIFO_UNDERFLOW)) {
@@ -311,7 +298,7 @@ static irqreturn_t handle_lcd_irq(struct drm_device *dev)
 			drm_info(&kmb->drm,
 				 "!LAYER0:VL0 DMA UNDERFLOW val = 0x%lx,under_flow=%d",
 			     val, kmb->kmb_under_flow);
-			/* disable underflow interrupt */
+			 
 			kmb_clr_bitmask_lcd(kmb, LCD_INT_ENABLE,
 					    LAYER0_DMA_FIFO_UNDERFLOW |
 					    LAYER0_DMA_CB_FIFO_UNDERFLOW |
@@ -320,7 +307,7 @@ static irqreturn_t handle_lcd_irq(struct drm_device *dev)
 					    LAYER0_DMA_CB_FIFO_UNDERFLOW |
 					    LAYER0_DMA_FIFO_UNDERFLOW |
 					    LAYER0_DMA_CR_FIFO_UNDERFLOW);
-			/* disable auto restart mode */
+			 
 			kmb_clr_bitmask_lcd(kmb, LCD_LAYERn_DMA_CFG(0),
 					    LCD_DMA_LAYER_CONT_PING_PONG_UPDATE);
 
@@ -337,7 +324,7 @@ static irqreturn_t handle_lcd_irq(struct drm_device *dev)
 			drm_dbg(&kmb->drm,
 				"LAYER0:VL0 DMA CR OVERFLOW val = 0x%lx", val);
 
-		/* LAYER1 - VL1 */
+		 
 		if (val & (LAYER1_DMA_FIFO_UNDERFLOW |
 			   LAYER1_DMA_CB_FIFO_UNDERFLOW |
 			   LAYER1_DMA_CR_FIFO_UNDERFLOW)) {
@@ -345,7 +332,7 @@ static irqreturn_t handle_lcd_irq(struct drm_device *dev)
 			drm_info(&kmb->drm,
 				 "!LAYER1:VL1 DMA UNDERFLOW val = 0x%lx, under_flow=%d",
 			     val, kmb->kmb_under_flow);
-			/* disable underflow interrupt */
+			 
 			kmb_clr_bitmask_lcd(kmb, LCD_INT_ENABLE,
 					    LAYER1_DMA_FIFO_UNDERFLOW |
 					    LAYER1_DMA_CB_FIFO_UNDERFLOW |
@@ -354,13 +341,13 @@ static irqreturn_t handle_lcd_irq(struct drm_device *dev)
 					    LAYER1_DMA_CB_FIFO_UNDERFLOW |
 					    LAYER1_DMA_FIFO_UNDERFLOW |
 					    LAYER1_DMA_CR_FIFO_UNDERFLOW);
-			/* disable auto restart mode */
+			 
 			kmb_clr_bitmask_lcd(kmb, LCD_LAYERn_DMA_CFG(1),
 					    LCD_DMA_LAYER_CONT_PING_PONG_UPDATE);
 			kmb->layer_no = 1;
 		}
 
-		/* LAYER1 - VL1 */
+		 
 		if (val & LAYER1_DMA_FIFO_OVERFLOW)
 			drm_dbg(&kmb->drm,
 				"LAYER1:VL1 DMA OVERFLOW val = 0x%lx", val);
@@ -371,7 +358,7 @@ static irqreturn_t handle_lcd_irq(struct drm_device *dev)
 			drm_dbg(&kmb->drm,
 				"LAYER1:VL1 DMA CR OVERFLOW val = 0x%lx", val);
 
-		/* LAYER2 - GL0 */
+		 
 		if (val & LAYER2_DMA_FIFO_UNDERFLOW)
 			drm_dbg(&kmb->drm,
 				"LAYER2:GL0 DMA UNDERFLOW val = 0x%lx", val);
@@ -379,7 +366,7 @@ static irqreturn_t handle_lcd_irq(struct drm_device *dev)
 			drm_dbg(&kmb->drm,
 				"LAYER2:GL0 DMA OVERFLOW val = 0x%lx", val);
 
-		/* LAYER3 - GL1 */
+		 
 		if (val & LAYER3_DMA_FIFO_UNDERFLOW)
 			drm_dbg(&kmb->drm,
 				"LAYER3:GL1 DMA UNDERFLOW val = 0x%lx", val);
@@ -391,16 +378,16 @@ static irqreturn_t handle_lcd_irq(struct drm_device *dev)
 	spin_unlock(&kmb->irq_lock);
 
 	if (status & LCD_INT_LAYER) {
-		/* Clear layer interrupts */
+		 
 		kmb_write_lcd(kmb, LCD_INT_CLEAR, LCD_INT_LAYER);
 	}
 
-	/* Clear all interrupts */
+	 
 	kmb_set_bitmask_lcd(kmb, LCD_INT_CLEAR, 1);
 	return IRQ_HANDLED;
 }
 
-/* IRQ handler */
+ 
 static irqreturn_t kmb_isr(int irq, void *arg)
 {
 	struct drm_device *dev = (struct drm_device *)arg;
@@ -438,7 +425,7 @@ DEFINE_DRM_GEM_DMA_FOPS(fops);
 static const struct drm_driver kmb_driver = {
 	.driver_features = DRIVER_GEM |
 	    DRIVER_MODESET | DRIVER_ATOMIC,
-	/* GEM Operations */
+	 
 	.fops = &fops,
 	DRM_GEM_DMA_DRIVER_OPS_VMAP,
 	.name = "kmb-drm",
@@ -465,12 +452,12 @@ static int kmb_remove(struct platform_device *pdev)
 
 	of_reserved_mem_device_release(drm->dev);
 
-	/* Release clks */
+	 
 	kmb_display_clk_disable(kmb);
 
 	dev_set_drvdata(dev, NULL);
 
-	/* Unregister DSI host */
+	 
 	kmb_dsi_host_unregister(kmb->kmb_dsi);
 	drm_atomic_helper_shutdown(drm);
 	return 0;
@@ -485,13 +472,7 @@ static int kmb_probe(struct platform_device *pdev)
 	struct device_node *dsi_node;
 	struct platform_device *dsi_pdev;
 
-	/* The bridge (ADV 7535) will return -EPROBE_DEFER until it
-	 * has a mipi_dsi_host to register its device to. So, we
-	 * first register the DSI host during probe time, and then return
-	 * -EPROBE_DEFER until the bridge is loaded. Probe will be called again
-	 *  and then the rest of the driver initialization can proceed
-	 *  afterwards and the bridge can be successfully attached.
-	 */
+	 
 	dsi_in = of_graph_get_endpoint_by_regs(dev->of_node, 0, 0);
 	if (!dsi_in) {
 		DRM_ERROR("Failed to get dsi_in node info from DT");
@@ -523,7 +504,7 @@ static int kmb_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Create DRM device */
+	 
 	kmb = devm_drm_dev_alloc(dev, &kmb_driver,
 				 struct kmb_drm_private, drm);
 	if (IS_ERR(kmb))
@@ -531,7 +512,7 @@ static int kmb_probe(struct platform_device *pdev)
 
 	dev_set_drvdata(dev, &kmb->drm);
 
-	/* Initialize MIPI DSI */
+	 
 	kmb->kmb_dsi = kmb_dsi_init(dsi_pdev);
 	if (IS_ERR(kmb->kmb_dsi)) {
 		drm_err(&kmb->drm, "failed to initialize DSI\n");
@@ -557,7 +538,7 @@ static int kmb_probe(struct platform_device *pdev)
 
 	drm_kms_helper_poll_init(&kmb->drm);
 
-	/* Register graphics device with the kernel */
+	 
 	ret = drm_dev_register(&kmb->drm, 0);
 	if (ret)
 		goto err_register;

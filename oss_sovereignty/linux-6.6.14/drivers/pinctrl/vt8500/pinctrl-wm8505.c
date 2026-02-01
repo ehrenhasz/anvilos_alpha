@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Pinctrl data for Wondermedia WM8505 SoC
- *
- * Copyright (c) 2013 Tony Prisk <linux@prisktech.co.nz>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/init.h>
@@ -13,29 +9,22 @@
 
 #include "pinctrl-wmt.h"
 
-/*
- * Describe the register offsets within the GPIO memory space
- * The dedicated external GPIO's should always be listed in bank 0
- * so they are exported in the 0..31 range which is what users
- * expect.
- *
- * Do not reorder these banks as it will change the pin numbering
- */
+ 
 static const struct wmt_pinctrl_bank_registers wm8505_banks[] = {
-	WMT_PINCTRL_BANK(0x64, 0x8C, 0xB4, 0xDC, NO_REG, NO_REG),	/* 0 */
-	WMT_PINCTRL_BANK(0x40, 0x68, 0x90, 0xB8, NO_REG, NO_REG),	/* 1 */
-	WMT_PINCTRL_BANK(0x44, 0x6C, 0x94, 0xBC, NO_REG, NO_REG),	/* 2 */
-	WMT_PINCTRL_BANK(0x48, 0x70, 0x98, 0xC0, NO_REG, NO_REG),	/* 3 */
-	WMT_PINCTRL_BANK(0x4C, 0x74, 0x9C, 0xC4, NO_REG, NO_REG),	/* 4 */
-	WMT_PINCTRL_BANK(0x50, 0x78, 0xA0, 0xC8, NO_REG, NO_REG),	/* 5 */
-	WMT_PINCTRL_BANK(0x54, 0x7C, 0xA4, 0xD0, NO_REG, NO_REG),	/* 6 */
-	WMT_PINCTRL_BANK(0x58, 0x80, 0xA8, 0xD4, NO_REG, NO_REG),	/* 7 */
-	WMT_PINCTRL_BANK(0x5C, 0x84, 0xAC, 0xD8, NO_REG, NO_REG),	/* 8 */
-	WMT_PINCTRL_BANK(0x60, 0x88, 0xB0, 0xDC, NO_REG, NO_REG),	/* 9 */
-	WMT_PINCTRL_BANK(0x500, 0x504, 0x508, 0x50C, NO_REG, NO_REG),	/* 10 */
+	WMT_PINCTRL_BANK(0x64, 0x8C, 0xB4, 0xDC, NO_REG, NO_REG),	 
+	WMT_PINCTRL_BANK(0x40, 0x68, 0x90, 0xB8, NO_REG, NO_REG),	 
+	WMT_PINCTRL_BANK(0x44, 0x6C, 0x94, 0xBC, NO_REG, NO_REG),	 
+	WMT_PINCTRL_BANK(0x48, 0x70, 0x98, 0xC0, NO_REG, NO_REG),	 
+	WMT_PINCTRL_BANK(0x4C, 0x74, 0x9C, 0xC4, NO_REG, NO_REG),	 
+	WMT_PINCTRL_BANK(0x50, 0x78, 0xA0, 0xC8, NO_REG, NO_REG),	 
+	WMT_PINCTRL_BANK(0x54, 0x7C, 0xA4, 0xD0, NO_REG, NO_REG),	 
+	WMT_PINCTRL_BANK(0x58, 0x80, 0xA8, 0xD4, NO_REG, NO_REG),	 
+	WMT_PINCTRL_BANK(0x5C, 0x84, 0xAC, 0xD8, NO_REG, NO_REG),	 
+	WMT_PINCTRL_BANK(0x60, 0x88, 0xB0, 0xDC, NO_REG, NO_REG),	 
+	WMT_PINCTRL_BANK(0x500, 0x504, 0x508, 0x50C, NO_REG, NO_REG),	 
 };
 
-/* Please keep sorted by bank/bit */
+ 
 #define WMT_PIN_EXTGPIO0	WMT_PIN(0, 0)
 #define WMT_PIN_EXTGPIO1	WMT_PIN(0, 1)
 #define WMT_PIN_EXTGPIO2	WMT_PIN(0, 2)
@@ -328,7 +317,7 @@ static const struct pinctrl_pin_desc wm8505_pins[] = {
 	PINCTRL_PIN(WMT_PIN_I2C2SDA, "i2c2_sda"),
 };
 
-/* Order of these names must match the above list */
+ 
 static const char * const wm8505_groups[] = {
 	"extgpio0",
 	"extgpio1",
@@ -496,7 +485,7 @@ static int wm8505_pinctrl_probe(struct platform_device *pdev)
 
 static const struct of_device_id wmt_pinctrl_of_match[] = {
 	{ .compatible = "wm,wm8505-pinctrl" },
-	{ /* sentinel */ },
+	{   },
 };
 
 static struct platform_driver wmt_pinctrl_driver = {

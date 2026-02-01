@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (c) 2011-2014 Samsung Electronics Co., Ltd
-//              http://www.samsung.com
+
+
+
+
 
 #include <linux/device.h>
 #include <linux/interrupt.h>
@@ -397,10 +397,7 @@ int sec_irq_init(struct sec_pmic_dev *sec_pmic)
 		return ret;
 	}
 
-	/*
-	 * The rtc-s5m driver requests S2MPS14_IRQ_RTCA0 also for S2MPS11
-	 * so the interrupt number must be consistent.
-	 */
+	 
 	BUILD_BUG_ON(((enum s2mps14_irq)S2MPS11_IRQ_RTCA0) != S2MPS14_IRQ_RTCA0);
 
 	return 0;

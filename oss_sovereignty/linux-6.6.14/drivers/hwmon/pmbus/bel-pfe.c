@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Hardware monitoring driver for BEL PFE family power supplies.
- *
- * Copyright (c) 2019 Facebook Inc.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -16,13 +12,7 @@
 
 enum chips {pfe1100, pfe3000};
 
-/*
- * Disable status check because some devices report communication error
- * (invalid command) for VOUT_MODE command (0x20) although the correct
- * VOUT_MODE (0x16) is returned: it leads to incorrect exponent in linear
- * mode.
- * This affects both pfe3000 and pfe1100.
- */
+ 
 static struct pmbus_platform_data pfe_plat_data = {
 	.flags = PMBUS_SKIP_STATUS_CHECK,
 };
@@ -58,7 +48,7 @@ static struct pmbus_driver_info pfe_driver_info[] = {
 		.format[PSC_TEMPERATURE] = linear,
 		.format[PSC_FAN] = linear,
 
-		/* Page 0: V1. */
+		 
 		.func[0] = PMBUS_HAVE_VOUT | PMBUS_HAVE_STATUS_VOUT |
 			   PMBUS_HAVE_IOUT | PMBUS_HAVE_STATUS_IOUT |
 			   PMBUS_HAVE_POUT | PMBUS_HAVE_FAN12 |
@@ -68,19 +58,13 @@ static struct pmbus_driver_info pfe_driver_info[] = {
 			   PMBUS_HAVE_TEMP3 | PMBUS_HAVE_STATUS_TEMP |
 			   PMBUS_HAVE_VCAP,
 
-		/* Page 1: Vsb. */
+		 
 		.func[1] = PMBUS_HAVE_VOUT | PMBUS_HAVE_STATUS_VOUT |
 			   PMBUS_HAVE_IOUT | PMBUS_HAVE_STATUS_IOUT |
 			   PMBUS_HAVE_PIN | PMBUS_HAVE_STATUS_INPUT |
 			   PMBUS_HAVE_POUT,
 
-		/*
-		 * Page 2: V1 Ishare.
-		 * Page 3: Reserved.
-		 * Page 4: V1 Cathode.
-		 * Page 5: Vsb Cathode.
-		 * Page 6: V1 Sense.
-		 */
+		 
 		.func[2] = PMBUS_HAVE_VOUT,
 		.func[4] = PMBUS_HAVE_VOUT,
 		.func[5] = PMBUS_HAVE_VOUT,
@@ -97,11 +81,7 @@ static int pfe_pmbus_probe(struct i2c_client *client)
 	model = (int)i2c_match_id(pfe_device_id, client)->driver_data;
 	client->dev.platform_data = &pfe_plat_data;
 
-	/*
-	 * PFE3000-12-069RA devices may not stay in page 0 during device
-	 * probe which leads to probe failure (read status word failed).
-	 * So let's set the device to page 0 at the beginning.
-	 */
+	 
 	if (model == pfe3000)
 		i2c_smbus_write_byte_data(client, PMBUS_PAGE, 0);
 

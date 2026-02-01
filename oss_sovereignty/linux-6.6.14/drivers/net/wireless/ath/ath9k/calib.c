@@ -1,24 +1,10 @@
-/*
- * Copyright (c) 2008-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include "hw.h"
 #include "hw-ops.h"
 #include <linux/export.h>
 
-/* Common calibration code */
+ 
 
 
 static int16_t ath9k_hw_get_nf_hist_mid(int16_t *nfCalBuffer)
@@ -129,23 +115,13 @@ static void ath9k_hw_update_nfcal_hist_buffer(struct ath_hw *ah,
 				 "not corrected (due to interference)" :
 				 "correcting to MAX"));
 
-			/*
-			 * Normally we limit the average noise floor by the
-			 * hardware specific maximum here. However if we have
-			 * encountered stuck beacons because of interference,
-			 * we bypass this limit here in order to better deal
-			 * with our environment.
-			 */
+			 
 			if (!test_bit(NFCAL_INTF, &cal->cal_flags))
 				h[i].privNF = limit->max;
 		}
 	}
 
-	/*
-	 * If the noise floor seems normal for all chains, assume that
-	 * there is no significant interference in the environment anymore.
-	 * Re-enable the enforcement of the NF maximum again.
-	 */
+	 
 	if (!high_nf_mid)
 		clear_bit(NFCAL_INTF, &cal->cal_flags);
 }
@@ -189,7 +165,7 @@ void ath9k_hw_reset_calibration(struct ath_hw *ah,
 	ah->cal_samples = 0;
 }
 
-/* This is done for the currently configured channel */
+ 
 bool ath9k_hw_reset_calvalid(struct ath_hw *ah)
 {
 	struct ath_common *common = ath9k_hw_common(ah);
@@ -269,7 +245,7 @@ int ath9k_hw_loadnf(struct ath_hw *ah, struct ath9k_channel *chan)
 			else if (h)
 				nfval = h[i].privNF;
 			else {
-				/* Try to get calibrated noise floor value */
+				 
 				nfval =
 				    ath9k_hw_get_nf_limits(ah, chan)->cal[i];
 				if (nfval > -60 || nfval < -127)
@@ -281,20 +257,14 @@ int ath9k_hw_loadnf(struct ath_hw *ah, struct ath9k_channel *chan)
 		}
 	}
 
-	/*
-	 * stop NF cal if ongoing to ensure NF load completes immediately
-	 * (or after end rx/tx frame if ongoing)
-	 */
+	 
 	if (bb_agc_ctl & AR_PHY_AGC_CONTROL_NF) {
 		REG_CLR_BIT(ah, AR_PHY_AGC_CONTROL(ah), AR_PHY_AGC_CONTROL_NF);
 		REG_RMW_BUFFER_FLUSH(ah);
 		ENABLE_REG_RMW_BUFFER(ah);
 	}
 
-	/*
-	 * Load software filtered NF value into baseband internal minCCApwr
-	 * variable.
-	 */
+	 
 	REG_CLR_BIT(ah, AR_PHY_AGC_CONTROL(ah),
 		    AR_PHY_AGC_CONTROL_ENABLE_NF);
 	REG_CLR_BIT(ah, AR_PHY_AGC_CONTROL(ah),
@@ -302,12 +272,7 @@ int ath9k_hw_loadnf(struct ath_hw *ah, struct ath9k_channel *chan)
 	REG_SET_BIT(ah, AR_PHY_AGC_CONTROL(ah), AR_PHY_AGC_CONTROL_NF);
 	REG_RMW_BUFFER_FLUSH(ah);
 
-	/*
-	 * Wait for load to complete, should be fast, a few 10s of us.
-	 * The max delay was changed from an original 250us to 22.2 msec.
-	 * This would increase timeout to the longest possible frame
-	 * (11n max length 22.1 msec)
-	 */
+	 
 	for (j = 0; j < 22200; j++) {
 		if ((REG_READ(ah, AR_PHY_AGC_CONTROL(ah)) &
 			      AR_PHY_AGC_CONTROL_NF) == 0)
@@ -315,9 +280,7 @@ int ath9k_hw_loadnf(struct ath_hw *ah, struct ath9k_channel *chan)
 		udelay(10);
 	}
 
-	/*
-	 * Restart NF so it can continue.
-	 */
+	 
 	if (bb_agc_ctl & AR_PHY_AGC_CONTROL_NF) {
 		ENABLE_REG_RMW_BUFFER(ah);
 		if (bb_agc_ctl & AR_PHY_AGC_CONTROL_ENABLE_NF)
@@ -330,15 +293,7 @@ int ath9k_hw_loadnf(struct ath_hw *ah, struct ath9k_channel *chan)
 		REG_RMW_BUFFER_FLUSH(ah);
 	}
 
-	/*
-	 * We timed out waiting for the noisefloor to load, probably due to an
-	 * in-progress rx. Simply return here and allow the load plenty of time
-	 * to complete before the next calibration interval.  We need to avoid
-	 * trying to load -50 (which happens below) while the previous load is
-	 * still in progress as this can cause rx deafness. Instead by returning
-	 * here, the baseband nf cal will just be capped by our present
-	 * noisefloor until the next calibration timer.
-	 */
+	 
 	if (j == 22200) {
 		ath_dbg(common, ANY,
 			"Timeout while waiting for nf to load: AR_PHY_AGC_CONTROL=0x%x\n",
@@ -346,11 +301,7 @@ int ath9k_hw_loadnf(struct ath_hw *ah, struct ath9k_channel *chan)
 		return -ETIMEDOUT;
 	}
 
-	/*
-	 * Restore maxCCAPower register parameter again so that we're not capped
-	 * by the median we just loaded.  This will be initial (and max) value
-	 * of next noise floor calibration the baseband does.
-	 */
+	 
 	ENABLE_REG_RMW_BUFFER(ah);
 	for (i = 0; i < NUM_NF_READINGS; i++) {
 		if (chainmask & (1 << i)) {
@@ -468,14 +419,7 @@ void ath9k_hw_bstuck_nfcal(struct ath_hw *ah)
 	if (unlikely(!caldata))
 		return;
 
-	/*
-	 * If beacons are stuck, the most likely cause is interference.
-	 * Triggering a noise floor calibration at this point helps the
-	 * hardware adapt to a noisy environment much faster.
-	 * To ensure that we recover from stuck beacons quickly, let
-	 * the baseband update the internal NF value itself, similar to
-	 * what is being done after a full reset.
-	 */
+	 
 	if (!test_bit(NFCAL_PENDING, &caldata->cal_flags))
 		ath9k_hw_start_nfcal(ah, true);
 	else if (!(REG_READ(ah, AR_PHY_AGC_CONTROL(ah)) & AR_PHY_AGC_CONTROL_NF))

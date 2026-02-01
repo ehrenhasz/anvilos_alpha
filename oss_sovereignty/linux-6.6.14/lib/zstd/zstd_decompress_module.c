@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+ OR BSD-3-Clause
-/*
- * Copyright (c) Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under both the BSD-style license (found in the
- * LICENSE file in the root directory of this source tree) and the GPLv2 (found
- * in the COPYING file in the root directory of this source tree).
- * You may select, at your option, one of the above-listed licenses.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -16,7 +8,7 @@
 
 #include "common/zstd_deps.h"
 
-/* Common symbols. zstd_compress must depend on zstd_decompress. */
+ 
 
 unsigned int zstd_is_error(size_t code)
 {
@@ -36,7 +28,7 @@ const char *zstd_get_error_name(size_t code)
 }
 EXPORT_SYMBOL(zstd_get_error_name);
 
-/* Decompression symbols. */
+ 
 
 size_t zstd_dctx_workspace_bound(void)
 {

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cryptographic API.
- *
- * Serpent Cipher Algorithm.
- *
- * Copyright (C) 2002 Dag Arne Osvik <osvik@ii.uib.no>
- */
+
+ 
 
 #include <crypto/algapi.h>
 #include <linux/init.h>
@@ -15,9 +9,7 @@
 #include <linux/types.h>
 #include <crypto/serpent.h>
 
-/* Key is padded to the maximum of 256 bits before round key generation.
- * Any key length <= 256 bits (32 bytes) is allowed by the algorithm.
- */
+ 
 
 #define PHI 0x9e3779b9UL
 
@@ -220,11 +212,7 @@
 	x4 ^= x2;					\
 	})
 
-/*
- * both gcc and clang have misoptimized this function in the past,
- * producing horrible object code from spilling temporary variables
- * on the stack. Forcing this part out of line avoids that.
- */
+ 
 static noinline void __serpent_setkey_sbox(u32 r0, u32 r1, u32 r2,
 					   u32 r3, u32 r4, u32 *k)
 {
@@ -275,7 +263,7 @@ int __serpent_setkey(struct serpent_ctx *ctx, const u8 *key,
 	__le32 *lk;
 	int i;
 
-	/* Copy key, add padding */
+	 
 
 	for (i = 0; i < keylen; ++i)
 		k8[i] = key[i];
@@ -294,7 +282,7 @@ int __serpent_setkey(struct serpent_ctx *ctx, const u8 *key,
 	k[6] = le32_to_cpu(lk[6]);
 	k[7] = le32_to_cpu(lk[7]);
 
-	/* Expand key using polynomial */
+	 
 
 	r0 = k[3];
 	r1 = k[4];
@@ -442,7 +430,7 @@ int __serpent_setkey(struct serpent_ctx *ctx, const u8 *key,
 	keyiter(k[22], r0, r4, r2, 130, 30);
 	keyiter(k[23], r1, r0, r3, 131, 31);
 
-	/* Apply S-boxes */
+	 
 	__serpent_setkey_sbox(r0, r1, r2, r3, r4, ctx->expkey);
 
 	return 0;

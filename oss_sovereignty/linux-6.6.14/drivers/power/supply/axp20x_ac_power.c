@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AXP20X and AXP22X PMICs' ACIN power supply driver
- *
- * Copyright (C) 2016 Free Electrons
- *	Quentin Schulz <quentin.schulz@free-electrons.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/init.h>
@@ -93,7 +88,7 @@ static int axp20x_ac_power_get_property(struct power_supply *psy,
 
 		val->intval = !!(reg & AXP20X_PWR_STATUS_ACIN_AVAIL);
 
-		/* ACIN_PATH_SEL disables ACIN even if ACIN_AVAIL is set. */
+		 
 		if (val->intval && power->has_acin_path_sel) {
 			ret = regmap_read(power->regmap, AXP813_ACIN_PATH_CTRL,
 					  &reg);
@@ -110,7 +105,7 @@ static int axp20x_ac_power_get_property(struct power_supply *psy,
 		if (ret)
 			return ret;
 
-		/* IIO framework gives mV but Power Supply framework gives uV */
+		 
 		val->intval *= 1000;
 
 		return 0;
@@ -120,7 +115,7 @@ static int axp20x_ac_power_get_property(struct power_supply *psy,
 		if (ret)
 			return ret;
 
-		/* IIO framework gives mA but Power Supply framework gives uA */
+		 
 		val->intval *= 1000;
 
 		return 0;
@@ -140,7 +135,7 @@ static int axp20x_ac_power_get_property(struct power_supply *psy,
 			return ret;
 
 		val->intval = AXP813_CURR_LIMIT_REG_TO_UA(reg);
-		/* AXP813 datasheet defines values 11x as 4000mA */
+		 
 		if (val->intval > 4000000)
 			val->intval = 4000000;
 
@@ -287,12 +282,7 @@ static int axp20x_ac_power_suspend(struct device *dev)
 	struct axp20x_ac_power *power = dev_get_drvdata(dev);
 	int i = 0;
 
-	/*
-	 * Allow wake via ACIN_PLUGIN only.
-	 *
-	 * As nested threaded IRQs are not automatically disabled during
-	 * suspend, we must explicitly disable the remainder of the IRQs.
-	 */
+	 
 	if (device_may_wakeup(&power->supply->dev))
 		enable_irq_wake(power->irqs[i++]);
 	while (i < power->num_irqs)
@@ -373,7 +363,7 @@ static int axp20x_ac_power_probe(struct platform_device *pdev)
 	if (IS_ERR(power->supply))
 		return PTR_ERR(power->supply);
 
-	/* Request irqs after registering, as irqs may trigger immediately */
+	 
 	for (i = 0; i < axp_data->num_irq_names; i++) {
 		irq = platform_get_irq_byname(pdev, axp_data->irq_names[i]);
 		if (irq < 0)
@@ -403,7 +393,7 @@ static const struct of_device_id axp20x_ac_power_match[] = {
 	}, {
 		.compatible = "x-powers,axp813-ac-power-supply",
 		.data = &axp813_data,
-	}, { /* sentinel */ }
+	}, {   }
 };
 MODULE_DEVICE_TABLE(of, axp20x_ac_power_match);
 

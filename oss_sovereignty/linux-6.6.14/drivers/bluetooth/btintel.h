@@ -1,12 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *
- *  Bluetooth support for Intel devices
- *
- *  Copyright (C) 2015  Intel Corporation
- */
+ 
+ 
 
-/* List of tlv type */
+ 
 enum {
 	INTEL_TLV_CNVI_TOP = 0x10,
 	INTEL_TLV_CNVR_TOP,

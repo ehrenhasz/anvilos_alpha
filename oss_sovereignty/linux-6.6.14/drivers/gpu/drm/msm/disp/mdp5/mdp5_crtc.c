@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014-2015 The Linux Foundation. All rights reserved.
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <linux/sort.h>
 
@@ -27,21 +23,19 @@ struct mdp5_crtc {
 	int id;
 	bool enabled;
 
-	spinlock_t lm_lock;     /* protect REG_MDP5_LM_* registers */
+	spinlock_t lm_lock;      
 
-	/* if there is a pending flip, these will be non-null: */
+	 
 	struct drm_pending_vblank_event *event;
 
-	/* Bits have been flushed at the last commit,
-	 * used to decide if a vsync has happened since last commit.
-	 */
+	 
 	u32 flushed_mask;
 
 #define PENDING_CURSOR 0x1
 #define PENDING_FLIP   0x2
 	atomic_t pending;
 
-	/* for unref'ing cursor bo's after scanout completes: */
+	 
 	struct drm_flip_work unref_cursor_work;
 
 	struct mdp_irq vblank;
@@ -53,10 +47,10 @@ struct mdp5_crtc {
 	bool lm_cursor_enabled;
 
 	struct {
-		/* protect REG_MDP5_LM_CURSOR* registers and cursor scanout_bo*/
+		 
 		spinlock_t lock;
 
-		/* current cursor being scanned out: */
+		 
 		struct drm_gem_object *scanout_bo;
 		uint64_t iova;
 		uint32_t width, height;
@@ -101,11 +95,7 @@ static u32 crtc_flush(struct drm_crtc *crtc, u32 flush_mask)
 	return mdp5_ctl_commit(ctl, pipeline, flush_mask, start);
 }
 
-/*
- * flush updates, to make sure hw is updated to new scanout fb,
- * so that we can safely queue unref to current fb (ie. next
- * vblank we know hw is done w/ previous scanout_fb).
- */
+ 
 static u32 crtc_flush_all(struct drm_crtc *crtc)
 {
 	struct mdp5_crtc_state *mdp5_cstate = to_mdp5_crtc_state(crtc->state);
@@ -113,7 +103,7 @@ static u32 crtc_flush_all(struct drm_crtc *crtc)
 	struct drm_plane *plane;
 	uint32_t flush_mask = 0;
 
-	/* this should not happen: */
+	 
 	if (WARN_ON(!mdp5_cstate->ctl))
 		return 0;
 
@@ -133,7 +123,7 @@ static u32 crtc_flush_all(struct drm_crtc *crtc)
 	return crtc_flush(crtc, flush_mask);
 }
 
-/* if file!=NULL, this is preclose potential cancel-flip path */
+ 
 static void complete_flip(struct drm_crtc *crtc, struct drm_file *file)
 {
 	struct mdp5_crtc_state *mdp5_cstate = to_mdp5_crtc_state(crtc->state);
@@ -154,10 +144,10 @@ static void complete_flip(struct drm_crtc *crtc, struct drm_file *file)
 	spin_unlock_irqrestore(&dev->event_lock, flags);
 
 	if (ctl && !crtc->state->enable) {
-		/* set STAGE_UNUSED for all layers */
+		 
 		mdp5_ctl_blend(ctl, pipeline, NULL, NULL, 0, 0);
-		/* XXX: What to do here? */
-		/* mdp5_crtc->ctl = NULL; */
+		 
+		 
 	}
 }
 
@@ -197,19 +187,11 @@ static inline u32 mdp5_lm_use_fg_alpha_mask(enum mdp_mixer_stage_id stage)
 	}
 }
 
-/*
- * left/right pipe offsets for the stage array used in blend_setup()
- */
+ 
 #define PIPE_LEFT	0
 #define PIPE_RIGHT	1
 
-/*
- * blend_setup() - blend all the planes of a CRTC
- *
- * If no base layer is available, border will be enabled as the base layer.
- * Otherwise all layers will be blended based on their stage calculated
- * in mdp5_crtc_atomic_check.
- */
+ 
 static void blend_setup(struct drm_crtc *crtc)
 {
 	struct mdp5_crtc *mdp5_crtc = to_mdp5_crtc(crtc);
@@ -236,12 +218,12 @@ static void blend_setup(struct drm_crtc *crtc)
 
 	spin_lock_irqsave(&mdp5_crtc->lm_lock, flags);
 
-	/* ctl could be released already when we are shutting down: */
-	/* XXX: Can this happen now? */
+	 
+	 
 	if (!ctl)
 		goto out;
 
-	/* Collect all plane information */
+	 
 	drm_atomic_crtc_for_each_plane(plane, crtc) {
 		enum mdp5_pipe right_pipe;
 
@@ -251,18 +233,11 @@ static void blend_setup(struct drm_crtc *crtc)
 		pstate = to_mdp5_plane_state(plane->state);
 		pstates[pstate->stage] = pstate;
 		stage[pstate->stage][PIPE_LEFT] = mdp5_plane_pipe(plane);
-		/*
-		 * if we have a right mixer, stage the same pipe as we
-		 * have on the left mixer
-		 */
+		 
 		if (r_mixer)
 			r_stage[pstate->stage][PIPE_LEFT] =
 						mdp5_plane_pipe(plane);
-		/*
-		 * if we have a right pipe (i.e, the plane comprises of 2
-		 * hwpipes, then stage the right pipe on the right side of both
-		 * the layer mixers
-		 */
+		 
 		right_pipe = mdp5_plane_right_pipe(plane);
 		if (right_pipe) {
 			stage[pstate->stage][PIPE_RIGHT] = right_pipe;
@@ -282,7 +257,7 @@ static void blend_setup(struct drm_crtc *crtc)
 			bg_alpha_enabled = true;
 	}
 
-	/* The reset for blending */
+	 
 	for (i = STAGE0; i <= STAGE_MAX; i++) {
 		if (!pstates[i])
 			continue;
@@ -389,7 +364,7 @@ static void mdp5_crtc_mode_set_nofb(struct drm_crtc *crtc)
 			MDP5_LM_OUT_SIZE_WIDTH(mixer_width) |
 			MDP5_LM_OUT_SIZE_HEIGHT(mode->vdisplay));
 
-	/* Assign mixer to LEFT side in source split mode */
+	 
 	val = mdp5_read(mdp5_kms, REG_MDP5_LM_BLEND_COLOR_OUT(lm));
 	val &= ~MDP5_LM_BLEND_COLOR_OUT_SPLIT_LEFT_RIGHT;
 	mdp5_write(mdp5_kms, REG_MDP5_LM_BLEND_COLOR_OUT(lm), val);
@@ -401,7 +376,7 @@ static void mdp5_crtc_mode_set_nofb(struct drm_crtc *crtc)
 			   MDP5_LM_OUT_SIZE_WIDTH(mixer_width) |
 			   MDP5_LM_OUT_SIZE_HEIGHT(mode->vdisplay));
 
-		/* Assign mixer to RIGHT side in source split mode */
+		 
 		val = mdp5_read(mdp5_kms, REG_MDP5_LM_BLEND_COLOR_OUT(r_lm));
 		val |= MDP5_LM_BLEND_COLOR_OUT_SPLIT_LEFT_RIGHT;
 		mdp5_write(mdp5_kms, REG_MDP5_LM_BLEND_COLOR_OUT(r_lm), val);
@@ -442,17 +417,13 @@ static bool mdp5_crtc_get_scanout_position(struct drm_crtc *crtc,
 	vsw = mode->crtc_vsync_end - mode->crtc_vsync_start;
 	vbp = mode->crtc_vtotal - mode->crtc_vsync_end;
 
-	/*
-	 * the line counter is 1 at the start of the VSYNC pulse and VTOTAL at
-	 * the end of VFP. Translate the porch values relative to the line
-	 * counter positions.
-	 */
+	 
 
 	vactive_start = vsw + vbp + 1;
 
 	vactive_end = vactive_start + mode->crtc_vdisplay;
 
-	/* last scan line before VSYNC */
+	 
 	vfp_end = mode->crtc_vtotal;
 
 	if (stime)
@@ -501,7 +472,7 @@ static void mdp5_crtc_atomic_disable(struct drm_crtc *crtc,
 	if (WARN_ON(!mdp5_crtc->enabled))
 		return;
 
-	/* Disable/save vblank irq handling before power is disabled */
+	 
 	drm_crtc_vblank_off(crtc);
 
 	if (mdp5_cstate->cmd_mode)
@@ -549,10 +520,7 @@ static void mdp5_crtc_atomic_enable(struct drm_crtc *crtc,
 	pm_runtime_get_sync(dev);
 
 	if (mdp5_crtc->lm_cursor_enabled) {
-		/*
-		 * Restore LM cursor state, as it might have been lost
-		 * with suspend:
-		 */
+		 
 		if (mdp5_crtc->cursor.iova) {
 			unsigned long flags;
 
@@ -568,7 +536,7 @@ static void mdp5_crtc_atomic_enable(struct drm_crtc *crtc,
 		}
 	}
 
-	/* Restore vblank irq handling after power is enabled */
+	 
 	mdp5_crtc_vblank_on(crtc);
 
 	mdp5_crtc_mode_set_nofb(crtc);
@@ -627,10 +595,7 @@ static int mdp5_crtc_setup_pipeline(struct drm_crtc *crtc,
 		}
 	}
 
-	/*
-	 * these should have been already set up in the encoder's atomic
-	 * check (called by drm_atomic_helper_check_modeset)
-	 */
+	 
 	intf = pipeline->intf;
 
 	mdp5_cstate->err_irqmask = intf2err(intf->num);
@@ -660,7 +625,7 @@ static int pstate_cmp(const void *a, const void *b)
 	return pa->state->base.normalized_zpos - pb->state->base.normalized_zpos;
 }
 
-/* is there a helper for this? */
+ 
 static bool is_fullscreen(struct drm_crtc_state *cstate,
 		struct drm_plane_state *pstate)
 {
@@ -676,16 +641,11 @@ static enum mdp_mixer_stage_id get_start_stage(struct drm_crtc *crtc,
 	struct mdp5_crtc_state *mdp5_cstate =
 			to_mdp5_crtc_state(new_crtc_state);
 
-	/*
-	 * if we're in source split mode, it's mandatory to have
-	 * border out on the base stage
-	 */
+	 
 	if (mdp5_cstate->pipeline.r_mixer)
 		return STAGE0;
 
-	/* if the bottom-most layer is not fullscreen, we need to use
-	 * it for solid-color:
-	 */
+	 
 	if (!is_fullscreen(new_crtc_state, bpstate))
 		return STAGE0;
 
@@ -727,10 +687,7 @@ static int mdp5_crtc_atomic_check(struct drm_crtc *crtc,
 		mdp5_pstate->needs_dirtyfb =
 			intf->mode == MDP5_INTF_DSI_MODE_COMMAND;
 
-		/*
-		 * if any plane on this crtc uses 2 hwpipes, then we need
-		 * the crtc to have a right hwmixer.
-		 */
+		 
 		if (pstates[cnt].state->r_hwpipe)
 			need_right_mixer = true;
 		cnt++;
@@ -739,16 +696,13 @@ static int mdp5_crtc_atomic_check(struct drm_crtc *crtc,
 			cursor_plane = true;
 	}
 
-	/* bail out early if there aren't any planes */
+	 
 	if (!cnt)
 		return 0;
 
 	hw_cfg = mdp5_cfg_get_hw_config(mdp5_kms->cfg);
 
-	/*
-	 * we need a right hwmixer if the mode's width is greater than a single
-	 * LM's max width
-	 */
+	 
 	if (mode->hdisplay > hw_cfg->lm.max_width)
 		need_right_mixer = true;
 
@@ -758,18 +712,16 @@ static int mdp5_crtc_atomic_check(struct drm_crtc *crtc,
 		return ret;
 	}
 
-	/* assign a stage based on sorted zpos property */
+	 
 	sort(pstates, cnt, sizeof(pstates[0]), pstate_cmp, NULL);
 
-	/* trigger a warning if cursor isn't the highest zorder */
+	 
 	WARN_ON(cursor_plane &&
 		(pstates[cnt - 1].plane->type != DRM_PLANE_TYPE_CURSOR));
 
 	start = get_start_stage(crtc, crtc_state, &pstates[0].state->base);
 
-	/* verify that there are not too many planes attached to crtc
-	 * and that we don't have conflicting mixer stages:
-	 */
+	 
 	if ((cnt + start - 1) >= hw_cfg->lm.nb_stages) {
 		DRM_DEV_ERROR(dev->dev, "too many planes! cnt=%d, start stage=%d\n",
 			cnt, start);
@@ -812,29 +764,20 @@ static void mdp5_crtc_atomic_flush(struct drm_crtc *crtc,
 	crtc->state->event = NULL;
 	spin_unlock_irqrestore(&dev->event_lock, flags);
 
-	/*
-	 * If no CTL has been allocated in mdp5_crtc_atomic_check(),
-	 * it means we are trying to flush a CRTC whose state is disabled:
-	 * nothing else needs to be done.
-	 */
-	/* XXX: Can this happen now ? */
+	 
+	 
 	if (unlikely(!mdp5_cstate->ctl))
 		return;
 
 	blend_setup(crtc);
 
-	/* PP_DONE irq is only used by command mode for now.
-	 * It is better to request pending before FLUSH and START trigger
-	 * to make sure no pp_done irq missed.
-	 * This is safe because no pp_done will happen before SW trigger
-	 * in command mode.
-	 */
+	 
 	if (mdp5_cstate->cmd_mode)
 		request_pp_done_pending(crtc);
 
 	mdp5_crtc->flushed_mask = crtc_flush_all(crtc);
 
-	/* XXX are we leaking out state here? */
+	 
 	mdp5_crtc->vblank.irqmask = mdp5_cstate->vblank_irqmask;
 	mdp5_crtc->err.irqmask = mdp5_cstate->err_irqmask;
 	mdp5_crtc->pp_done.irqmask = mdp5_cstate->pp_done_irqmask;
@@ -848,25 +791,7 @@ static void get_roi(struct drm_crtc *crtc, uint32_t *roi_w, uint32_t *roi_h)
 	uint32_t xres = crtc->mode.hdisplay;
 	uint32_t yres = crtc->mode.vdisplay;
 
-	/*
-	 * Cursor Region Of Interest (ROI) is a plane read from cursor
-	 * buffer to render. The ROI region is determined by the visibility of
-	 * the cursor point. In the default Cursor image the cursor point will
-	 * be at the top left of the cursor image.
-	 *
-	 * Without rotation:
-	 * If the cursor point reaches the right (xres - x < cursor.width) or
-	 * bottom (yres - y < cursor.height) boundary of the screen, then ROI
-	 * width and ROI height need to be evaluated to crop the cursor image
-	 * accordingly.
-	 * (xres-x) will be new cursor width when x > (xres - cursor.width)
-	 * (yres-y) will be new cursor height when y > (yres - cursor.height)
-	 *
-	 * With rotation:
-	 * We get negative x and/or y coordinates.
-	 * (cursor.width - abs(x)) will be new cursor width when x < 0
-	 * (cursor.height - abs(y)) will be new cursor width when y < 0
-	 */
+	 
 	if (mdp5_crtc->cursor.x >= 0)
 		*roi_w = min(mdp5_crtc->cursor.width, xres -
 			mdp5_crtc->cursor.x);
@@ -904,11 +829,7 @@ static void mdp5_crtc_restore_cursor(struct drm_crtc *crtc)
 
 	get_roi(crtc, &roi_w, &roi_h);
 
-	/* If cusror buffer overlaps due to rotation on the
-	 * upper or left screen border the pixel offset inside
-	 * the cursor buffer of the ROI is the positive overlap
-	 * distance.
-	 */
+	 
 	if (mdp5_crtc->cursor.x < 0) {
 		src_x = abs(mdp5_crtc->cursor.x);
 		x = 0;
@@ -980,7 +901,7 @@ static int mdp5_crtc_cursor_set(struct drm_crtc *crtc,
 	if (!ctl)
 		return -EINVAL;
 
-	/* don't support LM cursors when we have source split enabled */
+	 
 	if (mdp5_cstate->pipeline.r_mixer)
 		return -EINVAL;
 
@@ -1030,7 +951,7 @@ end:
 	pm_runtime_put_sync(&pdev->dev);
 	if (old_bo) {
 		drm_flip_work_queue(&mdp5_crtc->unref_cursor_work, old_bo);
-		/* enable vblank to complete cursor work: */
+		 
 		request_pending(crtc, PENDING_CURSOR);
 	}
 	return ret;
@@ -1053,15 +974,15 @@ static int mdp5_crtc_cursor_move(struct drm_crtc *crtc, int x, int y)
 		return -EINVAL;
 	}
 
-	/* don't support LM cursors when we have source split enabled */
+	 
 	if (mdp5_cstate->pipeline.r_mixer)
 		return -EINVAL;
 
-	/* In case the CRTC is disabled, just drop the cursor update */
+	 
 	if (unlikely(!crtc->state->enable))
 		return 0;
 
-	/* accept negative x/y coordinates up to maximum cursor overlap */
+	 
 	mdp5_crtc->cursor.x = x = max(x, -(int)mdp5_crtc->cursor.width);
 	mdp5_crtc->cursor.y = y = max(y, -(int)mdp5_crtc->cursor.height);
 
@@ -1241,7 +1162,7 @@ static void mdp5_crtc_wait_for_flush_done(struct drm_crtc *crtc)
 	struct mdp5_ctl *ctl = mdp5_cstate->ctl;
 	int ret;
 
-	/* Should not call this function if crtc is disabled. */
+	 
 	if (!ctl)
 		return;
 
@@ -1272,7 +1193,7 @@ void mdp5_crtc_set_pipeline(struct drm_crtc *crtc)
 	struct mdp5_crtc_state *mdp5_cstate = to_mdp5_crtc_state(crtc->state);
 	struct mdp5_kms *mdp5_kms = get_kms(crtc);
 
-	/* should this be done elsewhere ? */
+	 
 	mdp_irq_update(&mdp5_kms->base);
 
 	mdp5_ctl_set_pipeline(mdp5_cstate->ctl, &mdp5_cstate->pipeline);
@@ -1320,7 +1241,7 @@ void mdp5_crtc_wait_for_commit_done(struct drm_crtc *crtc)
 		mdp5_crtc_wait_for_flush_done(crtc);
 }
 
-/* initialize crtc */
+ 
 struct drm_crtc *mdp5_crtc_init(struct drm_device *dev,
 				struct drm_plane *plane,
 				struct drm_plane *cursor_plane, int id)

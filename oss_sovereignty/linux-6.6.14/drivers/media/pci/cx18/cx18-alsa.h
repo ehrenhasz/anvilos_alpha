@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  ALSA interface to cx18 PCM capture streams
- *
- *  Copyright (C) 2009  Andy Walls <awalls@md.metrocast.net>
- */
+ 
+ 
 
 struct snd_card;
 
@@ -18,10 +14,7 @@ struct snd_cx18_card {
 
 extern int cx18_alsa_debug;
 
-/*
- * File operations that manipulate the encoder or video or audio subdevices
- * need to be serialized.  Use the same lock we use for v4l2 file ops.
- */
+ 
 static inline void snd_cx18_lock(struct snd_cx18_card *cxsc)
 {
 	struct cx18 *cx = to_cx18(cxsc->v4l2_dev);

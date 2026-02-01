@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -328,7 +328,7 @@ int main(int argc, char **argv)
 		return err;
 	}
 
-	/* load BPF program */
+	 
 	if (bpf_object__load(obj)) {
 		fprintf(stderr, "ERROR: loading BPF object file failed\n");
 		goto cleanup;
@@ -345,19 +345,19 @@ int main(int argc, char **argv)
 		i++;
 	}
 
-	/* test two functions in the corresponding *_kern.c file */
+	 
 	CHECK_AND_RET(test_debug_fs_kprobe(0, "blk_mq_start_request",
 					   BPF_FD_TYPE_KPROBE));
 	CHECK_AND_RET(test_debug_fs_kprobe(1, "__blk_account_io_done",
 					   BPF_FD_TYPE_KRETPROBE));
 
-	/* test nondebug fs kprobe */
+	 
 	CHECK_AND_RET(test_nondebug_fs_probe("kprobe", "bpf_check", 0x0, 0x0,
 					     false, BPF_FD_TYPE_KPROBE,
 					     BPF_FD_TYPE_KRETPROBE,
 					     buf, sizeof(buf)));
 #ifdef __x86_64__
-	/* set a kprobe on "bpf_check + 0x5", which is x64 specific */
+	 
 	CHECK_AND_RET(test_nondebug_fs_probe("kprobe", "bpf_check", 0x5, 0x0,
 					     false, BPF_FD_TYPE_KPROBE,
 					     BPF_FD_TYPE_KRETPROBE,
@@ -388,13 +388,8 @@ int main(int argc, char **argv)
 					     BPF_FD_TYPE_KRETPROBE,
 					     0, 0));
 
-	/* test nondebug fs uprobe */
-	/* the calculation of uprobe file offset is based on gcc 7.3.1 on x64
-	 * and the default linker script, which defines __executable_start as
-	 * the start of the .text section. The calculation could be different
-	 * on different systems with different compilers. The right way is
-	 * to parse the ELF file. We took a shortcut here.
-	 */
+	 
+	 
 	uprobe_file_offset = (unsigned long)main - (unsigned long)&__executable_start;
 	CHECK_AND_RET(test_nondebug_fs_probe("uprobe", (char *)argv[0],
 					     uprobe_file_offset, 0x0, false,
@@ -407,7 +402,7 @@ int main(int argc, char **argv)
 					     BPF_FD_TYPE_URETPROBE,
 					     buf, sizeof(buf)));
 
-	/* test debug fs uprobe */
+	 
 	CHECK_AND_RET(test_debug_fs_uprobe((char *)argv[0], uprobe_file_offset,
 					   false));
 	CHECK_AND_RET(test_debug_fs_uprobe((char *)argv[0], uprobe_file_offset,

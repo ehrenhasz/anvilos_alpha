@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ff-pcm.c - a part of driver for RME Fireface series
- *
- * Copyright (c) 2015-2017 Takashi Sakamoto
- */
+
+ 
 
 #include "ff.h"
 
@@ -158,17 +154,17 @@ static int pcm_open(struct snd_pcm_substream *substream)
 
 	mutex_lock(&ff->mutex);
 
-	// When source of clock is not internal or any stream is reserved for
-	// transmission of PCM frames, the available sampling rate is limited
-	// at current one.
+	
+	
+	
 	if (src != SND_FF_CLOCK_SRC_INTERNAL) {
 		for (i = 0; i < CIP_SFC_COUNT; ++i) {
 			if (amdtp_rate_table[i] == rate)
 				break;
 		}
 
-		// The unit is configured at sampling frequency which packet
-		// streaming engine can't support.
+		
+		
 		if (i >= CIP_SFC_COUNT) {
 			mutex_unlock(&ff->mutex);
 			err = -EIO;

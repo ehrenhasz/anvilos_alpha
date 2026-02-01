@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// src4xxx.h  --  SRC4XXX ALSA SoC audio driver
-//
-// Copyright 2021-2022 Deqx Pty Ltd
-// Author: Matt R Flax <flatmax@flatmax.com>
+
+
+
+
+
+
 
 #ifndef __SRC4XXX_H__
 #define __SRC4XXX_H__
@@ -82,7 +82,7 @@
 #define SRC4XXX_SCR_CTL_31 0x31
 #define SRC4XXX_PAGE_SEL_7F 0x7F
 
-// read only registers
+
 #define SRC4XXX_GLOBAL_ITR_STS_02 0x02
 #define SRC4XXX_SRC_DIT_STS_0A 0x0A
 #define SRC4XXX_NON_AUDIO_D_12 0x12
@@ -110,4 +110,4 @@ int src4xxx_probe(struct device *dev, struct regmap *regmap,
 		void (*switch_mode)(struct device *dev));
 extern const struct regmap_config src4xxx_regmap_config;
 
-#endif /* __SRC4XXX_H__ */
+#endif  

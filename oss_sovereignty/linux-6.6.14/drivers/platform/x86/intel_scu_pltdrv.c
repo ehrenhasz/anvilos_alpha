@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Platform driver for the Intel SCU.
- *
- * Copyright (C) 2019, Intel Corporation
- * Authors: Divya Sasidharan <divya.s.sasidharan@intel.com>
- *	    Mika Westerberg <mika.westerberg@linux.intel.com>
- *	    Rajmohan Mani <rajmohan.mani@intel.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/errno.h>

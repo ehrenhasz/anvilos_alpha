@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * aspeed-vhub -- Driver for Aspeed SoC "vHub" USB gadget
- *
- * hub.c - virtual hub handling
- *
- * Copyright 2017 IBM Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -30,16 +24,7 @@
 
 #include "vhub.h"
 
-/* usb 2.0 hub device descriptor
- *
- * A few things we may want to improve here:
- *
- *    - We may need to indicate TT support
- *    - We may need a device qualifier descriptor
- *	as devices can pretend to be usb1 or 2
- *    - Make vid/did overridable
- *    - make it look like usb1 if usb1 mode forced
- */
+ 
 #define KERNEL_REL	bin2bcd(LINUX_VERSION_MAJOR)
 #define KERNEL_VER	bin2bcd(LINUX_VERSION_PATCHLEVEL)
 
@@ -79,16 +64,9 @@ static const struct usb_qualifier_descriptor ast_vhub_qual_desc = {
 	.bRESERVED = 0,
 };
 
-/*
- * Configuration descriptor: same comments as above
- * regarding handling USB1 mode.
- */
+ 
 
-/*
- * We don't use sizeof() as Linux definition of
- * struct usb_endpoint_descriptor contains 2
- * extra bytes
- */
+ 
 #define AST_VHUB_CONF_DESC_SIZE	(USB_DT_CONFIG_SIZE + \
 				 USB_DT_INTERFACE_SIZE + \
 				 USB_DT_ENDPOINT_SIZE)
@@ -140,10 +118,7 @@ static const struct usb_hub_descriptor ast_vhub_hub_desc = {
 	.u.hs.DeviceRemovable[1]	= 0xff,
 };
 
-/*
- * These strings converted to UTF-16 must be smaller than
- * our EP0 buffer.
- */
+ 
 static const struct usb_string ast_vhub_str_array[] = {
 	{
 		.id = AST_VHUB_STR_SERIAL,
@@ -172,16 +147,10 @@ static int ast_vhub_hub_dev_status(struct ast_vhub_ep *ep,
 
 	EPDBG(ep, "GET_STATUS(dev)\n");
 
-	/*
-	 * Mark it as self-powered, I doubt the BMC is powered off
-	 * the USB bus ...
-	 */
+	 
 	st0 = 1 << USB_DEVICE_SELF_POWERED;
 
-	/*
-	 * Need to double check how remote wakeup actually works
-	 * on that chip and what triggers it.
-	 */
+	 
 	if (ep->vhub->wakeup_en)
 		st0 |= 1 << USB_DEVICE_REMOTE_WAKEUP;
 
@@ -197,7 +166,7 @@ static int ast_vhub_hub_ep_status(struct ast_vhub_ep *ep,
 	ep_num = wIndex & USB_ENDPOINT_NUMBER_MASK;
 	EPDBG(ep, "GET_STATUS(ep%d)\n", ep_num);
 
-	/* On the hub we have only EP 0 and 1 */
+	 
 	if (ep_num == 1) {
 		if (ep->vhub->ep1_stalled)
 			st0 |= 1 << USB_ENDPOINT_HALT;
@@ -277,15 +246,7 @@ static int ast_vhub_rep_desc(struct ast_vhub_ep *ep,
 
 	EPDBG(ep, "GET_DESCRIPTOR(type:%d)\n", desc_type);
 
-	/*
-	 * Copy first to EP buffer and send from there, so
-	 * we can do some in-place patching if needed. We know
-	 * the EP buffer is big enough but ensure that doesn't
-	 * change. We do that now rather than later after we
-	 * have checked sizes etc... to avoid a gcc bug where
-	 * it thinks len is constant and barfs about read
-	 * overflows in memcpy.
-	 */
+	 
 	switch(desc_type) {
 	case USB_DT_DEVICE:
 		dsize = USB_DT_DEVICE_SIZE;
@@ -315,11 +276,11 @@ static int ast_vhub_rep_desc(struct ast_vhub_ep *ep,
 		return std_req_stall;
 	}
 
-	/* Crop requested length */
+	 
 	if (len > dsize)
 		len = dsize;
 
-	/* Shoot it from the EP buffer */
+	 
 	return ast_vhub_reply(ep, NULL, len);
 }
 
@@ -392,7 +353,7 @@ static int ast_vhub_rep_string(struct ast_vhub_ep *ep,
 	if (rc < 0 || rc >= AST_VHUB_EP0_MAX_PACKET)
 		return std_req_stall;
 
-	/* Shoot it from the EP buffer */
+	 
 	memcpy(ep->buf, buf, rc);
 	return ast_vhub_reply(ep, NULL, min_t(u16, rc, len));
 }
@@ -407,7 +368,7 @@ enum std_req_rc ast_vhub_std_hub_request(struct ast_vhub_ep *ep,
 	wIndex = le16_to_cpu(crq->wIndex);
 	wLength = le16_to_cpu(crq->wLength);
 
-	/* First packet, grab speed */
+	 
 	if (vhub->speed == USB_SPEED_UNKNOWN) {
 		u32 ustat = readl(vhub->regs + AST_VHUB_USBSTS);
 		if (ustat & VHUB_USBSTS_HISPEED)
@@ -419,13 +380,13 @@ enum std_req_rc ast_vhub_std_hub_request(struct ast_vhub_ep *ep,
 	}
 
 	switch ((crq->bRequestType << 8) | crq->bRequest) {
-		/* SET_ADDRESS */
+		 
 	case DeviceOutRequest | USB_REQ_SET_ADDRESS:
 		EPDBG(ep, "SET_ADDRESS: Got address %x\n", wValue);
 		writel(wValue, vhub->regs + AST_VHUB_CONF);
 		return std_req_complete;
 
-		/* GET_STATUS */
+		 
 	case DeviceRequest | USB_REQ_GET_STATUS:
 		return ast_vhub_hub_dev_status(ep, wIndex, wValue);
 	case InterfaceRequest | USB_REQ_GET_STATUS:
@@ -433,7 +394,7 @@ enum std_req_rc ast_vhub_std_hub_request(struct ast_vhub_ep *ep,
 	case EndpointRequest | USB_REQ_GET_STATUS:
 		return ast_vhub_hub_ep_status(ep, wIndex, wValue);
 
-		/* SET/CLEAR_FEATURE */
+		 
 	case DeviceOutRequest | USB_REQ_SET_FEATURE:
 		return ast_vhub_hub_dev_feature(ep, wIndex, wValue, true);
 	case DeviceOutRequest | USB_REQ_CLEAR_FEATURE:
@@ -443,7 +404,7 @@ enum std_req_rc ast_vhub_std_hub_request(struct ast_vhub_ep *ep,
 	case EndpointOutRequest | USB_REQ_CLEAR_FEATURE:
 		return ast_vhub_hub_ep_feature(ep, wIndex, wValue, false);
 
-		/* GET/SET_CONFIGURATION */
+		 
 	case DeviceRequest | USB_REQ_GET_CONFIGURATION:
 		return ast_vhub_simple_reply(ep, 1);
 	case DeviceOutRequest | USB_REQ_SET_CONFIGURATION:
@@ -451,7 +412,7 @@ enum std_req_rc ast_vhub_std_hub_request(struct ast_vhub_ep *ep,
 			return std_req_stall;
 		return std_req_complete;
 
-		/* GET_DESCRIPTOR */
+		 
 	case DeviceRequest | USB_REQ_GET_DESCRIPTOR:
 		switch (wValue >> 8) {
 		case USB_DT_DEVICE:
@@ -466,7 +427,7 @@ enum std_req_rc ast_vhub_std_hub_request(struct ast_vhub_ep *ep,
 		}
 		return std_req_stall;
 
-		/* GET/SET_INTERFACE */
+		 
 	case DeviceRequest | USB_REQ_GET_INTERFACE:
 		return ast_vhub_simple_reply(ep, 0);
 	case DeviceOutRequest | USB_REQ_SET_INTERFACE:
@@ -480,7 +441,7 @@ enum std_req_rc ast_vhub_std_hub_request(struct ast_vhub_ep *ep,
 static void ast_vhub_update_hub_ep1(struct ast_vhub *vhub,
 				    unsigned int port)
 {
-	/* Update HW EP1 response */
+	 
 	u32 reg = readl(vhub->regs + AST_VHUB_EP1_STS_CHG);
 	u32 pmask = (1 << (port + 1));
 	if (vhub->ports[port].change)
@@ -499,17 +460,17 @@ static void ast_vhub_change_port_stat(struct ast_vhub *vhub,
 	struct ast_vhub_port *p = &vhub->ports[port];
 	u16 prev;
 
-	/* Update port status */
+	 
 	prev = p->status;
 	p->status = (prev & ~clr_flags) | set_flags;
 	DDBG(&p->dev, "port %d status %04x -> %04x (C=%d)\n",
 	     port + 1, prev, p->status, set_c);
 
-	/* Update change bits if needed */
+	 
 	if (set_c) {
 		u16 chg = p->status ^ prev;
 
-		/* Only these are relevant for change */
+		 
 		chg &= USB_PORT_STAT_C_CONNECTION |
 		       USB_PORT_STAT_C_ENABLE |
 		       USB_PORT_STAT_C_SUSPEND |
@@ -517,10 +478,7 @@ static void ast_vhub_change_port_stat(struct ast_vhub *vhub,
 		       USB_PORT_STAT_C_RESET |
 		       USB_PORT_STAT_C_L1;
 
-		/*
-		 * We only set USB_PORT_STAT_C_ENABLE if we are disabling
-		 * the port as per USB spec, otherwise MacOS gets upset
-		 */
+		 
 		if (p->status & USB_PORT_STAT_ENABLE)
 			chg &= ~USB_PORT_STAT_C_ENABLE;
 
@@ -549,10 +507,7 @@ void ast_vhub_device_connect(struct ast_vhub *vhub,
 					  USB_PORT_STAT_ENABLE,
 					  0, true);
 
-	/*
-	 * If the hub is set to wakup the host on connection events
-	 * then send a wakeup.
-	 */
+	 
 	if (vhub->wakeup_en)
 		ast_vhub_send_host_wakeup(vhub);
 }
@@ -565,11 +520,7 @@ static void ast_vhub_wake_work(struct work_struct *work)
 	unsigned long flags;
 	unsigned int i;
 
-	/*
-	 * Wake all sleeping ports. If a port is suspended by
-	 * the host suspend (without explicit state suspend),
-	 * we let the normal host wake path deal with it later.
-	 */
+	 
 	spin_lock_irqsave(&vhub->lock, flags);
 	for (i = 0; i < vhub->max_ports; i++) {
 		struct ast_vhub_port *p = &vhub->ports[i];
@@ -587,11 +538,7 @@ static void ast_vhub_wake_work(struct work_struct *work)
 
 void ast_vhub_hub_wake_all(struct ast_vhub *vhub)
 {
-	/*
-	 * A device is trying to wake the world, because this
-	 * can recurse into the device, we break the call chain
-	 * using a work queue
-	 */
+	 
 	schedule_work(&vhub->wake_work);
 }
 
@@ -600,7 +547,7 @@ static void ast_vhub_port_reset(struct ast_vhub *vhub, u8 port)
 	struct ast_vhub_port *p = &vhub->ports[port];
 	u16 set, clr, speed;
 
-	/* First mark disabled */
+	 
 	ast_vhub_change_port_stat(vhub, port,
 				  USB_PORT_STAT_ENABLE |
 				  USB_PORT_STAT_SUSPEND,
@@ -610,13 +557,10 @@ static void ast_vhub_port_reset(struct ast_vhub *vhub, u8 port)
 	if (!p->dev.driver)
 		return;
 
-	/*
-	 * This will either "start" the port or reset the
-	 * device if already started...
-	 */
+	 
 	ast_vhub_dev_reset(&p->dev);
 
-	/* Grab the right speed */
+	 
 	speed = p->dev.driver->max_speed;
 	if (speed == USB_SPEED_UNKNOWN || speed > vhub->speed)
 		speed = vhub->speed;
@@ -644,7 +588,7 @@ static void ast_vhub_port_reset(struct ast_vhub *vhub, u8 port)
 	clr |= USB_PORT_STAT_RESET;
 	set |= USB_PORT_STAT_ENABLE;
 
-	/* This should ideally be delayed ... */
+	 
 	ast_vhub_change_port_stat(vhub, port, clr, set, true);
 }
 
@@ -673,11 +617,7 @@ static enum std_req_rc ast_vhub_set_port_feature(struct ast_vhub_ep *ep,
 		ast_vhub_port_reset(vhub, port);
 		return std_req_complete;
 	case USB_PORT_FEAT_POWER:
-		/*
-		 * On Power-on, we mark the connected flag changed,
-		 * if there's a connected device, some hosts will
-		 * otherwise fail to detect it.
-		 */
+		 
 		if (p->status & USB_PORT_STAT_CONNECTION) {
 			p->change |= USB_PORT_STAT_C_CONNECTION;
 			ast_vhub_update_hub_ep1(vhub, port);
@@ -685,7 +625,7 @@ static enum std_req_rc ast_vhub_set_port_feature(struct ast_vhub_ep *ep,
 		return std_req_complete;
 	case USB_PORT_FEAT_TEST:
 	case USB_PORT_FEAT_INDICATOR:
-		/* We don't do anything with these */
+		 
 		return std_req_complete;
 	}
 	return std_req_stall;
@@ -719,17 +659,17 @@ static enum std_req_rc ast_vhub_clr_port_feature(struct ast_vhub_ep *ep,
 		ast_vhub_dev_resume(&p->dev);
 		return std_req_complete;
 	case USB_PORT_FEAT_POWER:
-		/* We don't do power control */
+		 
 		return std_req_complete;
 	case USB_PORT_FEAT_INDICATOR:
-		/* We don't have indicators */
+		 
 		return std_req_complete;
 	case USB_PORT_FEAT_C_CONNECTION:
 	case USB_PORT_FEAT_C_ENABLE:
 	case USB_PORT_FEAT_C_SUSPEND:
 	case USB_PORT_FEAT_C_OVER_CURRENT:
 	case USB_PORT_FEAT_C_RESET:
-		/* Clear state-change feature */
+		 
 		p->change &= ~(1u << (feat - 16));
 		ast_vhub_update_hub_ep1(vhub, port);
 		return std_req_complete;
@@ -750,7 +690,7 @@ static enum std_req_rc ast_vhub_get_port_stat(struct ast_vhub_ep *ep,
 	stat = vhub->ports[port].status;
 	chg = vhub->ports[port].change;
 
-	/* We always have power */
+	 
 	stat |= USB_PORT_STAT_POWER;
 
 	EPDBG(ep, " port status=%04x change=%04x\n", stat, chg);
@@ -786,7 +726,7 @@ enum std_req_rc ast_vhub_class_hub_request(struct ast_vhub_ep *ep,
 	case SetHubFeature:
 	case ClearHubFeature:
 		EPDBG(ep, "Get/SetHubFeature(%d)\n", wValue);
-		/* No feature, just complete the requests */
+		 
 		if (wValue == C_HUB_LOCAL_POWER ||
 		    wValue == C_HUB_OVER_CURRENT)
 			return std_req_complete;
@@ -820,10 +760,7 @@ void ast_vhub_hub_suspend(struct ast_vhub *vhub)
 
 	vhub->suspended = true;
 
-	/*
-	 * Forward to unsuspended ports without changing
-	 * their connection status.
-	 */
+	 
 	for (i = 0; i < vhub->max_ports; i++) {
 		struct ast_vhub_port *p = &vhub->ports[i];
 
@@ -843,10 +780,7 @@ void ast_vhub_hub_resume(struct ast_vhub *vhub)
 
 	vhub->suspended = false;
 
-	/*
-	 * Forward to unsuspended ports without changing
-	 * their connection status.
-	 */
+	 
 	for (i = 0; i < vhub->max_ports; i++) {
 		struct ast_vhub_port *p = &vhub->ports[i];
 
@@ -861,38 +795,32 @@ void ast_vhub_hub_reset(struct ast_vhub *vhub)
 
 	UDCDBG(vhub, "USB bus reset\n");
 
-	/*
-	 * Is the speed known ? If not we don't care, we aren't
-	 * initialized yet and ports haven't been enabled.
-	 */
+	 
 	if (vhub->speed == USB_SPEED_UNKNOWN)
 		return;
 
-	/* We aren't suspended anymore obviously */
+	 
 	vhub->suspended = false;
 
-	/* No speed set */
+	 
 	vhub->speed = USB_SPEED_UNKNOWN;
 
-	/* Wakeup not enabled anymore */
+	 
 	vhub->wakeup_en = false;
 
-	/*
-	 * Clear all port status, disable gadgets and "suspend"
-	 * them. They will be woken up by a port reset.
-	 */
+	 
 	for (i = 0; i < vhub->max_ports; i++) {
 		struct ast_vhub_port *p = &vhub->ports[i];
 
-		/* Only keep the connected flag */
+		 
 		p->status &= USB_PORT_STAT_CONNECTION;
 		p->change = 0;
 
-		/* Suspend the gadget if any */
+		 
 		ast_vhub_dev_suspend(&p->dev);
 	}
 
-	/* Cleanup HW */
+	 
 	writel(0, vhub->regs + AST_VHUB_CONF);
 	writel(0, vhub->regs + AST_VHUB_EP0_CTRL);
 	writel(VHUB_EP1_CTRL_RESET_TOGGLE |
@@ -1006,10 +934,10 @@ static int ast_vhub_of_parse_str_desc(struct ast_vhub *vhub,
 
 	for_each_child_of_node(desc_np, child) {
 		if (of_property_read_u32(child, "reg", &langid))
-			continue; /* no language identifier specified */
+			continue;  
 
 		if (!usb_validate_langid(langid))
-			continue; /* invalid language identifier */
+			continue;  
 
 		lang_str.language = langid;
 		for (i = offset = 0; str_id_map[i].name; i++) {
@@ -1039,23 +967,23 @@ static int ast_vhub_init_desc(struct ast_vhub *vhub)
 	struct device_node *desc_np;
 	const struct device_node *vhub_np = vhub->pdev->dev.of_node;
 
-	/* Initialize vhub Device Descriptor. */
+	 
 	memcpy(&vhub->vhub_dev_desc, &ast_vhub_dev_desc,
 		sizeof(vhub->vhub_dev_desc));
 	ast_vhub_of_parse_dev_desc(vhub, vhub_np);
 	if (vhub->force_usb1)
 		ast_vhub_fixup_usb1_dev_desc(vhub);
 
-	/* Initialize vhub Configuration Descriptor. */
+	 
 	memcpy(&vhub->vhub_conf_desc, &ast_vhub_conf_desc,
 		sizeof(vhub->vhub_conf_desc));
 
-	/* Initialize vhub Hub Descriptor. */
+	 
 	memcpy(&vhub->vhub_hub_desc, &ast_vhub_hub_desc,
 		sizeof(vhub->vhub_hub_desc));
 	vhub->vhub_hub_desc.bNbrPorts = vhub->max_ports;
 
-	/* Initialize vhub String Descriptors. */
+	 
 	INIT_LIST_HEAD(&vhub->vhub_str_desc);
 	desc_np = of_get_child_by_name(vhub_np, "vhub-strings");
 	if (desc_np) {
@@ -1065,7 +993,7 @@ static int ast_vhub_init_desc(struct ast_vhub *vhub)
 	else
 		ret = ast_vhub_str_alloc_add(vhub, &ast_vhub_strings);
 
-	/* Initialize vhub Qualifier Descriptor. */
+	 
 	memcpy(&vhub->vhub_qual_desc, &ast_vhub_qual_desc,
 		sizeof(vhub->vhub_qual_desc));
 

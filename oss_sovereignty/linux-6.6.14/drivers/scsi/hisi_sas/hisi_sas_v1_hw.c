@@ -1,13 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2015 Linaro Ltd.
- * Copyright (c) 2015 Hisilicon Limited.
- */
+
+ 
 
 #include "hisi_sas.h"
 #define DRV_NAME "hisi_sas_v1_hw"
 
-/* global registers need init*/
+ 
 #define DLVRY_QUEUE_ENABLE		0x0
 #define IOST_BASE_ADDR_LO		0x8
 #define IOST_BASE_ADDR_HI		0xc
@@ -108,7 +105,7 @@
 #define COMPL_Q_0_RD_PTR		0x4f0
 #define HGC_ECC_ERR			0x7d0
 
-/* phy registers need init */
+ 
 #define PORT_BASE			(0x800)
 
 #define PHY_CFG				(PORT_BASE + 0x0)
@@ -191,9 +188,9 @@
 #define AXI_CFG				0x5100
 #define RESET_VALUE			0x7ffff
 
-/* HW dma structures */
-/* Delivery queue header */
-/* dw0 */
+ 
+ 
+ 
 #define CMD_HDR_RESP_REPORT_OFF		5
 #define CMD_HDR_RESP_REPORT_MSK		0x20
 #define CMD_HDR_TLR_CTRL_OFF		6
@@ -206,28 +203,28 @@
 #define CMD_HDR_MODE_MSK		0x10000000
 #define CMD_HDR_CMD_OFF			29
 #define CMD_HDR_CMD_MSK			0xe0000000
-/* dw1 */
+ 
 #define CMD_HDR_VERIFY_DTL_OFF		10
 #define CMD_HDR_VERIFY_DTL_MSK		0x400
 #define CMD_HDR_SSP_FRAME_TYPE_OFF	13
 #define CMD_HDR_SSP_FRAME_TYPE_MSK	0xe000
 #define CMD_HDR_DEVICE_ID_OFF		16
 #define CMD_HDR_DEVICE_ID_MSK		0xffff0000
-/* dw2 */
+ 
 #define CMD_HDR_CFL_OFF			0
 #define CMD_HDR_CFL_MSK			0x1ff
 #define CMD_HDR_MRFL_OFF		15
 #define CMD_HDR_MRFL_MSK		0xff8000
 #define CMD_HDR_FIRST_BURST_OFF		25
 #define CMD_HDR_FIRST_BURST_MSK		0x2000000
-/* dw3 */
+ 
 #define CMD_HDR_IPTT_OFF		0
 #define CMD_HDR_IPTT_MSK		0xffff
-/* dw6 */
+ 
 #define CMD_HDR_DATA_SGL_LEN_OFF	16
 #define CMD_HDR_DATA_SGL_LEN_MSK	0xffff0000
 
-/* Completion header */
+ 
 #define CMPLT_HDR_IPTT_OFF		0
 #define CMPLT_HDR_IPTT_MSK		(0xffff << CMPLT_HDR_IPTT_OFF)
 #define CMPLT_HDR_CMD_CMPLT_OFF		17
@@ -239,8 +236,8 @@
 #define CMPLT_HDR_IO_CFG_ERR_OFF	27
 #define CMPLT_HDR_IO_CFG_ERR_MSK	(0x1 << CMPLT_HDR_IO_CFG_ERR_OFF)
 
-/* ITCT header */
-/* qw0 */
+ 
+ 
 #define ITCT_HDR_DEV_TYPE_OFF		0
 #define ITCT_HDR_DEV_TYPE_MSK		(0x3ULL << ITCT_HDR_DEV_TYPE_OFF)
 #define ITCT_HDR_VALID_OFF		2
@@ -255,11 +252,11 @@
 #define ITCT_HDR_PORT_ID_MSK		(0x7ULL << ITCT_HDR_PORT_ID_OFF)
 #define ITCT_HDR_SMP_TIMEOUT_OFF	16
 #define ITCT_HDR_SMP_TIMEOUT_MSK	(0xffffULL << ITCT_HDR_SMP_TIMEOUT_OFF)
-/* qw1 */
+ 
 #define ITCT_HDR_MAX_SAS_ADDR_OFF	0
 #define ITCT_HDR_MAX_SAS_ADDR_MSK	(0xffffffffffffffff << \
 					ITCT_HDR_MAX_SAS_ADDR_OFF)
-/* qw2 */
+ 
 #define ITCT_HDR_IT_NEXUS_LOSS_TL_OFF	0
 #define ITCT_HDR_IT_NEXUS_LOSS_TL_MSK	(0xffffULL << \
 					ITCT_HDR_IT_NEXUS_LOSS_TL_OFF)
@@ -273,7 +270,7 @@
 #define ITCT_HDR_REJ_OPEN_TL_MSK	(0xffffULL << \
 					ITCT_HDR_REJ_OPEN_TL_OFF)
 
-/* Err record header */
+ 
 #define ERR_HDR_DMA_TX_ERR_TYPE_OFF	0
 #define ERR_HDR_DMA_TX_ERR_TYPE_MSK	(0xffff << ERR_HDR_DMA_TX_ERR_TYPE_OFF)
 #define ERR_HDR_DMA_RX_ERR_TYPE_OFF	16
@@ -284,16 +281,16 @@ struct hisi_sas_complete_v1_hdr {
 };
 
 struct hisi_sas_err_record_v1 {
-	/* dw0 */
+	 
 	__le32 dma_err_type;
 
-	/* dw1 */
+	 
 	__le32 trans_tx_fail_type;
 
-	/* dw2 */
+	 
 	__le32 trans_rx_fail_type;
 
-	/* dw3 */
+	 
 	u32 rsvd;
 };
 
@@ -310,95 +307,95 @@ enum {
 	TRANS_TX_FAIL_BASE = 0x200,
 	TRANS_RX_FAIL_BASE = 0x300,
 
-	/* dma tx */
-	DMA_TX_DIF_CRC_ERR = DMA_TX_ERR_BASE, /* 0x0 */
-	DMA_TX_DIF_APP_ERR, /* 0x1 */
-	DMA_TX_DIF_RPP_ERR, /* 0x2 */
-	DMA_TX_AXI_BUS_ERR, /* 0x3 */
-	DMA_TX_DATA_SGL_OVERFLOW_ERR, /* 0x4 */
-	DMA_TX_DIF_SGL_OVERFLOW_ERR, /* 0x5 */
-	DMA_TX_UNEXP_XFER_RDY_ERR, /* 0x6 */
-	DMA_TX_XFER_RDY_OFFSET_ERR, /* 0x7 */
-	DMA_TX_DATA_UNDERFLOW_ERR, /* 0x8 */
-	DMA_TX_XFER_RDY_LENGTH_OVERFLOW_ERR, /* 0x9 */
+	 
+	DMA_TX_DIF_CRC_ERR = DMA_TX_ERR_BASE,  
+	DMA_TX_DIF_APP_ERR,  
+	DMA_TX_DIF_RPP_ERR,  
+	DMA_TX_AXI_BUS_ERR,  
+	DMA_TX_DATA_SGL_OVERFLOW_ERR,  
+	DMA_TX_DIF_SGL_OVERFLOW_ERR,  
+	DMA_TX_UNEXP_XFER_RDY_ERR,  
+	DMA_TX_XFER_RDY_OFFSET_ERR,  
+	DMA_TX_DATA_UNDERFLOW_ERR,  
+	DMA_TX_XFER_RDY_LENGTH_OVERFLOW_ERR,  
 
-	/* dma rx */
-	DMA_RX_BUFFER_ECC_ERR = DMA_RX_ERR_BASE, /* 0x100 */
-	DMA_RX_DIF_CRC_ERR, /* 0x101 */
-	DMA_RX_DIF_APP_ERR, /* 0x102 */
-	DMA_RX_DIF_RPP_ERR, /* 0x103 */
-	DMA_RX_RESP_BUFFER_OVERFLOW_ERR, /* 0x104 */
-	DMA_RX_AXI_BUS_ERR, /* 0x105 */
-	DMA_RX_DATA_SGL_OVERFLOW_ERR, /* 0x106 */
-	DMA_RX_DIF_SGL_OVERFLOW_ERR, /* 0x107 */
-	DMA_RX_DATA_OFFSET_ERR, /* 0x108 */
-	DMA_RX_UNEXP_RX_DATA_ERR, /* 0x109 */
-	DMA_RX_DATA_OVERFLOW_ERR, /* 0x10a */
-	DMA_RX_DATA_UNDERFLOW_ERR, /* 0x10b */
-	DMA_RX_UNEXP_RETRANS_RESP_ERR, /* 0x10c */
+	 
+	DMA_RX_BUFFER_ECC_ERR = DMA_RX_ERR_BASE,  
+	DMA_RX_DIF_CRC_ERR,  
+	DMA_RX_DIF_APP_ERR,  
+	DMA_RX_DIF_RPP_ERR,  
+	DMA_RX_RESP_BUFFER_OVERFLOW_ERR,  
+	DMA_RX_AXI_BUS_ERR,  
+	DMA_RX_DATA_SGL_OVERFLOW_ERR,  
+	DMA_RX_DIF_SGL_OVERFLOW_ERR,  
+	DMA_RX_DATA_OFFSET_ERR,  
+	DMA_RX_UNEXP_RX_DATA_ERR,  
+	DMA_RX_DATA_OVERFLOW_ERR,  
+	DMA_RX_DATA_UNDERFLOW_ERR,  
+	DMA_RX_UNEXP_RETRANS_RESP_ERR,  
 
-	/* trans tx */
-	TRANS_TX_RSVD0_ERR = TRANS_TX_FAIL_BASE, /* 0x200 */
-	TRANS_TX_PHY_NOT_ENABLE_ERR, /* 0x201 */
-	TRANS_TX_OPEN_REJCT_WRONG_DEST_ERR, /* 0x202 */
-	TRANS_TX_OPEN_REJCT_ZONE_VIOLATION_ERR, /* 0x203 */
-	TRANS_TX_OPEN_REJCT_BY_OTHER_ERR, /* 0x204 */
-	TRANS_TX_RSVD1_ERR, /* 0x205 */
-	TRANS_TX_OPEN_REJCT_AIP_TIMEOUT_ERR, /* 0x206 */
-	TRANS_TX_OPEN_REJCT_STP_BUSY_ERR, /* 0x207 */
-	TRANS_TX_OPEN_REJCT_PROTOCOL_NOT_SUPPORT_ERR, /* 0x208 */
-	TRANS_TX_OPEN_REJCT_RATE_NOT_SUPPORT_ERR, /* 0x209 */
-	TRANS_TX_OPEN_REJCT_BAD_DEST_ERR, /* 0x20a */
-	TRANS_TX_OPEN_BREAK_RECEIVE_ERR, /* 0x20b */
-	TRANS_TX_LOW_PHY_POWER_ERR, /* 0x20c */
-	TRANS_TX_OPEN_REJCT_PATHWAY_BLOCKED_ERR, /* 0x20d */
-	TRANS_TX_OPEN_TIMEOUT_ERR, /* 0x20e */
-	TRANS_TX_OPEN_REJCT_NO_DEST_ERR, /* 0x20f */
-	TRANS_TX_OPEN_RETRY_ERR, /* 0x210 */
-	TRANS_TX_RSVD2_ERR, /* 0x211 */
-	TRANS_TX_BREAK_TIMEOUT_ERR, /* 0x212 */
-	TRANS_TX_BREAK_REQUEST_ERR, /* 0x213 */
-	TRANS_TX_BREAK_RECEIVE_ERR, /* 0x214 */
-	TRANS_TX_CLOSE_TIMEOUT_ERR, /* 0x215 */
-	TRANS_TX_CLOSE_NORMAL_ERR, /* 0x216 */
-	TRANS_TX_CLOSE_PHYRESET_ERR, /* 0x217 */
-	TRANS_TX_WITH_CLOSE_DWS_TIMEOUT_ERR, /* 0x218 */
-	TRANS_TX_WITH_CLOSE_COMINIT_ERR, /* 0x219 */
-	TRANS_TX_NAK_RECEIVE_ERR, /* 0x21a */
-	TRANS_TX_ACK_NAK_TIMEOUT_ERR, /* 0x21b */
-	TRANS_TX_CREDIT_TIMEOUT_ERR, /* 0x21c */
-	TRANS_TX_IPTT_CONFLICT_ERR, /* 0x21d */
-	TRANS_TX_TXFRM_TYPE_ERR, /* 0x21e */
-	TRANS_TX_TXSMP_LENGTH_ERR, /* 0x21f */
+	 
+	TRANS_TX_RSVD0_ERR = TRANS_TX_FAIL_BASE,  
+	TRANS_TX_PHY_NOT_ENABLE_ERR,  
+	TRANS_TX_OPEN_REJCT_WRONG_DEST_ERR,  
+	TRANS_TX_OPEN_REJCT_ZONE_VIOLATION_ERR,  
+	TRANS_TX_OPEN_REJCT_BY_OTHER_ERR,  
+	TRANS_TX_RSVD1_ERR,  
+	TRANS_TX_OPEN_REJCT_AIP_TIMEOUT_ERR,  
+	TRANS_TX_OPEN_REJCT_STP_BUSY_ERR,  
+	TRANS_TX_OPEN_REJCT_PROTOCOL_NOT_SUPPORT_ERR,  
+	TRANS_TX_OPEN_REJCT_RATE_NOT_SUPPORT_ERR,  
+	TRANS_TX_OPEN_REJCT_BAD_DEST_ERR,  
+	TRANS_TX_OPEN_BREAK_RECEIVE_ERR,  
+	TRANS_TX_LOW_PHY_POWER_ERR,  
+	TRANS_TX_OPEN_REJCT_PATHWAY_BLOCKED_ERR,  
+	TRANS_TX_OPEN_TIMEOUT_ERR,  
+	TRANS_TX_OPEN_REJCT_NO_DEST_ERR,  
+	TRANS_TX_OPEN_RETRY_ERR,  
+	TRANS_TX_RSVD2_ERR,  
+	TRANS_TX_BREAK_TIMEOUT_ERR,  
+	TRANS_TX_BREAK_REQUEST_ERR,  
+	TRANS_TX_BREAK_RECEIVE_ERR,  
+	TRANS_TX_CLOSE_TIMEOUT_ERR,  
+	TRANS_TX_CLOSE_NORMAL_ERR,  
+	TRANS_TX_CLOSE_PHYRESET_ERR,  
+	TRANS_TX_WITH_CLOSE_DWS_TIMEOUT_ERR,  
+	TRANS_TX_WITH_CLOSE_COMINIT_ERR,  
+	TRANS_TX_NAK_RECEIVE_ERR,  
+	TRANS_TX_ACK_NAK_TIMEOUT_ERR,  
+	TRANS_TX_CREDIT_TIMEOUT_ERR,  
+	TRANS_TX_IPTT_CONFLICT_ERR,  
+	TRANS_TX_TXFRM_TYPE_ERR,  
+	TRANS_TX_TXSMP_LENGTH_ERR,  
 
-	/* trans rx */
-	TRANS_RX_FRAME_CRC_ERR = TRANS_RX_FAIL_BASE, /* 0x300 */
-	TRANS_RX_FRAME_DONE_ERR, /* 0x301 */
-	TRANS_RX_FRAME_ERRPRM_ERR, /* 0x302 */
-	TRANS_RX_FRAME_NO_CREDIT_ERR, /* 0x303 */
-	TRANS_RX_RSVD0_ERR, /* 0x304 */
-	TRANS_RX_FRAME_OVERRUN_ERR, /* 0x305 */
-	TRANS_RX_FRAME_NO_EOF_ERR, /* 0x306 */
-	TRANS_RX_LINK_BUF_OVERRUN_ERR, /* 0x307 */
-	TRANS_RX_BREAK_TIMEOUT_ERR, /* 0x308 */
-	TRANS_RX_BREAK_REQUEST_ERR, /* 0x309 */
-	TRANS_RX_BREAK_RECEIVE_ERR, /* 0x30a */
-	TRANS_RX_CLOSE_TIMEOUT_ERR, /* 0x30b */
-	TRANS_RX_CLOSE_NORMAL_ERR, /* 0x30c */
-	TRANS_RX_CLOSE_PHYRESET_ERR, /* 0x30d */
-	TRANS_RX_WITH_CLOSE_DWS_TIMEOUT_ERR, /* 0x30e */
-	TRANS_RX_WITH_CLOSE_COMINIT_ERR, /* 0x30f */
-	TRANS_RX_DATA_LENGTH0_ERR, /* 0x310 */
-	TRANS_RX_BAD_HASH_ERR, /* 0x311 */
-	TRANS_RX_XRDY_ZERO_ERR, /* 0x312 */
-	TRANS_RX_SSP_FRAME_LEN_ERR, /* 0x313 */
-	TRANS_RX_TRANS_RX_RSVD1_ERR, /* 0x314 */
-	TRANS_RX_NO_BALANCE_ERR, /* 0x315 */
-	TRANS_RX_TRANS_RX_RSVD2_ERR, /* 0x316 */
-	TRANS_RX_TRANS_RX_RSVD3_ERR, /* 0x317 */
-	TRANS_RX_BAD_FRAME_TYPE_ERR, /* 0x318 */
-	TRANS_RX_SMP_FRAME_LEN_ERR, /* 0x319 */
-	TRANS_RX_SMP_RESP_TIMEOUT_ERR, /* 0x31a */
+	 
+	TRANS_RX_FRAME_CRC_ERR = TRANS_RX_FAIL_BASE,  
+	TRANS_RX_FRAME_DONE_ERR,  
+	TRANS_RX_FRAME_ERRPRM_ERR,  
+	TRANS_RX_FRAME_NO_CREDIT_ERR,  
+	TRANS_RX_RSVD0_ERR,  
+	TRANS_RX_FRAME_OVERRUN_ERR,  
+	TRANS_RX_FRAME_NO_EOF_ERR,  
+	TRANS_RX_LINK_BUF_OVERRUN_ERR,  
+	TRANS_RX_BREAK_TIMEOUT_ERR,  
+	TRANS_RX_BREAK_REQUEST_ERR,  
+	TRANS_RX_BREAK_RECEIVE_ERR,  
+	TRANS_RX_CLOSE_TIMEOUT_ERR,  
+	TRANS_RX_CLOSE_NORMAL_ERR,  
+	TRANS_RX_CLOSE_PHYRESET_ERR,  
+	TRANS_RX_WITH_CLOSE_DWS_TIMEOUT_ERR,  
+	TRANS_RX_WITH_CLOSE_COMINIT_ERR,  
+	TRANS_RX_DATA_LENGTH0_ERR,  
+	TRANS_RX_BAD_HASH_ERR,  
+	TRANS_RX_XRDY_ZERO_ERR,  
+	TRANS_RX_SSP_FRAME_LEN_ERR,  
+	TRANS_RX_TRANS_RX_RSVD1_ERR,  
+	TRANS_RX_NO_BALANCE_ERR,  
+	TRANS_RX_TRANS_RX_RSVD2_ERR,  
+	TRANS_RX_TRANS_RX_RSVD3_ERR,  
+	TRANS_RX_BAD_FRAME_TYPE_ERR,  
+	TRANS_RX_SMP_FRAME_LEN_ERR,  
+	TRANS_RX_SMP_RESP_TIMEOUT_ERR,  
 };
 
 #define HISI_SAS_PHY_MAX_INT_NR (HISI_SAS_PHY_INT_NR * HISI_SAS_MAX_PHYS)
@@ -500,7 +497,7 @@ static void setup_itct_v1_hw(struct hisi_hba *hisi_hba,
 
 	memset(itct, 0, sizeof(*itct));
 
-	/* qw0 */
+	 
 	qw0 = 0;
 	switch (sas_dev->dev_type) {
 	case SAS_END_DEVICE:
@@ -520,11 +517,11 @@ static void setup_itct_v1_hw(struct hisi_hba *hisi_hba,
 		(port->id << ITCT_HDR_PORT_ID_OFF));
 	itct->qw0 = cpu_to_le64(qw0);
 
-	/* qw1 */
+	 
 	memcpy(&sas_addr, device->sas_addr, SAS_ADDR_SIZE);
 	itct->sas_addr = cpu_to_le64(__swab64(sas_addr));
 
-	/* qw2 */
+	 
 	itct->qw2 = cpu_to_le64((500ULL << ITCT_HDR_IT_NEXUS_LOSS_TL_OFF) |
 				(0xff00ULL << ITCT_HDR_BUS_INACTIVE_TL_OFF) |
 				(0xff00ULL << ITCT_HDR_MAX_CONN_TL_OFF) |
@@ -542,7 +539,7 @@ static int clear_itct_v1_hw(struct hisi_hba *hisi_hba,
 	reg_val |= CFG_AGING_TIME_ITCT_REL_MSK;
 	hisi_sas_write32(hisi_hba, CFG_AGING_TIME, reg_val);
 
-	/* free itct */
+	 
 	udelay(1);
 	reg_val = hisi_sas_read32(hisi_hba, CFG_AGING_TIME);
 	reg_val &= ~CFG_AGING_TIME_ITCT_REL_MSK;
@@ -568,9 +565,9 @@ static int reset_hw_v1_hw(struct hisi_hba *hisi_hba)
 		phy_ctrl |= PHY_CTRL_RESET_MSK;
 		hisi_sas_phy_write32(hisi_hba, i, PHY_CTRL, phy_ctrl);
 	}
-	msleep(1); /* It is safe to wait for 50us */
+	msleep(1);  
 
-	/* Ensure DMA tx & rx idle */
+	 
 	for (i = 0; i < hisi_hba->n_phy; i++) {
 		u32 dma_tx_status, dma_rx_status;
 
@@ -592,7 +589,7 @@ static int reset_hw_v1_hw(struct hisi_hba *hisi_hba)
 		}
 	}
 
-	/* Ensure axi bus idle */
+	 
 	end_time = jiffies + msecs_to_jiffies(1000);
 	while (1) {
 		u32 axi_status =
@@ -615,8 +612,8 @@ static int reset_hw_v1_hw(struct hisi_hba *hisi_hba)
 			return -EIO;
 		}
 	} else if (hisi_hba->ctrl) {
-		/* Apply reset and disable clock */
-		/* clk disable reg is offset by +4 bytes from clk enable reg */
+		 
+		 
 		regmap_write(hisi_hba->ctrl, hisi_hba->ctrl_reset_reg,
 			     RESET_VALUE);
 		regmap_write(hisi_hba->ctrl, hisi_hba->ctrl_clock_ena_reg + 4,
@@ -628,8 +625,8 @@ static int reset_hw_v1_hw(struct hisi_hba *hisi_hba)
 			return -EIO;
 		}
 
-		/* De-reset and enable clock */
-		/* deassert rst reg is offset by +4 bytes from assert reg */
+		 
+		 
 		regmap_write(hisi_hba->ctrl, hisi_hba->ctrl_reset_reg + 4,
 			     RESET_VALUE);
 		regmap_write(hisi_hba->ctrl, hisi_hba->ctrl_clock_ena_reg,
@@ -652,7 +649,7 @@ static void init_reg_v1_hw(struct hisi_hba *hisi_hba)
 {
 	int i;
 
-	/* Global registers init*/
+	 
 	hisi_sas_write32(hisi_hba, DLVRY_QUEUE_ENABLE,
 			 (u32)((1ULL << hisi_hba->queue_count) - 1));
 	hisi_sas_write32(hisi_hba, HGC_TRANS_TASK_CNT_LIMIT, 0x11);
@@ -697,7 +694,7 @@ static void init_reg_v1_hw(struct hisi_hba *hisi_hba)
 	}
 
 	for (i = 0; i < hisi_hba->queue_count; i++) {
-		/* Delivery queue */
+		 
 		hisi_sas_write32(hisi_hba,
 				 DLVRY_Q_0_BASE_ADDR_HI + (i * 0x14),
 				 upper_32_bits(hisi_hba->cmd_hdr_dma[i]));
@@ -710,7 +707,7 @@ static void init_reg_v1_hw(struct hisi_hba *hisi_hba)
 				 DLVRY_Q_0_DEPTH + (i * 0x14),
 				 HISI_SAS_QUEUE_SLOTS);
 
-		/* Completion queue */
+		 
 		hisi_sas_write32(hisi_hba,
 				 COMPL_Q_0_BASE_ADDR_HI + (i * 0x14),
 				 upper_32_bits(hisi_hba->complete_hdr_dma[i]));
@@ -723,21 +720,21 @@ static void init_reg_v1_hw(struct hisi_hba *hisi_hba)
 				 HISI_SAS_QUEUE_SLOTS);
 	}
 
-	/* itct */
+	 
 	hisi_sas_write32(hisi_hba, ITCT_BASE_ADDR_LO,
 			 lower_32_bits(hisi_hba->itct_dma));
 
 	hisi_sas_write32(hisi_hba, ITCT_BASE_ADDR_HI,
 			 upper_32_bits(hisi_hba->itct_dma));
 
-	/* iost */
+	 
 	hisi_sas_write32(hisi_hba, IOST_BASE_ADDR_LO,
 			 lower_32_bits(hisi_hba->iost_dma));
 
 	hisi_sas_write32(hisi_hba, IOST_BASE_ADDR_HI,
 			 upper_32_bits(hisi_hba->iost_dma));
 
-	/* breakpoint */
+	 
 	hisi_sas_write32(hisi_hba, BROKEN_MSG_ADDR_LO,
 			 lower_32_bits(hisi_hba->breakpoint_dma));
 
@@ -859,7 +856,7 @@ static int get_wideport_bitmap_v1_hw(struct hisi_hba *hisi_hba, int port_id)
 	return bitmap;
 }
 
-/* DQ lock must be taken here */
+ 
 static void start_delivery_v1_hw(struct hisi_sas_dq *dq)
 {
 	struct hisi_hba *hisi_hba = dq->hisi_hba;
@@ -877,9 +874,7 @@ static void start_delivery_v1_hw(struct hisi_sas_dq *dq)
 	if (!s2)
 		return;
 
-	/*
-	 * Ensure that memories for slots built on other CPUs is observed.
-	 */
+	 
 	smp_rmb();
 	wp = (s2->dlvry_queue_slot + 1) % HISI_SAS_QUEUE_SLOTS;
 
@@ -922,22 +917,22 @@ static void prep_smp_v1_hw(struct hisi_hba *hisi_hba,
 	dma_addr_t req_dma_addr;
 	unsigned int req_len;
 
-	/* req */
+	 
 	sg_req = &task->smp_task.smp_req;
 	req_len = sg_dma_len(sg_req);
 	req_dma_addr = sg_dma_address(sg_req);
 
-	/* create header */
-	/* dw0 */
+	 
+	 
 	hdr->dw0 = cpu_to_le32((port->id << CMD_HDR_PORT_OFF) |
-			       (1 << CMD_HDR_PRIORITY_OFF) | /* high pri */
-			       (1 << CMD_HDR_MODE_OFF) | /* ini mode */
-			       (2 << CMD_HDR_CMD_OFF)); /* smp */
+			       (1 << CMD_HDR_PRIORITY_OFF) |  
+			       (1 << CMD_HDR_MODE_OFF) |  
+			       (2 << CMD_HDR_CMD_OFF));  
 
-	/* map itct entry */
+	 
 	hdr->dw1 = cpu_to_le32(sas_dev->device_id << CMD_HDR_DEVICE_ID_OFF);
 
-	/* dw2 */
+	 
 	hdr->dw2 = cpu_to_le32((((req_len-4)/4) << CMD_HDR_CFL_OFF) |
 			       (HISI_SAS_MAX_SMP_RESP_SZ/4 <<
 			       CMD_HDR_MRFL_OFF));
@@ -963,13 +958,13 @@ static void prep_ssp_v1_hw(struct hisi_hba *hisi_hba,
 	u8 *buf_cmd;
 	u32 dw1, dw2;
 
-	/* create header */
+	 
 	hdr->dw0 = cpu_to_le32((1 << CMD_HDR_RESP_REPORT_OFF) |
 			       (0x2 << CMD_HDR_TLR_CTRL_OFF) |
 			       (port->id << CMD_HDR_PORT_OFF) |
 			       (priority << CMD_HDR_PRIORITY_OFF) |
-			       (1 << CMD_HDR_MODE_OFF) | /* ini mode */
-			       (1 << CMD_HDR_CMD_OFF)); /* ssp */
+			       (1 << CMD_HDR_MODE_OFF) |  
+			       (1 << CMD_HDR_CMD_OFF));  
 
 	dw1 = 1 << CMD_HDR_VERIFY_DTL_OFF;
 
@@ -990,7 +985,7 @@ static void prep_ssp_v1_hw(struct hisi_hba *hisi_hba,
 		}
 	}
 
-	/* map itct entry */
+	 
 	dw1 |= sas_dev->device_id << CMD_HDR_DEVICE_ID_OFF;
 	hdr->dw1 = cpu_to_le32(dw1);
 
@@ -1041,7 +1036,7 @@ static void prep_ssp_v1_hw(struct hisi_hba *hisi_hba,
 	}
 }
 
-/* by default, task resp is complete */
+ 
 static void slot_err_v1_hw(struct hisi_hba *hisi_hba,
 			   struct sas_task *task,
 			   struct hisi_sas_slot *slot)
@@ -1068,19 +1063,19 @@ static void slot_err_v1_hw(struct hisi_hba *hisi_hba,
 				le32_to_cpu(err_record->trans_rx_fail_type);
 
 		if (dma_tx_err_type) {
-			/* dma tx err */
+			 
 			error = ffs(dma_tx_err_type)
 				- 1 + DMA_TX_ERR_BASE;
 		} else if (dma_rx_err_type) {
-			/* dma rx err */
+			 
 			error = ffs(dma_rx_err_type)
 				- 1 + DMA_RX_ERR_BASE;
 		} else if (trans_tx_fail_type) {
-			/* trans tx err */
+			 
 			error = ffs(trans_tx_fail_type)
 				- 1 + TRANS_TX_FAIL_BASE;
 		} else if (trans_rx_fail_type) {
-			/* trans rx err */
+			 
 			error = ffs(trans_rx_fail_type)
 				- 1 + TRANS_RX_FAIL_BASE;
 		}
@@ -1140,7 +1135,7 @@ static void slot_err_v1_hw(struct hisi_hba *hisi_hba,
 		case TRANS_TX_CREDIT_TIMEOUT_ERR:
 		case TRANS_TX_CLOSE_NORMAL_ERR:
 		{
-			/* This will request a retry */
+			 
 			ts->stat = SAS_QUEUE_FULL;
 			slot->abort = 1;
 			break;
@@ -1311,7 +1306,7 @@ out:
 		task->task_done(task);
 }
 
-/* Interrupts */
+ 
 static irqreturn_t int_phyup_v1_hw(int irq_no, void *p)
 {
 	struct hisi_sas_phy *phy = p;
@@ -1353,7 +1348,7 @@ static irqreturn_t int_phyup_v1_hw(int irq_no, void *p)
 		frame_rcvd[i] = __swab32(idaf);
 	}
 
-	/* Get the linkrate */
+	 
 	link_rate = hisi_sas_read32(hisi_hba, PHY_CONN_RATE);
 	link_rate = (link_rate >> (phy_no * 4)) & 0xf;
 	sas_phy->linkrate = link_rate;
@@ -1429,11 +1424,11 @@ static irqreturn_t int_abnormal_v1_hw(int irq, void *p)
 	u32 irq_value, irq_mask_old;
 	int phy_no = sas_phy->id;
 
-	/* mask_int0 */
+	 
 	irq_mask_old = hisi_sas_phy_read32(hisi_hba, phy_no, CHL_INT0_MSK);
 	hisi_sas_phy_write32(hisi_hba, phy_no, CHL_INT0_MSK, 0x3fffff);
 
-	/* read int0 */
+	 
 	irq_value = hisi_sas_phy_read32(hisi_hba, phy_no, CHL_INT0);
 
 	if (irq_value & CHL_INT0_PHYCTRL_NOTRDY_MSK) {
@@ -1463,7 +1458,7 @@ static irqreturn_t int_abnormal_v1_hw(int irq, void *p)
 	if (irq_value & CHL_INT0_SL_PS_FAIL_OFF)
 		dev_dbg(dev, "abnormal: SL_PS_FAIL phy%d fail\n", phy_no);
 
-	/* write to zero */
+	 
 	hisi_sas_phy_write32(hisi_hba, phy_no, CHL_INT0, irq_value);
 
 	if (irq_value & CHL_INT0_PHYCTRL_NOTRDY_MSK)
@@ -1503,10 +1498,7 @@ static irqreturn_t cq_interrupt_v1_hw(int irq, void *p)
 		      CMPLT_HDR_IPTT_OFF;
 		slot = &hisi_hba->slot_info[idx];
 
-		/* The completion queue and queue slot index are not
-		 * necessarily the same as the delivery queue and
-		 * queue slot index.
-		 */
+		 
 		slot->cmplt_queue_slot = rd_point;
 		slot->cmplt_queue = queue;
 		slot_complete_v1_hw(hisi_hba, slot);
@@ -1515,7 +1507,7 @@ static irqreturn_t cq_interrupt_v1_hw(int irq, void *p)
 			rd_point = 0;
 	}
 
-	/* update rd_point */
+	 
 	cq->rd_point = rd_point;
 	hisi_sas_write32(hisi_hba, COMPL_Q_0_RD_PTR + (0x14 * queue), rd_point);
 	spin_unlock(&hisi_hba->lock);
@@ -1687,7 +1679,7 @@ static int interrupt_openall_v1_hw(struct hisi_hba *hisi_hba)
 	u32 val;
 
 	for (i = 0; i < hisi_hba->n_phy; i++) {
-		/* Clear interrupt status */
+		 
 		val = hisi_sas_phy_read32(hisi_hba, i, CHL_INT0);
 		hisi_sas_phy_write32(hisi_hba, i, CHL_INT0, val);
 		val = hisi_sas_phy_read32(hisi_hba, i, CHL_INT1);
@@ -1695,12 +1687,12 @@ static int interrupt_openall_v1_hw(struct hisi_hba *hisi_hba)
 		val = hisi_sas_phy_read32(hisi_hba, i, CHL_INT2);
 		hisi_sas_phy_write32(hisi_hba, i, CHL_INT2, val);
 
-		/* Unmask interrupt */
+		 
 		hisi_sas_phy_write32(hisi_hba, i, CHL_INT0_MSK, 0x3ce3ee);
 		hisi_sas_phy_write32(hisi_hba, i, CHL_INT1_MSK, 0x17fff);
 		hisi_sas_phy_write32(hisi_hba, i, CHL_INT2_MSK, 0x8000012a);
 
-		/* bypass chip bug mask abnormal intr */
+		 
 		hisi_sas_phy_write32(hisi_hba, i, CHL_INT0_MSK,
 				0x3fffff & ~CHL_INT0_MSK_PHYCTRL_NOTRDY_MSK);
 	}

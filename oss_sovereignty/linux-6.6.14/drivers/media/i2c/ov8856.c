@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Intel Corporation.
+
+
 
 #include <asm/unaligned.h>
 #include <linux/acpi.h>
@@ -30,39 +30,37 @@
 #define OV8856_MODE_STANDBY		0x00
 #define OV8856_MODE_STREAMING		0x01
 
-/* module revisions */
+ 
 #define OV8856_2A_MODULE		0x01
 #define OV8856_1B_MODULE		0x02
 
-/* the OTP read-out buffer is at 0x7000 and 0xf is the offset
- * of the byte in the OTP that means the module revision
- */
+ 
 #define OV8856_MODULE_REVISION		0x700f
 #define OV8856_OTP_MODE_CTRL		0x3d84
 #define OV8856_OTP_LOAD_CTRL		0x3d81
 #define OV8856_OTP_MODE_AUTO		0x00
 #define OV8856_OTP_LOAD_CTRL_ENABLE	BIT(0)
 
-/* vertical-timings from sensor */
+ 
 #define OV8856_REG_VTS			0x380e
 #define OV8856_VTS_MAX			0x7fff
 
-/* horizontal-timings from sensor */
+ 
 #define OV8856_REG_HTS			0x380c
 
-/* Exposure controls from sensor */
+ 
 #define OV8856_REG_EXPOSURE		0x3500
 #define	OV8856_EXPOSURE_MIN		6
 #define OV8856_EXPOSURE_MAX_MARGIN	6
 #define	OV8856_EXPOSURE_STEP		1
 
-/* Analog gain controls from sensor */
+ 
 #define OV8856_REG_ANALOG_GAIN		0x3508
 #define	OV8856_ANAL_GAIN_MIN		128
 #define	OV8856_ANAL_GAIN_MAX		2047
 #define	OV8856_ANAL_GAIN_STEP		1
 
-/* Digital gain controls from sensor */
+ 
 #define OV8856_REG_DIGITAL_GAIN		0x350a
 #define OV8856_REG_MWB_R_GAIN		0x5019
 #define OV8856_REG_MWB_G_GAIN		0x501b
@@ -72,7 +70,7 @@
 #define OV8856_DGTL_GAIN_STEP		1
 #define OV8856_DGTL_GAIN_DEFAULT	1024
 
-/* Test Pattern Control */
+ 
 #define OV8856_REG_TEST_PATTERN		0x5e00
 #define OV8856_TEST_PATTERN_ENABLE	BIT(7)
 #define OV8856_TEST_PATTERN_BAR_SHIFT	2
@@ -81,7 +79,7 @@
 #define NUM_MODE_REGS				187
 #define NUM_MODE_REGS_2				200
 
-/* Flip Mirror Controls from sensor */
+ 
 #define OV8856_REG_FORMAT1			0x3820
 #define OV8856_REG_FORMAT2			0x3821
 #define OV8856_REG_FORMAT1_OP_1			BIT(1)
@@ -103,9 +101,9 @@
 #define to_ov8856(_sd)			container_of(_sd, struct ov8856, sd)
 
 static const char * const ov8856_supply_names[] = {
-	"dovdd",	/* Digital I/O power */
-	"avdd",		/* Analog power */
-	"dvdd",		/* Digital core power */
+	"dovdd",	 
+	"avdd",		 
+	"dvdd",		 
 };
 
 enum {
@@ -128,31 +126,31 @@ struct ov8856_link_freq_config {
 };
 
 struct ov8856_mode {
-	/* Frame width in pixels */
+	 
 	u32 width;
 
-	/* Frame height in pixels */
+	 
 	u32 height;
 
-	/* Horizontal timining size */
+	 
 	u32 hts;
 
-	/* Default vertical timining size */
+	 
 	u32 vts_def;
 
-	/* Min vertical timining size */
+	 
 	u32 vts_min;
 
-	/* Link frequency needed for this resolution */
+	 
 	u32 link_freq_index;
 
-	/* Sensor register settings for this resolution */
+	 
 	const struct ov8856_reg_list reg_list;
 
-	/* Number of data lanes */
+	 
 	u8 data_lanes;
 
-	/* Default MEDIA_BUS_FMT for this mode */
+	 
 	u32 default_mbus_index;
 };
 
@@ -162,7 +160,7 @@ struct ov8856_mipi_data_rates {
 };
 
 static const struct ov8856_mipi_data_rates mipi_data_rate_lane_2 = {
-	//mipi_data_rate_1440mbps
+	
 	{
 		{0x0103, 0x01},
 		{0x0100, 0x00},
@@ -172,7 +170,7 @@ static const struct ov8856_mipi_data_rates mipi_data_rate_lane_2 = {
 		{0x030d, 0x4b},
 		{0x031e, 0x0c}
 	},
-	//mipi_data_rate_720mbps
+	
 	{
 		{0x0103, 0x01},
 		{0x0100, 0x00},
@@ -185,7 +183,7 @@ static const struct ov8856_mipi_data_rates mipi_data_rate_lane_2 = {
 };
 
 static const struct ov8856_mipi_data_rates mipi_data_rate_lane_4 = {
-	//mipi_data_rate_720mbps
+	
 	{
 		{0x0103, 0x01},
 		{0x0100, 0x00},
@@ -195,7 +193,7 @@ static const struct ov8856_mipi_data_rates mipi_data_rate_lane_4 = {
 		{0x030d, 0x4b},
 		{0x031e, 0x0c}
 	},
-	//mipi_data_rate_360mbps
+	
 	{
 		{0x0103, 0x01},
 		{0x0100, 0x00},
@@ -208,7 +206,7 @@ static const struct ov8856_mipi_data_rates mipi_data_rate_lane_4 = {
 };
 
 static const struct ov8856_reg lane_2_mode_3280x2464[] = {
-	/* 3280x2464 resolution */
+	 
 		{0x3000, 0x20},
 		{0x3003, 0x08},
 		{0x300e, 0x20},
@@ -400,7 +398,7 @@ static const struct ov8856_reg lane_2_mode_3280x2464[] = {
 };
 
 static const struct ov8856_reg lane_2_mode_1640x1232[] = {
-	/* 1640x1232 resolution */
+	 
 		{0x3000, 0x20},
 		{0x3003, 0x08},
 		{0x300e, 0x20},
@@ -592,7 +590,7 @@ static const struct ov8856_reg lane_2_mode_1640x1232[] = {
 };
 
 static const struct ov8856_reg lane_4_mode_3280x2464[] = {
-	/* 3280x2464 resolution */
+	 
 		{0x3000, 0x20},
 		{0x3003, 0x08},
 		{0x300e, 0x20},
@@ -783,7 +781,7 @@ static const struct ov8856_reg lane_4_mode_3280x2464[] = {
 };
 
 static const struct ov8856_reg lane_4_mode_1640x1232[] = {
-	/* 1640x1232 resolution */
+	 
 		{0x3000, 0x20},
 		{0x3003, 0x08},
 		{0x300e, 0x20},
@@ -974,7 +972,7 @@ static const struct ov8856_reg lane_4_mode_1640x1232[] = {
 };
 
 static const struct ov8856_reg lane_4_mode_3264x2448[] = {
-	/* 3264x2448 resolution */
+	 
 		{0x0103, 0x01},
 		{0x0302, 0x3c},
 		{0x0303, 0x01},
@@ -1178,7 +1176,7 @@ static const struct ov8856_reg lane_4_mode_3264x2448[] = {
 };
 
 static const struct ov8856_reg lane_4_mode_1632x1224[] = {
-	/* 1632x1224 resolution */
+	 
 		{0x0103, 0x01},
 		{0x0302, 0x3c},
 		{0x0303, 0x01},
@@ -1422,32 +1420,32 @@ struct ov8856 {
 	struct gpio_desc	*reset_gpio;
 	struct regulator_bulk_data supplies[ARRAY_SIZE(ov8856_supply_names)];
 
-	/* V4L2 Controls */
+	 
 	struct v4l2_ctrl *link_freq;
 	struct v4l2_ctrl *pixel_rate;
 	struct v4l2_ctrl *vblank;
 	struct v4l2_ctrl *hblank;
 	struct v4l2_ctrl *exposure;
 
-	/* Current mode */
+	 
 	const struct ov8856_mode *cur_mode;
 
-	/* Application specified mbus format */
+	 
 	u32 cur_mbus_index;
 
-	/* To serialize asynchronus callbacks */
+	 
 	struct mutex mutex;
 
-	/* Streaming on/off */
+	 
 	bool streaming;
 
-	/* lanes index */
+	 
 	u8 nlanes;
 
 	const struct ov8856_lane_cfg *priv_lane;
 	u8 modes_size;
 
-	/* True if the device has been identified */
+	 
 	bool identified;
 };
 
@@ -1825,9 +1823,9 @@ static int ov8856_set_ctrl(struct v4l2_ctrl *ctrl)
 	s64 exposure_max;
 	int ret = 0;
 
-	/* Propagate change of current control to all related controls */
+	 
 	if (ctrl->id == V4L2_CID_VBLANK) {
-		/* Update max exposure while meeting expected vblanking */
+		 
 		exposure_max = ov8856->cur_mode->height + ctrl->val -
 			       OV8856_EXPOSURE_MAX_MARGIN;
 		__v4l2_ctrl_modify_range(ov8856->exposure,
@@ -1836,7 +1834,7 @@ static int ov8856_set_ctrl(struct v4l2_ctrl *ctrl)
 					 exposure_max);
 	}
 
-	/* V4L2 controls values will be applied only when power is already up */
+	 
 	if (!pm_runtime_get_if_in_use(&client->dev))
 		return 0;
 
@@ -1851,7 +1849,7 @@ static int ov8856_set_ctrl(struct v4l2_ctrl *ctrl)
 		break;
 
 	case V4L2_CID_EXPOSURE:
-		/* 4 least significant bits of expsoure are fractional part */
+		 
 		ret = ov8856_write_reg(ov8856, OV8856_REG_EXPOSURE,
 				       OV8856_REG_VALUE_24BIT, ctrl->val << 4);
 		break;
@@ -2189,7 +2187,7 @@ static int ov8856_set_format(struct v4l2_subdev *sd,
 						 mode->link_freq_index,
 						 ov8856->cur_mode->data_lanes));
 
-		/* Update limits and set FPS to default */
+		 
 		vblank_def = mode->vts_def - mode->height;
 		__v4l2_ctrl_modify_range(ov8856->vblank,
 					 mode->vts_min - mode->height,
@@ -2359,7 +2357,7 @@ static int ov8856_get_hwcfg(struct ov8856 *ov8856, struct device *dev)
 	if (ret)
 		return ret;
 
-	/* Get number of data lanes */
+	 
 	if (bus_cfg.bus.mipi_csi2.num_data_lanes != 2 &&
 	    bus_cfg.bus.mipi_csi2.num_data_lanes != 4) {
 		dev_err(dev, "number of CSI2 data lanes %d is not supported",
@@ -2479,7 +2477,7 @@ static int ov8856_probe(struct i2c_client *client)
 		goto probe_error_media_entity_cleanup;
 	}
 
-	/* Set the device's state to active if it's in D0 state. */
+	 
 	if (full_power)
 		pm_runtime_set_active(&client->dev);
 	pm_runtime_enable(&client->dev);
@@ -2516,7 +2514,7 @@ MODULE_DEVICE_TABLE(acpi, ov8856_acpi_ids);
 
 static const struct of_device_id ov8856_of_match[] = {
 	{ .compatible = "ovti,ov8856" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ov8856_of_match);
 

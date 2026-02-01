@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR Apache-2.0)
-/*
- * Generic implementation of the BLAKE2b digest algorithm.  Based on the BLAKE2b
- * reference implementation, but it has been heavily modified for use in the
- * kernel.  The reference implementation was:
- *
- *	Copyright 2012, Samuel Neves <sneves@dei.uc.pt>.  You may use this under
- *	the terms of the CC0, the OpenSSL Licence, or the Apache Public License
- *	2.0, at your option.  The terms of these licenses can be found at:
- *
- *	- CC0 1.0 Universal : http://creativecommons.org/publicdomain/zero/1.0
- *	- OpenSSL license   : https://www.openssl.org/source/license.html
- *	- Apache 2.0        : https://www.apache.org/licenses/LICENSE-2.0
- *
- * More information about BLAKE2 can be found at https://blake2.net.
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/module.h>
@@ -102,7 +88,7 @@ static void blake2b_compress_one_generic(struct blake2b_state *S,
 	ROUND(10);
 	ROUND(11);
 #ifdef CONFIG_CC_IS_CLANG
-#pragma nounroll /* https://bugs.llvm.org/show_bug.cgi?id=45803 */
+#pragma nounroll /* https:
 #endif
 	for (i = 0; i < 8; ++i)
 		S->h[i] = S->h[i] ^ v[i] ^ v[i + 8];

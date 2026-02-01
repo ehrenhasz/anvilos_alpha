@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
-//
-// Copyright (c) 2018 Mellanox Technologies. All rights reserved.
-// Copyright (c) 2018 Vadim Pasternak <vadimp@mellanox.com>
+
+
+
+
 
 #include <linux/bitops.h>
 #include <linux/device.h>
@@ -12,27 +12,18 @@
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 
-/* Codes for LEDs. */
-#define MLXREG_LED_OFFSET_BLINK_3HZ	0x01 /* Offset from solid: 3Hz blink */
-#define MLXREG_LED_OFFSET_BLINK_6HZ	0x02 /* Offset from solid: 6Hz blink */
-#define MLXREG_LED_IS_OFF		0x00 /* Off */
-#define MLXREG_LED_RED_SOLID		0x05 /* Solid red */
-#define MLXREG_LED_GREEN_SOLID		0x0D /* Solid green */
-#define MLXREG_LED_AMBER_SOLID		0x09 /* Solid amber */
-#define MLXREG_LED_BLINK_3HZ		167 /* ~167 msec off/on - HW support */
-#define MLXREG_LED_BLINK_6HZ		83 /* ~83 msec off/on - HW support */
-#define MLXREG_LED_CAPABILITY_CLEAR	GENMASK(31, 8) /* Clear mask */
+ 
+#define MLXREG_LED_OFFSET_BLINK_3HZ	0x01  
+#define MLXREG_LED_OFFSET_BLINK_6HZ	0x02  
+#define MLXREG_LED_IS_OFF		0x00  
+#define MLXREG_LED_RED_SOLID		0x05  
+#define MLXREG_LED_GREEN_SOLID		0x0D  
+#define MLXREG_LED_AMBER_SOLID		0x09  
+#define MLXREG_LED_BLINK_3HZ		167  
+#define MLXREG_LED_BLINK_6HZ		83  
+#define MLXREG_LED_CAPABILITY_CLEAR	GENMASK(31, 8)  
 
-/**
- * struct mlxreg_led_data - led control data:
- *
- * @data: led configuration data;
- * @led_cdev: led class data;
- * @base_color: base led color (other colors have constant offset from base);
- * @led_data: led data;
- * @data_parent: pointer to private device control data of parent;
- * @led_cdev_name: class device name
- */
+ 
 struct mlxreg_led_data {
 	struct mlxreg_core_data *data;
 	struct led_classdev led_cdev;
@@ -43,17 +34,11 @@ struct mlxreg_led_data {
 
 #define cdev_to_priv(c) container_of(c, struct mlxreg_led_data, led_cdev)
 
-/**
- * struct mlxreg_led_priv_data - platform private data:
- *
- * @pdev: platform device;
- * @pdata: platform data;
- * @access_lock: mutex for attribute IO access;
- */
+ 
 struct mlxreg_led_priv_data {
 	struct platform_device *pdev;
 	struct mlxreg_core_platform_data *pdata;
-	struct mutex access_lock; /* protect IO operations */
+	struct mutex access_lock;  
 };
 
 static int
@@ -66,16 +51,7 @@ mlxreg_led_store_hw(struct mlxreg_led_data *led_data, u8 vset)
 	u32 nib;
 	int ret;
 
-	/*
-	 * Each LED is controlled through low or high nibble of the relevant
-	 * register byte. Register offset is specified by off parameter.
-	 * Parameter vset provides color code: 0x0 for off, 0x5 for solid red,
-	 * 0x6 for 3Hz blink red, 0xd for solid green, 0xe for 3Hz blink
-	 * green.
-	 * Parameter mask specifies which nibble is used for specific LED: mask
-	 * 0xf0 - lower nibble is to be used (bits from 0 to 3), mask 0x0f -
-	 * higher nibble (bits from 4 to 7).
-	 */
+	 
 	mutex_lock(&priv->access_lock);
 
 	ret = regmap_read(led_pdata->regmap, data->reg, &regval);
@@ -103,21 +79,12 @@ mlxreg_led_get_hw(struct mlxreg_led_data *led_data)
 	u32 regval;
 	int err;
 
-	/*
-	 * Each LED is controlled through low or high nibble of the relevant
-	 * register byte. Register offset is specified by off parameter.
-	 * Parameter vset provides color code: 0x0 for off, 0x5 for solid red,
-	 * 0x6 for 3Hz blink red, 0xd for solid green, 0xe for 3Hz blink
-	 * green.
-	 * Parameter mask specifies which nibble is used for specific LED: mask
-	 * 0xf0 - lower nibble is to be used (bits from 0 to 3), mask 0x0f -
-	 * higher nibble (bits from 4 to 7).
-	 */
+	 
 	err = regmap_read(led_pdata->regmap, data->reg, &regval);
 	if (err < 0) {
 		dev_warn(led_data->led_cdev.dev, "Failed to get current brightness, error: %d\n",
 			 err);
-		/* Assume the LED is OFF */
+		 
 		return LED_OFF;
 	}
 
@@ -157,11 +124,7 @@ mlxreg_led_blink_set(struct led_classdev *cled, unsigned long *delay_on,
 	struct mlxreg_led_data *led_data = cdev_to_priv(cled);
 	int err;
 
-	/*
-	 * HW supports two types of blinking: full (6Hz) and half (3Hz).
-	 * For delay on/off zero LED is setting to solid color. For others
-	 * combination blinking is to be controlled by the software timer.
-	 */
+	 
 	if (!(*delay_on == 0 && *delay_off == 0) &&
 	    !(*delay_on == MLXREG_LED_BLINK_3HZ &&
 	      *delay_off == MLXREG_LED_BLINK_3HZ) &&
@@ -207,11 +170,7 @@ static int mlxreg_led_config(struct mlxreg_led_priv_data *priv)
 			}
 			if (!(regval & data->bit))
 				continue;
-			/*
-			 * Field "bit" can contain one capability bit in 0 byte
-			 * and offset bit in 1-3 bytes. Clear capability bit and
-			 * keep only offset bit.
-			 */
+			 
 			data->bit &= MLXREG_LED_CAPABILITY_CLEAR;
 		}
 

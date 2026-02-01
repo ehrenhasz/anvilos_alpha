@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Parser for TRX format partitions
- *
- * Copyright (C) 2012 - 2017 Rafał Miłecki <rafal@milecki.pl>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -12,9 +8,9 @@
 
 #define TRX_PARSER_MAX_PARTS		4
 
-/* Magics */
+ 
 #define TRX_MAGIC			0x30524448
-#define UBI_EC_MAGIC			0x23494255	/* UBI# */
+#define UBI_EC_MAGIC			0x23494255	 
 
 struct trx_header {
 	uint32_t magic;
@@ -60,7 +56,7 @@ static int parser_trx_parse(struct mtd_info *mtd,
 	uint32_t trx_magic = TRX_MAGIC;
 	int err;
 
-	/* Get different magic from device tree if specified */
+	 
 	err = of_property_read_u32(np, "brcm,trx-magic", &trx_magic);
 	if (err != 0 && err != -EINVAL)
 		pr_err("failed to parse \"brcm,trx-magic\" DT attribute, using default: %d\n", err);
@@ -82,7 +78,7 @@ static int parser_trx_parse(struct mtd_info *mtd,
 		return -ENOENT;
 	}
 
-	/* We have LZMA loader if there is address in offset[2] */
+	 
 	if (trx.offset[2]) {
 		part = &parts[curr_part++];
 		part->name = "loader";
@@ -104,10 +100,7 @@ static int parser_trx_parse(struct mtd_info *mtd,
 		i++;
 	}
 
-	/*
-	 * Assume that every partition ends at the beginning of the one it is
-	 * followed by.
-	 */
+	 
 	for (i = 0; i < curr_part; i++) {
 		u64 next_part_offset = (i < curr_part - 1) ?
 				       parts[i + 1].offset : mtd->size;

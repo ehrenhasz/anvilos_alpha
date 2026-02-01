@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2017 Free Electrons
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -53,22 +50,7 @@ static const u32 sun4i_frontend_horz_coef[64] = {
 	0x03ff0000, 0x0000fd41, 0x01ff0000, 0x0000fe42,
 };
 
-/*
- * These coefficients are taken from the A33 BSP from Allwinner.
- *
- * The first three values of each row are coded as 13-bit signed fixed-point
- * numbers, with 10 bits for the fractional part. The fourth value is a
- * constant coded as a 14-bit signed fixed-point number with 4 bits for the
- * fractional part.
- *
- * The values in table order give the following colorspace translation:
- * G = 1.164 * Y - 0.391 * U - 0.813 * V + 135
- * R = 1.164 * Y + 1.596 * V - 222
- * B = 1.164 * Y + 2.018 * U + 276
- *
- * This seems to be a conversion from Y[16:235] UV[16:240] to RGB[0:255],
- * following the BT601 spec.
- */
+ 
 const u32 sunxi_bt601_yuv2rgb_coef[12] = {
 	0x000004a7, 0x00001e6f, 0x00001cbf, 0x00000877,
 	0x000004a7, 0x00000000, 0x00000662, 0x00003211,
@@ -169,11 +151,7 @@ void sun4i_frontend_update_buffer(struct sun4i_frontend *frontend,
 
 		strides[0] = SUN4I_FRONTEND_LINESTRD_TILED(fb->pitches[0]);
 
-		/*
-		 * The X1 offset is the offset to the bottom-right point in the
-		 * end tile, which is the final pixel (at offset width - 1)
-		 * within the end tile (with a 32-byte mask).
-		 */
+		 
 		offset = (width - 1) & (32 - 1);
 
 		regmap_write(frontend->regs, SUN4I_FRONTEND_TB_OFF0_REG,
@@ -204,7 +182,7 @@ void sun4i_frontend_update_buffer(struct sun4i_frontend *frontend,
 			strides[2] = fb->pitches[2];
 	}
 
-	/* Set the line width */
+	 
 	DRM_DEBUG_DRIVER("Frontend stride: %d bytes\n", fb->pitches[0]);
 	regmap_write(frontend->regs, SUN4I_FRONTEND_LINESTRD0_REG,
 		     strides[0]);
@@ -217,10 +195,10 @@ void sun4i_frontend_update_buffer(struct sun4i_frontend *frontend,
 		regmap_write(frontend->regs, SUN4I_FRONTEND_LINESTRD2_REG,
 			     strides[2]);
 
-	/* Some planar formats require chroma channel swapping by hand. */
+	 
 	swap = sun4i_frontend_format_chroma_requires_swap(fb->format->format);
 
-	/* Set the physical address of the buffer in memory */
+	 
 	dma_addr = drm_fb_dma_get_gem_addr(fb, state, 0);
 	DRM_DEBUG_DRIVER("Setting buffer #0 address to %pad\n", &dma_addr);
 	regmap_write(frontend->regs, SUN4I_FRONTEND_BUF_ADDR0_REG, dma_addr);
@@ -293,7 +271,7 @@ static int
 sun4i_frontend_drm_format_to_input_sequence(const struct drm_format_info *format,
 					    u32 *val)
 {
-	/* Planar formats have an explicit input sequence. */
+	 
 	if (drm_format_info_is_yuv_planar(format)) {
 		*val = 0;
 		return 0;
@@ -438,10 +416,7 @@ int sun4i_frontend_update_formats(struct sun4i_frontend *frontend,
 		return ret;
 	}
 
-	/*
-	 * I have no idea what this does exactly, but it seems to be
-	 * related to the scaler FIR filter phase parameters.
-	 */
+	 
 	ch1_phase_idx = (format->num_planes > 1) ? 1 : 0;
 	regmap_write(frontend->regs, SUN4I_FRONTEND_CH0_HORZPHASE_REG,
 		     frontend->data->ch_phase[0]);
@@ -456,14 +431,9 @@ int sun4i_frontend_update_formats(struct sun4i_frontend *frontend,
 	regmap_write(frontend->regs, SUN4I_FRONTEND_CH1_VERTPHASE1_REG,
 		     frontend->data->ch_phase[ch1_phase_idx]);
 
-	/*
-	 * Checking the input format is sufficient since we currently only
-	 * support RGB output formats to the backend. If YUV output formats
-	 * ever get supported, an YUV input and output would require bypassing
-	 * the CSC engine too.
-	 */
+	 
 	if (format->is_yuv) {
-		/* Setup the CSC engine for YUV to RGB conversion. */
+		 
 		bypass = 0;
 
 		for (i = 0; i < ARRAY_SIZE(sunxi_bt601_yuv2rgb_coef); i++)
@@ -480,11 +450,7 @@ int sun4i_frontend_update_formats(struct sun4i_frontend *frontend,
 	regmap_write(frontend->regs, SUN4I_FRONTEND_INPUT_FMT_REG,
 		     in_mod_val | in_fmt_val | in_ps_val);
 
-	/*
-	 * TODO: It look like the A31 and A80 at least will need the
-	 * bit 7 (ALPHA_EN) enabled when using a format with alpha (so
-	 * ARGB8888).
-	 */
+	 
 	regmap_write(frontend->regs, SUN4I_FRONTEND_OUTPUT_FMT_REG,
 		     out_fmt_val);
 
@@ -500,7 +466,7 @@ void sun4i_frontend_update_coord(struct sun4i_frontend *frontend,
 	uint32_t luma_width, luma_height;
 	uint32_t chroma_width, chroma_height;
 
-	/* Set height and width */
+	 
 	DRM_DEBUG_DRIVER("Frontend size W: %u H: %u\n",
 			 state->crtc_w, state->crtc_h);
 

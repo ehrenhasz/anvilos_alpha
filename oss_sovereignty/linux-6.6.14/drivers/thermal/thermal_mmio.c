@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of_address.h>

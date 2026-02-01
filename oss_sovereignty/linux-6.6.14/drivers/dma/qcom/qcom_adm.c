@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -26,7 +24,7 @@
 #include "../dmaengine.h"
 #include "../virt-dma.h"
 
-/* ADM registers - calculated from channel number and security domain */
+ 
 #define ADM_CHAN_MULTI			0x4
 #define ADM_CI_MULTI			0x4
 #define ADM_CRCI_MULTI			0x4
@@ -48,45 +46,45 @@
 #define ADM_CRCI_CTL(crci, ee)		(0x400 + (crci) * ADM_CRCI_MULTI + \
 						ADM_EE_OFFS(ee))
 
-/* channel status */
+ 
 #define ADM_CH_STATUS_VALID		BIT(1)
 
-/* channel result */
+ 
 #define ADM_CH_RSLT_VALID		BIT(31)
 #define ADM_CH_RSLT_ERR			BIT(3)
 #define ADM_CH_RSLT_FLUSH		BIT(2)
 #define ADM_CH_RSLT_TPD			BIT(1)
 
-/* channel conf */
+ 
 #define ADM_CH_CONF_SHADOW_EN		BIT(12)
 #define ADM_CH_CONF_MPU_DISABLE		BIT(11)
 #define ADM_CH_CONF_PERM_MPU_CONF	BIT(9)
 #define ADM_CH_CONF_FORCE_RSLT_EN	BIT(7)
 #define ADM_CH_CONF_SEC_DOMAIN(ee)	((((ee) & 0x3) << 4) | (((ee) & 0x4) << 11))
 
-/* channel result conf */
+ 
 #define ADM_CH_RSLT_CONF_FLUSH_EN	BIT(1)
 #define ADM_CH_RSLT_CONF_IRQ_EN		BIT(0)
 
-/* CRCI CTL */
+ 
 #define ADM_CRCI_CTL_MUX_SEL		BIT(18)
 #define ADM_CRCI_CTL_RST		BIT(17)
 
-/* CI configuration */
+ 
 #define ADM_CI_RANGE_END(x)		((x) << 24)
 #define ADM_CI_RANGE_START(x)		((x) << 16)
 #define ADM_CI_BURST_4_WORDS		BIT(2)
 #define ADM_CI_BURST_8_WORDS		BIT(3)
 
-/* GP CTL */
+ 
 #define ADM_GP_CTL_LP_EN		BIT(12)
 #define ADM_GP_CTL_LP_CNT(x)		((x) << 8)
 
-/* Command pointer list entry */
+ 
 #define ADM_CPLE_LP			BIT(31)
 #define ADM_CPLE_CMD_PTR_LIST		BIT(29)
 
-/* Command list entry */
+ 
 #define ADM_CMD_LC			BIT(31)
 #define ADM_CMD_DST_CRCI(n)		(((n) & 0xf) << 7)
 #define ADM_CMD_SRC_CRCI(n)		(((n) & 0xf) << 3)
@@ -136,8 +134,8 @@ struct adm_chan {
 	struct virt_dma_chan vc;
 	struct adm_device *adev;
 
-	/* parsed from DT */
-	u32 id;			/* channel id */
+	 
+	u32 id;			 
 
 	struct adm_async_desc *curr_txd;
 	struct dma_slave_config slave;
@@ -173,24 +171,14 @@ struct adm_device {
 	int irq;
 };
 
-/**
- * adm_free_chan - Frees dma resources associated with the specific channel
- *
- * @chan: dma channel
- *
- * Free all allocated descriptors associated with this channel
- */
+ 
 static void adm_free_chan(struct dma_chan *chan)
 {
-	/* free all queued descriptors */
+	 
 	vchan_free_chan_resources(to_virt_chan(chan));
 }
 
-/**
- * adm_get_blksize - Get block size from burst value
- *
- * @burst: Burst size of transaction
- */
+ 
 static int adm_get_blksize(unsigned int burst)
 {
 	int ret;
@@ -216,16 +204,7 @@ static int adm_get_blksize(unsigned int burst)
 	return ret;
 }
 
-/**
- * adm_process_fc_descriptors - Process descriptors for flow controlled xfers
- *
- * @achan: ADM channel
- * @desc: Descriptor memory pointer
- * @sg: Scatterlist entry
- * @crci: CRCI value
- * @burst: Burst size of transaction
- * @direction: DMA transfer direction
- */
+ 
 static void *adm_process_fc_descriptors(struct adm_chan *achan, void *desc,
 					struct scatterlist *sg, u32 crci,
 					u32 burst,
@@ -268,7 +247,7 @@ static void *adm_process_fc_descriptors(struct adm_chan *achan, void *desc,
 		desc += sizeof(*box_desc);
 	}
 
-	/* if leftover bytes, do one single descriptor */
+	 
 	if (remainder) {
 		single_desc = desc;
 		single_desc->cmd = ADM_CMD_TYPE_SINGLE | crci_cmd;
@@ -287,14 +266,7 @@ static void *adm_process_fc_descriptors(struct adm_chan *achan, void *desc,
 	return desc;
 }
 
-/**
- * adm_process_non_fc_descriptors - Process descriptors for non-fc xfers
- *
- * @achan: ADM channel
- * @desc: Descriptor memory pointer
- * @sg: Scatterlist entry
- * @direction: DMA transfer direction
- */
+ 
 static void *adm_process_non_fc_descriptors(struct adm_chan *achan, void *desc,
 					    struct scatterlist *sg,
 					    enum dma_transfer_direction direction)
@@ -326,23 +298,14 @@ static void *adm_process_non_fc_descriptors(struct adm_chan *achan, void *desc,
 		desc += sizeof(*single_desc);
 	} while (remainder);
 
-	/* set last command if this is the end of the whole transaction */
+	 
 	if (sg_is_last(sg))
 		single_desc->cmd |= ADM_CMD_LC;
 
 	return desc;
 }
 
-/**
- * adm_prep_slave_sg - Prep slave sg transaction
- *
- * @chan: dma channel
- * @sgl: scatter gather list
- * @sg_len: length of sg
- * @direction: DMA transfer direction
- * @flags: DMA flags
- * @context: transfer context (unused)
- */
+ 
 static struct dma_async_tx_descriptor *adm_prep_slave_sg(struct dma_chan *chan,
 							 struct scatterlist *sgl,
 							 unsigned int sg_len,
@@ -366,14 +329,12 @@ static struct dma_async_tx_descriptor *adm_prep_slave_sg(struct dma_chan *chan,
 		return NULL;
 	}
 
-	/*
-	 * get burst value from slave configuration
-	 */
+	 
 	burst = (direction == DMA_MEM_TO_DEV) ?
 		achan->slave.dst_maxburst :
 		achan->slave.src_maxburst;
 
-	/* if using flow control, validate burst and crci values */
+	 
 	if (achan->slave.device_fc) {
 		blk_size = adm_get_blksize(burst);
 		if (blk_size < 0) {
@@ -389,7 +350,7 @@ static struct dma_async_tx_descriptor *adm_prep_slave_sg(struct dma_chan *chan,
 		}
 	}
 
-	/* iterate through sgs and compute allocation size of structures */
+	 
 	for_each_sg(sgl, sg, sg_len, i) {
 		if (achan->slave.device_fc) {
 			box_count += DIV_ROUND_UP(sg_dma_len(sg) / burst,
@@ -423,7 +384,7 @@ static struct dma_async_tx_descriptor *adm_prep_slave_sg(struct dma_chan *chan,
 
 	async_desc->adev = adev;
 
-	/* both command list entry and descriptors must be 8 byte aligned */
+	 
 	cple = PTR_ALIGN(async_desc->cpl, ADM_DESC_ALIGN);
 	desc = PTR_ALIGN(cple + 1, ADM_DESC_ALIGN);
 
@@ -448,7 +409,7 @@ static struct dma_async_tx_descriptor *adm_prep_slave_sg(struct dma_chan *chan,
 
 	cple_addr = async_desc->dma_addr + ((void *)cple - async_desc->cpl);
 
-	/* init cmd list */
+	 
 	dma_sync_single_for_cpu(adev->dev, cple_addr, sizeof(*cple),
 				DMA_TO_DEVICE);
 	*cple = ADM_CPLE_LP;
@@ -463,14 +424,7 @@ free:
 	return NULL;
 }
 
-/**
- * adm_terminate_all - terminate all transactions on a channel
- * @chan: dma channel
- *
- * Dequeues and frees all transactions, aborts current transaction
- * No callbacks are done
- *
- */
+ 
 static int adm_terminate_all(struct dma_chan *chan)
 {
 	struct adm_chan *achan = to_adm_chan(chan);
@@ -481,7 +435,7 @@ static int adm_terminate_all(struct dma_chan *chan)
 	spin_lock_irqsave(&achan->vc.lock, flags);
 	vchan_get_all_descriptors(&achan->vc, &head);
 
-	/* send flush command to terminate current transaction */
+	 
 	writel_relaxed(0x0,
 		       adev->regs + ADM_CH_FLUSH_STATE0(achan->id, adev->ee));
 
@@ -507,10 +461,7 @@ static int adm_slave_config(struct dma_chan *chan, struct dma_slave_config *cfg)
 	return 0;
 }
 
-/**
- * adm_start_dma - start next transaction
- * @achan: ADM dma channel
- */
+ 
 static void adm_start_dma(struct adm_chan *achan)
 {
 	struct virt_dma_desc *vd = vchan_next_desc(&achan->vc);
@@ -524,15 +475,15 @@ static void adm_start_dma(struct adm_chan *achan)
 
 	list_del(&vd->node);
 
-	/* write next command list out to the CMD FIFO */
+	 
 	async_desc = container_of(vd, struct adm_async_desc, vd);
 	achan->curr_txd = async_desc;
 
-	/* reset channel error */
+	 
 	achan->error = 0;
 
 	if (!achan->initialized) {
-		/* enable interrupts */
+		 
 		writel(ADM_CH_CONF_SHADOW_EN |
 		       ADM_CH_CONF_PERM_MPU_CONF |
 		       ADM_CH_CONF_MPU_DISABLE |
@@ -545,27 +496,21 @@ static void adm_start_dma(struct adm_chan *achan)
 		achan->initialized = 1;
 	}
 
-	/* set the crci block size if this transaction requires CRCI */
+	 
 	if (async_desc->crci) {
 		writel(async_desc->mux | async_desc->blk_size,
 		       adev->regs + ADM_CRCI_CTL(async_desc->crci, adev->ee));
 	}
 
-	/* make sure IRQ enable doesn't get reordered */
+	 
 	wmb();
 
-	/* write next command list out to the CMD FIFO */
+	 
 	writel(ALIGN(async_desc->dma_addr, ADM_DESC_ALIGN) >> 3,
 	       adev->regs + ADM_CH_CMD_PTR(achan->id, adev->ee));
 }
 
-/**
- * adm_dma_irq - irq handler for ADM controller
- * @irq: IRQ of interrupt
- * @data: callback data
- *
- * IRQ handler for the bam controller
- */
+ 
 static irqreturn_t adm_dma_irq(int irq, void *data)
 {
 	struct adm_device *adev = data;
@@ -584,18 +529,18 @@ static irqreturn_t adm_dma_irq(int irq, void *data)
 			status = readl_relaxed(adev->regs +
 					       ADM_CH_STATUS_SD(i, adev->ee));
 
-			/* if no result present, skip */
+			 
 			if (!(status & ADM_CH_STATUS_VALID))
 				continue;
 
 			result = readl_relaxed(adev->regs +
 				ADM_CH_RSLT(i, adev->ee));
 
-			/* no valid results, skip */
+			 
 			if (!(result & ADM_CH_RSLT_VALID))
 				continue;
 
-			/* flag error if transaction was flushed or failed */
+			 
 			if (result & (ADM_CH_RSLT_ERR | ADM_CH_RSLT_FLUSH))
 				achan->error = 1;
 
@@ -607,7 +552,7 @@ static irqreturn_t adm_dma_irq(int irq, void *data)
 			if (async_desc) {
 				vchan_cookie_complete(&async_desc->vd);
 
-				/* kick off next DMA */
+				 
 				adm_start_dma(achan);
 			}
 
@@ -618,14 +563,7 @@ static irqreturn_t adm_dma_irq(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/**
- * adm_tx_status - returns status of transaction
- * @chan: dma channel
- * @cookie: transaction cookie
- * @txstate: DMA transaction state
- *
- * Return status of dma transaction
- */
+ 
 static enum dma_status adm_tx_status(struct dma_chan *chan, dma_cookie_t cookie,
 				     struct dma_tx_state *txstate)
 {
@@ -647,11 +585,7 @@ static enum dma_status adm_tx_status(struct dma_chan *chan, dma_cookie_t cookie,
 
 	spin_unlock_irqrestore(&achan->vc.lock, flags);
 
-	/*
-	 * residue is either the full length if it is in the issued list, or 0
-	 * if it is in progress.  We have no reliable way of determining
-	 * anything inbetween
-	 */
+	 
 	dma_set_residue(txstate, residue);
 
 	if (achan->error)
@@ -660,12 +594,7 @@ static enum dma_status adm_tx_status(struct dma_chan *chan, dma_cookie_t cookie,
 	return ret;
 }
 
-/**
- * adm_issue_pending - starts pending transactions
- * @chan: dma channel
- *
- * Issues all pending transactions and starts DMA
- */
+ 
 static void adm_issue_pending(struct dma_chan *chan)
 {
 	struct adm_chan *achan = to_adm_chan(chan);
@@ -678,11 +607,7 @@ static void adm_issue_pending(struct dma_chan *chan)
 	spin_unlock_irqrestore(&achan->vc.lock, flags);
 }
 
-/**
- * adm_dma_free_desc - free descriptor memory
- * @vd: virtual descriptor
- *
- */
+ 
 static void adm_dma_free_desc(struct virt_dma_desc *vd)
 {
 	struct adm_async_desc *async_desc = container_of(vd,
@@ -704,17 +629,7 @@ static void adm_channel_init(struct adm_device *adev, struct adm_chan *achan,
 	achan->vc.desc_free = adm_dma_free_desc;
 }
 
-/**
- * adm_dma_xlate
- * @dma_spec:	pointer to DMA specifier as found in the device tree
- * @ofdma:	pointer to DMA controller data
- *
- * This can use either 1-cell or 2-cell formats, the first cell
- * identifies the slave device, while the optional second cell
- * contains the crci value.
- *
- * Returns pointer to appropriate dma channel on success or NULL on error.
- */
+ 
 static struct dma_chan *adm_dma_xlate(struct of_phandle_args *dma_spec,
 			       struct of_dma *ofdma)
 {
@@ -833,18 +748,18 @@ static int adm_dma_probe(struct platform_device *pdev)
 		goto err_disable_clks;
 	}
 
-	/* allocate and initialize channels */
+	 
 	INIT_LIST_HEAD(&adev->common.channels);
 
 	for (i = 0; i < ADM_MAX_CHANNELS; i++)
 		adm_channel_init(adev, &adev->channels[i], i);
 
-	/* reset CRCIs */
+	 
 	for (i = 0; i < 16; i++)
 		writel(ADM_CRCI_CTL_RST, adev->regs +
 			ADM_CRCI_CTL(i, adev->ee));
 
-	/* configure client interfaces */
+	 
 	writel(ADM_CI_RANGE_START(0x40) | ADM_CI_RANGE_END(0xb0) |
 	       ADM_CI_BURST_8_WORDS, adev->regs + ADM_CI_CONF(0));
 	writel(ADM_CI_RANGE_START(0x2a) | ADM_CI_RANGE_END(0x2c) |
@@ -864,12 +779,12 @@ static int adm_dma_probe(struct platform_device *pdev)
 	adev->common.dev = adev->dev;
 	adev->common.dev->dma_parms = &adev->dma_parms;
 
-	/* set capabilities */
+	 
 	dma_cap_zero(adev->common.cap_mask);
 	dma_cap_set(DMA_SLAVE, adev->common.cap_mask);
 	dma_cap_set(DMA_PRIVATE, adev->common.cap_mask);
 
-	/* initialize dmaengine apis */
+	 
 	adev->common.directions = BIT(DMA_DEV_TO_MEM | DMA_MEM_TO_DEV);
 	adev->common.residue_granularity = DMA_RESIDUE_GRANULARITY_DESCRIPTOR;
 	adev->common.src_addr_widths = DMA_SLAVE_BUSWIDTH_4_BYTES;
@@ -916,7 +831,7 @@ static int adm_dma_remove(struct platform_device *pdev)
 	for (i = 0; i < ADM_MAX_CHANNELS; i++) {
 		achan = &adev->channels[i];
 
-		/* mask IRQs for this channel/EE pair */
+		 
 		writel(0, adev->regs + ADM_CH_RSLT_CONF(achan->id, adev->ee));
 
 		tasklet_kill(&adev->channels[i].vc.task);

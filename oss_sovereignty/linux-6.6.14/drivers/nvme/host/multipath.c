@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2017-2018 Christoph Hellwig.
- */
+
+ 
 
 #include <linux/backing-dev.h>
 #include <linux/moduleparam.h>
@@ -89,11 +87,7 @@ void nvme_failover_req(struct request *req)
 
 	nvme_mpath_clear_current_path(ns);
 
-	/*
-	 * If we got back an ANA error, we know the controller is alive but not
-	 * ready to serve this namespace.  Kick of a re-read of the ANA
-	 * information page, and just try any other available path for now.
-	 */
+	 
 	if (nvme_is_ana_error(status) && ns->ctrl->ana_log_buf) {
 		set_bit(NVME_NS_ANA_PENDING, &ns->flags);
 		queue_work(nvme_wq, &ns->ctrl->ana_work);
@@ -106,13 +100,7 @@ void nvme_failover_req(struct request *req)
 			bio->bi_opf &= ~REQ_POLLED;
 			bio->bi_cookie = BLK_QC_T_NONE;
 		}
-		/*
-		 * The alternate request queue that we may end up submitting
-		 * the bio to may be frozen temporarily, in this case REQ_NOWAIT
-		 * will fail the I/O immediately with EAGAIN to the issuer.
-		 * We are not in the issuer context which cannot block. Clear
-		 * the flag to avoid spurious EAGAIN I/O failures.
-		 */
+		 
 		bio->bi_opf &= ~REQ_NOWAIT;
 	}
 	blk_steal_bios(&ns->head->requeue_list, req);
@@ -223,11 +211,7 @@ void nvme_mpath_revalidate_paths(struct nvme_ns *ns)
 
 static bool nvme_path_is_disabled(struct nvme_ns *ns)
 {
-	/*
-	 * We don't treat NVME_CTRL_DELETING as a disabled path as I/O should
-	 * still be able to complete assuming that the controller is connected.
-	 * Otherwise it will fail immediately and return to the requeue list.
-	 */
+	 
 	if (ns->ctrl->state != NVME_CTRL_LIVE &&
 	    ns->ctrl->state != NVME_CTRL_DELETING)
 		return true;
@@ -311,12 +295,7 @@ static struct nvme_ns *nvme_round_robin_path(struct nvme_ns_head *head,
 			found = ns;
 	}
 
-	/*
-	 * The loop above skips the current path for round-robin semantics.
-	 * Fall back to the current path if either:
-	 *  - no other optimized path found and current is optimized,
-	 *  - no other usable path found and current is usable.
-	 */
+	 
 	if (!nvme_path_is_disabled(old) &&
 	    (old->ana_state == NVME_ANA_OPTIMIZED ||
 	     (!found && old->ana_state == NVME_ANA_NONOPTIMIZED)))
@@ -362,7 +341,7 @@ static bool nvme_available_path(struct nvme_ns_head *head)
 		case NVME_CTRL_LIVE:
 		case NVME_CTRL_RESETTING:
 		case NVME_CTRL_CONNECTING:
-			/* fallthru */
+			 
 			return true;
 		default:
 			break;
@@ -378,11 +357,7 @@ static void nvme_ns_head_submit_bio(struct bio *bio)
 	struct nvme_ns *ns;
 	int srcu_idx;
 
-	/*
-	 * The namespace might be going away and the bio might be moved to a
-	 * different queue via blk_steal_bios(), so we need to use the bio_split
-	 * pool from the original queue to allocate the bvecs from.
-	 */
+	 
 	bio = bio_split_to_limits(bio);
 	if (!bio)
 		return;
@@ -439,7 +414,7 @@ static int nvme_ns_head_report_zones(struct gendisk *disk, sector_t sector,
 }
 #else
 #define nvme_ns_head_report_zones	NULL
-#endif /* CONFIG_BLK_DEV_ZONED */
+#endif  
 
 const struct block_device_operations nvme_ns_head_ops = {
 	.owner		= THIS_MODULE,
@@ -522,11 +497,7 @@ int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl, struct nvme_ns_head *head)
 	spin_lock_init(&head->requeue_lock);
 	INIT_WORK(&head->requeue_work, nvme_requeue_work);
 
-	/*
-	 * Add a multipath node if the subsystems supports multiple controllers.
-	 * We also do this for private namespaces as the namespace sharing flag
-	 * could change after a rescan.
-	 */
+	 
 	if (!(ctrl->subsys->cmic & NVME_CTRL_CMIC_MULTI_CTRL) ||
 	    !nvme_is_unique_nsid(ctrl, head) || !multipath)
 		return 0;
@@ -542,22 +513,17 @@ int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl, struct nvme_ns_head *head)
 	blk_queue_flag_set(QUEUE_FLAG_NONROT, head->disk->queue);
 	blk_queue_flag_set(QUEUE_FLAG_NOWAIT, head->disk->queue);
 	blk_queue_flag_set(QUEUE_FLAG_IO_STAT, head->disk->queue);
-	/*
-	 * This assumes all controllers that refer to a namespace either
-	 * support poll queues or not.  That is not a strict guarantee,
-	 * but if the assumption is wrong the effect is only suboptimal
-	 * performance but not correctness problem.
-	 */
+	 
 	if (ctrl->tagset->nr_maps > HCTX_TYPE_POLL &&
 	    ctrl->tagset->map[HCTX_TYPE_POLL].nr_queues)
 		blk_queue_flag_set(QUEUE_FLAG_POLL, head->disk->queue);
 
-	/* set to a default value of 512 until the disk is validated */
+	 
 	blk_queue_logical_block_size(head->disk->queue, 512);
 	blk_set_stacking_limits(&head->disk->queue->limits);
 	blk_queue_dma_alignment(head->disk->queue, 3);
 
-	/* we need to propagate up the VMC settings */
+	 
 	if (ctrl->vwc & NVME_CTRL_VWC_PRESENT)
 		vwc = true;
 	blk_queue_write_cache(head->disk->queue, vwc, vwc);
@@ -572,11 +538,7 @@ static void nvme_mpath_set_live(struct nvme_ns *ns)
 	if (!head->disk)
 		return;
 
-	/*
-	 * test_and_set_bit() is used because it is protecting against two nvme
-	 * paths simultaneously calling device_add_disk() on the same namespace
-	 * head.
-	 */
+	 
 	if (!test_and_set_bit(NVME_NSHEAD_DISK_LIVE, &head->flags)) {
 		rc = device_add_disk(&head->subsys->dev, head->disk,
 				     nvme_ns_id_attr_groups);
@@ -657,15 +619,7 @@ static void nvme_update_ns_ana_state(struct nvme_ana_group_desc *desc,
 	ns->ana_grpid = le32_to_cpu(desc->grpid);
 	ns->ana_state = desc->state;
 	clear_bit(NVME_NS_ANA_PENDING, &ns->flags);
-	/*
-	 * nvme_mpath_set_live() will trigger I/O to the multipath path device
-	 * and in turn to this path device.  However we cannot accept this I/O
-	 * if the controller is not live.  This may deadlock if called from
-	 * nvme_mpath_init_identify() and the ctrl will never complete
-	 * initialization, preventing I/O from completing.  For this case we
-	 * will reprocess the ANA log page in nvme_mpath_update() once the
-	 * controller is ready.
-	 */
+	 
 	if (nvme_state_is_live(ns->ana_state) &&
 	    ns->ctrl->state == NVME_CTRL_LIVE)
 		nvme_mpath_set_live(ns);
@@ -724,17 +678,7 @@ static int nvme_read_ana_log(struct nvme_ctrl *ctrl)
 	if (error)
 		goto out_unlock;
 
-	/*
-	 * In theory we should have an ANATT timer per group as they might enter
-	 * the change state at different times.  But that is a lot of overhead
-	 * just to protect against a target that keeps entering new changes
-	 * states while never finishing previous ones.  But we'll still
-	 * eventually time out once all groups are in change state, so this
-	 * isn't a big deal.
-	 *
-	 * We also double the ANATT value to provide some slack for transports
-	 * or AEN processing overhead.
-	 */
+	 
 	if (nr_change_groups)
 		mod_timer(&ctrl->anatt_timer, ctrl->anatt * HZ * 2 + jiffies);
 	else
@@ -840,7 +784,7 @@ static int nvme_lookup_ana_group_desc(struct nvme_ctrl *ctrl,
 		return 0;
 
 	*dst = *desc;
-	return -ENXIO; /* just break out of the loop */
+	return -ENXIO;  
 }
 
 void nvme_mpath_add_disk(struct nvme_ns *ns, __le32 anagrpid)
@@ -856,10 +800,10 @@ void nvme_mpath_add_disk(struct nvme_ns *ns, __le32 anagrpid)
 		nvme_parse_ana_log(ns->ctrl, &desc, nvme_lookup_ana_group_desc);
 		mutex_unlock(&ns->ctrl->ana_lock);
 		if (desc.state) {
-			/* found the group desc: update */
+			 
 			nvme_update_ns_ana_state(&desc, ns);
 		} else {
-			/* group desc not found: trigger a re-read */
+			 
 			set_bit(NVME_NS_ANA_PENDING, &ns->flags);
 			queue_work(nvme_wq, &ns->ctrl->ana_work);
 		}
@@ -892,7 +836,7 @@ void nvme_mpath_remove_disk(struct nvme_ns_head *head)
 {
 	if (!head->disk)
 		return;
-	/* make sure all pending bios are cleaned up */
+	 
 	kblockd_schedule_work(&head->requeue_work);
 	flush_work(&head->requeue_work);
 	put_disk(head->disk);
@@ -911,7 +855,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
 	size_t ana_log_size;
 	int error = 0;
 
-	/* check if multipath is enabled and we have the capability */
+	 
 	if (!multipath || !ctrl->subsys ||
 	    !(ctrl->subsys->cmic & NVME_CTRL_CMIC_ANA))
 		return 0;

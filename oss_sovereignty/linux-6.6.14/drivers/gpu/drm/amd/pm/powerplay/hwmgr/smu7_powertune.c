@@ -1,25 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "pp_debug.h"
 #include "hwmgr.h"
 #include "smumgr.h"
@@ -34,10 +13,7 @@ static uint32_t DIDTBlock_Info = SQ_IR_MASK | TCP_IR_MASK | TD_PCC_MASK;
 static uint32_t Polaris11_DIDTBlock_Info = SQ_PCC_MASK | TCP_IR_MASK | TD_PCC_MASK;
 
 static const struct gpu_pt_config_reg GCCACConfig_Polaris10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                Shift                                               Value       Type
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
+ 
 	{   ixGC_CAC_CNTL,                     0xFFFFFFFF,                                         0,                                                  0x00060013, GPU_CONFIGREG_GC_CAC_IND },
 	{   ixGC_CAC_CNTL,                     0xFFFFFFFF,                                         0,                                                  0x00860013, GPU_CONFIGREG_GC_CAC_IND },
 	{   ixGC_CAC_CNTL,                     0xFFFFFFFF,                                         0,                                                  0x01060013, GPU_CONFIGREG_GC_CAC_IND },
@@ -65,10 +41,7 @@ static const struct gpu_pt_config_reg GCCACConfig_Polaris10[] = {
 };
 
 static const struct gpu_pt_config_reg GCCACConfig_Polaris11[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                Shift                                               Value       Type
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
+ 
 	{   ixGC_CAC_CNTL,                     0xFFFFFFFF,                                         0,                                                  0x00060011, GPU_CONFIGREG_GC_CAC_IND },
 	{   ixGC_CAC_CNTL,                     0xFFFFFFFF,                                         0,                                                  0x00860011, GPU_CONFIGREG_GC_CAC_IND },
 	{   ixGC_CAC_CNTL,                     0xFFFFFFFF,                                         0,                                                  0x01060011, GPU_CONFIGREG_GC_CAC_IND },
@@ -96,10 +69,7 @@ static const struct gpu_pt_config_reg GCCACConfig_Polaris11[] = {
 };
 
 static const struct gpu_pt_config_reg DIDTConfig_Polaris10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                Shift                                               Value       Type
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
+ 
 	{   ixDIDT_SQ_WEIGHT0_3,               DIDT_SQ_WEIGHT0_3__WEIGHT0_MASK,                    DIDT_SQ_WEIGHT0_3__WEIGHT0__SHIFT,                  0x0073,     GPU_CONFIGREG_DIDT_IND },
 	{   ixDIDT_SQ_WEIGHT0_3,               DIDT_SQ_WEIGHT0_3__WEIGHT1_MASK,                    DIDT_SQ_WEIGHT0_3__WEIGHT1__SHIFT,                  0x00ab,     GPU_CONFIGREG_DIDT_IND },
 	{   ixDIDT_SQ_WEIGHT0_3,               DIDT_SQ_WEIGHT0_3__WEIGHT2_MASK,                    DIDT_SQ_WEIGHT0_3__WEIGHT2__SHIFT,                  0x0084,     GPU_CONFIGREG_DIDT_IND },
@@ -238,10 +208,7 @@ static const struct gpu_pt_config_reg DIDTConfig_Polaris10[] = {
 };
 
 static const struct gpu_pt_config_reg DIDTConfig_Polaris11[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                Shift                                               Value       Type
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
+ 
 	{   ixDIDT_SQ_WEIGHT0_3,               DIDT_SQ_WEIGHT0_3__WEIGHT0_MASK,                    DIDT_SQ_WEIGHT0_3__WEIGHT0__SHIFT,                  0x0073,     GPU_CONFIGREG_DIDT_IND },
 	{   ixDIDT_SQ_WEIGHT0_3,               DIDT_SQ_WEIGHT0_3__WEIGHT1_MASK,                    DIDT_SQ_WEIGHT0_3__WEIGHT1__SHIFT,                  0x00ab,     GPU_CONFIGREG_DIDT_IND },
 	{   ixDIDT_SQ_WEIGHT0_3,               DIDT_SQ_WEIGHT0_3__WEIGHT2_MASK,                    DIDT_SQ_WEIGHT0_3__WEIGHT2__SHIFT,                  0x0084,     GPU_CONFIGREG_DIDT_IND },
@@ -380,10 +347,7 @@ static const struct gpu_pt_config_reg DIDTConfig_Polaris11[] = {
 };
 
 static const struct gpu_pt_config_reg DIDTConfig_Polaris12[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                Shift                                               Value       Type
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
+ 
 	{   ixDIDT_SQ_WEIGHT0_3,               DIDT_SQ_WEIGHT0_3__WEIGHT0_MASK,                    DIDT_SQ_WEIGHT0_3__WEIGHT0__SHIFT,                  0x0073,     GPU_CONFIGREG_DIDT_IND },
 	{   ixDIDT_SQ_WEIGHT0_3,               DIDT_SQ_WEIGHT0_3__WEIGHT1_MASK,                    DIDT_SQ_WEIGHT0_3__WEIGHT1__SHIFT,                  0x00ab,     GPU_CONFIGREG_DIDT_IND },
 	{   ixDIDT_SQ_WEIGHT0_3,               DIDT_SQ_WEIGHT0_3__WEIGHT2_MASK,                    DIDT_SQ_WEIGHT0_3__WEIGHT2__SHIFT,                  0x0084,     GPU_CONFIGREG_DIDT_IND },
@@ -521,11 +485,8 @@ static const struct gpu_pt_config_reg DIDTConfig_Polaris12[] = {
 };
 
 static const struct gpu_pt_config_reg DIDTConfig_Polaris11_Kicker[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                Shift                                               Value       Type
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
-	/* DIDT_SQ */
+ 
+	 
 	{   ixDIDT_SQ_WEIGHT0_3,               DIDT_SQ_WEIGHT0_3__WEIGHT0_MASK,                    DIDT_SQ_WEIGHT0_3__WEIGHT0__SHIFT,                  0x004c,     GPU_CONFIGREG_DIDT_IND },
 	{   ixDIDT_SQ_WEIGHT0_3,               DIDT_SQ_WEIGHT0_3__WEIGHT1_MASK,                    DIDT_SQ_WEIGHT0_3__WEIGHT1__SHIFT,                  0x00d0,     GPU_CONFIGREG_DIDT_IND },
 	{   ixDIDT_SQ_WEIGHT0_3,               DIDT_SQ_WEIGHT0_3__WEIGHT2_MASK,                    DIDT_SQ_WEIGHT0_3__WEIGHT2__SHIFT,                  0x0069,     GPU_CONFIGREG_DIDT_IND },
@@ -574,7 +535,7 @@ static const struct gpu_pt_config_reg DIDTConfig_Polaris11_Kicker[] = {
 	{   ixDIDT_SQ_CTRL0,                   DIDT_SQ_CTRL0__DIDT_MAX_STALLS_ALLOWED_LO_MASK,     DIDT_SQ_CTRL0__DIDT_MAX_STALLS_ALLOWED_LO__SHIFT,   0x0008,     GPU_CONFIGREG_DIDT_IND },
 	{   ixDIDT_SQ_CTRL0,                   DIDT_SQ_CTRL0__UNUSED_0_MASK,                       DIDT_SQ_CTRL0__UNUSED_0__SHIFT,                     0x0000,     GPU_CONFIGREG_DIDT_IND },
 
-	/* DIDT_TD */
+	 
 	{   ixDIDT_TD_WEIGHT0_3,               DIDT_TD_WEIGHT0_3__WEIGHT0_MASK,                    DIDT_TD_WEIGHT0_3__WEIGHT0__SHIFT,                  0x000a,     GPU_CONFIGREG_DIDT_IND },
 	{   ixDIDT_TD_WEIGHT0_3,               DIDT_TD_WEIGHT0_3__WEIGHT1_MASK,                    DIDT_TD_WEIGHT0_3__WEIGHT1__SHIFT,                  0x0010,     GPU_CONFIGREG_DIDT_IND },
 	{   ixDIDT_TD_WEIGHT0_3,               DIDT_TD_WEIGHT0_3__WEIGHT2_MASK,                    DIDT_TD_WEIGHT0_3__WEIGHT2__SHIFT,                  0x0017,     GPU_CONFIGREG_DIDT_IND },
@@ -618,7 +579,7 @@ static const struct gpu_pt_config_reg DIDTConfig_Polaris11_Kicker[] = {
 	{   ixDIDT_TD_CTRL0,                   DIDT_TD_CTRL0__DIDT_MAX_STALLS_ALLOWED_LO_MASK,     DIDT_TD_CTRL0__DIDT_MAX_STALLS_ALLOWED_LO__SHIFT,   0x0008,     GPU_CONFIGREG_DIDT_IND },
 	{   ixDIDT_TD_CTRL0,                   DIDT_TD_CTRL0__UNUSED_0_MASK,                       DIDT_TD_CTRL0__UNUSED_0__SHIFT,                     0x0000,     GPU_CONFIGREG_DIDT_IND },
 
-	/* DIDT_TCP */
+	 
 	{   ixDIDT_TCP_WEIGHT0_3,              DIDT_TCP_WEIGHT0_3__WEIGHT0_MASK,                   DIDT_TCP_WEIGHT0_3__WEIGHT0__SHIFT,                 0x0004,     GPU_CONFIGREG_DIDT_IND },
 	{   ixDIDT_TCP_WEIGHT0_3,              DIDT_TCP_WEIGHT0_3__WEIGHT1_MASK,                   DIDT_TCP_WEIGHT0_3__WEIGHT1__SHIFT,                 0x0037,     GPU_CONFIGREG_DIDT_IND },
 	{   ixDIDT_TCP_WEIGHT0_3,              DIDT_TCP_WEIGHT0_3__WEIGHT2_MASK,                   DIDT_TCP_WEIGHT0_3__WEIGHT2__SHIFT,                 0x0001,     GPU_CONFIGREG_DIDT_IND },
@@ -662,15 +623,15 @@ static const struct gpu_pt_config_reg DIDTConfig_Polaris11_Kicker[] = {
 	{   ixDIDT_TCP_CTRL0,                   DIDT_TCP_CTRL0__DIDT_MAX_STALLS_ALLOWED_LO_MASK,     DIDT_TCP_CTRL0__DIDT_MAX_STALLS_ALLOWED_LO__SHIFT,   0x0010,     GPU_CONFIGREG_DIDT_IND },
 	{   ixDIDT_TCP_CTRL0,                   DIDT_TCP_CTRL0__UNUSED_0_MASK,                       DIDT_TCP_CTRL0__UNUSED_0__SHIFT,                     0x0000,     GPU_CONFIGREG_DIDT_IND },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 static const struct gpu_pt_config_reg GCCACConfig_VegaM[] = {
-// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//      Offset                             Mask                                                Shift                                               Value       Type
-// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    // DIDT_SQ
-    //
+
+
+
+    
+    
     {   ixGC_CAC_CNTL,                     0xFFFFFFFF,                                         0,                                                  0x00060013, GPU_CONFIGREG_GC_CAC_IND },
     {   ixGC_CAC_CNTL,                     0xFFFFFFFF,                                         0,                                                  0x00860013, GPU_CONFIGREG_GC_CAC_IND },
     {   ixGC_CAC_CNTL,                     0xFFFFFFFF,                                         0,                                                  0x01060013, GPU_CONFIGREG_GC_CAC_IND },
@@ -681,16 +642,16 @@ static const struct gpu_pt_config_reg GCCACConfig_VegaM[] = {
     {   ixGC_CAC_CNTL,                     0xFFFFFFFF,                                         0,                                                  0x03860013, GPU_CONFIGREG_GC_CAC_IND },
     {   ixGC_CAC_CNTL,                     0xFFFFFFFF,                                         0,                                                  0x04060013, GPU_CONFIGREG_GC_CAC_IND },
 
-    // DIDT_TD
-    //
+    
+    
     {   ixGC_CAC_CNTL,                     0xFFFFFFFF,                                         0,                                                  0x000E0013, GPU_CONFIGREG_GC_CAC_IND },
     {   ixGC_CAC_CNTL,                     0xFFFFFFFF,                                         0,                                                  0x008E0013, GPU_CONFIGREG_GC_CAC_IND },
     {   ixGC_CAC_CNTL,                     0xFFFFFFFF,                                         0,                                                  0x010E0013, GPU_CONFIGREG_GC_CAC_IND },
     {   ixGC_CAC_CNTL,                     0xFFFFFFFF,                                         0,                                                  0x018E0013, GPU_CONFIGREG_GC_CAC_IND },
     {   ixGC_CAC_CNTL,                     0xFFFFFFFF,                                         0,                                                  0x020E0013, GPU_CONFIGREG_GC_CAC_IND },
 
-    // DIDT_TCP
-    //
+    
+    
     {   ixGC_CAC_CNTL,                     0xFFFFFFFF,                                         0,                                                  0x00100013, GPU_CONFIGREG_GC_CAC_IND },
     {   ixGC_CAC_CNTL,                     0xFFFFFFFF,                                         0,                                                  0x00900013, GPU_CONFIGREG_GC_CAC_IND },
     {   ixGC_CAC_CNTL,                     0xFFFFFFFF,                                         0,                                                  0x01100013, GPU_CONFIGREG_GC_CAC_IND },
@@ -698,15 +659,15 @@ static const struct gpu_pt_config_reg GCCACConfig_VegaM[] = {
     {   ixGC_CAC_CNTL,                     0xFFFFFFFF,                                         0,                                                  0x02100013, GPU_CONFIGREG_GC_CAC_IND },
     {   ixGC_CAC_CNTL,                     0xFFFFFFFF,                                         0,                                                  0x02900013, GPU_CONFIGREG_GC_CAC_IND },
 
-    {   0xFFFFFFFF  }  // End of list
+    {   0xFFFFFFFF  }  
 };
 
 static const struct gpu_pt_config_reg DIDTConfig_VegaM[] = {
-// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//      Offset                             Mask                                                Shift                                               Value       Type
-// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    // DIDT_SQ
-    //
+
+
+
+    
+    
     {   ixDIDT_SQ_WEIGHT0_3,               DIDT_SQ_WEIGHT0_3__WEIGHT0_MASK,                    DIDT_SQ_WEIGHT0_3__WEIGHT0__SHIFT,                  0x0073,     GPU_CONFIGREG_DIDT_IND },
     {   ixDIDT_SQ_WEIGHT0_3,               DIDT_SQ_WEIGHT0_3__WEIGHT1_MASK,                    DIDT_SQ_WEIGHT0_3__WEIGHT1__SHIFT,                  0x00ab,     GPU_CONFIGREG_DIDT_IND },
     {   ixDIDT_SQ_WEIGHT0_3,               DIDT_SQ_WEIGHT0_3__WEIGHT2_MASK,                    DIDT_SQ_WEIGHT0_3__WEIGHT2__SHIFT,                  0x0084,     GPU_CONFIGREG_DIDT_IND },
@@ -755,8 +716,8 @@ static const struct gpu_pt_config_reg DIDTConfig_VegaM[] = {
     {   ixDIDT_SQ_CTRL0,                   DIDT_SQ_CTRL0__DIDT_MAX_STALLS_ALLOWED_LO_MASK,     DIDT_SQ_CTRL0__DIDT_MAX_STALLS_ALLOWED_LO__SHIFT,   0x0010,     GPU_CONFIGREG_DIDT_IND },
     {   ixDIDT_SQ_CTRL0,                   DIDT_SQ_CTRL0__UNUSED_0_MASK,                       DIDT_SQ_CTRL0__UNUSED_0__SHIFT,                     0x0000,     GPU_CONFIGREG_DIDT_IND },
 
-    // DIDT_TD
-    //
+    
+    
     {   ixDIDT_TD_WEIGHT0_3,               DIDT_TD_WEIGHT0_3__WEIGHT0_MASK,                    DIDT_TD_WEIGHT0_3__WEIGHT0__SHIFT,                  0x000a,     GPU_CONFIGREG_DIDT_IND },
     {   ixDIDT_TD_WEIGHT0_3,               DIDT_TD_WEIGHT0_3__WEIGHT1_MASK,                    DIDT_TD_WEIGHT0_3__WEIGHT1__SHIFT,                  0x0010,     GPU_CONFIGREG_DIDT_IND },
     {   ixDIDT_TD_WEIGHT0_3,               DIDT_TD_WEIGHT0_3__WEIGHT2_MASK,                    DIDT_TD_WEIGHT0_3__WEIGHT2__SHIFT,                  0x0017,     GPU_CONFIGREG_DIDT_IND },
@@ -800,8 +761,8 @@ static const struct gpu_pt_config_reg DIDTConfig_VegaM[] = {
     {   ixDIDT_TD_CTRL0,                   DIDT_TD_CTRL0__DIDT_MAX_STALLS_ALLOWED_LO_MASK,     DIDT_TD_CTRL0__DIDT_MAX_STALLS_ALLOWED_LO__SHIFT,   0x0009,     GPU_CONFIGREG_DIDT_IND },
     {   ixDIDT_TD_CTRL0,                   DIDT_TD_CTRL0__UNUSED_0_MASK,                       DIDT_TD_CTRL0__UNUSED_0__SHIFT,                     0x0000,     GPU_CONFIGREG_DIDT_IND },
 
-    // DIDT_TCP
-    //
+    
+    
     {   ixDIDT_TCP_WEIGHT0_3,              DIDT_TCP_WEIGHT0_3__WEIGHT0_MASK,                   DIDT_TCP_WEIGHT0_3__WEIGHT0__SHIFT,                 0x0004,     GPU_CONFIGREG_DIDT_IND },
     {   ixDIDT_TCP_WEIGHT0_3,              DIDT_TCP_WEIGHT0_3__WEIGHT1_MASK,                   DIDT_TCP_WEIGHT0_3__WEIGHT1__SHIFT,                 0x0037,     GPU_CONFIGREG_DIDT_IND },
     {   ixDIDT_TCP_WEIGHT0_3,              DIDT_TCP_WEIGHT0_3__WEIGHT2_MASK,                   DIDT_TCP_WEIGHT0_3__WEIGHT2__SHIFT,                 0x0001,     GPU_CONFIGREG_DIDT_IND },
@@ -845,7 +806,7 @@ static const struct gpu_pt_config_reg DIDTConfig_VegaM[] = {
     {   ixDIDT_TCP_CTRL0,                   DIDT_TCP_CTRL0__DIDT_MAX_STALLS_ALLOWED_LO_MASK,     DIDT_TCP_CTRL0__DIDT_MAX_STALLS_ALLOWED_LO__SHIFT,   0x0010,     GPU_CONFIGREG_DIDT_IND },
     {   ixDIDT_TCP_CTRL0,                   DIDT_TCP_CTRL0__UNUSED_0_MASK,                       DIDT_TCP_CTRL0__UNUSED_0__SHIFT,                     0x0000,     GPU_CONFIGREG_DIDT_IND },
 
-    {   0xFFFFFFFF  }  // End of list
+    {   0xFFFFFFFF  }  
 };
 static int smu7_enable_didt(struct pp_hwmgr *hwmgr, const bool enable)
 {
@@ -1249,7 +1210,7 @@ int smu7_power_control_set_level(struct pp_hwmgr *hwmgr)
 	else
 		cac_table = hwmgr->dyn_state.cac_dtp_table;
 	if (PP_CAP(PHM_PlatformCaps_PowerContainment)) {
-		/* adjustment percentage has already been validated */
+		 
 		adjust_percent = hwmgr->platform_descriptor.TDPAdjustmentPolarity ?
 				hwmgr->platform_descriptor.TDPAdjustment :
 				(-1 * hwmgr->platform_descriptor.TDPAdjustment);

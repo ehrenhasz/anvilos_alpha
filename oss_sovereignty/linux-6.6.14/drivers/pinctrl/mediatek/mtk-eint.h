@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2014-2018 MediaTek Inc.
- *
- * Author: Maoguang Meng <maoguang.meng@mediatek.com>
- *	   Sean Wang <sean.wang@mediatek.com>
- *
- */
+ 
+ 
 #ifndef __MTK_EINT_H
 #define __MTK_EINT_H
 
@@ -64,12 +58,12 @@ struct mtk_eint {
 	u32 *wake_mask;
 	u32 *cur_mask;
 
-	/* Used to fit into various EINT device */
+	 
 	const struct mtk_eint_hw *hw;
 	const struct mtk_eint_regs *regs;
 	u16 num_db_time;
 
-	/* Used to fit into various pinctrl device */
+	 
 	void *pctl;
 	const struct mtk_eint_xt *gpio_xlate;
 };
@@ -109,4 +103,4 @@ static inline int mtk_eint_find_irq(struct mtk_eint *eint, unsigned long eint_n)
 	return -EOPNOTSUPP;
 }
 #endif
-#endif /* __MTK_EINT_H */
+#endif  

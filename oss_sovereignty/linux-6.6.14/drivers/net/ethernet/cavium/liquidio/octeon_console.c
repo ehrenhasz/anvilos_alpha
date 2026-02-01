@@ -1,23 +1,5 @@
-/**********************************************************************
- * Author: Cavium, Inc.
- *
- * Contact: support@cavium.com
- *          Please include "LiquidIO" in the subject.
- *
- * Copyright (c) 2003-2016 Cavium, Inc.
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- ***********************************************************************/
-/*
- * @file octeon_console.c
- */
+ 
+ 
 #include <linux/moduleparam.h>
 #include <linux/pci.h>
 #include <linux/netdevice.h>
@@ -47,62 +29,53 @@ static int octeon_console_read(struct octeon_device *oct, u32 console_num,
 #define OCTEON_PCI_IO_BUF_OWNER_OCTEON    0x00000001
 #define OCTEON_PCI_IO_BUF_OWNER_HOST      0x00000002
 
-/** Can change without breaking ABI */
+ 
 #define CVMX_BOOTMEM_NUM_NAMED_BLOCKS 64
 
-/** minimum alignment of bootmem alloced blocks */
+ 
 #define CVMX_BOOTMEM_ALIGNMENT_SIZE     (16ull)
 
-/** CVMX bootmem descriptor major version */
+ 
 #define CVMX_BOOTMEM_DESC_MAJ_VER   3
-/* CVMX bootmem descriptor minor version */
+ 
 #define CVMX_BOOTMEM_DESC_MIN_VER   0
 
-/* Current versions */
+ 
 #define OCTEON_PCI_CONSOLE_MAJOR_VERSION    1
 #define OCTEON_PCI_CONSOLE_MINOR_VERSION    0
 #define OCTEON_PCI_CONSOLE_BLOCK_NAME   "__pci_console"
-#define OCTEON_CONSOLE_POLL_INTERVAL_MS  100    /* 10 times per second */
+#define OCTEON_CONSOLE_POLL_INTERVAL_MS  100     
 
-/* First three members of cvmx_bootmem_desc are left in original
- * positions for backwards compatibility.
- * Assumes big endian target
- */
+ 
 struct cvmx_bootmem_desc {
-	/** spinlock to control access to list */
+	 
 	u32 lock;
 
-	/** flags for indicating various conditions */
+	 
 	u32 flags;
 
 	u64 head_addr;
 
-	/** incremented changed when incompatible changes made */
+	 
 	u32 major_version;
 
-	/** incremented changed when compatible changes made,
-	 *  reset to zero when major incremented
-	 */
+	 
 	u32 minor_version;
 
 	u64 app_data_addr;
 	u64 app_data_size;
 
-	/** number of elements in named blocks array */
+	 
 	u32 nb_num_blocks;
 
-	/** length of name array in bootmem blocks */
+	 
 	u32 named_block_name_len;
 
-	/** address of named memory block descriptors */
+	 
 	u64 named_block_array_addr;
 };
 
-/* Structure that defines a single console.
- *
- * Note: when read_index == write_index, the buffer is empty.
- * The actual usable size of each console is console_buf_size -1;
- */
+ 
 struct octeon_pci_console {
 	u64 input_base_addr;
 	u32 input_read_index;
@@ -114,10 +87,7 @@ struct octeon_pci_console {
 	u32 buf_size;
 };
 
-/* This is the main container structure that contains all the information
- * about all PCI consoles.  The address of this structure is passed to various
- * routines that operation on PCI consoles.
- */
+ 
 struct octeon_pci_console_desc {
 	u32 major_version;
 	u32 minor_version;
@@ -125,25 +95,13 @@ struct octeon_pci_console_desc {
 	u32 flags;
 	u32 num_consoles;
 	u32 pad;
-	/* must be 64 bit aligned here... */
-	/* Array of addresses of octeon_pci_console structures */
+	 
+	 
 	u64 console_addr_array[];
-	/* Implicit storage for console_addr_array */
+	 
 };
 
-/*
- * This function is the implementation of the get macros defined
- * for individual structure members. The argument are generated
- * by the macros inorder to read only the needed memory.
- *
- * @param oct    Pointer to current octeon device
- * @param base   64bit physical address of the complete structure
- * @param offset Offset from the beginning of the structure to the member being
- *               accessed.
- * @param size   Size of the structure member.
- *
- * @return Value of the structure member promoted into a u64.
- */
+ 
 static inline u64 __cvmx_bootmem_desc_get(struct octeon_device *oct,
 					  u64 base,
 					  u32 offset,
@@ -160,16 +118,7 @@ static inline u64 __cvmx_bootmem_desc_get(struct octeon_device *oct,
 	}
 }
 
-/*
- * This function retrieves the string name of a named block. It is
- * more complicated than a simple memcpy() since the named block
- * descriptor may not be directly accessible.
- *
- * @param addr   Physical address of the named block descriptor
- * @param str    String to receive the named block string name
- * @param len    Length of the string buffer, which must match the length
- *               stored in the bootmem descriptor.
- */
+ 
 static void CVMX_BOOTMEM_NAMED_GET_NAME(struct octeon_device *oct,
 					u64 addr,
 					char *str,
@@ -180,18 +129,9 @@ static void CVMX_BOOTMEM_NAMED_GET_NAME(struct octeon_device *oct,
 	str[len] = 0;
 }
 
-/* See header file for descriptions of functions */
+ 
 
-/*
- * Check the version information on the bootmem descriptor
- *
- * @param exact_match
- *               Exact major version to check against. A zero means
- *               check that the version supports named blocks.
- *
- * @return Zero if the version is correct. Negative if the version is
- *         incorrect. Failures also cause a message to be displayed.
- */
+ 
 static int __cvmx_bootmem_check_version(struct octeon_device *oct,
 					u32 exact_match)
 {
@@ -322,15 +262,7 @@ static u64 cvmx_bootmem_phy_named_block_find(struct octeon_device *oct,
 	return result;
 }
 
-/*
- * Find a named block on the remote Octeon
- *
- * @param name      Name of block to find
- * @param base_addr Address the block is at (OUTPUT)
- * @param size      The size of the block (OUTPUT)
- *
- * @return Zero on success, One on failure.
- */
+ 
 static int octeon_named_block_find(struct octeon_device *oct, const char *name,
 				   u64 *base_addr, u64 *size)
 {
@@ -349,12 +281,12 @@ static int octeon_named_block_find(struct octeon_device *oct, const char *name,
 
 static void octeon_remote_lock(void)
 {
-	/* fill this in if any sharing is needed */
+	 
 }
 
 static void octeon_remote_unlock(void)
 {
-	/* fill this in if any sharing is needed */
+	 
 }
 
 int octeon_console_send_cmd(struct octeon_device *oct, char *cmd_str,
@@ -375,7 +307,7 @@ int octeon_console_send_cmd(struct octeon_device *oct, char *cmd_str,
 		return -1;
 	}
 
-	/* Write command to bootloader */
+	 
 	octeon_remote_lock();
 	octeon_pci_write_core_mem(oct, BOOTLOADER_PCI_READ_BUFFER_DATA_ADDR,
 				  (u8 *)cmd_str, len);
@@ -384,9 +316,7 @@ int octeon_console_send_cmd(struct octeon_device *oct, char *cmd_str,
 	octeon_write_device_mem32(oct, BOOTLOADER_PCI_READ_BUFFER_OWNER_ADDR,
 				  OCTEON_PCI_IO_BUF_OWNER_OCTEON);
 
-	/* Bootloader should accept command very quickly
-	 * if it really was ready
-	 */
+	 
 	if (octeon_wait_for_bootloader(oct, 200) != 0) {
 		octeon_remote_unlock();
 		dev_err(&oct->pci_dev->dev, "Bootloader did not accept command.\n");
@@ -440,16 +370,10 @@ static void output_console_line(struct octeon_device *oct,
 
 	line = console_buffer;
 	for (i = 0; i < bytes_read; i++) {
-		/* Output a line at a time, prefixed */
+		 
 		if (console_buffer[i] == '\n') {
 			console_buffer[i] = '\0';
-			/* We need to output 'line', prefaced by 'leftover'.
-			 * However, it is possible we're being called to
-			 * output 'leftover' by itself (in the case of nothing
-			 * having been read from the console).
-			 *
-			 * To avoid duplication, check for this condition.
-			 */
+			 
 			if (console->leftover[0] &&
 			    (line != console->leftover)) {
 				if (console->print)
@@ -466,7 +390,7 @@ static void output_console_line(struct octeon_device *oct,
 		}
 	}
 
-	/* Save off any leftovers */
+	 
 	if (line != &console_buffer[bytes_read]) {
 		console_buffer[bytes_read] = '\0';
 		len = strlen(console->leftover);
@@ -490,9 +414,7 @@ static void check_console(struct work_struct *work)
 	total_read = 0;
 
 	do {
-		/* Take console output regardless of whether it will
-		 * be logged
-		 */
+		 
 		bytes_read =
 			octeon_console_read(oct, console_num, console_buffer,
 					    sizeof(console_buffer) - 1);
@@ -512,12 +434,10 @@ static void check_console(struct work_struct *work)
 		tries++;
 	} while ((bytes_read > 0) && (tries < 16));
 
-	/* If nothing is read after polling the console,
-	 * output any leftovers if any
-	 */
+	 
 	if (console->print && (total_read == 0) &&
 	    (console->leftover[0])) {
-		/* append '\n' as terminator for 'output_console_line' */
+		 
 		len = strlen(console->leftover);
 		console->leftover[len] = '\n';
 		output_console_line(oct, console, console_num,
@@ -549,19 +469,14 @@ int octeon_init_consoles(struct octeon_device *oct)
 		return ret;
 	}
 
-	/* Dedicate one of Octeon's BAR1 index registers to create a static
-	 * mapping to a region of Octeon DRAM that contains the PCI console
-	 * named block.
-	 */
+	 
 	oct->console_nb_info.bar1_index = BAR1_INDEX_STATIC_MAP;
 	oct->fn_list.bar1_idx_setup(oct, addr, oct->console_nb_info.bar1_index,
 				    true);
 	oct->console_nb_info.dram_region_base = addr
 		& ~(OCTEON_BAR1_ENTRY_SIZE - 1ULL);
 
-	/* num_consoles > 0, is an indication that the consoles
-	 * are accessible
-	 */
+	 
 	oct->num_consoles = octeon_read_device_mem32(oct,
 		addr + offsetof(struct octeon_pci_console_desc,
 			num_consoles));
@@ -602,9 +517,7 @@ static void octeon_get_uboot_version(struct octeon_device *oct)
 	total_read = 0;
 
 	do {
-		/* Take console output regardless of whether it will
-		 * be logged
-		 */
+		 
 		bytes_read =
 			octeon_console_read(oct,
 					    console_num, buf + total_read,
@@ -624,9 +537,7 @@ static void octeon_get_uboot_version(struct octeon_device *oct)
 		tries++;
 	} while ((bytes_read > 0) && (tries < 16));
 
-	/* If nothing is read after polling the console,
-	 * output any leftovers if any
-	 */
+	 
 	if ((total_read == 0) && (console->leftover[0])) {
 		dev_dbg(&oct->pci_dev->dev, "%u: %s\n",
 			console_num, console->leftover);
@@ -694,7 +605,7 @@ int octeon_add_console(struct octeon_device *oct, u32 console_num,
 		delay = OCTEON_CONSOLE_POLL_INTERVAL_MS;
 		schedule_delayed_work(work, msecs_to_jiffies(delay));
 
-		/* an empty string means use default debug console enablement */
+		 
 		if (dbg_enb && !dbg_enb[0])
 			dbg_enb = "setenv pci_console_active 1";
 		if (dbg_enb)
@@ -706,11 +617,7 @@ int octeon_add_console(struct octeon_device *oct, u32 console_num,
 	return ret;
 }
 
-/*
- * Removes all consoles
- *
- * @param oct         octeon device
- */
+ 
 void octeon_remove_consoles(struct octeon_device *oct)
 {
 	u32 i;
@@ -769,9 +676,7 @@ static int octeon_console_read(struct octeon_device *oct, u32 console_num,
 
 	console = &oct->console[console_num];
 
-	/* Check to see if any data is available.
-	 * Maybe optimize this with 64-bit read.
-	 */
+	 
 	rd_idx = octeon_read_device_mem32(oct, console->addr +
 		offsetof(struct octeon_pci_console, output_read_index));
 	wr_idx = octeon_read_device_mem32(oct, console->addr +
@@ -784,9 +689,7 @@ static int octeon_console_read(struct octeon_device *oct, u32 console_num,
 
 	bytes_to_read = min_t(s32, bytes_to_read, buf_size);
 
-	/* Check to see if what we want to read is not contiguous, and limit
-	 * ourselves to the contiguous block
-	 */
+	 
 	if (rd_idx + bytes_to_read >= console->buffer_size)
 		bytes_to_read = console->buffer_size - rd_idx;
 
@@ -861,7 +764,7 @@ int octeon_download_firmware(struct octeon_device *oct, const u8 *data,
 
 	dev_info(&oct->pci_dev->dev, "%s: Loading %d images\n", __func__,
 		 be32_to_cpu(h->num_images));
-	/* load all images */
+	 
 	for (i = 0; i < be32_to_cpu(h->num_images); i++) {
 		load_addr = be64_to_cpu(h->desc[i].addr);
 		image_len = be32_to_cpu(h->desc[i].len);
@@ -869,7 +772,7 @@ int octeon_download_firmware(struct octeon_device *oct, const u8 *data,
 		dev_info(&oct->pci_dev->dev, "Loading firmware %d at %llx\n",
 			 image_len, load_addr);
 
-		/* Write in 4MB chunks*/
+		 
 		rem = image_len;
 
 		while (rem) {
@@ -878,7 +781,7 @@ int octeon_download_firmware(struct octeon_device *oct, const u8 *data,
 			else
 				size = FBUF_SIZE;
 
-			/* download the image */
+			 
 			octeon_pci_write_core_mem(oct, load_addr, data, (u32)size);
 
 			data += size;
@@ -887,14 +790,7 @@ int octeon_download_firmware(struct octeon_device *oct, const u8 *data,
 		}
 	}
 
-	/* Pass date and time information to NIC at the time of loading
-	 * firmware and periodically update the host time to NIC firmware.
-	 * This is to make NIC firmware use the same time reference as Host,
-	 * so that it is easy to correlate logs from firmware and host for
-	 * debugging.
-	 *
-	 * Octeon always uses UTC time. so timezone information is not sent.
-	 */
+	 
 	ktime_get_real_ts64(&ts);
 	ret = snprintf(boottime, MAX_BOOTTIME_SIZE,
 		       " time_sec=%lld time_nsec=%ld",
@@ -910,7 +806,7 @@ int octeon_download_firmware(struct octeon_device *oct, const u8 *data,
 	dev_info(&oct->pci_dev->dev, "Writing boot command: %s\n",
 		 h->bootcmd);
 
-	/* Invoke the bootcmd */
+	 
 	ret = octeon_console_send_cmd(oct, h->bootcmd, 50);
 	if (ret)
 		dev_info(&oct->pci_dev->dev, "Boot command send failed\n");

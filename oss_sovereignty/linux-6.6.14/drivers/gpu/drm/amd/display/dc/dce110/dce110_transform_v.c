@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dce110_transform_v.h"
 #include "dm_services.h"
@@ -49,7 +26,7 @@ static void calculate_viewport(
 		struct rect *luma_viewport,
 		struct rect *chroma_viewport)
 {
-	/*Do not set chroma vp for rgb444 pixel format*/
+	 
 	luma_viewport->x = scl_data->viewport.x - scl_data->viewport.x % 2;
 	luma_viewport->y = scl_data->viewport.y - scl_data->viewport.y % 2;
 	luma_viewport->width =
@@ -64,9 +41,7 @@ static void calculate_viewport(
 	if (scl_data->format == PIXEL_FORMAT_420BPP8) {
 		luma_viewport->height += luma_viewport->height % 2;
 		luma_viewport->width += luma_viewport->width % 2;
-		/*for 420 video chroma is 1/4 the area of luma, scaled
-		 *vertically and horizontally
-		 */
+		 
 		chroma_viewport->x = luma_viewport->x / 2;
 		chroma_viewport->y = luma_viewport->y / 2;
 		chroma_viewport->height = luma_viewport->height / 2;
@@ -144,16 +119,7 @@ static void program_viewport(
 	}
 }
 
-/*
- * Function:
- * void setup_scaling_configuration
- *
- * Purpose: setup scaling mode : bypass, RGb, YCbCr and nummber of taps
- * Input:   data
- *
- * Output:
- *  void
- */
+ 
 static bool setup_scaling_configuration(
 	struct dce_transform *xfm_dce,
 	const struct scaler_data *data)
@@ -204,26 +170,14 @@ static bool setup_scaling_configuration(
 	dm_write_reg(ctx, mmSCLV_MODE, value);
 
 	value = 0;
-	/*
-	 * 0 - Replaced out of bound pixels with black pixel
-	 * (or any other required color)
-	 * 1 - Replaced out of bound pixels with the edge pixel
-	 */
+	 
 	set_reg_field_value(value, 1, SCLV_CONTROL, SCL_BOUNDARY_MODE);
 	dm_write_reg(ctx, mmSCLV_CONTROL, value);
 
 	return is_scaling_needed;
 }
 
-/*
- * Function:
- * void program_overscan
- *
- * Purpose: Programs overscan border
- * Input:   overscan
- *
- * Output: void
- */
+ 
 static void program_overscan(
 		struct dce_transform *xfm_dce,
 		const struct scaler_data *data)
@@ -297,13 +251,13 @@ static void program_multi_taps_filter(
 	if (!coeffs)
 		return;
 
-	/*We need to disable power gating on coeff memory to do programming*/
+	 
 	power_ctl = dm_read_reg(ctx, mmDCFEV_MEM_PWR_CTRL);
 	power_ctl_off = power_ctl;
 	set_reg_field_value(power_ctl_off, 1, DCFEV_MEM_PWR_CTRL, SCLV_COEFF_MEM_PWR_DIS);
 	dm_write_reg(ctx, mmDCFEV_MEM_PWR_CTRL, power_ctl_off);
 
-	/*Wait to disable gating:*/
+	 
 	for (i = 0; i < 10; i++) {
 		if (get_reg_field_value(
 				dm_read_reg(ctx, mmDCFEV_MEM_PWR_STATUS),
@@ -317,8 +271,7 @@ static void program_multi_taps_filter(
 	set_reg_field_value(select, filter_type, SCLV_COEF_RAM_SELECT, SCL_C_RAM_FILTER_TYPE);
 
 	for (phase = 0; phase < phases_to_program; phase++) {
-		/*we always program N/2 + 1 phases, total phases N, but N/2-1 are just mirror
-		phase 0 is unique and phase N/2 is unique if N is even*/
+		 
 		set_reg_field_value(select, phase, SCLV_COEF_RAM_SELECT, SCL_C_RAM_PHASE);
 		for (pair = 0; pair < taps_pairs; pair++) {
 			uint32_t data = 0;
@@ -360,7 +313,7 @@ static void program_multi_taps_filter(
 		}
 	}
 
-	/*We need to restore power gating on coeff memory to initial state*/
+	 
 	dm_write_reg(ctx, mmDCFEV_MEM_PWR_CTRL, power_ctl);
 }
 
@@ -494,7 +447,7 @@ static const uint16_t *get_filter_coeffs_64p(int taps, struct fixed31_32 ratio)
 	else if (taps == 1)
 		return NULL;
 	else {
-		/* should never happen, bug */
+		 
 		BREAK_TO_DEBUGGER();
 		return NULL;
 	}
@@ -507,9 +460,9 @@ static bool dce110_xfmv_power_up_line_buffer(struct transform *xfm)
 
 	value = dm_read_reg(xfm_dce->base.ctx, mmLBV_MEMORY_CTRL);
 
-	/*Use all three pieces of memory always*/
+	 
 	set_reg_field_value(value, 0, LBV_MEMORY_CTRL, LB_MEMORY_CONFIG);
-	/*hard coded number DCE11 1712(0x6B0) Partitions: 720/960/1712*/
+	 
 	set_reg_field_value(value, xfm_dce->lb_memory_size, LBV_MEMORY_CTRL,
 			LB_MEMORY_SIZE);
 
@@ -530,20 +483,18 @@ static void dce110_xfmv_set_scaler(
 	struct rect chroma_viewport = {0};
 
 	dce110_xfmv_power_up_line_buffer(xfm);
-	/* 1. Calculate viewport, viewport programming should happen after init
-	 * calculations as they may require an adjustment in the viewport.
-	 */
+	 
 
 	calculate_viewport(data, &luma_viewport, &chroma_viewport);
 
-	/* 2. Program overscan */
+	 
 	program_overscan(xfm_dce, data);
 
-	/* 3. Program taps and configuration */
+	 
 	is_scaling_required = setup_scaling_configuration(xfm_dce, data);
 
 	if (is_scaling_required) {
-		/* 4. Calculate and program ratio, filter initialization */
+		 
 
 		struct sclv_ratios_inits inits = { 0 };
 
@@ -565,7 +516,7 @@ static void dce110_xfmv_set_scaler(
 				|| coeffs_v_c != xfm_dce->filter_v_c
 				|| coeffs_h != xfm_dce->filter_h
 				|| coeffs_h_c != xfm_dce->filter_h_c) {
-		/* 5. Program vertical filters */
+		 
 			program_multi_taps_filter(
 					xfm_dce,
 					data->taps.v_taps,
@@ -577,7 +528,7 @@ static void dce110_xfmv_set_scaler(
 					coeffs_v_c,
 					FILTER_TYPE_CBCR_VERTICAL);
 
-		/* 6. Program horizontal filters */
+		 
 			program_multi_taps_filter(
 					xfm_dce,
 					data->taps.h_taps,
@@ -597,10 +548,10 @@ static void dce110_xfmv_set_scaler(
 		}
 	}
 
-	/* 7. Program the viewport */
+	 
 	program_viewport(xfm_dce, &luma_viewport, &chroma_viewport);
 
-	/* 8. Set bit to flip to new coefficient memory */
+	 
 	if (filter_updated)
 		set_coeff_update_complete(xfm_dce);
 }
@@ -619,7 +570,7 @@ static void dce110_xfmv_set_gamut_remap(
 	struct transform *xfm,
 	const struct xfm_grph_csc_adjustment *adjust)
 {
-	/* DO NOTHING*/
+	 
 }
 
 static void dce110_xfmv_set_pixel_storage_depth(
@@ -669,8 +620,7 @@ static void dce110_xfmv_set_pixel_storage_depth(
 	dm_write_reg(xfm->ctx, mmLBV_DATA_FORMAT, reg_data);
 
 	if (!(xfm_dce->lb_pixel_depth_supported & depth)) {
-		/*we should use unsupported capabilities
-		 *  unless it is required by w/a*/
+		 
 		DC_LOG_WARNING("%s: Capability not supported",
 			__func__);
 	}
@@ -691,9 +641,9 @@ static const struct transform_funcs dce110_xfmv_funcs = {
 	.transform_get_optimal_number_of_taps =
 		dce_transform_get_optimal_number_of_taps
 };
-/*****************************************/
-/* Constructor, Destructor               */
-/*****************************************/
+ 
+ 
+ 
 
 bool dce110_transform_v_construct(
 	struct dce_transform *xfm_dce,
@@ -711,7 +661,7 @@ bool dce110_transform_v_construct(
 
 	xfm_dce->prescaler_on = true;
 	xfm_dce->lb_bits_per_entry = LB_BITS_PER_ENTRY;
-	xfm_dce->lb_memory_size = LB_TOTAL_NUMBER_OF_ENTRIES; /*0x6B0*/
+	xfm_dce->lb_memory_size = LB_TOTAL_NUMBER_OF_ENTRIES;  
 
 	return true;
 }

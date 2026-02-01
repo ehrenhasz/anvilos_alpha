@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2018 Red Hat, Inc.
- *
- * This is a test "dust" device, which fails reads on specified
- * sectors, emulating the behavior of a hard disk drive sending
- * a "Read Medium Error" sense.
- *
- */
+
+ 
 
 #include <linux/device-mapper.h>
 #include <linux/module.h>
@@ -309,15 +302,7 @@ static int dust_list_badblocks(struct dust_device *dd, char *result, unsigned in
 	return 1;
 }
 
-/*
- * Target parameters:
- *
- * <device_path> <offset> <blksz>
- *
- * device_path: path to the block device
- * offset: offset to data area from start of device_path
- * blksz: block size (minimum 512, maximum 1073741824, must be a power of 2)
- */
+ 
 static int dust_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 {
 	struct dust_device *dd;
@@ -378,15 +363,10 @@ static int dust_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 
 	dd->sect_per_block_shift = __ffs(sect_per_block);
 
-	/*
-	 * Whether to fail a read on a "bad" block.
-	 * Defaults to false; enabled later by message.
-	 */
+	 
 	dd->fail_read_on_bb = false;
 
-	/*
-	 * Initialize bad block list rbtree.
-	 */
+	 
 	dd->badblocklist = RB_ROOT;
 	dd->badblock_count = 0;
 	spin_lock_init(&dd->dust_lock);
@@ -541,9 +521,7 @@ static int dust_prepare_ioctl(struct dm_target *ti, struct block_device **bdev)
 
 	*bdev = dev->bdev;
 
-	/*
-	 * Only pass ioctls through if the device sizes match exactly.
-	 */
+	 
 	if (dd->start || ti->len != bdev_nr_sectors(dev->bdev))
 		return 1;
 

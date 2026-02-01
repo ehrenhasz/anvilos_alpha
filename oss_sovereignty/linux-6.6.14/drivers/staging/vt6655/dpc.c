@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
- * All rights reserved.
- *
- * Purpose: handle dpc rx functions
- *
- * Author: Lyndon Chen
- *
- * Date: May 20, 2003
- *
- * Functions:
- *
- * Revision History:
- *
- */
+
+ 
 
 #include "device.h"
 #include "baseband.h"
@@ -38,7 +24,7 @@ static bool vnt_rx_data(struct vnt_private *priv, struct sk_buff *skb,
 	u8 rate[MAX_RATE] = {2, 4, 11, 22, 12, 18, 24, 36, 48, 72, 96, 108};
 	long rx_dbm;
 
-	/* [31:16]RcvByteCount ( not include 4-byte Status ) */
+	 
 	frame_size = le16_to_cpu(*((__le16 *)(skb->data + 2)));
 	if (frame_size > 2346 || frame_size < 14) {
 		dev_dbg(&priv->pcid->dev, "------- WRONG Length 1\n");
@@ -103,7 +89,7 @@ static bool vnt_rx_data(struct vnt_private *priv, struct sk_buff *skb,
 		if (priv->local_id > REV_ID_VT3253_A1)
 			rx_status.flag |= RX_FLAG_DECRYPTED;
 
-		/* Drop packet */
+		 
 		if (!(*new_rsr & NEWRSR_DECRYPTOK))
 			return false;
 	}
@@ -130,7 +116,7 @@ bool vnt_receive_frame(struct vnt_private *priv, struct vnt_rx_desc *curr_rd)
 			- le16_to_cpu(curr_rd->rd0.res_count);
 
 	if ((frame_size > 2364) || (frame_size < 33)) {
-		/* Frame Size error drop this packet.*/
+		 
 		dev_dbg(&priv->pcid->dev, "Wrong frame size %d\n", frame_size);
 		dev_kfree_skb_irq(skb);
 		return true;

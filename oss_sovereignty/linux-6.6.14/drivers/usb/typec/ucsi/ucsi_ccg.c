@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * UCSI driver for Cypress CCGx Type-C controller
- *
- * Copyright (C) 2017-2018 NVIDIA Corporation. All rights reserved.
- * Author: Ajay Gupta <ajayg@nvidia.com>
- *
- * Some code borrowed from drivers/usb/typec/ucsi/ucsi_acpi.c
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/delay.h>
 #include <linux/firmware.h>
@@ -22,9 +15,9 @@
 #include "ucsi.h"
 
 enum enum_fw_mode {
-	BOOT,   /* bootloader */
-	FW1,    /* FW partition-1 (contains secondary fw) */
-	FW2,    /* FW partition-2 (contains primary fw) */
+	BOOT,    
+	FW1,     
+	FW2,     
 	FW_INVALID,
 };
 
@@ -65,14 +58,14 @@ enum enum_fw_mode {
 #define CCGX_RAB_RESPONSE			0x007E
 #define  ASYNC_EVENT				BIT(7)
 
-/* CCGx events & async msg codes */
+ 
 #define RESET_COMPLETE		0x80
 #define EVENT_INDEX		RESET_COMPLETE
 #define PORT_CONNECT_DET	0x84
 #define PORT_DISCONNECT_DET	0x85
 #define ROLE_SWAP_COMPELETE	0x87
 
-/* ccg firmware */
+ 
 #define CYACD_LINE_SIZE         527
 #define CCG4_ROW_SIZE           256
 #define FW1_METADATA_ROW        0x1FF
@@ -82,10 +75,10 @@ enum enum_fw_mode {
 static int secondary_fw_min_ver = 41;
 
 enum enum_flash_mode {
-	SECONDARY_BL,	/* update secondary using bootloader */
-	PRIMARY,	/* update primary using secondary */
-	SECONDARY,	/* update secondary using primary */
-	FLASH_NOT_NEEDED,	/* update not required */
+	SECONDARY_BL,	 
+	PRIMARY,	 
+	SECONDARY,	 
+	FLASH_NOT_NEEDED,	 
 	FLASH_INVALID,
 };
 
@@ -118,19 +111,14 @@ struct version_format {
 #define CCG_VERSION_MAJ_MASK (0xf << CCG_VERSION_MAJ_SHIFT)
 } __packed;
 
-/*
- * Firmware version 3.1.10 or earlier, built for NVIDIA has known issue
- * of missing interrupt when a device is connected for runtime resume
- */
+ 
 #define CCG_FW_BUILD_NVIDIA	(('n' << 8) | 'v')
 #define CCG_OLD_FW_VERSION	(CCG_VERSION(0x31) | CCG_VERSION_PATCH(10))
 
-/* Firmware for Tegra doesn't support UCSI ALT command, built
- * for NVIDIA has known issue of reporting wrong capability info
- */
+ 
 #define CCG_FW_BUILD_NVIDIA_TEGRA	(('g' << 8) | 'n')
 
-/* Altmode offset for NVIDIA Function Test Board (FTB) */
+ 
 #define NVIDIA_FTB_DP_OFFSET	(2)
 #define NVIDIA_FTB_DBG_OFFSET	(3)
 
@@ -153,7 +141,7 @@ struct fw_config_table {
 	u8 key_exp[4];
 };
 
-/* CCGx response codes */
+ 
 enum ccg_resp_code {
 	CMD_NO_RESP             = 0x00,
 	CMD_SUCCESS             = 0x02,
@@ -175,7 +163,7 @@ struct ccg_cmd {
 	u16 reg;
 	u32 data;
 	int len;
-	u32 delay; /* ms delay for cmd timeout  */
+	u32 delay;  
 };
 
 struct ccg_resp {
@@ -198,10 +186,10 @@ struct ucsi_ccg {
 	struct i2c_client *client;
 
 	struct ccg_dev_info info;
-	/* version info for boot, primary and secondary */
+	 
 	struct version_info version[FW2 + 1];
 	u32 fw_version;
-	/* CCG HPI communication flags */
+	 
 	unsigned long flags;
 #define RESET_PENDING	0
 #define DEV_CMD_PENDING	1
@@ -210,9 +198,9 @@ struct ucsi_ccg {
 	int port_num;
 	int irq;
 	struct work_struct work;
-	struct mutex lock; /* to sync between user and driver thread */
+	struct mutex lock;  
 
-	/* fw build with vendor information */
+	 
 	u16 fw_build;
 	struct work_struct pm_work;
 
@@ -245,7 +233,7 @@ static int ccg_read(struct ucsi_ccg *uc, u16 rab, u8 *data, u32 len)
 	u32 rlen, rem_len = len, max_read_len = len;
 	int status;
 
-	/* check any max_read_len limitation on i2c adapter */
+	 
 	if (quirks && quirks->max_read_len)
 		max_read_len = quirks->max_read_len;
 
@@ -321,10 +309,7 @@ static int ucsi_ccg_init(struct ucsi_ccg *uc)
 	if (status < 0)
 		return status;
 
-	/*
-	 * Flush CCGx RESPONSE queue by acking interrupts. Above ucsi control
-	 * register write will push response which must be cleared.
-	 */
+	 
 	do {
 		status = ccg_read(uc, CCGX_RAB_INTR_REG, &data, sizeof(data));
 		if (status < 0)
@@ -366,11 +351,7 @@ static bool ucsi_ccg_update_altmodes(struct ucsi *ucsi,
 	new_alt = uc->updated;
 	memset(uc->updated, 0, sizeof(uc->updated));
 
-	/*
-	 * Copy original connector altmodes to new structure.
-	 * We need this before second loop since second loop
-	 * checks for duplicate altmodes.
-	 */
+	 
 	for (i = 0; i < UCSI_MAX_ALTMODES; i++) {
 		alt[i].svid = orig[i].svid;
 		alt[i].mid = orig[i].mid;
@@ -382,12 +363,12 @@ static bool ucsi_ccg_update_altmodes(struct ucsi *ucsi,
 		if (!alt[i].svid)
 			break;
 
-		/* already checked and considered */
+		 
 		if (alt[i].checked)
 			continue;
 
 		if (!DP_CONF_GET_PIN_ASSIGN(alt[i].mid)) {
-			/* Found Non DP altmode */
+			 
 			new_alt[k].svid = alt[i].svid;
 			new_alt[k].mid |= alt[i].mid;
 			new_alt[k].linked_idx = i;
@@ -403,7 +384,7 @@ static bool ucsi_ccg_update_altmodes(struct ucsi *ucsi,
 			    !DP_CONF_GET_PIN_ASSIGN(alt[j].mid)) {
 				continue;
 			} else {
-				/* Found duplicate DP mode */
+				 
 				new_alt[k].svid = alt[i].svid;
 				new_alt[k].mid |= alt[i].mid | alt[j].mid;
 				new_alt[k].linked_idx = UCSI_MULTI_DP_INDEX;
@@ -416,7 +397,7 @@ static bool ucsi_ccg_update_altmodes(struct ucsi *ucsi,
 		if (found) {
 			uc->has_multiple_dp = true;
 		} else {
-			/* Didn't find any duplicate DP altmode */
+			 
 			new_alt[k].svid = alt[i].svid;
 			new_alt[k].mid |= alt[i].mid;
 			new_alt[k].linked_idx = i;
@@ -445,12 +426,7 @@ static void ucsi_ccg_update_set_new_cam_cmd(struct ucsi_ccg *uc,
 	cam = new_port->linked_idx;
 	enter_new_mode = UCSI_SET_NEW_CAM_ENTER(*cmd);
 
-	/*
-	 * If CAM is UCSI_MULTI_DP_INDEX then this is DP altmode
-	 * with multiple DP mode. Find out CAM for best pin assignment
-	 * among all DP mode. Priorite pin E->D->C after making sure
-	 * the partner supports that pin.
-	 */
+	 
 	if (cam == UCSI_MULTI_DP_INDEX) {
 		if (enter_new_mode) {
 			for (i = 0; con->partner_altmode[i]; i++) {
@@ -458,17 +434,12 @@ static void ucsi_ccg_update_set_new_cam_cmd(struct ucsi_ccg *uc,
 				if (alt->svid == new_port->svid)
 					break;
 			}
-			/*
-			 * alt will always be non NULL since this is
-			 * UCSI_SET_NEW_CAM command and so there will be
-			 * at least one con->partner_altmode[i] with svid
-			 * matching with new_port->svid.
-			 */
+			 
 			for (j = 0; port[j].svid; j++) {
 				pin = DP_CONF_GET_PIN_ASSIGN(port[j].mid);
 				if (alt && port[j].svid == alt->svid &&
 				    (pin & DP_CONF_GET_PIN_ASSIGN(alt->vdo))) {
-					/* prioritize pin E->D->C */
+					 
 					if (k == 0xff || (k != 0xff && pin >
 					    DP_CONF_GET_PIN_ASSIGN(port[k].mid))
 					    ) {
@@ -486,14 +457,7 @@ static void ucsi_ccg_update_set_new_cam_cmd(struct ucsi_ccg *uc,
 	*cmd |= UCSI_SET_NEW_CAM_SET_AM(cam);
 }
 
-/*
- * Change the order of vdo values of NVIDIA test device FTB
- * (Function Test Board) which reports altmode list with vdo=0x3
- * first and then vdo=0x. Current logic to assign mode value is
- * based on order in altmode list and it causes a mismatch of CON
- * and SOP altmodes since NVIDIA GPU connector has order of vdo=0x1
- * first and then vdo=0x3
- */
+ 
 static void ucsi_ccg_nvidia_altmode(struct ucsi_ccg *uc,
 				    struct ucsi_altmode *alt)
 {
@@ -710,7 +674,7 @@ static int ccg_read_response(struct ucsi_ccg *uc)
 	u8 intval;
 	int status;
 
-	/* wait for interrupt status to get updated */
+	 
 	do {
 		status = ccg_read(uc, CCGX_RAB_INTR_REG, &intval,
 				  sizeof(intval));
@@ -739,7 +703,7 @@ static int ccg_read_response(struct ucsi_ccg *uc)
 	return 0;
 }
 
-/* Caller must hold uc->lock */
+ 
 static int ccg_send_command(struct ucsi_ccg *uc, struct ccg_cmd *cmd)
 {
 	struct device *dev = uc->dev;
@@ -903,7 +867,7 @@ ccg_cmd_write_flash_row(struct ucsi_ccg *uc, u16 row,
 	u8 *p;
 	int ret;
 
-	/* Copy the data into the flash read/write memory. */
+	 
 	put_unaligned_le16(REG_FLASH_RW_MEM, buf);
 
 	memcpy(buf + 2, data, CCG4_ROW_SIZE);
@@ -917,8 +881,8 @@ ccg_cmd_write_flash_row(struct ucsi_ccg *uc, u16 row,
 		return ret < 0 ? ret : -EIO;
 	}
 
-	/* Use the FLASH_ROW_READ_WRITE register to trigger */
-	/* writing of data to the desired flash row */
+	 
+	 
 	p = (u8 *)&cmd.data;
 	cmd.reg = CCGX_RAB_FLASH_ROW_RW;
 	p[0] = FLASH_SIG;
@@ -970,13 +934,13 @@ static bool ccg_check_vendor_version(struct ucsi_ccg *uc,
 {
 	struct device *dev = uc->dev;
 
-	/* Check if the fw build is for supported vendors */
+	 
 	if (le16_to_cpu(app->build) != uc->fw_build) {
 		dev_info(dev, "current fw is not from supported vendor\n");
 		return false;
 	}
 
-	/* Check if the new fw build is for supported vendors */
+	 
 	if (le16_to_cpu(fw_cfg->app.build) != uc->fw_build) {
 		dev_info(dev, "new fw is not from supported vendor\n");
 		return false;
@@ -998,10 +962,7 @@ static bool ccg_check_fw_version(struct ucsi_ccg *uc, const char *fw_name,
 		return false;
 	}
 
-	/*
-	 * check if signed fw
-	 * last part of fw image is fw cfg table and signature
-	 */
+	 
 	if (fw->size < sizeof(fw_cfg) + FW_CFG_TABLE_SIG_SIZE)
 		goto out_release_firmware;
 
@@ -1013,7 +974,7 @@ static bool ccg_check_fw_version(struct ucsi_ccg *uc, const char *fw_name,
 		goto out_release_firmware;
 	}
 
-	/* compare input version with FWCT version */
+	 
 	cur_version = le16_to_cpu(app->build) | CCG_VERSION_PATCH(app->patch) |
 			CCG_VERSION(app->ver);
 
@@ -1108,10 +1069,7 @@ static int do_flash(struct ucsi_ccg *uc, enum enum_flash_mode mode)
 
 	eof = fw->data + fw->size;
 
-	/*
-	 * check if signed fw
-	 * last part of fw image is fw cfg table and signature
-	 */
+	 
 	if (fw->size < sizeof(fw_cfg) + sizeof(fw_cfg_sig))
 		goto not_signed_fw;
 
@@ -1127,7 +1085,7 @@ static int do_flash(struct ucsi_ccg *uc, enum enum_flash_mode mode)
 	memcpy((uint8_t *)&fw_cfg_sig,
 	       fw->data + fw->size - sizeof(fw_cfg_sig), sizeof(fw_cfg_sig));
 
-	/* flash fw config table and signature first */
+	 
 	err = ccg_cmd_write_flash_row(uc, 0, (u8 *)&fw_cfg,
 				      FLASH_FWCT1_WR_CMD);
 	if (err)
@@ -1154,21 +1112,7 @@ not_signed_fw:
 	if (err)
 		goto release_mem;
 
-	/*****************************************************************
-	 * CCG firmware image (.cyacd) file line format
-	 *
-	 * :00rrrrllll[dd....]cc/r/n
-	 *
-	 * :00   header
-	 * rrrr is row number to flash				(4 char)
-	 * llll is data len to flash				(4 char)
-	 * dd   is a data field represents one byte of data	(512 char)
-	 * cc   is checksum					(2 char)
-	 * \r\n newline
-	 *
-	 * Total length: 3 + 4 + 4 + 512 + 2 + 2 = 527
-	 *
-	 *****************************************************************/
+	 
 
 	p = strnchr(fw->data, fw->size, ':');
 	while (p < eof) {
@@ -1238,12 +1182,7 @@ release_fw:
 	return err;
 }
 
-/*******************************************************************************
- * CCG4 has two copies of the firmware in addition to the bootloader.
- * If the device is running FW1, FW2 can be updated with the new version.
- * Dual firmware mode allows the CCG device to stay in a PD contract and support
- * USB PD and Type-C functionality while a firmware update is in progress.
- ******************************************************************************/
+ 
 static int ccg_fw_update(struct ucsi_ccg *uc, enum enum_flash_mode flash_mode)
 {
 	int err = 0;
@@ -1357,7 +1296,7 @@ static int ucsi_ccg_probe(struct i2c_client *client)
 	INIT_WORK(&uc->work, ccg_update_firmware);
 	INIT_WORK(&uc->pm_work, ccg_pm_workaround_work);
 
-	/* Only fail FW flashing when FW build information is not provided */
+	 
 	status = device_property_read_string(dev, "firmware-name", &fw_name);
 	if (!status) {
 		if (!strcmp(fw_name, "nvidia,jetson-agx-xavier"))
@@ -1369,7 +1308,7 @@ static int ucsi_ccg_probe(struct i2c_client *client)
 	if (!uc->fw_build)
 		dev_err(uc->dev, "failed to get FW build information\n");
 
-	/* reset ccg device and initialize ucsi */
+	 
 	status = ucsi_ccg_init(uc);
 	if (status < 0) {
 		dev_err(uc->dev, "ucsi_ccg_init failed - %d\n", status);
@@ -1435,7 +1374,7 @@ static void ucsi_ccg_remove(struct i2c_client *client)
 
 static const struct of_device_id ucsi_ccg_of_match_table[] = {
 		{ .compatible = "cypress,cypd4226", },
-		{ /* sentinel */ }
+		{   }
 };
 MODULE_DEVICE_TABLE(of, ucsi_ccg_of_match_table);
 
@@ -1469,11 +1408,7 @@ static int ucsi_ccg_runtime_resume(struct device *dev)
 	struct i2c_client *client = to_i2c_client(dev);
 	struct ucsi_ccg *uc = i2c_get_clientdata(client);
 
-	/*
-	 * Firmware version 3.1.10 or earlier, built for NVIDIA has known issue
-	 * of missing interrupt when a device is connected for runtime resume.
-	 * Schedule a work to call ISR as a workaround.
-	 */
+	 
 	if (uc->fw_build == CCG_FW_BUILD_NVIDIA &&
 	    uc->fw_version <= CCG_OLD_FW_VERSION)
 		schedule_work(&uc->pm_work);

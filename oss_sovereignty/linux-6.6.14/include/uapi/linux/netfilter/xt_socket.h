@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _XT_SOCKET_H
 #define _XT_SOCKET_H
 
@@ -27,4 +27,4 @@ struct xt_socket_mtinfo3 {
 			   | XT_SOCKET_NOWILDCARD \
 			   | XT_SOCKET_RESTORESKMARK)
 
-#endif /* _XT_SOCKET_H */
+#endif  

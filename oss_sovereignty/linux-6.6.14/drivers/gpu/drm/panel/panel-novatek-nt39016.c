@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Novatek NT39016 TFT LCD panel driver
- *
- * Copyright (C) 2017, Maarten ter Huurne <maarten@treewalker.org>
- * Copyright (C) 2019, Paul Cercueil <paul@crapouillou.net>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -126,18 +121,13 @@ static int nt39016_prepare(struct drm_panel *drm_panel)
 		return err;
 	}
 
-	/*
-	 * Reset the NT39016.
-	 * The documentation says the reset pulse should be at least 40 us to
-	 * pass the glitch filter, but when testing I see some resets fail and
-	 * some succeed when using a 70 us delay, so we use 100 us instead.
-	 */
+	 
 	gpiod_set_value_cansleep(panel->reset_gpio, 1);
 	usleep_range(100, 1000);
 	gpiod_set_value_cansleep(panel->reset_gpio, 0);
 	udelay(2);
 
-	/* Init all registers. */
+	 
 	err = regmap_multi_reg_write(panel->map, nt39016_panel_regs,
 				     ARRAY_SIZE(nt39016_panel_regs));
 	if (err) {
@@ -176,7 +166,7 @@ static int nt39016_enable(struct drm_panel *drm_panel)
 	}
 
 	if (drm_panel->backlight) {
-		/* Wait for the picture to be ready before enabling backlight */
+		 
 		msleep(150);
 	}
 
@@ -302,7 +292,7 @@ static void nt39016_remove(struct spi_device *spi)
 }
 
 static const struct drm_display_mode kd035g6_display_modes[] = {
-	{	/* 60 Hz */
+	{	 
 		.clock = 6000,
 		.hdisplay = 320,
 		.hsync_start = 320 + 10,
@@ -314,7 +304,7 @@ static const struct drm_display_mode kd035g6_display_modes[] = {
 		.vtotal = 240 + 5 + 1 + 4,
 		.flags = DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC,
 	},
-	{	/* 50 Hz */
+	{	 
 		.clock = 5400,
 		.hdisplay = 320,
 		.hsync_start = 320 + 42,
@@ -339,7 +329,7 @@ static const struct nt39016_panel_info kd035g6_info = {
 
 static const struct of_device_id nt39016_of_match[] = {
 	{ .compatible = "kingdisplay,kd035g6-54nt", .data = &kd035g6_info },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, nt39016_of_match);
 

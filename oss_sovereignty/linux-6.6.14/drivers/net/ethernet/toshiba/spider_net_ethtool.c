@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Network device driver for Cell Processor-Based Blade
- *
- * (C) Copyright IBM Corp. 2005
- *
- * Authors : Utz Bacher <utz.bacher@de.ibm.com>
- *           Jens Osterkamp <Jens.Osterkamp@de.ibm.com>
- */
+
+ 
 
 #include <linux/netdevice.h>
 #include <linux/ethtool.h>
@@ -62,7 +55,7 @@ spider_net_ethtool_get_drvinfo(struct net_device *netdev,
 	struct spider_net_card *card;
 	card = netdev_priv(netdev);
 
-	/* clear and fill out info */
+	 
 	strscpy(drvinfo->driver, spider_net_driver_name,
 		sizeof(drvinfo->driver));
 	strscpy(drvinfo->version, VERSION, sizeof(drvinfo->version));
@@ -76,7 +69,7 @@ static void
 spider_net_ethtool_get_wol(struct net_device *netdev,
 			   struct ethtool_wolinfo *wolinfo)
 {
-	/* no support for wol */
+	 
 	wolinfo->supported = 0;
 	wolinfo->wolopts = 0;
 }

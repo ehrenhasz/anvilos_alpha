@@ -1,22 +1,4 @@
-/*
- * Copyright (c) 2006 Damien Bergamini <damien.bergamini@free.fr>
- * Copyright (c) 2006 Sam Leffler, Errno Consulting
- * Copyright (c) 2007 Christoph Hellwig <hch@lst.de>
- * Copyright (c) 2008-2009 Weongyo Jeong <weongyo@freebsd.org>
- * Copyright (c) 2012 Pontus Fuchs <pontus.fuchs@gmail.com>
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #define AR5523_FLAG_PRE_FIRMWARE	(1 << 0)
 #define AR5523_FLAG_ABG			(1 << 1)
@@ -68,9 +50,7 @@ struct ar5523_tx_cmd {
 	struct completion	done;
 };
 
-/* This struct is placed in tx_info->driver_data. It must not be larger
- *  than IEEE80211_TX_INFO_DRIVER_DATA_SIZE.
- */
+ 
 struct ar5523_tx_data {
 	struct list_head	list;
 	struct ar5523		*ar;
@@ -104,10 +84,10 @@ struct ar5523 {
 	spinlock_t		tx_data_list_lock;
 	wait_queue_head_t	tx_flush_waitq;
 
-	/* Queued + Submitted TX frames */
+	 
 	atomic_t		tx_nr_total;
 
-	/* Submitted TX frames */
+	 
 	atomic_t		tx_nr_pending;
 
 	void			*rx_cmd_buf;
@@ -130,17 +110,14 @@ struct ar5523 {
 	struct ieee80211_vif	*vif;
 };
 
-/* flags for sending firmware commands */
+ 
 #define AR5523_CMD_FLAG_READ	(1 << 1)
 #define AR5523_CMD_FLAG_MAGIC	(1 << 2)
 
 #define ar5523_dbg(ar, format, arg...) \
 	dev_dbg(&(ar)->dev->dev, format, ## arg)
 
-/* On USB hot-unplug there can be a lot of URBs in flight and they'll all
- * fail. Instead of dealing with them in every possible place just surpress
- * any messages on USB disconnect.
- */
+ 
 #define ar5523_err(ar, format, arg...) \
 do { \
 	if (!test_bit(AR5523_USB_DISCONNECTED, &ar->flags)) { \

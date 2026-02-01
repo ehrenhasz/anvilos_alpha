@@ -1,40 +1,4 @@
-/*
- * Broadcom NetXtreme-E RoCE driver.
- *
- * Copyright (c) 2016 - 2017, Broadcom. All rights reserved.  The term
- * Broadcom refers to Broadcom Limited and/or its subsidiaries.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * BSD license below:
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS''
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
- * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Description: IB Verbs interpreter (header)
- */
+ 
 
 #ifndef __BNXT_RE_IB_VERBS_H__
 #define __BNXT_RE_IB_VERBS_H__
@@ -76,19 +40,19 @@ struct bnxt_re_srq {
 	u32			srq_limit;
 	struct bnxt_qplib_srq	qplib_srq;
 	struct ib_umem		*umem;
-	spinlock_t		lock;		/* protect srq */
+	spinlock_t		lock;		 
 };
 
 struct bnxt_re_qp {
 	struct ib_qp		ib_qp;
 	struct list_head	list;
 	struct bnxt_re_dev	*rdev;
-	spinlock_t		sq_lock;	/* protect sq */
-	spinlock_t		rq_lock;	/* protect rq */
+	spinlock_t		sq_lock;	 
+	spinlock_t		rq_lock;	 
 	struct bnxt_qplib_qp	qplib_qp;
 	struct ib_umem		*sumem;
 	struct ib_umem		*rumem;
-	/* QP1 */
+	 
 	u32			send_psn;
 	struct ib_ud_header	qp1_hdr;
 	struct bnxt_re_cq	*scq;
@@ -98,7 +62,7 @@ struct bnxt_re_qp {
 struct bnxt_re_cq {
 	struct ib_cq		ib_cq;
 	struct bnxt_re_dev	*rdev;
-	spinlock_t              cq_lock;	/* protect cq */
+	spinlock_t              cq_lock;	 
 	u16			cq_count;
 	u16			cq_period;
 	struct bnxt_qplib_cq	qplib_cq;
@@ -138,7 +102,7 @@ struct bnxt_re_ucontext {
 	struct bnxt_qplib_dpi	dpi;
 	struct bnxt_qplib_dpi   wcdpi;
 	void			*shpg;
-	spinlock_t		sh_lock;	/* protect shpg */
+	spinlock_t		sh_lock;	 
 	struct rdma_user_mmap_entry *shpage_mmap;
 };
 
@@ -241,4 +205,4 @@ void bnxt_re_mmap_free(struct rdma_user_mmap_entry *rdma_entry);
 
 unsigned long bnxt_re_lock_cqs(struct bnxt_re_qp *qp);
 void bnxt_re_unlock_cqs(struct bnxt_re_qp *qp, unsigned long flags);
-#endif /* __BNXT_RE_IB_VERBS_H__ */
+#endif  

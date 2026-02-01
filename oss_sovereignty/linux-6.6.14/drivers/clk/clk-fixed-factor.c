@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2011 Sascha Hauer, Pengutronix <s.hauer@pengutronix.de>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/clk-provider.h>
 #include <linux/slab.h>
@@ -9,15 +7,7 @@
 #include <linux/of.h>
 #include <linux/platform_device.h>
 
-/*
- * DOC: basic fixed multiplier and divider clock that cannot gate
- *
- * Traits of this clock:
- * prepare - clk_prepare only ensures that parents are prepared
- * enable - clk_enable only ensures that parents are enabled
- * rate - rate is fixed.  clk->rate = parent->rate / div * mult
- * parent - fixed parent.  No clk_set_parent support
- */
+ 
 
 static unsigned long clk_factor_recalc_rate(struct clk_hw *hw,
 		unsigned long parent_rate)
@@ -48,11 +38,7 @@ static long clk_factor_round_rate(struct clk_hw *hw, unsigned long rate,
 static int clk_factor_set_rate(struct clk_hw *hw, unsigned long rate,
 				unsigned long parent_rate)
 {
-	/*
-	 * We must report success but we can do so unconditionally because
-	 * clk_factor_round_rate returns values that ensure this call is a
-	 * nop.
-	 */
+	 
 
 	return 0;
 }
@@ -68,11 +54,7 @@ static void devm_clk_hw_register_fixed_factor_release(struct device *dev, void *
 {
 	struct clk_fixed_factor *fix = res;
 
-	/*
-	 * We can not use clk_hw_unregister_fixed_factor, since it will kfree()
-	 * the hw, resulting in double free. Just unregister the hw and let
-	 * devres code kfree() it.
-	 */
+	 
 	clk_hw_unregister(&fix->hw);
 }
 
@@ -89,7 +71,7 @@ __clk_hw_register_fixed_factor(struct device *dev, struct device_node *np,
 	struct clk_hw *hw;
 	int ret;
 
-	/* You can't use devm without a dev */
+	 
 	if (devm && !dev)
 		return ERR_PTR(-EINVAL);
 
@@ -101,7 +83,7 @@ __clk_hw_register_fixed_factor(struct device *dev, struct device_node *np,
 	if (!fix)
 		return ERR_PTR(-ENOMEM);
 
-	/* struct clk_fixed_factor assignments */
+	 
 	fix->mult = mult;
 	fix->div = div;
 	fix->hw.init = &init;
@@ -134,19 +116,7 @@ __clk_hw_register_fixed_factor(struct device *dev, struct device_node *np,
 	return hw;
 }
 
-/**
- * devm_clk_hw_register_fixed_factor_index - Register a fixed factor clock with
- * parent from DT index
- * @dev: device that is registering this clock
- * @name: name of this clock
- * @index: index of phandle in @dev 'clocks' property
- * @flags: fixed factor flags
- * @mult: multiplier
- * @div: divider
- *
- * Return: Pointer to fixed factor clk_hw structure that was registered or
- * an error pointer.
- */
+ 
 struct clk_hw *devm_clk_hw_register_fixed_factor_index(struct device *dev,
 		const char *name, unsigned int index, unsigned long flags,
 		unsigned int mult, unsigned int div)
@@ -156,19 +126,7 @@ struct clk_hw *devm_clk_hw_register_fixed_factor_index(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(devm_clk_hw_register_fixed_factor_index);
 
-/**
- * devm_clk_hw_register_fixed_factor_parent_hw - Register a fixed factor clock with
- * pointer to parent clock
- * @dev: device that is registering this clock
- * @name: name of this clock
- * @parent_hw: pointer to parent clk
- * @flags: fixed factor flags
- * @mult: multiplier
- * @div: divider
- *
- * Return: Pointer to fixed factor clk_hw structure that was registered or
- * an error pointer.
- */
+ 
 struct clk_hw *devm_clk_hw_register_fixed_factor_parent_hw(struct device *dev,
 		const char *name, const struct clk_hw *parent_hw,
 		unsigned long flags, unsigned int mult, unsigned int div)
@@ -269,10 +227,7 @@ static struct clk_hw *_of_fixed_factor_clk_setup(struct device_node *node)
 	hw = __clk_hw_register_fixed_factor(NULL, node, clk_name, NULL, NULL, 0,
 					    0, mult, div, false);
 	if (IS_ERR(hw)) {
-		/*
-		 * Clear OF_POPULATED flag so that clock registration can be
-		 * attempted again from probe function.
-		 */
+		 
 		of_node_clear_flag(node, OF_POPULATED);
 		return ERR_CAST(hw);
 	}
@@ -286,10 +241,7 @@ static struct clk_hw *_of_fixed_factor_clk_setup(struct device_node *node)
 	return hw;
 }
 
-/**
- * of_fixed_factor_clk_setup() - Setup function for simple fixed factor clock
- * @node:	device node for the clock
- */
+ 
 void __init of_fixed_factor_clk_setup(struct device_node *node)
 {
 	_of_fixed_factor_clk_setup(node);
@@ -309,10 +261,7 @@ static int of_fixed_factor_clk_probe(struct platform_device *pdev)
 {
 	struct clk_hw *clk;
 
-	/*
-	 * This function is not executed when of_fixed_factor_clk_setup
-	 * succeeded.
-	 */
+	 
 	clk = _of_fixed_factor_clk_setup(pdev->dev.of_node);
 	if (IS_ERR(clk))
 		return PTR_ERR(clk);

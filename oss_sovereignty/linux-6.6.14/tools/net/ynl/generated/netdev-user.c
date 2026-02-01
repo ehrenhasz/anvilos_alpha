@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
-/* Do not edit directly, auto-generated from: */
-/*	Documentation/netlink/specs/netdev.yaml */
-/* YNL-GEN user source */
+
+ 
+ 
+ 
 
 #include <stdlib.h>
 #include <string.h>
@@ -12,7 +12,7 @@
 #include <libmnl/libmnl.h>
 #include <linux/genetlink.h>
 
-/* Enums */
+ 
 static const char * const netdev_op_strmap[] = {
 	[NETDEV_CMD_DEV_GET] = "dev-get",
 	[NETDEV_CMD_DEV_ADD_NTF] = "dev-add-ntf",
@@ -45,7 +45,7 @@ const char *netdev_xdp_act_str(enum netdev_xdp_act value)
 	return netdev_xdp_act_strmap[value];
 }
 
-/* Policies */
+ 
 struct ynl_policy_attr netdev_dev_policy[NETDEV_A_DEV_MAX + 1] = {
 	[NETDEV_A_DEV_IFINDEX] = { .name = "ifindex", .type = YNL_PT_U32, },
 	[NETDEV_A_DEV_PAD] = { .name = "pad", .type = YNL_PT_IGNORE, },
@@ -58,9 +58,9 @@ struct ynl_policy_nest netdev_dev_nest = {
 	.table = netdev_dev_policy,
 };
 
-/* Common nested types */
-/* ============== NETDEV_CMD_DEV_GET ============== */
-/* NETDEV_CMD_DEV_GET - do */
+ 
+ 
+ 
 void netdev_dev_get_req_free(struct netdev_dev_get_req *req)
 {
 	free(req);
@@ -134,7 +134,7 @@ err_free:
 	return NULL;
 }
 
-/* NETDEV_CMD_DEV_GET - dump */
+ 
 void netdev_dev_get_list_free(struct netdev_dev_get_list *rsp)
 {
 	struct netdev_dev_get_list *next = rsp;
@@ -172,7 +172,7 @@ free_list:
 	return NULL;
 }
 
-/* NETDEV_CMD_DEV_GET - notify */
+ 
 void netdev_dev_get_ntf_free(struct netdev_dev_get_ntf *rsp)
 {
 	free(rsp);

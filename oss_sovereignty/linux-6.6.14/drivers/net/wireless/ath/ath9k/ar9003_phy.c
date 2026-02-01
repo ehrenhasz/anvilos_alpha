@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2010-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/export.h>
 #include "hw.h"
@@ -35,16 +21,14 @@
 #define AR9300_11NG_HT_TS_SHIFT		28
 
 static const int firstep_table[] =
-/* level:  0   1   2   3   4   5   6   7   8  */
-	{ -4, -2,  0,  2,  4,  6,  8, 10, 12 }; /* lvl 0-8, default 2 */
+ 
+	{ -4, -2,  0,  2,  4,  6,  8, 10, 12 };  
 
 static const int cycpwrThr1_table[] =
-/* level:  0   1   2   3   4   5   6   7   8  */
-	{ -6, -4, -2,  0,  2,  4,  6,  8 };     /* lvl 0-7, default 3 */
+ 
+	{ -6, -4, -2,  0,  2,  4,  6,  8 };      
 
-/*
- * register values to turn OFDM weak signal detection OFF
- */
+ 
 static const int m1ThreshLow_off = 127;
 static const int m2ThreshLow_off = 127;
 static const int m1Thresh_off = 127;
@@ -121,31 +105,7 @@ static const u8 mcs2pwr_ht40[] = {
 	ALL_TARGET_HT40_23,
 };
 
-/**
- * ar9003_hw_set_channel - set channel on single-chip device
- * @ah: atheros hardware structure
- * @chan:
- *
- * This is the function to change channel on single-chip devices, that is
- * for AR9300 family of chipsets.
- *
- * This function takes the channel value in MHz and sets
- * hardware channel value. Assumes writes have been enabled to analog bus.
- *
- * Actual Expression,
- *
- * For 2GHz channel,
- * Channel Frequency = (3/4) * freq_ref * (chansel[8:0] + chanfrac[16:0]/2^17)
- * (freq_ref = 40MHz)
- *
- * For 5GHz channel,
- * Channel Frequency = (3/2) * freq_ref * (chansel[8:0] + chanfrac[16:0]/2^10)
- * (freq_ref = 40MHz/(24>>amodeRefSel))
- *
- * For 5GHz channels which are 5MHz spaced,
- * Channel Frequency = (3/2) * freq_ref * (chansel[8:0] + chanfrac[16:0]/2^17)
- * (freq_ref = 40MHz)
- */
+ 
 static int ar9003_hw_set_channel(struct ath_hw *ah, struct ath9k_channel *chan)
 {
 	u16 bMode, fracMode = 0, aModeRefSel = 0;
@@ -156,7 +116,7 @@ static int ar9003_hw_set_channel(struct ath_hw *ah, struct ath9k_channel *chan)
 	ath9k_hw_get_channel_centers(ah, chan, &centers);
 	freq = centers.synth_center;
 
-	if (freq < 4800) {     /* 2 GHz, fractional mode */
+	if (freq < 4800) {      
 		if (AR_SREV_9330(ah) || AR_SREV_9485(ah) ||
 		    AR_SREV_9531(ah) || AR_SREV_9550(ah) ||
 		    AR_SREV_9561(ah) || AR_SREV_9565(ah)) {
@@ -179,7 +139,7 @@ static int ar9003_hw_set_channel(struct ath_hw *ah, struct ath9k_channel *chan)
 		} else {
 			channelSel = CHANSEL_2G(freq);
 		}
-		/* Set to 2G mode */
+		 
 		bMode = 1;
 	} else {
 		if ((AR_SREV_9340(ah) || AR_SREV_9550(ah) ||
@@ -190,14 +150,14 @@ static int ar9003_hw_set_channel(struct ath_hw *ah, struct ath9k_channel *chan)
 			channelSel = (channelSel << 17) | chan_frac;
 		} else {
 			channelSel = CHANSEL_5G(freq);
-			/* Doubler is ON, so, divide channelSel by 2. */
+			 
 			channelSel >>= 1;
 		}
-		/* Set to 5G mode */
+		 
 		bMode = 0;
 	}
 
-	/* Enable fractional mode for all channels */
+	 
 	fracMode = 1;
 	aModeRefSel = 0;
 	loadSynthChannel = 0;
@@ -205,16 +165,16 @@ static int ar9003_hw_set_channel(struct ath_hw *ah, struct ath9k_channel *chan)
 	reg32 = (bMode << 29);
 	REG_WRITE(ah, AR_PHY_SYNTH_CONTROL, reg32);
 
-	/* Enable Long shift Select for Synthesizer */
+	 
 	REG_RMW_FIELD(ah, AR_PHY_65NM_CH0_SYNTH4,
 		      AR_PHY_SYNTH4_LONG_SHIFT_SELECT, 1);
 
-	/* Program Synth. setting */
+	 
 	reg32 = (channelSel << 2) | (fracMode << 30) |
 		(aModeRefSel << 28) | (loadSynthChannel << 31);
 	REG_WRITE(ah, AR_PHY_65NM_CH0_SYNTH7, reg32);
 
-	/* Toggle Load Synth channel bit */
+	 
 	loadSynthChannel = 1;
 	reg32 = (channelSel << 2) | (fracMode << 30) |
 		(aModeRefSel << 28) | (loadSynthChannel << 31);
@@ -225,16 +185,7 @@ static int ar9003_hw_set_channel(struct ath_hw *ah, struct ath9k_channel *chan)
 	return 0;
 }
 
-/**
- * ar9003_hw_spur_mitigate_mrc_cck - convert baseband spur frequency
- * @ah: atheros hardware structure
- * @chan:
- *
- * For single-chip solutions. Converts to baseband spur frequency given the
- * input channel frequency and compute register settings below.
- *
- * Spur mitigation for MRC CCK
- */
+ 
 static void ar9003_hw_spur_mitigate_mrc_cck(struct ath_hw *ah,
 					    struct ath9k_channel *chan)
 {
@@ -244,14 +195,11 @@ static void ar9003_hw_spur_mitigate_mrc_cck(struct ath_hw *ah,
 	int range, max_spur_cnts, synth_freq;
 	u8 *spur_fbin_ptr = ar9003_get_spur_chan_ptr(ah, IS_CHAN_2GHZ(chan));
 
-	/*
-	 * Need to verify range +/- 10 MHz in control channel, otherwise spur
-	 * is out-of-band and can be ignored.
-	 */
+	 
 
 	if (AR_SREV_9485(ah) || AR_SREV_9340(ah) || AR_SREV_9330(ah) ||
 	    AR_SREV_9550(ah) || AR_SREV_9561(ah)) {
-		if (spur_fbin_ptr[0] == 0) /* No spur */
+		if (spur_fbin_ptr[0] == 0)  
 			return;
 		max_spur_cnts = 5;
 		if (IS_CHAN_HT40(chan)) {
@@ -322,7 +270,7 @@ static void ar9003_hw_spur_mitigate_mrc_cck(struct ath_hw *ah,
 		      AR_PHY_CCK_SPUR_MIT_CCK_SPUR_FREQ, 0x0);
 }
 
-/* Clean all spur register fields */
+ 
 static void ar9003_hw_spur_ofdm_clear(struct ath_hw *ah)
 {
 	REG_RMW_FIELD(ah, AR_PHY_TIMING4,
@@ -376,7 +324,7 @@ static void ar9003_hw_spur_ofdm(struct ath_hw *ah,
 {
 	int mask_index = 0;
 
-	/* OFDM Spur mitigation */
+	 
 	REG_RMW_FIELD(ah, AR_PHY_TIMING4,
 		 AR_PHY_TIMING4_ENABLE_SPUR_FILTER, 0x1);
 	REG_RMW_FIELD(ah, AR_PHY_TIMING11,
@@ -448,7 +396,7 @@ static void ar9003_hw_spur_ofdm_9565(struct ath_hw *ah,
 		      AR_PHY_PILOT_SPUR_MASK_CF_PILOT_MASK_IDX_B,
 		      mask_index);
 
-	/* A == B */
+	 
 	REG_RMW_FIELD(ah, AR_PHY_SPUR_MASK_B(ah),
 		      AR_PHY_SPUR_MASK_A_CF_PUNC_MASK_IDX_A,
 		      mask_index);
@@ -461,7 +409,7 @@ static void ar9003_hw_spur_ofdm_9565(struct ath_hw *ah,
 	REG_RMW_FIELD(ah, AR_PHY_CHAN_SPUR_MASK,
 		      AR_PHY_CHAN_SPUR_MASK_CF_CHAN_MASK_B, 0xe);
 
-	/* A == B */
+	 
 	REG_RMW_FIELD(ah, AR_PHY_SPUR_MASK_B(ah),
 		      AR_PHY_SPUR_MASK_A_CF_PUNC_MASK_A, 0xa0);
 }
@@ -516,7 +464,7 @@ static void ar9003_hw_spur_ofdm_work(struct ath_hw *ah,
 			    range, synth_freq);
 }
 
-/* Spur mitigation for OFDM */
+ 
 static void ar9003_hw_spur_mitigate_ofdm(struct ath_hw *ah,
 					 struct ath9k_channel *chan)
 {
@@ -527,7 +475,7 @@ static void ar9003_hw_spur_mitigate_ofdm(struct ath_hw *ah,
 	unsigned int i;
 
 	if (spur_fbin_ptr[0] == 0)
-		return; /* No spur in the mode */
+		return;  
 
 	if (IS_CHAN_HT40(chan)) {
 		range = 19;
@@ -616,34 +564,34 @@ static void ar9003_hw_set_channel_regs(struct ath_hw *ah,
 	enableDacFifo =
 		(REG_READ(ah, AR_PHY_GEN_CTRL) & AR_PHY_GC_ENABLE_DAC_FIFO);
 
-	/* Enable 11n HT, 20 MHz */
+	 
 	phymode = AR_PHY_GC_HT_EN | AR_PHY_GC_SHORT_GI_40 | enableDacFifo;
 
 	if (!AR_SREV_9561(ah))
 		phymode |= AR_PHY_GC_SINGLE_HT_LTF1;
 
-	/* Configure baseband for dynamic 20/40 operation */
+	 
 	if (IS_CHAN_HT40(chan)) {
 		phymode |= AR_PHY_GC_DYN2040_EN;
-		/* Configure control (primary) channel at +-10MHz */
+		 
 		if (IS_CHAN_HT40PLUS(chan))
 			phymode |= AR_PHY_GC_DYN2040_PRI_CH;
 
 	}
 
-	/* make sure we preserve INI settings */
+	 
 	phymode |= REG_READ(ah, AR_PHY_GEN_CTRL);
-	/* turn off Green Field detection for STA for now */
+	 
 	phymode &= ~AR_PHY_GC_GF_DETECT_EN;
 
 	REG_WRITE(ah, AR_PHY_GEN_CTRL, phymode);
 
-	/* Configure MAC for 20/40 operation */
+	 
 	ath9k_hw_set11nmac2040(ah, chan);
 
-	/* global transmit timeout (25 TUs default)*/
+	 
 	REG_WRITE(ah, AR_GTXTO, 25 << AR_GTXTO_TIMEOUT_LIMIT_S);
-	/* carrier sense timeout */
+	 
 	REG_WRITE(ah, AR_CST, 0xF << AR_CST_TIMEOUT_LIMIT_S);
 }
 
@@ -652,14 +600,10 @@ static void ar9003_hw_init_bb(struct ath_hw *ah,
 {
 	u32 synthDelay;
 
-	/*
-	 * Wait for the frequency synth to settle (synth goes on
-	 * via AR_PHY_ACTIVE_EN).  Read the phy active delay register.
-	 * Value is in 100ns increments.
-	 */
+	 
 	synthDelay = REG_READ(ah, AR_PHY_RX_DELAY) & AR_PHY_RX_DELAY_DELAY;
 
-	/* Activate the PHY (includes baseband activate + synthesizer on) */
+	 
 	REG_WRITE(ah, AR_PHY_ACTIVE, AR_PHY_ACTIVE_EN);
 	ath9k_hw_synth_delay(ah, chan, synthDelay);
 }
@@ -679,27 +623,15 @@ void ar9003_hw_set_chain_masks(struct ath_hw *ah, u8 rx, u8 tx)
 	REG_WRITE(ah, AR_SELFGEN_MASK, tx);
 }
 
-/*
- * Override INI values with chip specific configuration.
- */
+ 
 static void ar9003_hw_override_ini(struct ath_hw *ah)
 {
 	u32 val;
 
-	/*
-	 * Set the RX_ABORT and RX_DIS and clear it only after
-	 * RXE is set for MAC. This prevents frames with
-	 * corrupted descriptor status.
-	 */
+	 
 	REG_SET_BIT(ah, AR_DIAG_SW, (AR_DIAG_RX_DIS | AR_DIAG_RX_ABORT));
 
-	/*
-	 * For AR9280 and above, there is a new feature that allows
-	 * Multicast search based on both MAC Address and Key ID. By default,
-	 * this feature is enabled. But since the driver is not using this
-	 * feature, we switch it off; otherwise multicast search based on
-	 * MAC addr only will fail.
-	 */
+	 
 	val = REG_READ(ah, AR_PCU_MISC_MODE2) & (~AR_ADHOC_MCAST_KEYID_ENABLE);
 	val |= AR_AGG_WEP_ENABLE_FIX |
 	       AR_AGG_WEP_ENABLE |
@@ -744,15 +676,11 @@ static void ar9003_hw_prog_ini(struct ath_hw *ah,
 {
 	unsigned int i, regWrites = 0;
 
-	/* New INI format: Array may be undefined (pre, core, post arrays) */
+	 
 	if (!iniArr->ia_array)
 		return;
 
-	/*
-	 * New INI format: Pre, core, and post arrays for a given subsystem
-	 * may be modal (> 2 columns) or non-modal (2 columns). Determine if
-	 * the array is non-modal and force the column to 1.
-	 */
+	 
 	if (column >= iniArr->ia_columns)
 		column = 1;
 
@@ -863,9 +791,7 @@ static int ar9003_hw_process_ini(struct ath_hw *ah,
 	else
 		modesIndex = IS_CHAN_HT40(chan) ? 3 : 4;
 
-	/*
-	 * SOC, MAC, BB, RADIO initvals.
-	 */
+	 
 	for (i = 0; i < ATH_INI_NUM_SPLIT; i++) {
 		ar9003_hw_prog_ini(ah, &ah->iniSOC[i], modesIndex);
 		ar9003_hw_prog_ini(ah, &ah->iniMac[i], modesIndex);
@@ -879,15 +805,11 @@ static int ar9003_hw_process_ini(struct ath_hw *ah,
 
 	ar9003_doubler_fix(ah);
 
-	/*
-	 * RXGAIN initvals.
-	 */
+	 
 	REG_WRITE_ARRAY(&ah->iniModesRxGain, 1, regWrites);
 
 	if (AR_SREV_9462_20_OR_LATER(ah)) {
-		/*
-		 * CUS217 mix LNA mode.
-		 */
+		 
 		if (ar9003_hw_get_rx_gain_idx(ah) == 2) {
 			REG_WRITE_ARRAY(&ah->ini_modes_rxgain_bb_core,
 					1, regWrites);
@@ -895,9 +817,7 @@ static int ar9003_hw_process_ini(struct ath_hw *ah,
 					modesIndex, regWrites);
 		}
 
-		/*
-		 * 5G-XLNA
-		 */
+		 
 		if ((ar9003_hw_get_rx_gain_idx(ah) == 2) ||
 		    (ar9003_hw_get_rx_gain_idx(ah) == 3)) {
 			REG_WRITE_ARRAY(&ah->ini_modes_rxgain_xlna,
@@ -912,9 +832,7 @@ static int ar9003_hw_process_ini(struct ath_hw *ah,
 	if (AR_SREV_9561(ah) && (ar9003_hw_get_rx_gain_idx(ah) == 0))
 		REG_WRITE_ARRAY(&ah->ini_modes_rxgain_xlna,
 				modesIndex, regWrites);
-	/*
-	 * TXGAIN initvals.
-	 */
+	 
 	if (AR_SREV_9550(ah) || AR_SREV_9531(ah) || AR_SREV_9561(ah)) {
 		int modes_txgain_index = 1;
 
@@ -934,22 +852,15 @@ static int ar9003_hw_process_ini(struct ath_hw *ah,
 		REG_WRITE_ARRAY(&ah->iniModesTxGain, modesIndex, regWrites);
 	}
 
-	/*
-	 * For 5GHz channels requiring Fast Clock, apply
-	 * different modal values.
-	 */
+	 
 	if (IS_CHAN_A_FAST_CLOCK(ah, chan))
 		REG_WRITE_ARRAY(&ah->iniModesFastClock,
 				modesIndex, regWrites);
 
-	/*
-	 * Clock frequency initvals.
-	 */
+	 
 	REG_WRITE_ARRAY(&ah->iniAdditional, 1, regWrites);
 
-	/*
-	 * JAPAN regulatory.
-	 */
+	 
 	if (chan->channel == 2484) {
 		ar9003_hw_prog_ini(ah, &ah->iniCckfirJapan2484, 1);
 
@@ -1002,19 +913,13 @@ static void ar9003_hw_set_delta_slope(struct ath_hw *ah,
 	u32 clockMhzScaled = 0x64000000;
 	struct chan_centers centers;
 
-	/*
-	 * half and quarter rate can divide the scaled clock by 2 or 4
-	 * scale for selected channel bandwidth
-	 */
+	 
 	if (IS_CHAN_HALF_RATE(chan))
 		clockMhzScaled = clockMhzScaled >> 1;
 	else if (IS_CHAN_QUARTER_RATE(chan))
 		clockMhzScaled = clockMhzScaled >> 2;
 
-	/*
-	 * ALGO -> coef = 1e8/fcarrier*fclock/40;
-	 * scaled coef to provide precision for this floating calculation
-	 */
+	 
 	ath9k_hw_get_channel_centers(ah, chan, &centers);
 	coef_scaled = clockMhzScaled / centers.synth_center;
 
@@ -1026,16 +931,13 @@ static void ar9003_hw_set_delta_slope(struct ath_hw *ah,
 	REG_RMW_FIELD(ah, AR_PHY_TIMING3,
 		      AR_PHY_TIMING3_DSC_EXP, ds_coef_exp);
 
-	/*
-	 * For Short GI,
-	 * scaled coeff is 9/10 that of normal coeff
-	 */
+	 
 	coef_scaled = (9 * coef_scaled) / 10;
 
 	ath9k_hw_get_delta_slope_vals(ah, coef_scaled, &ds_coef_man,
 				      &ds_coef_exp);
 
-	/* for short gi */
+	 
 	REG_RMW_FIELD(ah, AR_PHY_SGI_DELTA,
 		      AR_PHY_SGI_DSC_MAN, ds_coef_man);
 	REG_RMW_FIELD(ah, AR_PHY_SGI_DELTA,
@@ -1049,10 +951,7 @@ static bool ar9003_hw_rfbus_req(struct ath_hw *ah)
 			     AR_PHY_RFBUS_GRANT_EN, AH_WAIT_TIMEOUT);
 }
 
-/*
- * Wait for the frequency synth to settle (synth goes on via PHY_ACTIVE_EN).
- * Read the phy active delay register. Value is in 100ns increments.
- */
+ 
 static void ar9003_hw_rfbus_done(struct ath_hw *ah)
 {
 	u32 synthDelay = REG_READ(ah, AR_PHY_RX_DELAY) & AR_PHY_RX_DELAY_DELAY;
@@ -1077,13 +976,7 @@ static bool ar9003_hw_ani_control(struct ath_hw *ah,
 
 	switch (cmd & ah->ani_function) {
 	case ATH9K_ANI_OFDM_WEAK_SIGNAL_DETECTION:{
-		/*
-		 * on == 1 means ofdm weak signal detection is ON
-		 * on == 1 is the default, for less noise immunity
-		 *
-		 * on == 0 means ofdm weak signal detection is OFF
-		 * on == 0 means more noise imm
-		 */
+		 
 		u32 on = param ? 1 : 0;
 
 		if (AR_SREV_9462(ah) || AR_SREV_9565(ah))
@@ -1173,10 +1066,7 @@ skip_ws_det:
 			return false;
 		}
 
-		/*
-		 * make register setting relative to default
-		 * from INI file & cap value
-		 */
+		 
 		value = firstep_table[level] -
 			firstep_table[ATH9K_ANI_FIRSTEP_LVL] +
 			aniState->iniDef.firstep;
@@ -1187,11 +1077,7 @@ skip_ws_det:
 		REG_RMW_FIELD(ah, AR_PHY_FIND_SIG,
 			      AR_PHY_FIND_SIG_FIRSTEP,
 			      value);
-		/*
-		 * we need to set first step low register too
-		 * make register setting relative to default
-		 * from INI file & cap value
-		 */
+		 
 		value2 = firstep_table[level] -
 			 firstep_table[ATH9K_ANI_FIRSTEP_LVL] +
 			 aniState->iniDef.firstepLow;
@@ -1237,10 +1123,7 @@ skip_ws_det:
 				level, ARRAY_SIZE(cycpwrThr1_table));
 			return false;
 		}
-		/*
-		 * make register setting relative to default
-		 * from INI file & cap value
-		 */
+		 
 		value = cycpwrThr1_table[level] -
 			cycpwrThr1_table[ATH9K_ANI_SPUR_IMMUNE_LVL] +
 			aniState->iniDef.cycpwrThr1;
@@ -1252,11 +1135,7 @@ skip_ws_det:
 			      AR_PHY_TIMING5_CYCPWR_THR1,
 			      value);
 
-		/*
-		 * set AR_PHY_EXT_CCA for extension channel
-		 * make register setting relative to default
-		 * from INI file & cap value
-		 */
+		 
 		value2 = cycpwrThr1_table[level] -
 			 cycpwrThr1_table[ATH9K_ANI_SPUR_IMMUNE_LVL] +
 			 aniState->iniDef.cycpwrThr1Ext;
@@ -1293,10 +1172,7 @@ skip_ws_det:
 		break;
 	}
 	case ATH9K_ANI_MRC_CCK:{
-		/*
-		 * is_on == 1 means MRC CCK ON (default, less noise imm)
-		 * is_on == 0 means MRC CCK is OFF (more noise imm)
-		 */
+		 
 		bool is_on = param ? 1 : 0;
 
 		if (ah->caps.rx_chainmask == 1)
@@ -1384,11 +1260,7 @@ static void ar9003_hw_set_nf_limits(struct ath_hw *ah)
 	}
 }
 
-/*
- * Initialize the ANI register values with default (ini) values.
- * This routine is called during a (full) hardware reset after
- * all the registers are initialised from the INI.
- */
+ 
 static void ar9003_hw_ani_cache_ini_regs(struct ath_hw *ah)
 {
 	struct ar5416AniState *aniState;
@@ -1434,7 +1306,7 @@ static void ar9003_hw_ani_cache_ini_regs(struct ath_hw *ah)
 					       AR_PHY_EXT_CCA,
 					       AR_PHY_EXT_CYCPWR_THR1);
 
-	/* these levels just got reset to defaults by the INI */
+	 
 	aniState->spurImmunityLevel = ATH9K_ANI_SPUR_IMMUNE_LVL;
 	aniState->firstepLevel = ATH9K_ANI_FIRSTEP_LVL;
 	aniState->ofdmWeakSigDetect = true;
@@ -1576,19 +1448,14 @@ static void ar9003_hw_set_bt_ant_diversity(struct ath_hw *ah, bool enable)
 
 	ant_div_ctl1 = ah->eep_ops->get_eeprom(ah, EEP_ANT_DIV_CTL1);
 
-	/*
-	 * Set MAIN/ALT LNA conf.
-	 * Set MAIN/ALT gain_tb.
-	 */
+	 
 	regval = REG_READ(ah, AR_PHY_MC_GAIN_CTRL);
 	regval &= (~AR_ANT_DIV_CTRL_ALL);
 	regval |= (ant_div_ctl1 & 0x3f) << AR_ANT_DIV_CTRL_ALL_S;
 	REG_WRITE(ah, AR_PHY_MC_GAIN_CTRL, regval);
 
 	if (AR_SREV_9485_11_OR_LATER(ah)) {
-		/*
-		 * Enable LNA diversity.
-		 */
+		 
 		regval = REG_READ(ah, AR_PHY_MC_GAIN_CTRL);
 		regval &= ~AR_PHY_ANT_DIV_LNADIV;
 		regval |= ((ant_div_ctl1 >> 6) & 0x1) << AR_PHY_ANT_DIV_LNADIV_S;
@@ -1597,9 +1464,7 @@ static void ar9003_hw_set_bt_ant_diversity(struct ath_hw *ah, bool enable)
 
 		REG_WRITE(ah, AR_PHY_MC_GAIN_CTRL, regval);
 
-		/*
-		 * Enable fast antenna diversity.
-		 */
+		 
 		regval = REG_READ(ah, AR_PHY_CCK_DETECT);
 		regval &= ~AR_FAST_DIV_ENABLE;
 		regval |= ((ant_div_ctl1 >> 7) & 0x1) << AR_FAST_DIV_ENABLE_S;
@@ -1614,10 +1479,7 @@ static void ar9003_hw_set_bt_ant_diversity(struct ath_hw *ah, bool enable)
 				     AR_PHY_ANT_DIV_ALT_LNACONF |
 				     AR_PHY_ANT_DIV_ALT_GAINTB |
 				     AR_PHY_ANT_DIV_MAIN_GAINTB));
-			/*
-			 * Set MAIN to LNA1 and ALT to LNA2 at the
-			 * beginning.
-			 */
+			 
 			regval |= (ATH_ANT_DIV_COMB_LNA1 <<
 				   AR_PHY_ANT_DIV_MAIN_LNACONF_S);
 			regval |= (ATH_ANT_DIV_COMB_LNA2 <<
@@ -1695,9 +1557,7 @@ static int ar9003_hw_fast_chan_change(struct ath_hw *ah,
 	REG_WRITE_ARRAY(&ah->iniModesTxGain, txgain_index, regWrites);
 
 	if (AR_SREV_9462_20_OR_LATER(ah)) {
-		/*
-		 * CUS217 mix LNA mode.
-		 */
+		 
 		if (ar9003_hw_get_rx_gain_idx(ah) == 2) {
 			REG_WRITE_ARRAY(&ah->ini_modes_rxgain_bb_core,
 					1, regWrites);
@@ -1706,19 +1566,14 @@ static int ar9003_hw_fast_chan_change(struct ath_hw *ah,
 		}
 	}
 
-	/*
-	 * For 5GHz channels requiring Fast Clock, apply
-	 * different modal values.
-	 */
+	 
 	if (IS_CHAN_A_FAST_CLOCK(ah, chan))
 		REG_WRITE_ARRAY(&ah->iniModesFastClock, modesIndex, regWrites);
 
 	if (AR_SREV_9565(ah))
 		REG_WRITE_ARRAY(&ah->iniModesFastClock, 1, regWrites);
 
-	/*
-	 * JAPAN regulatory.
-	 */
+	 
 	if (chan->channel == 2484)
 		ar9003_hw_prog_ini(ah, &ah->iniCckfirJapan2484, 1);
 
@@ -1744,10 +1599,7 @@ static void ar9003_hw_spectral_scan_config(struct ath_hw *ah,
 	REG_SET_BIT(ah, AR_PHY_RADAR_0, AR_PHY_RADAR_0_FFT_ENA);
 	REG_SET_BIT(ah, AR_PHY_SPECTRAL_SCAN, AR_PHY_SPECTRAL_SCAN_ENABLE);
 
-	/* on AR93xx and newer, count = 0 will make the chip send
-	 * spectral samples endlessly. Check if this really was intended,
-	 * and fix otherwise.
-	 */
+	 
 	count = param->count;
 	if (param->endless)
 		count = 0;
@@ -1775,7 +1627,7 @@ static void ar9003_hw_spectral_scan_trigger(struct ath_hw *ah)
 {
 	REG_SET_BIT(ah, AR_PHY_SPECTRAL_SCAN,
 		    AR_PHY_SPECTRAL_SCAN_ENABLE);
-	/* Activate spectral scan */
+	 
 	REG_SET_BIT(ah, AR_PHY_SPECTRAL_SCAN,
 		    AR_PHY_SPECTRAL_SCAN_ACTIVE);
 }
@@ -1784,7 +1636,7 @@ static void ar9003_hw_spectral_scan_wait(struct ath_hw *ah)
 {
 	struct ath_common *common = ath9k_hw_common(ah);
 
-	/* Poll for spectral scan complete */
+	 
 	if (!ath9k_hw_wait(ah, AR_PHY_SPECTRAL_SCAN,
 			   AR_PHY_SPECTRAL_SCAN_ACTIVE,
 			   0, AH_WAIT_TIMEOUT)) {
@@ -1799,7 +1651,7 @@ static void ar9003_hw_tx99_start(struct ath_hw *ah, u32 qnum)
 	REG_CLR_BIT(ah, AR_DIAG_SW, AR_DIAG_RX_DIS);
 	REG_WRITE(ah, AR_CR, AR_CR_RXD);
 	REG_WRITE(ah, AR_DLCL_IFS(qnum), 0);
-	REG_WRITE(ah, AR_D_GBL_IFS_SIFS, 20); /* 50 OK */
+	REG_WRITE(ah, AR_D_GBL_IFS_SIFS, 20);  
 	REG_WRITE(ah, AR_D_GBL_IFS_EIFS, 20);
 	REG_WRITE(ah, AR_TIME_OUT, 0x00000400);
 	REG_WRITE(ah, AR_DRETRY_LIMIT(qnum), 0xffffffff);
@@ -1840,7 +1692,7 @@ static void ar9003_hw_init_txpower_ofdm(struct ath_hw *ah, u8 *rate_array,
 	int i, j;
 
 	for (i = offset; i < offset + AR9300_OFDM_RATES; i++) {
-		/* OFDM rate to power table idx */
+		 
 		j = ofdm2pwr[i - offset];
 		ah->tx_power[i] = rate_array[j];
 	}
@@ -1972,32 +1824,9 @@ void ar9003_hw_attach_phy_ops(struct ath_hw *ah)
 	memcpy(ah->nf_regs, ar9300_cca_regs, sizeof(ah->nf_regs));
 }
 
-/*
- * Baseband Watchdog signatures:
- *
- * 0x04000539: BB hang when operating in HT40 DFS Channel.
- *             Full chip reset is not required, but a recovery
- *             mechanism is needed.
- *
- * 0x1300000a: Related to CAC deafness.
- *             Chip reset is not required.
- *
- * 0x0400000a: Related to CAC deafness.
- *             Full chip reset is required.
- *
- * 0x04000b09: RX state machine gets into an illegal state
- *             when a packet with unsupported rate is received.
- *             Full chip reset is required and PHY_RESTART has
- *             to be disabled.
- *
- * 0x04000409: Packet stuck on receive.
- *             Full chip reset is required for all chips except
- *	       AR9340, AR9531 and AR9561.
- */
+ 
 
-/*
- * ar9003_hw_bb_watchdog_check(): Returns true if a chip reset is required.
- */
+ 
 bool ar9003_hw_bb_watchdog_check(struct ath_hw *ah)
 {
 	u32 val;
@@ -2026,10 +1855,7 @@ bool ar9003_hw_bb_watchdog_check(struct ath_hw *ah)
 		else
 			return true;
 	default:
-		/*
-		 * For any other unknown signatures, do a
-		 * full chip reset.
-		 */
+		 
 		return true;
 	}
 }
@@ -2042,13 +1868,13 @@ void ar9003_hw_bb_watchdog_config(struct ath_hw *ah)
 	u32 val, idle_count;
 
 	if (!idle_tmo_ms) {
-		/* disable IRQ, disable chip-reset for BB panic */
+		 
 		REG_WRITE(ah, AR_PHY_WATCHDOG_CTL_2,
 			  REG_READ(ah, AR_PHY_WATCHDOG_CTL_2) &
 			  ~(AR_PHY_WATCHDOG_RST_ENABLE |
 			    AR_PHY_WATCHDOG_IRQ_ENABLE));
 
-		/* disable watchdog in non-IDLE mode, disable in IDLE mode */
+		 
 		REG_WRITE(ah, AR_PHY_WATCHDOG_CTL_1,
 			  REG_READ(ah, AR_PHY_WATCHDOG_CTL_1) &
 			  ~(AR_PHY_WATCHDOG_NON_IDLE_ENABLE |
@@ -2058,33 +1884,22 @@ void ar9003_hw_bb_watchdog_config(struct ath_hw *ah)
 		return;
 	}
 
-	/* enable IRQ, disable chip-reset for BB watchdog */
+	 
 	val = REG_READ(ah, AR_PHY_WATCHDOG_CTL_2) & AR_PHY_WATCHDOG_CNTL2_MASK;
 	REG_WRITE(ah, AR_PHY_WATCHDOG_CTL_2,
 		  (val | AR_PHY_WATCHDOG_IRQ_ENABLE) &
 		  ~AR_PHY_WATCHDOG_RST_ENABLE);
 
-	/* bound limit to 10 secs */
+	 
 	if (idle_tmo_ms > 10000)
 		idle_tmo_ms = 10000;
 
-	/*
-	 * The time unit for watchdog event is 2^15 44/88MHz cycles.
-	 *
-	 * For HT20 we have a time unit of 2^15/44 MHz = .74 ms per tick
-	 * For HT40 we have a time unit of 2^15/88 MHz = .37 ms per tick
-	 *
-	 * Given we use fast clock now in 5 GHz, these time units should
-	 * be common for both 2 GHz and 5 GHz.
-	 */
+	 
 	idle_count = (100 * idle_tmo_ms) / 74;
 	if (ah->curchan && IS_CHAN_HT40(ah->curchan))
 		idle_count = (100 * idle_tmo_ms) / 37;
 
-	/*
-	 * enable watchdog in non-IDLE mode, disable in IDLE mode,
-	 * set idle time-out.
-	 */
+	 
 	REG_WRITE(ah, AR_PHY_WATCHDOG_CTL_1,
 		  AR_PHY_WATCHDOG_NON_IDLE_ENABLE |
 		  AR_PHY_WATCHDOG_IDLE_MASK |
@@ -2096,16 +1911,10 @@ void ar9003_hw_bb_watchdog_config(struct ath_hw *ah)
 
 void ar9003_hw_bb_watchdog_read(struct ath_hw *ah)
 {
-	/*
-	 * we want to avoid printing in ISR context so we save the
-	 * watchdog status to be printed later in bottom half context.
-	 */
+	 
 	ah->bb_watchdog_last_status = REG_READ(ah, AR_PHY_WATCHDOG_STATUS);
 
-	/*
-	 * the watchdog timer should reset on status read but to be sure
-	 * sure we write 0 to the watchdog status bit.
-	 */
+	 
 	REG_WRITE(ah, AR_PHY_WATCHDOG_STATUS,
 		  ah->bb_watchdog_last_status & ~AR_PHY_WATCHDOG_STATUS_CLR);
 }
@@ -2154,11 +1963,7 @@ void ar9003_hw_disable_phy_restart(struct ath_hw *ah)
 	u8 result;
 	u32 val;
 
-	/* While receiving unsupported rate frame rx state machine
-	 * gets into a state 0xb and if phy_restart happens in that
-	 * state, BB would go hang. If RXSM is in 0xb state after
-	 * first bb panic, ensure to disable the phy_restart.
-	 */
+	 
 	result = MS(ah->bb_watchdog_last_status, AR_PHY_WATCHDOG_RX_OFDM_SM);
 
 	if ((result == 0xb) || ah->bb_hang_rx_ofdm) {

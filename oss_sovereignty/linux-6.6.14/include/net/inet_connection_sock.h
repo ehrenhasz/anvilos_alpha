@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * NET		Generic infrastructure for INET connection oriented protocols.
- *
- *		Definitions for inet_connection_sock 
- *
- * Authors:	Many people, see the TCP sources
- *
- * 		From code originally in TCP
- */
+ 
+ 
 #ifndef _INET_CONNECTION_SOCK_H
 #define _INET_CONNECTION_SOCK_H
 
@@ -21,17 +13,14 @@
 #include <net/inet_sock.h>
 #include <net/request_sock.h>
 
-/* Cancel timers, when they are not required. */
+ 
 #undef INET_CSK_CLEAR_TIMERS
 
 struct inet_bind_bucket;
 struct inet_bind2_bucket;
 struct tcp_congestion_ops;
 
-/*
- * Pointers to address related TCP functions
- * (i.e. things that depend on the address family)
- */
+ 
 struct inet_connection_sock_af_ops {
 	int	    (*queue_xmit)(struct sock *sk, struct sk_buff *skb, struct flowi *fl);
 	void	    (*send_check)(struct sock *sk, struct sk_buff *skb);
@@ -54,34 +43,9 @@ struct inet_connection_sock_af_ops {
 	void	    (*mtu_reduced)(struct sock *sk);
 };
 
-/** inet_connection_sock - INET connection oriented sock
- *
- * @icsk_accept_queue:	   FIFO of established children
- * @icsk_bind_hash:	   Bind node
- * @icsk_bind2_hash:	   Bind node in the bhash2 table
- * @icsk_timeout:	   Timeout
- * @icsk_retransmit_timer: Resend (no ack)
- * @icsk_rto:		   Retransmit timeout
- * @icsk_pmtu_cookie	   Last pmtu seen by socket
- * @icsk_ca_ops		   Pluggable congestion control hook
- * @icsk_af_ops		   Operations which are AF_INET{4,6} specific
- * @icsk_ulp_ops	   Pluggable ULP control hook
- * @icsk_ulp_data	   ULP private data
- * @icsk_clean_acked	   Clean acked data hook
- * @icsk_ca_state:	   Congestion control state
- * @icsk_retransmits:	   Number of unrecovered [RTO] timeouts
- * @icsk_pending:	   Scheduled timer event
- * @icsk_backoff:	   Backoff
- * @icsk_syn_retries:      Number of allowed SYN (or equivalent) retries
- * @icsk_probes_out:	   unanswered 0 window probes
- * @icsk_ext_hdr_len:	   Network protocol overhead (IP/IPv6 options)
- * @icsk_ack:		   Delayed ACK control data
- * @icsk_mtup;		   MTU probing control data
- * @icsk_probes_tstamp:    Probe timestamp (cleared by non-zero window ack)
- * @icsk_user_timeout:	   TCP_USER_TIMEOUT value
- */
+ 
 struct inet_connection_sock {
-	/* inet_sock has to be the first member! */
+	 
 	struct inet_sock	  icsk_inet;
 	struct request_sock_queue icsk_accept_queue;
 	struct inet_bind_bucket	  *icsk_bind_hash;
@@ -110,24 +74,24 @@ struct inet_connection_sock {
 	__u8			  icsk_probes_out;
 	__u16			  icsk_ext_hdr_len;
 	struct {
-		__u8		  pending;	 /* ACK is pending			   */
-		__u8		  quick;	 /* Scheduled number of quick acks	   */
-		__u8		  pingpong;	 /* The session is interactive		   */
-		__u8		  retry;	 /* Number of attempts			   */
-		__u32		  ato;		 /* Predicted tick of soft clock	   */
-		unsigned long	  timeout;	 /* Currently scheduled timeout		   */
-		__u32		  lrcvtime;	 /* timestamp of last received data packet */
-		__u16		  last_seg_size; /* Size of last incoming segment	   */
-		__u16		  rcv_mss;	 /* MSS used for delayed ACK decisions	   */
+		__u8		  pending;	  
+		__u8		  quick;	  
+		__u8		  pingpong;	  
+		__u8		  retry;	  
+		__u32		  ato;		  
+		unsigned long	  timeout;	  
+		__u32		  lrcvtime;	  
+		__u16		  last_seg_size;  
+		__u16		  rcv_mss;	  
 	} icsk_ack;
 	struct {
-		/* Range of MTUs to search */
+		 
 		int		  search_high;
 		int		  search_low;
 
-		/* Information on the current probe. */
+		 
 		u32		  probe_size:31,
-		/* Is the MTUP feature enabled for this connection? */
+		 
 				  enabled:1;
 
 		u32		  probe_timestamp;
@@ -139,11 +103,11 @@ struct inet_connection_sock {
 #define ICSK_CA_PRIV_SIZE	  sizeof_field(struct inet_connection_sock, icsk_ca_priv)
 };
 
-#define ICSK_TIME_RETRANS	1	/* Retransmit timer */
-#define ICSK_TIME_DACK		2	/* Delayed ack timer */
-#define ICSK_TIME_PROBE0	3	/* Zero window probe timer */
-#define ICSK_TIME_LOSS_PROBE	5	/* Tail loss probe timer */
-#define ICSK_TIME_REO_TIMEOUT	6	/* Reordering timer */
+#define ICSK_TIME_RETRANS	1	 
+#define ICSK_TIME_DACK		2	 
+#define ICSK_TIME_PROBE0	3	 
+#define ICSK_TIME_LOSS_PROBE	5	 
+#define ICSK_TIME_REO_TIMEOUT	6	 
 
 static inline struct inet_connection_sock *inet_csk(const struct sock *sk)
 {
@@ -164,7 +128,7 @@ enum inet_csk_ack_state_t {
 	ICSK_ACK_TIMER  = 2,
 	ICSK_ACK_PUSHED = 4,
 	ICSK_ACK_PUSHED2 = 8,
-	ICSK_ACK_NOW = 16,	/* Send the next ACK immediately (once) */
+	ICSK_ACK_NOW = 16,	 
 	ICSK_ACK_NOMEM = 32,
 };
 
@@ -212,9 +176,7 @@ static inline void inet_csk_clear_xmit_timer(struct sock *sk, const int what)
 	}
 }
 
-/*
- *	Reset the retransmission timer
- */
+ 
 static inline void inet_csk_reset_xmit_timer(struct sock *sk, const int what,
 					     unsigned long when,
 					     const unsigned long max_when)
@@ -297,7 +259,7 @@ reqsk_timeout(struct request_sock *req, unsigned long max_timeout)
 
 static inline void inet_csk_prepare_for_destroy_sock(struct sock *sk)
 {
-	/* The below has to be done to allow calling inet_csk_destroy_sock */
+	 
 	sock_set_flag(sk, SOCK_DEAD);
 	this_cpu_inc(*sk->sk_prot->orphan_count);
 }
@@ -305,9 +267,7 @@ static inline void inet_csk_prepare_for_destroy_sock(struct sock *sk)
 void inet_csk_destroy_sock(struct sock *sk);
 void inet_csk_prepare_forced_close(struct sock *sk);
 
-/*
- * LISTEN is a special case for poll..
- */
+ 
 static inline __poll_t inet_csk_listen_poll(const struct sock *sk)
 {
 	return !reqsk_queue_empty(&inet_csk(sk)->icsk_accept_queue) ?
@@ -319,7 +279,7 @@ void inet_csk_listen_stop(struct sock *sk);
 
 void inet_csk_addr2sockaddr(struct sock *sk, struct sockaddr *uaddr);
 
-/* update the fast reuse flag when adding a socket */
+ 
 void inet_csk_update_fastreuse(struct inet_bind_bucket *tb,
 			       struct sock *sk);
 
@@ -347,4 +307,4 @@ static inline bool inet_csk_has_ulp(const struct sock *sk)
 	return inet_test_bit(IS_ICSK, sk) && !!inet_csk(sk)->icsk_ulp_ops;
 }
 
-#endif /* _INET_CONNECTION_SOCK_H */
+#endif  

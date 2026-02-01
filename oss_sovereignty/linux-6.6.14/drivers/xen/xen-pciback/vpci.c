@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCI Backend - Provides a Virtual PCI bus (with real devices)
- *               to the frontend
- *
- *   Author: Ryan Wilson <hap9@epoch.ncsc.mil>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #define dev_fmt pr_fmt
@@ -18,7 +13,7 @@
 #define PCI_SLOT_MAX 32
 
 struct vpci_dev_data {
-	/* Access to dev_list must be protected by lock */
+	 
 	struct list_head dev_list[PCI_SLOT_MAX];
 	struct mutex lock;
 };
@@ -93,12 +88,7 @@ static int __xen_pcibk_add_pci_dev(struct xen_pcibk_device *pdev,
 
 	mutex_lock(&vpci_dev->lock);
 
-	/*
-	 * Keep multi-function devices together on the virtual PCI bus, except
-	 * that we want to keep virtual functions at func 0 on their own. They
-	 * aren't multi-function devices and hence their presence at func 0
-	 * may cause guests to not scan the other functions.
-	 */
+	 
 	if (!dev->is_virtfn || func) {
 		for (slot = 0; slot < PCI_SLOT_MAX; slot++) {
 			if (list_empty(&vpci_dev->dev_list[slot]))
@@ -119,7 +109,7 @@ static int __xen_pcibk_add_pci_dev(struct xen_pcibk_device *pdev,
 		}
 	}
 
-	/* Assign to a new slot on the virtual PCI bus */
+	 
 	for (slot = 0; slot < PCI_SLOT_MAX; slot++) {
 		if (list_empty(&vpci_dev->dev_list[slot])) {
 			dev_info(&dev->dev, "vpci: assign to virtual slot %d\n",
@@ -137,7 +127,7 @@ static int __xen_pcibk_add_pci_dev(struct xen_pcibk_device *pdev,
 unlock:
 	mutex_unlock(&vpci_dev->lock);
 
-	/* Publish this device. */
+	 
 	if (!err)
 		err = publish_cb(pdev, 0, 0, PCI_DEVFN(slot, func), devid);
 	else
@@ -203,7 +193,7 @@ static int __xen_pcibk_init_devices(struct xen_pcibk_device *pdev)
 static int __xen_pcibk_publish_pci_roots(struct xen_pcibk_device *pdev,
 					 publish_pci_root_cb publish_cb)
 {
-	/* The Virtual PCI bus has only one root */
+	 
 	return publish_cb(pdev, 0, 0);
 }
 

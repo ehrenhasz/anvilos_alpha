@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * CEC driver for ChromeOS Embedded Controller
- *
- * Copyright (c) 2018 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -21,15 +16,7 @@
 
 #define DRV_NAME	"cros-ec-cec"
 
-/**
- * struct cros_ec_cec - Driver data for EC CEC
- *
- * @cros_ec: Pointer to EC device
- * @notifier: Notifier info for responding to EC events
- * @adap: CEC adapter
- * @notify: CEC notifier pointer
- * @rx_msg: storage for a received message
- */
+ 
 struct cros_ec_cec {
 	struct cros_ec_device *cros_ec;
 	struct notifier_block notifier;
@@ -61,7 +48,7 @@ static void handle_cec_event(struct cros_ec_cec *cros_ec_cec)
 		cec_transmit_attempt_done(cros_ec_cec->adap,
 					  CEC_TX_STATUS_OK);
 
-	/* FW takes care of all retries, tell core to avoid more retries */
+	 
 	if (events & EC_MKBP_CEC_SEND_FAILED)
 		cec_transmit_attempt_done(cros_ec_cec->adap,
 					  CEC_TX_STATUS_MAX_RETRIES |
@@ -202,10 +189,7 @@ static SIMPLE_DEV_PM_OPS(cros_ec_cec_pm_ops,
 
 #if IS_ENABLED(CONFIG_PCI) && IS_ENABLED(CONFIG_DMI)
 
-/*
- * The Firmware only handles a single CEC interface tied to a single HDMI
- * connector we specify along with the DRM device name handling the HDMI output
- */
+ 
 
 struct cec_dmi_match {
 	const char *sys_vendor;
@@ -215,21 +199,21 @@ struct cec_dmi_match {
 };
 
 static const struct cec_dmi_match cec_dmi_match_table[] = {
-	/* Google Fizz */
+	 
 	{ "Google", "Fizz", "0000:00:02.0", "Port B" },
-	/* Google Brask */
+	 
 	{ "Google", "Brask", "0000:00:02.0", "Port B" },
-	/* Google Moli */
+	 
 	{ "Google", "Moli", "0000:00:02.0", "Port B" },
-	/* Google Kinox */
+	 
 	{ "Google", "Kinox", "0000:00:02.0", "Port B" },
-	/* Google Kuldax */
+	 
 	{ "Google", "Kuldax", "0000:00:02.0", "Port B" },
-	/* Google Aurash */
+	 
 	{ "Google", "Aurash", "0000:00:02.0", "Port B" },
-	/* Google Gladios */
+	 
 	{ "Google", "Gladios", "0000:00:02.0", "Port B" },
-	/* Google Lisbon */
+	 
 	{ "Google", "Lisbon", "0000:00:02.0", "Port B" },
 };
 
@@ -245,7 +229,7 @@ static struct device *cros_ec_cec_find_hdmi_dev(struct device *dev,
 		    dmi_match(DMI_PRODUCT_NAME, m->product_name)) {
 			struct device *d;
 
-			/* Find the device, bail out if not yet registered */
+			 
 			d = bus_find_device_by_name(&pci_bus_type, NULL,
 						    m->devname);
 			if (!d)
@@ -256,7 +240,7 @@ static struct device *cros_ec_cec_find_hdmi_dev(struct device *dev,
 		}
 	}
 
-	/* Hardware support must be added in the cec_dmi_match_table */
+	 
 	dev_warn(dev, "CEC notifier not configured for this hardware\n");
 
 	return ERR_PTR(-ENODEV);
@@ -309,7 +293,7 @@ static int cros_ec_cec_probe(struct platform_device *pdev)
 		goto out_probe_adapter;
 	}
 
-	/* Get CEC events from the EC. */
+	 
 	cros_ec_cec->notifier.notifier_call = cros_ec_cec_event;
 	ret = blocking_notifier_chain_register(&cros_ec->event_notifier,
 					       &cros_ec_cec->notifier);
@@ -338,11 +322,7 @@ static void cros_ec_cec_remove(struct platform_device *pdev)
 	struct device *dev = &pdev->dev;
 	int ret;
 
-	/*
-	 * blocking_notifier_chain_unregister() only fails if the notifier isn't
-	 * in the list. We know it was added to it by .probe(), so there should
-	 * be no need for error checking. Be cautious and still check.
-	 */
+	 
 	ret = blocking_notifier_chain_unregister(
 			&cros_ec_cec->cros_ec->event_notifier,
 			&cros_ec_cec->notifier);

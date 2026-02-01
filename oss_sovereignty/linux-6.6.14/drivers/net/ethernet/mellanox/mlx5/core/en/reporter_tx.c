@@ -1,12 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2019 Mellanox Technologies. */
+ 
+ 
 
 #include "health.h"
 #include "en/ptp.h"
 #include "en/devlink.h"
 #include "lib/tout.h"
 
-/* Keep this string array consistent with the MLX5E_SQ_STATE_* enums in en.h */
+ 
 static const char * const sq_sw_state_type_name[] = {
 	[MLX5E_SQ_STATE_ENABLED] = "enabled",
 	[MLX5E_SQ_STATE_MPWQE] = "mpwqe",
@@ -102,10 +102,7 @@ static int mlx5e_tx_reporter_err_cqe_recover(void *ctx)
 	if (err)
 		goto out;
 
-	/* At this point, no new packets will arrive from the stack as TXQ is
-	 * marked with QUEUE_STATE_DRV_XOFF. In addition, NAPI cleared all
-	 * pending WQEs. SQ can safely reset the SQ.
-	 */
+	 
 
 	err = mlx5e_health_sq_to_ready(mdev, dev, sq->sqn);
 	if (err)
@@ -145,13 +142,13 @@ static int mlx5e_tx_reporter_timeout_recover(void *ctx)
 	priv = sq->priv;
 	err = mlx5e_health_channel_eq_recover(sq->netdev, eq, sq->cq.ch_stats);
 	if (!err) {
-		to_ctx->status = 0; /* this sq recovered */
+		to_ctx->status = 0;  
 		return err;
 	}
 
 	err = mlx5e_safe_reopen_channels(priv);
 	if (!err) {
-		to_ctx->status = 1; /* all channels recovered */
+		to_ctx->status = 1;  
 		return err;
 	}
 
@@ -192,7 +189,7 @@ static int mlx5e_tx_reporter_ptpsq_unhealthy_recover(void *ctx)
 
 	mlx5e_activate_priv_channels(priv);
 
-	/* return carrier back if needed */
+	 
 	if (carrier_ok)
 		netif_carrier_on(netdev);
 
@@ -201,9 +198,7 @@ static int mlx5e_tx_reporter_ptpsq_unhealthy_recover(void *ctx)
 	return err;
 }
 
-/* state lock cannot be grabbed within this function.
- * It can cause a dead lock or a read-after-free.
- */
+ 
 static int mlx5e_tx_reporter_recover_from_ctx(struct mlx5e_err_ctx *err_ctx)
 {
 	return err_ctx->recover(err_ctx->ctx);

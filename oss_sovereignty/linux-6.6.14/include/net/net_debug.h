@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_NET_DEBUG_H
 #define _LINUX_NET_DEBUG_H
 
@@ -79,7 +79,7 @@ do {								\
 })
 #endif
 
-/* netif printk helpers, similar to netdev_printk */
+ 
 
 #define netif_printk(priv, type, level, dev, fmt, args...)	\
 do {					  			\
@@ -127,7 +127,7 @@ do {								\
 })
 #endif
 
-/* if @cond then downgrade to debug, else print at @level */
+ 
 #define netif_cond_dbg(priv, type, netdev, cond, level, fmt, args...)     \
 	do {                                                              \
 		if (cond)                                                 \
@@ -154,4 +154,4 @@ do {								\
 #define DEBUG_NET_WARN_ON_ONCE(cond) BUILD_BUG_ON_INVALID(cond)
 #endif
 
-#endif	/* _LINUX_NET_DEBUG_H */
+#endif	 

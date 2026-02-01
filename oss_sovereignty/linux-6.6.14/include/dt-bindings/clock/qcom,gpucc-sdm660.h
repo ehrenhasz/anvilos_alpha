@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- * Copyright (c) 2020, AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_SDM_GPUCC_660_H
 #define _DT_BINDINGS_CLK_SDM_GPUCC_660_H

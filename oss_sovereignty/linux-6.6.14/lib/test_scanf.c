@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Test cases for sscanf facility.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -155,7 +153,7 @@ static int __init check_char(const void *check_data, const char *string,
 	_check_numbers_template("%hhd", pval, string, fmt, n_args, ap);
 }
 
-/* Selection of interesting numbers to test, copied from test-kstrtox.c */
+ 
 static const unsigned long long numbers[] __initconst = {
 	0x0ULL,
 	0x1ULL,
@@ -193,7 +191,7 @@ static const unsigned long long numbers[] __initconst = {
 #define test_one_number(T, gen_fmt, scan_fmt, val, fn)			\
 do {									\
 	const T expect_val = (T)(val);					\
-	T result = ~expect_val; /* should be overwritten */		\
+	T result = ~expect_val;  		\
 									\
 	snprintf(test_buffer, BUF_SIZE, gen_fmt, expect_val);		\
 	_test(fn, &expect_val, test_buffer, "%" scan_fmt, 1, &result);	\
@@ -262,11 +260,7 @@ static void __init numbers_simple(void)
 	simple_numbers_loop(signed char,	"0x%hhx", "hhx", check_char);
 }
 
-/*
- * This gives a better variety of number "lengths" in a small sample than
- * the raw prandom*() functions (Not mathematically rigorous!!).
- * Variabilty of length and value is more important than perfect randomness.
- */
+ 
 static u32 __init next_test_random(u32 max_bits)
 {
 	u32 n_bits = hweight32(prandom_u32_state(&rnd_state)) % (max_bits + 1);
@@ -288,11 +282,8 @@ static unsigned long long __init next_test_random_ull(void)
 		? next_test_random(BITS_PER_TYPE(T))	\
 		: next_test_random_ull()))
 
-/*
- * Define a pattern of negative and positive numbers to ensure we get
- * some of both within the small number of samples in a test string.
- */
-#define NEGATIVES_PATTERN 0x3246	/* 00110010 01000110 */
+ 
+#define NEGATIVES_PATTERN 0x3246	 
 
 #define fill_random_array(arr)							\
 do {										\
@@ -306,11 +297,7 @@ do {										\
 	}									\
 } while (0)
 
-/*
- * Convenience wrapper around snprintf() to append at buf_pos in buf,
- * updating buf_pos and returning the number of characters appended.
- * On error buf_pos is not changed and return value is 0.
- */
+ 
 static int __init __printf(4, 5)
 append_fmt(char *buf, int *buf_pos, int buf_len, const char *val_fmt, ...)
 {
@@ -329,10 +316,7 @@ append_fmt(char *buf, int *buf_pos, int buf_len, const char *val_fmt, ...)
 	return field_len;
 }
 
-/*
- * Convenience function to append the field delimiter string
- * to both the value string and format string buffers.
- */
+ 
 static void __init append_delim(char *str_buf, int *str_buf_pos, int str_buf_len,
 				char *fmt_buf, int *fmt_buf_pos, int fmt_buf_len,
 				const char *delim_str)
@@ -516,10 +500,7 @@ static void __init numbers_list_field_width_hh(const char *delim)
 	numbers_list_fix_width(signed char,	"0x%hhx",    delim, 4, "hhi", check_char);
 }
 
-/*
- * List of numbers separated by delim. Each field width specifier is the
- * maximum possible digits for the given type and base.
- */
+ 
 static void __init numbers_list_field_width_typemax(const char *delim)
 {
 	numbers_list_field_width_ll(delim);
@@ -579,10 +560,7 @@ static void __init numbers_list_field_width_val_hh(const char *delim)
 	numbers_list_val_width(signed char,	"0x%hhx",    delim, "hhi", check_char);
 }
 
-/*
- * List of numbers separated by delim. Each field width specifier is the
- * exact length of the corresponding value digits in the string being scanned.
- */
+ 
 static void __init numbers_list_field_width_val_width(const char *delim)
 {
 	numbers_list_field_width_val_ll(delim);
@@ -592,12 +570,7 @@ static void __init numbers_list_field_width_val_width(const char *delim)
 	numbers_list_field_width_val_hh(delim);
 }
 
-/*
- * Slice a continuous string of digits without field delimiters, containing
- * numbers of varying length, using the field width to extract each group
- * of digits. For example the hex values c0,3,bf01,303 would have a
- * string representation of "c03bf01303" and extracted with "%2x%1x%4x%3x".
- */
+ 
 static void __init numbers_slice(void)
 {
 	numbers_list_field_width_val_width("");
@@ -611,16 +584,10 @@ do {										\
 	_test(fn, &expect, str, scan_fmt, n_args, &result[0], &result[1]);	\
 } while (0)
 
-/*
- * Number prefix is >= field width.
- * Expected behaviour is derived from testing userland sscanf.
- */
+ 
 static void __init numbers_prefix_overflow(void)
 {
-	/*
-	 * Negative decimal with a field of width 1, should quit scanning
-	 * and return 0.
-	 */
+	 
 	test_number_prefix(long long,	"-1 1", "%1lld %lld",	0, 0, 0, check_ll);
 	test_number_prefix(long,	"-1 1", "%1ld %ld",	0, 0, 0, check_long);
 	test_number_prefix(int,		"-1 1", "%1d %d",	0, 0, 0, check_int);
@@ -633,11 +600,7 @@ static void __init numbers_prefix_overflow(void)
 	test_number_prefix(short,	"-1 1", "%1hi %hi",	0, 0, 0, check_short);
 	test_number_prefix(signed char,	"-1 1", "%1hhi %hhi",	0, 0, 0, check_char);
 
-	/*
-	 * 0x prefix in a field of width 1: 0 is a valid digit so should
-	 * convert. Next field scan starts at the 'x' which isn't a digit so
-	 * scan quits with one field converted.
-	 */
+	 
 	test_number_prefix(unsigned long long,	"0xA7", "%1llx%llx", 0, 0, 1, check_ull);
 	test_number_prefix(unsigned long,	"0xA7", "%1lx%lx",   0, 0, 1, check_ulong);
 	test_number_prefix(unsigned int,	"0xA7", "%1x%x",     0, 0, 1, check_uint);
@@ -649,23 +612,14 @@ static void __init numbers_prefix_overflow(void)
 	test_number_prefix(short,		"0xA7", "%1hi%hx",   0, 0, 1, check_short);
 	test_number_prefix(char,		"0xA7", "%1hhi%hhx", 0, 0, 1, check_char);
 
-	/*
-	 * 0x prefix in a field of width 2 using %x conversion: first field
-	 * converts to 0. Next field scan starts at the character after "0x".
-	 * Both fields will convert.
-	 */
+	 
 	test_number_prefix(unsigned long long,	"0xA7", "%2llx%llx", 0, 0xa7, 2, check_ull);
 	test_number_prefix(unsigned long,	"0xA7", "%2lx%lx",   0, 0xa7, 2, check_ulong);
 	test_number_prefix(unsigned int,	"0xA7", "%2x%x",     0, 0xa7, 2, check_uint);
 	test_number_prefix(unsigned short,	"0xA7", "%2hx%hx",   0, 0xa7, 2, check_ushort);
 	test_number_prefix(unsigned char,	"0xA7", "%2hhx%hhx", 0, 0xa7, 2, check_uchar);
 
-	/*
-	 * 0x prefix in a field of width 2 using %i conversion: first field
-	 * converts to 0. Next field scan starts at the character after "0x",
-	 * which will convert if can be interpreted as decimal but will fail
-	 * if it contains any hex digits (since no 0x prefix).
-	 */
+	 
 	test_number_prefix(long long,	"0x67", "%2lli%lli", 0, 67, 2, check_ll);
 	test_number_prefix(long,	"0x67", "%2li%li",   0, 67, 2, check_long);
 	test_number_prefix(int,		"0x67", "%2i%i",     0, 67, 2, check_int);
@@ -754,7 +708,7 @@ static void __init test_simple_strtol(void)
 	test_simple_strtoxx(long, simple_strtol, "0x%lx", 0);
 }
 
-/* Selection of common delimiters/separators between numbers in a string. */
+ 
 static const char * const number_delimiters[] __initconst = {
 	" ", ":", ",", "-", "/",
 };
@@ -763,21 +717,21 @@ static void __init test_numbers(void)
 {
 	int i;
 
-	/* String containing only one number. */
+	 
 	numbers_simple();
 
-	/* String with multiple numbers separated by delimiter. */
+	 
 	for (i = 0; i < ARRAY_SIZE(number_delimiters); i++) {
 		numbers_list(number_delimiters[i]);
 
-		/* Field width may be longer than actual field digits. */
+		 
 		numbers_list_field_width_typemax(number_delimiters[i]);
 
-		/* Each field width exactly length of actual field digits. */
+		 
 		numbers_list_field_width_val_width(number_delimiters[i]);
 	}
 
-	/* Slice continuous sequence of digits using field widths. */
+	 
 	numbers_slice();
 
 	numbers_prefix_overflow();

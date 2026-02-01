@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright(c) 2013-2015 Intel Corporation. All rights reserved.
- */
+
+ 
 #include <linux/device.h>
 #include <linux/sizes.h>
 #include <linux/badblocks.h>
@@ -93,10 +91,7 @@ static bool is_idle(struct device *dev, struct nd_namespace_common *ndns)
 
 struct nd_pfn *to_nd_pfn_safe(struct device *dev)
 {
-	/*
-	 * pfn device attributes are re-used by dax device instances, so we
-	 * need to be careful to correct device-to-nd_pfn conversion.
-	 */
+	 
 	if (is_nd_pfn(dev))
 		return to_nd_pfn(dev);
 
@@ -113,7 +108,7 @@ struct nd_pfn *to_nd_pfn_safe(struct device *dev)
 static void nd_detach_and_reset(struct device *dev,
 		struct nd_namespace_common **_ndns)
 {
-	/* detach the namespace and destroy / reset the device */
+	 
 	__nd_detach_ndns(dev, _ndns);
 	if (is_idle(dev, *_ndns)) {
 		nd_device_unregister(dev, ND_ASYNC);
@@ -151,7 +146,7 @@ ssize_t nd_namespace_store(struct device *dev,
 	strim(name);
 
 	if (strncmp(name, "namespace", 9) == 0 || strcmp(name, "") == 0)
-		/* pass */;
+		 ;
 	else {
 		len = -EINVAL;
 		goto out;
@@ -220,18 +215,13 @@ ssize_t nd_namespace_store(struct device *dev,
 	}
 
  out_attach:
-	put_device(&ndns->dev); /* from device_find_child */
+	put_device(&ndns->dev);  
  out:
 	kfree(name);
 	return len;
 }
 
-/*
- * nd_sb_checksum: compute checksum for a generic info block
- *
- * Returns a fletcher64 checksum of everything in the given info block
- * except the last field (since that's where the checksum lives).
- */
+ 
 u64 nd_sb_checksum(struct nd_gen_sb *nd_gen_sb)
 {
 	u64 sum;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* AFS silly rename handling
- *
- * Copyright (C) 2019 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- * - Derived from NFS's sillyrename.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/fs.h>
@@ -54,9 +49,7 @@ static const struct afs_operation_ops afs_silly_rename_operation = {
 	.edit_dir	= afs_silly_rename_edit_dir,
 };
 
-/*
- * Actually perform the silly rename step.
- */
+ 
 static int afs_do_silly_rename(struct afs_vnode *dvnode, struct afs_vnode *vnode,
 			       struct dentry *old, struct dentry *new,
 			       struct key *key)
@@ -86,17 +79,7 @@ static int afs_do_silly_rename(struct afs_vnode *dvnode, struct afs_vnode *vnode
 	return afs_do_sync_operation(op);
 }
 
-/*
- * Perform silly-rename of a dentry.
- *
- * AFS is stateless and the server doesn't know when the client is holding a
- * file open.  To prevent application problems when a file is unlinked while
- * it's still open, the client performs a "silly-rename".  That is, it renames
- * the file to a hidden file in the same directory, and only performs the
- * unlink once the last reference to it is put.
- *
- * The final cleanup is done during dentry_iput.
- */
+ 
 int afs_sillyrename(struct afs_vnode *dvnode, struct afs_vnode *vnode,
 		    struct dentry *dentry, struct key *key)
 {
@@ -107,7 +90,7 @@ int afs_sillyrename(struct afs_vnode *dvnode, struct afs_vnode *vnode,
 
 	_enter("");
 
-	/* We don't allow a dentry to be silly-renamed twice. */
+	 
 	if (dentry->d_flags & DCACHE_NFSFS_RENAMED)
 		return -EBUSY;
 
@@ -118,15 +101,11 @@ int afs_sillyrename(struct afs_vnode *dvnode, struct afs_vnode *vnode,
 		dput(sdentry);
 		sillycounter++;
 
-		/* Create a silly name.  Note that the ".__afs" prefix is
-		 * understood by the salvager and must not be changed.
-		 */
+		 
 		slen = scnprintf(silly, sizeof(silly), ".__afs%04X", sillycounter);
 		sdentry = lookup_one_len(silly, dentry->d_parent, slen);
 
-		/* N.B. Better to return EBUSY here ... it could be dangerous
-		 * to delete the file while it's in use.
-		 */
+		 
 		if (IS_ERR(sdentry))
 			goto out;
 	} while (!d_is_negative(sdentry));
@@ -136,14 +115,12 @@ int afs_sillyrename(struct afs_vnode *dvnode, struct afs_vnode *vnode,
 	ret = afs_do_silly_rename(dvnode, vnode, dentry, sdentry, key);
 	switch (ret) {
 	case 0:
-		/* The rename succeeded. */
+		 
 		set_bit(AFS_VNODE_SILLY_DELETED, &vnode->flags);
 		d_move(dentry, sdentry);
 		break;
 	case -ERESTARTSYS:
-		/* The result of the rename is unknown. Play it safe by forcing
-		 * a new lookup.
-		 */
+		 
 		d_drop(dentry);
 		d_drop(sdentry);
 	}
@@ -186,9 +163,7 @@ static const struct afs_operation_ops afs_silly_unlink_operation = {
 	.edit_dir	= afs_silly_unlink_edit_dir,
 };
 
-/*
- * Tell the server to remove a sillyrename file.
- */
+ 
 static int afs_do_silly_unlink(struct afs_vnode *dvnode, struct afs_vnode *vnode,
 			       struct dentry *dentry, struct key *key)
 {
@@ -215,9 +190,7 @@ static int afs_do_silly_unlink(struct afs_vnode *dvnode, struct afs_vnode *vnode
 	afs_begin_vnode_operation(op);
 	afs_wait_for_operation(op);
 
-	/* If there was a conflict with a third party, check the status of the
-	 * unlinked vnode.
-	 */
+	 
 	if (op->error == 0 && (op->flags & AFS_OPERATION_DIR_CONFLICT)) {
 		op->file[1].update_ctime = false;
 		op->fetch_status.which = 1;
@@ -229,9 +202,7 @@ static int afs_do_silly_unlink(struct afs_vnode *dvnode, struct afs_vnode *vnode
 	return afs_put_operation(op);
 }
 
-/*
- * Remove sillyrename file on iput.
- */
+ 
 int afs_silly_iput(struct dentry *dentry, struct inode *inode)
 {
 	struct afs_vnode *dvnode = AFS_FS_I(d_inode(dentry->d_parent));
@@ -252,9 +223,7 @@ int afs_silly_iput(struct dentry *dentry, struct inode *inode)
 	}
 
 	if (!d_in_lookup(alias)) {
-		/* We raced with lookup...  See if we need to transfer the
-		 * sillyrename information to the aliased dentry.
-		 */
+		 
 		ret = 0;
 		spin_lock(&alias->d_lock);
 		if (d_really_is_positive(alias) &&
@@ -268,7 +237,7 @@ int afs_silly_iput(struct dentry *dentry, struct inode *inode)
 		return ret;
 	}
 
-	/* Stop lock-release from complaining. */
+	 
 	spin_lock(&vnode->lock);
 	vnode->lock_state = AFS_VNODE_LOCK_DELETED;
 	trace_afs_flock_ev(vnode, NULL, afs_flock_silly_delete, 0);

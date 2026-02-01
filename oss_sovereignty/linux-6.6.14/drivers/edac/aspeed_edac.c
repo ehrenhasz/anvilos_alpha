@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2018, 2019 Cisco Systems
- */
+
+ 
 
 #include <linux/edac.h>
 #include <linux/module.h>
@@ -18,11 +16,11 @@
 #define DRV_NAME "aspeed-edac"
 
 
-#define ASPEED_MCR_PROT        0x00 /* protection key register */
-#define ASPEED_MCR_CONF        0x04 /* configuration register */
-#define ASPEED_MCR_INTR_CTRL   0x50 /* interrupt control/status register */
-#define ASPEED_MCR_ADDR_UNREC  0x58 /* address of first un-recoverable error */
-#define ASPEED_MCR_ADDR_REC    0x5c /* address of last recoverable error */
+#define ASPEED_MCR_PROT        0x00  
+#define ASPEED_MCR_CONF        0x04  
+#define ASPEED_MCR_INTR_CTRL   0x50  
+#define ASPEED_MCR_ADDR_UNREC  0x58  
+#define ASPEED_MCR_ADDR_REC    0x5c  
 #define ASPEED_MCR_LAST        ASPEED_MCR_ADDR_REC
 
 
@@ -42,12 +40,12 @@ static int regmap_reg_write(void *context, unsigned int reg, unsigned int val)
 {
 	void __iomem *regs = (void __iomem *)context;
 
-	/* enable write to MCR register set */
+	 
 	writel(ASPEED_MCR_PROT_PASSWD, regs + ASPEED_MCR_PROT);
 
 	writel(val, regs + reg);
 
-	/* disable write to MCR register set */
+	 
 	writel(~ASPEED_MCR_PROT_PASSWD, regs + ASPEED_MCR_PROT);
 
 	return 0;
@@ -97,10 +95,10 @@ static void count_rec(struct mem_ctl_info *mci, u8 rec_cnt, u32 rec_addr)
 	if (!rec_cnt)
 		return;
 
-	/* report first few errors (if there are) */
-	/* note: no addresses are recorded */
+	 
+	 
 	if (rec_cnt > 1) {
-		/* page, offset and syndrome are not available */
+		 
 		page = 0;
 		offset = 0;
 		syndrome = 0;
@@ -109,11 +107,11 @@ static void count_rec(struct mem_ctl_info *mci, u8 rec_cnt, u32 rec_addr)
 				     "address(es) not available", "");
 	}
 
-	/* report last error */
-	/* note: rec_addr is the last recoverable error addr */
+	 
+	 
 	page = rec_addr >> PAGE_SHIFT;
 	offset = rec_addr & ~PAGE_MASK;
-	/* syndrome is not available */
+	 
 	syndrome = 0;
 	edac_mc_handle_error(HW_EVENT_ERR_CORRECTED, mci, 1,
 			     csrow->first_page + page, offset, syndrome,
@@ -130,20 +128,20 @@ static void count_un_rec(struct mem_ctl_info *mci, u8 un_rec_cnt,
 	if (!un_rec_cnt)
 		return;
 
-	/* report 1. error */
-	/* note: un_rec_addr is the first unrecoverable error addr */
+	 
+	 
 	page = un_rec_addr >> PAGE_SHIFT;
 	offset = un_rec_addr & ~PAGE_MASK;
-	/* syndrome is not available */
+	 
 	syndrome = 0;
 	edac_mc_handle_error(HW_EVENT_ERR_UNCORRECTED, mci, 1,
 			     csrow->first_page + page, offset, syndrome,
 			     0, 0, -1, "", "");
 
-	/* report further errors (if there are) */
-	/* note: no addresses are recorded */
+	 
+	 
 	if (un_rec_cnt > 1) {
-		/* page, offset and syndrome are not available */
+		 
 		page = 0;
 		offset = 0;
 		syndrome = 0;
@@ -165,7 +163,7 @@ static irqreturn_t mcr_isr(int irq, void *arg)
 	dev_dbg(mci->pdev, "received edac interrupt w/ mcr register 50: 0x%x\n",
 		reg50);
 
-	/* collect data about recoverable and unrecoverable errors */
+	 
 	rec_cnt = (reg50 & ASPEED_MCR_INTR_CTRL_CNT_REC) >> 16;
 	un_rec_cnt = (reg50 & ASPEED_MCR_INTR_CTRL_CNT_UNREC) >> 12;
 
@@ -178,7 +176,7 @@ static irqreturn_t mcr_isr(int irq, void *arg)
 	regmap_read(aspeed_regmap, ASPEED_MCR_ADDR_REC, &reg5c);
 	rec_addr = reg5c;
 
-	/* clear interrupt flags and error counters: */
+	 
 	regmap_update_bits(aspeed_regmap, ASPEED_MCR_INTR_CTRL,
 			   ASPEED_MCR_INTR_CTRL_CLEAR,
 			   ASPEED_MCR_INTR_CTRL_CLEAR);
@@ -186,7 +184,7 @@ static irqreturn_t mcr_isr(int irq, void *arg)
 	regmap_update_bits(aspeed_regmap, ASPEED_MCR_INTR_CTRL,
 			   ASPEED_MCR_INTR_CTRL_CLEAR, 0);
 
-	/* process recoverable and unrecoverable errors */
+	 
 	count_rec(mci, rec_cnt, rec_addr);
 	count_un_rec(mci, un_rec_cnt, un_rec_addr);
 
@@ -206,7 +204,7 @@ static int config_irq(void *ctx, struct platform_device *pdev)
 	int irq;
 	int rc;
 
-	/* register interrupt handler */
+	 
 	irq = platform_get_irq(pdev, 0);
 	dev_dbg(&pdev->dev, "got irq %d\n", irq);
 	if (irq < 0)
@@ -219,7 +217,7 @@ static int config_irq(void *ctx, struct platform_device *pdev)
 		return rc;
 	}
 
-	/* enable interrupts */
+	 
 	regmap_update_bits(aspeed_regmap, ASPEED_MCR_INTR_CTRL,
 			   ASPEED_MCR_INTR_CTRL_ENABLE,
 			   ASPEED_MCR_INTR_CTRL_ENABLE);
@@ -238,7 +236,7 @@ static int init_csrows(struct mem_ctl_info *mci)
 	u32 reg04;
 	int rc;
 
-	/* retrieve info about physical memory from device tree */
+	 
 	np = of_find_node_by_name(NULL, "memory");
 	if (!np) {
 		dev_err(mci->pdev, "dt: missing /memory node\n");
@@ -294,7 +292,7 @@ static int aspeed_probe(struct platform_device *pdev)
 	if (IS_ERR(aspeed_regmap))
 		return PTR_ERR(aspeed_regmap);
 
-	/* bail out if ECC mode is not configured */
+	 
 	regmap_read(aspeed_regmap, ASPEED_MCR_CONF, &reg04);
 	if (!(reg04 & ASPEED_MCR_CONF_ECC)) {
 		dev_err(&pdev->dev, "ECC mode is not configured in u-boot\n");
@@ -303,7 +301,7 @@ static int aspeed_probe(struct platform_device *pdev)
 
 	edac_op_state = EDAC_OPSTATE_INT;
 
-	/* allocate & init EDAC MC data structure */
+	 
 	layers[0].type = EDAC_MC_LAYER_CHIP_SELECT;
 	layers[0].size = 1;
 	layers[0].is_virt_csrow = true;
@@ -333,14 +331,14 @@ static int aspeed_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, mci);
 
-	/* register with edac core */
+	 
 	rc = edac_mc_add_mc(mci);
 	if (rc) {
 		dev_err(&pdev->dev, "failed to register with EDAC core\n");
 		goto probe_exit02;
 	}
 
-	/* register interrupt handler and enable interrupts */
+	 
 	rc = config_irq(mci, pdev);
 	if (rc) {
 		dev_err(&pdev->dev, "failed setting up irq\n");
@@ -361,11 +359,11 @@ static int aspeed_remove(struct platform_device *pdev)
 {
 	struct mem_ctl_info *mci;
 
-	/* disable interrupts */
+	 
 	regmap_update_bits(aspeed_regmap, ASPEED_MCR_INTR_CTRL,
 			   ASPEED_MCR_INTR_CTRL_ENABLE, 0);
 
-	/* free resources */
+	 
 	mci = edac_mc_del_mc(&pdev->dev);
 	if (mci)
 		edac_mc_free(mci);

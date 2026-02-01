@@ -1,40 +1,4 @@
-/*
- * Copyright (c) 2004 Mellanox Technologies Ltd.  All rights reserved.
- * Copyright (c) 2004 Infinicon Corporation.  All rights reserved.
- * Copyright (c) 2004 Intel Corporation.  All rights reserved.
- * Copyright (c) 2004 Topspin Corporation.  All rights reserved.
- * Copyright (c) 2004 Voltaire Corporation.  All rights reserved.
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
- * Copyright (c) 2005, 2006 Cisco Systems.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/errno.h>
 #include <linux/err.h>
@@ -242,20 +206,9 @@ enum rdma_link_layer rdma_port_get_link_layer(struct ib_device *device,
 }
 EXPORT_SYMBOL(rdma_port_get_link_layer);
 
-/* Protection domains */
+ 
 
-/**
- * __ib_alloc_pd - Allocates an unused protection domain.
- * @device: The device on which to allocate the protection domain.
- * @flags: protection domain flags
- * @caller: caller's build-time module name
- *
- * A protection domain object provides an association between QPs, shared
- * receive queues, address handles, memory regions, and memory windows.
- *
- * Every PD has a local_dma_lkey which can be used as the lkey value for local
- * memory operations.
- */
+ 
 struct ib_pd *__ib_alloc_pd(struct ib_device *device, unsigned int flags,
 		const char *caller)
 {
@@ -319,15 +272,7 @@ struct ib_pd *__ib_alloc_pd(struct ib_device *device, unsigned int flags,
 }
 EXPORT_SYMBOL(__ib_alloc_pd);
 
-/**
- * ib_dealloc_pd_user - Deallocates a protection domain.
- * @pd: The protection domain to deallocate.
- * @udata: Valid user data or NULL for kernel object
- *
- * It is an error to call this function while any resources in the pd still
- * exist.  The caller is responsible to synchronously destroy them and
- * guarantee no new allocations will happen.
- */
+ 
 int ib_dealloc_pd_user(struct ib_pd *pd, struct ib_udata *udata)
 {
 	int ret;
@@ -348,14 +293,9 @@ int ib_dealloc_pd_user(struct ib_pd *pd, struct ib_udata *udata)
 }
 EXPORT_SYMBOL(ib_dealloc_pd_user);
 
-/* Address handles */
+ 
 
-/**
- * rdma_copy_ah_attr - Copy rdma ah attribute from source to destination.
- * @dest:       Pointer to destination ah_attr. Contents of the destination
- *              pointer is assumed to be invalid and attribute are overwritten.
- * @src:        Pointer to source ah_attr.
- */
+ 
 void rdma_copy_ah_attr(struct rdma_ah_attr *dest,
 		       const struct rdma_ah_attr *src)
 {
@@ -365,16 +305,7 @@ void rdma_copy_ah_attr(struct rdma_ah_attr *dest,
 }
 EXPORT_SYMBOL(rdma_copy_ah_attr);
 
-/**
- * rdma_replace_ah_attr - Replace valid ah_attr with new new one.
- * @old:        Pointer to existing ah_attr which needs to be replaced.
- *              old is assumed to be valid or zero'd
- * @new:        Pointer to the new ah_attr.
- *
- * rdma_replace_ah_attr() first releases any reference in the old ah_attr if
- * old the ah_attr is valid; after that it copies the new attribute and holds
- * the reference to the replaced ah_attr.
- */
+ 
 void rdma_replace_ah_attr(struct rdma_ah_attr *old,
 			  const struct rdma_ah_attr *new)
 {
@@ -385,17 +316,7 @@ void rdma_replace_ah_attr(struct rdma_ah_attr *old,
 }
 EXPORT_SYMBOL(rdma_replace_ah_attr);
 
-/**
- * rdma_move_ah_attr - Move ah_attr pointed by source to destination.
- * @dest:       Pointer to destination ah_attr to copy to.
- *              dest is assumed to be valid or zero'd
- * @src:        Pointer to the new ah_attr.
- *
- * rdma_move_ah_attr() first releases any reference in the destination ah_attr
- * if it is valid. This also transfers ownership of internal references from
- * src to dest, making src invalid in the process. No new reference of the src
- * ah_attr is taken.
- */
+ 
 void rdma_move_ah_attr(struct rdma_ah_attr *dest, struct rdma_ah_attr *src)
 {
 	rdma_destroy_ah_attr(dest);
@@ -404,10 +325,7 @@ void rdma_move_ah_attr(struct rdma_ah_attr *dest, struct rdma_ah_attr *src)
 }
 EXPORT_SYMBOL(rdma_move_ah_attr);
 
-/*
- * Validate that the rdma_ah_attr is valid for the device before passing it
- * off to the driver.
- */
+ 
 static int rdma_check_ah_attr(struct ib_device *device,
 			      struct rdma_ah_attr *ah_attr)
 {
@@ -420,10 +338,7 @@ static int rdma_check_ah_attr(struct ib_device *device,
 		return -EINVAL;
 
 	if (ah_attr->grh.sgid_attr) {
-		/*
-		 * Make sure the passed sgid_attr is consistent with the
-		 * parameters
-		 */
+		 
 		if (ah_attr->grh.sgid_attr->index != ah_attr->grh.sgid_index ||
 		    ah_attr->grh.sgid_attr->port_num != ah_attr->port_num)
 			return -EINVAL;
@@ -431,10 +346,7 @@ static int rdma_check_ah_attr(struct ib_device *device,
 	return 0;
 }
 
-/*
- * If the ah requires a GRH then ensure that sgid_attr pointer is filled in.
- * On success the caller is responsible to call rdma_unfill_sgid_attr().
- */
+ 
 static int rdma_fill_sgid_attr(struct ib_device *device,
 			       struct rdma_ah_attr *ah_attr,
 			       const struct ib_gid_attr **old_sgid_attr)
@@ -461,7 +373,7 @@ static int rdma_fill_sgid_attr(struct ib_device *device,
 	if (IS_ERR(sgid_attr))
 		return PTR_ERR(sgid_attr);
 
-	/* Move ownerhip of the kref into the ah_attr */
+	 
 	grh->sgid_attr = sgid_attr;
 	return 0;
 }
@@ -469,18 +381,11 @@ static int rdma_fill_sgid_attr(struct ib_device *device,
 static void rdma_unfill_sgid_attr(struct rdma_ah_attr *ah_attr,
 				  const struct ib_gid_attr *old_sgid_attr)
 {
-	/*
-	 * Fill didn't change anything, the caller retains ownership of
-	 * whatever it passed
-	 */
+	 
 	if (ah_attr->grh.sgid_attr == old_sgid_attr)
 		return;
 
-	/*
-	 * Otherwise, we need to undo what rdma_fill_sgid_attr so the caller
-	 * doesn't see any change in the rdma_ah_attr. If we get here
-	 * old_sgid_attr is NULL.
-	 */
+	 
 	rdma_destroy_ah_attr(ah_attr);
 }
 
@@ -542,17 +447,7 @@ static struct ib_ah *_rdma_create_ah(struct ib_pd *pd,
 	return ah;
 }
 
-/**
- * rdma_create_ah - Creates an address handle for the
- * given address vector.
- * @pd: The protection domain associated with the address handle.
- * @ah_attr: The attributes of the address vector.
- * @flags: Create address handle flags (see enum rdma_create_ah_flags).
- *
- * It returns 0 on success and returns appropriate error code on error.
- * The address handle is used to reference a local or global destination
- * in all UD QP post sends.
- */
+ 
 struct ib_ah *rdma_create_ah(struct ib_pd *pd, struct rdma_ah_attr *ah_attr,
 			     u32 flags)
 {
@@ -578,19 +473,7 @@ struct ib_ah *rdma_create_ah(struct ib_pd *pd, struct rdma_ah_attr *ah_attr,
 }
 EXPORT_SYMBOL(rdma_create_ah);
 
-/**
- * rdma_create_user_ah - Creates an address handle for the
- * given address vector.
- * It resolves destination mac address for ah attribute of RoCE type.
- * @pd: The protection domain associated with the address handle.
- * @ah_attr: The attributes of the address vector.
- * @udata: pointer to user's input output buffer information need by
- *         provider driver.
- *
- * It returns 0 on success and returns appropriate error code on error.
- * The address handle is used to reference a local or global destination
- * in all UD QP post sends.
- */
+ 
 struct ib_ah *rdma_create_user_ah(struct ib_pd *pd,
 				  struct rdma_ah_attr *ah_attr,
 				  struct ib_udata *udata)
@@ -626,27 +509,20 @@ int ib_get_rdma_header_version(const union rdma_network_hdr *hdr)
 	struct iphdr ip4h_checked;
 	const struct ipv6hdr *ip6h = (struct ipv6hdr *)&hdr->ibgrh;
 
-	/* If it's IPv6, the version must be 6, otherwise, the first
-	 * 20 bytes (before the IPv4 header) are garbled.
-	 */
+	 
 	if (ip6h->version != 6)
 		return (ip4h->version == 4) ? 4 : 0;
-	/* version may be 6 or 4 because the first 20 bytes could be garbled */
+	 
 
-	/* RoCE v2 requires no options, thus header length
-	 * must be 5 words
-	 */
+	 
 	if (ip4h->ihl != 5)
 		return 6;
 
-	/* Verify checksum.
-	 * We can't write on scattered buffers so we need to copy to
-	 * temp buffer.
-	 */
+	 
 	memcpy(&ip4h_checked, ip4h, sizeof(ip4h_checked));
 	ip4h_checked.check = 0;
 	ip4h_checked.check = ip_fast_csum((u8 *)&ip4h_checked, 5);
-	/* if IPv4 header checksum is OK, believe it */
+	 
 	if (ip4h->check == ip4h_checked.check)
 		return 4;
 	return 6;
@@ -742,10 +618,7 @@ int ib_get_gids_from_rdma_hdr(const union rdma_network_hdr *hdr,
 }
 EXPORT_SYMBOL(ib_get_gids_from_rdma_hdr);
 
-/* Resolve destination mac address and hop limit for unicast destination
- * GID entry, considering the source GID entry as well.
- * ah_attribute must have have valid port_num, sgid_index.
- */
+ 
 static int ib_resolve_unicast_gid_dmac(struct ib_device *device,
 				       struct rdma_ah_attr *ah_attr)
 {
@@ -754,9 +627,7 @@ static int ib_resolve_unicast_gid_dmac(struct ib_device *device,
 	int hop_limit = 0xff;
 	int ret = 0;
 
-	/* If destination is link local and source GID is RoCEv1,
-	 * IP stack is not used.
-	 */
+	 
 	if (rdma_link_local_addr((struct in6_addr *)grh->dgid.raw) &&
 	    sgid_attr->gid_type == IB_GID_TYPE_ROCE) {
 		rdma_get_ll_mac((struct in6_addr *)grh->dgid.raw,
@@ -772,18 +643,7 @@ static int ib_resolve_unicast_gid_dmac(struct ib_device *device,
 	return ret;
 }
 
-/*
- * This function initializes address handle attributes from the incoming packet.
- * Incoming packet has dgid of the receiver node on which this code is
- * getting executed and, sgid contains the GID of the sender.
- *
- * When resolving mac address of destination, the arrived dgid is used
- * as sgid and, sgid is used as dgid because sgid contains destinations
- * GID whom to respond to.
- *
- * On success the caller is responsible to call rdma_destroy_ah_attr on the
- * attr.
- */
+ 
 int ib_init_ah_attr_from_wc(struct ib_device *device, u32 port_num,
 			    const struct ib_wc *wc, const struct ib_grh *grh,
 			    struct rdma_ah_attr *ah_attr)
@@ -871,21 +731,7 @@ int ib_init_ah_attr_from_wc(struct ib_device *device, u32 port_num,
 }
 EXPORT_SYMBOL(ib_init_ah_attr_from_wc);
 
-/**
- * rdma_move_grh_sgid_attr - Sets the sgid attribute of GRH, taking ownership
- * of the reference
- *
- * @attr:	Pointer to AH attribute structure
- * @dgid:	Destination GID
- * @flow_label:	Flow label
- * @hop_limit:	Hop limit
- * @traffic_class: traffic class
- * @sgid_attr:	Pointer to SGID attribute
- *
- * This takes ownership of the sgid_attr reference. The caller must ensure
- * rdma_destroy_ah_attr() is called before destroying the rdma_ah_attr after
- * calling this function.
- */
+ 
 void rdma_move_grh_sgid_attr(struct rdma_ah_attr *attr, union ib_gid *dgid,
 			     u32 flow_label, u8 hop_limit, u8 traffic_class,
 			     const struct ib_gid_attr *sgid_attr)
@@ -896,15 +742,7 @@ void rdma_move_grh_sgid_attr(struct rdma_ah_attr *attr, union ib_gid *dgid,
 }
 EXPORT_SYMBOL(rdma_move_grh_sgid_attr);
 
-/**
- * rdma_destroy_ah_attr - Release reference to SGID attribute of
- * ah attribute.
- * @ah_attr: Pointer to ah attribute
- *
- * Release reference to the SGID attribute of the ah attribute if it is
- * non NULL. It is safe to call this multiple times, and safe to call it on
- * a zero initialized ah_attr.
- */
+ 
 void rdma_destroy_ah_attr(struct rdma_ah_attr *ah_attr)
 {
 	if (ah_attr->grh.sgid_attr) {
@@ -987,23 +825,9 @@ int rdma_destroy_ah_user(struct ib_ah *ah, u32 flags, struct ib_udata *udata)
 }
 EXPORT_SYMBOL(rdma_destroy_ah_user);
 
-/* Shared receive queues */
+ 
 
-/**
- * ib_create_srq_user - Creates a SRQ associated with the specified protection
- *   domain.
- * @pd: The protection domain associated with the SRQ.
- * @srq_init_attr: A list of initial attributes required to create the
- *   SRQ.  If SRQ creation succeeds, then the attributes are updated to
- *   the actual capabilities of the created SRQ.
- * @uobject: uobject pointer if this is not a kernel SRQ
- * @udata: udata pointer if this is not a kernel SRQ
- *
- * srq_attr->max_wr and srq_attr->max_sge are read the determine the
- * requested size of the SRQ, and set to the actual values allocated
- * on return.  If ib_create_srq() succeeds, then max_wr and max_sge
- * will always be at least as large as the requested values.
- */
+ 
 struct ib_srq *ib_create_srq_user(struct ib_pd *pd,
 				  struct ib_srq_init_attr *srq_init_attr,
 				  struct ib_usrq_object *uobject,
@@ -1096,7 +920,7 @@ int ib_destroy_srq_user(struct ib_srq *srq, struct ib_udata *udata)
 }
 EXPORT_SYMBOL(ib_destroy_srq_user);
 
-/* Queue pairs */
+ 
 
 static void __ib_shared_qp_event_handler(struct ib_event *event, void *context)
 {
@@ -1236,10 +1060,7 @@ static struct ib_qp *create_qp(struct ib_device *dev, struct ib_pd *pd,
 	if (ret)
 		goto err_create;
 
-	/*
-	 * TODO: The mlx4 internally overwrites send_cq and recv_cq.
-	 * Unfortunately, it is not an easy task to fix that driver.
-	 */
+	 
 	qp->send_cq = attr->send_cq;
 	qp->recv_cq = attr->recv_cq;
 
@@ -1259,18 +1080,7 @@ err_create:
 
 }
 
-/**
- * ib_create_qp_user - Creates a QP associated with the specified protection
- *   domain.
- * @dev: IB device
- * @pd: The protection domain associated with the QP.
- * @attr: A list of initial attributes required to create the
- *   QP.  If QP creation succeeds, then the attributes are updated to
- *   the actual capabilities of the created QP.
- * @udata: User data
- * @uobj: uverbs obect
- * @caller: caller's build-time module name
- */
+ 
 struct ib_qp *ib_create_qp_user(struct ib_device *dev, struct ib_pd *pd,
 				struct ib_qp_init_attr *attr,
 				struct ib_udata *udata,
@@ -1334,12 +1144,7 @@ struct ib_qp *ib_create_qp_kernel(struct ib_pd *pd,
 	struct ib_qp *qp;
 	int ret;
 
-	/*
-	 * If the callers is using the RDMA API calculate the resources
-	 * needed for the RDMA READ/WRITE operations.
-	 *
-	 * Note that these callers need to pass in a port number.
-	 */
+	 
 	if (qp_init_attr->cap.max_rdma_ctxs)
 		rdma_rw_init_qp(device, qp_init_attr);
 
@@ -1355,11 +1160,7 @@ struct ib_qp *ib_create_qp_kernel(struct ib_pd *pd,
 			goto err;
 	}
 
-	/*
-	 * Note: all hw drivers guarantee that max_send_sge is lower than
-	 * the device RDMA WRITE SGE limit but not all hw drivers ensure that
-	 * max_send_sge <= max_sge_rd.
-	 */
+	 
 	qp->max_write_sge = qp_init_attr->cap.max_send_sge;
 	qp->max_read_sge = min_t(u32, qp_init_attr->cap.max_send_sge,
 				 device->attrs.max_sge_rd);
@@ -1573,7 +1374,7 @@ static const struct {
 				[IB_QPT_UC]  = IB_QP_EN_SQD_ASYNC_NOTIFY,
 				[IB_QPT_RC]  = IB_QP_EN_SQD_ASYNC_NOTIFY,
 				[IB_QPT_XRC_INI] = IB_QP_EN_SQD_ASYNC_NOTIFY,
-				[IB_QPT_XRC_TGT] = IB_QP_EN_SQD_ASYNC_NOTIFY, /* ??? */
+				[IB_QPT_XRC_TGT] = IB_QP_EN_SQD_ASYNC_NOTIFY,  
 				[IB_QPT_SMI] = IB_QP_EN_SQD_ASYNC_NOTIFY,
 				[IB_QPT_GSI] = IB_QP_EN_SQD_ASYNC_NOTIFY
 			}
@@ -1708,15 +1509,7 @@ bool ib_modify_qp_is_ok(enum ib_qp_state cur_state, enum ib_qp_state next_state,
 }
 EXPORT_SYMBOL(ib_modify_qp_is_ok);
 
-/**
- * ib_resolve_eth_dmac - Resolve destination mac address
- * @device:		Device to consider
- * @ah_attr:		address handle attribute which describes the
- *			source and destination parameters
- * ib_resolve_eth_dmac() resolves destination mac address and L3 hop limit It
- * returns 0 on success or appropriate error code. It initializes the
- * necessary ah_attr fields when call is successful.
- */
+ 
 static int ib_resolve_eth_dmac(struct ib_device *device,
 			       struct rdma_ah_attr *ah_attr)
 {
@@ -1746,9 +1539,7 @@ static bool is_qp_type_connected(const struct ib_qp *qp)
 		qp->qp_type == IB_QPT_XRC_TGT);
 }
 
-/*
- * IB core internal function to perform QP attributes modification.
- */
+ 
 static int _ib_modify_qp(struct ib_qp *qp, struct ib_qp_attr *attr,
 			 int attr_mask, struct ib_udata *udata)
 {
@@ -1768,11 +1559,7 @@ static int _ib_modify_qp(struct ib_qp *qp, struct ib_qp_attr *attr,
 		    is_qp_type_connected(qp)) {
 			struct net_device *slave;
 
-			/*
-			 * If the user provided the qp_attr then we have to
-			 * resolve it. Kerne users have to provide already
-			 * resolved rdma_ah_attr's.
-			 */
+			 
 			if (udata) {
 				ret = ib_resolve_eth_dmac(qp->device,
 							  &attr->ah_attr);
@@ -1790,22 +1577,13 @@ static int _ib_modify_qp(struct ib_qp *qp, struct ib_qp_attr *attr,
 		}
 	}
 	if (attr_mask & IB_QP_ALT_PATH) {
-		/*
-		 * FIXME: This does not track the migration state, so if the
-		 * user loads a new alternate path after the HW has migrated
-		 * from primary->alternate we will keep the wrong
-		 * references. This is OK for IB because the reference
-		 * counting does not serve any functional purpose.
-		 */
+		 
 		ret = rdma_fill_sgid_attr(qp->device, &attr->alt_ah_attr,
 					  &old_sgid_attr_alt_av);
 		if (ret)
 			goto out_av;
 
-		/*
-		 * Today the core code can only handle alternate paths and APM
-		 * for IB. Ban them in roce mode.
-		 */
+		 
 		if (!(rdma_protocol_ib(qp->device,
 				       attr->alt_ah_attr.port_num) &&
 		      rdma_protocol_ib(qp->device, port))) {
@@ -1830,10 +1608,7 @@ static int _ib_modify_qp(struct ib_qp *qp, struct ib_qp_attr *attr,
 		}
 	}
 
-	/*
-	 * Bind this qp to a counter automatically based on the rdma counter
-	 * rules. This only set in RST2INIT with port specified
-	 */
+	 
 	if (!qp->counter && (attr_mask & IB_QP_PORT) &&
 	    ((attr_mask & IB_QP_STATE) && attr->qp_state == IB_QPS_INIT))
 		rdma_counter_bind_qp_auto(qp, attr->port_num);
@@ -1862,17 +1637,7 @@ out_av:
 	return ret;
 }
 
-/**
- * ib_modify_qp_with_udata - Modifies the attributes for the specified QP.
- * @ib_qp: The QP to modify.
- * @attr: On input, specifies the QP attributes to modify.  On output,
- *   the current values of selected QP attributes are returned.
- * @attr_mask: A bit-mask used to specify which attributes of the QP
- *   are being modified.
- * @udata: pointer to user's input output buffer information
- *   are being modified.
- * It returns 0 on success and returns appropriate error code on error.
- */
+ 
 int ib_modify_qp_with_udata(struct ib_qp *ib_qp, struct ib_qp_attr *attr,
 			    int attr_mask, struct ib_udata *udata)
 {
@@ -2113,7 +1878,7 @@ int ib_destroy_qp_user(struct ib_qp *qp, struct ib_udata *udata)
 }
 EXPORT_SYMBOL(ib_destroy_qp_user);
 
-/* Completion queues */
+ 
 
 struct ib_cq *__ib_create_cq(struct ib_device *device,
 			     ib_comp_handler comp_handler,
@@ -2192,7 +1957,7 @@ int ib_resize_cq(struct ib_cq *cq, int cqe)
 }
 EXPORT_SYMBOL(ib_resize_cq);
 
-/* Memory regions */
+ 
 
 struct ib_mr *ib_reg_user_mr(struct ib_pd *pd, u64 start, u64 length,
 			     u64 virt_addr, int access_flags)
@@ -2264,18 +2029,7 @@ int ib_dereg_mr_user(struct ib_mr *mr, struct ib_udata *udata)
 }
 EXPORT_SYMBOL(ib_dereg_mr_user);
 
-/**
- * ib_alloc_mr() - Allocates a memory region
- * @pd:            protection domain associated with the region
- * @mr_type:       memory region type
- * @max_num_sg:    maximum sg entries available for registration.
- *
- * Notes:
- * Memory registeration page/sg lists must not exceed max_num_sg.
- * For mr_type IB_MR_TYPE_MEM_REG, the total length cannot exceed
- * max_num_sg * used_page_size.
- *
- */
+ 
 struct ib_mr *ib_alloc_mr(struct ib_pd *pd, enum ib_mr_type mr_type,
 			  u32 max_num_sg)
 {
@@ -2314,18 +2068,7 @@ out:
 }
 EXPORT_SYMBOL(ib_alloc_mr);
 
-/**
- * ib_alloc_mr_integrity() - Allocates an integrity memory region
- * @pd:                      protection domain associated with the region
- * @max_num_data_sg:         maximum data sg entries available for registration
- * @max_num_meta_sg:         maximum metadata sg entries available for
- *                           registration
- *
- * Notes:
- * Memory registration page/sg lists must not exceed max_num_sg,
- * also the integrity page/sg lists must not exceed max_num_meta_sg.
- *
- */
+ 
 struct ib_mr *ib_alloc_mr_integrity(struct ib_pd *pd,
 				    u32 max_num_data_sg,
 				    u32 max_num_meta_sg)
@@ -2375,7 +2118,7 @@ out:
 }
 EXPORT_SYMBOL(ib_alloc_mr_integrity);
 
-/* Multicast groups */
+ 
 
 static bool is_valid_mcast_lid(struct ib_qp *qp, u16 lid)
 {
@@ -2384,9 +2127,7 @@ static bool is_valid_mcast_lid(struct ib_qp *qp, u16 lid)
 	int num_eth_ports = 0;
 	unsigned int port;
 
-	/* If QP state >= init, it is assigned to a port and we can check this
-	 * port only.
-	 */
+	 
 	if (!ib_query_qp(qp, &attr, IB_QP_STATE | IB_QP_PORT, &init_attr)) {
 		if (attr.qp_state >= IB_QPS_INIT) {
 			if (rdma_port_get_link_layer(qp->device, attr.port_num) !=
@@ -2396,20 +2137,17 @@ static bool is_valid_mcast_lid(struct ib_qp *qp, u16 lid)
 		}
 	}
 
-	/* Can't get a quick answer, iterate over all ports */
+	 
 	rdma_for_each_port(qp->device, port)
 		if (rdma_port_get_link_layer(qp->device, port) !=
 		    IB_LINK_LAYER_INFINIBAND)
 			num_eth_ports++;
 
-	/* If we have at lease one Ethernet port, RoCE annex declares that
-	 * multicast LID should be ignored. We can't tell at this step if the
-	 * QP belongs to an IB or Ethernet port.
-	 */
+	 
 	if (num_eth_ports)
 		return true;
 
-	/* If all the ports are IB, we can check according to IB spec. */
+	 
 lid_check:
 	return !(lid < be16_to_cpu(IB_MULTICAST_LID_BASE) ||
 		 lid == be16_to_cpu(IB_LID_PERMISSIVE));
@@ -2451,12 +2189,7 @@ int ib_detach_mcast(struct ib_qp *qp, union ib_gid *gid, u16 lid)
 }
 EXPORT_SYMBOL(ib_detach_mcast);
 
-/**
- * ib_alloc_xrcd_user - Allocates an XRC domain.
- * @device: The device on which to allocate the XRC domain.
- * @inode: inode to connect XRCD
- * @udata: Valid user data or NULL for kernel object
- */
+ 
 struct ib_xrcd *ib_alloc_xrcd_user(struct ib_device *device,
 				   struct inode *inode, struct ib_udata *udata)
 {
@@ -2486,11 +2219,7 @@ err:
 }
 EXPORT_SYMBOL(ib_alloc_xrcd_user);
 
-/**
- * ib_dealloc_xrcd_user - Deallocates an XRC domain.
- * @xrcd: The XRC domain to deallocate.
- * @udata: Valid user data or NULL for kernel object
- */
+ 
 int ib_dealloc_xrcd_user(struct ib_xrcd *xrcd, struct ib_udata *udata)
 {
 	int ret;
@@ -2507,20 +2236,7 @@ int ib_dealloc_xrcd_user(struct ib_xrcd *xrcd, struct ib_udata *udata)
 }
 EXPORT_SYMBOL(ib_dealloc_xrcd_user);
 
-/**
- * ib_create_wq - Creates a WQ associated with the specified protection
- * domain.
- * @pd: The protection domain associated with the WQ.
- * @wq_attr: A list of initial attributes required to create the
- * WQ. If WQ creation succeeds, then the attributes are updated to
- * the actual capabilities of the created WQ.
- *
- * wq_attr->max_wr and wq_attr->max_sge determine
- * the requested size of the WQ, and set to the actual values allocated
- * on return.
- * If ib_create_wq() succeeds, then max_wr and max_sge will always be
- * at least as large as the requested values.
- */
+ 
 struct ib_wq *ib_create_wq(struct ib_pd *pd,
 			   struct ib_wq_init_attr *wq_attr)
 {
@@ -2546,11 +2262,7 @@ struct ib_wq *ib_create_wq(struct ib_pd *pd,
 }
 EXPORT_SYMBOL(ib_create_wq);
 
-/**
- * ib_destroy_wq_user - Destroys the specified user WQ.
- * @wq: The WQ to destroy.
- * @udata: Valid user data
- */
+ 
 int ib_destroy_wq_user(struct ib_wq *wq, struct ib_udata *udata)
 {
 	struct ib_cq *cq = wq->cq;
@@ -2630,26 +2342,7 @@ int ib_get_vf_guid(struct ib_device *device, int vf, u32 port,
 	return device->ops.get_vf_guid(device, vf, port, node_guid, port_guid);
 }
 EXPORT_SYMBOL(ib_get_vf_guid);
-/**
- * ib_map_mr_sg_pi() - Map the dma mapped SG lists for PI (protection
- *     information) and set an appropriate memory region for registration.
- * @mr:             memory region
- * @data_sg:        dma mapped scatterlist for data
- * @data_sg_nents:  number of entries in data_sg
- * @data_sg_offset: offset in bytes into data_sg
- * @meta_sg:        dma mapped scatterlist for metadata
- * @meta_sg_nents:  number of entries in meta_sg
- * @meta_sg_offset: offset in bytes into meta_sg
- * @page_size:      page vector desired page size
- *
- * Constraints:
- * - The MR must be allocated with type IB_MR_TYPE_INTEGRITY.
- *
- * Return: 0 on success.
- *
- * After this completes successfully, the  memory region
- * is ready for registration.
- */
+ 
 int ib_map_mr_sg_pi(struct ib_mr *mr, struct scatterlist *data_sg,
 		    int data_sg_nents, unsigned int *data_sg_offset,
 		    struct scatterlist *meta_sg, int meta_sg_nents,
@@ -2667,32 +2360,7 @@ int ib_map_mr_sg_pi(struct ib_mr *mr, struct scatterlist *data_sg,
 }
 EXPORT_SYMBOL(ib_map_mr_sg_pi);
 
-/**
- * ib_map_mr_sg() - Map the largest prefix of a dma mapped SG list
- *     and set it the memory region.
- * @mr:            memory region
- * @sg:            dma mapped scatterlist
- * @sg_nents:      number of entries in sg
- * @sg_offset:     offset in bytes into sg
- * @page_size:     page vector desired page size
- *
- * Constraints:
- *
- * - The first sg element is allowed to have an offset.
- * - Each sg element must either be aligned to page_size or virtually
- *   contiguous to the previous element. In case an sg element has a
- *   non-contiguous offset, the mapping prefix will not include it.
- * - The last sg element is allowed to have length less than page_size.
- * - If sg_nents total byte length exceeds the mr max_num_sge * page_size
- *   then only max_num_sg entries will be mapped.
- * - If the MR was allocated with type IB_MR_TYPE_SG_GAPS, none of these
- *   constraints holds and the page_size argument is ignored.
- *
- * Returns the number of sg elements that were mapped to the memory region.
- *
- * After this completes successfully, the  memory region
- * is ready for registration.
- */
+ 
 int ib_map_mr_sg(struct ib_mr *mr, struct scatterlist *sg, int sg_nents,
 		 unsigned int *sg_offset, unsigned int page_size)
 {
@@ -2705,28 +2373,7 @@ int ib_map_mr_sg(struct ib_mr *mr, struct scatterlist *sg, int sg_nents,
 }
 EXPORT_SYMBOL(ib_map_mr_sg);
 
-/**
- * ib_sg_to_pages() - Convert the largest prefix of a sg list
- *     to a page vector
- * @mr:            memory region
- * @sgl:           dma mapped scatterlist
- * @sg_nents:      number of entries in sg
- * @sg_offset_p:   ==== =======================================================
- *                 IN   start offset in bytes into sg
- *                 OUT  offset in bytes for element n of the sg of the first
- *                      byte that has not been processed where n is the return
- *                      value of this function.
- *                 ==== =======================================================
- * @set_page:      driver page assignment function pointer
- *
- * Core service helper for drivers to convert the largest
- * prefix of given sg list to a page vector. The sg list
- * prefix converted is the prefix that meet the requirements
- * of ib_map_mr_sg.
- *
- * Returns the number of sg elements that were assigned to
- * a page vector.
- */
+ 
 int ib_sg_to_pages(struct ib_mr *mr, struct scatterlist *sgl, int sg_nents,
 		unsigned int *sg_offset_p, int (*set_page)(struct ib_mr *, u64))
 {
@@ -2750,21 +2397,13 @@ int ib_sg_to_pages(struct ib_mr *mr, struct scatterlist *sgl, int sg_nents,
 		u64 end_dma_addr = dma_addr + dma_len;
 		u64 page_addr = dma_addr & page_mask;
 
-		/*
-		 * For the second and later elements, check whether either the
-		 * end of element i-1 or the start of element i is not aligned
-		 * on a page boundary.
-		 */
+		 
 		if (i && (last_page_off != 0 || page_addr != dma_addr)) {
-			/* Stop mapping if there is a gap. */
+			 
 			if (last_end_dma_addr != dma_addr)
 				break;
 
-			/*
-			 * Coalesce this element with the last. If it is small
-			 * enough just update mr->length. Otherwise start
-			 * mapping from the next page.
-			 */
+			 
 			goto next_page;
 		}
 
@@ -2808,9 +2447,7 @@ static void ib_drain_qp_done(struct ib_cq *cq, struct ib_wc *wc)
 	complete(&cqe->done);
 }
 
-/*
- * Post a WR and block until its completion is reaped for the SQ.
- */
+ 
 static void __ib_drain_sq(struct ib_qp *qp)
 {
 	struct ib_cq *cq = qp->send_cq;
@@ -2847,9 +2484,7 @@ static void __ib_drain_sq(struct ib_qp *qp)
 		wait_for_completion(&sdrain.done);
 }
 
-/*
- * Post a WR and block until its completion is reaped for the RQ.
- */
+ 
 static void __ib_drain_rq(struct ib_qp *qp)
 {
 	struct ib_cq *cq = qp->recv_cq;
@@ -2881,25 +2516,7 @@ static void __ib_drain_rq(struct ib_qp *qp)
 		wait_for_completion(&rdrain.done);
 }
 
-/**
- * ib_drain_sq() - Block until all SQ CQEs have been consumed by the
- *		   application.
- * @qp:            queue pair to drain
- *
- * If the device has a provider-specific drain function, then
- * call that.  Otherwise call the generic drain function
- * __ib_drain_sq().
- *
- * The caller must:
- *
- * ensure there is room in the CQ and SQ for the drain work request and
- * completion.
- *
- * allocate the CQ using ib_alloc_cq().
- *
- * ensure that there are no other contexts that are posting WRs concurrently.
- * Otherwise the drain is not guaranteed.
- */
+ 
 void ib_drain_sq(struct ib_qp *qp)
 {
 	if (qp->device->ops.drain_sq)
@@ -2910,25 +2527,7 @@ void ib_drain_sq(struct ib_qp *qp)
 }
 EXPORT_SYMBOL(ib_drain_sq);
 
-/**
- * ib_drain_rq() - Block until all RQ CQEs have been consumed by the
- *		   application.
- * @qp:            queue pair to drain
- *
- * If the device has a provider-specific drain function, then
- * call that.  Otherwise call the generic drain function
- * __ib_drain_rq().
- *
- * The caller must:
- *
- * ensure there is room in the CQ and RQ for the drain work request and
- * completion.
- *
- * allocate the CQ using ib_alloc_cq().
- *
- * ensure that there are no other contexts that are posting WRs concurrently.
- * Otherwise the drain is not guaranteed.
- */
+ 
 void ib_drain_rq(struct ib_qp *qp)
 {
 	if (qp->device->ops.drain_rq)
@@ -2939,21 +2538,7 @@ void ib_drain_rq(struct ib_qp *qp)
 }
 EXPORT_SYMBOL(ib_drain_rq);
 
-/**
- * ib_drain_qp() - Block until all CQEs have been consumed by the
- *		   application on both the RQ and SQ.
- * @qp:            queue pair to drain
- *
- * The caller must:
- *
- * ensure there is room in the CQ(s), SQ, and RQ for drain work requests
- * and completions.
- *
- * allocate the CQs using ib_alloc_cq().
- *
- * ensure that there are no other contexts that are posting WRs concurrently.
- * Otherwise the drain is not guaranteed.
- */
+ 
 void ib_drain_qp(struct ib_qp *qp)
 {
 	ib_drain_sq(qp);
@@ -3018,7 +2603,7 @@ void __rdma_block_iter_start(struct ib_block_iter *biter,
 	biter->__sg = sglist;
 	biter->__sg_nents = nents;
 
-	/* Driver provides best block size to use */
+	 
 	biter->__pg_bit = __fls(pgsz);
 }
 EXPORT_SYMBOL(__rdma_block_iter_start);
@@ -3047,13 +2632,7 @@ bool __rdma_block_iter_next(struct ib_block_iter *biter)
 }
 EXPORT_SYMBOL(__rdma_block_iter_next);
 
-/**
- * rdma_alloc_hw_stats_struct - Helper function to allocate dynamic struct
- *   for the drivers.
- * @descs: array of static descriptors
- * @num_counters: number of elements in array
- * @lifespan: milliseconds between updates
- */
+ 
 struct rdma_hw_stats *rdma_alloc_hw_stats_struct(
 	const struct rdma_stat_desc *descs, int num_counters,
 	unsigned long lifespan)
@@ -3082,10 +2661,7 @@ err:
 }
 EXPORT_SYMBOL(rdma_alloc_hw_stats_struct);
 
-/**
- * rdma_free_hw_stats_struct - Helper function to release rdma_hw_stats
- * @stats: statistics to release
- */
+ 
 void rdma_free_hw_stats_struct(struct rdma_hw_stats *stats)
 {
 	if (!stats)

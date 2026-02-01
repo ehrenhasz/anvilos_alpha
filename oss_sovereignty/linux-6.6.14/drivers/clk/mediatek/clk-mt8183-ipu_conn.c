@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2018 MediaTek Inc.
-// Author: Weiyi Lu <weiyi.lu@mediatek.com>
+
+
+
+
 
 #include <linux/clk-provider.h>
 #include <linux/platform_device.h>
@@ -104,7 +104,7 @@ static const struct of_device_id of_match_clk_mt8183_ipu_conn[] = {
 		.compatible = "mediatek,mt8183-ipu_conn",
 		.data = &ipu_conn_desc,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8183_ipu_conn);

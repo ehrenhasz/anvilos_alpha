@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe host controller driver for Intel Gateway SoCs
- *
- * Copyright (c) 2019 Intel Corporation.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -23,7 +19,7 @@
 #define PORT_AFR_N_FTS_GEN3		180
 #define PORT_AFR_N_FTS_GEN4		196
 
-/* PCIe Application logic Registers */
+ 
 #define PCIE_APP_CCR			0x10
 #define PCIE_APP_CCR_LTSSM_ENABLE	BIT(0)
 
@@ -159,7 +155,7 @@ static int intel_pcie_ep_rst_init(struct intel_pcie *pcie)
 		return ret;
 	}
 
-	/* Make initial reset last for 100us */
+	 
 	usleep_range(100, 200);
 
 	return 0;
@@ -172,17 +168,11 @@ static void intel_pcie_core_rst_assert(struct intel_pcie *pcie)
 
 static void intel_pcie_core_rst_deassert(struct intel_pcie *pcie)
 {
-	/*
-	 * One micro-second delay to make sure the reset pulse
-	 * wide enough so that core reset is clean.
-	 */
+	 
 	udelay(1);
 	reset_control_deassert(pcie->core_rst);
 
-	/*
-	 * Some SoC core reset also reset PHY, more delay needed
-	 * to make sure the reset process is done.
-	 */
+	 
 	usleep_range(1000, 2000);
 }
 
@@ -255,11 +245,11 @@ static int intel_pcie_wait_l2(struct intel_pcie *pcie)
 	if (pci->link_gen < 3)
 		return 0;
 
-	/* Send PME_TURN_OFF message */
+	 
 	pcie_app_wr_mask(pcie, PCIE_APP_MSG_CR, PCIE_APP_MSG_XMT_PM_TURNOFF,
 			 PCIE_APP_MSG_XMT_PM_TURNOFF);
 
-	/* Read PMC status and wait for falling into L2 link state */
+	 
 	ret = readl_poll_timeout(pcie->app_base + PCIE_APP_PMC, value,
 				 value & PCIE_APP_PMC_IN_L2, 20,
 				 jiffies_to_usecs(5 * HZ));
@@ -274,7 +264,7 @@ static void intel_pcie_turn_off(struct intel_pcie *pcie)
 	if (dw_pcie_link_up(&pcie->pci))
 		intel_pcie_wait_l2(pcie);
 
-	/* Put endpoint device in reset state */
+	 
 	intel_pcie_device_rst_assert(pcie);
 	pcie_rc_cfg_wr_mask(pcie, PCI_COMMAND, PCI_COMMAND_MEMORY, 0);
 }
@@ -318,7 +308,7 @@ static int intel_pcie_host_setup(struct intel_pcie *pcie)
 	if (ret)
 		goto app_init_err;
 
-	/* Enable integrated interrupts */
+	 
 	pcie_app_wr_mask(pcie, PCIE_APP_IRNEN, PCIE_APP_IRN_INT,
 			 PCIE_APP_IRN_INT);
 

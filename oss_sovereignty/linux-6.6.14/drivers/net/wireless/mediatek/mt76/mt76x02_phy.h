@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- */
+ 
+ 
 
 #ifndef __MT76x02_PHY_H
 #define __MT76x02_PHY_H
@@ -46,4 +44,4 @@ void mt76x02_phy_set_band(struct mt76x02_dev *dev, int band,
 bool mt76x02_phy_adjust_vga_gain(struct mt76x02_dev *dev);
 void mt76x02_init_agc_gain(struct mt76x02_dev *dev);
 
-#endif /* __MT76x02_PHY_H */
+#endif  

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/**
- * extcon-qcom-spmi-misc.c - Qualcomm USB extcon driver to support USB ID
- *			and VBUS detection based on extcon-usb-gpio.c.
- *
- * Copyright (C) 2016 Linaro, Ltd.
- * Stephen Boyd <stephen.boyd@linaro.org>
- */
+
+ 
 
 #include <linux/devm-helpers.h>
 #include <linux/extcon-provider.h>
@@ -18,7 +12,7 @@
 #include <linux/slab.h>
 #include <linux/workqueue.h>
 
-#define USB_ID_DEBOUNCE_MS	5	/* ms */
+#define USB_ID_DEBOUNCE_MS	5	 
 
 struct qcom_usb_extcon_info {
 	struct extcon_dev *edev;
@@ -44,7 +38,7 @@ static void qcom_usb_extcon_detect_cable(struct work_struct *work)
 						    wq_detcable);
 
 	if (info->id_irq > 0) {
-		/* check ID and update cable state */
+		 
 		ret = irq_get_irqchip_state(info->id_irq,
 				IRQCHIP_STATE_LINE_LEVEL, &state);
 		if (ret)
@@ -59,7 +53,7 @@ static void qcom_usb_extcon_detect_cable(struct work_struct *work)
 	}
 
 	if (info->vbus_irq > 0) {
-		/* check VBUS and update cable state */
+		 
 		ret = irq_get_irqchip_state(info->vbus_irq,
 				IRQCHIP_STATE_LINE_LEVEL, &state);
 		if (ret)
@@ -157,7 +151,7 @@ static int qcom_usb_extcon_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, info);
 	device_init_wakeup(dev, 1);
 
-	/* Perform initial detection */
+	 
 	qcom_usb_extcon_detect_cable(&info->wq_detcable.work);
 
 	return 0;

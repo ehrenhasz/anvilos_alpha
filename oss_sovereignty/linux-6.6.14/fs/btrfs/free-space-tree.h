@@ -1,18 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2015 Facebook.  All rights reserved.
- */
+ 
+ 
 
 #ifndef BTRFS_FREE_SPACE_TREE_H
 #define BTRFS_FREE_SPACE_TREE_H
 
 struct btrfs_caching_control;
 
-/*
- * The default size for new free space bitmap items. The last bitmap in a block
- * group may be truncated, and none of the free space tree code assumes that
- * existing bitmaps are this size.
- */
+ 
 #define BTRFS_FREE_SPACE_BITMAP_SIZE 256
 #define BTRFS_FREE_SPACE_BITMAP_BITS (BTRFS_FREE_SPACE_BITMAP_SIZE * BITS_PER_BYTE)
 

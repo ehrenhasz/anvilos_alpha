@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <errno.h>
 #include <fcntl.h>
@@ -16,10 +16,7 @@
 #include "log.h"
 #include "timens.h"
 
-/*
- * Test shouldn't be run for a day, so add 10 days to child
- * time and check parent's time to be in the same day.
- */
+ 
 #define MAX_TEST_TIME_SEC		(60*5)
 #define DAY_IN_SEC			(60*60*24)
 #define TEN_DAYS_IN_SEC			(10*DAY_IN_SEC)

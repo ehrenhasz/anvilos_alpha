@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -8,7 +8,7 @@
 #include <linux/spinlock.h>
 #include <linux/netfilter/nf_conntrack_common.h>
 #include <linux/netfilter/nf_tables.h>
-#include <net/ip.h> /* for ipv4 options. */
+#include <net/ip.h>  
 #include <net/netfilter/nf_tables.h>
 #include <net/netfilter/nf_tables_core.h>
 #include <net/netfilter/nf_conntrack_core.h>
@@ -118,7 +118,7 @@ static void nft_dev_path_info(const struct net_device_path_stack *stack,
 				break;
 			}
 
-			/* DEV_PATH_VLAN and DEV_PATH_PPPOE */
+			 
 			if (info->num_encaps >= NF_FLOW_TABLE_ENCAP_MAX) {
 				info->indev = NULL;
 				break;
@@ -326,7 +326,7 @@ static void nft_flow_offload_eval(const struct nft_expr *expr,
 		if (ct->status & IPS_NAT_MASK)
 			goto out;
 		tuple = &ct->tuplehash[IP_CT_DIR_ORIGINAL].tuple;
-		/* No support for GRE v1 */
+		 
 		if (tuple->src.u.gre.key || tuple->dst.u.gre.key)
 			goto out;
 		break;

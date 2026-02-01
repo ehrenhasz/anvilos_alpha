@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  sst_drv_interface.c - Intel SST Driver for audio engine
- *
- *  Copyright (C) 2008-14 Intel Corp
- *  Authors:	Vinod Koul <vinod.koul@intel.com>
- *		Harsha Priya <priya.harsha@intel.com>
- *		Dharageswari R <dharageswari.r@intel.com)
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/pci.h>
 #include <linux/fs.h>
@@ -44,7 +34,7 @@ int free_stream_context(struct intel_sst_drv *ctx, unsigned int str_id)
 
 	stream = get_stream_info(ctx, str_id);
 	if (stream) {
-		/* str_id is valid, so stream is alloacted */
+		 
 		ret = sst_free_stream(ctx, str_id);
 		if (ret)
 			sst_clean_stream(&ctx->streams[str_id]);
@@ -68,11 +58,7 @@ int sst_get_stream_allocated(struct intel_sst_drv *ctx,
 
 }
 
-/*
- * sst_get_sfreq - this function returns the frequency of the stream
- *
- * @str_param : stream params
- */
+ 
 int sst_get_sfreq(struct snd_sst_params *str_param)
 {
 	switch (str_param->codec) {
@@ -87,11 +73,7 @@ int sst_get_sfreq(struct snd_sst_params *str_param)
 	}
 }
 
-/*
- * sst_get_num_channel - get number of channels for the stream
- *
- * @str_param : stream params
- */
+ 
 int sst_get_num_channel(struct snd_sst_params *str_param)
 {
 	switch (str_param->codec) {
@@ -106,23 +88,19 @@ int sst_get_num_channel(struct snd_sst_params *str_param)
 	}
 }
 
-/*
- * sst_get_stream - this function prepares for stream allocation
- *
- * @str_param : stream param
- */
+ 
 int sst_get_stream(struct intel_sst_drv *ctx,
 			struct snd_sst_params *str_param)
 {
 	int retval;
 	struct stream_info *str_info;
 
-	/* stream is not allocated, we are allocating */
+	 
 	retval = ctx->ops->alloc_stream(ctx, str_param);
 	if (retval <= 0) {
 		return -EIO;
 	}
-	/* store sampling freq */
+	 
 	str_info = &ctx->streams[retval];
 	str_info->sfreq = sst_get_sfreq(str_param);
 
@@ -159,14 +137,7 @@ static int sst_power_control(struct device *dev, bool state)
 	return ret;
 }
 
-/*
- * sst_open_pcm_stream - Open PCM interface
- *
- * @str_param: parameters of pcm stream
- *
- * This function is called by MID sound card driver to open
- * a new pcm interface
- */
+ 
 static int sst_open_pcm_stream(struct device *dev,
 		struct snd_sst_params *str_param)
 {
@@ -248,7 +219,7 @@ static int sst_cdev_ack(struct device *dev, unsigned int str_id,
 	if (!stream)
 		return -EINVAL;
 
-	/* update bytes sent */
+	 
 	stream->cumm_bytes += bytes;
 	dev_dbg(dev, "bytes copied %d inc by %ld\n", stream->cumm_bytes, bytes);
 
@@ -373,8 +344,8 @@ static int sst_cdev_tstamp(struct device *dev, unsigned int str_id,
 static int sst_cdev_caps(struct snd_compr_caps *caps)
 {
 	caps->num_codecs = NUM_CODEC;
-	caps->min_fragment_size = MIN_FRAGMENT_SIZE;  /* 50KB */
-	caps->max_fragment_size = MAX_FRAGMENT_SIZE;  /* 1024KB */
+	caps->min_fragment_size = MIN_FRAGMENT_SIZE;   
+	caps->max_fragment_size = MAX_FRAGMENT_SIZE;   
 	caps->min_fragments = MIN_FRAGMENT;
 	caps->max_fragments = MAX_FRAGMENT;
 	caps->codecs[0] = SND_AUDIOCODEC_MP3;
@@ -441,14 +412,7 @@ void sst_cdev_fragment_elapsed(struct intel_sst_drv *ctx, int str_id)
 		stream->compr_cb(stream->compr_cb_param);
 }
 
-/*
- * sst_close_pcm_stream - Close PCM interface
- *
- * @str_id: stream id to be closed
- *
- * This function is called by MID sound card driver to close
- * an existing pcm interface
- */
+ 
 static int sst_close_pcm_stream(struct device *dev, unsigned int str_id)
 {
 	struct stream_info *stream;
@@ -625,15 +589,7 @@ static int sst_stream_init(struct device *dev, struct pcm_stream_info *str_info)
 	return 0;
 }
 
-/*
- * sst_set_byte_stream - Set generic params
- *
- * @cmd: control cmd to be set
- * @arg: command argument
- *
- * This function is called by MID sound card driver to configure
- * SST runtime params.
- */
+ 
 static int sst_send_byte_stream(struct device *dev,
 		struct snd_sst_bytes_v2 *bytes)
 {
@@ -689,11 +645,7 @@ static struct sst_device sst_dsp_device = {
 	.compr_ops = &compr_ops,
 };
 
-/*
- * sst_register - function to register DSP
- *
- * This functions registers DSP with the platform driver
- */
+ 
 int sst_register(struct device *dev)
 {
 	int ret_val;

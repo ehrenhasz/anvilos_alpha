@@ -1,22 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- *
- * Modifications for inclusion into the Linux staging tree are
- * Copyright(c) 2010 Larry Finger. All rights reserved.
- *
- * Contact information:
- * WLAN FAE <wlanfae@realtek.com>
- * Larry Finger <Larry.Finger@lwfinger.net>
- *
- ******************************************************************************/
-/* ---------------------------------------------------------------------
- *
- *	For type defines and data structure defines
- *
- * ---------------------------------------------------------------------
- */
+ 
+ 
+ 
 #ifndef __DRV_TYPES_H__
 #define __DRV_TYPES_H__
 
@@ -37,7 +21,7 @@ enum _NIC_VERSION {
 };
 
 struct	qos_priv	{
-	/* bit mask option: u-apsd, s-apsd, ts, block ack... */
+	 
 	unsigned int qos_option;
 };
 
@@ -71,16 +55,16 @@ struct registry_priv {
 	u8	rfintfs;
 	u8	lbkmode;
 	u8	hci;
-	u8	network_mode;	/*infra, ad-hoc, auto*/
+	u8	network_mode;	 
 	struct ndis_802_11_ssid	ssid;
-	u8	channel;/* ad-hoc support requirement */
-	u8	wireless_mode;/* A, B, G, auto */
-	u8	vrtl_carrier_sense; /*Enable, Disable, Auto*/
-	u8	vcs_type;/*RTS/CTS, CTS-to-self*/
+	u8	channel; 
+	u8	wireless_mode; 
+	u8	vrtl_carrier_sense;  
+	u8	vcs_type; 
 	u16	rts_thresh;
 	u16  frag_thresh;
-	u8	preamble;/*long, short, auto*/
-	u8  scan_mode;/*active, passive*/
+	u8	preamble; 
+	u8  scan_mode; 
 	u8  adhoc_tx_pwr;
 	u8  soft_ap;
 	u8  smart_ps;
@@ -93,7 +77,7 @@ struct registry_priv {
 	u8 mp_mode;
 	u8 software_encrypt;
 	u8 software_decrypt;
-	/* UAPSD */
+	 
 	u8 wmm_enable;
 	u8 uapsd_enable;
 	u8 uapsd_max_sp;
@@ -106,7 +90,7 @@ struct registry_priv {
 
 	u8 ht_enable;
 	u8 cbw40_enable;
-	u8 ampdu_enable;/*for tx*/
+	u8 ampdu_enable; 
 	u8 rf_config;
 	u8 low_power;
 	u8 wifi_test;
@@ -121,11 +105,7 @@ struct dvobj_priv {
 	struct usb_device *pusbdev;
 };
 
-/**
- * struct _adapter - the main adapter structure for this device.
- *
- * bup: True indicates that the interface is up.
- */
+ 
 struct _adapter {
 	struct	dvobj_priv dvobjpriv;
 	struct	mlme_priv mlmepriv;
@@ -155,7 +135,7 @@ struct _adapter {
 	int bup;
 	struct net_device_stats stats;
 	struct iw_statistics iwstats;
-	int pid; /*process id from UI*/
+	int pid;  
 	struct work_struct wk_filter_rx_ff0;
 	const struct firmware *fw;
 	struct usb_interface *pusb_intf;
@@ -171,5 +151,5 @@ static inline u8 *myid(struct eeprom_priv *peepriv)
 
 u8 r8712_usb_hal_bus_init(struct _adapter *adapter);
 
-#endif /*__DRV_TYPES_H__*/
+#endif  
 

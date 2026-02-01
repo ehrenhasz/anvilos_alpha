@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Texas Instruments Ethernet Switch media-access-controller (MAC) submodule/
- * Ethernet MAC Sliver (CPGMAC_SL)
- *
- * Copyright (C) 2019 Texas Instruments
- *
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -257,10 +251,10 @@ void cpsw_sl_reset(struct cpsw_sl *sl, unsigned long tmo)
 {
 	unsigned long timeout = jiffies + msecs_to_jiffies(tmo);
 
-	/* Set the soft reset bit */
+	 
 	cpsw_sl_reg_write(sl, CPSW_SL_SOFT_RESET, CPSW_SL_SOFT_RESET_BIT);
 
-	/* Wait for the bit to clear */
+	 
 	do {
 		usleep_range(100, 200);
 	} while ((cpsw_sl_reg_read(sl, CPSW_SL_SOFT_RESET) &

@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright (c) 2020, The Linux Foundation. All rights reserved.
-//
-// sc7180.c -- ALSA SoC Machine driver for SC7180
+
+
+
+
+
 
 #include <dt-bindings/sound/sc7180-lpass.h>
 #include <linux/gpio.h>
@@ -171,7 +171,7 @@ static int sc7180_snd_startup(struct snd_pcm_substream *substream)
 				    SND_SOC_DAIFMT_NB_NF |
 				    SND_SOC_DAIFMT_I2S);
 
-		/* Configure PLL1 for codec */
+		 
 		ret = snd_soc_dai_set_pll(codec_dai, pll_id, pll_source,
 					  pll_in, pll_out);
 		if (ret) {
@@ -179,7 +179,7 @@ static int sc7180_snd_startup(struct snd_pcm_substream *substream)
 			return ret;
 		}
 
-		/* Configure sysclk for codec */
+		 
 		ret = snd_soc_dai_set_sysclk(codec_dai, clk_id, pll_out,
 					     SND_SOC_CLOCK_IN);
 		if (ret)
@@ -357,7 +357,7 @@ static int sc7180_snd_platform_probe(struct platform_device *pdev)
 	int i;
 	bool no_headphone = false;
 
-	/* Allocate the private data */
+	 
 	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;

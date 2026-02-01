@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2005-2014, 2018-2020 Intel Corporation
- * Copyright (C) 2015 Intel Mobile Communications GmbH
- */
+
+ 
 #include <linux/types.h>
 #include <linux/slab.h>
 #include <linux/export.h>
@@ -11,9 +8,9 @@
 #include "iwl-eeprom-parse.h"
 
 #if IS_ENABLED(CONFIG_IWLDVM)
-/* EEPROM offset definitions */
+ 
 
-/* indirect access definitions */
+ 
 #define ADDRESS_MSK                 0x0000FFFF
 #define INDIRECT_TYPE_MSK           0x000F0000
 #define INDIRECT_HOST               0x00010000
@@ -26,7 +23,7 @@
 #define INDIRECT_TXP_LIMIT_SIZE     0x00080000
 #define INDIRECT_ADDRESS            0x00100000
 
-/* corresponding link offsets in EEPROM */
+ 
 #define EEPROM_LINK_HOST             (2*0x64)
 #define EEPROM_LINK_GENERAL          (2*0x65)
 #define EEPROM_LINK_REGULATORY       (2*0x66)
@@ -36,19 +33,19 @@
 #define EEPROM_LINK_TXP_LIMIT        (2*0x6a)
 #define EEPROM_LINK_TXP_LIMIT_SIZE   (2*0x6b)
 
-/* General */
-#define EEPROM_DEVICE_ID                    (2*0x08)	/* 2 bytes */
-#define EEPROM_SUBSYSTEM_ID		    (2*0x0A)	/* 2 bytes */
-#define EEPROM_MAC_ADDRESS                  (2*0x15)	/* 6  bytes */
-#define EEPROM_BOARD_REVISION               (2*0x35)	/* 2  bytes */
-#define EEPROM_BOARD_PBA_NUMBER             (2*0x3B+1)	/* 9  bytes */
-#define EEPROM_VERSION                      (2*0x44)	/* 2  bytes */
-#define EEPROM_SKU_CAP                      (2*0x45)	/* 2  bytes */
-#define EEPROM_OEM_MODE                     (2*0x46)	/* 2  bytes */
-#define EEPROM_RADIO_CONFIG                 (2*0x48)	/* 2  bytes */
-#define EEPROM_NUM_MAC_ADDRESS              (2*0x4C)	/* 2  bytes */
+ 
+#define EEPROM_DEVICE_ID                    (2*0x08)	 
+#define EEPROM_SUBSYSTEM_ID		    (2*0x0A)	 
+#define EEPROM_MAC_ADDRESS                  (2*0x15)	 
+#define EEPROM_BOARD_REVISION               (2*0x35)	 
+#define EEPROM_BOARD_PBA_NUMBER             (2*0x3B+1)	 
+#define EEPROM_VERSION                      (2*0x44)	 
+#define EEPROM_SKU_CAP                      (2*0x45)	 
+#define EEPROM_OEM_MODE                     (2*0x46)	 
+#define EEPROM_RADIO_CONFIG                 (2*0x48)	 
+#define EEPROM_NUM_MAC_ADDRESS              (2*0x4C)	 
 
-/* calibration */
+ 
 struct iwl_eeprom_calib_hdr {
 	u8 version;
 	u8 pa_type;
@@ -58,11 +55,11 @@ struct iwl_eeprom_calib_hdr {
 #define EEPROM_CALIB_ALL	(INDIRECT_ADDRESS | INDIRECT_CALIBRATION)
 #define EEPROM_XTAL		((2*0x128) | EEPROM_CALIB_ALL)
 
-/* temperature */
+ 
 #define EEPROM_KELVIN_TEMPERATURE	((2*0x12A) | EEPROM_CALIB_ALL)
 #define EEPROM_RAW_TEMPERATURE		((2*0x12B) | EEPROM_CALIB_ALL)
 
-/* SKU Capabilities (actual values from EEPROM definition) */
+ 
 enum eeprom_sku_bits {
 	EEPROM_SKU_CAP_BAND_24GHZ	= BIT(4),
 	EEPROM_SKU_CAP_BAND_52GHZ	= BIT(5),
@@ -71,47 +68,41 @@ enum eeprom_sku_bits {
 	EEPROM_SKU_CAP_IPAN_ENABLE	= BIT(8)
 };
 
-/* radio config bits (actual values from EEPROM definition) */
-#define EEPROM_RF_CFG_TYPE_MSK(x)   (x & 0x3)         /* bits 0-1   */
-#define EEPROM_RF_CFG_STEP_MSK(x)   ((x >> 2)  & 0x3) /* bits 2-3   */
-#define EEPROM_RF_CFG_DASH_MSK(x)   ((x >> 4)  & 0x3) /* bits 4-5   */
-#define EEPROM_RF_CFG_PNUM_MSK(x)   ((x >> 6)  & 0x3) /* bits 6-7   */
-#define EEPROM_RF_CFG_TX_ANT_MSK(x) ((x >> 8)  & 0xF) /* bits 8-11  */
-#define EEPROM_RF_CFG_RX_ANT_MSK(x) ((x >> 12) & 0xF) /* bits 12-15 */
+ 
+#define EEPROM_RF_CFG_TYPE_MSK(x)   (x & 0x3)          
+#define EEPROM_RF_CFG_STEP_MSK(x)   ((x >> 2)  & 0x3)  
+#define EEPROM_RF_CFG_DASH_MSK(x)   ((x >> 4)  & 0x3)  
+#define EEPROM_RF_CFG_PNUM_MSK(x)   ((x >> 6)  & 0x3)  
+#define EEPROM_RF_CFG_TX_ANT_MSK(x) ((x >> 8)  & 0xF)  
+#define EEPROM_RF_CFG_RX_ANT_MSK(x) ((x >> 12) & 0xF)  
 
 
-/*
- * EEPROM bands
- * These are the channel numbers from each band in the order
- * that they are stored in the EEPROM band information. Note
- * that EEPROM bands aren't the same as mac80211 bands, and
- * there are even special "ht40 bands" in the EEPROM.
- */
-static const u8 iwl_eeprom_band_1[14] = { /* 2.4 GHz */
+ 
+static const u8 iwl_eeprom_band_1[14] = {  
 	1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
 };
 
-static const u8 iwl_eeprom_band_2[] = {	/* 4915-5080MHz */
+static const u8 iwl_eeprom_band_2[] = {	 
 	183, 184, 185, 187, 188, 189, 192, 196, 7, 8, 11, 12, 16
 };
 
-static const u8 iwl_eeprom_band_3[] = {	/* 5170-5320MHz */
+static const u8 iwl_eeprom_band_3[] = {	 
 	34, 36, 38, 40, 42, 44, 46, 48, 52, 56, 60, 64
 };
 
-static const u8 iwl_eeprom_band_4[] = {	/* 5500-5700MHz */
+static const u8 iwl_eeprom_band_4[] = {	 
 	100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140
 };
 
-static const u8 iwl_eeprom_band_5[] = {	/* 5725-5825MHz */
+static const u8 iwl_eeprom_band_5[] = {	 
 	145, 149, 153, 157, 161, 165
 };
 
-static const u8 iwl_eeprom_band_6[] = {	/* 2.4 ht40 channel */
+static const u8 iwl_eeprom_band_6[] = {	 
 	1, 2, 3, 4, 5, 6, 7
 };
 
-static const u8 iwl_eeprom_band_7[] = {	/* 5.2 ht40 channel */
+static const u8 iwl_eeprom_band_7[] = {	 
 	36, 44, 52, 60, 100, 108, 116, 124, 132, 149, 157
 };
 
@@ -121,7 +112,7 @@ static const u8 iwl_eeprom_band_7[] = {	/* 5.2 ht40 channel */
 				 ARRAY_SIZE(iwl_eeprom_band_4) + \
 				 ARRAY_SIZE(iwl_eeprom_band_5))
 
-/* rate data (static) */
+ 
 static struct ieee80211_rate iwl_cfg80211_rates[] = {
 	{ .bitrate = 1 * 10, .hw_value = 0, .hw_value_short = 0, },
 	{ .bitrate = 2 * 10, .hw_value = 1, .hw_value_short = 1,
@@ -144,7 +135,7 @@ static struct ieee80211_rate iwl_cfg80211_rates[] = {
 #define RATES_52_OFFS	4
 #define N_RATES_52	(N_RATES_24 - RATES_52_OFFS)
 
-/* EEPROM reading functions */
+ 
 
 static u16 iwl_eeprom_query16(const u8 *eeprom, size_t eeprom_size, int offset)
 {
@@ -199,7 +190,7 @@ static u32 eeprom_indirect_address(const u8 *eeprom, size_t eeprom_size,
 		break;
 	}
 
-	/* translate the offset from words to byte */
+	 
 	return (address & ADDRESS_MSK) + (offset << 1);
 }
 
@@ -229,15 +220,7 @@ static int iwl_eeprom_read_calib(const u8 *eeprom, size_t eeprom_size,
 	return 0;
 }
 
-/**
- * enum iwl_eeprom_channel_flags - channel flags in EEPROM
- * @EEPROM_CHANNEL_VALID: channel is usable for this SKU/geo
- * @EEPROM_CHANNEL_IBSS: usable as an IBSS channel
- * @EEPROM_CHANNEL_ACTIVE: active scanning allowed
- * @EEPROM_CHANNEL_RADAR: radar detection required
- * @EEPROM_CHANNEL_WIDE: 20 MHz channel okay (?)
- * @EEPROM_CHANNEL_DFS: dynamic freq selection candidate
- */
+ 
 enum iwl_eeprom_channel_flags {
 	EEPROM_CHANNEL_VALID = BIT(0),
 	EEPROM_CHANNEL_IBSS = BIT(1),
@@ -247,11 +230,7 @@ enum iwl_eeprom_channel_flags {
 	EEPROM_CHANNEL_DFS = BIT(7),
 };
 
-/**
- * struct iwl_eeprom_channel - EEPROM channel data
- * @flags: %EEPROM_CHANNEL_* flags
- * @max_power_avg: max power (in dBm) on this channel, at most 31 dBm
- */
+ 
 struct iwl_eeprom_channel {
 	u8 flags;
 	s8 max_power_avg;
@@ -269,20 +248,7 @@ enum iwl_eeprom_enhanced_txpwr_flags {
 	IWL_EEPROM_ENH_TXP_FL_COMMON_TYPE = BIT(7),
 };
 
-/**
- * struct iwl_eeprom_enhanced_txpwr
- * @flags: entry flags
- * @channel: channel number
- * @chain_a_max: chain a max power in 1/2 dBm
- * @chain_b_max: chain b max power in 1/2 dBm
- * @chain_c_max: chain c max power in 1/2 dBm
- * @delta_20_in_40: 20-in-40 deltas (hi/lo)
- * @mimo2_max: mimo2 max power in 1/2 dBm
- * @mimo3_max: mimo3 max power in 1/2 dBm
- *
- * This structure presents the enhanced regulatory tx power limit layout
- * in an EEPROM image.
- */
+ 
 struct iwl_eeprom_enhanced_txpwr {
 	u8 flags;
 	u8 channel;
@@ -297,9 +263,9 @@ struct iwl_eeprom_enhanced_txpwr {
 static s8 iwl_get_max_txpwr_half_dbm(const struct iwl_nvm_data *data,
 				     struct iwl_eeprom_enhanced_txpwr *txp)
 {
-	s8 result = 0; /* (.5 dBm) */
+	s8 result = 0;  
 
-	/* Take the highest tx power from any valid chains */
+	 
 	if (data->valid_tx_ant & ANT_A && txp->chain_a_max > result)
 		result = txp->chain_a_max;
 
@@ -341,11 +307,11 @@ iwl_eeprom_enh_txp_read_element(struct iwl_nvm_data *data,
 	for (ch_idx = 0; ch_idx < n_channels; ch_idx++) {
 		struct ieee80211_channel *chan = &data->channels[ch_idx];
 
-		/* update matching channel or from common data only */
+		 
 		if (txp->channel != 0 && chan->hw_value != txp->channel)
 			continue;
 
-		/* update matching band only */
+		 
 		if (band != chan->band)
 			continue;
 
@@ -367,7 +333,7 @@ static void iwl_eeprom_enhanced_txpower(struct device *dev,
 
 	BUILD_BUG_ON(sizeof(struct iwl_eeprom_enhanced_txpwr) != 8);
 
-	/* the length is in 16-bit words, but we want entries */
+	 
 	txp_len = (__le16 *)iwl_eeprom_query_addr(eeprom, eeprom_size,
 						  EEPROM_TXP_SZ_OFFS);
 	entries = le16_to_cpup(txp_len) * 2 / EEPROM_TXP_ENTRY_LEN;
@@ -377,7 +343,7 @@ static void iwl_eeprom_enhanced_txpower(struct device *dev,
 
 	for (idx = 0; idx < entries; idx++) {
 		txp = &txp_array[idx];
-		/* skip invalid entries */
+		 
 		if (!(txp->flags & IWL_EEPROM_ENH_TXP_FL_VALID))
 			continue;
 
@@ -429,31 +395,31 @@ static void iwl_init_band_reference(const struct iwl_cfg *cfg,
 	*ch_info = (void *)iwl_eeprom_query_addr(eeprom, eeprom_size, offset);
 
 	switch (eeprom_band) {
-	case 1:		/* 2.4GHz band */
+	case 1:		 
 		*eeprom_ch_count = ARRAY_SIZE(iwl_eeprom_band_1);
 		*eeprom_ch_array = iwl_eeprom_band_1;
 		break;
-	case 2:		/* 4.9GHz band */
+	case 2:		 
 		*eeprom_ch_count = ARRAY_SIZE(iwl_eeprom_band_2);
 		*eeprom_ch_array = iwl_eeprom_band_2;
 		break;
-	case 3:		/* 5.2GHz band */
+	case 3:		 
 		*eeprom_ch_count = ARRAY_SIZE(iwl_eeprom_band_3);
 		*eeprom_ch_array = iwl_eeprom_band_3;
 		break;
-	case 4:		/* 5.5GHz band */
+	case 4:		 
 		*eeprom_ch_count = ARRAY_SIZE(iwl_eeprom_band_4);
 		*eeprom_ch_array = iwl_eeprom_band_4;
 		break;
-	case 5:		/* 5.7GHz band */
+	case 5:		 
 		*eeprom_ch_count = ARRAY_SIZE(iwl_eeprom_band_5);
 		*eeprom_ch_array = iwl_eeprom_band_5;
 		break;
-	case 6:		/* 2.4GHz ht40 channels */
+	case 6:		 
 		*eeprom_ch_count = ARRAY_SIZE(iwl_eeprom_band_6);
 		*eeprom_ch_array = iwl_eeprom_band_6;
 		break;
-	case 7:		/* 5 GHz ht40 channels */
+	case 7:		 
 		*eeprom_ch_count = ARRAY_SIZE(iwl_eeprom_band_7);
 		*eeprom_ch_array = iwl_eeprom_band_7;
 		break;
@@ -520,9 +486,7 @@ static int iwl_init_channel_map(struct device *dev, const struct iwl_cfg *cfg,
 	int eeprom_ch_count;
 	int n_channels = 0;
 
-	/*
-	 * Loop through the 5 EEPROM bands and add them to the parse list
-	 */
+	 
 	for (band = 1; band <= 5; band++) {
 		struct ieee80211_channel *channel;
 
@@ -530,7 +494,7 @@ static int iwl_init_channel_map(struct device *dev, const struct iwl_cfg *cfg,
 					&eeprom_ch_count, &eeprom_ch_info,
 					&eeprom_ch_array);
 
-		/* Loop through each band adding each of the channels */
+		 
 		for (ch_idx = 0; ch_idx < eeprom_ch_count; ch_idx++) {
 			const struct iwl_eeprom_channel *eeprom_ch;
 
@@ -555,7 +519,7 @@ static int iwl_init_channel_map(struct device *dev, const struct iwl_cfg *cfg,
 				ieee80211_channel_to_frequency(
 					channel->hw_value, channel->band);
 
-			/* set no-HT40, will enable as appropriate later */
+			 
 			channel->flags = IEEE80211_CHAN_NO_HT40;
 
 			if (!(eeprom_ch->flags & EEPROM_CHANNEL_IBSS))
@@ -567,7 +531,7 @@ static int iwl_init_channel_map(struct device *dev, const struct iwl_cfg *cfg,
 			if (eeprom_ch->flags & EEPROM_CHANNEL_RADAR)
 				channel->flags |= IEEE80211_CHAN_RADAR;
 
-			/* Initialize regulatory-based run-time data */
+			 
 			channel->max_power =
 				eeprom_ch_info[ch_idx].max_power_avg;
 			IWL_DEBUG_EEPROM(dev,
@@ -591,16 +555,11 @@ static int iwl_init_channel_map(struct device *dev, const struct iwl_cfg *cfg,
 	}
 
 	if (cfg->eeprom_params->enhanced_txpower) {
-		/*
-		 * for newer device (6000 series and up)
-		 * EEPROM contain enhanced tx power information
-		 * driver need to process addition information
-		 * to determine the max channel tx power limits
-		 */
+		 
 		iwl_eeprom_enhanced_txpower(dev, data, eeprom, eeprom_size,
 					    n_channels);
 	} else {
-		/* All others use data from channel map */
+		 
 		int i;
 
 		data->max_tx_pwr_half_dbm = -128;
@@ -611,14 +570,14 @@ static int iwl_init_channel_map(struct device *dev, const struct iwl_cfg *cfg,
 				      data->channels[i].max_power * 2);
 	}
 
-	/* Check if we do have HT40 channels */
+	 
 	if (cfg->eeprom_params->regulatory_bands[5] ==
 				EEPROM_REGULATORY_BAND_NO_HT40 &&
 	    cfg->eeprom_params->regulatory_bands[6] ==
 				EEPROM_REGULATORY_BAND_NO_HT40)
 		return n_channels;
 
-	/* Two additional EEPROM bands for 2.4 and 5 GHz HT40 channels */
+	 
 	for (band = 6; band <= 7; band++) {
 		enum nl80211_band ieeeband;
 
@@ -626,19 +585,19 @@ static int iwl_init_channel_map(struct device *dev, const struct iwl_cfg *cfg,
 					&eeprom_ch_count, &eeprom_ch_info,
 					&eeprom_ch_array);
 
-		/* EEPROM band 6 is 2.4, band 7 is 5 GHz */
+		 
 		ieeeband = (band == 6) ? NL80211_BAND_2GHZ
 				       : NL80211_BAND_5GHZ;
 
-		/* Loop through each band adding each of the channels */
+		 
 		for (ch_idx = 0; ch_idx < eeprom_ch_count; ch_idx++) {
-			/* Set up driver's info for lower half */
+			 
 			iwl_mod_ht40_chan_info(dev, data, n_channels, ieeeband,
 					       eeprom_ch_array[ch_idx],
 					       &eeprom_ch_info[ch_idx],
 					       IEEE80211_CHAN_NO_HT40PLUS);
 
-			/* Set up driver's info for upper half */
+			 
 			iwl_mod_ht40_chan_info(dev, data, n_channels, ieeeband,
 					       eeprom_ch_array[ch_idx] + 4,
 					       &eeprom_ch_info[ch_idx],
@@ -672,8 +631,8 @@ int iwl_init_sband_channels(struct iwl_nvm_data *data,
 	return n;
 }
 
-#define MAX_BIT_RATE_40_MHZ	150 /* Mbps */
-#define MAX_BIT_RATE_20_MHZ	72 /* Mbps */
+#define MAX_BIT_RATE_40_MHZ	150  
+#define MAX_BIT_RATE_20_MHZ	72  
 
 void iwl_init_ht_hw_capab(struct iwl_trans *trans,
 			  struct iwl_nvm_data *data,
@@ -738,12 +697,12 @@ void iwl_init_ht_hw_capab(struct iwl_trans *trans,
 		max_bit_rate = MAX_BIT_RATE_40_MHZ;
 	}
 
-	/* Highest supported Rx data rate */
+	 
 	max_bit_rate *= rx_chains;
 	WARN_ON(max_bit_rate & ~IEEE80211_HT_MCS_RX_HIGHEST_MASK);
 	ht_info->mcs.rx_highest = cpu_to_le16(max_bit_rate);
 
-	/* Tx MCS capabilities */
+	 
 	ht_info->mcs.tx_params = IEEE80211_HT_MCS_TX_DEFINED;
 	if (tx_chains != rx_chains) {
 		ht_info->mcs.tx_params |= IEEE80211_HT_MCS_TX_RX_DIFF;
@@ -786,7 +745,7 @@ static void iwl_init_sbands(struct iwl_trans *trans, const struct iwl_cfg *cfg,
 			    n_used, n_channels);
 }
 
-/* EEPROM data functions */
+ 
 
 struct iwl_nvm_data *
 iwl_parse_eeprom_data(struct iwl_trans *trans, const struct iwl_cfg *cfg,
@@ -805,7 +764,7 @@ iwl_parse_eeprom_data(struct iwl_trans *trans, const struct iwl_cfg *cfg,
 	if (!data)
 		return NULL;
 
-	/* get MAC address(es) */
+	 
 	tmp = iwl_eeprom_query_addr(eeprom, eeprom_size, EEPROM_MAC_ADDRESS);
 	if (!tmp)
 		goto err_free;
@@ -856,7 +815,7 @@ iwl_parse_eeprom_data(struct iwl_trans *trans, const struct iwl_cfg *cfg,
 	data->nvm_version = iwl_eeprom_query16(eeprom, eeprom_size,
 					       EEPROM_VERSION);
 
-	/* check overrides (some devices have wrong EEPROM) */
+	 
 	if (cfg->valid_tx_ant)
 		data->valid_tx_ant = cfg->valid_tx_ant;
 	if (cfg->valid_rx_ant)

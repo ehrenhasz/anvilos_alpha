@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause */
-/*
- * Qualcomm SDM670 interconnect IDs
- *
- * Copyright (c) 2022, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef __DT_BINDINGS_INTERCONNECT_QCOM_SDM670_H
 #define __DT_BINDINGS_INTERCONNECT_QCOM_SDM670_H

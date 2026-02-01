@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright IBM Corp. 2008, 2009
- *
- *  Author: Jan Glauber (jang@linux.vnet.ibm.com)
- */
+
+ 
 #include <linux/seq_file.h>
 #include <linux/debugfs.h>
 #include <linux/uaccess.h>
@@ -65,7 +61,7 @@ int qdio_allocate_dbf(struct qdio_irq *irq_ptr)
 
 	DBF_EVENT("irq:%8lx", (unsigned long)irq_ptr);
 
-	/* allocate trace view for the interface */
+	 
 	snprintf(text, QDIO_DBF_NAME_LEN, "qdio_%s",
 		 dev_name(&irq_ptr->cdev->dev));
 	irq_ptr->debug_area = qdio_get_dbf_entry(text);

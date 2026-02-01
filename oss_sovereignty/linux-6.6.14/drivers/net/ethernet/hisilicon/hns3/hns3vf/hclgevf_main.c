@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright (c) 2016-2017 Hisilicon Limited.
+
+
 
 #include <linux/etherdevice.h>
 #include <linux/iopoll.h>
@@ -28,20 +28,13 @@ static const struct pci_device_id ae_algovf_pci_tbl[] = {
 	{PCI_VDEVICE(HUAWEI, HNAE3_DEV_ID_VF), 0},
 	{PCI_VDEVICE(HUAWEI, HNAE3_DEV_ID_RDMA_DCB_PFC_VF),
 	 HNAE3_DEV_SUPPORT_ROCE_DCB_BITS},
-	/* required last entry */
+	 
 	{0, }
 };
 
 MODULE_DEVICE_TABLE(pci, ae_algovf_pci_tbl);
 
-/* hclgevf_cmd_send - send command to command queue
- * @hw: pointer to the hw struct
- * @desc: prefilled descriptor for describing the command
- * @num : the number of descriptors to be sent
- *
- * This is the main send command for command queue, it
- * sends the queue, cleans the queue, etc
- */
+ 
 int hclgevf_cmd_send(struct hclgevf_hw *hw, struct hclge_desc *desc, int num)
 {
 	return hclge_comm_cmd_send(&hw->hw, desc, num);
@@ -52,7 +45,7 @@ void hclgevf_arq_init(struct hclgevf_dev *hdev)
 	struct hclge_comm_cmq *cmdq = &hdev->hw.hw.cmq;
 
 	spin_lock(&cmdq->crq.lock);
-	/* initialize the pointers of async rx queue of mailbox */
+	 
 	hdev->arq.hdev = hdev;
 	hdev->arq.head = 0;
 	hdev->arq.tail = 0;
@@ -283,9 +276,7 @@ static int hclgevf_alloc_tqps(struct hclgevf_dev *hdev)
 		tqp->q.tx_desc_num = hdev->num_tx_desc;
 		tqp->q.rx_desc_num = hdev->num_rx_desc;
 
-		/* need an extended offset to configure queues >=
-		 * HCLGEVF_TQP_MAX_SIZE_DEV_V2.
-		 */
+		 
 		if (i < HCLGEVF_TQP_MAX_SIZE_DEV_V2)
 			tqp->q.io_base = hdev->hw.hw.io_base +
 					 HCLGEVF_TQP_REG_OFFSET +
@@ -297,10 +288,7 @@ static int hclgevf_alloc_tqps(struct hclgevf_dev *hdev)
 					 (i - HCLGEVF_TQP_MAX_SIZE_DEV_V2) *
 					 HCLGEVF_TQP_REG_SIZE;
 
-		/* when device supports tx push and has device memory,
-		 * the queue can execute push mode or doorbell mode on
-		 * device memory.
-		 */
+		 
 		if (test_bit(HNAE3_DEV_SUPPORT_TX_PUSH_B, ae_dev->caps))
 			tqp->q.mem_base = hdev->hw.hw.mem_base +
 					  HCLGEVF_TQP_MEM_OFFSET(hdev, i);
@@ -344,9 +332,7 @@ static int hclgevf_knic_setup(struct hclgevf_dev *hdev)
 		kinfo->tqp[i] = &hdev->htqp[i].q;
 	}
 
-	/* after init the max rss_size and tqps, adjust the default tqp numbers
-	 * and rss size with the actual vector numbers
-	 */
+	 
 	kinfo->num_tqps = min_t(u16, hdev->num_nic_msix - 1, kinfo->num_tqps);
 	kinfo->rss_size = min_t(u16, kinfo->num_tqps / num_tc,
 				kinfo->rss_size);
@@ -481,7 +467,7 @@ static int hclgevf_get_vector_index(struct hclgevf_dev *hdev, int vector)
 	return -EINVAL;
 }
 
-/* for revision 0x20, vf shared the same rss config with pf */
+ 
 static int hclgevf_get_rss_hash_key(struct hclgevf_dev *hdev)
 {
 #define HCLGEVF_RSS_MBX_RESP_LEN	8
@@ -560,11 +546,11 @@ static int hclgevf_set_rss(struct hnae3_handle *handle, const u32 *indir,
 			return ret;
 	}
 
-	/* update the shadow RSS table with user specified qids */
+	 
 	for (i = 0; i < hdev->ae_dev->dev_specs.rss_ind_tbl_size; i++)
 		rss_cfg->rss_indirection_tbl[i] = indir[i];
 
-	/* update the hardware */
+	 
 	return hclge_comm_set_rss_indir_table(hdev->ae_dev, &hdev->hw.hw,
 					      rss_cfg->rss_indirection_tbl);
 }
@@ -887,12 +873,12 @@ static void hclgevf_update_mac_node(struct hclgevf_mac_addr_node *mac_node,
 				    enum HCLGEVF_MAC_NODE_STATE state)
 {
 	switch (state) {
-	/* from set_rx_mode or tmp_add_list */
+	 
 	case HCLGEVF_MAC_TO_ADD:
 		if (mac_node->state == HCLGEVF_MAC_TO_DEL)
 			mac_node->state = HCLGEVF_MAC_ACTIVE;
 		break;
-	/* only from set_rx_mode */
+	 
 	case HCLGEVF_MAC_TO_DEL:
 		if (mac_node->state == HCLGEVF_MAC_TO_ADD) {
 			list_del(&mac_node->node);
@@ -901,9 +887,7 @@ static void hclgevf_update_mac_node(struct hclgevf_mac_addr_node *mac_node,
 			mac_node->state = HCLGEVF_MAC_TO_DEL;
 		}
 		break;
-	/* only from tmp_add_list, the mac_node->state won't be
-	 * HCLGEVF_MAC_ACTIVE
-	 */
+	 
 	case HCLGEVF_MAC_ACTIVE:
 		if (mac_node->state == HCLGEVF_MAC_TO_ADD)
 			mac_node->state = HCLGEVF_MAC_ACTIVE;
@@ -925,17 +909,14 @@ static int hclgevf_update_mac_list(struct hnae3_handle *handle,
 
 	spin_lock_bh(&hdev->mac_table.mac_list_lock);
 
-	/* if the mac addr is already in the mac list, no need to add a new
-	 * one into it, just check the mac addr state, convert it to a new
-	 * state, or just remove it, or do nothing.
-	 */
+	 
 	mac_node = hclgevf_find_mac_node(list, addr);
 	if (mac_node) {
 		hclgevf_update_mac_node(mac_node, state);
 		spin_unlock_bh(&hdev->mac_table.mac_list_lock);
 		return 0;
 	}
-	/* if this address is never added, unnecessary to delete */
+	 
 	if (state == HCLGEVF_MAC_TO_DEL) {
 		spin_unlock_bh(&hdev->mac_table.mac_list_lock);
 		return -ENOENT;
@@ -1042,13 +1023,7 @@ static void hclgevf_sync_from_add_list(struct list_head *add_list,
 	struct hclgevf_mac_addr_node *mac_node, *tmp, *new_node;
 
 	list_for_each_entry_safe(mac_node, tmp, add_list, node) {
-		/* if the mac address from tmp_add_list is not in the
-		 * uc/mc_mac_list, it means have received a TO_DEL request
-		 * during the time window of sending mac config request to PF
-		 * If mac_node state is ACTIVE, then change its state to TO_DEL,
-		 * then it will be removed at next time. If is TO_ADD, it means
-		 * send TO_ADD request failed, so just remove the mac node.
-		 */
+		 
 		new_node = hclgevf_find_mac_node(mac_list, mac_node->mac_addr);
 		if (new_node) {
 			hclgevf_update_mac_node(new_node, mac_node->state);
@@ -1072,11 +1047,7 @@ static void hclgevf_sync_from_del_list(struct list_head *del_list,
 	list_for_each_entry_safe(mac_node, tmp, del_list, node) {
 		new_node = hclgevf_find_mac_node(mac_list, mac_node->mac_addr);
 		if (new_node) {
-			/* If the mac addr is exist in the mac list, it means
-			 * received a new request TO_ADD during the time window
-			 * of sending mac addr configurrequest to PF, so just
-			 * change the mac state to ACTIVE.
-			 */
+			 
 			new_node->state = HCLGEVF_MAC_ACTIVE;
 			list_del(&mac_node->node);
 			kfree(mac_node);
@@ -1106,9 +1077,7 @@ static void hclgevf_sync_mac_list(struct hclgevf_dev *hdev,
 	INIT_LIST_HEAD(&tmp_add_list);
 	INIT_LIST_HEAD(&tmp_del_list);
 
-	/* move the mac addr to the tmp_add_list and tmp_del_list, then
-	 * we can add/delete these mac addr outside the spin lock
-	 */
+	 
 	list = (mac_type == HCLGEVF_MAC_ADDR_UC) ?
 		&hdev->mac_table.uc_mac_list : &hdev->mac_table.mc_mac_list;
 
@@ -1136,13 +1105,11 @@ static void hclgevf_sync_mac_list(struct hclgevf_dev *hdev,
 stop_traverse:
 	spin_unlock_bh(&hdev->mac_table.mac_list_lock);
 
-	/* delete first, in order to get max mac table space for adding */
+	 
 	hclgevf_config_mac_list(hdev, &tmp_del_list, mac_type);
 	hclgevf_config_mac_list(hdev, &tmp_add_list, mac_type);
 
-	/* if some mac addresses were added/deleted fail, move back to the
-	 * mac_list, and retry at next time.
-	 */
+	 
 	spin_lock_bh(&hdev->mac_table.mac_list_lock);
 
 	hclgevf_sync_from_del_list(&tmp_del_list, list);
@@ -1198,10 +1165,7 @@ static int hclgevf_set_vlan_filter(struct hnae3_handle *handle,
 	if (proto != htons(ETH_P_8021Q))
 		return -EPROTONOSUPPORT;
 
-	/* When device is resetting or reset failed, firmware is unable to
-	 * handle mailbox. Just record the vlan id, and remove it after
-	 * reset finished.
-	 */
+	 
 	if ((test_bit(HCLGEVF_STATE_RST_HANDLING, &hdev->state) ||
 	     test_bit(HCLGEVF_STATE_RST_FAIL, &hdev->state)) && is_kill) {
 		set_bit(vlan_id, hdev->vlan_del_fail_bmap);
@@ -1217,10 +1181,7 @@ static int hclgevf_set_vlan_filter(struct hnae3_handle *handle,
 	vlan_filter->vlan_id = cpu_to_le16(vlan_id);
 	vlan_filter->proto = cpu_to_le16(be16_to_cpu(proto));
 
-	/* when remove hw vlan filter failed, record the vlan id,
-	 * and try to remove it from hw later, to be consistence
-	 * with stack.
-	 */
+	 
 	ret = hclgevf_send_mbx_msg(hdev, &send_msg, true, NULL, 0);
 	if (is_kill && ret)
 		set_bit(vlan_id, hdev->vlan_del_fail_bmap);
@@ -1276,7 +1237,7 @@ static int hclgevf_reset_tqp(struct hnae3_handle *handle)
 	int ret;
 	u16 i;
 
-	/* disable vf queue before send queue reset msg to PF */
+	 
 	ret = hclgevf_tqp_enable(handle, false);
 	if (ret) {
 		dev_err(&hdev->pdev->dev, "failed to disable tqp, ret = %d\n",
@@ -1380,17 +1341,14 @@ static int hclgevf_reset_wait(struct hclgevf_dev *hdev)
 					 HCLGEVF_RESET_WAIT_US,
 					 HCLGEVF_RESET_WAIT_TIMEOUT_US);
 
-	/* hardware completion status should be available by this time */
+	 
 	if (ret) {
 		dev_err(&hdev->pdev->dev,
 			"couldn't get reset done status from h/w, timeout!\n");
 		return ret;
 	}
 
-	/* we will wait a bit more to let reset of the stack to complete. This
-	 * might happen in case reset assertion was made by PF. Yes, this also
-	 * means we might end up waiting bit more even for VF reset.
-	 */
+	 
 	if (hdev->reset_type == HNAE3_VF_FULL_RESET)
 		msleep(5000);
 	else
@@ -1417,12 +1375,12 @@ static int hclgevf_reset_stack(struct hclgevf_dev *hdev)
 {
 	int ret;
 
-	/* uninitialize the nic client */
+	 
 	ret = hclgevf_notify_client(hdev, HNAE3_UNINIT_CLIENT);
 	if (ret)
 		return ret;
 
-	/* re-initialize the hclge device */
+	 
 	ret = hclgevf_reset_hdev(hdev);
 	if (ret) {
 		dev_err(&hdev->pdev->dev,
@@ -1430,15 +1388,15 @@ static int hclgevf_reset_stack(struct hclgevf_dev *hdev)
 		return ret;
 	}
 
-	/* bring up the nic client again */
+	 
 	ret = hclgevf_notify_client(hdev, HNAE3_INIT_CLIENT);
 	if (ret)
 		return ret;
 
-	/* clear handshake status with IMP */
+	 
 	hclgevf_reset_handshake(hdev, false);
 
-	/* bring up the nic to enable TX/RX again */
+	 
 	return hclgevf_notify_client(hdev, HNAE3_UP_CLIENT);
 }
 
@@ -1461,7 +1419,7 @@ static int hclgevf_reset_prepare_wait(struct hclgevf_dev *hdev)
 	}
 
 	set_bit(HCLGE_COMM_STATE_CMD_DISABLE, &hdev->hw.hw.comm_state);
-	/* inform hardware that preparatory work is done */
+	 
 	msleep(HCLGEVF_RESET_SYNC_TIME);
 	hclgevf_reset_handshake(hdev, true);
 	dev_info(&hdev->pdev->dev, "prepare reset(%d) wait done\n",
@@ -1499,7 +1457,7 @@ static void hclgevf_dump_rst_info(struct hclgevf_dev *hdev)
 
 static void hclgevf_reset_err_handle(struct hclgevf_dev *hdev)
 {
-	/* recover handshake status with IMP when reset fail */
+	 
 	hclgevf_reset_handshake(hdev, true);
 	hdev->rst_stats.rst_fail_cnt++;
 	dev_err(&hdev->pdev->dev, "failed to reset VF(%u)\n",
@@ -1523,13 +1481,13 @@ static int hclgevf_reset_prepare(struct hclgevf_dev *hdev)
 
 	hdev->rst_stats.rst_cnt++;
 
-	/* perform reset of the stack & ae device for a client */
+	 
 	ret = hclgevf_notify_roce_client(hdev, HNAE3_DOWN_CLIENT);
 	if (ret)
 		return ret;
 
 	rtnl_lock();
-	/* bring down the nic to stop any ongoing TX/RX */
+	 
 	ret = hclgevf_notify_client(hdev, HNAE3_DOWN_CLIENT);
 	rtnl_unlock();
 	if (ret)
@@ -1548,7 +1506,7 @@ static int hclgevf_reset_rebuild(struct hclgevf_dev *hdev)
 		return ret;
 
 	rtnl_lock();
-	/* now, re-initialize the nic client and ae device */
+	 
 	ret = hclgevf_reset_stack(hdev);
 	rtnl_unlock();
 	if (ret) {
@@ -1557,9 +1515,7 @@ static int hclgevf_reset_rebuild(struct hclgevf_dev *hdev)
 	}
 
 	ret = hclgevf_notify_roce_client(hdev, HNAE3_INIT_CLIENT);
-	/* ignore RoCE notify error if it fails HCLGEVF_RESET_MAX_FAIL_CNT - 1
-	 * times
-	 */
+	 
 	if (ret &&
 	    hdev->rst_stats.rst_fail_cnt < HCLGEVF_RESET_MAX_FAIL_CNT - 1)
 		return ret;
@@ -1581,11 +1537,9 @@ static void hclgevf_reset(struct hclgevf_dev *hdev)
 	if (hclgevf_reset_prepare(hdev))
 		goto err_reset;
 
-	/* check if VF could successfully fetch the hardware reset completion
-	 * status from the hardware
-	 */
+	 
 	if (hclgevf_reset_wait(hdev)) {
-		/* can't do much in this situation, will disable VF */
+		 
 		dev_err(&hdev->pdev->dev,
 			"failed to fetch H/W reset completion status\n");
 		goto err_reset;
@@ -1604,7 +1558,7 @@ static enum hnae3_reset_type hclgevf_get_reset_level(unsigned long *addr)
 {
 	enum hnae3_reset_type rst_level = HNAE3_NONE_RESET;
 
-	/* return the highest priority reset level amongst all */
+	 
 	if (test_bit(HNAE3_VF_RESET, addr)) {
 		rst_level = HNAE3_VF_RESET;
 		clear_bit(HNAE3_VF_RESET, addr);
@@ -1643,7 +1597,7 @@ static void hclgevf_reset_event(struct pci_dev *pdev,
 	else
 		hdev->reset_level = HNAE3_VF_FUNC_RESET;
 
-	/* reset of this VF requested */
+	 
 	set_bit(HCLGEVF_RESET_REQUESTED, &hdev->reset_state);
 	hclgevf_reset_task_schedule(hdev);
 
@@ -1689,7 +1643,7 @@ static void hclgevf_reset_prepare_general(struct hnae3_ae_dev *ae_dev,
 		msleep(HCLGEVF_RESET_RETRY_WAIT_MS);
 	}
 
-	/* disable misc vector before reset done */
+	 
 	hclgevf_enable_vector(&hdev->misc_vector, false);
 
 	if (hdev->reset_type == HNAE3_FLR_RESET)
@@ -1727,7 +1681,7 @@ static void hclgevf_get_misc_vector(struct hclgevf_dev *hdev)
 	vector->vector_irq = pci_irq_vector(hdev->pdev,
 					    HCLGEVF_MISC_VECTOR_NUM);
 	vector->addr = hdev->hw.hw.io_base + HCLGEVF_MISC_VECTOR_REG_BASE;
-	/* vector status always valid for Vector 0 */
+	 
 	hdev->vector_status[HCLGEVF_MISC_VECTOR_NUM] = 0;
 	hdev->vector_irq[HCLGEVF_MISC_VECTOR_NUM] = vector->vector_irq;
 
@@ -1772,11 +1726,7 @@ static void hclgevf_reset_service_task(struct hclgevf_dev *hdev)
 
 	if (test_and_clear_bit(HCLGEVF_RESET_PENDING,
 			       &hdev->reset_state)) {
-		/* PF has intimated that it is about to reset the hardware.
-		 * We now have to poll & check if hardware has actually
-		 * completed the reset sequence. On hardware reset completion,
-		 * VF needs to reset the client and ae device.
-		 */
+		 
 		hdev->reset_attempts = 0;
 
 		hdev->last_reset_time = jiffies;
@@ -1786,34 +1736,12 @@ static void hclgevf_reset_service_task(struct hclgevf_dev *hdev)
 			hclgevf_reset(hdev);
 	} else if (test_and_clear_bit(HCLGEVF_RESET_REQUESTED,
 				      &hdev->reset_state)) {
-		/* we could be here when either of below happens:
-		 * 1. reset was initiated due to watchdog timeout caused by
-		 *    a. IMP was earlier reset and our TX got choked down and
-		 *       which resulted in watchdog reacting and inducing VF
-		 *       reset. This also means our cmdq would be unreliable.
-		 *    b. problem in TX due to other lower layer(example link
-		 *       layer not functioning properly etc.)
-		 * 2. VF reset might have been initiated due to some config
-		 *    change.
-		 *
-		 * NOTE: Theres no clear way to detect above cases than to react
-		 * to the response of PF for this reset request. PF will ack the
-		 * 1b and 2. cases but we will not get any intimation about 1a
-		 * from PF as cmdq would be in unreliable state i.e. mailbox
-		 * communication between PF and VF would be broken.
-		 *
-		 * if we are never geting into pending state it means either:
-		 * 1. PF is not receiving our request which could be due to IMP
-		 *    reset
-		 * 2. PF is screwed
-		 * We cannot do much for 2. but to check first we can try reset
-		 * our PCIe + stack and see if it alleviates the problem.
-		 */
+		 
 		if (hdev->reset_attempts > HCLGEVF_MAX_RESET_ATTEMPTS_CNT) {
-			/* prepare for full reset of stack + pcie interface */
+			 
 			set_bit(HNAE3_VF_FULL_RESET, &hdev->reset_pending);
 
-			/* "defer" schedule the reset task again */
+			 
 			set_bit(HCLGEVF_RESET_PENDING, &hdev->reset_state);
 		} else {
 			hdev->reset_attempts++;
@@ -1887,9 +1815,7 @@ static void hclgevf_periodic_service_task(struct hclgevf_dev *hdev)
 	if (!(hdev->serv_processed_cnt % HCLGEVF_STATS_TIMER_INTERVAL))
 		hclge_comm_tqps_update_stats(handle, &hdev->hw.hw);
 
-	/* VF does not need to request link status when this bit is set, because
-	 * PF will push its link status to VFs when link status changed.
-	 */
+	 
 	if (!test_bit(HCLGEVF_STATE_PF_PUSH_LINK_STATUS, &hdev->state))
 		hclgevf_request_link_info(hdev);
 
@@ -1916,10 +1842,7 @@ static void hclgevf_service_task(struct work_struct *work)
 	hclgevf_mailbox_service_task(hdev);
 	hclgevf_periodic_service_task(hdev);
 
-	/* Handle reset and mbx again in case periodical task delays the
-	 * handling by calling hclgevf_task_schedule() in
-	 * hclgevf_periodic_service_task()
-	 */
+	 
 	hclgevf_reset_service_task(hdev);
 	hclgevf_mailbox_service_task(hdev);
 }
@@ -1934,7 +1857,7 @@ static enum hclgevf_evt_cause hclgevf_check_evt_cause(struct hclgevf_dev *hdev,
 {
 	u32 val, cmdq_stat_reg, rst_ing_reg;
 
-	/* fetch the events from their corresponding regs */
+	 
 	cmdq_stat_reg = hclgevf_read_dev(&hdev->hw,
 					 HCLGE_COMM_VECTOR0_CMDQ_STATE_REG);
 	if (BIT(HCLGEVF_VECTOR0_RST_INT_B) & cmdq_stat_reg) {
@@ -1946,24 +1869,16 @@ static enum hclgevf_evt_cause hclgevf_check_evt_cause(struct hclgevf_dev *hdev,
 		set_bit(HCLGE_COMM_STATE_CMD_DISABLE, &hdev->hw.hw.comm_state);
 		*clearval = ~(1U << HCLGEVF_VECTOR0_RST_INT_B);
 		hdev->rst_stats.vf_rst_cnt++;
-		/* set up VF hardware reset status, its PF will clear
-		 * this status when PF has initialized done.
-		 */
+		 
 		val = hclgevf_read_dev(&hdev->hw, HCLGEVF_VF_RST_ING);
 		hclgevf_write_dev(&hdev->hw, HCLGEVF_VF_RST_ING,
 				  val | HCLGEVF_VF_RST_ING_BIT);
 		return HCLGEVF_VECTOR0_EVENT_RST;
 	}
 
-	/* check for vector0 mailbox(=CMDQ RX) event source */
+	 
 	if (BIT(HCLGEVF_VECTOR0_RX_CMDQ_INT_B) & cmdq_stat_reg) {
-		/* for revision 0x21, clearing interrupt is writing bit 0
-		 * to the clear register, writing bit 1 means to keep the
-		 * old value.
-		 * for revision 0x20, the clear register is a read & write
-		 * register, so we should just write 0 to the bit we are
-		 * handling, and keep other bits as cmdq_stat_reg.
-		 */
+		 
 		if (hdev->ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V2)
 			*clearval = ~(1U << HCLGEVF_VECTOR0_RX_CMDQ_INT_B);
 		else
@@ -1973,7 +1888,7 @@ static enum hclgevf_evt_cause hclgevf_check_evt_cause(struct hclgevf_dev *hdev,
 		return HCLGEVF_VECTOR0_EVENT_MBX;
 	}
 
-	/* print other vector0 event source */
+	 
 	dev_info(&hdev->pdev->dev,
 		 "vector 0 interrupt from unknown source, cmdq_src = %#x\n",
 		 cmdq_stat_reg);
@@ -2029,17 +1944,17 @@ static int hclgevf_configure(struct hclgevf_dev *hdev)
 	if (ret)
 		return ret;
 
-	/* get current port based vlan state from PF */
+	 
 	ret = hclgevf_get_port_base_vlan_filter_state(hdev);
 	if (ret)
 		return ret;
 
-	/* get queue configuration from PF */
+	 
 	ret = hclgevf_get_queue_info(hdev);
 	if (ret)
 		return ret;
 
-	/* get queue depth info from PF */
+	 
 	ret = hclgevf_get_queue_depth(hdev);
 	if (ret)
 		return ret;
@@ -2180,7 +2095,7 @@ static void hclgevf_set_timer_task(struct hnae3_handle *handle, bool enable)
 	} else {
 		set_bit(HCLGEVF_STATE_DOWN, &hdev->state);
 
-		/* flush memory to make sure DOWN is seen by service task */
+		 
 		smp_mb__before_atomic();
 		hclgevf_flush_link_update(hdev);
 	}
@@ -2260,7 +2175,7 @@ static void hclgevf_state_init(struct hclgevf_dev *hdev)
 	INIT_LIST_HEAD(&hdev->mac_table.uc_mac_list);
 	INIT_LIST_HEAD(&hdev->mac_table.mc_mac_list);
 
-	/* bring the device down */
+	 
 	set_bit(HCLGEVF_STATE_DOWN, &hdev->state);
 }
 
@@ -2353,7 +2268,7 @@ static int hclgevf_misc_irq_init(struct hclgevf_dev *hdev)
 
 	hclgevf_clear_event_cause(hdev, 0);
 
-	/* enable misc. vector(vector 0) */
+	 
 	hclgevf_enable_vector(&hdev->misc_vector, true);
 
 	return ret;
@@ -2361,7 +2276,7 @@ static int hclgevf_misc_irq_init(struct hclgevf_dev *hdev)
 
 static void hclgevf_misc_irq_uninit(struct hclgevf_dev *hdev)
 {
-	/* disable misc vector(vector 0) */
+	 
 	hclgevf_enable_vector(&hdev->misc_vector, false);
 	synchronize_irq(hdev->misc_vector.vector_irq);
 	free_irq(hdev->misc_vector.vector_irq, hdev);
@@ -2490,7 +2405,7 @@ static void hclgevf_uninit_client_instance(struct hnae3_client *client,
 {
 	struct hclgevf_dev *hdev = ae_dev->priv;
 
-	/* un-init roce, if it exists */
+	 
 	if (hdev->roce_client) {
 		while (test_bit(HCLGEVF_STATE_RST_HANDLING, &hdev->state))
 			msleep(HCLGEVF_WAIT_RESET_DONE);
@@ -2501,7 +2416,7 @@ static void hclgevf_uninit_client_instance(struct hnae3_client *client,
 		hdev->roce.client = NULL;
 	}
 
-	/* un-init nic/unic, if this was not called by roce client */
+	 
 	if (client->ops->uninit_instance && hdev->nic_client &&
 	    client->type != HNAE3_CLIENT_ROCE) {
 		while (test_bit(HCLGEVF_STATE_RST_HANDLING, &hdev->state))
@@ -2519,7 +2434,7 @@ static int hclgevf_dev_mem_map(struct hclgevf_dev *hdev)
 	struct pci_dev *pdev = hdev->pdev;
 	struct hclgevf_hw *hw = &hdev->hw;
 
-	/* for device does not have device memory, return directly */
+	 
 	if (!(pci_select_bars(pdev, IORESOURCE_MEM) & BIT(HCLGEVF_MEM_BAR)))
 		return 0;
 
@@ -2621,12 +2536,10 @@ static int hclgevf_query_vf_resource(struct hclgevf_dev *hdev)
 		hnae3_get_field(le16_to_cpu(req->vf_intr_vector_number),
 				HCLGEVF_VEC_NUM_M, HCLGEVF_VEC_NUM_S);
 
-		/* nic's msix numbers is always equals to the roce's. */
+		 
 		hdev->num_nic_msix = hdev->num_roce_msix;
 
-		/* VF should have NIC vectors and Roce vectors, NIC vectors
-		 * are queued before Roce vectors. The offset is fixed to 64.
-		 */
+		 
 		hdev->num_msi = hdev->num_roce_msix +
 				hdev->roce_base_msix_offset;
 	} else {
@@ -2702,9 +2615,7 @@ static int hclgevf_query_dev_specs(struct hclgevf_dev *hdev)
 	int ret;
 	int i;
 
-	/* set default specifications as devices lower than version V3 do not
-	 * support querying specifications from firmware.
-	 */
+	 
 	if (hdev->ae_dev->dev_version < HNAE3_DEVICE_VERSION_V3) {
 		hclgevf_set_default_dev_specs(hdev);
 		return 0;
@@ -2822,7 +2733,7 @@ static int hclgevf_reset_hdev(struct hclgevf_dev *hdev)
 		return ret;
 	}
 
-	/* get current port based vlan state from PF */
+	 
 	ret = hclgevf_get_port_base_vlan_filter_state(hdev);
 	if (ret)
 		return ret;
@@ -2860,7 +2771,7 @@ static int hclgevf_init_hdev(struct hclgevf_dev *hdev)
 	if (ret)
 		goto err_cmd_init;
 
-	/* Get vf resource */
+	 
 	ret = hclgevf_query_vf_resource(hdev);
 	if (ret)
 		goto err_cmd_init;
@@ -2908,7 +2819,7 @@ static int hclgevf_init_hdev(struct hclgevf_dev *hdev)
 	if (ret)
 		goto err_config;
 
-	/* Initialize RSS for this VF */
+	 
 	ret = hclge_comm_rss_init_cfg(&hdev->nic, hdev->ae_dev,
 				      &hdev->rss_cfg);
 	if (ret) {
@@ -2923,7 +2834,7 @@ static int hclgevf_init_hdev(struct hclgevf_dev *hdev)
 		goto err_config;
 	}
 
-	/* ensure vf tbl list as empty before init */
+	 
 	ret = hclgevf_clear_vport_list(hdev);
 	if (ret) {
 		dev_err(&pdev->dev,
@@ -3025,16 +2936,7 @@ static u32 hclgevf_get_max_channels(struct hclgevf_dev *hdev)
 		     hdev->num_tqps / kinfo->tc_info.num_tc);
 }
 
-/**
- * hclgevf_get_channels - Get the current channels enabled and max supported.
- * @handle: hardware information for network interface
- * @ch: ethtool channels structure
- *
- * We don't support separate tx and rx queues as channels. The other count
- * represents how many queues are being used for control. max_combined counts
- * how many queue pairs we can support. They may not be mapped 1 to 1 with
- * q_vectors since we support a lot more queue pairs than q_vectors.
- **/
+ 
 static void hclgevf_get_channels(struct hnae3_handle *handle,
 				 struct ethtool_channels *ch)
 {
@@ -3067,9 +2969,7 @@ static void hclgevf_update_rss_size(struct hnae3_handle *handle,
 	max_rss_size = min_t(u16, hdev->rss_size_max,
 			     hdev->num_tqps / kinfo->tc_info.num_tc);
 
-	/* Use the user's configuration when it is not larger than
-	 * max_rss_size, otherwise, use the maximum specification value.
-	 */
+	 
 	if (kinfo->req_rss_size != kinfo->rss_size && kinfo->req_rss_size &&
 	    kinfo->req_rss_size <= max_rss_size)
 		kinfo->rss_size = kinfo->req_rss_size;
@@ -3103,11 +3003,11 @@ static int hclgevf_set_channels(struct hnae3_handle *handle, u32 new_tqps_num,
 	if (ret)
 		return ret;
 
-	/* RSS indirection table has been configured by user */
+	 
 	if (rxfh_configured)
 		goto out;
 
-	/* Reinitializes the rss indirect table according to the new RSS size */
+	 
 	rss_indir = kcalloc(hdev->ae_dev->dev_specs.rss_ind_tbl_size,
 			    sizeof(u32), GFP_KERNEL);
 	if (!rss_indir)
@@ -3250,7 +3150,7 @@ void hclgevf_update_port_base_vlan_info(struct hclgevf_dev *hdev, u16 state,
 		return;
 	}
 
-	/* send msg to PF and wait update port based vlan info */
+	 
 	hclgevf_build_send_msg(&send_msg, HCLGE_MBX_SET_VLAN,
 			       HCLGE_MBX_PORT_BASE_VLAN_CFG);
 	memcpy(send_msg.data, port_base_vlan, sizeof(*port_base_vlan));

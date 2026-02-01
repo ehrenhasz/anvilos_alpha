@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-//
-// Copyright (C) 2018 ROHM Semiconductors
-//
-// ROHM BD71837MWV and BD71847MWV PMIC driver
-//
-// Datasheet for BD71837MWV available from
-// https://www.rohm.com/datasheet/BD71837MWV/bd71837mwv-e
+
+
+
+
+
+
+
+
 
 #include <linux/gpio_keys.h>
 #include <linux/i2c.h>
@@ -216,7 +216,7 @@ static int __init bd718xx_i2c_init(void)
 	return i2c_add_driver(&bd718xx_i2c_driver);
 }
 
-/* Initialise early so consumer devices can complete system boot */
+ 
 subsys_initcall(bd718xx_i2c_init);
 
 static void __exit bd718xx_i2c_exit(void)

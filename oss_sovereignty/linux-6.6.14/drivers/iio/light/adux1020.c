@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * adux1020.c - Support for Analog Devices ADUX1020 photometric sensor
- *
- * Copyright (C) 2019 Linaro Ltd.
- * Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
- *
- * TODO: Triggered buffer support
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -26,7 +19,7 @@
 #define ADUX1020_REGMAP_NAME		"adux1020_regmap"
 #define ADUX1020_DRV_NAME		"adux1020"
 
-/* System registers */
+ 
 #define ADUX1020_REG_CHIP_ID		0x08
 #define ADUX1020_REG_SLAVE_ADDRESS	0x09
 
@@ -45,7 +38,7 @@
 #define	ADUX1020_REG_INT_STATUS		0x49
 #define	ADUX1020_REG_DATA_BUFFER	0x60
 
-/* Chip ID bits */
+ 
 #define ADUX1020_CHIP_ID_MASK		GENMASK(11, 0)
 #define ADUX1020_CHIP_ID		0x03fc
 
@@ -81,7 +74,7 @@
 #define ADUX1020_LED_CURRENT_MASK	GENMASK(3, 0)
 #define ADUX1020_LED_PIREF_EN		BIT(12)
 
-/* Operating modes */
+ 
 enum adux1020_op_modes {
 	ADUX1020_MODE_STANDBY,
 	ADUX1020_MODE_PROX_I,
@@ -218,7 +211,7 @@ static int adux1020_flush_fifo(struct adux1020_data *data)
 {
 	int ret;
 
-	/* Force Idle mode */
+	 
 	ret = regmap_write(data->regmap, ADUX1020_REG_FORCE_MODE,
 			   ADUX1020_ACTIVE_4_STATE);
 	if (ret < 0)
@@ -234,7 +227,7 @@ static int adux1020_flush_fifo(struct adux1020_data *data)
 	if (ret < 0)
 		return ret;
 
-	/* Flush FIFO */
+	 
 	ret = regmap_write(data->regmap, ADUX1020_REG_TEST_MODES_3,
 			   ADUX1020_FORCE_CLOCK_ON);
 	if (ret < 0)
@@ -254,7 +247,7 @@ static int adux1020_read_fifo(struct adux1020_data *data, u16 *buf, u8 buf_len)
 	unsigned int regval;
 	int i, ret;
 
-	/* Enable 32MHz clock */
+	 
 	ret = regmap_write(data->regmap, ADUX1020_REG_TEST_MODES_3,
 			   ADUX1020_FORCE_CLOCK_ON);
 	if (ret < 0)
@@ -269,7 +262,7 @@ static int adux1020_read_fifo(struct adux1020_data *data, u16 *buf, u8 buf_len)
 		buf[i] = regval;
 	}
 
-	/* Set 32MHz clock to be controlled by internal state machine */
+	 
 	return regmap_write(data->regmap, ADUX1020_REG_TEST_MODES_3,
 			    ADUX1020_FORCE_CLOCK_RESET);
 }
@@ -279,13 +272,13 @@ static int adux1020_set_mode(struct adux1020_data *data,
 {
 	int ret;
 
-	/* Switch to standby mode before changing the mode */
+	 
 	ret = regmap_write(data->regmap, ADUX1020_REG_OP_MODE,
 			   ADUX1020_MODE_STANDBY);
 	if (ret < 0)
 		return ret;
 
-	/* Set data out and switch to the desired mode */
+	 
 	switch (mode) {
 	case ADUX1020_MODE_PROX_I:
 		ret = regmap_update_bits(data->regmap, ADUX1020_REG_OP_MODE,
@@ -314,13 +307,13 @@ static int adux1020_measure(struct adux1020_data *data,
 	unsigned int status;
 	int ret, tries = 50;
 
-	/* Disable INT pin as polling is going to be used */
+	 
 	ret = regmap_write(data->regmap, ADUX1020_REG_INT_ENABLE,
 			   ADUX1020_INT_DISABLE);
 	if (ret < 0)
 		return ret;
 
-	/* Enable mode interrupt */
+	 
 	ret = regmap_update_bits(data->regmap, ADUX1020_REG_INT_MASK,
 				 ADUX1020_MODE_INT_MASK,
 				 adux1020_modes[mode].int_en);
@@ -346,13 +339,13 @@ static int adux1020_measure(struct adux1020_data *data,
 	if (ret < 0)
 		return ret;
 
-	/* Clear mode interrupt */
+	 
 	ret = regmap_write(data->regmap, ADUX1020_REG_INT_STATUS,
 			   (~adux1020_modes[mode].int_en));
 	if (ret < 0)
 		return ret;
 
-	/* Disable mode interrupts */
+	 
 	return regmap_update_bits(data->regmap, ADUX1020_REG_INT_MASK,
 				  ADUX1020_MODE_INT_MASK,
 				  ADUX1020_MODE_INT_DISABLE);
@@ -535,17 +528,14 @@ static int adux1020_write_event_config(struct iio_dev *indio_dev,
 		if (ret < 0)
 			goto fail;
 
-		/*
-		 * Trigger proximity interrupt when the intensity is above
-		 * or below threshold
-		 */
+		 
 		ret = regmap_update_bits(data->regmap, ADUX1020_REG_PROX_TYPE,
 					 ADUX1020_PROX_TYPE,
 					 ADUX1020_PROX_TYPE);
 		if (ret < 0)
 			goto fail;
 
-		/* Set proximity mode */
+		 
 		ret = adux1020_set_mode(data, ADUX1020_MODE_PROX_I);
 		break;
 	default:
@@ -637,7 +627,7 @@ static int adux1020_write_thresh(struct iio_dev *indio_dev,
 		return -EINVAL;
 	}
 
-	/* Full scale threshold value is 0-65535  */
+	 
 	if (val < 0 || val > 65535)
 		return -EINVAL;
 
@@ -753,7 +743,7 @@ static int adux1020_chip_init(struct adux1020_data *data)
 	if (ret < 0)
 		return ret;
 
-	/* Load default configuration */
+	 
 	ret = regmap_multi_reg_write(data->regmap, adux1020_def_conf,
 				     ARRAY_SIZE(adux1020_def_conf));
 	if (ret < 0)
@@ -763,13 +753,13 @@ static int adux1020_chip_init(struct adux1020_data *data)
 	if (ret < 0)
 		return ret;
 
-	/* Use LED_IREF for proximity mode */
+	 
 	ret = regmap_update_bits(data->regmap, ADUX1020_REG_LED_CURRENT,
 				 ADUX1020_LED_PIREF_EN, 0);
 	if (ret < 0)
 		return ret;
 
-	/* Mask all interrupts */
+	 
 	return regmap_update_bits(data->regmap, ADUX1020_REG_INT_MASK,
 			   ADUX1020_MODE_INT_MASK, ADUX1020_MODE_INT_DISABLE);
 }

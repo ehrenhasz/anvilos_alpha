@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 #ifndef __SDIO_OPS_H__
 #define __SDIO_OPS_H__
 
@@ -12,8 +8,8 @@
 
 extern void sdio_set_intf_ops(struct adapter *padapter, struct _io_ops *pops);
 
-/* extern void sdio_func1cmd52_read(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *rmem); */
-/* extern void sdio_func1cmd52_write(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *wmem); */
+ 
+ 
 extern u8 SdioLocalCmd52Read1Byte(struct adapter *padapter, u32 addr);
 extern void SdioLocalCmd52Write1Byte(struct adapter *padapter, u32 addr, u8 v);
 extern s32 sdio_local_read(struct adapter *padapter, u32 addr, u32 cnt, u8 *pbuf);
@@ -31,4 +27,4 @@ extern void EnableInterrupt8723BSdio(struct adapter *padapter);
 extern void DisableInterrupt8723BSdio(struct adapter *padapter);
 extern u8 HalQueryTxBufferStatus8723BSdio(struct adapter *padapter);
 extern void HalQueryTxOQTBufferStatus8723BSdio(struct adapter *padapter);
-#endif /*  !__SDIO_OPS_H__ */
+#endif  

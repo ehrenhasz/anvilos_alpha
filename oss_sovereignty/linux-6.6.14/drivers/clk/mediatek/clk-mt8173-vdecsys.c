@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Copyright (c) 2022 Collabora Ltd.
- * Author: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
- */
+
+ 
 
 #include <dt-bindings/clock/mt8173-clk.h>
 #include <linux/module.h>
@@ -40,7 +36,7 @@ static const struct mtk_clk_desc vdec_desc = {
 
 static const struct of_device_id of_match_clk_mt8173_vdecsys[] = {
 	{ .compatible = "mediatek,mt8173-vdecsys", .data = &vdec_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8173_vdecsys);
 

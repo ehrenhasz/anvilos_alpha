@@ -1,13 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Atlantic Network Driver
- *
- * Copyright (C) 2014-2019 aQuantia Corporation
- * Copyright (C) 2019-2020 Marvell International Ltd.
- */
+ 
+ 
 
-/* File aq_hw_utils.h: Declaration of helper functions used across hardware
- * layer.
- */
+ 
 
 #ifndef AQ_HW_UTILS_H
 #define AQ_HW_UTILS_H
@@ -39,4 +33,4 @@ int aq_hw_err_from_flags(struct aq_hw_s *hw);
 int aq_hw_num_tcs(struct aq_hw_s *hw);
 int aq_hw_q_per_tc(struct aq_hw_s *hw);
 
-#endif /* AQ_HW_UTILS_H */
+#endif  

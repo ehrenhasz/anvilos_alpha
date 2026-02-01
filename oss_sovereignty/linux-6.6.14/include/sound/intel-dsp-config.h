@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  intel-dsp-config.h - Intel DSP config
- *
- *  Copyright (c) 2019 Jaroslav Kysela <perex@perex.cz>
- */
+ 
+ 
 
 #ifndef __INTEL_DSP_CONFIG_H__
 #define __INTEL_DSP_CONFIG_H__

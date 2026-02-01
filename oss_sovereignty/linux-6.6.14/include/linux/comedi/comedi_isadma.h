@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * COMEDI ISA DMA support functions
- * Copyright (c) 2014 H Hartley Sweeten <hsweeten@visionengravers.com>
- */
+ 
+ 
 
 #ifndef _COMEDI_ISADMA_H
 #define _COMEDI_ISADMA_H
@@ -12,22 +9,11 @@
 struct comedi_device;
 struct device;
 
-/*
- * These are used to avoid issues when <asm/dma.h> and the DMA_MODE_
- * defines are not available.
- */
+ 
 #define COMEDI_ISADMA_READ	0
 #define COMEDI_ISADMA_WRITE	1
 
-/**
- * struct comedi_isadma_desc - cookie for ISA DMA
- * @virt_addr:	virtual address of buffer
- * @hw_addr:	hardware (bus) address of buffer
- * @chan:	DMA channel
- * @maxsize:	allocated size of buffer (in bytes)
- * @size:	transfer size (in bytes)
- * @mode:	DMA_MODE_READ or DMA_MODE_WRITE
- */
+ 
 struct comedi_isadma_desc {
 	void *virt_addr;
 	dma_addr_t hw_addr;
@@ -37,15 +23,7 @@ struct comedi_isadma_desc {
 	char mode;
 };
 
-/**
- * struct comedi_isadma - ISA DMA data
- * @dev:	device to allocate non-coherent memory for
- * @desc:	cookie for each DMA buffer
- * @n_desc:	the number of cookies
- * @cur_dma:	the current cookie in use
- * @chan:	the first DMA channel requested
- * @chan2:	the second DMA channel requested
- */
+ 
 struct comedi_isadma {
 	struct device *dev;
 	struct comedi_isadma_desc *desc;
@@ -70,7 +48,7 @@ struct comedi_isadma *comedi_isadma_alloc(struct comedi_device *dev,
 					  unsigned int maxsize, char dma_dir);
 void comedi_isadma_free(struct comedi_isadma *dma);
 
-#else	/* !IS_ENABLED(CONFIG_ISA_DMA_API) */
+#else	 
 
 static inline void comedi_isadma_program(struct comedi_isadma_desc *desc)
 {
@@ -109,6 +87,6 @@ static inline void comedi_isadma_free(struct comedi_isadma *dma)
 {
 }
 
-#endif	/* !IS_ENABLED(CONFIG_ISA_DMA_API) */
+#endif	 
 
-#endif	/* #ifndef _COMEDI_ISADMA_H */
+#endif	 

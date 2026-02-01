@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Driver for Ntrig/Microsoft Touchscreens over SPI
- *
- *  Copyright (c) 2016 Red Hat Inc.
- */
+
+ 
 
 
 #include <linux/kernel.h>
@@ -102,12 +98,7 @@ static void surface3_spi_process_touch(struct surface3_ts_data *ts_data, u8 *dat
 		finger = (struct surface3_ts_data_finger *)&data[17 +
 				i * sizeof(struct surface3_ts_data_finger)];
 
-		/*
-		 * When bit 5 of status is 1, it marks the end of the report:
-		 * - touch present: 0xe7
-		 * - touch released: 0xe4
-		 * - nothing valuable: 0xff
-		 */
+		 
 		if (finger->status & 0x10)
 			break;
 
@@ -127,7 +118,7 @@ static void surface3_spi_report_pen(struct surface3_ts_data *ts_data,
 	int rubber = st & 0x18;
 	int tool = (prox && rubber) ? BTN_TOOL_RUBBER : BTN_TOOL_PEN;
 
-	/* fake proximity out to switch tools */
+	 
 	if (ts_data->pen_tool != tool) {
 		input_report_key(dev, ts_data->pen_tool, 0);
 		input_sync(dev);
@@ -210,15 +201,11 @@ static void surface3_spi_power(struct surface3_ts_data *data, bool on)
 {
 	gpiod_set_value(data->gpiod_rst[0], on);
 	gpiod_set_value(data->gpiod_rst[1], on);
-	/* let the device settle a little */
+	 
 	msleep(20);
 }
 
-/**
- * surface3_spi_get_gpio_config - Get GPIO config from ACPI/DT
- *
- * @data: surface3_spi_ts_data pointer
- */
+ 
 static int surface3_spi_get_gpio_config(struct surface3_ts_data *data)
 {
 	struct device *dev;
@@ -227,7 +214,7 @@ static int surface3_spi_get_gpio_config(struct surface3_ts_data *data)
 
 	dev = &data->spi->dev;
 
-	/* Get the reset lines GPIO pin number */
+	 
 	for (i = 0; i < 2; i++) {
 		gpiod = devm_gpiod_get_index(dev, NULL, i, GPIOD_OUT_LOW);
 		if (IS_ERR(gpiod))
@@ -262,7 +249,7 @@ static int surface3_spi_create_touch_input(struct surface3_ts_data *data)
 	input->name = "Surface3 SPI Capacitive TouchScreen";
 	input->phys = "input/ts";
 	input->id.bustype = BUS_SPI;
-	input->id.vendor = 0x045e;	/* Microsoft */
+	input->id.vendor = 0x045e;	 
 	input->id.product = 0x0001;
 	input->id.version = 0x0000;
 
@@ -303,7 +290,7 @@ static int surface3_spi_create_pen_input(struct surface3_ts_data *data)
 	input->name = "Surface3 SPI Pen Input";
 	input->phys = "input/ts";
 	input->id.bustype = BUS_SPI;
-	input->id.vendor = 0x045e;     /* Microsoft */
+	input->id.vendor = 0x045e;      
 	input->id.product = 0x0002;
 	input->id.version = 0x0000;
 
@@ -322,7 +309,7 @@ static int surface3_spi_probe(struct spi_device *spi)
 	struct surface3_ts_data *data;
 	int error;
 
-	/* Set up SPI*/
+	 
 	spi->bits_per_word = 8;
 	spi->mode = SPI_MODE_0;
 	error = spi_setup(spi);

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "mutex.h"
 
 #include "debug.h"
@@ -24,7 +24,7 @@ static void __mutex_init(struct mutex *mtx, bool pshared)
 	CHECK_ERR(pthread_mutexattr_init(&attr));
 
 #ifndef NDEBUG
-	/* In normal builds enable error checking, such as recursive usage. */
+	 
 	CHECK_ERR(pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK));
 #endif
 	if (pshared)
@@ -36,12 +36,12 @@ static void __mutex_init(struct mutex *mtx, bool pshared)
 
 void mutex_init(struct mutex *mtx)
 {
-	__mutex_init(mtx, /*pshared=*/false);
+	__mutex_init(mtx,  false);
 }
 
 void mutex_init_pshared(struct mutex *mtx)
 {
-	__mutex_init(mtx, /*pshared=*/true);
+	__mutex_init(mtx,  true);
 }
 
 void mutex_destroy(struct mutex *mtx)
@@ -66,12 +66,12 @@ bool mutex_trylock(struct mutex *mtx)
 	int ret = pthread_mutex_trylock(&mtx->lock);
 
 	if (ret == 0)
-		return true; /* Lock acquired. */
+		return true;  
 
 	if (ret == EBUSY)
-		return false; /* Lock busy. */
+		return false;  
 
-	/* Print error. */
+	 
 	CHECK_ERR(ret);
 	return false;
 }
@@ -90,12 +90,12 @@ static void __cond_init(struct cond *cnd, bool pshared)
 
 void cond_init(struct cond *cnd)
 {
-	__cond_init(cnd, /*pshared=*/false);
+	__cond_init(cnd,  false);
 }
 
 void cond_init_pshared(struct cond *cnd)
 {
-	__cond_init(cnd, /*pshared=*/true);
+	__cond_init(cnd,  true);
 }
 
 void cond_destroy(struct cond *cnd)

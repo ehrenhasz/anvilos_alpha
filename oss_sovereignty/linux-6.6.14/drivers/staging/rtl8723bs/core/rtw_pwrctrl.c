@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2012 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+
+ 
 #include <drv_types.h>
 #include <rtw_debug.h>
 #include <hal_data.h>
@@ -16,7 +12,7 @@ void _ips_enter(struct adapter *padapter)
 
 	pwrpriv->bips_processing = true;
 
-	/*  syn ips_mode with request */
+	 
 	pwrpriv->ips_mode = pwrpriv->ips_mode_req;
 
 	pwrpriv->ips_enter_cnts++;
@@ -108,7 +104,7 @@ static bool rtw_pwr_unassociated_idle(struct adapter *adapter)
 	)
 		goto exit;
 
-	/* consider buddy, if exist */
+	 
 	if (buddy) {
 		struct mlme_priv *b_pmlmepriv = &(buddy->mlmepriv);
 
@@ -138,10 +134,7 @@ exit:
 }
 
 
-/*
- * ATTENTION:
- *rtw_ps_processor() doesn't handle LPS.
- */
+ 
 void rtw_ps_processor(struct adapter *padapter)
 {
 	struct pwrctrl_priv *pwrpriv = adapter_to_pwrctl(padapter);
@@ -155,7 +148,7 @@ void rtw_ps_processor(struct adapter *padapter)
 	if (ps_deny != 0)
 		goto exit;
 
-	if (pwrpriv->bInSuspend) {/* system suspend or autosuspend */
+	if (pwrpriv->bInSuspend) { 
 		pdbgpriv->dbg_ps_insuspend_cnt++;
 		return;
 	}
@@ -196,13 +189,13 @@ void traffic_check_for_leave_lps(struct adapter *padapter, u8 tx, u32 tx_packets
 
 
 
-	if (tx) { /* from tx */
+	if (tx) {  
 		xmit_cnt += tx_packets;
 
 		if (start_time == 0)
 			start_time = jiffies;
 
-		if (jiffies_to_msecs(jiffies - start_time) > 2000) { /*  2 sec == watch dog timer */
+		if (jiffies_to_msecs(jiffies - start_time) > 2000) {  
 			if (xmit_cnt > 8) {
 				if (adapter_to_pwrctl(padapter)->bLeisurePs
 				    && (adapter_to_pwrctl(padapter)->pwr_mode != PS_MODE_ACTIVE)
@@ -215,8 +208,8 @@ void traffic_check_for_leave_lps(struct adapter *padapter, u8 tx, u32 tx_packets
 			xmit_cnt = 0;
 		}
 
-	} else { /*  from rx path */
-		if (pmlmepriv->LinkDetectInfo.NumRxUnicastOkInPeriod > 4/*2*/) {
+	} else {  
+		if (pmlmepriv->LinkDetectInfo.NumRxUnicastOkInPeriod > 4 ) {
 			if (adapter_to_pwrctl(padapter)->bLeisurePs
 			    && (adapter_to_pwrctl(padapter)->pwr_mode != PS_MODE_ACTIVE)
 			    && !(hal_btcoex_IsBtControlLps(padapter)))
@@ -225,19 +218,11 @@ void traffic_check_for_leave_lps(struct adapter *padapter, u8 tx, u32 tx_packets
 	}
 
 	if (bLeaveLPS)
-		/* rtw_lps_ctrl_wk_cmd(padapter, LPS_CTRL_LEAVE, 1); */
+		 
 		rtw_lps_ctrl_wk_cmd(padapter, LPS_CTRL_LEAVE, tx?0:1);
 }
 
-/*
- * Description:
- *This function MUST be called under power lock protect
- *
- * Parameters
- *padapter
- *pslv			power state level, only could be PS_STATE_S0 ~ PS_STATE_S4
- *
- */
+ 
 void rtw_set_rpwm(struct adapter *padapter, u8 pslv)
 {
 	u8 rpwm;
@@ -265,7 +250,7 @@ void rtw_set_rpwm(struct adapter *padapter, u8 pslv)
 	}
 
 	rpwm = pslv | pwrpriv->tog;
-	/*  only when from PS_STATE S0/S1 to S2 and higher needs ACK */
+	 
 	if ((pwrpriv->cpwm < PS_STATE_S2) && (pslv >= PS_STATE_S2))
 		rpwm |= PS_ACK;
 
@@ -281,7 +266,7 @@ void rtw_set_rpwm(struct adapter *padapter, u8 pslv)
 
 	pwrpriv->tog += 0x80;
 
-	/*  No LPS 32K, No Ack */
+	 
 	if (rpwm & PS_ACK) {
 		unsigned long start_time;
 		u8 cpwm_now;
@@ -289,7 +274,7 @@ void rtw_set_rpwm(struct adapter *padapter, u8 pslv)
 
 		start_time = jiffies;
 
-		/*  polling cpwm */
+		 
 		do {
 			mdelay(1);
 			poll_cnt++;
@@ -357,7 +342,7 @@ void rtw_set_ps_mode(struct adapter *padapter, u8 ps_mode, u8 smart_ps, u8 bcn_a
 
 	mutex_lock(&pwrpriv->lock);
 
-	/* if (pwrpriv->pwr_mode == PS_MODE_ACTIVE) */
+	 
 	if (ps_mode == PS_MODE_ACTIVE) {
 		if (!(hal_btcoex_IsBtControlLps(padapter))
 				|| (hal_btcoex_IsBtControlLps(padapter)
@@ -404,12 +389,7 @@ void rtw_set_ps_mode(struct adapter *padapter, u8 ps_mode, u8 smart_ps, u8 bcn_a
 	mutex_unlock(&pwrpriv->lock);
 }
 
-/*
- * Return:
- *0:	Leave OK
- *-1:	Timeout
- *-2:	Other error
- */
+ 
 s32 LPS_RF_ON_check(struct adapter *padapter, u32 delay_ms)
 {
 	unsigned long start_time;
@@ -438,10 +418,10 @@ s32 LPS_RF_ON_check(struct adapter *padapter, u32 delay_ms)
 	return err;
 }
 
-/*  */
-/* 	Description: */
-/* 		Enter the leisure power save mode. */
-/*  */
+ 
+ 
+ 
+ 
 void LPS_Enter(struct adapter *padapter, const char *msg)
 {
 	struct dvobj_priv *dvobj = adapter_to_dvobj(padapter);
@@ -452,13 +432,13 @@ void LPS_Enter(struct adapter *padapter, const char *msg)
 	if (hal_btcoex_IsBtControlLps(padapter))
 		return;
 
-	/* Skip lps enter request if number of assocated adapters is not 1 */
+	 
 	if (check_fwstate(&(dvobj->padapters->mlmepriv), WIFI_ASOC_STATE))
 		n_assoc_iface++;
 	if (n_assoc_iface != 1)
 		return;
 
-	/* Skip lps enter request for adapter not port0 */
+	 
 	if (get_iface_type(padapter) != IFACE_PORT0)
 		return;
 
@@ -466,8 +446,8 @@ void LPS_Enter(struct adapter *padapter, const char *msg)
 		return;
 
 	if (pwrpriv->bLeisurePs) {
-		/*  Idle for a while if we connect to AP a while ago. */
-		if (pwrpriv->LpsIdleCount >= 2) { /*   4 Sec */
+		 
+		if (pwrpriv->LpsIdleCount >= 2) {  
 			if (pwrpriv->pwr_mode == PS_MODE_ACTIVE) {
 				scnprintf(buf, sizeof(buf), "WIFI-%s", msg);
 				pwrpriv->bpower_saving = true;
@@ -478,10 +458,10 @@ void LPS_Enter(struct adapter *padapter, const char *msg)
 	}
 }
 
-/*  */
-/* 	Description: */
-/* 		Leave the leisure power save mode. */
-/*  */
+ 
+ 
+ 
+ 
 void LPS_Leave(struct adapter *padapter, const char *msg)
 {
 #define LPS_LEAVE_TIMEOUT_MS 100
@@ -515,7 +495,7 @@ void LeaveAllPowerSaveModeDirect(struct adapter *Adapter)
 	if (Adapter->bSurpriseRemoved)
 		return;
 
-	if (check_fwstate(pmlmepriv, _FW_LINKED)) { /* connect */
+	if (check_fwstate(pmlmepriv, _FW_LINKED)) {  
 
 		if (pwrpriv->pwr_mode == PS_MODE_ACTIVE)
 			return;
@@ -533,10 +513,10 @@ void LeaveAllPowerSaveModeDirect(struct adapter *Adapter)
 	}
 }
 
-/*  */
-/*  Description: Leave all power save mode: LPS, FwLPS, IPS if needed. */
-/*  Move code to function by tynli. 2010.03.26. */
-/*  */
+ 
+ 
+ 
+ 
 void LeaveAllPowerSaveMode(struct adapter *Adapter)
 {
 	struct dvobj_priv *dvobj = adapter_to_dvobj(Adapter);
@@ -552,7 +532,7 @@ void LeaveAllPowerSaveMode(struct adapter *Adapter)
 	if (check_fwstate(&(dvobj->padapters->mlmepriv), WIFI_ASOC_STATE))
 		n_assoc_iface++;
 
-	if (n_assoc_iface) { /* connect */
+	if (n_assoc_iface) {  
 		enqueue = 1;
 
 		rtw_lps_ctrl_wk_cmd(Adapter, LPS_CTRL_LEAVE, enqueue);
@@ -598,13 +578,7 @@ void LPS_Leave_check(struct adapter *padapter)
 	}
 }
 
-/*
- * Caller:ISR handler...
- *
- * This will be called when CPWM interrupt is up.
- *
- * using to update cpwn of drv; and drv willl make a decision to up or down pwr level
- */
+ 
 void cpwm_int_hdl(struct adapter *padapter, struct reportpwrstate_parm *preportpwrstate)
 {
 	struct pwrctrl_priv *pwrpriv;
@@ -682,9 +656,7 @@ exit:
 	mutex_unlock(&pwrpriv->lock);
 }
 
-/*
- * This function is a timer handler, can't do any IO in it.
- */
+ 
 static void pwr_rpwm_timeout_handler(struct timer_list *t)
 {
 	struct pwrctrl_priv *pwrpriv = from_timer(pwrpriv, t, pwr_rpwm_timer);
@@ -706,21 +678,7 @@ static inline void unregister_task_alive(struct pwrctrl_priv *pwrctrl, u32 tag)
 }
 
 
-/*
- * Description:
- *Check if the fw_pwrstate is okay for I/O.
- *If not (cpwm is less than S2), then the sub-routine
- *will raise the cpwm to be greater than or equal to S2.
- *
- *Calling Context: Passive
- *
- *Constraint:
- *	1. this function will request pwrctrl->lock
- *
- * Return Value:
- *_SUCCESS	hardware is ready for I/O
- *_FAIL		can't I/O right now
- */
+ 
 s32 rtw_register_task_alive(struct adapter *padapter, u32 task)
 {
 	s32 res;
@@ -753,16 +711,7 @@ s32 rtw_register_task_alive(struct adapter *padapter, u32 task)
 	return res;
 }
 
-/*
- * Description:
- *If task is done, call this func. to power down firmware again.
- *
- *Constraint:
- *	1. this function will request pwrctrl->lock
- *
- * Return Value:
- *none
- */
+ 
 void rtw_unregister_task_alive(struct adapter *padapter, u32 task)
 {
 	struct pwrctrl_priv *pwrctrl;
@@ -793,19 +742,7 @@ void rtw_unregister_task_alive(struct adapter *padapter, u32 task)
 	mutex_unlock(&pwrctrl->lock);
 }
 
-/*
- * Caller: rtw_xmit_thread
- *
- * Check if the fw_pwrstate is okay for xmit.
- * If not (cpwm is less than S3), then the sub-routine
- * will raise the cpwm to be greater than or equal to S3.
- *
- * Calling Context: Passive
- *
- * Return Value:
- * _SUCCESS	rtw_xmit_thread can write fifo/txcmd afterwards.
- * _FAIL		rtw_xmit_thread can not do anything.
- */
+ 
 s32 rtw_register_tx_alive(struct adapter *padapter)
 {
 	s32 res;
@@ -838,19 +775,7 @@ s32 rtw_register_tx_alive(struct adapter *padapter)
 	return res;
 }
 
-/*
- * Caller: rtw_cmd_thread
- *
- * Check if the fw_pwrstate is okay for issuing cmd.
- * If not (cpwm should be is less than S2), then the sub-routine
- * will raise the cpwm to be greater than or equal to S2.
- *
- * Calling Context: Passive
- *
- * Return Value:
- *_SUCCESS	rtw_cmd_thread can issue cmds to firmware afterwards.
- *_FAIL		rtw_cmd_thread can not do anything.
- */
+ 
 s32 rtw_register_cmd_alive(struct adapter *padapter)
 {
 	s32 res;
@@ -883,13 +808,7 @@ s32 rtw_register_cmd_alive(struct adapter *padapter)
 	return res;
 }
 
-/*
- * Caller: ISR
- *
- * If ISR's txdone,
- * No more pkts for TX,
- * Then driver shall call this fun. to power down firmware again.
- */
+ 
 void rtw_unregister_tx_alive(struct adapter *padapter)
 {
 	struct pwrctrl_priv *pwrctrl;
@@ -919,13 +838,7 @@ void rtw_unregister_tx_alive(struct adapter *padapter)
 	mutex_unlock(&pwrctrl->lock);
 }
 
-/*
- * Caller: ISR
- *
- * If all commands have been done,
- * and no more command to do,
- * then driver shall call this fun. to power down firmware again.
- */
+ 
 void rtw_unregister_cmd_alive(struct adapter *padapter)
 {
 	struct pwrctrl_priv *pwrctrl;
@@ -976,7 +889,7 @@ void rtw_init_pwrctrl_priv(struct adapter *padapter)
 	pwrctrlpriv->bkeepfwalive = false;
 
 	pwrctrlpriv->LpsIdleCount = 0;
-	pwrctrlpriv->power_mgnt = padapter->registrypriv.power_mgnt;/*  PS_MODE_MIN; */
+	pwrctrlpriv->power_mgnt = padapter->registrypriv.power_mgnt; 
 	pwrctrlpriv->bLeisurePs = pwrctrlpriv->power_mgnt != PS_MODE_ACTIVE;
 
 	pwrctrlpriv->fw_current_in_ps_mode = false;
@@ -1017,12 +930,7 @@ inline void rtw_set_ips_deny(struct adapter *padapter, u32 ms)
 	pwrpriv->ips_deny_time = jiffies + msecs_to_jiffies(ms);
 }
 
-/*
-* rtw_pwr_wakeup - Wake the NIC up from: 1)IPS. 2)USB autosuspend
-* @adapter: pointer to struct adapter structure
-* @ips_deffer_ms: the ms will prevent from falling into IPS after wakeup
-* Return _SUCCESS or _FAIL
-*/
+ 
 
 int _rtw_pwr_wakeup(struct adapter *padapter, u32 ips_deffer_ms, const char *caller)
 {
@@ -1033,10 +941,10 @@ int _rtw_pwr_wakeup(struct adapter *padapter, u32 ips_deffer_ms, const char *cal
 	unsigned long start = jiffies;
 	unsigned long deny_time = jiffies + msecs_to_jiffies(ips_deffer_ms);
 
-	/* for LPS */
+	 
 	LeaveAllPowerSaveMode(padapter);
 
-	/* IPS still bound with primary adapter */
+	 
 	padapter = GET_PRIMARY_ADAPTER(padapter);
 	pmlmepriv = &padapter->mlmepriv;
 
@@ -1053,19 +961,19 @@ int _rtw_pwr_wakeup(struct adapter *padapter, u32 ips_deffer_ms, const char *cal
 		)
 			mdelay(10);
 
-	/* System suspend is not allowed to wakeup */
+	 
 	if (!(pwrpriv->bInternalAutoSuspend) && pwrpriv->bInSuspend) {
 		ret = _FAIL;
 		goto exit;
 	}
 
-	/* block??? */
+	 
 	if (pwrpriv->bInternalAutoSuspend  && padapter->net_closed) {
 		ret = _FAIL;
 		goto exit;
 	}
 
-	/* I think this should be check in IPS, LPS, autosuspend functions... */
+	 
 	if (check_fwstate(pmlmepriv, _FW_LINKED)) {
 		ret = _SUCCESS;
 		goto exit;
@@ -1080,7 +988,7 @@ int _rtw_pwr_wakeup(struct adapter *padapter, u32 ips_deffer_ms, const char *cal
 		}
 	}
 
-	/* TODO: the following checking need to be merged... */
+	 
 	if (padapter->bDriverStopped || !padapter->bup || !padapter->hw_init_completed) {
 		ret = false;
 		goto exit;
@@ -1133,10 +1041,7 @@ int rtw_pm_set_ips(struct adapter *padapter, u8 mode)
 	return 0;
 }
 
-/*
- * ATTENTION:
- *This function will request pwrctrl LOCK!
- */
+ 
 void rtw_ps_deny(struct adapter *padapter, enum ps_deny_reason reason)
 {
 	struct pwrctrl_priv *pwrpriv;
@@ -1148,10 +1053,7 @@ void rtw_ps_deny(struct adapter *padapter, enum ps_deny_reason reason)
 	mutex_unlock(&pwrpriv->lock);
 }
 
-/*
- * ATTENTION:
- *This function will request pwrctrl LOCK!
- */
+ 
 void rtw_ps_deny_cancel(struct adapter *padapter, enum ps_deny_reason reason)
 {
 	struct pwrctrl_priv *pwrpriv;
@@ -1163,11 +1065,7 @@ void rtw_ps_deny_cancel(struct adapter *padapter, enum ps_deny_reason reason)
 	mutex_unlock(&pwrpriv->lock);
 }
 
-/*
- * ATTENTION:
- *Before calling this function pwrctrl lock should be occupied already,
- *otherwise it may return incorrect value.
- */
+ 
 u32 rtw_ps_deny_get(struct adapter *padapter)
 {
 	return adapter_to_pwrctl(padapter)->ps_deny;

@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// tscs454.c -- TSCS454 ALSA SoC Audio driver
-// Copyright 2018 Tempo Semiconductor, Inc.
-// Author: Steven Eckhoff <steven.eckhoff.opensource@gmail.com>
+
+
+
+
 
 #include <linux/kernel.h>
 #include <linux/clk.h>
@@ -147,7 +147,7 @@ struct coeff_ram_ctl {
 };
 
 static const struct reg_sequence tscs454_patch[] = {
-	/* Assign ASRC out of the box so DAI 1 just works */
+	 
 	{ R_AUDIOMUX1, FV_ASRCIMUX_I2S1 | FV_I2S2MUX_I2S2 },
 	{ R_AUDIOMUX2, FV_ASRCOMUX_I2S1 | FV_DACMUX_I2S1 | FV_I2S3MUX_I2S3 },
 	{ R_AUDIOMUX3, FV_CLSSDMUX_I2S1 | FV_SUBMUX_I2S1_LR },
@@ -440,7 +440,7 @@ static int coeff_ram_put(struct snd_kcontrol *kcontrol,
 	mutex_lock(&tscs454->pll2.lock);
 
 	val = snd_soc_component_read(component, R_PLLSTAT);
-	if (val) { /* PLLs locked */
+	if (val) {  
 		ret = write_coeff_ram(component, coeff_ram,
 			r_stat, r_addr, r_wr,
 			ctl->addr, coeff_cnt);
@@ -696,10 +696,7 @@ static int pll_connected(struct snd_soc_dapm_widget *source,
 	return users;
 }
 
-/*
- * PLL must be enabled after power up and must be disabled before power down
- * for proper clock switching.
- */
+ 
 static int pll_power_event(struct snd_soc_dapm_widget *w,
 		struct snd_kcontrol *kcontrol, int event)
 {
@@ -727,11 +724,7 @@ static int pll_power_event(struct snd_soc_dapm_widget *w,
 	if (enable)
 		val = pll1 ? FV_PLL1CLKEN_ENABLE : FV_PLL2CLKEN_ENABLE;
 	else
-		/*
-		 * FV_PLL1CLKEN_DISABLE and FV_PLL2CLKEN_DISABLE are
-		 * identical zero vzalues, there is no need to test
-		 * the PLL index
-		 */
+		 
 		val = FV_PLL1CLKEN_DISABLE;
 
 	ret = snd_soc_component_update_bits(component, R_PLLCTL, msk, val);
@@ -744,7 +737,7 @@ static int pll_power_event(struct snd_soc_dapm_widget *w,
 	}
 
 	if (enable) {
-		msleep(20); // Wait for lock
+		msleep(20); 
 		ret = coeff_ram_sync(component, tscs454);
 		if (ret < 0) {
 			dev_err(component->dev,
@@ -819,7 +812,7 @@ static inline int aif_free(struct snd_soc_component *component,
 		aif->id, tscs454->aifs_status.streams);
 
 	if (!aif_active(&tscs454->aifs_status, aif->id)) {
-		/* Do config in slave mode */
+		 
 		aif_set_provider(component, aif->id, false);
 		dev_dbg(component->dev, "Freeing pll %d from aif %d\n",
 				aif->pll->id, aif->id);
@@ -837,7 +830,7 @@ static inline int aif_free(struct snd_soc_component *component,
 	return 0;
 }
 
-/* R_PLLCTL PG 0 ADDR 0x15 */
+ 
 static char const * const bclk_sel_txt[] = {
 		"BCLK 1", "BCLK 2", "BCLK 3"};
 
@@ -845,7 +838,7 @@ static struct soc_enum const bclk_sel_enum =
 		SOC_ENUM_SINGLE(R_PLLCTL, FB_PLLCTL_BCLKSEL,
 				ARRAY_SIZE(bclk_sel_txt), bclk_sel_txt);
 
-/* R_ISRC PG 0 ADDR 0x16 */
+ 
 static char const * const isrc_br_txt[] = {
 		"44.1kHz", "48kHz"};
 
@@ -860,7 +853,7 @@ static struct soc_enum const isrc_bm_enum =
 		SOC_ENUM_SINGLE(R_ISRC, FB_ISRC_IBM,
 				ARRAY_SIZE(isrc_bm_txt), isrc_bm_txt);
 
-/* R_SCLKCTL PG 0 ADDR 0x18 */
+ 
 static char const * const modular_rate_txt[] = {
 	"Reserved", "Half", "Full", "Auto",};
 
@@ -872,7 +865,7 @@ static struct soc_enum const dac_modular_rate_enum =
 	SOC_ENUM_SINGLE(R_SCLKCTL, FB_SCLKCTL_DSDM,
 			ARRAY_SIZE(modular_rate_txt), modular_rate_txt);
 
-/* R_I2SIDCTL PG 0 ADDR 0x38 */
+ 
 static char const * const data_ctrl_txt[] = {
 	"L/R", "L/L", "R/R", "R/L"};
 
@@ -885,7 +878,7 @@ static struct soc_enum const data_in_ctrl_enums[] = {
 			ARRAY_SIZE(data_ctrl_txt), data_ctrl_txt),
 };
 
-/* R_I2SODCTL PG 0 ADDR 0x39 */
+ 
 static struct soc_enum const data_out_ctrl_enums[] = {
 	SOC_ENUM_SINGLE(R_I2SODCTL, FB_I2SODCTL_I2SO1DCTL,
 			ARRAY_SIZE(data_ctrl_txt), data_ctrl_txt),
@@ -895,7 +888,7 @@ static struct soc_enum const data_out_ctrl_enums[] = {
 			ARRAY_SIZE(data_ctrl_txt), data_ctrl_txt),
 };
 
-/* R_AUDIOMUX1 PG 0 ADDR 0x3A */
+ 
 static char const * const asrc_mux_txt[] = {
 		"None", "DAI 1", "DAI 2", "DAI 3"};
 
@@ -921,7 +914,7 @@ static struct soc_enum const dai1_mux_enum =
 static struct snd_kcontrol_new const dai1_mux_dapm_enum =
 		SOC_DAPM_ENUM("DAI 1 Mux", dai1_mux_enum);
 
-/* R_AUDIOMUX2 PG 0 ADDR 0x3B */
+ 
 static struct soc_enum const asrc_out_mux_enum =
 		SOC_ENUM_SINGLE(R_AUDIOMUX2, FB_AUDIOMUX2_ASRCOMUX,
 				ARRAY_SIZE(asrc_mux_txt), asrc_mux_txt);
@@ -940,7 +933,7 @@ static struct soc_enum const dai3_mux_enum =
 static struct snd_kcontrol_new const dai3_mux_dapm_enum =
 		SOC_DAPM_ENUM("DAI 3 Mux", dai3_mux_enum);
 
-/* R_AUDIOMUX3 PG 0 ADDR 0x3C */
+ 
 static char const * const sub_mux_txt[] = {
 		"CH 0", "CH 1", "CH 0 + 1",
 		"CH 2", "CH 3", "CH 2 + 3",
@@ -964,7 +957,7 @@ static struct soc_enum const classd_mux_enum =
 static struct snd_kcontrol_new const classd_mux_dapm_enum =
 		SOC_DAPM_ENUM("ClassD Mux", classd_mux_enum);
 
-/* R_HSDCTL1 PG 1 ADDR 0x01 */
+ 
 static char const * const jack_type_txt[] = {
 		"3 Terminal", "4 Terminal"};
 
@@ -979,7 +972,7 @@ static struct soc_enum const hs_det_pol_enum =
 		SOC_ENUM_SINGLE(R_HSDCTL1, FB_HSDCTL1_HSDETPOL,
 				ARRAY_SIZE(hs_det_pol_txt), hs_det_pol_txt);
 
-/* R_HSDCTL1 PG 1 ADDR 0x02 */
+ 
 static char const * const hs_mic_bias_force_txt[] = {
 		"Off", "Ring", "Sleeve"};
 
@@ -996,7 +989,7 @@ static struct soc_enum const plug_type_force_enum =
 		ARRAY_SIZE(plug_type_txt), plug_type_txt);
 
 
-/* R_CH0AIC PG 1 ADDR 0x06 */
+ 
 static char const * const in_bst_mux_txt[] = {
 		"Input 1", "Input 2", "Input 3", "D2S"};
 
@@ -1030,7 +1023,7 @@ static struct snd_kcontrol_new const in_proc_mux_ch0_dapm_enum =
 		SOC_DAPM_ENUM("Input Processor Channel 0 Enum",
 				in_proc_ch0_enum);
 
-/* R_CH1AIC PG 1 ADDR 0x07 */
+ 
 static struct soc_enum const in_bst_mux_ch1_enum =
 		SOC_ENUM_SINGLE(R_CH1AIC, FB_CH1AIC_INSELR,
 				ARRAY_SIZE(in_bst_mux_txt),
@@ -1052,7 +1045,7 @@ static struct snd_kcontrol_new const in_proc_mux_ch1_dapm_enum =
 		SOC_DAPM_ENUM("Input Processor Channel 1 Enum",
 				in_proc_ch1_enum);
 
-/* R_ICTL0 PG 1 ADDR 0x0A */
+ 
 static char const * const pol_txt[] = {
 		"Normal", "Invert"};
 
@@ -1073,7 +1066,7 @@ static struct soc_enum const in_proc_ch01_sel_enum =
 				ARRAY_SIZE(in_proc_ch_sel_txt),
 				in_proc_ch_sel_txt);
 
-/* R_ICTL1 PG 1 ADDR 0x0B */
+ 
 static struct soc_enum const in_pol_ch3_enum =
 		SOC_ENUM_SINGLE(R_ICTL1, FB_ICTL1_IN2POL,
 				ARRAY_SIZE(pol_txt), pol_txt);
@@ -1087,7 +1080,7 @@ static struct soc_enum const in_proc_ch23_sel_enum =
 				ARRAY_SIZE(in_proc_ch_sel_txt),
 				in_proc_ch_sel_txt);
 
-/* R_MICBIAS PG 1 ADDR 0x0C */
+ 
 static char const * const mic_bias_txt[] = {
 		"2.5V", "2.1V", "1.8V", "Vdd"};
 
@@ -1099,25 +1092,25 @@ static struct soc_enum const mic_bias_1_enum =
 		SOC_ENUM_SINGLE(R_MICBIAS, FB_MICBIAS_MICBOV1,
 				ARRAY_SIZE(mic_bias_txt), mic_bias_txt);
 
-/* R_PGACTL0 PG 1 ADDR 0x0D */
-/* R_PGACTL1 PG 1 ADDR 0x0E */
-/* R_PGACTL2 PG 1 ADDR 0x0F */
-/* R_PGACTL3 PG 1 ADDR 0x10 */
+ 
+ 
+ 
+ 
 static DECLARE_TLV_DB_SCALE(in_pga_vol_tlv_arr, -1725, 75, 0);
 
-/* R_ICH0VOL PG1 ADDR 0x12 */
-/* R_ICH1VOL PG1 ADDR 0x13 */
-/* R_ICH2VOL PG1 ADDR 0x14 */
-/* R_ICH3VOL PG1 ADDR 0x15 */
+ 
+ 
+ 
+ 
 static DECLARE_TLV_DB_MINMAX(in_vol_tlv_arr, -7125, 2400);
 
-/* R_ASRCILVOL PG1 ADDR 0x16 */
-/* R_ASRCIRVOL PG1 ADDR 0x17 */
-/* R_ASRCOLVOL PG1 ADDR 0x18 */
-/* R_ASRCORVOL PG1 ADDR 0x19 */
+ 
+ 
+ 
+ 
 static DECLARE_TLV_DB_MINMAX(asrc_vol_tlv_arr, -9562, 600);
 
-/* R_ALCCTL0 PG1 ADDR 0x1D */
+ 
 static char const * const alc_mode_txt[] = {
 		"ALC", "Limiter"};
 
@@ -1132,14 +1125,14 @@ static struct soc_enum const alc_ref_enum =
 		SOC_ENUM_SINGLE(R_ALCCTL0, FB_ALCCTL0_ALCREF,
 				ARRAY_SIZE(alc_ref_text), alc_ref_text);
 
-/* R_ALCCTL1 PG 1 ADDR 0x1E */
+ 
 static DECLARE_TLV_DB_SCALE(alc_max_gain_tlv_arr, -1200, 600, 0);
 static DECLARE_TLV_DB_SCALE(alc_target_tlv_arr, -2850, 150, 0);
 
-/* R_ALCCTL2 PG 1 ADDR 0x1F */
+ 
 static DECLARE_TLV_DB_SCALE(alc_min_gain_tlv_arr, -1725, 600, 0);
 
-/* R_NGATE PG 1 ADDR 0x21 */
+ 
 static DECLARE_TLV_DB_SCALE(ngth_tlv_arr, -7650, 150, 0);
 
 static char const * const ngate_type_txt[] = {
@@ -1149,7 +1142,7 @@ static struct soc_enum const ngate_type_enum =
 		SOC_ENUM_SINGLE(R_NGATE, FB_NGATE_NGG,
 				ARRAY_SIZE(ngate_type_txt), ngate_type_txt);
 
-/* R_DMICCTL PG 1 ADDR 0x22 */
+ 
 static char const * const dmic_mono_sel_txt[] = {
 		"Stereo", "Mono"};
 
@@ -1157,7 +1150,7 @@ static struct soc_enum const dmic_mono_sel_enum =
 		SOC_ENUM_SINGLE(R_DMICCTL, FB_DMICCTL_DMONO,
 			ARRAY_SIZE(dmic_mono_sel_txt), dmic_mono_sel_txt);
 
-/* R_DACCTL PG 2 ADDR 0x01 */
+ 
 static struct soc_enum const dac_pol_r_enum =
 		SOC_ENUM_SINGLE(R_DACCTL, FB_DACCTL_DACPOLR,
 			ARRAY_SIZE(pol_txt), pol_txt);
@@ -1173,7 +1166,7 @@ static struct soc_enum const dac_dith_enum =
 		SOC_ENUM_SINGLE(R_DACCTL, FB_DACCTL_DACDITH,
 			ARRAY_SIZE(dac_dith_txt), dac_dith_txt);
 
-/* R_SPKCTL PG 2 ADDR 0x02 */
+ 
 static struct soc_enum const spk_pol_r_enum =
 		SOC_ENUM_SINGLE(R_SPKCTL, FB_SPKCTL_SPKPOLR,
 				ARRAY_SIZE(pol_txt), pol_txt);
@@ -1182,24 +1175,24 @@ static struct soc_enum const spk_pol_l_enum =
 		SOC_ENUM_SINGLE(R_SPKCTL, FB_SPKCTL_SPKPOLL,
 				ARRAY_SIZE(pol_txt), pol_txt);
 
-/* R_SUBCTL PG 2 ADDR 0x03 */
+ 
 static struct soc_enum const sub_pol_enum =
 		SOC_ENUM_SINGLE(R_SUBCTL, FB_SUBCTL_SUBPOL,
 				ARRAY_SIZE(pol_txt), pol_txt);
 
-/* R_MVOLL PG 2 ADDR 0x08 */
-/* R_MVOLR PG 2 ADDR 0x09 */
+ 
+ 
 static DECLARE_TLV_DB_MINMAX(mvol_tlv_arr, -9562, 0);
 
-/* R_HPVOLL PG 2 ADDR 0x0A */
-/* R_HPVOLR PG 2 ADDR 0x0B */
+ 
+ 
 static DECLARE_TLV_DB_SCALE(hp_vol_tlv_arr, -8850, 75, 0);
 
-/* R_SPKVOLL PG 2 ADDR 0x0C */
-/* R_SPKVOLR PG 2 ADDR 0x0D */
+ 
+ 
 static DECLARE_TLV_DB_SCALE(spk_vol_tlv_arr, -7725, 75, 0);
 
-/* R_SPKEQFILT PG 3 ADDR 0x01 */
+ 
 static char const * const eq_txt[] = {
 	"Pre Scale",
 	"Pre Scale + EQ Band 0",
@@ -1217,7 +1210,7 @@ static struct soc_enum const spk_eq_enums[] = {
 		ARRAY_SIZE(eq_txt), eq_txt),
 };
 
-/* R_SPKMBCCTL PG 3 ADDR 0x0B */
+ 
 static char const * const lvl_mode_txt[] = {
 		"Average", "Peak"};
 
@@ -1248,17 +1241,17 @@ static struct soc_enum const spk_mbc1_win_sel_enum =
 		SOC_ENUM_SINGLE(R_SPKMBCCTL, FB_SPKMBCCTL_WINSEL1,
 				ARRAY_SIZE(win_sel_txt), win_sel_txt);
 
-/* R_SPKMBCMUG1 PG 3 ADDR 0x0C */
+ 
 static struct soc_enum const spk_mbc1_phase_pol_enum =
 		SOC_ENUM_SINGLE(R_SPKMBCMUG1, FB_SPKMBCMUG_PHASE,
 				ARRAY_SIZE(pol_txt), pol_txt);
 
 static DECLARE_TLV_DB_MINMAX(mbc_mug_tlv_arr, -4650, 0);
 
-/* R_SPKMBCTHR1 PG 3 ADDR 0x0D */
+ 
 static DECLARE_TLV_DB_MINMAX(thr_tlv_arr, -9562, 0);
 
-/* R_SPKMBCRAT1 PG 3 ADDR 0x0E */
+ 
 static char const * const comp_rat_txt[] = {
 		"Reserved", "1.5:1", "2:1", "3:1", "4:1", "5:1", "6:1",
 		"7:1", "8:1", "9:1", "10:1", "11:1", "12:1", "13:1", "14:1",
@@ -1268,27 +1261,27 @@ static struct soc_enum const spk_mbc1_comp_rat_enum =
 		SOC_ENUM_SINGLE(R_SPKMBCRAT1, FB_SPKMBCRAT_RATIO,
 				ARRAY_SIZE(comp_rat_txt), comp_rat_txt);
 
-/* R_SPKMBCMUG2 PG 3 ADDR 0x13 */
+ 
 static struct soc_enum const spk_mbc2_phase_pol_enum =
 		SOC_ENUM_SINGLE(R_SPKMBCMUG2, FB_SPKMBCMUG_PHASE,
 				ARRAY_SIZE(pol_txt), pol_txt);
 
-/* R_SPKMBCRAT2 PG 3 ADDR 0x15 */
+ 
 static struct soc_enum const spk_mbc2_comp_rat_enum =
 		SOC_ENUM_SINGLE(R_SPKMBCRAT2, FB_SPKMBCRAT_RATIO,
 				ARRAY_SIZE(comp_rat_txt), comp_rat_txt);
 
-/* R_SPKMBCMUG3 PG 3 ADDR 0x1A */
+ 
 static struct soc_enum const spk_mbc3_phase_pol_enum =
 		SOC_ENUM_SINGLE(R_SPKMBCMUG3, FB_SPKMBCMUG_PHASE,
 				ARRAY_SIZE(pol_txt), pol_txt);
 
-/* R_SPKMBCRAT3 PG 3 ADDR 0x1C */
+ 
 static struct soc_enum const spk_mbc3_comp_rat_enum =
 		SOC_ENUM_SINGLE(R_SPKMBCRAT3, FB_SPKMBCRAT_RATIO,
 				ARRAY_SIZE(comp_rat_txt), comp_rat_txt);
 
-/* R_SPKCLECTL PG 3 ADDR 0x21 */
+ 
 static struct soc_enum const spk_cle_lvl_mode_enum =
 		SOC_ENUM_SINGLE(R_SPKCLECTL, FB_SPKCLECTL_LVLMODE,
 				ARRAY_SIZE(lvl_mode_txt), lvl_mode_txt);
@@ -1297,15 +1290,15 @@ static struct soc_enum const spk_cle_win_sel_enum =
 		SOC_ENUM_SINGLE(R_SPKCLECTL, FB_SPKCLECTL_WINSEL,
 				ARRAY_SIZE(win_sel_txt), win_sel_txt);
 
-/* R_SPKCLEMUG PG 3 ADDR 0x22 */
+ 
 static DECLARE_TLV_DB_MINMAX(cle_mug_tlv_arr, 0, 4650);
 
-/* R_SPKCOMPRAT PG 3 ADDR 0x24 */
+ 
 static struct soc_enum const spk_comp_rat_enum =
 		SOC_ENUM_SINGLE(R_SPKCOMPRAT, FB_SPKCOMPRAT_RATIO,
 				ARRAY_SIZE(comp_rat_txt), comp_rat_txt);
 
-/* R_SPKEXPTHR PG 3 ADDR 0x2F */
+ 
 static char const * const exp_rat_txt[] = {
 		"Reserved", "Reserved", "1:2", "1:3",
 		"1:4", "1:5", "1:6", "1:7"};
@@ -1314,7 +1307,7 @@ static struct soc_enum const spk_exp_rat_enum =
 		SOC_ENUM_SINGLE(R_SPKEXPRAT, FB_SPKEXPRAT_RATIO,
 				ARRAY_SIZE(exp_rat_txt), exp_rat_txt);
 
-/* R_DACEQFILT PG 4 ADDR 0x01 */
+ 
 static struct soc_enum const dac_eq_enums[] = {
 	SOC_ENUM_SINGLE(R_DACEQFILT, FB_DACEQFILT_EQ2BE,
 		ARRAY_SIZE(eq_txt), eq_txt),
@@ -1322,7 +1315,7 @@ static struct soc_enum const dac_eq_enums[] = {
 		ARRAY_SIZE(eq_txt), eq_txt),
 };
 
-/* R_DACMBCCTL PG 4 ADDR 0x0B */
+ 
 static struct soc_enum const dac_mbc3_lvl_det_mode_enum =
 		SOC_ENUM_SINGLE(R_DACMBCCTL, FB_DACMBCCTL_LVLMODE3,
 				ARRAY_SIZE(lvl_mode_txt), lvl_mode_txt);
@@ -1347,37 +1340,37 @@ static struct soc_enum const dac_mbc1_win_sel_enum =
 		SOC_ENUM_SINGLE(R_DACMBCCTL, FB_DACMBCCTL_WINSEL1,
 				ARRAY_SIZE(win_sel_txt), win_sel_txt);
 
-/* R_DACMBCMUG1 PG 4 ADDR 0x0C */
+ 
 static struct soc_enum const dac_mbc1_phase_pol_enum =
 		SOC_ENUM_SINGLE(R_DACMBCMUG1, FB_DACMBCMUG_PHASE,
 				ARRAY_SIZE(pol_txt), pol_txt);
 
-/* R_DACMBCRAT1 PG 4 ADDR 0x0E */
+ 
 static struct soc_enum const dac_mbc1_comp_rat_enum =
 		SOC_ENUM_SINGLE(R_DACMBCRAT1, FB_DACMBCRAT_RATIO,
 				ARRAY_SIZE(comp_rat_txt), comp_rat_txt);
 
-/* R_DACMBCMUG2 PG 4 ADDR 0x13 */
+ 
 static struct soc_enum const dac_mbc2_phase_pol_enum =
 		SOC_ENUM_SINGLE(R_DACMBCMUG2, FB_DACMBCMUG_PHASE,
 				ARRAY_SIZE(pol_txt), pol_txt);
 
-/* R_DACMBCRAT2 PG 4 ADDR 0x15 */
+ 
 static struct soc_enum const dac_mbc2_comp_rat_enum =
 		SOC_ENUM_SINGLE(R_DACMBCRAT2, FB_DACMBCRAT_RATIO,
 				ARRAY_SIZE(comp_rat_txt), comp_rat_txt);
 
-/* R_DACMBCMUG3 PG 4 ADDR 0x1A */
+ 
 static struct soc_enum const dac_mbc3_phase_pol_enum =
 		SOC_ENUM_SINGLE(R_DACMBCMUG3, FB_DACMBCMUG_PHASE,
 				ARRAY_SIZE(pol_txt), pol_txt);
 
-/* R_DACMBCRAT3 PG 4 ADDR 0x1C */
+ 
 static struct soc_enum const dac_mbc3_comp_rat_enum =
 		SOC_ENUM_SINGLE(R_DACMBCRAT3, FB_DACMBCRAT_RATIO,
 				ARRAY_SIZE(comp_rat_txt), comp_rat_txt);
 
-/* R_DACCLECTL PG 4 ADDR 0x21 */
+ 
 static struct soc_enum const dac_cle_lvl_mode_enum =
 		SOC_ENUM_SINGLE(R_DACCLECTL, FB_DACCLECTL_LVLMODE,
 				ARRAY_SIZE(lvl_mode_txt), lvl_mode_txt);
@@ -1386,17 +1379,17 @@ static struct soc_enum const dac_cle_win_sel_enum =
 		SOC_ENUM_SINGLE(R_DACCLECTL, FB_DACCLECTL_WINSEL,
 				ARRAY_SIZE(win_sel_txt), win_sel_txt);
 
-/* R_DACCOMPRAT PG 4 ADDR 0x24 */
+ 
 static struct soc_enum const dac_comp_rat_enum =
 		SOC_ENUM_SINGLE(R_DACCOMPRAT, FB_DACCOMPRAT_RATIO,
 				ARRAY_SIZE(comp_rat_txt), comp_rat_txt);
 
-/* R_DACEXPRAT PG 4 ADDR 0x30 */
+ 
 static struct soc_enum const dac_exp_rat_enum =
 		SOC_ENUM_SINGLE(R_DACEXPRAT, FB_DACEXPRAT_RATIO,
 				ARRAY_SIZE(exp_rat_txt), exp_rat_txt);
 
-/* R_SUBEQFILT PG 5 ADDR 0x01 */
+ 
 static struct soc_enum const sub_eq_enums[] = {
 	SOC_ENUM_SINGLE(R_SUBEQFILT, FB_SUBEQFILT_EQ2BE,
 		ARRAY_SIZE(eq_txt), eq_txt),
@@ -1404,7 +1397,7 @@ static struct soc_enum const sub_eq_enums[] = {
 		ARRAY_SIZE(eq_txt), eq_txt),
 };
 
-/* R_SUBMBCCTL PG 5 ADDR 0x0B */
+ 
 static struct soc_enum const sub_mbc3_lvl_det_mode_enum =
 		SOC_ENUM_SINGLE(R_SUBMBCCTL, FB_SUBMBCCTL_LVLMODE3,
 				ARRAY_SIZE(lvl_mode_txt), lvl_mode_txt);
@@ -1429,37 +1422,37 @@ static struct soc_enum const sub_mbc1_win_sel_enum =
 		SOC_ENUM_SINGLE(R_SUBMBCCTL, FB_SUBMBCCTL_WINSEL1,
 				ARRAY_SIZE(win_sel_txt), win_sel_txt);
 
-/* R_SUBMBCMUG1 PG 5 ADDR 0x0C */
+ 
 static struct soc_enum const sub_mbc1_phase_pol_enum =
 		SOC_ENUM_SINGLE(R_SUBMBCMUG1, FB_SUBMBCMUG_PHASE,
 				ARRAY_SIZE(pol_txt), pol_txt);
 
-/* R_SUBMBCRAT1 PG 5 ADDR 0x0E */
+ 
 static struct soc_enum const sub_mbc1_comp_rat_enum =
 		SOC_ENUM_SINGLE(R_SUBMBCRAT1, FB_SUBMBCRAT_RATIO,
 				ARRAY_SIZE(comp_rat_txt), comp_rat_txt);
 
-/* R_SUBMBCMUG2 PG 5 ADDR 0x13 */
+ 
 static struct soc_enum const sub_mbc2_phase_pol_enum =
 		SOC_ENUM_SINGLE(R_SUBMBCMUG2, FB_SUBMBCMUG_PHASE,
 				ARRAY_SIZE(pol_txt), pol_txt);
 
-/* R_SUBMBCRAT2 PG 5 ADDR 0x15 */
+ 
 static struct soc_enum const sub_mbc2_comp_rat_enum =
 		SOC_ENUM_SINGLE(R_SUBMBCRAT2, FB_SUBMBCRAT_RATIO,
 				ARRAY_SIZE(comp_rat_txt), comp_rat_txt);
 
-/* R_SUBMBCMUG3 PG 5 ADDR 0x1A */
+ 
 static struct soc_enum const sub_mbc3_phase_pol_enum =
 		SOC_ENUM_SINGLE(R_SUBMBCMUG3, FB_SUBMBCMUG_PHASE,
 				ARRAY_SIZE(pol_txt), pol_txt);
 
-/* R_SUBMBCRAT3 PG 5 ADDR 0x1C */
+ 
 static struct soc_enum const sub_mbc3_comp_rat_enum =
 		SOC_ENUM_SINGLE(R_SUBMBCRAT3, FB_SUBMBCRAT_RATIO,
 				ARRAY_SIZE(comp_rat_txt), comp_rat_txt);
 
-/* R_SUBCLECTL PG 5 ADDR 0x21 */
+ 
 static struct soc_enum const sub_cle_lvl_mode_enum =
 		SOC_ENUM_SINGLE(R_SUBCLECTL, FB_SUBCLECTL_LVLMODE,
 				ARRAY_SIZE(lvl_mode_txt), lvl_mode_txt);
@@ -1467,12 +1460,12 @@ static struct soc_enum const sub_cle_win_sel_enum =
 		SOC_ENUM_SINGLE(R_SUBCLECTL, FB_SUBCLECTL_WINSEL,
 				ARRAY_SIZE(win_sel_txt), win_sel_txt);
 
-/* R_SUBCOMPRAT PG 5 ADDR 0x24 */
+ 
 static struct soc_enum const sub_comp_rat_enum =
 		SOC_ENUM_SINGLE(R_SUBCOMPRAT, FB_SUBCOMPRAT_RATIO,
 				ARRAY_SIZE(comp_rat_txt), comp_rat_txt);
 
-/* R_SUBEXPRAT PG 5 ADDR 0x30 */
+ 
 static struct soc_enum const sub_exp_rat_enum =
 		SOC_ENUM_SINGLE(R_SUBEXPRAT, FB_SUBEXPRAT_RATIO,
 				ARRAY_SIZE(exp_rat_txt), exp_rat_txt);
@@ -1490,7 +1483,7 @@ static int bytes_info_ext(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-/* CH 0_1 Input Mux */
+ 
 static char const * const ch_0_1_mux_txt[] = {"DAI 1", "TDM 0_1"};
 
 static struct soc_enum const ch_0_1_mux_enum =
@@ -1500,7 +1493,7 @@ static struct soc_enum const ch_0_1_mux_enum =
 static struct snd_kcontrol_new const ch_0_1_mux_dapm_enum =
 		SOC_DAPM_ENUM("CH 0_1 Input Mux", ch_0_1_mux_enum);
 
-/* CH 2_3 Input Mux */
+ 
 static char const * const ch_2_3_mux_txt[] = {"DAI 2", "TDM 2_3"};
 
 static struct soc_enum const ch_2_3_mux_enum =
@@ -1510,7 +1503,7 @@ static struct soc_enum const ch_2_3_mux_enum =
 static struct snd_kcontrol_new const ch_2_3_mux_dapm_enum =
 		SOC_DAPM_ENUM("CH 2_3 Input Mux", ch_2_3_mux_enum);
 
-/* CH 4_5 Input Mux */
+ 
 static char const * const ch_4_5_mux_txt[] = {"DAI 3", "TDM 4_5"};
 
 static struct soc_enum const ch_4_5_mux_enum =
@@ -1531,58 +1524,58 @@ static struct snd_kcontrol_new const ch_4_5_mux_dapm_enum =
 }
 
 static struct snd_kcontrol_new const tscs454_snd_controls[] = {
-	/* R_PLLCTL PG 0 ADDR 0x15 */
+	 
 	SOC_ENUM("PLL BCLK Input", bclk_sel_enum),
-	/* R_ISRC PG 0 ADDR 0x16 */
+	 
 	SOC_ENUM("Internal Rate", isrc_br_enum),
 	SOC_ENUM("Internal Rate Multiple", isrc_bm_enum),
-	/* R_SCLKCTL PG 0 ADDR 0x18 */
+	 
 	SOC_ENUM("ADC Modular Rate", adc_modular_rate_enum),
 	SOC_ENUM("DAC Modular Rate", dac_modular_rate_enum),
-	/* R_ASRC PG 0 ADDR 0x28 */
+	 
 	SOC_SINGLE("ASRC Out High Bandwidth Switch",
 			R_ASRC, FB_ASRC_ASRCOBW, 1, 0),
 	SOC_SINGLE("ASRC In High Bandwidth Switch",
 			R_ASRC, FB_ASRC_ASRCIBW, 1, 0),
-	/* R_I2SIDCTL PG 0 ADDR 0x38 */
+	 
 	SOC_ENUM("I2S 1 Data In Control", data_in_ctrl_enums[0]),
 	SOC_ENUM("I2S 2 Data In Control", data_in_ctrl_enums[1]),
 	SOC_ENUM("I2S 3 Data In Control", data_in_ctrl_enums[2]),
-	/* R_I2SODCTL PG 0 ADDR 0x39 */
+	 
 	SOC_ENUM("I2S 1 Data Out Control", data_out_ctrl_enums[0]),
 	SOC_ENUM("I2S 2 Data Out Control", data_out_ctrl_enums[1]),
 	SOC_ENUM("I2S 3 Data Out Control", data_out_ctrl_enums[2]),
-	/* R_AUDIOMUX1 PG 0 ADDR 0x3A */
+	 
 	SOC_ENUM("ASRC In", asrc_in_mux_enum),
-	/* R_AUDIOMUX2 PG 0 ADDR 0x3B */
+	 
 	SOC_ENUM("ASRC Out", asrc_out_mux_enum),
-	/* R_HSDCTL1 PG 1 ADDR 0x01 */
+	 
 	SOC_ENUM("Headphone Jack Type", hp_jack_type_enum),
 	SOC_ENUM("Headset Detection Polarity", hs_det_pol_enum),
 	SOC_SINGLE("Headphone Detection Switch",
 			R_HSDCTL1, FB_HSDCTL1_HPID_EN, 1, 0),
 	SOC_SINGLE("Headset OMTP/CTIA Switch",
 			R_HSDCTL1, FB_HSDCTL1_GBLHS_EN, 1, 0),
-	/* R_HSDCTL1 PG 1 ADDR 0x02 */
+	 
 	SOC_ENUM("Headset Mic Bias Force", hs_mic_bias_force_enum),
 	SOC_SINGLE("Manual Mic Bias Switch",
 			R_HSDCTL2, FB_HSDCTL2_MB1MODE, 1, 0),
 	SOC_SINGLE("Ring/Sleeve Auto Switch",
 			R_HSDCTL2, FB_HSDCTL2_SWMODE, 1, 0),
 	SOC_ENUM("Manual Mode Plug Type", plug_type_force_enum),
-	/* R_CH0AIC PG 1 ADDR 0x06 */
+	 
 	SOC_SINGLE_TLV("Input Boost Channel 0 Volume", R_CH0AIC,
 			FB_CHAIC_MICBST, 0x3, 0, in_bst_vol_tlv_arr),
-	/* R_CH1AIC PG 1 ADDR 0x07 */
+	 
 	SOC_SINGLE_TLV("Input Boost Channel 1 Volume", R_CH1AIC,
 			FB_CHAIC_MICBST, 0x3, 0, in_bst_vol_tlv_arr),
-	/* R_CH2AIC PG 1 ADDR 0x08 */
+	 
 	SOC_SINGLE_TLV("Input Boost Channel 2 Volume", R_CH2AIC,
 			FB_CHAIC_MICBST, 0x3, 0, in_bst_vol_tlv_arr),
-	/* R_CH3AIC PG 1 ADDR 0x09 */
+	 
 	SOC_SINGLE_TLV("Input Boost Channel 3 Volume", R_CH3AIC,
 			FB_CHAIC_MICBST, 0x3, 0, in_bst_vol_tlv_arr),
-	/* R_ICTL0 PG 1 ADDR 0x0A */
+	 
 	SOC_ENUM("Input Channel 1 Polarity", in_pol_ch1_enum),
 	SOC_ENUM("Input Channel 0 Polarity", in_pol_ch0_enum),
 	SOC_ENUM("Input Processor Channel 0/1 Operation",
@@ -1595,7 +1588,7 @@ static struct snd_kcontrol_new const tscs454_snd_controls[] = {
 			R_ICTL0, FB_ICTL0_IN1HP, 1, 0),
 	SOC_SINGLE("Input Channel 0 HPF Disable Switch",
 			R_ICTL0, FB_ICTL0_IN0HP, 1, 0),
-	/* R_ICTL1 PG 1 ADDR 0x0B */
+	 
 	SOC_ENUM("Input Channel 3 Polarity", in_pol_ch3_enum),
 	SOC_ENUM("Input Channel 2 Polarity", in_pol_ch2_enum),
 	SOC_ENUM("Input Processor Channel 2/3 Operation",
@@ -1608,63 +1601,63 @@ static struct snd_kcontrol_new const tscs454_snd_controls[] = {
 			R_ICTL1, FB_ICTL1_IN3HP, 1, 0),
 	SOC_SINGLE("Input Channel 2 HPF Disable Switch",
 			R_ICTL1, FB_ICTL1_IN2HP, 1, 0),
-	/* R_MICBIAS PG 1 ADDR 0x0C */
+	 
 	SOC_ENUM("Mic Bias 2 Voltage", mic_bias_2_enum),
 	SOC_ENUM("Mic Bias 1 Voltage", mic_bias_1_enum),
-	/* R_PGACTL0 PG 1 ADDR 0x0D */
+	 
 	SOC_SINGLE("Input Channel 0 PGA Mute Switch",
 			R_PGACTL0, FB_PGACTL_PGAMUTE, 1, 0),
 	SOC_SINGLE_TLV("Input Channel 0 PGA Volume", R_PGACTL0,
 			FB_PGACTL_PGAVOL,
 			FM_PGACTL_PGAVOL, 0, in_pga_vol_tlv_arr),
-	/* R_PGACTL1 PG 1 ADDR 0x0E */
+	 
 	SOC_SINGLE("Input Channel 1 PGA Mute Switch",
 			R_PGACTL1, FB_PGACTL_PGAMUTE, 1, 0),
 	SOC_SINGLE_TLV("Input Channel 1 PGA Volume", R_PGACTL1,
 			FB_PGACTL_PGAVOL,
 			FM_PGACTL_PGAVOL, 0, in_pga_vol_tlv_arr),
-	/* R_PGACTL2 PG 1 ADDR 0x0F */
+	 
 	SOC_SINGLE("Input Channel 2 PGA Mute Switch",
 			R_PGACTL2, FB_PGACTL_PGAMUTE, 1, 0),
 	SOC_SINGLE_TLV("Input Channel 2 PGA Volume", R_PGACTL2,
 			FB_PGACTL_PGAVOL,
 			FM_PGACTL_PGAVOL, 0, in_pga_vol_tlv_arr),
-	/* R_PGACTL3 PG 1 ADDR 0x10 */
+	 
 	SOC_SINGLE("Input Channel 3 PGA Mute Switch",
 			R_PGACTL3, FB_PGACTL_PGAMUTE, 1, 0),
 	SOC_SINGLE_TLV("Input Channel 3 PGA Volume", R_PGACTL3,
 			FB_PGACTL_PGAVOL,
 			FM_PGACTL_PGAVOL, 0, in_pga_vol_tlv_arr),
-	/* R_ICH0VOL PG 1 ADDR 0x12 */
+	 
 	SOC_SINGLE_TLV("Input Channel 0 Volume", R_ICH0VOL,
 			FB_ICHVOL_ICHVOL, FM_ICHVOL_ICHVOL, 0, in_vol_tlv_arr),
-	/* R_ICH1VOL PG 1 ADDR 0x13 */
+	 
 	SOC_SINGLE_TLV("Input Channel 1 Volume", R_ICH1VOL,
 			FB_ICHVOL_ICHVOL, FM_ICHVOL_ICHVOL, 0, in_vol_tlv_arr),
-	/* R_ICH2VOL PG 1 ADDR 0x14 */
+	 
 	SOC_SINGLE_TLV("Input Channel 2 Volume", R_ICH2VOL,
 			FB_ICHVOL_ICHVOL, FM_ICHVOL_ICHVOL, 0, in_vol_tlv_arr),
-	/* R_ICH3VOL PG 1 ADDR 0x15 */
+	 
 	SOC_SINGLE_TLV("Input Channel 3 Volume", R_ICH3VOL,
 			FB_ICHVOL_ICHVOL, FM_ICHVOL_ICHVOL, 0, in_vol_tlv_arr),
-	/* R_ASRCILVOL PG 1 ADDR 0x16 */
+	 
 	SOC_SINGLE_TLV("ASRC Input Left Volume", R_ASRCILVOL,
 			FB_ASRCILVOL_ASRCILVOL, FM_ASRCILVOL_ASRCILVOL,
 			0, asrc_vol_tlv_arr),
-	/* R_ASRCIRVOL PG 1 ADDR 0x17 */
+	 
 	SOC_SINGLE_TLV("ASRC Input Right Volume", R_ASRCIRVOL,
 			FB_ASRCIRVOL_ASRCIRVOL, FM_ASRCIRVOL_ASRCIRVOL,
 			0, asrc_vol_tlv_arr),
-	/* R_ASRCOLVOL PG 1 ADDR 0x18 */
+	 
 	SOC_SINGLE_TLV("ASRC Output Left Volume", R_ASRCOLVOL,
 			FB_ASRCOLVOL_ASRCOLVOL, FM_ASRCOLVOL_ASRCOLVOL,
 			0, asrc_vol_tlv_arr),
-	/* R_ASRCORVOL PG 1 ADDR 0x19 */
+	 
 	SOC_SINGLE_TLV("ASRC Output Right Volume", R_ASRCORVOL,
 			FB_ASRCORVOL_ASRCOLVOL, FM_ASRCORVOL_ASRCOLVOL,
 			0, asrc_vol_tlv_arr),
-	/* R_IVOLCTLU PG 1 ADDR 0x1C */
-	/* R_ALCCTL0 PG 1 ADDR 0x1D */
+	 
+	 
 	SOC_ENUM("ALC Mode", alc_mode_enum),
 	SOC_ENUM("ALC Reference", alc_ref_enum),
 	SOC_SINGLE("Input Channel 3 ALC Switch",
@@ -1675,14 +1668,14 @@ static struct snd_kcontrol_new const tscs454_snd_controls[] = {
 			R_ALCCTL0, FB_ALCCTL0_ALCEN1, 1, 0),
 	SOC_SINGLE("Input Channel 0 ALC Switch",
 			R_ALCCTL0, FB_ALCCTL0_ALCEN0, 1, 0),
-	/* R_ALCCTL1 PG 1 ADDR 0x1E */
+	 
 	SOC_SINGLE_TLV("ALC Max Gain Volume", R_ALCCTL1,
 			FB_ALCCTL1_MAXGAIN, FM_ALCCTL1_MAXGAIN,
 			0, alc_max_gain_tlv_arr),
 	SOC_SINGLE_TLV("ALC Target Volume", R_ALCCTL1,
 			FB_ALCCTL1_ALCL, FM_ALCCTL1_ALCL,
 			0, alc_target_tlv_arr),
-	/* R_ALCCTL2 PG 1 ADDR 0x1F */
+	 
 	SOC_SINGLE("ALC Zero Cross Switch",
 			R_ALCCTL2, FB_ALCCTL2_ALCZC, 1, 0),
 	SOC_SINGLE_TLV("ALC Min Gain Volume", R_ALCCTL2,
@@ -1690,135 +1683,135 @@ static struct snd_kcontrol_new const tscs454_snd_controls[] = {
 			0, alc_min_gain_tlv_arr),
 	SOC_SINGLE_RANGE("ALC Hold", R_ALCCTL2,
 			FB_ALCCTL2_HLD, 0, FM_ALCCTL2_HLD, 0),
-	/* R_ALCCTL3 PG 1 ADDR 0x20 */
+	 
 	SOC_SINGLE_RANGE("ALC Decay", R_ALCCTL3,
 			FB_ALCCTL3_DCY, 0, FM_ALCCTL3_DCY, 0),
 	SOC_SINGLE_RANGE("ALC Attack", R_ALCCTL3,
 			FB_ALCCTL3_ATK, 0, FM_ALCCTL3_ATK, 0),
-	/* R_NGATE PG 1 ADDR 0x21 */
+	 
 	SOC_SINGLE_TLV("Noise Gate Threshold Volume", R_NGATE,
 			FB_NGATE_NGTH, FM_NGATE_NGTH, 0, ngth_tlv_arr),
 	SOC_ENUM("Noise Gate Type", ngate_type_enum),
 	SOC_SINGLE("Noise Gate Switch", R_NGATE, FB_NGATE_NGAT, 1, 0),
-	/* R_DMICCTL PG 1 ADDR 0x22 */
+	 
 	SOC_SINGLE("Digital Mic 2 Switch", R_DMICCTL, FB_DMICCTL_DMIC2EN, 1, 0),
 	SOC_SINGLE("Digital Mic 1 Switch", R_DMICCTL, FB_DMICCTL_DMIC1EN, 1, 0),
 	SOC_ENUM("Digital Mic Mono Select", dmic_mono_sel_enum),
-	/* R_DACCTL PG 2 ADDR 0x01 */
+	 
 	SOC_ENUM("DAC Polarity Left", dac_pol_r_enum),
 	SOC_ENUM("DAC Polarity Right", dac_pol_l_enum),
 	SOC_ENUM("DAC Dither", dac_dith_enum),
 	SOC_SINGLE("DAC Mute Switch", R_DACCTL, FB_DACCTL_DACMUTE, 1, 0),
 	SOC_SINGLE("DAC De-Emphasis Switch", R_DACCTL, FB_DACCTL_DACDEM, 1, 0),
-	/* R_SPKCTL PG 2 ADDR 0x02 */
+	 
 	SOC_ENUM("Speaker Polarity Right", spk_pol_r_enum),
 	SOC_ENUM("Speaker Polarity Left", spk_pol_l_enum),
 	SOC_SINGLE("Speaker Mute Switch", R_SPKCTL, FB_SPKCTL_SPKMUTE, 1, 0),
 	SOC_SINGLE("Speaker De-Emphasis Switch",
 			R_SPKCTL, FB_SPKCTL_SPKDEM, 1, 0),
-	/* R_SUBCTL PG 2 ADDR 0x03 */
+	 
 	SOC_ENUM("Sub Polarity", sub_pol_enum),
 	SOC_SINGLE("SUB Mute Switch", R_SUBCTL, FB_SUBCTL_SUBMUTE, 1, 0),
 	SOC_SINGLE("Sub De-Emphasis Switch", R_SUBCTL, FB_SUBCTL_SUBDEM, 1, 0),
-	/* R_DCCTL PG 2 ADDR 0x04 */
+	 
 	SOC_SINGLE("Sub DC Removal Switch", R_DCCTL, FB_DCCTL_SUBDCBYP, 1, 1),
 	SOC_SINGLE("DAC DC Removal Switch", R_DCCTL, FB_DCCTL_DACDCBYP, 1, 1),
 	SOC_SINGLE("Speaker DC Removal Switch",
 			R_DCCTL, FB_DCCTL_SPKDCBYP, 1, 1),
 	SOC_SINGLE("DC Removal Coefficient Switch", R_DCCTL, FB_DCCTL_DCCOEFSEL,
 			FM_DCCTL_DCCOEFSEL, 0),
-	/* R_OVOLCTLU PG 2 ADDR 0x06 */
+	 
 	SOC_SINGLE("Output Fade Switch", R_OVOLCTLU, FB_OVOLCTLU_OFADE, 1, 0),
-	/* R_MVOLL PG 2 ADDR 0x08 */
-	/* R_MVOLR PG 2 ADDR 0x09 */
+	 
+	 
 	SOC_DOUBLE_R_TLV("Master Volume", R_MVOLL, R_MVOLR,
 			FB_MVOLL_MVOL_L, FM_MVOLL_MVOL_L, 0, mvol_tlv_arr),
-	/* R_HPVOLL PG 2 ADDR 0x0A */
-	/* R_HPVOLR PG 2 ADDR 0x0B */
+	 
+	 
 	SOC_DOUBLE_R_TLV("Headphone Volume", R_HPVOLL, R_HPVOLR,
 			FB_HPVOLL_HPVOL_L, FM_HPVOLL_HPVOL_L, 0,
 			hp_vol_tlv_arr),
-	/* R_SPKVOLL PG 2 ADDR 0x0C */
-	/* R_SPKVOLR PG 2 ADDR 0x0D */
+	 
+	 
 	SOC_DOUBLE_R_TLV("Speaker Volume", R_SPKVOLL, R_SPKVOLR,
 			FB_SPKVOLL_SPKVOL_L, FM_SPKVOLL_SPKVOL_L, 0,
 			spk_vol_tlv_arr),
-	/* R_SUBVOL PG 2 ADDR 0x10 */
+	 
 	SOC_SINGLE_TLV("Sub Volume", R_SUBVOL,
 			FB_SUBVOL_SUBVOL, FM_SUBVOL_SUBVOL, 0, spk_vol_tlv_arr),
-	/* R_SPKEQFILT PG 3 ADDR 0x01 */
+	 
 	SOC_SINGLE("Speaker EQ 2 Switch",
 			R_SPKEQFILT, FB_SPKEQFILT_EQ2EN, 1, 0),
 	SOC_ENUM("Speaker EQ 2 Band", spk_eq_enums[0]),
 	SOC_SINGLE("Speaker EQ 1 Switch",
 			R_SPKEQFILT, FB_SPKEQFILT_EQ1EN, 1, 0),
 	SOC_ENUM("Speaker EQ 1 Band", spk_eq_enums[1]),
-	/* R_SPKMBCEN PG 3 ADDR 0x0A */
+	 
 	SOC_SINGLE("Speaker MBC 3 Switch",
 			R_SPKMBCEN, FB_SPKMBCEN_MBCEN3, 1, 0),
 	SOC_SINGLE("Speaker MBC 2 Switch",
 			R_SPKMBCEN, FB_SPKMBCEN_MBCEN2, 1, 0),
 	SOC_SINGLE("Speaker MBC 1 Switch",
 			R_SPKMBCEN, FB_SPKMBCEN_MBCEN1, 1, 0),
-	/* R_SPKMBCCTL PG 3 ADDR 0x0B */
+	 
 	SOC_ENUM("Speaker MBC 3 Mode", spk_mbc3_lvl_det_mode_enum),
 	SOC_ENUM("Speaker MBC 3 Window", spk_mbc3_win_sel_enum),
 	SOC_ENUM("Speaker MBC 2 Mode", spk_mbc2_lvl_det_mode_enum),
 	SOC_ENUM("Speaker MBC 2 Window", spk_mbc2_win_sel_enum),
 	SOC_ENUM("Speaker MBC 1 Mode", spk_mbc1_lvl_det_mode_enum),
 	SOC_ENUM("Speaker MBC 1 Window", spk_mbc1_win_sel_enum),
-	/* R_SPKMBCMUG1 PG 3 ADDR 0x0C */
+	 
 	SOC_ENUM("Speaker MBC 1 Phase Polarity", spk_mbc1_phase_pol_enum),
 	SOC_SINGLE_TLV("Speaker MBC1 Make-Up Gain Volume", R_SPKMBCMUG1,
 			FB_SPKMBCMUG_MUGAIN, FM_SPKMBCMUG_MUGAIN,
 			0, mbc_mug_tlv_arr),
-	/* R_SPKMBCTHR1 PG 3 ADDR 0x0D */
+	 
 	SOC_SINGLE_TLV("Speaker MBC 1 Compressor Threshold Volume",
 			R_SPKMBCTHR1, FB_SPKMBCTHR_THRESH, FM_SPKMBCTHR_THRESH,
 			0, thr_tlv_arr),
-	/* R_SPKMBCRAT1 PG 3 ADDR 0x0E */
+	 
 	SOC_ENUM("Speaker MBC 1 Compressor Ratio", spk_mbc1_comp_rat_enum),
-	/* R_SPKMBCATK1L PG 3 ADDR 0x0F */
-	/* R_SPKMBCATK1H PG 3 ADDR 0x10 */
+	 
+	 
 	SND_SOC_BYTES("Speaker MBC 1 Attack", R_SPKMBCATK1L, 2),
-	/* R_SPKMBCREL1L PG 3 ADDR 0x11 */
-	/* R_SPKMBCREL1H PG 3 ADDR 0x12 */
+	 
+	 
 	SND_SOC_BYTES("Speaker MBC 1 Release", R_SPKMBCREL1L, 2),
-	/* R_SPKMBCMUG2 PG 3 ADDR 0x13 */
+	 
 	SOC_ENUM("Speaker MBC 2 Phase Polarity", spk_mbc2_phase_pol_enum),
 	SOC_SINGLE_TLV("Speaker MBC2 Make-Up Gain Volume", R_SPKMBCMUG2,
 			FB_SPKMBCMUG_MUGAIN, FM_SPKMBCMUG_MUGAIN,
 			0, mbc_mug_tlv_arr),
-	/* R_SPKMBCTHR2 PG 3 ADDR 0x14 */
+	 
 	SOC_SINGLE_TLV("Speaker MBC 2 Compressor Threshold Volume",
 			R_SPKMBCTHR2, FB_SPKMBCTHR_THRESH, FM_SPKMBCTHR_THRESH,
 			0, thr_tlv_arr),
-	/* R_SPKMBCRAT2 PG 3 ADDR 0x15 */
+	 
 	SOC_ENUM("Speaker MBC 2 Compressor Ratio", spk_mbc2_comp_rat_enum),
-	/* R_SPKMBCATK2L PG 3 ADDR 0x16 */
-	/* R_SPKMBCATK2H PG 3 ADDR 0x17 */
+	 
+	 
 	SND_SOC_BYTES("Speaker MBC 2 Attack", R_SPKMBCATK2L, 2),
-	/* R_SPKMBCREL2L PG 3 ADDR 0x18 */
-	/* R_SPKMBCREL2H PG 3 ADDR 0x19 */
+	 
+	 
 	SND_SOC_BYTES("Speaker MBC 2 Release", R_SPKMBCREL2L, 2),
-	/* R_SPKMBCMUG3 PG 3 ADDR 0x1A */
+	 
 	SOC_ENUM("Speaker MBC 3 Phase Polarity", spk_mbc3_phase_pol_enum),
 	SOC_SINGLE_TLV("Speaker MBC 3 Make-Up Gain Volume", R_SPKMBCMUG3,
 			FB_SPKMBCMUG_MUGAIN, FM_SPKMBCMUG_MUGAIN,
 			0, mbc_mug_tlv_arr),
-	/* R_SPKMBCTHR3 PG 3 ADDR 0x1B */
+	 
 	SOC_SINGLE_TLV("Speaker MBC 3 Threshold Volume", R_SPKMBCTHR3,
 			FB_SPKMBCTHR_THRESH, FM_SPKMBCTHR_THRESH,
 			0, thr_tlv_arr),
-	/* R_SPKMBCRAT3 PG 3 ADDR 0x1C */
+	 
 	SOC_ENUM("Speaker MBC 3 Compressor Ratio", spk_mbc3_comp_rat_enum),
-	/* R_SPKMBCATK3L PG 3 ADDR 0x1D */
-	/* R_SPKMBCATK3H PG 3 ADDR 0x1E */
+	 
+	 
 	SND_SOC_BYTES("Speaker MBC 3 Attack", R_SPKMBCATK3L, 3),
-	/* R_SPKMBCREL3L PG 3 ADDR 0x1F */
-	/* R_SPKMBCREL3H PG 3 ADDR 0x20 */
+	 
+	 
 	SND_SOC_BYTES("Speaker MBC 3 Release", R_SPKMBCREL3L, 3),
-	/* R_SPKCLECTL PG 3 ADDR 0x21 */
+	 
 	SOC_ENUM("Speaker CLE Level Mode", spk_cle_lvl_mode_enum),
 	SOC_ENUM("Speaker CLE Window", spk_cle_win_sel_enum),
 	SOC_SINGLE("Speaker CLE Expander Switch",
@@ -1827,49 +1820,49 @@ static struct snd_kcontrol_new const tscs454_snd_controls[] = {
 			R_SPKCLECTL, FB_SPKCLECTL_LIMEN, 1, 0),
 	SOC_SINGLE("Speaker CLE Compressor Switch",
 			R_SPKCLECTL, FB_SPKCLECTL_COMPEN, 1, 0),
-	/* R_SPKCLEMUG PG 3 ADDR 0x22 */
+	 
 	SOC_SINGLE_TLV("Speaker CLE Make-Up Gain Volume", R_SPKCLEMUG,
 			FB_SPKCLEMUG_MUGAIN, FM_SPKCLEMUG_MUGAIN,
 			0, cle_mug_tlv_arr),
-	/* R_SPKCOMPTHR PG 3 ADDR 0x23 */
+	 
 	SOC_SINGLE_TLV("Speaker Compressor Threshold Volume", R_SPKCOMPTHR,
 			FB_SPKCOMPTHR_THRESH, FM_SPKCOMPTHR_THRESH,
 			0, thr_tlv_arr),
-	/* R_SPKCOMPRAT PG 3 ADDR 0x24 */
+	 
 	SOC_ENUM("Speaker Compressor Ratio", spk_comp_rat_enum),
-	/* R_SPKCOMPATKL PG 3 ADDR 0x25 */
-	/* R_SPKCOMPATKH PG 3 ADDR 0x26 */
+	 
+	 
 	SND_SOC_BYTES("Speaker Compressor Attack", R_SPKCOMPATKL, 2),
-	/* R_SPKCOMPRELL PG 3 ADDR 0x27 */
-	/* R_SPKCOMPRELH PG 3 ADDR 0x28 */
+	 
+	 
 	SND_SOC_BYTES("Speaker Compressor Release", R_SPKCOMPRELL, 2),
-	/* R_SPKLIMTHR PG 3 ADDR 0x29 */
+	 
 	SOC_SINGLE_TLV("Speaker Limiter Threshold Volume", R_SPKLIMTHR,
 			FB_SPKLIMTHR_THRESH, FM_SPKLIMTHR_THRESH,
 			0, thr_tlv_arr),
-	/* R_SPKLIMTGT PG 3 ADDR 0x2A */
+	 
 	SOC_SINGLE_TLV("Speaker Limiter Target Volume", R_SPKLIMTGT,
 			FB_SPKLIMTGT_TARGET, FM_SPKLIMTGT_TARGET,
 			0, thr_tlv_arr),
-	/* R_SPKLIMATKL PG 3 ADDR 0x2B */
-	/* R_SPKLIMATKH PG 3 ADDR 0x2C */
+	 
+	 
 	SND_SOC_BYTES("Speaker Limiter Attack", R_SPKLIMATKL, 2),
-	/* R_SPKLIMRELL PG 3 ADDR 0x2D */
-	/* R_SPKLIMRELR PG 3 ADDR 0x2E */
+	 
+	 
 	SND_SOC_BYTES("Speaker Limiter Release", R_SPKLIMRELL, 2),
-	/* R_SPKEXPTHR PG 3 ADDR 0x2F */
+	 
 	SOC_SINGLE_TLV("Speaker Expander Threshold Volume", R_SPKEXPTHR,
 			FB_SPKEXPTHR_THRESH, FM_SPKEXPTHR_THRESH,
 			0, thr_tlv_arr),
-	/* R_SPKEXPRAT PG 3 ADDR 0x30 */
+	 
 	SOC_ENUM("Speaker Expander Ratio", spk_exp_rat_enum),
-	/* R_SPKEXPATKL PG 3 ADDR 0x31 */
-	/* R_SPKEXPATKR PG 3 ADDR 0x32 */
+	 
+	 
 	SND_SOC_BYTES("Speaker Expander Attack", R_SPKEXPATKL, 2),
-	/* R_SPKEXPRELL PG 3 ADDR 0x33 */
-	/* R_SPKEXPRELR PG 3 ADDR 0x34 */
+	 
+	 
 	SND_SOC_BYTES("Speaker Expander Release", R_SPKEXPRELL, 2),
-	/* R_SPKFXCTL PG 3 ADDR 0x35 */
+	 
 	SOC_SINGLE("Speaker 3D Switch", R_SPKFXCTL, FB_SPKFXCTL_3DEN, 1, 0),
 	SOC_SINGLE("Speaker Treble Enhancement Switch",
 			R_SPKFXCTL, FB_SPKFXCTL_TEEN, 1, 0),
@@ -1879,75 +1872,75 @@ static struct snd_kcontrol_new const tscs454_snd_controls[] = {
 			R_SPKFXCTL, FB_SPKFXCTL_BEEN, 1, 0),
 	SOC_SINGLE("Speaker Bass NLF Switch",
 			R_SPKFXCTL, FB_SPKFXCTL_BNLFBYP, 1, 1),
-	/* R_DACEQFILT PG 4 ADDR 0x01 */
+	 
 	SOC_SINGLE("DAC EQ 2 Switch",
 			R_DACEQFILT, FB_DACEQFILT_EQ2EN, 1, 0),
 	SOC_ENUM("DAC EQ 2 Band", dac_eq_enums[0]),
 	SOC_SINGLE("DAC EQ 1 Switch", R_DACEQFILT, FB_DACEQFILT_EQ1EN, 1, 0),
 	SOC_ENUM("DAC EQ 1 Band", dac_eq_enums[1]),
-	/* R_DACMBCEN PG 4 ADDR 0x0A */
+	 
 	SOC_SINGLE("DAC MBC 3 Switch", R_DACMBCEN, FB_DACMBCEN_MBCEN3, 1, 0),
 	SOC_SINGLE("DAC MBC 2 Switch", R_DACMBCEN, FB_DACMBCEN_MBCEN2, 1, 0),
 	SOC_SINGLE("DAC MBC 1 Switch", R_DACMBCEN, FB_DACMBCEN_MBCEN1, 1, 0),
-	/* R_DACMBCCTL PG 4 ADDR 0x0B */
+	 
 	SOC_ENUM("DAC MBC 3 Mode", dac_mbc3_lvl_det_mode_enum),
 	SOC_ENUM("DAC MBC 3 Window", dac_mbc3_win_sel_enum),
 	SOC_ENUM("DAC MBC 2 Mode", dac_mbc2_lvl_det_mode_enum),
 	SOC_ENUM("DAC MBC 2 Window", dac_mbc2_win_sel_enum),
 	SOC_ENUM("DAC MBC 1 Mode", dac_mbc1_lvl_det_mode_enum),
 	SOC_ENUM("DAC MBC 1 Window", dac_mbc1_win_sel_enum),
-	/* R_DACMBCMUG1 PG 4 ADDR 0x0C */
+	 
 	SOC_ENUM("DAC MBC 1 Phase Polarity", dac_mbc1_phase_pol_enum),
 	SOC_SINGLE_TLV("DAC MBC 1 Make-Up Gain Volume", R_DACMBCMUG1,
 			FB_DACMBCMUG_MUGAIN, FM_DACMBCMUG_MUGAIN,
 			0, mbc_mug_tlv_arr),
-	/* R_DACMBCTHR1 PG 4 ADDR 0x0D */
+	 
 	SOC_SINGLE_TLV("DAC MBC 1 Compressor Threshold Volume", R_DACMBCTHR1,
 			FB_DACMBCTHR_THRESH, FM_DACMBCTHR_THRESH,
 			0, thr_tlv_arr),
-	/* R_DACMBCRAT1 PG 4 ADDR 0x0E */
+	 
 	SOC_ENUM("DAC MBC 1 Compressor Ratio", dac_mbc1_comp_rat_enum),
-	/* R_DACMBCATK1L PG 4 ADDR 0x0F */
-	/* R_DACMBCATK1H PG 4 ADDR 0x10 */
+	 
+	 
 	SND_SOC_BYTES("DAC MBC 1 Attack", R_DACMBCATK1L, 2),
-	/* R_DACMBCREL1L PG 4 ADDR 0x11 */
-	/* R_DACMBCREL1H PG 4 ADDR 0x12 */
+	 
+	 
 	SND_SOC_BYTES("DAC MBC 1 Release", R_DACMBCREL1L, 2),
-	/* R_DACMBCMUG2 PG 4 ADDR 0x13 */
+	 
 	SOC_ENUM("DAC MBC 2 Phase Polarity", dac_mbc2_phase_pol_enum),
 	SOC_SINGLE_TLV("DAC MBC 2 Make-Up Gain Volume", R_DACMBCMUG2,
 			FB_DACMBCMUG_MUGAIN, FM_DACMBCMUG_MUGAIN,
 			0, mbc_mug_tlv_arr),
-	/* R_DACMBCTHR2 PG 4 ADDR 0x14 */
+	 
 	SOC_SINGLE_TLV("DAC MBC 2 Compressor Threshold Volume", R_DACMBCTHR2,
 			FB_DACMBCTHR_THRESH, FM_DACMBCTHR_THRESH,
 			0, thr_tlv_arr),
-	/* R_DACMBCRAT2 PG 4 ADDR 0x15 */
+	 
 	SOC_ENUM("DAC MBC 2 Compressor Ratio", dac_mbc2_comp_rat_enum),
-	/* R_DACMBCATK2L PG 4 ADDR 0x16 */
-	/* R_DACMBCATK2H PG 4 ADDR 0x17 */
+	 
+	 
 	SND_SOC_BYTES("DAC MBC 2 Attack", R_DACMBCATK2L, 2),
-	/* R_DACMBCREL2L PG 4 ADDR 0x18 */
-	/* R_DACMBCREL2H PG 4 ADDR 0x19 */
+	 
+	 
 	SND_SOC_BYTES("DAC MBC 2 Release", R_DACMBCREL2L, 2),
-	/* R_DACMBCMUG3 PG 4 ADDR 0x1A */
+	 
 	SOC_ENUM("DAC MBC 3 Phase Polarity", dac_mbc3_phase_pol_enum),
 	SOC_SINGLE_TLV("DAC MBC 3 Make-Up Gain Volume", R_DACMBCMUG3,
 			FB_DACMBCMUG_MUGAIN, FM_DACMBCMUG_MUGAIN,
 			0, mbc_mug_tlv_arr),
-	/* R_DACMBCTHR3 PG 4 ADDR 0x1B */
+	 
 	SOC_SINGLE_TLV("DAC MBC 3 Threshold Volume", R_DACMBCTHR3,
 			FB_DACMBCTHR_THRESH, FM_DACMBCTHR_THRESH,
 			0, thr_tlv_arr),
-	/* R_DACMBCRAT3 PG 4 ADDR 0x1C */
+	 
 	SOC_ENUM("DAC MBC 3 Compressor Ratio", dac_mbc3_comp_rat_enum),
-	/* R_DACMBCATK3L PG 4 ADDR 0x1D */
-	/* R_DACMBCATK3H PG 4 ADDR 0x1E */
+	 
+	 
 	SND_SOC_BYTES("DAC MBC 3 Attack", R_DACMBCATK3L, 3),
-	/* R_DACMBCREL3L PG 4 ADDR 0x1F */
-	/* R_DACMBCREL3H PG 4 ADDR 0x20 */
+	 
+	 
 	SND_SOC_BYTES("DAC MBC 3 Release", R_DACMBCREL3L, 3),
-	/* R_DACCLECTL PG 4 ADDR 0x21 */
+	 
 	SOC_ENUM("DAC CLE Level Mode", dac_cle_lvl_mode_enum),
 	SOC_ENUM("DAC CLE Window", dac_cle_win_sel_enum),
 	SOC_SINGLE("DAC CLE Expander Switch",
@@ -1956,49 +1949,49 @@ static struct snd_kcontrol_new const tscs454_snd_controls[] = {
 			R_DACCLECTL, FB_DACCLECTL_LIMEN, 1, 0),
 	SOC_SINGLE("DAC CLE Compressor Switch",
 			R_DACCLECTL, FB_DACCLECTL_COMPEN, 1, 0),
-	/* R_DACCLEMUG PG 4 ADDR 0x22 */
+	 
 	SOC_SINGLE_TLV("DAC CLE Make-Up Gain Volume", R_DACCLEMUG,
 			FB_DACCLEMUG_MUGAIN, FM_DACCLEMUG_MUGAIN,
 			0, cle_mug_tlv_arr),
-	/* R_DACCOMPTHR PG 4 ADDR 0x23 */
+	 
 	SOC_SINGLE_TLV("DAC Compressor Threshold Volume", R_DACCOMPTHR,
 			FB_DACCOMPTHR_THRESH, FM_DACCOMPTHR_THRESH,
 			0, thr_tlv_arr),
-	/* R_DACCOMPRAT PG 4 ADDR 0x24 */
+	 
 	SOC_ENUM("DAC Compressor Ratio", dac_comp_rat_enum),
-	/* R_DACCOMPATKL PG 4 ADDR 0x25 */
-	/* R_DACCOMPATKH PG 4 ADDR 0x26 */
+	 
+	 
 	SND_SOC_BYTES("DAC Compressor Attack", R_DACCOMPATKL, 2),
-	/* R_DACCOMPRELL PG 4 ADDR 0x27 */
-	/* R_DACCOMPRELH PG 4 ADDR 0x28 */
+	 
+	 
 	SND_SOC_BYTES("DAC Compressor Release", R_DACCOMPRELL, 2),
-	/* R_DACLIMTHR PG 4 ADDR 0x29 */
+	 
 	SOC_SINGLE_TLV("DAC Limiter Threshold Volume", R_DACLIMTHR,
 			FB_DACLIMTHR_THRESH, FM_DACLIMTHR_THRESH,
 			0, thr_tlv_arr),
-	/* R_DACLIMTGT PG 4 ADDR 0x2A */
+	 
 	SOC_SINGLE_TLV("DAC Limiter Target Volume", R_DACLIMTGT,
 			FB_DACLIMTGT_TARGET, FM_DACLIMTGT_TARGET,
 			0, thr_tlv_arr),
-	/* R_DACLIMATKL PG 4 ADDR 0x2B */
-	/* R_DACLIMATKH PG 4 ADDR 0x2C */
+	 
+	 
 	SND_SOC_BYTES("DAC Limiter Attack", R_DACLIMATKL, 2),
-	/* R_DACLIMRELL PG 4 ADDR 0x2D */
-	/* R_DACLIMRELR PG 4 ADDR 0x2E */
+	 
+	 
 	SND_SOC_BYTES("DAC Limiter Release", R_DACLIMRELL, 2),
-	/* R_DACEXPTHR PG 4 ADDR 0x2F */
+	 
 	SOC_SINGLE_TLV("DAC Expander Threshold Volume", R_DACEXPTHR,
 			FB_DACEXPTHR_THRESH, FM_DACEXPTHR_THRESH,
 			0, thr_tlv_arr),
-	/* R_DACEXPRAT PG 4 ADDR 0x30 */
+	 
 	SOC_ENUM("DAC Expander Ratio", dac_exp_rat_enum),
-	/* R_DACEXPATKL PG 4 ADDR 0x31 */
-	/* R_DACEXPATKR PG 4 ADDR 0x32 */
+	 
+	 
 	SND_SOC_BYTES("DAC Expander Attack", R_DACEXPATKL, 2),
-	/* R_DACEXPRELL PG 4 ADDR 0x33 */
-	/* R_DACEXPRELR PG 4 ADDR 0x34 */
+	 
+	 
 	SND_SOC_BYTES("DAC Expander Release", R_DACEXPRELL, 2),
-	/* R_DACFXCTL PG 4 ADDR 0x35 */
+	 
 	SOC_SINGLE("DAC 3D Switch", R_DACFXCTL, FB_DACFXCTL_3DEN, 1, 0),
 	SOC_SINGLE("DAC Treble Enhancement Switch",
 			R_DACFXCTL, FB_DACFXCTL_TEEN, 1, 0),
@@ -2008,75 +2001,75 @@ static struct snd_kcontrol_new const tscs454_snd_controls[] = {
 			R_DACFXCTL, FB_DACFXCTL_BEEN, 1, 0),
 	SOC_SINGLE("DAC Bass NLF Switch",
 			R_DACFXCTL, FB_DACFXCTL_BNLFBYP, 1, 1),
-	/* R_SUBEQFILT PG 5 ADDR 0x01 */
+	 
 	SOC_SINGLE("Sub EQ 2 Switch",
 			R_SUBEQFILT, FB_SUBEQFILT_EQ2EN, 1, 0),
 	SOC_ENUM("Sub EQ 2 Band", sub_eq_enums[0]),
 	SOC_SINGLE("Sub EQ 1 Switch", R_SUBEQFILT, FB_SUBEQFILT_EQ1EN, 1, 0),
 	SOC_ENUM("Sub EQ 1 Band", sub_eq_enums[1]),
-	/* R_SUBMBCEN PG 5 ADDR 0x0A */
+	 
 	SOC_SINGLE("Sub MBC 3 Switch", R_SUBMBCEN, FB_SUBMBCEN_MBCEN3, 1, 0),
 	SOC_SINGLE("Sub MBC 2 Switch", R_SUBMBCEN, FB_SUBMBCEN_MBCEN2, 1, 0),
 	SOC_SINGLE("Sub MBC 1 Switch", R_SUBMBCEN, FB_SUBMBCEN_MBCEN1, 1, 0),
-	/* R_SUBMBCCTL PG 5 ADDR 0x0B */
+	 
 	SOC_ENUM("Sub MBC 3 Mode", sub_mbc3_lvl_det_mode_enum),
 	SOC_ENUM("Sub MBC 3 Window", sub_mbc3_win_sel_enum),
 	SOC_ENUM("Sub MBC 2 Mode", sub_mbc2_lvl_det_mode_enum),
 	SOC_ENUM("Sub MBC 2 Window", sub_mbc2_win_sel_enum),
 	SOC_ENUM("Sub MBC 1 Mode", sub_mbc1_lvl_det_mode_enum),
 	SOC_ENUM("Sub MBC 1 Window", sub_mbc1_win_sel_enum),
-	/* R_SUBMBCMUG1 PG 5 ADDR 0x0C */
+	 
 	SOC_ENUM("Sub MBC 1 Phase Polarity", sub_mbc1_phase_pol_enum),
 	SOC_SINGLE_TLV("Sub MBC 1 Make-Up Gain Volume", R_SUBMBCMUG1,
 			FB_SUBMBCMUG_MUGAIN, FM_SUBMBCMUG_MUGAIN,
 			0, mbc_mug_tlv_arr),
-	/* R_SUBMBCTHR1 PG 5 ADDR 0x0D */
+	 
 	SOC_SINGLE_TLV("Sub MBC 1 Compressor Threshold Volume", R_SUBMBCTHR1,
 			FB_SUBMBCTHR_THRESH, FM_SUBMBCTHR_THRESH,
 			0, thr_tlv_arr),
-	/* R_SUBMBCRAT1 PG 5 ADDR 0x0E */
+	 
 	SOC_ENUM("Sub MBC 1 Compressor Ratio", sub_mbc1_comp_rat_enum),
-	/* R_SUBMBCATK1L PG 5 ADDR 0x0F */
-	/* R_SUBMBCATK1H PG 5 ADDR 0x10 */
+	 
+	 
 	SND_SOC_BYTES("Sub MBC 1 Attack", R_SUBMBCATK1L, 2),
-	/* R_SUBMBCREL1L PG 5 ADDR 0x11 */
-	/* R_SUBMBCREL1H PG 5 ADDR 0x12 */
+	 
+	 
 	SND_SOC_BYTES("Sub MBC 1 Release", R_SUBMBCREL1L, 2),
-	/* R_SUBMBCMUG2 PG 5 ADDR 0x13 */
+	 
 	SOC_ENUM("Sub MBC 2 Phase Polarity", sub_mbc2_phase_pol_enum),
 	SOC_SINGLE_TLV("Sub MBC 2 Make-Up Gain Volume", R_SUBMBCMUG2,
 			FB_SUBMBCMUG_MUGAIN, FM_SUBMBCMUG_MUGAIN,
 			0, mbc_mug_tlv_arr),
-	/* R_SUBMBCTHR2 PG 5 ADDR 0x14 */
+	 
 	SOC_SINGLE_TLV("Sub MBC 2 Compressor Threshold Volume", R_SUBMBCTHR2,
 			FB_SUBMBCTHR_THRESH, FM_SUBMBCTHR_THRESH,
 			0, thr_tlv_arr),
-	/* R_SUBMBCRAT2 PG 5 ADDR 0x15 */
+	 
 	SOC_ENUM("Sub MBC 2 Compressor Ratio", sub_mbc2_comp_rat_enum),
-	/* R_SUBMBCATK2L PG 5 ADDR 0x16 */
-	/* R_SUBMBCATK2H PG 5 ADDR 0x17 */
+	 
+	 
 	SND_SOC_BYTES("Sub MBC 2 Attack", R_SUBMBCATK2L, 2),
-	/* R_SUBMBCREL2L PG 5 ADDR 0x18 */
-	/* R_SUBMBCREL2H PG 5 ADDR 0x19 */
+	 
+	 
 	SND_SOC_BYTES("Sub MBC 2 Release", R_SUBMBCREL2L, 2),
-	/* R_SUBMBCMUG3 PG 5 ADDR 0x1A */
+	 
 	SOC_ENUM("Sub MBC 3 Phase Polarity", sub_mbc3_phase_pol_enum),
 	SOC_SINGLE_TLV("Sub MBC 3 Make-Up Gain Volume", R_SUBMBCMUG3,
 			FB_SUBMBCMUG_MUGAIN, FM_SUBMBCMUG_MUGAIN,
 			0, mbc_mug_tlv_arr),
-	/* R_SUBMBCTHR3 PG 5 ADDR 0x1B */
+	 
 	SOC_SINGLE_TLV("Sub MBC 3 Threshold Volume", R_SUBMBCTHR3,
 			FB_SUBMBCTHR_THRESH, FM_SUBMBCTHR_THRESH,
 			0, thr_tlv_arr),
-	/* R_SUBMBCRAT3 PG 5 ADDR 0x1C */
+	 
 	SOC_ENUM("Sub MBC 3 Compressor Ratio", sub_mbc3_comp_rat_enum),
-	/* R_SUBMBCATK3L PG 5 ADDR 0x1D */
-	/* R_SUBMBCATK3H PG 5 ADDR 0x1E */
+	 
+	 
 	SND_SOC_BYTES("Sub MBC 3 Attack", R_SUBMBCATK3L, 3),
-	/* R_SUBMBCREL3L PG 5 ADDR 0x1F */
-	/* R_SUBMBCREL3H PG 5 ADDR 0x20 */
+	 
+	 
 	SND_SOC_BYTES("Sub MBC 3 Release", R_SUBMBCREL3L, 3),
-	/* R_SUBCLECTL PG 5 ADDR 0x21 */
+	 
 	SOC_ENUM("Sub CLE Level Mode", sub_cle_lvl_mode_enum),
 	SOC_ENUM("Sub CLE Window", sub_cle_win_sel_enum),
 	SOC_SINGLE("Sub CLE Expander Switch",
@@ -2085,49 +2078,49 @@ static struct snd_kcontrol_new const tscs454_snd_controls[] = {
 			R_SUBCLECTL, FB_SUBCLECTL_LIMEN, 1, 0),
 	SOC_SINGLE("Sub CLE Compressor Switch",
 			R_SUBCLECTL, FB_SUBCLECTL_COMPEN, 1, 0),
-	/* R_SUBCLEMUG PG 5 ADDR 0x22 */
+	 
 	SOC_SINGLE_TLV("Sub CLE Make-Up Gain Volume", R_SUBCLEMUG,
 			FB_SUBCLEMUG_MUGAIN, FM_SUBCLEMUG_MUGAIN,
 			0, cle_mug_tlv_arr),
-	/* R_SUBCOMPTHR PG 5 ADDR 0x23 */
+	 
 	SOC_SINGLE_TLV("Sub Compressor Threshold Volume", R_SUBCOMPTHR,
 			FB_SUBCOMPTHR_THRESH, FM_SUBCOMPTHR_THRESH,
 			0, thr_tlv_arr),
-	/* R_SUBCOMPRAT PG 5 ADDR 0x24 */
+	 
 	SOC_ENUM("Sub Compressor Ratio", sub_comp_rat_enum),
-	/* R_SUBCOMPATKL PG 5 ADDR 0x25 */
-	/* R_SUBCOMPATKH PG 5 ADDR 0x26 */
+	 
+	 
 	SND_SOC_BYTES("Sub Compressor Attack", R_SUBCOMPATKL, 2),
-	/* R_SUBCOMPRELL PG 5 ADDR 0x27 */
-	/* R_SUBCOMPRELH PG 5 ADDR 0x28 */
+	 
+	 
 	SND_SOC_BYTES("Sub Compressor Release", R_SUBCOMPRELL, 2),
-	/* R_SUBLIMTHR PG 5 ADDR 0x29 */
+	 
 	SOC_SINGLE_TLV("Sub Limiter Threshold Volume", R_SUBLIMTHR,
 			FB_SUBLIMTHR_THRESH, FM_SUBLIMTHR_THRESH,
 			0, thr_tlv_arr),
-	/* R_SUBLIMTGT PG 5 ADDR 0x2A */
+	 
 	SOC_SINGLE_TLV("Sub Limiter Target Volume", R_SUBLIMTGT,
 			FB_SUBLIMTGT_TARGET, FM_SUBLIMTGT_TARGET,
 			0, thr_tlv_arr),
-	/* R_SUBLIMATKL PG 5 ADDR 0x2B */
-	/* R_SUBLIMATKH PG 5 ADDR 0x2C */
+	 
+	 
 	SND_SOC_BYTES("Sub Limiter Attack", R_SUBLIMATKL, 2),
-	/* R_SUBLIMRELL PG 5 ADDR 0x2D */
-	/* R_SUBLIMRELR PG 5 ADDR 0x2E */
+	 
+	 
 	SND_SOC_BYTES("Sub Limiter Release", R_SUBLIMRELL, 2),
-	/* R_SUBEXPTHR PG 5 ADDR 0x2F */
+	 
 	SOC_SINGLE_TLV("Sub Expander Threshold Volume", R_SUBEXPTHR,
 			FB_SUBEXPTHR_THRESH, FM_SUBEXPTHR_THRESH,
 			0, thr_tlv_arr),
-	/* R_SUBEXPRAT PG 5 ADDR 0x30 */
+	 
 	SOC_ENUM("Sub Expander Ratio", sub_exp_rat_enum),
-	/* R_SUBEXPATKL PG 5 ADDR 0x31 */
-	/* R_SUBEXPATKR PG 5 ADDR 0x32 */
+	 
+	 
 	SND_SOC_BYTES("Sub Expander Attack", R_SUBEXPATKL, 2),
-	/* R_SUBEXPRELL PG 5 ADDR 0x33 */
-	/* R_SUBEXPRELR PG 5 ADDR 0x34 */
+	 
+	 
 	SND_SOC_BYTES("Sub Expander Release", R_SUBEXPRELL, 2),
-	/* R_SUBFXCTL PG 5 ADDR 0x35 */
+	 
 	SOC_SINGLE("Sub Treble Enhancement Switch",
 			R_SUBFXCTL, FB_SUBFXCTL_TEEN, 1, 0),
 	SOC_SINGLE("Sub Treble NLF Switch",
@@ -2351,21 +2344,21 @@ static struct snd_kcontrol_new const tscs454_snd_controls[] = {
 };
 
 static struct snd_soc_dapm_widget const tscs454_dapm_widgets[] = {
-	/* R_PLLCTL PG 0 ADDR 0x15 */
+	 
 	SND_SOC_DAPM_SUPPLY("PLL 1 Power", R_PLLCTL, FB_PLLCTL_PU_PLL1, 0,
 			pll_power_event,
 			SND_SOC_DAPM_POST_PMU|SND_SOC_DAPM_PRE_PMD),
 	SND_SOC_DAPM_SUPPLY("PLL 2 Power", R_PLLCTL, FB_PLLCTL_PU_PLL2, 0,
 			pll_power_event,
 			SND_SOC_DAPM_POST_PMU|SND_SOC_DAPM_PRE_PMD),
-	/* R_I2SPINC0 PG 0 ADDR 0x22 */
+	 
 	SND_SOC_DAPM_AIF_OUT("DAI 3 Out", "DAI 3 Capture", 0,
 			R_I2SPINC0, FB_I2SPINC0_SDO3TRI, 1),
 	SND_SOC_DAPM_AIF_OUT("DAI 2 Out", "DAI 2 Capture", 0,
 			R_I2SPINC0, FB_I2SPINC0_SDO2TRI, 1),
 	SND_SOC_DAPM_AIF_OUT("DAI 1 Out", "DAI 1 Capture", 0,
 			R_I2SPINC0, FB_I2SPINC0_SDO1TRI, 1),
-	/* R_PWRM0 PG 0 ADDR 0x33 */
+	 
 	SND_SOC_DAPM_ADC("Input Processor Channel 3", NULL,
 			R_PWRM0, FB_PWRM0_INPROC3PU, 0),
 	SND_SOC_DAPM_ADC("Input Processor Channel 2", NULL,
@@ -2378,7 +2371,7 @@ static struct snd_soc_dapm_widget const tscs454_dapm_widgets[] = {
 			R_PWRM0, FB_PWRM0_MICB2PU, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("Mic Bias 1", R_PWRM0,
 			FB_PWRM0_MICB1PU, 0, NULL, 0),
-	/* R_PWRM1 PG 0 ADDR 0x34 */
+	 
 	SND_SOC_DAPM_SUPPLY("Sub Power", R_PWRM1, FB_PWRM1_SUBPU, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("Headphone Left Power",
 			R_PWRM1, FB_PWRM1_HPLPU, 0, NULL, 0),
@@ -2392,7 +2385,7 @@ static struct snd_soc_dapm_widget const tscs454_dapm_widgets[] = {
 			R_PWRM1, FB_PWRM1_D2S2PU, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("Differential Input 1 Power",
 			R_PWRM1, FB_PWRM1_D2S1PU, 0, NULL, 0),
-	/* R_PWRM2 PG 0 ADDR 0x35 */
+	 
 	SND_SOC_DAPM_SUPPLY("DAI 3 Out Power",
 			R_PWRM2, FB_PWRM2_I2S3OPU, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("DAI 2 Out Power",
@@ -2405,50 +2398,50 @@ static struct snd_soc_dapm_widget const tscs454_dapm_widgets[] = {
 			R_PWRM2, FB_PWRM2_I2S2IPU, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("DAI 1 In Power",
 			R_PWRM2, FB_PWRM2_I2S1IPU, 0, NULL, 0),
-	/* R_PWRM3 PG 0 ADDR 0x36 */
+	 
 	SND_SOC_DAPM_SUPPLY("Line Out Left Power",
 			R_PWRM3, FB_PWRM3_LLINEPU, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("Line Out Right Power",
 			R_PWRM3, FB_PWRM3_RLINEPU, 0, NULL, 0),
-	/* R_PWRM4 PG 0 ADDR 0x37 */
+	 
 	SND_SOC_DAPM_DAC("Sub", NULL, R_PWRM4, FB_PWRM4_OPSUBPU, 0),
 	SND_SOC_DAPM_DAC("DAC Left", NULL, R_PWRM4, FB_PWRM4_OPDACLPU, 0),
 	SND_SOC_DAPM_DAC("DAC Right", NULL, R_PWRM4, FB_PWRM4_OPDACRPU, 0),
 	SND_SOC_DAPM_DAC("ClassD Left", NULL, R_PWRM4, FB_PWRM4_OPSPKLPU, 0),
 	SND_SOC_DAPM_DAC("ClassD Right", NULL, R_PWRM4, FB_PWRM4_OPSPKRPU, 0),
-	/* R_AUDIOMUX1  PG 0 ADDR 0x3A */
+	 
 	SND_SOC_DAPM_MUX("DAI 2 Out Mux", SND_SOC_NOPM, 0, 0,
 			&dai2_mux_dapm_enum),
 	SND_SOC_DAPM_MUX("DAI 1 Out Mux", SND_SOC_NOPM, 0, 0,
 			&dai1_mux_dapm_enum),
-	/* R_AUDIOMUX2 PG 0 ADDR 0x3B */
+	 
 	SND_SOC_DAPM_MUX("DAC Mux", SND_SOC_NOPM, 0, 0,
 			&dac_mux_dapm_enum),
 	SND_SOC_DAPM_MUX("DAI 3 Out Mux", SND_SOC_NOPM, 0, 0,
 			&dai3_mux_dapm_enum),
-	/* R_AUDIOMUX3 PG 0 ADDR 0x3C */
+	 
 	SND_SOC_DAPM_MUX("Sub Mux", SND_SOC_NOPM, 0, 0,
 			&sub_mux_dapm_enum),
 	SND_SOC_DAPM_MUX("Speaker Mux", SND_SOC_NOPM, 0, 0,
 			&classd_mux_dapm_enum),
-	/* R_HSDCTL1 PG 1 ADDR 0x01 */
+	 
 	SND_SOC_DAPM_SUPPLY("GHS Detect Power", R_HSDCTL1,
 			FB_HSDCTL1_CON_DET_PWD, 1, NULL, 0),
-	/* R_CH0AIC PG 1 ADDR 0x06 */
+	 
 	SND_SOC_DAPM_MUX("Input Boost Channel 0 Mux", SND_SOC_NOPM, 0, 0,
 			&in_bst_mux_ch0_dapm_enum),
 	SND_SOC_DAPM_MUX("ADC Channel 0 Mux", SND_SOC_NOPM, 0, 0,
 			&adc_mux_ch0_dapm_enum),
 	SND_SOC_DAPM_MUX("Input Processor Channel 0 Mux", SND_SOC_NOPM, 0, 0,
 			&in_proc_mux_ch0_dapm_enum),
-	/* R_CH1AIC PG 1 ADDR 0x07 */
+	 
 	SND_SOC_DAPM_MUX("Input Boost Channel 1 Mux", SND_SOC_NOPM, 0, 0,
 			&in_bst_mux_ch1_dapm_enum),
 	SND_SOC_DAPM_MUX("ADC Channel 1 Mux", SND_SOC_NOPM, 0, 0,
 			&adc_mux_ch1_dapm_enum),
 	SND_SOC_DAPM_MUX("Input Processor Channel 1 Mux", SND_SOC_NOPM, 0, 0,
 			&in_proc_mux_ch1_dapm_enum),
-	/* Virtual */
+	 
 	SND_SOC_DAPM_AIF_IN("DAI 3 In", "DAI 3 Playback", 0,
 			SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_IN("DAI 2 In", "DAI 2 Playback", 0,
@@ -2483,25 +2476,25 @@ static struct snd_soc_dapm_widget const tscs454_dapm_widgets[] = {
 };
 
 static struct snd_soc_dapm_route const tscs454_intercon[] = {
-	/* PLLs */
+	 
 	{"PLLs", NULL, "PLL 1 Power", pll_connected},
 	{"PLLs", NULL, "PLL 2 Power", pll_connected},
-	/* Inputs */
+	 
 	{"DAI 3 In", NULL, "DAI 3 In Power"},
 	{"DAI 2 In", NULL, "DAI 2 In Power"},
 	{"DAI 1 In", NULL, "DAI 1 In Power"},
-	/* Outputs */
+	 
 	{"DAI 3 Out", NULL, "DAI 3 Out Power"},
 	{"DAI 2 Out", NULL, "DAI 2 Out Power"},
 	{"DAI 1 Out", NULL, "DAI 1 Out Power"},
-	/* Ch Muxing */
+	 
 	{"CH 0_1 Mux", "DAI 1", "DAI 1 In"},
 	{"CH 0_1 Mux", "TDM 0_1", "DAI 1 In"},
 	{"CH 2_3 Mux", "DAI 2", "DAI 2 In"},
 	{"CH 2_3 Mux", "TDM 2_3", "DAI 1 In"},
 	{"CH 4_5 Mux", "DAI 3", "DAI 2 In"},
 	{"CH 4_5 Mux", "TDM 4_5", "DAI 1 In"},
-	/* In/Out Muxing */
+	 
 	{"DAI 1 Out Mux", "CH 0_1", "CH 0_1 Mux"},
 	{"DAI 1 Out Mux", "CH 2_3", "CH 2_3 Mux"},
 	{"DAI 1 Out Mux", "CH 4_5", "CH 4_5 Mux"},
@@ -2511,10 +2504,8 @@ static struct snd_soc_dapm_route const tscs454_intercon[] = {
 	{"DAI 3 Out Mux", "CH 0_1", "CH 0_1 Mux"},
 	{"DAI 3 Out Mux", "CH 2_3", "CH 2_3 Mux"},
 	{"DAI 3 Out Mux", "CH 4_5", "CH 4_5 Mux"},
-	/******************
-	 * Playback Paths *
-	 ******************/
-	/* DAC Path */
+	 
+	 
 	{"DAC Mux", "CH 4_5", "CH 4_5 Mux"},
 	{"DAC Mux", "CH 2_3", "CH 2_3 Mux"},
 	{"DAC Mux", "CH 0_1", "CH 0_1 Mux"},
@@ -2526,12 +2517,12 @@ static struct snd_soc_dapm_route const tscs454_intercon[] = {
 	{"Headphone Right", NULL, "Headphone Right Power"},
 	{"Headphone Left", NULL, "DAC Left"},
 	{"Headphone Right", NULL, "DAC Right"},
-	/* Line Out */
+	 
 	{"Line Out Left", NULL, "Line Out Left Power"},
 	{"Line Out Right", NULL, "Line Out Right Power"},
 	{"Line Out Left", NULL, "DAC Left"},
 	{"Line Out Right", NULL, "DAC Right"},
-	/* ClassD Path */
+	 
 	{"Speaker Mux", "CH 4_5", "CH 4_5 Mux"},
 	{"Speaker Mux", "CH 2_3", "CH 2_3 Mux"},
 	{"Speaker Mux", "CH 0_1", "CH 0_1 Mux"},
@@ -2543,7 +2534,7 @@ static struct snd_soc_dapm_route const tscs454_intercon[] = {
 	{"Speaker Right", NULL, "Speaker Right Power"},
 	{"Speaker Left", NULL, "ClassD Left"},
 	{"Speaker Right", NULL, "ClassD Right"},
-	/* Sub Path */
+	 
 	{"Sub Mux", "CH 4", "CH 4_5 Mux"},
 	{"Sub Mux", "CH 5", "CH 4_5 Mux"},
 	{"Sub Mux", "CH 4 + 5", "CH 4_5 Mux"},
@@ -2568,9 +2559,7 @@ static struct snd_soc_dapm_route const tscs454_intercon[] = {
 	{"Sub", NULL, "PLLs"},
 	{"Sub Out", NULL, "Sub Power"},
 	{"Sub Out", NULL, "Sub"},
-	/*****************
-	 * Capture Paths *
-	 *****************/
+	 
 	{"Input Boost Channel 0 Mux", "Input 3", "Line In 3 Left"},
 	{"Input Boost Channel 0 Mux", "Input 2", "Line In 2 Left"},
 	{"Input Boost Channel 0 Mux", "Input 1", "Line In 1 Left"},
@@ -2629,7 +2618,7 @@ static struct snd_soc_dapm_route const tscs454_intercon[] = {
 	{"DAI 3 Out", NULL, "DAI 3 Out Mux"},
 };
 
-/* This is used when BCLK is sourcing the PLLs */
+ 
 static int tscs454_set_sysclk(struct snd_soc_dai *dai,
 		int clk_id, unsigned int freq, int dir)
 {
@@ -3194,7 +3183,7 @@ static int tscs454_hw_params(struct snd_pcm_substream *substream,
 		reserve_pll(aif->pll);
 	}
 
-	if (!aifs_active(&tscs454->aifs_status)) { /* First active aif */
+	if (!aifs_active(&tscs454->aifs_status)) {  
 		val = snd_soc_component_read(component, R_ISRC);
 		if ((val & FM_ISRC_IBR) == FV_IBR_48)
 			tscs454->internal_rate.pll = &tscs454->pll1;
@@ -3443,7 +3432,7 @@ static int tscs454_i2c_probe(struct i2c_client *i2c)
 		dev_err(&i2c->dev, "Failed to apply patch (%d)\n", ret);
 		return ret;
 	}
-	/* Sync pg sel reg with cache */
+	 
 	regmap_write(tscs454->regmap, R_PAGESEL, 0x00);
 
 	ret = devm_snd_soc_register_component(&i2c->dev, &soc_component_dev_tscs454,

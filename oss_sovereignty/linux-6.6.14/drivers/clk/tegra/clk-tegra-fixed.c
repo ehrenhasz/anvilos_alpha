@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012, 2013, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/clk-provider.h>
@@ -53,7 +51,7 @@ int __init tegra_osc_clk_init(void __iomem *clk_base, struct tegra_clk *clks,
 	osc = clk_register_fixed_rate(NULL, "osc", NULL, 0, *osc_freq);
 	*dt_clk = osc;
 
-	/* osc_div2 */
+	 
 	dt_clk = tegra_lookup_dt_id(tegra_clk_osc_div2, clks);
 	if (dt_clk) {
 		clk = clk_register_fixed_factor(NULL, "osc_div2", "osc",
@@ -61,7 +59,7 @@ int __init tegra_osc_clk_init(void __iomem *clk_base, struct tegra_clk *clks,
 		*dt_clk = clk;
 	}
 
-	/* osc_div4 */
+	 
 	dt_clk = tegra_lookup_dt_id(tegra_clk_osc_div4, clks);
 	if (dt_clk) {
 		clk = clk_register_fixed_factor(NULL, "osc_div4", "osc",
@@ -77,7 +75,7 @@ int __init tegra_osc_clk_init(void __iomem *clk_base, struct tegra_clk *clks,
 					0, 1, clk_m_div);
 	*dt_clk = clk;
 
-	/* pll_ref */
+	 
 	val = (val >> OSC_CTRL_PLL_REF_DIV_SHIFT) & 3;
 	pll_ref_div = 1 << val;
 	dt_clk = tegra_lookup_dt_id(tegra_clk_pll_ref, clks);
@@ -99,7 +97,7 @@ void __init tegra_fixed_clk_init(struct tegra_clk *tegra_clks)
 	struct clk *clk;
 	struct clk **dt_clk;
 
-	/* clk_32k */
+	 
 	dt_clk = tegra_lookup_dt_id(tegra_clk_clk_32k, tegra_clks);
 	if (dt_clk) {
 		clk = clk_register_fixed_rate(NULL, "clk_32k", NULL, 0, 32768);

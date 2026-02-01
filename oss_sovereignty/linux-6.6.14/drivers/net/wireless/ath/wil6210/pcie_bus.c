@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2012-2017 Qualcomm Atheros, Inc.
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -123,7 +120,7 @@ int wil_set_capabilities(struct wil6210_priv *wil)
 	wil_info(wil, "Board hardware is %s, flash %sexist\n", wil->hw_name,
 		 test_bit(hw_capa_no_flash, wil->hw_capa) ? "doesn't " : "");
 
-	/* Get platform capabilities */
+	 
 	if (wil->platform_ops.get_capa) {
 		platform_capa =
 			wil->platform_ops.get_capa(wil->platform_handle);
@@ -133,7 +130,7 @@ int wil_set_capabilities(struct wil6210_priv *wil)
 
 	wil_info(wil, "platform_capa 0x%lx\n", *wil->platform_capa);
 
-	/* extract FW capabilities from file without loading the FW */
+	 
 	wil_request_firmware(wil, wil->wil_fw_name, false);
 	wil_refresh_fw_capabilities(wil);
 
@@ -176,22 +173,19 @@ static void wil_remove_all_additional_vifs(struct wil6210_priv *wil)
 	}
 }
 
-/* Bus ops */
+ 
 static int wil_if_pcie_enable(struct wil6210_priv *wil)
 {
 	struct pci_dev *pdev = wil->pdev;
 	int rc;
-	/* on platforms with buggy ACPI, pdev->msi_enabled may be set to
-	 * allow pci_enable_device to work. This indicates INTx was not routed
-	 * and only MSI should be used
-	 */
+	 
 	int msi_only = pdev->msi_enabled;
 
 	wil_dbg_misc(wil, "if_pcie_enable\n");
 
 	pci_set_master(pdev);
 
-	/* how many MSI interrupts to request? */
+	 
 	switch (n_msi) {
 	case 3:
 	case 1:
@@ -228,7 +222,7 @@ static int wil_if_pcie_enable(struct wil6210_priv *wil)
 	if (rc)
 		goto release_vectors;
 
-	/* need reset here to obtain MAC */
+	 
 	mutex_lock(&wil->mutex);
 	rc = wil_reset(wil, false);
 	mutex_unlock(&wil->mutex);
@@ -240,7 +234,7 @@ static int wil_if_pcie_enable(struct wil6210_priv *wil)
  release_irq:
 	wil6210_fini_irq(wil, pdev->irq);
  release_vectors:
-	/* safe to call if no allocation */
+	 
 	pci_free_irq_vectors(pdev);
  stop_master:
 	pci_clear_master(pdev);
@@ -254,11 +248,11 @@ static int wil_if_pcie_disable(struct wil6210_priv *wil)
 	wil_dbg_misc(wil, "if_pcie_disable\n");
 
 	pci_clear_master(pdev);
-	/* disable and release IRQ */
+	 
 	wil6210_fini_irq(wil, pdev->irq);
-	/* safe to call if no MSI */
+	 
 	pci_disable_msi(pdev);
-	/* TODO: disable HW */
+	 
 
 	return 0;
 }
@@ -302,10 +296,10 @@ static int wil_pcie_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		.fw_recovery = wil_platform_rop_fw_recovery,
 	};
 	u32 bar_size = pci_resource_len(pdev, 0);
-	int dma_addr_size[] = {64, 48, 40, 32}; /* keep descending order */
+	int dma_addr_size[] = {64, 48, 40, 32};  
 	int i, start_idx;
 
-	/* check HW */
+	 
 	dev_info(&pdev->dev, WIL_NAME
 		 " device found [%04x:%04x] (rev %x) bar size 0x%x\n",
 		 (int)pdev->vendor, (int)pdev->device, (int)pdev->revision,
@@ -328,7 +322,7 @@ static int wil_pcie_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	wil->pdev = pdev;
 	pci_set_drvdata(pdev, wil);
 	wil->bar_size = bar_size;
-	/* rollback to if_free */
+	 
 
 	wil->platform_handle =
 		wil_platform_init(&pdev->dev, &wil->platform_ops, &rops, wil);
@@ -337,14 +331,12 @@ static int wil_pcie_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		wil_err(wil, "wil_platform_init failed\n");
 		goto if_free;
 	}
-	/* rollback to err_plat */
+	 
 	rc = pci_enable_device(pdev);
 	if (rc && pdev->msi_enabled == 0) {
 		wil_err(wil,
 			"pci_enable_device failed, retry with MSI only\n");
-		/* Work around for platforms that can't allocate IRQ:
-		 * retry with MSI only
-		 */
+		 
 		pdev->msi_enabled = 1;
 		rc = pci_enable_device(pdev);
 	}
@@ -353,7 +345,7 @@ static int wil_pcie_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 			"pci_enable_device failed, even with MSI only\n");
 		goto err_plat;
 	}
-	/* rollback to err_disable_pdev */
+	 
 	pci_set_power_state(pdev, PCI_D0);
 
 	rc = pci_request_region(pdev, 0, WIL_NAME);
@@ -361,7 +353,7 @@ static int wil_pcie_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		wil_err(wil, "pci_request_region failed\n");
 		goto err_disable_pdev;
 	}
-	/* rollback to err_release_reg */
+	 
 
 	wil->csr = pci_ioremap_bar(pdev, 0);
 	if (!wil->csr) {
@@ -369,7 +361,7 @@ static int wil_pcie_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		rc = -ENODEV;
 		goto err_release_reg;
 	}
-	/* rollback to err_iounmap */
+	 
 	wil_info(wil, "CSR at %pR -> 0x%p\n", &pdev->resource[0], wil->csr);
 
 	rc = wil_set_capabilities(wil);
@@ -378,9 +370,7 @@ static int wil_pcie_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		goto err_iounmap;
 	}
 
-	/* device supports >32bit addresses.
-	 * for legacy DMA start from 48 bit.
-	 */
+	 
 	start_idx = wil->use_enhanced_dma_hw ? 0 : 1;
 
 	for (i = start_idx; i < ARRAY_SIZE(dma_addr_size); i++) {
@@ -401,13 +391,13 @@ static int wil_pcie_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	wil6210_clear_irq(wil);
 
-	/* FW should raise IRQ when ready */
+	 
 	rc = wil_if_pcie_enable(wil);
 	if (rc) {
 		wil_err(wil, "Enable device failed\n");
 		goto err_iounmap;
 	}
-	/* rollback to bus_disable */
+	 
 
 	wil_clear_fw_log_addr(wil);
 	rc = wil_if_add(wil);
@@ -416,7 +406,7 @@ static int wil_pcie_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		goto bus_disable;
 	}
 
-	/* in case of WMI-only FW, perform full reset and FW loading */
+	 
 	if (test_bit(WMI_FW_CAPABILITY_WMI_ONLY, wil->fw_capabilities)) {
 		wil_dbg_misc(wil, "Loading WMI only FW\n");
 		mutex_lock(&wil->mutex);
@@ -424,7 +414,7 @@ static int wil_pcie_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		mutex_unlock(&wil->mutex);
 		if (rc) {
 			wil_err(wil, "failed to load WMI only FW\n");
-			/* ignore the error to allow debugging */
+			 
 		}
 	}
 
@@ -433,9 +423,7 @@ static int wil_pcie_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	rc = register_pm_notifier(&wil->pm_notify);
 	if (rc)
-		/* Do not fail the driver initialization, as suspend can
-		 * be prevented in a later phase if needed
-		 */
+		 
 		wil_err(wil, "register_pm_notifier failed: %d\n", rc);
 
 	wil6210_debugfs_init(wil);
@@ -489,9 +477,9 @@ static void wil_pcie_remove(struct pci_dev *pdev)
 
 static const struct pci_device_id wil6210_pcie_ids[] = {
 	{ PCI_DEVICE(0x1ae9, 0x0310) },
-	{ PCI_DEVICE(0x1ae9, 0x0302) }, /* same as above, firmware broken */
-	{ PCI_DEVICE(0x17cb, 0x1201) }, /* Talyn */
-	{ /* end: all zeroes */	},
+	{ PCI_DEVICE(0x1ae9, 0x0302) },  
+	{ PCI_DEVICE(0x17cb, 0x1201) },  
+	{  	},
 };
 MODULE_DEVICE_TABLE(pci, wil6210_pcie_ids);
 
@@ -515,11 +503,9 @@ static int wil6210_suspend(struct device *dev, bool is_runtime)
 
 	rc = wil_suspend(wil, is_runtime, keep_radio_on);
 	if (!rc) {
-		/* In case radio stays on, platform device will control
-		 * PCIe master
-		 */
+		 
 		if (!keep_radio_on) {
-			/* disable bus mastering */
+			 
 			pci_clear_master(pdev);
 			wil->suspend_stats.r_off.successful_suspends++;
 		} else {
@@ -544,11 +530,9 @@ static int wil6210_resume(struct device *dev, bool is_runtime)
 	mutex_unlock(&wil->vif_mutex);
 	keep_radio_on = active_ifaces && wil->keep_radio_on_during_sleep;
 
-	/* In case radio stays on, platform device will control
-	 * PCIe master
-	 */
+	 
 	if (!keep_radio_on)
-		/* allow master */
+		 
 		pci_set_master(pdev);
 	rc = wil_resume(wil, is_runtime, keep_radio_on);
 	if (rc) {

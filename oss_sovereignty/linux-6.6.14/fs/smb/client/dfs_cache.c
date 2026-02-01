@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * DFS referral cache routines
- *
- * Copyright (c) 2018-2019 Paulo Alcantara <palcantara@suse.de>
- */
+
+ 
 
 #include <linux/jhash.h>
 #include <linux/ktime.h>
@@ -26,8 +22,8 @@
 
 #define CACHE_HTABLE_SIZE	32
 #define CACHE_MAX_ENTRIES	64
-#define CACHE_MIN_TTL		120 /* 2 minutes */
-#define CACHE_DEFAULT_TTL	300 /* 5 minutes */
+#define CACHE_MIN_TTL		120  
+#define CACHE_DEFAULT_TTL	300  
 
 struct cache_dfs_tgt {
 	char *name;
@@ -38,12 +34,12 @@ struct cache_dfs_tgt {
 struct cache_entry {
 	struct hlist_node hlist;
 	const char *path;
-	int hdr_flags; /* RESP_GET_DFS_REFERRAL.ReferralHeaderFlags */
-	int ttl; /* DFS_REREFERRAL_V3.TimeToLive */
-	int srvtype; /* DFS_REREFERRAL_V3.ServerType */
-	int ref_flags; /* DFS_REREFERRAL_V3.ReferralEntryFlags */
+	int hdr_flags;  
+	int ttl;  
+	int srvtype;  
+	int ref_flags;  
 	struct timespec64 etime;
-	int path_consumed; /* RESP_GET_DFS_REFERRAL.PathConsumed */
+	int path_consumed;  
 	int numtgts;
 	struct list_head tlist;
 	struct cache_dfs_tgt *tgthint;
@@ -56,23 +52,13 @@ atomic_t dfs_cache_ttl;
 
 static struct nls_table *cache_cp;
 
-/*
- * Number of entries in the cache
- */
+ 
 static atomic_t cache_count;
 
 static struct hlist_head cache_htable[CACHE_HTABLE_SIZE];
 static DECLARE_RWSEM(htable_rw_lock);
 
-/**
- * dfs_cache_canonical_path - get a canonical DFS path
- *
- * @path: DFS path
- * @cp: codepage
- * @remap: mapping type
- *
- * Return canonical path if success, otherwise error.
- */
+ 
 char *dfs_cache_canonical_path(const char *path, const struct nls_table *cp, int remap)
 {
 	char *tmp;
@@ -149,9 +135,7 @@ static void flush_cache_ents(void)
 	}
 }
 
-/*
- * dfs cache /proc file
- */
+ 
 static int dfscache_proc_show(struct seq_file *m, void *v)
 {
 	int i;
@@ -275,11 +259,7 @@ static inline void dump_refs(const struct dfs_info3_param *refs, int numrefs)
 #define dump_refs(r, n)
 #endif
 
-/**
- * dfs_cache_init - Initialize DFS referral cache.
- *
- * Return zero if initialized successfully, otherwise non-zero.
- */
+ 
 int dfs_cache_init(void)
 {
 	int rc;
@@ -336,7 +316,7 @@ static int cache_entry_hash(const void *data, int size, unsigned int *hash)
 	return 0;
 }
 
-/* Return target hint of a DFS cache entry */
+ 
 static inline char *get_tgt_name(const struct cache_entry *ce)
 {
 	struct cache_dfs_tgt *t = READ_ONCE(ce->tgthint);
@@ -344,7 +324,7 @@ static inline char *get_tgt_name(const struct cache_entry *ce)
 	return t ? t->name : ERR_PTR(-ENOENT);
 }
 
-/* Return expire time out of a new entry's TTL */
+ 
 static inline struct timespec64 get_expire_time(int ttl)
 {
 	struct timespec64 ts = {
@@ -357,7 +337,7 @@ static inline struct timespec64 get_expire_time(int ttl)
 	return timespec64_add(now, ts);
 }
 
-/* Allocate a new DFS target */
+ 
 static struct cache_dfs_tgt *alloc_target(const char *name, int path_consumed)
 {
 	struct cache_dfs_tgt *t;
@@ -375,10 +355,7 @@ static struct cache_dfs_tgt *alloc_target(const char *name, int path_consumed)
 	return t;
 }
 
-/*
- * Copy DFS referral information to a cache entry and conditionally update
- * target hint.
- */
+ 
 static int copy_ref_data(const struct dfs_info3_param *refs, int numrefs,
 			 struct cache_entry *ce, const char *tgthint)
 {
@@ -416,7 +393,7 @@ static int copy_ref_data(const struct dfs_info3_param *refs, int numrefs,
 	return 0;
 }
 
-/* Allocate a new cache entry */
+ 
 static struct cache_entry *alloc_cache_entry(struct dfs_info3_param *refs, int numrefs)
 {
 	struct cache_entry *ce;
@@ -471,7 +448,7 @@ static void remove_oldest_entry_locked(void)
 	flush_cache_ent(to_del);
 }
 
-/* Add a new DFS cache entry */
+ 
 static struct cache_entry *add_cache_entry_locked(struct dfs_info3_param *refs,
 						  int numrefs)
 {
@@ -506,7 +483,7 @@ static struct cache_entry *add_cache_entry_locked(struct dfs_info3_param *refs,
 	return ce;
 }
 
-/* Check if two DFS paths are equal.  @s1 and @s2 are expected to be in @cache_cp's charset */
+ 
 static bool dfs_path_equal(const char *s1, int len1, const char *s2, int len2)
 {
 	int i, l1, l2;
@@ -545,15 +522,7 @@ static struct cache_entry *__lookup_cache_entry(const char *path, unsigned int h
 	return ERR_PTR(-ENOENT);
 }
 
-/*
- * Find a DFS cache entry in hash table and optionally check prefix path against normalized @path.
- *
- * Use whole path components in the match.  Must be called with htable_rw_lock held.
- *
- * Return cached entry if successful.
- * Return ERR_PTR(-ENOENT) if the entry is not found.
- * Return error ptr otherwise.
- */
+ 
 static struct cache_entry *lookup_cache_entry(const char *path)
 {
 	struct cache_entry *ce;
@@ -572,17 +541,12 @@ static struct cache_entry *lookup_cache_entry(const char *path)
 			return ERR_PTR(rc);
 		return __lookup_cache_entry(path, hash, strlen(path));
 	}
-	/*
-	 * Handle paths that have more than two path components and are a complete prefix of the DFS
-	 * referral request path (@path).
-	 *
-	 * See MS-DFSC 3.2.5.5 "Receiving a Root Referral Request or Link Referral Request".
-	 */
+	 
 	e = path + strlen(path) - 1;
 	while (e > s) {
 		int len;
 
-		/* skip separators */
+		 
 		while (e > s && *e == sep)
 			e--;
 		if (e == s)
@@ -596,16 +560,14 @@ static struct cache_entry *lookup_cache_entry(const char *path)
 		if (!IS_ERR(ce))
 			return ce;
 
-		/* backward until separator */
+		 
 		while (e > s && *e != sep)
 			e--;
 	}
 	return ERR_PTR(-ENOENT);
 }
 
-/**
- * dfs_cache_destroy - destroy DFS referral cache
- */
+ 
 void dfs_cache_destroy(void)
 {
 	unload_nls(cache_cp);
@@ -616,7 +578,7 @@ void dfs_cache_destroy(void)
 	cifs_dbg(FYI, "%s: destroyed DFS referral cache\n", __func__);
 }
 
-/* Update a cache entry with the new referral in @refs */
+ 
 static int update_cache_entry_locked(struct cache_entry *ce, const struct dfs_info3_param *refs,
 				     int numrefs)
 {
@@ -669,17 +631,7 @@ static int get_dfs_referral(const unsigned int xid, struct cifs_ses *ses, const 
 	return rc;
 }
 
-/*
- * Find, create or update a DFS cache entry.
- *
- * If the entry wasn't found, it will create a new one. Or if it was found but
- * expired, then it will update the entry accordingly.
- *
- * For interlinks, cifs_mount() and expand_dfs_referral() are supposed to
- * handle them properly.
- *
- * On success, return entry with acquired lock for reading, otherwise error ptr.
- */
+ 
 static struct cache_entry *cache_refresh_path(const unsigned int xid,
 					      struct cifs_ses *ses,
 					      const char *path,
@@ -703,19 +655,10 @@ static struct cache_entry *cache_refresh_path(const unsigned int xid,
 		return ce;
 	}
 
-	/*
-	 * Unlock shared access as we don't want to hold any locks while getting
-	 * a new referral.  The @ses used for performing the I/O could be
-	 * reconnecting and it acquires @htable_rw_lock to look up the dfs cache
-	 * in order to failover -- if necessary.
-	 */
+	 
 	up_read(&htable_rw_lock);
 
-	/*
-	 * Either the entry was not found, or it is expired, or it is a forced
-	 * refresh.
-	 * Request a new DFS referral in order to create or update a cache entry.
-	 */
+	 
 	rc = get_dfs_referral(xid, ses, path, &refs, &numrefs);
 	if (rc) {
 		ce = ERR_PTR(rc);
@@ -725,7 +668,7 @@ static struct cache_entry *cache_refresh_path(const unsigned int xid,
 	dump_refs(refs, numrefs);
 
 	down_write(&htable_rw_lock);
-	/* Re-check as another task might have it added or refreshed already */
+	 
 	ce = lookup_cache_entry(path);
 	if (!IS_ERR(ce)) {
 		if (force_refresh || cache_entry_expired(ce)) {
@@ -748,11 +691,7 @@ out:
 	return ce;
 }
 
-/*
- * Set up a DFS referral from a given cache entry.
- *
- * Must be called with htable_rw_lock held.
- */
+ 
 static int setup_referral(const char *path, struct cache_entry *ce,
 			  struct dfs_info3_param *ref, const char *target)
 {
@@ -786,7 +725,7 @@ err_free_path:
 	return rc;
 }
 
-/* Return target list of a DFS cache entry */
+ 
 static int get_targets(struct cache_entry *ce, struct dfs_cache_tgt_list *tl)
 {
 	int rc;
@@ -831,28 +770,7 @@ err_free_it:
 	return rc;
 }
 
-/**
- * dfs_cache_find - find a DFS cache entry
- *
- * If it doesn't find the cache entry, then it will get a DFS referral
- * for @path and create a new entry.
- *
- * In case the cache entry exists but expired, it will get a DFS referral
- * for @path and then update the respective cache entry.
- *
- * These parameters are passed down to the get_dfs_refer() call if it
- * needs to be issued:
- * @xid: syscall xid
- * @ses: smb session to issue the request on
- * @cp: codepage
- * @remap: path character remapping type
- * @path: path to lookup in DFS referral cache.
- *
- * @ref: when non-NULL, store single DFS referral result in it.
- * @tgt_list: when non-NULL, store complete DFS target list in it.
- *
- * Return zero if the target was found, otherwise non-zero.
- */
+ 
 int dfs_cache_find(const unsigned int xid, struct cifs_ses *ses, const struct nls_table *cp,
 		   int remap, const char *path, struct dfs_info3_param *ref,
 		   struct dfs_cache_tgt_list *tgt_list)
@@ -885,22 +803,7 @@ out_free_path:
 	return rc;
 }
 
-/**
- * dfs_cache_noreq_find - find a DFS cache entry without sending any requests to
- * the currently connected server.
- *
- * NOTE: This function will neither update a cache entry in case it was
- * expired, nor create a new cache entry if @path hasn't been found. It heavily
- * relies on an existing cache entry.
- *
- * @path: canonical DFS path to lookup in the DFS referral cache.
- * @ref: when non-NULL, store single DFS referral result in it.
- * @tgt_list: when non-NULL, store complete DFS target list in it.
- *
- * Return 0 if successful.
- * Return -ENOENT if the entry was not found.
- * Return non-zero for other errors.
- */
+ 
 int dfs_cache_noreq_find(const char *path, struct dfs_info3_param *ref,
 			 struct dfs_cache_tgt_list *tgt_list)
 {
@@ -929,20 +832,7 @@ out_unlock:
 	return rc;
 }
 
-/**
- * dfs_cache_noreq_update_tgthint - update target hint of a DFS cache entry
- * without sending any requests to the currently connected server.
- *
- * NOTE: This function will neither update a cache entry in case it was
- * expired, nor create a new cache entry if @path hasn't been found. It heavily
- * relies on an existing cache entry.
- *
- * @path: canonical DFS path to lookup in DFS referral cache.
- * @it: target iterator which contains the target hint to update the cache
- * entry with.
- *
- * Return zero if the target hint was updated successfully, otherwise non-zero.
- */
+ 
 void dfs_cache_noreq_update_tgthint(const char *path, const struct dfs_cache_tgt_iterator *it)
 {
 	struct cache_dfs_tgt *t;
@@ -977,16 +867,7 @@ out_unlock:
 	up_read(&htable_rw_lock);
 }
 
-/**
- * dfs_cache_get_tgt_referral - returns a DFS referral (@ref) from a given
- * target iterator (@it).
- *
- * @path: canonical DFS path to lookup in DFS referral cache.
- * @it: DFS target iterator.
- * @ref: DFS referral pointer to set up the gathered information.
- *
- * Return zero if the DFS referral was set up correctly, otherwise non-zero.
- */
+ 
 int dfs_cache_get_tgt_referral(const char *path, const struct dfs_cache_tgt_iterator *it,
 			       struct dfs_info3_param *ref)
 {
@@ -1015,7 +896,7 @@ out_unlock:
 	return rc;
 }
 
-/* Extract share from DFS target and return a pointer to prefix path or NULL */
+ 
 static const char *parse_target_share(const char *target, char **share)
 {
 	const char *s, *seps = "/\\";
@@ -1039,16 +920,7 @@ static const char *parse_target_share(const char *target, char **share)
 	return s + strspn(s, seps);
 }
 
-/**
- * dfs_cache_get_tgt_share - parse a DFS target
- *
- * @path: DFS full path
- * @it: DFS target iterator.
- * @share: tree name.
- * @prefix: prefix path.
- *
- * Return zero if target was parsed correctly, otherwise non-zero.
- */
+ 
 int dfs_cache_get_tgt_share(char *path, const struct dfs_cache_tgt_iterator *it, char **share,
 			    char **prefix)
 {
@@ -1070,14 +942,14 @@ int dfs_cache_get_tgt_share(char *path, const struct dfs_cache_tgt_iterator *it,
 	if (IS_ERR(target_ppath))
 		return PTR_ERR(target_ppath);
 
-	/* point to prefix in DFS referral path */
+	 
 	dfsref_ppath = path + it->it_path_consumed;
 	dfsref_ppath += strspn(dfsref_ppath, "/\\");
 
 	target_pplen = strlen(target_ppath);
 	dfsref_pplen = strlen(dfsref_ppath);
 
-	/* merge prefix paths from DFS referral path and target node */
+	 
 	if (target_pplen || dfsref_pplen) {
 		len = target_pplen + dfsref_pplen + 2;
 		ppath = kzalloc(len, GFP_KERNEL);
@@ -1107,10 +979,7 @@ static bool target_share_equal(struct TCP_Server_Info *server, const char *s1, c
 	if (strcasecmp(s1, s2))
 		return false;
 
-	/*
-	 * Resolve share's hostname and check if server address matches.  Otherwise just ignore it
-	 * as we could not have upcall to resolve hostname or failed to convert ip address.
-	 */
+	 
 	extract_unc_hostname(s1, &host, &hostlen);
 	scnprintf(unc, sizeof(unc), "\\\\%.*s", (int)hostlen, host);
 
@@ -1128,10 +997,7 @@ static bool target_share_equal(struct TCP_Server_Info *server, const char *s1, c
 	return match;
 }
 
-/*
- * Mark dfs tcon for reconnecting when the currently connected tcon does not match any of the new
- * target shares in @refs.
- */
+ 
 static void mark_for_reconnect_if_needed(struct TCP_Server_Info *server,
 					 const char *path,
 					 struct dfs_cache_tgt_list *old_tl,
@@ -1172,7 +1038,7 @@ static bool is_ses_good(struct cifs_ses *ses)
 	return ret;
 }
 
-/* Refresh dfs referral of tcon and mark it for reconnect if needed */
+ 
 static int __refresh_tcon(const char *path, struct cifs_ses *ses, bool force_refresh)
 {
 	struct TCP_Server_Info *server = ses->server;
@@ -1233,16 +1099,7 @@ static int refresh_tcon(struct cifs_tcon *tcon, bool force_refresh)
 	return 0;
 }
 
-/**
- * dfs_cache_remount_fs - remount a DFS share
- *
- * Reconfigure dfs mount by forcing a new DFS referral and if the currently cached targets do not
- * match any of the new targets, mark it for reconnect.
- *
- * @cifs_sb: cifs superblock.
- *
- * Return zero if remounted, otherwise non-zero.
- */
+ 
 int dfs_cache_remount_fs(struct cifs_sb_info *cifs_sb)
 {
 	struct cifs_tcon *tcon;
@@ -1260,21 +1117,15 @@ int dfs_cache_remount_fs(struct cifs_sb_info *cifs_sb)
 	}
 	spin_unlock(&tcon->tc_lock);
 
-	/*
-	 * After reconnecting to a different server, unique ids won't match anymore, so we disable
-	 * serverino. This prevents dentry revalidation to think the dentry are stale (ESTALE).
-	 */
+	 
 	cifs_autodisable_serverino(cifs_sb);
-	/*
-	 * Force the use of prefix path to support failover on DFS paths that resolve to targets
-	 * that have different prefix paths.
-	 */
+	 
 	cifs_sb->mnt_cifs_flags |= CIFS_MOUNT_USE_PREFIX_PATH;
 
 	return refresh_tcon(tcon, true);
 }
 
-/* Refresh all DFS referrals related to DFS tcon */
+ 
 void dfs_cache_refresh(struct work_struct *work)
 {
 	struct TCP_Server_Info *server;

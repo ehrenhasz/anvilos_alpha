@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * dwc3-imx8mp.c - NXP imx8mp Specific Glue layer
- *
- * Copyright (c) 2020 NXP.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -17,36 +13,36 @@
 
 #include "core.h"
 
-/* USB wakeup registers */
+ 
 #define USB_WAKEUP_CTRL			0x00
 
-/* Global wakeup interrupt enable, also used to clear interrupt */
+ 
 #define USB_WAKEUP_EN			BIT(31)
-/* Wakeup from connect or disconnect, only for superspeed */
+ 
 #define USB_WAKEUP_SS_CONN		BIT(5)
-/* 0 select vbus_valid, 1 select sessvld */
+ 
 #define USB_WAKEUP_VBUS_SRC_SESS_VAL	BIT(4)
-/* Enable signal for wake up from u3 state */
+ 
 #define USB_WAKEUP_U3_EN		BIT(3)
-/* Enable signal for wake up from id change */
+ 
 #define USB_WAKEUP_ID_EN		BIT(2)
-/* Enable signal for wake up from vbus change */
+ 
 #define	USB_WAKEUP_VBUS_EN		BIT(1)
-/* Enable signal for wake up from dp/dm change */
+ 
 #define USB_WAKEUP_DPDM_EN		BIT(0)
 
 #define USB_WAKEUP_EN_MASK		GENMASK(5, 0)
 
-/* USB glue registers */
+ 
 #define USB_CTRL0		0x00
 #define USB_CTRL1		0x04
 
-#define USB_CTRL0_PORTPWR_EN	BIT(12) /* 1 - PPC enabled (default) */
-#define USB_CTRL0_USB3_FIXED	BIT(22) /* 1 - USB3 permanent attached */
-#define USB_CTRL0_USB2_FIXED	BIT(23) /* 1 - USB2 permanent attached */
+#define USB_CTRL0_PORTPWR_EN	BIT(12)  
+#define USB_CTRL0_USB3_FIXED	BIT(22)  
+#define USB_CTRL0_USB2_FIXED	BIT(23)  
 
-#define USB_CTRL1_OC_POLARITY	BIT(16) /* 0 - HIGH / 1 - LOW */
-#define USB_CTRL1_PWR_POLARITY	BIT(17) /* 0 - HIGH / 1 - LOW */
+#define USB_CTRL1_OC_POLARITY	BIT(16)  
+#define USB_CTRL1_PWR_POLARITY	BIT(17)  
 
 struct dwc3_imx8mp {
 	struct device			*dev;
@@ -288,7 +284,7 @@ static int __maybe_unused dwc3_imx8mp_suspend(struct dwc3_imx8mp *dwc3_imx,
 	if (dwc3_imx->pm_suspended)
 		return 0;
 
-	/* Wakeup enable */
+	 
 	if (PMSG_IS_AUTO(msg) || device_may_wakeup(dwc3_imx->dev))
 		dwc3_imx8mp_wakeup_enable(dwc3_imx);
 
@@ -306,11 +302,11 @@ static int __maybe_unused dwc3_imx8mp_resume(struct dwc3_imx8mp *dwc3_imx,
 	if (!dwc3_imx->pm_suspended)
 		return 0;
 
-	/* Wakeup disable */
+	 
 	dwc3_imx8mp_wakeup_disable(dwc3_imx);
 	dwc3_imx->pm_suspended = false;
 
-	/* Upon power loss any previous configuration is lost, restore it */
+	 
 	imx8mp_configure_glue(dwc3_imx);
 
 	if (dwc3_imx->wakeup_pending) {
@@ -319,10 +315,7 @@ static int __maybe_unused dwc3_imx8mp_resume(struct dwc3_imx8mp *dwc3_imx,
 			pm_runtime_mark_last_busy(dwc->dev);
 			pm_runtime_put_autosuspend(dwc->dev);
 		} else {
-			/*
-			 * Add wait for xhci switch from suspend
-			 * clock to normal clock to detect connection.
-			 */
+			 
 			usleep_range(9000, 10000);
 		}
 		enable_irq(dwc3_imx->irq);

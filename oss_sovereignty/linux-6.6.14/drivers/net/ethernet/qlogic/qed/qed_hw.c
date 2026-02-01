@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* QLogic qed NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/io.h>
@@ -28,7 +25,7 @@
 #define QED_BAR_ACQUIRE_TIMEOUT_UDELAY_CNT	100000
 #define QED_BAR_ACQUIRE_TIMEOUT_UDELAY		10
 
-/* Invalid values */
+ 
 #define QED_BAR_INVALID_OFFSET          (cpu_to_le32(-1))
 
 struct qed_ptt {
@@ -40,7 +37,7 @@ struct qed_ptt {
 
 struct qed_ptt_pool {
 	struct list_head	free_list;
-	spinlock_t		lock; /* ptt synchronized access */
+	spinlock_t		lock;  
 	struct qed_ptt		ptts[PXP_EXTERNAL_BAR_PF_WINDOW_NUM];
 };
 
@@ -101,7 +98,7 @@ struct qed_ptt *qed_ptt_acquire_context(struct qed_hwfn *p_hwfn, bool is_atomic)
 	else
 		count = QED_BAR_ACQUIRE_TIMEOUT_USLEEP_CNT;
 
-	/* Take the free PTT from the list */
+	 
 	for (i = 0; i < count; i++) {
 		spin_lock_bh(&p_hwfn->p_ptt_pool->lock);
 
@@ -139,7 +136,7 @@ void qed_ptt_release(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt)
 
 u32 qed_ptt_get_hw_addr(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt)
 {
-	/* The HW is using DWORDS and we need to translate it to Bytes */
+	 
 	return le32_to_cpu(p_ptt->pxp.offset) << 2;
 }
 
@@ -165,12 +162,12 @@ void qed_ptt_set_win(struct qed_hwfn *p_hwfn,
 	if (new_hw_addr == prev_hw_addr)
 		return;
 
-	/* Update PTT entery in admin window */
+	 
 	DP_VERBOSE(p_hwfn, NETIF_MSG_HW,
 		   "Updating PTT entry %d to offset 0x%x\n",
 		   p_ptt->idx, new_hw_addr);
 
-	/* The HW is using DWORDS and the address is in Bytes */
+	 
 	p_ptt->pxp.offset = cpu_to_le32(new_hw_addr >> 2);
 
 	REG_WR(p_hwfn,
@@ -192,7 +189,7 @@ static u32 qed_set_ptt(struct qed_hwfn *p_hwfn,
 			  "ptt[%d] of hwfn[%02x] is used by hwfn[%02x]!\n",
 			  p_ptt->idx, p_ptt->hwfn_id, p_hwfn->my_id);
 
-	/* Verify the address is within the window */
+	 
 	if (hw_addr < win_hw_addr ||
 	    offset >= PXP_EXTERNAL_BAR_PF_WINDOW_SINGLE_SIZE) {
 		qed_ptt_set_win(p_hwfn, p_ptt, hw_addr);
@@ -300,9 +297,7 @@ void qed_fid_pretend(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt, u16 fid)
 	SET_FIELD(control, PXP_PRETEND_CMD_IS_CONCRETE, 1);
 	SET_FIELD(control, PXP_PRETEND_CMD_PRETEND_FUNCTION, 1);
 
-	/* Every pretend undos previous pretends, including
-	 * previous port pretend.
-	 */
+	 
 	SET_FIELD(control, PXP_PRETEND_CMD_PORT, 0);
 	SET_FIELD(control, PXP_PRETEND_CMD_USE_PORT, 0);
 	SET_FIELD(control, PXP_PRETEND_CMD_PRETEND_PORT, 1);
@@ -383,7 +378,7 @@ u32 qed_vfid_to_concrete(struct qed_hwfn *p_hwfn, u8 vfid)
 	return concrete_fid;
 }
 
-/* DMAE */
+ 
 #define QED_DMAE_FLAGS_IS_SET(params, flag) \
 	((params) != NULL && GET_FIELD((params)->flags, QED_DMAE_PARAMS_##flag))
 
@@ -396,17 +391,14 @@ static void qed_dmae_opcode(struct qed_hwfn *p_hwfn,
 	u16 opcode_b = 0;
 	u32 opcode = 0;
 
-	/* Whether the source is the PCIe or the GRC.
-	 * 0- The source is the PCIe
-	 * 1- The source is the GRC.
-	 */
+	 
 	SET_FIELD(opcode, DMAE_CMD_SRC,
 		  (is_src_type_grc ? dmae_cmd_src_grc : dmae_cmd_src_pcie));
 	src_pfid = QED_DMAE_FLAGS_IS_SET(p_params, SRC_PF_VALID) ?
 	    p_params->src_pfid : p_hwfn->rel_pf_id;
 	SET_FIELD(opcode, DMAE_CMD_SRC_PF_ID, src_pfid);
 
-	/* The destination of the DMA can be: 0-None 1-PCIe 2-GRC 3-None */
+	 
 	SET_FIELD(opcode, DMAE_CMD_DST,
 		  (is_dst_type_grc ? dmae_cmd_dst_grc : dmae_cmd_dst_pcie));
 	dst_pfid = QED_DMAE_FLAGS_IS_SET(p_params, DST_PF_VALID) ?
@@ -414,30 +406,27 @@ static void qed_dmae_opcode(struct qed_hwfn *p_hwfn,
 	SET_FIELD(opcode, DMAE_CMD_DST_PF_ID, dst_pfid);
 
 
-	/* Whether to write a completion word to the completion destination:
-	 * 0-Do not write a completion word
-	 * 1-Write the completion word
-	 */
+	 
 	SET_FIELD(opcode, DMAE_CMD_COMP_WORD_EN, 1);
 	SET_FIELD(opcode, DMAE_CMD_SRC_ADDR_RESET, 1);
 
 	if (QED_DMAE_FLAGS_IS_SET(p_params, COMPLETION_DST))
 		SET_FIELD(opcode, DMAE_CMD_COMP_FUNC, 1);
 
-	/* swapping mode 3 - big endian */
+	 
 	SET_FIELD(opcode, DMAE_CMD_ENDIANITY_MODE, DMAE_CMD_ENDIANITY);
 
 	port_id = (QED_DMAE_FLAGS_IS_SET(p_params, PORT_VALID)) ?
 	    p_params->port_id : p_hwfn->port_id;
 	SET_FIELD(opcode, DMAE_CMD_PORT_ID, port_id);
 
-	/* reset source address in next go */
+	 
 	SET_FIELD(opcode, DMAE_CMD_SRC_ADDR_RESET, 1);
 
-	/* reset dest address in next go */
+	 
 	SET_FIELD(opcode, DMAE_CMD_DST_ADDR_RESET, 1);
 
-	/* SRC/DST VFID: all 1's - pf, otherwise VF id */
+	 
 	if (QED_DMAE_FLAGS_IS_SET(p_params, SRC_VF_VALID)) {
 		SET_FIELD(opcode, DMAE_CMD_SRC_VF_ID_VALID, 1);
 		SET_FIELD(opcode_b, DMAE_CMD_SRC_VF_ID, p_params->src_vfid);
@@ -457,7 +446,7 @@ static void qed_dmae_opcode(struct qed_hwfn *p_hwfn,
 
 u32 qed_dmae_idx_to_go_cmd(u8 idx)
 {
-	/* All the DMAE 'go' registers form an array in internal memory */
+	 
 	return DMAE_REG_GO_C0 + (idx << 2);
 }
 
@@ -468,7 +457,7 @@ static int qed_dmae_post_command(struct qed_hwfn *p_hwfn,
 	u8 idx_cmd = p_hwfn->dmae_info.channel, i;
 	int qed_status = 0;
 
-	/* verify address is not NULL */
+	 
 	if ((((!p_command->dst_addr_lo) && (!p_command->dst_addr_hi)) ||
 	     ((!p_command->src_addr_lo) && (!p_command->src_addr_hi)))) {
 		DP_NOTICE(p_hwfn,
@@ -498,12 +487,7 @@ static int qed_dmae_post_command(struct qed_hwfn *p_hwfn,
 		   le32_to_cpu(p_command->dst_addr_hi),
 		   le32_to_cpu(p_command->dst_addr_lo));
 
-	/* Copy the command to DMAE - need to do it before every call
-	 * for source/dest address no reset.
-	 * The first 9 DWs are the command registers, the 10 DW is the
-	 * GO register, and the rest are result registers
-	 * (which are read only by the client).
-	 */
+	 
 	for (i = 0; i < DMAE_CMD_SIZE; i++) {
 		u32 data = (i < DMAE_CMD_SIZE_TO_FILL) ?
 			   *(((u32 *)p_command) + i) : 0;
@@ -557,7 +541,7 @@ void qed_dmae_info_free(struct qed_hwfn *p_hwfn)
 {
 	dma_addr_t p_phys;
 
-	/* Just make sure no one is in the middle */
+	 
 	mutex_lock(&p_hwfn->dmae_info.mutex);
 
 	if (p_hwfn->dmae_info.p_completion_word) {
@@ -605,9 +589,7 @@ static int qed_dmae_operation_wait(struct qed_hwfn *p_hwfn)
 			break;
 		}
 
-		/* to sync the completion_word since we are not
-		 * using the volatile keyword for p_completion_word
-		 */
+		 
 		barrier();
 	}
 
@@ -635,7 +617,7 @@ static int qed_dmae_execute_sub_operation(struct qed_hwfn *p_hwfn,
 		cmd->src_addr_hi = cpu_to_le32(upper_32_bits(src_addr));
 		cmd->src_addr_lo = cpu_to_le32(lower_32_bits(src_addr));
 		break;
-	/* for virtual source addresses we use the intermediate buffer. */
+	 
 	case QED_DMAE_ADDRESS_HOST_VIRT:
 		cmd->src_addr_hi = cpu_to_le32(upper_32_bits(phys));
 		cmd->src_addr_lo = cpu_to_le32(lower_32_bits(phys));
@@ -653,7 +635,7 @@ static int qed_dmae_execute_sub_operation(struct qed_hwfn *p_hwfn,
 		cmd->dst_addr_hi = cpu_to_le32(upper_32_bits(dst_addr));
 		cmd->dst_addr_lo = cpu_to_le32(lower_32_bits(dst_addr));
 		break;
-	/* for virtual source addresses we use the intermediate buffer. */
+	 
 	case QED_DMAE_ADDRESS_HOST_VIRT:
 		cmd->dst_addr_hi = cpu_to_le32(upper_32_bits(phys));
 		cmd->dst_addr_lo = cpu_to_le32(lower_32_bits(phys));
@@ -705,7 +687,7 @@ static int qed_dmae_execute_command(struct qed_hwfn *p_hwfn,
 			   src_addr, src_type, dst_addr, dst_type,
 			   size_in_dwords);
 
-		/* Let the flow complete w/o any error handling */
+		 
 		return 0;
 	}
 
@@ -718,7 +700,7 @@ static int qed_dmae_execute_command(struct qed_hwfn *p_hwfn,
 	cmd->comp_addr_hi = cpu_to_le32(upper_32_bits(phys));
 	cmd->comp_val = cpu_to_le32(DMAE_COMPLETION_VAL);
 
-	/* Check if the grc_addr is valid like < MAX_GRC_OFFSET */
+	 
 	cnt_split = size_in_dwords / length_limit;
 	length_mod = size_in_dwords % length_limit;
 
@@ -742,7 +724,7 @@ static int qed_dmae_execute_command(struct qed_hwfn *p_hwfn,
 
 		length_cur = (cnt_split == i) ? length_mod : length_limit;
 
-		/* might be zero on last iteration */
+		 
 		if (!length_cur)
 			continue;
 
@@ -848,7 +830,7 @@ void qed_hw_err_notify(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
 		DP_NOTICE(p_hwfn, "%s", buf);
 	}
 
-	/* Fan failure cannot be masked by handling of another HW error */
+	 
 	if (p_hwfn->cdev->recov_in_prog &&
 	    err_type != QED_HW_ERR_FAN_FAIL) {
 		DP_VERBOSE(p_hwfn,
@@ -882,15 +864,15 @@ int qed_dmae_sanity(struct qed_hwfn *p_hwfn,
 		return -ENOMEM;
 	}
 
-	/* Fill the bottom half of the allocated memory with a known pattern */
+	 
 	for (p_tmp = (u32 *)p_virt;
 	     p_tmp < (u32 *)((u8 *)p_virt + size); p_tmp++) {
-		/* Save the address itself as the value */
+		 
 		val = (u32)(uintptr_t)p_tmp;
 		*p_tmp = val;
 	}
 
-	/* Zero the top half of the allocated memory */
+	 
 	memset((u8 *)p_virt + size, 0, size);
 
 	DP_VERBOSE(p_hwfn,
@@ -909,10 +891,10 @@ int qed_dmae_sanity(struct qed_hwfn *p_hwfn,
 		goto out;
 	}
 
-	/* Verify that the top half of the allocated memory has the pattern */
+	 
 	for (p_tmp = (u32 *)((u8 *)p_virt + size);
 	     p_tmp < (u32 *)((u8 *)p_virt + (2 * size)); p_tmp++) {
-		/* The corresponding address in the bottom half */
+		 
 		val = (u32)(uintptr_t)p_tmp - size;
 
 		if (*p_tmp != val) {

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Based on net/wireless/trace.h */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM cfg802154
@@ -37,9 +37,7 @@
 
 #define BOOL_TO_STR(bo) (bo) ? "true" : "false"
 
-/*************************************************************
- *			rdev->ops traces		     *
- *************************************************************/
+ 
 
 DECLARE_EVENT_CLASS(wpan_phy_only_evt,
 	TP_PROTO(struct wpan_phy *wpan_phy),
@@ -371,7 +369,7 @@ TRACE_EVENT(802154_rdev_return_int,
 		  __entry->ret)
 );
 
-#endif /* !__RDEV_CFG802154_OPS_TRACE || TRACE_HEADER_MULTI_READ */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

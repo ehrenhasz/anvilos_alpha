@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Copyright (C) 2015 ARM Limited
- */
+
+ 
 
 #define pr_fmt(fmt) "psci: " fmt
 
@@ -29,24 +26,14 @@
 #include <asm/smp_plat.h>
 #include <asm/suspend.h>
 
-/*
- * While a 64-bit OS can make calls with SMC32 calling conventions, for some
- * calls it is necessary to use SMC64 to pass or return 64-bit values.
- * For such calls PSCI_FN_NATIVE(version, name) will choose the appropriate
- * (native-width) function ID.
- */
+ 
 #ifdef CONFIG_64BIT
 #define PSCI_FN_NATIVE(version, name)	PSCI_##version##_FN64_##name
 #else
 #define PSCI_FN_NATIVE(version, name)	PSCI_##version##_FN_##name
 #endif
 
-/*
- * The CPU any Trusted OS is resident on. The trusted OS may reject CPU_OFF
- * calls to its resident CPU, so we must avoid issuing those. We never migrate
- * a Trusted OS even if it claims to be capable of migration -- doing so will
- * require cooperation with a Trusted OS driver.
- */
+ 
 static int resident_cpu = -1;
 struct psci_operations psci_ops;
 static enum arm_smccc_conduit psci_conduit = SMCCC_CONDUIT_NONE;
@@ -310,11 +297,7 @@ static int psci_sys_reset(struct notifier_block *nb, unsigned long action,
 {
 	if ((reboot_mode == REBOOT_WARM || reboot_mode == REBOOT_SOFT) &&
 	    psci_system_reset2_supported) {
-		/*
-		 * reset_type[31] = 0 (architectural)
-		 * reset_type[30:0] = 0 (SYSTEM_WARM_RESET)
-		 * cookie = 0 (ignored by the implementation)
-		 */
+		 
 		invoke_psci_fn(PSCI_FN_NATIVE(1_1, SYSTEM_RESET2), 0, 0, 0);
 	} else {
 		invoke_psci_fn(PSCI_0_2_FN_SYSTEM_RESET, 0, 0, 0);
@@ -346,7 +329,7 @@ static int psci_features(u32 psci_func_id)
 #define PSCI_ID_NATIVE(ver, _name) \
 	{ .fn = PSCI_FN_NATIVE(ver, _name), .name = #_name, }
 
-/* A table of all optional functions */
+ 
 static const struct {
 	u32 fn;
 	const char *name;
@@ -376,7 +359,7 @@ static int psci_debugfs_read(struct seq_file *s, void *data)
 		   PSCI_VERSION_MAJOR(ver),
 		   PSCI_VERSION_MINOR(ver));
 
-	/* PSCI_FEATURES is available only starting from 1.0 */
+	 
 	if (PSCI_VERSION_MAJOR(ver) < 1)
 		return 0;
 
@@ -479,9 +462,7 @@ int psci_cpu_suspend_enter(u32 state)
 		arm_cpuidle_restore_irq_context(&context);
 		ct_cpuidle_exit();
 	} else {
-		/*
-		 * ARM64 cpu_suspend() wants to do ct_cpuidle_*() itself.
-		 */
+		 
 		if (!IS_ENABLED(CONFIG_ARM64))
 			ct_cpuidle_enter();
 
@@ -544,10 +525,7 @@ static void __init psci_init_cpu_suspend(void)
 		psci_cpu_suspend_feature = feature;
 }
 
-/*
- * Detect the presence of a resident Trusted OS which may cause CPU_OFF to
- * return DENIED (which would be fatal).
- */
+ 
 static void __init psci_init_migrate(void)
 {
 	unsigned long cpuid;
@@ -600,10 +578,7 @@ static void __init psci_init_smccc(void)
 		}
 	}
 
-	/*
-	 * Conveniently, the SMCCC and PSCI versions are encoded the
-	 * same way. No, this isn't accidental.
-	 */
+	 
 	pr_info("SMC Calling Convention v%d.%d\n",
 		PSCI_VERSION_MAJOR(ver), PSCI_VERSION_MINOR(ver));
 
@@ -628,9 +603,7 @@ static void __init psci_0_2_set_functions(void)
 	pm_power_off = psci_sys_poweroff;
 }
 
-/*
- * Probe function for PSCI firmware versions >= 0.2
- */
+ 
 static int __init psci_probe(void)
 {
 	u32 ver = psci_0_2_get_version();
@@ -661,11 +634,7 @@ static int __init psci_probe(void)
 
 typedef int (*psci_initcall_t)(const struct device_node *);
 
-/*
- * PSCI init function for PSCI versions >=0.2
- *
- * Probe based on PSCI PSCI_VERSION function
- */
+ 
 static int __init psci_0_2_init(const struct device_node *np)
 {
 	int err;
@@ -674,19 +643,11 @@ static int __init psci_0_2_init(const struct device_node *np)
 	if (err)
 		return err;
 
-	/*
-	 * Starting with v0.2, the PSCI specification introduced a call
-	 * (PSCI_VERSION) that allows probing the firmware version, so
-	 * that PSCI function IDs and version specific initialization
-	 * can be carried out according to the specific version reported
-	 * by firmware
-	 */
+	 
 	return psci_probe();
 }
 
-/*
- * PSCI < v0.2 get PSCI Function IDs via DT.
- */
+ 
 static int __init psci_0_1_init(const struct device_node *np)
 {
 	u32 id;
@@ -734,7 +695,7 @@ static int __init psci_1_0_init(const struct device_node *np)
 	if (psci_has_osi_support()) {
 		pr_info("OSI mode supported.\n");
 
-		/* Default to PC mode. */
+		 
 		psci_set_osi_mode(false);
 	}
 
@@ -768,10 +729,7 @@ int __init psci_dt_init(void)
 }
 
 #ifdef CONFIG_ACPI
-/*
- * We use PSCI 0.2+ when ACPI is deployed on ARM64 and it's
- * explicitly clarified in SBBR
- */
+ 
 int __init psci_acpi_init(void)
 {
 	if (!acpi_psci_present()) {

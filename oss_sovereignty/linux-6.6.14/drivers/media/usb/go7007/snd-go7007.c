@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2005-2006 Micronas USA Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -151,8 +149,7 @@ static int go7007_snd_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
-		/* Just set a flag to indicate we should signal ALSA when
-		 * sound comes in */
+		 
 		gosnd->capturing = 1;
 		return 0;
 	case SNDRV_PCM_TRIGGER_STOP:

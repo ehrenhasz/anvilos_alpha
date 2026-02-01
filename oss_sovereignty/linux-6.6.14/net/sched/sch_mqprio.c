@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * net/sched/sch_mqprio.c
- *
- * Copyright (c) 2010 John Fastabend <john.r.fastabend@intel.com>
- */
+
+ 
 
 #include <linux/ethtool_netlink.h>
 #include <linux/types.h>
@@ -118,28 +114,18 @@ static int mqprio_parse_opt(struct net_device *dev, struct tc_mqprio_qopt *qopt,
 {
 	int err;
 
-	/* Limit qopt->hw to maximum supported offload value.  Drivers have
-	 * the option of overriding this later if they don't support the a
-	 * given offload type.
-	 */
+	 
 	if (qopt->hw > TC_MQPRIO_HW_OFFLOAD_MAX)
 		qopt->hw = TC_MQPRIO_HW_OFFLOAD_MAX;
 
-	/* If hardware offload is requested, we will leave 3 options to the
-	 * device driver:
-	 * - populate the queue counts itself (and ignore what was requested)
-	 * - validate the provided queue counts by itself (and apply them)
-	 * - request queue count validation here (and apply them)
-	 */
+	 
 	err = mqprio_validate_qopt(dev, qopt,
 				   !qopt->hw || caps->validate_queue_counts,
 				   false, extack);
 	if (err)
 		return err;
 
-	/* If ndo_setup_tc is not present then hardware doesn't support offload
-	 * and we should return an error.
-	 */
+	 
 	if (qopt->hw && !dev->netdev_ops->ndo_setup_tc) {
 		NL_SET_ERR_MSG(extack,
 			       "Device does not support hardware offload");
@@ -238,9 +224,7 @@ out:
 	return err;
 }
 
-/* Parse the other netlink attributes that represent the payload of
- * TCA_OPTIONS, which are appended right after struct tc_mqprio_qopt.
- */
+ 
 static int mqprio_parse_nlattr(struct Qdisc *sch, struct tc_mqprio_qopt *qopt,
 			       struct nlattr *opt,
 			       struct netlink_ext_ack *extack)
@@ -365,7 +349,7 @@ static int mqprio_init(struct Qdisc *sch, struct nlattr *opt,
 	if (!netif_is_multiqueue(dev))
 		return -EOPNOTSUPP;
 
-	/* make certain can allocate enough classids to handle queues */
+	 
 	if (dev->num_tx_queues >= TC_H_MIN_PRIORITY)
 		return -ENOMEM;
 
@@ -389,7 +373,7 @@ static int mqprio_init(struct Qdisc *sch, struct nlattr *opt,
 			return err;
 	}
 
-	/* pre-allocate qdisc, attachment can't fail */
+	 
 	priv->qdiscs = kcalloc(dev->num_tx_queues, sizeof(priv->qdiscs[0]),
 			       GFP_KERNEL);
 	if (!priv->qdiscs)
@@ -408,10 +392,7 @@ static int mqprio_init(struct Qdisc *sch, struct nlattr *opt,
 		qdisc->flags |= TCQ_F_ONETXQUEUE | TCQ_F_NOPARENT;
 	}
 
-	/* If the mqprio options indicate that hardware should own
-	 * the queue mapping then run ndo_setup_tc otherwise use the
-	 * supplied and verified mapping
-	 */
+	 
 	if (qopt->hw) {
 		err = mqprio_enable_offload(sch, qopt, extack);
 		if (err)
@@ -423,7 +404,7 @@ static int mqprio_init(struct Qdisc *sch, struct nlattr *opt,
 					    qopt->count[i], qopt->offset[i]);
 	}
 
-	/* Always use supplied priority mappings */
+	 
 	for (i = 0; i < TC_BITMASK + 1; i++)
 		netdev_set_prio_tc_map(dev, i, qopt->prio_tc_map[i]);
 
@@ -438,7 +419,7 @@ static void mqprio_attach(struct Qdisc *sch)
 	struct Qdisc *qdisc, *old;
 	unsigned int ntx;
 
-	/* Attach underlying qdisc */
+	 
 	for (ntx = 0; ntx < dev->num_tx_queues; ntx++) {
 		qdisc = priv->qdiscs[ntx];
 		old = dev_graft_qdisc(qdisc->dev_queue, qdisc);
@@ -565,11 +546,7 @@ static int mqprio_dump(struct Qdisc *sch, struct sk_buff *skb)
 	gnet_stats_basic_sync_init(&sch->bstats);
 	memset(&sch->qstats, 0, sizeof(sch->qstats));
 
-	/* MQ supports lockless qdiscs. However, statistics accounting needs
-	 * to account for all, none, or a mix of locked and unlocked child
-	 * qdiscs. Percpu stats are added to counters in-band and locking
-	 * qdisc totals are added at end.
-	 */
+	 
 	for (ntx = 0; ntx < dev->num_tx_queues; ntx++) {
 		qdisc = rtnl_dereference(netdev_get_tx_queue(dev, ntx)->qdisc_sleeping);
 		spin_lock_bh(qdisc_lock(qdisc));
@@ -626,17 +603,11 @@ static unsigned long mqprio_find(struct Qdisc *sch, u32 classid)
 	struct net_device *dev = qdisc_dev(sch);
 	unsigned int ntx = TC_H_MIN(classid);
 
-	/* There are essentially two regions here that have valid classid
-	 * values. The first region will have a classid value of 1 through
-	 * num_tx_queues. All of these are backed by actual Qdiscs.
-	 */
+	 
 	if (ntx < TC_H_MIN_PRIORITY)
 		return (ntx <= dev->num_tx_queues) ? ntx : 0;
 
-	/* The second region represents the hardware traffic classes. These
-	 * are represented by classid values of TC_H_MIN_PRIORITY through
-	 * TC_H_MIN_PRIORITY + netdev_get_num_tc - 1
-	 */
+	 
 	return ((ntx - TC_H_MIN_PRIORITY) < netdev_get_num_tc(dev)) ? ntx : 0;
 }
 
@@ -674,11 +645,7 @@ static int mqprio_dump_class_stats(struct Qdisc *sch, unsigned long cl,
 		struct netdev_tc_txq tc = dev->tc_to_txq[cl & TC_BITMASK];
 
 		gnet_stats_basic_sync_init(&bstats);
-		/* Drop lock here it will be reclaimed before touching
-		 * statistics this is required because the d->lock we
-		 * hold here is the look on dev_queue->qdisc_sleeping
-		 * also acquired below.
-		 */
+		 
 		if (d->lock)
 			spin_unlock_bh(d->lock);
 
@@ -698,7 +665,7 @@ static int mqprio_dump_class_stats(struct Qdisc *sch, unsigned long cl,
 		}
 		qlen = qdisc_qlen(sch) + qstats.qlen;
 
-		/* Reclaim root sleeping lock before completing stats */
+		 
 		if (d->lock)
 			spin_lock_bh(d->lock);
 		if (gnet_stats_copy_basic(d, NULL, &bstats, false) < 0 ||
@@ -724,20 +691,20 @@ static void mqprio_walk(struct Qdisc *sch, struct qdisc_walker *arg)
 	if (arg->stop)
 		return;
 
-	/* Walk hierarchy with a virtual class per tc */
+	 
 	arg->count = arg->skip;
 	for (ntx = arg->skip; ntx < netdev_get_num_tc(dev); ntx++) {
 		if (!tc_qdisc_stats_dump(sch, ntx + TC_H_MIN_PRIORITY, arg))
 			return;
 	}
 
-	/* Pad the values and skip over unused traffic classes */
+	 
 	if (ntx < TC_MAX_QUEUE) {
 		arg->count = TC_MAX_QUEUE;
 		ntx = TC_MAX_QUEUE;
 	}
 
-	/* Reset offset, sort out remaining per-queue qdiscs */
+	 
 	for (ntx -= TC_MAX_QUEUE; ntx < dev->num_tx_queues; ntx++) {
 		if (arg->fn(sch, ntx + 1, arg) < 0) {
 			arg->stop = 1;

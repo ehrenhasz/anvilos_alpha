@@ -1,23 +1,4 @@
-/* set_timer latency test
- *		John Stultz (john.stultz@linaro.org)
- *              (C) Copyright Linaro 2014
- *              Licensed under the GPLv2
- *
- *   This test makes sure the set_timer api is correct
- *
- *  To build:
- *	$ gcc set-timer-lat.c -o set-timer-lat -lrt
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- */
+ 
 
 
 #include <errno.h>
@@ -46,7 +27,7 @@
 
 
 #define NSEC_PER_SEC 1000000000ULL
-#define UNRESONABLE_LATENCY 40000000 /* 40ms in nanosecs */
+#define UNRESONABLE_LATENCY 40000000  
 
 #define TIMER_SECS 1
 int alarmcount;
@@ -126,7 +107,7 @@ int setup_timer(int clock_id, int flags, int interval, timer_t *tm1)
 	struct itimerspec its1, its2;
 	int err;
 
-	/* Set up timer: */
+	 
 	memset(&se, 0, sizeof(se));
 	se.sigev_notify = SIGEV_SIGNAL;
 	se.sigev_signo = SIGRTMAX;
@@ -143,7 +124,7 @@ int setup_timer(int clock_id, int flags, int interval, timer_t *tm1)
 			printf("%-22s %s missing CAP_WAKE_ALARM?    : [UNSUPPORTED]\n",
 					clockstring(clock_id),
 					flags ? "ABSTIME":"RELTIME");
-			/* Indicate timer isn't set, so caller doesn't wait */
+			 
 			return 1;
 		}
 		printf("%s - timer_create() failed\n", clockstring(clock_id));
@@ -214,7 +195,7 @@ int do_timer(int clock_id, int flags)
 	int err;
 
 	err = setup_timer(clock_id, flags, interval, &tm1);
-	/* Unsupported case - return 0 to not fail the test */
+	 
 	if (err)
 		return err == 1 ? 0 : err;
 
@@ -233,7 +214,7 @@ int do_timer_oneshot(int clock_id, int flags)
 	int err;
 
 	err = setup_timer(clock_id, flags, interval, &tm1);
-	/* Unsupported case - return 0 to not fail the test */
+	 
 	if (err)
 		return err == 1 ? 0 : err;
 
@@ -255,7 +236,7 @@ int main(void)
 	int signum = SIGRTMAX;
 	int ret = 0;
 
-	/* Set up signal handler: */
+	 
 	sigfillset(&act.sa_mask);
 	act.sa_flags = 0;
 	act.sa_handler = sigalarm;

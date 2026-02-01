@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VDPA simulator for networking device.
- *
- * Copyright (c) 2020, Red Hat Inc. All rights reserved.
- *     Author: Jason Wang <jasowang@redhat.com>
- *
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -32,7 +26,7 @@
 				 (1ULL << VIRTIO_NET_F_CTRL_VQ) | \
 				 (1ULL << VIRTIO_NET_F_CTRL_MAC_ADDR))
 
-/* 3 virtqueues, 2 address spaces, 2 virtqueue groups */
+ 
 #define VDPASIM_NET_VQ_NUM	3
 #define VDPASIM_NET_AS_NUM	2
 #define VDPASIM_NET_GROUP_NUM	2
@@ -68,12 +62,12 @@ static struct vdpasim_net *sim_to_net(struct vdpasim *vdpasim)
 
 static void vdpasim_net_complete(struct vdpasim_virtqueue *vq, size_t len)
 {
-	/* Make sure data is wrote before advancing index */
+	 
 	smp_wmb();
 
 	vringh_complete_iotlb(&vq->vring, vq->head, len);
 
-	/* Make sure used is visible before rasing the interrupt. */
+	 
 	smp_wmb();
 
 	local_bh_disable();
@@ -168,7 +162,7 @@ static void vdpasim_handle_cvq(struct vdpasim *vdpasim)
 		else
 			++errors;
 
-		/* Make sure data is wrote before advancing index */
+		 
 		smp_wmb();
 
 		write = vringh_iov_push_iotlb(&cvq->vring, &cvq->out_iov,
@@ -177,7 +171,7 @@ static void vdpasim_handle_cvq(struct vdpasim *vdpasim)
 		vringh_kiov_cleanup(&cvq->in_iov);
 		vringh_kiov_cleanup(&cvq->out_iov);
 
-		/* Make sure used is visible before rasing the interrupt. */
+		 
 		smp_wmb();
 
 		local_bh_disable();
@@ -424,7 +418,7 @@ static void vdpasim_net_setup_config(struct vdpasim *vdpasim,
 	if (config->mask & (1 << VDPA_ATTR_DEV_NET_CFG_MTU))
 		vio_config->mtu = cpu_to_vdpasim16(vdpasim, config->net.mtu);
 	else
-		/* Setup default MTU to be 1500 */
+		 
 		vio_config->mtu = cpu_to_vdpasim16(vdpasim, 1500);
 }
 
@@ -484,11 +478,7 @@ static int vdpasim_net_dev_add(struct vdpa_mgmt_dev *mdev, const char *name,
 		goto reg_err;
 	}
 
-	/*
-	 * Initialization must be completed before this call, since it can
-	 * connect the device to the vDPA bus, so requests can arrive after
-	 * this call.
-	 */
+	 
 	ret = _vdpa_register_device(&simdev->vdpa, VDPASIM_NET_VQ_NUM);
 	if (ret)
 		goto reg_err;

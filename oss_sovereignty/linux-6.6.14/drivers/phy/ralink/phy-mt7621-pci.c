@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Mediatek MT7621 PCI PHY Driver
- * Author: Sergio Paracuellos <sergio.paracuellos@gmail.com>
- */
+
+ 
 
 #include <dt-bindings/phy/phy.h>
 #include <linux/clk.h>
@@ -62,17 +59,7 @@
 
 #define MAX_PHYS	2
 
-/**
- * struct mt7621_pci_phy - Mt7621 Pcie PHY core
- * @dev: pointer to device
- * @regmap: kernel regmap pointer
- * @phy: pointer to the kernel PHY device
- * @sys_clk: pointer to the system XTAL clock
- * @port_base: base register
- * @has_dual_port: if the phy has dual ports.
- * @bypass_pipe_rst: mark if 'mt7621_bypass_pipe_rst'
- * needs to be executed. Depends on chip revision.
- */
+ 
 struct mt7621_pci_phy {
 	struct device *dev;
 	struct regmap *regmap;
@@ -88,13 +75,7 @@ static inline void mt7621_phy_rmw(struct mt7621_pci_phy *phy,
 {
 	u32 val;
 
-	/*
-	 * We cannot use 'regmap_write_bits' here because internally
-	 * 'set' is masked before is set to the value that will be
-	 * written to the register. That way results in no reliable
-	 * pci setup. Avoid to mask 'set' before set value to 'val'
-	 * completely avoid the problem.
-	 */
+	 
 	regmap_read(phy->regmap, reg, &val);
 	val &= ~clr;
 	val |= set;
@@ -123,14 +104,14 @@ static int mt7621_set_phy_for_ssc(struct mt7621_pci_phy *phy)
 	if (!clk_rate)
 		return -EINVAL;
 
-	/* Set PCIe Port PHY to disable SSC */
-	/* Debug Xtal Type */
+	 
+	 
 	mt7621_phy_rmw(phy, RG_PE1_FRC_H_XTAL_REG,
 		       RG_PE1_FRC_H_XTAL_TYPE | RG_PE1_H_XTAL_TYPE,
 		       RG_PE1_FRC_H_XTAL_TYPE |
 		       FIELD_PREP(RG_PE1_H_XTAL_TYPE, 0x00));
 
-	/* disable port */
+	 
 	mt7621_phy_rmw(phy, RG_PE1_FRC_PHY_REG, RG_PE1_PHY_EN,
 		       RG_PE1_FRC_PHY_EN);
 
@@ -139,32 +120,32 @@ static int mt7621_set_phy_for_ssc(struct mt7621_pci_phy *phy)
 			       RG_PE1_PHY_EN, RG_PE1_FRC_PHY_EN);
 	}
 
-	if (clk_rate == 40000000) { /* 40MHz Xtal */
-		/* Set Pre-divider ratio (for host mode) */
+	if (clk_rate == 40000000) {  
+		 
 		mt7621_phy_rmw(phy, RG_PE1_H_PLL_REG, RG_PE1_H_PLL_PREDIV,
 			       FIELD_PREP(RG_PE1_H_PLL_PREDIV, 0x01));
 
 		dev_dbg(dev, "Xtal is 40MHz\n");
-	} else if (clk_rate == 25000000) { /* 25MHz Xal */
+	} else if (clk_rate == 25000000) {  
 		mt7621_phy_rmw(phy, RG_PE1_H_PLL_REG, RG_PE1_H_PLL_PREDIV,
 			       FIELD_PREP(RG_PE1_H_PLL_PREDIV, 0x00));
 
-		/* Select feedback clock */
+		 
 		mt7621_phy_rmw(phy, RG_PE1_H_PLL_FBKSEL_REG,
 			       RG_PE1_H_PLL_FBKSEL,
 			       FIELD_PREP(RG_PE1_H_PLL_FBKSEL, 0x01));
 
-		/* DDS NCPO PCW (for host mode) */
+		 
 		mt7621_phy_rmw(phy, RG_PE1_H_LCDDS_SSC_PRD_REG,
 			       RG_PE1_H_LCDDS_SSC_PRD,
 			       FIELD_PREP(RG_PE1_H_LCDDS_SSC_PRD, 0x00));
 
-		/* DDS SSC dither period control */
+		 
 		mt7621_phy_rmw(phy, RG_PE1_H_LCDDS_SSC_PRD_REG,
 			       RG_PE1_H_LCDDS_SSC_PRD,
 			       FIELD_PREP(RG_PE1_H_LCDDS_SSC_PRD, 0x18d));
 
-		/* DDS SSC dither amplitude control */
+		 
 		mt7621_phy_rmw(phy, RG_PE1_H_LCDDS_SSC_DELTA_REG,
 			       RG_PE1_H_LCDDS_SSC_DELTA |
 			       RG_PE1_H_LCDDS_SSC_DELTA1,
@@ -172,18 +153,18 @@ static int mt7621_set_phy_for_ssc(struct mt7621_pci_phy *phy)
 			       FIELD_PREP(RG_PE1_H_LCDDS_SSC_DELTA1, 0x4a));
 
 		dev_dbg(dev, "Xtal is 25MHz\n");
-	} else { /* 20MHz Xtal */
+	} else {  
 		mt7621_phy_rmw(phy, RG_PE1_H_PLL_REG, RG_PE1_H_PLL_PREDIV,
 			       FIELD_PREP(RG_PE1_H_PLL_PREDIV, 0x00));
 
 		dev_dbg(dev, "Xtal is 20MHz\n");
 	}
 
-	/* DDS clock inversion */
+	 
 	mt7621_phy_rmw(phy, RG_PE1_LCDDS_CLK_PH_INV_REG,
 		       RG_PE1_LCDDS_CLK_PH_INV, RG_PE1_LCDDS_CLK_PH_INV);
 
-	/* Set PLL bits */
+	 
 	mt7621_phy_rmw(phy, RG_PE1_H_PLL_REG,
 		       RG_PE1_H_PLL_BC | RG_PE1_H_PLL_BP | RG_PE1_H_PLL_IR |
 		       RG_PE1_H_PLL_IC | RG_PE1_PLL_DIVEN,
@@ -196,8 +177,8 @@ static int mt7621_set_phy_for_ssc(struct mt7621_pci_phy *phy)
 	mt7621_phy_rmw(phy, RG_PE1_H_PLL_BR_REG, RG_PE1_H_PLL_BR,
 		       FIELD_PREP(RG_PE1_H_PLL_BR, 0x00));
 
-	if (clk_rate == 40000000) { /* 40MHz Xtal */
-		/* set force mode enable of da_pe1_mstckdiv */
+	if (clk_rate == 40000000) {  
+		 
 		mt7621_phy_rmw(phy, RG_PE1_MSTCKDIV_REG,
 			       RG_PE1_MSTCKDIV | RG_PE1_FRC_MSTCKDIV,
 			       FIELD_PREP(RG_PE1_MSTCKDIV, 0x01) |
@@ -221,7 +202,7 @@ static int mt7621_pci_phy_power_on(struct phy *phy)
 {
 	struct mt7621_pci_phy *mphy = phy_get_drvdata(phy);
 
-	/* Enable PHY and disable force mode */
+	 
 	mt7621_phy_rmw(mphy, RG_PE1_FRC_PHY_REG,
 		       RG_PE1_FRC_PHY_EN, RG_PE1_PHY_EN);
 
@@ -237,7 +218,7 @@ static int mt7621_pci_phy_power_off(struct phy *phy)
 {
 	struct mt7621_pci_phy *mphy = phy_get_drvdata(phy);
 
-	/* Disable PHY */
+	 
 	mt7621_phy_rmw(mphy, RG_PE1_FRC_PHY_REG,
 		       RG_PE1_PHY_EN, RG_PE1_FRC_PHY_EN);
 
@@ -280,7 +261,7 @@ static struct phy *mt7621_pcie_phy_of_xlate(struct device *dev,
 
 static const struct soc_device_attribute mt7621_pci_quirks_match[] = {
 	{ .soc_id = "mt7621", .revision = "E2" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct regmap_config mt7621_pci_phy_regmap_config = {

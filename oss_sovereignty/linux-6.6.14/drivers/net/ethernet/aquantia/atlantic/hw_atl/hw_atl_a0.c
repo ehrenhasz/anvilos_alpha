@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Atlantic Network Driver
- *
- * Copyright (C) 2014-2019 aQuantia Corporation
- * Copyright (C) 2019-2020 Marvell International Ltd.
- */
 
-/* File hw_atl_a0.c: Definition of Atlantic hardware specific functions. */
+ 
+
+ 
 
 #include "../aq_hw.h"
 #include "../aq_hw_utils.h"
@@ -96,7 +92,7 @@ static int hw_atl_a0_hw_reset(struct aq_hw_s *self)
 	HW_ATL_FLUSH();
 	hw_atl_glb_soft_res_set(self, 1);
 
-	/* check 10 times by 1ms */
+	 
 	err = readx_poll_timeout_atomic(hw_atl_glb_soft_res_get,
 					self, val, val == 0,
 					1000U, 10000U);
@@ -106,7 +102,7 @@ static int hw_atl_a0_hw_reset(struct aq_hw_s *self)
 	hw_atl_itr_irq_reg_res_dis_set(self, 0U);
 	hw_atl_itr_res_irq_set(self, 1U);
 
-	/* check 10 times by 1ms */
+	 
 	err = readx_poll_timeout_atomic(hw_atl_itr_res_irq_get,
 					self, val, val == 0,
 					1000U, 10000U);
@@ -128,14 +124,14 @@ static int hw_atl_a0_hw_qos_set(struct aq_hw_s *self)
 	u32 buff_size = 0U;
 	u32 tc = 0U;
 
-	/* TPS Descriptor rate init */
+	 
 	hw_atl_tps_tx_pkt_shed_desc_rate_curr_time_res_set(self, 0x0U);
 	hw_atl_tps_tx_pkt_shed_desc_rate_lim_set(self, 0xA);
 
-	/* TPS VM init */
+	 
 	hw_atl_tps_tx_pkt_shed_desc_vm_arb_mode_set(self, 0U);
 
-	/* TPS TC credits init */
+	 
 	hw_atl_tps_tx_pkt_shed_desc_tc_arb_mode_set(self, 0U);
 	hw_atl_tps_tx_pkt_shed_data_arb_mode_set(self, 0U);
 
@@ -144,7 +140,7 @@ static int hw_atl_a0_hw_qos_set(struct aq_hw_s *self)
 	hw_atl_tps_tx_pkt_shed_desc_tc_max_credit_set(self, 0U, 0x50);
 	hw_atl_tps_tx_pkt_shed_desc_tc_weight_set(self, 0U, 0x1E);
 
-	/* Tx buf size */
+	 
 	buff_size = HW_ATL_A0_TXBUF_MAX;
 
 	hw_atl_tpb_tx_pkt_buff_size_per_tc_set(self, buff_size, tc);
@@ -157,7 +153,7 @@ static int hw_atl_a0_hw_qos_set(struct aq_hw_s *self)
 						   (1024 / 32U) * 50U) /
 						   100U, tc);
 
-	/* QoS Rx buf size per TC */
+	 
 	tc = 0;
 	is_rx_flow_control = (AQ_NIC_FC_RX & self->aq_nic_cfg->fc.req);
 	buff_size = HW_ATL_A0_RXBUF_MAX;
@@ -173,7 +169,7 @@ static int hw_atl_a0_hw_qos_set(struct aq_hw_s *self)
 						   100U, tc);
 	hw_atl_rpb_rx_xoff_en_per_tc_set(self, is_rx_flow_control ? 1U : 0U, tc);
 
-	/* QoS 802.1p priority -> TC mapping */
+	 
 	for (i_priority = 8U; i_priority--;)
 		hw_atl_rpf_rpb_user_priority_tc_map_set(self, i_priority, 0U);
 
@@ -247,15 +243,15 @@ err_exit:
 static int hw_atl_a0_hw_offload_set(struct aq_hw_s *self,
 				    struct aq_nic_cfg_s *aq_nic_cfg)
 {
-	/* TX checksums offloads*/
+	 
 	hw_atl_tpo_ipv4header_crc_offload_en_set(self, 1);
 	hw_atl_tpo_tcp_udp_crc_offload_en_set(self, 1);
 
-	/* RX checksums offloads*/
+	 
 	hw_atl_rpo_ipv4header_crc_offload_en_set(self, 1);
 	hw_atl_rpo_tcp_udp_crc_offload_en_set(self, 1);
 
-	/* LSO offloads*/
+	 
 	hw_atl_tdm_large_send_offload_en_set(self, 0xFFFFFFFFU);
 
 	return aq_hw_err_from_flags(self);
@@ -267,10 +263,10 @@ static int hw_atl_a0_hw_init_tx_path(struct aq_hw_s *self)
 	hw_atl_thm_lso_tcp_flag_of_middle_pkt_set(self, 0x0FF6U);
 	hw_atl_thm_lso_tcp_flag_of_last_pkt_set(self, 0x0F7FU);
 
-	/* Tx interrupts */
+	 
 	hw_atl_tdm_tx_desc_wr_wb_irq_en_set(self, 1U);
 
-	/* misc */
+	 
 	aq_hw_write_reg(self, 0x00007040U, 0x00000000U);
 	hw_atl_tdm_tx_dca_en_set(self, 0U);
 	hw_atl_tdm_tx_dca_mode_set(self, 0U);
@@ -285,17 +281,17 @@ static int hw_atl_a0_hw_init_rx_path(struct aq_hw_s *self)
 	struct aq_nic_cfg_s *cfg = self->aq_nic_cfg;
 	int i;
 
-	/* Rx TC/RSS number config */
+	 
 	hw_atl_rpb_rpf_rx_traf_class_mode_set(self, 1U);
 
-	/* Rx flow control */
+	 
 	hw_atl_rpb_rx_flow_ctl_mode_set(self, 1U);
 
-	/* RSS Ring selection */
+	 
 	hw_atl_reg_rx_flr_rss_control1set(self, cfg->is_rss ?
 					  0xB3333333U : 0x00000000U);
 
-	/* Multicast filters */
+	 
 	for (i = HW_ATL_A0_MAC_MAX; i--;) {
 		hw_atl_rpfl2_uc_flr_en_set(self, (i == 0U) ? 1U : 0U, i);
 		hw_atl_rpfl2unicast_flr_act_set(self, 1U, i);
@@ -304,15 +300,15 @@ static int hw_atl_a0_hw_init_rx_path(struct aq_hw_s *self)
 	hw_atl_reg_rx_flr_mcst_flr_msk_set(self, 0x00000000U);
 	hw_atl_reg_rx_flr_mcst_flr_set(self, 0x00010FFFU, 0U);
 
-	/* Vlan filters */
+	 
 	hw_atl_rpf_vlan_outer_etht_set(self, 0x88A8U);
 	hw_atl_rpf_vlan_inner_etht_set(self, 0x8100U);
 	hw_atl_rpf_vlan_prom_mode_en_set(self, 1);
 
-	/* Rx Interrupts */
+	 
 	hw_atl_rdm_rx_desc_wr_wb_irq_en_set(self, 1U);
 
-	/* misc */
+	 
 	hw_atl_rpfl2broadcast_flr_act_set(self, 1U);
 	hw_atl_rpfl2broadcast_count_threshold_set(self, 0xFFFFU & (~0U / 256U));
 
@@ -374,7 +370,7 @@ static int hw_atl_a0_hw_init(struct aq_hw_s *self, const u8 *mac_addr)
 	hw_atl_a0_hw_rss_set(self, &aq_nic_cfg->aq_rss);
 	hw_atl_a0_hw_rss_hash_set(self, &aq_nic_cfg->aq_rss);
 
-	/* Reset link status and read out initial hardware counters */
+	 
 	self->aq_link_status.mbps = 0;
 	self->aq_fw_ops->update_stats(self);
 
@@ -382,14 +378,14 @@ static int hw_atl_a0_hw_init(struct aq_hw_s *self, const u8 *mac_addr)
 	if (err < 0)
 		goto err_exit;
 
-	/* Interrupts */
+	 
 	hw_atl_reg_irq_glb_ctl_set(self,
 				   aq_hw_atl_igcr_table_[aq_nic_cfg->irq_type]
 					[(aq_nic_cfg->vecs > 1U) ? 1 : 0]);
 
 	hw_atl_itr_irq_auto_masklsw_set(self, aq_nic_cfg->aq_hw_caps->irq_mask);
 
-	/* Interrupts */
+	 
 	hw_atl_reg_gen_irq_map_set(self,
 				   ((HW_ATL_A0_ERR_INT << 0x18) | (1U << 0x1F)) |
 				   ((HW_ATL_A0_ERR_INT << 0x10) | (1U << 0x17)) |
@@ -480,7 +476,7 @@ static int hw_atl_a0_hw_ring_tx_xmit(struct aq_hw_s *self,
 			txd->ctl |= (HW_ATL_A0_TXD_CTL_BLEN &
 						((u32)buff_pa_len << 4));
 			txd->ctl |= HW_ATL_A0_TXD_CTL_DESC_TYPE_TXD;
-			/* PAY_LEN */
+			 
 			txd->ctl2 |= HW_ATL_A0_TXD_CTL2_LEN & (pkt_len << 14);
 
 			if (is_gso) {
@@ -488,7 +484,7 @@ static int hw_atl_a0_hw_ring_tx_xmit(struct aq_hw_s *self,
 				txd->ctl2 |= HW_ATL_A0_TXD_CTL2_CTX_EN;
 			}
 
-			/* Tx checksum offloads */
+			 
 			if (buff->is_ip_cso)
 				txd->ctl |= HW_ATL_A0_TXD_CTL_CMD_IPCSO;
 
@@ -538,9 +534,9 @@ static int hw_atl_a0_hw_ring_rx_init(struct aq_hw_s *self,
 	hw_atl_rdm_rx_desc_head_splitting_set(self, 0U, aq_ring->idx);
 	hw_atl_rpo_rx_desc_vlan_stripping_set(self, 0U, aq_ring->idx);
 
-	/* Rx ring set mode */
+	 
 
-	/* Mapping interrupt vector */
+	 
 	hw_atl_itr_irq_map_rx_set(self, aq_ring_param->vec_idx, aq_ring->idx);
 	hw_atl_itr_irq_map_en_rx_set(self, true, aq_ring->idx);
 
@@ -569,10 +565,10 @@ static int hw_atl_a0_hw_ring_tx_init(struct aq_hw_s *self,
 
 	hw_atl_a0_hw_tx_ring_tail_update(self, aq_ring);
 
-	/* Set Tx threshold */
+	 
 	hw_atl_tdm_tx_desc_wr_wb_threshold_set(self, 0U, aq_ring->idx);
 
-	/* Mapping interrupt vector */
+	 
 	hw_atl_itr_irq_map_tx_set(self, aq_ring_param->vec_idx, aq_ring->idx);
 	hw_atl_itr_irq_map_en_tx_set(self, true, aq_ring->idx);
 
@@ -633,7 +629,7 @@ static int hw_atl_a0_hw_ring_rx_receive(struct aq_hw_s *self,
 		unsigned int is_rx_check_sum_enabled = 0U;
 		unsigned int pkt_type = 0U;
 
-		if (!(rxd_wb->status & 0x5U)) { /* RxD is not done */
+		if (!(rxd_wb->status & 0x5U)) {  
 			if ((1U << 4) &
 			hw_atl_reg_rx_dma_desc_status_get(self, ring->idx)) {
 				hw_atl_rdm_rx_desc_en_set(self, false, ring->idx);
@@ -679,7 +675,7 @@ static int hw_atl_a0_hw_ring_rx_receive(struct aq_hw_s *self,
 			else if (0x0U == (pkt_type & 0x1CU))
 				buff->is_tcp_cso = (is_err & 0x10U) ? 0 : 1;
 
-			/* Checksum offload workaround for small packets */
+			 
 			if (rxd_wb->pkt_len <= 60) {
 				buff->is_ip_cso = 0U;
 				buff->is_cso_err = 0U;
@@ -690,11 +686,11 @@ static int hw_atl_a0_hw_ring_rx_receive(struct aq_hw_s *self,
 		is_err &= ~0x04U;
 
 		if (is_err || rxd_wb->type & 0x1000U) {
-			/* status error or DMA error */
+			 
 			buff->is_error = 1U;
 		} else {
 			if (self->aq_nic_cfg->is_rss) {
-				/* last 4 byte */
+				 
 				u16 rss_type = rxd_wb->type & 0xFU;
 
 				if (rss_type && rss_type < 0x8U) {
@@ -712,7 +708,7 @@ static int hw_atl_a0_hw_ring_rx_receive(struct aq_hw_s *self,
 				buff->next = 0U;
 				buff->is_eop = 1U;
 			} else {
-				/* jumbo */
+				 
 				buff->next = aq_ring_next_dx(ring,
 							     ring->hw_head);
 				++ring->stats.rx.jumbo_packets;
@@ -835,12 +831,12 @@ static int hw_atl_a0_hw_interrupt_moderation_set(struct aq_hw_s *self)
 				itr_rx = 0U;
 			} else {
 				static unsigned int hw_timers_tbl_[] = {
-					0x01CU, /* 10Gbit */
-					0x039U, /* 5Gbit */
-					0x039U, /* 5Gbit 5GS */
-					0x073U, /* 2.5Gbit */
-					0x120U, /* 1Gbit */
-					0x1FFU, /* 100Mbit */
+					0x01CU,  
+					0x039U,  
+					0x039U,  
+					0x073U,  
+					0x120U,  
+					0x1FFU,  
 				};
 
 				unsigned int speed_index =

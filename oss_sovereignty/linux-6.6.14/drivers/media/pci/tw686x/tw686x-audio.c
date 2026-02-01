@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 VanguardiaSur - www.vanguardiasur.com.ar
- *
- * Based on the audio support from the tw6869 driver:
- * Copyright 2015 www.starterkit.ru <info@starterkit.ru>
- *
- * Based on:
- * Driver for Intersil|Techwell TW6869 based DVR cards
- * (c) 2011-12 liran <jli11@intersil.com> [Intersil|Techwell China]
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -44,7 +35,7 @@ void tw686x_audio_irq(struct tw686x_dev *dev, unsigned long requests,
 
 		spin_lock_irqsave(&ac->lock, flags);
 
-		/* Sanity check */
+		 
 		if (!ac->ss || !ac->curr_bufs[0] || !ac->curr_bufs[1]) {
 			spin_unlock_irqrestore(&ac->lock, flags);
 			continue;
@@ -61,10 +52,7 @@ void tw686x_audio_irq(struct tw686x_dev *dev, unsigned long requests,
 
 		if (!done)
 			continue;
-		/*
-		 * Checking for a non-nil dma_desc[pb]->virt buffer is
-		 * the same as checking for memcpy DMA mode.
-		 */
+		 
 		desc = &ac->dma_descs[pb];
 		if (desc->virt) {
 			memcpy(done->virt, desc->virt,
@@ -78,11 +66,7 @@ void tw686x_audio_irq(struct tw686x_dev *dev, unsigned long requests,
 	}
 }
 
-/*
- * Audio parameters are global and shared among all
- * capture channels. The driver prevents changes to
- * the parameters if any audio channel is capturing.
- */
+ 
 static const struct snd_pcm_hardware tw686x_capture_hw = {
 	.info			= (SNDRV_PCM_INFO_MMAP |
 				   SNDRV_PCM_INFO_INTERLEAVED |
@@ -138,10 +122,7 @@ static int tw686x_pcm_prepare(struct snd_pcm_substream *ss)
 	int i;
 
 	spin_lock_irqsave(&dev->lock, flags);
-	/*
-	 * Given the audio parameters are global (i.e. shared across
-	 * DMA channels), we need to check new params are allowed.
-	 */
+	 
 	if (((dev->audio_rate != rt->rate) ||
 	     (dev->period_size != period_size)) && dev->audio_enabled)
 		goto err_audio_busy;
@@ -312,11 +293,7 @@ static int tw686x_audio_dma_alloc(struct tw686x_dev *dev,
 {
 	int pb;
 
-	/*
-	 * In the memcpy DMA mode we allocate a coherent buffer
-	 * and use it for the DMA capture. Otherwise, DMA
-	 * acts on the ALSA buffers as received in pcm_prepare.
-	 */
+	 
 	if (dev->dma_mode != TW686X_DMA_MODE_MEMCPY)
 		return 0;
 
@@ -365,7 +342,7 @@ int tw686x_audio_init(struct tw686x_dev *dev)
 	struct snd_card *card;
 	int err, ch;
 
-	/* Enable external audio */
+	 
 	reg_write(dev, AUDIO_CONTROL1, BIT(0));
 
 	err = snd_card_new(&pci_dev->dev, SNDRV_DEFAULT_IDX1,

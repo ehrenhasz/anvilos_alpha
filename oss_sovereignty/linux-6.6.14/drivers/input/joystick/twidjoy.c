@@ -1,36 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) 2001 Arndt Schoenewald
- *  Copyright (c) 2000-2001 Vojtech Pavlik
- *  Copyright (c) 2000 Mark Fletcher
- *
- *  Sponsored by Quelltext AG (http://www.quelltext-ag.de), Dortmund, Germany
- */
 
-/*
- * Driver to use Handykey's Twiddler (the first edition, i.e. the one with
- * the RS232 interface) as a joystick under Linux
- *
- * The Twiddler is a one-handed chording keyboard featuring twelve buttons on
- * the front, six buttons on the top, and a built-in tilt sensor. The buttons
- * on the front, which are grouped as four rows of three buttons, are pressed
- * by the four fingers (this implies only one button per row can be held down
- * at the same time) and the buttons on the top are for the thumb. The tilt
- * sensor delivers X and Y axis data depending on how the Twiddler is held.
- * Additional information can be found at http://www.handykey.com.
- *
- * This driver does not use the Twiddler for its intended purpose, i.e. as
- * a chording keyboard, but as a joystick: pressing and releasing a button
- * immediately sends a corresponding button event, and tilting it generates
- * corresponding ABS_X and ABS_Y events. This turns the Twiddler into a game
- * controller with amazing 18 buttons :-)
- *
- * Note: The Twiddler2 (the successor of the Twiddler that connects directly
- * to the PS/2 keyboard and mouse ports) is NOT supported by this driver!
- *
- * For questions or feedback regarding this driver module please contact:
- * Arndt Schoenewald <arndt@quelltext.com>
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -43,9 +14,7 @@
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL");
 
-/*
- * Constants.
- */
+ 
 
 #define TWIDJOY_MAX_LENGTH 5
 
@@ -68,9 +37,7 @@ twidjoy_buttons[] = {
 	{ 0,  0, { 0                               } }
 };
 
-/*
- * Per-Twiddler data.
- */
+ 
 
 struct twidjoy {
 	struct input_dev *dev;
@@ -79,10 +46,7 @@ struct twidjoy {
 	char phys[32];
 };
 
-/*
- * twidjoy_process_packet() decodes packets the driver receives from the
- * Twiddler. It updates the data accordingly.
- */
+ 
 
 static void twidjoy_process_packet(struct twidjoy *twidjoy)
 {
@@ -113,24 +77,18 @@ static void twidjoy_process_packet(struct twidjoy *twidjoy)
 	input_sync(dev);
 }
 
-/*
- * twidjoy_interrupt() is called by the low level driver when characters
- * are ready for us. We then buffer them for further processing, or call the
- * packet processing routine.
- */
+ 
 
 static irqreturn_t twidjoy_interrupt(struct serio *serio, unsigned char data, unsigned int flags)
 {
 	struct twidjoy *twidjoy = serio_get_drvdata(serio);
 
-	/* All Twiddler packets are 5 bytes. The fact that the first byte
-	 * has a MSB of 0 and all other bytes have a MSB of 1 can be used
-	 * to check and regain sync. */
+	 
 
 	if ((data & 0x80) == 0)
-		twidjoy->idx = 0;	/* this byte starts a new packet */
+		twidjoy->idx = 0;	 
 	else if (twidjoy->idx == 0)
-		return IRQ_HANDLED;	/* wrong MSB -- ignore this byte */
+		return IRQ_HANDLED;	 
 
 	if (twidjoy->idx < TWIDJOY_MAX_LENGTH)
 		twidjoy->data[twidjoy->idx++] = data;
@@ -143,9 +101,7 @@ static irqreturn_t twidjoy_interrupt(struct serio *serio, unsigned char data, un
 	return IRQ_HANDLED;
 }
 
-/*
- * twidjoy_disconnect() is the opposite of twidjoy_connect()
- */
+ 
 
 static void twidjoy_disconnect(struct serio *serio)
 {
@@ -157,11 +113,7 @@ static void twidjoy_disconnect(struct serio *serio)
 	kfree(twidjoy);
 }
 
-/*
- * twidjoy_connect() is the routine that is called when someone adds a
- * new serio device. It looks for the Twiddler, and if found, registers
- * it as an input device.
- */
+ 
 
 static int twidjoy_connect(struct serio *serio, struct serio_driver *drv)
 {
@@ -214,9 +166,7 @@ static int twidjoy_connect(struct serio *serio, struct serio_driver *drv)
 	return err;
 }
 
-/*
- * The serio driver structure.
- */
+ 
 
 static const struct serio_device_id twidjoy_serio_ids[] = {
 	{

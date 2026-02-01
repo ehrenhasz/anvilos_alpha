@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2021 Rafał Miłecki <rafal@milecki.pl>
- */
+
+ 
 
 #include <linux/bcm47xx_nvram.h>
 #include <linux/etherdevice.h>
@@ -17,17 +15,7 @@
 
 #define NVRAM_MAGIC			"FLSH"
 
-/**
- * struct brcm_nvram - driver state internal struct
- *
- * @dev:		NVMEM device pointer
- * @nvmem_size:		Size of the whole space available for NVRAM
- * @data:		NVRAM data copy stored to avoid poking underlaying flash controller
- * @data_len:		NVRAM data size
- * @padding_byte:	Padding value used to fill remaining space
- * @cells:		Array of discovered NVMEM cells
- * @ncells:		Number of elements in cells
- */
+ 
 struct brcm_nvram {
 	struct device *dev;
 	size_t nvmem_size;
@@ -41,9 +29,9 @@ struct brcm_nvram {
 struct brcm_nvram_header {
 	char magic[4];
 	__le32 len;
-	__le32 crc_ver_init;	/* 0:7 crc, 8:15 ver, 16:31 sdram_init */
-	__le32 config_refresh;	/* 0:15 sdram_config, 16:31 sdram_refresh */
-	__le32 config_ncdl;	/* ncdl values for memc */
+	__le32 crc_ver_init;	 
+	__le32 config_refresh;	 
+	__le32 config_ncdl;	 
 };
 
 static int brcm_nvram_read(void *context, unsigned int offset, void *val,

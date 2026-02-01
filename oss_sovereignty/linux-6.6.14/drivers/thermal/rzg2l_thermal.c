@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas RZ/G2L TSU Thermal Sensor Driver
- *
- * Copyright (C) 2021 Renesas Electronics Corporation
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/err.h>
 #include <linux/io.h>
@@ -21,11 +17,11 @@
 
 #define CTEMP_MASK	0xFFF
 
-/* default calibration values, if FUSE values are missing */
+ 
 #define SW_CALIB0_VAL	3148
 #define SW_CALIB1_VAL	503
 
-/* Register offsets */
+ 
 #define TSU_SM		0x00
 #define TSU_ST		0x04
 #define TSU_SAD		0x0C
@@ -35,21 +31,21 @@
 #define OTPTSUTRIM_EN_MASK	BIT(31)
 #define OTPTSUTRIM_MASK		GENMASK(11, 0)
 
-/* Sensor Mode Register(TSU_SM) */
+ 
 #define TSU_SM_EN_TS		BIT(0)
 #define TSU_SM_ADC_EN_TS	BIT(1)
 #define TSU_SM_NORMAL_MODE	(TSU_SM_EN_TS | TSU_SM_ADC_EN_TS)
 
-/* TSU_ST bits */
+ 
 #define TSU_ST_START		BIT(0)
 
 #define TSU_SS_CONV_RUNNING	BIT(0)
 
 #define TS_CODE_AVE_SCALE(x)	((x) * 1000000)
 #define MCELSIUS(temp)		((temp) * MILLIDEGREE_PER_DEGREE)
-#define TS_CODE_CAP_TIMES	8	/* Total number of ADC data samples */
+#define TS_CODE_CAP_TIMES	8	 
 
-#define RZG2L_THERMAL_GRAN	500	/* milli Celsius */
+#define RZG2L_THERMAL_GRAN	500	 
 #define RZG2L_TSU_SS_TIMEOUT_US	1000
 
 #define CURVATURE_CORRECTION_CONST	13
@@ -80,32 +76,18 @@ static int rzg2l_thermal_get_temp(struct thermal_zone_device *tz, int *temp)
 	int val, i;
 
 	for (i = 0; i < TS_CODE_CAP_TIMES ; i++) {
-		/*
-		 * TSU repeats measurement at 20 microseconds intervals and
-		 * automatically updates the results of measurement. As per
-		 * the HW manual for measuring temperature we need to read 8
-		 * values consecutively and then take the average.
-		 * ts_code_ave = (ts_code[0] + ⋯ + ts_code[7]) / 8
-		 */
+		 
 		result += rzg2l_thermal_read(priv, TSU_SAD) & CTEMP_MASK;
 		usleep_range(20, 30);
 	}
 
 	ts_code_ave = result / TS_CODE_CAP_TIMES;
 
-	/*
-	 * Calculate actual sensor value by applying curvature correction formula
-	 * dsensor = ts_code_ave / (1 + ts_code_ave * 0.000013). Here we are doing
-	 * integer calculation by scaling all the values by 1000000.
-	 */
+	 
 	dsensor = TS_CODE_AVE_SCALE(ts_code_ave) /
 		(TS_CODE_AVE_SCALE(1) + (ts_code_ave * CURVATURE_CORRECTION_CONST));
 
-	/*
-	 * The temperature Tj is calculated by the formula
-	 * Tj = (dsensor − calib1) * 165/ (calib0 − calib1) − 40
-	 * where calib0 and calib1 are the calibration values.
-	 */
+	 
 	val = ((dsensor - priv->calib1) * (MCELSIUS(165) /
 		(priv->calib0 - priv->calib1))) - MCELSIUS(40);
 
@@ -125,11 +107,7 @@ static int rzg2l_thermal_init(struct rzg2l_thermal_priv *priv)
 	rzg2l_thermal_write(priv, TSU_SM, TSU_SM_NORMAL_MODE);
 	rzg2l_thermal_write(priv, TSU_ST, 0);
 
-	/*
-	 * Before setting the START bit, TSU should be in normal operating
-	 * mode. As per the HW manual, it will take 60 µs to place the TSU
-	 * into normal operating mode.
-	 */
+	 
 	usleep_range(60, 80);
 
 	reg_val = rzg2l_thermal_read(priv, TSU_ST);
@@ -232,7 +210,7 @@ err:
 
 static const struct of_device_id rzg2l_thermal_dt_ids[] = {
 	{ .compatible = "renesas,rzg2l-tsu", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, rzg2l_thermal_dt_ids);
 

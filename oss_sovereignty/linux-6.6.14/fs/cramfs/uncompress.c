@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * uncompress.c
- *
- * (C) Copyright 1999 Linus Torvalds
- *
- * cramfs interfaces to the uncompression library. There's really just
- * three entrypoints:
- *
- *  - cramfs_uncompress_init() - called to initialize the thing.
- *  - cramfs_uncompress_exit() - tell me when you're done
- *  - cramfs_uncompress_block() - uncompress a block.
- *
- * NOTE NOTE NOTE! The uncompression is entirely single-threaded. We
- * only have one stream, and we'll initialize it only once even if it
- * then is used by multiple filesystems.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -27,7 +12,7 @@
 static z_stream stream;
 static int initialized;
 
-/* Returns length of decompressed data. */
+ 
 int cramfs_uncompress_block(void *dst, int dstlen, void *src, int srclen)
 {
 	int err;

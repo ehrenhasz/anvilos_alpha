@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2017 Google Inc
- *
- * Provides a simple driver to control the ASPEED LPC snoop interface which
- * allows the BMC to listen on and save the data written by
- * the host to an arbitrary LPC I/O port.
- *
- * Typically used by the BMC to "watch" host boot progress via port
- * 0x80 writes made by the BIOS during the boot process.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -51,9 +42,7 @@
 #define HICRB_ENSNP1D		BIT(15)
 
 struct aspeed_lpc_snoop_model_data {
-	/* The ast2400 has bits 14 and 15 as reserved, whereas the ast2500
-	 * can use them.
-	 */
+	 
 	unsigned int has_hicrb_ensnp;
 };
 
@@ -115,7 +104,7 @@ static const struct file_operations snoop_fops = {
 	.llseek = noop_llseek,
 };
 
-/* Save a byte to a FIFO and discard the oldest byte if FIFO is full */
+ 
 static void put_fifo_with_discard(struct aspeed_lpc_snoop_channel *chan, u8 val)
 {
 	if (!kfifo_initialized(&chan->fifo))
@@ -134,15 +123,15 @@ static irqreturn_t aspeed_lpc_snoop_irq(int irq, void *arg)
 	if (regmap_read(lpc_snoop->regmap, HICR6, &reg))
 		return IRQ_NONE;
 
-	/* Check if one of the snoop channels is interrupting */
+	 
 	reg &= (HICR6_STR_SNP0W | HICR6_STR_SNP1W);
 	if (!reg)
 		return IRQ_NONE;
 
-	/* Ack pending IRQs */
+	 
 	regmap_write(lpc_snoop->regmap, HICR6, reg);
 
-	/* Read and save most recent snoop'ed data byte to FIFO */
+	 
 	regmap_read(lpc_snoop->regmap, SNPWDR, &data);
 
 	if (reg & HICR6_STR_SNP0W) {
@@ -191,7 +180,7 @@ static int aspeed_lpc_enable_snoop(struct aspeed_lpc_snoop *lpc_snoop,
 		of_device_get_match_data(dev);
 
 	init_waitqueue_head(&lpc_snoop->chan[channel].wq);
-	/* Create FIFO datastructure */
+	 
 	rc = kfifo_alloc(&lpc_snoop->chan[channel].fifo,
 			 SNOOP_FIFO_SIZE, GFP_KERNEL);
 	if (rc)
@@ -206,7 +195,7 @@ static int aspeed_lpc_enable_snoop(struct aspeed_lpc_snoop *lpc_snoop,
 	if (rc)
 		return rc;
 
-	/* Enable LPC snoop channel at requested port */
+	 
 	switch (channel) {
 	case 0:
 		hicr5_en = HICR5_EN_SNP0W | HICR5_ENINT_SNP0W;
@@ -313,7 +302,7 @@ static int aspeed_lpc_snoop_probe(struct platform_device *pdev)
 	if (rc)
 		goto err;
 
-	/* Configuration of 2nd snoop channel port is optional */
+	 
 	if (of_property_read_u32_index(dev->of_node, "snoop-ports",
 				       1, &port) == 0) {
 		rc = aspeed_lpc_enable_snoop(lpc_snoop, dev, 1, port);
@@ -335,7 +324,7 @@ static int aspeed_lpc_snoop_remove(struct platform_device *pdev)
 {
 	struct aspeed_lpc_snoop *lpc_snoop = dev_get_drvdata(&pdev->dev);
 
-	/* Disable both snoop channels */
+	 
 	aspeed_lpc_disable_snoop(lpc_snoop, 0);
 	aspeed_lpc_disable_snoop(lpc_snoop, 1);
 

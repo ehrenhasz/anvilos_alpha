@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2014-2018 Renesas Electronics Europe Limited
- *
- * Phil Edworthy <phil.edworthy@renesas.com>
- * Based on a driver originally written by Michel Pollet at Renesas.
- */
+
+ 
 
 #include <dt-bindings/pinctrl/rzn1-pinctrl.h>
 
@@ -25,7 +20,7 @@
 #include "../pinconf.h"
 #include "../pinctrl-utils.h"
 
-/* Field positions and masks in the pinmux registers */
+ 
 #define RZN1_L1_PIN_DRIVE_STRENGTH	10
 #define RZN1_L1_PIN_DRIVE_STRENGTH_4MA	0
 #define RZN1_L1_PIN_DRIVE_STRENGTH_6MA	1
@@ -39,67 +34,25 @@
 #define RZN1_L1_FUNC_MASK		0xf
 #define RZN1_L1_FUNCTION_L2		0xf
 
-/*
- * The hardware manual describes two levels of multiplexing, but it's more
- * logical to think of the hardware as three levels, with level 3 consisting of
- * the multiplexing for Ethernet MDIO signals.
- *
- * Level 1 functions go from 0 to 9, with level 1 function '15' (0xf) specifying
- * that level 2 functions are used instead. Level 2 has a lot more options,
- * going from 0 to 61. Level 3 allows selection of MDIO functions which can be
- * floating, or one of seven internal peripherals. Unfortunately, there are two
- * level 2 functions that can select MDIO, and two MDIO channels so we have four
- * sets of level 3 functions.
- *
- * For this driver, we've compounded the numbers together, so:
- *    0 to   9 is level 1
- *   10 to  71 is 10 + level 2 number
- *   72 to  79 is 72 + MDIO0 source for level 2 MDIO function.
- *   80 to  87 is 80 + MDIO0 source for level 2 MDIO_E1 function.
- *   88 to  95 is 88 + MDIO1 source for level 2 MDIO function.
- *   96 to 103 is 96 + MDIO1 source for level 2 MDIO_E1 function.
- * Examples:
- *  Function 28 corresponds UART0
- *  Function 73 corresponds to MDIO0 to GMAC0
- *
- * There are 170 configurable pins (called PL_GPIO in the datasheet).
- */
+ 
 
-/*
- * Structure detailing the HW registers on the RZ/N1 devices.
- * Both the Level 1 mux registers and Level 2 mux registers have the same
- * structure. The only difference is that Level 2 has additional MDIO registers
- * at the end.
- */
+ 
 struct rzn1_pinctrl_regs {
 	u32	conf[170];
 	u32	pad0[86];
-	u32	status_protect;	/* 0x400 */
-	/* MDIO mux registers, level2 only */
+	u32	status_protect;	 
+	 
 	u32	l2_mdio[2];
 };
 
-/**
- * struct rzn1_pmx_func - describes rzn1 pinmux functions
- * @name: the name of this specific function
- * @groups: corresponding pin groups
- * @num_groups: the number of groups
- */
+ 
 struct rzn1_pmx_func {
 	const char *name;
 	const char **groups;
 	unsigned int num_groups;
 };
 
-/**
- * struct rzn1_pin_group - describes an rzn1 pin group
- * @name: the name of this specific pin group
- * @func: the name of the function selected by this group
- * @npins: the number of pins in this group array, i.e. the number of
- *	elements in .pins so we can iterate over that array
- * @pins: array of pins. Needed due to pinctrl_ops.get_group_pins()
- * @pin_ids: array of pin_ids, i.e. the value used to select the mux
- */
+ 
 struct rzn1_pin_group {
 	const char *name;
 	const char *func;
@@ -178,11 +131,7 @@ enum {
 
 static void rzn1_hw_set_lock(struct rzn1_pinctrl *ipctl, u8 lock, u8 value)
 {
-	/*
-	 * The pinmux configuration is locked by writing the physical address of
-	 * the status_protect register to itself. It is unlocked by writing the
-	 * address | 1.
-	 */
+	 
 	if (lock & LOCK_LEVEL1) {
 		u32 val = ipctl->lev1_protect_phys | !(value & LOCK_LEVEL1);
 
@@ -208,14 +157,7 @@ static void rzn1_pinctrl_mdio_select(struct rzn1_pinctrl *ipctl, int mdio,
 	writel(func, &ipctl->lev2->l2_mdio[mdio]);
 }
 
-/*
- * Using a composite pin description, set the hardware pinmux registers
- * with the corresponding values.
- * Make sure to unlock write protection and reset it afterward.
- *
- * NOTE: There is no protection for potential concurrency, it is assumed these
- * calls are serialized already.
- */
+ 
 static int rzn1_set_hw_pin_func(struct rzn1_pinctrl *ipctl, unsigned int pin,
 				u32 pin_config, u8 use_locks)
 {
@@ -224,7 +166,7 @@ static int rzn1_set_hw_pin_func(struct rzn1_pinctrl *ipctl, unsigned int pin,
 	u32 l1;
 	u32 l2;
 
-	/* Level 3 MDIO multiplexing */
+	 
 	if (pin_config >= RZN1_FUNC_MDIO0_HIGHZ &&
 	    pin_config <= RZN1_FUNC_MDIO1_E1_SWITCH) {
 		int mdio_channel;
@@ -235,7 +177,7 @@ static int rzn1_set_hw_pin_func(struct rzn1_pinctrl *ipctl, unsigned int pin,
 		else
 			mdio_channel = 1;
 
-		/* Get MDIO func, and convert the func to the level 2 number */
+		 
 		if (pin_config <= RZN1_FUNC_MDIO0_SWITCH) {
 			mdio_func = pin_config - RZN1_FUNC_MDIO0_HIGHZ;
 			pin_config = RZN1_FUNC_ETH_MDIO;
@@ -252,7 +194,7 @@ static int rzn1_set_hw_pin_func(struct rzn1_pinctrl *ipctl, unsigned int pin,
 		rzn1_pinctrl_mdio_select(ipctl, mdio_channel, mdio_func);
 	}
 
-	/* Note here, we do not allow anything past the MDIO Mux values */
+	 
 	if (pin >= ARRAY_SIZE(ipctl->lev1->conf) ||
 	    pin_config >= RZN1_FUNC_MDIO0_HIGHZ)
 		return -EINVAL;
@@ -274,7 +216,7 @@ static int rzn1_set_hw_pin_func(struct rzn1_pinctrl *ipctl, unsigned int pin,
 		l2 = pin_config - RZN1_FUNC_L2_OFFSET;
 	}
 
-	/* If either configuration changes, we update both anyway */
+	 
 	if (l1 != l1_cache || l2 != l2_cache) {
 		writel(l1, &ipctl->lev1->conf[pin]);
 		writel(l2, &ipctl->lev2->conf[pin]);
@@ -326,14 +268,7 @@ static int rzn1_get_group_pins(struct pinctrl_dev *pctldev,
 	return 0;
 }
 
-/*
- * This function is called for each pinctl 'Function' node.
- * Sub-nodes can be used to describe multiple 'Groups' for the 'Function'
- * If there aren't any sub-nodes, the 'Group' is essentially the 'Function'.
- * Each 'Group' uses pinmux = <...> to detail the pins and data used to select
- * the functionality. Each 'Group' has optional pin configurations that apply
- * to all pins in the 'Group'.
- */
+ 
 static int rzn1_dt_node_to_map_one(struct pinctrl_dev *pctldev,
 				   struct device_node *np,
 				   struct pinctrl_map **map,
@@ -356,7 +291,7 @@ static int rzn1_dt_node_to_map_one(struct pinctrl_dev *pctldev,
 		return -EINVAL;
 	}
 
-	/* Get the group's pin configuration */
+	 
 	ret = pinconf_generic_parse_dt_config(np, pctldev, &configs,
 					      &num_configs);
 	if (ret < 0) {
@@ -368,20 +303,20 @@ static int rzn1_dt_node_to_map_one(struct pinctrl_dev *pctldev,
 	if (num_configs)
 		reserve++;
 
-	/* Increase the number of maps to cover this group */
+	 
 	ret = pinctrl_utils_reserve_map(pctldev, map, &reserved_maps, num_maps,
 					reserve);
 	if (ret < 0)
 		goto out;
 
-	/* Associate the group with the function */
+	 
 	ret = pinctrl_utils_add_map_mux(pctldev, map, &reserved_maps, num_maps,
 					grp->name, grp->func);
 	if (ret < 0)
 		goto out;
 
 	if (num_configs) {
-		/* Associate the group's pin configuration with the group */
+		 
 		ret = pinctrl_utils_add_map_configs(pctldev, map,
 				&reserved_maps, num_maps, grp->name,
 				configs, num_configs,
@@ -635,7 +570,7 @@ static int rzn1_pinconf_group_get(struct pinctrl_dev *pctldev,
 		if (rzn1_pinconf_get(pctldev, grp->pins[i], config))
 			return -ENOTSUPP;
 
-		/* configs do not match between two pins */
+		 
 		if (i && (old != *config))
 			return -ENOTSUPP;
 
@@ -695,14 +630,10 @@ static int rzn1_pinctrl_parse_groups(struct device_node *np,
 
 	dev_dbg(ipctl->dev, "%s: %s\n", __func__, np->name);
 
-	/* Initialise group */
+	 
 	grp->name = np->name;
 
-	/*
-	 * The binding format is
-	 *	pinmux = <PIN_FUNC_ID CONFIG ...>,
-	 * do sanity check and calculate pins number
-	 */
+	 
 	list = of_get_property(np, RZN1_PINS_PROP, &size);
 	if (!list) {
 		dev_err(ipctl->dev,
@@ -766,7 +697,7 @@ static int rzn1_pinctrl_parse_functions(struct device_node *np,
 
 	func = &ipctl->functions[index];
 
-	/* Initialise function */
+	 
 	func->name = np->name;
 	func->num_groups = rzn1_pinctrl_count_function_groups(np);
 	if (func->num_groups == 0) {
@@ -861,7 +792,7 @@ static int rzn1_pinctrl_probe(struct platform_device *pdev)
 	struct resource *res;
 	int ret;
 
-	/* Create state holders etc for this driver */
+	 
 	ipctl = devm_kzalloc(&pdev->dev, sizeof(*ipctl), GFP_KERNEL);
 	if (!ipctl)
 		return -ENOMEM;
@@ -931,7 +862,7 @@ static int rzn1_pinctrl_remove(struct platform_device *pdev)
 
 static const struct of_device_id rzn1_pinctrl_match[] = {
 	{ .compatible = "renesas,rzn1-pinctrl", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, rzn1_pinctrl_match);
 

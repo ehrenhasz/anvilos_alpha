@@ -1,22 +1,6 @@
-/* stats.c - malloc statistics */
+ 
 
-/*  Copyright (C) 2001-2020 Free Software Foundation, Inc.
-
-    This file is part of GNU Bash, the Bourne-Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
@@ -65,15 +49,12 @@ malloc_bucket_stats (size)
   v.nsplit = _mstats.nsplit[size];
   v.ncoalesce = _mstats.ncoalesce[size];
 
-  v.nfree = malloc_free_blocks (size);	/* call back to malloc.c */
+  v.nfree = malloc_free_blocks (size);	 
 
   return v;
 }
 
-/* Return a copy of _MSTATS, with two additional fields filled in:
-   BYTESFREE is the total number of bytes on free lists.  BYTESUSED
-   is the total number of bytes in use.  These two fields are fairly
-   expensive to compute, so we do it only when asked to. */
+ 
 struct _malstats
 malloc_stats ()
 {
@@ -105,8 +86,7 @@ _print_malloc_stats (s, fp)
   for (i = totused = totfree = 0; i < NBUCKETS; i++)
     {
       v = malloc_bucket_stats (i);
-      /* Show where the mmap threshold is; sizes greater than this use mmap to
-	 allocate and munmap to free (munmap shows up as lesscore). */
+       
       if (i == malloc_mmap_threshold+1)
 	fprintf (fp, "--------\n");
       if (v.nmal > 0)
@@ -162,7 +142,7 @@ trace_malloc_stats (s, fn)
     }
 }
 
-#endif /* MALLOC_STATS */
+#endif  
 
 #if defined (MALLOC_STATS) || defined (MALLOC_TRACE)
 FILE *
@@ -210,4 +190,4 @@ _imalloc_fopen (s, fn, def, defbuf, defsiz)
 
   return fp;
 }
-#endif /* MALLOC_STATS || MALLOC_TRACE */
+#endif  

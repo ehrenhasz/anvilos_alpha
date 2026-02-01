@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2005-2006 Micronas USA Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -27,24 +25,24 @@ static inline struct tw9906 *to_state(struct v4l2_subdev *sd)
 }
 
 static const u8 initial_registers[] = {
-	0x02, 0x40, /* input 0, composite */
-	0x03, 0xa2, /* correct digital format */
-	0x05, 0x81, /* or 0x01 for PAL */
-	0x07, 0x02, /* window */
-	0x08, 0x14, /* window */
-	0x09, 0xf0, /* window */
-	0x0a, 0x10, /* window */
-	0x0b, 0xd0, /* window */
-	0x0d, 0x00, /* scaling */
-	0x0e, 0x11, /* scaling */
-	0x0f, 0x00, /* scaling */
-	0x10, 0x00, /* brightness */
-	0x11, 0x60, /* contrast */
-	0x12, 0x11, /* sharpness */
-	0x13, 0x7e, /* U gain */
-	0x14, 0x7e, /* V gain */
-	0x15, 0x00, /* hue */
-	0x19, 0x57, /* vbi */
+	0x02, 0x40,  
+	0x03, 0xa2,  
+	0x05, 0x81,  
+	0x07, 0x02,  
+	0x08, 0x14,  
+	0x09, 0xf0,  
+	0x0a, 0x10,  
+	0x0b, 0xd0,  
+	0x0d, 0x00,  
+	0x0e, 0x11,  
+	0x0f, 0x00,  
+	0x10, 0x00,  
+	0x11, 0x60,  
+	0x12, 0x11,  
+	0x13, 0x7e,  
+	0x14, 0x7e,  
+	0x15, 0x00,  
+	0x19, 0x57,  
 	0x1a, 0x0f,
 	0x1b, 0x40,
 	0x29, 0x03,
@@ -55,7 +53,7 @@ static const u8 initial_registers[] = {
 	0x6e, 0x41,
 	0x6f, 0x13,
 	0xad, 0x70,
-	0x00, 0x00, /* Terminator (reg 0x00 is read-only) */
+	0x00, 0x00,  
 };
 
 static int write_reg(struct v4l2_subdev *sd, u8 reg, u8 value)
@@ -137,7 +135,7 @@ static int tw9906_log_status(struct v4l2_subdev *sd)
 	return 0;
 }
 
-/* --------------------------------------------------------------------------*/
+ 
 
 static const struct v4l2_ctrl_ops tw9906_ctrl_ops = {
 	.s_ctrl = tw9906_s_ctrl,
@@ -163,7 +161,7 @@ static int tw9906_probe(struct i2c_client *client)
 	struct v4l2_subdev *sd;
 	struct v4l2_ctrl_handler *hdl;
 
-	/* Check if the adapter supports the needed features */
+	 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -EIO;
 
@@ -191,7 +189,7 @@ static int tw9906_probe(struct i2c_client *client)
 		return err;
 	}
 
-	/* Initialize tw9906 */
+	 
 	dec->norm = V4L2_STD_NTSC;
 
 	if (write_regs(sd, initial_registers) < 0) {
@@ -210,7 +208,7 @@ static void tw9906_remove(struct i2c_client *client)
 	v4l2_ctrl_handler_free(&to_state(sd)->hdl);
 }
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static const struct i2c_device_id tw9906_id[] = {
 	{ "tw9906", 0 },

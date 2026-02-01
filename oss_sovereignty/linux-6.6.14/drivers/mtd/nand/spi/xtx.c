@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Author:
- * Felix Matouschek <felix@matouschek.org>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -76,11 +73,11 @@ static int xt26g0xa_ecc_get_status(struct spinand_device *spinand,
 		break;
 	}
 
-	/* At this point values greater than (2 << 4) are invalid  */
+	 
 	if (status > XT26G0XA_STATUS_ECC_UNCOR_ERROR)
 		return -EINVAL;
 
-	/* (1 << 2) through (7 << 2) are 1-7 corrected errors */
+	 
 	return status >> 2;
 }
 

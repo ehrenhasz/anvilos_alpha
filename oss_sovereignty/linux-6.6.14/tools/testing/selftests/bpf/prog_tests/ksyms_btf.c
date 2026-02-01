@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Google */
+
+ 
 
 #include <test_progs.h>
 #include <bpf/libbpf.h>
@@ -41,7 +41,7 @@ static void test_basic(void)
 	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
 		goto cleanup;
 
-	/* trigger tracepoint */
+	 
 	usleep(1);
 
 	data = skel->data;
@@ -98,7 +98,7 @@ static void test_weak_syms(void)
 	if (!ASSERT_OK(err, "test_ksyms_weak__attach"))
 		goto cleanup;
 
-	/* trigger tracepoint */
+	 
 	usleep(1);
 
 	data = skel->data;
@@ -125,7 +125,7 @@ static void test_weak_syms_lskel(void)
 	if (!ASSERT_OK(err, "test_ksyms_weak_lskel__attach"))
 		goto cleanup;
 
-	/* trigger tracepoint */
+	 
 	usleep(1);
 
 	data = skel->data;

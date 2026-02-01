@@ -1,31 +1,10 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #ifndef __SMU13_DRIVER_IF_V13_0_5_H__
 #define __SMU13_DRIVER_IF_V13_0_5_H__
 
 #define SMU13_0_5_DRIVER_IF_VERSION 5
 
-// Throttler Status Bitmask
+
 #define THROTTLER_STATUS_BIT_SPL            0
 #define THROTTLER_STATUS_BIT_FPPT           1
 #define THROTTLER_STATUS_BIT_SPPT           2
@@ -49,12 +28,12 @@
 #define NUM_DF_PSTATE_LEVELS    4
 
 typedef struct {
-  uint16_t MinClock; // This is either DCFCLK or SOCCLK (in MHz)
-  uint16_t MaxClock; // This is either DCFCLK or SOCCLK (in MHz)
+  uint16_t MinClock; 
+  uint16_t MaxClock; 
   uint16_t MinMclk;
   uint16_t MaxMclk;
   uint8_t  WmSetting;
-  uint8_t  WmType;  // Used for normal pstate change or memory retraining
+  uint8_t  WmType;  
   uint8_t  Padding[2];
 } WatermarkRowGeneric_t;
 
@@ -69,9 +48,9 @@ typedef enum {
 } WM_CLOCK_e;
 
 typedef struct {
-  // Watermarks
+  
   WatermarkRowGeneric_t WatermarkRow[WM_COUNT][NUM_WM_RANGES];
-  uint32_t MmHubPadding[7]; // SMU internal use
+  uint32_t MmHubPadding[7]; 
 } Watermarks_t;
 
 typedef struct {
@@ -81,32 +60,32 @@ typedef struct {
 } DfPstateTable_t;
 
 typedef struct {
-  uint16_t GfxclkFrequency;             //[MHz]
-  uint16_t SocclkFrequency;             //[MHz]
+  uint16_t GfxclkFrequency;             
+  uint16_t SocclkFrequency;             
 
-  uint16_t VclkFrequency;               //[MHz]
-  uint16_t DclkFrequency;               //[MHz]
+  uint16_t VclkFrequency;               
+  uint16_t DclkFrequency;               
 
-  uint16_t MemclkFrequency;             //[MHz]
+  uint16_t MemclkFrequency;             
   uint16_t spare;
 
-  uint16_t GfxActivity;                 //[centi]
-  uint16_t UvdActivity;                 //[centi]
+  uint16_t GfxActivity;                 
+  uint16_t UvdActivity;                 
 
-  uint16_t Voltage[2];                  //[mV] indices: VDDCR_VDD, VDDCR_SOC
-  uint16_t Current[2];                  //[mA] indices: VDDCR_VDD, VDDCR_SOC
+  uint16_t Voltage[2];                  
+  uint16_t Current[2];                  
 
-  uint16_t Power[2];                    //[mW] indices: VDDCR_VDD, VDDCR_SOC
-  uint16_t GfxTemperature;              //[centi-Celsius]
+  uint16_t Power[2];                    
+  uint16_t GfxTemperature;              
 
-  uint16_t SocTemperature;              //[centi-Celsius]
+  uint16_t SocTemperature;              
   uint16_t ThrottlerStatus;
 
-  uint16_t CurrentSocketPower;          //[mW]
+  uint16_t CurrentSocketPower;          
 } SmuMetrics_t;
 
-//Freq in MHz
-//Voltage in milli volts with 2 fractional bits
+
+
 typedef struct {
   uint32_t DcfClocks[NUM_DCFCLK_DPM_LEVELS];
   uint32_t DispClocks[NUM_DISPCLK_DPM_LEVELS];
@@ -117,23 +96,23 @@ typedef struct {
   uint32_t SocVoltage[NUM_SOC_VOLTAGE_LEVELS];
   DfPstateTable_t DfPstateTable[NUM_DF_PSTATE_LEVELS];
   uint8_t  NumDcfClkLevelsEnabled;
-  uint8_t  NumDispClkLevelsEnabled; //Applies to both Dispclk and Dppclk
+  uint8_t  NumDispClkLevelsEnabled; 
   uint8_t  NumSocClkLevelsEnabled;
-  uint8_t  VcnClkLevelsEnabled;     //Applies to both Vclk and Dclk
+  uint8_t  VcnClkLevelsEnabled;     
   uint8_t  NumDfPstatesEnabled;
   uint8_t  spare[3];
   uint32_t MinGfxClk;
   uint32_t MaxGfxClk;
 } DpmClocks_t;
 
-#define TABLE_BIOS_IF            0 // Called by BIOS
-#define TABLE_WATERMARKS         1 // Called by DAL through VBIOS
-#define TABLE_CUSTOM_DPM         2 // Called by Driver
+#define TABLE_BIOS_IF            0 
+#define TABLE_WATERMARKS         1 
+#define TABLE_CUSTOM_DPM         2 
 #define TABLE_SPARE1             3
-#define TABLE_DPMCLOCKS          4 // Called by Driver and VBIOS
-#define TABLE_MOMENTARY_PM       5 // Called by Tools
-#define TABLE_MODERN_STDBY       6 // Called by Tools for Modern Standby Log
-#define TABLE_SMU_METRICS        7 // Called by Driver
+#define TABLE_DPMCLOCKS          4 
+#define TABLE_MOMENTARY_PM       5 
+#define TABLE_MODERN_STDBY       6 
+#define TABLE_SMU_METRICS        7 
 #define TABLE_COUNT              8
 
 #endif

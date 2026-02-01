@@ -1,15 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
- * Copyright (c) 2014- QLogic Corporation.
- * All rights reserved
- * www.qlogic.com
- *
- * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
- */
-/*
- * fcbuild.h - FC link service frame building and parsing routines
- */
+ 
+ 
+ 
 
 #ifndef __FCBUILD_H__
 #define __FCBUILD_H__
@@ -18,30 +9,21 @@
 #include "bfa_fc.h"
 #include "bfa_defs_fcs.h"
 
-/*
- * Utility Macros/functions
- */
+ 
 
 #define wwn_is_equal(_wwn1, _wwn2)		\
 	(memcmp(&(_wwn1), &(_wwn2), sizeof(wwn_t)) == 0)
 
 #define fc_roundup(_l, _s) (((_l) + ((_s) - 1)) & ~((_s) - 1))
 
-/*
- * Given the fc response length, this routine will return
- * the length of the actual payload bytes following the CT header.
- *
- * Assumes the input response length does not include the crc, eof, etc.
- */
+ 
 static inline   u32
 fc_get_ctresp_pyld_len(u32 resp_len)
 {
 	return resp_len - sizeof(struct ct_hdr_s);
 }
 
-/*
- * Convert bfa speed to rpsc speed value.
- */
+ 
 static inline  enum bfa_port_speed
 fc_rpsc_operspeed_to_bfa_speed(enum fc_rpsc_op_speed speed)
 {
@@ -70,9 +52,7 @@ fc_rpsc_operspeed_to_bfa_speed(enum fc_rpsc_op_speed speed)
 	}
 }
 
-/*
- * Convert RPSC speed to bfa speed value.
- */
+ 
 static inline   enum fc_rpsc_op_speed
 fc_bfa_speed_to_rpsc_operspeed(enum bfa_port_speed op_speed)
 {

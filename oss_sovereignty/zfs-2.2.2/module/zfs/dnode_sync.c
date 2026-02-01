@@ -1,30 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2020 by Delphix. All rights reserved.
- * Copyright (c) 2014 Spectra Logic Corporation, All rights reserved.
- * Copyright 2020 Oxide Computer Company
- */
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/dbuf.h>
@@ -50,7 +26,7 @@ dnode_increase_indirection(dnode_t *dn, dmu_tx_t *tx)
 
 	rw_enter(&dn->dn_struct_rwlock, RW_WRITER);
 
-	/* this dnode can't be paged out because it's dirty */
+	 
 	ASSERT(dn->dn_phys->dn_type != DMU_OT_NONE);
 	ASSERT(new_level > 1 && dn->dn_phys->dn_nlevels > 0);
 
@@ -61,12 +37,7 @@ dnode_increase_indirection(dnode_t *dn, dmu_tx_t *tx)
 	dprintf("os=%p obj=%llu, increase to %d\n", dn->dn_objset,
 	    (u_longlong_t)dn->dn_object, dn->dn_phys->dn_nlevels);
 
-	/*
-	 * Lock ordering requires that we hold the children's db_mutexes (by
-	 * calling dbuf_find()) before holding the parent's db_rwlock.  The lock
-	 * order is imposed by dbuf_read's steps of "grab the lock to protect
-	 * db_parent, get db_parent, hold db_parent's db_rwlock".
-	 */
+	 
 	dmu_buf_impl_t *children[DN_MAX_NBLKPTR];
 	ASSERT3U(nblkptr, <=, DN_MAX_NBLKPTR);
 	for (i = 0; i < nblkptr; i++) {
@@ -74,7 +45,7 @@ dnode_increase_indirection(dnode_t *dn, dmu_tx_t *tx)
 		    old_toplvl, i, NULL);
 	}
 
-	/* transfer dnode's block pointers to new indirect block */
+	 
 	(void) dbuf_read(db, NULL, DB_RF_MUST_SUCCEED|DB_RF_HAVESTRUCT);
 	if (dn->dn_dbuf != NULL)
 		rw_enter(&dn->dn_dbuf->db_rwlock, RW_WRITER);
@@ -86,7 +57,7 @@ dnode_increase_indirection(dnode_t *dn, dmu_tx_t *tx)
 	    sizeof (blkptr_t) * nblkptr);
 	arc_buf_freeze(db->db_buf);
 
-	/* set dbuf's parent pointers to new indirect buf */
+	 
 	for (i = 0; i < nblkptr; i++) {
 		dmu_buf_impl_t *child = children[i];
 
@@ -96,7 +67,7 @@ dnode_increase_indirection(dnode_t *dn, dmu_tx_t *tx)
 		DB_DNODE_ENTER(child);
 		ASSERT3P(DB_DNODE(child), ==, dn);
 		DB_DNODE_EXIT(child);
-#endif	/* DEBUG */
+#endif	 
 		if (child->db_parent && child->db_parent != dn->dn_dbuf) {
 			ASSERT(child->db_parent->db_level == db->db_level);
 			ASSERT(child->db_blkptr !=
@@ -146,13 +117,7 @@ free_blocks(dnode_t *dn, blkptr_t *bp, int num, dmu_tx_t *tx)
 		bytesfreed += dsl_dataset_block_kill(ds, bp, tx, B_FALSE);
 		ASSERT3U(bytesfreed, <=, DN_USED_BYTES(dn->dn_phys));
 
-		/*
-		 * Save some useful information on the holes being
-		 * punched, including logical size, type, and indirection
-		 * level. Retaining birth time enables detection of when
-		 * holes are punched for reducing the number of free
-		 * records transmitted during a zfs send.
-		 */
+		 
 
 		uint64_t lsize = BP_GET_LSIZE(bp);
 		dmu_object_type_t type = BP_GET_TYPE(bp);
@@ -212,7 +177,7 @@ free_verify(dmu_buf_impl_t *db, uint64_t start, uint64_t end, dmu_tx_t *tx)
 		ASSERT(child->db_level == 0);
 		dr = dbuf_find_dirty_eq(child, txg);
 
-		/* data_old better be zeroed */
+		 
 		if (dr) {
 			buf = dr->dt.dl.dr_data->b_data;
 			for (j = 0; j < child->db.db_size >> 3; j++) {
@@ -227,10 +192,7 @@ free_verify(dmu_buf_impl_t *db, uint64_t start, uint64_t end, dmu_tx_t *tx)
 			}
 		}
 
-		/*
-		 * db_data better be zeroed unless it's dirty in a
-		 * future txg.
-		 */
+		 
 		mutex_enter(&child->db_mtx);
 		buf = child->db.db_data;
 		if (buf != NULL && child->db_state != DB_FILL &&
@@ -254,21 +216,7 @@ free_verify(dmu_buf_impl_t *db, uint64_t start, uint64_t end, dmu_tx_t *tx)
 }
 #endif
 
-/*
- * We don't usually free the indirect blocks here.  If in one txg we have a
- * free_range and a write to the same indirect block, it's important that we
- * preserve the hole's birth times. Therefore, we don't free any any indirect
- * blocks in free_children().  If an indirect block happens to turn into all
- * holes, it will be freed by dbuf_write_children_ready, which happens at a
- * point in the syncing process where we know for certain the contents of the
- * indirect block.
- *
- * However, if we're freeing a dnode, its space accounting must go to zero
- * before we actually try to free the dnode, or we will trip an assertion. In
- * addition, we know the case described above cannot occur, because the dnode is
- * being freed.  Therefore, we free the indirect blocks immediately in that
- * case.
- */
+ 
 static void
 free_children(dmu_buf_impl_t *db, uint64_t blkid, uint64_t nblks,
     boolean_t free_indirects, dmu_tx_t *tx)
@@ -279,31 +227,11 @@ free_children(dmu_buf_impl_t *db, uint64_t blkid, uint64_t nblks,
 	uint64_t start, end, dbstart, dbend;
 	unsigned int epbs, shift, i;
 
-	/*
-	 * There is a small possibility that this block will not be cached:
-	 *   1 - if level > 1 and there are no children with level <= 1
-	 *   2 - if this block was evicted since we read it from
-	 *	 dmu_tx_hold_free().
-	 */
+	 
 	if (db->db_state != DB_CACHED)
 		(void) dbuf_read(db, NULL, DB_RF_MUST_SUCCEED);
 
-	/*
-	 * If we modify this indirect block, and we are not freeing the
-	 * dnode (!free_indirects), then this indirect block needs to get
-	 * written to disk by dbuf_write().  If it is dirty, we know it will
-	 * be written (otherwise, we would have incorrect on-disk state
-	 * because the space would be freed but still referenced by the BP
-	 * in this indirect block).  Therefore we VERIFY that it is
-	 * dirty.
-	 *
-	 * Our VERIFY covers some cases that do not actually have to be
-	 * dirty, but the open-context code happens to dirty.  E.g. if the
-	 * blocks we are freeing are all holes, because in that case, we
-	 * are only freeing part of this indirect block, so it is an
-	 * ancestor of the first or last block to be freed.  The first and
-	 * last L1 indirect blocks are always dirtied by dnode_free_range().
-	 */
+	 
 	db_lock_type_t dblt = dmu_buf_lock_parent(db, RW_READER, FTAG);
 	VERIFY(BP_GET_FILL(db->db_blkptr) == 0 || db->db_dirtycnt > 0);
 	dmu_buf_unlock_parent(db, dblt, FTAG);
@@ -363,10 +291,7 @@ free_children(dmu_buf_impl_t *db, uint64_t blkid, uint64_t nblks,
 	arc_buf_freeze(db->db_buf);
 }
 
-/*
- * Traverse the indicated range of the provided file
- * and "free" all the blocks contained there.
- */
+ 
 static void
 dnode_sync_free_range_impl(dnode_t *dn, uint64_t blkid, uint64_t nblks,
     boolean_t free_indirects, dmu_tx_t *tx)
@@ -384,10 +309,10 @@ dnode_sync_free_range_impl(dnode_t *dn, uint64_t blkid, uint64_t nblks,
 		trunc = B_TRUE;
 	}
 
-	/* There are no indirect blocks in the object */
+	 
 	if (dnlevel == 1) {
 		if (blkid >= dn->dn_phys->dn_nblkptr) {
-			/* this range was never made persistent */
+			 
 			return;
 		}
 		ASSERT3U(blkid + nblks, <=, dn->dn_phys->dn_nblkptr);
@@ -413,20 +338,7 @@ dnode_sync_free_range_impl(dnode_t *dn, uint64_t blkid, uint64_t nblks,
 		}
 	}
 
-	/*
-	 * Do not truncate the maxblkid if we are performing a raw
-	 * receive. The raw receive sets the maxblkid manually and
-	 * must not be overridden. Usually, the last DRR_FREE record
-	 * will be at the maxblkid, because the source system sets
-	 * the maxblkid when truncating. However, if the last block
-	 * was freed by overwriting with zeros and being compressed
-	 * away to a hole, the source system will generate a DRR_FREE
-	 * record while leaving the maxblkid after the end of that
-	 * record. In this case we need to leave the maxblkid as
-	 * indicated in the DRR_OBJECT record, so that it matches the
-	 * source system, ensuring that the cryptographic hashes will
-	 * match.
-	 */
+	 
 	if (trunc && !dn->dn_objset->os_raw_receive) {
 		uint64_t off __maybe_unused;
 		dn->dn_phys->dn_maxblkid = blkid == 0 ? 0 : blkid - 1;
@@ -457,9 +369,7 @@ dnode_sync_free_range(void *arg, uint64_t blkid, uint64_t nblks)
 	mutex_enter(&dn->dn_mtx);
 }
 
-/*
- * Try to kick all the dnode's dbufs out of the cache...
- */
+ 
 void
 dnode_evict_dbufs(dnode_t *dn)
 {
@@ -475,7 +385,7 @@ dnode_evict_dbufs(dnode_t *dn)
 		DB_DNODE_ENTER(db);
 		ASSERT3P(DB_DNODE(db), ==, dn);
 		DB_DNODE_EXIT(db);
-#endif	/* DEBUG */
+#endif	 
 
 		mutex_enter(&db->db_mtx);
 		if (db->db_state != DB_EVICTING &&
@@ -486,19 +396,7 @@ dnode_evict_dbufs(dnode_t *dn)
 			avl_insert_here(&dn->dn_dbufs, db_marker, db,
 			    AVL_BEFORE);
 
-			/*
-			 * We need to use the "marker" dbuf rather than
-			 * simply getting the next dbuf, because
-			 * dbuf_destroy() may actually remove multiple dbufs.
-			 * It can call itself recursively on the parent dbuf,
-			 * which may also be removed from dn_dbufs.  The code
-			 * flow would look like:
-			 *
-			 * dbuf_destroy():
-			 *   dnode_rele_and_unlock(parent_dbuf, evicting=TRUE):
-			 *	if (!cacheable || pending_evict)
-			 *	  dbuf_destroy()
-			 */
+			 
 			dbuf_destroy(db);
 
 			db_next = AVL_NEXT(&dn->dn_dbufs, db_marker);
@@ -545,7 +443,7 @@ dnode_undirty_dbufs(list_t *list)
 			dnode_undirty_dbufs(&dr->dt.di.dr_children);
 
 		mutex_enter(&db->db_mtx);
-		/* XXX - use dbuf_undirty()? */
+		 
 		list_remove(list, dr);
 		ASSERT(list_head(&db->db_dirty_records) == dr);
 		list_remove_head(&db->db_dirty_records);
@@ -571,33 +469,22 @@ dnode_sync_free(dnode_t *dn, dmu_tx_t *tx)
 
 	ASSERT(dmu_tx_is_syncing(tx));
 
-	/*
-	 * Our contents should have been freed in dnode_sync() by the
-	 * free range record inserted by the caller of dnode_free().
-	 */
+	 
 	ASSERT0(DN_USED_BYTES(dn->dn_phys));
 	ASSERT(BP_IS_HOLE(dn->dn_phys->dn_blkptr));
 
 	dnode_undirty_dbufs(&dn->dn_dirty_records[txgoff]);
 	dnode_evict_dbufs(dn);
 
-	/*
-	 * XXX - It would be nice to assert this, but we may still
-	 * have residual holds from async evictions from the arc...
-	 *
-	 * zfs_obj_to_path() also depends on this being
-	 * commented out.
-	 *
-	 * ASSERT3U(zfs_refcount_count(&dn->dn_holds), ==, 1);
-	 */
+	 
 
-	/* Undirty next bits */
+	 
 	dn->dn_next_nlevels[txgoff] = 0;
 	dn->dn_next_indblkshift[txgoff] = 0;
 	dn->dn_next_blksz[txgoff] = 0;
 	dn->dn_next_maxblkid[txgoff] = 0;
 
-	/* ASSERT(blkptrs are zero); */
+	 
 	ASSERT(dn->dn_phys->dn_type != DMU_OT_NONE);
 	ASSERT(dn->dn_type != DMU_OT_NONE);
 
@@ -619,15 +506,10 @@ dnode_sync_free(dnode_t *dn, dmu_tx_t *tx)
 	ASSERT(dn->dn_object != DMU_META_DNODE_OBJECT);
 
 	dnode_rele(dn, (void *)(uintptr_t)tx->tx_txg);
-	/*
-	 * Now that we've released our hold, the dnode may
-	 * be evicted, so we mustn't access it.
-	 */
+	 
 }
 
-/*
- * Write out the dnode's dirty buffers.
- */
+ 
 void
 dnode_sync(dnode_t *dn, dmu_tx_t *tx)
 {
@@ -646,10 +528,7 @@ dnode_sync(dnode_t *dn, dmu_tx_t *tx)
 
 	ASSERT(dn->dn_dbuf == NULL || arc_released(dn->dn_dbuf->db_buf));
 
-	/*
-	 * Do user accounting if it is enabled and this is not
-	 * an encrypted receive.
-	 */
+	 
 	if (dmu_objset_userused_enabled(os) &&
 	    !DMU_OBJECT_IS_SPECIAL(dn->dn_object) &&
 	    (!os->os_encrypted || !dmu_objset_is_receiving(os))) {
@@ -663,12 +542,7 @@ dnode_sync(dnode_t *dn, dmu_tx_t *tx)
 		mutex_exit(&dn->dn_mtx);
 		dmu_objset_userquota_get_ids(dn, B_FALSE, tx);
 	} else if (!(os->os_encrypted && dmu_objset_is_receiving(os))) {
-		/*
-		 * Once we account for it, we should always account for it,
-		 * except for the case of a raw receive. We will not be able
-		 * to account for it until the receiving dataset has been
-		 * mounted.
-		 */
+		 
 		ASSERT(!(dn->dn_phys->dn_flags &
 		    DNODE_FLAG_USERUSED_ACCOUNTED));
 		ASSERT(!(dn->dn_phys->dn_flags &
@@ -677,9 +551,9 @@ dnode_sync(dnode_t *dn, dmu_tx_t *tx)
 
 	mutex_enter(&dn->dn_mtx);
 	if (dn->dn_allocated_txg == tx->tx_txg) {
-		/* The dnode is newly allocated or reallocated */
+		 
 		if (dnp->dn_type == DMU_OT_NONE) {
-			/* this is a first alloc, not a realloc */
+			 
 			dnp->dn_nlevels = 1;
 			dnp->dn_nblkptr = dn->dn_nblkptr;
 		}
@@ -737,10 +611,7 @@ dnode_sync(dnode_t *dn, dmu_tx_t *tx)
 	boolean_t freeing_dnode = dn->dn_free_txg > 0 &&
 	    dn->dn_free_txg <= tx->tx_txg;
 
-	/*
-	 * Remove the spill block if we have been explicitly asked to
-	 * remove it, or if the object is being removed.
-	 */
+	 
 	if (dn->dn_rm_spillblk[txgoff] || freeing_dnode) {
 		if (dnp->dn_flags & DNODE_FLAG_SPILL_BLKPTR)
 			kill_spill = B_TRUE;
@@ -753,11 +624,7 @@ dnode_sync(dnode_t *dn, dmu_tx_t *tx)
 		dn->dn_next_indblkshift[txgoff] = 0;
 	}
 
-	/*
-	 * Just take the live (open-context) values for checksum and compress.
-	 * Strictly speaking it's a future leak, but nothing bad happens if we
-	 * start using the new checksum or compress algorithm a little early.
-	 */
+	 
 	dnp->dn_checksum = dn->dn_checksum;
 	dnp->dn_compress = dn->dn_compress;
 
@@ -770,7 +637,7 @@ dnode_sync(dnode_t *dn, dmu_tx_t *tx)
 		mutex_exit(&dn->dn_mtx);
 	}
 
-	/* process all the "freed" ranges in the file */
+	 
 	if (dn->dn_free_ranges[txgoff] != NULL) {
 		dnode_sync_free_range_arg_t dsfra;
 		dsfra.dsfra_dnode = dn;
@@ -781,14 +648,7 @@ dnode_sync(dnode_t *dn, dmu_tx_t *tx)
 			ASSERT(range_tree_contains(dn->dn_free_ranges[txgoff],
 			    0, dn->dn_maxblkid + 1));
 		}
-		/*
-		 * Because dnode_sync_free_range() must drop dn_mtx during its
-		 * processing, using it as a callback to range_tree_vacate() is
-		 * not safe.  No other operations (besides destroy) are allowed
-		 * once range_tree_vacate() has begun, and dropping dn_mtx
-		 * would leave a window open for another thread to observe that
-		 * invalid (and unsafe) state.
-		 */
+		 
 		range_tree_walk(dn->dn_free_ranges[txgoff],
 		    dnode_sync_free_range, &dsfra);
 		range_tree_vacate(dn->dn_free_ranges[txgoff], NULL, NULL);
@@ -816,11 +676,7 @@ dnode_sync(dnode_t *dn, dmu_tx_t *tx)
 		dn->dn_next_nlevels[txgoff] = 0;
 	}
 
-	/*
-	 * This must be done after dnode_sync_free_range()
-	 * and dnode_increase_indirection(). See dnode_new_blkid()
-	 * for an explanation of the high bit being set.
-	 */
+	 
 	if (dn->dn_next_maxblkid[txgoff]) {
 		mutex_enter(&dn->dn_mtx);
 		dnp->dn_maxblkid =
@@ -830,10 +686,10 @@ dnode_sync(dnode_t *dn, dmu_tx_t *tx)
 	}
 
 	if (dn->dn_next_nblkptr[txgoff]) {
-		/* this should only happen on a realloc */
+		 
 		ASSERT(dn->dn_allocated_txg == tx->tx_txg);
 		if (dn->dn_next_nblkptr[txgoff] > dnp->dn_nblkptr) {
-			/* zero the new blkptrs we are gaining */
+			 
 			memset(dnp->dn_blkptr + dnp->dn_nblkptr, 0,
 			    sizeof (blkptr_t) *
 			    (dn->dn_next_nblkptr[txgoff] - dnp->dn_nblkptr));
@@ -841,7 +697,7 @@ dnode_sync(dnode_t *dn, dmu_tx_t *tx)
 		} else {
 			int i;
 			ASSERT(dn->dn_next_nblkptr[txgoff] < dnp->dn_nblkptr);
-			/* the blkptrs we are losing better be unallocated */
+			 
 			for (i = 0; i < dnp->dn_nblkptr; i++) {
 				if (i >= dn->dn_next_nblkptr[txgoff])
 					ASSERT(BP_IS_HOLE(&dnp->dn_blkptr[i]));
@@ -863,11 +719,5 @@ dnode_sync(dnode_t *dn, dmu_tx_t *tx)
 
 	ASSERT3U(dnp->dn_bonuslen, <=, DN_MAX_BONUS_LEN(dnp));
 
-	/*
-	 * Although we have dropped our reference to the dnode, it
-	 * can't be evicted until its written, and we haven't yet
-	 * initiated the IO for the dnode's dbuf.  Additionally, the caller
-	 * has already added a reference to the dnode because it's on the
-	 * os_synced_dnodes list.
-	 */
+	 
 }

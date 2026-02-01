@@ -1,41 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-/*
- * Copyright (C) ST-Ericsson 2010-2012
- * Contact: Alexey Orishko <alexey.orishko@stericsson.com>
- * Original author: Hans Petter Selasky <hans.petter.selasky@stericsson.com>
- *
- * USB Host Driver for Network Control Model (NCM)
- * http://www.usb.org/developers/devclass_docs/NCM10.zip
- *
- * The NCM encoding, decoding and initialization logic
- * derives from FreeBSD 8.x. if_cdce.c and if_cdcereg.h
- *
- * This software is available to you under a choice of one of two
- * licenses. You may choose this file to be licensed under the terms
- * of the GNU General Public License (GPL) Version 2 or the 2-clause
- * BSD license listed below:
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- */
+
+ 
 
 #ifndef __LINUX_USB_CDC_NCM_H
 #define __LINUX_USB_CDC_NCM_H
@@ -46,48 +10,45 @@
 #define CDC_NCM_DATA_ALTSETTING_NCM		1
 #define CDC_NCM_DATA_ALTSETTING_MBIM		2
 
-/* CDC NCM subclass 3.3.1 */
+ 
 #define USB_CDC_NCM_NDP16_LENGTH_MIN		0x10
 
-/* CDC NCM subclass 3.3.2 */
+ 
 #define USB_CDC_NCM_NDP32_LENGTH_MIN		0x20
 
-/* Maximum NTB length */
-#define	CDC_NCM_NTB_MAX_SIZE_TX			65536	/* bytes */
-#define	CDC_NCM_NTB_MAX_SIZE_RX			65536	/* bytes */
+ 
+#define	CDC_NCM_NTB_MAX_SIZE_TX			65536	 
+#define	CDC_NCM_NTB_MAX_SIZE_RX			65536	 
 
-/* Initial NTB length */
-#define	CDC_NCM_NTB_DEF_SIZE_TX			16384	/* bytes */
-#define	CDC_NCM_NTB_DEF_SIZE_RX			16384	/* bytes */
+ 
+#define	CDC_NCM_NTB_DEF_SIZE_TX			16384	 
+#define	CDC_NCM_NTB_DEF_SIZE_RX			16384	 
 
-/* Minimum value for MaxDatagramSize, ch. 6.2.9 */
-#define	CDC_NCM_MIN_DATAGRAM_SIZE		1514	/* bytes */
+ 
+#define	CDC_NCM_MIN_DATAGRAM_SIZE		1514	 
 
-/* Minimum value for MaxDatagramSize, ch. 8.1.3 */
-#define CDC_MBIM_MIN_DATAGRAM_SIZE		2048	/* bytes */
+ 
+#define CDC_MBIM_MIN_DATAGRAM_SIZE		2048	 
 
-#define	CDC_NCM_MIN_TX_PKT			512	/* bytes */
+#define	CDC_NCM_MIN_TX_PKT			512	 
 
-/* Default value for MaxDatagramSize */
-#define	CDC_NCM_MAX_DATAGRAM_SIZE		8192	/* bytes */
+ 
+#define	CDC_NCM_MAX_DATAGRAM_SIZE		8192	 
 
-/*
- * Maximum amount of datagrams in NCM Datagram Pointer Table, not counting
- * the last NULL entry.
- */
+ 
 #define	CDC_NCM_DPT_DATAGRAMS_MAX		40
 
-/* Restart the timer, if amount of datagrams is less than given value */
+ 
 #define	CDC_NCM_RESTART_TIMER_DATAGRAM_CNT	3
 #define	CDC_NCM_TIMER_PENDING_CNT		2
 #define CDC_NCM_TIMER_INTERVAL_USEC		400UL
 #define CDC_NCM_TIMER_INTERVAL_MIN		5UL
 #define CDC_NCM_TIMER_INTERVAL_MAX		(U32_MAX / NSEC_PER_USEC)
 
-/* Driver flags */
-#define CDC_NCM_FLAG_NDP_TO_END			0x02	/* NDP is placed at end of frame */
-#define CDC_MBIM_FLAG_AVOID_ALTSETTING_TOGGLE	0x04	/* Avoid altsetting toggle during init */
-#define CDC_NCM_FLAG_PREFER_NTB32 0x08	/* prefer NDP32 over NDP16 */
+ 
+#define CDC_NCM_FLAG_NDP_TO_END			0x02	 
+#define CDC_MBIM_FLAG_AVOID_ALTSETTING_TOGGLE	0x04	 
+#define CDC_NCM_FLAG_PREFER_NTB32 0x08	 
 
 #define cdc_ncm_comm_intf_is_mbim(x)  ((x)->desc.bInterfaceSubClass == USB_CDC_SUBCLASS_MBIM && \
 				       (x)->desc.bInterfaceProtocol == USB_CDC_PROTO_NONE)
@@ -140,7 +101,7 @@ struct cdc_ncm_ctx {
 	u16 rx_seq;
 	u16 min_tx_pkt;
 
-	/* statistics */
+	 
 	u32 tx_curr_frame_payload;
 	u32 tx_reason_ntb_full;
 	u32 tx_reason_ndp_full;
@@ -165,4 +126,4 @@ struct sk_buff *
 cdc_ncm_tx_fixup(struct usbnet *dev, struct sk_buff *skb, gfp_t flags);
 int cdc_ncm_rx_fixup(struct usbnet *dev, struct sk_buff *skb_in);
 
-#endif /* __LINUX_USB_CDC_NCM_H */
+#endif  

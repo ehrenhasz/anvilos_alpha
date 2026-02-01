@@ -1,36 +1,4 @@
-/*
- * This file is part of the Chelsio T4 Ethernet driver for Linux.
- *
- * Copyright (c) 2016 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/netdevice.h>
@@ -83,9 +51,7 @@ static int t4_sched_bind_unbind_op(struct port_info *pi, void *arg,
 
 		qe = (struct sched_queue_entry *)arg;
 
-		/* Create a template for the FW_PARAMS_CMD mnemonic and
-		 * value (TX Scheduling Class in this case).
-		 */
+		 
 		fw_mnem = (FW_PARAMS_MNEM_V(FW_PARAMS_MNEM_DMAQ) |
 			   FW_PARAMS_PARAM_X_V(
 				   FW_PARAMS_PARAM_DMAQ_EQ_SCHEDCLASS_ETH));
@@ -125,7 +91,7 @@ static void *t4_sched_entry_lookup(struct port_info *pi,
 	struct sched_class *e, *end;
 	void *found = NULL;
 
-	/* Look for an entry with matching @val */
+	 
 	end = &s->tab[s->sched_size];
 	for (e = &s->tab[0]; e != end; ++e) {
 		if (e->state == SCHED_STATE_UNUSED ||
@@ -195,7 +161,7 @@ static int t4_sched_queue_unbind(struct port_info *pi, struct ch_sched_queue *p)
 
 	txq = &adap->sge.ethtxq[pi->first_qset + p->queue];
 
-	/* Find the existing entry that the queue is bound to */
+	 
 	qe = t4_sched_entry_lookup(pi, SCHED_QUEUE, txq->q.cntxt_id);
 	if (qe) {
 		err = t4_sched_bind_unbind_op(pi, (void *)qe, SCHED_QUEUE,
@@ -232,12 +198,12 @@ static int t4_sched_queue_bind(struct port_info *pi, struct ch_sched_queue *p)
 	txq = &adap->sge.ethtxq[pi->first_qset + p->queue];
 	qid = txq->q.cntxt_id;
 
-	/* Unbind queue from any existing class */
+	 
 	err = t4_sched_queue_unbind(pi, p);
 	if (err)
 		goto out_err;
 
-	/* Bind queue to specified class */
+	 
 	qe->cntxt_id = qid;
 	memcpy(&qe->param, p, sizeof(qe->param));
 
@@ -266,7 +232,7 @@ static int t4_sched_flowc_unbind(struct port_info *pi, struct ch_sched_flowc *p)
 	if (p->tid < 0 || p->tid >= adap->tids.neotids)
 		return -ERANGE;
 
-	/* Find the existing entry that the flowc is bound to */
+	 
 	fe = t4_sched_entry_lookup(pi, SCHED_FLOWC, p->tid);
 	if (fe) {
 		err = t4_sched_bind_unbind_op(pi, (void *)fe, SCHED_FLOWC,
@@ -298,12 +264,12 @@ static int t4_sched_flowc_bind(struct port_info *pi, struct ch_sched_flowc *p)
 	if (!fe)
 		return -ENOMEM;
 
-	/* Unbind flowc from any existing class */
+	 
 	err = t4_sched_flowc_unbind(pi, p);
 	if (err)
 		goto out_err;
 
-	/* Bind flowc to specified class */
+	 
 	memcpy(&fe->param, p, sizeof(fe->param));
 
 	e = &s->tab[fe->param.class];
@@ -383,16 +349,7 @@ static int t4_sched_class_bind_unbind_op(struct port_info *pi, void *arg,
 	return err;
 }
 
-/**
- * cxgb4_sched_class_bind - Bind an entity to a scheduling class
- * @dev: net_device pointer
- * @arg: Entity opaque data
- * @type: Entity type (Queue)
- *
- * Binds an entity (queue) to a scheduling class.  If the entity
- * is bound to another class, it will be unbound from the other class
- * and bound to the class specified in @arg.
- */
+ 
 int cxgb4_sched_class_bind(struct net_device *dev, void *arg,
 			   enum sched_bind_type type)
 {
@@ -432,14 +389,7 @@ int cxgb4_sched_class_bind(struct net_device *dev, void *arg,
 
 }
 
-/**
- * cxgb4_sched_class_unbind - Unbind an entity from a scheduling class
- * @dev: net_device pointer
- * @arg: Entity opaque data
- * @type: Entity type (Queue)
- *
- * Unbinds an entity (queue) from a scheduling class.
- */
+ 
 int cxgb4_sched_class_unbind(struct net_device *dev, void *arg,
 			     enum sched_bind_type type)
 {
@@ -475,7 +425,7 @@ int cxgb4_sched_class_unbind(struct net_device *dev, void *arg,
 	return t4_sched_class_bind_unbind_op(pi, arg, type, false);
 }
 
-/* If @p is NULL, fetch any available unused class */
+ 
 static struct sched_class *t4_sched_class_lookup(struct port_info *pi,
 						const struct ch_sched_params *p)
 {
@@ -484,7 +434,7 @@ static struct sched_class *t4_sched_class_lookup(struct port_info *pi,
 	struct sched_class *e, *end;
 
 	if (!p) {
-		/* Get any available unused class */
+		 
 		end = &s->tab[s->sched_size];
 		for (e = &s->tab[0]; e != end; ++e) {
 			if (e->state == SCHED_STATE_UNUSED) {
@@ -493,12 +443,12 @@ static struct sched_class *t4_sched_class_lookup(struct port_info *pi,
 			}
 		}
 	} else {
-		/* Look for a class with matching scheduling parameters */
+		 
 		struct ch_sched_params info;
 		struct ch_sched_params tp;
 
 		memcpy(&tp, p, sizeof(tp));
-		/* Don't try to match class parameter */
+		 
 		tp.u.params.class = SCHED_CLS_NONE;
 
 		end = &s->tab[s->sched_size];
@@ -507,7 +457,7 @@ static struct sched_class *t4_sched_class_lookup(struct port_info *pi,
 				continue;
 
 			memcpy(&info, &e->info, sizeof(info));
-			/* Don't try to match class parameter */
+			 
 			info.u.params.class = SCHED_CLS_NONE;
 
 			if ((info.type == tp.type) &&
@@ -534,30 +484,25 @@ static struct sched_class *t4_sched_class_alloc(struct port_info *pi,
 
 	class_id = p->u.params.class;
 
-	/* Only accept search for existing class with matching params
-	 * or allocation of new class with specified params
-	 */
+	 
 	if (class_id != SCHED_CLS_NONE)
 		return NULL;
 
-	/* See if there's an exisiting class with same requested sched
-	 * params. Classes can only be shared among FLOWC types. For
-	 * other types, always request a new class.
-	 */
+	 
 	if (p->u.params.mode == SCHED_CLASS_MODE_FLOW)
 		e = t4_sched_class_lookup(pi, p);
 
 	if (!e) {
 		struct ch_sched_params np;
 
-		/* Fetch any available unused class */
+		 
 		e = t4_sched_class_lookup(pi, NULL);
 		if (!e)
 			return NULL;
 
 		memcpy(&np, p, sizeof(np));
 		np.u.params.class = e->idx;
-		/* New class */
+		 
 		err = t4_sched_class_fw_cmd(pi, &np, SCHED_FW_OP_ADD);
 		if (err)
 			return NULL;
@@ -569,16 +514,7 @@ static struct sched_class *t4_sched_class_alloc(struct port_info *pi,
 	return e;
 }
 
-/**
- * cxgb4_sched_class_alloc - allocate a scheduling class
- * @dev: net_device pointer
- * @p: new scheduling class to create.
- *
- * Returns pointer to the scheduling class created.  If @p is NULL, then
- * it allocates and returns any available unused scheduling class. If a
- * scheduling class with matching @p is found, then the matching class is
- * returned.
- */
+ 
 struct sched_class *cxgb4_sched_class_alloc(struct net_device *dev,
 					    struct ch_sched_params *p)
 {
@@ -595,13 +531,7 @@ struct sched_class *cxgb4_sched_class_alloc(struct net_device *dev,
 	return t4_sched_class_alloc(pi, p);
 }
 
-/**
- * cxgb4_sched_class_free - free a scheduling class
- * @dev: net_device pointer
- * @classid: scheduling class id to free
- *
- * Frees a scheduling class if there are no users.
- */
+ 
 void cxgb4_sched_class_free(struct net_device *dev, u8 classid)
 {
 	struct port_info *pi = netdev2pinfo(dev);
@@ -613,23 +543,16 @@ void cxgb4_sched_class_free(struct net_device *dev, u8 classid)
 
 	e = &s->tab[classid];
 	if (!atomic_read(&e->refcnt) && e->state != SCHED_STATE_UNUSED) {
-		/* Port based rate limiting needs explicit reset back
-		 * to max rate. But, we'll do explicit reset for all
-		 * types, instead of just port based type, to be on
-		 * the safer side.
-		 */
+		 
 		memcpy(&p, &e->info, sizeof(p));
-		/* Always reset mode to 0. Otherwise, FLOWC mode will
-		 * still be enabled even after resetting the traffic
-		 * class.
-		 */
+		 
 		p.u.params.mode = 0;
 		p.u.params.minrate = 0;
 		p.u.params.pktsize = 0;
 
 		ret = t4_get_link_params(pi, NULL, &speed, NULL);
 		if (!ret)
-			p.u.params.maxrate = speed * 1000; /* Mbps to Kbps */
+			p.u.params.maxrate = speed * 1000;  
 		else
 			p.u.params.maxrate = SCHED_MAX_RATE_KBPS;
 

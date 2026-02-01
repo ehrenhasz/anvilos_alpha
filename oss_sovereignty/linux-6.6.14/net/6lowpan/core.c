@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Authors:
- * (C) 2015 Pengutronix, Alexander Aring <aar@pengutronix.de>
- */
+
+ 
 
 #include <linux/if_arp.h>
 #include <linux/module.h>
@@ -80,22 +76,22 @@ int addrconf_ifid_802154_6lowpan(u8 *eui, struct net_device *dev)
 {
 	struct wpan_dev *wpan_dev = lowpan_802154_dev(dev)->wdev->ieee802154_ptr;
 
-	/* Set short_addr autoconfiguration if short_addr is present only */
+	 
 	if (!lowpan_802154_is_valid_src_short_addr(wpan_dev->short_addr))
 		return -1;
 
-	/* For either address format, all zero addresses MUST NOT be used */
+	 
 	if (wpan_dev->pan_id == cpu_to_le16(0x0000) &&
 	    wpan_dev->short_addr == cpu_to_le16(0x0000))
 		return -1;
 
-	/* Alternatively, if no PAN ID is known, 16 zero bits may be used */
+	 
 	if (wpan_dev->pan_id == cpu_to_le16(IEEE802154_PAN_ID_BROADCAST))
 		memset(eui, 0, 2);
 	else
 		ieee802154_le16_to_be16(eui, &wpan_dev->pan_id);
 
-	/* The "Universal/Local" (U/L) bit shall be set to zero */
+	 
 	eui[0] &= ~2;
 	eui[2] = 0;
 	eui[3] = 0xFF;
@@ -123,7 +119,7 @@ static int lowpan_event(struct notifier_block *unused,
 	switch (event) {
 	case NETDEV_UP:
 	case NETDEV_CHANGE:
-		/* (802.15.4 6LoWPAN short address slaac handling */
+		 
 		if (lowpan_is_ll(dev, LOWPAN_LLTYPE_IEEE802154) &&
 		    addrconf_ifid_802154_6lowpan(addr.s6_addr + 8, dev) == 0) {
 			__ipv6_addr_set_half(&addr.s6_addr32[0],

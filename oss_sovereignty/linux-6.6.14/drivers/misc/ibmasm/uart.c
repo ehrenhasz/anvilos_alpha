@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
 
-/*
- * IBM ASM Service Processor Device Driver
- *
- * Copyright (C) IBM Corporation, 2004
- *
- * Author: Max Asböck <amax@us.ibm.com>
- */
+
+ 
 
 #include <linux/termios.h>
 #include <linux/tty.h>
@@ -24,9 +18,7 @@ void ibmasm_register_uart(struct service_processor *sp)
 
 	iomem_base = sp->base_address + SCOUT_COM_B_BASE;
 
-	/* read the uart scratch register to determine if the UART
-	 * is dedicated to the service processor or if the OS can use it
-	 */
+	 
 	if (0 == readl(iomem_base + UART_SCR)) {
 		dev_info(sp->dev, "IBM SP UART not registered, owned by service processor\n");
 		sp->serial_line = -1;

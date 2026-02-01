@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 
 #ifndef __NOUVEAU_UVMM_H__
 #define __NOUVEAU_UVMM_H__
@@ -54,7 +54,7 @@ struct nouveau_uvmm_bind_job {
 	struct work_struct work;
 	struct completion complete;
 
-	/* struct bind_job_op */
+	 
 	struct list_head ops;
 };
 

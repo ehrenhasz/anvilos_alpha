@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
@@ -73,10 +73,7 @@ static void kprobe_multi_check(void *ctx, bool is_return)
 #undef SET
 }
 
-/*
- * No tests in here, just to trigger 'bpf_fentry_test*'
- * through tracing test_run
- */
+ 
 SEC("fentry/bpf_modify_return_test")
 int BPF_PROG(trigger)
 {

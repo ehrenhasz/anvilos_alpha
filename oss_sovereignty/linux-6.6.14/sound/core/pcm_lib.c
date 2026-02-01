@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Digital Audio (PCM) abstract layer
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *                   Abramo Bagnara <abramo@alsa-project.org>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/sched/signal.h>
@@ -52,15 +48,7 @@ static inline void update_silence_vars(struct snd_pcm_runtime *runtime,
 	runtime->silence_start = new_ptr;
 }
 
-/*
- * fill ring buffer with silence
- * runtime->silence_start: starting pointer to silence area
- * runtime->silence_filled: size filled with silence
- * runtime->silence_threshold: threshold from application
- * runtime->silence_size: maximal size from application
- *
- * when runtime->silence_size >= runtime->boundary - fill processed area with silence immediately
- */
+ 
 void snd_pcm_playback_silence(struct snd_pcm_substream *substream, snd_pcm_uframes_t new_hw_ptr)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
@@ -71,14 +59,14 @@ void snd_pcm_playback_silence(struct snd_pcm_substream *substream, snd_pcm_ufram
 		snd_pcm_sframes_t noise_dist;
 		snd_pcm_uframes_t appl_ptr = READ_ONCE(runtime->control->appl_ptr);
 		update_silence_vars(runtime, runtime->silence_start, appl_ptr);
-		/* initialization outside pointer updates */
+		 
 		if (new_hw_ptr == ULONG_MAX)
 			new_hw_ptr = runtime->status->hw_ptr;
-		/* get hw_avail with the boundary crossing */
+		 
 		noise_dist = appl_ptr - new_hw_ptr;
 		if (noise_dist < 0)
 			noise_dist += runtime->boundary;
-		/* total noise distance */
+		 
 		noise_dist += runtime->silence_filled;
 		if (noise_dist >= (snd_pcm_sframes_t) runtime->silence_threshold)
 			return;
@@ -86,36 +74,21 @@ void snd_pcm_playback_silence(struct snd_pcm_substream *substream, snd_pcm_ufram
 		if (frames > runtime->silence_size)
 			frames = runtime->silence_size;
 	} else {
-		/*
-		 * This filling mode aims at free-running mode (used for example by dmix),
-		 * which doesn't update the application pointer.
-		 */
+		 
 		snd_pcm_uframes_t hw_ptr = runtime->status->hw_ptr;
 		if (new_hw_ptr == ULONG_MAX) {
-			/*
-			 * Initialization, fill the whole unused buffer with silence.
-			 *
-			 * Usually, this is entered while stopped, before data is queued,
-			 * so both pointers are expected to be zero.
-			 */
+			 
 			snd_pcm_sframes_t avail = runtime->control->appl_ptr - hw_ptr;
 			if (avail < 0)
 				avail += runtime->boundary;
-			/*
-			 * In free-running mode, appl_ptr will be zero even while running,
-			 * so we end up with a huge number. There is no useful way to
-			 * handle this, so we just clear the whole buffer.
-			 */
+			 
 			runtime->silence_filled = avail > runtime->buffer_size ? 0 : avail;
 			runtime->silence_start = hw_ptr;
 		} else {
-			/* Silence the just played area immediately */
+			 
 			update_silence_vars(runtime, hw_ptr, new_hw_ptr);
 		}
-		/*
-		 * In this mode, silence_filled actually includes the valid
-		 * sample data from the user.
-		 */
+		 
 		frames = runtime->buffer_size - runtime->silence_filled;
 	}
 	if (snd_BUG_ON(frames > runtime->buffer_size))
@@ -148,8 +121,8 @@ EXPORT_SYMBOL(snd_pcm_debug_name);
 #endif
 
 #define XRUN_DEBUG_BASIC	(1<<0)
-#define XRUN_DEBUG_STACK	(1<<1)	/* dump also stack */
-#define XRUN_DEBUG_JIFFIESCHECK	(1<<2)	/* do jiffies check */
+#define XRUN_DEBUG_STACK	(1<<1)	 
+#define XRUN_DEBUG_JIFFIESCHECK	(1<<2)	 
 
 #ifdef CONFIG_SND_PCM_XRUN_DEBUG
 
@@ -164,7 +137,7 @@ EXPORT_SYMBOL(snd_pcm_debug_name);
 			dump_stack();				\
 	} while (0)
 
-/* call with stream lock held */
+ 
 void __snd_pcm_xrun(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
@@ -197,7 +170,7 @@ void __snd_pcm_xrun(struct snd_pcm_substream *substream)
 		}							\
 	} while (0)
 
-#else /* ! CONFIG_SND_PCM_XRUN_DEBUG */
+#else  
 
 #define hw_ptr_error(substream, fmt, args...) do { } while (0)
 
@@ -245,10 +218,7 @@ static void update_audio_tstamp(struct snd_pcm_substream *substream,
 		(runtime->audio_tstamp_report.actual_type ==
 			SNDRV_PCM_AUDIO_TSTAMP_TYPE_DEFAULT)) {
 
-		/*
-		 * provide audio timestamp derived from pointer position
-		 * add delay only if requested
-		 */
+		 
 
 		audio_frames = runtime->hw_ptr_wrap + runtime->status->hw_ptr;
 
@@ -272,10 +242,7 @@ static void update_audio_tstamp(struct snd_pcm_substream *substream,
 	}
 
 
-	/*
-	 * re-take a driver timestamp to let apps detect if the reference tstamp
-	 * read by low-level hardware was provided with a delay
-	 */
+	 
 	snd_pcm_gettime(substream->runtime, &driver_tstamp);
 	runtime->driver_tstamp = driver_tstamp;
 }
@@ -295,12 +262,7 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 
 	old_hw_ptr = runtime->status->hw_ptr;
 
-	/*
-	 * group pointer, time and jiffies reads to allow for more
-	 * accurate correlations/corrections.
-	 * The values are stored at the end of this routine after
-	 * corrections for hw_ptr position
-	 */
+	 
 	pos = substream->ops->pointer(substream);
 	curr_jiffies = jiffies;
 	if (runtime->tstamp_mode == SNDRV_PCM_TSTAMP_ENABLE) {
@@ -311,7 +273,7 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 						&runtime->audio_tstamp_config,
 						&runtime->audio_tstamp_report);
 
-			/* re-test in case tstamp type is not supported in hardware and was demoted to DEFAULT */
+			 
 			if (runtime->audio_tstamp_report.actual_type == SNDRV_PCM_AUDIO_TSTAMP_TYPE_DEFAULT)
 				snd_pcm_gettime(runtime, &curr_tstamp);
 		} else
@@ -338,11 +300,11 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 	hw_base = runtime->hw_ptr_base;
 	new_hw_ptr = hw_base + pos;
 	if (in_interrupt) {
-		/* we know that one period was processed */
-		/* delta = "expected next hw_ptr" for in_interrupt != 0 */
+		 
+		 
 		delta = runtime->hw_ptr_interrupt + runtime->period_size;
 		if (delta > new_hw_ptr) {
-			/* check for double acknowledged interrupts */
+			 
 			hdelta = curr_jiffies - runtime->hw_ptr_jiffies;
 			if (hdelta > runtime->hw_ptr_buffer_jiffies/2 + 1) {
 				hw_base += runtime->buffer_size;
@@ -355,8 +317,8 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 			}
 		}
 	}
-	/* new_hw_ptr might be lower than old_hw_ptr in case when */
-	/* pointer crosses the end of the ring buffer */
+	 
+	 
 	if (new_hw_ptr < old_hw_ptr) {
 		hw_base += runtime->buffer_size;
 		if (hw_base >= runtime->boundary) {
@@ -372,10 +334,7 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 
 	if (runtime->no_period_wakeup) {
 		snd_pcm_sframes_t xrun_threshold;
-		/*
-		 * Without regular period interrupts, we have to check
-		 * the elapsed time to detect xruns.
-		 */
+		 
 		jdelta = curr_jiffies - runtime->hw_ptr_jiffies;
 		if (jdelta < runtime->hw_ptr_buffer_jiffies / 2)
 			goto no_delta_check;
@@ -394,7 +353,7 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 		goto no_delta_check;
 	}
 
-	/* something must be really wrong */
+	 
 	if (delta >= runtime->buffer_size + runtime->period_size) {
 		hw_ptr_error(substream, in_interrupt, "Unexpected hw_ptr",
 			     "(stream=%i, pos=%ld, new_hw_ptr=%ld, old_hw_ptr=%ld)\n",
@@ -403,14 +362,11 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 		return 0;
 	}
 
-	/* Do jiffies check only in xrun_debug mode */
+	 
 	if (!xrun_debug(substream, XRUN_DEBUG_JIFFIESCHECK))
 		goto no_jiffies_check;
 
-	/* Skip the jiffies check for hardwares with BATCH flag.
-	 * Such hardware usually just increases the position at each IRQ,
-	 * thus it can't give any strange position.
-	 */
+	 
 	if (runtime->hw.info & SNDRV_PCM_INFO_BATCH)
 		goto no_jiffies_check;
 	hdelta = delta;
@@ -422,11 +378,11 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 		delta = jdelta /
 			(((runtime->period_size * HZ) / runtime->rate)
 								+ HZ/100);
-		/* move new_hw_ptr according jiffies not pos variable */
+		 
 		new_hw_ptr = old_hw_ptr;
 		hw_base = delta;
-		/* use loop to avoid checks for delta overflows */
-		/* the delta value is small or zero in most cases */
+		 
+		 
 		while (delta > 0) {
 			new_hw_ptr += runtime->period_size;
 			if (new_hw_ptr >= runtime->boundary) {
@@ -435,7 +391,7 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 			}
 			delta--;
 		}
-		/* align hw_base to buffer_size */
+		 
 		hw_ptr_error(substream, in_interrupt, "hw_ptr skipping",
 			     "(pos=%ld, delta=%ld, period=%ld, jdelta=%lu/%lu/%lu, hw_ptr=%ld/%ld)\n",
 			     (long)pos, (long)hdelta,
@@ -443,7 +399,7 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 			     ((hdelta * HZ) / runtime->rate), hw_base,
 			     (unsigned long)old_hw_ptr,
 			     (unsigned long)new_hw_ptr);
-		/* reset values to proper state */
+		 
 		delta = 0;
 		hw_base = new_hw_ptr - (new_hw_ptr % runtime->buffer_size);
 	}
@@ -490,20 +446,13 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 	return snd_pcm_update_state(substream, runtime);
 }
 
-/* CAUTION: call it with irq disabled */
+ 
 int snd_pcm_update_hw_ptr(struct snd_pcm_substream *substream)
 {
 	return snd_pcm_update_hw_ptr0(substream, 0);
 }
 
-/**
- * snd_pcm_set_ops - set the PCM operators
- * @pcm: the pcm instance
- * @direction: stream direction, SNDRV_PCM_STREAM_XXX
- * @ops: the operator table
- *
- * Sets the given PCM operators to the pcm instance.
- */
+ 
 void snd_pcm_set_ops(struct snd_pcm *pcm, int direction,
 		     const struct snd_pcm_ops *ops)
 {
@@ -515,12 +464,7 @@ void snd_pcm_set_ops(struct snd_pcm *pcm, int direction,
 }
 EXPORT_SYMBOL(snd_pcm_set_ops);
 
-/**
- * snd_pcm_set_sync - set the PCM sync id
- * @substream: the pcm substream
- *
- * Sets the PCM sync identifier for the card.
- */
+ 
 void snd_pcm_set_sync(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
@@ -532,9 +476,7 @@ void snd_pcm_set_sync(struct snd_pcm_substream *substream)
 }
 EXPORT_SYMBOL(snd_pcm_set_sync);
 
-/*
- *  Standard ioctl routine
- */
+ 
 
 static inline unsigned int div32(unsigned int a, unsigned int b, 
 				 unsigned int *r)
@@ -591,18 +533,7 @@ static inline unsigned int muldiv32(unsigned int a, unsigned int b,
 	return n;
 }
 
-/**
- * snd_interval_refine - refine the interval value of configurator
- * @i: the interval value to refine
- * @v: the interval value to refer to
- *
- * Refines the interval value with the reference value.
- * The interval is changed to the range satisfying both intervals.
- * The interval status (min, max, integer, etc.) are evaluated.
- *
- * Return: Positive if the value is changed, zero if it's not changed, or a
- * negative error code.
- */
+ 
 int snd_interval_refine(struct snd_interval *i, const struct snd_interval *v)
 {
 	int changed = 0;
@@ -658,7 +589,7 @@ static int snd_interval_refine_first(struct snd_interval *i)
 	i->max = i->min;
 	if (i->openmin)
 		i->max++;
-	/* only exclude max value if also excluded before refine */
+	 
 	i->openmax = (i->openmax && i->max >= last_max);
 	return 1;
 }
@@ -674,7 +605,7 @@ static int snd_interval_refine_last(struct snd_interval *i)
 	i->min = i->max;
 	if (i->openmax)
 		i->min--;
-	/* only exclude min value if also excluded before refine */
+	 
 	i->openmin = (i->openmin && i->min <= last_min);
 	return 1;
 }
@@ -693,16 +624,7 @@ void snd_interval_mul(const struct snd_interval *a, const struct snd_interval *b
 	c->integer = (a->integer && b->integer);
 }
 
-/**
- * snd_interval_div - refine the interval value with division
- * @a: dividend
- * @b: divisor
- * @c: quotient
- *
- * c = a / b
- *
- * Returns non-zero if the value is changed, zero if not changed.
- */
+ 
 void snd_interval_div(const struct snd_interval *a, const struct snd_interval *b, struct snd_interval *c)
 {
 	unsigned int r;
@@ -727,17 +649,7 @@ void snd_interval_div(const struct snd_interval *a, const struct snd_interval *b
 	c->integer = 0;
 }
 
-/**
- * snd_interval_muldivk - refine the interval value
- * @a: dividend 1
- * @b: dividend 2
- * @k: divisor (as integer)
- * @c: result
-  *
- * c = a * b / k
- *
- * Returns non-zero if the value is changed, zero if not changed.
- */
+ 
 void snd_interval_muldivk(const struct snd_interval *a, const struct snd_interval *b,
 		      unsigned int k, struct snd_interval *c)
 {
@@ -758,17 +670,7 @@ void snd_interval_muldivk(const struct snd_interval *a, const struct snd_interva
 	c->integer = 0;
 }
 
-/**
- * snd_interval_mulkdiv - refine the interval value
- * @a: dividend 1
- * @k: dividend 2 (as integer)
- * @b: divisor
- * @c: result
- *
- * c = a * k / b
- *
- * Returns non-zero if the value is changed, zero if not changed.
- */
+ 
 void snd_interval_mulkdiv(const struct snd_interval *a, unsigned int k,
 		      const struct snd_interval *b, struct snd_interval *c)
 {
@@ -794,20 +696,10 @@ void snd_interval_mulkdiv(const struct snd_interval *a, unsigned int k,
 	c->integer = 0;
 }
 
-/* ---- */
+ 
 
 
-/**
- * snd_interval_ratnum - refine the interval value
- * @i: interval to refine
- * @rats_count: number of ratnum_t 
- * @rats: ratnum_t array
- * @nump: pointer to store the resultant numerator
- * @denp: pointer to store the resultant denominator
- *
- * Return: Positive if the value is changed, zero if it's not changed, or a
- * negative error code.
- */
+ 
 int snd_interval_ratnum(struct snd_interval *i,
 			unsigned int rats_count, const struct snd_ratnum *rats,
 			unsigned int *nump, unsigned int *denp)
@@ -915,17 +807,7 @@ int snd_interval_ratnum(struct snd_interval *i,
 }
 EXPORT_SYMBOL(snd_interval_ratnum);
 
-/**
- * snd_interval_ratden - refine the interval value
- * @i: interval to refine
- * @rats_count: number of struct ratden
- * @rats: struct ratden array
- * @nump: pointer to store the resultant numerator
- * @denp: pointer to store the resultant denominator
- *
- * Return: Positive if the value is changed, zero if it's not changed, or a
- * negative error code.
- */
+ 
 static int snd_interval_ratden(struct snd_interval *i,
 			       unsigned int rats_count,
 			       const struct snd_ratden *rats,
@@ -1013,20 +895,7 @@ static int snd_interval_ratden(struct snd_interval *i,
 	return err;
 }
 
-/**
- * snd_interval_list - refine the interval value from the list
- * @i: the interval value to refine
- * @count: the number of elements in the list
- * @list: the value list
- * @mask: the bit-mask to evaluate
- *
- * Refines the interval value from the list.
- * When mask is non-zero, only the elements corresponding to bit 1 are
- * evaluated.
- *
- * Return: Positive if the value is changed, zero if it's not changed, or a
- * negative error code.
- */
+ 
 int snd_interval_list(struct snd_interval *i, unsigned int count,
 		      const unsigned int *list, unsigned int mask)
 {
@@ -1052,20 +921,7 @@ int snd_interval_list(struct snd_interval *i, unsigned int count,
 }
 EXPORT_SYMBOL(snd_interval_list);
 
-/**
- * snd_interval_ranges - refine the interval value from the list of ranges
- * @i: the interval value to refine
- * @count: the number of elements in the list of ranges
- * @ranges: the ranges list
- * @mask: the bit-mask to evaluate
- *
- * Refines the interval value from the list of ranges.
- * When mask is non-zero, only the elements corresponding to bit 1 are
- * evaluated.
- *
- * Return: Positive if the value is changed, zero if it's not changed, or a
- * negative error code.
- */
+ 
 int snd_interval_ranges(struct snd_interval *i, unsigned int count,
 			const struct snd_interval *ranges, unsigned int mask)
 {
@@ -1129,19 +985,9 @@ static int snd_interval_step(struct snd_interval *i, unsigned int step)
 	return changed;
 }
 
-/* Info constraints helpers */
+ 
 
-/**
- * snd_pcm_hw_rule_add - add the hw-constraint rule
- * @runtime: the pcm runtime instance
- * @cond: condition bits
- * @var: the variable to evaluate
- * @func: the evaluation function
- * @private: the private data pointer passed to function
- * @dep: the dependent variables
- *
- * Return: Zero if successful, or a negative error code on failure.
- */
+ 
 int snd_pcm_hw_rule_add(struct snd_pcm_runtime *runtime, unsigned int cond,
 			int var,
 			snd_pcm_hw_rule_func_t func, void *private,
@@ -1186,38 +1032,20 @@ int snd_pcm_hw_rule_add(struct snd_pcm_runtime *runtime, unsigned int cond,
 }
 EXPORT_SYMBOL(snd_pcm_hw_rule_add);
 
-/**
- * snd_pcm_hw_constraint_mask - apply the given bitmap mask constraint
- * @runtime: PCM runtime instance
- * @var: hw_params variable to apply the mask
- * @mask: the bitmap mask
- *
- * Apply the constraint of the given bitmap mask to a 32-bit mask parameter.
- *
- * Return: Zero if successful, or a negative error code on failure.
- */
+ 
 int snd_pcm_hw_constraint_mask(struct snd_pcm_runtime *runtime, snd_pcm_hw_param_t var,
 			       u_int32_t mask)
 {
 	struct snd_pcm_hw_constraints *constrs = &runtime->hw_constraints;
 	struct snd_mask *maskp = constrs_mask(constrs, var);
 	*maskp->bits &= mask;
-	memset(maskp->bits + 1, 0, (SNDRV_MASK_MAX-32) / 8); /* clear rest */
+	memset(maskp->bits + 1, 0, (SNDRV_MASK_MAX-32) / 8);  
 	if (*maskp->bits == 0)
 		return -EINVAL;
 	return 0;
 }
 
-/**
- * snd_pcm_hw_constraint_mask64 - apply the given bitmap mask constraint
- * @runtime: PCM runtime instance
- * @var: hw_params variable to apply the mask
- * @mask: the 64bit bitmap mask
- *
- * Apply the constraint of the given bitmap mask to a 64-bit mask parameter.
- *
- * Return: Zero if successful, or a negative error code on failure.
- */
+ 
 int snd_pcm_hw_constraint_mask64(struct snd_pcm_runtime *runtime, snd_pcm_hw_param_t var,
 				 u_int64_t mask)
 {
@@ -1225,23 +1053,14 @@ int snd_pcm_hw_constraint_mask64(struct snd_pcm_runtime *runtime, snd_pcm_hw_par
 	struct snd_mask *maskp = constrs_mask(constrs, var);
 	maskp->bits[0] &= (u_int32_t)mask;
 	maskp->bits[1] &= (u_int32_t)(mask >> 32);
-	memset(maskp->bits + 2, 0, (SNDRV_MASK_MAX-64) / 8); /* clear rest */
+	memset(maskp->bits + 2, 0, (SNDRV_MASK_MAX-64) / 8);  
 	if (! maskp->bits[0] && ! maskp->bits[1])
 		return -EINVAL;
 	return 0;
 }
 EXPORT_SYMBOL(snd_pcm_hw_constraint_mask64);
 
-/**
- * snd_pcm_hw_constraint_integer - apply an integer constraint to an interval
- * @runtime: PCM runtime instance
- * @var: hw_params variable to apply the integer constraint
- *
- * Apply the constraint of integer to an interval parameter.
- *
- * Return: Positive if the value is changed, zero if it's not changed, or a
- * negative error code.
- */
+ 
 int snd_pcm_hw_constraint_integer(struct snd_pcm_runtime *runtime, snd_pcm_hw_param_t var)
 {
 	struct snd_pcm_hw_constraints *constrs = &runtime->hw_constraints;
@@ -1249,18 +1068,7 @@ int snd_pcm_hw_constraint_integer(struct snd_pcm_runtime *runtime, snd_pcm_hw_pa
 }
 EXPORT_SYMBOL(snd_pcm_hw_constraint_integer);
 
-/**
- * snd_pcm_hw_constraint_minmax - apply a min/max range constraint to an interval
- * @runtime: PCM runtime instance
- * @var: hw_params variable to apply the range
- * @min: the minimal value
- * @max: the maximal value
- * 
- * Apply the min/max range constraint to an interval parameter.
- *
- * Return: Positive if the value is changed, zero if it's not changed, or a
- * negative error code.
- */
+ 
 int snd_pcm_hw_constraint_minmax(struct snd_pcm_runtime *runtime, snd_pcm_hw_param_t var,
 				 unsigned int min, unsigned int max)
 {
@@ -1282,17 +1090,7 @@ static int snd_pcm_hw_rule_list(struct snd_pcm_hw_params *params,
 }		
 
 
-/**
- * snd_pcm_hw_constraint_list - apply a list of constraints to a parameter
- * @runtime: PCM runtime instance
- * @cond: condition bits
- * @var: hw_params variable to apply the list constraint
- * @l: list
- * 
- * Apply the list of constraints to an interval parameter.
- *
- * Return: Zero if successful, or a negative error code on failure.
- */
+ 
 int snd_pcm_hw_constraint_list(struct snd_pcm_runtime *runtime,
 			       unsigned int cond,
 			       snd_pcm_hw_param_t var,
@@ -1313,17 +1111,7 @@ static int snd_pcm_hw_rule_ranges(struct snd_pcm_hw_params *params,
 }
 
 
-/**
- * snd_pcm_hw_constraint_ranges - apply list of range constraints to a parameter
- * @runtime: PCM runtime instance
- * @cond: condition bits
- * @var: hw_params variable to apply the list of range constraints
- * @r: ranges
- *
- * Apply the list of range constraints to an interval parameter.
- *
- * Return: Zero if successful, or a negative error code on failure.
- */
+ 
 int snd_pcm_hw_constraint_ranges(struct snd_pcm_runtime *runtime,
 				 unsigned int cond,
 				 snd_pcm_hw_param_t var,
@@ -1350,15 +1138,7 @@ static int snd_pcm_hw_rule_ratnums(struct snd_pcm_hw_params *params,
 	return err;
 }
 
-/**
- * snd_pcm_hw_constraint_ratnums - apply ratnums constraint to a parameter
- * @runtime: PCM runtime instance
- * @cond: condition bits
- * @var: hw_params variable to apply the ratnums constraint
- * @r: struct snd_ratnums constriants
- *
- * Return: Zero if successful, or a negative error code on failure.
- */
+ 
 int snd_pcm_hw_constraint_ratnums(struct snd_pcm_runtime *runtime, 
 				  unsigned int cond,
 				  snd_pcm_hw_param_t var,
@@ -1384,15 +1164,7 @@ static int snd_pcm_hw_rule_ratdens(struct snd_pcm_hw_params *params,
 	return err;
 }
 
-/**
- * snd_pcm_hw_constraint_ratdens - apply ratdens constraint to a parameter
- * @runtime: PCM runtime instance
- * @cond: condition bits
- * @var: hw_params variable to apply the ratdens constraint
- * @r: struct snd_ratdens constriants
- *
- * Return: Zero if successful, or a negative error code on failure.
- */
+ 
 int snd_pcm_hw_constraint_ratdens(struct snd_pcm_runtime *runtime, 
 				  unsigned int cond,
 				  snd_pcm_hw_param_t var,
@@ -1423,20 +1195,7 @@ static int snd_pcm_hw_rule_msbits(struct snd_pcm_hw_params *params,
 	return 0;
 }
 
-/**
- * snd_pcm_hw_constraint_msbits - add a hw constraint msbits rule
- * @runtime: PCM runtime instance
- * @cond: condition bits
- * @width: sample bits width
- * @msbits: msbits width
- *
- * This constraint will set the number of most significant bits (msbits) if a
- * sample format with the specified width has been select. If width is set to 0
- * the msbits will be set for any sample format with a width larger than the
- * specified msbits.
- *
- * Return: Zero if successful, or a negative error code on failure.
- */
+ 
 int snd_pcm_hw_constraint_msbits(struct snd_pcm_runtime *runtime, 
 				 unsigned int cond,
 				 unsigned int width,
@@ -1457,15 +1216,7 @@ static int snd_pcm_hw_rule_step(struct snd_pcm_hw_params *params,
 	return snd_interval_step(hw_param_interval(params, rule->var), step);
 }
 
-/**
- * snd_pcm_hw_constraint_step - add a hw constraint step rule
- * @runtime: PCM runtime instance
- * @cond: condition bits
- * @var: hw_params variable to apply the step constraint
- * @step: step size
- *
- * Return: Zero if successful, or a negative error code on failure.
- */
+ 
 int snd_pcm_hw_constraint_step(struct snd_pcm_runtime *runtime,
 			       unsigned int cond,
 			       snd_pcm_hw_param_t var,
@@ -1489,14 +1240,7 @@ static int snd_pcm_hw_rule_pow2(struct snd_pcm_hw_params *params, struct snd_pcm
 				 ARRAY_SIZE(pow2_sizes), pow2_sizes, 0);
 }		
 
-/**
- * snd_pcm_hw_constraint_pow2 - add a hw constraint power-of-2 rule
- * @runtime: PCM runtime instance
- * @cond: condition bits
- * @var: hw_params variable to apply the power-of-2 constraint
- *
- * Return: Zero if successful, or a negative error code on failure.
- */
+ 
 int snd_pcm_hw_constraint_pow2(struct snd_pcm_runtime *runtime,
 			       unsigned int cond,
 			       snd_pcm_hw_param_t var)
@@ -1517,13 +1261,7 @@ static int snd_pcm_hw_rule_noresample_func(struct snd_pcm_hw_params *params,
 	return snd_interval_list(rate, 1, &base_rate, 0);
 }
 
-/**
- * snd_pcm_hw_rule_noresample - add a rule to allow disabling hw resampling
- * @runtime: PCM runtime instance
- * @base_rate: the rate at which the hardware does not resample
- *
- * Return: Zero if successful, or a negative error code on failure.
- */
+ 
 int snd_pcm_hw_rule_noresample(struct snd_pcm_runtime *runtime,
 			       unsigned int base_rate)
 {
@@ -1565,15 +1303,7 @@ void _snd_pcm_hw_params_any(struct snd_pcm_hw_params *params)
 }
 EXPORT_SYMBOL(_snd_pcm_hw_params_any);
 
-/**
- * snd_pcm_hw_param_value - return @params field @var value
- * @params: the hw_params instance
- * @var: parameter to retrieve
- * @dir: pointer to the direction (-1,0,1) or %NULL
- *
- * Return: The value for field @var if it's fixed in configuration space
- * defined by @params. -%EINVAL otherwise.
- */
+ 
 int snd_pcm_hw_param_value(const struct snd_pcm_hw_params *params,
 			   snd_pcm_hw_param_t var, int *dir)
 {
@@ -1632,18 +1362,7 @@ static int _snd_pcm_hw_param_first(struct snd_pcm_hw_params *params,
 }
 
 
-/**
- * snd_pcm_hw_param_first - refine config space and return minimum value
- * @pcm: PCM instance
- * @params: the hw_params instance
- * @var: parameter to retrieve
- * @dir: pointer to the direction (-1,0,1) or %NULL
- *
- * Inside configuration space defined by @params remove from @var all
- * values > minimum. Reduce configuration space accordingly.
- *
- * Return: The minimum, or a negative error code on failure.
- */
+ 
 int snd_pcm_hw_param_first(struct snd_pcm_substream *pcm, 
 			   struct snd_pcm_hw_params *params, 
 			   snd_pcm_hw_param_t var, int *dir)
@@ -1678,18 +1397,7 @@ static int _snd_pcm_hw_param_last(struct snd_pcm_hw_params *params,
 }
 
 
-/**
- * snd_pcm_hw_param_last - refine config space and return maximum value
- * @pcm: PCM instance
- * @params: the hw_params instance
- * @var: parameter to retrieve
- * @dir: pointer to the direction (-1,0,1) or %NULL
- *
- * Inside configuration space defined by @params remove from @var all
- * values < maximum. Reduce configuration space accordingly.
- *
- * Return: The maximum, or a negative error code on failure.
- */
+ 
 int snd_pcm_hw_param_last(struct snd_pcm_substream *pcm, 
 			  struct snd_pcm_hw_params *params,
 			  snd_pcm_hw_param_t var, int *dir)
@@ -1777,17 +1485,7 @@ static int snd_pcm_lib_ioctl_fifo_size(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-/**
- * snd_pcm_lib_ioctl - a generic PCM ioctl callback
- * @substream: the pcm substream instance
- * @cmd: ioctl command
- * @arg: ioctl argument
- *
- * Processes the generic ioctl commands for PCM.
- * Can be passed as the ioctl callback for PCM ops.
- *
- * Return: Zero if successful, or a negative error code on failure.
- */
+ 
 int snd_pcm_lib_ioctl(struct snd_pcm_substream *substream,
 		      unsigned int cmd, void *arg)
 {
@@ -1803,33 +1501,7 @@ int snd_pcm_lib_ioctl(struct snd_pcm_substream *substream,
 }
 EXPORT_SYMBOL(snd_pcm_lib_ioctl);
 
-/**
- * snd_pcm_period_elapsed_under_stream_lock() - update the status of runtime for the next period
- *						under acquired lock of PCM substream.
- * @substream: the instance of pcm substream.
- *
- * This function is called when the batch of audio data frames as the same size as the period of
- * buffer is already processed in audio data transmission.
- *
- * The call of function updates the status of runtime with the latest position of audio data
- * transmission, checks overrun and underrun over buffer, awaken user processes from waiting for
- * available audio data frames, sampling audio timestamp, and performs stop or drain the PCM
- * substream according to configured threshold.
- *
- * The function is intended to use for the case that PCM driver operates audio data frames under
- * acquired lock of PCM substream; e.g. in callback of any operation of &snd_pcm_ops in process
- * context. In any interrupt context, it's preferrable to use ``snd_pcm_period_elapsed()`` instead
- * since lock of PCM substream should be acquired in advance.
- *
- * Developer should pay enough attention that some callbacks in &snd_pcm_ops are done by the call of
- * function:
- *
- * - .pointer - to retrieve current position of audio data transmission by frame count or XRUN state.
- * - .trigger - with SNDRV_PCM_TRIGGER_STOP at XRUN or DRAINING state.
- * - .get_time_info - to retrieve audio time stamp if needed.
- *
- * Even if more than one periods have elapsed since the last call, you have to call this only once.
- */
+ 
 void snd_pcm_period_elapsed_under_stream_lock(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime;
@@ -1851,18 +1523,7 @@ void snd_pcm_period_elapsed_under_stream_lock(struct snd_pcm_substream *substrea
 }
 EXPORT_SYMBOL(snd_pcm_period_elapsed_under_stream_lock);
 
-/**
- * snd_pcm_period_elapsed() - update the status of runtime for the next period by acquiring lock of
- *			      PCM substream.
- * @substream: the instance of PCM substream.
- *
- * This function is mostly similar to ``snd_pcm_period_elapsed_under_stream_lock()`` except for
- * acquiring lock of PCM substream voluntarily.
- *
- * It's typically called by any type of IRQ handler when hardware IRQ occurs to notify event that
- * the batch of audio data frames as the same size as the period of buffer is already processed in
- * audio data transmission.
- */
+ 
 void snd_pcm_period_elapsed(struct snd_pcm_substream *substream)
 {
 	unsigned long flags;
@@ -1876,12 +1537,7 @@ void snd_pcm_period_elapsed(struct snd_pcm_substream *substream)
 }
 EXPORT_SYMBOL(snd_pcm_period_elapsed);
 
-/*
- * Wait until avail_min data becomes available
- * Returns a negative error code if any error occurs during operation.
- * The available space is stored on availp.  When err = 0 and avail = 0
- * on the capture stream, it indicates the stream is in DRAINING state.
- */
+ 
 static int wait_for_avail(struct snd_pcm_substream *substream,
 			      snd_pcm_uframes_t *availp)
 {
@@ -1899,7 +1555,7 @@ static int wait_for_avail(struct snd_pcm_substream *substream,
 	if (runtime->no_period_wakeup)
 		wait_time = MAX_SCHEDULE_TIMEOUT;
 	else {
-		/* use wait time from substream if available */
+		 
 		if (substream->wait_time) {
 			wait_time = substream->wait_time;
 		} else {
@@ -1919,13 +1575,7 @@ static int wait_for_avail(struct snd_pcm_substream *substream,
 			break;
 		}
 
-		/*
-		 * We need to check if space became available already
-		 * (and thus the wakeup happened already) first to close
-		 * the race of space already having become available.
-		 * This check must happen after been added to the waitqueue
-		 * and having current state be INTERRUPTIBLE.
-		 */
+		 
 		avail = snd_pcm_avail(substream);
 		if (avail >= runtime->twake)
 			break;
@@ -1946,7 +1596,7 @@ static int wait_for_avail(struct snd_pcm_substream *substream,
 			if (is_playback)
 				err = -EPIPE;
 			else 
-				avail = 0; /* indicate draining */
+				avail = 0;  
 			goto _endloop;
 		case SNDRV_PCM_STATE_OPEN:
 		case SNDRV_PCM_STATE_SETUP:
@@ -1979,7 +1629,7 @@ typedef int (*pcm_copy_f)(struct snd_pcm_substream *, snd_pcm_uframes_t, void *,
 			  snd_pcm_uframes_t, snd_pcm_uframes_t, pcm_transfer_f,
 			  bool);
 
-/* calculate the target DMA-buffer position to be written/read */
+ 
 static void *get_dma_ptr(struct snd_pcm_runtime *runtime,
 			   int channel, unsigned long hwoff)
 {
@@ -1987,7 +1637,7 @@ static void *get_dma_ptr(struct snd_pcm_runtime *runtime,
 		channel * (runtime->dma_bytes / runtime->channels);
 }
 
-/* default copy ops for write; used for both interleaved and non- modes */
+ 
 static int default_write_copy(struct snd_pcm_substream *substream,
 			      int channel, unsigned long hwoff,
 			      struct iov_iter *iter, unsigned long bytes)
@@ -1998,10 +1648,7 @@ static int default_write_copy(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-/* fill silence instead of copy data; called as a transfer helper
- * from __snd_pcm_lib_write() or directly from noninterleaved_copy() when
- * a NULL buffer is passed
- */
+ 
 static int fill_silence(struct snd_pcm_substream *substream, int channel,
 			unsigned long hwoff, struct iov_iter *iter,
 			unsigned long bytes)
@@ -2020,7 +1667,7 @@ static int fill_silence(struct snd_pcm_substream *substream, int channel,
 	return 0;
 }
 
-/* default copy ops for read; used for both interleaved and non- modes */
+ 
 static int default_read_copy(struct snd_pcm_substream *substream,
 			     int channel, unsigned long hwoff,
 			     struct iov_iter *iter, unsigned long bytes)
@@ -2031,7 +1678,7 @@ static int default_read_copy(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-/* call transfer with the filled iov_iter */
+ 
 static int do_transfer(struct snd_pcm_substream *substream, int c,
 		       unsigned long hwoff, void *data, unsigned long bytes,
 		       pcm_transfer_f transfer, bool in_kernel)
@@ -2057,9 +1704,7 @@ static int do_transfer(struct snd_pcm_substream *substream, int c,
 	return transfer(substream, c, hwoff, &iter, bytes);
 }
 
-/* call transfer function with the converted pointers and sizes;
- * for interleaved mode, it's one shot for all samples
- */
+ 
 static int interleaved_copy(struct snd_pcm_substream *substream,
 			    snd_pcm_uframes_t hwoff, void *data,
 			    snd_pcm_uframes_t off,
@@ -2069,7 +1714,7 @@ static int interleaved_copy(struct snd_pcm_substream *substream,
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 
-	/* convert to bytes */
+	 
 	hwoff = frames_to_bytes(runtime, hwoff);
 	off = frames_to_bytes(runtime, off);
 	frames = frames_to_bytes(runtime, frames);
@@ -2078,9 +1723,7 @@ static int interleaved_copy(struct snd_pcm_substream *substream,
 			   in_kernel);
 }
 
-/* call transfer function with the converted pointers and sizes for each
- * non-interleaved channel; when buffer is NULL, silencing instead of copying
- */
+ 
 static int noninterleaved_copy(struct snd_pcm_substream *substream,
 			       snd_pcm_uframes_t hwoff, void *data,
 			       snd_pcm_uframes_t off,
@@ -2093,10 +1736,7 @@ static int noninterleaved_copy(struct snd_pcm_substream *substream,
 	void **bufs = data;
 	int c, err;
 
-	/* convert to bytes; note that it's not frames_to_bytes() here.
-	 * in non-interleaved mode, we copy for each channel, thus
-	 * each copy is n_samples bytes x channels = whole frames.
-	 */
+	 
 	off = samples_to_bytes(runtime, off);
 	frames = samples_to_bytes(runtime, frames);
 	hwoff = samples_to_bytes(runtime, hwoff);
@@ -2112,9 +1752,7 @@ static int noninterleaved_copy(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-/* fill silence on the given buffer position;
- * called from snd_pcm_playback_silence()
- */
+ 
 static int fill_silence_frames(struct snd_pcm_substream *substream,
 			       snd_pcm_uframes_t off, snd_pcm_uframes_t frames)
 {
@@ -2127,7 +1765,7 @@ static int fill_silence_frames(struct snd_pcm_substream *substream,
 					   fill_silence, true);
 }
 
-/* sanity-check for read/write methods */
+ 
 static int pcm_sanity_check(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime;
@@ -2157,9 +1795,7 @@ static int pcm_accessible_state(struct snd_pcm_runtime *runtime)
 	}
 }
 
-/* update to the given appl_ptr and call ack callback if needed;
- * when an error is returned, take back to the original value
- */
+ 
 int pcm_lib_apply_appl_ptr(struct snd_pcm_substream *substream,
 			   snd_pcm_uframes_t appl_ptr)
 {
@@ -2173,9 +1809,7 @@ int pcm_lib_apply_appl_ptr(struct snd_pcm_substream *substream,
 
 	if (appl_ptr >= runtime->boundary)
 		return -EINVAL;
-	/*
-	 * check if a rewind is requested by the application
-	 */
+	 
 	if (substream->runtime->info & SNDRV_PCM_INFO_NO_REWINDS) {
 		diff = appl_ptr - old_appl_ptr;
 		if (diff >= 0) {
@@ -2203,7 +1837,7 @@ int pcm_lib_apply_appl_ptr(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-/* the common loop for read/write data */
+ 
 snd_pcm_sframes_t __snd_pcm_lib_xfer(struct snd_pcm_substream *substream,
 				     void *data, bool interleaved,
 				     snd_pcm_uframes_t size, bool in_kernel)
@@ -2261,10 +1895,7 @@ snd_pcm_sframes_t __snd_pcm_lib_xfer(struct snd_pcm_substream *substream,
 	if (runtime->state == SNDRV_PCM_STATE_RUNNING)
 		snd_pcm_update_hw_ptr(substream);
 
-	/*
-	 * If size < start_threshold, wait indefinitely. Another
-	 * thread may start capture
-	 */
+	 
 	if (!is_playback &&
 	    runtime->state == SNDRV_PCM_STATE_PREPARED &&
 	    size >= runtime->start_threshold) {
@@ -2294,7 +1925,7 @@ snd_pcm_sframes_t __snd_pcm_lib_xfer(struct snd_pcm_substream *substream,
 			if (err < 0)
 				goto _end_unlock;
 			if (!avail)
-				continue; /* draining */
+				continue;  
 		}
 		frames = size > avail ? avail : size;
 		appl_ptr = READ_ONCE(runtime->control->appl_ptr);
@@ -2352,11 +1983,9 @@ snd_pcm_sframes_t __snd_pcm_lib_xfer(struct snd_pcm_substream *substream,
 }
 EXPORT_SYMBOL(__snd_pcm_lib_xfer);
 
-/*
- * standard channel mapping helpers
- */
+ 
 
-/* default channel maps for multi-channel playbacks, up to 8 channels */
+ 
 const struct snd_pcm_chmap_elem snd_pcm_std_chmaps[] = {
 	{ .channels = 1,
 	  .map = { SNDRV_CHMAP_MONO } },
@@ -2378,7 +2007,7 @@ const struct snd_pcm_chmap_elem snd_pcm_std_chmaps[] = {
 };
 EXPORT_SYMBOL_GPL(snd_pcm_std_chmaps);
 
-/* alternative channel maps with CLFE <-> surround swapped for 6/8 channels */
+ 
 const struct snd_pcm_chmap_elem snd_pcm_alt_chmaps[] = {
 	{ .channels = 1,
 	  .map = { SNDRV_CHMAP_MONO } },
@@ -2419,9 +2048,7 @@ static int pcm_chmap_ctl_info(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-/* get callback for channel map ctl element
- * stores the channel position firstly matching with the current channels
- */
+ 
 static int pcm_chmap_ctl_get(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
@@ -2438,7 +2065,7 @@ static int pcm_chmap_ctl_get(struct snd_kcontrol *kcontrol,
 	memset(ucontrol->value.integer.value, 0,
 	       sizeof(long) * info->max_channels);
 	if (!substream->runtime)
-		return 0; /* no channels set */
+		return 0;  
 	for (map = info->chmap; map->channels; map++) {
 		int i;
 		if (map->channels == substream->runtime->channels &&
@@ -2451,9 +2078,7 @@ static int pcm_chmap_ctl_get(struct snd_kcontrol *kcontrol,
 	return -EINVAL;
 }
 
-/* tlv callback for channel map ctl element
- * expands the pre-defined channel maps in a form of TLV
- */
+ 
 static int pcm_chmap_ctl_tlv(struct snd_kcontrol *kcontrol, int op_flag,
 			     unsigned int size, unsigned int __user *tlv)
 {
@@ -2504,18 +2129,7 @@ static void pcm_chmap_ctl_private_free(struct snd_kcontrol *kcontrol)
 	kfree(info);
 }
 
-/**
- * snd_pcm_add_chmap_ctls - create channel-mapping control elements
- * @pcm: the assigned PCM instance
- * @stream: stream direction
- * @chmap: channel map elements (for query)
- * @max_channels: the max number of channels for the stream
- * @private_value: the value passed to each kcontrol's private_value field
- * @info_ret: store struct snd_pcm_chmap instance if non-NULL
- *
- * Create channel-mapping control elements assigned to the given PCM stream(s).
- * Return: Zero if successful, or a negative error value.
- */
+ 
 int snd_pcm_add_chmap_ctls(struct snd_pcm *pcm, int stream,
 			   const struct snd_pcm_chmap_elem *chmap,
 			   int max_channels,

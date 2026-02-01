@@ -1,20 +1,4 @@
-/* uniq -- remove duplicate lines from a sorted file
-   Copyright (C) 1986-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Richard M. Stallman and David MacKenzie. */
+ 
 
 #include <config.h>
 
@@ -31,7 +15,7 @@
 #include "memcasecmp.h"
 #include "quote.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "uniq"
 
 #define AUTHORS \
@@ -48,44 +32,41 @@
     }						\
   while (0)
 
-/* Number of fields to skip on each line when doing comparisons. */
+ 
 static size_t skip_fields;
 
-/* Number of chars to skip after skipping any fields. */
+ 
 static size_t skip_chars;
 
-/* Number of chars to compare. */
+ 
 static size_t check_chars;
 
 enum countmode
 {
-  count_occurrences,		/* -c Print count before output lines. */
-  count_none			/* Default.  Do not print counts. */
+  count_occurrences,		 
+  count_none			 
 };
 
-/* Whether and how to precede the output lines with a count of the number of
-   times they occurred in the input. */
+ 
 static enum countmode countmode;
 
-/* Which lines to output: unique lines, the first of a group of
-   repeated lines, and the second and subsequent of a group of
-   repeated lines.  */
+ 
 static bool output_unique;
 static bool output_first_repeated;
 static bool output_later_repeated;
 
-/* If true, ignore case when comparing.  */
+ 
 static bool ignore_case;
 
 enum delimit_method
 {
-  /* No delimiters output.  --all-repeated[=none] */
+   
   DM_NONE,
 
-  /* Delimiter precedes all groups.  --all-repeated=prepend */
+   
   DM_PREPEND,
 
-  /* Delimit all groups.  --all-repeated=separate */
+   
   DM_SEPARATE
 };
 
@@ -99,24 +80,24 @@ static enum delimit_method const delimit_method_map[] =
   DM_NONE, DM_PREPEND, DM_SEPARATE
 };
 
-/* Select whether/how to delimit groups of duplicate lines.  */
+ 
 static enum delimit_method delimit_groups;
 
 enum grouping_method
 {
-  /* No grouping, when "--group" isn't used */
+   
   GM_NONE,
 
-  /* Delimiter precedes all groups.  --group=prepend */
+   
   GM_PREPEND,
 
-  /* Delimiter follows all groups.   --group=append */
+   
   GM_APPEND,
 
-  /* Delimiter between groups.    --group[=separate] */
+   
   GM_SEPARATE,
 
-  /* Delimiter before and after each group. --group=both */
+   
   GM_BOTH
 };
 

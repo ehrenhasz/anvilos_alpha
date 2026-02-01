@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright © 2010-2015 Broadcom Corporation
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -32,19 +30,11 @@
 
 #include "brcmnand.h"
 
-/*
- * This flag controls if WP stays on between erase/write commands to mitigate
- * flash corruption due to power glitches. Values:
- * 0: NAND_WP is not used or not available
- * 1: NAND_WP is set by default, cleared for erase/write operations
- * 2: NAND_WP is always cleared
- */
+ 
 static int wp_on = 1;
 module_param(wp_on, int, 0444);
 
-/***********************************************************************
- * Definitions
- ***********************************************************************/
+ 
 
 #define DRV_NAME			"brcmnand"
 
@@ -81,17 +71,17 @@ struct brcm_nand_dma_desc {
 	u32 status_valid;
 } __packed;
 
-/* Bitfields for brcm_nand_dma_desc::status_valid */
+ 
 #define FLASH_DMA_ECC_ERROR	(1 << 8)
 #define FLASH_DMA_CORR_ERROR	(1 << 9)
 
-/* Bitfields for DMA_MODE */
-#define FLASH_DMA_MODE_STOP_ON_ERROR	BIT(1) /* stop in Uncorr ECC error */
-#define FLASH_DMA_MODE_MODE		BIT(0) /* link list */
+ 
+#define FLASH_DMA_MODE_STOP_ON_ERROR	BIT(1)  
+#define FLASH_DMA_MODE_MODE		BIT(0)  
 #define FLASH_DMA_MODE_MASK		(FLASH_DMA_MODE_STOP_ON_ERROR |	\
 						FLASH_DMA_MODE_MODE)
 
-/* 512B flash cache in the NAND controller HW */
+ 
 #define FC_SHIFT		9U
 #define FC_BYTES		512U
 #define FC_WORDS		(FC_BYTES >> 2)
@@ -117,7 +107,7 @@ struct brcm_nand_dma_desc {
 #define EDU_CONFIG_SWAP_CFG     0
 #endif
 
-/* edu registers */
+ 
 enum edu_reg {
 	EDU_CONFIG = 0,
 	EDU_DRAM_ADDR,
@@ -142,7 +132,7 @@ static const u16  edu_regs[] = {
 	[EDU_ERR_STATUS] = 0x20,
 };
 
-/* flash_dma registers */
+ 
 enum flash_dma_reg {
 	FLASH_DMA_REVISION = 0,
 	FLASH_DMA_FIRST_DESC,
@@ -157,7 +147,7 @@ enum flash_dma_reg {
 	FLASH_DMA_CURRENT_DESC_EXT,
 };
 
-/* flash_dma registers v0*/
+ 
 static const u16 flash_dma_regs_v0[] = {
 	[FLASH_DMA_REVISION]		= 0x00,
 	[FLASH_DMA_FIRST_DESC]		= 0x04,
@@ -169,7 +159,7 @@ static const u16 flash_dma_regs_v0[] = {
 	[FLASH_DMA_CURRENT_DESC]	= 0x1c,
 };
 
-/* flash_dma registers v1*/
+ 
 static const u16 flash_dma_regs_v1[] = {
 	[FLASH_DMA_REVISION]		= 0x00,
 	[FLASH_DMA_FIRST_DESC]		= 0x04,
@@ -184,7 +174,7 @@ static const u16 flash_dma_regs_v1[] = {
 	[FLASH_DMA_CURRENT_DESC_EXT]	= 0x28,
 };
 
-/* flash_dma registers v4 */
+ 
 static const u16 flash_dma_regs_v4[] = {
 	[FLASH_DMA_REVISION]		= 0x00,
 	[FLASH_DMA_FIRST_DESC]		= 0x08,
@@ -199,7 +189,7 @@ static const u16 flash_dma_regs_v4[] = {
 	[FLASH_DMA_CURRENT_DESC_EXT]	= 0x34,
 };
 
-/* Controller feature flags */
+ 
 enum {
 	BRCMNAND_HAS_1K_SECTORS			= BIT(0),
 	BRCMNAND_HAS_PREFETCH			= BIT(1),
@@ -215,16 +205,16 @@ struct brcmnand_controller {
 	struct device		*dev;
 	struct nand_controller	controller;
 	void __iomem		*nand_base;
-	void __iomem		*nand_fc; /* flash cache */
+	void __iomem		*nand_fc;  
 	void __iomem		*flash_dma_base;
 	int			irq;
 	unsigned int		dma_irq;
 	int			nand_version;
 
-	/* Some SoCs provide custom interrupt status register(s) */
+	 
 	struct brcmnand_soc	*soc;
 
-	/* Some SoCs have a gateable clock for the controller */
+	 
 	struct clk		*clk;
 
 	int			cmd_pending;
@@ -234,10 +224,10 @@ struct brcmnand_controller {
 	struct completion	dma_done;
 	struct completion       edu_done;
 
-	/* List of NAND hosts (one for each chip-select) */
+	 
 	struct list_head host_list;
 
-	/* EDU info, per-transaction */
+	 
 	const u16               *edu_offsets;
 	void __iomem            *edu_base;
 	int			edu_irq;
@@ -246,11 +236,11 @@ struct brcmnand_controller {
 	u32                     edu_ext_addr;
 	u32                     edu_cmd;
 	u32                     edu_config;
-	int			sas; /* spare area size, per flash cache */
+	int			sas;  
 	int			sector_size_1k;
 	u8			*oob;
 
-	/* flash_dma reg */
+	 
 	const u16		*flash_dma_offsets;
 	struct brcm_nand_dma_desc *dma_desc;
 	dma_addr_t		dma_pa;
@@ -258,14 +248,14 @@ struct brcmnand_controller {
 	int (*dma_trans)(struct brcmnand_host *host, u64 addr, u32 *buf,
 			 u8 *oob, u32 len, u8 dma_cmd);
 
-	/* in-memory cache of the FLASH_CACHE, used only for some commands */
+	 
 	u8			flash_cache[FC_BYTES];
 
-	/* Controller revision details */
+	 
 	const u16		*reg_offsets;
-	unsigned int		reg_spacing; /* between CS1, CS2, ... regs */
-	const u8		*cs_offsets; /* within each chip-select */
-	const u8		*cs0_offsets; /* within CS0, if different */
+	unsigned int		reg_spacing;  
+	const u8		*cs_offsets;  
+	const u8		*cs0_offsets;  
 	unsigned int		max_block_size;
 	const unsigned int	*block_sizes;
 	unsigned int		max_page_size;
@@ -275,7 +265,7 @@ struct brcmnand_controller {
 	u32			ecc_level_shift;
 	u32			features;
 
-	/* for low-power standby/resume only */
+	 
 	u32			nand_cs_nand_select;
 	u32			nand_cs_nand_xor;
 	u32			corr_stat_threshold;
@@ -295,7 +285,7 @@ struct brcmnand_cfg {
 	unsigned int		ful_adr_bytes;
 	unsigned int		sector_size_1k;
 	unsigned int		ecc_level;
-	/* use for low-power standby/resume only */
+	 
 	u32			acc_control;
 	u32			config;
 	u32			config_ext;
@@ -326,7 +316,7 @@ enum brcmnand_reg {
 	BRCMNAND_CS_XOR,
 	BRCMNAND_LL_OP,
 	BRCMNAND_CS0_BASE,
-	BRCMNAND_CS1_BASE,		/* CS1 regs, if non-contiguous */
+	BRCMNAND_CS1_BASE,		 
 	BRCMNAND_CORR_THRESHOLD,
 	BRCMNAND_CORR_THRESHOLD_EXT,
 	BRCMNAND_UNCORR_COUNT,
@@ -340,13 +330,13 @@ enum brcmnand_reg {
 	BRCMNAND_ID_EXT,
 	BRCMNAND_LL_RDATA,
 	BRCMNAND_OOB_READ_BASE,
-	BRCMNAND_OOB_READ_10_BASE,	/* offset 0x10, if non-contiguous */
+	BRCMNAND_OOB_READ_10_BASE,	 
 	BRCMNAND_OOB_WRITE_BASE,
-	BRCMNAND_OOB_WRITE_10_BASE,	/* offset 0x10, if non-contiguous */
+	BRCMNAND_OOB_WRITE_10_BASE,	 
 	BRCMNAND_FC_BASE,
 };
 
-/* BRCMNAND v2.1-v2.2 */
+ 
 static const u16 brcmnand_regs_v21[] = {
 	[BRCMNAND_CMD_START]		=  0x04,
 	[BRCMNAND_CMD_EXT_ADDRESS]	=  0x08,
@@ -376,7 +366,7 @@ static const u16 brcmnand_regs_v21[] = {
 	[BRCMNAND_FC_BASE]		= 0x200,
 };
 
-/* BRCMNAND v3.3-v4.0 */
+ 
 static const u16 brcmnand_regs_v33[] = {
 	[BRCMNAND_CMD_START]		=  0x04,
 	[BRCMNAND_CMD_EXT_ADDRESS]	=  0x08,
@@ -406,7 +396,7 @@ static const u16 brcmnand_regs_v33[] = {
 	[BRCMNAND_FC_BASE]		= 0x200,
 };
 
-/* BRCMNAND v5.0 */
+ 
 static const u16 brcmnand_regs_v50[] = {
 	[BRCMNAND_CMD_START]		=  0x04,
 	[BRCMNAND_CMD_EXT_ADDRESS]	=  0x08,
@@ -436,7 +426,7 @@ static const u16 brcmnand_regs_v50[] = {
 	[BRCMNAND_FC_BASE]		= 0x200,
 };
 
-/* BRCMNAND v6.0 - v7.1 */
+ 
 static const u16 brcmnand_regs_v60[] = {
 	[BRCMNAND_CMD_START]		=  0x04,
 	[BRCMNAND_CMD_EXT_ADDRESS]	=  0x08,
@@ -466,7 +456,7 @@ static const u16 brcmnand_regs_v60[] = {
 	[BRCMNAND_FC_BASE]		= 0x400,
 };
 
-/* BRCMNAND v7.1 */
+ 
 static const u16 brcmnand_regs_v71[] = {
 	[BRCMNAND_CMD_START]		=  0x04,
 	[BRCMNAND_CMD_EXT_ADDRESS]	=  0x08,
@@ -496,7 +486,7 @@ static const u16 brcmnand_regs_v71[] = {
 	[BRCMNAND_FC_BASE]		= 0x400,
 };
 
-/* BRCMNAND v7.2 */
+ 
 static const u16 brcmnand_regs_v72[] = {
 	[BRCMNAND_CMD_START]		=  0x04,
 	[BRCMNAND_CMD_EXT_ADDRESS]	=  0x08,
@@ -534,7 +524,7 @@ enum brcmnand_cs_reg {
 	BRCMNAND_CS_TIMING2,
 };
 
-/* Per chip-select offsets for v7.1 */
+ 
 static const u8 brcmnand_cs_offsets_v71[] = {
 	[BRCMNAND_CS_ACC_CONTROL]	= 0x00,
 	[BRCMNAND_CS_CFG_EXT]		= 0x04,
@@ -543,7 +533,7 @@ static const u8 brcmnand_cs_offsets_v71[] = {
 	[BRCMNAND_CS_TIMING2]		= 0x10,
 };
 
-/* Per chip-select offsets for pre v7.1, except CS0 on <= v5.0 */
+ 
 static const u8 brcmnand_cs_offsets[] = {
 	[BRCMNAND_CS_ACC_CONTROL]	= 0x00,
 	[BRCMNAND_CS_CFG_EXT]		= 0x04,
@@ -552,7 +542,7 @@ static const u8 brcmnand_cs_offsets[] = {
 	[BRCMNAND_CS_TIMING2]		= 0x0c,
 };
 
-/* Per chip-select offset for <= v5.0 on CS0 only */
+ 
 static const u8 brcmnand_cs_offsets_cs0[] = {
 	[BRCMNAND_CS_ACC_CONTROL]	= 0x00,
 	[BRCMNAND_CS_CFG_EXT]		= 0x08,
@@ -561,11 +551,7 @@ static const u8 brcmnand_cs_offsets_cs0[] = {
 	[BRCMNAND_CS_TIMING2]		= 0x14,
 };
 
-/*
- * Bitfields for the CFG and CFG_EXT registers. Pre-v7.1 controllers only had
- * one config register, but once the bitfields overflowed, newer controllers
- * (v7.1 and newer) added a CFG_EXT register and shuffled a few fields around.
- */
+ 
 enum {
 	CFG_BLK_ADR_BYTES_SHIFT		= 8,
 	CFG_COL_ADR_BYTES_SHIFT		= 12,
@@ -574,19 +560,19 @@ enum {
 	CFG_BUS_WIDTH			= BIT(CFG_BUS_WIDTH_SHIFT),
 	CFG_DEVICE_SIZE_SHIFT		= 24,
 
-	/* Only for v2.1 */
+	 
 	CFG_PAGE_SIZE_SHIFT_v2_1	= 30,
 
-	/* Only for pre-v7.1 (with no CFG_EXT register) */
+	 
 	CFG_PAGE_SIZE_SHIFT		= 20,
 	CFG_BLK_SIZE_SHIFT		= 28,
 
-	/* Only for v7.1+ (with CFG_EXT register) */
+	 
 	CFG_EXT_PAGE_SIZE_SHIFT		= 0,
 	CFG_EXT_BLK_SIZE_SHIFT		= 4,
 };
 
-/* BRCMNAND_INTFC_STATUS */
+ 
 enum {
 	INTFC_FLASH_STATUS		= GENMASK(7, 0),
 
@@ -597,19 +583,14 @@ enum {
 	INTFC_CTLR_READY		= BIT(31),
 };
 
-/***********************************************************************
- * NAND ACC CONTROL bitfield
- *
- * Some bits have remained constant throughout hardware revision, while
- * others have shifted around.
- ***********************************************************************/
+ 
 
-/* Constant for all versions (where supported) */
+ 
 enum {
-	/* See BRCMNAND_HAS_CACHE_MODE */
+	 
 	ACC_CONTROL_CACHE_MODE				= BIT(22),
 
-	/* See BRCMNAND_HAS_PREFETCH */
+	 
 	ACC_CONTROL_PREFETCH				= BIT(23),
 
 	ACC_CONTROL_PAGE_HIT				= BIT(24),
@@ -622,7 +603,7 @@ enum {
 };
 
 #define	ACC_CONTROL_ECC_SHIFT			16
-/* Only for v7.2 */
+ 
 #define	ACC_CONTROL_ECC_EXT_SHIFT		13
 
 static inline bool brcmnand_non_mmio_ops(struct brcmnand_controller *ctrl)
@@ -662,14 +643,14 @@ static int brcmnand_revision_init(struct brcmnand_controller *ctrl)
 
 	ctrl->nand_version = nand_readreg(ctrl, 0) & 0xffff;
 
-	/* Only support v2.1+ */
+	 
 	if (ctrl->nand_version < 0x0201) {
 		dev_err(ctrl->dev, "version %#x not supported\n",
 			ctrl->nand_version);
 		return -ENODEV;
 	}
 
-	/* Register offsets */
+	 
 	if (ctrl->nand_version >= 0x0702)
 		ctrl->reg_offsets = brcmnand_regs_v72;
 	else if (ctrl->nand_version == 0x0701)
@@ -683,27 +664,27 @@ static int brcmnand_revision_init(struct brcmnand_controller *ctrl)
 	else if (ctrl->nand_version >= 0x0201)
 		ctrl->reg_offsets = brcmnand_regs_v21;
 
-	/* Chip-select stride */
+	 
 	if (ctrl->nand_version >= 0x0701)
 		ctrl->reg_spacing = 0x14;
 	else
 		ctrl->reg_spacing = 0x10;
 
-	/* Per chip-select registers */
+	 
 	if (ctrl->nand_version >= 0x0701) {
 		ctrl->cs_offsets = brcmnand_cs_offsets_v71;
 	} else {
 		ctrl->cs_offsets = brcmnand_cs_offsets;
 
-		/* v3.3-5.0 have a different CS0 offset layout */
+		 
 		if (ctrl->nand_version >= 0x0303 &&
 		    ctrl->nand_version <= 0x0500)
 			ctrl->cs0_offsets = brcmnand_cs_offsets_cs0;
 	}
 
-	/* Page / block sizes */
+	 
 	if (ctrl->nand_version >= 0x0701) {
-		/* >= v7.1 use nice power-of-2 values! */
+		 
 		ctrl->max_page_size = 16 * 1024;
 		ctrl->max_block_size = 2 * 1024 * 1024;
 	} else {
@@ -737,7 +718,7 @@ static int brcmnand_revision_init(struct brcmnand_controller *ctrl)
 		}
 	}
 
-	/* Maximum spare area sector size (per 512B) */
+	 
 	if (ctrl->nand_version == 0x0702)
 		ctrl->max_oob = 128;
 	else if (ctrl->nand_version >= 0x0600)
@@ -747,14 +728,11 @@ static int brcmnand_revision_init(struct brcmnand_controller *ctrl)
 	else
 		ctrl->max_oob = 16;
 
-	/* v6.0 and newer (except v6.1) have prefetch support */
+	 
 	if (ctrl->nand_version >= 0x0600 && ctrl->nand_version != 0x0601)
 		ctrl->features |= BRCMNAND_HAS_PREFETCH;
 
-	/*
-	 * v6.x has cache mode, but it's implemented differently. Ignore it for
-	 * now.
-	 */
+	 
 	if (ctrl->nand_version >= 0x0700)
 		ctrl->features |= BRCMNAND_HAS_CACHE_MODE;
 
@@ -766,7 +744,7 @@ static int brcmnand_revision_init(struct brcmnand_controller *ctrl)
 	else if (of_property_read_bool(ctrl->dev->of_node, "brcm,nand-has-wp"))
 		ctrl->features |= BRCMNAND_HAS_WP;
 
-	/* v7.2 has different ecc level shift in the acc register */
+	 
 	if (ctrl->nand_version == 0x0702)
 		ctrl->ecc_level_shift = ACC_CONTROL_ECC_EXT_SHIFT;
 	else
@@ -777,7 +755,7 @@ static int brcmnand_revision_init(struct brcmnand_controller *ctrl)
 
 static void brcmnand_flash_dma_revision_init(struct brcmnand_controller *ctrl)
 {
-	/* flash_dma register offsets */
+	 
 	if (ctrl->nand_version >= 0x0703)
 		ctrl->flash_dma_offsets = flash_dma_regs_v4;
 	else if (ctrl->nand_version == 0x0602)
@@ -852,7 +830,7 @@ static inline u32 edu_readl(struct brcmnand_controller *ctrl,
 static void brcmnand_clear_ecc_addr(struct brcmnand_controller *ctrl)
 {
 
-	/* Clear error addresses */
+	 
 	brcmnand_write_reg(ctrl, BRCMNAND_UNCORR_ADDR, 0);
 	brcmnand_write_reg(ctrl, BRCMNAND_CORR_ADDR, 0);
 	brcmnand_write_reg(ctrl, BRCMNAND_UNCORR_EXT_ADDR, 0);
@@ -955,9 +933,7 @@ static void brcmnand_wr_corr_thresh(struct brcmnand_host *host, u8 val)
 
 static inline int brcmnand_cmd_shift(struct brcmnand_controller *ctrl)
 {
-	/* Kludge for the BCMA-based NAND controller which does not actually
-	 * shift the command
-	 */
+	 
 	if (ctrl->nand_version == 0x0304 && brcmnand_non_mmio_ops(ctrl))
 		return 0;
 
@@ -984,7 +960,7 @@ static inline u32 brcmnand_ecc_level_mask(struct brcmnand_controller *ctrl)
 
 	mask <<= ACC_CONTROL_ECC_SHIFT;
 
-	/* v7.2 includes additional ECC levels */
+	 
 	if (ctrl->nand_version == 0x0702)
 		mask |= 0x7 << ACC_CONTROL_ECC_EXT_SHIFT;
 
@@ -999,11 +975,11 @@ static void brcmnand_set_ecc_enabled(struct brcmnand_host *host, int en)
 	u32 ecc_flags = ACC_CONTROL_WR_ECC | ACC_CONTROL_RD_ECC;
 
 	if (en) {
-		acc_control |= ecc_flags; /* enable RD/WR ECC */
+		acc_control |= ecc_flags;  
 		acc_control &= ~brcmnand_ecc_level_mask(ctrl);
 		acc_control |= host->hwcfg.ecc_level << ctrl->ecc_level_shift;
 	} else {
-		acc_control &= ~ecc_flags; /* disable RD/WR ECC */
+		acc_control &= ~ecc_flags;  
 		acc_control &= ~brcmnand_ecc_level_mask(ctrl);
 	}
 
@@ -1052,9 +1028,7 @@ static void brcmnand_set_sector_size_1k(struct brcmnand_host *host, int val)
 	nand_writereg(ctrl, acc_control_offs, tmp);
 }
 
-/***********************************************************************
- * CS_NAND_SELECT
- ***********************************************************************/
+ 
 
 enum {
 	CS_SELECT_NAND_WP			= BIT(29),
@@ -1080,10 +1054,7 @@ static int bcmnand_ctrl_poll_status(struct brcmnand_controller *ctrl,
 		cpu_relax();
 	} while (time_after(limit, jiffies));
 
-	/*
-	 * do a final check after time out in case the CPU was busy and the driver
-	 * did not get enough time to perform the polling to avoid false alarms
-	 */
+	 
 	val = brcmnand_read_reg(ctrl, BRCMNAND_INTFC_STATUS);
 	if ((val & mask) == expected_val)
 		return 0;
@@ -1101,9 +1072,7 @@ static inline void brcmnand_set_wp(struct brcmnand_controller *ctrl, bool en)
 	brcmnand_rmw_reg(ctrl, BRCMNAND_CS_SELECT, CS_SELECT_NAND_WP, 0, val);
 }
 
-/***********************************************************************
- * Flash DMA
- ***********************************************************************/
+ 
 
 static inline bool has_flash_dma(struct brcmnand_controller *ctrl)
 {
@@ -1156,7 +1125,7 @@ static inline u32 flash_dma_readl(struct brcmnand_controller *ctrl,
 	return brcmnand_readl(ctrl->flash_dma_base + offs);
 }
 
-/* Low-level operation types: command, address, write, or read */
+ 
 enum brcmnand_llop_type {
 	LL_OP_CMD,
 	LL_OP_ADDR,
@@ -1164,9 +1133,7 @@ enum brcmnand_llop_type {
 	LL_OP_RD,
 };
 
-/***********************************************************************
- * Internal support functions
- ***********************************************************************/
+ 
 
 static inline bool is_hamming_ecc(struct brcmnand_controller *ctrl,
 				  struct brcmnand_cfg *cfg)
@@ -1180,11 +1147,7 @@ static inline bool is_hamming_ecc(struct brcmnand_controller *ctrl,
 			(cfg->spare_area_size == 28 && cfg->ecc_level == 16));
 }
 
-/*
- * Set mtd->ooblayout to the appropriate mtd_ooblayout_ops given
- * the layout/configuration.
- * Returns -ERRCODE on failure.
- */
+ 
 static int brcmnand_hamming_ooblayout_ecc(struct mtd_info *mtd, int section,
 					  struct mtd_oob_region *oobregion)
 {
@@ -1224,10 +1187,10 @@ static int brcmnand_hamming_ooblayout_free(struct mtd_info *mtd, int section,
 		oobregion->offset = ((section - 1) * sas) + 9;
 	} else {
 		if (cfg->page_size > 512) {
-			/* Large page NAND uses first 2 bytes for BBI */
+			 
 			oobregion->offset = 2;
 		} else {
-			/* Small page NAND uses last byte before ECC for BBI */
+			 
 			oobregion->offset = 0;
 			next--;
 		}
@@ -1338,12 +1301,7 @@ static int brcmstb_choose_ecc_layout(struct brcmnand_host *host)
 		return 0;
 	}
 
-	/*
-	 * CONTROLLER_VERSION:
-	 *   < v5.0: ECC_REQ = ceil(BCH_T * 13/8)
-	 *  >= v5.0: ECC_REQ = ceil(BCH_T * 14/8)
-	 * But we will just be conservative.
-	 */
+	 
 	ecc->bytes = DIV_ROUND_UP(ecc_level * 14, 8);
 	if (p->page_size == 512)
 		mtd_set_ooblayout(mtd, &brcmnand_bch_sp_ooblayout_ops);
@@ -1375,10 +1333,7 @@ static void brcmnand_wp(struct mtd_info *mtd, int wp)
 			old_wp = wp;
 		}
 
-		/*
-		 * make sure ctrl/flash ready before and after
-		 * changing state of #WP pin
-		 */
+		 
 		ret = bcmnand_ctrl_poll_status(ctrl, NAND_CTRL_RDY |
 					       NAND_STATUS_READY,
 					       NAND_CTRL_RDY |
@@ -1388,7 +1343,7 @@ static void brcmnand_wp(struct mtd_info *mtd, int wp)
 
 		brcmnand_set_wp(ctrl, wp);
 		nand_status_op(chip, NULL);
-		/* NAND_STATUS_WP 0x00 = protected, 0x80 = not protected */
+		 
 		ret = bcmnand_ctrl_poll_status(ctrl,
 					       NAND_CTRL_RDY |
 					       NAND_STATUS_READY |
@@ -1404,7 +1359,7 @@ static void brcmnand_wp(struct mtd_info *mtd, int wp)
 	}
 }
 
-/* Helper functions for reading and writing OOB registers */
+ 
 static inline u8 oob_reg_read(struct brcmnand_controller *ctrl, u32 offs)
 {
 	u16 offset0, offset10, reg_offs;
@@ -1442,21 +1397,14 @@ static inline void oob_reg_write(struct brcmnand_controller *ctrl, u32 offs,
 	nand_writereg(ctrl, reg_offs, data);
 }
 
-/*
- * read_oob_from_regs - read data from OOB registers
- * @ctrl: NAND controller
- * @i: sub-page sector index
- * @oob: buffer to read to
- * @sas: spare area sector size (i.e., OOB size per FLASH_CACHE)
- * @sector_1k: 1 for 1KiB sectors, 0 for 512B, other values are illegal
- */
+ 
 static int read_oob_from_regs(struct brcmnand_controller *ctrl, int i, u8 *oob,
 			      int sas, int sector_1k)
 {
 	int tbytes = sas << sector_1k;
 	int j;
 
-	/* Adjust OOB values for 1K sector size */
+	 
 	if (sector_1k && (i & 0x01))
 		tbytes = max(0, tbytes - (int)ctrl->max_oob);
 	tbytes = min_t(int, tbytes, ctrl->max_oob);
@@ -1466,13 +1414,7 @@ static int read_oob_from_regs(struct brcmnand_controller *ctrl, int i, u8 *oob,
 	return tbytes;
 }
 
-/*
- * write_oob_to_regs - write data to OOB registers
- * @i: sub-page sector index
- * @oob: buffer to write from
- * @sas: spare area sector size (i.e., OOB size per FLASH_CACHE)
- * @sector_1k: 1 for 1KiB sectors, 0 for 512B, other values are illegal
- */
+ 
 static int write_oob_to_regs(struct brcmnand_controller *ctrl, int i,
 			     const u8 *oob, int sas, int sector_1k)
 {
@@ -1481,15 +1423,12 @@ static int write_oob_to_regs(struct brcmnand_controller *ctrl, int i,
 	u32 last = 0xffffffff;
 	u8 *plast = (u8 *)&last;
 
-	/* Adjust OOB values for 1K sector size */
+	 
 	if (sector_1k && (i & 0x01))
 		tbytes = max(0, tbytes - (int)ctrl->max_oob);
 	tbytes = min_t(int, tbytes, ctrl->max_oob);
 
-	/*
-	 * tbytes may not be multiple of words. Make sure we don't read out of
-	 * the boundary and stop at last word.
-	 */
+	 
 	for (j = 0; (j + 3) < tbytes; j += 4)
 		oob_reg_write(ctrl, j,
 				(oob[j + 0] << 24) |
@@ -1497,7 +1436,7 @@ static int write_oob_to_regs(struct brcmnand_controller *ctrl, int i,
 				(oob[j + 2] <<  8) |
 				(oob[j + 3] <<  0));
 
-	/* handle the remaing bytes */
+	 
 	while (j < tbytes)
 		plast[k++] = oob[j++];
 
@@ -1509,7 +1448,7 @@ static int write_oob_to_regs(struct brcmnand_controller *ctrl, int i,
 
 static void brcmnand_edu_init(struct brcmnand_controller *ctrl)
 {
-	/* initialize edu */
+	 
 	edu_writel(ctrl, EDU_ERR_STATUS, 0);
 	edu_readl(ctrl, EDU_ERR_STATUS);
 	edu_writel(ctrl, EDU_DONE, 0);
@@ -1519,7 +1458,7 @@ static void brcmnand_edu_init(struct brcmnand_controller *ctrl)
 	edu_readl(ctrl, EDU_DONE);
 }
 
-/* edu irq */
+ 
 static irqreturn_t brcmnand_edu_irq(int irq, void *data)
 {
 	struct brcmnand_controller *ctrl = data;
@@ -1558,7 +1497,7 @@ static irqreturn_t brcmnand_edu_irq(int irq, void *data)
 			}
 		}
 
-		mb(); /* flush previous writes */
+		mb();  
 		edu_writel(ctrl, EDU_CMD, ctrl->edu_cmd);
 		edu_readl(ctrl, EDU_CMD);
 
@@ -1574,17 +1513,17 @@ static irqreturn_t brcmnand_ctlrdy_irq(int irq, void *data)
 {
 	struct brcmnand_controller *ctrl = data;
 
-	/* Discard all NAND_CTLRDY interrupts during DMA */
+	 
 	if (ctrl->dma_pending)
 		return IRQ_HANDLED;
 
-	/* check if you need to piggy back on the ctrlrdy irq */
+	 
 	if (ctrl->edu_pending) {
 		if (irq == ctrl->irq && ((int)ctrl->edu_irq >= 0))
-	/* Discard interrupts while using dedicated edu irq */
+	 
 			return IRQ_HANDLED;
 
-	/* no registered edu irq, call handler */
+	 
 		return brcmnand_edu_irq(irq, data);
 	}
 
@@ -1592,7 +1531,7 @@ static irqreturn_t brcmnand_ctlrdy_irq(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/* Handle SoC-specific interrupt hardware */
+ 
 static irqreturn_t brcmnand_irq(int irq, void *data)
 {
 	struct brcmnand_controller *ctrl = data;
@@ -1622,11 +1561,7 @@ static void brcmnand_send_cmd(struct brcmnand_host *host, int cmd)
 
 	dev_dbg(ctrl->dev, "send native cmd %d addr 0x%llx\n", cmd, cmd_addr);
 
-	/*
-	 * If we came here through _panic_write and there is a pending
-	 * command, try to wait for it. If it times out, rather than
-	 * hitting BUG_ON, just return so we don't crash while crashing.
-	 */
+	 
 	if (oops_in_progress) {
 		if (ctrl->cmd_pending &&
 			bcmnand_ctrl_poll_status(ctrl, NAND_CTRL_RDY, NAND_CTRL_RDY, 0))
@@ -1638,19 +1573,17 @@ static void brcmnand_send_cmd(struct brcmnand_host *host, int cmd)
 	ret = bcmnand_ctrl_poll_status(ctrl, NAND_CTRL_RDY, NAND_CTRL_RDY, 0);
 	WARN_ON(ret);
 
-	mb(); /* flush previous writes */
+	mb();  
 	brcmnand_write_reg(ctrl, BRCMNAND_CMD_START,
 			   cmd << brcmnand_cmd_shift(ctrl));
 }
 
-/***********************************************************************
- * NAND MTD API: read/program/erase
- ***********************************************************************/
+ 
 
 static void brcmnand_cmd_ctrl(struct nand_chip *chip, int dat,
 			      unsigned int ctrl)
 {
-	/* intentionally left blank */
+	 
 }
 
 static bool brcmstb_nand_wait_for_completion(struct nand_chip *chip)
@@ -1662,7 +1595,7 @@ static bool brcmstb_nand_wait_for_completion(struct nand_chip *chip)
 	int sts;
 
 	if (mtd->oops_panic_write || ctrl->irq < 0) {
-		/* switch to interrupt polling and PIO mode */
+		 
 		disable_ctrl_irqs(ctrl);
 		sts = bcmnand_ctrl_poll_status(ctrl, NAND_CTRL_RDY,
 					       NAND_CTRL_RDY, 0);
@@ -1670,7 +1603,7 @@ static bool brcmstb_nand_wait_for_completion(struct nand_chip *chip)
 	} else {
 		unsigned long timeo = msecs_to_jiffies(
 						NAND_POLL_STATUS_TIMEOUT_MS);
-		/* wait for completion interrupt */
+		 
 		sts = wait_for_completion_timeout(&ctrl->done, timeo);
 		err = !sts;
 	}
@@ -1727,20 +1660,20 @@ static int brcmnand_low_level_op(struct brcmnand_host *host,
 		tmp |= LLOP_WE | LLOP_CLE;
 		break;
 	case LL_OP_ADDR:
-		/* WE | ALE */
+		 
 		tmp |= LLOP_WE | LLOP_ALE;
 		break;
 	case LL_OP_WR:
-		/* WE */
+		 
 		tmp |= LLOP_WE;
 		break;
 	case LL_OP_RD:
-		/* RE */
+		 
 		tmp |= LLOP_RE;
 		break;
 	}
 	if (last_op)
-		/* RETURN_IDLE */
+		 
 		tmp |= LLOP_RETURN_IDLE;
 
 	dev_dbg(ctrl->dev, "ll_op cmd %#x\n", tmp);
@@ -1764,7 +1697,7 @@ static void brcmnand_cmdfunc(struct nand_chip *chip, unsigned command,
 	if (command == NAND_CMD_READID || command == NAND_CMD_PARAM ||
 			command == NAND_CMD_RNDOUT)
 		addr = (u64)column;
-	/* Avoid propagating a negative, don't-care address */
+	 
 	else if (page_addr < 0)
 		addr = 0;
 
@@ -1803,10 +1736,7 @@ static void brcmnand_cmdfunc(struct nand_chip *chip, unsigned command,
 	case NAND_CMD_RNDOUT:
 		native_cmd = CMD_PARAMETER_CHANGE_COL;
 		addr &= ~((u64)(FC_BYTES - 1));
-		/*
-		 * HW quirk: PARAMETER_CHANGE_COL requires SECTOR_SIZE_1K=0
-		 * NB: hwcfg.sector_size_1k may not be initialized yet
-		 */
+		 
 		if (brcmnand_get_sector_size_1k(host)) {
 			host->hwcfg.sector_size_1k =
 				brcmnand_get_sector_size_1k(host);
@@ -1824,32 +1754,26 @@ static void brcmnand_cmdfunc(struct nand_chip *chip, unsigned command,
 
 	if (native_cmd == CMD_PARAMETER_READ ||
 			native_cmd == CMD_PARAMETER_CHANGE_COL) {
-		/* Copy flash cache word-wise */
+		 
 		u32 *flash_cache = (u32 *)ctrl->flash_cache;
 		int i;
 
 		brcmnand_soc_data_bus_prepare(ctrl->soc, true);
 
-		/*
-		 * Must cache the FLASH_CACHE now, since changes in
-		 * SECTOR_SIZE_1K may invalidate it
-		 */
+		 
 		for (i = 0; i < FC_WORDS; i++)
-			/*
-			 * Flash cache is big endian for parameter pages, at
-			 * least on STB SoCs
-			 */
+			 
 			flash_cache[i] = be32_to_cpu(brcmnand_read_fc(ctrl, i));
 
 		brcmnand_soc_data_bus_unprepare(ctrl->soc, true);
 
-		/* Cleanup from HW quirk: restore SECTOR_SIZE_1K */
+		 
 		if (host->hwcfg.sector_size_1k)
 			brcmnand_set_sector_size_1k(host,
 						    host->hwcfg.sector_size_1k);
 	}
 
-	/* Re-enable protection is necessary only after erase */
+	 
 	if (command == NAND_CMD_ERASE1)
 		brcmnand_wp(mtd, 1);
 }
@@ -1878,7 +1802,7 @@ static uint8_t brcmnand_read_byte(struct nand_chip *chip)
 	case NAND_CMD_STATUS:
 		ret = brcmnand_read_reg(ctrl, BRCMNAND_INTFC_STATUS) &
 					INTFC_FLASH_STATUS;
-		if (wp_on) /* hide WP status */
+		if (wp_on)  
 			ret |= NAND_STATUS_WP;
 		break;
 
@@ -1887,7 +1811,7 @@ static uint8_t brcmnand_read_byte(struct nand_chip *chip)
 		addr = host->last_addr + host->last_byte;
 		offs = addr & (FC_BYTES - 1);
 
-		/* At FC_BYTES boundary, switch to next column */
+		 
 		if (host->last_byte > 0 && offs == 0)
 			nand_change_read_column_op(chip, addr, NULL, 0, false);
 
@@ -1936,9 +1860,7 @@ static void brcmnand_write_buf(struct nand_chip *chip, const uint8_t *buf,
 	}
 }
 
-/*
- *  Kick EDU engine
- */
+ 
 static int brcmnand_edu_trans(struct brcmnand_host *host, u64 addr, u32 *buf,
 			      u8 *oob, u32 len, u8 cmd)
 {
@@ -1985,8 +1907,8 @@ static int brcmnand_edu_trans(struct brcmnand_host *host, u64 addr, u32 *buf,
 					       ctrl->sector_size_1k);
 	}
 
-	/* Start edu engine */
-	mb(); /* flush previous writes */
+	 
+	mb();  
 	edu_writel(ctrl, EDU_CMD, ctrl->edu_cmd);
 	edu_readl(ctrl, EDU_CMD);
 
@@ -1999,7 +1921,7 @@ static int brcmnand_edu_trans(struct brcmnand_host *host, u64 addr, u32 *buf,
 
 	dma_unmap_single(ctrl->dev, pa, len, dir);
 
-	/* read last subpage oob */
+	 
 	if (ctrl->oob && (ctrl->edu_cmd == EDU_CMD_READ)) {
 		ctrl->oob += read_oob_from_regs(ctrl,
 						1,
@@ -2007,7 +1929,7 @@ static int brcmnand_edu_trans(struct brcmnand_host *host, u64 addr, u32 *buf,
 						ctrl->sector_size_1k);
 	}
 
-	/* for program page check NAND status */
+	 
 	if (((brcmnand_read_reg(ctrl, BRCMNAND_INTFC_STATUS) &
 	      INTFC_FLASH_STATUS) & NAND_STATUS_FAIL) &&
 	    edu_cmd == EDU_CMD_WRITE) {
@@ -2016,7 +1938,7 @@ static int brcmnand_edu_trans(struct brcmnand_host *host, u64 addr, u32 *buf,
 		ret = -EIO;
 	}
 
-	/* Make sure the EDU status is clean */
+	 
 	if (edu_readl(ctrl, EDU_STATUS) & EDU_STATUS_ACTIVE)
 		dev_warn(ctrl->dev, "EDU still active: %#x\n",
 			 edu_readl(ctrl, EDU_STATUS));
@@ -2029,16 +1951,13 @@ static int brcmnand_edu_trans(struct brcmnand_host *host, u64 addr, u32 *buf,
 
 	ctrl->edu_pending = false;
 	brcmnand_edu_init(ctrl);
-	edu_writel(ctrl, EDU_STOP, 0); /* force stop */
+	edu_writel(ctrl, EDU_STOP, 0);  
 	edu_readl(ctrl, EDU_STOP);
 
 	if (!ret && edu_cmd == EDU_CMD_READ) {
 		u64 err_addr = 0;
 
-		/*
-		 * check for ECC errors here, subpage ECC errors are
-		 * retained in ECC error address register
-		 */
+		 
 		err_addr = brcmnand_get_uncorrecc_addr(ctrl);
 		if (!err_addr) {
 			err_addr = brcmnand_get_correcc_addr(ctrl);
@@ -2051,12 +1970,7 @@ static int brcmnand_edu_trans(struct brcmnand_host *host, u64 addr, u32 *buf,
 	return ret;
 }
 
-/*
- * Construct a FLASH_DMA descriptor as part of a linked list. You must know the
- * following ahead of time:
- *  - Is this descriptor the beginning or end of a linked list?
- *  - What is the (DMA) address of the next descriptor in the linked list?
- */
+ 
 static int brcmnand_fill_dma_desc(struct brcmnand_host *host,
 				  struct brcm_nand_dma_desc *desc, u64 addr,
 				  dma_addr_t buf, u32 len, u8 dma_cmd,
@@ -2064,12 +1978,12 @@ static int brcmnand_fill_dma_desc(struct brcmnand_host *host,
 				  dma_addr_t next_desc)
 {
 	memset(desc, 0, sizeof(*desc));
-	/* Descriptors are written in native byte order (wordwise) */
+	 
 	desc->next_desc = lower_32_bits(next_desc);
 	desc->next_desc_ext = upper_32_bits(next_desc);
 	desc->cmd_irq = (dma_cmd << 24) |
-		(end ? (0x03 << 8) : 0) | /* IRQ | STOP */
-		(!!begin) | ((!!end) << 1); /* head, tail */
+		(end ? (0x03 << 8) : 0) |  
+		(!!begin) | ((!!end) << 1);  
 #ifdef CONFIG_CPU_BIG_ENDIAN
 	desc->cmd_irq |= 0x01 << 12;
 #endif
@@ -2084,9 +1998,7 @@ static int brcmnand_fill_dma_desc(struct brcmnand_host *host,
 	return 0;
 }
 
-/*
- * Kick the FLASH_DMA engine, with a given DMA descriptor
- */
+ 
 static void brcmnand_dma_run(struct brcmnand_host *host, dma_addr_t desc)
 {
 	struct brcmnand_controller *ctrl = host->ctrl;
@@ -2100,10 +2012,10 @@ static void brcmnand_dma_run(struct brcmnand_host *host, dma_addr_t desc)
 		(void)flash_dma_readl(ctrl, FLASH_DMA_FIRST_DESC_EXT);
 	}
 
-	/* Start FLASH_DMA engine */
+	 
 	ctrl->dma_pending = true;
-	mb(); /* flush previous writes */
-	flash_dma_writel(ctrl, FLASH_DMA_CTRL, 0x03); /* wake | run */
+	mb();  
+	flash_dma_writel(ctrl, FLASH_DMA_CTRL, 0x03);  
 
 	if (wait_for_completion_timeout(&ctrl->dma_done, timeo) <= 0) {
 		dev_err(ctrl->dev,
@@ -2112,7 +2024,7 @@ static void brcmnand_dma_run(struct brcmnand_host *host, dma_addr_t desc)
 				flash_dma_readl(ctrl, FLASH_DMA_ERROR_STATUS));
 	}
 	ctrl->dma_pending = false;
-	flash_dma_writel(ctrl, FLASH_DMA_CTRL, 0); /* force stop */
+	flash_dma_writel(ctrl, FLASH_DMA_CTRL, 0);  
 }
 
 static int brcmnand_dma_trans(struct brcmnand_host *host, u64 addr, u32 *buf,
@@ -2143,9 +2055,7 @@ static int brcmnand_dma_trans(struct brcmnand_host *host, u64 addr, u32 *buf,
 	return 0;
 }
 
-/*
- * Assumes proper CS is already set
- */
+ 
 static int brcmnand_read_by_pio(struct mtd_info *mtd, struct nand_chip *chip,
 				u64 addr, unsigned int trans, u32 *buf,
 				u8 *oob, u64 *err_addr)
@@ -2158,7 +2068,7 @@ static int brcmnand_read_by_pio(struct mtd_info *mtd, struct nand_chip *chip,
 
 	for (i = 0; i < trans; i++, addr += FC_BYTES) {
 		brcmnand_set_cmd_addr(mtd, addr);
-		/* SPARE_AREA_READ does not use ECC, so just use PAGE_READ */
+		 
 		brcmnand_send_cmd(host, CMD_PAGE_READ);
 		brcmnand_waitfunc(chip);
 
@@ -2194,20 +2104,7 @@ static int brcmnand_read_by_pio(struct mtd_info *mtd, struct nand_chip *chip,
 	return ret;
 }
 
-/*
- * Check a page to see if it is erased (w/ bitflips) after an uncorrectable ECC
- * error
- *
- * Because the HW ECC signals an ECC error if an erase paged has even a single
- * bitflip, we must check each ECC error to see if it is actually an erased
- * page with bitflips, not a truly corrupted page.
- *
- * On a real error, return a negative error code (-EBADMSG for ECC error), and
- * buf will contain raw data.
- * Otherwise, buf gets filled with 0xffs and return the maximum number of
- * bitflips-per-ECC-sector to the caller.
- *
- */
+ 
 static int brcmstb_nand_verify_erased_page(struct mtd_info *mtd,
 		  struct nand_chip *chip, void *buf, u64 addr)
 {
@@ -2222,7 +2119,7 @@ static int brcmstb_nand_verify_erased_page(struct mtd_info *mtd,
 	if (!buf)
 		buf = nand_get_data_buf(chip);
 
-	/* read without ecc for verification */
+	 
 	ret = chip->ecc.read_page_raw(chip, buf, true, page);
 	if (ret)
 		return ret;
@@ -2286,14 +2183,7 @@ try_dmaread:
 	}
 
 	if (mtd_is_eccerr(err)) {
-		/*
-		 * On controller version and 7.0, 7.1 , DMA read after a
-		 * prior PIO read that reported uncorrectable error,
-		 * the DMA engine captures this error following DMA read
-		 * cleared only on subsequent DMA read, so just retry once
-		 * to clear a possible false error reported for current DMA
-		 * read
-		 */
+		 
 		if ((ctrl->nand_version == 0x0700) ||
 		    (ctrl->nand_version == 0x0701)) {
 			if (retry) {
@@ -2302,14 +2192,11 @@ try_dmaread:
 			}
 		}
 
-		/*
-		 * Controller version 7.2 has hw encoder to detect erased page
-		 * bitflips, apply sw verification for older controllers only
-		 */
+		 
 		if (ctrl->nand_version < 0x0702) {
 			err = brcmstb_nand_verify_erased_page(mtd, chip, buf,
 							      addr);
-			/* erased page bitflips corrected */
+			 
 			if (err >= 0)
 				return err;
 		}
@@ -2317,14 +2204,14 @@ try_dmaread:
 		dev_dbg(ctrl->dev, "uncorrectable error at 0x%llx\n",
 			(unsigned long long)err_addr);
 		mtd->ecc_stats.failed++;
-		/* NAND layer expects zero on ECC errors */
+		 
 		return 0;
 	}
 
 	if (mtd_is_bitflip(err)) {
 		unsigned int corrected = brcmnand_count_corrected(ctrl);
 
-		/* in case of EDU correctable error we read again using PIO */
+		 
 		if (edu_err)
 			err = brcmnand_read_by_pio(mtd, chip, addr, trans, buf,
 						   oob, &err_addr);
@@ -2332,7 +2219,7 @@ try_dmaread:
 		dev_dbg(ctrl->dev, "corrected error at 0x%llx\n",
 			(unsigned long long)err_addr);
 		mtd->ecc_stats.corrected += corrected;
-		/* Always exceed the software-imposed threshold */
+		 
 		return max(mtd->bitflip_threshold, corrected);
 	}
 
@@ -2412,7 +2299,7 @@ static int brcmnand_write(struct mtd_info *mtd, struct nand_chip *chip,
 		oob_reg_write(ctrl, i, 0xffffffff);
 
 	if (mtd->oops_panic_write)
-		/* switch to interrupt polling and PIO mode */
+		 
 		disable_ctrl_irqs(ctrl);
 
 	if (use_dma(ctrl) && (has_edu(ctrl) || !oob) && flash_dma_buf_ok(buf)) {
@@ -2425,7 +2312,7 @@ static int brcmnand_write(struct mtd_info *mtd, struct nand_chip *chip,
 	}
 
 	for (i = 0; i < trans; i++, addr += FC_BYTES) {
-		/* full address MUST be set before populating FC */
+		 
 		brcmnand_set_cmd_addr(mtd, addr);
 
 		if (buf) {
@@ -2446,7 +2333,7 @@ static int brcmnand_write(struct mtd_info *mtd, struct nand_chip *chip,
 					host->hwcfg.sector_size_1k);
 		}
 
-		/* we cannot use SPARE_AREA_PROGRAM when PARTIAL_PAGE_EN=0 */
+		 
 		brcmnand_send_cmd(host, CMD_PROGRAM_PAGE);
 		status = brcmnand_waitfunc(chip);
 
@@ -2511,9 +2398,7 @@ static int brcmnand_write_oob_raw(struct nand_chip *chip, int page)
 	return ret;
 }
 
-/***********************************************************************
- * Per-CS setup (1 NAND device)
- ***********************************************************************/
+ 
 
 static int brcmnand_set_cfg(struct brcmnand_host *host,
 			    struct brcmnand_cfg *cfg)
@@ -2609,7 +2494,7 @@ static int brcmnand_set_cfg(struct brcmnand_host *host,
 
 	brcmnand_set_sector_size_1k(host, cfg->sector_size_1k);
 
-	/* threshold = ceil(BCH-level * 0.75) */
+	 
 	brcmnand_wr_corr_thresh(host, DIV_ROUND_UP(chip->ecc.strength * 3, 4));
 
 	return 0;
@@ -2626,7 +2511,7 @@ static void brcmnand_print_cfg(struct brcmnand_host *host,
 		cfg->page_size >= 1024 ? "KiB" : "B",
 		cfg->spare_area_size, cfg->device_width);
 
-	/* Account for Hamming ECC and for BCH 512B vs 1KiB sectors */
+	 
 	if (is_hamming_ecc(host->ctrl, cfg))
 		sprintf(buf, ", Hamming ECC");
 	else if (cfg->sector_size_1k)
@@ -2635,13 +2520,7 @@ static void brcmnand_print_cfg(struct brcmnand_host *host,
 		sprintf(buf, ", BCH-%u", cfg->ecc_level);
 }
 
-/*
- * Minimum number of bytes to address a page. Calculated as:
- *     roundup(log2(size / page-size) / 8)
- *
- * NB: the following does not "round up" for non-power-of-2 'size'; but this is
- *     OK because many other things will break if 'size' is irregular...
- */
+ 
 static inline int get_blk_adr_bytes(u64 size, u32 writesize)
 {
 	return ALIGN(ilog2(size) - ilog2(writesize), 8) >> 3;
@@ -2667,7 +2546,7 @@ static int brcmnand_setup_dev(struct brcmnand_host *host)
 				   "brcm,nand-oob-sector-size",
 				   &oob_sector);
 	if (ret) {
-		/* Use detected size */
+		 
 		cfg->spare_area_size = mtd->oobsize /
 					(mtd->writesize >> FC_SHIFT);
 	} else {
@@ -2675,10 +2554,7 @@ static int brcmnand_setup_dev(struct brcmnand_host *host)
 	}
 	if (cfg->spare_area_size > ctrl->max_oob)
 		cfg->spare_area_size = ctrl->max_oob;
-	/*
-	 * Set mtd and memorg oobsize to be consistent with controller's
-	 * spare_area_size, as the rest is inaccessible.
-	 */
+	 
 	mtd->oobsize = cfg->spare_area_size * (mtd->writesize >> FC_SHIFT);
 	memorg->oobsize = mtd->oobsize;
 
@@ -2697,10 +2573,10 @@ static int brcmnand_setup_dev(struct brcmnand_host *host)
 
 	if (chip->ecc.algo == NAND_ECC_ALGO_UNKNOWN) {
 		if (chip->ecc.strength == 1 && chip->ecc.size == 512)
-			/* Default to Hamming for 1-bit ECC, if unspecified */
+			 
 			chip->ecc.algo = NAND_ECC_ALGO_HAMMING;
 		else
-			/* Otherwise, BCH */
+			 
 			chip->ecc.algo = NAND_ECC_ALGO_BCH;
 	}
 
@@ -2714,7 +2590,7 @@ static int brcmnand_setup_dev(struct brcmnand_host *host)
 	if (chip->ecc.engine_type != NAND_ECC_ENGINE_TYPE_NONE &&
 	    (!chip->ecc.size || !chip->ecc.strength)) {
 		if (requirements->step_size && requirements->strength) {
-			/* use detected ECC parameters */
+			 
 			chip->ecc.size = requirements->step_size;
 			chip->ecc.strength = requirements->strength;
 			dev_info(ctrl->dev, "Using ECC step-size %d, strength %d\n",
@@ -2765,13 +2641,13 @@ static int brcmnand_setup_dev(struct brcmnand_host *host)
 	brcmnand_print_cfg(host, msg, cfg);
 	dev_info(ctrl->dev, "detected %s\n", msg);
 
-	/* Configure ACC_CONTROL */
+	 
 	offs = brcmnand_cs_offset(ctrl, host->cs, BRCMNAND_CS_ACC_CONTROL);
 	tmp = nand_readreg(ctrl, offs);
 	tmp &= ~ACC_CONTROL_PARTIAL_PAGE;
 	tmp &= ~ACC_CONTROL_RD_ERASED;
 
-	/* We need to turn on Read from erased paged protected by ECC */
+	 
 	if (ctrl->nand_version >= 0x0702)
 		tmp |= ACC_CONTROL_RD_ERASED;
 	tmp &= ~ACC_CONTROL_FAST_PGM_RDIN;
@@ -2790,11 +2666,7 @@ static int brcmnand_attach_chip(struct nand_chip *chip)
 	int ret;
 
 	chip->options |= NAND_NO_SUBPAGE_WRITE;
-	/*
-	 * Avoid (for instance) kmap()'d buffers from JFFS2, which we can't DMA
-	 * to/from, and have nand_base pass us a bounce buffer instead, as
-	 * needed.
-	 */
+	 
 	chip->options |= NAND_USES_DMA;
 
 	if (chip->bbt_options & NAND_BBT_USE_FLASH)
@@ -2805,12 +2677,12 @@ static int brcmnand_attach_chip(struct nand_chip *chip)
 
 	chip->ecc.size = host->hwcfg.sector_size_1k ? 1024 : 512;
 
-	/* only use our internal HW threshold */
+	 
 	mtd->bitflip_threshold = 1;
 
 	ret = brcmstb_choose_ecc_layout(host);
 
-	/* If OOB is written with ECC enabled it will cause ECC errors */
+	 
 	if (is_hamming_ecc(host->ctrl, &host->hwcfg)) {
 		chip->ecc.write_oob = brcmnand_write_oob_raw;
 		chip->ecc.read_oob = brcmnand_read_oob_raw;
@@ -2864,11 +2736,7 @@ static int brcmnand_init_cs(struct brcmnand_host *host,
 
 	chip->controller = &ctrl->controller;
 
-	/*
-	 * The bootloader might have configured 16bit mode but
-	 * NAND READID command only works in 8bit mode. We force
-	 * 8bit mode here to ensure that NAND READID commands works.
-	 */
+	 
 	cfg_offs = brcmnand_cs_offset(ctrl, host->cs, BRCMNAND_CS_CFG);
 	nand_writereg(ctrl, cfg_offs,
 		      nand_readreg(ctrl, cfg_offs) & ~CFG_BUS_WIDTH);
@@ -2958,7 +2826,7 @@ static int brcmnand_resume(struct device *dev)
 	brcmnand_write_reg(ctrl, BRCMNAND_CORR_THRESHOLD,
 			ctrl->corr_stat_threshold);
 	if (ctrl->soc) {
-		/* Clear/re-enable interrupt */
+		 
 		ctrl->soc->ctlrdy_ack(ctrl->soc);
 		ctrl->soc->ctlrdy_set_enabled(ctrl->soc, true);
 	}
@@ -2968,7 +2836,7 @@ static int brcmnand_resume(struct device *dev)
 
 		brcmnand_save_restore_cs_config(host, 1);
 
-		/* Reset the chip, required by some chips after power-up */
+		 
 		nand_reset_op(chip);
 	}
 
@@ -2997,9 +2865,7 @@ static const struct of_device_id __maybe_unused brcmnand_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, brcmnand_of_match);
 
-/***********************************************************************
- * Platform driver setup (per controller)
- ***********************************************************************/
+ 
 static int brcmnand_edu_setup(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -3019,7 +2885,7 @@ static int brcmnand_edu_setup(struct platform_device *pdev)
 			   EDU_CONFIG_SWAP_CFG);
 		edu_readl(ctrl, EDU_CONFIG);
 
-		/* initialize edu */
+		 
 		brcmnand_edu_init(ctrl);
 
 		ctrl->edu_irq = platform_get_irq_optional(pdev, 1);
@@ -3065,9 +2931,7 @@ int brcmnand_probe(struct platform_device *pdev, struct brcmnand_soc *soc)
 	ctrl->dev = dev;
 	ctrl->soc = soc;
 
-	/* Enable the static key if the soc provides I/O operations indicating
-	 * that a non-memory mapped IO access path must be used
-	 */
+	 
 	if (brcmnand_soc_has_ops(ctrl->soc))
 		static_branch_enable(&brcmnand_soc_has_ops_key);
 
@@ -3078,13 +2942,13 @@ int brcmnand_probe(struct platform_device *pdev, struct brcmnand_soc *soc)
 	ctrl->controller.ops = &brcmnand_controller_ops;
 	INIT_LIST_HEAD(&ctrl->host_list);
 
-	/* NAND register range */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	ctrl->nand_base = devm_ioremap_resource(dev, res);
 	if (IS_ERR(ctrl->nand_base) && !brcmnand_soc_has_ops(soc))
 		return PTR_ERR(ctrl->nand_base);
 
-	/* Enable clock before using NAND registers */
+	 
 	ctrl->clk = devm_clk_get(dev, "nand");
 	if (!IS_ERR(ctrl->clk)) {
 		ret = clk_prepare_enable(ctrl->clk);
@@ -3098,15 +2962,12 @@ int brcmnand_probe(struct platform_device *pdev, struct brcmnand_soc *soc)
 		ctrl->clk = NULL;
 	}
 
-	/* Initialize NAND revision */
+	 
 	ret = brcmnand_revision_init(ctrl);
 	if (ret)
 		goto err;
 
-	/*
-	 * Most chips have this cache at a fixed offset within 'nand' block.
-	 * Some must specify this region separately.
-	 */
+	 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "nand-cache");
 	if (res) {
 		ctrl->nand_fc = devm_ioremap_resource(dev, res);
@@ -3119,7 +2980,7 @@ int brcmnand_probe(struct platform_device *pdev, struct brcmnand_soc *soc)
 				ctrl->reg_offsets[BRCMNAND_FC_BASE];
 	}
 
-	/* FLASH_DMA */
+	 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "flash-dma");
 	if (res) {
 		ctrl->flash_dma_base = devm_ioremap_resource(dev, res);
@@ -3128,7 +2989,7 @@ int brcmnand_probe(struct platform_device *pdev, struct brcmnand_soc *soc)
 			goto err;
 		}
 
-		/* initialize the dma version */
+		 
 		brcmnand_flash_dma_revision_init(ctrl);
 
 		ret = -EIO;
@@ -3141,11 +3002,11 @@ int brcmnand_probe(struct platform_device *pdev, struct brcmnand_soc *soc)
 		if (ret)
 			goto err;
 
-		/* linked-list and stop on error */
+		 
 		flash_dma_writel(ctrl, FLASH_DMA_MODE, FLASH_DMA_MODE_MASK);
 		flash_dma_writel(ctrl, FLASH_DMA_ERROR_STATUS, 0);
 
-		/* Allocate descriptor(s) */
+		 
 		ctrl->dma_desc = dmam_alloc_coherent(dev,
 						     sizeof(*ctrl->dma_desc),
 						     &ctrl->dma_pa, GFP_KERNEL);
@@ -3171,7 +3032,7 @@ int brcmnand_probe(struct platform_device *pdev, struct brcmnand_soc *soc)
 		}
 
 		dev_info(dev, "enabling FLASH_DMA\n");
-		/* set flash dma transfer function to call */
+		 
 		ctrl->dma_trans = brcmnand_dma_trans;
 	} else	{
 		ret = brcmnand_edu_setup(pdev);
@@ -3179,40 +3040,37 @@ int brcmnand_probe(struct platform_device *pdev, struct brcmnand_soc *soc)
 			goto err;
 
 		if (has_edu(ctrl))
-			/* set edu transfer function to call */
+			 
 			ctrl->dma_trans = brcmnand_edu_trans;
 	}
 
-	/* Disable automatic device ID config, direct addressing */
+	 
 	brcmnand_rmw_reg(ctrl, BRCMNAND_CS_SELECT,
 			 CS_SELECT_AUTO_DEVICE_ID_CFG | 0xff, 0, 0);
-	/* Disable XOR addressing */
+	 
 	brcmnand_rmw_reg(ctrl, BRCMNAND_CS_XOR, 0xff, 0, 0);
 
 	if (ctrl->features & BRCMNAND_HAS_WP) {
-		/* Permanently disable write protection */
+		 
 		if (wp_on == 2)
 			brcmnand_set_wp(ctrl, false);
 	} else {
 		wp_on = 0;
 	}
 
-	/* IRQ */
+	 
 	ctrl->irq = platform_get_irq_optional(pdev, 0);
 	if (ctrl->irq > 0) {
-		/*
-		 * Some SoCs integrate this controller (e.g., its interrupt bits) in
-		 * interesting ways
-		 */
+		 
 		if (soc) {
 			ret = devm_request_irq(dev, ctrl->irq, brcmnand_irq, 0,
 					       DRV_NAME, ctrl);
 
-			/* Enable interrupt */
+			 
 			ctrl->soc->ctlrdy_ack(ctrl->soc);
 			ctrl->soc->ctlrdy_set_enabled(ctrl->soc, true);
 		} else {
-			/* Use standard interrupt infrastructure */
+			 
 			ret = devm_request_irq(dev, ctrl->irq, brcmnand_ctlrdy_irq, 0,
 					       DRV_NAME, ctrl);
 		}
@@ -3251,7 +3109,7 @@ int brcmnand_probe(struct platform_device *pdev, struct brcmnand_soc *soc)
 					goto err;
 				}
 				devm_kfree(dev, host);
-				continue; /* Try all chip-selects */
+				continue;  
 			}
 
 			list_add_tail(&host->node, &ctrl->host_list);
@@ -3266,7 +3124,7 @@ int brcmnand_probe(struct platform_device *pdev, struct brcmnand_soc *soc)
 		goto err;
 	}
 
-	/* If we got there we must have been probing via platform data */
+	 
 	host = devm_kzalloc(dev, sizeof(*host), GFP_KERNEL);
 	if (!host) {
 		ret = -ENOMEM;
@@ -3284,7 +3142,7 @@ int brcmnand_probe(struct platform_device *pdev, struct brcmnand_soc *soc)
 
 	list_add_tail(&host->node, &ctrl->host_list);
 
-	/* No chip-selects could initialize properly */
+	 
 	if (list_empty(&ctrl->host_list)) {
 		ret = -ENODEV;
 		goto err;

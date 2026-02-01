@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2021-2022 Intel Corporation. All rights reserved.
-//
-// Authors: Cezary Rojewski <cezary.rojewski@intel.com>
-//          Amadeusz Slawinski <amadeuszx.slawinski@linux.intel.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/devcoredump.h>
 #include <linux/slab.h>
@@ -50,7 +50,7 @@ int skl_log_buffer_offset(struct avs_dev *adev, u32 core)
 	return core * avs_log_buffer_size(adev);
 }
 
-/* fw DbgLogWp registers */
+ 
 #define FW_REGS_DBG_LOG_WP(core) (0x30 + 0x4 * core)
 
 static int
@@ -64,10 +64,10 @@ skl_log_buffer_status(struct avs_dev *adev, union avs_notify_msg *msg)
 
 	size = avs_log_buffer_size(adev) / 2;
 	write = readl(avs_sram_addr(adev, AVS_FW_REGS_WINDOW) + FW_REGS_DBG_LOG_WP(msg->log.core));
-	/* determine buffer half */
+	 
 	offset = (write < size) ? size : 0;
 
-	/* Address is guaranteed to exist in SRAM2. */
+	 
 	buf = avs_log_buffer_addr(adev, msg->log.core) + offset;
 	avs_dump_fw_log_wakeup(adev, buf, size);
 
@@ -91,13 +91,13 @@ static int skl_coredump(struct avs_dev *adev, union avs_notify_msg *msg)
 static bool
 skl_d0ix_toggle(struct avs_dev *adev, struct avs_ipc_msg *tx, bool wake)
 {
-	/* unsupported on cAVS 1.5 hw */
+	 
 	return false;
 }
 
 static int skl_set_d0ix(struct avs_dev *adev, bool enable)
 {
-	/* unsupported on cAVS 1.5 hw */
+	 
 	return 0;
 }
 

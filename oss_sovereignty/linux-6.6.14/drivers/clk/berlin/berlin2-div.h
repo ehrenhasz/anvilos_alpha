@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2014 Marvell Technology Group Ltd.
- *
- * Alexandre Belloni <alexandre.belloni@free-electrons.com>
- * Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
- */
+ 
+ 
 #ifndef __BERLIN2_DIV_H
 #define __BERLIN2_DIV_H
 
@@ -75,4 +70,4 @@ berlin2_div_register(const struct berlin2_div_map *map,
 	     const char **parent_names, int num_parents,
 	     unsigned long flags,  spinlock_t *lock);
 
-#endif /* __BERLIN2_DIV_H */
+#endif  

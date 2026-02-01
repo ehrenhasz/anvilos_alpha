@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Generic sigma delta modulator driver
- *
- * Copyright (C) 2017, STMicroelectronics - All Rights Reserved
- * Author: Arnaud Pouliquen <arnaud.pouliquen@st.com>.
- */
+
+ 
 
 #include <linux/iio/iio.h>
 #include <linux/iio/triggered_buffer.h>

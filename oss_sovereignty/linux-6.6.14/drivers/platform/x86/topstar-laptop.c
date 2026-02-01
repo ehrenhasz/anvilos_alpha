@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Topstar Laptop ACPI Extras driver
- *
- * Copyright (c) 2009 Herton Ronaldo Krzesinski <herton@mandriva.com.br>
- * Copyright (c) 2018 Guillaume Douézan-Grard
- *
- * Implementation inspired by existing x86 platform drivers, in special
- * asus/eepc/fujitsu-laptop, thanks to their authors.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -31,9 +23,7 @@ struct topstar_laptop {
 	struct led_classdev led;
 };
 
-/*
- * LED
- */
+ 
 
 static enum led_brightness topstar_led_get(struct led_classdev *led)
 {
@@ -56,21 +46,13 @@ static int topstar_led_set(struct led_classdev *led,
 	in_obj.type = ACPI_TYPE_INTEGER;
 	in_obj.integer.value = 0x83;
 
-	/*
-	 * Topstar ACPI returns 0x30001 when the LED is ON and 0x30000 when it
-	 * is OFF.
-	 */
+	 
 	status = acpi_evaluate_integer(topstar->device->handle,
 			"GETX", &params, &ret);
 	if (ACPI_FAILURE(status))
 		return -1;
 
-	/*
-	 * FNCX(0x83) toggles the LED (more precisely, it is supposed to
-	 * act as an hardware switch and disconnect the WLAN adapter but
-	 * it seems to be faulty on some models like the Topstar U931
-	 * Notebook).
-	 */
+	 
 	if ((ret == 0x30001 && state == LED_OFF)
 			|| (ret == 0x30000 && state != LED_OFF)) {
 		status = acpi_execute_simple_method(topstar->device->handle,
@@ -99,9 +81,7 @@ static void topstar_led_exit(struct topstar_laptop *topstar)
 	led_classdev_unregister(&topstar->led);
 }
 
-/*
- * Input
- */
+ 
 
 static const struct key_entry topstar_keymap[] = {
 	{ KE_KEY, 0x80, { KEY_BRIGHTNESSUP } },
@@ -110,23 +90,19 @@ static const struct key_entry topstar_keymap[] = {
 	{ KE_KEY, 0x84, { KEY_VOLUMEDOWN } },
 	{ KE_KEY, 0x85, { KEY_MUTE } },
 	{ KE_KEY, 0x86, { KEY_SWITCHVIDEOMODE } },
-	{ KE_KEY, 0x87, { KEY_F13 } }, /* touchpad enable/disable key */
+	{ KE_KEY, 0x87, { KEY_F13 } },  
 	{ KE_KEY, 0x88, { KEY_WLAN } },
 	{ KE_KEY, 0x8a, { KEY_WWW } },
 	{ KE_KEY, 0x8b, { KEY_MAIL } },
 	{ KE_KEY, 0x8c, { KEY_MEDIA } },
 
-	/* Known non hotkey events don't handled or that we don't care yet */
-	{ KE_IGNORE, 0x82, }, /* backlight event */
+	 
+	{ KE_IGNORE, 0x82, },  
 	{ KE_IGNORE, 0x8e, },
 	{ KE_IGNORE, 0x8f, },
 	{ KE_IGNORE, 0x90, },
 
-	/*
-	 * 'G key' generate two event codes, convert to only
-	 * one event/key code for now, consider replacing by
-	 * a switch (3G switch - SW_3G?)
-	 */
+	 
 	{ KE_KEY, 0x96, { KEY_F14 } },
 	{ KE_KEY, 0x97, { KEY_F14 } },
 
@@ -178,9 +154,7 @@ static void topstar_input_exit(struct topstar_laptop *topstar)
 	input_unregister_device(topstar->input);
 }
 
-/*
- * Platform
- */
+ 
 
 static struct platform_driver topstar_platform_driver = {
 	.driver = {
@@ -214,9 +188,7 @@ static void topstar_platform_exit(struct topstar_laptop *topstar)
 	platform_device_unregister(topstar->platform);
 }
 
-/*
- * ACPI
- */
+ 
 
 static int topstar_acpi_fncx_switch(struct acpi_device *device, bool state)
 {
@@ -238,7 +210,7 @@ static void topstar_acpi_notify(struct acpi_device *device, u32 event)
 	static bool dup_evnt[2];
 	bool *dup;
 
-	/* 0x83 and 0x84 key events comes duplicated... */
+	 
 	if (event == 0x83 || event == 0x84) {
 		dup = &dup_evnt[event - 0x83];
 		if (*dup) {
@@ -261,10 +233,7 @@ static void topstar_acpi_exit(struct topstar_laptop *topstar)
 	topstar_acpi_fncx_switch(topstar->device, false);
 }
 
-/*
- * Enable software-based WLAN LED control on systems with defective
- * hardware switch.
- */
+ 
 static bool led_workaround;
 
 static int dmi_led_workaround(const struct dmi_system_id *id)

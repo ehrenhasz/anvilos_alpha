@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Copyright (C) 2011 Novell Inc.
- */
+
+ 
 
 #include <uapi/linux/magic.h>
 #include <linux/fs.h>
@@ -34,7 +31,7 @@ static struct dentry *ovl_d_real(struct dentry *dentry,
 	struct dentry *real = NULL, *lower;
 	int err;
 
-	/* It's an overlay file */
+	 
 	if (inode && d_inode(dentry) == inode)
 		return dentry;
 
@@ -51,14 +48,7 @@ static struct dentry *ovl_d_real(struct dentry *dentry,
 	if (real && !inode && ovl_has_upperdata(d_inode(dentry)))
 		return real;
 
-	/*
-	 * Best effort lazy lookup of lowerdata for !inode case to return
-	 * the real lowerdata dentry.  The only current caller of d_real() with
-	 * NULL inode is d_real_inode() from trace_uprobe and this caller is
-	 * likely going to be followed reading from the file, before placing
-	 * uprobes on offset within the file, so lowerdata should be available
-	 * when setting the uprobe.
-	 */
+	 
 	err = ovl_verify_lowerdata(dentry);
 	if (err)
 		goto bug;
@@ -67,7 +57,7 @@ static struct dentry *ovl_d_real(struct dentry *dentry,
 		goto bug;
 	real = lower;
 
-	/* Handle recursion */
+	 
 	real = d_real(real, inode);
 
 	if (!inode || inode == d_inode(real))
@@ -111,7 +101,7 @@ static int ovl_dentry_revalidate_common(struct dentry *dentry,
 	unsigned int i;
 	int ret = 1;
 
-	/* Careful in RCU mode */
+	 
 	if (!inode)
 		return -ECHILD;
 
@@ -194,7 +184,7 @@ static void ovl_put_super(struct super_block *sb)
 		ovl_free_fs(ofs);
 }
 
-/* Sync real dirty inodes in upper filesystem (if it exists) */
+ 
 static int ovl_sync_fs(struct super_block *sb, int wait)
 {
 	struct ovl_fs *ofs = OVL_FS(sb);
@@ -202,11 +192,7 @@ static int ovl_sync_fs(struct super_block *sb, int wait)
 	int ret;
 
 	ret = ovl_sync_status(ofs);
-	/*
-	 * We have to always set the err, because the return value isn't
-	 * checked in syncfs, and instead indirectly return an error via
-	 * the sb's writeback errseq, which VFS inspects after this call.
-	 */
+	 
 	if (ret < 0) {
 		errseq_set(&sb->s_wb_err, -EIO);
 		return -EIO;
@@ -215,14 +201,7 @@ static int ovl_sync_fs(struct super_block *sb, int wait)
 	if (!ret)
 		return ret;
 
-	/*
-	 * Not called for sync(2) call or an emergency sync (SB_I_SKIP_SYNC).
-	 * All the super blocks will be iterated, including upper_sb.
-	 *
-	 * If this is a syncfs(2) call, then we do need to call
-	 * sync_filesystem() on upper_sb, but enough if we do it when being
-	 * called with wait == 1.
-	 */
+	 
 	if (!wait)
 		return 0;
 
@@ -235,14 +214,7 @@ static int ovl_sync_fs(struct super_block *sb, int wait)
 	return ret;
 }
 
-/**
- * ovl_statfs
- * @dentry: The dentry to query
- * @buf: The struct kstatfs to fill in with stats
- *
- * Get the filesystem statistics.  As writes always target the upper layer
- * filesystem pass the statfs to the upper filesystem (if it exists)
- */
+ 
 static int ovl_statfs(struct dentry *dentry, struct kstatfs *buf)
 {
 	struct super_block *sb = dentry->d_sb;
@@ -319,24 +291,12 @@ retry:
 		if (err)
 			goto out_dput;
 
-		/* Weird filesystem returning with hashed negative (kernfs)? */
+		 
 		err = -EINVAL;
 		if (d_really_is_negative(work))
 			goto out_dput;
 
-		/*
-		 * Try to remove POSIX ACL xattrs from workdir.  We are good if:
-		 *
-		 * a) success (there was a POSIX ACL xattr and was removed)
-		 * b) -ENODATA (there was no POSIX ACL xattr)
-		 * c) -EOPNOTSUPP (POSIX ACL xattrs are not supported)
-		 *
-		 * There are various other error values that could effectively
-		 * mean that the xattr doesn't exist (e.g. -ERANGE is returned
-		 * if the xattr name is too long), but the set of filesystems
-		 * allowed as upper are limited to "normal" ones, where checking
-		 * for the above two errors is sufficient.
-		 */
+		 
 		err = ovl_do_remove_acl(ofs, work, XATTR_NAME_POSIX_ACL_DEFAULT);
 		if (err && err != -ENODATA && err != -EOPNOTSUPP)
 			goto out_dput;
@@ -345,7 +305,7 @@ retry:
 		if (err && err != -ENODATA && err != -EOPNOTSUPP)
 			goto out_dput;
 
-		/* Clear any inherited mode bits */
+		 
 		inode_lock(work->d_inode);
 		err = ovl_do_notify_change(ofs, work, &attr);
 		inode_unlock(work->d_inode);
@@ -394,10 +354,7 @@ static int ovl_lower_dir(const char *name, struct path *path,
 
 	*stack_depth = max(*stack_depth, path->mnt->mnt_sb->s_stack_depth);
 
-	/*
-	 * The inodes index feature and NFS export need to encode and decode
-	 * file handles, so they require that all layers support them.
-	 */
+	 
 	fh_type = ovl_can_decode_fh(path->dentry->d_sb);
 	if ((ofs->config.nfs_export ||
 	     (ofs->config.index && ofs->config.upperdir)) && !fh_type) {
@@ -407,10 +364,7 @@ static int ovl_lower_dir(const char *name, struct path *path,
 			name);
 	}
 	ofs->nofh |= !fh_type;
-	/*
-	 * Decoding origin file handle is required for persistent st_ino.
-	 * Without persistent st_ino, xino=auto falls back to xino=off.
-	 */
+	 
 	if (ofs->config.xino == OVL_XINO_AUTO &&
 	    ofs->config.upperdir && !fh_type) {
 		ofs->config.xino = OVL_XINO_OFF;
@@ -418,14 +372,14 @@ static int ovl_lower_dir(const char *name, struct path *path,
 			name);
 	}
 
-	/* Check if lower fs has 32bit inode numbers */
+	 
 	if (fh_type != FILEID_INO32_GEN)
 		ofs->xino_mode = -1;
 
 	return 0;
 }
 
-/* Workdir should not be subdir of upperdir and vice versa */
+ 
 static bool ovl_workdir_ok(struct dentry *workdir, struct dentry *upperdir)
 {
 	bool ok = false;
@@ -482,7 +436,7 @@ static const struct xattr_handler ovl_own_user_xattr_handler = {
 };
 
 static const struct xattr_handler ovl_other_xattr_handler = {
-	.prefix	= "", /* catch all */
+	.prefix	= "",  
 	.get = ovl_other_xattr_get,
 	.set = ovl_other_xattr_set,
 };
@@ -517,12 +471,7 @@ static int ovl_setup_trap(struct super_block *sb, struct dentry *dir,
 	return 0;
 }
 
-/*
- * Determine how we treat concurrent use of upperdir/workdir based on the
- * index feature. This is papering over mount leaks of container runtimes,
- * for example, an old overlay mount is leaked and now its upperdir is
- * attempted to be used as a lower layer in a new overlay mount.
- */
+ 
 static int ovl_report_in_use(struct ovl_fs *ofs, const char *name)
 {
 	if (ofs->config.index) {
@@ -543,7 +492,7 @@ static int ovl_get_upper(struct super_block *sb, struct ovl_fs *ofs,
 	struct vfsmount *upper_mnt;
 	int err;
 
-	/* Upperdir path should not be r/o */
+	 
 	if (__mnt_is_readonly(upperpath->mnt)) {
 		pr_err("upper fs is r/o, try multi-lower layers mount\n");
 		err = -EINVAL;
@@ -566,21 +515,13 @@ static int ovl_get_upper(struct super_block *sb, struct ovl_fs *ofs,
 		goto out;
 	}
 
-	/* Don't inherit atime flags */
+	 
 	upper_mnt->mnt_flags &= ~(MNT_NOATIME | MNT_NODIRATIME | MNT_RELATIME);
 	upper_layer->mnt = upper_mnt;
 	upper_layer->idx = 0;
 	upper_layer->fsid = 0;
 
-	/*
-	 * Inherit SB_NOSEC flag from upperdir.
-	 *
-	 * This optimization changes behavior when a security related attribute
-	 * (suid/sgid/security.*) is changed on an underlying layer.  This is
-	 * okay because we don't yet have guarantees in that case, but it will
-	 * need careful treatment once we want to honour changes to underlying
-	 * filesystems.
-	 */
+	 
 	if (upper_mnt->mnt_sb->s_flags & SB_NOSEC)
 		sb->s_flags |= SB_NOSEC;
 
@@ -597,10 +538,7 @@ out:
 	return err;
 }
 
-/*
- * Returns 1 if RENAME_WHITEOUT is supported, 0 if not supported and
- * negative values if error is encountered.
- */
+ 
 static int ovl_check_rename_whiteout(struct ovl_fs *ofs)
 {
 	struct dentry *workdir = ofs->workdir;
@@ -625,7 +563,7 @@ static int ovl_check_rename_whiteout(struct ovl_fs *ofs)
 		goto out_unlock;
 	}
 
-	/* Name is inline and stable - using snapshot as a copy helper */
+	 
 	take_dentry_name_snapshot(&name, temp);
 	err = ovl_do_rename(ofs, dir, temp, dir, dest, RENAME_WHITEOUT);
 	if (err) {
@@ -641,7 +579,7 @@ static int ovl_check_rename_whiteout(struct ovl_fs *ofs)
 
 	err = ovl_is_whiteout(whiteout);
 
-	/* Best effort cleanup of whiteout and temp file */
+	 
 	if (err)
 		ovl_cleanup(ofs, dir, whiteout);
 	dput(whiteout);
@@ -676,10 +614,7 @@ static struct dentry *ovl_lookup_or_create(struct ovl_fs *ofs,
 	return child;
 }
 
-/*
- * Creates $workdir/work/incompat/volatile/dirty file if it is not already
- * present.
- */
+ 
 static int ovl_create_volatile_dirty(struct ovl_fs *ofs)
 {
 	unsigned int ctr;
@@ -724,12 +659,7 @@ static int ovl_make_workdir(struct super_block *sb, struct ovl_fs *ofs,
 	if (err)
 		goto out;
 
-	/*
-	 * Upper should support d_type, else whiteouts are visible.  Given
-	 * workdir and upper are on same fs, we can do iterate_dir() on
-	 * workdir. This check requires successful creation of workdir in
-	 * previous step.
-	 */
+	 
 	err = ovl_check_d_type_supported(workpath);
 	if (err < 0)
 		goto out;
@@ -738,7 +668,7 @@ static int ovl_make_workdir(struct super_block *sb, struct ovl_fs *ofs,
 	if (!d_type)
 		pr_warn("upper fs needs to support d_type.\n");
 
-	/* Check if upper/work fs supports O_TMPFILE */
+	 
 	tmpfile = ovl_do_tmpfile(ofs, ofs->workdir, S_IFREG | 0);
 	ofs->tmpfile = !IS_ERR(tmpfile);
 	if (ofs->tmpfile)
@@ -747,7 +677,7 @@ static int ovl_make_workdir(struct super_block *sb, struct ovl_fs *ofs,
 		pr_warn("upper fs does not support tmpfile.\n");
 
 
-	/* Check if upper/work fs supports RENAME_WHITEOUT */
+	 
 	err = ovl_check_rename_whiteout(ofs);
 	if (err < 0)
 		goto out;
@@ -756,9 +686,7 @@ static int ovl_make_workdir(struct super_block *sb, struct ovl_fs *ofs,
 	if (!rename_whiteout)
 		pr_warn("upper fs does not support RENAME_WHITEOUT.\n");
 
-	/*
-	 * Check if upper/work fs supports (trusted|user).overlay.* xattr
-	 */
+	 
 	err = ovl_setxattr(ofs, ofs->workdir, OVL_XATTR_OPAQUE, "0", 1);
 	if (err) {
 		pr_warn("failed to set xattr on upper\n");
@@ -779,10 +707,7 @@ static int ovl_make_workdir(struct super_block *sb, struct ovl_fs *ofs,
 			ofs->config.uuid = OVL_UUID_NULL;
 			pr_warn("...falling back to uuid=null.\n");
 		}
-		/*
-		 * xattr support is required for persistent st_ino.
-		 * Without persistent st_ino, xino=auto falls back to xino=off.
-		 */
+		 
 		if (ofs->config.xino == OVL_XINO_AUTO) {
 			ofs->config.xino = OVL_XINO_OFF;
 			pr_warn("...falling back to xino=off.\n");
@@ -794,11 +719,7 @@ static int ovl_make_workdir(struct super_block *sb, struct ovl_fs *ofs,
 		ovl_removexattr(ofs, ofs->workdir, OVL_XATTR_OPAQUE);
 	}
 
-	/*
-	 * We allowed sub-optimal upper fs configuration and don't want to break
-	 * users over kernel upgrade, but we never allowed remote upper fs, so
-	 * we can enforce strict requirements for remote upper fs.
-	 */
+	 
 	if (ovl_dentry_remote(ofs->workdir) &&
 	    (!d_type || !rename_whiteout || ofs->noxattr)) {
 		pr_err("upper fs missing required features.\n");
@@ -806,10 +727,7 @@ static int ovl_make_workdir(struct super_block *sb, struct ovl_fs *ofs,
 		goto out;
 	}
 
-	/*
-	 * For volatile mount, create a incompat/volatile/dirty file to keep
-	 * track of it.
-	 */
+	 
 	if (ofs->config.ovl_volatile) {
 		err = ovl_create_volatile_dirty(ofs);
 		if (err < 0) {
@@ -818,7 +736,7 @@ static int ovl_make_workdir(struct super_block *sb, struct ovl_fs *ofs,
 		}
 	}
 
-	/* Check if upper/work fs supports file handles */
+	 
 	fh_type = ovl_can_decode_fh(ofs->workdir->d_sb);
 	if (ofs->config.index && !fh_type) {
 		ofs->config.index = false;
@@ -826,11 +744,11 @@ static int ovl_make_workdir(struct super_block *sb, struct ovl_fs *ofs,
 	}
 	ofs->nofh |= !fh_type;
 
-	/* Check if upper fs has 32bit inode numbers */
+	 
 	if (fh_type != FILEID_INO32_GEN)
 		ofs->xino_mode = -1;
 
-	/* NFS export of r/w mount depends on index */
+	 
 	if (ofs->config.nfs_export && !ofs->config.index) {
 		pr_warn("NFS export requires \"index=on\", falling back to nfs_export=off.\n");
 		ofs->config.nfs_export = false;
@@ -885,7 +803,7 @@ static int ovl_get_indexdir(struct super_block *sb, struct ovl_fs *ofs,
 	if (err)
 		return err;
 
-	/* Verify lower root is upper root origin */
+	 
 	err = ovl_verify_origin(ofs, upperpath->dentry,
 				ovl_lowerstack(oe)->dentry, true);
 	if (err) {
@@ -893,7 +811,7 @@ static int ovl_get_indexdir(struct super_block *sb, struct ovl_fs *ofs,
 		goto out;
 	}
 
-	/* index dir will act also as workdir */
+	 
 	iput(ofs->workdir_trap);
 	ofs->workdir_trap = NULL;
 	dput(ofs->workdir);
@@ -910,14 +828,7 @@ static int ovl_get_indexdir(struct super_block *sb, struct ovl_fs *ofs,
 		if (err)
 			goto out;
 
-		/*
-		 * Verify upper root is exclusively associated with index dir.
-		 * Older kernels stored upper fh in ".overlay.origin"
-		 * xattr. If that xattr exists, verify that it is a match to
-		 * upper dir file handle. In any case, verify or set xattr
-		 * ".overlay.upper" to indicate that index may have
-		 * directory entries.
-		 */
+		 
 		if (ovl_check_origin_xattr(ofs, ofs->indexdir)) {
 			err = ovl_verify_set_fh(ofs, ofs->indexdir,
 						OVL_XATTR_ORIGIN,
@@ -930,7 +841,7 @@ static int ovl_get_indexdir(struct super_block *sb, struct ovl_fs *ofs,
 		if (err)
 			pr_err("failed to verify index dir 'upper' xattr\n");
 
-		/* Cleanup bad/stale/orphan index entries */
+		 
 		if (!err)
 			err = ovl_indexdir_cleanup(ofs);
 	}
@@ -949,25 +860,12 @@ static bool ovl_lower_uuid_ok(struct ovl_fs *ofs, const uuid_t *uuid)
 	if (!ofs->config.nfs_export && !ovl_upper_mnt(ofs))
 		return true;
 
-	/*
-	 * We allow using single lower with null uuid for index and nfs_export
-	 * for example to support those features with single lower squashfs.
-	 * To avoid regressions in setups of overlay with re-formatted lower
-	 * squashfs, do not allow decoding origin with lower null uuid unless
-	 * user opted-in to one of the new features that require following the
-	 * lower inode of non-dir upper.
-	 */
+	 
 	if (ovl_allow_offline_changes(ofs) && uuid_is_null(uuid))
 		return false;
 
 	for (i = 0; i < ofs->numfs; i++) {
-		/*
-		 * We use uuid to associate an overlay lower file handle with a
-		 * lower layer, so we can accept lower fs with null uuid as long
-		 * as all lower layers with null uuid are on the same fs.
-		 * if we detect multiple lower fs with the same uuid, we
-		 * disable lower file handle decoding on all of them.
-		 */
+		 
 		if (ofs->fs[i].is_lower &&
 		    uuid_equal(&ofs->fs[i].sb->s_uuid, uuid)) {
 			ofs->fs[i].bad_uuid = true;
@@ -977,7 +875,7 @@ static bool ovl_lower_uuid_ok(struct ovl_fs *ofs, const uuid_t *uuid)
 	return true;
 }
 
-/* Get a unique fsid for the layer */
+ 
 static int ovl_get_fsid(struct ovl_fs *ofs, const struct path *path)
 {
 	struct super_block *sb = path->mnt->mnt_sb;
@@ -1024,10 +922,7 @@ static int ovl_get_fsid(struct ovl_fs *ofs, const struct path *path)
 	return ofs->numfs++;
 }
 
-/*
- * The fsid after the last lower fsid is used for the data layers.
- * It is a "null fs" with a null sb, null uuid, and no pseudo dev.
- */
+ 
 static int ovl_get_data_fsid(struct ovl_fs *ofs)
 {
 	return ofs->numfs;
@@ -1045,18 +940,10 @@ static int ovl_get_layers(struct super_block *sb, struct ovl_fs *ofs,
 	if (ofs->fs == NULL)
 		return -ENOMEM;
 
-	/*
-	 * idx/fsid 0 are reserved for upper fs even with lower only overlay
-	 * and the last fsid is reserved for "null fs" of the data layers.
-	 */
+	 
 	ofs->numfs++;
 
-	/*
-	 * All lower layers that share the same fs as upper layer, use the same
-	 * pseudo_dev as upper layer.  Allocate fs[0].pseudo_dev even for lower
-	 * only overlay to simplify ovl_fs_free().
-	 * is_lower will be set if upper fs is shared with a lower layer.
-	 */
+	 
 	err = get_anon_bdev(&ofs->fs[0].pseudo_dev);
 	if (err) {
 		pr_err("failed to get anonymous bdev for upper fs\n");
@@ -1082,13 +969,7 @@ static int ovl_get_layers(struct super_block *sb, struct ovl_fs *ofs,
 		if (fsid < 0)
 			return fsid;
 
-		/*
-		 * Check if lower root conflicts with this overlay layers before
-		 * checking if it is in-use as upperdir/workdir of "another"
-		 * mount, because we do not bother to check in ovl_is_inuse() if
-		 * the upperdir/workdir is in fact in-use by our
-		 * upperdir/workdir.
-		 */
+		 
 		err = ovl_setup_trap(sb, l->path.dentry, &trap, "lowerdir");
 		if (err)
 			return err;
@@ -1109,10 +990,7 @@ static int ovl_get_layers(struct super_block *sb, struct ovl_fs *ofs,
 			return err;
 		}
 
-		/*
-		 * Make lower layers R/O.  That way fchmod/fchown on lower file
-		 * will fail instead of modifying lower fs.
-		 */
+		 
 		mnt->mnt_flags |= MNT_READONLY | MNT_NOATIME;
 
 		layers[ofs->numlayer].trap = trap;
@@ -1120,22 +998,14 @@ static int ovl_get_layers(struct super_block *sb, struct ovl_fs *ofs,
 		layers[ofs->numlayer].idx = ofs->numlayer;
 		layers[ofs->numlayer].fsid = fsid;
 		layers[ofs->numlayer].fs = &ofs->fs[fsid];
-		/* Store for printing lowerdir=... in ovl_show_options() */
+		 
 		ofs->config.lowerdirs[ofs->numlayer] = l->name;
 		l->name = NULL;
 		ofs->numlayer++;
 		ofs->fs[fsid].is_lower = true;
 	}
 
-	/*
-	 * When all layers on same fs, overlay can use real inode numbers.
-	 * With mount option "xino=<on|auto>", mounter declares that there are
-	 * enough free high bits in underlying fs to hold the unique fsid.
-	 * If overlayfs does encounter underlying inodes using the high xino
-	 * bits reserved for fsid, it emits a warning and uses the original
-	 * inode number or a non persistent inode number allocated from a
-	 * dedicated range.
-	 */
+	 
 	if (ofs->numfs - !ovl_upper_mnt(ofs) == 1) {
 		if (ofs->config.xino == OVL_XINO_ON)
 			pr_info("\"xino=on\" is useless with all layers on same fs, ignore.\n");
@@ -1143,13 +1013,7 @@ static int ovl_get_layers(struct super_block *sb, struct ovl_fs *ofs,
 	} else if (ofs->config.xino == OVL_XINO_OFF) {
 		ofs->xino_mode = -1;
 	} else if (ofs->xino_mode < 0) {
-		/*
-		 * This is a roundup of number of bits needed for encoding
-		 * fsid, where fsid 0 is reserved for upper fs (even with
-		 * lower only overlay) +1 extra bit is reserved for the non
-		 * persistent inode number range that is used for resolving
-		 * xino lower bits overflow.
-		 */
+		 
 		BUILD_BUG_ON(ilog2(OVL_MAX_STACK) > 30);
 		ofs->xino_mode = ilog2(ofs->numfs - 1) + 2;
 	}
@@ -1201,7 +1065,7 @@ static struct ovl_entry *ovl_get_lowerstack(struct super_block *sb,
 		return ERR_PTR(err);
 
 	err = -ENOMEM;
-	/* Data-only layers are not merged in root directory */
+	 
 	nr_merged_lower = ctx->nr - ctx->nr_data;
 	oe = ovl_alloc_entry(nr_merged_lower);
 	if (!oe)
@@ -1218,11 +1082,7 @@ static struct ovl_entry *ovl_get_lowerstack(struct super_block *sb,
 	return oe;
 }
 
-/*
- * Check if this layer root is a descendant of:
- * - another layer of this overlayfs instance
- * - upper/work dir of any overlayfs instance
- */
+ 
 static int ovl_check_layer(struct super_block *sb, struct ovl_fs *ofs,
 			   struct dentry *dentry, const char *name,
 			   bool is_lower)
@@ -1235,7 +1095,7 @@ static int ovl_check_layer(struct super_block *sb, struct ovl_fs *ofs,
 
 	parent = dget_parent(next);
 
-	/* Walk back ancestors to root (inclusive) looking for traps */
+	 
 	while (!err && parent != next) {
 		if (is_lower && ovl_lookup_trap_inode(sb, parent)) {
 			err = -ELOOP;
@@ -1253,9 +1113,7 @@ static int ovl_check_layer(struct super_block *sb, struct ovl_fs *ofs,
 	return err;
 }
 
-/*
- * Check if any of the layers or work dirs overlap.
- */
+ 
 static int ovl_check_overlapping_layers(struct super_block *sb,
 					struct ovl_fs *ofs)
 {
@@ -1267,13 +1125,7 @@ static int ovl_check_overlapping_layers(struct super_block *sb,
 		if (err)
 			return err;
 
-		/*
-		 * Checking workbasedir avoids hitting ovl_is_inuse(parent) of
-		 * this instance and covers overlapping work and index dirs,
-		 * unless work or index dir have been moved since created inside
-		 * workbasedir.  In that case, we already have their traps in
-		 * inode cache and we will catch that case on lookup.
-		 */
+		 
 		err = ovl_check_layer(sb, ofs, ofs->workbasedir, "workdir",
 				      false);
 		if (err)
@@ -1309,7 +1161,7 @@ static struct dentry *ovl_get_root(struct super_block *sb,
 		return NULL;
 
 	if (upperdentry) {
-		/* Root inode uses upper st_ino/i_ino */
+		 
 		ino = d_inode(upperdentry)->i_ino;
 		fsid = 0;
 		ovl_dentry_set_upper_alias(root);
@@ -1317,13 +1169,13 @@ static struct dentry *ovl_get_root(struct super_block *sb,
 			ovl_set_flag(OVL_IMPURE, d_inode(root));
 	}
 
-	/* Root is always merge -> can have whiteouts */
+	 
 	ovl_set_flag(OVL_WHITEOUTS, d_inode(root));
 	ovl_dentry_set_flag(OVL_E_CONNECTED, root);
 	ovl_set_upperdata(d_inode(root));
 	ovl_inode_init(d_inode(root), &oip, ino, fsid);
 	ovl_dentry_init_flags(root, upperdentry, oe, DCACHE_OP_WEAK_REVALIDATE);
-	/* root keeps a reference of upperdentry */
+	 
 	dget(upperdentry);
 
 	return root;
@@ -1372,16 +1224,13 @@ int ovl_fill_super(struct super_block *sb, struct fs_context *fc)
 		goto out_err;
 	}
 	ofs->layers = layers;
-	/*
-	 * Layer 0 is reserved for upper even if there's no upper.
-	 * For consistency, config.lowerdirs[0] is NULL.
-	 */
+	 
 	ofs->numlayer = 1;
 
 	sb->s_stack_depth = 0;
 	sb->s_maxbytes = MAX_LFS_FILESIZE;
 	atomic_long_set(&ofs->last_ino, 1);
-	/* Assume underlying fs uses 32bit inodes unless proven otherwise */
+	 
 	if (ofs->config.xino != OVL_XINO_OFF) {
 		ofs->xino_mode = BITS_PER_LONG - 32;
 		if (!ofs->xino_mode) {
@@ -1390,7 +1239,7 @@ int ovl_fill_super(struct super_block *sb, struct fs_context *fc)
 		}
 	}
 
-	/* alloc/destroy_inode needed for setting up traps in inode cache */
+	 
 	sb->s_op = &ovl_super_operations;
 
 	if (ofs->config.upperdir) {
@@ -1431,7 +1280,7 @@ int ovl_fill_super(struct super_block *sb, struct fs_context *fc)
 	if (IS_ERR(oe))
 		goto out_err;
 
-	/* If the upper fs is nonexistent, we mark overlayfs r/o too */
+	 
 	if (!ovl_upper_mnt(ofs))
 		sb->s_flags |= SB_RDONLY;
 
@@ -1439,7 +1288,7 @@ int ovl_fill_super(struct super_block *sb, struct fs_context *fc)
 		pr_warn("The uuid=off requires a single fs for lower and upper, falling back to uuid=null.\n");
 		ofs->config.uuid = OVL_UUID_NULL;
 	} else if (ovl_has_fsid(ofs) && ovl_upper_mnt(ofs)) {
-		/* Use per instance persistent uuid/fsid */
+		 
 		ovl_init_uuid_xattr(sb, ofs, &ctx->upper);
 	}
 
@@ -1448,7 +1297,7 @@ int ovl_fill_super(struct super_block *sb, struct fs_context *fc)
 		if (err)
 			goto out_free_oe;
 
-		/* Force r/o mount with no index dir */
+		 
 		if (!ofs->indexdir)
 			sb->s_flags |= SB_RDONLY;
 	}
@@ -1457,7 +1306,7 @@ int ovl_fill_super(struct super_block *sb, struct fs_context *fc)
 	if (err)
 		goto out_free_oe;
 
-	/* Show index=off in /proc/mounts for forced r/o mount */
+	 
 	if (!ofs->indexdir) {
 		ofs->config.index = false;
 		if (ovl_upper_mnt(ofs) && ofs->config.nfs_export) {
@@ -1471,17 +1320,13 @@ int ovl_fill_super(struct super_block *sb, struct fs_context *fc)
 		ofs->config.nfs_export = false;
 	}
 
-	/*
-	 * Support encoding decodable file handles with nfs_export=on
-	 * and encoding non-decodable file handles with nfs_export=off
-	 * if all layers support file handles.
-	 */
+	 
 	if (ofs->config.nfs_export)
 		sb->s_export_op = &ovl_export_operations;
 	else if (!ofs->nofh)
 		sb->s_export_op = &ovl_export_fid_operations;
 
-	/* Never override disk quota limits or use reserved space */
+	 
 	cap_lower(cred->cap_effective, CAP_SYS_RESOURCE);
 
 	sb->s_magic = OVERLAYFS_SUPER_MAGIC;
@@ -1554,10 +1399,7 @@ static void __exit ovl_exit(void)
 {
 	unregister_filesystem(&ovl_fs_type);
 
-	/*
-	 * Make sure all delayed rcu free inodes are flushed before we
-	 * destroy cache.
-	 */
+	 
 	rcu_barrier();
 	kmem_cache_destroy(ovl_inode_cachep);
 	ovl_aio_request_cache_destroy();

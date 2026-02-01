@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2021 Google LLC.
- *
- * Common part of most Semtech SAR sensor.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/byteorder/generic.h>
@@ -29,7 +25,7 @@
 
 #include "sx_common.h"
 
-/* All Semtech SAR sensors have IRQ bit in the same order. */
+ 
 #define   SX_COMMON_CONVDONE_IRQ			BIT(0)
 #define   SX_COMMON_FAR_IRQ				BIT(2)
 #define   SX_COMMON_CLOSE_IRQ				BIT(3)
@@ -63,11 +59,7 @@ static irqreturn_t sx_common_irq_handler(int irq, void *private)
 	if (data->trigger_enabled)
 		iio_trigger_poll(data->trig);
 
-	/*
-	 * Even if no event is enabled, we need to wake the thread to clear the
-	 * interrupt state by reading SX_COMMON_REG_IRQ_SRC.
-	 * It is not possible to do that here because regmap_read takes a mutex.
-	 */
+	 
 	return IRQ_WAKE_THREAD;
 }
 
@@ -79,7 +71,7 @@ static void sx_common_push_events(struct iio_dev *indio_dev)
 	s64 timestamp = iio_get_time_ns(indio_dev);
 	unsigned long prox_changed;
 
-	/* Read proximity state on all channels */
+	 
 	ret = regmap_read(data->regmap, data->chip_info->reg_stat, &val);
 	if (ret) {
 		dev_err(&data->client->dev, "i2c transfer error in irq\n");
@@ -88,10 +80,7 @@ static void sx_common_push_events(struct iio_dev *indio_dev)
 
 	val >>= data->chip_info->stat_offset;
 
-	/*
-	 * Only iterate over channels with changes on proximity status that have
-	 * events enabled.
-	 */
+	 
 	prox_changed = (data->chan_prox_stat ^ val) & data->chan_event;
 
 	for_each_set_bit(chan, &prox_changed, data->chip_info->num_channels) {
@@ -168,15 +157,7 @@ static int sx_common_put_event_channel(struct sx_common_data *data, int channel)
 				     data->chan_event & ~BIT(channel));
 }
 
-/**
- * sx_common_read_proximity() - Read raw proximity value.
- * @data:	Internal data
- * @chan:	Channel to read
- * @val:	pointer to return read value.
- *
- * Request a conversion, wait for the sensor to be ready and
- * return the raw proximity value.
- */
+ 
 int sx_common_read_proximity(struct sx_common_data *data,
 			     const struct iio_chan_spec *chan, int *val)
 {
@@ -236,15 +217,7 @@ out:
 }
 EXPORT_SYMBOL_NS_GPL(sx_common_read_proximity, SEMTECH_PROX);
 
-/**
- * sx_common_read_event_config() - Configure event setting.
- * @indio_dev:	iio device object
- * @chan:	Channel to read
- * @type:	Type of event (unused)
- * @dir:	Direction of event (unused)
- *
- * return if the given channel is used for event gathering.
- */
+ 
 int sx_common_read_event_config(struct iio_dev *indio_dev,
 				const struct iio_chan_spec *chan,
 				enum iio_event_type type,
@@ -256,16 +229,7 @@ int sx_common_read_event_config(struct iio_dev *indio_dev,
 }
 EXPORT_SYMBOL_NS_GPL(sx_common_read_event_config, SEMTECH_PROX);
 
-/**
- * sx_common_write_event_config() - Configure event setting.
- * @indio_dev:	iio device object
- * @chan:	Channel to enable
- * @type:	Type of event (unused)
- * @dir:	Direction of event (unused)
- * @state:	State of the event.
- *
- * Enable/Disable event on a given channel.
- */
+ 
 int sx_common_write_event_config(struct iio_dev *indio_dev,
 				 const struct iio_chan_spec *chan,
 				 enum iio_event_type type,
@@ -275,7 +239,7 @@ int sx_common_write_event_config(struct iio_dev *indio_dev,
 	unsigned int eventirq = SX_COMMON_FAR_IRQ | SX_COMMON_CLOSE_IRQ;
 	int ret;
 
-	/* If the state hasn't changed, there's nothing to do. */
+	 
 	if (!!(data->chan_event & BIT(chan->channel)) == state)
 		return 0;
 
@@ -460,14 +424,14 @@ static int sx_common_init_device(struct device *dev, struct iio_dev *indio_dev)
 	if (ret)
 		return ret;
 
-	usleep_range(1000, 2000); /* power-up time is ~1ms. */
+	usleep_range(1000, 2000);  
 
-	/* Clear reset interrupt state by reading SX_COMMON_REG_IRQ_SRC. */
+	 
 	ret = regmap_read(data->regmap, SX_COMMON_REG_IRQ_SRC, &val);
 	if (ret)
 		return ret;
 
-	/* Program defaults from constant or BIOS. */
+	 
 	for (i = 0; i < data->chip_info->num_default_regs; i++) {
 		initval = data->chip_info->ops.get_default_reg(dev, i, &tmp);
 		ret = regmap_write(data->regmap, initval->reg, initval->def);
@@ -478,12 +442,7 @@ static int sx_common_init_device(struct device *dev, struct iio_dev *indio_dev)
 	return data->chip_info->ops.init_compensation(indio_dev);
 }
 
-/**
- * sx_common_probe() - Common setup for Semtech SAR sensor
- * @client:		I2C client object
- * @chip_info:		Semtech sensor chip information.
- * @regmap_config:	Sensor registers map configuration.
- */
+ 
 int sx_common_probe(struct i2c_client *client,
 		    const struct sx_common_chip_info *chip_info,
 		    const struct regmap_config *regmap_config)
@@ -515,7 +474,7 @@ int sx_common_probe(struct i2c_client *client,
 	if (ret)
 		return dev_err_probe(dev, ret, "Unable to get regulators\n");
 
-	/* Must wait for Tpor time after initial power up */
+	 
 	usleep_range(1000, 1100);
 
 	ret = data->chip_info->ops.check_whoami(dev, indio_dev);

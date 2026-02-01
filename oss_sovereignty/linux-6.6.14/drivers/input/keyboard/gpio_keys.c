@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for keys on GPIO lines capable of generating interrupts.
- *
- * Copyright 2005 Phil Blundell
- * Copyright 2010, 2011 David Jander <david@protonic.nl>
- */
+
+ 
 
 #include <linux/module.h>
 
@@ -38,11 +33,11 @@ struct gpio_button_data {
 	unsigned short *code;
 
 	struct hrtimer release_timer;
-	unsigned int release_delay;	/* in msecs, for IRQ-only buttons */
+	unsigned int release_delay;	 
 
 	struct delayed_work work;
 	struct hrtimer debounce_timer;
-	unsigned int software_debounce;	/* in msecs, for GPIO-driven buttons */
+	unsigned int software_debounce;	 
 
 	unsigned int irq;
 	unsigned int wakeup_trigger_type;
@@ -61,47 +56,9 @@ struct gpio_keys_drvdata {
 	struct gpio_button_data data[];
 };
 
-/*
- * SYSFS interface for enabling/disabling keys and switches:
- *
- * There are 4 attributes under /sys/devices/platform/gpio-keys/
- *	keys [ro]              - bitmap of keys (EV_KEY) which can be
- *	                         disabled
- *	switches [ro]          - bitmap of switches (EV_SW) which can be
- *	                         disabled
- *	disabled_keys [rw]     - bitmap of keys currently disabled
- *	disabled_switches [rw] - bitmap of switches currently disabled
- *
- * Userland can change these values and hence disable event generation
- * for each key (or switch). Disabling a key means its interrupt line
- * is disabled.
- *
- * For example, if we have following switches set up as gpio-keys:
- *	SW_DOCK = 5
- *	SW_CAMERA_LENS_COVER = 9
- *	SW_KEYPAD_SLIDE = 10
- *	SW_FRONT_PROXIMITY = 11
- * This is read from switches:
- *	11-9,5
- * Next we want to disable proximity (11) and dock (5), we write:
- *	11,5
- * to file disabled_switches. Now proximity and dock IRQs are disabled.
- * This can be verified by reading the file disabled_switches:
- *	11,5
- * If we now want to enable proximity (11) switch we write:
- *	5
- * to disabled_switches.
- *
- * We can disable only those keys which don't allow sharing the irq.
- */
+ 
 
-/**
- * get_n_events_by_type() - returns maximum number of events per @type
- * @type: type of button (%EV_KEY, %EV_SW)
- *
- * Return value of this function can be used to allocate bitmap
- * large enough to hold all bits for given type.
- */
+ 
 static int get_n_events_by_type(int type)
 {
 	BUG_ON(type != EV_SW && type != EV_KEY);
@@ -109,14 +66,7 @@ static int get_n_events_by_type(int type)
 	return (type == EV_KEY) ? KEY_CNT : SW_CNT;
 }
 
-/**
- * get_bm_events_by_type() - returns bitmap of supported events per @type
- * @dev: input device from which bitmap is retrieved
- * @type: type of button (%EV_KEY, %EV_SW)
- *
- * Return value of this function can be used to allocate bitmap
- * large enough to hold all bits for given type.
- */
+ 
 static const unsigned long *get_bm_events_by_type(struct input_dev *dev,
 						  int type)
 {
@@ -137,41 +87,18 @@ static void gpio_keys_quiesce_key(void *data)
 		cancel_delayed_work_sync(&bdata->work);
 }
 
-/**
- * gpio_keys_disable_button() - disables given GPIO button
- * @bdata: button data for button to be disabled
- *
- * Disables button pointed by @bdata. This is done by masking
- * IRQ line. After this function is called, button won't generate
- * input events anymore. Note that one can only disable buttons
- * that don't share IRQs.
- *
- * Make sure that @bdata->disable_lock is locked when entering
- * this function to avoid races when concurrent threads are
- * disabling buttons at the same time.
- */
+ 
 static void gpio_keys_disable_button(struct gpio_button_data *bdata)
 {
 	if (!bdata->disabled) {
-		/*
-		 * Disable IRQ and associated timer/work structure.
-		 */
+		 
 		disable_irq(bdata->irq);
 		gpio_keys_quiesce_key(bdata);
 		bdata->disabled = true;
 	}
 }
 
-/**
- * gpio_keys_enable_button() - enables given GPIO button
- * @bdata: button data for button to be disabled
- *
- * Enables given button pointed by @bdata.
- *
- * Make sure that @bdata->disable_lock is locked when entering
- * this function to avoid races with concurrent threads trying
- * to enable the same button at the same time.
- */
+ 
 static void gpio_keys_enable_button(struct gpio_button_data *bdata)
 {
 	if (bdata->disabled) {
@@ -180,20 +107,7 @@ static void gpio_keys_enable_button(struct gpio_button_data *bdata)
 	}
 }
 
-/**
- * gpio_keys_attr_show_helper() - fill in stringified bitmap of buttons
- * @ddata: pointer to drvdata
- * @buf: buffer where stringified bitmap is written
- * @type: button type (%EV_KEY, %EV_SW)
- * @only_disabled: does caller want only those buttons that are
- *                 currently disabled or all buttons that can be
- *                 disabled
- *
- * This function writes buttons that can be disabled to @buf. If
- * @only_disabled is true, then @buf contains only those buttons
- * that are currently disabled. Returns 0 on success or negative
- * errno on failure.
- */
+ 
 static ssize_t gpio_keys_attr_show_helper(struct gpio_keys_drvdata *ddata,
 					  char *buf, unsigned int type,
 					  bool only_disabled)
@@ -228,16 +142,7 @@ static ssize_t gpio_keys_attr_show_helper(struct gpio_keys_drvdata *ddata,
 	return ret;
 }
 
-/**
- * gpio_keys_attr_store_helper() - enable/disable buttons based on given bitmap
- * @ddata: pointer to drvdata
- * @buf: buffer from userspace that contains stringified bitmap
- * @type: button type (%EV_KEY, %EV_SW)
- *
- * This function parses stringified bitmap from @buf and disables/enables
- * GPIO buttons accordingly. Returns 0 on success and negative error
- * on failure.
- */
+ 
 static ssize_t gpio_keys_attr_store_helper(struct gpio_keys_drvdata *ddata,
 					   const char *buf, unsigned int type)
 {
@@ -255,7 +160,7 @@ static ssize_t gpio_keys_attr_store_helper(struct gpio_keys_drvdata *ddata,
 	if (error)
 		goto out;
 
-	/* First validate */
+	 
 	if (!bitmap_subset(bits, bitmap, n_events)) {
 		error = -EINVAL;
 		goto out;
@@ -312,12 +217,7 @@ ATTR_SHOW_FN(switches, EV_SW, false);
 ATTR_SHOW_FN(disabled_keys, EV_KEY, true);
 ATTR_SHOW_FN(disabled_switches, EV_SW, true);
 
-/*
- * ATTRIBUTES:
- *
- * /sys/devices/platform/gpio-keys/keys [ro]
- * /sys/devices/platform/gpio-keys/switches [ro]
- */
+ 
 static DEVICE_ATTR(keys, S_IRUGO, gpio_keys_show_keys, NULL);
 static DEVICE_ATTR(switches, S_IRUGO, gpio_keys_show_switches, NULL);
 
@@ -341,12 +241,7 @@ static ssize_t gpio_keys_store_##name(struct device *dev,		\
 ATTR_STORE_FN(disabled_keys, EV_KEY);
 ATTR_STORE_FN(disabled_switches, EV_SW);
 
-/*
- * ATTRIBUTES:
- *
- * /sys/devices/platform/gpio-keys/disabled_keys [rw]
- * /sys/devices/platform/gpio-keys/disables_switches [rw]
- */
+ 
 static DEVICE_ATTR(disabled_keys, S_IWUSR | S_IRUGO,
 		   gpio_keys_show_disabled_keys,
 		   gpio_keys_store_disabled_keys);
@@ -426,11 +321,7 @@ static irqreturn_t gpio_keys_gpio_isr(int irq, void *dev_id)
 		pm_stay_awake(bdata->input->dev.parent);
 		if (bdata->suspended  &&
 		    (button->type == 0 || button->type == EV_KEY)) {
-			/*
-			 * Simulate wakeup key press in case the key has
-			 * already released by the time we got interrupt
-			 * handler to run.
-			 */
+			 
 			input_report_key(bdata->input, button->code, 1);
 		}
 	}
@@ -527,17 +418,11 @@ static int gpio_keys_setup_key(struct platform_device *pdev,
 				return dev_err_probe(dev, error,
 						     "failed to get gpio\n");
 
-			/*
-			 * GPIO is optional, we may be dealing with
-			 * purely interrupt-driven setup.
-			 */
+			 
 			bdata->gpiod = NULL;
 		}
 	} else if (gpio_is_valid(button->gpio)) {
-		/*
-		 * Legacy GPIO number, so request the GPIO here and
-		 * convert it to descriptor.
-		 */
+		 
 		unsigned flags = GPIOF_IN;
 
 		if (button->active_low)
@@ -561,16 +446,12 @@ static int gpio_keys_setup_key(struct platform_device *pdev,
 		if (button->debounce_interval) {
 			error = gpiod_set_debounce(bdata->gpiod,
 					button->debounce_interval * 1000);
-			/* use timer if gpiolib doesn't provide debounce */
+			 
 			if (error < 0)
 				bdata->software_debounce =
 						button->debounce_interval;
 
-			/*
-			 * If reading the GPIO won't sleep, we can use a
-			 * hrtimer instead of a standard timer for the software
-			 * debounce, to reduce the latency as much as possible.
-			 */
+			 
 			bdata->debounce_use_hrtimer =
 					!gpiod_cansleep(bdata->gpiod);
 		}
@@ -609,10 +490,7 @@ static int gpio_keys_setup_key(struct platform_device *pdev,
 			break;
 		case EV_ACT_ANY:
 		default:
-			/*
-			 * For other cases, we are OK letting suspend/resume
-			 * not reconfigure the trigger type.
-			 */
+			 
 			break;
 		}
 	} else {
@@ -636,20 +514,14 @@ static int gpio_keys_setup_key(struct platform_device *pdev,
 		isr = gpio_keys_irq_isr;
 		irqflags = 0;
 
-		/*
-		 * For IRQ buttons, there is no interrupt for release.
-		 * So we don't need to reconfigure the trigger type for wakeup.
-		 */
+		 
 	}
 
 	bdata->code = &ddata->keymap[idx];
 	*bdata->code = button->code;
 	input_set_capability(input, button->type ?: EV_KEY, *bdata->code);
 
-	/*
-	 * Install custom action to cancel release timer and
-	 * workqueue item.
-	 */
+	 
 	error = devm_add_action(dev, gpio_keys_quiesce_key, bdata);
 	if (error) {
 		dev_err(dev, "failed to register quiesce action, error: %d\n",
@@ -657,10 +529,7 @@ static int gpio_keys_setup_key(struct platform_device *pdev,
 		return error;
 	}
 
-	/*
-	 * If platform has specified that the button can be disabled,
-	 * we don't want it to share the interrupt line.
-	 */
+	 
 	if (!button->can_disable)
 		irqflags |= IRQF_SHARED;
 
@@ -700,7 +569,7 @@ static int gpio_keys_open(struct input_dev *input)
 			return error;
 	}
 
-	/* Report current state of buttons that are connected to GPIOs */
+	 
 	gpio_keys_report_state(ddata);
 
 	return 0;
@@ -715,13 +584,9 @@ static void gpio_keys_close(struct input_dev *input)
 		pdata->disable(input->dev.parent);
 }
 
-/*
- * Handlers for alternative sources of platform_data
- */
+ 
 
-/*
- * Translate properties into platform_data
- */
+ 
 static struct gpio_keys_platform_data *
 gpio_keys_get_devtree_pdata(struct device *dev)
 {
@@ -772,7 +637,7 @@ gpio_keys_get_devtree_pdata(struct device *dev)
 
 		button->wakeup =
 			fwnode_property_read_bool(child, "wakeup-source") ||
-			/* legacy name */
+			 
 			fwnode_property_read_bool(child, "gpio-key,wakeup");
 
 		fwnode_property_read_u32(child, "wakeup-event-action",
@@ -854,7 +719,7 @@ static int gpio_keys_probe(struct platform_device *pdev)
 	input->keycodesize = sizeof(ddata->keymap[0]);
 	input->keycodemax = pdata->nbuttons;
 
-	/* Enable auto repeat feature of Linux input subsystem */
+	 
 	if (pdata->rep)
 		__set_bit(EV_REP, input->evbit);
 
@@ -929,10 +794,7 @@ gpio_keys_button_disable_wakeup(struct gpio_button_data *bdata)
 {
 	int error;
 
-	/*
-	 * The trigger type is always both edges for gpio-based keys and we do
-	 * not support changing wakeup trigger for interrupt-based keys.
-	 */
+	 
 	if (bdata->wakeup_trigger_type) {
 		error = irq_set_irq_type(bdata->irq, IRQ_TYPE_EDGE_BOTH);
 		if (error)

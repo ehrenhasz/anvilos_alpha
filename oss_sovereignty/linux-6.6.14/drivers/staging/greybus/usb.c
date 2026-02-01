@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * USB host driver for the Greybus "generic" USB module.
- *
- * Copyright 2014 Google Inc.
- * Copyright 2014 Linaro Ltd.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -14,7 +9,7 @@
 
 #include "gbphy.h"
 
-/* Greybus USB request types */
+ 
 #define GB_USB_TYPE_HCD_START		0x02
 #define GB_USB_TYPE_HCD_STOP		0x03
 #define GB_USB_TYPE_HUB_CONTROL		0x04
@@ -105,7 +100,7 @@ static int hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue, u16 wIndex,
 	size_t response_size;
 	int ret;
 
-	/* FIXME: handle unspecified lengths */
+	 
 	response_size = sizeof(*response) + wLength;
 
 	operation = gb_operation_create(dev->connection,
@@ -127,7 +122,7 @@ static int hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue, u16 wIndex,
 		goto out;
 
 	if (wLength) {
-		/* Greybus core has verified response size */
+		 
 		response = operation->response->payload;
 		memcpy(buf, response->buf, wLength);
 	}
@@ -188,12 +183,7 @@ static int gb_usb_probe(struct gbphy_device *gbphy_dev,
 	if (retval)
 		goto exit_connection_destroy;
 
-	/*
-	 * FIXME: The USB bridged-PHY protocol driver depends on changes to
-	 *        USB core which are not yet upstream.
-	 *
-	 *        Disable for now.
-	 */
+	 
 	if (1) {
 		dev_warn(dev, "USB protocol disabled\n");
 		retval = -EPROTONOSUPPORT;

@@ -1,20 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * This file and its contents are supplied under the terms of the
- * Common Development and Distribution License ("CDDL"), version 1.0.
- * You may only use this file in accordance with the terms of version
- * 1.0 of the CDDL.
- *
- * A full copy of the text of the CDDL should have accompanied this
- * source.  A copy of the CDDL is also available via the Internet at
- * http://www.illumos.org/license/CDDL.
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2013, 2017 by Delphix. All rights reserved.
- */
+ 
+ 
 
 #ifndef	_SYS_MULTILIST_H
 #define	_SYS_MULTILIST_H
@@ -31,43 +16,21 @@ typedef struct multilist_sublist multilist_sublist_t;
 typedef unsigned int multilist_sublist_index_func_t(multilist_t *, void *);
 
 struct multilist_sublist {
-	/*
-	 * The mutex used internally to implement thread safe insertions
-	 * and removals to this individual sublist. It can also be locked
-	 * by a consumer using multilist_sublist_{lock,unlock}, which is
-	 * useful if a consumer needs to traverse the list in a thread
-	 * safe manner.
-	 */
+	 
 	kmutex_t	mls_lock;
-	/*
-	 * The actual list object containing all objects in this sublist.
-	 */
+	 
 	list_t		mls_list;
-	/*
-	 * Pad to cache line, in an effort to try and prevent cache line
-	 * contention.
-	 */
+	 
 } ____cacheline_aligned;
 
 struct multilist {
-	/*
-	 * This is used to get to the multilist_node_t structure given
-	 * the void *object contained on the list.
-	 */
+	 
 	size_t				ml_offset;
-	/*
-	 * The number of sublists used internally by this multilist.
-	 */
+	 
 	uint64_t			ml_num_sublists;
-	/*
-	 * The array of pointers to the actual sublists.
-	 */
+	 
 	multilist_sublist_t		*ml_sublists;
-	/*
-	 * Pointer to function which determines the sublist to use
-	 * when inserting and removing objects from this multilist.
-	 * Please see the comment above multilist_create for details.
-	 */
+	 
 	multilist_sublist_index_func_t	*ml_index_func;
 };
 
@@ -105,4 +68,4 @@ int  multilist_link_active(multilist_node_t *);
 }
 #endif
 
-#endif /* _SYS_MULTILIST_H */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2005-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2017 Qualcomm Atheros, Inc.
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/debugfs.h>
@@ -17,7 +13,7 @@
 #include "hif.h"
 #include "wmi-ops.h"
 
-/* ms */
+ 
 #define ATH10K_DEBUG_HTT_STATS_INTERVAL 1000
 
 #define ATH10K_DEBUG_CAL_DATA_LEN 12064
@@ -272,17 +268,7 @@ void ath10k_debug_fw_stats_process(struct ath10k *ar, struct sk_buff *skb)
 		goto free;
 	}
 
-	/* Stat data may exceed htc-wmi buffer limit. In such case firmware
-	 * splits the stats data and delivers it in a ping-pong fashion of
-	 * request cmd-update event.
-	 *
-	 * However there is no explicit end-of-data. Instead start-of-data is
-	 * used as an implicit one. This works as follows:
-	 *  a) discard stat update events until one with pdev stats is
-	 *     delivered - this skips session started at end of (b)
-	 *  b) consume stat update events until another one with pdev stats is
-	 *     delivered which is treated as end-of-data and is itself discarded
-	 */
+	 
 	if (ath10k_peer_stats_enabled(ar))
 		ath10k_sta_update_rx_duration(ar, &stats);
 
@@ -313,9 +299,7 @@ void ath10k_debug_fw_stats_process(struct ath10k *ar, struct sk_buff *skb)
 
 	if (is_started && !is_end) {
 		if (num_peers >= ATH10K_MAX_NUM_PEER_IDS) {
-			/* Although this is unlikely impose a sane limit to
-			 * prevent firmware from DoS-ing the host.
-			 */
+			 
 			ath10k_fw_stats_peers_free(&ar->debug.fw_stats.peers);
 			ath10k_fw_extd_stats_peers_free(&ar->debug.fw_stats.peers_extd);
 			ath10k_warn(ar, "dropping fw peer stats\n");
@@ -339,9 +323,7 @@ void ath10k_debug_fw_stats_process(struct ath10k *ar, struct sk_buff *skb)
 	complete(&ar->debug.fw_stats_complete);
 
 free:
-	/* In some cases lists have been spliced and cleared. Free up
-	 * resources if that is not the case.
-	 */
+	 
 	ath10k_fw_stats_pdevs_free(&stats.pdevs);
 	ath10k_fw_stats_vdevs_free(&stats.vdevs);
 	ath10k_fw_stats_peers_free(&stats.peers);
@@ -498,7 +480,7 @@ static const struct file_operations fops_fw_reset_stats = {
 	.llseek = default_llseek,
 };
 
-/* This is a clean assert crash in firmware. */
+ 
 static int ath10k_debug_fw_assert(struct ath10k *ar)
 {
 	struct wmi_vdev_install_key_cmd *cmd;
@@ -511,7 +493,7 @@ static int ath10k_debug_fw_assert(struct ath10k *ar)
 	cmd = (struct wmi_vdev_install_key_cmd *)skb->data;
 	memset(cmd, 0, sizeof(*cmd));
 
-	/* big enough number so that firmware asserts */
+	 
 	cmd->vdev_id = __cpu_to_le32(0x7ffe);
 
 	return ath10k_wmi_cmd_send(ar, skb,
@@ -532,13 +514,7 @@ static ssize_t ath10k_read_simulate_fw_crash(struct file *file,
 	return simple_read_from_buffer(user_buf, count, ppos, buf, strlen(buf));
 }
 
-/* Simulate firmware crash:
- * 'soft': Call wmi command causing firmware hang. This firmware hang is
- * recoverable by warm firmware reset.
- * 'hard': Force firmware crash by setting any vdev parameter for not allowed
- * vdev id. This is hard firmware crash because it is recoverable only by cold
- * firmware reset.
- */
+ 
 static ssize_t ath10k_write_simulate_fw_crash(struct file *file,
 					      const char __user *user_buf,
 					      size_t count, loff_t *ppos)
@@ -548,7 +524,7 @@ static ssize_t ath10k_write_simulate_fw_crash(struct file *file,
 	ssize_t rc;
 	int ret;
 
-	/* filter partial writes and invalid commands */
+	 
 	if (*ppos != 0 || count >= sizeof(buf) || count == 0)
 		return -EINVAL;
 
@@ -556,7 +532,7 @@ static ssize_t ath10k_write_simulate_fw_crash(struct file *file,
 	if (rc < 0)
 		return rc;
 
-	/* drop the possible '\n' from the end */
+	 
 	if (buf[*ppos - 1] == '\n')
 		buf[*ppos - 1] = '\0';
 
@@ -573,9 +549,7 @@ static ssize_t ath10k_write_simulate_fw_crash(struct file *file,
 		ret = ath10k_wmi_force_fw_hang(ar, WMI_FORCE_FW_HANG_ASSERT, 0);
 	} else if (!strcmp(buf, "hard")) {
 		ath10k_info(ar, "simulating hard firmware crash\n");
-		/* 0x7fff is vdev id, and it is always out of range for all
-		 * firmware variants in order to force a firmware crash.
-		 */
+		 
 		ret = ath10k_wmi_vdev_set_param(ar, 0x7fff,
 						ar->wmi.vdev_param->rts_threshold,
 						0);
@@ -868,7 +842,7 @@ static int ath10k_debug_htt_stats_req(struct ath10k *ar)
 	lockdep_assert_held(&ar->conf_mutex);
 
 	if (ar->debug.htt_stats_mask == 0)
-		/* htt stats are disabled */
+		 
 		return 0;
 
 	if (ar->state != ATH10K_STATE_ON)
@@ -926,7 +900,7 @@ static ssize_t ath10k_write_htt_stats_mask(struct file *file,
 	if (ret)
 		return ret;
 
-	/* max 17 bit masks (for now) */
+	 
 	if (mask > HTT_STATS_BIT_MASK)
 		return -E2BIG;
 
@@ -1051,7 +1025,7 @@ static ssize_t ath10k_write_fw_dbglog(struct file *file,
 		return -EINVAL;
 
 	if (ret == 1)
-		/* default if user did not specify */
+		 
 		log_level = ATH10K_DBGLOG_LEVEL_WARN;
 
 	mutex_lock(&ar->conf_mutex);
@@ -1077,12 +1051,9 @@ exit:
 	return ret;
 }
 
-/* TODO:  Would be nice to always support ethtool stats, would need to
- * move the stats storage out of ath10k_debug, or always have ath10k_debug
- * struct available..
- */
+ 
 
-/* This generally corresponds to the debugfs fw_stats file */
+ 
 static const char ath10k_gstrings_stats[][ETH_GSTRING_LEN] = {
 	"tx_pkts_nic",
 	"tx_bytes_nic",
@@ -1093,9 +1064,9 @@ static const char ath10k_gstrings_stats[][ETH_GSTRING_LEN] = {
 	"d_phy_error",
 	"d_rts_bad",
 	"d_rts_good",
-	"d_tx_power", /* in .5 dbM I think */
-	"d_rx_crc_err", /* fcs_bad */
-	"d_rx_crc_err_drop", /* frame with FCS error, dropped late in kernel */
+	"d_tx_power",  
+	"d_rx_crc_err",  
+	"d_rx_crc_err_drop",  
 	"d_no_beacon",
 	"d_tx_mpdus_queued",
 	"d_tx_msdu_queued",
@@ -1127,7 +1098,7 @@ static const char ath10k_gstrings_stats[][ETH_GSTRING_LEN] = {
 	"d_rx_mpdu_stack",
 	"d_rx_phy_err",
 	"d_rx_phy_err_drops",
-	"d_rx_mpdu_errors", /* FCS, MIC, ENC */
+	"d_rx_mpdu_errors",  
 	"d_fw_crash_count",
 	"d_fw_warm_reset_count",
 	"d_fw_cold_reset_count",
@@ -1167,7 +1138,7 @@ void ath10k_debug_get_et_stats(struct ieee80211_hw *hw,
 	if (ar->state == ATH10K_STATE_ON) {
 		ret = ath10k_debug_fw_stats_request(ar);
 		if (ret) {
-			/* just print a warning and try to use older results */
+			 
 			ath10k_warn(ar,
 				    "failed to get fw stats for ethtool: %d\n",
 				    ret);
@@ -1178,16 +1149,16 @@ void ath10k_debug_get_et_stats(struct ieee80211_hw *hw,
 					      struct ath10k_fw_stats_pdev,
 					      list);
 	if (!pdev_stats) {
-		/* no results available so just return zeroes */
+		 
 		pdev_stats = &zero_stats;
 	}
 
 	spin_lock_bh(&ar->data_lock);
 
-	data[i++] = pdev_stats->hw_reaped; /* ppdu reaped */
-	data[i++] = 0; /* tx bytes */
+	data[i++] = pdev_stats->hw_reaped;  
+	data[i++] = 0;  
 	data[i++] = pdev_stats->htt_mpdus;
-	data[i++] = 0; /* rx bytes */
+	data[i++] = 0;  
 	data[i++] = pdev_stats->ch_noise_floor;
 	data[i++] = pdev_stats->cycle_count;
 	data[i++] = pdev_stats->phy_err_count;
@@ -1403,7 +1374,7 @@ static ssize_t ath10k_write_nf_cal_period(struct file *file,
 	if (period > WMI_PDEV_PARAM_CAL_PERIOD_MAX)
 		return -EINVAL;
 
-	/* there's no way to switch back to the firmware default */
+	 
 	if (period == 0)
 		return -EINVAL;
 
@@ -1412,7 +1383,7 @@ static ssize_t ath10k_write_nf_cal_period(struct file *file,
 	ar->debug.nf_cal_period = period;
 
 	if (ar->state != ATH10K_STATE_ON) {
-		/* firmware is not running, nothing else to do */
+		 
 		ret = count;
 		goto exit;
 	}
@@ -1697,7 +1668,7 @@ int ath10k_debug_start(struct ath10k *ar)
 
 	ret = ath10k_debug_htt_stats_req(ar);
 	if (ret)
-		/* continue normally anyway, this isn't serious */
+		 
 		ath10k_warn(ar, "failed to start htt stats workqueue: %d\n",
 			    ret);
 
@@ -1705,7 +1676,7 @@ int ath10k_debug_start(struct ath10k *ar)
 		ret = ath10k_wmi_dbglog_cfg(ar, ar->debug.fw_dbglog_mask,
 					    ATH10K_DBGLOG_LEVEL_WARN);
 		if (ret)
-			/* not serious */
+			 
 			ath10k_warn(ar, "failed to enable dbglog during start: %d",
 				    ret);
 	}
@@ -1714,14 +1685,14 @@ int ath10k_debug_start(struct ath10k *ar)
 		ret = ath10k_wmi_pdev_pktlog_enable(ar,
 						    ar->pktlog_filter);
 		if (ret)
-			/* not serious */
+			 
 			ath10k_warn(ar,
 				    "failed to enable pktlog filter %x: %d\n",
 				    ar->pktlog_filter, ret);
 	} else {
 		ret = ath10k_wmi_pdev_pktlog_disable(ar);
 		if (ret)
-			/* not serious */
+			 
 			ath10k_warn(ar, "failed to disable pktlog: %d\n", ret);
 	}
 
@@ -1732,7 +1703,7 @@ int ath10k_debug_start(struct ath10k *ar)
 						ar->wmi.pdev_param->cal_period,
 						ar->debug.nf_cal_period);
 		if (ret)
-			/* not serious */
+			 
 			ath10k_warn(ar, "cal period cfg failed from debug start: %d\n",
 				    ret);
 	}
@@ -1748,10 +1719,7 @@ void ath10k_debug_stop(struct ath10k *ar)
 		      ar->normal_mode_fw.fw_file.fw_features))
 		ath10k_debug_cal_data_fetch(ar);
 
-	/* Must not use _sync to avoid deadlock, we do that in
-	 * ath10k_debug_destroy(). The check for htt_stats_mask is to avoid
-	 * warning from del_timer().
-	 */
+	 
 	if (ar->debug.htt_stats_mask != 0)
 		cancel_delayed_work(&ar->debug.htt_stats_dwork);
 
@@ -1765,10 +1733,7 @@ static ssize_t ath10k_write_simulate_radar(struct file *file,
 	struct ath10k *ar = file->private_data;
 	struct ath10k_vif *arvif;
 
-	/* Just check for the first vif alone, as all the vifs will be
-	 * sharing the same channel and if the channel is disabled, all the
-	 * vifs will share the same 'is_started' state.
-	 */
+	 
 	arvif = list_first_entry(&ar->arvifs, typeof(*arvif), list);
 	if (!arvif->is_started)
 		return -EINVAL;
@@ -2667,7 +2632,7 @@ void ath10k_debug_unregister(struct ath10k *ar)
 	cancel_delayed_work_sync(&ar->debug.htt_stats_dwork);
 }
 
-#endif /* CONFIG_ATH10K_DEBUGFS */
+#endif  
 
 #ifdef CONFIG_ATH10K_DEBUG
 void __ath10k_dbg(struct ath10k *ar, enum ath10k_debug_mask mask,
@@ -2717,10 +2682,10 @@ void ath10k_dbg_dump(struct ath10k *ar,
 		}
 	}
 
-	/* tracing code doesn't like null strings :/ */
+	 
 	trace_ath10k_log_dbg_dump(ar, msg ? msg : "", prefix ? prefix : "",
 				  buf, len);
 }
 EXPORT_SYMBOL(ath10k_dbg_dump);
 
-#endif /* CONFIG_ATH10K_DEBUG */
+#endif  

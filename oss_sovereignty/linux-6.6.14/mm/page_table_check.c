@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright (c) 2021, Google LLC.
- * Pasha Tatashin <pasha.tatashin@soleen.com>
- */
+
+ 
 #include <linux/kstrtox.h>
 #include <linux/mm.h>
 #include <linux/page_table_check.h>
@@ -54,10 +51,7 @@ static struct page_table_check *get_page_table_check(struct page_ext *page_ext)
 	return page_ext_data(page_ext, &page_table_check_ops);
 }
 
-/*
- * An entry is removed from the page table, decrement the counters for that page
- * verify that it is of correct type and counters do not become negative.
- */
+ 
 static void page_table_check_clear(unsigned long pfn, unsigned long pgcnt)
 {
 	struct page_ext *page_ext;
@@ -89,11 +83,7 @@ static void page_table_check_clear(unsigned long pfn, unsigned long pgcnt)
 	page_ext_put(page_ext);
 }
 
-/*
- * A new entry is added to the page table, increment the counters for that page
- * verify that it is of correct type and is not being mapped with a different
- * type to a different process.
- */
+ 
 static void page_table_check_set(unsigned long pfn, unsigned long pgcnt,
 				 bool rw)
 {
@@ -126,10 +116,7 @@ static void page_table_check_set(unsigned long pfn, unsigned long pgcnt,
 	page_ext_put(page_ext);
 }
 
-/*
- * page is on free list, or is being allocated, verify that counters are zeroes
- * crash if they are not.
- */
+ 
 void __page_table_check_zero(struct page *page, unsigned int order)
 {
 	struct page_ext *page_ext;

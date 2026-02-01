@@ -1,14 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// nau8822.c  --  NAU8822 ALSA Soc Audio driver
-//
-// Copyright 2017 Nuvoton Technology Crop.
-//
-// Author: David Lin <ctlin0@nuvoton.com>
-// Co-author: John Hsu <kchsu0@nuvoton.com>
-// Co-author: Seven Li <wtli@nuvoton.com>
-//
-// Based on WM8974.c
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -170,12 +170,7 @@ static bool nau8822_volatile(struct device *dev, unsigned int reg)
 	}
 }
 
-/* The EQ parameters get function is to get the 5 band equalizer control.
- * The regmap raw read can't work here because regmap doesn't provide
- * value format for value width of 9 bits. Therefore, the driver reads data
- * from cache and makes value format according to the endianness of
- * bytes type control element.
- */
+ 
 static int nau8822_eq_get(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
@@ -190,9 +185,7 @@ static int nau8822_eq_get(struct snd_kcontrol *kcontrol,
 	reg = NAU8822_REG_EQ1;
 	for (i = 0; i < params->max / sizeof(u16); i++) {
 		reg_val = snd_soc_component_read(component, reg + i);
-		/* conversion of 16-bit integers between native CPU format
-		 * and big endian format
-		 */
+		 
 		tmp = cpu_to_be16(reg_val);
 		memcpy(val + i, &tmp, sizeof(tmp));
 	}
@@ -200,14 +193,7 @@ static int nau8822_eq_get(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-/* The EQ parameters put function is to make configuration of 5 band equalizer
- * control. These configuration includes central frequency, equalizer gain,
- * cut-off frequency, bandwidth control, and equalizer path.
- * The regmap raw write can't work here because regmap doesn't provide
- * register and value format for register with address 7 bits and value 9 bits.
- * Therefore, the driver makes value format according to the endianness of
- * bytes type control element and writes data to codec.
- */
+ 
 static int nau8822_eq_put(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
@@ -227,9 +213,7 @@ static int nau8822_eq_put(struct snd_kcontrol *kcontrol,
 	val = (u16 *)data;
 	reg = NAU8822_REG_EQ1;
 	for (i = 0; i < params->max / sizeof(u16); i++) {
-		/* conversion of 16-bit integers between native CPU format
-		 * and big endian format
-		 */
+		 
 		tmp = (__be16 *)(val + i);
 		value = be16_to_cpup(tmp);
 		ret = snd_soc_component_write(component, reg + i, value);
@@ -384,7 +368,7 @@ static const struct snd_kcontrol_new nau8822_snd_controls[] = {
 		NAU8822_REG_ADC_CONTROL, 5, 1, 0),
 };
 
-/* LMAIN and RMAIN Mixer */
+ 
 static const struct snd_kcontrol_new nau8822_left_out_mixer[] = {
 	SOC_DAPM_SINGLE("LINMIX Switch",
 		NAU8822_REG_LEFT_MIXER_CONTROL, 1, 1, 0),
@@ -407,7 +391,7 @@ static const struct snd_kcontrol_new nau8822_right_out_mixer[] = {
 		NAU8822_REG_OUTPUT_CONTROL, 6, 1, 0),
 };
 
-/* AUX1 and AUX2 Mixer */
+ 
 static const struct snd_kcontrol_new nau8822_auxout1_mixer[] = {
 	SOC_DAPM_SINGLE("RDAC Switch", NAU8822_REG_AUX1_MIXER, 0, 1, 0),
 	SOC_DAPM_SINGLE("RMIX Switch", NAU8822_REG_AUX1_MIXER, 1, 1, 0),
@@ -424,7 +408,7 @@ static const struct snd_kcontrol_new nau8822_auxout2_mixer[] = {
 		NAU8822_REG_AUX2_MIXER, 3, 1, 0),
 };
 
-/* Input PGA */
+ 
 static const struct snd_kcontrol_new nau8822_left_input_mixer[] = {
 	SOC_DAPM_SINGLE("L2 Switch", NAU8822_REG_INPUT_CONTROL, 2, 1, 0),
 	SOC_DAPM_SINGLE("MicN Switch", NAU8822_REG_INPUT_CONTROL, 1, 1, 0),
@@ -436,7 +420,7 @@ static const struct snd_kcontrol_new nau8822_right_input_mixer[] = {
 	SOC_DAPM_SINGLE("MicP Switch", NAU8822_REG_INPUT_CONTROL, 4, 1, 0),
 };
 
-/* Loopback Switch */
+ 
 static const struct snd_kcontrol_new nau8822_loopback =
 	SOC_DAPM_SINGLE("Switch", NAU8822_REG_COMPANDING_CONTROL,
 		NAU8822_ADDAP_SFT, 1, 0);
@@ -532,7 +516,7 @@ static const struct snd_soc_dapm_route nau8822_dapm_routes[] = {
 	{"Right DAC", NULL, "PLL", check_mclk_select_pll},
 	{"Left DAC", NULL, "PLL", check_mclk_select_pll},
 
-	/* LMAIN and RMAIN Mixer */
+	 
 	{"Right Output Mixer", "LDAC Switch", "Left DAC"},
 	{"Right Output Mixer", "RDAC Switch", "Right DAC"},
 	{"Right Output Mixer", "RAUX Switch", "RAUX"},
@@ -543,7 +527,7 @@ static const struct snd_soc_dapm_route nau8822_dapm_routes[] = {
 	{"Left Output Mixer", "LAUX Switch", "LAUX"},
 	{"Left Output Mixer", "LINMIX Switch", "Left Boost Mixer"},
 
-	/* AUX1 and AUX2 Mixer */
+	 
 	{"AUX1 Output Mixer", "RDAC Switch", "Right DAC"},
 	{"AUX1 Output Mixer", "RMIX Switch", "Right Output Mixer"},
 	{"AUX1 Output Mixer", "RINMIX Switch", "Right Boost Mixer"},
@@ -555,7 +539,7 @@ static const struct snd_soc_dapm_route nau8822_dapm_routes[] = {
 	{"AUX2 Output Mixer", "LINMIX Switch", "Left Boost Mixer"},
 	{"AUX2 Output Mixer", "AUX1MIX Output Switch", "AUX1 Output Mixer"},
 
-	/* Outputs */
+	 
 	{"Right Headphone Out", NULL, "Right Output Mixer"},
 	{"RHP", NULL, "Right Headphone Out"},
 
@@ -573,7 +557,7 @@ static const struct snd_soc_dapm_route nau8822_dapm_routes[] = {
 	{"AUXOUT1", NULL, "AUX1 Out"},
 	{"AUXOUT2", NULL, "AUX2 Out"},
 
-	/* Boost Mixer */
+	 
 	{"Right ADC", NULL, "PLL", check_mclk_select_pll},
 	{"Left ADC", NULL, "PLL", check_mclk_select_pll},
 
@@ -589,11 +573,11 @@ static const struct snd_soc_dapm_route nau8822_dapm_routes[] = {
 	{"Left Boost Mixer", NULL, "Left Capture PGA"},
 	{"Left Boost Mixer", NULL, "L2"},
 
-	/* Input PGA */
+	 
 	{"Right Capture PGA", NULL, "Right Input Mixer"},
 	{"Left Capture PGA", NULL, "Left Input Mixer"},
 
-	/* Enable Microphone Power */
+	 
 	{"Right Capture PGA", NULL, "Mic Bias"},
 	{"Left Capture PGA", NULL, "Mic Bias"},
 
@@ -605,7 +589,7 @@ static const struct snd_soc_dapm_route nau8822_dapm_routes[] = {
 	{"Left Input Mixer", "MicN Switch", "LMICN"},
 	{"Left Input Mixer", "MicP Switch", "LMICP"},
 
-	/* Digital Loopback */
+	 
 	{"Digital Loopback", "Switch", "Left ADC"},
 	{"Digital Loopback", "Switch", "Right ADC"},
 	{"Left DAC", NULL, "Digital Loopback"},
@@ -651,9 +635,7 @@ static int nau8822_calc_pll(unsigned int pll_in, unsigned int fs,
 	pll_param->mclk_scaler = scal_sel;
 	f2 = f2_max;
 
-	/* Calculate the PLL 4-bit integer input and the PLL 24-bit fractional
-	 * input; round up the 24+4bit.
-	 */
+	 
 	pll_ratio = div_u64(f2 << 28, pll_in);
 	pll_param->pre_factor = 0;
 	if (((pll_ratio >> 28) & 0xF) < NAU_PLL_OPTOP_MIN) {
@@ -675,10 +657,7 @@ static int nau8822_config_clkdiv(struct snd_soc_dai *dai, int div, int rate)
 
 	switch (nau8822->div_id) {
 	case NAU8822_CLK_MCLK:
-		/* Configure the master clock prescaler div to make system
-		 * clock to approximate the internal master clock (IMCLK);
-		 * and large or equal to IMCLK.
-		 */
+		 
 		div = 0;
 		imclk = rate * 256;
 		for (i = 1; i < ARRAY_SIZE(nau8822_mclk_scaler); i++) {
@@ -690,7 +669,7 @@ static int nau8822_config_clkdiv(struct snd_soc_dai *dai, int div, int rate)
 		dev_dbg(component->dev, "master clock prescaler %x for fs %d\n",
 			div, rate);
 
-		/* master clock from MCLK and disable PLL */
+		 
 		snd_soc_component_update_bits(component,
 			NAU8822_REG_CLOCKING, NAU8822_MCLKSEL_MASK,
 			(div << NAU8822_MCLKSEL_SFT));
@@ -700,7 +679,7 @@ static int nau8822_config_clkdiv(struct snd_soc_dai *dai, int div, int rate)
 		break;
 
 	case NAU8822_CLK_PLL:
-		/* master clock from PLL and enable PLL */
+		 
 		if (pll->mclk_scaler != div) {
 			dev_err(component->dev,
 			"master clock prescaler not meet PLL parameters\n");
@@ -851,10 +830,10 @@ static int nau8822_hw_params(struct snd_pcm_substream *substream,
 	int val_len = 0, val_rate = 0;
 	unsigned int ctrl_val, bclk_fs, bclk_div;
 
-	/* make BCLK and LRC divide configuration if the codec as master. */
+	 
 	ctrl_val = snd_soc_component_read(component, NAU8822_REG_CLOCKING);
 	if (ctrl_val & NAU8822_CLK_MASTER) {
-		/* get the bclk and fs ratio */
+		 
 		bclk_fs = snd_soc_params_to_bclk(params) / params_rate(params);
 		if (bclk_fs <= 32)
 			bclk_div = NAU8822_BCLKDIV_8;
@@ -912,9 +891,7 @@ static int nau8822_hw_params(struct snd_pcm_substream *substream,
 	snd_soc_component_update_bits(component,
 		NAU8822_REG_ADDITIONAL_CONTROL, NAU8822_SMPLR_MASK, val_rate);
 
-	/* If the master clock is from MCLK, provide the runtime FS for driver
-	 * to get the master clock prescaler configuration.
-	 */
+	 
 	if (nau8822->div_id == NAU8822_CLK_MCLK)
 		nau8822_config_clkdiv(dai, 0, params_rate(params));
 
@@ -1037,12 +1014,7 @@ static int nau8822_resume(struct snd_soc_component *component)
 	return 0;
 }
 
-/*
- * These registers contain an "update" bit - bit 8. This means, for example,
- * that one can write new DAC digital volume for both channels, but only when
- * the update bit is set, will also the volume be updated - simultaneously for
- * both channels.
- */
+ 
 static const int update_reg[] = {
 	NAU8822_REG_LEFT_DAC_DIGITAL_VOLUME,
 	NAU8822_REG_RIGHT_DAC_DIGITAL_VOLUME,
@@ -1061,18 +1033,12 @@ static int nau8822_probe(struct snd_soc_component *component)
 	int i;
 	struct device_node *of_node = component->dev->of_node;
 
-	/*
-	 * Set the update bit in all registers, that have one. This way all
-	 * writes to those registers will also cause the update bit to be
-	 * written.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(update_reg); i++)
 		snd_soc_component_update_bits(component,
 			update_reg[i], 0x100, 0x100);
 
-	/* Check property to configure the two loudspeaker outputs as
-	 * a single Bridge Tied Load output
-	 */
+	 
 	if (of_property_read_bool(of_node, "nuvoton,spk-btl"))
 		snd_soc_component_update_bits(component,
 					      NAU8822_REG_RIGHT_SPEAKER_CONTROL,
@@ -1133,7 +1099,7 @@ static int nau8822_i2c_probe(struct i2c_client *i2c)
 	}
 	nau8822->dev = dev;
 
-	/* Reset the codec */
+	 
 	ret = regmap_write(nau8822->regmap, NAU8822_REG_RESET, 0x00);
 	if (ret != 0) {
 		dev_err(&i2c->dev, "Failed to issue reset: %d\n", ret);

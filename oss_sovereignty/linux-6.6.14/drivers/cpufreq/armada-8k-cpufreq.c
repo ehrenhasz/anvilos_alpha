@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * CPUFreq support for Armada 8K
- *
- * Copyright (C) 2018 Marvell
- *
- * Omri Itach <omrii@marvell.com>
- * Gregory Clement <gregory.clement@bootlin.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -28,10 +21,7 @@ static const struct of_device_id __maybe_unused armada_8k_cpufreq_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, armada_8k_cpufreq_of_match);
 
-/*
- * Setup the opps list with the divider for the max frequency, that
- * will be filled at runtime.
- */
+ 
 static const int opps_div[] __initconst = {1, 2, 3, 4};
 
 static struct platform_device *armada_8k_pdev;
@@ -41,7 +31,7 @@ struct freq_table {
 	unsigned int freq[ARRAY_SIZE(opps_div)];
 };
 
-/* If the CPUs share the same clock, then they are in the same cluster. */
+ 
 static void __init armada_8k_get_sharing_cpus(struct clk *cur_clk,
 					      struct cpumask *cpumask)
 {
@@ -77,7 +67,7 @@ static int __init armada_8k_add_opp(struct clk *clk, struct device *cpu_dev,
 	unsigned int freq;
 	int i, ret;
 
-	/* Get nominal (current) CPU frequency. */
+	 
 	cur_frequency = clk_get_rate(clk);
 	if (!cur_frequency) {
 		dev_err(cpu_dev, "Failed to get clock rate for this CPU\n");
@@ -106,16 +96,12 @@ static void armada_8k_cpufreq_free_table(struct freq_table *freq_tables)
 	for (opps_index = 0 ; opps_index <= nb_cpus; opps_index++) {
 		int i;
 
-		/* If cpu_dev is NULL then we reached the end of the array */
+		 
 		if (!freq_tables[opps_index].cpu_dev)
 			break;
 
 		for (i = 0; i < ARRAY_SIZE(opps_div); i++) {
-			/*
-			 * A 0Hz frequency is not valid, this meant
-			 * that it was not yet initialized so there is
-			 * no more opp to free
-			 */
+			 
 			if (freq_tables[opps_index].freq[i] == 0)
 				break;
 
@@ -148,11 +134,7 @@ static int __init armada_8k_cpufreq_init(void)
 		return -ENOMEM;
 	cpumask_copy(&cpus, cpu_possible_mask);
 
-	/*
-	 * For each CPU, this loop registers the operating points
-	 * supported (which are the nominal CPU frequency and full integer
-	 * divisions of it).
-	 */
+	 
 	for_each_cpu(cpu, &cpus) {
 		struct cpumask shared_cpus;
 		struct device *cpu_dev;

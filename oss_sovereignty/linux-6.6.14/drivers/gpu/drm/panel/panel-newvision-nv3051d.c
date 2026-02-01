@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NV3051D MIPI-DSI panel driver for Anbernic RG353x
- * Copyright (C) 2022 Chris Morgan
- *
- * based on
- *
- * Elida kd35t133 3.5" MIPI-DSI panel driver
- * Copyright (C) Theobroma Systems 2020
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -47,10 +39,7 @@ static int panel_nv3051d_init_sequence(struct panel_nv3051d *ctx)
 {
 	struct mipi_dsi_device *dsi = to_mipi_dsi_device(ctx->dev);
 
-	/*
-	 * Init sequence was supplied by device vendor with no
-	 * documentation.
-	 */
+	 
 
 	mipi_dsi_dcs_write_seq(dsi, 0xFF, 0x30);
 	mipi_dsi_dcs_write_seq(dsi, 0xFF, 0x52);
@@ -438,7 +427,7 @@ static void panel_nv3051d_remove(struct mipi_dsi_device *dsi)
 }
 
 static const struct drm_display_mode nv3051d_rgxx3_modes[] = {
-	{ /* 120hz */
+	{  
 		.hdisplay	= 640,
 		.hsync_start	= 640 + 40,
 		.hsync_end	= 640 + 40 + 2,
@@ -450,7 +439,7 @@ static const struct drm_display_mode nv3051d_rgxx3_modes[] = {
 		.clock		= 48300,
 		.flags		= DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC,
 	},
-	{ /* 100hz */
+	{  
 		.hdisplay       = 640,
 		.hsync_start    = 640 + 40,
 		.hsync_end      = 640 + 40 + 2,
@@ -462,7 +451,7 @@ static const struct drm_display_mode nv3051d_rgxx3_modes[] = {
 		.clock          = 40250,
 		.flags		= DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC,
 	},
-	{ /* 60hz */
+	{  
 		.hdisplay	= 640,
 		.hsync_start	= 640 + 40,
 		.hsync_end	= 640 + 40 + 2,
@@ -486,7 +475,7 @@ static const struct nv3051d_panel_info nv3051d_rgxx3_info = {
 
 static const struct of_device_id newvision_nv3051d_of_match[] = {
 	{ .compatible = "newvision,nv3051d", .data = &nv3051d_rgxx3_info },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, newvision_nv3051d_of_match);
 

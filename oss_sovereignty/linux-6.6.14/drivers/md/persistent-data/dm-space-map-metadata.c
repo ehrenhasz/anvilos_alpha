@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011 Red Hat, Inc.
- *
- * This file is released under the GPL.
- */
+
+ 
 
 #include "dm-space-map.h"
 #include "dm-space-map-common.h"
@@ -16,11 +12,9 @@
 
 #define DM_MSG_PREFIX "space map metadata"
 
-/*----------------------------------------------------------------*/
+ 
 
-/*
- * An edge triggered threshold.
- */
+ 
 struct threshold {
 	bool threshold_set;
 	bool value_set;
@@ -65,22 +59,11 @@ static void check_threshold(struct threshold *t, dm_block_t value)
 	t->current_value = value;
 }
 
-/*----------------------------------------------------------------*/
+ 
 
-/*
- * Space map interface.
- *
- * The low level disk format is written using the standard btree and
- * transaction manager.  This means that performing disk operations may
- * cause us to recurse into the space map in order to allocate new blocks.
- * For this reason we have a pool of pre-allocated blocks large enough to
- * service any metadata_ll_disk operation.
- */
+ 
 
-/*
- * FIXME: we should calculate this based on the size of the device.
- * Only the metadata space map needs this functionality.
- */
+ 
 #define MAX_RECURSIVE_ALLOCATIONS 1024
 
 enum block_op_type {
@@ -124,10 +107,7 @@ static int brb_push(struct bop_ring_buffer *brb,
 	struct block_op *bop;
 	unsigned int next = brb_next(brb, brb->end);
 
-	/*
-	 * We don't allow the last bop to be filled, this way we can
-	 * differentiate between full and empty.
-	 */
+	 
 	if (next == brb->begin)
 		return -ENOMEM;
 
@@ -163,7 +143,7 @@ static int brb_pop(struct bop_ring_buffer *brb)
 	return 0;
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 struct sm_metadata {
 	struct dm_space_map sm;
@@ -242,9 +222,7 @@ static int out(struct sm_metadata *smm)
 {
 	int r = 0;
 
-	/*
-	 * If we're not recursing then very bad things are happening.
-	 */
+	 
 	if (!smm->recursion_count) {
 		DMERR("lost track of recursion depth");
 		return -ENOMEM;
@@ -258,11 +236,7 @@ static int out(struct sm_metadata *smm)
 	return r;
 }
 
-/*
- * When using the out() function above, we often want to combine an error
- * code for the operation run in the recursive context with that from
- * out().
- */
+ 
 static int combine_errors(int r1, int r2)
 {
 	return r1 ? r1 : r2;
@@ -307,10 +281,7 @@ static int sm_metadata_get_count(struct dm_space_map *sm, dm_block_t b,
 	struct sm_metadata *smm = container_of(sm, struct sm_metadata, sm);
 	unsigned int adjustment = 0;
 
-	/*
-	 * We may have some uncommitted adjustments to add.  This list
-	 * should always be really short.
-	 */
+	 
 	for (i = smm->uncommitted.begin;
 	     i != smm->uncommitted.end;
 	     i = brb_next(&smm->uncommitted, i)) {
@@ -347,10 +318,7 @@ static int sm_metadata_count_is_more_than_one(struct dm_space_map *sm,
 	struct sm_metadata *smm = container_of(sm, struct sm_metadata, sm);
 	uint32_t rc;
 
-	/*
-	 * We may have some uncommitted adjustments to add.  This list
-	 * should always be really short.
-	 */
+	 
 	for (i = smm->uncommitted.begin;
 	     i != smm->uncommitted.end;
 	     i = brb_next(&smm->uncommitted, i)) {
@@ -381,9 +349,7 @@ static int sm_metadata_count_is_more_than_one(struct dm_space_map *sm,
 		return r;
 
 	if (rc == 3)
-		/*
-		 * We err on the side of caution, and always return true.
-		 */
+		 
 		*result = 1;
 	else
 		*result = rc + adjustment > 1;
@@ -452,15 +418,10 @@ static int sm_metadata_new_block_(struct dm_space_map *sm, dm_block_t *b)
 	int32_t nr_allocations;
 	struct sm_metadata *smm = container_of(sm, struct sm_metadata, sm);
 
-	/*
-	 * Any block we allocate has to be free in both the old and current ll.
-	 */
+	 
 	r = sm_ll_find_common_free_block(&smm->old_ll, &smm->ll, smm->begin, smm->ll.nr_blocks, b);
 	if (r == -ENOSPC) {
-		/*
-		 * There's no free block between smm->begin and the end of the metadata device.
-		 * We search before smm->begin in case something has been freed.
-		 */
+		 
 		r = sm_ll_find_common_free_block(&smm->old_ll, &smm->ll, 0, smm->begin, b);
 	}
 
@@ -577,12 +538,9 @@ static const struct dm_space_map ops = {
 	.register_threshold_callback = sm_metadata_register_threshold_callback
 };
 
-/*----------------------------------------------------------------*/
+ 
 
-/*
- * When a new space map is created that manages its own space.  We use
- * this tiny bootstrap allocator.
- */
+ 
 static void sm_bootstrap_destroy(struct dm_space_map *sm)
 {
 }
@@ -642,9 +600,7 @@ static int sm_bootstrap_new_block(struct dm_space_map *sm, dm_block_t *b)
 {
 	struct sm_metadata *smm = container_of(sm, struct sm_metadata, sm);
 
-	/*
-	 * We know the entire device is unused.
-	 */
+	 
 	if (smm->begin == smm->ll.nr_blocks)
 		return -ENOSPC;
 
@@ -714,7 +670,7 @@ static const struct dm_space_map bootstrap_ops = {
 	.register_threshold_callback = NULL
 };
 
-/*----------------------------------------------------------------*/
+ 
 
 static int sm_metadata_extend(struct dm_space_map *sm, dm_block_t extra_blocks)
 {
@@ -722,23 +678,16 @@ static int sm_metadata_extend(struct dm_space_map *sm, dm_block_t extra_blocks)
 	struct sm_metadata *smm = container_of(sm, struct sm_metadata, sm);
 	dm_block_t old_len = smm->ll.nr_blocks;
 
-	/*
-	 * Flick into a mode where all blocks get allocated in the new area.
-	 */
+	 
 	smm->begin = old_len;
 	memcpy(sm, &bootstrap_ops, sizeof(*sm));
 
-	/*
-	 * Extend.
-	 */
+	 
 	r = sm_ll_extend(&smm->ll, extra_blocks);
 	if (r)
 		goto out;
 
-	/*
-	 * We repeatedly increment then commit until the commit doesn't
-	 * allocate any new blocks.
-	 */
+	 
 	do {
 		r = add_bop(smm, BOP_INC, old_len, smm->begin);
 		if (r)
@@ -759,14 +708,12 @@ static int sm_metadata_extend(struct dm_space_map *sm, dm_block_t extra_blocks)
 	} while (old_len != smm->begin);
 
 out:
-	/*
-	 * Switch back to normal behaviour.
-	 */
+	 
 	memcpy(sm, &ops, sizeof(*sm));
 	return r;
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 struct dm_space_map *dm_sm_metadata_init(void)
 {
@@ -807,10 +754,7 @@ int dm_sm_metadata_create(struct dm_space_map *sm,
 	if (r)
 		return r;
 
-	/*
-	 * Now we need to update the newly created data structures with the
-	 * allocated blocks that they were built from.
-	 */
+	 
 	r = add_bop(smm, BOP_INC, superblock, smm->begin);
 	if (r)
 		return r;

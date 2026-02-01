@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * (C) COPYRIGHT 2018 ARM Limited. All rights reserved.
- * Author: James.Qian.Wang <james.qian.wang@arm.com>
- *
- */
+
+ 
 #include <drm/drm_device.h>
 #include <drm/drm_fb_dma_helper.h>
 #include <drm/drm_gem.h>
@@ -67,7 +63,7 @@ komeda_fb_afbc_size_check(struct komeda_fb *kfb, struct drm_file *file,
 		break;
 	}
 
-	/* tiled header afbc */
+	 
 	if (fb->modifier & AFBC_FORMAT_MOD_TILED) {
 		alignment_w *= AFBC_TH_LAYOUT_ALIGNMENT;
 		alignment_h *= AFBC_TH_LAYOUT_ALIGNMENT;
@@ -263,7 +259,7 @@ komeda_fb_get_pixel_addr(struct komeda_fb *kfb, int x, int y, int plane)
 	return obj->dma_addr + offset;
 }
 
-/* if the fb can be supported by a specific layer */
+ 
 bool komeda_fb_is_layer_supported(struct komeda_fb *kfb, u32 layer_type,
 				  u32 rot)
 {

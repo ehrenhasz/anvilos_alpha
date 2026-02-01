@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2011 Alexander Stein <alexander.stein@systec-electronic.com>
- *
- * The LM95245 is a sensor chip made by TI / National Semiconductor.
- * It reports up to two temperatures (its own plus an external one).
- *
- * This driver is based on lm95241.c
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -20,41 +13,41 @@
 static const unsigned short normal_i2c[] = {
 	0x18, 0x19, 0x29, 0x4c, 0x4d, I2C_CLIENT_END };
 
-/* LM95245 registers */
-/* general registers */
+ 
+ 
 #define LM95245_REG_RW_CONFIG1		0x03
 #define LM95245_REG_RW_CONVERS_RATE	0x04
 #define LM95245_REG_W_ONE_SHOT		0x0F
 
-/* diode configuration */
+ 
 #define LM95245_REG_RW_CONFIG2		0xBF
 #define LM95245_REG_RW_REMOTE_OFFH	0x11
 #define LM95245_REG_RW_REMOTE_OFFL	0x12
 
-/* status registers */
+ 
 #define LM95245_REG_R_STATUS1		0x02
 #define LM95245_REG_R_STATUS2		0x33
 
-/* limit registers */
+ 
 #define LM95245_REG_RW_REMOTE_OS_LIMIT		0x07
 #define LM95245_REG_RW_LOCAL_OS_TCRIT_LIMIT	0x20
 #define LM95245_REG_RW_REMOTE_TCRIT_LIMIT	0x19
 #define LM95245_REG_RW_COMMON_HYSTERESIS	0x21
 
-/* temperature signed */
+ 
 #define LM95245_REG_R_LOCAL_TEMPH_S	0x00
 #define LM95245_REG_R_LOCAL_TEMPL_S	0x30
 #define LM95245_REG_R_REMOTE_TEMPH_S	0x01
 #define LM95245_REG_R_REMOTE_TEMPL_S	0x10
-/* temperature unsigned */
+ 
 #define LM95245_REG_R_REMOTE_TEMPH_U	0x31
 #define LM95245_REG_R_REMOTE_TEMPL_U	0x32
 
-/* id registers */
+ 
 #define LM95245_REG_R_MAN_ID		0xFE
 #define LM95245_REG_R_CHIP_ID		0xFF
 
-/* LM95245 specific bitfields */
+ 
 #define CFG_STOP		0x40
 #define CFG_REMOTE_TCRIT_MASK	0x10
 #define CFG_REMOTE_OS_MASK	0x08
@@ -68,7 +61,7 @@ static const unsigned short normal_i2c[] = {
 #define CFG2_REMOTE_FILTER_DIS	0x00
 #define CFG2_REMOTE_FILTER_EN	0x06
 
-/* conversation rate in ms */
+ 
 #define RATE_CR0063	0x00
 #define RATE_CR0364	0x01
 #define RATE_CR1000	0x02
@@ -83,14 +76,14 @@ static const unsigned short normal_i2c[] = {
 #define LM95235_REVISION	0xB1
 #define LM95245_REVISION	0xB3
 
-/* Client data (each client gets its own) */
+ 
 struct lm95245_data {
 	struct regmap *regmap;
 	struct mutex update_lock;
-	int interval;	/* in msecs */
+	int interval;	 
 };
 
-/* Conversions */
+ 
 static int temp_from_reg_unsigned(u8 val_h, u8 val_l)
 {
 	return val_h * 1000 + val_l * 1000 / 256;
@@ -175,12 +168,7 @@ static int lm95245_read_temp(struct device *dev, u32 attr, int channel,
 		ret = regmap_read(regmap, regh, &regvalh);
 		if (ret < 0)
 			return ret;
-		/*
-		 * Local temp is always signed.
-		 * Remote temp has both signed and unsigned data.
-		 * Use signed calculation for remote if signed bit is set
-		 * or if reported temperature is below signed limit.
-		 */
+		 
 		if (!channel || (regvalh & 0x80) || regvalh < 0x7f) {
 			*val = temp_from_reg_signed(regvalh, regvall);
 			return 0;
@@ -300,7 +288,7 @@ static int lm95245_write_temp(struct device *dev, u32 attr, int channel,
 			mutex_unlock(&data->update_lock);
 			return ret;
 		}
-		/* Clamp to reasonable range to prevent overflow */
+		 
 		val = clamp_val(val, -1000000, 1000000);
 		val = regval - val / 1000;
 		val = clamp_val(val, 0, 31);
@@ -431,7 +419,7 @@ static umode_t lm95245_is_visible(const void *data,
 	}
 }
 
-/* Return 0 if detection is successful, -ENODEV otherwise */
+ 
 static int lm95245_detect(struct i2c_client *new_client,
 			  struct i2c_board_info *info)
 {
@@ -564,7 +552,7 @@ static int lm95245_probe(struct i2c_client *client)
 
 	mutex_init(&data->update_lock);
 
-	/* Initialize the LM95245 chip */
+	 
 	ret = lm95245_init_client(data);
 	if (ret < 0)
 		return ret;
@@ -576,7 +564,7 @@ static int lm95245_probe(struct i2c_client *client)
 	return PTR_ERR_OR_ZERO(hwmon_dev);
 }
 
-/* Driver data (common to all clients) */
+ 
 static const struct i2c_device_id lm95245_id[] = {
 	{ "lm95235", 0 },
 	{ "lm95245", 0 },

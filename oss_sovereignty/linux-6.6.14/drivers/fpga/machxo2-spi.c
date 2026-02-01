@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Lattice MachXO2 Slave SPI Driver
- *
- * Manage Lattice FPGA firmware that is loaded over SPI using
- * the slave serial configuration interface.
- *
- * Copyright (C) 2018 Paolo Pisati <p.pisati@gmail.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/fpga/fpga-mgr.h>
@@ -15,7 +8,7 @@
 #include <linux/of.h>
 #include <linux/spi/spi.h>
 
-/* MachXO2 Programming Guide - sysCONFIG Programming Commands */
+ 
 #define IDCODE_PUB		{0xe0, 0x00, 0x00, 0x00}
 #define ISC_ENABLE		{0xc6, 0x08, 0x00, 0x00}
 #define ISC_ERASE		{0x0e, 0x04, 0x00, 0x00}
@@ -25,10 +18,7 @@
 #define LSC_READ_STATUS		{0x3c, 0x00, 0x00, 0x00}
 #define LSC_REFRESH		{0x79, 0x00, 0x00, 0x00}
 
-/*
- * Max CCLK in Slave SPI mode according to 'MachXO2 Family Data
- * Sheet' sysCONFIG Port Timing Specifications (3-36)
- */
+ 
 #define MACHXO2_MAX_SPEED		66000000
 
 #define MACHXO2_LOW_DELAY_USEC		5
@@ -40,7 +30,7 @@
 #define MACHXO2_PAGE_SIZE		16
 #define MACHXO2_BUF_SIZE		(MACHXO2_PAGE_SIZE + 4)
 
-/* Status register bits, errors and error mask */
+ 
 #define BUSY	12
 #define DONE	8
 #define DVER	27
@@ -49,14 +39,14 @@
 #define ERRMASK	7
 #define FAIL	13
 
-#define ENOERR	0 /* no error */
+#define ENOERR	0  
 #define EID	1
 #define ECMD	2
 #define ECRC	3
-#define EPREAM	4 /* preamble error */
-#define EABRT	5 /* abort error */
-#define EOVERFL	6 /* overflow error */
-#define ESDMEOF	7 /* SDM EOF */
+#define EPREAM	4  
+#define EABRT	5  
+#define EOVERFL	6  
+#define ESDMEOF	7  
 
 static inline u8 get_err(unsigned long *status)
 {
@@ -330,7 +320,7 @@ static int machxo2_write_complete(struct fpga_manager *mgr,
 		if (ret)
 			goto fail;
 
-		/* check refresh status */
+		 
 		get_status(spi, &status);
 		dump_status_reg(&status);
 		if (!test_bit(BUSY, &status) && test_bit(DONE, &status) &&

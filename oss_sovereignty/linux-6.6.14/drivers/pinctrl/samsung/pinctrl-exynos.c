@@ -1,17 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Exynos specific support for Samsung pinctrl/gpiolib driver with eint support.
-//
-// Copyright (c) 2012 Samsung Electronics Co., Ltd.
-//		http://www.samsung.com
-// Copyright (c) 2012 Linaro Ltd
-//		http://www.linaro.org
-//
-// Author: Thomas Abraham <thomas.ab@samsung.com>
-//
-// This file contains the Samsung Exynos specific information required by the
-// the Samsung pinctrl/gpiolib driver. It also includes the implementation of
-// external gpio and wakeup interrupt support.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/device.h>
 #include <linux/interrupt.h>
@@ -84,14 +84,7 @@ static void exynos_irq_unmask(struct irq_data *irqd)
 	unsigned int mask;
 	unsigned long flags;
 
-	/*
-	 * Ack level interrupts right before unmask
-	 *
-	 * If we don't do this we'll get a double-interrupt.  Level triggered
-	 * interrupts must not fire an interrupt if the level is not
-	 * _currently_ active, even if it was active while the interrupt was
-	 * masked.
-	 */
+	 
 	if (irqd_get_trigger_type(irqd) & IRQ_TYPE_LEVEL_MASK)
 		exynos_irq_ack(irqd);
 
@@ -202,9 +195,7 @@ static void exynos_irq_release_resources(struct irq_data *irqd)
 	gpiochip_unlock_as_irq(&bank->gpio_chip, irqd->hwirq);
 }
 
-/*
- * irq_chip for gpio interrupts.
- */
+ 
 static const struct exynos_irq_chip exynos_gpio_irq_chip __initconst = {
 	.chip = {
 		.name = "exynos_gpio_irq_chip",
@@ -218,7 +209,7 @@ static const struct exynos_irq_chip exynos_gpio_irq_chip __initconst = {
 	.eint_con = EXYNOS_GPIO_ECON_OFFSET,
 	.eint_mask = EXYNOS_GPIO_EMASK_OFFSET,
 	.eint_pend = EXYNOS_GPIO_EPEND_OFFSET,
-	/* eint_wake_mask_value not used */
+	 
 };
 
 static int exynos_eint_irq_map(struct irq_domain *h, unsigned int virq,
@@ -232,9 +223,7 @@ static int exynos_eint_irq_map(struct irq_domain *h, unsigned int virq,
 	return 0;
 }
 
-/*
- * irq domain callbacks for external gpio and wakeup interrupt controllers.
- */
+ 
 static const struct irq_domain_ops exynos_eint_irqd_ops = {
 	.map	= exynos_eint_irq_map,
 	.xlate	= irq_domain_xlate_twocell,
@@ -269,10 +258,7 @@ struct exynos_eint_gpio_save {
 	u32 eint_mask;
 };
 
-/*
- * exynos_eint_gpio_init() - setup handling of external gpio interrupts.
- * @d: driver data of samsung pinctrl driver.
- */
+ 
 __init int exynos_eint_gpio_init(struct samsung_pinctrl_drv_data *d)
 {
 	struct samsung_pin_bank *bank;
@@ -395,9 +381,7 @@ s5pv210_pinctrl_set_eint_wakeup_mask(struct samsung_pinctrl_drv_data *drvdata,
 }
 
 static u32 eint_wake_mask_value = EXYNOS_EINT_WAKEUP_MASK_DISABLED;
-/*
- * irq_chip for wakeup interrupts
- */
+ 
 static const struct exynos_irq_chip s5pv210_wkup_irq_chip __initconst = {
 	.chip = {
 		.name = "s5pv210_wkup_irq_chip",
@@ -413,7 +397,7 @@ static const struct exynos_irq_chip s5pv210_wkup_irq_chip __initconst = {
 	.eint_mask = EXYNOS_WKUP_EMASK_OFFSET,
 	.eint_pend = EXYNOS_WKUP_EPEND_OFFSET,
 	.eint_wake_mask_value = &eint_wake_mask_value,
-	/* Only differences with exynos4210_wkup_irq_chip: */
+	 
 	.eint_wake_mask_reg = S5PV210_EINT_WAKEUP_MASK,
 	.set_eint_wakeup_mask = s5pv210_pinctrl_set_eint_wakeup_mask,
 };
@@ -456,7 +440,7 @@ static const struct exynos_irq_chip exynos7_wkup_irq_chip __initconst = {
 	.set_eint_wakeup_mask = exynos_pinctrl_set_eint_wakeup_mask,
 };
 
-/* list of external wakeup controllers supported */
+ 
 static const struct of_device_id exynos_wkup_irq_ids[] = {
 	{ .compatible = "samsung,s5pv210-wakeup-eint",
 			.data = &s5pv210_wkup_irq_chip },
@@ -471,7 +455,7 @@ static const struct of_device_id exynos_wkup_irq_ids[] = {
 	{ }
 };
 
-/* interrupt handler for wakeup interrupts 0..15 */
+ 
 static void exynos_irq_eint0_15(struct irq_desc *desc)
 {
 	struct exynos_weint_data *eintd = irq_desc_get_handler_data(desc);
@@ -497,7 +481,7 @@ static inline void exynos_irq_demux_eint(unsigned int pend,
 	}
 }
 
-/* interrupt handler for wakeup interrupt 16 */
+ 
 static void exynos_irq_demux_eint16_31(struct irq_desc *desc)
 {
 	struct irq_chip *chip = irq_desc_get_chip(desc);
@@ -520,10 +504,7 @@ static void exynos_irq_demux_eint16_31(struct irq_desc *desc)
 	chained_irq_exit(chip, desc);
 }
 
-/*
- * exynos_eint_wkup_init() - setup handling of external wakeup interrupts.
- * @d: driver data of samsung pinctrl driver.
- */
+ 
 __init int exynos_eint_wkup_init(struct samsung_pinctrl_drv_data *d)
 {
 	struct device *dev = d->dev;
@@ -757,7 +738,7 @@ exynos_retention_init(struct samsung_pinctrl_drv_data *drvdata,
 	ctrl->enable = exynos_retention_enable;
 	ctrl->disable = exynos_retention_disable;
 
-	/* Ensure that retention is disabled on driver init */
+	 
 	for (i = 0; i < ctrl->nr_regs; i++)
 		regmap_write(pmu_regs, ctrl->regs[i], ctrl->value);
 

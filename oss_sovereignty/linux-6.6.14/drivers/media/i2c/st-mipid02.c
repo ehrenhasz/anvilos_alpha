@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for ST MIPID02 CSI-2 to PARALLEL bridge
- *
- * Copyright (C) STMicroelectronics SA 2019
- * Authors: Mickael Guene <mickael.guene@st.com>
- *          for STMicroelectronics.
- *
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -36,22 +28,22 @@
 #define MIPID02_PIX_WIDTH_CTRL				0x1e
 #define MIPID02_PIX_WIDTH_CTRL_EMB			0x1f
 
-/* Bits definition for MIPID02_CLK_LANE_REG1 */
+ 
 #define CLK_ENABLE					BIT(0)
-/* Bits definition for MIPID02_CLK_LANE_REG3 */
+ 
 #define CLK_MIPI_CSI					BIT(1)
-/* Bits definition for MIPID02_DATA_LANE0_REG1 */
+ 
 #define DATA_ENABLE					BIT(0)
-/* Bits definition for MIPID02_DATA_LANEx_REG2 */
+ 
 #define DATA_MIPI_CSI					BIT(0)
-/* Bits definition for MIPID02_MODE_REG1 */
+ 
 #define MODE_DATA_SWAP					BIT(2)
 #define MODE_NO_BYPASS					BIT(6)
-/* Bits definition for MIPID02_MODE_REG2 */
+ 
 #define MODE_HSYNC_ACTIVE_HIGH				BIT(1)
 #define MODE_VSYNC_ACTIVE_HIGH				BIT(2)
 #define MODE_PCLK_SAMPLE_RISING				BIT(3)
-/* Bits definition for MIPID02_DATA_SELECTION_CTRL */
+ 
 #define SELECTION_MANUAL_DATA				BIT(2)
 #define SELECTION_MANUAL_WIDTH				BIT(3)
 
@@ -71,10 +63,10 @@ static const u32 mipid02_supported_fmt_codes[] = {
 	MEDIA_BUS_FMT_JPEG_1X8
 };
 
-/* regulator supplies */
+ 
 static const char * const mipid02_supply_name[] = {
-	"VDDE", /* 1.8V digital I/O supply */
-	"VDDIN", /* 1V8 voltage regulator supply */
+	"VDDE",  
+	"VDDIN",  
 };
 
 #define MIPID02_NUM_SUPPLIES		ARRAY_SIZE(mipid02_supply_name)
@@ -91,14 +83,14 @@ struct mipid02_dev {
 	struct media_pad pad[MIPID02_PAD_NB];
 	struct clk *xclk;
 	struct gpio_desc *reset_gpio;
-	/* endpoints info */
+	 
 	struct v4l2_fwnode_endpoint rx;
 	u64 link_frequency;
 	struct v4l2_fwnode_endpoint tx;
-	/* remote source */
+	 
 	struct v4l2_async_notifier notifier;
 	struct v4l2_subdev *s_subdev;
-	/* registers */
+	 
 	struct {
 		u8 clk_lane_reg1;
 		u8 data_lane0_reg1;
@@ -110,7 +102,7 @@ struct mipid02_dev {
 		u8 pix_width_ctrl;
 		u8 pix_width_ctrl_emb;
 	} r;
-	/* lock to protect all members below */
+	 
 	struct mutex lock;
 	bool streaming;
 	struct v4l2_mbus_framefmt fmt;
@@ -360,10 +352,7 @@ static int mipid02_detect(struct mipid02_dev *bridge)
 {
 	u8 reg;
 
-	/*
-	 * There is no version registers. Just try to read register
-	 * MIPID02_CLK_LANE_WR_REG1.
-	 */
+	 
 	return mipid02_read_reg(bridge, MIPID02_CLK_LANE_WR_REG1, &reg);
 }
 
@@ -402,11 +391,7 @@ static u32 mipid02_get_link_freq_from_cid_pixel_rate(struct mipid02_dev *bridge,
 	return pixel_clock * bpp / (2 * ep->bus.mipi_csi2.num_data_lanes);
 }
 
-/*
- * We need to know link frequency to setup clk_lane_reg1 timings. Link frequency
- * will be computed using connected device V4L2_CID_PIXEL_RATE, bit per pixel
- * and number of lanes.
- */
+ 
 static int mipid02_configure_from_rx_speed(struct mipid02_dev *bridge)
 {
 	struct i2c_client *client = bridge->i2c_client;
@@ -435,7 +420,7 @@ static int mipid02_configure_clk_lane(struct mipid02_dev *bridge)
 	struct v4l2_fwnode_endpoint *ep = &bridge->rx;
 	bool *polarities = ep->bus.mipi_csi2.lane_polarities;
 
-	/* midid02 doesn't support clock lane remapping */
+	 
 	if (ep->bus.mipi_csi2.clock_lane != 0) {
 		dev_err(&client->dev, "clk lane must be map to lane 0\n");
 		return -EINVAL;
@@ -453,10 +438,7 @@ static int mipid02_configure_data0_lane(struct mipid02_dev *bridge, int nb,
 	if (nb == 1 && are_lanes_swap)
 		return 0;
 
-	/*
-	 * data lane 0 as pin swap polarity reversed compared to clock and
-	 * data lane 1
-	 */
+	 
 	if (!are_pin_swap)
 		bridge->r.data_lane0_reg1 = 1 << 1;
 	bridge->r.data_lane0_reg1 |= DATA_ENABLE;
@@ -554,7 +536,7 @@ static int mipid02_stream_disable(struct mipid02_dev *bridge)
 	if (ret)
 		goto error;
 
-	/* Disable all lanes */
+	 
 	ret = mipid02_write_reg(bridge, MIPID02_CLK_LANE_REG1, 0);
 	if (ret)
 		goto error;
@@ -580,7 +562,7 @@ static int mipid02_stream_enable(struct mipid02_dev *bridge)
 		goto error;
 
 	memset(&bridge->r, 0, sizeof(bridge->r));
-	/* build registers content */
+	 
 	ret = mipid02_configure_from_rx(bridge);
 	if (ret)
 		goto error;
@@ -591,7 +573,7 @@ static int mipid02_stream_enable(struct mipid02_dev *bridge)
 	if (ret)
 		goto error;
 
-	/* write mipi registers */
+	 
 	ret = mipid02_write_reg(bridge, MIPID02_CLK_LANE_REG1,
 		bridge->r.clk_lane_reg1);
 	if (ret)
@@ -719,7 +701,7 @@ static int mipid02_get_fmt(struct v4l2_subdev *sd,
 
 	if (format->pad >= MIPID02_PAD_NB)
 		return -EINVAL;
-	/* second CSI-2 pad not yet supported */
+	 
 	if (format->pad == MIPID02_SINK_1)
 		return -EINVAL;
 
@@ -732,7 +714,7 @@ static int mipid02_get_fmt(struct v4l2_subdev *sd,
 	mutex_lock(&bridge->lock);
 
 	*mbus_fmt = *fmt;
-	/* code may need to be converted for source */
+	 
 	if (format->pad == MIPID02_SOURCE)
 		mbus_fmt->code = serial_to_parallel_code(mbus_fmt->code);
 
@@ -747,17 +729,17 @@ static void mipid02_set_fmt_source(struct v4l2_subdev *sd,
 {
 	struct mipid02_dev *bridge = to_mipid02_dev(sd);
 
-	/* source pad mirror sink pad */
+	 
 	if (format->which == V4L2_SUBDEV_FORMAT_ACTIVE)
 		format->format = bridge->fmt;
 	else
 		format->format = *v4l2_subdev_get_try_format(sd, sd_state,
 							     MIPID02_SINK_0);
 
-	/* but code may need to be converted */
+	 
 	format->format.code = serial_to_parallel_code(format->format.code);
 
-	/* only apply format for V4L2_SUBDEV_FORMAT_TRY case */
+	 
 	if (format->which != V4L2_SUBDEV_FORMAT_TRY)
 		return;
 
@@ -781,7 +763,7 @@ static void mipid02_set_fmt_sink(struct v4l2_subdev *sd,
 
 	*fmt = format->format;
 
-	/* Propagate the format change to the source pad */
+	 
 	mipid02_set_fmt_source(sd, sd_state, format);
 }
 
@@ -797,7 +779,7 @@ static int mipid02_set_fmt(struct v4l2_subdev *sd,
 
 	if (format->pad >= MIPID02_PAD_NB)
 		return -EINVAL;
-	/* second CSI-2 pad not yet supported */
+	 
 	if (format->pad == MIPID02_SINK_1)
 		return -EINVAL;
 
@@ -894,7 +876,7 @@ static int mipid02_parse_rx_ep(struct mipid02_dev *bridge)
 	struct device_node *ep_node;
 	int ret;
 
-	/* parse rx (endpoint 0) */
+	 
 	ep_node = of_graph_get_endpoint_by_regs(bridge->i2c_client->dev.of_node,
 						0, 0);
 	if (!ep_node) {
@@ -910,7 +892,7 @@ static int mipid02_parse_rx_ep(struct mipid02_dev *bridge)
 		goto error_of_node_put;
 	}
 
-	/* do some sanity checks */
+	 
 	if (ep.bus.mipi_csi2.num_data_lanes > 2) {
 		dev_err(&client->dev, "max supported data lanes is 2 / got %d",
 			ep.bus.mipi_csi2.num_data_lanes);
@@ -918,10 +900,10 @@ static int mipid02_parse_rx_ep(struct mipid02_dev *bridge)
 		goto error_of_node_put;
 	}
 
-	/* register it for later use */
+	 
 	bridge->rx = ep;
 
-	/* register async notifier so we get noticed when sensor is connected */
+	 
 	v4l2_async_subdev_nf_init(&bridge->notifier, &bridge->sd);
 	asd = v4l2_async_nf_add_fwnode_remote(&bridge->notifier,
 					      of_fwnode_handle(ep_node),
@@ -955,7 +937,7 @@ static int mipid02_parse_tx_ep(struct mipid02_dev *bridge)
 	struct device_node *ep_node;
 	int ret;
 
-	/* parse tx (endpoint 2) */
+	 
 	ep_node = of_graph_get_endpoint_by_regs(bridge->i2c_client->dev.of_node,
 						2, 0);
 	if (!ep_node) {
@@ -998,7 +980,7 @@ static int mipid02_probe(struct i2c_client *client)
 	bridge->i2c_client = client;
 	v4l2_i2c_subdev_init(&bridge->sd, client, &mipid02_subdev_ops);
 
-	/* got and check clock */
+	 
 	bridge->xclk = devm_clk_get(dev, "xclk");
 	if (IS_ERR(bridge->xclk)) {
 		dev_err(dev, "failed to get xclk\n");
@@ -1040,7 +1022,7 @@ static int mipid02_probe(struct i2c_client *client)
 		goto mutex_cleanup;
 	}
 
-	/* enable clock, power and reset device if available */
+	 
 	ret = mipid02_set_power_on(bridge);
 	if (ret)
 		goto entity_cleanup;
@@ -1102,7 +1084,7 @@ static void mipid02_remove(struct i2c_client *client)
 
 static const struct of_device_id mipid02_dt_ids[] = {
 	{ .compatible = "st,st-mipid02" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mipid02_dt_ids);
 

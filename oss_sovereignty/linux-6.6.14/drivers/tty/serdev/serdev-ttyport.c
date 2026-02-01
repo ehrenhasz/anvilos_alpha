@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2016-2017 Linaro Ltd., Rob Herring <robh@kernel.org>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/serdev.h>
 #include <linux/tty.h>
@@ -18,9 +16,7 @@ struct serport {
 	unsigned long flags;
 };
 
-/*
- * Callback functions from the tty port.
- */
+ 
 
 static size_t ttyport_receive_buf(struct tty_port *port, const u8 *cp,
 				  const u8 *fp, size_t count)
@@ -59,7 +55,7 @@ static void ttyport_write_wakeup(struct tty_port *port)
 	    test_bit(SERPORT_ACTIVE, &serport->flags))
 		serdev_controller_write_wakeup(ctrl);
 
-	/* Wake up any tty_wait_until_sent() */
+	 
 	wake_up_interruptible(&tty->write_wait);
 
 	tty_kref_put(tty);
@@ -70,9 +66,7 @@ static const struct tty_port_client_operations client_ops = {
 	.write_wakeup = ttyport_write_wakeup,
 };
 
-/*
- * Callback functions from the serdev core.
- */
+ 
 
 static int ttyport_write_buf(struct serdev_controller *ctrl, const unsigned char *data, size_t len)
 {
@@ -125,7 +119,7 @@ static int ttyport_open(struct serdev_controller *ctrl)
 
 	tty_unlock(serport->tty);
 
-	/* Bring the UART into a known 8 bits no parity hw fc state */
+	 
 	ktermios = tty->termios;
 	ktermios.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP |
 			      INLCR | IGNCR | ICRNL | IXON);
@@ -134,7 +128,7 @@ static int ttyport_open(struct serdev_controller *ctrl)
 	ktermios.c_cflag &= ~(CSIZE | PARENB);
 	ktermios.c_cflag |= CS8;
 	ktermios.c_cflag |= CRTSCTS;
-	/* Hangups are not supported so make sure to ignore carrier detect. */
+	 
 	ktermios.c_cflag |= CLOCAL;
 	tty_set_termios(tty, &ktermios);
 
@@ -175,7 +169,7 @@ static unsigned int ttyport_set_baudrate(struct serdev_controller *ctrl, unsigne
 	ktermios.c_cflag &= ~CBAUD;
 	tty_termios_encode_baud_rate(&ktermios, speed, speed);
 
-	/* tty_set_termios() return not checked as it is always 0 */
+	 
 	tty_set_termios(tty, &ktermios);
 	return ktermios.c_ospeed;
 }

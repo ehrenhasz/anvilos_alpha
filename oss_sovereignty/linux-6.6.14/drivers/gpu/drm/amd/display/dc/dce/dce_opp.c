@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 #include "basics/conversion.h"
@@ -76,36 +53,16 @@ enum {
 
 
 
-/*
- *****************************************************************************
- *  Function: regamma_config_regions_and_segments
- *
- *     build regamma curve by using predefined hw points
- *     uses interface parameters ,like EDID coeff.
- *
- * @param   : parameters   interface parameters
- *  @return void
- *
- *  @note
- *
- *  @see
- *
- *****************************************************************************
- */
+ 
 
 
 
-/*
- *	set_truncation
- *	1) set truncation depth: 0 for 18 bpp or 1 for 24 bpp
- *	2) enable truncation
- *	3) HW remove 12bit FMT support for DCE11 power saving reason.
- */
+ 
 static void set_truncation(
 		struct dce110_opp *opp110,
 		const struct bit_depth_reduction_params *params)
 {
-	/*Disable truncation*/
+	 
 	REG_UPDATE_3(FMT_BIT_DEPTH_CONTROL,
 			FMT_TRUNCATE_EN, 0,
 			FMT_TRUNCATE_DEPTH, 0,
@@ -113,24 +70,24 @@ static void set_truncation(
 
 
 	if (params->pixel_encoding == PIXEL_ENCODING_YCBCR422) {
-		/*  8bpc trunc on YCbCr422*/
+		 
 		if (params->flags.TRUNCATE_DEPTH == 1)
 			REG_UPDATE_3(FMT_BIT_DEPTH_CONTROL,
 					FMT_TRUNCATE_EN, 1,
 					FMT_TRUNCATE_DEPTH, 1,
 					FMT_TRUNCATE_MODE, 0);
 		else if (params->flags.TRUNCATE_DEPTH == 2)
-			/*  10bpc trunc on YCbCr422*/
+			 
 			REG_UPDATE_3(FMT_BIT_DEPTH_CONTROL,
 					FMT_TRUNCATE_EN, 1,
 					FMT_TRUNCATE_DEPTH, 2,
 					FMT_TRUNCATE_MODE, 0);
 		return;
 	}
-	/* on other format-to do */
+	 
 	if (params->flags.TRUNCATE_ENABLED == 0)
 		return;
-	/*Set truncation depth and Enable truncation*/
+	 
 	REG_UPDATE_3(FMT_BIT_DEPTH_CONTROL,
 				FMT_TRUNCATE_EN, 1,
 				FMT_TRUNCATE_DEPTH,
@@ -140,40 +97,35 @@ static void set_truncation(
 }
 
 #if defined(CONFIG_DRM_AMD_DC_SI)
-/*
- *	dce60_set_truncation
- *	1) set truncation depth: 0 for 18 bpp or 1 for 24 bpp
- *	2) enable truncation
- *	3) HW remove 12bit FMT support for DCE11 power saving reason.
- */
+ 
 static void dce60_set_truncation(
 		struct dce110_opp *opp110,
 		const struct bit_depth_reduction_params *params)
 {
-	/* DCE6 has no FMT_TRUNCATE_MODE bit in FMT_BIT_DEPTH_CONTROL reg */
+	 
 
-	/*Disable truncation*/
+	 
 	REG_UPDATE_2(FMT_BIT_DEPTH_CONTROL,
 			FMT_TRUNCATE_EN, 0,
 			FMT_TRUNCATE_DEPTH, 0);
 
 	if (params->pixel_encoding == PIXEL_ENCODING_YCBCR422) {
-		/*  8bpc trunc on YCbCr422*/
+		 
 		if (params->flags.TRUNCATE_DEPTH == 1)
 			REG_UPDATE_2(FMT_BIT_DEPTH_CONTROL,
 					FMT_TRUNCATE_EN, 1,
 					FMT_TRUNCATE_DEPTH, 1);
 		else if (params->flags.TRUNCATE_DEPTH == 2)
-			/*  10bpc trunc on YCbCr422*/
+			 
 			REG_UPDATE_2(FMT_BIT_DEPTH_CONTROL,
 					FMT_TRUNCATE_EN, 1,
 					FMT_TRUNCATE_DEPTH, 2);
 		return;
 	}
-	/* on other format-to do */
+	 
 	if (params->flags.TRUNCATE_ENABLED == 0)
 		return;
-	/*Set truncation depth and Enable truncation*/
+	 
 	REG_UPDATE_2(FMT_BIT_DEPTH_CONTROL,
 				FMT_TRUNCATE_EN, 1,
 				FMT_TRUNCATE_DEPTH,
@@ -181,26 +133,12 @@ static void dce60_set_truncation(
 }
 #endif
 
-/*
- *	set_spatial_dither
- *	1) set spatial dithering mode: pattern of seed
- *	2) set spatial dithering depth: 0 for 18bpp or 1 for 24bpp
- *	3) set random seed
- *	4) set random mode
- *		lfsr is reset every frame or not reset
- *		RGB dithering method
- *		0: RGB data are all dithered with x^28+x^3+1
- *		1: R data is dithered with x^28+x^3+1
- *		G data is dithered with x^28+X^9+1
- *		B data is dithered with x^28+x^13+1
- *		enable high pass filter or not
- *	5) enable spatical dithering
- */
+ 
 static void set_spatial_dither(
 	struct dce110_opp *opp110,
 	const struct bit_depth_reduction_params *params)
 {
-	/*Disable spatial (random) dithering*/
+	 
 	REG_UPDATE_3(FMT_BIT_DEPTH_CONTROL,
 		FMT_SPATIAL_DITHER_EN, 0,
 		FMT_SPATIAL_DITHER_DEPTH, 0,
@@ -217,7 +155,7 @@ static void set_spatial_dither(
 	if (params->flags.SPATIAL_DITHER_ENABLED == 0)
 		return;
 
-	/* only use FRAME_COUNTER_MAX if frameRandom == 1*/
+	 
 
 	if (opp110->opp_mask->FMT_SPATIAL_DITHER_FRAME_COUNTER_MAX &&
 			opp110->opp_mask->FMT_SPATIAL_DITHER_FRAME_COUNTER_BIT_SWAP) {
@@ -239,9 +177,7 @@ static void set_spatial_dither(
 					FMT_SPATIAL_DITHER_FRAME_COUNTER_BIT_SWAP, 0);
 		}
 	}
-	/* Set seed for random values for
-	 * spatial dithering for R,G,B channels
-	 */
+	 
 	REG_UPDATE(FMT_DITHER_RAND_R_SEED,
 			FMT_RAND_R_SEED, params->r_seed_value);
 
@@ -251,58 +187,30 @@ static void set_spatial_dither(
 	REG_UPDATE(FMT_DITHER_RAND_B_SEED,
 			FMT_RAND_B_SEED, params->b_seed_value);
 
-	/* FMT_OFFSET_R_Cr  31:16 0x0 Setting the zero
-	 * offset for the R/Cr channel, lower 4LSB
-	 * is forced to zeros. Typically set to 0
-	 * RGB and 0x80000 YCbCr.
-	 */
-	/* FMT_OFFSET_G_Y   31:16 0x0 Setting the zero
-	 * offset for the G/Y  channel, lower 4LSB is
-	 * forced to zeros. Typically set to 0 RGB
-	 * and 0x80000 YCbCr.
-	 */
-	/* FMT_OFFSET_B_Cb  31:16 0x0 Setting the zero
-	 * offset for the B/Cb channel, lower 4LSB is
-	 * forced to zeros. Typically set to 0 RGB and
-	 * 0x80000 YCbCr.
-	 */
+	 
+	 
+	 
 
-	/* Disable High pass filter
-	 * Reset only at startup
-	 * Set RGB data dithered with x^28+x^3+1
-	 */
+	 
 	REG_UPDATE_3(FMT_BIT_DEPTH_CONTROL,
 		FMT_HIGHPASS_RANDOM_ENABLE, params->flags.HIGHPASS_RANDOM,
 		FMT_FRAME_RANDOM_ENABLE, params->flags.FRAME_RANDOM,
 		FMT_RGB_RANDOM_ENABLE, params->flags.RGB_RANDOM);
 
-	/* Set spatial dithering bit depth
-	 * Set spatial dithering mode
-	 * (default is Seed patterrn AAAA...)
-	 * Enable spatial dithering
-	 */
+	 
 	REG_UPDATE_3(FMT_BIT_DEPTH_CONTROL,
 		FMT_SPATIAL_DITHER_DEPTH, params->flags.SPATIAL_DITHER_DEPTH,
 		FMT_SPATIAL_DITHER_MODE, params->flags.SPATIAL_DITHER_MODE,
 		FMT_SPATIAL_DITHER_EN, 1);
 }
 
-/*
- *	SetTemporalDither (Frame Modulation)
- *	1) set temporal dither depth
- *	2) select pattern: from hard-coded pattern or programmable pattern
- *	3) select optimized strips for BGR or RGB LCD sub-pixel
- *	4) set s matrix
- *	5) set t matrix
- *	6) set grey level for 0.25, 0.5, 0.75
- *	7) enable temporal dithering
- */
+ 
 
 static void set_temporal_dither(
 	struct dce110_opp *opp110,
 	const struct bit_depth_reduction_params *params)
 {
-	/*Disable temporal (frame modulation) dithering first*/
+	 
 	REG_UPDATE_3(FMT_BIT_DEPTH_CONTROL,
 		FMT_TEMPORAL_DITHER_EN, 0,
 		FMT_TEMPORAL_DITHER_RESET, 0,
@@ -317,27 +225,27 @@ static void set_temporal_dither(
 		FMT_50FRC_SEL, 0,
 		FMT_75FRC_SEL, 0);
 
-	/* no 10bpc dither on DCE11*/
+	 
 	if (params->flags.FRAME_MODULATION_ENABLED == 0 ||
 		params->flags.FRAME_MODULATION_DEPTH == 2)
 		return;
 
-	/* Set temporal dithering depth*/
+	 
 	REG_UPDATE_3(FMT_BIT_DEPTH_CONTROL,
 		FMT_TEMPORAL_DITHER_DEPTH, params->flags.FRAME_MODULATION_DEPTH,
 		FMT_TEMPORAL_DITHER_RESET, 0,
 		FMT_TEMPORAL_DITHER_OFFSET, 0);
 
-	/*Select legacy pattern based on FRC and Temporal level*/
+	 
 	if (REG(FMT_TEMPORAL_DITHER_PATTERN_CONTROL)) {
 		REG_WRITE(FMT_TEMPORAL_DITHER_PATTERN_CONTROL, 0);
-		/*Set s matrix*/
+		 
 		REG_WRITE(FMT_TEMPORAL_DITHER_PROGRAMMABLE_PATTERN_S_MATRIX, 0);
-		/*Set t matrix*/
+		 
 		REG_WRITE(FMT_TEMPORAL_DITHER_PROGRAMMABLE_PATTERN_T_MATRIX, 0);
 	}
 
-	/*Select patterns for 0.25, 0.5 and 0.75 grey level*/
+	 
 	REG_UPDATE(FMT_BIT_DEPTH_CONTROL,
 		FMT_TEMPORAL_LEVEL, params->flags.TEMPORAL_LEVEL);
 
@@ -346,20 +254,12 @@ static void set_temporal_dither(
 		FMT_50FRC_SEL, params->flags.FRC50,
 		FMT_75FRC_SEL, params->flags.FRC75);
 
-	/*Enable bit reduction by temporal (frame modulation) dithering*/
+	 
 	REG_UPDATE(FMT_BIT_DEPTH_CONTROL,
 		FMT_TEMPORAL_DITHER_EN, 1);
 }
 
-/*
- *	Set Clamping
- *	1) Set clamping format based on bpc - 0 for 6bpc (No clamping)
- *		1 for 8 bpc
- *		2 for 10 bpc
- *		3 for 12 bpc
- *		7 for programable
- *	2) Enable clamp if Limited range requested
- */
+ 
 void dce110_opp_set_clamping(
 	struct dce110_opp *opp110,
 	const struct clamping_and_pixel_encoding_params *params)
@@ -387,12 +287,12 @@ void dce110_opp_set_clamping(
 			FMT_CLAMP_COLOR_FORMAT, 3);
 		break;
 	case CLAMPING_LIMITED_RANGE_PROGRAMMABLE:
-		/*Set clamp control*/
+		 
 		REG_SET_2(FMT_CLAMP_CNTL, 0,
 			FMT_CLAMP_DATA_EN, 1,
 			FMT_CLAMP_COLOR_FORMAT, 7);
 
-		/*set the defaults*/
+		 
 		REG_SET_2(FMT_CLAMP_COMPONENT_R, 0,
 			FMT_CLAMP_LOWER_R, 0x10,
 			FMT_CLAMP_UPPER_R, 0xFEF);
@@ -411,15 +311,7 @@ void dce110_opp_set_clamping(
 }
 
 #if defined(CONFIG_DRM_AMD_DC_SI)
-/*
- *	Set Clamping for DCE6 parts
- *	1) Set clamping format based on bpc - 0 for 6bpc (No clamping)
- *		1 for 8 bpc
- *		2 for 10 bpc
- *		3 for 12 bpc
- *		7 for programable
- *	2) Enable clamp if Limited range requested
- */
+ 
 static void dce60_opp_set_clamping(
 	struct dce110_opp *opp110,
 	const struct clamping_and_pixel_encoding_params *params)
@@ -447,12 +339,12 @@ static void dce60_opp_set_clamping(
 			FMT_CLAMP_COLOR_FORMAT, 3);
 		break;
 	case CLAMPING_LIMITED_RANGE_PROGRAMMABLE:
-		/*Set clamp control*/
+		 
 		REG_SET_2(FMT_CLAMP_CNTL, 0,
 			FMT_CLAMP_DATA_EN, 1,
 			FMT_CLAMP_COLOR_FORMAT, 7);
 
-		/* DCE6 does have FMT_CLAMP_COMPONENT_{R,G,B} registers */
+		 
 
 		break;
 	default:
@@ -461,13 +353,7 @@ static void dce60_opp_set_clamping(
 }
 #endif
 
-/*
- *	set_pixel_encoding
- *
- *	Set Pixel Encoding
- *		0: RGB 4:4:4 or YCbCr 4:4:4 or YOnly
- *		1: YCbCr 4:2:2
- */
+ 
 static void set_pixel_encoding(
 	struct dce110_opp *opp110,
 	const struct clamping_and_pixel_encoding_params *params)
@@ -497,13 +383,7 @@ static void set_pixel_encoding(
 }
 
 #if defined(CONFIG_DRM_AMD_DC_SI)
-/*
- *	dce60_set_pixel_encoding
- *	DCE6 has no FMT_SUBSAMPLING_{MODE,ORDER} bits in FMT_CONTROL reg
- *	Set Pixel Encoding
- *		0: RGB 4:4:4 or YCbCr 4:4:4 or YOnly
- *		1: YCbCr 4:2:2
- */
+ 
 static void dce60_set_pixel_encoding(
 	struct dce110_opp *opp110,
 	const struct clamping_and_pixel_encoding_params *params)
@@ -581,16 +461,16 @@ static void program_formatter_420_memory(struct output_pixel_processor *opp)
 	struct dce110_opp *opp110 = TO_DCE110_OPP(opp);
 	uint32_t fmt_mem_cntl_value;
 
-	/* Program source select*/
-	/* Use HW default source select for FMT_MEMORYx_CONTROL */
-	/* Use that value for FMT_SRC_SELECT as well*/
+	 
+	 
+	 
 	REG_GET(CONTROL,
 			FMT420_MEM0_SOURCE_SEL, &fmt_mem_cntl_value);
 
 	REG_UPDATE(FMT_CONTROL,
 			FMT_SRC_SELECT, fmt_mem_cntl_value);
 
-	/* Turn on the memory */
+	 
 	REG_UPDATE(CONTROL,
 			FMT420_MEM0_PWR_FORCE, 0);
 }
@@ -607,8 +487,8 @@ void dce110_opp_set_dyn_expansion(
 			FMT_DYNAMIC_EXP_EN, 0,
 			FMT_DYNAMIC_EXP_MODE, 0);
 
-	/*00 - 10-bit -> 12-bit dynamic expansion*/
-	/*01 - 8-bit  -> 12-bit dynamic expansion*/
+	 
+	 
 	if (signal == SIGNAL_TYPE_HDMI_TYPE_A ||
 		signal == SIGNAL_TYPE_DISPLAY_PORT ||
 		signal == SIGNAL_TYPE_DISPLAY_PORT_MST) {
@@ -626,7 +506,7 @@ void dce110_opp_set_dyn_expansion(
 		case COLOR_DEPTH_121212:
 			REG_UPDATE_2(
 				FMT_DYNAMIC_EXP_CNTL,
-				FMT_DYNAMIC_EXP_EN, 1,/*otherwise last two bits are zero*/
+				FMT_DYNAMIC_EXP_EN, 1, 
 				FMT_DYNAMIC_EXP_MODE, 0);
 			break;
 		default:
@@ -639,11 +519,11 @@ static void program_formatter_reset_dig_resync_fifo(struct output_pixel_processo
 {
 	struct dce110_opp *opp110 = TO_DCE110_OPP(opp);
 
-	/* clear previous phase lock status*/
+	 
 	REG_UPDATE(FMT_CONTROL,
 			FMT_420_PIXEL_PHASE_LOCKED_CLEAR, 1);
 
-	/* poll until FMT_420_PIXEL_PHASE_LOCKED become 1*/
+	 
 	REG_WAIT(FMT_CONTROL, FMT_420_PIXEL_PHASE_LOCKED, 1, 10, 10);
 
 }
@@ -653,8 +533,7 @@ void dce110_opp_program_fmt(
 	struct bit_depth_reduction_params *fmt_bit_depth,
 	struct clamping_and_pixel_encoding_params *clamping)
 {
-	/* dithering is affected by <CrtcSourceSelect>, hence should be
-	 * programmed afterwards */
+	 
 
 	if (clamping->pixel_encoding == PIXEL_ENCODING_YCBCR420)
 		program_formatter_420_memory(opp);
@@ -679,8 +558,7 @@ static void dce60_opp_program_fmt(
 	struct bit_depth_reduction_params *fmt_bit_depth,
 	struct clamping_and_pixel_encoding_params *clamping)
 {
-	/* dithering is affected by <CrtcSourceSelect>, hence should be
-	 * programmed afterwards */
+	 
 
 	if (clamping->pixel_encoding == PIXEL_ENCODING_YCBCR420)
 		program_formatter_420_memory(opp);
@@ -702,9 +580,9 @@ static void dce60_opp_program_fmt(
 
 
 
-/*****************************************/
-/* Constructor, Destructor               */
-/*****************************************/
+ 
+ 
+ 
 
 static const struct opp_funcs funcs = {
 	.opp_set_dyn_expansion = dce110_opp_set_dyn_expansion,

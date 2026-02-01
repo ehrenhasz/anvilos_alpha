@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * NVIDIA Tegra Video decoder driver
- *
- * Copyright (C) 2016-2019 GRATE-DRIVER project
- */
+
+ 
 
 #include <linux/dma-buf.h>
 #include <linux/iova.h>

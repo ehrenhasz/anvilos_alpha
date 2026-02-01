@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 HiSilicon Limited. */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/crypto.h>
@@ -203,7 +203,7 @@ static int hisi_trng_read(struct hwrng *rng, void *buf, size_t max, bool wait)
 			continue;
 		}
 
-		/* copy remaining bytes */
+		 
 		memcpy(buf + currsize, &val, max - currsize);
 		currsize = max;
 	} while (currsize < max);
@@ -307,7 +307,7 @@ static int hisi_trng_remove(struct platform_device *pdev)
 {
 	struct hisi_trng *trng = platform_get_drvdata(pdev);
 
-	/* Wait until the task is finished */
+	 
 	while (hisi_trng_del_from_list(trng))
 		;
 

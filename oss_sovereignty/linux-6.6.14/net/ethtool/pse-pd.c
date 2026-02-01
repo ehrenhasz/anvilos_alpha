@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// ethtool interface for Ethernet PSE (Power Sourcing Equipment)
-// and PD (Powered Device)
-//
-// Copyright (c) 2022 Pengutronix, Oleksij Rempel <kernel@pengutronix.de>
-//
+
+
+
+
+
+
+
 
 #include "common.h"
 #include "linux/pse-pd/pse.h"
@@ -25,7 +25,7 @@ struct pse_reply_data {
 #define PSE_REPDATA(__reply_base) \
 	container_of(__reply_base, struct pse_reply_data, base)
 
-/* PSE_GET */
+ 
 
 const struct nla_policy ethnl_pse_get_policy[ETHTOOL_A_PSE_HEADER + 1] = {
 	[ETHTOOL_A_PSE_HEADER] = NLA_POLICY_NESTED(ethnl_header_policy),
@@ -79,9 +79,9 @@ static int pse_reply_size(const struct ethnl_req_info *req_base,
 	int len = 0;
 
 	if (st->podl_admin_state > 0)
-		len += nla_total_size(sizeof(u32)); /* _PODL_PSE_ADMIN_STATE */
+		len += nla_total_size(sizeof(u32));  
 	if (st->podl_pw_status > 0)
-		len += nla_total_size(sizeof(u32)); /* _PODL_PSE_PW_D_STATUS */
+		len += nla_total_size(sizeof(u32));  
 
 	return len;
 }
@@ -106,7 +106,7 @@ static int pse_fill_reply(struct sk_buff *skb,
 	return 0;
 }
 
-/* PSE_SET */
+ 
 
 const struct nla_policy ethnl_pse_set_policy[ETHTOOL_A_PSE_MAX + 1] = {
 	[ETHTOOL_A_PSE_HEADER] = NLA_POLICY_NESTED(ethnl_header_policy),
@@ -129,7 +129,7 @@ ethnl_set_pse(struct ethnl_req_info *req_info, struct genl_info *info)
 	struct nlattr **tb = info->attrs;
 	struct phy_device *phydev;
 
-	/* this values are already validated by the ethnl_pse_set_policy */
+	 
 	config.admin_cotrol = nla_get_u32(tb[ETHTOOL_A_PODL_PSE_ADMIN_CONTROL]);
 
 	phydev = dev->phydev;
@@ -143,7 +143,7 @@ ethnl_set_pse(struct ethnl_req_info *req_info, struct genl_info *info)
 		return -EOPNOTSUPP;
 	}
 
-	/* Return errno directly - PSE has no notification */
+	 
 	return pse_ethtool_set_config(phydev->psec, info->extack, &config);
 }
 
@@ -160,5 +160,5 @@ const struct ethnl_request_ops ethnl_pse_request_ops = {
 
 	.set_validate		= ethnl_set_pse_validate,
 	.set			= ethnl_set_pse,
-	/* PSE has no notification */
+	 
 };

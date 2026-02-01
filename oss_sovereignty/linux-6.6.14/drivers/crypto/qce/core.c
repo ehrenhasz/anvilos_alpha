@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2010-2014, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -92,7 +90,7 @@ static int qce_handle_queue(struct qce_device *qce,
 	if (req)
 		ret = crypto_enqueue_request(&qce->queue, req);
 
-	/* busy, do not dequeue request */
+	 
 	if (qce->req) {
 		spin_unlock_irqrestore(&qce->lock, flags);
 		return ret;
@@ -158,28 +156,13 @@ static int qce_check_version(struct qce_device *qce)
 
 	qce_get_version(qce, &major, &minor, &step);
 
-	/*
-	 * the driver does not support v5 with minor 0 because it has special
-	 * alignment requirements.
-	 */
+	 
 	if (major != QCE_MAJOR_VERSION5 || minor == 0)
 		return -ENODEV;
 
 	qce->burst_size = QCE_BAM_BURST_SIZE;
 
-	/*
-	 * Rx and tx pipes are treated as a pair inside CE.
-	 * Pipe pair number depends on the actual BAM dma pipe
-	 * that is used for transfers. The BAM dma pipes are passed
-	 * from the device tree and used to derive the pipe pair
-	 * id in the CE driver as follows.
-	 * 	BAM dma pipes(rx, tx)		CE pipe pair id
-	 *		0,1				0
-	 *		2,3				1
-	 *		4,5				2
-	 *		6,7				3
-	 *		...
-	 */
+	 
 	qce->pipe_pair_id = qce->dma.rxchan->chan_id >> 1;
 
 	dev_dbg(qce->dev, "Crypto device found, version %d.%d.%d\n",

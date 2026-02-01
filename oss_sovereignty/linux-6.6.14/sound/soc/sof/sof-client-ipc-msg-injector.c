@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2022 Intel Corporation. All rights reserved.
-//
-// Author: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-//
+
+
+
+
+
+
 
 #include <linux/auxiliary_bus.h>
 #include <linux/completion.h>
@@ -82,13 +82,13 @@ static ssize_t sof_msg_inject_ipc4_dfs_read(struct file *file,
 	if (!ipc4_msg->header_u64 || !count || *ppos)
 		return 0;
 
-	/* we need space for the header at minimum (u64) */
+	 
 	if (count < header_size)
 		return -ENOSPC;
 
 	remaining = header_size;
 
-	/* Only get large config have payload */
+	 
 	if (SOF_IPC4_MSG_IS_MODULE_MSG(ipc4_msg->primary) &&
 	    (SOF_IPC4_MSG_TYPE_GET(ipc4_msg->primary) == SOF_IPC4_MOD_LARGE_CONFIG_GET))
 		remaining += ipc4_msg->data_size;
@@ -98,7 +98,7 @@ static ssize_t sof_msg_inject_ipc4_dfs_read(struct file *file,
 	else if (count < remaining)
 		remaining = count;
 
-	/* copy the header first */
+	 
 	if (copy_to_user(buffer, &ipc4_msg->header_u64, header_size))
 		return -EFAULT;
 
@@ -111,7 +111,7 @@ static ssize_t sof_msg_inject_ipc4_dfs_read(struct file *file,
 	if (remaining > ipc4_msg->data_size)
 		remaining = ipc4_msg->data_size;
 
-	/* Copy the payload */
+	 
 	if (copy_to_user(buffer + *ppos, ipc4_msg->data_ptr, remaining))
 		return -EFAULT;
 
@@ -131,7 +131,7 @@ static int sof_msg_inject_send_message(struct sof_client_dev *cdev)
 		return ret;
 	}
 
-	/* send the message */
+	 
 	ret = sof_client_ipc_tx_message(cdev, priv->tx_buffer, priv->rx_buffer,
 					priv->max_msg_size);
 	if (ret)
@@ -167,7 +167,7 @@ static ssize_t sof_msg_inject_dfs_write(struct file *file, const char __user *bu
 
 	ret = sof_msg_inject_send_message(cdev);
 
-	/* return the error code if test failed */
+	 
 	if (ret < 0)
 		size = ret;
 
@@ -190,7 +190,7 @@ static ssize_t sof_msg_inject_ipc4_dfs_write(struct file *file,
 	if (count < sizeof(ipc4_msg->header_u64))
 		return -EINVAL;
 
-	/* copy the header first */
+	 
 	if (copy_from_user(&ipc4_msg->header_u64, buffer,
 			   sizeof(ipc4_msg->header_u64)))
 		return -EFAULT;
@@ -199,14 +199,14 @@ static ssize_t sof_msg_inject_ipc4_dfs_write(struct file *file,
 	if (data_size > priv->max_msg_size)
 		return -EINVAL;
 
-	/* Copy the payload */
+	 
 	if (copy_from_user(ipc4_msg->data_ptr,
 			   buffer + sizeof(ipc4_msg->header_u64), data_size))
 		return -EFAULT;
 
 	ipc4_msg->data_size = data_size;
 
-	/* Initialize the reply storage */
+	 
 	ipc4_msg = priv->rx_buffer;
 	ipc4_msg->header_u64 = 0;
 	ipc4_msg->data_size = priv->max_msg_size;
@@ -214,7 +214,7 @@ static ssize_t sof_msg_inject_ipc4_dfs_write(struct file *file,
 
 	ret = sof_msg_inject_send_message(cdev);
 
-	/* return the error code if test failed */
+	 
 	if (ret < 0)
 		return ret;
 
@@ -258,7 +258,7 @@ static int sof_msg_inject_probe(struct auxiliary_device *auxdev,
 	struct sof_msg_inject_priv *priv;
 	size_t alloc_size;
 
-	/* allocate memory for client data */
+	 
 	priv = devm_kzalloc(&auxdev->dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;
@@ -294,7 +294,7 @@ static int sof_msg_inject_probe(struct auxiliary_device *auxdev,
 	priv->dfs_file = debugfs_create_file("ipc_msg_inject", 0644, debugfs_root,
 					     cdev, fops);
 
-	/* enable runtime PM */
+	 
 	pm_runtime_set_autosuspend_delay(dev, SOF_IPC_CLIENT_SUSPEND_DELAY_MS);
 	pm_runtime_use_autosuspend(dev);
 	pm_runtime_enable(dev);
@@ -320,12 +320,7 @@ static const struct auxiliary_device_id sof_msg_inject_client_id_table[] = {
 };
 MODULE_DEVICE_TABLE(auxiliary, sof_msg_inject_client_id_table);
 
-/*
- * No need for driver pm_ops as the generic pm callbacks in the auxiliary bus
- * type are enough to ensure that the parent SOF device resumes to bring the DSP
- * back to D0.
- * Driver name will be set based on KBUILD_MODNAME.
- */
+ 
 static struct auxiliary_driver sof_msg_inject_client_drv = {
 	.probe = sof_msg_inject_probe,
 	.remove = sof_msg_inject_remove,

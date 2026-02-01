@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/types.h>
 #include <linux/clk.h>
@@ -282,17 +282,17 @@ struct netsec_desc_ring {
 	struct netsec_desc *desc;
 	void *vaddr;
 	u16 head, tail;
-	u16 xdp_xmit; /* netsec_xdp_xmit packets */
+	u16 xdp_xmit;  
 	struct page_pool *page_pool;
 	struct xdp_rxq_info xdp_rxq;
-	spinlock_t lock; /* XDP tx queue locking */
+	spinlock_t lock;  
 };
 
 struct netsec_priv {
 	struct netsec_desc_ring desc_ring[NETSEC_RING_MAX];
 	struct ethtool_coalesce et_coalesce;
 	struct bpf_prog *xdp_prog;
-	spinlock_t reglock; /* protect reg access */
+	spinlock_t reglock;  
 	struct napi_struct napi;
 	phy_interface_t phy_interface;
 	struct net_device *ndev;
@@ -309,7 +309,7 @@ struct netsec_priv {
 	bool rx_cksum_offload_flag;
 };
 
-struct netsec_de { /* Netsec Descriptor layout */
+struct netsec_de {  
 	u32 attr;
 	u32 data_buf_addr_up;
 	u32 data_buf_addr_lw;
@@ -338,7 +338,7 @@ static u32 netsec_read(struct netsec_priv *priv, u32 reg_addr)
 	return readl(priv->ioaddr + reg_addr);
 }
 
-/************* MDIO BUS OPS FOLLOW *************/
+ 
 
 #define TIMEOUT_SPINS_MAC		1000
 #define TIMEOUT_SECONDARY_MS_MAC	100
@@ -484,13 +484,7 @@ static int netsec_phy_write(struct mii_bus *bus,
 	status = netsec_mac_wait_while_busy(priv, GMAC_REG_GAR,
 					    NETSEC_GMAC_GAR_REG_GB);
 
-	/* Developerbox implements RTL8211E PHY and there is
-	 * a compatibility problem with F_GMAC4.
-	 * RTL8211E expects MDC clock must be kept toggling for several
-	 * clock cycle with MDIO high before entering the IDLE state.
-	 * To meet this requirement, netsec driver needs to issue dummy
-	 * read(e.g. read PHYID1(offset 0x2) register) right after write.
-	 */
+	 
 	netsec_phy_read(bus, phy_addr, MII_PHYSID1);
 
 	return status;
@@ -521,7 +515,7 @@ static int netsec_phy_read(struct mii_bus *bus, int phy_addr, int reg_addr)
 	return data;
 }
 
-/************* ETHTOOL_OPS FOLLOW *************/
+ 
 
 static void netsec_et_get_drvinfo(struct net_device *net_device,
 				  struct ethtool_drvinfo *info)
@@ -606,7 +600,7 @@ static const struct ethtool_ops netsec_ethtool_ops = {
 	.set_msglevel		= netsec_et_set_msglevel,
 };
 
-/************* NETDEV_OPS FOLLOW *************/
+ 
 
 
 static void netsec_set_rx_de(struct netsec_priv *priv,
@@ -647,7 +641,7 @@ static bool netsec_clean_tx_dring(struct netsec_priv *priv)
 	xdp_frame_bulk_init(&bq);
 	entry = dring->vaddr + DESC_SZ * tail;
 
-	rcu_read_lock(); /* need for xdp_return_frame_bulk */
+	rcu_read_lock();  
 
 	while (!(entry->attr & (1U << NETSEC_TX_SHIFT_OWN_FIELD)) &&
 	       cnt < DESC_NUM) {
@@ -658,9 +652,7 @@ static bool netsec_clean_tx_dring(struct netsec_priv *priv)
 		eop = (entry->attr >> NETSEC_TX_LAST) & 1;
 		dma_rmb();
 
-		/* if buf_type is either TYPE_NETSEC_SKB or
-		 * TYPE_NETSEC_XDP_NDO we mapped it
-		 */
+		 
 		if (desc->buf_type != TYPE_NETSEC_XDP_TX)
 			dma_unmap_single(priv->dev, desc->dma_addr, desc->len,
 					 DMA_TO_DEVICE);
@@ -679,16 +671,12 @@ static bool netsec_clean_tx_dring(struct netsec_priv *priv)
 				xdp_return_frame_bulk(desc->xdpf, &bq);
 		}
 next:
-		/* clean up so netsec_uninit_pkt_dring() won't free the skb
-		 * again
-		 */
+		 
 		*desc = (struct netsec_desc){};
 
-		/* entry->attr is not going to be accessed by the NIC until
-		 * netsec_set_tx_de() is called. No need for a dma_wmb() here
-		 */
+		 
 		entry->attr = 1U << NETSEC_TX_SHIFT_OWN_FIELD;
-		/* move tail ahead */
+		 
 		dring->tail = (tail + 1) % DESC_NUM;
 
 		tail = dring->tail;
@@ -704,7 +692,7 @@ next:
 	if (!cnt)
 		return false;
 
-	/* reading the register clears the irq */
+	 
 	netsec_read(priv, NETSEC_REG_NRM_TX_DONE_PKTCNT);
 
 	priv->ndev->stats.tx_packets += cnt;
@@ -723,9 +711,7 @@ static void netsec_process_tx(struct netsec_priv *priv)
 	cleaned = netsec_clean_tx_dring(priv);
 
 	if (cleaned && netif_queue_stopped(ndev)) {
-		/* Make sure we update the value, anyone stopping the queue
-		 * after this will read the proper consumer idx
-		 */
+		 
 		smp_wmb();
 		netif_wake_queue(ndev);
 	}
@@ -743,14 +729,9 @@ static void *netsec_alloc_rx_data(struct netsec_priv *priv,
 	if (!page)
 		return NULL;
 
-	/* We allocate the same buffer length for XDP and non-XDP cases.
-	 * page_pool API will map the whole page, skip what's needed for
-	 * network payloads and/or XDP
-	 */
+	 
 	*dma_handle = page_pool_get_dma_addr(page) + NETSEC_RXBUF_HEADROOM;
-	/* Make sure the incoming payload fits in the page for XDP and non-XDP
-	 * cases and reserve enough space for headroom + skb_shared_info
-	 */
+	 
 	*desc_len = NETSEC_RX_BUF_SIZE;
 
 	return page_address(page);
@@ -820,11 +801,11 @@ static void netsec_set_tx_de(struct netsec_priv *priv,
 		 desc->buf_type == TYPE_NETSEC_XDP_NDO)
 		dring->desc[idx].xdpf = buf;
 
-	/* move head ahead */
+	 
 	dring->head = (dring->head + 1) % DESC_NUM;
 }
 
-/* The current driver only supports 1 Txq, this should run under spin_lock() */
+ 
 static u32 netsec_xdp_queue_one(struct netsec_priv *priv,
 				struct xdp_frame *xdpf, bool is_ndo)
 
@@ -845,18 +826,14 @@ static u32 netsec_xdp_queue_one(struct netsec_priv *priv,
 		return NETSEC_XDP_CONSUMED;
 
 	if (is_ndo) {
-		/* this is for ndo_xdp_xmit, the buffer needs mapping before
-		 * sending
-		 */
+		 
 		dma_handle = dma_map_single(priv->dev, xdpf->data, xdpf->len,
 					    DMA_TO_DEVICE);
 		if (dma_mapping_error(priv->dev, dma_handle))
 			return NETSEC_XDP_CONSUMED;
 		tx_desc.buf_type = TYPE_NETSEC_XDP_NDO;
 	} else {
-		/* This is the device Rx buffer from page_pool. No need to remap
-		 * just sync and send it
-		 */
+		 
 		struct netsec_desc_ring *rx_ring =
 			&priv->desc_ring[NETSEC_RING_RX];
 		enum dma_data_direction dma_dir =
@@ -907,7 +884,7 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
 
 	act = bpf_prog_run_xdp(prog, xdp);
 
-	/* Due xdp_adjust_tail: DMA sync for_device cover max len CPU touch */
+	 
 	sync = xdp->data_end - xdp->data_hard_start - NETSEC_RXBUF_HEADROOM;
 	sync = max(sync, len);
 
@@ -937,7 +914,7 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
 		fallthrough;
 	case XDP_ABORTED:
 		trace_xdp_exception(priv->ndev, prog, act);
-		fallthrough;	/* handle aborts by dropping packet */
+		fallthrough;	 
 	case XDP_DROP:
 		ret = NETSEC_XDP_CONSUMED;
 		page = virt_to_head_page(xdp->data);
@@ -977,15 +954,12 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
 		void *buf_addr;
 
 		if (de->attr & (1U << NETSEC_RX_PKT_OWN_FIELD)) {
-			/* reading the register clears the irq */
+			 
 			netsec_read(priv, NETSEC_REG_NRM_RX_PKTCNT);
 			break;
 		}
 
-		/* This  barrier is needed to keep us from reading
-		 * any other fields out of the netsec_de until we have
-		 * verified the descriptor has been written back
-		 */
+		 
 		dma_rmb();
 		done++;
 
@@ -999,16 +973,14 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
 				  rx_info.err_code);
 			ndev->stats.rx_dropped++;
 			dring->tail = (dring->tail + 1) % DESC_NUM;
-			/* reuse buffer page frag */
+			 
 			netsec_rx_fill(priv, idx, 1);
 			continue;
 		}
 		rx_info.rx_cksum_result =
 			(de->attr >> NETSEC_RX_PKT_CO_FIELD) & 3;
 
-		/* allocate a fresh buffer and map it to the hardware.
-		 * This will eventually replace the old buffer in the hardware
-		 */
+		 
 		buf_addr = netsec_alloc_rx_data(priv, &dma_handle, &desc_len);
 
 		if (unlikely(!buf_addr))
@@ -1033,11 +1005,7 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
 		skb = build_skb(desc->addr, desc->len + NETSEC_RX_BUF_NON_DATA);
 
 		if (unlikely(!skb)) {
-			/* If skb fails recycle_direct will either unmap and
-			 * free the page or refill the cache depending on the
-			 * cache state. Since we paid the allocation cost if
-			 * building an skb fails try to put the page into cache
-			 */
+			 
 			page_pool_put_page(dring->page_pool, page, pkt_len,
 					   true);
 			netif_err(priv, drv, priv->ndev,
@@ -1062,7 +1030,7 @@ next:
 			ndev->stats.rx_bytes += xdp.data_end - xdp.data;
 		}
 
-		/* Update the descriptor with fresh buffers */
+		 
 		desc->len = desc_len;
 		desc->dma_addr = dma_handle;
 		desc->addr = buf_addr;
@@ -1114,13 +1082,11 @@ static int netsec_check_stop_tx(struct netsec_priv *priv, int used)
 {
 	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_TX];
 
-	/* keep tail from touching the queue */
+	 
 	if (DESC_NUM - used < 2) {
 		netif_stop_queue(priv->ndev);
 
-		/* Make sure we read the updated value in case
-		 * descriptors got freed
-		 */
+		 
 		smp_rmb();
 
 		used = netsec_desc_used(dring);
@@ -1191,7 +1157,7 @@ static netdev_tx_t netsec_netdev_start_xmit(struct sk_buff *skb,
 
 	netsec_set_tx_de(priv, dring, &tx_ctrl, &tx_desc, skb);
 	spin_unlock_bh(&dring->lock);
-	netsec_write(priv, NETSEC_REG_NRM_TX_PKTCNT, 1); /* submit another tx */
+	netsec_write(priv, NETSEC_REG_NRM_TX_PKTCNT, 1);  
 
 	return NETDEV_TX_OK;
 }
@@ -1220,7 +1186,7 @@ static void netsec_uninit_pkt_dring(struct netsec_priv *priv, int id)
 		}
 	}
 
-	/* Rx is currently using page_pool */
+	 
 	if (id == NETSEC_RING_RX) {
 		if (xdp_rxq_info_is_reg(&dring->xdp_rxq))
 			xdp_rxq_info_unreg(&dring->xdp_rxq);
@@ -1280,10 +1246,7 @@ static void netsec_setup_tx_dring(struct netsec_priv *priv)
 		struct netsec_de *de;
 
 		de = dring->vaddr + (DESC_SZ * i);
-		/* de->attr is not going to be accessed by the NIC
-		 * until netsec_set_tx_de() is called.
-		 * No need for a dma_wmb() here
-		 */
+		 
 		de->attr = 1U << NETSEC_TX_SHIFT_OWN_FIELD;
 	}
 }
@@ -1294,7 +1257,7 @@ static int netsec_setup_rx_dring(struct netsec_priv *priv)
 	struct bpf_prog *xdp_prog = READ_ONCE(priv->xdp_prog);
 	struct page_pool_params pp_params = {
 		.order = 0,
-		/* internal DMA mapping in page_pool */
+		 
 		.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
 		.pool_size = DESC_NUM,
 		.nid = NUMA_NO_NODE,
@@ -1403,7 +1366,7 @@ static int netsec_reset_hardware(struct netsec_priv *priv,
 	u32 value;
 	int err;
 
-	/* stop DMA engines */
+	 
 	if (!netsec_read(priv, NETSEC_REG_ADDR_DIS_CORE)) {
 		netsec_write(priv, NETSEC_REG_DMA_HM_CTRL,
 			     NETSEC_DMA_CTRL_REG_STOP);
@@ -1426,7 +1389,7 @@ static int netsec_reset_hardware(struct netsec_priv *priv,
 	while (netsec_read(priv, NETSEC_REG_COM_INIT) != 0)
 		cpu_relax();
 
-	/* set desc_start addr */
+	 
 	netsec_write(priv, NETSEC_REG_NRM_RX_DESC_START_UP,
 		     upper_32_bits(priv->desc_ring[NETSEC_RING_RX].desc_dma));
 	netsec_write(priv, NETSEC_REG_NRM_RX_DESC_START_LW,
@@ -1437,7 +1400,7 @@ static int netsec_reset_hardware(struct netsec_priv *priv,
 	netsec_write(priv, NETSEC_REG_NRM_TX_DESC_START_LW,
 		     lower_32_bits(priv->desc_ring[NETSEC_RING_TX].desc_dma));
 
-	/* set normal tx dring ring config */
+	 
 	netsec_write(priv, NETSEC_REG_NRM_TX_CONFIG,
 		     1 << NETSEC_REG_DESC_ENDIAN);
 	netsec_write(priv, NETSEC_REG_NRM_RX_CONFIG,
@@ -1453,7 +1416,7 @@ static int netsec_reset_hardware(struct netsec_priv *priv,
 		}
 	}
 
-	/* start DMA engines */
+	 
 	netsec_write(priv, NETSEC_REG_DMA_TMR_CTRL, priv->freq / 1000000 - 1);
 	netsec_write(priv, NETSEC_REG_ADDR_DIS_CORE, 0);
 
@@ -1472,7 +1435,7 @@ static int netsec_reset_hardware(struct netsec_priv *priv,
 	if (priv->ndev->mtu > ETH_DATA_LEN)
 		value |= NETSEC_PKT_CTRL_REG_EN_JUMBO;
 
-	/* change to normal mode */
+	 
 	netsec_write(priv, NETSEC_REG_DMA_MH_CTRL, MH_CTRL__MODE_TRANS);
 	netsec_write(priv, NETSEC_REG_PKT_CTRL, value);
 
@@ -1480,10 +1443,10 @@ static int netsec_reset_hardware(struct netsec_priv *priv,
 		NETSEC_MODE_TRANS_COMP_IRQ_T2N) == 0)
 		cpu_relax();
 
-	/* clear any pending EMPTY/ERR irq status */
+	 
 	netsec_write(priv, NETSEC_REG_NRM_TX_STATUS, ~0);
 
-	/* Disable TX & RX intr */
+	 
 	netsec_write(priv, NETSEC_REG_INTEN_CLR, ~0);
 
 	return 0;
@@ -1505,7 +1468,7 @@ static int netsec_start_gmac(struct netsec_priv *priv)
 			     NETSEC_GMAC_BMR_REG_RESET))
 		return -ETIMEDOUT;
 
-	/* Wait soft reset */
+	 
 	usleep_range(1000, 5000);
 
 	ret = netsec_mac_read(priv, GMAC_REG_BMR, &value);
@@ -1567,7 +1530,7 @@ static int netsec_stop_gmac(struct netsec_priv *priv)
 	value &= ~NETSEC_GMAC_OMR_REG_SR;
 	value &= ~NETSEC_GMAC_OMR_REG_ST;
 
-	/* disable all interrupts */
+	 
 	netsec_write(priv, NETSEC_REG_NRM_RX_INTEN_CLR, ~0);
 	netsec_write(priv, NETSEC_REG_NRM_TX_INTEN_CLR, ~0);
 
@@ -1592,7 +1555,7 @@ static irqreturn_t netsec_irq_handler(int irq, void *dev_id)
 	u32 val, status = netsec_read(priv, NETSEC_REG_TOP_STATUS);
 	unsigned long flags;
 
-	/* Disable interrupts */
+	 
 	if (status & NETSEC_IRQ_TX) {
 		val = netsec_read(priv, NETSEC_REG_NRM_TX_STATUS);
 		netsec_write(priv, NETSEC_REG_NRM_TX_STATUS, val);
@@ -1658,7 +1621,7 @@ static int netsec_netdev_open(struct net_device *ndev)
 	napi_enable(&priv->napi);
 	netif_start_queue(ndev);
 
-	/* Enable TX+RX intr. */
+	 
 	netsec_write(priv, NETSEC_REG_INTEN_SET, NETSEC_IRQ_RX | NETSEC_IRQ_TX);
 
 	return 0;
@@ -1715,7 +1678,7 @@ static int netsec_netdev_init(struct net_device *ndev)
 	if (ret)
 		goto err1;
 
-	/* set phy power down */
+	 
 	data = netsec_phy_read(priv->mii_bus, priv->phy_addr, MII_BMCR);
 	netsec_phy_write(priv->mii_bus, priv->phy_addr, MII_BMCR,
 			 data | BMCR_PDOWN);
@@ -1724,7 +1687,7 @@ static int netsec_netdev_init(struct net_device *ndev)
 	if (ret)
 		goto err2;
 
-	/* Restore phy power state */
+	 
 	netsec_phy_write(priv->mii_bus, priv->phy_addr, MII_BMCR, data);
 
 	spin_lock_init(&priv->desc_ring[NETSEC_RING_TX].lock);
@@ -1794,7 +1757,7 @@ static int netsec_xdp_setup(struct netsec_priv *priv, struct bpf_prog *prog,
 	struct net_device *dev = priv->ndev;
 	struct bpf_prog *old_prog;
 
-	/* For now just support only the usual MTU sized frames */
+	 
 	if (prog && dev->mtu > 1500) {
 		NL_SET_ERR_MSG_MOD(extack, "Jumbo frames not supported on XDP");
 		return -EOPNOTSUPP;
@@ -1803,7 +1766,7 @@ static int netsec_xdp_setup(struct netsec_priv *priv, struct bpf_prog *prog,
 	if (netif_running(dev))
 		netsec_netdev_stop(dev);
 
-	/* Detach old prog, if any */
+	 
 	old_prog = xchg(&priv->xdp_prog, prog);
 	if (old_prog)
 		bpf_prog_put(old_prog);
@@ -1851,11 +1814,7 @@ static int netsec_of_probe(struct platform_device *pdev,
 		return err;
 	}
 
-	/*
-	 * SynQuacer is physically configured with TX and RX delays
-	 * but the standard firmware claimed otherwise for a long
-	 * time, ignore it.
-	 */
+	 
 	if (of_machine_is_compatible("socionext,developer-box") &&
 	    priv->phy_interface != PHY_INTERFACE_MODE_RGMII_ID) {
 		dev_warn(&pdev->dev, "Outdated firmware reports incorrect PHY mode, overriding\n");
@@ -1870,7 +1829,7 @@ static int netsec_of_probe(struct platform_device *pdev,
 
 	*phy_addr = of_mdio_parse_addr(&pdev->dev, priv->phy_np);
 
-	priv->clk = devm_clk_get(&pdev->dev, NULL); /* get by 'phy_ref_clk' */
+	priv->clk = devm_clk_get(&pdev->dev, NULL);  
 	if (IS_ERR(priv->clk))
 		return dev_err_probe(&pdev->dev, PTR_ERR(priv->clk),
 				     "phy_ref_clk not found\n");
@@ -1887,12 +1846,7 @@ static int netsec_acpi_probe(struct platform_device *pdev,
 	if (!IS_ENABLED(CONFIG_ACPI))
 		return -ENODEV;
 
-	/* ACPI systems are assumed to configure the PHY in firmware, so
-	 * there is really no need to discover the PHY mode from the DSDT.
-	 * Since firmware is known to exist in the field that configures the
-	 * PHY correctly but passes the wrong mode string in the phy-mode
-	 * device property, we have no choice but to ignore it.
-	 */
+	 
 	priv->phy_interface = PHY_INTERFACE_MODE_NA;
 
 	ret = device_property_read_u32(&pdev->dev, "phy-channel", phy_addr);
@@ -1945,9 +1899,7 @@ static int netsec_register_mdio(struct netsec_priv *priv, u32 phy_addr)
 		if (mdio_node) {
 			parent = mdio_node;
 		} else {
-			/* older f/w doesn't populate the mdio subnode,
-			 * allow relaxed upgrade of f/w in due time.
-			 */
+			 
 			dev_info(priv->dev, "Upgrade f/w for mdio subnode!\n");
 		}
 
@@ -1959,7 +1911,7 @@ static int netsec_register_mdio(struct netsec_priv *priv, u32 phy_addr)
 			return ret;
 		}
 	} else {
-		/* Mask out all PHYs from auto probing. */
+		 
 		bus->phy_mask = ~0;
 		ret = mdiobus_register(bus);
 		if (ret) {
@@ -2080,7 +2032,7 @@ static int netsec_probe(struct platform_device *pdev)
 		goto free_ndev;
 	}
 
-	/* default for throughput */
+	 
 	priv->et_coalesce.rx_coalesce_usecs = 500;
 	priv->et_coalesce.rx_max_coalesced_frames = 8;
 	priv->et_coalesce.tx_coalesce_usecs = 500;
@@ -2091,12 +2043,12 @@ static int netsec_probe(struct platform_device *pdev)
 	if (ret < 0)
 		ndev->max_mtu = ETH_DATA_LEN;
 
-	/* runtime_pm coverage just for probe, open/close also cover it */
+	 
 	pm_runtime_enable(&pdev->dev);
 	pm_runtime_get_sync(&pdev->dev);
 
 	hw_ver = netsec_read(priv, NETSEC_REG_F_TAIKI_VER);
-	/* this driver only supports F_TAIKI style NETSEC */
+	 
 	if (NETSEC_F_NETSEC_VER_MAJOR_NUM(hw_ver) !=
 	    NETSEC_F_NETSEC_VER_MAJOR_NUM(NETSEC_REG_NETSEC_VER_F_TAIKI)) {
 		ret = -ENODEV;

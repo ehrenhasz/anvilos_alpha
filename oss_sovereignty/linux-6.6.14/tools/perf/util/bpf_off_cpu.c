@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "util/bpf_counter.h"
 #include "util/debug.h"
 #include "util/evsel.h"
@@ -18,7 +18,7 @@
 
 #define MAX_STACKS  32
 #define MAX_PROC  4096
-/* we don't need actual timestamp, just want to put the samples at last */
+ 
 #define OFF_CPU_TIMESTAMP  (~0ull << 32)
 
 static struct off_cpu_bpf *skel;
@@ -42,7 +42,7 @@ static int off_cpu_config(struct evlist *evlist)
 	struct perf_event_attr attr = {
 		.type	= PERF_TYPE_SOFTWARE,
 		.config = PERF_COUNT_SW_BPF_OUTPUT,
-		.size	= sizeof(attr), /* to capture ABI version */
+		.size	= sizeof(attr),  
 	};
 	char *evname = strdup(OFFCPU_EVENT);
 
@@ -57,7 +57,7 @@ static int off_cpu_config(struct evlist *evlist)
 
 	evsel->core.attr.freq = 1;
 	evsel->core.attr.sample_period = 1;
-	/* off-cpu analysis depends on stack trace */
+	 
 	evsel->core.attr.sample_type = PERF_SAMPLE_CALLCHAIN;
 
 	evlist__add(evlist, evsel);
@@ -72,7 +72,7 @@ static void off_cpu_start(void *arg)
 {
 	struct evlist *evlist = arg;
 
-	/* update task filter for the given workload */
+	 
 	if (!skel->bss->has_cpu && !skel->bss->has_task &&
 	    perf_thread_map__pid(evlist->core.threads, 0) != -1) {
 		int fd;
@@ -95,7 +95,7 @@ static void off_cpu_finish(void *arg __maybe_unused)
 	off_cpu_bpf__destroy(skel);
 }
 
-/* v5.18 kernel added prev_state arg, so it needs to check the signature */
+ 
 static void check_sched_switch_args(void)
 {
 	const struct btf *btf = btf__load_vmlinux_btf();
@@ -116,9 +116,9 @@ static void check_sched_switch_args(void)
 		return;
 
 	t3 = btf__type_by_id(btf, t2->type);
-	/* btf_trace func proto has one more argument for the context */
+	 
 	if (t3 && btf_is_func_proto(t3) && btf_vlen(t3) == 5) {
-		/* new format: pass prev_state as 4th arg */
+		 
 		skel->rodata->has_prev_state = true;
 	}
 }
@@ -142,7 +142,7 @@ int off_cpu_prepare(struct evlist *evlist, struct target *target,
 		return -1;
 	}
 
-	/* don't need to set cpu filter for system-wide mode */
+	 
 	if (target->cpu_list) {
 		ncpus = perf_cpu_map__nr(evlist->core.user_requested_cpus);
 		bpf_map__set_max_entries(skel->maps.cpu_filter, ncpus);
@@ -179,7 +179,7 @@ int off_cpu_prepare(struct evlist *evlist, struct target *target,
 	}
 
 	if (evlist__first(evlist)->cgrp) {
-		ncgrps = evlist->core.nr_entries - 1; /* excluding a dummy */
+		ncgrps = evlist->core.nr_entries - 1;  
 		bpf_map__set_max_entries(skel->maps.cgroup_filter, ncgrps);
 
 		if (!cgroup_is_v2("perf_event"))
@@ -331,7 +331,7 @@ int off_cpu_write(struct perf_session *session)
 	memset(&prev, 0, sizeof(prev));
 
 	while (!bpf_map_get_next_key(fd, &prev, &key)) {
-		int n = 1;  /* start from perf_event_header */
+		int n = 1;   
 		int ip_pos = -1;
 
 		bpf_map_lookup_elem(fd, &key, &val);
@@ -340,7 +340,7 @@ int off_cpu_write(struct perf_session *session)
 			data.array[n++] = sid;
 		if (sample_type & PERF_SAMPLE_IP) {
 			ip_pos = n;
-			data.array[n++] = 0;  /* will be updated */
+			data.array[n++] = 0;   
 		}
 		if (sample_type & PERF_SAMPLE_TID)
 			data.array[n++] = (u64)key.pid << 32 | key.tgid;
@@ -355,7 +355,7 @@ int off_cpu_write(struct perf_session *session)
 		if (sample_type & PERF_SAMPLE_CALLCHAIN) {
 			int len = 0;
 
-			/* data.array[n] is callchain->nr (updated later) */
+			 
 			data.array[n + 1] = PERF_CONTEXT_USER;
 			data.array[n + 2] = 0;
 
@@ -363,14 +363,14 @@ int off_cpu_write(struct perf_session *session)
 			while (data.array[n + 2 + len])
 				len++;
 
-			/* update length of callchain */
+			 
 			data.array[n] = len + 1;
 
-			/* update sample ip with the first callchain entry */
+			 
 			if (ip_pos >= 0)
 				data.array[ip_pos] = data.array[n + 2];
 
-			/* calculate sample callchain data array length */
+			 
 			n += len + 2;
 		}
 		if (sample_type & PERF_SAMPLE_CGROUP)
@@ -386,7 +386,7 @@ int off_cpu_write(struct perf_session *session)
 		}
 
 		prev = key;
-		/* increase dummy timestamp to sort later samples */
+		 
 		tstamp++;
 	}
 	return bytes;

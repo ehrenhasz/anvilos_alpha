@@ -1,26 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Christian König
- */
+ 
 
 #include <linux/iosys-map.h>
 #include <linux/io-mapping.h>
@@ -30,26 +8,14 @@
 #include <drm/ttm/ttm_placement.h>
 #include <drm/ttm/ttm_resource.h>
 
-/**
- * ttm_lru_bulk_move_init - initialize a bulk move structure
- * @bulk: the structure to init
- *
- * For now just memset the structure to zero.
- */
+ 
 void ttm_lru_bulk_move_init(struct ttm_lru_bulk_move *bulk)
 {
 	memset(bulk, 0, sizeof(*bulk));
 }
 EXPORT_SYMBOL(ttm_lru_bulk_move_init);
 
-/**
- * ttm_lru_bulk_move_tail - bulk move range of resources to the LRU tail.
- *
- * @bulk: bulk move structure
- *
- * Bulk move BOs to the LRU tail, only valid to use when driver makes sure that
- * resource order never changes. Should be called with &ttm_device.lru_lock held.
- */
+ 
 void ttm_lru_bulk_move_tail(struct ttm_lru_bulk_move *bulk)
 {
 	unsigned i, j;
@@ -74,14 +40,14 @@ void ttm_lru_bulk_move_tail(struct ttm_lru_bulk_move *bulk)
 }
 EXPORT_SYMBOL(ttm_lru_bulk_move_tail);
 
-/* Return the bulk move pos object for this resource */
+ 
 static struct ttm_lru_bulk_move_pos *
 ttm_lru_bulk_move_pos(struct ttm_lru_bulk_move *bulk, struct ttm_resource *res)
 {
 	return &bulk->pos[res->mem_type][res->bo->priority];
 }
 
-/* Move the resource to the tail of the bulk move range */
+ 
 static void ttm_lru_bulk_move_pos_tail(struct ttm_lru_bulk_move_pos *pos,
 				       struct ttm_resource *res)
 {
@@ -93,7 +59,7 @@ static void ttm_lru_bulk_move_pos_tail(struct ttm_lru_bulk_move_pos *pos,
 	}
 }
 
-/* Add the resource to a bulk_move cursor */
+ 
 static void ttm_lru_bulk_move_add(struct ttm_lru_bulk_move *bulk,
 				  struct ttm_resource *res)
 {
@@ -107,7 +73,7 @@ static void ttm_lru_bulk_move_add(struct ttm_lru_bulk_move *bulk,
 	}
 }
 
-/* Remove the resource from a bulk_move range */
+ 
 static void ttm_lru_bulk_move_del(struct ttm_lru_bulk_move *bulk,
 				  struct ttm_resource *res)
 {
@@ -126,7 +92,7 @@ static void ttm_lru_bulk_move_del(struct ttm_lru_bulk_move *bulk,
 	}
 }
 
-/* Add the resource to a bulk move if the BO is configured for it */
+ 
 void ttm_resource_add_bulk_move(struct ttm_resource *res,
 				struct ttm_buffer_object *bo)
 {
@@ -134,7 +100,7 @@ void ttm_resource_add_bulk_move(struct ttm_resource *res,
 		ttm_lru_bulk_move_add(bo->bulk_move, res);
 }
 
-/* Remove the resource from a bulk move if the BO is configured for it */
+ 
 void ttm_resource_del_bulk_move(struct ttm_resource *res,
 				struct ttm_buffer_object *bo)
 {
@@ -142,7 +108,7 @@ void ttm_resource_del_bulk_move(struct ttm_resource *res,
 		ttm_lru_bulk_move_del(bo->bulk_move, res);
 }
 
-/* Move a resource to the LRU or bulk tail */
+ 
 void ttm_resource_move_to_lru_tail(struct ttm_resource *res)
 {
 	struct ttm_buffer_object *bo = res->bo;
@@ -166,14 +132,7 @@ void ttm_resource_move_to_lru_tail(struct ttm_resource *res)
 	}
 }
 
-/**
- * ttm_resource_init - resource object constructure
- * @bo: buffer object this resources is allocated for
- * @place: placement of the resource
- * @res: the resource object to inistilize
- *
- * Initialize a new resource object. Counterpart of ttm_resource_fini().
- */
+ 
 void ttm_resource_init(struct ttm_buffer_object *bo,
                        const struct ttm_place *place,
                        struct ttm_resource *res)
@@ -201,16 +160,7 @@ void ttm_resource_init(struct ttm_buffer_object *bo,
 }
 EXPORT_SYMBOL(ttm_resource_init);
 
-/**
- * ttm_resource_fini - resource destructor
- * @man: the resource manager this resource belongs to
- * @res: the resource to clean up
- *
- * Should be used by resource manager backends to clean up the TTM resource
- * objects before freeing the underlying structure. Makes sure the resource is
- * removed from the LRU before destruction.
- * Counterpart of ttm_resource_init().
- */
+ 
 void ttm_resource_fini(struct ttm_resource_manager *man,
 		       struct ttm_resource *res)
 {
@@ -257,19 +207,7 @@ void ttm_resource_free(struct ttm_buffer_object *bo, struct ttm_resource **res)
 }
 EXPORT_SYMBOL(ttm_resource_free);
 
-/**
- * ttm_resource_intersects - test for intersection
- *
- * @bdev: TTM device structure
- * @res: The resource to test
- * @place: The placement to test
- * @size: How many bytes the new allocation needs.
- *
- * Test if @res intersects with @place and @size. Used for testing if evictions
- * are valueable or not.
- *
- * Returns true if the res placement intersects with @place and @size.
- */
+ 
 bool ttm_resource_intersects(struct ttm_device *bdev,
 			     struct ttm_resource *res,
 			     const struct ttm_place *place,
@@ -287,18 +225,7 @@ bool ttm_resource_intersects(struct ttm_device *bdev,
 	return man->func->intersects(man, res, place, size);
 }
 
-/**
- * ttm_resource_compatible - test for compatibility
- *
- * @bdev: TTM device structure
- * @res: The resource to test
- * @place: The placement to test
- * @size: How many bytes the new allocation needs.
- *
- * Test if @res compatible with @place and @size.
- *
- * Returns true if the res placement compatible with @place and @size.
- */
+ 
 bool ttm_resource_compatible(struct ttm_device *bdev,
 			     struct ttm_resource *res,
 			     const struct ttm_place *place,
@@ -341,14 +268,7 @@ static bool ttm_resource_places_compat(struct ttm_resource *res,
 	return false;
 }
 
-/**
- * ttm_resource_compat - check if resource is compatible with placement
- *
- * @res: the resource to check
- * @placement: the placement to check against
- *
- * Returns true if the placement is compatible.
- */
+ 
 bool ttm_resource_compat(struct ttm_resource *res,
 			 struct ttm_placement *placement)
 {
@@ -373,15 +293,7 @@ void ttm_resource_set_bo(struct ttm_resource *res,
 	spin_unlock(&bo->bdev->lru_lock);
 }
 
-/**
- * ttm_resource_manager_init
- *
- * @man: memory manager object to init
- * @bdev: ttm device this manager belongs to
- * @size: size of managed resources in arbitrary units
- *
- * Initialise core parts of a manager object.
- */
+ 
 void ttm_resource_manager_init(struct ttm_resource_manager *man,
 			       struct ttm_device *bdev,
 			       uint64_t size)
@@ -399,15 +311,7 @@ void ttm_resource_manager_init(struct ttm_resource_manager *man,
 }
 EXPORT_SYMBOL(ttm_resource_manager_init);
 
-/*
- * ttm_resource_manager_evict_all
- *
- * @bdev - device to use
- * @man - manager to use
- *
- * Evict all the objects out of a memory manager until it is empty.
- * Part of memory manager cleanup sequence.
- */
+ 
 int ttm_resource_manager_evict_all(struct ttm_device *bdev,
 				   struct ttm_resource_manager *man)
 {
@@ -420,9 +324,7 @@ int ttm_resource_manager_evict_all(struct ttm_device *bdev,
 	int ret;
 	unsigned i;
 
-	/*
-	 * Can't use standard list traversal since we're unlocking.
-	 */
+	 
 
 	spin_lock(&bdev->lru_lock);
 	for (i = 0; i < TTM_MAX_BO_PRIORITY; ++i) {
@@ -452,13 +354,7 @@ int ttm_resource_manager_evict_all(struct ttm_device *bdev,
 }
 EXPORT_SYMBOL(ttm_resource_manager_evict_all);
 
-/**
- * ttm_resource_manager_usage
- *
- * @man: A memory manager object.
- *
- * Return how many resources are currently used.
- */
+ 
 uint64_t ttm_resource_manager_usage(struct ttm_resource_manager *man)
 {
 	uint64_t usage;
@@ -470,12 +366,7 @@ uint64_t ttm_resource_manager_usage(struct ttm_resource_manager *man)
 }
 EXPORT_SYMBOL(ttm_resource_manager_usage);
 
-/**
- * ttm_resource_manager_debug
- *
- * @man: manager type to dump.
- * @p: printer to use for debug.
- */
+ 
 void ttm_resource_manager_debug(struct ttm_resource_manager *man,
 				struct drm_printer *p)
 {
@@ -488,14 +379,7 @@ void ttm_resource_manager_debug(struct ttm_resource_manager *man,
 }
 EXPORT_SYMBOL(ttm_resource_manager_debug);
 
-/**
- * ttm_resource_manager_first
- *
- * @man: resource manager to iterate over
- * @cursor: cursor to record the position
- *
- * Returns the first resource from the resource manager.
- */
+ 
 struct ttm_resource *
 ttm_resource_manager_first(struct ttm_resource_manager *man,
 			   struct ttm_resource_cursor *cursor)
@@ -512,15 +396,7 @@ ttm_resource_manager_first(struct ttm_resource_manager *man,
 	return NULL;
 }
 
-/**
- * ttm_resource_manager_next
- *
- * @man: resource manager to iterate over
- * @cursor: cursor to record the position
- * @res: the current resource pointer
- *
- * Returns the next resource from the resource manager.
- */
+ 
 struct ttm_resource *
 ttm_resource_manager_next(struct ttm_resource_manager *man,
 			  struct ttm_resource_cursor *cursor,
@@ -582,17 +458,7 @@ static const struct ttm_kmap_iter_ops ttm_kmap_iter_io_ops = {
 	.maps_tt = false,
 };
 
-/**
- * ttm_kmap_iter_iomap_init - Initialize a struct ttm_kmap_iter_iomap
- * @iter_io: The struct ttm_kmap_iter_iomap to initialize.
- * @iomap: The struct io_mapping representing the underlying linear io_memory.
- * @st: sg_table into @iomap, representing the memory of the struct
- * ttm_resource.
- * @start: Offset that needs to be subtracted from @st to make
- * sg_dma_address(st->sgl) - @start == 0 for @iomap start.
- *
- * Return: Pointer to the embedded struct ttm_kmap_iter.
- */
+ 
 struct ttm_kmap_iter *
 ttm_kmap_iter_iomap_init(struct ttm_kmap_iter_iomap *iter_io,
 			 struct io_mapping *iomap,
@@ -609,17 +475,7 @@ ttm_kmap_iter_iomap_init(struct ttm_kmap_iter_iomap *iter_io,
 }
 EXPORT_SYMBOL(ttm_kmap_iter_iomap_init);
 
-/**
- * DOC: Linear io iterator
- *
- * This code should die in the not too near future. Best would be if we could
- * make io-mapping use memremap for all io memory, and have memremap
- * implement a kmap_local functionality. We could then strip a huge amount of
- * code. These linear io iterators are implemented to mimic old functionality,
- * and they don't use kmap_local semantics at all internally. Rather ioremap or
- * friends, and at least on 32-bit they add global TLB flushes and points
- * of failure.
- */
+ 
 
 static void ttm_kmap_iter_linear_io_map_local(struct ttm_kmap_iter *iter,
 					      struct iosys_map *dmap,
@@ -637,18 +493,7 @@ static const struct ttm_kmap_iter_ops ttm_kmap_iter_linear_io_ops = {
 	.maps_tt = false,
 };
 
-/**
- * ttm_kmap_iter_linear_io_init - Initialize an iterator for linear io memory
- * @iter_io: The iterator to initialize
- * @bdev: The TTM device
- * @mem: The ttm resource representing the iomap.
- *
- * This function is for internal TTM use only. It sets up a memcpy kmap iterator
- * pointing at a linear chunk of io memory.
- *
- * Return: A pointer to the embedded struct ttm_kmap_iter or error pointer on
- * failure.
- */
+ 
 struct ttm_kmap_iter *
 ttm_kmap_iter_linear_io_init(struct ttm_kmap_iter_linear_io *iter_io,
 			     struct ttm_device *bdev,
@@ -681,7 +526,7 @@ ttm_kmap_iter_linear_io_init(struct ttm_kmap_iter_linear_io *iter_io,
 						     MEMREMAP_WT |
 						     MEMREMAP_WC));
 
-		/* If uncached requested or if mapping cached or wc failed */
+		 
 		if (iosys_map_is_null(&iter_io->dmap))
 			iosys_map_set_vaddr_iomem(&iter_io->dmap,
 						  ioremap(mem->bus.offset,
@@ -702,15 +547,7 @@ out_err:
 	return ERR_PTR(ret);
 }
 
-/**
- * ttm_kmap_iter_linear_io_fini - Clean up an iterator for linear io memory
- * @iter_io: The iterator to initialize
- * @bdev: The TTM device
- * @mem: The ttm resource representing the iomap.
- *
- * This function is for internal TTM use only. It cleans up a memcpy kmap
- * iterator initialized by ttm_kmap_iter_linear_io_init.
- */
+ 
 void
 ttm_kmap_iter_linear_io_fini(struct ttm_kmap_iter_linear_io *iter_io,
 			     struct ttm_device *bdev,
@@ -740,16 +577,7 @@ DEFINE_SHOW_ATTRIBUTE(ttm_resource_manager);
 
 #endif
 
-/**
- * ttm_resource_manager_create_debugfs - Create debugfs entry for specified
- * resource manager.
- * @man: The TTM resource manager for which the debugfs stats file be creates
- * @parent: debugfs directory in which the file will reside
- * @name: The filename to create.
- *
- * This function setups up a debugfs file that can be used to look
- * at debug statistics of the specified ttm_resource_manager.
- */
+ 
 void ttm_resource_manager_create_debugfs(struct ttm_resource_manager *man,
 					 struct dentry * parent,
 					 const char *name)

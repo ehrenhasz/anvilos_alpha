@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Surface System Aggregator Module (SSAM) HID transport driver for the legacy
- * keyboard interface (KBD/TC=0x08 subsystem). Provides support for the
- * integrated HID keyboard on Surface Laptops 1 and 2.
- *
- * Copyright (C) 2019-2021 Maximilian Luz <luzmaximilian@gmail.com>
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/hid.h>
@@ -19,9 +13,9 @@
 #include "surface_hid_core.h"
 
 
-/* -- SAM interface (KBD). -------------------------------------------------- */
+ 
 
-#define KBD_FEATURE_REPORT_SIZE			7  /* 6 + report ID */
+#define KBD_FEATURE_REPORT_SIZE			7   
 
 enum surface_kbd_cid {
 	SURFACE_KBD_CID_GET_DESCRIPTOR		= 0x00,
@@ -125,10 +119,7 @@ static u32 ssam_kbd_event_fn(struct ssam_event_notifier *nf, const struct ssam_e
 {
 	struct surface_hid_device *shid = container_of(nf, struct surface_hid_device, notif);
 
-	/*
-	 * Check against device UID manually, as registry and device target
-	 * category doesn't line up.
-	 */
+	 
 
 	if (shid->uid.category != event->target_category)
 		return 0;
@@ -147,7 +138,7 @@ static u32 ssam_kbd_event_fn(struct ssam_event_notifier *nf, const struct ssam_e
 }
 
 
-/* -- Transport driver (KBD). ----------------------------------------------- */
+ 
 
 static int skbd_get_caps_led_value(struct hid_device *hid, u8 rprt_id, u8 *buf, size_t len)
 {
@@ -155,19 +146,19 @@ static int skbd_get_caps_led_value(struct hid_device *hid, u8 rprt_id, u8 *buf, 
 	unsigned int offset, size;
 	int i;
 
-	/* Get LED field. */
+	 
 	field = hidinput_get_led_field(hid);
 	if (!field)
 		return -ENOENT;
 
-	/* Check if we got the correct report. */
+	 
 	if (len != hid_report_len(field->report))
 		return -ENOENT;
 
 	if (rprt_id != field->report->id)
 		return -ENOENT;
 
-	/* Get caps lock LED index. */
+	 
 	for (i = 0; i < field->report_count; i++)
 		if ((field->usage[i].hid & 0xffff) == 0x02)
 			break;
@@ -175,7 +166,7 @@ static int skbd_get_caps_led_value(struct hid_device *hid, u8 rprt_id, u8 *buf, 
 	if (i == field->report_count)
 		return -ENOENT;
 
-	/* Extract value. */
+	 
 	size = field->report_size;
 	offset = field->report_offset + i * size;
 	return !!hid_field_extract(hid, buf + 1, size, offset);
@@ -188,7 +179,7 @@ static int skbd_output_report(struct surface_hid_device *shid, u8 rprt_id, u8 *b
 
 	caps_led = skbd_get_caps_led_value(shid->hid, rprt_id, buf, len);
 	if (caps_led < 0)
-		return -EIO;  /* Only caps LED output reports are supported. */
+		return -EIO;   
 
 	status = ssam_kbd_set_caps_led(shid, caps_led);
 	if (status < 0)
@@ -202,11 +193,7 @@ static int skbd_get_feature_report(struct surface_hid_device *shid, u8 rprt_id, 
 	u8 report[KBD_FEATURE_REPORT_SIZE];
 	int status;
 
-	/*
-	 * The keyboard only has a single hard-coded read-only feature report
-	 * of size KBD_FEATURE_REPORT_SIZE. Try to load it and compare its
-	 * report ID against the requested one.
-	 */
+	 
 
 	if (len < ARRAY_SIZE(report))
 		return -ENOSPC;
@@ -224,19 +211,19 @@ static int skbd_get_feature_report(struct surface_hid_device *shid, u8 rprt_id, 
 
 static int skbd_set_feature_report(struct surface_hid_device *shid, u8 rprt_id, u8 *buf, size_t len)
 {
-	/* Not supported. See skbd_get_feature_report() for details. */
+	 
 	return -EIO;
 }
 
 
-/* -- Driver setup. --------------------------------------------------------- */
+ 
 
 static int surface_kbd_probe(struct platform_device *pdev)
 {
 	struct ssam_controller *ctrl;
 	struct surface_hid_device *shid;
 
-	/* Add device link to EC. */
+	 
 	ctrl = ssam_client_bind(&pdev->dev);
 	if (IS_ERR(ctrl))
 		return PTR_ERR(ctrl) == -ENODEV ? -EPROBE_DEFER : PTR_ERR(ctrl);

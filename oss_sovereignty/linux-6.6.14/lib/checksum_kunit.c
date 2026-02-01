@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Test cases csum_partial and csum_fold
- */
+
+ 
 
 #include <kunit/test.h>
 #include <asm/checksum.h>
@@ -10,7 +8,7 @@
 #define MAX_ALIGN 64
 #define TEST_BUFLEN (MAX_LEN + MAX_ALIGN)
 
-/* Values for a little endian CPU. Byte swap each half on big endian CPU. */
+ 
 static const u32 random_init_sum = 0x2847aab;
 static const u8 random_buf[] = {
 	0xac, 0xd7, 0x76, 0x69, 0x6e, 0xf2, 0x93, 0x2c, 0x1f, 0xe0, 0xde, 0x86,
@@ -58,7 +56,7 @@ static const u8 random_buf[] = {
 	0x1a, 0xac, 0x46, 0xdd, 0x2e, 0xce, 0x40, 0x09
 };
 
-/* Values for a little endian CPU. Byte swap on big endian CPU. */
+ 
 static const u16 expected_results[] = {
 	0x82d0, 0x8224, 0xab23, 0xaaad, 0x41ad, 0x413f, 0x4f3e, 0x4eab, 0x22ab,
 	0x228c, 0x428b, 0x41ad, 0xbbac, 0xbb1d, 0x671d, 0x66ea, 0xd6e9, 0xd654,
@@ -119,7 +117,7 @@ static const u16 expected_results[] = {
 	0x6ca6, 0x6c8c, 0xc08b, 0xc045, 0xe344, 0xe316, 0x1516, 0x14d6,
 };
 
-/* Values for a little endian CPU. Byte swap each half on big endian CPU. */
+ 
 static const u32 init_sums_no_overflow[] = {
 	0xffffffff, 0xfffffffb, 0xfffffbfb, 0xfffffbf7, 0xfffff7f7, 0xfffff7f3,
 	0xfffff3f3, 0xfffff3ef, 0xffffefef, 0xffffefeb, 0xffffebeb, 0xffffebe7,
@@ -220,7 +218,7 @@ static __sum16 to_sum16(u16 x)
 	return (__force __sum16)le16_to_cpu((__force __le16)x);
 }
 
-/* This function swaps the bytes inside each half of a __wsum */
+ 
 static __wsum to_wsum(u32 x)
 {
 	u16 hi = le16_to_cpu((__force __le16)(x >> 16));
@@ -239,9 +237,7 @@ static void assert_setup_correct(struct kunit *test)
 		 MAX_LEN);
 }
 
-/*
- * Test with randomized input (pre determined random with known results).
- */
+ 
 static void test_csum_fixed_random_inputs(struct kunit *test)
 {
 	int len, align;
@@ -254,9 +250,7 @@ static void test_csum_fixed_random_inputs(struct kunit *test)
 		       min(MAX_LEN, TEST_BUFLEN - align));
 		for (len = 0; len < MAX_LEN && (align + len) < TEST_BUFLEN;
 		     ++len) {
-			/*
-			 * Test the precomputed random input.
-			 */
+			 
 			sum = to_wsum(random_init_sum);
 			result = full_csum(&tmp_buf[align], len, sum);
 			expec = to_sum16(expected_results[len]);
@@ -265,9 +259,7 @@ static void test_csum_fixed_random_inputs(struct kunit *test)
 	}
 }
 
-/*
- * All ones input test. If there are any missing carry operations, it fails.
- */
+ 
 static void test_csum_all_carry_inputs(struct kunit *test)
 {
 	int len, align;
@@ -279,17 +271,13 @@ static void test_csum_all_carry_inputs(struct kunit *test)
 	for (align = 0; align < TEST_BUFLEN; ++align) {
 		for (len = 0; len < MAX_LEN && (align + len) < TEST_BUFLEN;
 		     ++len) {
-			/*
-			 * All carries from input and initial sum.
-			 */
+			 
 			sum = to_wsum(0xffffffff);
 			result = full_csum(&tmp_buf[align], len, sum);
 			expec = to_sum16((len & 1) ? 0xff00 : 0);
 			CHECK_EQ(result, expec);
 
-			/*
-			 * All carries from input.
-			 */
+			 
 			sum = 0;
 			result = full_csum(&tmp_buf[align], len, sum);
 			if (len & 1)
@@ -303,11 +291,7 @@ static void test_csum_all_carry_inputs(struct kunit *test)
 	}
 }
 
-/*
- * Test with input that alone doesn't cause any carries. By selecting the
- * maximum initial sum, this allows us to test that there are no carries
- * where there shouldn't be.
- */
+ 
 static void test_csum_no_carry_inputs(struct kunit *test)
 {
 	int len, align;
@@ -319,17 +303,13 @@ static void test_csum_no_carry_inputs(struct kunit *test)
 	for (align = 0; align < TEST_BUFLEN; ++align) {
 		for (len = 0; len < MAX_LEN && (align + len) < TEST_BUFLEN;
 		     ++len) {
-			/*
-			 * Expect no carries.
-			 */
+			 
 			sum = to_wsum(init_sums_no_overflow[len]);
 			result = full_csum(&tmp_buf[align], len, sum);
 			expec = 0;
 			CHECK_EQ(result, expec);
 
-			/*
-			 * Expect one carry.
-			 */
+			 
 			sum = to_wsum(init_sums_no_overflow[len] + 1);
 			result = full_csum(&tmp_buf[align], len, sum);
 			expec = to_sum16(len ? 0xfffe : 0xffff);

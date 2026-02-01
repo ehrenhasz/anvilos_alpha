@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2017-2018 Etnaviv Project
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 
@@ -18,12 +16,12 @@
 #define SUBALLOC_GRANULES	(SUBALLOC_SIZE / SUBALLOC_GRANULE)
 
 struct etnaviv_cmdbuf_suballoc {
-	/* suballocated dma buffer properties */
+	 
 	struct device *dev;
 	void *vaddr;
 	dma_addr_t paddr;
 
-	/* allocation management */
+	 
 	struct mutex lock;
 	DECLARE_BITMAP(granule_map, SUBALLOC_GRANULES);
 	int free_space;

@@ -1,16 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// mcp251xfd - Microchip MCP251xFD Family CAN controller driver
-//
-// Copyright (c) 2019, 2020, 2021 Pengutronix,
-//               Marc Kleine-Budde <kernel@pengutronix.de>
-//
-// Based on:
-//
-// CAN bus driver for Microchip 25XXFD CAN Controller with SPI Interface
-//
-// Copyright (c) 2019 Martin Sperl <kernel@martin.sperl.org>
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/bitfield.h>
 
@@ -79,7 +79,7 @@ mcp251xfd_handle_tefif_recover(const struct mcp251xfd_priv *priv, const u32 seq)
 		    "not empty" : "empty",
 		    seq, priv->tef->tail, priv->tef->head, tx_ring->head);
 
-	/* The Sequence Number in the TEF doesn't match our tef_tail. */
+	 
 	return -EAGAIN;
 }
 
@@ -95,10 +95,7 @@ mcp251xfd_handle_tefif_one(struct mcp251xfd_priv *priv,
 	seq = FIELD_GET(MCP251XFD_OBJ_FLAGS_SEQ_MCP2518FD_MASK,
 			hw_tef_obj->flags);
 
-	/* Use the MCP2517FD mask on the MCP2518FD, too. We only
-	 * compare 7 bits, this should be enough to detect
-	 * net-yet-completed, i.e. old TEF objects.
-	 */
+	 
 	seq_masked = seq &
 		field_mask(MCP251XFD_OBJ_FLAGS_SEQ_MCP2517FD_MASK);
 	tef_tail_masked = priv->tef->tail &
@@ -131,14 +128,12 @@ static int mcp251xfd_tef_ring_update(struct mcp251xfd_priv *priv)
 	if (err)
 		return err;
 
-	/* chip_tx_tail, is the next TX-Object send by the HW.
-	 * The new TEF head must be >= the old head, ...
-	 */
+	 
 	new_head = round_down(priv->tef->head, tx_ring->obj_num) + chip_tx_tail;
 	if (new_head <= priv->tef->head)
 		new_head += tx_ring->obj_num;
 
-	/* ... but it cannot exceed the TX head. */
+	 
 	priv->tef->head = min(new_head, tx_ring->head);
 
 	return mcp251xfd_check_tef_tail(priv);
@@ -203,11 +198,7 @@ int mcp251xfd_handle_tefif(struct mcp251xfd_priv *priv)
 		unsigned int frame_len = 0;
 
 		err = mcp251xfd_handle_tefif_one(priv, &hw_tef_obj[i], &frame_len);
-		/* -EAGAIN means the Sequence Number in the TEF
-		 * doesn't match our tef_tail. This can happen if we
-		 * read the TEF objects too early. Leave loop let the
-		 * interrupt handler call us again.
-		 */
+		 
 		if (err == -EAGAIN)
 			goto out_netif_wake_queue;
 		if (err)
@@ -217,21 +208,13 @@ int mcp251xfd_handle_tefif(struct mcp251xfd_priv *priv)
 	}
 
  out_netif_wake_queue:
-	len = i;	/* number of handled goods TEFs */
+	len = i;	 
 	if (len) {
 		struct mcp251xfd_tef_ring *ring = priv->tef;
 		struct mcp251xfd_tx_ring *tx_ring = priv->tx;
 		int offset;
 
-		/* Increment the TEF FIFO tail pointer 'len' times in
-		 * a single SPI message.
-		 *
-		 * Note:
-		 * Calculate offset, so that the SPI transfer ends on
-		 * the last message of the uinc_xfer array, which has
-		 * "cs_change == 0", to properly deactivate the chip
-		 * select.
-		 */
+		 
 		offset = ARRAY_SIZE(ring->uinc_xfer) - len;
 		err = spi_sync_transfer(priv->spi,
 					ring->uinc_xfer + offset, len);
@@ -249,9 +232,7 @@ int mcp251xfd_handle_tefif(struct mcp251xfd_priv *priv)
 	mcp251xfd_ecc_tefif_successful(priv);
 
 	if (mcp251xfd_get_tx_free(priv->tx)) {
-		/* Make sure that anybody stopping the queue after
-		 * this sees the new tx_ring->tail.
-		 */
+		 
 		smp_mb();
 		netif_wake_queue(priv->ndev);
 	}

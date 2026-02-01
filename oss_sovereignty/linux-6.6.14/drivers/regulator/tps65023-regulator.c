@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tps65023-regulator.c
- *
- * Supports TPS65023 Regulator
- *
- * Copyright (C) 2009 Texas Instrument Incorporated - https://www.ti.com/
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -18,7 +12,7 @@
 #include <linux/slab.h>
 #include <linux/regmap.h>
 
-/* Register definitions */
+ 
 #define	TPS65023_REG_VERSION		0
 #define	TPS65023_REG_PGOODZ		1
 #define	TPS65023_REG_MASK		2
@@ -29,7 +23,7 @@
 #define	TPS65023_REG_DEFSLEW		7
 #define	TPS65023_REG_LDO_CTRL		8
 
-/* PGOODZ bitfields */
+ 
 #define	TPS65023_PGOODZ_PWRFAILZ	BIT(7)
 #define	TPS65023_PGOODZ_LOWBATTZ	BIT(6)
 #define	TPS65023_PGOODZ_VDCDC1		BIT(5)
@@ -38,7 +32,7 @@
 #define	TPS65023_PGOODZ_LDO2		BIT(2)
 #define	TPS65023_PGOODZ_LDO1		BIT(1)
 
-/* MASK bitfields */
+ 
 #define	TPS65023_MASK_PWRFAILZ		BIT(7)
 #define	TPS65023_MASK_LOWBATTZ		BIT(6)
 #define	TPS65023_MASK_VDCDC1		BIT(5)
@@ -47,32 +41,32 @@
 #define	TPS65023_MASK_LDO2		BIT(2)
 #define	TPS65023_MASK_LDO1		BIT(1)
 
-/* REG_CTRL bitfields */
+ 
 #define TPS65023_REG_CTRL_VDCDC1_EN	BIT(5)
 #define TPS65023_REG_CTRL_VDCDC2_EN	BIT(4)
 #define TPS65023_REG_CTRL_VDCDC3_EN	BIT(3)
 #define TPS65023_REG_CTRL_LDO2_EN	BIT(2)
 #define TPS65023_REG_CTRL_LDO1_EN	BIT(1)
 
-/* REG_CTRL2 bitfields */
+ 
 #define TPS65023_REG_CTRL2_GO		BIT(7)
 #define TPS65023_REG_CTRL2_CORE_ADJ	BIT(6)
 #define TPS65023_REG_CTRL2_DCDC2	BIT(2)
 #define TPS65023_REG_CTRL2_DCDC1	BIT(1)
 #define TPS65023_REG_CTRL2_DCDC3	BIT(0)
 
-/* Number of step-down converters available */
+ 
 #define TPS65023_NUM_DCDC		3
-/* Number of LDO voltage regulators  available */
+ 
 #define TPS65023_NUM_LDO		2
-/* Number of total regulators available */
+ 
 #define TPS65023_NUM_REGULATOR	(TPS65023_NUM_DCDC + TPS65023_NUM_LDO)
 
-/* DCDCs */
+ 
 #define TPS65023_DCDC_1			0
 #define TPS65023_DCDC_2			1
 #define TPS65023_DCDC_3			2
-/* LDOs */
+ 
 #define TPS65023_LDO_1			3
 #define TPS65023_LDO_2			4
 
@@ -114,7 +108,7 @@
 		.enable_reg	= TPS65023_REG_REG_CTRL,	\
 	}							\
 
-/* Supported voltage values for regulators */
+ 
 static const unsigned int VCORE_VSEL_table[] = {
 	800000, 825000, 850000, 875000,
 	900000, 925000, 950000, 975000,
@@ -134,14 +128,13 @@ static const unsigned int DCDC_FIXED_1800000_VSEL_table[] = {
 	1800000,
 };
 
-/* Supported voltage values for LDO regulators for tps65020 */
+ 
 static const unsigned int TPS65020_LDO_VSEL_table[] = {
 	1000000, 1050000, 1100000, 1300000,
 	1800000, 2500000, 3000000, 3300000,
 };
 
-/* Supported voltage values for LDO regulators
- * for tps65021 and tps65023 */
+ 
 static const unsigned int TPS65023_LDO1_VSEL_table[] = {
 	1000000, 1100000, 1300000, 1800000,
 	2200000, 2600000, 2800000, 3150000,
@@ -152,14 +145,14 @@ static const unsigned int TPS65023_LDO2_VSEL_table[] = {
 	2500000, 2800000, 3000000, 3300000,
 };
 
-/* PMIC details */
+ 
 struct tps_pmic {
 	struct regulator_dev *rdev[TPS65023_NUM_REGULATOR];
 	const struct tps_driver_data *driver_data;
 	struct regmap *regmap;
 };
 
-/* Struct passed as driver data */
+ 
 struct tps_driver_data {
 	const struct regulator_desc *desc;
 	u8 core_regulator;
@@ -191,7 +184,7 @@ static int tps65023_dcdc_set_voltage_sel(struct regulator_dev *dev,
 	return regulator_set_voltage_sel_regmap(dev, selector);
 }
 
-/* Operations permitted on VDCDCx */
+ 
 static const struct regulator_ops tps65023_dcdc_ops = {
 	.is_enabled = regulator_is_enabled_regmap,
 	.enable = regulator_enable_regmap,
@@ -202,7 +195,7 @@ static const struct regulator_ops tps65023_dcdc_ops = {
 	.map_voltage = regulator_map_voltage_ascend,
 };
 
-/* Operations permitted on LDOx */
+ 
 static const struct regulator_ops tps65023_ldo_ops = {
 	.is_enabled = regulator_is_enabled_regmap,
 	.enable = regulator_enable_regmap,
@@ -280,7 +273,7 @@ static int tps_65023_probe(struct i2c_client *client)
 		return error;
 	}
 
-	/* common for all regulators */
+	 
 	config.dev = &client->dev;
 	config.driver_data = tps;
 	config.regmap = tps->regmap;
@@ -289,7 +282,7 @@ static int tps_65023_probe(struct i2c_client *client)
 		if (init_data)
 			config.init_data = &init_data[i];
 
-		/* Register the regulators */
+		 
 		tps->rdev[i] = devm_regulator_register(&client->dev,
 					&tps->driver_data->desc[i], &config);
 		if (IS_ERR(tps->rdev[i])) {
@@ -301,7 +294,7 @@ static int tps_65023_probe(struct i2c_client *client)
 
 	i2c_set_clientdata(client, tps);
 
-	/* Enable setting output voltage by I2C */
+	 
 	regmap_update_bits(tps->regmap, TPS65023_REG_CON_CTRL2,
 			   TPS65023_REG_CTRL2_CORE_ADJ, 0);
 

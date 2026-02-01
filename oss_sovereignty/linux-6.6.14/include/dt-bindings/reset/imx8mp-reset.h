@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2020 NXP
- */
+ 
+ 
 
 #ifndef DT_BINDING_RESET_IMX8MP_H
 #define DT_BINDING_RESET_IMX8MP_H

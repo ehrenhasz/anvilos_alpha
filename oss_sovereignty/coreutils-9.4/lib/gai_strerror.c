@@ -1,51 +1,4 @@
-/* Copyright (C) 1997, 2001-2002, 2004-2006, 2008-2023 Free Software
-   Foundation, Inc.
-   This file is part of the GNU C Library.
-   Contributed by Philip Blundell <pjb27@cam.ac.uk>, 1997.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#ifndef _LIBC
-# include <config.h>
-#endif
-
-#include <stdio.h>
-#include <netdb.h>
-
-#ifdef _LIBC
-# include <libintl.h>
-#else
-# include "gettext.h"
-# define _(String) gettext (String)
-# define N_(String) String
-#endif
-
-#if HAVE_DECL_GAI_STRERROR
-
-# include <sys/socket.h>
-# undef gai_strerror
-# if HAVE_DECL_GAI_STRERRORA
-#  define gai_strerror gai_strerrorA
-# endif
-
-const char *
-rpl_gai_strerror (int code)
-{
-  return gai_strerror (code);
-}
-
-#else /* !HAVE_DECL_GAI_STRERROR */
+ 
 
 static struct
   {
@@ -89,4 +42,4 @@ gai_strerror (int code)
 # ifdef _LIBC
 libc_hidden_def (gai_strerror)
 # endif
-#endif /* !HAVE_DECL_GAI_STRERROR */
+#endif  

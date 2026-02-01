@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Key management related functions.
- *
- * Copyright (c) 2017-2020, Silicon Laboratories, Inc.
- * Copyright (c) 2010, ST-Ericsson
- */
+
+ 
 #include <linux/etherdevice.h>
 #include <net/mac80211.h>
 
@@ -79,10 +74,10 @@ static u8 fill_tkip_group(struct wfx_hif_tkip_group_key *msg, struct ieee80211_k
 	memcpy(msg->tkip_key_data, keybuf, sizeof(msg->tkip_key_data));
 	keybuf += sizeof(msg->tkip_key_data);
 	if (iftype == NL80211_IFTYPE_AP)
-		/* Use Tx MIC Key */
+		 
 		memcpy(msg->rx_mic_key, keybuf + 0, sizeof(msg->rx_mic_key));
 	else
-		/* Use Rx MIC Key */
+		 
 		memcpy(msg->rx_mic_key, keybuf + 8, sizeof(msg->rx_mic_key));
 	return HIF_KEY_TYPE_TKIP_GROUP;
 }

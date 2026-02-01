@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * System76 ACPI Driver
- *
- * Copyright (C) 2023 System76
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/hwmon.h>
@@ -51,7 +43,7 @@ static const struct acpi_device_id device_ids[] = {
 };
 MODULE_DEVICE_TABLE(acpi, device_ids);
 
-// Array of keyboard LED brightness levels
+
 static const enum led_brightness kb_levels[] = {
 	48,
 	72,
@@ -61,7 +53,7 @@ static const enum led_brightness kb_levels[] = {
 	255
 };
 
-// Array of keyboard LED colors in 24-bit RGB format
+
 static const int kb_colors[] = {
 	0xFFFFFF,
 	0x0000FF,
@@ -72,7 +64,7 @@ static const int kb_colors[] = {
 	0xFFFF00
 };
 
-// Get a System76 ACPI device value by name
+
 static int system76_get(struct system76_data *data, char *method)
 {
 	acpi_handle handle;
@@ -86,7 +78,7 @@ static int system76_get(struct system76_data *data, char *method)
 	return -ENODEV;
 }
 
-// Get a System76 ACPI device value by name with index
+
 static int system76_get_index(struct system76_data *data, char *method, int index)
 {
 	union acpi_object obj;
@@ -107,7 +99,7 @@ static int system76_get_index(struct system76_data *data, char *method, int inde
 	return -ENODEV;
 }
 
-// Get a System76 ACPI device object by name
+
 static int system76_get_object(struct system76_data *data, char *method, union acpi_object **obj)
 {
 	acpi_handle handle;
@@ -124,7 +116,7 @@ static int system76_get_object(struct system76_data *data, char *method, union a
 	return -ENODEV;
 }
 
-// Get a name from a System76 ACPI device object
+
 static char *system76_name(union acpi_object *obj, int index)
 {
 	if (obj && obj->type == ACPI_TYPE_PACKAGE && index <= obj->package.count) {
@@ -135,7 +127,7 @@ static char *system76_name(union acpi_object *obj, int index)
 	return NULL;
 }
 
-// Set a System76 ACPI device value by name
+
 static int system76_set(struct system76_data *data, char *method, int value)
 {
 	union acpi_object obj;
@@ -176,7 +168,7 @@ static ssize_t battery_get_threshold(int which, char *buf)
 
 	input.count = 1;
 	input.pointer = &param;
-	// Start/stop selection
+	
 	param.type = ACPI_TYPE_INTEGER;
 	param.integer.value = which;
 
@@ -211,10 +203,10 @@ static ssize_t battery_set_threshold(int which, const char *buf, size_t count)
 
 	input.count = 2;
 	input.pointer = params;
-	// Start/stop selection
+	
 	params[0].type = ACPI_TYPE_INTEGER;
 	params[0].integer.value = which;
-	// Threshold value
+	
 	params[1].type = ACPI_TYPE_INTEGER;
 	params[1].integer.value = value;
 
@@ -263,7 +255,7 @@ ATTRIBUTE_GROUPS(system76_battery);
 
 static int system76_battery_add(struct power_supply *battery, struct acpi_battery_hook *hook)
 {
-	// System76 EC only supports 1 battery
+	
 	if (strcmp(battery->desc->name, "BAT0") != 0)
 		return -ENODEV;
 
@@ -295,7 +287,7 @@ static void system76_battery_exit(void)
 	battery_hook_unregister(&system76_battery_hook);
 }
 
-// Get the airplane mode LED brightness
+
 static enum led_brightness ap_led_get(struct led_classdev *led)
 {
 	struct system76_data *data;
@@ -309,7 +301,7 @@ static enum led_brightness ap_led_get(struct led_classdev *led)
 		return LED_OFF;
 }
 
-// Set the airplane mode LED brightness
+
 static int ap_led_set(struct led_classdev *led, enum led_brightness value)
 {
 	struct system76_data *data;
@@ -318,7 +310,7 @@ static int ap_led_set(struct led_classdev *led, enum led_brightness value)
 	return system76_set(data, "SAPL", value == LED_OFF ? 0 : 1);
 }
 
-// Get the last set keyboard LED brightness
+
 static enum led_brightness kb_led_get(struct led_classdev *led)
 {
 	struct system76_data *data;
@@ -327,7 +319,7 @@ static enum led_brightness kb_led_get(struct led_classdev *led)
 	return data->kb_brightness;
 }
 
-// Set the keyboard LED brightness
+
 static int kb_led_set(struct led_classdev *led, enum led_brightness value)
 {
 	struct system76_data *data;
@@ -341,7 +333,7 @@ static int kb_led_set(struct led_classdev *led, enum led_brightness value)
 	}
 }
 
-// Get the last set keyboard LED color
+
 static ssize_t kb_led_color_show(
 	struct device *dev,
 	struct device_attribute *dev_attr,
@@ -355,7 +347,7 @@ static ssize_t kb_led_color_show(
 	return sysfs_emit(buf, "%06X\n", data->kb_color);
 }
 
-// Set the keyboard LED color
+
 static ssize_t kb_led_color_store(
 	struct device *dev,
 	struct device_attribute *dev_attr,
@@ -396,7 +388,7 @@ static struct attribute *system76_kb_led_color_attrs[] = {
 
 ATTRIBUTE_GROUPS(system76_kb_led_color);
 
-// Notify that the keyboard LED was changed by hardware
+
 static void kb_led_notify(struct system76_data *data)
 {
 	led_classdev_notify_brightness_hw_changed(
@@ -405,7 +397,7 @@ static void kb_led_notify(struct system76_data *data)
 	);
 }
 
-// Read keyboard LED brightness as set by hardware
+
 static void kb_led_hotkey_hardware(struct system76_data *data)
 {
 	int value;
@@ -422,7 +414,7 @@ static void kb_led_hotkey_hardware(struct system76_data *data)
 	kb_led_notify(data);
 }
 
-// Toggle the keyboard LED
+
 static void kb_led_hotkey_toggle(struct system76_data *data)
 {
 	if (data->kb_brightness > 0) {
@@ -434,7 +426,7 @@ static void kb_led_hotkey_toggle(struct system76_data *data)
 	kb_led_notify(data);
 }
 
-// Decrease the keyboard LED brightness
+
 static void kb_led_hotkey_down(struct system76_data *data)
 {
 	int i;
@@ -452,7 +444,7 @@ static void kb_led_hotkey_down(struct system76_data *data)
 	kb_led_notify(data);
 }
 
-// Increase the keyboard LED brightness
+
 static void kb_led_hotkey_up(struct system76_data *data)
 {
 	int i;
@@ -470,7 +462,7 @@ static void kb_led_hotkey_up(struct system76_data *data)
 	kb_led_notify(data);
 }
 
-// Cycle the keyboard LED color
+
 static void kb_led_hotkey_color(struct system76_data *data)
 {
 	int i;
@@ -597,7 +589,7 @@ static const struct hwmon_ops thermal_ops = {
 	.read_string = thermal_read_string,
 };
 
-// Allocate up to 8 fans and temperatures
+
 static const struct hwmon_channel_info * const thermal_channel_info[] = {
 	HWMON_CHANNEL_INFO(fan,
 		HWMON_F_INPUT | HWMON_F_LABEL,
@@ -643,7 +635,7 @@ static void input_key(struct system76_data *data, unsigned int code)
 	input_sync(data->input);
 }
 
-// Handle ACPI notification
+
 static void system76_notify(struct acpi_device *acpi_dev, u32 event)
 {
 	struct system76_data *data;
@@ -671,7 +663,7 @@ static void system76_notify(struct acpi_device *acpi_dev, u32 event)
 	}
 }
 
-// Add a System76 ACPI device
+
 static int system76_add(struct acpi_device *acpi_dev)
 {
 	struct system76_data *data;
@@ -683,8 +675,8 @@ static int system76_add(struct acpi_device *acpi_dev)
 	acpi_dev->driver_data = data;
 	data->acpi_dev = acpi_dev;
 
-	// Some models do not run open EC firmware. Check for an ACPI method
-	// that only exists on open EC to guard functionality specific to it.
+	
+	
 	data->has_open_ec = acpi_has_method(acpi_device_handle(data->acpi_dev), "NFAN");
 
 	err = system76_get(data, "INIT");
@@ -705,12 +697,12 @@ static int system76_add(struct acpi_device *acpi_dev)
 	data->kb_led.brightness_get = kb_led_get;
 	data->kb_led.brightness_set_blocking = kb_led_set;
 	if (acpi_has_method(acpi_device_handle(data->acpi_dev), "GKBK")) {
-		// Use the new ACPI methods
+		
 		data->kbled_type = system76_get(data, "GKBK");
 
 		switch (data->kbled_type) {
 		case KBLED_NONE:
-			// Nothing to do: Device will not be registered.
+			
 			break;
 		case KBLED_WHITE:
 			data->kb_led.max_brightness = 255;
@@ -725,7 +717,7 @@ static int system76_add(struct acpi_device *acpi_dev)
 			break;
 		}
 	} else {
-		// Use the old ACPI methods
+		
 		if (acpi_has_method(acpi_device_handle(data->acpi_dev), "SKBC")) {
 			data->kbled_type = KBLED_RGB;
 			data->kb_led.max_brightness = 255;
@@ -787,7 +779,7 @@ error:
 	return err;
 }
 
-// Remove a System76 ACPI device
+
 static void system76_remove(struct acpi_device *acpi_dev)
 {
 	struct system76_data *data;

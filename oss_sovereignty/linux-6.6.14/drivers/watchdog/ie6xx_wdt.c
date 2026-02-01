@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *      Intel Atom E6xx Watchdog driver
- *
- *      Copyright (C) 2011 Alexander Stein
- *                <alexander.stein@systec-electronic.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -42,7 +37,7 @@
 #define WDT_TOUT_CNF	0x03
 
 #define MIN_TIME	1
-#define MAX_TIME	(10 * 60) /* 10 minutes */
+#define MAX_TIME	(10 * 60)  
 #define DEFAULT_TIME	60
 
 static unsigned int timeout = DEFAULT_TIME;
@@ -72,11 +67,7 @@ static struct {
 #endif
 } ie6xx_wdt_data;
 
-/*
- * This is needed to write to preload and reload registers
- * struct ie6xx_wdt_data.unlock_sequence must be used
- * to prevent sequence interrupts
- */
+ 
 static void ie6xx_wdt_unlock_registers(void)
 {
 	outb(0x80, ie6xx_wdt_data.sch_wdtba + RR0);
@@ -98,19 +89,16 @@ static int ie6xx_wdt_set_timeout(struct watchdog_device *wdd, unsigned int t)
 	u64 clock;
 	u8 wdtcr;
 
-	/* Watchdog clock is PCI Clock (33MHz) */
+	 
 	clock = 33000000;
-	/* and the preload value is loaded into [34:15] of the down counter */
+	 
 	preload = (t * clock) >> 15;
-	/*
-	 * Manual states preload must be one less.
-	 * Does not wrap as t is at least 1
-	 */
+	 
 	preload -= 1;
 
 	spin_lock(&ie6xx_wdt_data.unlock_sequence);
 
-	/* Set ResetMode & Enable prescaler for range 10ms to 10 min */
+	 
 	wdtcr = resetmode & 0x38;
 	outb(wdtcr, ie6xx_wdt_data.sch_wdtba + WDTCR);
 
@@ -133,7 +121,7 @@ static int ie6xx_wdt_start(struct watchdog_device *wdd)
 {
 	ie6xx_wdt_set_timeout(wdd, wdd->timeout);
 
-	/* Enable the watchdog timer */
+	 
 	spin_lock(&ie6xx_wdt_data.unlock_sequence);
 	outb(WDT_ENABLE, ie6xx_wdt_data.sch_wdtba + WDTLR);
 	spin_unlock(&ie6xx_wdt_data.unlock_sequence);
@@ -146,7 +134,7 @@ static int ie6xx_wdt_stop(struct watchdog_device *wdd)
 	if (inb(ie6xx_wdt_data.sch_wdtba + WDTLR) & WDT_LOCK)
 		return -1;
 
-	/* Disable the watchdog timer */
+	 
 	spin_lock(&ie6xx_wdt_data.unlock_sequence);
 	outb(0, ie6xx_wdt_data.sch_wdtba + WDTLR);
 	spin_unlock(&ie6xx_wdt_data.unlock_sequence);
@@ -201,7 +189,7 @@ DEFINE_SHOW_ATTRIBUTE(ie6xx_wdt);
 
 static void ie6xx_wdt_debugfs_init(void)
 {
-	/* /sys/kernel/debug/ie6xx_wdt */
+	 
 	ie6xx_wdt_data.debugfs = debugfs_create_file("ie6xx_wdt",
 		S_IFREG | S_IRUGO, NULL, NULL, &ie6xx_wdt_fops);
 }
@@ -288,8 +276,8 @@ static struct platform_driver ie6xx_wdt_driver = {
 
 static int __init ie6xx_wdt_init(void)
 {
-	/* Check boot parameters to verify that their initial values */
-	/* are in range. */
+	 
+	 
 	if ((timeout < MIN_TIME) ||
 	    (timeout > MAX_TIME)) {
 		pr_err("Watchdog timer: value of timeout %d (dec) "

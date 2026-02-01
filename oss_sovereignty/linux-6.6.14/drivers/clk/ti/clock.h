@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * TI Clock driver internal definitions
- *
- * Copyright (C) 2014 Texas Instruments, Inc
- *     Tero Kristo (t-kristo@ti.com)
- */
+ 
+ 
 #ifndef __DRIVERS_CLK_TI_CLOCK__
 #define __DRIVERS_CLK_TI_CLOCK__
 
@@ -46,14 +41,14 @@ enum {
 	TI_CLK_DPLL,
 };
 
-/* Global flags */
+ 
 #define CLKF_INDEX_POWER_OF_TWO		(1 << 0)
 #define CLKF_INDEX_STARTS_AT_ONE	(1 << 1)
 #define CLKF_SET_RATE_PARENT		(1 << 2)
 #define CLKF_OMAP3			(1 << 3)
 #define CLKF_AM35XX			(1 << 4)
 
-/* Gate flags */
+ 
 #define CLKF_SET_BIT_TO_DISABLE		(1 << 5)
 #define CLKF_INTERFACE			(1 << 6)
 #define CLKF_SSI			(1 << 7)
@@ -64,7 +59,7 @@ enum {
 #define CLKF_HSDIV			(1 << 12)
 #define CLKF_CLKDM			(1 << 13)
 
-/* DPLL flags */
+ 
 #define CLKF_LOW_POWER_STOP		(1 << 5)
 #define CLKF_LOCK			(1 << 6)
 #define CLKF_LOW_POWER_BYPASS		(1 << 7)
@@ -72,7 +67,7 @@ enum {
 #define CLKF_CORE			(1 << 9)
 #define CLKF_J_TYPE			(1 << 10)
 
-/* CLKCTRL flags */
+ 
 #define CLKF_SW_SUP			BIT(5)
 #define CLKF_HW_SUP			BIT(6)
 #define CLKF_NO_IDLEST			BIT(7)
@@ -130,7 +125,7 @@ struct ti_clk_gate {
 	u16 flags;
 };
 
-/* Composite clock component types */
+ 
 enum {
 	CLK_COMPONENT_TYPE_GATE = 0,
 	CLK_COMPONENT_TYPE_DIVIDER,
@@ -138,11 +133,7 @@ enum {
 	CLK_COMPONENT_TYPE_MAX,
 };
 
-/**
- * struct ti_dt_clk - OMAP DT clock alias declarations
- * @lk: clock lookup definition
- * @node_name: clock DT node to map to
- */
+ 
 struct ti_dt_clk {
 	struct clk_lookup		lk;
 	char				*node_name;
@@ -157,7 +148,7 @@ struct ti_dt_clk {
 		.node_name = name,	\
 	}
 
-/* CLKCTRL type definitions */
+ 
 struct omap_clkctrl_div_data {
 	const int *dividers;
 	int max_div;
@@ -277,11 +268,7 @@ long omap2_dpll_round_rate(struct clk_hw *hw, unsigned long target_rate,
 unsigned long omap3_clkoutx2_recalc(struct clk_hw *hw,
 				    unsigned long parent_rate);
 
-/*
- * OMAP3_DPLL5_FREQ_FOR_USBHOST: USBHOST and USBTLL are the only clocks
- * that are sourced by DPLL5, and both of these require this clock
- * to be at 120 MHz for proper operation.
- */
+ 
 #define OMAP3_DPLL5_FREQ_FOR_USBHOST	120000000
 
 unsigned long omap3_dpll_recalc(struct clk_hw *hw, unsigned long parent_rate);

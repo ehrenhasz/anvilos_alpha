@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
- *
- * Contact Information: wlanfae <wlanfae@realtek.com>
- */
+
+ 
 #include "rtllib.h"
 #include "rtl819x_HT.h"
 u8 MCS_FILTER_ALL[16] = {
@@ -687,9 +683,7 @@ void HTResetSelfAndSavePeerSetting(struct rtllib_device *ieee,
 	struct rt_hi_throughput *ht_info = ieee->ht_info;
 	u8	bIOTAction = 0;
 
-	/* unmark enable_ht flag here is the same reason why unmarked in
-	 * function rtllib_softmac_new_net. WB 2008.09.10
-	 */
+	 
 	if (pNetwork->bssht.bd_support_ht) {
 		ht_info->bCurrentHTSupport = true;
 		ht_info->ePeerHTSpecVer = pNetwork->bssht.bd_ht_spec_ver;

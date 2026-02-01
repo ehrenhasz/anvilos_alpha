@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2022 Intel Corporation
- *
- * High level crtc/connector/encoder modeset state verification.
- */
+
+ 
 
 #include <drm/drm_atomic_state_helper.h>
 
@@ -19,10 +15,7 @@
 #include "intel_snps_phy.h"
 #include "skl_watermark.h"
 
-/*
- * Cross check the actual hw state with our own modeset state tracking (and its
- * internal consistency).
- */
+ 
 static void intel_connector_verify_state(struct intel_crtc_state *crtc_state,
 					 struct drm_connector_state *conn_state)
 {
@@ -94,11 +87,7 @@ static void intel_pipe_config_sanity_check(struct drm_i915_private *dev_priv,
 							    &pipe_config->fdi_m_n);
 		int dotclock = pipe_config->hw.adjusted_mode.crtc_clock;
 
-		/*
-		 * FDI already provided one idea for the dotclock.
-		 * Yell if the encoder disagrees. Allow for slight
-		 * rounding differences.
-		 */
+		 
 		drm_WARN(&dev_priv->drm, abs(fdi_dotclock - dotclock) > 1,
 			 "FDI dotclock and encoder dotclock mismatch, fdi: %i, encoder: %i\n",
 			 fdi_dotclock, dotclock);
@@ -179,7 +168,7 @@ verify_crtc_state(struct intel_crtc *crtc,
 
 	intel_crtc_get_pipe_config(pipe_config);
 
-	/* we keep both pipes enabled on 830 */
+	 
 	if (IS_I830(dev_priv) && pipe_config->hw.active)
 		pipe_config->hw.active = new_crtc_state->hw.active;
 

@@ -1,18 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  ebt_mark
- *
- *	Authors:
- *	Bart De Schuymer <bdschuym@pandora.be>
- *
- *  July, 2002
- *
- */
 
-/* The mark target can be used in any chain,
- * I believe adding a mangle table just for marking is total overkill.
- * Marking a frame doesn't really change anything in the frame anyway.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/netfilter/x_tables.h>

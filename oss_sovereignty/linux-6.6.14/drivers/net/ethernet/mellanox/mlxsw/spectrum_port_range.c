@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/netlink.h>
@@ -27,9 +27,7 @@ mlxsw_sp_port_range_reg_configure(struct mlxsw_sp *mlxsw_sp,
 {
 	char pprr_pl[MLXSW_REG_PPRR_LEN];
 
-	/* We do not care if packet is IPv4/IPv6 and TCP/UDP, so set all four
-	 * fields.
-	 */
+	 
 	mlxsw_reg_pprr_pack(pprr_pl, prr->index);
 	mlxsw_reg_pprr_ipv4_set(pprr_pl, true);
 	mlxsw_reg_pprr_ipv6_set(pprr_pl, true);
@@ -167,9 +165,7 @@ int mlxsw_sp_port_range_init(struct mlxsw_sp *mlxsw_sp)
 		return -EIO;
 	max = MLXSW_CORE_RES_GET(core, ACL_MAX_L4_PORT_RANGE);
 
-	/* Each port range register is represented using a single bit in the
-	 * two bytes "l4_port_range" ACL key element.
-	 */
+	 
 	WARN_ON(max > BITS_PER_BYTE * sizeof(u16));
 
 	pr_core = kzalloc(sizeof(*mlxsw_sp->pr_core), GFP_KERNEL);

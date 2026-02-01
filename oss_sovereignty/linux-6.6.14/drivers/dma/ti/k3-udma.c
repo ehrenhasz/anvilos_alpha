@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com
- *  Author: Peter Ujfalusi <peter.ujfalusi@ti.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -34,15 +31,15 @@
 #include "k3-psil-priv.h"
 
 struct udma_static_tr {
-	u8 elsize; /* RPSTR0 */
-	u16 elcnt; /* RPSTR0 */
-	u16 bstcnt; /* RPSTR1 */
+	u8 elsize;  
+	u16 elcnt;  
+	u16 bstcnt;  
 };
 
 #define K3_UDMA_MAX_RFLOWS		1024
 #define K3_UDMA_DEFAULT_RING_SIZE	16
 
-/* How SRC/DST tag should be updated by UDMA in the descriptor's Word 3 */
+ 
 #define UDMA_RFLOW_SRCTAG_NONE		0
 #define UDMA_RFLOW_SRCTAG_CFG_TAG	1
 #define UDMA_RFLOW_SRCTAG_FLOW_ID	2
@@ -81,9 +78,9 @@ struct udma_tchan {
 	void __iomem *reg_rt;
 
 	int id;
-	struct k3_ring *t_ring; /* Transmit ring */
-	struct k3_ring *tc_ring; /* Transmit Completion ring */
-	int tflow_id; /* applicable only for PKTDMA */
+	struct k3_ring *t_ring;  
+	struct k3_ring *tc_ring;  
+	int tflow_id;  
 
 };
 
@@ -91,8 +88,8 @@ struct udma_tchan {
 
 struct udma_rflow {
 	int id;
-	struct k3_ring *fd_ring; /* Free Descriptor ring */
-	struct k3_ring *r_ring; /* Receive ring */
+	struct k3_ring *fd_ring;  
+	struct k3_ring *r_ring;  
 };
 
 struct udma_rchan {
@@ -102,10 +99,10 @@ struct udma_rchan {
 };
 
 struct udma_oes_offsets {
-	/* K3 UDMA Output Event Offset */
+	 
 	u32 udma_rchan;
 
-	/* BCDMA Output Event Offsets */
+	 
 	u32 bcdma_bchan_data;
 	u32 bcdma_bchan_ring;
 	u32 bcdma_tchan_data;
@@ -113,7 +110,7 @@ struct udma_oes_offsets {
 	u32 bcdma_rchan_data;
 	u32 bcdma_rchan_ring;
 
-	/* PKTDMA Output Event Offsets */
+	 
 	u32 pktdma_tchan_flow;
 	u32 pktdma_rchan_flow;
 };
@@ -147,7 +144,7 @@ struct udma_hwdesc {
 	void *cppi5_desc_vaddr;
 	dma_addr_t cppi5_desc_paddr;
 
-	/* TR descriptor internal pointers */
+	 
 	void *tr_req_base;
 	struct cppi5_tr_resp_t *tr_resp_base;
 };
@@ -176,7 +173,7 @@ struct udma_dev {
 	struct udma_tpl tchan_tpl;
 	struct udma_tpl rchan_tpl;
 
-	size_t desc_align; /* alignment to use for descriptors */
+	size_t desc_align;  
 
 	struct udma_tisci_rm tisci_rm;
 
@@ -224,20 +221,20 @@ struct udma_desc {
 	u32 residue;
 
 	unsigned int sglen;
-	unsigned int desc_idx; /* Only used for cyclic in packet mode */
+	unsigned int desc_idx;  
 	unsigned int tr_idx;
 
 	u32 metadata_size;
-	void *metadata; /* pointer to provided metadata buffer (EPIP, PSdata) */
+	void *metadata;  
 
 	unsigned int hwdesc_count;
 	struct udma_hwdesc hwdesc[];
 };
 
 enum udma_chan_state {
-	UDMA_CHAN_IS_IDLE = 0, /* not active, no teardown is in progress */
-	UDMA_CHAN_IS_ACTIVE, /* Normal operation */
-	UDMA_CHAN_IS_TERMINATING, /* channel is being terminated */
+	UDMA_CHAN_IS_IDLE = 0,  
+	UDMA_CHAN_IS_ACTIVE,  
+	UDMA_CHAN_IS_TERMINATING,  
 };
 
 struct udma_tx_drain {
@@ -247,12 +244,12 @@ struct udma_tx_drain {
 };
 
 struct udma_chan_config {
-	bool pkt_mode; /* TR or packet */
-	bool needs_epib; /* EPIB is needed for the communication or not */
-	u32 psd_size; /* size of Protocol Specific Data */
-	u32 metadata_size; /* (needs_epib ? 16:0) + psd_size */
-	u32 hdesc_size; /* Size of a packet descriptor in packet mode */
-	bool notdpkt; /* Suppress sending TDC packet */
+	bool pkt_mode;  
+	bool needs_epib;  
+	u32 psd_size;  
+	u32 metadata_size;  
+	u32 hdesc_size;  
+	bool notdpkt;  
 	int remote_thread_id;
 	u32 atype;
 	u32 asel;
@@ -261,14 +258,14 @@ struct udma_chan_config {
 	enum psil_endpoint_type ep_type;
 	bool enable_acc32;
 	bool enable_burst;
-	enum udma_tp_level channel_tpl; /* Channel Throughput Level */
+	enum udma_tp_level channel_tpl;  
 
 	u32 tr_trigger_type;
 	unsigned long tx_flags;
 
-	/* PKDMA mapped channel */
+	 
 	int mapped_channel_id;
-	/* PKTDMA default tflow or rflow for mapped channel */
+	 
 	int default_flow_id;
 
 	enum dma_transfer_direction dir;
@@ -302,12 +299,12 @@ struct udma_chan {
 
 	struct udma_tx_drain tx_drain;
 
-	/* Channel configuration parameters */
+	 
 	struct udma_chan_config config;
-	/* Channel configuration parameters (backup) */
+	 
 	struct udma_chan_config backup_config;
 
-	/* dmapool for packet mode descriptors */
+	 
 	bool use_dma_pool;
 	struct dma_pool *hdesc_pool;
 
@@ -329,7 +326,7 @@ static inline struct udma_desc *to_udma_desc(struct dma_async_tx_descriptor *t)
 	return container_of(t, struct udma_desc, vd.tx);
 }
 
-/* Generic register access functions */
+ 
 static inline u32 udma_read(void __iomem *base, int reg)
 {
 	return readl(base + reg);
@@ -353,7 +350,7 @@ static inline void udma_update_bits(void __iomem *base, int reg,
 		writel(tmp, base + reg);
 }
 
-/* TCHANRT */
+ 
 static inline u32 udma_tchanrt_read(struct udma_chan *uc, int reg)
 {
 	if (!uc->tchan)
@@ -376,7 +373,7 @@ static inline void udma_tchanrt_update_bits(struct udma_chan *uc, int reg,
 	udma_update_bits(uc->tchan->reg_rt, reg, mask, val);
 }
 
-/* RCHANRT */
+ 
 static inline u32 udma_rchanrt_read(struct udma_chan *uc, int reg)
 {
 	if (!uc->rchan)
@@ -425,7 +422,7 @@ static void k3_configure_chan_coherency(struct dma_chan *chan, u32 asel)
 	struct device *chan_dev = &chan->dev->device;
 
 	if (asel == 0) {
-		/* No special handling for the channel */
+		 
 		chan->dev->chan_dma_dev = false;
 
 		chan_dev->dma_coherent = false;
@@ -572,7 +569,7 @@ static void udma_purge_desc_work(struct work_struct *work)
 		kfree(d);
 	}
 
-	/* If more to purge, schedule the work again */
+	 
 	if (!list_empty(&ud->desc_to_purge))
 		schedule_work(&ud->purge_work);
 }
@@ -666,13 +663,13 @@ static int udma_push_to_ring(struct udma_chan *uc, int idx)
 		return -EINVAL;
 	}
 
-	/* RX flush packet: idx == -1 is only passed in case of DEV_TO_MEM */
+	 
 	if (idx == -1) {
 		paddr = udma_get_rx_flush_hwdesc_paddr(uc);
 	} else {
 		paddr = udma_curr_cppi5_desc_paddr(d, idx);
 
-		wmb(); /* Ensure that writes are not moved over this point */
+		wmb();  
 	}
 
 	return k3_ringacc_ring_push(ring, &paddr);
@@ -710,13 +707,13 @@ static int udma_pop_from_ring(struct udma_chan *uc, dma_addr_t *addr)
 	if (ret)
 		return ret;
 
-	rmb(); /* Ensure that reads are not moved before this point */
+	rmb();  
 
-	/* Teardown completion */
+	 
 	if (cppi5_desc_is_tdcm(*addr))
 		return 0;
 
-	/* Check for flush descriptor */
+	 
 	if (udma_desc_is_rx_flush(uc, *addr))
 		return -ENOENT;
 
@@ -752,7 +749,7 @@ static void udma_reset_rings(struct udma_chan *uc)
 	if (ring2)
 		k3_ringacc_ring_reset(ring2);
 
-	/* make sure we are not leaking memory by stalled descriptor */
+	 
 	if (uc->terminated_desc) {
 		udma_desc_free(&uc->terminated_desc->vd);
 		uc->terminated_desc = NULL;
@@ -828,10 +825,10 @@ static int udma_reset_chan(struct udma_chan *uc, bool hard)
 		return -EINVAL;
 	}
 
-	/* Reset all counters */
+	 
 	udma_reset_counters(uc);
 
-	/* Hard reset: re-initialize the channel to reset */
+	 
 	if (hard) {
 		struct udma_chan_config ucc_backup;
 		int ret;
@@ -839,16 +836,13 @@ static int udma_reset_chan(struct udma_chan *uc, bool hard)
 		memcpy(&ucc_backup, &uc->config, sizeof(uc->config));
 		uc->ud->ddev.device_free_chan_resources(&uc->vc.chan);
 
-		/* restore the channel configuration */
+		 
 		memcpy(&uc->config, &ucc_backup, sizeof(uc->config));
 		ret = uc->ud->ddev.device_alloc_chan_resources(&uc->vc.chan);
 		if (ret)
 			return ret;
 
-		/*
-		 * Setting forced teardown after forced reset helps recovering
-		 * the rchan.
-		 */
+		 
 		if (uc->config.dir == DMA_DEV_TO_MEM)
 			udma_rchanrt_write(uc, UDMA_CHAN_RT_CTL_REG,
 					   UDMA_CHAN_RT_CTL_EN |
@@ -868,12 +862,7 @@ static void udma_start_desc(struct udma_chan *uc)
 	    (uc->cyclic || ucc->dir == DMA_DEV_TO_MEM)) {
 		int i;
 
-		/*
-		 * UDMA only: Push all descriptors to ring for packet mode
-		 * cyclic or RX
-		 * PKTDMA supports pre-linked descriptor and cyclic is not
-		 * supported
-		 */
+		 
 		for (i = 0; i < uc->desc->sglen; i++)
 			udma_push_to_ring(uc, i);
 	} else {
@@ -883,11 +872,11 @@ static void udma_start_desc(struct udma_chan *uc)
 
 static bool udma_chan_needs_reconfiguration(struct udma_chan *uc)
 {
-	/* Only PDMAs have staticTR */
+	 
 	if (uc->config.ep_type == PSIL_EP_NATIVE)
 		return false;
 
-	/* Check if the staticTR configuration has changed for TX */
+	 
 	if (memcmp(&uc->static_tr, &uc->desc->static_tr, sizeof(uc->static_tr)))
 		return true;
 
@@ -907,21 +896,21 @@ static int udma_start(struct udma_chan *uc)
 
 	uc->desc = to_udma_desc(&vd->tx);
 
-	/* Channel is already running and does not need reconfiguration */
+	 
 	if (udma_is_chan_running(uc) && !udma_chan_needs_reconfiguration(uc)) {
 		udma_start_desc(uc);
 		goto out;
 	}
 
-	/* Make sure that we clear the teardown bit, if it is set */
+	 
 	udma_reset_chan(uc, false);
 
-	/* Push descriptors before we start the channel */
+	 
 	udma_start_desc(uc);
 
 	switch (uc->desc->dir) {
 	case DMA_DEV_TO_MEM:
-		/* Config remote TR */
+		 
 		if (uc->config.ep_type == PSIL_EP_PDMA_XY) {
 			u32 val = PDMA_STATIC_TR_Y(uc->desc->static_tr.elcnt) |
 				  PDMA_STATIC_TR_X(uc->desc->static_tr.elsize);
@@ -942,7 +931,7 @@ static int udma_start(struct udma_chan *uc)
 				PDMA_STATIC_TR_Z(uc->desc->static_tr.bstcnt,
 						 match_data->statictr_z_mask));
 
-			/* save the current staticTR configuration */
+			 
 			memcpy(&uc->static_tr, &uc->desc->static_tr,
 			       sizeof(uc->static_tr));
 		}
@@ -950,13 +939,13 @@ static int udma_start(struct udma_chan *uc)
 		udma_rchanrt_write(uc, UDMA_CHAN_RT_CTL_REG,
 				   UDMA_CHAN_RT_CTL_EN);
 
-		/* Enable remote */
+		 
 		udma_rchanrt_write(uc, UDMA_CHAN_RT_PEER_RT_EN_REG,
 				   UDMA_PEER_RT_EN_ENABLE);
 
 		break;
 	case DMA_MEM_TO_DEV:
-		/* Config remote TR */
+		 
 		if (uc->config.ep_type == PSIL_EP_PDMA_XY) {
 			u32 val = PDMA_STATIC_TR_Y(uc->desc->static_tr.elcnt) |
 				  PDMA_STATIC_TR_X(uc->desc->static_tr.elsize);
@@ -970,12 +959,12 @@ static int udma_start(struct udma_chan *uc)
 					   UDMA_CHAN_RT_PEER_STATIC_TR_XY_REG,
 					   val);
 
-			/* save the current staticTR configuration */
+			 
 			memcpy(&uc->static_tr, &uc->desc->static_tr,
 			       sizeof(uc->static_tr));
 		}
 
-		/* Enable remote */
+		 
 		udma_tchanrt_write(uc, UDMA_CHAN_RT_PEER_RT_EN_REG,
 				   UDMA_PEER_RT_EN_ENABLE);
 
@@ -1060,12 +1049,7 @@ static bool udma_is_desc_really_done(struct udma_chan *uc, struct udma_desc *d)
 {
 	u32 peer_bcnt, bcnt;
 
-	/*
-	 * Only TX towards PDMA is affected.
-	 * If DMA_PREP_INTERRUPT is not set by consumer then skip the transfer
-	 * completion calculation, consumer must ensure that there is no stale
-	 * data in DMA fabric in this case.
-	 */
+	 
 	if (uc->config.ep_type == PSIL_EP_NATIVE ||
 	    uc->config.dir != DMA_MEM_TO_DEV || !(uc->config.tx_flags & DMA_PREP_INTERRUPT))
 		return true;
@@ -1073,7 +1057,7 @@ static bool udma_is_desc_really_done(struct udma_chan *uc, struct udma_desc *d)
 	peer_bcnt = udma_tchanrt_read(uc, UDMA_CHAN_RT_PEER_BCNT_REG);
 	bcnt = udma_tchanrt_read(uc, UDMA_CHAN_RT_BCNT_REG);
 
-	/* Transfer is incomplete, store current residue and time stamp */
+	 
 	if (peer_bcnt < bcnt) {
 		uc->tx_drain.residue = bcnt - peer_bcnt;
 		uc->tx_drain.tstamp = ktime_get();
@@ -1094,35 +1078,24 @@ static void udma_check_tx_completion(struct work_struct *work)
 
 	while (1) {
 		if (uc->desc) {
-			/* Get previous residue and time stamp */
+			 
 			residue_diff = uc->tx_drain.residue;
 			time_diff = uc->tx_drain.tstamp;
-			/*
-			 * Get current residue and time stamp or see if
-			 * transfer is complete
-			 */
+			 
 			desc_done = udma_is_desc_really_done(uc, uc->desc);
 		}
 
 		if (!desc_done) {
-			/*
-			 * Find the time delta and residue delta w.r.t
-			 * previous poll
-			 */
+			 
 			time_diff = ktime_sub(uc->tx_drain.tstamp,
 					      time_diff) + 1;
 			residue_diff -= uc->tx_drain.residue;
 			if (residue_diff) {
-				/*
-				 * Try to guess when we should check
-				 * next time by calculating rate at
-				 * which data is being drained at the
-				 * peer device
-				 */
+				 
 				delay = (time_diff / residue_diff) *
 					uc->tx_drain.residue;
 			} else {
-				/* No progress, check again in 1 second  */
+				 
 				schedule_delayed_work(&uc->tx_drain.work, HZ);
 				break;
 			}
@@ -1156,7 +1129,7 @@ static irqreturn_t udma_ring_irq_handler(int irq, void *data)
 
 	spin_lock(&uc->vc.lock);
 
-	/* Teardown completion message */
+	 
 	if (cppi5_desc_is_tdcm(paddr)) {
 		complete_all(&uc->teardown_completed);
 
@@ -1182,7 +1155,7 @@ static irqreturn_t udma_ring_irq_handler(int irq, void *data)
 		}
 
 		if (d == uc->desc) {
-			/* active descriptor */
+			 
 			if (uc->cyclic) {
 				udma_cyclic_packet_elapsed(uc);
 				vchan_cyclic_callback(&d->vd);
@@ -1197,10 +1170,7 @@ static irqreturn_t udma_ring_irq_handler(int irq, void *data)
 				}
 			}
 		} else {
-			/*
-			 * terminated descriptor, mark the descriptor as
-			 * completed to update the channel's cookie marker
-			 */
+			 
 			dma_cookie_complete(&d->vd.tx);
 		}
 	}
@@ -1223,7 +1193,7 @@ static irqreturn_t udma_udma_irq_handler(int irq, void *data)
 		if (uc->cyclic) {
 			vchan_cyclic_callback(&d->vd);
 		} else {
-			/* TODO: figure out the real amount of data */
+			 
 			udma_decrement_byte_counters(uc, d->residue);
 			udma_start(uc);
 			vchan_cookie_complete(&d->vd);
@@ -1235,22 +1205,7 @@ static irqreturn_t udma_udma_irq_handler(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/**
- * __udma_alloc_gp_rflow_range - alloc range of GP RX flows
- * @ud: UDMA device
- * @from: Start the search from this flow id number
- * @cnt: Number of consecutive flow ids to allocate
- *
- * Allocate range of RX flow ids for future use, those flows can be requested
- * only using explicit flow id number. if @from is set to -1 it will try to find
- * first free range. if @from is positive value it will force allocation only
- * of the specified range of flows.
- *
- * Returns -ENOMEM if can't find free range.
- * -EEXIST if requested range is busy.
- * -EINVAL if wrong input values passed.
- * Returns flow id on success.
- */
+ 
 static int __udma_alloc_gp_rflow_range(struct udma_dev *ud, int from, int cnt)
 {
 	int start, tmp_from;
@@ -1259,7 +1214,7 @@ static int __udma_alloc_gp_rflow_range(struct udma_dev *ud, int from, int cnt)
 	tmp_from = from;
 	if (tmp_from < 0)
 		tmp_from = ud->rchan_cnt;
-	/* default flows can't be allocated and accessible only by id */
+	 
 	if (tmp_from < ud->rchan_cnt)
 		return -EINVAL;
 
@@ -1295,12 +1250,7 @@ static int __udma_free_gp_rflow_range(struct udma_dev *ud, int from, int cnt)
 
 static struct udma_rflow *__udma_get_rflow(struct udma_dev *ud, int id)
 {
-	/*
-	 * Attempt to request rflow by ID can be made for any rflow
-	 * if not in use with assumption that caller knows what's doing.
-	 * TI-SCI FW will perform additional permission check ant way, it's
-	 * safe
-	 */
+	 
 
 	if (id < 0 || id >= ud->rflow_cnt)
 		return ERR_PTR(-ENOENT);
@@ -1309,7 +1259,7 @@ static struct udma_rflow *__udma_get_rflow(struct udma_dev *ud, int id)
 		return ERR_PTR(-ENOENT);
 
 	if (ud->rflow_gp_map) {
-		/* GP rflow has to be allocated first */
+		 
 		if (!test_bit(id, ud->rflow_gp_map) &&
 		    !test_bit(id, ud->rflow_gp_map_allocated))
 			return ERR_PTR(-EINVAL);
@@ -1376,10 +1326,7 @@ static int bcdma_get_bchan(struct udma_chan *uc)
 		return 0;
 	}
 
-	/*
-	 * Use normal channels for peripherals, and highest TPL channel for
-	 * mem2mem
-	 */
+	 
 	if (uc->config.tr_trigger_type)
 		tpl = 0;
 	else
@@ -1408,11 +1355,7 @@ static int udma_get_tchan(struct udma_chan *uc)
 		return 0;
 	}
 
-	/*
-	 * mapped_channel_id is -1 for UDMA, BCDMA and PKTDMA unmapped channels.
-	 * For PKTDMA mapped channels it is configured to a channel which must
-	 * be used to service the peripheral.
-	 */
+	 
 	uc->tchan = __udma_reserve_tchan(ud, uc->config.channel_tpl,
 					 uc->config.mapped_channel_id);
 	if (IS_ERR(uc->tchan)) {
@@ -1424,7 +1367,7 @@ static int udma_get_tchan(struct udma_chan *uc)
 	if (ud->tflow_cnt) {
 		int tflow_id;
 
-		/* Only PKTDMA have support for tx flows */
+		 
 		if (uc->config.default_flow_id >= 0)
 			tflow_id = uc->config.default_flow_id;
 		else
@@ -1457,11 +1400,7 @@ static int udma_get_rchan(struct udma_chan *uc)
 		return 0;
 	}
 
-	/*
-	 * mapped_channel_id is -1 for UDMA, BCDMA and PKTDMA unmapped channels.
-	 * For PKTDMA mapped channels it is configured to a channel which must
-	 * be used to service the peripheral.
-	 */
+	 
 	uc->rchan = __udma_reserve_rchan(ud, uc->config.channel_tpl,
 					 uc->config.mapped_channel_id);
 	if (IS_ERR(uc->rchan)) {
@@ -1494,12 +1433,9 @@ static int udma_get_chan_pair(struct udma_chan *uc)
 		return -EBUSY;
 	}
 
-	/* Can be optimized, but let's have it like this for now */
+	 
 	end = min(ud->tchan_cnt, ud->rchan_cnt);
-	/*
-	 * Try to use the highest TPL channel pair for MEM_TO_MEM channels
-	 * Note: in UDMAP the channel TPL is symmetric between tchan and rchan
-	 */
+	 
 	chan_id = ud->tchan_tpl.start_idx[ud->tchan_tpl.levels - 1];
 	for (; chan_id < end; chan_id++) {
 		if (!test_bit(chan_id, ud->tchan_map) &&
@@ -1515,7 +1451,7 @@ static int udma_get_chan_pair(struct udma_chan *uc)
 	uc->tchan = &ud->tchans[chan_id];
 	uc->rchan = &ud->rchans[chan_id];
 
-	/* UDMA does not use tx flows */
+	 
 	uc->tchan->tflow_id = -1;
 
 	return 0;
@@ -1760,7 +1696,7 @@ static int udma_alloc_rx_resources(struct udma_chan *uc)
 	if (ret)
 		return ret;
 
-	/* For MEM_TO_MEM we don't need rflow or rings */
+	 
 	if (uc->config.dir == DMA_MEM_TO_MEM)
 		return 0;
 
@@ -1873,7 +1809,7 @@ static int udma_tisci_m2m_channel_config(struct udma_chan *uc)
 	int ret;
 	u8 tpl;
 
-	/* Non synchronized - mem to mem type of transfer */
+	 
 	int tc_ring = k3_ringacc_get_ring_id(tchan->tc_ring);
 	struct ti_sci_msg_rm_udmap_tx_ch_cfg req_tx = { 0 };
 	struct ti_sci_msg_rm_udmap_rx_ch_cfg req_rx = { 0 };
@@ -1984,7 +1920,7 @@ static int udma_tisci_tx_channel_config(struct udma_chan *uc)
 	req_tx.tx_atype = uc->config.atype;
 	if (uc->config.ep_type == PSIL_EP_PDMA_XY &&
 	    ud->match_data->flags & UDMA_FLAG_TDTYPE) {
-		/* wait for peer to complete the teardown for PDMAs */
+		 
 		req_tx.valid_params |=
 				TI_SCI_MSG_VALUE_RM_UDMAP_CH_TX_TDTYPE_VALID;
 		req_tx.tx_tdtype = 1;
@@ -2011,7 +1947,7 @@ static int bcdma_tisci_tx_channel_config(struct udma_chan *uc)
 	req_tx.index = tchan->id;
 	req_tx.tx_supr_tdpkt = uc->config.notdpkt;
 	if (ud->match_data->flags & UDMA_FLAG_TDTYPE) {
-		/* wait for peer to complete the teardown for PDMAs */
+		 
 		req_tx.valid_params |=
 				TI_SCI_MSG_VALUE_RM_UDMAP_CH_TX_TDTYPE_VALID;
 		req_tx.tx_tdtype = 1;
@@ -2186,7 +2122,7 @@ static int udma_alloc_chan_resources(struct dma_chan *chan)
 
 	if (uc->config.pkt_mode || uc->config.dir == DMA_MEM_TO_MEM) {
 		uc->use_dma_pool = true;
-		/* in case of MEM_TO_MEM we have maximum of two TRs */
+		 
 		if (uc->config.dir == DMA_MEM_TO_MEM) {
 			uc->config.hdesc_size = cppi5_trdesc_calc_size(
 					sizeof(struct cppi5_tr_type15_t), 2);
@@ -2208,17 +2144,14 @@ static int udma_alloc_chan_resources(struct dma_chan *chan)
 		}
 	}
 
-	/*
-	 * Make sure that the completion is in a known state:
-	 * No teardown, the channel is idle
-	 */
+	 
 	reinit_completion(&uc->teardown_completed);
 	complete_all(&uc->teardown_completed);
 	uc->state = UDMA_CHAN_IS_IDLE;
 
 	switch (uc->config.dir) {
 	case DMA_MEM_TO_MEM:
-		/* Non synchronized - mem to mem type of transfer */
+		 
 		dev_dbg(uc->ud->dev, "%s: chan%d as MEM-to-MEM\n", __func__,
 			uc->id);
 
@@ -2248,7 +2181,7 @@ static int udma_alloc_chan_resources(struct dma_chan *chan)
 		ret = udma_tisci_m2m_channel_config(uc);
 		break;
 	case DMA_MEM_TO_DEV:
-		/* Slave transfer synchronized - mem to dev (TX) trasnfer */
+		 
 		dev_dbg(uc->ud->dev, "%s: chan%d as MEM-to-DEV\n", __func__,
 			uc->id);
 
@@ -2266,7 +2199,7 @@ static int udma_alloc_chan_resources(struct dma_chan *chan)
 		ret = udma_tisci_tx_channel_config(uc);
 		break;
 	case DMA_DEV_TO_MEM:
-		/* Slave transfer synchronized - dev to mem (RX) trasnfer */
+		 
 		dev_dbg(uc->ud->dev, "%s: chan%d as DEV-to-MEM\n", __func__,
 			uc->id);
 
@@ -2284,7 +2217,7 @@ static int udma_alloc_chan_resources(struct dma_chan *chan)
 		ret = udma_tisci_rx_channel_config(uc);
 		break;
 	default:
-		/* Can not happen */
+		 
 		dev_err(uc->ud->dev, "%s: chan%d invalid direction (%u)\n",
 			__func__, uc->id, uc->config.dir);
 		ret = -EINVAL;
@@ -2292,7 +2225,7 @@ static int udma_alloc_chan_resources(struct dma_chan *chan)
 
 	}
 
-	/* check if the channel configuration was successful */
+	 
 	if (ret)
 		goto err_res_free;
 
@@ -2306,7 +2239,7 @@ static int udma_alloc_chan_resources(struct dma_chan *chan)
 		}
 	}
 
-	/* PSI-L pairing */
+	 
 	ret = navss_psil_pair(ud, uc->config.src_thread, uc->config.dst_thread);
 	if (ret) {
 		dev_err(ud->dev, "PSI-L pairing failed: 0x%04x -> 0x%04x\n",
@@ -2331,7 +2264,7 @@ static int udma_alloc_chan_resources(struct dma_chan *chan)
 		goto err_irq_free;
 	}
 
-	/* Event from UDMA (TR events) only needed for slave TR mode channels */
+	 
 	if (is_slave_direction(uc->config.dir) && !uc->config.pkt_mode) {
 		uc->irq_num_udma = msi_get_virq(ud->dev, irq_udma_idx);
 		if (uc->irq_num_udma <= 0) {
@@ -2386,20 +2319,17 @@ static int bcdma_alloc_chan_resources(struct dma_chan *chan)
 	u32 irq_udma_idx, irq_ring_idx;
 	int ret;
 
-	/* Only TR mode is supported */
+	 
 	uc->config.pkt_mode = false;
 
-	/*
-	 * Make sure that the completion is in a known state:
-	 * No teardown, the channel is idle
-	 */
+	 
 	reinit_completion(&uc->teardown_completed);
 	complete_all(&uc->teardown_completed);
 	uc->state = UDMA_CHAN_IS_IDLE;
 
 	switch (uc->config.dir) {
 	case DMA_MEM_TO_MEM:
-		/* Non synchronized - mem to mem type of transfer */
+		 
 		dev_dbg(uc->ud->dev, "%s: chan%d as MEM-to-MEM\n", __func__,
 			uc->id);
 
@@ -2413,7 +2343,7 @@ static int bcdma_alloc_chan_resources(struct dma_chan *chan)
 		ret = bcdma_tisci_m2m_channel_config(uc);
 		break;
 	case DMA_MEM_TO_DEV:
-		/* Slave transfer synchronized - mem to dev (TX) trasnfer */
+		 
 		dev_dbg(uc->ud->dev, "%s: chan%d as MEM-to-DEV\n", __func__,
 			uc->id);
 
@@ -2433,7 +2363,7 @@ static int bcdma_alloc_chan_resources(struct dma_chan *chan)
 		ret = bcdma_tisci_tx_channel_config(uc);
 		break;
 	case DMA_DEV_TO_MEM:
-		/* Slave transfer synchronized - dev to mem (RX) trasnfer */
+		 
 		dev_dbg(uc->ud->dev, "%s: chan%d as DEV-to-MEM\n", __func__,
 			uc->id);
 
@@ -2453,13 +2383,13 @@ static int bcdma_alloc_chan_resources(struct dma_chan *chan)
 		ret = bcdma_tisci_rx_channel_config(uc);
 		break;
 	default:
-		/* Can not happen */
+		 
 		dev_err(uc->ud->dev, "%s: chan%d invalid direction (%u)\n",
 			__func__, uc->id, uc->config.dir);
 		return -EINVAL;
 	}
 
-	/* check if the channel configuration was successful */
+	 
 	if (ret)
 		goto err_res_free;
 
@@ -2492,7 +2422,7 @@ static int bcdma_alloc_chan_resources(struct dma_chan *chan)
 
 		uc->use_dma_pool = true;
 	} else if (uc->config.dir != DMA_MEM_TO_MEM) {
-		/* PSI-L pairing */
+		 
 		ret = navss_psil_pair(ud, uc->config.src_thread,
 				      uc->config.dst_thread);
 		if (ret) {
@@ -2520,7 +2450,7 @@ static int bcdma_alloc_chan_resources(struct dma_chan *chan)
 		goto err_irq_free;
 	}
 
-	/* Event from BCDMA (TR events) only needed for slave channels */
+	 
 	if (is_slave_direction(uc->config.dir)) {
 		uc->irq_num_udma = msi_get_virq(ud->dev, irq_udma_idx);
 		if (uc->irq_num_udma <= 0) {
@@ -2598,17 +2528,14 @@ static int pktdma_alloc_chan_resources(struct dma_chan *chan)
 	u32 irq_ring_idx;
 	int ret;
 
-	/*
-	 * Make sure that the completion is in a known state:
-	 * No teardown, the channel is idle
-	 */
+	 
 	reinit_completion(&uc->teardown_completed);
 	complete_all(&uc->teardown_completed);
 	uc->state = UDMA_CHAN_IS_IDLE;
 
 	switch (uc->config.dir) {
 	case DMA_MEM_TO_DEV:
-		/* Slave transfer synchronized - mem to dev (TX) trasnfer */
+		 
 		dev_dbg(uc->ud->dev, "%s: chan%d as MEM-to-DEV\n", __func__,
 			uc->id);
 
@@ -2627,7 +2554,7 @@ static int pktdma_alloc_chan_resources(struct dma_chan *chan)
 		ret = pktdma_tisci_tx_channel_config(uc);
 		break;
 	case DMA_DEV_TO_MEM:
-		/* Slave transfer synchronized - dev to mem (RX) trasnfer */
+		 
 		dev_dbg(uc->ud->dev, "%s: chan%d as DEV-to-MEM\n", __func__,
 			uc->id);
 
@@ -2646,13 +2573,13 @@ static int pktdma_alloc_chan_resources(struct dma_chan *chan)
 		ret = pktdma_tisci_rx_channel_config(uc);
 		break;
 	default:
-		/* Can not happen */
+		 
 		dev_err(uc->ud->dev, "%s: chan%d invalid direction (%u)\n",
 			__func__, uc->id, uc->config.dir);
 		return -EINVAL;
 	}
 
-	/* check if the channel configuration was successful */
+	 
 	if (ret)
 		goto err_res_free;
 
@@ -2680,7 +2607,7 @@ static int pktdma_alloc_chan_resources(struct dma_chan *chan)
 
 	uc->use_dma_pool = true;
 
-	/* PSI-L pairing */
+	 
 	ret = navss_psil_pair(ud, uc->config.src_thread, uc->config.dst_thread);
 	if (ret) {
 		dev_err(ud->dev, "PSI-L pairing failed: 0x%04x -> 0x%04x\n",
@@ -2772,7 +2699,7 @@ static struct udma_desc *udma_alloc_tr_desc(struct udma_chan *uc,
 		return NULL;
 	}
 
-	/* We have only one descriptor containing multiple TRs */
+	 
 	d = kzalloc(sizeof(*d) + sizeof(d->hwdesc[0]), GFP_NOWAIT);
 	if (!d)
 		return NULL;
@@ -2782,7 +2709,7 @@ static struct udma_desc *udma_alloc_tr_desc(struct udma_chan *uc,
 	d->hwdesc_count = 1;
 	hwdesc = &d->hwdesc[0];
 
-	/* Allocate memory for DMA ring descriptor */
+	 
 	if (uc->use_dma_pool) {
 		hwdesc->cppi5_desc_size = uc->config.hdesc_size;
 		hwdesc->cppi5_desc_vaddr = dma_pool_zalloc(uc->hdesc_pool,
@@ -2804,9 +2731,9 @@ static struct udma_desc *udma_alloc_tr_desc(struct udma_chan *uc,
 		return NULL;
 	}
 
-	/* Start of the TR req records */
+	 
 	hwdesc->tr_req_base = hwdesc->cppi5_desc_vaddr + tr_size;
-	/* Start address of the TR response array */
+	 
 	hwdesc->tr_resp_base = hwdesc->tr_req_base + tr_size * tr_count;
 
 	tr_desc = hwdesc->cppi5_desc_vaddr;
@@ -2827,22 +2754,7 @@ static struct udma_desc *udma_alloc_tr_desc(struct udma_chan *uc,
 	return d;
 }
 
-/**
- * udma_get_tr_counters - calculate TR counters for a given length
- * @len: Length of the trasnfer
- * @align_to: Preferred alignment
- * @tr0_cnt0: First TR icnt0
- * @tr0_cnt1: First TR icnt1
- * @tr1_cnt0: Second (if used) TR icnt0
- *
- * For len < SZ_64K only one TR is enough, tr1_cnt0 is not updated
- * For len >= SZ_64K two TRs are used in a simple way:
- * First TR: SZ_64K-alignment blocks (tr0_cnt0, tr0_cnt1)
- * Second TR: the remaining length (tr1_cnt0)
- *
- * Returns the number of TRs the length needs (1 or 2)
- * -EINVAL if the length can not be supported
- */
+ 
 static int udma_get_tr_counters(size_t len, unsigned long align_to,
 				u16 *tr0_cnt0, u16 *tr0_cnt1, u16 *tr1_cnt0)
 {
@@ -2887,7 +2799,7 @@ udma_prep_slave_sg_tr(struct udma_chan *uc, struct scatterlist *sgl,
 	int tr_idx = 0;
 	u64 asel;
 
-	/* estimate the number of TRs we will need */
+	 
 	for_each_sg(sgl, sgent, sglen, i) {
 		if (sg_dma_len(sgent) < SZ_64K)
 			num_tr++;
@@ -2895,7 +2807,7 @@ udma_prep_slave_sg_tr(struct udma_chan *uc, struct scatterlist *sgl,
 			num_tr += 2;
 	}
 
-	/* Now allocate and setup the descriptor. */
+	 
 	tr_size = sizeof(struct cppi5_tr_type1_t);
 	d = udma_alloc_tr_desc(uc, tr_size, num_tr, dir);
 	if (!d)
@@ -3009,7 +2921,7 @@ udma_prep_slave_sg_triggered_tr(struct udma_chan *uc, struct scatterlist *sgl,
 	}
 	trigger_size = tr_cnt0 * tr_cnt1;
 
-	/* estimate the number of TRs we will need */
+	 
 	for_each_sg(sgl, sgent, sglen, i) {
 		sg_len = sg_dma_len(sgent);
 
@@ -3026,7 +2938,7 @@ udma_prep_slave_sg_triggered_tr(struct udma_chan *uc, struct scatterlist *sgl,
 			num_tr += 2;
 	}
 
-	/* Now allocate and setup the descriptor. */
+	 
 	tr_size = sizeof(struct cppi5_tr_type15_t);
 	d = udma_alloc_tr_desc(uc, tr_size, num_tr, dir);
 	if (!d)
@@ -3162,7 +3074,7 @@ static int udma_configure_statictr(struct udma_chan *uc, struct udma_desc *d,
 	if (uc->config.ep_type != PSIL_EP_PDMA_XY)
 		return 0;
 
-	/* Bus width translates to the element size (ES) */
+	 
 	switch (dev_width) {
 	case DMA_SLAVE_BUSWIDTH_1_BYTE:
 		d->static_tr.elsize = 0;
@@ -3179,18 +3091,13 @@ static int udma_configure_statictr(struct udma_chan *uc, struct udma_desc *d,
 	case DMA_SLAVE_BUSWIDTH_8_BYTES:
 		d->static_tr.elsize = 4;
 		break;
-	default: /* not reached */
+	default:  
 		return -EINVAL;
 	}
 
 	d->static_tr.elcnt = elcnt;
 
-	/*
-	 * PDMA must to close the packet when the channel is in packet mode.
-	 * For TR mode when the channel is not cyclic we also need PDMA to close
-	 * the packet otherwise the transfer will stall because PDMA holds on
-	 * the data it has received from the peripheral.
-	 */
+	 
 	if (uc->config.pkt_mode || !uc->cyclic) {
 		unsigned int div = dev_width * elcnt;
 
@@ -3262,7 +3169,7 @@ udma_prep_slave_sg_pkt(struct udma_chan *uc, struct scatterlist *sgl,
 
 		if (i == 0) {
 			cppi5_hdesc_init(desc, 0, 0);
-			/* Flow and Packed ID */
+			 
 			cppi5_desc_set_pktids(&desc->hdr, uc->id,
 					      CPPI5_INFO1_DESC_FLOWID_DEFAULT);
 			cppi5_desc_set_retpolicy(&desc->hdr, 0, ring_id);
@@ -3271,11 +3178,11 @@ udma_prep_slave_sg_pkt(struct udma_chan *uc, struct scatterlist *sgl,
 			cppi5_desc_set_retpolicy(&desc->hdr, 0, 0xffff);
 		}
 
-		/* attach the sg buffer to the descriptor */
+		 
 		sg_addr |= asel;
 		cppi5_hdesc_attach_buf(desc, sg_addr, sg_len, sg_addr, sg_len);
 
-		/* Attach link as host buffer descriptor */
+		 
 		if (h_desc)
 			cppi5_hdesc_link_hbdesc(h_desc,
 						hwdesc->cppi5_desc_paddr | asel);
@@ -3447,7 +3354,7 @@ udma_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 	d->desc_idx = 0;
 	d->tr_idx = 0;
 
-	/* static TR for remote PDMA */
+	 
 	if (udma_configure_statictr(uc, d, dev_width, burst)) {
 		dev_err(uc->ud->dev,
 			"%s: StaticTR Z is limited to maximum 4095 (%u)\n",
@@ -3485,7 +3392,7 @@ udma_prep_dma_cyclic_tr(struct udma_chan *uc, dma_addr_t buf_addr,
 		return NULL;
 	}
 
-	/* Now allocate and setup the descriptor. */
+	 
 	tr_size = sizeof(struct cppi5_tr_type1_t);
 	d = udma_alloc_tr_desc(uc, tr_size, periods * num_tr, dir);
 	if (!d)
@@ -3556,7 +3463,7 @@ udma_prep_dma_cyclic_pkt(struct udma_chan *uc, dma_addr_t buf_addr,
 
 	d->hwdesc_count = periods;
 
-	/* TODO: re-check this... */
+	 
 	if (dir == DMA_DEV_TO_MEM)
 		ring_id = k3_ringacc_get_ring_id(uc->rflow->r_ring);
 	else
@@ -3588,12 +3495,12 @@ udma_prep_dma_cyclic_pkt(struct udma_chan *uc, dma_addr_t buf_addr,
 		cppi5_hdesc_init(h_desc, 0, 0);
 		cppi5_hdesc_set_pktlen(h_desc, period_len);
 
-		/* Flow and Packed ID */
+		 
 		cppi5_desc_set_pktids(&h_desc->hdr, uc->id,
 				      CPPI5_INFO1_DESC_FLOWID_DEFAULT);
 		cppi5_desc_set_retpolicy(&h_desc->hdr, 0, ring_id);
 
-		/* attach each period to a new descriptor */
+		 
 		cppi5_hdesc_attach_buf(h_desc,
 				       period_addr, period_len,
 				       period_addr, period_len);
@@ -3652,7 +3559,7 @@ udma_prep_dma_cyclic(struct dma_chan *chan, dma_addr_t buf_addr, size_t buf_len,
 	d->dir = dir;
 	d->residue = buf_len;
 
-	/* static TR for remote PDMA */
+	 
 	if (udma_configure_statictr(uc, d, dev_width, burst)) {
 		dev_err(uc->ud->dev,
 			"%s: StaticTR Z is limited to maximum 4095 (%u)\n",
@@ -3767,13 +3674,9 @@ static void udma_issue_pending(struct dma_chan *chan)
 
 	spin_lock_irqsave(&uc->vc.lock, flags);
 
-	/* If we have something pending and no active descriptor, then */
+	 
 	if (vchan_issue_pending(&uc->vc) && !uc->desc) {
-		/*
-		 * start a descriptor if the channel is NOT [marked as
-		 * terminating _and_ it is still running (teardown has not
-		 * completed yet)].
-		 */
+		 
 		if (!(uc->state == UDMA_CHAN_IS_TERMINATING &&
 		      udma_is_chan_running(uc)))
 			udma_start(uc);
@@ -3859,7 +3762,7 @@ static int udma_pause(struct dma_chan *chan)
 {
 	struct udma_chan *uc = to_udma_chan(chan);
 
-	/* pause the channel */
+	 
 	switch (uc->config.dir) {
 	case DMA_DEV_TO_MEM:
 		udma_rchanrt_update_bits(uc, UDMA_CHAN_RT_PEER_RT_EN_REG,
@@ -3887,7 +3790,7 @@ static int udma_resume(struct dma_chan *chan)
 {
 	struct udma_chan *uc = to_udma_chan(chan);
 
-	/* resume the channel */
+	 
 	switch (uc->config.dir) {
 	case DMA_DEV_TO_MEM:
 		udma_rchanrt_update_bits(uc, UDMA_CHAN_RT_PEER_RT_EN_REG,
@@ -3977,7 +3880,7 @@ static void udma_desc_pre_callback(struct virt_dma_chan *vc,
 	if (d->metadata_size)
 		udma_fetch_epib(uc, d);
 
-	/* Provide residue information for the client */
+	 
 	if (result) {
 		void *desc_vaddr = udma_curr_cppi5_desc_vaddr(d, d->desc_idx);
 
@@ -3996,10 +3899,7 @@ static void udma_desc_pre_callback(struct virt_dma_chan *vc,
 	}
 }
 
-/*
- * This tasklet handles the completion of a DMA descriptor by
- * calling its callback and freeing it.
- */
+ 
 static void udma_vchan_complete(struct tasklet_struct *t)
 {
 	struct virt_dma_chan *vc = from_tasklet(vc, t, task);
@@ -4059,7 +3959,7 @@ static void udma_free_chan_resources(struct dma_chan *chan)
 		uc->irq_num_udma = 0;
 	}
 
-	/* Release PSI-L pairing */
+	 
 	if (uc->psil_paired) {
 		navss_psil_unpair(ud, uc->config.src_thread,
 				  uc->config.dst_thread);
@@ -4256,9 +4156,9 @@ static struct udma_match_data am654_main_data = {
 	.enable_memcpy_support = true,
 	.statictr_z_mask = GENMASK(11, 0),
 	.burst_size = {
-		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_64_BYTES, /* Normal Channels */
-		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_64_BYTES, /* H Channels */
-		0, /* No UH Channels */
+		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_64_BYTES,  
+		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_64_BYTES,  
+		0,  
 	},
 };
 
@@ -4268,9 +4168,9 @@ static struct udma_match_data am654_mcu_data = {
 	.enable_memcpy_support = false,
 	.statictr_z_mask = GENMASK(11, 0),
 	.burst_size = {
-		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_64_BYTES, /* Normal Channels */
-		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_64_BYTES, /* H Channels */
-		0, /* No UH Channels */
+		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_64_BYTES,  
+		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_64_BYTES,  
+		0,  
 	},
 };
 
@@ -4281,22 +4181,22 @@ static struct udma_match_data j721e_main_data = {
 	.flags = UDMA_FLAGS_J7_CLASS,
 	.statictr_z_mask = GENMASK(23, 0),
 	.burst_size = {
-		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_64_BYTES, /* Normal Channels */
-		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_256_BYTES, /* H Channels */
-		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_256_BYTES, /* UH Channels */
+		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_64_BYTES,  
+		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_256_BYTES,  
+		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_256_BYTES,  
 	},
 };
 
 static struct udma_match_data j721e_mcu_data = {
 	.type = DMA_TYPE_UDMA,
 	.psil_base = 0x6000,
-	.enable_memcpy_support = false, /* MEM_TO_MEM is slow via MCU UDMA */
+	.enable_memcpy_support = false,  
 	.flags = UDMA_FLAGS_J7_CLASS,
 	.statictr_z_mask = GENMASK(23, 0),
 	.burst_size = {
-		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_64_BYTES, /* Normal Channels */
-		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_128_BYTES, /* H Channels */
-		0, /* No UH Channels */
+		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_64_BYTES,  
+		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_128_BYTES,  
+		0,  
 	},
 };
 
@@ -4321,36 +4221,36 @@ static struct udma_match_data am62a_bcdma_csirx_data = {
 	.psil_base = 0x3100,
 	.enable_memcpy_support = false,
 	.burst_size = {
-		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_64_BYTES, /* Normal Channels */
-		0, /* No H Channels */
-		0, /* No UH Channels */
+		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_64_BYTES,  
+		0,  
+		0,  
 	},
 	.soc_data = &am62a_dmss_csi_soc_data,
 };
 
 static struct udma_match_data am64_bcdma_data = {
 	.type = DMA_TYPE_BCDMA,
-	.psil_base = 0x2000, /* for tchan and rchan, not applicable to bchan */
-	.enable_memcpy_support = true, /* Supported via bchan */
+	.psil_base = 0x2000,  
+	.enable_memcpy_support = true,  
 	.flags = UDMA_FLAGS_J7_CLASS,
 	.statictr_z_mask = GENMASK(23, 0),
 	.burst_size = {
-		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_64_BYTES, /* Normal Channels */
-		0, /* No H Channels */
-		0, /* No UH Channels */
+		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_64_BYTES,  
+		0,  
+		0,  
 	},
 };
 
 static struct udma_match_data am64_pktdma_data = {
 	.type = DMA_TYPE_PKTDMA,
 	.psil_base = 0x1000,
-	.enable_memcpy_support = false, /* PKTDMA does not support MEM_TO_MEM */
+	.enable_memcpy_support = false,  
 	.flags = UDMA_FLAGS_J7_CLASS,
 	.statictr_z_mask = GENMASK(23, 0),
 	.burst_size = {
-		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_64_BYTES, /* Normal Channels */
-		0, /* No H Channels */
-		0, /* No UH Channels */
+		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_64_BYTES,  
+		0,  
+		0,  
 	},
 };
 
@@ -4359,9 +4259,9 @@ static struct udma_match_data j721s2_bcdma_csi_data = {
 	.psil_base = 0x2000,
 	.enable_memcpy_support = false,
 	.burst_size = {
-		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_64_BYTES, /* Normal Channels */
-		0, /* No H Channels */
-		0, /* No UH Channels */
+		TI_SCI_RM_UDMAP_CHAN_BURST_SIZE_64_BYTES,  
+		0,  
+		0,  
 	},
 	.soc_data = &j721s2_bcdma_csi_soc_data,
 };
@@ -4397,7 +4297,7 @@ static const struct of_device_id udma_of_match[] = {
 		.compatible = "ti,j721s2-dmss-bcdma-csi",
 		.data = &j721s2_bcdma_csi_data,
 	},
-	{ /* Sentinel */ },
+	{   },
 };
 
 static struct udma_soc_data am654_soc_data = {
@@ -4441,7 +4341,7 @@ static const struct soc_device_attribute k3_soc_devices[] = {
 	{ .family = "AM62X", .data = &am64_soc_data },
 	{ .family = "AM62AX", .data = &am64_soc_data },
 	{ .family = "J784S4", .data = &j721e_soc_data },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int udma_get_mmrs(struct platform_device *pdev, struct udma_dev *ud)
@@ -4523,7 +4423,7 @@ static int udma_setup_resources(struct udma_dev *ud)
 	struct udma_tisci_rm *tisci_rm = &ud->tisci_rm;
 	u32 cap3;
 
-	/* Set up the throughput level start indexes */
+	 
 	cap3 = udma_read(ud->mmrs[MMR_GCFG], 0x2c);
 	if (of_device_is_compatible(dev->of_node,
 				    "ti,am654-navss-main-udmap")) {
@@ -4574,17 +4474,13 @@ static int udma_setup_resources(struct udma_dev *ud)
 	    !ud->rflows || !ud->rflow_in_use)
 		return -ENOMEM;
 
-	/*
-	 * RX flows with the same Ids as RX channels are reserved to be used
-	 * as default flows if remote HW can't generate flow_ids. Those
-	 * RX flows can be requested only explicitly by id.
-	 */
+	 
 	bitmap_set(ud->rflow_gp_map_allocated, 0, ud->rchan_cnt);
 
-	/* by default no GP rflows are assigned to Linux */
+	 
 	bitmap_set(ud->rflow_gp_map, 0, ud->rflow_cnt);
 
-	/* Get resource ranges from tisci */
+	 
 	for (i = 0; i < RM_RANGE_LAST; i++) {
 		if (i == RM_RANGE_BCHAN || i == RM_RANGE_TFLOW)
 			continue;
@@ -4595,7 +4491,7 @@ static int udma_setup_resources(struct udma_dev *ud)
 						    (char *)range_names[i]);
 	}
 
-	/* tchan ranges */
+	 
 	rm_res = tisci_rm->rm_ranges[RM_RANGE_TCHAN];
 	if (IS_ERR(rm_res)) {
 		bitmap_zero(ud->tchan_map, ud->tchan_cnt);
@@ -4608,7 +4504,7 @@ static int udma_setup_resources(struct udma_dev *ud)
 		irq_res.sets = rm_res->sets;
 	}
 
-	/* rchan and matching default flow ranges */
+	 
 	rm_res = tisci_rm->rm_ranges[RM_RANGE_RCHAN];
 	if (IS_ERR(rm_res)) {
 		bitmap_zero(ud->rchan_map, ud->rchan_cnt);
@@ -4662,10 +4558,10 @@ static int udma_setup_resources(struct udma_dev *ud)
 		return ret;
 	}
 
-	/* GP rflow ranges */
+	 
 	rm_res = tisci_rm->rm_ranges[RM_RANGE_RFLOW];
 	if (IS_ERR(rm_res)) {
-		/* all gp flows are assigned exclusively to Linux */
+		 
 		bitmap_clear(ud->rflow_gp_map, ud->rchan_cnt,
 			     ud->rflow_cnt - ud->rchan_cnt);
 	} else {
@@ -4686,7 +4582,7 @@ static int bcdma_setup_resources(struct udma_dev *ud)
 	const struct udma_oes_offsets *oes = &ud->soc_data->oes;
 	u32 cap;
 
-	/* Set up the throughput level start indexes */
+	 
 	cap = udma_read(ud->mmrs[MMR_GCFG], 0x2c);
 	if (BCDMA_CAP3_UBCHAN_CNT(cap)) {
 		ud->bchan_tpl.levels = 3;
@@ -4734,7 +4630,7 @@ static int bcdma_setup_resources(struct udma_dev *ud)
 					   sizeof(unsigned long), GFP_KERNEL);
 	ud->rchans = devm_kcalloc(dev, ud->rchan_cnt, sizeof(*ud->rchans),
 				  GFP_KERNEL);
-	/* BCDMA do not really have flows, but the driver expect it */
+	 
 	ud->rflow_in_use = devm_kcalloc(dev, BITS_TO_LONGS(ud->rchan_cnt),
 					sizeof(unsigned long),
 					GFP_KERNEL);
@@ -4746,7 +4642,7 @@ static int bcdma_setup_resources(struct udma_dev *ud)
 	    !ud->rflows)
 		return -ENOMEM;
 
-	/* Get resource ranges from tisci */
+	 
 	for (i = 0; i < RM_RANGE_LAST; i++) {
 		if (i == RM_RANGE_RFLOW || i == RM_RANGE_TFLOW)
 			continue;
@@ -4765,7 +4661,7 @@ static int bcdma_setup_resources(struct udma_dev *ud)
 
 	irq_res.sets = 0;
 
-	/* bchan ranges */
+	 
 	if (ud->bchan_cnt) {
 		rm_res = tisci_rm->rm_ranges[RM_RANGE_BCHAN];
 		if (IS_ERR(rm_res)) {
@@ -4781,7 +4677,7 @@ static int bcdma_setup_resources(struct udma_dev *ud)
 		}
 	}
 
-	/* tchan ranges */
+	 
 	if (ud->tchan_cnt) {
 		rm_res = tisci_rm->rm_ranges[RM_RANGE_TCHAN];
 		if (IS_ERR(rm_res)) {
@@ -4797,7 +4693,7 @@ static int bcdma_setup_resources(struct udma_dev *ud)
 		}
 	}
 
-	/* rchan ranges */
+	 
 	if (ud->rchan_cnt) {
 		rm_res = tisci_rm->rm_ranges[RM_RANGE_RCHAN];
 		if (IS_ERR(rm_res)) {
@@ -4893,7 +4789,7 @@ static int pktdma_setup_resources(struct udma_dev *ud)
 	const struct udma_oes_offsets *oes = &ud->soc_data->oes;
 	u32 cap3;
 
-	/* Set up the throughput level start indexes */
+	 
 	cap3 = udma_read(ud->mmrs[MMR_GCFG], 0x2c);
 	if (UDMA_CAP3_UCHAN_CNT(cap3)) {
 		ud->tchan_tpl.levels = 3;
@@ -4930,7 +4826,7 @@ static int pktdma_setup_resources(struct udma_dev *ud)
 	    !ud->rchans || !ud->rflows || !ud->rflow_in_use)
 		return -ENOMEM;
 
-	/* Get resource ranges from tisci */
+	 
 	for (i = 0; i < RM_RANGE_LAST; i++) {
 		if (i == RM_RANGE_BCHAN)
 			continue;
@@ -4941,7 +4837,7 @@ static int pktdma_setup_resources(struct udma_dev *ud)
 						    (char *)range_names[i]);
 	}
 
-	/* tchan ranges */
+	 
 	rm_res = tisci_rm->rm_ranges[RM_RANGE_TCHAN];
 	if (IS_ERR(rm_res)) {
 		bitmap_zero(ud->tchan_map, ud->tchan_cnt);
@@ -4952,7 +4848,7 @@ static int pktdma_setup_resources(struct udma_dev *ud)
 						  &rm_res->desc[i], "tchan");
 	}
 
-	/* rchan ranges */
+	 
 	rm_res = tisci_rm->rm_ranges[RM_RANGE_RCHAN];
 	if (IS_ERR(rm_res)) {
 		bitmap_zero(ud->rchan_map, ud->rchan_cnt);
@@ -4963,10 +4859,10 @@ static int pktdma_setup_resources(struct udma_dev *ud)
 						  &rm_res->desc[i], "rchan");
 	}
 
-	/* rflow ranges */
+	 
 	rm_res = tisci_rm->rm_ranges[RM_RANGE_RFLOW];
 	if (IS_ERR(rm_res)) {
-		/* all rflows are assigned exclusively to Linux */
+		 
 		bitmap_zero(ud->rflow_in_use, ud->rflow_cnt);
 		irq_res.sets = 1;
 	} else {
@@ -4977,10 +4873,10 @@ static int pktdma_setup_resources(struct udma_dev *ud)
 		irq_res.sets = rm_res->sets;
 	}
 
-	/* tflow ranges */
+	 
 	rm_res = tisci_rm->rm_ranges[RM_RANGE_TFLOW];
 	if (IS_ERR(rm_res)) {
-		/* all tflows are assigned exclusively to Linux */
+		 
 		bitmap_zero(ud->tflow_map, ud->tflow_cnt);
 		irq_res.sets++;
 	} else {
@@ -5111,7 +5007,7 @@ static int udma_setup_rx_flush(struct udma_dev *ud)
 	struct udma_hwdesc *hwdesc;
 	size_t tr_size;
 
-	/* Allocate 1K buffer for discarded data on RX channel teardown */
+	 
 	rx_flush->buffer_size = SZ_1K;
 	rx_flush->buffer_vaddr = devm_kzalloc(dev, rx_flush->buffer_size,
 					      GFP_KERNEL);
@@ -5124,7 +5020,7 @@ static int udma_setup_rx_flush(struct udma_dev *ud)
 	if (dma_mapping_error(dev, rx_flush->buffer_paddr))
 		return -ENOMEM;
 
-	/* Set up descriptor to be used for TR mode */
+	 
 	hwdesc = &rx_flush->hwdescs[0];
 	tr_size = sizeof(struct cppi5_tr_type1_t);
 	hwdesc->cppi5_desc_size = cppi5_trdesc_calc_size(tr_size, 1);
@@ -5142,9 +5038,9 @@ static int udma_setup_rx_flush(struct udma_dev *ud)
 	if (dma_mapping_error(dev, hwdesc->cppi5_desc_paddr))
 		return -ENOMEM;
 
-	/* Start of the TR req records */
+	 
 	hwdesc->tr_req_base = hwdesc->cppi5_desc_vaddr + tr_size;
-	/* Start address of the TR response array */
+	 
 	hwdesc->tr_resp_base = hwdesc->tr_req_base + tr_size;
 
 	tr_desc = hwdesc->cppi5_desc_vaddr;
@@ -5164,7 +5060,7 @@ static int udma_setup_rx_flush(struct udma_dev *ud)
 	dma_sync_single_for_device(dev, hwdesc->cppi5_desc_paddr,
 				   hwdesc->cppi5_desc_size, DMA_TO_DEVICE);
 
-	/* Set up descriptor to be used for packet mode */
+	 
 	hwdesc = &rx_flush->hwdescs[1];
 	hwdesc->cppi5_desc_size = ALIGN(sizeof(struct cppi5_host_desc_t) +
 					CPPI5_INFO0_HDESC_EPIB_SIZE +
@@ -5267,7 +5163,7 @@ static void udma_dbg_summary_show(struct seq_file *s,
 			udma_dbg_summary_show_chan(s, chan);
 	}
 }
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 
 static enum dmaengine_alignment udma_get_copy_align(struct udma_dev *ud)
 {
@@ -5277,7 +5173,7 @@ static enum dmaengine_alignment udma_get_copy_align(struct udma_dev *ud)
 	if (!match_data->enable_memcpy_support)
 		return DMAENGINE_ALIGN_8_BYTES;
 
-	/* Get the highest TPL level the device supports for memcpy */
+	 
 	if (ud->bchan_cnt)
 		tpl = udma_get_chan_tpl_index(&ud->bchan_tpl, 0);
 	else if (ud->tchan_cnt)
@@ -5409,7 +5305,7 @@ static int udma_probe(struct platform_device *pdev)
 	}
 
 	dma_cap_set(DMA_SLAVE, ud->ddev.cap_mask);
-	/* cyclic operation is not supported via PKTDMA */
+	 
 	if (ud->match_data->type != DMA_TYPE_PKTDMA) {
 		dma_cap_set(DMA_CYCLIC, ud->ddev.cap_mask);
 		ud->ddev.device_prep_dma_cyclic = udma_prep_dma_cyclic;
@@ -5525,13 +5421,13 @@ static int udma_probe(struct platform_device *pdev)
 					  dev_name(dev), i);
 
 		vchan_init(&uc->vc, &ud->ddev);
-		/* Use custom vchan completion handling */
+		 
 		tasklet_setup(&uc->vc.task, udma_vchan_complete);
 		init_completion(&uc->teardown_completed);
 		INIT_DELAYED_WORK(&uc->tx_drain.work, udma_check_tx_completion);
 	}
 
-	/* Configure the copy_align to the maximum burst size the device supports */
+	 
 	ud->ddev.copy_align = udma_get_copy_align(ud);
 
 	ret = dma_async_device_register(&ud->ddev);
@@ -5561,7 +5457,7 @@ static int __maybe_unused udma_pm_suspend(struct device *dev)
 	list_for_each_entry(chan, &dma_dev->channels, device_node) {
 		if (chan->client_count) {
 			uc = to_udma_chan(chan);
-			/* backup the channel configuration */
+			 
 			memcpy(&uc->backup_config, &uc->config,
 			       sizeof(struct udma_chan_config));
 			dev_dbg(dev, "Suspending channel %s\n",
@@ -5584,7 +5480,7 @@ static int __maybe_unused udma_pm_resume(struct device *dev)
 	list_for_each_entry(chan, &dma_dev->channels, device_node) {
 		if (chan->client_count) {
 			uc = to_udma_chan(chan);
-			/* restore the channel configuration */
+			 
 			memcpy(&uc->config, &uc->backup_config,
 			       sizeof(struct udma_chan_config));
 			dev_dbg(dev, "Resuming channel %s\n",
@@ -5615,5 +5511,5 @@ static struct platform_driver udma_driver = {
 module_platform_driver(udma_driver);
 MODULE_LICENSE("GPL v2");
 
-/* Private interfaces to UDMA */
+ 
 #include "k3-udma-private.c"

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/module.h>
 
 #include <linux/inet_diag.h>
@@ -28,11 +28,7 @@ raw_get_hashinfo(const struct inet_diag_req_v2 *r)
 	}
 }
 
-/*
- * Due to requirement of not breaking user API we can't simply
- * rename @pad field in inet_diag_req_v2 structure, instead
- * use helper to figure it out.
- */
+ 
 
 static bool raw_lookup(struct net *net, const struct sock *sk,
 		       const struct inet_diag_req_v2 *req)
@@ -69,11 +65,7 @@ static struct sock *raw_sock_get(struct net *net, const struct inet_diag_req_v2 
 		hlist = &hashinfo->ht[slot];
 		sk_for_each_rcu(sk, hlist) {
 			if (raw_lookup(net, sk, r)) {
-				/*
-				 * Grab it and keep until we fill
-				 * diag message to be reported, so
-				 * caller should call sock_put then.
-				 */
+				 
 				if (refcount_inc_not_zero(&sk->sk_refcnt))
 					goto out_unlock;
 			}
@@ -225,10 +217,7 @@ static const struct inet_diag_handler raw_diag_handler = {
 
 static void __always_unused __check_inet_diag_req_raw(void)
 {
-	/*
-	 * Make sure the two structures are identical,
-	 * except the @pad field.
-	 */
+	 
 #define __offset_mismatch(m1, m2)			\
 	(offsetof(struct inet_diag_req_v2, m1) !=	\
 	 offsetof(struct inet_diag_req_raw, m2))
@@ -257,5 +246,5 @@ static void __exit raw_diag_exit(void)
 module_init(raw_diag_init);
 module_exit(raw_diag_exit);
 MODULE_LICENSE("GPL");
-MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_NETLINK, NETLINK_SOCK_DIAG, 2-255 /* AF_INET - IPPROTO_RAW */);
-MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_NETLINK, NETLINK_SOCK_DIAG, 10-255 /* AF_INET6 - IPPROTO_RAW */);
+MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_NETLINK, NETLINK_SOCK_DIAG, 2-255  );
+MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_NETLINK, NETLINK_SOCK_DIAG, 10-255  );

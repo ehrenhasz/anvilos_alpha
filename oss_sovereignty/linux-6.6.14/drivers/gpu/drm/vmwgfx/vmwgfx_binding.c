@@ -1,55 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/**************************************************************************
- *
- * Copyright 2015 VMware, Inc., Palo Alto, CA., USA
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- **************************************************************************/
-/*
- * This file implements the vmwgfx context binding manager,
- * The sole reason for having to use this code is that vmware guest
- * backed contexts can be swapped out to their backing mobs by the device
- * at any time, also swapped in at any time. At swapin time, the device
- * validates the context bindings to make sure they point to valid resources.
- * It's this outside-of-drawcall validation (that can happen at any time),
- * that makes this code necessary.
- *
- * We therefore need to kill any context bindings pointing to a resource
- * when the resource is swapped out. Furthermore, if the vmwgfx driver has
- * swapped out the context we can't swap it in again to kill bindings because
- * of backing mob reservation lockdep violations, so as part of
- * context swapout, also kill all bindings of a context, so that they are
- * already killed if a resource to which a binding points
- * needs to be swapped out.
- *
- * Note that a resource can be pointed to by bindings from multiple contexts,
- * Therefore we can't easily protect this data by a per context mutex
- * (unless we use deadlock-safe WW mutexes). So we use a global binding_mutex
- * to protect all binding manager data.
- *
- * Finally, any association between a context and a global resource
- * (surface, shader or even DX query) is conceptually a context binding that
- * needs to be tracked by this code.
- */
+
+ 
+ 
 
 #include "vmwgfx_drv.h"
 #include "vmwgfx_binding.h"
@@ -65,34 +16,7 @@
 
 #define VMW_BINDING_PS_SR_BIT  0
 
-/**
- * struct vmw_ctx_binding_state - per context binding state
- *
- * @dev_priv: Pointer to device private structure.
- * @list: linked list of individual active bindings.
- * @render_targets: Render target bindings.
- * @texture_units: Texture units bindings.
- * @ds_view: Depth-stencil view binding.
- * @so_targets: StreamOutput target bindings.
- * @vertex_buffers: Vertex buffer bindings.
- * @index_buffer: Index buffer binding.
- * @per_shader: Per shader-type bindings.
- * @ua_views: UAV bindings.
- * @so_state: StreamOutput bindings.
- * @dirty: Bitmap tracking per binding-type changes that have not yet
- * been emitted to the device.
- * @dirty_vb: Bitmap tracking individual vertex buffer binding changes that
- * have not yet been emitted to the device.
- * @bind_cmd_buffer: Scratch space used to construct binding commands.
- * @bind_cmd_count: Number of binding command data entries in @bind_cmd_buffer
- * @bind_first_slot: Used together with @bind_cmd_buffer to indicate the
- * device binding slot of the first command data entry in @bind_cmd_buffer.
- *
- * Note that this structure also provides storage space for the individual
- * struct vmw_ctx_binding objects, so that no dynamic allocation is needed
- * for individual bindings.
- *
- */
+ 
 struct vmw_ctx_binding_state {
 	struct vmw_private *dev_priv;
 	struct list_head list;
@@ -135,28 +59,14 @@ static void vmw_binding_build_asserts(void) __attribute__ ((unused));
 
 typedef int (*vmw_scrub_func)(struct vmw_ctx_bindinfo *, bool);
 
-/**
- * struct vmw_binding_info - Per binding type information for the binding
- * manager
- *
- * @size: The size of the struct binding derived from a struct vmw_ctx_bindinfo.
- * @offsets: array[shader_slot] of offsets to the array[slot]
- * of struct bindings for the binding type.
- * @scrub_func: Pointer to the scrub function for this binding type.
- *
- * Holds static information to help optimize the binding manager and avoid
- * an excessive amount of switch statements.
- */
+ 
 struct vmw_binding_info {
 	size_t size;
 	const size_t *offsets;
 	vmw_scrub_func scrub_func;
 };
 
-/*
- * A number of static variables that help determine the scrub func and the
- * location of the struct vmw_ctx_bindinfo slots for each binding type.
- */
+ 
 static const size_t vmw_binding_shader_offsets[] = {
 	offsetof(struct vmw_ctx_binding_state, per_shader[0].shader),
 	offsetof(struct vmw_ctx_binding_state, per_shader[1].shader),
@@ -268,18 +178,7 @@ static const struct vmw_binding_info vmw_binding_infos[] = {
 		.scrub_func = vmw_binding_scrub_so},
 };
 
-/**
- * vmw_cbs_context - Return a pointer to the context resource of a
- * context binding state tracker.
- *
- * @cbs: The context binding state tracker.
- *
- * Provided there are any active bindings, this function will return an
- * unreferenced pointer to the context resource that owns the context
- * binding state tracker. If there are no active bindings, this function
- * will return NULL. Note that the caller must somehow ensure that a reference
- * is held on the context resource prior to calling this function.
- */
+ 
 static const struct vmw_resource *
 vmw_cbs_context(const struct vmw_ctx_binding_state *cbs)
 {
@@ -290,14 +189,7 @@ vmw_cbs_context(const struct vmw_ctx_binding_state *cbs)
 				ctx_list)->ctx;
 }
 
-/**
- * vmw_binding_loc - determine the struct vmw_ctx_bindinfo slot location.
- *
- * @cbs: Pointer to a struct vmw_ctx_binding state which holds the slot.
- * @bt: The binding type.
- * @shader_slot: The shader slot of the binding. If none, then set to 0.
- * @slot: The slot of the binding.
- */
+ 
 static struct vmw_ctx_bindinfo *
 vmw_binding_loc(struct vmw_ctx_binding_state *cbs,
 		enum vmw_ctx_binding_type bt, u32 shader_slot, u32 slot)
@@ -308,15 +200,7 @@ vmw_binding_loc(struct vmw_ctx_binding_state *cbs,
 	return (struct vmw_ctx_bindinfo *)((u8 *) cbs + offset);
 }
 
-/**
- * vmw_binding_drop: Stop tracking a context binding
- *
- * @bi: Pointer to binding tracker storage.
- *
- * Stops tracking a context binding, and re-initializes its storage.
- * Typically used when the context binding is replaced with a binding to
- * another (or the same, for that matter) resource.
- */
+ 
 static void vmw_binding_drop(struct vmw_ctx_bindinfo *bi)
 {
 	list_del(&bi->ctx_list);
@@ -325,17 +209,7 @@ static void vmw_binding_drop(struct vmw_ctx_bindinfo *bi)
 	bi->ctx = NULL;
 }
 
-/**
- * vmw_binding_add: Start tracking a context binding
- *
- * @cbs: Pointer to the context binding state tracker.
- * @bi: Information about the binding to track.
- * @shader_slot: The shader slot of the binding.
- * @slot: The slot of the binding.
- *
- * Starts tracking the binding in the context binding
- * state structure @cbs.
- */
+ 
 void vmw_binding_add(struct vmw_ctx_binding_state *cbs,
 		    const struct vmw_ctx_bindinfo *bi,
 		    u32 shader_slot, u32 slot)
@@ -353,17 +227,7 @@ void vmw_binding_add(struct vmw_ctx_binding_state *cbs,
 	INIT_LIST_HEAD(&loc->res_list);
 }
 
-/**
- * vmw_binding_cb_offset_update: Update the offset of a cb binding
- *
- * @cbs: Pointer to the context binding state tracker.
- * @shader_slot: The shader slot of the binding.
- * @slot: The slot of the binding.
- * @offsetInBytes: The new offset of the binding.
- *
- * Updates the offset of an existing cb binding in the context binding
- * state structure @cbs.
- */
+ 
 void vmw_binding_cb_offset_update(struct vmw_ctx_binding_state *cbs,
 				  u32 shader_slot, u32 slot, u32 offsetInBytes)
 {
@@ -374,26 +238,14 @@ void vmw_binding_cb_offset_update(struct vmw_ctx_binding_state *cbs,
 	loc_cb->offset = offsetInBytes;
 }
 
-/**
- * vmw_binding_add_uav_index - Add UAV index for tracking.
- * @cbs: Pointer to the context binding state tracker.
- * @slot: UAV type to which bind this index.
- * @index: The splice index to track.
- */
+ 
 void vmw_binding_add_uav_index(struct vmw_ctx_binding_state *cbs, uint32 slot,
 			       uint32 index)
 {
 	cbs->ua_views[slot].index = index;
 }
 
-/**
- * vmw_binding_transfer: Transfer a context binding tracking entry.
- *
- * @cbs: Pointer to the persistent context binding state tracker.
- * @from: Staged binding info built during execbuf
- * @bi: Information about the binding to track.
- *
- */
+ 
 static void vmw_binding_transfer(struct vmw_ctx_binding_state *cbs,
 				 const struct vmw_ctx_binding_state *from,
 				 const struct vmw_ctx_bindinfo *bi)
@@ -415,15 +267,7 @@ static void vmw_binding_transfer(struct vmw_ctx_binding_state *cbs,
 	}
 }
 
-/**
- * vmw_binding_state_kill - Kill all bindings associated with a
- * struct vmw_ctx_binding state structure, and re-initialize the structure.
- *
- * @cbs: Pointer to the context binding state tracker.
- *
- * Emits commands to scrub all bindings associated with the
- * context binding state tracker. Then re-initializes the whole structure.
- */
+ 
 void vmw_binding_state_kill(struct vmw_ctx_binding_state *cbs)
 {
 	struct vmw_ctx_bindinfo *entry, *next;
@@ -433,15 +277,7 @@ void vmw_binding_state_kill(struct vmw_ctx_binding_state *cbs)
 		vmw_binding_drop(entry);
 }
 
-/**
- * vmw_binding_state_scrub - Scrub all bindings associated with a
- * struct vmw_ctx_binding state structure.
- *
- * @cbs: Pointer to the context binding state tracker.
- *
- * Emits commands to scrub all bindings associated with the
- * context binding state tracker.
- */
+ 
 void vmw_binding_state_scrub(struct vmw_ctx_binding_state *cbs)
 {
 	struct vmw_ctx_bindinfo *entry;
@@ -457,15 +293,7 @@ void vmw_binding_state_scrub(struct vmw_ctx_binding_state *cbs)
 	(void) vmw_binding_emit_dirty(cbs);
 }
 
-/**
- * vmw_binding_res_list_kill - Kill all bindings on a
- * resource binding list
- *
- * @head: list head of resource binding list
- *
- * Kills all bindings associated with a specific resource. Typically
- * called before the resource is destroyed.
- */
+ 
 void vmw_binding_res_list_kill(struct list_head *head)
 {
 	struct vmw_ctx_bindinfo *entry, *next;
@@ -475,15 +303,7 @@ void vmw_binding_res_list_kill(struct list_head *head)
 		vmw_binding_drop(entry);
 }
 
-/**
- * vmw_binding_res_list_scrub - Scrub all bindings on a
- * resource binding list
- *
- * @head: list head of resource binding list
- *
- * Scrub all bindings associated with a specific resource. Typically
- * called before the resource is evicted.
- */
+ 
 void vmw_binding_res_list_scrub(struct list_head *head)
 {
 	struct vmw_ctx_bindinfo *entry;
@@ -505,17 +325,7 @@ void vmw_binding_res_list_scrub(struct list_head *head)
 }
 
 
-/**
- * vmw_binding_state_commit - Commit staged binding info
- *
- * @to:   Staged binding info area to copy into to.
- * @from: Staged binding info built during execbuf.
- *
- * Transfers binding info from a temporary structure
- * (typically used by execbuf) to the persistent
- * structure in the context. This can be done once commands have been
- * submitted to hardware
- */
+ 
 void vmw_binding_state_commit(struct vmw_ctx_binding_state *to,
 			      struct vmw_ctx_binding_state *from)
 {
@@ -526,19 +336,12 @@ void vmw_binding_state_commit(struct vmw_ctx_binding_state *to,
 		vmw_binding_drop(entry);
 	}
 
-	/* Also transfer uav splice indices */
+	 
 	to->ua_views[0].index = from->ua_views[0].index;
 	to->ua_views[1].index = from->ua_views[1].index;
 }
 
-/**
- * vmw_binding_rebind_all - Rebind all scrubbed bindings of a context
- *
- * @cbs: Pointer to the context binding state tracker.
- *
- * Walks through the context binding list and rebinds all scrubbed
- * resources.
- */
+ 
 int vmw_binding_rebind_all(struct vmw_ctx_binding_state *cbs)
 {
 	struct vmw_ctx_bindinfo *entry;
@@ -562,12 +365,7 @@ int vmw_binding_rebind_all(struct vmw_ctx_binding_state *cbs)
 	return vmw_binding_emit_dirty(cbs);
 }
 
-/**
- * vmw_binding_scrub_shader - scrub a shader binding from a context.
- *
- * @bi: single binding information.
- * @rebind: Whether to issue a bind instead of scrub command.
- */
+ 
 static int vmw_binding_scrub_shader(struct vmw_ctx_bindinfo *bi, bool rebind)
 {
 	struct vmw_ctx_bindinfo_shader *binding =
@@ -592,13 +390,7 @@ static int vmw_binding_scrub_shader(struct vmw_ctx_bindinfo *bi, bool rebind)
 	return 0;
 }
 
-/**
- * vmw_binding_scrub_render_target - scrub a render target binding
- * from a context.
- *
- * @bi: single binding information.
- * @rebind: Whether to issue a bind instead of scrub command.
- */
+ 
 static int vmw_binding_scrub_render_target(struct vmw_ctx_bindinfo *bi,
 					   bool rebind)
 {
@@ -626,15 +418,7 @@ static int vmw_binding_scrub_render_target(struct vmw_ctx_bindinfo *bi,
 	return 0;
 }
 
-/**
- * vmw_binding_scrub_texture - scrub a texture binding from a context.
- *
- * @bi: single binding information.
- * @rebind: Whether to issue a bind instead of scrub command.
- *
- * TODO: Possibly complement this function with a function that takes
- * a list of texture bindings and combines them to a single command.
- */
+ 
 static int vmw_binding_scrub_texture(struct vmw_ctx_bindinfo *bi,
 				     bool rebind)
 {
@@ -664,12 +448,7 @@ static int vmw_binding_scrub_texture(struct vmw_ctx_bindinfo *bi,
 	return 0;
 }
 
-/**
- * vmw_binding_scrub_dx_shader - scrub a dx shader binding from a context.
- *
- * @bi: single binding information.
- * @rebind: Whether to issue a bind instead of scrub command.
- */
+ 
 static int vmw_binding_scrub_dx_shader(struct vmw_ctx_bindinfo *bi, bool rebind)
 {
 	struct vmw_ctx_bindinfo_shader *binding =
@@ -693,12 +472,7 @@ static int vmw_binding_scrub_dx_shader(struct vmw_ctx_bindinfo *bi, bool rebind)
 	return 0;
 }
 
-/**
- * vmw_binding_scrub_cb - scrub a constant buffer binding from a context.
- *
- * @bi: single binding information.
- * @rebind: Whether to issue a bind instead of scrub command.
- */
+ 
 static int vmw_binding_scrub_cb(struct vmw_ctx_bindinfo *bi, bool rebind)
 {
 	struct vmw_ctx_bindinfo_cb *binding =
@@ -731,20 +505,7 @@ static int vmw_binding_scrub_cb(struct vmw_ctx_bindinfo *bi, bool rebind)
 	return 0;
 }
 
-/**
- * vmw_collect_view_ids - Build view id data for a view binding command
- * without checking which bindings actually need to be emitted
- *
- * @cbs: Pointer to the context's struct vmw_ctx_binding_state
- * @biv: Pointer to where the binding info array is stored in @cbs
- * @max_num: Maximum number of entries in the @bi array.
- *
- * Scans the @bi array for bindings and builds a buffer of view id data.
- * Stops at the first non-existing binding in the @bi array.
- * On output, @cbs->bind_cmd_count contains the number of bindings to be
- * emitted, @cbs->bind_first_slot is set to zero, and @cbs->bind_cmd_buffer
- * contains the command data.
- */
+ 
 static void vmw_collect_view_ids(struct vmw_ctx_binding_state *cbs,
 				 const struct vmw_ctx_bindinfo_view *biv,
 				 u32 max_num)
@@ -764,20 +525,7 @@ static void vmw_collect_view_ids(struct vmw_ctx_binding_state *cbs,
 	}
 }
 
-/**
- * vmw_collect_dirty_view_ids - Build view id data for a view binding command
- *
- * @cbs: Pointer to the context's struct vmw_ctx_binding_state
- * @bi: Pointer to where the binding info array is stored in @cbs
- * @dirty: Bitmap indicating which bindings need to be emitted.
- * @max_num: Maximum number of entries in the @bi array.
- *
- * Scans the @bi array for bindings that need to be emitted and
- * builds a buffer of view id data.
- * On output, @cbs->bind_cmd_count contains the number of bindings to be
- * emitted, @cbs->bind_first_slot indicates the index of the first emitted
- * binding, and @cbs->bind_cmd_buffer contains the command data.
- */
+ 
 static void vmw_collect_dirty_view_ids(struct vmw_ctx_binding_state *cbs,
 				       const struct vmw_ctx_bindinfo *bi,
 				       unsigned long *dirty,
@@ -806,12 +554,7 @@ static void vmw_collect_dirty_view_ids(struct vmw_ctx_binding_state *cbs,
 	}
 }
 
-/**
- * vmw_emit_set_sr - Issue delayed DX shader resource binding commands
- *
- * @cbs: Pointer to the context's struct vmw_ctx_binding_state
- * @shader_slot: The shader slot of the binding.
- */
+ 
 static int vmw_emit_set_sr(struct vmw_ctx_binding_state *cbs,
 			   int shader_slot)
 {
@@ -850,11 +593,7 @@ static int vmw_emit_set_sr(struct vmw_ctx_binding_state *cbs,
 	return 0;
 }
 
-/**
- * vmw_emit_set_rt - Issue delayed DX rendertarget binding commands
- *
- * @cbs: Pointer to the context's struct vmw_ctx_binding_state
- */
+ 
 static int vmw_emit_set_rt(struct vmw_ctx_binding_state *cbs)
 {
 	const struct vmw_ctx_bindinfo_view *loc = &cbs->render_targets[0];
@@ -888,20 +627,7 @@ static int vmw_emit_set_rt(struct vmw_ctx_binding_state *cbs)
 
 }
 
-/**
- * vmw_collect_so_targets - Build SVGA3dSoTarget data for a binding command
- * without checking which bindings actually need to be emitted
- *
- * @cbs: Pointer to the context's struct vmw_ctx_binding_state
- * @biso: Pointer to where the binding info array is stored in @cbs
- * @max_num: Maximum number of entries in the @bi array.
- *
- * Scans the @bi array for bindings and builds a buffer of SVGA3dSoTarget data.
- * Stops at the first non-existing binding in the @bi array.
- * On output, @cbs->bind_cmd_count contains the number of bindings to be
- * emitted, @cbs->bind_first_slot is set to zero, and @cbs->bind_cmd_buffer
- * contains the command data.
- */
+ 
 static void vmw_collect_so_targets(struct vmw_ctx_binding_state *cbs,
 				   const struct vmw_ctx_bindinfo_so_target *biso,
 				   u32 max_num)
@@ -929,11 +655,7 @@ static void vmw_collect_so_targets(struct vmw_ctx_binding_state *cbs,
 	}
 }
 
-/**
- * vmw_emit_set_so_target - Issue delayed streamout binding commands
- *
- * @cbs: Pointer to the context's struct vmw_ctx_binding_state
- */
+ 
 static int vmw_emit_set_so_target(struct vmw_ctx_binding_state *cbs)
 {
 	const struct vmw_ctx_bindinfo_so_target *loc = &cbs->so_targets[0];
@@ -964,12 +686,7 @@ static int vmw_emit_set_so_target(struct vmw_ctx_binding_state *cbs)
 
 }
 
-/**
- * vmw_binding_emit_dirty_ps - Issue delayed per shader binding commands
- *
- * @cbs: Pointer to the context's struct vmw_ctx_binding_state
- *
- */
+ 
 static int vmw_binding_emit_dirty_ps(struct vmw_ctx_binding_state *cbs)
 {
 	struct vmw_dx_shader_bindings *sb = &cbs->per_shader[0];
@@ -990,21 +707,7 @@ static int vmw_binding_emit_dirty_ps(struct vmw_ctx_binding_state *cbs)
 	return 0;
 }
 
-/**
- * vmw_collect_dirty_vbs - Build SVGA3dVertexBuffer data for a
- * SVGA3dCmdDXSetVertexBuffers command
- *
- * @cbs: Pointer to the context's struct vmw_ctx_binding_state
- * @bi: Pointer to where the binding info array is stored in @cbs
- * @dirty: Bitmap indicating which bindings need to be emitted.
- * @max_num: Maximum number of entries in the @bi array.
- *
- * Scans the @bi array for bindings that need to be emitted and
- * builds a buffer of SVGA3dVertexBuffer data.
- * On output, @cbs->bind_cmd_count contains the number of bindings to be
- * emitted, @cbs->bind_first_slot indicates the index of the first emitted
- * binding, and @cbs->bind_cmd_buffer contains the command data.
- */
+ 
 static void vmw_collect_dirty_vbs(struct vmw_ctx_binding_state *cbs,
 				  const struct vmw_ctx_bindinfo *bi,
 				  unsigned long *dirty,
@@ -1040,12 +743,7 @@ static void vmw_collect_dirty_vbs(struct vmw_ctx_binding_state *cbs,
 	}
 }
 
-/**
- * vmw_emit_set_vb - Issue delayed vertex buffer binding commands
- *
- * @cbs: Pointer to the context's struct vmw_ctx_binding_state
- *
- */
+ 
 static int vmw_emit_set_vb(struct vmw_ctx_binding_state *cbs)
 {
 	const struct vmw_ctx_bindinfo *loc =
@@ -1101,7 +799,7 @@ static int vmw_emit_set_uav(struct vmw_ctx_binding_state *cbs)
 	cmd->header.id = SVGA_3D_CMD_DX_SET_UA_VIEWS;
 	cmd->header.size = sizeof(cmd->body) + view_id_size;
 
-	/* Splice index is specified user-space   */
+	 
 	cmd->body.uavSpliceIndex = cbs->ua_views[0].index;
 
 	memcpy(&cmd[1], cbs->bind_cmd_buffer, view_id_size);
@@ -1131,7 +829,7 @@ static int vmw_emit_set_cs_uav(struct vmw_ctx_binding_state *cbs)
 	cmd->header.id = SVGA_3D_CMD_DX_SET_CS_UA_VIEWS;
 	cmd->header.size = sizeof(cmd->body) + view_id_size;
 
-	/* Start index is specified user-space */
+	 
 	cmd->body.startIndex = cbs->ua_views[1].index;
 
 	memcpy(&cmd[1], cbs->bind_cmd_buffer, view_id_size);
@@ -1141,16 +839,7 @@ static int vmw_emit_set_cs_uav(struct vmw_ctx_binding_state *cbs)
 	return 0;
 }
 
-/**
- * vmw_binding_emit_dirty - Issue delayed binding commands
- *
- * @cbs: Pointer to the context's struct vmw_ctx_binding_state
- *
- * This function issues the delayed binding commands that arise from
- * previous scrub / unscrub calls. These binding commands are typically
- * commands that batch a number of bindings and therefore it makes sense
- * to delay them.
- */
+ 
 static int vmw_binding_emit_dirty(struct vmw_ctx_binding_state *cbs)
 {
 	int ret = 0;
@@ -1191,13 +880,7 @@ static int vmw_binding_emit_dirty(struct vmw_ctx_binding_state *cbs)
 	return 0;
 }
 
-/**
- * vmw_binding_scrub_sr - Schedule a dx shaderresource binding
- * scrub from a context
- *
- * @bi: single binding information.
- * @rebind: Whether to issue a bind instead of scrub command.
- */
+ 
 static int vmw_binding_scrub_sr(struct vmw_ctx_bindinfo *bi, bool rebind)
 {
 	struct vmw_ctx_bindinfo_view *biv =
@@ -1213,13 +896,7 @@ static int vmw_binding_scrub_sr(struct vmw_ctx_bindinfo *bi, bool rebind)
 	return 0;
 }
 
-/**
- * vmw_binding_scrub_dx_rt - Schedule a dx rendertarget binding
- * scrub from a context
- *
- * @bi: single binding information.
- * @rebind: Whether to issue a bind instead of scrub command.
- */
+ 
 static int vmw_binding_scrub_dx_rt(struct vmw_ctx_bindinfo *bi, bool rebind)
 {
 	struct vmw_ctx_binding_state *cbs =
@@ -1230,13 +907,7 @@ static int vmw_binding_scrub_dx_rt(struct vmw_ctx_bindinfo *bi, bool rebind)
 	return 0;
 }
 
-/**
- * vmw_binding_scrub_so_target - Schedule a dx streamoutput buffer binding
- * scrub from a context
- *
- * @bi: single binding information.
- * @rebind: Whether to issue a bind instead of scrub command.
- */
+ 
 static int vmw_binding_scrub_so_target(struct vmw_ctx_bindinfo *bi, bool rebind)
 {
 	struct vmw_ctx_binding_state *cbs =
@@ -1247,13 +918,7 @@ static int vmw_binding_scrub_so_target(struct vmw_ctx_bindinfo *bi, bool rebind)
 	return 0;
 }
 
-/**
- * vmw_binding_scrub_vb - Schedule a dx vertex buffer binding
- * scrub from a context
- *
- * @bi: single binding information.
- * @rebind: Whether to issue a bind instead of scrub command.
- */
+ 
 static int vmw_binding_scrub_vb(struct vmw_ctx_bindinfo *bi, bool rebind)
 {
 	struct vmw_ctx_bindinfo_vb *bivb =
@@ -1267,12 +932,7 @@ static int vmw_binding_scrub_vb(struct vmw_ctx_bindinfo *bi, bool rebind)
 	return 0;
 }
 
-/**
- * vmw_binding_scrub_ib - scrub a dx index buffer binding from a context
- *
- * @bi: single binding information.
- * @rebind: Whether to issue a bind instead of scrub command.
- */
+ 
 static int vmw_binding_scrub_ib(struct vmw_ctx_bindinfo *bi, bool rebind)
 {
 	struct vmw_ctx_bindinfo_ib *binding =
@@ -1320,11 +980,7 @@ static int vmw_binding_scrub_cs_uav(struct vmw_ctx_bindinfo *bi, bool rebind)
 	return 0;
 }
 
-/**
- * vmw_binding_scrub_so - Scrub a streamoutput binding from context.
- * @bi: Single binding information.
- * @rebind: Whether to issue a bind instead of scrub command.
- */
+ 
 static int vmw_binding_scrub_so(struct vmw_ctx_bindinfo *bi, bool rebind)
 {
 	struct vmw_ctx_bindinfo_so *binding =
@@ -1347,13 +1003,7 @@ static int vmw_binding_scrub_so(struct vmw_ctx_bindinfo *bi, bool rebind)
 	return 0;
 }
 
-/**
- * vmw_binding_state_alloc - Allocate a struct vmw_ctx_binding_state.
- *
- * @dev_priv: Pointer to a device private structure.
- *
- * Returns a pointer to a newly allocated struct or an error pointer on error.
- */
+ 
 struct vmw_ctx_binding_state *
 vmw_binding_state_alloc(struct vmw_private *dev_priv)
 {
@@ -1370,38 +1020,19 @@ vmw_binding_state_alloc(struct vmw_private *dev_priv)
 	return cbs;
 }
 
-/**
- * vmw_binding_state_free - Free a struct vmw_ctx_binding_state.
- *
- * @cbs: Pointer to the struct vmw_ctx_binding_state to be freed.
- */
+ 
 void vmw_binding_state_free(struct vmw_ctx_binding_state *cbs)
 {
 	vfree(cbs);
 }
 
-/**
- * vmw_binding_state_list - Get the binding list of a
- * struct vmw_ctx_binding_state
- *
- * @cbs: Pointer to the struct vmw_ctx_binding_state
- *
- * Returns the binding list which can be used to traverse through the bindings
- * and access the resource information of all bindings.
- */
+ 
 struct list_head *vmw_binding_state_list(struct vmw_ctx_binding_state *cbs)
 {
 	return &cbs->list;
 }
 
-/**
- * vmw_binding_state_reset - clear a struct vmw_ctx_binding_state
- *
- * @cbs: Pointer to the struct vmw_ctx_binding_state to be cleared
- *
- * Drops all bindings registered in @cbs. No device binding actions are
- * performed.
- */
+ 
 void vmw_binding_state_reset(struct vmw_ctx_binding_state *cbs)
 {
 	struct vmw_ctx_bindinfo *entry, *next;
@@ -1410,18 +1041,7 @@ void vmw_binding_state_reset(struct vmw_ctx_binding_state *cbs)
 		vmw_binding_drop(entry);
 }
 
-/**
- * vmw_binding_dirtying - Return whether a binding type is dirtying its resource
- * @binding_type: The binding type
- *
- * Each time a resource is put on the validation list as the result of a
- * context binding referencing it, we need to determine whether that resource
- * will be dirtied (written to by the GPU) as a result of the corresponding
- * GPU operation. Currently rendertarget-, depth-stencil-, stream-output-target
- * and unordered access view bindings are capable of dirtying its resource.
- *
- * Return: Whether the binding type dirties the resource its binding points to.
- */
+ 
 u32 vmw_binding_dirtying(enum vmw_ctx_binding_type binding_type)
 {
 	static u32 is_binding_dirtying[vmw_ctx_binding_max] = {
@@ -1433,33 +1053,24 @@ u32 vmw_binding_dirtying(enum vmw_ctx_binding_type binding_type)
 		[vmw_ctx_binding_cs_uav] = VMW_RES_DIRTY_SET,
 	};
 
-	/* Review this function as new bindings are added. */
+	 
 	BUILD_BUG_ON(vmw_ctx_binding_max != 14);
 	return is_binding_dirtying[binding_type];
 }
 
-/*
- * This function is unused at run-time, and only used to hold various build
- * asserts important for code optimization assumptions.
- */
+ 
 static void vmw_binding_build_asserts(void)
 {
 	BUILD_BUG_ON(SVGA3D_NUM_SHADERTYPE_DX10 != 3);
 	BUILD_BUG_ON(SVGA3D_DX_MAX_RENDER_TARGETS > SVGA3D_RT_MAX);
 	BUILD_BUG_ON(sizeof(uint32) != sizeof(u32));
 
-	/*
-	 * struct vmw_ctx_binding_state::bind_cmd_buffer is used for various
-	 * view id arrays.
-	 */
+	 
 	BUILD_BUG_ON(VMW_MAX_VIEW_BINDINGS < SVGA3D_RT_MAX);
 	BUILD_BUG_ON(VMW_MAX_VIEW_BINDINGS < SVGA3D_DX_MAX_SRVIEWS);
 	BUILD_BUG_ON(VMW_MAX_VIEW_BINDINGS < SVGA3D_DX_MAX_CONSTBUFFERS);
 
-	/*
-	 * struct vmw_ctx_binding_state::bind_cmd_buffer is used for
-	 * u32 view ids, SVGA3dSoTargets and SVGA3dVertexBuffers
-	 */
+	 
 	BUILD_BUG_ON(SVGA3D_DX_MAX_SOTARGETS*sizeof(SVGA3dSoTarget) >
 		     VMW_MAX_VIEW_BINDINGS*sizeof(u32));
 	BUILD_BUG_ON(SVGA3D_DX_MAX_VERTEXBUFFERS*sizeof(SVGA3dVertexBuffer) >

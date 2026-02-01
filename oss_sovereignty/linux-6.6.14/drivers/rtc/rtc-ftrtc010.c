@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Faraday Technology FTRTC010 driver
- *
- *  Copyright (C) 2009 Janos Laube <janos.dev@gmail.com>
- *
- * Original code for older kernel 2.6.15 are from Stormlinksemi
- * first update from Janos Laube for > 2.6.29 kernels
- *
- * checkpatch fixes and usage of rtc-lib code
- * Hans Ulli Kroll <ulli.kroll@googlemail.com>
- */
+
+ 
 
 #include <linux/rtc.h>
 #include <linux/io.h>
@@ -52,14 +42,7 @@ static irqreturn_t ftrtc010_rtc_interrupt(int irq, void *dev)
 	return IRQ_HANDLED;
 }
 
-/*
- * Looks like the RTC in the Gemini SoC is (totaly) broken
- * We can't read/write directly the time from RTC registers.
- * We must do some "offset" calculation to get the real time
- *
- * This FIX works pretty fine and Stormlinksemi aka Cortina-Networks does
- * the same thing, without the rtc-lib.c calls.
- */
+ 
 
 static int ftrtc010_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {

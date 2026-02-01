@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  cb710/sgbuf2.c
- *
- *  Copyright by Michał Mirosław, 2008-2009
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/cb710.h>
@@ -70,23 +66,7 @@ static bool sg_dwiter_get_next_block(struct sg_mapping_iter *miter, uint32_t **p
 	return false;
 }
 
-/**
- * cb710_sg_dwiter_read_next_block() - get next 32-bit word from sg buffer
- * @miter: sg mapping iterator used for reading
- *
- * Description:
- *   Returns 32-bit word starting at byte pointed to by @miter@
- *   handling any alignment issues.  Bytes past the buffer's end
- *   are not accessed (read) but are returned as zeroes.  @miter@
- *   is advanced by 4 bytes or to the end of buffer whichever is
- *   closer.
- *
- * Context:
- *   Same requirements as in sg_miter_next().
- *
- * Returns:
- *   32-bit word just read.
- */
+ 
 uint32_t cb710_sg_dwiter_read_next_block(struct sg_mapping_iter *miter)
 {
 	uint32_t *ptr = NULL;
@@ -114,20 +94,7 @@ static void sg_dwiter_write_slow(struct sg_mapping_iter *miter, uint32_t data)
 	} while (sg_dwiter_next(miter));
 }
 
-/**
- * cb710_sg_dwiter_write_next_block() - write next 32-bit word to sg buffer
- * @miter: sg mapping iterator used for writing
- * @data: data to write to sg buffer
- *
- * Description:
- *   Writes 32-bit word starting at byte pointed to by @miter@
- *   handling any alignment issues.  Bytes which would be written
- *   past the buffer's end are silently discarded. @miter@ is
- *   advanced by 4 bytes or to the end of buffer whichever is closer.
- *
- * Context:
- *   Same requirements as in sg_miter_next().
- */
+ 
 void cb710_sg_dwiter_write_next_block(struct sg_mapping_iter *miter, uint32_t data)
 {
 	uint32_t *ptr = NULL;

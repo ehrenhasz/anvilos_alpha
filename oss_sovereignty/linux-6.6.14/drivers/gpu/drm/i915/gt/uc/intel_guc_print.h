@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2023 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_GUC_PRINT__
 #define __INTEL_GUC_PRINT__
@@ -48,4 +46,4 @@
 #define guc_WARN_ON_ONCE(_guc, _cond) \
 	gt_WARN_ONCE(guc_to_gt(_guc), _cond, "%s(%s)", "guc_WARN_ON_ONCE", __stringify(_cond))
 
-#endif /* __INTEL_GUC_PRINT__ */
+#endif  

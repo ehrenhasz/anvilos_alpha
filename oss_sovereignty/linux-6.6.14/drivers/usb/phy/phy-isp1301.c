@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NXP ISP1301 USB transceiver driver
- *
- * Copyright (C) 2012 Roland Stigge
- *
- * Author: Roland Stigge <stigge@antcom.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mutex.h>
@@ -57,7 +51,7 @@ static int isp1301_phy_init(struct usb_phy *phy)
 {
 	struct isp1301 *isp = phy_to_isp(phy);
 
-	/* Disable transparent UART mode first */
+	 
 	isp1301_clear(isp, ISP1301_I2C_MODE_CONTROL_1, MC1_UART_EN);
 	isp1301_clear(isp, ISP1301_I2C_MODE_CONTROL_1, ~MC1_SPEED_REG);
 	isp1301_write(isp, ISP1301_I2C_MODE_CONTROL_1, MC1_SPEED_REG);
@@ -72,7 +66,7 @@ static int isp1301_phy_init(struct usb_phy *phy)
 	isp1301_clear(isp, ISP1301_I2C_OTG_CONTROL_1, (OTG1_DM_PULLUP
 				| OTG1_DP_PULLUP));
 
-	/* mask all interrupts */
+	 
 	isp1301_clear(isp, ISP1301_I2C_INTERRUPT_LATCH, ~0);
 	isp1301_clear(isp, ISP1301_I2C_INTERRUPT_FALLING, ~0);
 	isp1301_clear(isp, ISP1301_I2C_INTERRUPT_RISING, ~0);
@@ -143,12 +137,12 @@ struct i2c_client *isp1301_get_client(struct device_node *node)
 {
 	struct i2c_client *client;
 
-	/* reference of ISP1301 I2C node via DT */
+	 
 	client = of_find_i2c_device_by_node(node);
 	if (client)
 		return client;
 
-	/* non-DT: only one ISP1301 chip supported */
+	 
 	return isp1301_i2c_client;
 }
 EXPORT_SYMBOL_GPL(isp1301_get_client);

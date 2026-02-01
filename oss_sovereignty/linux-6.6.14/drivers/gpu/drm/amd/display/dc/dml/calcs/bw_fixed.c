@@ -1,27 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 #include "dm_services.h"
 #include "bw_fixed.h"
 
@@ -63,7 +40,7 @@ struct bw_fixed bw_frc_to_fixed(int64_t numerator, int64_t denominator)
 	uint64_t arg2_value;
 	uint64_t remainder;
 
-	/* determine integer part */
+	 
 	uint64_t res_value;
 
 	ASSERT(denominator != 0);
@@ -74,7 +51,7 @@ struct bw_fixed bw_frc_to_fixed(int64_t numerator, int64_t denominator)
 
 	ASSERT(res_value <= BW_FIXED_MAX_I32);
 
-	/* determine fractional part */
+	 
 	{
 		uint32_t i = BW_FIXED_BITS_PER_FRACTIONAL_PART;
 
@@ -90,7 +67,7 @@ struct bw_fixed bw_frc_to_fixed(int64_t numerator, int64_t denominator)
 		} while (--i != 0);
 	}
 
-	/* round up LSB */
+	 
 	{
 		uint64_t summand = (remainder << 1) >= arg2_value;
 

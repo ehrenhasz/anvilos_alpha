@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright Sunplus Technology Co., Ltd.
- *       All rights reserved.
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/netdevice.h>
@@ -21,9 +19,7 @@ static int spl2sw_mdio_access(struct spl2sw_common *comm, u8 cmd, u8 addr, u8 re
 	u32 val;
 	int ret;
 
-	/* Note that addr (of phy) should match either ext_phy0_addr
-	 * or ext_phy1_addr, or mdio commands won't be sent out.
-	 */
+	 
 	reg = readl(comm->l2sw_reg_base + L2SW_MAC_FORCE_MODE);
 	reg &= ~MAC_EXT_PHY0_ADDR;
 	reg |= FIELD_PREP(MAC_EXT_PHY0_ADDR, addr);
@@ -31,9 +27,7 @@ static int spl2sw_mdio_access(struct spl2sw_common *comm, u8 cmd, u8 addr, u8 re
 	reg2 = FIELD_PREP(MAC_CPU_PHY_WT_DATA, wdata) | FIELD_PREP(MAC_CPU_PHY_CMD, cmd) |
 	       FIELD_PREP(MAC_CPU_PHY_REG_ADDR, regnum) | FIELD_PREP(MAC_CPU_PHY_ADDR, addr);
 
-	/* Set ext_phy0_addr and then issue mdio command.
-	 * No interrupt is allowed in between.
-	 */
+	 
 	spin_lock_irq(&comm->mdio_lock);
 	writel(reg, comm->l2sw_reg_base + L2SW_MAC_FORCE_MODE);
 	writel(reg2, comm->l2sw_reg_base + L2SW_PHY_CNTL_REG0);
@@ -42,10 +36,7 @@ static int spl2sw_mdio_access(struct spl2sw_common *comm, u8 cmd, u8 addr, u8 re
 	ret = read_poll_timeout(readl, val, val & cmd, 1, 1000, true,
 				comm->l2sw_reg_base + L2SW_PHY_CNTL_REG1);
 
-	/* Set ext_phy0_addr back to 31 to prevent
-	 * from sending mdio command to phy by
-	 * hardware auto-mdio function.
-	 */
+	 
 	reg = readl(comm->l2sw_reg_base + L2SW_MAC_FORCE_MODE);
 	reg &= ~MAC_EXT_PHY0_ADDR;
 	reg |= FIELD_PREP(MAC_EXT_PHY0_ADDR, 31);
@@ -82,14 +73,14 @@ u32 spl2sw_mdio_init(struct spl2sw_common *comm)
 	struct mii_bus *mii_bus;
 	int ret;
 
-	/* Get mdio child node. */
+	 
 	mdio_np = of_get_child_by_name(comm->pdev->dev.of_node, "mdio");
 	if (!mdio_np) {
 		dev_err(&comm->pdev->dev, "No mdio child node found!\n");
 		return -ENODEV;
 	}
 
-	/* Allocate and register mdio bus. */
+	 
 	mii_bus = devm_mdiobus_alloc(&comm->pdev->dev);
 	if (!mii_bus) {
 		ret = -ENOMEM;

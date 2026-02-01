@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include <linux/util_macros.h>
 
@@ -13,17 +11,7 @@
 #include "intel_snps_phy.h"
 #include "intel_snps_phy_regs.h"
 
-/**
- * DOC: Synopsis PHY support
- *
- * Synopsis PHYs are primarily programmed by looking up magic register values
- * in tables rather than calculating the necessary values at runtime.
- *
- * Of special note is that the SNPS PHYs include a dedicated port PLL, known as
- * an "MPLLB."  The MPLLB replaces the shared DPLL functionality used on other
- * platforms and must be programming directly during the modeset sequence
- * since it is not handled by the shared DPLL framework as on other platforms.
- */
+ 
 
 void intel_snps_phy_wait_for_calibration(struct drm_i915_private *i915)
 {
@@ -33,11 +21,7 @@ void intel_snps_phy_wait_for_calibration(struct drm_i915_private *i915)
 		if (!intel_phy_is_snps(i915, phy))
 			continue;
 
-		/*
-		 * If calibration does not complete successfully, we'll remember
-		 * which phy was affected and skip setup of the corresponding
-		 * output later.
-		 */
+		 
 		if (intel_de_wait_for_clear(i915, DG2_PHY_MISC(phy),
 					    DG2_PHY_DP_TX_ACK_MASK, 25))
 			i915->display.snps.phy_failed_calibration |= BIT(phy);
@@ -82,9 +66,7 @@ void intel_snps_phy_set_signal_levels(struct intel_encoder *encoder,
 	}
 }
 
-/*
- * Basic DP link rates with 100 MHz reference clock.
- */
+ 
 
 static const struct intel_mpllb_state dg2_dp_rbr_100 = {
 	.clock = 162000,
@@ -201,9 +183,7 @@ static const struct intel_mpllb_state dg2_dp_uhbr10_100 = {
 		REG_FIELD_PREP(SNPS_PHY_MPLLB_FRACN_CGG_UPDATE_EN, 1) |
 		REG_FIELD_PREP(SNPS_PHY_MPLLB_FRACN_DEN, 1),
 
-	/*
-	 * SSC will be enabled, DP UHBR has a minimum SSC requirement.
-	 */
+	 
 	.mpllb_sscen =
 		REG_FIELD_PREP(SNPS_PHY_MPLLB_SSC_EN, 1) |
 		REG_FIELD_PREP(SNPS_PHY_MPLLB_SSC_PEAK, 58982),
@@ -235,9 +215,7 @@ static const struct intel_mpllb_state dg2_dp_uhbr13_100 = {
 		REG_FIELD_PREP(SNPS_PHY_MPLLB_FRACN_CGG_UPDATE_EN, 1) |
 		REG_FIELD_PREP(SNPS_PHY_MPLLB_FRACN_DEN, 1),
 
-	/*
-	 * SSC will be enabled, DP UHBR has a minimum SSC requirement.
-	 */
+	 
 	.mpllb_sscen =
 		REG_FIELD_PREP(SNPS_PHY_MPLLB_SSC_EN, 1) |
 		REG_FIELD_PREP(SNPS_PHY_MPLLB_SSC_PEAK, 79626),
@@ -255,9 +233,7 @@ static const struct intel_mpllb_state * const dg2_dp_100_tables[] = {
 	NULL,
 };
 
-/*
- * eDP link rates with 100 MHz reference clock.
- */
+ 
 
 static const struct intel_mpllb_state dg2_edp_r216 = {
 	.clock = 216000,
@@ -396,9 +372,7 @@ static const struct intel_mpllb_state * const dg2_edp_tables[] = {
 	NULL,
 };
 
-/*
- * HDMI link rates with 100 MHz reference clock.
- */
+ 
 
 static const struct intel_mpllb_state dg2_hdmi_25_175 = {
 	.clock = 25175,
@@ -518,7 +492,7 @@ static const struct intel_mpllb_state dg2_hdmi_148_5 = {
 		REG_FIELD_PREP(SNPS_PHY_MPLLB_SSC_UP_SPREAD, 1),
 };
 
-/* values in the below table are calculted using the algo */
+ 
 static const struct intel_mpllb_state dg2_hdmi_25200 = {
 	.clock = 25200,
 	.ref_control =
@@ -1792,11 +1766,7 @@ int intel_mpllb_calc_state(struct intel_crtc_state *crtc_state,
 	if (intel_crtc_has_type(crtc_state, INTEL_OUTPUT_HDMI)) {
 		if (intel_snps_phy_check_hdmi_link_rate(crtc_state->port_clock)
 		    != MODE_OK) {
-			/*
-			 * FIXME: Can only support fixed HDMI frequencies
-			 * until we have a proper algorithm under a valid
-			 * license.
-			 */
+			 
 			drm_dbg_kms(&i915->drm, "Can't support HDMI link rate %d\n",
 				    crtc_state->port_clock);
 			return -EINVAL;
@@ -1826,10 +1796,7 @@ void intel_mpllb_enable(struct intel_encoder *encoder,
 	i915_reg_t enable_reg = (phy <= PHY_D ?
 				 DG2_PLL_ENABLE(phy) : MG_PLL_ENABLE(0));
 
-	/*
-	 * 3. Software programs the following PLL registers for the desired
-	 * frequency.
-	 */
+	 
 	intel_de_write(dev_priv, SNPS_PHY_MPLLB_CP(phy), pll_state->mpllb_cp);
 	intel_de_write(dev_priv, SNPS_PHY_MPLLB_DIV(phy), pll_state->mpllb_div);
 	intel_de_write(dev_priv, SNPS_PHY_MPLLB_DIV2(phy), pll_state->mpllb_div2);
@@ -1838,42 +1805,20 @@ void intel_mpllb_enable(struct intel_encoder *encoder,
 	intel_de_write(dev_priv, SNPS_PHY_MPLLB_FRACN1(phy), pll_state->mpllb_fracn1);
 	intel_de_write(dev_priv, SNPS_PHY_MPLLB_FRACN2(phy), pll_state->mpllb_fracn2);
 
-	/*
-	 * 4. If the frequency will result in a change to the voltage
-	 * requirement, follow the Display Voltage Frequency Switching -
-	 * Sequence Before Frequency Change.
-	 *
-	 * We handle this step in bxt_set_cdclk().
-	 */
+	 
 
-	/* 5. Software sets DPLL_ENABLE [PLL Enable] to "1". */
+	 
 	intel_de_rmw(dev_priv, enable_reg, 0, PLL_ENABLE);
 
-	/*
-	 * 9. Software sets SNPS_PHY_MPLLB_DIV dp_mpllb_force_en to "1". This
-	 * will keep the PLL running during the DDI lane programming and any
-	 * typeC DP cable disconnect. Do not set the force before enabling the
-	 * PLL because that will start the PLL before it has sampled the
-	 * divider values.
-	 */
+	 
 	intel_de_write(dev_priv, SNPS_PHY_MPLLB_DIV(phy),
 		       pll_state->mpllb_div | SNPS_PHY_MPLLB_FORCE_EN);
 
-	/*
-	 * 10. Software polls on register DPLL_ENABLE [PLL Lock] to confirm PLL
-	 * is locked at new settings. This register bit is sampling PHY
-	 * dp_mpllb_state interface signal.
-	 */
+	 
 	if (intel_de_wait_for_set(dev_priv, enable_reg, PLL_LOCK, 5))
 		drm_dbg_kms(&dev_priv->drm, "Port %c PLL not locked\n", phy_name(phy));
 
-	/*
-	 * 11. If the frequency will result in a change to the voltage
-	 * requirement, follow the Display Voltage Frequency Switching -
-	 * Sequence After Frequency Change.
-	 *
-	 * We handle this step in bxt_set_cdclk().
-	 */
+	 
 }
 
 void intel_mpllb_disable(struct intel_encoder *encoder)
@@ -1883,37 +1828,19 @@ void intel_mpllb_disable(struct intel_encoder *encoder)
 	i915_reg_t enable_reg = (phy <= PHY_D ?
 				 DG2_PLL_ENABLE(phy) : MG_PLL_ENABLE(0));
 
-	/*
-	 * 1. If the frequency will result in a change to the voltage
-	 * requirement, follow the Display Voltage Frequency Switching -
-	 * Sequence Before Frequency Change.
-	 *
-	 * We handle this step in bxt_set_cdclk().
-	 */
+	 
 
-	/* 2. Software programs DPLL_ENABLE [PLL Enable] to "0" */
+	 
 	intel_de_rmw(i915, enable_reg, PLL_ENABLE, 0);
 
-	/*
-	 * 4. Software programs SNPS_PHY_MPLLB_DIV dp_mpllb_force_en to "0".
-	 * This will allow the PLL to stop running.
-	 */
+	 
 	intel_de_rmw(i915, SNPS_PHY_MPLLB_DIV(phy), SNPS_PHY_MPLLB_FORCE_EN, 0);
 
-	/*
-	 * 5. Software polls DPLL_ENABLE [PLL Lock] for PHY acknowledgment
-	 * (dp_txX_ack) that the new transmitter setting request is completed.
-	 */
+	 
 	if (intel_de_wait_for_clear(i915, enable_reg, PLL_LOCK, 5))
 		drm_err(&i915->drm, "Port %c PLL not locked\n", phy_name(phy));
 
-	/*
-	 * 6. If the frequency will result in a change to the voltage
-	 * requirement, follow the Display Voltage Frequency Switching -
-	 * Sequence After Frequency Change.
-	 *
-	 * We handle this step in bxt_set_cdclk().
-	 */
+	 
 }
 
 int intel_mpllb_calc_port_clock(struct intel_encoder *encoder,
@@ -1961,21 +1888,11 @@ void intel_mpllb_readout_hw_state(struct intel_encoder *encoder,
 	pll_state->mpllb_fracn1 = intel_de_read(dev_priv, SNPS_PHY_MPLLB_FRACN1(phy));
 	pll_state->mpllb_fracn2 = intel_de_read(dev_priv, SNPS_PHY_MPLLB_FRACN2(phy));
 
-	/*
-	 * REF_CONTROL is under firmware control and never programmed by the
-	 * driver; we read it only for sanity checking purposes.  The bspec
-	 * only tells us the expected value for one field in this register,
-	 * so we'll only read out those specific bits here.
-	 */
+	 
 	pll_state->ref_control = intel_de_read(dev_priv, SNPS_PHY_REF_CONTROL(phy)) &
 		SNPS_PHY_REF_CONTROL_REF_RANGE;
 
-	/*
-	 * MPLLB_DIV is programmed twice, once with the software-computed
-	 * state, then again with the MPLLB_FORCE_EN bit added.  Drop that
-	 * extra bit during readout so that we return the actual expected
-	 * software state.
-	 */
+	 
 	pll_state->mpllb_div &= ~SNPS_PHY_MPLLB_FORCE_EN;
 }
 
@@ -2007,7 +1924,7 @@ void intel_mpllb_state_verify(struct intel_atomic_state *state,
 	if (!new_crtc_state->hw.active)
 		return;
 
-	/* intel_get_crtc_new_encoder() only works for modeset/fastset commits */
+	 
 	if (!intel_crtc_needs_modeset(new_crtc_state) &&
 	    !intel_crtc_needs_fastset(new_crtc_state))
 		return;
@@ -2030,11 +1947,7 @@ void intel_mpllb_state_verify(struct intel_atomic_state *state,
 	MPLLB_CHECK(mpllb_sscen);
 	MPLLB_CHECK(mpllb_sscstep);
 
-	/*
-	 * ref_control is handled by the hardware/firemware and never
-	 * programmed by the software, but the proper values are supplied
-	 * in the bspec for verification purposes.
-	 */
+	 
 	MPLLB_CHECK(ref_control);
 
 #undef MPLLB_CHECK

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * (C) COPYRIGHT 2018 ARM Limited. All rights reserved.
- * Author: James.Qian.Wang <james.qian.wang@arm.com>
- *
- */
+
+ 
 
 #include <linux/slab.h>
 #include "komeda_format_caps.h"
@@ -54,37 +50,34 @@ u32 komeda_get_afbc_format_bpp(const struct drm_format_info *info, u64 modifier)
 	return bpp;
 }
 
-/* Two assumptions
- * 1. RGB always has YTR
- * 2. Tiled RGB always has SC
- */
+ 
 u64 komeda_supported_modifiers[] = {
-	/* AFBC_16x16 + features: YUV+RGB both */
+	 
 	AFBC_16x16(0),
-	/* SPARSE */
+	 
 	AFBC_16x16(_SPARSE),
-	/* YTR + (SPARSE) */
+	 
 	AFBC_16x16(_YTR | _SPARSE),
 	AFBC_16x16(_YTR),
-	/* SPLIT + SPARSE + YTR RGB only */
-	/* split mode is only allowed for sparse mode */
+	 
+	 
 	AFBC_16x16(_SPLIT | _SPARSE | _YTR),
-	/* TILED + (SPARSE) */
-	/* TILED YUV format only */
+	 
+	 
 	AFBC_16x16(_TILED | _SPARSE),
 	AFBC_16x16(_TILED),
-	/* TILED + SC + (SPLIT+SPARSE | SPARSE) + (YTR) */
+	 
 	AFBC_16x16(_TILED | _SC | _SPLIT | _SPARSE | _YTR),
 	AFBC_16x16(_TILED | _SC | _SPARSE | _YTR),
 	AFBC_16x16(_TILED | _SC | _YTR),
-	/* AFBC_32x8 + features: which are RGB formats only */
-	/* YTR + (SPARSE) */
+	 
+	 
 	AFBC_32x8(_YTR | _SPARSE),
 	AFBC_32x8(_YTR),
-	/* SPLIT + SPARSE + (YTR) */
-	/* split mode is only allowed for sparse mode */
+	 
+	 
 	AFBC_32x8(_SPLIT | _SPARSE | _YTR),
-	/* TILED + SC + (SPLIT+SPARSE | SPARSE) + YTR */
+	 
 	AFBC_32x8(_TILED | _SC | _SPLIT | _SPARSE | _YTR),
 	AFBC_32x8(_TILED | _SC | _SPARSE | _YTR),
 	AFBC_32x8(_TILED | _SC | _YTR),
@@ -129,9 +122,7 @@ u32 *komeda_get_layer_fourcc_list(struct komeda_format_caps_table *table,
 		    (cap->fourcc == 0))
 			continue;
 
-		/* one fourcc may has two caps items in table (afbc/none-afbc),
-		 * so check the existing list to avoid adding a duplicated one.
-		 */
+		 
 		for (j = n - 1; j >= 0; j--)
 			if (fmts[j] == cap->fourcc)
 				break;

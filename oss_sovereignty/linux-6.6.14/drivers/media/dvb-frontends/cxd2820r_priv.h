@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Sony CXD2820R demodulator driver
- *
- * Copyright (C) 2010 Antti Palosaari <crope@iki.fi>
- */
+ 
+ 
 
 
 #ifndef CXD2820R_PRIV_H
@@ -13,7 +9,7 @@
 #include <media/dvb_frontend.h>
 #include <linux/int_log.h>
 #include "cxd2820r.h"
-#include <linux/gpio/driver.h> /* For gpio_chip */
+#include <linux/gpio/driver.h>  
 #include <linux/math64.h>
 #include <linux/regmap.h>
 
@@ -47,10 +43,10 @@ struct cxd2820r_priv {
 #endif
 
 	enum fe_delivery_system delivery_system;
-	bool last_tune_failed; /* for switch between T and T2 tune */
+	bool last_tune_failed;  
 };
 
-/* cxd2820r_core.c */
+ 
 
 int cxd2820r_gpio(struct dvb_frontend *fe, u8 *gpio);
 
@@ -73,7 +69,7 @@ int cxd2820r_wr_reg(struct cxd2820r_priv *priv, u32 reg, u8 val);
 
 int cxd2820r_rd_reg(struct cxd2820r_priv *priv, u32 reg, u8 *val);
 
-/* cxd2820r_c.c */
+ 
 
 int cxd2820r_get_frontend_c(struct dvb_frontend *fe,
 			    struct dtv_frontend_properties *p);
@@ -89,7 +85,7 @@ int cxd2820r_sleep_c(struct dvb_frontend *fe);
 int cxd2820r_get_tune_settings_c(struct dvb_frontend *fe,
 	struct dvb_frontend_tune_settings *s);
 
-/* cxd2820r_t.c */
+ 
 
 int cxd2820r_get_frontend_t(struct dvb_frontend *fe,
 			    struct dtv_frontend_properties *p);
@@ -105,7 +101,7 @@ int cxd2820r_sleep_t(struct dvb_frontend *fe);
 int cxd2820r_get_tune_settings_t(struct dvb_frontend *fe,
 	struct dvb_frontend_tune_settings *s);
 
-/* cxd2820r_t2.c */
+ 
 
 int cxd2820r_get_frontend_t2(struct dvb_frontend *fe,
 			     struct dtv_frontend_properties *p);
@@ -121,4 +117,4 @@ int cxd2820r_sleep_t2(struct dvb_frontend *fe);
 int cxd2820r_get_tune_settings_t2(struct dvb_frontend *fe,
 	struct dvb_frontend_tune_settings *s);
 
-#endif /* CXD2820R_PRIV_H */
+#endif  

@@ -1,27 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Written for linux by Johan Myreen as a translation from
- * the assembly version by Linus (with diacriticals added)
- *
- * Some additional features added by Christoph Niemann (ChN), March 1993
- *
- * Loadable keymaps by Risto Kankkunen, May 1993
- *
- * Diacriticals redone & other small changes, aeb@cwi.nl, June 1993
- * Added decr/incr_console, dynamic keymaps, Unicode support,
- * dynamic function/string keys, led setting,  Sept 1994
- * `Sticky' modifier keys, 951006.
- *
- * 11-11-96: SAK should now work in the raw mode (Martin Mares)
- *
- * Modified to provide 'generic' keyboard support by Hamish Macdonald
- * Merge with the m68k keyboard driver and split-off of the PC low-level
- * parts by Geert Uytterhoeven, May 1997
- *
- * 27-05-97: Added support for the Magic SysRq Key (Martin Mares)
- * 30-07-98: Dead keys redone, aeb@cwi.nl.
- * 21-08-02: Converted to input API, major cleanup. (Vojtech Pavlik)
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -49,9 +27,7 @@
 
 #include <asm/irq_regs.h>
 
-/*
- * Exported functions/variables
- */
+ 
 
 #define KBD_DEFMODE (BIT(VC_REPEAT) | BIT(VC_META))
 
@@ -66,9 +42,7 @@ static inline int kbd_defleds(void)
 
 #define KBD_DEFLOCK 0
 
-/*
- * Handler Tables.
- */
+ 
 
 #define K_HANDLERS\
 	k_self,		k_fn,		k_spec,		k_pad,\
@@ -92,9 +66,7 @@ typedef void (fn_handler_fn)(struct vc_data *vc);
 static fn_handler_fn FN_HANDLERS;
 static fn_handler_fn *fn_handler[] = { FN_HANDLERS };
 
-/*
- * Variables exported for vt_ioctl.c
- */
+ 
 
 struct vt_spawn_console vt_spawn_con = {
 	.lock = __SPIN_LOCK_UNLOCKED(vt_spawn_con.lock),
@@ -103,14 +75,12 @@ struct vt_spawn_console vt_spawn_con = {
 };
 
 
-/*
- * Internal Data.
- */
+ 
 
 static struct kbd_struct kbd_table[MAX_NR_CONSOLES];
 static struct kbd_struct *kbd = kbd_table;
 
-/* maximum values each key_handler can handle */
+ 
 static const unsigned char max_vals[] = {
 	[ KT_LATIN	] = 255,
 	[ KT_FN		] = ARRAY_SIZE(func_table) - 1,
@@ -137,27 +107,25 @@ static DECLARE_TASKLET_DISABLED(keyboard_tasklet, kbd_bh);
 static struct input_handler kbd_handler;
 static DEFINE_SPINLOCK(kbd_event_lock);
 static DEFINE_SPINLOCK(led_lock);
-static DEFINE_SPINLOCK(func_buf_lock); /* guard 'func_buf'  and friends */
-static DECLARE_BITMAP(key_down, KEY_CNT);	/* keyboard key bitmap */
-static unsigned char shift_down[NR_SHIFT];		/* shift state counters.. */
+static DEFINE_SPINLOCK(func_buf_lock);  
+static DECLARE_BITMAP(key_down, KEY_CNT);	 
+static unsigned char shift_down[NR_SHIFT];		 
 static bool dead_key_next;
 
-/* Handles a number being assembled on the number pad */
+ 
 static bool npadch_active;
 static unsigned int npadch_value;
 
 static unsigned int diacr;
-static bool rep;			/* flag telling character repeat */
+static bool rep;			 
 
 static int shift_state = 0;
 
-static unsigned int ledstate = -1U;			/* undefined */
+static unsigned int ledstate = -1U;			 
 static unsigned char ledioctl;
 static bool vt_switch;
 
-/*
- * Notifier list for console keyboard events
- */
+ 
 static ATOMIC_NOTIFIER_HEAD(keyboard_notifier_list);
 
 int register_keyboard_notifier(struct notifier_block *nb)
@@ -172,15 +140,7 @@ int unregister_keyboard_notifier(struct notifier_block *nb)
 }
 EXPORT_SYMBOL_GPL(unregister_keyboard_notifier);
 
-/*
- * Translation of scancodes to keycodes. We set them on only the first
- * keyboard in the list that accepts the scancode and keycode.
- * Explanation for not choosing the first attached keyboard anymore:
- *  USB keyboards for example have two event devices: one for all "normal"
- *  keys and one for extra function keys (like "volume up", "make coffee",
- *  etc.). So this means that scancodes for the extra function keys won't
- *  be valid for the first event device, but will be for the second.
- */
+ 
 
 struct getset_keycode_data {
 	struct input_keymap_entry ke;
@@ -193,7 +153,7 @@ static int getkeycode_helper(struct input_handle *handle, void *data)
 
 	d->error = input_get_keycode(handle->dev, &d->ke);
 
-	return d->error == 0; /* stop as soon as we successfully get one */
+	return d->error == 0;  
 }
 
 static int getkeycode(unsigned int scancode)
@@ -220,7 +180,7 @@ static int setkeycode_helper(struct input_handle *handle, void *data)
 
 	d->error = input_set_keycode(handle->dev, &d->ke);
 
-	return d->error == 0; /* stop as soon as we successfully set one */
+	return d->error == 0;  
 }
 
 static int setkeycode(unsigned int scancode, unsigned int keycode)
@@ -241,10 +201,7 @@ static int setkeycode(unsigned int scancode, unsigned int keycode)
 	return d.error;
 }
 
-/*
- * Making beeps and bells. Note that we prefer beeps to bells, but when
- * shutting the sound off we do both.
- */
+ 
 
 static int kd_sound_helper(struct input_handle *handle, void *data)
 {
@@ -284,9 +241,7 @@ void kd_mksound(unsigned int hz, unsigned int ticks)
 }
 EXPORT_SYMBOL(kd_mksound);
 
-/*
- * Setting the keyboard rate.
- */
+ 
 
 static int kbd_rate_helper(struct input_handle *handle, void *data)
 {
@@ -314,14 +269,12 @@ int kbd_rate(struct kbd_repeat *rpt)
 	struct kbd_repeat data[2] = { *rpt };
 
 	input_handler_for_each_handle(&kbd_handler, data, kbd_rate_helper);
-	*rpt = data[1];	/* Copy currently used settings */
+	*rpt = data[1];	 
 
 	return 0;
 }
 
-/*
- * Helper Functions.
- */
+ 
 static void put_queue(struct vc_data *vc, int ch)
 {
 	tty_insert_flip_char(&vc->port, ch, 0);
@@ -343,19 +296,14 @@ static void applkey(struct vc_data *vc, int key, char mode)
 	puts_queue(vc, buf);
 }
 
-/*
- * Many other routines do put_queue, but I think either
- * they produce ASCII, or they produce some user-assigned
- * string, and in both cases we might assume that it is
- * in utf-8 already.
- */
+ 
 static void to_utf8(struct vc_data *vc, uint c)
 {
 	if (c < 0x80)
-		/*  0******* */
+		 
 		put_queue(vc, c);
 	else if (c < 0x800) {
-		/* 110***** 10****** */
+		 
 		put_queue(vc, 0xc0 | (c >> 6));
 		put_queue(vc, 0x80 | (c & 0x3f));
 	} else if (c < 0x10000) {
@@ -363,12 +311,12 @@ static void to_utf8(struct vc_data *vc, uint c)
 			return;
 		if (c == 0xFFFF)
 			return;
-		/* 1110**** 10****** 10****** */
+		 
 		put_queue(vc, 0xe0 | (c >> 12));
 		put_queue(vc, 0x80 | ((c >> 6) & 0x3f));
 		put_queue(vc, 0x80 | (c & 0x3f));
 	} else if (c < 0x110000) {
-		/* 11110*** 10****** 10****** 10****** */
+		 
 		put_queue(vc, 0xf0 | (c >> 18));
 		put_queue(vc, 0x80 | ((c >> 12) & 0x3f));
 		put_queue(vc, 0x80 | ((c >> 6) & 0x3f));
@@ -376,18 +324,13 @@ static void to_utf8(struct vc_data *vc, uint c)
 	}
 }
 
-/* FIXME: review locking for vt.c callers */
+ 
 static void set_leds(void)
 {
 	tasklet_schedule(&keyboard_tasklet);
 }
 
-/*
- * Called after returning from RAW mode or when changing consoles - recompute
- * shift_down[] and shift_state from key_down[] maybe called when keymap is
- * undefined, so that shiftkey release is seen. The caller must hold the
- * kbd_event_lock.
- */
+ 
 
 static void do_compute_shiftstate(void)
 {
@@ -410,16 +353,12 @@ static void do_compute_shiftstate(void)
 	}
 }
 
-/* We still have to export this method to vt.c */
+ 
 void vt_set_leds_compute_shiftstate(void)
 {
 	unsigned long flags;
 
-	/*
-	 * When VT is switched, the keyboard led needs to be set once.
-	 * Ensure that after the switch is completed, the state of the
-	 * keyboard LED is consistent with the state of the keyboard lock.
-	 */
+	 
 	vt_switch = true;
 	set_leds();
 
@@ -428,13 +367,7 @@ void vt_set_leds_compute_shiftstate(void)
 	spin_unlock_irqrestore(&kbd_event_lock, flags);
 }
 
-/*
- * We have a combining character DIACR here, followed by the character CH.
- * If the combination occurs in the table, return the corresponding value.
- * Otherwise, if CH is a space or equals DIACR, return DIACR.
- * Otherwise, conclude that DIACR was not combining after all,
- * queue it and return CH.
- */
+ 
 static unsigned int handle_diacr(struct vc_data *vc, unsigned int ch)
 {
 	unsigned int d = diacr;
@@ -465,9 +398,7 @@ static unsigned int handle_diacr(struct vc_data *vc, unsigned int ch)
 	return ch;
 }
 
-/*
- * Special function handlers
- */
+ 
 static void fn_enter(struct vc_data *vc)
 {
 	if (diacr) {
@@ -517,11 +448,7 @@ static void fn_hold(struct vc_data *vc)
 	if (rep || !tty)
 		return;
 
-	/*
-	 * Note: SCROLLOCK will be set (cleared) by stop_tty (start_tty);
-	 * these routines are also activated by ^S/^Q.
-	 * (And SCROLLOCK can also be set by the ioctl KDSKBLED.)
-	 */
+	 
 	if (tty->flow.stopped)
 		start_tty(tty);
 	else
@@ -536,12 +463,7 @@ static void fn_num(struct vc_data *vc)
 		fn_bare_num(vc);
 }
 
-/*
- * Bind this to Shift-NumLock if you work in application keypad mode
- * but want to be able to change the NumLock flag.
- * Bind this to NumLock if you prefer that the NumLock key always
- * changes the NumLock flag.
- */
+ 
 static void fn_bare_num(struct vc_data *vc)
 {
 	if (!rep)
@@ -550,7 +472,7 @@ static void fn_bare_num(struct vc_data *vc)
 
 static void fn_lastcons(struct vc_data *vc)
 {
-	/* switch to the last used console, ChN */
+	 
 	set_console(last_console);
 }
 
@@ -558,7 +480,7 @@ static void fn_dec_console(struct vc_data *vc)
 {
 	int i, cur = fg_console;
 
-	/* Currently switching?  Queue this next switch relative to that. */
+	 
 	if (want_console != -1)
 		cur = want_console;
 
@@ -575,7 +497,7 @@ static void fn_inc_console(struct vc_data *vc)
 {
 	int i, cur = fg_console;
 
-	/* Currently switching?  Queue this next switch relative to that. */
+	 
 	if (want_console != -1)
 		cur = want_console;
 
@@ -646,9 +568,7 @@ static void fn_null(struct vc_data *vc)
 	do_compute_shiftstate();
 }
 
-/*
- * Special key handlers
- */
+ 
 static void k_ignore(struct vc_data *vc, unsigned char value, char up_flag)
 {
 }
@@ -663,7 +583,7 @@ static void k_spec(struct vc_data *vc, unsigned char value, char up_flag)
 	     kbd->kbdmode == VC_MEDIUMRAW ||
 	     kbd->kbdmode == VC_OFF) &&
 	     value != KVAL(K_SAK))
-		return;		/* SAK is allowed even in raw mode */
+		return;		 
 	fn_handler[value](vc);
 }
 
@@ -675,7 +595,7 @@ static void k_lowercase(struct vc_data *vc, unsigned char value, char up_flag)
 static void k_unicode(struct vc_data *vc, unsigned int value, char up_flag)
 {
 	if (up_flag)
-		return;		/* no action, if this is a key release */
+		return;		 
 
 	if (diacr)
 		value = handle_diacr(vc, value);
@@ -694,11 +614,7 @@ static void k_unicode(struct vc_data *vc, unsigned int value, char up_flag)
 	}
 }
 
-/*
- * Handle dead key. Note that we now may have several
- * dead keys modifying the same character. Very useful
- * for Vietnamese.
- */
+ 
 static void k_deadunicode(struct vc_data *vc, unsigned int value, char up_flag)
 {
 	if (up_flag)
@@ -717,39 +633,37 @@ static void k_dead2(struct vc_data *vc, unsigned char value, char up_flag)
 	k_deadunicode(vc, value, up_flag);
 }
 
-/*
- * Obsolete - for backwards compatibility only
- */
+ 
 static void k_dead(struct vc_data *vc, unsigned char value, char up_flag)
 {
 	static const unsigned char ret_diacr[NR_DEAD] = {
-		'`',	/* dead_grave */
-		'\'',	/* dead_acute */
-		'^',	/* dead_circumflex */
-		'~',	/* dead_tilda */
-		'"',	/* dead_diaeresis */
-		',',	/* dead_cedilla */
-		'_',	/* dead_macron */
-		'U',	/* dead_breve */
-		'.',	/* dead_abovedot */
-		'*',	/* dead_abovering */
-		'=',	/* dead_doubleacute */
-		'c',	/* dead_caron */
-		'k',	/* dead_ogonek */
-		'i',	/* dead_iota */
-		'#',	/* dead_voiced_sound */
-		'o',	/* dead_semivoiced_sound */
-		'!',	/* dead_belowdot */
-		'?',	/* dead_hook */
-		'+',	/* dead_horn */
-		'-',	/* dead_stroke */
-		')',	/* dead_abovecomma */
-		'(',	/* dead_abovereversedcomma */
-		':',	/* dead_doublegrave */
-		'n',	/* dead_invertedbreve */
-		';',	/* dead_belowcomma */
-		'$',	/* dead_currency */
-		'@',	/* dead_greek */
+		'`',	 
+		'\'',	 
+		'^',	 
+		'~',	 
+		'"',	 
+		',',	 
+		'_',	 
+		'U',	 
+		'.',	 
+		'*',	 
+		'=',	 
+		'c',	 
+		'k',	 
+		'i',	 
+		'#',	 
+		'o',	 
+		'!',	 
+		'?',	 
+		'+',	 
+		'-',	 
+		')',	 
+		'(',	 
+		':',	 
+		'n',	 
+		';',	 
+		'$',	 
+		'@',	 
 	};
 
 	k_deadunicode(vc, ret_diacr[value], up_flag);
@@ -796,9 +710,9 @@ static void k_pad(struct vc_data *vc, unsigned char value, char up_flag)
 	static const char app_map[] = "pqrstuvwxylSRQMnnmPQS";
 
 	if (up_flag)
-		return;		/* no action, if this is a key release */
+		return;		 
 
-	/* kludge... shift forces cursor/number keys */
+	 
 	if (vc_kbd_mode(kbd, VC_APPLIC) && !shift_down[KG_SHIFT]) {
 		applkey(vc, app_map[value], 1);
 		return;
@@ -855,10 +769,7 @@ static void k_shift(struct vc_data *vc, unsigned char value, char up_flag)
 
 	if (rep)
 		return;
-	/*
-	 * Mimic typewriter:
-	 * a CapsShift key acts like Shift but undoes CapsLock
-	 */
+	 
 	if (value == KVAL(K_CAPSSHIFT)) {
 		value = KVAL(K_SHIFT);
 		if (!up_flag)
@@ -866,10 +777,7 @@ static void k_shift(struct vc_data *vc, unsigned char value, char up_flag)
 	}
 
 	if (up_flag) {
-		/*
-		 * handle the case that two shift or control
-		 * keys are depressed simultaneously
-		 */
+		 
 		if (shift_down[value])
 			shift_down[value]--;
 	} else
@@ -880,7 +788,7 @@ static void k_shift(struct vc_data *vc, unsigned char value, char up_flag)
 	else
 		shift_state &= ~BIT(value);
 
-	/* kludge */
+	 
 	if (up_flag && shift_state != old_state && npadch_active) {
 		if (kbd->kbdmode == VC_UNICODE)
 			to_utf8(vc, npadch_value);
@@ -910,10 +818,10 @@ static void k_ascii(struct vc_data *vc, unsigned char value, char up_flag)
 		return;
 
 	if (value < 10) {
-		/* decimal input of code, while Alt depressed */
+		 
 		base = 10;
 	} else {
-		/* hexadecimal input of code, while AltGr depressed */
+		 
 		value -= 10;
 		base = 16;
 	}
@@ -941,14 +849,14 @@ static void k_slock(struct vc_data *vc, unsigned char value, char up_flag)
 		return;
 
 	chg_vc_kbd_slock(kbd, value);
-	/* try to make Alt, oops, AltGr and such work */
+	 
 	if (!key_maps[kbd->lockstate ^ kbd->slockstate]) {
 		kbd->slockstate = 0;
 		chg_vc_kbd_slock(kbd, value);
 	}
 }
 
-/* by default, 300ms interval for combination release */
+ 
 static unsigned brl_timeout = 300;
 MODULE_PARM_DESC(brl_timeout, "Braille keys release delay in ms (0 for commit on first key release)");
 module_param(brl_timeout, uint, 0644);
@@ -1137,11 +1045,7 @@ static void kbd_init_leds(void)
 
 #endif
 
-/*
- * The leds display either (i) the status of NumLock, CapsLock, ScrollLock,
- * or (ii) whatever pattern of lights people want to show using KDSETLED,
- * or (iii) specified bits of specified words in kernel memory.
- */
+ 
 static unsigned char getledstate(void)
 {
 	return ledstate & 0xff;
@@ -1171,13 +1075,7 @@ static inline unsigned char getleds(void)
 	return kb->ledflagstate;
 }
 
-/**
- *	vt_get_leds	-	helper for braille console
- *	@console: console to read
- *	@flag: flag we want to check
- *
- *	Check the status of a keyboard led flag and report it back
- */
+ 
 int vt_get_leds(unsigned int console, int flag)
 {
 	struct kbd_struct *kb = &kbd_table[console];
@@ -1192,33 +1090,14 @@ int vt_get_leds(unsigned int console, int flag)
 }
 EXPORT_SYMBOL_GPL(vt_get_leds);
 
-/**
- *	vt_set_led_state	-	set LED state of a console
- *	@console: console to set
- *	@leds: LED bits
- *
- *	Set the LEDs on a console. This is a wrapper for the VT layer
- *	so that we can keep kbd knowledge internal
- */
+ 
 void vt_set_led_state(unsigned int console, int leds)
 {
 	struct kbd_struct *kb = &kbd_table[console];
 	setledstate(kb, leds);
 }
 
-/**
- *	vt_kbd_con_start	-	Keyboard side of console start
- *	@console: console
- *
- *	Handle console start. This is a wrapper for the VT layer
- *	so that we can keep kbd knowledge internal
- *
- *	FIXME: We eventually need to hold the kbd lock here to protect
- *	the LED updating. We can't do it yet because fn_hold calls stop_tty
- *	and start_tty under the kbd_event_lock, while normal tty paths
- *	don't hold the lock. We probably need to split out an LED lock
- *	but not during an -rc release!
- */
+ 
 void vt_kbd_con_start(unsigned int console)
 {
 	struct kbd_struct *kb = &kbd_table[console];
@@ -1229,13 +1108,7 @@ void vt_kbd_con_start(unsigned int console)
 	spin_unlock_irqrestore(&led_lock, flags);
 }
 
-/**
- *	vt_kbd_con_stop		-	Keyboard side of console stop
- *	@console: console
- *
- *	Handle console stop. This is a wrapper for the VT layer
- *	so that we can keep kbd knowledge internal
- */
+ 
 void vt_kbd_con_stop(unsigned int console)
 {
 	struct kbd_struct *kb = &kbd_table[console];
@@ -1246,12 +1119,7 @@ void vt_kbd_con_stop(unsigned int console)
 	spin_unlock_irqrestore(&led_lock, flags);
 }
 
-/*
- * This is the tasklet that updates LED state of LEDs using standard
- * keyboard triggers. The reason we use tasklet is that we need to
- * handle the scenario when keyboard handler is not registered yet
- * but we already getting updates from the VT to update led state.
- */
+ 
 static void kbd_bh(struct tasklet_struct *unused)
 {
 	unsigned int leds;
@@ -1333,12 +1201,7 @@ static int emulate_raw(struct vc_data *vc, unsigned int keycode,
 		break;
 
 	case KEY_SYSRQ:
-		/*
-		 * Real AT keyboards (that's what we're trying
-		 * to emulate here) emit 0xe0 0x2a 0xe0 0x37 when
-		 * pressing PrtSc/SysRq alone, but simply 0x54
-		 * when pressing Alt+PrtSc/SysRq.
-		 */
+		 
 		if (test_bit(KEY_LEFTALT, key_down) ||
 		    test_bit(KEY_RIGHTALT, key_down)) {
 			put_queue(vc, 0x54 | up_flag);
@@ -1408,7 +1271,7 @@ static void kbd_keycode(unsigned int keycode, int down, bool hw_raw)
 	tty = vc->port.tty;
 
 	if (tty && (!tty->driver_data)) {
-		/* No driver data? Strange. Okay we fix it then. */
+		 
 		tty->driver_data = vc;
 	}
 
@@ -1436,15 +1299,7 @@ static void kbd_keycode(unsigned int keycode, int down, bool hw_raw)
 #endif
 
 	if (kbd->kbdmode == VC_MEDIUMRAW) {
-		/*
-		 * This is extended medium raw mode, with keys above 127
-		 * encoded as 0, high 7 bits, low 7 bits, with the 0 bearing
-		 * the 'up' flag if needed. 0 is reserved, so this shouldn't
-		 * interfere with anything else. The two bytes after 0 will
-		 * always have the up flag set not to interfere with older
-		 * applications. This allows for 16384 different keycodes,
-		 * which should be enough.
-		 */
+		 
 		if (keycode < 128) {
 			put_queue(vc, keycode | (!down << 7));
 		} else {
@@ -1460,11 +1315,7 @@ static void kbd_keycode(unsigned int keycode, int down, bool hw_raw)
 	if (rep &&
 	    (!vc_kbd_mode(kbd, VC_REPEAT) ||
 	     (tty && !L_ECHO(tty) && tty_chars_in_buffer(tty)))) {
-		/*
-		 * Don't repeat a key if the input buffers are not empty and the
-		 * characters get aren't echoed locally. This makes key repeat
-		 * usable with slow applications and under heavy loads.
-		 */
+		 
 		return;
 	}
 
@@ -1533,7 +1384,7 @@ static void kbd_keycode(unsigned int keycode, int down, bool hw_raw)
 static void kbd_event(struct input_handle *handle, unsigned int event_type,
 		      unsigned int event_code, int value)
 {
-	/* We are called with interrupts disabled, just take the lock */
+	 
 	spin_lock(&kbd_event_lock);
 
 	if (event_type == EV_MSC && event_code == MSC_RAW &&
@@ -1566,12 +1417,7 @@ static bool kbd_match(struct input_handler *handler, struct input_dev *dev)
 	return false;
 }
 
-/*
- * When a keyboard (or other input device) is found, the kbd_connect
- * function is called. The function then looks at the device, and if it
- * likes it, it can open it and get events from it. In this (kbd_connect)
- * function, we should decide which VT to bind that keyboard to initially.
- */
+ 
 static int kbd_connect(struct input_handler *handler, struct input_dev *dev,
 			const struct input_device_id *id)
 {
@@ -1610,10 +1456,7 @@ static void kbd_disconnect(struct input_handle *handle)
 	kfree(handle);
 }
 
-/*
- * Start keyboard handler on the new keyboard by refreshing LED state to
- * match the rest of the system.
- */
+ 
 static void kbd_start(struct input_handle *handle)
 {
 	tasklet_disable(&keyboard_tasklet);
@@ -1635,7 +1478,7 @@ static const struct input_device_id kbd_ids[] = {
 		.evbit = { BIT_MASK(EV_SND) },
 	},
 
-	{ },    /* Terminating entry */
+	{ },     
 };
 
 MODULE_DEVICE_TABLE(input, kbd_ids);
@@ -1677,17 +1520,9 @@ int __init kbd_init(void)
 	return 0;
 }
 
-/* Ioctl support code */
+ 
 
-/**
- *	vt_do_diacrit		-	diacritical table updates
- *	@cmd: ioctl request
- *	@udp: pointer to user data for ioctl
- *	@perm: permissions check computed by caller
- *
- *	Update the diacritical tables atomically and safely. Lock them
- *	against simultaneous keypresses
- */
+ 
 int vt_do_diacrit(unsigned int cmd, void __user *udp, int perm)
 {
 	unsigned long flags;
@@ -1706,8 +1541,7 @@ int vt_do_diacrit(unsigned int cmd, void __user *udp, int perm)
 		if (!dia)
 			return -ENOMEM;
 
-		/* Lock the diacriticals table, make a copy and then
-		   copy it after we unlock */
+		 
 		spin_lock_irqsave(&kbd_event_lock, flags);
 
 		asize = accent_table_size;
@@ -1739,8 +1573,7 @@ int vt_do_diacrit(unsigned int cmd, void __user *udp, int perm)
 		if (buf == NULL)
 			return -ENOMEM;
 
-		/* Lock the diacriticals table, make a copy and then
-		   copy it after we unlock */
+		 
 		spin_lock_irqsave(&kbd_event_lock, flags);
 
 		asize = accent_table_size;
@@ -1829,14 +1662,7 @@ int vt_do_diacrit(unsigned int cmd, void __user *udp, int perm)
 	return ret;
 }
 
-/**
- *	vt_do_kdskbmode		-	set keyboard mode ioctl
- *	@console: the console to use
- *	@arg: the requested mode
- *
- *	Update the keyboard mode bits while holding the correct locks.
- *	Return 0 for success or an error code.
- */
+ 
 int vt_do_kdskbmode(unsigned int console, unsigned int arg)
 {
 	struct kbd_struct *kb = &kbd_table[console];
@@ -1869,14 +1695,7 @@ int vt_do_kdskbmode(unsigned int console, unsigned int arg)
 	return ret;
 }
 
-/**
- *	vt_do_kdskbmeta		-	set keyboard meta state
- *	@console: the console to use
- *	@arg: the requested meta state
- *
- *	Update the keyboard meta bits while holding the correct locks.
- *	Return 0 for success or an error code.
- */
+ 
 int vt_do_kdskbmeta(unsigned int console, unsigned int arg)
 {
 	struct kbd_struct *kb = &kbd_table[console];
@@ -1927,7 +1746,7 @@ static unsigned short vt_kdgkbent(unsigned char kbdmode, unsigned char idx,
 	unsigned short *key_map, val;
 	unsigned long flags;
 
-	/* Ensure another thread doesn't free it under us */
+	 
 	spin_lock_irqsave(&kbd_event_lock, flags);
 	key_map = key_maps[map];
 	if (key_map) {
@@ -1949,7 +1768,7 @@ static int vt_kdskbent(unsigned char kbdmode, unsigned char idx,
 
 	if (!idx && val == K_NOSUCHMAP) {
 		spin_lock_irqsave(&kbd_event_lock, flags);
-		/* deallocate map */
+		 
 		key_map = key_maps[map];
 		if (map && key_map) {
 			key_maps[map] = NULL;
@@ -1969,9 +1788,9 @@ static int vt_kdskbent(unsigned char kbdmode, unsigned char idx,
 	} else if (kbdmode != VC_UNICODE)
 		return -EINVAL;
 
-	/* ++Geert: non-PC keyboards may generate keycode zero */
+	 
 #if !defined(__mc68000__) && !defined(__powerpc__)
-	/* assignment to entry 0 only tests validity of args */
+	 
 	if (!idx)
 		return 0;
 #endif
@@ -2004,7 +1823,7 @@ static int vt_kdskbent(unsigned char kbdmode, unsigned char idx,
 	if (val == oldval)
 		goto out;
 
-	/* Attention Key */
+	 
 	if ((oldval == K_SAK || val == K_SAK) && !capable(CAP_SYS_ADMIN)) {
 		spin_unlock_irqrestore(&kbd_event_lock, flags);
 		return -EPERM;
@@ -2071,7 +1890,7 @@ int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
 
 	switch (cmd) {
 	case KDGKBSENT: {
-		/* size should have been a struct member */
+		 
 		ssize_t len = sizeof(user_kdgkb->kb_string);
 
 		kbs = kmalloc(len, GFP_KERNEL);
@@ -2116,8 +1935,8 @@ int vt_do_kdskled(unsigned int console, int cmd, unsigned long arg, int perm)
 	unsigned char ucval;
 
         switch(cmd) {
-	/* the ioctls below read/set the flags usually shown in the leds */
-	/* don't use them - they will go away without warning */
+	 
+	 
 	case KDGKBLED:
                 spin_lock_irqsave(&kbd_event_lock, flags);
 		ucval = kb->ledflagstate | (kb->default_ledflagstate << 4);
@@ -2136,8 +1955,8 @@ int vt_do_kdskled(unsigned int console, int cmd, unsigned long arg, int perm)
                 spin_unlock_irqrestore(&led_lock, flags);
 		return 0;
 
-	/* the ioctls below only set the lights, not the functions */
-	/* for those, see KDGKBLED and KDSKBLED above */
+	 
+	 
 	case KDGETLED:
 		ucval = getledstate();
 		return put_user(ucval, (char __user *)arg);
@@ -2154,7 +1973,7 @@ int vt_do_kdskled(unsigned int console, int cmd, unsigned long arg, int perm)
 int vt_do_kdgkbmode(unsigned int console)
 {
 	struct kbd_struct *kb = &kbd_table[console];
-	/* This is a spot read so needs no locking */
+	 
 	switch (kb->kbdmode) {
 	case VC_RAW:
 		return K_RAW;
@@ -2169,25 +1988,15 @@ int vt_do_kdgkbmode(unsigned int console)
 	}
 }
 
-/**
- *	vt_do_kdgkbmeta		-	report meta status
- *	@console: console to report
- *
- *	Report the meta flag status of this console
- */
+ 
 int vt_do_kdgkbmeta(unsigned int console)
 {
 	struct kbd_struct *kb = &kbd_table[console];
-        /* Again a spot read so no locking */
+         
 	return vc_kbd_mode(kb, VC_META) ? K_ESCPREFIX : K_METABIT;
 }
 
-/**
- *	vt_reset_unicode	-	reset the unicode status
- *	@console: console being reset
- *
- *	Restore the unicode console state to its default
- */
+ 
 void vt_reset_unicode(unsigned int console)
 {
 	unsigned long flags;
@@ -2197,25 +2006,14 @@ void vt_reset_unicode(unsigned int console)
 	spin_unlock_irqrestore(&kbd_event_lock, flags);
 }
 
-/**
- *	vt_get_shift_state	-	shift bit state
- *
- *	Report the shift bits from the keyboard state. We have to export
- *	this to support some oddities in the vt layer.
- */
+ 
 int vt_get_shift_state(void)
 {
-        /* Don't lock as this is a transient report */
+         
         return shift_state;
 }
 
-/**
- *	vt_reset_keyboard	-	reset keyboard state
- *	@console: console to reset
- *
- *	Reset the keyboard bits for a console as part of a general console
- *	reset event
- */
+ 
 void vt_reset_keyboard(unsigned int console)
 {
 	struct kbd_struct *kb = &kbd_table[console];
@@ -2232,19 +2030,11 @@ void vt_reset_keyboard(unsigned int console)
 	kb->ledmode = LED_SHOW_FLAGS;
 	kb->ledflagstate = kb->default_ledflagstate;
 	spin_unlock(&led_lock);
-	/* do not do set_leds here because this causes an endless tasklet loop
-	   when the keyboard hasn't been initialized yet */
+	 
 	spin_unlock_irqrestore(&kbd_event_lock, flags);
 }
 
-/**
- *	vt_get_kbd_mode_bit	-	read keyboard status bits
- *	@console: console to read from
- *	@bit: mode bit to read
- *
- *	Report back a vt mode bit. We do this without locking so the
- *	caller must be sure that there are no synchronization needs
- */
+ 
 
 int vt_get_kbd_mode_bit(unsigned int console, int bit)
 {
@@ -2252,14 +2042,7 @@ int vt_get_kbd_mode_bit(unsigned int console, int bit)
 	return vc_kbd_mode(kb, bit);
 }
 
-/**
- *	vt_set_kbd_mode_bit	-	read keyboard status bits
- *	@console: console to read from
- *	@bit: mode bit to read
- *
- *	Set a vt mode bit. We do this without locking so the
- *	caller must be sure that there are no synchronization needs
- */
+ 
 
 void vt_set_kbd_mode_bit(unsigned int console, int bit)
 {
@@ -2271,14 +2054,7 @@ void vt_set_kbd_mode_bit(unsigned int console, int bit)
 	spin_unlock_irqrestore(&kbd_event_lock, flags);
 }
 
-/**
- *	vt_clr_kbd_mode_bit	-	read keyboard status bits
- *	@console: console to read from
- *	@bit: mode bit to read
- *
- *	Report back a vt mode bit. We do this without locking so the
- *	caller must be sure that there are no synchronization needs
- */
+ 
 
 void vt_clr_kbd_mode_bit(unsigned int console, int bit)
 {

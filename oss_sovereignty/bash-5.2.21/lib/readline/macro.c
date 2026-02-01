@@ -1,23 +1,6 @@
-/* macro.c -- keyboard macros for readline. */
+ 
 
-/* Copyright (C) 1994-2009,2017 Free Software Foundation, Inc.
-
-   This file is part of the GNU Readline Library (Readline), a library
-   for reading lines of text with interactive input and history editing.      
-
-   Readline is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Readline is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Readline.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #define READLINE_LIBRARY
 
@@ -28,21 +11,21 @@
 #include <sys/types.h>
 
 #if defined (HAVE_UNISTD_H)
-#  include <unistd.h>           /* for _POSIX_VERSION */
-#endif /* HAVE_UNISTD_H */
+#  include <unistd.h>            
+#endif  
 
 #if defined (HAVE_STDLIB_H)
 #  include <stdlib.h>
 #else
 #  include "ansi_stdlib.h"
-#endif /* HAVE_STDLIB_H */
+#endif  
 
 #include <stdio.h>
 
-/* System-specific feature definitions and include files. */
+ 
 #include "rldefs.h"
 
-/* Some standard library routines. */
+ 
 #include "readline.h"
 #include "history.h"
 
@@ -51,44 +34,40 @@
 
 #define MAX_MACRO_LEVEL 16
 
-/* **************************************************************** */
-/*								    */
-/*			Hacking Keyboard Macros 		    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
-/* The currently executing macro string.  If this is non-zero,
-   then it is a malloc ()'ed string where input is coming from. */
+ 
 char *rl_executing_macro = (char *)NULL;
 
-/* The offset in the above string to the next character to be read. */
+ 
 static int executing_macro_index;
 
-/* The current macro string being built.  Characters get stuffed
-   in here by add_macro_char (). */
+ 
 static char *current_macro = (char *)NULL;
 
-/* The size of the buffer allocated to current_macro. */
+ 
 static int current_macro_size;
 
-/* The index at which characters are being added to current_macro. */
+ 
 static int current_macro_index;
 
-/* A structure used to save nested macro strings.
-   It is a linked list of string/index for each saved macro. */
+ 
 struct saved_macro {
   struct saved_macro *next;
   char *string;
   int sindex;
 };
 
-/* The list of saved macros. */
+ 
 static struct saved_macro *macro_list = (struct saved_macro *)NULL;
 
 static int macro_level = 0;
 
-/* Set up to read subsequent input from STRING.
-   STRING is free ()'ed when we are done with it. */
+ 
 void
 _rl_with_macro_input (char *string)
 {
@@ -100,7 +79,7 @@ _rl_with_macro_input (char *string)
     }
 
 #if 0
-  if (rl_executing_macro)		/* XXX - later */
+  if (rl_executing_macro)		 
 #endif
     _rl_push_executing_macro ();
   rl_executing_macro = string;
@@ -108,8 +87,7 @@ _rl_with_macro_input (char *string)
   RL_SETSTATE(RL_STATE_MACROINPUT);
 }
 
-/* Return the next character available from a macro, or 0 if
-   there are no macro characters. */
+ 
 int
 _rl_next_macro_key (void)
 {
@@ -130,8 +108,7 @@ _rl_next_macro_key (void)
       _rl_pop_executing_macro ();
   return c;
 #else
-  /* XXX - consider doing the same as the callback code, just not testing
-     whether we're running in callback mode */
+   
   return (rl_executing_macro[executing_macro_index++]);
 #endif
 }
@@ -161,7 +138,7 @@ _rl_prev_macro_key (void)
   return (rl_executing_macro[executing_macro_index]);
 }
 
-/* Save the currently executing macro on a stack of saved macros. */
+ 
 void
 _rl_push_executing_macro (void)
 {
@@ -177,8 +154,7 @@ _rl_push_executing_macro (void)
   macro_level++;
 }
 
-/* Discard the current macro, replacing it with the one
-   on the top of the stack of saved macros. */
+ 
 void
 _rl_pop_executing_macro (void)
 {
@@ -203,7 +179,7 @@ _rl_pop_executing_macro (void)
     RL_UNSETSTATE(RL_STATE_MACROINPUT);
 }
 
-/* Add a character to the macro being built. */
+ 
 void
 _rl_add_macro_char (int c)
 {
@@ -236,12 +212,7 @@ _rl_kill_kbd_macro (void)
   RL_UNSETSTATE(RL_STATE_MACRODEF);
 }
 
-/* Begin defining a keyboard macro.
-   Keystrokes are recorded as they are executed.
-   End the definition with rl_end_kbd_macro ().
-   If a numeric argument was explicitly typed, then append this
-   definition to the end of the existing macro, and start by
-   re-executing the existing macro. */
+ 
 int
 rl_start_kbd_macro (int ignore1, int ignore2)
 {
@@ -263,9 +234,7 @@ rl_start_kbd_macro (int ignore1, int ignore2)
   return 0;
 }
 
-/* Stop defining a keyboard macro.
-   A numeric argument says to execute the macro right now,
-   that many times, counting the definition as the first time. */
+ 
 int
 rl_end_kbd_macro (int count, int ignore)
 {
@@ -285,8 +254,7 @@ rl_end_kbd_macro (int count, int ignore)
   return (rl_call_last_kbd_macro (--count, 0));
 }
 
-/* Execute the most recently defined keyboard macro.
-   COUNT says how many times to execute it. */
+ 
 int
 rl_call_last_kbd_macro (int count, int ignore)
 {
@@ -295,8 +263,8 @@ rl_call_last_kbd_macro (int count, int ignore)
 
   if (RL_ISSTATE (RL_STATE_MACRODEF))
     {
-      rl_ding ();		/* no recursive macros */
-      current_macro[--current_macro_index] = '\0';	/* erase this char */
+      rl_ding ();		 
+      current_macro[--current_macro_index] = '\0';	 
       return 0;
     }
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include <network_helpers.h>
 #include <error.h>
@@ -8,7 +8,7 @@
 
 #include "bpf_flow.skel.h"
 
-#define FLOW_CONTINUE_SADDR 0x7f00007f /* 127.0.0.127 */
+#define FLOW_CONTINUE_SADDR 0x7f00007f  
 
 #ifndef IP_MF
 #define IP_MF 0x2000
@@ -543,7 +543,7 @@ static void run_tests_skb_less(int tap_fd, struct bpf_map *keys)
 		return;
 
 	for (i = 0; i < ARRAY_SIZE(tests); i++) {
-		/* Keep in sync with 'flags' from eth_get_headlen. */
+		 
 		__u32 eth_get_headlen_flags =
 			BPF_FLOW_DISSECTOR_F_PARSE_1ST_FRAG;
 		LIBBPF_OPTS(bpf_test_run_opts, topts);
@@ -551,9 +551,7 @@ static void run_tests_skb_less(int tap_fd, struct bpf_map *keys)
 		__u32 key = (__u32)(tests[i].keys.sport) << 16 |
 			    tests[i].keys.dport;
 
-		/* For skb-less case we can't pass input flags; run
-		 * only the tests that have a matching set of flags.
-		 */
+		 
 
 		if (tests[i].flags != eth_get_headlen_flags)
 			continue;
@@ -561,7 +559,7 @@ static void run_tests_skb_less(int tap_fd, struct bpf_map *keys)
 		err = tx_tap(tap_fd, &tests[i].pkt, sizeof(tests[i].pkt));
 		CHECK(err < 0, "tx_tap", "err %d errno %d\n", err, errno);
 
-		/* check the stored flow_keys only if BPF_OK expected */
+		 
 		if (tests[i].retval != BPF_OK)
 			continue;
 
@@ -652,7 +650,7 @@ void test_flow_dissector(void)
 		ASSERT_OK(err, "test_run");
 		ASSERT_EQ(topts.retval, tests[i].retval, "test_run retval");
 
-		/* check the resulting flow_keys only if BPF_OK returned */
+		 
 		if (topts.retval != BPF_OK)
 			continue;
 		ASSERT_EQ(topts.data_size_out, sizeof(flow_keys),
@@ -660,20 +658,16 @@ void test_flow_dissector(void)
 		CHECK_FLOW_KEYS(tests[i].name, flow_keys, tests[i].keys);
 	}
 
-	/* Do the same tests but for skb-less flow dissector.
-	 * We use a known path in the net/tun driver that calls
-	 * eth_get_headlen and we manually export bpf_flow_keys
-	 * via BPF map in this case.
-	 */
+	 
 
 	tap_fd = create_tap("tap0");
 	CHECK(tap_fd < 0, "create_tap", "tap_fd %d errno %d\n", tap_fd, errno);
 	err = ifup("tap0");
 	CHECK(err, "ifup", "err %d errno %d\n", err, errno);
 
-	/* Test direct prog attachment */
+	 
 	test_skb_less_prog_attach(skel, tap_fd);
-	/* Test indirect prog attachment via link */
+	 
 	test_skb_less_link_create(skel, tap_fd);
 
 	close(tap_fd);

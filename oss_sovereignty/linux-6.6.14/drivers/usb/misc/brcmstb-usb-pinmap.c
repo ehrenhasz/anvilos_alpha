@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020, Broadcom */
+
+ 
 
 #include <linux/init.h>
 #include <linux/types.h>
@@ -68,10 +68,7 @@ static void sync_in_pin(struct in_pin *pin)
 		pinmap_unset(pin->pdata->regs, pin->value_mask);
 }
 
-/*
- * Interrupt from override register, propagate from override bit
- * to GPIO.
- */
+ 
 static irqreturn_t brcmstb_usb_pinmap_ovr_isr(int irq, void *dev_id)
 {
 	struct brcmstb_usb_pinmap_data *pdata = dev_id;
@@ -96,9 +93,7 @@ static irqreturn_t brcmstb_usb_pinmap_ovr_isr(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * Interrupt from GPIO, propagate from GPIO to override bit.
- */
+ 
 static irqreturn_t brcmstb_usb_pinmap_gpio_isr(int irq, void *dev_id)
 {
 	struct in_pin *pin = dev_id;
@@ -223,10 +218,7 @@ static void sync_all_pins(struct brcmstb_usb_pinmap_data *pdata)
 	int val;
 	int x;
 
-	/*
-	 * Enable the override, clear any changed condition and
-	 * propagate the state to the GPIO for all out pins.
-	 */
+	 
 	pout = pdata->out_pins;
 	for (x = 0; x < pdata->out_count; x++) {
 		pinmap_set(pdata->regs, pout->enable_mask);
@@ -237,7 +229,7 @@ static void sync_all_pins(struct brcmstb_usb_pinmap_data *pdata)
 		pout++;
 	}
 
-	/* sync and enable all in pins. */
+	 
 	pin = pdata->in_pins;
 	for (x = 0; x < pdata->in_count; x++) {
 		sync_in_pin(pin);
@@ -291,7 +283,7 @@ static int __init brcmstb_usb_pinmap_probe(struct platform_device *pdev)
 
 	if (out_count) {
 
-		/* Enable interrupt for out pins */
+		 
 		irq = platform_get_irq(pdev, 0);
 		if (irq < 0)
 			return irq;

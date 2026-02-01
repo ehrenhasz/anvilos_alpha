@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the VIA Chrome integrated camera controller.
- *
- * Copyright 2009,2010 Jonathan Corbet <corbet@lwn.net>
- *
- * This work was supported by the One Laptop Per Child project
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/device.h>
@@ -51,9 +45,7 @@ module_param(override_serial, bool, 0444);
 MODULE_PARM_DESC(override_serial,
 		"The camera driver will normally refuse to load if the XO 1.5 serial port is enabled.  Set this option to force-enable the camera.");
 
-/*
- * The structure describing our camera.
- */
+ 
 enum viacam_opstate { S_IDLE = 0, S_RUNNING = 1 };
 
 struct via_camera {
@@ -67,69 +59,46 @@ struct via_camera {
 	enum viacam_opstate opstate;
 	unsigned long flags;
 	struct pm_qos_request qos_request;
-	/*
-	 * GPIO info for power/reset management
-	 */
+	 
 	struct gpio_desc *power_gpio;
 	struct gpio_desc *reset_gpio;
-	/*
-	 * I/O memory stuff.
-	 */
-	void __iomem *mmio;	/* Where the registers live */
-	void __iomem *fbmem;	/* Frame buffer memory */
-	u32 fb_offset;		/* Reserved memory offset (FB) */
-	/*
-	 * Capture buffers and related.	 The controller supports
-	 * up to three, so that's what we have here.  These buffers
-	 * live in frame buffer memory, so we don't call them "DMA".
-	 */
-	unsigned int cb_offsets[3];	/* offsets into fb mem */
-	u8 __iomem *cb_addrs[3];	/* Kernel-space addresses */
-	int n_cap_bufs;			/* How many are we using? */
+	 
+	void __iomem *mmio;	 
+	void __iomem *fbmem;	 
+	u32 fb_offset;		 
+	 
+	unsigned int cb_offsets[3];	 
+	u8 __iomem *cb_addrs[3];	 
+	int n_cap_bufs;			 
 	struct vb2_queue vq;
 	struct list_head buffer_queue;
 	u32 sequence;
-	/*
-	 * Video format information.  sensor_format is kept in a form
-	 * that we can use to pass to the sensor.  We always run the
-	 * sensor in VGA resolution, though, and let the controller
-	 * downscale things if need be.	 So we keep the "real*
-	 * dimensions separately.
-	 */
+	 
 	struct v4l2_pix_format sensor_format;
 	struct v4l2_pix_format user_format;
 	u32 mbus_code;
 };
 
-/* buffer for one video frame */
+ 
 struct via_buffer {
-	/* common v4l buffer stuff -- must be first */
+	 
 	struct vb2_v4l2_buffer		vbuf;
 	struct list_head		queue;
 };
 
-/*
- * Yes, this is a hack, but there's only going to be one of these
- * on any system we know of.
- */
+ 
 static struct via_camera *via_cam_info;
 
-/*
- * Flag values, manipulated with bitops
- */
-#define CF_DMA_ACTIVE	 0	/* A frame is incoming */
-#define CF_CONFIG_NEEDED 1	/* Must configure hardware */
+ 
+#define CF_DMA_ACTIVE	 0	 
+#define CF_CONFIG_NEEDED 1	 
 
 
-/*
- * Nasty ugly v4l2 boilerplate.
- */
+ 
 #define sensor_call(cam, optype, func, args...) \
 	v4l2_subdev_call(cam->sensor, optype, func, ##args)
 
-/*
- * Debugging and related.
- */
+ 
 #define cam_err(cam, fmt, arg...) \
 	dev_err(&(cam)->platdev->dev, fmt, ##arg)
 #define cam_warn(cam, fmt, arg...) \
@@ -137,15 +106,10 @@ static struct via_camera *via_cam_info;
 #define cam_dbg(cam, fmt, arg...) \
 	dev_dbg(&(cam)->platdev->dev, fmt, ##arg)
 
-/*
- * Format handling.  This is ripped almost directly from Hans's changes
- * to cafe_ccic.c.  It's a little unfortunate; until this change, we
- * didn't need to know anything about the format except its byte depth;
- * now this information must be managed at this level too.
- */
+ 
 static struct via_format {
 	__u32 pixelformat;
-	int bpp;   /* Bytes per pixel */
+	int bpp;    
 	u32 mbus_code;
 } via_formats[] = {
 	{
@@ -153,10 +117,7 @@ static struct via_format {
 		.mbus_code	= MEDIA_BUS_FMT_YUYV8_2X8,
 		.bpp		= 2,
 	},
-	/* RGB444 and Bayer should be doable, but have never been
-	   tested with this driver. RGB565 seems to work at the default
-	   resolution, but results in color corruption when being scaled by
-	   viacam_set_scaled(), and is disabled as a result. */
+	 
 };
 #define N_VIA_FMTS ARRAY_SIZE(via_formats)
 
@@ -167,16 +128,13 @@ static struct via_format *via_find_format(u32 pixelformat)
 	for (i = 0; i < N_VIA_FMTS; i++)
 		if (via_formats[i].pixelformat == pixelformat)
 			return via_formats + i;
-	/* Not found? Then return the first format. */
+	 
 	return via_formats;
 }
 
 
-/*--------------------------------------------------------------------------*/
-/*
- * Sensor power/reset management.  This piece is OLPC-specific for
- * sure; other configurations will have things connected differently.
- */
+ 
+ 
 static int via_sensor_power_setup(struct via_camera *cam)
 {
 	struct device *dev = &cam->platdev->dev;
@@ -186,7 +144,7 @@ static int via_sensor_power_setup(struct via_camera *cam)
 		return dev_err_probe(dev, PTR_ERR(cam->power_gpio),
 				     "failed to get power GPIO");
 
-	/* Request the reset line asserted */
+	 
 	cam->reset_gpio = devm_gpiod_get(dev, "VGPIO2", GPIOD_OUT_HIGH);
 	if (IS_ERR(cam->reset_gpio))
 		return dev_err_probe(dev, PTR_ERR(cam->reset_gpio),
@@ -195,14 +153,12 @@ static int via_sensor_power_setup(struct via_camera *cam)
 	return 0;
 }
 
-/*
- * Power up the sensor and perform the reset dance.
- */
+ 
 static void via_sensor_power_up(struct via_camera *cam)
 {
 	gpiod_set_value(cam->power_gpio, 1);
 	gpiod_set_value(cam->reset_gpio, 1);
-	msleep(20);  /* Probably excessive */
+	msleep(20);   
 	gpiod_set_value(cam->reset_gpio, 0);
 	msleep(20);
 }
@@ -219,12 +175,10 @@ static void via_sensor_power_release(struct via_camera *cam)
 	via_sensor_power_down(cam);
 }
 
-/* --------------------------------------------------------------------------*/
-/* Sensor ops */
+ 
+ 
 
-/*
- * Manage the ov7670 "flip" bit, which needs special help.
- */
+ 
 static int viacam_set_flip(struct via_camera *cam)
 {
 	struct v4l2_control ctrl;
@@ -235,10 +189,7 @@ static int viacam_set_flip(struct via_camera *cam)
 	return v4l2_s_ctrl(NULL, cam->sensor->ctrl_handler, &ctrl);
 }
 
-/*
- * Configure the sensor.  It's up to the caller to ensure
- * that the camera is in the correct operating state.
- */
+ 
 static int viacam_configure_sensor(struct via_camera *cam)
 {
 	struct v4l2_subdev_format format = {
@@ -250,9 +201,7 @@ static int viacam_configure_sensor(struct via_camera *cam)
 	ret = sensor_call(cam, core, init, 0);
 	if (ret == 0)
 		ret = sensor_call(cam, pad, set_fmt, NULL, &format);
-	/*
-	 * OV7670 does weird things if flip is set *before* format...
-	 */
+	 
 	if (ret == 0)
 		ret = viacam_set_flip(cam);
 	return ret;
@@ -260,14 +209,8 @@ static int viacam_configure_sensor(struct via_camera *cam)
 
 
 
-/* --------------------------------------------------------------------------*/
-/*
- * Some simple register accessors; they assume that the lock is held.
- *
- * Should we want to support the second capture engine, we could
- * hide the register difference by adding 0x1000 to registers in the
- * 0x300-350 range.
- */
+ 
+ 
 static inline void viacam_write_reg(struct via_camera *cam,
 		int reg, int value)
 {
@@ -289,8 +232,8 @@ static inline void viacam_write_reg_mask(struct via_camera *cam,
 }
 
 
-/* --------------------------------------------------------------------------*/
-/* Interrupt management and handling */
+ 
+ 
 
 static irqreturn_t viacam_quick_irq(int irq, void *data)
 {
@@ -298,10 +241,7 @@ static irqreturn_t viacam_quick_irq(int irq, void *data)
 	irqreturn_t ret = IRQ_NONE;
 	int icv;
 
-	/*
-	 * All we do here is to clear the interrupts and tell
-	 * the handler thread to wake up.
-	 */
+	 
 	spin_lock(&cam->viadev->reg_lock);
 	icv = viacam_read_reg(cam, VCR_INTCTRL);
 	if (icv & VCR_IC_EAV) {
@@ -313,9 +253,7 @@ static irqreturn_t viacam_quick_irq(int irq, void *data)
 	return ret;
 }
 
-/*
- * Find the next buffer which has somebody waiting on it.
- */
+ 
 static struct via_buffer *viacam_next_buffer(struct via_camera *cam)
 {
 	if (cam->opstate != S_RUNNING)
@@ -325,9 +263,7 @@ static struct via_buffer *viacam_next_buffer(struct via_camera *cam)
 	return list_entry(cam->buffer_queue.next, struct via_buffer, queue);
 }
 
-/*
- * The threaded IRQ handler.
- */
+ 
 static irqreturn_t viacam_irq(int irq, void *data)
 {
 	struct via_camera *cam = data;
@@ -336,23 +272,16 @@ static irqreturn_t viacam_irq(int irq, void *data)
 	struct sg_table *sgt;
 
 	mutex_lock(&cam->lock);
-	/*
-	 * If there is no place to put the data frame, don't bother
-	 * with anything else.
-	 */
+	 
 	vb = viacam_next_buffer(cam);
 	if (vb == NULL)
 		goto done;
-	/*
-	 * Figure out which buffer we just completed.
-	 */
+	 
 	bufn = (viacam_read_reg(cam, VCR_INTCTRL) & VCR_IC_ACTBUF) >> 3;
 	bufn -= 1;
 	if (bufn < 0)
 		bufn = cam->n_cap_bufs - 1;
-	/*
-	 * Copy over the data and let any waiters know.
-	 */
+	 
 	sgt = vb2_dma_sg_plane_desc(&vb->vbuf.vb2_buf, 0);
 	vb->vbuf.vb2_buf.timestamp = ktime_get_ns();
 	viafb_dma_copy_out_sg(cam->cb_offsets[bufn], sgt->sgl, sgt->nents);
@@ -366,13 +295,7 @@ done:
 }
 
 
-/*
- * These functions must mess around with the general interrupt
- * control register, which is relevant to much more than just the
- * camera.  Nothing else uses interrupts, though, as of this writing.
- * Should that situation change, we'll have to improve support at
- * the via-core level.
- */
+ 
 static void viacam_int_enable(struct via_camera *cam)
 {
 	viacam_write_reg(cam, VCR_INTCTRL,
@@ -388,21 +311,17 @@ static void viacam_int_disable(struct via_camera *cam)
 
 
 
-/* --------------------------------------------------------------------------*/
-/* Controller operations */
+ 
+ 
 
-/*
- * Set up our capture buffers in framebuffer memory.
- */
+ 
 static int viacam_ctlr_cbufs(struct via_camera *cam)
 {
 	int nbuf = cam->viadev->camera_fbmem_size/cam->sensor_format.sizeimage;
 	int i;
 	unsigned int offset;
 
-	/*
-	 * See how many buffers we can work with.
-	 */
+	 
 	if (nbuf >= 3) {
 		cam->n_cap_bufs = 3;
 		viacam_write_reg_mask(cam, VCR_CAPINTC, VCR_CI_3BUFS,
@@ -414,9 +333,7 @@ static int viacam_ctlr_cbufs(struct via_camera *cam)
 		cam_warn(cam, "Insufficient frame buffer memory\n");
 		return -ENOMEM;
 	}
-	/*
-	 * Set them up.
-	 */
+	 
 	offset = cam->fb_offset;
 	for (i = 0; i < cam->n_cap_bufs; i++) {
 		cam->cb_offsets[i] = offset;
@@ -427,23 +344,7 @@ static int viacam_ctlr_cbufs(struct via_camera *cam)
 	return 0;
 }
 
-/*
- * Set the scaling register for downscaling the image.
- *
- * This register works like this...  Vertical scaling is enabled
- * by bit 26; if that bit is set, downscaling is controlled by the
- * value in bits 16:25.	 Those bits are divided by 1024 to get
- * the scaling factor; setting just bit 25 thus cuts the height
- * in half.
- *
- * Horizontal scaling works about the same, but it's enabled by
- * bit 11, with bits 0:10 giving the numerator of a fraction
- * (over 2048) for the scaling value.
- *
- * This function is naive in that, if the user departs from
- * the 3x4 VGA scaling factor, the image will distort.	We
- * could work around that if it really seemed important.
- */
+ 
 static void viacam_set_scale(struct via_camera *cam)
 {
 	unsigned int avscale;
@@ -463,52 +364,34 @@ static void viacam_set_scale(struct via_camera *cam)
 }
 
 
-/*
- * Configure image-related information into the capture engine.
- */
+ 
 static void viacam_ctlr_image(struct via_camera *cam)
 {
 	int cicreg;
 
-	/*
-	 * Disable clock before messing with stuff - from the via
-	 * sample driver.
-	 */
+	 
 	viacam_write_reg(cam, VCR_CAPINTC, ~(VCR_CI_ENABLE|VCR_CI_CLKEN));
-	/*
-	 * Set up the controller for VGA resolution, modulo magic
-	 * offsets from the via sample driver.
-	 */
+	 
 	viacam_write_reg(cam, VCR_HORRANGE, 0x06200120);
 	viacam_write_reg(cam, VCR_VERTRANGE, 0x01de0000);
 	viacam_set_scale(cam);
-	/*
-	 * Image size info.
-	 */
+	 
 	viacam_write_reg(cam, VCR_MAXDATA,
 			(cam->sensor_format.height << 16) |
 			(cam->sensor_format.bytesperline >> 3));
 	viacam_write_reg(cam, VCR_MAXVBI, 0);
 	viacam_write_reg(cam, VCR_VSTRIDE,
 			cam->user_format.bytesperline & VCR_VS_STRIDE);
-	/*
-	 * Set up the capture interface control register,
-	 * everything but the "go" bit.
-	 *
-	 * The FIFO threshold is a bit of a magic number; 8 is what
-	 * VIA's sample code uses.
-	 */
+	 
 	cicreg = VCR_CI_CLKEN |
-		0x08000000 |		/* FIFO threshold */
-		VCR_CI_FLDINV |		/* OLPC-specific? */
-		VCR_CI_VREFINV |	/* OLPC-specific? */
-		VCR_CI_DIBOTH |		/* Capture both fields */
+		0x08000000 |		 
+		VCR_CI_FLDINV |		 
+		VCR_CI_VREFINV |	 
+		VCR_CI_DIBOTH |		 
 		VCR_CI_CCIR601_8;
 	if (cam->n_cap_bufs == 3)
 		cicreg |= VCR_CI_3BUFS;
-	/*
-	 * YUV formats need different byte swapping than RGB.
-	 */
+	 
 	if (cam->user_format.pixelformat == V4L2_PIX_FMT_YUYV)
 		cicreg |= VCR_CI_YUYV;
 	else
@@ -531,15 +414,13 @@ static int viacam_config_controller(struct via_camera *cam)
 	return ret;
 }
 
-/*
- * Make it start grabbing data.
- */
+ 
 static void viacam_start_engine(struct via_camera *cam)
 {
 	spin_lock_irq(&cam->viadev->reg_lock);
 	viacam_write_reg_mask(cam, VCR_CAPINTC, VCR_CI_ENABLE, VCR_CI_ENABLE);
 	viacam_int_enable(cam);
-	(void) viacam_read_reg(cam, VCR_CAPINTC); /* Force post */
+	(void) viacam_read_reg(cam, VCR_CAPINTC);  
 	cam->opstate = S_RUNNING;
 	spin_unlock_irq(&cam->viadev->reg_lock);
 }
@@ -550,14 +431,14 @@ static void viacam_stop_engine(struct via_camera *cam)
 	spin_lock_irq(&cam->viadev->reg_lock);
 	viacam_int_disable(cam);
 	viacam_write_reg_mask(cam, VCR_CAPINTC, 0, VCR_CI_ENABLE);
-	(void) viacam_read_reg(cam, VCR_CAPINTC); /* Force post */
+	(void) viacam_read_reg(cam, VCR_CAPINTC);  
 	cam->opstate = S_IDLE;
 	spin_unlock_irq(&cam->viadev->reg_lock);
 }
 
 
-/* --------------------------------------------------------------------------*/
-/* vb2 callback ops */
+ 
+ 
 
 static struct via_buffer *vb2_to_via_buffer(struct vb2_buffer *vb)
 {
@@ -617,9 +498,7 @@ static int viacam_vb2_start_streaming(struct vb2_queue *vq, unsigned int count)
 		ret = -EBUSY;
 		goto out;
 	}
-	/*
-	 * Configure things if need be.
-	 */
+	 
 	if (test_bit(CF_CONFIG_NEEDED, &cam->flags)) {
 		ret = viacam_configure_sensor(cam);
 		if (ret)
@@ -629,12 +508,7 @@ static int viacam_vb2_start_streaming(struct vb2_queue *vq, unsigned int count)
 			goto out;
 	}
 	cam->sequence = 0;
-	/*
-	 * If the CPU goes into C3, the DMA transfer gets corrupted and
-	 * users start filing unsightly bug reports.  Put in a "latency"
-	 * requirement which will keep the CPU out of the deeper sleep
-	 * states.
-	 */
+	 
 	cpu_latency_qos_add_request(&cam->qos_request, 50);
 	viacam_start_engine(cam);
 	return 0;
@@ -670,18 +544,15 @@ static const struct vb2_ops viacam_vb2_ops = {
 	.wait_finish		= vb2_ops_wait_finish,
 };
 
-/* --------------------------------------------------------------------------*/
-/* File operations */
+ 
+ 
 
 static int viacam_open(struct file *filp)
 {
 	struct via_camera *cam = video_drvdata(filp);
 	int ret;
 
-	/*
-	 * Note the new user.  If this is the first one, we'll also
-	 * need to power up the sensor.
-	 */
+	 
 	mutex_lock(&cam->lock);
 	ret = v4l2_fh_open(filp);
 	if (ret)
@@ -709,9 +580,7 @@ static int viacam_release(struct file *filp)
 	mutex_lock(&cam->lock);
 	last_open = v4l2_fh_is_singular_file(filp);
 	_vb2_fop_release(filp, NULL);
-	/*
-	 * Last one out needs to turn out the lights.
-	 */
+	 
 	if (last_open) {
 		via_sensor_power_down(cam);
 		viafb_release_dma();
@@ -730,14 +599,10 @@ static const struct v4l2_file_operations viacam_fops = {
 	.unlocked_ioctl = video_ioctl2,
 };
 
-/*----------------------------------------------------------------------------*/
-/*
- * The long list of v4l2 ioctl ops
- */
+ 
+ 
 
-/*
- * Only one input.
- */
+ 
 static int viacam_enum_input(struct file *filp, void *priv,
 		struct v4l2_input *input)
 {
@@ -762,10 +627,7 @@ static int viacam_s_input(struct file *filp, void *priv, unsigned int i)
 	return 0;
 }
 
-/*
- * Video format stuff.	Here is our default format until
- * user space messes with things.
- */
+ 
 static const struct v4l2_pix_format viacam_def_pix_format = {
 	.width		= VGA_WIDTH,
 	.height		= VGA_HEIGHT,
@@ -787,10 +649,7 @@ static int viacam_enum_fmt_vid_cap(struct file *filp, void *priv,
 	return 0;
 }
 
-/*
- * Figure out proper image dimensions, but always force the
- * sensor to VGA.
- */
+ 
 static void viacam_fmt_pre(struct v4l2_pix_format *userfmt,
 		struct v4l2_pix_format *sensorfmt)
 {
@@ -825,9 +684,7 @@ static void viacam_fmt_post(struct v4l2_pix_format *userfmt,
 }
 
 
-/*
- * The real work of figuring out a workable format.
- */
+ 
 static int viacam_do_try_fmt(struct via_camera *cam,
 		struct v4l2_pix_format *upix, struct v4l2_pix_format *spix)
 {
@@ -879,22 +736,14 @@ static int viacam_s_fmt_vid_cap(struct file *filp, void *priv,
 	struct v4l2_format sfmt;
 	struct via_format *f = via_find_format(fmt->fmt.pix.pixelformat);
 
-	/*
-	 * Camera must be idle or we can't mess with the
-	 * video setup.
-	 */
+	 
 	if (cam->opstate != S_IDLE)
 		return -EBUSY;
-	/*
-	 * Let the sensor code look over and tweak the
-	 * requested formatting.
-	 */
+	 
 	ret = viacam_do_try_fmt(cam, &fmt->fmt.pix, &sfmt.fmt.pix);
 	if (ret)
 		return ret;
-	/*
-	 * OK, let's commit to the new format.
-	 */
+	 
 	cam->user_format = fmt->fmt.pix;
 	cam->sensor_format = sfmt.fmt.pix;
 	cam->mbus_code = f->mbus_code;
@@ -913,7 +762,7 @@ static int viacam_querycap(struct file *filp, void *priv,
 	return 0;
 }
 
-/* G/S_PARM */
+ 
 
 static int viacam_g_parm(struct file *filp, void *priv,
 		struct v4l2_streamparm *parm)
@@ -1008,11 +857,9 @@ static const struct v4l2_ioctl_ops viacam_ioctl_ops = {
 	.vidioc_unsubscribe_event	= v4l2_event_unsubscribe,
 };
 
-/*----------------------------------------------------------------------------*/
+ 
 
-/*
- * Power management.
- */
+ 
 #ifdef CONFIG_PM
 
 static int viacam_suspend(void *priv)
@@ -1022,7 +869,7 @@ static int viacam_suspend(void *priv)
 
 	if (cam->opstate != S_IDLE) {
 		viacam_stop_engine(cam);
-		cam->opstate = state; /* So resume restarts */
+		cam->opstate = state;  
 	}
 
 	return 0;
@@ -1033,23 +880,17 @@ static int viacam_resume(void *priv)
 	struct via_camera *cam = priv;
 	int ret = 0;
 
-	/*
-	 * Get back to a reasonable operating state.
-	 */
+	 
 	via_write_reg_mask(VIASR, 0x78, 0, 0x80);
 	via_write_reg_mask(VIASR, 0x1e, 0xc0, 0xc0);
 	viacam_int_disable(cam);
 	set_bit(CF_CONFIG_NEEDED, &cam->flags);
-	/*
-	 * Make sure the sensor's power state is correct
-	 */
+	 
 	if (!list_empty(&cam->vdev.fh_list))
 		via_sensor_power_up(cam);
 	else
 		via_sensor_power_down(cam);
-	/*
-	 * If it was operating, try to restart it.
-	 */
+	 
 	if (cam->opstate != S_IDLE) {
 		mutex_lock(&cam->lock);
 		ret = viacam_configure_sensor(cam);
@@ -1068,28 +909,21 @@ static struct viafb_pm_hooks viacam_pm_hooks = {
 	.resume = viacam_resume
 };
 
-#endif /* CONFIG_PM */
+#endif  
 
-/*
- * Setup stuff.
- */
+ 
 
 static const struct video_device viacam_v4l_template = {
 	.name		= "via-camera",
 	.minor		= -1,
 	.fops		= &viacam_fops,
 	.ioctl_ops	= &viacam_ioctl_ops,
-	.release	= video_device_release_empty, /* Check this */
+	.release	= video_device_release_empty,  
 	.device_caps	= V4L2_CAP_VIDEO_CAPTURE | V4L2_CAP_READWRITE |
 			  V4L2_CAP_STREAMING,
 };
 
-/*
- * The OLPC folks put the serial port on the same pin as
- * the camera.	They also get grumpy if we break the
- * serial port and keep them from using it.  So we have
- * to check the serial enable bit and not step on it.
- */
+ 
 #define VIACAM_SERIAL_DEVFN 0x88
 #define VIACAM_SERIAL_CREG 0x46
 #define VIACAM_SERIAL_BIT 0x40
@@ -1104,7 +938,7 @@ static bool viacam_serial_is_enabled(void)
 	pci_bus_read_config_byte(pbus, VIACAM_SERIAL_DEVFN,
 			VIACAM_SERIAL_CREG, &cbyte);
 	if ((cbyte & VIACAM_SERIAL_BIT) == 0)
-		return false; /* Not enabled */
+		return false;  
 	if (!override_serial) {
 		printk(KERN_NOTICE "Via camera: serial port is enabled, " \
 				"refusing to load.\n");
@@ -1119,7 +953,7 @@ static bool viacam_serial_is_enabled(void)
 }
 
 static struct ov7670_config sensor_cfg = {
-	/* The XO-1.5 (only known user) clocks the camera at 90MHz. */
+	 
 	.clock_speed = 90,
 };
 
@@ -1135,22 +969,10 @@ static int viacam_probe(struct platform_device *pdev)
 		.platform_data = &sensor_cfg,
 	};
 
-	/*
-	 * Note that there are actually two capture channels on
-	 * the device.	We only deal with one for now.	That
-	 * is encoded here; nothing else assumes it's dealing with
-	 * a unique capture device.
-	 */
+	 
 	struct via_camera *cam;
 
-	/*
-	 * Ensure that frame buffer memory has been set aside for
-	 * this purpose.  As an arbitrary limit, refuse to work
-	 * with less than two frames of VGA 16-bit data.
-	 *
-	 * If we ever support the second port, we'll need to set
-	 * aside more memory.
-	 */
+	 
 	if (viadev->camera_fbmem_size < (VGA_HEIGHT*VGA_WIDTH*4)) {
 		printk(KERN_ERR "viacam: insufficient FB memory reserved\n");
 		return -ENOMEM;
@@ -1163,9 +985,7 @@ static int viacam_probe(struct platform_device *pdev)
 	if (machine_is_olpc() && viacam_serial_is_enabled())
 		return -EBUSY;
 
-	/*
-	 * Basic structure initialization.
-	 */
+	 
 	cam = kzalloc (sizeof(struct via_camera), GFP_KERNEL);
 	if (cam == NULL)
 		return -ENOMEM;
@@ -1181,9 +1001,7 @@ static int viacam_probe(struct platform_device *pdev)
 	cam->fb_offset = viadev->camera_fbmem_offset;
 	cam->flags = 1 << CF_CONFIG_NEEDED;
 	cam->mbus_code = via_def_mbus_code;
-	/*
-	 * Tell V4L that we exist.
-	 */
+	 
 	ret = v4l2_device_register(&pdev->dev, &cam->v4l2_dev);
 	if (ret) {
 		dev_err(&pdev->dev, "Unable to register v4l2 device\n");
@@ -1193,31 +1011,21 @@ static int viacam_probe(struct platform_device *pdev)
 	if (ret)
 		goto out_unregister;
 	cam->v4l2_dev.ctrl_handler = &cam->ctrl_handler;
-	/*
-	 * Convince the system that we can do DMA.
-	 */
+	 
 	pdev->dev.dma_mask = &viadev->pdev->dma_mask;
 	ret = dma_set_mask(&pdev->dev, 0xffffffff);
 	if (ret)
 		goto out_ctrl_hdl_free;
-	/*
-	 * Fire up the capture port.  The write to 0x78 looks purely
-	 * OLPCish; any system will need to tweak 0x1e.
-	 */
+	 
 	via_write_reg_mask(VIASR, 0x78, 0, 0x80);
 	via_write_reg_mask(VIASR, 0x1e, 0xc0, 0xc0);
-	/*
-	 * Get the sensor powered up.
-	 */
+	 
 	ret = via_sensor_power_setup(cam);
 	if (ret)
 		goto out_ctrl_hdl_free;
 	via_sensor_power_up(cam);
 
-	/*
-	 * See if we can't find it on the bus.	The VIA_PORT_31 assumption
-	 * is OLPC-specific.  0x42 assumption is ov7670-specific.
-	 */
+	 
 	sensor_adapter = viafb_find_i2c_adapter(VIA_PORT_31);
 	cam->sensor = v4l2_i2c_new_subdev_board(&cam->v4l2_dev, sensor_adapter,
 			&ov7670_info, NULL);
@@ -1226,9 +1034,7 @@ static int viacam_probe(struct platform_device *pdev)
 		ret = -ENODEV;
 		goto out_power_down;
 	}
-	/*
-	 * Get the IRQ.
-	 */
+	 
 	viacam_int_disable(cam);
 	ret = request_threaded_irq(viadev->pdev->irq, viacam_quick_irq,
 			viacam_irq, IRQF_SHARED, "via-camera", cam);
@@ -1248,9 +1054,7 @@ static int viacam_probe(struct platform_device *pdev)
 	vq->lock = &cam->lock;
 
 	ret = vb2_queue_init(vq);
-	/*
-	 * Tell V4l2 that we exist.
-	 */
+	 
 	cam->vdev = viacam_v4l_template;
 	cam->vdev.v4l2_dev = &cam->v4l2_dev;
 	cam->vdev.lock = &cam->lock;
@@ -1261,14 +1065,12 @@ static int viacam_probe(struct platform_device *pdev)
 		goto out_irq;
 
 #ifdef CONFIG_PM
-	/*
-	 * Hook into PM events
-	 */
+	 
 	viacam_pm_hooks.private = cam;
 	viafb_pm_register(&viacam_pm_hooks);
 #endif
 
-	/* Power the sensor down until somebody opens the device */
+	 
 	via_sensor_power_down(cam);
 	return 0;
 

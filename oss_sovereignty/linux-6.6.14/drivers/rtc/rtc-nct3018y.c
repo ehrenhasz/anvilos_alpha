@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2022 Nuvoton Technology Corporation
+
+
 
 #include <linux/bcd.h>
 #include <linux/clk-provider.h>
@@ -10,19 +10,19 @@
 #include <linux/rtc.h>
 #include <linux/slab.h>
 
-#define NCT3018Y_REG_SC		0x00 /* seconds */
-#define NCT3018Y_REG_SCA	0x01 /* alarm */
+#define NCT3018Y_REG_SC		0x00  
+#define NCT3018Y_REG_SCA	0x01  
 #define NCT3018Y_REG_MN		0x02
-#define NCT3018Y_REG_MNA	0x03 /* alarm */
+#define NCT3018Y_REG_MNA	0x03  
 #define NCT3018Y_REG_HR		0x04
-#define NCT3018Y_REG_HRA	0x05 /* alarm */
+#define NCT3018Y_REG_HRA	0x05  
 #define NCT3018Y_REG_DW		0x06
 #define NCT3018Y_REG_DM		0x07
 #define NCT3018Y_REG_MO		0x08
 #define NCT3018Y_REG_YR		0x09
-#define NCT3018Y_REG_CTRL	0x0A /* timer control */
-#define NCT3018Y_REG_ST		0x0B /* status */
-#define NCT3018Y_REG_CLKO	0x0C /* clock out */
+#define NCT3018Y_REG_CTRL	0x0A  
+#define NCT3018Y_REG_ST		0x0B  
+#define NCT3018Y_REG_CLKO	0x0C  
 
 #define NCT3018Y_BIT_AF		BIT(7)
 #define NCT3018Y_BIT_ST		BIT(7)
@@ -35,8 +35,8 @@
 #define NCT3018Y_BIT_TWO	BIT(0)
 
 #define NCT3018Y_REG_BAT_MASK		0x07
-#define NCT3018Y_REG_CLKO_F_MASK	0x03 /* frequenc mask */
-#define NCT3018Y_REG_CLKO_CKE		0x80 /* clock out enabled */
+#define NCT3018Y_REG_CLKO_F_MASK	0x03  
+#define NCT3018Y_REG_CLKO_CKE		0x80  
 
 struct nct3018y {
 	struct rtc_device *rtc;
@@ -140,10 +140,7 @@ static irqreturn_t nct3018y_irq(int irq, void *dev_id)
 	return IRQ_NONE;
 }
 
-/*
- * In the routines that deal directly with the nct3018y hardware, we use
- * rtc_time -- month 0-11, hour 0-23, yr = calendar year-epoch.
- */
+ 
 static int nct3018y_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -305,9 +302,7 @@ static int nct3018y_ioctl(struct device *dev, unsigned int cmd, unsigned long ar
 }
 
 #ifdef CONFIG_COMMON_CLK
-/*
- * Handling of the clkout
- */
+ 
 
 #define clkout_hw_to_nct3018y(_hw) container_of(_hw, struct nct3018y, clkout_hw)
 
@@ -430,10 +425,10 @@ static struct clk *nct3018y_clkout_register_clk(struct nct3018y *nct3018y)
 	init.num_parents = 0;
 	nct3018y->clkout_hw.init = &init;
 
-	/* optional override of the clockname */
+	 
 	of_property_read_string(node, "clock-output-names", &init.name);
 
-	/* register the clock */
+	 
 	clk = devm_clk_register(&client->dev, &nct3018y->clkout_hw);
 
 	if (!IS_ERR(clk))
@@ -516,7 +511,7 @@ static int nct3018y_probe(struct i2c_client *client)
 	}
 
 #ifdef CONFIG_COMMON_CLK
-	/* register clk in common clk framework */
+	 
 	nct3018y_clkout_register_clk(nct3018y);
 #endif
 

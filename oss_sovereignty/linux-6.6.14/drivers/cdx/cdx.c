@@ -1,59 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * CDX bus driver.
- *
- * Copyright (C) 2022-2023, Advanced Micro Devices, Inc.
- */
 
-/*
- * Architecture Overview
- * =====================
- * CDX is a Hardware Architecture designed for AMD FPGA devices. It
- * consists of sophisticated mechanism for interaction between FPGA,
- * Firmware and the APUs (Application CPUs).
- *
- * Firmware resides on RPU (Realtime CPUs) which interacts with
- * the FPGA program manager and the APUs. The RPU provides memory-mapped
- * interface (RPU if) which is used to communicate with APUs.
- *
- * The diagram below shows an overview of the CDX architecture:
- *
- *          +--------------------------------------+
- *          |    Application CPUs (APU)            |
- *          |                                      |
- *          |                    CDX device drivers|
- *          |     Linux OS                |        |
- *          |                        CDX bus       |
- *          |                             |        |
- *          |                     CDX controller   |
- *          |                             |        |
- *          +-----------------------------|--------+
- *                                        | (discover, config,
- *                                        |  reset, rescan)
- *                                        |
- *          +------------------------| RPU if |----+
- *          |                             |        |
- *          |                             V        |
- *          |          Realtime CPUs (RPU)         |
- *          |                                      |
- *          +--------------------------------------+
- *                                |
- *          +---------------------|----------------+
- *          |  FPGA               |                |
- *          |      +-----------------------+       |
- *          |      |           |           |       |
- *          | +-------+    +-------+   +-------+   |
- *          | | dev 1 |    | dev 2 |   | dev 3 |   |
- *          | +-------+    +-------+   +-------+   |
- *          +--------------------------------------+
- *
- * The RPU firmware extracts the device information from the loaded FPGA
- * image and implements a mechanism that allows the APU drivers to
- * enumerate such devices (device personality and resource details) via
- * a dedicated communication channel. RPU mediates operations such as
- * discover, reset and rescan of the FPGA devices for the APU. This is
- * done using memory mapped interface provided by the RPU to APU.
- */
+ 
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -66,19 +14,14 @@
 #include <linux/dma-map-ops.h>
 #include "cdx.h"
 
-/* Default DMA mask for devices on a CDX bus */
+ 
 #define CDX_DEFAULT_DMA_MASK	(~0ULL)
 #define MAX_CDX_CONTROLLERS 16
 
-/* CDX controllers registered with the CDX bus */
+ 
 static DEFINE_XARRAY_ALLOC(cdx_controllers);
 
-/**
- * cdx_dev_reset - Reset a CDX device
- * @dev: CDX device
- *
- * Return: -errno on failure, 0 on success.
- */
+ 
 int cdx_dev_reset(struct device *dev)
 {
 	struct cdx_device *cdx_dev = to_cdx_device(dev);
@@ -88,7 +31,7 @@ int cdx_dev_reset(struct device *dev)
 	int ret;
 
 	cdx_drv = to_cdx_driver(dev->driver);
-	/* Notify driver that device is being reset */
+	 
 	if (cdx_drv && cdx_drv->reset_prepare)
 		cdx_drv->reset_prepare(cdx_dev);
 
@@ -98,7 +41,7 @@ int cdx_dev_reset(struct device *dev)
 	if (ret)
 		dev_err(dev, "cdx device reset failed\n");
 
-	/* Notify driver that device reset is complete */
+	 
 	if (cdx_drv && cdx_drv->reset_done)
 		cdx_drv->reset_done(cdx_dev);
 
@@ -106,16 +49,7 @@ int cdx_dev_reset(struct device *dev)
 }
 EXPORT_SYMBOL_GPL(cdx_dev_reset);
 
-/**
- * cdx_unregister_device - Unregister a CDX device
- * @dev: CDX device
- * @data: This is always passed as NULL, and is not used in this API,
- *	  but is required here as the bus_for_each_dev() API expects
- *	  the passed function (cdx_unregister_device) to have this
- *	  as an argument.
- *
- * Return: 0 on success.
- */
+ 
 static int cdx_unregister_device(struct device *dev,
 				 void *data)
 {
@@ -123,10 +57,7 @@ static int cdx_unregister_device(struct device *dev,
 
 	kfree(cdx_dev->driver_override);
 	cdx_dev->driver_override = NULL;
-	/*
-	 * Do not free cdx_dev here as it would be freed in
-	 * cdx_device_release() called from within put_device().
-	 */
+	 
 	device_del(&cdx_dev->dev);
 	put_device(&cdx_dev->dev);
 
@@ -135,40 +66,23 @@ static int cdx_unregister_device(struct device *dev,
 
 static void cdx_unregister_devices(struct bus_type *bus)
 {
-	/* Reset all the devices attached to cdx bus */
+	 
 	bus_for_each_dev(bus, NULL, NULL, cdx_unregister_device);
 }
 
-/**
- * cdx_match_one_device - Tell if a CDX device structure has a matching
- *			  CDX device id structure
- * @id: single CDX device id structure to match
- * @dev: the CDX device structure to match against
- *
- * Return: matching cdx_device_id structure or NULL if there is no match.
- */
+ 
 static inline const struct cdx_device_id *
 cdx_match_one_device(const struct cdx_device_id *id,
 		     const struct cdx_device *dev)
 {
-	/* Use vendor ID and device ID for matching */
+	 
 	if ((id->vendor == CDX_ANY_ID || id->vendor == dev->vendor) &&
 	    (id->device == CDX_ANY_ID || id->device == dev->device))
 		return id;
 	return NULL;
 }
 
-/**
- * cdx_match_id - See if a CDX device matches a given cdx_id table
- * @ids: array of CDX device ID structures to search in
- * @dev: the CDX device structure to match against.
- *
- * Used by a driver to check whether a CDX device is in its list of
- * supported devices. Returns the matching cdx_device_id structure or
- * NULL if there is no match.
- *
- * Return: matching cdx_device_id structure or NULL if there is no match.
- */
+ 
 static inline const struct cdx_device_id *
 cdx_match_id(const struct cdx_device_id *ids, struct cdx_device *dev)
 {
@@ -182,14 +96,7 @@ cdx_match_id(const struct cdx_device_id *ids, struct cdx_device *dev)
 	return NULL;
 }
 
-/**
- * cdx_bus_match - device to driver matching callback
- * @dev: the cdx device to match against
- * @drv: the device driver to search for matching cdx device
- * structures
- *
- * Return: true on success, false otherwise.
- */
+ 
 static int cdx_bus_match(struct device *dev, struct device_driver *drv)
 {
 	struct cdx_device *cdx_dev = to_cdx_device(dev);
@@ -199,7 +106,7 @@ static int cdx_bus_match(struct device *dev, struct device_driver *drv)
 
 	ids = cdx_drv->match_id_table;
 
-	/* When driver_override is set, only bind to the matching driver */
+	 
 	if (cdx_dev->driver_override && strcmp(cdx_dev->driver_override, drv->name))
 		return false;
 
@@ -208,10 +115,7 @@ static int cdx_bus_match(struct device *dev, struct device_driver *drv)
 		return false;
 
 	do {
-		/*
-		 * In case override_only was set, enforce driver_override
-		 * matching.
-		 */
+		 
 		if (!found_id->override_only)
 			return true;
 		if (cdx_dev->driver_override)
@@ -287,7 +191,7 @@ static void cdx_dma_cleanup(struct device *dev)
 		iommu_device_unuse_default_domain(dev);
 }
 
-/* show configuration fields */
+ 
 #define cdx_config_attr(field, format_string)	\
 static ssize_t	\
 field##_show(struct device *dev, struct device_attribute *attr, char *buf)	\
@@ -393,10 +297,10 @@ static ssize_t rescan_store(const struct bus_type *bus,
 	if (!val)
 		return -EINVAL;
 
-	/* Unregister all the devices on the bus */
+	 
 	cdx_unregister_devices(&cdx_bus_type);
 
-	/* Rescan all the devices */
+	 
 	xa_for_each(&cdx_controllers, index, cdx) {
 		int ret;
 
@@ -471,12 +375,12 @@ int cdx_device_add(struct cdx_dev_params *dev_params)
 	if (!cdx_dev)
 		return -ENOMEM;
 
-	/* Populate resource */
+	 
 	memcpy(cdx_dev->res, dev_params->res, sizeof(struct resource) *
 		dev_params->res_count);
 	cdx_dev->res_count = dev_params->res_count;
 
-	/* Populate CDX dev params */
+	 
 	cdx_dev->req_id = dev_params->req_id;
 	cdx_dev->vendor = dev_params->vendor;
 	cdx_dev->device = dev_params->device;
@@ -485,14 +389,14 @@ int cdx_device_add(struct cdx_dev_params *dev_params)
 	cdx_dev->cdx = dev_params->cdx;
 	cdx_dev->dma_mask = CDX_DEFAULT_DMA_MASK;
 
-	/* Initialize generic device */
+	 
 	device_initialize(&cdx_dev->dev);
 	cdx_dev->dev.parent = parent;
 	cdx_dev->dev.bus = &cdx_bus_type;
 	cdx_dev->dev.dma_mask = &cdx_dev->dma_mask;
 	cdx_dev->dev.release = cdx_device_release;
 
-	/* Set Name */
+	 
 	dev_set_name(&cdx_dev->dev, "cdx-%02x:%02x",
 		     ((cdx->id << CDX_CONTROLLER_ID_SHIFT) | (cdx_dev->bus_num & CDX_BUS_NUM_MASK)),
 		     cdx_dev->dev_num);
@@ -506,10 +410,7 @@ int cdx_device_add(struct cdx_dev_params *dev_params)
 
 	return 0;
 fail:
-	/*
-	 * Do not free cdx_dev here as it would be freed in
-	 * cdx_device_release() called from put_device().
-	 */
+	 
 	put_device(&cdx_dev->dev);
 
 	return ret;
@@ -529,7 +430,7 @@ int cdx_register_controller(struct cdx_controller *cdx)
 		return ret;
 	}
 
-	/* Scan all the devices */
+	 
 	cdx->ops->scan(cdx);
 
 	return 0;

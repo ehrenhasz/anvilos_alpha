@@ -1,22 +1,6 @@
-/* error.c -- Functions for handling errors. */
+ 
 
-/* Copyright (C) 1993-2021 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include "config.h"
 
@@ -38,7 +22,7 @@
 #include <errno.h>
 #if !defined (errno)
 extern int errno;
-#endif /* !errno */
+#endif  
 
 #include "bashansi.h"
 #include "bashintl.h"
@@ -57,7 +41,7 @@ extern int executing_line_number PARAMS((void));
 #if defined (JOB_CONTROL)
 extern pid_t shell_pgrp;
 extern int give_terminal_to PARAMS((pid_t, int));
-#endif /* JOB_CONTROL */
+#endif  
 
 #if defined (ARRAY_VARS)
 extern const char * const bash_badsub_errmsg;
@@ -65,8 +49,7 @@ extern const char * const bash_badsub_errmsg;
 
 static void error_prolog PARAMS((int));
 
-/* The current maintainer of the shell.  You change this in the
-   Makefile. */
+ 
 #if !defined (MAINTAINER)
 #define MAINTAINER "bash-maintainers@gnu.org"
 #endif
@@ -91,7 +74,7 @@ error_prolog (print_lineno)
     fprintf (stderr, "%s: ", ename);
 }
 
-/* Return the name of the shell or the shell script for error reporting. */
+ 
 char *
 get_name_for_error ()
 {
@@ -109,7 +92,7 @@ get_name_for_error ()
       if (bash_source_v && array_p (bash_source_v) &&
 	  (bash_source_a = array_cell (bash_source_v)))
 	name = array_reference (bash_source_a, 0);
-      if (name == 0 || *name == '\0')	/* XXX - was just name == 0 */
+      if (name == 0 || *name == '\0')	 
 #endif
 	name = dollar_vars[0];
     }
@@ -125,9 +108,7 @@ get_name_for_error ()
   return (name);
 }
 
-/* Report an error having to do with FILENAME.  This does not use
-   sys_error so the filename is not interpreted as a printf-style
-   format string. */
+ 
 void
 file_error (filename)
      const char *filename;
@@ -149,7 +130,7 @@ programming_error (format, va_alist)
 
 #if defined (JOB_CONTROL)
   give_terminal_to (shell_pgrp, 0);
-#endif /* JOB_CONTROL */
+#endif  
 
   SH_VA_START (args, format);
 
@@ -175,10 +156,7 @@ programming_error (format, va_alist)
   abort ();
 }
 
-/* Print an error message and, if `set -e' has been executed, exit the
-   shell.  Used in this file by file_error and programming_error.  Used
-   outside this file mostly to report substitution and expansion errors,
-   and for bad invocation options. */
+ 
 void
 #if defined (PREFER_STDARG)
 report_error (const char *format, ...)
@@ -283,7 +261,7 @@ internal_inform (format, va_alist)
   va_list args;
 
   error_prolog (1);
-  /* TRANSLATORS: this is a prefix for informational messages. */
+   
   fprintf (stderr, _("INFORM: "));
 
   SH_VA_START (args, format);
@@ -343,14 +321,7 @@ sys_error (format, va_alist)
   va_end (args);
 }
 
-/* An error from the parser takes the general form
-
-	shell_name: input file name: line number: message
-
-   The input file name and line number are omitted if the shell is
-   currently interactive.  If the shell is not currently interactive,
-   the input file name is inserted only if it is different from the
-   shell name. */
+ 
 void
 #if defined (PREFER_STDARG)
 parser_error (int lineno, const char *format, ...)
@@ -388,7 +359,7 @@ parser_error (lineno, format, va_alist)
 }
 
 #ifdef DEBUG
-/* This assumes ASCII and is suitable only for debugging */
+ 
 char *
 strescape (str)
      const char *str;
@@ -441,8 +412,7 @@ itrace (format, va_alist)
   fflush(stderr);
 }
 
-/* A trace function for silent debugging -- doesn't require a control
-   terminal. */
+ 
 void
 #if defined (PREFER_STDARG)
 trace (const char *format, ...)
@@ -461,7 +431,7 @@ trace (format, va_alist)
   if (tracefp == NULL)
     tracefp = stderr;
   else
-    fcntl (fileno (tracefp), F_SETFD, 1);     /* close-on-exec */
+    fcntl (fileno (tracefp), F_SETFD, 1);      
 
   fprintf(tracefp, "TRACE: pid %ld: ", (long)getpid());
 
@@ -475,27 +445,27 @@ trace (format, va_alist)
   fflush(tracefp);
 }
 
-#endif /* DEBUG */
+#endif  
 
-/* **************************************************************** */
-/*								    */
-/*  		    Common error reporting			    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
 
 static const char * const cmd_error_table[] = {
-	N_("unknown command error"),	/* CMDERR_DEFAULT */
-	N_("bad command type"),		/* CMDERR_BADTYPE */
-	N_("bad connector"),		/* CMDERR_BADCONN */
-	N_("bad jump"),			/* CMDERR_BADJUMP */
+	N_("unknown command error"),	 
+	N_("bad command type"),		 
+	N_("bad connector"),		 
+	N_("bad jump"),			 
 	0
 };
 
 void
 command_error (func, code, e, flags)
      const char *func;
-     int code, e, flags;	/* flags currently unused */
+     int code, e, flags;	 
 {
   if (code > CMDERR_LAST)
     code = CMDERR_DEFAULT;

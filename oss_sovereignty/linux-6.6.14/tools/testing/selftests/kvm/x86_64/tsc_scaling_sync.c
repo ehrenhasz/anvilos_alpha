@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright © 2021 Amazon.com, Inc. or its affiliates.
- */
+
+ 
 
 #include "test_util.h"
 #include "kvm_util.h"
@@ -47,7 +45,7 @@ static void *run_vcpu(void *_cpu_nr)
 	static bool first_cpu_done;
 	struct kvm_vcpu *vcpu;
 
-	/* The kernel is fine, but vm_vcpu_add() needs locking */
+	 
 	pthread_spin_lock(&create_lock);
 
 	vcpu = vm_vcpu_add(vm, vcpu_id, guest_code);

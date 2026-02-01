@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * FCI FC2580 silicon tuner driver
- *
- * Copyright (C) 2012 Antti Palosaari <crope@iki.fi>
- */
+ 
+ 
 
 #ifndef FC2580_PRIV_H
 #define FC2580_PRIV_H
@@ -45,10 +41,10 @@ struct fc2580_pll {
 };
 
 static const struct fc2580_pll fc2580_pll_lut[] = {
-	/*                            VCO min    VCO max */
-	{ 400000000, 12, 0x80}, /* .......... 4800000000 */
-	{1000000000,  4, 0x00}, /* 1600000000 4000000000 */
-	{0xffffffff,  2, 0x40}, /* 2000000000 .......... */
+	 
+	{ 400000000, 12, 0x80},  
+	{1000000000,  4, 0x00},  
+	{0xffffffff,  2, 0x40},  
 };
 
 struct fc2580_if_filter {
@@ -92,7 +88,7 @@ struct fc2580_freq_regs {
 	u8 r6f_val;
 };
 
-/* XXX: 0xff is used for don't-care! */
+ 
 static const struct fc2580_freq_regs fc2580_freq_regs_lut[] = {
 	{ 400000000,
 		0xff, 0x77, 0x33, 0x40, 0xff, 0xff, 0xff, 0x09, 0xff, 0x8c,
@@ -125,7 +121,7 @@ struct fc2580_dev {
 	unsigned int f_frequency;
 	unsigned int f_bandwidth;
 
-	/* Controls */
+	 
 	struct v4l2_ctrl_handler hdl;
 	struct v4l2_ctrl *bandwidth_auto;
 	struct v4l2_ctrl *bandwidth;

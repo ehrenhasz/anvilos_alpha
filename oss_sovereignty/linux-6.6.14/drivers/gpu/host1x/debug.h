@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Tegra host1x Debug
- *
- * Copyright (c) 2011-2013 NVIDIA Corporation.
- */
+ 
+ 
 #ifndef __HOST1X_DEBUG_H
 #define __HOST1X_DEBUG_H
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2015 Free Electrons
- * Copyright (C) 2015 NextThing Co
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk.h>
 
@@ -51,12 +46,7 @@ static int sun4i_rgb_get_modes(struct drm_connector *connector)
 	return drm_panel_get_modes(rgb->panel, connector);
 }
 
-/*
- * VESA DMT defines a tolerance of 0.5% on the pixel clock, while the
- * CVT spec reuses that tolerance in its examples, so it looks to be a
- * good default tolerance for the EDID-based modes. Define it to 5 per
- * mille to avoid floating point operations.
- */
+ 
 #define SUN4I_RGB_DOTCLOCK_TOLERANCE_PER_MILLE	5
 
 static enum drm_mode_status sun4i_rgb_mode_valid(struct drm_encoder *crtc,
@@ -100,21 +90,13 @@ static enum drm_mode_status sun4i_rgb_mode_valid(struct drm_encoder *crtc,
 
 	DRM_DEBUG_DRIVER("Vertical parameters OK\n");
 
-	/*
-	 * TODO: We should use the struct display_timing if available
-	 * and / or trying to stretch the timings within that
-	 * tolerancy to take care of panels that we wouldn't be able
-	 * to have a exact match for.
-	 */
+	 
 	if (rgb->panel) {
 		DRM_DEBUG_DRIVER("RGB panel used, skipping clock rate checks");
 		goto out;
 	}
 
-	/*
-	 * That shouldn't ever happen unless something is really wrong, but it
-	 * doesn't harm to check.
-	 */
+	 
 	if (!rgb->bridge)
 		goto out;
 
@@ -214,7 +196,7 @@ int sun4i_rgb_init(struct drm_device *drm, struct sun4i_tcon *tcon)
 		goto err_out;
 	}
 
-	/* The RGB encoder can only work with the TCON channel 0 */
+	 
 	rgb->encoder.possible_crtcs = drm_crtc_mask(&tcon->crtc->crtc);
 
 	if (rgb->panel) {

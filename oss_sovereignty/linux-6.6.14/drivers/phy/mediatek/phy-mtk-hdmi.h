@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2018 MediaTek Inc.
- * Author: Chunhui Dai <chunhui.dai@mediatek.com>
- */
+ 
+ 
 
 #ifndef _MTK_HDMI_PHY_H
 #define _MTK_HDMI_PHY_H
@@ -48,4 +45,4 @@ extern struct mtk_hdmi_phy_conf mtk_hdmi_phy_8195_conf;
 extern struct mtk_hdmi_phy_conf mtk_hdmi_phy_8173_conf;
 extern struct mtk_hdmi_phy_conf mtk_hdmi_phy_2701_conf;
 
-#endif /* _MTK_HDMI_PHY_H */
+#endif  

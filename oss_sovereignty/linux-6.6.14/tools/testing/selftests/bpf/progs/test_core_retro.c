@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 Facebook
+
+
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_core_read.h>
@@ -31,7 +31,7 @@ int handle_sys_enter(void *ctx)
 	int real_tgid = bpf_get_current_pid_tgid() >> 32;
 	int *exp_tgid = bpf_map_lookup_elem(&exp_tgid_map, &zero);
 
-	/* only pass through sys_enters from test process */
+	 
 	if (!exp_tgid || *exp_tgid != real_tgid)
 		return 0;
 

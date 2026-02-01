@@ -1,11 +1,4 @@
-/*
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 2008 Ralf Baechle (ralf@linux-mips.org)
- * Copyright (C) 2012 MIPS Technologies, Inc.  All rights reserved.
- */
+ 
 
 #define pr_fmt(fmt) "irq-mips-gic: " fmt
 
@@ -32,13 +25,13 @@
 #define GIC_MAX_INTRS		256
 #define GIC_MAX_LONGS		BITS_TO_LONGS(GIC_MAX_INTRS)
 
-/* Add 2 to convert GIC CPU pin to core interrupt */
+ 
 #define GIC_CPU_PIN_OFFSET	2
 
-/* Mapped interrupt to pin X, then GIC will generate the vector (X+1). */
+ 
 #define GIC_PIN_TO_VEC_OFFSET	1
 
-/* Convert between local/shared IRQ number and GIC HW IRQ number. */
+ 
 #define GIC_LOCAL_HWIRQ_BASE	0
 #define GIC_LOCAL_TO_HWIRQ(x)	(GIC_LOCAL_HWIRQ_BASE + (x))
 #define GIC_HWIRQ_TO_LOCAL(x)	((x) - GIC_LOCAL_HWIRQ_BASE)
@@ -59,7 +52,7 @@ static struct irq_chip gic_level_irq_controller, gic_edge_irq_controller;
 #ifdef CONFIG_GENERIC_IRQ_IPI
 static DECLARE_BITMAP(ipi_resrv, GIC_MAX_INTRS);
 static DECLARE_BITMAP(ipi_available, GIC_MAX_INTRS);
-#endif /* CONFIG_GENERIC_IRQ_IPI */
+#endif  
 
 static struct gic_all_vpes_chip_data {
 	u32	map;
@@ -70,7 +63,7 @@ static void gic_clear_pcpu_masks(unsigned int intr)
 {
 	unsigned int i;
 
-	/* Clear the interrupt's bit in all pcpu_masks */
+	 
 	for_each_possible_cpu(i)
 		clear_bit(intr, per_cpu_ptr(pcpu_masks, i));
 }
@@ -79,7 +72,7 @@ static bool gic_local_irq_is_routable(int intr)
 {
 	u32 vpe_ctl;
 
-	/* All local interrupts are routable in EIC mode. */
+	 
 	if (cpu_has_veic)
 		return true;
 
@@ -101,10 +94,10 @@ static bool gic_local_irq_is_routable(int intr)
 
 static void gic_bind_eic_interrupt(int irq, int set)
 {
-	/* Convert irq vector # to hw int # */
+	 
 	irq -= GIC_PIN_TO_VEC_OFFSET;
 
-	/* Set irq to use shadow set */
+	 
 	write_gic_vl_eic_shadow_set(irq, set);
 }
 
@@ -126,7 +119,7 @@ int gic_get_c0_compare_int(void)
 int gic_get_c0_perfcount_int(void)
 {
 	if (!gic_local_irq_is_routable(GIC_LOCAL_INT_PERFCTR)) {
-		/* Is the performance counter shared with the timer? */
+		 
 		if (cp0_perfcount_irq < 0)
 			return -1;
 		return MIPS_CPU_IRQ_BASE + cp0_perfcount_irq;
@@ -138,7 +131,7 @@ int gic_get_c0_perfcount_int(void)
 int gic_get_c0_fdc_int(void)
 {
 	if (!gic_local_irq_is_routable(GIC_LOCAL_INT_FDC)) {
-		/* Is the FDC IRQ even present? */
+		 
 		if (cp0_fdc_irq < 0)
 			return -1;
 		return MIPS_CPU_IRQ_BASE + cp0_fdc_irq;
@@ -154,7 +147,7 @@ static void gic_handle_shared_int(bool chained)
 	unsigned long *pcpu_mask;
 	DECLARE_BITMAP(pending, GIC_MAX_INTRS);
 
-	/* Get per-cpu bitmaps */
+	 
 	pcpu_mask = this_cpu_ptr(pcpu_masks);
 
 	if (mips_cm_is64)
@@ -223,7 +216,7 @@ static int gic_set_type(struct irq_data *d, unsigned int type)
 		dual = GIC_DUAL_SINGLE;
 		break;
 	case IRQ_TYPE_EDGE_BOTH:
-		pol = 0; /* Doesn't matter */
+		pol = 0;  
 		trig = GIC_TRIG_EDGE;
 		dual = GIC_DUAL_DUAL;
 		break;
@@ -267,13 +260,13 @@ static int gic_set_affinity(struct irq_data *d, const struct cpumask *cpumask,
 	if (cpu >= NR_CPUS)
 		return -EINVAL;
 
-	/* Assumption : cpumask refers to a single CPU */
+	 
 	raw_spin_lock_irqsave(&gic_lock, flags);
 
-	/* Re-route this IRQ */
+	 
 	write_gic_map_vp(irq, BIT(mips_cm_vp_id(cpu)));
 
-	/* Update the pcpu_masks */
+	 
 	gic_clear_pcpu_masks(irq);
 	if (read_gic_mask(irq))
 		set_bit(irq, per_cpu_ptr(pcpu_masks, cpu));
@@ -476,10 +469,10 @@ static int gic_irq_domain_map(struct irq_domain *d, unsigned int virq,
 
 	if (hwirq >= GIC_SHARED_HWIRQ_BASE) {
 #ifdef CONFIG_GENERIC_IRQ_IPI
-		/* verify that shared irqs don't conflict with an IPI irq */
+		 
 		if (test_bit(GIC_HWIRQ_TO_SHARED(hwirq), ipi_resrv))
 			return -EBUSY;
-#endif /* CONFIG_GENERIC_IRQ_IPI */
+#endif  
 
 		err = irq_domain_set_hwirq_and_chip(d, virq, hwirq,
 						    &gic_level_irq_controller,
@@ -494,19 +487,12 @@ static int gic_irq_domain_map(struct irq_domain *d, unsigned int virq,
 	intr = GIC_HWIRQ_TO_LOCAL(hwirq);
 	map = GIC_MAP_PIN_MAP_TO_PIN | gic_cpu_pin;
 
-	/*
-	 * If adding support for more per-cpu interrupts, keep the
-	 * array in gic_all_vpes_irq_cpu_online() in sync.
-	 */
+	 
 	switch (intr) {
 	case GIC_LOCAL_INT_TIMER:
 	case GIC_LOCAL_INT_PERFCTR:
 	case GIC_LOCAL_INT_FDC:
-		/*
-		 * HACK: These are all really percpu interrupts, but
-		 * the rest of the MIPS kernel code does not use the
-		 * percpu IRQ API for them.
-		 */
+		 
 		cd = &gic_all_vpes_chip_data[intr];
 		cd->map = map;
 		err = irq_domain_set_hwirq_and_chip(d, virq, hwirq,
@@ -576,10 +562,7 @@ static int gic_ipi_domain_xlate(struct irq_domain *d, struct device_node *ctrlr,
 				irq_hw_number_t *out_hwirq,
 				unsigned int *out_type)
 {
-	/*
-	 * There's nothing to translate here. hwirq is dynamically allocated and
-	 * the irq type is always edge triggered.
-	 * */
+	 
 	*out_hwirq = 0;
 	*out_type = IRQ_TYPE_EDGE_RISING;
 
@@ -597,14 +580,14 @@ static int gic_ipi_domain_alloc(struct irq_domain *d, unsigned int virq,
 	if (base_hwirq == gic_shared_intrs)
 		return -ENOMEM;
 
-	/* check that we have enough space */
+	 
 	for (i = base_hwirq; i < nr_irqs; i++) {
 		if (!test_bit(i, ipi_available))
 			return -EBUSY;
 	}
 	bitmap_clear(ipi_available, base_hwirq, nr_irqs);
 
-	/* map the hwirq for each cpu consecutively */
+	 
 	i = 0;
 	for_each_cpu(cpu, ipimask) {
 		hwirq = GIC_SHARED_TO_HWIRQ(base_hwirq + i);
@@ -694,10 +677,7 @@ static int gic_register_ipi_domain(struct device_node *node)
 	    !of_property_read_u32_array(node, "mti,reserved-ipi-vectors", v, 2)) {
 		bitmap_set(ipi_resrv, v[0], v[1]);
 	} else {
-		/*
-		 * Reserve 2 interrupts per possible CPU/VP for use as IPIs,
-		 * meeting the requirements of arch/mips SMP.
-		 */
+		 
 		num_ipis = 2 * num_possible_cpus();
 		bitmap_set(ipi_resrv, gic_shared_intrs - num_ipis, num_ipis);
 	}
@@ -707,25 +687,25 @@ static int gic_register_ipi_domain(struct device_node *node)
 	return 0;
 }
 
-#else /* !CONFIG_GENERIC_IRQ_IPI */
+#else  
 
 static inline int gic_register_ipi_domain(struct device_node *node)
 {
 	return 0;
 }
 
-#endif /* !CONFIG_GENERIC_IRQ_IPI */
+#endif  
 
 static int gic_cpu_startup(unsigned int cpu)
 {
-	/* Enable or disable EIC */
+	 
 	change_gic_vl_ctl(GIC_VX_CTL_EIC,
 			  cpu_has_veic ? GIC_VX_CTL_EIC : 0);
 
-	/* Clear all local IRQ masks (ie. disable all local interrupts) */
+	 
 	write_gic_vl_rmask(~0);
 
-	/* Enable desired interrupts */
+	 
 	gic_all_vpes_irq_cpu_online();
 
 	return 0;
@@ -741,7 +721,7 @@ static int __init gic_of_init(struct device_node *node,
 	size_t gic_len;
 	int ret;
 
-	/* Find the first available CPU vector. */
+	 
 	i = 0;
 	reserved = (C_SW0 | C_SW1) >> __ffs(C_SW0);
 	while (!of_property_read_u32_index(node, "mti,reserved-cpu-vectors",
@@ -755,10 +735,7 @@ static int __init gic_of_init(struct device_node *node,
 	}
 
 	if (of_address_to_resource(node, 0, &res)) {
-		/*
-		 * Probe the CM for the GIC base address if not specified
-		 * in the device-tree.
-		 */
+		 
 		if (mips_cm_present()) {
 			gic_base = read_gcr_gic_base() &
 				~CM_GCR_GIC_BASE_GICEN;
@@ -776,7 +753,7 @@ static int __init gic_of_init(struct device_node *node,
 
 	if (mips_cm_present()) {
 		write_gcr_gic_base(gic_base | CM_GCR_GIC_BASE_GICEN);
-		/* Ensure GIC region is enabled before trying to access it */
+		 
 		__sync();
 	}
 
@@ -791,7 +768,7 @@ static int __init gic_of_init(struct device_node *node,
 	gic_shared_intrs = (gic_shared_intrs + 1) * 8;
 
 	if (cpu_has_veic) {
-		/* Always use vector 1 in EIC mode */
+		 
 		gic_cpu_pin = 0;
 		set_vi_handler(gic_cpu_pin + GIC_PIN_TO_VEC_OFFSET,
 			       __gic_irq_dispatch);
@@ -815,7 +792,7 @@ static int __init gic_of_init(struct device_node *node,
 
 	board_bind_eic_interrupt = &gic_bind_eic_interrupt;
 
-	/* Setup defaults */
+	 
 	for (i = 0; i < gic_shared_intrs; i++) {
 		change_gic_pol(i, GIC_POL_ACTIVE_HIGH);
 		change_gic_trig(i, GIC_TRIG_LEVEL);

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2018 Exceet Electronics GmbH
- * Copyright (C) 2018 Bootlin
- *
- * Author: Boris Brezillon <boris.brezillon@bootlin.com>
- */
+
+ 
 #include <linux/dmaengine.h>
 #include <linux/iopoll.h>
 #include <linux/pm_runtime.h>
@@ -16,23 +11,7 @@
 
 #define SPI_MEM_MAX_BUSWIDTH		8
 
-/**
- * spi_controller_dma_map_mem_op_data() - DMA-map the buffer attached to a
- *					  memory operation
- * @ctlr: the SPI controller requesting this dma_map()
- * @op: the memory operation containing the buffer to map
- * @sgt: a pointer to a non-initialized sg_table that will be filled by this
- *	 function
- *
- * Some controllers might want to do DMA on the data buffer embedded in @op.
- * This helper prepares everything for you and provides a ready-to-use
- * sg_table. This function is not intended to be called from spi drivers.
- * Only SPI controller drivers should use it.
- * Note that the caller must ensure the memory region pointed by
- * op->data.buf.{in,out} is DMA-able before calling this function.
- *
- * Return: 0 in case of success, a negative error code otherwise.
- */
+ 
 int spi_controller_dma_map_mem_op_data(struct spi_controller *ctlr,
 				       const struct spi_mem_op *op,
 				       struct sg_table *sgt)
@@ -58,27 +37,7 @@ int spi_controller_dma_map_mem_op_data(struct spi_controller *ctlr,
 }
 EXPORT_SYMBOL_GPL(spi_controller_dma_map_mem_op_data);
 
-/**
- * spi_controller_dma_unmap_mem_op_data() - DMA-unmap the buffer attached to a
- *					    memory operation
- * @ctlr: the SPI controller requesting this dma_unmap()
- * @op: the memory operation containing the buffer to unmap
- * @sgt: a pointer to an sg_table previously initialized by
- *	 spi_controller_dma_map_mem_op_data()
- *
- * Some controllers might want to do DMA on the data buffer embedded in @op.
- * This helper prepares things so that the CPU can access the
- * op->data.buf.{in,out} buffer again.
- *
- * This function is not intended to be called from SPI drivers. Only SPI
- * controller drivers should use it.
- *
- * This function should be called after the DMA operation has finished and is
- * only valid if the previous spi_controller_dma_map_mem_op_data() call
- * returned 0.
- *
- * Return: 0 in case of success, a negative error code otherwise.
- */
+ 
 void spi_controller_dma_unmap_mem_op_data(struct spi_controller *ctlr,
 					  const struct spi_mem_op *op,
 					  struct sg_table *sgt)
@@ -212,7 +171,7 @@ static int spi_mem_check_op(const struct spi_mem_op *op)
 	    !spi_mem_buswidth_is_valid(op->data.buswidth))
 		return -EINVAL;
 
-	/* Buffers must be DMA-able. */
+	 
 	if (WARN_ON_ONCE(op->data.dir == SPI_MEM_DATA_IN &&
 			 object_is_on_stack(op->data.buf.in)))
 		return -EINVAL;
@@ -235,21 +194,7 @@ static bool spi_mem_internal_supports_op(struct spi_mem *mem,
 	return spi_mem_default_supports_op(mem, op);
 }
 
-/**
- * spi_mem_supports_op() - Check if a memory device and the controller it is
- *			   connected to support a specific memory operation
- * @mem: the SPI memory
- * @op: the memory operation to check
- *
- * Some controllers are only supporting Single or Dual IOs, others might only
- * support specific opcodes, or it can even be that the controller and device
- * both support Quad IOs but the hardware prevents you from using it because
- * only 2 IO lines are connected.
- *
- * This function checks whether a specific operation is supported.
- *
- * Return: true if @op is supported, false otherwise.
- */
+ 
 bool spi_mem_supports_op(struct spi_mem *mem, const struct spi_mem_op *op)
 {
 	if (spi_mem_check_op(op))
@@ -263,10 +208,7 @@ static int spi_mem_access_start(struct spi_mem *mem)
 {
 	struct spi_controller *ctlr = mem->spi->controller;
 
-	/*
-	 * Flush the message queue before executing our SPI memory
-	 * operation to prevent preemption of regular SPI transfers.
-	 */
+	 
 	spi_flush_queue(ctlr);
 
 	if (ctlr->auto_runtime_pm) {
@@ -297,18 +239,7 @@ static void spi_mem_access_end(struct spi_mem *mem)
 		pm_runtime_put(ctlr->dev.parent);
 }
 
-/**
- * spi_mem_exec_op() - Execute a memory operation
- * @mem: the SPI memory
- * @op: the memory operation to execute
- *
- * Executes a memory operation.
- *
- * This function first checks that @op is supported and then tries to execute
- * it.
- *
- * Return: 0 in case of success, a negative error code otherwise.
- */
+ 
 int spi_mem_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
 {
 	unsigned int tmpbufsize, xferpos = 0, totalxferlen = 0;
@@ -334,22 +265,14 @@ int spi_mem_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
 
 		spi_mem_access_end(mem);
 
-		/*
-		 * Some controllers only optimize specific paths (typically the
-		 * read path) and expect the core to use the regular SPI
-		 * interface in other cases.
-		 */
+		 
 		if (!ret || ret != -ENOTSUPP)
 			return ret;
 	}
 
 	tmpbufsize = op->cmd.nbytes + op->addr.nbytes + op->dummy.nbytes;
 
-	/*
-	 * Allocate a buffer to transmit the CMD, ADDR cycles with kmalloc() so
-	 * we're guaranteed that this buffer is DMA-able, as required by the
-	 * SPI layer.
-	 */
+	 
 	tmpbuf = kzalloc(tmpbufsize, GFP_KERNEL | GFP_DMA);
 	if (!tmpbuf)
 		return -ENOMEM;
@@ -419,39 +342,14 @@ int spi_mem_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
 }
 EXPORT_SYMBOL_GPL(spi_mem_exec_op);
 
-/**
- * spi_mem_get_name() - Return the SPI mem device name to be used by the
- *			upper layer if necessary
- * @mem: the SPI memory
- *
- * This function allows SPI mem users to retrieve the SPI mem device name.
- * It is useful if the upper layer needs to expose a custom name for
- * compatibility reasons.
- *
- * Return: a string containing the name of the memory device to be used
- *	   by the SPI mem user
- */
+ 
 const char *spi_mem_get_name(struct spi_mem *mem)
 {
 	return mem->name;
 }
 EXPORT_SYMBOL_GPL(spi_mem_get_name);
 
-/**
- * spi_mem_adjust_op_size() - Adjust the data size of a SPI mem operation to
- *			      match controller limitations
- * @mem: the SPI memory
- * @op: the operation to adjust
- *
- * Some controllers have FIFO limitations and must split a data transfer
- * operation into multiple ones, others require a specific alignment for
- * optimized accesses. This function allows SPI mem drivers to split a single
- * operation into multiple sub-operations when required.
- *
- * Return: a negative error code if the controller can't properly adjust @op,
- *	   0 otherwise. Note that @op->data.nbytes will be updated if @op
- *	   can't be handled in a single step.
- */
+ 
 int spi_mem_adjust_op_size(struct spi_mem *mem, struct spi_mem_op *op)
 {
 	struct spi_controller *ctlr = mem->spi->controller;
@@ -518,19 +416,7 @@ static ssize_t spi_mem_no_dirmap_write(struct spi_mem_dirmap_desc *desc,
 	return op.data.nbytes;
 }
 
-/**
- * spi_mem_dirmap_create() - Create a direct mapping descriptor
- * @mem: SPI mem device this direct mapping should be created for
- * @info: direct mapping information
- *
- * This function is creating a direct mapping descriptor which can then be used
- * to access the memory using spi_mem_dirmap_read() or spi_mem_dirmap_write().
- * If the SPI controller driver does not support direct mapping, this function
- * falls back to an implementation using spi_mem_exec_op(), so that the caller
- * doesn't have to bother implementing a fallback on his own.
- *
- * Return: a valid pointer in case of success, and ERR_PTR() otherwise.
- */
+ 
 struct spi_mem_dirmap_desc *
 spi_mem_dirmap_create(struct spi_mem *mem,
 		      const struct spi_mem_dirmap_info *info)
@@ -539,11 +425,11 @@ spi_mem_dirmap_create(struct spi_mem *mem,
 	struct spi_mem_dirmap_desc *desc;
 	int ret = -ENOTSUPP;
 
-	/* Make sure the number of address cycles is between 1 and 8 bytes. */
+	 
 	if (!info->op_tmpl.addr.nbytes || info->op_tmpl.addr.nbytes > 8)
 		return ERR_PTR(-EINVAL);
 
-	/* data.dir should either be SPI_MEM_DATA_IN or SPI_MEM_DATA_OUT. */
+	 
 	if (info->op_tmpl.data.dir == SPI_MEM_NO_DATA)
 		return ERR_PTR(-EINVAL);
 
@@ -573,13 +459,7 @@ spi_mem_dirmap_create(struct spi_mem *mem,
 }
 EXPORT_SYMBOL_GPL(spi_mem_dirmap_create);
 
-/**
- * spi_mem_dirmap_destroy() - Destroy a direct mapping descriptor
- * @desc: the direct mapping descriptor to destroy
- *
- * This function destroys a direct mapping descriptor previously created by
- * spi_mem_dirmap_create().
- */
+ 
 void spi_mem_dirmap_destroy(struct spi_mem_dirmap_desc *desc)
 {
 	struct spi_controller *ctlr = desc->mem->spi->controller;
@@ -598,18 +478,7 @@ static void devm_spi_mem_dirmap_release(struct device *dev, void *res)
 	spi_mem_dirmap_destroy(desc);
 }
 
-/**
- * devm_spi_mem_dirmap_create() - Create a direct mapping descriptor and attach
- *				  it to a device
- * @dev: device the dirmap desc will be attached to
- * @mem: SPI mem device this direct mapping should be created for
- * @info: direct mapping information
- *
- * devm_ variant of the spi_mem_dirmap_create() function. See
- * spi_mem_dirmap_create() for more details.
- *
- * Return: a valid pointer in case of success, and ERR_PTR() otherwise.
- */
+ 
 struct spi_mem_dirmap_desc *
 devm_spi_mem_dirmap_create(struct device *dev, struct spi_mem *mem,
 			   const struct spi_mem_dirmap_info *info)
@@ -643,15 +512,7 @@ static int devm_spi_mem_dirmap_match(struct device *dev, void *res, void *data)
 	return *ptr == data;
 }
 
-/**
- * devm_spi_mem_dirmap_destroy() - Destroy a direct mapping descriptor attached
- *				   to a device
- * @dev: device the dirmap desc is attached to
- * @desc: the direct mapping descriptor to destroy
- *
- * devm_ variant of the spi_mem_dirmap_destroy() function. See
- * spi_mem_dirmap_destroy() for more details.
- */
+ 
 void devm_spi_mem_dirmap_destroy(struct device *dev,
 				 struct spi_mem_dirmap_desc *desc)
 {
@@ -660,22 +521,7 @@ void devm_spi_mem_dirmap_destroy(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(devm_spi_mem_dirmap_destroy);
 
-/**
- * spi_mem_dirmap_read() - Read data through a direct mapping
- * @desc: direct mapping descriptor
- * @offs: offset to start reading from. Note that this is not an absolute
- *	  offset, but the offset within the direct mapping which already has
- *	  its own offset
- * @len: length in bytes
- * @buf: destination buffer. This buffer must be DMA-able
- *
- * This function reads data from a memory device using a direct mapping
- * previously instantiated with spi_mem_dirmap_create().
- *
- * Return: the amount of data read from the memory device or a negative error
- * code. Note that the returned size might be smaller than @len, and the caller
- * is responsible for calling spi_mem_dirmap_read() again when that happens.
- */
+ 
 ssize_t spi_mem_dirmap_read(struct spi_mem_dirmap_desc *desc,
 			    u64 offs, size_t len, void *buf)
 {
@@ -706,22 +552,7 @@ ssize_t spi_mem_dirmap_read(struct spi_mem_dirmap_desc *desc,
 }
 EXPORT_SYMBOL_GPL(spi_mem_dirmap_read);
 
-/**
- * spi_mem_dirmap_write() - Write data through a direct mapping
- * @desc: direct mapping descriptor
- * @offs: offset to start writing from. Note that this is not an absolute
- *	  offset, but the offset within the direct mapping which already has
- *	  its own offset
- * @len: length in bytes
- * @buf: source buffer. This buffer must be DMA-able
- *
- * This function writes data to a memory device using a direct mapping
- * previously instantiated with spi_mem_dirmap_create().
- *
- * Return: the amount of data written to the memory device or a negative error
- * code. Note that the returned size might be smaller than @len, and the caller
- * is responsible for calling spi_mem_dirmap_write() again when that happens.
- */
+ 
 ssize_t spi_mem_dirmap_write(struct spi_mem_dirmap_desc *desc,
 			     u64 offs, size_t len, const void *buf)
 {
@@ -776,22 +607,7 @@ static int spi_mem_read_status(struct spi_mem *mem,
 	return 0;
 }
 
-/**
- * spi_mem_poll_status() - Poll memory device status
- * @mem: SPI memory device
- * @op: the memory operation to execute
- * @mask: status bitmask to ckeck
- * @match: (status & mask) expected value
- * @initial_delay_us: delay in us before starting to poll
- * @polling_delay_us: time to sleep between reads in us
- * @timeout_ms: timeout in milliseconds
- *
- * This function polls a status register and returns when
- * (status & mask) == match or when the timeout has expired.
- *
- * Return: 0 in case of success, -ETIMEDOUT in case of error,
- *         -EOPNOTSUPP if not supported.
- */
+ 
 int spi_mem_poll_status(struct spi_mem *mem,
 			const struct spi_mem_op *op,
 			u16 mask, u16 match,
@@ -885,15 +701,7 @@ static void spi_mem_shutdown(struct spi_device *spi)
 		memdrv->shutdown(mem);
 }
 
-/**
- * spi_mem_driver_register_with_owner() - Register a SPI memory driver
- * @memdrv: the SPI memory driver to register
- * @owner: the owner of this driver
- *
- * Registers a SPI memory driver.
- *
- * Return: 0 in case of success, a negative error core otherwise.
- */
+ 
 
 int spi_mem_driver_register_with_owner(struct spi_mem_driver *memdrv,
 				       struct module *owner)
@@ -906,12 +714,7 @@ int spi_mem_driver_register_with_owner(struct spi_mem_driver *memdrv,
 }
 EXPORT_SYMBOL_GPL(spi_mem_driver_register_with_owner);
 
-/**
- * spi_mem_driver_unregister() - Unregister a SPI memory driver
- * @memdrv: the SPI memory driver to unregister
- *
- * Unregisters a SPI memory driver.
- */
+ 
 void spi_mem_driver_unregister(struct spi_mem_driver *memdrv)
 {
 	spi_unregister_driver(&memdrv->spidrv);

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	sun4v watchdog timer
- *	(c) Copyright 2016 Oracle Corporation
- *
- *	Implement a simple watchdog driver using the built-in sun4v hypervisor
- *	watchdog support. If time expires, the hypervisor stops or bounces
- *	the guest domain.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -22,7 +15,7 @@
 #define WDT_TIMEOUT			60
 #define WDT_MAX_TIMEOUT			31536000
 #define WDT_MIN_TIMEOUT			1
-#define WDT_DEFAULT_RESOLUTION_MS	1000	/* 1 second */
+#define WDT_DEFAULT_RESOLUTION_MS	1000	 
 
 static unsigned int timeout;
 module_param(timeout, uint, 0);
@@ -45,11 +38,7 @@ static int sun4v_wdt_ping(struct watchdog_device *wdd)
 {
 	int hverr;
 
-	/*
-	 * HV watchdog timer will round up the timeout
-	 * passed in to the nearest multiple of the
-	 * watchdog resolution in milliseconds.
-	 */
+	 
 	hverr = sun4v_mach_set_watchdog(wdd->timeout * 1000, NULL);
 	if (hverr == HV_EINVAL)
 		return -EINVAL;
@@ -97,15 +86,7 @@ static int __init sun4v_wdt_init(void)
 	int err = 0;
 	unsigned long major = 1, minor = 1;
 
-	/*
-	 * There are 2 properties that can be set from the control
-	 * domain for the watchdog.
-	 * watchdog-resolution
-	 * watchdog-max-timeout
-	 *
-	 * We can expect a handle to be returned otherwise something
-	 * serious is wrong. Correct to return -ENODEV here.
-	 */
+	 
 
 	handle = mdesc_grab();
 	if (!handle)
@@ -116,14 +97,11 @@ static int __init sun4v_wdt_init(void)
 	if (node == MDESC_NODE_NULL)
 		goto out_release;
 
-	/*
-	 * This is a safe way to validate if we are on the right
-	 * platform.
-	 */
+	 
 	if (sun4v_hvapi_register(HV_GRP_CORE, major, &minor))
 		goto out_hv_unreg;
 
-	/* Allow value of watchdog-resolution up to 1s (default) */
+	 
 	value = mdesc_get_property(handle, node, "watchdog-resolution", NULL);
 	err = -EINVAL;
 	if (value) {
@@ -134,18 +112,11 @@ static int __init sun4v_wdt_init(void)
 
 	value = mdesc_get_property(handle, node, "watchdog-max-timeout", NULL);
 	if (value) {
-		/*
-		 * If the property value (in ms) is smaller than
-		 * min_timeout, return -EINVAL.
-		 */
+		 
 		if (*value < wdd.min_timeout * 1000)
 			goto out_hv_unreg;
 
-		/*
-		 * If the property value is smaller than
-		 * default max_timeout  then set watchdog max_timeout to
-		 * the value of the property in seconds.
-		 */
+		 
 		if (*value < wdd.max_timeout * 1000)
 			wdd.max_timeout = *value  / 1000;
 	}

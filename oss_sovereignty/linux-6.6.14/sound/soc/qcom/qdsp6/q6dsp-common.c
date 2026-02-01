@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2011-2017, The Linux Foundation. All rights reserved.
-// Copyright (c) 2018, Linaro Limited
+
+
+
 
 #include "q6dsp-common.h"
 #include <linux/kernel.h>
@@ -68,7 +68,7 @@ int q6dsp_get_channel_allocation(int channels)
 {
 	int channel_allocation;
 
-	/* HDMI spec CEA-861-E: Table 28 Audio InfoFrame Data Byte 4 */
+	 
 	switch (channels) {
 	case 2:
 		channel_allocation = 0;

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Sysfs support implementation.
- *
- * Copyright (C) 2005-2014 Nippon Telegraph and Telephone Corporation.
- * Copyright (C) 2014 HGST, Inc., a Western Digital Company.
- *
- * Written by Vyacheslav Dubeyko <Vyacheslav.Dubeyko@hgst.com>
- */
+
+ 
 
 #include <linux/kobject.h>
 
@@ -16,7 +9,7 @@
 #include "cpfile.h"
 #include "sysfs.h"
 
-/* /sys/fs/<nilfs>/ */
+ 
 static struct kset *nilfs_kset;
 
 #define NILFS_DEV_INT_GROUP_OPS(name, parent_name) \
@@ -87,9 +80,7 @@ static void nilfs_sysfs_delete_##name##_group(struct the_nilfs *nilfs) \
 	kobject_put(&nilfs->ns_##parent_name##_subgroups->sg_##name##_kobj); \
 }
 
-/************************************************************************
- *                        NILFS snapshot attrs                          *
- ************************************************************************/
+ 
 
 static ssize_t
 nilfs_snapshot_inodes_count_show(struct nilfs_snapshot_attr *attr,
@@ -206,9 +197,7 @@ void nilfs_sysfs_delete_snapshot_group(struct nilfs_root *root)
 	kobject_put(&root->snapshot_kobj);
 }
 
-/************************************************************************
- *                    NILFS mounted snapshots attrs                     *
- ************************************************************************/
+ 
 
 static const char mounted_snapshots_readme_str[] =
 	"The mounted_snapshots group contains group for\n"
@@ -233,9 +222,7 @@ NILFS_DEV_INT_GROUP_OPS(mounted_snapshots, dev);
 NILFS_DEV_INT_GROUP_TYPE(mounted_snapshots, dev);
 NILFS_DEV_INT_GROUP_FNS(mounted_snapshots, dev);
 
-/************************************************************************
- *                      NILFS checkpoints attrs                         *
- ************************************************************************/
+ 
 
 static ssize_t
 nilfs_checkpoints_checkpoints_number_show(struct nilfs_checkpoints_attr *attr,
@@ -347,9 +334,7 @@ NILFS_DEV_INT_GROUP_OPS(checkpoints, dev);
 NILFS_DEV_INT_GROUP_TYPE(checkpoints, dev);
 NILFS_DEV_INT_GROUP_FNS(checkpoints, dev);
 
-/************************************************************************
- *                        NILFS segments attrs                          *
- ************************************************************************/
+ 
 
 static ssize_t
 nilfs_segments_segments_number_show(struct nilfs_segments_attr *attr,
@@ -437,9 +422,7 @@ NILFS_DEV_INT_GROUP_OPS(segments, dev);
 NILFS_DEV_INT_GROUP_TYPE(segments, dev);
 NILFS_DEV_INT_GROUP_FNS(segments, dev);
 
-/************************************************************************
- *                        NILFS segctor attrs                           *
- ************************************************************************/
+ 
 
 static ssize_t
 nilfs_segctor_last_pseg_block_show(struct nilfs_segctor_attr *attr,
@@ -699,9 +682,7 @@ NILFS_DEV_INT_GROUP_OPS(segctor, dev);
 NILFS_DEV_INT_GROUP_TYPE(segctor, dev);
 NILFS_DEV_INT_GROUP_FNS(segctor, dev);
 
-/************************************************************************
- *                        NILFS superblock attrs                        *
- ************************************************************************/
+ 
 
 static ssize_t
 nilfs_superblock_sb_write_time_show(struct nilfs_superblock_attr *attr,
@@ -827,9 +808,7 @@ NILFS_DEV_INT_GROUP_OPS(superblock, dev);
 NILFS_DEV_INT_GROUP_TYPE(superblock, dev);
 NILFS_DEV_INT_GROUP_FNS(superblock, dev);
 
-/************************************************************************
- *                        NILFS device attrs                            *
- ************************************************************************/
+ 
 
 static
 ssize_t nilfs_dev_revision_show(struct nilfs_dev_attr *attr,
@@ -1047,9 +1026,7 @@ void nilfs_sysfs_delete_device_group(struct the_nilfs *nilfs)
 	kfree(nilfs->ns_dev_subgroups);
 }
 
-/************************************************************************
- *                        NILFS feature attrs                           *
- ************************************************************************/
+ 
 
 static ssize_t nilfs_feature_revision_show(struct kobject *kobj,
 					    struct attribute *attr, char *buf)

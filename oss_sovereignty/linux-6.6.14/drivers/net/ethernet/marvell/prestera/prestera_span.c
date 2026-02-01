@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2020 Marvell International Ltd. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/list.h>
@@ -129,7 +129,7 @@ int prestera_span_rule_add(struct prestera_flow_block_binding *binding,
 	int err;
 
 	if (binding->span_id != PRESTERA_SPAN_INVALID_ID)
-		/* port already in mirroring */
+		 
 		return -EEXIST;
 
 	err = prestera_span_get(to_port, &span_id);

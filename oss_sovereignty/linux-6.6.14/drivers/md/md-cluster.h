@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 
 #ifndef _MD_CLUSTER_H
@@ -33,4 +33,4 @@ struct md_cluster_operations {
 	void (*update_size)(struct mddev *mddev, sector_t old_dev_sectors);
 };
 
-#endif /* _MD_CLUSTER_H */
+#endif  

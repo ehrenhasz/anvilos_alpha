@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB */
-/* Copyright (c) 2015 - 2019 Intel Corporation */
+ 
+ 
 #ifndef IRDMA_PBLE_H
 #define IRDMA_PBLE_H
 
@@ -83,7 +83,7 @@ struct irdma_chunk {
 
 struct irdma_pble_prm {
 	struct list_head clist;
-	spinlock_t prm_lock; /* protect prm bitmap */
+	spinlock_t prm_lock;  
 	u64 total_pble_alloc;
 	u64 free_pble_cnt;
 	u8 pble_shift;
@@ -91,7 +91,7 @@ struct irdma_pble_prm {
 
 struct irdma_hmc_pble_rsrc {
 	u32 unallocated_pble;
-	struct mutex pble_mutex_lock; /* protect PBLE resource */
+	struct mutex pble_mutex_lock;  
 	struct irdma_sc_dev *dev;
 	u64 fpm_base_addr;
 	u64 next_fpm_addr;
@@ -129,4 +129,4 @@ void irdma_pble_release_lock(struct irdma_hmc_pble_rsrc *pble_rsrc,
 void irdma_pble_free_paged_mem(struct irdma_chunk *chunk);
 int irdma_pble_get_paged_mem(struct irdma_chunk *chunk, u32 pg_cnt);
 void irdma_prm_rem_bitmapmem(struct irdma_hw *hw, struct irdma_chunk *chunk);
-#endif /* IRDMA_PBLE_H */
+#endif  

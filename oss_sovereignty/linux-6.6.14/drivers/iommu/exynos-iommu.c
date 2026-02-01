@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2011,2016 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- */
+
+ 
 
 #ifdef CONFIG_EXYNOS_IOMMU_DEBUG
 #define DEBUG
@@ -25,7 +22,7 @@
 typedef u32 sysmmu_iova_t;
 typedef u32 sysmmu_pte_t;
 
-/* We do not consider super section mapping (16MB) */
+ 
 #define SECT_ORDER 20
 #define LPAGE_ORDER 16
 #define SPAGE_ORDER 12
@@ -50,44 +47,37 @@ typedef u32 sysmmu_pte_t;
 #define lv2ent_small(pent) ((*(pent) & 2) == 2)
 #define lv2ent_large(pent) ((*(pent) & 3) == 1)
 
-/*
- * v1.x - v3.x SYSMMU supports 32bit physical and 32bit virtual address spaces
- * v5.0 introduced support for 36bit physical address space by shifting
- * all page entry values by 4 bits.
- * All SYSMMU controllers in the system support the address spaces of the same
- * size, so PG_ENT_SHIFT can be initialized on first SYSMMU probe to proper
- * value (0 or 4).
- */
+ 
 static short PG_ENT_SHIFT = -1;
 #define SYSMMU_PG_ENT_SHIFT 0
 #define SYSMMU_V5_PG_ENT_SHIFT 4
 
 static const sysmmu_pte_t *LV1_PROT;
 static const sysmmu_pte_t SYSMMU_LV1_PROT[] = {
-	((0 << 15) | (0 << 10)), /* no access */
-	((1 << 15) | (1 << 10)), /* IOMMU_READ only */
-	((0 << 15) | (1 << 10)), /* IOMMU_WRITE not supported, use read/write */
-	((0 << 15) | (1 << 10)), /* IOMMU_READ | IOMMU_WRITE */
+	((0 << 15) | (0 << 10)),  
+	((1 << 15) | (1 << 10)),  
+	((0 << 15) | (1 << 10)),  
+	((0 << 15) | (1 << 10)),  
 };
 static const sysmmu_pte_t SYSMMU_V5_LV1_PROT[] = {
-	(0 << 4), /* no access */
-	(1 << 4), /* IOMMU_READ only */
-	(2 << 4), /* IOMMU_WRITE only */
-	(3 << 4), /* IOMMU_READ | IOMMU_WRITE */
+	(0 << 4),  
+	(1 << 4),  
+	(2 << 4),  
+	(3 << 4),  
 };
 
 static const sysmmu_pte_t *LV2_PROT;
 static const sysmmu_pte_t SYSMMU_LV2_PROT[] = {
-	((0 << 9) | (0 << 4)), /* no access */
-	((1 << 9) | (1 << 4)), /* IOMMU_READ only */
-	((0 << 9) | (1 << 4)), /* IOMMU_WRITE not supported, use read/write */
-	((0 << 9) | (1 << 4)), /* IOMMU_READ | IOMMU_WRITE */
+	((0 << 9) | (0 << 4)),  
+	((1 << 9) | (1 << 4)),  
+	((0 << 9) | (1 << 4)),  
+	((0 << 9) | (1 << 4)),  
 };
 static const sysmmu_pte_t SYSMMU_V5_LV2_PROT[] = {
-	(0 << 2), /* no access */
-	(1 << 2), /* IOMMU_READ only */
-	(2 << 2), /* IOMMU_WRITE only */
-	(3 << 2), /* IOMMU_READ | IOMMU_WRITE */
+	(0 << 2),  
+	(1 << 2),  
+	(2 << 2),  
+	(3 << 2),  
 };
 
 #define SYSMMU_SUPPORTED_PROT_BITS (IOMMU_READ | IOMMU_WRITE)
@@ -131,16 +121,16 @@ static u32 lv2ent_offset(sysmmu_iova_t iova)
 #define CFG_LRU		0x1
 #define CFG_EAP		(1 << 2)
 #define CFG_QOS(n)	((n & 0xF) << 7)
-#define CFG_ACGEN	(1 << 24) /* System MMU 3.3 only */
-#define CFG_SYSSEL	(1 << 22) /* System MMU 3.2 only */
-#define CFG_FLPDCACHE	(1 << 20) /* System MMU 3.2+ only */
+#define CFG_ACGEN	(1 << 24)  
+#define CFG_SYSSEL	(1 << 22)  
+#define CFG_FLPDCACHE	(1 << 20)  
 
 #define CTRL_VM_ENABLE			BIT(0)
 #define CTRL_VM_FAULT_MODE_STALL	BIT(3)
 #define CAPA0_CAPA1_EXIST		BIT(11)
 #define CAPA1_VCR_ENABLED		BIT(14)
 
-/* common registers */
+ 
 #define REG_MMU_CTRL		0x000
 #define REG_MMU_CFG		0x004
 #define REG_MMU_STATUS		0x008
@@ -148,21 +138,21 @@ static u32 lv2ent_offset(sysmmu_iova_t iova)
 
 #define MMU_MAJ_VER(val)	((val) >> 7)
 #define MMU_MIN_VER(val)	((val) & 0x7F)
-#define MMU_RAW_VER(reg)	(((reg) >> 21) & ((1 << 11) - 1)) /* 11 bits */
+#define MMU_RAW_VER(reg)	(((reg) >> 21) & ((1 << 11) - 1))  
 
 #define MAKE_MMU_VER(maj, min)	((((maj) & 0xF) << 7) | ((min) & 0x7F))
 
-/* v1.x - v3.x registers */
+ 
 #define REG_PAGE_FAULT_ADDR	0x024
 #define REG_AW_FAULT_ADDR	0x028
 #define REG_AR_FAULT_ADDR	0x02C
 #define REG_DEFAULT_SLAVE_ADDR	0x030
 
-/* v5.x registers */
+ 
 #define REG_V5_FAULT_AR_VA	0x070
 #define REG_V5_FAULT_AW_VA	0x080
 
-/* v7.x registers */
+ 
 #define REG_V7_CAPA0		0x870
 #define REG_V7_CAPA1		0x874
 #define REG_V7_CTRL_VM		0x8000
@@ -186,15 +176,15 @@ static sysmmu_pte_t *page_entry(sysmmu_pte_t *sent, sysmmu_iova_t iova)
 }
 
 struct sysmmu_fault {
-	sysmmu_iova_t addr;	/* IOVA address that caused fault */
-	const char *name;	/* human readable fault name */
-	unsigned int type;	/* fault type for report_iommu_fault() */
+	sysmmu_iova_t addr;	 
+	const char *name;	 
+	unsigned int type;	 
 };
 
 struct sysmmu_v1_fault_info {
-	unsigned short addr_reg; /* register to read IOVA fault address */
-	const char *name;	/* human readable fault name */
-	unsigned int type;	/* fault type for report_iommu_fault */
+	unsigned short addr_reg;  
+	const char *name;	 
+	unsigned int type;	 
 };
 
 static const struct sysmmu_v1_fault_info sysmmu_v1_faults[] = {
@@ -208,7 +198,7 @@ static const struct sysmmu_v1_fault_info sysmmu_v1_faults[] = {
 	{ REG_AW_FAULT_ADDR, "ACCESS PROTECTION", IOMMU_FAULT_WRITE },
 };
 
-/* SysMMU v5 has the same faults for AR (0..4 bits) and AW (16..20 bits) */
+ 
 static const char * const sysmmu_v5_fault_names[] = {
 	"PTW",
 	"PAGE",
@@ -224,84 +214,65 @@ static const char * const sysmmu_v7_fault_names[] = {
 	"RESERVED"
 };
 
-/*
- * This structure is attached to dev->iommu->priv of the master device
- * on device add, contains a list of SYSMMU controllers defined by device tree,
- * which are bound to given master device. It is usually referenced by 'owner'
- * pointer.
-*/
+ 
 struct exynos_iommu_owner {
-	struct list_head controllers;	/* list of sysmmu_drvdata.owner_node */
-	struct iommu_domain *domain;	/* domain this device is attached */
-	struct mutex rpm_lock;		/* for runtime pm of all sysmmus */
+	struct list_head controllers;	 
+	struct iommu_domain *domain;	 
+	struct mutex rpm_lock;		 
 };
 
-/*
- * This structure exynos specific generalization of struct iommu_domain.
- * It contains list of SYSMMU controllers from all master devices, which has
- * been attached to this domain and page tables of IO address space defined by
- * it. It is usually referenced by 'domain' pointer.
- */
+ 
 struct exynos_iommu_domain {
-	struct list_head clients; /* list of sysmmu_drvdata.domain_node */
-	sysmmu_pte_t *pgtable;	/* lv1 page table, 16KB */
-	short *lv2entcnt;	/* free lv2 entry counter for each section */
-	spinlock_t lock;	/* lock for modyfying list of clients */
-	spinlock_t pgtablelock;	/* lock for modifying page table @ pgtable */
-	struct iommu_domain domain; /* generic domain data structure */
+	struct list_head clients;  
+	sysmmu_pte_t *pgtable;	 
+	short *lv2entcnt;	 
+	spinlock_t lock;	 
+	spinlock_t pgtablelock;	 
+	struct iommu_domain domain;  
 };
 
 struct sysmmu_drvdata;
 
-/*
- * SysMMU version specific data. Contains offsets for the registers which can
- * be found in different SysMMU variants, but have different offset values.
- * Also contains version specific callbacks to abstract the hardware.
- */
+ 
 struct sysmmu_variant {
-	u32 pt_base;		/* page table base address (physical) */
-	u32 flush_all;		/* invalidate all TLB entries */
-	u32 flush_entry;	/* invalidate specific TLB entry */
-	u32 flush_range;	/* invalidate TLB entries in specified range */
-	u32 flush_start;	/* start address of range invalidation */
-	u32 flush_end;		/* end address of range invalidation */
-	u32 int_status;		/* interrupt status information */
-	u32 int_clear;		/* clear the interrupt */
-	u32 fault_va;		/* IOVA address that caused fault */
-	u32 fault_info;		/* fault transaction info */
+	u32 pt_base;		 
+	u32 flush_all;		 
+	u32 flush_entry;	 
+	u32 flush_range;	 
+	u32 flush_start;	 
+	u32 flush_end;		 
+	u32 int_status;		 
+	u32 int_clear;		 
+	u32 fault_va;		 
+	u32 fault_info;		 
 
 	int (*get_fault_info)(struct sysmmu_drvdata *data, unsigned int itype,
 			      struct sysmmu_fault *fault);
 };
 
-/*
- * This structure hold all data of a single SYSMMU controller, this includes
- * hw resources like registers and clocks, pointers and list nodes to connect
- * it to all other structures, internal state and parameters read from device
- * tree. It is usually referenced by 'data' pointer.
- */
+ 
 struct sysmmu_drvdata {
-	struct device *sysmmu;		/* SYSMMU controller device */
-	struct device *master;		/* master device (owner) */
-	struct device_link *link;	/* runtime PM link to master */
-	void __iomem *sfrbase;		/* our registers */
-	struct clk *clk;		/* SYSMMU's clock */
-	struct clk *aclk;		/* SYSMMU's aclk clock */
-	struct clk *pclk;		/* SYSMMU's pclk clock */
-	struct clk *clk_master;		/* master's device clock */
-	spinlock_t lock;		/* lock for modyfying state */
-	bool active;			/* current status */
-	struct exynos_iommu_domain *domain; /* domain we belong to */
-	struct list_head domain_node;	/* node for domain clients list */
-	struct list_head owner_node;	/* node for owner controllers list */
-	phys_addr_t pgtable;		/* assigned page table structure */
-	unsigned int version;		/* our version */
+	struct device *sysmmu;		 
+	struct device *master;		 
+	struct device_link *link;	 
+	void __iomem *sfrbase;		 
+	struct clk *clk;		 
+	struct clk *aclk;		 
+	struct clk *pclk;		 
+	struct clk *clk_master;		 
+	spinlock_t lock;		 
+	bool active;			 
+	struct exynos_iommu_domain *domain;  
+	struct list_head domain_node;	 
+	struct list_head owner_node;	 
+	phys_addr_t pgtable;		 
+	unsigned int version;		 
 
-	struct iommu_device iommu;	/* IOMMU core handle */
-	const struct sysmmu_variant *variant; /* version specific data */
+	struct iommu_device iommu;	 
+	const struct sysmmu_variant *variant;  
 
-	/* v7 fields */
-	bool has_vcr;			/* virtual machine control register */
+	 
+	bool has_vcr;			 
 };
 
 #define SYSMMU_REG(data, reg) ((data)->sfrbase + (data)->variant->reg)
@@ -359,7 +330,7 @@ static int exynos_sysmmu_v7_get_fault_info(struct sysmmu_drvdata *data,
 	return 0;
 }
 
-/* SysMMU v1..v3 */
+ 
 static const struct sysmmu_variant sysmmu_v1_variant = {
 	.flush_all	= 0x0c,
 	.flush_entry	= 0x10,
@@ -370,7 +341,7 @@ static const struct sysmmu_variant sysmmu_v1_variant = {
 	.get_fault_info	= exynos_sysmmu_v1_get_fault_info,
 };
 
-/* SysMMU v5 */
+ 
 static const struct sysmmu_variant sysmmu_v5_variant = {
 	.pt_base	= 0x0c,
 	.flush_all	= 0x10,
@@ -384,7 +355,7 @@ static const struct sysmmu_variant sysmmu_v5_variant = {
 	.get_fault_info	= exynos_sysmmu_v5_get_fault_info,
 };
 
-/* SysMMU v7: non-VM capable register layout */
+ 
 static const struct sysmmu_variant sysmmu_v7_variant = {
 	.pt_base	= 0x0c,
 	.flush_all	= 0x10,
@@ -400,7 +371,7 @@ static const struct sysmmu_variant sysmmu_v7_variant = {
 	.get_fault_info	= exynos_sysmmu_v7_get_fault_info,
 };
 
-/* SysMMU v7: VM capable register layout */
+ 
 static const struct sysmmu_variant sysmmu_v7_vm_variant = {
 	.pt_base	= 0x800c,
 	.flush_all	= 0x8010,
@@ -517,7 +488,7 @@ static void __sysmmu_get_version(struct sysmmu_drvdata *data)
 
 	ver = readl(data->sfrbase + REG_MMU_VERSION);
 
-	/* controllers on some SoCs don't report proper version */
+	 
 	if (ver == 0x80000001u)
 		data->version = MAKE_MMU_VER(1, 0);
 	else
@@ -590,7 +561,7 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
 out:
 	writel(1 << itype, SYSMMU_REG(data, int_clear));
 
-	/* SysMMU is in blocked state when interrupt occurred */
+	 
 	sysmmu_unblock(data);
 	clk_disable(data->clk_master);
 	spin_unlock(&data->lock);
@@ -624,7 +595,7 @@ static void __sysmmu_init_config(struct sysmmu_drvdata *data)
 	else
 		cfg = CFG_QOS(15) | CFG_FLPDCACHE | CFG_ACGEN;
 
-	cfg |= CFG_EAP; /* enable access protection bits check */
+	cfg |= CFG_EAP;  
 
 	writel(cfg, data->sfrbase + REG_MMU_CFG);
 }
@@ -656,12 +627,7 @@ static void __sysmmu_enable(struct sysmmu_drvdata *data)
 	data->active = true;
 	spin_unlock_irqrestore(&data->lock, flags);
 
-	/*
-	 * SYSMMU driver keeps master's clock enabled only for the short
-	 * time, while accessing the registers. For performing address
-	 * translation during DMA transaction it relies on the client
-	 * driver to enable it.
-	 */
+	 
 	clk_disable(data->clk_master);
 }
 
@@ -696,16 +662,7 @@ static void sysmmu_tlb_invalidate_entry(struct sysmmu_drvdata *data,
 
 		clk_enable(data->clk_master);
 
-		/*
-		 * L2TLB invalidation required
-		 * 4KB page: 1 invalidation
-		 * 64KB page: 16 invalidations
-		 * 1MB page: 64 invalidations
-		 * because it is set-associative TLB
-		 * with 8-way and 64 sets.
-		 * 1MB page can be cached in one of all sets.
-		 * 64KB page can be one of 16 consecutive sets.
-		 */
+		 
 		if (MMU_MAJ_VER(data->version) == 2)
 			num_inv = min_t(unsigned int, size / SPAGE_SIZE, 64);
 
@@ -800,10 +757,7 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
 		}
 	}
 
-	/*
-	 * use the first registered sysmmu device for performing
-	 * dma mapping operations on iommu page tables (cpu cache flush)
-	 */
+	 
 	if (!dma_dev)
 		dma_dev = &pdev->dev;
 
@@ -892,7 +846,7 @@ static struct iommu_domain *exynos_iommu_domain_alloc(unsigned type)
 	dma_addr_t handle;
 	int i;
 
-	/* Check if correct PTE offsets are initialized */
+	 
 	BUG_ON(PG_ENT_SHIFT < 0 || !dma_dev);
 
 	if (type != IOMMU_DOMAIN_DMA && type != IOMMU_DOMAIN_UNMANAGED)
@@ -910,13 +864,13 @@ static struct iommu_domain *exynos_iommu_domain_alloc(unsigned type)
 	if (!domain->lv2entcnt)
 		goto err_counter;
 
-	/* Workaround for System MMU v3.3 to prevent caching 1MiB mapping */
+	 
 	for (i = 0; i < NUM_LV1ENTRIES; i++)
 		domain->pgtable[i] = ZERO_LV2LINK;
 
 	handle = dma_map_single(dma_dev, domain->pgtable, LV1TABLE_SIZE,
 				DMA_TO_DEVICE);
-	/* For mapping page table entries we rely on dma == phys */
+	 
 	BUG_ON(handle != virt_to_phys(domain->pgtable));
 	if (dma_mapping_error(dma_dev, handle))
 		goto err_lv2ent;
@@ -1089,23 +1043,7 @@ static sysmmu_pte_t *alloc_lv2entry(struct exynos_iommu_domain *domain,
 			return ERR_PTR(-EADDRINUSE);
 		}
 
-		/*
-		 * If pre-fetched SLPD is a faulty SLPD in zero_l2_table,
-		 * FLPD cache may cache the address of zero_l2_table. This
-		 * function replaces the zero_l2_table with new L2 page table
-		 * to write valid mappings.
-		 * Accessing the valid area may cause page fault since FLPD
-		 * cache may still cache zero_l2_table for the valid area
-		 * instead of new L2 page table that has the mapping
-		 * information of the valid area.
-		 * Thus any replacement of zero_l2_table with other valid L2
-		 * page table must involve FLPD cache invalidation for System
-		 * MMU v3.3.
-		 * FLPD cache invalidation is performed with TLB invalidation
-		 * by VPN without blocking. It is safe to invalidate TLB without
-		 * blocking because the target address of TLB invalidation is
-		 * not currently mapped.
-		 */
+		 
 		if (need_flush_flpd_cache) {
 			struct sysmmu_drvdata *data;
 
@@ -1145,10 +1083,7 @@ static int lv1set_section(struct exynos_iommu_domain *domain,
 	spin_lock(&domain->lock);
 	if (lv1ent_page_zero(sent)) {
 		struct sysmmu_drvdata *data;
-		/*
-		 * Flushing FLPD cache in System MMU v3.3 that may cache a FLPD
-		 * entry by speculative prefetch of SLPD which has no mapping.
-		 */
+		 
 		list_for_each_entry(data, &domain->clients, domain_node)
 			sysmmu_tlb_invalidate_flpdcache(data, iova);
 	}
@@ -1166,7 +1101,7 @@ static int lv2set_page(sysmmu_pte_t *pent, phys_addr_t paddr, size_t size,
 
 		exynos_iommu_set_pte(pent, mk_lv2ent_spage(paddr, prot));
 		*pgcnt -= 1;
-	} else { /* size == LPAGE_SIZE */
+	} else {  
 		int i;
 		dma_addr_t pent_base = virt_to_phys(pent);
 
@@ -1191,32 +1126,7 @@ static int lv2set_page(sysmmu_pte_t *pent, phys_addr_t paddr, size_t size,
 	return 0;
 }
 
-/*
- * *CAUTION* to the I/O virtual memory managers that support exynos-iommu:
- *
- * System MMU v3.x has advanced logic to improve address translation
- * performance with caching more page table entries by a page table walk.
- * However, the logic has a bug that while caching faulty page table entries,
- * System MMU reports page fault if the cached fault entry is hit even though
- * the fault entry is updated to a valid entry after the entry is cached.
- * To prevent caching faulty page table entries which may be updated to valid
- * entries later, the virtual memory manager should care about the workaround
- * for the problem. The following describes the workaround.
- *
- * Any two consecutive I/O virtual address regions must have a hole of 128KiB
- * at maximum to prevent misbehavior of System MMU 3.x (workaround for h/w bug).
- *
- * Precisely, any start address of I/O virtual region must be aligned with
- * the following sizes for System MMU v3.1 and v3.2.
- * System MMU v3.1: 128KiB
- * System MMU v3.2: 256KiB
- *
- * Because System MMU v3.3 caches page table entries more aggressively, it needs
- * more workarounds.
- * - Any two consecutive I/O virtual regions must have a hole of size larger
- *   than or equal to 128KiB.
- * - Start address of an I/O virtual region must be aligned by 128KiB.
- */
+ 
 static int exynos_iommu_map(struct iommu_domain *iommu_domain,
 			    unsigned long l_iova, phys_addr_t paddr, size_t size,
 			    int prot, gfp_t gfp)
@@ -1295,7 +1205,7 @@ static size_t exynos_iommu_unmap(struct iommu_domain *iommu_domain,
 			goto err;
 		}
 
-		/* workaround for h/w bug in System MMU v3.3 */
+		 
 		exynos_iommu_set_pte(ent, ZERO_LV2LINK);
 		size = SECT_SIZE;
 		goto done;
@@ -1307,7 +1217,7 @@ static size_t exynos_iommu_unmap(struct iommu_domain *iommu_domain,
 		goto done;
 	}
 
-	/* lv1ent_page(sent) == true here */
+	 
 
 	ent = page_entry(ent, iova);
 
@@ -1323,7 +1233,7 @@ static size_t exynos_iommu_unmap(struct iommu_domain *iommu_domain,
 		goto done;
 	}
 
-	/* lv1ent_large(ent) == true here */
+	 
 	if (WARN_ON(size < LPAGE_SIZE)) {
 		err_pgsize = LPAGE_SIZE;
 		goto err;
@@ -1390,17 +1300,13 @@ static struct iommu_device *exynos_iommu_probe_device(struct device *dev)
 		return ERR_PTR(-ENODEV);
 
 	list_for_each_entry(data, &owner->controllers, owner_node) {
-		/*
-		 * SYSMMU will be runtime activated via device link
-		 * (dependency) to its master device, so there are no
-		 * direct calls to pm_runtime_get/put in this driver.
-		 */
+		 
 		data->link = device_link_add(dev, data->sysmmu,
 					     DL_FLAG_STATELESS |
 					     DL_FLAG_PM_RUNTIME);
 	}
 
-	/* There is always at least one entry, see exynos_iommu_of_xlate() */
+	 
 	data = list_first_entry(&owner->controllers,
 				struct sysmmu_drvdata, owner_node);
 

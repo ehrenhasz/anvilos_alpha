@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * srf08.c - Support for Devantech SRFxx ultrasonic ranger
- *           with i2c interface
- * actually supported are srf02, srf08, srf10
- *
- * Copyright (c) 2016, 2017 Andreas Klinger <ak@it-klinger.de>
- *
- * For details about the device see:
- * https://www.robot-electronics.co.uk/htm/srf08tech.html
- * https://www.robot-electronics.co.uk/htm/srf10tech.htm
- * https://www.robot-electronics.co.uk/htm/srf02tech.htm
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -23,16 +12,16 @@
 #include <linux/iio/trigger_consumer.h>
 #include <linux/iio/triggered_buffer.h>
 
-/* registers of SRF08 device */
-#define SRF08_WRITE_COMMAND	0x00	/* Command Register */
-#define SRF08_WRITE_MAX_GAIN	0x01	/* Max Gain Register: 0 .. 31 */
-#define SRF08_WRITE_RANGE	0x02	/* Range Register: 0 .. 255 */
-#define SRF08_READ_SW_REVISION	0x00	/* Software Revision */
-#define SRF08_READ_LIGHT	0x01	/* Light Sensor during last echo */
-#define SRF08_READ_ECHO_1_HIGH	0x02	/* Range of first echo received */
-#define SRF08_READ_ECHO_1_LOW	0x03	/* Range of first echo received */
+ 
+#define SRF08_WRITE_COMMAND	0x00	 
+#define SRF08_WRITE_MAX_GAIN	0x01	 
+#define SRF08_WRITE_RANGE	0x02	 
+#define SRF08_READ_SW_REVISION	0x00	 
+#define SRF08_READ_LIGHT	0x01	 
+#define SRF08_READ_ECHO_1_HIGH	0x02	 
+#define SRF08_READ_ECHO_1_LOW	0x03	 
 
-#define SRF08_CMD_RANGING_CM	0x51	/* Ranging Mode - Result in cm */
+#define SRF08_CMD_RANGING_CM	0x51	 
 
 enum srf08_sensor_type {
 	SRF02,
@@ -46,43 +35,34 @@ struct srf08_chip_info {
 	int			num_sensitivity_avail;
 	int			sensitivity_default;
 
-	/* default value of Range in mm */
+	 
 	int			range_default;
 };
 
 struct srf08_data {
 	struct i2c_client	*client;
 
-	/*
-	 * Gain in the datasheet is called sensitivity here to distinct it
-	 * from the gain used with amplifiers of adc's
-	 */
+	 
 	int			sensitivity;
 
-	/* max. Range in mm */
+	 
 	int			range_mm;
 	struct mutex		lock;
 
-	/* Ensure timestamp is naturally aligned */
+	 
 	struct {
 		s16 chan;
 		s64 timestamp __aligned(8);
 	} scan;
 
-	/* Sensor-Type */
+	 
 	enum srf08_sensor_type	sensor_type;
 
-	/* Chip-specific information */
+	 
 	const struct srf08_chip_info	*chip_info;
 };
 
-/*
- * in the documentation one can read about the "Gain" of the device
- * which is used here for amplifying the signal and filtering out unwanted
- * ones.
- * But with ADC's this term is already used differently and that's why it
- * is called "Sensitivity" here.
- */
+ 
 static const struct srf08_chip_info srf02_chip_info = {
 	.sensitivity_avail	= NULL,
 	.num_sensitivity_avail	= 0,
@@ -136,23 +116,14 @@ static int srf08_read_ranging(struct srf08_data *data)
 		return ret;
 	}
 
-	/*
-	 * we read here until a correct version number shows up as
-	 * suggested by the documentation
-	 *
-	 * with an ultrasonic speed of 343 m/s and a roundtrip of it
-	 * sleep the expected duration and try to read from the device
-	 * if nothing useful is read try it in a shorter grid
-	 *
-	 * polling for not more than 20 ms should be enough
-	 */
+	 
 	waittime = 1 + data->range_mm / 172;
 	msleep(waittime);
 	for (i = 0; i < 4; i++) {
 		ret = i2c_smbus_read_byte_data(data->client,
 						SRF08_READ_SW_REVISION);
 
-		/* check if a valid version number is read */
+		 
 		if (ret < 255 && ret > 0)
 			break;
 		msleep(5);
@@ -218,7 +189,7 @@ static int srf08_read_raw(struct iio_dev *indio_dev,
 		*val = ret;
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SCALE:
-		/* 1 LSB is 1 cm */
+		 
 		*val = 0;
 		*val2 = 10000;
 		return IIO_VAL_INT_PLUS_MICRO;
@@ -246,17 +217,7 @@ static ssize_t srf08_show_range_mm(struct device *dev,
 						data->range_mm % 1000);
 }
 
-/*
- * set the range of the sensor to an even multiple of 43 mm
- * which corresponds to 1 LSB in the register
- *
- * register value    corresponding range
- *         0x00             43 mm
- *         0x01             86 mm
- *         0x02            129 mm
- *         ...
- *         0xFF          11008 mm
- */
+ 
 static ssize_t srf08_write_range_mm(struct srf08_data *data, unsigned int val)
 {
 	int ret;
@@ -435,10 +396,7 @@ static const struct iio_info srf08_info = {
 	.attrs = &srf08_attribute_group,
 };
 
-/*
- * srf02 don't have an adjustable range or sensitivity,
- * so we don't need attributes at all
- */
+ 
 static const struct iio_info srf02_info = {
 	.read_raw = srf08_read_raw,
 };
@@ -497,13 +455,7 @@ static int srf08_probe(struct i2c_client *client)
 	}
 
 	if (data->chip_info->range_default) {
-		/*
-		 * set default range of device in mm here
-		 * these register values cannot be read from the hardware
-		 * therefore set driver specific default values
-		 *
-		 * srf02 don't have a default value so it'll be omitted
-		 */
+		 
 		ret = srf08_write_range_mm(data,
 					data->chip_info->range_default);
 		if (ret < 0)
@@ -511,13 +463,7 @@ static int srf08_probe(struct i2c_client *client)
 	}
 
 	if (data->chip_info->sensitivity_default) {
-		/*
-		 * set default sensitivity of device here
-		 * these register values cannot be read from the hardware
-		 * therefore set driver specific default values
-		 *
-		 * srf02 don't have a default value so it'll be omitted
-		 */
+		 
 		ret = srf08_write_sensitivity(data,
 				data->chip_info->sensitivity_default);
 		if (ret < 0)

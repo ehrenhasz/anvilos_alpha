@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * DMA Router driver for LPC18xx/43xx DMA MUX
- *
- * Copyright (C) 2015 Joachim Eastwood <manabian@gmail.com>
- *
- * Based on TI DMA Crossbar driver by:
- *   Copyright (C) 2015 Texas Instruments Incorporated - http://www.ti.com
- *   Author: Peter Ujfalusi <peter.ujfalusi@ti.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -19,7 +11,7 @@
 #include <linux/regmap.h>
 #include <linux/spinlock.h>
 
-/* CREG register offset and macros for mux manipulation */
+ 
 #define LPC18XX_CREG_DMAMUX		0x11c
 #define LPC18XX_DMAMUX_VAL(v, n)	((v) << (n * 2))
 #define LPC18XX_DMAMUX_MASK(n)		(0x3 << (n * 2))
@@ -76,7 +68,7 @@ static void *lpc18xx_dmamux_reserve(struct of_phandle_args *dma_spec,
 		return ERR_PTR(-EINVAL);
 	}
 
-	/* The of_node_put() will be done in the core for the node */
+	 
 	dma_spec->np = of_parse_phandle(ofdma->of_node, "dma-masters", 0);
 	if (!dma_spec->np) {
 		dev_err(&pdev->dev, "can't get dma master\n");

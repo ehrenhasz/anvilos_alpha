@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// error-inject.c: Function-level error injection table
+
+
 #include <linux/error-injection.h>
 #include <linux/debugfs.h>
 #include <linux/kallsyms.h>
@@ -10,7 +10,7 @@
 #include <linux/slab.h>
 #include <asm/sections.h>
 
-/* Whitelist of symbols that can be overridden for error injection. */
+ 
 static LIST_HEAD(error_injection_list);
 static DEFINE_MUTEX(ei_mutex);
 struct ei_entry {
@@ -54,13 +54,7 @@ int get_injectable_error_type(unsigned long addr)
 	return ei_type;
 }
 
-/*
- * Lookup and populate the error_injection_list.
- *
- * For safety reasons we only allow certain functions to be overridden with
- * bpf_error_injection, so we need to populate the list of the symbols that have
- * been marked as safe for overriding.
- */
+ 
 static void populate_error_injection_list(struct error_injection_entry *start,
 					  struct error_injection_entry *end,
 					  void *priv)
@@ -93,7 +87,7 @@ static void populate_error_injection_list(struct error_injection_entry *start,
 	mutex_unlock(&ei_mutex);
 }
 
-/* Markers of the _error_inject_whitelist section */
+ 
 extern struct error_injection_entry __start_error_injection_whitelist[];
 extern struct error_injection_entry __stop_error_injection_whitelist[];
 
@@ -131,7 +125,7 @@ static void module_unload_ei_list(struct module *mod)
 	mutex_unlock(&ei_mutex);
 }
 
-/* Module notifier call back, checking error injection table on the module */
+ 
 static int ei_module_callback(struct notifier_block *nb,
 			      unsigned long val, void *data)
 {
@@ -154,14 +148,11 @@ static __init int module_ei_init(void)
 {
 	return register_module_notifier(&ei_module_nb);
 }
-#else /* !CONFIG_MODULES */
+#else  
 #define module_ei_init()	(0)
 #endif
 
-/*
- * error_injection/whitelist -- shows which functions can be overridden for
- * error injection.
- */
+ 
 static void *ei_seq_start(struct seq_file *m, loff_t *pos)
 {
 	mutex_lock(&ei_mutex);

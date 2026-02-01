@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Error Location Module
- *
- * Copyright (C) 2012 Texas Instruments Incorporated - https://www.ti.com/
- */
+
+ 
 
 #define DRIVER_NAME	"omap-elm"
 
@@ -31,23 +27,23 @@
 #define ELM_LOCATION_STATUS		0x800
 #define ELM_ERROR_LOCATION_0		0x880
 
-/* ELM Interrupt Status Register */
+ 
 #define INTR_STATUS_PAGE_VALID		BIT(8)
 
-/* ELM Interrupt Enable Register */
+ 
 #define INTR_EN_PAGE_MASK		BIT(8)
 
-/* ELM Location Configuration Register */
+ 
 #define ECC_BCH_LEVEL_MASK		0x3
 
-/* ELM syndrome */
+ 
 #define ELM_SYNDROME_VALID		BIT(16)
 
-/* ELM_LOCATION_STATUS Register */
+ 
 #define ECC_CORRECTABLE_MASK		BIT(8)
 #define ECC_NB_ERRORS_MASK		0x1f
 
-/* ELM_ERROR_LOCATION_0-15 Registers */
+ 
 #define ECC_ERROR_LOCATION_MASK		0x1fff
 
 #define ELM_ECC_SIZE			0x7ff
@@ -92,14 +88,7 @@ static u32 elm_read_reg(struct elm_info *info, int offset)
 	return readl(info->elm_base + offset);
 }
 
-/**
- * elm_config - Configure ELM module
- * @dev:	ELM device
- * @bch_type:	Type of BCH ecc
- * @ecc_steps:	ECC steps to assign to config
- * @ecc_step_size:	ECC step size to assign to config
- * @ecc_syndrome_size:	ECC syndrome size to assign to config
- */
+ 
 int elm_config(struct device *dev, enum bch_ecc bch_type,
 	int ecc_steps, int ecc_step_size, int ecc_syndrome_size)
 {
@@ -110,12 +99,12 @@ int elm_config(struct device *dev, enum bch_ecc bch_type,
 		dev_err(dev, "Unable to configure elm - device not probed?\n");
 		return -EPROBE_DEFER;
 	}
-	/* ELM cannot detect ECC errors for chunks > 1KB */
+	 
 	if (ecc_step_size > ((ELM_ECC_SIZE + 1) / 2)) {
 		dev_err(dev, "unsupported config ecc-size=%d\n", ecc_step_size);
 		return -EINVAL;
 	}
-	/* ELM support 8 error syndrome process */
+	 
 	if (ecc_steps > ERROR_VECTOR_MAX && ecc_steps % ERROR_VECTOR_MAX) {
 		dev_err(dev, "unsupported config ecc-step=%d\n", ecc_steps);
 		return -EINVAL;
@@ -131,14 +120,7 @@ int elm_config(struct device *dev, enum bch_ecc bch_type,
 }
 EXPORT_SYMBOL(elm_config);
 
-/**
- * elm_configure_page_mode - Enable/Disable page mode
- * @info:	elm info
- * @index:	index number of syndrome fragment vector
- * @enable:	enable/disable flag for page mode
- *
- * Enable page mode for syndrome fragment index
- */
+ 
 static void elm_configure_page_mode(struct elm_info *info, int index,
 		bool enable)
 {
@@ -146,21 +128,14 @@ static void elm_configure_page_mode(struct elm_info *info, int index,
 
 	reg_val = elm_read_reg(info, ELM_PAGE_CTRL);
 	if (enable)
-		reg_val |= BIT(index);	/* enable page mode */
+		reg_val |= BIT(index);	 
 	else
-		reg_val &= ~BIT(index);	/* disable page mode */
+		reg_val &= ~BIT(index);	 
 
 	elm_write_reg(info, ELM_PAGE_CTRL, reg_val);
 }
 
-/**
- * elm_load_syndrome - Load ELM syndrome reg
- * @info:	elm info
- * @err_vec:	elm error vectors
- * @ecc:	buffer with calculated ecc
- *
- * Load syndrome fragment registers with calculated ecc in reverse order.
- */
+ 
 static void elm_load_syndrome(struct elm_info *info,
 		struct elm_errorvec *err_vec, u8 *ecc)
 {
@@ -169,39 +144,39 @@ static void elm_load_syndrome(struct elm_info *info,
 
 	for (i = 0; i < info->ecc_steps; i++) {
 
-		/* Check error reported */
+		 
 		if (err_vec[i].error_reported) {
 			elm_configure_page_mode(info, i, true);
 			offset = ELM_SYNDROME_FRAGMENT_0 +
 				SYNDROME_FRAGMENT_REG_SIZE * i;
 			switch (info->bch_type) {
 			case BCH8_ECC:
-				/* syndrome fragment 0 = ecc[9-12B] */
+				 
 				val = (__force u32)cpu_to_be32(*(u32 *)&ecc[9]);
 				elm_write_reg(info, offset, val);
 
-				/* syndrome fragment 1 = ecc[5-8B] */
+				 
 				offset += 4;
 				val = (__force u32)cpu_to_be32(*(u32 *)&ecc[5]);
 				elm_write_reg(info, offset, val);
 
-				/* syndrome fragment 2 = ecc[1-4B] */
+				 
 				offset += 4;
 				val = (__force u32)cpu_to_be32(*(u32 *)&ecc[1]);
 				elm_write_reg(info, offset, val);
 
-				/* syndrome fragment 3 = ecc[0B] */
+				 
 				offset += 4;
 				val = ecc[0];
 				elm_write_reg(info, offset, val);
 				break;
 			case BCH4_ECC:
-				/* syndrome fragment 0 = ecc[20-52b] bits */
+				 
 				val = ((__force u32)cpu_to_be32(*(u32 *)&ecc[3]) >> 4) |
 					((ecc[2] & 0xf) << 28);
 				elm_write_reg(info, offset, val);
 
-				/* syndrome fragment 1 = ecc[0-20b] bits */
+				 
 				offset += 4;
 				val = (__force u32)cpu_to_be32(*(u32 *)&ecc[0]) >> 12;
 				elm_write_reg(info, offset, val);
@@ -233,30 +208,19 @@ static void elm_load_syndrome(struct elm_info *info,
 			}
 		}
 
-		/* Update ecc pointer with ecc byte size */
+		 
 		ecc += info->ecc_syndrome_size;
 	}
 }
 
-/**
- * elm_start_processing - start elm syndrome processing
- * @info:	elm info
- * @err_vec:	elm error vectors
- *
- * Set syndrome valid bit for syndrome fragment registers for which
- * elm syndrome fragment registers are loaded. This enables elm module
- * to start processing syndrome vectors.
- */
+ 
 static void elm_start_processing(struct elm_info *info,
 		struct elm_errorvec *err_vec)
 {
 	int i, offset;
 	u32 reg_val;
 
-	/*
-	 * Set syndrome vector valid, so that ELM module
-	 * will process it for vectors error is reported
-	 */
+	 
 	for (i = 0; i < info->ecc_steps; i++) {
 		if (err_vec[i].error_reported) {
 			offset = ELM_SYNDROME_FRAGMENT_6 +
@@ -268,17 +232,7 @@ static void elm_start_processing(struct elm_info *info,
 	}
 }
 
-/**
- * elm_error_correction - locate correctable error position
- * @info:	elm info
- * @err_vec:	elm error vectors
- *
- * On completion of processing by elm module, error location status
- * register updated with correctable/uncorrectable error information.
- * In case of correctable errors, number of errors located from
- * elm location status register & read the positions from
- * elm error location register.
- */
+ 
 static void elm_error_correction(struct elm_info *info,
 		struct elm_errorvec *err_vec)
 {
@@ -288,73 +242,65 @@ static void elm_error_correction(struct elm_info *info,
 
 	for (i = 0; i < info->ecc_steps; i++) {
 
-		/* Check error reported */
+		 
 		if (err_vec[i].error_reported) {
 			offset = ELM_LOCATION_STATUS + ERROR_LOCATION_SIZE * i;
 			reg_val = elm_read_reg(info, offset);
 
-			/* Check correctable error or not */
+			 
 			if (reg_val & ECC_CORRECTABLE_MASK) {
 				offset = ELM_ERROR_LOCATION_0 +
 					ERROR_LOCATION_SIZE * i;
 
-				/* Read count of correctable errors */
+				 
 				err_vec[i].error_count = reg_val &
 					ECC_NB_ERRORS_MASK;
 
-				/* Update the error locations in error vector */
+				 
 				for (j = 0; j < err_vec[i].error_count; j++) {
 
 					reg_val = elm_read_reg(info, offset);
 					err_vec[i].error_loc[j] = reg_val &
 						ECC_ERROR_LOCATION_MASK;
 
-					/* Update error location register */
+					 
 					offset += 4;
 				}
 			} else {
 				err_vec[i].error_uncorrectable = true;
 			}
 
-			/* Clearing interrupts for processed error vectors */
+			 
 			elm_write_reg(info, ELM_IRQSTATUS, BIT(i));
 
-			/* Disable page mode */
+			 
 			elm_configure_page_mode(info, i, false);
 		}
 	}
 }
 
-/**
- * elm_decode_bch_error_page - Locate error position
- * @dev:	device pointer
- * @ecc_calc:	calculated ECC bytes from GPMC
- * @err_vec:	elm error vectors
- *
- * Called with one or more error reported vectors & vectors with
- * error reported is updated in err_vec[].error_reported
- */
+ 
 void elm_decode_bch_error_page(struct device *dev, u8 *ecc_calc,
 		struct elm_errorvec *err_vec)
 {
 	struct elm_info *info = dev_get_drvdata(dev);
 	u32 reg_val;
 
-	/* Enable page mode interrupt */
+	 
 	reg_val = elm_read_reg(info, ELM_IRQSTATUS);
 	elm_write_reg(info, ELM_IRQSTATUS, reg_val & INTR_STATUS_PAGE_VALID);
 	elm_write_reg(info, ELM_IRQENABLE, INTR_EN_PAGE_MASK);
 
-	/* Load valid ecc byte to syndrome fragment register */
+	 
 	elm_load_syndrome(info, err_vec, ecc_calc);
 
-	/* Enable syndrome processing for which syndrome fragment is updated */
+	 
 	elm_start_processing(info, err_vec);
 
-	/* Wait for ELM module to finish locating error correction */
+	 
 	wait_for_completion(&info->elm_completion);
 
-	/* Disable page mode interrupt */
+	 
 	reg_val = elm_read_reg(info, ELM_IRQENABLE);
 	elm_write_reg(info, ELM_IRQENABLE, reg_val & ~INTR_EN_PAGE_MASK);
 	elm_error_correction(info, err_vec);
@@ -368,7 +314,7 @@ static irqreturn_t elm_isr(int this_irq, void *dev_id)
 
 	reg_val = elm_read_reg(info, ELM_IRQSTATUS);
 
-	/* All error vectors processed */
+	 
 	if (reg_val & INTR_STATUS_PAGE_VALID) {
 		elm_write_reg(info, ELM_IRQSTATUS,
 				reg_val & INTR_STATUS_PAGE_VALID);
@@ -429,10 +375,7 @@ static void elm_remove(struct platform_device *pdev)
 }
 
 #ifdef CONFIG_PM_SLEEP
-/*
- * elm_context_save
- * saves ELM configurations to preserve them across Hardware powered-down
- */
+ 
 static int elm_context_save(struct elm_info *info)
 {
 	struct elm_registers *regs = &info->elm_regs;
@@ -469,18 +412,14 @@ static int elm_context_save(struct elm_info *info)
 		default:
 			return -EINVAL;
 		}
-		/* ELM SYNDROME_VALID bit in SYNDROME_FRAGMENT_6[] needs
-		 * to be saved for all BCH schemes*/
+		 
 		regs->elm_syndrome_fragment_6[i] = elm_read_reg(info,
 					ELM_SYNDROME_FRAGMENT_6 + offset);
 	}
 	return 0;
 }
 
-/*
- * elm_context_restore
- * writes configurations saved duing power-down back into ELM registers
- */
+ 
 static int elm_context_restore(struct elm_info *info)
 {
 	struct elm_registers *regs = &info->elm_regs;
@@ -517,7 +456,7 @@ static int elm_context_restore(struct elm_info *info)
 		default:
 			return -EINVAL;
 		}
-		/* ELM_SYNDROME_VALID bit to be set in last to trigger FSM */
+		 
 		elm_write_reg(info, ELM_SYNDROME_FRAGMENT_6 + offset,
 					regs->elm_syndrome_fragment_6[i] &
 							 ELM_SYNDROME_VALID);

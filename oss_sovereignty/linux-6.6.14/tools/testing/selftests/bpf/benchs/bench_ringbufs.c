@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include <asm/barrier.h>
 #include <linux/perf_event.h>
 #include <linux/ring_buffer.h>
@@ -16,9 +16,9 @@ static struct {
 	int batch_cnt;
 	bool sampled;
 	int sample_rate;
-	int ringbuf_sz; /* per-ringbuf, in bytes */
-	bool ringbuf_use_output; /* use slower output API */
-	int perfbuf_sz; /* per-CPU size, in pages */
+	int ringbuf_sz;  
+	bool ringbuf_use_output;  
+	int perfbuf_sz;  
 } args = {
 	.back2back = false,
 	.batch_cnt = 500,
@@ -78,13 +78,13 @@ static error_t parse_arg(int key, char *arg, struct argp_state *state)
 	return 0;
 }
 
-/* exported into benchmark runner */
+ 
 const struct argp bench_ringbufs_argp = {
 	.options = opts,
 	.parser = parse_arg,
 };
 
-/* RINGBUF-LIBBPF benchmark */
+ 
 
 static struct counter buf_hits;
 
@@ -109,7 +109,7 @@ static void bufs_validate(void)
 static void *bufs_sample_producer(void *input)
 {
 	if (args.back2back) {
-		/* initial batch to get everything started */
+		 
 		bufs_trigger_batch();
 		return NULL;
 	}
@@ -148,7 +148,7 @@ static struct ringbuf_bench *ringbuf_setup_skeleton(void)
 	skel->rodata->use_output = args.ringbuf_use_output ? 1 : 0;
 
 	if (args.sampled)
-		/* record data + header take 16 bytes */
+		 
 		skel->rodata->wakeup_data_size = args.sample_rate * 16;
 
 	bpf_map__set_max_entries(skel->maps.ringbuf, args.ringbuf_sz);
@@ -199,7 +199,7 @@ static void *ringbuf_libbpf_consumer(void *input)
 	return NULL;
 }
 
-/* RINGBUF-CUSTOM benchmark */
+ 
 struct ringbuf_custom {
 	__u64 *consumer_pos;
 	__u64 *producer_pos;
@@ -244,7 +244,7 @@ static void ringbuf_custom_setup(void)
 	r->map_fd = bpf_map__fd(ctx->skel->maps.ringbuf);
 	r->mask = args.ringbuf_sz - 1;
 
-	/* Map writable consumer page */
+	 
 	tmp = mmap(NULL, page_size, PROT_READ | PROT_WRITE, MAP_SHARED,
 		   r->map_fd, 0);
 	if (tmp == MAP_FAILED) {
@@ -253,7 +253,7 @@ static void ringbuf_custom_setup(void)
 	}
 	r->consumer_pos = tmp;
 
-	/* Map read-only producer page and data pages. */
+	 
 	tmp = mmap(NULL, page_size + 2 * args.ringbuf_sz, PROT_READ, MAP_SHARED,
 		   r->map_fd, page_size);
 	if (tmp == MAP_FAILED) {
@@ -283,12 +283,12 @@ static void ringbuf_custom_setup(void)
 
 static inline int roundup_len(__u32 len)
 {
-	/* clear out top 2 bits */
+	 
 	len <<= 2;
 	len >>= 2;
-	/* add length prefix */
+	 
 	len += RINGBUF_META_LEN;
-	/* round up to 8 byte alignment */
+	 
 	return (len + 7) / 8 * 8;
 }
 
@@ -306,7 +306,7 @@ static void ringbuf_custom_process_ring(struct ringbuf_custom *r)
 			len_ptr = r->data + (cons_pos & r->mask);
 			len = smp_load_acquire(len_ptr);
 
-			/* sample not committed yet, bail out for now */
+			 
 			if (len & RINGBUF_BUSY_BIT)
 				return;
 
@@ -338,7 +338,7 @@ static void *ringbuf_custom_consumer(void *input)
 	return 0;
 }
 
-/* PERFBUF-LIBBPF benchmark */
+ 
 static struct perfbuf_libbpf_ctx {
 	struct perfbuf_bench *skel;
 	struct perf_buffer *perfbuf;
@@ -402,7 +402,7 @@ static void perfbuf_libbpf_setup(void)
 	attr.config = PERF_COUNT_SW_BPF_OUTPUT;
 	attr.type = PERF_TYPE_SOFTWARE;
 	attr.sample_type = PERF_SAMPLE_RAW;
-	/* notify only every Nth sample */
+	 
 	if (args.sampled) {
 		attr.sample_period = args.sample_rate;
 		attr.wakeup_events = args.sample_rate;
@@ -444,13 +444,13 @@ static void *perfbuf_libbpf_consumer(void *input)
 	return NULL;
 }
 
-/* PERFBUF-CUSTOM benchmark */
+ 
 
-/* copies of internal libbpf definitions */
+ 
 struct perf_cpu_buf {
 	struct perf_buffer *pb;
-	void *base; /* mmap()'ed memory */
-	void *buf; /* for reconstructing segmented data */
+	void *base;  
+	void *buf;  
 	size_t buf_size;
 	int fd;
 	int cpu;
@@ -461,15 +461,15 @@ struct perf_buffer {
 	perf_buffer_event_fn event_cb;
 	perf_buffer_sample_fn sample_cb;
 	perf_buffer_lost_fn lost_cb;
-	void *ctx; /* passed into callbacks */
+	void *ctx;  
 
 	size_t page_size;
 	size_t mmap_size;
 	struct perf_cpu_buf **cpu_bufs;
 	struct epoll_event *events;
-	int cpu_cnt; /* number of allocated CPU buffers */
-	int epoll_fd; /* perf event FD */
-	int map_fd; /* BPF_MAP_TYPE_PERF_EVENT_ARRAY BPF map FD */
+	int cpu_cnt;  
+	int epoll_fd;  
+	int map_fd;  
 };
 
 static void *perfbuf_custom_consumer(void *input)

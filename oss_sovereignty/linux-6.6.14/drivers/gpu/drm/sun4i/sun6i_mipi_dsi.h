@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2016 Allwinnertech Co., Ltd.
- * Copyright (C) 2017-2018 Bootlin
- *
- * Maxime Ripard <maxime.ripard@bootlin.com>
- */
+
+ 
 
 #ifndef _SUN6I_MIPI_DSI_H_
 #define _SUN6I_MIPI_DSI_H_
@@ -55,4 +50,4 @@ static inline struct sun6i_dsi *encoder_to_sun6i_dsi(const struct drm_encoder *e
 	return container_of(encoder, struct sun6i_dsi, encoder);
 };
 
-#endif /* _SUN6I_MIPI_DSI_H_ */
+#endif  

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #ifndef IOU_RSRC_H
 #define IOU_RSRC_H
 

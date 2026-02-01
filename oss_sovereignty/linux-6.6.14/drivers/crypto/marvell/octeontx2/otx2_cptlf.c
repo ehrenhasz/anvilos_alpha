@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2020 Marvell. */
+
+ 
 
 #include "otx2_cpt_common.h"
 #include "otx2_cptlf.h"
@@ -108,28 +108,28 @@ static int cptlf_set_grp_and_pri(struct otx2_cptlfs_info *lfs,
 
 static void cptlf_hw_init(struct otx2_cptlfs_info *lfs)
 {
-	/* Disable instruction queues */
+	 
 	otx2_cptlf_disable_iqueues(lfs);
 
-	/* Set instruction queues base addresses */
+	 
 	otx2_cptlf_set_iqueues_base_addr(lfs);
 
-	/* Set instruction queues sizes */
+	 
 	otx2_cptlf_set_iqueues_size(lfs);
 
-	/* Set done interrupts time wait */
+	 
 	cptlf_set_done_time_wait(lfs, CPT_TIMER_HOLD);
 
-	/* Set done interrupts num wait */
+	 
 	cptlf_set_done_num_wait(lfs, CPT_COUNT_HOLD);
 
-	/* Enable instruction queues */
+	 
 	otx2_cptlf_enable_iqueues(lfs);
 }
 
 static void cptlf_hw_cleanup(struct otx2_cptlfs_info *lfs)
 {
-	/* Disable instruction queues */
+	 
 	otx2_cptlf_disable_iqueues(lfs);
 }
 
@@ -155,11 +155,11 @@ static void cptlf_enable_intrs(struct otx2_cptlfs_info *lfs)
 {
 	int slot;
 
-	/* Enable done interrupts */
+	 
 	for (slot = 0; slot < lfs->lfs_num; slot++)
 		otx2_cpt_write64(lfs->reg_base, lfs->blkaddr, slot,
 				 OTX2_CPT_LF_DONE_INT_ENA_W1S, 0x1);
-	/* Enable Misc interrupts */
+	 
 	cptlf_set_misc_intrs(lfs, true);
 }
 
@@ -221,7 +221,7 @@ static irqreturn_t cptlf_misc_intr_handler(int __always_unused irq, void *arg)
 		return IRQ_NONE;
 	}
 
-	/* Acknowledge interrupts */
+	 
 	otx2_cpt_write64(lf->lfs->reg_base, lf->lfs->blkaddr, lf->slot,
 			 OTX2_CPT_LF_MISC_INT, irq_misc_ack.u);
 
@@ -234,12 +234,12 @@ static irqreturn_t cptlf_done_intr_handler(int irq, void *arg)
 	struct otx2_cptlf_info *lf = arg;
 	int irq_cnt;
 
-	/* Read the number of completed requests */
+	 
 	irq_cnt = cptlf_read_done_cnt(lf);
 	if (irq_cnt) {
 		done_wait.u = otx2_cpt_read64(lf->lfs->reg_base, lf->lfs->blkaddr,
 					      lf->slot, OTX2_CPT_LF_DONE_WAIT);
-		/* Acknowledge the number of completed requests */
+		 
 		otx2_cpt_write64(lf->lfs->reg_base, lf->lfs->blkaddr, lf->slot,
 				 OTX2_CPT_LF_DONE_ACK, irq_cnt);
 
@@ -251,7 +251,7 @@ static irqreturn_t cptlf_done_intr_handler(int irq, void *arg)
 			return IRQ_NONE;
 		}
 
-		/* Schedule processing of completed requests */
+		 
 		tasklet_hi_schedule(&lf->wqe->work);
 	}
 	return IRQ_HANDLED;
@@ -396,7 +396,7 @@ int otx2_cptlf_init(struct otx2_cptlfs_info *lfs, u8 eng_grp_mask, int pri,
 			OTX2_CPT_RVU_FUNC_ADDR_S(lfs->blkaddr, slot,
 						 OTX2_CPT_LF_NQX(0));
 	}
-	/* Send request to attach LFs */
+	 
 	ret = otx2_cpt_attach_rscrs_msg(lfs);
 	if (ret)
 		goto clear_lfs_num;
@@ -408,10 +408,7 @@ int otx2_cptlf_init(struct otx2_cptlfs_info *lfs, u8 eng_grp_mask, int pri,
 		goto detach_rsrcs;
 	}
 	cptlf_hw_init(lfs);
-	/*
-	 * Allow each LF to execute requests destined to any of 8 engine
-	 * groups and set queue priority of each LF to high
-	 */
+	 
 	ret = cptlf_set_grp_and_pri(lfs, eng_grp_mask, pri);
 	if (ret)
 		goto free_iq;
@@ -432,9 +429,9 @@ EXPORT_SYMBOL_NS_GPL(otx2_cptlf_init, CRYPTO_DEV_OCTEONTX2_CPT);
 void otx2_cptlf_shutdown(struct otx2_cptlfs_info *lfs)
 {
 	lfs->lfs_num = 0;
-	/* Cleanup LFs hardware side */
+	 
 	cptlf_hw_cleanup(lfs);
-	/* Send request to detach LFs */
+	 
 	otx2_cpt_detach_rsrcs_msg(lfs);
 }
 EXPORT_SYMBOL_NS_GPL(otx2_cptlf_shutdown, CRYPTO_DEV_OCTEONTX2_CPT);

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Hyper-V Isolation VM interface with paravisor and hypervisor
- *
- * Author:
- *  Tianyu Lan <Tianyu.Lan@microsoft.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/hyperv.h>
@@ -61,10 +56,10 @@ union hv_ghcb {
 	} hypercall;
 } __packed __aligned(HV_HYP_PAGE_SIZE);
 
-/* Only used in an SNP VM with the paravisor */
+ 
 static u16 hv_ghcb_version __ro_after_init;
 
-/* Functions only used in an SNP VM with the paravisor go here. */
+ 
 u64 hv_ghcb_hypercall(u64 control, void *input, void *output, u32 input_size)
 {
 	union hv_ghcb *hv_ghcb;
@@ -121,7 +116,7 @@ static inline void wr_ghcb_msr(u64 val)
 static enum es_result hv_ghcb_hv_call(struct ghcb *ghcb, u64 exit_code,
 				   u64 exit_info_1, u64 exit_info_2)
 {
-	/* Fill in protocol and format specifiers */
+	 
 	ghcb->protocol_version = hv_ghcb_version;
 	ghcb->ghcb_usage       = GHCB_DEFAULT_USAGE;
 
@@ -141,10 +136,10 @@ void __noreturn hv_ghcb_terminate(unsigned int set, unsigned int reason)
 {
 	u64 val = GHCB_MSR_TERM_REQ;
 
-	/* Tell the hypervisor what went wrong. */
+	 
 	val |= GHCB_SEV_TERM_REASON(set, reason);
 
-	/* Request Guest Termination from Hypvervisor */
+	 
 	wr_ghcb_msr(val);
 	VMGEXIT();
 
@@ -157,10 +152,10 @@ bool hv_ghcb_negotiate_protocol(void)
 	u64 ghcb_gpa;
 	u64 val;
 
-	/* Save ghcb page gpa. */
+	 
 	ghcb_gpa = rd_ghcb_msr();
 
-	/* Do the GHCB protocol version negotiation */
+	 
 	wr_ghcb_msr(GHCB_MSR_SEV_INFO_REQ);
 	VMGEXIT();
 	val = rd_ghcb_msr();
@@ -175,7 +170,7 @@ bool hv_ghcb_negotiate_protocol(void)
 	hv_ghcb_version = min_t(size_t, GHCB_MSR_PROTO_MAX(val),
 			     GHCB_PROTOCOL_MAX);
 
-	/* Write ghcb page back after negotiating protocol. */
+	 
 	wr_ghcb_msr(ghcb_gpa);
 	VMGEXIT();
 
@@ -217,7 +212,7 @@ static void hv_ghcb_msr_read(u64 msr, u64 *value)
 	void **ghcb_base;
 	unsigned long flags;
 
-	/* Check size of union hv_ghcb here. */
+	 
 	BUILD_BUG_ON(sizeof(union hv_ghcb) != HV_HYP_PAGE_SIZE);
 
 	if (!hv_ghcb_pg)
@@ -242,12 +237,12 @@ static void hv_ghcb_msr_read(u64 msr, u64 *value)
 	local_irq_restore(flags);
 }
 
-/* Only used in a fully enlightened SNP VM, i.e. without the paravisor */
+ 
 static u8 ap_start_input_arg[PAGE_SIZE] __bss_decrypted __aligned(PAGE_SIZE);
 static u8 ap_start_stack[PAGE_SIZE] __aligned(PAGE_SIZE);
 static DEFINE_PER_CPU(struct sev_es_save_area *, hv_sev_vmsa);
 
-/* Functions only used in an SNP VM without the paravisor go here. */
+ 
 
 #define hv_populate_vmcb_seg(seg, gdtr_base)			\
 do {								\
@@ -263,13 +258,7 @@ static int snp_set_vmsa(void *va, bool vmsa)
 {
 	u64 attrs;
 
-	/*
-	 * Running at VMPL0 allows the kernel to change the VMSA bit for a page
-	 * using the RMPADJUST instruction. However, for the instruction to
-	 * succeed it must target the permissions of a lesser privileged
-	 * (higher numbered) VMPL level, so use VMPL1 (refer to the RMPADJUST
-	 * instruction in the AMD64 APM Volume 3).
-	 */
+	 
 	attrs = 1;
 	if (vmsa)
 		attrs |= RMPADJUST_VMSA_PAGE_BIT;
@@ -329,11 +318,7 @@ int hv_snp_boot_ap(int cpu, unsigned long start_ip)
 	vmsa->rip = (u64)secondary_startup_64_no_verify;
 	vmsa->rsp = (u64)&ap_start_stack[PAGE_SIZE];
 
-	/*
-	 * Set the SNP-specific fields for this VMSA:
-	 *   VMPL level
-	 *   SEV_FEATURES (matches the SEV STATUS MSR right shifted 2 bits)
-	 */
+	 
 	vmsa->vmpl = 0;
 	vmsa->sev_features = sev_status >> 2;
 
@@ -366,11 +351,11 @@ int hv_snp_boot_ap(int cpu, unsigned long start_ip)
 	}
 
 	cur_vmsa = per_cpu(hv_sev_vmsa, cpu);
-	/* Free up any previous VMSA page */
+	 
 	if (cur_vmsa)
 		snp_cleanup_vmsa(cur_vmsa);
 
-	/* Record the current VMSA page */
+	 
 	per_cpu(hv_sev_vmsa, cpu) = vmsa;
 
 	return ret;
@@ -379,7 +364,7 @@ int hv_snp_boot_ap(int cpu, unsigned long start_ip)
 #else
 static inline void hv_ghcb_msr_write(u64 msr, u64 value) {}
 static inline void hv_ghcb_msr_read(u64 msr, u64 *value) {}
-#endif /* CONFIG_AMD_MEM_ENCRYPT */
+#endif  
 
 #ifdef CONFIG_INTEL_TDX_GUEST
 static void hv_tdx_msr_write(u64 msr, u64 val)
@@ -428,7 +413,7 @@ u64 hv_tdx_hypercall(u64 control, u64 param1, u64 param2)
 #else
 static inline void hv_tdx_msr_write(u64 msr, u64 value) {}
 static inline void hv_tdx_msr_read(u64 msr, u64 *value) {}
-#endif /* CONFIG_INTEL_TDX_GUEST */
+#endif  
 
 #if defined(CONFIG_AMD_MEM_ENCRYPT) || defined(CONFIG_INTEL_TDX_GUEST)
 void hv_ivm_msr_write(u64 msr, u64 value)
@@ -453,13 +438,7 @@ void hv_ivm_msr_read(u64 msr, u64 *value)
 		hv_ghcb_msr_read(msr, value);
 }
 
-/*
- * hv_mark_gpa_visibility - Set pages visible to host via hvcall.
- *
- * In Isolation VM, all guest memory is encrypted from host and guest
- * needs to set memory visible to host via hvcall before sharing memory
- * with host.
- */
+ 
 static int hv_mark_gpa_visibility(u16 count, const u64 pfn[],
 			   enum hv_mem_host_visibility visibility)
 {
@@ -468,7 +447,7 @@ static int hv_mark_gpa_visibility(u16 count, const u64 pfn[],
 	u64 hv_status;
 	unsigned long flags;
 
-	/* no-op if partition isolation is not enabled */
+	 
 	if (!hv_is_isolation_supported())
 		return 0;
 
@@ -502,14 +481,7 @@ static int hv_mark_gpa_visibility(u16 count, const u64 pfn[],
 		return -EFAULT;
 }
 
-/*
- * hv_vtom_set_host_visibility - Set specified memory visible to host.
- *
- * In Isolation VM, all guest memory is encrypted from host and guest
- * needs to set memory visible to host via hvcall before sharing memory
- * with host. This function works as wrap of hv_mark_gpa_visibility()
- * with memory base and size.
- */
+ 
 static bool hv_vtom_set_host_visibility(unsigned long kbuffer, int pagecount, bool enc)
 {
 	enum hv_mem_host_visibility visibility = enc ?
@@ -555,16 +527,12 @@ static bool hv_vtom_cache_flush_required(void)
 
 static bool hv_is_private_mmio(u64 addr)
 {
-	/*
-	 * Hyper-V always provides a single IO-APIC in a guest VM.
-	 * When a paravisor is used, it is emulated by the paravisor
-	 * in the guest context and must be mapped private.
-	 */
+	 
 	if (addr >= HV_IOAPIC_BASE_ADDRESS &&
 	    addr < (HV_IOAPIC_BASE_ADDRESS + PAGE_SIZE))
 		return true;
 
-	/* Same with a vTPM */
+	 
 	if (addr >= VTPM_BASE_ADDRESS &&
 	    addr < (VTPM_BASE_ADDRESS + PAGE_SIZE))
 		return true;
@@ -579,14 +547,7 @@ void __init hv_vtom_init(void)
 	switch (type) {
 	case HV_ISOLATION_TYPE_VBS:
 		fallthrough;
-	/*
-	 * By design, a VM using vTOM doesn't see the SEV setting,
-	 * so SEV initialization is bypassed and sev_status isn't set.
-	 * Set it here to indicate a vTOM VM.
-	 *
-	 * Note: if CONFIG_AMD_MEM_ENCRYPT is not set, sev_status is
-	 * defined as 0ULL, to which we can't assigned a value.
-	 */
+	 
 #ifdef CONFIG_AMD_MEM_ENCRYPT
 	case HV_ISOLATION_TYPE_SNP:
 		sev_status = MSR_AMD64_SNP_VTOM;
@@ -610,11 +571,11 @@ void __init hv_vtom_init(void)
 	x86_platform.guest.enc_tlb_flush_required = hv_vtom_tlb_flush_required;
 	x86_platform.guest.enc_status_change_finish = hv_vtom_set_host_visibility;
 
-	/* Set WB as the default cache mode. */
+	 
 	mtrr_overwrite_state(NULL, 0, MTRR_TYPE_WRBACK);
 }
 
-#endif /* defined(CONFIG_AMD_MEM_ENCRYPT) || defined(CONFIG_INTEL_TDX_GUEST) */
+#endif  
 
 enum hv_isolation_type hv_get_isolation_type(void)
 {
@@ -624,10 +585,7 @@ enum hv_isolation_type hv_get_isolation_type(void)
 }
 EXPORT_SYMBOL_GPL(hv_get_isolation_type);
 
-/*
- * hv_is_isolation_supported - Check system runs in the Hyper-V
- * isolation VM.
- */
+ 
 bool hv_is_isolation_supported(void)
 {
 	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))
@@ -641,20 +599,14 @@ bool hv_is_isolation_supported(void)
 
 DEFINE_STATIC_KEY_FALSE(isolation_type_snp);
 
-/*
- * hv_isolation_type_snp - Check if the system runs in an AMD SEV-SNP based
- * isolation VM.
- */
+ 
 bool hv_isolation_type_snp(void)
 {
 	return static_branch_unlikely(&isolation_type_snp);
 }
 
 DEFINE_STATIC_KEY_FALSE(isolation_type_tdx);
-/*
- * hv_isolation_type_tdx - Check if the system runs in an Intel TDX based
- * isolated VM.
- */
+ 
 bool hv_isolation_type_tdx(void)
 {
 	return static_branch_unlikely(&isolation_type_tdx);

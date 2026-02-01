@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung S5K6A3 image sensor driver
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- * Author: Sylwester Nawrocki <s.nawrocki@samsung.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -41,19 +36,7 @@ enum {
 	S5K6A3_NUM_SUPPLIES,
 };
 
-/**
- * struct s5k6a3 - fimc-is sensor data structure
- * @dev: pointer to this I2C client device structure
- * @subdev: the image sensor's v4l2 subdev
- * @pad: subdev media source pad
- * @supplies: image sensor's voltage regulator supplies
- * @gpio_reset: GPIO connected to the sensor's reset pin
- * @lock: mutex protecting the structure's members below
- * @format: media bus format at the sensor's source pad
- * @clock: pointer to &struct clk.
- * @clock_frequency: clock frequency
- * @power_count: stores state if device is powered
- */
+ 
 struct s5k6a3 {
 	struct device *dev;
 	struct v4l2_subdev subdev;
@@ -222,7 +205,7 @@ static int __s5k6a3_power_on(struct s5k6a3 *sensor)
 	usleep_range(600, 800);
 	gpiod_set_value_cansleep(sensor->gpio_reset, 0);
 
-	/* Delay needed for the sensor initialization */
+	 
 	msleep(20);
 	return 0;
 
@@ -363,7 +346,7 @@ MODULE_DEVICE_TABLE(i2c, s5k6a3_ids);
 #ifdef CONFIG_OF
 static const struct of_device_id s5k6a3_of_match[] = {
 	{ .compatible = "samsung,s5k6a3" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, s5k6a3_of_match);
 #endif

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright © 2022 Rafał Miłecki <rafal@milecki.pl>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
- */
+ 
+ 
 
 #ifndef __MFD_MT6331_CORE_H__
 #define __MFD_MT6331_CORE_H__
@@ -37,4 +35,4 @@ enum mt6331_irq_status_numbers {
 #define MT6331_IRQ_CON1_BASE	MT6331_IRQ_STATUS_VDVFS11_OC
 #define MT6331_IRQ_CON1_BITS	(MT6331_IRQ_STATUS_LDO_OC - MT6331_IRQ_STATUS_VDFS11_OC + 1)
 
-#endif /* __MFD_MT6331_CORE_H__ */
+#endif  

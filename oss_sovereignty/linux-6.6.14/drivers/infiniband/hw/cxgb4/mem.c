@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2009-2010 Chelsio, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -227,10 +197,7 @@ out:
 	return ret;
 }
 
-/*
- * write len bytes of data into addr (32B aligned address)
- * If data is NULL, clear len byte of memory to zero.
- */
+ 
 static int write_adapter_mem(struct c4iw_rdev *rdev, u32 addr, u32 len,
 			     void *data, struct sk_buff *skb,
 			     struct c4iw_wr_wait *wr_waitp)
@@ -261,12 +228,7 @@ out:
 
 }
 
-/*
- * Build and write a TPT entry.
- * IN: stag key, pdid, perm, bind_enabled, zbva, to, len, page_size,
- *     pbl_size and pbl_addr
- * OUT: stag index
- */
+ 
 static int write_tpt_entry(struct c4iw_rdev *rdev, u32 reset_tpt_entry,
 			   u32 *stag, u8 stag_state, u32 pdid,
 			   enum fw_ri_stag_type type, enum fw_ri_mem_perms perm,
@@ -308,7 +270,7 @@ static int write_tpt_entry(struct c4iw_rdev *rdev, u32 reset_tpt_entry,
 	pr_debug("stag_state 0x%0x type 0x%0x pdid 0x%0x, stag_idx 0x%x\n",
 		 stag_state, type, pdid, stag_idx);
 
-	/* write TPT entry */
+	 
 	if (reset_tpt_entry)
 		memset(tpt, 0, sizeof(*tpt));
 	else {

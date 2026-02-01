@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_PCI_PRIV_H__
 #define __NVKM_PCI_PRIV_H__
 #define nvkm_pci(p) container_of((p), struct nvkm_pci, subdev)
@@ -36,7 +36,7 @@ void nv46_pci_msi_rearm(struct nvkm_pci *);
 
 void g84_pci_init(struct nvkm_pci *pci);
 
-/* pcie functions */
+ 
 void g84_pcie_set_version(struct nvkm_pci *, u8);
 int g84_pcie_version(struct nvkm_pci *);
 void g84_pcie_set_link_speed(struct nvkm_pci *, enum nvkm_pcie_speed);

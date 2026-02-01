@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020, Red Hat, Inc.
- */
+
+ 
 #include "guest_modes.h"
 
 #ifdef __aarch64__
@@ -46,10 +44,7 @@ void guest_modes_append_default(void)
 			guest_mode_append(VM_MODE_P36V47_16K, ps16k, ps16k);
 		}
 
-		/*
-		 * Pick the first supported IPA size if the default
-		 * isn't available.
-		 */
+		 
 		for (i = 0; vm_mode_default == NUM_VM_MODES && i < NUM_VM_MODES; i++) {
 			if (guest_modes[i].supported && guest_modes[i].enabled)
 				vm_mode_default = i;
@@ -70,7 +65,7 @@ void guest_modes_append_default(void)
 				    KVM_S390_VM_CPU_PROCESSOR, &info);
 		close(vm_fd);
 		close(kvm_fd);
-		/* Starting with z13 we have 47bits of physical address */
+		 
 		if (info.ibc >= 0x30)
 			guest_mode_append(VM_MODE_P47V64_4K, true, true);
 	}

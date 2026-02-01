@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Xtables module to match packets using a BPF filter.
- * Copyright 2013 Google Inc.
- * Written by Willem de Bruijn <willemb@google.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 

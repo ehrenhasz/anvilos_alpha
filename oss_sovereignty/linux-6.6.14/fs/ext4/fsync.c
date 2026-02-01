@@ -1,27 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/ext4/fsync.c
- *
- *  Copyright (C) 1993  Stephen Tweedie (sct@redhat.com)
- *  from
- *  Copyright (C) 1992  Remy Card (card@masi.ibp.fr)
- *                      Laboratoire MASI - Institut Blaise Pascal
- *                      Universite Pierre et Marie Curie (Paris VI)
- *  from
- *  linux/fs/minix/truncate.c   Copyright (C) 1991, 1992  Linus Torvalds
- *
- *  ext4fs fsync primitive
- *
- *  Big-endian to little-endian byte-swapping/bitmaps by
- *        David S. Miller (davem@caip.rutgers.edu), 1995
- *
- *  Removed unnecessary code duplication for little endian machines
- *  and excessive __inline__s.
- *        Andi Kleen, 1997
- *
- * Major simplications and cleanup - we only need to do the metadata, because
- * we can depend on generic_block_fdatasync() to sync the data blocks.
- */
+
+ 
 
 #include <linux/time.h>
 #include <linux/fs.h>
@@ -35,14 +13,7 @@
 
 #include <trace/events/ext4.h>
 
-/*
- * If we're not journaling and this is a just-created file, we have to
- * sync our parent directory (if it was freshly created) since
- * otherwise it will only be written by writeback, leaving a huge
- * window during which a crash may lose the file.  This may apply for
- * the parent directory's parent as well, and so on recursively, if
- * they are also freshly created.
- */
+ 
 static int ext4_sync_parent(struct inode *inode)
 {
 	struct dentry *dentry, *next;
@@ -61,13 +32,7 @@ static int ext4_sync_parent(struct inode *inode)
 		dentry = next;
 		inode = dentry->d_inode;
 
-		/*
-		 * The directory inode may have gone through rmdir by now. But
-		 * the inode itself and its blocks are still allocated (we hold
-		 * a reference to the inode via its dentry), so it didn't go
-		 * through ext4_evict_inode()) and so we are safe to flush
-		 * metadata blocks and the inode.
-		 */
+		 
 		ret = sync_mapping_buffers(inode->i_mapping);
 		if (ret)
 			break;
@@ -101,10 +66,7 @@ static int ext4_fsync_journal(struct inode *inode, bool datasync,
 	journal_t *journal = EXT4_SB(inode->i_sb)->s_journal;
 	tid_t commit_tid = datasync ? ei->i_datasync_tid : ei->i_sync_tid;
 
-	/*
-	 * Fastcommit does not really support fsync on directories or other
-	 * special files. Force a full commit.
-	 */
+	 
 	if (!S_ISREG(inode->i_mode))
 		return ext4_force_commit(inode->i_sb);
 
@@ -115,17 +77,7 @@ static int ext4_fsync_journal(struct inode *inode, bool datasync,
 	return ext4_fc_commit(journal, commit_tid);
 }
 
-/*
- * akpm: A new design for ext4_sync_file().
- *
- * This is only called from sys_fsync(), sys_fdatasync() and sys_msync().
- * There cannot be a transaction open by this task.
- * Another task could have dirtied this inode.  Its data can be in any
- * state in the journalling system.
- *
- * What we do is just kick off a commit and wait on it.  This will snapshot the
- * inode to disk.
- */
+ 
 int ext4_sync_file(struct file *file, loff_t start, loff_t end, int datasync)
 {
 	int ret = 0, err;
@@ -140,7 +92,7 @@ int ext4_sync_file(struct file *file, loff_t start, loff_t end, int datasync)
 	trace_ext4_sync_file_enter(file, datasync);
 
 	if (sb_rdonly(inode->i_sb)) {
-		/* Make sure that we read updated s_ext4_flags value */
+		 
 		smp_rmb();
 		if (ext4_forced_shutdown(inode->i_sb))
 			ret = -EROFS;
@@ -159,11 +111,7 @@ int ext4_sync_file(struct file *file, loff_t start, loff_t end, int datasync)
 	if (ret)
 		goto out;
 
-	/*
-	 *  The caller's filemap_fdatawrite()/wait will sync the data.
-	 *  Metadata is in the journal, we wait for proper transaction to
-	 *  commit here.
-	 */
+	 
 	ret = ext4_fsync_journal(inode, datasync, &needs_barrier);
 
 issue_flush:

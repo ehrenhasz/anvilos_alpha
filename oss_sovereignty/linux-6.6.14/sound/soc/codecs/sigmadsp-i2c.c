@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Load Analog Devices SigmaStudio firmware files
- *
- * Copyright 2009-2011 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/i2c.h>
@@ -64,16 +60,7 @@ static int sigmadsp_read_i2c(void *control_data,
 	return 0;
 }
 
-/**
- * devm_sigmadsp_init_i2c() - Initialize SigmaDSP instance
- * @client: The parent I2C device
- * @ops: The sigmadsp_ops to use for this instance
- * @firmware_name: Name of the firmware file to load
- *
- * Allocates a SigmaDSP instance and loads the specified firmware file.
- *
- * Returns a pointer to a struct sigmadsp on success, or a PTR_ERR() on error.
- */
+ 
 struct sigmadsp *devm_sigmadsp_init_i2c(struct i2c_client *client,
 	const struct sigmadsp_ops *ops,	const char *firmware_name)
 {

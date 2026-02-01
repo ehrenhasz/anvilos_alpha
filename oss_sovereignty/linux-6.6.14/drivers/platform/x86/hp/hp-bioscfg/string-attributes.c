@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Functions corresponding to string type attributes under
- * HP_WMI_BIOS_STRING_GUID for use with hp-bioscfg driver.
- *
- * Copyright (c) 2022 HP Development Company, L.P.
- */
+
+ 
 
 #include "bioscfg.h"
 
@@ -23,19 +18,13 @@ static ssize_t current_value_show(struct kobject *kobj, struct kobj_attribute *a
 			 bioscfg_drv.string_data[instance_id].current_value);
 }
 
-/**
- * validate_string_input() -
- * Validate input of current_value against min and max lengths
- *
- * @instance_id: The instance on which input is validated
- * @buf: Input value
- */
+ 
 static int validate_string_input(int instance_id, const char *buf)
 {
 	int in_len = strlen(buf);
 	struct string_data *string_data = &bioscfg_drv.string_data[instance_id];
 
-	/* BIOS treats it as a read only attribute */
+	 
 	if (string_data->common.is_readonly)
 		return -EIO;
 
@@ -49,15 +38,11 @@ static void update_string_value(int instance_id, char *attr_value)
 {
 	struct string_data *string_data = &bioscfg_drv.string_data[instance_id];
 
-	/* Write settings to BIOS */
+	 
 	strscpy(string_data->current_value, attr_value, sizeof(string_data->current_value));
 }
 
-/*
- * ATTRIBUTE_S_COMMON_PROPERTY_SHOW(display_name_language_code, string);
- * static struct kobj_attribute string_display_langcode =
- *	__ATTR_RO(display_name_language_code);
- */
+ 
 
 ATTRIBUTE_S_COMMON_PROPERTY_SHOW(display_name, string);
 static struct kobj_attribute string_display_name =
@@ -110,7 +95,7 @@ int hp_alloc_string_data(void)
 	return 0;
 }
 
-/* Expected Values types associated with each element */
+ 
 static const acpi_object_type expected_string_types[] = {
 	[NAME] = ACPI_TYPE_STRING,
 	[VALUE] = ACPI_TYPE_STRING,
@@ -144,7 +129,7 @@ static int hp_populate_string_elements_from_package(union acpi_object *string_ob
 		return -EINVAL;
 
 	for (elem = 1, eloc = 1; elem < string_obj_count; elem++, eloc++) {
-		/* ONLY look at the first STRING_ELEM_CNT elements */
+		 
 		if (eloc == STR_ELEM_CNT)
 			goto exit_string_package;
 
@@ -167,7 +152,7 @@ static int hp_populate_string_elements_from_package(union acpi_object *string_ob
 			continue;
 		}
 
-		/* Check that both expected and read object type match */
+		 
 		if (expected_string_types[eloc] != string_obj[elem].type) {
 			pr_err("Error expected type %d for elem %d, but got type %d instead\n",
 			       expected_string_types[eloc], elem, string_obj[elem].type);
@@ -175,7 +160,7 @@ static int hp_populate_string_elements_from_package(union acpi_object *string_ob
 			return -EIO;
 		}
 
-		/* Assign appropriate element value to corresponding field*/
+		 
 		switch (eloc) {
 		case VALUE:
 			strscpy(string_data->current_value,
@@ -204,13 +189,7 @@ static int hp_populate_string_elements_from_package(union acpi_object *string_ob
 			}
 			string_data->common.prerequisites_size = int_value;
 
-			/*
-			 * This step is needed to keep the expected
-			 * element list pointing to the right obj[elem].type
-			 * when the size is zero. PREREQUISITES
-			 * object is omitted by BIOS when the size is
-			 * zero.
-			 */
+			 
 			if (string_data->common.prerequisites_size == 0)
 				eloc++;
 			break;
@@ -262,14 +241,7 @@ exit_string_package:
 	return 0;
 }
 
-/**
- * hp_populate_string_package_data() -
- * Populate all properties of an instance under string attribute
- *
- * @string_obj: ACPI object with string data
- * @instance_id: The instance to enumerate
- * @attr_name_kobj: The parent kernel object
- */
+ 
 int hp_populate_string_package_data(union acpi_object *string_obj,
 				    int instance_id,
 				    struct kobject *attr_name_kobj)
@@ -297,39 +269,26 @@ static int hp_populate_string_elements_from_buffer(u8 *buffer_ptr, u32 *buffer_s
 	int ret = 0;
 	struct string_data *string_data = &bioscfg_drv.string_data[instance_id];
 
-	/*
-	 * Only data relevant to this driver and its functionality is
-	 * read. BIOS defines the order in which each * element is
-	 * read. Element 0 data is not relevant to this
-	 * driver hence it is ignored. For clarity, all element names
-	 * (DISPLAY_IN_UI) which defines the order in which is read
-	 * and the name matches the variable where the data is stored.
-	 *
-	 * In earlier implementation, reported errors were ignored
-	 * causing the data to remain uninitialized. It is not
-	 * possible to determine if data read from BIOS is valid or
-	 * not. It is for this reason functions may return a error
-	 * without validating the data itself.
-	 */
+	 
 
-	// VALUE:
+	
 	ret = hp_get_string_from_buffer(&buffer_ptr, buffer_size, string_data->current_value,
 					sizeof(string_data->current_value));
 	if (ret < 0)
 		goto buffer_exit;
 
-	// COMMON:
+	
 	ret = hp_get_common_data_from_buffer(&buffer_ptr, buffer_size, &string_data->common);
 	if (ret < 0)
 		goto buffer_exit;
 
-	// STR_MIN_LENGTH:
+	
 	ret = hp_get_integer_from_buffer(&buffer_ptr, buffer_size,
 					 &string_data->min_length);
 	if (ret < 0)
 		goto buffer_exit;
 
-	// STR_MAX_LENGTH:
+	
 	ret = hp_get_integer_from_buffer(&buffer_ptr, buffer_size,
 					 &string_data->max_length);
 
@@ -338,15 +297,7 @@ buffer_exit:
 	return ret;
 }
 
-/**
- * hp_populate_string_buffer_data() -
- * Populate all properties of an instance under string attribute
- *
- * @buffer_ptr: Buffer pointer
- * @buffer_size: Buffer size
- * @instance_id: The instance to enumerate
- * @attr_name_kobj: The parent kernel object
- */
+ 
 int hp_populate_string_buffer_data(u8 *buffer_ptr, u32 *buffer_size,
 				   int instance_id,
 				   struct kobject *attr_name_kobj)
@@ -371,11 +322,7 @@ int hp_populate_string_buffer_data(u8 *buffer_ptr, u32 *buffer_size,
 	return sysfs_create_group(attr_name_kobj, &string_attr_group);
 }
 
-/**
- * hp_exit_string_attributes() - Clear all attribute data
- *
- * Clears all data allocated for this group of attributes
- */
+ 
 void hp_exit_string_attributes(void)
 {
 	int instance_id;

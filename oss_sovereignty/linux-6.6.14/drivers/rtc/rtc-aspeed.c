@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright 2015 IBM Corp.
+
+
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -71,7 +71,7 @@ static int aspeed_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	writel(reg1, rtc->base + RTC_TIME);
 	writel(reg2, rtc->base + RTC_YEAR);
 
-	/* Re-lock and ensure enable is set now that a time is programmed */
+	 
 	writel(ctrl | RTC_ENABLE, rtc->base + RTC_CTRL);
 
 	return 0;
@@ -102,7 +102,7 @@ static int aspeed_rtc_probe(struct platform_device *pdev)
 
 	rtc->rtc_dev->ops = &aspeed_rtc_ops;
 	rtc->rtc_dev->range_min = RTC_TIMESTAMP_BEGIN_1900;
-	rtc->rtc_dev->range_max = 38814989399LL; /* 3199-12-31 23:59:59 */
+	rtc->rtc_dev->range_max = 38814989399LL;  
 
 	return devm_rtc_register_device(rtc->rtc_dev);
 }

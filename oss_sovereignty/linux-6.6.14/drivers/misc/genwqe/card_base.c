@@ -1,20 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IBM Accelerator Family 'GenWQE'
- *
- * (C) Copyright IBM Corp. 2013
- *
- * Author: Frank Haverkamp <haver@linux.vnet.ibm.com>
- * Author: Joerg-Stephan Vogt <jsvogt@de.ibm.com>
- * Author: Michael Jung <mijung@gmx.net>
- * Author: Michael Ruettger <michael@ibmra.de>
- */
 
-/*
- * Module initialization and PCIe setup. Card health monitoring and
- * recovery functionality. Character device creation and deletion are
- * controlled from here.
- */
+ 
+
+ 
 
 #include <linux/types.h>
 #include <linux/pci.h>
@@ -46,7 +33,7 @@ static char genwqe_driver_name[] = GENWQE_DEVNAME;
 static struct dentry *debugfs_genwqe;
 static struct genwqe_dev *genwqe_devices[GENWQE_CARD_NO_MAX];
 
-/* PCI structure for identifying device by PCI vendor and device ID */
+ 
 static const struct pci_device_id genwqe_device_table[] = {
 	{ .vendor      = PCI_VENDOR_ID_IBM,
 	  .device      = PCI_DEVICE_GENWQE,
@@ -56,7 +43,7 @@ static const struct pci_device_id genwqe_device_table[] = {
 	  .class_mask  = ~0,
 	  .driver_data = 0 },
 
-	/* Initial SR-IOV bring-up image */
+	 
 	{ .vendor      = PCI_VENDOR_ID_IBM,
 	  .device      = PCI_DEVICE_GENWQE,
 	  .subvendor   = PCI_SUBVENDOR_ID_IBM_SRIOV,
@@ -65,15 +52,15 @@ static const struct pci_device_id genwqe_device_table[] = {
 	  .class_mask  = ~0,
 	  .driver_data = 0 },
 
-	{ .vendor      = PCI_VENDOR_ID_IBM,  /* VF Vendor ID */
-	  .device      = 0x0000,  /* VF Device ID */
+	{ .vendor      = PCI_VENDOR_ID_IBM,   
+	  .device      = 0x0000,   
 	  .subvendor   = PCI_SUBVENDOR_ID_IBM_SRIOV,
 	  .subdevice   = PCI_SUBSYSTEM_ID_GENWQE5_SRIOV,
 	  .class       = (PCI_CLASSCODE_GENWQE5_SRIOV << 8),
 	  .class_mask  = ~0,
 	  .driver_data = 0 },
 
-	/* Fixed up image */
+	 
 	{ .vendor      = PCI_VENDOR_ID_IBM,
 	  .device      = PCI_DEVICE_GENWQE,
 	  .subvendor   = PCI_SUBVENDOR_ID_IBM_SRIOV,
@@ -82,15 +69,15 @@ static const struct pci_device_id genwqe_device_table[] = {
 	  .class_mask  = ~0,
 	  .driver_data = 0 },
 
-	{ .vendor      = PCI_VENDOR_ID_IBM,  /* VF Vendor ID */
-	  .device      = 0x0000,  /* VF Device ID */
+	{ .vendor      = PCI_VENDOR_ID_IBM,   
+	  .device      = 0x0000,   
 	  .subvendor   = PCI_SUBVENDOR_ID_IBM_SRIOV,
 	  .subdevice   = PCI_SUBSYSTEM_ID_GENWQE5,
 	  .class       = (PCI_CLASSCODE_GENWQE5_SRIOV << 8),
 	  .class_mask  = ~0,
 	  .driver_data = 0 },
 
-	/* Even one more ... */
+	 
 	{ .vendor      = PCI_VENDOR_ID_IBM,
 	  .device      = PCI_DEVICE_GENWQE,
 	  .subvendor   = PCI_SUBVENDOR_ID_IBM,
@@ -99,19 +86,12 @@ static const struct pci_device_id genwqe_device_table[] = {
 	  .class_mask  = ~0,
 	  .driver_data = 0 },
 
-	{ 0, }			/* 0 terminated list. */
+	{ 0, }			 
 };
 
 MODULE_DEVICE_TABLE(pci, genwqe_device_table);
 
-/**
- * genwqe_devnode() - Set default access mode for genwqe devices.
- * @dev:	Pointer to device (unused)
- * @mode:	Carrier to pass-back given mode (permissions)
- *
- * Default mode should be rw for everybody. Do not change default
- * device name.
- */
+ 
 static char *genwqe_devnode(const struct device *dev, umode_t *mode)
 {
 	if (mode)
@@ -124,11 +104,7 @@ static const struct class class_genwqe = {
 	.devnode = genwqe_devnode,
 };
 
-/**
- * genwqe_dev_alloc() - Create and prepare a new card descriptor
- *
- * Return: Pointer to card descriptor, or ERR_PTR(err) on error
- */
+ 
 static struct genwqe_dev *genwqe_dev_alloc(void)
 {
 	unsigned int i = 0, j;
@@ -149,10 +125,7 @@ static struct genwqe_dev *genwqe_dev_alloc(void)
 	cd->class_genwqe = &class_genwqe;
 	cd->debugfs_genwqe = debugfs_genwqe;
 
-	/*
-	 * This comes from kernel config option and can be overritten via
-	 * debugfs.
-	 */
+	 
 	cd->use_platform_recovery = CONFIG_GENWQE_PLATFORM_ERROR_RECOVERY;
 
 	init_waitqueue_head(&cd->queue_waitq);
@@ -182,15 +155,7 @@ static void genwqe_dev_free(struct genwqe_dev *cd)
 	kfree(cd);
 }
 
-/**
- * genwqe_bus_reset() - Card recovery
- * @cd: GenWQE device information
- *
- * pci_reset_function() will recover the device and ensure that the
- * registers are accessible again when it completes with success. If
- * not, the card will stay dead and registers will be unaccessible
- * still.
- */
+ 
 static int genwqe_bus_reset(struct genwqe_dev *cd)
 {
 	int rc = 0;
@@ -206,11 +171,7 @@ static int genwqe_bus_reset(struct genwqe_dev *cd)
 
 	pci_release_mem_regions(pci_dev);
 
-	/*
-	 * Firmware/BIOS might change memory mapping during bus reset.
-	 * Settings like enable bus-mastering, ... are backuped and
-	 * restored by the pci_reset_function().
-	 */
+	 
 	dev_dbg(&pci_dev->dev, "[%s] pci_reset function ...\n", __func__);
 	rc = pci_reset_function(pci_dev);
 	if (rc) {
@@ -220,10 +181,7 @@ static int genwqe_bus_reset(struct genwqe_dev *cd)
 	}
 	dev_dbg(&pci_dev->dev, "[%s] done with rc=%d\n", __func__, rc);
 
-	/*
-	 * Here is the right spot to clear the register read
-	 * failure. pci_bus_reset() does this job in real systems.
-	 */
+	 
 	cd->err_inject &= ~(GENWQE_INJECT_HARDWARE_FAILURE |
 			    GENWQE_INJECT_GFIR_FATAL |
 			    GENWQE_INJECT_GFIR_INFO);
@@ -244,17 +202,7 @@ static int genwqe_bus_reset(struct genwqe_dev *cd)
 	return 0;
 }
 
-/*
- * Hardware circumvention section. Certain bitstreams in our test-lab
- * had different kinds of problems. Here is where we adjust those
- * bitstreams to function will with this version of our device driver.
- *
- * Thise circumventions are applied to the physical function only.
- * The magical numbers below are identifying development/manufacturing
- * versions of the bitstream used on the card.
- *
- * Turn off error reporting for old/manufacturing images.
- */
+ 
 
 bool genwqe_need_err_masking(struct genwqe_dev *cd)
 {
@@ -265,7 +213,7 @@ static void genwqe_tweak_hardware(struct genwqe_dev *cd)
 {
 	struct pci_dev *pci_dev = cd->pci_dev;
 
-	/* Mask FIRs for development images */
+	 
 	if (((cd->slu_unitcfg & 0xFFFF0ull) >= 0x32000ull) &&
 	    ((cd->slu_unitcfg & 0xFFFF0ull) <= 0x33250ull)) {
 		dev_warn(&pci_dev->dev,
@@ -280,15 +228,7 @@ static void genwqe_tweak_hardware(struct genwqe_dev *cd)
 	}
 }
 
-/**
- * genwqe_recovery_on_fatal_gfir_required() - Version depended actions
- * @cd: GenWQE device information
- *
- * Bitstreams older than 2013-02-17 have a bug where fatal GFIRs must
- * be ignored. This is e.g. true for the bitstream we gave to the card
- * manufacturer, but also for some old bitstreams we released to our
- * test-lab.
- */
+ 
 int genwqe_recovery_on_fatal_gfir_required(struct genwqe_dev *cd)
 {
 	return (cd->slu_unitcfg & 0xFFFF0ull) >= 0x32170ull;
@@ -299,40 +239,21 @@ int genwqe_flash_readback_fails(struct genwqe_dev *cd)
 	return (cd->slu_unitcfg & 0xFFFF0ull) < 0x32170ull;
 }
 
-/**
- * genwqe_T_psec() - Calculate PF/VF timeout register content
- * @cd: GenWQE device information
- *
- * Note: From a design perspective it turned out to be a bad idea to
- * use codes here to specifiy the frequency/speed values. An old
- * driver cannot understand new codes and is therefore always a
- * problem. Better is to measure out the value or put the
- * speed/frequency directly into a register which is always a valid
- * value for old as well as for new software.
- */
-/* T = 1/f */
+ 
+ 
 static int genwqe_T_psec(struct genwqe_dev *cd)
 {
-	u16 speed;	/* 1/f -> 250,  200,  166,  175 */
+	u16 speed;	 
 	static const int T[] = { 4000, 5000, 6000, 5714 };
 
 	speed = (u16)((cd->slu_unitcfg >> 28) & 0x0full);
 	if (speed >= ARRAY_SIZE(T))
-		return -1;	/* illegal value */
+		return -1;	 
 
 	return T[speed];
 }
 
-/**
- * genwqe_setup_pf_jtimer() - Setup PF hardware timeouts for DDCB execution
- * @cd: GenWQE device information
- *
- * Do this _after_ card_reset() is called. Otherwise the values will
- * vanish. The settings need to be done when the queues are inactive.
- *
- * The max. timeout value is 2^(10+x) * T (6ns for 166MHz) * 15/16.
- * The min. timeout value is 2^(10+x) * T (6ns for 166MHz) * 14/16.
- */
+ 
 static bool genwqe_setup_pf_jtimer(struct genwqe_dev *cd)
 {
 	u32 T = genwqe_T_psec(cd);
@@ -341,7 +262,7 @@ static bool genwqe_setup_pf_jtimer(struct genwqe_dev *cd)
 	if (GENWQE_PF_JOBTIMEOUT_MSEC == 0)
 		return false;
 
-	/* PF: large value needed, flash update 2sec per block */
+	 
 	x = ilog2(GENWQE_PF_JOBTIMEOUT_MSEC *
 		  16000000000uL/(T * 15)) - 10;
 
@@ -350,10 +271,7 @@ static bool genwqe_setup_pf_jtimer(struct genwqe_dev *cd)
 	return true;
 }
 
-/**
- * genwqe_setup_vf_jtimer() - Setup VF hardware timeouts for DDCB execution
- * @cd: GenWQE device information
- */
+ 
 static bool genwqe_setup_vf_jtimer(struct genwqe_dev *cd)
 {
 	struct pci_dev *pci_dev = cd->pci_dev;
@@ -400,15 +318,12 @@ static int genwqe_ffdc_buffs_alloc(struct genwqe_dev *cd)
 			break;
 		}
 
-		/* currently support only the debug units mentioned here */
+		 
 		cd->ffdc[type].entries = e;
 		cd->ffdc[type].regs =
 			kmalloc_array(e, sizeof(struct genwqe_reg),
 				      GFP_KERNEL);
-		/*
-		 * regs == NULL is ok, the using code treats this as no regs,
-		 * Printing warning is ok in this case.
-		 */
+		 
 	}
 	return 0;
 }
@@ -454,13 +369,7 @@ static int genwqe_read_ids(struct genwqe_dev *cd)
 	}
 	genwqe_read_app_id(cd, cd->app_name, sizeof(cd->app_name));
 
-	/*
-	 * Is access to all registers possible? If we are a VF the
-	 * answer is obvious. If we run fully virtualized, we need to
-	 * check if we can access all registers. If we do not have
-	 * full access we will cause an UR and some informational FIRs
-	 * in the PF, but that should not harm.
-	 */
+	 
 	if (pci_dev->is_virtfn)
 		cd->is_privileged = 0;
 	else
@@ -481,11 +390,11 @@ static int genwqe_start(struct genwqe_dev *cd)
 		return err;
 
 	if (genwqe_is_privileged(cd)) {
-		/* do this after the tweaks. alloc fail is acceptable */
+		 
 		genwqe_ffdc_buffs_alloc(cd);
 		genwqe_stop_traps(cd);
 
-		/* Collect registers e.g. FIRs, UNITIDs, traces ... */
+		 
 		genwqe_read_ffdc_regs(cd, cd->ffdc[GENWQE_DBG_REGS].regs,
 				      cd->ffdc[GENWQE_DBG_REGS].entries, 0);
 
@@ -507,10 +416,7 @@ static int genwqe_start(struct genwqe_dev *cd)
 			dev_warn(&pci_dev->dev,
 				 "[%s] chip reload/recovery!\n", __func__);
 
-			/*
-			 * Stealth Mode: Reload chip on either hot
-			 * reset or PERST.
-			 */
+			 
 			cd->softreset = 0x7Cull;
 			__genwqe_writeq(cd, IO_SLC_CFGREG_SOFTRESET,
 				       cd->softreset);
@@ -523,18 +429,14 @@ static int genwqe_start(struct genwqe_dev *cd)
 				goto out;
 			}
 
-			/*
-			 * Re-read the IDs because
-			 * it could happen that the bitstream load
-			 * failed!
-			 */
+			 
 			err = genwqe_read_ids(cd);
 			if (err)
 				goto out;
 		}
 	}
 
-	err = genwqe_setup_service_layer(cd);  /* does a reset to the card */
+	err = genwqe_setup_service_layer(cd);   
 	if (err != 0) {
 		dev_err(&pci_dev->dev,
 			"[%s] err: could not setup servicelayer!\n", __func__);
@@ -542,7 +444,7 @@ static int genwqe_start(struct genwqe_dev *cd)
 		goto out;
 	}
 
-	if (genwqe_is_privileged(cd)) {	 /* code is running _after_ reset */
+	if (genwqe_is_privileged(cd)) {	  
 		genwqe_tweak_hardware(cd);
 
 		genwqe_setup_pf_jtimer(cd);
@@ -565,45 +467,22 @@ static int genwqe_start(struct genwqe_dev *cd)
 	return -EIO;
 }
 
-/**
- * genwqe_stop() - Stop card operation
- * @cd: GenWQE device information
- *
- * Recovery notes:
- *   As long as genwqe_thread runs we might access registers during
- *   error data capture. Same is with the genwqe_health_thread.
- *   When genwqe_bus_reset() fails this function might called two times:
- *   first by the genwqe_health_thread() and later by genwqe_remove() to
- *   unbind the device. We must be able to survive that.
- *
- * This function must be robust enough to be called twice.
- */
+ 
 static int genwqe_stop(struct genwqe_dev *cd)
 {
-	genwqe_finish_queue(cd);	    /* no register access */
-	genwqe_device_remove(cd);	    /* device removed, procs killed */
-	genwqe_release_service_layer(cd);   /* here genwqe_thread is stopped */
+	genwqe_finish_queue(cd);	     
+	genwqe_device_remove(cd);	     
+	genwqe_release_service_layer(cd);    
 
 	if (genwqe_is_privileged(cd)) {
-		pci_disable_sriov(cd->pci_dev);	/* access pci config space */
+		pci_disable_sriov(cd->pci_dev);	 
 		genwqe_ffdc_buffs_free(cd);
 	}
 
 	return 0;
 }
 
-/**
- * genwqe_recover_card() - Try to recover the card if it is possible
- * @cd: GenWQE device information
- * @fatal_err: Indicate whether to attempt soft reset
- *
- * If fatal_err is set no register access is possible anymore. It is
- * likely that genwqe_start fails in that situation. Proper error
- * handling is required in this case.
- *
- * genwqe_bus_reset() will cause the pci code to call genwqe_remove()
- * and later genwqe_probe() for all virtual functions.
- */
+ 
 static int genwqe_recover_card(struct genwqe_dev *cd, int fatal_err)
 {
 	int rc;
@@ -611,10 +490,7 @@ static int genwqe_recover_card(struct genwqe_dev *cd, int fatal_err)
 
 	genwqe_stop(cd);
 
-	/*
-	 * Make sure chip is not reloaded to maintain FFDC. Write SLU
-	 * Reset Register, CPLDReset field to 0.
-	 */
+	 
 	if (!fatal_err) {
 		cd->softreset = 0x70ull;
 		__genwqe_writeq(cd, IO_SLC_CFGREG_SOFTRESET, cd->softreset);
@@ -643,16 +519,7 @@ static int genwqe_health_check_cond(struct genwqe_dev *cd, u64 *gfir)
 		genwqe_recovery_on_fatal_gfir_required(cd);
 }
 
-/**
- * genwqe_fir_checking() - Check the fault isolation registers of the card
- * @cd: GenWQE device information
- *
- * If this code works ok, can be tried out with help of the genwqe_poke tool:
- *   sudo ./tools/genwqe_poke 0x8 0xfefefefefef
- *
- * Now the relevant FIRs/sFIRs should be printed out and the driver should
- * invoke recovery (devices are removed and readded).
- */
+ 
 static u64 genwqe_fir_checking(struct genwqe_dev *cd)
 {
 	int j, iterations = 0;
@@ -675,30 +542,25 @@ static u64 genwqe_fir_checking(struct genwqe_dev *cd)
 	if (gfir == IO_ILLEGAL_VALUE)
 		goto fatal_error;
 
-	/*
-	 * Avoid printing when to GFIR bit is on prevents contignous
-	 * printout e.g. for the following bug:
-	 *   FIR set without a 2ndary FIR/FIR cannot be cleared
-	 * Comment out the following if to get the prints:
-	 */
+	 
 	if (gfir == 0)
 		return 0;
 
-	gfir_masked = gfir & GFIR_ERR_TRIGGER;  /* fatal errors */
+	gfir_masked = gfir & GFIR_ERR_TRIGGER;   
 
-	for (uid = 0; uid < GENWQE_MAX_UNITS; uid++) { /* 0..2 in zEDC */
+	for (uid = 0; uid < GENWQE_MAX_UNITS; uid++) {  
 
-		/* read the primary FIR (pfir) */
+		 
 		fir_addr = (uid << 24) + 0x08;
 		fir = __genwqe_readq(cd, fir_addr);
 		if (fir == 0x0)
-			continue;  /* no error in this unit */
+			continue;   
 
 		dev_err(&pci_dev->dev, "* 0x%08x 0x%016llx\n", fir_addr, fir);
 		if (fir == IO_ILLEGAL_VALUE)
 			goto fatal_error;
 
-		/* read primary FEC */
+		 
 		fec_addr = (uid << 24) + 0x18;
 		fec = __genwqe_readq(cd, fec_addr);
 
@@ -708,7 +570,7 @@ static u64 genwqe_fir_checking(struct genwqe_dev *cd)
 
 		for (j = 0, mask = 1ULL; j < 64; j++, mask <<= 1) {
 
-			/* secondary fir empty, skip it */
+			 
 			if ((fir & mask) == 0x0)
 				continue;
 
@@ -732,17 +594,16 @@ static u64 genwqe_fir_checking(struct genwqe_dev *cd)
 			if (gfir == IO_ILLEGAL_VALUE)
 				goto fatal_error;
 
-			/* gfir turned on during routine! get out and
-			   start over. */
+			 
 			if ((gfir_masked == 0x0) &&
 			    (gfir & GFIR_ERR_TRIGGER)) {
 				goto healthMonitor;
 			}
 
-			/* do not clear if we entered with a fatal gfir */
+			 
 			if (gfir_masked == 0x0) {
 
-				/* NEW clear by mask the logged bits */
+				 
 				sfir_addr = (uid << 24) + 0x100 + 0x08 * j;
 				__genwqe_writeq(cd, sfir_addr, sfir);
 
@@ -750,16 +611,9 @@ static u64 genwqe_fir_checking(struct genwqe_dev *cd)
 					"[HM] Clearing  2ndary FIR 0x%08x with 0x%016llx\n",
 					sfir_addr, sfir);
 
-				/*
-				 * note, these cannot be error-Firs
-				 * since gfir_masked is 0 after sfir
-				 * was read. Also, it is safe to do
-				 * this write if sfir=0. Still need to
-				 * clear the primary. This just means
-				 * there is no secondary FIR.
-				 */
+				 
 
-				/* clear by mask the logged bit. */
+				 
 				fir_clr_addr = (uid << 24) + 0x10;
 				__genwqe_writeq(cd, fir_clr_addr, mask);
 
@@ -774,10 +628,7 @@ static u64 genwqe_fir_checking(struct genwqe_dev *cd)
 		goto fatal_error;
 
 	if ((gfir_masked == 0x0) && (gfir & GFIR_ERR_TRIGGER)) {
-		/*
-		 * Check once more that it didn't go on after all the
-		 * FIRS were cleared.
-		 */
+		 
 		dev_dbg(&pci_dev->dev, "ACK! Another FIR! Recursing %d!\n",
 			iterations);
 		goto healthMonitor;
@@ -788,31 +639,20 @@ static u64 genwqe_fir_checking(struct genwqe_dev *cd)
 	return IO_ILLEGAL_VALUE;
 }
 
-/**
- * genwqe_pci_fundamental_reset() - trigger a PCIe fundamental reset on the slot
- * @pci_dev:	PCI device information struct
- *
- * Note: pci_set_pcie_reset_state() is not implemented on all archs, so this
- * reset method will not work in all cases.
- *
- * Return: 0 on success or error code from pci_set_pcie_reset_state()
- */
+ 
 static int genwqe_pci_fundamental_reset(struct pci_dev *pci_dev)
 {
 	int rc;
 
-	/*
-	 * lock pci config space access from userspace,
-	 * save state and issue PCIe fundamental reset
-	 */
+	 
 	pci_cfg_access_lock(pci_dev);
 	pci_save_state(pci_dev);
 	rc = pci_set_pcie_reset_state(pci_dev, pcie_warm_reset);
 	if (!rc) {
-		/* keep PCIe reset asserted for 250ms */
+		 
 		msleep(250);
 		pci_set_pcie_reset_state(pci_dev, pcie_deassert_reset);
-		/* Wait for 2s to reload flash and train the link */
+		 
 		msleep(2000);
 	}
 	pci_restore_state(pci_dev);
@@ -829,14 +669,14 @@ static int genwqe_platform_recovery(struct genwqe_dev *cd)
 	dev_info(&pci_dev->dev,
 		 "[%s] resetting card for error recovery\n", __func__);
 
-	/* Clear out error injection flags */
+	 
 	cd->err_inject &= ~(GENWQE_INJECT_HARDWARE_FAILURE |
 			    GENWQE_INJECT_GFIR_FATAL |
 			    GENWQE_INJECT_GFIR_INFO);
 
 	genwqe_stop(cd);
 
-	/* Try recoverying the card with fundamental reset */
+	 
 	rc = genwqe_pci_fundamental_reset(pci_dev);
 	if (!rc) {
 		rc = genwqe_start(cd);
@@ -855,15 +695,7 @@ static int genwqe_platform_recovery(struct genwqe_dev *cd)
 	return rc;
 }
 
-/**
- * genwqe_reload_bistream() - reload card bitstream
- * @cd: GenWQE device information
- *
- * Set the appropriate register and call fundamental reset to reaload the card
- * bitstream.
- *
- * Return: 0 on success, error code otherwise
- */
+ 
 static int genwqe_reload_bistream(struct genwqe_dev *cd)
 {
 	struct pci_dev *pci_dev = cd->pci_dev;
@@ -875,21 +707,13 @@ static int genwqe_reload_bistream(struct genwqe_dev *cd)
 
 	genwqe_stop(cd);
 
-	/*
-	 * Cause a CPLD reprogram with the 'next_bitstream'
-	 * partition on PCIe hot or fundamental reset
-	 */
+	 
 	__genwqe_writeq(cd, IO_SLC_CFGREG_SOFTRESET,
 			(cd->softreset & 0xcull) | 0x70ull);
 
 	rc = genwqe_pci_fundamental_reset(pci_dev);
 	if (rc) {
-		/*
-		 * A fundamental reset failure can be caused
-		 * by lack of support on the arch, so we just
-		 * log the error and try to start the card
-		 * again.
-		 */
+		 
 		dev_err(&pci_dev->dev,
 			"[%s] err: failed to reset card for bitstream reload\n",
 			__func__);
@@ -908,26 +732,7 @@ static int genwqe_reload_bistream(struct genwqe_dev *cd)
 }
 
 
-/**
- * genwqe_health_thread() - Health checking thread
- * @data: GenWQE device information
- *
- * This thread is only started for the PF of the card.
- *
- * This thread monitors the health of the card. A critical situation
- * is when we read registers which contain -1 (IO_ILLEGAL_VALUE). In
- * this case we need to be recovered from outside. Writing to
- * registers will very likely not work either.
- *
- * This thread must only exit if kthread_should_stop() becomes true.
- *
- * Condition for the health-thread to trigger:
- *   a) when a kthread_stop() request comes in or
- *   b) a critical GFIR occured
- *
- * Informational GFIRs are checked and potentially printed in
- * GENWQE_HEALTH_CHECK_INTERVAL seconds.
- */
+ 
 static int genwqe_health_thread(void *data)
 {
 	int rc, should_stop = 0;
@@ -980,10 +785,7 @@ static int genwqe_health_thread(void *data)
 		if (gfir_masked == IO_ILLEGAL_VALUE)
 			goto fatal_error;
 
-		/*
-		 * GFIR ErrorTrigger bits set => reset the card!
-		 * Never do this for old/manufacturing images!
-		 */
+		 
 		if ((gfir_masked) && !cd->skip_recovery &&
 		    genwqe_recovery_on_fatal_gfir_required(cd)) {
 
@@ -991,13 +793,13 @@ static int genwqe_health_thread(void *data)
 
 			rc = genwqe_recover_card(cd, 0);
 			if (rc < 0) {
-				/* FIXME Card is unusable and needs unbind! */
+				 
 				goto fatal_error;
 			}
 		}
 
 		if (cd->card_state == GENWQE_CARD_RELOAD_BITSTREAM) {
-			/* Userspace requested card bitstream reload */
+			 
 			rc = genwqe_reload_bistream(cd);
 			if (rc)
 				goto fatal_error;
@@ -1011,22 +813,14 @@ static int genwqe_health_thread(void *data)
 
  fatal_error:
 	if (cd->use_platform_recovery) {
-		/*
-		 * Since we use raw accessors, EEH errors won't be detected
-		 * by the platform until we do a non-raw MMIO or config space
-		 * read
-		 */
+		 
 		readq(cd->mmio + IO_SLC_CFGREG_GFIR);
 
-		/* We do nothing if the card is going over PCI recovery */
+		 
 		if (pci_channel_offline(pci_dev))
 			return -EIO;
 
-		/*
-		 * If it's supported by the platform, we try a fundamental reset
-		 * to recover from a fatal error. Otherwise, we continue to wait
-		 * for an external recovery procedure to take care of it.
-		 */
+		 
 		rc = genwqe_platform_recovery(cd);
 		if (!rc)
 			goto health_thread_begin;
@@ -1035,11 +829,11 @@ static int genwqe_health_thread(void *data)
 	dev_err(&pci_dev->dev,
 		"[%s] card unusable. Please trigger unbind!\n", __func__);
 
-	/* Bring down logical devices to inform user space via udev remove. */
+	 
 	cd->card_state = GENWQE_CARD_FATAL_ERROR;
 	genwqe_stop(cd);
 
-	/* genwqe_bus_reset failed(). Now wait for genwqe_remove(). */
+	 
 	while (!kthread_should_stop())
 		cond_resched();
 
@@ -1051,10 +845,10 @@ static int genwqe_health_check_start(struct genwqe_dev *cd)
 	int rc;
 
 	if (GENWQE_HEALTH_CHECK_INTERVAL <= 0)
-		return 0;	/* valid for disabling the service */
+		return 0;	 
 
-	/* moved before request_irq() */
-	/* init_waitqueue_head(&cd->health_waitq); */
+	 
+	 
 
 	cd->health_thread = kthread_run(genwqe_health_thread, cd,
 					GENWQE_DEVNAME "%d_health",
@@ -1082,10 +876,7 @@ static int genwqe_health_check_stop(struct genwqe_dev *cd)
 	return 0;
 }
 
-/**
- * genwqe_pci_setup() - Allocate PCIe related resources for our card
- * @cd: GenWQE device information
- */
+ 
 static int genwqe_pci_setup(struct genwqe_dev *cd)
 {
 	int err;
@@ -1098,7 +889,7 @@ static int genwqe_pci_setup(struct genwqe_dev *cd)
 		goto err_out;
 	}
 
-	/* Reserve PCI I/O and memory resources */
+	 
 	err = pci_request_mem_regions(pci_dev, genwqe_driver_name);
 	if (err) {
 		dev_err(&pci_dev->dev,
@@ -1107,8 +898,8 @@ static int genwqe_pci_setup(struct genwqe_dev *cd)
 		goto err_disable_device;
 	}
 
-	/* check for 64-bit DMA address supported (DAC) */
-	/* check for 32-bit DMA address supported (SAC) */
+	 
+	 
 	if (dma_set_mask_and_coherent(&pci_dev->dev, DMA_BIT_MASK(64)) &&
 	    dma_set_mask_and_coherent(&pci_dev->dev, DMA_BIT_MASK(32))) {
 		dev_err(&pci_dev->dev,
@@ -1119,10 +910,10 @@ static int genwqe_pci_setup(struct genwqe_dev *cd)
 
 	pci_set_master(pci_dev);
 
-	/* EEH recovery requires PCIe fundamental reset */
+	 
 	pci_dev->needs_freset = 1;
 
-	/* request complete BAR-0 space (length = 0) */
+	 
 	cd->mmio_len = pci_resource_len(pci_dev, 0);
 	cd->mmio = pci_iomap(pci_dev, 0, 0);
 	if (cd->mmio == NULL) {
@@ -1152,10 +943,7 @@ static int genwqe_pci_setup(struct genwqe_dev *cd)
 	return err;
 }
 
-/**
- * genwqe_pci_remove() - Free PCIe related resources for our card
- * @cd: GenWQE device information
- */
+ 
 static void genwqe_pci_remove(struct genwqe_dev *cd)
 {
 	struct pci_dev *pci_dev = cd->pci_dev;
@@ -1167,15 +955,7 @@ static void genwqe_pci_remove(struct genwqe_dev *cd)
 	pci_disable_device(pci_dev);
 }
 
-/**
- * genwqe_probe() - Device initialization
- * @pci_dev:	PCI device information struct
- * @id:		PCI device ID
- *
- * Callable for multiple cards. This function is called on bind.
- *
- * Return: 0 if succeeded, < 0 when failed
- */
+ 
 static int genwqe_probe(struct pci_dev *pci_dev,
 			const struct pci_device_id *id)
 {
@@ -1228,36 +1008,20 @@ static int genwqe_probe(struct pci_dev *pci_dev,
 	return err;
 }
 
-/**
- * genwqe_remove() - Called when device is removed (hot-plugable)
- * @pci_dev:	PCI device information struct
- *
- * Or when driver is unloaded respecitively when unbind is done.
- */
+ 
 static void genwqe_remove(struct pci_dev *pci_dev)
 {
 	struct genwqe_dev *cd = dev_get_drvdata(&pci_dev->dev);
 
 	genwqe_health_check_stop(cd);
 
-	/*
-	 * genwqe_stop() must survive if it is called twice
-	 * sequentially. This happens when the health thread calls it
-	 * and fails on genwqe_bus_reset().
-	 */
+	 
 	genwqe_stop(cd);
 	genwqe_pci_remove(cd);
 	genwqe_dev_free(cd);
 }
 
-/**
- * genwqe_err_error_detected() - Error detection callback
- * @pci_dev:	PCI device information struct
- * @state:	PCI channel state
- *
- * This callback is called by the PCI subsystem whenever a PCI bus
- * error is detected.
- */
+ 
 static pci_ers_result_t genwqe_err_error_detected(struct pci_dev *pci_dev,
 						 pci_channel_state_t state)
 {
@@ -1269,15 +1033,11 @@ static pci_ers_result_t genwqe_err_error_detected(struct pci_dev *pci_dev,
 	if (cd == NULL)
 		return PCI_ERS_RESULT_DISCONNECT;
 
-	/* Stop the card */
+	 
 	genwqe_health_check_stop(cd);
 	genwqe_stop(cd);
 
-	/*
-	 * On permanent failure, the PCI code will call device remove
-	 * after the return of this function.
-	 * genwqe_stop() can be called twice.
-	 */
+	 
 	if (state == pci_channel_io_perm_failure) {
 		return PCI_ERS_RESULT_DISCONNECT;
 	} else {
@@ -1359,9 +1119,7 @@ static struct pci_driver genwqe_driver = {
 	.err_handler = &genwqe_err_handler,
 };
 
-/**
- * genwqe_init_module() - Driver registration and initialization
- */
+ 
 static int __init genwqe_init_module(void)
 {
 	int rc;
@@ -1388,9 +1146,7 @@ static int __init genwqe_init_module(void)
 	return rc;
 }
 
-/**
- * genwqe_exit_module() - Driver exit
- */
+ 
 static void __exit genwqe_exit_module(void)
 {
 	pci_unregister_driver(&genwqe_driver);

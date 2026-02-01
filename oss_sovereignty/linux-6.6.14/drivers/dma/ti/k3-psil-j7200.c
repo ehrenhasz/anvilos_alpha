@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com
- *  Author: Peter Ujfalusi <peter.ujfalusi@ti.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 
@@ -58,13 +55,13 @@
 		},					\
 	}
 
-/* PSI-L source thread IDs, used for RX (DMA_DEV_TO_MEM) */
+ 
 static struct psil_ep j7200_src_ep_map[] = {
-	/* PDMA_MCASP - McASP0-2 */
+	 
 	PSIL_PDMA_MCASP(0x4400),
 	PSIL_PDMA_MCASP(0x4401),
 	PSIL_PDMA_MCASP(0x4402),
-	/* PDMA_SPI_G0 - SPI0-3 */
+	 
 	PSIL_PDMA_XY_PKT(0x4600),
 	PSIL_PDMA_XY_PKT(0x4601),
 	PSIL_PDMA_XY_PKT(0x4602),
@@ -81,7 +78,7 @@ static struct psil_ep j7200_src_ep_map[] = {
 	PSIL_PDMA_XY_PKT(0x460d),
 	PSIL_PDMA_XY_PKT(0x460e),
 	PSIL_PDMA_XY_PKT(0x460f),
-	/* PDMA_SPI_G1 - SPI4-7 */
+	 
 	PSIL_PDMA_XY_PKT(0x4610),
 	PSIL_PDMA_XY_PKT(0x4611),
 	PSIL_PDMA_XY_PKT(0x4612),
@@ -98,29 +95,29 @@ static struct psil_ep j7200_src_ep_map[] = {
 	PSIL_PDMA_XY_PKT(0x461d),
 	PSIL_PDMA_XY_PKT(0x461e),
 	PSIL_PDMA_XY_PKT(0x461f),
-	/* PDMA_USART_G0 - UART0-1 */
+	 
 	PSIL_PDMA_XY_PKT(0x4700),
 	PSIL_PDMA_XY_PKT(0x4701),
-	/* PDMA_USART_G1 - UART2-3 */
+	 
 	PSIL_PDMA_XY_PKT(0x4702),
 	PSIL_PDMA_XY_PKT(0x4703),
-	/* PDMA_USART_G2 - UART4-9 */
+	 
 	PSIL_PDMA_XY_PKT(0x4704),
 	PSIL_PDMA_XY_PKT(0x4705),
 	PSIL_PDMA_XY_PKT(0x4706),
 	PSIL_PDMA_XY_PKT(0x4707),
 	PSIL_PDMA_XY_PKT(0x4708),
 	PSIL_PDMA_XY_PKT(0x4709),
-	/* CPSW5 */
+	 
 	PSIL_ETHERNET(0x4a00),
-	/* CPSW0 */
+	 
 	PSIL_ETHERNET(0x7000),
-	/* MCU_PDMA_MISC_G0 - SPI0 */
+	 
 	PSIL_PDMA_XY_PKT(0x7100),
 	PSIL_PDMA_XY_PKT(0x7101),
 	PSIL_PDMA_XY_PKT(0x7102),
 	PSIL_PDMA_XY_PKT(0x7103),
-	/* MCU_PDMA_MISC_G1 - SPI1-2 */
+	 
 	PSIL_PDMA_XY_PKT(0x7200),
 	PSIL_PDMA_XY_PKT(0x7201),
 	PSIL_PDMA_XY_PKT(0x7202),
@@ -129,25 +126,25 @@ static struct psil_ep j7200_src_ep_map[] = {
 	PSIL_PDMA_XY_PKT(0x7205),
 	PSIL_PDMA_XY_PKT(0x7206),
 	PSIL_PDMA_XY_PKT(0x7207),
-	/* MCU_PDMA_MISC_G2 - UART0 */
+	 
 	PSIL_PDMA_XY_PKT(0x7300),
-	/* MCU_PDMA_ADC - ADC0-1 */
+	 
 	PSIL_PDMA_XY_TR(0x7400),
 	PSIL_PDMA_XY_TR(0x7401),
-	/* SA2UL */
+	 
 	PSIL_SA2UL(0x7500, 0),
 	PSIL_SA2UL(0x7501, 0),
 	PSIL_SA2UL(0x7502, 0),
 	PSIL_SA2UL(0x7503, 0),
 };
 
-/* PSI-L destination thread IDs, used for TX (DMA_MEM_TO_DEV) */
+ 
 static struct psil_ep j7200_dst_ep_map[] = {
-	/* PDMA_MCASP - McASP0-2 */
+	 
 	PSIL_PDMA_MCASP(0xc400),
 	PSIL_PDMA_MCASP(0xc401),
 	PSIL_PDMA_MCASP(0xc402),
-	/* PDMA_SPI_G0 - SPI0-3 */
+	 
 	PSIL_PDMA_XY_PKT(0xc600),
 	PSIL_PDMA_XY_PKT(0xc601),
 	PSIL_PDMA_XY_PKT(0xc602),
@@ -164,7 +161,7 @@ static struct psil_ep j7200_dst_ep_map[] = {
 	PSIL_PDMA_XY_PKT(0xc60d),
 	PSIL_PDMA_XY_PKT(0xc60e),
 	PSIL_PDMA_XY_PKT(0xc60f),
-	/* PDMA_SPI_G1 - SPI4-7 */
+	 
 	PSIL_PDMA_XY_PKT(0xc610),
 	PSIL_PDMA_XY_PKT(0xc611),
 	PSIL_PDMA_XY_PKT(0xc612),
@@ -181,20 +178,20 @@ static struct psil_ep j7200_dst_ep_map[] = {
 	PSIL_PDMA_XY_PKT(0xc61d),
 	PSIL_PDMA_XY_PKT(0xc61e),
 	PSIL_PDMA_XY_PKT(0xc61f),
-	/* PDMA_USART_G0 - UART0-1 */
+	 
 	PSIL_PDMA_XY_PKT(0xc700),
 	PSIL_PDMA_XY_PKT(0xc701),
-	/* PDMA_USART_G1 - UART2-3 */
+	 
 	PSIL_PDMA_XY_PKT(0xc702),
 	PSIL_PDMA_XY_PKT(0xc703),
-	/* PDMA_USART_G2 - UART4-9 */
+	 
 	PSIL_PDMA_XY_PKT(0xc704),
 	PSIL_PDMA_XY_PKT(0xc705),
 	PSIL_PDMA_XY_PKT(0xc706),
 	PSIL_PDMA_XY_PKT(0xc707),
 	PSIL_PDMA_XY_PKT(0xc708),
 	PSIL_PDMA_XY_PKT(0xc709),
-	/* CPSW5 */
+	 
 	PSIL_ETHERNET(0xca00),
 	PSIL_ETHERNET(0xca01),
 	PSIL_ETHERNET(0xca02),
@@ -203,7 +200,7 @@ static struct psil_ep j7200_dst_ep_map[] = {
 	PSIL_ETHERNET(0xca05),
 	PSIL_ETHERNET(0xca06),
 	PSIL_ETHERNET(0xca07),
-	/* CPSW0 */
+	 
 	PSIL_ETHERNET(0xf000),
 	PSIL_ETHERNET(0xf001),
 	PSIL_ETHERNET(0xf002),
@@ -212,12 +209,12 @@ static struct psil_ep j7200_dst_ep_map[] = {
 	PSIL_ETHERNET(0xf005),
 	PSIL_ETHERNET(0xf006),
 	PSIL_ETHERNET(0xf007),
-	/* MCU_PDMA_MISC_G0 - SPI0 */
+	 
 	PSIL_PDMA_XY_PKT(0xf100),
 	PSIL_PDMA_XY_PKT(0xf101),
 	PSIL_PDMA_XY_PKT(0xf102),
 	PSIL_PDMA_XY_PKT(0xf103),
-	/* MCU_PDMA_MISC_G1 - SPI1-2 */
+	 
 	PSIL_PDMA_XY_PKT(0xf200),
 	PSIL_PDMA_XY_PKT(0xf201),
 	PSIL_PDMA_XY_PKT(0xf202),
@@ -226,9 +223,9 @@ static struct psil_ep j7200_dst_ep_map[] = {
 	PSIL_PDMA_XY_PKT(0xf205),
 	PSIL_PDMA_XY_PKT(0xf206),
 	PSIL_PDMA_XY_PKT(0xf207),
-	/* MCU_PDMA_MISC_G2 - UART0 */
+	 
 	PSIL_PDMA_XY_PKT(0xf300),
-	/* SA2UL */
+	 
 	PSIL_SA2UL(0xf500, 1),
 	PSIL_SA2UL(0xf501, 1),
 };

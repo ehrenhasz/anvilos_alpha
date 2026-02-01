@@ -1,23 +1,6 @@
-/* array.h -- definitions for the interface exported by array.c that allows
-   the rest of the shell to manipulate array variables. */
+ 
 
-/* Copyright (C) 1997-2021 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 
 #ifndef _ARRAY_H_
@@ -52,7 +35,7 @@ typedef struct array_element {
 
 typedef int sh_ae_map_func_t PARAMS((ARRAY_ELEMENT *, void *));
 
-/* Basic operations on entire arrays */
+ 
 #ifdef ALT_ARRAY_IMPLEMENTATION
 extern void   array_alloc PARAMS((ARRAY *, arrayind_t));
 extern void   array_resize PARAMS((ARRAY *, arrayind_t));
@@ -90,7 +73,7 @@ extern char	*array_subrange PARAMS((ARRAY *, arrayind_t, arrayind_t, int, int, i
 extern char	*array_patsub PARAMS((ARRAY *, char *, char *, int));
 extern char	*array_modcase PARAMS((ARRAY *, char *, int, int));
 
-/* Basic operations on array elements. */
+ 
 extern ARRAY_ELEMENT *array_create_element PARAMS((arrayind_t, char *));
 extern ARRAY_ELEMENT *array_copy_element PARAMS((ARRAY_ELEMENT *));
 extern void	array_dispose_element PARAMS((ARRAY_ELEMENT *));
@@ -99,7 +82,7 @@ extern int	array_insert PARAMS((ARRAY *, arrayind_t, char *));
 extern ARRAY_ELEMENT *array_remove PARAMS((ARRAY *, arrayind_t));
 extern char	*array_reference PARAMS((ARRAY *, arrayind_t));
 
-/* Converting to and from arrays */
+ 
 extern WORD_LIST *array_to_word_list PARAMS((ARRAY *));
 extern ARRAY *array_from_word_list PARAMS((WORD_LIST *));
 extern WORD_LIST *array_keys_to_word_list PARAMS((ARRAY *));
@@ -115,7 +98,7 @@ extern char *array_to_assign PARAMS((ARRAY *, int));
 extern char *array_to_string PARAMS((ARRAY *, char *, int));
 extern ARRAY *array_from_string PARAMS((char *, char *));
 
-/* Flags for array_shift */
+ 
 #define AS_DISPOSE	0x01
 
 #define array_num_elements(a)	((a)->num_elements)
@@ -151,7 +134,7 @@ extern arrayind_t element_back PARAMS((ARRAY *, arrayind_t));
 #define set_max_index(a, i)	((a)->max_index = (i))
 #define set_num_elements(a, n)	((a)->num_elements = (n))
 
-/* Convenience */
+ 
 #define array_push(a,v)	\
   do { array_rshift ((a), 1, (v)); } while (0)
 #define array_pop(a) \
@@ -176,7 +159,7 @@ extern arrayind_t element_back PARAMS((ARRAY *, arrayind_t));
 
 #define ALL_ELEMENT_SUB(c)	((c) == '@' || (c) == '*')
 
-/* In eval.c, but uses ARRAY * */
+ 
 extern int execute_array_command PARAMS((ARRAY *, void *));
 
-#endif /* _ARRAY_H_ */
+#endif  

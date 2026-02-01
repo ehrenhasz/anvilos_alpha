@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/init.h>
 #include <linux/pci.h>
 #include <linux/topology.h>
@@ -25,25 +25,20 @@ struct amd_hostbridge {
 	u32 device;
 };
 
-/*
- * IMPORTANT NOTE:
- * hb_probes[] and early_root_info_init() is in maintenance mode.
- * It only supports K8, Fam10h, Fam11h, and Fam15h_00h-0fh .
- * Future processor will rely on information in ACPI.
- */
+ 
 static struct amd_hostbridge hb_probes[] __initdata = {
-	{ 0, 0x18, 0x1100 }, /* K8 */
-	{ 0, 0x18, 0x1200 }, /* Family10h */
-	{ 0xff, 0, 0x1200 }, /* Family10h */
-	{ 0, 0x18, 0x1300 }, /* Family11h */
-	{ 0, 0x18, 0x1600 }, /* Family15h */
+	{ 0, 0x18, 0x1100 },  
+	{ 0, 0x18, 0x1200 },  
+	{ 0xff, 0, 0x1200 },  
+	{ 0, 0x18, 0x1300 },  
+	{ 0, 0x18, 0x1600 },  
 };
 
 static struct pci_root_info __init *find_pci_root_info(int node, int link)
 {
 	struct pci_root_info *info;
 
-	/* find the position */
+	 
 	list_for_each_entry(info, &pci_root_infos, list)
 		if (info->node == node && info->link == link)
 			return info;
@@ -59,12 +54,7 @@ static inline resource_size_t cap_resource(u64 val)
 	return val;
 }
 
-/**
- * early_root_info_init()
- * called before pcibios_scan_root and pci_scan_bus
- * fills the mp_bus_to_cpumask array based according
- * to the LDT Bus Number Registers found in the northbridge.
- */
+ 
 static int __init early_root_info_init(void)
 {
 	int i;
@@ -114,18 +104,14 @@ static int __init early_root_info_init(void)
 	if (!found)
 		return 0;
 
-	/*
-	 * We should learn topology and routing information from _PXM and
-	 * _CRS methods in the ACPI namespace.  We extract node numbers
-	 * here to work around BIOSes that don't supply _PXM.
-	 */
+	 
 	for (i = 0; i < AMD_NB_F1_CONFIG_MAP_RANGES; i++) {
 		int min_bus;
 		int max_bus;
 		reg = read_pci_config(bus, slot, 1,
 				AMD_NB_F1_CONFIG_MAP_REG + (i << 2));
 
-		/* Check if that register is enabled for bus range */
+		 
 		if ((reg & 7) != 3)
 			continue;
 
@@ -137,18 +123,11 @@ static int __init early_root_info_init(void)
 		alloc_pci_root_info(min_bus, max_bus, node, link);
 	}
 
-	/*
-	 * The following code extracts routing information for use on old
-	 * systems where Linux doesn't automatically use host bridge _CRS
-	 * methods (or when the user specifies "pci=nocrs").
-	 *
-	 * We only do this through Fam11h, because _CRS should be enough on
-	 * newer systems.
-	 */
+	 
 	if (boot_cpu_data.x86 > 0x11)
 		return 0;
 
-	/* get the default node and link for left over res */
+	 
 	reg = read_pci_config(bus, slot, 0, AMD_NB_F0_NODE_ID);
 	def_node = (reg >> 8) & 0x07;
 	reg = read_pci_config(bus, slot, 0, AMD_NB_F0_UNIT_ID);
@@ -156,7 +135,7 @@ static int __init early_root_info_init(void)
 
 	memset(range, 0, sizeof(range));
 	add_range(range, RANGE_NUM, 0, 0, 0xffff + 1);
-	/* io port resource */
+	 
 	for (i = 0; i < 4; i++) {
 		reg = read_pci_config(bus, slot, 1, 0xc0 + (i << 3));
 		if (!(reg & 3))
@@ -170,19 +149,19 @@ static int __init early_root_info_init(void)
 
 		info = find_pci_root_info(node, link);
 		if (!info)
-			continue; /* not found */
+			continue;  
 
 		printk(KERN_DEBUG "node %d link %d: io port [%llx, %llx]\n",
 		       node, link, start, end);
 
-		/* kernel only handle 16 bit only */
+		 
 		if (end > 0xffff)
 			end = 0xffff;
 		update_res(info, start, end, IORESOURCE_IO, 1);
 		subtract_range(range, RANGE_NUM, start, end + 1);
 	}
-	/* add left over io port range to def node/link, [0, 0xffff] */
-	/* find the position */
+	 
+	 
 	info = find_pci_root_info(def_node, def_link);
 	if (info) {
 		for (i = 0; i < RANGE_NUM; i++) {
@@ -195,12 +174,12 @@ static int __init early_root_info_init(void)
 	}
 
 	memset(range, 0, sizeof(range));
-	/* 0xfd00000000-0xffffffffff for HT */
+	 
 	end = cap_resource((0xfdULL<<32) - 1);
 	end++;
 	add_range(range, RANGE_NUM, 0, 0, end);
 
-	/* need to take out [0, TOM) for RAM*/
+	 
 	address = MSR_K8_TOP_MEM1;
 	rdmsrl(address, val);
 	end = (val & 0xffffff800000ULL);
@@ -208,9 +187,9 @@ static int __init early_root_info_init(void)
 	if (end < (1ULL<<32))
 		subtract_range(range, RANGE_NUM, 0, end);
 
-	/* get mmconfig */
+	 
 	fam10h_mmconf = amd_get_mmconfig_range(&fam10h_mmconf_res);
-	/* need to take out mmconf range */
+	 
 	if (fam10h_mmconf) {
 		printk(KERN_DEBUG "Fam 10h mmconf %pR\n", fam10h_mmconf);
 		fam10h_mmconf_start = fam10h_mmconf->start;
@@ -222,13 +201,13 @@ static int __init early_root_info_init(void)
 		fam10h_mmconf_end = 0;
 	}
 
-	/* mmio resource */
+	 
 	for (i = 0; i < 8; i++) {
 		reg = read_pci_config(bus, slot, 1, 0x80 + (i << 3));
 		if (!(reg & 3))
 			continue;
 
-		start = reg & 0xffffff00; /* 39:16 on 31:8*/
+		start = reg & 0xffffff00;  
 		start <<= 8;
 		reg = read_pci_config(bus, slot, 1, 0x84 + (i << 3));
 		node = reg & 0x07;
@@ -244,10 +223,7 @@ static int __init early_root_info_init(void)
 
 		printk(KERN_DEBUG "node %d link %d: mmio [%llx, %llx]",
 		       node, link, start, end);
-		/*
-		 * some sick allocation would have range overlap with fam10h
-		 * mmconf range, so need to update start and end.
-		 */
+		 
 		if (fam10h_mmconf_end) {
 			int changed = 0;
 			u64 endx = 0;
@@ -265,7 +241,7 @@ static int __init early_root_info_init(void)
 
 			if (start < fam10h_mmconf_start &&
 			    end > fam10h_mmconf_end) {
-				/* we got a hole */
+				 
 				endx = fam10h_mmconf_start - 1;
 				update_res(info, start, endx, IORESOURCE_MEM, 0);
 				subtract_range(range, RANGE_NUM, start,
@@ -290,13 +266,13 @@ static int __init early_root_info_init(void)
 		printk(KERN_CONT "\n");
 	}
 
-	/* need to take out [4G, TOM2) for RAM*/
-	/* SYS_CFG */
+	 
+	 
 	address = MSR_AMD64_SYSCFG;
 	rdmsrl(address, val);
-	/* TOP_MEM2 is enabled? */
+	 
 	if (val & (1<<21)) {
-		/* TOP_MEM2 */
+		 
 		address = MSR_K8_TOP_MEM2;
 		rdmsrl(address, val);
 		end = (val & 0xffffff800000ULL);
@@ -304,10 +280,7 @@ static int __init early_root_info_init(void)
 		subtract_range(range, RANGE_NUM, 1ULL<<32, end);
 	}
 
-	/*
-	 * add left over mmio range to def node/link ?
-	 * that is tricky, just record range in from start_min to 4G
-	 */
+	 
 	info = find_pci_root_info(def_node, def_link);
 	if (info) {
 		for (i = 0; i < RANGE_NUM; i++) {
@@ -380,11 +353,11 @@ static int __init pci_io_ecs_init(void)
 {
 	int ret;
 
-	/* assume all cpus from fam10h have IO ECS */
+	 
 	if (boot_cpu_data.x86 < 0x10)
 		return 0;
 
-	/* Try the PCI method first. */
+	 
 	if (early_pci_allowed())
 		pci_enable_pci_io_ecs();
 

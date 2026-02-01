@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2018-2019, Intel Corporation. */
+ 
+ 
 
 #ifndef _PLDMFW_H_
 #define _PLDMFW_H_
@@ -19,29 +19,29 @@
 struct pldmfw_record {
 	struct list_head entry;
 
-	/* List of descriptor TLVs */
+	 
 	struct list_head descs;
 
-	/* Component Set version string*/
+	 
 	const u8 *version_string;
 	u8 version_type;
 	u8 version_len;
 
-	/* Package Data length */
+	 
 	u16 package_data_len;
 
-	/* Bitfield of Device Update Flags */
+	 
 	u32 device_update_flags;
 
-	/* Package Data block */
+	 
 	const u8 *package_data;
 
-	/* Bitmap of components applicable to this record */
+	 
 	unsigned long *component_bitmap;
 	u16 component_bitmap_len;
 };
 
-/* Standard descriptor TLV identifiers */
+ 
 #define PLDM_DESC_ID_PCI_VENDOR_ID	0x0000
 #define PLDM_DESC_ID_IANA_ENTERPRISE_ID	0x0001
 #define PLDM_DESC_ID_UUID		0x0002
@@ -91,7 +91,7 @@ struct pldmfw_desc_tlv {
 struct pldmfw_component {
 	struct list_head entry;
 
-	/* component identifier */
+	 
 	u16 classification;
 	u16 identifier;
 
@@ -103,28 +103,24 @@ struct pldmfw_component {
 	u32 component_size;
 	const u8 *component_data;
 
-	/* Component version string */
+	 
 	const u8 *version_string;
 	u8 version_type;
 	u8 version_len;
 
-	/* component index */
+	 
 	u8 index;
 
 };
 
-/* Transfer flag used for sending components to the firmware */
+ 
 #define PLDM_TRANSFER_FLAG_START		BIT(0)
 #define PLDM_TRANSFER_FLAG_MIDDLE		BIT(1)
 #define PLDM_TRANSFER_FLAG_END			BIT(2)
 
 struct pldmfw_ops;
 
-/* Main entry point to the PLDM firmware update engine. Device drivers
- * should embed this in a private structure and use container_of to obtain
- * a pointer to their own data, used to implement the device specific
- * operations.
- */
+ 
 struct pldmfw {
 	const struct pldmfw_ops *ops;
 	struct device *dev;
@@ -132,25 +128,7 @@ struct pldmfw {
 
 bool pldmfw_op_pci_match_record(struct pldmfw *context, struct pldmfw_record *record);
 
-/* Operations invoked by the generic PLDM firmware update engine. Used to
- * implement device specific logic.
- *
- * @match_record: check if the device matches the given record. For
- * convenience, a standard implementation is provided for PCI devices.
- *
- * @send_package_data: send the package data associated with the matching
- * record to firmware.
- *
- * @send_component_table: send the component data associated with a given
- * component to firmware. Called once for each applicable component.
- *
- * @flash_component: Flash the data for a given component to the device.
- * Called once for each applicable component, after all component tables have
- * been sent.
- *
- * @finalize_update: (optional) Finish the update. Called after all components
- * have been flashed.
- */
+ 
 struct pldmfw_ops {
 	bool (*match_record)(struct pldmfw *context, struct pldmfw_record *record);
 	int (*send_package_data)(struct pldmfw *context, const u8 *data, u16 length);

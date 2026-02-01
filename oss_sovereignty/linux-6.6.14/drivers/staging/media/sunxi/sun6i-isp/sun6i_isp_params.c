@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2021-2022 Bootlin
- * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- */
+
+ 
 
 #include <media/v4l2-device.h>
 #include <media/v4l2-event.h>
@@ -16,7 +13,7 @@
 #include "sun6i_isp_reg.h"
 #include "uapi/sun6i-isp-config.h"
 
-/* Params */
+ 
 
 static const struct sun6i_isp_params_config sun6i_isp_params_config_default = {
 	.modules_used = SUN6I_ISP_MODULE_BAYER,
@@ -64,7 +61,7 @@ static void sun6i_isp_params_configure_ob(struct sun6i_isp_device *isp_dev)
 
 static void sun6i_isp_params_configure_ae(struct sun6i_isp_device *isp_dev)
 {
-	/* These are default values that need to be set to get an output. */
+	 
 
 	sun6i_isp_load_write(isp_dev, SUN6I_ISP_AE_CFG_REG,
 			     SUN6I_ISP_AE_CFG_LOW_BRI_TH(0xff) |
@@ -98,7 +95,7 @@ sun6i_isp_params_configure_bayer(struct sun6i_isp_device *isp_dev,
 
 static void sun6i_isp_params_configure_wb(struct sun6i_isp_device *isp_dev)
 {
-	/* These are default values that need to be set to get an output. */
+	 
 
 	sun6i_isp_load_write(isp_dev, SUN6I_ISP_WB_GAIN0_REG,
 			     SUN6I_ISP_WB_GAIN0_R(256) |
@@ -159,13 +156,13 @@ sun6i_isp_params_configure_modules(struct sun6i_isp_device *isp_dev,
 		sun6i_isp_params_configure_bayer(isp_dev, config);
 
 	value = sun6i_isp_load_read(isp_dev, SUN6I_ISP_MODULE_EN_REG);
-	/* Clear all modules but keep input configuration. */
+	 
 	value &= SUN6I_ISP_MODULE_EN_SRC0 | SUN6I_ISP_MODULE_EN_SRC1;
 
 	if (config->modules_used & SUN6I_ISP_MODULE_BDNF)
 		value |= SUN6I_ISP_MODULE_EN_BDNF;
 
-	/* Bayer stage is always enabled. */
+	 
 
 	sun6i_isp_load_write(isp_dev, SUN6I_ISP_MODULE_EN_REG, value);
 }
@@ -179,7 +176,7 @@ void sun6i_isp_params_configure(struct sun6i_isp_device *isp_dev)
 
 	sun6i_isp_params_configure_base(isp_dev);
 
-	/* Default config is only applied at the very first stream start. */
+	 
 	if (state->configured)
 		goto complete;
 
@@ -192,7 +189,7 @@ complete:
 	spin_unlock_irqrestore(&state->lock, flags);
 }
 
-/* State */
+ 
 
 static void sun6i_isp_params_state_cleanup(struct sun6i_isp_device *isp_dev,
 					   bool error)
@@ -276,7 +273,7 @@ void sun6i_isp_params_state_complete(struct sun6i_isp_device *isp_dev)
 
 	vb2_buffer->timestamp = ktime_get_ns();
 
-	/* Parameters will be applied starting from the next frame. */
+	 
 	isp_buffer->v4l2_buffer.sequence = isp_dev->capture.state.sequence + 1;
 
 	vb2_buffer_done(vb2_buffer, VB2_BUF_STATE_DONE);
@@ -287,7 +284,7 @@ complete:
 	spin_unlock_irqrestore(&state->lock, flags);
 }
 
-/* Queue */
+ 
 
 static int sun6i_isp_params_queue_setup(struct vb2_queue *queue,
 					unsigned int *buffers_count,
@@ -353,10 +350,7 @@ static int sun6i_isp_params_start_streaming(struct vb2_queue *queue,
 
 	state->streaming = true;
 
-	/*
-	 * Update the state as soon as possible if capture is streaming,
-	 * otherwise it will be applied when capture starts streaming.
-	 */
+	 
 
 	if (capture_streaming)
 		sun6i_isp_state_update(isp_dev, false);
@@ -383,7 +377,7 @@ static const struct vb2_ops sun6i_isp_params_queue_ops = {
 	.wait_finish		= vb2_ops_wait_finish,
 };
 
-/* Video Device */
+ 
 
 static int sun6i_isp_params_querycap(struct file *file, void *private,
 				     struct v4l2_capability *capability)
@@ -452,7 +446,7 @@ static const struct v4l2_file_operations sun6i_isp_params_fops = {
 	.poll		= vb2_fop_poll,
 };
 
-/* Params */
+ 
 
 int sun6i_isp_params_setup(struct sun6i_isp_device *isp_dev)
 {
@@ -467,12 +461,12 @@ int sun6i_isp_params_setup(struct sun6i_isp_device *isp_dev)
 	struct v4l2_meta_format *params_format = &format->fmt.meta;
 	int ret;
 
-	/* State */
+	 
 
 	INIT_LIST_HEAD(&state->queue);
 	spin_lock_init(&state->lock);
 
-	/* Media Pads */
+	 
 
 	pad->flags = MEDIA_PAD_FL_SOURCE | MEDIA_PAD_FL_MUST_CONNECT;
 
@@ -480,7 +474,7 @@ int sun6i_isp_params_setup(struct sun6i_isp_device *isp_dev)
 	if (ret)
 		goto error_mutex;
 
-	/* Queue */
+	 
 
 	mutex_init(&params->lock);
 
@@ -501,13 +495,13 @@ int sun6i_isp_params_setup(struct sun6i_isp_device *isp_dev)
 		goto error_media_entity;
 	}
 
-	/* V4L2 Format */
+	 
 
 	format->type = queue->type;
 	params_format->dataformat = V4L2_META_FMT_SUN6I_ISP_PARAMS;
 	params_format->buffersize = sizeof(struct sun6i_isp_params_config);
 
-	/* Video Device */
+	 
 
 	strscpy(video_dev->name, SUN6I_ISP_PARAMS_NAME,
 		sizeof(video_dev->name));
@@ -529,7 +523,7 @@ int sun6i_isp_params_setup(struct sun6i_isp_device *isp_dev)
 		goto error_media_entity;
 	}
 
-	/* Media Pad Link */
+	 
 
 	ret = media_create_pad_link(&video_dev->entity, 0,
 				    &proc_subdev->entity,

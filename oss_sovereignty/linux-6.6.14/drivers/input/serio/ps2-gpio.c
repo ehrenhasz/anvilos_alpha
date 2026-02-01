@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * GPIO based serio bus driver for bit banging the PS/2 protocol
- *
- * Author: Danilo Krummrich <danilokrummrich@dk-develop.de>
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/interrupt.h>
@@ -44,23 +40,7 @@
 
 #define PS2_CMD_RESEND		0xfe
 
-/*
- * The PS2 protocol specifies a clock frequency between 10kHz and 16.7kHz,
- * therefore the maximal interrupt interval should be 100us and the minimum
- * interrupt interval should be ~60us. Let's allow +/- 20us for frequency
- * deviations and interrupt latency.
- *
- * The data line must be samples after ~30us to 50us after the falling edge,
- * since the device updates the data line at the rising edge.
- *
- * ___            ______            ______            ______            ___
- *    \          /      \          /      \          /      \          /
- *     \        /        \        /        \        /        \        /
- *      \______/          \______/          \______/          \______/
- *
- *     |-----------------|                 |--------|
- *          60us/100us                      30us/50us
- */
+ 
 #define PS2_CLK_FREQ_MIN_HZ		10000
 #define PS2_CLK_FREQ_MAX_HZ		16700
 #define PS2_CLK_MIN_INTERVAL_US		((1000 * 1000) / PS2_CLK_FREQ_MAX_HZ)
@@ -171,10 +151,7 @@ static irqreturn_t ps2_gpio_irq_rx(struct ps2_gpio_data *drvdata)
 
 	drvdata->t_irq_now = ktime_get();
 
-	/*
-	 * We need to consider spurious interrupts happening right after
-	 * a TX xfer finished.
-	 */
+	 
 	us_delta = ktime_us_delta(drvdata->t_irq_now, drvdata->tx.t_xfer_end);
 	if (unlikely(us_delta < PS2_IRQ_MIN_INTERVAL_US))
 		goto end;
@@ -185,7 +162,7 @@ static irqreturn_t ps2_gpio_irq_rx(struct ps2_gpio_data *drvdata)
 			"RX: timeout, probably we missed an interrupt\n");
 		goto err;
 	} else if (unlikely(us_delta < PS2_IRQ_MIN_INTERVAL_US)) {
-		/* Ignore spurious IRQs. */
+		 
 		goto end;
 	}
 	drvdata->t_irq_last = drvdata->t_irq_now;
@@ -199,7 +176,7 @@ static irqreturn_t ps2_gpio_irq_rx(struct ps2_gpio_data *drvdata)
 
 	switch (cnt) {
 	case PS2_START_BIT:
-		/* start bit should be low */
+		 
 		if (unlikely(data)) {
 			dev_err(drvdata->dev, "RX: start bit should be low\n");
 			goto err;
@@ -213,12 +190,12 @@ static irqreturn_t ps2_gpio_irq_rx(struct ps2_gpio_data *drvdata)
 	case PS2_DATA_BIT5:
 	case PS2_DATA_BIT6:
 	case PS2_DATA_BIT7:
-		/* processing data bits */
+		 
 		if (data)
 			byte |= (data << (cnt - 1));
 		break;
 	case PS2_PARITY_BIT:
-		/* check odd parity */
+		 
 		if (!((hweight8(byte) & 1) ^ data)) {
 			rxflags |= SERIO_PARITY;
 			dev_warn(drvdata->dev, "RX: parity error\n");
@@ -227,16 +204,13 @@ static irqreturn_t ps2_gpio_irq_rx(struct ps2_gpio_data *drvdata)
 		}
 		break;
 	case PS2_STOP_BIT:
-		/* stop bit should be high */
+		 
 		if (unlikely(!data)) {
 			dev_err(drvdata->dev, "RX: stop bit should be high\n");
 			goto err;
 		}
 
-		/*
-		 * Do not send spurious ACK's and NACK's when write fn is
-		 * not provided.
-		 */
+		 
 		if (!drvdata->write_enable) {
 			if (byte == PS2_DEV_RET_NACK)
 				goto err;
@@ -249,14 +223,14 @@ static irqreturn_t ps2_gpio_irq_rx(struct ps2_gpio_data *drvdata)
 
 		cnt = byte = 0;
 
-		goto end; /* success */
+		goto end;  
 	default:
 		dev_err(drvdata->dev, "RX: got out of sync with the device\n");
 		goto err;
 	}
 
 	cnt++;
-	goto end; /* success */
+	goto end;  
 
 err:
 	cnt = byte = 0;
@@ -278,12 +252,7 @@ static irqreturn_t ps2_gpio_irq_tx(struct ps2_gpio_data *drvdata)
 
 	drvdata->t_irq_now = ktime_get();
 
-	/*
-	 * There might be pending IRQs since we disabled IRQs in
-	 * __ps2_gpio_write().  We can expect at least one clock period until
-	 * the device generates the first falling edge after releasing the
-	 * clock line.
-	 */
+	 
 	us_delta = ktime_us_delta(drvdata->t_irq_now,
 				  drvdata->tx.t_xfer_start);
 	if (unlikely(us_delta < PS2_CLK_MIN_INTERVAL_US))
@@ -295,14 +264,14 @@ static irqreturn_t ps2_gpio_irq_tx(struct ps2_gpio_data *drvdata)
 			"TX: timeout, probably we missed an interrupt\n");
 		goto err;
 	} else if (unlikely(us_delta < PS2_IRQ_MIN_INTERVAL_US)) {
-		/* Ignore spurious IRQs. */
+		 
 		goto end;
 	}
 	drvdata->t_irq_last = drvdata->t_irq_now;
 
 	switch (cnt) {
 	case PS2_START_BIT:
-		/* should never happen */
+		 
 		dev_err(drvdata->dev,
 			"TX: start bit should have been sent already\n");
 		goto err;
@@ -318,12 +287,12 @@ static irqreturn_t ps2_gpio_irq_tx(struct ps2_gpio_data *drvdata)
 		gpiod_set_value(drvdata->gpio_data, data);
 		break;
 	case PS2_PARITY_BIT:
-		/* do odd parity */
+		 
 		data = !(hweight8(byte) & 1);
 		gpiod_set_value(drvdata->gpio_data, data);
 		break;
 	case PS2_STOP_BIT:
-		/* release data line to generate stop bit */
+		 
 		gpiod_direction_input(drvdata->gpio_data);
 		break;
 	case PS2_ACK_BIT:
@@ -338,19 +307,16 @@ static irqreturn_t ps2_gpio_irq_tx(struct ps2_gpio_data *drvdata)
 		complete(&drvdata->tx.complete);
 
 		cnt = 1;
-		goto end; /* success */
+		goto end;  
 	default:
-		/*
-		 * Probably we missed the stop bit. Therefore we release data
-		 * line and try again.
-		 */
+		 
 		gpiod_direction_input(drvdata->gpio_data);
 		dev_err(drvdata->dev, "TX: got out of sync with the device\n");
 		goto err;
 	}
 
 	cnt++;
-	goto end; /* success */
+	goto end;  
 
 err:
 	cnt = 1;
@@ -374,7 +340,7 @@ static int ps2_gpio_get_props(struct device *dev,
 {
 	enum gpiod_flags gflags;
 
-	/* Enforce open drain, since this is required by the PS/2 bus. */
+	 
 	gflags = GPIOD_IN | GPIOD_FLAGS_BIT_OPEN_DRAIN;
 
 	drvdata->gpio_data = devm_gpiod_get(dev, "data", gflags);
@@ -436,16 +402,13 @@ static int ps2_gpio_probe(struct platform_device *pdev)
 		goto err_free_serio;
 	}
 
-	/* Keep irq disabled until serio->open is called. */
+	 
 	disable_irq(drvdata->irq);
 
 	serio->id.type = SERIO_8042;
 	serio->open = ps2_gpio_open;
 	serio->close = ps2_gpio_close;
-	/*
-	 * Write can be enabled in platform/dt data, but possibly it will not
-	 * work because of the tough timings.
-	 */
+	 
 	serio->write = drvdata->write_enable ? ps2_gpio_write : NULL;
 	serio->port_data = drvdata;
 	serio->dev.parent = dev;
@@ -456,10 +419,7 @@ static int ps2_gpio_probe(struct platform_device *pdev)
 	drvdata->dev = dev;
 	drvdata->mode = PS2_MODE_RX;
 
-	/*
-	 * Tx count always starts at 1, as the start bit is sent implicitly by
-	 * host-to-device communication initialization.
-	 */
+	 
 	drvdata->tx.cnt = 1;
 
 	INIT_DELAYED_WORK(&drvdata->tx.work, ps2_gpio_tx_work_fn);
@@ -469,7 +429,7 @@ static int ps2_gpio_probe(struct platform_device *pdev)
 	serio_register_port(serio);
 	platform_set_drvdata(pdev, drvdata);
 
-	return 0;	/* success */
+	return 0;	 
 
 err_free_serio:
 	kfree(serio);

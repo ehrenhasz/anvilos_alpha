@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/ext4/sysfs.c
- *
- * Copyright (C) 1992, 1993, 1994, 1995
- * Remy Card (card@masi.ibp.fr)
- * Theodore Ts'o (tytso@mit.edu)
- *
- */
+
+ 
 
 #include <linux/time.h>
 #include <linux/fs.h>
@@ -301,7 +294,7 @@ static struct attribute *ext4_attrs[] = {
 };
 ATTRIBUTE_GROUPS(ext4);
 
-/* Features this copy of ext4 supports */
+ 
 EXT4_ATTR_FEATURE(lazy_itable_init);
 EXT4_ATTR_FEATURE(batched_discard);
 EXT4_ATTR_FEATURE(meta_bg_resize);

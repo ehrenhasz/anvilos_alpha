@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * O(1) TX queue with built-in allocator for ST-Ericsson CW1200 drivers
- *
- * Copyright (c) 2010, ST-Ericsson
- * Author: Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>
- */
+
+ 
 
 #include <net/mac80211.h>
 #include <linux/sched.h>
@@ -13,7 +8,7 @@
 #include "cw1200.h"
 #include "debug.h"
 
-/* private */ struct cw1200_queue_item
+  struct cw1200_queue_item
 {
 	struct list_head	head;
 	struct sk_buff		*skb;
@@ -311,9 +306,7 @@ int cw1200_queue_put(struct cw1200_queue *queue,
 		++stats->link_map_cache[txpriv->link_id];
 		spin_unlock_bh(&stats->lock);
 
-		/* TX may happen in parallel sometimes.
-		 * Leave extra queue slots so we don't overflow.
-		 */
+		 
 		if (queue->overfull == false &&
 		    queue->num_queued >=
 		    (queue->capacity - (num_present_cpus() - 1))) {
@@ -470,9 +463,7 @@ int cw1200_queue_remove(struct cw1200_queue *queue, u32 packet_id)
 		--queue->num_queued;
 		++queue->num_sent;
 		++item->generation;
-		/* Do not use list_move_tail here, but list_move:
-		 * try to utilize cache row.
-		 */
+		 
 		list_move(&item->head, &queue->free_pool);
 
 		if (queue->overfull &&

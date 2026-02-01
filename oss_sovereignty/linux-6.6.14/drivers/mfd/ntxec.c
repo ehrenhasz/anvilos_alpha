@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * The Netronix embedded controller is a microcontroller found in some
- * e-book readers designed by the original design manufacturer Netronix, Inc.
- * It contains RTC, battery monitoring, system power management, and PWM
- * functionality.
- *
- * This driver implements register access, version detection, and system
- * power-off/reset.
- *
- * Copyright 2020 Jonathan Neuschäfer <j.neuschaefer@gmx.net>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/errno.h>
@@ -54,11 +44,7 @@ static void ntxec_poweroff(void)
 		dev_warn(&poweroff_restart_client->dev,
 			 "Failed to power off (err = %d)\n", res);
 
-	/*
-	 * The time from the register write until the host CPU is powered off
-	 * has been observed to be about 2.5 to 3 seconds. Sleep long enough to
-	 * safely avoid returning from the poweroff handler.
-	 */
+	 
 	msleep(5000);
 }
 
@@ -67,11 +53,7 @@ static int ntxec_restart(struct notifier_block *nb,
 {
 	int res;
 	u8 buf[3] = { NTXEC_REG_RESET };
-	/*
-	 * NOTE: The lower half of the reset value is not sent, because sending
-	 * it causes an I2C error. (The reset handler in the downstream driver
-	 * does send the full two-byte value, but doesn't check the result).
-	 */
+	 
 	struct i2c_msg msgs[] = {
 		{
 			.addr = poweroff_restart_client->addr,
@@ -115,10 +97,7 @@ static int regmap_wrap_read(void *context, unsigned int reg,
 	return regmap_read(regmap, reg, val);
 }
 
-/*
- * Some firmware versions do not ack written data, add a wrapper. It
- * is used to stack another regmap on top.
- */
+ 
 static const struct regmap_config regmap_config_noack = {
 	.name = "ntxec_noack",
 	.reg_bits = 8,
@@ -165,14 +144,14 @@ static int ntxec_probe(struct i2c_client *client)
 		return PTR_ERR(ec->regmap);
 	}
 
-	/* Determine the firmware version */
+	 
 	res = regmap_read(ec->regmap, NTXEC_REG_VERSION, &version);
 	if (res < 0) {
 		dev_err(ec->dev, "Failed to read firmware version number\n");
 		return res;
 	}
 
-	/* Bail out if we encounter an unknown firmware version */
+	 
 	switch (version) {
 	case NTXEC_VERSION_KOBO_AURA:
 	case NTXEC_VERSION_TOLINO_VISION:
@@ -182,7 +161,7 @@ static int ntxec_probe(struct i2c_client *client)
 	case NTXEC_VERSION_TOLINO_SHINE2:
 		subdevs = ntxec_subdev_pwm;
 		n_subdevs = ARRAY_SIZE(ntxec_subdev_pwm);
-		/* Another regmap stacked on top of the other */
+		 
 		ec->regmap = devm_regmap_init(ec->dev, NULL,
 					      ec->regmap,
 					      &regmap_config_noack);
@@ -200,26 +179,20 @@ static int ntxec_probe(struct i2c_client *client)
 		 "Netronix embedded controller version %04x detected.\n", version);
 
 	if (of_device_is_system_power_controller(ec->dev->of_node)) {
-		/*
-		 * Set the 'powerkeep' bit. This is necessary on some boards
-		 * in order to keep the system running.
-		 */
+		 
 		res = regmap_write(ec->regmap, NTXEC_REG_POWERKEEP,
 				   NTXEC_POWERKEEP_VALUE);
 		if (res < 0)
 			return res;
 
 		if (poweroff_restart_client)
-			/*
-			 * Another instance of the driver already took
-			 * poweroff/restart duties.
-			 */
+			 
 			dev_err(ec->dev, "poweroff_restart_client already assigned\n");
 		else
 			poweroff_restart_client = client;
 
 		if (pm_power_off)
-			/* Another driver already registered a poweroff handler. */
+			 
 			dev_err(ec->dev, "pm_power_off already assigned\n");
 		else
 			pm_power_off = ntxec_poweroff;

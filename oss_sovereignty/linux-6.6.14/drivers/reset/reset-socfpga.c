@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018, Intel Corporation
- * Copied from reset-sunxi.c
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/io.h>
@@ -73,16 +70,10 @@ err_alloc:
 	return ret;
 };
 
-/*
- * These are the reset controller we need to initialize early on in
- * our system, before we can even think of using a regular device
- * driver for it.
- * The controllers that we can register through the regular device
- * model are handled by the simple reset driver directly.
- */
+ 
 static const struct of_device_id socfpga_early_reset_dt_ids[] __initconst = {
 	{ .compatible = "altr,rst-mgr", },
-	{ /* sentinel */ },
+	{   },
 };
 
 void __init socfpga_reset_init(void)
@@ -93,16 +84,10 @@ void __init socfpga_reset_init(void)
 		a10_reset_init(np);
 }
 
-/*
- * The early driver is problematic, because it doesn't register
- * itself as a driver. This causes certain device links to prevent
- * consumer devices from probing. The hacky solution is to register
- * an empty driver, whose only job is to attach itself to the reset
- * manager and call probe.
- */
+ 
 static const struct of_device_id socfpga_reset_dt_ids[] = {
 	{ .compatible = "altr,rst-mgr", },
-	{ /* sentinel */ },
+	{   },
 };
 
 static int reset_simple_probe(struct platform_device *pdev)

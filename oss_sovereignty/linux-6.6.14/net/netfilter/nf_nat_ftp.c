@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* FTP extension for TCP NAT alteration. */
 
-/* (C) 1999-2001 Paul `Rusty' Russell
- * (C) 2002-2006 Netfilter Core Team <coreteam@netfilter.org>
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -25,7 +23,7 @@ MODULE_AUTHOR("Rusty Russell <rusty@rustcorp.com.au>");
 MODULE_DESCRIPTION("ftp NAT helper");
 MODULE_ALIAS_NF_NAT_HELPER(NAT_HELPER_NAME);
 
-/* FIXME: Time out? --RR */
+ 
 
 static struct nf_conntrack_nat_helper nat_helper_ftp =
 	NF_CT_NAT_HELPER_INIT(NAT_HELPER_NAME);
@@ -58,8 +56,7 @@ static int nf_nat_ftp_fmt_cmd(struct nf_conn *ct, enum nf_ct_ftp_type type,
 	return 0;
 }
 
-/* So, this packet has hit the connection tracking matching code.
-   Mangle it, and change the expectation to match the new version. */
+ 
 static unsigned int nf_nat_ftp(struct sk_buff *skb,
 			       enum ip_conntrack_info ctinfo,
 			       enum nf_ct_ftp_type type,
@@ -77,13 +74,12 @@ static unsigned int nf_nat_ftp(struct sk_buff *skb,
 
 	pr_debug("type %i, off %u len %u\n", type, matchoff, matchlen);
 
-	/* Connection will come from wherever this packet goes, hence !dir */
+	 
 	newaddr = ct->tuplehash[!dir].tuple.dst.u3;
 	exp->saved_proto.tcp.port = exp->tuple.dst.u.tcp.port;
 	exp->dir = !dir;
 
-	/* When you see the packet, we need to NAT it the same as the
-	 * this one. */
+	 
 	exp->expectfn = nf_nat_follow_master;
 
 	port = nf_nat_exp_find_port(exp, ntohs(exp->saved_proto.tcp.port));
@@ -126,7 +122,7 @@ static int __init nf_nat_ftp_init(void)
 	return 0;
 }
 
-/* Prior to 2.6.11, we had a ports param.  No longer, but don't break users. */
+ 
 static int warn_set(const char *val, const struct kernel_param *kp)
 {
 	pr_info("kernel >= 2.6.10 only uses 'ports' for conntrack modules\n");

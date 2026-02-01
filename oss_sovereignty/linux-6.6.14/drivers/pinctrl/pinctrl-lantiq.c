@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/drivers/pinctrl/pinctrl-lantiq.c
- *  based on linux/drivers/pinctrl/pinctrl-pxa3xx.c
- *
- *  Copyright (C) 2012 John Crispin <john@phrozen.org>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/io.h>
@@ -209,7 +204,7 @@ static int ltq_pmx_get_groups(struct pinctrl_dev *pctrldev,
 	return 0;
 }
 
-/* Return function number. If failure, return negative value. */
+ 
 static int match_mux(const struct ltq_mfp_pin *mfp, unsigned mux)
 {
 	int i;
@@ -222,7 +217,7 @@ static int match_mux(const struct ltq_mfp_pin *mfp, unsigned mux)
 	return i;
 }
 
-/* don't assume .mfp is linearly mapped. find the mfp with the correct .pin */
+ 
 static int match_mfp(const struct ltq_pinmux_info *info, int pin)
 {
 	int i;
@@ -233,7 +228,7 @@ static int match_mfp(const struct ltq_pinmux_info *info, int pin)
 	return -1;
 }
 
-/* check whether current pin configuration is valid. Negative for failure */
+ 
 static int match_group_mux(const struct ltq_pin_group *grp,
 			   const struct ltq_pinmux_info *info,
 			   unsigned mux)
@@ -319,10 +314,7 @@ static const struct pinmux_ops ltq_pmx_ops = {
 	.gpio_request_enable	= ltq_pmx_gpio_request_enable,
 };
 
-/*
- * allow different socs to register with the generic part of the lanti
- * pinctrl code
- */
+ 
 int ltq_pinctrl_register(struct platform_device *pdev,
 				struct ltq_pinmux_info *info)
 {

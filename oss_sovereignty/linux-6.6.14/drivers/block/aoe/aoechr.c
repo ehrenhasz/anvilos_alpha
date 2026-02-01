@@ -1,8 +1,5 @@
-/* Copyright (c) 2012 Coraid, Inc.  See COPYING for GPL terms. */
-/*
- * aoechr.c
- * AoE character device driver
- */
+ 
+ 
 
 #include <linux/hdreg.h>
 #include <linux/blkdev.h>
@@ -15,14 +12,14 @@
 #include "aoe.h"
 
 enum {
-	//MINOR_STAT = 1, (moved to sysfs)
+	
 	MINOR_ERR = 2,
 	MINOR_DISCOVER,
 	MINOR_INTERFACES,
 	MINOR_REVALIDATE,
 	MINOR_FLUSH,
 	MSGSZ = 2048,
-	NMSG = 100,		/* message backlog to retain */
+	NMSG = 100,		 
 };
 
 struct aoe_chardev {
@@ -40,10 +37,7 @@ struct ErrMsg {
 
 static DEFINE_MUTEX(aoechr_mutex);
 
-/* A ring buffer of error messages, to be read through
- * "/dev/etherd/err".  When no messages are present,
- * readers will block waiting for messages to appear.
- */
+ 
 static struct ErrMsg emsgs[NMSG];
 static int emsgs_head_idx, emsgs_tail_idx;
 static struct completion emsgs_comp;
@@ -115,9 +109,7 @@ revalidate(const char __user *str, size_t size)
 loop:
 	skb = aoecmd_ata_id(d);
 	spin_unlock_irqrestore(&d->lock, flags);
-	/* try again if we are able to sleep a bit,
-	 * otherwise give up this revalidation
-	 */
+	 
 	if (!skb && !msleep_interruptible(250)) {
 		spin_lock_irqsave(&d->lock, flags);
 		goto loop;

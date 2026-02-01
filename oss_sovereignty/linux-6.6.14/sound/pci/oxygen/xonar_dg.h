@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef XONAR_DG_H_INCLUDED
 #define XONAR_DG_H_INCLUDED
 
@@ -25,17 +25,17 @@ enum cs4245_shadow_operation {
 };
 
 struct dg {
-	/* shadow copy of the CS4245 register space */
+	 
 	unsigned char cs4245_shadow[17];
-	/* output select: headphone/speakers */
+	 
 	unsigned char output_sel;
-	/* volumes for all capture sources */
+	 
 	char input_vol[4][2];
-	/* input select: mic/fp mic/line/aux */
+	 
 	unsigned char input_sel;
 };
 
-/* Xonar DG control routines */
+ 
 int cs4245_write_spi(struct oxygen *chip, u8 reg);
 int cs4245_read_spi(struct oxygen *chip, u8 reg);
 int cs4245_shadow_control(struct oxygen *chip, enum cs4245_shadow_operation op);

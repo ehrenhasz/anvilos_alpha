@@ -1,22 +1,6 @@
-/* stringlist.c - functions to handle a generic `list of strings' structure */
+ 
 
-/* Copyright (C) 2000-2019 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include <config.h>
 
@@ -34,7 +18,7 @@
 #endif
 #define STRDUP(x)	((x) ? savestring (x) : (char *)NULL)
 
-/* Allocate a new STRINGLIST, with room for N strings. */
+ 
 
 STRINGLIST *
 strlist_create (n)
@@ -127,7 +111,7 @@ strlist_copy (sl)
   if (sl == 0)
     return ((STRINGLIST *)0);
   new = strlist_create (sl->list_size);
-  /* I'd like to use strvec_copy, but that doesn't copy everything. */
+   
   if (sl->list)
     {
       for (i = 0; i < sl->list_size; i++)
@@ -135,13 +119,13 @@ strlist_copy (sl)
     }
   new->list_size = sl->list_size;
   new->list_len = sl->list_len;
-  /* just being careful */
+   
   if (new->list)
     new->list[new->list_len] = (char *)NULL;
   return new;
 }
 
-/* Return a new STRINGLIST with everything from M1 and M2. */
+ 
 
 STRINGLIST *
 strlist_merge (m1, m2)
@@ -163,7 +147,7 @@ strlist_merge (m1, m2)
   return (sl);
 }
 
-/* Make STRINGLIST M1 contain everything in M1 and M2. */
+ 
 STRINGLIST *
 strlist_append (m1, m2)
      STRINGLIST *m1, *m2;

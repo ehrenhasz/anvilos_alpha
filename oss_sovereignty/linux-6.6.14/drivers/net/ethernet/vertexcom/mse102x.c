@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2021 in-tech smart charging GmbH
- *
- * driver is based on micrel/ks8851_spi.c
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -78,7 +75,7 @@ struct mse102x_net {
 
 struct mse102x_net_spi {
 	struct mse102x_net	mse102x;
-	struct mutex		lock;		/* Protect SPI frame transfer */
+	struct mutex		lock;		 
 	struct work_struct	tx_work;
 	struct spi_device	*spidev;
 	struct spi_message	spi_msg;
@@ -126,7 +123,7 @@ static void mse102x_remove_device_debugfs(struct mse102x_net_spi *mses)
 	debugfs_remove_recursive(mses->device_root);
 }
 
-#else /* CONFIG_DEBUG_FS */
+#else  
 
 static void mse102x_init_device_debugfs(struct mse102x_net_spi *mses)
 {
@@ -138,12 +135,7 @@ static void mse102x_remove_device_debugfs(struct mse102x_net_spi *mses)
 
 #endif
 
-/* SPI register read/write calls.
- *
- * All these calls issue SPI transactions to access the chip's registers. They
- * all require that the necessary lock is held to prevent accesses when the
- * chip is busy transferring packet data.
- */
+ 
 
 static void mse102x_tx_cmd_spi(struct mse102x_net *mse, u16 cmd)
 {
@@ -347,10 +339,7 @@ static void mse102x_rx_pkt_spi(struct mse102x_net *mse)
 	if (!skb)
 		return;
 
-	/* 2 bytes Start of frame (before ethernet header)
-	 * 2 bytes Data frame tail (after ethernet frame)
-	 * They are copied, but ignored.
-	 */
+	 
 	rxpkt = skb_put(skb, rxlen) - DET_SOF_LEN;
 	if (mse102x_rx_frame_spi(mse, rxpkt, rxlen)) {
 		mse->ndev->stats.rx_errors++;
@@ -386,7 +375,7 @@ static int mse102x_tx_pkt_spi(struct mse102x_net *mse, struct sk_buff *txb,
 		cmd_resp = be16_to_cpu(rx);
 
 		if (!ret) {
-			/* ready to send frame ? */
+			 
 			if (cmd_resp == CMD_CTR)
 				break;
 
@@ -395,17 +384,14 @@ static int mse102x_tx_pkt_spi(struct mse102x_net *mse, struct sk_buff *txb,
 			mse->stats.invalid_ctr++;
 		}
 
-		/* It's not predictable how long / many retries it takes to
-		 * send at least one packet, so TX timeouts are possible.
-		 * That's the reason why the netdev watchdog is not used here.
-		 */
+		 
 		if (time_after(jiffies, work_timeout))
 			return -ETIMEDOUT;
 
 		if (first) {
-			/* throttle at first issue */
+			 
 			netif_stop_queue(mse->ndev);
-			/* fast retry */
+			 
 			usleep_range(50, 100);
 			first = false;
 		} else {
@@ -425,7 +411,7 @@ static int mse102x_tx_pkt_spi(struct mse102x_net *mse, struct sk_buff *txb,
 
 static void mse102x_tx_work(struct work_struct *work)
 {
-	/* Make sure timeout is sufficient to transfer TX_QUEUE_MAX frames */
+	 
 	unsigned long work_timeout = jiffies + msecs_to_jiffies(1000);
 	struct mse102x_net_spi *mses;
 	struct mse102x_net *mse;
@@ -490,7 +476,7 @@ static void mse102x_init_mac(struct mse102x_net *mse, struct device_node *np)
 	}
 }
 
-/* Assumption: this is called for every incoming packet */
+ 
 static irqreturn_t mse102x_irq(int irq, void *_mse)
 {
 	struct mse102x_net *mse = _mse;
@@ -535,7 +521,7 @@ static int mse102x_net_stop(struct net_device *ndev)
 
 	netif_carrier_off(mse->ndev);
 
-	/* stop any outstanding work */
+	 
 	flush_work(&mses->tx_work);
 
 	netif_stop_queue(ndev);
@@ -555,7 +541,7 @@ static const struct net_device_ops mse102x_netdev_ops = {
 	.ndo_validate_addr	= eth_validate_addr,
 };
 
-/* ethtool support */
+ 
 
 static void mse102x_get_drvinfo(struct net_device *ndev,
 				struct ethtool_drvinfo *di)
@@ -620,7 +606,7 @@ static const struct ethtool_ops mse102x_ethtool_ops = {
 	.get_sset_count		= mse102x_get_sset_count,
 };
 
-/* driver bus management functions */
+ 
 
 #ifdef CONFIG_PM_SLEEP
 
@@ -663,7 +649,7 @@ static int mse102x_probe_spi(struct spi_device *spi)
 
 	spi->bits_per_word = 8;
 	spi->mode |= SPI_MODE_3;
-	/* enforce minimum speed to ensure device functionality */
+	 
 	spi->master->min_speed_hz = MIN_FREQ_HZ;
 
 	if (!spi->max_speed_hz)
@@ -698,14 +684,14 @@ static int mse102x_probe_spi(struct spi_device *spi)
 	mutex_init(&mses->lock);
 	INIT_WORK(&mses->tx_work, mse102x_tx_work);
 
-	/* initialise pre-made spi transfer messages */
+	 
 	spi_message_init(&mses->spi_msg);
 	spi_message_add_tail(&mses->spi_xfer, &mses->spi_msg);
 
 	ndev->irq = spi->irq;
 	mse->ndev = ndev;
 
-	/* set the default message enable */
+	 
 	mse->msg_enable = netif_msg_init(-1, MSG_DEFAULT);
 
 	skb_queue_head_init(&mse->txq);

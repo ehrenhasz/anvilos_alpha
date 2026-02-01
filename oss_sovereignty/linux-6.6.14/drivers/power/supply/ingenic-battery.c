@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Battery driver for the Ingenic JZ47xx SoCs
- * Copyright (c) 2019 Artur Rojek <contact@artur-rojek.eu>
- *
- * based on drivers/power/supply/jz4740-battery.c
- */
+
+ 
 
 #include <linux/iio/consumer.h>
 #include <linux/module.h>
@@ -55,9 +50,7 @@ static int ingenic_battery_get_property(struct power_supply *psy,
 	}
 }
 
-/* Set the most appropriate IIO channel voltage reference scale
- * based on the battery's max voltage.
- */
+ 
 static int ingenic_battery_set_scale(struct ingenic_battery *bat)
 {
 	const int *scale_raw;
@@ -100,7 +93,7 @@ static int ingenic_battery_set_scale(struct ingenic_battery *bat)
 		return -EINVAL;
 	}
 
-	/* Only set scale if there is more than one (fractional) entry */
+	 
 	if (scale_len > 2) {
 		ret = iio_write_channel_attribute(bat->channel,
 						  scale_raw[best_idx],

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sl3516-ce-rng.c - hardware cryptographic offloader for SL3516 SoC.
- *
- * Copyright (C) 2021 Corentin Labbe <clabbe@baylibre.com>
- *
- * This file handle the RNG found in the SL3516 crypto engine
- */
+
+ 
 #include "sl3516-ce.h"
 #include <linux/pm_runtime.h>
 #include <linux/hw_random.h>

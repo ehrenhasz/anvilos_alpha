@@ -1,22 +1,17 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2022 Samsung Electronics Co., Ltd.
- * Author: Chanho Park <chanho61.park@samsung.com>
- *
- * Device Tree binding constants for Exynos Auto V9 clock controller.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLOCK_EXYNOSAUTOV9_H
 #define _DT_BINDINGS_CLOCK_EXYNOSAUTOV9_H
 
-/* CMU_TOP */
+ 
 #define FOUT_SHARED0_PLL		1
 #define FOUT_SHARED1_PLL		2
 #define FOUT_SHARED2_PLL		3
 #define FOUT_SHARED3_PLL		4
 #define FOUT_SHARED4_PLL		5
 
-/* MUX in CMU_TOP */
+ 
 #define MOUT_SHARED0_PLL		6
 #define MOUT_SHARED1_PLL		7
 #define MOUT_SHARED2_PLL		8
@@ -65,7 +60,7 @@
 #define MOUT_CLKCMU_PERIC1_IP		53
 #define MOUT_CLKCMU_PERIS_BUS		54
 
-/* DIV in CMU_TOP */
+ 
 #define DOUT_SHARED0_DIV3		101
 #define DOUT_SHARED0_DIV2		102
 #define DOUT_SHARED1_DIV3		103
@@ -117,7 +112,7 @@
 #define DOUT_CLKCMU_PERIC1_IP		151
 #define DOUT_CLKCMU_PERIS_BUS		152
 
-/* GAT in CMU_TOP */
+ 
 #define GOUT_CLKCMU_CMU_BOOST		201
 #define GOUT_CLKCMU_CPUCL0_BOOST	202
 #define GOUT_CLKCMU_CPUCL1_BOOST	203
@@ -166,20 +161,20 @@
 #define GOUT_CLKCMU_PERIC1_IP		248
 #define GOUT_CLKCMU_PERIS_BUS		249
 
-/* CMU_BUSMC */
+ 
 #define CLK_MOUT_BUSMC_BUS_USER		1
 #define CLK_DOUT_BUSMC_BUSP		2
 #define CLK_GOUT_BUSMC_PDMA0_PCLK	3
 #define CLK_GOUT_BUSMC_SPDMA_PCLK	4
 
-/* CMU_CORE */
+ 
 #define CLK_MOUT_CORE_BUS_USER		1
 #define CLK_DOUT_CORE_BUSP		2
 #define CLK_GOUT_CORE_CCI_CLK		3
 #define CLK_GOUT_CORE_CCI_PCLK		4
 #define CLK_GOUT_CORE_CMU_CORE_PCLK	5
 
-/* CMU_FSYS0 */
+ 
 #define CLK_MOUT_FSYS0_BUS_USER		1
 #define CLK_MOUT_FSYS0_PCIE_USER	2
 #define CLK_GOUT_FSYS0_BUS_PCLK		3
@@ -220,7 +215,7 @@
 #define CLK_GOUT_FSYS0_PCIE_GEN3A_4L_CLK		35
 #define CLK_GOUT_FSYS0_PCIE_GEN3B_4L_CLK		36
 
-/* CMU_FSYS1 */
+ 
 #define FOUT_MMC_PLL				1
 
 #define CLK_MOUT_FSYS1_BUS_USER			2
@@ -243,7 +238,7 @@
 #define CLK_GOUT_FSYS1_USB30_0_ACLK		17
 #define CLK_GOUT_FSYS1_USB30_1_ACLK		18
 
-/* CMU_FSYS2 */
+ 
 #define CLK_MOUT_FSYS2_BUS_USER		1
 #define CLK_MOUT_FSYS2_UFS_EMBD_USER	2
 #define CLK_MOUT_FSYS2_ETHERNET_USER	3
@@ -252,7 +247,7 @@
 #define CLK_GOUT_FSYS2_UFS_EMBD1_ACLK	6
 #define CLK_GOUT_FSYS2_UFS_EMBD1_UNIPRO	7
 
-/* CMU_PERIC0 */
+ 
 #define CLK_MOUT_PERIC0_BUS_USER	1
 #define CLK_MOUT_PERIC0_IP_USER		2
 #define CLK_MOUT_PERIC0_USI00_USI	3
@@ -296,7 +291,7 @@
 #define CLK_GOUT_PERIC0_PCLK_10		42
 #define CLK_GOUT_PERIC0_PCLK_11		43
 
-/* CMU_PERIC1 */
+ 
 #define CLK_MOUT_PERIC1_BUS_USER	1
 #define CLK_MOUT_PERIC1_IP_USER		2
 #define CLK_MOUT_PERIC1_USI06_USI	3
@@ -340,10 +335,10 @@
 #define CLK_GOUT_PERIC1_PCLK_10		42
 #define CLK_GOUT_PERIC1_PCLK_11		43
 
-/* CMU_PERIS */
+ 
 #define CLK_MOUT_PERIS_BUS_USER		1
 #define CLK_GOUT_SYSREG_PERIS_PCLK	2
 #define CLK_GOUT_WDT_CLUSTER0		3
 #define CLK_GOUT_WDT_CLUSTER1		4
 
-#endif /* _DT_BINDINGS_CLOCK_EXYNOSAUTOV9_H */
+#endif  

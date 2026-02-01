@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* connection-level event handling
- *
- * Copyright (C) 2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -16,9 +12,7 @@
 #include <net/ip.h>
 #include "ar-internal.h"
 
-/*
- * Set the completion state on an aborted connection.
- */
+ 
 static bool rxrpc_set_conn_aborted(struct rxrpc_connection *conn, struct sk_buff *skb,
 				   s32 abort_code, int err,
 				   enum rxrpc_call_completion compl)
@@ -31,7 +25,7 @@ static bool rxrpc_set_conn_aborted(struct rxrpc_connection *conn, struct sk_buff
 			conn->abort_code = abort_code;
 			conn->error	 = err;
 			conn->completion = compl;
-			/* Order the abort info before the state change. */
+			 
 			smp_store_release(&conn->state, RXRPC_CONN_ABORTED);
 			set_bit(RXRPC_CONN_DONT_REUSE, &conn->flags);
 			set_bit(RXRPC_CONN_EV_ABORT_CALLS, &conn->events);
@@ -43,9 +37,7 @@ static bool rxrpc_set_conn_aborted(struct rxrpc_connection *conn, struct sk_buff
 	return aborted;
 }
 
-/*
- * Mark a socket buffer to indicate that the connection it's on should be aborted.
- */
+ 
 int rxrpc_abort_conn(struct rxrpc_connection *conn, struct sk_buff *skb,
 		     s32 abort_code, int err, enum rxrpc_abort_reason why)
 {
@@ -60,9 +52,7 @@ int rxrpc_abort_conn(struct rxrpc_connection *conn, struct sk_buff *skb,
 	return -EPROTO;
 }
 
-/*
- * Mark a connection as being remotely aborted.
- */
+ 
 static bool rxrpc_input_conn_abort(struct rxrpc_connection *conn,
 				   struct sk_buff *skb)
 {
@@ -70,9 +60,7 @@ static bool rxrpc_input_conn_abort(struct rxrpc_connection *conn,
 				      RXRPC_CALL_REMOTELY_ABORTED);
 }
 
-/*
- * Retransmit terminal ACK or ABORT of the previous call.
- */
+ 
 void rxrpc_conn_retransmit_call(struct rxrpc_connection *conn,
 				struct sk_buff *skb,
 				unsigned int channel)
@@ -97,9 +85,7 @@ void rxrpc_conn_retransmit_call(struct rxrpc_connection *conn,
 
 	chan = &conn->channels[channel];
 
-	/* If the last call got moved on whilst we were waiting to run, just
-	 * ignore this packet.
-	 */
+	 
 	call_id = chan->last_call;
 	if (skb && call_id != sp->hdr.callNumber)
 		return;
@@ -182,9 +168,7 @@ void rxrpc_conn_retransmit_call(struct rxrpc_connection *conn,
 	_leave("");
 }
 
-/*
- * pass a connection-level abort onto all calls on that connection
- */
+ 
 static void rxrpc_abort_calls(struct rxrpc_connection *conn)
 {
 	struct rxrpc_call *call;
@@ -204,10 +188,7 @@ static void rxrpc_abort_calls(struct rxrpc_connection *conn)
 	_leave("");
 }
 
-/*
- * mark a call as being on a now-secured channel
- * - must be called with BH's disabled.
- */
+ 
 static void rxrpc_call_is_secure(struct rxrpc_call *call)
 {
 	if (call && __rxrpc_call_state(call) == RXRPC_CALL_SERVER_SECURING) {
@@ -216,9 +197,7 @@ static void rxrpc_call_is_secure(struct rxrpc_call *call)
 	}
 }
 
-/*
- * connection-level Rx packet processor
- */
+ 
 static int rxrpc_process_event(struct rxrpc_connection *conn,
 			       struct sk_buff *skb)
 {
@@ -250,10 +229,7 @@ static int rxrpc_process_event(struct rxrpc_connection *conn,
 		spin_unlock(&conn->state_lock);
 
 		if (conn->state == RXRPC_CONN_SERVICE) {
-			/* Offload call state flipping to the I/O thread.  As
-			 * we've already received the packet, put it on the
-			 * front of the queue.
-			 */
+			 
 			skb->mark = RXRPC_SKB_MARK_SERVICE_CONN_SECURED;
 			rxrpc_get_skb(skb, rxrpc_skb_get_conn_secured);
 			skb_queue_head(&conn->local->rx_queue, skb);
@@ -267,9 +243,7 @@ static int rxrpc_process_event(struct rxrpc_connection *conn,
 	}
 }
 
-/*
- * set up security and issue a challenge
- */
+ 
 static void rxrpc_secure_connection(struct rxrpc_connection *conn)
 {
 	if (conn->security->issue_challenge(conn) < 0)
@@ -277,9 +251,7 @@ static void rxrpc_secure_connection(struct rxrpc_connection *conn)
 				 rxrpc_abort_nomem);
 }
 
-/*
- * Process delayed final ACKs that we haven't subsumed into a subsequent call.
- */
+ 
 void rxrpc_process_delayed_final_acks(struct rxrpc_connection *conn, bool force)
 {
 	unsigned long j = jiffies, next_j;
@@ -317,9 +289,7 @@ again:
 		rxrpc_reduce_conn_timer(conn, next_j);
 }
 
-/*
- * connection-level event processor
- */
+ 
 static void rxrpc_do_process_connection(struct rxrpc_connection *conn)
 {
 	struct sk_buff *skb;
@@ -328,8 +298,7 @@ static void rxrpc_do_process_connection(struct rxrpc_connection *conn)
 	if (test_and_clear_bit(RXRPC_CONN_EV_CHALLENGE, &conn->events))
 		rxrpc_secure_connection(conn);
 
-	/* go through the conn-level event packets, releasing the ref on this
-	 * connection that each one has when we've finished with it */
+	 
 	while ((skb = skb_dequeue(&conn->rx_queue))) {
 		rxrpc_see_skb(skb, rxrpc_skb_see_conn_work);
 		ret = rxrpc_process_event(conn, skb);
@@ -359,11 +328,7 @@ void rxrpc_process_connection(struct work_struct *work)
 	}
 }
 
-/*
- * post connection-level events to the connection
- * - this includes challenges, responses, some aborts and call terminal packet
- *   retransmission.
- */
+ 
 static void rxrpc_post_packet_to_conn(struct rxrpc_connection *conn,
 				      struct sk_buff *skb)
 {
@@ -374,16 +339,14 @@ static void rxrpc_post_packet_to_conn(struct rxrpc_connection *conn,
 	rxrpc_queue_conn(conn, rxrpc_conn_queue_rx_work);
 }
 
-/*
- * Input a connection-level packet.
- */
+ 
 bool rxrpc_input_conn_packet(struct rxrpc_connection *conn, struct sk_buff *skb)
 {
 	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
 
 	switch (sp->hdr.type) {
 	case RXRPC_PACKET_TYPE_BUSY:
-		/* Just ignore BUSY packets for now. */
+		 
 		return true;
 
 	case RXRPC_PACKET_TYPE_ABORT:
@@ -409,9 +372,7 @@ bool rxrpc_input_conn_packet(struct rxrpc_connection *conn, struct sk_buff *skb)
 	}
 }
 
-/*
- * Input a connection event.
- */
+ 
 void rxrpc_input_conn_event(struct rxrpc_connection *conn, struct sk_buff *skb)
 {
 	unsigned int loop;
@@ -429,7 +390,7 @@ void rxrpc_input_conn_event(struct rxrpc_connection *conn, struct sk_buff *skb)
 		break;
 	}
 
-	/* Process delayed ACKs whose time has come. */
+	 
 	if (conn->flags & RXRPC_CONN_FINAL_ACK_MASK)
 		rxrpc_process_delayed_final_acks(conn, false);
 }

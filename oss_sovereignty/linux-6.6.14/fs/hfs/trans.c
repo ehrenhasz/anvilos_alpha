@@ -1,35 +1,13 @@
-/*
- *  linux/fs/hfs/trans.c
- *
- * Copyright (C) 1995-1997  Paul H. Hargrove
- * This file may be distributed under the terms of the GNU General Public License.
- *
- * This file contains routines for converting between the Macintosh
- * character set and various other encodings.  This includes dealing
- * with ':' vs. '/' as the path-element separator.
- */
+ 
 
 #include <linux/types.h>
 #include <linux/nls.h>
 
 #include "hfs_fs.h"
 
-/*================ Global functions ================*/
+ 
 
-/*
- * hfs_mac2asc()
- *
- * Given a 'Pascal String' (a string preceded by a length byte) in
- * the Macintosh character set produce the corresponding filename using
- * the 'trivial' name-mangling scheme, returning the length of the
- * mangled filename.  Note that the output string is not NULL
- * terminated.
- *
- * The name-mangling works as follows:
- * The character '/', which is illegal in Linux filenames is replaced
- * by ':' which never appears in HFS filenames.	 All other characters
- * are passed unchanged from input to output.
- */
+ 
 int hfs_mac2asc(struct super_block *sb, char *out, const struct hfs_name *in)
 {
 	struct nls_table *nls_disk = HFS_SB(sb)->nls_disk;
@@ -82,18 +60,7 @@ out:
 	return dst - out;
 }
 
-/*
- * hfs_asc2mac()
- *
- * Given an ASCII string (not null-terminated) and its length,
- * generate the corresponding filename in the Macintosh character set
- * using the 'trivial' name-mangling scheme, returning the length of
- * the mangled filename.  Note that the output string is not NULL
- * terminated.
- *
- * This routine is a inverse to hfs_mac2triv().
- * A ':' is replaced by a '/'.
- */
+ 
 void hfs_asc2mac(struct super_block *sb, struct hfs_name *out, const struct qstr *in)
 {
 	struct nls_table *nls_disk = HFS_SB(sb)->nls_disk;

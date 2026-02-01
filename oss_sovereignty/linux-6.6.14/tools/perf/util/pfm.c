@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for libpfm4 event encoding.
- *
- * Copyright 2020 Google LLC.
- */
+
+ 
 #include "util/cpumap.h"
 #include "util/debug.h"
 #include "util/event.h"
@@ -47,9 +43,7 @@ int parse_libpfm_events_option(const struct option *opt, const char *str,
 	p_orig = p = strdup(str);
 	if (!p)
 		return -1;
-	/*
-	 * force loading of the PMU list
-	 */
+	 
 	perf_pmus__scan(NULL);
 
 	for (q = p; strsep(&p, ",{}"); q = p) {
@@ -63,7 +57,7 @@ int parse_libpfm_events_option(const struct option *opt, const char *str,
 			grp_evt++;
 		}
 
-		/* no event */
+		 
 		if (*q == '\0') {
 			if (*sep == '}') {
 				if (grp_evt < 0) {
@@ -89,7 +83,7 @@ int parse_libpfm_events_option(const struct option *opt, const char *str,
 
 		pmu = perf_pmus__find_by_type((unsigned int)attr.type);
 		evsel = parse_events__add_event(evlist->core.nr_entries,
-						&attr, q, /*metric_id=*/NULL,
+						&attr, q,  NULL,
 						pmu);
 		if (evsel == NULL)
 			goto error;
@@ -139,7 +133,7 @@ static bool is_libpfm_event_supported(const char *name, struct perf_cpu_map *cpu
 		return false;
 
 	pmu = perf_pmus__find_by_type((unsigned int)attr.type);
-	evsel = parse_events__add_event(0, &attr, name, /*metric_id=*/NULL, pmu);
+	evsel = parse_events__add_event(0, &attr, name,  NULL, pmu);
 	if (evsel == NULL)
 		return false;
 
@@ -200,7 +194,7 @@ print_libpfm_event(const struct print_callbacks *print_cb, void *print_state,
 
 		src = srcs[ainfo.ctrl];
 		switch (ainfo.type) {
-		case PFM_ATTR_UMASK: /* Ignore for now */
+		case PFM_ATTR_UMASK:  
 			break;
 		case PFM_ATTR_MOD_BOOL:
 			strbuf_addf(buf, " Modif: %s: [%s] : %s (boolean)\n", src,
@@ -222,10 +216,10 @@ print_libpfm_event(const struct print_callbacks *print_cb, void *print_state,
 	if (is_libpfm_event_supported(name, cpus, threads)) {
 		print_cb->print_event(print_state, pinfo->name, topic,
 				      name, info->equiv,
-				      /*scale_unit=*/NULL,
-				      /*deprecated=*/NULL, "PFM event",
-				      info->desc, /*long_desc=*/NULL,
-				      /*encoding_desc=*/buf->buf);
+				       NULL,
+				       NULL, "PFM event",
+				      info->desc,  NULL,
+				       buf->buf);
 	}
 
 	pfm_for_each_event_attr(j, info) {
@@ -256,11 +250,11 @@ print_libpfm_event(const struct print_callbacks *print_cb, void *print_state,
 			print_cb->print_event(print_state,
 					pinfo->name,
 					topic,
-					name, /*alias=*/NULL,
-					/*scale_unit=*/NULL,
-					/*deprecated=*/NULL, "PFM event",
-					ainfo.desc, /*long_desc=*/NULL,
-					/*encoding_desc=*/buf->buf);
+					name,  NULL,
+					 NULL,
+					 NULL, "PFM event",
+					ainfo.desc,  NULL,
+					 buf->buf);
 		}
 	}
 
@@ -277,7 +271,7 @@ void print_libpfm_events(const struct print_callbacks *print_cb, void *print_sta
 
 	libpfm_initialize();
 
-	/* initialize to zero to indicate ABI version */
+	 
 	info.size  = sizeof(info);
 	pinfo.size = sizeof(pinfo);
 
@@ -288,11 +282,11 @@ void print_libpfm_events(const struct print_callbacks *print_cb, void *print_sta
 		if (ret != PFM_SUCCESS)
 			continue;
 
-		/* only print events that are supported by host HW */
+		 
 		if (!pinfo.is_present)
 			continue;
 
-		/* handled by perf directly */
+		 
 		if (pinfo.pmu == PFM_PMU_PERF_EVENT)
 			continue;
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/errno.h>
 #include <linux/ip.h>
 #include <linux/kernel.h>
@@ -52,9 +52,7 @@ static int ila_output(struct net *net, struct sock *sk, struct sk_buff *skb)
 					true);
 
 	if (rt->rt6i_flags & (RTF_GATEWAY | RTF_CACHE)) {
-		/* Already have a next hop address in route, no need for
-		 * dest cache route.
-		 */
+		 
 		return orig_dst->lwtstate->orig_output(net, sk, skb);
 	}
 
@@ -63,9 +61,7 @@ static int ila_output(struct net *net, struct sock *sk, struct sk_buff *skb)
 		struct ipv6hdr *ip6h = ipv6_hdr(skb);
 		struct flowi6 fl6;
 
-		/* Lookup a route for the new destination. Take into
-		 * account that the base route may already have a gateway.
-		 */
+		 
 
 		memset(&fl6, 0, sizeof(fl6));
 		fl6.flowi6_oif = orig_dst->dev->ifindex;
@@ -160,14 +156,10 @@ static int ila_build_state(struct net *net, struct nlattr *nla,
 		ident_type = nla_get_u8(tb[ILA_ATTR_IDENT_TYPE]);
 
 	if (ident_type == ILA_ATYPE_USE_FORMAT) {
-		/* Infer identifier type from type field in formatted
-		 * identifier.
-		 */
+		 
 
 		if (cfg6->fc_dst_len < 8 * sizeof(struct ila_locator) + 3) {
-			/* Need to have full locator and at least type field
-			 * included in destination
-			 */
+			 
 			return -EINVAL;
 		}
 
@@ -178,7 +170,7 @@ static int ila_build_state(struct net *net, struct nlattr *nla,
 
 	switch (eff_ident_type) {
 	case ILA_ATYPE_IID:
-		/* Don't allow ILA for IID type */
+		 
 		return -EINVAL;
 	case ILA_ATYPE_LUID:
 		break;
@@ -186,7 +178,7 @@ static int ila_build_state(struct net *net, struct nlattr *nla,
 	case ILA_ATYPE_VIRT_UNI_V6:
 	case ILA_ATYPE_VIRT_MULTI_V6:
 	case ILA_ATYPE_NONLOCAL_ADDR:
-		/* These ILA formats are not supported yet. */
+		 
 	default:
 		return -EINVAL;
 	}
@@ -210,9 +202,7 @@ static int ila_build_state(struct net *net, struct nlattr *nla,
 
 	if (csum_mode == ILA_CSUM_NEUTRAL_MAP &&
 	    ila_csum_neutral_set(iaddr->ident)) {
-		/* Don't allow translation if checksum neutral bit is
-		 * configured and it's set in the SIR address.
-		 */
+		 
 		return -EINVAL;
 	}
 
@@ -235,9 +225,7 @@ static int ila_build_state(struct net *net, struct nlattr *nla,
 	p->ident_type = ident_type;
 	p->locator.v64 = (__force __be64)nla_get_u64(tb[ILA_ATTR_LOCATOR]);
 
-	/* Precompute checksum difference for translation since we
-	 * know both the old locator and the new one.
-	 */
+	 
 	p->locator_match = iaddr->loc;
 
 	ila_init_saved_csum(p);
@@ -288,10 +276,10 @@ nla_put_failure:
 
 static int ila_encap_nlsize(struct lwtunnel_state *lwtstate)
 {
-	return nla_total_size_64bit(sizeof(u64)) + /* ILA_ATTR_LOCATOR */
-	       nla_total_size(sizeof(u8)) +        /* ILA_ATTR_CSUM_MODE */
-	       nla_total_size(sizeof(u8)) +        /* ILA_ATTR_IDENT_TYPE */
-	       nla_total_size(sizeof(u8)) +        /* ILA_ATTR_HOOK_TYPE */
+	return nla_total_size_64bit(sizeof(u64)) +  
+	       nla_total_size(sizeof(u8)) +         
+	       nla_total_size(sizeof(u8)) +         
+	       nla_total_size(sizeof(u8)) +         
 	       0;
 }
 

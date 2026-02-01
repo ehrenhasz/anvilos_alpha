@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _FS_CEPH_OSD_CLIENT_H
 #define _FS_CEPH_OSD_CLIENT_H
 
@@ -22,25 +22,18 @@ struct ceph_snap_context;
 struct ceph_osd_request;
 struct ceph_osd_client;
 
-/*
- * completion callback for async writepages
- */
+ 
 typedef void (*ceph_osdc_callback_t)(struct ceph_osd_request *);
 
 #define CEPH_HOMELESS_OSD	-1
 
-/*
- * A single extent in a SPARSE_READ reply.
- *
- * Note that these come from the OSD as little-endian values. On BE arches,
- * we convert them in-place after receipt.
- */
+ 
 struct ceph_sparse_extent {
 	u64	off;
 	u64	len;
 } __packed;
 
-/* Sparse read state machine state values */
+ 
 enum ceph_sparse_read_state {
 	CEPH_SPARSE_READ_HDR	= 0,
 	CEPH_SPARSE_READ_EXTENTS,
@@ -48,34 +41,20 @@ enum ceph_sparse_read_state {
 	CEPH_SPARSE_READ_DATA,
 };
 
-/*
- * A SPARSE_READ reply is a 32-bit count of extents, followed by an array of
- * 64-bit offset/length pairs, and then all of the actual file data
- * concatenated after it (sans holes).
- *
- * Unfortunately, we don't know how long the extent array is until we've
- * started reading the data section of the reply. The caller should send down
- * a destination buffer for the array, but we'll alloc one if it's too small
- * or if the caller doesn't.
- */
+ 
 struct ceph_sparse_read {
-	enum ceph_sparse_read_state	sr_state;    /* state machine state */
-	u64				sr_req_off;  /* orig request offset */
-	u64				sr_req_len;  /* orig request length */
-	u64				sr_pos;      /* current pos in buffer */
-	int				sr_index;    /* current extent index */
-	__le32				sr_datalen;  /* length of actual data */
-	u32				sr_count;    /* extent count in reply */
-	int				sr_ext_len;  /* length of extent array */
-	struct ceph_sparse_extent	*sr_extent;  /* extent array */
+	enum ceph_sparse_read_state	sr_state;     
+	u64				sr_req_off;   
+	u64				sr_req_len;   
+	u64				sr_pos;       
+	int				sr_index;     
+	__le32				sr_datalen;   
+	u32				sr_count;     
+	int				sr_ext_len;   
+	struct ceph_sparse_extent	*sr_extent;   
 };
 
-/*
- * A given osd we're communicating with.
- *
- * Note that the o_requests tree can be searched while holding the "lock" mutex
- * or the "o_requests_lock" spinlock. Insertion or removal requires both!
- */
+ 
 struct ceph_osd {
 	refcount_t o_ref;
 	int o_sparse_op_idx;
@@ -106,7 +85,7 @@ enum ceph_osd_data_type {
 	CEPH_OSD_DATA_TYPE_PAGELIST,
 #ifdef CONFIG_BLOCK
 	CEPH_OSD_DATA_TYPE_BIO,
-#endif /* CONFIG_BLOCK */
+#endif  
 	CEPH_OSD_DATA_TYPE_BVECS,
 	CEPH_OSD_DATA_TYPE_ITER,
 };
@@ -127,7 +106,7 @@ struct ceph_osd_data {
 			struct ceph_bio_iter	bio_pos;
 			u32			bio_length;
 		};
-#endif /* CONFIG_BLOCK */
+#endif  
 		struct {
 			struct ceph_bvec_iter	bvec_pos;
 			u32			num_bvecs;
@@ -137,10 +116,10 @@ struct ceph_osd_data {
 };
 
 struct ceph_osd_req_op {
-	u16 op;           /* CEPH_OSD_OP_* */
-	u32 flags;        /* CEPH_OSD_OP_FLAG_* */
-	u32 indata_len;   /* request */
-	u32 outdata_len;  /* reply */
+	u16 op;            
+	u32 flags;         
+	u32 indata_len;    
+	u32 outdata_len;   
 	s32 rval;
 
 	union {
@@ -156,8 +135,8 @@ struct ceph_osd_req_op {
 		struct {
 			u32 name_len;
 			u32 value_len;
-			__u8 cmp_op;       /* CEPH_OSD_CMPXATTR_OP_* */
-			__u8 cmp_mode;     /* CEPH_OSD_CMPXATTR_MODE_* */
+			__u8 cmp_op;        
+			__u8 cmp_mode;      
 			struct ceph_osd_data osd_data;
 		} xattr;
 		struct {
@@ -172,7 +151,7 @@ struct ceph_osd_req_op {
 		} cls;
 		struct {
 			u64 cookie;
-			__u8 op;           /* CEPH_OSD_WATCH_OP_ */
+			__u8 op;            
 			u32 gen;
 		} watch;
 		struct {
@@ -189,7 +168,7 @@ struct ceph_osd_req_op {
 		struct {
 			u64 expected_object_size;
 			u64 expected_write_size;
-			u32 flags;  /* CEPH_OSD_OP_ALLOC_HINT_FLAG_* */
+			u32 flags;   
 		} alloc_hint;
 		struct {
 			u64 snapid;
@@ -210,8 +189,8 @@ struct ceph_osd_request_target {
 	struct ceph_object_id target_oid;
 	struct ceph_object_locator target_oloc;
 
-	struct ceph_pg pgid;               /* last raw pg we mapped to */
-	struct ceph_spg spgid;             /* last actual spg we mapped to */
+	struct ceph_pg pgid;                
+	struct ceph_spg spgid;              
 	u32 pg_num;
 	u32 pg_num_mask;
 	struct ceph_osds acting;
@@ -221,7 +200,7 @@ struct ceph_osd_request_target {
 	bool sort_bitwise;
 	bool recovery_deletes;
 
-	unsigned int flags;                /* CEPH_OSD_FLAG_* */
+	unsigned int flags;                 
 	bool used_replica;
 	bool paused;
 
@@ -231,11 +210,11 @@ struct ceph_osd_request_target {
 	int osd;
 };
 
-/* an in-flight request */
+ 
 struct ceph_osd_request {
-	u64             r_tid;              /* unique for this client */
+	u64             r_tid;               
 	struct rb_node  r_node;
-	struct rb_node  r_mc_node;          /* map check */
+	struct rb_node  r_mc_node;           
 	struct work_struct r_complete_work;
 	struct ceph_osd *r_osd;
 
@@ -245,9 +224,9 @@ struct ceph_osd_request {
 #define r_flags		r_t.flags
 
 	struct ceph_msg  *r_request, *r_reply;
-	u32               r_sent;      /* >0 if r_request is sending/sent */
+	u32               r_sent;       
 
-	/* request osd ops array  */
+	 
 	unsigned int		r_num_ops;
 
 	int               r_result;
@@ -255,26 +234,26 @@ struct ceph_osd_request {
 	struct ceph_osd_client *r_osdc;
 	struct kref       r_kref;
 	bool              r_mempool;
-	bool		  r_linger;           /* don't resend on failure */
-	struct completion r_completion;       /* private to osd_client.c */
+	bool		  r_linger;            
+	struct completion r_completion;        
 	ceph_osdc_callback_t r_callback;
 
-	struct inode *r_inode;         	      /* for use by callbacks */
-	struct list_head r_private_item;      /* ditto */
-	void *r_priv;			      /* ditto */
+	struct inode *r_inode;         	       
+	struct list_head r_private_item;       
+	void *r_priv;			       
 
-	/* set by submitter */
-	u64 r_snapid;                         /* for reads, CEPH_NOSNAP o/w */
-	struct ceph_snap_context *r_snapc;    /* for writes */
-	struct timespec64 r_mtime;            /* ditto */
-	u64 r_data_offset;                    /* ditto */
+	 
+	u64 r_snapid;                          
+	struct ceph_snap_context *r_snapc;     
+	struct timespec64 r_mtime;             
+	u64 r_data_offset;                     
 
-	/* internal */
-	u64 r_version;			      /* data version sent in reply */
-	unsigned long r_stamp;                /* jiffies, send or check time */
-	unsigned long r_start_stamp;          /* jiffies */
-	ktime_t r_start_latency;              /* ktime_t */
-	ktime_t r_end_latency;                /* ktime_t */
+	 
+	u64 r_version;			       
+	unsigned long r_stamp;                 
+	unsigned long r_start_stamp;           
+	ktime_t r_start_latency;               
+	ktime_t r_end_latency;                 
 	int r_attempts;
 	u32 r_map_dne_bound;
 
@@ -285,11 +264,7 @@ struct ceph_request_redirect {
 	struct ceph_object_locator oloc;
 };
 
-/*
- * osd request identifier
- *
- * caller name + incarnation# + tid to unique identify this request
- */
+ 
 struct ceph_osd_reqid {
 	struct ceph_entity_name name;
 	__le64 tid;
@@ -310,7 +285,7 @@ struct ceph_osd_linger_request {
 	struct ceph_osd_client *osdc;
 	u64 linger_id;
 	bool committed;
-	bool is_watch;                  /* watch or notify */
+	bool is_watch;                   
 
 	struct ceph_osd *osd;
 	struct ceph_osd_request *reg_req;
@@ -326,9 +301,9 @@ struct ceph_osd_linger_request {
 
 	struct kref kref;
 	struct mutex lock;
-	struct rb_node node;            /* osd */
-	struct rb_node osdc_node;       /* osdc */
-	struct rb_node mc_node;         /* map check */
+	struct rb_node node;             
+	struct rb_node osdc_node;        
+	struct rb_node mc_node;          
 	struct list_head scan_item;
 
 	struct completion reg_commit_wait;
@@ -376,7 +351,7 @@ struct ceph_hobject_id {
 	size_t nspace_len;
 	s64 pool;
 
-	/* cache */
+	 
 	u32 hash_reverse_bits;
 };
 
@@ -385,10 +360,7 @@ static inline void ceph_hoid_build_hash_cache(struct ceph_hobject_id *hoid)
 	hoid->hash_reverse_bits = bitrev32(hoid->hash);
 }
 
-/*
- * PG-wide backoff: [begin, end)
- * per-object backoff: begin == end
- */
+ 
 struct ceph_osd_backoff {
 	struct rb_node spg_node;
 	struct rb_node id_node;
@@ -404,17 +376,17 @@ struct ceph_osd_backoff {
 struct ceph_osd_client {
 	struct ceph_client     *client;
 
-	struct ceph_osdmap     *osdmap;       /* current map */
+	struct ceph_osdmap     *osdmap;        
 	struct rw_semaphore    lock;
 
-	struct rb_root         osds;          /* osds */
-	struct list_head       osd_lru;       /* idle osds */
+	struct rb_root         osds;           
+	struct list_head       osd_lru;        
 	spinlock_t             osd_lru_lock;
 	u32		       epoch_barrier;
 	struct ceph_osd        homeless_osd;
-	atomic64_t             last_tid;      /* tid of last request */
+	atomic64_t             last_tid;       
 	u64                    last_linger_id;
-	struct rb_root         linger_requests; /* lingering requests */
+	struct rb_root         linger_requests;  
 	struct rb_root         map_checks;
 	struct rb_root         linger_map_checks;
 	atomic_t               num_requests;
@@ -499,7 +471,7 @@ void osd_req_op_extent_osd_data_bio(struct ceph_osd_request *osd_req,
 				    unsigned int which,
 				    struct ceph_bio_iter *bio_pos,
 				    u32 bio_length);
-#endif /* CONFIG_BLOCK */
+#endif  
 void osd_req_op_extent_osd_data_bvecs(struct ceph_osd_request *osd_req,
 				      unsigned int which,
 				      struct bio_vec *bvecs, u32 num_bvecs,
@@ -565,11 +537,7 @@ extern struct ceph_osd_request *ceph_osdc_new_request(struct ceph_osd_client *,
 
 int __ceph_alloc_sparse_ext_map(struct ceph_osd_req_op *op, int cnt);
 
-/*
- * How big an extent array should we preallocate for a sparse read? This is
- * just a starting value.  If we get more than this back from the OSD, the
- * receiver will reallocate.
- */
+ 
 #define CEPH_SPARSE_EXT_ARRAY_INITIAL  16
 
 static inline int ceph_alloc_sparse_ext_map(struct ceph_osd_req_op *op)
@@ -598,7 +566,7 @@ int ceph_osdc_call(struct ceph_osd_client *osdc,
 		   struct page *req_page, size_t req_len,
 		   struct page **resp_pages, size_t *resp_len);
 
-/* watch/notify */
+ 
 struct ceph_osd_linger_request *
 ceph_osdc_watch(struct ceph_osd_client *osdc,
 		struct ceph_object_id *oid,
@@ -632,12 +600,12 @@ int ceph_osdc_list_watchers(struct ceph_osd_client *osdc,
 			    struct ceph_watch_item **watchers,
 			    u32 *num_watchers);
 
-/* Find offset into the buffer of the end of the extent map */
+ 
 static inline u64 ceph_sparse_ext_map_end(struct ceph_osd_req_op *op)
 {
 	struct ceph_sparse_extent *ext;
 
-	/* No extents? No data */
+	 
 	if (op->extent.sparse_ext_cnt == 0)
 		return 0;
 

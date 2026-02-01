@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2013-2015, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/etherdevice.h>
 #include <rdma/ib_umem.h>
@@ -67,7 +37,7 @@ enum {
 struct mlx5_modify_raw_qp_param {
 	u16 operation;
 
-	u32 set_mask; /* raw_qp_set_mask_map */
+	u32 set_mask;  
 
 	struct mlx5_rate_limit rl;
 
@@ -97,25 +67,7 @@ static int is_sqp(enum ib_qp_type qp_type)
 	return is_qp0(qp_type) || is_qp1(qp_type);
 }
 
-/**
- * mlx5_ib_read_user_wqe_common() - Copy a WQE (or part of) from user WQ
- * to kernel buffer
- *
- * @umem: User space memory where the WQ is
- * @buffer: buffer to copy to
- * @buflen: buffer length
- * @wqe_index: index of WQE to copy from
- * @wq_offset: offset to start of WQ
- * @wq_wqe_cnt: number of WQEs in WQ
- * @wq_wqe_shift: log2 of WQE size
- * @bcnt: number of bytes to copy
- * @bytes_copied: number of bytes to copy (return value)
- *
- * Copies from start of WQE bcnt or less bytes.
- * Does not gurantee to copy the entire WQE.
- *
- * Return: zero on success, or an error code.
- */
+ 
 static int mlx5_ib_read_user_wqe_common(struct ib_umem *umem, void *buffer,
 					size_t buflen, int wqe_index,
 					int wq_offset, int wq_wqe_cnt,
@@ -127,9 +79,7 @@ static int mlx5_ib_read_user_wqe_common(struct ib_umem *umem, void *buffer,
 	size_t copy_length;
 	int ret;
 
-	/* don't copy more than requested, more than buffer length or
-	 * beyond WQ end
-	 */
+	 
 	copy_length = min_t(u32, buflen, wq_end - offset);
 	copy_length = min_t(u32, copy_length, bcnt);
 
@@ -154,13 +104,13 @@ static int mlx5_ib_read_kernel_wqe_sq(struct mlx5_ib_qp *qp, int wqe_index,
 
 	wqe_index = wqe_index & qp->sq.fbc.sz_m1;
 
-	/* read the control segment first */
+	 
 	p = mlx5_frag_buf_get_wqe(&qp->sq.fbc, wqe_index);
 	ctrl = p;
 	ds = be32_to_cpu(ctrl->qpn_ds) & MLX5_WQE_CTRL_DS_MASK;
 	wqe_length = ds * MLX5_WQE_DS_UNITS;
 
-	/* read rest of WQE if it spreads over more than one stride */
+	 
 	while (bytes_copied < wqe_length) {
 		size_t copy_length =
 			min_t(size_t, buflen - bytes_copied, MLX5_SEND_WQE_BB);
@@ -191,7 +141,7 @@ static int mlx5_ib_read_user_wqe_sq(struct mlx5_ib_qp *qp, int wqe_index,
 	int ret;
 	int ds;
 
-	/* at first read as much as possible */
+	 
 	ret = mlx5_ib_read_user_wqe_common(umem, buffer, buflen, wqe_index,
 					   wq->offset, wq->wqe_cnt,
 					   wq->wqe_shift, buflen,
@@ -199,7 +149,7 @@ static int mlx5_ib_read_user_wqe_sq(struct mlx5_ib_qp *qp, int wqe_index,
 	if (ret)
 		return ret;
 
-	/* we need at least control segment size to proceed */
+	 
 	if (bytes_copied < sizeof(*ctrl))
 		return -EINVAL;
 
@@ -207,16 +157,13 @@ static int mlx5_ib_read_user_wqe_sq(struct mlx5_ib_qp *qp, int wqe_index,
 	ds = be32_to_cpu(ctrl->qpn_ds) & MLX5_WQE_CTRL_DS_MASK;
 	wqe_length = ds * MLX5_WQE_DS_UNITS;
 
-	/* if we copied enough then we are done */
+	 
 	if (bytes_copied >= wqe_length) {
 		*bc = bytes_copied;
 		return 0;
 	}
 
-	/* otherwise this a wrapped around wqe
-	 * so read the remaining bytes starting
-	 * from  wqe_index 0
-	 */
+	 
 	ret = mlx5_ib_read_user_wqe_common(umem, buffer + bytes_copied,
 					   buflen - bytes_copied, 0, wq->offset,
 					   wq->wqe_cnt, wq->wqe_shift,
@@ -409,7 +356,7 @@ static void mlx5_ib_qp_event(struct mlx5_core_qp *qp, int type)
 	struct mlx5_ib_qp_event_work *qpe_work;
 
 	if (type == MLX5_EVENT_TYPE_PATH_MIG) {
-		/* This event is only valid for trans_qps */
+		 
 		to_mibqp(qp)->port = to_mibqp(qp)->trans_qp.alt_port;
 	}
 
@@ -436,7 +383,7 @@ static int set_rq_size(struct mlx5_ib_dev *dev, struct ib_qp_cap *cap,
 	int wqe_size;
 	int wq_size;
 
-	/* Sanity check RQ size before proceeding */
+	 
 	if (cap->max_recv_wr > (1 << MLX5_CAP_GEN(dev->mdev, log_max_qp_sz)))
 		return -EINVAL;
 
@@ -686,11 +633,7 @@ static int qp_has_rq(struct ib_qp_init_attr *attr)
 }
 
 enum {
-	/* this is the first blue flame register in the array of bfregs assigned
-	 * to a processes. Since we do not use it for blue flame but rather
-	 * regular 64 bit doorbells, we do not need a lock for maintaiing
-	 * "odd/even" order
-	 */
+	 
 	NUM_NON_BLUE_FLAME_BFREGS = 1,
 };
 
@@ -1071,20 +1014,17 @@ static void destroy_qp(struct mlx5_ib_dev *dev, struct mlx5_ib_qp *qp,
 		udata, struct mlx5_ib_ucontext, ibucontext);
 
 	if (udata) {
-		/* User QP */
+		 
 		mlx5_ib_db_unmap_user(context, &qp->db);
 		ib_umem_release(base->ubuffer.umem);
 
-		/*
-		 * Free only the BFREGs which are handled by the kernel.
-		 * BFREGs of UARs allocated dynamically are handled by user.
-		 */
+		 
 		if (qp->bfregn != MLX5_IB_INVALID_BFREG)
 			mlx5_ib_free_bfreg(dev, &context->bfregi, qp->bfregn);
 		return;
 	}
 
-	/* Kernel QP */
+	 
 	kvfree(qp->sq.wqe_head);
 	kvfree(qp->sq.w_list);
 	kvfree(qp->sq.wrid);
@@ -1112,9 +1052,7 @@ static int _create_kernel_qp(struct mlx5_ib_dev *dev,
 	else
 		qp->bf.bfreg = &dev->bfreg;
 
-	/* We need to divide by two since each register is comprised of
-	 * two buffers of identical size, namely odd and even
-	 */
+	 
 	qp->bf.buf_size = (1 << MLX5_CAP_GEN(dev->mdev, log_bf_reg_size)) / 2;
 	uar_index = qp->bf.bfreg->index;
 
@@ -1164,7 +1102,7 @@ static int _create_kernel_qp(struct mlx5_ib_dev *dev,
 	MLX5_SET(qpc, qpc, ts_format, mlx5_get_qp_default_ts(dev->mdev));
 	MLX5_SET(qpc, qpc, log_page_size, qp->buf.page_shift - MLX5_ADAPTER_PAGE_SHIFT);
 
-	/* Set "fast registration enabled" for all kernel QPs */
+	 
 	MLX5_SET(qpc, qpc, fre, 1);
 	MLX5_SET(qpc, qpc, rlky, 1);
 
@@ -1801,7 +1739,7 @@ static int create_rss_raw_qp_tir(struct mlx5_ib_dev *dev, struct ib_pd *pd,
 	}
 
 	if (!ucmd->rx_hash_fields_mask) {
-		/* special case when this TIR serves as steering entry without hashing */
+		 
 		if (!init_attr->rwq_ind_tbl->log_ind_tbl_size)
 			goto create_tir;
 		err = -EINVAL;
@@ -1816,7 +1754,7 @@ static int create_rss_raw_qp_tir(struct mlx5_ib_dev *dev, struct ib_pd *pd,
 		goto err;
 	}
 
-	/* If none of IPV4 & IPV6 SRC/DST was set - this bit field is ignored */
+	 
 	if ((ucmd->rx_hash_fields_mask & MLX5_RX_HASH_SRC_IPV4) ||
 	    (ucmd->rx_hash_fields_mask & MLX5_RX_HASH_DST_IPV4))
 		MLX5_SET(rx_hash_field_select, hfso, l3_prot_type,
@@ -1834,13 +1772,13 @@ static int create_rss_raw_qp_tir(struct mlx5_ib_dev *dev, struct ib_pd *pd,
 			   << 1 |
 		   (ucmd->rx_hash_fields_mask & MLX5_RX_HASH_IPSEC_SPI) << 2;
 
-	/* Check that only one l4 protocol is set */
+	 
 	if (outer_l4 & (outer_l4 - 1)) {
 		err = -EINVAL;
 		goto err;
 	}
 
-	/* If none of TCP & UDP SRC/DST was set - this bit field is ignored */
+	 
 	if ((ucmd->rx_hash_fields_mask & MLX5_RX_HASH_SRC_PORT_TCP) ||
 	    (ucmd->rx_hash_fields_mask & MLX5_RX_HASH_DST_PORT_TCP))
 		MLX5_SET(rx_hash_field_select, hfso, l4_prot_type,
@@ -1908,7 +1846,7 @@ create_tir:
 	}
 
 	kvfree(in);
-	/* qpn is reserved for that QP */
+	 
 	qp->trans_qp.base.mqp.qpn = 0;
 	qp->is_rss = true;
 	return 0;
@@ -1944,9 +1882,7 @@ static void configure_requester_scat_cqe(struct mlx5_ib_dev *dev,
 
 static int atomic_size_to_mode(int size_mask)
 {
-	/* driver does not support atomic_size > 256B
-	 * and does not know how to translate bigger sizes
-	 */
+	 
 	int supported_size_mask = size_mask & 0x1ff;
 	int log_max_size;
 
@@ -2035,14 +1971,14 @@ static int create_xrc_tgt_qp(struct mlx5_ib_dev *dev, struct mlx5_ib_qp *qp,
 	MLX5_SET(qpc, qpc, xrcd, to_mxrcd(attr->xrcd)->xrcdn);
 	MLX5_SET64(qpc, qpc, dbr_addr, qp->db.dma);
 
-	/* 0xffffff means we ask to work with cqe version 0 */
+	 
 	if (MLX5_CAP_GEN(mdev, cqe_version) == MLX5_CQE_VERSION_V1)
 		MLX5_SET(qpc, qpc, user_index, uidx);
 
 	if (qp->flags & IB_QP_CREATE_PCI_WRITE_END_PADDING) {
 		MLX5_SET(qpc, qpc, end_padding_mode,
 			 MLX5_WQ_END_PAD_MODE_ALIGN);
-		/* Special case to clean flag */
+		 
 		qp->flags &= ~IB_QP_CREATE_PCI_WRITE_END_PADDING;
 	}
 
@@ -2159,7 +2095,7 @@ static int create_dci(struct mlx5_ib_dev *dev, struct ib_pd *pd,
 
 	MLX5_SET(qpc, qpc, log_sq_size, ilog2(qp->sq.wqe_cnt));
 
-	/* Set default resources */
+	 
 	if (init_attr->srq) {
 		MLX5_SET(qpc, qpc, xrcd, devr->xrcdn0);
 		MLX5_SET(qpc, qpc, srqn_rmpn_xrqn,
@@ -2180,14 +2116,14 @@ static int create_dci(struct mlx5_ib_dev *dev, struct ib_pd *pd,
 
 	MLX5_SET64(qpc, qpc, dbr_addr, qp->db.dma);
 
-	/* 0xffffff means we ask to work with cqe version 0 */
+	 
 	if (MLX5_CAP_GEN(mdev, cqe_version) == MLX5_CQE_VERSION_V1)
 		MLX5_SET(qpc, qpc, user_index, uidx);
 
 	if (qp->flags & IB_QP_CREATE_PCI_WRITE_END_PADDING) {
 		MLX5_SET(qpc, qpc, end_padding_mode,
 			 MLX5_WQ_END_PAD_MODE_ALIGN);
-		/* Special case to clean flag */
+		 
 		qp->flags &= ~IB_QP_CREATE_PCI_WRITE_END_PADDING;
 	}
 
@@ -2206,12 +2142,9 @@ static int create_dci(struct mlx5_ib_dev *dev, struct ib_pd *pd,
 		&send_cq, &recv_cq);
 	spin_lock_irqsave(&dev->reset_flow_resource_lock, flags);
 	mlx5_ib_lock_cqs(send_cq, recv_cq);
-	/* Maintain device to QPs access, needed for further handling via reset
-	 * flow
-	 */
+	 
 	list_add_tail(&qp->qps_list, &dev->qp_list);
-	/* Maintain CQ to QPs access, needed for further handling via reset flow
-	 */
+	 
 	if (send_cq)
 		list_add_tail(&qp->cq_send_list, &send_cq->list_send_qp);
 	if (recv_cq)
@@ -2350,7 +2283,7 @@ static int create_user_qp(struct mlx5_ib_dev *dev, struct ib_pd *pd,
 				 MLX5_QPC_OFFLOAD_TYPE_RNDV);
 	}
 
-	/* Set default resources */
+	 
 	switch (init_attr->qp_type) {
 	case IB_QPT_XRC_INI:
 		MLX5_SET(qpc, qpc, cqn_rcv, to_mcq(devr->c0)->mcq.cqn);
@@ -2375,7 +2308,7 @@ static int create_user_qp(struct mlx5_ib_dev *dev, struct ib_pd *pd,
 
 	MLX5_SET64(qpc, qpc, dbr_addr, qp->db.dma);
 
-	/* 0xffffff means we ask to work with cqe version 0 */
+	 
 	if (MLX5_CAP_GEN(mdev, cqe_version) == MLX5_CQE_VERSION_V1)
 		MLX5_SET(qpc, qpc, user_index, uidx);
 
@@ -2383,7 +2316,7 @@ static int create_user_qp(struct mlx5_ib_dev *dev, struct ib_pd *pd,
 	    init_attr->qp_type != IB_QPT_RAW_PACKET) {
 		MLX5_SET(qpc, qpc, end_padding_mode,
 			 MLX5_WQ_END_PAD_MODE_ALIGN);
-		/* Special case to clean flag */
+		 
 		qp->flags &= ~IB_QP_CREATE_PCI_WRITE_END_PADDING;
 	}
 
@@ -2409,12 +2342,9 @@ static int create_user_qp(struct mlx5_ib_dev *dev, struct ib_pd *pd,
 		&send_cq, &recv_cq);
 	spin_lock_irqsave(&dev->reset_flow_resource_lock, flags);
 	mlx5_ib_lock_cqs(send_cq, recv_cq);
-	/* Maintain device to QPs access, needed for further handling via reset
-	 * flow
-	 */
+	 
 	list_add_tail(&qp->qps_list, &dev->qp_list);
-	/* Maintain CQ to QPs access, needed for further handling via reset flow
-	 */
+	 
 	if (send_cq)
 		list_add_tail(&qp->cq_send_list, &send_cq->list_send_qp);
 	if (recv_cq)
@@ -2518,11 +2448,11 @@ static int create_kernel_qp(struct mlx5_ib_dev *dev, struct ib_pd *pd,
 
 	MLX5_SET64(qpc, qpc, dbr_addr, qp->db.dma);
 
-	/* 0xffffff means we ask to work with cqe version 0 */
+	 
 	if (MLX5_CAP_GEN(mdev, cqe_version) == MLX5_CQE_VERSION_V1)
 		MLX5_SET(qpc, qpc, user_index, uidx);
 
-	/* we use IB_QP_CREATE_IPOIB_UD_LSO to indicates ipoib qp */
+	 
 	if (qp->flags & IB_QP_CREATE_IPOIB_UD_LSO)
 		MLX5_SET(qpc, qpc, ulp_stateless_offload_mode, 1);
 
@@ -2542,12 +2472,9 @@ static int create_kernel_qp(struct mlx5_ib_dev *dev, struct ib_pd *pd,
 		&send_cq, &recv_cq);
 	spin_lock_irqsave(&dev->reset_flow_resource_lock, flags);
 	mlx5_ib_lock_cqs(send_cq, recv_cq);
-	/* Maintain device to QPs access, needed for further handling via reset
-	 * flow
-	 */
+	 
 	list_add_tail(&qp->qps_list, &dev->qp_list);
-	/* Maintain CQ to QPs access, needed for further handling via reset flow
-	 */
+	 
 	if (send_cq)
 		list_add_tail(&qp->cq_send_list, &send_cq->list_send_qp);
 	if (recv_cq)
@@ -2695,7 +2622,7 @@ static void destroy_qp_common(struct mlx5_ib_dev *dev, struct mlx5_ib_qp *qp,
 
 	spin_lock_irqsave(&dev->reset_flow_resource_lock, flags);
 	mlx5_ib_lock_cqs(send_cq, recv_cq);
-	/* del from lists under both locks above to protect reset flow paths */
+	 
 	list_del(&qp->qps_list);
 	if (send_cq)
 		list_del(&qp->cq_send_list);
@@ -2805,7 +2732,7 @@ static int check_valid_flow(struct mlx5_ib_dev *dev, struct ib_pd *pd,
 		udata, struct mlx5_ib_ucontext, ibucontext);
 
 	if (!udata) {
-		/* Kernel create_qp callers */
+		 
 		if (attr->rwq_ind_tbl)
 			return -EOPNOTSUPP;
 
@@ -2818,7 +2745,7 @@ static int check_valid_flow(struct mlx5_ib_dev *dev, struct ib_pd *pd,
 		}
 	}
 
-	/* Userspace create_qp callers */
+	 
 	if (attr->qp_type == IB_QPT_RAW_PACKET && !ucontext->cqe_version) {
 		mlx5_ib_dbg(dev,
 			"Raw Packet QP is only supported for CQE version > 0\n");
@@ -2832,10 +2759,7 @@ static int check_valid_flow(struct mlx5_ib_dev *dev, struct ib_pd *pd,
 		return -EINVAL;
 	}
 
-	/*
-	 * We don't need to see this warning, it means that kernel code
-	 * missing ib_pd. Placed here to catch developer's mistakes.
-	 */
+	 
 	WARN_ONCE(!pd && attr->qp_type != IB_QPT_XRC_TGT,
 		  "There is a missing PD pointer assignment\n");
 	return 0;
@@ -2856,10 +2780,7 @@ static void process_vendor_flag(struct mlx5_ib_dev *dev, int *flags, int flag,
 	switch (flag) {
 	case MLX5_QP_FLAG_SCATTER_CQE:
 	case MLX5_QP_FLAG_ALLOW_SCATTER_CQE:
-		/*
-		 * We don't return error if these flags were provided,
-		 * and mlx5 doesn't have right capability.
-		 */
+		 
 		*flags &= ~(MLX5_QP_FLAG_SCATTER_CQE |
 			    MLX5_QP_FLAG_ALLOW_SCATTER_CQE);
 		return;
@@ -2891,10 +2812,7 @@ static int process_vendor_flags(struct mlx5_ib_dev *dev, struct mlx5_ib_qp *qp,
 	default:
 		if (qp->type != IB_QPT_DRIVER)
 			break;
-		/*
-		 * It is IB_QPT_DRIVER and or no subtype or
-		 * wrong subtype were provided.
-		 */
+		 
 		return -EINVAL;
 	}
 
@@ -2960,10 +2878,7 @@ static void process_create_flag(struct mlx5_ib_dev *dev, int *flags, int flag,
 	}
 
 	if (flag == MLX5_IB_QP_CREATE_WC_TEST) {
-		/*
-		 * Special case, if condition didn't meet, it won't be error,
-		 * just different in-kernel flow.
-		 */
+		 
 		*flags &= ~MLX5_IB_QP_CREATE_WC_TEST;
 		return;
 	}
@@ -3051,19 +2966,16 @@ static int process_udata_size(struct mlx5_ib_dev *dev,
 	params->outlen = min(outlen, sizeof(struct mlx5_ib_create_qp_resp));
 	params->ucmd_size = ucmd;
 	if (!params->is_rss_raw) {
-		/* User has old rdma-core, which doesn't support ECE */
+		 
 		size_t min_inlen =
 			offsetof(struct mlx5_ib_create_qp, ece_options);
 
-		/*
-		 * We will check in check_ucmd_data() that user
-		 * cleared everything after inlen.
-		 */
+		 
 		params->inlen = (inlen < min_inlen) ? 0 : min(inlen, ucmd);
 		goto out;
 	}
 
-	/* RSS RAW QP */
+	 
 	if (inlen < offsetofend(struct mlx5_ib_create_qp_rss, flags))
 		return -EINVAL;
 
@@ -3211,10 +3123,7 @@ static int check_ucmd_data(struct mlx5_ib_dev *dev,
 	int ret;
 
 	if (params->is_rss_raw)
-		/*
-		 * These QPs don't have "reserved" field in their
-		 * create_qp input struct, so their data is always valid.
-		 */
+		 
 		last = sizeof(struct mlx5_ib_create_qp_rss);
 	else
 		last = offsetof(struct mlx5_ib_create_qp, reserved);
@@ -3222,11 +3131,7 @@ static int check_ucmd_data(struct mlx5_ib_dev *dev,
 	if (udata->inlen <= last)
 		return 0;
 
-	/*
-	 * User provides different create_qp structures based on the
-	 * flow and we need to know if he cleared memory after our
-	 * struct create_qp ends.
-	 */
+	 
 	size = udata->inlen - last;
 	ret = ib_is_udata_cleared(params->udata, last, size);
 	if (!ret)
@@ -3305,11 +3210,7 @@ int mlx5_ib_create_qp(struct ib_qp *ibqp, struct ib_qp_init_attr *attr,
 	params.ucmd = NULL;
 
 	if (udata)
-		/*
-		 * It is safe to copy response for all user create QP flows,
-		 * including MLX5_IB_QPT_DCT, which doesn't need it.
-		 * In that case, resp will be filled with zeros.
-		 */
+		 
 		err = ib_copy_to_udata(udata, &params.resp, params.outlen);
 	if (err)
 		goto destroy_qp;

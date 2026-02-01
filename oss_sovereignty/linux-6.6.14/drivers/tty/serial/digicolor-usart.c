@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  Driver for Conexant Digicolor serial ports (USART)
- *
- * Author: Baruch Siach <baruch@tkos.co.il>
- *
- * Copyright (C) 2014 Paradox Innovation Ltd.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/console.h>
@@ -65,13 +59,7 @@
 
 #define DIGICOLOR_USART_NR		3
 
-/*
- * We use the 16 bytes hardware FIFO to buffer Rx traffic. Rx interrupt is
- * only produced when the FIFO is filled more than a certain configurable
- * threshold. Unfortunately, there is no way to set this threshold below half
- * FIFO. This means that we must periodically poll the FIFO status register to
- * see whether there are waiting Rx bytes.
- */
+ 
 
 struct digicolor_port {
 	struct uart_port port;
@@ -123,7 +111,7 @@ static void digicolor_rx_poll(struct work_struct *work)
 			     struct digicolor_port, rx_poll_work);
 
 	if (!digicolor_uart_rx_empty(&dp->port))
-		/* force RX interrupt */
+		 
 		writeb_relaxed(UA_INT_RX, dp->port.membase + UA_INTFLAG_SET);
 
 	schedule_delayed_work(&dp->rx_poll_work, msecs_to_jiffies(100));
@@ -291,11 +279,11 @@ static void digicolor_uart_set_termios(struct uart_port *port,
 	u8 config = 0;
 	unsigned long flags;
 
-	/* Mask termios capabilities we don't support */
+	 
 	termios->c_cflag &= ~CMSPAR;
 	termios->c_iflag &= ~(BRKINT | IGNBRK);
 
-	/* Limit baud rates so that we don't need the fractional divider */
+	 
 	baud = uart_get_baud_rate(port, termios, old,
 				  port->uartclk / (0x10000*16),
 				  port->uartclk / 256);
@@ -321,13 +309,13 @@ static void digicolor_uart_set_termios(struct uart_port *port,
 			config |= UA_CONFIG_ODD_PARITY;
 	}
 
-	/* Set read status mask */
+	 
 	port->read_status_mask = UA_STATUS_OVERRUN_ERR;
 	if (termios->c_iflag & INPCK)
 		port->read_status_mask |= UA_STATUS_PARITY_ERR
 			| UA_STATUS_FRAME_ERR;
 
-	/* Set status ignore mask */
+	 
 	port->ignore_status_mask = 0;
 	if (!(termios->c_cflag & CREAD))
 		port->ignore_status_mask |= UA_STATUS_OVERRUN_ERR
@@ -407,7 +395,7 @@ static void digicolor_uart_console_write(struct console *co, const char *c,
 	if (locked)
 		spin_unlock_irqrestore(&port->lock, flags);
 
-	/* Wait for transmitter to become empty */
+	 
 	do {
 		status = readb_relaxed(port->membase + UA_STATUS);
 	} while ((status & UA_STATUS_TX_READY) == 0);

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019 Hammerspace Inc
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kobject.h>
@@ -84,7 +82,7 @@ static ssize_t nfs_netns_identifier_show(struct kobject *kobj,
 	return ret;
 }
 
-/* Strip trailing '\n' */
+ 
 static size_t nfs_string_strip(const char *c, size_t len)
 {
 	while (len > 0 && c[len-1] == '\n')
@@ -253,7 +251,7 @@ shutdown_store(struct kobject *kobj, struct kobj_attribute *attr,
 	if (val != 1)
 		return -EINVAL;
 
-	/* already shut down? */
+	 
 	if (server->flags & NFS_MOUNT_SHUTDOWN)
 		goto out;
 
@@ -294,7 +292,7 @@ EXPORT_SYMBOL_GPL(nfs_sysfs_link_rpc_client);
 
 static void nfs_sysfs_sb_release(struct kobject *kobj)
 {
-	/* no-op: why? see lib/kobject.c kobject_cleanup() */
+	 
 }
 
 static const void *nfs_netns_server_namespace(const struct kobject *kobj)
@@ -354,7 +352,7 @@ void nfs_sysfs_move_sb_to_server(struct nfs_server *server)
 					server->kobj.name, ret);
 }
 
-/* unlink, not dec-ref */
+ 
 void nfs_sysfs_remove_server(struct nfs_server *server)
 {
 	kobject_del(&server->kobj);

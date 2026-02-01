@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * HWMON Driver for Dialog DA9052
- *
- * Copyright(c) 2012 Dialog Semiconductor Ltd.
- *
- * Author: David Dajun Chen <dchen@diasemi.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/hwmon.h>
@@ -46,19 +40,19 @@ static const char * const input_names[] = {
 	[DA9052_ADC_VBBAT]	=	"BACK-UP BATTERY VOLTAGE",
 };
 
-/* Conversion function for VDDOUT and VBAT */
+ 
 static inline int volt_reg_to_mv(int value)
 {
 	return DIV_ROUND_CLOSEST(value * 2000, 1023) + 2500;
 }
 
-/* Conversion function for ADC channels 4, 5 and 6 */
+ 
 static inline int input_reg_to_mv(int value)
 {
 	return DIV_ROUND_CLOSEST(value * 2500, 1023);
 }
 
-/* Conversion function for VBBAT */
+ 
 static inline int vbbat_reg_to_mv(int value)
 {
 	return DIV_ROUND_CLOSEST(value * 5000, 1023);
@@ -124,7 +118,7 @@ static ssize_t da9052_ich_show(struct device *dev,
 	if (ret < 0)
 		return ret;
 
-	/* Equivalent to 3.9mA/bit in register ICHG_AV */
+	 
 	return sprintf(buf, "%d\n", DIV_ROUND_CLOSEST(ret * 39, 10));
 }
 
@@ -191,7 +185,7 @@ static int da9052_get_tsi_result(struct da9052_hwmon *hwmon, int channel)
 	u8 regs[3];
 	int msb, lsb, err;
 
-	/* block read to avoid separation of MSB and LSB */
+	 
 	err = da9052_group_read(hwmon->da9052, DA9052_TSI_X_MSB_REG,
 				ARRAY_SIZE(regs), regs);
 	if (err)
@@ -229,7 +223,7 @@ static ssize_t __da9052_read_tsi(struct device *dev, int channel)
 	if (ret < 0)
 		return ret;
 
-	/* Wait for an conversion done interrupt */
+	 
 	if (!wait_for_completion_timeout(&hwmon->tsidone,
 					 msecs_to_jiffies(500)))
 		return -ETIMEDOUT;
@@ -269,10 +263,7 @@ static ssize_t da9052_tjunc_show(struct device *dev,
 	if (toffset < 0)
 		return toffset;
 
-	/*
-	 * Degrees celsius = 1.708 * (TJUNC_RES - T_OFFSET) - 108.8
-	 * T_OFFSET is a trim value used to improve accuracy of the result
-	 */
+	 
 	return sprintf(buf, "%d\n", 1708 * (tjunc - toffset) - 108800);
 }
 
@@ -431,10 +422,10 @@ static int da9052_hwmon_probe(struct platform_device *pdev)
 			goto exit_regulator;
 		}
 
-		/* convert from microvolt (DT) to millivolt (hwmon) */
+		 
 		hwmon->tsiref_mv /= 1000;
 
-		/* TSIREF limits from datasheet */
+		 
 		if (hwmon->tsiref_mv < 1800 || hwmon->tsiref_mv > 2600) {
 			dev_err(hwmon->da9052->dev, "invalid TSIREF voltage: %d",
 				hwmon->tsiref_mv);
@@ -442,10 +433,10 @@ static int da9052_hwmon_probe(struct platform_device *pdev)
 			goto exit_regulator;
 		}
 
-		/* disable touchscreen features */
+		 
 		da9052_reg_write(hwmon->da9052, DA9052_TSI_CONT_A_REG, 0x00);
 
-		/* Sample every 1ms */
+		 
 		da9052_reg_update(hwmon->da9052, DA9052_ADC_CONT_REG,
 					  DA9052_ADCCONT_ADCMODE,
 					  DA9052_ADCCONT_ADCMODE);

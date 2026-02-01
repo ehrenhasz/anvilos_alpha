@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Infineon TUA9001 silicon tuner driver
- *
- * Copyright (C) 2009 Antti Palosaari <crope@iki.fi>
- */
+
+ 
 
 #include "tua9001_priv.h"
 
@@ -149,7 +145,7 @@ static int tua9001_get_if_frequency(struct dvb_frontend *fe, u32 *frequency)
 
 	dev_dbg(&client->dev, "\n");
 
-	*frequency = 0; /* Zero-IF */
+	*frequency = 0;  
 	return 0;
 }
 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _IPT_ECN_H
 #define _IPT_ECN_H
 
@@ -13,4 +13,4 @@ enum {
 	IPT_ECN_OP_MATCH_MASK = XT_ECN_OP_MATCH_MASK,
 };
 
-#endif /* IPT_ECN_H */
+#endif  

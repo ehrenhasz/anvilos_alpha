@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Clock framework definitions for SPEAr platform
- *
- * Copyright (C) 2012 ST Microelectronics
- * Viresh Kumar <vireshk@kernel.org>
- */
+ 
+ 
 
 #ifndef __SPEAR_CLK_H
 #define __SPEAR_CLK_H
@@ -13,8 +8,8 @@
 #include <linux/spinlock_types.h>
 #include <linux/types.h>
 
-/* Auxiliary Synth clk */
-/* Default masks */
+ 
+ 
 #define AUX_EQ_SEL_SHIFT	30
 #define AUX_EQ_SEL_MASK		1
 #define AUX_EQ1_SEL		0
@@ -52,7 +47,7 @@ struct clk_aux {
 	spinlock_t		*lock;
 };
 
-/* Fractional Synth clk */
+ 
 struct frac_rate_tbl {
 	u32 div;
 };
@@ -65,7 +60,7 @@ struct clk_frac {
 	spinlock_t		*lock;
 };
 
-/* GPT clk */
+ 
 struct gpt_rate_tbl {
 	u16 mscale;
 	u16 nscale;
@@ -79,7 +74,7 @@ struct clk_gpt {
 	spinlock_t		*lock;
 };
 
-/* VCO-PLL clk */
+ 
 struct pll_rate_tbl {
 	u8 mode;
 	u16 m;
@@ -106,7 +101,7 @@ struct clk_pll {
 typedef unsigned long (*clk_calc_rate)(struct clk_hw *hw, unsigned long prate,
 		int index);
 
-/* clk register routines */
+ 
 struct clk *clk_register_aux(const char *aux_name, const char *gate_name,
 		const char *parent_name, unsigned long flags, void __iomem *reg,
 		const struct aux_clk_masks *masks, struct aux_rate_tbl *rtbl,
@@ -128,4 +123,4 @@ long clk_round_rate_index(struct clk_hw *hw, unsigned long drate,
 		unsigned long parent_rate, clk_calc_rate calc_rate, u8 rtbl_cnt,
 		int *index);
 
-#endif /* __SPEAR_CLK_H */
+#endif  

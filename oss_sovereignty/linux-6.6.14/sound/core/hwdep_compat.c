@@ -1,20 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   32bit -> 64bit ioctl wrapper for hwdep API
- *   Copyright (c) by Takashi Iwai <tiwai@suse.de>
- */
 
-/* This file is included from hwdep.c */
+ 
+
+ 
 
 #include <linux/compat.h>
 
 struct snd_hwdep_dsp_image32 {
 	u32 index;
 	unsigned char name[64];
-	u32 image;	/* pointer */
+	u32 image;	 
 	u32 length;
 	u32 driver_data;
-} /* don't set packed attribute here */;
+}  ;
 
 static int snd_hwdep_dsp_load_compat(struct snd_hwdep *hw,
 				     struct snd_hwdep_dsp_image32 __user *src)

@@ -1,36 +1,4 @@
-/* net/tipc/udp_media.c: IP bearer support for TIPC
- *
- * Copyright (c) 2015, Ericsson AB
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the names of the copyright holders nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include <linux/socket.h>
 #include <linux/ip.h>
@@ -54,22 +22,12 @@
 #include "msg.h"
 #include "udp_media.h"
 
-/* IANA assigned UDP port */
+ 
 #define UDP_PORT_DEFAULT	6118
 
 #define UDP_MIN_HEADROOM        48
 
-/**
- * struct udp_media_addr - IP/UDP addressing information
- *
- * This is the bearer level originating address used in neighbor discovery
- * messages, and all fields should be in network byte order
- *
- * @proto: Ethernet protocol in use
- * @port: port being used
- * @ipv4: IPv4 address of neighbor
- * @ipv6: IPv6 address of neighbor
- */
+ 
 struct udp_media_addr {
 	__be16	proto;
 	__be16	port;
@@ -79,7 +37,7 @@ struct udp_media_addr {
 	};
 };
 
-/* struct udp_replicast - container for UDP remote addresses */
+ 
 struct udp_replicast {
 	struct udp_media_addr addr;
 	struct dst_cache dst_cache;
@@ -87,14 +45,7 @@ struct udp_replicast {
 	struct list_head list;
 };
 
-/**
- * struct udp_bearer - ip/udp bearer data structure
- * @bearer:	associated generic tipc bearer
- * @ubsock:	bearer associated socket
- * @ifindex:	local address scope
- * @work:	used to schedule deferred work on a bearer
- * @rcast:	associated udp_replicast container
- */
+ 
 struct udp_bearer {
 	struct tipc_bearer __rcu *bearer;
 	struct socket *ubsock;
@@ -114,7 +65,7 @@ static int tipc_udp_is_mcast_addr(struct udp_media_addr *addr)
 	return 0;
 }
 
-/* udp_media_addr_set - convert a ip/udp address to a TIPC media address */
+ 
 static void tipc_udp_media_addr_set(struct tipc_media_addr *addr,
 				    struct udp_media_addr *ua)
 {
@@ -126,7 +77,7 @@ static void tipc_udp_media_addr_set(struct tipc_media_addr *addr,
 		addr->broadcast = TIPC_BROADCAST_SUPPORT;
 }
 
-/* tipc_udp_addr2str - convert ip/udp address to string */
+ 
 static int tipc_udp_addr2str(struct tipc_media_addr *a, char *buf, int size)
 {
 	struct udp_media_addr *ua = (struct udp_media_addr *)&a->value;
@@ -140,7 +91,7 @@ static int tipc_udp_addr2str(struct tipc_media_addr *a, char *buf, int size)
 	return 0;
 }
 
-/* tipc_udp_msg2addr - extract an ip/udp address from a TIPC ndisc message */
+ 
 static int tipc_udp_msg2addr(struct tipc_bearer *b, struct tipc_media_addr *a,
 			     char *msg)
 {
@@ -153,7 +104,7 @@ static int tipc_udp_msg2addr(struct tipc_bearer *b, struct tipc_media_addr *a,
 	return 0;
 }
 
-/* tipc_udp_addr2msg - write an ip/udp address to a TIPC ndisc message */
+ 
 static int tipc_udp_addr2msg(char *msg, struct tipc_media_addr *a)
 {
 	memset(msg, 0, TIPC_MEDIA_INFO_SIZE);
@@ -163,7 +114,7 @@ static int tipc_udp_addr2msg(char *msg, struct tipc_media_addr *a)
 	return 0;
 }
 
-/* tipc_send_msg - enqueue a send request */
+ 
 static int tipc_udp_xmit(struct net *net, struct sk_buff *skb,
 			 struct udp_bearer *ub, struct udp_media_addr *src,
 			 struct udp_media_addr *dst, struct dst_cache *cache)
@@ -255,7 +206,7 @@ static int tipc_udp_send_msg(struct net *net, struct sk_buff *skb,
 		return tipc_udp_xmit(net, skb, ub, src, dst,
 				     &ub->rcast.dst_cache);
 
-	/* Replicast, send an skb to each configured IP address */
+	 
 	list_for_each_entry_rcu(rcast, &ub->rcast.list, list) {
 		struct sk_buff *_skb;
 
@@ -365,7 +316,7 @@ static int tipc_udp_rcast_disc(struct tipc_bearer *b, struct sk_buff *skb)
 	return tipc_udp_rcast_add(b, &src);
 }
 
-/* tipc_udp_recv - read data from bearer socket */
+ 
 static int tipc_udp_recv(struct sock *sk, struct sk_buff *skb)
 {
 	struct udp_bearer *ub;
@@ -572,12 +523,7 @@ msg_full:
 	return -EMSGSIZE;
 }
 
-/**
- * tipc_parse_udp_addr - build udp media address from netlink data
- * @nla:	netlink attribute containing sockaddr storage aligned address
- * @addr:	tipc media address to fill with address, port and protocol type
- * @scope_id:	IPv6 scope id pointer, not NULL indicates it's required
- */
+ 
 
 static int tipc_parse_udp_addr(struct nlattr *nla, struct udp_media_addr *addr,
 			       u32 *scope_id)
@@ -601,7 +547,7 @@ static int tipc_parse_udp_addr(struct nlattr *nla, struct udp_media_addr *addr,
 		addr->port = ip6->sin6_port;
 		memcpy(&addr->ipv6, &ip6->sin6_addr, sizeof(struct in6_addr));
 
-		/* Scope ID is only interesting for local addresses */
+		 
 		if (scope_id) {
 			int atype;
 
@@ -649,15 +595,7 @@ int tipc_udp_nl_bearer_add(struct tipc_bearer *b, struct nlattr *attr)
 	return tipc_udp_rcast_add(b, &addr);
 }
 
-/**
- * tipc_udp_enable - callback to create a new udp bearer instance
- * @net:	network namespace
- * @b:		pointer to generic tipc_bearer
- * @attrs:	netlink bearer configuration
- *
- * validate the bearer parameters and initialize the udp bearer
- * rtnl_lock should be held
- */
+ 
 static int tipc_udp_enable(struct net *net, struct tipc_bearer *b,
 			   struct nlattr *attrs[])
 {
@@ -704,10 +642,10 @@ static int tipc_udp_enable(struct net *net, struct tipc_bearer *b,
 		goto err;
 	}
 
-	/* Checking remote ip address */
+	 
 	rmcast = tipc_udp_is_mcast_addr(&remote);
 
-	/* Autoconfigure own node identity if needed */
+	 
 	if (!tipc_own_id(net)) {
 		memcpy(node_id, local.ipv6.in6_u.u6_addr8, 16);
 		tipc_net_init(net, node_id, 0);
@@ -731,7 +669,7 @@ static int tipc_udp_enable(struct net *net, struct tipc_bearer *b,
 		}
 		udp_conf.family = AF_INET;
 
-		/* Switch to use ANY to receive packets from group */
+		 
 		if (rmcast)
 			udp_conf.local_ip.s_addr = htonl(INADDR_ANY);
 		else
@@ -777,10 +715,7 @@ static int tipc_udp_enable(struct net *net, struct tipc_bearer *b,
 	if (err)
 		goto free;
 
-	/*
-	 * The bcast media address port is used for all peers and the ip
-	 * is used if it's a multicast address.
-	 */
+	 
 	memcpy(&b->bcast_addr.value, &remote, sizeof(remote));
 	if (rmcast)
 		err = enable_mcast(ub, &remote);
@@ -799,7 +734,7 @@ err:
 	return err;
 }
 
-/* cleanup_bearer - break the socket/bearer association */
+ 
 static void cleanup_bearer(struct work_struct *work)
 {
 	struct udp_bearer *ub = container_of(work, struct udp_bearer, work);
@@ -818,7 +753,7 @@ static void cleanup_bearer(struct work_struct *work)
 	kfree(ub);
 }
 
-/* tipc_udp_disable - detach bearer from socket */
+ 
 static void tipc_udp_disable(struct tipc_bearer *b)
 {
 	struct udp_bearer *ub;
@@ -831,7 +766,7 @@ static void tipc_udp_disable(struct tipc_bearer *b)
 	sock_set_flag(ub->ubsock->sk, SOCK_DEAD);
 	RCU_INIT_POINTER(ub->bearer, NULL);
 
-	/* sock_release need to be done outside of rtnl lock */
+	 
 	atomic_inc(&tipc_net(sock_net(ub->ubsock->sk))->wq_count);
 	INIT_WORK(&ub->work, cleanup_bearer);
 	schedule_work(&ub->work);

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI LP8788 MFD - keyled driver
- *
- * Copyright 2012 Texas Instruments
- *
- * Author: Milo(Woogyom) Kim <milo.kim@ti.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -54,7 +48,7 @@ static int lp8788_led_init_device(struct lp8788_led *led,
 
 	led->isink_num = cfg->num;
 
-	/* scale configuration */
+	 
 	addr = LP8788_ISINK_CTRL;
 	mask = 1 << (cfg->num + LP8788_ISINK_SCALE_OFFSET);
 	val = cfg->scale << (cfg->num + LP8788_ISINK_SCALE_OFFSET);
@@ -62,7 +56,7 @@ static int lp8788_led_init_device(struct lp8788_led *led,
 	if (ret)
 		return ret;
 
-	/* current configuration */
+	 
 	addr = lp8788_iout_addr[cfg->num];
 	mask = lp8788_iout_mask[cfg->num];
 	val = cfg->iout;

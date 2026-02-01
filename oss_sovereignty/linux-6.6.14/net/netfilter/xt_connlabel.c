@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * (C) 2013 Astaro GmbH & Co KG
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/skbuff.h>

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -17,10 +15,10 @@
 #include <linux/property.h>
 #include <linux/regulator/consumer.h>
 
-/* Blow timer clock frequency in Mhz */
+ 
 #define QFPROM_BLOW_TIMER_OFFSET 0x03c
 
-/* Amount of time required to hold charge to blow fuse in micro-seconds */
+ 
 #define QFPROM_FUSE_BLOW_POLL_US	100
 #define QFPROM_FUSE_BLOW_TIMEOUT_US	10000
 
@@ -40,15 +38,7 @@ static bool read_raw_data;
 module_param(read_raw_data, bool, 0644);
 MODULE_PARM_DESC(read_raw_data, "Read raw instead of corrected data");
 
-/**
- * struct qfprom_soc_data - config that varies from SoC to SoC.
- *
- * @accel_value:             Should contain qfprom accel value.
- * @qfprom_blow_timer_value: The timer value of qfprom when doing efuse blow.
- * @qfprom_blow_set_freq:    The frequency required to set when we start the
- *                           fuse blowing.
- * @qfprom_blow_uV:          LDO voltage to be set when doing efuse blow
- */
+ 
 struct qfprom_soc_data {
 	u32 accel_value;
 	u32 qfprom_blow_timer_value;
@@ -56,19 +46,7 @@ struct qfprom_soc_data {
 	int qfprom_blow_uV;
 };
 
-/**
- * struct qfprom_priv - structure holding qfprom attributes
- *
- * @qfpraw:       iomapped memory space for qfprom-efuse raw address space.
- * @qfpconf:      iomapped memory space for qfprom-efuse configuration address
- *                space.
- * @qfpcorrected: iomapped memory space for qfprom corrected address space.
- * @qfpsecurity:  iomapped memory space for qfprom security control space.
- * @dev:          qfprom device structure.
- * @secclk:       Clock supply.
- * @vcc:          Regulator supply.
- * @soc_data:     Data that for things that varies from SoC to SoC.
- */
+ 
 struct qfprom_priv {
 	void __iomem *qfpraw;
 	void __iomem *qfpconf;
@@ -80,26 +58,14 @@ struct qfprom_priv {
 	const struct qfprom_soc_data *soc_data;
 };
 
-/**
- * struct qfprom_touched_values - saved values to restore after blowing
- *
- * @clk_rate: The rate the clock was at before blowing.
- * @accel_val: The value of the accel reg before blowing.
- * @timer_val: The value of the timer before blowing.
- */
+ 
 struct qfprom_touched_values {
 	unsigned long clk_rate;
 	u32 accel_val;
 	u32 timer_val;
 };
 
-/**
- * struct qfprom_soc_compatible_data - Data matched against the SoC
- * compatible string.
- *
- * @keepout: Array of keepout regions for this SoC.
- * @nkeepout: Number of elements in the keepout array.
- */
+ 
 struct qfprom_soc_compatible_data {
 	const struct nvmem_keepout *keepout;
 	unsigned int nkeepout;
@@ -125,17 +91,7 @@ static const struct qfprom_soc_compatible_data sc7280_qfprom = {
 	.nkeepout = ARRAY_SIZE(sc7280_qfprom_keepout)
 };
 
-/**
- * qfprom_disable_fuse_blowing() - Undo enabling of fuse blowing.
- * @priv: Our driver data.
- * @old:  The data that was stashed from before fuse blowing.
- *
- * Resets the value of the blow timer, accel register and the clock
- * and voltage settings.
- *
- * Prints messages if there are errors but doesn't return an error code
- * since there's not much we can do upon failure.
- */
+ 
 static void qfprom_disable_fuse_blowing(const struct qfprom_priv *priv,
 					const struct qfprom_touched_values *old)
 {
@@ -147,12 +103,7 @@ static void qfprom_disable_fuse_blowing(const struct qfprom_priv *priv,
 	dev_pm_genpd_set_performance_state(priv->dev, 0);
 	pm_runtime_put(priv->dev);
 
-	/*
-	 * This may be a shared rail and may be able to run at a lower rate
-	 * when we're not blowing fuses.  At the moment, the regulator framework
-	 * applies voltage constraints even on disabled rails, so remove our
-	 * constraints and allow the rail to be adjusted by other users.
-	 */
+	 
 	ret = regulator_set_voltage(priv->vcc, 0, INT_MAX);
 	if (ret)
 		dev_warn(priv->dev, "Failed to set 0 voltage (ignoring)\n");
@@ -169,18 +120,7 @@ static void qfprom_disable_fuse_blowing(const struct qfprom_priv *priv,
 	clk_disable_unprepare(priv->secclk);
 }
 
-/**
- * qfprom_enable_fuse_blowing() - Enable fuse blowing.
- * @priv: Our driver data.
- * @old:  We'll stash stuff here to use when disabling.
- *
- * Sets the value of the blow timer, accel register and the clock
- * and voltage settings.
- *
- * Prints messages if there are errors so caller doesn't need to.
- *
- * Return: 0 or -err.
- */
+ 
 static int qfprom_enable_fuse_blowing(const struct qfprom_priv *priv,
 				      struct qfprom_touched_values *old)
 {
@@ -200,11 +140,7 @@ static int qfprom_enable_fuse_blowing(const struct qfprom_priv *priv,
 		goto err_clk_prepared;
 	}
 
-	/*
-	 * Hardware requires a minimum voltage for fuse blowing.
-	 * This may be a shared rail so don't specify a maximum.
-	 * Regulator constraints will cap to the actual maximum.
-	 */
+	 
 	ret = regulator_set_voltage(priv->vcc, qfprom_blow_uV, INT_MAX);
 	if (ret) {
 		dev_err(priv->dev, "Failed to set %duV\n", qfprom_blow_uV);
@@ -242,17 +178,7 @@ err_clk_prepared:
 	return ret;
 }
 
-/**
- * qfprom_reg_write() - Write to fuses.
- * @context: Our driver data.
- * @reg:     The offset to write at.
- * @_val:    Pointer to data to write.
- * @bytes:   The number of bytes to write.
- *
- * Writes to fuses.  WARNING: THIS IS PERMANENT.
- *
- * Return: 0 or -err.
- */
+ 
 static int qfprom_reg_write(void *context, unsigned int reg, void *_val,
 			    size_t bytes)
 {
@@ -268,11 +194,7 @@ static int qfprom_reg_write(void *context, unsigned int reg, void *_val,
 		"Writing to raw qfprom region : %#010x of size: %zu\n",
 		reg, bytes);
 
-	/*
-	 * The hardware only allows us to write word at a time, but we can
-	 * read byte at a time.  Until the nvmem framework allows a separate
-	 * word_size and stride for reading vs. writing, we'll enforce here.
-	 */
+	 
 	if (bytes % 4) {
 		dev_err(priv->dev,
 			"%zu is not an integral number of words\n", bytes);
@@ -307,7 +229,7 @@ static int qfprom_reg_write(void *context, unsigned int reg, void *_val,
 		blow_status, blow_status == QFPROM_BLOW_STATUS_READY,
 		QFPROM_FUSE_BLOW_POLL_US, QFPROM_FUSE_BLOW_TIMEOUT_US);
 
-	/* Give an error, but not much we can do in this case */
+	 
 	if (ret)
 		dev_err(priv->dev, "Timeout waiting for finish.\n");
 
@@ -373,7 +295,7 @@ static int qfprom_probe(struct platform_device *pdev)
 	if (!priv)
 		return -ENOMEM;
 
-	/* The corrected section is always provided */
+	 
 	priv->qfpcorrected = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
 	if (IS_ERR(priv->qfpcorrected))
 		return PTR_ERR(priv->qfpcorrected);
@@ -389,10 +311,7 @@ static int qfprom_probe(struct platform_device *pdev)
 		econfig.nkeepout = soc_data->nkeepout;
 	}
 
-	/*
-	 * If more than one region is provided then the OS has the ability
-	 * to write.
-	 */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
 	if (res) {
 		u32 version;
@@ -427,7 +346,7 @@ static int qfprom_probe(struct platform_device *pdev)
 		if (IS_ERR(priv->secclk))
 			return dev_err_probe(dev, PTR_ERR(priv->secclk), "Error getting clock\n");
 
-		/* Only enable writing if we have SoC data. */
+		 
 		if (priv->soc_data)
 			econfig.reg_write = qfprom_reg_write;
 	}
@@ -446,7 +365,7 @@ static const struct of_device_id qfprom_of_match[] = {
 	{ .compatible = "qcom,qfprom",},
 	{ .compatible = "qcom,sc7180-qfprom", .data = &sc7180_qfprom},
 	{ .compatible = "qcom,sc7280-qfprom", .data = &sc7280_qfprom},
-	{/* sentinel */},
+	{ },
 };
 MODULE_DEVICE_TABLE(of, qfprom_of_match);
 

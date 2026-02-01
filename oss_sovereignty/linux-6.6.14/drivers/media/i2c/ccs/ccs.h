@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * drivers/media/i2c/smiapp/ccs.h
- *
- * Generic driver for MIPI CCS/SMIA/SMIA++ compliant camera sensors
- *
- * Copyright (C) 2020 Intel Corporation
- * Copyright (C) 2010--2012 Nokia Corporation
- * Contact: Sakari Ailus <sakari.ailus@linux.intel.com>
- */
+ 
+ 
 
 #ifndef __CCS_H__
 #define __CCS_H__
@@ -24,19 +16,17 @@
 #include "../ccs-pll.h"
 #include "smiapp-reg-defs.h"
 
-/*
- * Standard SMIA++ constants
- */
+ 
 #define SMIA_VERSION_1			10
-#define SMIAPP_VERSION_0_8		8 /* Draft 0.8 */
-#define SMIAPP_VERSION_0_9		9 /* Draft 0.9 */
+#define SMIAPP_VERSION_0_8		8  
+#define SMIAPP_VERSION_0_9		9  
 #define SMIAPP_VERSION_1		10
 
 #define SMIAPP_PROFILE_0		0
 #define SMIAPP_PROFILE_1		1
 #define SMIAPP_PROFILE_2		2
 
-#define SMIAPP_NVM_PAGE_SIZE		64	/* bytes */
+#define SMIAPP_NVM_PAGE_SIZE		64	 
 
 #define SMIAPP_RESET_DELAY_CLOCKS	2400
 #define SMIAPP_RESET_DELAY(clk)				\
@@ -48,8 +38,8 @@
 #define SMIAPP_NAME			"smiapp"
 #define CCS_NAME			"ccs"
 
-#define CCS_DFL_I2C_ADDR	(0x20 >> 1) /* Default I2C Address */
-#define CCS_ALT_I2C_ADDR	(0x6e >> 1) /* Alternate I2C Address */
+#define CCS_DFL_I2C_ADDR	(0x20 >> 1)  
+#define CCS_ALT_I2C_ADDR	(0x6e >> 1)  
 
 #define CCS_LIM(sensor, limit) \
 	ccs_get_limit(sensor, CCS_L_##limit, 0)
@@ -66,17 +56,14 @@ struct ccs_flash_strobe_parms {
 };
 
 struct ccs_hwconfig {
-	/*
-	 * Change the cci address if i2c_addr_alt is set.
-	 * Both default and alternate cci addr need to be present
-	 */
-	unsigned short i2c_addr_dfl;	/* Default i2c addr */
-	unsigned short i2c_addr_alt;	/* Alternate i2c addr */
+	 
+	unsigned short i2c_addr_dfl;	 
+	unsigned short i2c_addr_alt;	 
 
-	u32 ext_clk;			/* sensor external clk */
+	u32 ext_clk;			 
 
-	unsigned int lanes;		/* Number of CSI-2 lanes */
-	u32 csi_signalling_mode;	/* CCS_CSI_SIGNALLING_MODE_* */
+	unsigned int lanes;		 
+	u32 csi_signalling_mode;	 
 	u64 *op_sys_clock;
 
 	struct ccs_flash_strobe_parms *strobe_setup;
@@ -184,7 +171,7 @@ struct ccs_subdev {
 	struct media_pad pads[CCS_PADS];
 	struct v4l2_rect sink_fmt;
 	struct v4l2_rect crop[CCS_PADS];
-	struct v4l2_rect compose; /* compose on sink */
+	struct v4l2_rect compose;  
 	unsigned short sink_pad;
 	unsigned short source_pad;
 	int npads;
@@ -192,16 +179,9 @@ struct ccs_subdev {
 	struct v4l2_ctrl_handler ctrl_handler;
 };
 
-/*
- * struct ccs_sensor - Main device structure
- */
+ 
 struct ccs_sensor {
-	/*
-	 * "mutex" is used to serialise access to all fields here
-	 * except v4l2_ctrls at the end of the struct. "mutex" is also
-	 * used to serialise access to file handle specific
-	 * information.
-	 */
+	 
 	struct mutex mutex;
 	struct ccs_subdev ssds[CCS_SUBDEVS];
 	u32 ssds_used;
@@ -231,10 +211,10 @@ struct ccs_sensor {
 	u8 scaling_mode;
 
 	u8 frame_skip;
-	u16 embedded_start; /* embedded data start line */
+	u16 embedded_start;  
 	u16 embedded_end;
-	u16 image_start; /* image data start line */
-	u16 visible_pixel_start; /* start pixel of the visible image */
+	u16 image_start;  
+	u16 visible_pixel_start;  
 
 	bool streaming;
 	bool dev_init_done;
@@ -244,10 +224,10 @@ struct ccs_sensor {
 
 	struct ccs_pll pll;
 
-	/* Is a default format supported for a given BPP? */
+	 
 	unsigned long *valid_link_freqs;
 
-	/* Pixel array controls */
+	 
 	struct v4l2_ctrl *exposure;
 	struct v4l2_ctrl *hflip;
 	struct v4l2_ctrl *vflip;
@@ -255,10 +235,10 @@ struct ccs_sensor {
 	struct v4l2_ctrl *hblank;
 	struct v4l2_ctrl *pixel_rate_parray;
 	struct v4l2_ctrl *luminance_level;
-	/* src controls */
+	 
 	struct v4l2_ctrl *link_freq;
 	struct v4l2_ctrl *pixel_rate_csi;
-	/* test pattern colour components */
+	 
 	struct v4l2_ctrl *test_data[CCS_COLOUR_COMPONENTS];
 };
 
@@ -273,4 +253,4 @@ void ccs_replace_limit(struct ccs_sensor *sensor,
 u32 ccs_get_limit(struct ccs_sensor *sensor, unsigned int limit,
 		  unsigned int offset);
 
-#endif /* __CCS_H__ */
+#endif  

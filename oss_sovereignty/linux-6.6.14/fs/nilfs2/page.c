@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Buffer/page management specific to NILFS
- *
- * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
- *
- * Written by Ryusuke Konishi and Seiji Kihara.
- */
+
+ 
 
 #include <linux/pagemap.h>
 #include <linux/writeback.h>
@@ -67,10 +61,7 @@ struct buffer_head *nilfs_grab_buffer(struct inode *inode,
 	return bh;
 }
 
-/**
- * nilfs_forget_buffer - discard dirty state
- * @bh: buffer head of the buffer to be discarded
- */
+ 
 void nilfs_forget_buffer(struct buffer_head *bh)
 {
 	struct page *page = bh->b_page;
@@ -91,11 +82,7 @@ void nilfs_forget_buffer(struct buffer_head *bh)
 	brelse(bh);
 }
 
-/**
- * nilfs_copy_buffer -- copy buffer data and flags
- * @dbh: destination buffer
- * @sbh: source buffer
- */
+ 
 void nilfs_copy_buffer(struct buffer_head *dbh, struct buffer_head *sbh)
 {
 	void *kaddr0, *kaddr1;
@@ -130,13 +117,7 @@ void nilfs_copy_buffer(struct buffer_head *dbh, struct buffer_head *sbh)
 		ClearPageMappedToDisk(dpage);
 }
 
-/**
- * nilfs_page_buffers_clean - check if a page has dirty buffers or not.
- * @page: page to be checked
- *
- * nilfs_page_buffers_clean() returns zero if the page has dirty buffers.
- * Otherwise, it returns non-zero value.
- */
+ 
 int nilfs_page_buffers_clean(struct page *page)
 {
 	struct buffer_head *bh, *head;
@@ -183,16 +164,7 @@ void nilfs_page_bug(struct page *page)
 	}
 }
 
-/**
- * nilfs_copy_page -- copy the page with buffers
- * @dst: destination page
- * @src: source page
- * @copy_dirty: flag whether to copy dirty states on the page's buffer heads.
- *
- * This function is for both data pages and btnode pages.  The dirty flag
- * should be treated by caller.  The page must not be under i/o.
- * Both src and dst page must be locked
- */
+ 
 static void nilfs_copy_page(struct page *dst, struct page *src, int copy_dirty)
 {
 	struct buffer_head *dbh, *dbufs, *sbh;
@@ -260,7 +232,7 @@ repeat:
 
 		dfolio = filemap_grab_folio(dmap, folio->index);
 		if (unlikely(IS_ERR(dfolio))) {
-			/* No empty page is added to the page cache */
+			 
 			folio_unlock(folio);
 			err = PTR_ERR(dfolio);
 			break;
@@ -284,14 +256,7 @@ repeat:
 	return err;
 }
 
-/**
- * nilfs_copy_back_pages -- copy back pages to original cache from shadow cache
- * @dmap: destination page cache
- * @smap: source page cache
- *
- * No pages must be added to the cache during this process.
- * This must be ensured by the caller.
- */
+ 
 void nilfs_copy_back_pages(struct address_space *dmap,
 			   struct address_space *smap)
 {
@@ -312,16 +277,16 @@ repeat:
 		folio_lock(folio);
 		dfolio = filemap_lock_folio(dmap, index);
 		if (!IS_ERR(dfolio)) {
-			/* overwrite existing folio in the destination cache */
+			 
 			WARN_ON(folio_test_dirty(dfolio));
 			nilfs_copy_page(&dfolio->page, &folio->page, 0);
 			folio_unlock(dfolio);
 			folio_put(dfolio);
-			/* Do we not need to remove folio from smap here? */
+			 
 		} else {
 			struct folio *f;
 
-			/* move the folio to the destination cache */
+			 
 			xa_lock_irq(&smap->i_pages);
 			f = __xa_erase(&smap->i_pages, index);
 			WARN_ON(folio != f);
@@ -331,7 +296,7 @@ repeat:
 			xa_lock_irq(&dmap->i_pages);
 			f = __xa_store(&dmap->i_pages, index, folio, GFP_NOFS);
 			if (unlikely(f)) {
-				/* Probably -ENOMEM */
+				 
 				folio->mapping = NULL;
 				folio_put(folio);
 			} else {
@@ -351,11 +316,7 @@ repeat:
 	goto repeat;
 }
 
-/**
- * nilfs_clear_dirty_pages - discard dirty pages in address space
- * @mapping: address space with dirty pages for discarding
- * @silent: suppress [true] or print [false] warning messages
- */
+ 
 void nilfs_clear_dirty_pages(struct address_space *mapping, bool silent)
 {
 	struct folio_batch fbatch;
@@ -371,11 +332,7 @@ void nilfs_clear_dirty_pages(struct address_space *mapping, bool silent)
 
 			folio_lock(folio);
 
-			/*
-			 * This folio may have been removed from the address
-			 * space by truncation or invalidation when the lock
-			 * was acquired.  Skip processing in that case.
-			 */
+			 
 			if (likely(folio->mapping == mapping))
 				nilfs_clear_dirty_page(&folio->page, silent);
 
@@ -386,11 +343,7 @@ void nilfs_clear_dirty_pages(struct address_space *mapping, bool silent)
 	}
 }
 
-/**
- * nilfs_clear_dirty_page - discard dirty page
- * @page: dirty page that will be discarded
- * @silent: suppress [true] or print [false] warning messages
- */
+ 
 void nilfs_clear_dirty_page(struct page *page, bool silent)
 {
 	struct inode *inode = page->mapping->host;
@@ -445,16 +398,7 @@ unsigned int nilfs_page_count_clean_buffers(struct page *page,
 	return nc;
 }
 
-/*
- * NILFS2 needs clear_page_dirty() in the following two cases:
- *
- * 1) For B-tree node pages and data pages of DAT file, NILFS2 clears dirty
- *    flag of pages when it copies back pages from shadow cache to the
- *    original cache.
- *
- * 2) Some B-tree operations like insertion or deletion may dispose buffers
- *    in dirty state, and this needs to cancel the dirty state of their pages.
- */
+ 
 int __nilfs_clear_page_dirty(struct page *page)
 {
 	struct address_space *mapping = page->mapping;
@@ -473,18 +417,7 @@ int __nilfs_clear_page_dirty(struct page *page)
 	return TestClearPageDirty(page);
 }
 
-/**
- * nilfs_find_uncommitted_extent - find extent of uncommitted data
- * @inode: inode
- * @start_blk: start block offset (in)
- * @blkoff: start offset of the found extent (out)
- *
- * This function searches an extent of buffers marked "delayed" which
- * starts from a block offset equal to or larger than @start_blk.  If
- * such an extent was found, this will store the start offset in
- * @blkoff and return its length in blocks.  Otherwise, zero is
- * returned.
- */
+ 
 unsigned long nilfs_find_uncommitted_extent(struct inode *inode,
 					    sector_t start_blk,
 					    sector_t *blkoff)

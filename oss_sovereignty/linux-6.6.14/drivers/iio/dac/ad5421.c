@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AD5421 Digital to analog converters  driver
- *
- * Copyright 2011 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/delay.h>
@@ -25,8 +21,7 @@
 #define AD5421_REG_CTRL			0x2
 #define AD5421_REG_OFFSET		0x3
 #define AD5421_REG_GAIN			0x4
-/* load dac and fault shared the same register number. Writing to it will cause
- * a dac load command, reading from it will return the fault status register */
+ 
 #define AD5421_REG_LOAD_DAC		0x5
 #define AD5421_REG_FAULT		0x5
 #define AD5421_REG_FORCE_ALARM_CURRENT	0x6
@@ -50,20 +45,12 @@
 #define AD5421_FAULT_UNDER_VOLTAGE_6V		BIT(9)
 #define AD5421_FAULT_UNDER_VOLTAGE_12V		BIT(8)
 
-/* These bits will cause the fault pin to go high */
+ 
 #define AD5421_FAULT_TRIGGER_IRQ \
 	(AD5421_FAULT_SPI | AD5421_FAULT_PEC | AD5421_FAULT_OVER_CURRENT | \
 	AD5421_FAULT_UNDER_CURRENT | AD5421_FAULT_TEMP_OVER_140)
 
-/**
- * struct ad5421_state - driver instance specific data
- * @spi:		spi_device
- * @ctrl:		control register cache
- * @current_range:	current range which the device is configured for
- * @data:		spi transfer buffers
- * @fault_mask:		software masking of events
- * @lock:		lock to protect the data buffer during SPI ops
- */
+ 
 struct ad5421_state {
 	struct spi_device		*spi;
 	unsigned int			ctrl;
@@ -71,10 +58,7 @@ struct ad5421_state {
 	unsigned int			fault_mask;
 	struct mutex			lock;
 
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 	union {
 		__be32 d32;
 		u8 d8[4];
@@ -212,29 +196,17 @@ static irqreturn_t ad5421_fault_handler(int irq, void *data)
 	if (!fault)
 		return IRQ_NONE;
 
-	/* If we had a fault, this might mean that the DAC has lost its state
-	 * and has been reset. Make sure that the control register actually
-	 * contains what we expect it to contain. Otherwise the watchdog might
-	 * be enabled and we get watchdog timeout faults, which will render the
-	 * DAC unusable. */
+	 
 	ad5421_update_ctrl(indio_dev, 0, 0);
 
 
-	/* The fault pin stays high as long as a fault condition is present and
-	 * it is not possible to mask fault conditions. For certain fault
-	 * conditions for example like over-temperature it takes some time
-	 * until the fault condition disappears. If we would exit the interrupt
-	 * handler immediately after handling the event it would be entered
-	 * again instantly. Thus we fall back to polling in case we detect that
-	 * a interrupt condition is still present.
-	 */
+	 
 	do {
-		/* 0xffff is a invalid value for the register and will only be
-		 * read if there has been a communication error */
+		 
 		if (fault == 0xffff)
 			fault = 0;
 
-		/* we are only interested in new events */
+		 
 		events = (old_fault ^ fault) & fault;
 		events &= st->fault_mask;
 
@@ -268,7 +240,7 @@ static irqreturn_t ad5421_fault_handler(int irq, void *data)
 		old_fault = fault;
 		fault = ad5421_read(indio_dev, AD5421_REG_FAULT);
 
-		/* still active? go to sleep for some time */
+		 
 		if (fault & AD5421_FAULT_TRIGGER_IRQ)
 			msleep(1000);
 
@@ -281,8 +253,7 @@ static irqreturn_t ad5421_fault_handler(int irq, void *data)
 static void ad5421_get_current_min_max(struct ad5421_state *st,
 	unsigned int *min, unsigned int *max)
 {
-	/* The current range is configured using external pins, which are
-	 * usually hard-wired and not run-time switchable. */
+	 
 	switch (st->current_range) {
 	case AD5421_CURRENT_RANGE_4mA_20mA:
 		*min = 4000;
@@ -506,7 +477,7 @@ static int ad5421_probe(struct spi_device *spi)
 		st->current_range = AD5421_CURRENT_RANGE_4mA_20mA;
 	}
 
-	/* write initial ctrl register value */
+	 
 	ad5421_update_ctrl(indio_dev, 0, 0);
 
 	if (spi->irq) {

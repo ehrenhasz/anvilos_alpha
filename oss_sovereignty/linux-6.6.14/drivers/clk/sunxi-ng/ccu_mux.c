@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 Maxime Ripard
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -101,11 +98,7 @@ int ccu_mux_helper_determine_rate(struct ccu_common *common,
 		best_rate = round(cm, best_parent, &adj_parent_rate,
 				  req->rate, data);
 
-		/*
-		 * adj_parent_rate might have been modified by our clock.
-		 * Unapply the pre-divider if there's one, and give
-		 * the actual frequency the parent needs to run at.
-		 */
+		 
 		best_parent_rate = ccu_mux_helper_unapply_prediv(common, cm, -1,
 								 adj_parent_rate);
 
@@ -125,11 +118,7 @@ int ccu_mux_helper_determine_rate(struct ccu_common *common,
 
 		tmp_rate = round(cm, parent, &parent_rate, req->rate, data);
 
-		/*
-		 * parent_rate might have been modified by our clock.
-		 * Unapply the pre-divider if there's one, and give
-		 * the actual frequency the parent needs to run at.
-		 */
+		 
 		parent_rate = ccu_mux_helper_unapply_prediv(common, cm, i,
 							    parent_rate);
 		if (tmp_rate == req->rate) {
@@ -194,7 +183,7 @@ int ccu_mux_helper_set_parent(struct ccu_common *common,
 
 	reg = readl(common->base + common->reg);
 
-	/* The key field always reads as zero. */
+	 
 	if (common->features & CCU_FEATURE_KEY_FIELD)
 		reg |= CCU_MUX_KEY_VALUE;
 
@@ -275,12 +264,7 @@ const struct clk_ops ccu_mux_ops = {
 };
 EXPORT_SYMBOL_NS_GPL(ccu_mux_ops, SUNXI_CCU);
 
-/*
- * This clock notifier is called when the frequency of the of the parent
- * PLL clock is to be changed. The idea is to switch the parent to a
- * stable clock, such as the main oscillator, while the PLL frequency
- * stabilizes.
- */
+ 
 static int ccu_mux_notifier_cb(struct notifier_block *nb,
 			       unsigned long event, void *data)
 {

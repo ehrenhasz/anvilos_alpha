@@ -1,20 +1,5 @@
-/* $OpenBSD: sk-usbhid.c,v 1.46 2023/03/28 06:12:38 dtucker Exp $ */
-/*
- * Copyright (c) 2019 Markus Friedl
- * Copyright (c) 2020 Pedro Martelletto
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -33,11 +18,7 @@
 #include <sha2.h>
 #endif
 
-/*
- * Almost every use of OpenSSL in this file is for ECDSA-NISTP256.
- * This is strictly a larger hammer than necessary, but it reduces changes
- * with upstream.
- */
+ 
 #ifndef OPENSSL_HAS_ECC
 # undef WITH_OPENSSL
 #endif
@@ -49,12 +30,12 @@
 #include <openssl/ec.h>
 #include <openssl/ecdsa.h>
 #include <openssl/evp.h>
-#endif /* WITH_OPENSSL */
+#endif  
 
 #include <fido.h>
 #include <fido/credman.h>
 
-/* backwards compat for libfido2 */
+ 
 #ifndef HAVE_FIDO_CRED_PROT
 #define fido_cred_prot(x) (0)
 #endif
@@ -81,19 +62,16 @@
 # include "log.h"
 # include "xmalloc.h"
 # include "misc.h"
-/*
- * If building as part of OpenSSH, then rename exported functions.
- * This must be done before including sk-api.h.
- */
+ 
 # define sk_api_version		ssh_sk_api_version
 # define sk_enroll		ssh_sk_enroll
 # define sk_sign		ssh_sk_sign
 # define sk_load_resident_keys	ssh_sk_load_resident_keys
-#endif /* !SK_STANDALONE */
+#endif  
 
 #include "sk-api.h"
 
-/* #define SK_DEBUG 1 */
+ 
 
 #ifdef SK_DEBUG
 #define SSH_FIDO_INIT_ARG	FIDO_DEBUG
@@ -115,21 +93,21 @@ struct sk_usbhid {
 	char *path;
 };
 
-/* Return the version of the middleware API */
+ 
 uint32_t sk_api_version(void);
 
-/* Enroll a U2F key (private key generation) */
+ 
 int sk_enroll(uint32_t alg, const uint8_t *challenge, size_t challenge_len,
     const char *application, uint8_t flags, const char *pin,
     struct sk_option **options, struct sk_enroll_response **enroll_response);
 
-/* Sign a challenge */
+ 
 int sk_sign(uint32_t alg, const uint8_t *data, size_t data_len,
     const char *application, const uint8_t *key_handle, size_t key_handle_len,
     uint8_t flags, const char *pin, struct sk_option **options,
     struct sk_sign_response **sign_response);
 
-/* Load resident keys */
+ 
 int sk_load_resident_keys(const char *pin, struct sk_option **options,
     struct sk_resident_key ***rks, size_t *nrks);
 
@@ -157,8 +135,8 @@ skdebug(const char *func, const char *fmt, ...)
 	fputc('\n', stderr);
 	va_end(ap);
 #else
-	(void)func; /* XXX */
-	(void)fmt; /* XXX */
+	(void)func;  
+	(void)fmt;  
 #endif
 }
 
@@ -209,7 +187,7 @@ sk_close(struct sk_usbhid *sk)
 {
 	if (sk == NULL)
 		return;
-	fido_dev_cancel(sk->dev); /* cancel any pending operation */
+	fido_dev_cancel(sk->dev);  
 	fido_dev_close(sk->dev);
 	fido_dev_free(&sk->dev);
 	free(sk->path);
@@ -285,13 +263,13 @@ sk_touch_poll(struct sk_usbhid **skv, size_t nsk, int *touch, size_t *idx)
 	npoll = nsk;
 	for (i = 0; i < nsk; i++) {
 		if (skv[i] == NULL)
-			continue; /* device discarded */
+			continue;  
 		skdebug(__func__, "polling %s", skv[i]->path);
 		if ((r = fido_dev_get_touch_status(skv[i]->dev, touch,
 		    FIDO_POLL_MS)) != FIDO_OK) {
 			skdebug(__func__, "fido_dev_get_touch_status %s: %s",
 			    skv[i]->path, fido_strerr(r));
-			sk_close(skv[i]); /* discard device */
+			sk_close(skv[i]);  
 			skv[i] = NULL;
 			if (--npoll == 0) {
 				skdebug(__func__, "no device left to poll");
@@ -308,7 +286,7 @@ sk_touch_poll(struct sk_usbhid **skv, size_t nsk, int *touch, size_t *idx)
 
 #if !defined(HAVE_FIDO_ASSERT_SET_CLIENTDATA) || \
     !defined(HAVE_FIDO_CRED_SET_CLIENTDATA)
-/* Calculate SHA256(m) */
+ 
 static int
 sha256_mem(const void *m, size_t mlen, u_char *d, size_t dlen)
 {
@@ -331,7 +309,7 @@ sha256_mem(const void *m, size_t mlen, u_char *d, size_t dlen)
 #endif
 	return 0;
 }
-#endif /* !HAVE_FIDO_ASSERT_SET_CLIENTDATA || !HAVE_FIDO_CRED_SET_CLIENTDATA */
+#endif  
 
 #ifndef HAVE_FIDO_CRED_SET_CLIENTDATA
 static int
@@ -352,7 +330,7 @@ fido_cred_set_clientdata(fido_cred_t *cred, const u_char *ptr, size_t len)
 	}
 	return r;
 }
-#endif /* HAVE_FIDO_CRED_SET_CLIENTDATA */
+#endif  
 
 #ifndef HAVE_FIDO_ASSERT_SET_CLIENTDATA
 static int
@@ -373,7 +351,7 @@ fido_assert_set_clientdata(fido_assert_t *assert, const u_char *ptr, size_t len)
 	}
 	return r;
 }
-#endif /* HAVE_FIDO_ASSERT_SET_CLIENTDATA */
+#endif  
 
 #ifndef HAVE_FIDO_DEV_IS_WINHELLO
 static bool
@@ -381,9 +359,9 @@ fido_dev_is_winhello(const fido_dev_t *fdev)
 {
 	return 0;
 }
-#endif /* HAVE_FIDO_DEV_IS_WINHELLO */
+#endif  
 
-/* Check if the specified key handle exists on a given sk. */
+ 
 static int
 sk_try(const struct sk_usbhid *sk, const char *application,
     const uint8_t *key_handle, size_t key_handle_len)
@@ -397,7 +375,7 @@ sk_try(const struct sk_usbhid *sk, const char *application,
 		skdebug(__func__, "fido_assert_new failed");
 		goto out;
 	}
-	/* generate an invalid signature on FIDO2 tokens */
+	 
 	if ((r = fido_assert_set_clientdata(assert, message,
 	    sizeof(message))) != FIDO_OK) {
 		skdebug(__func__, "fido_assert_set_clientdata: %s",
@@ -420,7 +398,7 @@ sk_try(const struct sk_usbhid *sk, const char *application,
 	r = fido_dev_get_assert(sk->dev, assert, NULL);
 	skdebug(__func__, "fido_dev_get_assert: %s", fido_strerr(r));
 	if (r == FIDO_ERR_USER_PRESENCE_REQUIRED) {
-		/* U2F tokens may return this */
+		 
 		r = FIDO_OK;
 	}
  out:
@@ -519,7 +497,7 @@ sk_select_by_touch(const fido_dev_info_t *devlist, size_t ndevs)
 	sk = NULL;
 	if (skvcnt < 2) {
 		if (skvcnt == 1) {
-			/* single candidate */
+			 
 			sk = skv[0];
 			skv[0] = NULL;
 		}
@@ -568,7 +546,7 @@ sk_probe(const char *application, const uint8_t *key_handle,
 #ifdef HAVE_CYGWIN
 	if (!probe_resident && (sk = sk_open("windows://hello")) != NULL)
 		return sk;
-#endif /* HAVE_CYGWIN */
+#endif  
 	if ((devlist = fido_dev_info_new(MAX_FIDO_DEVICES)) == NULL) {
 		skdebug(__func__, "fido_dev_info_new failed");
 		return NULL;
@@ -596,10 +574,7 @@ sk_probe(const char *application, const uint8_t *key_handle,
 }
 
 #ifdef WITH_OPENSSL
-/*
- * The key returned via fido_cred_pubkey_ptr() is in affine coordinates,
- * but the API expects a SEC1 octet string.
- */
+ 
 static int
 pack_public_key_ecdsa(const fido_cred_t *cred,
     struct sk_enroll_response *response)
@@ -655,7 +630,7 @@ pack_public_key_ecdsa(const fido_cred_t *cred,
 		skdebug(__func__, "EC_POINT_point2oct failed");
 		goto out;
 	}
-	/* success */
+	 
 	ret = 0;
  out:
 	if (ret != 0 && response->public_key != NULL) {
@@ -669,7 +644,7 @@ pack_public_key_ecdsa(const fido_cred_t *cred,
 	BN_clear_free(y);
 	return ret;
 }
-#endif /* WITH_OPENSSL */
+#endif  
 
 static int
 pack_public_key_ed25519(const fido_cred_t *cred,
@@ -711,7 +686,7 @@ pack_public_key(uint32_t alg, const fido_cred_t *cred,
 #ifdef WITH_OPENSSL
 	case SSH_SK_ECDSA:
 		return pack_public_key_ecdsa(cred, response);
-#endif /* WITH_OPENSSL */
+#endif  
 	case SSH_SK_ED25519:
 		return pack_public_key_ed25519(cred, response);
 	default:
@@ -785,7 +760,7 @@ key_lookup(fido_dev_t *dev, const char *application, const uint8_t *user_id,
 		skdebug(__func__, "fido_assert_new failed");
 		goto out;
 	}
-	/* generate an invalid signature on FIDO2 tokens */
+	 
 	if ((r = fido_assert_set_clientdata(assert, message,
 	    sizeof(message))) != FIDO_OK) {
 		skdebug(__func__, "fido_assert_set_clientdata: %s",
@@ -856,14 +831,14 @@ sk_enroll(uint32_t alg, const uint8_t *challenge, size_t challenge_len,
 	memset(user_id, 0, sizeof(user_id));
 	if (check_enroll_options(options, &device, user_id,
 	    sizeof(user_id)) != 0)
-		goto out; /* error already logged */
+		goto out;  
 
 	switch(alg) {
 #ifdef WITH_OPENSSL
 	case SSH_SK_ECDSA:
 		cose_alg = COSE_ES256;
 		break;
-#endif /* WITH_OPENSSL */
+#endif  
 	case SSH_SK_ED25519:
 		cose_alg = COSE_EDDSA;
 		break;
@@ -928,7 +903,7 @@ sk_enroll(uint32_t alg, const uint8_t *challenge, size_t challenge_len,
 		skdebug(__func__, "libfido2 version does not support a feature required for this operation. Please upgrade to >=1.5.0");
 		ret = SSH_SK_ERR_UNSUPPORTED;
 		goto out;
-		credprot = 0; (void)credprot; /* avoid warning */
+		credprot = 0; (void)credprot;  
 #endif
 		if (!fido_dev_supports_cred_prot(sk->dev)) {
 			skdebug(__func__, "%s does not support credprot, "
@@ -1070,7 +1045,7 @@ pack_sig_ecdsa(fido_assert_t *assert, struct sk_sign_response *response)
 	}
 	return ret;
 }
-#endif /* WITH_OPENSSL */
+#endif  
 
 static int
 pack_sig_ed25519(fido_assert_t *assert, struct sk_sign_response *response)
@@ -1108,7 +1083,7 @@ pack_sig(uint32_t  alg, fido_assert_t *assert,
 #ifdef WITH_OPENSSL
 	case SSH_SK_ECDSA:
 		return pack_sig_ecdsa(assert, response);
-#endif /* WITH_OPENSSL */
+#endif  
 	case SSH_SK_ED25519:
 		return pack_sig_ed25519(assert, response);
 	default:
@@ -1116,7 +1091,7 @@ pack_sig(uint32_t  alg, fido_assert_t *assert,
 	}
 }
 
-/* Checks sk_options for sk_sign() and sk_load_resident_keys() */
+ 
 static int
 check_sign_load_resident_options(struct sk_option **options, char **devicep)
 {
@@ -1165,7 +1140,7 @@ sk_sign(uint32_t alg, const uint8_t *data, size_t datalen,
 	}
 	*sign_response = NULL;
 	if (check_sign_load_resident_options(options, &device) != 0)
-		goto out; /* error already logged */
+		goto out;  
 	if (device != NULL)
 		sk = sk_open(device);
 	else if (pin != NULL || (flags & SSH_SK_USER_VERIFICATION_REQD))
@@ -1202,10 +1177,7 @@ sk_sign(uint32_t alg, const uint8_t *data, size_t datalen,
 		skdebug(__func__, "fido_assert_set_up: %s", fido_strerr(r));
 		goto out;
 	}
-	/*
-	 * WinHello requests the PIN by default.  Make "uv" request explicit
-	 * to allow keys with and without -O verify-required to make sense.
-	 */
+	 
 	if (pin == NULL && fido_dev_is_winhello (sk->dev) &&
 	    (r = fido_assert_set_uv(assert, FIDO_OPT_FALSE)) != FIDO_OK) {
 		skdebug(__func__, "fido_assert_set_uv: %s", fido_strerr(r));
@@ -1311,7 +1283,7 @@ read_rks(struct sk_usbhid *sk, const char *pin,
 	skdebug(__func__, "Device %s has resident keys for %zu RPs",
 	    sk->path, nrp);
 
-	/* Iterate over RP IDs that have resident keys */
+	 
 	for (i = 0; i < nrp; i++) {
 		rp_id = fido_credman_rp_id(rp, i);
 		rp_name = fido_credman_rp_name(rp, i);
@@ -1320,7 +1292,7 @@ read_rks(struct sk_usbhid *sk, const char *pin,
 		    rp_id == NULL ? "(none)" : rp_id,
 		    fido_credman_rp_id_hash_len(rp, i));
 
-		/* Skip non-SSH RP IDs */
+		 
 		if (rp_id == NULL ||
 		    strncasecmp(fido_credman_rp_id(rp, i), "ssh:", 4) != 0)
 			continue;
@@ -1340,7 +1312,7 @@ read_rks(struct sk_usbhid *sk, const char *pin,
 		skdebug(__func__, "RP \"%s\" has %zu resident keys",
 		    fido_credman_rp_id(rp, i), nrk);
 
-		/* Iterate over resident keys for this RP ID */
+		 
 		for (j = 0; j < nrk; j++) {
 			if ((cred = fido_credman_rk(rk, j)) == NULL) {
 				skdebug(__func__, "no RK in slot %zu", j);
@@ -1356,7 +1328,7 @@ read_rks(struct sk_usbhid *sk, const char *pin,
 			    user_id_len, j, fido_cred_type(cred),
 			    fido_cred_flags(cred), fido_cred_prot(cred));
 
-			/* build response entry */
+			 
 			if ((srk = calloc(1, sizeof(*srk))) == NULL ||
 			    (srk->key.key_handle = calloc(1,
 			    fido_cred_id_len(cred))) == NULL ||
@@ -1384,7 +1356,7 @@ read_rks(struct sk_usbhid *sk, const char *pin,
 			default:
 				skdebug(__func__, "unsupported key type %d",
 				    fido_cred_type(cred));
-				goto out; /* XXX free rk and continue */
+				goto out;  
 			}
 
 			if (fido_cred_prot(cred) == FIDO_CRED_PROT_UV_REQUIRED
@@ -1396,7 +1368,7 @@ read_rks(struct sk_usbhid *sk, const char *pin,
 				skdebug(__func__, "pack public key failed");
 				goto out;
 			}
-			/* append */
+			 
 			if ((tmp = recallocarray(*rksp, *nrksp, (*nrksp) + 1,
 			    sizeof(**rksp))) == NULL) {
 				skdebug(__func__, "alloc rksp");
@@ -1407,7 +1379,7 @@ read_rks(struct sk_usbhid *sk, const char *pin,
 			srk = NULL;
 		}
 	}
-	/* Success */
+	 
 	ret = 0;
  out:
 	if (srk != NULL) {
@@ -1439,7 +1411,7 @@ sk_load_resident_keys(const char *pin, struct sk_option **options,
 	fido_init(SSH_FIDO_INIT_ARG);
 
 	if (check_sign_load_resident_options(options, &device) != 0)
-		goto out; /* error already logged */
+		goto out;  
 	if (device != NULL)
 		sk = sk_open(device);
 	else
@@ -1455,7 +1427,7 @@ sk_load_resident_keys(const char *pin, struct sk_option **options,
 		ret = r;
 		goto out;
 	}
-	/* success, unless we have no keys but a specific error */
+	 
 	if (nrks > 0 || ret == SSH_SK_ERR_GENERAL)
 		ret = 0;
 	*rksp = rks;
@@ -1476,4 +1448,4 @@ sk_load_resident_keys(const char *pin, struct sk_option **options,
 	return ret;
 }
 
-#endif /* ENABLE_SK_INTERNAL */
+#endif  

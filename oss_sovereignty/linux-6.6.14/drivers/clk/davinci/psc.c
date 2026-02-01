@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Clock driver for TI Davinci PSC controllers
- *
- * Copyright (C) 2017 David Lechner <david@lechnology.com>
- *
- * Based on: drivers/clk/keystone/gate.c
- * Copyright (C) 2013 Texas Instruments.
- *	Murali Karicheri <m-karicheri2@ti.com>
- *	Santosh Shilimkar <santosh.shilimkar@ti.com>
- *
- * And: arch/arm/mach-davinci/psc.c
- * Copyright (C) 2006 Texas Instruments.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/clk.h>
@@ -31,7 +19,7 @@
 
 #include "psc.h"
 
-/* PSC register offsets */
+ 
 #define EPCPR			0x070
 #define PTCMD			0x120
 #define PTSTAT			0x128
@@ -40,7 +28,7 @@
 #define MDSTAT(n)		(0x800 + 4 * (n))
 #define MDCTL(n)		(0xa00 + 4 * (n))
 
-/* PSC module states */
+ 
 enum davinci_lpsc_state {
 	LPSC_STATE_SWRSTDISABLE	= 0,
 	LPSC_STATE_SYNCRST	= 1,
@@ -62,17 +50,7 @@ struct davinci_psc_data {
 	struct reset_controller_dev rcdev;
 };
 
-/**
- * struct davinci_lpsc_clk - LPSC clock structure
- * @dev: the device that provides this LPSC or NULL
- * @hw: clk_hw for the LPSC
- * @pm_domain: power domain for the LPSC
- * @genpd_clk: clock reference owned by @pm_domain
- * @regmap: PSC MMIO region
- * @md: Module domain (LPSC module id)
- * @pd: Power domain
- * @flags: LPSC_* quirk flags
- */
+ 
 struct davinci_lpsc_clk {
 	struct device *dev;
 	struct clk_hw hw;
@@ -87,15 +65,7 @@ struct davinci_lpsc_clk {
 #define to_davinci_psc_data(x) container_of(x, struct davinci_psc_data, x)
 #define to_davinci_lpsc_clk(x) container_of(x, struct davinci_lpsc_clk, x)
 
-/**
- * best_dev_name - get the "best" device name.
- * @dev: the device
- *
- * Returns the device tree compatible name if the device has a DT node,
- * otherwise return the device name. This is mainly needed because clkdev
- * lookups are limited to 20 chars for dev_id and when using device tree,
- * dev_name(dev) is much longer than that.
- */
+ 
 static inline const char *best_dev_name(struct device *dev)
 {
 	const char *compatible;
@@ -181,10 +151,7 @@ static int davinci_psc_genpd_attach_dev(struct generic_pm_domain *pm_domain,
 	struct clk *clk;
 	int ret;
 
-	/*
-	 * pm_clk_remove_clk() will call clk_put(), so we have to use clk_get()
-	 * to get the clock instead of using lpsc->hw.clk directly.
-	 */
+	 
 	clk = clk_get_sys(best_dev_name(lpsc->dev), clk_hw_get_name(&lpsc->hw));
 	if (IS_ERR(clk))
 		return (PTR_ERR(clk));
@@ -220,16 +187,7 @@ static void davinci_psc_genpd_detach_dev(struct generic_pm_domain *pm_domain,
 	lpsc->genpd_clk = NULL;
 }
 
-/**
- * davinci_lpsc_clk_register - register LPSC clock
- * @dev: the clocks's device or NULL
- * @name: name of this clock
- * @parent_name: name of clock's parent
- * @regmap: PSC MMIO region
- * @md: local PSC number
- * @pd: power domain
- * @flags: LPSC_* flags
- */
+ 
 static struct davinci_lpsc_clk *
 davinci_lpsc_clk_register(struct device *dev, const char *name,
 			  const char *parent_name, struct regmap *regmap,
@@ -269,11 +227,11 @@ davinci_lpsc_clk_register(struct device *dev, const char *name,
 		return ERR_PTR(ret);
 	}
 
-	/* for now, genpd is only registered when using device-tree */
+	 
 	if (!dev || !dev->of_node)
 		return lpsc;
 
-	/* genpd attach needs a way to look up this clock */
+	 
 	ret = clk_hw_register_clkdev(&lpsc->hw, name, best_dev_name(dev));
 
 	lpsc->pm_domain.name = devm_kasprintf(dev, GFP_KERNEL, "%s: %s",
@@ -329,12 +287,12 @@ static const struct reset_control_ops davinci_psc_reset_ops = {
 static int davinci_psc_reset_of_xlate(struct reset_controller_dev *rcdev,
 				      const struct of_phandle_args *reset_spec)
 {
-	struct of_phandle_args clkspec = *reset_spec; /* discard const qualifier */
+	struct of_phandle_args clkspec = *reset_spec;  
 	struct clk *clk;
 	struct clk_hw *hw;
 	struct davinci_lpsc_clk *lpsc;
 
-	/* the clock node is the same as the reset node */
+	 
 	clk = of_clk_get_from_provider(&clkspec);
 	if (IS_ERR(clk))
 		return PTR_ERR(clk);
@@ -343,7 +301,7 @@ static int davinci_psc_reset_of_xlate(struct reset_controller_dev *rcdev,
 	lpsc = to_davinci_lpsc_clk(hw);
 	clk_put(clk);
 
-	/* not all modules support local reset */
+	 
 	if (!(lpsc->flags & LPSC_LOCAL_RESET))
 		return -EINVAL;
 
@@ -381,10 +339,7 @@ __davinci_psc_register_clocks(struct device *dev,
 	psc->clk_data.clks = clks;
 	psc->clk_data.clk_num = num_clks;
 
-	/*
-	 * init array with error so that of_clk_src_onecell_get() doesn't
-	 * return NULL for gaps in the sparse array
-	 */
+	 
 	for (i = 0; i < num_clks; i++)
 		clks[i] = ERR_PTR(-ENOENT);
 
@@ -419,10 +374,7 @@ __davinci_psc_register_clocks(struct device *dev,
 		pm_domains[info->md] = &lpsc->pm_domain;
 	}
 
-	/*
-	 * for now, a reset controller is only registered when there is a device
-	 * to associate it with.
-	 */
+	 
 	if (!dev)
 		return psc;
 
@@ -559,5 +511,5 @@ static int __init davinci_psc_driver_init(void)
 	return platform_driver_register(&davinci_psc_driver);
 }
 
-/* has to be postcore_initcall because davinci_gpio depend on PSC clocks */
+ 
 postcore_initcall(davinci_psc_driver_init);

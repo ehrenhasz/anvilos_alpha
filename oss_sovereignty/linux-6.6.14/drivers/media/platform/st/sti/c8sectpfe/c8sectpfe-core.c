@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * c8sectpfe-core.c - C8SECTPFE STi DVB driver
- *
- * Copyright (c) STMicroelectronics 2015
- *
- *   Author:Peter Bennett <peter.bennett@st.com>
- *	    Peter Griffin <peter.griffin@linaro.org>
- *
- */
+
+ 
 #include <linux/atomic.h>
 #include <linux/clk.h>
 #include <linux/completion.h>
@@ -56,7 +48,7 @@ static int load_c8sectpfe_fw(struct c8sectpfei *fei);
 #define PACKET_SIZE (TS_PKT_SIZE+HEADER_SIZE)
 
 #define FEI_ALIGNMENT (32)
-/* hw requires minimum of 8*PACKET_SIZE and padded to 8byte boundary */
+ 
 #define FEI_BUFFER_SIZE (8*PACKET_SIZE*340)
 
 #define FIFO_LEN 1024
@@ -67,11 +59,11 @@ static void c8sectpfe_timer_interrupt(struct timer_list *t)
 	struct channel_info *channel;
 	int chan_num;
 
-	/* iterate through input block channels */
+	 
 	for (chan_num = 0; chan_num < fei->tsin_count; chan_num++) {
 		channel = fei->channel_data[chan_num];
 
-		/* is this descriptor initialised and TP enabled */
+		 
 		if (channel->irec && readl(channel->irec + DMA_PRDS_TPENABLE))
 			tasklet_schedule(&channel->tsklet);
 	}
@@ -98,14 +90,14 @@ static void channel_swdemux_tsklet(struct tasklet_struct *t)
 
 	pos = rp - channel->back_buffer_busaddr;
 
-	/* has it wrapped */
+	 
 	if (wp < rp)
 		wp = channel->back_buffer_busaddr + FEI_BUFFER_SIZE;
 
 	size = wp - rp;
 	num_packets = size / PACKET_SIZE;
 
-	/* manage cache so data is visible to CPU */
+	 
 	dma_sync_single_for_cpu(fei->dev,
 				rp,
 				size,
@@ -126,7 +118,7 @@ static void channel_swdemux_tsklet(struct tasklet_struct *t)
 		pos += PACKET_SIZE;
 	}
 
-	/* advance the read pointer */
+	 
 	if (wp == (channel->back_buffer_busaddr + FEI_BUFFER_SIZE))
 		writel(channel->back_buffer_busaddr, channel->irec +
 			DMA_PRDS_BUSRP_TP(0));
@@ -182,7 +174,7 @@ static int c8sectpfe_start_feed(struct dvb_demux_feed *dvbdmxfeed)
 
 	bitmap = channel->pid_buffer_aligned;
 
-	/* 8192 is a special PID */
+	 
 	if (dvbdmxfeed->pid == 8192) {
 		tmp = readl(fei->io + C8SECTPFE_IB_PID_SET(channel->tsin_id));
 		tmp &= ~C8SECTPFE_PID_ENABLE;
@@ -192,7 +184,7 @@ static int c8sectpfe_start_feed(struct dvb_demux_feed *dvbdmxfeed)
 		bitmap_set(bitmap, dvbdmxfeed->pid, 1);
 	}
 
-	/* manage cache so PID bitmap is visible to HW */
+	 
 	dma_sync_single_for_device(fei->dev,
 					channel->pid_buffer_busaddr,
 					PID_TABLE_SIZE,
@@ -213,7 +205,7 @@ static int c8sectpfe_start_feed(struct dvb_demux_feed *dvbdmxfeed)
 
 		tasklet_setup(&channel->tsklet, channel_swdemux_tsklet);
 
-		/* Reset the internal inputblock sram pointers */
+		 
 		writel(channel->fifo,
 			fei->io + C8SECTPFE_IB_BUFF_STRT(channel->tsin_id));
 		writel(channel->fifo + FIFO_LEN - 1,
@@ -225,7 +217,7 @@ static int c8sectpfe_start_feed(struct dvb_demux_feed *dvbdmxfeed)
 			fei->io + C8SECTPFE_IB_WRT_PNT(channel->tsin_id));
 
 
-		/* reset read / write memdma ptrs for this channel */
+		 
 		writel(channel->back_buffer_busaddr, channel->irec +
 			DMA_PRDS_BUSBASE_TP(0));
 
@@ -235,11 +227,11 @@ static int c8sectpfe_start_feed(struct dvb_demux_feed *dvbdmxfeed)
 		writel(channel->back_buffer_busaddr, channel->irec +
 			DMA_PRDS_BUSWP_TP(0));
 
-		/* Issue a reset and enable InputBlock */
+		 
 		writel(C8SECTPFE_SYS_ENABLE | C8SECTPFE_SYS_RESET
 			, fei->io + C8SECTPFE_IB_SYS(channel->tsin_id));
 
-		/* and enable the tp */
+		 
 		writel(0x1, channel->irec + DMA_PRDS_TPENABLE);
 
 		dev_dbg(fei->dev, "%s:%d Starting DMA feed on stdemux=%p\n"
@@ -286,7 +278,7 @@ static int c8sectpfe_stop_feed(struct dvb_demux_feed *dvbdmxfeed)
 		bitmap_clear(bitmap, dvbdmxfeed->pid, 1);
 	}
 
-	/* manage cache so data is visible to HW */
+	 
 	dma_sync_single_for_device(fei->dev,
 					channel->pid_buffer_busaddr,
 					PID_TABLE_SIZE,
@@ -296,21 +288,21 @@ static int c8sectpfe_stop_feed(struct dvb_demux_feed *dvbdmxfeed)
 
 		channel = fei->channel_data[stdemux->tsin_index];
 
-		/* TP re-configuration on page 168 of functional spec */
+		 
 
-		/* disable IB (prevents more TS data going to memdma) */
+		 
 		writel(0, fei->io + C8SECTPFE_IB_SYS(channel->tsin_id));
 
-		/* disable this channels descriptor */
+		 
 		writel(0,  channel->irec + DMA_PRDS_TPENABLE);
 
 		tasklet_disable(&channel->tsklet);
 
-		/* now request memdma channel goes idle */
+		 
 		idlereq = (1 << channel->tsin_id) | IDLEREQ;
 		writel(idlereq, fei->io + DMA_IDLE_REQ);
 
-		/* wait for idle irq handler to signal completion */
+		 
 		ret = wait_for_completion_timeout(&channel->idle_completion,
 						msecs_to_jiffies(100));
 
@@ -321,7 +313,7 @@ static int c8sectpfe_stop_feed(struct dvb_demux_feed *dvbdmxfeed)
 
 		reinit_completion(&channel->idle_completion);
 
-		/* reset read / write ptrs for this channel */
+		 
 
 		writel(channel->back_buffer_busaddr,
 			channel->irec + DMA_PRDS_BUSBASE_TP(0));
@@ -336,10 +328,10 @@ static int c8sectpfe_stop_feed(struct dvb_demux_feed *dvbdmxfeed)
 			"%s:%d stopping DMA feed on stdemux=%p channel=%d\n",
 			__func__, __LINE__, stdemux, channel->tsin_id);
 
-		/* turn off all PIDS in the bitmap */
+		 
 		memset(channel->pid_buffer_aligned, 0, PID_TABLE_SIZE);
 
-		/* manage cache so data is visible to HW */
+		 
 		dma_sync_single_for_device(fei->dev,
 					channel->pid_buffer_busaddr,
 					PID_TABLE_SIZE,
@@ -406,10 +398,9 @@ static irqreturn_t c8sectpfe_idle_irq_handler(int irq, void *priv)
 	int bit;
 	unsigned long tmp = readl(fei->io + DMA_IDLE_REQ);
 
-	/* page 168 of functional spec: Clear the idle request
-	   by writing 0 to the C8SECTPFE_DMA_IDLE_REQ register. */
+	 
 
-	/* signal idle completion */
+	 
 	for_each_set_bit(bit, &tmp, fei->hw_stats.num_ib) {
 
 		chan = find_channel(fei, bit);
@@ -467,7 +458,7 @@ static int configure_memdma_and_inputblock(struct c8sectpfei *fei,
 		goto err_unmap;
 	}
 
-	/* Ensure backbuffer is 32byte aligned */
+	 
 	tsin->back_buffer_aligned = tsin->back_buffer_start + FEI_ALIGNMENT;
 
 	tsin->back_buffer_aligned = PTR_ALIGN(tsin->back_buffer_aligned, FEI_ALIGNMENT);
@@ -483,23 +474,14 @@ static int configure_memdma_and_inputblock(struct c8sectpfei *fei,
 		goto err_unmap;
 	}
 
-	/*
-	 * The pid buffer can be configured (in hw) for byte or bit
-	 * per pid. By powers of deduction we conclude stih407 family
-	 * is configured (at SoC design stage) for bit per pid.
-	 */
+	 
 	tsin->pid_buffer_start = kzalloc(PID_TABLE_SIZE + PID_TABLE_SIZE, GFP_KERNEL);
 	if (!tsin->pid_buffer_start) {
 		ret = -ENOMEM;
 		goto err_unmap;
 	}
 
-	/*
-	 * PID buffer needs to be aligned to size of the pid table
-	 * which at bit per pid is 1024 bytes (8192 pids / 8).
-	 * PIDF_BASE register enforces this alignment when writing
-	 * the register.
-	 */
+	 
 
 	tsin->pid_buffer_aligned = tsin->pid_buffer_start + PID_TABLE_SIZE;
 
@@ -516,7 +498,7 @@ static int configure_memdma_and_inputblock(struct c8sectpfei *fei,
 		goto err_unmap;
 	}
 
-	/* manage cache so pid bitmap is visible to HW */
+	 
 	dma_sync_single_for_device(fei->dev,
 				tsin->pid_buffer_busaddr,
 				PID_TABLE_SIZE,
@@ -541,7 +523,7 @@ static int configure_memdma_and_inputblock(struct c8sectpfei *fei,
 		goto err_unmap;
 	}
 
-	/* Enable this input block */
+	 
 	tmp = readl(fei->io + SYS_INPUT_CLKEN);
 	tmp |= BIT(tsin->tsin_id);
 	writel(tmp, fei->io + SYS_INPUT_CLKEN);
@@ -566,7 +548,7 @@ static int configure_memdma_and_inputblock(struct c8sectpfei *fei,
 
 	writel(TS_PKT_SIZE, fei->io + C8SECTPFE_IB_PKT_LEN(tsin->tsin_id));
 
-	/* Place the FIFO's at the end of the irec descriptors */
+	 
 
 	tsin->fifo = (tsin->tsin_id * FIFO_LEN);
 
@@ -584,14 +566,9 @@ static int configure_memdma_and_inputblock(struct c8sectpfei *fei,
 		tsin->tsin_id, readl(fei->io + PIDF_BASE(tsin->tsin_id)),
 		&tsin->pid_buffer_busaddr);
 
-	/* Configure and enable HW PID filtering */
+	 
 
-	/*
-	 * The PID value is created by assembling the first 8 bytes of
-	 * the TS packet into a 64-bit word in big-endian format. A
-	 * slice of that 64-bit word is taken from
-	 * (PID_OFFSET+PID_NUM_BITS-1) to PID_OFFSET.
-	 */
+	 
 	tmp = (C8SECTPFE_PID_ENABLE | C8SECTPFE_PID_NUMBITS(13)
 		| C8SECTPFE_PID_OFFSET(40));
 
@@ -604,13 +581,13 @@ static int configure_memdma_and_inputblock(struct c8sectpfei *fei,
 		readl(fei->io + C8SECTPFE_IB_BUFF_STRT(tsin->tsin_id)),
 		readl(fei->io + C8SECTPFE_IB_BUFF_END(tsin->tsin_id)));
 
-	/* Get base addpress of pointer record block from DMEM */
+	 
 	tsin->irec = fei->io + DMA_MEMDMA_OFFSET + DMA_DMEM_OFFSET +
 			readl(fei->io + DMA_PTRREC_BASE);
 
-	/* fill out pointer record data structure */
+	 
 
-	/* advance pointer record block to our channel */
+	 
 	tsin->irec += (tsin->tsin_id * DMA_PRDS_SIZE);
 
 	writel(tsin->fifo, tsin->irec + DMA_PRDS_MEMBASE);
@@ -621,7 +598,7 @@ static int configure_memdma_and_inputblock(struct c8sectpfei *fei,
 
 	writel(0x1, tsin->irec + DMA_PRDS_TPENABLE);
 
-	/* read/write pointers with physical bus address */
+	 
 
 	writel(tsin->back_buffer_busaddr, tsin->irec + DMA_PRDS_BUSBASE_TP(0));
 
@@ -631,7 +608,7 @@ static int configure_memdma_and_inputblock(struct c8sectpfei *fei,
 	writel(tsin->back_buffer_busaddr, tsin->irec + DMA_PRDS_BUSWP_TP(0));
 	writel(tsin->back_buffer_busaddr, tsin->irec + DMA_PRDS_BUSRP_TP(0));
 
-	/* initialize tasklet */
+	 
 	tasklet_setup(&tsin->tsklet, channel_swdemux_tsklet);
 
 	return 0;
@@ -648,10 +625,7 @@ static irqreturn_t c8sectpfe_error_irq_handler(int irq, void *priv)
 	dev_err(fei->dev, "%s: error handling not yet implemented\n"
 		, __func__);
 
-	/*
-	 * TODO FIXME we should detect some error conditions here
-	 * and ideally do something about them!
-	 */
+	 
 
 	return IRQ_HANDLED;
 }
@@ -665,7 +639,7 @@ static int c8sectpfe_probe(struct platform_device *pdev)
 	int ret, index = 0;
 	struct channel_info *tsin;
 
-	/* Allocate the c8sectpfei structure */
+	 
 	fei = devm_kzalloc(dev, sizeof(struct c8sectpfei), GFP_KERNEL);
 	if (!fei)
 		return -ENOMEM;
@@ -707,13 +681,13 @@ static int c8sectpfe_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* to save power disable all IP's (on by default) */
+	 
 	writel(0, fei->io + SYS_INPUT_CLKEN);
 
-	/* Enable memdma clock */
+	 
 	writel(MEMDMAENABLE, fei->io + SYS_OTHER_CLKEN);
 
-	/* clear internal sram */
+	 
 	memset_io(fei->sram, 0x0, fei->sram_size);
 
 	c8sectpfe_getconfig(fei);
@@ -773,7 +747,7 @@ static int c8sectpfe_probe(struct platform_device *pdev)
 			goto err_node_put;
 		}
 
-		/* sanity check value */
+		 
 		if (tsin->tsin_id > fei->hw_stats.num_ib) {
 			dev_err(&pdev->dev,
 				"tsin-num %d specified greater than number\n\tof input block hw in SoC! (%d)",
@@ -814,7 +788,7 @@ static int c8sectpfe_probe(struct platform_device *pdev)
 		}
 		of_node_put(i2c_bus);
 
-		/* Acquire reset GPIO and activate it */
+		 
 		tsin->rst_gpio = devm_fwnode_gpiod_get(dev,
 						       of_fwnode_handle(child),
 						       "reset", GPIOD_OUT_HIGH,
@@ -827,9 +801,9 @@ static int c8sectpfe_probe(struct platform_device *pdev)
 		}
 
 		if (!ret) {
-			/* wait for the chip to reset */
+			 
 			usleep_range(3500, 5000);
-			/* release the reset line */
+			 
 			gpiod_set_value_cansleep(tsin->rst_gpio, 0);
 			usleep_range(3000, 5000);
 		}
@@ -846,12 +820,12 @@ static int c8sectpfe_probe(struct platform_device *pdev)
 		index++;
 	}
 
-	/* Setup timer interrupt */
+	 
 	timer_setup(&fei->timer, c8sectpfe_timer_interrupt, 0);
 
 	mutex_init(&fei->lock);
 
-	/* Get the configuration information about the tuners */
+	 
 	ret = c8sectpfe_tuner_register_frontend(&fei->c8sectpfe[0],
 					(void *)fei,
 					c8sectpfe_start_feed,
@@ -883,9 +857,7 @@ static void c8sectpfe_remove(struct platform_device *pdev)
 
 	c8sectpfe_tuner_unregister_frontend(fei->c8sectpfe[0], fei);
 
-	/*
-	 * Now loop through and un-configure each of the InputBlock resources
-	 */
+	 
 	for (i = 0; i < fei->tsin_count; i++) {
 		channel = fei->channel_data[i];
 		free_input_block(fei, channel);
@@ -897,7 +869,7 @@ static void c8sectpfe_remove(struct platform_device *pdev)
 	if (readl(fei->io + DMA_CPU_RUN))
 		writel(0x0,  fei->io + DMA_CPU_RUN);
 
-	/* unclock all internal IP's */
+	 
 	if (readl(fei->io + SYS_INPUT_CLKEN))
 		writel(0, fei->io + SYS_INPUT_CLKEN);
 
@@ -913,7 +885,7 @@ static int configure_channels(struct c8sectpfei *fei)
 	int index = 0, ret;
 	struct device_node *child, *np = fei->dev->of_node;
 
-	/* iterate round each tsin and configure memdma descriptor and IB hw */
+	 
 	for_each_child_of_node(np, child) {
 		ret = configure_memdma_and_inputblock(fei,
 						fei->channel_data[index]);
@@ -953,7 +925,7 @@ c8sectpfe_elf_sanity_check(struct c8sectpfei *fei, const struct firmware *fw)
 
 	ehdr = (struct elf32_hdr *)fw->data;
 
-	/* We only support ELF32 at this point */
+	 
 	class = ehdr->e_ident[EI_CLASS];
 	if (class != ELFCLASS32) {
 		dev_err(fei->dev, "Unsupported class: %d\n", class);
@@ -975,7 +947,7 @@ c8sectpfe_elf_sanity_check(struct c8sectpfei *fei, const struct firmware *fw)
 		return -EINVAL;
 	}
 
-	/* Check ELF magic */
+	 
 	ehdr = (Elf32_Ehdr *)fw->data;
 	if (ehdr->e_ident[EI_MAG0] != ELFMAG0 ||
 	    ehdr->e_ident[EI_MAG1] != ELFMAG1 ||
@@ -1006,12 +978,7 @@ static void load_imem_segment(struct c8sectpfei *fei, Elf32_Phdr *phdr,
 	const u8 *imem_src = fw->data + phdr->p_offset;
 	int i;
 
-	/*
-	 * For IMEM segments, the segment contains 24-bit
-	 * instructions which must be padded to 32-bit
-	 * instructions before being written. The written
-	 * segment is padded with NOP instructions.
-	 */
+	 
 
 	dev_dbg(fei->dev,
 		"Loading IMEM segment %d 0x%08x\n\t (0x%x bytes) -> 0x%p (0x%x bytes)\n",
@@ -1022,8 +989,7 @@ static void load_imem_segment(struct c8sectpfei *fei, Elf32_Phdr *phdr,
 
 		writeb(readb((void __iomem *)imem_src), (void __iomem *)dest);
 
-		/* Every 3 bytes, add an additional
-		 * padding zero in destination */
+		 
 		if (i % 3 == 2) {
 			dest++;
 			writeb(0x00, (void __iomem *)dest);
@@ -1037,10 +1003,7 @@ static void load_imem_segment(struct c8sectpfei *fei, Elf32_Phdr *phdr,
 static void load_dmem_segment(struct c8sectpfei *fei, Elf32_Phdr *phdr,
 			const struct firmware *fw, u8 __iomem *dst, int seg_num)
 {
-	/*
-	 * For DMEM segments copy the segment data from the ELF
-	 * file and pad segment with zeroes
-	 */
+	 
 
 	dev_dbg(fei->dev,
 		"Loading DMEM segment %d 0x%08x\n\t(0x%x bytes) -> 0x%p (0x%x bytes)\n",
@@ -1067,16 +1030,14 @@ static int load_slim_core_fw(const struct firmware *fw, struct c8sectpfei *fei)
 	ehdr = (Elf32_Ehdr *)fw->data;
 	phdr = (Elf32_Phdr *)(fw->data + ehdr->e_phoff);
 
-	/* go through the available ELF segments */
+	 
 	for (i = 0; i < ehdr->e_phnum; i++, phdr++) {
 
-		/* Only consider LOAD segments */
+		 
 		if (phdr->p_type != PT_LOAD)
 			continue;
 
-		/*
-		 * Check segment is contained within the fw->data buffer
-		 */
+		 
 		if (phdr->p_offset + phdr->p_filesz > fw->size) {
 			dev_err(fei->dev,
 				"Segment %d is outside of firmware file\n", i);
@@ -1084,26 +1045,16 @@ static int load_slim_core_fw(const struct firmware *fw, struct c8sectpfei *fei)
 			break;
 		}
 
-		/*
-		 * MEMDMA IMEM has executable flag set, otherwise load
-		 * this segment into DMEM.
-		 *
-		 */
+		 
 
 		if (phdr->p_flags & PF_X) {
 			dst = (u8 __iomem *) fei->io + DMA_MEMDMA_IMEM;
-			/*
-			 * The Slim ELF file uses 32-bit word addressing for
-			 * load offsets.
-			 */
+			 
 			dst += (phdr->p_paddr & 0xFFFFF) * sizeof(unsigned int);
 			load_imem_segment(fei, phdr, fw, dst, i);
 		} else {
 			dst = (u8 __iomem *) fei->io + DMA_MEMDMA_DMEM;
-			/*
-			 * The Slim ELF file uses 32-bit word addressing for
-			 * load offsets.
-			 */
+			 
 			dst += (phdr->p_paddr & 0xFFFFF) * sizeof(unsigned int);
 			load_dmem_segment(fei, phdr, fw, dst, i);
 		}
@@ -1138,17 +1089,14 @@ static int load_c8sectpfe_fw(struct c8sectpfei *fei)
 		return err;
 	}
 
-	/* now the firmware is loaded configure the input blocks */
+	 
 	err = configure_channels(fei);
 	if (err) {
 		dev_err(fei->dev, "configure_channels failed err=(%d)\n", err);
 		return err;
 	}
 
-	/*
-	 * STBus target port can access IMEM and DMEM ports
-	 * without waiting for CPU
-	 */
+	 
 	writel(0x1, fei->io + DMA_PER_STBUS_SYNC);
 
 	dev_info(fei->dev, "Boot the memdma SLIM core\n");
@@ -1161,7 +1109,7 @@ static int load_c8sectpfe_fw(struct c8sectpfei *fei)
 
 static const struct of_device_id c8sectpfe_match[] = {
 	{ .compatible = "st,stih407-c8sectpfe" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, c8sectpfe_match);
 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/* Copyright 2017 Microsemi Corporation
- * Copyright 2018-2019 NXP
- */
+
+ 
 #include <linux/fsl/enetc_mdio.h>
 #include <soc/mscc/ocelot_qsys.h>
 #include <soc/mscc/ocelot_vcap.h>
@@ -163,16 +161,16 @@ static const u32 vsc9959_qs_regmap[] = {
 };
 
 static const u32 vsc9959_vcap_regmap[] = {
-	/* VCAP_CORE_CFG */
+	 
 	REG(VCAP_CORE_UPDATE_CTRL,		0x000000),
 	REG(VCAP_CORE_MV_CFG,			0x000004),
-	/* VCAP_CORE_CACHE */
+	 
 	REG(VCAP_CACHE_ENTRY_DAT,		0x000008),
 	REG(VCAP_CACHE_MASK_DAT,		0x000108),
 	REG(VCAP_CACHE_ACTION_DAT,		0x000208),
 	REG(VCAP_CACHE_CNT_DAT,			0x000308),
 	REG(VCAP_CACHE_TG_DAT,			0x000388),
-	/* VCAP_CONST */
+	 
 	REG(VCAP_CONST_VCAP_VER,		0x000398),
 	REG(VCAP_CONST_ENTRY_WIDTH,		0x00039c),
 	REG(VCAP_CONST_ENTRY_CNT,		0x0003a0),
@@ -518,7 +516,7 @@ static const u32 *vsc9959_regmap[TARGET_MAX] = {
 	[DEV_GMII] = vsc9959_dev_gmii_regmap,
 };
 
-/* Addresses are relative to the PCI device's base address */
+ 
 static const struct resource vsc9959_resources[] = {
 	DEFINE_RES_MEM_NAMED(0x0010000, 0x0010000, "sys"),
 	DEFINE_RES_MEM_NAMED(0x0030000, 0x0010000, "rew"),
@@ -551,9 +549,7 @@ static const char * const vsc9959_resource_names[TARGET_MAX] = {
 	[ANA] = "ana",
 };
 
-/* Port MAC 0 Internal MDIO bus through which the SerDes acting as an
- * SGMII/QSGMII MAC PCS can be found.
- */
+ 
 static const struct resource vsc9959_imdio_res =
 	DEFINE_RES_MEM_NAMED(0x8030, 0x10, "imdio");
 
@@ -591,7 +587,7 @@ static const struct reg_field vsc9959_regfields[REGFIELD_MAX] = {
 	[ANA_TABLES_MACTINDX_M_INDEX] = REG_FIELD(ANA_TABLES_MACTINDX, 0, 10),
 	[SYS_RESET_CFG_CORE_ENA] = REG_FIELD(SYS_RESET_CFG, 0, 0),
 	[GCB_SOFT_RST_SWC_RST] = REG_FIELD(GCB_SOFT_RST, 0, 0),
-	/* Replicated per number of ports (7), register size 4 per port */
+	 
 	[QSYS_SWITCH_PORT_MODE_PORT_ENA] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 14, 14, 7, 4),
 	[QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 11, 13, 7, 4),
 	[QSYS_SWITCH_PORT_MODE_YEL_RSRVD] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 10, 10, 7, 4),
@@ -654,24 +650,24 @@ static const struct vcap_field vsc9959_vcap_is1_keys[] = {
 	[VCAP_IS1_HK_VID]			= { 26,  12},
 	[VCAP_IS1_HK_DEI]			= { 38,   1},
 	[VCAP_IS1_HK_PCP]			= { 39,   3},
-	/* Specific Fields for IS1 Half Key S1_NORMAL */
+	 
 	[VCAP_IS1_HK_L2_SMAC]			= { 42,  48},
 	[VCAP_IS1_HK_ETYPE_LEN]			= { 90,   1},
 	[VCAP_IS1_HK_ETYPE]			= { 91,  16},
 	[VCAP_IS1_HK_IP_SNAP]			= {107,   1},
 	[VCAP_IS1_HK_IP4]			= {108,   1},
-	/* Layer-3 Information */
+	 
 	[VCAP_IS1_HK_L3_FRAGMENT]		= {109,   1},
 	[VCAP_IS1_HK_L3_FRAG_OFS_GT0]		= {110,   1},
 	[VCAP_IS1_HK_L3_OPTIONS]		= {111,   1},
 	[VCAP_IS1_HK_L3_DSCP]			= {112,   6},
 	[VCAP_IS1_HK_L3_IP4_SIP]		= {118,  32},
-	/* Layer-4 Information */
+	 
 	[VCAP_IS1_HK_TCP_UDP]			= {150,   1},
 	[VCAP_IS1_HK_TCP]			= {151,   1},
 	[VCAP_IS1_HK_L4_SPORT]			= {152,  16},
 	[VCAP_IS1_HK_L4_RNG]			= {168,   8},
-	/* Specific Fields for IS1 Half Key S1_5TUPLE_IP4 */
+	 
 	[VCAP_IS1_HK_IP4_INNER_TPID]            = { 42,   1},
 	[VCAP_IS1_HK_IP4_INNER_VID]		= { 43,  12},
 	[VCAP_IS1_HK_IP4_INNER_DEI]		= { 55,   1},
@@ -700,7 +696,7 @@ static const struct vcap_field vsc9959_vcap_is1_actions[] = {
 	[VCAP_IS1_ACT_PAG_OVERRIDE_MASK]	= { 13,  8},
 	[VCAP_IS1_ACT_PAG_VAL]			= { 21,  8},
 	[VCAP_IS1_ACT_RSV]			= { 29,  9},
-	/* The fields below are incorrectly shifted by 2 in the manual */
+	 
 	[VCAP_IS1_ACT_VID_REPLACE_ENA]		= { 38,  1},
 	[VCAP_IS1_ACT_VID_ADD_VAL]		= { 39, 12},
 	[VCAP_IS1_ACT_FID_SEL]			= { 51,  2},
@@ -715,7 +711,7 @@ static const struct vcap_field vsc9959_vcap_is1_actions[] = {
 };
 
 static struct vcap_field vsc9959_vcap_is2_keys[] = {
-	/* Common: 41 bits */
+	 
 	[VCAP_IS2_TYPE]				= {  0,   4},
 	[VCAP_IS2_HK_FIRST]			= {  4,   1},
 	[VCAP_IS2_HK_PAG]			= {  5,   8},
@@ -728,19 +724,19 @@ static struct vcap_field vsc9959_vcap_is2_keys[] = {
 	[VCAP_IS2_HK_VID]			= { 25,  12},
 	[VCAP_IS2_HK_DEI]			= { 37,   1},
 	[VCAP_IS2_HK_PCP]			= { 38,   3},
-	/* MAC_ETYPE / MAC_LLC / MAC_SNAP / OAM common */
+	 
 	[VCAP_IS2_HK_L2_DMAC]			= { 41,  48},
 	[VCAP_IS2_HK_L2_SMAC]			= { 89,  48},
-	/* MAC_ETYPE (TYPE=000) */
+	 
 	[VCAP_IS2_HK_MAC_ETYPE_ETYPE]		= {137,  16},
 	[VCAP_IS2_HK_MAC_ETYPE_L2_PAYLOAD0]	= {153,  16},
 	[VCAP_IS2_HK_MAC_ETYPE_L2_PAYLOAD1]	= {169,   8},
 	[VCAP_IS2_HK_MAC_ETYPE_L2_PAYLOAD2]	= {177,   3},
-	/* MAC_LLC (TYPE=001) */
+	 
 	[VCAP_IS2_HK_MAC_LLC_L2_LLC]		= {137,  40},
-	/* MAC_SNAP (TYPE=010) */
+	 
 	[VCAP_IS2_HK_MAC_SNAP_L2_SNAP]		= {137,  40},
-	/* MAC_ARP (TYPE=011) */
+	 
 	[VCAP_IS2_HK_MAC_ARP_SMAC]		= { 41,  48},
 	[VCAP_IS2_HK_MAC_ARP_ADDR_SPACE_OK]	= { 89,   1},
 	[VCAP_IS2_HK_MAC_ARP_PROTO_SPACE_OK]	= { 90,   1},
@@ -752,7 +748,7 @@ static struct vcap_field vsc9959_vcap_is2_keys[] = {
 	[VCAP_IS2_HK_MAC_ARP_L3_IP4_DIP]	= { 97,  32},
 	[VCAP_IS2_HK_MAC_ARP_L3_IP4_SIP]	= {129,  32},
 	[VCAP_IS2_HK_MAC_ARP_DIP_EQ_SIP]	= {161,   1},
-	/* IP4_TCP_UDP / IP4_OTHER common */
+	 
 	[VCAP_IS2_HK_IP4]			= { 41,   1},
 	[VCAP_IS2_HK_L3_FRAGMENT]		= { 42,   1},
 	[VCAP_IS2_HK_L3_FRAG_OFS_GT0]		= { 43,   1},
@@ -762,7 +758,7 @@ static struct vcap_field vsc9959_vcap_is2_keys[] = {
 	[VCAP_IS2_HK_L3_IP4_DIP]		= { 54,  32},
 	[VCAP_IS2_HK_L3_IP4_SIP]		= { 86,  32},
 	[VCAP_IS2_HK_DIP_EQ_SIP]		= {118,   1},
-	/* IP4_TCP_UDP (TYPE=100) */
+	 
 	[VCAP_IS2_HK_TCP]			= {119,   1},
 	[VCAP_IS2_HK_L4_DPORT]			= {120,  16},
 	[VCAP_IS2_HK_L4_SPORT]			= {136,  16},
@@ -777,14 +773,14 @@ static struct vcap_field vsc9959_vcap_is2_keys[] = {
 	[VCAP_IS2_HK_L4_URG]			= {167,   1},
 	[VCAP_IS2_HK_L4_1588_DOM]		= {168,   8},
 	[VCAP_IS2_HK_L4_1588_VER]		= {176,   4},
-	/* IP4_OTHER (TYPE=101) */
+	 
 	[VCAP_IS2_HK_IP4_L3_PROTO]		= {119,   8},
 	[VCAP_IS2_HK_L3_PAYLOAD]		= {127,  56},
-	/* IP6_STD (TYPE=110) */
+	 
 	[VCAP_IS2_HK_IP6_L3_TTL_GT0]		= { 41,   1},
 	[VCAP_IS2_HK_L3_IP6_SIP]		= { 42, 128},
 	[VCAP_IS2_HK_IP6_L3_PROTO]		= {170,   8},
-	/* OAM (TYPE=111) */
+	 
 	[VCAP_IS2_HK_OAM_MEL_FLAGS]		= {137,   7},
 	[VCAP_IS2_HK_OAM_VER]			= {144,   5},
 	[VCAP_IS2_HK_OAM_OPCODE]		= {149,   8},
@@ -817,7 +813,7 @@ static struct vcap_props vsc9959_vcap_props[] = {
 		.action_type_width = 0,
 		.action_table = {
 			[ES0_ACTION_TYPE_NORMAL] = {
-				.width = 72, /* HIT_STICKY not included */
+				.width = 72,  
 				.count = 1,
 			},
 		},
@@ -829,7 +825,7 @@ static struct vcap_props vsc9959_vcap_props[] = {
 		.action_type_width = 0,
 		.action_table = {
 			[IS1_ACTION_TYPE_NORMAL] = {
-				.width = 78, /* HIT_STICKY not included */
+				.width = 78,  
 				.count = 4,
 			},
 		},
@@ -890,14 +886,12 @@ static int vsc9959_sys_ram_init_status(struct ocelot *ocelot)
 	return ocelot_read(ocelot, SYS_RAM_INIT);
 }
 
-/* CORE_ENA is in SYS:SYSTEM:RESET_CFG
- * RAM_INIT is in SYS:RAM_CTRL:RAM_INIT
- */
+ 
 static int vsc9959_reset(struct ocelot *ocelot)
 {
 	int val, err;
 
-	/* soft-reset the switch core */
+	 
 	ocelot_field_write(ocelot, GCB_SOFT_RST_SWC_RST, 1);
 
 	err = readx_poll_timeout(vsc9959_gcb_soft_rst_status, ocelot, val, !val,
@@ -907,7 +901,7 @@ static int vsc9959_reset(struct ocelot *ocelot)
 		return err;
 	}
 
-	/* initialize switch mem ~40us */
+	 
 	ocelot_write(ocelot, SYS_RAM_INIT_RAM_INIT, SYS_RAM_INIT);
 	err = readx_poll_timeout(vsc9959_sys_ram_init_status, ocelot, val, !val,
 				 VSC9959_SYS_RAMINIT_SLEEP,
@@ -917,16 +911,13 @@ static int vsc9959_reset(struct ocelot *ocelot)
 		return err;
 	}
 
-	/* enable switch core */
+	 
 	ocelot_field_write(ocelot, SYS_RESET_CFG_CORE_ENA, 1);
 
 	return 0;
 }
 
-/* Watermark encode
- * Bit 8:   Unit; 0:1, 1:16
- * Bit 7-0: Value to be multiplied with unit
- */
+ 
 static u16 vsc9959_wm_enc(u16 value)
 {
 	WARN_ON(value >= 16 * BIT(8));
@@ -1003,13 +994,11 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
 	bus->parent = dev;
 	mdio_priv = bus->priv;
 	mdio_priv->hw = hw;
-	/* This gets added to imdio_regs, which already maps addresses
-	 * starting with the proper offset.
-	 */
+	 
 	mdio_priv->mdio_base = 0;
 	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-imdio", dev_name(dev));
 
-	/* Needed in order to initialize the bus mutex lock */
+	 
 	rc = mdiobus_register(bus);
 	if (rc < 0) {
 		dev_err(dev, "failed to register MDIO bus\n");
@@ -1056,17 +1045,10 @@ static void vsc9959_mdio_bus_free(struct ocelot *ocelot)
 	mdiobus_free(felix->imdio);
 }
 
-/* The switch considers any frame (regardless of size) as eligible for
- * transmission if the traffic class gate is open for at least 33 ns.
- * Overruns are prevented by cropping an interval at the end of the gate time
- * slot for which egress scheduling is blocked, but we need to still keep 33 ns
- * available for one packet to be transmitted, otherwise the port tc will hang.
- * This function returns the size of a gate interval that remains available for
- * setting the guard band, after reserving the space for one egress frame.
- */
+ 
 static u64 vsc9959_tas_remaining_gate_len_ps(u64 gate_len_ns)
 {
-	/* Gate always open */
+	 
 	if (gate_len_ns == U64_MAX)
 		return U64_MAX;
 
@@ -1076,10 +1058,7 @@ static u64 vsc9959_tas_remaining_gate_len_ps(u64 gate_len_ns)
 	return (gate_len_ns - VSC9959_TAS_MIN_GATE_LEN_NS) * PSEC_PER_NSEC;
 }
 
-/* Extract shortest continuous gate open intervals in ns for each traffic class
- * of a cyclic tc-taprio schedule. If a gate is always open, the duration is
- * considered U64_MAX. If the gate is always closed, it is considered 0.
- */
+ 
 static void vsc9959_tas_min_gate_lengths(struct tc_taprio_qopt_offload *taprio,
 					 u64 min_gate_len[OCELOT_NUM_TC])
 {
@@ -1088,25 +1067,19 @@ static void vsc9959_tas_min_gate_lengths(struct tc_taprio_qopt_offload *taprio,
 	u8 gates_ever_opened = 0;
 	int tc, i, n;
 
-	/* Initialize arrays */
+	 
 	for (tc = 0; tc < OCELOT_NUM_TC; tc++) {
 		min_gate_len[tc] = U64_MAX;
 		gate_len[tc] = 0;
 	}
 
-	/* If we don't have taprio, consider all gates as permanently open */
+	 
 	if (!taprio)
 		return;
 
 	n = taprio->num_entries;
 
-	/* Walk through the gate list twice to determine the length
-	 * of consecutively open gates for a traffic class, including
-	 * open gates that wrap around. We are just interested in the
-	 * minimum window size, and this doesn't change what the
-	 * minimum is (if the gate never closes, min_gate_len will
-	 * remain U64_MAX).
-	 */
+	 
 	for (i = 0; i < 2 * n; i++) {
 		entry = &taprio->entries[i % n];
 
@@ -1115,9 +1088,7 @@ static void vsc9959_tas_min_gate_lengths(struct tc_taprio_qopt_offload *taprio,
 				gate_len[tc] += entry->interval;
 				gates_ever_opened |= BIT(tc);
 			} else {
-				/* Gate closes now, record a potential new
-				 * minimum and reinitialize length
-				 */
+				 
 				if (min_gate_len[tc] > gate_len[tc] &&
 				    gate_len[tc])
 					min_gate_len[tc] = gate_len[tc];
@@ -1126,21 +1097,13 @@ static void vsc9959_tas_min_gate_lengths(struct tc_taprio_qopt_offload *taprio,
 		}
 	}
 
-	/* min_gate_len[tc] actually tracks minimum *open* gate time, so for
-	 * permanently closed gates, min_gate_len[tc] will still be U64_MAX.
-	 * Therefore they are currently indistinguishable from permanently
-	 * open gates. Overwrite the gate len with 0 when we know they're
-	 * actually permanently closed, i.e. after the loop above.
-	 */
+	 
 	for (tc = 0; tc < OCELOT_NUM_TC; tc++)
 		if (!(gates_ever_opened & BIT(tc)))
 			min_gate_len[tc] = 0;
 }
 
-/* ocelot_write_rix is a macro that concatenates QSYS_MAXSDU_CFG_* with _RSZ,
- * so we need to spell out the register access to each traffic class in helper
- * functions, to simplify callers
- */
+ 
 static void vsc9959_port_qmaxsdu_set(struct ocelot *ocelot, int port, int tc,
 				     u32 max_sdu)
 {
@@ -1204,12 +1167,7 @@ static u32 vsc9959_tas_tc_max_sdu(struct tc_taprio_qopt_offload *taprio, int tc)
 	return taprio->max_sdu[tc] + ETH_HLEN + 2 * VLAN_HLEN + ETH_FCS_LEN;
 }
 
-/* Update QSYS_PORT_MAX_SDU to make sure the static guard bands added by the
- * switch (see the ALWAYS_GUARD_BAND_SCH_Q comment) are correct at all MTU
- * values (the default value is 1518). Also, for traffic class windows smaller
- * than one MTU sized frame, update QSYS_QMAXSDU_CFG to enable oversized frame
- * dropping, such that these won't hang the port, as they will never be sent.
- */
+ 
 static void vsc9959_tas_guard_bands_update(struct ocelot *ocelot, int port)
 {
 	struct ocelot_port *ocelot_port = ocelot->ports[port];
@@ -1250,18 +1208,12 @@ static void vsc9959_tas_guard_bands_update(struct ocelot *ocelot, int port)
 	picos_per_byte = (USEC_PER_SEC * 8) / speed;
 
 	val = ocelot_port_readl(ocelot_port, DEV_MAC_MAXLEN_CFG);
-	/* MAXLEN_CFG accounts automatically for VLAN. We need to include it
-	 * manually in the bit time calculation, plus the preamble and SFD.
-	 */
+	 
 	maxlen = val + 2 * VLAN_HLEN;
-	/* Consider the standard Ethernet overhead of 8 octets preamble+SFD,
-	 * 4 octets FCS, 12 octets IFG.
-	 */
+	 
 	needed_bit_time_ps = (u64)(maxlen + 24) * picos_per_byte;
 
-	/* Preemptible TCs don't need to pass a full MTU, the port will
-	 * automatically emit a HOLD request when a preemptible TC gate closes
-	 */
+	 
 	val = ocelot_read_rix(ocelot, QSYS_PREEMPTION_CFG, port);
 	add_frag_size = QSYS_PREEMPTION_CFG_MM_ADD_FRAG_SIZE_X(val);
 	needed_min_frag_time_ps = picos_per_byte *
@@ -1285,38 +1237,19 @@ static void vsc9959_tas_guard_bands_update(struct ocelot *ocelot, int port)
 		if ((mm->active_preemptible_tcs & BIT(tc)) ?
 		    remaining_gate_len_ps > needed_min_frag_time_ps :
 		    remaining_gate_len_ps > needed_bit_time_ps) {
-			/* Setting QMAXSDU_CFG to 0 disables oversized frame
-			 * dropping.
-			 */
+			 
 			max_sdu = requested_max_sdu;
 			dev_dbg(ocelot->dev,
 				"port %d tc %d min gate len %llu"
 				", sending all frames\n",
 				port, tc, min_gate_len[tc]);
 		} else {
-			/* If traffic class doesn't support a full MTU sized
-			 * frame, make sure to enable oversize frame dropping
-			 * for frames larger than the smallest that would fit.
-			 *
-			 * However, the exact same register, QSYS_QMAXSDU_CFG_*,
-			 * controls not only oversized frame dropping, but also
-			 * per-tc static guard band lengths, so it reduces the
-			 * useful gate interval length. Therefore, be careful
-			 * to calculate a guard band (and therefore max_sdu)
-			 * that still leaves 33 ns available in the time slot.
-			 */
+			 
 			max_sdu = div_u64(remaining_gate_len_ps, picos_per_byte);
-			/* A TC gate may be completely closed, which is a
-			 * special case where all packets are oversized.
-			 * Any limit smaller than 64 octets accomplishes this
-			 */
+			 
 			if (!max_sdu)
 				max_sdu = 1;
-			/* Take L1 overhead into account, but just don't allow
-			 * max_sdu to go negative or to 0. Here we use 20
-			 * because QSYS_MAXSDU_CFG_* already counts the 4 FCS
-			 * octets as part of packet size.
-			 */
+			 
 			if (max_sdu > 20)
 				max_sdu -= 20;
 
@@ -1456,24 +1389,14 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
 		goto err_reset_tc;
 	}
 
-	/* Enable guard band. The switch will schedule frames without taking
-	 * their length into account. Thus we'll always need to enable the
-	 * guard band which reserves the time of a maximum sized frame at the
-	 * end of the time window.
-	 *
-	 * Although the ALWAYS_GUARD_BAND_SCH_Q bit is global for all ports, we
-	 * need to set PORT_NUM, because subsequent writes to PARAM_CFG_REG_n
-	 * operate on the port number.
-	 */
+	 
 	ocelot_rmw(ocelot, QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM(port) |
 		   QSYS_TAS_PARAM_CFG_CTRL_ALWAYS_GUARD_BAND_SCH_Q,
 		   QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM_M |
 		   QSYS_TAS_PARAM_CFG_CTRL_ALWAYS_GUARD_BAND_SCH_Q,
 		   QSYS_TAS_PARAM_CFG_CTRL);
 
-	/* Hardware errata -  Admin config could not be overwritten if
-	 * config is pending, need reset the TAS module
-	 */
+	 
 	val = ocelot_read(ocelot, QSYS_PARAM_STATUS_REG_8);
 	if (val & QSYS_PARAM_STATUS_REG_8_CONFIG_PENDING) {
 		ret = -EBUSY;
@@ -1551,7 +1474,7 @@ static void vsc9959_tas_clock_adjust(struct ocelot *ocelot)
 			   QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM_M,
 			   QSYS_TAS_PARAM_CFG_CTRL);
 
-		/* Disable time-aware shaper */
+		 
 		ocelot_rmw_rix(ocelot, 0, QSYS_TAG_CONFIG_ENABLE,
 			       QSYS_TAG_CONFIG, port);
 
@@ -1571,7 +1494,7 @@ static void vsc9959_tas_clock_adjust(struct ocelot *ocelot)
 			   QSYS_TAS_PARAM_CFG_CTRL_CONFIG_CHANGE,
 			   QSYS_TAS_PARAM_CFG_CTRL);
 
-		/* Re-enable time-aware shaper */
+		 
 		ocelot_rmw_rix(ocelot, QSYS_TAG_CONFIG_ENABLE,
 			       QSYS_TAG_CONFIG_ENABLE,
 			       QSYS_TAG_CONFIG, port);
@@ -1600,13 +1523,13 @@ static int vsc9959_qos_port_cbs_set(struct dsa_switch *ds, int port,
 		return 0;
 	}
 
-	/* Rate unit is 100 kbps */
+	 
 	rate = DIV_ROUND_UP(cbs_qopt->idleslope, 100);
-	/* Avoid using zero rate */
+	 
 	rate = clamp_t(u32, rate, 1, GENMASK(14, 0));
-	/* Burst unit is 4kB */
+	 
 	burst = DIV_ROUND_UP(cbs_qopt->hicredit, 4096);
-	/* Avoid using zero burst size */
+	 
 	burst = clamp_t(u32, burst, 1, GENMASK(5, 0));
 	ocelot_write_gix(ocelot,
 			 QSYS_CIR_CFG_CIR_RATE(rate) |
@@ -1799,9 +1722,7 @@ static int vsc9959_mact_stream_set(struct ocelot *ocelot,
 	ether_addr_copy(mac, stream->dmac);
 	vid = stream->vid;
 
-	/* Stream identification desn't support to add a stream with non
-	 * existent MAC (The MAC entry has not been learned in MAC table).
-	 */
+	 
 	ret = ocelot_mact_lookup(ocelot, &dst_idx, mac, vid, &type);
 	if (ret) {
 		if (extack)
@@ -2004,7 +1925,7 @@ static int vsc9959_psfp_sfi_table_add(struct ocelot *ocelot,
 			refcount_inc(&tmp->refcount);
 			return 0;
 		}
-		/* Make sure that the index is increasing in order. */
+		 
 		if (tmp->index == insert) {
 			last = pos;
 			insert++;
@@ -2030,7 +1951,7 @@ static int vsc9959_psfp_sfi_table_add2(struct ocelot *ocelot,
 
 	list_for_each_safe(pos, q, &psfp->sfi_list) {
 		tmp = list_entry(pos, struct felix_stream_filter, list);
-		/* Make sure that the index is increasing in order. */
+		 
 		if (tmp->index >= insert + 2)
 			break;
 
@@ -2307,7 +2228,7 @@ static int vsc9959_psfp_filter_add(struct ocelot *ocelot, int port,
 	sfi.prio = (sfi.prio_valid ? stream.prio : 0);
 	sfi.enable = 1;
 
-	/* Check if stream is set. */
+	 
 	stream_entry = vsc9959_stream_table_lookup(&psfp->stream_list, &stream);
 	if (stream_entry) {
 		if (stream_entry->ports & BIT(port)) {
@@ -2448,7 +2369,7 @@ static void vsc9959_update_sfid_stats(struct ocelot *ocelot,
 	not_pass_sdu = ocelot_read(ocelot, SYS_COUNT_SF_NOT_PASSING_SDU);
 	red = ocelot_read(ocelot, SYS_COUNT_SF_RED_FRAMES);
 
-	/* Clear the PSFP counter. */
+	 
 	ocelot_write(ocelot,
 		     SYS_STAT_CFG_STAT_VIEW(sfid) |
 		     SYS_STAT_CFG_STAT_CLEAR_SHOT(0x10),
@@ -2460,7 +2381,7 @@ static void vsc9959_update_sfid_stats(struct ocelot *ocelot,
 	s->red += red;
 }
 
-/* Caller must hold &ocelot->stat_view_lock */
+ 
 static void vsc9959_update_stats(struct ocelot *ocelot)
 {
 	struct ocelot_psfp_list *psfp = &ocelot->psfp;
@@ -2516,15 +2437,7 @@ static void vsc9959_psfp_init(struct ocelot *ocelot)
 	mutex_init(&psfp->lock);
 }
 
-/* When using cut-through forwarding and the egress port runs at a higher data
- * rate than the ingress port, the packet currently under transmission would
- * suffer an underrun since it would be transmitted faster than it is received.
- * The Felix switch implementation of cut-through forwarding does not check in
- * hardware whether this condition is satisfied or not, so we must restrict the
- * list of ports that have cut-through forwarding enabled on egress to only be
- * the ports operating at the lowest link speed within their respective
- * forwarding domain.
- */
+ 
 static void vsc9959_cut_through_fwd(struct ocelot *ocelot)
 {
 	struct felix *felix = ocelot_to_felix(ocelot);
@@ -2540,15 +2453,12 @@ static void vsc9959_cut_through_fwd(struct ocelot *ocelot)
 		unsigned long mask = 0;
 		u32 tmp, val = 0;
 
-		/* Disable cut-through on ports that are down */
+		 
 		if (ocelot_port->speed <= 0)
 			goto set;
 
 		if (dsa_is_cpu_port(ds, port)) {
-			/* Ocelot switches forward from the NPI port towards
-			 * any port, regardless of it being in the NPI port's
-			 * forwarding domain or not.
-			 */
+			 
 			mask = dsa_user_ports(ds);
 		} else {
 			mask = ocelot_get_bridge_fwd_mask(ocelot, port);
@@ -2560,9 +2470,7 @@ static void vsc9959_cut_through_fwd(struct ocelot *ocelot)
 										port);
 		}
 
-		/* Calculate the minimum link speed, among the ports that are
-		 * up, of this source port's forwarding domain.
-		 */
+		 
 		for_each_set_bit(other_port, &mask, ocelot->num_phys_ports) {
 			struct ocelot_port *other_ocelot_port;
 
@@ -2574,12 +2482,7 @@ static void vsc9959_cut_through_fwd(struct ocelot *ocelot)
 				min_speed = other_ocelot_port->speed;
 		}
 
-		/* Enable cut-through forwarding for all traffic classes that
-		 * don't have oversized dropping enabled, since this check is
-		 * bypassed in cut-through mode. Also exclude preemptible
-		 * traffic classes, since these would hang the port for some
-		 * reason, if sent as cut-through.
-		 */
+		 
 		if (ocelot_port->speed == min_speed) {
 			val = GENMASK(7, 0) & ~mm->active_preemptible_tcs;
 
@@ -2644,9 +2547,7 @@ static const struct felix_info felix_info_vsc9959 = {
 	.port_sched_speed_set	= vsc9959_sched_speed_set,
 };
 
-/* The INTB interrupt is shared between for PTP TX timestamp availability
- * notification and MAC Merge status change on each port.
- */
+ 
 static irqreturn_t felix_irq_handler(int irq, void *data)
 {
 	struct ocelot *ocelot = (struct ocelot *)data;
@@ -2766,7 +2667,7 @@ static void felix_pci_shutdown(struct pci_dev *pdev)
 
 static struct pci_device_id felix_ids[] = {
 	{
-		/* NXP LS1028A */
+		 
 		PCI_DEVICE(PCI_VENDOR_ID_FREESCALE, 0xEEF0),
 	},
 	{ 0, }

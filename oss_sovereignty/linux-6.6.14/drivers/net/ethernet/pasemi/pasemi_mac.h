@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2006 PA Semi, Inc
- *
- * Driver for the PA6T-1682M onchip 1G/10G Ethernet MACs, soft state and
- * hardware register layouts.
- */
+ 
+ 
 
 #ifndef PASEMI_MAC_H
 #define PASEMI_MAC_H
@@ -14,7 +9,7 @@
 #include <linux/spinlock.h>
 #include <linux/phy.h>
 
-/* Must be a power of two */
+ 
 #define RX_RING_SIZE 2048
 #define TX_RING_SIZE 4096
 #define CS_RING_SIZE (TX_RING_SIZE*2)
@@ -23,26 +18,26 @@
 #define MAX_CS	2
 
 struct pasemi_mac_txring {
-	struct pasemi_dmachan chan; /* Must be first */
+	struct pasemi_dmachan chan;  
 	spinlock_t	 lock;
 	unsigned int	 size;
 	unsigned int	 next_to_fill;
 	unsigned int	 next_to_clean;
 	struct pasemi_mac_buffer *ring_info;
-	struct pasemi_mac *mac;	/* Needed in intr handler */
+	struct pasemi_mac *mac;	 
 	struct timer_list clean_timer;
 };
 
 struct pasemi_mac_rxring {
-	struct pasemi_dmachan chan; /* Must be first */
+	struct pasemi_dmachan chan;  
 	spinlock_t	 lock;
-	u64		*buffers;	/* RX interface buffer ring */
+	u64		*buffers;	 
 	dma_addr_t	 buf_dma;
 	unsigned int	 size;
 	unsigned int	 next_to_fill;
 	unsigned int	 next_to_clean;
 	struct pasemi_mac_buffer *ring_info;
-	struct pasemi_mac *mac;	/* Needed in intr handler */
+	struct pasemi_mac *mac;	 
 };
 
 struct pasemi_mac_csring {
@@ -61,7 +56,7 @@ struct pasemi_mac {
 	struct pci_dev *iob_pdev;
 	struct napi_struct napi;
 
-	int		bufsz; /* RX ring buffer size */
+	int		bufsz;  
 	int		last_cs;
 	int		num_cs;
 	u32		dma_if;
@@ -76,8 +71,8 @@ struct pasemi_mac {
 	struct pasemi_mac_txring *tx;
 	struct pasemi_mac_rxring *rx;
 	struct pasemi_mac_csring *cs[MAX_CS];
-	char		tx_irq_name[10];		/* "eth%d tx" */
-	char		rx_irq_name[10];		/* "eth%d rx" */
+	char		tx_irq_name[10];		 
+	char		rx_irq_name[10];		 
 	int	link;
 	int	speed;
 	int	duplex;
@@ -85,7 +80,7 @@ struct pasemi_mac {
 	unsigned int	msg_enable;
 };
 
-/* Software status descriptor (ring_info) */
+ 
 struct pasemi_mac_buffer {
 	struct sk_buff *skb;
 	dma_addr_t	dma;
@@ -102,10 +97,10 @@ struct pasemi_mac_buffer {
 				& ((ring)->size - 1))
 #define RING_AVAIL(ring)	((ring->size) - RING_USED(ring))
 
-/* PCI register offsets and formats */
+ 
 
 
-/* MAC CFG register offsets */
+ 
 enum {
 	PAS_MAC_CFG_PCFG = 0x80,
 	PAS_MAC_CFG_MACCFG = 0x84,
@@ -116,7 +111,7 @@ enum {
 	PAS_MAC_IPC_CHNL = 0x208,
 };
 
-/* MAC CFG register fields */
+ 
 #define PAS_MAC_CFG_PCFG_PE		0x80000000
 #define PAS_MAC_CFG_PCFG_CE		0x40000000
 #define PAS_MAC_CFG_PCFG_BU		0x20000000
@@ -196,4 +191,4 @@ enum {
 					 PAS_MAC_IPC_CHNL_BCH_M)
 
 
-#endif /* PASEMI_MAC_H */
+#endif  

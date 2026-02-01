@@ -1,46 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2009, Christoph Hellwig
- * All Rights Reserved.
- *
- * NOTE: none of these tracepoints shall be considered a stable kernel ABI
- * as they can change at any time.
- *
- * Current conventions for printing numbers measuring specific units:
- *
- * agno: allocation group number
- *
- * agino: per-AG inode number
- * ino: filesystem inode number
- *
- * agbno: per-AG block number in fs blocks
- * startblock: physical block number for file mappings.  This is either a
- *             segmented fsblock for data device mappings, or a rfsblock
- *             for realtime device mappings
- * fsbcount: number of blocks in an extent, in fs blocks
- *
- * daddr: physical block number in 512b blocks
- * bbcount: number of blocks in a physical extent, in 512b blocks
- *
- * rtx: physical rt extent number for extent mappings
- * rtxcount: number of rt extents in an extent mapping
- *
- * owner: reverse-mapping owner, usually inodes
- *
- * fileoff: file offset, in fs blocks
- * pos: file offset, in bytes
- * bytecount: number of bytes
- *
- * disize: ondisk file size, in bytes
- * isize: incore file size, in bytes
- *
- * forkoff: inode fork offset, in bytes
- *
- * ireccount: number of inode records
- *
- * Numbers describing space allocations (blocks, extents, inodes) should be
- * formatted in hexadecimal.
- */
+
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM xfs
 
@@ -482,11 +441,11 @@ DEFINE_BUF_EVENT(xfs_buf_error_relse);
 DEFINE_BUF_EVENT(xfs_buf_drain_buftarg);
 DEFINE_BUF_EVENT(xfs_trans_read_buf_shut);
 
-/* not really buffer traces, but the buf provides useful information */
+ 
 DEFINE_BUF_EVENT(xfs_btree_corrupt);
 DEFINE_BUF_EVENT(xfs_reset_dqcounts);
 
-/* pass flags explicitly */
+ 
 DECLARE_EVENT_CLASS(xfs_buf_flags_class,
 	TP_PROTO(struct xfs_buf *bp, unsigned flags, unsigned long caller_ip),
 	TP_ARGS(bp, flags, caller_ip),
@@ -799,12 +758,7 @@ DEFINE_INODE_EVENT(xfs_inode_reclaiming);
 DEFINE_INODE_EVENT(xfs_inode_set_need_inactive);
 DEFINE_INODE_EVENT(xfs_inode_inactivating);
 
-/*
- * ftrace's __print_symbolic requires that all enum values be wrapped in the
- * TRACE_DEFINE_ENUM macro so that the enum value can be encoded in the ftrace
- * ring buffer.  Somehow this was only worth mentioning in the ftrace sample
- * code.
- */
+ 
 TRACE_DEFINE_ENUM(XFS_REFC_DOMAIN_SHARED);
 TRACE_DEFINE_ENUM(XFS_REFC_DOMAIN_COW);
 
@@ -2449,7 +2403,7 @@ DEFINE_DISCARD_EVENT(xfs_discard_toosmall);
 DEFINE_DISCARD_EVENT(xfs_discard_exclude);
 DEFINE_DISCARD_EVENT(xfs_discard_busy);
 
-/* btree cursor events */
+ 
 TRACE_DEFINE_ENUM(XFS_BTNUM_BNOi);
 TRACE_DEFINE_ENUM(XFS_BTNUM_CNTi);
 TRACE_DEFINE_ENUM(XFS_BTNUM_BMAPi);
@@ -2493,7 +2447,7 @@ DEFINE_EVENT(xfs_btree_cur_class, name, \
 DEFINE_BTREE_CUR_EVENT(xfs_btree_updkeys);
 DEFINE_BTREE_CUR_EVENT(xfs_btree_overlapped_query_range);
 
-/* deferred ops */
+ 
 struct xfs_defer_pending;
 
 DECLARE_EVENT_CLASS(xfs_defer_class,
@@ -2720,7 +2674,7 @@ DEFINE_DEFER_PENDING_ITEM_EVENT(xfs_defer_add_item);
 DEFINE_DEFER_PENDING_ITEM_EVENT(xfs_defer_cancel_item);
 DEFINE_DEFER_PENDING_ITEM_EVENT(xfs_defer_finish_item);
 
-/* rmap tracepoints */
+ 
 DECLARE_EVENT_CLASS(xfs_rmap_class,
 	TP_PROTO(struct xfs_mount *mp, xfs_agnumber_t agno,
 		 xfs_agblock_t agbno, xfs_extlen_t len, bool unwritten,
@@ -2762,7 +2716,7 @@ DEFINE_EVENT(xfs_rmap_class, name, \
 		 const struct xfs_owner_info *oinfo), \
 	TP_ARGS(mp, agno, agbno, len, unwritten, oinfo))
 
-/* simple AG-based error/%ip tracepoint class */
+ 
 DECLARE_EVENT_CLASS(xfs_ag_error_class,
 	TP_PROTO(struct xfs_mount *mp, xfs_agnumber_t agno, int error,
 		 unsigned long caller_ip),
@@ -2863,12 +2817,12 @@ DEFINE_RMAPBT_EVENT(xfs_rmap_lookup_le_range_result);
 DEFINE_RMAPBT_EVENT(xfs_rmap_find_right_neighbor_result);
 DEFINE_RMAPBT_EVENT(xfs_rmap_find_left_neighbor_result);
 
-/* deferred bmbt updates */
+ 
 #define DEFINE_BMAP_DEFERRED_EVENT	DEFINE_RMAP_DEFERRED_EVENT
 DEFINE_BMAP_DEFERRED_EVENT(xfs_bmap_defer);
 DEFINE_BMAP_DEFERRED_EVENT(xfs_bmap_deferred);
 
-/* per-AG reservation */
+ 
 DECLARE_EVENT_CLASS(xfs_ag_resv_class,
 	TP_PROTO(struct xfs_perag *pag, enum xfs_ag_resv_type resv,
 		 xfs_extlen_t len),
@@ -2912,7 +2866,7 @@ DEFINE_EVENT(xfs_ag_resv_class, name, \
 		 xfs_extlen_t len), \
 	TP_ARGS(pag, type, len))
 
-/* per-AG reservation tracepoints */
+ 
 DEFINE_AG_RESV_EVENT(xfs_ag_resv_init);
 DEFINE_AG_RESV_EVENT(xfs_ag_resv_free);
 DEFINE_AG_RESV_EVENT(xfs_ag_resv_alloc_extent);
@@ -2923,12 +2877,12 @@ DEFINE_AG_RESV_EVENT(xfs_ag_resv_needed);
 DEFINE_AG_ERROR_EVENT(xfs_ag_resv_free_error);
 DEFINE_AG_ERROR_EVENT(xfs_ag_resv_init_error);
 
-/* refcount tracepoint classes */
+ 
 
-/* reuse the discard trace class for agbno/aglen-based traces */
+ 
 #define DEFINE_AG_EXTENT_EVENT(name) DEFINE_DISCARD_EVENT(name)
 
-/* ag btree lookup tracepoint class */
+ 
 TRACE_DEFINE_ENUM(XFS_LOOKUP_EQi);
 TRACE_DEFINE_ENUM(XFS_LOOKUP_LEi);
 TRACE_DEFINE_ENUM(XFS_LOOKUP_GEi);
@@ -2962,7 +2916,7 @@ DEFINE_EVENT(xfs_ag_btree_lookup_class, name, \
 		 xfs_agblock_t agbno, xfs_lookup_t dir), \
 	TP_ARGS(mp, agno, agbno, dir))
 
-/* single-rcext tracepoint class */
+ 
 DECLARE_EVENT_CLASS(xfs_refcount_extent_class,
 	TP_PROTO(struct xfs_mount *mp, xfs_agnumber_t agno,
 		 struct xfs_refcount_irec *irec),
@@ -2998,7 +2952,7 @@ DEFINE_EVENT(xfs_refcount_extent_class, name, \
 		 struct xfs_refcount_irec *irec), \
 	TP_ARGS(mp, agno, irec))
 
-/* single-rcext and an agbno tracepoint class */
+ 
 DECLARE_EVENT_CLASS(xfs_refcount_extent_at_class,
 	TP_PROTO(struct xfs_mount *mp, xfs_agnumber_t agno,
 		 struct xfs_refcount_irec *irec, xfs_agblock_t agbno),
@@ -3037,7 +2991,7 @@ DEFINE_EVENT(xfs_refcount_extent_at_class, name, \
 		 struct xfs_refcount_irec *irec, xfs_agblock_t agbno), \
 	TP_ARGS(mp, agno, irec, agbno))
 
-/* double-rcext tracepoint class */
+ 
 DECLARE_EVENT_CLASS(xfs_refcount_double_extent_class,
 	TP_PROTO(struct xfs_mount *mp, xfs_agnumber_t agno,
 		 struct xfs_refcount_irec *i1, struct xfs_refcount_irec *i2),
@@ -3086,7 +3040,7 @@ DEFINE_EVENT(xfs_refcount_double_extent_class, name, \
 		 struct xfs_refcount_irec *i1, struct xfs_refcount_irec *i2), \
 	TP_ARGS(mp, agno, i1, i2))
 
-/* double-rcext and an agbno tracepoint class */
+ 
 DECLARE_EVENT_CLASS(xfs_refcount_double_extent_at_class,
 	TP_PROTO(struct xfs_mount *mp, xfs_agnumber_t agno,
 		 struct xfs_refcount_irec *i1, struct xfs_refcount_irec *i2,
@@ -3140,7 +3094,7 @@ DEFINE_EVENT(xfs_refcount_double_extent_at_class, name, \
 		 xfs_agblock_t agbno), \
 	TP_ARGS(mp, agno, i1, i2, agbno))
 
-/* triple-rcext tracepoint class */
+ 
 DECLARE_EVENT_CLASS(xfs_refcount_triple_extent_class,
 	TP_PROTO(struct xfs_mount *mp, xfs_agnumber_t agno,
 		 struct xfs_refcount_irec *i1, struct xfs_refcount_irec *i2,
@@ -3204,7 +3158,7 @@ DEFINE_EVENT(xfs_refcount_triple_extent_class, name, \
 		 struct xfs_refcount_irec *i3), \
 	TP_ARGS(mp, agno, i1, i2, i3))
 
-/* refcount btree tracepoints */
+ 
 DEFINE_BUSY_EVENT(xfs_refcountbt_alloc_block);
 DEFINE_BUSY_EVENT(xfs_refcountbt_free_block);
 DEFINE_AG_BTREE_LOOKUP_EVENT(xfs_refcount_lookup);
@@ -3216,7 +3170,7 @@ DEFINE_AG_ERROR_EVENT(xfs_refcount_insert_error);
 DEFINE_AG_ERROR_EVENT(xfs_refcount_delete_error);
 DEFINE_AG_ERROR_EVENT(xfs_refcount_update_error);
 
-/* refcount adjustment tracepoints */
+ 
 DEFINE_AG_EXTENT_EVENT(xfs_refcount_increase);
 DEFINE_AG_EXTENT_EVENT(xfs_refcount_decrease);
 DEFINE_AG_EXTENT_EVENT(xfs_refcount_cow_increase);
@@ -3239,7 +3193,7 @@ DEFINE_AG_ERROR_EVENT(xfs_refcount_merge_right_extent_error);
 DEFINE_AG_ERROR_EVENT(xfs_refcount_find_left_extent_error);
 DEFINE_AG_ERROR_EVENT(xfs_refcount_find_right_extent_error);
 
-/* reflink helpers */
+ 
 DEFINE_AG_EXTENT_EVENT(xfs_refcount_find_shared);
 DEFINE_AG_EXTENT_EVENT(xfs_refcount_find_shared_result);
 DEFINE_AG_ERROR_EVENT(xfs_refcount_find_shared_error);
@@ -3273,7 +3227,7 @@ TRACE_EVENT(xfs_refcount_finish_one_leftover,
 		  __entry->len)
 );
 
-/* simple inode-based error/%ip tracepoint class */
+ 
 DECLARE_EVENT_CLASS(xfs_inode_error_class,
 	TP_PROTO(struct xfs_inode *ip, int error, unsigned long caller_ip),
 	TP_ARGS(ip, error, caller_ip),
@@ -3302,9 +3256,9 @@ DEFINE_EVENT(xfs_inode_error_class, name, \
 		 unsigned long caller_ip), \
 	TP_ARGS(ip, error, caller_ip))
 
-/* reflink tracepoint classes */
+ 
 
-/* two-file io tracepoint class */
+ 
 DECLARE_EVENT_CLASS(xfs_double_io_class,
 	TP_PROTO(struct xfs_inode *src, xfs_off_t soffset, xfs_off_t len,
 		 struct xfs_inode *dest, xfs_off_t doffset),
@@ -3354,7 +3308,7 @@ DEFINE_EVENT(xfs_double_io_class, name,	\
 		 struct xfs_inode *dest, xfs_off_t doffset), \
 	TP_ARGS(src, soffset, len, dest, doffset))
 
-/* inode/irec events */
+ 
 DECLARE_EVENT_CLASS(xfs_inode_irec_class,
 	TP_PROTO(struct xfs_inode *ip, struct xfs_bmbt_irec *irec),
 	TP_ARGS(ip, irec),
@@ -3387,7 +3341,7 @@ DEFINE_EVENT(xfs_inode_irec_class, name, \
 	TP_PROTO(struct xfs_inode *ip, struct xfs_bmbt_irec *irec), \
 	TP_ARGS(ip, irec))
 
-/* inode iomap invalidation events */
+ 
 DECLARE_EVENT_CLASS(xfs_wb_invalid_class,
 	TP_PROTO(struct xfs_inode *ip, const struct iomap *iomap, unsigned int wpcseq, int whichfork),
 	TP_ARGS(ip, iomap, wpcseq, whichfork),
@@ -3473,9 +3427,9 @@ DEFINE_EVENT(xfs_iomap_invalid_class, name, \
 	TP_ARGS(ip, iomap))
 DEFINE_IOMAP_INVALID_EVENT(xfs_iomap_invalid);
 
-/* refcount/reflink tracepoint definitions */
+ 
 
-/* reflink tracepoints */
+ 
 DEFINE_INODE_EVENT(xfs_reflink_set_inode_flag);
 DEFINE_INODE_EVENT(xfs_reflink_unset_inode_flag);
 DEFINE_ITRUNC_EVENT(xfs_reflink_update_inode_size);
@@ -3518,11 +3472,11 @@ DEFINE_INODE_ERROR_EVENT(xfs_reflink_remap_extent_error);
 DEFINE_INODE_IREC_EVENT(xfs_reflink_remap_extent_src);
 DEFINE_INODE_IREC_EVENT(xfs_reflink_remap_extent_dest);
 
-/* dedupe tracepoints */
+ 
 DEFINE_DOUBLE_IO_EVENT(xfs_reflink_compare_extents);
 DEFINE_INODE_ERROR_EVENT(xfs_reflink_compare_extents_error);
 
-/* ioctl tracepoints */
+ 
 TRACE_EVENT(xfs_ioctl_clone,
 	TP_PROTO(struct inode *src, struct inode *dest),
 	TP_ARGS(src, dest),
@@ -3548,11 +3502,11 @@ TRACE_EVENT(xfs_ioctl_clone,
 		  __entry->dest_isize)
 );
 
-/* unshare tracepoints */
+ 
 DEFINE_SIMPLE_IO_EVENT(xfs_reflink_unshare);
 DEFINE_INODE_ERROR_EVENT(xfs_reflink_unshare_error);
 
-/* copy on write */
+ 
 DEFINE_INODE_IREC_EVENT(xfs_reflink_trim_around_shared);
 DEFINE_INODE_IREC_EVENT(xfs_reflink_cow_found);
 DEFINE_INODE_IREC_EVENT(xfs_reflink_cow_enospc);
@@ -3569,12 +3523,12 @@ DEFINE_INODE_ERROR_EVENT(xfs_reflink_end_cow_error);
 
 DEFINE_INODE_IREC_EVENT(xfs_reflink_cancel_cow);
 
-/* rmap swapext tracepoints */
+ 
 DEFINE_INODE_IREC_EVENT(xfs_swap_extent_rmap_remap);
 DEFINE_INODE_IREC_EVENT(xfs_swap_extent_rmap_remap_piece);
 DEFINE_INODE_ERROR_EVENT(xfs_swap_extent_rmap_error);
 
-/* fsmap traces */
+ 
 DECLARE_EVENT_CLASS(xfs_fsmap_class,
 	TP_PROTO(struct xfs_mount *mp, u32 keydev, xfs_agnumber_t agno,
 		 const struct xfs_rmap_irec *rmap),
@@ -4460,9 +4414,9 @@ DEFINE_PERAG_INTENTS_EVENT(xfs_perag_intent_hold);
 DEFINE_PERAG_INTENTS_EVENT(xfs_perag_intent_rele);
 DEFINE_PERAG_INTENTS_EVENT(xfs_perag_wait_intents);
 
-#endif /* CONFIG_XFS_DRAIN_INTENTS */
+#endif  
 
-#endif /* _TRACE_XFS_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Huawei HiNIC PCI Express Linux driver
- * Copyright(c) 2017 Huawei Technologies Co., Ltd
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/if_vlan.h>
@@ -72,7 +70,7 @@ static void hinic_notify_vf_link_status(struct hinic_hwdev *hwdev, u16 vf_id,
 	}
 }
 
-/* send link change event mbox msg to active vfs under the pf */
+ 
 void hinic_notify_all_vfs_link_changed(struct hinic_hwdev *hwdev,
 				       u8 link_status)
 {
@@ -107,7 +105,7 @@ static int hinic_set_vf_vlan(struct hinic_hwdev *hwdev, bool add, u16 vid,
 	int err;
 	u8 cmd;
 
-	/* VLAN 0 is a special case, don't allow it to be removed */
+	 
 	if (!vid && !add)
 		return 0;
 
@@ -619,7 +617,7 @@ static int hinic_set_vf_mac(struct hinic_hwdev *hwdev, int vf,
 
 	vf_info = nic_io->vf_infos + HW_VF_ID_TO_OS(vf);
 
-	/* duplicate request, so just return success */
+	 
 	if (vf_info->pf_set_mac &&
 	    !memcmp(vf_info->vf_mac_addr, mac_addr, ETH_ALEN))
 		return 0;
@@ -800,7 +798,7 @@ int hinic_ndo_set_vf_vlan(struct net_device *netdev, int vf, u16 vlan, u8 qos,
 	vlanprio = vlan | qos << HINIC_VLAN_PRIORITY_SHIFT;
 	cur_vlanprio = hinic_vf_info_vlanprio(nic_dev->hwdev,
 					      OS_VF_ID_TO_HW(vf));
-	/* duplicate request, so just return success */
+	 
 	if (vlanprio == cur_vlanprio)
 		return 0;
 
@@ -838,7 +836,7 @@ int hinic_ndo_set_vf_trust(struct net_device *netdev, int vf, bool setting)
 		return -EINVAL;
 
 	cur_trust = nic_io->vf_infos[vf].trust;
-	/* same request, so just return success */
+	 
 	if (setting == cur_trust)
 		return 0;
 
@@ -888,7 +886,7 @@ int hinic_ndo_set_vf_bw(struct net_device *netdev,
 	if (err || port_cap.speed > LINK_SPEED_100GB)
 		return -EIO;
 
-	/* rate limit cannot be less than 0 and greater than link speed */
+	 
 	if (max_tx_rate < 0 || max_tx_rate > speeds[port_cap.speed]) {
 		netif_err(nic_dev, drv, netdev, "Max tx rate must be in [0 - %d]\n",
 			  speeds[port_cap.speed]);
@@ -958,7 +956,7 @@ int hinic_ndo_set_vf_spoofchk(struct net_device *netdev, int vf, bool setting)
 
 	cur_spoofchk = nic_dev->hwdev->func_to_io.vf_infos[vf].spoofchk;
 
-	/* same request, so just return success */
+	 
 	if (setting == cur_spoofchk)
 		return 0;
 
@@ -1004,7 +1002,7 @@ static int hinic_set_vf_link_state(struct hinic_hwdev *hwdev, u16 vf_id,
 		return -EINVAL;
 	}
 
-	/* Notify the VF of its new link state */
+	 
 	hinic_notify_vf_link_status(hwdev, vf_id, link_status);
 
 	return 0;
@@ -1027,7 +1025,7 @@ int hinic_ndo_set_vf_link_state(struct net_device *netdev, int vf_id, int link)
 				      OS_VF_ID_TO_HW(vf_id), link);
 }
 
-/* pf receive message from vf */
+ 
 static int nic_pf_mbox_handler(void *hwdev, u16 vf_id, u8 cmd, void *buf_in,
 			       u16 in_size, void *buf_out, u16 *out_size)
 {
@@ -1146,7 +1144,7 @@ static void hinic_clear_vf_infos(struct hinic_dev *nic_dev, u16 vf_id)
 		hinic_set_vf_trust(nic_dev->hwdev, vf_id, false);
 
 	memset(vf_infos, 0, sizeof(*vf_infos));
-	/* set vf_infos to default */
+	 
 	hinic_init_vf_infos(&nic_dev->hwdev->func_to_io, HW_VF_ID_TO_OS(vf_id));
 }
 
@@ -1261,7 +1259,7 @@ static int hinic_init_vf_hw(struct hinic_hwdev *hwdev, u16 start_vf_id,
 	u16 i, func_idx;
 	int err;
 
-	/* vf use 256K as default wq page size, and can't change it */
+	 
 	for (i = start_vf_id; i <= end_vf_id; i++) {
 		func_idx = hinic_glb_pf_vf_offset(hwdev->hwif) + i;
 		err = hinic_set_wq_page_size(hwdev, func_idx,
@@ -1279,16 +1277,13 @@ int hinic_pci_sriov_disable(struct pci_dev *pdev)
 	u16 tmp_vfs;
 
 	sriov_info = hinic_get_sriov_info_by_pcidev(pdev);
-	/* if SR-IOV is already disabled then nothing will be done */
+	 
 	if (!sriov_info->sriov_enabled)
 		return 0;
 
 	set_bit(HINIC_SRIOV_DISABLE, &sriov_info->state);
 
-	/* If our VFs are assigned we cannot shut down SR-IOV
-	 * without causing issues, so just leave the hardware
-	 * available but disabled
-	 */
+	 
 	if (pci_vfs_assigned(sriov_info->pdev)) {
 		clear_bit(HINIC_SRIOV_DISABLE, &sriov_info->state);
 		dev_warn(&pdev->dev, "Unloading driver while VFs are assigned - VFs will not be deallocated\n");
@@ -1296,7 +1291,7 @@ int hinic_pci_sriov_disable(struct pci_dev *pdev)
 	}
 	sriov_info->sriov_enabled = false;
 
-	/* disable iov and allow time for transactions to clear */
+	 
 	pci_disable_sriov(sriov_info->pdev);
 
 	tmp_vfs = (u16)sriov_info->num_vfs;

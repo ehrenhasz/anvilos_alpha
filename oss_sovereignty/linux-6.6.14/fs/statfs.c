@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/syscalls.h>
 #include <linux/export.h>
 #include <linux/fs.h>
@@ -136,10 +136,7 @@ static int do_statfs_native(struct kstatfs *st, struct statfs __user *p)
 			     st->f_bsize | st->f_frsize) &
 			    0xffffffff00000000ULL)
 				return -EOVERFLOW;
-			/*
-			 * f_files and f_ffree may be -1; it's okay to stuff
-			 * that into 32 bits
-			 */
+			 
 			if (st->f_files != -1 &&
 			    (st->f_files & 0xffffffff00000000ULL))
 				return -EOVERFLOW;
@@ -271,8 +268,7 @@ static int put_compat_statfs(struct compat_statfs __user *ubuf, struct kstatfs *
 		if ((kbuf->f_blocks | kbuf->f_bfree | kbuf->f_bavail |
 		     kbuf->f_bsize | kbuf->f_frsize) & 0xffffffff00000000ULL)
 			return -EOVERFLOW;
-		/* f_files and f_ffree may be -1; it's okay
-		 * to stuff that into 32 bits */
+		 
 		if (kbuf->f_files != 0xffffffffffffffffULL
 		 && (kbuf->f_files & 0xffffffff00000000ULL))
 			return -EOVERFLOW;
@@ -298,10 +294,7 @@ static int put_compat_statfs(struct compat_statfs __user *ubuf, struct kstatfs *
 	return 0;
 }
 
-/*
- * The following statfs calls are copies of code from fs/statfs.c and
- * should be checked against those from time to time
- */
+ 
 COMPAT_SYSCALL_DEFINE2(statfs, const char __user *, pathname, struct compat_statfs __user *, buf)
 {
 	struct kstatfs tmp;
@@ -383,11 +376,7 @@ COMPAT_SYSCALL_DEFINE3(fstatfs64, unsigned int, fd, compat_size_t, sz, struct co
 	return kcompat_sys_fstatfs64(fd, sz, buf);
 }
 
-/*
- * This is a copy of sys_ustat, just dealing with a structure layout.
- * Given how simple this syscall is that apporach is more maintainable
- * than the various conversion hacks.
- */
+ 
 COMPAT_SYSCALL_DEFINE2(ustat, unsigned, dev, struct compat_ustat __user *, u)
 {
 	struct compat_ustat tmp;

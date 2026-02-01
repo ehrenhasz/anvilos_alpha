@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015-2017 Pengutronix, Uwe Kleine-König <kernel@pengutronix.de>
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/module.h>
@@ -33,7 +31,7 @@ static int siox_gpio_pushpull(struct siox_master *smaster,
 	size_t i;
 	size_t cycles = max(setbuf_len, getbuf_len);
 
-	/* reset data and clock */
+	 
 	gpiod_set_value_cansleep(ddata->dout, 0);
 	gpiod_set_value_cansleep(ddata->dclk, 0);
 
@@ -53,7 +51,7 @@ static int siox_gpio_pushpull(struct siox_master *smaster,
 			if (gpiod_get_value_cansleep(ddata->din))
 				get |= 1;
 
-			/* DOUT is logically inverted */
+			 
 			gpiod_set_value_cansleep(ddata->dout, !(set & 0x80));
 			set <<= 1;
 
@@ -72,13 +70,7 @@ static int siox_gpio_pushpull(struct siox_master *smaster,
 	ndelay(siox_loadhigh_ns);
 	gpiod_set_value_cansleep(ddata->dld, 0);
 
-	/*
-	 * Resetting dout isn't necessary protocol wise, but it makes the
-	 * signals more pretty because the dout level is deterministic between
-	 * cycles. Note that this only affects dout between the master and the
-	 * first siox device. dout for the later devices depend on the output of
-	 * the previous siox device.
-	 */
+	 
 	gpiod_set_value_cansleep(ddata->dout, 0);
 
 	return 0;
@@ -129,7 +121,7 @@ static int siox_gpio_probe(struct platform_device *pdev)
 	}
 
 	smaster->pushpull = siox_gpio_pushpull;
-	/* XXX: determine automatically like spi does */
+	 
 	smaster->busno = 0;
 
 	ret = siox_master_register(smaster);
@@ -154,7 +146,7 @@ static int siox_gpio_remove(struct platform_device *pdev)
 
 static const struct of_device_id siox_gpio_dt_ids[] = {
 	{ .compatible = "eckelmann,siox-gpio", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, siox_gpio_dt_ids);
 

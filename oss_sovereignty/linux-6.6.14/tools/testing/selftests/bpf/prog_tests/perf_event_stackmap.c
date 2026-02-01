@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 Facebook
+
+
 #define _GNU_SOURCE
 #include <pthread.h>
 #include <sched.h>
@@ -53,7 +53,7 @@ noinline int func_6(void)
 void test_perf_event_stackmap(void)
 {
 	struct perf_event_attr attr = {
-		/* .type = PERF_TYPE_SOFTWARE, */
+		 
 		.type = PERF_TYPE_HARDWARE,
 		.config = PERF_COUNT_HW_CPU_CYCLES,
 		.precise_ip = 2,
@@ -87,9 +87,9 @@ void test_perf_event_stackmap(void)
 	if (CHECK(err, "set_affinity", "err %d, errno %d\n", err, errno))
 		goto cleanup;
 
-	pmu_fd = syscall(__NR_perf_event_open, &attr, -1 /* pid */,
-			 0 /* cpu 0 */, -1 /* group id */,
-			 0 /* flags */);
+	pmu_fd = syscall(__NR_perf_event_open, &attr, -1  ,
+			 0  , -1  ,
+			 0  );
 	if (pmu_fd < 0) {
 		printf("%s:SKIP:cpu doesn't support the event\n", __func__);
 		test__skip();
@@ -103,7 +103,7 @@ void test_perf_event_stackmap(void)
 		goto cleanup;
 	}
 
-	/* create kernel and user stack traces for testing */
+	 
 	func_6();
 
 	CHECK(skel->data->stackid_kernel != 2, "get_stackid_kernel", "failed\n");

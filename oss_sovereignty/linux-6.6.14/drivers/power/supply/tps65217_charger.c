@@ -1,12 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-// Battery charger driver for TI's tps65217
-//
-// Copyright (C) 2015 Collabora Ltd.
-// Author: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 
-/*
- * Battery charger driver for TI's tps65217
- */
+
+
+
+
+
+ 
 #include <linux/kernel.h>
 #include <linux/kthread.h>
 #include <linux/device.h>
@@ -45,24 +43,7 @@ static int tps65217_config_charger(struct tps65217_charger *charger)
 {
 	int ret;
 
-	/*
-	 * tps65217 rev. G, p. 31 (see p. 32 for NTC schematic)
-	 *
-	 * The device can be configured to support a 100k NTC (B = 3960) by
-	 * setting the NTC_TYPE bit in register CHGCONFIG1 to 1. However it
-	 * is not recommended to do so. In sleep mode, the charger continues
-	 * charging the battery, but all register values are reset to default
-	 * values. Therefore, the charger would get the wrong temperature
-	 * information. If 100k NTC setting is required, please contact the
-	 * factory.
-	 *
-	 * ATTENTION, conflicting information, from p. 46
-	 *
-	 * NTC TYPE (for battery temperature measurement)
-	 *   0 – 100k (curve 1, B = 3960)
-	 *   1 – 10k  (curve 2, B = 3480) (default on reset)
-	 *
-	 */
+	 
 	ret = tps65217_clear_bits(charger->tps, TPS65217_REG_CHGCONFIG1,
 				  TPS65217_CHGCONFIG1_NTC_TYPE,
 				  TPS65217_PROTECT_NONE);
@@ -79,7 +60,7 @@ static int tps65217_enable_charging(struct tps65217_charger *charger)
 {
 	int ret;
 
-	/* charger already enabled */
+	 
 	if (charger->online)
 		return 0;
 
@@ -129,7 +110,7 @@ static irqreturn_t tps65217_charger_irq(int irq, void *dev)
 
 	dev_dbg(charger->dev, "%s: 0x%x\n", __func__, val);
 
-	/* check for charger status bit */
+	 
 	if (val & CHARGER_STATUS_PRESENT) {
 		ret = tps65217_enable_charging(charger);
 		if (ret) {
@@ -218,7 +199,7 @@ static int tps65217_charger_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Create a polling thread if an interrupt is invalid */
+	 
 	if (irq[0] < 0 || irq[1] < 0) {
 		poll_task = kthread_run(tps65217_charger_poll_task,
 					charger, "ktps65217charger");
@@ -233,7 +214,7 @@ static int tps65217_charger_probe(struct platform_device *pdev)
 		return 0;
 	}
 
-	/* Create IRQ threads for charger interrupts */
+	 
 	for (i = 0; i < NUM_CHARGER_IRQS; i++) {
 		ret = devm_request_threaded_irq(&pdev->dev, irq[i], NULL,
 						tps65217_charger_irq,
@@ -246,7 +227,7 @@ static int tps65217_charger_probe(struct platform_device *pdev)
 			return ret;
 		}
 
-		/* Check current state */
+		 
 		tps65217_charger_irq(-1, charger);
 	}
 
@@ -265,7 +246,7 @@ static int tps65217_charger_remove(struct platform_device *pdev)
 
 static const struct of_device_id tps65217_charger_match_table[] = {
 	{ .compatible = "ti,tps65217-charger", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, tps65217_charger_match_table);
 

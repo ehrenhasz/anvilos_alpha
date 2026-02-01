@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * hwmon driver for HP (and some HP Compaq) business-class computers that
- * report numeric sensor data via Windows Management Instrumentation (WMI).
- *
- * Copyright (C) 2023 James Seo <james@equiv.tech>
- *
- * References:
- * [1] Hewlett-Packard Development Company, L.P.,
- *     "HP Client Management Interface Technical White Paper", 2005. [Online].
- *     Available: https://h20331.www2.hp.com/hpsub/downloads/cmi_whitepaper.pdf
- * [2] Hewlett-Packard Development Company, L.P.,
- *     "HP Retail Manageability", 2012. [Online].
- *     Available: http://h10032.www1.hp.com/ctg/Manual/c03291135.pdf
- * [3] Linux Hardware Project, A. Ponomarenko et al.,
- *     "linuxhw/ACPI - Collect ACPI table dumps", 2018. [Online].
- *     Available: https://github.com/linuxhw/ACPI
- * [4] P. Rohár, "bmfdec - Decompile binary MOF file (BMF) from WMI buffer",
- *     2017. [Online]. Available: https://github.com/pali/bmfdec
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/debugfs.h>
@@ -33,7 +15,7 @@
 #define HP_WMI_NUMERIC_SENSOR_GUID	"8F1F6435-9F42-42C8-BADC-0E9424F20C9A"
 #define HP_WMI_PLATFORM_EVENTS_GUID	"41227C2D-80E1-423F-8B8E-87E32755A0EB"
 
-/* Patterns for recognizing sensors and matching events to channels. */
+ 
 
 #define HP_WMI_PATTERN_SYS_TEMP		"Chassis Thermal Index"
 #define HP_WMI_PATTERN_SYS_TEMP2	"System Ambient Temperature"
@@ -46,7 +28,7 @@
 #define HP_WMI_PATTERN_TEMP		"Temperature"
 #define HP_WMI_PATTERN_CPU		"CPU"
 
-/* These limits are arbitrary. The WMI implementation may vary by system. */
+ 
 
 #define HP_WMI_MAX_STR_SIZE		128U
 #define HP_WMI_MAX_PROPERTIES		32U
@@ -58,7 +40,7 @@ enum hp_wmi_type {
 	HP_WMI_TYPE_VOLTAGE			= 3,
 	HP_WMI_TYPE_CURRENT			= 4,
 	HP_WMI_TYPE_AIR_FLOW			= 12,
-	HP_WMI_TYPE_INTRUSION			= 0xabadb01, /* Custom. */
+	HP_WMI_TYPE_INTRUSION			= 0xabadb01,  
 };
 
 enum hp_wmi_category {
@@ -87,7 +69,7 @@ enum hp_wmi_status {
 	HP_WMI_STATUS_ABORTED			= 14,
 	HP_WMI_STATUS_SUPPORTING_ENTITY_IN_ERROR = 16,
 
-	/* Occurs combined with one of "OK", "Degraded", and "Error" [1]. */
+	 
 	HP_WMI_STATUS_COMPLETED			= 17,
 };
 
@@ -183,89 +165,14 @@ static const u32 hp_wmi_hwmon_attributes[hwmon_max] = {
 	[hwmon_intrusion] = HWMON_INTRUSION_ALARM,
 };
 
-/*
- * struct hp_wmi_numeric_sensor - a HPBIOS_BIOSNumericSensor instance
- *
- * Two variants of HPBIOS_BIOSNumericSensor are known. The first is specified
- * in [1] and appears to be much more widespread. The second was discovered by
- * decoding BMOF blobs [4], seems to be found only in some newer ZBook systems
- * [3], and has two new properties and a slightly different property order.
- *
- * These differences don't matter on Windows, where WMI object properties are
- * accessed by name. For us, supporting both variants gets ugly and hacky at
- * times. The fun begins now; this struct is defined as per the new variant.
- *
- * Effective MOF definition:
- *
- *   #pragma namespace("\\\\.\\root\\HP\\InstrumentedBIOS");
- *   class HPBIOS_BIOSNumericSensor {
- *     [read] string Name;
- *     [read] string Description;
- *     [read, ValueMap {"0","1","2","3","4","5","6","7","8","9",
- *      "10","11","12"}, Values {"Unknown","Other","Temperature",
- *      "Voltage","Current","Tachometer","Counter","Switch","Lock",
- *      "Humidity","Smoke Detection","Presence","Air Flow"}]
- *     uint32 SensorType;
- *     [read] string OtherSensorType;
- *     [read, ValueMap {"0","1","2","3","4","5","6","7","8","9",
- *      "10","11","12","13","14","15","16","17","18","..",
- *      "0x8000.."}, Values {"Unknown","Other","OK","Degraded",
- *      "Stressed","Predictive Failure","Error",
- *      "Non-Recoverable Error","Starting","Stopping","Stopped",
- *      "In Service","No Contact","Lost Communication","Aborted",
- *      "Dormant","Supporting Entity in Error","Completed",
- *      "Power Mode","DMTF Reserved","Vendor Reserved"}]
- *     uint32 OperationalStatus;
- *     [read] uint32 Size;
- *     [read] string PossibleStates[];
- *     [read] string CurrentState;
- *     [read, ValueMap {"0","1","2","3","4","5","6","7","8","9",
- *      "10","11","12","13","14","15","16","17","18","19","20",
- *      "21","22","23","24","25","26","27","28","29","30","31",
- *      "32","33","34","35","36","37","38","39","40","41","42",
- *      "43","44","45","46","47","48","49","50","51","52","53",
- *      "54","55","56","57","58","59","60","61","62","63","64",
- *      "65"}, Values {"Unknown","Other","Degrees C","Degrees F",
- *      "Degrees K","Volts","Amps","Watts","Joules","Coulombs",
- *      "VA","Nits","Lumens","Lux","Candelas","kPa","PSI",
- *      "Newtons","CFM","RPM","Hertz","Seconds","Minutes",
- *      "Hours","Days","Weeks","Mils","Inches","Feet",
- *      "Cubic Inches","Cubic Feet","Meters","Cubic Centimeters",
- *      "Cubic Meters","Liters","Fluid Ounces","Radians",
- *      "Steradians","Revolutions","Cycles","Gravities","Ounces",
- *      "Pounds","Foot-Pounds","Ounce-Inches","Gauss","Gilberts",
- *      "Henries","Farads","Ohms","Siemens","Moles","Becquerels",
- *      "PPM (parts/million)","Decibels","DbA","DbC","Grays",
- *      "Sieverts","Color Temperature Degrees K","Bits","Bytes",
- *      "Words (data)","DoubleWords","QuadWords","Percentage"}]
- *     uint32 BaseUnits;
- *     [read] sint32 UnitModifier;
- *     [read] uint32 CurrentReading;
- *     [read] uint32 RateUnits;
- *   };
- *
- * Effective MOF definition of old variant [1] (sans redundant info):
- *
- *   class HPBIOS_BIOSNumericSensor {
- *     [read] string Name;
- *     [read] string Description;
- *     [read] uint32 SensorType;
- *     [read] string OtherSensorType;
- *     [read] uint32 OperationalStatus;
- *     [read] string CurrentState;
- *     [read] string PossibleStates[];
- *     [read] uint32 BaseUnits;
- *     [read] sint32 UnitModifier;
- *     [read] uint32 CurrentReading;
- *   };
- */
+ 
 struct hp_wmi_numeric_sensor {
 	const char *name;
 	const char *description;
 	u32 sensor_type;
-	const char *other_sensor_type;	/* Explains "Other" SensorType. */
+	const char *other_sensor_type;	 
 	u32 operational_status;
-	u8 size;			/* Count of PossibleStates[]. */
+	u8 size;			 
 	const char **possible_states;
 	const char *current_state;
 	u32 base_units;
@@ -274,40 +181,7 @@ struct hp_wmi_numeric_sensor {
 	u32 rate_units;
 };
 
-/*
- * struct hp_wmi_platform_events - a HPBIOS_PlatformEvents instance
- *
- * Instances of this object reveal the set of possible HPBIOS_BIOSEvent
- * instances for the current system, but it may not always be present.
- *
- * Effective MOF definition:
- *
- *   #pragma namespace("\\\\.\\root\\HP\\InstrumentedBIOS");
- *   class HPBIOS_PlatformEvents {
- *     [read] string Name;
- *     [read] string Description;
- *     [read] string SourceNamespace;
- *     [read] string SourceClass;
- *     [read, ValueMap {"0","1","2","3","4",".."}, Values {
- *      "Unknown","Configuration Change","Button Pressed",
- *      "Sensor","BIOS Settings","Reserved"}]
- *     uint32 Category;
- *     [read, ValueMap{"0","5","10","15","20","25","30",".."},
- *      Values{"Unknown","OK","Degraded/Warning","Minor Failure",
- *      "Major Failure","Critical Failure","Non-recoverable Error",
- *      "DMTF Reserved"}]
- *     uint32 PossibleSeverity;
- *     [read, ValueMap {"0","1","2","3","4","5","6","7","8","9",
- *      "10","11","12","13","14","15","16","17","18","..",
- *      "0x8000.."}, Values {"Unknown","Other","OK","Degraded",
- *      "Stressed","Predictive Failure","Error",
- *      "Non-Recoverable Error","Starting","Stopping","Stopped",
- *      "In Service","No Contact","Lost Communication","Aborted",
- *      "Dormant","Supporting Entity in Error","Completed",
- *      "Power Mode","DMTF Reserved","Vendor Reserved"}]
- *     uint32 PossibleStatus;
- *   };
- */
+ 
 struct hp_wmi_platform_events {
 	const char *name;
 	const char *description;
@@ -318,73 +192,27 @@ struct hp_wmi_platform_events {
 	u32 possible_status;
 };
 
-/*
- * struct hp_wmi_event - a HPBIOS_BIOSEvent instance
- *
- * Effective MOF definition [1] (corrected below from original):
- *
- *   #pragma namespace("\\\\.\\root\\WMI");
- *   class HPBIOS_BIOSEvent : WMIEvent {
- *     [read] string Name;
- *     [read] string Description;
- *     [read ValueMap {"0","1","2","3","4"}, Values {"Unknown",
- *      "Configuration Change","Button Pressed","Sensor",
- *      "BIOS Settings"}]
- *     uint32 Category;
- *     [read, ValueMap {"0","5","10","15","20","25","30"},
- *      Values {"Unknown","OK","Degraded/Warning",
- *      "Minor Failure","Major Failure","Critical Failure",
- *      "Non-recoverable Error"}]
- *     uint32 Severity;
- *     [read, ValueMap {"0","1","2","3","4","5","6","7","8",
- *      "9","10","11","12","13","14","15","16","17","18","..",
- *      "0x8000.."}, Values {"Unknown","Other","OK","Degraded",
- *      "Stressed","Predictive Failure","Error",
- *      "Non-Recoverable Error","Starting","Stopping","Stopped",
- *      "In Service","No Contact","Lost Communication","Aborted",
- *      "Dormant","Supporting Entity in Error","Completed",
- *      "Power Mode","DMTF Reserved","Vendor Reserved"}]
- *     uint32 Status;
- *   };
- */
+ 
 struct hp_wmi_event {
 	const char *name;
 	const char *description;
 	u32 category;
 };
 
-/*
- * struct hp_wmi_info - sensor info
- * @nsensor: numeric sensor properties
- * @instance: its WMI instance number
- * @state: pointer to driver state
- * @has_alarm: whether sensor has an alarm flag
- * @alarm: alarm flag
- * @type: its hwmon sensor type
- * @cached_val: current sensor reading value, scaled for hwmon
- * @last_updated: when these readings were last updated
- */
+ 
 struct hp_wmi_info {
 	struct hp_wmi_numeric_sensor nsensor;
 	u8 instance;
-	void *state;			/* void *: Avoid forward declaration. */
+	void *state;			 
 	bool has_alarm;
 	bool alarm;
 	enum hwmon_sensor_types type;
 	long cached_val;
-	unsigned long last_updated;	/* In jiffies. */
+	unsigned long last_updated;	 
 
 };
 
-/*
- * struct hp_wmi_sensors - driver state
- * @wdev: pointer to the parent WMI device
- * @info_map: sensor info structs by hwmon type and channel number
- * @channel_count: count of hwmon channels by hwmon type
- * @has_intrusion: whether an intrusion sensor is present
- * @intrusion: intrusion flag
- * @lock: mutex to lock polling WMI and changes to driver state
- */
+ 
 struct hp_wmi_sensors {
 	struct wmi_device *wdev;
 	struct hp_wmi_info **info_map[hwmon_max];
@@ -392,10 +220,10 @@ struct hp_wmi_sensors {
 	bool has_intrusion;
 	bool intrusion;
 
-	struct mutex lock;	/* Lock polling WMI and driver state changes. */
+	struct mutex lock;	 
 };
 
-/* hp_wmi_strdup - devm_kstrdup, but length-limited */
+ 
 static char *hp_wmi_strdup(struct device *dev, const char *src)
 {
 	char *dst;
@@ -412,14 +240,7 @@ static char *hp_wmi_strdup(struct device *dev, const char *src)
 	return dst;
 }
 
-/*
- * hp_wmi_get_wobj - poll WMI for a WMI object instance
- * @guid: WMI object GUID
- * @instance: WMI object instance number
- *
- * Returns a new WMI object instance on success, or NULL on error.
- * Caller must kfree() the result.
- */
+ 
 static union acpi_object *hp_wmi_get_wobj(const char *guid, u8 instance)
 {
 	struct acpi_buffer out = { ACPI_ALLOCATE_BUFFER, NULL };
@@ -432,7 +253,7 @@ static union acpi_object *hp_wmi_get_wobj(const char *guid, u8 instance)
 	return out.pointer;
 }
 
-/* hp_wmi_wobj_instance_count - find count of WMI object instances */
+ 
 static u8 hp_wmi_wobj_instance_count(const char *guid)
 {
 	int count;
@@ -492,14 +313,7 @@ static int extract_acpi_value(struct device *dev,
 	return 0;
 }
 
-/*
- * check_numeric_sensor_wobj - validate a HPBIOS_BIOSNumericSensor instance
- * @wobj: pointer to WMI object instance to check
- * @out_size: out pointer to count of possible states
- * @out_is_new: out pointer to whether this is a "new" variant object
- *
- * Returns 0 on success, or a negative error code on error.
- */
+ 
 static int check_numeric_sensor_wobj(const union acpi_object *wobj,
 				     u8 *out_size, bool *out_is_new)
 {
@@ -517,12 +331,7 @@ static int check_numeric_sensor_wobj(const union acpi_object *wobj,
 	if (type != ACPI_TYPE_PACKAGE)
 		return -EINVAL;
 
-	/*
-	 * elements is a variable-length array of ACPI objects, one for
-	 * each property of the WMI object instance, except that the
-	 * strings in PossibleStates[] are flattened into this array
-	 * as if each individual string were a property by itself.
-	 */
+	 
 	elements = wobj->package.elements;
 
 	elem_count = wobj->package.count;
@@ -546,11 +355,7 @@ static int check_numeric_sensor_wobj(const union acpi_object *wobj,
 		return -EINVAL;
 	}
 
-	/*
-	 * In general, the count of PossibleStates[] must be > 0.
-	 * Also, the old variant lacks the Size property, so we may need to
-	 * reduce the value of last_prop by 1 when doing arithmetic with it.
-	 */
+	 
 	if (elem_count < last_prop - !is_new + 1)
 		return -EINVAL;
 
@@ -564,32 +369,32 @@ static int check_numeric_sensor_wobj(const union acpi_object *wobj,
 
 		switch (prop) {
 		case HP_WMI_PROPERTY_OPERATIONAL_STATUS:
-			/* Old variant: CurrentState follows OperationalStatus. */
+			 
 			if (!is_new)
 				prop = HP_WMI_PROPERTY_CURRENT_STATE - 1;
 			break;
 
 		case HP_WMI_PROPERTY_SIZE:
-			/* New variant: Size == count of PossibleStates[]. */
+			 
 			if (count != elements[i].integer.value)
 				return -EINVAL;
 			break;
 
 		case HP_WMI_PROPERTY_POSSIBLE_STATES:
-			/* PossibleStates[0] has already been type-checked. */
+			 
 			for (j = 0; i + 1 < elem_count && j + 1 < count; j++) {
 				type = elements[++i].type;
 				if (type != valid_type)
 					return -EINVAL;
 			}
 
-			/* Old variant: BaseUnits follows PossibleStates[]. */
+			 
 			if (!is_new)
 				prop = HP_WMI_PROPERTY_BASE_UNITS - 1;
 			break;
 
 		case HP_WMI_PROPERTY_CURRENT_STATE:
-			/* Old variant: PossibleStates[] follows CurrentState. */
+			 
 			if (!is_new)
 				prop = HP_WMI_PROPERTY_POSSIBLE_STATES - 1;
 			break;
@@ -619,8 +424,8 @@ static int numeric_sensor_has_fault(const struct hp_wmi_numeric_sensor *nsensor)
 
 	switch (operational_status) {
 	case HP_WMI_STATUS_DEGRADED:
-	case HP_WMI_STATUS_STRESSED:		/* e.g. Overload, overtemp. */
-	case HP_WMI_STATUS_PREDICTIVE_FAILURE:	/* e.g. Fan removed. */
+	case HP_WMI_STATUS_STRESSED:		 
+	case HP_WMI_STATUS_PREDICTIVE_FAILURE:	 
 	case HP_WMI_STATUS_ERROR:
 	case HP_WMI_STATUS_NON_RECOVERABLE_ERROR:
 	case HP_WMI_STATUS_NO_CONTACT:
@@ -628,7 +433,7 @@ static int numeric_sensor_has_fault(const struct hp_wmi_numeric_sensor *nsensor)
 	case HP_WMI_STATUS_ABORTED:
 	case HP_WMI_STATUS_SUPPORTING_ENTITY_IN_ERROR:
 
-	/* Assume combination by addition; bitwise OR doesn't make sense. */
+	 
 	case HP_WMI_STATUS_COMPLETED + HP_WMI_STATUS_DEGRADED:
 	case HP_WMI_STATUS_COMPLETED + HP_WMI_STATUS_ERROR:
 		return true;
@@ -637,7 +442,7 @@ static int numeric_sensor_has_fault(const struct hp_wmi_numeric_sensor *nsensor)
 	return false;
 }
 
-/* scale_numeric_sensor - scale sensor reading for hwmon */
+ 
 static long scale_numeric_sensor(const struct hp_wmi_numeric_sensor *nsensor)
 {
 	u32 current_reading = nsensor->current_reading;
@@ -647,7 +452,7 @@ static long scale_numeric_sensor(const struct hp_wmi_numeric_sensor *nsensor)
 	s32 target_modifier;
 	long val;
 
-	/* Fan readings are in RPM units; others are in milliunits. */
+	 
 	target_modifier = sensor_type == HP_WMI_TYPE_AIR_FLOW ? 0 : -3;
 
 	val = current_reading;
@@ -681,13 +486,7 @@ static long scale_numeric_sensor(const struct hp_wmi_numeric_sensor *nsensor)
 	return val;
 }
 
-/*
- * classify_numeric_sensor - classify a numeric sensor
- * @nsensor: pointer to numeric sensor struct
- *
- * Returns an enum hp_wmi_type value on success,
- * or a negative value if the sensor type is unsupported.
- */
+ 
 static int classify_numeric_sensor(const struct hp_wmi_numeric_sensor *nsensor)
 {
 	u32 sensor_type = nsensor->sensor_type;
@@ -696,15 +495,7 @@ static int classify_numeric_sensor(const struct hp_wmi_numeric_sensor *nsensor)
 
 	switch (sensor_type) {
 	case HP_WMI_TYPE_TEMPERATURE:
-		/*
-		 * Some systems have sensors named "X Thermal Index" in "Other"
-		 * units. Tested CPU sensor examples were found to be in °C,
-		 * albeit perhaps "differently" accurate; e.g. readings were
-		 * reliably -6°C vs. coretemp on a HP Compaq Elite 8300, and
-		 * +8°C on an EliteOne G1 800. But this is still within the
-		 * realm of plausibility for cheaply implemented motherboard
-		 * sensors, and chassis readings were about as expected.
-		 */
+		 
 		if ((base_units == HP_WMI_UNITS_OTHER &&
 		     strstr(name, HP_WMI_PATTERN_TEMP_SENSOR)) ||
 		    base_units == HP_WMI_UNITS_DEGREES_C ||
@@ -724,10 +515,7 @@ static int classify_numeric_sensor(const struct hp_wmi_numeric_sensor *nsensor)
 		break;
 
 	case HP_WMI_TYPE_AIR_FLOW:
-		/*
-		 * Strangely, HP considers fan RPM sensor type to be
-		 * "Air Flow" instead of the more intuitive "Tachometer".
-		 */
+		 
 		if (base_units == HP_WMI_UNITS_RPM)
 			return HP_WMI_TYPE_AIR_FLOW;
 		break;
@@ -800,20 +588,20 @@ populate_numeric_sensor_from_wobj(struct device *dev,
 		case HP_WMI_PROPERTY_OPERATIONAL_STATUS:
 			nsensor->operational_status = value;
 
-			/* Old variant: CurrentState follows OperationalStatus. */
+			 
 			if (!is_new)
 				prop = HP_WMI_PROPERTY_CURRENT_STATE - 1;
 			break;
 
 		case HP_WMI_PROPERTY_SIZE:
-			break;			/* Already set. */
+			break;			 
 
 		case HP_WMI_PROPERTY_POSSIBLE_STATES:
 			*possible_states++ = string;
 			if (--size)
 				prop--;
 
-			/* Old variant: BaseUnits follows PossibleStates[]. */
+			 
 			if (!is_new && !size)
 				prop = HP_WMI_PROPERTY_BASE_UNITS - 1;
 			break;
@@ -821,7 +609,7 @@ populate_numeric_sensor_from_wobj(struct device *dev,
 		case HP_WMI_PROPERTY_CURRENT_STATE:
 			nsensor->current_state = string;
 
-			/* Old variant: PossibleStates[] follows CurrentState. */
+			 
 			if (!is_new)
 				prop = HP_WMI_PROPERTY_POSSIBLE_STATES - 1;
 			break;
@@ -831,7 +619,7 @@ populate_numeric_sensor_from_wobj(struct device *dev,
 			break;
 
 		case HP_WMI_PROPERTY_UNIT_MODIFIER:
-			/* UnitModifier is signed. */
+			 
 			nsensor->unit_modifier = (s32)value;
 			break;
 
@@ -853,7 +641,7 @@ populate_numeric_sensor_from_wobj(struct device *dev,
 	return 0;
 }
 
-/* update_numeric_sensor_from_wobj - update fungible sensor properties */
+ 
 static void
 update_numeric_sensor_from_wobj(struct device *dev,
 				struct hp_wmi_numeric_sensor *nsensor,
@@ -876,12 +664,7 @@ update_numeric_sensor_from_wobj(struct device *dev,
 	element = &elements[HP_WMI_PROPERTY_OPERATIONAL_STATUS];
 	nsensor->operational_status = element->integer.value;
 
-	/*
-	 * In general, an index offset is needed after PossibleStates[0].
-	 * On a new variant, CurrentState is after PossibleStates[]. This is
-	 * not the case on an old variant, but we still need to offset the
-	 * read because CurrentState is where Size would be on a new variant.
-	 */
+	 
 	offset = is_new ? size - 1 : -2;
 
 	element = &elements[HP_WMI_PROPERTY_CURRENT_STATE + offset];
@@ -892,9 +675,9 @@ update_numeric_sensor_from_wobj(struct device *dev,
 		nsensor->current_state = hp_wmi_strdup(dev, string);
 	}
 
-	/* Old variant: -2 (not -1) because it lacks the Size property. */
+	 
 	if (!is_new)
-		offset = (int)size - 2;	/* size is > 0, i.e. may be 1. */
+		offset = (int)size - 2;	 
 
 	element = &elements[HP_WMI_PROPERTY_UNIT_MODIFIER + offset];
 	nsensor->unit_modifier = (s32)element->integer.value;
@@ -903,12 +686,7 @@ update_numeric_sensor_from_wobj(struct device *dev,
 	nsensor->current_reading = element->integer.value;
 }
 
-/*
- * check_platform_events_wobj - validate a HPBIOS_PlatformEvents instance
- * @wobj: pointer to WMI object instance to check
- *
- * Returns 0 on success, or a negative error code on error.
- */
+ 
 static int check_platform_events_wobj(const union acpi_object *wobj)
 {
 	return check_wobj(wobj, hp_wmi_platform_events_property_map,
@@ -984,12 +762,7 @@ populate_platform_events_from_wobj(struct device *dev,
 	return 0;
 }
 
-/*
- * check_event_wobj - validate a HPBIOS_BIOSEvent instance
- * @wobj: pointer to WMI object instance to check
- *
- * Returns 0 on success, or a negative error code on error.
- */
+ 
 static int check_event_wobj(const union acpi_object *wobj)
 {
 	return check_wobj(wobj, hp_wmi_event_property_map,
@@ -1009,7 +782,7 @@ static int populate_event_from_wobj(struct hp_wmi_event *event,
 
 	element = wobj->package.elements;
 
-	/* Extracted strings are NOT device-managed copies. */
+	 
 
 	for (; prop <= HP_WMI_EVENT_PROPERTY_CATEGORY; prop++, element++) {
 		switch (prop) {
@@ -1033,51 +806,28 @@ static int populate_event_from_wobj(struct hp_wmi_event *event,
 	return 0;
 }
 
-/*
- * classify_event - classify an event
- * @name: event name
- * @category: event category
- *
- * Classify instances of both HPBIOS_PlatformEvents and HPBIOS_BIOSEvent from
- * property values. Recognition criteria are based on multiple ACPI dumps [3].
- *
- * Returns an enum hp_wmi_type value on success,
- * or a negative value if the event type is unsupported.
- */
+ 
 static int classify_event(const char *event_name, u32 category)
 {
 	if (category != HP_WMI_CATEGORY_SENSOR)
 		return -EINVAL;
 
-	/* Fan events have Name "X Stall". */
+	 
 	if (strstr(event_name, HP_WMI_PATTERN_FAN_ALARM))
 		return HP_WMI_TYPE_AIR_FLOW;
 
-	/* Intrusion events have Name "Hood Intrusion". */
+	 
 	if (!strcmp(event_name, HP_WMI_PATTERN_INTRUSION_ALARM))
 		return HP_WMI_TYPE_INTRUSION;
 
-	/*
-	 * Temperature events have Name either "Thermal Caution" or
-	 * "Thermal Critical". Deal only with "Thermal Critical" events.
-	 *
-	 * "Thermal Caution" events have Status "Stressed", informing us that
-	 * the OperationalStatus of the related sensor has become "Stressed".
-	 * However, this is already a fault condition that will clear itself
-	 * when the sensor recovers, so we have no further interest in them.
-	 */
+	 
 	if (!strcmp(event_name, HP_WMI_PATTERN_TEMP_ALARM))
 		return HP_WMI_TYPE_TEMPERATURE;
 
 	return -EINVAL;
 }
 
-/*
- * interpret_info - interpret sensor for hwmon
- * @info: pointer to sensor info struct
- *
- * Should be called after the numeric sensor member has been updated.
- */
+ 
 static void interpret_info(struct hp_wmi_info *info)
 {
 	const struct hp_wmi_numeric_sensor *nsensor = &info->nsensor;
@@ -1086,13 +836,7 @@ static void interpret_info(struct hp_wmi_info *info)
 	info->last_updated = jiffies;
 }
 
-/*
- * hp_wmi_update_info - poll WMI to update sensor info
- * @state: pointer to driver state
- * @info: pointer to sensor info struct
- *
- * Returns 0 on success, or a negative error code on error.
- */
+ 
 static int hp_wmi_update_info(struct hp_wmi_sensors *state,
 			      struct hp_wmi_info *info)
 {
@@ -1212,13 +956,13 @@ static int current_reading_show(struct seq_file *seqf, void *ignored)
 }
 DEFINE_SHOW_ATTRIBUTE(current_reading);
 
-/* hp_wmi_devm_debugfs_remove - devm callback for debugfs cleanup */
+ 
 static void hp_wmi_devm_debugfs_remove(void *res)
 {
 	debugfs_remove_recursive(res);
 }
 
-/* hp_wmi_debugfs_init - create and populate debugfs directory tree */
+ 
 static void hp_wmi_debugfs_init(struct device *dev, struct hp_wmi_info *info,
 				struct hp_wmi_platform_events *pevents,
 				u8 icount, u8 pcount, bool is_new)
@@ -1231,7 +975,7 @@ static void hp_wmi_debugfs_init(struct device *dev, struct hp_wmi_info *info,
 	int err;
 	u8 i;
 
-	/* dev_name() gives a not-very-friendly GUID for WMI devices. */
+	 
 	scnprintf(buf, sizeof(buf), "hp-wmi-sensors-%u", dev->id);
 
 	debugfs = debugfs_create_dir(buf, NULL);
@@ -1437,7 +1181,7 @@ static struct hp_wmi_info *match_fan_event(struct hp_wmi_sensors *state,
 	const char *name;
 	u8 i;
 
-	/* Fan event has Description "X Speed". Sensor has Name "X[ Speed]". */
+	 
 
 	for (i = 0; i < fan_count; i++, ptr_info++) {
 		info = *ptr_info;
@@ -1463,20 +1207,14 @@ static u8 match_temp_events(struct hp_wmi_sensors *state,
 	bool is_sys;
 	u8 i;
 
-	/* Description is either "CPU Thermal Index" or "Chassis Thermal Index". */
+	 
 
 	is_cpu = !strcmp(event_description, HP_WMI_PATTERN_CPU_TEMP);
 	is_sys = !strcmp(event_description, HP_WMI_PATTERN_SYS_TEMP);
 	if (!is_cpu && !is_sys)
 		return 0;
 
-	/*
-	 * CPU event: Match one sensor with Name either "CPU Thermal Index" or
-	 * "CPU Temperature", or multiple with Name(s) "CPU[#] Temperature".
-	 *
-	 * Chassis event: Match one sensor with Name either
-	 * "Chassis Thermal Index" or "System Ambient Temperature".
-	 */
+	 
 
 	for (i = 0; i < temp_count; i++, ptr_info++) {
 		info = *ptr_info;
@@ -1498,13 +1236,13 @@ static u8 match_temp_events(struct hp_wmi_sensors *state,
 	return count;
 }
 
-/* hp_wmi_devm_debugfs_remove - devm callback for WMI event handler removal */
+ 
 static void hp_wmi_devm_notify_remove(void *ignored)
 {
 	wmi_remove_notify_handler(HP_WMI_EVENT_GUID);
 }
 
-/* hp_wmi_notify - WMI event notification handler */
+ 
 static void hp_wmi_notify(u32 value, void *context)
 {
 	struct hp_wmi_info *temp_info[HP_WMI_MAX_INSTANCES] = {};
@@ -1518,25 +1256,7 @@ static void hp_wmi_notify(u32 value, void *context)
 	int event_type;
 	u8 count;
 
-	/*
-	 * The following warning may occur in the kernel log:
-	 *
-	 *   ACPI Warning: \_SB.WMID._WED: Return type mismatch -
-	 *     found Package, expected Integer/String/Buffer
-	 *
-	 * After using [4] to decode BMOF blobs found in [3], careless copying
-	 * of BIOS code seems the most likely explanation for this warning.
-	 * HP_WMI_EVENT_GUID refers to \\.\root\WMI\HPBIOS_BIOSEvent on
-	 * business-class systems, but it refers to \\.\root\WMI\hpqBEvnt on
-	 * non-business-class systems. Per the existing hp-wmi driver, it
-	 * looks like an instance of hpqBEvnt delivered as event data may
-	 * indeed take the form of a raw ACPI_BUFFER on non-business-class
-	 * systems ("may" because ASL shows some BIOSes do strange things).
-	 *
-	 * In any case, we can ignore this warning, because we always validate
-	 * the event data to ensure it is an ACPI_PACKAGE containing a
-	 * HPBIOS_BIOSEvent instance.
-	 */
+	 
 
 	mutex_lock(&state->lock);
 
@@ -1722,58 +1442,7 @@ static bool find_event_attributes(struct hp_wmi_sensors *state,
 				  struct hp_wmi_platform_events *pevents,
 				  u8 pevents_count)
 {
-	/*
-	 * The existence of this HPBIOS_PlatformEvents instance:
-	 *
-	 *   {
-	 *     Name = "Rear Chassis Fan0 Stall";
-	 *     Description = "Rear Chassis Fan0 Speed";
-	 *     Category = 3;           // "Sensor"
-	 *     PossibleSeverity = 25;  // "Critical Failure"
-	 *     PossibleStatus = 5;     // "Predictive Failure"
-	 *     [...]
-	 *   }
-	 *
-	 * means that this HPBIOS_BIOSEvent instance may occur:
-	 *
-	 *   {
-	 *     Name = "Rear Chassis Fan0 Stall";
-	 *     Description = "Rear Chassis Fan0 Speed";
-	 *     Category = 3;           // "Sensor"
-	 *     Severity = 25;          // "Critical Failure"
-	 *     Status = 5;             // "Predictive Failure"
-	 *   }
-	 *
-	 * After the event occurs (e.g. because the fan was unplugged),
-	 * polling the related HPBIOS_BIOSNumericSensor instance gives:
-	 *
-	 *   {
-	 *      Name = "Rear Chassis Fan0";
-	 *      Description = "Reports rear chassis fan0 speed";
-	 *      OperationalStatus = 5; // "Predictive Failure", was 3 ("OK")
-	 *      CurrentReading = 0;
-	 *      [...]
-	 *   }
-	 *
-	 * In this example, the hwmon fan channel for "Rear Chassis Fan0"
-	 * should support the alarm flag and have it be set if the related
-	 * HPBIOS_BIOSEvent instance occurs.
-	 *
-	 * In addition to fan events, temperature (CPU/chassis) and intrusion
-	 * events are relevant to hwmon [2]. Note that much information in [2]
-	 * is unreliable; it is referenced in addition to ACPI dumps [3] merely
-	 * to support the conclusion that sensor and event names/descriptions
-	 * are systematic enough to allow this driver to match them.
-	 *
-	 * Complications and limitations:
-	 *
-	 * - Strings are freeform and may vary, cf. sensor Name "CPU0 Fan"
-	 *   on a Z420 vs. "CPU Fan Speed" on an EliteOne 800 G1.
-	 * - Leading/trailing whitespace is a rare but real possibility [3].
-	 * - The HPBIOS_PlatformEvents object may not exist or its instances
-	 *   may show that the system only has e.g. BIOS setting-related
-	 *   events (cf. the ProBook 4540s and ProBook 470 G0 [3]).
-	 */
+	 
 
 	struct hp_wmi_info *temp_info[HP_WMI_MAX_INSTANCES] = {};
 	const char *event_description;
@@ -1937,11 +1606,11 @@ static int hp_wmi_sensors_init(struct hp_wmi_sensors *state)
 		hp_wmi_debugfs_init(dev, info, pevents, icount, pcount, is_new);
 
 	if (!count)
-		return 0;	/* No connected sensors; debugfs only. */
+		return 0;	 
 
 	has_events = find_event_attributes(state, pevents, pcount);
 
-	/* Survive failure to install WMI event handler. */
+	 
 	if (has_events && !add_event_handler(state))
 		has_events = false;
 

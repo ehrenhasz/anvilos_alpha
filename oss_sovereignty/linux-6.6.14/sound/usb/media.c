@@ -1,20 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * media.c - Media Controller specific ALSA driver code
- *
- * Copyright (c) 2019 Shuah Khan <shuah@kernel.org>
- *
- */
 
-/*
- * This file adds Media Controller support to the ALSA driver
- * to use the Media Controller API to share the tuner with DVB
- * and V4L2 drivers that control the media device.
- *
- * The media device is created based on the existing quirks framework.
- * Using this approach, the media controller API usage can be added for
- * a specific device.
- */
+ 
+
+ 
 
 #include <linux/init.h>
 #include <linux/list.h>
@@ -48,7 +35,7 @@ int snd_media_stream_init(struct snd_usb_substream *subs, struct snd_pcm *pcm,
 	if (subs->media_ctl)
 		return 0;
 
-	/* allocate media_ctl */
+	 
 	mctl = kzalloc(sizeof(*mctl), GFP_KERNEL);
 	if (!mctl)
 		return -ENOMEM;
@@ -87,7 +74,7 @@ int snd_media_stream_init(struct snd_usb_substream *subs, struct snd_pcm *pcm,
 		goto devnode_remove;
 	}
 
-	/* create link between mixer and audio */
+	 
 	media_device_for_each_entity(entity, mdev) {
 		switch (entity->function) {
 		case MEDIA_ENT_F_AUDIO_MIXER:
@@ -189,7 +176,7 @@ static int snd_media_mixer_init(struct snd_usb_audio *chip)
 		if (mixer->media_mixer_ctl)
 			continue;
 
-		/* allocate media_mixer_ctl */
+		 
 		mctl = kzalloc(sizeof(*mctl), GFP_KERNEL);
 		if (!mctl)
 			return -ENOMEM;
@@ -258,11 +245,7 @@ int snd_media_device_create(struct snd_usb_audio *chip,
 	struct usb_device *usbdev = interface_to_usbdev(iface);
 	int ret = 0;
 
-	/* usb-audio driver is probed for each usb interface, and
-	 * there are multiple interfaces per device. Avoid calling
-	 * media_device_usb_allocate() each time usb_audio_probe()
-	 * is called. Do it only once.
-	 */
+	 
 	if (chip->media_dev) {
 		mdev = chip->media_dev;
 		goto snd_mixer_init;
@@ -272,30 +255,30 @@ int snd_media_device_create(struct snd_usb_audio *chip,
 	if (IS_ERR(mdev))
 		return -ENOMEM;
 
-	/* save media device - avoid lookups */
+	 
 	chip->media_dev = mdev;
 
 snd_mixer_init:
-	/* Create media entities for mixer and control dev */
+	 
 	ret = snd_media_mixer_init(chip);
-	/* media_device might be registered, print error and continue */
+	 
 	if (ret)
 		dev_err(&usbdev->dev,
 			"Couldn't create media mixer entities. Error: %d\n",
 			ret);
 
 	if (!media_devnode_is_registered(mdev->devnode)) {
-		/* don't register if snd_media_mixer_init() failed */
+		 
 		if (ret)
 			goto create_fail;
 
-		/* register media_device */
+		 
 		ret = media_device_register(mdev);
 create_fail:
 		if (ret) {
 			snd_media_mixer_delete(chip);
 			media_device_delete(mdev, KBUILD_MODNAME, THIS_MODULE);
-			/* clear saved media_dev */
+			 
 			chip->media_dev = NULL;
 			dev_err(&usbdev->dev,
 				"Couldn't register media device. Error: %d\n",
@@ -312,7 +295,7 @@ void snd_media_device_delete(struct snd_usb_audio *chip)
 	struct media_device *mdev = chip->media_dev;
 	struct snd_usb_stream *stream;
 
-	/* release resources */
+	 
 	list_for_each_entry(stream, &chip->pcm_list, list) {
 		snd_media_stream_delete(&stream->substream[0]);
 		snd_media_stream_delete(&stream->substream[1]);

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/******************************************************************************
- *
- * Module Name: utbuffer - Buffer dump routines
- *
- * Copyright (C) 2000 - 2023, Intel Corp.
- *
- *****************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 #include "accommon.h"
@@ -13,24 +7,7 @@
 #define _COMPONENT          ACPI_UTILITIES
 ACPI_MODULE_NAME("utbuffer")
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ut_dump_buffer
- *
- * PARAMETERS:  buffer              - Buffer to dump
- *              count               - Amount to dump, in bytes
- *              display             - BYTE, WORD, DWORD, or QWORD display:
- *                                      DB_BYTE_DISPLAY
- *                                      DB_WORD_DISPLAY
- *                                      DB_DWORD_DISPLAY
- *                                      DB_QWORD_DISPLAY
- *              base_offset         - Beginning buffer offset (display only)
- *
- * RETURN:      None
- *
- * DESCRIPTION: Generic dump buffer in both hex and ascii.
- *
- ******************************************************************************/
+ 
 void acpi_ut_dump_buffer(u8 *buffer, u32 count, u32 display, u32 base_offset)
 {
 	u32 i = 0;
@@ -49,22 +26,22 @@ void acpi_ut_dump_buffer(u8 *buffer, u32 count, u32 display, u32 base_offset)
 		display = DB_BYTE_DISPLAY;
 	}
 
-	/* Nasty little dump buffer routine! */
+	 
 
 	while (i < count) {
 
-		/* Print current offset */
+		 
 
 		if (!display_data_only) {
 			acpi_os_printf("%8.4X: ", (base_offset + i));
 		}
 
-		/* Print 16 hex chars */
+		 
 
 		for (j = 0; j < 16;) {
 			if (i + j >= count) {
 
-				/* Dump fill spaces */
+				 
 
 				acpi_os_printf("%*s", ((display * 2) + 1), " ");
 				j += display;
@@ -73,7 +50,7 @@ void acpi_ut_dump_buffer(u8 *buffer, u32 count, u32 display, u32 base_offset)
 
 			switch (display) {
 			case DB_BYTE_DISPLAY:
-			default:	/* Default is BYTE display */
+			default:	 
 
 				acpi_os_printf("%02X ",
 					       buffer[(acpi_size)i + j]);
@@ -109,10 +86,7 @@ void acpi_ut_dump_buffer(u8 *buffer, u32 count, u32 display, u32 base_offset)
 			j += display;
 		}
 
-		/*
-		 * Print the ASCII equivalent characters but watch out for the bad
-		 * unprintable ones (printable chars are 0x20 through 0x7E)
-		 */
+		 
 		if (!display_data_only) {
 			acpi_os_printf(" ");
 			for (j = 0; j < 16; j++) {
@@ -121,10 +95,7 @@ void acpi_ut_dump_buffer(u8 *buffer, u32 count, u32 display, u32 base_offset)
 					return;
 				}
 
-				/*
-				 * Add comment characters so rest of line is ignored when
-				 * compiled
-				 */
+				 
 				if (j == 0) {
 					acpi_os_printf("// ");
 				}
@@ -137,7 +108,7 @@ void acpi_ut_dump_buffer(u8 *buffer, u32 count, u32 display, u32 base_offset)
 				}
 			}
 
-			/* Done with that line. */
+			 
 
 			acpi_os_printf("\n");
 		}
@@ -147,30 +118,13 @@ void acpi_ut_dump_buffer(u8 *buffer, u32 count, u32 display, u32 base_offset)
 	return;
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ut_debug_dump_buffer
- *
- * PARAMETERS:  buffer              - Buffer to dump
- *              count               - Amount to dump, in bytes
- *              display             - BYTE, WORD, DWORD, or QWORD display:
- *                                      DB_BYTE_DISPLAY
- *                                      DB_WORD_DISPLAY
- *                                      DB_DWORD_DISPLAY
- *                                      DB_QWORD_DISPLAY
- *              component_ID        - Caller's component ID
- *
- * RETURN:      None
- *
- * DESCRIPTION: Generic dump buffer in both hex and ascii.
- *
- ******************************************************************************/
+ 
 
 void
 acpi_ut_debug_dump_buffer(u8 *buffer, u32 count, u32 display, u32 component_id)
 {
 
-	/* Only dump the buffer if tracing is enabled */
+	 
 
 	if (!((ACPI_LV_TABLES & acpi_dbg_level) &&
 	      (component_id & acpi_dbg_layer))) {
@@ -181,25 +135,7 @@ acpi_ut_debug_dump_buffer(u8 *buffer, u32 count, u32 display, u32 component_id)
 }
 
 #ifdef ACPI_APPLICATION
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ut_dump_buffer_to_file
- *
- * PARAMETERS:  file                - File descriptor
- *              buffer              - Buffer to dump
- *              count               - Amount to dump, in bytes
- *              display             - BYTE, WORD, DWORD, or QWORD display:
- *                                      DB_BYTE_DISPLAY
- *                                      DB_WORD_DISPLAY
- *                                      DB_DWORD_DISPLAY
- *                                      DB_QWORD_DISPLAY
- *              base_offset         - Beginning buffer offset (display only)
- *
- * RETURN:      None
- *
- * DESCRIPTION: Generic dump buffer in both hex and ascii to a file.
- *
- ******************************************************************************/
+ 
 
 void
 acpi_ut_dump_buffer_to_file(ACPI_FILE file,
@@ -219,20 +155,20 @@ acpi_ut_dump_buffer_to_file(ACPI_FILE file,
 		display = DB_BYTE_DISPLAY;
 	}
 
-	/* Nasty little dump buffer routine! */
+	 
 
 	while (i < count) {
 
-		/* Print current offset */
+		 
 
 		fprintf(file, "%8.4X: ", (base_offset + i));
 
-		/* Print 16 hex chars */
+		 
 
 		for (j = 0; j < 16;) {
 			if (i + j >= count) {
 
-				/* Dump fill spaces */
+				 
 
 				fprintf(file, "%*s", ((display * 2) + 1), " ");
 				j += display;
@@ -241,7 +177,7 @@ acpi_ut_dump_buffer_to_file(ACPI_FILE file,
 
 			switch (display) {
 			case DB_BYTE_DISPLAY:
-			default:	/* Default is BYTE display */
+			default:	 
 
 				fprintf(file, "%02X ",
 					buffer[(acpi_size)i + j]);
@@ -277,10 +213,7 @@ acpi_ut_dump_buffer_to_file(ACPI_FILE file,
 			j += display;
 		}
 
-		/*
-		 * Print the ASCII equivalent characters but watch out for the bad
-		 * unprintable ones (printable chars are 0x20 through 0x7E)
-		 */
+		 
 		fprintf(file, " ");
 		for (j = 0; j < 16; j++) {
 			if (i + j >= count) {
@@ -296,7 +229,7 @@ acpi_ut_dump_buffer_to_file(ACPI_FILE file,
 			}
 		}
 
-		/* Done with that line. */
+		 
 
 		fprintf(file, "\n");
 		i += 16;

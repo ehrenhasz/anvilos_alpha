@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Written 1992,1993 by Werner Almesberger
- *  22/11/2000 - Fixed fat_date_unix2dos for dates earlier than 01/01/1980
- *		 and date_dos2unix for date==0 by Igor Zhbanov(bsg@uniyar.ac.ru)
- * Copyright (C) 2012-2013 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/time.h>
 #include <linux/fs.h>
@@ -15,14 +10,7 @@
 #include "exfat_raw.h"
 #include "exfat_fs.h"
 
-/*
- * exfat_fs_error reports a file system problem that might indicate fa data
- * corruption/inconsistency. Depending on 'errors' mount option the
- * panic() is called, or error message is printed FAT and nothing is done,
- * or filesystem is remounted read-only (default behavior).
- * In case the file system is remounted read-only, it can be made writable
- * again by remounting it.
- */
+ 
 void __exfat_fs_error(struct super_block *sb, int report, const char *fmt, ...)
 {
 	struct exfat_mount_options *opts = &EXFAT_SB(sb)->options;
@@ -53,7 +41,7 @@ static void exfat_adjust_tz(struct timespec64 *ts, u8 tz_off)
 {
 	if (tz_off <= 0x3F)
 		ts->tv_sec -= TIMEZONE_SEC(tz_off);
-	else /* 0x40 <= (tz_off & 0x7F) <=0x7F */
+	else  
 		ts->tv_sec += TIMEZONE_SEC(0x80 - tz_off);
 }
 
@@ -64,7 +52,7 @@ static inline int exfat_tz_offset(struct exfat_sb_info *sbi)
 	return sbi->options.time_offset;
 }
 
-/* Convert a EXFAT time/date pair to a UNIX date (seconds since 1 1 70). */
+ 
 void exfat_get_entry_time(struct exfat_sb_info *sbi, struct timespec64 *ts,
 		u8 tz, __le16 time, __le16 date, u8 time_cs)
 {
@@ -75,7 +63,7 @@ void exfat_get_entry_time(struct exfat_sb_info *sbi, struct timespec64 *ts,
 			      t >> 11, (t >> 5) & 0x003F, (t & 0x001F) << 1);
 
 
-	/* time_cs field represent 0 ~ 199cs(1990 ms) */
+	 
 	if (time_cs) {
 		ts->tv_sec += time_cs / 100;
 		ts->tv_nsec = (time_cs % 100) * 10 * NSEC_PER_MSEC;
@@ -83,13 +71,13 @@ void exfat_get_entry_time(struct exfat_sb_info *sbi, struct timespec64 *ts,
 		ts->tv_nsec = 0;
 
 	if (tz & EXFAT_TZ_VALID)
-		/* Adjust timezone to UTC0. */
+		 
 		exfat_adjust_tz(ts, tz & ~EXFAT_TZ_VALID);
 	else
 		ts->tv_sec -= exfat_tz_offset(sbi) * SECS_PER_MIN;
 }
 
-/* Convert linear UNIX date to a EXFAT time/date pair. */
+ 
 void exfat_set_entry_time(struct exfat_sb_info *sbi, struct timespec64 *ts,
 		u8 *tz, __le16 *time, __le16 *date, u8 *time_cs)
 {
@@ -103,23 +91,16 @@ void exfat_set_entry_time(struct exfat_sb_info *sbi, struct timespec64 *ts,
 	*time = cpu_to_le16(t);
 	*date = cpu_to_le16(d);
 
-	/* time_cs field represent 0 ~ 199cs(1990 ms) */
+	 
 	if (time_cs)
 		*time_cs = (tm.tm_sec & 1) * 100 +
 			ts->tv_nsec / (10 * NSEC_PER_MSEC);
 
-	/*
-	 * Record 00h value for OffsetFromUtc field and 1 value for OffsetValid
-	 * to indicate that local time and UTC are the same.
-	 */
+	 
 	*tz = EXFAT_TZ_VALID;
 }
 
-/*
- * The timestamp for access_time has double seconds granularity.
- * (There is no 10msIncrement field for access_time unlike create/modify_time)
- * atime also has only a 2-second resolution.
- */
+ 
 void exfat_truncate_atime(struct timespec64 *ts)
 {
 	ts->tv_sec = round_down(ts->tv_sec, 2);

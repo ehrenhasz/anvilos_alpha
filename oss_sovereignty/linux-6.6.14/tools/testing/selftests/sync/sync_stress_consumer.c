@@ -1,29 +1,4 @@
-/*
- *  sync stress test: producer/consumer
- *  Copyright 2015-2016 Collabora Ltd.
- *
- *  Based on the implementation from the Android Open Source Project,
- *
- *  Copyright 2012 Google, Inc
- *
- *  Permission is hereby granted, free of charge, to any person obtaining a
- *  copy of this software and associated documentation files (the "Software"),
- *  to deal in the Software without restriction, including without limitation
- *  the rights to use, copy, modify, merge, publish, distribute, sublicense,
- *  and/or sell copies of the Software, and to permit persons to whom the
- *  Software is furnished to do so, subject to the following conditions:
- *
- *  The above copyright notice and this permission notice shall be included in
- *  all copies or substantial portions of the Software.
- *
- *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- *  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- *  OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- *  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- *  OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include <pthread.h>
 
@@ -31,12 +6,9 @@
 #include "sw_sync.h"
 #include "synctest.h"
 
-/* IMPORTANT NOTE: if you see this test failing on your system, it may be
- * due to a shortage of file descriptors. Please ensure your system has
- * a sensible limit for this test to finish correctly.
- */
+ 
 
-/* Returns 1 on error, 0 on success */
+ 
 static int busy_wait_on_fence(int fence)
 {
 	int error, active;
@@ -73,10 +45,7 @@ static int mpsc_producer_thread(void *d)
 		valid = sw_sync_fence_is_valid(fence);
 		ASSERT(valid, "Failure creating fence\n");
 
-		/*
-		 * Wait for the consumer to finish. Use alternate
-		 * means of waiting on the fence
-		 */
+		 
 
 		if ((iterations + id) % 8 != 0) {
 			ASSERT(sync_wait(fence, -1) > 0,
@@ -86,10 +55,7 @@ static int mpsc_producer_thread(void *d)
 			       "Failure waiting on fence\n");
 		}
 
-		/*
-		 * Every producer increments the counter, the consumer
-		 * checks and erases it
-		 */
+		 
 		pthread_mutex_lock(&test_data_mpsc.lock);
 		test_data_mpsc.counter++;
 		pthread_mutex_unlock(&test_data_mpsc.lock);
@@ -125,10 +91,7 @@ static int mpcs_consumer_thread(void)
 		valid = sw_sync_fence_is_valid(fence);
 		ASSERT(valid, "Failure merging fences\n");
 
-		/*
-		 * Make sure we see an increment from every producer thread.
-		 * Vary the means by which we wait.
-		 */
+		 
 		if (iterations % 8 != 0) {
 			ASSERT(sync_wait(fence, -1) > 0,
 			       "Producers did not increment as expected\n");
@@ -140,7 +103,7 @@ static int mpcs_consumer_thread(void)
 		ASSERT(test_data_mpsc.counter == n * it,
 		       "Counter value mismatch!\n");
 
-		/* Release the producer threads */
+		 
 		ASSERT(sw_sync_timeline_inc(consumer_timeline, 1) == 0,
 		       "Failure releasing producer threads\n");
 
@@ -175,7 +138,7 @@ int test_consumer_stress_multi_producer_single_consumer(void)
 			       mpsc_producer_thread, (void *)i);
 	}
 
-	/* Consumer thread runs here */
+	 
 	ret = mpcs_consumer_thread();
 
 	for (i = 0; i < n; i++)

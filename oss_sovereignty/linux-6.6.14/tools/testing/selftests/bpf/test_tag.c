@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -188,7 +188,7 @@ int main(void)
 	uint32_t tests = 0;
 	int i, fd_map;
 
-	/* Use libbpf 1.0 API mode */
+	 
 	libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
 
 	fd_map = bpf_map_create(BPF_MAP_TYPE_HASH, NULL, sizeof(int),

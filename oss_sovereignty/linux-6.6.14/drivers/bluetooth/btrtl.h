@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Bluetooth support for Realtek devices
- *
- *  Copyright (C) 2015 Endless Mobile, Inc.
- */
+ 
+ 
 
 #define RTL_FRAG_LEN 252
 

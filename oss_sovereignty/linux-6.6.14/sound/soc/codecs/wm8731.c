@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * wm8731.c  --  WM8731 ALSA SoC Audio driver
- *
- * Copyright 2005 Openedhand Ltd.
- * Copyright 2006-12 Wolfson Microelectronics, plc
- *
- * Author: Richard Purdie <richard@openedhand.com>
- *
- * Based on wm8753.c by Liam Girdwood
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -35,9 +26,7 @@ static const char *wm8731_supply_names[WM8731_NUM_SUPPLIES] = {
 	"DBVDD",
 };
 
-/*
- * wm8731 register cache
- */
+ 
 static const struct reg_default wm8731_reg_defaults[] = {
 	{ 0, 0x0097 },
 	{ 1, 0x0097 },
@@ -70,9 +59,7 @@ static int wm8731_set_deemph(struct snd_soc_component *component)
 	struct wm8731_priv *wm8731 = snd_soc_component_get_drvdata(component);
 	int val, i, best;
 
-	/* If we're using deemphasis select the nearest available sample
-	 * rate.
-	 */
+	 
 	if (wm8731->deemph) {
 		best = 1;
 		for (i = 2; i < ARRAY_SIZE(wm8731_deemph); i++) {
@@ -157,14 +144,14 @@ SOC_SINGLE_BOOL_EXT("Playback Deemphasis Switch", 0,
 		    wm8731_get_deemph, wm8731_put_deemph),
 };
 
-/* Output Mixer */
+ 
 static const struct snd_kcontrol_new wm8731_output_mixer_controls[] = {
 SOC_DAPM_SINGLE("Line Bypass Switch", WM8731_APANA, 3, 1, 0),
 SOC_DAPM_SINGLE("Mic Sidetone Switch", WM8731_APANA, 5, 1, 0),
 SOC_DAPM_SINGLE("HiFi Playback Switch", WM8731_APANA, 4, 1, 0),
 };
 
-/* Input mux */
+ 
 static const struct snd_kcontrol_new wm8731_input_mux_controls =
 SOC_DAPM_ENUM("Input Select", wm8731_insel_enum);
 
@@ -203,23 +190,23 @@ static const struct snd_soc_dapm_route wm8731_intercon[] = {
 	{"DAC", NULL, "ACTIVE"},
 	{"ADC", NULL, "ACTIVE"},
 
-	/* output mixer */
+	 
 	{"Output Mixer", "Line Bypass Switch", "Line Input"},
 	{"Output Mixer", "HiFi Playback Switch", "DAC"},
 	{"Output Mixer", "Mic Sidetone Switch", "Mic Bias"},
 
-	/* outputs */
+	 
 	{"RHPOUT", NULL, "Output Mixer"},
 	{"ROUT", NULL, "Output Mixer"},
 	{"LHPOUT", NULL, "Output Mixer"},
 	{"LOUT", NULL, "Output Mixer"},
 
-	/* input mux */
+	 
 	{"Input Mux", "Line In", "Line Input"},
 	{"Input Mux", "Mic", "Mic Bias"},
 	{"ADC", NULL, "Input Mux"},
 
-	/* inputs */
+	 
 	{"Line Input", NULL, "LLINEIN"},
 	{"Line Input", NULL, "RLINEIN"},
 	{"Mic Bias", NULL, "MICIN"},
@@ -234,42 +221,42 @@ struct _coeff_div {
 	u8 usb:1;
 };
 
-/* codec mclk clock divider coefficients */
+ 
 static const struct _coeff_div coeff_div[] = {
-	/* 48k */
+	 
 	{12288000, 48000, 256, 0x0, 0x0, 0x0},
 	{18432000, 48000, 384, 0x0, 0x1, 0x0},
 	{12000000, 48000, 250, 0x0, 0x0, 0x1},
 
-	/* 32k */
+	 
 	{12288000, 32000, 384, 0x6, 0x0, 0x0},
 	{18432000, 32000, 576, 0x6, 0x1, 0x0},
 	{12000000, 32000, 375, 0x6, 0x0, 0x1},
 
-	/* 8k */
+	 
 	{12288000, 8000, 1536, 0x3, 0x0, 0x0},
 	{18432000, 8000, 2304, 0x3, 0x1, 0x0},
 	{11289600, 8000, 1408, 0xb, 0x0, 0x0},
 	{16934400, 8000, 2112, 0xb, 0x1, 0x0},
 	{12000000, 8000, 1500, 0x3, 0x0, 0x1},
 
-	/* 96k */
+	 
 	{12288000, 96000, 128, 0x7, 0x0, 0x0},
 	{18432000, 96000, 192, 0x7, 0x1, 0x0},
 	{12000000, 96000, 125, 0x7, 0x0, 0x1},
 
-	/* 44.1k */
+	 
 	{11289600, 44100, 256, 0x8, 0x0, 0x0},
 	{16934400, 44100, 384, 0x8, 0x1, 0x0},
 	{12000000, 44100, 272, 0x8, 0x1, 0x1},
 
-	/* 88.2k */
+	 
 	{11289600, 88200, 128, 0xf, 0x0, 0x0},
 	{16934400, 88200, 192, 0xf, 0x1, 0x0},
 	{12000000, 88200, 136, 0xf, 0x1, 0x1},
 };
 
-/* rates constraints */
+ 
 static const unsigned int wm8731_rates_12000000[] = {
 	8000, 32000, 44100, 48000, 96000, 88200,
 };
@@ -325,7 +312,7 @@ static int wm8731_hw_params(struct snd_pcm_substream *substream,
 
 	snd_soc_component_write(component, WM8731_SRATE, srate);
 
-	/* bit size */
+	 
 	switch (params_width(params)) {
 	case 16:
 		break;
@@ -419,7 +406,7 @@ static int wm8731_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	/* interface format */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		iface |= 0x0002;
@@ -439,7 +426,7 @@ static int wm8731_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	/* clock inversion */
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
 		break;
@@ -456,7 +443,7 @@ static int wm8731_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	/* set iface */
+	 
 	snd_soc_component_write(component, WM8731_IFACE, iface);
 	return 0;
 }
@@ -488,7 +475,7 @@ static int wm8731_set_bias_level(struct snd_soc_component *component,
 			regcache_sync(wm8731->regmap);
 		}
 
-		/* Clear PWROFF, gate CLKOUT, everything else as-is */
+		 
 		reg = snd_soc_component_read(component, WM8731_PWR) & 0xff7f;
 		snd_soc_component_write(component, WM8731_PWR, reg | 0x0040);
 		break;
@@ -604,16 +591,16 @@ int wm8731_init(struct device *dev, struct wm8731_priv *wm8731)
 		goto err_regulator_enable;
 	}
 
-	/* Clear POWEROFF, keep everything else disabled */
+	 
 	regmap_write(wm8731->regmap, WM8731_PWR, 0x7f);
 
-	/* Latch the update bits */
+	 
 	regmap_update_bits(wm8731->regmap, WM8731_LOUT1V, 0x100, 0);
 	regmap_update_bits(wm8731->regmap, WM8731_ROUT1V, 0x100, 0);
 	regmap_update_bits(wm8731->regmap, WM8731_LINVOL, 0x100, 0);
 	regmap_update_bits(wm8731->regmap, WM8731_RINVOL, 0x100, 0);
 
-	/* Disable bypass path by default */
+	 
 	regmap_update_bits(wm8731->regmap, WM8731_APANA, 0x8, 0);
 
 	regcache_mark_dirty(wm8731->regmap);
@@ -628,7 +615,7 @@ int wm8731_init(struct device *dev, struct wm8731_priv *wm8731)
 	return 0;
 
 err_regulator_enable:
-	/* Regulators will be enabled by bias management */
+	 
 	regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);
 
 	return ret;

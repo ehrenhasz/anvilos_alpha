@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * LED flash driver for LM3554
- *
- * Copyright (c) 2010-2012 Intel Corporation. All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- *
- */
+
+ 
 #include <linux/module.h>
 #include <linux/i2c.h>
 #include <linux/mutex.h>
@@ -29,7 +14,7 @@
 #include "../include/linux/atomisp_gmin_platform.h"
 #include "../include/linux/atomisp.h"
 
-/* Registers */
+ 
 
 #define LM3554_TORCH_BRIGHTNESS_REG	0xA0
 #define LM3554_TORCH_MODE_SHIFT		0
@@ -78,7 +63,7 @@ struct lm3554 {
 
 #define to_lm3554(p_sd)	container_of(p_sd, struct lm3554, sd)
 
-/* Return negative errno else zero on success */
+ 
 static int lm3554_write(struct lm3554 *flash, u8 addr, u8 val)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&flash->sd);
@@ -92,7 +77,7 @@ static int lm3554_write(struct lm3554 *flash, u8 addr, u8 val)
 	return ret;
 }
 
-/* Return negative errno else a data byte received from the device. */
+ 
 static int lm3554_read(struct lm3554 *flash, u8 addr)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&flash->sd);
@@ -106,9 +91,7 @@ static int lm3554_read(struct lm3554 *flash, u8 addr)
 	return ret;
 }
 
-/* -----------------------------------------------------------------------------
- * Hardware configuration
- */
+ 
 
 static int lm3554_set_mode(struct lm3554 *flash, unsigned int mode)
 {
@@ -164,9 +147,7 @@ static int lm3554_set_config1(struct lm3554 *flash)
 	return lm3554_write(flash, LM3554_CONFIG_REG_1, val);
 }
 
-/* -----------------------------------------------------------------------------
- * Hardware trigger
- */
+ 
 static void lm3554_flash_off_delay(struct timer_list *t)
 {
 	struct lm3554 *flash = from_timer(flash, t, flash_off_delay);
@@ -182,17 +163,13 @@ static int lm3554_hw_strobe(struct i2c_client *client, bool strobe)
 	struct lm3554 *flash = to_lm3554(sd);
 	struct lm3554_platform_data *pdata = flash->pdata;
 
-	/*
-	 * An abnormal high flash current is observed when strobe off the
-	 * flash. Workaround here is firstly set flash current to lower level,
-	 * wait a short moment, and then strobe off the flash.
-	 */
+	 
 
 	timer_pending = del_timer_sync(&flash->flash_off_delay);
 
-	/* Flash off */
+	 
 	if (!strobe) {
-		/* set current to 70mA and wait a while */
+		 
 		ret = lm3554_write(flash, LM3554_FLASH_BRIGHTNESS_REG, 0);
 		if (ret < 0)
 			goto err;
@@ -201,21 +178,18 @@ static int lm3554_hw_strobe(struct i2c_client *client, bool strobe)
 		return 0;
 	}
 
-	/* Flash on */
+	 
 
-	/*
-	 * If timer is killed before run, flash is not strobe off,
-	 * so must strobe off here
-	 */
+	 
 	if (timer_pending)
 		gpiod_set_value(pdata->gpio_strobe, 0);
 
-	/* Restore flash current settings */
+	 
 	ret = lm3554_set_flash(flash);
 	if (ret < 0)
 		goto err;
 
-	/* Strobe on Flash */
+	 
 	gpiod_set_value(pdata->gpio_strobe, 1);
 
 	return 0;
@@ -225,31 +199,22 @@ err:
 	return ret;
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 controls
- */
+ 
 
 static int lm3554_read_status(struct lm3554 *flash)
 {
 	int ret;
 	struct i2c_client *client = v4l2_get_subdevdata(&flash->sd);
 
-	/* NOTE: reading register clear fault status */
+	 
 	ret = lm3554_read(flash, LM3554_FLAGS_REG);
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Accordingly to datasheet we read back '1' in bit 6.
-	 * Clear it first.
-	 */
+	 
 	ret &= ~LM3554_FLAG_UNUSED;
 
-	/*
-	 * Do not take TX1/TX2 signal as an error
-	 * because MSIC will not turn off flash, but turn to
-	 * torch mode according to gsm modem signal by hardware.
-	 */
+	 
 	ret &= ~(LM3554_FLAG_TX1_INTERRUPT | LM3554_FLAG_TX2_INTERRUPT);
 
 	if (ret > 0)
@@ -579,17 +544,15 @@ static const struct v4l2_ctrl_config lm3554_controls[] = {
 	},
 };
 
-/* -----------------------------------------------------------------------------
- * V4L2 subdev core operations
- */
+ 
 
-/* Put device into known state. */
+ 
 static int lm3554_setup(struct lm3554 *flash)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&flash->sd);
 	int ret;
 
-	/* clear the flags register */
+	 
 	ret = lm3554_read(flash, LM3554_FLAGS_REG);
 	if (ret < 0)
 		return ret;
@@ -612,7 +575,7 @@ static int lm3554_setup(struct lm3554 *flash)
 	if (ret < 0)
 		return ret;
 
-	/* read status */
+	 
 	ret = lm3554_read_status(flash);
 	if (ret < 0)
 		return ret;
@@ -625,14 +588,12 @@ static int __lm3554_s_power(struct lm3554 *flash, int power)
 	struct lm3554_platform_data *pdata = flash->pdata;
 	int ret;
 
-	/*initialize flash driver*/
+	 
 	gpiod_set_value(pdata->gpio_reset, power);
 	usleep_range(100, 100 + 1);
 
 	if (power) {
-		/* Setup default values. This makes sure that the chip
-		 * is in a known state.
-		 */
+		 
 		ret = lm3554_setup(flash);
 		if (ret < 0) {
 			__lm3554_s_power(flash, 0);
@@ -684,7 +645,7 @@ static int lm3554_detect(struct v4l2_subdev *sd)
 		return -ENODEV;
 	}
 
-	/* Power up the flash driver and reset it */
+	 
 	ret = lm3554_s_power(&flash->sd, 1);
 	if (ret < 0) {
 		dev_err(&client->dev, "Failed to power on lm3554 LED flash\n");
@@ -712,9 +673,7 @@ static const struct v4l2_subdev_internal_ops lm3554_internal_ops = {
 	.close = lm3554_close,
 };
 
-/* -----------------------------------------------------------------------------
- *  I2C driver
- */
+ 
 #ifdef CONFIG_PM
 
 static int lm3554_suspend(struct device *dev)
@@ -756,7 +715,7 @@ static int lm3554_resume(struct device *dev)
 #define lm3554_suspend NULL
 #define lm3554_resume  NULL
 
-#endif /* CONFIG_PM */
+#endif  
 
 static int lm3554_gpio_init(struct i2c_client *client)
 {
@@ -817,14 +776,11 @@ static void *lm3554_platform_data_func(struct i2c_client *client)
 	if (IS_ERR(platform_data.gpio_torch))
 		return ERR_CAST(platform_data.gpio_torch);
 
-	/* Set to TX2 mode, then ENVM/TX2 pin is a power amplifier sync input:
-	 * ENVM/TX pin asserted, flash forced into torch;
-	 * ENVM/TX pin desserted, flash set back;
-	 */
+	 
 	platform_data.envm_tx2 = 1;
 	platform_data.tx2_polarity = 0;
 
-	/* set peak current limit to be 1000mA */
+	 
 	platform_data.current_limit = 0;
 
 	return &platform_data;

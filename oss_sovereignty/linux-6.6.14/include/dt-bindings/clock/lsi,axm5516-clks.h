@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014 LSI Corporation
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_AXM5516_H
 #define _DT_BINDINGS_CLK_AXM5516_H

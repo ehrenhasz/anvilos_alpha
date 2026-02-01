@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Copyright (c) 2018 Quantenna Communications, Inc. All rights reserved. */
+ 
+ 
 
 #ifndef _QTN_FMAC_PCIE_H_
 #define _QTN_FMAC_PCIE_H_
@@ -57,7 +57,7 @@ struct qtnf_pcie_bus_priv {
 	u32 tx_bd_w_index;
 	u32 tx_bd_r_index;
 
-	/* diagnostics stats */
+	 
 	u32 pcie_irq_count;
 	u32 tx_full_count;
 	u32 tx_done_count;
@@ -83,8 +83,8 @@ static inline void qtnf_non_posted_write(u32 val, void __iomem *basereg)
 {
 	writel(val, basereg);
 
-	/* flush posted write */
+	 
 	readl(basereg);
 }
 
-#endif /* _QTN_FMAC_PCIE_H_ */
+#endif  

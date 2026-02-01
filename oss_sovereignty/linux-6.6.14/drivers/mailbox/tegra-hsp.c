@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016-2023, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -199,17 +197,7 @@ static irqreturn_t tegra_hsp_doorbell_irq(int irq, void *data)
 		struct tegra_hsp_doorbell *db;
 
 		db = __tegra_hsp_doorbell_get(hsp, master);
-		/*
-		 * Depending on the bootloader chain, the CCPLEX doorbell will
-		 * have some doorbells enabled, which means that requesting an
-		 * interrupt will immediately fire.
-		 *
-		 * In that case, db->channel.chan will still be NULL here and
-		 * cause a crash if not properly guarded.
-		 *
-		 * It remains to be seen if ignoring the doorbell in that case
-		 * is the correct solution.
-		 */
+		 
 		if (db && db->channel.chan)
 			mbox_chan_received_data(db->channel.chan, NULL);
 	}
@@ -227,20 +215,14 @@ static irqreturn_t tegra_hsp_shared_irq(int irq, void *data)
 
 	status = tegra_hsp_readl(hsp, HSP_INT_IR) & hsp->mask;
 
-	/* process EMPTY interrupts first */
+	 
 	mask = (status >> HSP_INT_EMPTY_SHIFT) & HSP_INT_EMPTY_MASK;
 
 	for_each_set_bit(bit, &mask, hsp->num_sm) {
 		struct tegra_hsp_mailbox *mb = &hsp->mailboxes[bit];
 
 		if (mb->producer) {
-			/*
-			 * Disable EMPTY interrupts until data is sent with
-			 * the next message. These interrupts are level-
-			 * triggered, so if we kept them enabled they would
-			 * constantly trigger until we next write data into
-			 * the message.
-			 */
+			 
 			spin_lock(&hsp->lock);
 
 			hsp->mask &= ~BIT(HSP_INT_EMPTY_SHIFT + mb->index);
@@ -253,7 +235,7 @@ static irqreturn_t tegra_hsp_shared_irq(int irq, void *data)
 		}
 	}
 
-	/* process FULL interrupts */
+	 
 	mask = (status >> HSP_INT_FULL_SHIFT) & HSP_INT_FULL_MASK;
 
 	for_each_set_bit(bit, &mask, hsp->num_sm) {
@@ -323,11 +305,7 @@ static int tegra_hsp_doorbell_startup(struct mbox_chan *chan)
 	if (!ccplex)
 		return -ENODEV;
 
-	/*
-	 * On simulation platforms the BPMP hasn't had a chance yet to mark
-	 * the doorbell as ringable by the CCPLEX, so we want to skip extra
-	 * checks here.
-	 */
+	 
 	if (tegra_is_silicon() && !tegra_hsp_doorbell_can_ring(db))
 		return -ENODEV;
 
@@ -373,7 +351,7 @@ static void tegra_hsp_sm_send32(struct tegra_hsp_channel *channel, void *data)
 {
 	u32 value;
 
-	/* copy data and mark mailbox full */
+	 
 	value = (u32)(unsigned long)data;
 	value |= HSP_SM_SHRD_MBOX_FULL;
 
@@ -390,13 +368,7 @@ static void tegra_hsp_sm_recv32(struct tegra_hsp_channel *channel)
 	msg = (void *)(unsigned long)value;
 	mbox_chan_received_data(channel->chan, msg);
 
-	/*
-	 * Need to clear all bits here since some producers, such as TCU, depend
-	 * on fields in the register getting cleared by the consumer.
-	 *
-	 * The mailbox API doesn't give the consumers a way of doing that
-	 * explicitly, so we have to make sure we cover all possible cases.
-	 */
+	 
 	tegra_hsp_channel_writel(channel, 0x0, HSP_SM_SHRD_MBOX);
 }
 
@@ -411,13 +383,13 @@ static void tegra_hsp_sm_send128(struct tegra_hsp_channel *channel, void *data)
 
 	memcpy(value, data, sizeof(value));
 
-	/* Copy data */
+	 
 	tegra_hsp_channel_writel(channel, value[0], HSP_SHRD_MBOX_TYPE1_DATA0);
 	tegra_hsp_channel_writel(channel, value[1], HSP_SHRD_MBOX_TYPE1_DATA1);
 	tegra_hsp_channel_writel(channel, value[2], HSP_SHRD_MBOX_TYPE1_DATA2);
 	tegra_hsp_channel_writel(channel, value[3], HSP_SHRD_MBOX_TYPE1_DATA3);
 
-	/* Update tag to mark mailbox full */
+	 
 	tegra_hsp_channel_writel(channel, HSP_SM_SHRD_MBOX_FULL,
 				 HSP_SHRD_MBOX_TYPE1_TAG);
 }
@@ -435,9 +407,7 @@ static void tegra_hsp_sm_recv128(struct tegra_hsp_channel *channel)
 	msg = (void *)(unsigned long)value;
 	mbox_chan_received_data(channel->chan, msg);
 
-	/*
-	 * Clear data registers and tag.
-	 */
+	 
 	tegra_hsp_channel_writel(channel, 0x0, HSP_SHRD_MBOX_TYPE1_DATA0);
 	tegra_hsp_channel_writel(channel, 0x0, HSP_SHRD_MBOX_TYPE1_DATA1);
 	tegra_hsp_channel_writel(channel, 0x0, HSP_SHRD_MBOX_TYPE1_DATA2);
@@ -461,7 +431,7 @@ static int tegra_hsp_mailbox_send_data(struct mbox_chan *chan, void *data)
 
 	mb->ops->send(&mb->channel, data);
 
-	/* enable EMPTY interrupt for the shared mailbox */
+	 
 	spin_lock_irqsave(&hsp->lock, flags);
 
 	hsp->mask |= BIT(HSP_INT_EMPTY_SHIFT + mb->index);
@@ -486,7 +456,7 @@ static int tegra_hsp_mailbox_flush(struct mbox_chan *chan,
 		if ((value & HSP_SM_SHRD_MBOX_FULL) == 0) {
 			mbox_chan_txdone(chan, 0);
 
-			/* Wait until channel is empty */
+			 
 			if (chan->active_req != NULL)
 				continue;
 
@@ -508,16 +478,7 @@ static int tegra_hsp_mailbox_startup(struct mbox_chan *chan)
 
 	chan->txdone_method = TXDONE_BY_IRQ;
 
-	/*
-	 * Shared mailboxes start out as consumers by default. FULL and EMPTY
-	 * interrupts are coalesced at the same shared interrupt.
-	 *
-	 * Keep EMPTY interrupts disabled at startup and only enable them when
-	 * the mailbox is actually full. This is required because the FULL and
-	 * EMPTY interrupts are level-triggered, so keeping EMPTY interrupts
-	 * enabled all the time would cause an interrupt storm while mailboxes
-	 * are idle.
-	 */
+	 
 
 	spin_lock_irqsave(&hsp->lock, flags);
 
@@ -708,7 +669,7 @@ static int tegra_hsp_request_shared_irq(struct tegra_hsp *hsp)
 
 		hsp->shared_irq = i;
 
-		/* disable all interrupts */
+		 
 		tegra_hsp_writel(hsp, 0, HSP_INT_IE(hsp->shared_irq));
 
 		dev_dbg(hsp->dev, "interrupt requested: %u\n", irq);
@@ -786,7 +747,7 @@ static int tegra_hsp_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* setup the doorbell controller */
+	 
 	hsp->mbox_db.of_xlate = tegra_hsp_db_xlate;
 	hsp->mbox_db.num_chans = 32;
 	hsp->mbox_db.dev = &pdev->dev;
@@ -814,7 +775,7 @@ static int tegra_hsp_probe(struct platform_device *pdev)
 		return err;
 	}
 
-	/* setup the shared mailbox controller */
+	 
 	hsp->mbox_sm.of_xlate = tegra_hsp_sm_xlate;
 	hsp->mbox_sm.num_chans = hsp->num_sm;
 	hsp->mbox_sm.dev = &pdev->dev;
@@ -907,7 +868,7 @@ static const struct dev_pm_ops tegra_hsp_pm_ops = {
 static const struct tegra_hsp_db_map tegra186_hsp_db_map[] = {
 	{ "ccplex", TEGRA_HSP_DB_MASTER_CCPLEX, HSP_DB_CCPLEX, },
 	{ "bpmp",   TEGRA_HSP_DB_MASTER_BPMP,   HSP_DB_BPMP,   },
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct tegra_hsp_soc tegra186_hsp_soc = {

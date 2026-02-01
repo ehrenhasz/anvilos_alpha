@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com
- *  Author: Peter Ujfalusi <peter.ujfalusi@ti.com>
- */
+
+ 
 #include <linux/of.h>
 #include <linux/of_platform.h>
 
@@ -140,7 +137,7 @@ XUDMA_GET_RESOURCE_ID(tchan);
 XUDMA_GET_RESOURCE_ID(rchan);
 XUDMA_GET_RESOURCE_ID(rflow);
 
-/* Exported register access functions */
+ 
 #define XUDMA_RT_IO_FUNCTIONS(res)					\
 u32 xudma_##res##rt_read(struct udma_##res *p, int reg)			\
 {									\

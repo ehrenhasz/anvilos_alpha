@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2013 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com/
- *
- * Author: Jacek Anaszewski <j.anaszewski@samsung.com>
- *
- * Register interface file for JPEG driver on Exynos4x12.
- */
+
+ 
 #include <linux/io.h>
 #include <linux/delay.h>
 
@@ -34,16 +28,16 @@ void exynos4_jpeg_set_enc_dec_mode(void __iomem *base, unsigned int mode)
 	unsigned int reg;
 
 	reg = readl(base + EXYNOS4_JPEG_CNTL_REG);
-	/* set exynos4_jpeg mod register */
+	 
 	if (mode == S5P_JPEG_DECODE) {
 		writel((reg & EXYNOS4_ENC_DEC_MODE_MASK) |
 					EXYNOS4_DEC_MODE,
 			base + EXYNOS4_JPEG_CNTL_REG);
-	} else if (mode == S5P_JPEG_ENCODE) {/* encode */
+	} else if (mode == S5P_JPEG_ENCODE) { 
 		writel((reg & EXYNOS4_ENC_DEC_MODE_MASK) |
 					EXYNOS4_ENC_MODE,
 			base + EXYNOS4_JPEG_CNTL_REG);
-	} else { /* disable both */
+	} else {  
 		writel(reg & EXYNOS4_ENC_DEC_MODE_MASK,
 			base + EXYNOS4_JPEG_CNTL_REG);
 	}
@@ -65,7 +59,7 @@ void __exynos4_jpeg_set_img_fmt(void __iomem *base, unsigned int img_fmt,
 	}
 
 	reg = readl(base + EXYNOS4_IMG_FMT_REG) &
-			EXYNOS4_ENC_IN_FMT_MASK; /* clear except enc format */
+			EXYNOS4_ENC_IN_FMT_MASK;  
 
 	switch (img_fmt) {
 	case V4L2_PIX_FMT_GREY:
@@ -140,7 +134,7 @@ void __exynos4_jpeg_set_enc_out_fmt(void __iomem *base, unsigned int out_fmt,
 
 	reg = readl(base + EXYNOS4_IMG_FMT_REG) &
 			~(version == SJPEG_EXYNOS4 ? EXYNOS4_ENC_FMT_MASK :
-			  EXYNOS5433_ENC_FMT_MASK); /* clear enc format */
+			  EXYNOS5433_ENC_FMT_MASK);  
 
 	switch (out_fmt) {
 	case V4L2_JPEG_CHROMA_SUBSAMPLING_GRAY:
@@ -225,7 +219,7 @@ void exynos4_jpeg_set_stream_buf_address(void __iomem *base,
 void exynos4_jpeg_set_stream_size(void __iomem *base,
 		unsigned int x_value, unsigned int y_value)
 {
-	writel(0x0, base + EXYNOS4_JPEG_IMG_SIZE_REG); /* clear */
+	writel(0x0, base + EXYNOS4_JPEG_IMG_SIZE_REG);  
 	writel(EXYNOS4_X_SIZE(x_value) | EXYNOS4_Y_SIZE(y_value),
 			base + EXYNOS4_JPEG_IMG_SIZE_REG);
 }

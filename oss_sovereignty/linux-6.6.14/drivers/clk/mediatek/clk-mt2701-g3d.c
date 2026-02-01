@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018 MediaTek Inc.
- * Author: Sean Wang <sean.wang@mediatek.com>
- *
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/mod_devicetable.h>
@@ -44,7 +40,7 @@ static const struct mtk_clk_desc g3d_desc = {
 
 static const struct of_device_id of_match_clk_mt2701_g3d[] = {
 	{ .compatible = "mediatek,mt2701-g3dsys", .data = &g3d_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt2701_g3d);
 

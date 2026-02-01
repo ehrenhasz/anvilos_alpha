@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NVM Express device driver
- * Copyright (c) 2011-2014, Intel Corporation.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/async.h>
@@ -37,10 +34,7 @@
 
 #define SGES_PER_PAGE	(NVME_CTRL_PAGE_SIZE / sizeof(struct nvme_sgl_desc))
 
-/*
- * These can be higher, but we need to ensure that any command doesn't
- * require an sg allocation that needs more than a page of data.
- */
+ 
 #define NVME_MAX_KB_SZ	8192
 #define NVME_MAX_SEGS	128
 #define NVME_MAX_NR_ALLOCATIONS	5
@@ -112,9 +106,7 @@ static void nvme_dev_disable(struct nvme_dev *dev, bool shutdown);
 static void nvme_delete_io_queues(struct nvme_dev *dev);
 static void nvme_update_attrs(struct nvme_dev *dev);
 
-/*
- * Represents an NVM Express device.  Each nvme_dev is a PCI function.
- */
+ 
 struct nvme_dev {
 	struct nvme_queue *queues;
 	struct blk_mq_tag_set tagset;
@@ -144,13 +136,13 @@ struct nvme_dev {
 
 	mempool_t *iod_mempool;
 
-	/* shadow doorbell buffer support: */
+	 
 	__le32 *dbbuf_dbs;
 	dma_addr_t dbbuf_dbs_dma_addr;
 	__le32 *dbbuf_eis;
 	dma_addr_t dbbuf_eis_dma_addr;
 
-	/* host memory buffer support: */
+	 
 	u64 host_mem_size;
 	u32 nr_host_mem_descs;
 	dma_addr_t host_mem_descs_dma;
@@ -182,15 +174,12 @@ static inline struct nvme_dev *to_nvme_dev(struct nvme_ctrl *ctrl)
 	return container_of(ctrl, struct nvme_dev, ctrl);
 }
 
-/*
- * An NVM Express queue.  Each device has at least two (one for admin
- * commands and one for I/O commands).
- */
+ 
 struct nvme_queue {
 	struct nvme_dev *dev;
 	spinlock_t sq_lock;
 	void *sq_cmds;
-	 /* only used for poll queues: */
+	  
 	spinlock_t cq_poll_lock ____cacheline_aligned_in_smp;
 	struct nvme_completion *cqes;
 	dma_addr_t sq_dma_addr;
@@ -221,19 +210,13 @@ union nvme_descriptor {
 	__le64			*prp_list;
 };
 
-/*
- * The nvme_iod describes the data in an I/O.
- *
- * The sg pointer contains the list of PRP/SGL chunk allocations in addition
- * to the actual struct scatterlist.
- */
+ 
 struct nvme_iod {
 	struct nvme_request req;
 	struct nvme_command cmd;
 	bool aborted;
-	s8 nr_allocations;	/* PRP list pool allocations. 0 means small
-				   pool in use */
-	unsigned int dma_len;	/* length of single DMA segment mapping */
+	s8 nr_allocations;	 
+	unsigned int dma_len;	 
 	dma_addr_t first_dma;
 	dma_addr_t meta_dma;
 	struct sg_table sgt;
@@ -253,10 +236,7 @@ static void nvme_dbbuf_dma_alloc(struct nvme_dev *dev)
 		return;
 
 	if (dev->dbbuf_dbs) {
-		/*
-		 * Clear the dbbuf memory so the driver doesn't observe stale
-		 * values from the previous instantiation.
-		 */
+		 
 		memset(dev->dbbuf_dbs, 0, mem_size);
 		memset(dev->dbbuf_eis, 0, mem_size);
 		return;
@@ -335,7 +315,7 @@ static void nvme_dbbuf_set(struct nvme_dev *dev)
 
 	if (nvme_submit_sync_cmd(dev->ctrl.admin_q, &c, NULL, 0)) {
 		dev_warn(dev->ctrl.device, "unable to set dbbuf\n");
-		/* Free memory and continue on */
+		 
 		nvme_dbbuf_dma_free(dev);
 
 		for (i = 1; i <= dev->online_queues; i++)
@@ -348,28 +328,20 @@ static inline int nvme_dbbuf_need_event(u16 event_idx, u16 new_idx, u16 old)
 	return (u16)(new_idx - event_idx - 1) < (u16)(new_idx - old);
 }
 
-/* Update dbbuf and return true if an MMIO is required */
+ 
 static bool nvme_dbbuf_update_and_check_event(u16 value, __le32 *dbbuf_db,
 					      volatile __le32 *dbbuf_ei)
 {
 	if (dbbuf_db) {
 		u16 old_value, event_idx;
 
-		/*
-		 * Ensure that the queue is written before updating
-		 * the doorbell in memory
-		 */
+		 
 		wmb();
 
 		old_value = le32_to_cpu(*dbbuf_db);
 		*dbbuf_db = cpu_to_le32(value);
 
-		/*
-		 * Ensure that the doorbell is updated before reading the event
-		 * index from memory.  The controller needs to provide similar
-		 * ordering to ensure the envent index is updated before reading
-		 * the doorbell.
-		 */
+		 
 		mb();
 
 		event_idx = le32_to_cpu(*dbbuf_ei);
@@ -380,11 +352,7 @@ static bool nvme_dbbuf_update_and_check_event(u16 value, __le32 *dbbuf_db,
 	return true;
 }
 
-/*
- * Will slightly overestimate the number of pages needed.  This is OK
- * as it only leads to a small amount of wasted memory for the lifetime of
- * the I/O.
- */
+ 
 static int nvme_pci_npages_prp(void)
 {
 	unsigned max_bytes = (NVME_MAX_KB_SZ * 1024) + NVME_CTRL_PAGE_SIZE;
@@ -429,7 +397,7 @@ static int nvme_pci_init_request(struct blk_mq_tag_set *set,
 
 static int queue_irq_offset(struct nvme_dev *dev)
 {
-	/* if we have more than 1 vec, admin queue offsets us by 1 */
+	 
 	if (dev->num_vecs > 1)
 		return 1;
 
@@ -451,10 +419,7 @@ static void nvme_pci_map_queues(struct blk_mq_tag_set *set)
 			continue;
 		}
 
-		/*
-		 * The poll queue(s) doesn't have an IRQ (and hence IRQ
-		 * affinity), so use the regular blk-mq cpu mapping
-		 */
+		 
 		map->queue_offset = qoff;
 		if (i != HCTX_TYPE_POLL && offset)
 			blk_mq_pci_map_queues(map, to_pci_dev(dev->dev), offset);
@@ -465,9 +430,7 @@ static void nvme_pci_map_queues(struct blk_mq_tag_set *set)
 	}
 }
 
-/*
- * Write sq tail if we are asked to, or if the next command would wrap.
- */
+ 
 static inline void nvme_write_sq_db(struct nvme_queue *nvmeq, bool write_sq)
 {
 	if (!write_sq) {
@@ -693,7 +656,7 @@ static blk_status_t nvme_pci_setup_sgls(struct nvme_dev *dev,
 	dma_addr_t sgl_dma;
 	int i = 0;
 
-	/* setting the transfer type as SGL */
+	 
 	cmd->flags = NVME_CMD_SGL_METABUF;
 
 	if (entries == 1) {
@@ -868,9 +831,7 @@ out_free_cmd:
 	return ret;
 }
 
-/*
- * NOTE: ns is NULL when called on the admin queue.
- */
+ 
 static blk_status_t nvme_queue_rq(struct blk_mq_hw_ctx *hctx,
 			 const struct blk_mq_queue_data *bd)
 {
@@ -880,10 +841,7 @@ static blk_status_t nvme_queue_rq(struct blk_mq_hw_ctx *hctx,
 	struct nvme_iod *iod = blk_mq_rq_to_pdu(req);
 	blk_status_t ret;
 
-	/*
-	 * We should not need to do this, but we're still using this to
-	 * ensure we can drain requests on a dying queue.
-	 */
+	 
 	if (unlikely(!test_bit(NVMEQ_ENABLED, &nvmeq->flags)))
 		return BLK_STS_IOERR;
 
@@ -915,10 +873,7 @@ static void nvme_submit_cmds(struct nvme_queue *nvmeq, struct request **rqlist)
 
 static bool nvme_prep_rq_batch(struct nvme_queue *nvmeq, struct request *req)
 {
-	/*
-	 * We should not need to do this, but we're still using this to
-	 * ensure we can drain requests on a dying queue.
-	 */
+	 
 	if (unlikely(!test_bit(NVMEQ_ENABLED, &nvmeq->flags)))
 		return false;
 	if (unlikely(!nvme_check_ready(&nvmeq->dev->ctrl, req, true)))
@@ -937,7 +892,7 @@ static void nvme_queue_rqs(struct request **rqlist)
 		struct nvme_queue *nvmeq = req->mq_hctx->driver_data;
 
 		if (!nvme_prep_rq_batch(nvmeq, req)) {
-			/* detach 'req' and add to remainder list */
+			 
 			rq_list_move(rqlist, &requeue_list, req, prev);
 
 			req = prev;
@@ -946,7 +901,7 @@ static void nvme_queue_rqs(struct request **rqlist)
 		}
 
 		if (!next || req->mq_hctx != next->mq_hctx) {
-			/* detach rest of list, and submit */
+			 
 			req->rq_next = NULL;
 			nvme_submit_cmds(nvmeq, rqlist);
 			*rqlist = next;
@@ -985,7 +940,7 @@ static void nvme_pci_complete_batch(struct io_comp_batch *iob)
 	nvme_complete_batch(iob, nvme_pci_unmap_rq);
 }
 
-/* We read the CQE phase first to check if the rest of the entry is valid */
+ 
 static inline bool nvme_cqe_pending(struct nvme_queue *nvmeq)
 {
 	struct nvme_completion *hcqe = &nvmeq->cqes[nvmeq->cq_head];
@@ -1016,12 +971,7 @@ static inline void nvme_handle_cqe(struct nvme_queue *nvmeq,
 	__u16 command_id = READ_ONCE(cqe->command_id);
 	struct request *req;
 
-	/*
-	 * AEN requests are special as they don't time out and can
-	 * survive any kind of queue freeze and often don't respond to
-	 * aborts.  We don't even bother to allocate a struct request
-	 * for them but rather special case them here.
-	 */
+	 
 	if (unlikely(nvme_is_aen_req(nvmeq->qid, command_id))) {
 		nvme_complete_async_event(&nvmeq->dev->ctrl,
 				cqe->status, &cqe->result);
@@ -1062,10 +1012,7 @@ static inline int nvme_poll_cq(struct nvme_queue *nvmeq,
 
 	while (nvme_cqe_pending(nvmeq)) {
 		found++;
-		/*
-		 * load-load control dependency between phase and the rest of
-		 * the cqe requires a full read memory barrier
-		 */
+		 
 		dma_rmb();
 		nvme_handle_cqe(nvmeq, iob, nvmeq->cq_head);
 		nvme_update_cq_head(nvmeq);
@@ -1098,10 +1045,7 @@ static irqreturn_t nvme_irq_check(int irq, void *data)
 	return IRQ_NONE;
 }
 
-/*
- * Poll for completions for any interrupt driven queue
- * Can be called from any context.
- */
+ 
 static void nvme_poll_irqdisable(struct nvme_queue *nvmeq)
 {
 	struct pci_dev *pdev = to_pci_dev(nvmeq->dev->dev);
@@ -1162,10 +1106,7 @@ static int adapter_alloc_cq(struct nvme_dev *dev, u16 qid,
 	if (!test_bit(NVMEQ_POLLED, &nvmeq->flags))
 		flags |= NVME_CQ_IRQ_ENABLED;
 
-	/*
-	 * Note: we (ab)use the fact that the prp fields survive if no data
-	 * is attached to the request.
-	 */
+	 
 	c.create_cq.opcode = nvme_admin_create_cq;
 	c.create_cq.prp1 = cpu_to_le64(nvmeq->cq_dma_addr);
 	c.create_cq.cqid = cpu_to_le16(qid);
@@ -1183,18 +1124,11 @@ static int adapter_alloc_sq(struct nvme_dev *dev, u16 qid,
 	struct nvme_command c = { };
 	int flags = NVME_QUEUE_PHYS_CONTIG;
 
-	/*
-	 * Some drives have a bug that auto-enables WRRU if MEDIUM isn't
-	 * set. Since URGENT priority is zeroes, it makes all queues
-	 * URGENT.
-	 */
+	 
 	if (ctrl->quirks & NVME_QUIRK_MEDIUM_PRIO_SQ)
 		flags |= NVME_SQ_PRIO_MEDIUM;
 
-	/*
-	 * Note: we (ab)use the fact that the prp fields survive if no data
-	 * is attached to the request.
-	 */
+	 
 	c.create_sq.opcode = nvme_admin_create_sq;
 	c.create_sq.prp1 = cpu_to_le64(nvmeq->sq_dma_addr);
 	c.create_sq.sqid = cpu_to_le16(qid);
@@ -1228,12 +1162,10 @@ static enum rq_end_io_ret abort_endio(struct request *req, blk_status_t error)
 
 static bool nvme_should_reset(struct nvme_dev *dev, u32 csts)
 {
-	/* If true, indicates loss of adapter communication, possibly by a
-	 * NVMe Subsystem reset.
-	 */
+	 
 	bool nssro = dev->subsystem && (csts & NVME_CSTS_NSSRO);
 
-	/* If there is a reset/reinit ongoing, we shouldn't reset again. */
+	 
 	switch (nvme_ctrl_state(&dev->ctrl)) {
 	case NVME_CTRL_RESETTING:
 	case NVME_CTRL_CONNECTING:
@@ -1242,9 +1174,7 @@ static bool nvme_should_reset(struct nvme_dev *dev, u32 csts)
 		break;
 	}
 
-	/* We shouldn't reset unless the controller is on fatal error state
-	 * _or_ if we lost the communication with it.
-	 */
+	 
 	if (!(csts & NVME_CSTS_CFS) && !nssro)
 		return false;
 
@@ -1253,7 +1183,7 @@ static bool nvme_should_reset(struct nvme_dev *dev, u32 csts)
 
 static void nvme_warn_reset(struct nvme_dev *dev, u32 csts)
 {
-	/* Read a config register to help see what died. */
+	 
 	u16 pci_status;
 	int result;
 
@@ -1286,24 +1216,18 @@ static enum blk_eh_timer_return nvme_timeout(struct request *req)
 	struct nvme_command cmd = { };
 	u32 csts = readl(dev->bar + NVME_REG_CSTS);
 
-	/* If PCI error recovery process is happening, we cannot reset or
-	 * the recovery mechanism will surely fail.
-	 */
+	 
 	mb();
 	if (pci_channel_offline(to_pci_dev(dev->dev)))
 		return BLK_EH_RESET_TIMER;
 
-	/*
-	 * Reset immediately if the controller is failed
-	 */
+	 
 	if (nvme_should_reset(dev, csts)) {
 		nvme_warn_reset(dev, csts);
 		goto disable;
 	}
 
-	/*
-	 * Did we miss an interrupt?
-	 */
+	 
 	if (test_bit(NVMEQ_POLLED, &nvmeq->flags))
 		nvme_poll(req->mq_hctx, NULL);
 	else
@@ -1316,12 +1240,7 @@ static enum blk_eh_timer_return nvme_timeout(struct request *req)
 		return BLK_EH_DONE;
 	}
 
-	/*
-	 * Shutdown immediately if controller times out while starting. The
-	 * reset work will see the pci device disabled when it gets the forced
-	 * cancellation error. All outstanding requests are completed on
-	 * shutdown, so we return BLK_EH_DONE.
-	 */
+	 
 	switch (nvme_ctrl_state(&dev->ctrl)) {
 	case NVME_CTRL_CONNECTING:
 		nvme_change_ctrl_state(&dev->ctrl, NVME_CTRL_DELETING);
@@ -1339,11 +1258,7 @@ static enum blk_eh_timer_return nvme_timeout(struct request *req)
 		break;
 	}
 
-	/*
-	 * Shutdown the controller immediately and schedule a reset if the
-	 * command was already aborted once before and still hasn't been
-	 * returned to the driver, or if this is the admin queue.
-	 */
+	 
 	if (!nvmeq->qid || iod->aborted) {
 		dev_warn(dev->ctrl.device,
 			 "I/O %d QID %d timeout, reset controller\n",
@@ -1380,11 +1295,7 @@ static enum blk_eh_timer_return nvme_timeout(struct request *req)
 	abort_req->end_io_data = NULL;
 	blk_execute_rq_nowait(abort_req, false);
 
-	/*
-	 * The aborted req will be completed on receiving the abort req.
-	 * We enable the timer again. If hit twice, it'll cause a device reset,
-	 * as the device then is in a faulty state.
-	 */
+	 
 	return BLK_EH_RESET_TIMER;
 
 disable:
@@ -1430,7 +1341,7 @@ static void nvme_suspend_queue(struct nvme_dev *dev, unsigned int qid)
 	if (!test_and_clear_bit(NVMEQ_ENABLED, &nvmeq->flags))
 		return;
 
-	/* ensure that nvme_queue_rq() sees NVMEQ_ENABLED cleared */
+	 
 	mb();
 
 	nvmeq->dev->online_queues--;
@@ -1448,12 +1359,7 @@ static void nvme_suspend_io_queues(struct nvme_dev *dev)
 		nvme_suspend_queue(dev, i);
 }
 
-/*
- * Called only on a device that has been disabled and after all other threads
- * that can check this device's completion queues have synced, except
- * nvme_poll(). This is the last chance for the driver to see a natural
- * completion before nvme_cancel_request() terminates all incomplete requests.
- */
+ 
 static void nvme_reap_pending_cqes(struct nvme_dev *dev)
 {
 	int i;
@@ -1478,11 +1384,7 @@ static int nvme_cmb_qdepth(struct nvme_dev *dev, int nr_io_queues,
 		mem_per_q = round_down(mem_per_q, NVME_CTRL_PAGE_SIZE);
 		q_depth = div_u64(mem_per_q, entry_size);
 
-		/*
-		 * Ensure the reduced q_depth is above some threshold where it
-		 * would be better to map queues in system memory with the
-		 * original depth
-		 */
+		 
 		if (q_depth < 64)
 			return -ENOMEM;
 	}
@@ -1577,23 +1479,17 @@ static void nvme_init_queue(struct nvme_queue *nvmeq, u16 qid)
 	memset((void *)nvmeq->cqes, 0, CQ_SIZE(nvmeq));
 	nvme_dbbuf_init(dev, nvmeq, qid);
 	dev->online_queues++;
-	wmb(); /* ensure the first interrupt sees the initialization */
+	wmb();  
 }
 
-/*
- * Try getting shutdown_lock while setting up IO queues.
- */
+ 
 static int nvme_setup_io_queues_trylock(struct nvme_dev *dev)
 {
-	/*
-	 * Give up if the lock is being held by nvme_dev_disable.
-	 */
+	 
 	if (!mutex_trylock(&dev->shutdown_lock))
 		return -ENODEV;
 
-	/*
-	 * Controller is in wrong state, fail early.
-	 */
+	 
 	if (nvme_ctrl_state(&dev->ctrl) != NVME_CTRL_CONNECTING) {
 		mutex_unlock(&dev->shutdown_lock);
 		return -ENODEV;
@@ -1610,10 +1506,7 @@ static int nvme_create_queue(struct nvme_queue *nvmeq, int qid, bool polled)
 
 	clear_bit(NVMEQ_DELETE_ERROR, &nvmeq->flags);
 
-	/*
-	 * A queue's vector matches the queue identifier unless the controller
-	 * has only one vector available.
-	 */
+	 
 	if (!polled)
 		vector = dev->num_vecs == 1 ? 0 : qid;
 	else
@@ -1677,11 +1570,7 @@ static const struct blk_mq_ops nvme_mq_ops = {
 static void nvme_dev_remove_admin(struct nvme_dev *dev)
 {
 	if (dev->ctrl.admin_q && !blk_queue_dying(dev->ctrl.admin_q)) {
-		/*
-		 * If the controller was reset during removal, it's possible
-		 * user requests may be waiting on a stopped queue. Start the
-		 * queue to flush these to completion.
-		 */
+		 
 		nvme_unquiesce_admin_queue(&dev->ctrl);
 		nvme_remove_admin_tag_set(&dev->ctrl);
 	}
@@ -1730,13 +1619,7 @@ static int nvme_pci_configure_admin_queue(struct nvme_dev *dev)
 	    (readl(dev->bar + NVME_REG_CSTS) & NVME_CSTS_NSSRO))
 		writel(NVME_CSTS_NSSRO, dev->bar + NVME_REG_CSTS);
 
-	/*
-	 * If the device has been passed off to us in an enabled state, just
-	 * clear the enabled bit.  The spec says we should set the 'shutdown
-	 * notification bits', but doing so may cause the device to complete
-	 * commands to the admin queue ... and we don't know what memory that
-	 * might be pointing at!
-	 */
+	 
 	result = nvme_disable_ctrl(&dev->ctrl, false);
 	if (result < 0)
 		return result;
@@ -1799,12 +1682,7 @@ static int nvme_create_io_queues(struct nvme_dev *dev)
 			break;
 	}
 
-	/*
-	 * Ignore failing Create SQ/CQ commands, we can continue with less
-	 * than the desired amount of queues, and even a controller without
-	 * I/O queues can still be used to issue admin commands.  This might
-	 * be useful to upgrade a buggy firmware for example.
-	 */
+	 
 	return ret >= 0 ? 0 : ret;
 }
 
@@ -1846,21 +1724,14 @@ static void nvme_map_cmb(struct nvme_dev *dev)
 	if (offset > bar_size)
 		return;
 
-	/*
-	 * Tell the controller about the host side address mapping the CMB,
-	 * and enable CMB decoding for the NVMe 1.4+ scheme:
-	 */
+	 
 	if (NVME_CAP_CMBS(dev->ctrl.cap)) {
 		hi_lo_writeq(NVME_CMBMSC_CRE | NVME_CMBMSC_CMSE |
 			     (pci_bus_address(pdev, bar) + offset),
 			     dev->bar + NVME_REG_CMBMSC);
 	}
 
-	/*
-	 * Controllers may support a CMB size larger than their BAR,
-	 * for example, due to being behind a bridge. Reduce the CMB to
-	 * the reported size of the BAR
-	 */
+	 
 	if (size > bar_size - offset)
 		size = bar_size - offset;
 
@@ -2002,7 +1873,7 @@ static int nvme_alloc_host_mem(struct nvme_dev *dev, u64 min, u64 preferred)
 	u64 hmminds = max_t(u32, dev->ctrl.hmminds * 4096, PAGE_SIZE * 2);
 	u64 chunk_size;
 
-	/* start big and work our way down */
+	 
 	for (chunk_size = min_chunk; chunk_size >= hmminds; chunk_size /= 2) {
 		if (!__nvme_alloc_host_mem(dev, preferred, chunk_size)) {
 			if (!min || dev->host_mem_size >= min)
@@ -2034,9 +1905,7 @@ static int nvme_setup_host_mem(struct nvme_dev *dev)
 		return 0;
 	}
 
-	/*
-	 * If we already have a buffer allocated check if we can reuse it.
-	 */
+	 
 	if (dev->host_mem_descs) {
 		if (dev->host_mem_size >= min)
 			enable_bits |= NVME_HOST_MEM_RETURN;
@@ -2048,7 +1917,7 @@ static int nvme_setup_host_mem(struct nvme_dev *dev)
 		if (nvme_alloc_host_mem(dev, min, preferred)) {
 			dev_warn(dev->ctrl.device,
 				"failed to allocate host memory buffer.\n");
-			return 0; /* controller must work without HMB */
+			return 0;  
 		}
 
 		dev_info(dev->ctrl.device,
@@ -2169,26 +2038,13 @@ static void nvme_update_attrs(struct nvme_dev *dev)
 	sysfs_update_group(&dev->ctrl.device->kobj, &nvme_pci_dev_attrs_group);
 }
 
-/*
- * nirqs is the number of interrupts available for write and read
- * queues. The core already reserved an interrupt for the admin queue.
- */
+ 
 static void nvme_calc_irq_sets(struct irq_affinity *affd, unsigned int nrirqs)
 {
 	struct nvme_dev *dev = affd->priv;
 	unsigned int nr_read_queues, nr_write_queues = dev->nr_write_queues;
 
-	/*
-	 * If there is no interrupt available for queues, ensure that
-	 * the default queue is set to 1. The affinity set size is
-	 * also set to one, but the irq core ignores it for this case.
-	 *
-	 * If only one interrupt is available or 'write_queue' == 0, combine
-	 * write and read queues.
-	 *
-	 * If 'write_queues' > 0, ensure it leaves room for at least one read
-	 * queue.
-	 */
+	 
 	if (!nrirqs) {
 		nrirqs = 1;
 		nr_read_queues = 0;
@@ -2217,25 +2073,15 @@ static int nvme_setup_irqs(struct nvme_dev *dev, unsigned int nr_io_queues)
 	};
 	unsigned int irq_queues, poll_queues;
 
-	/*
-	 * Poll queues don't need interrupts, but we need at least one I/O queue
-	 * left over for non-polled I/O.
-	 */
+	 
 	poll_queues = min(dev->nr_poll_queues, nr_io_queues - 1);
 	dev->io_queues[HCTX_TYPE_POLL] = poll_queues;
 
-	/*
-	 * Initialize for the single interrupt case, will be updated in
-	 * nvme_calc_irq_sets().
-	 */
+	 
 	dev->io_queues[HCTX_TYPE_DEFAULT] = 1;
 	dev->io_queues[HCTX_TYPE_READ] = 0;
 
-	/*
-	 * We need interrupts for the admin queue and each non-polled I/O queue,
-	 * but some Apple controllers require all queues to use the first
-	 * vector.
-	 */
+	 
 	irq_queues = 1;
 	if (!(dev->ctrl.quirks & NVME_QUIRK_SINGLE_VECTOR))
 		irq_queues += (nr_io_queues - poll_queues);
@@ -2245,10 +2091,7 @@ static int nvme_setup_irqs(struct nvme_dev *dev, unsigned int nr_io_queues)
 
 static unsigned int nvme_max_io_queues(struct nvme_dev *dev)
 {
-	/*
-	 * If tags are shared with admin queue (Apple bug), then
-	 * make sure we only use one IO queue.
-	 */
+	 
 	if (dev->ctrl.quirks & NVME_QUIRK_SHARED_TAGS)
 		return 1;
 	return num_possible_cpus() + dev->nr_write_queues + dev->nr_poll_queues;
@@ -2262,10 +2105,7 @@ static int nvme_setup_io_queues(struct nvme_dev *dev)
 	unsigned long size;
 	int result;
 
-	/*
-	 * Sample the module parameters once at reset time so that we have
-	 * stable values to work with.
-	 */
+	 
 	dev->nr_write_queues = write_queues;
 	dev->nr_poll_queues = poll_queues;
 
@@ -2277,13 +2117,7 @@ static int nvme_setup_io_queues(struct nvme_dev *dev)
 	if (nr_io_queues == 0)
 		return 0;
 
-	/*
-	 * Free IRQ resources as soon as NVMEQ_ENABLED bit transitions
-	 * from set to unset. If there is a window to it is truely freed,
-	 * pci_free_irq_vectors() jumping into this window will crash.
-	 * And take lock to avoid racing with pci_free_irq_vectors() in
-	 * nvme_dev_disable() path.
-	 */
+	 
 	result = nvme_setup_io_queues_trylock(dev);
 	if (result)
 		return result;
@@ -2314,14 +2148,11 @@ static int nvme_setup_io_queues(struct nvme_dev *dev)
 	adminq->q_db = dev->dbs;
 
  retry:
-	/* Deregister the admin queue's interrupt */
+	 
 	if (test_and_clear_bit(NVMEQ_ENABLED, &adminq->flags))
 		pci_free_irq(pdev, 0, adminq);
 
-	/*
-	 * If we enable msix early due to not intx, disable it again before
-	 * setting up the full range we need.
-	 */
+	 
 	pci_free_irq_vectors(pdev);
 
 	result = nvme_setup_irqs(dev, nr_io_queues);
@@ -2334,12 +2165,7 @@ static int nvme_setup_io_queues(struct nvme_dev *dev)
 	result = max(result - 1, 1);
 	dev->max_qid = result + dev->io_queues[HCTX_TYPE_POLL];
 
-	/*
-	 * Should investigate if there's a performance win from allocating
-	 * more queues than interrupt vectors; it might allow the submission
-	 * path to scale better, even if the receive path is limited by the
-	 * number of interrupts.
-	 */
+	 
 	result = queue_request_irq(adminq);
 	if (result)
 		goto out_unlock;
@@ -2461,7 +2287,7 @@ static unsigned int nvme_pci_nr_maps(struct nvme_dev *dev)
 static void nvme_pci_update_nr_queues(struct nvme_dev *dev)
 {
 	blk_mq_update_nr_hw_queues(&dev->tagset, dev->online_queues - 1);
-	/* free previously allocated queues that are no longer usable */
+	 
 	nvme_free_queues(dev, dev->online_queues);
 }
 
@@ -2480,11 +2306,7 @@ static int nvme_pci_enable(struct nvme_dev *dev)
 		goto disable;
 	}
 
-	/*
-	 * Some devices and/or platforms don't advertise or work with INTx
-	 * interrupts. Pre-enable a single MSIX or MSI vec for setup. We'll
-	 * adjust this later.
-	 */
+	 
 	result = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_ALL_TYPES);
 	if (result < 0)
 		goto disable;
@@ -2496,20 +2318,13 @@ static int nvme_pci_enable(struct nvme_dev *dev)
 	dev->db_stride = 1 << NVME_CAP_STRIDE(dev->ctrl.cap);
 	dev->dbs = dev->bar + 4096;
 
-	/*
-	 * Some Apple controllers require a non-standard SQE size.
-	 * Interestingly they also seem to ignore the CC:IOSQES register
-	 * so we don't bother updating it here.
-	 */
+	 
 	if (dev->ctrl.quirks & NVME_QUIRK_128_BYTES_SQES)
 		dev->io_sqes = 7;
 	else
 		dev->io_sqes = NVME_NVM_IOSQES;
 
-	/*
-	 * Temporary fix for the Apple controller found in the MacBook8,1 and
-	 * some MacBook7,1 to avoid controller resets and data loss.
-	 */
+	 
 	if (pdev->vendor == PCI_VENDOR_ID_APPLE && pdev->device == 0x2001) {
 		dev->q_depth = 2;
 		dev_warn(dev->ctrl.device, "detected Apple NVMe controller, "
@@ -2523,17 +2338,14 @@ static int nvme_pci_enable(struct nvme_dev *dev)
                         "set queue depth=%u\n", dev->q_depth);
 	}
 
-	/*
-	 * Controllers with the shared tags quirk need the IO queue to be
-	 * big enough so that we get 32 tags for the admin queue
-	 */
+	 
 	if ((dev->ctrl.quirks & NVME_QUIRK_SHARED_TAGS) &&
 	    (dev->q_depth < (NVME_AQ_DEPTH + 2))) {
 		dev->q_depth = NVME_AQ_DEPTH + 2;
 		dev_warn(dev->ctrl.device, "IO queue depth clamped to %d\n",
 			 dev->q_depth);
 	}
-	dev->ctrl.sqsize = dev->q_depth - 1; /* 0's based queue depth */
+	dev->ctrl.sqsize = dev->q_depth - 1;  
 
 	nvme_map_cmb(dev);
 
@@ -2583,10 +2395,7 @@ static void nvme_dev_disable(struct nvme_dev *dev, bool shutdown)
 	if (state == NVME_CTRL_LIVE || state == NVME_CTRL_RESETTING) {
 		if (pci_is_enabled(pdev))
 			nvme_start_freeze(&dev->ctrl);
-		/*
-		 * Give the controller a chance to complete all entered requests
-		 * if doing a safe shutdown.
-		 */
+		 
 		if (!dead && shutdown)
 			nvme_wait_freeze_timeout(&dev->ctrl, NVME_IO_TIMEOUT);
 	}
@@ -2608,11 +2417,7 @@ static void nvme_dev_disable(struct nvme_dev *dev, bool shutdown)
 	nvme_cancel_tagset(&dev->ctrl);
 	nvme_cancel_admin_tagset(&dev->ctrl);
 
-	/*
-	 * The driver will not be starting up queues again if shutting down so
-	 * must flush all entered requests to their failed completion to avoid
-	 * deadlocking blk-mq hot-cpu notifier.
-	 */
+	 
 	if (shutdown) {
 		nvme_unquiesce_io_queues(&dev->ctrl);
 		if (dev->ctrl.admin_q && !blk_queue_dying(dev->ctrl.admin_q))
@@ -2637,7 +2442,7 @@ static int nvme_setup_prp_pools(struct nvme_dev *dev)
 	if (!dev->prp_page_pool)
 		return -ENOMEM;
 
-	/* Optimisation for I/Os between 4k and 128k */
+	 
 	dev->prp_small_pool = dma_pool_create("prp list 256", dev->dev,
 						256, 256, 0);
 	if (!dev->prp_small_pool) {
@@ -2673,7 +2478,7 @@ static void nvme_free_tagset(struct nvme_dev *dev)
 	dev->ctrl.tagset = NULL;
 }
 
-/* pairs with nvme_pci_alloc_dev */
+ 
 static void nvme_pci_free_ctrl(struct nvme_ctrl *ctrl)
 {
 	struct nvme_dev *dev = to_nvme_dev(ctrl);
@@ -2698,10 +2503,7 @@ static void nvme_reset_work(struct work_struct *work)
 		goto out;
 	}
 
-	/*
-	 * If we're called to reset a live controller first shut it down before
-	 * moving on.
-	 */
+	 
 	if (dev->ctrl.ctrl_config & NVME_CC_ENABLE)
 		nvme_dev_disable(dev, false);
 	nvme_sync_queues(&dev->ctrl);
@@ -2713,10 +2515,7 @@ static void nvme_reset_work(struct work_struct *work)
 	nvme_unquiesce_admin_queue(&dev->ctrl);
 	mutex_unlock(&dev->shutdown_lock);
 
-	/*
-	 * Introduce CONNECTING state from nvme-fc/rdma transports to mark the
-	 * initializing procedure here.
-	 */
+	 
 	if (!nvme_change_ctrl_state(&dev->ctrl, NVME_CTRL_CONNECTING)) {
 		dev_warn(dev->ctrl.device,
 			"failed to mark controller CONNECTING\n");
@@ -2738,11 +2537,7 @@ static void nvme_reset_work(struct work_struct *work)
 	if (result)
 		goto out;
 
-	/*
-	 * Freeze and update the number of I/O queues as thos might have
-	 * changed.  If there are no I/O queues left after this reset, keep the
-	 * controller around but remove all namespaces.
-	 */
+	 
 	if (dev->online_queues > 1) {
 		nvme_unquiesce_io_queues(&dev->ctrl);
 		nvme_wait_freeze(&dev->ctrl);
@@ -2757,10 +2552,7 @@ static void nvme_reset_work(struct work_struct *work)
 		nvme_free_tagset(dev);
 	}
 
-	/*
-	 * If only admin queue live, keep it to do further investigation or
-	 * recovery.
-	 */
+	 
 	if (!nvme_change_ctrl_state(&dev->ctrl, NVME_CTRL_LIVE)) {
 		dev_warn(dev->ctrl.device,
 			"failed to mark controller live state\n");
@@ -2774,10 +2566,7 @@ static void nvme_reset_work(struct work_struct *work)
  out_unlock:
 	mutex_unlock(&dev->shutdown_lock);
  out:
-	/*
-	 * Set state to deleting now to avoid blocking nvme_wait_reset(), which
-	 * may be holding this pci_dev's device lock.
-	 */
+	 
 	dev_warn(dev->ctrl.device, "Disabling device after reset failure: %d\n",
 		 result);
 	nvme_change_ctrl_state(&dev->ctrl, NVME_CTRL_DELETING);
@@ -2868,25 +2657,13 @@ static int nvme_dev_map(struct nvme_dev *dev)
 static unsigned long check_vendor_combination_bug(struct pci_dev *pdev)
 {
 	if (pdev->vendor == 0x144d && pdev->device == 0xa802) {
-		/*
-		 * Several Samsung devices seem to drop off the PCIe bus
-		 * randomly when APST is on and uses the deepest sleep state.
-		 * This has been observed on a Samsung "SM951 NVMe SAMSUNG
-		 * 256GB", a "PM951 NVMe SAMSUNG 512GB", and a "Samsung SSD
-		 * 950 PRO 256GB", but it seems to be restricted to two Dell
-		 * laptops.
-		 */
+		 
 		if (dmi_match(DMI_SYS_VENDOR, "Dell Inc.") &&
 		    (dmi_match(DMI_PRODUCT_NAME, "XPS 15 9550") ||
 		     dmi_match(DMI_PRODUCT_NAME, "Precision 5510")))
 			return NVME_QUIRK_NO_DEEPEST_PS;
 	} else if (pdev->vendor == 0x144d && pdev->device == 0xa804) {
-		/*
-		 * Samsung SSD 960 EVO drops off the PCIe bus after system
-		 * suspend on a Ryzen board, ASUS PRIME B350M-A, as well as
-		 * within few minutes after bootup on a Coffee Lake board -
-		 * ASUS PRIME Z370-A
-		 */
+		 
 		if (dmi_match(DMI_BOARD_VENDOR, "ASUSTeK COMPUTER INC.") &&
 		    (dmi_match(DMI_BOARD_NAME, "PRIME B350M-A") ||
 		     dmi_match(DMI_BOARD_NAME, "PRIME Z370-A")))
@@ -2894,22 +2671,13 @@ static unsigned long check_vendor_combination_bug(struct pci_dev *pdev)
 	} else if ((pdev->vendor == 0x144d && (pdev->device == 0xa801 ||
 		    pdev->device == 0xa808 || pdev->device == 0xa809)) ||
 		   (pdev->vendor == 0x1e0f && pdev->device == 0x0001)) {
-		/*
-		 * Forcing to use host managed nvme power settings for
-		 * lowest idle power with quick resume latency on
-		 * Samsung and Toshiba SSDs based on suspend behavior
-		 * on Coffee Lake board for LENOVO C640
-		 */
+		 
 		if ((dmi_match(DMI_BOARD_VENDOR, "LENOVO")) &&
 		     dmi_match(DMI_BOARD_NAME, "LNVNB161216"))
 			return NVME_QUIRK_SIMPLE_SUSPEND;
 	} else if (pdev->vendor == 0x2646 && (pdev->device == 0x2263 ||
 		   pdev->device == 0x500f)) {
-		/*
-		 * Exclude some Kingston NV1 and A2000 devices from
-		 * NVME_QUIRK_SIMPLE_SUSPEND. Do a full suspend to save a
-		 * lot fo energy with s2idle sleep on some TUXEDO platforms.
-		 */
+		 
 		if (dmi_match(DMI_BOARD_NAME, "NS5X_NS7XAU") ||
 		    dmi_match(DMI_BOARD_NAME, "NS5x_7xAU") ||
 		    dmi_match(DMI_BOARD_NAME, "NS5x_7xPU") ||
@@ -2948,10 +2716,7 @@ static struct nvme_dev *nvme_pci_alloc_dev(struct pci_dev *pdev,
 	if (!noacpi &&
 	    !(quirks & NVME_QUIRK_FORCE_NO_SIMPLE_SUSPEND) &&
 	    acpi_storage_d3(&pdev->dev)) {
-		/*
-		 * Some systems use a bios work around to ask for D3 on
-		 * platforms that support kernel managed suspend.
-		 */
+		 
 		dev_info(&pdev->dev,
 			 "platform quirk: setting simple suspend\n");
 		quirks |= NVME_QUIRK_SIMPLE_SUSPEND;
@@ -2968,18 +2733,12 @@ static struct nvme_dev *nvme_pci_alloc_dev(struct pci_dev *pdev,
 	dma_set_min_align_mask(&pdev->dev, NVME_CTRL_PAGE_SIZE - 1);
 	dma_set_max_seg_size(&pdev->dev, 0xffffffff);
 
-	/*
-	 * Limit the max command size to prevent iod->sg allocations going
-	 * over a single page.
-	 */
+	 
 	dev->ctrl.max_hw_sectors = min_t(u32,
 		NVME_MAX_KB_SZ << 1, dma_opt_mapping_size(&pdev->dev) >> 9);
 	dev->ctrl.max_segments = NVME_MAX_SEGS;
 
-	/*
-	 * There is no support for SGLs for metadata (yet), so we are limited to
-	 * a single integrity segment for the separate metadata pointer.
-	 */
+	 
 	dev->ctrl.max_integrity_segments = 1;
 	return dev;
 
@@ -3023,10 +2782,7 @@ static int nvme_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (result)
 		goto out_disable;
 
-	/*
-	 * Mark the controller as connecting before sending admin commands to
-	 * allow the timeout handler to do the right thing.
-	 */
+	 
 	if (!nvme_change_ctrl_state(&dev->ctrl, NVME_CTRL_CONNECTING)) {
 		dev_warn(dev->ctrl.device,
 			"failed to mark controller CONNECTING\n");
@@ -3094,11 +2850,7 @@ static void nvme_reset_prepare(struct pci_dev *pdev)
 {
 	struct nvme_dev *dev = pci_get_drvdata(pdev);
 
-	/*
-	 * We don't need to check the return value from waiting for the reset
-	 * state as pci_dev device lock is held, making it impossible to race
-	 * with ->remove().
-	 */
+	 
 	nvme_disable_prepare_reset(dev, false);
 	nvme_sync_queues(&dev->ctrl);
 }
@@ -3118,11 +2870,7 @@ static void nvme_shutdown(struct pci_dev *pdev)
 	nvme_disable_prepare_reset(dev, true);
 }
 
-/*
- * The driver's remove may be called on a device in a partially initialized
- * state. This function must not have any dependencies on the device state in
- * order to proceed.
- */
+ 
 static void nvme_remove(struct pci_dev *pdev)
 {
 	struct nvme_dev *dev = pci_get_drvdata(pdev);
@@ -3185,19 +2933,7 @@ static int nvme_suspend(struct device *dev)
 
 	ndev->last_ps = U32_MAX;
 
-	/*
-	 * The platform does not remove power for a kernel managed suspend so
-	 * use host managed nvme power settings for lowest idle power if
-	 * possible. This should have quicker resume latency than a full device
-	 * shutdown.  But if the firmware is involved after the suspend or the
-	 * device does not support any non-default power states, shut down the
-	 * device fully.
-	 *
-	 * If ASPM is not enabled for the device, shut down the device and allow
-	 * the PCI bus layer to put it into D3 in order to take the PCIe link
-	 * down, so as to allow the platform to achieve its minimum low-power
-	 * state (which may not be possible if the link is up).
-	 */
+	 
 	if (pm_suspend_via_firmware() || !ctrl->npss ||
 	    !pcie_aspm_enabled(pdev) ||
 	    (ndev->ctrl.quirks & NVME_QUIRK_SIMPLE_SUSPEND))
@@ -3210,11 +2946,7 @@ static int nvme_suspend(struct device *dev)
 	if (nvme_ctrl_state(ctrl) != NVME_CTRL_LIVE)
 		goto unfreeze;
 
-	/*
-	 * Host memory access may not be successful in a system suspend state,
-	 * but the specification allows the controller to access memory in a
-	 * non-operational power state.
-	 */
+	 
 	if (ndev->hmb) {
 		ret = nvme_set_host_mem(ndev, 0);
 		if (ret < 0)
@@ -3225,11 +2957,7 @@ static int nvme_suspend(struct device *dev)
 	if (ret < 0)
 		goto unfreeze;
 
-	/*
-	 * A saved state prevents pci pm from generically controlling the
-	 * device's power. If we're using protocol specific settings, we don't
-	 * want pci interfering.
-	 */
+	 
 	pci_save_state(pdev);
 
 	ret = nvme_set_power_state(ctrl, ctrl->npss);
@@ -3237,13 +2965,10 @@ static int nvme_suspend(struct device *dev)
 		goto unfreeze;
 
 	if (ret) {
-		/* discard the saved state */
+		 
 		pci_load_saved_state(pdev, NULL);
 
-		/*
-		 * Clearing npss forces a controller reset on resume. The
-		 * correct value will be rediscovered then.
-		 */
+		 
 		ret = nvme_disable_prepare_reset(ndev, true);
 		ctrl->npss = 0;
 	}
@@ -3275,18 +3000,14 @@ static const struct dev_pm_ops nvme_dev_pm_ops = {
 	.poweroff	= nvme_simple_suspend,
 	.restore	= nvme_simple_resume,
 };
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static pci_ers_result_t nvme_error_detected(struct pci_dev *pdev,
 						pci_channel_state_t state)
 {
 	struct nvme_dev *dev = pci_get_drvdata(pdev);
 
-	/*
-	 * A frozen channel requires a reset. When detected, this method will
-	 * shutdown the controller to quiesce. The controller will be restarted
-	 * after the slot reset through driver's slot_reset callback.
-	 */
+	 
 	switch (state) {
 	case pci_channel_io_normal:
 		return PCI_ERS_RESULT_CAN_RECOVER;
@@ -3334,146 +3055,146 @@ static const struct pci_error_handlers nvme_err_handler = {
 };
 
 static const struct pci_device_id nvme_id_table[] = {
-	{ PCI_VDEVICE(INTEL, 0x0953),	/* Intel 750/P3500/P3600/P3700 */
+	{ PCI_VDEVICE(INTEL, 0x0953),	 
 		.driver_data = NVME_QUIRK_STRIPE_SIZE |
 				NVME_QUIRK_DEALLOCATE_ZEROES, },
-	{ PCI_VDEVICE(INTEL, 0x0a53),	/* Intel P3520 */
+	{ PCI_VDEVICE(INTEL, 0x0a53),	 
 		.driver_data = NVME_QUIRK_STRIPE_SIZE |
 				NVME_QUIRK_DEALLOCATE_ZEROES, },
-	{ PCI_VDEVICE(INTEL, 0x0a54),	/* Intel P4500/P4600 */
+	{ PCI_VDEVICE(INTEL, 0x0a54),	 
 		.driver_data = NVME_QUIRK_STRIPE_SIZE |
 				NVME_QUIRK_DEALLOCATE_ZEROES |
 				NVME_QUIRK_IGNORE_DEV_SUBNQN |
 				NVME_QUIRK_BOGUS_NID, },
-	{ PCI_VDEVICE(INTEL, 0x0a55),	/* Dell Express Flash P4600 */
+	{ PCI_VDEVICE(INTEL, 0x0a55),	 
 		.driver_data = NVME_QUIRK_STRIPE_SIZE |
 				NVME_QUIRK_DEALLOCATE_ZEROES, },
-	{ PCI_VDEVICE(INTEL, 0xf1a5),	/* Intel 600P/P3100 */
+	{ PCI_VDEVICE(INTEL, 0xf1a5),	 
 		.driver_data = NVME_QUIRK_NO_DEEPEST_PS |
 				NVME_QUIRK_MEDIUM_PRIO_SQ |
 				NVME_QUIRK_NO_TEMP_THRESH_CHANGE |
 				NVME_QUIRK_DISABLE_WRITE_ZEROES, },
-	{ PCI_VDEVICE(INTEL, 0xf1a6),	/* Intel 760p/Pro 7600p */
+	{ PCI_VDEVICE(INTEL, 0xf1a6),	 
 		.driver_data = NVME_QUIRK_IGNORE_DEV_SUBNQN, },
-	{ PCI_VDEVICE(INTEL, 0x5845),	/* Qemu emulated controller */
+	{ PCI_VDEVICE(INTEL, 0x5845),	 
 		.driver_data = NVME_QUIRK_IDENTIFY_CNS |
 				NVME_QUIRK_DISABLE_WRITE_ZEROES |
 				NVME_QUIRK_BOGUS_NID, },
-	{ PCI_VDEVICE(REDHAT, 0x0010),	/* Qemu emulated controller */
+	{ PCI_VDEVICE(REDHAT, 0x0010),	 
 		.driver_data = NVME_QUIRK_BOGUS_NID, },
-	{ PCI_DEVICE(0x126f, 0x2263),	/* Silicon Motion unidentified */
+	{ PCI_DEVICE(0x126f, 0x2263),	 
 		.driver_data = NVME_QUIRK_NO_NS_DESC_LIST |
 				NVME_QUIRK_BOGUS_NID, },
-	{ PCI_DEVICE(0x1bb1, 0x0100),   /* Seagate Nytro Flash Storage */
+	{ PCI_DEVICE(0x1bb1, 0x0100),    
 		.driver_data = NVME_QUIRK_DELAY_BEFORE_CHK_RDY |
 				NVME_QUIRK_NO_NS_DESC_LIST, },
-	{ PCI_DEVICE(0x1c58, 0x0003),	/* HGST adapter */
+	{ PCI_DEVICE(0x1c58, 0x0003),	 
 		.driver_data = NVME_QUIRK_DELAY_BEFORE_CHK_RDY, },
-	{ PCI_DEVICE(0x1c58, 0x0023),	/* WDC SN200 adapter */
+	{ PCI_DEVICE(0x1c58, 0x0023),	 
 		.driver_data = NVME_QUIRK_DELAY_BEFORE_CHK_RDY, },
-	{ PCI_DEVICE(0x1c5f, 0x0540),	/* Memblaze Pblaze4 adapter */
+	{ PCI_DEVICE(0x1c5f, 0x0540),	 
 		.driver_data = NVME_QUIRK_DELAY_BEFORE_CHK_RDY, },
-	{ PCI_DEVICE(0x144d, 0xa821),   /* Samsung PM1725 */
+	{ PCI_DEVICE(0x144d, 0xa821),    
 		.driver_data = NVME_QUIRK_DELAY_BEFORE_CHK_RDY, },
-	{ PCI_DEVICE(0x144d, 0xa822),   /* Samsung PM1725a */
+	{ PCI_DEVICE(0x144d, 0xa822),    
 		.driver_data = NVME_QUIRK_DELAY_BEFORE_CHK_RDY |
 				NVME_QUIRK_DISABLE_WRITE_ZEROES|
 				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
-	{ PCI_DEVICE(0x1987, 0x5012),	/* Phison E12 */
+	{ PCI_DEVICE(0x1987, 0x5012),	 
 		.driver_data = NVME_QUIRK_BOGUS_NID, },
-	{ PCI_DEVICE(0x1987, 0x5016),	/* Phison E16 */
+	{ PCI_DEVICE(0x1987, 0x5016),	 
 		.driver_data = NVME_QUIRK_IGNORE_DEV_SUBNQN |
 				NVME_QUIRK_BOGUS_NID, },
-	{ PCI_DEVICE(0x1987, 0x5019),  /* phison E19 */
+	{ PCI_DEVICE(0x1987, 0x5019),   
 		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
-	{ PCI_DEVICE(0x1987, 0x5021),   /* Phison E21 */
+	{ PCI_DEVICE(0x1987, 0x5021),    
 		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
-	{ PCI_DEVICE(0x1b4b, 0x1092),	/* Lexar 256 GB SSD */
+	{ PCI_DEVICE(0x1b4b, 0x1092),	 
 		.driver_data = NVME_QUIRK_NO_NS_DESC_LIST |
 				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
-	{ PCI_DEVICE(0x1cc1, 0x33f8),   /* ADATA IM2P33F8ABR1 1 TB */
+	{ PCI_DEVICE(0x1cc1, 0x33f8),    
 		.driver_data = NVME_QUIRK_BOGUS_NID, },
-	{ PCI_DEVICE(0x10ec, 0x5762),   /* ADATA SX6000LNP */
+	{ PCI_DEVICE(0x10ec, 0x5762),    
 		.driver_data = NVME_QUIRK_IGNORE_DEV_SUBNQN |
 				NVME_QUIRK_BOGUS_NID, },
-	{ PCI_DEVICE(0x10ec, 0x5763),  /* ADATA SX6000PNP */
+	{ PCI_DEVICE(0x10ec, 0x5763),   
 		.driver_data = NVME_QUIRK_BOGUS_NID, },
-	{ PCI_DEVICE(0x1cc1, 0x8201),   /* ADATA SX8200PNP 512GB */
+	{ PCI_DEVICE(0x1cc1, 0x8201),    
 		.driver_data = NVME_QUIRK_NO_DEEPEST_PS |
 				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
-	 { PCI_DEVICE(0x1344, 0x5407), /* Micron Technology Inc NVMe SSD */
+	 { PCI_DEVICE(0x1344, 0x5407),  
 		.driver_data = NVME_QUIRK_IGNORE_DEV_SUBNQN },
-	 { PCI_DEVICE(0x1344, 0x6001),   /* Micron Nitro NVMe */
+	 { PCI_DEVICE(0x1344, 0x6001),    
 		 .driver_data = NVME_QUIRK_BOGUS_NID, },
-	{ PCI_DEVICE(0x1c5c, 0x1504),   /* SK Hynix PC400 */
+	{ PCI_DEVICE(0x1c5c, 0x1504),    
 		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
-	{ PCI_DEVICE(0x1c5c, 0x174a),   /* SK Hynix P31 SSD */
+	{ PCI_DEVICE(0x1c5c, 0x174a),    
 		.driver_data = NVME_QUIRK_BOGUS_NID, },
-	{ PCI_DEVICE(0x15b7, 0x2001),   /*  Sandisk Skyhawk */
+	{ PCI_DEVICE(0x15b7, 0x2001),    
 		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
-	{ PCI_DEVICE(0x1d97, 0x2263),   /* SPCC */
+	{ PCI_DEVICE(0x1d97, 0x2263),    
 		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
-	{ PCI_DEVICE(0x144d, 0xa80b),   /* Samsung PM9B1 256G and 512G */
+	{ PCI_DEVICE(0x144d, 0xa80b),    
 		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES |
 				NVME_QUIRK_BOGUS_NID, },
-	{ PCI_DEVICE(0x144d, 0xa809),   /* Samsung MZALQ256HBJD 256G */
+	{ PCI_DEVICE(0x144d, 0xa809),    
 		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
-	{ PCI_DEVICE(0x144d, 0xa802),   /* Samsung SM953 */
+	{ PCI_DEVICE(0x144d, 0xa802),    
 		.driver_data = NVME_QUIRK_BOGUS_NID, },
-	{ PCI_DEVICE(0x1cc4, 0x6303),   /* UMIS RPJTJ512MGE1QDY 512G */
+	{ PCI_DEVICE(0x1cc4, 0x6303),    
 		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
-	{ PCI_DEVICE(0x1cc4, 0x6302),   /* UMIS RPJTJ256MGE1QDY 256G */
+	{ PCI_DEVICE(0x1cc4, 0x6302),    
 		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
-	{ PCI_DEVICE(0x2646, 0x2262),   /* KINGSTON SKC2000 NVMe SSD */
+	{ PCI_DEVICE(0x2646, 0x2262),    
 		.driver_data = NVME_QUIRK_NO_DEEPEST_PS, },
-	{ PCI_DEVICE(0x2646, 0x2263),   /* KINGSTON A2000 NVMe SSD  */
+	{ PCI_DEVICE(0x2646, 0x2263),    
 		.driver_data = NVME_QUIRK_NO_DEEPEST_PS, },
-	{ PCI_DEVICE(0x2646, 0x5013),   /* Kingston KC3000, Kingston FURY Renegade */
+	{ PCI_DEVICE(0x2646, 0x5013),    
 		.driver_data = NVME_QUIRK_NO_SECONDARY_TEMP_THRESH, },
-	{ PCI_DEVICE(0x2646, 0x5018),   /* KINGSTON OM8SFP4xxxxP OS21012 NVMe SSD */
+	{ PCI_DEVICE(0x2646, 0x5018),    
 		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
-	{ PCI_DEVICE(0x2646, 0x5016),   /* KINGSTON OM3PGP4xxxxP OS21011 NVMe SSD */
+	{ PCI_DEVICE(0x2646, 0x5016),    
 		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
-	{ PCI_DEVICE(0x2646, 0x501A),   /* KINGSTON OM8PGP4xxxxP OS21005 NVMe SSD */
+	{ PCI_DEVICE(0x2646, 0x501A),    
 		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
-	{ PCI_DEVICE(0x2646, 0x501B),   /* KINGSTON OM8PGP4xxxxQ OS21005 NVMe SSD */
+	{ PCI_DEVICE(0x2646, 0x501B),    
 		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
-	{ PCI_DEVICE(0x2646, 0x501E),   /* KINGSTON OM3PGP4xxxxQ OS21011 NVMe SSD */
+	{ PCI_DEVICE(0x2646, 0x501E),    
 		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
-	{ PCI_DEVICE(0x1f40, 0x1202),   /* Netac Technologies Co. NV3000 NVMe SSD */
+	{ PCI_DEVICE(0x1f40, 0x1202),    
 		.driver_data = NVME_QUIRK_BOGUS_NID, },
-	{ PCI_DEVICE(0x1f40, 0x5236),   /* Netac Technologies Co. NV7000 NVMe SSD */
+	{ PCI_DEVICE(0x1f40, 0x5236),    
 		.driver_data = NVME_QUIRK_BOGUS_NID, },
-	{ PCI_DEVICE(0x1e4B, 0x1001),   /* MAXIO MAP1001 */
+	{ PCI_DEVICE(0x1e4B, 0x1001),    
 		.driver_data = NVME_QUIRK_BOGUS_NID, },
-	{ PCI_DEVICE(0x1e4B, 0x1002),   /* MAXIO MAP1002 */
+	{ PCI_DEVICE(0x1e4B, 0x1002),    
 		.driver_data = NVME_QUIRK_BOGUS_NID, },
-	{ PCI_DEVICE(0x1e4B, 0x1202),   /* MAXIO MAP1202 */
+	{ PCI_DEVICE(0x1e4B, 0x1202),    
 		.driver_data = NVME_QUIRK_BOGUS_NID, },
-	{ PCI_DEVICE(0x1e4B, 0x1602),   /* MAXIO MAP1602 */
+	{ PCI_DEVICE(0x1e4B, 0x1602),    
 		.driver_data = NVME_QUIRK_BOGUS_NID, },
-	{ PCI_DEVICE(0x1cc1, 0x5350),   /* ADATA XPG GAMMIX S50 */
+	{ PCI_DEVICE(0x1cc1, 0x5350),    
 		.driver_data = NVME_QUIRK_BOGUS_NID, },
-	{ PCI_DEVICE(0x1dbe, 0x5236),   /* ADATA XPG GAMMIX S70 */
+	{ PCI_DEVICE(0x1dbe, 0x5236),    
 		.driver_data = NVME_QUIRK_BOGUS_NID, },
-	{ PCI_DEVICE(0x1e49, 0x0021),   /* ZHITAI TiPro5000 NVMe SSD */
+	{ PCI_DEVICE(0x1e49, 0x0021),    
 		.driver_data = NVME_QUIRK_NO_DEEPEST_PS, },
-	{ PCI_DEVICE(0x1e49, 0x0041),   /* ZHITAI TiPro7000 NVMe SSD */
+	{ PCI_DEVICE(0x1e49, 0x0041),    
 		.driver_data = NVME_QUIRK_NO_DEEPEST_PS, },
-	{ PCI_DEVICE(0xc0a9, 0x540a),   /* Crucial P2 */
+	{ PCI_DEVICE(0xc0a9, 0x540a),    
 		.driver_data = NVME_QUIRK_BOGUS_NID, },
-	{ PCI_DEVICE(0x1d97, 0x2263), /* Lexar NM610 */
+	{ PCI_DEVICE(0x1d97, 0x2263),  
 		.driver_data = NVME_QUIRK_BOGUS_NID, },
-	{ PCI_DEVICE(0x1d97, 0x1d97), /* Lexar NM620 */
+	{ PCI_DEVICE(0x1d97, 0x1d97),  
 		.driver_data = NVME_QUIRK_BOGUS_NID, },
-	{ PCI_DEVICE(0x1d97, 0x2269), /* Lexar NM760 */
+	{ PCI_DEVICE(0x1d97, 0x2269),  
 		.driver_data = NVME_QUIRK_BOGUS_NID |
 				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
-	{ PCI_DEVICE(0x10ec, 0x5763), /* TEAMGROUP T-FORCE CARDEA ZERO Z330 SSD */
+	{ PCI_DEVICE(0x10ec, 0x5763),  
 		.driver_data = NVME_QUIRK_BOGUS_NID, },
-	{ PCI_DEVICE(0x1e4b, 0x1602), /* HS-SSD-FUTURE 2048G  */
+	{ PCI_DEVICE(0x1e4b, 0x1602),  
 		.driver_data = NVME_QUIRK_BOGUS_NID, },
-	{ PCI_DEVICE(0x10ec, 0x5765), /* TEAMGROUP MP33 2TB SSD */
+	{ PCI_DEVICE(0x10ec, 0x5765),  
 		.driver_data = NVME_QUIRK_BOGUS_NID, },
 	{ PCI_DEVICE(PCI_VENDOR_ID_AMAZON, 0x0061),
 		.driver_data = NVME_QUIRK_DMA_ADDRESS_BITS_48, },

@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2016 Intel Corporation
- */
+ 
 
 #include "i915_selftest.h"
 
@@ -14,9 +10,7 @@ static int mock_phys_object(void *arg)
 	struct drm_i915_gem_object *obj;
 	int err;
 
-	/* Create an object and bind it to a contiguous set of physical pages,
-	 * i.e. exercise the i915_gem_object_phys API.
-	 */
+	 
 
 	obj = i915_gem_object_create_shmem(i915, PAGE_SIZE);
 	if (IS_ERR(obj)) {
@@ -52,7 +46,7 @@ static int mock_phys_object(void *arg)
 		goto out_obj;
 	}
 
-	/* Make the object dirty so that put_pages must do copy back the data */
+	 
 	i915_gem_object_lock(obj, NULL);
 	err = i915_gem_object_set_to_gtt_domain(obj, true);
 	i915_gem_object_unlock(obj);

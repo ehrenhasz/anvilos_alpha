@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <test_progs.h>
 #include "test_lookup_and_delete.skel.h"
@@ -74,7 +74,7 @@ cleanup:
 	return NULL;
 }
 
-/* Triggers BPF program that updates map with given key and value */
+ 
 static int trigger_tp(struct test_lookup_and_delete *skel, __u64 key,
 		      __u64 value)
 {
@@ -101,7 +101,7 @@ static void test_lookup_and_delete_hash(void)
 	__u64 key, value;
 	int map_fd, err;
 
-	/* Setup program and fill the map. */
+	 
 	skel = setup_prog(BPF_MAP_TYPE_HASH, &map_fd);
 	if (!ASSERT_OK_PTR(skel, "setup_prog"))
 		return;
@@ -110,19 +110,19 @@ static void test_lookup_and_delete_hash(void)
 	if (!ASSERT_OK(err, "fill_values"))
 		goto cleanup;
 
-	/* Lookup and delete element. */
+	 
 	key = 1;
 	err = bpf_map__lookup_and_delete_elem(skel->maps.hash_map,
 					      &key, sizeof(key), &value, sizeof(value), 0);
 	if (!ASSERT_OK(err, "bpf_map_lookup_and_delete_elem"))
 		goto cleanup;
 
-	/* Fetched value should match the initially set value. */
+	 
 	if (CHECK(value != START_VALUE, "bpf_map_lookup_and_delete_elem",
 		  "unexpected value=%lld\n", value))
 		goto cleanup;
 
-	/* Check that the entry is non existent. */
+	 
 	err = bpf_map_lookup_elem(map_fd, &key, &value);
 	if (!ASSERT_ERR(err, "bpf_map_lookup_elem"))
 		goto cleanup;
@@ -137,7 +137,7 @@ static void test_lookup_and_delete_percpu_hash(void)
 	__u64 key, val, value[nr_cpus];
 	int map_fd, err, i;
 
-	/* Setup program and fill the map. */
+	 
 	skel = setup_prog(BPF_MAP_TYPE_PERCPU_HASH, &map_fd);
 	if (!ASSERT_OK_PTR(skel, "setup_prog"))
 		return;
@@ -146,7 +146,7 @@ static void test_lookup_and_delete_percpu_hash(void)
 	if (!ASSERT_OK(err, "fill_values_percpu"))
 		goto cleanup;
 
-	/* Lookup and delete element. */
+	 
 	key = 1;
 	err = bpf_map__lookup_and_delete_elem(skel->maps.hash_map,
 					      &key, sizeof(key), value, sizeof(value), 0);
@@ -156,13 +156,13 @@ static void test_lookup_and_delete_percpu_hash(void)
 	for (i = 0; i < nr_cpus; i++) {
 		val = value[i];
 
-		/* Fetched value should match the initially set value. */
+		 
 		if (CHECK(val != START_VALUE, "map value",
 			  "unexpected for cpu %d: %lld\n", i, val))
 			goto cleanup;
 	}
 
-	/* Check that the entry is non existent. */
+	 
 	err = bpf_map_lookup_elem(map_fd, &key, value);
 	if (!ASSERT_ERR(err, "bpf_map_lookup_elem"))
 		goto cleanup;
@@ -177,7 +177,7 @@ static void test_lookup_and_delete_lru_hash(void)
 	__u64 key, value;
 	int map_fd, err;
 
-	/* Setup program and fill the LRU map. */
+	 
 	skel = setup_prog(BPF_MAP_TYPE_LRU_HASH, &map_fd);
 	if (!ASSERT_OK_PTR(skel, "setup_prog"))
 		return;
@@ -186,24 +186,24 @@ static void test_lookup_and_delete_lru_hash(void)
 	if (!ASSERT_OK(err, "fill_values"))
 		goto cleanup;
 
-	/* Insert new element at key=3, should reuse LRU element. */
+	 
 	key = 3;
 	err = trigger_tp(skel, key, NEW_VALUE);
 	if (!ASSERT_OK(err, "trigger_tp"))
 		goto cleanup;
 
-	/* Lookup and delete element 3. */
+	 
 	err = bpf_map__lookup_and_delete_elem(skel->maps.hash_map,
 					      &key, sizeof(key), &value, sizeof(value), 0);
 	if (!ASSERT_OK(err, "bpf_map_lookup_and_delete_elem"))
 		goto cleanup;
 
-	/* Value should match the new value. */
+	 
 	if (CHECK(value != NEW_VALUE, "bpf_map_lookup_and_delete_elem",
 		  "unexpected value=%lld\n", value))
 		goto cleanup;
 
-	/* Check that entries 3 and 1 are non existent. */
+	 
 	err = bpf_map_lookup_elem(map_fd, &key, &value);
 	if (!ASSERT_ERR(err, "bpf_map_lookup_elem"))
 		goto cleanup;
@@ -223,7 +223,7 @@ static void test_lookup_and_delete_lru_percpu_hash(void)
 	__u64 key, val, value[nr_cpus];
 	int map_fd, err, i, cpucnt = 0;
 
-	/* Setup program and fill the LRU map. */
+	 
 	skel = setup_prog(BPF_MAP_TYPE_LRU_PERCPU_HASH, &map_fd);
 	if (!ASSERT_OK_PTR(skel, "setup_prog"))
 		return;
@@ -232,23 +232,23 @@ static void test_lookup_and_delete_lru_percpu_hash(void)
 	if (!ASSERT_OK(err, "fill_values_percpu"))
 		goto cleanup;
 
-	/* Insert new element at key=3, should reuse LRU element 1. */
+	 
 	key = 3;
 	err = trigger_tp(skel, key, NEW_VALUE);
 	if (!ASSERT_OK(err, "trigger_tp"))
 		goto cleanup;
 
-	/* Clean value. */
+	 
 	for (i = 0; i < nr_cpus; i++)
 		value[i] = 0;
 
-	/* Lookup and delete element 3. */
+	 
 	err = bpf_map__lookup_and_delete_elem(skel->maps.hash_map,
 					      &key, sizeof(key), value, sizeof(value), 0);
 	if (!ASSERT_OK(err, "bpf_map_lookup_and_delete_elem"))
 		goto cleanup;
 
-	/* Check if only one CPU has set the value. */
+	 
 	for (i = 0; i < nr_cpus; i++) {
 		val = value[i];
 		if (val) {
@@ -262,7 +262,7 @@ static void test_lookup_and_delete_lru_percpu_hash(void)
 		  cpucnt))
 		goto cleanup;
 
-	/* Check that entries 3 and 1 are non existent. */
+	 
 	err = bpf_map_lookup_elem(map_fd, &key, &value);
 	if (!ASSERT_ERR(err, "bpf_map_lookup_elem"))
 		goto cleanup;

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		Generic INET6 transport hashtables
- *
- * Authors:	Lotsa people, from code originally in tcp, generalised here
- *		by Arnaldo Carvalho de Melo <acme@mandriva.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/random.h>
@@ -41,12 +32,7 @@ u32 inet6_ehashfn(const struct net *net,
 }
 EXPORT_SYMBOL_GPL(inet6_ehashfn);
 
-/*
- * Sockets in TCP_CLOSE state are _always_ taken out of the hash, so
- * we need not check it for TCP lookups anymore, thanks Alexey. -DaveM
- *
- * The sockhash lock must be held as a reader here.
- */
+ 
 struct sock *__inet6_lookup_established(struct net *net,
 					struct inet_hashinfo *hashinfo,
 					   const struct in6_addr *saddr,
@@ -58,9 +44,7 @@ struct sock *__inet6_lookup_established(struct net *net,
 	struct sock *sk;
 	const struct hlist_nulls_node *node;
 	const __portpair ports = INET_COMBINED_PORTS(sport, hnum);
-	/* Optimize here for direct hit, only listening connections can
-	 * have wildcards anyways.
-	 */
+	 
 	unsigned int hash = inet6_ehashfn(net, daddr, hnum, saddr, sport);
 	unsigned int slot = hash & hashinfo->ehash_mask;
 	struct inet_ehash_bucket *head = &hashinfo->ehash[slot];
@@ -112,21 +96,7 @@ static inline int compute_score(struct sock *sk, struct net *net,
 	return score;
 }
 
-/**
- * inet6_lookup_reuseport() - execute reuseport logic on AF_INET6 socket if necessary.
- * @net: network namespace.
- * @sk: AF_INET6 socket, must be in TCP_LISTEN state for TCP or TCP_CLOSE for UDP.
- * @skb: context for a potential SK_REUSEPORT program.
- * @doff: header offset.
- * @saddr: source address.
- * @sport: source port.
- * @daddr: destination address.
- * @hnum: destination port in host byte order.
- * @ehashfn: hash function used to generate the fallback hash.
- *
- * Return: NULL if sk doesn't have SO_REUSEPORT set, otherwise a pointer to
- *         the selected sock or an error.
- */
+ 
 struct sock *inet6_lookup_reuseport(struct net *net, struct sock *sk,
 				    struct sk_buff *skb, int doff,
 				    const struct in6_addr *saddr,
@@ -147,7 +117,7 @@ struct sock *inet6_lookup_reuseport(struct net *net, struct sock *sk,
 }
 EXPORT_SYMBOL_GPL(inet6_lookup_reuseport);
 
-/* called with rcu_read_lock() */
+ 
 static struct sock *inet6_lhash2_lookup(struct net *net,
 		struct inet_listen_hashbucket *ilb2,
 		struct sk_buff *skb, int doff,
@@ -211,7 +181,7 @@ struct sock *inet6_lookup_listener(struct net *net,
 	struct sock *result = NULL;
 	unsigned int hash2;
 
-	/* Lookup redirect from BPF */
+	 
 	if (static_branch_unlikely(&bpf_sk_lookup_enabled) &&
 	    hashinfo == net->ipv4.tcp_death_row.hashinfo) {
 		result = inet6_lookup_run_sk_lookup(net, IPPROTO_TCP, skb, doff,
@@ -230,7 +200,7 @@ struct sock *inet6_lookup_listener(struct net *net,
 	if (result)
 		goto done;
 
-	/* Lookup lhash2 with in6addr_any */
+	 
 	hash2 = ipv6_portaddr_hash(net, &in6addr_any, hnum);
 	ilb2 = inet_lhash2_bucket(hashinfo, hash2);
 
@@ -298,9 +268,7 @@ static int __inet6_check_established(struct inet_timewait_death_row *death_row,
 		}
 	}
 
-	/* Must record num and sport now. Otherwise we will see
-	 * in hash table socket with a funny identity.
-	 */
+	 
 	inet->inet_num = lport;
 	inet->inet_sport = htons(lport);
 	sk->sk_hash = hash;
@@ -316,7 +284,7 @@ static int __inet6_check_established(struct inet_timewait_death_row *death_row,
 	if (twp) {
 		*twp = tw;
 	} else if (tw) {
-		/* Silly. Should hash-dance instead... */
+		 
 		inet_twsk_deschedule_put(tw);
 	}
 	return 0;

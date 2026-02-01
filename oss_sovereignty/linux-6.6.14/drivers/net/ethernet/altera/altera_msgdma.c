@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Altera TSE SGDMA and MSGDMA Linux driver
- * Copyright (C) 2014 Altera Corporation. All rights reserved
- */
+
+ 
 
 #include <linux/netdevice.h>
 #include "altera_utils.h"
@@ -9,7 +7,7 @@
 #include "altera_msgdmahw.h"
 #include "altera_msgdma.h"
 
-/* No initialization work to do for MSGDMA */
+ 
 int msgdma_initialize(struct altera_tse_private *priv)
 {
 	return 0;
@@ -27,7 +25,7 @@ void msgdma_reset(struct altera_tse_private *priv)
 {
 	int counter;
 
-	/* Reset Rx mSGDMA */
+	 
 	csrwr32(MSGDMA_CSR_STAT_MASK, priv->rx_dma_csr,
 		msgdma_csroffs(status));
 	csrwr32(MSGDMA_CSR_CTL_RESET, priv->rx_dma_csr,
@@ -45,10 +43,10 @@ void msgdma_reset(struct altera_tse_private *priv)
 		netif_warn(priv, drv, priv->dev,
 			   "TSE Rx mSGDMA resetting bit never cleared!\n");
 
-	/* clear all status bits */
+	 
 	csrwr32(MSGDMA_CSR_STAT_MASK, priv->rx_dma_csr, msgdma_csroffs(status));
 
-	/* Reset Tx mSGDMA */
+	 
 	csrwr32(MSGDMA_CSR_STAT_MASK, priv->tx_dma_csr,
 		msgdma_csroffs(status));
 
@@ -67,7 +65,7 @@ void msgdma_reset(struct altera_tse_private *priv)
 		netif_warn(priv, drv, priv->dev,
 			   "TSE Tx mSGDMA resetting bit never cleared!\n");
 
-	/* clear all status bits */
+	 
 	csrwr32(MSGDMA_CSR_STAT_MASK, priv->tx_dma_csr, msgdma_csroffs(status));
 }
 
@@ -105,7 +103,7 @@ void msgdma_clear_txirq(struct altera_tse_private *priv)
 	csrwr32(MSGDMA_CSR_STAT_IRQ, priv->tx_dma_csr, msgdma_csroffs(status));
 }
 
-/* return 0 to indicate transmit is pending */
+ 
 int msgdma_tx_buffer(struct altera_tse_private *priv, struct tse_buffer *buffer)
 {
 	csrwr32(lower_32_bits(buffer->dma_addr), priv->tx_dma_desc,
@@ -129,15 +127,15 @@ u32 msgdma_tx_completions(struct altera_tse_private *priv)
 	u32 inuse;
 	u32 status;
 
-	/* Get number of sent descriptors */
+	 
 	inuse = csrrd32(priv->tx_dma_csr, msgdma_csroffs(rw_fill_level))
 			& 0xffff;
 
-	if (inuse) { /* Tx FIFO is not empty */
+	if (inuse) {  
 		ready = max_t(int,
 			      priv->tx_prod - priv->tx_cons - inuse - 1, 0);
 	} else {
-		/* Check for buffered last packet */
+		 
 		status = csrrd32(priv->tx_dma_csr, msgdma_csroffs(status));
 		if (status & MSGDMA_CSR_STAT_BUSY)
 			ready = priv->tx_prod - priv->tx_cons - 1;
@@ -147,8 +145,7 @@ u32 msgdma_tx_completions(struct altera_tse_private *priv)
 	return ready;
 }
 
-/* Put buffer to the mSGDMA RX FIFO
- */
+ 
 void msgdma_add_rx_desc(struct altera_tse_private *priv,
 			struct tse_buffer *rxbuffer)
 {
@@ -173,9 +170,7 @@ void msgdma_add_rx_desc(struct altera_tse_private *priv,
 	csrwr32(control, priv->rx_dma_desc, msgdma_descroffs(control));
 }
 
-/* status is returned on upper 16 bits,
- * length is returned in lower 16 bits
- */
+ 
 u32 msgdma_rx_status(struct altera_tse_private *priv)
 {
 	u32 rxstatus = 0;

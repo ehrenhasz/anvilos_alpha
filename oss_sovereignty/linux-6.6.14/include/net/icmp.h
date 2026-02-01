@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the  BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		Definitions for the ICMP module.
- *
- * Version:	@(#)icmp.h	1.0.4	05/13/93
- *
- * Authors:	Ross Biro
- *		Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
- */
+ 
+ 
 #ifndef _ICMP_H
 #define	_ICMP_H
 
@@ -59,4 +48,4 @@ int icmp_init(void);
 void icmp_out_count(struct net *net, unsigned char type);
 bool icmp_build_probe(struct sk_buff *skb, struct icmphdr *icmphdr);
 
-#endif	/* _ICMP_H */
+#endif	 

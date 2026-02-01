@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Elonics E4000 silicon tuner driver
- *
- * Copyright (C) 2012 Antti Palosaari <crope@iki.fi>
- */
+
+ 
 
 #include "e4000_priv.h"
 
@@ -14,12 +10,12 @@ static int e4000_init(struct e4000_dev *dev)
 
 	dev_dbg(&client->dev, "\n");
 
-	/* reset */
+	 
 	ret = regmap_write(dev->regmap, 0x00, 0x01);
 	if (ret)
 		goto err;
 
-	/* disable output clock */
+	 
 	ret = regmap_write(dev->regmap, 0x06, 0x00);
 	if (ret)
 		goto err;
@@ -28,7 +24,7 @@ static int e4000_init(struct e4000_dev *dev)
 	if (ret)
 		goto err;
 
-	/* configure gains */
+	 
 	ret = regmap_bulk_write(dev->regmap, 0x7e, "\x01\xfe", 2);
 	if (ret)
 		goto err;
@@ -49,7 +45,7 @@ static int e4000_init(struct e4000_dev *dev)
 	if (ret)
 		goto err;
 
-	/* DC offset control */
+	 
 	ret = regmap_write(dev->regmap, 0x2d, 0x1f);
 	if (ret)
 		goto err;
@@ -58,7 +54,7 @@ static int e4000_init(struct e4000_dev *dev)
 	if (ret)
 		goto err;
 
-	/* gain control */
+	 
 	ret = regmap_write(dev->regmap, 0x1a, 0x17);
 	if (ret)
 		goto err;
@@ -107,26 +103,12 @@ static int e4000_set_params(struct e4000_dev *dev)
 		return 0;
 	}
 
-	/* gain control manual */
+	 
 	ret = regmap_write(dev->regmap, 0x1a, 0x00);
 	if (ret)
 		goto err;
 
-	/*
-	 * Fractional-N synthesizer
-	 *
-	 *           +----------------------------+
-	 *           v                            |
-	 *  Fref   +----+     +-------+         +------+     +---+
-	 * ------> | PD | --> |  VCO  | ------> | /N.F | <-- | K |
-	 *         +----+     +-------+         +------+     +---+
-	 *                      |
-	 *                      |
-	 *                      v
-	 *                    +-------+  Fout
-	 *                    | /Rout | ------>
-	 *                    +-------+
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(e4000_pll_lut); i++) {
 		if (dev->f_frequency <= e4000_pll_lut[i].freq)
 			break;
@@ -139,7 +121,7 @@ static int e4000_set_params(struct e4000_dev *dev)
 	#define F_REF dev->clk
 	div_out = e4000_pll_lut[i].div_out;
 	f_vco = (u64) dev->f_frequency * div_out;
-	/* calculate PLL integer and fractional control word */
+	 
 	div_n = div_u64_rem(f_vco, F_REF, &k);
 	k_cw = div_u64((u64) k * 0x10000, F_REF);
 
@@ -157,7 +139,7 @@ static int e4000_set_params(struct e4000_dev *dev)
 	if (ret)
 		goto err;
 
-	/* LNA filter (RF filter) */
+	 
 	for (i = 0; i < ARRAY_SIZE(e400_lna_filter_lut); i++) {
 		if (dev->f_frequency <= e400_lna_filter_lut[i].freq)
 			break;
@@ -171,7 +153,7 @@ static int e4000_set_params(struct e4000_dev *dev)
 	if (ret)
 		goto err;
 
-	/* IF filters */
+	 
 	for (i = 0; i < ARRAY_SIZE(e4000_if_filter_lut); i++) {
 		if (dev->f_bandwidth <= e4000_if_filter_lut[i].freq)
 			break;
@@ -188,7 +170,7 @@ static int e4000_set_params(struct e4000_dev *dev)
 	if (ret)
 		goto err;
 
-	/* frequency band */
+	 
 	for (i = 0; i < ARRAY_SIZE(e4000_band_lut); i++) {
 		if (dev->f_frequency <= e4000_band_lut[i].freq)
 			break;
@@ -206,7 +188,7 @@ static int e4000_set_params(struct e4000_dev *dev)
 	if (ret)
 		goto err;
 
-	/* DC offset */
+	 
 	for (i = 0; i < 4; i++) {
 		if (i == 0)
 			ret = regmap_bulk_write(dev->regmap, 0x15, "\x00\x7e\x24", 3);
@@ -243,7 +225,7 @@ static int e4000_set_params(struct e4000_dev *dev)
 	if (ret)
 		goto err;
 
-	/* gain control auto */
+	 
 	ret = regmap_write(dev->regmap, 0x1a, 0x17);
 	if (ret)
 		goto err;
@@ -254,9 +236,7 @@ err:
 	return ret;
 }
 
-/*
- * V4L2 API
- */
+ 
 #if IS_ENABLED(CONFIG_VIDEO_DEV)
 static const struct v4l2_frequency_band bands[] = {
 	{
@@ -531,11 +511,7 @@ static int e4000_s_ctrl(struct v4l2_ctrl *ctrl)
 	switch (ctrl->id) {
 	case V4L2_CID_RF_TUNER_BANDWIDTH_AUTO:
 	case V4L2_CID_RF_TUNER_BANDWIDTH:
-		/*
-		 * TODO: Auto logic does not work 100% correctly as tuner driver
-		 * do not have information to calculate maximum suitable
-		 * bandwidth. Calculating it is responsible of master driver.
-		 */
+		 
 		dev->f_bandwidth = dev->bandwidth->val;
 		ret = e4000_set_params(dev);
 		break;
@@ -566,9 +542,7 @@ static const struct v4l2_ctrl_ops e4000_ctrl_ops = {
 };
 #endif
 
-/*
- * DVB API
- */
+ 
 static int e4000_dvb_set_params(struct dvb_frontend *fe)
 {
 	struct e4000_dev *dev = fe->tuner_priv;
@@ -591,7 +565,7 @@ static int e4000_dvb_sleep(struct dvb_frontend *fe)
 
 static int e4000_dvb_get_if_frequency(struct dvb_frontend *fe, u32 *frequency)
 {
-	*frequency = 0; /* Zero-IF */
+	*frequency = 0;  
 	return 0;
 }
 
@@ -636,7 +610,7 @@ static int e4000_probe(struct i2c_client *client)
 		goto err_kfree;
 	}
 
-	/* check if the tuner is there */
+	 
 	ret = regmap_read(dev->regmap, 0x02, &uitmp);
 	if (ret)
 		goto err_kfree;
@@ -648,13 +622,13 @@ static int e4000_probe(struct i2c_client *client)
 		goto err_kfree;
 	}
 
-	/* put sleep as chip seems to be in normal mode by default */
+	 
 	ret = regmap_write(dev->regmap, 0x00, 0x00);
 	if (ret)
 		goto err_kfree;
 
 #if IS_ENABLED(CONFIG_VIDEO_DEV)
-	/* Register controls */
+	 
 	v4l2_ctrl_handler_init(&dev->hdl, 9);
 	dev->bandwidth_auto = v4l2_ctrl_new_std(&dev->hdl, &e4000_ctrl_ops,
 			V4L2_CID_RF_TUNER_BANDWIDTH_AUTO, 0, 1, 1, 1);

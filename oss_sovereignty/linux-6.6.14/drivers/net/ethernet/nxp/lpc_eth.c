@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * drivers/net/ethernet/nxp/lpc_eth.c
- *
- * Author: Kevin Wells <kevin.wells@nxp.com>
- *
- * Copyright (C) 2010 NXP Semiconductors
- * Copyright (C) 2012 Roland Stigge <stigge@antcom.de>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -31,9 +24,7 @@
 
 #define NAPI_WEIGHT 16
 
-/*
- * Ethernet MAC controller Register offsets
- */
+ 
 #define LPC_ENET_MAC1(x)			(x + 0x000)
 #define LPC_ENET_MAC2(x)			(x + 0x004)
 #define LPC_ENET_IPGT(x)			(x + 0x008)
@@ -79,9 +70,7 @@
 #define LPC_ENET_INTSET(x)			(x + 0xFEC)
 #define LPC_ENET_POWERDOWN(x)			(x + 0xFF4)
 
-/*
- * mac1 register definitions
- */
+ 
 #define LPC_MAC1_RECV_ENABLE			(1 << 0)
 #define LPC_MAC1_PASS_ALL_RX_FRAMES		(1 << 1)
 #define LPC_MAC1_RX_FLOW_CONTROL		(1 << 2)
@@ -94,9 +83,7 @@
 #define LPC_MAC1_SIMULATION_RESET		(1 << 14)
 #define LPC_MAC1_SOFT_RESET			(1 << 15)
 
-/*
- * mac2 register definitions
- */
+ 
 #define LPC_MAC2_FULL_DUPLEX			(1 << 0)
 #define LPC_MAC2_FRAME_LENGTH_CHECKING		(1 << 1)
 #define LPC_MAC2_HUGH_LENGTH_CHECKING		(1 << 2)
@@ -111,44 +98,30 @@
 #define LPC_MAC2_BACK_PRESSURE			(1 << 13)
 #define LPC_MAC2_EXCESS_DEFER			(1 << 14)
 
-/*
- * ipgt register definitions
- */
+ 
 #define LPC_IPGT_LOAD(n)			((n) & 0x7F)
 
-/*
- * ipgr register definitions
- */
+ 
 #define LPC_IPGR_LOAD_PART2(n)			((n) & 0x7F)
 #define LPC_IPGR_LOAD_PART1(n)			(((n) & 0x7F) << 8)
 
-/*
- * clrt register definitions
- */
+ 
 #define LPC_CLRT_LOAD_RETRY_MAX(n)		((n) & 0xF)
 #define LPC_CLRT_LOAD_COLLISION_WINDOW(n)	(((n) & 0x3F) << 8)
 
-/*
- * maxf register definitions
- */
+ 
 #define LPC_MAXF_LOAD_MAX_FRAME_LEN(n)		((n) & 0xFFFF)
 
-/*
- * supp register definitions
- */
+ 
 #define LPC_SUPP_SPEED				(1 << 8)
 #define LPC_SUPP_RESET_RMII			(1 << 11)
 
-/*
- * test register definitions
- */
+ 
 #define LPC_TEST_SHORTCUT_PAUSE_QUANTA		(1 << 0)
 #define LPC_TEST_PAUSE				(1 << 1)
 #define LPC_TEST_BACKPRESSURE			(1 << 2)
 
-/*
- * mcfg register definitions
- */
+ 
 #define LPC_MCFG_SCAN_INCREMENT			(1 << 0)
 #define LPC_MCFG_SUPPRESS_PREAMBLE		(1 << 1)
 #define LPC_MCFG_CLOCK_SELECT(n)		(((n) & 0x7) << 2)
@@ -161,39 +134,27 @@
 #define LPC_MCFG_CLOCK_HOST_DIV_28		7
 #define LPC_MCFG_RESET_MII_MGMT			(1 << 15)
 
-/*
- * mcmd register definitions
- */
+ 
 #define LPC_MCMD_READ				(1 << 0)
 #define LPC_MCMD_SCAN				(1 << 1)
 
-/*
- * madr register definitions
- */
+ 
 #define LPC_MADR_REGISTER_ADDRESS(n)		((n) & 0x1F)
 #define LPC_MADR_PHY_0ADDRESS(n)		(((n) & 0x1F) << 8)
 
-/*
- * mwtd register definitions
- */
+ 
 #define LPC_MWDT_WRITE(n)			((n) & 0xFFFF)
 
-/*
- * mrdd register definitions
- */
+ 
 #define LPC_MRDD_READ_MASK			0xFFFF
 
-/*
- * mind register definitions
- */
+ 
 #define LPC_MIND_BUSY				(1 << 0)
 #define LPC_MIND_SCANNING			(1 << 1)
 #define LPC_MIND_NOT_VALID			(1 << 2)
 #define LPC_MIND_MII_LINK_FAIL			(1 << 3)
 
-/*
- * command register definitions
- */
+ 
 #define LPC_COMMAND_RXENABLE			(1 << 0)
 #define LPC_COMMAND_TXENABLE			(1 << 1)
 #define LPC_COMMAND_REG_RESET			(1 << 3)
@@ -205,15 +166,11 @@
 #define LPC_COMMAND_RMII			(1 << 9)
 #define LPC_COMMAND_FULLDUPLEX			(1 << 10)
 
-/*
- * status register definitions
- */
+ 
 #define LPC_STATUS_RXACTIVE			(1 << 0)
 #define LPC_STATUS_TXACTIVE			(1 << 1)
 
-/*
- * tsv0 register definitions
- */
+ 
 #define LPC_TSV0_CRC_ERROR			(1 << 0)
 #define LPC_TSV0_LENGTH_CHECK_ERROR		(1 << 1)
 #define LPC_TSV0_LENGTH_OUT_OF_RANGE		(1 << 2)
@@ -232,15 +189,11 @@
 #define LPC_TSV0_BACKPRESSURE			(1 << 30)
 #define LPC_TSV0_VLAN				(1 << 31)
 
-/*
- * tsv1 register definitions
- */
+ 
 #define LPC_TSV1_TRANSMIT_BYTE_COUNT(n)		((n) & 0xFFFF)
 #define LPC_TSV1_COLLISION_COUNT(n)		(((n) >> 16) & 0xF)
 
-/*
- * rsv register definitions
- */
+ 
 #define LPC_RSV_RECEIVED_BYTE_COUNT(n)		((n) & 0xFFFF)
 #define LPC_RSV_RXDV_EVENT_IGNORED		(1 << 16)
 #define LPC_RSV_RXDV_EVENT_PREVIOUSLY_SEEN	(1 << 17)
@@ -258,21 +211,14 @@
 #define LPC_RSV_UNSUPPORTED_OPCODE		(1 << 29)
 #define LPC_RSV_VLAN				(1 << 30)
 
-/*
- * flowcontrolcounter register definitions
- */
+ 
 #define LPC_FCCR_MIRRORCOUNTER(n)		((n) & 0xFFFF)
 #define LPC_FCCR_PAUSETIMER(n)			(((n) >> 16) & 0xFFFF)
 
-/*
- * flowcontrolstatus register definitions
- */
+ 
 #define LPC_FCCR_MIRRORCOUNTERCURRENT(n)	((n) & 0xFFFF)
 
-/*
- * rxfilterctrl, rxfilterwolstatus, and rxfilterwolclear shared
- * register definitions
- */
+ 
 #define LPC_RXFLTRW_ACCEPTUNICAST		(1 << 0)
 #define LPC_RXFLTRW_ACCEPTUBROADCAST		(1 << 1)
 #define LPC_RXFLTRW_ACCEPTUMULTICAST		(1 << 2)
@@ -280,22 +226,15 @@
 #define LPC_RXFLTRW_ACCEPTUMULTICASTHASH	(1 << 4)
 #define LPC_RXFLTRW_ACCEPTPERFECT		(1 << 5)
 
-/*
- * rxfilterctrl register definitions
- */
+ 
 #define LPC_RXFLTRWSTS_MAGICPACKETENWOL		(1 << 12)
 #define LPC_RXFLTRWSTS_RXFILTERENWOL		(1 << 13)
 
-/*
- * rxfilterwolstatus/rxfilterwolclear register definitions
- */
+ 
 #define LPC_RXFLTRWSTS_RXFILTERWOL		(1 << 7)
 #define LPC_RXFLTRWSTS_MAGICPACKETWOL		(1 << 8)
 
-/*
- * intstatus, intenable, intclear, and Intset shared register
- * definitions
- */
+ 
 #define LPC_MACINT_RXOVERRUNINTEN		(1 << 0)
 #define LPC_MACINT_RXERRORONINT			(1 << 1)
 #define LPC_MACINT_RXFINISHEDINTEN		(1 << 2)
@@ -307,9 +246,7 @@
 #define LPC_MACINT_SOFTINTEN			(1 << 12)
 #define LPC_MACINT_WAKEUPINTEN			(1 << 13)
 
-/*
- * powerdown register definitions
- */
+ 
 #define LPC_POWERDOWN_MACAHB			(1 << 31)
 
 static phy_interface_t lpc_phy_interface_mode(struct device *dev)
@@ -330,7 +267,7 @@ static bool use_iram_for_net(struct device *dev)
 	return false;
 }
 
-/* Receive Status information word */
+ 
 #define RXSTATUS_SIZE			0x000007FF
 #define RXSTATUS_CONTROL		(1 << 18)
 #define RXSTATUS_VLAN			(1 << 19)
@@ -351,11 +288,11 @@ static bool use_iram_for_net(struct device *dev)
 	(RXSTATUS_NODESC | RXSTATUS_OVERRUN | RXSTATUS_ALIGN | \
 	 RXSTATUS_RANGE | RXSTATUS_LENGTH | RXSTATUS_SYMBOL | RXSTATUS_CRC)
 
-/* Receive Descriptor control word */
+ 
 #define RXDESC_CONTROL_SIZE		0x000007FF
 #define RXDESC_CONTROL_INT		(1 << 31)
 
-/* Transmit Status information word */
+ 
 #define TXSTATUS_COLLISIONS_GET(x)	(((x) >> 21) & 0xF)
 #define TXSTATUS_DEFER			(1 << 25)
 #define TXSTATUS_EXCESSDEFER		(1 << 26)
@@ -365,7 +302,7 @@ static bool use_iram_for_net(struct device *dev)
 #define TXSTATUS_NODESC			(1 << 30)
 #define TXSTATUS_ERROR			(1 << 31)
 
-/* Transmit Descriptor control word */
+ 
 #define TXDESC_CONTROL_SIZE		0x000007FF
 #define TXDESC_CONTROL_OVERRIDE		(1 << 26)
 #define TXDESC_CONTROL_HUGE		(1 << 27)
@@ -374,9 +311,7 @@ static bool use_iram_for_net(struct device *dev)
 #define TXDESC_CONTROL_LAST		(1 << 30)
 #define TXDESC_CONTROL_INT		(1 << 31)
 
-/*
- * Structure of a TX/RX descriptors and RX status
- */
+ 
 struct txrx_desc_t {
 	__le32 packet;
 	__le32 control;
@@ -386,9 +321,7 @@ struct rx_status_t {
 	__le32 statushashcrc;
 };
 
-/*
- * Device driver data structure
- */
+ 
 struct netdata_local {
 	struct platform_device	*pdev;
 	struct net_device	*ndev;
@@ -416,14 +349,12 @@ struct netdata_local {
 	struct napi_struct	napi;
 };
 
-/*
- * MAC support functions
- */
+ 
 static void __lpc_set_mac(struct netdata_local *pldat, const u8 *mac)
 {
 	u32 tmp;
 
-	/* Set station address */
+	 
 	tmp = mac[0] | ((u32)mac[1] << 8);
 	writel(tmp, LPC_ENET_SA2(pldat->net_base));
 	tmp = mac[2] | ((u32)mac[3] << 8);
@@ -438,7 +369,7 @@ static void __lpc_get_mac(struct netdata_local *pldat, u8 *mac)
 {
 	u32 tmp;
 
-	/* Get station address */
+	 
 	tmp = readl(LPC_ENET_SA2(pldat->net_base));
 	mac[0] = tmp & 0xFF;
 	mac[1] = tmp >> 8;
@@ -480,7 +411,7 @@ static void __lpc_params_setup(struct netdata_local *pldat)
 
 static void __lpc_eth_reset(struct netdata_local *pldat)
 {
-	/* Reset all MAC logic */
+	 
 	writel((LPC_MAC1_RESET_TX | LPC_MAC1_RESET_MCS_TX | LPC_MAC1_RESET_RX |
 		LPC_MAC1_RESET_MCS_RX | LPC_MAC1_SIMULATION_RESET |
 		LPC_MAC1_SOFT_RESET), LPC_ENET_MAC1(pldat->net_base));
@@ -490,10 +421,10 @@ static void __lpc_eth_reset(struct netdata_local *pldat)
 
 static int __lpc_mii_mngt_reset(struct netdata_local *pldat)
 {
-	/* Reset MII management hardware */
+	 
 	writel(LPC_MCFG_RESET_MII_MGMT, LPC_ENET_MCFG(pldat->net_base));
 
-	/* Setup MII clock to slowest rate with a /28 divider */
+	 
 	writel(LPC_MCFG_CLOCK_SELECT(LPC_MCFG_CLOCK_HOST_DIV_28),
 	       LPC_ENET_MCFG(pldat->net_base));
 
@@ -521,7 +452,7 @@ static void lpc_eth_disable_int(void __iomem *regbase)
 	writel(0, LPC_ENET_INTENABLE(regbase));
 }
 
-/* Setup TX/RX descriptors */
+ 
 static void __lpc_txrx_desc_setup(struct netdata_local *pldat)
 {
 	u32 *ptxstat;
@@ -532,7 +463,7 @@ static void __lpc_txrx_desc_setup(struct netdata_local *pldat)
 
 	tbuff = PTR_ALIGN(pldat->dma_buff_base_v, 16);
 
-	/* Setup TX descriptors, status, and buffers */
+	 
 	pldat->tx_desc_v = tbuff;
 	tbuff += sizeof(struct txrx_desc_t) * ENET_TX_DESC;
 
@@ -543,7 +474,7 @@ static void __lpc_txrx_desc_setup(struct netdata_local *pldat)
 	pldat->tx_buff_v = tbuff;
 	tbuff += ENET_MAXF_SIZE * ENET_TX_DESC;
 
-	/* Setup RX descriptors, status, and buffers */
+	 
 	pldat->rx_desc_v = tbuff;
 	tbuff += sizeof(struct txrx_desc_t) * ENET_RX_DESC;
 
@@ -555,7 +486,7 @@ static void __lpc_txrx_desc_setup(struct netdata_local *pldat)
 	pldat->rx_buff_v = tbuff;
 	tbuff += ENET_MAXF_SIZE * ENET_RX_DESC;
 
-	/* Map the TX descriptors to the TX buffers in hardware */
+	 
 	for (i = 0; i < ENET_TX_DESC; i++) {
 		ptxstat = &pldat->tx_stat_v[i];
 		ptxrxdesc = &pldat->tx_desc_v[i];
@@ -566,7 +497,7 @@ static void __lpc_txrx_desc_setup(struct netdata_local *pldat)
 		*ptxstat = 0;
 	}
 
-	/* Map the RX descriptors to the RX buffers in hardware */
+	 
 	for (i = 0; i < ENET_RX_DESC; i++) {
 		prxstat = &pldat->rx_stat_v[i];
 		ptxrxdesc = &pldat->rx_desc_v[i];
@@ -578,9 +509,7 @@ static void __lpc_txrx_desc_setup(struct netdata_local *pldat)
 		prxstat->statushashcrc = 0;
 	}
 
-	/* Setup base addresses in hardware to point to buffers and
-	 * descriptors
-	 */
+	 
 	writel((ENET_TX_DESC - 1),
 	       LPC_ENET_TXDESCRIPTORNUMBER(pldat->net_base));
 	writel(__va_to_pa(pldat->tx_desc_v, pldat),
@@ -599,7 +528,7 @@ static void __lpc_eth_init(struct netdata_local *pldat)
 {
 	u32 tmp;
 
-	/* Disable controller and reset */
+	 
 	tmp = readl(LPC_ENET_COMMAND(pldat->net_base));
 	tmp &= ~LPC_COMMAND_RXENABLE | LPC_COMMAND_TXENABLE;
 	writel(tmp, LPC_ENET_COMMAND(pldat->net_base));
@@ -607,13 +536,13 @@ static void __lpc_eth_init(struct netdata_local *pldat)
 	tmp &= ~LPC_MAC1_RECV_ENABLE;
 	writel(tmp, LPC_ENET_MAC1(pldat->net_base));
 
-	/* Initial MAC setup */
+	 
 	writel(LPC_MAC1_PASS_ALL_RX_FRAMES, LPC_ENET_MAC1(pldat->net_base));
 	writel((LPC_MAC2_PAD_CRC_ENABLE | LPC_MAC2_CRC_ENABLE),
 	       LPC_ENET_MAC2(pldat->net_base));
 	writel(ENET_MAXF_SIZE, LPC_ENET_MAXF(pldat->net_base));
 
-	/* Collision window, gap */
+	 
 	writel((LPC_CLRT_LOAD_RETRY_MAX(0xF) |
 		LPC_CLRT_LOAD_COLLISION_WINDOW(0x37)),
 	       LPC_ENET_CLRT(pldat->net_base));
@@ -630,24 +559,24 @@ static void __lpc_eth_init(struct netdata_local *pldat)
 
 	__lpc_params_setup(pldat);
 
-	/* Setup TX and RX descriptors */
+	 
 	__lpc_txrx_desc_setup(pldat);
 
-	/* Setup packet filtering */
+	 
 	writel((LPC_RXFLTRW_ACCEPTUBROADCAST | LPC_RXFLTRW_ACCEPTPERFECT),
 	       LPC_ENET_RXFILTER_CTRL(pldat->net_base));
 
-	/* Get the next TX buffer output index */
+	 
 	pldat->num_used_tx_buffs = 0;
 	pldat->last_tx_idx =
 		readl(LPC_ENET_TXCONSUMEINDEX(pldat->net_base));
 
-	/* Clear and enable interrupts */
+	 
 	writel(0xFFFF, LPC_ENET_INTCLEAR(pldat->net_base));
 	smp_wmb();
 	lpc_eth_enable_int(pldat->net_base);
 
-	/* Enable controller */
+	 
 	tmp = readl(LPC_ENET_COMMAND(pldat->net_base));
 	tmp |= LPC_COMMAND_RXENABLE | LPC_COMMAND_TXENABLE;
 	writel(tmp, LPC_ENET_COMMAND(pldat->net_base));
@@ -658,15 +587,13 @@ static void __lpc_eth_init(struct netdata_local *pldat)
 
 static void __lpc_eth_shutdown(struct netdata_local *pldat)
 {
-	/* Reset ethernet and power down PHY */
+	 
 	__lpc_eth_reset(pldat);
 	writel(0, LPC_ENET_MAC1(pldat->net_base));
 	writel(0, LPC_ENET_MAC2(pldat->net_base));
 }
 
-/*
- * MAC<--->PHY support functions
- */
+ 
 static int lpc_mdio_read(struct mii_bus *bus, int phy_id, int phyreg)
 {
 	struct netdata_local *pldat = bus->priv;
@@ -676,7 +603,7 @@ static int lpc_mdio_read(struct mii_bus *bus, int phy_id, int phyreg)
 	writel(((phy_id << 8) | phyreg), LPC_ENET_MADR(pldat->net_base));
 	writel(LPC_MCMD_READ, LPC_ENET_MCMD(pldat->net_base));
 
-	/* Wait for unbusy status */
+	 
 	while (readl(LPC_ENET_MIND(pldat->net_base)) & LPC_MIND_BUSY) {
 		if (time_after(jiffies, timeout))
 			return -EIO;
@@ -698,7 +625,7 @@ static int lpc_mdio_write(struct mii_bus *bus, int phy_id, int phyreg,
 	writel(((phy_id << 8) | phyreg), LPC_ENET_MADR(pldat->net_base));
 	writel(phydata, LPC_ENET_MWTD(pldat->net_base));
 
-	/* Wait for completion */
+	 
 	while (readl(LPC_ENET_MIND(pldat->net_base)) & LPC_MIND_BUSY) {
 		if (time_after(jiffies, timeout))
 			return -EIO;
@@ -753,7 +680,7 @@ static int lpc_mii_probe(struct net_device *ndev)
 	struct netdata_local *pldat = netdev_priv(ndev);
 	struct phy_device *phydev;
 
-	/* Attach to the PHY */
+	 
 	if (lpc_phy_interface_mode(&pldat->pdev->dev) == PHY_INTERFACE_MODE_MII)
 		netdev_info(ndev, "using MII interface\n");
 	else
@@ -798,7 +725,7 @@ static int lpc_mii_init(struct netdata_local *pldat)
 		goto err_out;
 	}
 
-	/* Setup MII mode */
+	 
 	if (lpc_phy_interface_mode(&pldat->pdev->dev) == PHY_INTERFACE_MODE_MII)
 		writel(LPC_COMMAND_PASSRUNTFRAME,
 		       LPC_ENET_COMMAND(pldat->net_base));
@@ -845,40 +772,40 @@ static void __lpc_handle_xmit(struct net_device *ndev)
 	while (pldat->last_tx_idx != txcidx) {
 		unsigned int skblen = pldat->skblen[pldat->last_tx_idx];
 
-		/* A buffer is available, get buffer status */
+		 
 		ptxstat = &pldat->tx_stat_v[pldat->last_tx_idx];
 		txstat = *ptxstat;
 
-		/* Next buffer and decrement used buffer counter */
+		 
 		pldat->num_used_tx_buffs--;
 		pldat->last_tx_idx++;
 		if (pldat->last_tx_idx >= ENET_TX_DESC)
 			pldat->last_tx_idx = 0;
 
-		/* Update collision counter */
+		 
 		ndev->stats.collisions += TXSTATUS_COLLISIONS_GET(txstat);
 
-		/* Any errors occurred? */
+		 
 		if (txstat & TXSTATUS_ERROR) {
 			if (txstat & TXSTATUS_UNDERRUN) {
-				/* FIFO underrun */
+				 
 				ndev->stats.tx_fifo_errors++;
 			}
 			if (txstat & TXSTATUS_LATECOLL) {
-				/* Late collision */
+				 
 				ndev->stats.tx_aborted_errors++;
 			}
 			if (txstat & TXSTATUS_EXCESSCOLL) {
-				/* Excessive collision */
+				 
 				ndev->stats.tx_aborted_errors++;
 			}
 			if (txstat & TXSTATUS_EXCESSDEFER) {
-				/* Defer limit */
+				 
 				ndev->stats.tx_aborted_errors++;
 			}
 			ndev->stats.tx_errors++;
 		} else {
-			/* Update stats */
+			 
 			ndev->stats.tx_packets++;
 			ndev->stats.tx_bytes += skblen;
 		}
@@ -900,15 +827,15 @@ static int __lpc_handle_recv(struct net_device *ndev, int budget)
 	struct rx_status_t *prxstat;
 	int rx_done = 0;
 
-	/* Get the current RX buffer indexes */
+	 
 	rxconsidx = readl(LPC_ENET_RXCONSUMEINDEX(pldat->net_base));
 	while (rx_done < budget && rxconsidx !=
 			readl(LPC_ENET_RXPRODUCEINDEX(pldat->net_base))) {
-		/* Get pointer to receive status */
+		 
 		prxstat = &pldat->rx_stat_v[rxconsidx];
 		len = (prxstat->statusinfo & RXSTATUS_SIZE) + 1;
 
-		/* Status error? */
+		 
 		ethst = prxstat->statusinfo;
 		if ((ethst & (RXSTATUS_ERROR | RXSTATUS_STATUS_ERROR)) ==
 		    (RXSTATUS_ERROR | RXSTATUS_RANGE))
@@ -916,33 +843,33 @@ static int __lpc_handle_recv(struct net_device *ndev, int budget)
 
 		if (ethst & RXSTATUS_ERROR) {
 			int si = prxstat->statusinfo;
-			/* Check statuses */
+			 
 			if (si & RXSTATUS_OVERRUN) {
-				/* Overrun error */
+				 
 				ndev->stats.rx_fifo_errors++;
 			} else if (si & RXSTATUS_CRC) {
-				/* CRC error */
+				 
 				ndev->stats.rx_crc_errors++;
 			} else if (si & RXSTATUS_LENGTH) {
-				/* Length error */
+				 
 				ndev->stats.rx_length_errors++;
 			} else if (si & RXSTATUS_ERROR) {
-				/* Other error */
+				 
 				ndev->stats.rx_length_errors++;
 			}
 			ndev->stats.rx_errors++;
 		} else {
-			/* Packet is good */
+			 
 			skb = dev_alloc_skb(len);
 			if (!skb) {
 				ndev->stats.rx_dropped++;
 			} else {
-				/* Copy packet from buffer */
+				 
 				skb_put_data(skb,
 					     pldat->rx_buff_v + rxconsidx * ENET_MAXF_SIZE,
 					     len);
 
-				/* Pass to upper layer */
+				 
 				skb->protocol = eth_type_trans(skb, ndev);
 				netif_receive_skb(skb);
 				ndev->stats.rx_packets++;
@@ -950,7 +877,7 @@ static int __lpc_handle_recv(struct net_device *ndev, int budget)
 			}
 		}
 
-		/* Increment consume index */
+		 
 		rxconsidx = rxconsidx + 1;
 		if (rxconsidx >= ENET_RX_DESC)
 			rxconsidx = 0;
@@ -992,7 +919,7 @@ static irqreturn_t __lpc_eth_interrupt(int irq, void *dev_id)
 	spin_lock(&pldat->lock);
 
 	tmp = readl(LPC_ENET_INTSTATUS(pldat->net_base));
-	/* Clear interrupts */
+	 
 	writel(tmp, LPC_ENET_INTCLEAR(pldat->net_base));
 
 	lpc_eth_disable_int(pldat->net_base);
@@ -1042,39 +969,37 @@ static netdev_tx_t lpc_eth_hard_start_xmit(struct sk_buff *skb,
 	spin_lock_irq(&pldat->lock);
 
 	if (pldat->num_used_tx_buffs >= (ENET_TX_DESC - 1)) {
-		/* This function should never be called when there are no
-		 * buffers
-		 */
+		 
 		netif_stop_queue(ndev);
 		spin_unlock_irq(&pldat->lock);
 		WARN(1, "BUG! TX request when no free TX buffers!\n");
 		return NETDEV_TX_BUSY;
 	}
 
-	/* Get the next TX descriptor index */
+	 
 	txidx = readl(LPC_ENET_TXPRODUCEINDEX(pldat->net_base));
 
-	/* Setup control for the transfer */
+	 
 	ptxstat = &pldat->tx_stat_v[txidx];
 	*ptxstat = 0;
 	ptxrxdesc = &pldat->tx_desc_v[txidx];
 	ptxrxdesc->control =
 		(len - 1) | TXDESC_CONTROL_LAST | TXDESC_CONTROL_INT;
 
-	/* Copy data to the DMA buffer */
+	 
 	memcpy(pldat->tx_buff_v + txidx * ENET_MAXF_SIZE, skb->data, len);
 
-	/* Save the buffer and increment the buffer counter */
+	 
 	pldat->skblen[txidx] = len;
 	pldat->num_used_tx_buffs++;
 
-	/* Start transmit */
+	 
 	txidx++;
 	if (txidx >= ENET_TX_DESC)
 		txidx = 0;
 	writel(txidx, LPC_ENET_TXPRODUCEINDEX(pldat->net_base));
 
-	/* Stop queue if no more TX buffers */
+	 
 	if (pldat->num_used_tx_buffs >= (ENET_TX_DESC - 1))
 		netif_stop_queue(ndev);
 
@@ -1096,7 +1021,7 @@ static int lpc_set_mac_address(struct net_device *ndev, void *p)
 
 	spin_lock_irqsave(&pldat->lock, flags);
 
-	/* Set station address */
+	 
 	__lpc_set_mac(pldat, ndev->dev_addr);
 
 	spin_unlock_irqrestore(&pldat->lock, flags);
@@ -1114,7 +1039,7 @@ static void lpc_eth_set_multicast_list(struct net_device *ndev)
 
 	spin_lock_irqsave(&pldat->lock, flags);
 
-	/* Set station address */
+	 
 	__lpc_set_mac(pldat, ndev->dev_addr);
 
 	tmp32 =  LPC_RXFLTRW_ACCEPTUBROADCAST | LPC_RXFLTRW_ACCEPTPERFECT;
@@ -1131,11 +1056,11 @@ static void lpc_eth_set_multicast_list(struct net_device *ndev)
 	writel(tmp32, LPC_ENET_RXFILTER_CTRL(pldat->net_base));
 
 
-	/* Set initial hash table */
+	 
 	hashlo = 0x0;
 	hashhi = 0x0;
 
-	/* 64 bits : multicast address in hash table */
+	 
 	netdev_hw_addr_list_for_each(ha, mcptr) {
 		hash_val = (ether_crc(6, ha->addr) >> 23) & 0x3F;
 
@@ -1163,14 +1088,14 @@ static int lpc_eth_open(struct net_device *ndev)
 	if (ret)
 		return ret;
 
-	/* Suspended PHY makes LPC ethernet core block, so resume now */
+	 
 	phy_resume(ndev->phydev);
 
-	/* Reset and initialize */
+	 
 	__lpc_eth_reset(pldat);
 	__lpc_eth_init(pldat);
 
-	/* schedule a link state check */
+	 
 	phy_start(ndev->phydev);
 	netif_start_queue(ndev);
 	napi_enable(&pldat->napi);
@@ -1178,9 +1103,7 @@ static int lpc_eth_open(struct net_device *ndev)
 	return 0;
 }
 
-/*
- * Ethtool ops
- */
+ 
 static void lpc_eth_ethtool_getdrvinfo(struct net_device *ndev,
 	struct ethtool_drvinfo *info)
 {
@@ -1234,10 +1157,10 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
 	u8 addr[ETH_ALEN];
 	int irq, ret;
 
-	/* Setup network interface for RMII or MII mode */
+	 
 	lpc32xx_set_phy_interface_mode(lpc_phy_interface_mode(dev));
 
-	/* Get platform resources */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	irq = platform_get_irq(pdev, 0);
 	if (!res || irq < 0) {
@@ -1246,7 +1169,7 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
 		goto err_exit;
 	}
 
-	/* Allocate net driver data structure */
+	 
 	ndev = alloc_etherdev(sizeof(struct netdata_local));
 	if (!ndev) {
 		dev_err(dev, "could not allocate device.\n");
@@ -1262,10 +1185,10 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
 
 	spin_lock_init(&pldat->lock);
 
-	/* Save resources */
+	 
 	ndev->irq = irq;
 
-	/* Get clock for the device */
+	 
 	pldat->clk = clk_get(dev, NULL);
 	if (IS_ERR(pldat->clk)) {
 		dev_err(dev, "error getting clock.\n");
@@ -1273,12 +1196,12 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
 		goto err_out_free_dev;
 	}
 
-	/* Enable network clock */
+	 
 	ret = clk_prepare_enable(pldat->clk);
 	if (ret)
 		goto err_out_clk_put;
 
-	/* Map IO space */
+	 
 	pldat->net_base = ioremap(res->start, resource_size(res));
 	if (!pldat->net_base) {
 		dev_err(dev, "failed to map registers\n");
@@ -1292,12 +1215,12 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
 		goto err_out_iounmap;
 	}
 
-	/* Setup driver functions */
+	 
 	ndev->netdev_ops = &lpc_netdev_ops;
 	ndev->ethtool_ops = &lpc_eth_ethtool_ops;
 	ndev->watchdog_timeo = msecs_to_jiffies(2500);
 
-	/* Get size of DMA buffers/descriptors region */
+	 
 	pldat->dma_buff_size = (ENET_TX_DESC + ENET_RX_DESC) * (ENET_MAXF_SIZE +
 		sizeof(struct txrx_desc_t) + sizeof(struct rx_status_t));
 
@@ -1318,9 +1241,7 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
 
 		pldat->dma_buff_size = PAGE_ALIGN(pldat->dma_buff_size);
 
-		/* Allocate a chunk of memory for the DMA ethernet buffers
-		 * and descriptors
-		 */
+		 
 		pldat->dma_buff_base_v =
 			dma_alloc_coherent(dev,
 					   pldat->dma_buff_size, &dma_handle,
@@ -1346,7 +1267,7 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
 
 	pldat->phy_node = of_parse_phandle(np, "phy-handle", 0);
 
-	/* Get MAC address from current HW setting (POR state is all zeros) */
+	 
 	__lpc_get_mac(pldat, addr);
 	eth_hw_addr_set(ndev, addr);
 
@@ -1356,18 +1277,16 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
 	if (!is_valid_ether_addr(ndev->dev_addr))
 		eth_hw_addr_random(ndev);
 
-	/* then shut everything down to save power */
+	 
 	__lpc_eth_shutdown(pldat);
 
-	/* Set default parameters */
+	 
 	pldat->msg_enable = NETIF_MSG_LINK;
 
-	/* Force an MII interface reset and clock setup */
+	 
 	__lpc_mii_mngt_reset(pldat);
 
-	/* Force default PHY interface setup in chip, this will probably be
-	 * changed by the PHY driver
-	 */
+	 
 	pldat->link = 0;
 	pldat->speed = 100;
 	pldat->duplex = DUPLEX_FULL;
@@ -1456,10 +1375,7 @@ static int lpc_eth_drv_suspend(struct platform_device *pdev,
 			__lpc_eth_shutdown(pldat);
 			clk_disable_unprepare(pldat->clk);
 
-			/*
-			 * Reset again now clock is disable to be sure
-			 * EMC_MDC is down
-			 */
+			 
 			__lpc_eth_reset(pldat);
 		}
 	}
@@ -1480,12 +1396,12 @@ static int lpc_eth_drv_resume(struct platform_device *pdev)
 		if (netif_running(ndev)) {
 			pldat = netdev_priv(ndev);
 
-			/* Enable interface clock */
+			 
 			ret = clk_enable(pldat->clk);
 			if (ret)
 				return ret;
 
-			/* Reset and initialize */
+			 
 			__lpc_eth_reset(pldat);
 			__lpc_eth_init(pldat);
 

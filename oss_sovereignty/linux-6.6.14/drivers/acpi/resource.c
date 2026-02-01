@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/acpi/resource.c - ACPI device resources interpretation.
- *
- * Copyright (C) 2012, Intel Corp.
- * Author: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/device.h>
@@ -22,16 +13,12 @@
 #define valid_IRQ(i) (((i) != 0) && ((i) != 2))
 static inline bool acpi_iospace_resource_valid(struct resource *res)
 {
-	/* On X86 IO space is limited to the [0 - 64K] IO port range */
+	 
 	return res->end < 0x10003;
 }
 #else
 #define valid_IRQ(i) (true)
-/*
- * ACPI IO descriptors on arches other than X86 contain MMIO CPU physical
- * addresses mapping IO space in CPU physical address space, IO space
- * resources can be placed anywhere in the 64-bit physical address space.
- */
+ 
 static inline bool
 acpi_iospace_resource_valid(struct resource *res) { return true; }
 #endif
@@ -53,13 +40,7 @@ static bool acpi_dev_resource_len_valid(u64 start, u64 end, u64 len, bool io)
 {
 	u64 reslen = end - start + 1;
 
-	/*
-	 * CHECKME: len might be required to check versus a minimum
-	 * length as well. 1 for io is fine, but for memory it does
-	 * not make any sense at all.
-	 * Note: some BIOSes report incorrect length for ACPI address space
-	 * descriptor, so remove check of 'reslen == len' to avoid regression.
-	 */
+	 
 	if (len && reslen && start <= end)
 		return true;
 
@@ -89,20 +70,7 @@ static void acpi_dev_get_memresource(struct resource *res, u64 start, u64 len,
 	acpi_dev_memresource_flags(res, len, write_protect);
 }
 
-/**
- * acpi_dev_resource_memory - Extract ACPI memory resource information.
- * @ares: Input ACPI resource object.
- * @res: Output generic resource object.
- *
- * Check if the given ACPI resource object represents a memory resource and
- * if that's the case, use the information in it to populate the generic
- * resource object pointed to by @res.
- *
- * Return:
- * 1) false with res->flags setting to zero: not the expected resource type
- * 2) false with IORESOURCE_DISABLED in res->flags: valid unassigned resource
- * 3) true: valid assigned resource
- */
+ 
 bool acpi_dev_resource_memory(struct acpi_resource *ares, struct resource *res)
 {
 	struct acpi_resource_memory24 *memory24;
@@ -162,20 +130,7 @@ static void acpi_dev_get_ioresource(struct resource *res, u64 start, u64 len,
 	acpi_dev_ioresource_flags(res, len, io_decode, 0);
 }
 
-/**
- * acpi_dev_resource_io - Extract ACPI I/O resource information.
- * @ares: Input ACPI resource object.
- * @res: Output generic resource object.
- *
- * Check if the given ACPI resource object represents an I/O resource and
- * if that's the case, use the information in it to populate the generic
- * resource object pointed to by @res.
- *
- * Return:
- * 1) false with res->flags setting to zero: not the expected resource type
- * 2) false with IORESOURCE_DISABLED in res->flags: valid unassigned resource
- * 3) true: valid assigned resource
- */
+ 
 bool acpi_dev_resource_io(struct acpi_resource *ares, struct resource *res)
 {
 	struct acpi_resource_io *io;
@@ -213,22 +168,13 @@ static bool acpi_decode_space(struct resource_win *win,
 	u64 start, end, offset = 0;
 	struct resource *res = &win->res;
 
-	/*
-	 * Filter out invalid descriptor according to ACPI Spec 5.0, section
-	 * 6.4.3.5 Address Space Resource Descriptors.
-	 */
+	 
 	if ((addr->min_address_fixed != addr->max_address_fixed && len) ||
 	    (addr->min_address_fixed && addr->max_address_fixed && !len))
 		pr_debug("ACPI: Invalid address space min_addr_fix %d, max_addr_fix %d, len %llx\n",
 			 addr->min_address_fixed, addr->max_address_fixed, len);
 
-	/*
-	 * For bridges that translate addresses across the bridge,
-	 * translation_offset is the offset that must be added to the
-	 * address on the secondary side to obtain the address on the
-	 * primary side. Non-bridge devices must list 0 for all Address
-	 * Translation offset bits.
-	 */
+	 
 	if (addr->producer_consumer == ACPI_PRODUCER)
 		offset = attr->translation_offset;
 	else if (attr->translation_offset)
@@ -271,21 +217,7 @@ static bool acpi_decode_space(struct resource_win *win,
 	return !(res->flags & IORESOURCE_DISABLED);
 }
 
-/**
- * acpi_dev_resource_address_space - Extract ACPI address space information.
- * @ares: Input ACPI resource object.
- * @win: Output generic resource object.
- *
- * Check if the given ACPI resource object represents an address space resource
- * and if that's the case, use the information in it to populate the generic
- * resource object pointed to by @win.
- *
- * Return:
- * 1) false with win->res.flags setting to zero: not the expected resource type
- * 2) false with IORESOURCE_DISABLED in win->res.flags: valid unassigned
- *    resource
- * 3) true: valid assigned resource
- */
+ 
 bool acpi_dev_resource_address_space(struct acpi_resource *ares,
 				     struct resource_win *win)
 {
@@ -300,21 +232,7 @@ bool acpi_dev_resource_address_space(struct acpi_resource *ares,
 }
 EXPORT_SYMBOL_GPL(acpi_dev_resource_address_space);
 
-/**
- * acpi_dev_resource_ext_address_space - Extract ACPI address space information.
- * @ares: Input ACPI resource object.
- * @win: Output generic resource object.
- *
- * Check if the given ACPI resource object represents an extended address space
- * resource and if that's the case, use the information in it to populate the
- * generic resource object pointed to by @win.
- *
- * Return:
- * 1) false with win->res.flags setting to zero: not the expected resource type
- * 2) false with IORESOURCE_DISABLED in win->res.flags: valid unassigned
- *    resource
- * 3) true: valid assigned resource
- */
+ 
 bool acpi_dev_resource_ext_address_space(struct acpi_resource *ares,
 					 struct resource_win *win)
 {
@@ -331,13 +249,7 @@ bool acpi_dev_resource_ext_address_space(struct acpi_resource *ares,
 }
 EXPORT_SYMBOL_GPL(acpi_dev_resource_ext_address_space);
 
-/**
- * acpi_dev_irq_flags - Determine IRQ resource flags.
- * @triggering: Triggering type as provided by ACPI.
- * @polarity: Interrupt polarity as provided by ACPI.
- * @shareable: Whether or not the interrupt is shareable.
- * @wake_capable: Wake capability as provided by ACPI.
- */
+ 
 unsigned long acpi_dev_irq_flags(u8 triggering, u8 polarity, u8 shareable, u8 wake_capable)
 {
 	unsigned long flags;
@@ -359,11 +271,7 @@ unsigned long acpi_dev_irq_flags(u8 triggering, u8 polarity, u8 shareable, u8 wa
 }
 EXPORT_SYMBOL_GPL(acpi_dev_irq_flags);
 
-/**
- * acpi_dev_get_irq_type - Determine irq type.
- * @triggering: Triggering type as provided by ACPI.
- * @polarity: Interrupt polarity as provided by ACPI.
- */
+ 
 unsigned int acpi_dev_get_irq_type(int triggering, int polarity)
 {
 	switch (polarity) {
@@ -447,7 +355,7 @@ static const struct dmi_system_id asus_laptop[] = {
 		},
 	},
 	{
-		/* Asus ExpertBook B1402CVA */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
 			DMI_MATCH(DMI_BOARD_NAME, "B1402CVA"),
@@ -503,20 +411,20 @@ static const struct dmi_system_id maingear_laptop[] = {
 		}
 	},
 	{
-		/* TongFang GMxXGxx/TUXEDO Polaris 15 Gen5 AMD */
+		 
 		.matches = {
 			DMI_MATCH(DMI_BOARD_NAME, "GMxXGxx"),
 		},
 	},
 	{
-		/* TongFang GMxXGxx sold as Eluktronics Inc. RP-15 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Eluktronics Inc."),
 			DMI_MATCH(DMI_BOARD_NAME, "RP-15"),
 		},
 	},
 	{
-		/* TongFang GM6XGxX/TUXEDO Stellaris 16 Gen5 AMD */
+		 
 		.matches = {
 			DMI_MATCH(DMI_BOARD_NAME, "GM6XGxX"),
 		},
@@ -533,19 +441,19 @@ static const struct dmi_system_id maingear_laptop[] = {
 
 static const struct dmi_system_id pcspecialist_laptop[] = {
 	{
-		/* TongFang GM6BGEQ / PCSpecialist Elimina Pro 16 M, RTX 3050 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_BOARD_NAME, "GM6BGEQ"),
 		},
 	},
 	{
-		/* TongFang GM6BG5Q, RTX 4050 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_BOARD_NAME, "GM6BG5Q"),
 		},
 	},
 	{
-		/* TongFang GM6BG0Q / PCSpecialist Elimina Pro 16 M, RTX 4060 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_BOARD_NAME, "GM6BG0Q"),
 		},
@@ -599,23 +507,15 @@ static bool acpi_dev_irq_override(u32 gsi, u8 triggering, u8 polarity,
 	}
 
 #ifdef CONFIG_X86
-	/*
-	 * Always use the MADT override info, except for the i8042 PS/2 ctrl
-	 * IRQs (1 and 12). For these the DSDT IRQ settings should sometimes
-	 * be used otherwise PS/2 keyboards / mice will not work.
-	 */
+	 
 	if (gsi != 1 && gsi != 12)
 		return true;
 
-	/* If the override comes from an INT_SRC_OVR MADT entry, honor it. */
+	 
 	if (acpi_int_src_ovr[gsi])
 		return true;
 
-	/*
-	 * IRQ override isn't needed on modern AMD Zen systems and
-	 * this override breaks active low IRQs on AMD Ryzen 6000 and
-	 * newer systems. Skip it.
-	 */
+	 
 	if (boot_cpu_has(X86_FEATURE_ZEN))
 		return false;
 #endif
@@ -634,16 +534,7 @@ static void acpi_dev_get_irqresource(struct resource *res, u32 gsi,
 		return;
 	}
 
-	/*
-	 * In IO-APIC mode, use overridden attribute. Two reasons:
-	 * 1. BIOS bug in DSDT
-	 * 2. BIOS uses IO-APIC mode Interrupt Source Override
-	 *
-	 * We do this only if we are dealing with IRQ() or IRQNoFlags()
-	 * resource (the legacy ISA resources). With modern ACPI 5 devices
-	 * using extended IRQ descriptors we take the IRQ configuration
-	 * from _CRS directly.
-	 */
+	 
 	if (check_override &&
 	    acpi_dev_irq_override(gsi, triggering, polarity, shareable) &&
 	    !acpi_get_override_irq(gsi, &t, &p)) {
@@ -671,25 +562,7 @@ static void acpi_dev_get_irqresource(struct resource *res, u32 gsi,
 	}
 }
 
-/**
- * acpi_dev_resource_interrupt - Extract ACPI interrupt resource information.
- * @ares: Input ACPI resource object.
- * @index: Index into the array of GSIs represented by the resource.
- * @res: Output generic resource object.
- *
- * Check if the given ACPI resource object represents an interrupt resource
- * and @index does not exceed the resource's interrupt count (true is returned
- * in that case regardless of the results of the other checks)).  If that's the
- * case, register the GSI corresponding to @index from the array of interrupts
- * represented by the resource and populate the generic resource object pointed
- * to by @res accordingly.  If the registration of the GSI is not successful,
- * IORESOURCE_DISABLED will be set it that object's flags.
- *
- * Return:
- * 1) false with res->flags setting to zero: not the expected resource type
- * 2) false with IORESOURCE_DISABLED in res->flags: valid unassigned resource
- * 3) true: valid assigned resource
- */
+ 
 bool acpi_dev_resource_interrupt(struct acpi_resource *ares, int index,
 				 struct resource *res)
 {
@@ -698,10 +571,7 @@ bool acpi_dev_resource_interrupt(struct acpi_resource *ares, int index,
 
 	switch (ares->type) {
 	case ACPI_RESOURCE_TYPE_IRQ:
-		/*
-		 * Per spec, only one interrupt per descriptor is allowed in
-		 * _CRS, but some firmware violates this, so parse them all.
-		 */
+		 
 		irq = &ares->data.irq;
 		if (index >= irq->interrupt_count) {
 			irqresource_disabled(res, 0);
@@ -735,10 +605,7 @@ bool acpi_dev_resource_interrupt(struct acpi_resource *ares, int index,
 }
 EXPORT_SYMBOL_GPL(acpi_dev_resource_interrupt);
 
-/**
- * acpi_dev_free_resource_list - Free resource from %acpi_dev_get_resources().
- * @list: The head of the resource list to free.
- */
+ 
 void acpi_dev_free_resource_list(struct list_head *list)
 {
 	resource_list_free(list);
@@ -838,30 +705,7 @@ static int __acpi_dev_get_resources(struct acpi_device *adev,
 	return c.count;
 }
 
-/**
- * acpi_dev_get_resources - Get current resources of a device.
- * @adev: ACPI device node to get the resources for.
- * @list: Head of the resultant list of resources (must be empty).
- * @preproc: The caller's preprocessing routine.
- * @preproc_data: Pointer passed to the caller's preprocessing routine.
- *
- * Evaluate the _CRS method for the given device node and process its output by
- * (1) executing the @preproc() routine provided by the caller, passing the
- * resource pointer and @preproc_data to it as arguments, for each ACPI resource
- * returned and (2) converting all of the returned ACPI resources into struct
- * resource objects if possible.  If the return value of @preproc() in step (1)
- * is different from 0, step (2) is not applied to the given ACPI resource and
- * if that value is negative, the whole processing is aborted and that value is
- * returned as the final error code.
- *
- * The resultant struct resource objects are put on the list pointed to by
- * @list, that must be empty initially, as members of struct resource_entry
- * objects.  Callers of this routine should use %acpi_dev_free_resource_list() to
- * free that list.
- *
- * The number of resources in the output list is returned on success, an error
- * code reflecting the error condition is returned otherwise.
- */
+ 
 int acpi_dev_get_resources(struct acpi_device *adev, struct list_head *list,
 			   int (*preproc)(struct acpi_resource *, void *),
 			   void *preproc_data)
@@ -886,22 +730,7 @@ static int is_memory(struct acpi_resource *ares, void *not_used)
 	       || acpi_dev_resource_ext_address_space(ares, &win));
 }
 
-/**
- * acpi_dev_get_dma_resources - Get current DMA resources of a device.
- * @adev: ACPI device node to get the resources for.
- * @list: Head of the resultant list of resources (must be empty).
- *
- * Evaluate the _DMA method for the given device node and process its
- * output.
- *
- * The resultant struct resource objects are put on the list pointed to
- * by @list, that must be empty initially, as members of struct
- * resource_entry objects.  Callers of this routine should use
- * %acpi_dev_free_resource_list() to free that list.
- *
- * The number of resources in the output list is returned on success,
- * an error code reflecting the error condition is returned otherwise.
- */
+ 
 int acpi_dev_get_dma_resources(struct acpi_device *adev, struct list_head *list)
 {
 	return __acpi_dev_get_resources(adev, list, is_memory, NULL,
@@ -909,32 +738,14 @@ int acpi_dev_get_dma_resources(struct acpi_device *adev, struct list_head *list)
 }
 EXPORT_SYMBOL_GPL(acpi_dev_get_dma_resources);
 
-/**
- * acpi_dev_get_memory_resources - Get current memory resources of a device.
- * @adev: ACPI device node to get the resources for.
- * @list: Head of the resultant list of resources (must be empty).
- *
- * This is a helper function that locates all memory type resources of @adev
- * with acpi_dev_get_resources().
- *
- * The number of resources in the output list is returned on success, an error
- * code reflecting the error condition is returned otherwise.
- */
+ 
 int acpi_dev_get_memory_resources(struct acpi_device *adev, struct list_head *list)
 {
 	return acpi_dev_get_resources(adev, list, is_memory, NULL);
 }
 EXPORT_SYMBOL_GPL(acpi_dev_get_memory_resources);
 
-/**
- * acpi_dev_filter_resource_type - Filter ACPI resource according to resource
- *				   types
- * @ares: Input ACPI resource object.
- * @types: Valid resource types of IORESOURCE_XXX
- *
- * This is a helper function to support acpi_dev_get_resources(), which filters
- * ACPI resource objects according to resource types.
- */
+ 
 int acpi_dev_filter_resource_type(struct acpi_resource *ares,
 				  unsigned long types)
 {
@@ -1022,14 +833,7 @@ static acpi_status acpi_res_consumer_cb(acpi_handle handle, u32 depth,
 	return AE_OK;
 }
 
-/**
- * acpi_resource_consumer - Find the ACPI device that consumes @res.
- * @res: Resource to search for.
- *
- * Search the current resource settings (_CRS) of every ACPI device node
- * for @res.  If we find an ACPI device whose _CRS includes @res, return
- * it.  Otherwise, return NULL.
- */
+ 
 struct acpi_device *acpi_resource_consumer(struct resource *res)
 {
 	struct acpi_device *consumer = NULL;

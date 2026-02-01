@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2004 IBM Corporation
- * Authors:
- * Leendert van Doorn <leendert@watson.ibm.com>
- * Dave Safford <safford@watson.ibm.com>
- * Reiner Sailer <sailer@watson.ibm.com>
- * Kylene Hall <kjhall@us.ibm.com>
- *
- * Copyright (C) 2013 Obsidian Research Corp
- * Jason Gunthorpe <jgunthorpe@obsidianresearch.com>
- *
- * Device file system interface to the TPM
- */
+
+ 
 #include <linux/poll.h>
 #include <linux/slab.h>
 #include <linux/uaccess.h>
@@ -28,9 +16,7 @@ static ssize_t tpm_dev_transmit(struct tpm_chip *chip, struct tpm_space *space,
 	ssize_t ret, len;
 
 	ret = tpm2_prepare_space(chip, space, buf, bufsiz);
-	/* If the command is not implemented by the TPM, synthesize a
-	 * response with a TPM2_RC_COMMAND_CODE return for user-space.
-	 */
+	 
 	if (ret == -EOPNOTSUPP) {
 		header->length = cpu_to_be32(sizeof(*header));
 		header->tag = cpu_to_be16(TPM2_ST_NO_SESSIONS);
@@ -70,11 +56,7 @@ static void tpm_dev_async_work(struct work_struct *work)
 			       sizeof(priv->data_buffer));
 	tpm_put_ops(priv->chip);
 
-	/*
-	 * If ret is > 0 then tpm_dev_transmit returned the size of the
-	 * response. If ret is < 0 then tpm_dev_transmit failed and
-	 * returned an error code.
-	 */
+	 
 	if (ret != 0) {
 		priv->response_length = ret;
 		mod_timer(&priv->user_read_timer, jiffies + (120 * HZ));
@@ -173,10 +155,7 @@ ssize_t tpm_common_write(struct file *file, const char __user *buf,
 
 	mutex_lock(&priv->buffer_mutex);
 
-	/* Cannot perform a write until the read has cleared either via
-	 * tpm_read or a user_read_timer timeout. This also prevents split
-	 * buffered writes from blocking here.
-	 */
+	 
 	if ((!priv->response_read && priv->response_length) ||
 	    priv->command_enqueued) {
 		ret = -EBUSY;
@@ -198,12 +177,7 @@ ssize_t tpm_common_write(struct file *file, const char __user *buf,
 	priv->response_read = false;
 	*off = 0;
 
-	/*
-	 * If in nonblocking mode schedule an async job to send
-	 * the command return the size.
-	 * In case of error the err code will be returned in
-	 * the subsequent read call.
-	 */
+	 
 	if (file->f_flags & O_NONBLOCK) {
 		priv->command_enqueued = true;
 		queue_work(tpm_dev_wq, &priv->async_work);
@@ -211,10 +185,7 @@ ssize_t tpm_common_write(struct file *file, const char __user *buf,
 		return size;
 	}
 
-	/* atomic tpm command send and result receive. We only hold the ops
-	 * lock during this period so that the tpm can be unregistered even if
-	 * the char dev is held open.
-	 */
+	 
 	if (tpm_try_get_ops(priv->chip)) {
 		ret = -EPIPE;
 		goto out;
@@ -242,11 +213,7 @@ __poll_t tpm_common_poll(struct file *file, poll_table *wait)
 	poll_wait(file, &priv->async_wait, wait);
 	mutex_lock(&priv->buffer_mutex);
 
-	/*
-	 * The response_length indicates if there is still response
-	 * (or part of it) to be consumed. Partial reads decrease it
-	 * by the number of bytes read, and write resets it the zero.
-	 */
+	 
 	if (priv->response_length)
 		mask = EPOLLIN | EPOLLRDNORM;
 	else
@@ -256,9 +223,7 @@ __poll_t tpm_common_poll(struct file *file, poll_table *wait)
 	return mask;
 }
 
-/*
- * Called on file close
- */
+ 
 void tpm_common_release(struct file *file, struct file_priv *priv)
 {
 	flush_work(&priv->async_work);

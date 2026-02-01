@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * SPI driver for Renesas Synchronization Management Unit (SMU) devices.
- *
- * Copyright (C) 2021 Integrated Device Technology, Inc., a Renesas Company.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -44,18 +40,7 @@ static int rsmu_read_device(struct rsmu_ddata *rsmu, u8 reg, u8 *buf, u16 bytes)
 	spi_message_init(&msg);
 	spi_message_add_tail(&xfer, &msg);
 
-	/*
-	 * 4-wire SPI is a shift register, so for every byte you send,
-	 * you get one back at the same time. Example read from 0xC024,
-	 * which has value of 0x2D
-	 *
-	 * MOSI:
-	 *       7C 00 C0 #Set page register
-	 *       A4 00    #MSB is set, so this is read command
-	 * MISO:
-	 *       XX 2D    #XX is a dummy byte from sending A4 and we
-	 *                 need to throw it away
-	 */
+	 
 	ret = spi_sync(client, &msg);
 	if (ret >= 0)
 		memcpy(buf, &rsp[1], xfer.len-1);
@@ -86,11 +71,7 @@ static int rsmu_write_device(struct rsmu_ddata *rsmu, u8 reg, u8 *buf, u16 bytes
 	return  spi_sync(client, &msg);
 }
 
-/*
- * 1-byte (1B) offset addressing:
- * 16-bit register address: the lower 7 bits of the register address come
- * from the offset addr byte and the upper 9 bits come from the page register.
- */
+ 
 static int rsmu_write_page_register(struct rsmu_ddata *rsmu, u32 reg)
 {
 	u8 page_reg;
@@ -101,7 +82,7 @@ static int rsmu_write_page_register(struct rsmu_ddata *rsmu, u32 reg)
 
 	switch (rsmu->type) {
 	case RSMU_CM:
-		/* Do not modify page register for none-scsr registers */
+		 
 		if (reg < RSMU_CM_SCSR_BASE)
 			return 0;
 		page_reg = RSMU_CM_PAGE_ADDR;
@@ -113,12 +94,12 @@ static int rsmu_write_page_register(struct rsmu_ddata *rsmu, u32 reg)
 		bytes = 4;
 		break;
 	case RSMU_SABRE:
-		/* Do not modify page register if reg is page register itself */
+		 
 		if ((reg & RSMU_ADDR_MASK) == RSMU_ADDR_MASK)
 			return 0;
 		page_reg = RSMU_SABRE_PAGE_ADDR;
 		page = reg & RSMU_PAGE_MASK;
-		/* The three page bits are located in the single Page Register */
+		 
 		buf[0] = (u8)((page >> 7) & 0x7);
 		bytes = 1;
 		break;
@@ -127,7 +108,7 @@ static int rsmu_write_page_register(struct rsmu_ddata *rsmu, u32 reg)
 		return -ENODEV;
 	}
 
-	/* Simply return if we are on the same page */
+	 
 	if (rsmu->page == page)
 		return 0;
 
@@ -135,7 +116,7 @@ static int rsmu_write_page_register(struct rsmu_ddata *rsmu, u32 reg)
 	if (err)
 		dev_err(rsmu->dev, "Failed to set page offset 0x%x\n", page);
 	else
-		/* Remember the last page */
+		 
 		rsmu->page = page;
 
 	return err;
@@ -211,7 +192,7 @@ static int rsmu_spi_probe(struct spi_device *client)
 	rsmu->dev = &client->dev;
 	rsmu->type = (enum rsmu_type)id->driver_data;
 
-	/* Initialize regmap */
+	 
 	switch (rsmu->type) {
 	case RSMU_CM:
 		cfg = &rsmu_cm_regmap_config;

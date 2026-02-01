@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/bitmap.h>
 #include <linux/workqueue.h>
 
@@ -9,9 +9,7 @@
 
 #define RING_TO_VFNO(_x, _y)	((_x) / (_y))
 
-/*
- * mbx_msg_type - Mailbox message types
- */
+ 
 enum mbx_msg_type {
 	MBX_MSG_TYPE_NOP,
 	MBX_MSG_TYPE_REQ,
@@ -19,9 +17,7 @@ enum mbx_msg_type {
 	MBX_MSG_TYPE_NACK,
 };
 
-/*
- * mbx_msg_opcode - Mailbox message opcodes
- */
+ 
 enum mbx_msg_opcode {
 	MSG_OP_VF_MODE = 1,
 	MSG_OP_VF_UP,
@@ -91,7 +87,7 @@ static void pf2vf_send_response(struct nitrox_device *ndev,
 	if (msg.type == MBX_MSG_TYPE_NOP)
 		return;
 
-	/* send ACK to VF */
+	 
 	msg.type = MBX_MSG_TYPE_ACK;
 	pf2vf_write_mbox(ndev, msg.value, vfdev->ring);
 
@@ -108,7 +104,7 @@ static void pf2vf_resp_handler(struct work_struct *work)
 
 	switch (vfdev->msg.type) {
 	case MBX_MSG_TYPE_REQ:
-		/* process the request from VF */
+		 
 		pf2vf_send_response(ndev, vfdev);
 		break;
 	case MBX_MSG_TYPE_ACK:
@@ -128,16 +124,16 @@ void nitrox_pf2vf_mbox_handler(struct nitrox_device *ndev)
 	u32 i;
 	int vfno;
 
-	/* loop for VF(0..63) */
+	 
 	reg_addr = NPS_PKT_MBOX_INT_LO;
 	value = nitrox_read_csr(ndev, reg_addr);
 	bitmap_from_u64(csr, value);
 	for_each_set_bit(i, csr, BITS_PER_TYPE(csr)) {
-		/* get the vfno from ring */
+		 
 		vfno = RING_TO_VFNO(i, ndev->iov.max_vf_queues);
 		vfdev = ndev->iov.vfdev + vfno;
 		vfdev->ring = i;
-		/* fill the vf mailbox data */
+		 
 		vfdev->msg.value = pf2vf_read_mbox(ndev, vfdev->ring);
 		pfwork = kzalloc(sizeof(*pfwork), GFP_ATOMIC);
 		if (!pfwork)
@@ -147,20 +143,20 @@ void nitrox_pf2vf_mbox_handler(struct nitrox_device *ndev)
 		pfwork->ndev = ndev;
 		INIT_WORK(&pfwork->pf2vf_resp, pf2vf_resp_handler);
 		queue_work(ndev->iov.pf2vf_wq, &pfwork->pf2vf_resp);
-		/* clear the corresponding vf bit */
+		 
 		nitrox_write_csr(ndev, reg_addr, BIT_ULL(i));
 	}
 
-	/* loop for VF(64..127) */
+	 
 	reg_addr = NPS_PKT_MBOX_INT_HI;
 	value = nitrox_read_csr(ndev, reg_addr);
 	bitmap_from_u64(csr, value);
 	for_each_set_bit(i, csr, BITS_PER_TYPE(csr)) {
-		/* get the vfno from ring */
+		 
 		vfno = RING_TO_VFNO(i + 64, ndev->iov.max_vf_queues);
 		vfdev = ndev->iov.vfdev + vfno;
 		vfdev->ring = (i + 64);
-		/* fill the vf mailbox data */
+		 
 		vfdev->msg.value = pf2vf_read_mbox(ndev, vfdev->ring);
 
 		pfwork = kzalloc(sizeof(*pfwork), GFP_ATOMIC);
@@ -171,7 +167,7 @@ void nitrox_pf2vf_mbox_handler(struct nitrox_device *ndev)
 		pfwork->ndev = ndev;
 		INIT_WORK(&pfwork->pf2vf_resp, pf2vf_resp_handler);
 		queue_work(ndev->iov.pf2vf_wq, &pfwork->pf2vf_resp);
-		/* clear the corresponding vf bit */
+		 
 		nitrox_write_csr(ndev, reg_addr, BIT_ULL(i));
 	}
 }
@@ -191,14 +187,14 @@ int nitrox_mbox_init(struct nitrox_device *ndev)
 		vfdev->vfno = i;
 	}
 
-	/* allocate pf2vf response workqueue */
+	 
 	ndev->iov.pf2vf_wq = alloc_workqueue("nitrox_pf2vf", 0, 0);
 	if (!ndev->iov.pf2vf_wq) {
 		kfree(ndev->iov.vfdev);
 		ndev->iov.vfdev = NULL;
 		return -ENOMEM;
 	}
-	/* enable pf2vf mailbox interrupts */
+	 
 	enable_pf2vf_mbox_interrupts(ndev);
 
 	return 0;
@@ -206,9 +202,9 @@ int nitrox_mbox_init(struct nitrox_device *ndev)
 
 void nitrox_mbox_cleanup(struct nitrox_device *ndev)
 {
-	/* disable pf2vf mailbox interrupts */
+	 
 	disable_pf2vf_mbox_interrupts(ndev);
-	/* destroy workqueue */
+	 
 	if (ndev->iov.pf2vf_wq)
 		destroy_workqueue(ndev->iov.pf2vf_wq);
 

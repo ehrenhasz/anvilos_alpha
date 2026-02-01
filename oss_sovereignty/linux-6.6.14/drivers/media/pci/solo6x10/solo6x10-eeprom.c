@@ -1,20 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2010-2013 Bluecherry, LLC <https://www.bluecherrydvr.com>
- *
- * Original author:
- * Ben Collins <bcollins@ubuntu.com>
- *
- * Additional work by:
- * John Brooks <john.brooks@bluecherry.net>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/delay.h>
 
 #include "solo6x10.h"
 
-/* Control */
+ 
 #define EE_SHIFT_CLK	0x04
 #define EE_CS		0x08
 #define EE_DATA_WRITE	0x02
@@ -33,7 +25,7 @@
 #endif
 #define ADDR_LEN	6
 
-/* Commands */
+ 
 #define EE_EWEN_CMD	4
 #define EE_EWDS_CMD	4
 #define EE_WRITE_CMD	5

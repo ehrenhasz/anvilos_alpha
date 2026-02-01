@@ -1,33 +1,4 @@
-/*
- * Copyright(c) 2011-2016 Intel Corporation. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Authors:
- *    Kevin Tian <kevin.tian@intel.com>
- *    Zhi Wang <zhi.a.wang@intel.com>
- *
- * Contributors:
- *    Min he <min.he@intel.com>
- *
- */
+ 
 
 #ifndef _GVT_INTERRUPT_H_
 #define _GVT_INTERRUPT_H_
@@ -150,7 +121,7 @@ struct intel_gvt_irq_ops {
 	void (*check_pending_irq)(struct intel_vgpu *vgpu);
 };
 
-/* the list of physical interrupt control register groups */
+ 
 enum intel_gvt_irq_type {
 	INTEL_GVT_IRQ_INFO_GT,
 	INTEL_GVT_IRQ_INFO_DPY,
@@ -175,7 +146,7 @@ enum intel_gvt_irq_type {
 
 #define INTEL_GVT_IRQ_BITWIDTH	32
 
-/* device specific interrupt bit definitions */
+ 
 struct intel_gvt_irq_info {
 	char *name;
 	i915_reg_t reg_base;
@@ -186,12 +157,12 @@ struct intel_gvt_irq_info {
 	bool has_upstream_irq;
 };
 
-/* per-event information */
+ 
 struct intel_gvt_event_info {
-	int bit;				/* map to register bit */
-	int policy;				/* forwarding policy */
-	struct intel_gvt_irq_info *info;	/* register info */
-	gvt_event_virt_handler_t v_handler;	/* for v_event */
+	int bit;				 
+	int policy;				 
+	struct intel_gvt_irq_info *info;	 
+	gvt_event_virt_handler_t v_handler;	 
 };
 
 struct intel_gvt_irq_map {
@@ -201,7 +172,7 @@ struct intel_gvt_irq_map {
 	u32 down_irq_bitmask;
 };
 
-/* structure containing device specific IRQ state */
+ 
 struct intel_gvt_irq {
 	const struct intel_gvt_irq_ops *ops;
 	struct intel_gvt_irq_info *info[INTEL_GVT_IRQ_INFO_MAX];
@@ -229,4 +200,4 @@ int gvt_ring_id_to_pipe_control_notify_event(int ring_id);
 int gvt_ring_id_to_mi_flush_dw_event(int ring_id);
 int gvt_ring_id_to_mi_user_interrupt_event(int ring_id);
 
-#endif /* _GVT_INTERRUPT_H_ */
+#endif  

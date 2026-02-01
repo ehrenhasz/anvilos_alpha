@@ -1,25 +1,4 @@
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef __AMDGPU_RING_MUX__
 #define __AMDGPU_RING_MUX__
@@ -30,16 +9,7 @@
 
 struct amdgpu_ring;
 
-/**
- * struct amdgpu_mux_entry - the entry recording software rings copying information.
- * @ring: the pointer to the software ring.
- * @start_ptr_in_hw_ring: last start location copied to in the hardware ring.
- * @end_ptr_in_hw_ring: last end location copied to in the hardware ring.
- * @sw_cptr: the position of the copy pointer in the sw ring.
- * @sw_rptr: the read pointer in software ring.
- * @sw_wptr: the write pointer in software ring.
- * @list: list head for amdgpu_mux_chunk
- */
+ 
 struct amdgpu_mux_entry {
 	struct amdgpu_ring      *ring;
 	u64                     start_ptr_in_hw_ring;
@@ -57,11 +27,11 @@ enum amdgpu_ring_mux_offset_type {
 };
 
 enum ib_complete_status {
-	/* IB not started/reset value, default value. */
+	 
 	IB_COMPLETION_STATUS_DEFAULT = 0,
-	/* IB preempted, started but not completed. */
+	 
 	IB_COMPLETION_STATUS_PREEMPTED = 1,
-	/* IB completed. */
+	 
 	IB_COMPLETION_STATUS_COMPLETED = 2,
 };
 
@@ -71,7 +41,7 @@ struct amdgpu_ring_mux {
 	struct amdgpu_mux_entry *ring_entry;
 	unsigned int            num_ring_entries;
 	unsigned int            ring_entry_size;
-	/*the lock for copy data from different software rings*/
+	 
 	spinlock_t              lock;
 	bool                    s_resubmit;
 	uint32_t                seqno_to_resubmit;
@@ -81,16 +51,7 @@ struct amdgpu_ring_mux {
 	bool                    pending_trailing_fence_signaled;
 };
 
-/**
- * struct amdgpu_mux_chunk - save the location of indirect buffer's package on softare rings.
- * @entry: the list entry.
- * @sync_seq: the fence seqno related with the saved IB.
- * @start:- start location on the software ring.
- * @end:- end location on the software ring.
- * @control_offset:- the PRE_RESUME bit position used for resubmission.
- * @de_offset:- the anchor in write_data for de meta of resubmission.
- * @ce_offset:- the anchor in write_data for ce meta of resubmission.
- */
+ 
 struct amdgpu_mux_chunk {
 	struct list_head        entry;
 	uint32_t                sync_seq;

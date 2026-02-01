@@ -1,20 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell RVU Admin Function driver
- *
- * Copyright (C) 2021 Marvell.
- *
- */
+
+ 
 
 #include <linux/pci.h>
 #include "rvu.h"
 
-/* SDP PF device id */
+ 
 #define PCI_DEVID_OTX2_SDP_PF   0xA0F6
 
-/* Maximum SDP blocks in a chip */
+ 
 #define MAX_SDP		2
 
-/* SDP PF number */
+ 
 static int sdp_pf_num[MAX_SDP] = {-1, -1};
 
 bool is_sdp_pfvf(u16 pcifunc)
@@ -55,7 +51,7 @@ int rvu_sdp_init(struct rvu *rvu)
 	while ((i < MAX_SDP) && (pdev = pci_get_device(PCI_VENDOR_ID_CAVIUM,
 						       PCI_DEVID_OTX2_SDP_PF,
 						       pdev)) != NULL) {
-		/* The RVU PF number is one less than bus number */
+		 
 		sdp_pf_num[i] = pdev->bus->number - 1;
 		pfvf = &rvu->pf[sdp_pf_num[i]];
 

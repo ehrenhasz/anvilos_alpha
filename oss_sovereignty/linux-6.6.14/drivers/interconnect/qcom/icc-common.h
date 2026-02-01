@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2022 Linaro Ltd.
- */
+ 
+ 
 
 #ifndef __DRIVERS_INTERCONNECT_QCOM_ICC_COMMON_H__
 #define __DRIVERS_INTERCONNECT_QCOM_ICC_COMMON_H__

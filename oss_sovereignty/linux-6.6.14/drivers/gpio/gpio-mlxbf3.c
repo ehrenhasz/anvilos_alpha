@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only OR BSD-3-Clause
-/* Copyright (C) 2022 NVIDIA CORPORATION & AFFILIATES */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -13,18 +13,12 @@
 #include <linux/spinlock.h>
 #include <linux/types.h>
 
-/*
- * There are 2 YU GPIO blocks:
- * gpio[0]: HOST_GPIO0->HOST_GPIO31
- * gpio[1]: HOST_GPIO32->HOST_GPIO55
- */
+ 
 #define MLXBF3_GPIO_MAX_PINS_PER_BLOCK 32
 #define MLXBF3_GPIO_MAX_PINS_BLOCK0    32
 #define MLXBF3_GPIO_MAX_PINS_BLOCK1    24
 
-/*
- * fw_gpio[x] block registers and their offset
- */
+ 
 #define MLXBF_GPIO_FW_OUTPUT_ENABLE_SET	  0x00
 #define MLXBF_GPIO_FW_DATA_OUT_SET        0x04
 
@@ -42,12 +36,12 @@
 struct mlxbf3_gpio_context {
 	struct gpio_chip gc;
 
-	/* YU GPIO block address */
+	 
 	void __iomem *gpio_set_io;
 	void __iomem *gpio_clr_io;
 	void __iomem *gpio_io;
 
-	/* YU GPIO cause block address */
+	 
 	void __iomem *gpio_cause_io;
 };
 
@@ -145,7 +139,7 @@ mlxbf3_gpio_irq_set_type(struct irq_data *irqd, unsigned int type)
 	return 0;
 }
 
-/* This function needs to be defined for handle_edge_irq() */
+ 
 static void mlxbf3_gpio_irq_ack(struct irq_data *data)
 {
 }
@@ -228,16 +222,13 @@ static int mlxbf3_gpio_probe(struct platform_device *pdev)
 		girq = &gs->gc.irq;
 		gpio_irq_chip_set_chip(girq, &gpio_mlxbf3_irqchip);
 		girq->default_type = IRQ_TYPE_NONE;
-		/* This will let us handle the parent IRQ in the driver */
+		 
 		girq->num_parents = 0;
 		girq->parents = NULL;
 		girq->parent_handler = NULL;
 		girq->handler = handle_bad_irq;
 
-		/*
-		 * Directly request the irq here instead of passing
-		 * a flow-handler because the irq is shared.
-		 */
+		 
 		ret = devm_request_irq(dev, irq, mlxbf3_gpio_irq_handler,
 				       IRQF_SHARED, dev_name(dev), gs);
 		if (ret)

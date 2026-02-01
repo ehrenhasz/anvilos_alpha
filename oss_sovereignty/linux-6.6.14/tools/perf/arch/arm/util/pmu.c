@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright(C) 2015 Linaro Limited. All rights reserved.
- * Author: Mathieu Poirier <mathieu.poirier@linaro.org>
- */
+
+ 
 
 #include <string.h>
 #include <linux/coresight-pmu.h>
@@ -19,7 +16,7 @@ struct perf_event_attr
 {
 #ifdef HAVE_AUXTRACE_SUPPORT
 	if (!strcmp(pmu->name, CORESIGHT_ETM_PMU_NAME)) {
-		/* add ETM default config here */
+		 
 		pmu->selectable = true;
 		return cs_etm_get_default_config(pmu);
 #if defined(__aarch64__)

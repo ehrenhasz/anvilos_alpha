@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * MUSB OTG driver defines
- *
- * Copyright 2005 Mentor Graphics Corporation
- * Copyright (C) 2005-2006 by Texas Instruments
- * Copyright (C) 2006-2007 Nokia Corporation
- */
+ 
+ 
 
 #ifndef __MUSB_CORE_H__
 #define __MUSB_CORE_H__
@@ -29,7 +23,7 @@ struct musb_hw_ep;
 struct musb_ep;
 struct musb_qh;
 
-/* Helper defines for struct musb->hwvers */
+ 
 #define MUSB_HWVERS_MAJOR(x)	((x >> 10) & 0x1f)
 #define MUSB_HWVERS_MINOR(x)	(x & 0x3ff)
 #define MUSB_HWVERS_RC		0x8000
@@ -48,13 +42,11 @@ struct musb_qh;
 #include <linux/usb/hcd.h>
 #include "musb_host.h"
 
-/* NOTE:  otg and peripheral-only state machines start at B_IDLE.
- * OTG or host-only go to A_IDLE when ID is sensed.
- */
+ 
 #define is_peripheral_active(m)		(!(m)->is_host)
 #define is_host_active(m)		((m)->is_host)
 
-/****************************** CONSTANTS ********************************/
+ 
 
 #ifndef MUSB_C_NUM_EPS
 #define MUSB_C_NUM_EPS ((u8)16)
@@ -64,36 +56,33 @@ struct musb_qh;
 #define MUSB_MAX_END0_PACKET ((u16)MUSB_EP0_FIFOSIZE)
 #endif
 
-/* host side ep0 states */
+ 
 enum musb_h_ep0_state {
 	MUSB_EP0_IDLE,
-	MUSB_EP0_START,			/* expect ack of setup */
-	MUSB_EP0_IN,			/* expect IN DATA */
-	MUSB_EP0_OUT,			/* expect ack of OUT DATA */
-	MUSB_EP0_STATUS,		/* expect ack of STATUS */
+	MUSB_EP0_START,			 
+	MUSB_EP0_IN,			 
+	MUSB_EP0_OUT,			 
+	MUSB_EP0_STATUS,		 
 } __attribute__ ((packed));
 
-/* peripheral side ep0 states */
+ 
 enum musb_g_ep0_state {
-	MUSB_EP0_STAGE_IDLE,		/* idle, waiting for SETUP */
-	MUSB_EP0_STAGE_SETUP,		/* received SETUP */
-	MUSB_EP0_STAGE_TX,		/* IN data */
-	MUSB_EP0_STAGE_RX,		/* OUT data */
-	MUSB_EP0_STAGE_STATUSIN,	/* (after OUT data) */
-	MUSB_EP0_STAGE_STATUSOUT,	/* (after IN data) */
-	MUSB_EP0_STAGE_ACKWAIT,		/* after zlp, before statusin */
+	MUSB_EP0_STAGE_IDLE,		 
+	MUSB_EP0_STAGE_SETUP,		 
+	MUSB_EP0_STAGE_TX,		 
+	MUSB_EP0_STAGE_RX,		 
+	MUSB_EP0_STAGE_STATUSIN,	 
+	MUSB_EP0_STAGE_STATUSOUT,	 
+	MUSB_EP0_STAGE_ACKWAIT,		 
 } __attribute__ ((packed));
 
-/*
- * OTG protocol constants.  See USB OTG 1.3 spec,
- * sections 5.5 "Device Timings" and 6.6.5 "Timers".
- */
-#define OTG_TIME_A_WAIT_VRISE	100		/* msec (max) */
-#define OTG_TIME_A_WAIT_BCON	1100		/* min 1 second */
-#define OTG_TIME_A_AIDL_BDIS	200		/* min 200 msec */
-#define OTG_TIME_B_ASE0_BRST	100		/* min 3.125 ms */
+ 
+#define OTG_TIME_A_WAIT_VRISE	100		 
+#define OTG_TIME_A_WAIT_BCON	1100		 
+#define OTG_TIME_A_AIDL_BDIS	200		 
+#define OTG_TIME_B_ASE0_BRST	100		 
 
-/****************************** FUNCTIONS ********************************/
+ 
 
 #define MUSB_HST_MODE(_musb)\
 	{ (_musb)->is_host = true; }
@@ -105,42 +94,11 @@ enum musb_g_ep0_state {
 
 #define MUSB_MODE(musb) ((musb)->is_host ? "Host" : "Peripheral")
 
-/******************************** TYPES *************************************/
+ 
 
 struct musb_io;
 
-/**
- * struct musb_platform_ops - Operations passed to musb_core by HW glue layer
- * @quirks:	flags for platform specific quirks
- * @enable:	enable device
- * @disable:	disable device
- * @ep_offset:	returns the end point offset
- * @ep_select:	selects the specified end point
- * @fifo_mode:	sets the fifo mode
- * @fifo_offset: returns the fifo offset
- * @readb:	read 8 bits
- * @writeb:	write 8 bits
- * @clearb:	could be clear-on-readb or W1C
- * @readw:	read 16 bits
- * @writew:	write 16 bits
- * @clearw:	could be clear-on-readw or W1C
- * @read_fifo:	reads the fifo
- * @write_fifo:	writes to fifo
- * @get_toggle:	platform specific get toggle function
- * @set_toggle:	platform specific set toggle function
- * @dma_init:	platform specific dma init function
- * @dma_exit:	platform specific dma exit function
- * @init:	turns on clocks, sets up platform-specific registers, etc
- * @exit:	undoes @init
- * @set_mode:	forcefully changes operating mode
- * @try_idle:	tries to idle the IP
- * @recover:	platform-specific babble recovery
- * @vbus_status: returns vbus status if possible
- * @set_vbus:	forces vbus status
- * @pre_root_reset_end: called before the root usb port reset flag gets cleared
- * @post_root_reset_end: called after the root usb port reset flag gets cleared
- * @phy_callback: optional callback function for the phy to call
- */
+ 
 struct musb_platform_ops {
 
 #define MUSB_G_NO_SKB_RESERVE	BIT(9)
@@ -192,11 +150,7 @@ struct musb_platform_ops {
 	void	(*clear_ep_rxintr)(struct musb *musb, int epnum);
 };
 
-/*
- * struct musb_hw_ep - endpoint hardware (bidirectional)
- *
- * Ordered slightly for better cacheline locality.
- */
+ 
 struct musb_hw_ep {
 	struct musb		*musb;
 	void __iomem		*fifo;
@@ -206,10 +160,10 @@ struct musb_hw_ep {
 	void __iomem		*conf;
 #endif
 
-	/* index in musb->endpoints[]  */
+	 
 	u8			epnum;
 
-	/* hardware configuration, possibly dynamic */
+	 
 	bool			is_shared_fifo;
 	bool			tx_double_buffered;
 	bool			rx_double_buffered;
@@ -220,22 +174,22 @@ struct musb_hw_ep {
 	struct dma_channel	*rx_channel;
 
 #if IS_ENABLED(CONFIG_USB_MUSB_TUSB6010)
-	/* TUSB has "asynchronous" and "synchronous" dma modes */
+	 
 	dma_addr_t		fifo_async;
 	dma_addr_t		fifo_sync;
 	void __iomem		*fifo_sync_va;
 #endif
 
-	/* currently scheduled peripheral endpoint */
+	 
 	struct musb_qh		*in_qh;
 	struct musb_qh		*out_qh;
 
 	u8			rx_reinit;
 	u8			tx_reinit;
 
-	/* peripheral side */
-	struct musb_ep		ep_in;			/* TX */
-	struct musb_ep		ep_out;			/* RX */
+	 
+	struct musb_ep		ep_in;			 
+	struct musb_ep		ep_out;			 
 };
 
 static inline struct musb_request *next_in_request(struct musb_hw_ep *hw_ep)
@@ -249,7 +203,7 @@ static inline struct musb_request *next_out_request(struct musb_hw_ep *hw_ep)
 }
 
 struct musb_csr_regs {
-	/* FIFO registers */
+	 
 	u16 txmaxp, txcsr, rxmaxp, rxcsr;
 	u16 rxfifoadd, txfifoadd;
 	u8 txtype, txinterval, rxtype, rxinterval;
@@ -271,13 +225,11 @@ struct musb_context_registers {
 	struct musb_csr_regs index_regs[MUSB_C_NUM_EPS];
 };
 
-/*
- * struct musb - Driver instance data.
- */
+ 
 struct musb {
-	/* device lock */
+	 
 	spinlock_t		lock;
-	spinlock_t		list_lock;	/* resume work list lock */
+	spinlock_t		list_lock;	 
 
 	struct musb_io		io;
 	const struct musb_platform_ops *ops;
@@ -292,7 +244,7 @@ struct musb {
 
 	u16			intrrxe;
 	u16			intrtxe;
-/* this hub status bit is reserved by USB 2.0 and not seen by usbcore */
+ 
 #define MUSB_PORT_STAT_RESUME	(1 << 31)
 
 	u32			port1_status;
@@ -301,18 +253,13 @@ struct musb {
 
 	enum musb_h_ep0_state	ep0_stage;
 
-	/* bulk traffic normally dedicates endpoint hardware, and each
-	 * direction has its own ring of host side endpoints.
-	 * we try to progress the transfer at the head of each endpoint's
-	 * queue until it completes or NAKs too much; then we try the next
-	 * endpoint.
-	 */
+	 
 	struct musb_hw_ep	*bulk_ep;
 
-	struct list_head	control;	/* of musb_qh */
-	struct list_head	in_bulk;	/* of musb_qh */
-	struct list_head	out_bulk;	/* of musb_qh */
-	struct list_head	pending_list;	/* pending work list */
+	struct list_head	control;	 
+	struct list_head	in_bulk;	 
+	struct list_head	out_bulk;	 
+	struct list_head	pending_list;	 
 
 	struct timer_list	otg_timer;
 	struct timer_list	dev_timer;
@@ -331,7 +278,7 @@ struct musb {
 	u8			tusb_revision;
 #endif
 
-	/* passed down from chip/board specific irq handlers */
+	 
 	u8			int_usb;
 	u16			int_rx;
 	u16			int_tx;
@@ -352,27 +299,27 @@ struct musb {
 	u16 epmask;
 	u8 nr_endpoints;
 
-	u8			min_power;	/* vbus for periph, in mA/2 */
+	u8			min_power;	 
 
 	enum musb_mode		port_mode;
 	bool			session;
 	unsigned long		quirk_retries;
 	bool			is_host;
 
-	int			a_wait_bcon;	/* VBUS timeout in msecs */
-	unsigned long		idle_timeout;	/* Next timeout in jiffies */
+	int			a_wait_bcon;	 
+	unsigned long		idle_timeout;	 
 
 	unsigned		is_initialized:1;
 	unsigned		is_runtime_suspended:1;
 
-	/* active means connected and not suspended */
+	 
 	unsigned		is_active:1;
 
 	unsigned is_multipoint:1;
 
-	unsigned		hb_iso_rx:1;	/* high bandwidth iso rx? */
-	unsigned		hb_iso_tx:1;	/* high bandwidth iso tx? */
-	unsigned		dyn_fifo:1;	/* dynamic FIFO supported? */
+	unsigned		hb_iso_rx:1;	 
+	unsigned		hb_iso_tx:1;	 
+	unsigned		dyn_fifo:1;	 
 
 	unsigned		bulk_split:1;
 #define	can_bulk_split(musb, type) \
@@ -382,16 +329,13 @@ struct musb {
 #define	can_bulk_combine(musb, type) \
 	(((type) == USB_ENDPOINT_XFER_BULK) && (musb)->bulk_combine)
 
-	/* is_suspended means USB B_PERIPHERAL suspend */
+	 
 	unsigned		is_suspended:1;
 
-	/* may_wakeup means remote wakeup is enabled */
+	 
 	unsigned		may_wakeup:1;
 
-	/* is_self_powered is reported in device status and the
-	 * config descriptor.  is_bus_powered means B_PERIPHERAL
-	 * draws some VBUS current; both can be true.
-	 */
+	 
 	unsigned		is_self_powered:1;
 	unsigned		is_bus_powered:1;
 
@@ -403,11 +347,11 @@ struct musb {
 
 	u8			address;
 	u8			test_mode_nr;
-	u16			ackpend;		/* ep0 */
+	u16			ackpend;		 
 	enum musb_g_ep0_state	ep0_state;
-	struct usb_gadget	g;			/* the gadget */
-	struct usb_gadget_driver *gadget_driver;	/* its driver */
-	struct usb_hcd		*hcd;			/* the usb hcd */
+	struct usb_gadget	g;			 
+	struct usb_gadget_driver *gadget_driver;	 
+	struct usb_hcd		*hcd;			 
 
 	const struct musb_hdrc_config *config;
 
@@ -417,7 +361,7 @@ struct musb {
 #endif
 };
 
-/* This must be included after struct musb is defined */
+ 
 #include "musb_regs.h"
 
 static inline struct musb *gadget_to_musb(struct usb_gadget *g)
@@ -455,9 +399,9 @@ static inline int musb_read_fifosize(struct musb *musb,
 	void __iomem *mbase = musb->mregs;
 	u8 reg = 0;
 
-	/* read from core using indexed model */
+	 
 	reg = musb_readb(mbase, musb->io.ep_offset(epnum, MUSB_FIFOSIZE));
-	/* 0's returned when no more endpoints */
+	 
 	if (!reg)
 		return -ENODEV;
 
@@ -466,7 +410,7 @@ static inline int musb_read_fifosize(struct musb *musb,
 
 	hw_ep->max_packet_sz_tx = 1 << (reg & 0x0f);
 
-	/* shared TX/RX FIFO? */
+	 
 	if ((reg & 0xf0) == 0xf0) {
 		hw_ep->max_packet_sz_rx = hw_ep->max_packet_sz_tx;
 		hw_ep->is_shared_fifo = true;
@@ -486,7 +430,7 @@ static inline void musb_configure_ep0(struct musb *musb)
 	musb->endpoints[0].is_shared_fifo = true;
 }
 
-/***************************** Glue it together *****************************/
+ 
 
 extern const char musb_driver_name[];
 
@@ -614,10 +558,7 @@ static inline const char *musb_otg_state_string(struct musb *musb)
 	return usb_otg_state_string(musb_get_state(musb));
 }
 
-/*
- * gets the "dr_mode" property from DT and converts it into musb_mode
- * if the property is not found or not recognized returns MUSB_OTG
- */
+ 
 extern enum musb_mode musb_get_mode(struct device *dev);
 
-#endif	/* __MUSB_CORE_H__ */
+#endif	 

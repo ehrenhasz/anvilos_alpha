@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * arizona.h - Wolfson Arizona class device shared support
- *
- * Copyright 2012 Wolfson Microelectronics plc
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+ 
+ 
 
 #ifndef _ASOC_ARIZONA_H
 #define _ASOC_ARIZONA_H
@@ -62,7 +56,7 @@
 #define ARIZONA_DVFS_SR1_RQ	0x001
 #define ARIZONA_DVFS_ADSP1_RQ	0x100
 
-/* Notifier events */
+ 
 #define ARIZONA_NOTIFY_VOICE_TRIGGER   0x1
 
 struct wm_adsp;
@@ -92,7 +86,7 @@ struct arizona_priv {
 	struct mutex dvfs_lock;
 	bool dvfs_cached;
 
-	/* Variables used by arizona-jack.c code */
+	 
 	struct mutex lock;
 	struct delayed_work hpdet_work;
 	struct delayed_work micd_detect_work;
@@ -257,7 +251,7 @@ extern unsigned int arizona_mixer_values[ARIZONA_NUM_MIXER_INPUTS];
 #define ARIZONA_RATE_ENUM_SIZE 4
 #define ARIZONA_SAMPLE_RATE_ENUM_SIZE 14
 
-/* SND_JACK_* mask for supported cable/switch types */
+ 
 #define ARIZONA_JACK_MASK  (SND_JACK_HEADSET | SND_JACK_LINEOUT | SND_JACK_MECHANICAL)
 
 extern const char * const arizona_rate_text[ARIZONA_RATE_ENUM_SIZE];

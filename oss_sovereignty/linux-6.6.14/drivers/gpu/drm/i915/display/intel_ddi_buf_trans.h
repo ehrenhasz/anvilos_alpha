@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2020 Intel Corporation
- */
+ 
+ 
 
 #ifndef _INTEL_DDI_BUF_TRANS_H_
 #define _INTEL_DDI_BUF_TRANS_H_
@@ -13,15 +11,15 @@ struct intel_encoder;
 struct intel_crtc_state;
 
 struct hsw_ddi_buf_trans {
-	u32 trans1;	/* balance leg enable, de-emph level */
-	u32 trans2;	/* vref sel, vswing */
-	u8 i_boost;	/* SKL: I_boost; valid: 0x0, 0x1, 0x3, 0x7 */
+	u32 trans1;	 
+	u32 trans2;	 
+	u8 i_boost;	 
 };
 
 struct bxt_ddi_buf_trans {
-	u8 margin;	/* swing value */
-	u8 scale;	/* scale value */
-	u8 enable;	/* scale enable */
+	u8 margin;	 
+	u8 scale;	 
+	u8 enable;	 
 	u8 deemphasis;
 };
 

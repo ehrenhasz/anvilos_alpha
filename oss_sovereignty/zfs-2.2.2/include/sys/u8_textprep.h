@@ -1,27 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
+ 
+ 
 
 #ifndef	_SYS_U8_TEXTPREP_H
 #define	_SYS_U8_TEXTPREP_H
@@ -36,9 +14,7 @@
 extern "C" {
 #endif
 
-/*
- * Unicode encoding conversion functions and their macros.
- */
+ 
 #define	UCONV_IN_BIG_ENDIAN		0x0001
 #define	UCONV_OUT_BIG_ENDIAN		0x0002
 #define	UCONV_IN_SYSTEM_ENDIAN		0x0004
@@ -58,13 +34,7 @@ extern int uconv_u32tou8(const uint32_t *, size_t *, uchar_t *, size_t *, int);
 extern int uconv_u8tou16(const uchar_t *, size_t *, uint16_t *, size_t *, int);
 extern int uconv_u8tou32(const uchar_t *, size_t *, uint32_t *, size_t *, int);
 
-/*
- * UTF-8 text preparation functions and their macros.
- *
- * Among the macros defined, U8_CANON_DECOMP, U8_COMPAT_DECOMP, and
- * U8_CANON_COMP are not public interfaces and must not be used directly
- * at the flag input argument.
- */
+ 
 #define	U8_STRCMP_CS			(0x00000001)
 #define	U8_STRCMP_CI_UPPER		(0x00000002)
 #define	U8_STRCMP_CI_LOWER		(0x00000004)
@@ -110,4 +80,4 @@ extern size_t u8_textprep_str(char *, size_t *, char *, size_t *, int, size_t,
 }
 #endif
 
-#endif	/* _SYS_U8_TEXTPREP_H */
+#endif	 

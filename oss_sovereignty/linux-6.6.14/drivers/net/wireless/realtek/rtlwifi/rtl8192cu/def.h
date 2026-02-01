@@ -1,11 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+ 
+ 
 
 #include "../rtl8192ce/def.h"
 
-/*-------------------------------------------------------------------------
- *	Chip specific
- *-------------------------------------------------------------------------*/
+ 
 #define NORMAL_CHIP			BIT(4)
 #define CHIP_VENDOR_UMC			BIT(5)
 #define CHIP_VENDOR_UMC_B_CUT		BIT(6)

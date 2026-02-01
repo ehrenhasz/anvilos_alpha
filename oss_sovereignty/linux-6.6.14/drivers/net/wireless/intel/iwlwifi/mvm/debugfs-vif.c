@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2012-2014, 2018-2023 Intel Corporation
- * Copyright (C) 2013-2015 Intel Mobile Communications GmbH
- * Copyright (C) 2016-2017 Intel Deutschland GmbH
- */
+
+ 
 #include "mvm.h"
 #include "debugfs.h"
 
@@ -526,10 +522,7 @@ static ssize_t iwl_dbgfs_low_latency_read(struct file *file,
 	char format[] = "traffic=%d\ndbgfs=%d\nvcmd=%d\nvif_type=%d\n"
 			"dbgfs_force_enable=%d\ndbgfs_force=%d\nactual=%d\n";
 
-	/*
-	 * all values in format are boolean so the size of format is enough
-	 * for holding the result string
-	 */
+	 
 	char buf[sizeof(format) + 1] = {};
 	int len;
 
@@ -591,7 +584,7 @@ static ssize_t iwl_dbgfs_rx_phyinfo_write(struct ieee80211_vif *vif, char *buf,
 	rcu_read_lock();
 
 	chanctx_conf = rcu_dereference(vif->bss_conf.chanctx_conf);
-	/* make sure the channel context is assigned */
+	 
 	if (!chanctx_conf) {
 		rcu_read_unlock();
 		mutex_unlock(&mvm->mutex);
@@ -706,10 +699,7 @@ void iwl_mvm_vif_dbgfs_register(struct iwl_mvm *mvm, struct ieee80211_vif *vif)
 	struct iwl_mvm_vif *mvmvif = iwl_mvm_vif_from_mac80211(vif);
 	char buf[100];
 
-	/*
-	 * Check if debugfs directory already exist before creating it.
-	 * This may happen when, for example, resetting hw or suspend-resume
-	 */
+	 
 	if (!dbgfs_dir || mvmvif->dbgfs_dir)
 		return;
 
@@ -738,13 +728,7 @@ void iwl_mvm_vif_dbgfs_register(struct iwl_mvm *mvm, struct ieee80211_vif *vif)
 	    mvmvif == mvm->bf_allowed_vif)
 		MVM_DEBUGFS_ADD_FILE_VIF(bf_params, mvmvif->dbgfs_dir, 0600);
 
-	/*
-	 * Create symlink for convenience pointing to interface specific
-	 * debugfs entries for the driver. For example, under
-	 * /sys/kernel/debug/iwlwifi/0000\:02\:00.0/iwlmvm/
-	 * find
-	 * netdev:wlan0 -> ../../../ieee80211/phy0/netdev:wlan0/iwlmvm/
-	 */
+	 
 	snprintf(buf, 100, "../../../%pd3/%pd",
 		 dbgfs_dir,
 		 mvmvif->dbgfs_dir);

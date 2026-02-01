@@ -1,28 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2013, 2016 by Delphix. All rights reserved.
- * Copyright 2013 Saso Kiselkov. All rights reserved.
- */
+ 
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/spa.h>
@@ -33,63 +10,7 @@
 #include <sys/abd.h>
 #include <zfs_fletcher.h>
 
-/*
- * Checksum vectors.
- *
- * In the SPA, everything is checksummed.  We support checksum vectors
- * for three distinct reasons:
- *
- *   1. Different kinds of data need different levels of protection.
- *	For SPA metadata, we always want a very strong checksum.
- *	For user data, we let users make the trade-off between speed
- *	and checksum strength.
- *
- *   2. Cryptographic hash and MAC algorithms are an area of active research.
- *	It is likely that in future hash functions will be at least as strong
- *	as current best-of-breed, and may be substantially faster as well.
- *	We want the ability to take advantage of these new hashes as soon as
- *	they become available.
- *
- *   3. If someone develops hardware that can compute a strong hash quickly,
- *	we want the ability to take advantage of that hardware.
- *
- * Of course, we don't want a checksum upgrade to invalidate existing
- * data, so we store the checksum *function* in eight bits of the bp.
- * This gives us room for up to 256 different checksum functions.
- *
- * When writing a block, we always checksum it with the latest-and-greatest
- * checksum function of the appropriate strength.  When reading a block,
- * we compare the expected checksum against the actual checksum, which we
- * compute via the checksum function specified by BP_GET_CHECKSUM(bp).
- *
- * SALTED CHECKSUMS
- *
- * To enable the use of less secure hash algorithms with dedup, we
- * introduce the notion of salted checksums (MACs, really).  A salted
- * checksum is fed both a random 256-bit value (the salt) and the data
- * to be checksummed.  This salt is kept secret (stored on the pool, but
- * never shown to the user).  Thus even if an attacker knew of collision
- * weaknesses in the hash algorithm, they won't be able to mount a known
- * plaintext attack on the DDT, since the actual hash value cannot be
- * known ahead of time.  How the salt is used is algorithm-specific
- * (some might simply prefix it to the data block, others might need to
- * utilize a full-blown HMAC).  On disk the salt is stored in a ZAP
- * object in the MOS (DMU_POOL_CHECKSUM_SALT).
- *
- * CONTEXT TEMPLATES
- *
- * Some hashing algorithms need to perform a substantial amount of
- * initialization work (e.g. salted checksums above may need to pre-hash
- * the salt) before being able to process data.  Performing this
- * redundant work for each block would be wasteful, so we instead allow
- * a checksum algorithm to do the work once (the first time it's used)
- * and then keep this pre-initialized context as a template inside the
- * spa_t (spa_cksum_tmpls).  If the zio_checksum_info_t contains
- * non-NULL ci_tmpl_init and ci_tmpl_free callbacks, they are used to
- * construct and destruct the pre-initialized checksum context.  The
- * pre-initialized context is then reused during each checksum
- * invocation and passed to the checksum function.
- */
+ 
 
 static void
 abd_checksum_off(abd_t *abd, uint64_t size,
@@ -201,10 +122,7 @@ zio_checksum_info_t zio_checksum_table[ZIO_CHECKSUM_FUNCTIONS] = {
 	    ZCHECKSUM_FLAG_SALTED | ZCHECKSUM_FLAG_NOPWRITE, "blake3"},
 };
 
-/*
- * The flag corresponding to the "verify" in dedup=[checksum,]verify
- * must be cleared first, so callers should use ZIO_CHECKSUM_MASK.
- */
+ 
 spa_feature_t
 zio_checksum_to_feature(enum zio_checksum cksum)
 {
@@ -264,10 +182,7 @@ zio_checksum_dedup_select(spa_t *spa, enum zio_checksum child,
 	return (child);
 }
 
-/*
- * Set the external verifier for a gang block based on <vdev, offset, txg>,
- * a tuple which is guaranteed to be unique for the life of the pool.
- */
+ 
 static void
 zio_checksum_gang_verifier(zio_cksum_t *zcp, const blkptr_t *bp)
 {
@@ -279,21 +194,14 @@ zio_checksum_gang_verifier(zio_cksum_t *zcp, const blkptr_t *bp)
 	ZIO_SET_CHECKSUM(zcp, DVA_GET_VDEV(dva), DVA_GET_OFFSET(dva), txg, 0);
 }
 
-/*
- * Set the external verifier for a label block based on its offset.
- * The vdev is implicit, and the txg is unknowable at pool open time --
- * hence the logic in vdev_uberblock_load() to find the most recent copy.
- */
+ 
 static void
 zio_checksum_label_verifier(zio_cksum_t *zcp, uint64_t offset)
 {
 	ZIO_SET_CHECKSUM(zcp, offset, 0, 0, 0);
 }
 
-/*
- * Calls the template init function of a checksum which supports context
- * templates and installs the template into the spa_t.
- */
+ 
 static void
 zio_checksum_template_init(enum zio_checksum checksum, spa_t *spa)
 {
@@ -314,16 +222,11 @@ zio_checksum_template_init(enum zio_checksum checksum, spa_t *spa)
 	mutex_exit(&spa->spa_cksum_tmpls_lock);
 }
 
-/* convenience function to update a checksum to accommodate an encryption MAC */
+ 
 static void
 zio_checksum_handle_crypt(zio_cksum_t *cksum, zio_cksum_t *saved, boolean_t xor)
 {
-	/*
-	 * Weak checksums do not have their entropy spread evenly
-	 * across the bits of the checksum. Therefore, when truncating
-	 * a weak checksum we XOR the first 2 words with the last 2 so
-	 * that we don't "lose" any entropy unnecessarily.
-	 */
+	 
 	if (xor) {
 		cksum->zc_word[0] ^= cksum->zc_word[2];
 		cksum->zc_word[1] ^= cksum->zc_word[3];
@@ -333,9 +236,7 @@ zio_checksum_handle_crypt(zio_cksum_t *cksum, zio_cksum_t *saved, boolean_t xor)
 	cksum->zc_word[3] = saved->zc_word[3];
 }
 
-/*
- * Generate the checksum.
- */
+ 
 void
 zio_checksum_compute(zio_t *zio, enum zio_checksum checksum,
     abd_t *abd, uint64_t size)
@@ -494,13 +395,7 @@ zio_checksum_error_impl(spa_t *spa, const blkptr_t *bp,
 		    spa->spa_cksum_tmpls[checksum], &actual_cksum);
 	}
 
-	/*
-	 * MAC checksums are a special case since half of this checksum will
-	 * actually be the encryption MAC. This will be verified by the
-	 * decryption process, so we just check the truncated checksum now.
-	 * Objset blocks use embedded MACs so we don't truncate the checksum
-	 * for them.
-	 */
+	 
 	if (bp != NULL && BP_USES_CRYPT(bp) &&
 	    BP_GET_TYPE(bp) != DMU_OT_OBJSET) {
 		if (!(ci->ci_flags & ZCHECKSUM_FLAG_DEDUP)) {
@@ -552,11 +447,7 @@ zio_checksum_error(zio_t *zio, zio_bad_cksum_t *info)
 	return (error);
 }
 
-/*
- * Called by a spa_t that's about to be deallocated. This steps through
- * all of the checksum context templates and deallocates any that were
- * initialized using the algorithm-specific template init function.
- */
+ 
 void
 zio_checksum_templates_free(spa_t *spa)
 {

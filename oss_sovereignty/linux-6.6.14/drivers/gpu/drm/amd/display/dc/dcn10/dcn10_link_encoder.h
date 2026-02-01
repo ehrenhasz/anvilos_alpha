@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- *  and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef __DC_LINK_ENCODER__DCN10_H__
 #define __DC_LINK_ENCODER__DCN10_H__
@@ -107,13 +84,13 @@ struct dcn10_link_enc_registers {
 	uint32_t DP_DPHY_HBR2_PATTERN_CONTROL;
 	uint32_t DP_SEC_CNTL1;
 	uint32_t TMDS_CTL_BITS;
-	/* DCCG  */
+	 
 	uint32_t CLOCK_ENABLE;
-	/* DIG */
+	 
 	uint32_t DIG_LANE_ENABLE;
-	/* UNIPHY */
+	 
 	uint32_t CHANNEL_XBAR_CNTL;
-	/* DPCS */
+	 
 	uint32_t RDPCSTX_PHY_CNTL3;
 	uint32_t RDPCSTX_PHY_CNTL4;
 	uint32_t RDPCSTX_PHY_CNTL5;
@@ -148,7 +125,7 @@ struct dcn10_link_enc_registers {
 	uint32_t RDPCSTX0_RDPCSTX_SCRATCH;
 	uint32_t RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG;
 	uint32_t DCIO_SOFT_RESET;
-	/* indirect registers */
+	 
 	uint32_t RAWLANE0_DIG_PCS_XF_RX_OVRD_IN_2;
 	uint32_t RAWLANE0_DIG_PCS_XF_RX_OVRD_IN_3;
 	uint32_t RAWLANE1_DIG_PCS_XF_RX_OVRD_IN_2;
@@ -534,15 +511,15 @@ bool dcn10_link_encoder_validate_output_with_stream(
 	struct link_encoder *enc,
 	const struct dc_stream_state *stream);
 
-/****************** HW programming ************************/
+ 
 
-/* initialize HW */  /* why do we initialze aux in here? */
+    
 void dcn10_link_encoder_hw_init(struct link_encoder *enc);
 
 void dcn10_link_encoder_destroy(struct link_encoder **enc);
 
-/* program DIG_MODE in DIG_BE */
-/* TODO can this be combined with enable_output? */
+ 
+ 
 void dcn10_link_encoder_setup(
 	struct link_encoder *enc,
 	enum signal_type signal);
@@ -551,8 +528,8 @@ void enc1_configure_encoder(
 	struct dcn10_link_encoder *enc10,
 	const struct dc_link_settings *link_settings);
 
-/* enables TMDS PHY output */
-/* TODO: still need depth or just pass in adjusted pixel clock? */
+ 
+ 
 void dcn10_link_encoder_enable_tmds_output(
 	struct link_encoder *enc,
 	enum clock_source_id clock_source,
@@ -567,24 +544,24 @@ void dcn10_link_encoder_enable_tmds_output_with_clk_pattern_wa(
 	enum signal_type signal,
 	uint32_t pixel_clock);
 
-/* enables DP PHY output */
+ 
 void dcn10_link_encoder_enable_dp_output(
 	struct link_encoder *enc,
 	const struct dc_link_settings *link_settings,
 	enum clock_source_id clock_source);
 
-/* enables DP PHY output in MST mode */
+ 
 void dcn10_link_encoder_enable_dp_mst_output(
 	struct link_encoder *enc,
 	const struct dc_link_settings *link_settings,
 	enum clock_source_id clock_source);
 
-/* disable PHY output */
+ 
 void dcn10_link_encoder_disable_output(
 	struct link_encoder *enc,
 	enum signal_type signal);
 
-/* set DP lane settings */
+ 
 void dcn10_link_encoder_dp_set_lane_settings(
 	struct link_encoder *enc,
 	const struct dc_link_settings *link_settings,
@@ -594,7 +571,7 @@ void dcn10_link_encoder_dp_set_phy_pattern(
 	struct link_encoder *enc,
 	const struct encoder_set_dp_phy_pattern_param *param);
 
-/* programs DP MST VC payload allocation */
+ 
 void dcn10_link_encoder_update_mst_stream_allocation_table(
 	struct link_encoder *enc,
 	const struct link_mst_stream_allocation_table *table);
@@ -629,4 +606,4 @@ enum signal_type dcn10_get_dig_mode(
 
 void dcn10_link_encoder_get_max_link_cap(struct link_encoder *enc,
 	struct dc_link_settings *link_settings);
-#endif /* __DC_LINK_ENCODER__DCN10_H__ */
+#endif  

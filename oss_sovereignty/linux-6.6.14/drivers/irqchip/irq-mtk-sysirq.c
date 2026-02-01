@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: Joe.C <yingjoe.chen@mediatek.com>
- */
+
+ 
 
 #include <linux/irq.h>
 #include <linux/irqchip.h>
@@ -77,7 +74,7 @@ static int mtk_sysirq_domain_translate(struct irq_domain *d,
 		if (fwspec->param_count != 3)
 			return -EINVAL;
 
-		/* No PPI should point to this domain */
+		 
 		if (fwspec->param[0] != 0)
 			return -EINVAL;
 
@@ -100,7 +97,7 @@ static int mtk_sysirq_domain_alloc(struct irq_domain *domain, unsigned int virq,
 	if (fwspec->param_count != 3)
 		return -EINVAL;
 
-	/* sysirq doesn't support PPI */
+	 
 	if (fwspec->param[0])
 		return -EINVAL;
 
@@ -193,10 +190,7 @@ static int __init mtk_sysirq_of_init(struct device_node *node,
 		goto out_free_intpol_idx;
 	}
 
-	/*
-	 * assign an index of the intpol_bases for each irq
-	 * to set it fast later
-	 */
+	 
 	for (i = 0; i < intpol_num ; i++) {
 		u32 word = i / 32, j;
 

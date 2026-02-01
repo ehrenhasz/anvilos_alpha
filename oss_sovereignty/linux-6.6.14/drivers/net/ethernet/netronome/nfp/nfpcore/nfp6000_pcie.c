@@ -1,19 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2015-2018 Netronome Systems, Inc. */
 
-/*
- * nfp6000_pcie.c
- * Authors: Jakub Kicinski <jakub.kicinski@netronome.com>
- *          Jason McMullan <jason.mcmullan@netronome.com>
- *          Rolf Neugebauer <rolf.neugebauer@netronome.com>
- *
- * Multiplexes the NFP BARs between NFP internal resources and
- * implements the PCIe specific interface for generic CPP bus access.
- *
- * The BARs are managed with refcounts and are allocated/acquired
- * using target, token and offset/size matching.  The generic CPP bus
- * abstraction builds upon this BAR interface.
- */
+ 
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/kernel.h>
@@ -90,9 +78,7 @@
 #define NFP_PCIE_EM                                     0x020000
 #define NFP_PCIE_SRAM                                   0x000000
 
-/* Minimal size of the PCIe cfg memory we depend on being mapped,
- * queue controller and DMA controller don't have to be covered.
- */
+ 
 #define NFP_PCI_MIN_MAP_SIZE				0x080000
 
 #define NFP_PCIE_P2C_FIXED_SIZE(bar)               (1 << (bar)->bitsize)
@@ -103,33 +89,19 @@
 
 #define NFP_PCIE_P2C_EXPBAR_OFFSET(bar_index)		((bar_index) * 4)
 
-/* The number of explicit BARs to reserve.
- * Minimum is 0, maximum is 4 on the NFP6000.
- * The NFP3800 can have only one per PF.
- */
+ 
 #define NFP_PCIE_EXPLICIT_BARS		2
 
 struct nfp6000_pcie;
 struct nfp6000_area_priv;
 
-/**
- * struct nfp_bar - describes BAR configuration and usage
- * @nfp:	backlink to owner
- * @barcfg:	cached contents of BAR config CSR
- * @base:	the BAR's base CPP offset
- * @mask:       mask for the BAR aperture (read only)
- * @bitsize:	bitsize of BAR aperture (read only)
- * @index:	index of the BAR
- * @refcnt:	number of current users
- * @iomem:	mapped IO memory
- * @resource:	iomem resource window
- */
+ 
 struct nfp_bar {
 	struct nfp6000_pcie *nfp;
 	u32 barcfg;
-	u64 base;          /* CPP address base */
-	u64 mask;          /* Bit mask of the bar */
-	u32 bitsize;       /* Bit size of the bar */
+	u64 base;           
+	u64 mask;           
+	u32 bitsize;        
 	int index;
 	atomic_t refcnt;
 
@@ -144,22 +116,22 @@ struct nfp6000_pcie {
 	struct device *dev;
 	const struct nfp_dev_info *dev_info;
 
-	/* PCI BAR management */
-	spinlock_t bar_lock;		/* Protect the PCI2CPP BAR cache */
+	 
+	spinlock_t bar_lock;		 
 	int bars;
 	struct nfp_bar bar[NFP_PCI_BAR_MAX];
 	wait_queue_head_t bar_waiters;
 
-	/* Reserved BAR access */
+	 
 	struct {
 		void __iomem *csr;
 		void __iomem *em;
 		void __iomem *expl[4];
 	} iomem;
 
-	/* Explicit IO access */
+	 
 	struct {
-		struct mutex mutex; /* Lock access to this explicit group */
+		struct mutex mutex;  
 		u8 master_id;
 		u8 signal_ref;
 		void __iomem *data;
@@ -219,7 +191,7 @@ compute_bar(const struct nfp6000_pcie *nfp, const struct nfp_bar *bar,
 	}
 
 	if (act != NFP_CPP_ACTION_RW && act != 0) {
-		/* Fixed CPP mapping with specific action */
+		 
 		u64 mask = ~(NFP_PCIE_P2C_FIXED_SIZE(bar) - 1);
 
 		newcfg |= NFP_PCIE_BAR_PCIE2CPP_MapType(
@@ -236,7 +208,7 @@ compute_bar(const struct nfp6000_pcie *nfp, const struct nfp_bar *bar,
 	} else {
 		u64 mask = ~(NFP_PCIE_P2C_BULK_SIZE(bar) - 1);
 
-		/* Bulk mapping */
+		 
 		newcfg |= NFP_PCIE_BAR_PCIE2CPP_MapType(
 			NFP_PCIE_BAR_PCIE2CPP_MapType_BULK);
 		newcfg |= NFP_PCIE_BAR_PCIE2CPP_Target_BaseAddress(tgt);
@@ -273,7 +245,7 @@ nfp6000_bar_write(struct nfp6000_pcie *nfp, struct nfp_bar *bar, u32 newcfg)
 
 	if (nfp->iomem.csr) {
 		writel(newcfg, nfp->iomem.csr + xbar);
-		/* Readback to ensure BAR is flushed */
+		 
 		readl(nfp->iomem.csr + xbar);
 	} else {
 		xbar += nfp->dev_info->pcie_cfg_expbar_offset;
@@ -303,7 +275,7 @@ reconfigure_bar(struct nfp6000_pcie *nfp, struct nfp_bar *bar,
 	return nfp6000_bar_write(nfp, bar, newcfg);
 }
 
-/* Check if BAR can be used with the given parameters. */
+ 
 static int matching_bar(struct nfp_bar *bar, u32 tgt, u32 act, u32 tok,
 			u64 offset, size_t size, int width)
 {
@@ -344,11 +316,11 @@ static int matching_bar(struct nfp_bar *bar, u32 tgt, u32 act, u32 tok,
 	case NFP_PCIE_BAR_PCIE2CPP_MapType_FIXED:
 		break;
 	default:
-		/* We don't match explicit bars through the area interface */
+		 
 		return 0;
 	}
 
-	/* Make sure to match up the width */
+	 
 	if (barwidth != width)
 		return 0;
 
@@ -359,7 +331,7 @@ static int matching_bar(struct nfp_bar *bar, u32 tgt, u32 act, u32 tok,
 	    (bar->base + (1 << bar->bitsize)) >= (offset + size))
 		return 1;
 
-	/* No match */
+	 
 	return 0;
 }
 
@@ -379,7 +351,7 @@ find_matching_bar(struct nfp6000_pcie *nfp,
 	return -1;
 }
 
-/* Return EAGAIN if no resource is available */
+ 
 static int
 find_unused_bar_noblock(const struct nfp6000_pcie *nfp,
 			int tgt, int act, int tok,
@@ -394,7 +366,7 @@ find_unused_bar_noblock(const struct nfp6000_pcie *nfp,
 		if (!bar->bitsize)
 			continue;
 
-		/* Just check to see if we can make it fit... */
+		 
 		err = compute_bar(nfp, bar, NULL, NULL,
 				  tgt, act, tok, offset, size, width);
 		if (err)
@@ -467,7 +439,7 @@ nfp_alloc_bar(struct nfp6000_pcie *nfp,
 	spin_lock_irqsave(&nfp->bar_lock, irqflags);
 	barnum = find_matching_bar(nfp, tgt, act, tok, offset, size, width);
 	if (barnum >= 0) {
-		/* Found a perfect match. */
+		 
 		nfp_bar_get(nfp, &nfp->bar[barnum]);
 		spin_unlock_irqrestore(&nfp->bar_lock, irqflags);
 		return barnum;
@@ -479,10 +451,7 @@ nfp_alloc_bar(struct nfp6000_pcie *nfp,
 		if (nonblocking)
 			goto err_nobar;
 
-		/* Wait until a BAR becomes available.  The
-		 * find_unused_bar function will reclaim the bar_lock
-		 * if a free BAR is found.
-		 */
+		 
 		spin_unlock_irqrestore(&nfp->bar_lock, irqflags);
 		retval = nfp_wait_for_bar(nfp, &barnum, tgt, act, tok,
 					  offset, size, width);
@@ -516,22 +485,7 @@ static int bar_cmp(const void *aptr, const void *bptr)
 		return a->bitsize - b->bitsize;
 }
 
-/* Map all PCI bars and fetch the actual BAR configurations from the
- * board.  We assume that the BAR with the PCIe config block is
- * already mapped.
- *
- * BAR0.0: Reserved for General Mapping (for MSI-X access to PCIe SRAM)
- * BAR0.1: Reserved for XPB access (for MSI-X access to PCIe PBA)
- * BAR0.2: --
- * BAR0.3: --
- * BAR0.4: Reserved for Explicit 0.0-0.3 access
- * BAR0.5: Reserved for Explicit 1.0-1.3 access
- * BAR0.6: Reserved for Explicit 2.0-2.3 access
- * BAR0.7: Reserved for Explicit 3.0-3.3 access
- *
- * BAR1.0-BAR1.7: --
- * BAR2.0-BAR2.7: --
- */
+ 
 static int enable_bars(struct nfp6000_pcie *nfp, u16 interface)
 {
 	const u32 barcfg_msix_general =
@@ -570,7 +524,7 @@ static int enable_bars(struct nfp6000_pcie *nfp, u16 interface)
 
 		res = &nfp->pdev->resource[(i >> 3) * 2];
 
-		/* Skip over BARs that are not IORESOURCE_MEM */
+		 
 		if (!(resource_type(res) & IORESOURCE_MEM)) {
 			bar--;
 			continue;
@@ -595,15 +549,14 @@ static int enable_bars(struct nfp6000_pcie *nfp, u16 interface)
 
 	bars_free = nfp->bars;
 
-	/* Convert unit ID (0..3) to signal master/data master ID (0x40..0x70)
-	 */
+	 
 	mutex_init(&nfp->expl.mutex);
 
 	nfp->expl.master_id = ((NFP_CPP_INTERFACE_UNIT_of(interface) & 3) + 4)
 		<< 4;
 	nfp->expl.signal_ref = 0x10;
 
-	/* Configure, and lock, BAR0.0 for General Target use (MSI-X SRAM) */
+	 
 	bar = &nfp->bar[0];
 	if (nfp_bar_resource_len(bar) >= NFP_PCI_MIN_MAP_SIZE)
 		bar->iomem = ioremap(nfp_bar_resource_start(bar),
@@ -655,7 +608,7 @@ static int enable_bars(struct nfp6000_pcie *nfp, u16 interface)
 		goto err_unmap_bar0;
 	}
 
-	/* Configure, and lock, BAR0.1 for PCIe XPB (MSI-X PBA) */
+	 
 	bar = &nfp->bar[1];
 	msg += scnprintf(msg, end - msg, "0.1: PCIe XPB/MSI-X PBA, ");
 	atomic_inc(&bar->refcnt);
@@ -663,7 +616,7 @@ static int enable_bars(struct nfp6000_pcie *nfp, u16 interface)
 
 	nfp6000_bar_write(nfp, bar, barcfg_msix_xpb);
 
-	/* Use BAR0.4..BAR0.7 for EXPL IO */
+	 
 	for (i = 0; i < 4; i++) {
 		int j;
 
@@ -691,7 +644,7 @@ static int enable_bars(struct nfp6000_pcie *nfp, u16 interface)
 		nfp->iomem.expl[i] = bar->iomem;
 	}
 
-	/* Sort bars by bit size - use the smallest possible first. */
+	 
 	sort(&nfp->bar[0], nfp->bars, sizeof(nfp->bar[0]),
 	     bar_cmp, NULL);
 
@@ -718,9 +671,7 @@ static void disable_bars(struct nfp6000_pcie *nfp)
 	}
 }
 
-/*
- * Generic CPP bus access interface.
- */
+ 
 
 struct nfp6000_area_priv {
 	atomic_t refcnt;
@@ -811,7 +762,7 @@ static int nfp6000_area_acquire(struct nfp_cpp_area *area)
 	int barnum, err;
 
 	if (priv->bar) {
-		/* Already allocated. */
+		 
 		priv_area_get(area);
 		return 0;
 	}
@@ -825,7 +776,7 @@ static int nfp6000_area_acquire(struct nfp_cpp_area *area)
 	}
 	priv->bar = &nfp->bar[barnum];
 
-	/* Calculate offset into BAR. */
+	 
 	if (nfp_bar_maptype(priv->bar) ==
 	    NFP_PCIE_BAR_PCIE2CPP_MapType_GENERAL) {
 		priv->bar_offset = priv->offset &
@@ -838,22 +789,18 @@ static int nfp6000_area_acquire(struct nfp_cpp_area *area)
 		priv->bar_offset = priv->offset & priv->bar->mask;
 	}
 
-	/* We don't actually try to acquire the resource area using
-	 * request_resource.  This would prevent sharing the mapped
-	 * BAR between multiple CPP areas and prevent us from
-	 * effectively utilizing the limited amount of BAR resources.
-	 */
+	 
 	priv->phys = nfp_bar_resource_start(priv->bar) + priv->bar_offset;
 	priv->resource.name = nfp_cpp_area_name(area);
 	priv->resource.start = priv->phys;
 	priv->resource.end = priv->resource.start + priv->size - 1;
 	priv->resource.flags = IORESOURCE_MEM;
 
-	/* If the bar is already mapped in, use its mapping */
+	 
 	if (priv->bar->iomem)
 		priv->iomem = priv->bar->iomem + priv->bar_offset;
 	else
-		/* Must have been too big. Sub-allocate. */
+		 
 		priv->iomem = ioremap(priv->phys, priv->size);
 
 	if (IS_ERR_OR_NULL(priv->iomem)) {
@@ -907,10 +854,7 @@ static void __iomem *nfp6000_area_iomem(struct nfp_cpp_area *area)
 
 static struct resource *nfp6000_area_resource(struct nfp_cpp_area *area)
 {
-	/* Use the BAR resource as the resource for the CPP area.
-	 * This enables us to share the BAR among multiple CPP areas
-	 * without resource conflicts.
-	 */
+	 
 	struct nfp6000_area_priv *priv = nfp_cpp_area_priv(area);
 
 	return priv->bar->resource;
@@ -937,13 +881,13 @@ static int nfp6000_area_read(struct nfp_cpp_area *area, void *kernel_vaddr,
 	if (width <= 0)
 		return -EINVAL;
 
-	/* MU reads via a PCIe2CPP BAR support 32bit (and other) lengths */
+	 
 	if (priv->target == (NFP_CPP_TARGET_MU & NFP_CPP_TARGET_ID_MASK) &&
 	    priv->action == NFP_CPP_ACTION_RW &&
 	    (offset % sizeof(u64) == 4 || length % sizeof(u64) == 4))
 		width = TARGET_WIDTH_32;
 
-	/* Unaligned? Translate to an explicit access */
+	 
 	if ((priv->offset + offset) & (width - 1))
 		return nfp_cpp_explicit_read(nfp_cpp_area_cpp(area),
 					     NFP_CPP_ID(priv->target,
@@ -1000,13 +944,13 @@ nfp6000_area_write(struct nfp_cpp_area *area,
 	if (width <= 0)
 		return -EINVAL;
 
-	/* MU writes via a PCIe2CPP BAR support 32bit (and other) lengths */
+	 
 	if (priv->target == (NFP_CPP_TARGET_ID_MASK & NFP_CPP_TARGET_MU) &&
 	    priv->action == NFP_CPP_ACTION_RW &&
 	    (offset % sizeof(u64) == 4 || length % sizeof(u64) == 4))
 		width = TARGET_WIDTH_32;
 
-	/* Unaligned? Translate to an explicit access */
+	 
 	if ((priv->offset + offset) & (width - 1))
 		return nfp_cpp_explicit_write(nfp_cpp_area_cpp(area),
 					      NFP_CPP_ID(priv->target,
@@ -1177,7 +1121,7 @@ nfp6000_explicit_do(struct nfp_cpp_explicit *expl,
 		writel(csr[2], nfp->iomem.csr +
 		       NFP_PCIE_BAR_EXPLICIT_BAR2(priv->bar.group,
 						  priv->bar.area));
-		/* Readback to ensure BAR is flushed */
+		 
 		readl(nfp->iomem.csr +
 		      NFP_PCIE_BAR_EXPLICIT_BAR0(priv->bar.group,
 						 priv->bar.area));
@@ -1204,7 +1148,7 @@ nfp6000_explicit_do(struct nfp_cpp_explicit *expl,
 				       csr[2]);
 	}
 
-	/* Issue the 'kickoff' transaction */
+	 
 	readb(priv->addr + (address & ((1 << priv->bitsize) - 1)));
 
 	return sigmask;
@@ -1299,13 +1243,7 @@ static const struct nfp_cpp_operations nfp6000_pcie_ops = {
 	.explicit_get		= nfp6000_explicit_get,
 };
 
-/**
- * nfp_cpp_from_nfp6000_pcie() - Build a NFP CPP bus from a NFP6000 PCI device
- * @pdev:	NFP6000 PCI device
- * @dev_info:	NFP ASIC params
- *
- * Return: NFP CPP handle
- */
+ 
 struct nfp_cpp *
 nfp_cpp_from_nfp6000_pcie(struct pci_dev *pdev, const struct nfp_dev_info *dev_info)
 {
@@ -1313,7 +1251,7 @@ nfp_cpp_from_nfp6000_pcie(struct pci_dev *pdev, const struct nfp_dev_info *dev_i
 	u16 interface;
 	int err;
 
-	/*  Finished with card initialization. */
+	 
 	dev_info(&pdev->dev, "Network Flow Processor %s PCIe Card Probe\n",
 		 dev_info->chip_names);
 	pcie_print_link_status(pdev);
@@ -1355,7 +1293,7 @@ nfp_cpp_from_nfp6000_pcie(struct pci_dev *pdev, const struct nfp_dev_info *dev_i
 	if (err)
 		goto err_free_nfp;
 
-	/* Probe for all the common NFP devices */
+	 
 	return nfp_cpp_from_operations(&nfp6000_pcie_ops, &pdev->dev, nfp);
 
 err_free_nfp:

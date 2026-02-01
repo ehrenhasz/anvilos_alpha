@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2010, Code Aurora Forum. All rights reserved. */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -27,7 +27,7 @@
 
 #define HSPHY_SESS_VLD_CTRL		BIT(25)
 
-/* Vendor base starts at 0x200 beyond CI base */
+ 
 #define HS_PHY_CTRL			0x0040
 #define HS_PHY_SEC_CTRL			0x0078
 #define HS_PHY_DIG_CLAMP_N		BIT(16)
@@ -60,11 +60,7 @@ ci_hdrc_msm_por_reset(struct reset_controller_dev *r, unsigned long id)
 	val = readl_relaxed(addr);
 	val |= HS_PHY_POR_ASSERT;
 	writel(val, addr);
-	/*
-	 * wait for minimum 10 microseconds as suggested by manual.
-	 * Use a slightly larger value since the exact value didn't
-	 * work 100% of the time.
-	 */
+	 
 	udelay(12);
 	val &= ~HS_PHY_POR_ASSERT;
 	writel(val, addr);
@@ -103,10 +99,10 @@ static int ci_hdrc_msm_notify_event(struct ci_hdrc *ci, unsigned event)
 			return ret;
 		}
 
-		/* use AHB transactor, allow posted data writes */
+		 
 		hw_write_id_reg(ci, HS_PHY_AHB_MODE, 0xffffffff, 0x8);
 
-		/* workaround for rx buffer collision issue */
+		 
 		hw_write_id_reg(ci, HS_PHY_GENCONFIG,
 				HS_PHY_TXFIFO_IDLE_FORCE_DIS, 0);
 

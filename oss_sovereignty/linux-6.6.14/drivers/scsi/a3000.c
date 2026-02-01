@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/types.h>
 #include <linux/mm.h>
 #include <linux/ioport.h>
@@ -70,17 +70,10 @@ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
 	}
 	scsi_pointer->dma_handle = addr;
 
-	/*
-	 * if the physical address has the wrong alignment, or if
-	 * physical address is bad, or if it is a write and at the
-	 * end of a physical memory chunk, then allocate a bounce
-	 * buffer
-	 * MSch 20220629 - only wrong alignment tested - bounce
-	 * buffer returned by kmalloc is guaranteed to be aligned
-	 */
+	 
 	if (addr & A3000_XFER_MASK) {
 		WARN_ONCE(1, "Invalid alignment for DMA!");
-		/* drop useless mapping */
+		 
 		dma_unmap_single(hdata->dev, scsi_pointer->dma_handle,
 				 scsi_pointer->this_residual,
 				 DMA_DIR(dir_in));
@@ -89,7 +82,7 @@ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
 		wh->dma_bounce_buffer = kmalloc(wh->dma_bounce_len,
 						GFP_KERNEL);
 
-		/* can't allocate memory; use PIO */
+		 
 		if (!wh->dma_bounce_buffer) {
 			wh->dma_bounce_len = 0;
 			scsi_pointer->dma_handle = (dma_addr_t) NULL;
@@ -97,7 +90,7 @@ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
 		}
 
 		if (!dir_in) {
-			/* copy to bounce buffer for a write */
+			 
 			memcpy(wh->dma_bounce_buffer, scsi_pointer->ptr,
 			       scsi_pointer->this_residual);
 		}
@@ -113,26 +106,26 @@ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
 		scsi_pointer->dma_handle = addr;
 	}
 
-	/* setup dma direction */
+	 
 	if (!dir_in)
 		cntr |= CNTR_DDIR;
 
-	/* remember direction */
+	 
 	wh->dma_dir = dir_in;
 
 	regs->CNTR = cntr;
 
-	/* setup DMA *physical* address */
+	 
 	regs->ACR = addr;
 
-	/* no more cache flush here - dma_map_single() takes care */
+	 
 
-	/* start DMA */
-	mb();			/* make sure setup is completed */
+	 
+	mb();			 
 	regs->ST_DMA = 1;
-	mb();			/* make sure DMA has started before next IO */
+	mb();			 
 
-	/* return success */
+	 
 	return 0;
 }
 
@@ -144,43 +137,41 @@ static void dma_stop(struct Scsi_Host *instance, struct scsi_cmnd *SCpnt,
 	struct WD33C93_hostdata *wh = &hdata->wh;
 	struct a3000_scsiregs *regs = hdata->regs;
 
-	/* disable SCSI interrupts */
+	 
 	unsigned short cntr = CNTR_PDMD;
 
 	if (!wh->dma_dir)
 		cntr |= CNTR_DDIR;
 
 	regs->CNTR = cntr;
-	mb();			/* make sure CNTR is updated before next IO */
+	mb();			 
 
-	/* flush if we were reading */
+	 
 	if (wh->dma_dir) {
 		regs->FLUSH = 1;
-		mb();		/* don't allow prefetch */
+		mb();		 
 		while (!(regs->ISTR & ISTR_FE_FLG))
 			barrier();
-		mb();		/* no IO until FLUSH is done */
+		mb();		 
 	}
 
-	/* clear a possible interrupt */
-	/* I think that this CINT is only necessary if you are
-	 * using the terminal count features.   HM 7 Mar 1994
-	 */
+	 
+	 
 	regs->CINT = 1;
 
-	/* stop DMA */
+	 
 	regs->SP_DMA = 1;
-	mb();			/* make sure DMA is stopped before next IO */
+	mb();			 
 
-	/* restore the CONTROL bits (minus the direction flag) */
+	 
 	regs->CNTR = CNTR_PDMD | CNTR_INTEN;
-	mb();			/* make sure CNTR is updated before next IO */
+	mb();			 
 
 	dma_unmap_single(hdata->dev, scsi_pointer->dma_handle,
 			 scsi_pointer->this_residual,
 			 DMA_DIR(wh->dma_dir));
 
-	/* copy from a bounce buffer, if necessary */
+	 
 	if (status && wh->dma_bounce_buffer) {
 		if (SCpnt) {
 			if (wh->dma_dir && SCpnt)

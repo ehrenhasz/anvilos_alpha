@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- *  Copyright (C) 2012 John Crispin <john@phrozen.org>
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/slab.h>
@@ -16,28 +13,23 @@
 #include <linux/clk.h>
 #include <linux/err.h>
 
-/*
- * The Serial To Parallel (STP) is found on MIPS based Lantiq socs. It is a
- * peripheral controller used to drive external shift register cascades. At most
- * 3 groups of 8 bits can be driven. The hardware is able to allow the DSL modem
- * to drive the 2 LSBs of the cascade automatically.
- */
+ 
 
-/* control register 0 */
+ 
 #define XWAY_STP_CON0		0x00
-/* control register 1 */
+ 
 #define XWAY_STP_CON1		0x04
-/* data register 0 */
+ 
 #define XWAY_STP_CPU0		0x08
-/* data register 1 */
+ 
 #define XWAY_STP_CPU1		0x0C
-/* access register */
+ 
 #define XWAY_STP_AR		0x10
 
-/* software or hardware update select bit */
+ 
 #define XWAY_STP_CON_SWU	BIT(31)
 
-/* automatic update rates */
+ 
 #define XWAY_STP_2HZ		0
 #define XWAY_STP_4HZ		BIT(23)
 #define XWAY_STP_8HZ		BIT(24)
@@ -47,28 +39,28 @@
 #define XWAY_STP_FPIS_VALUE	BIT(21)
 #define XWAY_STP_FPIS_MASK	(BIT(20) | BIT(21))
 
-/* clock source for automatic update */
+ 
 #define XWAY_STP_UPD_FPI	BIT(31)
 #define XWAY_STP_UPD_MASK	(BIT(31) | BIT(30))
 
-/* let the adsl core drive the 2 LSBs */
+ 
 #define XWAY_STP_ADSL_SHIFT	24
 #define XWAY_STP_ADSL_MASK	0x3
 
-/* 2 groups of 3 bits can be driven by the phys */
+ 
 #define XWAY_STP_PHY_MASK	0x7
 #define XWAY_STP_PHY1_SHIFT	27
 #define XWAY_STP_PHY2_SHIFT	3
 #define XWAY_STP_PHY3_SHIFT	6
 #define XWAY_STP_PHY4_SHIFT	15
 
-/* STP has 3 groups of 8 bits */
+ 
 #define XWAY_STP_GROUP0		BIT(0)
 #define XWAY_STP_GROUP1		BIT(1)
 #define XWAY_STP_GROUP2		BIT(2)
 #define XWAY_STP_GROUP_MASK	(0x7)
 
-/* Edge configuration bits */
+ 
 #define XWAY_STP_FALLING	BIT(26)
 #define XWAY_STP_EDGE_MASK	BIT(26)
 
@@ -80,24 +72,18 @@
 struct xway_stp {
 	struct gpio_chip gc;
 	void __iomem *virt;
-	u32 edge;	/* rising or falling edge triggered shift register */
-	u32 shadow;	/* shadow the shift registers state */
-	u8 groups;	/* we can drive 1-3 groups of 8bit each */
-	u8 dsl;		/* the 2 LSBs can be driven by the dsl core */
-	u8 phy1;	/* 3 bits can be driven by phy1 */
-	u8 phy2;	/* 3 bits can be driven by phy2 */
-	u8 phy3;	/* 3 bits can be driven by phy3 */
-	u8 phy4;	/* 3 bits can be driven by phy4 */
-	u8 reserved;	/* mask out the hw driven bits in gpio_request */
+	u32 edge;	 
+	u32 shadow;	 
+	u8 groups;	 
+	u8 dsl;		 
+	u8 phy1;	 
+	u8 phy2;	 
+	u8 phy3;	 
+	u8 phy4;	 
+	u8 reserved;	 
 };
 
-/**
- * xway_stp_get() - gpio_chip->get - get gpios.
- * @gc:     Pointer to gpio_chip device structure.
- * @gpio:   GPIO signal number.
- *
- * Gets the shadow value.
- */
+ 
 static int xway_stp_get(struct gpio_chip *gc, unsigned int gpio)
 {
 	struct xway_stp *chip = gpiochip_get_data(gc);
@@ -105,14 +91,7 @@ static int xway_stp_get(struct gpio_chip *gc, unsigned int gpio)
 	return (xway_stp_r32(chip->virt, XWAY_STP_CPU0) & BIT(gpio));
 }
 
-/**
- * xway_stp_set() - gpio_chip->set - set gpios.
- * @gc:     Pointer to gpio_chip device structure.
- * @gpio:   GPIO signal number.
- * @val:    Value to be written to specified signal.
- *
- * Set the shadow value and call ltq_ebu_apply.
- */
+ 
 static void xway_stp_set(struct gpio_chip *gc, unsigned gpio, int val)
 {
 	struct xway_stp *chip = gpiochip_get_data(gc);
@@ -126,14 +105,7 @@ static void xway_stp_set(struct gpio_chip *gc, unsigned gpio, int val)
 		xway_stp_w32_mask(chip->virt, 0, XWAY_STP_CON_SWU, XWAY_STP_CON0);
 }
 
-/**
- * xway_stp_dir_out() - gpio_chip->dir_out - set gpio direction.
- * @gc:     Pointer to gpio_chip device structure.
- * @gpio:   GPIO signal number.
- * @val:    Value to be written to specified signal.
- *
- * Same as xway_stp_set, always returns 0.
- */
+ 
 static int xway_stp_dir_out(struct gpio_chip *gc, unsigned gpio, int val)
 {
 	xway_stp_set(gc, gpio, val);
@@ -141,13 +113,7 @@ static int xway_stp_dir_out(struct gpio_chip *gc, unsigned gpio, int val)
 	return 0;
 }
 
-/**
- * xway_stp_request() - gpio_chip->request
- * @gc:     Pointer to gpio_chip device structure.
- * @gpio:   GPIO signal number.
- *
- * We mask out the HW driven pins
- */
+ 
 static int xway_stp_request(struct gpio_chip *gc, unsigned gpio)
 {
 	struct xway_stp *chip = gpiochip_get_data(gc);
@@ -160,34 +126,31 @@ static int xway_stp_request(struct gpio_chip *gc, unsigned gpio)
 	return 0;
 }
 
-/**
- * xway_stp_hw_init() - Configure the STP unit and enable the clock gate
- * @chip: Pointer to the xway_stp chip structure
- */
+ 
 static void xway_stp_hw_init(struct xway_stp *chip)
 {
-	/* sane defaults */
+	 
 	xway_stp_w32(chip->virt, 0, XWAY_STP_AR);
 	xway_stp_w32(chip->virt, 0, XWAY_STP_CPU0);
 	xway_stp_w32(chip->virt, 0, XWAY_STP_CPU1);
 	xway_stp_w32(chip->virt, XWAY_STP_CON_SWU, XWAY_STP_CON0);
 	xway_stp_w32(chip->virt, 0, XWAY_STP_CON1);
 
-	/* apply edge trigger settings for the shift register */
+	 
 	xway_stp_w32_mask(chip->virt, XWAY_STP_EDGE_MASK,
 				chip->edge, XWAY_STP_CON0);
 
-	/* apply led group settings */
+	 
 	xway_stp_w32_mask(chip->virt, XWAY_STP_GROUP_MASK,
 				chip->groups, XWAY_STP_CON1);
 
-	/* tell the hardware which pins are controlled by the dsl modem */
+	 
 	xway_stp_w32_mask(chip->virt,
 			XWAY_STP_ADSL_MASK << XWAY_STP_ADSL_SHIFT,
 			chip->dsl << XWAY_STP_ADSL_SHIFT,
 			XWAY_STP_CON0);
 
-	/* tell the hardware which pins are controlled by the phys */
+	 
 	xway_stp_w32_mask(chip->virt,
 			XWAY_STP_PHY_MASK << XWAY_STP_PHY1_SHIFT,
 			chip->phy1 << XWAY_STP_PHY1_SHIFT,
@@ -212,14 +175,11 @@ static void xway_stp_hw_init(struct xway_stp *chip)
 				XWAY_STP_CON1);
 	}
 
-	/* mask out the hw driven bits in gpio_request */
+	 
 	chip->reserved = (chip->phy4 << 11) | (chip->phy3 << 8) | (chip->phy2 << 5)
 		| (chip->phy1 << 2) | chip->dsl;
 
-	/*
-	 * if we have pins that are driven by hw, we need to tell the stp what
-	 * clock to use as a timer.
-	 */
+	 
 	if (chip->reserved) {
 		xway_stp_w32_mask(chip->virt, XWAY_STP_UPD_MASK,
 			XWAY_STP_UPD_FPI, XWAY_STP_CON1);
@@ -254,22 +214,22 @@ static int xway_stp_probe(struct platform_device *pdev)
 	chip->gc.base = -1;
 	chip->gc.owner = THIS_MODULE;
 
-	/* store the shadow value if one was passed by the devicetree */
+	 
 	if (!of_property_read_u32(pdev->dev.of_node, "lantiq,shadow", &shadow))
 		chip->shadow = shadow;
 
-	/* find out which gpio groups should be enabled */
+	 
 	if (!of_property_read_u32(pdev->dev.of_node, "lantiq,groups", &groups))
 		chip->groups = groups & XWAY_STP_GROUP_MASK;
 	else
 		chip->groups = XWAY_STP_GROUP0;
 	chip->gc.ngpio = fls(chip->groups) * 8;
 
-	/* find out which gpios are controlled by the dsl core */
+	 
 	if (!of_property_read_u32(pdev->dev.of_node, "lantiq,dsl", &dsl))
 		chip->dsl = dsl & XWAY_STP_ADSL_MASK;
 
-	/* find out which gpios are controlled by the phys */
+	 
 	if (of_machine_is_compatible("lantiq,ar9") ||
 			of_machine_is_compatible("lantiq,gr9") ||
 			of_machine_is_compatible("lantiq,vr9") ||
@@ -292,7 +252,7 @@ static int xway_stp_probe(struct platform_device *pdev)
 			chip->phy4 = phy & XWAY_STP_PHY_MASK;
 	}
 
-	/* check which edge trigger we should use, default to a falling edge */
+	 
 	if (!of_property_read_bool(pdev->dev.of_node, "lantiq,rising"))
 		chip->edge = XWAY_STP_FALLING;
 

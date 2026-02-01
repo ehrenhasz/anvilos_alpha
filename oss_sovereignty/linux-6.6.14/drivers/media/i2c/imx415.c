@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the Sony IMX415 CMOS Image Sensor.
- *
- * Copyright (C) 2023 WolfVision GmbH.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/gpio/consumer.h>
@@ -105,11 +101,7 @@ static const char *const imx415_supply_names[] = {
 	"avdd",
 };
 
-/*
- * The IMX415 data sheet uses lane rates but v4l2 uses link frequency to
- * describe MIPI CSI-2 speed. This driver uses lane rates wherever possible
- * and converts them to link frequencies by a factor of two when needed.
- */
+ 
 static const s64 link_freq_menu_items[] = {
 	594000000 / 2,	720000000 / 2,	891000000 / 2,
 	1440000000 / 2, 1485000000 / 2,
@@ -121,7 +113,7 @@ struct imx415_clk_params {
 	struct imx415_reg regs[IMX415_NUM_CLK_PARAM_REGS];
 };
 
-/* INCK Settings - includes all lane rate and INCK dependent registers */
+ 
 static const struct imx415_clk_params imx415_clk_params[] = {
 	{
 		.lane_rate = 594000000,
@@ -200,7 +192,7 @@ static const struct imx415_clk_params imx415_clk_params[] = {
 	},
 };
 
-/* all-pixel 2-lane 720 Mbps 15.74 Hz mode */
+ 
 static const struct imx415_reg imx415_mode_2_720[] = {
 	{ IMX415_VMAX, 0x08CA },
 	{ IMX415_HMAX, 0x07F0 },
@@ -216,7 +208,7 @@ static const struct imx415_reg imx415_mode_2_720[] = {
 	{ IMX415_TLPX, 0x0027 },
 };
 
-/* all-pixel 2-lane 1440 Mbps 30.01 Hz mode */
+ 
 static const struct imx415_reg imx415_mode_2_1440[] = {
 	{ IMX415_VMAX, 0x08CA },
 	{ IMX415_HMAX, 0x042A },
@@ -232,7 +224,7 @@ static const struct imx415_reg imx415_mode_2_1440[] = {
 	{ IMX415_TLPX, 0x004F },
 };
 
-/* all-pixel 4-lane 891 Mbps 30 Hz mode */
+ 
 static const struct imx415_reg imx415_mode_4_891[] = {
 	{ IMX415_VMAX, 0x08CA },
 	{ IMX415_HMAX, 0x044C },
@@ -253,34 +245,7 @@ struct imx415_mode_reg_list {
 	const struct imx415_reg *regs;
 };
 
-/*
- * Mode : number of lanes, lane rate and frame rate dependent settings
- *
- * pixel_rate and hmax_pix are needed to calculate hblank for the v4l2 ctrl
- * interface. These values can not be found in the data sheet and should be
- * treated as virtual values. Use following table when adding new modes.
- *
- * lane_rate  lanes    fps     hmax_pix   pixel_rate
- *
- *     594      2     10.000     4400       99000000
- *     891      2     15.000     4400      148500000
- *     720      2     15.748     4064      144000000
- *    1782      2     30.000     4400      297000000
- *    2079      2     30.000     4400      297000000
- *    1440      2     30.019     4510      304615385
- *
- *     594      4     20.000     5500      247500000
- *     594      4     25.000     4400      247500000
- *     720      4     25.000     4400      247500000
- *     720      4     30.019     4510      304615385
- *     891      4     30.000     4400      297000000
- *    1440      4     30.019     4510      304615385
- *    1440      4     60.038     4510      609230769
- *    1485      4     60.000     4400      594000000
- *    1782      4     60.000     4400      594000000
- *    2079      4     60.000     4400      594000000
- *    2376      4     90.164     4392      891000000
- */
+ 
 struct imx415_mode {
 	u64 lane_rate;
 	u32 lanes;
@@ -289,7 +254,7 @@ struct imx415_mode {
 	struct imx415_mode_reg_list reg_list;
 };
 
-/* mode configs */
+ 
 static const struct imx415_mode supported_modes[] = {
 	{
 		.lane_rate = 720000000,
@@ -367,23 +332,20 @@ struct imx415 {
 	unsigned int num_data_lanes;
 };
 
-/*
- * This table includes fixed register settings and a bunch of undocumented
- * registers that have to be set to another value than default.
- */
+ 
 static const struct imx415_reg imx415_init_table[] = {
-	/* use all-pixel readout mode, no flip */
+	 
 	{ IMX415_WINMODE, 0x00 },
 	{ IMX415_ADDMODE, 0x00 },
 	{ IMX415_REVERSE, 0x00 },
-	/* use RAW 10-bit mode */
+	 
 	{ IMX415_ADBIT, 0x00 },
 	{ IMX415_MDBIT, 0x00 },
-	/* output VSYNC on XVS and low on XHS */
+	 
 	{ IMX415_OUTSEL, 0x22 },
 	{ IMX415_DRV, 0x00 },
 
-	/* SONY magic registers */
+	 
 	{ IMX415_REG_8BIT(0x32D4), 0x21 },
 	{ IMX415_REG_8BIT(0x32EC), 0xA1 },
 	{ IMX415_REG_8BIT(0x3452), 0x7F },
@@ -551,13 +513,13 @@ static int imx415_s_ctrl(struct v4l2_ctrl *ctrl)
 
 	switch (ctrl->id) {
 	case V4L2_CID_EXPOSURE:
-		/* clamp the exposure value to VMAX. */
+		 
 		vmax = format->height + sensor->vblank->cur.val;
 		ctrl->val = min_t(int, ctrl->val, vmax);
 		return imx415_write(sensor, IMX415_SHR0, vmax - ctrl->val);
 
 	case V4L2_CID_ANALOGUE_GAIN:
-		/* analogue gain in 0.3 dB step size */
+		 
 		return imx415_write(sensor, IMX415_GAIN_PCG_0, ctrl->val);
 
 	case V4L2_CID_HFLIP:
@@ -637,11 +599,7 @@ static int imx415_ctrls_init(struct imx415 *sensor)
 	if (sensor->vblank)
 		sensor->vblank->flags |= V4L2_CTRL_FLAG_READ_ONLY;
 
-	/*
-	 * The pixel rate used here is a virtual value and can be used for
-	 * calculating the frame rate together with hblank. It may not
-	 * necessarily be the physically correct pixel clock.
-	 */
+	 
 	v4l2_ctrl_new_std(&sensor->ctrls, NULL, V4L2_CID_PIXEL_RATE, pixel_rate,
 			  pixel_rate, 1, pixel_rate);
 
@@ -720,11 +678,7 @@ static int imx415_wakeup(struct imx415 *sensor)
 	if (ret)
 		return ret;
 
-	/*
-	 * According to the datasheet we have to wait at least 63 us after
-	 * leaving standby mode. But this doesn't work even after 30 ms.
-	 * So probably this should be 63 ms and therefore we wait for 80 ms.
-	 */
+	 
 	msleep(80);
 
 	return 0;
@@ -779,11 +733,7 @@ static int imx415_s_stream(struct v4l2_subdev *sd, int enable)
 	if (ret)
 		goto err_pm;
 
-	/*
-	 * Set streaming to true to ensure __v4l2_ctrl_handler_setup() will set
-	 * the controls. The flag is reset to false further down if an error
-	 * occurs.
-	 */
+	 
 	sensor->streaming = true;
 
 	ret = __v4l2_ctrl_handler_setup(&sensor->ctrls);
@@ -802,10 +752,7 @@ unlock:
 	return ret;
 
 err_pm:
-	/*
-	 * In case of error, turn the power off synchronously as the device
-	 * likely has no other chance to recover.
-	 */
+	 
 	pm_runtime_put_sync(sensor->dev);
 	sensor->streaming = false;
 
@@ -974,11 +921,7 @@ static int imx415_power_on(struct imx415 *sensor)
 	if (ret < 0)
 		goto err_reset;
 
-	/*
-	 * Data sheet states that 20 us are required before communication start,
-	 * but this doesn't work in all cases. Use 100 us to be on the safe
-	 * side.
-	 */
+	 
 	usleep_range(100, 200);
 
 	return 0;
@@ -1000,10 +943,7 @@ static int imx415_identify_model(struct imx415 *sensor)
 {
 	int model, ret;
 
-	/*
-	 * While most registers can be read when the sensor is in standby, this
-	 * is not the case of the sensor info register :-(
-	 */
+	 
 	ret = imx415_wakeup(sensor);
 	if (ret)
 		return dev_err_probe(sensor->dev, ret,
@@ -1109,10 +1049,7 @@ static int imx415_parse_hw_config(struct imx415 *sensor)
 		goto done_endpoint_free;
 	}
 
-	/*
-	 * Check if there exists a sensor mode defined for current INCK,
-	 * number of lanes and given lane rates.
-	 */
+	 
 	inck = clk_get_rate(sensor->clk);
 	for (i = 0; i < bus_cfg.nr_of_link_frequencies; ++i) {
 		if (imx415_check_inck(inck, bus_cfg.link_frequencies[i])) {
@@ -1184,11 +1121,7 @@ static int imx415_probe(struct i2c_client *client)
 	if (IS_ERR(sensor->regmap))
 		return PTR_ERR(sensor->regmap);
 
-	/*
-	 * Enable power management. The driver supports runtime PM, but needs to
-	 * work when runtime PM is disabled in the kernel. To that end, power
-	 * the sensor on manually here, identify it, and fully initialize it.
-	 */
+	 
 	ret = imx415_power_on(sensor);
 	if (ret)
 		return ret;
@@ -1201,10 +1134,7 @@ static int imx415_probe(struct i2c_client *client)
 	if (ret)
 		goto err_power;
 
-	/*
-	 * Enable runtime PM. As the device has been powered manually, mark it
-	 * as active, and increase the usage count without resuming the device.
-	 */
+	 
 	pm_runtime_set_active(sensor->dev);
 	pm_runtime_get_noresume(sensor->dev);
 	pm_runtime_enable(sensor->dev);
@@ -1213,11 +1143,7 @@ static int imx415_probe(struct i2c_client *client)
 	if (ret < 0)
 		goto err_pm;
 
-	/*
-	 * Finally, enable autosuspend and decrease the usage count. The device
-	 * will get suspended after the autosuspend delay, turning the power
-	 * off.
-	 */
+	 
 	pm_runtime_set_autosuspend_delay(sensor->dev, 1000);
 	pm_runtime_use_autosuspend(sensor->dev);
 	pm_runtime_put_autosuspend(sensor->dev);
@@ -1242,10 +1168,7 @@ static void imx415_remove(struct i2c_client *client)
 
 	imx415_subdev_cleanup(sensor);
 
-	/*
-	 * Disable runtime PM. In case runtime PM is disabled in the kernel,
-	 * make sure to turn power off manually.
-	 */
+	 
 	pm_runtime_disable(sensor->dev);
 	if (!pm_runtime_status_suspended(sensor->dev))
 		imx415_power_off(sensor);
@@ -1277,7 +1200,7 @@ static DEFINE_RUNTIME_DEV_PM_OPS(imx415_pm_ops, imx415_runtime_suspend,
 
 static const struct of_device_id imx415_of_match[] = {
 	{ .compatible = "sony,imx415" },
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, imx415_of_match);

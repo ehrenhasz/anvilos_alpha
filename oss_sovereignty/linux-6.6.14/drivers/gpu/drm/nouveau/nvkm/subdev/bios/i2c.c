@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include <subdev/bios.h>
 #include <subdev/bios/dcb.h>
 #include <subdev/bios/i2c.h>
@@ -48,7 +26,7 @@ dcb_i2c_table(struct nvkm_bios *bios, u8 *ver, u8 *hdr, u8 *cnt, u8 *len)
 		*cnt = nvbios_rd08(bios, i2c + 2);
 		*len = nvbios_rd08(bios, i2c + 3);
 	} else {
-		*ver = *ver; /* use DCB version */
+		*ver = *ver;  
 		*hdr = 0;
 		*cnt = 16;
 		*len = 4;
@@ -78,7 +56,7 @@ dcb_i2c_parse(struct nvkm_bios *bios, u8 idx, struct dcb_i2c_entry *info)
 			u32 ent_value = nvbios_rd32(bios, ent);
 			u8 i2c_port = (ent_value >> 0) & 0x1f;
 			u8 dpaux_port = (ent_value >> 5) & 0x1f;
-			/* value 0x1f means unused according to DCB 4.x spec */
+			 
 			if (i2c_port == 0x1f && dpaux_port == 0x1f)
 				info->type = DCB_I2C_UNUSED;
 			else
@@ -134,9 +112,7 @@ dcb_i2c_parse(struct nvkm_bios *bios, u8 idx, struct dcb_i2c_entry *info)
 	}
 
 	if (bios->bmp_offset && idx < 2) {
-		/* BMP (from v4.0 has i2c info in the structure, it's in a
-		 * fixed location on earlier VBIOS
-		 */
+		 
 		if (nvbios_rd08(bios, bios->bmp_offset + 5) < 4)
 			ent = 0x0048;
 		else

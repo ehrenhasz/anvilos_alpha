@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVIF_OBJECT_H__
 #define __NVIF_OBJECT_H__
 #include <nvif/os.h>
@@ -15,7 +15,7 @@ struct nvif_object {
 	const char *name;
 	u32 handle;
 	s32 oclass;
-	void *priv; /*XXX: hack */
+	void *priv;  
 	struct {
 		void __iomem *ptr;
 		u64 size;
@@ -135,7 +135,7 @@ struct nvif_mclass {
 #define NVIF_MV32(p,A...) DRF_MV(NVIF_RD32_, NVIF_WR32_, u32, (p), 0, ##A)
 #define NVIF_MD32(p,A...) DRF_MD(NVIF_RD32_, NVIF_WR32_, u32, (p), 0, ##A)
 
-/*XXX*/
+ 
 #include <core/object.h>
 #define nvxx_object(a) ({                                                      \
 	struct nvif_object *_object = (a);                                     \

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas RZ/G2L DMA Controller Driver
- *
- * Based on imx-dma.c
- *
- * Copyright (C) 2021 Renesas Electronics Corp.
- * Copyright 2010 Sascha Hauer, Pengutronix <s.hauer@pengutronix.de>
- * Copyright 2012 Javier Martin, Vista Silicon <javier.martin@vista-silicon.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/dma-mapping.h>
@@ -52,7 +44,7 @@ struct rz_dmac_desc {
 	struct list_head node;
 	enum dma_transfer_direction direction;
 	enum rz_dmac_prep_type type;
-	/* For slave sg */
+	 
 	struct scatterlist *sg;
 	unsigned int sgcount;
 };
@@ -104,10 +96,7 @@ struct rz_dmac {
 
 #define to_rz_dmac(d)	container_of(d, struct rz_dmac, engine)
 
-/*
- * -----------------------------------------------------------------------------
- * Registers
- */
+ 
 
 #define CHSTAT				0x0024
 #define CHCTRL				0x0028
@@ -160,17 +149,14 @@ struct rz_dmac {
 #define DCTRL_PR			BIT(0)
 #define DCTRL_DEFAULT			(DCTRL_LVINT | DCTRL_PR)
 
-/* LINK MODE DESCRIPTOR */
+ 
 #define HEADER_LV			BIT(0)
 
 #define RZ_DMAC_MAX_CHAN_DESCRIPTORS	16
 #define RZ_DMAC_MAX_CHANNELS		16
 #define DMAC_NR_LMDESC			64
 
-/*
- * -----------------------------------------------------------------------------
- * Device access
- */
+ 
 
 static void rz_dmac_writel(struct rz_dmac *dmac, unsigned int val,
 			   unsigned int offset)
@@ -207,10 +193,7 @@ static u32 rz_dmac_ch_readl(struct rz_dmac_chan *channel,
 		return readl(channel->ch_cmn_base + offset);
 }
 
-/*
- * -----------------------------------------------------------------------------
- * Initialization
- */
+ 
 
 static void rz_lmdesc_setup(struct rz_dmac_chan *channel,
 			    struct rz_lmdesc *lmdesc)
@@ -232,10 +215,7 @@ static void rz_lmdesc_setup(struct rz_dmac_chan *channel,
 	lmdesc->nxla = channel->lmdesc.base_dma;
 }
 
-/*
- * -----------------------------------------------------------------------------
- * Descriptors preparation
- */
+ 
 
 static void rz_dmac_lmdesc_recycle(struct rz_dmac_chan *channel)
 {
@@ -315,7 +295,7 @@ static void rz_dmac_prepare_desc_for_memcpy(struct rz_dmac_chan *channel)
 	struct rz_dmac_desc *d = channel->desc;
 	u32 chcfg = CHCFG_MEM_COPY;
 
-	/* prepare descriptor */
+	 
 	lmdesc->sa = d->src;
 	lmdesc->da = d->dest;
 	lmdesc->tb = d->len;
@@ -408,10 +388,7 @@ static int rz_dmac_xfer_desc(struct rz_dmac_chan *chan)
 	return 0;
 }
 
-/*
- * -----------------------------------------------------------------------------
- * DMA engine operations
- */
+ 
 
 static int rz_dmac_alloc_chan_resources(struct dma_chan *chan)
 {
@@ -623,13 +600,7 @@ static int rz_dmac_config(struct dma_chan *chan,
 
 static void rz_dmac_virt_desc_free(struct virt_dma_desc *vd)
 {
-	/*
-	 * Place holder
-	 * Descriptor allocation is done during alloc_chan_resources and
-	 * get freed during free_chan_resources.
-	 * list is used to manage the descriptors and avoid any memory
-	 * allocation/free during DMA read/write.
-	 */
+	 
 }
 
 static void rz_dmac_device_synchronize(struct dma_chan *chan)
@@ -647,10 +618,7 @@ static void rz_dmac_device_synchronize(struct dma_chan *chan)
 	rz_dmac_set_dmars_register(dmac, channel->index, 0);
 }
 
-/*
- * -----------------------------------------------------------------------------
- * IRQ handling
- */
+ 
 
 static void rz_dmac_irq_handle_channel(struct rz_dmac_chan *channel)
 {
@@ -680,7 +648,7 @@ static irqreturn_t rz_dmac_irq_handler(int irq, void *dev_id)
 		rz_dmac_irq_handle_channel(channel);
 		return IRQ_WAKE_THREAD;
 	}
-	/* handle DMAERR irq */
+	 
 	return IRQ_HANDLED;
 }
 
@@ -693,7 +661,7 @@ static irqreturn_t rz_dmac_irq_handler_thread(int irq, void *dev_id)
 	spin_lock_irqsave(&channel->vc.lock, flags);
 
 	if (list_empty(&channel->ld_active)) {
-		/* Someone might have called terminate all */
+		 
 		goto out;
 	}
 
@@ -713,10 +681,7 @@ out:
 	return IRQ_HANDLED;
 }
 
-/*
- * -----------------------------------------------------------------------------
- * OF xlate and channel filter
- */
+ 
 
 static bool rz_dmac_chan_filter(struct dma_chan *chan, void *arg)
 {
@@ -741,17 +706,14 @@ static struct dma_chan *rz_dmac_of_xlate(struct of_phandle_args *dma_spec,
 	if (dma_spec->args_count != 1)
 		return NULL;
 
-	/* Only slave DMA channels can be allocated via DT */
+	 
 	dma_cap_zero(mask);
 	dma_cap_set(DMA_SLAVE, mask);
 
 	return dma_request_channel(mask, rz_dmac_chan_filter, dma_spec);
 }
 
-/*
- * -----------------------------------------------------------------------------
- * Probe and remove
- */
+ 
 
 static int rz_dmac_chan_probe(struct rz_dmac *dmac,
 			      struct rz_dmac_chan *channel,
@@ -766,7 +728,7 @@ static int rz_dmac_chan_probe(struct rz_dmac *dmac,
 	channel->index = index;
 	channel->mid_rid = -EINVAL;
 
-	/* Request the channel interrupt. */
+	 
 	sprintf(pdev_irqname, "ch%u", index);
 	channel->irq = platform_get_irq_byname(pdev, pdev_irqname);
 	if (channel->irq < 0)
@@ -787,7 +749,7 @@ static int rz_dmac_chan_probe(struct rz_dmac *dmac,
 		return ret;
 	}
 
-	/* Set io base address for each channel */
+	 
 	if (index < 8) {
 		channel->ch_base = dmac->base + CHANNEL_0_7_OFFSET +
 			EACH_CHANNEL_OFFSET * index;
@@ -798,7 +760,7 @@ static int rz_dmac_chan_probe(struct rz_dmac *dmac,
 		channel->ch_cmn_base = dmac->base + CHANNEL_8_15_COMMON_BASE;
 	}
 
-	/* Allocate descriptors */
+	 
 	lmdesc = dma_alloc_coherent(&pdev->dev,
 				    sizeof(struct rz_lmdesc) * DMAC_NR_LMDESC,
 				    &channel->lmdesc.base_dma, GFP_KERNEL);
@@ -808,7 +770,7 @@ static int rz_dmac_chan_probe(struct rz_dmac *dmac,
 	}
 	rz_lmdesc_setup(channel, lmdesc);
 
-	/* Initialize register for each channel */
+	 
 	rz_dmac_ch_writel(channel, CHCTRL_DEFAULT, CHCTRL, 1);
 
 	channel->vc.desc_free = rz_dmac_virt_desc_free;
@@ -865,7 +827,7 @@ static int rz_dmac_probe(struct platform_device *pdev)
 	if (!dmac->channels)
 		return -ENOMEM;
 
-	/* Request resources */
+	 
 	dmac->base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(dmac->base))
 		return PTR_ERR(dmac->base);
@@ -874,7 +836,7 @@ static int rz_dmac_probe(struct platform_device *pdev)
 	if (IS_ERR(dmac->ext_base))
 		return PTR_ERR(dmac->ext_base);
 
-	/* Register interrupt handler for error */
+	 
 	irq = platform_get_irq_byname(pdev, irqname);
 	if (irq < 0)
 		return irq;
@@ -887,7 +849,7 @@ static int rz_dmac_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Initialize the channels. */
+	 
 	INIT_LIST_HEAD(&dmac->engine.channels);
 
 	dmac->rstc = devm_reset_control_array_get_exclusive(&pdev->dev);
@@ -912,13 +874,13 @@ static int rz_dmac_probe(struct platform_device *pdev)
 			goto err;
 	}
 
-	/* Register the DMAC as a DMA provider for DT. */
+	 
 	ret = of_dma_controller_register(pdev->dev.of_node, rz_dmac_of_xlate,
 					 NULL);
 	if (ret < 0)
 		goto err;
 
-	/* Register the DMA engine device. */
+	 
 	engine = &dmac->engine;
 	dma_cap_set(DMA_SLAVE, engine->cap_mask);
 	dma_cap_set(DMA_MEMCPY, engine->cap_mask);
@@ -993,7 +955,7 @@ static int rz_dmac_remove(struct platform_device *pdev)
 
 static const struct of_device_id of_rz_dmac_match[] = {
 	{ .compatible = "renesas,rz-dmac", },
-	{ /* Sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_rz_dmac_match);
 

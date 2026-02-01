@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/delay.h>
 #include <linux/pci.h>
@@ -102,14 +102,12 @@ static void mgag200_g200se_set_hiprilvl(struct mga_device *mdev,
 		hiprilvl = 4;
 	}
 
-	crtcext6 = hiprilvl; /* implicitly sets maxhipri to 0 */
+	crtcext6 = hiprilvl;  
 
 	WREG_ECRT(0x06, crtcext6);
 }
 
-/*
- * PIXPLLC
- */
+ 
 
 static int mgag200_g200se_00_pixpllc_atomic_check(struct drm_crtc *crtc,
 						  struct drm_atomic_state *new_state)
@@ -220,7 +218,7 @@ static int mgag200_g200se_04_pixpllc_atomic_check(struct drm_crtc *crtc,
 		clock = 25000;
 	clock = clock * 2;
 
-	/* Permited delta is 0.5% as VESA Specification */
+	 
 	permitteddelta = clock * 5 / 1000;
 
 	for (i = 0 ; i < ARRAY_SIZE(pvalues_e4); i++) {
@@ -284,7 +282,7 @@ static void mgag200_g200se_04_pixpllc_atomic_update(struct drm_crtc *crtc,
 	pixpllcp = pixpllc->p - 1;
 	pixpllcs = pixpllc->s;
 
-	// For G200SE A, BIT(7) should be set unconditionally.
+	
 	xpixpllcm = BIT(7) | pixpllcm;
 	xpixpllcn = pixpllcn;
 	xpixpllcp = (pixpllcs << 3) | pixpllcp;
@@ -300,9 +298,7 @@ static void mgag200_g200se_04_pixpllc_atomic_update(struct drm_crtc *crtc,
 	WREG_DAC(0x1a, 0x01);
 }
 
-/*
- * Mode-setting pipeline
- */
+ 
 
 static const struct drm_plane_helper_funcs mgag200_g200se_primary_plane_helper_funcs = {
 	MGAG200_PRIMARY_PLANE_HELPER_FUNCS,
@@ -400,7 +396,7 @@ static int mgag200_g200se_pipeline_init(struct mga_device *mdev)
 	}
 	drm_crtc_helper_add(crtc, &mgag200_g200se_crtc_helper_funcs);
 
-	/* FIXME: legacy gamma tables, but atomic gamma doesn't work without */
+	 
 	drm_mode_crtc_set_gamma_size(crtc, MGAG200_LUT_SIZE);
 	drm_crtc_enable_color_mgmt(crtc, 0, false, MGAG200_LUT_SIZE);
 
@@ -437,9 +433,7 @@ static int mgag200_g200se_pipeline_init(struct mga_device *mdev)
 	return 0;
 }
 
-/*
- * DRM device
- */
+ 
 
 static const struct mgag200_device_info mgag200_g200se_a_01_device_info =
 	MGAG200_DEVICE_INFO_INIT(1600, 1200, 24400, false, 0, 1, true);
@@ -464,7 +458,7 @@ static int mgag200_g200se_init_unique_rev_id(struct mgag200_g200se_device *g200s
 	struct mga_device *mdev = &g200se->base;
 	struct drm_device *dev = &mdev->base;
 
-	/* stash G200 SE model number for later use */
+	 
 	g200se->unique_rev_id = RREG32(0x1e24);
 	if (!g200se->unique_rev_id)
 		return -ENODEV;

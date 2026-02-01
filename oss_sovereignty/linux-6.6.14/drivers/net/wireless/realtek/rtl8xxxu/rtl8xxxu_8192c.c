@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * RTL8XXXU mac80211 USB driver - 8188c/8188r/8192c specific subdriver
- *
- * Copyright (c) 2014 - 2017 Jes Sorensen <Jes.Sorensen@gmail.com>
- *
- * Portions, notably calibration code:
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- * This driver was written as a replacement for the vendor provided
- * rtl8723au driver. As the Realtek 8xxx chips are very similar in
- * their programming interface, I have started adding support for
- * additional 8xxx chips like the 8192cu, 8188cus, etc.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -374,9 +362,7 @@ static int rtl8192cu_identify_chip(struct rtl8xxxu_priv *priv)
 
 	rtl8xxxu_config_endpoints_sie(priv);
 
-	/*
-	 * Fallback for devices that do not provide REG_NORMAL_SIE_EP_TX
-	 */
+	 
 	if (!priv->ep_tx_count)
 		ret = rtl8xxxu_config_endpoints_no_sie(priv);
 
@@ -496,9 +482,7 @@ static int rtl8192cu_power_on(struct rtl8xxxu_priv *priv)
 		return -ENODEV;
 	}
 
-	/*
-	 * RSV_CTRL 0x001C[7:0] = 0x00, unlock ISO/CLK/Power control register
-	 */
+	 
 	rtl8xxxu_write8(priv, REG_RSV_CTRL, 0x0);
 	rtl8xxxu_write8(priv, REG_SPS0_CTRL, 0x2b);
 	udelay(100);
@@ -516,9 +500,7 @@ static int rtl8192cu_power_on(struct rtl8xxxu_priv *priv)
 		rtl8xxxu_write8(priv, REG_SYS_ISO_CTRL, val8);
 	}
 
-	/*
-	 * Auto enable WLAN
-	 */
+	 
 	val16 = rtl8xxxu_read16(priv, REG_APS_FSMCO);
 	val16 |= APS_FSMCO_MAC_ENABLE;
 	rtl8xxxu_write16(priv, REG_APS_FSMCO, val16);
@@ -533,16 +515,12 @@ static int rtl8192cu_power_on(struct rtl8xxxu_priv *priv)
 		return -EBUSY;
 	}
 
-	/*
-	 * Enable radio, GPIO, LED
-	 */
+	 
 	val16 = APS_FSMCO_HW_SUSPEND | APS_FSMCO_ENABLE_POWERDOWN |
 		APS_FSMCO_PFM_ALDN;
 	rtl8xxxu_write16(priv, REG_APS_FSMCO, val16);
 
-	/*
-	 * Release RF digital isolation
-	 */
+	 
 	val16 = rtl8xxxu_read16(priv, REG_SYS_ISO_CTRL);
 	val16 &= ~SYS_ISO_DIOR;
 	rtl8xxxu_write16(priv, REG_SYS_ISO_CTRL, val16);
@@ -561,9 +539,7 @@ static int rtl8192cu_power_on(struct rtl8xxxu_priv *priv)
 		return -EBUSY;
 	}
 
-	/*
-	 * Enable MAC DMA/WMAC/SCHEDULE/SEC block
-	 */
+	 
 	val16 = rtl8xxxu_read16(priv, REG_CR);
 	val16 |= CR_HCI_TXDMA_ENABLE | CR_HCI_RXDMA_ENABLE |
 		CR_TXDMA_ENABLE | CR_RXDMA_ENABLE | CR_PROTOCOL_ENABLE |
@@ -572,9 +548,7 @@ static int rtl8192cu_power_on(struct rtl8xxxu_priv *priv)
 
 	rtl8xxxu_write8(priv, 0xfe10, 0x19);
 
-	/*
-	 * Workaround for 8188RU LNA power leakage problem.
-	 */
+	 
 	if (priv->rtl_chip == RTL8188R) {
 		val32 = rtl8xxxu_read32(priv, REG_FPGA0_XCD_RF_PARM);
 		val32 &= ~BIT(1);

@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * rfd_ftl.c -- resident flash disk (flash translation layer)
- *
- * Copyright © 2005  Sean Young <sean@mess.org>
- *
- * This type of flash translation layer (FTL) is used by the Embedded BIOS
- * by General Software. It is known as the Resident Flash Disk (RFD), see:
- *
- *	http://www.gensw.com/pages/prod/bios/rfd.htm
- *
- * based on ftl.c
- */
+
+ 
 
 #include <linux/hdreg.h>
 #include <linux/init.h>
@@ -29,22 +18,22 @@ MODULE_PARM_DESC(block_size, "Block size to use by RFD, defaults to erase unit s
 
 #define PREFIX "rfd_ftl: "
 
-/* This major has been assigned by device@lanana.org */
+ 
 #ifndef RFD_FTL_MAJOR
 #define RFD_FTL_MAJOR		256
 #endif
 
-/* Maximum number of partitions in an FTL region */
+ 
 #define PART_BITS		4
 
-/* An erase unit should start with this value */
+ 
 #define RFD_MAGIC		0x9193
 
-/* the second value is 0xffff or 0xffc8; function unknown */
+ 
 
-/* the third value is always 0xffff, ignored */
+ 
 
-/* next is an array of mapping for each corresponding sector */
+ 
 #define HEADER_MAP_OFFSET	3
 #define SECTOR_DELETED		0x0000
 #define SECTOR_ZERO		0xfffe
@@ -71,15 +60,15 @@ struct block {
 struct partition {
 	struct mtd_blktrans_dev mbd;
 
-	u_int block_size;		/* size of erase unit */
-	u_int total_blocks;		/* number of erase units */
-	u_int header_sectors_per_block;	/* header sectors in erase unit */
-	u_int data_sectors_per_block;	/* data sectors in erase unit */
-	u_int sector_count;		/* sectors in translated disk */
-	u_int header_size;		/* bytes in header sector */
-	int reserved_block;		/* block next up for reclaim */
-	int current_block;		/* block to write to */
-	u16 *header_cache;		/* cached header */
+	u_int block_size;		 
+	u_int total_blocks;		 
+	u_int header_sectors_per_block;	 
+	u_int data_sectors_per_block;	 
+	u_int sector_count;		 
+	u_int header_size;		 
+	int reserved_block;		 
+	int current_block;		 
+	u16 *header_cache;		 
 
 	int is_reclaiming;
 	int cylinders;
@@ -161,7 +150,7 @@ static int scan_header(struct partition *part)
 	if (part->total_blocks < 2)
 		return -ENOENT;
 
-	/* each erase block has three bytes header, followed by the map */
+	 
 	part->header_sectors_per_block =
 			((HEADER_MAP_OFFSET + sectors_per_block) *
 			sizeof(u16) + SECTOR_SIZE - 1) / SECTOR_SIZE;
@@ -358,7 +347,7 @@ static int move_block_contents(struct partition *part, int block_no, u_long *old
 		if (entry == SECTOR_ZERO)
 			entry = 0;
 
-		/* already warned about and ignored in build_block_map() */
+		 
 		if (entry >= part->sector_count)
 			continue;
 
@@ -409,10 +398,10 @@ static int reclaim_block(struct partition *part, u_long *old_sector)
 	int block, best_block, score, old_sector_block;
 	int rc;
 
-	/* we have a race if sync doesn't exist */
+	 
 	mtd_sync(part->mbd.mtd);
 
-	score = 0x7fffffff; /* MAX_INT */
+	score = 0x7fffffff;  
 	best_block = -1;
 	if (*old_sector != -1)
 		old_sector_block = *old_sector / part->block_size;
@@ -425,11 +414,7 @@ static int reclaim_block(struct partition *part, u_long *old_sector)
 		if (block == part->reserved_block)
 			continue;
 
-		/*
-		 * Postpone reclaiming if there is a free sector as
-		 * more removed sectors is more efficient (have to move
-		 * less).
-		 */
+		 
 		if (part->blocks[block].free_sectors)
 			return 0;
 
@@ -438,7 +423,7 @@ static int reclaim_block(struct partition *part, u_long *old_sector)
 		if (block == old_sector_block)
 			this_score--;
 		else {
-			/* no point in moving a full block */
+			 
 			if (part->blocks[block].used_sectors ==
 					part->data_sectors_per_block)
 				continue;
@@ -471,11 +456,7 @@ static int reclaim_block(struct partition *part, u_long *old_sector)
 	return rc;
 }
 
-/*
- * IMPROVE: It would be best to choose the block with the most deleted sectors,
- * because if we fill that one up first it'll have the most chance of having
- * the least live sectors at reclaim.
- */
+ 
 static int find_free_block(struct partition *part)
 {
 	int block, stop;

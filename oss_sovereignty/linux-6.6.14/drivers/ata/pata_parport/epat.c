@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * (c) 1997-1998  Grant R. Guenther <grant@torque.net>
- *
- * This is the low level protocol driver for the EPAT parallel
- * to IDE adapter from Shuttle Technologies.  This adapter is
- * used in many popular parallel port disk products such as the
- * SyQuest EZ drives, the Avatar Shark and the Imation SuperDisk.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -27,11 +20,7 @@ MODULE_PARM_DESC(epatc8,
 		 "support for the Shuttle EP1284 chip, "
 		 "used in any recent Imation SuperDisk (LS-120) drive.");
 
-/*
- * cont =  0   IDE register file
- * cont =  1   IDE control registers
- * cont =  2   internal EPAT registers
- */
+ 
 static int cont_map[3] = { 0x18, 0x10, 0 };
 
 static void epat_write_regr(struct pi_adapter *pi, int cont, int regr, int val)
@@ -79,7 +68,7 @@ static int epat_read_regr(struct pi_adapter *pi, int cont, int regr)
 		return a;
 	}
 
-	return -1;	/* never gets here */
+	return -1;	 
 }
 
 static void epat_read_block(struct pi_adapter *pi, char *buf, int count)
@@ -203,17 +192,17 @@ static void epat_write_block(struct pi_adapter *pi, char *buf, int count)
 	}
 }
 
-/* these macros access the EPAT registers in native addressing */
+ 
 
 #define	WR(r, v)	epat_write_regr(pi, 2, r, v)
 #define	RR(r)		epat_read_regr(pi, 2, r)
 
-/* and these access the IDE task file */
+ 
 
 #define WRi(r, v)	epat_write_regr(pi, 0, r, v)
 #define RRi(r)		epat_read_regr(pi, 0, r)
 
-/* FIXME:  the CPP stuff should be fixed to handle multiple EPATs on a chain */
+ 
 
 #define CPP(x)					\
 	do {					\
@@ -228,7 +217,7 @@ static void epat_connect(struct pi_adapter *pi)
 	pi->saved_r0 = r0();
 	pi->saved_r2 = r2();
 
- 	/* Initialize the chip */
+ 	 
 	CPP(0);
 
 	if (epatc8) {
@@ -239,18 +228,18 @@ static void epat_connect(struct pi_adapter *pi)
 		WR(0x12, 0x10);
 		WR(0xe, 0xf);
 		WR(0xf, 4);
-		/* WR(0xe,0xa);WR(0xf,4); */
+		 
 		WR(0xe, 0xd);
 		WR(0xf, 0);
-		/* CPP(0x30); */
+		 
 	}
 
-        /* Connect to the chip */
+         
 	CPP(0xe0);
-	w0(0); w2(1); w2(4); /* Idle into SPP */
+	w0(0); w2(1); w2(4);  
         if (pi->mode >= 3) {
 		w0(0); w2(1); w2(4); w2(0xc);
-		/* Request EPP */
+		 
 		w0(0x40); w2(6); w2(7); w2(4); w2(0xc); w2(4);
         }
 
@@ -318,7 +307,7 @@ static void epat_log_adapter(struct pi_adapter *pi)
 		{ "4-bit", "5/3", "8-bit", "EPP-8", "EPP-16", "EPP-32" };
 
 	epat_connect(pi);
-	WR(0xa, 0x38);		/* read the version code */
+	WR(0xa, 0x38);		 
 	ver = RR(0xb);
 	epat_disconnect(pi);
 

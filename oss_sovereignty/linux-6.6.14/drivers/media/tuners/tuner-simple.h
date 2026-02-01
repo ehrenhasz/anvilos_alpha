@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-*/
+ 
+ 
 
 #ifndef __TUNER_SIMPLE_H__
 #define __TUNER_SIMPLE_H__
@@ -24,4 +23,4 @@ static inline struct dvb_frontend *simple_tuner_attach(struct dvb_frontend *fe,
 }
 #endif
 
-#endif /* __TUNER_SIMPLE_H__ */
+#endif  

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2020 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_PPS_H__
 #define __INTEL_PPS_H__
@@ -53,4 +51,4 @@ void intel_pps_setup(struct drm_i915_private *i915);
 
 void assert_pps_unlocked(struct drm_i915_private *i915, enum pipe pipe);
 
-#endif /* __INTEL_PPS_H__ */
+#endif  

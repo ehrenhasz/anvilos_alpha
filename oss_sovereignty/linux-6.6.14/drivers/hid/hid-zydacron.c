@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-*  HID driver for zydacron remote control
-*
-*  Copyright (c) 2010 Don Prince <dhprince.devel@yahoo.co.uk>
-*/
 
-/*
-*/
+ 
+
+ 
 
 #include <linux/device.h>
 #include <linux/hid.h>
@@ -20,10 +15,7 @@ struct zc_device {
 };
 
 
-/*
-* Zydacron remote control has an invalid HID report descriptor,
-* that needs fixing before we can parse it.
-*/
+ 
 static __u8 *zc_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 	unsigned int *rsize)
 {
@@ -57,7 +49,7 @@ static int zc_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 		usage->hid & HID_USAGE);
 
 	switch (usage->hid & HID_USAGE) {
-	/* report 2 */
+	 
 	case 0x10:
 		zc_map_key_clear(KEY_MODE);
 		break;
@@ -67,11 +59,11 @@ static int zc_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 	case 0x70:
 		zc_map_key_clear(KEY_INFO);
 		break;
-	/* report 3 */
+	 
 	case 0x04:
 		zc_map_key_clear(KEY_RADIO);
 		break;
-	/* report 4 */
+	 
 	case 0x0d:
 		zc_map_key_clear(KEY_PVR);
 		break;
@@ -116,7 +108,7 @@ static int zc_raw_event(struct hid_device *hdev, struct hid_report *report,
 
 	if (report->id == data[0]) {
 
-		/* break keys */
+		 
 		for (index = 0; index < 4; index++) {
 			key = zc->last_key[index];
 			if (key) {

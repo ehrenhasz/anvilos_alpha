@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * cs35l36.h -- CS35L36 ALSA SoC audio driver
- *
- * Copyright 2018 Cirrus Logic, Inc.
- *
- * Author: James Schulman <james.schulman@cirrus.com>
- *
- */
+ 
+ 
 
 #ifndef __CS35L36_H__
 #define __CS35L36_H__

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tsys01.c - Support for Measurement-Specialties tsys01 temperature sensor
- *
- * Copyright (c) 2015 Measurement-Specialties
- *
- * Datasheet:
- *  http://www.meas-spec.com/downloads/TSYS01_Digital_Temperature_Sensor.pdf
- */
+
+ 
 
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
@@ -19,7 +12,7 @@
 #include <linux/stat.h>
 #include "../common/ms_sensors/ms_sensors_i2c.h"
 
-/* TSYS01 Commands */
+ 
 #define TSYS01_RESET				0x1E
 #define TSYS01_CONVERSION_START			0x48
 #define TSYS01_ADC_READ				0x00
@@ -29,7 +22,7 @@
 
 struct tsys01_dev {
 	void *client;
-	struct mutex lock; /* lock during conversion */
+	struct mutex lock;  
 
 	int (*reset)(void *cli, u8 cmd, unsigned int delay);
 	int (*convert_and_read)(void *cli, u8 conv, u8 rd,
@@ -39,7 +32,7 @@ struct tsys01_dev {
 	u16 prom[TSYS01_PROM_WORDS_NB];
 };
 
-/* Multiplication coefficients for temperature computation */
+ 
 static const int coeff_mul[] = { -1500000, 1000000, -2000000,
 				 4000000, -2000000 };
 
@@ -61,7 +54,7 @@ static int tsys01_read_temperature(struct iio_dev *indio_dev,
 
 	adc >>= 8;
 
-	/* Temperature algorithm */
+	 
 	for (i = 4; i > 0; i--) {
 		temp += coeff_mul[i] *
 			(s64)dev_data->prom[5 - i];
@@ -87,7 +80,7 @@ static int tsys01_read_raw(struct iio_dev *indio_dev,
 	switch (mask) {
 	case IIO_CHAN_INFO_PROCESSED:
 		switch (channel->type) {
-		case IIO_TEMP:	/* in milli °C */
+		case IIO_TEMP:	 
 			ret = tsys01_read_temperature(indio_dev, &temperature);
 			if (ret)
 				return ret;

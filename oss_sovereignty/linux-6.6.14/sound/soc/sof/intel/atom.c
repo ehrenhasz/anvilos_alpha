@@ -1,16 +1,14 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2018-2021 Intel Corporation. All rights reserved.
-//
-// Author: Liam Girdwood <liam.r.girdwood@linux.intel.com>
-//
 
-/*
- * Hardware interface for audio DSP on Atom devices
- */
+
+
+
+
+
+
+
+
+
+ 
 
 #include <linux/module.h>
 #include <sound/sof.h>
@@ -28,9 +26,7 @@
 static void atom_host_done(struct snd_sof_dev *sdev);
 static void atom_dsp_done(struct snd_sof_dev *sdev);
 
-/*
- * Debug
- */
+ 
 
 static void atom_get_registers(struct snd_sof_dev *sdev,
 			       struct sof_ipc_dsp_oops_xtensa *xoops,
@@ -39,12 +35,12 @@ static void atom_get_registers(struct snd_sof_dev *sdev,
 {
 	u32 offset = sdev->dsp_oops_offset;
 
-	/* first read regsisters */
+	 
 	sof_mailbox_read(sdev, offset, xoops, sizeof(*xoops));
 
-	/* note: variable AR register array is not read */
+	 
 
-	/* then get panic info */
+	 
 	if (xoops->arch_hdr.totalsize > EXCEPT_MAX_HDR_SIZE) {
 		dev_err(sdev->dev, "invalid header size 0x%x. FW oops is bogus\n",
 			xoops->arch_hdr.totalsize);
@@ -53,7 +49,7 @@ static void atom_get_registers(struct snd_sof_dev *sdev,
 	offset += xoops->arch_hdr.totalsize;
 	sof_mailbox_read(sdev, offset, panic_info, sizeof(*panic_info));
 
-	/* then get the stack */
+	 
 	offset += sizeof(*panic_info);
 	sof_mailbox_read(sdev, offset, stack, stack_words * sizeof(u32));
 }
@@ -65,7 +61,7 @@ void atom_dump(struct snd_sof_dev *sdev, u32 flags)
 	u32 stack[STACK_DUMP_SIZE];
 	u64 status, panic, imrd, imrx;
 
-	/* now try generic SOF status messages */
+	 
 	status = snd_sof_dsp_read64(sdev, DSP_BAR, SHIM_IPCD);
 	panic = snd_sof_dsp_read64(sdev, DSP_BAR, SHIM_IPCX);
 	atom_get_registers(sdev, &xoops, &panic_info, stack,
@@ -73,7 +69,7 @@ void atom_dump(struct snd_sof_dev *sdev, u32 flags)
 	sof_print_oops_and_stack(sdev, KERN_ERR, status, panic, &xoops,
 				 &panic_info, stack, STACK_DUMP_SIZE);
 
-	/* provide some context for firmware debug */
+	 
 	imrx = snd_sof_dsp_read64(sdev, DSP_BAR, SHIM_IMRX);
 	imrd = snd_sof_dsp_read64(sdev, DSP_BAR, SHIM_IMRD);
 	dev_err(sdev->dev,
@@ -96,9 +92,7 @@ void atom_dump(struct snd_sof_dev *sdev, u32 flags)
 }
 EXPORT_SYMBOL_NS(atom_dump, SND_SOC_SOF_INTEL_ATOM_HIFI_EP);
 
-/*
- * IPC Doorbell IRQ handler and thread.
- */
+ 
 
 irqreturn_t atom_irq_handler(int irq, void *context)
 {
@@ -111,7 +105,7 @@ irqreturn_t atom_irq_handler(int irq, void *context)
 
 	if (ipcx & SHIM_BYT_IPCX_DONE) {
 
-		/* reply message from DSP, Mask Done interrupt first */
+		 
 		snd_sof_dsp_update_bits64_unlocked(sdev, DSP_BAR,
 						   SHIM_IMRX,
 						   SHIM_IMRX_DONE,
@@ -121,7 +115,7 @@ irqreturn_t atom_irq_handler(int irq, void *context)
 
 	if (ipcd & SHIM_BYT_IPCD_BUSY) {
 
-		/* new message from DSP, Mask Busy interrupt first */
+		 
 		snd_sof_dsp_update_bits64_unlocked(sdev, DSP_BAR,
 						   SHIM_IMRX,
 						   SHIM_IMRX_BUSY,
@@ -141,18 +135,12 @@ irqreturn_t atom_irq_thread(int irq, void *context)
 	ipcx = snd_sof_dsp_read64(sdev, DSP_BAR, SHIM_IPCX);
 	ipcd = snd_sof_dsp_read64(sdev, DSP_BAR, SHIM_IPCD);
 
-	/* reply message from DSP */
+	 
 	if (ipcx & SHIM_BYT_IPCX_DONE) {
 
 		spin_lock_irq(&sdev->ipc_lock);
 
-		/*
-		 * handle immediate reply from DSP core. If the msg is
-		 * found, set done bit in cmd_done which is called at the
-		 * end of message processing function, else set it here
-		 * because the done bit can't be set in cmd_done function
-		 * which is triggered by msg
-		 */
+		 
 		snd_sof_ipc_process_reply(sdev, ipcx);
 
 		atom_dsp_done(sdev);
@@ -160,10 +148,10 @@ irqreturn_t atom_irq_thread(int irq, void *context)
 		spin_unlock_irq(&sdev->ipc_lock);
 	}
 
-	/* new message from DSP */
+	 
 	if (ipcd & SHIM_BYT_IPCD_BUSY) {
 
-		/* Handle messages from DSP Core */
+		 
 		if ((ipcd & SOF_IPC_PANIC_MAGIC_MASK) == SOF_IPC_PANIC_MAGIC) {
 			snd_sof_dsp_panic(sdev, PANIC_OFFSET(ipcd) + MBOX_OFFSET,
 					  true);
@@ -180,11 +168,11 @@ EXPORT_SYMBOL_NS(atom_irq_thread, SND_SOC_SOF_INTEL_ATOM_HIFI_EP);
 
 int atom_send_msg(struct snd_sof_dev *sdev, struct snd_sof_ipc_msg *msg)
 {
-	/* unmask and prepare to receive Done interrupt */
+	 
 	snd_sof_dsp_update_bits64_unlocked(sdev, DSP_BAR, SHIM_IMRX,
 					   SHIM_IMRX_DONE, 0);
 
-	/* send the message */
+	 
 	sof_mailbox_write(sdev, sdev->host_box.offset, msg->msg_data,
 			  msg->msg_size);
 	snd_sof_dsp_write64(sdev, DSP_BAR, SHIM_IPCX, SHIM_BYT_IPCX_BUSY);
@@ -207,33 +195,31 @@ EXPORT_SYMBOL_NS(atom_get_window_offset, SND_SOC_SOF_INTEL_ATOM_HIFI_EP);
 
 static void atom_host_done(struct snd_sof_dev *sdev)
 {
-	/* clear BUSY bit and set DONE bit - accept new messages */
+	 
 	snd_sof_dsp_update_bits64_unlocked(sdev, DSP_BAR, SHIM_IPCD,
 					   SHIM_BYT_IPCD_BUSY |
 					   SHIM_BYT_IPCD_DONE,
 					   SHIM_BYT_IPCD_DONE);
 
-	/* unmask and prepare to receive next new message */
+	 
 	snd_sof_dsp_update_bits64_unlocked(sdev, DSP_BAR, SHIM_IMRX,
 					   SHIM_IMRX_BUSY, 0);
 }
 
 static void atom_dsp_done(struct snd_sof_dev *sdev)
 {
-	/* clear DONE bit - tell DSP we have completed */
+	 
 	snd_sof_dsp_update_bits64_unlocked(sdev, DSP_BAR, SHIM_IPCX,
 					   SHIM_BYT_IPCX_DONE, 0);
 }
 
-/*
- * DSP control.
- */
+ 
 
 int atom_run(struct snd_sof_dev *sdev)
 {
 	int tries = 10;
 
-	/* release stall and wait to unstall */
+	 
 	snd_sof_dsp_update_bits64(sdev, DSP_BAR, SHIM_CSR,
 				  SHIM_BYT_CSR_STALL, 0x0);
 	while (tries--) {
@@ -245,14 +231,14 @@ int atom_run(struct snd_sof_dev *sdev)
 	if (tries < 0)
 		return -ENODEV;
 
-	/* return init core mask */
+	 
 	return 1;
 }
 EXPORT_SYMBOL_NS(atom_run, SND_SOC_SOF_INTEL_ATOM_HIFI_EP);
 
 int atom_reset(struct snd_sof_dev *sdev)
 {
-	/* put DSP into reset, set reset vector and stall */
+	 
 	snd_sof_dsp_update_bits64(sdev, DSP_BAR, SHIM_CSR,
 				  SHIM_BYT_CSR_RST | SHIM_BYT_CSR_VECTOR_SEL |
 				  SHIM_BYT_CSR_STALL,
@@ -261,7 +247,7 @@ int atom_reset(struct snd_sof_dev *sdev)
 
 	usleep_range(10, 15);
 
-	/* take DSP out of reset and keep stalled for FW loading */
+	 
 	snd_sof_dsp_update_bits64(sdev, DSP_BAR, SHIM_CSR,
 				  SHIM_BYT_CSR_RST, 0);
 
@@ -281,7 +267,7 @@ static const char *fixup_tplg_name(struct snd_sof_dev *sdev,
 	if (!filename)
 		return NULL;
 
-	/* this assumes a .tplg extension */
+	 
 	tmp = filename;
 	split_ext = strsep(&tmp, ".");
 	if (split_ext)
@@ -332,7 +318,7 @@ struct snd_soc_acpi_mach *atom_machine_select(struct snd_sof_dev *sdev)
 }
 EXPORT_SYMBOL_NS(atom_machine_select, SND_SOC_SOF_INTEL_ATOM_HIFI_EP);
 
-/* Atom DAIs */
+ 
 struct snd_soc_dai_driver atom_dai[] = {
 {
 	.name = "ssp0-port",

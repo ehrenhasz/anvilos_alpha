@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Spanning tree protocol; timer-related code
- *	Linux ethernet bridge
- *
- *	Authors:
- *	Lennert Buytenhek		<buytenh@gnu.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/times.h>
@@ -13,7 +7,7 @@
 #include "br_private.h"
 #include "br_private_stp.h"
 
-/* called under bridge lock */
+ 
 static int br_is_designated_for_some_port(const struct net_bridge *br)
 {
 	struct net_bridge_port *p;
@@ -57,11 +51,7 @@ static void br_message_age_timer_expired(struct timer_list *t)
 		(unsigned int) p->port_no, p->dev->name,
 		id->prio[0], id->prio[1], &id->addr);
 
-	/*
-	 * According to the spec, the message age timer cannot be
-	 * running when we are the root bridge. So..  this was_root
-	 * check is redundant. I'm leaving it in for now, though.
-	 */
+	 
 	spin_lock(&br->lock);
 	if (p->state == BR_STATE_DISABLED)
 		goto unlock;
@@ -153,7 +143,7 @@ void br_stp_port_timer_init(struct net_bridge_port *p)
 	timer_setup(&p->hold_timer, br_hold_timer_expired, 0);
 }
 
-/* Report ticks left (in USER_HZ) used for API */
+ 
 unsigned long br_timer_value(const struct timer_list *timer)
 {
 	return timer_pending(timer)

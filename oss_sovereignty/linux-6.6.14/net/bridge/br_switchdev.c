@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/list.h>
 #include <linux/netdevice.h>
@@ -34,7 +34,7 @@ void br_switchdev_frame_set_offload_fwd_mark(struct sk_buff *skb)
 	skb->offload_fwd_mark = br_switchdev_frame_uses_tx_fwd_offload(skb);
 }
 
-/* Mark the frame for TX forwarding offload if this egress port supports it */
+ 
 void nbp_switchdev_frame_mark_tx_fwd_offload(const struct net_bridge_port *p,
 					     struct sk_buff *skb)
 {
@@ -42,11 +42,7 @@ void nbp_switchdev_frame_mark_tx_fwd_offload(const struct net_bridge_port *p,
 		BR_INPUT_SKB_CB(skb)->tx_fwd_offload = true;
 }
 
-/* Lazily adds the hwdom of the egress bridge port to the bit mask of hwdoms
- * that the skb has been already forwarded to, to avoid further cloning to
- * other ports in the same hwdom by making nbp_switchdev_allowed_egress()
- * return false.
- */
+ 
 void nbp_switchdev_frame_mark_tx_fwd_to_hwdom(const struct net_bridge_port *p,
 					      struct sk_buff *skb)
 {
@@ -70,7 +66,7 @@ bool nbp_switchdev_allowed_egress(const struct net_bridge_port *p,
 		(!skb->offload_fwd_mark || cb->src_hwdom != p->hwdom);
 }
 
-/* Flags that can be offloaded to hardware */
+ 
 #define BR_PORT_FLAGS_HW_OFFLOAD (BR_LEARNING | BR_FLOOD | BR_PORT_MAB | \
 				  BR_MCAST_FLOOD | BR_BCAST_FLOOD | BR_PORT_LOCKED | \
 				  BR_HAIRPIN_MODE | BR_ISOLATED | BR_MULTICAST_TO_UNICAST)
@@ -96,7 +92,7 @@ int br_switchdev_set_port_flag(struct net_bridge_port *p,
 	attr.u.brport_flags.val = flags;
 	attr.u.brport_flags.mask = mask;
 
-	/* We run from atomic context here */
+	 
 	err = call_switchdev_notifiers(SWITCHDEV_PORT_ATTR_SET, p->dev,
 				       &info.info, extack);
 	err = notifier_to_errno(err);
@@ -148,12 +144,7 @@ br_switchdev_fdb_notify(struct net_bridge *br,
 	if (test_bit(BR_FDB_LOCKED, &fdb->flags))
 		return;
 
-	/* Entries with these flags were created using ndm_state == NUD_REACHABLE,
-	 * ndm_flags == NTF_MASTER( | NTF_STICKY), ext_flags == 0 by something
-	 * equivalent to 'bridge fdb add ... master dynamic (sticky)'.
-	 * Drivers don't know how to deal with these, so don't notify them to
-	 * avoid confusing them.
-	 */
+	 
 	if (test_bit(BR_FDB_ADDED_BY_USER, &fdb->flags) &&
 	    !test_bit(BR_FDB_STATIC, &fdb->flags) &&
 	    !test_bit(BR_FDB_ADDED_BY_EXT_LEARN, &fdb->flags))
@@ -204,7 +195,7 @@ static int nbp_switchdev_hwdom_set(struct net_bridge_port *joining)
 	struct net_bridge_port *p;
 	int hwdom;
 
-	/* joining is yet to be added to the port list. */
+	 
 	list_for_each_entry(p, &br->port_list, list) {
 		if (netdev_phys_item_id_same(&joining->ppid, &p->ppid)) {
 			joining->hwdom = p->hwdom;
@@ -226,7 +217,7 @@ static void nbp_switchdev_hwdom_put(struct net_bridge_port *leaving)
 	struct net_bridge *br = leaving->br;
 	struct net_bridge_port *p;
 
-	/* leaving is no longer in the port list. */
+	 
 	list_for_each_entry(p, &br->port_list, list) {
 		if (p->hwdom == leaving->hwdom)
 			return;
@@ -243,20 +234,14 @@ static int nbp_switchdev_add(struct net_bridge_port *p,
 	int err;
 
 	if (p->offload_count) {
-		/* Prevent unsupported configurations such as a bridge port
-		 * which is a bonding interface, and the member ports are from
-		 * different hardware switches.
-		 */
+		 
 		if (!netdev_phys_item_id_same(&p->ppid, &ppid)) {
 			NL_SET_ERR_MSG_MOD(extack,
 					   "Same bridge port cannot be offloaded by two physical switches");
 			return -EBUSY;
 		}
 
-		/* Tolerate drivers that call switchdev_bridge_port_offload()
-		 * more than once for the same bridge port, such as when the
-		 * bridge port is an offloaded bonding/team interface.
-		 */
+		 
 		p->offload_count++;
 
 		return 0;
@@ -677,14 +662,7 @@ br_switchdev_mdb_replay(struct net_device *br_dev, struct net_device *dev,
 	if (!br_opt_get(br, BROPT_MULTICAST_ENABLED))
 		return 0;
 
-	/* We cannot walk over br->mdb_list protected just by the rtnl_mutex,
-	 * because the write-side protection is br->multicast_lock. But we
-	 * need to emulate the [ blocking ] calling context of a regular
-	 * switchdev event, so since both br->multicast_lock and RCU read side
-	 * critical sections are atomic, we have no choice but to pick the RCU
-	 * read side lock, queue up all our events, leave the critical section
-	 * and notify switchdev from blocking context.
-	 */
+	 
 	rcu_read_lock();
 
 	hlist_for_each_entry_rcu(mp, &br->mdb_list, mdb_node) {
@@ -762,7 +740,7 @@ static int nbp_switchdev_sync_objs(struct net_bridge_port *p, const void *ctx,
 	err = br_switchdev_mdb_replay(br_dev, dev, ctx, true, blocking_nb,
 				      extack);
 	if (err) {
-		/* -EOPNOTSUPP not propagated from MDB replay. */
+		 
 		return err;
 	}
 
@@ -788,9 +766,7 @@ static void nbp_switchdev_unsync_objs(struct net_bridge_port *p,
 	br_switchdev_vlan_replay(br_dev, ctx, false, blocking_nb, NULL);
 }
 
-/* Let the bridge know that this port is offloaded, so that it can assign a
- * switchdev hardware domain to it.
- */
+ 
 int br_switchdev_port_offload(struct net_bridge_port *p,
 			      struct net_device *dev, const void *ctx,
 			      struct notifier_block *atomic_nb,

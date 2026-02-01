@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Register interface file for Samsung Camera Interface (FIMC) driver
- *
- * Copyright (C) 2010 - 2013 Samsung Electronics Co., Ltd.
- * Sylwester Nawrocki <s.nawrocki@samsung.com>
-*/
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -24,7 +19,7 @@ void fimc_hw_reset(struct fimc_dev *dev)
 	cfg |= FIMC_REG_CISRCFMT_ITU601_8BIT;
 	writel(cfg, dev->regs + FIMC_REG_CISRCFMT);
 
-	/* Software reset. */
+	 
 	cfg = readl(dev->regs + FIMC_REG_CIGCTRL);
 	cfg |= (FIMC_REG_CIGCTRL_SWRST | FIMC_REG_CIGCTRL_IRQ_LEVEL);
 	writel(cfg, dev->regs + FIMC_REG_CIGCTRL);
@@ -77,11 +72,7 @@ void fimc_hw_set_rotation(struct fimc_ctx *ctx)
 	cfg &= ~(FIMC_REG_CITRGFMT_INROT90 | FIMC_REG_CITRGFMT_OUTROT90 |
 		 FIMC_REG_CITRGFMT_FLIP_180);
 
-	/*
-	 * The input and output rotator cannot work simultaneously.
-	 * Use the output rotator in output DMA mode or the input rotator
-	 * in direct fifo output mode.
-	 */
+	 
 	if (ctx->rotation == 90 || ctx->rotation == 270) {
 		if (ctx->out_path == FIMC_IO_LCDFIFO)
 			cfg |= FIMC_REG_CITRGFMT_INROT90;
@@ -93,7 +84,7 @@ void fimc_hw_set_rotation(struct fimc_ctx *ctx)
 		cfg |= fimc_hw_get_target_flip(ctx);
 		writel(cfg, dev->regs + FIMC_REG_CITRGFMT);
 	} else {
-		/* LCD FIFO path */
+		 
 		flip = readl(dev->regs + FIMC_REG_MSCTRL);
 		flip &= ~FIMC_REG_MSCTRL_FLIP_MASK;
 		flip |= fimc_hw_get_in_flip(ctx);
@@ -153,11 +144,11 @@ static void fimc_hw_set_out_dma_size(struct fimc_ctx *ctx)
 	cfg = (frame->f_height << 16) | frame->f_width;
 	writel(cfg, dev->regs + FIMC_REG_ORGOSIZE);
 
-	/* Select color space conversion equation (HD/SD size).*/
+	 
 	cfg = readl(dev->regs + FIMC_REG_CIGCTRL);
-	if (frame->f_width >= 1280) /* HD */
+	if (frame->f_width >= 1280)  
 		cfg |= FIMC_REG_CIGCTRL_CSC_ITU601_709;
-	else	/* SD */
+	else	 
 		cfg &= ~FIMC_REG_CIGCTRL_CSC_ITU601_709;
 	writel(cfg, dev->regs + FIMC_REG_CIGCTRL);
 
@@ -171,7 +162,7 @@ void fimc_hw_set_out_dma(struct fimc_ctx *ctx)
 	struct fimc_fmt *fmt = frame->fmt;
 	u32 cfg;
 
-	/* Set the input dma offsets. */
+	 
 	cfg = (offset->y_v << 16) | offset->y_h;
 	writel(cfg, dev->regs + FIMC_REG_CIOYOFF);
 
@@ -183,7 +174,7 @@ void fimc_hw_set_out_dma(struct fimc_ctx *ctx)
 
 	fimc_hw_set_out_dma_size(ctx);
 
-	/* Configure chroma components order. */
+	 
 	cfg = readl(dev->regs + FIMC_REG_CIOCTRL);
 
 	cfg &= ~(FIMC_REG_CIOCTRL_ORDER2P_MASK |
@@ -424,7 +415,7 @@ void fimc_hw_set_in_dma(struct fimc_ctx *ctx)
 	struct fimc_dma_offset *offset = &frame->dma_offset;
 	u32 cfg;
 
-	/* Set the pixel offsets. */
+	 
 	cfg = (offset->y_v << 16) | offset->y_h;
 	writel(cfg, dev->regs + FIMC_REG_CIIYOFF);
 
@@ -434,13 +425,13 @@ void fimc_hw_set_in_dma(struct fimc_ctx *ctx)
 	cfg = (offset->cr_v << 16) | offset->cr_h;
 	writel(cfg, dev->regs + FIMC_REG_CIICROFF);
 
-	/* Input original and real size. */
+	 
 	fimc_hw_set_in_dma_size(ctx);
 
-	/* Use DMA autoload only in FIFO mode. */
+	 
 	fimc_hw_en_autoload(dev, ctx->out_path == FIMC_IO_LCDFIFO);
 
-	/* Set the input DMA to process single frame only. */
+	 
 	cfg = readl(dev->regs + FIMC_REG_MSCTRL);
 	cfg &= ~(FIMC_REG_MSCTRL_INFORMAT_MASK
 		 | FIMC_REG_MSCTRL_IN_BURST_COUNT_MASK
@@ -486,7 +477,7 @@ void fimc_hw_set_in_dma(struct fimc_ctx *ctx)
 
 	writel(cfg, dev->regs + FIMC_REG_MSCTRL);
 
-	/* Input/output DMA linear/tiled mode. */
+	 
 	cfg = readl(dev->regs + FIMC_REG_CIDMAPARAM);
 	cfg &= ~FIMC_REG_CIDMAPARAM_TILE_MASK;
 
@@ -631,7 +622,7 @@ int fimc_hw_set_camera_source(struct fimc_dev *fimc,
 				cfg |= FIMC_REG_CISRCFMT_ITU601_8BIT;
 			else if (bus_width == 16)
 				cfg |= FIMC_REG_CISRCFMT_ITU601_16BIT;
-		} /* else defaults to ITU-R BT.656 8-bit */
+		}  
 		break;
 	case FIMC_BUS_TYPE_MIPI_CSI2:
 		if (fimc_fmt_is_user_defined(f->fmt->color))
@@ -639,7 +630,7 @@ int fimc_hw_set_camera_source(struct fimc_dev *fimc,
 		break;
 	default:
 	case FIMC_BUS_TYPE_ISP_WRITEBACK:
-		/* Anything to do here ? */
+		 
 		break;
 	}
 
@@ -660,7 +651,7 @@ void fimc_hw_set_camera_offset(struct fimc_dev *fimc, struct fimc_frame *f)
 
 	writel(cfg, fimc->regs + FIMC_REG_CIWDOFST);
 
-	/* See CIWDOFSTn register description in the datasheet for details. */
+	 
 	hoff2 = f->o_width - f->width - f->offs_h;
 	voff2 = f->o_height - f->height - f->offs_v;
 	cfg = (hoff2 << 16) | voff2;
@@ -676,7 +667,7 @@ int fimc_hw_set_camera_type(struct fimc_dev *fimc,
 
 	cfg = readl(fimc->regs + FIMC_REG_CIGCTRL);
 
-	/* Select ITU B interface, disable Writeback path and test pattern. */
+	 
 	cfg &= ~(FIMC_REG_CIGCTRL_TESTPAT_MASK | FIMC_REG_CIGCTRL_SELCAM_ITU_A |
 		FIMC_REG_CIGCTRL_SELCAM_MIPI | FIMC_REG_CIGCTRL_CAMIF_SELWB |
 		FIMC_REG_CIGCTRL_SELCAM_MIPI_A | FIMC_REG_CIGCTRL_CAM_JPEG |
@@ -689,7 +680,7 @@ int fimc_hw_set_camera_type(struct fimc_dev *fimc,
 		if (source->mux_id == 0)
 			cfg |= FIMC_REG_CIGCTRL_SELCAM_MIPI_A;
 
-		/* TODO: add remaining supported formats. */
+		 
 		switch (vid_cap->ci_fmt.code) {
 		case MEDIA_BUS_FMT_VYUY8_2X8:
 			tmp = FIMC_REG_CSIIMGFMT_YCBCR422_8BIT;
@@ -710,7 +701,7 @@ int fimc_hw_set_camera_type(struct fimc_dev *fimc,
 		writel(tmp, fimc->regs + FIMC_REG_CSIIMGFMT);
 		break;
 	case FIMC_BUS_TYPE_ITU_601...FIMC_BUS_TYPE_ITU_656:
-		if (source->mux_id == 0) /* ITU-A, ITU-B: 0, 1 */
+		if (source->mux_id == 0)  
 			cfg |= FIMC_REG_CIGCTRL_SELCAM_ITU_A;
 		if (vid_cap->ci_fmt.code == MEDIA_BUS_FMT_JPEG_1X8)
 			cfg |= FIMC_REG_CIGCTRL_CAM_JPEG;
@@ -762,7 +753,7 @@ void fimc_hw_activate_input_dma(struct fimc_dev *dev, bool on)
 	writel(cfg, dev->regs + FIMC_REG_MSCTRL);
 }
 
-/* Return an index to the buffer actually being written. */
+ 
 s32 fimc_hw_get_frame_index(struct fimc_dev *dev)
 {
 	s32 reg;
@@ -778,7 +769,7 @@ s32 fimc_hw_get_frame_index(struct fimc_dev *dev)
 		FIMC_REG_CISTATUS_FRAMECNT_SHIFT;
 }
 
-/* Return an index to the buffer being written previously. */
+ 
 s32 fimc_hw_get_prev_frame_index(struct fimc_dev *dev)
 {
 	s32 reg;
@@ -790,7 +781,7 @@ s32 fimc_hw_get_prev_frame_index(struct fimc_dev *dev)
 	return ((reg >> 7) & 0x3f) - 1;
 }
 
-/* Locking: the caller holds fimc->slock */
+ 
 void fimc_activate_capture(struct fimc_ctx *ctx)
 {
 	fimc_hw_enable_scaler(ctx->fimc_dev, ctx->scaler.enabled);

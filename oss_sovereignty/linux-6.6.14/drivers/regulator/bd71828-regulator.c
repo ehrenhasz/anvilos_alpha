@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2019 ROHM Semiconductors
-// bd71828-regulator.c ROHM BD71828GW-DS1 regulator driver
-//
+
+
+
+
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -29,10 +29,7 @@ struct bd71828_regulator_data {
 };
 
 static const struct reg_init buck1_inits[] = {
-	/*
-	 * DVS Buck voltages can be changed by register values or via GPIO.
-	 * Use register accesses by default.
-	 */
+	 
 	{
 		.reg = BD71828_REG_PS_CTRL_1,
 		.mask = BD71828_MASK_DVS_BUCK1_CTRL,
@@ -207,11 +204,7 @@ static const struct bd71828_regulator_data bd71828_rdata[] = {
 			.suspend_mask = BD71828_MASK_BUCK1267_VOLT,
 			.suspend_on_mask = BD71828_MASK_SUSP_EN,
 			.lpsr_on_mask = BD71828_MASK_LPSR_EN,
-			/*
-			 * LPSR voltage is same as SUSPEND voltage. Allow
-			 * setting it so that regulator can be set enabled at
-			 * LPSR state
-			 */
+			 
 			.lpsr_reg = BD71828_REG_BUCK1_SUSP_VOLT,
 			.lpsr_mask = BD71828_MASK_BUCK1267_VOLT,
 		},
@@ -278,12 +271,7 @@ static const struct bd71828_regulator_data bd71828_rdata[] = {
 			.of_parse_cb = buck_set_hw_dvs_levels,
 		},
 		.dvs = {
-			/*
-			 * BUCK3 only supports single voltage for all states.
-			 * voltage can be individually enabled for each state
-			 * though => allow setting all states to support
-			 * enabling power rail on different states.
-			 */
+			 
 			.level_map = ROHM_DVS_LEVEL_RUN | ROHM_DVS_LEVEL_IDLE |
 				     ROHM_DVS_LEVEL_SUSPEND |
 				     ROHM_DVS_LEVEL_LPSR,
@@ -319,12 +307,7 @@ static const struct bd71828_regulator_data bd71828_rdata[] = {
 			.of_parse_cb = buck_set_hw_dvs_levels,
 		},
 		.dvs = {
-			/*
-			 * BUCK4 only supports single voltage for all states.
-			 * voltage can be individually enabled for each state
-			 * though => allow setting all states to support
-			 * enabling power rail on different states.
-			 */
+			 
 			.level_map = ROHM_DVS_LEVEL_RUN | ROHM_DVS_LEVEL_IDLE |
 				     ROHM_DVS_LEVEL_SUSPEND |
 				     ROHM_DVS_LEVEL_LPSR,
@@ -360,12 +343,7 @@ static const struct bd71828_regulator_data bd71828_rdata[] = {
 			.of_parse_cb = buck_set_hw_dvs_levels,
 		},
 		.dvs = {
-			/*
-			 * BUCK5 only supports single voltage for all states.
-			 * voltage can be individually enabled for each state
-			 * though => allow setting all states to support
-			 * enabling power rail on different states.
-			 */
+			 
 			.level_map = ROHM_DVS_LEVEL_RUN | ROHM_DVS_LEVEL_IDLE |
 				     ROHM_DVS_LEVEL_SUSPEND |
 				     ROHM_DVS_LEVEL_LPSR,
@@ -483,12 +461,7 @@ static const struct bd71828_regulator_data bd71828_rdata[] = {
 			.of_parse_cb = buck_set_hw_dvs_levels,
 		},
 		.dvs = {
-			/*
-			 * LDO1 only supports single voltage for all states.
-			 * voltage can be individually enabled for each state
-			 * though => allow setting all states to support
-			 * enabling power rail on different states.
-			 */
+			 
 			.level_map = ROHM_DVS_LEVEL_RUN | ROHM_DVS_LEVEL_IDLE |
 				     ROHM_DVS_LEVEL_SUSPEND |
 				     ROHM_DVS_LEVEL_LPSR,
@@ -523,12 +496,7 @@ static const struct bd71828_regulator_data bd71828_rdata[] = {
 			.of_parse_cb = buck_set_hw_dvs_levels,
 		},
 		.dvs = {
-			/*
-			 * LDO2 only supports single voltage for all states.
-			 * voltage can be individually enabled for each state
-			 * though => allow setting all states to support
-			 * enabling power rail on different states.
-			 */
+			 
 			.level_map = ROHM_DVS_LEVEL_RUN | ROHM_DVS_LEVEL_IDLE |
 				     ROHM_DVS_LEVEL_SUSPEND |
 				     ROHM_DVS_LEVEL_LPSR,
@@ -563,12 +531,7 @@ static const struct bd71828_regulator_data bd71828_rdata[] = {
 			.of_parse_cb = buck_set_hw_dvs_levels,
 		},
 		.dvs = {
-			/*
-			 * LDO3 only supports single voltage for all states.
-			 * voltage can be individually enabled for each state
-			 * though => allow setting all states to support
-			 * enabling power rail on different states.
-			 */
+			 
 			.level_map = ROHM_DVS_LEVEL_RUN | ROHM_DVS_LEVEL_IDLE |
 				     ROHM_DVS_LEVEL_SUSPEND |
 				     ROHM_DVS_LEVEL_LPSR,
@@ -604,12 +567,7 @@ static const struct bd71828_regulator_data bd71828_rdata[] = {
 			.of_parse_cb = buck_set_hw_dvs_levels,
 		},
 		.dvs = {
-			/*
-			 * LDO1 only supports single voltage for all states.
-			 * voltage can be individually enabled for each state
-			 * though => allow setting all states to support
-			 * enabling power rail on different states.
-			 */
+			 
 			.level_map = ROHM_DVS_LEVEL_RUN | ROHM_DVS_LEVEL_IDLE |
 				     ROHM_DVS_LEVEL_SUSPEND |
 				     ROHM_DVS_LEVEL_LPSR,
@@ -643,13 +601,7 @@ static const struct bd71828_regulator_data bd71828_rdata[] = {
 			.of_parse_cb = buck_set_hw_dvs_levels,
 			.owner = THIS_MODULE,
 		},
-		/*
-		 * LDO5 is special. It can choose vsel settings to be configured
-		 * from 2 different registers (by GPIO).
-		 *
-		 * This driver supports only configuration where
-		 * BD71828_REG_LDO5_VOLT_L is used.
-		 */
+		 
 		.dvs = {
 			.level_map = ROHM_DVS_LEVEL_RUN | ROHM_DVS_LEVEL_IDLE |
 				     ROHM_DVS_LEVEL_SUSPEND |
@@ -680,15 +632,12 @@ static const struct bd71828_regulator_data bd71828_rdata[] = {
 			.enable_reg = BD71828_REG_LDO6_EN,
 			.enable_mask = BD71828_MASK_RUN_EN,
 			.owner = THIS_MODULE,
-			/*
-			 * LDO6 only supports enable/disable for all states.
-			 * Voltage for LDO6 is fixed.
-			 */
+			 
 			.of_parse_cb = ldo6_parse_dt,
 		},
 	}, {
 		.desc = {
-			/* SNVS LDO in data-sheet */
+			 
 			.name = "ldo7",
 			.of_match = of_match_ptr("LDO7"),
 			.regulators_node = of_match_ptr("regulators"),
@@ -706,12 +655,7 @@ static const struct bd71828_regulator_data bd71828_rdata[] = {
 			.of_parse_cb = buck_set_hw_dvs_levels,
 		},
 		.dvs = {
-			/*
-			 * LDO7 only supports single voltage for all states.
-			 * voltage can be individually enabled for each state
-			 * though => allow setting all states to support
-			 * enabling power rail on different states.
-			 */
+			 
 			.level_map = ROHM_DVS_LEVEL_RUN | ROHM_DVS_LEVEL_IDLE |
 				     ROHM_DVS_LEVEL_SUSPEND |
 				     ROHM_DVS_LEVEL_LPSR,

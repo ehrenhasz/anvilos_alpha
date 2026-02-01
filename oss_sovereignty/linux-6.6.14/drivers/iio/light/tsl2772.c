@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Device driver for monitoring ambient light intensity in (lux) and proximity
- * detection (prox) within the TAOS TSL2571, TSL2671, TMD2671, TSL2771, TMD2771,
- * TSL2572, TSL2672, TMD2672, TSL2772, and TMD2772 devices.
- *
- * Copyright (c) 2012, TAOS Corporation.
- * Copyright (c) 2017-2018 Brian Masney <masneyb@onstation.org>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/errno.h>
@@ -24,28 +17,25 @@
 #include <linux/platform_data/tsl2772.h>
 #include <linux/regulator/consumer.h>
 
-/* Cal defs */
+ 
 #define PROX_STAT_CAL			0
 #define PROX_STAT_SAMP			1
 #define MAX_SAMPLES_CAL			200
 
-/* TSL2772 Device ID */
+ 
 #define TRITON_ID			0x00
 #define SWORDFISH_ID			0x30
 #define HALIBUT_ID			0x20
 
-/* Lux calculation constants */
+ 
 #define TSL2772_LUX_CALC_OVER_FLOW	65535
 
-/*
- * TAOS Register definitions - Note: depending on device, some of these register
- * are not used and the register address is benign.
- */
+ 
 
-/* Register offsets */
+ 
 #define TSL2772_MAX_CONFIG_REG		16
 
-/* Device Registers and Masks */
+ 
 #define TSL2772_CNTRL			0x00
 #define TSL2772_ALS_TIME		0X01
 #define TSL2772_PRX_TIME		0x02
@@ -73,7 +63,7 @@
 #define TSL2772_PRX_LO			0x18
 #define TSL2772_PRX_HI			0x19
 
-/* tsl2772 cmd reg masks */
+ 
 #define TSL2772_CMD_REG			0x80
 #define TSL2772_CMD_SPL_FN		0x60
 #define TSL2772_CMD_REPEAT_PROTO	0x00
@@ -83,11 +73,11 @@
 #define TSL2772_CMD_ALS_INT_CLR		0x06
 #define TSL2772_CMD_PROXALS_INT_CLR	0X07
 
-/* tsl2772 cntrl reg masks */
+ 
 #define TSL2772_CNTL_ADC_ENBL		0x02
 #define TSL2772_CNTL_PWR_ON		0x01
 
-/* tsl2772 status reg masks */
+ 
 #define TSL2772_STA_ADC_VALID		0x01
 #define TSL2772_STA_PRX_VALID		0x02
 #define TSL2772_STA_ADC_PRX_VALID	(TSL2772_STA_ADC_VALID | \
@@ -95,7 +85,7 @@
 #define TSL2772_STA_ALS_INTR		0x10
 #define TSL2772_STA_PRX_INTR		0x20
 
-/* tsl2772 cntrl reg masks */
+ 
 #define TSL2772_CNTL_REG_CLEAR		0x00
 #define TSL2772_CNTL_PROX_INT_ENBL	0X20
 #define TSL2772_CNTL_ALS_INT_ENBL	0X10
@@ -115,7 +105,7 @@
 #define TSL2772_BOOT_MIN_SLEEP_TIME	10000
 #define TSL2772_BOOT_MAX_SLEEP_TIME	28000
 
-/* Device family members */
+ 
 enum {
 	tsl2571,
 	tsl2671,
@@ -142,7 +132,7 @@ enum {
 	TSL2772_NUM_SUPPLIES = 2
 };
 
-/* Per-device data */
+ 
 struct tsl2772_als_info {
 	u16 als_ch0;
 	u16 als_ch1;
@@ -181,22 +171,11 @@ struct tsl2772_chip {
 	const struct tsl2772_chip_info	*chip_info;
 	const struct iio_info *info;
 	s64 event_timestamp;
-	/*
-	 * This structure is intentionally large to accommodate
-	 * updates via sysfs.
-	 * Sized to 9 = max 8 segments + 1 termination segment
-	 */
+	 
 	struct tsl2772_lux tsl2772_device_lux[TSL2772_MAX_LUX_TABLE_SIZE];
 };
 
-/*
- * Different devices require different coefficents, and these numbers were
- * derived from the 'Lux Equation' section of the various device datasheets.
- * All of these coefficients assume a Glass Attenuation (GA) factor of 1.
- * The coefficients are multiplied by 1000 to avoid floating point operations.
- * The two rows in each table correspond to the Lux1 and Lux2 equations from
- * the datasheets.
- */
+ 
 static const struct tsl2772_lux tsl2x71_lux_table[TSL2772_DEF_LUX_TABLE_SZ] = {
 	{ 53000, 106000 },
 	{ 31800,  53000 },
@@ -242,9 +221,9 @@ static const struct tsl2772_lux *tsl2772_default_lux_table_group[] = {
 };
 
 static const struct tsl2772_settings tsl2772_default_settings = {
-	.als_time = 255, /* 2.72 / 2.73 ms */
+	.als_time = 255,  
 	.als_gain = 0,
-	.prox_time = 255, /* 2.72 / 2.73 ms */
+	.prox_time = 255,  
 	.prox_gain = 0,
 	.wait_time = 255,
 	.als_prox_config = 0,
@@ -296,7 +275,7 @@ static int tsl2772_int_calibscale_avail[] = { 1, 8, 16, 120 };
 
 static int tsl2772_prox_calibscale_avail[] = { 1, 2, 4, 8 };
 
-/* Channel variations */
+ 
 enum {
 	ALS,
 	PRX,
@@ -397,17 +376,7 @@ static int tsl2772_read_autoinc_regs(struct tsl2772_chip *chip, int lower_reg,
 	return le16_to_cpup((const __le16 *)&buf[0]);
 }
 
-/**
- * tsl2772_get_lux() - Reads and calculates current lux value.
- * @indio_dev:	pointer to IIO device
- *
- * The raw ch0 and ch1 values of the ambient light sensed in the last
- * integration cycle are read from the device. The raw values are multiplied
- * by a device-specific scale factor, and divided by the integration time and
- * device gain. The code supports multiple lux equations through the lux table
- * coefficients. A lux gain trim is applied to each lux equation, and then the
- * maximum lux within the interval 0..65535 is selected.
- */
+ 
 static int tsl2772_get_lux(struct iio_dev *indio_dev)
 {
 	struct tsl2772_chip *chip = iio_priv(indio_dev);
@@ -431,7 +400,7 @@ static int tsl2772_get_lux(struct iio_dev *indio_dev)
 	if (!(ret & TSL2772_STA_ADC_VALID)) {
 		dev_err(&chip->client->dev,
 			"%s: data not valid yet\n", __func__);
-		ret = chip->als_cur_info.lux; /* return LAST VALUE */
+		ret = chip->als_cur_info.lux;  
 		goto out_unlock;
 	}
 
@@ -453,7 +422,7 @@ static int tsl2772_get_lux(struct iio_dev *indio_dev)
 	}
 
 	if (!chip->als_cur_info.als_ch0) {
-		/* have no data, so return LAST VALUE */
+		 
 		ret = chip->als_cur_info.lux;
 		goto out_unlock;
 	}
@@ -468,12 +437,7 @@ static int tsl2772_get_lux(struct iio_dev *indio_dev)
 		       (chip->als_cur_info.als_ch1 * p->ch1)) /
 			chip->als_gain_time_scale;
 
-		/*
-		 * The als_gain_trim can have a value within the range 250..4000
-		 * and is a multiplier for the lux. A trim of 1000 makes no
-		 * changes to the lux, less than 1000 scales it down, and
-		 * greater than 1000 scales it up.
-		 */
+		 
 		lux = (lux * chip->settings.als_gain_trim) / 1000;
 
 		if (lux > TSL2772_LUX_CALC_OVER_FLOW) {
@@ -497,12 +461,7 @@ out_unlock:
 	return ret;
 }
 
-/**
- * tsl2772_get_prox() - Reads proximity data registers and updates
- *                      chip->prox_data.
- *
- * @indio_dev:	pointer to IIO device
- */
+ 
 static int tsl2772_get_prox(struct iio_dev *indio_dev)
 {
 	struct tsl2772_chip *chip = iio_priv(indio_dev);
@@ -612,16 +571,10 @@ static void tsl2772_parse_dt(struct tsl2772_chip *chip)
 	tsl2772_read_prox_diodes(chip);
 }
 
-/**
- * tsl2772_defaults() - Populates the device nominal operating parameters
- *                      with those provided by a 'platform' data struct or
- *                      with prefined defaults.
- *
- * @chip:               pointer to device structure.
- */
+ 
 static void tsl2772_defaults(struct tsl2772_chip *chip)
 {
-	/* If Operational settings defined elsewhere.. */
+	 
 	if (chip->pdata && chip->pdata->platform_default_settings)
 		memcpy(&chip->settings, chip->pdata->platform_default_settings,
 		       sizeof(tsl2772_default_settings));
@@ -629,7 +582,7 @@ static void tsl2772_defaults(struct tsl2772_chip *chip)
 		memcpy(&chip->settings, &tsl2772_default_settings,
 		       sizeof(tsl2772_default_settings));
 
-	/* Load up the proper lux table. */
+	 
 	if (chip->pdata && chip->pdata->platform_lux_table[0].ch0 != 0)
 		memcpy(chip->tsl2772_device_lux,
 		       chip->pdata->platform_lux_table,
@@ -642,12 +595,7 @@ static void tsl2772_defaults(struct tsl2772_chip *chip)
 	tsl2772_parse_dt(chip);
 }
 
-/**
- * tsl2772_als_calibrate() -	Obtain single reading and calculate
- *                              the als_gain_trim.
- *
- * @indio_dev:	pointer to IIO device
- */
+ 
 static int tsl2772_als_calibrate(struct iio_dev *indio_dev)
 {
 	struct tsl2772_chip *chip = iio_priv(indio_dev);
@@ -707,7 +655,7 @@ static int tsl2772_chip_on(struct iio_dev *indio_dev)
 	int ret, i, als_count, als_time_us;
 	u8 *dev_reg, reg_val;
 
-	/* Non calculated parameters */
+	 
 	chip->tsl2772_config[TSL2772_ALS_TIME] = chip->settings.als_time;
 	chip->tsl2772_config[TSL2772_PRX_TIME] = chip->settings.prox_time;
 	chip->tsl2772_config[TSL2772_WAIT_TIME] = chip->settings.wait_time;
@@ -737,39 +685,33 @@ static int tsl2772_chip_on(struct iio_dev *indio_dev)
 	chip->tsl2772_config[TSL2772_PRX_MAXTHRESHHI] =
 			(chip->settings.prox_thres_high >> 8) & 0xFF;
 
-	/* and make sure we're not already on */
+	 
 	if (chip->tsl2772_chip_status == TSL2772_CHIP_WORKING) {
-		/* if forcing a register update - turn off, then on */
+		 
 		dev_info(&chip->client->dev, "device is already enabled\n");
 		return -EINVAL;
 	}
 
-	/* Set the gain based on tsl2772_settings struct */
+	 
 	chip->tsl2772_config[TSL2772_GAIN] =
 		(chip->settings.als_gain & 0xFF) |
 		((chip->settings.prox_gain & 0xFF) << 2) |
 		(chip->settings.prox_diode << 4) |
 		(chip->settings.prox_power << 6);
 
-	/* set chip time scaling and saturation */
+	 
 	als_count = 256 - chip->settings.als_time;
 	als_time_us = als_count * tsl2772_int_time_avail[chip->id][3];
-	chip->als_saturation = als_count * 768; /* 75% of full scale */
+	chip->als_saturation = als_count * 768;  
 	chip->als_gain_time_scale = als_time_us *
 		tsl2772_als_gain[chip->settings.als_gain];
 
-	/*
-	 * TSL2772 Specific power-on / adc enable sequence
-	 * Power on the device 1st.
-	 */
+	 
 	ret = tsl2772_write_control_reg(chip, TSL2772_CNTL_PWR_ON);
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Use the following shadow copy for our delay before enabling ADC.
-	 * Write all the registers.
-	 */
+	 
 	for (i = 0, dev_reg = chip->tsl2772_config;
 			i < TSL2772_MAX_CONFIG_REG; i++) {
 		int reg = TSL2772_CMD_REG + i;
@@ -784,7 +726,7 @@ static int tsl2772_chip_on(struct iio_dev *indio_dev)
 		}
 	}
 
-	/* Power-on settling time */
+	 
 	usleep_range(3000, 3500);
 
 	reg_val = TSL2772_CNTL_PWR_ON | TSL2772_CNTL_ADC_ENBL |
@@ -817,7 +759,7 @@ static int tsl2772_chip_off(struct iio_dev *indio_dev)
 {
 	struct tsl2772_chip *chip = iio_priv(indio_dev);
 
-	/* turn device off */
+	 
 	chip->tsl2772_chip_status = TSL2772_CHIP_SUSPENDED;
 	return tsl2772_write_control_reg(chip, 0x00);
 }
@@ -829,15 +771,7 @@ static void tsl2772_chip_off_action(void *data)
 	tsl2772_chip_off(indio_dev);
 }
 
-/**
- * tsl2772_invoke_change - power cycle the device to implement the user
- *                         parameters
- * @indio_dev:	pointer to IIO device
- *
- * Obtain and lock both ALS and PROX resources, determine and save device state
- * (On/Off), cycle device to implement updated parameter, put device back into
- * proper state, and unlock resource.
- */
+ 
 static int tsl2772_invoke_change(struct iio_dev *indio_dev)
 {
 	struct tsl2772_chip *chip = iio_priv(indio_dev);
@@ -986,10 +920,7 @@ static ssize_t in_illuminance0_lux_table_show(struct device *dev,
 			chip->tsl2772_device_lux[i].ch0,
 			chip->tsl2772_device_lux[i].ch1);
 		if (chip->tsl2772_device_lux[i].ch0 == 0) {
-			/*
-			 * We just printed the first "0" entry.
-			 * Now get rid of the extra "," and break.
-			 */
+			 
 			offset--;
 			break;
 		}
@@ -1011,12 +942,7 @@ static ssize_t in_illuminance0_lux_table_store(struct device *dev,
 
 	get_options(buf, ARRAY_SIZE(value), value);
 
-	/*
-	 * We now have an array of ints starting at value[1], and
-	 * enumerated by value[0].
-	 * We expect each group of two ints to be one table entry,
-	 * and the last table entry is all 0.
-	 */
+	 
 	n = value[0];
 	if ((n % 2) || n < 4 ||
 	    n > ((ARRAY_SIZE(chip->tsl2772_device_lux) - 1) * 2))
@@ -1031,7 +957,7 @@ static ssize_t in_illuminance0_lux_table_store(struct device *dev,
 			return ret;
 	}
 
-	/* Zero out the table */
+	 
 	memset(chip->tsl2772_device_lux, 0, sizeof(chip->tsl2772_device_lux));
 	memcpy(chip->tsl2772_device_lux, &value[1], (value[0] * 4));
 
@@ -1145,7 +1071,7 @@ static int tsl2772_write_event_value(struct iio_dev *indio_dev,
 			(count * tsl2772_int_time_avail[chip->id][3]);
 
 		if (chan->type == IIO_INTENSITY) {
-			/* ALS filter values are 1, 2, 3, 5, 10, 15, ..., 60 */
+			 
 			if (persistence > 3)
 				persistence = (persistence / 5) + 3;
 
@@ -1208,7 +1134,7 @@ static int tsl2772_read_event_value(struct iio_dev *indio_dev,
 			time = chip->settings.als_time;
 			persistence = chip->settings.als_persistence;
 
-			/* ALS filter values are 1, 2, 3, 5, 10, 15, ..., 60 */
+			 
 			if (persistence > 3)
 				persistence = (persistence - 3) * 5;
 		} else {
@@ -1357,7 +1283,7 @@ static DEVICE_ATTR_WO(in_proximity0_calibrate);
 
 static DEVICE_ATTR_RW(in_illuminance0_lux_table);
 
-/* Use the default register values to identify the Taos device */
+ 
 static int tsl2772_device_id_verif(int id, int target)
 {
 	switch (target) {
@@ -1391,7 +1317,7 @@ static irqreturn_t tsl2772_event_handler(int irq, void *private)
 	if (ret < 0)
 		return IRQ_HANDLED;
 
-	/* What type of interrupt do we need to process */
+	 
 	if (ret & TSL2772_STA_PRX_INTR) {
 		iio_push_event(indio_dev,
 			       IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY,

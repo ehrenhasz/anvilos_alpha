@@ -1,28 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+
+ 
 
 #include "dm_services.h"
 #include "dc.h"
@@ -100,11 +77,9 @@ enum dcn32_clk_src_array_id {
 	DCN32_CLK_SRC_TOTAL
 };
 
-/* begin *********************
- * macros to expend register list macro defined in HW object header file
- */
+ 
 
-/* DCN */
+ 
 #define BASE_INNER(seg) ctx->dcn_reg_offsets[seg]
 
 #define BASE(seg) BASE_INNER(seg)
@@ -175,7 +150,7 @@ enum dcn32_clk_src_array_id {
 	REG_STRUCT.reg_name[id] = BASE(reg ## reg_name ## _ ## block ## id ## _BASE_IDX) + \
 		reg ## reg_name ## _ ## block ## id
 
-/* NBIO */
+ 
 #define NBIO_BASE_INNER(seg) ctx->nbio_reg_offsets[seg]
 
 #define NBIO_BASE(seg) \
@@ -313,18 +288,18 @@ static struct dcn10_link_enc_hpd_registers link_enc_hpd_regs[5];
 	LE_DCN31_REG_LIST_RI(id), \
 	UNIPHY_DCN2_REG_LIST_RI(id, phyid)\
 	)
-	/*DPCS_DCN31_REG_LIST(id),*/ \
+	  \
 
 static struct dcn10_link_enc_registers link_enc_regs[5];
 
 static const struct dcn10_link_enc_shift le_shift = {
 	LINK_ENCODER_MASK_SH_LIST_DCN31(__SHIFT), \
-	//DPCS_DCN31_MASK_SH_LIST(__SHIFT)
+	
 };
 
 static const struct dcn10_link_enc_mask le_mask = {
 	LINK_ENCODER_MASK_SH_LIST_DCN31(_MASK), \
-	//DPCS_DCN31_MASK_SH_LIST(_MASK)
+	
 };
 
 #define hpo_dp_stream_encoder_reg_init(id)\
@@ -343,10 +318,10 @@ static const struct dcn31_hpo_dp_stream_encoder_mask hpo_dp_se_mask = {
 
 #define hpo_dp_link_encoder_reg_init(id)\
 	DCN3_1_HPO_DP_LINK_ENC_REG_LIST_RI(id)
-	/*DCN3_1_RDPCSTX_REG_LIST(0),*/
-	/*DCN3_1_RDPCSTX_REG_LIST(1),*/
-	/*DCN3_1_RDPCSTX_REG_LIST(2),*/
-	/*DCN3_1_RDPCSTX_REG_LIST(3),*/
+	 
+	 
+	 
+	 
 
 static struct dcn31_hpo_dp_link_encoder_registers hpo_dp_link_enc_regs[2];
 
@@ -672,7 +647,7 @@ static const struct dc_plane_cap plane_cap = {
 			.fp16 = 16000
 	},
 
-	// 6:1 downscaling ratio: 1000/6 = 166.666
+	
 	.max_downscale_factor = {
 			.argb8888 = 167,
 			.nv12 = 167,
@@ -688,23 +663,23 @@ static const struct dc_debug_options debug_defaults_drv = {
 	.timing_trace = false,
 	.clock_trace = true,
 	.disable_pplib_clock_request = false,
-	.pipe_split_policy = MPC_SPLIT_AVOID, // Due to CRB, no need to MPC split anymore
+	.pipe_split_policy = MPC_SPLIT_AVOID, 
 	.force_single_disp_pipe_split = false,
 	.disable_dcc = DCC_ENABLE,
 	.vsr_support = true,
 	.performance_trace = false,
-	.max_downscale_src_width = 7680,/*upto 8K*/
+	.max_downscale_src_width = 7680, 
 	.disable_pplib_wm_range = false,
 	.scl_reset_length10 = true,
 	.sanity_checks = false,
 	.underflow_assert_delay_us = 0xFFFFFFFF,
-	.dwb_fi_phase = -1, // -1 = disable,
+	.dwb_fi_phase = -1, 
 	.dmub_command_table = true,
 	.enable_mem_low_power = {
 		.bits = {
 			.vga = false,
 			.i2c = false,
-			.dmcu = false, // This is previously known to cause hang on S3 cycles if enabled
+			.dmcu = false, 
 			.dscl = false,
 			.cm = false,
 			.mpc = false,
@@ -716,16 +691,16 @@ static const struct dc_debug_options debug_defaults_drv = {
 	.exit_idle_opt_for_cursor_updates = true,
 	.enable_single_display_2to1_odm_policy = true,
 
-	/* Must match enable_single_display_2to1_odm_policy to support dynamic ODM transitions*/
+	 
 	.enable_double_buffered_dsc_pg_support = true,
 	.enable_dp_dig_pixel_rate_div_policy = 1,
-	.allow_sw_cursor_fallback = false, // Linux can't do SW cursor "fallback"
+	.allow_sw_cursor_fallback = false, 
 	.alloc_extra_way_for_cursor = true,
-	.min_prefetch_in_strobe_ns = 60000, // 60us
+	.min_prefetch_in_strobe_ns = 60000, 
 	.disable_unbounded_requesting = false,
 	.override_dispclk_programming = true,
 	.disable_fpo_optimizations = false,
-	.fpo_vactive_margin_us = 2000, // 2000us
+	.fpo_vactive_margin_us = 2000, 
 	.disable_fpo_vactive = false,
 	.disable_boot_optimizations = false,
 	.disable_subvp_high_refresh = false,
@@ -1200,7 +1175,7 @@ static struct stream_encoder *dcn32_stream_encoder_create(
 	int vpg_inst;
 	int afmt_inst;
 
-	/* Mapping of VPG, AFMT, DME register blocks to DIO block instance */
+	 
 	if (eng_id <= ENGINE_ID_DIGF) {
 		vpg_inst = eng_id;
 		afmt_inst = eng_id;
@@ -1248,23 +1223,13 @@ static struct hpo_dp_stream_encoder *dcn32_hpo_dp_stream_encoder_create(
 	ASSERT((eng_id >= ENGINE_ID_HPO_DP_0) && (eng_id <= ENGINE_ID_HPO_DP_3));
 	hpo_dp_inst = eng_id - ENGINE_ID_HPO_DP_0;
 
-	/* Mapping of VPG register blocks to HPO DP block instance:
-	 * VPG[6] -> HPO_DP[0]
-	 * VPG[7] -> HPO_DP[1]
-	 * VPG[8] -> HPO_DP[2]
-	 * VPG[9] -> HPO_DP[3]
-	 */
+	 
 	vpg_inst = hpo_dp_inst + 6;
 
-	/* Mapping of APG register blocks to HPO DP block instance:
-	 * APG[0] -> HPO_DP[0]
-	 * APG[1] -> HPO_DP[1]
-	 * APG[2] -> HPO_DP[2]
-	 * APG[3] -> HPO_DP[3]
-	 */
+	 
 	apg_inst = hpo_dp_inst;
 
-	/* allocate HPO stream encoder and create VPG sub-block */
+	 
 	hpo_dp_enc31 = kzalloc(sizeof(struct dcn31_hpo_dp_stream_encoder), GFP_KERNEL);
 	vpg = dcn32_vpg_create(ctx, vpg_inst);
 	apg = dcn31_apg_create(ctx, apg_inst);
@@ -1297,7 +1262,7 @@ static struct hpo_dp_link_encoder *dcn32_hpo_dp_link_encoder_create(
 {
 	struct dcn31_hpo_dp_link_encoder *hpo_dp_enc31;
 
-	/* allocate HPO link encoder */
+	 
 	hpo_dp_enc31 = kzalloc(sizeof(struct dcn31_hpo_dp_link_encoder), GFP_KERNEL);
 
 #undef REG_STRUCT
@@ -1658,7 +1623,7 @@ static void dcn32_enable_phantom_plane(struct dc *dc,
 		phantom_plane->rotation = curr_pipe->plane_state->rotation;
 		phantom_plane->visible = curr_pipe->plane_state->visible;
 
-		/* Shadow pipe has small viewport. */
+		 
 		phantom_plane->clip_rect.y = 0;
 		phantom_plane->clip_rect.height = phantom_stream->src.height;
 
@@ -1688,7 +1653,7 @@ static struct dc_stream_state *dcn32_enable_phantom_stream(struct dc *dc,
 	ref_pipe->stream->mall_stream_config.type = SUBVP_MAIN;
 	ref_pipe->stream->mall_stream_config.paired_stream = phantom_stream;
 
-	/* stream has limited viewport and small timing */
+	 
 	memcpy(&phantom_stream->timing, &ref_pipe->stream->timing, sizeof(phantom_stream->timing));
 	memcpy(&phantom_stream->src, &ref_pipe->stream->src, sizeof(phantom_stream->src));
 	memcpy(&phantom_stream->dst, &ref_pipe->stream->dst, sizeof(phantom_stream->dst));
@@ -1721,7 +1686,7 @@ void dcn32_retain_phantom_pipes(struct dc *dc, struct dc_state *context)
 	}
 }
 
-// return true if removed piped from ctx, false otherwise
+
 bool dcn32_remove_phantom_pipes(struct dc *dc, struct dc_state *context, bool fast_update)
 {
 	int i;
@@ -1731,7 +1696,7 @@ bool dcn32_remove_phantom_pipes(struct dc *dc, struct dc_state *context, bool fa
 
 	for (i = 0; i < dc->res_pool->pipe_count; i++) {
 		struct pipe_ctx *pipe = &context->res_ctx.pipe_ctx[i];
-		// build scaling params for phantom pipes
+		
 		if (pipe->plane_state && pipe->stream && pipe->stream->mall_stream_config.type == SUBVP_PHANTOM) {
 			phantom_plane = pipe->plane_state;
 			phantom_stream = pipe->stream;
@@ -1739,25 +1704,16 @@ bool dcn32_remove_phantom_pipes(struct dc *dc, struct dc_state *context, bool fa
 			dc_rem_all_planes_for_stream(dc, pipe->stream, context);
 			dc_remove_stream_from_ctx(dc, context, pipe->stream);
 
-			/* Ref count is incremented on allocation and also when added to the context.
-			 * Therefore we must call release for the the phantom plane and stream once
-			 * they are removed from the ctx to finally decrement the refcount to 0 to free.
-			 */
+			 
 			dc_plane_state_release(phantom_plane);
 			dc_stream_release(phantom_stream);
 
 			removed_pipe = true;
 		}
 
-		/* For non-full updates, a shallow copy of the current state
-		 * is created. In this case we don't want to erase the current
-		 * state (there can be 2 HIRQL threads, one in flip, and one in
-		 * checkMPO) that can cause a race condition.
-		 *
-		 * This is just a workaround, needs a proper fix.
-		 */
+		 
 		if (!fast_update) {
-			// Clear all phantom stream info
+			 
 			if (pipe->stream) {
 				pipe->stream->mall_stream_config.type = SUBVP_NONE;
 				pipe->stream->mall_stream_config.paired_stream = NULL;
@@ -1771,9 +1727,7 @@ bool dcn32_remove_phantom_pipes(struct dc *dc, struct dc_state *context, bool fa
 	return removed_pipe;
 }
 
-/* TODO: Input to this function should indicate which pipe indexes (or streams)
- * require a phantom pipe / stream
- */
+ 
 void dcn32_add_phantom_pipes(struct dc *dc, struct dc_state *context,
 		display_e2e_pipe_params_st *pipes,
 		unsigned int pipe_cnt,
@@ -1782,24 +1736,24 @@ void dcn32_add_phantom_pipes(struct dc *dc, struct dc_state *context,
 	struct dc_stream_state *phantom_stream = NULL;
 	unsigned int i;
 
-	// The index of the DC pipe passed into this function is guarenteed to
-	// be a valid candidate for SubVP (i.e. has a plane, stream, doesn't
-	// already have phantom pipe assigned, etc.) by previous checks.
+	 
+	 
+	
 	phantom_stream = dcn32_enable_phantom_stream(dc, context, pipes, pipe_cnt, index);
 	dcn32_enable_phantom_plane(dc, context, phantom_stream, index);
 
 	for (i = 0; i < dc->res_pool->pipe_count; i++) {
 		struct pipe_ctx *pipe = &context->res_ctx.pipe_ctx[i];
 
-		// Build scaling params for phantom pipes which were newly added.
-		// We determine which phantom pipes were added by comparing with
-		// the phantom stream.
+		
+		
+		
 		if (pipe->plane_state && pipe->stream && pipe->stream == phantom_stream &&
 				pipe->stream->mall_stream_config.type == SUBVP_PHANTOM) {
 			pipe->stream->use_dynamic_meta = false;
 			pipe->plane_state->flip_immediate = false;
 			if (!resource_build_scaling_params(pipe)) {
-				// Log / remove phantom pipes since failed to build scaling params
+				
 			}
 		}
 	}
@@ -1818,23 +1772,13 @@ bool dcn32_validate_bandwidth(struct dc *dc,
 	display_e2e_pipe_params_st *pipes = kzalloc(dc->res_pool->pipe_count * sizeof(display_e2e_pipe_params_st), GFP_KERNEL);
 	struct mall_temp_config mall_temp_config;
 
-	/* To handle Freesync properly, setting FreeSync DML parameters
-	 * to its default state for the first stage of validation
-	 */
+	 
 	context->bw_ctx.bw.dcn.clk.fw_based_mclk_switching = false;
 	context->bw_ctx.dml.soc.dram_clock_change_requirement_final = true;
 
 	DC_LOGGER_INIT(dc->ctx->logger);
 
-	/* For fast validation, there are situations where a shallow copy of
-	 * of the dc->current_state is created for the validation. In this case
-	 * we want to save and restore the mall config because we always
-	 * teardown subvp at the beginning of validation (and don't attempt
-	 * to add it back if it's fast validation). If we don't restore the
-	 * subvp config in cases of fast validation + shallow copy of the
-	 * dc->current_state, the dc->current_state will have a partially
-	 * removed subvp state when we did not intend to remove it.
-	 */
+	 
 	if (fast_validate) {
 		memset(&mall_temp_config, 0, sizeof(mall_temp_config));
 		dcn32_save_mall_state(dc, context, &mall_temp_config);
@@ -1899,13 +1843,7 @@ int dcn32_populate_dml_pipes_from_context(
 
 	dcn20_populate_dml_pipes_from_context(dc, context, pipes, fast_validate);
 
-	/* Determine whether we will apply ODM 2to1 policy:
-	 * Applies to single display and where the number of planes is less than 3.
-	 * For 3 plane case ( 2 MPO planes ), we will not set the policy for the MPO pipes.
-	 *
-	 * Apply pipe split policy first so we can predict the pipe split correctly
-	 * (dcn32_predict_pipe_split).
-	 */
+	 
 	for (i = 0, pipe_cnt = 0; i < dc->res_pool->pipe_count; i++) {
 		if (!res_ctx->pipe_ctx[i].stream)
 			continue;
@@ -1921,7 +1859,7 @@ int dcn32_populate_dml_pipes_from_context(
 				is_h_timing_divisible_by_2(res_ctx->pipe_ctx[i].stream) &&
 				pipe->stream->timing.pix_clk_100hz * 100 > DCN3_2_VMIN_DISPCLK_HZ &&
 				dc->debug.enable_single_display_2to1_odm_policy &&
-				!vsr_odm_support) { //excluding 2to1 ODM combine on >= 5k vsr
+				!vsr_odm_support) {  
 			pipes[pipe_cnt].pipe.dest.odm_combine_policy = dm_odm_combine_policy_2to1;
 		}
 		pipe_cnt++;
@@ -1939,13 +1877,11 @@ int dcn32_populate_dml_pipes_from_context(
 		dcn32_zero_pipe_dcc_fraction(pipes, pipe_cnt);
 		DC_FP_END();
 		pipes[pipe_cnt].pipe.dest.vfront_porch = timing->v_front_porch;
-		pipes[pipe_cnt].pipe.src.gpuvm_min_page_size_kbytes = 256; // according to spreadsheet
+		pipes[pipe_cnt].pipe.src.gpuvm_min_page_size_kbytes = 256;  
 		pipes[pipe_cnt].pipe.src.unbounded_req_mode = false;
 		pipes[pipe_cnt].pipe.scale_ratio_depth.lb_depth = dm_lb_19;
 
-		/* Only populate DML input with subvp info for full updates.
-		 * This is just a workaround -- needs a proper fix.
-		 */
+		 
 		if (!fast_validate) {
 			switch (pipe->stream->mall_stream_config.type) {
 			case SUBVP_MAIN:
@@ -1955,7 +1891,7 @@ int dcn32_populate_dml_pipes_from_context(
 			case SUBVP_PHANTOM:
 				pipes[pipe_cnt].pipe.src.use_mall_for_pstate_change = dm_use_mall_pstate_change_phantom_pipe;
 				pipes[pipe_cnt].pipe.src.use_mall_for_static_screen = dm_use_mall_static_screen_disable;
-				// Disallow unbounded req for SubVP according to DCHUB programming guide
+				 
 				pipes[pipe_cnt].pipe.src.unbounded_req_mode = false;
 				break;
 			case SUBVP_NONE:
@@ -1992,15 +1928,12 @@ int dcn32_populate_dml_pipes_from_context(
 		pipe_cnt++;
 	}
 
-	/* For DET allocation, we don't want to use DML policy (not optimal for utilizing all
-	 * the DET available for each pipe). Use the DET override input to maintain our driver
-	 * policy.
-	 */
+	 
 	dcn32_set_det_allocations(dc, context, pipes);
 
-	// In general cases we want to keep the dram clock change requirement
-	// (prefer configs that support MCLK switch). Only override to false
-	// for SubVP
+	
+	
+	
 	if (context->bw_ctx.bw.dcn.clk.fw_based_mclk_switching || subvp_in_use)
 		context->bw_ctx.dml.soc.dram_clock_change_requirement_final = false;
 	else
@@ -2060,7 +1993,7 @@ static struct resource_funcs dcn32_res_pool_funcs = {
 static uint32_t read_pipe_fuses(struct dc_context *ctx)
 {
 	uint32_t value = REG_READ(CC_DC_PIPE_DIS);
-	/* DCN32 support max 4 pipes */
+	 
 	value = value & 0xf;
 	return value;
 }
@@ -2106,7 +2039,7 @@ static bool dcn32_resource_construct(
 	ctx->dc_bios->regs = &bios_regs;
 
 	pool->base.res_cap = &res_cap_dcn32;
-	/* max number of pipes for ASIC before checking for pipe fuses */
+	 
 	num_pipes  = pool->base.res_cap->num_timing_generator;
 	pipe_fuses = read_pipe_fuses(ctx);
 
@@ -2115,30 +2048,26 @@ static bool dcn32_resource_construct(
 			num_pipes--;
 
 	if (pipe_fuses & 1)
-		ASSERT(0); //Unexpected - Pipe 0 should always be fully functional!
+		ASSERT(0); 
 
 	if (pipe_fuses & CC_DC_PIPE_DIS__DC_FULL_DIS_MASK)
-		ASSERT(0); //Entire DCN is harvested!
+		ASSERT(0); 
 
-	/* within dml lib, initial value is hard coded, if ASIC pipe is fused, the
-	 * value will be changed, update max_num_dpp and max_num_otg for dml.
-	 */
+	 
 	dcn3_2_ip.max_num_dpp = num_pipes;
 	dcn3_2_ip.max_num_otg = num_pipes;
 
 	pool->base.funcs = &dcn32_res_pool_funcs;
 
-	/*************************************************
-	 *  Resource + asic cap harcoding                *
-	 *************************************************/
+	 
 	pool->base.underlay_pipe_index = NO_UNDERLAY_PIPE;
 	pool->base.timing_generator_count = num_pipes;
 	pool->base.pipe_count = num_pipes;
 	pool->base.mpcc_count = num_pipes;
 	dc->caps.max_downscale_ratio = 600;
 	dc->caps.i2c_speed_in_khz = 100;
-	dc->caps.i2c_speed_in_khz_hdcp = 100; /*1.4 w/a applied by default*/
-	/* TODO: Bring max_cursor_size back to 256 after subvp cursor corruption is fixed*/
+	dc->caps.i2c_speed_in_khz_hdcp = 100;  
+	 
 	dc->caps.max_cursor_size = 64;
 	dc->caps.min_horizontal_blanking_period = 80;
 	dc->caps.dmdata_alloc_size = 2048;
@@ -2149,7 +2078,7 @@ static bool dcn32_resource_construct(
 	dc->caps.cache_line_size = 64;
 	dc->caps.cache_num_ways = 16;
 
-	/* Calculate the available MALL space */
+	 
 	dc->caps.max_cab_allocation_bytes = dcn32_calc_num_avail_chans_for_mall(
 		dc, dc->ctx->dc_bios->vram_info.num_chans) *
 		dc->caps.mall_size_per_mem_channel * 1024 * 1024;
@@ -2161,7 +2090,7 @@ static bool dcn32_resource_construct(
 	dc->caps.subvp_swath_height_margin_lines = 16;
 	dc->caps.subvp_pstate_allow_width_us = 20;
 	dc->caps.subvp_vertical_int_margin_us = 30;
-	dc->caps.subvp_drr_vblank_start_margin_us = 100; // 100us margin
+	dc->caps.subvp_drr_vblank_start_margin_us = 100; 
 
 	dc->caps.max_slave_planes = 2;
 	dc->caps.max_slave_yuv_planes = 2;
@@ -2178,11 +2107,11 @@ static bool dcn32_resource_construct(
 	dc->caps.seamless_odm = true;
 	dc->caps.max_v_total = (1 << 15) - 1;
 
-	/* Color pipeline capabilities */
+	 
 	dc->caps.color.dpp.dcn_arch = 1;
 	dc->caps.color.dpp.input_lut_shared = 0;
 	dc->caps.color.dpp.icsc = 1;
-	dc->caps.color.dpp.dgam_ram = 0; // must use gamma_corr
+	dc->caps.color.dpp.dgam_ram = 0; 
 	dc->caps.color.dpp.dgam_rom_caps.srgb = 1;
 	dc->caps.color.dpp.dgam_rom_caps.bt2020 = 1;
 	dc->caps.color.dpp.dgam_rom_caps.gamma2_2 = 1;
@@ -2193,8 +2122,8 @@ static bool dcn32_resource_construct(
 	dc->caps.color.dpp.dgam_rom_for_yuv = 0;
 
 	dc->caps.color.dpp.hw_3d_lut = 1;
-	dc->caps.color.dpp.ogam_ram = 0;  // no OGAM in DPP since DCN1
-	// no OGAM ROM on DCN2 and later ASICs
+	dc->caps.color.dpp.ogam_ram = 0;  
+	
 	dc->caps.color.dpp.ogam_rom_caps.srgb = 0;
 	dc->caps.color.dpp.ogam_rom_caps.bt2020 = 0;
 	dc->caps.color.dpp.ogam_rom_caps.gamma2_2 = 0;
@@ -2203,7 +2132,7 @@ static bool dcn32_resource_construct(
 	dc->caps.color.dpp.ocsc = 0;
 
 	dc->caps.color.mpc.gamut_remap = 1;
-	dc->caps.color.mpc.num_3dluts = pool->base.res_cap->num_mpc_3dlut; //4, configurable to be before or after BLND in MPCC
+	dc->caps.color.mpc.num_3dluts = pool->base.res_cap->num_mpc_3dlut; 
 	dc->caps.color.mpc.ogam_ram = 1;
 	dc->caps.color.mpc.ogam_rom_caps.srgb = 0;
 	dc->caps.color.mpc.ogam_rom_caps.bt2020 = 0;
@@ -2212,11 +2141,11 @@ static bool dcn32_resource_construct(
 	dc->caps.color.mpc.ogam_rom_caps.hlg = 0;
 	dc->caps.color.mpc.ocsc = 1;
 
-	/* Use pipe context based otg sync logic */
+	 
 	dc->config.use_pipe_ctx_sync_logic = true;
 
 	dc->config.dc_mode_clk_limit_support = true;
-	/* read VBIOS LTTPR caps */
+	 
 	{
 		if (ctx->dc_bios->funcs->get_lttpr_caps) {
 			enum bp_result bp_query_result;
@@ -2226,7 +2155,7 @@ static bool dcn32_resource_construct(
 			dc->caps.vbios_lttpr_enable = (bp_query_result == BP_RESULT_OK) && !!is_vbios_lttpr_enable;
 		}
 
-		/* interop bit is implicit */
+		 
 		{
 			dc->caps.vbios_lttpr_aware = true;
 		}
@@ -2235,15 +2164,13 @@ static bool dcn32_resource_construct(
 	if (dc->ctx->dce_environment == DCE_ENV_PRODUCTION_DRV)
 		dc->debug = debug_defaults_drv;
 
-	// Init the vm_helper
+	
 	if (dc->vm_helper)
 		vm_helper_init(dc->vm_helper, 16);
 
-	/*************************************************
-	 *  Create resources                             *
-	 *************************************************/
+	 
 
-	/* Clock Sources for Pixel Clock*/
+	 
 	pool->base.clock_sources[DCN32_CLK_SRC_PLL0] =
 			dcn32_clock_source_create(ctx, ctx->dc_bios,
 				CLOCK_SOURCE_COMBO_PHY_PLL0,
@@ -2267,7 +2194,7 @@ static bool dcn32_resource_construct(
 
 	pool->base.clk_src_count = DCN32_CLK_SRC_TOTAL;
 
-	/* todo: not reuse phy_pll registers */
+	 
 	pool->base.dp_clock_source =
 			dcn32_clock_source_create(ctx, ctx->dc_bios,
 				CLOCK_SOURCE_ID_DP_DTO,
@@ -2281,7 +2208,7 @@ static bool dcn32_resource_construct(
 		}
 	}
 
-	/* DCCG */
+	 
 	pool->base.dccg = dccg32_create(ctx, &dccg_regs, &dccg_shift, &dccg_mask);
 	if (pool->base.dccg == NULL) {
 		dm_error("DC: failed to create dccg!\n");
@@ -2289,16 +2216,16 @@ static bool dcn32_resource_construct(
 		goto create_fail;
 	}
 
-	/* DML */
+	 
 	dml_init_instance(&dc->dml, &dcn3_2_soc, &dcn3_2_ip, DML_PROJECT_DCN32);
 
-	/* IRQ Service */
+	 
 	init_data.ctx = dc->ctx;
 	pool->base.irqs = dal_irq_service_dcn32_create(&init_data);
 	if (!pool->base.irqs)
 		goto create_fail;
 
-	/* HUBBUB */
+	 
 	pool->base.hubbub = dcn32_hubbub_create(ctx);
 	if (pool->base.hubbub == NULL) {
 		BREAK_TO_DEBUGGER();
@@ -2306,16 +2233,14 @@ static bool dcn32_resource_construct(
 		goto create_fail;
 	}
 
-	/* HUBPs, DPPs, OPPs, TGs, ABMs */
+	 
 	for (i = 0, j = 0; i < pool->base.res_cap->num_timing_generator; i++) {
 
-		/* if pipe is disabled, skip instance of HW pipe,
-		 * i.e, skip ASIC register instance
-		 */
+		 
 		if (pipe_fuses & 1 << i)
 			continue;
 
-		/* HUBPs */
+		 
 		pool->base.hubps[j] = dcn32_hubp_create(ctx, i);
 		if (pool->base.hubps[j] == NULL) {
 			BREAK_TO_DEBUGGER();
@@ -2324,7 +2249,7 @@ static bool dcn32_resource_construct(
 			goto create_fail;
 		}
 
-		/* DPPs */
+		 
 		pool->base.dpps[j] = dcn32_dpp_create(ctx, i);
 		if (pool->base.dpps[j] == NULL) {
 			BREAK_TO_DEBUGGER();
@@ -2333,7 +2258,7 @@ static bool dcn32_resource_construct(
 			goto create_fail;
 		}
 
-		/* OPPs */
+		 
 		pool->base.opps[j] = dcn32_opp_create(ctx, i);
 		if (pool->base.opps[j] == NULL) {
 			BREAK_TO_DEBUGGER();
@@ -2342,7 +2267,7 @@ static bool dcn32_resource_construct(
 			goto create_fail;
 		}
 
-		/* TGs */
+		 
 		pool->base.timing_generators[j] = dcn32_timing_generator_create(
 				ctx, i);
 		if (pool->base.timing_generators[j] == NULL) {
@@ -2351,7 +2276,7 @@ static bool dcn32_resource_construct(
 			goto create_fail;
 		}
 
-		/* ABMs */
+		 
 		pool->base.multiple_abms[j] = dmub_abm_create(ctx,
 				&abm_regs[i],
 				&abm_shift,
@@ -2362,11 +2287,11 @@ static bool dcn32_resource_construct(
 			goto create_fail;
 		}
 
-		/* index for resource pool arrays for next valid pipe */
+		 
 		j++;
 	}
 
-	/* PSR */
+	 
 	pool->base.psr = dmub_psr_create(ctx);
 	if (pool->base.psr == NULL) {
 		dm_error("DC: failed to create psr obj!\n");
@@ -2374,7 +2299,7 @@ static bool dcn32_resource_construct(
 		goto create_fail;
 	}
 
-	/* MPCCs */
+	 
 	pool->base.mpc = dcn32_mpc_create(ctx, pool->base.res_cap->num_timing_generator, pool->base.res_cap->num_mpc_3dlut);
 	if (pool->base.mpc == NULL) {
 		BREAK_TO_DEBUGGER();
@@ -2382,7 +2307,7 @@ static bool dcn32_resource_construct(
 		goto create_fail;
 	}
 
-	/* DSCs */
+	 
 	for (i = 0; i < pool->base.res_cap->num_dsc; i++) {
 		pool->base.dscs[i] = dcn32_dsc_create(ctx, i);
 		if (pool->base.dscs[i] == NULL) {
@@ -2392,21 +2317,21 @@ static bool dcn32_resource_construct(
 		}
 	}
 
-	/* DWB */
+	 
 	if (!dcn32_dwbc_create(ctx, &pool->base)) {
 		BREAK_TO_DEBUGGER();
 		dm_error("DC: failed to create dwbc!\n");
 		goto create_fail;
 	}
 
-	/* MMHUBBUB */
+	 
 	if (!dcn32_mmhubbub_create(ctx, &pool->base)) {
 		BREAK_TO_DEBUGGER();
 		dm_error("DC: failed to create mcif_wb!\n");
 		goto create_fail;
 	}
 
-	/* AUX and I2C */
+	 
 	for (i = 0; i < pool->base.res_cap->num_ddc; i++) {
 		pool->base.engines[i] = dcn32_aux_engine_create(ctx, i);
 		if (pool->base.engines[i] == NULL) {
@@ -2425,12 +2350,12 @@ static bool dcn32_resource_construct(
 		pool->base.sw_i2cs[i] = NULL;
 	}
 
-	/* Audio, HWSeq, Stream Encoders including HPO and virtual, MPC 3D LUTs */
+	 
 	if (!resource_construct(num_virtual_links, dc, &pool->base,
 			&res_create_funcs))
 		goto create_fail;
 
-	/* HW Sequencer init functions and Plane caps */
+	 
 	dcn32_hw_sequencer_init_functions(dc);
 
 	dc->caps.max_planes =  pool->base.pipe_count;
@@ -2485,48 +2410,7 @@ struct resource_pool *dcn32_create_resource_pool(
 	return NULL;
 }
 
-/*
- * Find the most optimal free pipe from res_ctx, which could be used as a
- * secondary dpp pipe for input opp head pipe.
- *
- * a free pipe - a pipe in input res_ctx not yet used for any streams or
- * planes.
- * secondary dpp pipe - a pipe gets inserted to a head OPP pipe's MPC blending
- * tree. This is typical used for rendering MPO planes or additional offset
- * areas in MPCC combine.
- *
- * Hardware Transition Minimization Algorithm for Finding a Secondary DPP Pipe
- * -------------------------------------------------------------------------
- *
- * PROBLEM:
- *
- * 1. There is a hardware limitation that a secondary DPP pipe cannot be
- * transferred from one MPC blending tree to the other in a single frame.
- * Otherwise it could cause glitches on the screen.
- *
- * For instance, we cannot transition from state 1 to state 2 in one frame. This
- * is because PIPE1 is transferred from PIPE0's MPC blending tree over to
- * PIPE2's MPC blending tree, which is not supported by hardware.
- * To support this transition we need to first remove PIPE1 from PIPE0's MPC
- * blending tree in one frame and then insert PIPE1 to PIPE2's MPC blending tree
- * in the next frame. This is not optimal as it will delay the flip for two
- * frames.
- *
- *	State 1:
- *	PIPE0 -- secondary DPP pipe --> (PIPE1)
- *	PIPE2 -- secondary DPP pipe --> NONE
- *
- *	State 2:
- *	PIPE0 -- secondary DPP pipe --> NONE
- *	PIPE2 -- secondary DPP pipe --> (PIPE1)
- *
- * 2. We want to in general minimize the unnecessary changes in pipe topology.
- * If a pipe is already added in current blending tree and there are no changes
- * to plane topology, we don't want to swap it with another free pipe
- * unnecessarily in every update. Powering up and down a pipe would require a
- * full update which delays the flip for 1 frame. If we use the original pipe
- * we don't have to toggle its power. So we can flip faster.
- */
+ 
 static int find_optimal_free_pipe_as_secondary_dpp_pipe(
 		const struct resource_context *cur_res_ctx,
 		struct resource_context *new_res_ctx,
@@ -2540,20 +2424,12 @@ static int find_optimal_free_pipe_as_secondary_dpp_pipe(
 	free_pipe_idx = resource_find_free_pipe_used_in_cur_mpc_blending_tree(
 			cur_res_ctx, new_res_ctx, cur_opp_head);
 
-	/* Up until here if we have not found a free secondary pipe, we will
-	 * need to wait for at least one frame to complete the transition
-	 * sequence.
-	 */
+	 
 	if (free_pipe_idx == FREE_PIPE_INDEX_NOT_FOUND)
 		free_pipe_idx = recource_find_free_pipe_not_used_in_cur_res_ctx(
 				cur_res_ctx, new_res_ctx, pool);
 
-	/* Up until here if we have not found a free secondary pipe, we will
-	 * need to wait for at least two frames to complete the transition
-	 * sequence. It really doesn't matter which pipe we decide take from
-	 * current enabled pipes. It won't save our frame time when we swap only
-	 * one pipe or more pipes.
-	 */
+	 
 	if (free_pipe_idx == FREE_PIPE_INDEX_NOT_FOUND)
 		free_pipe_idx = resource_find_free_pipe_used_as_cur_sec_dpp_in_mpcc_combine(
 				cur_res_ctx, new_res_ctx, pool);
@@ -2575,25 +2451,7 @@ static struct pipe_ctx *find_idle_secondary_pipe_check_mpo(
 	int primary_index, preferred_pipe_idx;
 	struct pipe_ctx *old_primary_pipe = NULL;
 
-	/*
-	 * Modified from find_idle_secondary_pipe
-	 * With windowed MPO and ODM, we want to avoid the case where we want a
-	 *  free pipe for the left side but the free pipe is being used on the
-	 *  right side.
-	 * Add check on current_state if the primary_pipe is the left side,
-	 *  to check the right side ( primary_pipe->next_odm_pipe ) to see if
-	 *  it is using a pipe for MPO ( primary_pipe->next_odm_pipe->bottom_pipe )
-	 * - If so, then don't use this pipe
-	 * EXCEPTION - 3 plane ( 2 MPO plane ) case
-	 * - in this case, the primary pipe has already gotten a free pipe for the
-	 *  MPO window in the left
-	 * - when it tries to get a free pipe for the MPO window on the right,
-	 *  it will see that it is already assigned to the right side
-	 *  ( primary_pipe->next_odm_pipe ).  But in this case, we want this
-	 *  free pipe, since it will be for the right side.  So add an
-	 *  additional condition, that skipping the free pipe on the right only
-	 *  applies if the primary pipe has no bottom pipe currently assigned
-	 */
+	 
 	if (primary_pipe) {
 		primary_index = primary_pipe->pipe_idx;
 		old_primary_pipe = &primary_pipe->stream->ctx->dc->current_state->res_ctx.pipe_ctx[primary_index];
@@ -2609,10 +2467,7 @@ static struct pipe_ctx *find_idle_secondary_pipe_check_mpo(
 		}
 	}
 
-	/*
-	 * search backwards for the second pipe to keep pipe
-	 * assignment more consistent
-	 */
+	 
 	if (!secondary_pipe)
 		for (i = pool->pipe_count - 1; i >= 0; i--) {
 			if ((res_ctx->pipe_ctx[i].stream == NULL) &&
@@ -2640,12 +2495,7 @@ static struct pipe_ctx *dcn32_acquire_idle_pipe_for_head_pipe_in_layer(
 	if (!head_pipe)
 		ASSERT(0);
 
-	/*
-	 * Modified from dcn20_acquire_idle_pipe_for_layer
-	 * Check if head_pipe in old_context already has bottom_pipe allocated.
-	 * - If so, check if that pipe is available in the current context.
-	 * --  If so, reuse pipe from old_context
-	 */
+	 
 	head_index = head_pipe->pipe_idx;
 	pipe = &old_ctx->pipe_ctx[head_index];
 	if (pipe->bottom_pipe && res_ctx->pipe_ctx[pipe->bottom_pipe->pipe_idx].stream == NULL) {
@@ -2708,36 +2558,7 @@ struct pipe_ctx *dcn32_acquire_free_pipe_as_secondary_dpp_pipe(
 
 unsigned int dcn32_calc_num_avail_chans_for_mall(struct dc *dc, int num_chans)
 {
-	/*
-	 * DCN32 and DCN321 SKUs may have different sizes for MALL
-	 *  but we may not be able to access all the MALL space.
-	 *  If the num_chans is power of 2, then we can access all
-	 *  of the available MALL space.  Otherwise, we can only
-	 *  access:
-	 *
-	 *  max_cab_size_in_bytes = total_cache_size_in_bytes *
-	 *    ((2^floor(log2(num_chans)))/num_chans)
-	 *
-	 * Calculating the MALL sizes for all available SKUs, we
-	 *  have come up with the follow simplified check.
-	 * - we have max_chans which provides the max MALL size.
-	 *  Each chans supports 4MB of MALL so:
-	 *
-	 *  total_cache_size_in_bytes = max_chans * 4 MB
-	 *
-	 * - we have avail_chans which shows the number of channels
-	 *  we can use if we can't access the entire MALL space.
-	 *  It is generally half of max_chans
-	 * - so we use the following checks:
-	 *
-	 *   if (num_chans == max_chans), return max_chans
-	 *   if (num_chans < max_chans), return avail_chans
-	 *
-	 * - exception is GC_11_0_0 where we can't access max_chans,
-	 *  so we define max_avail_chans as the maximum available
-	 *  MALL space
-	 *
-	 */
+	 
 	int gc_11_0_0_max_chans = 48;
 	int gc_11_0_0_max_avail_chans = 32;
 	int gc_11_0_0_avail_chans = 16;
@@ -2752,7 +2573,7 @@ unsigned int dcn32_calc_num_avail_chans_for_mall(struct dc *dc, int num_chans)
 	} else if (ASICREV_IS_GC_11_0_2(dc->ctx->asic_id.hw_internal_rev)) {
 		return (num_chans == gc_11_0_2_max_chans) ?
 			gc_11_0_2_max_chans : gc_11_0_2_avail_chans;
-	} else { // if (ASICREV_IS_GC_11_0_3(dc->ctx->asic_id.hw_internal_rev)) {
+	} else { 
 		return (num_chans == gc_11_0_3_max_chans) ?
 			gc_11_0_3_max_chans : gc_11_0_3_avail_chans;
 	}

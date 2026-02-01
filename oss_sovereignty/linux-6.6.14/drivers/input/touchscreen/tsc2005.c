@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * TSC2005 touchscreen driver
- *
- * Copyright (C) 2006-2010 Nokia Corporation
- * Copyright (C) 2015 QWERTY Embedded Design
- * Copyright (C) 2015 EMAC Inc.
- *
- * Based on original tsc2005.c by Lauri Leukkunen <lauri.leukkunen@nokia.com>
- */
+
+ 
 
 #include <linux/input.h>
 #include <linux/module.h>
@@ -72,7 +64,7 @@ static void tsc2005_remove(struct spi_device *spi)
 #ifdef CONFIG_OF
 static const struct of_device_id tsc2005_of_match[] = {
 	{ .compatible = "ti,tsc2005" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, tsc2005_of_match);
 #endif

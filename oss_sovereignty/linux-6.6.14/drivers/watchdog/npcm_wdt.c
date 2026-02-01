@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2018 Nuvoton Technology corporation.
-// Copyright (c) 2018 IBM Corp.
+
+
+
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -15,31 +15,16 @@
 
 #define NPCM_WTCR	0x1C
 
-#define NPCM_WTCLK	(BIT(10) | BIT(11))	/* Clock divider */
-#define NPCM_WTE	BIT(7)			/* Enable */
-#define NPCM_WTIE	BIT(6)			/* Enable irq */
-#define NPCM_WTIS	(BIT(4) | BIT(5))	/* Interval selection */
-#define NPCM_WTIF	BIT(3)			/* Interrupt flag*/
-#define NPCM_WTRF	BIT(2)			/* Reset flag */
-#define NPCM_WTRE	BIT(1)			/* Reset enable */
-#define NPCM_WTR	BIT(0)			/* Reset counter */
+#define NPCM_WTCLK	(BIT(10) | BIT(11))	 
+#define NPCM_WTE	BIT(7)			 
+#define NPCM_WTIE	BIT(6)			 
+#define NPCM_WTIS	(BIT(4) | BIT(5))	 
+#define NPCM_WTIF	BIT(3)			 
+#define NPCM_WTRF	BIT(2)			 
+#define NPCM_WTRE	BIT(1)			 
+#define NPCM_WTR	BIT(0)			 
 
-/*
- * Watchdog timeouts
- *
- * 170     msec:    WTCLK=01 WTIS=00     VAL= 0x400
- * 670     msec:    WTCLK=01 WTIS=01     VAL= 0x410
- * 1360    msec:    WTCLK=10 WTIS=00     VAL= 0x800
- * 2700    msec:    WTCLK=01 WTIS=10     VAL= 0x420
- * 5360    msec:    WTCLK=10 WTIS=01     VAL= 0x810
- * 10700   msec:    WTCLK=01 WTIS=11     VAL= 0x430
- * 21600   msec:    WTCLK=10 WTIS=10     VAL= 0x820
- * 43000   msec:    WTCLK=11 WTIS=00     VAL= 0xC00
- * 85600   msec:    WTCLK=10 WTIS=11     VAL= 0x830
- * 172000  msec:    WTCLK=11 WTIS=01     VAL= 0xC10
- * 687000  msec:    WTCLK=11 WTIS=10     VAL= 0xC20
- * 2750000 msec:    WTCLK=11 WTIS=11     VAL= 0xC30
- */
+ 
 
 struct npcm_wdt {
 	struct watchdog_device  wdd;
@@ -155,7 +140,7 @@ static int npcm_wdt_restart(struct watchdog_device *wdd,
 {
 	struct npcm_wdt *wdt = to_npcm_wdt(wdd);
 
-	/* For reset, we start the WDT clock and leave it running. */
+	 
 	if (wdt->clk)
 		clk_prepare_enable(wdt->clk);
 
@@ -220,11 +205,11 @@ static int npcm_wdt_probe(struct platform_device *pdev)
 	wdt->wdd.timeout = 86;
 	watchdog_init_timeout(&wdt->wdd, 0, dev);
 
-	/* Ensure timeout is able to be represented by the hardware */
+	 
 	npcm_wdt_set_timeout(&wdt->wdd, wdt->wdd.timeout);
 
 	if (npcm_is_running(&wdt->wdd)) {
-		/* Restart with the default or device-tree specified timeout */
+		 
 		npcm_wdt_start(&wdt->wdd);
 		set_bit(WDOG_HW_RUNNING, &wdt->wdd.status);
 	}

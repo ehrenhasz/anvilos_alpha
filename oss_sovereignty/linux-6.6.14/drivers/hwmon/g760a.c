@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * g760a - Driver for the Global Mixed-mode Technology Inc. G760A
- *	   fan speed PWM controller chip
- *
- * Copyright (C) 2007  Herbert Valerio Riedel <hvr@gnu.org>
- *
- * Complete datasheet is available at GMT's website:
- * http://www.gmt.com.tw/product/datasheet/EDS-760A.pdf
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -26,30 +18,27 @@ enum g760a_regs {
 	G760A_REG_FAN_STA = 0x02
 };
 
-#define G760A_REG_FAN_STA_RPM_OFF 0x1 /* +/-20% off */
-#define G760A_REG_FAN_STA_RPM_LOW 0x2 /* below 1920rpm */
+#define G760A_REG_FAN_STA_RPM_OFF 0x1  
+#define G760A_REG_FAN_STA_RPM_LOW 0x2  
 
-/* register data is read (and cached) at most once per second */
+ 
 #define G760A_UPDATE_INTERVAL (HZ)
 
 struct g760a_data {
 	struct i2c_client *client;
 	struct mutex update_lock;
 
-	/* board specific parameters */
-	u32 clk; /* default 32kHz */
-	u16 fan_div; /* default P=2 */
+	 
+	u32 clk;  
+	u16 fan_div;  
 
-	/* g760a register cache */
+	 
 	unsigned int valid:1;
-	unsigned long last_updated; /* In jiffies */
+	unsigned long last_updated;  
 
-	u8 set_cnt; /* PWM (period) count number; 0xff stops fan */
-	u8 act_cnt; /*   formula: cnt = (CLK * 30)/(rpm * P) */
-	u8 fan_sta; /* bit 0: set when actual fan speed more than 20%
-		     *   outside requested fan speed
-		     * bit 1: set when fan speed below 1920 rpm
-		     */
+	u8 set_cnt;  
+	u8 act_cnt;  
+	u8 fan_sta;  
 };
 
 #define G760A_DEFAULT_CLK 32768
@@ -63,7 +52,7 @@ static inline unsigned int rpm_from_cnt(u8 val, u32 clk, u16 div)
 	return ((val == 0x00) ? 0 : ((clk*30)/(val*div)));
 }
 
-/* read/write wrappers */
+ 
 static int g760a_read_value(struct i2c_client *client, enum g760a_regs reg)
 {
 	return i2c_smbus_read_byte_data(client, reg);
@@ -75,9 +64,7 @@ static int g760a_write_value(struct i2c_client *client, enum g760a_regs reg,
 	return i2c_smbus_write_byte_data(client, reg, value);
 }
 
-/*
- * sysfs attributes
- */
+ 
 
 static struct g760a_data *g760a_update_client(struct device *dev)
 {
@@ -166,9 +153,7 @@ static struct attribute *g760a_attrs[] = {
 
 ATTRIBUTE_GROUPS(g760a);
 
-/*
- * new-style driver model code
- */
+ 
 
 static int g760a_probe(struct i2c_client *client)
 {
@@ -186,7 +171,7 @@ static int g760a_probe(struct i2c_client *client)
 	data->client = client;
 	mutex_init(&data->update_lock);
 
-	/* setup default configuration for now */
+	 
 	data->fan_div = G760A_DEFAULT_FAN_DIV;
 	data->clk = G760A_DEFAULT_CLK;
 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022 ARM Limited.
- */
+
+ 
 
 #define _GNU_SOURCE
 #define _POSIX_C_SOURCE 199309L
@@ -73,38 +71,25 @@ static void child_start(struct child_data *child, const char *program)
 				   strerror(errno), errno);
 
 	if (!child->pid) {
-		/*
-		 * In child, replace stdout with the pipe, errors to
-		 * stderr from here as kselftest prints to stdout.
-		 */
+		 
 		ret = dup2(pipefd[1], 1);
 		if (ret == -1) {
 			fprintf(stderr, "dup2() %d\n", errno);
 			exit(EXIT_FAILURE);
 		}
 
-		/*
-		 * Duplicate the read side of the startup pipe to
-		 * FD 3 so we can close everything else.
-		 */
+		 
 		ret = dup2(startup_pipe[0], 3);
 		if (ret == -1) {
 			fprintf(stderr, "dup2() %d\n", errno);
 			exit(EXIT_FAILURE);
 		}
 
-		/*
-		 * Very dumb mechanism to clean open FDs other than
-		 * stdio. We don't want O_CLOEXEC for the pipes...
-		 */
+		 
 		for (i = 4; i < 8192; i++)
 			close(i);
 
-		/*
-		 * Read from the startup pipe, there should be no data
-		 * and we should block until it is closed.  We just
-		 * carry on on error since this isn't super critical.
-		 */
+		 
 		ret = read(3, &i, sizeof(i));
 		if (ret < 0)
 			fprintf(stderr, "read(startp pipe) failed: %s (%d)\n",
@@ -120,10 +105,7 @@ static void child_start(struct child_data *child, const char *program)
 
 		exit(EXIT_FAILURE);
 	} else {
-		/*
-		 * In parent, remember the child and close our copy of the
-		 * write side of stdout.
-		 */
+		 
 		close(pipefd[1]);
 		child->stdout = pipefd[0];
 		child->output = NULL;
@@ -161,7 +143,7 @@ static bool child_output_read(struct child_data *child)
 
 	child->output_seen = true;
 
-	/* Pick up any partial read */
+	 
 	if (child->output) {
 		strncpy(work, child->output, sizeof(work) - 1);
 		cur_work = strnlen(work, sizeof(work));
@@ -290,7 +272,7 @@ static void handle_exit_signal(int sig, siginfo_t *info, void *context)
 {
 	int i;
 
-	/* If we're already exiting then don't signal again */
+	 
 	if (terminate)
 		return;
 
@@ -298,10 +280,7 @@ static void handle_exit_signal(int sig, siginfo_t *info, void *context)
 
 	terminate = true;
 
-	/*
-	 * This should be redundant, the main loop should clean up
-	 * after us, but for safety stop everything we can here.
-	 */
+	 
 	for (i = 0; i < num_children; i++)
 		child_stop(&children[i]);
 }
@@ -408,7 +387,7 @@ static void probe_vls(int vls[], int *vl_count, int set_vl)
 	}
 }
 
-/* Handle any pending output without blocking */
+ 
 static void drain_output(bool flush)
 {
 	int ret = 1;
@@ -482,7 +461,7 @@ int main(int argc, char **argv)
 		have_sme2 = false;
 	}
 
-	/* Force context switching if we only have FPSIMD */
+	 
 	if (!sve_vl_count && !sme_vl_count)
 		fpsimd_per_cpu = 2;
 	else
@@ -511,13 +490,13 @@ int main(int argc, char **argv)
 				   strerror(errno), ret);
 	epoll_fd = ret;
 
-	/* Create a pipe which children will block on before execing */
+	 
 	ret = pipe(startup_pipe);
 	if (ret != 0)
 		ksft_exit_fail_msg("Failed to create startup pipe: %s (%d)\n",
 				   strerror(errno), errno);
 
-	/* Get signal handers ready before we start any children */
+	 
 	memset(&sa, 0, sizeof(sa));
 	sa.sa_sigaction = handle_exit_signal;
 	sa.sa_flags = SA_RESTART | SA_SIGINFO;
@@ -557,26 +536,16 @@ int main(int argc, char **argv)
 			start_zt(&children[num_children++], i);
 	}
 
-	/*
-	 * All children started, close the startup pipe and let them
-	 * run.
-	 */
+	 
 	close(startup_pipe[0]);
 	close(startup_pipe[1]);
 
 	for (;;) {
-		/* Did we get a signal asking us to exit? */
+		 
 		if (terminate)
 			break;
 
-		/*
-		 * Timeout is counted in seconds with no output, the
-		 * tests print during startup then are silent when
-		 * running so this should ensure they all ran enough
-		 * to install the signal handler, this is especially
-		 * useful in emulation where we will both be slow and
-		 * likely to have a large set of VLs.
-		 */
+		 
 		ret = epoll_wait(epoll_fd, evs, tests, 1000);
 		if (ret < 0) {
 			if (errno == EINTR)
@@ -585,7 +554,7 @@ int main(int argc, char **argv)
 					   strerror(errno), errno);
 		}
 
-		/* Output? */
+		 
 		if (ret > 0) {
 			for (i = 0; i < ret; i++) {
 				child_output(evs[i].data.ptr, evs[i].events,
@@ -594,12 +563,9 @@ int main(int argc, char **argv)
 			continue;
 		}
 
-		/* Otherwise epoll_wait() timed out */
+		 
 
-		/*
-		 * If the child processes have not produced output they
-		 * aren't actually running the tests yet .
-		 */
+		 
 		if (!all_children_started) {
 			seen_children = 0;
 
@@ -623,7 +589,7 @@ int main(int argc, char **argv)
 		for (i = 0; i < num_children; i++)
 			child_tickle(&children[i]);
 
-		/* Negative timeout means run indefinitely */
+		 
 		if (timeout < 0)
 			continue;
 		if (--timeout == 0)

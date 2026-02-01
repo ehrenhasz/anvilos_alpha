@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* sysctls for configuring RxRPC operating parameters
- *
- * Copyright (C) 2014 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/sysctl.h>
 #include <net/sock.h>
@@ -21,14 +17,9 @@ static const unsigned long max_jiffies = MAX_JIFFY_OFFSET;
 static const unsigned long max_500 = 500;
 #endif
 
-/*
- * RxRPC operating parameters.
- *
- * See Documentation/networking/rxrpc.rst and the variable definitions for more
- * information on the individual parameters.
- */
+ 
 static struct ctl_table rxrpc_sysctl_table[] = {
-	/* Values measured in milliseconds but used in jiffies */
+	 
 	{
 		.procname	= "soft_ack_delay",
 		.data		= &rxrpc_soft_ack_delay,
@@ -66,7 +57,7 @@ static struct ctl_table rxrpc_sysctl_table[] = {
 		.extra2		= (void *)&max_jiffies,
 	},
 
-	/* Values used in milliseconds */
+	 
 #ifdef CONFIG_AF_RXRPC_INJECT_RX_DELAY
 	{
 		.procname	= "inject_rx_delay",
@@ -79,7 +70,7 @@ static struct ctl_table rxrpc_sysctl_table[] = {
 	},
 #endif
 
-	/* Non-time values */
+	 
 	{
 		.procname	= "reap_client_conns",
 		.data		= &rxrpc_reap_client_connections,

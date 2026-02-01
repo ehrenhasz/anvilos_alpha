@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2019 Intel Corporation. All rights rsvd. */
+
+ 
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -63,10 +63,10 @@ static struct idxd_driver_data idxd_driver_data[] = {
 };
 
 static struct pci_device_id idxd_pci_tbl[] = {
-	/* DSA ver 1.0 platforms */
+	 
 	{ PCI_DEVICE_DATA(INTEL, DSA_SPR0, &idxd_driver_data[IDXD_TYPE_DSA]) },
 
-	/* IAX ver 1.0 platforms */
+	 
 	{ PCI_DEVICE_DATA(INTEL, IAX_SPR0, &idxd_driver_data[IDXD_TYPE_IAX]) },
 	{ 0, }
 };
@@ -309,10 +309,7 @@ static int idxd_setup_groups(struct idxd_device *idxd)
 			group->tc_a = -1;
 			group->tc_b = -1;
 		}
-		/*
-		 * The default value is the same as the value of
-		 * total read buffers in GRPCAP.
-		 */
+		 
 		group->rdbufs_allowed = idxd->max_rdbufs;
 	}
 
@@ -447,7 +444,7 @@ static void idxd_read_caps(struct idxd_device *idxd)
 	struct device *dev = &idxd->pdev->dev;
 	int i;
 
-	/* reading generic capabilities */
+	 
 	idxd->hw.gen_cap.bits = ioread64(idxd->reg_base + IDXD_GENCAP_OFFSET);
 	dev_dbg(dev, "gen_cap: %#llx\n", idxd->hw.gen_cap.bits);
 
@@ -456,7 +453,7 @@ static void idxd_read_caps(struct idxd_device *idxd)
 		dev_dbg(dev, "cmd_cap: %#x\n", idxd->hw.cmd_cap);
 	}
 
-	/* reading command capabilities */
+	 
 	if (idxd->hw.cmd_cap & BIT(IDXD_CMD_REQUEST_INT_HANDLE))
 		idxd->request_int_handles = true;
 
@@ -467,7 +464,7 @@ static void idxd_read_caps(struct idxd_device *idxd)
 	if (idxd->hw.gen_cap.config_en)
 		set_bit(IDXD_FLAG_CONFIGURABLE, &idxd->flags);
 
-	/* reading group capabilities */
+	 
 	idxd->hw.group_cap.bits =
 		ioread64(idxd->reg_base + IDXD_GRPCAP_OFFSET);
 	dev_dbg(dev, "group_cap: %#llx\n", idxd->hw.group_cap.bits);
@@ -477,14 +474,14 @@ static void idxd_read_caps(struct idxd_device *idxd)
 	dev_dbg(dev, "max read buffers: %u\n", idxd->max_rdbufs);
 	idxd->nr_rdbufs = idxd->max_rdbufs;
 
-	/* read engine capabilities */
+	 
 	idxd->hw.engine_cap.bits =
 		ioread64(idxd->reg_base + IDXD_ENGCAP_OFFSET);
 	dev_dbg(dev, "engine_cap: %#llx\n", idxd->hw.engine_cap.bits);
 	idxd->max_engines = idxd->hw.engine_cap.num_engines;
 	dev_dbg(dev, "max engines: %u\n", idxd->max_engines);
 
-	/* read workqueue capabilities */
+	 
 	idxd->hw.wq_cap.bits = ioread64(idxd->reg_base + IDXD_WQCAP_OFFSET);
 	dev_dbg(dev, "wq_cap: %#llx\n", idxd->hw.wq_cap.bits);
 	idxd->max_wq_size = idxd->hw.wq_cap.total_wq_size;
@@ -494,7 +491,7 @@ static void idxd_read_caps(struct idxd_device *idxd)
 	idxd->wqcfg_size = 1 << (idxd->hw.wq_cap.wqcfg_size + IDXD_WQCFG_MIN);
 	dev_dbg(dev, "wqcfg size: %u\n", idxd->wqcfg_size);
 
-	/* reading operation capabilities */
+	 
 	for (i = 0; i < 4; i++) {
 		idxd->hw.opcap.bits[i] = ioread64(idxd->reg_base +
 				IDXD_OPCAP_OFFSET + i * sizeof(u64));
@@ -502,7 +499,7 @@ static void idxd_read_caps(struct idxd_device *idxd)
 	}
 	multi_u64_to_bmap(idxd->opcap_bmap, &idxd->hw.opcap.bits[0], 4);
 
-	/* read iaa cap */
+	 
 	if (idxd->data->type == IDXD_TYPE_IAX && idxd->hw.version >= DEVICE_VERSION_2)
 		idxd->hw.iaa_cap.bits = ioread64(idxd->reg_base + IDXD_IAACAP_OFFSET);
 }
@@ -556,10 +553,7 @@ static int idxd_enable_system_pasid(struct idxd_device *idxd)
 	ioasid_t pasid;
 	int ret;
 
-	/*
-	 * Attach a global PASID to the DMA domain so that we can use ENQCMDS
-	 * to submit work on buffers mapped by DMA API.
-	 */
+	 
 	domain = iommu_get_domain_for_dev(dev);
 	if (!domain)
 		return -EPERM;
@@ -568,10 +562,7 @@ static int idxd_enable_system_pasid(struct idxd_device *idxd)
 	if (pasid == IOMMU_PASID_INVALID)
 		return -ENOSPC;
 
-	/*
-	 * DMA domain is owned by the driver, it should support all valid
-	 * types such as DMA-FQ, identity, etc.
-	 */
+	 
 	ret = iommu_attach_device_pasid(domain, dev, pasid);
 	if (ret) {
 		dev_err(dev, "failed to attach device pasid %d, domain type %d",
@@ -580,7 +571,7 @@ static int idxd_enable_system_pasid(struct idxd_device *idxd)
 		return ret;
 	}
 
-	/* Since we set user privilege for kernel DMA, enable completion IRQ */
+	 
 	idxd_set_user_intr(idxd, 1);
 	idxd->pasid = pasid;
 
@@ -662,7 +653,7 @@ static int idxd_probe(struct idxd_device *idxd)
 	if (rc)
 		goto err;
 
-	/* If the configs are readonly, then load them from device */
+	 
 	if (!test_bit(IDXD_FLAG_CONFIGURABLE, &idxd->flags)) {
 		dev_dbg(dev, "Loading RO device config\n");
 		rc = idxd_device_load_config(idxd);
@@ -805,13 +796,7 @@ static void idxd_remove(struct pci_dev *pdev)
 	struct idxd_irq_entry *irq_entry;
 
 	idxd_unregister_devices(idxd);
-	/*
-	 * When ->release() is called for the idxd->conf_dev, it frees all the memory related
-	 * to the idxd context. The driver still needs those bits in order to do the rest of
-	 * the cleanup. However, we do need to unbound the idxd sub-driver. So take a ref
-	 * on the device here to hold off the freeing while allowing the idxd sub-driver
-	 * to unbind.
-	 */
+	 
 	get_device(idxd_confdev(idxd));
 	device_unregister(idxd_confdev(idxd));
 	idxd_shutdown(pdev);
@@ -843,10 +828,7 @@ static int __init idxd_init_module(void)
 {
 	int err;
 
-	/*
-	 * If the CPU does not support MOVDIR64B or ENQCMDS, there's no point in
-	 * enumerating the device. We can not utilize it.
-	 */
+	 
 	if (!cpu_feature_enabled(X86_FEATURE_MOVDIR64B)) {
 		pr_warn("idxd driver failed to load without MOVDIR64B.\n");
 		return -ENODEV;

@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * User-space I/O driver support for HID subsystem
- * Copyright (c) 2012 David Herrmann
- */
 
-/*
- */
+ 
+
+ 
 
 #include <linux/atomic.h>
 #include <linux/compat.h>
@@ -29,21 +25,13 @@
 struct uhid_device {
 	struct mutex devlock;
 
-	/* This flag tracks whether the HID device is usable for commands from
-	 * userspace. The flag is already set before hid_add_device(), which
-	 * runs in workqueue context, to allow hid_add_device() to communicate
-	 * with userspace.
-	 * However, if hid_add_device() fails, the flag is cleared without
-	 * holding devlock.
-	 * We guarantee that if @running changes from true to false while you're
-	 * holding @devlock, it's still fine to access @hid.
-	 */
+	 
 	bool running;
 
 	__u8 *rd_data;
 	uint rd_size;
 
-	/* When this is NULL, userspace may use UHID_CREATE/UHID_CREATE2. */
+	 
 	struct hid_device *hid;
 	struct uhid_event input_buf;
 
@@ -53,7 +41,7 @@ struct uhid_device {
 	__u8 tail;
 	struct uhid_event *outq[UHID_BUFSIZE];
 
-	/* blocking GET_REPORT support; state changes protected by qlock */
+	 
 	struct mutex report_lock;
 	wait_queue_head_t report_wait;
 	bool report_running;
@@ -74,16 +62,7 @@ static void uhid_device_add_worker(struct work_struct *work)
 	if (ret) {
 		hid_err(uhid->hid, "Cannot register HID device: error %d\n", ret);
 
-		/* We used to call hid_destroy_device() here, but that's really
-		 * messy to get right because we have to coordinate with
-		 * concurrent writes from userspace that might be in the middle
-		 * of using uhid->hid.
-		 * Just leave uhid->hid as-is for now, and clean it up when
-		 * userspace tries to close or reinitialize the uhid instance.
-		 *
-		 * However, we do have to clear the ->running flag and do a
-		 * wakeup to make sure userspace knows that the device is gone.
-		 */
+		 
 		WRITE_ONCE(uhid->running, false);
 		wake_up_interruptible(&uhid->report_wait);
 	}
@@ -178,7 +157,7 @@ static int uhid_hid_parse(struct hid_device *hid)
 	return hid_parse_report(hid, uhid->rd_data, uhid->rd_size);
 }
 
-/* must be called with report_lock held */
+ 
 static int __uhid_report_queue_and_wait(struct uhid_device *uhid,
 					struct uhid_event *ev,
 					__u32 *report_id)
@@ -215,7 +194,7 @@ static void uhid_report_wake_up(struct uhid_device *uhid, u32 id,
 
 	spin_lock_irqsave(&uhid->qlock, flags);
 
-	/* id for old report; drop it silently */
+	 
 	if (uhid->report_type != ev->type || uhid->report_id != id)
 		goto unlock;
 	if (!uhid->report_running)
@@ -254,7 +233,7 @@ static int uhid_hid_get_report(struct hid_device *hid, unsigned char rnum,
 		return ret;
 	}
 
-	/* this _always_ takes ownership of @ev */
+	 
 	ret = __uhid_report_queue_and_wait(uhid, ev, &ev->u.get_report.id);
 	if (ret)
 		goto unlock;
@@ -298,7 +277,7 @@ static int uhid_hid_set_report(struct hid_device *hid, unsigned char rnum,
 		return ret;
 	}
 
-	/* this _always_ takes ownership of @ev */
+	 
 	ret = __uhid_report_queue_and_wait(uhid, ev, &ev->u.set_report.id);
 	if (ret)
 		goto unlock;
@@ -400,7 +379,7 @@ static const struct hid_ll_driver uhid_hid_driver = {
 
 #ifdef CONFIG_COMPAT
 
-/* Apparently we haven't stepped on these rakes enough times yet. */
+ 
 struct uhid_create_req_compat {
 	__u8 name[128];
 	__u8 phys[64];
@@ -426,11 +405,7 @@ static int uhid_event_from_user(const char __user *buffer, size_t len,
 			return -EFAULT;
 
 		if (type == UHID_CREATE) {
-			/*
-			 * This is our messed up request with compat pointer.
-			 * It is largish (more than 256 bytes) so we better
-			 * allocate it from the heap.
-			 */
+			 
 			struct uhid_create_req_compat *compat;
 
 			compat = kzalloc(sizeof(*compat), GFP_KERNEL);
@@ -445,7 +420,7 @@ static int uhid_event_from_user(const char __user *buffer, size_t len,
 				return -EFAULT;
 			}
 
-			/* Shuffle the data over to proper structure */
+			 
 			event->type = type;
 
 			memcpy(event->u.create.name, compat->name,
@@ -467,7 +442,7 @@ static int uhid_event_from_user(const char __user *buffer, size_t len,
 			kfree(compat);
 			return 0;
 		}
-		/* All others can be copied directly */
+		 
 	}
 
 	if (copy_from_user(event, buffer, min(len, sizeof(*event))))
@@ -514,7 +489,7 @@ static int uhid_dev_create2(struct uhid_device *uhid,
 		goto err_free;
 	}
 
-	/* @hid is zero-initialized, strncpy() is correct, strlcpy() not */
+	 
 	len = min(sizeof(hid->name), sizeof(ev->u.create2.name)) - 1;
 	strncpy(hid->name, ev->u.create2.name, len);
 	len = min(sizeof(hid->phys), sizeof(ev->u.create2.phys)) - 1;
@@ -534,10 +509,7 @@ static int uhid_dev_create2(struct uhid_device *uhid,
 	uhid->hid = hid;
 	uhid->running = true;
 
-	/* Adding of a HID device is done through a worker, to allow HID drivers
-	 * which use feature requests during .probe to work, without they would
-	 * be blocked on devlock, which is held by uhid_char_write.
-	 */
+	 
 	schedule_work(&uhid->worker);
 
 	return 0;
@@ -678,7 +650,7 @@ static ssize_t uhid_char_read(struct file *file, char __user *buffer,
 	unsigned long flags;
 	size_t len;
 
-	/* they need at least the "type" member of uhid_event */
+	 
 	if (count < sizeof(__u32))
 		return -EINVAL;
 
@@ -725,7 +697,7 @@ static ssize_t uhid_char_write(struct file *file, const char __user *buffer,
 	int ret;
 	size_t len;
 
-	/* we need at least the "type" member of uhid_event */
+	 
 	if (count < sizeof(__u32))
 		return -EINVAL;
 
@@ -742,11 +714,7 @@ static ssize_t uhid_char_write(struct file *file, const char __user *buffer,
 
 	switch (uhid->input_buf.type) {
 	case UHID_CREATE:
-		/*
-		 * 'struct uhid_create_req' contains a __user pointer which is
-		 * copied from, so it's unsafe to allow this with elevated
-		 * privileges (e.g. from a setuid binary) or via kernel_write().
-		 */
+		 
 		if (file->f_cred != current_cred()) {
 			pr_err_once("UHID_CREATE from different security context by process %d (%s), this is not allowed.\n",
 				    task_tgid_vnr(current), current->comm);
@@ -780,14 +748,14 @@ static ssize_t uhid_char_write(struct file *file, const char __user *buffer,
 unlock:
 	mutex_unlock(&uhid->devlock);
 
-	/* return "count" not "len" to not confuse the caller */
+	 
 	return ret ? ret : count;
 }
 
 static __poll_t uhid_char_poll(struct file *file, poll_table *wait)
 {
 	struct uhid_device *uhid = file->private_data;
-	__poll_t mask = EPOLLOUT | EPOLLWRNORM; /* uhid is always writable */
+	__poll_t mask = EPOLLOUT | EPOLLWRNORM;  
 
 	poll_wait(file, &uhid->waitq, wait);
 

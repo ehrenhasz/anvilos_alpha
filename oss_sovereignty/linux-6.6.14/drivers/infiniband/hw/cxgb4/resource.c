@@ -1,35 +1,5 @@
-/*
- * Copyright (c) 2009-2010 Chelsio, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-/* Crude resource management */
+ 
+ 
 #include <linux/spinlock.h>
 #include <linux/genalloc.h>
 #include <linux/ratelimit.h>
@@ -52,7 +22,7 @@ static int c4iw_init_qid_table(struct c4iw_rdev *rdev)
 	return 0;
 }
 
-/* nr_* must be power of 2 */
+ 
 int c4iw_init_resource(struct c4iw_rdev *rdev, u32 nr_tpt,
 		       u32 nr_pdid, u32 nr_srqt)
 {
@@ -87,9 +57,7 @@ int c4iw_init_resource(struct c4iw_rdev *rdev, u32 nr_tpt,
 	return -ENOMEM;
 }
 
-/*
- * returns 0 if no resource available
- */
+ 
 u32 c4iw_get_resource(struct c4iw_id_table *id_table)
 {
 	u32 entry;
@@ -133,10 +101,7 @@ u32 c4iw_get_cqid(struct c4iw_rdev *rdev, struct c4iw_dev_ucontext *uctx)
 			list_add_tail(&entry->entry, &uctx->cqids);
 		}
 
-		/*
-		 * now put the same ids on the qp list since they all
-		 * map to the same db/gts page.
-		 */
+		 
 		entry = kmalloc(sizeof(*entry), GFP_KERNEL);
 		if (!entry)
 			goto out;
@@ -207,10 +172,7 @@ u32 c4iw_get_qpid(struct c4iw_rdev *rdev, struct c4iw_dev_ucontext *uctx)
 			list_add_tail(&entry->entry, &uctx->qpids);
 		}
 
-		/*
-		 * now put the same ids on the cq list since they all
-		 * map to the same db/gts page.
-		 */
+		 
 		entry = kmalloc(sizeof(*entry), GFP_KERNEL);
 		if (!entry)
 			goto out;
@@ -256,11 +218,9 @@ void c4iw_destroy_resource(struct c4iw_resource *rscp)
 	c4iw_id_table_free(&rscp->pdid_table);
 }
 
-/*
- * PBL Memory Manager.  Uses Linux generic allocator.
- */
+ 
 
-#define MIN_PBL_SHIFT 8			/* 256B == min PBL size (32 entries) */
+#define MIN_PBL_SHIFT 8			 
 
 u32 c4iw_pblpool_alloc(struct c4iw_rdev *rdev, int size)
 {
@@ -335,11 +295,9 @@ void c4iw_pblpool_destroy(struct c4iw_rdev *rdev)
 	kref_put(&rdev->pbl_kref, destroy_pblpool);
 }
 
-/*
- * RQT Memory Manager.  Uses Linux generic allocator.
- */
+ 
 
-#define MIN_RQT_SHIFT 10	/* 1KB == min RQT size (16 entries) */
+#define MIN_RQT_SHIFT 10	 
 
 u32 c4iw_rqtpool_alloc(struct c4iw_rdev *rdev, int size)
 {
@@ -388,10 +346,7 @@ int c4iw_rqtpool_create(struct c4iw_rdev *rdev)
 	if (!rdev->rqt_pool)
 		return -ENOMEM;
 
-	/*
-	 * If SRQs are supported, then never use the first RQE from
-	 * the RQT region. This is because HW uses RQT index 0 as NULL.
-	 */
+	 
 	if (rdev->lldi.vr->srq.size)
 		skip = T4_RQT_ENTRY_SIZE;
 
@@ -450,10 +405,8 @@ void c4iw_free_srq_idx(struct c4iw_rdev *rdev, int idx)
 	mutex_unlock(&rdev->stats.lock);
 }
 
-/*
- * On-Chip QP Memory.
- */
-#define MIN_OCQP_SHIFT 12	/* 4KB == min ocqp size */
+ 
+#define MIN_OCQP_SHIFT 12	 
 
 u32 c4iw_ocqp_pool_alloc(struct c4iw_rdev *rdev, int size)
 {

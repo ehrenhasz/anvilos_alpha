@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_IRQ_WORK_H
 #define _ASM_IRQ_WORK_H
 
@@ -17,4 +17,4 @@ static inline bool arch_irq_work_has_interrupt(void)
 }
 #endif
 
-#endif /* _ASM_IRQ_WORK_H */
+#endif  

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Marvell Berlin BG2 pinctrl driver.
- *
- * Copyright (C) 2014 Marvell Technology Group Ltd.
- *
- * Antoine Ténart <antoine.tenart@free-electrons.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/of_device.h>
@@ -15,37 +9,33 @@
 #include "berlin.h"
 
 static const struct berlin_desc_group berlin2_soc_pinctrl_groups[] = {
-	/* G */
+	 
 	BERLIN_PINCTRL_GROUP("G0", 0x00, 0x1, 0x00,
-		BERLIN_PINCTRL_FUNCTION(0x0, "spi1"), /* SS0n */
+		BERLIN_PINCTRL_FUNCTION(0x0, "spi1"),  
 		BERLIN_PINCTRL_FUNCTION(0x1, "gpio")),
 	BERLIN_PINCTRL_GROUP("G1", 0x00, 0x2, 0x01,
-		BERLIN_PINCTRL_FUNCTION(0x0, "spi1"), /* SS1n */
+		BERLIN_PINCTRL_FUNCTION(0x0, "spi1"),  
 		BERLIN_PINCTRL_FUNCTION(0x1, "gpio"),
 		BERLIN_PINCTRL_FUNCTION(0x2, "usb1")),
 	BERLIN_PINCTRL_GROUP("G2", 0x00, 0x2, 0x02,
 		BERLIN_PINCTRL_FUNCTION(0x0, "gpio"),
-		BERLIN_PINCTRL_FUNCTION(0x1, "spi1"), /* SS2n */
+		BERLIN_PINCTRL_FUNCTION(0x1, "spi1"),  
 		BERLIN_PINCTRL_FUNCTION(0x2, "pwm"),
 		BERLIN_PINCTRL_FUNCTION(0x3, "i2s0")),
 	BERLIN_PINCTRL_GROUP("G3", 0x00, 0x2, 0x04,
 		BERLIN_PINCTRL_FUNCTION(0x0, "soc"),
-		BERLIN_PINCTRL_FUNCTION(0x1, "spi1"), /* SS3n */
+		BERLIN_PINCTRL_FUNCTION(0x1, "spi1"),  
 		BERLIN_PINCTRL_FUNCTION(0x2, "gpio"),
 		BERLIN_PINCTRL_FUNCTION(0x3, "i2s1")),
 	BERLIN_PINCTRL_GROUP("G4", 0x00, 0x2, 0x06,
-		BERLIN_PINCTRL_FUNCTION(0x0, "spi1"), /* CLK/SDI/SDO */
+		BERLIN_PINCTRL_FUNCTION(0x0, "spi1"),  
 		BERLIN_PINCTRL_FUNCTION(0x1, "gpio"),
 		BERLIN_PINCTRL_FUNCTION(0x2, "pwm")),
 	BERLIN_PINCTRL_GROUP("G5", 0x00, 0x3, 0x08,
 		BERLIN_PINCTRL_FUNCTION(0x0, "gpio"),
 		BERLIN_PINCTRL_FUNCTION(0x1, "sts1"),
 		BERLIN_PINCTRL_FUNCTION(0x2, "et"),
-		/*
-		 * Mode 0x3 mux i2s2 mclk *and* i2s3 mclk:
-		 * add two functions so it can be used with other groups
-		 * within the same subnode in the device tree
-		 */
+		 
 		BERLIN_PINCTRL_FUNCTION(0x3, "i2s2"),
 		BERLIN_PINCTRL_FUNCTION(0x3, "i2s3")),
 	BERLIN_PINCTRL_GROUP("G6", 0x00, 0x2, 0x0b,
@@ -123,8 +113,8 @@ static const struct berlin_desc_group berlin2_soc_pinctrl_groups[] = {
 		BERLIN_PINCTRL_FUNCTION(0x1, "dvio"),
 		BERLIN_PINCTRL_FUNCTION(0x2, "fp"),
 		BERLIN_PINCTRL_FUNCTION(0x3, "adac_dbg"),
-		BERLIN_PINCTRL_FUNCTION(0x4, "pdm_a"),	/* gpio17..19,pdm */
-		BERLIN_PINCTRL_FUNCTION(0x7, "pdm_b")),	/* gpio12..14,pdm */
+		BERLIN_PINCTRL_FUNCTION(0x4, "pdm_a"),	 
+		BERLIN_PINCTRL_FUNCTION(0x7, "pdm_b")),	 
 	BERLIN_PINCTRL_GROUP("G22", 0x04, 0x3, 0x12,
 		BERLIN_PINCTRL_FUNCTION(0x0, "gpio"),
 		BERLIN_PINCTRL_FUNCTION(0x1, "dv0"),
@@ -157,34 +147,34 @@ static const struct berlin_desc_group berlin2_soc_pinctrl_groups[] = {
 };
 
 static const struct berlin_desc_group berlin2_sysmgr_pinctrl_groups[] = {
-	/* GSM */
+	 
 	BERLIN_PINCTRL_GROUP("GSM0", 0x40, 0x2, 0x00,
 		BERLIN_PINCTRL_FUNCTION(0x0, "gpio"),
-		BERLIN_PINCTRL_FUNCTION(0x1, "spi2"), /* SS0n */
+		BERLIN_PINCTRL_FUNCTION(0x1, "spi2"),  
 		BERLIN_PINCTRL_FUNCTION(0x2, "eth1")),
 	BERLIN_PINCTRL_GROUP("GSM1", 0x40, 0x2, 0x02,
 		BERLIN_PINCTRL_FUNCTION(0x0, "gpio"),
-		BERLIN_PINCTRL_FUNCTION(0x1, "spi2"), /* SS1n */
+		BERLIN_PINCTRL_FUNCTION(0x1, "spi2"),  
 		BERLIN_PINCTRL_FUNCTION(0x2, "eth1")),
 	BERLIN_PINCTRL_GROUP("GSM2", 0x40, 0x2, 0x04,
 		BERLIN_PINCTRL_FUNCTION(0x0, "twsi2"),
-		BERLIN_PINCTRL_FUNCTION(0x1, "spi2")), /* SS2n/SS3n */
+		BERLIN_PINCTRL_FUNCTION(0x1, "spi2")),  
 	BERLIN_PINCTRL_GROUP("GSM3", 0x40, 0x2, 0x06,
 		BERLIN_PINCTRL_FUNCTION(0x0, "gpio"),
-		BERLIN_PINCTRL_FUNCTION(0x1, "uart0"),	/* CTS/RTS */
-		BERLIN_PINCTRL_FUNCTION(0x2, "uart2"),	/* RX/TX */
+		BERLIN_PINCTRL_FUNCTION(0x1, "uart0"),	 
+		BERLIN_PINCTRL_FUNCTION(0x2, "uart2"),	 
 		BERLIN_PINCTRL_FUNCTION(0x3, "twsi2")),
 	BERLIN_PINCTRL_GROUP("GSM4", 0x40, 0x2, 0x08,
-		BERLIN_PINCTRL_FUNCTION(0x0, "uart0"),	/* RX/TX */
+		BERLIN_PINCTRL_FUNCTION(0x0, "uart0"),	 
 		BERLIN_PINCTRL_FUNCTION(0x1, "irda0")),
 	BERLIN_PINCTRL_GROUP("GSM5", 0x40, 0x2, 0x0a,
 		BERLIN_PINCTRL_FUNCTION(0x0, "gpio"),
-		BERLIN_PINCTRL_FUNCTION(0x1, "uart1"),	/* RX/TX */
+		BERLIN_PINCTRL_FUNCTION(0x1, "uart1"),	 
 		BERLIN_PINCTRL_FUNCTION(0x2, "irda1"),
 		BERLIN_PINCTRL_FUNCTION(0x3, "twsi3")),
 	BERLIN_PINCTRL_GROUP("GSM6", 0x40, 0x2, 0x0c,
 		BERLIN_PINCTRL_FUNCTION(0x0, "gpio"),
-		BERLIN_PINCTRL_FUNCTION(0x1, "spi2"), /* CLK/SDO */
+		BERLIN_PINCTRL_FUNCTION(0x1, "spi2"),  
 		BERLIN_PINCTRL_FUNCTION(0x1, "clki")),
 	BERLIN_PINCTRL_GROUP("GSM7", 0x40, 0x1, 0x0e,
 		BERLIN_PINCTRL_FUNCTION(0x0, "gpio"),

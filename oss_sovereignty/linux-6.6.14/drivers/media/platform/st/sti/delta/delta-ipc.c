@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2015
- * Author: Hugues Fruchet <hugues.fruchet@st.com> for STMicroelectronics.
- */
+
+ 
 
 #include <linux/rpmsg.h>
 
@@ -50,21 +47,7 @@ static inline bool is_valid_data(struct delta_ipc_ctx *ctx,
 		((data + size) <= (ctx->ipc_buf->vaddr + ctx->ipc_buf->size)));
 }
 
-/*
- * IPC shared memory (@ipc_buf_size, @ipc_buf_paddr) is sent to copro
- * at each instance opening. This memory is allocated by IPC client
- * and given through delta_ipc_open(). All messages parameters
- * (open, set_stream, decode) will have their phy address within
- * this IPC shared memory, avoiding de-facto recopies inside delta-ipc.
- * All the below messages structures are used on both host and firmware
- * side and are packed (use only of 32 bits size fields in messages
- * structures to ensure packing):
- * - struct delta_ipc_open_msg
- * - struct delta_ipc_set_stream_msg
- * - struct delta_ipc_decode_msg
- * - struct delta_ipc_close_msg
- * - struct delta_ipc_cb_msg
- */
+ 
 struct delta_ipc_open_msg {
 	struct delta_ipc_header_msg header;
 	u32 ipc_buf_size;
@@ -155,21 +138,17 @@ int delta_ipc_open(struct delta_ctx *pctx, const char *name,
 		return -EINVAL;
 	}
 
-	/* init */
+	 
 	init_completion(&ctx->done);
 
-	/*
-	 * allocation of contiguous buffer for
-	 * data of commands exchanged between
-	 * host and firmware coprocessor
-	 */
+	 
 	ret = hw_alloc(pctx, ipc_buf_size,
 		       "ipc data buffer", buf);
 	if (ret)
 		return ret;
 	ctx->ipc_buf = buf;
 
-	/* build rpmsg message */
+	 
 	build_msg_header(ctx, DELTA_IPC_OPEN, &msg.header);
 
 	msg.ipc_buf_size = ipc_buf_size;
@@ -181,7 +160,7 @@ int delta_ipc_open(struct delta_ctx *pctx, const char *name,
 	memcpy(ctx->ipc_buf->vaddr, param->data, msg.param_size);
 	msg.param_paddr = ctx->ipc_buf->paddr;
 
-	/* send it */
+	 
 	ret = rpmsg_send(rpmsg_device->ept, &msg, sizeof(msg));
 	if (ret) {
 		dev_err(delta->dev,
@@ -191,7 +170,7 @@ int delta_ipc_open(struct delta_ctx *pctx, const char *name,
 		goto err;
 	}
 
-	/* wait for acknowledge */
+	 
 	if (!wait_for_completion_timeout
 	    (&ctx->done, msecs_to_jiffies(IPC_TIMEOUT))) {
 		dev_err(delta->dev,
@@ -202,7 +181,7 @@ int delta_ipc_open(struct delta_ctx *pctx, const char *name,
 		goto err;
 	}
 
-	/* command completed, check error */
+	 
 	if (ctx->cb_err) {
 		dev_err(delta->dev,
 			"%s   ipc: failed to open, DELTA_IPC_OPEN completed but with error (%d) (name=%s, size=%d, data=%p)\n",
@@ -274,13 +253,13 @@ int delta_ipc_set_stream(void *hdl, struct delta_ipc_param *param)
 		return -EINVAL;
 	}
 
-	/* build rpmsg message */
+	 
 	build_msg_header(ctx, DELTA_IPC_SET_STREAM, &msg.header);
 
 	msg.param_size = param->size;
 	msg.param_paddr = to_paddr(ctx, param->data);
 
-	/* send it */
+	 
 	ret = rpmsg_send(rpmsg_device->ept, &msg, sizeof(msg));
 	if (ret) {
 		dev_err(delta->dev,
@@ -291,7 +270,7 @@ int delta_ipc_set_stream(void *hdl, struct delta_ipc_param *param)
 		return ret;
 	}
 
-	/* wait for acknowledge */
+	 
 	if (!wait_for_completion_timeout
 	    (&ctx->done, msecs_to_jiffies(IPC_TIMEOUT))) {
 		dev_err(delta->dev,
@@ -302,7 +281,7 @@ int delta_ipc_set_stream(void *hdl, struct delta_ipc_param *param)
 		return -ETIMEDOUT;
 	}
 
-	/* command completed, check status */
+	 
 	if (ctx->cb_err) {
 		dev_err(delta->dev,
 			"%s   ipc: failed to set stream, DELTA_IPC_SET_STREAM completed but with error (%d) (size=%d, data=%p)\n",
@@ -385,7 +364,7 @@ int delta_ipc_decode(void *hdl, struct delta_ipc_param *param,
 		return -EINVAL;
 	}
 
-	/* build rpmsg message */
+	 
 	build_msg_header(ctx, DELTA_IPC_DECODE, &msg.header);
 
 	msg.param_size = param->size;
@@ -394,7 +373,7 @@ int delta_ipc_decode(void *hdl, struct delta_ipc_param *param,
 	msg.status_size = status->size;
 	msg.status_paddr = to_paddr(ctx, status->data);
 
-	/* send it */
+	 
 	ret = rpmsg_send(rpmsg_device->ept, &msg, sizeof(msg));
 	if (ret) {
 		dev_err(delta->dev,
@@ -405,7 +384,7 @@ int delta_ipc_decode(void *hdl, struct delta_ipc_param *param,
 		return ret;
 	}
 
-	/* wait for acknowledge */
+	 
 	if (!wait_for_completion_timeout
 	    (&ctx->done, msecs_to_jiffies(IPC_TIMEOUT))) {
 		dev_err(delta->dev,
@@ -416,7 +395,7 @@ int delta_ipc_decode(void *hdl, struct delta_ipc_param *param,
 		return -ETIMEDOUT;
 	}
 
-	/* command completed, check status */
+	 
 	if (ctx->cb_err) {
 		dev_err(delta->dev,
 			"%s   ipc: failed to decode, DELTA_IPC_DECODE completed but with error (%d) (size=%d, data=%p)\n",
@@ -457,10 +436,10 @@ void delta_ipc_close(void *hdl)
 		return;
 	}
 
-	/* build rpmsg message */
+	 
 	build_msg_header(ctx, DELTA_IPC_CLOSE, &msg.header);
 
-	/* send it */
+	 
 	ret = rpmsg_send(rpmsg_device->ept, &msg, sizeof(msg));
 	if (ret) {
 		dev_err(delta->dev,
@@ -470,7 +449,7 @@ void delta_ipc_close(void *hdl)
 		return;
 	}
 
-	/* wait for acknowledge */
+	 
 	if (!wait_for_completion_timeout
 	    (&ctx->done, msecs_to_jiffies(IPC_TIMEOUT))) {
 		dev_err(delta->dev,
@@ -480,7 +459,7 @@ void delta_ipc_close(void *hdl)
 		return;
 	}
 
-	/* command completed, check status */
+	 
 	if (ctx->cb_err) {
 		dev_err(delta->dev,
 			"%s   ipc: failed to close, DELTA_IPC_CLOSE completed but with error (%d)\n",
@@ -495,7 +474,7 @@ static int delta_ipc_cb(struct rpmsg_device *rpdev, void *data,
 	struct delta_ipc_ctx *ctx;
 	struct delta_ipc_cb_msg *msg;
 
-	/* sanity check */
+	 
 	if (!rpdev) {
 		dev_err(NULL, "rpdev is NULL\n");
 		return -EINVAL;
@@ -530,17 +509,11 @@ static int delta_ipc_cb(struct rpmsg_device *rpdev, void *data,
 		return -EINVAL;
 	}
 
-	/*
-	 * if not already known, save copro instance context
-	 * to ensure re-entrance on copro side
-	 */
+	 
 	if (!ctx->copro_hdl)
 		ctx->copro_hdl = msg_to_copro_hdl(msg);
 
-	/*
-	 * all is fine,
-	 * update status & complete command
-	 */
+	 
 	ctx->cb_err = msg->err;
 	complete(&ctx->done);
 

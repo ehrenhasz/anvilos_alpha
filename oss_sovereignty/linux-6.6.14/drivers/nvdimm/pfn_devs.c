@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright(c) 2013-2016 Intel Corporation. All rights reserved.
- */
+
+ 
 #include <linux/memremap.h>
 #include <linux/blkdev.h>
 #include <linux/device.h>
@@ -107,9 +105,7 @@ static unsigned long *nd_pfn_supported_alignments(unsigned long *alignments)
 	return alignments;
 }
 
-/*
- * Use pmd mapping if supported as default alignment
- */
+ 
 static unsigned long nd_pfn_default_alignment(void)
 {
 
@@ -212,7 +208,7 @@ static ssize_t resource_show(struct device *dev,
 		rc = sprintf(buf, "%#llx\n", (unsigned long long) nsio->res.start
 				+ start_pad + offset);
 	} else {
-		/* no address to convey if the pfn instance is disabled */
+		 
 		rc = -ENXIO;
 	}
 	device_unlock(dev);
@@ -240,7 +236,7 @@ static ssize_t size_show(struct device *dev,
 				resource_size(&nsio->res) - start_pad
 				- end_trunc - offset);
 	} else {
-		/* no size to convey if the pfn instance is disabled */
+		 
 		rc = -ENXIO;
 	}
 	device_unlock(dev);
@@ -355,12 +351,7 @@ struct device *nd_pfn_create(struct nd_region *nd_region)
 	return dev;
 }
 
-/*
- * nd_pfn_clear_memmap_errors() clears any errors in the volatile memmap
- * space associated with the namespace. If the memmap is set to DRAM, then
- * this is a no-op. Since the memmap area is freshly initialized during
- * probe, we have an opportunity to clear any badblocks in this area.
- */
+ 
 static int nd_pfn_clear_memmap_errors(struct nd_pfn *nd_pfn)
 {
 	struct nd_region *nd_region = to_nd_region(nd_pfn->dev.parent);
@@ -378,10 +369,7 @@ static int nd_pfn_clear_memmap_errors(struct nd_pfn *nd_pfn)
 	meta_start = (SZ_4K + sizeof(*pfn_sb)) >> 9;
 	meta_num = (le64_to_cpu(pfn_sb->dataoff) >> 9) - meta_start;
 
-	/*
-	 * re-enable the namespace with correct size so that we can access
-	 * the device memmap area.
-	 */
+	 
 	devm_namespace_disable(&nd_pfn->dev, ndns);
 	rc = devm_namespace_enable(&nd_pfn->dev, ndns, le64_to_cpu(pfn_sb->dataoff));
 	if (rc)
@@ -438,15 +426,7 @@ static bool nd_supported_alignment(unsigned long align)
 	return false;
 }
 
-/**
- * nd_pfn_validate - read and validate info-block
- * @nd_pfn: fsdax namespace runtime state / properties
- * @sig: 'devdax' or 'fsdax' signature
- *
- * Upon return the info-block buffer contents (->pfn_sb) are
- * indeterminate when validation fails, and a coherent info-block
- * otherwise.
- */
+ 
 int nd_pfn_validate(struct nd_pfn *nd_pfn, const char *sig)
 {
 	u64 checksum, offset;
@@ -525,11 +505,7 @@ int nd_pfn_validate(struct nd_pfn *nd_pfn, const char *sig)
 		return -EOPNOTSUPP;
 	}
 
-	/*
-	 * Check whether the we support the alignment. For Dax if the
-	 * superblock alignment is not matching, we won't initialize
-	 * the device.
-	 */
+	 
 	if (!nd_supported_alignment(align) &&
 			!memcmp(pfn_sb->signature, DAX_SIG, PFN_SIG_LEN)) {
 		dev_err(&nd_pfn->dev, "init failed, alignment mismatch: "
@@ -538,30 +514,18 @@ int nd_pfn_validate(struct nd_pfn *nd_pfn, const char *sig)
 	}
 
 	if (!nd_pfn->uuid) {
-		/*
-		 * When probing a namepace via nd_pfn_probe() the uuid
-		 * is NULL (see: nd_pfn_devinit()) we init settings from
-		 * pfn_sb
-		 */
+		 
 		nd_pfn->uuid = kmemdup(pfn_sb->uuid, 16, GFP_KERNEL);
 		if (!nd_pfn->uuid)
 			return -ENOMEM;
 		nd_pfn->align = align;
 		nd_pfn->mode = mode;
 	} else {
-		/*
-		 * When probing a pfn / dax instance we validate the
-		 * live settings against the pfn_sb
-		 */
+		 
 		if (memcmp(nd_pfn->uuid, pfn_sb->uuid, 16) != 0)
 			return -ENODEV;
 
-		/*
-		 * If the uuid validates, but other settings mismatch
-		 * return EINVAL because userspace has managed to change
-		 * the configuration without specifying new
-		 * identification.
-		 */
+		 
 		if (nd_pfn->align != align || nd_pfn->mode != mode) {
 			dev_err(&nd_pfn->dev,
 					"init failed, settings mismatch\n");
@@ -578,12 +542,7 @@ int nd_pfn_validate(struct nd_pfn *nd_pfn, const char *sig)
 		return -EOPNOTSUPP;
 	}
 
-	/*
-	 * These warnings are verbose because they can only trigger in
-	 * the case where the physical address alignment of the
-	 * namespace has changed since the pfn superblock was
-	 * established.
-	 */
+	 
 	nsio = to_nd_namespace_io(&ndns->dev);
 	res = &nsio->res;
 	res_size = resource_size(res);
@@ -659,10 +618,7 @@ int nd_pfn_probe(struct device *dev, struct nd_namespace_common *ndns)
 }
 EXPORT_SYMBOL(nd_pfn_probe);
 
-/*
- * We hotplug memory at sub-section granularity, pad the reserved area
- * from the previous section base to the namespace base address.
- */
+ 
 static unsigned long init_altmap_base(resource_size_t base)
 {
 	unsigned long base_pfn = PHYS_PFN(base);
@@ -754,7 +710,7 @@ static int nd_pfn_init(struct nd_pfn *nd_pfn)
 	if (rc != -ENODEV)
 		return rc;
 
-	/* no info block, do init */;
+	 ;
 	memset(pfn_sb, 0, sizeof(*pfn_sb));
 
 	nd_region = to_nd_region(nd_pfn->dev.parent);
@@ -770,11 +726,7 @@ static int nd_pfn_init(struct nd_pfn *nd_pfn)
 	npfns = PHYS_PFN(size - SZ_8K);
 	align = max(nd_pfn->align, memremap_compat_align());
 
-	/*
-	 * When @start is misaligned fail namespace creation. See
-	 * the 'struct nd_pfn_sb' commentary on why ->start_pad is not
-	 * an option.
-	 */
+	 
 	if (!IS_ALIGNED(start, memremap_compat_align())) {
 		dev_err(&nd_pfn->dev, "%s: start %pa misaligned to %#lx\n",
 				dev_name(&ndns->dev), &start,
@@ -785,21 +737,7 @@ static int nd_pfn_init(struct nd_pfn *nd_pfn)
 	if (nd_pfn->mode == PFN_MODE_PMEM) {
 		unsigned long page_map_size = MAX_STRUCT_PAGE_SIZE * npfns;
 
-		/*
-		 * The altmap should be padded out to the block size used
-		 * when populating the vmemmap. This *should* be equal to
-		 * PMD_SIZE for most architectures.
-		 *
-		 * Also make sure size of struct page is less than
-		 * MAX_STRUCT_PAGE_SIZE. The goal here is compatibility in the
-		 * face of production kernel configurations that reduce the
-		 * 'struct page' size below MAX_STRUCT_PAGE_SIZE. For debug
-		 * kernel configurations that increase the 'struct page' size
-		 * above MAX_STRUCT_PAGE_SIZE, the page_struct_override allows
-		 * for continuing with the capacity that will be wasted when
-		 * reverting to a production kernel configuration. Otherwise,
-		 * those configurations are blocked by default.
-		 */
+		 
 		if (sizeof(struct page) > MAX_STRUCT_PAGE_SIZE) {
 			if (page_struct_override)
 				page_map_size = sizeof(struct page) * npfns;
@@ -816,7 +754,7 @@ static int nd_pfn_init(struct nd_pfn *nd_pfn)
 		return -ENXIO;
 
 	if (offset >= (size - end_trunc)) {
-		/* This results in zero size devices */
+		 
 		dev_err(&nd_pfn->dev, "%s unable to satisfy requested alignment\n",
 				dev_name(&ndns->dev));
 		return -ENXIO;
@@ -848,10 +786,7 @@ static int nd_pfn_init(struct nd_pfn *nd_pfn)
 	return nvdimm_write_bytes(ndns, SZ_4K, pfn_sb, sizeof(*pfn_sb), 0);
 }
 
-/*
- * Determine the effective resource range and vmem_altmap from an nd_pfn
- * instance.
- */
+ 
 int nvdimm_setup_pfn(struct nd_pfn *nd_pfn, struct dev_pagemap *pgmap)
 {
 	int rc;
@@ -863,7 +798,7 @@ int nvdimm_setup_pfn(struct nd_pfn *nd_pfn, struct dev_pagemap *pgmap)
 	if (rc)
 		return rc;
 
-	/* we need a valid pfn_sb before we can init a dev_pagemap */
+	 
 	return __nvdimm_setup_pfn(nd_pfn, pgmap);
 }
 EXPORT_SYMBOL_GPL(nvdimm_setup_pfn);

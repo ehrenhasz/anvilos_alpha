@@ -1,27 +1,11 @@
-/* syntax.h -- Syntax definitions for the shell */
+ 
 
-/* Copyright (C) 2000, 2001, 2005, 2008, 2009-2020 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #ifndef _SYNTAX_H_
 #define _SYNTAX_H_
 
-/* Defines for use by mksyntax.c */
+ 
 
 #define slashify_in_quotes "\\`$\"\n"
 #define slashify_in_here_document "\\`$"
@@ -44,27 +28,27 @@
 #endif
 #define shell_glob_chars	"*?[]^"
 
-/* Defines shared by mksyntax.c and the rest of the shell code. */
+ 
 
-/* Values for character flags in syntax tables */
+ 
 
-#define CWORD		0x0000	/* nothing special; an ordinary character */
-#define CSHMETA		0x0001	/* shell meta character */
-#define CSHBRK		0x0002	/* shell break character */
-#define CBACKQ		0x0004	/* back quote */
-#define CQUOTE		0x0008	/* shell quote character */
-#define CSPECL		0x0010	/* special character that needs quoting */
-#define CEXP		0x0020	/* shell expansion character */
-#define CBSDQUOTE	0x0040	/* characters escaped by backslash in double quotes */
-#define CBSHDOC		0x0080	/* characters escaped by backslash in here doc */
-#define CGLOB		0x0100	/* globbing characters */
-#define CXGLOB		0x0200	/* extended globbing characters */
-#define CXQUOTE		0x0400	/* cquote + backslash */
-#define CSPECVAR	0x0800	/* single-character shell variable name */
-#define CSUBSTOP	0x1000	/* values of OP for ${word[:]OPstuff} */
-#define CBLANK		0x2000	/* whitespace (blank) character */
+#define CWORD		0x0000	 
+#define CSHMETA		0x0001	 
+#define CSHBRK		0x0002	 
+#define CBACKQ		0x0004	 
+#define CQUOTE		0x0008	 
+#define CSPECL		0x0010	 
+#define CEXP		0x0020	 
+#define CBSDQUOTE	0x0040	 
+#define CBSHDOC		0x0080	 
+#define CGLOB		0x0100	 
+#define CXGLOB		0x0200	 
+#define CXQUOTE		0x0400	 
+#define CSPECVAR	0x0800	 
+#define CSUBSTOP	0x1000	 
+#define CBLANK		0x2000	 
 
-/* Defines for use by the rest of the shell. */
+ 
 extern int sh_syntaxtab[];
 extern int sh_syntabsiz;
 
@@ -103,4 +87,4 @@ extern int sh_syntabsiz;
 #  define isblank(x)	((x) == ' ' || (x) == '\t')
 #endif
 
-#endif /* _SYNTAX_H_ */
+#endif  

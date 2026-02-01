@@ -1,44 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Portions Copyright 2011 Martin Matuska
- * Copyright 2015, OmniTI Computer Consulting, Inc. All rights reserved.
- * Portions Copyright 2012 Pawel Jakub Dawidek <pawel@dawidek.net>
- * Copyright (c) 2014, 2016 Joyent, Inc. All rights reserved.
- * Copyright 2016 Nexenta Systems, Inc.  All rights reserved.
- * Copyright (c) 2014, Joyent, Inc. All rights reserved.
- * Copyright (c) 2011, 2018 by Delphix. All rights reserved.
- * Copyright (c) 2013 by Saso Kiselkov. All rights reserved.
- * Copyright (c) 2013 Steven Hartland. All rights reserved.
- * Copyright (c) 2014 Integros [integros.com]
- * Copyright 2016 Toomas Soome <tsoome@me.com>
- * Copyright (c) 2016 Actifio, Inc. All rights reserved.
- * Copyright (c) 2018, loli10K <ezomori.nozomu@gmail.com>. All rights reserved.
- * Copyright 2017 RackTop Systems.
- * Copyright (c) 2017 Open-E, Inc. All Rights Reserved.
- * Copyright (c) 2019 Datto Inc.
- * Copyright (c) 2021 Klara, Inc.
- */
+ 
 
 #include <sys/types.h>
 #include <sys/param.h>
@@ -161,12 +123,7 @@ zfs_ioc_userns_attach(zfs_cmd_t *zc)
 
 	error = zone_dataset_attach(CRED(), zc->zc_name, zc->zc_cleanup_fd);
 
-	/*
-	 * Translate ENOTTY to ZFS_ERR_NOT_USER_NAMESPACE as we just arrived
-	 * back from the SPL layer, which does not know about ZFS_ERR_* errors.
-	 * See the comment at the user_ns_get() function in spl-zone.c for
-	 * details.
-	 */
+	 
 	if (error == ENOTTY)
 		error = ZFS_ERR_NOT_USER_NAMESPACE;
 
@@ -183,10 +140,7 @@ zfs_ioc_userns_detach(zfs_cmd_t *zc)
 
 	error = zone_dataset_detach(CRED(), zc->zc_name, zc->zc_cleanup_fd);
 
-	/*
-	 * See the comment in zfs_ioc_userns_attach() for details on what is
-	 * going on here.
-	 */
+	 
 	if (error == ENOTTY)
 		error = ZFS_ERR_NOT_USER_NAMESPACE;
 
@@ -202,7 +156,7 @@ zfs_max_nvlist_src_size_os(void)
 	return (MIN(ptob(zfs_totalram_pages) / 4, 128 * 1024 * 1024));
 }
 
-/* Update the VFS's cache of mountpoint properties */
+ 
 void
 zfs_ioctl_update_mount_cache(const char *dsname)
 {
@@ -251,11 +205,7 @@ zfsdev_attach(void)
 
 	error = misc_register(&zfs_misc);
 	if (error == -EBUSY) {
-		/*
-		 * Fallback to dynamic minor allocation in the event of a
-		 * collision with a reserved minor in linux/miscdevice.h.
-		 * In this case the kernel modules must be manually loaded.
-		 */
+		 
 		printk(KERN_INFO "ZFS: misc_register() with static minor %d "
 		    "failed %d, retrying with MISC_DYNAMIC_MINOR\n",
 		    ZFS_DEVICE_MINOR, error);
@@ -305,7 +255,7 @@ openzfs_init_os(void)
 	    SPA_VERSION_STRING, ZPL_VERSION_STRING);
 #ifndef CONFIG_FS_POSIX_ACL
 	printk(KERN_NOTICE "ZFS: Posix ACLs disabled by kernel\n");
-#endif /* CONFIG_FS_POSIX_ACL */
+#endif  
 
 	zfs_init_idmap = (zidmap_t *)zfs_get_init_idmap();
 
@@ -373,7 +323,7 @@ MODULE_ALIAS("zcommon");
 MODULE_ALIAS("zzstd");
 MODULE_DESCRIPTION("ZFS");
 MODULE_AUTHOR(ZFS_META_AUTHOR);
-MODULE_LICENSE("Dual MIT/GPL"); /* lua */
-MODULE_LICENSE("Dual BSD/GPL"); /* zstd / misc */
+MODULE_LICENSE("Dual MIT/GPL");  
+MODULE_LICENSE("Dual BSD/GPL");  
 MODULE_LICENSE(ZFS_META_LICENSE);
 MODULE_VERSION(ZFS_META_VERSION "-" ZFS_META_RELEASE);

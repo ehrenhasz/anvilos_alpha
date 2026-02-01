@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * HDMI driver definition for TI OMAP4 Processor.
- *
- * Copyright (C) 2010-2011 Texas Instruments Incorporated - https://www.ti.com/
- */
+ 
+ 
 
 #ifndef _HDMI_H
 #define _HDMI_H
@@ -17,7 +13,7 @@
 
 #include "dss.h"
 
-/* HDMI Wrapper */
+ 
 
 #define HDMI_WP_REVISION			0x0
 #define HDMI_WP_SYSCONFIG			0x10
@@ -38,7 +34,7 @@
 #define HDMI_WP_AUDIO_CTRL			0x88
 #define HDMI_WP_AUDIO_DATA			0x8C
 
-/* HDMI WP IRQ flags */
+ 
 #define HDMI_IRQ_CORE				(1 << 0)
 #define HDMI_IRQ_OCP_TIMEOUT			(1 << 4)
 #define HDMI_IRQ_AUDIO_FIFO_UNDERFLOW		(1 << 8)
@@ -53,7 +49,7 @@
 #define HDMI_IRQ_PLL_UNLOCK			(1 << 30)
 #define HDMI_IRQ_PLL_RECAL			(1 << 31)
 
-/* HDMI PLL */
+ 
 
 #define PLLCTRL_PLL_CONTROL			0x0
 #define PLLCTRL_PLL_STATUS			0x4
@@ -65,7 +61,7 @@
 #define PLLCTRL_SSC_CFG2			0x1C
 #define PLLCTRL_CFG4				0x20
 
-/* HDMI PHY */
+ 
 
 #define HDMI_TXPHY_TX_CTRL			0x0
 #define HDMI_TXPHY_DIGITAL_CTRL			0x4
@@ -165,8 +161,8 @@ enum hdmi_audio_mclk_mode {
 
 struct hdmi_video_format {
 	enum hdmi_packing_mode	packing_mode;
-	u32			y_res;	/* Line per panel */
-	u32			x_res;	/* pixel per line */
+	u32			y_res;	 
+	u32			x_res;	 
 };
 
 struct hdmi_config {
@@ -273,7 +269,7 @@ static inline int hdmi_wait_for_bit_change(void __iomem *base_addr,
 	return v;
 }
 
-/* HDMI wrapper funcs */
+ 
 int hdmi_wp_video_start(struct hdmi_wp_data *wp);
 void hdmi_wp_video_stop(struct hdmi_wp_data *wp);
 void hdmi_wp_dump(struct hdmi_wp_data *wp, struct seq_file *s);
@@ -294,7 +290,7 @@ void hdmi_wp_init_vid_fmt_timings(struct hdmi_video_format *video_fmt,
 int hdmi_wp_init(struct platform_device *pdev, struct hdmi_wp_data *wp);
 phys_addr_t hdmi_wp_get_audio_dma_addr(struct hdmi_wp_data *wp);
 
-/* HDMI PLL funcs */
+ 
 void hdmi_pll_dump(struct hdmi_pll_data *pll, struct seq_file *s);
 void hdmi_pll_compute(struct hdmi_pll_data *pll,
 	unsigned long target_tmds, struct dss_pll_clock_info *pi);
@@ -302,18 +298,18 @@ int hdmi_pll_init(struct platform_device *pdev, struct hdmi_pll_data *pll,
 	struct hdmi_wp_data *wp);
 void hdmi_pll_uninit(struct hdmi_pll_data *hpll);
 
-/* HDMI PHY funcs */
+ 
 int hdmi_phy_configure(struct hdmi_phy_data *phy, unsigned long hfbitclk,
 	unsigned long lfbitclk);
 void hdmi_phy_dump(struct hdmi_phy_data *phy, struct seq_file *s);
 int hdmi_phy_init(struct platform_device *pdev, struct hdmi_phy_data *phy);
 int hdmi_phy_parse_lanes(struct hdmi_phy_data *phy, const u32 *lanes);
 
-/* HDMI common funcs */
+ 
 int hdmi_parse_lanes_of(struct platform_device *pdev, struct device_node *ep,
 	struct hdmi_phy_data *phy);
 
-/* Audio funcs */
+ 
 int hdmi_compute_acr(u32 pclk, u32 sample_freq, u32 *n, u32 *cts);
 int hdmi_wp_audio_enable(struct hdmi_wp_data *wp, bool enable);
 int hdmi_wp_audio_core_req_enable(struct hdmi_wp_data *wp, bool enable);
@@ -326,7 +322,7 @@ static inline bool hdmi_mode_has_audio(struct hdmi_config *cfg)
 	return cfg->hdmi_dvi_mode == HDMI_HDMI ? true : false;
 }
 
-/* HDMI DRV data */
+ 
 struct omap_hdmi {
 	struct mutex lock;
 	struct platform_device *pdev;
@@ -351,7 +347,7 @@ struct omap_hdmi {
 	bool audio_configured;
 	struct omap_dss_audio audio_config;
 
-	/* This lock should be taken when booleans bellow are touched. */
+	 
 	spinlock_t audio_playing_lock;
 	bool audio_playing;
 	bool display_enabled;

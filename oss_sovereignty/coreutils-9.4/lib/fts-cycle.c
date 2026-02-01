@@ -1,26 +1,4 @@
-/* Detect cycles in file tree walks.
-
-   Copyright (C) 2003-2006, 2009-2023 Free Software Foundation, Inc.
-
-   Written by Jim Meyering.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include "cycle-check.h"
-#include "hash.h"
-
-/* Use each of these to map a device/inode pair to an FTSENT.  */
+ 
 struct Active_dir
 {
   dev_t dev;
@@ -44,7 +22,7 @@ AD_hash (void const *x, size_t table_size)
   return (uintmax_t) ax->ino % table_size;
 }
 
-/* Set up the cycle-detection machinery.  */
+ 
 
 static bool
 setup_dir (FTS *fts)
@@ -68,7 +46,7 @@ setup_dir (FTS *fts)
   return true;
 }
 
-/* Enter a directory during a file tree walk.  */
+ 
 
 static bool
 enter_dir (FTS *fts, FTSENT *ent)
@@ -86,9 +64,7 @@ enter_dir (FTS *fts, FTSENT *ent)
       ad->ino = st->st_ino;
       ad->fts_ent = ent;
 
-      /* See if we've already encountered this directory.
-         This can happen when following symlinks as well as
-         with a corrupted directory hierarchy. */
+       
       ad_from_table = hash_insert (fts->fts_cycle.ht, ad);
 
       if (ad_from_table != ad)
@@ -97,8 +73,7 @@ enter_dir (FTS *fts, FTSENT *ent)
           if (!ad_from_table)
             return false;
 
-          /* There was an entry with matching dev/inode already in the table.
-             Record the fact that we've found a cycle.  */
+           
           ent->fts_cycle = ad_from_table->fts_ent;
           ent->fts_info = FTS_DC;
         }
@@ -107,10 +82,7 @@ enter_dir (FTS *fts, FTSENT *ent)
     {
       if (cycle_check (fts->fts_cycle.state, ent->fts_statp))
         {
-          /* FIXME: setting fts_cycle like this isn't proper.
-             To do what the documentation requires, we'd have to
-             go around the cycle again and find the right entry.
-             But no callers in coreutils use the fts_cycle member. */
+           
           ent->fts_cycle = ent;
           ent->fts_info = FTS_DC;
         }
@@ -119,7 +91,7 @@ enter_dir (FTS *fts, FTSENT *ent)
   return true;
 }
 
-/* Leave a directory during a file tree walk.  */
+ 
 
 static void
 leave_dir (FTS *fts, FTSENT *ent)
@@ -145,7 +117,7 @@ leave_dir (FTS *fts, FTSENT *ent)
     }
 }
 
-/* Free any memory used for cycle detection.  */
+ 
 
 static void
 free_dir (FTS *sp)

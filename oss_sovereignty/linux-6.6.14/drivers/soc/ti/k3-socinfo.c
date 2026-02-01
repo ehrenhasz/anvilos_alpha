@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * TI K3 SoC info driver
- *
- * Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com
- */
+
+ 
 
 #include <linux/mfd/syscon.h>
 #include <linux/of.h>
@@ -15,13 +11,7 @@
 #include <linux/sys_soc.h>
 
 #define CTRLMMR_WKUP_JTAGID_REG		0
-/*
- * Bits:
- *  31-28 VARIANT	Device variant
- *  27-12 PARTNO	Part number
- *  11-1  MFG		Indicates TI as manufacturer (0x17)
- *  1			Always 1
- */
+ 
 #define CTRLMMR_WKUP_JTAGID_VARIANT_SHIFT	(28)
 #define CTRLMMR_WKUP_JTAGID_VARIANT_MASK	GENMASK(31, 28)
 
@@ -141,7 +131,7 @@ err:
 
 static const struct of_device_id k3_chipinfo_of_match[] = {
 	{ .compatible = "ti,am654-chipid", },
-	{ /* sentinel */ },
+	{   },
 };
 
 static struct platform_driver k3_chipinfo_driver = {

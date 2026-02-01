@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IIO ADC driver for NXP LPC18xx ADC
- *
- * Copyright (C) 2016 Joachim Eastwood <manabian@gmail.com>
- *
- * UNSUPPORTED hardware features:
- *  - Hardware triggers
- *  - Burst mode
- *  - Interrupts
- *  - DMA
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -23,19 +13,19 @@
 #include <linux/platform_device.h>
 #include <linux/regulator/consumer.h>
 
-/* LPC18XX ADC registers and bits */
+ 
 #define LPC18XX_ADC_CR			0x000
 #define  LPC18XX_ADC_CR_CLKDIV_SHIFT	8
 #define  LPC18XX_ADC_CR_PDN		BIT(21)
 #define  LPC18XX_ADC_CR_START_NOW	(0x1 << 24)
 #define LPC18XX_ADC_GDR			0x004
 
-/* Data register bits */
+ 
 #define LPC18XX_ADC_SAMPLE_SHIFT	6
 #define LPC18XX_ADC_SAMPLE_MASK		0x3ff
 #define LPC18XX_ADC_CONV_DONE		BIT(31)
 
-/* Clock should be 4.5 MHz or less */
+ 
 #define LPC18XX_ADC_CLK_TARGET		4500000
 
 struct lpc18xx_adc {
@@ -188,7 +178,7 @@ static int lpc18xx_adc_probe(struct platform_device *pdev)
 
 static const struct of_device_id lpc18xx_adc_match[] = {
 	{ .compatible = "nxp,lpc1850-adc" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, lpc18xx_adc_match);
 

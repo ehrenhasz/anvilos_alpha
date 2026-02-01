@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Manage printing of source lines
- * Copyright (c) 2017, Intel Corporation.
- * Author: Andi Kleen
- */
+
+ 
 #include <linux/list.h>
 #include <linux/zalloc.h>
 #include <stdlib.h>
@@ -15,7 +11,7 @@
 #include <string.h>
 #include "srccode.h"
 #include "debug.h"
-#include <internal/lib.h> // page_size
+#include <internal/lib.h> 
 #include "fncache.h"
 
 #define MAXSRCCACHE (32*1024*1024)
@@ -96,13 +92,13 @@ static struct srcfile *find_srcfile(char *fn)
 
 	hlist_for_each_entry (h, &srcfile_htab[hval], hash_nd) {
 		if (!strcmp(fn, h->fn)) {
-			/* Move to front */
+			 
 			list_move(&h->nd, &srcfile_list);
 			return h;
 		}
 	}
 
-	/* Only prune if there is more than one entry */
+	 
 	while ((num_srcfiles > MAXSRCFILES || map_total_sz > MAXSRCCACHE) &&
 	       srcfile_list.next != &srcfile_list) {
 		assert(!list_empty(&srcfile_list));
@@ -152,7 +148,7 @@ out_h:
 	return NULL;
 }
 
-/* Result is not 0 terminated */
+ 
 char *find_sourceline(char *fn, unsigned line, int *lenp)
 {
 	char *l, *p;

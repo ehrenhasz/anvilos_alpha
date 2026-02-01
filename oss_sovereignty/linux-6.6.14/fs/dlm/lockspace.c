@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/******************************************************************************
-*******************************************************************************
-**
-**  Copyright (C) Sistina Software, Inc.  1997-2003  All rights reserved.
-**  Copyright (C) 2004-2011 Red Hat, Inc.  All rights reserved.
-**
-**
-*******************************************************************************
-******************************************************************************/
+
+ 
 
 #include <linux/module.h>
 
@@ -204,8 +196,7 @@ static int do_uevent(struct dlm_ls *ls, int in)
 
 	log_rinfo(ls, "%s the lockspace group...", in ? "joining" : "leaving");
 
-	/* dlm_controld will see the uevent, do the necessary group management
-	   and then write to sysfs to wake us */
+	 
 
 	wait_event(ls->ls_uevent_wait,
 		   test_and_clear_bit(LSFL_UEVENT_WAIT, &ls->ls_flags));
@@ -380,7 +371,7 @@ static int threads_start(void)
 {
 	int error;
 
-	/* Thread for sending/receiving messages for all lockspace's */
+	 
 	error = dlm_midcomms_start();
 	if (error) {
 		log_print("cannot start dlm midcomms %d", error);
@@ -487,9 +478,7 @@ static int new_lockspace(const char *name, const char *cluster,
 		ls->ls_ops_arg = ops_arg;
 	}
 
-	/* ls_exflags are forced to match among nodes, and we don't
-	 * need to require all nodes to have some flags set
-	 */
+	 
 	ls->ls_exflags = (flags & ~(DLM_LSFL_FS | DLM_LSFL_NEWEXCL));
 
 	size = READ_ONCE(dlm_config.ci_rsbtbl_size);
@@ -559,11 +548,7 @@ static int new_lockspace(const char *name, const char *cluster,
 	mutex_init(&ls->ls_requestqueue_mutex);
 	spin_lock_init(&ls->ls_clear_proc_locks);
 
-	/* Due backwards compatibility with 3.1 we need to use maximum
-	 * possible dlm message size to be sure the message will fit and
-	 * not having out of bounds issues. However on sending side 3.2
-	 * might send less.
-	 */
+	 
 	ls->ls_recover_buf = kmalloc(DLM_MAX_SOCKET_BUFSIZE, GFP_NOFS);
 	if (!ls->ls_recover_buf)
 		goto out_lkbidr;
@@ -598,12 +583,7 @@ static int new_lockspace(const char *name, const char *cluster,
 
 	init_waitqueue_head(&ls->ls_recover_lock_wait);
 
-	/*
-	 * Once started, dlm_recoverd first looks for ls in lslist, then
-	 * initializes ls_in_recovery as locked in "down" mode.  We need
-	 * to wait for the wakeup from dlm_recoverd because in_recovery
-	 * has to start out in down mode.
-	 */
+	 
 
 	error = dlm_recoverd_start(ls);
 	if (error) {
@@ -614,7 +594,7 @@ static int new_lockspace(const char *name, const char *cluster,
 	wait_event(ls->ls_recover_lock_wait,
 		   test_bit(LSFL_RECOVER_LOCK, &ls->ls_flags));
 
-	/* let kobject handle freeing of ls if there's an error */
+	 
 	do_unreg = 1;
 
 	ls->ls_kobj.kset = dlm_kset;
@@ -624,17 +604,13 @@ static int new_lockspace(const char *name, const char *cluster,
 		goto out_recoverd;
 	kobject_uevent(&ls->ls_kobj, KOBJ_ADD);
 
-	/* This uevent triggers dlm_controld in userspace to add us to the
-	   group of nodes that are members of this lockspace (managed by the
-	   cluster infrastructure.)  Once it's done that, it tells us who the
-	   current lockspace members are (via configfs) and then tells the
-	   lockspace to start running (via sysfs) in dlm_ls_start(). */
+	 
 
 	error = do_uevent(ls, 1);
 	if (error)
 		goto out_recoverd;
 
-	/* wait until recovery is successful or failed */
+	 
 	wait_for_completion(&ls->ls_recovery_done);
 	error = ls->ls_recovery_result;
 	if (error)
@@ -748,9 +724,7 @@ static int lkb_idr_free(int id, void *p, void *data)
 	return 0;
 }
 
-/* NOTE: We check the lkbidr here rather than the resource table.
-   This is because there may be LKBs queued as ASTs that have been unlinked
-   from their RSBs and are pending deletion once the AST has been delivered */
+ 
 
 static int lockspace_busy(struct dlm_ls *ls, int force)
 {
@@ -781,7 +755,7 @@ static int release_lockspace(struct dlm_ls *ls, int force)
 		if (busy) {
 			rv = -EBUSY;
 		} else {
-			/* remove_lockspace takes ls off lslist */
+			 
 			ls->ls_create_count = 0;
 			rv = 0;
 		}
@@ -822,16 +796,12 @@ static int release_lockspace(struct dlm_ls *ls, int force)
 	idr_destroy(&ls->ls_recover_idr);
 	kfree(ls->ls_recover_buf);
 
-	/*
-	 * Free all lkb's in idr
-	 */
+	 
 
 	idr_for_each(&ls->ls_lkbidr, lkb_idr_free, ls);
 	idr_destroy(&ls->ls_lkbidr);
 
-	/*
-	 * Free all rsb's on rsbtbl[] lists
-	 */
+	 
 
 	for (i = 0; i < ls->ls_rsbtbl_size; i++) {
 		while ((n = rb_first(&ls->ls_rsbtbl[i].keep))) {
@@ -859,9 +829,7 @@ static int release_lockspace(struct dlm_ls *ls, int force)
 		dlm_free_rsb(rsb);
 	}
 
-	/*
-	 * Free structures on any other lists
-	 */
+	 
 
 	dlm_purge_requestqueue(ls);
 	kfree(ls->ls_recover_args);
@@ -870,25 +838,13 @@ static int release_lockspace(struct dlm_ls *ls, int force)
 	kfree(ls->ls_node_array);
 	log_rinfo(ls, "release_lockspace final free");
 	kobject_put(&ls->ls_kobj);
-	/* The ls structure will be freed when the kobject is done with */
+	 
 
 	module_put(THIS_MODULE);
 	return 0;
 }
 
-/*
- * Called when a system has released all its locks and is not going to use the
- * lockspace any longer.  We free everything we're managing for this lockspace.
- * Remaining nodes will go through the recovery process as if we'd died.  The
- * lockspace must continue to function as usual, participating in recoveries,
- * until this returns.
- *
- * Force has 4 possible values:
- * 0 - don't destroy lockspace if it has any LKBs
- * 1 - destroy lockspace if it has remote LKBs but not if it has local LKBs
- * 2 - destroy lockspace regardless of LKBs
- * 3 - destroy lockspace as part of a forced shutdown
- */
+ 
 
 int dlm_release_lockspace(void *lockspace, int force)
 {

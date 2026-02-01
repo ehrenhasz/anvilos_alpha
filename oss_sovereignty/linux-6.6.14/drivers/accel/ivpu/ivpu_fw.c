@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
+
+ 
 
 #include <linux/firmware.h>
 #include <linux/highmem.h>
@@ -19,8 +17,8 @@
 
 #define FW_GLOBAL_MEM_START	(2ull * SZ_1G)
 #define FW_GLOBAL_MEM_END	(3ull * SZ_1G)
-#define FW_SHARED_MEM_SIZE	SZ_256M /* Must be aligned to FW_SHARED_MEM_ALIGNMENT */
-#define FW_SHARED_MEM_ALIGNMENT	SZ_128K /* VPU MTRR limitation */
+#define FW_SHARED_MEM_SIZE	SZ_256M  
+#define FW_SHARED_MEM_ALIGNMENT	SZ_128K  
 #define FW_RUNTIME_MAX_SIZE	SZ_512M
 #define FW_SHAVE_NN_MAX_SIZE	SZ_2M
 #define FW_RUNTIME_MIN_ADDR	(FW_GLOBAL_MEM_START)
@@ -43,7 +41,7 @@ static char *ivpu_firmware;
 module_param_named_unsafe(firmware, ivpu_firmware, charp, 0644);
 MODULE_PARM_DESC(firmware, "VPU firmware binary in /lib/firmware/..");
 
-/* TODO: Remove mtl_vpu.bin from names after transition to generation based FW names */
+ 
 static struct {
 	int gen;
 	const char *name;
@@ -330,7 +328,7 @@ int ivpu_fw_load(struct ivpu_device *vdev)
 		memset(start, 0, size);
 	}
 
-	wmb(); /* Flush WC buffers after writing fw->mem */
+	wmb();  
 
 	return 0;
 }
@@ -428,11 +426,11 @@ void ivpu_fw_boot_params_setup(struct ivpu_device *vdev, struct vpu_boot_params 
 {
 	struct ivpu_bo *ipc_mem_rx = vdev->ipc->mem_rx;
 
-	/* In case of warm boot we only have to reset the entrypoint addr */
+	 
 	if (!ivpu_fw_is_cold_boot(vdev)) {
 		boot_params->save_restore_ret_address = 0;
 		vdev->pm->is_warmboot = true;
-		wmb(); /* Flush WC buffers after writing save_restore_ret_address */
+		wmb();  
 		return;
 	}
 
@@ -442,10 +440,7 @@ void ivpu_fw_boot_params_setup(struct ivpu_device *vdev, struct vpu_boot_params 
 	boot_params->vpu_id = to_pci_dev(vdev->drm.dev)->bus->number;
 	boot_params->frequency = ivpu_hw_reg_pll_freq_get(vdev);
 
-	/*
-	 * Uncached region of VPU address space, covers IPC buffers, job queues
-	 * and log buffers, programmable to L2$ Uncached by VPU MTRR
-	 */
+	 
 	boot_params->shared_region_base = vdev->hw->ranges.global.start;
 	boot_params->shared_region_size = vdev->hw->ranges.global.end -
 					  vdev->hw->ranges.global.start;
@@ -459,10 +454,10 @@ void ivpu_fw_boot_params_setup(struct ivpu_device *vdev, struct vpu_boot_params 
 	boot_params->global_aliased_pio_base = vdev->hw->ranges.user.start;
 	boot_params->global_aliased_pio_size = ivpu_hw_range_size(&vdev->hw->ranges.user);
 
-	/* Allow configuration for L2C_PAGE_TABLE with boot param value */
+	 
 	boot_params->autoconfig = 1;
 
-	/* Enable L2 cache for first 2GB of high memory */
+	 
 	boot_params->cache_defaults[VPU_BOOT_L2_CACHE_CFG_NN].use = 1;
 	boot_params->cache_defaults[VPU_BOOT_L2_CACHE_CFG_NN].cfg =
 		ADDR_TO_L2_CACHE_CFG(vdev->hw->ranges.shave.start);
@@ -494,7 +489,7 @@ void ivpu_fw_boot_params_setup(struct ivpu_device *vdev, struct vpu_boot_params 
 	boot_params->punit_telemetry_sram_size = ivpu_hw_reg_telemetry_size_get(vdev);
 	boot_params->vpu_telemetry_enable = ivpu_hw_reg_telemetry_enable_get(vdev);
 
-	wmb(); /* Flush WC buffers after writing bootparams */
+	wmb();  
 
 	ivpu_fw_boot_params_print(vdev, boot_params);
 }

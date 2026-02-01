@@ -1,17 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * DAMON sysfs Interface
- *
- * Copyright (c) 2022 SeongJae Park <sj@kernel.org>
- */
+
+ 
 
 #include <linux/slab.h>
 
 #include "sysfs-common.h"
 
-/*
- * scheme region directory
- */
+ 
 
 struct damon_sysfs_scheme_region {
 	struct kobject kobj;
@@ -109,9 +103,7 @@ static const struct kobj_type damon_sysfs_scheme_region_ktype = {
 	.default_groups = damon_sysfs_scheme_region_groups,
 };
 
-/*
- * scheme regions directory
- */
+ 
 
 struct damon_sysfs_scheme_regions {
 	struct kobject kobj;
@@ -151,7 +143,7 @@ static void damon_sysfs_scheme_regions_rm_dirs(
 	struct damon_sysfs_scheme_region *r, *next;
 
 	list_for_each_entry_safe(r, next, &regions->regions_list, list) {
-		/* release function deletes it from the list */
+		 
 		kobject_put(&r->kobj);
 		regions->nr_regions--;
 	}
@@ -177,9 +169,7 @@ static const struct kobj_type damon_sysfs_scheme_regions_ktype = {
 	.default_groups = damon_sysfs_scheme_regions_groups,
 };
 
-/*
- * schemes/stats directory
- */
+ 
 
 struct damon_sysfs_stats {
 	struct kobject kobj;
@@ -276,9 +266,7 @@ static const struct kobj_type damon_sysfs_stats_ktype = {
 	.default_groups = damon_sysfs_stats_groups,
 };
 
-/*
- * filter directory
- */
+ 
 
 struct damon_sysfs_scheme_filter {
 	struct kobject kobj;
@@ -294,7 +282,7 @@ static struct damon_sysfs_scheme_filter *damon_sysfs_scheme_filter_alloc(void)
 	return kzalloc(sizeof(struct damon_sysfs_scheme_filter), GFP_KERNEL);
 }
 
-/* Should match with enum damos_filter_type */
+ 
 static const char * const damon_sysfs_scheme_filter_type_strs[] = {
 	"anon",
 	"memcg",
@@ -481,9 +469,7 @@ static const struct kobj_type damon_sysfs_scheme_filter_ktype = {
 	.default_groups = damon_sysfs_scheme_filter_groups,
 };
 
-/*
- * filters directory
- */
+ 
 
 struct damon_sysfs_scheme_filters {
 	struct kobject kobj;
@@ -600,9 +586,7 @@ static const struct kobj_type damon_sysfs_scheme_filters_ktype = {
 	.default_groups = damon_sysfs_scheme_filters_groups,
 };
 
-/*
- * watermarks directory
- */
+ 
 
 struct damon_sysfs_watermarks {
 	struct kobject kobj;
@@ -631,7 +615,7 @@ static struct damon_sysfs_watermarks *damon_sysfs_watermarks_alloc(
 	return watermarks;
 }
 
-/* Should match with enum damos_wmark_metric */
+ 
 static const char * const damon_sysfs_wmark_metric_strs[] = {
 	"none",
 	"free_mem_rate",
@@ -775,9 +759,7 @@ static const struct kobj_type damon_sysfs_watermarks_ktype = {
 	.default_groups = damon_sysfs_watermarks_groups,
 };
 
-/*
- * scheme/weights directory
- */
+ 
 
 struct damon_sysfs_weights {
 	struct kobject kobj;
@@ -886,9 +868,7 @@ static const struct kobj_type damon_sysfs_weights_ktype = {
 	.default_groups = damon_sysfs_weights_groups,
 };
 
-/*
- * quotas directory
- */
+ 
 
 struct damon_sysfs_quotas {
 	struct kobject kobj;
@@ -1017,9 +997,7 @@ static const struct kobj_type damon_sysfs_quotas_ktype = {
 	.default_groups = damon_sysfs_quotas_groups,
 };
 
-/*
- * access_pattern directory
- */
+ 
 
 struct damon_sysfs_access_pattern {
 	struct kobject kobj;
@@ -1116,9 +1094,7 @@ static const struct kobj_type damon_sysfs_access_pattern_ktype = {
 	.default_groups = damon_sysfs_access_pattern_groups,
 };
 
-/*
- * scheme directory
- */
+ 
 
 struct damon_sysfs_scheme {
 	struct kobject kobj;
@@ -1131,7 +1107,7 @@ struct damon_sysfs_scheme {
 	struct damon_sysfs_scheme_regions *tried_regions;
 };
 
-/* This should match with enum damos_action */
+ 
 static const char * const damon_sysfs_damos_action_strs[] = {
 	"willneed",
 	"cold",
@@ -1376,9 +1352,7 @@ static const struct kobj_type damon_sysfs_scheme_ktype = {
 	.default_groups = damon_sysfs_scheme_groups,
 };
 
-/*
- * schemes directory
- */
+ 
 
 struct damon_sysfs_schemes *damon_sysfs_schemes_alloc(void)
 {
@@ -1500,7 +1474,7 @@ static bool damon_sysfs_memcg_path_eq(struct mem_cgroup *memcg,
 	cgroup_path(memcg->css.cgroup, memcg_path_buf, PATH_MAX);
 	if (sysfs_streq(memcg_path_buf, path))
 		return true;
-#endif /* CONFIG_MEMCG */
+#endif  
 	return false;
 }
 
@@ -1519,7 +1493,7 @@ static int damon_sysfs_memcg_path_to_id(char *memcg_path, unsigned short *id)
 
 	for (memcg = mem_cgroup_iter(NULL, NULL, NULL); memcg;
 			memcg = mem_cgroup_iter(NULL, memcg, NULL)) {
-		/* skip removed memcg */
+		 
 		if (!mem_cgroup_id(memcg))
 			continue;
 		if (damon_sysfs_memcg_path_eq(memcg, path, memcg_path)) {
@@ -1702,7 +1676,7 @@ void damon_sysfs_schemes_update_stats(
 	damon_for_each_scheme(scheme, ctx) {
 		struct damon_sysfs_stats *sysfs_stats;
 
-		/* user could have removed the scheme sysfs dir */
+		 
 		if (schemes_idx >= sysfs_schemes->nr)
 			break;
 
@@ -1715,19 +1689,12 @@ void damon_sysfs_schemes_update_stats(
 	}
 }
 
-/*
- * damon_sysfs_schemes that need to update its schemes regions dir.  Protected
- * by damon_sysfs_lock
- */
+ 
 static struct damon_sysfs_schemes *damon_sysfs_schemes_for_damos_callback;
 static int damon_sysfs_schemes_region_idx;
 static bool damos_regions_upd_total_bytes_only;
 
-/*
- * DAMON callback that called before damos apply.  While this callback is
- * registered, damon_sysfs_lock should be held to ensure the regions
- * directories exist.
- */
+ 
 static int damon_sysfs_before_damos_apply(struct damon_ctx *ctx,
 		struct damon_target *t, struct damon_region *r,
 		struct damos *s)
@@ -1745,7 +1712,7 @@ static int damon_sysfs_before_damos_apply(struct damon_ctx *ctx,
 		schemes_idx++;
 	}
 
-	/* user could have removed the scheme sysfs dir */
+	 
 	if (schemes_idx >= sysfs_schemes->nr)
 		return 0;
 
@@ -1768,7 +1735,7 @@ static int damon_sysfs_before_damos_apply(struct damon_ctx *ctx,
 	return 0;
 }
 
-/* Called from damon_sysfs_cmd_request_callback under damon_sysfs_lock */
+ 
 int damon_sysfs_schemes_clear_regions(
 		struct damon_sysfs_schemes *sysfs_schemes,
 		struct damon_ctx *ctx)
@@ -1779,7 +1746,7 @@ int damon_sysfs_schemes_clear_regions(
 	damon_for_each_scheme(scheme, ctx) {
 		struct damon_sysfs_scheme *sysfs_scheme;
 
-		/* user could have removed the scheme sysfs dir */
+		 
 		if (schemes_idx >= sysfs_schemes->nr)
 			break;
 
@@ -1791,7 +1758,7 @@ int damon_sysfs_schemes_clear_regions(
 	return 0;
 }
 
-/* Called from damon_sysfs_cmd_request_callback under damon_sysfs_lock */
+ 
 int damon_sysfs_schemes_update_regions_start(
 		struct damon_sysfs_schemes *sysfs_schemes,
 		struct damon_ctx *ctx, bool total_bytes_only)
@@ -1803,11 +1770,7 @@ int damon_sysfs_schemes_update_regions_start(
 	return 0;
 }
 
-/*
- * Called from damon_sysfs_cmd_request_callback under damon_sysfs_lock.  Caller
- * should unlock damon_sysfs_lock which held before
- * damon_sysfs_schemes_update_regions_start()
- */
+ 
 int damon_sysfs_schemes_update_regions_stop(struct damon_ctx *ctx)
 {
 	damon_sysfs_schemes_for_damos_callback = NULL;

@@ -1,11 +1,4 @@
-/*
- * Broadcom specific AMBA
- * ChipCommon B Unit driver
- *
- * Copyright 2014, Hauke Mehrtens <hauke@hauke-m.de>
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #include "bcma_private.h"
 #include <linux/export.h>

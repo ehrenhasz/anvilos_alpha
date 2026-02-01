@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2020 Intel Corporation. All rights reserved. */
+
+ 
 #include <linux/platform_device.h>
 #include <linux/memregion.h>
 #include <linux/workqueue.h>
@@ -14,24 +14,9 @@
 #include <cxl.h>
 #include "core.h"
 
-/**
- * DOC: cxl core
- *
- * The CXL core provides a set of interfaces that can be consumed by CXL aware
- * drivers. The interfaces allow for creation, modification, and destruction of
- * regions, memory devices, ports, and decoders. CXL aware drivers must register
- * with the CXL core via these interfaces in order to be able to participate in
- * cross-device interleave coordination. The CXL core also establishes and
- * maintains the bridge to the nvdimm subsystem.
- *
- * CXL core introduces sysfs hierarchy to control the devices that are
- * instantiated by the core.
- */
+ 
 
-/*
- * All changes to the interleave configuration occur with this lock held
- * for write.
- */
+ 
 DECLARE_RWSEM(cxl_region_rwsem);
 
 static DEFINE_IDA(cxl_port_ida);
@@ -567,11 +552,7 @@ static void unregister_port(void *_port)
 	else
 		parent = to_cxl_port(port->dev.parent);
 
-	/*
-	 * CXL root port's and the first level of ports are unregistered
-	 * under the platform firmware device lock, all other ports are
-	 * unregistered while holding their parent port lock.
-	 */
+	 
 	if (!parent)
 		lock_dev = port->uport_dev;
 	else if (is_cxl_root(parent))
@@ -645,12 +626,7 @@ static struct cxl_port *cxl_port_alloc(struct device *uport_dev,
 	port->id = rc;
 	port->uport_dev = uport_dev;
 
-	/*
-	 * The top-level cxl_port "cxl_root" does not have a cxl_port as
-	 * its parent and it does not have any corresponding component
-	 * registers as its decode is described by a fixed platform
-	 * description.
-	 */
+	 
 	dev = &port->dev;
 	if (parent_dport) {
 		struct cxl_port *parent_port = parent_dport->port;
@@ -660,10 +636,7 @@ static struct cxl_port *cxl_port_alloc(struct device *uport_dev,
 		port->depth = parent_port->depth + 1;
 		port->parent_dport = parent_dport;
 
-		/*
-		 * walk to the host bridge, or the first ancestor that knows
-		 * the host bridge
-		 */
+		 
 		iter = port;
 		while (!iter->host_bridge &&
 		       !is_cxl_root(to_cxl_port(iter->dev.parent)))
@@ -733,11 +706,7 @@ static int cxl_dport_setup_regs(struct device *host, struct cxl_dport *dport,
 	if (dev_is_platform(dport->dport_dev))
 		return 0;
 
-	/*
-	 * use @dport->dport_dev for the context for error messages during
-	 * register probing, and fixup @host after the fact, since @host may be
-	 * NULL.
-	 */
+	 
 	rc = cxl_setup_comp_regs(dport->dport_dev, &dport->comp_map,
 				 component_reg_phys);
 	dport->comp_map.host = host;
@@ -794,13 +763,7 @@ err:
 	return ERR_PTR(rc);
 }
 
-/**
- * devm_cxl_add_port - register a cxl_port in CXL memory decode hierarchy
- * @host: host device for devm operations
- * @uport_dev: "physical" device implementing this upstream port
- * @component_reg_phys: (optional) for configurable cxl_port instances
- * @parent_dport: next hop up in the CXL memory decode hierarchy
- */
+ 
 struct cxl_port *devm_cxl_add_port(struct device *host,
 				   struct device *uport_dev,
 				   resource_size_t component_reg_phys,
@@ -832,7 +795,7 @@ EXPORT_SYMBOL_NS_GPL(devm_cxl_add_port, CXL);
 
 struct pci_bus *cxl_port_to_pci_bus(struct cxl_port *port)
 {
-	/* There is no pci_bus associated with a CXL platform-root port */
+	 
 	if (is_cxl_root(port))
 		return NULL;
 
@@ -935,13 +898,7 @@ static int add_dport(struct cxl_port *port, struct cxl_dport *dport)
 	return 0;
 }
 
-/*
- * Since root-level CXL dports cannot be enumerated by PCI they are not
- * enumerated by the common port driver that acquires the port lock over
- * dport add/remove. Instead, root dports are manually added by a
- * platform driver and cond_cxl_root_lock() is used to take the missing
- * port lock in that case.
- */
+ 
 static void cond_cxl_root_lock(struct cxl_port *port)
 {
 	if (is_cxl_root(port))
@@ -1020,10 +977,7 @@ __devm_cxl_add_dport(struct cxl_port *port, struct device *dport_dev,
 			return ERR_PTR(-ENXIO);
 		}
 
-		/*
-		 * RCH @dport is not ready to map until associated with its
-		 * memdev
-		 */
+		 
 		rc = cxl_dport_setup_regs(NULL, dport, component_reg_phys);
 		if (rc)
 			return ERR_PTR(rc);
@@ -1057,17 +1011,7 @@ __devm_cxl_add_dport(struct cxl_port *port, struct device *dport_dev,
 	return dport;
 }
 
-/**
- * devm_cxl_add_dport - append VH downstream port data to a cxl_port
- * @port: the cxl_port that references this dport
- * @dport_dev: firmware or PCI device representing the dport
- * @port_id: identifier for this dport in a decoder's target list
- * @component_reg_phys: optional location of CXL component registers
- *
- * Note that dports are appended to the devm release action's of the
- * either the port's host (for root ports), or the port itself (for
- * switch ports)
- */
+ 
 struct cxl_dport *devm_cxl_add_dport(struct cxl_port *port,
 				     struct device *dport_dev, int port_id,
 				     resource_size_t component_reg_phys)
@@ -1088,15 +1032,7 @@ struct cxl_dport *devm_cxl_add_dport(struct cxl_port *port,
 }
 EXPORT_SYMBOL_NS_GPL(devm_cxl_add_dport, CXL);
 
-/**
- * devm_cxl_add_rch_dport - append RCH downstream port data to a cxl_port
- * @port: the cxl_port that references this dport
- * @dport_dev: firmware or PCI device representing the dport
- * @port_id: identifier for this dport in a decoder's target list
- * @rcrb: mandatory location of a Root Complex Register Block
- *
- * See CXL 3.0 9.11.8 CXL Devices Attached to an RCH
- */
+ 
 struct cxl_dport *devm_cxl_add_rch_dport(struct cxl_port *port,
 					 struct device *dport_dev, int port_id,
 					 resource_size_t rcrb)
@@ -1139,15 +1075,7 @@ static int add_ep(struct cxl_ep *new)
 	return rc;
 }
 
-/**
- * cxl_add_ep - register an endpoint's interest in a port
- * @dport: the dport that routes to @ep_dev
- * @ep_dev: device representing the endpoint
- *
- * Intermediate CXL ports are scanned based on the arrival of endpoints.
- * When those endpoints depart the port can be destroyed once all
- * endpoints that care about that port have been removed.
- */
+ 
 static int cxl_add_ep(struct cxl_dport *dport, struct device *ep_dev)
 {
 	struct cxl_ep *ep;
@@ -1231,13 +1159,7 @@ static struct cxl_port *find_cxl_port_at(struct cxl_port *parent_port,
 	return port;
 }
 
-/*
- * All users of grandparent() are using it to walk PCIe-like switch port
- * hierarchy. A PCIe switch is comprised of a bridge device representing the
- * upstream switch port and N bridges representing downstream switch ports. When
- * bridges stack the grand-parent of a downstream switch port is another
- * downstream switch port in the immediate ancestor switch.
- */
+ 
 static struct device *grandparent(struct device *dev)
 {
 	if (dev && dev->parent)
@@ -1285,15 +1207,7 @@ int cxl_endpoint_autoremove(struct cxl_memdev *cxlmd, struct cxl_port *endpoint)
 }
 EXPORT_SYMBOL_NS_GPL(cxl_endpoint_autoremove, CXL);
 
-/*
- * The natural end of life of a non-root 'cxl_port' is when its parent port goes
- * through a ->remove() event ("top-down" unregistration). The unnatural trigger
- * for a port to be unregistered is when all memdevs beneath that port have gone
- * through ->remove(). This "bottom-up" removal selectively removes individual
- * child ports manually. This depends on devm_cxl_add_port() to not change is
- * devm action registration order, and for dports to have already been
- * destroyed by reap_dports().
- */
+ 
 static void delete_switch_port(struct cxl_port *port)
 {
 	devm_release_action(port->dev.parent, cxl_unlink_parent_dport, port);
@@ -1364,11 +1278,7 @@ static void cxl_detach_ep(void *data)
 		cxl_ep_remove(port, ep);
 		if (ep && !port->dead && xa_empty(&port->endpoints) &&
 		    !is_cxl_root(parent_port) && parent_port->dev.driver) {
-			/*
-			 * This was the last ep attached to a dynamically
-			 * enumerated port. Block new cxl_add_ep() and garbage
-			 * collect the port.
-			 */
+			 
 			died = true;
 			port->dead = true;
 			reap_dports(port);
@@ -1390,10 +1300,7 @@ static resource_size_t find_component_registers(struct device *dev)
 	struct cxl_register_map map;
 	struct pci_dev *pdev;
 
-	/*
-	 * Theoretically, CXL component registers can be hosted on a
-	 * non-PCI device, in practice, only cxl_test hits this case.
-	 */
+	 
 	if (!dev_is_pci(dev))
 		return CXL_RESOURCE_NONE;
 
@@ -1414,11 +1321,7 @@ static int add_port_attach_ep(struct cxl_memdev *cxlmd,
 	int rc;
 
 	if (!dparent) {
-		/*
-		 * The iteration reached the topology root without finding the
-		 * CXL-root 'cxl_port' on a previous iteration, fail for now to
-		 * be re-probed after platform driver attaches.
-		 */
+		 
 		dev_dbg(&cxlmd->dev, "%s is a root dport\n",
 			dev_name(dport_dev));
 		return -ENXIO;
@@ -1426,7 +1329,7 @@ static int add_port_attach_ep(struct cxl_memdev *cxlmd,
 
 	parent_port = find_cxl_port(dparent, &parent_dport);
 	if (!parent_port) {
-		/* iterate to create this parent_port */
+		 
 		return -EAGAIN;
 	}
 
@@ -1444,7 +1347,7 @@ static int add_port_attach_ep(struct cxl_memdev *cxlmd,
 		component_reg_phys = find_component_registers(uport_dev);
 		port = devm_cxl_add_port(&parent_port->dev, uport_dev,
 					 component_reg_phys, parent_dport);
-		/* retry find to pick up the new dport information */
+		 
 		if (!IS_ERR(port))
 			port = find_cxl_port_at(parent_port, dport_dev, &dport);
 	}
@@ -1458,10 +1361,7 @@ out:
 			dev_name(&port->dev), dev_name(port->uport_dev));
 		rc = cxl_add_ep(dport, &cxlmd->dev);
 		if (rc == -EBUSY) {
-			/*
-			 * "can't" happen, but this error code means
-			 * something to the caller, so translate it.
-			 */
+			 
 			rc = -ENXIO;
 		}
 		put_device(&port->dev);
@@ -1477,10 +1377,7 @@ int devm_cxl_enumerate_ports(struct cxl_memdev *cxlmd)
 	struct device *iter;
 	int rc;
 
-	/*
-	 * Skip intermediate port enumeration in the RCH case, there
-	 * are no ports in between a host bridge and an endpoint.
-	 */
+	 
 	if (cxlmd->cxlds->rcd)
 		return 0;
 
@@ -1488,11 +1385,7 @@ int devm_cxl_enumerate_ports(struct cxl_memdev *cxlmd)
 	if (rc)
 		return rc;
 
-	/*
-	 * Scan for and add all cxl_ports in this device's ancestry.
-	 * Repeat until no more ports are added. Abort if a port add
-	 * attempt fails.
-	 */
+	 
 retry:
 	for (iter = dev; iter; iter = grandparent(iter)) {
 		struct device *dport_dev = grandparent(iter);
@@ -1521,19 +1414,13 @@ retry:
 				dev_name(port->uport_dev));
 			rc = cxl_add_ep(dport, &cxlmd->dev);
 
-			/*
-			 * If the endpoint already exists in the port's list,
-			 * that's ok, it was added on a previous pass.
-			 * Otherwise, retry in add_port_attach_ep() after taking
-			 * the parent_port lock as the current port may be being
-			 * reaped.
-			 */
+			 
 			if (rc && rc != -EBUSY) {
 				put_device(&port->dev);
 				return rc;
 			}
 
-			/* Any more ports to add between this one and the root? */
+			 
 			if (!dev_is_cxl_root_child(&port->dev)) {
 				put_device(&port->dev);
 				continue;
@@ -1544,13 +1431,13 @@ retry:
 		}
 
 		rc = add_port_attach_ep(cxlmd, uport_dev, dport_dev);
-		/* port missing, try to add parent */
+		 
 		if (rc == -EAGAIN)
 			continue;
-		/* failed to add ep or port */
+		 
 		if (rc)
 			return rc;
-		/* port added, new descendants possible, start over */
+		 
 		goto retry;
 	}
 
@@ -1614,16 +1501,7 @@ EXPORT_SYMBOL_NS_GPL(cxl_hb_modulo, CXL);
 
 static struct lock_class_key cxl_decoder_key;
 
-/**
- * cxl_decoder_init - Common decoder setup / initialization
- * @port: owning port of this decoder
- * @cxld: common decoder properties to initialize
- *
- * A port may contain one or more decoders. Each of those decoders
- * enable some address space for CXL.mem utilization. A decoder is
- * expected to be configured by the caller before registering via
- * cxl_decoder_add()
- */
+ 
 static int cxl_decoder_init(struct cxl_port *port, struct cxl_decoder *cxld)
 {
 	struct device *dev;
@@ -1633,7 +1511,7 @@ static int cxl_decoder_init(struct cxl_port *port, struct cxl_decoder *cxld)
 	if (rc < 0)
 		return rc;
 
-	/* need parent to stick around to release the id */
+	 
 	get_device(&port->dev);
 	cxld->id = rc;
 
@@ -1644,7 +1522,7 @@ static int cxl_decoder_init(struct cxl_port *port, struct cxl_decoder *cxld)
 	dev->parent = &port->dev;
 	dev->bus = &cxl_bus_type;
 
-	/* Pre initialize an "empty" decoder */
+	 
 	cxld->interleave_ways = 1;
 	cxld->interleave_granularity = PAGE_SIZE;
 	cxld->target_type = CXL_DECODER_HOSTONLYMEM;
@@ -1667,17 +1545,7 @@ static int cxl_switch_decoder_init(struct cxl_port *port,
 	return cxl_decoder_init(port, &cxlsd->cxld);
 }
 
-/**
- * cxl_root_decoder_alloc - Allocate a root level decoder
- * @port: owning CXL root of this decoder
- * @nr_targets: static number of downstream targets
- * @calc_hb: which host bridge covers the n'th position by granularity
- *
- * Return: A new cxl decoder to be registered by cxl_decoder_add(). A
- * 'CXL root' decoder is one that decodes from a top-level / static platform
- * firmware description of CXL resources into a CXL standard decode
- * topology.
- */
+ 
 struct cxl_root_decoder *cxl_root_decoder_alloc(struct cxl_port *port,
 						unsigned int nr_targets,
 						cxl_calc_hb_fn calc_hb)
@@ -1707,10 +1575,7 @@ struct cxl_root_decoder *cxl_root_decoder_alloc(struct cxl_port *port,
 
 	cxld = &cxlsd->cxld;
 	cxld->dev.type = &cxl_decoder_root_type;
-	/*
-	 * cxl_root_decoder_release() special cases negative ids to
-	 * detect memregion_alloc() failures.
-	 */
+	 
 	atomic_set(&cxlrd->region_id, -1);
 	rc = memregion_alloc(GFP_KERNEL);
 	if (rc < 0) {
@@ -1723,17 +1588,7 @@ struct cxl_root_decoder *cxl_root_decoder_alloc(struct cxl_port *port,
 }
 EXPORT_SYMBOL_NS_GPL(cxl_root_decoder_alloc, CXL);
 
-/**
- * cxl_switch_decoder_alloc - Allocate a switch level decoder
- * @port: owning CXL switch port of this decoder
- * @nr_targets: max number of dynamically addressable downstream targets
- *
- * Return: A new cxl decoder to be registered by cxl_decoder_add(). A
- * 'switch' decoder is any decoder that can be enumerated by PCIe
- * topology and the HDM Decoder Capability. This includes the decoders
- * that sit between Switch Upstream Ports / Switch Downstream Ports and
- * Host Bridges / Root Ports.
- */
+ 
 struct cxl_switch_decoder *cxl_switch_decoder_alloc(struct cxl_port *port,
 						    unsigned int nr_targets)
 {
@@ -1760,12 +1615,7 @@ struct cxl_switch_decoder *cxl_switch_decoder_alloc(struct cxl_port *port,
 }
 EXPORT_SYMBOL_NS_GPL(cxl_switch_decoder_alloc, CXL);
 
-/**
- * cxl_endpoint_decoder_alloc - Allocate an endpoint decoder
- * @port: owning port of this decoder
- *
- * Return: A new cxl decoder to be registered by cxl_decoder_add()
- */
+ 
 struct cxl_endpoint_decoder *cxl_endpoint_decoder_alloc(struct cxl_port *port)
 {
 	struct cxl_endpoint_decoder *cxled;
@@ -1792,25 +1642,7 @@ struct cxl_endpoint_decoder *cxl_endpoint_decoder_alloc(struct cxl_port *port)
 }
 EXPORT_SYMBOL_NS_GPL(cxl_endpoint_decoder_alloc, CXL);
 
-/**
- * cxl_decoder_add_locked - Add a decoder with targets
- * @cxld: The cxl decoder allocated by cxl_<type>_decoder_alloc()
- * @target_map: A list of downstream ports that this decoder can direct memory
- *              traffic to. These numbers should correspond with the port number
- *              in the PCIe Link Capabilities structure.
- *
- * Certain types of decoders may not have any targets. The main example of this
- * is an endpoint device. A more awkward example is a hostbridge whose root
- * ports get hot added (technically possible, though unlikely).
- *
- * This is the locked variant of cxl_decoder_add().
- *
- * Context: Process context. Expects the device lock of the port that owns the
- *	    @cxld to be held.
- *
- * Return: Negative error code if the decoder wasn't properly configured; else
- *	   returns 0.
- */
+ 
 int cxl_decoder_add_locked(struct cxl_decoder *cxld, int *target_map)
 {
 	struct cxl_port *port;
@@ -1848,19 +1680,7 @@ int cxl_decoder_add_locked(struct cxl_decoder *cxld, int *target_map)
 }
 EXPORT_SYMBOL_NS_GPL(cxl_decoder_add_locked, CXL);
 
-/**
- * cxl_decoder_add - Add a decoder with targets
- * @cxld: The cxl decoder allocated by cxl_<type>_decoder_alloc()
- * @target_map: A list of downstream ports that this decoder can direct memory
- *              traffic to. These numbers should correspond with the port number
- *              in the PCIe Link Capabilities structure.
- *
- * This is the unlocked variant of cxl_decoder_add_locked().
- * See cxl_decoder_add_locked().
- *
- * Context: Process context. Takes and releases the device lock of the port that
- *	    owns the @cxld.
- */
+ 
 int cxl_decoder_add(struct cxl_decoder *cxld, int *target_map)
 {
 	struct cxl_port *port;
@@ -1900,12 +1720,7 @@ int cxl_decoder_autoremove(struct device *host, struct cxl_decoder *cxld)
 }
 EXPORT_SYMBOL_NS_GPL(cxl_decoder_autoremove, CXL);
 
-/**
- * __cxl_driver_register - register a driver for the cxl bus
- * @cxl_drv: cxl driver structure to attach
- * @owner: owning module/driver
- * @modname: KBUILD_MODNAME for parent driver
- */
+ 
 int __cxl_driver_register(struct cxl_driver *cxl_drv, struct module *owner,
 			  const char *modname)
 {
@@ -1996,7 +1811,7 @@ bool schedule_cxl_memdev_detach(struct cxl_memdev *cxlmd)
 }
 EXPORT_SYMBOL_NS_GPL(schedule_cxl_memdev_detach, CXL);
 
-/* for user tooling to ensure port disable work has completed */
+ 
 static ssize_t flush_store(const struct bus_type *bus, const char *buf, size_t count)
 {
 	if (sysfs_streq(buf, "1")) {

@@ -1,14 +1,4 @@
-/*
- * Sonics Silicon Backplane
- * Broadcom EXTIF core driver
- *
- * Copyright 2005, Broadcom Corporation
- * Copyright 2006, 2007, Michael Buesch <m@bues.ch>
- * Copyright 2006, 2007, Felix Fietkau <nbd@openwrt.org>
- * Copyright 2007, Aurelien Jarno <aurelien@aurel32.net>
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #include "ssb_private.h"
 
@@ -56,7 +46,7 @@ int ssb_extif_serial_init(struct ssb_extif *extif, struct ssb_serial_port *ports
 {
 	u32 i, nr_ports = 0;
 
-	/* Disable GPIO interrupt initially */
+	 
 	extif_write32(extif, SSB_EXTIF_GPIO_INTPOL, 0);
 	extif_write32(extif, SSB_EXTIF_GPIO_INTMASK, 0);
 
@@ -81,22 +71,22 @@ int ssb_extif_serial_init(struct ssb_extif *extif, struct ssb_serial_port *ports
 	}
 	return nr_ports;
 }
-#endif /* CONFIG_SSB_SERIAL */
+#endif  
 
 void ssb_extif_timing_init(struct ssb_extif *extif, unsigned long ns)
 {
 	u32 tmp;
 
-	/* Initialize extif so we can get to the LEDs and external UART */
+	 
 	extif_write32(extif, SSB_EXTIF_PROG_CFG, SSB_EXTCFG_EN);
 
-	/* Set timing for the flash */
+	 
 	tmp  = DIV_ROUND_UP(10, ns) << SSB_PROG_WCNT_3_SHIFT;
 	tmp |= DIV_ROUND_UP(40, ns) << SSB_PROG_WCNT_1_SHIFT;
 	tmp |= DIV_ROUND_UP(120, ns);
 	extif_write32(extif, SSB_EXTIF_PROG_WAITCNT, tmp);
 
-	/* Set programmable interface timing for external uart */
+	 
 	tmp  = DIV_ROUND_UP(10, ns) << SSB_PROG_WCNT_3_SHIFT;
 	tmp |= DIV_ROUND_UP(20, ns) << SSB_PROG_WCNT_2_SHIFT;
 	tmp |= DIV_ROUND_UP(100, ns) << SSB_PROG_WCNT_1_SHIFT;
@@ -141,7 +131,7 @@ u32 ssb_extif_watchdog_timer_set(struct ssb_extif *extif, u32 ticks)
 void ssb_extif_init(struct ssb_extif *extif)
 {
 	if (!extif->dev)
-		return; /* We don't have a Extif core */
+		return;  
 	spin_lock_init(&extif->gpio_lock);
 }
 

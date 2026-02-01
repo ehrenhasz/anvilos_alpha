@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: LGPL-2.1 */
-/*
- *
- *   Copyright (c) International Business Machines  Corp., 2002,2008
- *   Author(s): Steve French (sfrench@us.ibm.com)
- *
- */
+ 
+ 
 #ifndef _CIFSPROTO_H
 #define _CIFSPROTO_H
 #include <linux/nls.h>
@@ -18,11 +13,7 @@ struct statfs;
 struct smb_rqst;
 struct smb3_fs_context;
 
-/*
- *****************************************************************
- * All Prototypes
- *****************************************************************
- */
+ 
 
 extern struct smb_hdr *cifs_buf_get(void);
 extern void cifs_buf_release(void *);
@@ -30,7 +21,7 @@ extern struct smb_hdr *cifs_small_buf_get(void);
 extern void cifs_small_buf_release(void *);
 extern void free_rsp_buf(int, void *);
 extern int smb_send(struct TCP_Server_Info *, struct smb_hdr *,
-			unsigned int /* length */);
+			unsigned int  );
 extern unsigned int _get_xid(void);
 extern void _free_xid(unsigned int);
 #define get_xid()							\
@@ -107,10 +98,10 @@ extern int compound_send_recv(const unsigned int xid, struct cifs_ses *ses,
 			      const int flags, const int num_rqst,
 			      struct smb_rqst *rqst, int *resp_buf_type,
 			      struct kvec *resp_iov);
-extern int SendReceive(const unsigned int /* xid */ , struct cifs_ses *,
-			struct smb_hdr * /* input */ ,
-			struct smb_hdr * /* out */ ,
-			int * /* bytes returned */ , const int);
+extern int SendReceive(const unsigned int   , struct cifs_ses *,
+			struct smb_hdr *   ,
+			struct smb_hdr *   ,
+			int *   , const int);
 extern int SendReceiveNoRsp(const unsigned int xid, struct cifs_ses *ses,
 			    char *in_buf, int flags);
 extern struct mid_q_entry *cifs_setup_request(struct cifs_ses *,
@@ -123,10 +114,10 @@ extern int cifs_check_receive(struct mid_q_entry *mid,
 extern int cifs_wait_mtu_credits(struct TCP_Server_Info *server,
 				 unsigned int size, unsigned int *num,
 				 struct cifs_credits *credits);
-extern int SendReceive2(const unsigned int /* xid */ , struct cifs_ses *,
-			struct kvec *, int /* nvec to send */,
-			int * /* type of buf returned */, const int flags,
-			struct kvec * /* resp vec */);
+extern int SendReceive2(const unsigned int   , struct cifs_ses *,
+			struct kvec *, int  ,
+			int *  , const int flags,
+			struct kvec *  );
 extern int SendReceiveBlockingLock(const unsigned int xid,
 			struct cifs_tcon *ptcon,
 			struct smb_hdr *in_buf,
@@ -163,9 +154,8 @@ extern int cifs_convert_address(struct sockaddr *dst, const char *src, int len);
 extern void cifs_set_port(struct sockaddr *addr, const unsigned short int port);
 extern int map_smb_to_linux_error(char *buf, bool logErr);
 extern int map_and_check_smb_error(struct mid_q_entry *mid, bool logErr);
-extern void header_assemble(struct smb_hdr *, char /* command */ ,
-			    const struct cifs_tcon *, int /* length of
-			    fixed section (word count) in two byte units */);
+extern void header_assemble(struct smb_hdr *, char   ,
+			    const struct cifs_tcon *, int  );
 extern int small_smb_init_no_tc(const int smb_cmd, const int wct,
 				struct cifs_ses *ses,
 				void **request_buf);
@@ -342,7 +332,7 @@ extern int CIFSSMBQFileInfo(const unsigned int xid, struct cifs_tcon *tcon,
 			u16 netfid, FILE_ALL_INFO *pFindData);
 extern int CIFSSMBQPathInfo(const unsigned int xid, struct cifs_tcon *tcon,
 			    const char *search_Name, FILE_ALL_INFO *data,
-			    int legacy /* whether to use old info level */,
+			    int legacy  ,
 			    const struct nls_table *nls_codepage, int remap);
 extern int SMBQueryInformation(const unsigned int xid, struct cifs_tcon *tcon,
 			       const char *search_name, FILE_ALL_INFO *data,
@@ -568,7 +558,7 @@ extern int cifs_do_set_acl(const unsigned int xid, struct cifs_tcon *tcon,
 			   const struct nls_table *nls_codepage, int remap);
 extern int CIFSGetExtAttr(const unsigned int xid, struct cifs_tcon *tcon,
 			const int netfid, __u64 *pExtAttrBits, __u64 *pMask);
-#endif /* CIFS_ALLOW_INSECURE_LEGACY */
+#endif  
 extern void cifs_autodisable_serverino(struct cifs_sb_info *cifs_sb);
 extern bool couldbe_mf_symlink(const struct cifs_fattr *fattr);
 extern int check_mf_symlink(unsigned int xid, struct cifs_tcon *tcon,
@@ -708,7 +698,7 @@ struct super_block *cifs_get_tcon_super(struct cifs_tcon *tcon);
 void cifs_put_tcon_super(struct super_block *sb);
 int cifs_wait_for_server_reconnect(struct TCP_Server_Info *server, bool retry);
 
-/* Put references of @ses and @ses->dfs_root_ses */
+ 
 static inline void cifs_put_smb_ses(struct cifs_ses *ses)
 {
 	struct cifs_ses *rses = ses->dfs_root_ses;
@@ -718,14 +708,7 @@ static inline void cifs_put_smb_ses(struct cifs_ses *ses)
 		__cifs_put_smb_ses(rses);
 }
 
-/* Get an active reference of @ses and @ses->dfs_root_ses.
- *
- * NOTE: make sure to call this function when incrementing reference count of
- * @ses to ensure that any DFS root session attached to it (@ses->dfs_root_ses)
- * will also get its reference count incremented.
- *
- * cifs_put_smb_ses() will put both references, so call it when you're done.
- */
+ 
 static inline void cifs_smb_ses_inc_refcount(struct cifs_ses *ses)
 {
 	lockdep_assert_held(&cifs_tcp_ses_lock);
@@ -754,4 +737,4 @@ static inline void release_mid(struct mid_q_entry *mid)
 	kref_put(&mid->refcount, __release_mid);
 }
 
-#endif			/* _CIFSPROTO_H */
+#endif			 

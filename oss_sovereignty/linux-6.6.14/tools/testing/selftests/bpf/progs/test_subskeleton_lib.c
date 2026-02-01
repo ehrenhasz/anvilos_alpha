@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include <stdbool.h>
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
 
-/* volatile to force a read */
+ 
 const volatile int var1;
 volatile int var2 = 1;
 struct {
@@ -20,7 +20,7 @@ int var4[4];
 
 __weak int var5 SEC(".data");
 
-/* Fully contained within library extern-and-definition */
+ 
 extern int var6;
 
 int var7 SEC(".data.custom");

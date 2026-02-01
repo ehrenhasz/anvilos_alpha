@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include "stacktrace_map_skip.skel.h"
 
@@ -14,7 +14,7 @@ void test_stacktrace_map_skip(void)
 	if (!ASSERT_OK_PTR(skel, "skel_open_and_load"))
 		return;
 
-	/* find map fds */
+	 
 	stackid_hmap_fd = bpf_map__fd(skel->maps.stackid_hmap);
 	if (!ASSERT_GE(stackid_hmap_fd, 0, "stackid_hmap fd"))
 		goto out;
@@ -33,15 +33,13 @@ void test_stacktrace_map_skip(void)
 	if (!ASSERT_OK(err, "skel_attach"))
 		goto out;
 
-	/* give some time for bpf program run */
+	 
 	sleep(1);
 
-	/* disable stack trace collection */
+	 
 	skel->bss->control = 1;
 
-	/* for every element in stackid_hmap, we can find a corresponding one
-	 * in stackmap, and vise versa.
-	 */
+	 
 	err = compare_map_keys(stackid_hmap_fd, stackmap_fd);
 	if (!ASSERT_OK(err, "compare_map_keys stackid_hmap vs. stackmap"))
 		goto out;

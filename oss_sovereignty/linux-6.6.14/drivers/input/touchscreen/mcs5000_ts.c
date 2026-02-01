@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * mcs5000_ts.c - Touchscreen driver for MELFAS MCS-5000 controller
- *
- * Copyright (C) 2009 Samsung Electronics Co.Ltd
- * Author: Joonyoung Shim <jy0922.shim@samsung.com>
- *
- * Based on wm97xx-core.c
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -16,7 +9,7 @@
 #include <linux/platform_data/mcs.h>
 #include <linux/slab.h>
 
-/* Registers */
+ 
 #define MCS5000_TS_STATUS		0x00
 #define STATUS_OFFSET			0
 #define STATUS_NO			(0 << STATUS_OFFSET)
@@ -82,7 +75,7 @@
 #define MCS5000_TS_MODULE_REV		0x20
 #define MCS5000_TS_FIRMWARE_VER		0x21
 
-/* Touchscreen absolute values */
+ 
 #define MCS5000_MAX_XC			0x3ff
 #define MCS5000_MAX_YC			0x3ff
 
@@ -95,7 +88,7 @@ enum mcs5000_ts_read_offset {
 	READ_BLOCK_SIZE,
 };
 
-/* Each client has this additional data */
+ 
 struct mcs5000_ts_data {
 	struct i2c_client *client;
 	struct input_dev *input_dev;
@@ -135,15 +128,15 @@ static irqreturn_t mcs5000_ts_interrupt(int irq, void *dev_id)
 		break;
 
 	case INPUT_TYPE_DUAL:
-		/* TODO */
+		 
 		break;
 
 	case INPUT_TYPE_PALM:
-		/* TODO */
+		 
 		break;
 
 	case INPUT_TYPE_PROXIMITY:
-		/* TODO */
+		 
 		break;
 
 	default:
@@ -161,11 +154,11 @@ static void mcs5000_ts_phys_init(struct mcs5000_ts_data *data,
 {
 	struct i2c_client *client = data->client;
 
-	/* Touch reset & sleep mode */
+	 
 	i2c_smbus_write_byte_data(client, MCS5000_TS_OP_MODE,
 			RESET_EXT_SOFT | OP_MODE_SLEEP);
 
-	/* Touch size */
+	 
 	i2c_smbus_write_byte_data(client, MCS5000_TS_X_SIZE_UPPER,
 			platform_data->x_size >> 8);
 	i2c_smbus_write_byte_data(client, MCS5000_TS_X_SIZE_LOWER,
@@ -175,7 +168,7 @@ static void mcs5000_ts_phys_init(struct mcs5000_ts_data *data,
 	i2c_smbus_write_byte_data(client, MCS5000_TS_Y_SIZE_LOWER,
 			platform_data->y_size & 0xff);
 
-	/* Touch active mode & 80 report rate */
+	 
 	i2c_smbus_write_byte_data(data->client, MCS5000_TS_OP_MODE,
 			OP_MODE_ACTIVE | REPORT_RATE_80);
 }
@@ -245,7 +238,7 @@ static int mcs5000_ts_suspend(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 
-	/* Touch sleep mode */
+	 
 	i2c_smbus_write_byte_data(client, MCS5000_TS_OP_MODE, OP_MODE_SLEEP);
 
 	return 0;
@@ -282,7 +275,7 @@ static struct i2c_driver mcs5000_ts_driver = {
 
 module_i2c_driver(mcs5000_ts_driver);
 
-/* Module information */
+ 
 MODULE_AUTHOR("Joonyoung Shim <jy0922.shim@samsung.com>");
 MODULE_DESCRIPTION("Touchscreen driver for MELFAS MCS-5000 controller");
 MODULE_LICENSE("GPL");

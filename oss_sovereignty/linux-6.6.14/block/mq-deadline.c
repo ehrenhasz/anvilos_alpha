@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  MQ Deadline i/o scheduler - adaptation of the legacy deadline scheduler,
- *  for the blk-mq scheduling framework
- *
- *  Copyright (C) 2016 Jens Axboe <axboe@kernel.dk>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/fs.h>
 #include <linux/blkdev.h>
@@ -24,19 +19,13 @@
 #include "blk-mq-debugfs.h"
 #include "blk-mq-sched.h"
 
-/*
- * See Documentation/block/deadline-iosched.rst
- */
-static const int read_expire = HZ / 2;  /* max time before a read is submitted. */
-static const int write_expire = 5 * HZ; /* ditto for writes, these limits are SOFT! */
-/*
- * Time after which to dispatch lower priority requests even if higher
- * priority requests are pending.
- */
+ 
+static const int read_expire = HZ / 2;   
+static const int write_expire = 5 * HZ;  
+ 
 static const int prio_aging_expire = 10 * HZ;
-static const int writes_starved = 2;    /* max times reads can starve a write */
-static const int fifo_batch = 16;       /* # of sequential requests treated as one
-				     by the above parameters. For throughput. */
+static const int writes_starved = 2;     
+static const int fifo_batch = 16;        
 
 enum dd_data_dir {
 	DD_READ		= READ,
@@ -54,11 +43,7 @@ enum dd_prio {
 
 enum { DD_PRIO_COUNT = 3 };
 
-/*
- * I/O statistics per I/O priority. It is fine if these counters overflow.
- * What matters is that these counters are at least as wide as
- * log2(max_outstanding_requests).
- */
+ 
 struct io_stats_per_prio {
 	uint32_t inserted;
 	uint32_t merged;
@@ -66,34 +51,27 @@ struct io_stats_per_prio {
 	atomic_t completed;
 };
 
-/*
- * Deadline scheduler data per I/O priority (enum dd_prio). Requests are
- * present on both sort_list[] and fifo_list[].
- */
+ 
 struct dd_per_prio {
 	struct list_head dispatch;
 	struct rb_root sort_list[DD_DIR_COUNT];
 	struct list_head fifo_list[DD_DIR_COUNT];
-	/* Position of the most recently dispatched request. */
+	 
 	sector_t latest_pos[DD_DIR_COUNT];
 	struct io_stats_per_prio stats;
 };
 
 struct deadline_data {
-	/*
-	 * run time data
-	 */
+	 
 
 	struct dd_per_prio per_prio[DD_PRIO_COUNT];
 
-	/* Data direction of latest dispatched request. */
+	 
 	enum dd_data_dir last_dir;
-	unsigned int batching;		/* number of sequential requests made */
-	unsigned int starved;		/* times reads have starved writes */
+	unsigned int batching;		 
+	unsigned int starved;		 
 
-	/*
-	 * settings that change how the i/o scheduler behaves
-	 */
+	 
 	int fifo_expire[DD_DIR_COUNT];
 	int fifo_batch;
 	int writes_starved;
@@ -105,7 +83,7 @@ struct deadline_data {
 	spinlock_t zone_lock;
 };
 
-/* Maps an I/O priority class to a deadline scheduler priority. */
+ 
 static const enum dd_prio ioprio_class_to_prio[] = {
 	[IOPRIO_CLASS_NONE]	= DD_BE_PRIO,
 	[IOPRIO_CLASS_RT]	= DD_RT_PRIO,
@@ -119,18 +97,13 @@ deadline_rb_root(struct dd_per_prio *per_prio, struct request *rq)
 	return &per_prio->sort_list[rq_data_dir(rq)];
 }
 
-/*
- * Returns the I/O priority class (IOPRIO_CLASS_*) that has been assigned to a
- * request.
- */
+ 
 static u8 dd_rq_ioclass(struct request *rq)
 {
 	return IOPRIO_PRIO_CLASS(req_get_ioprio(rq));
 }
 
-/*
- * get the request before `rq' in sector-sorted order
- */
+ 
 static inline struct request *
 deadline_earlier_request(struct request *rq)
 {
@@ -142,9 +115,7 @@ deadline_earlier_request(struct request *rq)
 	return NULL;
 }
 
-/*
- * get the request after `rq' in sector-sorted order
- */
+ 
 static inline struct request *
 deadline_latter_request(struct request *rq)
 {
@@ -156,10 +127,7 @@ deadline_latter_request(struct request *rq)
 	return NULL;
 }
 
-/*
- * Return the first request for which blk_rq_pos() >= @pos. For zoned devices,
- * return the first request after the start of the zone containing @pos.
- */
+ 
 static inline struct request *deadline_from_pos(struct dd_per_prio *per_prio,
 				enum dd_data_dir data_dir, sector_t pos)
 {
@@ -170,11 +138,7 @@ static inline struct request *deadline_from_pos(struct dd_per_prio *per_prio,
 		return NULL;
 
 	rq = rb_entry_rq(node);
-	/*
-	 * A zoned write may have been requeued with a starting position that
-	 * is below that of the most recently dispatched request. Hence, for
-	 * zoned writes, start searching from the start of a zone.
-	 */
+	 
 	if (blk_rq_is_seq_zoned_write(rq))
 		pos = round_down(pos, rq->q->limits.chunk_sectors);
 
@@ -204,18 +168,14 @@ deadline_del_rq_rb(struct dd_per_prio *per_prio, struct request *rq)
 	elv_rb_del(deadline_rb_root(per_prio, rq), rq);
 }
 
-/*
- * remove rq from rbtree and fifo.
- */
+ 
 static void deadline_remove_request(struct request_queue *q,
 				    struct dd_per_prio *per_prio,
 				    struct request *rq)
 {
 	list_del_init(&rq->queuelist);
 
-	/*
-	 * We might not be on the rbtree, if we are doing an insert merge
-	 */
+	 
 	if (!RB_EMPTY_NODE(&rq->rb_node))
 		deadline_del_rq_rb(per_prio, rq);
 
@@ -232,18 +192,14 @@ static void dd_request_merged(struct request_queue *q, struct request *req,
 	const enum dd_prio prio = ioprio_class_to_prio[ioprio_class];
 	struct dd_per_prio *per_prio = &dd->per_prio[prio];
 
-	/*
-	 * if the merge was a front merge, we need to reposition request
-	 */
+	 
 	if (type == ELEVATOR_FRONT_MERGE) {
 		elv_rb_del(deadline_rb_root(per_prio, req), req);
 		deadline_add_rq_rb(per_prio, req);
 	}
 }
 
-/*
- * Callback function that is invoked after @next has been merged into @req.
- */
+ 
 static void dd_merged_requests(struct request_queue *q, struct request *req,
 			       struct request *next)
 {
@@ -255,10 +211,7 @@ static void dd_merged_requests(struct request_queue *q, struct request *req,
 
 	dd->per_prio[prio].stats.merged++;
 
-	/*
-	 * if next expires before rq, assign its expire time to rq
-	 * and move into next position (next will be deleted) in fifo
-	 */
+	 
 	if (!list_empty(&req->queuelist) && !list_empty(&next->queuelist)) {
 		if (time_before((unsigned long)next->fifo_time,
 				(unsigned long)req->fifo_time)) {
@@ -267,26 +220,20 @@ static void dd_merged_requests(struct request_queue *q, struct request *req,
 		}
 	}
 
-	/*
-	 * kill knowledge of next, this one is a goner
-	 */
+	 
 	deadline_remove_request(q, &dd->per_prio[prio], next);
 }
 
-/*
- * move an entry to dispatch queue
- */
+ 
 static void
 deadline_move_request(struct deadline_data *dd, struct dd_per_prio *per_prio,
 		      struct request *rq)
 {
-	/*
-	 * take it off the sort and fifo list
-	 */
+	 
 	deadline_remove_request(rq->q, per_prio, rq);
 }
 
-/* Number of requests queued for a given priority level. */
+ 
 static u32 dd_queued(struct deadline_data *dd, enum dd_prio prio)
 {
 	const struct io_stats_per_prio *stats = &dd->per_prio[prio].stats;
@@ -296,10 +243,7 @@ static u32 dd_queued(struct deadline_data *dd, enum dd_prio prio)
 	return stats->inserted - atomic_read(&stats->completed);
 }
 
-/*
- * deadline_check_fifo returns true if and only if there are expired requests
- * in the FIFO list. Requires !list_empty(&dd->fifo_list[data_dir]).
- */
+ 
 static inline bool deadline_check_fifo(struct dd_per_prio *per_prio,
 				       enum dd_data_dir data_dir)
 {
@@ -308,9 +252,7 @@ static inline bool deadline_check_fifo(struct dd_per_prio *per_prio,
 	return time_is_before_eq_jiffies((unsigned long)rq->fifo_time);
 }
 
-/*
- * Check if rq has a sequential request preceding it.
- */
+ 
 static bool deadline_is_seq_write(struct deadline_data *dd, struct request *rq)
 {
 	struct request *prev = deadline_earlier_request(rq);
@@ -321,10 +263,7 @@ static bool deadline_is_seq_write(struct deadline_data *dd, struct request *rq)
 	return blk_rq_pos(prev) + blk_rq_sectors(prev) == blk_rq_pos(rq);
 }
 
-/*
- * Skip all write requests that are sequential from @rq, even if we cross
- * a zone boundary.
- */
+ 
 static struct request *deadline_skip_seq_writes(struct deadline_data *dd,
 						struct request *rq)
 {
@@ -338,10 +277,7 @@ static struct request *deadline_skip_seq_writes(struct deadline_data *dd,
 	return rq;
 }
 
-/*
- * For the specified data direction, return the next request to
- * dispatch using arrival ordered lists.
- */
+ 
 static struct request *
 deadline_fifo_request(struct deadline_data *dd, struct dd_per_prio *per_prio,
 		      enum dd_data_dir data_dir)
@@ -356,17 +292,11 @@ deadline_fifo_request(struct deadline_data *dd, struct dd_per_prio *per_prio,
 	if (data_dir == DD_READ || !blk_queue_is_zoned(rq->q))
 		return rq;
 
-	/*
-	 * Look for a write request that can be dispatched, that is one with
-	 * an unlocked target zone. For some HDDs, breaking a sequential
-	 * write stream can lead to lower throughput, so make sure to preserve
-	 * sequential write streams, even if that stream crosses into the next
-	 * zones and these zones are unlocked.
-	 */
+	 
 	spin_lock_irqsave(&dd->zone_lock, flags);
 	list_for_each_entry_safe(rq, next, &per_prio->fifo_list[DD_WRITE],
 				 queuelist) {
-		/* Check whether a prior request exists for the same zone. */
+		 
 		rb_rq = deadline_from_pos(per_prio, data_dir, blk_rq_pos(rq));
 		if (rb_rq && blk_rq_pos(rb_rq) < blk_rq_pos(rq))
 			rq = rb_rq;
@@ -382,10 +312,7 @@ out:
 	return rq;
 }
 
-/*
- * For the specified data direction, return the next request to
- * dispatch using sector position sorted lists.
- */
+ 
 static struct request *
 deadline_next_request(struct deadline_data *dd, struct dd_per_prio *per_prio,
 		      enum dd_data_dir data_dir)
@@ -401,13 +328,7 @@ deadline_next_request(struct deadline_data *dd, struct dd_per_prio *per_prio,
 	if (data_dir == DD_READ || !blk_queue_is_zoned(rq->q))
 		return rq;
 
-	/*
-	 * Look for a write request that can be dispatched, that is one with
-	 * an unlocked target zone. For some HDDs, breaking a sequential
-	 * write stream can lead to lower throughput, so make sure to preserve
-	 * sequential write streams, even if that stream crosses into the next
-	 * zones and these zones are unlocked.
-	 */
+	 
 	spin_lock_irqsave(&dd->zone_lock, flags);
 	while (rq) {
 		if (blk_req_can_dispatch_to_zone(rq))
@@ -422,10 +343,7 @@ deadline_next_request(struct deadline_data *dd, struct dd_per_prio *per_prio,
 	return rq;
 }
 
-/*
- * Returns true if and only if @rq started after @latest_start where
- * @latest_start is in jiffies.
- */
+ 
 static bool started_after(struct deadline_data *dd, struct request *rq,
 			  unsigned long latest_start)
 {
@@ -436,10 +354,7 @@ static bool started_after(struct deadline_data *dd, struct request *rq,
 	return time_after(start_time, latest_start);
 }
 
-/*
- * deadline_dispatch_requests selects the best request according to
- * read/write expire, fifo_batch, etc and with a start time <= @latest_start.
- */
+ 
 static struct request *__dd_dispatch_request(struct deadline_data *dd,
 					     struct dd_per_prio *per_prio,
 					     unsigned long latest_start)
@@ -461,20 +376,15 @@ static struct request *__dd_dispatch_request(struct deadline_data *dd,
 		goto done;
 	}
 
-	/*
-	 * batches are currently reads XOR writes
-	 */
+	 
 	rq = deadline_next_request(dd, per_prio, dd->last_dir);
 	if (rq && dd->batching < dd->fifo_batch) {
-		/* we have a next request and are still entitled to batch */
+		 
 		data_dir = rq_data_dir(rq);
 		goto dispatch_request;
 	}
 
-	/*
-	 * at this point we are not running a batch. select the appropriate
-	 * data direction (read / write)
-	 */
+	 
 
 	if (!list_empty(&per_prio->fifo_list[DD_READ])) {
 		BUG_ON(RB_EMPTY_ROOT(&per_prio->sort_list[DD_READ]));
@@ -488,9 +398,7 @@ static struct request *__dd_dispatch_request(struct deadline_data *dd,
 		goto dispatch_find_request;
 	}
 
-	/*
-	 * there are either no reads or writes have been starved
-	 */
+	 
 
 	if (!list_empty(&per_prio->fifo_list[DD_WRITE])) {
 dispatch_writes:
@@ -506,29 +414,17 @@ dispatch_writes:
 	return NULL;
 
 dispatch_find_request:
-	/*
-	 * we are not running a batch, find best request for selected data_dir
-	 */
+	 
 	next_rq = deadline_next_request(dd, per_prio, data_dir);
 	if (deadline_check_fifo(per_prio, data_dir) || !next_rq) {
-		/*
-		 * A deadline has expired, the last request was in the other
-		 * direction, or we have run out of higher-sectored requests.
-		 * Start again from the request with the earliest expiry time.
-		 */
+		 
 		rq = deadline_fifo_request(dd, per_prio, data_dir);
 	} else {
-		/*
-		 * The last req was the same dir and we have a next request in
-		 * sort order. No expired requests so continue on from here.
-		 */
+		 
 		rq = next_rq;
 	}
 
-	/*
-	 * For a zoned block device, if we only have writes queued and none of
-	 * them can be dispatched, rq will be NULL.
-	 */
+	 
 	if (!rq)
 		return NULL;
 
@@ -539,9 +435,7 @@ dispatch_request:
 	if (started_after(dd, rq, latest_start))
 		return NULL;
 
-	/*
-	 * rq is the selected appropriate request.
-	 */
+	 
 	dd->batching++;
 	deadline_move_request(dd, per_prio, rq);
 done:
@@ -549,18 +443,13 @@ done:
 	prio = ioprio_class_to_prio[ioprio_class];
 	dd->per_prio[prio].latest_pos[data_dir] = blk_rq_pos(rq);
 	dd->per_prio[prio].stats.dispatched++;
-	/*
-	 * If the request needs its target zone locked, do it.
-	 */
+	 
 	blk_req_zone_write_lock(rq);
 	rq->rq_flags |= RQF_STARTED;
 	return rq;
 }
 
-/*
- * Check whether there are any requests with priority other than DD_RT_PRIO
- * that were inserted more than prio_aging_expire jiffies ago.
- */
+ 
 static struct request *dd_dispatch_prio_aged_requests(struct deadline_data *dd,
 						      unsigned long now)
 {
@@ -585,14 +474,7 @@ static struct request *dd_dispatch_prio_aged_requests(struct deadline_data *dd,
 	return NULL;
 }
 
-/*
- * Called from blk_mq_run_hw_queue() -> __blk_mq_sched_dispatch_requests().
- *
- * One confusing aspect here is that we get called for a specific
- * hardware queue, but we may return a request that is for a
- * different hardware queue. This is because mq-deadline has shared
- * state for all hardware queues, in terms of sorting, FIFOs, etc.
- */
+ 
 static struct request *dd_dispatch_request(struct blk_mq_hw_ctx *hctx)
 {
 	struct deadline_data *dd = hctx->queue->elevator->elevator_data;
@@ -605,10 +487,7 @@ static struct request *dd_dispatch_request(struct blk_mq_hw_ctx *hctx)
 	if (rq)
 		goto unlock;
 
-	/*
-	 * Next, dispatch requests in priority order. Ignore lower priority
-	 * requests if any higher priority requests are pending.
-	 */
+	 
 	for (prio = 0; prio <= DD_PRIO_MAX; prio++) {
 		rq = __dd_dispatch_request(dd, &dd->per_prio[prio], now);
 		if (rq || dd_queued(dd, prio))
@@ -621,26 +500,20 @@ unlock:
 	return rq;
 }
 
-/*
- * Called by __blk_mq_alloc_request(). The shallow_depth value set by this
- * function is used by __blk_mq_get_tag().
- */
+ 
 static void dd_limit_depth(blk_opf_t opf, struct blk_mq_alloc_data *data)
 {
 	struct deadline_data *dd = data->q->elevator->elevator_data;
 
-	/* Do not throttle synchronous reads. */
+	 
 	if (op_is_sync(opf) && !op_is_write(opf))
 		return;
 
-	/*
-	 * Throttle asynchronous requests and writes such that these requests
-	 * do not block the allocation of synchronous requests.
-	 */
+	 
 	data->shallow_depth = dd->async_depth;
 }
 
-/* Called by blk_mq_update_nr_requests(). */
+ 
 static void dd_depth_updated(struct blk_mq_hw_ctx *hctx)
 {
 	struct request_queue *q = hctx->queue;
@@ -653,7 +526,7 @@ static void dd_depth_updated(struct blk_mq_hw_ctx *hctx)
 	sbitmap_queue_min_shallow_depth(&tags->bitmap_tags, dd->async_depth);
 }
 
-/* Called by blk_mq_init_hctx() and blk_mq_init_sched(). */
+ 
 static int dd_init_hctx(struct blk_mq_hw_ctx *hctx, unsigned int hctx_idx)
 {
 	dd_depth_updated(hctx);
@@ -686,9 +559,7 @@ static void dd_exit_sched(struct elevator_queue *e)
 	kfree(dd);
 }
 
-/*
- * initialize elevator private data (deadline_data).
- */
+ 
 static int dd_init_sched(struct request_queue *q, struct elevator_type *e)
 {
 	struct deadline_data *dd;
@@ -725,7 +596,7 @@ static int dd_init_sched(struct request_queue *q, struct elevator_type *e)
 	spin_lock_init(&dd->lock);
 	spin_lock_init(&dd->zone_lock);
 
-	/* We dispatch from request queue wide instead of hw queue */
+	 
 	blk_queue_flag_set(QUEUE_FLAG_SQ_SCHED, q);
 
 	q->elevator = eq;
@@ -736,10 +607,7 @@ put_eq:
 	return ret;
 }
 
-/*
- * Try to merge @bio into an existing request. If @bio has been merged into
- * an existing request, store the pointer to that request into *@rq.
- */
+ 
 static int dd_request_merge(struct request_queue *q, struct request **rq,
 			    struct bio *bio)
 {
@@ -768,10 +636,7 @@ static int dd_request_merge(struct request_queue *q, struct request **rq,
 	return ELEVATOR_NO_MERGE;
 }
 
-/*
- * Attempt to merge a bio into an existing request. This function is called
- * before @bio is associated with a request.
- */
+ 
 static bool dd_bio_merge(struct request_queue *q, struct bio *bio,
 		unsigned int nr_segs)
 {
@@ -789,9 +654,7 @@ static bool dd_bio_merge(struct request_queue *q, struct bio *bio,
 	return ret;
 }
 
-/*
- * add rq to rbtree and fifo
- */
+ 
 static void dd_insert_request(struct blk_mq_hw_ctx *hctx, struct request *rq,
 			      blk_insert_t flags, struct list_head *free)
 {
@@ -805,10 +668,7 @@ static void dd_insert_request(struct blk_mq_hw_ctx *hctx, struct request *rq,
 
 	lockdep_assert_held(&dd->lock);
 
-	/*
-	 * This may be a requeue of a write request that has locked its
-	 * target zone. If it is the case, this releases the zone lock.
-	 */
+	 
 	blk_req_zone_write_unlock(rq);
 
 	prio = ioprio_class_to_prio[ioprio_class];
@@ -837,16 +697,11 @@ static void dd_insert_request(struct blk_mq_hw_ctx *hctx, struct request *rq,
 				q->last_merge = rq;
 		}
 
-		/*
-		 * set expire time and add to fifo list
-		 */
+		 
 		rq->fifo_time = jiffies + dd->fifo_expire[data_dir];
 		insert_before = &per_prio->fifo_list[data_dir];
 #ifdef CONFIG_BLK_DEV_ZONED
-		/*
-		 * Insert zoned writes such that requests are sorted by
-		 * position per zone.
-		 */
+		 
 		if (blk_rq_is_seq_zoned_write(rq)) {
 			struct request *rq2 = deadline_latter_request(rq);
 
@@ -858,9 +713,7 @@ static void dd_insert_request(struct blk_mq_hw_ctx *hctx, struct request *rq,
 	}
 }
 
-/*
- * Called from blk_mq_insert_request() or blk_mq_dispatch_plug_list().
- */
+ 
 static void dd_insert_requests(struct blk_mq_hw_ctx *hctx,
 			       struct list_head *list,
 			       blk_insert_t flags)
@@ -882,7 +735,7 @@ static void dd_insert_requests(struct blk_mq_hw_ctx *hctx,
 	blk_mq_free_requests(&free);
 }
 
-/* Callback from inside blk_mq_rq_ctx_init(). */
+ 
 static void dd_prepare_request(struct request *rq)
 {
 	rq->elv.priv[0] = NULL;
@@ -900,22 +753,7 @@ static bool dd_has_write_work(struct blk_mq_hw_ctx *hctx)
 	return false;
 }
 
-/*
- * Callback from inside blk_mq_free_request().
- *
- * For zoned block devices, write unlock the target zone of
- * completed write requests. Do this while holding the zone lock
- * spinlock so that the zone is never unlocked while deadline_fifo_request()
- * or deadline_next_request() are executing. This function is called for
- * all requests, whether or not these requests complete successfully.
- *
- * For a zoned block device, __dd_dispatch_request() may have stopped
- * dispatching requests if all the queued requests are write requests directed
- * at zones that are already locked due to on-going write requests. To ensure
- * write request dispatch progress in this case, mark the queue as needing a
- * restart to ensure that the queue is run again after completion of the
- * request and zones being unlocked.
- */
+ 
 static void dd_finish_request(struct request *rq)
 {
 	struct request_queue *q = rq->q;
@@ -924,11 +762,7 @@ static void dd_finish_request(struct request *rq)
 	const enum dd_prio prio = ioprio_class_to_prio[ioprio_class];
 	struct dd_per_prio *per_prio = &dd->per_prio[prio];
 
-	/*
-	 * The block layer core may call dd_finish_request() without having
-	 * called dd_insert_requests(). Skip requests that bypassed I/O
-	 * scheduling. See also blk_mq_request_bypass_insert().
-	 */
+	 
 	if (!rq->elv.priv[0])
 		return;
 
@@ -965,9 +799,7 @@ static bool dd_has_work(struct blk_mq_hw_ctx *hctx)
 	return false;
 }
 
-/*
- * sysfs parts below
- */
+ 
 #define SHOW_INT(__FUNC, __VAR)						\
 static ssize_t __FUNC(struct elevator_queue *e, char *page)		\
 {									\
@@ -1138,7 +970,7 @@ static int dd_queued_show(void *data, struct seq_file *m)
 	return 0;
 }
 
-/* Number of requests owned by the block driver for a given priority. */
+ 
 static u32 dd_owned_by_driver(struct deadline_data *dd, enum dd_prio prio)
 {
 	const struct io_stats_per_prio *stats = &dd->per_prio[prio].stats;

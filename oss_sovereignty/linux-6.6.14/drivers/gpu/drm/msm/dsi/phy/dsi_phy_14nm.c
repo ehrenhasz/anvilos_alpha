@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -13,23 +11,7 @@
 
 #define PHY_14NM_CKLN_IDX	4
 
-/*
- * DSI PLL 14nm - clock diagram (eg: DSI0):
- *
- *         dsi0n1_postdiv_clk
- *                         |
- *                         |
- *                 +----+  |  +----+
- *  dsi0vco_clk ---| n1 |--o--| /8 |-- dsi0pllbyte
- *                 +----+  |  +----+
- *                         |           dsi0n1_postdivby2_clk
- *                         |   +----+  |
- *                         o---| /2 |--o--|\
- *                         |   +----+     | \   +----+
- *                         |              |  |--| n2 |-- dsi0pll
- *                         o--------------| /   +----+
- *                                        |/
- */
+ 
 
 #define POLL_MAX_READS			15
 #define POLL_TIMEOUT_US			1000
@@ -41,16 +23,16 @@
 struct dsi_pll_config {
 	u64 vco_current_rate;
 
-	u32 ssc_en;	/* SSC enable/disable */
+	u32 ssc_en;	 
 
-	/* fixed params */
+	 
 	u32 plllock_cnt;
 	u32 ssc_center;
 	u32 ssc_adj_period;
 	u32 ssc_spread;
 	u32 ssc_freq;
 
-	/* calculated */
+	 
 	u32 dec_start;
 	u32 div_frac_start;
 	u32 ssc_period;
@@ -73,7 +55,7 @@ struct dsi_pll_14nm {
 
 	struct msm_dsi_phy *phy;
 
-	/* protects REG_DSI_14nm_PHY_CMN_CLK_CFG0 register */
+	 
 	spinlock_t postdiv_lock;
 
 	struct pll_14nm_cached_state cached_state;
@@ -83,28 +65,21 @@ struct dsi_pll_14nm {
 
 #define to_pll_14nm(x)	container_of(x, struct dsi_pll_14nm, clk_hw)
 
-/*
- * Private struct for N1/N2 post-divider clocks. These clocks are similar to
- * the generic clk_divider class of clocks. The only difference is that it
- * also sets the slave DSI PLL's post-dividers if in bonded DSI mode
- */
+ 
 struct dsi_pll_14nm_postdiv {
 	struct clk_hw hw;
 
-	/* divider params */
+	 
 	u8 shift;
 	u8 width;
-	u8 flags; /* same flags as used by clk_divider struct */
+	u8 flags;  
 
 	struct dsi_pll_14nm *pll;
 };
 
 #define to_pll_14nm_postdiv(_hw) container_of(_hw, struct dsi_pll_14nm_postdiv, hw)
 
-/*
- * Global list of private DSI PLL struct pointers. We need this for bonded DSI
- * mode, where the master PLL's clk_ops needs access the slave's private data
- */
+ 
 static struct dsi_pll_14nm *pll_14nm_list[DSI_MAX];
 
 static bool pll_14nm_poll_for_ready(struct dsi_pll_14nm *pll_14nm,
@@ -147,17 +122,14 @@ out:
 
 static void dsi_pll_14nm_config_init(struct dsi_pll_config *pconf)
 {
-	/* fixed input */
+	 
 	pconf->plllock_cnt = 1;
 
-	/*
-	 * SSC is enabled by default. We might need DT props for configuring
-	 * some SSC params like PPM and center/down spread etc.
-	 */
+	 
 	pconf->ssc_en = 1;
-	pconf->ssc_center = 0;		/* down spread by default */
-	pconf->ssc_spread = 5;		/* PPM / 1000 */
-	pconf->ssc_freq = 31500;	/* default recommended */
+	pconf->ssc_center = 0;		 
+	pconf->ssc_spread = 5;		 
+	pconf->ssc_freq = 31500;	 
 	pconf->ssc_adj_period = 37;
 }
 
@@ -197,7 +169,7 @@ static void pll_14nm_ssc_calc(struct dsi_pll_14nm *pll, struct dsi_pll_config *p
 
 	DBG("step_size=%lld", step_size);
 
-	step_size &= 0x0ffff;	/* take lower 16 bits */
+	step_size &= 0x0ffff;	 
 
 	pconf->ssc_step_size = step_size;
 }
@@ -259,18 +231,18 @@ static void pll_14nm_calc_vco_count(struct dsi_pll_14nm *pll, struct dsi_pll_con
 
 	data = fref * vco_measure_time;
 	do_div(data, 1000000);
-	data &= 0x03ff;	/* 10 bits */
+	data &= 0x03ff;	 
 	data -= 2;
 	pconf->pll_vco_div_ref = data;
 
-	data = div_u64(vco_clk_rate, 1000000);	/* unit is Mhz */
+	data = div_u64(vco_clk_rate, 1000000);	 
 	data *= vco_measure_time;
 	do_div(data, 10);
 	pconf->pll_vco_count = data;
 
 	data = fref * kvco_measure_time;
 	do_div(data, 1000000);
-	data &= 0x03ff;	/* 10 bits */
+	data &= 0x03ff;	 
 	data -= 1;
 	pconf->pll_kvco_div_ref = data;
 
@@ -309,10 +281,10 @@ static void pll_db_commit_ssc(struct dsi_pll_14nm *pll, struct dsi_pll_config *p
 
 	data = (pconf->ssc_center & 0x01);
 	data <<= 1;
-	data |= 0x01; /* enable */
+	data |= 0x01;  
 	dsi_phy_write(base + REG_DSI_14nm_PHY_PLL_SSC_EN_CENTER, data);
 
-	wmb();	/* make sure register committed */
+	wmb();	 
 }
 
 static void pll_db_commit_common(struct dsi_pll_14nm *pll,
@@ -321,15 +293,15 @@ static void pll_db_commit_common(struct dsi_pll_14nm *pll,
 	void __iomem *base = pll->phy->pll_base;
 	u8 data;
 
-	/* confgiure the non frequency dependent pll registers */
+	 
 	data = 0;
 	dsi_phy_write(base + REG_DSI_14nm_PHY_PLL_SYSCLK_EN_RESET, data);
 
 	dsi_phy_write(base + REG_DSI_14nm_PHY_PLL_TXCLK_EN, 1);
 
 	dsi_phy_write(base + REG_DSI_14nm_PHY_PLL_RESETSM_CNTRL, 48);
-	dsi_phy_write(base + REG_DSI_14nm_PHY_PLL_RESETSM_CNTRL2, 4 << 3); /* bandgap_timer */
-	dsi_phy_write(base + REG_DSI_14nm_PHY_PLL_RESETSM_CNTRL5, 5); /* pll_wakeup_timer */
+	dsi_phy_write(base + REG_DSI_14nm_PHY_PLL_RESETSM_CNTRL2, 4 << 3);  
+	dsi_phy_write(base + REG_DSI_14nm_PHY_PLL_RESETSM_CNTRL5, 5);  
 
 	data = pconf->pll_vco_div_ref & 0xff;
 	dsi_phy_write(base + REG_DSI_14nm_PHY_PLL_VCO_DIV_REF1, data);
@@ -366,17 +338,17 @@ static void pll_14nm_software_reset(struct dsi_pll_14nm *pll_14nm)
 {
 	void __iomem *cmn_base = pll_14nm->phy->base;
 
-	/* de assert pll start and apply pll sw reset */
+	 
 
-	/* stop pll */
+	 
 	dsi_phy_write(cmn_base + REG_DSI_14nm_PHY_CMN_PLL_CNTRL, 0);
 
-	/* pll sw reset */
+	 
 	dsi_phy_write_udelay(cmn_base + REG_DSI_14nm_PHY_CMN_CTRL_1, 0x20, 10);
-	wmb();	/* make sure register committed */
+	wmb();	 
 
 	dsi_phy_write(cmn_base + REG_DSI_14nm_PHY_CMN_CTRL_1, 0);
-	wmb();	/* make sure register committed */
+	wmb();	 
 }
 
 static void pll_db_commit_14nm(struct dsi_pll_14nm *pll,
@@ -394,13 +366,13 @@ static void pll_db_commit_14nm(struct dsi_pll_14nm *pll,
 
 	pll_14nm_software_reset(pll);
 
-	/* Use the /2 path in Mux */
+	 
 	dsi_phy_write(cmn_base + REG_DSI_14nm_PHY_CMN_CLK_CFG1, 1);
 
-	data = 0xff; /* data, clk, pll normal operation */
+	data = 0xff;  
 	dsi_phy_write(cmn_base + REG_DSI_14nm_PHY_CMN_CTRL_0, data);
 
-	/* configure the frequency dependent pll registers */
+	 
 	data = pconf->dec_start;
 	dsi_phy_write(base + REG_DSI_14nm_PHY_PLL_DEC_START, data);
 
@@ -420,7 +392,7 @@ static void pll_db_commit_14nm(struct dsi_pll_14nm *pll,
 	data = (pconf->plllock_cmp >> 16) & 0x3;
 	dsi_phy_write(base + REG_DSI_14nm_PHY_PLL_PLLLOCK_CMP3, data);
 
-	data = pconf->plllock_cnt << 1 | 0 << 3; /* plllock_rng */
+	data = pconf->plllock_cnt << 1 | 0 << 3;  
 	dsi_phy_write(base + REG_DSI_14nm_PHY_PLL_PLLLOCK_CMP_EN, data);
 
 	data = pconf->pll_vco_count & 0xff;
@@ -433,26 +405,16 @@ static void pll_db_commit_14nm(struct dsi_pll_14nm *pll,
 	data = (pconf->pll_kvco_count >> 8) & 0x3;
 	dsi_phy_write(base + REG_DSI_14nm_PHY_PLL_KVCO_COUNT2, data);
 
-	/*
-	 * High nibble configures the post divider internal to the VCO. It's
-	 * fixed to divide by 1 for now.
-	 *
-	 * 0: divided by 1
-	 * 1: divided by 2
-	 * 2: divided by 4
-	 * 3: divided by 8
-	 */
+	 
 	dsi_phy_write(base + REG_DSI_14nm_PHY_PLL_PLL_LPF2_POSTDIV, 0 << 4 | 3);
 
 	if (pconf->ssc_en)
 		pll_db_commit_ssc(pll, pconf);
 
-	wmb();	/* make sure register committed */
+	wmb();	 
 }
 
-/*
- * VCO clock Callbacks
- */
+ 
 static int dsi_pll_14nm_vco_set_rate(struct clk_hw *hw, unsigned long rate,
 				     unsigned long parent_rate)
 {
@@ -472,10 +434,7 @@ static int dsi_pll_14nm_vco_set_rate(struct clk_hw *hw, unsigned long rate,
 
 	pll_14nm_calc_vco_count(pll_14nm, &conf);
 
-	/* commit the slave DSI PLL registers if we're master. Note that we
-	 * don't lock the slave PLL. We just ensure that the PLL/PHY registers
-	 * of the master and slave are identical
-	 */
+	 
 	if (pll_14nm->phy->usecase == MSM_DSI_PHY_MASTER) {
 		struct dsi_pll_14nm *pll_14nm_slave = pll_14nm->slave;
 
@@ -515,11 +474,7 @@ static unsigned long dsi_pll_14nm_vco_recalc_rate(struct clk_hw *hw,
 
 	vco_rate += ((ref_clk * div_frac_start) / multiplier);
 
-	/*
-	 * Recalculating the rate from dec_start and frac_start doesn't end up
-	 * the rate we originally set. Convert the freq to KHz, round it up and
-	 * convert it back to MHz.
-	 */
+	 
 	vco_rate = DIV_ROUND_UP_ULL(vco_rate, 1000) * 1000;
 
 	DBG("returning vco rate = %lu", (unsigned long)vco_rate);
@@ -595,9 +550,7 @@ static const struct clk_ops clk_ops_dsi_pll_14nm_vco = {
 	.unprepare = dsi_pll_14nm_vco_unprepare,
 };
 
-/*
- * N1 and N2 post-divider clock callbacks
- */
+ 
 #define div_mask(width)	((1 << (width)) - 1)
 static unsigned long dsi_pll_14nm_postdiv_recalc_rate(struct clk_hw *hw,
 						      unsigned long parent_rate)
@@ -659,9 +612,7 @@ static int dsi_pll_14nm_postdiv_set_rate(struct clk_hw *hw, unsigned long rate,
 	val |= value << shift;
 	dsi_phy_write(base + REG_DSI_14nm_PHY_CMN_CLK_CFG0, val);
 
-	/* If we're master in bonded DSI mode, then the slave PLL's post-dividers
-	 * follow the master's post dividers
-	 */
+	 
 	if (pll_14nm->phy->usecase == MSM_DSI_PHY_MASTER) {
 		struct dsi_pll_14nm *pll_14nm_slave = pll_14nm->slave;
 		void __iomem *slave_base = pll_14nm_slave->phy->base;
@@ -680,9 +631,7 @@ static const struct clk_ops clk_ops_dsi_pll_14nm_postdiv = {
 	.set_rate = dsi_pll_14nm_postdiv_set_rate,
 };
 
-/*
- * PLL Callbacks
- */
+ 
 
 static void dsi_14nm_pll_save_state(struct msm_dsi_phy *phy)
 {
@@ -725,7 +674,7 @@ static int dsi_14nm_pll_restore_state(struct msm_dsi_phy *phy)
 
 	dsi_phy_write(cmn_base + REG_DSI_14nm_PHY_CMN_CLK_CFG0, data);
 
-	/* also restore post-dividers for slave DSI PLL */
+	 
 	if (phy->usecase == MSM_DSI_PHY_MASTER) {
 		struct dsi_pll_14nm *pll_14nm_slave = pll_14nm->slave;
 		void __iomem *slave_base = pll_14nm_slave->phy->base;
@@ -788,9 +737,9 @@ static struct clk_hw *pll_14nm_postdiv_register(struct dsi_pll_14nm *pll_14nm,
 
 	pll_postdiv->pll = pll_14nm;
 	pll_postdiv->shift = shift;
-	/* both N1 and N2 postdividers are 4 bits wide */
+	 
 	pll_postdiv->width = 4;
-	/* range of each divider is from 1 to 15 */
+	 
 	pll_postdiv->flags = CLK_DIVIDER_ONE_BASED;
 	pll_postdiv->hw.init = &postdiv_init;
 
@@ -828,7 +777,7 @@ static int pll_14nm_register(struct dsi_pll_14nm *pll_14nm, struct clk_hw **prov
 
 	snprintf(clk_name, sizeof(clk_name), "dsi%dn1_postdiv_clk", pll_14nm->phy->id);
 
-	/* N1 postdiv, bits 0-3 in REG_DSI_14nm_PHY_CMN_CLK_CFG0 */
+	 
 	n1_postdiv = pll_14nm_postdiv_register(pll_14nm, clk_name,
 			&pll_14nm->clk_hw, CLK_SET_RATE_PARENT, 0);
 	if (IS_ERR(n1_postdiv))
@@ -836,7 +785,7 @@ static int pll_14nm_register(struct dsi_pll_14nm *pll_14nm, struct clk_hw **prov
 
 	snprintf(clk_name, sizeof(clk_name), "dsi%dpllbyte", pll_14nm->phy->id);
 
-	/* DSI Byte clock = VCO_CLK / N1 / 8 */
+	 
 	hw = devm_clk_hw_register_fixed_factor_parent_hw(dev, clk_name,
 			n1_postdiv, CLK_SET_RATE_PARENT, 1, 8);
 	if (IS_ERR(hw))
@@ -846,10 +795,7 @@ static int pll_14nm_register(struct dsi_pll_14nm *pll_14nm, struct clk_hw **prov
 
 	snprintf(clk_name, sizeof(clk_name), "dsi%dn1_postdivby2_clk", pll_14nm->phy->id);
 
-	/*
-	 * Skip the mux for now, force DSICLK_SEL to 1, Add a /2 divider
-	 * on the way. Don't let it set parent.
-	 */
+	 
 	n1_postdivby2 = devm_clk_hw_register_fixed_factor_parent_hw(dev,
 			clk_name, n1_postdiv, 0, 1, 2);
 	if (IS_ERR(n1_postdivby2))
@@ -857,10 +803,7 @@ static int pll_14nm_register(struct dsi_pll_14nm *pll_14nm, struct clk_hw **prov
 
 	snprintf(clk_name, sizeof(clk_name), "dsi%dpll", pll_14nm->phy->id);
 
-	/* DSI pixel clock = VCO_CLK / N1 / 2 / N2
-	 * This is the output of N2 post-divider, bits 4-7 in
-	 * REG_DSI_14nm_PHY_CMN_CLK_CFG0. Don't let it set parent.
-	 */
+	 
 	hw = pll_14nm_postdiv_register(pll_14nm, clk_name, n1_postdivby2,
 			0, 4);
 	if (IS_ERR(hw))
@@ -965,7 +908,7 @@ static int dsi_14nm_phy_enable(struct msm_dsi_phy *phy,
 
 	dsi_phy_write(base + REG_DSI_14nm_PHY_CMN_GLBL_TEST_CTRL, 0x1);
 
-	/* 4 data lanes + 1 clk lane configuration */
+	 
 	for (i = 0; i < 5; i++) {
 		dsi_phy_write(lane_base + REG_DSI_14nm_PHY_LN_VREG_CNTRL(i),
 			      0x1d);
@@ -987,14 +930,14 @@ static int dsi_14nm_phy_enable(struct msm_dsi_phy *phy,
 		dsi_14nm_dphy_set_timing(phy, timing, i);
 	}
 
-	/* Make sure PLL is not start */
+	 
 	dsi_phy_write(base + REG_DSI_14nm_PHY_CMN_PLL_CNTRL, 0x00);
 
-	wmb(); /* make sure everything is written before reset and enable */
+	wmb();  
 
-	/* reset digital block */
+	 
 	dsi_phy_write(base + REG_DSI_14nm_PHY_CMN_CTRL_1, 0x80);
-	wmb(); /* ensure reset is asserted */
+	wmb();  
 	udelay(100);
 	dsi_phy_write(base + REG_DSI_14nm_PHY_CMN_CTRL_1, 0x00);
 
@@ -1011,7 +954,7 @@ static int dsi_14nm_phy_enable(struct msm_dsi_phy *phy,
 		return ret;
 	}
 
-	/* Remove power down from PLL and all lanes */
+	 
 	dsi_phy_write(base + REG_DSI_14nm_PHY_CMN_CTRL_0, 0xff);
 
 	return 0;
@@ -1022,7 +965,7 @@ static void dsi_14nm_phy_disable(struct msm_dsi_phy *phy)
 	dsi_phy_write(phy->base + REG_DSI_14nm_PHY_CMN_GLBL_TEST_CTRL, 0);
 	dsi_phy_write(phy->base + REG_DSI_14nm_PHY_CMN_CTRL_0, 0);
 
-	/* ensure that the phy is completely disabled */
+	 
 	wmb();
 }
 

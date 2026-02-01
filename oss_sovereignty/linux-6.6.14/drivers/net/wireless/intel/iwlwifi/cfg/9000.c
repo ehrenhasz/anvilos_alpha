@@ -1,24 +1,21 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2015-2017 Intel Deutschland GmbH
- * Copyright (C) 2018-2021, 2023 Intel Corporation
- */
+
+ 
 #include <linux/module.h>
 #include <linux/stringify.h>
 #include "iwl-config.h"
 #include "fw/file.h"
 #include "iwl-prph.h"
 
-/* Highest firmware API version supported */
+ 
 #define IWL9000_UCODE_API_MAX	46
 
-/* Lowest firmware API version supported */
+ 
 #define IWL9000_UCODE_API_MIN	30
 
-/* NVM versions */
+ 
 #define IWL9000_NVM_VERSION		0x0a1d
 
-/* Memory offsets and lengths */
+ 
 #define IWL9000_DCCM_OFFSET		0x800000
 #define IWL9000_DCCM_LEN		0x18000
 #define IWL9000_DCCM2_OFFSET		0x880000

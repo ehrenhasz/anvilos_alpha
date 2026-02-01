@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * MFD core driver for the RT5033
- *
- * Copyright (C) 2014 Samsung Electronics
- * Author: Beomho Seo <beomho.seo@samsung.com>
- */
+ 
+ 
 
 #ifndef __RT5033_H__
 #define __RT5033_H__
@@ -13,7 +8,7 @@
 #include <linux/i2c.h>
 #include <linux/regmap.h>
 
-/* RT5033 regulator IDs */
+ 
 enum rt5033_regulators {
 	RT5033_BUCK = 0,
 	RT5033_LDO,
@@ -31,4 +26,4 @@ struct rt5033_dev {
 	bool wakeup;
 };
 
-#endif /* __RT5033_H__ */
+#endif  

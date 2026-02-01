@@ -1,14 +1,4 @@
-/*
- * Broadcom 43xx PCI-SSB bridge module
- *
- * This technically is a separate PCI driver module, but
- * because of its small size we include it in the SSB core
- * instead of creating a standalone module.
- *
- * Copyright 2007  Michael Buesch <m@bues.ch>
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #include "ssb_private.h"
 

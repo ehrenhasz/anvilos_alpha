@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2007 Jon Loeliger, Freescale Semiconductor, Inc.
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -10,18 +8,18 @@
 #include "dtc.h"
 #include "srcpos.h"
 
-/* A node in our list of directories to search for source/include files */
+ 
 struct search_path {
-	struct search_path *next;	/* next node in list, NULL for end */
-	const char *dirname;		/* name of directory to search */
+	struct search_path *next;	 
+	const char *dirname;		 
 };
 
-/* This is the list of directories that we search for source files */
+ 
 static struct search_path *search_path_head, **search_path_tail;
 
-/* Detect infinite include recursion. */
+ 
 #define MAX_SRCFILE_DEPTH     (200)
-static int srcfile_depth; /* = 0 */
+static int srcfile_depth;  
 
 static char *get_dirname(const char *path)
 {
@@ -38,10 +36,10 @@ static char *get_dirname(const char *path)
 	return NULL;
 }
 
-FILE *depfile; /* = NULL */
-struct srcfile_state *current_srcfile; /* = NULL */
-static char *initial_path; /* = NULL */
-static int initial_pathlen; /* = 0 */
+FILE *depfile;  
+struct srcfile_state *current_srcfile;  
+static char *initial_path;  
+static int initial_pathlen;  
 static bool initial_cpp = true;
 
 static void set_initial_path(char *fname)
@@ -86,17 +84,7 @@ static char *shorten_to_initial_path(char *fname)
 	return NULL;
 }
 
-/**
- * Try to open a file in a given directory.
- *
- * If the filename is an absolute path, then dirname is ignored. If it is a
- * relative path, then we look in that directory for the file.
- *
- * @param dirname	Directory to look in, or NULL for none
- * @param fname		Filename to look for
- * @param fp		Set to NULL if file did not open
- * @return allocated filename on success (caller must free), NULL on failure
- */
+ 
 static char *try_open(const char *dirname, const char *fname, FILE **fp)
 {
 	char *fullname;
@@ -115,28 +103,20 @@ static char *try_open(const char *dirname, const char *fname, FILE **fp)
 	return fullname;
 }
 
-/**
- * Open a file for read access
- *
- * If it is a relative filename, we search the full search path for it.
- *
- * @param fname	Filename to open
- * @param fp	Returns pointer to opened FILE, or NULL on failure
- * @return pointer to allocated filename, which caller must free
- */
+ 
 static char *fopen_any_on_path(const char *fname, FILE **fp)
 {
 	const char *cur_dir = NULL;
 	struct search_path *node;
 	char *fullname;
 
-	/* Try current directory first */
+	 
 	assert(fp);
 	if (current_srcfile)
 		cur_dir = current_srcfile->dir;
 	fullname = try_open(cur_dir, fname, fp);
 
-	/* Failing that, try each search path in turn */
+	 
 	for (node = search_path_head; !*fp && node; node = node->next)
 		fullname = try_open(node->dirname, fname, fp);
 
@@ -203,11 +183,7 @@ bool srcfile_pop(void)
 		die("Error closing \"%s\": %s\n", srcfile->name,
 		    strerror(errno));
 
-	/* FIXME: We allow the srcfile_state structure to leak,
-	 * because it could still be referenced from a location
-	 * variable being carried through the parser somewhere.  To
-	 * fix this we could either allocate all the files from a
-	 * table, or use a pool allocator. */
+	 
 
 	return current_srcfile ? true : false;
 }
@@ -216,12 +192,12 @@ void srcfile_add_search_path(const char *dirname)
 {
 	struct search_path *node;
 
-	/* Create the node */
+	 
 	node = xmalloc(sizeof(*node));
 	node->next = NULL;
 	node->dirname = xstrdup(dirname);
 
-	/* Add to the end of our list */
+	 
 	if (search_path_tail)
 		*search_path_tail = node;
 	else
@@ -263,7 +239,7 @@ srcpos_copy(struct srcpos *pos)
 	assert(pos->next == NULL);
 	memcpy(pos_new, pos, sizeof(struct srcpos));
 
-	/* allocate without free */
+	 
 	srcfile_state = xmalloc(sizeof(struct srcfile_state));
 	memcpy(srcfile_state, pos->file, sizeof(struct srcfile_state));
 	pos_new->file = srcfile_state;

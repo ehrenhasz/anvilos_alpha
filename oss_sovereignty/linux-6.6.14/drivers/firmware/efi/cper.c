@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * UEFI Common Platform Error Record (CPER) support
- *
- * Copyright (C) 2010, Intel Corp.
- *	Author: Huang Ying <ying.huang@intel.com>
- *
- * CPER is the format used to describe platform hardware error by
- * various tables, such as ERST, BERT and HEST etc.
- *
- * For more information about CPER, please refer to Appendix N of UEFI
- * Specification version 2.4.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -26,11 +15,7 @@
 #include <ras/ras_event.h>
 #include "cper_cxl.h"
 
-/*
- * CPER record ID need to be unique even after reboot, because record
- * ID is used as index for ERST storage, while CPER records from
- * multiple boot may co-exist in ERST.
- */
+ 
 u64 cper_next_record_id(void)
 {
 	static atomic64_t seq;
@@ -38,12 +23,7 @@ u64 cper_next_record_id(void)
 	if (!atomic64_read(&seq)) {
 		time64_t time = ktime_get_real_seconds();
 
-		/*
-		 * This code is unlikely to still be needed in year 2106,
-		 * but just in case, let's use a few more bits for timestamps
-		 * after y2038 to be sure they keep increasing monotonically
-		 * for the next few hundred years...
-		 */
+		 
 		if (time < 0x80000000)
 			atomic64_set(&seq, (ktime_get_real_seconds()) << 32);
 		else
@@ -69,17 +49,7 @@ const char *cper_severity_str(unsigned int severity)
 }
 EXPORT_SYMBOL_GPL(cper_severity_str);
 
-/*
- * cper_print_bits - print strings for set bits
- * @pfx: prefix for each line, including log level and prefix string
- * @bits: bit mask
- * @strs: string array, indexed by bit position
- * @strs_size: size of the string array: @strs
- *
- * For each set bit in @bits, print the corresponding string in @strs.
- * If the output length is longer than 80, multiple line will be
- * printed, with @pfx is printed at the beginning of each line.
- */
+ 
 void cper_print_bits(const char *pfx, unsigned int bits,
 		     const char * const strs[], unsigned int strs_size)
 {
@@ -357,7 +327,7 @@ static void cper_print_mem(const char *pfx, const struct cper_sec_mem_err *mem,
 	struct cper_mem_err_compact cmem;
 	char rcd_decode_str[CPER_REC_LEN];
 
-	/* Don't trust UEFI 2.1/2.2 structure with bad validation bits */
+	 
 	if (len == sizeof(struct cper_sec_mem_err_old) &&
 	    (mem->validation_bits & ~(CPER_MEM_VALID_RANK_NUMBER - 1))) {
 		pr_err(FW_WARN "valid bits set for fields beyond structure\n");
@@ -434,7 +404,7 @@ static void cper_print_pcie(const char *pfx, const struct cper_sec_pcie *pcie,
 	"%s""bridge: secondary_status: 0x%04x, control: 0x%04x\n",
 	pfx, pcie->bridge.secondary_status, pcie->bridge.control);
 
-	/* Fatal errors call __ghes_panic() before AER handler prints this */
+	 
 	if ((pcie->validation_bits & CPER_PCIE_VALID_AER_INFO) &&
 	    (gdata->error_severity & CPER_SEV_FATAL)) {
 		struct aer_capability_regs *aer;
@@ -468,7 +438,7 @@ static void cper_print_fw_err(const char *pfx,
 	       fw_err_rec_type_strs[fw_err->record_type] : "unknown");
 	printk("%s""Revision: %d\n", pfx, fw_err->revision);
 
-	/* Record Type based on UEFI 2.7 */
+	 
 	if (fw_err->revision == 0) {
 		printk("%s""Record Identifier: %08llx\n", pfx,
 		       fw_err->record_identifier);
@@ -477,19 +447,13 @@ static void cper_print_fw_err(const char *pfx,
 		       &fw_err->record_identifier_guid);
 	}
 
-	/*
-	 * The FW error record may contain trailing data beyond the
-	 * structure defined by the specification. As the fields
-	 * defined (and hence the offset of any trailing data) vary
-	 * with the revision, set the offset to account for this
-	 * variation.
-	 */
+	 
 	if (fw_err->revision == 0) {
-		/* record_identifier_guid not defined */
+		 
 		offset = offsetof(struct cper_sec_fw_err_rec_ref,
 				  record_identifier_guid);
 	} else if (fw_err->revision == 1) {
-		/* record_identifier not defined */
+		 
 		offset = offsetof(struct cper_sec_fw_err_rec_ref,
 				  record_identifier);
 	} else {
@@ -594,7 +558,7 @@ cper_estatus_print_section(const char *pfx, struct acpi_hest_generic_data *gdata
 
 		printk("%ssection_type: Firmware Error Record Reference\n",
 		       newpfx);
-		/* The minimal FW Error Record contains 16 bytes */
+		 
 		if (gdata->error_data_length >= SZ_16)
 			cper_print_fw_err(newpfx, gdata, fw_err);
 		else

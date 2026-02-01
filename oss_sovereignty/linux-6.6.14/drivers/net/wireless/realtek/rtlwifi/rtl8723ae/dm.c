@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "../base.h"
@@ -807,7 +807,7 @@ static void rtl8723e_dm_init_bt_coexist(struct ieee80211_hw *hw)
 	rtlpriv->btcoexist.previous_state_h = 0;
 	rtlpriv->btcoexist.lps_counter = 0;
 
-	/*  Enable counter statistics */
+	 
 	rtl_write_byte(rtlpriv, 0x76e, 0x4);
 	rtl_write_byte(rtlpriv, 0x778, 0x3);
 	rtl_write_byte(rtlpriv, 0x40, 0x20);

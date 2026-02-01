@@ -1,21 +1,6 @@
-/*
- * Implementation of the access vector table type.
- *
- * Author : Stephen Smalley, <stephen.smalley.work@gmail.com>
- */
+ 
 
-/* Updated: Frank Mayer <mayerf@tresys.com> and Karl MacMillan <kmacmillan@tresys.com>
- *
- *	Added conditional policy language extensions
- *
- * Copyright (C) 2003 Tresys Technology, LLC
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation, version 2.
- *
- * Updated: Yuichi Nakamura <ynakam@hitachisoft.jp>
- *	Tuned number of hash slots for avtab to reduce memory usage
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -26,9 +11,7 @@
 static struct kmem_cache *avtab_node_cachep __ro_after_init;
 static struct kmem_cache *avtab_xperms_cachep __ro_after_init;
 
-/* Based on MurmurHash3, written by Austin Appleby and placed in the
- * public domain.
- */
+ 
 static inline u32 avtab_hash(const struct avtab_key *keyp, u32 mask)
 {
 	static const u32 c1 = 0xcc9e2d51;
@@ -121,7 +104,7 @@ static int avtab_insert(struct avtab *h, const struct avtab_key *key,
 		    key->target_type == cur->key.target_type &&
 		    key->target_class == cur->key.target_class &&
 		    (specified & cur->key.specified)) {
-			/* extended perms may not be unique */
+			 
 			if (specified & AVTAB_XPERMS)
 				break;
 			return -EEXIST;
@@ -144,10 +127,7 @@ static int avtab_insert(struct avtab *h, const struct avtab_key *key,
 	return 0;
 }
 
-/* Unlike avtab_insert(), this function allow multiple insertions of the same
- * key/specified mask into the table, as needed by the conditional avtab.
- * It also returns a pointer to the node inserted.
- */
+ 
 struct avtab_node *avtab_insert_nonunique(struct avtab *h,
 					  const struct avtab_key *key,
 					  const struct avtab_datum *datum)
@@ -180,9 +160,7 @@ struct avtab_node *avtab_insert_nonunique(struct avtab *h,
 	return avtab_insert_node(h, hvalue, prev, key, datum);
 }
 
-/* This search function returns a node pointer, and can be used in
- * conjunction with avtab_search_next_node()
- */
+ 
 struct avtab_node *avtab_search_node(struct avtab *h,
 				     const struct avtab_key *key)
 {
@@ -353,7 +331,7 @@ void avtab_hash_eval(struct avtab *h, const char *tag)
 	       tag, h->nel, slots_used, h->nslot, max_chain_len,
 	       chain2_len_sum);
 }
-#endif /* CONFIG_SECURITY_SELINUX_DEBUG */
+#endif  
 
 static const uint16_t spec_order[] = {
 	AVTAB_ALLOWED,

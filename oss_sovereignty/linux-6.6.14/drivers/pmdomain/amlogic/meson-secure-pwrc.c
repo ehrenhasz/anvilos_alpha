@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2019 Amlogic, Inc.
- * Author: Jianxin Pan <jianxin.pan@amlogic.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -97,9 +94,9 @@ static int meson_secure_pwrc_on(struct generic_pm_domain *domain)
 static struct meson_secure_pwrc_domain_desc a1_pwrc_domains[] = {
 	SEC_PD(DSPA,	0),
 	SEC_PD(DSPB,	0),
-	/* UART should keep working in ATF after suspend and before resume */
+	 
 	SEC_PD(UART,	GENPD_FLAG_ALWAYS_ON),
-	/* DMC is for DDR PHY ana/dig and DMC, and should be always on */
+	 
 	SEC_PD(DMC,	GENPD_FLAG_ALWAYS_ON),
 	SEC_PD(I2C,	0),
 	SEC_PD(PSRAM,	0),
@@ -109,13 +106,13 @@ static struct meson_secure_pwrc_domain_desc a1_pwrc_domains[] = {
 	SEC_PD(DMA,	GENPD_FLAG_ALWAYS_ON | GENPD_FLAG_IRQ_SAFE),
 	SEC_PD(SD_EMMC,	0),
 	SEC_PD(RAMA,	0),
-	/* SRAMB is used as ATF runtime memory, and should be always on */
+	 
 	SEC_PD(RAMB,	GENPD_FLAG_ALWAYS_ON),
 	SEC_PD(IR,	0),
 	SEC_PD(SPICC,	0),
 	SEC_PD(SPIFC,	0),
 	SEC_PD(USB,	0),
-	/* NIC is for the Arm NIC-400 interconnect, and should be always on */
+	 
 	SEC_PD(NIC,	GENPD_FLAG_ALWAYS_ON),
 	SEC_PD(PDMIN,	0),
 	SEC_PD(RSA,	0),
@@ -143,7 +140,7 @@ static struct meson_secure_pwrc_domain_desc s4_pwrc_domains[] = {
 	SEC_PD(S4_VPU_HDMI,	0),
 	SEC_PD(S4_USB_COMB,	0),
 	SEC_PD(S4_GE2D,		0),
-	/* ETH is for ethernet online wakeup, and should be always on */
+	 
 	SEC_PD(S4_ETH,		GENPD_FLAG_ALWAYS_ON),
 	SEC_PD(S4_DEMOD,	0),
 	SEC_PD(S4_AUDIO,	0),
@@ -242,7 +239,7 @@ static const struct of_device_id meson_secure_pwrc_match_table[] = {
 		.compatible = "amlogic,meson-s4-pwrc",
 		.data = &meson_secure_s4_pwrc_data,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, meson_secure_pwrc_match_table);
 

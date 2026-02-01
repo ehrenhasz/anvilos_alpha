@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// mt8186-mt6366-common.c
-//	--  MT8186 MT6366 ALSA common driver
-//
-// Copyright (c) 2022 MediaTek Inc.
-// Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
-//
+
+
+
+
+
+
+
+
 #include <sound/soc.h>
 
 #include "../../codecs/mt6358.h"
@@ -24,7 +24,7 @@ int mt8186_mt6366_init(struct snd_soc_pcm_runtime *rtd)
 	struct snd_soc_dapm_context *dapm = &rtd->card->dapm;
 	int ret;
 
-	/* set mtkaif protocol */
+	 
 	mt6358_set_mtkaif_protocol(cmpnt_codec,
 				   MT6358_MTKAIF_PROTOCOL_1);
 	afe_priv->mtkaif_protocol = MT6358_MTKAIF_PROTOCOL_1;

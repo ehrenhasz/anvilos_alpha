@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019, Linaro Ltd
- */
+
+ 
 #include <linux/clk-provider.h>
 #include <linux/interrupt.h>
 #include <linux/io.h>
@@ -17,7 +15,7 @@
 #define QMP_DESC_VERSION		0x4
 #define QMP_DESC_FEATURES		0x8
 
-/* AOP-side offsets */
+ 
 #define QMP_DESC_UCORE_LINK_STATE	0xc
 #define QMP_DESC_UCORE_LINK_STATE_ACK	0x10
 #define QMP_DESC_UCORE_CH_STATE		0x14
@@ -25,7 +23,7 @@
 #define QMP_DESC_UCORE_MBOX_SIZE	0x1c
 #define QMP_DESC_UCORE_MBOX_OFFSET	0x20
 
-/* Linux-side offsets */
+ 
 #define QMP_DESC_MCORE_LINK_STATE	0x24
 #define QMP_DESC_MCORE_LINK_STATE_ACK	0x28
 #define QMP_DESC_MCORE_CH_STATE		0x2c
@@ -36,10 +34,10 @@
 #define QMP_STATE_UP			GENMASK(15, 0)
 #define QMP_STATE_DOWN			GENMASK(31, 16)
 
-#define QMP_MAGIC			0x4d41494c /* mail */
+#define QMP_MAGIC			0x4d41494c  
 #define QMP_VERSION			1
 
-/* 64 bytes is enough to store the requests and provides padding to 4 bytes */
+ 
 #define QMP_MSG_LEN			64
 
 #define QMP_NUM_COOLING_RESOURCES	2
@@ -53,19 +51,7 @@ struct qmp_cooling_device {
 	bool state;
 };
 
-/**
- * struct qmp - driver state for QMP implementation
- * @msgram: iomem referencing the message RAM used for communication
- * @dev: reference to QMP device
- * @mbox_client: mailbox client used to ring the doorbell on transmit
- * @mbox_chan: mailbox channel used to ring the doorbell on transmit
- * @offset: offset within @msgram where messages should be written
- * @size: maximum size of the messages to be transmitted
- * @event: wait_queue for synchronization with the IRQ
- * @tx_lock: provides synchronization between multiple callers of qmp_send()
- * @qdss_clk: QDSS clock hw struct
- * @cooling_devs: thermal cooling devices
- */
+ 
 struct qmp {
 	void __iomem *msgram;
 	struct device *dev;
@@ -133,11 +119,11 @@ static int qmp_open(struct qmp *qmp)
 		return -EINVAL;
 	}
 
-	/* Ack remote core's link state */
+	 
 	val = readl(qmp->msgram + QMP_DESC_UCORE_LINK_STATE);
 	writel(val, qmp->msgram + QMP_DESC_UCORE_LINK_STATE_ACK);
 
-	/* Set local core's link state to up */
+	 
 	writel(QMP_STATE_UP, qmp->msgram + QMP_DESC_MCORE_LINK_STATE);
 
 	qmp_kick(qmp);
@@ -158,7 +144,7 @@ static int qmp_open(struct qmp *qmp)
 		goto timeout_close_channel;
 	}
 
-	/* Ack remote core's channel state */
+	 
 	writel(QMP_STATE_UP, qmp->msgram + QMP_DESC_UCORE_CH_STATE_ACK);
 
 	qmp_kick(qmp);
@@ -202,18 +188,7 @@ static bool qmp_message_empty(struct qmp *qmp)
 	return readl(qmp->msgram + qmp->offset) == 0;
 }
 
-/**
- * qmp_send() - send a message to the AOSS
- * @qmp: qmp context
- * @fmt: format string for message to be sent
- * @...: arguments for the format string
- *
- * Transmit message to AOSS and wait for the AOSS to acknowledge the message.
- * data must not be longer than the mailbox size. Access is synchronized by
- * this implementation.
- *
- * Return: 0 on success, negative errno on failure
- */
+ 
 int qmp_send(struct qmp *qmp, const char *fmt, ...)
 {
 	char buf[QMP_MSG_LEN];
@@ -235,12 +210,12 @@ int qmp_send(struct qmp *qmp, const char *fmt, ...)
 
 	mutex_lock(&qmp->tx_lock);
 
-	/* The message RAM only implements 32-bit accesses */
+	 
 	__iowrite32_copy(qmp->msgram + qmp->offset + sizeof(u32),
 			 buf, sizeof(buf) / sizeof(u32));
 	writel(sizeof(buf), qmp->msgram + qmp->offset);
 
-	/* Read back length to confirm data written in message RAM */
+	 
 	readl(qmp->msgram + qmp->offset);
 	qmp_kick(qmp);
 
@@ -250,7 +225,7 @@ int qmp_send(struct qmp *qmp, const char *fmt, ...)
 		dev_err(qmp->dev, "ucore did not ack channel\n");
 		ret = -ETIMEDOUT;
 
-		/* Clear message from buffer */
+		 
 		writel(0, qmp->msgram + qmp->offset);
 	} else {
 		ret = 0;
@@ -337,7 +312,7 @@ static int qmp_cdev_set_cur_state(struct thermal_cooling_device *cdev,
 	bool cdev_state;
 	int ret;
 
-	/* Normalize state */
+	 
 	cdev_state = !!state;
 
 	if (qmp_cdev->state == state)
@@ -426,12 +401,7 @@ static void qmp_cooling_devices_remove(struct qmp *qmp)
 		thermal_cooling_device_unregister(qmp->cooling_devs[i].cdev);
 }
 
-/**
- * qmp_get() - get a qmp handle from a device
- * @dev: client device pointer
- *
- * Return: handle to qmp device on success, ERR_PTR() on failure
- */
+ 
 struct qmp *qmp_get(struct device *dev)
 {
 	struct platform_device *pdev;
@@ -460,16 +430,10 @@ struct qmp *qmp_get(struct device *dev)
 }
 EXPORT_SYMBOL(qmp_get);
 
-/**
- * qmp_put() - release a qmp handle
- * @qmp: qmp handle obtained from qmp_get()
- */
+ 
 void qmp_put(struct qmp *qmp)
 {
-	/*
-	 * Match get_device() inside of_find_device_by_node() in
-	 * qmp_get()
-	 */
+	 
 	if (!IS_ERR_OR_NULL(qmp))
 		put_device(qmp->dev);
 }

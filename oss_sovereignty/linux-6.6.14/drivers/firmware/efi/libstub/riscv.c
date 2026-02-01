@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020 Western Digital Corporation or its affiliates.
- */
+
+ 
 
 #include <linux/efi.h>
 #include <linux/libfdt.h>
@@ -74,10 +72,7 @@ efi_status_t check_platform_features(void)
 
 unsigned long __weak stext_offset(void)
 {
-	/*
-	 * This fallback definition is used by the EFI zboot stub, which loads
-	 * the entire image so it can branch via the image header at offset #0.
-	 */
+	 
 	return 0;
 }
 
@@ -87,12 +82,7 @@ void __noreturn efi_enter_kernel(unsigned long entrypoint, unsigned long fdt,
 	unsigned long kernel_entry = entrypoint + stext_offset();
 	jump_kernel_func jump_kernel = (jump_kernel_func)kernel_entry;
 
-	/*
-	 * Jump to real kernel here with following constraints.
-	 * 1. MMU should be disabled.
-	 * 2. a0 should contain hartid
-	 * 3. a1 should DT address
-	 */
+	 
 	csr_write(CSR_SATP, 0);
 	jump_kernel(hartid, fdt);
 }

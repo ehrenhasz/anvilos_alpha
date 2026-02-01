@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Sanyo LV5207LP LED Driver
- *
- * Copyright (C) 2013 Ideas on board SPRL
- *
- * Contact: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/err.h>

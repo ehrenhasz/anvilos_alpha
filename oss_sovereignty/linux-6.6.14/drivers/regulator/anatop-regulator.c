@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (C) 2011 Freescale Semiconductor, Inc. All Rights Reserved.
+
+
+
 
 #include <linux/slab.h>
 #include <linux/device.h>
@@ -16,8 +16,8 @@
 #include <linux/regulator/of_regulator.h>
 #include <linux/regulator/machine.h>
 
-#define LDO_RAMP_UP_UNIT_IN_CYCLES      64 /* 64 cycles per step */
-#define LDO_RAMP_UP_FREQ_IN_MHZ         24 /* cycle based on 24M OSC */
+#define LDO_RAMP_UP_UNIT_IN_CYCLES      64  
+#define LDO_RAMP_UP_FREQ_IN_MHZ         24  
 
 #define LDO_POWER_GATE			0x00
 #define LDO_FET_FULL_ON			0x1f
@@ -39,14 +39,9 @@ static int anatop_regmap_set_voltage_time_sel(struct regulator_dev *reg,
 	u32 val;
 	int ret = 0;
 
-	/* check whether need to care about LDO ramp up speed */
+	 
 	if (anatop_reg->delay_bit_width && new_sel > old_sel) {
-		/*
-		 * the delay for LDO ramp up time is
-		 * based on the register setting, we need
-		 * to calculate how many steps LDO need to
-		 * ramp up, and how much delay needed. (us)
-		 */
+		 
 		regmap_read(reg->regmap, anatop_reg->delay_reg, &val);
 		val = (val >> anatop_reg->delay_bit_shift) &
 			((1 << anatop_reg->delay_bit_width) - 1);
@@ -231,7 +226,7 @@ static int anatop_regulator_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* read LDO ramp up setting, only for core reg */
+	 
 	of_property_read_u32(np, "anatop-delay-reg-offset",
 			     &sreg->delay_reg);
 	of_property_read_u32(np, "anatop-delay-bit-width",
@@ -254,7 +249,7 @@ static int anatop_regulator_probe(struct platform_device *pdev)
 	config.of_node = pdev->dev.of_node;
 	config.regmap = regmap;
 
-	/* Only core regulators have the ramp up delay configuration. */
+	 
 	if (control_reg && sreg->delay_bit_width) {
 		rdesc->ops = &anatop_core_rops;
 
@@ -270,15 +265,11 @@ static int anatop_regulator_probe(struct platform_device *pdev)
 			sreg->bypass = true;
 		}
 
-		/*
-		 * In case vddpu was disabled by the bootloader, we need to set
-		 * a sane default until imx6-cpufreq was probed and changes the
-		 * voltage to the correct value. In this case we set 1.25V.
-		 */
+		 
 		if (!sreg->sel && !strcmp(rdesc->name, "vddpu"))
 			sreg->sel = 22;
 
-		/* set the default voltage of the pcie phy to be 1.100v */
+		 
 		if (!sreg->sel && !strcmp(rdesc->name, "vddpcie"))
 			sreg->sel = 0x10;
 
@@ -302,7 +293,7 @@ static int anatop_regulator_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* register regulator */
+	 
 	rdev = devm_regulator_register(dev, rdesc, &config);
 	if (IS_ERR(rdev)) {
 		ret = PTR_ERR(rdev);
@@ -321,7 +312,7 @@ static int anatop_regulator_probe(struct platform_device *pdev)
 
 static const struct of_device_id of_anatop_regulator_match_tbl[] = {
 	{ .compatible = "fsl,anatop-regulator", },
-	{ /* end */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_anatop_regulator_match_tbl);
 

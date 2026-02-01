@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2009, Microsoft Corporation.
- *
- * Authors:
- *   Haiyang Zhang <haiyangz@microsoft.com>
- *   Hank Janssen  <hjanssen@microsoft.com>
- *   K. Y. Srinivasan <kys@microsoft.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/wait.h>
@@ -34,23 +27,9 @@
 #include <scsi/scsi_transport_fc.h>
 #include <scsi/scsi_transport.h>
 
-/*
- * All wire protocol details (storage protocol between the guest and the host)
- * are consolidated here.
- *
- * Begin protocol definitions.
- */
+ 
 
-/*
- * Version history:
- * V1 Beta: 0.1
- * V1 RC < 2008/1/31: 1.0
- * V1 RC > 2008/1/31:  2.0
- * Win7: 4.2
- * Win8: 5.1
- * Win8.1: 6.0
- * Win10: 6.2
- */
+ 
 
 #define VMSTOR_PROTO_VERSION(MAJOR_, MINOR_)	((((MAJOR_) & 0xff) << 8) | \
 						(((MINOR_) & 0xff)))
@@ -60,10 +39,10 @@
 #define VMSTOR_PROTO_VERSION_WIN8_1	VMSTOR_PROTO_VERSION(6, 0)
 #define VMSTOR_PROTO_VERSION_WIN10	VMSTOR_PROTO_VERSION(6, 2)
 
-/* channel callback timeout in ms */
+ 
 #define CALLBACK_TIMEOUT               2
 
-/*  Packet structure describing virtual storage requests. */
+ 
 enum vstor_packet_operation {
 	VSTOR_OPERATION_COMPLETE_IO		= 1,
 	VSTOR_OPERATION_REMOVE_DEVICE		= 2,
@@ -81,9 +60,7 @@ enum vstor_packet_operation {
 	VSTOR_OPERATION_MAXIMUM                 = 13
 };
 
-/*
- * WWN packet for Fibre Channel HBA
- */
+ 
 
 struct hv_fc_wwn_packet {
 	u8	primary_active;
@@ -96,9 +73,7 @@ struct hv_fc_wwn_packet {
 
 
 
-/*
- * SRB Flag Bits
- */
+ 
 
 #define SRB_FLAGS_QUEUE_ACTION_ENABLE		0x00000002
 #define SRB_FLAGS_DISABLE_DISCONNECT		0x00000004
@@ -113,9 +88,7 @@ struct hv_fc_wwn_packet {
 #define SRB_FLAGS_ADAPTER_CACHE_ENABLE		0x00000200
 #define SRB_FLAGS_FREE_SENSE_BUFFER		0x00000400
 
-/*
- * This flag indicates the request is part of the workflow for processing a D3.
- */
+ 
 #define SRB_FLAGS_D3_PROCESSING			0x00000800
 #define SRB_FLAGS_IS_ACTIVE			0x00010000
 #define SRB_FLAGS_ALLOCATED_FROM_ZONE		0x00020000
@@ -131,22 +104,14 @@ struct hv_fc_wwn_packet {
 #define SP_UNTAGGED			((unsigned char) ~0)
 #define SRB_SIMPLE_TAG_REQUEST		0x20
 
-/*
- * Platform neutral description of a scsi request -
- * this remains the same across the write regardless of 32/64 bit
- * note: it's patterned off the SCSI_PASS_THROUGH structure
- */
+ 
 #define STORVSC_MAX_CMD_LEN			0x10
 
-/* Sense buffer size is the same for all versions since Windows 8 */
+ 
 #define STORVSC_SENSE_BUFFER_SIZE		0x14
 #define STORVSC_MAX_BUF_LEN_WITH_PADDING	0x14
 
-/*
- * The storage protocol version is determined during the
- * initial exchange with the host.  It will indicate which
- * storage functionality is available in the host.
-*/
+ 
 static int vmstor_proto_version;
 
 #define STORVSC_LOGGING_NONE	0
@@ -191,9 +156,7 @@ struct vmscsi_request {
 		u8 sense_data[STORVSC_SENSE_BUFFER_SIZE];
 		u8 reserved_array[STORVSC_MAX_BUF_LEN_WITH_PADDING];
 	};
-	/*
-	 * The following was added in win8.
-	 */
+	 
 	u16 reserve;
 	u8  queue_tag;
 	u8  queue_action;
@@ -203,9 +166,7 @@ struct vmscsi_request {
 
 } __attribute((packed));
 
-/*
- * The list of windows version in order of preference.
- */
+ 
 
 static const int protocol_version[] = {
 		VMSTOR_PROTO_VERSION_WIN10,
@@ -214,10 +175,7 @@ static const int protocol_version[] = {
 };
 
 
-/*
- * This structure is sent during the initialization phase to get the different
- * properties of the channel.
- */
+ 
 
 #define STORAGE_CHANNEL_SUPPORTS_MULTI_CHANNEL		0x1
 
@@ -232,86 +190,67 @@ struct vmstorage_channel_properties {
 	u64  reserved2;
 } __packed;
 
-/*  This structure is sent during the storage protocol negotiations. */
+ 
 struct vmstorage_protocol_version {
-	/* Major (MSW) and minor (LSW) version numbers. */
+	 
 	u16 major_minor;
 
-	/*
-	 * Revision number is auto-incremented whenever this file is changed
-	 * (See FILL_VMSTOR_REVISION macro above).  Mismatch does not
-	 * definitely indicate incompatibility--but it does indicate mismatched
-	 * builds.
-	 * This is only used on the windows side. Just set it to 0.
-	 */
+	 
 	u16 revision;
 } __packed;
 
-/* Channel Property Flags */
+ 
 #define STORAGE_CHANNEL_REMOVABLE_FLAG		0x1
 #define STORAGE_CHANNEL_EMULATED_IDE_FLAG	0x2
 
 struct vstor_packet {
-	/* Requested operation type */
+	 
 	enum vstor_packet_operation operation;
 
-	/*  Flags - see below for values */
+	 
 	u32 flags;
 
-	/* Status of the request returned from the server side. */
+	 
 	u32 status;
 
-	/* Data payload area */
+	 
 	union {
-		/*
-		 * Structure used to forward SCSI commands from the
-		 * client to the server.
-		 */
+		 
 		struct vmscsi_request vm_srb;
 
-		/* Structure used to query channel properties. */
+		 
 		struct vmstorage_channel_properties storage_channel_properties;
 
-		/* Used during version negotiations. */
+		 
 		struct vmstorage_protocol_version version;
 
-		/* Fibre channel address packet */
+		 
 		struct hv_fc_wwn_packet wwn_packet;
 
-		/* Number of sub-channels to create */
+		 
 		u16 sub_channel_count;
 
-		/* This will be the maximum of the union members */
+		 
 		u8  buffer[0x34];
 	};
 } __packed;
 
-/*
- * Packet Flags:
- *
- * This flag indicates that the server should send back a completion for this
- * packet.
- */
+ 
 
 #define REQUEST_COMPLETION_FLAG	0x1
 
-/* Matches Windows-end */
+ 
 enum storvsc_request_type {
 	WRITE_TYPE = 0,
 	READ_TYPE,
 	UNKNOWN_TYPE,
 };
 
-/*
- * SRB status codes and masks. In the 8-bit field, the two high order bits
- * are flags, while the remaining 6 bits are an integer status code.  The
- * definitions here include only the subset of the integer status codes that
- * are tested for in this driver.
- */
+ 
 #define SRB_STATUS_AUTOSENSE_VALID	0x80
 #define SRB_STATUS_QUEUE_FROZEN		0x40
 
-/* SRB status integer codes */
+ 
 #define SRB_STATUS_SUCCESS		0x01
 #define SRB_STATUS_ABORTED		0x02
 #define SRB_STATUS_ERROR		0x04
@@ -325,9 +264,7 @@ enum storvsc_request_type {
 
 #define SRB_STATUS(status) \
 	(status & ~(SRB_STATUS_AUTOSENSE_VALID | SRB_STATUS_QUEUE_FROZEN))
-/*
- * This is the end of Protocol specific defines.
- */
+ 
 
 static int storvsc_ringbuffer_size = (128 * 1024);
 static u32 max_outstanding_req_per_channel;
@@ -350,9 +287,7 @@ module_param(ring_avail_percent_lowater, int, S_IRUGO);
 MODULE_PARM_DESC(ring_avail_percent_lowater,
 		"Select a channel if available ring size > this in percent");
 
-/*
- * Timeout in seconds for all devices managed by this driver.
- */
+ 
 static int storvsc_timeout = 180;
 
 #if IS_ENABLED(CONFIG_SCSI_FC_ATTRS)
@@ -375,9 +310,7 @@ static void storvsc_on_channel_callback(void *context);
 #define STORVSC_IDE_MAX_TARGETS				1
 #define STORVSC_IDE_MAX_CHANNELS			1
 
-/*
- * Upper bound on the size of a storvsc packet.
- */
+ 
 #define STORVSC_MAX_PKT_SIZE (sizeof(struct vmpacket_descriptor) +\
 			      sizeof(struct vstor_packet))
 
@@ -386,7 +319,7 @@ struct storvsc_cmd_request {
 
 	struct hv_device *device;
 
-	/* Synchronize the request/response if needed */
+	 
 	struct completion wait_event;
 
 	struct vmbus_channel_packet_multipage_buffer mpb;
@@ -397,7 +330,7 @@ struct storvsc_cmd_request {
 };
 
 
-/* A storvsc device is a device object that contains a vmbus channel */
+ 
 struct storvsc_device {
 	struct hv_device *device;
 
@@ -408,39 +341,24 @@ struct storvsc_device {
 
 	wait_queue_head_t waiting_to_drain;
 
-	/*
-	 * Each unique Port/Path/Target represents 1 channel ie scsi
-	 * controller. In reality, the pathid, targetid is always 0
-	 * and the port is set by us
-	 */
+	 
 	unsigned int port_number;
 	unsigned char path_id;
 	unsigned char target_id;
 
-	/*
-	 * Max I/O, the device can support.
-	 */
+	 
 	u32   max_transfer_bytes;
-	/*
-	 * Number of sub-channels we will open.
-	 */
+	 
 	u16 num_sc;
 	struct vmbus_channel **stor_chns;
-	/*
-	 * Mask of CPUs bound to subchannels.
-	 */
+	 
 	struct cpumask alloced_cpus;
-	/*
-	 * Serializes modifications of stor_chns[] from storvsc_do_io()
-	 * and storvsc_change_target_cpu().
-	 */
+	 
 	spinlock_t lock;
-	/* Used for vsc/vsp channel reset process */
+	 
 	struct storvsc_cmd_request init_request;
 	struct storvsc_cmd_request reset_request;
-	/*
-	 * Currently active port and node names for FC devices.
-	 */
+	 
 	u64 node_name;
 	u64 port_name;
 #if IS_ENABLED(CONFIG_SCSI_FC_ATTRS)
@@ -490,24 +408,12 @@ static void storvsc_host_scan(struct work_struct *work)
 		container_of(work, struct hv_host_device, host_scan_work);
 
 	host = host_device->host;
-	/*
-	 * Before scanning the host, first check to see if any of the
-	 * currently known devices have been hot removed. We issue a
-	 * "unit ready" command against all currently known devices.
-	 * This I/O will result in an error for devices that have been
-	 * removed. As part of handling the I/O error, we remove the device.
-	 *
-	 * When a LUN is added or removed, the host sends us a signal to
-	 * scan the host. Thus we are forced to discover the LUNs that
-	 * may have been removed this way.
-	 */
+	 
 	mutex_lock(&host->scan_mutex);
 	shost_for_each_device(sdev, host)
 		scsi_test_unit_ready(sdev, 1, 1, NULL);
 	mutex_unlock(&host->scan_mutex);
-	/*
-	 * Now scan the host to discover LUNs that may have been added.
-	 */
+	 
 	scsi_scan_host(host);
 }
 
@@ -533,20 +439,7 @@ done:
 }
 
 
-/*
- * We can get incoming messages from the host that are not in response to
- * messages that we have sent out. An example of this would be messages
- * received by the guest to notify dynamic addition/removal of LUNs. To
- * deal with potential race conditions where the driver may be in the
- * midst of being unloaded when we might receive an unsolicited message
- * from the host, we have implemented a mechanism to gurantee sequential
- * consistency:
- *
- * 1) Once the device is marked as being destroyed, we will fail all
- *    outgoing messages.
- * 2) We permit incoming messages when the device is being destroyed,
- *    only to properly account for messages already sent out.
- */
+ 
 
 static inline struct storvsc_device *get_out_stor_device(
 					struct hv_device *device)
@@ -580,10 +473,7 @@ static inline struct storvsc_device *get_in_stor_device(
 	if (!stor_device)
 		goto get_in_err;
 
-	/*
-	 * If the device is being destroyed; allow incoming
-	 * traffic only to cleanup outstanding requests.
-	 */
+	 
 
 	if (stor_device->destroy  &&
 		(atomic_read(&stor_device->num_outstanding_req) == 0))
@@ -611,14 +501,10 @@ static void storvsc_change_target_cpu(struct vmbus_channel *channel, u32 old,
 	if (!stor_device)
 		return;
 
-	/* See storvsc_do_io() -> get_og_chn(). */
+	 
 	spin_lock_irqsave(&stor_device->lock, flags);
 
-	/*
-	 * Determines if the storvsc device has other channels assigned to
-	 * the "old" CPU to update the alloced_cpus mask and the stor_chns
-	 * array.
-	 */
+	 
 	if (device->channel != channel && device->channel->target_cpu == old) {
 		cur_chn = device->channel;
 		old_is_alloced = true;
@@ -639,7 +525,7 @@ old_is_alloced:
 	else
 		cpumask_clear_cpu(old, &stor_device->alloced_cpus);
 
-	/* "Flush" the stor_chns array. */
+	 
 	for_each_possible_cpu(cpu) {
 		if (stor_device->stor_chns[cpu] && !cpumask_test_cpu(
 					cpu, &stor_device->alloced_cpus))
@@ -662,10 +548,7 @@ static u64 storvsc_next_request_id(struct vmbus_channel *channel, u64 rqst_addr)
 	if (rqst_addr == VMBUS_RQST_RESET)
 		return VMBUS_RQST_RESET;
 
-	/*
-	 * Cannot return an ID of 0, which is reserved for an unsolicited
-	 * message from Hyper-V.
-	 */
+	 
 	return (u64)blk_mq_unique_tag(scsi_cmd_to_rq(request->cmd)) + 1;
 }
 
@@ -693,7 +576,7 @@ static void handle_sc_creation(struct vmbus_channel *new_sc)
 			 sizeof(struct vmstorage_channel_properties),
 			 storvsc_on_channel_callback, new_sc);
 
-	/* In case vmbus_open() fails, we don't use the sub-channel. */
+	 
 	if (ret != 0) {
 		dev_err(dev, "Failed to open sub-channel: err=%d\n", ret);
 		return;
@@ -701,7 +584,7 @@ static void handle_sc_creation(struct vmbus_channel *new_sc)
 
 	new_sc->change_target_cpu_callback = storvsc_change_target_cpu;
 
-	/* Add the sub-channel to the array of available channels. */
+	 
 	stor_device->stor_chns[new_sc->target_cpu] = new_sc;
 	cpumask_set_cpu(new_sc->target_cpu, &stor_device->alloced_cpus);
 }
@@ -715,13 +598,7 @@ static void  handle_multichannel_storage(struct hv_device *device, int max_chns)
 	struct vstor_packet *vstor_packet;
 	int ret, t;
 
-	/*
-	 * If the number of CPUs is artificially restricted, such as
-	 * with maxcpus=1 on the kernel boot line, Hyper-V could offer
-	 * sub-channels >= the number of CPUs. These sub-channels
-	 * should not be created. The primary channel is already created
-	 * and assigned to one CPU, so check against # CPUs - 1.
-	 */
+	 
 	num_sc = min((int)(num_online_cpus() - 1), max_chns);
 	if (!num_sc)
 		return;
@@ -734,14 +611,10 @@ static void  handle_multichannel_storage(struct hv_device *device, int max_chns)
 	request = &stor_device->init_request;
 	vstor_packet = &request->vstor_packet;
 
-	/*
-	 * Establish a handler for dealing with subchannels.
-	 */
+	 
 	vmbus_set_sc_create_callback(device->channel, handle_sc_creation);
 
-	/*
-	 * Request the host to create sub-channels.
-	 */
+	 
 	memset(request, 0, sizeof(struct storvsc_cmd_request));
 	init_completion(&request->wait_event);
 	vstor_packet->operation = VSTOR_OPERATION_CREATE_SUB_CHANNELS;
@@ -772,19 +645,13 @@ static void  handle_multichannel_storage(struct hv_device *device, int max_chns)
 		return;
 	}
 
-	/*
-	 * We need to do nothing here, because vmbus_process_offer()
-	 * invokes channel->sc_creation_callback, which will open and use
-	 * the sub-channel(s).
-	 */
+	 
 }
 
 static void cache_wwn(struct storvsc_device *stor_device,
 		      struct vstor_packet *vstor_packet)
 {
-	/*
-	 * Cache the currently active port and node ww names.
-	 */
+	 
 	if (vstor_packet->wwn_packet.primary_active) {
 		stor_device->node_name =
 			wwn_to_u64(vstor_packet->wwn_packet.primary_node_wwn);
@@ -854,30 +721,23 @@ static int storvsc_channel_init(struct hv_device *device, bool is_fc)
 	request = &stor_device->init_request;
 	vstor_packet = &request->vstor_packet;
 
-	/*
-	 * Now, initiate the vsc/vsp initialization protocol on the open
-	 * channel
-	 */
+	 
 	memset(request, 0, sizeof(struct storvsc_cmd_request));
 	vstor_packet->operation = VSTOR_OPERATION_BEGIN_INITIALIZATION;
 	ret = storvsc_execute_vstor_op(device, request, true);
 	if (ret)
 		return ret;
-	/*
-	 * Query host supported protocol version.
-	 */
+	 
 
 	for (i = 0; i < ARRAY_SIZE(protocol_version); i++) {
-		/* reuse the packet for version range supported */
+		 
 		memset(vstor_packet, 0, sizeof(struct vstor_packet));
 		vstor_packet->operation =
 			VSTOR_OPERATION_QUERY_PROTOCOL_VERSION;
 
 		vstor_packet->version.major_minor = protocol_version[i];
 
-		/*
-		 * The revision number is only used in Windows; set it to 0.
-		 */
+		 
 		vstor_packet->version.revision = 0;
 		ret = storvsc_execute_vstor_op(device, request, false);
 		if (ret != 0)
@@ -905,22 +765,10 @@ static int storvsc_channel_init(struct hv_device *device, bool is_fc)
 	if (ret != 0)
 		return ret;
 
-	/*
-	 * Check to see if multi-channel support is there.
-	 * Hosts that implement protocol version of 5.1 and above
-	 * support multi-channel.
-	 */
+	 
 	max_chns = vstor_packet->storage_channel_properties.max_channel_cnt;
 
-	/*
-	 * Allocate state to manage the sub-channels.
-	 * We allocate an array based on the numbers of possible CPUs
-	 * (Hyper-V does not support cpu online/offline).
-	 * This Array will be sparseley populated with unique
-	 * channels - primary + sub-channels.
-	 * We will however populate all the slots to evenly distribute
-	 * the load.
-	 */
+	 
 	stor_device->stor_chns = kcalloc(num_possible_cpus(), sizeof(void *),
 					 GFP_KERNEL);
 	if (stor_device->stor_chns == NULL)
@@ -942,18 +790,14 @@ static int storvsc_channel_init(struct hv_device *device, bool is_fc)
 	if (!is_fc)
 		goto done;
 
-	/*
-	 * For FC devices retrieve FC HBA data.
-	 */
+	 
 	memset(vstor_packet, 0, sizeof(struct vstor_packet));
 	vstor_packet->operation = VSTOR_OPERATION_FCHBA_DATA;
 	ret = storvsc_execute_vstor_op(device, request, true);
 	if (ret != 0)
 		return ret;
 
-	/*
-	 * Cache the currently active port and node ww names.
-	 */
+	 
 	cache_wwn(stor_device, vstor_packet);
 
 done:
@@ -989,23 +833,15 @@ static void storvsc_handle_error(struct vmscsi_request *vm_srb,
 	case SRB_STATUS_BUS_RESET:
 	case SRB_STATUS_DATA_OVERRUN:
 		if (vm_srb->srb_status & SRB_STATUS_AUTOSENSE_VALID) {
-			/* Check for capacity change */
+			 
 			if ((asc == 0x2a) && (ascq == 0x9)) {
 				process_err_fn = storvsc_device_scan;
-				/* Retry the I/O that triggered this. */
+				 
 				set_host_byte(scmnd, DID_REQUEUE);
 				goto do_work;
 			}
 
-			/*
-			 * Check for "Operating parameters have changed"
-			 * due to Hyper-V changing the VHD/VHDX BlockSize
-			 * when adding/removing a differencing disk. This
-			 * causes discard_granularity to change, so do a
-			 * rescan to pick up the new granularity. We don't
-			 * want scsi_report_sense() to output a message
-			 * that a sysadmin wouldn't know what to do with.
-			 */
+			 
 			if ((asc == 0x3f) && (ascq != 0x03) &&
 					(ascq != 0x0e)) {
 				process_err_fn = storvsc_device_scan;
@@ -1013,29 +849,17 @@ static void storvsc_handle_error(struct vmscsi_request *vm_srb,
 				goto do_work;
 			}
 
-			/*
-			 * Otherwise, let upper layer deal with the
-			 * error when sense message is present
-			 */
+			 
 			return;
 		}
 
-		/*
-		 * If there is an error; offline the device since all
-		 * error recovery strategies would have already been
-		 * deployed on the host side. However, if the command
-		 * were a pass-through command deal with it appropriately.
-		 */
+		 
 		switch (scmnd->cmnd[0]) {
 		case ATA_16:
 		case ATA_12:
 			set_host_byte(scmnd, DID_PASSTHROUGH);
 			break;
-		/*
-		 * On some Hyper-V hosts TEST_UNIT_READY command can
-		 * return SRB_STATUS_ERROR. Let the upper level code
-		 * deal with it based on the sense information.
-		 */
+		 
 		case TEST_UNIT_READY:
 			break;
 		default:
@@ -1052,9 +876,7 @@ static void storvsc_handle_error(struct vmscsi_request *vm_srb,
 	return;
 
 do_work:
-	/*
-	 * We need to schedule work to process this error; schedule it.
-	 */
+	 
 	wrk = kmalloc(sizeof(struct storvsc_scan_work), GFP_ATOMIC);
 	if (!wrk) {
 		set_host_byte(scmnd, DID_BAD_TARGET);
@@ -1100,16 +922,12 @@ static void storvsc_command_completion(struct storvsc_cmd_request *cmd_request,
 	if (vm_srb->srb_status != SRB_STATUS_SUCCESS) {
 		storvsc_handle_error(vm_srb, scmnd, host, sense_hdr.asc,
 					 sense_hdr.ascq);
-		/*
-		 * The Windows driver set data_transfer_length on
-		 * SRB_STATUS_DATA_OVERRUN. On other errors, this value
-		 * is untouched.  In these cases we set it to 0.
-		 */
+		 
 		if (vm_srb->srb_status != SRB_STATUS_DATA_OVERRUN)
 			data_transfer_length = 0;
 	}
 
-	/* Validate data_transfer_length (from Hyper-V) */
+	 
 	if (data_transfer_length > cmd_request->payload->range.len)
 		data_transfer_length = cmd_request->payload->range.len;
 
@@ -1132,16 +950,7 @@ static void storvsc_on_io_completion(struct storvsc_device *stor_device,
 
 	stor_pkt = &request->vstor_packet;
 
-	/*
-	 * The current SCSI handling on the host side does
-	 * not correctly handle:
-	 * INQUIRY command with page code parameter set to 0x80
-	 * MODE_SENSE command with cmd[2] == 0x1c
-	 *
-	 * Setup srb and scsi status so this won't be fatal.
-	 * We do this so we can distinguish truly fatal failues
-	 * (srb status == 0x4) and off-line the device in that case.
-	 */
+	 
 
 	if ((stor_pkt->vm_srb.cdb[0] == INQUIRY) ||
 	   (stor_pkt->vm_srb.cdb[0] == MODE_SENSE)) {
@@ -1149,25 +958,18 @@ static void storvsc_on_io_completion(struct storvsc_device *stor_device,
 		vstor_packet->vm_srb.srb_status = SRB_STATUS_SUCCESS;
 	}
 
-	/* Copy over the status...etc */
+	 
 	stor_pkt->vm_srb.scsi_status = vstor_packet->vm_srb.scsi_status;
 	stor_pkt->vm_srb.srb_status = vstor_packet->vm_srb.srb_status;
 
-	/*
-	 * Copy over the sense_info_length, but limit to the known max
-	 * size if Hyper-V returns a bad value.
-	 */
+	 
 	stor_pkt->vm_srb.sense_info_length = min_t(u8, STORVSC_SENSE_BUFFER_SIZE,
 		vstor_packet->vm_srb.sense_info_length);
 
 	if (vstor_packet->vm_srb.scsi_status != 0 ||
 	    vstor_packet->vm_srb.srb_status != SRB_STATUS_SUCCESS) {
 
-		/*
-		 * Log TEST_UNIT_READY errors only as warnings. Hyper-V can
-		 * return errors when detecting devices using TEST_UNIT_READY,
-		 * and logging these as errors produces unhelpful noise.
-		 */
+		 
 		int loglevel = (stor_pkt->vm_srb.cdb[0] == TEST_UNIT_READY) ?
 			STORVSC_LOGGING_WARN : STORVSC_LOGGING_ERROR;
 
@@ -1270,25 +1072,9 @@ static void storvsc_on_channel_callback(void *context)
 		} else if (rqst_id == VMBUS_RQST_RESET) {
 			request = &stor_device->reset_request;
 		} else {
-			/* Hyper-V can send an unsolicited message with ID of 0 */
+			 
 			if (rqst_id == 0) {
-				/*
-				 * storvsc_on_receive() looks at the vstor_packet in the message
-				 * from the ring buffer.
-				 *
-				 * - If the operation in the vstor_packet is COMPLETE_IO, then
-				 *   we call storvsc_on_io_completion(), and dereference the
-				 *   guest memory address.  Make sure we don't call
-				 *   storvsc_on_io_completion() with a guest memory address
-				 *   that is zero if Hyper-V were to construct and send such
-				 *   a bogus packet.
-				 *
-				 * - If the operation in the vstor_packet is FCHBA_DATA, then
-				 *   we call cache_wwn(), and access the data payload area of
-				 *   the packet (wwn_packet); however, there is no guarantee
-				 *   that the packet is big enough to contain such area.
-				 *   Future-proof the code by rejecting such a bogus packet.
-				 */
+				 
 				if (packet->operation == VSTOR_OPERATION_COMPLETE_IO ||
 				    packet->operation == VSTOR_OPERATION_FCHBA_DATA) {
 					dev_err(&device->device, "Invalid packet with ID of 0\n");
@@ -1297,7 +1083,7 @@ static void storvsc_on_channel_callback(void *context)
 			} else {
 				struct scsi_cmnd *scmnd;
 
-				/* Transaction 'rqst_id' corresponds to tag 'rqst_id - 1' */
+				 
 				scmnd = scsi_host_find_tag(shost, rqst_id - 1);
 				if (scmnd == NULL) {
 					dev_err(&device->device, "Incorrect transaction ID\n");
@@ -1351,27 +1137,17 @@ static int storvsc_dev_remove(struct hv_device *device)
 
 	stor_device->destroy = true;
 
-	/* Make sure flag is set before waiting */
+	 
 	wmb();
 
-	/*
-	 * At this point, all outbound traffic should be disable. We
-	 * only allow inbound traffic (responses) to proceed so that
-	 * outstanding requests can be completed.
-	 */
+	 
 
 	storvsc_wait_to_drain(stor_device);
 
-	/*
-	 * Since we have already drained, we don't need to busy wait
-	 * as was done in final_release_stor_device()
-	 * Note that we cannot set the ext pointer to NULL until
-	 * we have drained - to drain the outgoing packets, we need to
-	 * allow incoming packets.
-	 */
+	 
 	hv_set_drvdata(device, NULL);
 
-	/* Close the channel */
+	 
 	vmbus_close(device->channel);
 
 	kfree(stor_device->stor_chns);
@@ -1392,14 +1168,7 @@ static struct vmbus_channel *get_og_chn(struct storvsc_device *stor_device,
 		return stor_device->device->channel;
 	}
 
-	/*
-	 * Our channel array is sparsley populated and we
-	 * initiated I/O on a processor/hw-q that does not
-	 * currently have a designated channel. Fix this.
-	 * The strategy is simple:
-	 * I. Ensure NUMA locality
-	 * II. Distribute evenly (best effort)
-	 */
+	 
 
 	node_mask = cpumask_of_node(cpu_to_node(q_num));
 
@@ -1450,17 +1219,12 @@ static int storvsc_do_io(struct hv_device *device,
 
 
 	request->device  = device;
-	/*
-	 * Select an appropriate channel to send the request out.
-	 */
-	/* See storvsc_change_target_cpu(). */
+	 
+	 
 	outgoing_channel = READ_ONCE(stor_device->stor_chns[q_num]);
 	if (outgoing_channel != NULL) {
 		if (outgoing_channel->target_cpu == q_num) {
-			/*
-			 * Ideally, we want to pick a different channel if
-			 * available on the same NUMA node.
-			 */
+			 
 			node_mask = cpumask_of_node(cpu_to_node(q_num));
 			for_each_cpu_wrap(tgt_cpu,
 				 &stor_device->alloced_cpus, q_num + 1) {
@@ -1480,20 +1244,13 @@ static int storvsc_do_io(struct hv_device *device,
 				}
 			}
 
-			/*
-			 * All the other channels on the same NUMA node are
-			 * busy. Try to use the channel on the current CPU
-			 */
+			 
 			if (hv_get_avail_to_write_percent(
 						&outgoing_channel->outbound)
 					> ring_avail_percent_lowater)
 				goto found_channel;
 
-			/*
-			 * If we reach here, all the channels on the current
-			 * NUMA node are busy. Try to find a channel in
-			 * other NUMA nodes
-			 */
+			 
 			for_each_cpu(tgt_cpu, &stor_device->alloced_cpus) {
 				if (cpumask_test_cpu(tgt_cpu, node_mask))
 					continue;
@@ -1559,15 +1316,7 @@ found_channel:
 
 static int storvsc_device_alloc(struct scsi_device *sdevice)
 {
-	/*
-	 * Set blist flag to permit the reading of the VPD pages even when
-	 * the target may claim SPC-2 compliance. MSFT targets currently
-	 * claim SPC-2 compliance while they implement post SPC-2 features.
-	 * With this flag we can correctly handle WRITE_SAME_16 issues.
-	 *
-	 * Hypervisor reports SCSI_UNKNOWN type for DVD ROM device but
-	 * still supports REPORT LUN.
-	 */
+	 
 	sdevice->sdev_bflags = BLIST_REPORTLUN2 | BLIST_TRY_VPD_PAGES;
 
 	return 0;
@@ -1577,15 +1326,11 @@ static int storvsc_device_configure(struct scsi_device *sdevice)
 {
 	blk_queue_rq_timeout(sdevice->request_queue, (storvsc_timeout * HZ));
 
-	/* storvsc devices don't support MAINTENANCE_IN SCSI cmd */
+	 
 	sdevice->no_report_opcodes = 1;
 	sdevice->no_write_same = 1;
 
-	/*
-	 * If the host is WIN8 or WIN8 R2, claim conformance to SPC-3
-	 * if the device is a MSFT virtual device.  If the host is
-	 * WIN10 or newer, allow write_same.
-	 */
+	 
 	if (!strncmp(sdevice->vendor, "Msft", 4)) {
 		switch (vmstor_proto_version) {
 		case VMSTOR_PROTO_VERSION_WIN8:
@@ -1608,11 +1353,9 @@ static int storvsc_get_chs(struct scsi_device *sdev, struct block_device * bdev,
 	sector_t cylinders = nsect;
 	int heads, sectors_pt;
 
-	/*
-	 * We are making up these values; let us keep it simple.
-	 */
+	 
 	heads = 0xff;
-	sectors_pt = 0x3f;      /* Sectors per track */
+	sectors_pt = 0x3f;       
 	sector_div(cylinders, heads * sectors_pt);
 	if ((sector_t)(cylinders + 1) * heads * sectors_pt < nsect)
 		cylinders = 0xffff;
@@ -1661,24 +1404,13 @@ static int storvsc_host_reset_handler(struct scsi_cmnd *scmnd)
 		return TIMEOUT_ERROR;
 
 
-	/*
-	 * At this point, all outstanding requests in the adapter
-	 * should have been flushed out and return to us
-	 * There is a potential race here where the host may be in
-	 * the process of responding when we return from here.
-	 * Just wait for all in-transit packets to be accounted for
-	 * before we return from here.
-	 */
+	 
 	storvsc_wait_to_drain(stor_device);
 
 	return SUCCESS;
 }
 
-/*
- * The host guarantees to respond to each command, although I/O latencies might
- * be unbounded on Azure.  Reset the timer unconditionally to give the host a
- * chance to perform EH.
- */
+ 
 static enum scsi_timeout_action storvsc_eh_timed_out(struct scsi_cmnd *scmnd)
 {
 	return SCSI_EH_RESET_TIMER;
@@ -1690,12 +1422,9 @@ static bool storvsc_scsi_cmd_ok(struct scsi_cmnd *scmnd)
 	u8 scsi_op = scmnd->cmnd[0];
 
 	switch (scsi_op) {
-	/* the host does not handle WRITE_SAME, log accident usage */
+	 
 	case WRITE_SAME:
-	/*
-	 * smartd sends this command and the host does not handle
-	 * this. So, don't send it.
-	 */
+	 
 	case SET_WINDOW:
 		set_host_byte(scmnd, DID_ERROR);
 		allowed = false;
@@ -1719,21 +1448,14 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
 	u32 length;
 
 	if (vmstor_proto_version <= VMSTOR_PROTO_VERSION_WIN8) {
-		/*
-		 * On legacy hosts filter unimplemented commands.
-		 * Future hosts are expected to correctly handle
-		 * unsupported commands. Furthermore, it is
-		 * possible that some of the currently
-		 * unsupported commands maybe supported in
-		 * future versions of the host.
-		 */
+		 
 		if (!storvsc_scsi_cmd_ok(scmnd)) {
 			scsi_done(scmnd);
 			return 0;
 		}
 	}
 
-	/* Setup the cmd request */
+	 
 	cmd_request->cmd = scmnd;
 
 	memset(&cmd_request->vstor_packet, 0, sizeof(struct vstor_packet));
@@ -1750,7 +1472,7 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
 		vm_srb->queue_action = SRB_SIMPLE_TAG_REQUEST;
 	}
 
-	/* Build the SRB */
+	 
 	switch (scmnd->sc_data_direction) {
 	case DMA_TO_DEVICE:
 		vm_srb->data_in = WRITE_TYPE;
@@ -1765,10 +1487,7 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
 		vm_srb->srb_flags |= SRB_FLAGS_NO_DATA_TRANSFER;
 		break;
 	default:
-		/*
-		 * This is DMA_BIDIRECTIONAL or something else we are never
-		 * supposed to see here.
-		 */
+		 
 		WARN(1, "Unexpected data direction: %d\n",
 		     scmnd->sc_data_direction);
 		return -EINVAL;
@@ -1816,25 +1535,12 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
 		}
 
 		for_each_sg(sgl, sg, sg_count, j) {
-			/*
-			 * Init values for the current sgl entry. hvpfns_to_add
-			 * is in units of Hyper-V size pages. Handling the
-			 * PAGE_SIZE != HV_HYP_PAGE_SIZE case also handles
-			 * values of sgl->offset that are larger than PAGE_SIZE.
-			 * Such offsets are handled even on other than the first
-			 * sgl entry, provided they are a multiple of PAGE_SIZE.
-			 */
+			 
 			hvpfn = HVPFN_DOWN(sg_dma_address(sg));
 			hvpfns_to_add = HVPFN_UP(sg_dma_address(sg) +
 						 sg_dma_len(sg)) - hvpfn;
 
-			/*
-			 * Fill the next portion of the PFN array with
-			 * sequential Hyper-V PFNs for the continguous physical
-			 * memory described by the sgl entry. The end of the
-			 * last sgl should be reached at the same time that
-			 * the PFN array is filled.
-			 */
+			 
 			while (hvpfns_to_add--)
 				payload->range.pfn_array[i++] = hvpfn++;
 		}
@@ -1843,7 +1549,7 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
 	cmd_request->payload = payload;
 	cmd_request->payload_sz = payload_sz;
 
-	/* Invokes the vsc to start an IO */
+	 
 	ret = storvsc_do_io(dev, cmd_request, get_cpu());
 	put_cpu();
 
@@ -1851,7 +1557,7 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
 		scsi_dma_unmap(scmnd);
 
 	if (ret == -EAGAIN) {
-		/* no more space */
+		 
 		ret = SCSI_MLQUEUE_DEVICE_BUSY;
 		goto err_free_payload;
 	}
@@ -1878,7 +1584,7 @@ static struct scsi_host_template scsi_driver = {
 	.slave_configure =	storvsc_device_configure,
 	.cmd_per_lun =		2048,
 	.this_id =		-1,
-	/* Ensure there are no gaps in presented sgls */
+	 
 	.virt_boundary_mask =	HV_HYP_PAGE_SIZE - 1,
 	.no_write_same =	1,
 	.track_queue_depth =	1,
@@ -1892,15 +1598,15 @@ enum {
 };
 
 static const struct hv_vmbus_device_id id_table[] = {
-	/* SCSI guid */
+	 
 	{ HV_SCSI_GUID,
 	  .driver_data = SCSI_GUID
 	},
-	/* IDE guid */
+	 
 	{ HV_IDE_GUID,
 	  .driver_data = IDE_GUID
 	},
-	/* Fibre Channel GUID */
+	 
 	{
 	  HV_SYNTHFC_GUID,
 	  .driver_data = SFC_GUID
@@ -1932,11 +1638,7 @@ static int storvsc_probe(struct hv_device *device,
 	int max_sub_channels = 0;
 	u32 max_xfer_bytes;
 
-	/*
-	 * We support sub-channels for storage on SCSI and FC controllers.
-	 * The number of sub-channels offerred is based on the number of
-	 * VCPUs in the guest.
-	 */
+	 
 	if (!dev_is_ide)
 		max_sub_channels =
 			(num_cpus - 1) / storvsc_vcpus_per_sub_channel;
@@ -2002,37 +1704,18 @@ static int storvsc_probe(struct hv_device *device,
 		host->max_channel = STORVSC_IDE_MAX_CHANNELS - 1;
 		break;
 	}
-	/* max cmd length */
+	 
 	host->max_cmd_len = STORVSC_MAX_CMD_LEN;
-	/*
-	 * Any reasonable Hyper-V configuration should provide
-	 * max_transfer_bytes value aligning to HV_HYP_PAGE_SIZE,
-	 * protecting it from any weird value.
-	 */
+	 
 	max_xfer_bytes = round_down(stor_device->max_transfer_bytes, HV_HYP_PAGE_SIZE);
 	if (is_fc)
 		max_xfer_bytes = min(max_xfer_bytes, STORVSC_FC_MAX_XFER_SIZE);
 
-	/* max_hw_sectors_kb */
+	 
 	host->max_sectors = max_xfer_bytes >> 9;
-	/*
-	 * There are 2 requirements for Hyper-V storvsc sgl segments,
-	 * based on which the below calculation for max segments is
-	 * done:
-	 *
-	 * 1. Except for the first and last sgl segment, all sgl segments
-	 *    should be align to HV_HYP_PAGE_SIZE, that also means the
-	 *    maximum number of segments in a sgl can be calculated by
-	 *    dividing the total max transfer length by HV_HYP_PAGE_SIZE.
-	 *
-	 * 2. Except for the first and last, each entry in the SGL must
-	 *    have an offset that is a multiple of HV_HYP_PAGE_SIZE.
-	 */
+	 
 	host->sg_tablesize = (max_xfer_bytes >> HV_HYP_PAGE_SHIFT) + 1;
-	/*
-	 * For non-IDE disks, the host supports multiple channels.
-	 * Set the number of HW queues we are supporting.
-	 */
+	 
 	if (!dev_is_ide) {
 		if (storvsc_max_hw_queues > num_present_cpus) {
 			storvsc_max_hw_queues = 0;
@@ -2045,9 +1728,7 @@ static int storvsc_probe(struct hv_device *device,
 			host->nr_hw_queues = num_present_cpus;
 	}
 
-	/*
-	 * Set the error handler work queue.
-	 */
+	 
 	host_dev->handle_error_wq =
 			alloc_ordered_workqueue("storvsc_error_wq_%d",
 						0,
@@ -2057,7 +1738,7 @@ static int storvsc_probe(struct hv_device *device,
 		goto err_out2;
 	}
 	INIT_WORK(&host_dev->host_scan_work, storvsc_host_scan);
-	/* Register the HBA and start the scsi bus scan */
+	 
 	ret = scsi_add_host(host, &device->device);
 	if (ret != 0)
 		goto err_out3;
@@ -2095,12 +1776,7 @@ err_out3:
 	destroy_workqueue(host_dev->handle_error_wq);
 
 err_out2:
-	/*
-	 * Once we have connected with the host, we would need to
-	 * invoke storvsc_dev_remove() to rollback this state and
-	 * this call also frees up the stor_device; hence the jump around
-	 * err_out1 label.
-	 */
+	 
 	storvsc_dev_remove(device);
 	goto err_out0;
 
@@ -2113,7 +1789,7 @@ err_out0:
 	return ret;
 }
 
-/* Change a scsi target's queue depth */
+ 
 static int storvsc_change_queue_depth(struct scsi_device *sdev, int queue_depth)
 {
 	if (queue_depth > scsi_driver.can_queue)
@@ -2192,12 +1868,7 @@ static int __init storvsc_drv_init(void)
 {
 	int ret;
 
-	/*
-	 * Divide the ring buffer data size (which is 1 page less
-	 * than the ring buffer size since that page is reserved for
-	 * the ring buffer indices) by the max request size (which is
-	 * vmbus_channel_packet_multipage_buffer + struct vstor_packet + u64)
-	 */
+	 
 	max_outstanding_req_per_channel =
 		((storvsc_ringbuffer_size - PAGE_SIZE) /
 		ALIGN(MAX_MULTIPAGE_BUFFER_PACKET +

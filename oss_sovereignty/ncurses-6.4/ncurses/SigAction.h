@@ -1,43 +1,8 @@
-/****************************************************************************
- * Copyright 2020 Thomas E. Dickey                                          *
- * Copyright 1998-2003,2005 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- ****************************************************************************/
+ 
 
-/*
- * $Id: SigAction.h,v 1.10 2020/02/02 23:34:34 tom Exp $
- *
- * This file exists to handle non-POSIX systems which don't have <unistd.h>,
- * and usually no sigaction() nor <termios.h>
- */
+ 
 
 #ifndef _SIGACTION_H
 #define _SIGACTION_H
@@ -56,7 +21,7 @@
 typedef struct sigaction sigaction_t;
 #endif
 
-#else	/* !HAVE_SIGACTION */
+#else	 
 
 #if HAVE_SIGVEC
 
@@ -69,10 +34,7 @@ typedef struct sigaction sigaction_t;
 #undef  SIG_SETMASK
 #define SIG_SETMASK     02
 
- 	/*
-	 * <bsd/signal.h> is in the Linux 1.2.8 + gcc 2.7.0 configuration,
-	 * and is useful for testing this header file.
-	 */
+ 	 
 #if HAVE_BSD_SIGNAL_H
 #include <bsd/signal.h>
 #endif
@@ -102,9 +64,9 @@ typedef unsigned long sigset_t;
 #undef  sigaddset
 #define sigaddset   _nc_sigaddset
 
-/* tty/lib_tstp.c is the only user */
+ 
 #include <base/sigaction.c>
 
-#endif /* HAVE_SIGVEC */
-#endif /* HAVE_SIGACTION */
-#endif /* !defined(_SIGACTION_H) */
+#endif  
+#endif  
+#endif  

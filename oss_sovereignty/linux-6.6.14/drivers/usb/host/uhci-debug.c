@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * UHCI-specific debugging code. Invaluable when something
- * goes wrong, but don't get in my face.
- *
- * Kernel visible pointers are surrounded in []s and bus
- * visible pointers are surrounded in ()s
- *
- * (C) Copyright 1999 Linus Torvalds
- * (C) Copyright 1999-2001 Johannes Erdfelt
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/kernel.h>
@@ -23,12 +14,12 @@ static struct dentry *uhci_debugfs_root;
 
 #ifdef CONFIG_DYNAMIC_DEBUG
 
-/* Handle REALLY large printks so we don't overflow buffers */
+ 
 static void lprintk(char *buf)
 {
 	char *p;
 
-	/* Just write one line at a time */
+	 
 	while (buf) {
 		p = strchr(buf, '\n');
 		if (p)
@@ -489,7 +480,7 @@ check_link:
 		if (out - buf > len)
 			goto tail;
 
-		/* Last QH is the Terminating QH, it's different */
+		 
 		if (i == SKEL_TERM) {
 			if (qh_element(qh) != LINK_TO_TD(uhci, uhci->term_td)) {
 				out += sprintf(out,
@@ -615,9 +606,9 @@ static const struct file_operations uhci_debug_operations = {
 };
 #define UHCI_DEBUG_OPS
 
-#endif	/* CONFIG_DEBUG_FS */
+#endif	 
 
-#else	/* CONFIG_DYNAMIC_DEBUG*/
+#else	 
 
 static inline void lprintk(char *buf)
 {}

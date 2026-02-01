@@ -1,24 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Mediated virtual PCI display host device driver
- *
- * Emulate enough of qemu stdvga to make bochs-drm.ko happy.  That is
- * basically the vram memory bar and the bochs dispi interface vbe
- * registers in the mmio register bar.	Specifically it does *not*
- * include any legacy vga stuff.  Device looks a lot like "qemu -device
- * secondary-vga".
- *
- *   (c) Gerd Hoffmann <kraxel@redhat.com>
- *
- * based on mtty driver which is:
- *   Copyright (c) 2016, NVIDIA CORPORATION. All rights reserved.
- *	 Author: Neo Jia <cjia@nvidia.com>
- *		 Kirti Wankhede <kwankhede@nvidia.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
+
+ 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -167,7 +148,7 @@ struct mbochs_dmabuf {
 	bool unlinked;
 };
 
-/* State of each mdev device */
+ 
 struct mdev_state {
 	struct vfio_device vdev;
 	u8 *vconfig;
@@ -338,9 +319,9 @@ static void handle_mmio_write(struct mdev_state *mdev_state, u16 offset,
 	u16 reg16;
 
 	switch (offset) {
-	case 0x400 ... 0x41f: /* vga ioports remapped */
+	case 0x400 ... 0x41f:  
 		goto unhandled;
-	case 0x500 ... 0x515: /* bochs dispi interface */
+	case 0x500 ... 0x515:  
 		if (count != 2)
 			goto unhandled;
 		index = (offset - 0x500) / 2;
@@ -350,7 +331,7 @@ static void handle_mmio_write(struct mdev_state *mdev_state, u16 offset,
 		dev_dbg(dev, "%s: vbe write %d = %d (%s)\n",
 			__func__, index, reg16, vbe_name(index));
 		break;
-	case 0x600 ... 0x607: /* qemu extended regs */
+	case 0x600 ... 0x607:  
 		goto unhandled;
 	default:
 unhandled:
@@ -369,7 +350,7 @@ static void handle_mmio_read(struct mdev_state *mdev_state, u16 offset,
 	int index;
 
 	switch (offset) {
-	case 0x000 ... 0x3ff: /* edid block */
+	case 0x000 ... 0x3ff:  
 		edid = &mdev_state->edid_regs;
 		if (edid->link_state != VFIO_DEVICE_GFX_LINK_STATE_UP ||
 		    offset >= edid->edid_size) {
@@ -378,7 +359,7 @@ static void handle_mmio_read(struct mdev_state *mdev_state, u16 offset,
 		}
 		memcpy(buf, mdev_state->edid_blob + offset, count);
 		break;
-	case 0x500 ... 0x515: /* bochs dispi interface */
+	case 0x500 ... 0x515:  
 		if (count != 2)
 			goto unhandled;
 		index = (offset - 0x500) / 2;
@@ -416,7 +397,7 @@ static void handle_edid_regs(struct mdev_state *mdev_state, u16 offset,
 			memcpy(regs + offset, buf, count);
 			break;
 		default:
-			/* read-only regs */
+			 
 			break;
 		}
 	} else {
@@ -1313,7 +1294,7 @@ static void mbochs_close_device(struct vfio_device *vdev)
 	list_for_each_entry_safe(dmabuf, tmp, &mdev_state->dmabufs, next) {
 		list_del(&dmabuf->next);
 		if (dmabuf->buf) {
-			/* free in mbochs_release_dmabuf() */
+			 
 			dmabuf->unlinked = true;
 		} else {
 			kfree(dmabuf);
@@ -1400,7 +1381,7 @@ static const struct file_operations vd_fops = {
 
 static void mbochs_device_release(struct device *dev)
 {
-	/* nothing */
+	 
 }
 
 static int __init mbochs_dev_init(void)

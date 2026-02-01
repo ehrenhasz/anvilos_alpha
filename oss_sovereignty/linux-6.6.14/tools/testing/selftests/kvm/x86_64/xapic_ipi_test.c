@@ -1,26 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * xapic_ipi_test
- *
- * Copyright (C) 2020, Google LLC.
- *
- * This work is licensed under the terms of the GNU GPL, version 2.
- *
- * Test that when the APIC is in xAPIC mode, a vCPU can send an IPI to wake
- * another vCPU that is halted when KVM's backing page for the APIC access
- * address has been moved by mm.
- *
- * The test starts two vCPUs: one that sends IPIs and one that continually
- * executes HLT. The sender checks that the halter has woken from the HLT and
- * has reentered HLT before sending the next IPI. While the vCPUs are running,
- * the host continually calls migrate_pages to move all of the process' pages
- * amongst the available numa nodes on the machine.
- *
- * Migration is a command line option. When used on non-numa machines will 
- * exit with error. Test is still usefull on non-numa for testing IPIs.
- */
 
-#define _GNU_SOURCE /* for program_invocation_short_name */
+ 
+
+#define _GNU_SOURCE  
 #include <getopt.h>
 #include <pthread.h>
 #include <inttypes.h>
@@ -33,26 +14,19 @@
 #include "test_util.h"
 #include "vmx.h"
 
-/* Default running time for the test */
+ 
 #define DEFAULT_RUN_SECS 3
 
-/* Default delay between migrate_pages calls (microseconds) */
+ 
 #define DEFAULT_DELAY_USECS 500000
 
-/*
- * Vector for IPI from sender vCPU to halting vCPU.
- * Value is arbitrary and was chosen for the alternating bit pattern. Any
- * value should work.
- */
+ 
 #define IPI_VECTOR	 0xa5
 
-/*
- * Incremented in the IPI handler. Provides evidence to the sender that the IPI
- * arrived at the destination
- */
+ 
 static volatile uint64_t ipis_rcvd;
 
-/* Data struct shared between host main thread and vCPUs */
+ 
 struct test_data_page {
 	uint32_t halter_apic_id;
 	volatile uint64_t hlt_count;
@@ -65,19 +39,14 @@ struct test_data_page {
 	uint32_t halter_tpr;
 	uint32_t halter_ppr;
 
-	/*
-	 *  Record local version register as a cross-check that APIC access
-	 *  worked. Value should match what KVM reports (APIC_VERSION in
-	 *  arch/x86/kvm/lapic.c). If test is failing, check that values match
-	 *  to determine whether APIC access exits are working.
-	 */
+	 
 	uint32_t halter_lvr;
 };
 
 struct thread_params {
 	struct test_data_page *data;
 	struct kvm_vcpu *vcpu;
-	uint64_t *pipis_rcvd; /* host address of ipis_rcvd global */
+	uint64_t *pipis_rcvd;  
 };
 
 void verify_apic_base_addr(void)
@@ -96,14 +65,7 @@ static void halter_guest_code(struct test_data_page *data)
 	data->halter_apic_id = GET_APIC_ID_FIELD(xapic_read_reg(APIC_ID));
 	data->halter_lvr = xapic_read_reg(APIC_LVR);
 
-	/*
-	 * Loop forever HLTing and recording halts & wakes. Disable interrupts
-	 * each time around to minimize window between signaling the pending
-	 * halt to the sender vCPU and executing the halt. No need to disable on
-	 * first run as this vCPU executes first and the host waits for it to
-	 * signal going into first halt before starting the sender vCPU. Record
-	 * TPR and PPR for diagnostic purposes in case the test fails.
-	 */
+	 
 	for (;;) {
 		data->halter_tpr = xapic_read_reg(APIC_TASKPRI);
 		data->halter_ppr = xapic_read_reg(APIC_PROCPRI);
@@ -113,11 +75,7 @@ static void halter_guest_code(struct test_data_page *data)
 	}
 }
 
-/*
- * Runs on halter vCPU when IPI arrives. Write an arbitrary non-zero value to
- * enable diagnosing errant writes to the APIC access address backing page in
- * case of test failure.
- */
+ 
 static void guest_ipi_handler(struct ex_regs *regs)
 {
 	ipis_rcvd++;
@@ -136,17 +94,7 @@ static void sender_guest_code(struct test_data_page *data)
 	verify_apic_base_addr();
 	xapic_enable();
 
-	/*
-	 * Init interrupt command register for sending IPIs
-	 *
-	 * Delivery mode=fixed, per SDM:
-	 *   "Delivers the interrupt specified in the vector field to the target
-	 *    processor."
-	 *
-	 * Destination mode=physical i.e. specify target by its local APIC
-	 * ID. This vCPU assumes that the halter vCPU has already started and
-	 * set data->halter_apic_id.
-	 */
+	 
 	icr_val = (APIC_DEST_PHYSICAL | APIC_DM_FIXED | IPI_VECTOR);
 	icr2_val = SET_APIC_DEST_FIELD(data->halter_apic_id);
 	data->icr = icr_val;
@@ -156,23 +104,12 @@ static void sender_guest_code(struct test_data_page *data)
 	last_hlt_count = data->hlt_count;
 	last_ipis_rcvd_count = ipis_rcvd;
 	for (;;) {
-		/*
-		 * Send IPI to halter vCPU.
-		 * First IPI can be sent unconditionally because halter vCPU
-		 * starts earlier.
-		 */
+		 
 		xapic_write_reg(APIC_ICR2, icr2_val);
 		xapic_write_reg(APIC_ICR, icr_val);
 		data->ipis_sent++;
 
-		/*
-		 * Wait up to ~1 sec for halter to indicate that it has:
-		 * 1. Received the IPI
-		 * 2. Woken up from the halt
-		 * 3. Gone back into halt
-		 * Current CPUs typically run at 2.x Ghz which is ~2
-		 * billion ticks per second.
-		 */
+		 
 		tsc_start = rdtsc();
 		while (rdtsc() - tsc_start < 2000000000) {
 			if ((ipis_rcvd != last_ipis_rcvd_count) &&
@@ -267,7 +204,7 @@ void do_migrations(struct test_data_page *data, int run_secs, int delay_usecs,
 	fprintf(stderr, "Calling migrate_pages every %d microseconds\n",
 		delay_usecs);
 
-	/* Get set of first 64 numa nodes available */
+	 
 	r = get_mempolicy(NULL, &nodemask, sizeof(nodemask) * 8,
 			  0, MPOL_F_MEMS_ALLOWED);
 	TEST_ASSERT(r == 0, "get_mempolicy failed errno=%d", errno);
@@ -276,10 +213,7 @@ void do_migrations(struct test_data_page *data, int run_secs, int delay_usecs,
 		"(each 1-bit indicates node is present): %#lx\n",
 		sizeof(nodemask) * 8, nodemask);
 
-	/* Init array of masks containing a single-bit in each, one for each
-	 * available node. migrate_pages called below requires specifying nodes
-	 * as bit masks.
-	 */
+	 
 	for (i = 0, bit = 1; i < sizeof(nodemask) * 8; i++, bit <<= 1) {
 		if (nodemask & bit) {
 			nodemasks[nodes] = nodemask & bit;
@@ -304,14 +238,7 @@ void do_migrations(struct test_data_page *data, int run_secs, int delay_usecs,
 	while ((int)(time(NULL) - start_time) < run_secs) {
 		data->migrations_attempted++;
 
-		/*
-		 * migrate_pages with PID=0 will migrate all pages of this
-		 * process between the nodes specified as bitmasks. The page
-		 * backing the APIC access address belongs to this process
-		 * because it is allocated by KVM in the context of the
-		 * KVM_CREATE_VCPU ioctl. If that assumption ever changes this
-		 * test may break or give a false positive signal.
-		 */
+		 
 		pages_not_moved = migrate_pages(0, sizeof(nodemasks[from]),
 						&nodemasks[from],
 						&nodemasks[to]);
@@ -431,7 +358,7 @@ int main(int argc, char *argv[])
 	params[0].pipis_rcvd = pipis_rcvd;
 	params[1].pipis_rcvd = pipis_rcvd;
 
-	/* Start halter vCPU thread and wait for it to execute first HLT. */
+	 
 	r = pthread_create(&threads[0], NULL, vcpu_thread, &params[0]);
 	TEST_ASSERT(r == 0,
 		    "pthread_create halter failed errno=%d", errno);
@@ -463,9 +390,7 @@ int main(int argc, char *argv[])
 	else
 		do_migrations(data, run_secs, delay_usecs, pipis_rcvd);
 
-	/*
-	 * Cancel threads and wait for them to stop.
-	 */
+	 
 	cancel_join_vcpu_thread(threads[0], params[0].vcpu);
 	cancel_join_vcpu_thread(threads[1], params[1].vcpu);
 

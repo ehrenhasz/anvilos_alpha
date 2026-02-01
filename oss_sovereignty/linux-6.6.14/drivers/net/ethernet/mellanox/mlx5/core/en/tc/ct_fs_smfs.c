@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. */
+
+ 
 
 #include <linux/refcount.h>
 
@@ -33,7 +33,7 @@ struct mlx5_ct_fs_smfs {
 	struct mlx5_ct_fs_smfs_matchers matchers_nat;
 	struct mlx5dr_action *fwd_action;
 	struct mlx5_flow_table *ct_nat;
-	struct mutex lock; /* Guards matchers */
+	struct mutex lock;  
 };
 
 struct mlx5_ct_fs_smfs_rule {
@@ -127,13 +127,11 @@ mlx5_ct_fs_smfs_matcher_get(struct mlx5_ct_fs *fs, bool nat, bool ipv4, bool tcp
 
 	mutex_lock(&fs_smfs->lock);
 
-	/* Retry with lock, as another thread might have already created the relevant matcher
-	 * till we acquired the lock
-	 */
+	 
 	if (refcount_inc_not_zero(&smfs_matcher->ref))
 		goto out_unlock;
 
-	// Find next available priority in sorted used list
+	
 	prio = 0;
 	prev = &matchers->used;
 	list_for_each_entry(m, &matchers->used, list) {

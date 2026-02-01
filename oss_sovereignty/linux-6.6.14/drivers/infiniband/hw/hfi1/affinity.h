@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2015 - 2020 Intel Corporation.
- */
+ 
+ 
 
 #ifndef _HFI1_AFFINITY_H
 #define _HFI1_AFFINITY_H
@@ -16,7 +14,7 @@ enum irq_type {
 	IRQ_OTHER
 };
 
-/* Can be used for both memory and cpu */
+ 
 enum affinity_flags {
 	AFF_AUTO,
 	AFF_NUMA_LOCAL,
@@ -32,28 +30,19 @@ struct cpu_mask_set {
 
 struct hfi1_msix_entry;
 
-/* Initialize non-HT cpu cores mask */
+ 
 void init_real_cpu_mask(void);
-/* Initialize driver affinity data */
+ 
 int hfi1_dev_affinity_init(struct hfi1_devdata *dd);
-/*
- * Set IRQ affinity to a CPU. The function will determine the
- * CPU and set the affinity to it.
- */
+ 
 int hfi1_get_irq_affinity(struct hfi1_devdata *dd,
 			  struct hfi1_msix_entry *msix);
-/*
- * Remove the IRQ's CPU affinity. This function also updates
- * any internal CPU tracking data
- */
+ 
 void hfi1_put_irq_affinity(struct hfi1_devdata *dd,
 			   struct hfi1_msix_entry *msix);
-/*
- * Determine a CPU affinity for a user process, if the process does not
- * have an affinity set yet.
- */
+ 
 int hfi1_get_proc_affinity(int node);
-/* Release a CPU used by a user process. */
+ 
 void hfi1_put_proc_affinity(int cpu);
 
 struct hfi1_affinity_node {
@@ -74,7 +63,7 @@ struct hfi1_affinity_node_list {
 	int num_possible_nodes;
 	int num_online_nodes;
 	int num_online_cpus;
-	struct mutex lock; /* protects affinity nodes */
+	struct mutex lock;  
 };
 
 int node_affinity_init(void);
@@ -85,4 +74,4 @@ int hfi1_comp_vect_mappings_lookup(struct rvt_dev_info *rdi, int comp_vect);
 int hfi1_comp_vectors_set_up(struct hfi1_devdata *dd);
 void hfi1_comp_vectors_clean_up(struct hfi1_devdata *dd);
 
-#endif /* _HFI1_AFFINITY_H */
+#endif  

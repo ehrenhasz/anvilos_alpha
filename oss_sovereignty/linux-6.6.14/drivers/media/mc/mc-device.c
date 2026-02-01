@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Media device
- *
- * Copyright (C) 2010 Nokia Corporation
- *
- * Contacts: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- *	     Sakari Ailus <sakari.ailus@iki.fi>
- */
+
+ 
 
 #include <linux/compat.h>
 #include <linux/export.h>
@@ -26,19 +19,12 @@
 
 #ifdef CONFIG_MEDIA_CONTROLLER
 
-/*
- * Legacy defines from linux/media.h. This is the only place we need this
- * so we just define it here. The media.h header doesn't expose it to the
- * kernel to prevent it from being used by drivers, but here (and only here!)
- * we need it to handle the legacy behavior.
- */
+ 
 #define MEDIA_ENT_SUBTYPE_MASK			0x0000ffff
 #define MEDIA_ENT_T_DEVNODE_UNKNOWN		(MEDIA_ENT_F_OLD_BASE | \
 						 MEDIA_ENT_SUBTYPE_MASK)
 
-/* -----------------------------------------------------------------------------
- * Userspace API
- */
+ 
 
 static inline void __user *media_get_uptr(__u64 arg)
 {
@@ -110,23 +96,13 @@ static long media_device_enum_entities(struct media_device *mdev, void *arg)
 	if (ent->name)
 		strscpy(entd->name, ent->name, sizeof(entd->name));
 	entd->type = ent->function;
-	entd->revision = 0;		/* Unused */
+	entd->revision = 0;		 
 	entd->flags = ent->flags;
-	entd->group_id = 0;		/* Unused */
+	entd->group_id = 0;		 
 	entd->pads = ent->num_pads;
 	entd->links = ent->num_links - ent->num_backlinks;
 
-	/*
-	 * Workaround for a bug at media-ctl <= v1.10 that makes it to
-	 * do the wrong thing if the entity function doesn't belong to
-	 * either MEDIA_ENT_F_OLD_BASE or MEDIA_ENT_F_OLD_SUBDEV_BASE
-	 * Ranges.
-	 *
-	 * Non-subdevices are expected to be at the MEDIA_ENT_F_OLD_BASE,
-	 * or, otherwise, will be silently ignored by media-ctl when
-	 * printing the graphviz diagram. So, map them into the devnode
-	 * old range.
-	 */
+	 
 	if (ent->function < MEDIA_ENT_F_OLD_BASE ||
 	    ent->function > MEDIA_ENT_F_TUNER) {
 		if (is_media_entity_v4l2_subdev(ent))
@@ -177,7 +153,7 @@ static long media_device_enum_links(struct media_device *mdev, void *arg)
 		list_for_each_entry(link, &entity->links, list) {
 			struct media_link_desc klink_desc;
 
-			/* Ignore backlinks. */
+			 
 			if (link->source->entity != entity)
 				continue;
 			memset(&klink_desc, 0, sizeof(klink_desc));
@@ -204,8 +180,7 @@ static long media_device_setup_link(struct media_device *mdev, void *arg)
 	struct media_entity *source;
 	struct media_entity *sink;
 
-	/* Find the source and sink entities and link.
-	 */
+	 
 	source = find_entity(mdev, linkd->source.entity);
 	sink = find_entity(mdev, linkd->sink.entity);
 
@@ -223,7 +198,7 @@ static long media_device_setup_link(struct media_device *mdev, void *arg)
 
 	memset(linkd->reserved, 0, sizeof(linkd->reserved));
 
-	/* Setup the link on both entities. */
+	 
 	return __media_entity_setup_link(link, linkd->flags);
 }
 
@@ -243,7 +218,7 @@ static long media_device_get_topology(struct media_device *mdev, void *arg)
 
 	topo->topology_version = mdev->topology_version;
 
-	/* Get entities and number of entities */
+	 
 	i = 0;
 	uentity = media_get_uptr(topo->ptr_entities);
 	media_device_for_each_entity(entity, mdev) {
@@ -256,7 +231,7 @@ static long media_device_get_topology(struct media_device *mdev, void *arg)
 			continue;
 		}
 
-		/* Copy fields to userspace struct if not error */
+		 
 		memset(&kentity, 0, sizeof(kentity));
 		kentity.id = entity->graph_obj.id;
 		kentity.function = entity->function;
@@ -271,7 +246,7 @@ static long media_device_get_topology(struct media_device *mdev, void *arg)
 	topo->num_entities = i;
 	topo->reserved1 = 0;
 
-	/* Get interfaces and number of interfaces */
+	 
 	i = 0;
 	uintf = media_get_uptr(topo->ptr_interfaces);
 	media_device_for_each_intf(intf, mdev) {
@@ -286,7 +261,7 @@ static long media_device_get_topology(struct media_device *mdev, void *arg)
 
 		memset(&kintf, 0, sizeof(kintf));
 
-		/* Copy intf fields to userspace struct */
+		 
 		kintf.id = intf->graph_obj.id;
 		kintf.intf_type = intf->type;
 		kintf.flags = intf->flags;
@@ -307,7 +282,7 @@ static long media_device_get_topology(struct media_device *mdev, void *arg)
 	topo->num_interfaces = i;
 	topo->reserved2 = 0;
 
-	/* Get pads and number of pads */
+	 
 	i = 0;
 	upad = media_get_uptr(topo->ptr_pads);
 	media_device_for_each_pad(pad, mdev) {
@@ -322,7 +297,7 @@ static long media_device_get_topology(struct media_device *mdev, void *arg)
 
 		memset(&kpad, 0, sizeof(kpad));
 
-		/* Copy pad fields to userspace struct */
+		 
 		kpad.id = pad->graph_obj.id;
 		kpad.entity_id = pad->entity->graph_obj.id;
 		kpad.flags = pad->flags;
@@ -335,7 +310,7 @@ static long media_device_get_topology(struct media_device *mdev, void *arg)
 	topo->num_pads = i;
 	topo->reserved3 = 0;
 
-	/* Get links and number of links */
+	 
 	i = 0;
 	ulink = media_get_uptr(topo->ptr_links);
 	media_device_for_each_link(link, mdev) {
@@ -354,7 +329,7 @@ static long media_device_get_topology(struct media_device *mdev, void *arg)
 
 		memset(&klink, 0, sizeof(klink));
 
-		/* Copy link fields to userspace struct */
+		 
 		klink.id = link->graph_obj.id;
 		klink.source_id = link->gobj0->id;
 		klink.sink_id = link->gobj1->id;
@@ -402,7 +377,7 @@ static long copy_arg_to_user(void __user *uarg, void *karg, unsigned int cmd)
 	return 0;
 }
 
-/* Do acquire the graph mutex */
+ 
 #define MEDIA_IOC_FL_GRAPH_MUTEX	BIT(0)
 
 #define MEDIA_IOC_ARG(__cmd, func, fl, from_user, to_user)		\
@@ -417,7 +392,7 @@ static long copy_arg_to_user(void __user *uarg, void *karg, unsigned int cmd)
 #define MEDIA_IOC(__cmd, func, fl)					\
 	MEDIA_IOC_ARG(__cmd, func, fl, copy_arg_from_user, copy_arg_to_user)
 
-/* the table is indexed by _IOC_NR(cmd) */
+ 
 struct media_ioctl_info {
 	unsigned int cmd;
 	unsigned short flags;
@@ -485,8 +460,8 @@ out_free:
 
 struct media_links_enum32 {
 	__u32 entity;
-	compat_uptr_t pads; /* struct media_pad_desc * */
-	compat_uptr_t links; /* struct media_link_desc * */
+	compat_uptr_t pads;  
+	compat_uptr_t links;  
 	__u32 reserved[4];
 };
 
@@ -540,7 +515,7 @@ static long media_device_compat_ioctl(struct file *filp, unsigned int cmd,
 
 	return ret;
 }
-#endif /* CONFIG_COMPAT */
+#endif  
 
 static const struct media_file_operations media_device_fops = {
 	.owner = THIS_MODULE,
@@ -548,13 +523,11 @@ static const struct media_file_operations media_device_fops = {
 	.ioctl = media_device_ioctl,
 #ifdef CONFIG_COMPAT
 	.compat_ioctl = media_device_compat_ioctl,
-#endif /* CONFIG_COMPAT */
+#endif  
 	.release = media_device_close,
 };
 
-/* -----------------------------------------------------------------------------
- * sysfs
- */
+ 
 
 static ssize_t model_show(struct device *cd,
 			  struct device_attribute *attr, char *buf)
@@ -567,9 +540,7 @@ static ssize_t model_show(struct device *cd,
 
 static DEVICE_ATTR_RO(model);
 
-/* -----------------------------------------------------------------------------
- * Registration/unregistration
- */
+ 
 
 static void media_device_release(struct media_devnode *devnode)
 {
@@ -585,7 +556,7 @@ static void __media_device_unregister_entity(struct media_entity *entity)
 
 	ida_free(&mdev->entity_internal_idx, entity->internal_idx);
 
-	/* Remove all interface links pointing to this entity */
+	 
 	list_for_each_entry(intf, &mdev->interfaces, graph_obj.list) {
 		list_for_each_entry_safe(link, tmp, &intf->links, list) {
 			if (link->entity == entity)
@@ -593,17 +564,17 @@ static void __media_device_unregister_entity(struct media_entity *entity)
 		}
 	}
 
-	/* Remove all data links that belong to this entity */
+	 
 	__media_entity_remove_links(entity);
 
-	/* Remove all pads that belong to this entity */
+	 
 	media_entity_for_each_pad(entity, iter)
 		media_gobj_destroy(&iter->graph_obj);
 
-	/* Remove the entity */
+	 
 	media_gobj_destroy(&entity->graph_obj);
 
-	/* invoke entity_notify callbacks to handle entity removal?? */
+	 
 }
 
 int __must_check media_device_register_entity(struct media_device *mdev,
@@ -619,7 +590,7 @@ int __must_check media_device_register_entity(struct media_device *mdev,
 			 "Entity type for entity %s was not initialized!\n",
 			 entity->name);
 
-	/* Warn if we apparently re-register an entity */
+	 
 	WARN_ON(entity->graph_obj.mdev != NULL);
 	entity->graph_obj.mdev = mdev;
 	INIT_LIST_HEAD(&entity->links);
@@ -635,14 +606,14 @@ int __must_check media_device_register_entity(struct media_device *mdev,
 	mdev->entity_internal_idx_max =
 		max(mdev->entity_internal_idx_max, entity->internal_idx);
 
-	/* Initialize media_gobj embedded at the entity */
+	 
 	media_gobj_create(mdev, MEDIA_GRAPH_ENTITY, &entity->graph_obj);
 
-	/* Initialize objects at the pads */
+	 
 	media_entity_for_each_pad(entity, iter)
 		media_gobj_create(mdev, MEDIA_GRAPH_PAD, &iter->graph_obj);
 
-	/* invoke entity_notify callbacks */
+	 
 	list_for_each_entry_safe(notify, next, &mdev->entity_notify, list)
 		notify->notify(entity, notify->notify_data);
 
@@ -650,11 +621,7 @@ int __must_check media_device_register_entity(struct media_device *mdev,
 	    >= mdev->pm_count_walk.ent_enum.idx_max) {
 		struct media_graph new = { .top = 0 };
 
-		/*
-		 * Initialise the new graph walk before cleaning up
-		 * the old one in order not to spoil the graph walk
-		 * object of the media device if graph walk init fails.
-		 */
+		 
 		ret = media_graph_walk_init(&new, mdev);
 		if (ret) {
 			__media_device_unregister_entity(entity);
@@ -725,25 +692,25 @@ int __must_check __media_device_register(struct media_device *mdev,
 	if (!devnode)
 		return -ENOMEM;
 
-	/* Register the device node. */
+	 
 	mdev->devnode = devnode;
 	devnode->fops = &media_device_fops;
 	devnode->parent = mdev->dev;
 	devnode->release = media_device_release;
 
-	/* Set version 0 to indicate user-space that the graph is static */
+	 
 	mdev->topology_version = 0;
 
 	ret = media_devnode_register(mdev, devnode, owner);
 	if (ret < 0) {
-		/* devnode free is handled in media_devnode_*() */
+		 
 		mdev->devnode = NULL;
 		return ret;
 	}
 
 	ret = device_create_file(&devnode->dev, &dev_attr_model);
 	if (ret < 0) {
-		/* devnode free is handled in media_devnode_*() */
+		 
 		mdev->devnode = NULL;
 		media_devnode_unregister_prepare(devnode);
 		media_devnode_unregister(devnode);
@@ -765,9 +732,7 @@ void media_device_register_entity_notify(struct media_device *mdev,
 }
 EXPORT_SYMBOL_GPL(media_device_register_entity_notify);
 
-/*
- * Note: Should be called with mdev->lock held.
- */
+ 
 static void __media_device_unregister_entity_notify(struct media_device *mdev,
 					struct media_entity_notify *nptr)
 {
@@ -795,31 +760,27 @@ void media_device_unregister(struct media_device *mdev)
 
 	mutex_lock(&mdev->graph_mutex);
 
-	/* Check if mdev was ever registered at all */
+	 
 	if (!media_devnode_is_registered(mdev->devnode)) {
 		mutex_unlock(&mdev->graph_mutex);
 		return;
 	}
 
-	/* Clear the devnode register bit to avoid races with media dev open */
+	 
 	media_devnode_unregister_prepare(mdev->devnode);
 
-	/* Remove all entities from the media device */
+	 
 	list_for_each_entry_safe(entity, next, &mdev->entities, graph_obj.list)
 		__media_device_unregister_entity(entity);
 
-	/* Remove all entity_notify callbacks from the media device */
+	 
 	list_for_each_entry_safe(notify, nextp, &mdev->entity_notify, list)
 		__media_device_unregister_entity_notify(mdev, notify);
 
-	/* Remove all interfaces from the media device */
+	 
 	list_for_each_entry_safe(intf, tmp_intf, &mdev->interfaces,
 				 graph_obj.list) {
-		/*
-		 * Unlink the interface, but don't free it here; the
-		 * module which created it is responsible for freeing
-		 * it
-		 */
+		 
 		__media_remove_intf_links(intf);
 		media_gobj_destroy(&intf->graph_obj);
 	}
@@ -830,7 +791,7 @@ void media_device_unregister(struct media_device *mdev)
 
 	device_remove_file(&mdev->devnode->dev, &dev_attr_model);
 	media_devnode_unregister(mdev->devnode);
-	/* devnode free is handled in media_devnode_*() */
+	 
 	mdev->devnode = NULL;
 }
 EXPORT_SYMBOL_GPL(media_device_unregister);
@@ -886,4 +847,4 @@ EXPORT_SYMBOL_GPL(__media_device_usb_init);
 #endif
 
 
-#endif /* CONFIG_MEDIA_CONTROLLER */
+#endif  

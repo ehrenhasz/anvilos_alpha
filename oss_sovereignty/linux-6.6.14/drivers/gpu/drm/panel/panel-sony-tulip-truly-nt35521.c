@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, Linaro Limited
- *
- * Generated with linux-mdss-dsi-panel-driver-generator from vendor device tree:
- *   Copyright (c) 2013, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -523,7 +518,7 @@ static void truly_nt35521_remove(struct mipi_dsi_device *dsi)
 
 static const struct of_device_id truly_nt35521_of_match[] = {
 	{ .compatible = "sony,tulip-truly-nt35521" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, truly_nt35521_of_match);
 

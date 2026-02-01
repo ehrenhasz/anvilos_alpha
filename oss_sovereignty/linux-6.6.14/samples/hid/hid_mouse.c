@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2022 Benjamin Tissoires
- *
- * This is a pure HID-BPF example, and should be considered as such:
- * on the Etekcity Scroll 6E, the X and Y axes will be swapped and
- * inverted. On any other device... Not sure what this will do.
- *
- * This C main file is generic though. To adapt the code and test, users
- * must amend only the .bpf.c file, which this program will load any
- * eBPF program it finds.
- */
+
+ 
 
 #include <assert.h>
 #include <errno.h>
@@ -129,7 +120,7 @@ int main(int argc, char **argv)
 	}
 
 	bpf_object__for_each_program(prog, *skel->skeleton->obj) {
-		/* ignore syscalls */
+		 
 		if (bpf_program__get_type(prog) != BPF_PROG_TYPE_TRACING)
 			continue;
 

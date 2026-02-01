@@ -1,29 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  TUN - Universal TUN/TAP device driver.
- *  Copyright (C) 1999-2002 Maxim Krasnyansky <maxk@qualcomm.com>
- *
- *  $Id: tun.c,v 1.15 2002/03/01 02:44:24 maxk Exp $
- */
 
-/*
- *  Changes:
- *
- *  Mike Kershaw <dragorn@kismetwireless.net> 2005/08/14
- *    Add TUNSETLINK ioctl to set the link encapsulation
- *
- *  Mark Smith <markzzzsmith@yahoo.com.au>
- *    Use eth_random_addr() for tap MAC address.
- *
- *  Harald Roelle <harald.roelle@ifi.lmu.de>  2004/04/20
- *    Fixes in packet dropping, queue length setting and queue wakeup.
- *    Increased default tx queue length.
- *    Added ethtool API.
- *    Minor cleanups
- *
- *  Daniel Podlejski <underley@underley.eu.org>
- *    Modifications for 2.3.99-pre5 kernel.
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -86,13 +64,11 @@ static void tun_default_link_ksettings(struct net_device *dev,
 
 #define TUN_RX_PAD (NET_IP_ALIGN + NET_SKB_PAD)
 
-/* TUN device flags */
+ 
 
-/* IFF_ATTACH_QUEUE is never stored in device flags,
- * overload it to mean fasync when stored there.
- */
+ 
 #define TUN_FASYNC	IFF_ATTACH_QUEUE
-/* High bits in flags field are unused. */
+ 
 #define TUN_VNET_LE     0x80000000
 #define TUN_VNET_BE     0x40000000
 
@@ -103,35 +79,24 @@ static void tun_default_link_ksettings(struct net_device *dev,
 
 #define FLT_EXACT_COUNT 8
 struct tap_filter {
-	unsigned int    count;    /* Number of addrs. Zero means disabled */
-	u32             mask[2];  /* Mask of the hashed addrs */
+	unsigned int    count;     
+	u32             mask[2];   
 	unsigned char	addr[FLT_EXACT_COUNT][ETH_ALEN];
 };
 
-/* MAX_TAP_QUEUES 256 is chosen to allow rx/tx queues to be equal
- * to max number of VCPUs in guest. */
+ 
 #define MAX_TAP_QUEUES 256
 #define MAX_TAP_FLOWS  4096
 
 #define TUN_FLOW_EXPIRE (3 * HZ)
 
-/* A tun_file connects an open character device to a tuntap netdevice. It
- * also contains all socket related structures (except sock_fprog and tap_filter)
- * to serve as one transmit queue for tuntap device. The sock_fprog and
- * tap_filter were kept in tun_struct since they were used for filtering for the
- * netdevice not for a specific queue (at least I didn't see the requirement for
- * this).
- *
- * RCU usage:
- * The tun_file and tun_struct are loosely coupled, the pointer from one to the
- * other can only be read while rcu_read_lock or rtnl_lock is held.
- */
+ 
 struct tun_file {
 	struct sock sk;
 	struct socket socket;
 	struct tun_struct __rcu *tun;
 	struct fasync_struct *fasync;
-	/* only used for fasnyc */
+	 
 	unsigned int flags;
 	union {
 		u16 queue_index;
@@ -140,7 +105,7 @@ struct tun_file {
 	struct napi_struct napi;
 	bool napi_enabled;
 	bool napi_frags_enabled;
-	struct mutex napi_mutex;	/* Protects access to the above napi */
+	struct mutex napi_mutex;	 
 	struct list_head next;
 	struct tun_struct *detached;
 	struct ptr_ring tx_ring;
@@ -171,10 +136,7 @@ struct tun_prog {
 	struct bpf_prog *prog;
 };
 
-/* Since the socket were moved to tun_file, to preserve the behavior of persist
- * device, socket filter, sndbuf and vnet header size were restore when the
- * file were attached to a persist device.
- */
+ 
 struct tun_struct {
 	struct tun_file __rcu	*tfiles[MAX_TAP_QUEUES];
 	unsigned int            numqueues;
@@ -192,7 +154,7 @@ struct tun_struct {
 	int			sndbuf;
 	struct tap_filter	txflt;
 	struct sock_fprog	fprog;
-	/* protected by rtnl lock */
+	 
 	bool			filter_attached;
 	u32			msg_enable;
 	spinlock_t lock;
@@ -209,7 +171,7 @@ struct tun_struct {
 	struct tun_prog __rcu *steering_prog;
 	struct tun_prog __rcu *filter_prog;
 	struct ethtool_link_ksettings link_ksettings;
-	/* init args */
+	 
 	struct file *file;
 	struct ifreq *ifr;
 };
@@ -342,7 +304,7 @@ static long tun_set_vnet_be(struct tun_struct *tun, int __user *argp)
 {
 	return -EINVAL;
 }
-#endif /* CONFIG_TUN_VNET_CROSS_LE */
+#endif  
 
 static inline bool tun_is_little_endian(struct tun_struct *tun)
 {
@@ -484,7 +446,7 @@ static void tun_flow_update(struct tun_struct *tun, u32 rxhash,
 
 	e = tun_flow_find(head, rxhash);
 	if (likely(e)) {
-		/* TODO: keep queueing to old queue until it's empty? */
+		 
 		if (READ_ONCE(e->queue_index) != queue_index)
 			WRITE_ONCE(e->queue_index, queue_index);
 		if (e->updated != jiffies)
@@ -505,21 +467,14 @@ static void tun_flow_update(struct tun_struct *tun, u32 rxhash,
 	rcu_read_unlock();
 }
 
-/* Save the hash received in the stack receive path and update the
- * flow_hash table accordingly.
- */
+ 
 static inline void tun_flow_save_rps_rxhash(struct tun_flow_entry *e, u32 hash)
 {
 	if (unlikely(e->rps_rxhash != hash))
 		e->rps_rxhash = hash;
 }
 
-/* We try to identify a flow through its rxhash. The reason that
- * we do not check rxq no. is because some cards(e.g 82599), chooses
- * the rxq based on the txq where the last packet of the flow comes. As
- * the userspace application move between processors, we may get a
- * different rxq no. here.
- */
+ 
 static u16 tun_automq_select_queue(struct tun_struct *tun, struct sk_buff *skb)
 {
 	struct tun_flow_entry *e;
@@ -534,7 +489,7 @@ static u16 tun_automq_select_queue(struct tun_struct *tun, struct sk_buff *skb)
 		tun_flow_save_rps_rxhash(e, txq);
 		txq = e->queue_index;
 	} else {
-		/* use multiply and shift instead of expensive divide */
+		 
 		txq = ((u64)txq * numqueues) >> 32;
 	}
 
@@ -667,7 +622,7 @@ static void __tun_detach(struct tun_file *tfile, bool clean)
 
 		synchronize_net();
 		tun_flow_delete_by_queue(tun, tun->numqueues + 1);
-		/* Drop read queue */
+		 
 		tun_queue_purge(tfile);
 		tun_set_real_num_queues(tun);
 	} else if (tfile->detached && clean) {
@@ -732,7 +687,7 @@ static void tun_detach_all(struct net_device *dev)
 	for (i = 0; i < n; i++) {
 		tfile = rtnl_dereference(tun->tfiles[i]);
 		tun_napi_del(tfile);
-		/* Drop read queue */
+		 
 		tun_queue_purge(tfile);
 		xdp_rxq_info_unreg(&tfile->xdp_rxq);
 		sock_put(&tfile->sk);
@@ -777,7 +732,7 @@ static int tun_attach(struct tun_struct *tun, struct file *file,
 
 	err = 0;
 
-	/* Re-attach the filter to persist device */
+	 
 	if (!skip_filter && (tun->filter_attached == true)) {
 		lock_sock(tfile->socket.sk);
 		err = sk_attach_filter(&tun->fprog, tfile->socket.sk);
@@ -797,13 +752,13 @@ static int tun_attach(struct tun_struct *tun, struct file *file,
 	tfile->socket.sk->sk_shutdown &= ~RCV_SHUTDOWN;
 
 	if (tfile->detached) {
-		/* Re-attach detached tfile, updating XDP queue_index */
+		 
 		WARN_ON(!xdp_rxq_info_is_reg(&tfile->xdp_rxq));
 
 		if (tfile->xdp_rxq.queue_index    != tfile->queue_index)
 			tfile->xdp_rxq.queue_index = tfile->queue_index;
 	} else {
-		/* Setup XDP RX-queue info, for new tfile getting attached */
+		 
 		err = xdp_rxq_info_reg(&tfile->xdp_rxq,
 				       tun->dev, tfile->queue_index, 0);
 		if (err < 0)
@@ -828,14 +783,9 @@ static int tun_attach(struct tun_struct *tun, struct file *file,
 	if (rtnl_dereference(tun->xdp_prog))
 		sock_set_flag(&tfile->sk, SOCK_XDP);
 
-	/* device is allowed to go away first, so no need to hold extra
-	 * refcnt.
-	 */
+	 
 
-	/* Publish tfile->tun and tun->tfiles only after we've fully
-	 * initialized tfile; otherwise we risk using half-initialized
-	 * object.
-	 */
+	 
 	if (publish_tun)
 		rcu_assign_pointer(tfile->tun, tun);
 	rcu_assign_pointer(tun->tfiles[tun->numqueues], tfile);
@@ -863,7 +813,7 @@ static void tun_put(struct tun_struct *tun)
 	dev_put(tun->dev);
 }
 
-/* TAP filtering */
+ 
 static void addr_hash_set(u32 *mask, const u8 *addr)
 {
 	int n = ether_crc(ETH_ALEN, addr) >> 26;
@@ -886,7 +836,7 @@ static int update_filter(struct tap_filter *filter, void __user *arg)
 		return -EFAULT;
 
 	if (!uf.count) {
-		/* Disabled */
+		 
 		filter->count = 0;
 		return 0;
 	}
@@ -896,69 +846,61 @@ static int update_filter(struct tap_filter *filter, void __user *arg)
 	if (IS_ERR(addr))
 		return PTR_ERR(addr);
 
-	/* The filter is updated without holding any locks. Which is
-	 * perfectly safe. We disable it first and in the worst
-	 * case we'll accept a few undesired packets. */
+	 
 	filter->count = 0;
 	wmb();
 
-	/* Use first set of addresses as an exact filter */
+	 
 	for (n = 0; n < uf.count && n < FLT_EXACT_COUNT; n++)
 		memcpy(filter->addr[n], addr[n].u, ETH_ALEN);
 
 	nexact = n;
 
-	/* Remaining multicast addresses are hashed,
-	 * unicast will leave the filter disabled. */
+	 
 	memset(filter->mask, 0, sizeof(filter->mask));
 	for (; n < uf.count; n++) {
 		if (!is_multicast_ether_addr(addr[n].u)) {
-			err = 0; /* no filter */
+			err = 0;  
 			goto free_addr;
 		}
 		addr_hash_set(filter->mask, addr[n].u);
 	}
 
-	/* For ALLMULTI just set the mask to all ones.
-	 * This overrides the mask populated above. */
+	 
 	if ((uf.flags & TUN_FLT_ALLMULTI))
 		memset(filter->mask, ~0, sizeof(filter->mask));
 
-	/* Now enable the filter */
+	 
 	wmb();
 	filter->count = nexact;
 
-	/* Return the number of exact filters */
+	 
 	err = nexact;
 free_addr:
 	kfree(addr);
 	return err;
 }
 
-/* Returns: 0 - drop, !=0 - accept */
+ 
 static int run_filter(struct tap_filter *filter, const struct sk_buff *skb)
 {
-	/* Cannot use eth_hdr(skb) here because skb_mac_hdr() is incorrect
-	 * at this point. */
+	 
 	struct ethhdr *eh = (struct ethhdr *) skb->data;
 	int i;
 
-	/* Exact match */
+	 
 	for (i = 0; i < filter->count; i++)
 		if (ether_addr_equal(eh->h_dest, filter->addr[i]))
 			return 1;
 
-	/* Inexact match (multicast only) */
+	 
 	if (is_multicast_ether_addr(eh->h_dest))
 		return addr_hash_test(filter->mask, eh->h_dest);
 
 	return 0;
 }
 
-/*
- * Checks whether the packet is accepted or not.
- * Returns: 0 - drop, !=0 - accept
- */
+ 
 static int check_filter(struct tap_filter *filter, const struct sk_buff *skb)
 {
 	if (!filter->count)
@@ -967,7 +909,7 @@ static int check_filter(struct tap_filter *filter, const struct sk_buff *skb)
 	return run_filter(filter, skb);
 }
 
-/* Network device part of the driver */
+ 
 
 static const struct ethtool_ops tun_ethtool_ops;
 
@@ -1014,13 +956,13 @@ static int tun_net_init(struct net_device *dev)
 	return 0;
 }
 
-/* Net device detach from fd. */
+ 
 static void tun_net_uninit(struct net_device *dev)
 {
 	tun_detach_all(dev);
 }
 
-/* Net device open. */
+ 
 static int tun_net_open(struct net_device *dev)
 {
 	netif_tx_start_all_queues(dev);
@@ -1028,21 +970,19 @@ static int tun_net_open(struct net_device *dev)
 	return 0;
 }
 
-/* Net device close. */
+ 
 static int tun_net_close(struct net_device *dev)
 {
 	netif_tx_stop_all_queues(dev);
 	return 0;
 }
 
-/* Net device start xmit */
+ 
 static void tun_automq_xmit(struct tun_struct *tun, struct sk_buff *skb)
 {
 #ifdef CONFIG_RPS
 	if (tun->numqueues == 1 && static_branch_unlikely(&rps_needed)) {
-		/* Select queue was not called for the skbuff, so we extract the
-		 * RPS hash and save it into the flow_table here.
-		 */
+		 
 		struct tun_flow_entry *e;
 		__u32 rxhash;
 
@@ -1066,7 +1006,7 @@ static unsigned int run_ebpf_filter(struct tun_struct *tun,
 	return len;
 }
 
-/* Net device start xmit */
+ 
 static netdev_tx_t tun_net_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct tun_struct *tun = netdev_priv(dev);
@@ -1079,7 +1019,7 @@ static netdev_tx_t tun_net_xmit(struct sk_buff *skb, struct net_device *dev)
 	rcu_read_lock();
 	tfile = rcu_dereference(tun->tfiles[txq]);
 
-	/* Drop packet if interface is not attached */
+	 
 	if (!tfile) {
 		drop_reason = SKB_DROP_REASON_DEV_READY;
 		goto drop;
@@ -1090,9 +1030,7 @@ static netdev_tx_t tun_net_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	netif_info(tun, tx_queued, tun->dev, "%s %d\n", __func__, skb->len);
 
-	/* Drop if the filter does not like it.
-	 * This is a noop if the filter is disabled.
-	 * Filter can be enabled only for the TAP devices. */
+	 
 	if (!check_filter(&tun->txflt, skb)) {
 		drop_reason = SKB_DROP_REASON_TAP_TXFILTER;
 		goto drop;
@@ -1122,9 +1060,7 @@ static netdev_tx_t tun_net_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	skb_tx_timestamp(skb);
 
-	/* Orphan the skb - required as we might hang on to it
-	 * for indefinite time.
-	 */
+	 
 	skb_orphan(skb);
 
 	nf_reset_ct(skb);
@@ -1134,11 +1070,11 @@ static netdev_tx_t tun_net_xmit(struct sk_buff *skb, struct net_device *dev)
 		goto drop;
 	}
 
-	/* NETIF_F_LLTX requires to do our own update of trans_start */
+	 
 	queue = netdev_get_tx_queue(dev, txq);
 	txq_trans_cond_update(queue);
 
-	/* Notify and wake up reader process */
+	 
 	if (tfile->flags & TUN_FASYNC)
 		kill_fasync(&tfile->fasync, SIGIO, POLL_IN);
 	tfile->socket.sk->sk_data_ready(tfile->socket.sk);
@@ -1156,11 +1092,7 @@ drop:
 
 static void tun_net_mclist(struct net_device *dev)
 {
-	/*
-	 * This callback is supposed to deal with mc filter in
-	 * _rx_ path and has nothing to do with the _tx_ path.
-	 * In rx path we always accept everything userspace gives us.
-	 */
+	 
 }
 
 static netdev_features_t tun_net_fix_features(struct net_device *dev,
@@ -1262,7 +1194,7 @@ static const struct net_device_ops tun_netdev_ops = {
 
 static void __tun_xdp_flush_tfile(struct tun_file *tfile)
 {
-	/* Notify and wake up reader process */
+	 
 	if (tfile->flags & TUN_FASYNC)
 		kill_fasync(&tfile->fasync, SIGIO, POLL_IN);
 	tfile->socket.sk->sk_data_ready(tfile->socket.sk);
@@ -1286,7 +1218,7 @@ resample:
 	numqueues = READ_ONCE(tun->numqueues);
 	if (!numqueues) {
 		rcu_read_unlock();
-		return -ENXIO; /* Caller will free/return all frames */
+		return -ENXIO;  
 	}
 
 	tfile = rcu_dereference(tun->tfiles[smp_processor_id() %
@@ -1297,9 +1229,7 @@ resample:
 	spin_lock(&tfile->tx_ring.producer_lock);
 	for (i = 0; i < n; i++) {
 		struct xdp_frame *xdp = frames[i];
-		/* Encode the XDP flag into lowest bit for consumer to differ
-		 * XDP buffer from sk_buff.
-		 */
+		 
 		void *frame = tun_xdp_to_ptr(xdp);
 
 		if (__ptr_ring_produce(&tfile->tx_ring, frame)) {
@@ -1372,7 +1302,7 @@ static void tun_flow_uninit(struct tun_struct *tun)
 #define MIN_MTU 68
 #define MAX_MTU 65535
 
-/* Initialize net device. */
+ 
 static void tun_net_initialize(struct net_device *dev)
 {
 	struct tun_struct *tun = netdev_priv(dev);
@@ -1382,26 +1312,26 @@ static void tun_net_initialize(struct net_device *dev)
 		dev->netdev_ops = &tun_netdev_ops;
 		dev->header_ops = &ip_tunnel_header_ops;
 
-		/* Point-to-Point TUN Device */
+		 
 		dev->hard_header_len = 0;
 		dev->addr_len = 0;
 		dev->mtu = 1500;
 
-		/* Zero header length */
+		 
 		dev->type = ARPHRD_NONE;
 		dev->flags = IFF_POINTOPOINT | IFF_NOARP | IFF_MULTICAST;
 		break;
 
 	case IFF_TAP:
 		dev->netdev_ops = &tap_netdev_ops;
-		/* Ethernet TAP Device */
+		 
 		ether_setup(dev);
 		dev->priv_flags &= ~IFF_TX_SKB_SHARING;
 		dev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
 
 		eth_hw_addr_random(dev);
 
-		/* Currently tun does not support XDP, only tap does. */
+		 
 		dev->xdp_features = NETDEV_XDP_ACT_BASIC |
 				    NETDEV_XDP_ACT_REDIRECT |
 				    NETDEV_XDP_ACT_NDO_XMIT;
@@ -1420,9 +1350,9 @@ static bool tun_sock_writeable(struct tun_struct *tun, struct tun_file *tfile)
 	return (tun->dev->flags & IFF_UP) && sock_writeable(sk);
 }
 
-/* Character device part */
+ 
 
-/* Poll */
+ 
 static __poll_t tun_chr_poll(struct file *file, poll_table *wait)
 {
 	struct tun_file *tfile = file->private_data;
@@ -1440,11 +1370,7 @@ static __poll_t tun_chr_poll(struct file *file, poll_table *wait)
 	if (!ptr_ring_empty(&tfile->tx_ring))
 		mask |= EPOLLIN | EPOLLRDNORM;
 
-	/* Make sure SOCKWQ_ASYNC_NOSPACE is set if not writable to
-	 * guarantee EPOLLOUT to be raised by either here or
-	 * tun_sock_write_space(). Then process could get notification
-	 * after it writes to a down device and meets -EIO.
-	 */
+	 
 	if (tun_sock_writeable(tun, tfile) ||
 	    (!test_and_set_bit(SOCKWQ_ASYNC_NOSPACE, &sk->sk_socket->flags) &&
 	     tun_sock_writeable(tun, tfile)))
@@ -1507,13 +1433,12 @@ static struct sk_buff *tun_napi_alloc_frags(struct tun_file *tfile,
 
 	return skb;
 free:
-	/* frees skb and all frags allocated with napi_alloc_frag() */
+	 
 	napi_free_frags(&tfile->napi);
 	return ERR_PTR(err);
 }
 
-/* prepad is the amount to reserve at front.  len is length after that.
- * linear is a hint as to how much to copy (usually headers). */
+ 
 static struct sk_buff *tun_alloc_skb(struct tun_file *tfile,
 				     size_t prepad, size_t len,
 				     size_t linear, int noblock)
@@ -1522,7 +1447,7 @@ static struct sk_buff *tun_alloc_skb(struct tun_file *tfile,
 	struct sk_buff *skb;
 	int err;
 
-	/* Under a page?  Don't bother with paged skb. */
+	 
 	if (prepad + len < PAGE_SIZE)
 		linear = len;
 
@@ -1686,10 +1611,7 @@ static struct sk_buff *tun_build_skb(struct tun_struct *tun,
 	if (copied != len)
 		return ERR_PTR(-EFAULT);
 
-	/* There's a small window that XDP may be set after the check
-	 * of xdp_prog above, this should be rare and for simplicity
-	 * we do XDP on skb in case the headroom is not enough.
-	 */
+	 
 	if (hdr->gso_type || !xdp_prog) {
 		*skb_xdp = 1;
 		return __tun_build_skb(tfile, alloc_frag, buf, buflen, len,
@@ -1739,7 +1661,7 @@ out:
 	return NULL;
 }
 
-/* Get packet from user space buffer */
+ 
 static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
 			    void *msg_control, struct iov_iter *from,
 			    int noblock, bool more)
@@ -1798,10 +1720,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
 	if (msg_control) {
 		struct iov_iter i = *from;
 
-		/* There are 256 bytes to be copied in skb, so there is
-		 * enough room for skb expand head in case it is used.
-		 * The rest of the buffer is mapped from userspace.
-		 */
+		 
 		copylen = gso.hdr_len ? tun16_to_cpu(tun, gso.hdr_len) : GOODCOPY_LEN;
 		if (copylen > good_linear)
 			copylen = good_linear;
@@ -1812,10 +1731,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
 	}
 
 	if (!frags && tun_can_build_skb(tun, tfile, len, noblock, zerocopy)) {
-		/* For the packet that is not easy to be processed
-		 * (e.g gso or jumbo packet), we will do it at after
-		 * skb was created with generic XDP routine.
-		 */
+		 
 		skb = tun_build_skb(tun, tfile, from, &gso, len, &skb_xdp);
 		err = PTR_ERR_OR_ZERO(skb);
 		if (err)
@@ -1834,10 +1750,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
 		if (frags) {
 			mutex_lock(&tfile->napi_mutex);
 			skb = tun_napi_alloc_frags(tfile, copylen, from);
-			/* tun_napi_alloc_frags() enforces a layout for the skb.
-			 * If zerocopy is enabled, then this layout will be
-			 * overwritten by zerocopy_sg_from_iter().
-			 */
+			 
 			zerocopy = false;
 		} else {
 			if (!linear)
@@ -1901,7 +1814,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
 		break;
 	}
 
-	/* copy skb_ubuf_info for callback when skb has no error */
+	 
 	if (zerocopy) {
 		skb_zcopy_init(skb, msg_control);
 	} else if (msg_control) {
@@ -1932,10 +1845,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
 		local_bh_enable();
 	}
 
-	/* Compute the costly rx hash only if needed for flow updates.
-	 * We may get a very small possibility of OOO during switching, not
-	 * worth to optimize.
-	 */
+	 
 	if (!rcu_access_pointer(tun->steering_prog) && tun->numqueues > 1 &&
 	    !tfile->detached)
 		rxhash = __skb_get_hash_symmetric(skb);
@@ -1951,7 +1861,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
 	if (frags) {
 		u32 headlen;
 
-		/* Exercise flow dissector code path. */
+		 
 		skb_push(skb, ETH_HLEN);
 		headlen = eth_get_headlen(tun->dev, skb->data,
 					  skb_headlen(skb));
@@ -2081,7 +1991,7 @@ static ssize_t tun_put_user_xdp(struct tun_struct *tun,
 	return ret;
 }
 
-/* Put packet to the user space buffer */
+ 
 static ssize_t tun_put_user(struct tun_struct *tun,
 			    struct tun_file *tfile,
 			    struct sk_buff *skb,
@@ -2107,7 +2017,7 @@ static ssize_t tun_put_user(struct tun_struct *tun,
 
 		total += sizeof(pi);
 		if (iov_iter_count(iter) < total) {
-			/* Packet will be striped */
+			 
 			pi.flags |= TUN_PKT_STRIP;
 		}
 
@@ -2164,7 +2074,7 @@ static ssize_t tun_put_user(struct tun_struct *tun,
 	skb_copy_datagram_iter(skb, vlan_offset, iter, skb->len - vlan_offset);
 
 done:
-	/* caller is in process context, */
+	 
 	preempt_disable();
 	dev_sw_netstats_tx_add(tun->dev, 1, skb->len + vlan_hlen);
 	preempt_enable();
@@ -2226,7 +2136,7 @@ static ssize_t tun_do_read(struct tun_struct *tun, struct tun_file *tfile,
 	}
 
 	if (!ptr) {
-		/* Read frames from ring */
+		 
 		ptr = tun_ring_recv(tfile, noblock, &err);
 		if (!ptr)
 			return err;
@@ -2329,13 +2239,11 @@ static void tun_setup(struct net_device *dev)
 	dev->ethtool_ops = &tun_ethtool_ops;
 	dev->needs_free_netdev = true;
 	dev->priv_destructor = tun_free_netdev;
-	/* We prefer our own queue length */
+	 
 	dev->tx_queue_len = TUN_READQ_SIZE;
 }
 
-/* Trivial set of netlink ops to allow deleting tun or tap
- * device with netlink.
- */
+ 
 static int tun_validate(struct nlattr *tb[], struct nlattr *data[],
 			struct netlink_ext_ack *extack)
 {
@@ -2349,15 +2257,15 @@ static size_t tun_get_size(const struct net_device *dev)
 	BUILD_BUG_ON(sizeof(u32) != sizeof(uid_t));
 	BUILD_BUG_ON(sizeof(u32) != sizeof(gid_t));
 
-	return nla_total_size(sizeof(uid_t)) + /* OWNER */
-	       nla_total_size(sizeof(gid_t)) + /* GROUP */
-	       nla_total_size(sizeof(u8)) + /* TYPE */
-	       nla_total_size(sizeof(u8)) + /* PI */
-	       nla_total_size(sizeof(u8)) + /* VNET_HDR */
-	       nla_total_size(sizeof(u8)) + /* PERSIST */
-	       nla_total_size(sizeof(u8)) + /* MULTI_QUEUE */
-	       nla_total_size(sizeof(u32)) + /* NUM_QUEUES */
-	       nla_total_size(sizeof(u32)) + /* NUM_DISABLED_QUEUES */
+	return nla_total_size(sizeof(uid_t)) +  
+	       nla_total_size(sizeof(gid_t)) +  
+	       nla_total_size(sizeof(u8)) +  
+	       nla_total_size(sizeof(u8)) +  
+	       nla_total_size(sizeof(u8)) +  
+	       nla_total_size(sizeof(u8)) +  
+	       nla_total_size(sizeof(u8)) +  
+	       nla_total_size(sizeof(u32)) +  
+	       nla_total_size(sizeof(u32)) +  
 	       0;
 }
 
@@ -2540,9 +2448,7 @@ build:
 		ret = 0;
 	}
 
-	/* No need to disable preemption here since this function is
-	 * always called with bh disabled
-	 */
+	 
 	dev_sw_netstats_rx_add(tun->dev, datasize);
 
 	if (rxhash)
@@ -2672,7 +2578,7 @@ static int tun_peek_len(struct socket *sock)
 	return ret;
 }
 
-/* Ops structure to mimic raw sockets with tun */
+ 
 static const struct proto_ops tun_socket_ops = {
 	.peek_len = tun_peek_len,
 	.sendmsg = tun_sendmsg,
@@ -2780,9 +2686,7 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
 
 		if (tun->flags & IFF_MULTI_QUEUE &&
 		    (tun->numqueues + tun->numdisabled > 1)) {
-			/* One or more queue has already been attached, no need
-			 * to initialize the device again.
-			 */
+			 
 			netdev_state_change(dev);
 			return 0;
 		}
@@ -2803,13 +2707,13 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
 		if (err < 0)
 			return err;
 
-		/* Set dev type */
+		 
 		if (ifr->ifr_flags & IFF_TUN) {
-			/* TUN device */
+			 
 			flags |= IFF_TUN;
 			name = "tun%d";
 		} else if (ifr->ifr_flags & IFF_TAP) {
-			/* TAP device */
+			 
 			flags |= IFF_TAP;
 			name = "tap%d";
 		} else
@@ -2852,9 +2756,7 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
 			free_netdev(dev);
 			return err;
 		}
-		/* free_netdev() won't check refcnt, to avoid race
-		 * with dev_put() we need publish tun after registration.
-		 */
+		 
 		rcu_assign_pointer(tfile->tun, tun);
 	}
 
@@ -2863,9 +2765,7 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
 	else
 		netif_carrier_on(tun->dev);
 
-	/* Make sure persistent devices do not get stuck in
-	 * xoff state.
-	 */
+	 
 	if (netif_running(tun->dev))
 		netif_tx_wake_all_queues(tun->dev);
 
@@ -2881,8 +2781,7 @@ static void tun_get_iff(struct tun_struct *tun, struct ifreq *ifr)
 
 }
 
-/* This is like a cut-down ethtool ops, except done via tun fd so no
- * privs required. */
+ 
 static int set_offload(struct tun_struct *tun, unsigned long arg)
 {
 	netdev_features_t features = 0;
@@ -2905,15 +2804,14 @@ static int set_offload(struct tun_struct *tun, unsigned long arg)
 
 		arg &= ~TUN_F_UFO;
 
-		/* TODO: for now USO4 and USO6 should work simultaneously */
+		 
 		if (arg & TUN_F_USO4 && arg & TUN_F_USO6) {
 			features |= NETIF_F_GSO_UDP_L4;
 			arg &= ~(TUN_F_USO4 | TUN_F_USO6);
 		}
 	}
 
-	/* This gives the user a way to test for new features in future by
-	 * trying to set them. */
+	 
 	if (arg)
 		return -EINVAL;
 
@@ -3027,7 +2925,7 @@ static int tun_set_ebpf(struct tun_struct *tun, struct tun_prog __rcu **prog_p,
 	return __tun_set_ebpf(tun, prog_p, prog);
 }
 
-/* Return correct value for tun->dev->addr_len based on tun->dev->type. */
+ 
 static unsigned char tun_get_addr_len(unsigned short type)
 {
 	switch (type) {
@@ -3092,10 +2990,7 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
 		memset(&ifr, 0, sizeof(ifr));
 	}
 	if (cmd == TUNGETFEATURES) {
-		/* Currently this just means: "what IFF flags are valid?".
-		 * This is needed because we never checked for invalid flags on
-		 * TUNSETIFF.
-		 */
+		 
 		return put_user(IFF_TUN | IFF_TAP | IFF_NO_CARRIER |
 				TUN_FEATURES, (unsigned int __user*)argp);
 	} else if (cmd == TUNSETQUEUE) {
@@ -3163,17 +3058,15 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
 		break;
 
 	case TUNSETNOCSUM:
-		/* Disable/Enable checksum */
+		 
 
-		/* [unimplemented] */
+		 
 		netif_info(tun, drv, tun->dev, "ignored: set checksum %s\n",
 			   arg ? "disabled" : "enabled");
 		break;
 
 	case TUNSETPERSIST:
-		/* Disable/Enable persist mode. Keep an extra reference to the
-		 * module to prevent the module being unprobed.
-		 */
+		 
 		if (arg && !(tun->flags & IFF_PERSIST)) {
 			tun->flags |= IFF_PERSIST;
 			__module_get(THIS_MODULE);
@@ -3190,7 +3083,7 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
 		break;
 
 	case TUNSETOWNER:
-		/* Set owner of the device */
+		 
 		owner = make_kuid(current_user_ns(), arg);
 		if (!uid_valid(owner)) {
 			ret = -EINVAL;
@@ -3203,7 +3096,7 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
 		break;
 
 	case TUNSETGROUP:
-		/* Set group of the device */
+		 
 		group = make_kgid(current_user_ns(), arg);
 		if (!gid_valid(group)) {
 			ret = -EINVAL;
@@ -3216,7 +3109,7 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
 		break;
 
 	case TUNSETLINK:
-		/* Only allow setting the type when the interface is down */
+		 
 		if (tun->dev->flags & IFF_UP) {
 			netif_info(tun, drv, tun->dev,
 				   "Linktype set failed because interface is up\n");
@@ -3248,7 +3141,7 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
 		break;
 
 	case TUNSETTXFILTER:
-		/* Can be set only for TAPs */
+		 
 		ret = -EINVAL;
 		if ((tun->flags & TUN_TYPE_MASK) != IFF_TAP)
 			break;
@@ -3256,14 +3149,14 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
 		break;
 
 	case SIOCGIFHWADDR:
-		/* Get hw address */
+		 
 		dev_get_mac_address(&ifr.ifr_hwaddr, net, tun->dev->name);
 		if (copy_to_user(argp, &ifr, ifreq_len))
 			ret = -EFAULT;
 		break;
 
 	case SIOCSIFHWADDR:
-		/* Set hw address */
+		 
 		ret = dev_set_mac_address_user(tun->dev, &ifr.ifr_hwaddr, NULL);
 		break;
 
@@ -3332,7 +3225,7 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
 		break;
 
 	case TUNATTACHFILTER:
-		/* Can be set only for TAPs */
+		 
 		ret = -EINVAL;
 		if ((tun->flags & TUN_TYPE_MASK) != IFF_TAP)
 			break;
@@ -3344,7 +3237,7 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
 		break;
 
 	case TUNDETACHFILTER:
-		/* Can be set only for TAPs */
+		 
 		ret = -EINVAL;
 		if ((tun->flags & TUN_TYPE_MASK) != IFF_TAP)
 			break;
@@ -3425,15 +3318,10 @@ static long tun_chr_compat_ioctl(struct file *file,
 		break;
 	}
 
-	/*
-	 * compat_ifreq is shorter than ifreq, so we must not access beyond
-	 * the end of that structure. All fields that are used in this
-	 * driver are compatible though, we don't need to convert the
-	 * contents.
-	 */
+	 
 	return __tun_chr_ioctl(file, cmd, arg, sizeof(struct compat_ifreq));
 }
-#endif /* CONFIG_COMPAT */
+#endif  
 
 static int tun_chr_fasync(int fd, struct file *file, int on)
 {
@@ -3487,7 +3375,7 @@ static int tun_chr_open(struct inode *inode, struct file * file)
 
 	sock_set_flag(&tfile->sk, SOCK_ZEROCOPY);
 
-	/* tun groks IOCB_NOWAIT just fine, mark it as such */
+	 
 	file->f_mode |= FMODE_NOWAIT;
 	return 0;
 }
@@ -3548,7 +3436,7 @@ static struct miscdevice tun_miscdev = {
 	.fops = &tun_fops,
 };
 
-/* ethtool interface */
+ 
 
 static void tun_default_link_ksettings(struct net_device *dev,
 				       struct ethtool_link_ksettings *cmd)
@@ -3753,10 +3641,7 @@ static void __exit tun_cleanup(void)
 	unregister_netdevice_notifier(&tun_notifier_block);
 }
 
-/* Get an underlying socket object from tun file.  Returns error unless file is
- * attached to a device.  The returned object works like a packet socket, it
- * can be used for sock_sendmsg/sock_recvmsg.  The caller is responsible for
- * holding a reference to the file for as long as the socket is in use. */
+ 
 struct socket *tun_get_socket(struct file *file)
 {
 	struct tun_file *tfile;

@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2016 Facebook
- */
+
+ 
 #include <linux/unistd.h>
 #include <linux/bpf.h>
 
@@ -34,7 +33,7 @@ int main(int argc, char **argv)
 
 	while ((opt = getopt(argc, argv, "F:U:v:")) != -1) {
 		switch (opt) {
-		/* General args */
+		 
 		case 'F':
 			pinned_file = optarg;
 			break;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 Maxime Ripard
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -62,10 +59,7 @@ static int ccu_reset_status(struct reset_controller_dev *rcdev,
 	struct ccu_reset *ccu = rcdev_to_ccu_reset(rcdev);
 	const struct ccu_reset_map *map = &ccu->reset_map[id];
 
-	/*
-	 * The reset control API expects 0 if reset is not asserted,
-	 * which is the opposite of what our hardware uses.
-	 */
+	 
 	return !(map->bit & readl(ccu->base + map->reg));
 }
 

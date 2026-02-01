@@ -1,43 +1,4 @@
-/*
- * Copyright (c) 2013, Cisco Systems, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Author: Upinder Malhi <umalhi@cisco.com>
- * Author: Anant Deepak <anadeepa@cisco.com>
- * Author: Cesare Cantu' <cantuc@cisco.com>
- * Author: Jeff Squyres <jsquyres@cisco.com>
- * Author: Kiran Thirumalai <kithirum@cisco.com>
- * Author: Xuyang Wang <xuywang@cisco.com>
- * Author: Reese Faucette <rfaucett@cisco.com>
- *
- */
+ 
 
 #include <linux/module.h>
 #include <linux/inetdevice.h>
@@ -72,13 +33,13 @@ static const char usnic_version[] =
 static DEFINE_MUTEX(usnic_ib_ibdev_list_lock);
 static LIST_HEAD(usnic_ib_ibdev_list);
 
-/* Callback dump funcs */
+ 
 static int usnic_ib_dump_vf_hdr(void *obj, char *buf, int buf_sz)
 {
 	struct usnic_ib_vf *vf = obj;
 	return scnprintf(buf, buf_sz, "PF: %s ", dev_name(&vf->pf->ib_dev.dev));
 }
-/* End callback dump funcs */
+ 
 
 static void usnic_ib_dump_vf(struct usnic_ib_vf *vf, char *buf, int buf_sz)
 {
@@ -100,7 +61,7 @@ void usnic_ib_log_vf(struct usnic_ib_vf *vf)
 	kfree(buf);
 }
 
-/* Start of netdev section */
+ 
 static void usnic_ib_qp_grp_modify_active_to_err(struct usnic_ib_dev *us_ibdev)
 {
 	struct usnic_ib_ucontext *ctx;
@@ -239,9 +200,9 @@ static int usnic_ib_netdevice_event(struct notifier_block *notifier,
 static struct notifier_block usnic_ib_netdevice_notifier = {
 	.notifier_call = usnic_ib_netdevice_event
 };
-/* End of netdev section */
+ 
 
-/* Start of inet section */
+ 
 static int usnic_ib_handle_inet_event(struct usnic_ib_dev *us_ibdev,
 					unsigned long event, void *ptr)
 {
@@ -301,7 +262,7 @@ static int usnic_ib_inetaddr_event(struct notifier_block *notifier,
 static struct notifier_block usnic_ib_inetaddr_notifier = {
 	.notifier_call = usnic_ib_inetaddr_event
 };
-/* End of inet section*/
+ 
 
 static int usnic_port_immutable(struct ib_device *ibdev, u32 port_num,
 			        struct ib_port_immutable *immutable)
@@ -364,7 +325,7 @@ static const struct ib_device_ops usnic_dev_ops = {
 	INIT_RDMA_OBJ_SIZE(ib_ucontext, usnic_ib_ucontext, ibucontext),
 };
 
-/* Start of PF discovery section */
+ 
 static void *usnic_ib_device_add(struct pci_dev *dev)
 {
 	struct usnic_ib_dev *us_ibdev;
@@ -517,9 +478,9 @@ out:
 	mutex_unlock(&usnic_ib_ibdev_list_lock);
 	return us_ibdev;
 }
-/* End of PF discovery section */
+ 
 
-/* Start of PCI section */
+ 
 
 static const struct pci_device_id usnic_ib_pci_ids[] = {
 	{PCI_DEVICE(PCI_VENDOR_ID_CISCO, PCI_DEVICE_ID_CISCO_VIC_USPACE_NIC)},
@@ -580,10 +541,7 @@ static int usnic_ib_pci_probe(struct pci_dev *pdev,
 	mutex_init(&vf->lock);
 	mutex_lock(&pf->usdev_lock);
 	list_add_tail(&vf->link, &pf->vf_dev_list);
-	/*
-	 * Save max settings (will be same for each VF, easier to re-write than
-	 * to say "if (!set) { set_values(); set=1; }
-	 */
+	 
 	for (res_type = USNIC_VNIC_RES_TYPE_EOL+1;
 			res_type < USNIC_VNIC_RES_TYPE_MAX;
 			res_type++) {
@@ -629,16 +587,16 @@ static void usnic_ib_pci_remove(struct pci_dev *pdev)
 	usnic_info("Removed VF %s\n", pci_name(pdev));
 }
 
-/* PCI driver entry points */
+ 
 static struct pci_driver usnic_ib_pci_driver = {
 	.name = DRV_NAME,
 	.id_table = usnic_ib_pci_ids,
 	.probe = usnic_ib_pci_probe,
 	.remove = usnic_ib_pci_remove,
 };
-/* End of PCI section */
+ 
 
-/* Start of module section */
+ 
 static int __init usnic_ib_init(void)
 {
 	int err;
@@ -705,4 +663,4 @@ MODULE_DEVICE_TABLE(pci, usnic_ib_pci_ids);
 
 module_init(usnic_ib_init);
 module_exit(usnic_ib_destroy);
-/* End of module section */
+ 

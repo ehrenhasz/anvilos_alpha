@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Hantro VPU codec driver
- *
- * Copyright (C) 2018 Rockchip Electronics Co., Ltd.
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/bitfield.h>
@@ -109,11 +105,11 @@ rockchip_vpu2_mpeg2_dec_set_buffers(struct hantro_dev *vpu,
 		forward_addr = hantro_get_ref(ctx, pic->forward_ref_ts);
 	}
 
-	/* Source bitstream buffer */
+	 
 	addr = vb2_dma_contig_plane_dma_addr(src_buf, 0);
 	vdpu_write_relaxed(vpu, addr, VDPU_REG_RLC_VLC_BASE);
 
-	/* Destination frame buffer */
+	 
 	addr = vb2_dma_contig_plane_dma_addr(dst_buf, 0);
 	current_addr = addr;
 
@@ -126,7 +122,7 @@ rockchip_vpu2_mpeg2_dec_set_buffers(struct hantro_dev *vpu,
 	if (!backward_addr)
 		backward_addr = current_addr;
 
-	/* Set forward ref frame (top/bottom field) */
+	 
 	if (pic->picture_structure == V4L2_MPEG2_PIC_FRAME ||
 	    pic->picture_coding_type == V4L2_MPEG2_PIC_CODING_TYPE_B ||
 	    (pic->picture_structure == V4L2_MPEG2_PIC_TOP_FIELD &&
@@ -143,7 +139,7 @@ rockchip_vpu2_mpeg2_dec_set_buffers(struct hantro_dev *vpu,
 		vdpu_write_relaxed(vpu, forward_addr, VDPU_REG_REFER1_BASE);
 	}
 
-	/* Set backward ref frame (top/bottom field) */
+	 
 	vdpu_write_relaxed(vpu, backward_addr, VDPU_REG_REFER2_BASE);
 	vdpu_write_relaxed(vpu, backward_addr, VDPU_REG_REFER3_BASE);
 }
@@ -238,7 +234,7 @@ int rockchip_vpu2_mpeg2_dec_run(struct hantro_ctx *ctx)
 	rockchip_vpu2_mpeg2_dec_set_buffers(vpu, ctx, &src_buf->vb2_buf,
 					    &dst_buf->vb2_buf, seq, pic);
 
-	/* Kick the watchdog and start decoding */
+	 
 	hantro_end_prepare_run(ctx);
 
 	reg = vdpu_read(vpu, VDPU_SWREG(57)) | VDPU_REG_DEC_E(1);

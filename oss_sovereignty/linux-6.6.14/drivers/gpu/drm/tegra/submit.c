@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2020 NVIDIA Corporation */
+
+ 
 
 #include <linux/dma-fence-array.h>
 #include <linux/dma-mapping.h>
@@ -228,7 +228,7 @@ static int submit_copy_gather_data(struct gather_bo **pbo, struct device *dev,
 static int submit_write_reloc(struct tegra_drm_context *context, struct gather_bo *bo,
 			      struct drm_tegra_submit_buf *buf, struct tegra_drm_mapping *mapping)
 {
-	/* TODO check that target_offset is within bounds */
+	 
 	dma_addr_t iova = mapping->iova + buf->reloc.target_offset;
 	u32 written_ptr;
 
@@ -334,7 +334,7 @@ static int submit_get_syncpt(struct tegra_drm_context *context, struct host1x_jo
 		return -EINVAL;
 	}
 
-	/* Syncpt ref will be dropped on job release */
+	 
 	sp = xa_load(syncpoints, args->syncpt.id);
 	if (!sp) {
 		SUBMIT_ERR(context, "syncpoint specified in syncpt was not allocated");
@@ -360,7 +360,7 @@ static int submit_job_add_gather(struct host1x_job *job, struct tegra_drm_contex
 		return -EINVAL;
 	}
 
-	/* Check for maximum gather size */
+	 
 	if (cmd->words > 16383) {
 		SUBMIT_ERR(context, "too many words in GATHER_UPTR command");
 		return -EINVAL;
@@ -399,7 +399,7 @@ submit_create_job(struct tegra_drm_context *context, struct gather_bo *bo,
 	struct host1x_job *job;
 	int err;
 
-	/* Set initial class for firewall. */
+	 
 	class = context->client->base.class;
 
 	cmds = alloc_copy_user_array(u64_to_user_ptr(args->cmds_ptr), args->num_cmds,
@@ -555,7 +555,7 @@ int tegra_drm_ioctl_channel_submit(struct drm_device *drm, void *data,
 		}
 	}
 
-	/* Allocate gather BO and copy gather words in. */
+	 
 	err = submit_copy_gather_data(&bo, drm->dev, context, args);
 	if (err)
 		goto unlock;
@@ -567,19 +567,19 @@ int tegra_drm_ioctl_channel_submit(struct drm_device *drm, void *data,
 		goto put_bo;
 	}
 
-	/* Get data buffer mappings and do relocation patching. */
+	 
 	err = submit_process_bufs(context, bo, args, job_data);
 	if (err)
 		goto free_job_data;
 
-	/* Allocate host1x_job and add gathers and waits to it. */
+	 
 	job = submit_create_job(context, bo, args, job_data, &fpriv->syncpoints);
 	if (IS_ERR(job)) {
 		err = PTR_ERR(job);
 		goto free_job_data;
 	}
 
-	/* Map gather data for Host1x. */
+	 
 	err = host1x_job_pin(job, context->client->base.dev);
 	if (err) {
 		SUBMIT_ERR(context, "failed to pin job: %d", err);
@@ -609,16 +609,13 @@ int tegra_drm_ioctl_channel_submit(struct drm_device *drm, void *data,
 			host1x_memory_context_get(job->memory_context);
 		}
 	} else if (context->client->ops->get_streamid_offset) {
-		/*
-		 * Job submission will need to temporarily change stream ID,
-		 * so need to tell it what to change it back to.
-		 */
+		 
 		if (!tegra_dev_iommu_get_stream_id(context->client->base.dev,
 						   &job->engine_fallback_streamid))
 			job->engine_fallback_streamid = TEGRA_STREAM_ID_BYPASS;
 	}
 
-	/* Boot engine. */
+	 
 	err = pm_runtime_resume_and_get(context->client->base.dev);
 	if (err < 0) {
 		SUBMIT_ERR(context, "could not power up engine: %d", err);
@@ -629,20 +626,17 @@ int tegra_drm_ioctl_channel_submit(struct drm_device *drm, void *data,
 	job->release = release_job;
 	job->timeout = 10000;
 
-	/*
-	 * job_data is now part of job reference counting, so don't release
-	 * it from here.
-	 */
+	 
 	job_data = NULL;
 
-	/* Submit job to hardware. */
+	 
 	err = host1x_job_submit(job);
 	if (err) {
 		SUBMIT_ERR(context, "host1x job submission failed: %d", err);
 		goto unpin_job;
 	}
 
-	/* Return postfences to userspace and add fences to DMA reservations. */
+	 
 	args->syncpt.value = job->syncpt_end;
 
 	if (syncobj) {

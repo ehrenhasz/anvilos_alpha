@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * OMAP gate clock support
- *
- * Copyright (C) 2013 Texas Instruments, Inc.
- *
- * Tero Kristo <t-kristo@ti.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/slab.h>
@@ -44,17 +38,7 @@ static const struct clk_ops omap_gate_clk_hsdiv_restore_ops = {
 	.restore_context = clk_gate_restore_context,
 };
 
-/**
- * omap36xx_gate_clk_enable_with_hsdiv_restore - enable clocks suffering
- *         from HSDivider PWRDN problem Implements Errata ID: i556.
- * @hw: DPLL output struct clk_hw
- *
- * 3630 only: dpll3_m3_ck, dpll4_m2_ck, dpll4_m3_ck, dpll4_m4_ck,
- * dpll4_m5_ck & dpll4_m6_ck dividers gets loaded with reset
- * valueafter their respective PWRDN bits are set.  Any dummy write
- * (Any other value different from the Read value) to the
- * corresponding CM_CLKSEL register will refresh the dividers.
- */
+ 
 static int omap36xx_gate_clk_enable_with_hsdiv_restore(struct clk_hw *hw)
 {
 	struct clk_omap_divider *parent;
@@ -62,23 +46,23 @@ static int omap36xx_gate_clk_enable_with_hsdiv_restore(struct clk_hw *hw)
 	u32 dummy_v, orig_v;
 	int ret;
 
-	/* Clear PWRDN bit of HSDIVIDER */
+	 
 	ret = omap2_dflt_clk_enable(hw);
 
-	/* Parent is the x2 node, get parent of parent for the m2 div */
+	 
 	parent_hw = clk_hw_get_parent(clk_hw_get_parent(hw));
 	parent = to_clk_omap_divider(parent_hw);
 
-	/* Restore the dividers */
+	 
 	if (!ret) {
 		orig_v = ti_clk_ll_ops->clk_readl(&parent->reg);
 		dummy_v = orig_v;
 
-		/* Write any other value different from the Read value */
+		 
 		dummy_v ^= (1 << parent->shift);
 		ti_clk_ll_ops->clk_writel(dummy_v, &parent->reg);
 
-		/* Write the original divider */
+		 
 		ti_clk_ll_ops->clk_writel(orig_v, &parent->reg);
 	}
 

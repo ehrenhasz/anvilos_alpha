@@ -1,24 +1,4 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include "amdgpu.h"
 #include "amdgpu_i2c.h"
@@ -207,7 +187,7 @@ static int amdgpu_parse_clk_voltage_dep_table(struct amdgpu_clock_voltage_depend
 	return 0;
 }
 
-/* sizeof(ATOM_PPLIB_EXTENDEDHEADER) */
+ 
 #define SIZE_OF_ATOM_PPLIB_EXTENDEDHEADER_V2 12
 #define SIZE_OF_ATOM_PPLIB_EXTENDEDHEADER_V3 14
 #define SIZE_OF_ATOM_PPLIB_EXTENDEDHEADER_V4 16
@@ -233,7 +213,7 @@ int amdgpu_parse_extended_power_table(struct amdgpu_device *adev)
 		return -EINVAL;
 	power_info = (union power_info *)(mode_info->atom_context->bios + data_offset);
 
-	/* fan table */
+	 
 	if (le16_to_cpu(power_info->pplib.usTableSize) >=
 	    sizeof(struct _ATOM_PPLIB_POWERPLAYTABLE3)) {
 		if (power_info->pplib3.usFanTableOffset) {
@@ -263,7 +243,7 @@ int amdgpu_parse_extended_power_table(struct amdgpu_device *adev)
 		}
 	}
 
-	/* clock dependancy tables, shedding tables */
+	 
 	if (le16_to_cpu(power_info->pplib.usTableSize) >=
 	    sizeof(struct _ATOM_PPLIB_POWERPLAYTABLE4)) {
 		if (power_info->pplib4.usVddcDependencyOnSCLKOffset) {
@@ -350,7 +330,7 @@ int amdgpu_parse_extended_power_table(struct amdgpu_device *adev)
 		}
 	}
 
-	/* cac data */
+	 
 	if (le16_to_cpu(power_info->pplib.usTableSize) >=
 	    sizeof(struct _ATOM_PPLIB_POWERPLAYTABLE5)) {
 		adev->pm.dpm.tdp_limit = le32_to_cpu(power_info->pplib5.ulTDPLimit);
@@ -397,7 +377,7 @@ int amdgpu_parse_extended_power_table(struct amdgpu_device *adev)
 		}
 	}
 
-	/* ext tables */
+	 
 	if (le16_to_cpu(power_info->pplib.usTableSize) >=
 	    sizeof(struct _ATOM_PPLIB_POWERPLAYTABLE3)) {
 		ATOM_PPLIB_EXTENDEDHEADER *ext_hdr = (ATOM_PPLIB_EXTENDEDHEADER *)
@@ -688,7 +668,7 @@ void amdgpu_add_thermal_controller(struct amdgpu_device *adev)
 		(mode_info->atom_context->bios + data_offset);
 	controller = &power_table->sThermalController;
 
-	/* add the i2c bus for thermal/fan chip */
+	 
 	if (controller->ucType > 0) {
 		if (controller->ucFanParameters & ATOM_PP_FANPARAMETERS_NOFAN)
 			adev->pm.no_fan = true;
@@ -800,28 +780,26 @@ static struct amdgpu_ps *amdgpu_dpm_pick_power_state(struct amdgpu_device *adev,
 	bool single_display = (adev->pm.dpm.new_active_crtc_count < 2) ?
 		true : false;
 
-	/* check if the vblank period is too short to adjust the mclk */
+	 
 	if (single_display && adev->powerplay.pp_funcs->vblank_too_short) {
 		if (amdgpu_dpm_vblank_too_short(adev))
 			single_display = false;
 	}
 
-	/* certain older asics have a separare 3D performance state,
-	 * so try that first if the user selected performance
-	 */
+	 
 	if (dpm_state == POWER_STATE_TYPE_PERFORMANCE)
 		dpm_state = POWER_STATE_TYPE_INTERNAL_3DPERF;
-	/* balanced states don't exist at the moment */
+	 
 	if (dpm_state == POWER_STATE_TYPE_BALANCED)
 		dpm_state = POWER_STATE_TYPE_PERFORMANCE;
 
 restart_search:
-	/* Pick the best power state based on current conditions */
+	 
 	for (i = 0; i < adev->pm.dpm.num_ps; i++) {
 		ps = &adev->pm.dpm.ps[i];
 		ui_class = ps->class & ATOM_PPLIB_CLASSIFICATION_UI_MASK;
 		switch (dpm_state) {
-		/* user states */
+		 
 		case POWER_STATE_TYPE_BATTERY:
 			if (ui_class == ATOM_PPLIB_CLASSIFICATION_UI_BATTERY) {
 				if (ps->caps & ATOM_PPLIB_SINGLE_DISPLAY_ONLY) {
@@ -849,7 +827,7 @@ restart_search:
 					return ps;
 			}
 			break;
-		/* internal states */
+		 
 		case POWER_STATE_TYPE_INTERNAL_UVD:
 			if (adev->pm.dpm.uvd_ps)
 				return adev->pm.dpm.uvd_ps;
@@ -893,7 +871,7 @@ restart_search:
 			break;
 		}
 	}
-	/* use a fallback state if we didn't match */
+	 
 	switch (dpm_state) {
 	case POWER_STATE_TYPE_INTERNAL_UVD_SD:
 		dpm_state = POWER_STATE_TYPE_INTERNAL_UVD_HD;
@@ -933,12 +911,12 @@ static int amdgpu_dpm_change_power_state_locked(struct amdgpu_device *adev)
 	int ret;
 	bool equal = false;
 
-	/* if dpm init failed */
+	 
 	if (!adev->pm.dpm_enabled)
 		return 0;
 
 	if (adev->pm.dpm.user_state != adev->pm.dpm.state) {
-		/* add other state override checks here */
+		 
 		if ((!adev->pm.dpm.thermal_active) &&
 		    (!adev->pm.dpm.uvd_active))
 			adev->pm.dpm.state = adev->pm.dpm.user_state;
@@ -958,7 +936,7 @@ static int amdgpu_dpm_change_power_state_locked(struct amdgpu_device *adev)
 		amdgpu_dpm_print_power_state(adev, adev->pm.dpm.requested_ps);
 	}
 
-	/* update whether vce is active */
+	 
 	ps->vce_active = adev->pm.dpm.vce_active;
 	if (pp_funcs->display_configuration_changed)
 		amdgpu_dpm_display_configuration_changed(adev);
@@ -986,12 +964,12 @@ static int amdgpu_dpm_change_power_state_locked(struct amdgpu_device *adev)
 	if (pp_funcs->force_performance_level) {
 		if (adev->pm.dpm.thermal_active) {
 			enum amd_dpm_forced_level level = adev->pm.dpm.forced_level;
-			/* force low perf level for thermal */
+			 
 			pp_funcs->force_performance_level(adev, AMD_DPM_FORCED_LEVEL_LOW);
-			/* save the user's level */
+			 
 			adev->pm.dpm.forced_level = level;
 		} else {
-			/* otherwise, user selected level */
+			 
 			pp_funcs->force_performance_level(adev, adev->pm.dpm.forced_level);
 		}
 	}
@@ -1014,7 +992,7 @@ void amdgpu_dpm_thermal_work_handler(struct work_struct *work)
 		container_of(work, struct amdgpu_device,
 			     pm.dpm.thermal.work);
 	const struct amd_pm_funcs *pp_funcs = adev->powerplay.pp_funcs;
-	/* switch to the thermal state */
+	 
 	enum amd_pm_state_type dpm_state = POWER_STATE_TYPE_INTERNAL_THERMAL;
 	int temp, size = sizeof(temp);
 
@@ -1026,11 +1004,11 @@ void amdgpu_dpm_thermal_work_handler(struct work_struct *work)
 				   (void *)&temp,
 				   &size)) {
 		if (temp < adev->pm.dpm.thermal.min_temp)
-			/* switch back the user state */
+			 
 			dpm_state = adev->pm.dpm.user_state;
 	} else {
 		if (adev->pm.dpm.thermal.high_to_low)
-			/* switch back the user state */
+			 
 			dpm_state = adev->pm.dpm.user_state;
 	}
 

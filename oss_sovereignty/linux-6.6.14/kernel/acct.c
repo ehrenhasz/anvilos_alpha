@@ -1,48 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/kernel/acct.c
- *
- *  BSD Process Accounting for Linux
- *
- *  Author: Marco van Wieringen <mvw@planets.elm.net>
- *
- *  Some code based on ideas and code from:
- *  Thomas K. Dyas <tdyas@eden.rutgers.edu>
- *
- *  This file implements BSD-style process accounting. Whenever any
- *  process exits, an accounting record of type "struct acct" is
- *  written to the file specified with the acct() system call. It is
- *  up to user-level programs to do useful things with the accounting
- *  log. The kernel just provides the raw accounting information.
- *
- * (C) Copyright 1995 - 1997 Marco van Wieringen - ELM Consultancy B.V.
- *
- *  Plugged two leaks. 1) It didn't return acct_file into the free_filps if
- *  the file happened to be read-only. 2) If the accounting was suspended
- *  due to the lack of space it happily allowed to reopen it and completely
- *  lost the old acct_file. 3/10/98, Al Viro.
- *
- *  Now we silently close acct_file on attempt to reopen. Cleaned sys_acct().
- *  XTerms and EMACS are manifestations of pure evil. 21/10/98, AV.
- *
- *  Fixed a nasty interaction with sys_umount(). If the accounting
- *  was suspeneded we failed to stop it on umount(). Messy.
- *  Another one: remount to readonly didn't stop accounting.
- *	Question: what should we do if we have CAP_SYS_ADMIN but not
- *  CAP_SYS_PACCT? Current code does the following: umount returns -EBUSY
- *  unless we are messing with the root. In that case we are getting a
- *  real mess with do_remount_sb(). 9/11/98, AV.
- *
- *  Fixed a bunch of races (and pair of leaks). Probably not the best way,
- *  but this one obviously doesn't introduce deadlocks. Later. BTW, found
- *  one race (and leak) in BSD implementation.
- *  OK, that's better. ANOTHER race and leak in BSD variant. There always
- *  is one more bug... 10/11/98, AV.
- *
- *	Oh, fsck... Oopsable SMP race in do_process_acct() - we must hold
- * ->mmap_lock to walk the vma list of current->mm. Nasty, since it leaks
- * a struct file opened for write. Fixed. 2/6/2000, AV.
- */
+
+ 
 
 #include <linux/mm.h>
 #include <linux/slab.h>
@@ -63,17 +20,12 @@
 #include <linux/pid_namespace.h>
 #include <linux/fs_pin.h>
 
-/*
- * These constants control the amount of freespace that suspend and
- * resume the process accounting system, and the time delay between
- * each check.
- * Turned into sysctl-controllable parameters. AV, 12/11/98
- */
+ 
 
 static int acct_parm[3] = {4, 2, 30};
-#define RESUME		(acct_parm[0])	/* >foo% free space - resume */
-#define SUSPEND		(acct_parm[1])	/* <foo% free space - suspend */
-#define ACCT_TIMEOUT	(acct_parm[2])	/* foo second timeout between checks */
+#define RESUME		(acct_parm[0])	 
+#define SUSPEND		(acct_parm[1])	 
+#define ACCT_TIMEOUT	(acct_parm[2])	 
 
 #ifdef CONFIG_SYSCTL
 static struct ctl_table kern_acct_table[] = {
@@ -93,11 +45,9 @@ static __init int kernel_acct_sysctls_init(void)
 	return 0;
 }
 late_initcall(kernel_acct_sysctls_init);
-#endif /* CONFIG_SYSCTL */
+#endif  
 
-/*
- * External references and all of the globals.
- */
+ 
 
 struct bsd_acct_struct {
 	struct fs_pin		pin;
@@ -114,9 +64,7 @@ struct bsd_acct_struct {
 
 static void do_acct_process(struct bsd_acct_struct *acct);
 
-/*
- * Check the amount of free space and suspend/resume accordingly.
- */
+ 
 static int check_free_space(struct bsd_acct_struct *acct)
 {
 	struct kstatfs sbuf;
@@ -124,7 +72,7 @@ static int check_free_space(struct bsd_acct_struct *acct)
 	if (time_is_after_jiffies(acct->needcheck))
 		goto out;
 
-	/* May block */
+	 
 	if (vfs_statfs(&acct->file->f_path, &sbuf))
 		goto out;
 
@@ -222,7 +170,7 @@ static int acct_on(struct filename *pathname)
 	if (!acct)
 		return -ENOMEM;
 
-	/* Difference from BSD - they don't do O_APPEND */
+	 
 	file = file_open_name(pathname, O_WRONLY|O_APPEND|O_LARGEFILE, 0);
 	if (IS_ERR(file)) {
 		kfree(acct);
@@ -264,7 +212,7 @@ static int acct_on(struct filename *pathname)
 	mutex_init(&acct->lock);
 	INIT_WORK(&acct->work, close_work);
 	init_completion(&acct->done);
-	mutex_lock_nested(&acct->lock, 1);	/* nobody has seen it yet */
+	mutex_lock_nested(&acct->lock, 1);	 
 	pin_insert(&acct->pin, mnt);
 
 	rcu_read_lock();
@@ -278,17 +226,7 @@ static int acct_on(struct filename *pathname)
 
 static DEFINE_MUTEX(acct_on_mutex);
 
-/**
- * sys_acct - enable/disable process accounting
- * @name: file name for accounting records or NULL to shutdown accounting
- *
- * sys_acct() is the only system call needed to implement process
- * accounting. It takes the name of the file where accounting records
- * should be written. If the filename is NULL, accounting will be
- * shutdown.
- *
- * Returns: 0 for success or negative errno values for failure.
- */
+ 
 SYSCALL_DEFINE1(acct, const char __user *, name)
 {
 	int error = 0;
@@ -319,17 +257,11 @@ void acct_exit_ns(struct pid_namespace *ns)
 	pin_kill(ns->bacct);
 }
 
-/*
- *  encode an u64 into a comp_t
- *
- *  This routine has been adopted from the encode_comp_t() function in
- *  the kern_acct.c file of the FreeBSD operating system. The encoding
- *  is a 13-bit fraction with a 3-bit (base 8) exponent.
- */
+ 
 
-#define	MANTSIZE	13			/* 13 bit mantissa. */
-#define	EXPSIZE		3			/* Base 8 (3 bit) exponent. */
-#define	MAXFRACT	((1 << MANTSIZE) - 1)	/* Maximum fractional value. */
+#define	MANTSIZE	13			 
+#define	EXPSIZE		3			 
+#define	MAXFRACT	((1 << MANTSIZE) - 1)	 
 
 static comp_t encode_comp_t(u64 value)
 {
@@ -337,14 +269,12 @@ static comp_t encode_comp_t(u64 value)
 
 	exp = rnd = 0;
 	while (value > MAXFRACT) {
-		rnd = value & (1 << (EXPSIZE - 1));	/* Round up? */
-		value >>= EXPSIZE;	/* Base 8 exponent == 3 bit shift. */
+		rnd = value & (1 << (EXPSIZE - 1));	 
+		value >>= EXPSIZE;	 
 		exp++;
 	}
 
-	/*
-	 * If we need to round up, do it (and handle overflow correctly).
-	 */
+	 
 	if (rnd && (++value > MAXFRACT)) {
 		value >>= EXPSIZE;
 		exp++;
@@ -352,28 +282,19 @@ static comp_t encode_comp_t(u64 value)
 
 	if (exp > (((comp_t) ~0U) >> MANTSIZE))
 		return (comp_t) ~0U;
-	/*
-	 * Clean it up and polish it off.
-	 */
-	exp <<= MANTSIZE;		/* Shift the exponent into place */
-	exp += value;			/* and add on the mantissa. */
+	 
+	exp <<= MANTSIZE;		 
+	exp += value;			 
 	return exp;
 }
 
 #if ACCT_VERSION == 1 || ACCT_VERSION == 2
-/*
- * encode an u64 into a comp2_t (24 bits)
- *
- * Format: 5 bit base 2 exponent, 20 bits mantissa.
- * The leading bit of the mantissa is not stored, but implied for
- * non-zero exponents.
- * Largest encodable value is 50 bits.
- */
+ 
 
-#define MANTSIZE2       20                      /* 20 bit mantissa. */
-#define EXPSIZE2        5                       /* 5 bit base 2 exponent. */
-#define MAXFRACT2       ((1ul << MANTSIZE2) - 1) /* Maximum fractional value. */
-#define MAXEXP2         ((1 << EXPSIZE2) - 1)    /* Maximum exponent. */
+#define MANTSIZE2       20                       
+#define EXPSIZE2        5                        
+#define MAXFRACT2       ((1ul << MANTSIZE2) - 1)  
+#define MAXEXP2         ((1 << EXPSIZE2) - 1)     
 
 static comp2_t encode_comp2_t(u64 value)
 {
@@ -387,25 +308,21 @@ static comp2_t encode_comp2_t(u64 value)
 		exp++;
 	}
 
-	/*
-	 * If we need to round up, do it (and handle overflow correctly).
-	 */
+	 
 	if (rnd && (++value > MAXFRACT2)) {
 		value >>= 1;
 		exp++;
 	}
 
 	if (exp > MAXEXP2) {
-		/* Overflow. Return largest representable number instead. */
+		 
 		return (1ul << (MANTSIZE2+EXPSIZE2-1)) - 1;
 	} else {
 		return (value & (MAXFRACT2>>1)) | (exp << (MANTSIZE2-1));
 	}
 }
 #elif ACCT_VERSION == 3
-/*
- * encode an u64 into a 32 bit IEEE float
- */
+ 
 static u32 encode_float(u64 value)
 {
 	unsigned exp = 190;
@@ -422,14 +339,7 @@ static u32 encode_float(u64 value)
 }
 #endif
 
-/*
- *  Write an accounting entry for an exiting process
- *
- *  The acct_process() call is the workhorse of the process
- *  accounting system. The struct acct is built here and then written
- *  into the accounting file. This function should only be called from
- *  do_exit() or when switching to a different output file.
- */
+ 
 
 static void fill_ac(acct_t *ac)
 {
@@ -438,19 +348,16 @@ static void fill_ac(acct_t *ac)
 	time64_t btime;
 	struct tty_struct *tty;
 
-	/*
-	 * Fill the accounting struct with the needed info as recorded
-	 * by the different kernel functions.
-	 */
+	 
 	memset(ac, 0, sizeof(acct_t));
 
 	ac->ac_version = ACCT_VERSION | ACCT_BYTEORDER;
 	strscpy(ac->ac_comm, current->comm, sizeof(ac->ac_comm));
 
-	/* calculate run_time in nsec*/
+	 
 	run_time = ktime_get_ns();
 	run_time -= current->group_leader->start_time;
-	/* convert nsec -> AHZ */
+	 
 	elapsed = nsec_to_AHZ(run_time);
 #if ACCT_VERSION == 3
 	ac->ac_etime = encode_float(elapsed);
@@ -460,7 +367,7 @@ static void fill_ac(acct_t *ac)
 #endif
 #if ACCT_VERSION == 1 || ACCT_VERSION == 2
 	{
-		/* new enlarged etime field */
+		 
 		comp2_t etime = encode_comp2_t(elapsed);
 
 		ac->ac_etime_hi = etime >> 16;
@@ -475,7 +382,7 @@ static void fill_ac(acct_t *ac)
 #endif
 
 	spin_lock_irq(&current->sighand->siglock);
-	tty = current->signal->tty;	/* Safe as we hold the siglock */
+	tty = current->signal->tty;	 
 	ac->ac_tty = tty ? old_encode_dev(tty_devnum(tty)) : 0;
 	ac->ac_utime = encode_comp_t(nsec_to_AHZ(pacct->ac_utime));
 	ac->ac_stime = encode_comp_t(nsec_to_AHZ(pacct->ac_stime));
@@ -486,9 +393,7 @@ static void fill_ac(acct_t *ac)
 	ac->ac_exitcode = pacct->ac_exitcode;
 	spin_unlock_irq(&current->sighand->siglock);
 }
-/*
- *  do_acct_process does all actual work. Caller holds the reference to file.
- */
+ 
 static void do_acct_process(struct bsd_acct_struct *acct)
 {
 	acct_t ac;
@@ -496,27 +401,22 @@ static void do_acct_process(struct bsd_acct_struct *acct)
 	const struct cred *orig_cred;
 	struct file *file = acct->file;
 
-	/*
-	 * Accounting records are not subject to resource limits.
-	 */
+	 
 	flim = rlimit(RLIMIT_FSIZE);
 	current->signal->rlim[RLIMIT_FSIZE].rlim_cur = RLIM_INFINITY;
-	/* Perform file operations on behalf of whoever enabled accounting */
+	 
 	orig_cred = override_creds(file->f_cred);
 
-	/*
-	 * First check to see if there is enough free_space to continue
-	 * the process accounting system.
-	 */
+	 
 	if (!check_free_space(acct))
 		goto out;
 
 	fill_ac(&ac);
-	/* we really need to bite the bullet and change layout */
+	 
 	ac.ac_uid = from_kuid_munged(file->f_cred->user_ns, orig_cred->uid);
 	ac.ac_gid = from_kgid_munged(file->f_cred->user_ns, orig_cred->gid);
 #if ACCT_VERSION == 1 || ACCT_VERSION == 2
-	/* backward-compatible 16 bit fields */
+	 
 	ac.ac_uid16 = ac.ac_uid;
 	ac.ac_gid16 = ac.ac_gid;
 #elif ACCT_VERSION == 3
@@ -530,12 +430,9 @@ static void do_acct_process(struct bsd_acct_struct *acct)
 		rcu_read_unlock();
 	}
 #endif
-	/*
-	 * Get freeze protection. If the fs is frozen, just skip the write
-	 * as we could deadlock the system otherwise.
-	 */
+	 
 	if (file_start_write_trylock(file)) {
-		/* it's been opened O_APPEND, so position is irrelevant */
+		 
 		loff_t pos = 0;
 		__kernel_write(file, &ac, sizeof(acct_t), &pos);
 		file_end_write(file);
@@ -545,11 +442,7 @@ out:
 	revert_creds(orig_cred);
 }
 
-/**
- * acct_collect - collect accounting information into pacct_struct
- * @exitcode: task exit code
- * @group_dead: not 0, if this thread is the last one in the process.
- */
+ 
 void acct_collect(long exitcode, int group_dead)
 {
 	struct pacct_struct *pacct = &current->signal->pacct;
@@ -602,18 +495,12 @@ static void slow_acct_process(struct pid_namespace *ns)
 	}
 }
 
-/**
- * acct_process - handles process accounting for an exiting task
- */
+ 
 void acct_process(void)
 {
 	struct pid_namespace *ns;
 
-	/*
-	 * This loop is safe lockless, since current is still
-	 * alive and holds its namespace, which in turn holds
-	 * its parent.
-	 */
+	 
 	for (ns = task_active_pid_ns(current); ns != NULL; ns = ns->parent) {
 		if (ns->bacct)
 			break;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com
- *  Author: Peter Ujfalusi <peter.ujfalusi@ti.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -16,11 +13,7 @@
 
 #include "davinci-mcasp.h"
 
-/*
- * Maximum number of configuration entries for prefixes:
- * CPB: 2 (mcasp10 + codec)
- * IVI: 3 (mcasp0 + 2x codec)
- */
+ 
 #define J721E_CODEC_CONF_COUNT	5
 
 enum j721e_audio_domain_id {
@@ -285,7 +278,7 @@ static int j721e_audio_startup(struct snd_pcm_substream *substream)
 	if (ret)
 		goto out;
 
-	/* Reset TDM slots to 32 */
+	 
 	ret = snd_soc_dai_set_tdm_slot(cpu_dai, 0x3, 0x3, 2, 32);
 	if (ret && ret != -ENOTSUPP)
 		goto out;
@@ -408,7 +401,7 @@ static int j721e_audio_init(struct snd_soc_pcm_runtime *rtd)
 	unsigned int sysclk_rate;
 	int i, ret;
 
-	/* Set up initial clock configuration */
+	 
 	ret = j721e_configure_refclk(priv, domain_id, 48000);
 	if (ret)
 		return ret;
@@ -426,7 +419,7 @@ static int j721e_audio_init(struct snd_soc_pcm_runtime *rtd)
 	if (ret && ret != -ENOTSUPP)
 		return ret;
 
-	/* Set initial tdm slots */
+	 
 	ret = snd_soc_dai_set_tdm_slot(cpu_dai, 0x3, 0x3, 2, 32);
 	if (ret && ret != -ENOTSUPP)
 		return ret;
@@ -514,27 +507,27 @@ static int j721e_get_clocks(struct device *dev,
 
 static const struct j721e_audio_match_data j721e_cpb_data = {
 	.board_type = J721E_BOARD_CPB,
-	.num_links = 2, /* CPB pcm3168a */
+	.num_links = 2,  
 	.pll_rates = {
-		[J721E_CLK_PARENT_44100] = 1083801600, /* PLL15 */
-		[J721E_CLK_PARENT_48000] = 1179648000, /* PLL4 */
+		[J721E_CLK_PARENT_44100] = 1083801600,  
+		[J721E_CLK_PARENT_48000] = 1179648000,  
 	},
 };
 
 static const struct j721e_audio_match_data j721e_cpb_ivi_data = {
 	.board_type = J721E_BOARD_CPB_IVI,
-	.num_links = 4, /* CPB pcm3168a + 2x pcm3168a on IVI */
+	.num_links = 4,  
 	.pll_rates = {
-		[J721E_CLK_PARENT_44100] = 1083801600, /* PLL15 */
-		[J721E_CLK_PARENT_48000] = 1179648000, /* PLL4 */
+		[J721E_CLK_PARENT_44100] = 1083801600,  
+		[J721E_CLK_PARENT_48000] = 1179648000,  
 	},
 };
 
 static const struct j721e_audio_match_data j7200_cpb_data = {
 	.board_type = J721E_BOARD_CPB,
-	.num_links = 2, /* CPB pcm3168a */
+	.num_links = 2,  
 	.pll_rates = {
-		[J721E_CLK_PARENT_48000] = 2359296000u, /* PLL4 */
+		[J721E_CLK_PARENT_48000] = 2359296000u,  
 	},
 };
 
@@ -643,11 +636,7 @@ static int j721e_soc_probe_cpb(struct j721e_priv *priv, int *link_idx,
 	if (ret)
 		goto put_codec_node;
 
-	/*
-	 * Common Processor Board, two links
-	 * Link 1: McASP10 -> pcm3168a_1 DAC
-	 * Link 2: McASP10 <- pcm3168a_1 ADC
-	 */
+	 
 	comp_count = 6;
 	compnent = devm_kzalloc(priv->dev, comp_count * sizeof(*compnent),
 				GFP_KERNEL);
@@ -755,13 +744,7 @@ static int j721e_soc_probe_ivi(struct j721e_priv *priv, int *link_idx,
 	if (ret)
 		goto put_codecb_node;
 
-	/*
-	 * IVI extension, two links
-	 * Link 1: McASP0 -> pcm3168a_a DAC
-	 *		  \> pcm3168a_b DAC
-	 * Link 2: McASP0 <- pcm3168a_a ADC
-	 *		   \ pcm3168a_b ADC
-	 */
+	 
 	comp_count = 8;
 	compnent = devm_kzalloc(priv->dev, comp_count * sizeof(*compnent),
 				GFP_KERNEL);

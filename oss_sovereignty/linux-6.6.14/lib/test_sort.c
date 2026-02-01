@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <kunit/test.h>
 
@@ -6,7 +6,7 @@
 #include <linux/slab.h>
 #include <linux/module.h>
 
-/* a simple boot-time regression test */
+ 
 
 #define TEST_LEN 1000
 

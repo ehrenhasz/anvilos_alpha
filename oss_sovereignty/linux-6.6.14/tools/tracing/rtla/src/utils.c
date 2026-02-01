@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Red Hat Inc, Daniel Bristot de Oliveira <bristot@kernel.org>
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <dirent.h>
@@ -20,9 +18,7 @@
 #define MAX_MSG_LENGTH	1024
 int config_debug;
 
-/*
- * err_msg - print an error message to the stderr
- */
+ 
 void err_msg(const char *fmt, ...)
 {
 	char message[MAX_MSG_LENGTH];
@@ -35,9 +31,7 @@ void err_msg(const char *fmt, ...)
 	fprintf(stderr, "%s", message);
 }
 
-/*
- * debug_msg - print a debug message to stderr if debug is set
- */
+ 
 void debug_msg(const char *fmt, ...)
 {
 	char message[MAX_MSG_LENGTH];
@@ -53,9 +47,7 @@ void debug_msg(const char *fmt, ...)
 	fprintf(stderr, "%s", message);
 }
 
-/*
- * get_llong_from_str - get a long long int from a string
- */
+ 
 long long get_llong_from_str(char *start)
 {
 	long long value;
@@ -69,9 +61,7 @@ long long get_llong_from_str(char *start)
 	return value;
 }
 
-/*
- * get_duration - fill output with a human readable duration since start_time
- */
+ 
 void get_duration(time_t start_time, char *output, int output_size)
 {
 	time_t now = time(NULL);
@@ -88,14 +78,7 @@ void get_duration(time_t start_time, char *output, int output_size)
 			tm_info->tm_sec);
 }
 
-/*
- * parse_cpu_set - parse a cpu_list filling cpu_set_t argument
- *
- * Receives a cpu list, like 1-3,5 (cpus 1, 2, 3, 5), and then set
- * filling cpu_set_t argument.
- *
- * Returns 1 on success, 0 otherwise.
- */
+ 
 int parse_cpu_set(char *cpu_list, cpu_set_t *set)
 {
 	const char *p;
@@ -145,9 +128,7 @@ err:
 	return 1;
 }
 
-/*
- * parse_duration - parse duration with s/m/h/d suffix converting it to seconds
- */
+ 
 long parse_seconds_duration(char *val)
 {
 	char *end;
@@ -179,9 +160,7 @@ long parse_seconds_duration(char *val)
 	return t;
 }
 
-/*
- * parse_ns_duration - parse duration with ns/us/ms/s converting it to nanoseconds
- */
+ 
 long parse_ns_duration(char *val)
 {
 	char *end;
@@ -208,9 +187,7 @@ long parse_ns_duration(char *val)
 	return t;
 }
 
-/*
- * This is a set of helper functions to use SCHED_DEADLINE.
- */
+ 
 #ifdef __x86_64__
 # define __NR_sched_setattr	314
 # define __NR_sched_getattr	315
@@ -259,17 +236,7 @@ int __set_sched_attr(int pid, struct sched_attr *attr)
 	return 0;
 }
 
-/*
- * procfs_is_workload_pid - check if a procfs entry contains a comm_prefix* comm
- *
- * Check if the procfs entry is a directory of a process, and then check if the
- * process has a comm with the prefix set in char *comm_prefix. As the
- * current users of this function only check for kernel threads, there is no
- * need to check for the threads for the process.
- *
- * Return: True if the proc_entry contains a comm file with comm_prefix*.
- * Otherwise returns false.
- */
+ 
 static int procfs_is_workload_pid(const char *comm_prefix, struct dirent *proc_entry)
 {
 	char buffer[MAX_PATH];
@@ -282,7 +249,7 @@ static int procfs_is_workload_pid(const char *comm_prefix, struct dirent *proc_e
 	if (*proc_entry->d_name == '.')
 		return 0;
 
-	/* check if the string is a pid */
+	 
 	for (t_name = proc_entry->d_name; t_name; t_name++) {
 		if (!isdigit(*t_name))
 			break;
@@ -308,20 +275,13 @@ static int procfs_is_workload_pid(const char *comm_prefix, struct dirent *proc_e
 	if (retval)
 		return 0;
 
-	/* comm already have \n */
+	 
 	debug_msg("Found workload pid:%s comm:%s", proc_entry->d_name, buffer);
 
 	return 1;
 }
 
-/*
- * set_comm_sched_attr - set sched params to threads starting with char *comm_prefix
- *
- * This function uses procfs to list the currently running threads and then set the
- * sched_attr *attr to the threads that start with char *comm_prefix. It is
- * mainly used to set the priority to the kernel threads created by the
- * tracers.
- */
+ 
 int set_comm_sched_attr(const char *comm_prefix, struct sched_attr *attr)
 {
 	struct dirent *proc_entry;
@@ -346,7 +306,7 @@ int set_comm_sched_attr(const char *comm_prefix, struct sched_attr *attr)
 		if (!retval)
 			continue;
 
-		/* procfs_is_workload_pid confirmed it is a pid */
+		 
 		retval = __set_sched_attr(atoi(proc_entry->d_name), attr);
 		if (retval) {
 			err_msg("Error setting sched attributes for pid:%s\n", proc_entry->d_name);
@@ -367,12 +327,12 @@ static long get_long_ns_after_colon(char *start)
 {
 	long val = INVALID_VAL;
 
-	/* find the ":" */
+	 
 	start = strstr(start, ":");
 	if (!start)
 		return -1;
 
-	/* skip ":" */
+	 
 	start++;
 	val = parse_ns_duration(start);
 
@@ -383,33 +343,19 @@ static long get_long_after_colon(char *start)
 {
 	long val = INVALID_VAL;
 
-	/* find the ":" */
+	 
 	start = strstr(start, ":");
 	if (!start)
 		return -1;
 
-	/* skip ":" */
+	 
 	start++;
 	val = get_llong_from_str(start);
 
 	return val;
 }
 
-/*
- * parse priority in the format:
- * SCHED_OTHER:
- *		o:<prio>
- *		O:<prio>
- * SCHED_RR:
- *		r:<prio>
- *		R:<prio>
- * SCHED_FIFO:
- *		f:<prio>
- *		F:<prio>
- * SCHED_DEADLINE:
- *		d:runtime:period
- *		D:runtime:period
- */
+ 
 int parse_prio(char *arg, struct sched_attr *sched_param)
 {
 	long prio;
@@ -422,7 +368,7 @@ int parse_prio(char *arg, struct sched_attr *sched_param)
 	switch (arg[0]) {
 	case 'd':
 	case 'D':
-		/* d:runtime:period */
+		 
 		if (strlen(arg) < 4)
 			return -1;
 
@@ -444,7 +390,7 @@ int parse_prio(char *arg, struct sched_attr *sched_param)
 		break;
 	case 'f':
 	case 'F':
-		/* f:prio */
+		 
 		prio = get_long_after_colon(arg);
 		if (prio == INVALID_VAL)
 			return -1;
@@ -459,7 +405,7 @@ int parse_prio(char *arg, struct sched_attr *sched_param)
 		break;
 	case 'r':
 	case 'R':
-		/* r:prio */
+		 
 		prio = get_long_after_colon(arg);
 		if (prio == INVALID_VAL)
 			return -1;
@@ -474,7 +420,7 @@ int parse_prio(char *arg, struct sched_attr *sched_param)
 		break;
 	case 'o':
 	case 'O':
-		/* o:prio */
+		 
 		prio = get_long_after_colon(arg);
 		if (prio == INVALID_VAL)
 			return -1;
@@ -493,15 +439,7 @@ int parse_prio(char *arg, struct sched_attr *sched_param)
 	return 0;
 }
 
-/*
- * set_cpu_dma_latency - set the /dev/cpu_dma_latecy
- *
- * This is used to reduce the exit from idle latency. The value
- * will be reset once the file descriptor of /dev/cpu_dma_latecy
- * is closed.
- *
- * Return: the /dev/cpu_dma_latecy file descriptor
- */
+ 
 int set_cpu_dma_latency(int32_t latency)
 {
 	int retval;
@@ -528,12 +466,7 @@ int set_cpu_dma_latency(int32_t latency)
 #define _STR(x) #x
 #define STR(x) _STR(x)
 
-/*
- * find_mount - find a the mount point of a given fs
- *
- * Returns 0 if mount is not found, otherwise return 1 and fill mp
- * with the mount point.
- */
+ 
 static const int find_mount(const char *fs, char *mp, int sizeof_mp)
 {
 	char mount_point[MAX_PATH];
@@ -563,17 +496,7 @@ static const int find_mount(const char *fs, char *mp, int sizeof_mp)
 	return 1;
 }
 
-/*
- * get_self_cgroup - get the current thread cgroup path
- *
- * Parse /proc/$$/cgroup file to get the thread's cgroup. As an example of line to parse:
- *
- * 0::/user.slice/user-0.slice/session-3.scope'\n'
- *
- * This function is interested in the content after the second : and before the '\n'.
- *
- * Returns 1 if a string was found, 0 otherwise.
- */
+ 
 static int get_self_cgroup(char *self_cg, int sizeof_self_cg)
 {
 	char path[MAX_PATH], *start;
@@ -598,14 +521,14 @@ static int get_self_cgroup(char *self_cg, int sizeof_self_cg)
 	if (!start)
 		return 0;
 
-	/* skip ":" */
+	 
 	start++;
 
 	start = strstr(start, ":");
 	if (!start)
 		return 0;
 
-	/* skip ":" */
+	 
 	start++;
 
 	if (strlen(start) >= sizeof_self_cg)
@@ -613,29 +536,20 @@ static int get_self_cgroup(char *self_cg, int sizeof_self_cg)
 
 	snprintf(self_cg, sizeof_self_cg, "%s", start);
 
-	/* Swap '\n' with '\0' */
+	 
 	start = strstr(self_cg, "\n");
 
-	/* there must be '\n' */
+	 
 	if (!start)
 		return 0;
 
-	/* ok, it found a string after the second : and before the \n */
+	 
 	*start = '\0';
 
 	return 1;
 }
 
-/*
- * set_comm_cgroup - Set cgroup to pid_t pid
- *
- * If cgroup argument is not NULL, the threads will move to the given cgroup.
- * Otherwise, the cgroup of the calling, i.e., rtla, thread will be used.
- *
- * Supports cgroup v2.
- *
- * Returns 1 on success, 0 otherwise.
- */
+ 
 int set_pid_cgroup(pid_t pid, const char *cgroup)
 {
 	char cgroup_path[MAX_PATH - strlen("/cgroup.procs")];
@@ -684,16 +598,7 @@ int set_pid_cgroup(pid_t pid, const char *cgroup)
 	return (retval >= 0);
 }
 
-/**
- * set_comm_cgroup - Set cgroup to threads starting with char *comm_prefix
- *
- * If cgroup argument is not NULL, the threads will move to the given cgroup.
- * Otherwise, the cgroup of the calling, i.e., rtla, thread will be used.
- *
- * Supports cgroup v2.
- *
- * Returns 1 on success, 0 otherwise.
- */
+ 
 int set_comm_cgroup(const char *comm_prefix, const char *cgroup)
 {
 	char cgroup_path[MAX_PATH - strlen("/cgroup.procs")];
@@ -768,26 +673,20 @@ out_cg:
 	return 0;
 }
 
-/**
- * auto_house_keeping - Automatically move rtla out of measurement threads
- *
- * Try to move rtla away from the tracer, if possible.
- *
- * Returns 1 on success, 0 otherwise.
- */
+ 
 int auto_house_keeping(cpu_set_t *monitored_cpus)
 {
 	cpu_set_t rtla_cpus, house_keeping_cpus;
 	int retval;
 
-	/* first get the CPUs in which rtla can actually run. */
+	 
 	retval = sched_getaffinity(getpid(), sizeof(rtla_cpus), &rtla_cpus);
 	if (retval == -1) {
 		debug_msg("Could not get rtla affinity, rtla might run with the threads!\n");
 		return 0;
 	}
 
-	/* then check if the existing setup is already good. */
+	 
 	CPU_AND(&house_keeping_cpus, &rtla_cpus, monitored_cpus);
 	if (!CPU_COUNT(&house_keeping_cpus)) {
 		debug_msg("rtla and the monitored CPUs do not share CPUs.");
@@ -795,13 +694,13 @@ int auto_house_keeping(cpu_set_t *monitored_cpus)
 		return 1;
 	}
 
-	/* remove the intersection */
+	 
 	CPU_XOR(&house_keeping_cpus, &rtla_cpus, monitored_cpus);
 
-	/* get only those that rtla can run */
+	 
 	CPU_AND(&house_keeping_cpus, &house_keeping_cpus, &rtla_cpus);
 
-	/* is there any cpu left? */
+	 
 	if (!CPU_COUNT(&house_keeping_cpus)) {
 		debug_msg("Could not find any CPU for auto house-keeping\n");
 		return 0;

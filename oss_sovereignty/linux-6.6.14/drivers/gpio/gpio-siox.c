@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015-2018 Pengutronix, Uwe Kleine-König <kernel@pengutronix.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/siox.h>
@@ -20,10 +18,7 @@ struct gpio_siox_ddata {
 	u32 irq_type[20];
 };
 
-/*
- * Note that this callback only sets the value that is clocked out in the next
- * cycle.
- */
+ 
 static int gpio_siox_set_data(struct siox_device *sdevice, u8 status, u8 buf[])
 {
 	struct gpio_siox_ddata *ddata = dev_get_drvdata(&sdevice->dev);
@@ -78,11 +73,7 @@ static int gpio_siox_get_data(struct siox_device *sdevice, const u8 buf[])
 			struct irq_domain *irqdomain = ddata->gchip.irq.domain;
 			unsigned int irq = irq_find_mapping(irqdomain, offset);
 
-			/*
-			 * Conceptually handle_nested_irq should call the flow
-			 * handler of the irq chip. But it doesn't, so we have
-			 * to clean the irq_status here.
-			 */
+			 
 			raw_spin_lock_irq(&ddata->irqlock);
 			ddata->irq_status &= ~(1 << offset);
 			raw_spin_unlock_irq(&ddata->irqlock);

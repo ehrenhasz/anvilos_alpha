@@ -1,29 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/**************************************************************************
- *
- * Copyright 2011-2023 VMware, Inc., Palo Alto, CA., USA
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- **************************************************************************/
+
+ 
 
 #include "vmwgfx_bo.h"
 #include "vmwgfx_kms.h"
@@ -40,18 +16,7 @@
 #define vmw_connector_to_sou(x) \
 	container_of(x, struct vmw_screen_object_unit, base.connector)
 
-/**
- * struct vmw_kms_sou_surface_dirty - Closure structure for
- * blit surface to screen command.
- * @base: The base type we derive from. Used by vmw_kms_helper_dirty().
- * @left: Left side of bounding box.
- * @right: Right side of bounding box.
- * @top: Top side of bounding box.
- * @bottom: Bottom side of bounding box.
- * @dst_x: Difference between source clip rects and framebuffer coordinates.
- * @dst_y: Difference between source clip rects and framebuffer coordinates.
- * @sid: Surface id of surface to copy from.
- */
+ 
 struct vmw_kms_sou_surface_dirty {
 	struct vmw_kms_dirty base;
 	s32 left, right, top, bottom;
@@ -59,10 +24,7 @@ struct vmw_kms_sou_surface_dirty {
 	u32 sid;
 };
 
-/*
- * SVGA commands that are used by this code. Please see the device headers
- * for explanation.
- */
+ 
 struct vmw_kms_sou_readback_blit {
 	uint32 header;
 	SVGAFifoCmdBlitScreenToGMRFB body;
@@ -83,14 +45,12 @@ struct vmw_kms_sou_define_gmrfb {
 	SVGAFifoCmdDefineGMRFB body;
 };
 
-/*
- * Display unit using screen objects.
- */
+ 
 struct vmw_screen_object_unit {
 	struct vmw_display_unit base;
 
-	unsigned long buffer_size; /**< Size of allocated buffer */
-	struct vmw_bo *buffer; /**< Backing store buffer */
+	unsigned long buffer_size;  
+	struct vmw_bo *buffer;  
 
 	bool defined;
 };
@@ -102,18 +62,14 @@ static void vmw_sou_destroy(struct vmw_screen_object_unit *sou)
 }
 
 
-/*
- * Screen Object Display Unit CRTC functions
- */
+ 
 
 static void vmw_sou_crtc_destroy(struct drm_crtc *crtc)
 {
 	vmw_sou_destroy(vmw_crtc_to_sou(crtc));
 }
 
-/*
- * Send the fifo command to create a screen.
- */
+ 
 static int vmw_sou_fifo_create(struct vmw_private *dev_priv,
 			       struct vmw_screen_object_unit *sou,
 			       int x, int y,
@@ -148,7 +104,7 @@ static int vmw_sou_fifo_create(struct vmw_private *dev_priv,
 	sou->base.set_gui_x = cmd->obj.root.x;
 	sou->base.set_gui_y = cmd->obj.root.y;
 
-	/* Ok to assume that buffer is pinned in vram */
+	 
 	vmw_bo_get_guest_ptr(&sou->buffer->tbo, &cmd->obj.backingStore.ptr);
 	cmd->obj.backingStore.pitch = mode->hdisplay * 4;
 
@@ -159,9 +115,7 @@ static int vmw_sou_fifo_create(struct vmw_private *dev_priv,
 	return 0;
 }
 
-/*
- * Send the fifo command to destroy a screen.
- */
+ 
 static int vmw_sou_fifo_destroy(struct vmw_private *dev_priv,
 				struct vmw_screen_object_unit *sou)
 {
@@ -175,7 +129,7 @@ static int vmw_sou_fifo_destroy(struct vmw_private *dev_priv,
 		SVGAFifoCmdDestroyScreen body;
 	} *cmd;
 
-	/* no need to do anything */
+	 
 	if (unlikely(!sou->defined))
 		return 0;
 
@@ -190,7 +144,7 @@ static int vmw_sou_fifo_destroy(struct vmw_private *dev_priv,
 
 	vmw_cmd_commit(dev_priv, fifo_size);
 
-	/* Force sync */
+	 
 	ret = vmw_fallback_wait(dev_priv, false, true, 0, false, 3*HZ);
 	if (unlikely(ret != 0))
 		DRM_ERROR("Failed to sync with HW");
@@ -200,14 +154,7 @@ static int vmw_sou_fifo_destroy(struct vmw_private *dev_priv,
 	return ret;
 }
 
-/**
- * vmw_sou_crtc_mode_set_nofb - Create new screen
- *
- * @crtc: CRTC associated with the new screen
- *
- * This function creates/destroys a screen.  This function cannot fail, so if
- * somehow we run into a failure, just do the best we can to get out.
- */
+ 
 static void vmw_sou_crtc_mode_set_nofb(struct drm_crtc *crtc)
 {
 	struct vmw_private *dev_priv;
@@ -259,36 +206,18 @@ static void vmw_sou_crtc_mode_set_nofb(struct drm_crtc *crtc)
 	}
 }
 
-/**
- * vmw_sou_crtc_helper_prepare - Noop
- *
- * @crtc:  CRTC associated with the new screen
- *
- * Prepares the CRTC for a mode set, but we don't need to do anything here.
- */
+ 
 static void vmw_sou_crtc_helper_prepare(struct drm_crtc *crtc)
 {
 }
 
-/**
- * vmw_sou_crtc_atomic_enable - Noop
- *
- * @crtc: CRTC associated with the new screen
- * @state: Unused
- *
- * This is called after a mode set has been completed.
- */
+ 
 static void vmw_sou_crtc_atomic_enable(struct drm_crtc *crtc,
 				       struct drm_atomic_state *state)
 {
 }
 
-/**
- * vmw_sou_crtc_atomic_disable - Turns off CRTC
- *
- * @crtc: CRTC to be turned off
- * @state: Unused
- */
+ 
 static void vmw_sou_crtc_atomic_disable(struct drm_crtc *crtc,
 					struct drm_atomic_state *state)
 {
@@ -322,9 +251,7 @@ static const struct drm_crtc_funcs vmw_screen_object_crtc_funcs = {
 	.page_flip = drm_atomic_helper_page_flip,
 };
 
-/*
- * Screen Object Display Unit encoder functions
- */
+ 
 
 static void vmw_sou_encoder_destroy(struct drm_encoder *encoder)
 {
@@ -335,9 +262,7 @@ static const struct drm_encoder_funcs vmw_screen_object_encoder_funcs = {
 	.destroy = vmw_sou_encoder_destroy,
 };
 
-/*
- * Screen Object Display Unit connector functions
- */
+ 
 
 static void vmw_sou_connector_destroy(struct drm_connector *connector)
 {
@@ -361,20 +286,9 @@ drm_connector_helper_funcs vmw_sou_connector_helper_funcs = {
 
 
 
-/*
- * Screen Object Display Plane Functions
- */
+ 
 
-/**
- * vmw_sou_primary_plane_cleanup_fb - Frees sou backing buffer
- *
- * @plane:  display plane
- * @old_state: Contains the FB to clean up
- *
- * Unpins the display surface
- *
- * Returns 0 on success
- */
+ 
 static void
 vmw_sou_primary_plane_cleanup_fb(struct drm_plane *plane,
 				 struct drm_plane_state *old_state)
@@ -392,16 +306,7 @@ vmw_sou_primary_plane_cleanup_fb(struct drm_plane *plane,
 }
 
 
-/**
- * vmw_sou_primary_plane_prepare_fb - allocate backing buffer
- *
- * @plane:  display plane
- * @new_state: info on the new plane state, including the FB
- *
- * The SOU backing buffer is our equivalent of the display plane.
- *
- * Returns 0 on success
- */
+ 
 static int
 vmw_sou_primary_plane_prepare_fb(struct drm_plane *plane,
 				 struct drm_plane_state *new_state)
@@ -430,10 +335,7 @@ vmw_sou_primary_plane_prepare_fb(struct drm_plane *plane,
 
 	if (vps->bo) {
 		if (vps->bo_size == bo_params.size) {
-			/*
-			 * Note that this might temporarily up the pin-count
-			 * to 2, until cleanup_fb() is called.
-			 */
+			 
 			return vmw_bo_pin_in_vram(dev_priv, vps->bo,
 						      true);
 		}
@@ -444,9 +346,7 @@ vmw_sou_primary_plane_prepare_fb(struct drm_plane *plane,
 
 	vmw_svga_enable(dev_priv);
 
-	/* After we have alloced the backing store might not be able to
-	 * resume the overlays, this is preferred to failing to alloc.
-	 */
+	 
 	vmw_overlay_pause_all(dev_priv);
 	ret = vmw_bo_create(dev_priv, &bo_params, &vps->bo);
 	vmw_overlay_resume_all(dev_priv);
@@ -455,10 +355,7 @@ vmw_sou_primary_plane_prepare_fb(struct drm_plane *plane,
 
 	vps->bo_size = bo_params.size;
 
-	/*
-	 * TTM already thinks the buffer is pinned, but make sure the
-	 * pin_count is upped.
-	 */
+	 
 	return vmw_bo_pin_in_vram(dev_priv, vps->bo, true);
 }
 
@@ -477,10 +374,7 @@ static uint32_t vmw_sou_bo_define_gmrfb(struct vmw_du_update_plane *update,
 	struct vmw_kms_sou_define_gmrfb *gmr = cmd;
 	int depth = update->vfb->base.format->depth;
 
-	/* Emulate RGBA support, contrary to svga_reg.h this is not
-	 * supported by hosts. This is only a problem if we are reading
-	 * this value later and expecting what we uploaded back.
-	 */
+	 
 	if (depth == 32)
 		depth = 24;
 
@@ -519,18 +413,7 @@ static uint32_t vmw_stud_bo_post_clip(struct vmw_du_update_plane  *update,
 	return 0;
 }
 
-/**
- * vmw_sou_plane_update_bo - Update display unit for bo backed fb.
- * @dev_priv: Device private.
- * @plane: Plane state.
- * @old_state: Old plane state.
- * @vfb: Framebuffer which is blitted to display unit.
- * @out_fence: If non-NULL, will return a ref-counted pointer to vmw_fence_obj.
- *             The returned fence pointer may be NULL in which case the device
- *             has already synchronized.
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 static int vmw_sou_plane_update_bo(struct vmw_private *dev_priv,
 				   struct drm_plane *plane,
 				   struct drm_plane_state *old_state,
@@ -571,11 +454,7 @@ static uint32_t vmw_sou_surface_post_prepare(struct vmw_du_update_plane *update,
 
 	srf_update = container_of(update, typeof(*srf_update), base);
 
-	/*
-	 * SOU SVGA_3D_CMD_BLIT_SURFACE_TO_SCREEN is special in the sense that
-	 * its bounding box is filled before iterating over all the clips. So
-	 * store the FIFO start address and revisit to fill the details.
-	 */
+	 
 	srf_update->cmd_start = cmd;
 
 	return 0;
@@ -596,7 +475,7 @@ static uint32_t vmw_sou_surface_pre_clip(struct vmw_du_update_plane *update,
 	blit->body.srcImage.sid = vfbs->surface->res.id;
 	blit->body.destScreenId = update->du->unit;
 
-	/* Update the source and destination bounding box later in post_clip */
+	 
 	blit->body.srcRect.left = 0;
 	blit->body.srcRect.top = 0;
 	blit->body.srcRect.right = 0;
@@ -616,10 +495,7 @@ static uint32_t vmw_sou_surface_clip_rect(struct vmw_du_update_plane *update,
 {
 	SVGASignedRect *rect = cmd;
 
-	/*
-	 * rects are relative to dest bounding box rect on screen object, so
-	 * translate to it later in post_clip
-	 */
+	 
 	rect->left = clip->x1;
 	rect->top = clip->y1;
 	rect->right = clip->x2;
@@ -651,7 +527,7 @@ static uint32_t vmw_sou_surface_post_clip(struct vmw_du_update_plane *update,
 
 	src_bb = *bb;
 
-	/* To translate bb back to fb src coord */
+	 
 	translate_src_x = (state->src_x >> 16) - state->crtc_x;
 	translate_src_y = (state->src_y >> 16) - state->crtc_y;
 
@@ -667,7 +543,7 @@ static uint32_t vmw_sou_surface_post_clip(struct vmw_du_update_plane *update,
 	blit->body.destRect.right = bb->x2;
 	blit->body.destRect.bottom = bb->y2;
 
-	/* rects are relative to dest bb rect */
+	 
 	for (i = 0; i < num_hits; i++) {
 		rect->left -= bb->x1;
 		rect->top -= bb->y1;
@@ -679,18 +555,7 @@ static uint32_t vmw_sou_surface_post_clip(struct vmw_du_update_plane *update,
 	return 0;
 }
 
-/**
- * vmw_sou_plane_update_surface - Update display unit for surface backed fb.
- * @dev_priv: Device private.
- * @plane: Plane state.
- * @old_state: Old plane state.
- * @vfb: Framebuffer which is blitted to display unit
- * @out_fence: If non-NULL, will return a ref-counted pointer to vmw_fence_obj.
- *             The returned fence pointer may be NULL in which case the device
- *             has already synchronized.
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 static int vmw_sou_plane_update_surface(struct vmw_private *dev_priv,
 					struct drm_plane *plane,
 					struct drm_plane_state *old_state,
@@ -728,7 +593,7 @@ vmw_sou_primary_plane_atomic_update(struct drm_plane *plane,
 	struct vmw_fence_obj *fence = NULL;
 	int ret;
 
-	/* In case of device error, maintain consistent atomic state */
+	 
 	if (crtc && new_state->fb) {
 		struct vmw_private *dev_priv = vmw_priv(crtc->dev);
 		struct vmw_framebuffer *vfb =
@@ -744,7 +609,7 @@ vmw_sou_primary_plane_atomic_update(struct drm_plane *plane,
 		if (ret != 0)
 			DRM_ERROR("Failed to update screen.\n");
 	} else {
-		/* Do nothing when fb and crtc is NULL (blank crtc) */
+		 
 		return;
 	}
 
@@ -771,9 +636,7 @@ static const struct drm_plane_funcs vmw_sou_cursor_funcs = {
 	.atomic_destroy_state = vmw_du_plane_destroy_state,
 };
 
-/*
- * Atomic Helpers
- */
+ 
 static const struct
 drm_plane_helper_funcs vmw_sou_cursor_plane_helper_funcs = {
 	.atomic_check = vmw_du_cursor_plane_atomic_check,
@@ -828,13 +691,10 @@ static int vmw_sou_init(struct vmw_private *dev_priv, unsigned unit)
 	sou->base.pref_height = dev_priv->initial_height;
 	sou->base.pref_mode = NULL;
 
-	/*
-	 * Remove this after enabling atomic because property values can
-	 * only exist in a state object
-	 */
+	 
 	sou->base.is_implicit = false;
 
-	/* Initialize primary plane */
+	 
 	ret = drm_universal_plane_init(dev, primary,
 				       0, &vmw_sou_plane_funcs,
 				       vmw_primary_plane_formats,
@@ -848,7 +708,7 @@ static int vmw_sou_init(struct vmw_private *dev_priv, unsigned unit)
 	drm_plane_helper_add(primary, &vmw_sou_primary_plane_helper_funcs);
 	drm_plane_enable_fb_damage_clips(primary);
 
-	/* Initialize cursor plane */
+	 
 	ret = drm_universal_plane_init(dev, &cursor->base,
 			0, &vmw_sou_cursor_funcs,
 			vmw_cursor_plane_formats,
@@ -925,7 +785,7 @@ int vmw_kms_sou_init_display(struct vmw_private *dev_priv)
 	struct drm_device *dev = &dev_priv->drm;
 	int i;
 
-	/* Screen objects won't work if GMR's aren't available */
+	 
 	if (!dev_priv->has_gmr)
 		return -ENOSYS;
 
@@ -955,10 +815,7 @@ static int do_bo_define_gmrfb(struct vmw_private *dev_priv,
 		SVGAFifoCmdDefineGMRFB body;
 	} *cmd;
 
-	/* Emulate RGBA support, contrary to svga_reg.h this is not
-	 * supported by hosts. This is only a problem if we are reading
-	 * this value later and expecting what we uploaded back.
-	 */
+	 
 	if (depth == 32)
 		depth = 24;
 
@@ -971,22 +828,14 @@ static int do_bo_define_gmrfb(struct vmw_private *dev_priv,
 	cmd->body.format.colorDepth = depth;
 	cmd->body.format.reserved = 0;
 	cmd->body.bytesPerLine = framebuffer->base.pitches[0];
-	/* Buffer is reserved in vram or GMR */
+	 
 	vmw_bo_get_guest_ptr(&buf->tbo, &cmd->body.ptr);
 	vmw_cmd_commit(dev_priv, sizeof(*cmd));
 
 	return 0;
 }
 
-/**
- * vmw_sou_surface_fifo_commit - Callback to fill in and submit a
- * blit surface to screen command.
- *
- * @dirty: The closure structure.
- *
- * Fills in the missing fields in the command, and translates the cliprects
- * to match the destination bounding box encoded.
- */
+ 
 static void vmw_sou_surface_fifo_commit(struct vmw_kms_dirty *dirty)
 {
 	struct vmw_kms_sou_surface_dirty *sdirty =
@@ -1006,10 +855,7 @@ static void vmw_sou_surface_fifo_commit(struct vmw_kms_dirty *dirty)
 	cmd->header.id = SVGA_3D_CMD_BLIT_SURFACE_TO_SCREEN;
 	cmd->header.size = sizeof(cmd->body) + region_size;
 
-	/*
-	 * Use the destination bounding box to specify destination - and
-	 * source bounding regions.
-	 */
+	 
 	cmd->body.destRect.left = sdirty->left;
 	cmd->body.destRect.right = sdirty->right;
 	cmd->body.destRect.top = sdirty->top;
@@ -1023,7 +869,7 @@ static void vmw_sou_surface_fifo_commit(struct vmw_kms_dirty *dirty)
 	cmd->body.srcImage.sid = sdirty->sid;
 	cmd->body.destScreenId = dirty->unit->unit;
 
-	/* Blits are relative to the destination rect. Translate. */
+	 
 	for (i = 0; i < dirty->num_hits; ++i, ++blit) {
 		blit->left -= sdirty->left;
 		blit->right -= sdirty->left;
@@ -1037,14 +883,7 @@ static void vmw_sou_surface_fifo_commit(struct vmw_kms_dirty *dirty)
 	sdirty->right = sdirty->bottom = S32_MIN;
 }
 
-/**
- * vmw_sou_surface_clip - Callback to encode a blit surface to screen cliprect.
- *
- * @dirty: The closure structure
- *
- * Encodes a SVGASignedRect cliprect and updates the bounding box of the
- * BLIT_SURFACE_TO_SCREEN command.
- */
+ 
 static void vmw_sou_surface_clip(struct vmw_kms_dirty *dirty)
 {
 	struct vmw_kms_sou_surface_dirty *sdirty =
@@ -1052,14 +891,14 @@ static void vmw_sou_surface_clip(struct vmw_kms_dirty *dirty)
 	struct vmw_kms_sou_dirty_cmd *cmd = dirty->cmd;
 	SVGASignedRect *blit = (SVGASignedRect *) &cmd[1];
 
-	/* Destination rect. */
+	 
 	blit += dirty->num_hits;
 	blit->left = dirty->unit_x1;
 	blit->top = dirty->unit_y1;
 	blit->right = dirty->unit_x2;
 	blit->bottom = dirty->unit_y2;
 
-	/* Destination bounding box */
+	 
 	sdirty->left = min_t(s32, sdirty->left, dirty->unit_x1);
 	sdirty->top = min_t(s32, sdirty->top, dirty->unit_y1);
 	sdirty->right = max_t(s32, sdirty->right, dirty->unit_x2);
@@ -1068,28 +907,7 @@ static void vmw_sou_surface_clip(struct vmw_kms_dirty *dirty)
 	dirty->num_hits++;
 }
 
-/**
- * vmw_kms_sou_do_surface_dirty - Dirty part of a surface backed framebuffer
- *
- * @dev_priv: Pointer to the device private structure.
- * @framebuffer: Pointer to the surface-buffer backed framebuffer.
- * @clips: Array of clip rects. Either @clips or @vclips must be NULL.
- * @vclips: Alternate array of clip rects. Either @clips or @vclips must
- * be NULL.
- * @srf: Pointer to surface to blit from. If NULL, the surface attached
- * to @framebuffer will be used.
- * @dest_x: X coordinate offset to align @srf with framebuffer coordinates.
- * @dest_y: Y coordinate offset to align @srf with framebuffer coordinates.
- * @num_clips: Number of clip rects in @clips.
- * @inc: Increment to use when looping over @clips.
- * @out_fence: If non-NULL, will return a ref-counted pointer to a
- * struct vmw_fence_obj. The returned fence pointer may be NULL in which
- * case the device has already synchronized.
- * @crtc: If crtc is passed, perform surface dirty on that crtc only.
- *
- * Returns 0 on success, negative error code on failure. -ERESTARTSYS if
- * interrupted.
- */
+ 
 int vmw_kms_sou_do_surface_dirty(struct vmw_private *dev_priv,
 				 struct vmw_framebuffer *framebuffer,
 				 struct drm_clip_rect *clips,
@@ -1145,13 +963,7 @@ out_unref:
 	return ret;
 }
 
-/**
- * vmw_sou_bo_fifo_commit - Callback to submit a set of readback clips.
- *
- * @dirty: The closure structure.
- *
- * Commits a previously built command buffer of readback clips.
- */
+ 
 static void vmw_sou_bo_fifo_commit(struct vmw_kms_dirty *dirty)
 {
 	if (!dirty->num_hits) {
@@ -1164,13 +976,7 @@ static void vmw_sou_bo_fifo_commit(struct vmw_kms_dirty *dirty)
 			dirty->num_hits);
 }
 
-/**
- * vmw_sou_bo_clip - Callback to encode a readback cliprect.
- *
- * @dirty: The closure structure
- *
- * Encodes a BLIT_GMRFB_TO_SCREEN cliprect.
- */
+ 
 static void vmw_sou_bo_clip(struct vmw_kms_dirty *dirty)
 {
 	struct vmw_kms_sou_bo_blit *blit = dirty->cmd;
@@ -1187,25 +993,7 @@ static void vmw_sou_bo_clip(struct vmw_kms_dirty *dirty)
 	dirty->num_hits++;
 }
 
-/**
- * vmw_kms_sou_do_bo_dirty - Dirty part of a buffer-object backed framebuffer
- *
- * @dev_priv: Pointer to the device private structure.
- * @framebuffer: Pointer to the buffer-object backed framebuffer.
- * @clips: Array of clip rects.
- * @vclips: Alternate array of clip rects. Either @clips or @vclips must
- * be NULL.
- * @num_clips: Number of clip rects in @clips.
- * @increment: Increment to use when looping over @clips.
- * @interruptible: Whether to perform waits interruptible if possible.
- * @out_fence: If non-NULL, will return a ref-counted pointer to a
- * struct vmw_fence_obj. The returned fence pointer may be NULL in which
- * case the device has already synchronized.
- * @crtc: If crtc is passed, perform bo dirty on that crtc only.
- *
- * Returns 0 on success, negative error code on failure. -ERESTARTSYS if
- * interrupted.
- */
+ 
 int vmw_kms_sou_do_bo_dirty(struct vmw_private *dev_priv,
 				struct vmw_framebuffer *framebuffer,
 				struct drm_clip_rect *clips,
@@ -1257,13 +1045,7 @@ out_unref:
 }
 
 
-/**
- * vmw_sou_readback_fifo_commit - Callback to submit a set of readback clips.
- *
- * @dirty: The closure structure.
- *
- * Commits a previously built command buffer of readback clips.
- */
+ 
 static void vmw_sou_readback_fifo_commit(struct vmw_kms_dirty *dirty)
 {
 	if (!dirty->num_hits) {
@@ -1276,13 +1058,7 @@ static void vmw_sou_readback_fifo_commit(struct vmw_kms_dirty *dirty)
 			dirty->num_hits);
 }
 
-/**
- * vmw_sou_readback_clip - Callback to encode a readback cliprect.
- *
- * @dirty: The closure structure
- *
- * Encodes a BLIT_SCREEN_TO_GMRFB cliprect.
- */
+ 
 static void vmw_sou_readback_clip(struct vmw_kms_dirty *dirty)
 {
 	struct vmw_kms_sou_readback_blit *blit = dirty->cmd;
@@ -1299,23 +1075,7 @@ static void vmw_sou_readback_clip(struct vmw_kms_dirty *dirty)
 	dirty->num_hits++;
 }
 
-/**
- * vmw_kms_sou_readback - Perform a readback from the screen object system to
- * a buffer-object backed framebuffer.
- *
- * @dev_priv: Pointer to the device private structure.
- * @file_priv: Pointer to a struct drm_file identifying the caller.
- * Must be set to NULL if @user_fence_rep is NULL.
- * @vfb: Pointer to the buffer-object backed framebuffer.
- * @user_fence_rep: User-space provided structure for fence information.
- * Must be set to non-NULL if @file_priv is non-NULL.
- * @vclips: Array of clip rects.
- * @num_clips: Number of clip rects in @vclips.
- * @crtc: If crtc is passed, readback on that crtc only.
- *
- * Returns 0 on success, negative error code on failure. -ERESTARTSYS if
- * interrupted.
- */
+ 
 int vmw_kms_sou_readback(struct vmw_private *dev_priv,
 			 struct drm_file *file_priv,
 			 struct vmw_framebuffer *vfb,

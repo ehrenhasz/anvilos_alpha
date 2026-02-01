@@ -1,14 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* Copyright (c) 2018, The Linux Foundation. All rights reserved.
- * Copyright (C) 2018-2022 Linaro Ltd.
- */
+
+ 
 #include <linux/stddef.h>
 #include <linux/soc/qcom/qmi.h>
 
 #include "ipa_qmi_msg.h"
 
-/* QMI message structure definition for struct ipa_indication_register_req */
+ 
 const struct qmi_elem_info ipa_indication_register_req_ei[] = {
 	{
 		.data_type	= QMI_OPT_FLAG,
@@ -115,7 +113,7 @@ const struct qmi_elem_info ipa_indication_register_req_ei[] = {
 	},
 };
 
-/* QMI message structure definition for struct ipa_indication_register_rsp */
+ 
 const struct qmi_elem_info ipa_indication_register_rsp_ei[] = {
 	{
 		.data_type	= QMI_STRUCT,
@@ -133,7 +131,7 @@ const struct qmi_elem_info ipa_indication_register_rsp_ei[] = {
 	},
 };
 
-/* QMI message structure definition for struct ipa_driver_init_complete_req */
+ 
 const struct qmi_elem_info ipa_driver_init_complete_req_ei[] = {
 	{
 		.data_type	= QMI_UNSIGNED_1_BYTE,
@@ -150,7 +148,7 @@ const struct qmi_elem_info ipa_driver_init_complete_req_ei[] = {
 	},
 };
 
-/* QMI message structure definition for struct ipa_driver_init_complete_rsp */
+ 
 const struct qmi_elem_info ipa_driver_init_complete_rsp_ei[] = {
 	{
 		.data_type	= QMI_STRUCT,
@@ -168,7 +166,7 @@ const struct qmi_elem_info ipa_driver_init_complete_rsp_ei[] = {
 	},
 };
 
-/* QMI message structure definition for struct ipa_init_complete_ind */
+ 
 const struct qmi_elem_info ipa_init_complete_ind_ei[] = {
 	{
 		.data_type	= QMI_STRUCT,
@@ -186,7 +184,7 @@ const struct qmi_elem_info ipa_init_complete_ind_ei[] = {
 	},
 };
 
-/* QMI message structure definition for struct ipa_mem_bounds */
+ 
 const struct qmi_elem_info ipa_mem_bounds_ei[] = {
 	{
 		.data_type	= QMI_UNSIGNED_4_BYTE,
@@ -207,7 +205,7 @@ const struct qmi_elem_info ipa_mem_bounds_ei[] = {
 	},
 };
 
-/* QMI message structure definition for struct ipa_mem_array */
+ 
 const struct qmi_elem_info ipa_mem_array_ei[] = {
 	{
 		.data_type	= QMI_UNSIGNED_4_BYTE,
@@ -228,7 +226,7 @@ const struct qmi_elem_info ipa_mem_array_ei[] = {
 	},
 };
 
-/* QMI message structure definition for struct ipa_mem_range */
+ 
 const struct qmi_elem_info ipa_mem_range_ei[] = {
 	{
 		.data_type	= QMI_UNSIGNED_4_BYTE,
@@ -249,7 +247,7 @@ const struct qmi_elem_info ipa_mem_range_ei[] = {
 	},
 };
 
-/* QMI message structure definition for struct ipa_init_modem_driver_req */
+ 
 const struct qmi_elem_info ipa_init_modem_driver_req_ei[] = {
 	{
 		.data_type	= QMI_OPT_FLAG,
@@ -644,7 +642,7 @@ const struct qmi_elem_info ipa_init_modem_driver_req_ei[] = {
 	},
 };
 
-/* QMI message structure definition for struct ipa_init_modem_driver_rsp */
+ 
 const struct qmi_elem_info ipa_init_modem_driver_rsp_ei[] = {
 	{
 		.data_type	= QMI_STRUCT,

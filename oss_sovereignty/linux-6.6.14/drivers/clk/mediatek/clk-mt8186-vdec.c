@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright (c) 2022 MediaTek Inc.
-// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
+
+
+
+
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -49,17 +49,17 @@ static const struct mtk_gate_regs vdec3_cg_regs = {
 	GATE_MTK(_id, _name, _parent, &vdec3_cg_regs, _shift, &mtk_clk_gate_ops_setclr_inv)
 
 static const struct mtk_gate vdec_clks[] = {
-	/* VDEC0 */
+	 
 	GATE_VDEC0(CLK_VDEC_CKEN, "vdec_cken", "top_vdec", 0),
 	GATE_VDEC0(CLK_VDEC_ACTIVE, "vdec_active", "top_vdec", 4),
 	GATE_VDEC0(CLK_VDEC_CKEN_ENG, "vdec_cken_eng", "top_vdec", 8),
-	/* VDEC1 */
+	 
 	GATE_VDEC1(CLK_VDEC_MINI_MDP_CKEN_CFG_RG, "vdec_mini_mdp_cken_cfg_rg", "top_vdec", 0),
-	/* VDEC2 */
+	 
 	GATE_VDEC2(CLK_VDEC_LAT_CKEN, "vdec_lat_cken", "top_vdec", 0),
 	GATE_VDEC2(CLK_VDEC_LAT_ACTIVE, "vdec_lat_active", "top_vdec", 4),
 	GATE_VDEC2(CLK_VDEC_LAT_CKEN_ENG, "vdec_lat_cken_eng", "top_vdec", 8),
-	/* VDEC3 */
+	 
 	GATE_VDEC3(CLK_VDEC_LARB1_CKEN, "vdec_larb1_cken", "top_vdec", 0),
 };
 
@@ -73,7 +73,7 @@ static const struct of_device_id of_match_clk_mt8186_vdec[] = {
 		.compatible = "mediatek,mt8186-vdecsys",
 		.data = &vdec_desc,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8186_vdec);

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include <argp.h>
 #include <linux/btf.h>
@@ -63,9 +63,9 @@ const struct argp bench_local_storage_argp = {
 	.parser = parse_arg,
 };
 
-/* Keep in sync w/ array of maps in bpf */
+ 
 #define MAX_NR_MAPS 1000
-/* keep in sync w/ same define in bpf */
+ 
 #define HASHMAP_SZ 4194304
 
 static void validate(void)
@@ -100,9 +100,7 @@ static void prepopulate_hashmap(int fd)
 {
 	int i, key, val;
 
-	/* local_storage gets will have BPF_LOCAL_STORAGE_GET_F_CREATE flag set, so
-	 * populate the hashmap for a similar comparison
-	 */
+	 
 	for (i = 0; i < HASHMAP_SZ; i++) {
 		key = val = i;
 		if (bpf_map_update_elem(fd, &key, &val, 0)) {
@@ -238,16 +236,7 @@ static void *producer(void *input)
 	return NULL;
 }
 
-/* cache sequential and interleaved get benchs test local_storage get
- * performance, specifically they demonstrate performance cliff of
- * current list-plus-cache local_storage model.
- *
- * cache sequential get: call bpf_task_storage_get on n maps in order
- * cache interleaved get: like "sequential get", but interleave 4 calls to the
- *	'important' map (idx 0 in array_of_maps) for every 10 calls. Goal
- *	is to mimic environment where many progs are accessing their local_storage
- *	maps, with 'our' prog needing to access its map more often than others
- */
+ 
 const struct bench bench_local_storage_cache_seq_get = {
 	.name = "local-storage-cache-seq-get",
 	.argp = &bench_local_storage_argp,

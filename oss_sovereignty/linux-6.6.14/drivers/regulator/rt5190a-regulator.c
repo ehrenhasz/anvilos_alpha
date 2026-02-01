@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <dt-bindings/regulator/richtek,rt5190a-regulator.h>
 #include <linux/bits.h>
@@ -172,7 +172,7 @@ static irqreturn_t rt5190a_irq_handler(int irq, void *data)
 	if (ret)
 		dev_err(priv->dev, "Failed to write-clear events\n");
 
-	/* Handle OV,UV events */
+	 
 	for (i = 0; i < ARRAY_SIZE(event_tbl); i++) {
 		fields = events & event_tbl[i].bitmask;
 		fields >>= ffs(event_tbl[i].bitmask) - 1;
@@ -187,7 +187,7 @@ static irqreturn_t rt5190a_irq_handler(int irq, void *data)
 		}
 	}
 
-	/* Handle CH234 OT event */
+	 
 	if (events & RT5190A_CH234OT_MASK) {
 		for (j = RT5190A_IDX_BUCK2; j < RT5190A_IDX_LDO; j++) {
 			regulator_notifier_call_chain(priv->rdev[j],
@@ -196,7 +196,7 @@ static irqreturn_t rt5190a_irq_handler(int irq, void *data)
 		}
 	}
 
-	/* Warning if CHIP OT occur */
+	 
 	if (events & RT5190A_CHIPOT_MASK)
 		dev_warn(priv->dev, "CHIP overheat\n");
 
@@ -248,7 +248,7 @@ static int rt5190a_of_parse_cb(struct rt5190a_priv *priv, int rid,
 
 	latchup_enable = of_property_read_bool(np, "richtek,latchup-enable");
 
-	/* latchup: 0, default hiccup: 1 */
+	 
 	val = !latchup_enable ? mask : 0;
 
 	return regmap_update_bits(priv->regmap, RT5190A_REG_PROTMODE, mask, val);

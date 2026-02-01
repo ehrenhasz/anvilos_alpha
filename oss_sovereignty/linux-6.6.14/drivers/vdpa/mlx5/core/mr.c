@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2020 Mellanox Technologies Ltd. */
+
+ 
 
 #include <linux/vhost_types.h>
 #include <linux/vdpa.h>
@@ -8,7 +8,7 @@
 #include <linux/mlx5/qp.h>
 #include "mlx5_vdpa.h"
 
-/* DIV_ROUND_UP where the divider is a power of 2 give by its log base 2 value */
+ 
 #define MLX5_DIV_ROUND_UP_POW2(_n, _s) \
 ({ \
 	u64 __s = _s; \
@@ -348,12 +348,7 @@ err_alloc:
 	return err;
 }
 
-/* The iotlb pointer contains a list of maps. Go over the maps, possibly
- * merging mergeable maps, and create direct memory keys that provide the
- * device access to memory. The direct mkeys are then referred to by the
- * indirect memory key that provides access to the enitre address space given
- * by iotlb.
- */
+ 
 static int create_user_mr(struct mlx5_vdpa_dev *mvdev, struct vhost_iotlb *iotlb)
 {
 	struct mlx5_vdpa_mr *mr = &mvdev->mr;
@@ -377,9 +372,7 @@ static int create_user_mr(struct mlx5_vdpa_dev *mvdev, struct vhost_iotlb *iotlb
 		} else {
 			if (ps != U64_MAX) {
 				if (pe < map->start) {
-					/* We have a hole in the map. Check how
-					 * many null keys are required to fill it.
-					 */
+					 
 					nnuls = MLX5_DIV_ROUND_UP_POW2(map->start - pe,
 								       LOG_MAX_KLM_SIZE);
 					mr->num_klms += nnuls;
@@ -397,10 +390,7 @@ static int create_user_mr(struct mlx5_vdpa_dev *mvdev, struct vhost_iotlb *iotlb
 	if (err)
 		goto err_chain;
 
-	/* Create the memory key that defines the guests's address space. This
-	 * memory key refers to the direct keys that contain the MTT
-	 * translations
-	 */
+	 
 	err = create_indirect_key(mvdev, mr);
 	if (err)
 		goto err_chain;

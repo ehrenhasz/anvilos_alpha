@@ -1,16 +1,4 @@
-/*
- * llc_if.c - Defines LLC interface to upper layer
- *
- * Copyright (c) 1997 by Procom Technology, Inc.
- * 		 2001-2003 by Arnaldo Carvalho de Melo <acme@conectiva.com.br>
- *
- * This program can be redistributed or modified under the terms of the
- * GNU General Public License as published by the Free Software Foundation.
- * This program is distributed without any warranty or implied warranty
- * of merchantability or fitness for a particular purpose.
- *
- * See the GNU General Public License for more details.
- */
+ 
 #include <linux/gfp.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -26,21 +14,7 @@
 #include <net/llc_c_st.h>
 #include <net/tcp_states.h>
 
-/**
- *	llc_build_and_send_pkt - Connection data sending for upper layers.
- *	@sk: connection
- *	@skb: packet to send
- *
- *	This function is called when upper layer wants to send data using
- *	connection oriented communication mode. During sending data, connection
- *	will be locked and received frames and expired timers will be queued.
- *	Returns 0 for success, -ECONNABORTED when the connection already
- *	closed and -EBUSY when sending data is not permitted in this state or
- *	LLC has send an I pdu with p bit set to 1 and is waiting for it's
- *	response.
- *
- *	This function always consumes a reference to the skb.
- */
+ 
 int llc_build_and_send_pkt(struct sock *sk, struct sk_buff *skb)
 {
 	struct llc_conn_state_ev *ev;
@@ -50,7 +24,7 @@ int llc_build_and_send_pkt(struct sock *sk, struct sk_buff *skb)
 	if (unlikely(llc->state == LLC_CONN_STATE_ADM))
 		goto out_free;
 	rc = -EBUSY;
-	if (unlikely(llc_data_accept_state(llc->state) || /* data_conn_refuse */
+	if (unlikely(llc_data_accept_state(llc->state) ||  
 		     llc->p_flag)) {
 		llc->failed_data_req = 1;
 		goto out_free;
@@ -67,19 +41,7 @@ out_free:
 	return rc;
 }
 
-/**
- *	llc_establish_connection - Called by upper layer to establish a conn
- *	@sk: connection
- *	@lmac: local mac address
- *	@dmac: destination mac address
- *	@dsap: destination sap
- *
- *	Upper layer calls this to establish an LLC connection with a remote
- *	machine. This function packages a proper event and sends it connection
- *	component state machine. Success or failure of connection
- *	establishment will inform to upper layer via calling it's confirm
- *	function and passing proper information.
- */
+ 
 int llc_establish_connection(struct sock *sk, const u8 *lmac, u8 *dmac, u8 dsap)
 {
 	int rc = -EISCONN;
@@ -117,15 +79,7 @@ out_put:
 	return rc;
 }
 
-/**
- *	llc_send_disc - Called by upper layer to close a connection
- *	@sk: connection to be closed
- *
- *	Upper layer calls this when it wants to close an established LLC
- *	connection with a remote machine. This function packages a proper event
- *	and sends it to connection component state machine. Returns 0 for
- *	success, 1 otherwise.
- */
+ 
 int llc_send_disc(struct sock *sk)
 {
 	u16 rc = 1;
@@ -137,10 +91,7 @@ int llc_send_disc(struct sock *sk)
 	    llc_sk(sk)->state == LLC_CONN_STATE_ADM ||
 	    llc_sk(sk)->state == LLC_CONN_OUT_OF_SVC)
 		goto out;
-	/*
-	 * Postpone unassigning the connection from its SAP and returning the
-	 * connection until all ACTIONs have been completely executed
-	 */
+	 
 	skb = alloc_skb(0, GFP_ATOMIC);
 	if (!skb)
 		goto out;

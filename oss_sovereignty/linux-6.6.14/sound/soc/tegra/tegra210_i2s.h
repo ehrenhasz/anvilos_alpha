@@ -1,15 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tegra210_i2s.h - Definitions for Tegra210 I2S driver
- *
- * Copyright (c) 2020 NVIDIA CORPORATION. All rights reserved.
- *
- */
+ 
+ 
 
 #ifndef __TEGRA210_I2S_H__
 #define __TEGRA210_I2S_H__
 
-/* Register offsets from I2S*_BASE */
+ 
 #define TEGRA210_I2S_RX_ENABLE			0x0
 #define TEGRA210_I2S_RX_SOFT_RESET		0x4
 #define TEGRA210_I2S_RX_STATUS			0x0c
@@ -47,7 +42,7 @@
 #define TEGRA210_I2S_CLK_TRIM			0xac
 #define TEGRA210_I2S_CYA			0xb0
 
-/* Bit fields, shifts and masks */
+ 
 #define I2S_DATA_SHIFT				8
 #define I2S_CTRL_DATA_OFFSET_MASK		(0x7ff << I2S_DATA_SHIFT)
 

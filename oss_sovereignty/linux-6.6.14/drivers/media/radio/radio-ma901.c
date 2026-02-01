@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for the MasterKit MA901 USB FM radio. This device plugs
- * into the USB port and an analog audio input or headphones, so this thing
- * only deals with initialization, frequency setting, volume.
- *
- * Copyright (c) 2012 Alexey Klimov <klimov.linux@gmail.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -32,7 +26,7 @@ MODULE_VERSION(DRIVER_VERSION);
 #define USB_MA901_VENDOR  0x16c0
 #define USB_MA901_PRODUCT 0x05df
 
-/* dev_warn macro with driver name */
+ 
 #define MA901_DRIVER_NAME "radio-ma901"
 #define ma901radio_dev_warn(dev, fmt, arg...)				\
 		dev_warn(dev, MA901_DRIVER_NAME " - " fmt, ##arg)
@@ -40,7 +34,7 @@ MODULE_VERSION(DRIVER_VERSION);
 #define ma901radio_dev_err(dev, fmt, arg...) \
 		dev_err(dev, MA901_DRIVER_NAME " - " fmt, ##arg)
 
-/* Probably USB_TIMEOUT should be modified in module parameter */
+ 
 #define BUFFER_LENGTH 8
 #define USB_TIMEOUT 500
 
@@ -51,25 +45,23 @@ MODULE_VERSION(DRIVER_VERSION);
 #define MA901_VOLUME_MAX 16
 #define MA901_VOLUME_MIN 0
 
-/* Commands that device should understand
- * List isn't full and will be updated with implementation of new functions
- */
+ 
 #define MA901_RADIO_SET_FREQ		0x03
 #define MA901_RADIO_SET_VOLUME		0x04
 #define MA901_RADIO_SET_MONO_STEREO	0x05
 
-/* Comfortable defines for ma901radio_set_stereo */
+ 
 #define MA901_WANT_STEREO		0x50
 #define MA901_WANT_MONO			0xd0
 
-/* module parameter */
+ 
 static int radio_nr = -1;
 module_param(radio_nr, int, 0);
 MODULE_PARM_DESC(radio_nr, "Radio file number");
 
-/* Data for one (physical) device */
+ 
 struct ma901radio_device {
-	/* reference to USB and video device */
+	 
 	struct usb_device *usbdev;
 	struct usb_interface *intf;
 	struct video_device vdev;
@@ -77,7 +69,7 @@ struct ma901radio_device {
 	struct v4l2_ctrl_handler hdl;
 
 	u8 *buffer;
-	struct mutex lock;	/* buffer locking */
+	struct mutex lock;	 
 	int curfreq;
 	u16 volume;
 	int stereo;
@@ -89,7 +81,7 @@ static inline struct ma901radio_device *to_ma901radio_dev(struct v4l2_device *v4
 	return container_of(v4l2_dev, struct ma901radio_device, v4l2_dev);
 }
 
-/* set a frequency, freq is defined by v4l's TUNER_LOW, i.e. 1/16th kHz */
+ 
 static int ma901radio_set_freq(struct ma901radio_device *radio, int freq)
 {
 	unsigned int freq_send = 0x300 + (freq >> 5) / 25;
@@ -165,11 +157,7 @@ static int ma901_set_stereo(struct ma901radio_device *radio, u8 stereo)
 	return retval;
 }
 
-/* Handle unplugging the device.
- * We call video_unregister_device in any case.
- * The last function called in this procedure is
- * usb_ma901radio_device_release.
- */
+ 
 static void usb_ma901radio_disconnect(struct usb_interface *intf)
 {
 	struct ma901radio_device *radio = to_ma901radio_dev(usb_get_intfdata(intf));
@@ -182,7 +170,7 @@ static void usb_ma901radio_disconnect(struct usb_interface *intf)
 	v4l2_device_put(&radio->v4l2_dev);
 }
 
-/* vidioc_querycap - query device capabilities */
+ 
 static int vidioc_querycap(struct file *file, void *priv,
 					struct v4l2_capability *v)
 {
@@ -194,7 +182,7 @@ static int vidioc_querycap(struct file *file, void *priv,
 	return 0;
 }
 
-/* vidioc_g_tuner - get tuner attributes */
+ 
 static int vidioc_g_tuner(struct file *file, void *priv,
 				struct v4l2_tuner *v)
 {
@@ -205,24 +193,20 @@ static int vidioc_g_tuner(struct file *file, void *priv,
 
 	v->signal = 0;
 
-	/* TODO: the same words like in _probe() goes here.
-	 * When receiving of stats will be implemented then we can call
-	 * ma901radio_get_stat().
-	 * retval = ma901radio_get_stat(radio, &is_stereo, &v->signal);
-	 */
+	 
 
 	strscpy(v->name, "FM", sizeof(v->name));
 	v->type = V4L2_TUNER_RADIO;
 	v->rangelow = FREQ_MIN * FREQ_MUL;
 	v->rangehigh = FREQ_MAX * FREQ_MUL;
 	v->capability = V4L2_TUNER_CAP_LOW | V4L2_TUNER_CAP_STEREO;
-	/* v->rxsubchans = is_stereo ? V4L2_TUNER_SUB_STEREO : V4L2_TUNER_SUB_MONO; */
+	 
 	v->audmode = radio->stereo ?
 		V4L2_TUNER_MODE_STEREO : V4L2_TUNER_MODE_MONO;
 	return 0;
 }
 
-/* vidioc_s_tuner - set tuner attributes */
+ 
 static int vidioc_s_tuner(struct file *file, void *priv,
 				const struct v4l2_tuner *v)
 {
@@ -231,7 +215,7 @@ static int vidioc_s_tuner(struct file *file, void *priv,
 	if (v->index > 0)
 		return -EINVAL;
 
-	/* mono/stereo selector */
+	 
 	switch (v->audmode) {
 	case V4L2_TUNER_MODE_MONO:
 		return ma901_set_stereo(radio, MA901_WANT_MONO);
@@ -240,7 +224,7 @@ static int vidioc_s_tuner(struct file *file, void *priv,
 	}
 }
 
-/* vidioc_s_frequency - set tuner radio frequency */
+ 
 static int vidioc_s_frequency(struct file *file, void *priv,
 				const struct v4l2_frequency *f)
 {
@@ -253,7 +237,7 @@ static int vidioc_s_frequency(struct file *file, void *priv,
 				FREQ_MIN * FREQ_MUL, FREQ_MAX * FREQ_MUL));
 }
 
-/* vidioc_g_frequency - get tuner radio frequency */
+ 
 static int vidioc_g_frequency(struct file *file, void *priv,
 				struct v4l2_frequency *f)
 {
@@ -272,18 +256,14 @@ static int usb_ma901radio_s_ctrl(struct v4l2_ctrl *ctrl)
 		container_of(ctrl->handler, struct ma901radio_device, hdl);
 
 	switch (ctrl->id) {
-	case V4L2_CID_AUDIO_VOLUME:     /* set volume */
+	case V4L2_CID_AUDIO_VOLUME:      
 		return ma901radio_set_volume(radio, (u16)ctrl->val);
 	}
 
 	return -EINVAL;
 }
 
-/* TODO: Should we really need to implement suspend and resume functions?
- * Radio has it's own memory and will continue playing if power is present
- * on usb port and on resume it will start to play again based on freq, volume
- * values in device memory.
- */
+ 
 static int usb_ma901radio_suspend(struct usb_interface *intf, pm_message_t message)
 {
 	return 0;
@@ -298,7 +278,7 @@ static const struct v4l2_ctrl_ops usb_ma901radio_ctrl_ops = {
 	.s_ctrl = usb_ma901radio_s_ctrl,
 };
 
-/* File system interface */
+ 
 static const struct v4l2_file_operations usb_ma901radio_fops = {
 	.owner		= THIS_MODULE,
 	.open		= v4l2_fh_open,
@@ -328,7 +308,7 @@ static void usb_ma901radio_release(struct v4l2_device *v4l2_dev)
 	kfree(radio);
 }
 
-/* check if the device is present and register with v4l and usb if it is */
+ 
 static int usb_ma901radio_probe(struct usb_interface *intf,
 				const struct usb_device_id *id)
 {
@@ -336,10 +316,7 @@ static int usb_ma901radio_probe(struct usb_interface *intf,
 	struct ma901radio_device *radio;
 	int retval = 0;
 
-	/* Masterkit MA901 usb radio has the same USB ID as many others
-	 * Atmel V-USB devices. Let's make additional checks to be sure
-	 * that this is our device.
-	 */
+	 
 
 	if (dev->product && dev->manufacturer &&
 		(strncmp(dev->product, "MA901", 5) != 0
@@ -368,13 +345,7 @@ static int usb_ma901radio_probe(struct usb_interface *intf,
 
 	v4l2_ctrl_handler_init(&radio->hdl, 1);
 
-	/* TODO:It looks like this radio doesn't have mute/unmute control
-	 * and windows program just emulate it using volume control.
-	 * Let's plan to do the same in this driver.
-	 *
-	 * v4l2_ctrl_new_std(&radio->hdl, &usb_ma901radio_ctrl_ops,
-	 *		  V4L2_CID_AUDIO_MUTE, 0, 1, 1, 1);
-	 */
+	 
 
 	v4l2_ctrl_new_std(&radio->hdl, &usb_ma901radio_ctrl_ops,
 			  V4L2_CID_AUDIO_VOLUME, MA901_VOLUME_MIN,
@@ -405,12 +376,7 @@ static int usb_ma901radio_probe(struct usb_interface *intf,
 
 	video_set_drvdata(&radio->vdev, radio);
 
-	/* TODO: we can get some statistics (freq, volume) from device
-	 * but it's not implemented yet. After insertion in usb-port radio
-	 * setups frequency and starts playing without any initialization.
-	 * So we don't call usb_ma901radio_init/get_stat() here.
-	 * retval = usb_ma901radio_init(radio);
-	 */
+	 
 
 	retval = video_register_device(&radio->vdev, VFL_TYPE_RADIO,
 					radio_nr);
@@ -433,16 +399,16 @@ err:
 	return retval;
 }
 
-/* USB Device ID List */
+ 
 static const struct usb_device_id usb_ma901radio_device_table[] = {
 	{ USB_DEVICE_AND_INTERFACE_INFO(USB_MA901_VENDOR, USB_MA901_PRODUCT,
 							USB_CLASS_HID, 0, 0) },
-	{ }						/* Terminating entry */
+	{ }						 
 };
 
 MODULE_DEVICE_TABLE(usb, usb_ma901radio_device_table);
 
-/* USB subsystem interface */
+ 
 static struct usb_driver usb_ma901radio_driver = {
 	.name			= MA901_DRIVER_NAME,
 	.probe			= usb_ma901radio_probe,

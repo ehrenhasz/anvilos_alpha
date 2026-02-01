@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-	Intersil ISL6423 SEC and LNB Power supply controller
 
-	Copyright (C) Manu Abraham <abraham.manu@gmail.com>
-
-*/
+ 
 
 #include <linux/delay.h>
 #include <linux/errno.h>
@@ -104,12 +99,12 @@ static int isl6423_voltage_boost(struct dvb_frontend *fe, long arg)
 	int err = 0;
 
 	if (arg) {
-		/* EN = 1, VSPEN = 1, VBOT = 1 */
+		 
 		reg_4 |= (1 << 4);
 		reg_4 |= 0x1;
 		reg_3 |= (1 << 3);
 	} else {
-		/* EN = 1, VSPEN = 1, VBOT = 0 */
+		 
 		reg_4 |= (1 << 4);
 		reg_4 &= ~0x1;
 		reg_3 |= (1 << 3);
@@ -142,19 +137,19 @@ static int isl6423_set_voltage(struct dvb_frontend *fe,
 
 	switch (voltage) {
 	case SEC_VOLTAGE_OFF:
-		/* EN = 0 */
+		 
 		reg_4 &= ~(1 << 4);
 		break;
 
 	case SEC_VOLTAGE_13:
-		/* EN = 1, VSPEN = 1, VTOP = 0, VBOT = 0 */
+		 
 		reg_4 |= (1 << 4);
 		reg_4 &= ~0x3;
 		reg_3 |= (1 << 3);
 		break;
 
 	case SEC_VOLTAGE_18:
-		/* EN = 1, VSPEN = 1, VTOP = 1, VBOT = 0 */
+		 
 		reg_4 |= (1 << 4);
 		reg_4 |=  0x2;
 		reg_4 &= ~0x1;
@@ -190,28 +185,28 @@ static int isl6423_set_current(struct dvb_frontend *fe)
 
 	switch (config->current_max) {
 	case SEC_CURRENT_275m:
-		/* 275mA */
-		/* ISELH = 0, ISELL = 0 */
+		 
+		 
 		reg_3 &= ~0x3;
 		break;
 
 	case SEC_CURRENT_515m:
-		/* 515mA */
-		/* ISELH = 0, ISELL = 1 */
+		 
+		 
 		reg_3 &= ~0x2;
 		reg_3 |=  0x1;
 		break;
 
 	case SEC_CURRENT_635m:
-		/* 635mA */
-		/* ISELH = 1, ISELL = 0 */
+		 
+		 
 		reg_3 &= ~0x1;
 		reg_3 |=  0x2;
 		break;
 
 	case SEC_CURRENT_800m:
-		/* 800mA */
-		/* ISELH = 1, ISELL = 1 */
+		 
+		 
 		reg_3 |= 0x3;
 		break;
 	}
@@ -222,12 +217,12 @@ static int isl6423_set_current(struct dvb_frontend *fe)
 
 	switch (config->curlim) {
 	case SEC_CURRENT_LIM_ON:
-		/* DCL = 0 */
+		 
 		reg_3 &= ~0x10;
 		break;
 
 	case SEC_CURRENT_LIM_OFF:
-		/* DCL = 1 */
+		 
 		reg_3 |= 0x10;
 		break;
 	}
@@ -266,9 +261,9 @@ struct dvb_frontend *isl6423_attach(struct dvb_frontend *fe,
 	isl6423->i2c	= i2c;
 	fe->sec_priv	= isl6423;
 
-	/* SR3H = 0, SR3M = 1, SR3L = 0 */
+	 
 	isl6423->reg_3 = 0x02 << 5;
-	/* SR4H = 0, SR4M = 1, SR4L = 1 */
+	 
 	isl6423->reg_4 = 0x03 << 5;
 
 	if (isl6423_set_current(fe))

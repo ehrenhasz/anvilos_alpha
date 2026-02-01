@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * CPU idle Marvell Kirkwood SoCs
- *
- * The cpu idle uses wait-for-interrupt and DDR self refresh in order
- * to implement two idle states -
- * #1 wait-for-interrupt
- * #2 wait-for-interrupt and DDR self refresh
- *
- * Maintainer: Jason Cooper <jason@lakedaemon.net>
- * Maintainer: Andrew Lunn <andrew@lunn.ch>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -24,7 +14,7 @@
 
 static void __iomem *ddr_operation_base;
 
-/* Actual code that puts the SoC in different idle states */
+ 
 static int kirkwood_enter_idle(struct cpuidle_device *dev,
 			       struct cpuidle_driver *drv,
 			       int index)
@@ -49,7 +39,7 @@ static struct cpuidle_driver kirkwood_idle_driver = {
 	.state_count = KIRKWOOD_MAX_STATES,
 };
 
-/* Initialize CPU idle by registering the idle states */
+ 
 static int kirkwood_cpuidle_probe(struct platform_device *pdev)
 {
 	ddr_operation_base = devm_platform_ioremap_resource(pdev, 0);

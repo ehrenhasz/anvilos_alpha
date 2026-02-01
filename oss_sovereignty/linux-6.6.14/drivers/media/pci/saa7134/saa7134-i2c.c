@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- * device driver for philips saa7134 based TV cards
- * i2c interface support
- *
- * (c) 2001,02 Gerd Knorr <kraxel@bytesex.org> [SuSE Labs]
- */
+
+ 
 
 #include "saa7134.h"
 #include "saa7134-reg.h"
@@ -18,7 +12,7 @@
 
 #include <media/v4l2-common.h>
 
-/* ----------------------------------------------------------- */
+ 
 
 static unsigned int i2c_debug;
 module_param(i2c_debug, int, 0644);
@@ -41,7 +35,7 @@ MODULE_PARM_DESC(i2c_scan,"scan i2c bus at insmod time");
 #define I2C_WAIT_DELAY  32
 #define I2C_WAIT_RETRY  16
 
-/* ----------------------------------------------------------- */
+ 
 
 static char *str_i2c_status[] = {
 	"IDLE", "DONE_STOP", "BUSY", "TO_SCL", "TO_ARB", "DONE_WRITE",
@@ -50,22 +44,22 @@ static char *str_i2c_status[] = {
 };
 
 enum i2c_status {
-	IDLE          = 0,  // no I2C command pending
-	DONE_STOP     = 1,  // I2C command done and STOP executed
-	BUSY          = 2,  // executing I2C command
-	TO_SCL        = 3,  // executing I2C command, time out on clock stretching
-	TO_ARB        = 4,  // time out on arbitration trial, still trying
-	DONE_WRITE    = 5,  // I2C command done and awaiting next write command
-	DONE_READ     = 6,  // I2C command done and awaiting next read command
-	DONE_WRITE_TO = 7,  // see 5, and time out on status echo
-	DONE_READ_TO  = 8,  // see 6, and time out on status echo
-	NO_DEVICE     = 9,  // no acknowledge on device slave address
-	NO_ACKN       = 10, // no acknowledge after data byte transfer
-	BUS_ERR       = 11, // bus error
-	ARB_LOST      = 12, // arbitration lost during transfer
-	SEQ_ERR       = 13, // erroneous programming sequence
-	ST_ERR        = 14, // wrong status echoing
-	SW_ERR        = 15  // software error
+	IDLE          = 0,  
+	DONE_STOP     = 1,  
+	BUSY          = 2,  
+	TO_SCL        = 3,  
+	TO_ARB        = 4,  
+	DONE_WRITE    = 5,  
+	DONE_READ     = 6,  
+	DONE_WRITE_TO = 7,  
+	DONE_READ_TO  = 8,  
+	NO_DEVICE     = 9,  
+	NO_ACKN       = 10, 
+	BUS_ERR       = 11, 
+	ARB_LOST      = 12, 
+	SEQ_ERR       = 13, 
+	ST_ERR        = 14, 
+	SW_ERR        = 15  
 };
 
 static char *str_i2c_attr[] = {
@@ -73,10 +67,10 @@ static char *str_i2c_attr[] = {
 };
 
 enum i2c_attr {
-	NOP           = 0,  // no operation on I2C bus
-	STOP          = 1,  // stop condition, no associated byte transfer
-	CONTINUE      = 2,  // continue with byte transfer
-	START         = 3   // start condition with byte transfer
+	NOP           = 0,  
+	STOP          = 1,  
+	CONTINUE      = 2,  
+	START         = 3   
 };
 
 static inline enum i2c_status i2c_get_status(struct saa7134_dev *dev)
@@ -189,13 +183,13 @@ static inline int i2c_send_byte(struct saa7134_dev *dev,
 	enum i2c_status status;
 	__u32 dword;
 
-	/* have to write both attr + data in one 32bit word */
+	 
 	dword  = saa_readl(SAA7134_I2C_ATTR_STATUS >> 2);
 	dword &= 0x0f;
 	dword |= (attr << 6);
 	dword |= ((__u32)data << 8);
-	dword |= 0x00 << 16;  /* 100 kHz */
-//	dword |= 0x40 << 16;  /* 400 kHz */
+	dword |= 0x00 << 16;   
+
 	dword |= 0xf0 << 24;
 	saa_writel(SAA7134_I2C_ATTR_STATUS >> 2, dword);
 	i2c_dbg(2, "i2c data => 0x%x\n", data);
@@ -241,7 +235,7 @@ static int saa7134_i2c_xfer(struct i2c_adapter *i2c_adap,
 	i2c_dbg(1, "i2c xfer:");
 	for (i = 0; i < num; i++) {
 		if (!(msgs[i].flags & I2C_M_NOSTART) || 0 == i) {
-			/* send address */
+			 
 			i2c_dbg(2, "send address\n");
 			addr  = msgs[i].addr << 1;
 			if (msgs[i].flags & I2C_M_RD)
@@ -250,9 +244,7 @@ static int saa7134_i2c_xfer(struct i2c_adapter *i2c_adap,
 			    I2C_M_RD && msgs[i].addr != 0x40 &&
 			    msgs[i].addr != 0x41 &&
 			    msgs[i].addr != 0x19) {
-				/* workaround for a saa7134 i2c bug
-				 * needed to talk to the mt352 demux
-				 * thanks to pinnacle for the hint */
+				 
 				int quirk = 0xfe;
 				i2c_cont(1, " [%02x quirk]", quirk);
 				i2c_send_byte(dev,START,quirk);
@@ -264,7 +256,7 @@ static int saa7134_i2c_xfer(struct i2c_adapter *i2c_adap,
 				 goto err;
 		}
 		if (msgs[i].flags & I2C_M_RD) {
-			/* read bytes */
+			 
 			i2c_dbg(2, "read bytes\n");
 			for (byte = 0; byte < msgs[i].len; byte++) {
 				i2c_cont(1, " =");
@@ -274,9 +266,7 @@ static int saa7134_i2c_xfer(struct i2c_adapter *i2c_adap,
 				i2c_cont(1, "%02x", rc);
 				msgs[i].buf[byte] = rc;
 			}
-			/* discard mysterious extra byte when reading
-			   from Samsung S5H1411.  i2c bus gets error
-			   if we do not. */
+			 
 			if (0x19 == msgs[i].addr) {
 				i2c_cont(1, " ?");
 				rc = i2c_recv_byte(dev);
@@ -285,7 +275,7 @@ static int saa7134_i2c_xfer(struct i2c_adapter *i2c_adap,
 				i2c_cont(1, "%02x", rc);
 			}
 		} else {
-			/* write bytes */
+			 
 			i2c_dbg(2, "write bytes\n");
 			for (byte = 0; byte < msgs[i].len; byte++) {
 				data = msgs[i].buf[byte];
@@ -305,7 +295,7 @@ static int saa7134_i2c_xfer(struct i2c_adapter *i2c_adap,
 	status = i2c_get_status(dev);
 	if (i2c_is_error(status))
 		goto err;
-	/* ensure that the bus is idle for at least one bit slot */
+	 
 	msleep(1);
 
 	i2c_cont(1, "\n");
@@ -318,7 +308,7 @@ static int saa7134_i2c_xfer(struct i2c_adapter *i2c_adap,
 	return rc;
 }
 
-/* ----------------------------------------------------------- */
+ 
 
 static u32 functionality(struct i2c_adapter *adap)
 {
@@ -340,13 +330,9 @@ static const struct i2c_client saa7134_client_template = {
 	.name	= "saa7134 internal",
 };
 
-/* ----------------------------------------------------------- */
+ 
 
-/*
- * On Medion 7134 reading the SAA7134 chip config EEPROM needs DVB-T
- * demod i2c gate closed due to an address clash between this EEPROM
- * and the demod one.
- */
+ 
 static void saa7134_i2c_eeprom_md7134_gate(struct saa7134_dev *dev)
 {
 	u8 subaddr = 0x7, dmdregval;
@@ -444,7 +430,7 @@ int saa7134_i2c_register(struct saa7134_dev *dev)
 	if (i2c_scan)
 		do_i2c_scan(&dev->i2c_client);
 
-	/* Instantiate the IR receiver device, if present */
+	 
 	saa7134_probe_i2c_ir(dev);
 	return 0;
 }

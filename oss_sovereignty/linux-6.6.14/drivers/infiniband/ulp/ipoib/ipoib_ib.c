@@ -1,37 +1,4 @@
-/*
- * Copyright (c) 2004, 2005 Topspin Communications.  All rights reserved.
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
- * Copyright (c) 2005 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2004, 2005 Voltaire, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/delay.h>
 #include <linux/moduleparam.h>
@@ -132,10 +99,7 @@ static struct sk_buff *ipoib_alloc_rx_skb(struct net_device *dev, int id)
 	if (unlikely(!skb))
 		return NULL;
 
-	/*
-	 * the IP header will be at IPOIP_HARD_LEN + IB_GRH_BYTES, that is
-	 * 64 bytes aligned
-	 */
+	 
 	skb_reserve(skb, sizeof(struct ipoib_pseudo_header));
 
 	mapping = priv->rx_ring[id].mapping;
@@ -204,10 +168,7 @@ static void ipoib_ib_handle_rx_wc(struct net_device *dev, struct ib_wc *wc)
 	memcpy(mapping, priv->rx_ring[wr_id].mapping,
 	       IPOIB_UD_RX_SG * sizeof(*mapping));
 
-	/*
-	 * If we can't allocate a new RX buffer, dump
-	 * this packet and reuse the old buffer.
-	 */
+	 
 	if (unlikely(!ipoib_alloc_rx_skb(dev, wr_id))) {
 		++dev->stats.rx_dropped;
 		goto repost;
@@ -220,7 +181,7 @@ static void ipoib_ib_handle_rx_wc(struct net_device *dev, struct ib_wc *wc)
 
 	skb_put(skb, wc->byte_len);
 
-	/* First byte of dgid signals multicast when 0xff */
+	 
 	dgid = &((struct ib_grh *)skb->data)->dgid;
 
 	if (!(wc->wc_flags & IB_WC_GRH) || dgid->raw[0] != 0xff)
@@ -232,10 +193,7 @@ static void ipoib_ib_handle_rx_wc(struct net_device *dev, struct ib_wc *wc)
 
 	sgid = &((struct ib_grh *)skb->data)->sgid;
 
-	/*
-	 * Drop packets that this interface sent, ie multicast packets
-	 * that the HCA has replicated.
-	 */
+	 
 	if (wc->slid == priv->local_lid && wc->src_qp == priv->qp->qp_num) {
 		int need_repost = 1;
 
@@ -337,11 +295,7 @@ void ipoib_dma_unmap_tx(struct ipoib_dev_priv *priv,
 	}
 }
 
-/*
- * As the result of a completion error the QP Can be transferred to SQE states.
- * The function checks if the (send)QP is in SQE state and
- * moves it back to RTS state, that in order to have it functional again.
- */
+ 
 static void ipoib_qp_state_validate_work(struct work_struct *work)
 {
 	struct ipoib_qp_state_validate *qp_work =
@@ -361,7 +315,7 @@ static void ipoib_qp_state_validate_work(struct work_struct *work)
 	pr_info("%s: QP: 0x%x is in state: %d\n",
 		__func__, priv->qp->qp_num, qp_attr.qp_state);
 
-	/* currently support only in SQE->RTS transition*/
+	 
 	if (qp_attr.qp_state == IB_QPS_SQE) {
 		qp_attr.qp_state = IB_QPS_RTS;
 
@@ -602,7 +556,7 @@ int ipoib_send(struct net_device *dev, struct sk_buff *skb,
 			dev_kfree_skb_any(skb);
 			return -1;
 		}
-		/* Does skb_linearize return ok without reducing nr_frags? */
+		 
 		if (skb_shinfo(skb)->nr_frags > usable_sge) {
 			ipoib_warn(priv, "too many frags after skb linearize\n");
 			++dev->stats.tx_dropped;
@@ -616,13 +570,7 @@ int ipoib_send(struct net_device *dev, struct sk_buff *skb,
 		       "sending packet, length=%d address=%p dqpn=0x%06x\n",
 		       skb->len, address, dqpn);
 
-	/*
-	 * We put the skb into the tx_ring _before_ we call post_send()
-	 * because it's entirely possible that the completion handler will
-	 * run before we execute anything after the post_send().  That
-	 * means we have to make sure everything is properly recorded and
-	 * our state is consistent before we call post_send().
-	 */
+	 
 	tx_req = &priv->tx_ring[priv->tx_head & (ipoib_sendq_size - 1)];
 	tx_req->skb = skb;
 	if (unlikely(ipoib_dma_map_tx(priv->ca, tx_req))) {
@@ -635,7 +583,7 @@ int ipoib_send(struct net_device *dev, struct sk_buff *skb,
 		priv->tx_wr.wr.send_flags |= IB_SEND_IP_CSUM;
 	else
 		priv->tx_wr.wr.send_flags &= ~IB_SEND_IP_CSUM;
-	/* increase the tx_head after send success, but use it for queue state */
+	 
 	if ((priv->global_tx_head - priv->global_tx_tail) ==
 	    ipoib_sendq_size - 1) {
 		ipoib_dbg(priv, "TX ring full, stopping kernel net queue\n");
@@ -712,11 +660,7 @@ static void ipoib_stop_ah_reaper(struct ipoib_dev_priv *priv)
 {
 	set_bit(IPOIB_STOP_REAPER, &priv->flags);
 	cancel_delayed_work(&priv->ah_reap_task);
-	/*
-	 * After ipoib_stop_ah_reaper() we always go through
-	 * ipoib_reap_dead_ahs() which ensures the work is really stopped and
-	 * does a final flush out of the dead_ah's list
-	 */
+	 
 }
 
 static int recvs_pending(struct net_device *dev)
@@ -745,7 +689,7 @@ static void check_qp_movement_and_print(struct ipoib_dev_priv *priv,
 		ipoib_warn(priv, "%s: Failed to query QP\n", __func__);
 		return;
 	}
-	/* print according to the new-state and the previous state.*/
+	 
 	if (new_state == IB_QPS_ERR && qp_attr.qp_state == IB_QPS_RESET)
 		ipoib_dbg(priv, "Failed modify QP, IB_QPS_RESET to IB_QPS_ERR, acceptable\n");
 	else
@@ -782,15 +726,12 @@ int ipoib_ib_dev_stop_default(struct net_device *dev)
 
 	ipoib_cm_dev_stop(dev);
 
-	/*
-	 * Move our QP to the error state and then reinitialize in
-	 * when all work requests have completed or have been flushed.
-	 */
+	 
 	qp_attr.qp_state = IB_QPS_ERR;
 	if (ib_modify_qp(priv->qp, &qp_attr, IB_QP_STATE))
 		check_qp_movement_and_print(priv, priv->qp, IB_QPS_ERR);
 
-	/* Wait for all sends and receives to complete */
+	 
 	begin = jiffies;
 
 	while (priv->tx_head != priv->tx_tail || recvs_pending(dev)) {
@@ -800,10 +741,7 @@ int ipoib_ib_dev_stop_default(struct net_device *dev)
 				   priv->tx_head - priv->tx_tail,
 				   recvs_pending(dev));
 
-			/*
-			 * assume the HW is wedged and just free up
-			 * all our pending work requests.
-			 */
+			 
 			while ((int)priv->tx_tail - (int)priv->tx_head < 0) {
 				tx_req = &priv->tx_ring[priv->tx_tail &
 							(ipoib_sendq_size - 1)];
@@ -965,21 +903,13 @@ void ipoib_drain_cq(struct net_device *dev)
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
 	int i, n;
 
-	/*
-	 * We call completion handling routines that expect to be
-	 * called from the BH-disabled NAPI poll context, so disable
-	 * BHs here too.
-	 */
+	 
 	local_bh_disable();
 
 	do {
 		n = ib_poll_cq(priv->recv_cq, IPOIB_NUM_WC, priv->ibwc);
 		for (i = 0; i < n; ++i) {
-			/*
-			 * Convert any successful completions to flush
-			 * errors to avoid passing packets up the
-			 * stack after bringing the device down.
-			 */
+			 
 			if (priv->ibwc[i].status == IB_WC_SUCCESS)
 				priv->ibwc[i].status = IB_WC_WR_FLUSH_ERR;
 
@@ -995,15 +925,12 @@ void ipoib_drain_cq(struct net_device *dev)
 	} while (n == IPOIB_NUM_WC);
 
 	while (poll_tx(priv))
-		; /* nothing */
+		;  
 
 	local_bh_enable();
 }
 
-/*
- * Takes whatever value which is in pkey index 0 and updates priv->pkey
- * returns 0 if the pkey value was changed.
- */
+ 
 static inline int update_parent_pkey(struct ipoib_dev_priv *priv)
 {
 	int result;
@@ -1022,10 +949,7 @@ static inline int update_parent_pkey(struct ipoib_dev_priv *priv)
 	if (prev_pkey != priv->pkey) {
 		ipoib_dbg(priv, "pkey changed from 0x%x to 0x%x\n",
 			  prev_pkey, priv->pkey);
-		/*
-		 * Update the pkey in the broadcast address, while making sure to set
-		 * the full membership bit, so that we join the right broadcast group.
-		 */
+		 
 		priv->dev->broadcast[8] = priv->pkey >> 8;
 		priv->dev->broadcast[9] = priv->pkey & 0xff;
 		return 0;
@@ -1033,9 +957,7 @@ static inline int update_parent_pkey(struct ipoib_dev_priv *priv)
 
 	return 1;
 }
-/*
- * returns 0 if pkey value was found in a different slot.
- */
+ 
 static inline int update_child_pkey(struct ipoib_dev_priv *priv)
 {
 	u16 old_index = priv->pkey_index;
@@ -1049,10 +971,7 @@ static inline int update_child_pkey(struct ipoib_dev_priv *priv)
 	return 0;
 }
 
-/*
- * returns true if the device address of the ipoib interface has changed and the
- * new address is a valid one (i.e in the gid table), return false otherwise.
- */
+ 
 static bool ipoib_dev_addr_changed_valid(struct ipoib_dev_priv *priv)
 {
 	union ib_gid search_gid;
@@ -1067,9 +986,7 @@ static bool ipoib_dev_addr_changed_valid(struct ipoib_dev_priv *priv)
 
 	netif_addr_lock_bh(priv->dev);
 
-	/* The subnet prefix may have changed, update it now so we won't have
-	 * to do it later
-	 */
+	 
 	priv->local_gid.global.subnet_prefix = gid0.global.subnet_prefix;
 	dev_addr_mod(priv->dev, 4, (u8 *)&gid0.global.subnet_prefix,
 		     sizeof(gid0.global.subnet_prefix));
@@ -1085,36 +1002,10 @@ static bool ipoib_dev_addr_changed_valid(struct ipoib_dev_priv *priv)
 
 	if (search_gid.global.interface_id !=
 	    priv->local_gid.global.interface_id)
-		/* There was a change while we were looking up the gid, bail
-		 * here and let the next work sort this out
-		 */
+		 
 		goto out;
 
-	/* The next section of code needs some background:
-	 * Per IB spec the port GUID can't change if the HCA is powered on.
-	 * port GUID is the basis for GID at index 0 which is the basis for
-	 * the default device address of a ipoib interface.
-	 *
-	 * so it seems the flow should be:
-	 * if user_changed_dev_addr && gid in gid tbl
-	 *	set bit dev_addr_set
-	 *	return true
-	 * else
-	 *	return false
-	 *
-	 * The issue is that there are devices that don't follow the spec,
-	 * they change the port GUID when the HCA is powered, so in order
-	 * not to break userspace applications, We need to check if the
-	 * user wanted to control the device address and we assume that
-	 * if he sets the device address back to be based on GID index 0,
-	 * he no longer wishs to control it.
-	 *
-	 * If the user doesn't control the device address,
-	 * IPOIB_FLAG_DEV_ADDR_SET is set and ib_find_gid failed it means
-	 * the port GUID has changed and GID at index 0 has changed
-	 * so we need to change priv->local_gid and priv->dev->dev_addr
-	 * to reflect the new GID.
-	 */
+	 
 	if (!test_bit(IPOIB_FLAG_DEV_ADDR_SET, &priv->flags)) {
 		if (!err && port == priv->port) {
 			set_bit(IPOIB_FLAG_DEV_ADDR_SET, &priv->flags);
@@ -1157,10 +1048,7 @@ static void __ipoib_ib_dev_flush(struct ipoib_dev_priv *priv,
 
 	down_read_nested(&priv->vlan_rwsem, nesting);
 
-	/*
-	 * Flush any child interfaces too -- they might be up even if
-	 * the parent is down.
-	 */
+	 
 	list_for_each_entry(cpriv, &priv->child_intfs, list)
 		__ipoib_ib_dev_flush(cpriv, level, nesting + 1);
 
@@ -1168,7 +1056,7 @@ static void __ipoib_ib_dev_flush(struct ipoib_dev_priv *priv,
 
 	if (!test_bit(IPOIB_FLAG_INITIALIZED, &priv->flags) &&
 	    level != IPOIB_FLUSH_HEAVY) {
-		/* Make sure the dev_addr is set even if not flushing */
+		 
 		if (level == IPOIB_FLUSH_LIGHT)
 			ipoib_dev_addr_changed_valid(priv);
 		ipoib_dbg(priv, "Not flushing - IPOIB_FLAG_INITIALIZED not set.\n");
@@ -1176,7 +1064,7 @@ static void __ipoib_ib_dev_flush(struct ipoib_dev_priv *priv,
 	}
 
 	if (!test_bit(IPOIB_FLAG_ADMIN_UP, &priv->flags)) {
-		/* interface is down. update pkey and leave. */
+		 
 		if (level == IPOIB_FLUSH_HEAVY) {
 			if (!test_bit(IPOIB_FLAG_SUBINTERFACE, &priv->flags))
 				update_parent_pkey(priv);
@@ -1189,20 +1077,18 @@ static void __ipoib_ib_dev_flush(struct ipoib_dev_priv *priv,
 	}
 
 	if (level == IPOIB_FLUSH_HEAVY) {
-		/* child devices chase their origin pkey value, while non-child
-		 * (parent) devices should always takes what present in pkey index 0
-		 */
+		 
 		if (test_bit(IPOIB_FLAG_SUBINTERFACE, &priv->flags)) {
 			result = update_child_pkey(priv);
 			if (result) {
-				/* restart QP only if P_Key index is changed */
+				 
 				ipoib_dbg(priv, "Not flushing - P_Key index not changed.\n");
 				return;
 			}
 
 		} else {
 			result = update_parent_pkey(priv);
-			/* restart QP only if P_Key value changed */
+			 
 			if (result) {
 				ipoib_dbg(priv, "Not flushing - P_Key value not changed.\n");
 				return;
@@ -1213,11 +1099,7 @@ static void __ipoib_ib_dev_flush(struct ipoib_dev_priv *priv,
 	if (level == IPOIB_FLUSH_LIGHT) {
 		int oper_up;
 		ipoib_mark_paths_invalid(dev);
-		/* Set IPoIB operation as down to prevent races between:
-		 * the flush flow which leaves MCG and on the fly joins
-		 * which can happen during that time. mcast restart task
-		 * should deal with join requests we missed.
-		 */
+		 
 		oper_up = test_and_clear_bit(IPOIB_FLAG_OPER_UP, &priv->flags);
 		ipoib_mcast_dev_flush(dev);
 		if (oper_up)
@@ -1239,10 +1121,7 @@ static void __ipoib_ib_dev_flush(struct ipoib_dev_priv *priv,
 			netif_start_queue(dev);
 	}
 
-	/*
-	 * The device could have been brought down between the start and when
-	 * we get here, don't bring it back up if it's not configured up
-	 */
+	 
 	if (test_bit(IPOIB_FLAG_ADMIN_UP, &priv->flags)) {
 		if (level >= IPOIB_FLUSH_NORMAL)
 			ipoib_ib_dev_up(dev);
@@ -1282,21 +1161,13 @@ void ipoib_ib_dev_cleanup(struct net_device *dev)
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
 
 	ipoib_dbg(priv, "cleaning up ib_dev\n");
-	/*
-	 * We must make sure there are no more (path) completions
-	 * that may wish to touch priv fields that are no longer valid
-	 */
+	 
 	ipoib_flush_paths(dev);
 
 	ipoib_mcast_stop_thread(dev);
 	ipoib_mcast_dev_flush(dev);
 
-	/*
-	 * All of our ah references aren't free until after
-	 * ipoib_mcast_dev_flush(), ipoib_flush_paths, and
-	 * the neighbor garbage collection is stopped and reaped.
-	 * That should all be done now, so make a final ah flush.
-	 */
+	 
 	ipoib_reap_dead_ahs(priv);
 
 	clear_bit(IPOIB_PKEY_ASSIGNED, &priv->flags);

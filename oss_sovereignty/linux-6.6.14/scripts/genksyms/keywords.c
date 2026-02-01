@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 static struct resword {
 	const char *name;
 	int token;
@@ -25,20 +25,20 @@ static struct resword {
 	{ "__int128_t", BUILTIN_INT_KEYW },
 	{ "__uint128_t", BUILTIN_INT_KEYW },
 
-	// According to rth, c99 defines "_Bool", "__restrict", "__restrict__", "restrict".  KAO
+	
 	{ "_Bool", BOOL_KEYW },
 	{ "__restrict", RESTRICT_KEYW },
 	{ "__restrict__", RESTRICT_KEYW },
 	{ "restrict", RESTRICT_KEYW },
 	{ "asm", ASM_KEYW },
 
-	// c11 keywords that can be used at module scope
+	
 	{ "_Static_assert", STATIC_ASSERT_KEYW },
 
-	// attribute commented out in modutils 2.4.2.  People are using 'attribute' as a
-	// field name which breaks the genksyms parser.  It is not a gcc keyword anyway.
-	// KAO. },
-	// { "attribute", ATTRIBUTE_KEYW },
+	
+	
+	
+	
 
 	{ "auto", AUTO_KEYW },
 	{ "char", CHAR_KEYW },

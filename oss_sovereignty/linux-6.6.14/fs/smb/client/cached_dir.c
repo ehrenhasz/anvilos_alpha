@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Functions to handle the cached directory entries
- *
- *  Copyright (c) 2022, Ronnie Sahlberg <lsahlber@redhat.com>
- */
+
+ 
 
 #include <linux/namei.h>
 #include "cifsglob.h"
@@ -27,11 +23,7 @@ static struct cached_fid *find_or_create_cached_dir(struct cached_fids *cfids,
 	spin_lock(&cfids->cfid_list_lock);
 	list_for_each_entry(cfid, &cfids->entries, entry) {
 		if (!strcmp(cfid->path, path)) {
-			/*
-			 * If it doesn't have a lease it is either not yet
-			 * fully cached or it may be in the process of
-			 * being deleted due to a lease break.
-			 */
+			 
 			if (!cfid->time || !cfid->has_lease) {
 				spin_unlock(&cfids->cfid_list_lock);
 				return NULL;
@@ -84,13 +76,13 @@ path_to_dentry(struct cifs_sb_info *cifs_sb, const char *path)
 			break;
 		}
 
-		/* skip separators */
+		 
 		while (*s == sep)
 			s++;
 		if (!*s)
 			break;
 		p = s++;
-		/* next separator */
+		 
 		while (*s && *s != sep)
 			s++;
 
@@ -118,10 +110,7 @@ static const char *path_no_prefix(struct cifs_sb_info *cifs_sb,
 	return path + len;
 }
 
-/*
- * Open the and cache a directory handle.
- * If error then *cfid is not initialized.
- */
+ 
 int open_cached_dir(unsigned int xid, struct cifs_tcon *tcon,
 		    const char *path,
 		    struct cifs_sb_info *cifs_sb,
@@ -169,11 +158,7 @@ int open_cached_dir(unsigned int xid, struct cifs_tcon *tcon,
 		kfree(utf16_path);
 		return -ENOENT;
 	}
-	/*
-	 * Return cached fid if it has a lease.  Otherwise, it is either a new
-	 * entry or laundromat worker removed it from @cfids->entries.  Caller
-	 * will put last reference if the latter.
-	 */
+	 
 	spin_lock(&cfids->cfid_list_lock);
 	if (cfid->has_lease) {
 		spin_unlock(&cfids->cfid_list_lock);
@@ -183,13 +168,7 @@ int open_cached_dir(unsigned int xid, struct cifs_tcon *tcon,
 	}
 	spin_unlock(&cfids->cfid_list_lock);
 
-	/*
-	 * Skip any prefix paths in @path as lookup_positive_unlocked() ends up
-	 * calling ->lookup() which already adds those through
-	 * build_path_from_dentry().  Also, do it earlier as we might reconnect
-	 * below when trying to send compounded request and then potentially
-	 * having a different prefix path (e.g. after DFS failover).
-	 */
+	 
 	npath = path_no_prefix(cifs_sb, path);
 	if (IS_ERR(npath)) {
 		rc = PTR_ERR(npath);
@@ -207,13 +186,7 @@ int open_cached_dir(unsigned int xid, struct cifs_tcon *tcon,
 	}
 	cfid->dentry = dentry;
 
-	/*
-	 * We do not hold the lock for the open because in case
-	 * SMB2_open needs to reconnect.
-	 * This is safe because no other thread will be able to get a ref
-	 * to the cfid until we have finished opening the file and (possibly)
-	 * acquired a lease.
-	 */
+	 
 	if (smb3_encryption_required(tcon))
 		flags |= CIFS_TRANSFORM_REQ;
 
@@ -224,7 +197,7 @@ int open_cached_dir(unsigned int xid, struct cifs_tcon *tcon,
 	resp_buftype[0] = resp_buftype[1] = CIFS_NO_BUFFER;
 	memset(rsp_iov, 0, sizeof(rsp_iov));
 
-	/* Open */
+	 
 	memset(&open_iov, 0, sizeof(open_iov));
 	rqst[0].rq_iov = open_iov;
 	rqst[0].rq_nvec = SMB2_CREATE_IOV_SIZE;
@@ -259,13 +232,7 @@ int open_cached_dir(unsigned int xid, struct cifs_tcon *tcon,
 
 	smb2_set_related(&rqst[1]);
 
-	/*
-	 * Set @cfid->has_lease to true before sending out compounded request so
-	 * its lease reference can be put in cached_dir_lease_break() due to a
-	 * potential lease break right after the request is sent or while @cfid
-	 * is still being cached.  Concurrent processes won't be to use it yet
-	 * due to @cfid->time being zero.
-	 */
+	 
 	cfid->has_lease = true;
 
 	rc = compound_send_recv(xid, ses, server,
@@ -289,7 +256,7 @@ int open_cached_dir(unsigned int xid, struct cifs_tcon *tcon,
 	oparms.fid->volatile_fid = o_rsp->VolatileFileId;
 #ifdef CONFIG_CIFS_DEBUG2
 	oparms.fid->mid = le64_to_cpu(o_rsp->hdr.MessageId);
-#endif /* CIFS_DEBUG2 */
+#endif  
 
 
 	if (o_rsp->OplockLevel != SMB2_OPLOCK_LEVEL_LEASE) {
@@ -326,7 +293,7 @@ int open_cached_dir(unsigned int xid, struct cifs_tcon *tcon,
 
 	cfid->time = jiffies;
 	spin_unlock(&cfids->cfid_list_lock);
-	/* At this point the directory handle is fully cached */
+	 
 	rc = 0;
 
 oshr_free:
@@ -342,13 +309,7 @@ oshr_free:
 			cfids->num_entries--;
 		}
 		if (cfid->has_lease) {
-			/*
-			 * We are guaranteed to have two references at this
-			 * point. One for the caller and one for a potential
-			 * lease. Release the Lease-ref so that the directory
-			 * will be closed when the caller closes the cached
-			 * handle.
-			 */
+			 
 			cfid->has_lease = false;
 			spin_unlock(&cfids->cfid_list_lock);
 			kref_put(&cfid->refcount, smb2_close_cached_fid);
@@ -446,9 +407,7 @@ void close_cached_dir(struct cached_fid *cfid)
 	kref_put(&cfid->refcount, smb2_close_cached_fid);
 }
 
-/*
- * Called from cifs_kill_sb when we unmount a share
- */
+ 
 void close_all_cached_dirs(struct cifs_sb_info *cifs_sb)
 {
 	struct rb_root *root = &cifs_sb->tlink_tree;
@@ -473,10 +432,7 @@ void close_all_cached_dirs(struct cifs_sb_info *cifs_sb)
 	}
 }
 
-/*
- * Invalidate all cached dirs when a TCON has been reset
- * due to a session loss.
- */
+ 
 void invalidate_all_cached_dirs(struct cifs_tcon *tcon)
 {
 	struct cached_fids *cfids = tcon->cfids;
@@ -492,7 +448,7 @@ void invalidate_all_cached_dirs(struct cifs_tcon *tcon)
 		cfids->num_entries--;
 		cfid->is_open = false;
 		cfid->on_list = false;
-		/* To prevent race with smb2_cached_lease_break() */
+		 
 		kref_get(&cfid->refcount);
 	}
 	spin_unlock(&cfids->cfid_list_lock);
@@ -501,16 +457,13 @@ void invalidate_all_cached_dirs(struct cifs_tcon *tcon)
 		list_del(&cfid->entry);
 		cancel_work_sync(&cfid->lease_break);
 		if (cfid->has_lease) {
-			/*
-			 * We lease was never cancelled from the server so we
-			 * need to drop the reference.
-			 */
+			 
 			spin_lock(&cfids->cfid_list_lock);
 			cfid->has_lease = false;
 			spin_unlock(&cfids->cfid_list_lock);
 			kref_put(&cfid->refcount, smb2_close_cached_fid);
 		}
-		/* Drop the extra reference opened above*/
+		 
 		kref_put(&cfid->refcount, smb2_close_cached_fid);
 	}
 }
@@ -542,10 +495,7 @@ int cached_dir_lease_break(struct cifs_tcon *tcon, __u8 lease_key[16])
 			    cfid->fid.lease_key,
 			    SMB2_LEASE_KEY_SIZE)) {
 			cfid->time = 0;
-			/*
-			 * We found a lease remove it from the list
-			 * so no threads can access it.
-			 */
+			 
 			list_del(&cfid->entry);
 			cfid->on_list = false;
 			cfids->num_entries--;
@@ -589,9 +539,7 @@ static void free_cached_dir(struct cached_fid *cfid)
 	dput(cfid->dentry);
 	cfid->dentry = NULL;
 
-	/*
-	 * Delete all cached dirent names
-	 */
+	 
 	list_for_each_entry_safe(dirent, q, &cfid->dirents.entries, entry) {
 		list_del(&dirent->entry);
 		kfree(dirent->name);
@@ -618,7 +566,7 @@ static void cfids_laundromat_worker(struct work_struct *work)
 			cfid->on_list = false;
 			list_move(&cfid->entry, &entry);
 			cfids->num_entries--;
-			/* To prevent race with smb2_cached_lease_break() */
+			 
 			kref_get(&cfid->refcount);
 		}
 	}
@@ -626,22 +574,16 @@ static void cfids_laundromat_worker(struct work_struct *work)
 
 	list_for_each_entry_safe(cfid, q, &entry, entry) {
 		list_del(&cfid->entry);
-		/*
-		 * Cancel and wait for the work to finish in case we are racing
-		 * with it.
-		 */
+		 
 		cancel_work_sync(&cfid->lease_break);
 		if (cfid->has_lease) {
-			/*
-			 * Our lease has not yet been cancelled from the server
-			 * so we need to drop the reference.
-			 */
+			 
 			spin_lock(&cfids->cfid_list_lock);
 			cfid->has_lease = false;
 			spin_unlock(&cfids->cfid_list_lock);
 			kref_put(&cfid->refcount, smb2_close_cached_fid);
 		}
-		/* Drop the extra reference opened above */
+		 
 		kref_put(&cfid->refcount, smb2_close_cached_fid);
 	}
 	queue_delayed_work(cifsiod_wq, &cfids->laundromat_work,
@@ -665,10 +607,7 @@ struct cached_fids *init_cached_dirs(void)
 	return cfids;
 }
 
-/*
- * Called from tconInfoFree when we are tearing down the tcon.
- * There are no active users or open files/directories at this point.
- */
+ 
 void free_cached_dirs(struct cached_fids *cfids)
 {
 	struct cached_fid *cfid, *q;

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) B.A.T.M.A.N. contributors:
- *
- * Marek Lindner, Linus Lüssing
- */
+ 
+ 
 
 #ifndef _NET_BATMAN_ADV_BAT_V_H_
 #define _NET_BATMAN_ADV_BAT_V_H_
@@ -36,6 +33,6 @@ static inline void batadv_v_mesh_free(struct batadv_priv *bat_priv)
 {
 }
 
-#endif /* CONFIG_BATMAN_ADV_BATMAN_V */
+#endif  
 
-#endif /* _NET_BATMAN_ADV_BAT_V_H_ */
+#endif  

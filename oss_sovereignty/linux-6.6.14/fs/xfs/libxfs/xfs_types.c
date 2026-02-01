@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2002,2005 Silicon Graphics, Inc.
- * Copyright (C) 2017 Oracle.
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_format.h"
@@ -14,10 +10,7 @@
 #include "xfs_ag.h"
 
 
-/*
- * Verify that an AG block number pointer neither points outside the AG
- * nor points at static metadata.
- */
+ 
 static inline bool
 xfs_verify_agno_agbno(
 	struct xfs_mount	*mp,
@@ -34,10 +27,7 @@ xfs_verify_agno_agbno(
 	return true;
 }
 
-/*
- * Verify that an FS block number pointer neither points outside the
- * filesystem nor points at static AG metadata.
- */
+ 
 inline bool
 xfs_verify_fsbno(
 	struct xfs_mount	*mp,
@@ -50,10 +40,7 @@ xfs_verify_fsbno(
 	return xfs_verify_agno_agbno(mp, agno, XFS_FSB_TO_AGBNO(mp, fsbno));
 }
 
-/*
- * Verify that a data device extent is fully contained inside the filesystem,
- * does not cross an AG boundary, and does not point at static metadata.
- */
+ 
 bool
 xfs_verify_fsbext(
 	struct xfs_mount	*mp,
@@ -73,10 +60,7 @@ xfs_verify_fsbext(
 		XFS_FSB_TO_AGNO(mp, fsbno + len - 1);
 }
 
-/*
- * Verify that an AG inode number pointer neither points outside the AG
- * nor points at static metadata.
- */
+ 
 static inline bool
 xfs_verify_agno_agino(
 	struct xfs_mount	*mp,
@@ -90,10 +74,7 @@ xfs_verify_agno_agino(
 	return agino >= first && agino <= last;
 }
 
-/*
- * Verify that an FS inode number pointer neither points outside the
- * filesystem nor points at static AG metadata.
- */
+ 
 inline bool
 xfs_verify_ino(
 	struct xfs_mount	*mp,
@@ -109,7 +90,7 @@ xfs_verify_ino(
 	return xfs_verify_agno_agino(mp, agno, agino);
 }
 
-/* Is this an internal inode number? */
+ 
 inline bool
 xfs_internal_inum(
 	struct xfs_mount	*mp,
@@ -120,10 +101,7 @@ xfs_internal_inum(
 		 xfs_is_quota_inode(&mp->m_sb, ino));
 }
 
-/*
- * Verify that a directory entry's inode number doesn't point at an internal
- * inode, empty space, or static AG metadata.
- */
+ 
 bool
 xfs_verify_dir_ino(
 	struct xfs_mount	*mp,
@@ -134,10 +112,7 @@ xfs_verify_dir_ino(
 	return xfs_verify_ino(mp, ino);
 }
 
-/*
- * Verify that an realtime block number pointer doesn't point off the
- * end of the realtime device.
- */
+ 
 inline bool
 xfs_verify_rtbno(
 	struct xfs_mount	*mp,
@@ -146,7 +121,7 @@ xfs_verify_rtbno(
 	return rtbno < mp->m_sb.sb_rblocks;
 }
 
-/* Verify that a realtime device extent is fully contained inside the volume. */
+ 
 bool
 xfs_verify_rtext(
 	struct xfs_mount	*mp,
@@ -162,7 +137,7 @@ xfs_verify_rtext(
 	return xfs_verify_rtbno(mp, rtbno + len - 1);
 }
 
-/* Calculate the range of valid icount values. */
+ 
 inline void
 xfs_icount_range(
 	struct xfs_mount	*mp,
@@ -173,7 +148,7 @@ xfs_icount_range(
 	struct xfs_perag	*pag;
 	xfs_agnumber_t		agno;
 
-	/* root, rtbitmap, rtsum all live in the first chunk */
+	 
 	*min = XFS_INODES_PER_CHUNK;
 
 	for_each_perag(mp, agno, pag)
@@ -181,7 +156,7 @@ xfs_icount_range(
 	*max = nr_inos;
 }
 
-/* Sanity-checking of inode counts. */
+ 
 bool
 xfs_verify_icount(
 	struct xfs_mount	*mp,
@@ -193,7 +168,7 @@ xfs_verify_icount(
 	return icount >= min && icount <= max;
 }
 
-/* Sanity-checking of dir/attr block offsets. */
+ 
 bool
 xfs_verify_dablk(
 	struct xfs_mount	*mp,
@@ -204,7 +179,7 @@ xfs_verify_dablk(
 	return dabno <= max_dablk;
 }
 
-/* Check that a file block offset does not exceed the maximum. */
+ 
 bool
 xfs_verify_fileoff(
 	struct xfs_mount	*mp,
@@ -213,7 +188,7 @@ xfs_verify_fileoff(
 	return off <= XFS_MAX_FILEOFF;
 }
 
-/* Check that a range of file block offsets do not exceed the maximum. */
+ 
 bool
 xfs_verify_fileext(
 	struct xfs_mount	*mp,

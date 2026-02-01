@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Generate kernel symbol version hashes.
-   Copyright 1996, 1997 Linux International.
-
-   New implementation contributed by Richard Henderson <rth@tamu.edu>
-   Based on original work by Bjorn Ekwall <bj0rn@blox.se>
-
-   This file is part of the Linux modutils.
-
- */
+ 
+ 
 
 #ifndef MODUTILS_GENKSYMS_H
 #define MODUTILS_GENKSYMS_H 1
@@ -66,7 +58,7 @@ int yyparse(void);
 
 void error_with_pos(const char *, ...) __attribute__ ((format(printf, 1, 2)));
 
-/*----------------------------------------------------------------------*/
+ 
 #define xmalloc(size) ({ void *__ptr = malloc(size);		\
 	if(!__ptr && size != 0) {				\
 		fprintf(stderr, "out of memory\n");		\
@@ -80,4 +72,4 @@ void error_with_pos(const char *, ...) __attribute__ ((format(printf, 1, 2)));
 	}							\
 	__str; })
 
-#endif				/* genksyms.h */
+#endif				 

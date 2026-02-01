@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * xfrm_policy.c
- *
- * Changes:
- *	Mitsuru KANDA @USAGI
- * 	Kazunori MIYAZAWA @USAGI
- * 	Kunihiro Ishiguro <kunihiro@ipinfusion.com>
- * 		IPv6 support
- * 	Kazunori MIYAZAWA @USAGI
- * 	YOSHIFUJI Hideaki
- * 		Split up af-specific portion
- *	Derek Atkins <derek@ihtfp.com>		Add the post_input processor
- *
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/slab.h>
@@ -56,7 +43,7 @@ struct xfrm_flo {
 	u8 flags;
 };
 
-/* prefixes smaller than this are stored in lists, not trees. */
+ 
 #define INEXACT_PREFIXLEN_IPV4	16
 #define INEXACT_PREFIXLEN_IPV6	48
 
@@ -70,46 +57,11 @@ struct xfrm_pol_inexact_node {
 
 	struct rb_root root;
 
-	/* the policies matching this node, can be empty list */
+	 
 	struct hlist_head hhead;
 };
 
-/* xfrm inexact policy search tree:
- * xfrm_pol_inexact_bin = hash(dir,type,family,if_id);
- *  |
- * +---- root_d: sorted by daddr:prefix
- * |                 |
- * |        xfrm_pol_inexact_node
- * |                 |
- * |                 +- root: sorted by saddr/prefix
- * |                 |              |
- * |                 |         xfrm_pol_inexact_node
- * |                 |              |
- * |                 |              + root: unused
- * |                 |              |
- * |                 |              + hhead: saddr:daddr policies
- * |                 |
- * |                 +- coarse policies and all any:daddr policies
- * |
- * +---- root_s: sorted by saddr:prefix
- * |                 |
- * |        xfrm_pol_inexact_node
- * |                 |
- * |                 + root: unused
- * |                 |
- * |                 + hhead: saddr:any policies
- * |
- * +---- coarse policies and all any:any policies
- *
- * Lookups return four candidate lists:
- * 1. any:any list from top-level xfrm_pol_inexact_bin
- * 2. any:daddr list from daddr tree
- * 3. saddr:daddr list from 2nd level daddr tree
- * 4. saddr:any list from saddr tree
- *
- * This result set then needs to be searched for the policy with
- * the lowest priority.  If two results have same prio, youngest one wins.
- */
+ 
 
 struct xfrm_pol_inexact_key {
 	possible_net_t net;
@@ -121,17 +73,17 @@ struct xfrm_pol_inexact_key {
 struct xfrm_pol_inexact_bin {
 	struct xfrm_pol_inexact_key k;
 	struct rhash_head head;
-	/* list containing '*:*' policies */
+	 
 	struct hlist_head hhead;
 
 	seqcount_spinlock_t count;
-	/* tree sorted by daddr/prefix */
+	 
 	struct rb_root root_d;
 
-	/* tree sorted by saddr/prefix */
+	 
 	struct rb_root root_s;
 
-	/* slow path below */
+	 
 	struct list_head inexact_bins;
 	struct rcu_head rcu;
 };
@@ -245,7 +197,7 @@ static const struct xfrm_policy_afinfo *xfrm_policy_get_afinfo(unsigned short fa
 	return afinfo;
 }
 
-/* Called with rcu_read_lock(). */
+ 
 static const struct xfrm_if_cb *xfrm_if_get_cb(void)
 {
 	return rcu_dereference(xfrm_if_cb);
@@ -381,9 +333,7 @@ expired:
 	xfrm_pol_put(xp);
 }
 
-/* Allocate xfrm_policy. Not used here, it is supposed to be used by pfkeyv2
- * SPD calls.
- */
+ 
 
 struct xfrm_policy *xfrm_policy_alloc(struct net *net, gfp_t gfp)
 {
@@ -416,7 +366,7 @@ static void xfrm_policy_destroy_rcu(struct rcu_head *head)
 	kfree(policy);
 }
 
-/* Destroy xfrm_policy: descendant resources must be released to this moment. */
+ 
 
 void xfrm_policy_destroy(struct xfrm_policy *policy)
 {
@@ -430,9 +380,7 @@ void xfrm_policy_destroy(struct xfrm_policy *policy)
 }
 EXPORT_SYMBOL(xfrm_policy_destroy);
 
-/* Rule must be locked. Release descendant resources, announce
- * entry dead. The rule must be unlinked from lists to the moment.
- */
+ 
 
 static void xfrm_policy_kill(struct xfrm_policy *policy)
 {
@@ -459,7 +407,7 @@ static inline unsigned int idx_hash(struct net *net, u32 index)
 	return __idx_hash(index, net->xfrm.policy_idx_hmask);
 }
 
-/* calculate policy hash thresholds */
+ 
 static void __get_hash_thresh(struct net *net,
 			      unsigned short family, int dir,
 			      u8 *dbits, u8 *sbits)
@@ -689,10 +637,7 @@ static void xfrm_hash_resize(struct work_struct *work)
 	mutex_unlock(&hash_resize_mutex);
 }
 
-/* Make sure *pol can be inserted into fastbin.
- * Useful to check that later insert requests will be successful
- * (provided xfrm_policy_lock is held throughout).
- */
+ 
 static struct xfrm_pol_inexact_bin *
 xfrm_policy_inexact_alloc_bin(const struct xfrm_policy *pol, u8 dir)
 {
@@ -872,14 +817,7 @@ static void xfrm_policy_inexact_list_reinsert(struct net *net,
 		else
 			hlist_add_head_rcu(&policy->bydst, &n->hhead);
 
-		/* paranoia checks follow.
-		 * Check that the reinserted policy matches at least
-		 * saddr or daddr for current node prefix.
-		 *
-		 * Matching both is fine, matching saddr in one policy
-		 * (but not daddr) and then matching only daddr in another
-		 * is a bug.
-		 */
+		 
 		matches_s = xfrm_policy_addr_delta(&policy->selector.saddr,
 						   &n->addr,
 						   n->prefixlen,
@@ -908,7 +846,7 @@ static void xfrm_policy_inexact_node_reinsert(struct net *net,
 	struct xfrm_pol_inexact_node *node;
 	struct rb_node **p, *parent;
 
-	/* we should not have another subtree here */
+	 
 	WARN_ON_ONCE(!RB_EMPTY_ROOT(&n->root));
 restart:
 	parent = NULL;
@@ -957,7 +895,7 @@ restart:
 	rb_insert_color(&n->node, new);
 }
 
-/* merge nodes v and n */
+ 
 static void xfrm_policy_inexact_node_merge(struct net *net,
 					   struct xfrm_pol_inexact_node *v,
 					   struct xfrm_pol_inexact_node *n,
@@ -967,10 +905,7 @@ static void xfrm_policy_inexact_node_merge(struct net *net,
 	struct xfrm_policy *tmp;
 	struct rb_node *rnode;
 
-	/* To-be-merged node v has a subtree.
-	 *
-	 * Dismantle it and insert its nodes to n->root.
-	 */
+	 
 	while ((rnode = rb_first(&v->root)) != NULL) {
 		node = rb_entry(rnode, struct xfrm_pol_inexact_node, node);
 		rb_erase(&node->node, &v->root);
@@ -1007,7 +942,7 @@ xfrm_policy_inexact_insert_node(struct net *net,
 					       node->prefixlen,
 					       family);
 		if (delta == 0 && prefixlen >= node->prefixlen) {
-			WARN_ON_ONCE(cached); /* ipsec policies got lost */
+			WARN_ON_ONCE(cached);  
 			return node;
 		}
 
@@ -1023,11 +958,7 @@ xfrm_policy_inexact_insert_node(struct net *net,
 			if (delta)
 				continue;
 
-			/* This node is a subnet of the new prefix. It needs
-			 * to be removed and re-inserted with the smaller
-			 * prefix and all nodes that are now also covered
-			 * by the reduced prefixlen.
-			 */
+			 
 			rb_erase(&node->node, root);
 
 			if (!cached) {
@@ -1035,16 +966,13 @@ xfrm_policy_inexact_insert_node(struct net *net,
 							   prefixlen);
 				cached = node;
 			} else {
-				/* This node also falls within the new
-				 * prefixlen. Merge the to-be-reinserted
-				 * node and this one.
-				 */
+				 
 				xfrm_policy_inexact_node_merge(net, node,
 							       cached, family);
 				kfree_rcu(node, rcu);
 			}
 
-			/* restart */
+			 
 			p = &root->rb_node;
 			parent = NULL;
 		}
@@ -1153,7 +1081,7 @@ xfrm_policy_inexact_alloc_chain(struct xfrm_pol_inexact_bin *bin,
 		return &n->hhead;
 	}
 
-	/* daddr is fixed */
+	 
 	write_seqcount_begin(&bin->count);
 	n = xfrm_policy_inexact_insert_node(net,
 					    &bin->root_d,
@@ -1164,7 +1092,7 @@ xfrm_policy_inexact_alloc_chain(struct xfrm_pol_inexact_bin *bin,
 	if (!n)
 		return NULL;
 
-	/* saddr is wildcard */
+	 
 	if (xfrm_pol_inexact_addr_use_any_list(&policy->selector.saddr,
 					       policy->family,
 					       policy->selector.prefixlen_s))
@@ -1236,7 +1164,7 @@ static void xfrm_hash_rebuild(struct work_struct *work)
 
 	mutex_lock(&hash_resize_mutex);
 
-	/* read selector prefixlen thresholds */
+	 
 	do {
 		seq = read_seqbegin(&net->xfrm.policy_hthresh.lock);
 
@@ -1249,9 +1177,7 @@ static void xfrm_hash_rebuild(struct work_struct *work)
 	spin_lock_bh(&net->xfrm.xfrm_policy_lock);
 	write_seqcount_begin(&net->xfrm.xfrm_policy_hash_generation);
 
-	/* make sure that we can insert the indirect policies again before
-	 * we start with destructive action.
-	 */
+	 
 	list_for_each_entry(policy, &net->xfrm.policy_all, walk.all) {
 		struct xfrm_pol_inexact_bin *bin;
 		u8 dbits, sbits;
@@ -1293,7 +1219,7 @@ static void xfrm_hash_rebuild(struct work_struct *work)
 			goto out_unlock;
 	}
 
-	/* reset the bydst and inexact table in all directions */
+	 
 	for (dir = 0; dir < XFRM_POLICY_MAX; dir++) {
 		struct hlist_node *n;
 
@@ -1311,13 +1237,13 @@ static void xfrm_hash_rebuild(struct work_struct *work)
 				hlist_del_rcu(&policy->bydst);
 		}
 		if ((dir & XFRM_POLICY_MASK) == XFRM_POLICY_OUT) {
-			/* dir out => dst = remote, src = local */
+			 
 			net->xfrm.policy_bydst[dir].dbits4 = rbits4;
 			net->xfrm.policy_bydst[dir].sbits4 = lbits4;
 			net->xfrm.policy_bydst[dir].dbits6 = rbits6;
 			net->xfrm.policy_bydst[dir].sbits6 = lbits6;
 		} else {
-			/* dir in/fwd => dst = local, src = remote */
+			 
 			net->xfrm.policy_bydst[dir].dbits4 = lbits4;
 			net->xfrm.policy_bydst[dir].sbits4 = rbits4;
 			net->xfrm.policy_bydst[dir].dbits6 = lbits6;
@@ -1325,13 +1251,13 @@ static void xfrm_hash_rebuild(struct work_struct *work)
 		}
 	}
 
-	/* re-insert all policies by order of creation */
+	 
 	list_for_each_entry_reverse(policy, &net->xfrm.policy_all, walk.all) {
 		if (policy->walk.dead)
 			continue;
 		dir = xfrm_policy_id2dir(policy->index);
 		if (dir >= XFRM_POLICY_MAX) {
-			/* skip socket policies */
+			 
 			continue;
 		}
 		newpos = NULL;
@@ -1371,8 +1297,7 @@ void xfrm_policy_hash_rebuild(struct net *net)
 }
 EXPORT_SYMBOL(xfrm_policy_hash_rebuild);
 
-/* Generate new index... KAME seems to generate them ordered by cost
- * of an absolute inpredictability of ordering of rules. This will not pass. */
+ 
 static u32 xfrm_gen_index(struct net *net, int dir, u32 index)
 {
 	for (;;) {
@@ -1566,9 +1491,7 @@ static struct xfrm_policy *xfrm_policy_insert_list(struct hlist_head *chain,
 	if (newpos && policy->xdo.type != XFRM_DEV_OFFLOAD_PACKET)
 		hlist_add_behind_rcu(&policy->bydst, &newpos->bydst);
 	else
-		/* Packet offload policies enter to the head
-		 * to speed-up lookups.
-		 */
+		 
 		hlist_add_head_rcu(&policy->bydst, chain);
 
 	return delpol;
@@ -1594,7 +1517,7 @@ int xfrm_policy_insert(int dir, struct xfrm_policy *policy, int excl)
 
 	__xfrm_policy_link(policy, dir);
 
-	/* After previous checking, family can either be AF_INET or AF_INET6 */
+	 
 	if (policy->family == AF_INET)
 		rt_genid_bump_ipv4(net);
 	else
@@ -1954,17 +1877,13 @@ void xfrm_policy_walk_done(struct xfrm_policy_walk *walk, struct net *net)
 	if (list_empty(&walk->walk.all))
 		return;
 
-	spin_lock_bh(&net->xfrm.xfrm_policy_lock); /*FIXME where is net? */
+	spin_lock_bh(&net->xfrm.xfrm_policy_lock);  
 	list_del(&walk->walk.all);
 	spin_unlock_bh(&net->xfrm.xfrm_policy_lock);
 }
 EXPORT_SYMBOL(xfrm_policy_walk_done);
 
-/*
- * Find policy to apply to this flow.
- *
- * Returns 0 if policy found, else an -errno.
- */
+ 
 static int xfrm_policy_match(const struct xfrm_policy *pol,
 			     const struct flowi *fl,
 			     u8 type, u16 family, u32 if_id)
@@ -2115,7 +2034,7 @@ __xfrm_policy_eval_candidates(struct hlist_head *chain,
 		}
 
 		if (prefer) {
-			/* matches.  Is it older than *prefer? */
+			 
 			if (pol->priority == priority &&
 			    prefer->pos < pol->pos)
 				return prefer;
@@ -2295,7 +2214,7 @@ static struct xfrm_policy *__xfrm_policy_unlink(struct xfrm_policy *pol,
 	if (list_empty(&pol->walk.all))
 		return NULL;
 
-	/* Socket policies are not hashed. */
+	 
 	if (!hlist_unhashed(&pol->bydst)) {
 		hlist_del_rcu(&pol->bydst);
 		hlist_del_init(&pol->bydst_inexact_list);
@@ -2357,9 +2276,7 @@ int xfrm_sk_policy_insert(struct sock *sk, int dir, struct xfrm_policy *pol)
 		if (pol)
 			xfrm_policy_requeue(old_pol, pol);
 
-		/* Unlinking succeeds always. This is the only function
-		 * allowed to delete or replace socket policy.
-		 */
+		 
 		xfrm_sk_policy_unlink(old_pol, dir);
 	}
 	spin_unlock_bh(&net->xfrm.xfrm_policy_lock);
@@ -2380,7 +2297,7 @@ static struct xfrm_policy *clone_policy(const struct xfrm_policy *old, int dir)
 		if (security_xfrm_policy_clone(old->security,
 					       &newp->security)) {
 			kfree(newp);
-			return NULL;  /* ENOMEM */
+			return NULL;   
 		}
 		newp->lft = old->lft;
 		newp->curlft = old->curlft;
@@ -2438,7 +2355,7 @@ xfrm_get_saddr(struct net *net, int oif, xfrm_address_t *local,
 	return err;
 }
 
-/* Resolve list of templates for the flow, given policy. */
+ 
 
 static int
 xfrm_tmpl_resolve_one(struct xfrm_policy *policy, const struct flowi *fl,
@@ -2524,7 +2441,7 @@ xfrm_tmpl_resolve(struct xfrm_policy **pols, int npols, const struct flowi *fl,
 			cnx += ret;
 	}
 
-	/* found states are sorted for outbound processing */
+	 
 	if (npols > 1)
 		xfrm_state_sort(xfrm, tpp, cnx, family);
 
@@ -2606,9 +2523,7 @@ static inline int xfrm_fill_dst(struct xfrm_dst *xdst, struct net_device *dev,
 }
 
 
-/* Allocate chain of dst_entry's, attach known xfrm's, calculate
- * all the metrics... Shortly, bundle a bundle.
- */
+ 
 
 static struct dst_entry *xfrm_bundle_create(struct xfrm_policy *policy,
 					    struct xfrm_state **xfrm,
@@ -2653,9 +2568,7 @@ static struct dst_entry *xfrm_bundle_create(struct xfrm_policy *policy,
 		if (!xdst_prev)
 			xdst0 = xdst;
 		else
-			/* Ref count is taken during xfrm_alloc_dst()
-			 * No need to do dst_clone() on dst1
-			 */
+			 
 			xfrm_dst_set_child(xdst_prev, &xdst->u.dst);
 
 		if (xfrm[i]->sel.family == AF_UNSPEC) {
@@ -2808,7 +2721,7 @@ xfrm_resolve_and_create_bundle(struct xfrm_policy **pols, int num_pols,
 	struct dst_entry *dst;
 	int err;
 
-	/* Try to instantiate a bundle */
+	 
 	err = xfrm_tmpl_resolve(pols, num_pols, fl, xfrm, family);
 	if (err <= 0) {
 		if (err == 0)
@@ -2855,7 +2768,7 @@ static void xfrm_policy_queue_process(struct timer_list *t)
 	dst = skb_dst(skb);
 	sk = skb->sk;
 
-	/* Fixup the mark to support VTI. */
+	 
 	skb_mark = skb->mark;
 	skb->mark = pol->mark.v;
 	xfrm_decode_session(skb, &fl, dst->ops->family);
@@ -2891,7 +2804,7 @@ static void xfrm_policy_queue_process(struct timer_list *t)
 	while (!skb_queue_empty(&list)) {
 		skb = __skb_dequeue(&list);
 
-		/* Fixup the mark to support VTI. */
+		 
 		skb_mark = skb->mark;
 		skb->mark = pol->mark.v;
 		xfrm_decode_session(skb, &fl, skb_dst(skb)->ops->family);
@@ -3031,8 +2944,7 @@ static struct xfrm_dst *xfrm_bundle_lookup(struct net *net,
 	int num_pols = 0, num_xfrms = 0, err;
 	struct xfrm_dst *xdst;
 
-	/* Resolve policies to use if we couldn't get them from
-	 * previous cache entry */
+	 
 	num_pols = 1;
 	pols[0] = xfrm_policy_lookup(net, fl, family, dir, if_id);
 	err = xfrm_expand_policies(fl, family, pols,
@@ -3064,9 +2976,7 @@ static struct xfrm_dst *xfrm_bundle_lookup(struct net *net,
 	return xdst;
 
 make_dummy_bundle:
-	/* We found policies, but there's no bundles to instantiate:
-	 * either because the policy blocks, has no transformations or
-	 * we could not build template (no xfrm_states).*/
+	 
 	xdst = xfrm_create_dummy_bundle(net, xflo, fl, num_xfrms, family);
 	if (IS_ERR(xdst)) {
 		xfrm_pols_put(pols, num_pols);
@@ -3102,14 +3012,7 @@ static struct dst_entry *make_blackhole(struct net *net, u16 family,
 	return ret;
 }
 
-/* Finds/creates a bundle for given flow and if_id
- *
- * At the moment we eat a raw IP route. Mostly to speed up lookups
- * on interfaces with disabled IPsec.
- *
- * xfrm_lookup uses an if_id of 0 by default, and is provided for
- * compatibility
- */
+ 
 struct dst_entry *xfrm_lookup_with_ifid(struct net *net,
 					struct dst_entry *dst_orig,
 					const struct flowi *fl,
@@ -3170,7 +3073,7 @@ struct dst_entry *xfrm_lookup_with_ifid(struct net *net,
 		xflo.dst_orig = dst_orig;
 		xflo.flags = flags;
 
-		/* To accelerate a bit...  */
+		 
 		if (!if_id && ((dst_orig->flags & DST_NOXFRM) ||
 			       !net->xfrm.policy_count[XFRM_POLICY_OUT]))
 			goto nopol;
@@ -3191,12 +3094,7 @@ struct dst_entry *xfrm_lookup_with_ifid(struct net *net,
 
 	dst = &xdst->u.dst;
 	if (route == NULL && num_xfrms > 0) {
-		/* The only case when xfrm_bundle_lookup() returns a
-		 * bundle with null route, is when the template could
-		 * not be resolved. It means policies are there, but
-		 * bundle could not be created, since we don't yet
-		 * have the xfrm_state's. We need to wait for KM to
-		 * negotiate new SA's or bail out with error.*/
+		 
 		if (net->xfrm.sysctl_larval_drop) {
 			XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTNOSTATES);
 			err = -EREMOTE;
@@ -3223,15 +3121,15 @@ no_transform:
 		WRITE_ONCE(pols[i]->curlft.use_time, ktime_get_real_seconds());
 
 	if (num_xfrms < 0) {
-		/* Prohibit the flow */
+		 
 		XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTPOLBLOCK);
 		err = -EPERM;
 		goto error;
 	} else if (num_xfrms > 0) {
-		/* Flow transformed */
+		 
 		dst_release(dst_orig);
 	} else {
-		/* Flow passes untransformed */
+		 
 		dst_release(dst);
 		dst = dst_orig;
 	}
@@ -3263,11 +3161,7 @@ dropdst:
 }
 EXPORT_SYMBOL(xfrm_lookup_with_ifid);
 
-/* Main function: finds/creates a bundle for given flow.
- *
- * At the moment we eat a raw IP route. Mostly to speed up lookups
- * on interfaces with disabled IPsec.
- */
+ 
 struct dst_entry *xfrm_lookup(struct net *net, struct dst_entry *dst_orig,
 			      const struct flowi *fl, const struct sock *sk,
 			      int flags)
@@ -3276,9 +3170,7 @@ struct dst_entry *xfrm_lookup(struct net *net, struct dst_entry *dst_orig,
 }
 EXPORT_SYMBOL(xfrm_lookup);
 
-/* Callers of xfrm_lookup_route() must ensure a call to dst_output().
- * Otherwise we may send out blackholed packets.
- */
+ 
 struct dst_entry *xfrm_lookup_route(struct net *net, struct dst_entry *dst_orig,
 				    const struct flowi *fl,
 				    const struct sock *sk, int flags)
@@ -3311,11 +3203,7 @@ xfrm_secpath_reject(int idx, struct sk_buff *skb, const struct flowi *fl)
 	return x->type->reject(x, skb, fl);
 }
 
-/* When skb is transformed back to its "native" form, we have to
- * check policy restrictions. At the moment we make this in maximally
- * stupid way. Shame on me. :-) Of course, connected sockets must
- * have policy cached at them.
- */
+ 
 
 static inline int
 xfrm_state_ok(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x,
@@ -3334,13 +3222,7 @@ xfrm_state_ok(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x,
 		(if_id == 0 || if_id == x->if_id);
 }
 
-/*
- * 0 or more than 0 is returned when validation is succeeded (either bypass
- * because of optional transport mode, or next index of the matched secpath
- * state with the template.
- * -1 is returned when no matching template is found.
- * Otherwise "-2 - errored_index" is returned.
- */
+ 
 static inline int
 xfrm_policy_ok(const struct xfrm_tmpl *tmpl, const struct sec_path *sp, int start,
 	       unsigned short family, u32 if_id)
@@ -3357,9 +3239,7 @@ xfrm_policy_ok(const struct xfrm_tmpl *tmpl, const struct sec_path *sp, int star
 			return ++idx;
 		if (sp->xvec[idx]->props.mode != XFRM_MODE_TRANSPORT) {
 			if (idx < sp->verified_cnt) {
-				/* Secpath entry previously verified, consider optional and
-				 * continue searching
-				 */
+				 
 				continue;
 			}
 
@@ -3630,7 +3510,7 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
 
 	nf_nat_decode_session(skb, &fl, family);
 
-	/* First, check used SA against their selectors. */
+	 
 	sp = skb_sec_path(skb);
 	if (sp) {
 		int i;
@@ -3676,7 +3556,7 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
 		return 1;
 	}
 
-	/* This lockless write can happen from different cpus. */
+	 
 	WRITE_ONCE(pol->curlft.use_time, ktime_get_real_seconds());
 
 	pols[0] = pol;
@@ -3692,7 +3572,7 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
 				xfrm_pol_put(pols[0]);
 				return 0;
 			}
-			/* This write can happen from different cpus. */
+			 
 			WRITE_ONCE(pols[1]->curlft.use_time,
 				   ktime_get_real_seconds());
 			npols++;
@@ -3732,20 +3612,12 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
 			tpp = stp;
 		}
 
-		/* For each tunnel xfrm, find the first matching tmpl.
-		 * For each tmpl before that, find corresponding xfrm.
-		 * Order is _important_. Later we will implement
-		 * some barriers, but at the moment barriers
-		 * are implied between each two transformations.
-		 * Upon success, marks secpath entries as having been
-		 * verified to allow them to be skipped in future policy
-		 * checks (e.g. nested tunnels).
-		 */
+		 
 		for (i = xfrm_nr-1, k = 0; i >= 0; i--) {
 			k = xfrm_policy_ok(tpp[i], sp, k, family, if_id);
 			if (k < 0) {
 				if (k < -1)
-					/* "-2 - errored_index" returned */
+					 
 					xerr_idx = -(2+k);
 				XFRM_INC_STATS(net, LINUX_MIB_XFRMINTMPLMISMATCH);
 				goto reject;
@@ -3800,31 +3672,11 @@ int __xfrm_route_forward(struct sk_buff *skb, unsigned short family)
 }
 EXPORT_SYMBOL(__xfrm_route_forward);
 
-/* Optimize later using cookies and generation ids. */
+ 
 
 static struct dst_entry *xfrm_dst_check(struct dst_entry *dst, u32 cookie)
 {
-	/* Code (such as __xfrm4_bundle_create()) sets dst->obsolete
-	 * to DST_OBSOLETE_FORCE_CHK to force all XFRM destinations to
-	 * get validated by dst_ops->check on every use.  We do this
-	 * because when a normal route referenced by an XFRM dst is
-	 * obsoleted we do not go looking around for all parent
-	 * referencing XFRM dsts so that we can invalidate them.  It
-	 * is just too much work.  Instead we make the checks here on
-	 * every use.  For example:
-	 *
-	 *	XFRM dst A --> IPv4 dst X
-	 *
-	 * X is the "xdst->route" of A (X is also the "dst->path" of A
-	 * in this example).  If X is marked obsolete, "A" will not
-	 * notice.  That's what we are validating here via the
-	 * stale_bundle() check.
-	 *
-	 * When a dst is removed from the fib tree, DST_OBSOLETE_DEAD will
-	 * be marked on it.
-	 * This will force stale_bundle() to fail on any xdst bundle with
-	 * this dst linked in it.
-	 */
+	 
 	if (dst->obsolete < 0 && !stale_bundle(dst))
 		return dst;
 
@@ -3848,7 +3700,7 @@ EXPORT_SYMBOL(xfrm_dst_ifdown);
 
 static void xfrm_link_failure(struct sk_buff *skb)
 {
-	/* Impossible. Such dst must be popped before reaches point of failure. */
+	 
 }
 
 static struct dst_entry *xfrm_negative_advice(struct dst_entry *dst)
@@ -3885,9 +3737,7 @@ static void xfrm_init_pmtu(struct xfrm_dst **bundle, int nr)
 	}
 }
 
-/* Check that the bundle accepts the flow and its components are
- * still valid.
- */
+ 
 
 static int xfrm_bundle_ok(struct xfrm_dst *first)
 {
@@ -4211,7 +4061,7 @@ static int __net_init xfrm_net_init(struct net *net)
 {
 	int rv;
 
-	/* Initialize the per-net locks here */
+	 
 	spin_lock_init(&net->xfrm.xfrm_state_lock);
 	spin_lock_init(&net->xfrm.xfrm_policy_lock);
 	seqcount_spinlock_init(&net->xfrm.xfrm_policy_hash_generation, &net->xfrm.xfrm_policy_lock);
@@ -4411,9 +4261,7 @@ static int migrate_tmpl_match(const struct xfrm_migrate *m, const struct xfrm_tm
 			}
 			break;
 		case XFRM_MODE_TRANSPORT:
-			/* in case of transport mode, template does not store
-			   any IP addresses, hence we just compare mode and
-			   protocol */
+			 
 			match = 1;
 			break;
 		default:
@@ -4423,7 +4271,7 @@ static int migrate_tmpl_match(const struct xfrm_migrate *m, const struct xfrm_tm
 	return match;
 }
 
-/* update endpoint address(es) of template(s) */
+ 
 static int xfrm_policy_migrate(struct xfrm_policy *pol,
 			       struct xfrm_migrate *m, int num_migrate,
 			       struct netlink_ext_ack *extack)
@@ -4433,7 +4281,7 @@ static int xfrm_policy_migrate(struct xfrm_policy *pol,
 
 	write_lock_bh(&pol->lock);
 	if (unlikely(pol->walk.dead)) {
-		/* target policy has been deleted */
+		 
 		NL_SET_ERR_MSG(extack, "Target policy not found");
 		write_unlock_bh(&pol->lock);
 		return -ENOENT;
@@ -4447,13 +4295,13 @@ static int xfrm_policy_migrate(struct xfrm_policy *pol,
 			if (pol->xfrm_vec[i].mode != XFRM_MODE_TUNNEL &&
 			    pol->xfrm_vec[i].mode != XFRM_MODE_BEET)
 				continue;
-			/* update endpoints */
+			 
 			memcpy(&pol->xfrm_vec[i].id.daddr, &mp->new_daddr,
 			       sizeof(pol->xfrm_vec[i].id.daddr));
 			memcpy(&pol->xfrm_vec[i].saddr, &mp->new_saddr,
 			       sizeof(pol->xfrm_vec[i].saddr));
 			pol->xfrm_vec[i].encap_family = mp->new_family;
-			/* flush bundles */
+			 
 			atomic_inc(&pol->genid);
 		}
 	}
@@ -4483,7 +4331,7 @@ static int xfrm_migrate_check(const struct xfrm_migrate *m, int num_migrate,
 			return -EINVAL;
 		}
 
-		/* check if there is any duplicated entry */
+		 
 		for (j = i + 1; j < num_migrate; j++) {
 			if (!memcmp(&m[i].old_daddr, &m[j].old_daddr,
 				    sizeof(m[i].old_daddr)) &&
@@ -4515,7 +4363,7 @@ int xfrm_migrate(const struct xfrm_selector *sel, u8 dir, u8 type,
 	struct xfrm_state *x_new[XFRM_MAX_DEPTH];
 	struct xfrm_migrate *mp;
 
-	/* Stage 0 - sanity checks */
+	 
 	err = xfrm_migrate_check(m, num_migrate, extack);
 	if (err < 0)
 		goto out;
@@ -4526,7 +4374,7 @@ int xfrm_migrate(const struct xfrm_selector *sel, u8 dir, u8 type,
 		goto out;
 	}
 
-	/* Stage 1 - find policy */
+	 
 	pol = xfrm_migrate_policy_find(sel, dir, type, net, if_id);
 	if (!pol) {
 		NL_SET_ERR_MSG(extack, "Target policy not found");
@@ -4534,7 +4382,7 @@ int xfrm_migrate(const struct xfrm_selector *sel, u8 dir, u8 type,
 		goto out;
 	}
 
-	/* Stage 2 - find and update state(s) */
+	 
 	for (i = 0, mp = m; i < num_migrate; i++, mp++) {
 		if ((x = xfrm_migrate_state_find(mp, net, if_id))) {
 			x_cur[nx_cur] = x;
@@ -4550,18 +4398,18 @@ int xfrm_migrate(const struct xfrm_selector *sel, u8 dir, u8 type,
 		}
 	}
 
-	/* Stage 3 - update policy */
+	 
 	err = xfrm_policy_migrate(pol, m, num_migrate, extack);
 	if (err < 0)
 		goto restore_state;
 
-	/* Stage 4 - delete old state(s) */
+	 
 	if (nx_cur) {
 		xfrm_states_put(x_cur, nx_cur);
 		xfrm_states_delete(x_cur, nx_cur);
 	}
 
-	/* Stage 5 - announce */
+	 
 	km_migrate(sel, dir, type, m, num_migrate, k, encap);
 
 	xfrm_pol_put(pol);

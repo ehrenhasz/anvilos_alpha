@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Microchip AR1020 and AR1021 driver for I2C
- *
- * Author: Christian Gmeiner <christian.gmeiner@gmail.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/module.h>
@@ -41,7 +37,7 @@ static irqreturn_t ar1021_i2c_irq(int irq, void *dev_id)
 	if (retval != sizeof(ar1021->data))
 		goto out;
 
-	/* sync bit set ? */
+	 
 	if (!(data[0] & BIT(7)))
 		goto out;
 
@@ -62,7 +58,7 @@ static int ar1021_i2c_open(struct input_dev *dev)
 {
 	static const u8 cmd_enable_touch[] = {
 		AR1021_CMD,
-		0x01, /* number of bytes after this */
+		0x01,  
 		AR1021_CMD_ENABLE_TOUCH
 	};
 	struct ar1021_i2c *ar1021 = input_get_drvdata(dev);

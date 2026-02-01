@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * xfrm_input.c
- *
- * Changes:
- * 	YOSHIFUJI Hideaki @USAGI
- * 		Split up af-specific portion
- *
- */
+
+ 
 
 #include <linux/bottom_half.h>
 #include <linux/cache.h>
@@ -124,10 +117,10 @@ struct sec_path *secpath_set(struct sk_buff *skb)
 	if (!sp)
 		return NULL;
 
-	if (tmp) /* reused existing one (was COW'd if needed) */
+	if (tmp)  
 		return sp;
 
-	/* allocated new secpath */
+	 
 	memset(sp->ovec, 0, sizeof(sp->ovec));
 	sp->olen = 0;
 	sp->len = 0;
@@ -137,7 +130,7 @@ struct sec_path *secpath_set(struct sk_buff *skb)
 }
 EXPORT_SYMBOL(secpath_set);
 
-/* Fetch spi and seq from ipsec header */
+ 
 
 int xfrm_parse_spi(struct sk_buff *skb, u8 nexthdr, __be32 *spi, __be32 *seq)
 {
@@ -323,16 +316,7 @@ out:
 	return err;
 }
 
-/* Remove encapsulation header.
- *
- * The IP header will be moved over the top of the encapsulation
- * header.
- *
- * On entry, the transport header shall point to where the IP header
- * should be and the network header shall be set to where the IP
- * header currently is.  skb->data shall point to the start of the
- * payload.
- */
+ 
 static int
 xfrm_inner_mode_encap_remove(struct xfrm_state *x,
 			     struct sk_buff *skb)
@@ -378,14 +362,7 @@ static int xfrm_prepare_input(struct xfrm_state *x, struct sk_buff *skb)
 	return xfrm_inner_mode_encap_remove(x, skb);
 }
 
-/* Remove encapsulation header.
- *
- * The IP header will be moved over the top of the encapsulation header.
- *
- * On entry, skb_transport_header() shall point to where the IP header
- * should be and skb_network_header() shall be set to where the IP header
- * currently is.  skb->data shall point to the start of the payload.
- */
+ 
 static int xfrm4_transport_input(struct xfrm_state *x, struct sk_buff *skb)
 {
 	int ihl = skb->data - skb_transport_header(skb);
@@ -479,14 +456,14 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
 
 		family = x->props.family;
 
-		/* An encap_type of -1 indicates async resumption. */
+		 
 		if (encap_type == -1) {
 			async = 1;
 			seq = XFRM_SKB_CB(skb)->seq.input.low;
 			goto resume;
 		}
 
-		/* encap_type < -1 indicates a GRO call. */
+		 
 		encap_type = 0;
 		seq = XFRM_SPI_SKB_CB(skb)->seq;
 
@@ -528,7 +505,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
 
 	family = XFRM_SPI_SKB_CB(skb)->family;
 
-	/* if tunnel is present override skb->mark value with tunnel i_key */
+	 
 	switch (family) {
 	case AF_INET:
 		if (XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip4)
@@ -644,7 +621,7 @@ resume:
 			goto drop_unlock;
 		}
 
-		/* only the first xfrm gets the encap type */
+		 
 		encap_type = 0;
 
 		if (xfrm_replay_recheck(x, skb, seq)) {
@@ -672,10 +649,7 @@ resume:
 			break;
 		}
 
-		/*
-		 * We need the inner address.  However, we only get here for
-		 * transport mode so the outer address is identical.
-		 */
+		 
 		daddr = &x->id.daddr;
 		family = x->props.family;
 

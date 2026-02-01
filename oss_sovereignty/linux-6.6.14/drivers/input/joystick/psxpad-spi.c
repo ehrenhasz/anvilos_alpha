@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * PlayStation 1/2 joypads via SPI interface Driver
- *
- * Copyright (C) 2017 Tomohiro Yoshidomi <sylph23k@gmail.com>
- *
- * PlayStation 1/2 joypad's plug (not socket)
- *  123 456 789
- * (...|...|...)
- *
- * 1: DAT -> MISO (pullup with 1k owm to 3.3V)
- * 2: CMD -> MOSI
- * 3: 9V (for motor, if not use N.C.)
- * 4: GND
- * 5: 3.3V
- * 6: Attention -> CS(SS)
- * 7: SCK -> SCK
- * 8: N.C.
- * 9: ACK -> N.C.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/device.h>
@@ -32,13 +14,9 @@
 	(((x) & 0x20) >> 3) | (((x) & 0x10) >> 1) | (((x) & 0x08) << 1) | \
 	(((x) & 0x04) << 3) | (((x) & 0x02) << 5) | (((x) & 0x01) << 7))
 
-/* PlayStation 1/2 joypad command and response are LSBFIRST. */
+ 
 
-/*
- *	0x01, 0x42, 0x00, 0x00, 0x00,
- *	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
- *	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
- */
+ 
 static const u8 PSX_CMD_POLL[] = {
 	0x80, 0x42, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -46,19 +24,19 @@ static const u8 PSX_CMD_POLL[] = {
 };
 
 #ifdef CONFIG_JOYSTICK_PSXPAD_SPI_FF
-/*	0x01, 0x43, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00 */
+ 
 static const u8 PSX_CMD_ENTER_CFG[] = {
 	0x80, 0xC2, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00
 };
-/*	0x01, 0x43, 0x00, 0x00, 0x5A, 0x5A, 0x5A, 0x5A, 0x5A */
+ 
 static const u8 PSX_CMD_EXIT_CFG[] = {
 	0x80, 0xC2, 0x00, 0x00, 0x5A, 0x5A, 0x5A, 0x5A, 0x5A
 };
-/*	0x01, 0x4D, 0x00, 0x00, 0x01, 0xFF, 0xFF, 0xFF, 0xFF */
+ 
 static const u8 PSX_CMD_ENABLE_MOTOR[]	= {
 	0x80, 0xB2, 0x00, 0x00, 0x80, 0xFF, 0xFF, 0xFF, 0xFF
 };
-#endif /* CONFIG_JOYSTICK_PSXPAD_SPI_FF */
+#endif  
 
 struct psxpad {
 	struct spi_device *spi;
@@ -171,7 +149,7 @@ static int psxpad_spi_init_ff(struct psxpad *pad)
 	return 0;
 }
 
-#else	/* CONFIG_JOYSTICK_PSXPAD_SPI_FF */
+#else	 
 
 static void psxpad_control_motor(struct psxpad *pad,
 				 bool motor1enable, bool motor2enable)
@@ -187,7 +165,7 @@ static inline int psxpad_spi_init_ff(struct psxpad *pad)
 {
 	return 0;
 }
-#endif	/* CONFIG_JOYSTICK_PSXPAD_SPI_FF */
+#endif	 
 
 static int psxpad_spi_poll_open(struct input_dev *input)
 {
@@ -224,8 +202,8 @@ static void psxpad_spi_poll(struct input_dev *input)
 	}
 
 	switch (pad->response[1]) {
-	case 0xCE:	/* 0x73 : analog 1 */
-		/* button data is inverted */
+	case 0xCE:	 
+		 
 		b_rsp3 = ~pad->response[3];
 		b_rsp4 = ~pad->response[4];
 
@@ -251,8 +229,8 @@ static void psxpad_spi_poll(struct input_dev *input)
 		input_report_key(input, BTN_START, b_rsp3 & BIT(4));
 		break;
 
-	case 0x82:	/* 0x41 : digital */
-		/* button data is inverted */
+	case 0x82:	 
+		 
 		b_rsp3 = ~pad->response[3];
 		b_rsp4 = ~pad->response[4];
 
@@ -298,11 +276,11 @@ static int psxpad_spi_probe(struct spi_device *spi)
 		return -ENOMEM;
 	}
 
-	/* input poll device settings */
+	 
 	pad->idev = idev;
 	pad->spi = spi;
 
-	/* input device settings */
+	 
 	input_set_drvdata(idev, pad);
 
 	idev->name = "PlayStation 1/2 joypad";
@@ -312,7 +290,7 @@ static int psxpad_spi_probe(struct spi_device *spi)
 	idev->open = psxpad_spi_poll_open;
 	idev->close = psxpad_spi_poll_close;
 
-	/* key/value map settings */
+	 
 	input_set_abs_params(idev, ABS_X, 0, 255, 0, 0);
 	input_set_abs_params(idev, ABS_Y, 0, 255, 0, 0);
 	input_set_abs_params(idev, ABS_RX, 0, 255, 0, 0);
@@ -338,15 +316,15 @@ static int psxpad_spi_probe(struct spi_device *spi)
 	if (err)
 		return err;
 
-	/* SPI settings */
+	 
 	spi->mode = SPI_MODE_3;
 	spi->bits_per_word = 8;
-	/* (PlayStation 1/2 joypad might be possible works 250kHz/500kHz) */
+	 
 	spi->master->min_speed_hz = 125000;
 	spi->master->max_speed_hz = 125000;
 	spi_setup(spi);
 
-	/* pad settings */
+	 
 	psxpad_set_motor_level(pad, 0, 0);
 
 
@@ -356,12 +334,12 @@ static int psxpad_spi_probe(struct spi_device *spi)
 		return err;
 	}
 
-	/* poll interval is about 60fps */
+	 
 	input_set_poll_interval(idev, 16);
 	input_set_min_poll_interval(idev, 8);
 	input_set_max_poll_interval(idev, 32);
 
-	/* register input poll device */
+	 
 	err = input_register_device(idev);
 	if (err) {
 		dev_err(&spi->dev,

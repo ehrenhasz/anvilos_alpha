@@ -1,30 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2015 by Delphix. All rights reserved.
- * Copyright (c) 2013 Martin Matuska. All rights reserved.
- * Copyright 2019 Joyent, Inc.
- * Copyright (c) 2022 Hewlett Packard Enterprise Development LP.
- */
+ 
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/dmu.h>
@@ -47,11 +22,7 @@
 static int
 dodefault(zfs_prop_t prop, int intsz, int numints, void *buf)
 {
-	/*
-	 * The setonce properties are read-only, BUT they still
-	 * have a default value that can be used as the initial
-	 * value.
-	 */
+	 
 	if (prop == ZPROP_INVAL ||
 	    (zfs_prop_readonly(prop) && !zfs_prop_setonce(prop)))
 		return (SET_ERROR(ENOENT));
@@ -107,10 +78,7 @@ dsl_prop_get_dd(dsl_dir_t *dd, const char *propname,
 	recvdstr = kmem_asprintf("%s%s", propname, ZPROP_RECVD_SUFFIX);
 	iuvstr = kmem_asprintf("%s%s", propname, ZPROP_IUV_SUFFIX);
 
-	/*
-	 * Note: dd may become NULL, therefore we shouldn't dereference it
-	 * after this loop.
-	 */
+	 
 	for (; dd != NULL; dd = dd->dd_parent) {
 		if (dd != target || snapshot) {
 			if (!inheritable) {
@@ -120,7 +88,7 @@ dsl_prop_get_dd(dsl_dir_t *dd, const char *propname,
 			inheriting = B_TRUE;
 		}
 
-		/* Check for a iuv value. */
+		 
 		err = zap_lookup(mos, dsl_dir_phys(dd)->dd_props_zapobj,
 		    iuvstr, intsz, numints, buf);
 		if (err == 0 && dsl_prop_known_index(prop,
@@ -132,7 +100,7 @@ dsl_prop_get_dd(dsl_dir_t *dd, const char *propname,
 			break;
 		}
 
-		/* Check for a local value. */
+		 
 		err = zap_lookup(mos, dsl_dir_phys(dd)->dd_props_zapobj,
 		    propname, intsz, numints, buf);
 		if (err != ENOENT) {
@@ -141,17 +109,14 @@ dsl_prop_get_dd(dsl_dir_t *dd, const char *propname,
 			break;
 		}
 
-		/*
-		 * Skip the check for a received value if there is an explicit
-		 * inheritance entry.
-		 */
+		 
 		err = zap_contains(mos, dsl_dir_phys(dd)->dd_props_zapobj,
 		    inheritstr);
 		if (err != 0 && err != ENOENT)
 			break;
 
 		if (err == ENOENT) {
-			/* Check for a received value. */
+			 
 			err = zap_lookup(mos, dsl_dir_phys(dd)->dd_props_zapobj,
 			    recvdstr, intsz, numints, buf);
 			if (err != ENOENT) {
@@ -168,12 +133,7 @@ dsl_prop_get_dd(dsl_dir_t *dd, const char *propname,
 			}
 		}
 
-		/*
-		 * If we found an explicit inheritance entry, err is zero even
-		 * though we haven't yet found the value, so reinitializing err
-		 * at the end of the loop (instead of at the beginning) ensures
-		 * that err has a valid post-loop value.
-		 */
+		 
 		err = SET_ERROR(ENOENT);
 	}
 
@@ -205,7 +165,7 @@ dsl_prop_get_ds(dsl_dataset_t *ds, const char *propname,
 
 		ASSERT(ds->ds_is_snapshot);
 
-		/* Check for a local value. */
+		 
 		err = zap_lookup(mos, zapobj, propname, intsz, numints, buf);
 		if (err != ENOENT) {
 			if (setpoint != NULL && err == 0)
@@ -213,10 +173,7 @@ dsl_prop_get_ds(dsl_dataset_t *ds, const char *propname,
 			return (err);
 		}
 
-		/*
-		 * Skip the check for a received value if there is an explicit
-		 * inheritance entry.
-		 */
+		 
 		if (inheritable) {
 			char *inheritstr = kmem_asprintf("%s%s", propname,
 			    ZPROP_INHERIT_SUFFIX);
@@ -227,7 +184,7 @@ dsl_prop_get_ds(dsl_dataset_t *ds, const char *propname,
 		}
 
 		if (err == ENOENT) {
-			/* Check for a received value. */
+			 
 			char *recvdstr = kmem_asprintf("%s%s", propname,
 			    ZPROP_RECVD_SUFFIX);
 			err = zap_lookup(mos, zapobj, recvdstr,
@@ -299,13 +256,7 @@ dsl_prop_fini(dsl_dir_t *dd)
 	list_destroy(&dd->dd_props);
 }
 
-/*
- * Register interest in the named property.  We'll call the callback
- * once to notify it of the current property value, and again each time
- * the property changes, until this callback is unregistered.
- *
- * Return 0 on success, errno if the prop is not an integer value.
- */
+ 
 int
 dsl_prop_register(dsl_dataset_t *ds, const char *propname,
     dsl_prop_changed_cb_t *callback, void *cbarg)
@@ -359,14 +310,7 @@ dsl_prop_get(const char *dsname, const char *propname,
 	return (error);
 }
 
-/*
- * Get the current property value.  It may have changed by the time this
- * function returns, so it is NOT safe to follow up with
- * dsl_prop_register() and assume that the value has not changed in
- * between.
- *
- * Return 0 on success, ENOENT if ddname is invalid.
- */
+ 
 int
 dsl_prop_get_integer(const char *ddname, const char *propname,
     uint64_t *valuep, char *setpoint)
@@ -381,16 +325,7 @@ dsl_prop_get_int_ds(dsl_dataset_t *ds, const char *propname,
 	return (dsl_prop_get_ds(ds, propname, 8, 1, valuep, NULL));
 }
 
-/*
- * Predict the effective value of the given special property if it were set with
- * the given value and source. This is not a general purpose function. It exists
- * only to handle the special requirements of the quota and reservation
- * properties. The fact that these properties are non-inheritable greatly
- * simplifies the prediction logic.
- *
- * Returns 0 on success, a positive error code on failure, or -1 if called with
- * a property not handled by this function.
- */
+ 
 int
 dsl_prop_predict(dsl_dir_t *dd, const char *propname,
     zprop_source_t source, uint64_t value, uint64_t *newvalp)
@@ -426,7 +361,7 @@ dsl_prop_predict(dsl_dir_t *dd, const char *propname,
 
 	switch ((int)source) {
 	case ZPROP_SRC_NONE:
-		/* Revert to the received value, if any. */
+		 
 		err = zap_lookup(mos, zapobj, recvdstr, 8, 1, newvalp);
 		if (err == ENOENT)
 			*newvalp = 0;
@@ -435,19 +370,13 @@ dsl_prop_predict(dsl_dir_t *dd, const char *propname,
 		*newvalp = value;
 		break;
 	case ZPROP_SRC_RECEIVED:
-		/*
-		 * If there's no local setting, then the new received value will
-		 * be the effective value.
-		 */
+		 
 		err = zap_lookup(mos, zapobj, propname, 8, 1, newvalp);
 		if (err == ENOENT)
 			*newvalp = value;
 		break;
 	case (ZPROP_SRC_NONE | ZPROP_SRC_RECEIVED):
-		/*
-		 * We're clearing the received value, so the local setting (if
-		 * it exists) remains the effective value.
-		 */
+		 
 		err = zap_lookup(mos, zapobj, propname, 8, 1, newvalp);
 		if (err == ENOENT)
 			*newvalp = 0;
@@ -464,13 +393,7 @@ dsl_prop_predict(dsl_dir_t *dd, const char *propname,
 	return (err);
 }
 
-/*
- * Unregister this callback.  Return 0 on success, ENOENT if ddname is
- * invalid, or ENOMSG if no matching callback registered.
- *
- * NOTE: This function is no longer used internally but has been preserved
- * to prevent breaking external consumers (Lustre, etc).
- */
+ 
 int
 dsl_prop_unregister(dsl_dataset_t *ds, const char *propname,
     dsl_prop_changed_cb_t *callback, void *cbarg)
@@ -501,10 +424,7 @@ dsl_prop_unregister(dsl_dataset_t *ds, const char *propname,
 	return (0);
 }
 
-/*
- * Unregister all callbacks that are registered with the
- * given callback argument.
- */
+ 
 void
 dsl_prop_unregister_all(dsl_dataset_t *ds, void *cbarg)
 {
@@ -547,28 +467,7 @@ dsl_prop_notify_all_cb(dsl_pool_t *dp, dsl_dataset_t *ds, void *arg)
 		    cbr = list_next(&pr->pr_cbs, cbr)) {
 			uint64_t value;
 
-			/*
-			 * Callback entries do not have holds on their
-			 * datasets so that datasets with registered
-			 * callbacks are still eligible for eviction.
-			 * Unlike operations to update properties on a
-			 * single dataset, we are performing a recursive
-			 * descent of related head datasets.  The caller
-			 * of this function only has a dataset hold on
-			 * the passed in head dataset, not the snapshots
-			 * associated with this dataset.  Without a hold,
-			 * the dataset pointer within callback records
-			 * for snapshots can be invalidated by eviction
-			 * at any time.
-			 *
-			 * Use dsl_dataset_try_add_ref() to verify
-			 * that the dataset for a snapshot has not
-			 * begun eviction processing and to prevent
-			 * eviction from occurring for the duration of
-			 * the callback.  If the hold attempt fails,
-			 * this object is already being evicted and the
-			 * callback can be safely ignored.
-			 */
+			 
 			if (ds != cbr->cbr_ds &&
 			    !dsl_dataset_try_add_ref(dp, cbr->cbr_ds, FTAG))
 				continue;
@@ -587,10 +486,7 @@ dsl_prop_notify_all_cb(dsl_pool_t *dp, dsl_dataset_t *ds, void *arg)
 	return (0);
 }
 
-/*
- * Update all property values for ddobj & its descendants.  This is used
- * when renaming the dir.
- */
+ 
 void
 dsl_prop_notify_all(dsl_dir_t *dd)
 {
@@ -618,10 +514,7 @@ dsl_prop_changed_notify(dsl_pool_t *dp, uint64_t ddobj,
 		return;
 
 	if (!first) {
-		/*
-		 * If the prop is set here, then this change is not
-		 * being inherited here or below; stop the recursion.
-		 */
+		 
 		err = zap_contains(mos, dsl_dir_phys(dd)->dd_props_zapobj,
 		    propname);
 		if (err == 0) {
@@ -638,21 +531,13 @@ dsl_prop_changed_notify(dsl_pool_t *dp, uint64_t ddobj,
 		    cbr = list_next(&pr->pr_cbs, cbr)) {
 			uint64_t propobj;
 
-			/*
-			 * cbr->cbr_ds may be invalidated due to eviction,
-			 * requiring the use of dsl_dataset_try_add_ref().
-			 * See comment block in dsl_prop_notify_all_cb()
-			 * for details.
-			 */
+			 
 			if (!dsl_dataset_try_add_ref(dp, cbr->cbr_ds, FTAG))
 				continue;
 
 			propobj = dsl_dataset_phys(cbr->cbr_ds)->ds_props_obj;
 
-			/*
-			 * If the property is not set on this ds, then it is
-			 * inherited here; call the callback.
-			 */
+			 
 			if (propobj == 0 ||
 			    zap_contains(mos, propobj, propname) != 0)
 				cbr->cbr_func(cbr->cbr_arg, value);
@@ -676,14 +561,7 @@ dsl_prop_changed_notify(dsl_pool_t *dp, uint64_t ddobj,
 }
 
 
-/*
- * For newer values in zfs index type properties, we add a new key
- * propname$iuv (iuv = Ignore Unknown Values) to the properties zap object
- * to store the new property value and store the default value in the
- * existing prop key. So that the propname$iuv key is ignored by the older zfs
- * versions and the default property value from the existing prop key is
- * used.
- */
+ 
 static void
 dsl_prop_set_iuv(objset_t *mos, uint64_t zapobj, const char *propname,
     int intsz, int numints, const void *value, dmu_tx_t *tx)
@@ -747,7 +625,7 @@ dsl_prop_set_sync_impl(dsl_dataset_t *ds, const char *propname,
 		zapobj = dsl_dir_phys(ds->ds_dir)->dd_props_zapobj;
 	}
 
-	/* If we are removing objects from a non-existent ZAP just return */
+	 
 	if (zapobj == 0)
 		return;
 
@@ -764,22 +642,14 @@ dsl_prop_set_sync_impl(dsl_dataset_t *ds, const char *propname,
 
 	switch ((int)source) {
 	case ZPROP_SRC_NONE:
-		/*
-		 * revert to received value, if any (inherit -S)
-		 * - remove propname
-		 * - remove propname$inherit
-		 */
+		 
 		err = zap_remove(mos, zapobj, propname, tx);
 		ASSERT(err == 0 || err == ENOENT);
 		err = zap_remove(mos, zapobj, inheritstr, tx);
 		ASSERT(err == 0 || err == ENOENT);
 		break;
 	case ZPROP_SRC_LOCAL:
-		/*
-		 * remove propname$inherit
-		 * set propname -> value
-		 * set propname$iuv -> new property value
-		 */
+		 
 		err = zap_remove(mos, zapobj, inheritstr, tx);
 		ASSERT(err == 0 || err == ENOENT);
 		VERIFY0(zap_update(mos, zapobj, propname,
@@ -788,11 +658,7 @@ dsl_prop_set_sync_impl(dsl_dataset_t *ds, const char *propname,
 		    numints, value, tx);
 		break;
 	case ZPROP_SRC_INHERITED:
-		/*
-		 * explicitly inherit
-		 * - remove propname
-		 * - set propname$inherit
-		 */
+		 
 		err = zap_remove(mos, zapobj, propname, tx);
 		ASSERT(err == 0 || err == ENOENT);
 		err = zap_remove(mos, zapobj, iuvstr, tx);
@@ -805,29 +671,20 @@ dsl_prop_set_sync_impl(dsl_dataset_t *ds, const char *propname,
 		}
 		break;
 	case ZPROP_SRC_RECEIVED:
-		/*
-		 * set propname$recvd -> value
-		 */
+		 
 		err = zap_update(mos, zapobj, recvdstr,
 		    intsz, numints, value, tx);
 		ASSERT(err == 0);
 		break;
 	case (ZPROP_SRC_NONE | ZPROP_SRC_LOCAL | ZPROP_SRC_RECEIVED):
-		/*
-		 * clear local and received settings
-		 * - remove propname
-		 * - remove propname$inherit
-		 * - remove propname$recvd
-		 */
+		 
 		err = zap_remove(mos, zapobj, propname, tx);
 		ASSERT(err == 0 || err == ENOENT);
 		err = zap_remove(mos, zapobj, inheritstr, tx);
 		ASSERT(err == 0 || err == ENOENT);
 		zfs_fallthrough;
 	case (ZPROP_SRC_NONE | ZPROP_SRC_RECEIVED):
-		/*
-		 * remove propname$recvd
-		 */
+		 
 		err = zap_remove(mos, zapobj, recvdstr, tx);
 		ASSERT(err == 0 || err == ENOENT);
 		break;
@@ -839,11 +696,7 @@ dsl_prop_set_sync_impl(dsl_dataset_t *ds, const char *propname,
 	kmem_strfree(recvdstr);
 	kmem_strfree(iuvstr);
 
-	/*
-	 * If we are left with an empty snap zap we can destroy it.
-	 * This will prevent unnecessary calls to zap_lookup() in
-	 * the "zfs list" and "zfs get" code paths.
-	 */
+	 
 	if (ds->ds_is_snapshot &&
 	    zap_count(mos, zapobj, &count) == 0 && count == 0) {
 		dmu_buf_will_dirty(ds->ds_dbuf, tx);
@@ -856,11 +709,7 @@ dsl_prop_set_sync_impl(dsl_dataset_t *ds, const char *propname,
 
 		if (ds->ds_is_snapshot) {
 			dsl_prop_cb_record_t *cbr;
-			/*
-			 * It's a snapshot; nothing can inherit this
-			 * property, so just look for callbacks on this
-			 * ds here.
-			 */
+			 
 			mutex_enter(&ds->ds_dir->dd_lock);
 			for (cbr = list_head(&ds->ds_prop_cbs); cbr;
 			    cbr = list_next(&ds->ds_prop_cbs, cbr)) {
@@ -985,13 +834,7 @@ dsl_props_set_sync_impl(dsl_dataset_t *ds, zprop_source_t source,
 		const char *name = nvpair_name(pair);
 
 		if (nvpair_type(pair) == DATA_TYPE_NVLIST) {
-			/*
-			 * This usually happens when we reuse the nvlist_t data
-			 * returned by the counterpart dsl_prop_get_all_impl().
-			 * For instance we do this to restore the original
-			 * received properties when an error occurs in the
-			 * zfs_ioc_recv() codepath.
-			 */
+			 
 			nvlist_t *attrs = fnvpair_value_nvlist(pair);
 			pair = fnvlist_lookup_nvpair(attrs, ZPROP_VALUE);
 		}
@@ -1025,9 +868,7 @@ dsl_props_set_sync(void *arg, dmu_tx_t *tx)
 	dsl_dataset_rele(ds, FTAG);
 }
 
-/*
- * All-or-nothing; if any prop can't be set, nothing will be modified.
- */
+ 
 int
 dsl_props_set(const char *dsname, zprop_source_t source, nvlist_t *props)
 {
@@ -1038,10 +879,7 @@ dsl_props_set(const char *dsname, zprop_source_t source, nvlist_t *props)
 	dpsa.dpsa_source = source;
 	dpsa.dpsa_props = props;
 
-	/*
-	 * If the source includes NONE, then we will only be removing entries
-	 * from the ZAP object.  In that case don't check for ENOSPC.
-	 */
+	 
 	if ((source & ZPROP_SRC_NONE) == 0)
 		nblks = 2 * fnvlist_num_pairs(props);
 
@@ -1050,10 +888,10 @@ dsl_props_set(const char *dsname, zprop_source_t source, nvlist_t *props)
 }
 
 typedef enum dsl_prop_getflags {
-	DSL_PROP_GET_INHERITING = 0x1,	/* searching parent of target ds */
-	DSL_PROP_GET_SNAPSHOT = 0x2,	/* snapshot dataset */
-	DSL_PROP_GET_LOCAL = 0x4,	/* local properties */
-	DSL_PROP_GET_RECEIVED = 0x8,	/* received properties */
+	DSL_PROP_GET_INHERITING = 0x1,	 
+	DSL_PROP_GET_SNAPSHOT = 0x2,	 
+	DSL_PROP_GET_LOCAL = 0x4,	 
+	DSL_PROP_GET_RECEIVED = 0x8,	 
 } dsl_prop_getflags_t;
 
 static int
@@ -1078,17 +916,14 @@ dsl_prop_get_all_impl(objset_t *mos, uint64_t propobj,
 		suffix = strchr(za.za_name, '$');
 
 		if (suffix == NULL) {
-			/*
-			 * Skip local properties if we only want received
-			 * properties.
-			 */
+			 
 			if (flags & DSL_PROP_GET_RECEIVED)
 				continue;
 
 			propname = za.za_name;
 			source = setpoint;
 
-			/* Skip if iuv entries are preset. */
+			 
 			valstr = kmem_asprintf("%s%s", propname,
 			    ZPROP_IUV_SUFFIX);
 			err = zap_contains(mos, propobj, valstr);
@@ -1096,7 +931,7 @@ dsl_prop_get_all_impl(objset_t *mos, uint64_t propobj,
 			if (err == 0)
 				continue;
 		} else if (strcmp(suffix, ZPROP_INHERIT_SUFFIX) == 0) {
-			/* Skip explicitly inherited entries. */
+			 
 			continue;
 		} else if (strcmp(suffix, ZPROP_RECVD_SUFFIX) == 0) {
 			if (flags & DSL_PROP_GET_LOCAL)
@@ -1107,14 +942,14 @@ dsl_prop_get_all_impl(objset_t *mos, uint64_t propobj,
 			propname = buf;
 
 			if (!(flags & DSL_PROP_GET_RECEIVED)) {
-				/* Skip if locally overridden. */
+				 
 				err = zap_contains(mos, propobj, propname);
 				if (err == 0)
 					continue;
 				if (err != ENOENT)
 					break;
 
-				/* Skip if explicitly inherited. */
+				 
 				valstr = kmem_asprintf("%s%s", propname,
 				    ZPROP_INHERIT_SUFFIX);
 				err = zap_contains(mos, propobj, valstr);
@@ -1138,34 +973,29 @@ dsl_prop_get_all_impl(objset_t *mos, uint64_t propobj,
 			    za.za_first_integer) != 1)
 				continue;
 		} else {
-			/*
-			 * For backward compatibility, skip suffixes we don't
-			 * recognize.
-			 */
+			 
 			continue;
 		}
 
 		prop = zfs_name_to_prop(propname);
 
-		/* Skip non-inheritable properties. */
+		 
 		if ((flags & DSL_PROP_GET_INHERITING) &&
 		    prop != ZPROP_USERPROP && !zfs_prop_inheritable(prop))
 			continue;
 
-		/* Skip properties not valid for this type. */
+		 
 		if ((flags & DSL_PROP_GET_SNAPSHOT) && prop != ZPROP_USERPROP &&
 		    !zfs_prop_valid_for_type(prop, ZFS_TYPE_SNAPSHOT, B_FALSE))
 			continue;
 
-		/* Skip properties already defined. */
+		 
 		if (nvlist_exists(nv, propname))
 			continue;
 
 		VERIFY(nvlist_alloc(&propval, NV_UNIQUE_NAME, KM_SLEEP) == 0);
 		if (za.za_integer_length == 1) {
-			/*
-			 * String property
-			 */
+			 
 			char *tmp = kmem_alloc(za.za_num_integers,
 			    KM_SLEEP);
 			err = zap_lookup(mos, propobj,
@@ -1178,9 +1008,7 @@ dsl_prop_get_all_impl(objset_t *mos, uint64_t propobj,
 			    tmp) == 0);
 			kmem_free(tmp, za.za_num_integers);
 		} else {
-			/*
-			 * Integer property
-			 */
+			 
 			ASSERT(za.za_integer_length == 8);
 			(void) nvlist_add_uint64(propval, ZPROP_VALUE,
 			    za.za_first_integer);
@@ -1196,9 +1024,7 @@ dsl_prop_get_all_impl(objset_t *mos, uint64_t propobj,
 	return (err);
 }
 
-/*
- * Iterate over all properties for this dataset and return them in an nvlist.
- */
+ 
 static int
 dsl_prop_get_all_ds(dsl_dataset_t *ds, nvlist_t **nvp,
     dsl_prop_getflags_t flags)
@@ -1272,10 +1098,7 @@ dsl_prop_set_hasrecvd_impl(const char *dsname, zprop_source_t source)
 	return (error);
 }
 
-/*
- * Call after successfully receiving properties to ensure that only the first
- * receive on or after SPA_VERSION_RECVD_PROPS blows away local properties.
- */
+ 
 int
 dsl_prop_set_hasrecvd(const char *dsname)
 {
@@ -1303,11 +1126,7 @@ dsl_prop_get_received(const char *dsname, nvlist_t **nvp)
 	objset_t *os;
 	int error;
 
-	/*
-	 * Received properties are not distinguishable from local properties
-	 * until the dataset has received properties on or after
-	 * SPA_VERSION_RECVD_PROPS.
-	 */
+	 
 	dsl_prop_getflags_t flags = (dsl_prop_get_hasrecvd(dsname) ?
 	    DSL_PROP_GET_RECEIVED : DSL_PROP_GET_LOCAL);
 
@@ -1333,7 +1152,7 @@ dsl_prop_nvlist_add_uint64(nvlist_t *nv, zfs_prop_t prop, uint64_t value)
 
 	VERIFY(nvlist_alloc(&propval, NV_UNIQUE_NAME, KM_SLEEP) == 0);
 	VERIFY(nvlist_add_uint64(propval, ZPROP_VALUE, value) == 0);
-	/* Indicate the default source if we can. */
+	 
 	if (dodefault(prop, 8, 1, &default_value) == 0 &&
 	    value == default_value) {
 		VERIFY(nvlist_add_string(propval, ZPROP_SOURCE, "") == 0);

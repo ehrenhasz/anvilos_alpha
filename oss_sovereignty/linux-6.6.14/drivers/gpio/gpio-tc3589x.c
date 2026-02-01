@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) ST-Ericsson SA 2010
- *
- * Author: Hanumath Prasad <hanumath.prasad@stericsson.com> for ST-Ericsson
- * Author: Rabin Vincent <rabin.vincent@stericsson.com> for ST-Ericsson
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/platform_device.h>
@@ -15,10 +10,7 @@
 #include <linux/mfd/tc3589x.h>
 #include <linux/bitops.h>
 
-/*
- * These registers are modified under the irq bus lock and cached to avoid
- * unnecessary writes in bus_sync_unlock.
- */
+ 
 enum { REG_IBE, REG_IEV, REG_IS, REG_IE, REG_DIRECT };
 
 #define CACHE_NR_REGS	5
@@ -29,7 +21,7 @@ struct tc3589x_gpio {
 	struct tc3589x *tc3589x;
 	struct device *dev;
 	struct mutex irq_lock;
-	/* Caches of interrupt control registers for bus_lock */
+	 
 	u8 regs[CACHE_NR_REGS][CACHE_NR_BANKS];
 	u8 oldregs[CACHE_NR_REGS][CACHE_NR_BANKS];
 };
@@ -108,11 +100,7 @@ static int tc3589x_gpio_set_config(struct gpio_chip *chip, unsigned int offset,
 {
 	struct tc3589x_gpio *tc3589x_gpio = gpiochip_get_data(chip);
 	struct tc3589x *tc3589x = tc3589x_gpio->tc3589x;
-	/*
-	 * These registers are alterated at each second address
-	 * ODM bit 0 = drive to GND or Hi-Z (open drain)
-	 * ODM bit 1 = drive to VDD or Hi-Z (open source)
-	 */
+	 
 	u8 odmreg = TC3589x_GPIOODM0 + (offset / 8) * 2;
 	u8 odereg = TC3589x_GPIOODE0 + (offset / 8) * 2;
 	unsigned int pos = offset % 8;
@@ -120,21 +108,21 @@ static int tc3589x_gpio_set_config(struct gpio_chip *chip, unsigned int offset,
 
 	switch (pinconf_to_config_param(config)) {
 	case PIN_CONFIG_DRIVE_OPEN_DRAIN:
-		/* Set open drain mode */
+		 
 		ret = tc3589x_set_bits(tc3589x, odmreg, BIT(pos), 0);
 		if (ret)
 			return ret;
-		/* Enable open drain/source mode */
+		 
 		return tc3589x_set_bits(tc3589x, odereg, BIT(pos), BIT(pos));
 	case PIN_CONFIG_DRIVE_OPEN_SOURCE:
-		/* Set open source mode */
+		 
 		ret = tc3589x_set_bits(tc3589x, odmreg, BIT(pos), BIT(pos));
 		if (ret)
 			return ret;
-		/* Enable open drain/source mode */
+		 
 		return tc3589x_set_bits(tc3589x, odereg, BIT(pos), BIT(pos));
 	case PIN_CONFIG_DRIVE_PUSH_PULL:
-		/* Disable open drain/source mode */
+		 
 		return tc3589x_set_bits(tc3589x, odereg, BIT(pos), 0);
 	default:
 		break;
@@ -326,7 +314,7 @@ static int tc3589x_gpio_probe(struct platform_device *pdev)
 
 	girq = &tc3589x_gpio->chip.irq;
 	gpio_irq_chip_set_chip(girq, &tc3589x_gpio_irq_chip);
-	/* This will let us handle the parent IRQ in the driver */
+	 
 	girq->parent_handler = NULL;
 	girq->num_parents = 0;
 	girq->parents = NULL;
@@ -334,18 +322,13 @@ static int tc3589x_gpio_probe(struct platform_device *pdev)
 	girq->handler = handle_simple_irq;
 	girq->threaded = true;
 
-	/* Bring the GPIO module out of reset */
+	 
 	ret = tc3589x_set_bits(tc3589x, TC3589x_RSTCTRL,
 			       TC3589x_RSTCTRL_GPIRST, 0);
 	if (ret < 0)
 		return ret;
 
-	 /* For tc35894, have to disable Direct KBD interrupts,
-	  * else IRQST will always be 0x20, IRQN low level, can't
-	  * clear the irq status.
-	  * TODO: need more test on other tc3589x chip.
-	  *
-	  */
+	  
 	ret = tc3589x_reg_write(tc3589x, TC3589x_DKBDMSK,
 			TC3589x_DKBDMSK_ELINT | TC3589x_DKBDMSK_EINT);
 	if (ret < 0)

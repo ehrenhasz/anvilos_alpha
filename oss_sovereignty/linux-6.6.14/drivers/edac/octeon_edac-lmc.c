@@ -1,14 +1,4 @@
-/*
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 2009 Wind River Systems,
- *   written by Ralf Baechle <ralf@linux-mips.org>
- *
- * Copyright (c) 2013 by Cisco Systems, Inc.
- * All rights reserved.
- */
+ 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -54,14 +44,14 @@ static void octeon_lmc_edac_poll(struct mem_ctl_info *mci)
 	if (cfg0.s.sec_err) {
 		edac_mc_handle_error(HW_EVENT_ERR_CORRECTED, mci, 1, 0, 0, 0,
 				     -1, -1, -1, msg, "");
-		cfg0.s.sec_err = -1;	/* Done, re-arm */
+		cfg0.s.sec_err = -1;	 
 		do_clear = true;
 	}
 
 	if (cfg0.s.ded_err) {
 		edac_mc_handle_error(HW_EVENT_ERR_UNCORRECTED, mci, 1, 0, 0, 0,
 				     -1, -1, -1, msg, "");
-		cfg0.s.ded_err = -1;	/* Done, re-arm */
+		cfg0.s.ded_err = -1;	 
 		do_clear = true;
 	}
 	if (do_clear)
@@ -105,14 +95,14 @@ static void octeon_lmc_edac_poll_o2(struct mem_ctl_info *mci)
 	if (int_reg.s.sec_err) {
 		edac_mc_handle_error(HW_EVENT_ERR_CORRECTED, mci, 1, 0, 0, 0,
 				     -1, -1, -1, msg, "");
-		int_reg.s.sec_err = -1;	/* Done, re-arm */
+		int_reg.s.sec_err = -1;	 
 		do_clear = true;
 	}
 
 	if (int_reg.s.ded_err) {
 		edac_mc_handle_error(HW_EVENT_ERR_UNCORRECTED, mci, 1, 0, 0, 0,
 				     -1, -1, -1, msg, "");
-		int_reg.s.ded_err = -1;	/* Done, re-arm */
+		int_reg.s.ded_err = -1;	 
 		do_clear = true;
 	}
 
@@ -124,9 +114,9 @@ static void octeon_lmc_edac_poll_o2(struct mem_ctl_info *mci)
 	}
 }
 
-/************************ MC SYSFS parts ***********************************/
+ 
 
-/* Only a couple naming differences per template, so very similar */
+ 
 #define TEMPLATE_SHOW(reg)						\
 static ssize_t octeon_mc_inject_##reg##_show(struct device *dev,	\
 			       struct device_attribute *attr,		\
@@ -261,11 +251,11 @@ static int octeon_lmc_edac_probe(struct platform_device *pdev)
 		}
 
 		cfg0.u64 = cvmx_read_csr(CVMX_LMCX_MEM_CFG0(mc));
-		cfg0.s.intr_ded_ena = 0;	/* We poll */
+		cfg0.s.intr_ded_ena = 0;	 
 		cfg0.s.intr_sec_ena = 0;
 		cvmx_write_csr(CVMX_LMCX_MEM_CFG0(mc), cfg0.u64);
 	} else {
-		/* OCTEON II */
+		 
 		union cvmx_lmcx_int_en en;
 		union cvmx_lmcx_config config;
 
@@ -293,7 +283,7 @@ static int octeon_lmc_edac_probe(struct platform_device *pdev)
 		}
 
 		en.u64 = cvmx_read_csr(CVMX_LMCX_MEM_CFG0(mc));
-		en.s.intr_ded_ena = 0;	/* We poll */
+		en.s.intr_ded_ena = 0;	 
 		en.s.intr_sec_ena = 0;
 		cvmx_write_csr(CVMX_LMCX_MEM_CFG0(mc), en.u64);
 	}

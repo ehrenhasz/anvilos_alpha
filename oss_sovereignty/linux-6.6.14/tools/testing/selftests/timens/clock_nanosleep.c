@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <sched.h>
 
@@ -74,19 +74,19 @@ int run_test(int clockid, int abs)
 		return 1;
 	}
 
-	/* Wait when the thread will call clock_nanosleep(). */
+	 
 	ok = 0;
 	for (j = 0; j < 8; j++) {
-		/* The maximum timeout is about 5 seconds. */
+		 
 		usleep(10000 << j);
 
-		/* Try to interrupt clock_nanosleep(). */
+		 
 		pthread_kill(thread, SIGUSR1);
 
 		usleep(10000 << j);
-		/* Check whether clock_nanosleep() has been interrupted or not. */
+		 
 		if (pthread_mutex_trylock(&lock) == 0) {
-			/**/
+			 
 			ok = 1;
 			break;
 		}

@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * addi_apci_3120.c
- * Copyright (C) 2004,2005  ADDI-DATA GmbH for the source code of this module.
- *
- *	ADDI-DATA GmbH
- *	Dieselstrasse 3
- *	D-77833 Ottersweier
- *	Tel: +19(0)7223/9493-0
- *	Fax: +49(0)7223/9493-92
- *	http://www.addi-data.com
- *	info@addi-data.com
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -18,15 +7,10 @@
 
 #include "amcc_s5933.h"
 
-/*
- * PCI BAR 0 register map (devpriv->amcc)
- * see amcc_s5933.h for register and bit defines
- */
+ 
 #define APCI3120_FIFO_ADVANCE_ON_BYTE_2		BIT(29)
 
-/*
- * PCI BAR 1 register map (dev->iobase)
- */
+ 
 #define APCI3120_AI_FIFO_REG			0x00
 #define APCI3120_CTRL_REG			0x00
 #define APCI3120_CTRL_EXT_TRIG			BIT(15)
@@ -56,10 +40,10 @@
 #define APCI3120_AO_DATA(x)			((x) << 0)
 #define APCI3120_TIMER_MODE_REG			0x0c
 #define APCI3120_TIMER_MODE(_t, _m)		((_m) << ((_t) * 2))
-#define APCI3120_TIMER_MODE0			0  /* I8254_MODE0 */
-#define APCI3120_TIMER_MODE2			1  /* I8254_MODE2 */
-#define APCI3120_TIMER_MODE4			2  /* I8254_MODE4 */
-#define APCI3120_TIMER_MODE5			3  /* I8254_MODE5 */
+#define APCI3120_TIMER_MODE0			0   
+#define APCI3120_TIMER_MODE2			1   
+#define APCI3120_TIMER_MODE4			2   
+#define APCI3120_TIMER_MODE5			3   
 #define APCI3120_TIMER_MODE_MASK(_t)		(3 << ((_t) * 2))
 #define APCI3120_CTR0_REG			0x0d
 #define APCI3120_CTR0_DO_BITS(x)		((x) << 4)
@@ -81,22 +65,18 @@
 #define APCI3120_MODE_EOS_IRQ_ENA		BIT(1)
 #define APCI3120_MODE_EOC_IRQ_ENA		BIT(0)
 
-/*
- * PCI BAR 2 register map (devpriv->addon)
- */
+ 
 #define APCI3120_ADDON_ADDR_REG			0x00
 #define APCI3120_ADDON_DATA_REG			0x02
 #define APCI3120_ADDON_CTRL_REG			0x04
 #define APCI3120_ADDON_CTRL_AMWEN_ENA		BIT(1)
 #define APCI3120_ADDON_CTRL_A2P_FIFO_ENA	BIT(0)
 
-/*
- * Board revisions
- */
+ 
 #define APCI3120_REVA				0xa
 #define APCI3120_REVB				0xb
-#define APCI3120_REVA_OSC_BASE			70	/* 70ns = 14.29MHz */
-#define APCI3120_REVB_OSC_BASE			50	/* 50ns = 20MHz */
+#define APCI3120_REVA_OSC_BASE			70	 
+#define APCI3120_REVB_OSC_BASE			50	 
 
 static const struct comedi_lrange apci3120_ai_range = {
 	8, {
@@ -159,7 +139,7 @@ static void apci3120_addon_write(struct comedi_device *dev,
 {
 	struct apci3120_private *devpriv = dev->private;
 
-	/* 16-bit interface for AMCC add-on registers */
+	 
 
 	outw(reg, devpriv->addon + APCI3120_ADDON_ADDR_REG);
 	outw(val & 0xffff, devpriv->addon + APCI3120_ADDON_DATA_REG);
@@ -173,29 +153,29 @@ static void apci3120_init_dma(struct comedi_device *dev,
 {
 	struct apci3120_private *devpriv = dev->private;
 
-	/* AMCC - enable transfer count and reset A2P FIFO */
+	 
 	outl(AGCSTS_TC_ENABLE | AGCSTS_RESET_A2P_FIFO,
 	     devpriv->amcc + AMCC_OP_REG_AGCSTS);
 
-	/* Add-On - enable transfer count and reset A2P FIFO */
+	 
 	apci3120_addon_write(dev, AGCSTS_TC_ENABLE | AGCSTS_RESET_A2P_FIFO,
 			     AMCC_OP_REG_AGCSTS);
 
-	/* AMCC - enable transfers and reset A2P flags */
+	 
 	outl(RESET_A2P_FLAGS | EN_A2P_TRANSFERS,
 	     devpriv->amcc + AMCC_OP_REG_MCSR);
 
-	/* Add-On - DMA start address */
+	 
 	apci3120_addon_write(dev, dmabuf->hw, AMCC_OP_REG_AMWAR);
 
-	/* Add-On - Number of acquisitions */
+	 
 	apci3120_addon_write(dev, dmabuf->use_size, AMCC_OP_REG_AMWTC);
 
-	/* AMCC - enable write complete (DMA) and set FIFO advance */
+	 
 	outl(APCI3120_FIFO_ADVANCE_ON_BYTE_2 | AINT_WRITE_COMPL,
 	     devpriv->amcc + AMCC_OP_REG_INTCSR);
 
-	/* Add-On - enable DMA */
+	 
 	outw(APCI3120_ADDON_CTRL_AMWEN_ENA | APCI3120_ADDON_CTRL_A2P_FIFO_ENA,
 	     devpriv->addon + APCI3120_ADDON_CTRL_REG);
 }
@@ -214,10 +194,7 @@ static void apci3120_setup_dma(struct comedi_device *dev,
 	scan_bytes = comedi_samples_to_bytes(s, cmd->scan_end_arg);
 
 	if (cmd->stop_src == TRIG_COUNT) {
-		/*
-		 * Must we fill full first buffer? And must we fill
-		 * full second buffer when first is once filled?
-		 */
+		 
 		if (dmalen0 > (cmd->stop_arg * scan_bytes))
 			dmalen0 = cmd->stop_arg * scan_bytes;
 		else if (dmalen1 > (cmd->stop_arg * scan_bytes - dmalen0))
@@ -225,7 +202,7 @@ static void apci3120_setup_dma(struct comedi_device *dev,
 	}
 
 	if (cmd->flags & CMDF_WAKE_EOS) {
-		/* don't we want wake up every scan? */
+		 
 		if (dmalen0 > scan_bytes) {
 			dmalen0 = scan_bytes;
 			if (cmd->scan_end_arg & 1)
@@ -239,7 +216,7 @@ static void apci3120_setup_dma(struct comedi_device *dev,
 				dmalen1 = 4;
 		}
 	} else {
-		/* isn't output buff smaller that our DMA buff? */
+		 
 		if (dmalen0 > s->async->prealloc_bufsz)
 			dmalen0 = s->async->prealloc_bufsz;
 		if (dmalen1 > s->async->prealloc_bufsz)
@@ -251,20 +228,7 @@ static void apci3120_setup_dma(struct comedi_device *dev,
 	apci3120_init_dma(dev, dmabuf0);
 }
 
-/*
- * There are three timers on the board. They all use the same base
- * clock with a fixed prescaler for each timer. The base clock used
- * depends on the board version and type.
- *
- * APCI-3120 Rev A boards OSC = 14.29MHz base clock (~70ns)
- * APCI-3120 Rev B boards OSC = 20MHz base clock (50ns)
- * APCI-3001 boards OSC = 20MHz base clock (50ns)
- *
- * The prescalers for each timer are:
- * Timer 0 CLK = OSC/10
- * Timer 1 CLK = OSC/1000
- * Timer 2 CLK = OSC/1000
- */
+ 
 static unsigned int apci3120_ns_to_timer(struct comedi_device *dev,
 					 unsigned int timer,
 					 unsigned int ns,
@@ -289,15 +253,15 @@ static unsigned int apci3120_ns_to_timer(struct comedi_device *dev,
 	}
 
 	if (timer == 2) {
-		/* timer 2 is 24-bits */
+		 
 		if (divisor > 0x00ffffff)
 			divisor = 0x00ffffff;
 	} else {
-		/* timers 0 and 1 are 16-bits */
+		 
 		if (divisor > 0xffff)
 			divisor = 0xffff;
 	}
-	/* the timers require a minimum divisor of 2 */
+	 
 	if (divisor < 2)
 		divisor = 2;
 
@@ -306,7 +270,7 @@ static unsigned int apci3120_ns_to_timer(struct comedi_device *dev,
 
 static void apci3120_clr_timer2_interrupt(struct comedi_device *dev)
 {
-	/* a dummy read of APCI3120_CTR0_REG clears the timer 2 interrupt */
+	 
 	inb(dev->iobase + APCI3120_CTR0_REG);
 }
 
@@ -315,14 +279,14 @@ static void apci3120_timer_write(struct comedi_device *dev,
 {
 	struct apci3120_private *devpriv = dev->private;
 
-	/* write 16-bit value to timer (lower 16-bits of timer 2) */
+	 
 	outb(APCI3120_CTR0_DO_BITS(devpriv->do_bits) |
 	     APCI3120_CTR0_TIMER_SEL(timer),
 	     dev->iobase + APCI3120_CTR0_REG);
 	outw(val & 0xffff, dev->iobase + APCI3120_TIMER_REG);
 
 	if (timer == 2) {
-		/* write upper 16-bits to timer 2 */
+		 
 		outb(APCI3120_CTR0_DO_BITS(devpriv->do_bits) |
 		     APCI3120_CTR0_TIMER_SEL(timer + 1),
 		     dev->iobase + APCI3120_CTR0_REG);
@@ -336,14 +300,14 @@ static unsigned int apci3120_timer_read(struct comedi_device *dev,
 	struct apci3120_private *devpriv = dev->private;
 	unsigned int val;
 
-	/* read 16-bit value from timer (lower 16-bits of timer 2) */
+	 
 	outb(APCI3120_CTR0_DO_BITS(devpriv->do_bits) |
 	     APCI3120_CTR0_TIMER_SEL(timer),
 	     dev->iobase + APCI3120_CTR0_REG);
 	val = inw(dev->iobase + APCI3120_TIMER_REG);
 
 	if (timer == 2) {
-		/* read upper 16-bits from timer 2 */
+		 
 		outb(APCI3120_CTR0_DO_BITS(devpriv->do_bits) |
 		     APCI3120_CTR0_TIMER_SEL(timer + 1),
 		     dev->iobase + APCI3120_CTR0_REG);
@@ -393,7 +357,7 @@ static void apci3120_set_chanlist(struct comedi_device *dev,
 	struct apci3120_private *devpriv = dev->private;
 	int i;
 
-	/* set chanlist for scan */
+	 
 	for (i = 0; i < n_chan; i++) {
 		unsigned int chan = CR_CHAN(chanlist[i]);
 		unsigned int range = CR_RANGE(chanlist[i]);
@@ -409,14 +373,14 @@ static void apci3120_set_chanlist(struct comedi_device *dev,
 		outw(val, dev->iobase + APCI3120_CHANLIST_REG);
 	}
 
-	/* a dummy read of APCI3120_TIMER_MODE_REG resets the ai FIFO */
+	 
 	inw(dev->iobase + APCI3120_TIMER_MODE_REG);
 
-	/* set scan length (PR) and scan start (PA) */
+	 
 	devpriv->ctrl = APCI3120_CTRL_PR(n_chan - 1) | APCI3120_CTRL_PA(0);
 	outw(devpriv->ctrl, dev->iobase + APCI3120_CTRL_REG);
 
-	/* enable chanlist scanning if necessary */
+	 
 	if (n_chan > 1)
 		devpriv->mode |= APCI3120_MODE_SCAN_ENA;
 }
@@ -456,12 +420,12 @@ static void apci3120_interrupt_dma(struct comedi_device *dev,
 		return;
 
 	if (devpriv->use_double_buffer) {
-		/* switch DMA buffers for next interrupt */
+		 
 		devpriv->cur_dmabuf = !devpriv->cur_dmabuf;
 		dmabuf = &devpriv->dmabuf[devpriv->cur_dmabuf];
 		apci3120_init_dma(dev, dmabuf);
 	} else {
-		/* restart DMA if not using double buffering */
+		 
 		apci3120_init_dma(dev, dmabuf);
 	}
 }
@@ -510,18 +474,15 @@ static irqreturn_t apci3120_interrupt(int irq, void *d)
 	}
 
 	if (status & APCI3120_STATUS_TIMER2_INT) {
-		/*
-		 * for safety...
-		 * timer2 interrupts are not enabled in the driver
-		 */
+		 
 		apci3120_clr_timer2_interrupt(dev);
 	}
 
 	if (status & APCI3120_STATUS_AMCC_INT) {
-		/* AMCC- Clear write complete interrupt (DMA) */
+		 
 		outl(AINT_WT_COMPLETE, devpriv->amcc + AMCC_OP_REG_INTCSR);
 
-		/* do some data transfer */
+		 
 		apci3120_interrupt_dma(dev, s);
 	}
 
@@ -540,36 +501,30 @@ static int apci3120_ai_cmd(struct comedi_device *dev,
 	struct comedi_cmd *cmd = &s->async->cmd;
 	unsigned int divisor;
 
-	/* set default mode bits */
+	 
 	devpriv->mode = APCI3120_MODE_TIMER2_CLK_OSC |
 			APCI3120_MODE_TIMER2_AS_TIMER;
 
-	/* AMCC- Clear write complete interrupt (DMA) */
+	 
 	outl(AINT_WT_COMPLETE, devpriv->amcc + AMCC_OP_REG_INTCSR);
 
 	devpriv->cur_dmabuf = 0;
 
-	/* load chanlist for command scan */
+	 
 	apci3120_set_chanlist(dev, s, cmd->chanlist_len, cmd->chanlist);
 
 	if (cmd->start_src == TRIG_EXT)
 		apci3120_exttrig_enable(dev, true);
 
 	if (cmd->scan_begin_src == TRIG_TIMER) {
-		/*
-		 * Timer 1 is used in MODE2 (rate generator) to set the
-		 * start time for each scan.
-		 */
+		 
 		divisor = apci3120_ns_to_timer(dev, 1, cmd->scan_begin_arg,
 					       cmd->flags);
 		apci3120_timer_set_mode(dev, 1, APCI3120_TIMER_MODE2);
 		apci3120_timer_write(dev, 1, divisor);
 	}
 
-	/*
-	 * Timer 0 is used in MODE2 (rate generator) to set the conversion
-	 * time for each acquisition.
-	 */
+	 
 	divisor = apci3120_ns_to_timer(dev, 0, cmd->convert_arg, cmd->flags);
 	apci3120_timer_set_mode(dev, 0, APCI3120_TIMER_MODE2);
 	apci3120_timer_write(dev, 0, divisor);
@@ -579,7 +534,7 @@ static int apci3120_ai_cmd(struct comedi_device *dev,
 	else
 		devpriv->mode |= APCI3120_MODE_EOS_IRQ_ENA;
 
-	/* set mode to enable acquisition */
+	 
 	outb(devpriv->mode, dev->iobase + APCI3120_MODE_REG);
 
 	if (cmd->scan_begin_src == TRIG_TIMER)
@@ -596,7 +551,7 @@ static int apci3120_ai_cmdtest(struct comedi_device *dev,
 	unsigned int arg;
 	int err = 0;
 
-	/* Step 1 : check if triggers are trivially valid */
+	 
 
 	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW | TRIG_EXT);
 	err |= comedi_check_trigger_src(&cmd->scan_begin_src,
@@ -608,27 +563,27 @@ static int apci3120_ai_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 1;
 
-	/* Step 2a : make sure trigger sources are unique */
+	 
 
 	err |= comedi_check_trigger_is_unique(cmd->start_src);
 	err |= comedi_check_trigger_is_unique(cmd->scan_begin_src);
 	err |= comedi_check_trigger_is_unique(cmd->stop_src);
 
-	/* Step 2b : and mutually compatible */
+	 
 
 	if (err)
 		return 2;
 
-	/* Step 3: check if arguments are trivially valid */
+	 
 
 	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
 
-	if (cmd->scan_begin_src == TRIG_TIMER) {	/* Test Delay timing */
+	if (cmd->scan_begin_src == TRIG_TIMER) {	 
 		err |= comedi_check_trigger_arg_min(&cmd->scan_begin_arg,
 						    100000);
 	}
 
-	/* minimum conversion time per sample is 10us */
+	 
 	err |= comedi_check_trigger_arg_min(&cmd->convert_arg, 10000);
 
 	err |= comedi_check_trigger_arg_min(&cmd->chanlist_len, 1);
@@ -637,16 +592,16 @@ static int apci3120_ai_cmdtest(struct comedi_device *dev,
 
 	if (cmd->stop_src == TRIG_COUNT)
 		err |= comedi_check_trigger_arg_min(&cmd->stop_arg, 1);
-	else	/*  TRIG_NONE */
+	else	 
 		err |= comedi_check_trigger_arg_is(&cmd->stop_arg, 0);
 
 	if (err)
 		return 3;
 
-	/* Step 4: fix up any arguments */
+	 
 
 	if (cmd->scan_begin_src == TRIG_TIMER) {
-		/* scan begin must be larger than the scan time */
+		 
 		arg = cmd->convert_arg * cmd->scan_end_arg;
 		err |= comedi_check_trigger_arg_min(&cmd->scan_begin_arg, arg);
 	}
@@ -654,7 +609,7 @@ static int apci3120_ai_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 4;
 
-	/* Step 5: check channel list if it exists */
+	 
 
 	return 0;
 }
@@ -664,20 +619,20 @@ static int apci3120_cancel(struct comedi_device *dev,
 {
 	struct apci3120_private *devpriv = dev->private;
 
-	/* Add-On - disable DMA */
+	 
 	outw(0, devpriv->addon + 4);
 
-	/* Add-On - disable bus master */
+	 
 	apci3120_addon_write(dev, 0, AMCC_OP_REG_AGCSTS);
 
-	/* AMCC - disable bus master */
+	 
 	outl(0, devpriv->amcc + AMCC_OP_REG_MCSR);
 
-	/* disable all counters, ext trigger, and reset scan */
+	 
 	devpriv->ctrl = 0;
 	outw(devpriv->ctrl, dev->iobase + APCI3120_CTRL_REG);
 
-	/* DISABLE_ALL_INTERRUPT */
+	 
 	devpriv->mode = 0;
 	outb(devpriv->mode, dev->iobase + APCI3120_MODE_REG);
 
@@ -710,28 +665,23 @@ static int apci3120_ai_insn_read(struct comedi_device *dev,
 	int ret;
 	int i;
 
-	/* set mode for A/D conversions by software trigger with timer 0 */
+	 
 	devpriv->mode = APCI3120_MODE_TIMER2_CLK_OSC |
 			APCI3120_MODE_TIMER2_AS_TIMER;
 	outb(devpriv->mode, dev->iobase + APCI3120_MODE_REG);
 
-	/* load chanlist for single channel scan */
+	 
 	apci3120_set_chanlist(dev, s, 1, &insn->chanspec);
 
-	/*
-	 * Timer 0 is used in MODE4 (software triggered strobe) to set the
-	 * conversion time for each acquisition. Each conversion is triggered
-	 * when the divisor is written to the timer, The conversion is done
-	 * when the EOC bit in the status register is '0'.
-	 */
+	 
 	apci3120_timer_set_mode(dev, 0, APCI3120_TIMER_MODE4);
 	apci3120_timer_enable(dev, 0, true);
 
-	/* fixed conversion time of 10 us */
+	 
 	divisor = apci3120_ns_to_timer(dev, 0, 10000, CMDF_ROUND_NEAREST);
 
 	for (i = 0; i < insn->n; i++) {
-		/* trigger conversion */
+		 
 		apci3120_timer_write(dev, 0, divisor);
 
 		ret = comedi_timeout(dev, s, insn, apci3120_ai_eoc, 0);
@@ -951,13 +901,13 @@ static void apci3120_dma_free(struct comedi_device *dev)
 
 static void apci3120_reset(struct comedi_device *dev)
 {
-	/* disable all interrupt sources */
+	 
 	outb(0, dev->iobase + APCI3120_MODE_REG);
 
-	/* disable all counters, ext trigger, and reset scan */
+	 
 	outw(0, dev->iobase + APCI3120_CTRL_REG);
 
-	/* clear interrupt status */
+	 
 	inw(dev->iobase + APCI3120_STATUS_REG);
 }
 
@@ -1014,7 +964,7 @@ static int apci3120_auto_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* Analog Input subdevice */
+	 
 	s = &dev->subdevices[0];
 	s->type		= COMEDI_SUBD_AI;
 	s->subdev_flags	= SDF_READABLE | SDF_COMMON | SDF_GROUND | SDF_DIFF;
@@ -1031,7 +981,7 @@ static int apci3120_auto_attach(struct comedi_device *dev,
 		s->cancel	= apci3120_cancel;
 	}
 
-	/* Analog Output subdevice */
+	 
 	s = &dev->subdevices[1];
 	if (board->has_ao) {
 		s->type		= COMEDI_SUBD_AO;
@@ -1048,7 +998,7 @@ static int apci3120_auto_attach(struct comedi_device *dev,
 		s->type		= COMEDI_SUBD_UNUSED;
 	}
 
-	/* Digital Input subdevice */
+	 
 	s = &dev->subdevices[2];
 	s->type		= COMEDI_SUBD_DI;
 	s->subdev_flags	= SDF_READABLE;
@@ -1057,7 +1007,7 @@ static int apci3120_auto_attach(struct comedi_device *dev,
 	s->range_table	= &range_digital;
 	s->insn_bits	= apci3120_di_insn_bits;
 
-	/* Digital Output subdevice */
+	 
 	s = &dev->subdevices[3];
 	s->type		= COMEDI_SUBD_DO;
 	s->subdev_flags	= SDF_WRITABLE;
@@ -1066,7 +1016,7 @@ static int apci3120_auto_attach(struct comedi_device *dev,
 	s->range_table	= &range_digital;
 	s->insn_bits	= apci3120_do_insn_bits;
 
-	/* Timer subdevice */
+	 
 	s = &dev->subdevices[4];
 	s->type		= COMEDI_SUBD_TIMER;
 	s->subdev_flags	= SDF_READABLE;

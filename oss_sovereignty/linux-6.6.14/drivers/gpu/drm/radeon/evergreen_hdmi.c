@@ -1,29 +1,4 @@
-/*
- * Copyright 2008 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- * Copyright 2009 Christian König.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Christian König
- *          Rafał Miłecki
- */
+ 
 #include <linux/hdmi.h>
 
 #include <drm/radeon_drm.h>
@@ -34,7 +9,7 @@
 #include "evergreend.h"
 #include "atom.h"
 
-/* enable the audio stream */
+ 
 void dce4_audio_enable(struct radeon_device *rdev,
 			      struct r600_audio_pin *pin,
 			      u8 enable_mask)
@@ -79,11 +54,11 @@ void evergreen_hdmi_update_acr(struct drm_encoder *encoder, long offset,
 
 	if (bpc > 8)
 		WREG32(HDMI_ACR_PACKET_CONTROL + offset,
-			HDMI_ACR_AUTO_SEND);	/* allow hw to sent ACR packets when required */
+			HDMI_ACR_AUTO_SEND);	 
 	else
 		WREG32(HDMI_ACR_PACKET_CONTROL + offset,
-			HDMI_ACR_SOURCE |		/* select SW CTS value */
-			HDMI_ACR_AUTO_SEND);	/* allow hw to sent ACR packets when required */
+			HDMI_ACR_SOURCE |		 
+			HDMI_ACR_AUTO_SEND);	 
 
 	WREG32(HDMI_ACR_32_0 + offset, HDMI_ACR_CTS_32(acr->cts_32khz));
 	WREG32(HDMI_ACR_32_1 + offset, acr->n_32khz);
@@ -123,15 +98,15 @@ void dce4_afmt_hdmi_write_speaker_allocation(struct drm_encoder *encoder,
 	struct radeon_device *rdev = encoder->dev->dev_private;
 	u32 tmp;
 
-	/* program the speaker allocation */
+	 
 	tmp = RREG32_ENDPOINT(0, AZ_F0_CODEC_PIN0_CONTROL_CHANNEL_SPEAKER);
 	tmp &= ~(DP_CONNECTION | SPEAKER_ALLOCATION_MASK);
-	/* set HDMI mode */
+	 
 	tmp |= HDMI_CONNECTION;
 	if (sad_count)
 		tmp |= SPEAKER_ALLOCATION(sadb[0]);
 	else
-		tmp |= SPEAKER_ALLOCATION(5); /* stereo */
+		tmp |= SPEAKER_ALLOCATION(5);  
 	WREG32_ENDPOINT(0, AZ_F0_CODEC_PIN0_CONTROL_CHANNEL_SPEAKER, tmp);
 }
 
@@ -141,15 +116,15 @@ void dce4_afmt_dp_write_speaker_allocation(struct drm_encoder *encoder,
 	struct radeon_device *rdev = encoder->dev->dev_private;
 	u32 tmp;
 
-	/* program the speaker allocation */
+	 
 	tmp = RREG32_ENDPOINT(0, AZ_F0_CODEC_PIN0_CONTROL_CHANNEL_SPEAKER);
 	tmp &= ~(HDMI_CONNECTION | SPEAKER_ALLOCATION_MASK);
-	/* set DP mode */
+	 
 	tmp |= DP_CONNECTION;
 	if (sad_count)
 		tmp |= SPEAKER_ALLOCATION(sadb[0]);
 	else
-		tmp |= SPEAKER_ALLOCATION(5); /* stereo */
+		tmp |= SPEAKER_ALLOCATION(5);  
 	WREG32_ENDPOINT(0, AZ_F0_CODEC_PIN0_CONTROL_CHANNEL_SPEAKER, tmp);
 }
 
@@ -203,9 +178,7 @@ void evergreen_hdmi_write_sad_regs(struct drm_encoder *encoder,
 	}
 }
 
-/*
- * build a AVI Info Frame
- */
+ 
 void evergreen_set_avi_packet(struct radeon_device *rdev, u32 offset,
 			      unsigned char *buffer, size_t size)
 {
@@ -221,7 +194,7 @@ void evergreen_set_avi_packet(struct radeon_device *rdev, u32 offset,
 		frame[0xC] | (frame[0xD] << 8) | (buffer[1] << 24));
 
 	WREG32_P(HDMI_INFOFRAME_CONTROL1 + offset,
-		 HDMI_AVI_INFO_LINE(2),	/* anything other than 0 */
+		 HDMI_AVI_INFO_LINE(2),	 
 		 ~HDMI_AVI_INFO_LINE_MASK);
 }
 
@@ -252,7 +225,7 @@ void dce4_hdmi_audio_set_dto(struct radeon_device *rdev,
 	value &= ~DCCG_AUDIO_DTO1_USE_512FBR_DTO;
 	WREG32(DCCG_AUDIO_DTO0_CNTL, value);
 
-	/* Two dtos; generally use dto0 for HDMI */
+	 
 	value = 0;
 
 	if (crtc)
@@ -260,10 +233,7 @@ void dce4_hdmi_audio_set_dto(struct radeon_device *rdev,
 
 	WREG32(DCCG_AUDIO_DTO_SOURCE, value);
 
-	/* Express [24MHz / target pixel clock] as an exact rational
-	 * number (coefficient of two integer numbers.  DCCG_AUDIO_DTOx_PHASE
-	 * is the numerator, DCCG_AUDIO_DTOx_MODULE is the denominator
-	 */
+	 
 	WREG32(DCCG_AUDIO_DTO0_PHASE, dto_phase);
 	WREG32(DCCG_AUDIO_DTO0_MODULE, clock);
 }
@@ -277,7 +247,7 @@ void dce4_dp_audio_set_dto(struct radeon_device *rdev,
 	value |= DCCG_AUDIO_DTO1_USE_512FBR_DTO;
 	WREG32(DCCG_AUDIO_DTO1_CNTL, value);
 
-	/* Two dtos; generally use dto1 for DP */
+	 
 	value = 0;
 	value |= DCCG_AUDIO_DTO_SEL;
 
@@ -286,10 +256,7 @@ void dce4_dp_audio_set_dto(struct radeon_device *rdev,
 
 	WREG32(DCCG_AUDIO_DTO_SOURCE, value);
 
-	/* Express [24MHz / target pixel clock] as an exact rational
-	 * number (coefficient of two integer numbers.  DCCG_AUDIO_DTOx_PHASE
-	 * is the numerator, DCCG_AUDIO_DTOx_MODULE is the denominator
-	 */
+	 
 	if (ASIC_IS_DCE41(rdev)) {
 		unsigned int div = (RREG32(DCE41_DENTIST_DISPCLK_CNTL) &
 			DENTIST_DPREFCLK_WDIVIDER_MASK) >>
@@ -310,9 +277,9 @@ void dce4_set_vbi_packet(struct drm_encoder *encoder, u32 offset)
 	struct radeon_device *rdev = dev->dev_private;
 
 	WREG32(HDMI_VBI_PACKET_CONTROL + offset,
-		HDMI_NULL_SEND |	/* send null packets when required */
-		HDMI_GC_SEND |		/* send general control packets */
-		HDMI_GC_CONT);		/* send general control packets every frame */
+		HDMI_NULL_SEND |	 
+		HDMI_GC_SEND |		 
+		HDMI_GC_CONT);		 
 }
 
 void dce4_hdmi_set_color_depth(struct drm_encoder *encoder, u32 offset, int bpc)
@@ -358,7 +325,7 @@ void dce4_set_audio_packet(struct drm_encoder *encoder, u32 offset)
 	struct radeon_device *rdev = dev->dev_private;
 
 	WREG32(AFMT_INFOFRAME_CONTROL0 + offset,
-		AFMT_AUDIO_INFO_UPDATE); /* required for audio info values to be updated */
+		AFMT_AUDIO_INFO_UPDATE);  
 
 	WREG32(AFMT_60958_0 + offset,
 		AFMT_60958_CS_CHANNEL_NUMBER_L(1));
@@ -378,10 +345,10 @@ void dce4_set_audio_packet(struct drm_encoder *encoder, u32 offset)
 		AFMT_AUDIO_CHANNEL_ENABLE(0xff));
 
 	WREG32(HDMI_AUDIO_PACKET_CONTROL + offset,
-	       HDMI_AUDIO_DELAY_EN(1) | /* set the default audio delay */
-	       HDMI_AUDIO_PACKETS_PER_LINE(3)); /* should be suffient for all audio modes and small enough for all hblanks */
+	       HDMI_AUDIO_DELAY_EN(1) |  
+	       HDMI_AUDIO_PACKETS_PER_LINE(3));  
 
-	/* allow 60958 channel status and send audio packets fields to be updated */
+	 
 	WREG32_OR(AFMT_AUDIO_PACKET_CONTROL + offset,
 		  AFMT_RESET_FIFO_WHEN_AUDIO_DIS | AFMT_60958_CS_UPDATE);
 }
@@ -413,16 +380,16 @@ void evergreen_hdmi_enable(struct drm_encoder *encoder, bool enable)
 
 		if (connector && drm_detect_monitor_audio(radeon_connector_edid(connector))) {
 			WREG32(HDMI_INFOFRAME_CONTROL0 + dig->afmt->offset,
-			       HDMI_AVI_INFO_SEND | /* enable AVI info frames */
-			       HDMI_AVI_INFO_CONT | /* required for audio info values to be updated */
-			       HDMI_AUDIO_INFO_SEND | /* enable audio info frames (frames won't be set until audio is enabled) */
-			       HDMI_AUDIO_INFO_CONT); /* required for audio info values to be updated */
+			       HDMI_AVI_INFO_SEND |  
+			       HDMI_AVI_INFO_CONT |  
+			       HDMI_AUDIO_INFO_SEND |  
+			       HDMI_AUDIO_INFO_CONT);  
 			WREG32_OR(AFMT_AUDIO_PACKET_CONTROL + dig->afmt->offset,
 				  AFMT_AUDIO_SAMPLE_SEND);
 		} else {
 			WREG32(HDMI_INFOFRAME_CONTROL0 + dig->afmt->offset,
-			       HDMI_AVI_INFO_SEND | /* enable AVI info frames */
-			       HDMI_AVI_INFO_CONT); /* required for audio info values to be updated */
+			       HDMI_AVI_INFO_SEND |  
+			       HDMI_AVI_INFO_CONT);  
 			WREG32_AND(AFMT_AUDIO_PACKET_CONTROL + dig->afmt->offset,
 				   ~AFMT_AUDIO_SAMPLE_SEND);
 		}
@@ -476,10 +443,10 @@ void evergreen_dp_enable(struct drm_encoder *encoder, bool enable)
 		}
 
 		WREG32(EVERGREEN_DP_SEC_CNTL + dig->afmt->offset,
-			EVERGREEN_DP_SEC_ASP_ENABLE |		/* Audio packet transmission */
-			EVERGREEN_DP_SEC_ATP_ENABLE |		/* Audio timestamp packet transmission */
-			EVERGREEN_DP_SEC_AIP_ENABLE |		/* Audio infoframe packet transmission */
-			EVERGREEN_DP_SEC_STREAM_ENABLE);	/* Master enable for secondary stream engine */
+			EVERGREEN_DP_SEC_ASP_ENABLE |		 
+			EVERGREEN_DP_SEC_ATP_ENABLE |		 
+			EVERGREEN_DP_SEC_AIP_ENABLE |		 
+			EVERGREEN_DP_SEC_STREAM_ENABLE);	 
 	} else {
 		WREG32(EVERGREEN_DP_SEC_CNTL + dig->afmt->offset, 0);
 		WREG32_AND(AFMT_AUDIO_PACKET_CONTROL + dig->afmt->offset,

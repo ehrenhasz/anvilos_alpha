@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-16 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef _DCE_DCE_TRANSFORM_H_
 #define _DCE_DCE_TRANSFORM_H_
@@ -627,12 +604,12 @@ struct sclh_ratios_inits {
 #endif
 
 enum ram_filter_type {
-	FILTER_TYPE_RGB_Y_VERTICAL	= 0, /* 0 - RGB/Y Vertical filter */
-	FILTER_TYPE_CBCR_VERTICAL	= 1, /* 1 - CbCr  Vertical filter */
-	FILTER_TYPE_RGB_Y_HORIZONTAL	= 2, /* 1 - RGB/Y Horizontal filter */
-	FILTER_TYPE_CBCR_HORIZONTAL	= 3, /* 3 - CbCr  Horizontal filter */
-	FILTER_TYPE_ALPHA_VERTICAL	= 4, /* 4 - Alpha Vertical filter. */
-	FILTER_TYPE_ALPHA_HORIZONTAL	= 5, /* 5 - Alpha Horizontal filter. */
+	FILTER_TYPE_RGB_Y_VERTICAL	= 0,  
+	FILTER_TYPE_CBCR_VERTICAL	= 1,  
+	FILTER_TYPE_RGB_Y_HORIZONTAL	= 2,  
+	FILTER_TYPE_CBCR_HORIZONTAL	= 3,  
+	FILTER_TYPE_ALPHA_VERTICAL	= 4,  
+	FILTER_TYPE_ALPHA_HORIZONTAL	= 5,  
 };
 
 struct dce_transform {
@@ -680,7 +657,7 @@ void dce110_opp_set_csc_default(
 	struct transform *xfm,
 	const struct default_adjustment *default_adjust);
 
-/* REGAMMA RELATED */
+ 
 void dce110_opp_power_on_regamma_lut(
 	struct transform *xfm,
 	bool power_on);
@@ -692,4 +669,4 @@ void dce110_opp_program_regamma_pwl(
 void dce110_opp_set_regamma_mode(struct transform *xfm,
 		enum opp_regamma mode);
 
-#endif /* _DCE_DCE_TRANSFORM_H_ */
+#endif  

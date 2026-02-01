@@ -1,25 +1,4 @@
-/*
- * Copyright © 2006-2017 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include <linux/time.h>
 
@@ -40,33 +19,7 @@
 #include "intel_vdsc.h"
 #include "vlv_sideband.h"
 
-/**
- * DOC: CDCLK / RAWCLK
- *
- * The display engine uses several different clocks to do its work. There
- * are two main clocks involved that aren't directly related to the actual
- * pixel clock or any symbol/bit clock of the actual output port. These
- * are the core display clock (CDCLK) and RAWCLK.
- *
- * CDCLK clocks most of the display pipe logic, and thus its frequency
- * must be high enough to support the rate at which pixels are flowing
- * through the pipes. Downscaling must also be accounted as that increases
- * the effective pixel rate.
- *
- * On several platforms the CDCLK frequency can be changed dynamically
- * to minimize power consumption for a given display configuration.
- * Typically changes to the CDCLK frequency require all the display pipes
- * to be shut down while the frequency is being changed.
- *
- * On SKL+ the DMC will toggle the CDCLK off/on during DC5/6 entry/exit.
- * DMC will not change the active CDCLK frequency however, so that part
- * will still be performed by the driver directly.
- *
- * RAWCLK is a fixed frequency clock, often used by various auxiliary
- * blocks such as AUX CH or backlight PWM. Hence the only thing we
- * really need to know about RAWCLK is its frequency so that various
- * dividers can be programmed correctly.
- */
+ 
 
 struct intel_cdclk_funcs {
 	void (*get_cdclk)(struct drm_i915_private *i915,
@@ -145,11 +98,7 @@ static void i85x_get_cdclk(struct drm_i915_private *dev_priv,
 	struct pci_dev *pdev = to_pci_dev(dev_priv->drm.dev);
 	u16 hpllcc = 0;
 
-	/*
-	 * 852GM/852GMV only supports 133 MHz and the HPLLCC
-	 * encoding is different :(
-	 * FIXME is this the right way to detect 852GM/852GMV?
-	 */
+	 
 	if (pdev->revision == 0x1) {
 		cdclk_config->cdclk = 133333;
 		return;
@@ -158,9 +107,7 @@ static void i85x_get_cdclk(struct drm_i915_private *dev_priv,
 	pci_bus_read_config_word(pdev->bus,
 				 PCI_DEVFN(0, 3), HPLLCC, &hpllcc);
 
-	/* Assume that the hardware is in the high speed state.  This
-	 * should be the default.
-	 */
+	 
 	switch (hpllcc & GC_CLOCK_CONTROL_MASK) {
 	case GC_CLOCK_133_200:
 	case GC_CLOCK_133_200_2:
@@ -272,7 +219,7 @@ static unsigned int intel_hpll_vco(struct drm_i915_private *dev_priv)
 	unsigned int vco;
 	u8 tmp = 0;
 
-	/* FIXME other chipsets? */
+	 
 	if (IS_GM45(dev_priv))
 		vco_table = ctg_vco;
 	else if (IS_G45(dev_priv))
@@ -481,11 +428,7 @@ static int vlv_calc_cdclk(struct drm_i915_private *dev_priv, int min_cdclk)
 	int freq_320 = (dev_priv->hpll_freq <<  1) % 320000 != 0 ?
 		333333 : 320000;
 
-	/*
-	 * We seem to get an unstable or solid color picture at 200MHz.
-	 * Not sure what's wrong. For now use 200MHz only when all pipes
-	 * are off.
-	 */
+	 
 	if (IS_VALLEYVIEW(dev_priv) && min_cdclk > freq_320)
 		return 400000;
 	else if (min_cdclk > 266667)
@@ -499,18 +442,14 @@ static int vlv_calc_cdclk(struct drm_i915_private *dev_priv, int min_cdclk)
 static u8 vlv_calc_voltage_level(struct drm_i915_private *dev_priv, int cdclk)
 {
 	if (IS_VALLEYVIEW(dev_priv)) {
-		if (cdclk >= 320000) /* jump to highest voltage for 400MHz too */
+		if (cdclk >= 320000)  
 			return 2;
 		else if (cdclk >= 266667)
 			return 1;
 		else
 			return 0;
 	} else {
-		/*
-		 * Specs are full of misinformation, but testing on actual
-		 * hardware has shown that we just need to write the desired
-		 * CCK divider into the Punit register.
-		 */
+		 
 		return DIV_ROUND_CLOSEST(dev_priv->hpll_freq << 1, cdclk) - 1;
 	}
 }
@@ -551,7 +490,7 @@ static void vlv_program_pfi_credits(struct drm_i915_private *dev_priv)
 		default_credits = PFI_CREDIT(8);
 
 	if (dev_priv->display.cdclk.hw.cdclk >= dev_priv->czclk_freq) {
-		/* CHV suggested value is 31 or 63 */
+		 
 		if (IS_CHERRYVIEW(dev_priv))
 			credits = PFI_CREDIT_63;
 		else
@@ -560,20 +499,14 @@ static void vlv_program_pfi_credits(struct drm_i915_private *dev_priv)
 		credits = default_credits;
 	}
 
-	/*
-	 * WA - write default credits before re-programming
-	 * FIXME: should we also set the resend bit here?
-	 */
+	 
 	intel_de_write(dev_priv, GCI_CONTROL,
 		       VGA_FAST_MODE_DISABLE | default_credits);
 
 	intel_de_write(dev_priv, GCI_CONTROL,
 		       VGA_FAST_MODE_DISABLE | credits | PFI_CREDIT_RESEND);
 
-	/*
-	 * FIXME is this guaranteed to clear
-	 * immediately or should we poll for it?
-	 */
+	 
 	drm_WARN_ON(&dev_priv->drm,
 		    intel_de_read(dev_priv, GCI_CONTROL) & PFI_CREDIT_RESEND);
 }
@@ -598,12 +531,7 @@ static void vlv_set_cdclk(struct drm_i915_private *dev_priv,
 		return;
 	}
 
-	/* There are cases where we can end up here with power domains
-	 * off and a CDCLK frequency other than the minimum, like when
-	 * issuing a modeset without actually changing any display after
-	 * a system suspend.  So grab the display core domain, which covers
-	 * the HW blocks needed for the following programming.
-	 */
+	 
 	wakeref = intel_display_power_get(dev_priv, POWER_DOMAIN_DISPLAY_CORE);
 
 	vlv_iosf_sb_get(dev_priv,
@@ -628,7 +556,7 @@ static void vlv_set_cdclk(struct drm_i915_private *dev_priv,
 		divider = DIV_ROUND_CLOSEST(dev_priv->hpll_freq << 1,
 					    cdclk) - 1;
 
-		/* adjust cdclk divider */
+		 
 		val = vlv_cck_read(dev_priv, CCK_DISPLAY_CLOCK_CONTROL);
 		val &= ~CCK_FREQUENCY_VALUES;
 		val |= divider;
@@ -641,18 +569,15 @@ static void vlv_set_cdclk(struct drm_i915_private *dev_priv,
 				"timed out waiting for CDclk change\n");
 	}
 
-	/* adjust self-refresh exit latency value */
+	 
 	val = vlv_bunit_read(dev_priv, BUNIT_REG_BISOC);
 	val &= ~0x7f;
 
-	/*
-	 * For high bandwidth configs, we set a higher latency in the bunit
-	 * so that the core display fetch happens in time to avoid underruns.
-	 */
+	 
 	if (cdclk == 400000)
-		val |= 4500 / 250; /* 4.5 usec */
+		val |= 4500 / 250;  
 	else
-		val |= 3000 / 250; /* 3.0 usec */
+		val |= 3000 / 250;  
 	vlv_bunit_write(dev_priv, BUNIT_REG_BISOC, val);
 
 	vlv_iosf_sb_put(dev_priv,
@@ -686,12 +611,7 @@ static void chv_set_cdclk(struct drm_i915_private *dev_priv,
 		return;
 	}
 
-	/* There are cases where we can end up here with power domains
-	 * off and a CDCLK frequency other than the minimum, like when
-	 * issuing a modeset without actually changing any display after
-	 * a system suspend.  So grab the display core domain, which covers
-	 * the HW blocks needed for the following programming.
-	 */
+	 
 	wakeref = intel_display_power_get(dev_priv, POWER_DOMAIN_DISPLAY_CORE);
 
 	vlv_punit_get(dev_priv);
@@ -761,10 +681,7 @@ static void bdw_get_cdclk(struct drm_i915_private *dev_priv,
 	else
 		cdclk_config->cdclk = 675000;
 
-	/*
-	 * Can't read this out :( Let's assume it's
-	 * at least what the CDCLK frequency requires.
-	 */
+	 
 	cdclk_config->voltage_level =
 		bdw_calc_voltage_level(cdclk_config->cdclk);
 }
@@ -812,10 +729,7 @@ static void bdw_set_cdclk(struct drm_i915_private *dev_priv,
 	intel_de_rmw(dev_priv, LCPLL_CTL,
 		     0, LCPLL_CD_SOURCE_FCLK);
 
-	/*
-	 * According to the spec, it should be enough to poll for this 1 us.
-	 * However, extensive testing shows that this can take longer.
-	 */
+	 
 	if (wait_for_us(intel_de_read(dev_priv, LCPLL_CTL) &
 			LCPLL_CD_SOURCE_FCLK_DONE, 100))
 		drm_err(&dev_priv->drm, "Switching to FCLK failed\n");
@@ -968,15 +882,12 @@ static void skl_get_cdclk(struct drm_i915_private *dev_priv,
 	}
 
  out:
-	/*
-	 * Can't read this out :( Let's assume it's
-	 * at least what the CDCLK frequency requires.
-	 */
+	 
 	cdclk_config->voltage_level =
 		skl_calc_voltage_level(cdclk_config->cdclk);
 }
 
-/* convert from kHz to .1 fixpoint MHz with -1MHz offset */
+ 
 static int skl_cdclk_decimal(int cdclk)
 {
 	return DIV_ROUND_CLOSEST(cdclk - 1000, 500);
@@ -997,15 +908,7 @@ static u32 skl_dpll0_link_rate(struct drm_i915_private *dev_priv, int vco)
 {
 	drm_WARN_ON(&dev_priv->drm, vco != 8100000 && vco != 8640000);
 
-	/*
-	 * We always enable DPLL0 with the lowest link rate possible, but still
-	 * taking into account the VCO required to operate the eDP panel at the
-	 * desired frequency. The usual DP link rates operate with a VCO of
-	 * 8100 while the eDP 1.4 alternate link rates need a VCO of 8640.
-	 * The modeset code is responsible for the selection of the exact link
-	 * rate later on, with the constraint of choosing a frequency that
-	 * works with vco.
-	 */
+	 
 	if (vco == 8640000)
 		return DPLL_CTRL1_LINK_RATE(DPLL_CTRL1_LINK_RATE_1080, SKL_DPLL0);
 	else
@@ -1030,7 +933,7 @@ static void skl_dpll0_enable(struct drm_i915_private *dev_priv, int vco)
 
 	dev_priv->display.cdclk.hw.vco = vco;
 
-	/* We'll want to keep using the current vco from now on. */
+	 
 	skl_set_preferred_cdclk_vco(dev_priv, vco);
 }
 
@@ -1077,14 +980,7 @@ static void skl_set_cdclk(struct drm_i915_private *dev_priv,
 	u32 freq_select, cdclk_ctl;
 	int ret;
 
-	/*
-	 * Based on WA#1183 CDCLK rates 308 and 617MHz CDCLK rates are
-	 * unsupported on SKL. In theory this should never happen since only
-	 * the eDP1.4 2.16 and 4.32Gbps rates require it, but eDP1.4 is not
-	 * supported on SKL either, see the above WA. WARN whenever trying to
-	 * use the corresponding VCO freq as that always leads to using the
-	 * minimum 308MHz CDCLK.
-	 */
+	 
 	drm_WARN_ON_ONCE(&dev_priv->drm,
 			 IS_SKYLAKE(dev_priv) && vco == 8640000);
 
@@ -1107,13 +1003,13 @@ static void skl_set_cdclk(struct drm_i915_private *dev_priv,
 	cdclk_ctl = intel_de_read(dev_priv, CDCLK_CTL);
 
 	if (dev_priv->display.cdclk.hw.vco != vco) {
-		/* Wa Display #1183: skl,kbl,cfl */
+		 
 		cdclk_ctl &= ~(CDCLK_FREQ_SEL_MASK | CDCLK_FREQ_DECIMAL_MASK);
 		cdclk_ctl |= freq_select | skl_cdclk_decimal(cdclk);
 		intel_de_write(dev_priv, CDCLK_CTL, cdclk_ctl);
 	}
 
-	/* Wa Display #1183: skl,kbl,cfl */
+	 
 	cdclk_ctl |= CDCLK_DIVMUX_CD_OVERRIDE;
 	intel_de_write(dev_priv, CDCLK_CTL, cdclk_ctl);
 	intel_de_posting_read(dev_priv, CDCLK_CTL);
@@ -1121,19 +1017,19 @@ static void skl_set_cdclk(struct drm_i915_private *dev_priv,
 	if (dev_priv->display.cdclk.hw.vco != vco)
 		skl_dpll0_enable(dev_priv, vco);
 
-	/* Wa Display #1183: skl,kbl,cfl */
+	 
 	cdclk_ctl &= ~(CDCLK_FREQ_SEL_MASK | CDCLK_FREQ_DECIMAL_MASK);
 	intel_de_write(dev_priv, CDCLK_CTL, cdclk_ctl);
 
 	cdclk_ctl |= freq_select | skl_cdclk_decimal(cdclk);
 	intel_de_write(dev_priv, CDCLK_CTL, cdclk_ctl);
 
-	/* Wa Display #1183: skl,kbl,cfl */
+	 
 	cdclk_ctl &= ~CDCLK_DIVMUX_CD_OVERRIDE;
 	intel_de_write(dev_priv, CDCLK_CTL, cdclk_ctl);
 	intel_de_posting_read(dev_priv, CDCLK_CTL);
 
-	/* inform PCU of the change */
+	 
 	snb_pcode_write(&dev_priv->uncore, SKL_PCODE_CDCLK_CONTROL,
 			cdclk_config->voltage_level);
 
@@ -1144,41 +1040,32 @@ static void skl_sanitize_cdclk(struct drm_i915_private *dev_priv)
 {
 	u32 cdctl, expected;
 
-	/*
-	 * check if the pre-os initialized the display
-	 * There is SWF18 scratchpad register defined which is set by the
-	 * pre-os which can be used by the OS drivers to check the status
-	 */
+	 
 	if ((intel_de_read(dev_priv, SWF_ILK(0x18)) & 0x00FFFFFF) == 0)
 		goto sanitize;
 
 	intel_update_cdclk(dev_priv);
 	intel_cdclk_dump_config(dev_priv, &dev_priv->display.cdclk.hw, "Current CDCLK");
 
-	/* Is PLL enabled and locked ? */
+	 
 	if (dev_priv->display.cdclk.hw.vco == 0 ||
 	    dev_priv->display.cdclk.hw.cdclk == dev_priv->display.cdclk.hw.bypass)
 		goto sanitize;
 
-	/* DPLL okay; verify the cdclock
-	 *
-	 * Noticed in some instances that the freq selection is correct but
-	 * decimal part is programmed wrong from BIOS where pre-os does not
-	 * enable display. Verify the same as well.
-	 */
+	 
 	cdctl = intel_de_read(dev_priv, CDCLK_CTL);
 	expected = (cdctl & CDCLK_FREQ_SEL_MASK) |
 		skl_cdclk_decimal(dev_priv->display.cdclk.hw.cdclk);
 	if (cdctl == expected)
-		/* All well; nothing to sanitize */
+		 
 		return;
 
 sanitize:
 	drm_dbg_kms(&dev_priv->drm, "Sanitizing cdclk programmed by pre-os\n");
 
-	/* force cdclk programming */
+	 
 	dev_priv->display.cdclk.hw.cdclk = 0;
-	/* force full PLL disable + enable */
+	 
 	dev_priv->display.cdclk.hw.vco = -1;
 }
 
@@ -1190,10 +1077,7 @@ static void skl_cdclk_init_hw(struct drm_i915_private *dev_priv)
 
 	if (dev_priv->display.cdclk.hw.cdclk != 0 &&
 	    dev_priv->display.cdclk.hw.vco != 0) {
-		/*
-		 * Use the current vco as our initial
-		 * guess as to what the preferred vco is.
-		 */
+		 
 		if (dev_priv->skl_preferred_vco_freq == 0)
 			skl_set_preferred_cdclk_vco(dev_priv,
 						    dev_priv->display.cdclk.hw.vco);
@@ -1226,7 +1110,7 @@ struct intel_cdclk_vals {
 	u32 cdclk;
 	u16 refclk;
 	u16 waveform;
-	u8 divider;	/* CD2X divider * 2 */
+	u8 divider;	 
 	u8 ratio;
 };
 
@@ -1502,18 +1386,12 @@ static void bxt_de_pll_readout(struct drm_i915_private *dev_priv,
 	val = intel_de_read(dev_priv, BXT_DE_PLL_ENABLE);
 	if ((val & BXT_DE_PLL_PLL_ENABLE) == 0 ||
 	    (val & BXT_DE_PLL_LOCK) == 0) {
-		/*
-		 * CDCLK PLL is disabled, the VCO/ratio doesn't matter, but
-		 * setting it to zero is a way to signal that.
-		 */
+		 
 		cdclk_config->vco = 0;
 		return;
 	}
 
-	/*
-	 * DISPLAY_VER >= 11 have the ratio directly in the PLL enable register,
-	 * gen9lp had it in a separate PLL control register.
-	 */
+	 
 	if (DISPLAY_VER(dev_priv) >= 11)
 		ratio = val & ICL_CDCLK_PLL_RATIO_MASK;
 	else
@@ -1580,10 +1458,7 @@ static void bxt_get_cdclk(struct drm_i915_private *dev_priv,
 	}
 
  out:
-	/*
-	 * Can't read this out :( Let's assume it's
-	 * at least what the CDCLK frequency requires.
-	 */
+	 
 	cdclk_config->voltage_level =
 		intel_cdclk_calc_voltage_level(dev_priv, cdclk_config->cdclk);
 }
@@ -1592,7 +1467,7 @@ static void bxt_de_pll_disable(struct drm_i915_private *dev_priv)
 {
 	intel_de_write(dev_priv, BXT_DE_PLL_ENABLE, 0);
 
-	/* Timeout 200us */
+	 
 	if (intel_de_wait_for_clear(dev_priv,
 				    BXT_DE_PLL_ENABLE, BXT_DE_PLL_LOCK, 1))
 		drm_err(&dev_priv->drm, "timeout waiting for DE PLL unlock\n");
@@ -1609,7 +1484,7 @@ static void bxt_de_pll_enable(struct drm_i915_private *dev_priv, int vco)
 
 	intel_de_write(dev_priv, BXT_DE_PLL_ENABLE, BXT_DE_PLL_PLL_ENABLE);
 
-	/* Timeout 200us */
+	 
 	if (intel_de_wait_for_set(dev_priv,
 				  BXT_DE_PLL_ENABLE, BXT_DE_PLL_LOCK, 1))
 		drm_err(&dev_priv->drm, "timeout waiting for DE PLL lock\n");
@@ -1622,7 +1497,7 @@ static void icl_cdclk_pll_disable(struct drm_i915_private *dev_priv)
 	intel_de_rmw(dev_priv, BXT_DE_PLL_ENABLE,
 		     BXT_DE_PLL_PLL_ENABLE, 0);
 
-	/* Timeout 200us */
+	 
 	if (intel_de_wait_for_clear(dev_priv, BXT_DE_PLL_ENABLE, BXT_DE_PLL_LOCK, 1))
 		drm_err(&dev_priv->drm, "timeout waiting for CDCLK PLL unlock\n");
 
@@ -1640,7 +1515,7 @@ static void icl_cdclk_pll_enable(struct drm_i915_private *dev_priv, int vco)
 	val |= BXT_DE_PLL_PLL_ENABLE;
 	intel_de_write(dev_priv, BXT_DE_PLL_ENABLE, val);
 
-	/* Timeout 200us */
+	 
 	if (intel_de_wait_for_set(dev_priv, BXT_DE_PLL_ENABLE, BXT_DE_PLL_LOCK, 1))
 		drm_err(&dev_priv->drm, "timeout waiting for CDCLK PLL lock\n");
 
@@ -1652,15 +1527,15 @@ static void adlp_cdclk_pll_crawl(struct drm_i915_private *dev_priv, int vco)
 	int ratio = DIV_ROUND_CLOSEST(vco, dev_priv->display.cdclk.hw.ref);
 	u32 val;
 
-	/* Write PLL ratio without disabling */
+	 
 	val = ICL_CDCLK_PLL_RATIO(ratio) | BXT_DE_PLL_PLL_ENABLE;
 	intel_de_write(dev_priv, BXT_DE_PLL_ENABLE, val);
 
-	/* Submit freq change request */
+	 
 	val |= BXT_DE_PLL_FREQ_REQ;
 	intel_de_write(dev_priv, BXT_DE_PLL_ENABLE, val);
 
-	/* Timeout 200us */
+	 
 	if (intel_de_wait_for_set(dev_priv, BXT_DE_PLL_ENABLE,
 				  BXT_DE_PLL_LOCK | BXT_DE_PLL_FREQ_REQ_ACK, 1))
 		drm_err(&dev_priv->drm, "timeout waiting for FREQ change request ack\n");
@@ -1694,7 +1569,7 @@ static u32 bxt_cdclk_cd2x_pipe(struct drm_i915_private *dev_priv, enum pipe pipe
 static u32 bxt_cdclk_cd2x_div_sel(struct drm_i915_private *dev_priv,
 				  int cdclk, int vco)
 {
-	/* cdclk = vco / 2 / div{1,1.5,2,4} */
+	 
 	switch (DIV_ROUND_CLOSEST(vco, cdclk)) {
 	default:
 		drm_WARN_ON(&dev_priv->drm,
@@ -1766,11 +1641,7 @@ static void dg2_cdclk_squash_program(struct drm_i915_private *i915,
 
 static bool cdclk_pll_is_unknown(unsigned int vco)
 {
-	/*
-	 * Ensure driver does not take the crawl path for the
-	 * case when the vco is set to ~0 in the
-	 * sanitize path.
-	 */
+	 
 	return vco == ~0;
 }
 
@@ -1788,18 +1659,18 @@ static bool cdclk_compute_crawl_and_squash_midpoint(struct drm_i915_private *i91
 	int size = 16;
 	int div = 2;
 
-	/* Return if PLL is in an unknown state, force a complete disable and re-enable. */
+	 
 	if (cdclk_pll_is_unknown(old_cdclk_config->vco))
 		return false;
 
-	/* Return if both Squash and Crawl are not present */
+	 
 	if (!HAS_CDCLK_CRAWL(i915) || !HAS_CDCLK_SQUASH(i915))
 		return false;
 
 	old_waveform = cdclk_squash_waveform(i915, old_cdclk_config->cdclk);
 	new_waveform = cdclk_squash_waveform(i915, new_cdclk_config->cdclk);
 
-	/* Return if Squash only or Crawl only is the desired action */
+	 
 	if (old_cdclk_config->vco == 0 || new_cdclk_config->vco == 0 ||
 	    old_cdclk_config->vco == new_cdclk_config->vco ||
 	    old_waveform == new_waveform)
@@ -1807,13 +1678,7 @@ static bool cdclk_compute_crawl_and_squash_midpoint(struct drm_i915_private *i91
 
 	*mid_cdclk_config = *new_cdclk_config;
 
-	/*
-	 * Populate the mid_cdclk_config accordingly.
-	 * - If moving to a higher cdclk, the desired action is squashing.
-	 * The mid cdclk config should have the new (squash) waveform.
-	 * - If moving to a lower cdclk, the desired action is crawling.
-	 * The mid cdclk config should have the new vco.
-	 */
+	 
 
 	if (cdclk_squash_divider(new_waveform) > cdclk_squash_divider(old_waveform)) {
 		mid_cdclk_config->vco = old_cdclk_config->vco;
@@ -1826,7 +1691,7 @@ static bool cdclk_compute_crawl_and_squash_midpoint(struct drm_i915_private *i91
 	mid_cdclk_config->cdclk = DIV_ROUND_CLOSEST(cdclk_squash_divider(mid_waveform) *
 						    mid_cdclk_config->vco, size * div);
 
-	/* make sure the mid clock came out sane */
+	 
 
 	drm_WARN_ON(&i915->drm, mid_cdclk_config->cdclk <
 		    min(old_cdclk_config->cdclk, new_cdclk_config->cdclk));
@@ -1860,7 +1725,7 @@ static void _bxt_set_cdclk(struct drm_i915_private *dev_priv,
 		if (dev_priv->display.cdclk.hw.vco != vco)
 			adlp_cdclk_pll_crawl(dev_priv, vco);
 	} else if (DISPLAY_VER(dev_priv) >= 11) {
-		/* wa_15010685871: dg2, mtl */
+		 
 		if (pll_enable_wa_needed(dev_priv))
 			dg2_cdclk_squash_program(dev_priv, 0);
 
@@ -1882,10 +1747,7 @@ static void _bxt_set_cdclk(struct drm_i915_private *dev_priv,
 		bxt_cdclk_cd2x_pipe(dev_priv, pipe) |
 		skl_cdclk_decimal(cdclk);
 
-	/*
-	 * Disable SSA Precharge when CD clock frequency < 500 MHz,
-	 * enable otherwise.
-	 */
+	 
 	if ((IS_GEMINILAKE(dev_priv) || IS_BROXTON(dev_priv)) &&
 	    cdclk >= 500000)
 		val |= BXT_CDCLK_SSA_PRECHARGE_ENABLE;
@@ -1903,24 +1765,16 @@ static void bxt_set_cdclk(struct drm_i915_private *dev_priv,
 	int cdclk = cdclk_config->cdclk;
 	int ret = 0;
 
-	/*
-	 * Inform power controller of upcoming frequency change.
-	 * Display versions 14 and beyond do not follow the PUnit
-	 * mailbox communication, skip
-	 * this step.
-	 */
+	 
 	if (DISPLAY_VER(dev_priv) >= 14 || IS_DG2(dev_priv))
-		/* NOOP */;
+		 ;
 	else if (DISPLAY_VER(dev_priv) >= 11)
 		ret = skl_pcode_request(&dev_priv->uncore, SKL_PCODE_CDCLK_CONTROL,
 					SKL_CDCLK_PREPARE_FOR_CHANGE,
 					SKL_CDCLK_READY_FOR_CHANGE,
 					SKL_CDCLK_READY_FOR_CHANGE, 3);
 	else
-		/*
-		 * BSpec requires us to wait up to 150usec, but that leads to
-		 * timeouts; the 2ms used here is based on experiment.
-		 */
+		 
 		ret = snb_pcode_write_timeout(&dev_priv->uncore,
 					      HSW_PCODE_DE_WRITE_FREQ_REQ,
 					      0x80000000, 150, 2);
@@ -1941,20 +1795,12 @@ static void bxt_set_cdclk(struct drm_i915_private *dev_priv,
 	}
 
 	if (DISPLAY_VER(dev_priv) >= 14)
-		/*
-		 * NOOP - No Pcode communication needed for
-		 * Display versions 14 and beyond
-		 */;
+		 ;
 	else if (DISPLAY_VER(dev_priv) >= 11 && !IS_DG2(dev_priv))
 		ret = snb_pcode_write(&dev_priv->uncore, SKL_PCODE_CDCLK_CONTROL,
 				      cdclk_config->voltage_level);
 	if (DISPLAY_VER(dev_priv) < 11) {
-		/*
-		 * The timeout isn't specified, the 2ms used here is based on
-		 * experiment.
-		 * FIXME: Waiting for the request completion could be delayed
-		 * until the next PCODE request based on BSpec.
-		 */
+		 
 		ret = snb_pcode_write_timeout(&dev_priv->uncore,
 					      HSW_PCODE_DE_WRITE_FREQ_REQ,
 					      cdclk_config->voltage_level,
@@ -1970,10 +1816,7 @@ static void bxt_set_cdclk(struct drm_i915_private *dev_priv,
 	intel_update_cdclk(dev_priv);
 
 	if (DISPLAY_VER(dev_priv) >= 11)
-		/*
-		 * Can't read out the voltage level :(
-		 * Let's just assume everything is as expected.
-		 */
+		 
 		dev_priv->display.cdclk.hw.voltage_level = cdclk_config->voltage_level;
 }
 
@@ -1989,33 +1832,24 @@ static void bxt_sanitize_cdclk(struct drm_i915_private *dev_priv)
 	    dev_priv->display.cdclk.hw.cdclk == dev_priv->display.cdclk.hw.bypass)
 		goto sanitize;
 
-	/* DPLL okay; verify the cdclock
-	 *
-	 * Some BIOS versions leave an incorrect decimal frequency value and
-	 * set reserved MBZ bits in CDCLK_CTL at least during exiting from S4,
-	 * so sanitize this register.
-	 */
+	 
 	cdctl = intel_de_read(dev_priv, CDCLK_CTL);
-	/*
-	 * Let's ignore the pipe field, since BIOS could have configured the
-	 * dividers both synching to an active pipe, or asynchronously
-	 * (PIPE_NONE).
-	 */
+	 
 	cdctl &= ~bxt_cdclk_cd2x_pipe(dev_priv, INVALID_PIPE);
 
-	/* Make sure this is a legal cdclk value for the platform */
+	 
 	cdclk = bxt_calc_cdclk(dev_priv, dev_priv->display.cdclk.hw.cdclk);
 	if (cdclk != dev_priv->display.cdclk.hw.cdclk)
 		goto sanitize;
 
-	/* Make sure the VCO is correct for the cdclk */
+	 
 	vco = bxt_calc_cdclk_pll_vco(dev_priv, cdclk);
 	if (vco != dev_priv->display.cdclk.hw.vco)
 		goto sanitize;
 
 	expected = skl_cdclk_decimal(cdclk);
 
-	/* Figure out what CD2X divider we should be using for this cdclk */
+	 
 	if (HAS_CDCLK_SQUASH(dev_priv))
 		clock = dev_priv->display.cdclk.hw.vco / 2;
 	else
@@ -2024,25 +1858,22 @@ static void bxt_sanitize_cdclk(struct drm_i915_private *dev_priv)
 	expected |= bxt_cdclk_cd2x_div_sel(dev_priv, clock,
 					   dev_priv->display.cdclk.hw.vco);
 
-	/*
-	 * Disable SSA Precharge when CD clock frequency < 500 MHz,
-	 * enable otherwise.
-	 */
+	 
 	if ((IS_GEMINILAKE(dev_priv) || IS_BROXTON(dev_priv)) &&
 	    dev_priv->display.cdclk.hw.cdclk >= 500000)
 		expected |= BXT_CDCLK_SSA_PRECHARGE_ENABLE;
 
 	if (cdctl == expected)
-		/* All well; nothing to sanitize */
+		 
 		return;
 
 sanitize:
 	drm_dbg_kms(&dev_priv->drm, "Sanitizing cdclk programmed by pre-os\n");
 
-	/* force cdclk programming */
+	 
 	dev_priv->display.cdclk.hw.cdclk = 0;
 
-	/* force full PLL disable + enable */
+	 
 	dev_priv->display.cdclk.hw.vco = -1;
 }
 
@@ -2058,11 +1889,7 @@ static void bxt_cdclk_init_hw(struct drm_i915_private *dev_priv)
 
 	cdclk_config = dev_priv->display.cdclk.hw;
 
-	/*
-	 * FIXME:
-	 * - The initial CDCLK needs to be read from VBT.
-	 *   Need to make this change after VBT has changes for BXT.
-	 */
+	 
 	cdclk_config.cdclk = bxt_calc_cdclk(dev_priv, 0);
 	cdclk_config.vco = bxt_calc_cdclk_pll_vco(dev_priv, cdclk_config.cdclk);
 	cdclk_config.voltage_level =
@@ -2083,15 +1910,7 @@ static void bxt_cdclk_uninit_hw(struct drm_i915_private *dev_priv)
 	bxt_set_cdclk(dev_priv, &cdclk_config, INVALID_PIPE);
 }
 
-/**
- * intel_cdclk_init_hw - Initialize CDCLK hardware
- * @i915: i915 device
- *
- * Initialize CDCLK. This consists mainly of initializing dev_priv->display.cdclk.hw and
- * sanitizing the state of the hardware if needed. This is generally done only
- * during the display core initialization sequence, after which the DMC will
- * take care of turning CDCLK off/on as needed.
- */
+ 
 void intel_cdclk_init_hw(struct drm_i915_private *i915)
 {
 	if (DISPLAY_VER(i915) >= 10 || IS_BROXTON(i915))
@@ -2100,13 +1919,7 @@ void intel_cdclk_init_hw(struct drm_i915_private *i915)
 		skl_cdclk_init_hw(i915);
 }
 
-/**
- * intel_cdclk_uninit_hw - Uninitialize CDCLK hardware
- * @i915: i915 device
- *
- * Uninitialize CDCLK. This is done only during the display core
- * uninitialization sequence.
- */
+ 
 void intel_cdclk_uninit_hw(struct drm_i915_private *i915)
 {
 	if (DISPLAY_VER(i915) >= 10 || IS_BROXTON(i915))
@@ -2146,10 +1959,7 @@ static bool intel_cdclk_can_crawl(struct drm_i915_private *dev_priv,
 	if (!HAS_CDCLK_CRAWL(dev_priv))
 		return false;
 
-	/*
-	 * The vco and cd2x divider will change independently
-	 * from each, so we disallow cd2x change when crawling.
-	 */
+	 
 	a_div = DIV_ROUND_CLOSEST(a->vco, a->cdclk);
 	b_div = DIV_ROUND_CLOSEST(b->vco, b->cdclk);
 
@@ -2163,12 +1973,7 @@ static bool intel_cdclk_can_squash(struct drm_i915_private *dev_priv,
 				   const struct intel_cdclk_config *a,
 				   const struct intel_cdclk_config *b)
 {
-	/*
-	 * FIXME should store a bit more state in intel_cdclk_config
-	 * to differentiate squasher vs. cd2x divider properly. For
-	 * the moment all platforms with squasher use a fixed cd2x
-	 * divider.
-	 */
+	 
 	if (!HAS_CDCLK_SQUASH(dev_priv))
 		return false;
 
@@ -2178,16 +1983,7 @@ static bool intel_cdclk_can_squash(struct drm_i915_private *dev_priv,
 		a->ref == b->ref;
 }
 
-/**
- * intel_cdclk_needs_modeset - Determine if changong between the CDCLK
- *                             configurations requires a modeset on all pipes
- * @a: first CDCLK configuration
- * @b: second CDCLK configuration
- *
- * Returns:
- * True if changing between the two CDCLK configurations
- * requires all pipes to be off, false if not.
- */
+ 
 bool intel_cdclk_needs_modeset(const struct intel_cdclk_config *a,
 			       const struct intel_cdclk_config *b)
 {
@@ -2196,31 +1992,16 @@ bool intel_cdclk_needs_modeset(const struct intel_cdclk_config *a,
 		a->ref != b->ref;
 }
 
-/**
- * intel_cdclk_can_cd2x_update - Determine if changing between the two CDCLK
- *                               configurations requires only a cd2x divider update
- * @dev_priv: i915 device
- * @a: first CDCLK configuration
- * @b: second CDCLK configuration
- *
- * Returns:
- * True if changing between the two CDCLK configurations
- * can be done with just a cd2x divider update, false if not.
- */
+ 
 static bool intel_cdclk_can_cd2x_update(struct drm_i915_private *dev_priv,
 					const struct intel_cdclk_config *a,
 					const struct intel_cdclk_config *b)
 {
-	/* Older hw doesn't have the capability */
+	 
 	if (DISPLAY_VER(dev_priv) < 10 && !IS_BROXTON(dev_priv))
 		return false;
 
-	/*
-	 * FIXME should store a bit more state in intel_cdclk_config
-	 * to differentiate squasher vs. cd2x divider properly. For
-	 * the moment all platforms with squasher use a fixed cd2x
-	 * divider.
-	 */
+	 
 	if (HAS_CDCLK_SQUASH(dev_priv))
 		return false;
 
@@ -2230,14 +2011,7 @@ static bool intel_cdclk_can_cd2x_update(struct drm_i915_private *dev_priv,
 		a->ref == b->ref;
 }
 
-/**
- * intel_cdclk_changed - Determine if two CDCLK configurations are different
- * @a: first CDCLK configuration
- * @b: second CDCLK configuration
- *
- * Returns:
- * True if the CDCLK configurations don't match, false if they do.
- */
+ 
 static bool intel_cdclk_changed(const struct intel_cdclk_config *a,
 				const struct intel_cdclk_config *b)
 {
@@ -2287,15 +2061,7 @@ static void intel_pcode_notify(struct drm_i915_private *i915,
 			ret);
 }
 
-/**
- * intel_set_cdclk - Push the CDCLK configuration to the hardware
- * @dev_priv: i915 device
- * @cdclk_config: new CDCLK configuration
- * @pipe: pipe with which to synchronize the update
- *
- * Program the hardware based on the passed in CDCLK state,
- * if necessary.
- */
+ 
 static void intel_set_cdclk(struct drm_i915_private *dev_priv,
 			    const struct intel_cdclk_config *cdclk_config,
 			    enum pipe pipe)
@@ -2318,11 +2084,7 @@ static void intel_set_cdclk(struct drm_i915_private *dev_priv,
 
 	intel_audio_cdclk_change_pre(dev_priv);
 
-	/*
-	 * Lock aux/gmbus while we change cdclk in case those
-	 * functions use cdclk. Not all platforms/ports do,
-	 * but we'll lock them all for simplicity.
-	 */
+	 
 	mutex_lock(&dev_priv->display.gmbus.mutex);
 	for_each_intel_dp(&dev_priv->drm, encoder) {
 		struct intel_dp *intel_dp = enc_to_intel_dp(encoder);
@@ -2372,28 +2134,18 @@ static void intel_cdclk_pcode_pre_notify(struct intel_atomic_state *state)
 				 old_cdclk_state->active_pipes)
 		return;
 
-	/* According to "Sequence Before Frequency Change", voltage level set to 0x3 */
+	 
 	voltage_level = DISPLAY_TO_PCODE_VOLTAGE_MAX;
 
 	change_cdclk = new_cdclk_state->actual.cdclk != old_cdclk_state->actual.cdclk;
 	update_pipe_count = hweight8(new_cdclk_state->active_pipes) >
 			    hweight8(old_cdclk_state->active_pipes);
 
-	/*
-	 * According to "Sequence Before Frequency Change",
-	 * if CDCLK is increasing, set bits 25:16 to upcoming CDCLK,
-	 * if CDCLK is decreasing or not changing, set bits 25:16 to current CDCLK,
-	 * which basically means we choose the maximum of old and new CDCLK, if we know both
-	 */
+	 
 	if (change_cdclk)
 		cdclk = max(new_cdclk_state->actual.cdclk, old_cdclk_state->actual.cdclk);
 
-	/*
-	 * According to "Sequence For Pipe Count Change",
-	 * if pipe count is increasing, set bits 25:16 to upcoming pipe count
-	 * (power well is enabled)
-	 * no action if it is decreasing, before the change
-	 */
+	 
 	if (update_pipe_count)
 		num_active_pipes = hweight8(new_cdclk_state->active_pipes);
 
@@ -2411,26 +2163,18 @@ static void intel_cdclk_pcode_post_notify(struct intel_atomic_state *state)
 	unsigned int cdclk = 0; u8 voltage_level, num_active_pipes = 0;
 	bool update_cdclk, update_pipe_count;
 
-	/* According to "Sequence After Frequency Change", set voltage to used level */
+	 
 	voltage_level = new_cdclk_state->actual.voltage_level;
 
 	update_cdclk = new_cdclk_state->actual.cdclk != old_cdclk_state->actual.cdclk;
 	update_pipe_count = hweight8(new_cdclk_state->active_pipes) <
 			    hweight8(old_cdclk_state->active_pipes);
 
-	/*
-	 * According to "Sequence After Frequency Change",
-	 * set bits 25:16 to current CDCLK
-	 */
+	 
 	if (update_cdclk)
 		cdclk = new_cdclk_state->actual.cdclk;
 
-	/*
-	 * According to "Sequence For Pipe Count Change",
-	 * if pipe count is decreasing, set bits 25:16 to current pipe count,
-	 * after the change(power well is disabled)
-	 * no action if it is increasing, after the change
-	 */
+	 
 	if (update_pipe_count)
 		num_active_pipes = hweight8(new_cdclk_state->active_pipes);
 
@@ -2438,13 +2182,7 @@ static void intel_cdclk_pcode_post_notify(struct intel_atomic_state *state)
 			   update_cdclk, update_pipe_count);
 }
 
-/**
- * intel_set_cdclk_pre_plane_update - Push the CDCLK state to the hardware
- * @state: intel atomic state
- *
- * Program the hardware before updating the HW plane state based on the
- * new CDCLK state, if necessary.
- */
+ 
 void
 intel_set_cdclk_pre_plane_update(struct intel_atomic_state *state)
 {
@@ -2470,13 +2208,7 @@ intel_set_cdclk_pre_plane_update(struct intel_atomic_state *state)
 	}
 }
 
-/**
- * intel_set_cdclk_post_plane_update - Push the CDCLK state to the hardware
- * @state: intel atomic state
- *
- * Program the hardware after updating the HW plane state based on the
- * new CDCLK state, if necessary.
- */
+ 
 void
 intel_set_cdclk_post_plane_update(struct intel_atomic_state *state)
 {
@@ -2544,73 +2276,47 @@ int intel_crtc_compute_min_cdclk(const struct intel_crtc_state *crtc_state)
 
 	min_cdclk = intel_pixel_rate_to_cdclk(crtc_state);
 
-	/* pixel rate mustn't exceed 95% of cdclk with IPS on BDW */
+	 
 	if (IS_BROADWELL(dev_priv) && hsw_crtc_state_ips_capable(crtc_state))
 		min_cdclk = DIV_ROUND_UP(min_cdclk * 100, 95);
 
-	/* BSpec says "Do not use DisplayPort with CDCLK less than 432 MHz,
-	 * audio enabled, port width x4, and link rate HBR2 (5.4 GHz), or else
-	 * there may be audio corruption or screen corruption." This cdclk
-	 * restriction for GLK is 316.8 MHz.
-	 */
+	 
 	if (intel_crtc_has_dp_encoder(crtc_state) &&
 	    crtc_state->has_audio &&
 	    crtc_state->port_clock >= 540000 &&
 	    crtc_state->lane_count == 4) {
 		if (DISPLAY_VER(dev_priv) == 10) {
-			/* Display WA #1145: glk */
+			 
 			min_cdclk = max(316800, min_cdclk);
 		} else if (DISPLAY_VER(dev_priv) == 9 || IS_BROADWELL(dev_priv)) {
-			/* Display WA #1144: skl,bxt */
+			 
 			min_cdclk = max(432000, min_cdclk);
 		}
 	}
 
-	/*
-	 * According to BSpec, "The CD clock frequency must be at least twice
-	 * the frequency of the Azalia BCLK." and BCLK is 96 MHz by default.
-	 */
+	 
 	if (crtc_state->has_audio && DISPLAY_VER(dev_priv) >= 9)
 		min_cdclk = max(2 * 96000, min_cdclk);
 
-	/*
-	 * "For DP audio configuration, cdclk frequency shall be set to
-	 *  meet the following requirements:
-	 *  DP Link Frequency(MHz) | Cdclk frequency(MHz)
-	 *  270                    | 320 or higher
-	 *  162                    | 200 or higher"
-	 */
+	 
 	if ((IS_VALLEYVIEW(dev_priv) || IS_CHERRYVIEW(dev_priv)) &&
 	    intel_crtc_has_dp_encoder(crtc_state) && crtc_state->has_audio)
 		min_cdclk = max(crtc_state->port_clock, min_cdclk);
 
-	/*
-	 * On Valleyview some DSI panels lose (v|h)sync when the clock is lower
-	 * than 320000KHz.
-	 */
+	 
 	if (intel_crtc_has_type(crtc_state, INTEL_OUTPUT_DSI) &&
 	    IS_VALLEYVIEW(dev_priv))
 		min_cdclk = max(320000, min_cdclk);
 
-	/*
-	 * On Geminilake once the CDCLK gets as low as 79200
-	 * picture gets unstable, despite that values are
-	 * correct for DSI PLL and DE PLL.
-	 */
+	 
 	if (intel_crtc_has_type(crtc_state, INTEL_OUTPUT_DSI) &&
 	    IS_GEMINILAKE(dev_priv))
 		min_cdclk = max(158400, min_cdclk);
 
-	/* Account for additional needs from the planes */
+	 
 	min_cdclk = max(intel_planes_min_cdclk(crtc_state), min_cdclk);
 
-	/*
-	 * When we decide to use only one VDSC engine, since
-	 * each VDSC operates with 1 ppc throughput, pixel clock
-	 * cannot be higher than the VDSC clock (cdclk)
-	 * If there 2 VDSC engines, then pixel clock can't be higher than
-	 * VDSC clock(cdclk) * 2 and so on.
-	 */
+	 
 	if (crtc_state->dsc.compression_enable) {
 		int num_vdsc_instances = intel_dsc_get_num_vdsc_instances(crtc_state);
 
@@ -2619,20 +2325,9 @@ int intel_crtc_compute_min_cdclk(const struct intel_crtc_state *crtc_state)
 					       num_vdsc_instances));
 	}
 
-	/*
-	 * HACK. Currently for TGL/DG2 platforms we calculate
-	 * min_cdclk initially based on pixel_rate divided
-	 * by 2, accounting for also plane requirements,
-	 * however in some cases the lowest possible CDCLK
-	 * doesn't work and causing the underruns.
-	 * Explicitly stating here that this seems to be currently
-	 * rather a Hack, than final solution.
-	 */
+	 
 	if (IS_TIGERLAKE(dev_priv) || IS_DG2(dev_priv)) {
-		/*
-		 * Clamp to max_cdclk_freq in case pixel rate is higher,
-		 * in order not to break an 8K, but still leave W/A at place.
-		 */
+		 
 		min_cdclk = max_t(int, min_cdclk,
 				  min_t(int, crtc_state->pixel_rate,
 					dev_priv->display.cdclk.max_cdclk_freq));
@@ -2688,14 +2383,7 @@ static int intel_compute_min_cdclk(struct intel_cdclk_state *cdclk_state)
 	for_each_pipe(dev_priv, pipe)
 		min_cdclk = max(cdclk_state->min_cdclk[pipe], min_cdclk);
 
-	/*
-	 * Avoid glk_force_audio_cdclk() causing excessive screen
-	 * blinking when multiple pipes are active by making sure
-	 * CDCLK frequency is always high enough for audio. With a
-	 * single active pipe we can always change CDCLK frequency
-	 * by changing the cd2x divider (see glk_cdclk_table[]) and
-	 * thus a full modeset won't be needed then.
-	 */
+	 
 	if (IS_GEMINILAKE(dev_priv) && cdclk_state->active_pipes &&
 	    !is_power_of_2(cdclk_state->active_pipes))
 		min_cdclk = max(2 * 96000, min_cdclk);
@@ -2710,19 +2398,7 @@ static int intel_compute_min_cdclk(struct intel_cdclk_state *cdclk_state)
 	return min_cdclk;
 }
 
-/*
- * Account for port clock min voltage level requirements.
- * This only really does something on DISPLA_VER >= 11 but can be
- * called on earlier platforms as well.
- *
- * Note that this functions assumes that 0 is
- * the lowest voltage value, and higher values
- * correspond to increasingly higher voltages.
- *
- * Should that relationship no longer hold on
- * future platforms this code will need to be
- * adjusted.
- */
+ 
 static int bxt_compute_min_voltage_level(struct intel_cdclk_state *cdclk_state)
 {
 	struct intel_atomic_state *state = cdclk_state->base.state;
@@ -2834,10 +2510,7 @@ static int skl_dpll0_vco(struct intel_cdclk_state *cdclk_state)
 		if (!intel_crtc_has_type(crtc_state, INTEL_OUTPUT_EDP))
 			continue;
 
-		/*
-		 * DPLL0 VCO may need to be adjusted to get the correct
-		 * clock for eDP. This will affect cdclk as well.
-		 */
+		 
 		switch (crtc_state->port_clock / 2) {
 		case 108000:
 		case 216000:
@@ -2925,11 +2598,7 @@ static int fixed_modeset_calc_cdclk(struct intel_cdclk_state *cdclk_state)
 {
 	int min_cdclk;
 
-	/*
-	 * We can't change the cdclk frequency, but we still want to
-	 * check that the required minimum frequency doesn't exceed
-	 * the actual cdclk frequency.
-	 */
+	 
 	min_cdclk = intel_compute_min_cdclk(cdclk_state);
 	if (min_cdclk < 0)
 		return min_cdclk;
@@ -2984,11 +2653,7 @@ int intel_cdclk_atomic_check(struct intel_atomic_state *state,
 	int ret;
 	int i;
 
-	/*
-	 * active_planes bitmask has been updated, and potentially affected
-	 * planes are part of the state. We can now compute the minimum cdclk
-	 * for each plane.
-	 */
+	 
 	for_each_new_intel_plane_in_state(state, plane, plane_state, i) {
 		ret = intel_plane_calc_min_cdclk(state, plane, need_cdclk_calc);
 		if (ret)
@@ -3031,10 +2696,7 @@ static bool intel_cdclk_need_serialize(struct drm_i915_private *i915,
 				      hweight8(new_cdclk_state->active_pipes);
 	bool cdclk_changed = intel_cdclk_changed(&old_cdclk_state->actual,
 						 &new_cdclk_state->actual);
-	/*
-	 * We need to poke hw for gen >= 12, because we notify PCode if
-	 * pipe power well count changes.
-	 */
+	 
 	return cdclk_changed || (IS_DG2(i915) && power_well_cnt_changed);
 }
 
@@ -3060,10 +2722,7 @@ int intel_modeset_calc_cdclk(struct intel_atomic_state *state)
 		return ret;
 
 	if (intel_cdclk_need_serialize(dev_priv, old_cdclk_state, new_cdclk_state)) {
-		/*
-		 * Also serialize commits across all crtcs
-		 * if the actual hw needs to be poked.
-		 */
+		 
 		ret = intel_atomic_serialize_global_state(&new_cdclk_state->base);
 		if (ret)
 			return ret;
@@ -3119,7 +2778,7 @@ int intel_modeset_calc_cdclk(struct intel_atomic_state *state)
 			    pipe_name(pipe));
 	} else if (intel_cdclk_needs_modeset(&old_cdclk_state->actual,
 					     &new_cdclk_state->actual)) {
-		/* All pipes must be switched off while we change the cdclk. */
+		 
 		ret = intel_modeset_all_pipes(state, "CDCLK change");
 		if (ret)
 			return ret;
@@ -3157,14 +2816,7 @@ static int intel_compute_max_dotclk(struct drm_i915_private *dev_priv)
 		return max_cdclk_freq*90/100;
 }
 
-/**
- * intel_update_max_cdclk - Determine the maximum support CDCLK frequency
- * @dev_priv: i915 device
- *
- * Determine the maximum CDCLK frequency the platform supports, and also
- * derive the maximum dot clock frequency the maximum CDCLK frequency
- * allows.
- */
+ 
 void intel_update_max_cdclk(struct drm_i915_private *dev_priv)
 {
 	if (IS_JASPERLAKE(dev_priv) || IS_ELKHARTLAKE(dev_priv)) {
@@ -3188,11 +2840,7 @@ void intel_update_max_cdclk(struct drm_i915_private *dev_priv)
 		vco = dev_priv->skl_preferred_vco_freq;
 		drm_WARN_ON(&dev_priv->drm, vco != 8100000 && vco != 8640000);
 
-		/*
-		 * Use the lower (vco 8640) cdclk values as a
-		 * first guess. skl_calc_cdclk() will correct it
-		 * if the preferred vco is 8100 instead.
-		 */
+		 
 		if (limit == SKL_DFSM_CDCLK_LIMIT_675)
 			max_cdclk = 617143;
 		else if (limit == SKL_DFSM_CDCLK_LIMIT_540)
@@ -3204,12 +2852,7 @@ void intel_update_max_cdclk(struct drm_i915_private *dev_priv)
 
 		dev_priv->display.cdclk.max_cdclk_freq = skl_calc_cdclk(max_cdclk, vco);
 	} else if (IS_BROADWELL(dev_priv))  {
-		/*
-		 * FIXME with extra cooling we can allow
-		 * 540 MHz for ULX and 675 Mhz for ULT.
-		 * How can we know if extra cooling is
-		 * available? PCI ID, VTB, something else?
-		 */
+		 
 		if (intel_de_read(dev_priv, FUSE_STRAP) & HSW_CDCLK_LIMIT)
 			dev_priv->display.cdclk.max_cdclk_freq = 450000;
 		else if (IS_BROADWELL_ULX(dev_priv))
@@ -3223,7 +2866,7 @@ void intel_update_max_cdclk(struct drm_i915_private *dev_priv)
 	} else if (IS_VALLEYVIEW(dev_priv)) {
 		dev_priv->display.cdclk.max_cdclk_freq = 400000;
 	} else {
-		/* otherwise assume cdclk is fixed */
+		 
 		dev_priv->display.cdclk.max_cdclk_freq = dev_priv->display.cdclk.hw.cdclk;
 	}
 
@@ -3236,22 +2879,12 @@ void intel_update_max_cdclk(struct drm_i915_private *dev_priv)
 		dev_priv->max_dotclk_freq);
 }
 
-/**
- * intel_update_cdclk - Determine the current CDCLK frequency
- * @dev_priv: i915 device
- *
- * Determine the current CDCLK frequency.
- */
+ 
 void intel_update_cdclk(struct drm_i915_private *dev_priv)
 {
 	intel_cdclk_get_cdclk(dev_priv, &dev_priv->display.cdclk.hw);
 
-	/*
-	 * 9:0 CMBUS [sic] CDCLK frequency (cdfreq):
-	 * Programmng [sic] note: bit[9:2] should be programmed to the number
-	 * of cdclk that generates 4MHz reference clock freq which is used to
-	 * generate GMBus clock. This will vary with the cdclk freq.
-	 */
+	 
 	if (IS_VALLEYVIEW(dev_priv) || IS_CHERRYVIEW(dev_priv))
 		intel_de_write(dev_priv, GMBUSFREQ_VLV,
 			       DIV_ROUND_UP(dev_priv->display.cdclk.hw.cdclk, 1000));
@@ -3259,10 +2892,7 @@ void intel_update_cdclk(struct drm_i915_private *dev_priv)
 
 static int dg1_rawclk(struct drm_i915_private *dev_priv)
 {
-	/*
-	 * DG1 always uses a 38.4 MHz rawclk.  The bspec tells us
-	 * "Program Numerator=2, Denominator=4, Divider=37 decimal."
-	 */
+	 
 	intel_de_write(dev_priv, PCH_RAWCLK_FREQ,
 		       CNP_RAWCLK_DEN(4) | CNP_RAWCLK_DIV(37) | ICP_RAWCLK_NUM(2));
 
@@ -3275,11 +2905,11 @@ static int cnp_rawclk(struct drm_i915_private *dev_priv)
 	int divider, fraction;
 
 	if (intel_de_read(dev_priv, SFUSE_STRAP) & SFUSE_STRAP_RAW_FREQUENCY) {
-		/* 24 MHz */
+		 
 		divider = 24000;
 		fraction = 0;
 	} else {
-		/* 19.2 MHz */
+		 
 		divider = 19000;
 		fraction = 200;
 	}
@@ -3305,7 +2935,7 @@ static int pch_rawclk(struct drm_i915_private *dev_priv)
 
 static int vlv_hrawclk(struct drm_i915_private *dev_priv)
 {
-	/* RAWCLK_FREQ_VLV register updated from power well code */
+	 
 	return vlv_get_cck_clock_hpll(dev_priv, "hrawclk",
 				      CCK_DISPLAY_REF_CLOCK_CONTROL);
 }
@@ -3314,16 +2944,7 @@ static int i9xx_hrawclk(struct drm_i915_private *dev_priv)
 {
 	u32 clkcfg;
 
-	/*
-	 * hrawclock is 1/4 the FSB frequency
-	 *
-	 * Note that this only reads the state of the FSB
-	 * straps, not the actual FSB frequency. Some BIOSen
-	 * let you configure each independently. Ideally we'd
-	 * read out the actual FSB frequency but sadly we
-	 * don't know which registers have that information,
-	 * and all the relevant docs have gone to bit heaven :(
-	 */
+	 
 	clkcfg = intel_de_read(dev_priv, CLKCFG) & CLKCFG_FSB_MASK;
 
 	if (IS_MOBILE(dev_priv)) {
@@ -3366,13 +2987,7 @@ static int i9xx_hrawclk(struct drm_i915_private *dev_priv)
 	}
 }
 
-/**
- * intel_read_rawclk - Determine the current RAWCLK frequency
- * @dev_priv: i915 device
- *
- * Determine the current RAWCLK frequency. RAWCLK is a fixed
- * frequency clock so this needs to done only once.
- */
+ 
 u32 intel_read_rawclk(struct drm_i915_private *dev_priv)
 {
 	u32 freq;
@@ -3380,11 +2995,7 @@ u32 intel_read_rawclk(struct drm_i915_private *dev_priv)
 	if (INTEL_PCH_TYPE(dev_priv) >= PCH_DG1)
 		freq = dg1_rawclk(dev_priv);
 	else if (INTEL_PCH_TYPE(dev_priv) >= PCH_MTP)
-		/*
-		 * MTL always uses a 38.4 MHz rawclk.  The bspec tells us
-		 * "RAWCLK_FREQ defaults to the values for 38.4 and does
-		 * not need to be programmed."
-		 */
+		 
 		freq = 38400;
 	else if (INTEL_PCH_TYPE(dev_priv) >= PCH_CNP)
 		freq = cnp_rawclk(dev_priv);
@@ -3395,7 +3006,7 @@ u32 intel_read_rawclk(struct drm_i915_private *dev_priv)
 	else if (DISPLAY_VER(dev_priv) >= 3)
 		freq = i9xx_hrawclk(dev_priv);
 	else
-		/* no rawclk on other platforms, or no need to know it */
+		 
 		return 0;
 
 	return freq;
@@ -3493,7 +3104,7 @@ static const struct intel_cdclk_funcs hsw_cdclk_funcs = {
 	.modeset_calc_cdclk = fixed_modeset_calc_cdclk,
 };
 
-/* SNB, IVB, 965G, 945G */
+ 
 static const struct intel_cdclk_funcs fixed_400mhz_cdclk_funcs = {
 	.get_cdclk = fixed_400mhz_get_cdclk,
 	.modeset_calc_cdclk = fixed_modeset_calc_cdclk,
@@ -3509,14 +3120,14 @@ static const struct intel_cdclk_funcs gm45_cdclk_funcs = {
 	.modeset_calc_cdclk = fixed_modeset_calc_cdclk,
 };
 
-/* G45 uses G33 */
+ 
 
 static const struct intel_cdclk_funcs i965gm_cdclk_funcs = {
 	.get_cdclk = i965gm_get_cdclk,
 	.modeset_calc_cdclk = fixed_modeset_calc_cdclk,
 };
 
-/* i965G uses fixed 400 */
+ 
 
 static const struct intel_cdclk_funcs pnv_cdclk_funcs = {
 	.get_cdclk = pnv_get_cdclk,
@@ -3533,7 +3144,7 @@ static const struct intel_cdclk_funcs i945gm_cdclk_funcs = {
 	.modeset_calc_cdclk = fixed_modeset_calc_cdclk,
 };
 
-/* i945G uses fixed 400 */
+ 
 
 static const struct intel_cdclk_funcs i915gm_cdclk_funcs = {
 	.get_cdclk = i915gm_get_cdclk,
@@ -3565,10 +3176,7 @@ static const struct intel_cdclk_funcs i830_cdclk_funcs = {
 	.modeset_calc_cdclk = fixed_modeset_calc_cdclk,
 };
 
-/**
- * intel_init_cdclk_hooks - Initialize CDCLK related modesetting hooks
- * @dev_priv: i915 device
- */
+ 
 void intel_init_cdclk_hooks(struct drm_i915_private *dev_priv)
 {
 	if (IS_METEORLAKE(dev_priv)) {
@@ -3578,7 +3186,7 @@ void intel_init_cdclk_hooks(struct drm_i915_private *dev_priv)
 		dev_priv->display.funcs.cdclk = &tgl_cdclk_funcs;
 		dev_priv->display.cdclk.table = dg2_cdclk_table;
 	} else if (IS_ALDERLAKE_P(dev_priv)) {
-		/* Wa_22011320316:adl-p[a0] */
+		 
 		if (IS_ALDERLAKE_P(dev_priv) && IS_DISPLAY_STEP(dev_priv, STEP_A0, STEP_B0)) {
 			dev_priv->display.cdclk.table = adlp_a_step_cdclk_table;
 			dev_priv->display.funcs.cdclk = &tgl_cdclk_funcs;

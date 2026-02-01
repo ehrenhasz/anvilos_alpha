@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Application UART driver for:
- *	Freescale STMP37XX/STMP378X
- *	Alphascale ASM9260
- *
- * Author: dmitry pervushin <dimka@embeddedalley.com>
- *
- * Copyright 2014 Oleksij Rempel <linux@rempel-privat.de>
- *	Provide Alphascale ASM9260 support.
- * Copyright 2008-2010 Freescale Semiconductor, Inc.
- * Copyright 2008 Embedded Alley Solutions, Inc All Rights Reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -114,239 +103,176 @@
 #define AUART_STAT_FERR				(1 << 16)
 #define AUART_STAT_RXCOUNT_MASK			0xffff
 
-/*
- * Start of Alphascale asm9260 defines
- * This list contains only differences of existing bits
- * between imx2x and asm9260
- */
+ 
 #define ASM9260_HW_CTRL0			0x0000
-/*
- * RW. Tell the UART to execute the RX DMA Command. The
- * UART will clear this bit at the end of receive execution.
- */
+ 
 #define ASM9260_BM_CTRL0_RXDMA_RUN		BIT(28)
-/* RW. 0 use FIFO for status register; 1 use DMA */
+ 
 #define ASM9260_BM_CTRL0_RXTO_SOURCE_STATUS	BIT(25)
-/*
- * RW. RX TIMEOUT Enable. Valid for FIFO and DMA.
- * Warning: If this bit is set to 0, the RX timeout will not affect receive DMA
- * operation. If this bit is set to 1, a receive timeout will cause the receive
- * DMA logic to terminate by filling the remaining DMA bytes with garbage data.
- */
+ 
 #define ASM9260_BM_CTRL0_RXTO_ENABLE		BIT(24)
-/*
- * RW. Receive Timeout Counter Value: number of 8-bit-time to wait before
- * asserting timeout on the RX input. If the RXFIFO is not empty and the RX
- * input is idle, then the watchdog counter will decrement each bit-time. Note
- * 7-bit-time is added to the programmed value, so a value of zero will set
- * the counter to 7-bit-time, a value of 0x1 gives 15-bit-time and so on. Also
- * note that the counter is reloaded at the end of each frame, so if the frame
- * is 10 bits long and the timeout counter value is zero, then timeout will
- * occur (when FIFO is not empty) even if the RX input is not idle. The default
- * value is 0x3 (31 bit-time).
- */
+ 
 #define ASM9260_BM_CTRL0_RXTO_MASK		(0xff << 16)
-/* TIMEOUT = (100*7+1)*(1/BAUD) */
+ 
 #define ASM9260_BM_CTRL0_DEFAULT_RXTIMEOUT	(20 << 16)
 
-/* TX ctrl register */
+ 
 #define ASM9260_HW_CTRL1			0x0010
-/*
- * RW. Tell the UART to execute the TX DMA Command. The
- * UART will clear this bit at the end of transmit execution.
- */
+ 
 #define ASM9260_BM_CTRL1_TXDMA_RUN		BIT(28)
 
 #define ASM9260_HW_CTRL2			0x0020
-/*
- * RW. Receive Interrupt FIFO Level Select.
- * The trigger points for the receive interrupt are as follows:
- * ONE_EIGHTHS = 0x0 Trigger on FIFO full to at least 2 of 16 entries.
- * ONE_QUARTER = 0x1 Trigger on FIFO full to at least 4 of 16 entries.
- * ONE_HALF = 0x2 Trigger on FIFO full to at least 8 of 16 entries.
- * THREE_QUARTERS = 0x3 Trigger on FIFO full to at least 12 of 16 entries.
- * SEVEN_EIGHTHS = 0x4 Trigger on FIFO full to at least 14 of 16 entries.
- */
+ 
 #define ASM9260_BM_CTRL2_RXIFLSEL		(7 << 20)
 #define ASM9260_BM_CTRL2_DEFAULT_RXIFLSEL	(3 << 20)
-/* RW. Same as RXIFLSEL */
+ 
 #define ASM9260_BM_CTRL2_TXIFLSEL		(7 << 16)
 #define ASM9260_BM_CTRL2_DEFAULT_TXIFLSEL	(2 << 16)
-/* RW. Set DTR. When this bit is 1, the output is 0. */
+ 
 #define ASM9260_BM_CTRL2_DTR			BIT(10)
-/* RW. Loop Back Enable */
+ 
 #define ASM9260_BM_CTRL2_LBE			BIT(7)
 #define ASM9260_BM_CTRL2_PORT_ENABLE		BIT(0)
 
 #define ASM9260_HW_LINECTRL			0x0030
-/*
- * RW. Stick Parity Select. When bits 1, 2, and 7 of this register are set, the
- * parity bit is transmitted and checked as a 0. When bits 1 and 7 are set,
- * and bit 2 is 0, the parity bit is transmitted and checked as a 1. When this
- * bit is cleared stick parity is disabled.
- */
+ 
 #define ASM9260_BM_LCTRL_SPS			BIT(7)
-/* RW. Word length */
+ 
 #define ASM9260_BM_LCTRL_WLEN			(3 << 5)
 #define ASM9260_BM_LCTRL_CHRL_5			(0 << 5)
 #define ASM9260_BM_LCTRL_CHRL_6			(1 << 5)
 #define ASM9260_BM_LCTRL_CHRL_7			(2 << 5)
 #define ASM9260_BM_LCTRL_CHRL_8			(3 << 5)
 
-/*
- * Interrupt register.
- * contains the interrupt enables and the interrupt status bits
- */
+ 
 #define ASM9260_HW_INTR				0x0040
-/* Tx FIFO EMPTY Raw Interrupt enable */
+ 
 #define ASM9260_BM_INTR_TFEIEN			BIT(27)
-/* Overrun Error Interrupt Enable. */
+ 
 #define ASM9260_BM_INTR_OEIEN			BIT(26)
-/* Break Error Interrupt Enable. */
+ 
 #define ASM9260_BM_INTR_BEIEN			BIT(25)
-/* Parity Error Interrupt Enable. */
+ 
 #define ASM9260_BM_INTR_PEIEN			BIT(24)
-/* Framing Error Interrupt Enable. */
+ 
 #define ASM9260_BM_INTR_FEIEN			BIT(23)
 
-/* nUARTDSR Modem Interrupt Enable. */
+ 
 #define ASM9260_BM_INTR_DSRMIEN			BIT(19)
-/* nUARTDCD Modem Interrupt Enable. */
+ 
 #define ASM9260_BM_INTR_DCDMIEN			BIT(18)
-/* nUARTRI Modem Interrupt Enable. */
+ 
 #define ASM9260_BM_INTR_RIMIEN			BIT(16)
-/* Auto-Boud Timeout */
+ 
 #define ASM9260_BM_INTR_ABTO			BIT(13)
 #define ASM9260_BM_INTR_ABEO			BIT(12)
-/* Tx FIFO EMPTY Raw Interrupt state */
+ 
 #define ASM9260_BM_INTR_TFEIS			BIT(11)
-/* Overrun Error */
+ 
 #define ASM9260_BM_INTR_OEIS			BIT(10)
-/* Break Error */
+ 
 #define ASM9260_BM_INTR_BEIS			BIT(9)
-/* Parity Error */
+ 
 #define ASM9260_BM_INTR_PEIS			BIT(8)
-/* Framing Error */
+ 
 #define ASM9260_BM_INTR_FEIS			BIT(7)
 #define ASM9260_BM_INTR_DSRMIS			BIT(3)
 #define ASM9260_BM_INTR_DCDMIS			BIT(2)
 #define ASM9260_BM_INTR_RIMIS			BIT(0)
 
-/*
- * RW. In DMA mode, up to 4 Received/Transmit characters can be accessed at a
- * time. In PIO mode, only one character can be accessed at a time. The status
- * register contains the receive data flags and valid bits.
- */
+ 
 #define ASM9260_HW_DATA				0x0050
 
 #define ASM9260_HW_STAT				0x0060
-/* RO. If 1, UARTAPP is present in this product. */
+ 
 #define ASM9260_BM_STAT_PRESENT			BIT(31)
-/* RO. If 1, HISPEED is present in this product. */
+ 
 #define ASM9260_BM_STAT_HISPEED			BIT(30)
-/* RO. Receive FIFO Full. */
+ 
 #define ASM9260_BM_STAT_RXFULL			BIT(26)
 
-/* RO. The UART Debug Register contains the state of the DMA signals. */
+ 
 #define ASM9260_HW_DEBUG			0x0070
-/* DMA Command Run Status */
+ 
 #define ASM9260_BM_DEBUG_TXDMARUN		BIT(5)
 #define ASM9260_BM_DEBUG_RXDMARUN		BIT(4)
-/* DMA Command End Status */
+ 
 #define ASM9260_BM_DEBUG_TXCMDEND		BIT(3)
 #define ASM9260_BM_DEBUG_RXCMDEND		BIT(2)
-/* DMA Request Status */
+ 
 #define ASM9260_BM_DEBUG_TXDMARQ		BIT(1)
 #define ASM9260_BM_DEBUG_RXDMARQ		BIT(0)
 
 #define ASM9260_HW_ILPR				0x0080
 
 #define ASM9260_HW_RS485CTRL			0x0090
-/*
- * RW. This bit reverses the polarity of the direction control signal on the RTS
- * (or DTR) pin.
- * If 0, The direction control pin will be driven to logic ‘0’ when the
- * transmitter has data to be sent. It will be driven to logic ‘1’ after the
- * last bit of data has been transmitted.
- */
+ 
 #define ASM9260_BM_RS485CTRL_ONIV		BIT(5)
-/* RW. Enable Auto Direction Control. */
+ 
 #define ASM9260_BM_RS485CTRL_DIR_CTRL		BIT(4)
-/*
- * RW. If 0 and DIR_CTRL = 1, pin RTS is used for direction control.
- * If 1 and DIR_CTRL = 1, pin DTR is used for direction control.
- */
+ 
 #define ASM9260_BM_RS485CTRL_PINSEL		BIT(3)
-/* RW. Enable Auto Address Detect (AAD). */
+ 
 #define ASM9260_BM_RS485CTRL_AADEN		BIT(2)
-/* RW. Disable receiver. */
+ 
 #define ASM9260_BM_RS485CTRL_RXDIS		BIT(1)
-/* RW. Enable RS-485/EIA-485 Normal Multidrop Mode (NMM) */
+ 
 #define ASM9260_BM_RS485CTRL_RS485EN		BIT(0)
 
 #define ASM9260_HW_RS485ADRMATCH		0x00a0
-/* Contains the address match value. */
+ 
 #define ASM9260_BM_RS485ADRMATCH_MASK		(0xff << 0)
 
 #define ASM9260_HW_RS485DLY			0x00b0
-/*
- * RW. Contains the direction control (RTS or DTR) delay value. This delay time
- * is in periods of the baud clock.
- */
+ 
 #define ASM9260_BM_RS485DLY_MASK		(0xff << 0)
 
 #define ASM9260_HW_AUTOBAUD			0x00c0
-/* WO. Auto-baud time-out interrupt clear bit. */
+ 
 #define ASM9260_BM_AUTOBAUD_TO_INT_CLR		BIT(9)
-/* WO. End of auto-baud interrupt clear bit. */
+ 
 #define ASM9260_BM_AUTOBAUD_EO_INT_CLR		BIT(8)
-/* Restart in case of timeout (counter restarts at next UART Rx falling edge) */
+ 
 #define ASM9260_BM_AUTOBAUD_AUTORESTART		BIT(2)
-/* Auto-baud mode select bit. 0 - Mode 0, 1 - Mode 1. */
+ 
 #define ASM9260_BM_AUTOBAUD_MODE		BIT(1)
-/*
- * Auto-baud start (auto-baud is running). Auto-baud run bit. This bit is
- * automatically cleared after auto-baud completion.
- */
+ 
 #define ASM9260_BM_AUTOBAUD_START		BIT(0)
 
 #define ASM9260_HW_CTRL3			0x00d0
 #define ASM9260_BM_CTRL3_OUTCLK_DIV_MASK	(0xffff << 16)
-/*
- * RW. Provide clk over OUTCLK pin. In case of asm9260 it can be configured on
- * pins 137 and 144.
- */
+ 
 #define ASM9260_BM_CTRL3_MASTERMODE		BIT(6)
-/* RW. Baud Rate Mode: 1 - Enable sync mode. 0 - async mode. */
+ 
 #define ASM9260_BM_CTRL3_SYNCMODE		BIT(4)
-/* RW. 1 - MSB bit send frist; 0 - LSB bit frist. */
+ 
 #define ASM9260_BM_CTRL3_MSBF			BIT(2)
-/* RW. 1 - sample rate = 8 x Baudrate; 0 - sample rate = 16 x Baudrate. */
+ 
 #define ASM9260_BM_CTRL3_BAUD8			BIT(1)
-/* RW. 1 - Set word length to 9bit. 0 - use ASM9260_BM_LCTRL_WLEN */
+ 
 #define ASM9260_BM_CTRL3_9BIT			BIT(0)
 
 #define ASM9260_HW_ISO7816_CTRL			0x00e0
-/* RW. Enable High Speed mode. */
+ 
 #define ASM9260_BM_ISO7816CTRL_HS		BIT(12)
-/* Disable Successive Receive NACK */
+ 
 #define ASM9260_BM_ISO7816CTRL_DS_NACK		BIT(8)
 #define ASM9260_BM_ISO7816CTRL_MAX_ITER_MASK	(0xff << 4)
-/* Receive NACK Inhibit */
+ 
 #define ASM9260_BM_ISO7816CTRL_INACK		BIT(3)
 #define ASM9260_BM_ISO7816CTRL_NEG_DATA		BIT(2)
-/* RW. 1 - ISO7816 mode; 0 - USART mode */
+ 
 #define ASM9260_BM_ISO7816CTRL_ENABLE		BIT(0)
 
 #define ASM9260_HW_ISO7816_ERRCNT		0x00f0
-/* Parity error counter. Will be cleared after reading */
+ 
 #define ASM9260_BM_ISO7816_NB_ERRORS_MASK	(0xff << 0)
 
 #define ASM9260_HW_ISO7816_STATUS		0x0100
-/* Max number of Repetitions Reached */
+ 
 #define ASM9260_BM_ISO7816_STAT_ITERATION	BIT(0)
 
-/* End of Alphascale asm9260 defines */
+ 
 
 static struct uart_driver auart_driver;
 
@@ -373,7 +299,7 @@ enum {
 	REG_VERSION,
 	REG_AUTOBAUD,
 
-	/* The size of the array - must be last */
+	 
 	REG_ARRAY_SIZE,
 };
 
@@ -415,9 +341,9 @@ struct mxs_auart_port {
 	struct uart_port port;
 
 #define MXS_AUART_DMA_ENABLED	0x2
-#define MXS_AUART_DMA_TX_SYNC	2  /* bit 2 */
-#define MXS_AUART_DMA_RX_READY	3  /* bit 3 */
-#define MXS_AUART_RTSCTS	4  /* bit 4 */
+#define MXS_AUART_DMA_TX_SYNC	2   
+#define MXS_AUART_DMA_RX_READY	3   
+#define MXS_AUART_RTSCTS	4   
 	unsigned long flags;
 	unsigned int mctrl_prev;
 	enum mxs_auart_type devtype;
@@ -427,7 +353,7 @@ struct mxs_auart_port {
 	struct clk *clk_ahb;
 	struct device *dev;
 
-	/* for DMA */
+	 
 	struct scatterlist tx_sgl;
 	struct dma_chan	*tx_dma_chan;
 	void *tx_dma_buf;
@@ -451,7 +377,7 @@ static const struct of_device_id mxs_auart_dt_ids[] = {
 	}, {
 		.compatible = "alphascale,asm9260-auart",
 		.data = (const void *)ASM9260_AUART
-	}, { /* sentinel */ }
+	}, {   }
 };
 MODULE_DEVICE_TABLE(of, mxs_auart_dt_ids);
 
@@ -521,11 +447,11 @@ static void dma_tx_callback(void *param)
 
 	dma_unmap_sg(s->dev, &s->tx_sgl, 1, DMA_TO_DEVICE);
 
-	/* clear the bit used to serialize the DMA tx. */
+	 
 	clear_bit(MXS_AUART_DMA_TX_SYNC, &s->flags);
 	smp_mb__after_atomic();
 
-	/* wake up the possible processes. */
+	 
 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
 		uart_write_wakeup(&s->port);
 
@@ -539,7 +465,7 @@ static int mxs_auart_dma_tx(struct mxs_auart_port *s, int size)
 	struct dma_chan *channel = s->tx_dma_chan;
 	u32 pio;
 
-	/* [1] : send PIO. Note, the first pio word is CTRL1. */
+	 
 	pio = AUART_CTRL1_XFER_COUNT(size);
 	desc = dmaengine_prep_slave_sg(channel, (struct scatterlist *)&pio,
 					1, DMA_TRANS_NONE, 0);
@@ -548,7 +474,7 @@ static int mxs_auart_dma_tx(struct mxs_auart_port *s, int size)
 		return -EINVAL;
 	}
 
-	/* [2] : set DMA buffer. */
+	 
 	sg_init_one(sgl, s->tx_dma_buf, size);
 	dma_map_sg(s->dev, sgl, 1, DMA_TO_DEVICE);
 	desc = dmaengine_prep_slave_sg(channel, sgl,
@@ -558,7 +484,7 @@ static int mxs_auart_dma_tx(struct mxs_auart_port *s, int size)
 		return -EINVAL;
 	}
 
-	/* [3] : submit the DMA */
+	 
 	desc->callback = dma_tx_callback;
 	desc->callback_param = s;
 	dmaengine_submit(desc);
@@ -635,9 +561,7 @@ static void mxs_auart_rx_char(struct mxs_auart_port *s)
 		s->port.icount.frame++;
 	}
 
-	/*
-	 * Mask off conditions which should be ingored.
-	 */
+	 
 	stat &= s->port.read_status_mask;
 
 	if (stat & AUART_STAT_BERR) {
@@ -755,16 +679,12 @@ static u32 mxs_auart_get_mctrl(struct uart_port *u)
 	return mctrl_gpio_get(s->gpios, &mctrl);
 }
 
-/*
- * Enable modem status interrupts
- */
+ 
 static void mxs_auart_enable_ms(struct uart_port *port)
 {
 	struct mxs_auart_port *s = to_auart_port(port);
 
-	/*
-	 * Interrupt should not be enabled twice
-	 */
+	 
 	if (s->ms_irq_enabled)
 		return;
 
@@ -772,7 +692,7 @@ static void mxs_auart_enable_ms(struct uart_port *port)
 
 	if (s->gpio_irq[UART_GPIO_CTS] >= 0)
 		enable_irq(s->gpio_irq[UART_GPIO_CTS]);
-	/* TODO: enable AUART_INTR_CTSMIEN otherwise */
+	 
 
 	if (s->gpio_irq[UART_GPIO_DSR] >= 0)
 		enable_irq(s->gpio_irq[UART_GPIO_DSR]);
@@ -784,16 +704,12 @@ static void mxs_auart_enable_ms(struct uart_port *port)
 		enable_irq(s->gpio_irq[UART_GPIO_DCD]);
 }
 
-/*
- * Disable modem status interrupts
- */
+ 
 static void mxs_auart_disable_ms(struct uart_port *port)
 {
 	struct mxs_auart_port *s = to_auart_port(port);
 
-	/*
-	 * Interrupt should not be disabled twice
-	 */
+	 
 	if (!s->ms_irq_enabled)
 		return;
 
@@ -801,7 +717,7 @@ static void mxs_auart_disable_ms(struct uart_port *port)
 
 	if (s->gpio_irq[UART_GPIO_CTS] >= 0)
 		disable_irq(s->gpio_irq[UART_GPIO_CTS]);
-	/* TODO: disable AUART_INTR_CTSMIEN otherwise */
+	 
 
 	if (s->gpio_irq[UART_GPIO_DSR] >= 0)
 		disable_irq(s->gpio_irq[UART_GPIO_DSR]);
@@ -833,7 +749,7 @@ static void dma_rx_callback(void *arg)
 	mxs_write(stat, s, REG_STAT);
 	tty_flip_buffer_push(port);
 
-	/* start the next DMA for RX. */
+	 
 	mxs_auart_dma_prep_rx(s);
 }
 
@@ -844,7 +760,7 @@ static int mxs_auart_dma_prep_rx(struct mxs_auart_port *s)
 	struct dma_chan *channel = s->rx_dma_chan;
 	u32 pio[1];
 
-	/* [1] : send PIO */
+	 
 	pio[0] = AUART_CTRL0_RXTO_ENABLE
 		| AUART_CTRL0_RXTIMEOUT(0x80)
 		| AUART_CTRL0_XFER_COUNT(UART_XMIT_SIZE);
@@ -855,7 +771,7 @@ static int mxs_auart_dma_prep_rx(struct mxs_auart_port *s)
 		return -EINVAL;
 	}
 
-	/* [2] : send DMA request */
+	 
 	sg_init_one(sgl, s->rx_dma_buf, UART_XMIT_SIZE);
 	dma_map_sg(s->dev, sgl, 1, DMA_FROM_DEVICE);
 	desc = dmaengine_prep_slave_sg(channel, sgl, 1, DMA_DEV_TO_MEM,
@@ -865,7 +781,7 @@ static int mxs_auart_dma_prep_rx(struct mxs_auart_port *s)
 		return -1;
 	}
 
-	/* [3] : submit the DMA, but do not issue it. */
+	 
 	desc->callback = dma_rx_callback;
 	desc->callback_param = s;
 	dmaengine_submit(desc);
@@ -907,7 +823,7 @@ static int mxs_auart_dma_init(struct mxs_auart_port *s)
 	if (auart_dma_enabled(s))
 		return 0;
 
-	/* init for RX */
+	 
 	s->rx_dma_chan = dma_request_slave_channel(s->dev, "rx");
 	if (!s->rx_dma_chan)
 		goto err_out;
@@ -915,7 +831,7 @@ static int mxs_auart_dma_init(struct mxs_auart_port *s)
 	if (!s->rx_dma_buf)
 		goto err_out;
 
-	/* init for TX */
+	 
 	s->tx_dma_chan = dma_request_slave_channel(s->dev, "tx");
 	if (!s->tx_dma_chan)
 		goto err_out;
@@ -923,11 +839,11 @@ static int mxs_auart_dma_init(struct mxs_auart_port *s)
 	if (!s->tx_dma_buf)
 		goto err_out;
 
-	/* set the flags */
+	 
 	s->flags |= MXS_AUART_DMA_ENABLED;
 	dev_dbg(s->dev, "enabled the DMA support.");
 
-	/* The DMA buffer is now the FIFO the TTY subsystem can use */
+	 
 	s->port.fifosize = UART_XMIT_SIZE;
 
 	return 0;
@@ -955,7 +871,7 @@ static void mxs_auart_settermios(struct uart_port *u,
 
 	ctrl |= AUART_LINECTRL_WLEN(tty_get_char_size(cflag));
 
-	/* parity */
+	 
 	if (cflag & PARENB) {
 		ctrl |= AUART_LINECTRL_PEN;
 		if ((cflag & PARODD) == 0)
@@ -971,58 +887,45 @@ static void mxs_auart_settermios(struct uart_port *u,
 	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
 		u->read_status_mask |= AUART_STAT_BERR;
 
-	/*
-	 * Characters to ignore
-	 */
+	 
 	u->ignore_status_mask = 0;
 	if (termios->c_iflag & IGNPAR)
 		u->ignore_status_mask |= AUART_STAT_PERR;
 	if (termios->c_iflag & IGNBRK) {
 		u->ignore_status_mask |= AUART_STAT_BERR;
-		/*
-		 * If we're ignoring parity and break indicators,
-		 * ignore overruns too (for real raw support).
-		 */
+		 
 		if (termios->c_iflag & IGNPAR)
 			u->ignore_status_mask |= AUART_STAT_OERR;
 	}
 
-	/*
-	 * ignore all characters if CREAD is not set
-	 */
+	 
 	if (cflag & CREAD)
 		ctrl2 |= AUART_CTRL2_RXE;
 	else
 		ctrl2 &= ~AUART_CTRL2_RXE;
 
-	/* figure out the stop bits requested */
+	 
 	if (cflag & CSTOPB)
 		ctrl |= AUART_LINECTRL_STP2;
 
-	/* figure out the hardware flow control settings */
+	 
 	ctrl2 &= ~(AUART_CTRL2_CTSEN | AUART_CTRL2_RTSEN);
 	if (cflag & CRTSCTS) {
-		/*
-		 * The DMA has a bug(see errata:2836) in mx23.
-		 * So we can not implement the DMA for auart in mx23,
-		 * we can only implement the DMA support for auart
-		 * in mx28.
-		 */
+		 
 		if (is_imx28_auart(s)
 				&& test_bit(MXS_AUART_RTSCTS, &s->flags)) {
 			if (!mxs_auart_dma_init(s))
-				/* enable DMA tranfer */
+				 
 				ctrl2 |= AUART_CTRL2_TXDMAE | AUART_CTRL2_RXDMAE
 				       | AUART_CTRL2_DMAONERR;
 		}
-		/* Even if RTS is GPIO line RTSEN can be enabled because
-		 * the pinctrl configuration decides about RTS pin function */
+		 
 		ctrl2 |= AUART_CTRL2_RTSEN;
 		if (CTS_AT_AUART())
 			ctrl2 |= AUART_CTRL2_CTSEN;
 	}
 
-	/* set baud rate */
+	 
 	if (is_asm9260_auart(s)) {
 		baud = uart_get_baud_rate(u, termios, old,
 					  u->uartclk * 4 / 0x3FFFFF,
@@ -1044,11 +947,11 @@ static void mxs_auart_settermios(struct uart_port *u,
 
 	uart_update_timeout(u, termios->c_cflag, baud);
 
-	/* prepare for the DMA RX. */
+	 
 	if (auart_dma_enabled(s) &&
 		!test_and_set_bit(MXS_AUART_DMA_RX_READY, &s->flags)) {
 		if (!mxs_auart_dma_prep_rx(s)) {
-			/* Disable the normal RX interrupt. */
+			 
 			mxs_clr(AUART_INTR_RXIEN | AUART_INTR_RTIEN,
 				s, REG_INTR);
 		} else {
@@ -1057,7 +960,7 @@ static void mxs_auart_settermios(struct uart_port *u,
 		}
 	}
 
-	/* CTS flow-control and modem-status interrupts */
+	 
 	if (UART_ENABLE_MS(u, termios->c_cflag))
 		mxs_auart_enable_ms(u);
 	else
@@ -1084,13 +987,11 @@ static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
 
 	istat = mxs_read(s, REG_INTR);
 
-	/* ack irq */
+	 
 	mxs_clr(istat & (AUART_INTR_RTIS | AUART_INTR_TXIS | AUART_INTR_RXIS
 		| AUART_INTR_CTSMIS), s, REG_INTR);
 
-	/*
-	 * Dealing with GPIO interrupt
-	 */
+	 
 	if (irq == s->gpio_irq[UART_GPIO_CTS] ||
 	    irq == s->gpio_irq[UART_GPIO_DCD] ||
 	    irq == s->gpio_irq[UART_GPIO_DSR] ||
@@ -1142,7 +1043,7 @@ static void mxs_auart_reset_assert(struct mxs_auart_port *s)
 	u32 reg;
 
 	reg = mxs_read(s, REG_CTRL0);
-	/* if already in reset state, keep it untouched */
+	 
 	if (reg & AUART_CTRL0_SFTRST)
 		return;
 
@@ -1151,7 +1052,7 @@ static void mxs_auart_reset_assert(struct mxs_auart_port *s)
 
 	for (i = 0; i < 1000; i++) {
 		reg = mxs_read(s, REG_CTRL0);
-		/* reset is finished when the clock is gated */
+		 
 		if (reg & AUART_CTRL0_CLKGATE)
 			return;
 		udelay(10);
@@ -1172,7 +1073,7 @@ static int mxs_auart_startup(struct uart_port *u)
 	if (uart_console(u)) {
 		mxs_clr(AUART_CTRL0_CLKGATE, s, REG_CTRL0);
 	} else {
-		/* reset the unit to a well known state */
+		 
 		mxs_auart_reset_assert(s);
 		mxs_auart_reset_deassert(s);
 	}
@@ -1182,16 +1083,13 @@ static int mxs_auart_startup(struct uart_port *u)
 	mxs_write(AUART_INTR_RXIEN | AUART_INTR_RTIEN | AUART_INTR_CTSMIEN,
 		  s, REG_INTR);
 
-	/* Reset FIFO size (it could have changed if DMA was enabled) */
+	 
 	u->fifosize = MXS_AUART_FIFO_SIZE;
 
-	/*
-	 * Enable fifo so all four bytes of a DMA word are written to
-	 * output (otherwise, only the LSB is written, ie. 1 in 4 bytes)
-	 */
+	 
 	mxs_set(AUART_LINECTRL_FEN, s, REG_LINECTRL);
 
-	/* get initial status of modem lines */
+	 
 	mctrl_gpio_get(s->gpios, &s->mctrl_prev);
 
 	s->ms_irq_enabled = false;
@@ -1235,7 +1133,7 @@ static void mxs_auart_start_tx(struct uart_port *u)
 {
 	struct mxs_auart_port *s = to_auart_port(u);
 
-	/* enable transmitter */
+	 
 	mxs_set(AUART_CTRL2_TXE, s, REG_CTRL2);
 
 	mxs_auart_tx_chars(s);
@@ -1318,7 +1216,7 @@ auart_console_write(struct console *co, const char *str, unsigned int count)
 
 	clk_enable(s->clk);
 
-	/* First save the CR then disable the interrupts */
+	 
 	old_ctrl2 = mxs_read(s, REG_CTRL2);
 	old_ctrl0 = mxs_read(s, REG_CTRL0);
 
@@ -1327,19 +1225,14 @@ auart_console_write(struct console *co, const char *str, unsigned int count)
 
 	uart_console_write(port, str, count, mxs_auart_console_putchar);
 
-	/* Finally, wait for transmitter to become empty ... */
+	 
 	while (mxs_read(s, REG_STAT) & AUART_STAT_BUSY) {
 		udelay(1);
 		if (!to--)
 			break;
 	}
 
-	/*
-	 * ... and restore the TCR if we waited long enough for the transmitter
-	 * to be idle. This might keep the transmitter enabled although it is
-	 * unused, but that is better than to disable it while it is still
-	 * transmitting.
-	 */
+	 
 	if (!(mxs_read(s, REG_STAT) & AUART_STAT_BUSY)) {
 		mxs_write(old_ctrl0, s, REG_CTRL0);
 		mxs_write(old_ctrl2, s, REG_CTRL2);
@@ -1393,11 +1286,7 @@ auart_console_setup(struct console *co, char *options)
 	int flow = 'n';
 	int ret;
 
-	/*
-	 * Check whether an invalid uart number has been specified, and
-	 * if so, search for the first available port that does have
-	 * console support.
-	 */
+	 
 	if (co->index == -1 || co->index >= ARRAY_SIZE(auart_port))
 		co->index = 0;
 	s = auart_port[co->index];
@@ -1507,7 +1396,7 @@ static int mxs_auart_init_gpios(struct mxs_auart_port *s, struct device *dev)
 	if (IS_ERR(s->gpios))
 		return PTR_ERR(s->gpios);
 
-	/* Block (enabled before) DMA option if RTS or CTS is GPIO line */
+	 
 	if (!RTS_AT_AUART() || !CTS_AT_AUART()) {
 		if (test_bit(MXS_AUART_RTSCTS, &s->flags))
 			dev_warn(dev,
@@ -1553,10 +1442,7 @@ static int mxs_auart_request_gpio_irq(struct mxs_auart_port *s)
 				__func__, irq[i]);
 	}
 
-	/*
-	 * If something went wrong, rollback.
-	 * Be careful: i may be unsigned.
-	 */
+	 
 	while (err && (i-- > 0))
 		if (irq[i] >= 0)
 			free_irq(irq[i], s);
@@ -1587,7 +1473,7 @@ static int mxs_auart_probe(struct platform_device *pdev)
 	s->port.line = ret;
 
 	if (of_property_read_bool(np, "uart-has-rtscts") ||
-	    of_property_read_bool(np, "fsl,uart-has-rtscts") /* deprecated */)
+	    of_property_read_bool(np, "fsl,uart-has-rtscts")  )
 		set_bit(MXS_AUART_RTSCTS, &s->flags);
 
 	if (s->port.line >= ARRAY_SIZE(auart_port)) {
@@ -1644,9 +1530,7 @@ static int mxs_auart_probe(struct platform_device *pdev)
 		goto out_iounmap;
 	}
 
-	/*
-	 * Get the GPIO lines IRQ
-	 */
+	 
 	ret = mxs_auart_request_gpio_irq(s);
 	if (ret)
 		goto out_iounmap;
@@ -1659,7 +1543,7 @@ static int mxs_auart_probe(struct platform_device *pdev)
 	if (ret)
 		goto out_free_qpio_irq;
 
-	/* ASM9260 don't have version reg */
+	 
 	if (is_asm9260_auart(s)) {
 		dev_info(&pdev->dev, "Found APPUART ASM9260\n");
 	} else {

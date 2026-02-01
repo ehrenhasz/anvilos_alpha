@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1+
-/*
- *   Copyright (C) International Business Machines  Corp., 2007,2008
- *   Author(s): Steve French (sfrench@us.ibm.com)
- *   Copyright (C) 2020 Samsung Electronics Co., Ltd.
- *   Author(s): Namjae Jeon <linkinjeon@kernel.org>
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/slab.h>
@@ -21,53 +16,48 @@ static const struct smb_sid domain = {1, 4, {0, 0, 0, 0, 0, 5},
 	{cpu_to_le32(21), cpu_to_le32(1), cpu_to_le32(2), cpu_to_le32(3),
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
 
-/* security id for everyone/world system group */
+ 
 static const struct smb_sid creator_owner = {
 	1, 1, {0, 0, 0, 0, 0, 3}, {0} };
-/* security id for everyone/world system group */
+ 
 static const struct smb_sid creator_group = {
 	1, 1, {0, 0, 0, 0, 0, 3}, {cpu_to_le32(1)} };
 
-/* security id for everyone/world system group */
+ 
 static const struct smb_sid sid_everyone = {
 	1, 1, {0, 0, 0, 0, 0, 1}, {0} };
-/* security id for Authenticated Users system group */
+ 
 static const struct smb_sid sid_authusers = {
 	1, 1, {0, 0, 0, 0, 0, 5}, {cpu_to_le32(11)} };
 
-/* S-1-22-1 Unmapped Unix users */
+ 
 static const struct smb_sid sid_unix_users = {1, 1, {0, 0, 0, 0, 0, 22},
 		{cpu_to_le32(1), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
 
-/* S-1-22-2 Unmapped Unix groups */
+ 
 static const struct smb_sid sid_unix_groups = { 1, 1, {0, 0, 0, 0, 0, 22},
 		{cpu_to_le32(2), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
 
-/*
- * See http://technet.microsoft.com/en-us/library/hh509017(v=ws.10).aspx
- */
+ 
 
-/* S-1-5-88 MS NFS and Apple style UID/GID/mode */
+ 
 
-/* S-1-5-88-1 Unix uid */
+ 
 static const struct smb_sid sid_unix_NFS_users = { 1, 2, {0, 0, 0, 0, 0, 5},
 	{cpu_to_le32(88),
 	 cpu_to_le32(1), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
 
-/* S-1-5-88-2 Unix gid */
+ 
 static const struct smb_sid sid_unix_NFS_groups = { 1, 2, {0, 0, 0, 0, 0, 5},
 	{cpu_to_le32(88),
 	 cpu_to_le32(2), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
 
-/* S-1-5-88-3 Unix mode */
+ 
 static const struct smb_sid sid_unix_NFS_mode = { 1, 2, {0, 0, 0, 0, 0, 5},
 	{cpu_to_le32(88),
 	 cpu_to_le32(3), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
 
-/*
- * if the two SIDs (roughly equivalent to a UUID for a user or group) are
- * the same returns zero, if they do not match returns non-zero.
- */
+ 
 int compare_sids(const struct smb_sid *ctsid, const struct smb_sid *cwsid)
 {
 	int i;
@@ -76,7 +66,7 @@ int compare_sids(const struct smb_sid *ctsid, const struct smb_sid *cwsid)
 	if (!ctsid || !cwsid)
 		return 1;
 
-	/* compare the revision */
+	 
 	if (ctsid->revision != cwsid->revision) {
 		if (ctsid->revision > cwsid->revision)
 			return 1;
@@ -84,7 +74,7 @@ int compare_sids(const struct smb_sid *ctsid, const struct smb_sid *cwsid)
 			return -1;
 	}
 
-	/* compare all of the six auth values */
+	 
 	for (i = 0; i < NUM_AUTHS; ++i) {
 		if (ctsid->authority[i] != cwsid->authority[i]) {
 			if (ctsid->authority[i] > cwsid->authority[i])
@@ -94,7 +84,7 @@ int compare_sids(const struct smb_sid *ctsid, const struct smb_sid *cwsid)
 		}
 	}
 
-	/* compare all of the subauth values if any */
+	 
 	num_sat = ctsid->num_subauth;
 	num_saw = cwsid->num_subauth;
 	num_subauth = min(num_sat, num_saw);
@@ -110,7 +100,7 @@ int compare_sids(const struct smb_sid *ctsid, const struct smb_sid *cwsid)
 		}
 	}
 
-	return 0; /* sids compare/match */
+	return 0;  
 }
 
 static void smb_copy_sid(struct smb_sid *dst, const struct smb_sid *src)
@@ -125,11 +115,7 @@ static void smb_copy_sid(struct smb_sid *dst, const struct smb_sid *src)
 		dst->sub_auth[i] = src->sub_auth[i];
 }
 
-/*
- * change posix mode to reflect permissions
- * pmode is the existing mode (we only want to overwrite part of this
- * bits to set can be: S_IRWXU, S_IRWXG or S_IRWXO ie 00700 or 00070 or 00007
- */
+ 
 static umode_t access_flags_to_mode(struct smb_fattr *fattr, __le32 ace_flags,
 				    int type)
 {
@@ -160,25 +146,17 @@ static umode_t access_flags_to_mode(struct smb_fattr *fattr, __le32 ace_flags,
 	return mode;
 }
 
-/*
- * Generate access flags to reflect permissions mode is the existing mode.
- * This function is called for every ACE in the DACL whose SID matches
- * with either owner or group or everyone.
- */
+ 
 static void mode_to_access_flags(umode_t mode, umode_t bits_to_use,
 				 __u32 *pace_flags)
 {
-	/* reset access mask */
+	 
 	*pace_flags = 0x0;
 
-	/* bits to use are either S_IRWXU or S_IRWXG or S_IRWXO */
+	 
 	mode &= bits_to_use;
 
-	/*
-	 * check for R/W/X UGO since we do not know whose flags
-	 * is this but we have cleared all the bits sans RWX for
-	 * either user or group or other as per bits_to_use
-	 */
+	 
 	if (mode & 0444)
 		*pace_flags |= SET_FILE_READ_RIGHTS;
 	if (mode & 0222)
@@ -249,7 +227,7 @@ void id_to_sid(unsigned int cid, uint sidtype, struct smb_sid *ssid)
 		return;
 	}
 
-	/* RID */
+	 
 	ssid->sub_auth[ssid->num_subauth] = cpu_to_le32(cid);
 	ssid->num_subauth++;
 }
@@ -260,10 +238,7 @@ static int sid_to_id(struct mnt_idmap *idmap,
 {
 	int rc = -EINVAL;
 
-	/*
-	 * If we have too many subauthorities, then something is really wrong.
-	 * Just return an error.
-	 */
+	 
 	if (unlikely(psid->num_subauth > SID_MAX_SUB_AUTHORITIES)) {
 		pr_err("%s: %u subauthorities is too many!\n",
 		       __func__, psid->num_subauth);
@@ -338,11 +313,7 @@ int init_acl_state(struct posix_acl_state *state, int cnt)
 	int alloc;
 
 	memset(state, 0, sizeof(struct posix_acl_state));
-	/*
-	 * In the worst case, each individual acl could be for a distinct
-	 * named user or group, but we don't know which, so we allocate
-	 * enough space for either:
-	 */
+	 
 	alloc = sizeof(struct posix_ace_state_array)
 		+ cnt * sizeof(struct posix_user_ace_state);
 	state->users = kzalloc(alloc, GFP_KERNEL);
@@ -380,7 +351,7 @@ static void parse_dacl(struct mnt_idmap *idmap,
 	if (!pdacl)
 		return;
 
-	/* validate that we do not go past end of acl */
+	 
 	if (end_of_acl < (char *)pdacl + sizeof(struct smb_acl) ||
 	    end_of_acl < (char *)pdacl + le16_to_cpu(pdacl->size)) {
 		pr_err("ACL too small to parse DACL\n");
@@ -417,11 +388,7 @@ static void parse_dacl(struct mnt_idmap *idmap,
 		return;
 	}
 
-	/*
-	 * reset rwx permissions for user/group/other.
-	 * Also, if num_aces is 0 i.e. DACL has no ACEs,
-	 * user/group/other have no permissions
-	 */
+	 
 	for (i = 0; i < num_aces; ++i) {
 		if (end_of_acl - acl_base < acl_size)
 			break;
@@ -514,7 +481,7 @@ static void parse_dacl(struct mnt_idmap *idmap,
 	kfree(ppace);
 
 	if (owner_found) {
-		/* The owner must be set to at least read-only. */
+		 
 		acl_state.owner.allow = ((mode & 0700) >> 6) | 0004;
 		acl_state.users->aces[acl_state.users->n].uid = fattr->cf_uid;
 		acl_state.users->aces[acl_state.users->n++].perms.allow =
@@ -749,7 +716,7 @@ static void set_mode_dacl(struct mnt_idmap *idmap,
 		goto out;
 	}
 
-	/* owner RID */
+	 
 	uid = from_kuid(&init_user_ns, fattr->cf_uid);
 	if (uid)
 		sid = &server_conf.domain_sid;
@@ -762,7 +729,7 @@ static void set_mode_dacl(struct mnt_idmap *idmap,
 	size += le16_to_cpu(pace->size);
 	pace = (struct smb_ace *)((char *)pndace + size);
 
-	/* Group RID */
+	 
 	ace_size = fill_ace_for_sid(pace, &sid_unix_groups,
 				    ACCESS_ALLOWED, 0, fattr->cf_mode, 0070);
 	pace->sid.sub_auth[pace->sid.num_subauth++] =
@@ -775,19 +742,19 @@ static void set_mode_dacl(struct mnt_idmap *idmap,
 	if (S_ISDIR(fattr->cf_mode)) {
 		pace = (struct smb_ace *)((char *)pndace + size);
 
-		/* creator owner */
+		 
 		size += fill_ace_for_sid(pace, &creator_owner, ACCESS_ALLOWED,
 					 0x0b, fattr->cf_mode, 0700);
 		pace = (struct smb_ace *)((char *)pndace + size);
 
-		/* creator group */
+		 
 		size += fill_ace_for_sid(pace, &creator_group, ACCESS_ALLOWED,
 					 0x0b, fattr->cf_mode, 0070);
 		pace = (struct smb_ace *)((char *)pndace + size);
 		num_aces = 5;
 	}
 
-	/* other */
+	 
 	size += fill_ace_for_sid(pace, &sid_everyone, ACCESS_ALLOWED, 0,
 				 fattr->cf_mode, 0007);
 
@@ -798,10 +765,7 @@ out:
 
 static int parse_sid(struct smb_sid *psid, char *end_of_acl)
 {
-	/*
-	 * validate that we do not go past end of ACL - sid must be at least 8
-	 * bytes long (assuming no sub-auths - e.g. the null SID
-	 */
+	 
 	if (end_of_acl < (char *)psid + 8) {
 		pr_err("ACL too small to parse SID %p\n", psid);
 		return -EINVAL;
@@ -810,13 +774,13 @@ static int parse_sid(struct smb_sid *psid, char *end_of_acl)
 	return 0;
 }
 
-/* Convert CIFS ACL to POSIX form */
+ 
 int parse_sec_desc(struct mnt_idmap *idmap, struct smb_ntsd *pntsd,
 		   int acl_len, struct smb_fattr *fattr)
 {
 	int rc = 0;
 	struct smb_sid *owner_sid_ptr, *group_sid_ptr;
-	struct smb_acl *dacl_ptr; /* no need for SACL ptr */
+	struct smb_acl *dacl_ptr;  
 	char *end_of_acl = ((char *)pntsd) + acl_len;
 	__u32 dacloffset;
 	int pntsd_type;
@@ -891,7 +855,7 @@ int parse_sec_desc(struct mnt_idmap *idmap, struct smb_ntsd *pntsd,
 	return 0;
 }
 
-/* Convert permission bits from mode to equivalent CIFS ACL */
+ 
 int build_sec_desc(struct mnt_idmap *idmap,
 		   struct smb_ntsd *pntsd, struct smb_ntsd *ppntsd,
 		   int ppntsd_size, int addition_info, __u32 *secdesclen,
@@ -901,7 +865,7 @@ int build_sec_desc(struct mnt_idmap *idmap,
 	__u32 offset;
 	struct smb_sid *owner_sid_ptr, *group_sid_ptr;
 	struct smb_sid *nowner_sid_ptr, *ngroup_sid_ptr;
-	struct smb_acl *dacl_ptr = NULL; /* no need for SACL ptr */
+	struct smb_acl *dacl_ptr = NULL;  
 	uid_t uid;
 	gid_t gid;
 	unsigned int sid_type = SIDOWNER;
@@ -1409,7 +1373,7 @@ int set_info_sec(struct ksmbd_conn *conn, struct ksmbd_tree_connect *tcon,
 	newattrs.ia_mode = (inode->i_mode & ~0777) | (fattr.cf_mode & 0777);
 
 	ksmbd_vfs_remove_acl_xattrs(idmap, path);
-	/* Update posix acls */
+	 
 	if (IS_ENABLED(CONFIG_FS_POSIX_ACL) && fattr.cf_dacls) {
 		rc = set_posix_acl(idmap, path->dentry,
 				   ACL_TYPE_ACCESS, fattr.cf_acls);
@@ -1433,12 +1397,12 @@ int set_info_sec(struct ksmbd_conn *conn, struct ksmbd_tree_connect *tcon,
 	if (rc)
 		goto out;
 
-	/* Check it only calling from SD BUFFER context */
+	 
 	if (type_check && !(le16_to_cpu(pntsd->type) & DACL_PRESENT))
 		goto out;
 
 	if (test_share_config_flag(tcon->share_conf, KSMBD_SHARE_FLAG_ACL_XATTR)) {
-		/* Update WinACL in xattr */
+		 
 		ksmbd_vfs_remove_sd_xattrs(idmap, path);
 		ksmbd_vfs_set_sd_xattr(conn, idmap, path, pntsd, ntsd_len,
 				get_write);

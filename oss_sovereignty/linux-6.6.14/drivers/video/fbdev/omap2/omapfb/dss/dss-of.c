@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Texas Instruments
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -26,17 +23,14 @@ omapdss_of_get_next_port(const struct device_node *parent,
 
 	if (!prev) {
 		struct device_node *ports;
-		/*
-		 * It's the first call, we have to find a port subnode
-		 * within this node or within an optional 'ports' node.
-		 */
+		 
 		ports = of_get_child_by_name(parent, "ports");
 		if (ports)
 			parent = ports;
 
 		port = of_get_child_by_name(parent, "port");
 
-		/* release the 'ports' node */
+		 
 		of_node_put(ports);
 	} else {
 		struct device_node *ports;

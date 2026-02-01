@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/* Copyright 2020 Qiang Yu <yuq825@gmail.com> */
+ 
+ 
 
 #if !defined(_LIMA_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _LIMA_TRACE_H_
@@ -44,7 +44,7 @@ DEFINE_EVENT(lima_task, lima_task_run,
 
 #endif
 
-/* This part must be outside protection */
+ 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH ../../drivers/gpu/drm/lima
 #include <trace/define_trace.h>

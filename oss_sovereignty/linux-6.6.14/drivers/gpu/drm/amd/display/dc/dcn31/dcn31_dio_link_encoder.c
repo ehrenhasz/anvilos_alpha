@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 
 #include "reg_helper.h"
@@ -107,7 +84,7 @@ static bool has_query_dp_alt(struct link_encoder *enc)
 	if (enc->ctx->dce_version >= DCN_VERSION_3_15)
 		return true;
 
-	/* Supports development firmware and firmware >= 4.0.11 */
+	 
 	return dc_dmub_srv &&
 	       !(dc_dmub_srv->dmub->fw_version >= DMUB_FW_VERSION(4, 0, 0) &&
 		 dc_dmub_srv->dmub->fw_version <= DMUB_FW_VERSION(4, 0, 10));
@@ -200,7 +177,7 @@ void dcn31_link_encoder_set_dio_phy_mux(
 				ENC_TYPE_SEL, sel);
 		break;
 	default:
-		/* Do nothing */
+		 
 		break;
 	}
 }
@@ -209,38 +186,18 @@ static void enc31_hw_init(struct link_encoder *enc)
 {
 	struct dcn10_link_encoder *enc10 = TO_DCN10_LINK_ENC(enc);
 
-/*
-	00 - DP_AUX_DPHY_RX_DETECTION_THRESHOLD__1to2 : 1/2
-	01 - DP_AUX_DPHY_RX_DETECTION_THRESHOLD__3to4 : 3/4
-	02 - DP_AUX_DPHY_RX_DETECTION_THRESHOLD__7to8 : 7/8
-	03 - DP_AUX_DPHY_RX_DETECTION_THRESHOLD__15to16 : 15/16
-	04 - DP_AUX_DPHY_RX_DETECTION_THRESHOLD__31to32 : 31/32
-	05 - DP_AUX_DPHY_RX_DETECTION_THRESHOLD__63to64 : 63/64
-	06 - DP_AUX_DPHY_RX_DETECTION_THRESHOLD__127to128 : 127/128
-	07 - DP_AUX_DPHY_RX_DETECTION_THRESHOLD__255to256 : 255/256
-*/
+ 
 
-/*
-	AUX_REG_UPDATE_5(AUX_DPHY_RX_CONTROL0,
-	AUX_RX_START_WINDOW = 1 [6:4]
-	AUX_RX_RECEIVE_WINDOW = 1 default is 2 [10:8]
-	AUX_RX_HALF_SYM_DETECT_LEN  = 1 [13:12] default is 1
-	AUX_RX_TRANSITION_FILTER_EN = 1 [16] default is 1
-	AUX_RX_ALLOW_BELOW_THRESHOLD_PHASE_DETECT [17] is 0  default is 0
-	AUX_RX_ALLOW_BELOW_THRESHOLD_START [18] is 1  default is 1
-	AUX_RX_ALLOW_BELOW_THRESHOLD_STOP [19] is 1  default is 1
-	AUX_RX_PHASE_DETECT_LEN,  [21,20] = 0x3 default is 3
-	AUX_RX_DETECTION_THRESHOLD [30:28] = 1
-*/
-	// dmub will read AUX_DPHY_RX_CONTROL0/AUX_DPHY_TX_CONTROL from vbios table in dp_aux_init
+ 
+	
 
-	//AUX_DPHY_TX_REF_CONTROL'AUX_TX_REF_DIV HW default is 0x32;
-	// Set AUX_TX_REF_DIV Divider to generate 2 MHz reference from refclk
-	// 27MHz -> 0xd
-	// 100MHz -> 0x32
-	// 48MHz -> 0x18
+	
+	
+	
+	
+	
 
-	// Set TMDS_CTL0 to 1.  This is a legacy setting.
+	
 	REG_UPDATE(TMDS_CTL_BITS, TMDS_CTL0, 1);
 
 	dcn10_aux_initialize(enc10);
@@ -306,14 +263,9 @@ void dcn31_link_encoder_construct(
 
 	enc10->base.transmitter = init_data->transmitter;
 
-	/* set the flag to indicate whether driver poll the I2C data pin
-	 * while doing the DP sink detect
-	 */
+	 
 
-/*	if (dal_adapter_service_is_feature_supported(as,
-		FEATURE_DP_SINK_DETECT_POLL_DATA_PIN))
-		enc10->base.features.flags.bits.
-			DP_SINK_DETECT_POLL_DATA_PIN = true;*/
+ 
 
 	enc10->base.output_signals =
 		SIGNAL_TYPE_DVI_SINGLE_LINK |
@@ -324,16 +276,7 @@ void dcn31_link_encoder_construct(
 		SIGNAL_TYPE_EDP |
 		SIGNAL_TYPE_HDMI_TYPE_A;
 
-	/* For DCE 8.0 and 8.1, by design, UNIPHY is hardwired to DIG_BE.
-	 * SW always assign DIG_FE 1:1 mapped to DIG_FE for non-MST UNIPHY.
-	 * SW assign DIG_FE to non-MST UNIPHY first and MST last. So prefer
-	 * DIG is per UNIPHY and used by SST DP, eDP, HDMI, DVI and LVDS.
-	 * Prefer DIG assignment is decided by board design.
-	 * For DCE 8.0, there are only max 6 UNIPHYs, we assume board design
-	 * and VBIOS will filter out 7 UNIPHY for DCE 8.0.
-	 * By this, adding DIGG should not hurt DCE 8.0.
-	 * This will let DCE 8.1 share DCE 8.0 as much as possible
-	 */
+	 
 
 	enc10->link_regs = link_regs;
 	enc10->aux_regs = aux_regs;
@@ -365,13 +308,13 @@ void dcn31_link_encoder_construct(
 		enc10->base.preferred_engine = ENGINE_ID_UNKNOWN;
 	}
 
-	/* default to one to mirror Windows behavior */
+	 
 	enc10->base.features.flags.bits.HDMI_6GB_EN = 1;
 
 	result = bp_funcs->get_encoder_cap_info(enc10->base.ctx->dc_bios,
 						enc10->base.id, &bp_cap_info);
 
-	/* Override features with DCE-specific values */
+	 
 	if (result == BP_RESULT_OK) {
 		enc10->base.features.flags.bits.IS_HBR2_CAPABLE =
 				bp_cap_info.DP_HBR2_EN;
@@ -419,7 +362,7 @@ void dcn31_link_encoder_construct_minimal(
 		SIGNAL_TYPE_EDP;
 }
 
-/* DPIA equivalent of link_transmitter_control. */
+ 
 static bool link_dpia_control(struct dc_context *dc_ctx,
 	struct dmub_cmd_dig_dpia_control_data *dpia_control)
 {
@@ -443,7 +386,7 @@ static bool link_dpia_control(struct dc_context *dc_ctx,
 
 static void link_encoder_disable(struct dcn10_link_encoder *enc10)
 {
-	/* reset training complete */
+	 
 	REG_UPDATE(DP_LINK_CNTL, DP_LINK_TRAINING_COMPLETE, 0);
 }
 
@@ -454,7 +397,7 @@ void dcn31_link_encoder_enable_dp_output(
 {
 	struct dcn10_link_encoder *enc10 = TO_DCN10_LINK_ENC(enc);
 
-	/* Enable transmitter and encoder. */
+	 
 	if (!link_enc_cfg_is_transmitter_mappable(enc->ctx->dc, enc)) {
 
 		DC_LOG_DEBUG("%s: enc_id(%d)\n", __func__, enc->preferred_engine);
@@ -471,13 +414,11 @@ void dcn31_link_encoder_enable_dp_output(
 
 		dpia_control.action = (uint8_t)TRANSMITTER_CONTROL_ENABLE;
 		dpia_control.enc_id = enc->preferred_engine;
-		dpia_control.mode_laneset.digmode = 0; /* 0 for SST; 5 for MST */
+		dpia_control.mode_laneset.digmode = 0;  
 		dpia_control.lanenum = (uint8_t)link_settings->lane_count;
 		dpia_control.symclk_10khz = link_settings->link_rate *
 				LINK_RATE_REF_FREQ_IN_KHZ / 10;
-		/* DIG_BE_CNTL.DIG_HPD_SELECT set to 5 (hpdsel - 1) to indicate HPD pin
-		 * unused by DPIA.
-		 */
+		 
 		dpia_control.hpdsel = 6;
 
 		if (link) {
@@ -501,7 +442,7 @@ void dcn31_link_encoder_enable_dp_mst_output(
 {
 	struct dcn10_link_encoder *enc10 = TO_DCN10_LINK_ENC(enc);
 
-	/* Enable transmitter and encoder. */
+	 
 	if (!link_enc_cfg_is_transmitter_mappable(enc->ctx->dc, enc)) {
 
 		DC_LOG_DEBUG("%s: enc_id(%d)\n", __func__, enc->preferred_engine);
@@ -518,13 +459,11 @@ void dcn31_link_encoder_enable_dp_mst_output(
 
 		dpia_control.action = (uint8_t)TRANSMITTER_CONTROL_ENABLE;
 		dpia_control.enc_id = enc->preferred_engine;
-		dpia_control.mode_laneset.digmode = 5; /* 0 for SST; 5 for MST */
+		dpia_control.mode_laneset.digmode = 5;  
 		dpia_control.lanenum = (uint8_t)link_settings->lane_count;
 		dpia_control.symclk_10khz = link_settings->link_rate *
 				LINK_RATE_REF_FREQ_IN_KHZ / 10;
-		/* DIG_BE_CNTL.DIG_HPD_SELECT set to 5 (hpdsel - 1) to indicate HPD pin
-		 * unused by DPIA.
-		 */
+		 
 		dpia_control.hpdsel = 6;
 
 		if (link) {
@@ -547,7 +486,7 @@ void dcn31_link_encoder_disable_output(
 {
 	struct dcn10_link_encoder *enc10 = TO_DCN10_LINK_ENC(enc);
 
-	/* Disable transmitter and encoder. */
+	 
 	if (!link_enc_cfg_is_transmitter_mappable(enc->ctx->dc, enc)) {
 
 		DC_LOG_DEBUG("%s: enc_id(%d)\n", __func__, enc->preferred_engine);
@@ -566,9 +505,9 @@ void dcn31_link_encoder_disable_output(
 		dpia_control.action = (uint8_t)TRANSMITTER_CONTROL_DISABLE;
 		dpia_control.enc_id = enc->preferred_engine;
 		if (signal == SIGNAL_TYPE_DISPLAY_PORT) {
-			dpia_control.mode_laneset.digmode = 0; /* 0 for SST; 5 for MST */
+			dpia_control.mode_laneset.digmode = 0;  
 		} else if (signal == SIGNAL_TYPE_DISPLAY_PORT_MST) {
-			dpia_control.mode_laneset.digmode = 5; /* 0 for SST; 5 for MST */
+			dpia_control.mode_laneset.digmode = 5;  
 		} else {
 			DC_LOG_ERROR("%s: USB4 DPIA only supports DisplayPort.\n", __func__);
 			BREAK_TO_DEBUGGER();
@@ -595,14 +534,11 @@ bool dcn31_link_encoder_is_in_alt_mode(struct link_encoder *enc)
 	union dmub_rb_cmd cmd;
 	uint32_t dp_alt_mode_disable;
 
-	/* Only applicable to USB-C PHY. */
+	 
 	if (!enc->features.flags.bits.DP_IS_USB_C)
 		return false;
 
-	/*
-	 * Use the new interface from DMCUB if available.
-	 * Avoids hanging the RDCPSPIPE if DMCUB wasn't already running.
-	 */
+	 
 	if (has_query_dp_alt(enc)) {
 		if (!query_dp_alt_from_dmub(enc, &cmd))
 			return false;
@@ -610,15 +546,12 @@ bool dcn31_link_encoder_is_in_alt_mode(struct link_encoder *enc)
 		return (cmd.query_dp_alt.data.is_dp_alt_disable == 0);
 	}
 
-	/* Legacy path, avoid if possible. */
+	 
 	if (enc->ctx->asic_id.hw_internal_rev != YELLOW_CARP_B0) {
 		REG_GET(RDPCSTX_PHY_CNTL6, RDPCS_PHY_DPALT_DISABLE,
 			&dp_alt_mode_disable);
 	} else {
-		/*
-		 * B0 phys use a new set of registers to check whether alt mode is disabled.
-		 * if value == 1 alt mode is disabled, otherwise it is enabled.
-		 */
+		 
 		if ((enc10->base.transmitter == TRANSMITTER_UNIPHY_A) ||
 		    (enc10->base.transmitter == TRANSMITTER_UNIPHY_B) ||
 		    (enc10->base.transmitter == TRANSMITTER_UNIPHY_E)) {
@@ -641,14 +574,11 @@ void dcn31_link_encoder_get_max_link_cap(struct link_encoder *enc, struct dc_lin
 
 	dcn10_link_encoder_get_max_link_cap(enc, link_settings);
 
-	/* Take the link cap directly if not USB */
+	 
 	if (!enc->features.flags.bits.DP_IS_USB_C)
 		return;
 
-	/*
-	 * Use the new interface from DMCUB if available.
-	 * Avoids hanging the RDCPSPIPE if DMCUB wasn't already running.
-	 */
+	 
 	if (has_query_dp_alt(enc)) {
 		if (!query_dp_alt_from_dmub(enc, &cmd))
 			return;
@@ -660,7 +590,7 @@ void dcn31_link_encoder_get_max_link_cap(struct link_encoder *enc, struct dc_lin
 		return;
 	}
 
-	/* Legacy path, avoid if possible. */
+	 
 	if (enc->ctx->asic_id.hw_internal_rev != YELLOW_CARP_B0) {
 		REG_GET(RDPCSTX_PHY_CNTL6, RDPCS_PHY_DPALT_DP4,
 			&is_in_usb_c_dp4_mode);

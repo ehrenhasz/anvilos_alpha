@@ -61,6 +61,6 @@ static inline pmd_t pmd_swp_clear_uffd_wp(pmd_t pmd)
 {
 	return pmd;
 }
-#endif /* CONFIG_HAVE_ARCH_USERFAULTFD_WP */
+#endif  
 
-#endif /* _ASM_GENERIC_PGTABLE_UFFD_H */
+#endif  

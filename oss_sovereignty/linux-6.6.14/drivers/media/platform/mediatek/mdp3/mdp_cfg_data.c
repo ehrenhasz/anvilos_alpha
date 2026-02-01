@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2023 MediaTek Inc.
- * Author: Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
- */
+
+ 
 
 #include "mtk-img-ipi.h"
 #include "mtk-mdp3-cfg.h"
@@ -11,39 +8,39 @@
 #include "mtk-mdp3-regs.h"
 
 enum mt8183_mdp_comp_id {
-	/* ISP */
+	 
 	MT8183_MDP_COMP_WPEI = 0,
-	MT8183_MDP_COMP_WPEO,           /* 1 */
-	MT8183_MDP_COMP_WPEI2,          /* 2 */
-	MT8183_MDP_COMP_WPEO2,          /* 3 */
-	MT8183_MDP_COMP_ISP_IMGI,       /* 4 */
-	MT8183_MDP_COMP_ISP_IMGO,       /* 5 */
-	MT8183_MDP_COMP_ISP_IMG2O,      /* 6 */
+	MT8183_MDP_COMP_WPEO,            
+	MT8183_MDP_COMP_WPEI2,           
+	MT8183_MDP_COMP_WPEO2,           
+	MT8183_MDP_COMP_ISP_IMGI,        
+	MT8183_MDP_COMP_ISP_IMGO,        
+	MT8183_MDP_COMP_ISP_IMG2O,       
 
-	/* IPU */
-	MT8183_MDP_COMP_IPUI,           /* 7 */
-	MT8183_MDP_COMP_IPUO,           /* 8 */
+	 
+	MT8183_MDP_COMP_IPUI,            
+	MT8183_MDP_COMP_IPUO,            
 
-	/* MDP */
-	MT8183_MDP_COMP_CAMIN,          /* 9 */
-	MT8183_MDP_COMP_CAMIN2,         /* 10 */
-	MT8183_MDP_COMP_RDMA0,          /* 11 */
-	MT8183_MDP_COMP_AAL0,           /* 12 */
-	MT8183_MDP_COMP_CCORR0,         /* 13 */
-	MT8183_MDP_COMP_RSZ0,           /* 14 */
-	MT8183_MDP_COMP_RSZ1,           /* 15 */
-	MT8183_MDP_COMP_TDSHP0,         /* 16 */
-	MT8183_MDP_COMP_COLOR0,         /* 17 */
-	MT8183_MDP_COMP_PATH0_SOUT,     /* 18 */
-	MT8183_MDP_COMP_PATH1_SOUT,     /* 19 */
-	MT8183_MDP_COMP_WROT0,          /* 20 */
-	MT8183_MDP_COMP_WDMA,           /* 21 */
+	 
+	MT8183_MDP_COMP_CAMIN,           
+	MT8183_MDP_COMP_CAMIN2,          
+	MT8183_MDP_COMP_RDMA0,           
+	MT8183_MDP_COMP_AAL0,            
+	MT8183_MDP_COMP_CCORR0,          
+	MT8183_MDP_COMP_RSZ0,            
+	MT8183_MDP_COMP_RSZ1,            
+	MT8183_MDP_COMP_TDSHP0,          
+	MT8183_MDP_COMP_COLOR0,          
+	MT8183_MDP_COMP_PATH0_SOUT,      
+	MT8183_MDP_COMP_PATH1_SOUT,      
+	MT8183_MDP_COMP_WROT0,           
+	MT8183_MDP_COMP_WDMA,            
 
-	/* Dummy Engine */
-	MT8183_MDP_COMP_RDMA1,          /* 22 */
-	MT8183_MDP_COMP_RSZ2,           /* 23 */
-	MT8183_MDP_COMP_TDSHP1,         /* 24 */
-	MT8183_MDP_COMP_WROT1,          /* 25 */
+	 
+	MT8183_MDP_COMP_RDMA1,           
+	MT8183_MDP_COMP_RSZ2,            
+	MT8183_MDP_COMP_TDSHP1,          
+	MT8183_MDP_COMP_WROT1,           
 };
 
 static const struct of_device_id mt8183_mdp_probe_infra[MDP_INFRA_MAX] = {
@@ -157,10 +154,7 @@ static const struct of_device_id mt8183_sub_comp_dt_ids[] = {
 	{}
 };
 
-/*
- * All 10-bit related formats are not added in the basic format list,
- * please add the corresponding format settings before use.
- */
+ 
 static const struct mdp_format mt8183_formats[] = {
 	{
 		.pixelformat	= V4L2_PIX_FMT_GREY,

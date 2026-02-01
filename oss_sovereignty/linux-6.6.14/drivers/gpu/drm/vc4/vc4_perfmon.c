@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Broadcom
- */
 
-/**
- * DOC: VC4 V3D performance monitor module
- *
- * The V3D block provides 16 hardware counters which can count various events.
- */
+ 
+
+ 
 
 #include "vc4_drv.h"
 #include "vc4_regs.h"
@@ -154,12 +148,12 @@ int vc4_perfmon_create_ioctl(struct drm_device *dev, void *data,
 		return -ENODEV;
 	}
 
-	/* Number of monitored counters cannot exceed HW limits. */
+	 
 	if (req->ncounters > DRM_VC4_MAX_PERF_COUNTERS ||
 	    !req->ncounters)
 		return -EINVAL;
 
-	/* Make sure all events are valid. */
+	 
 	for (i = 0; i < req->ncounters; i++) {
 		if (req->events[i] >= VC4_PERFCNT_NUM_EVENTS)
 			return -EINVAL;

@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2013-2015, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/highmem.h>
 #include <linux/kernel.h>
@@ -310,7 +280,7 @@ map:
 		goto err_mapping;
 	}
 
-	/* Firmware doesn't support page with physical address 0 */
+	 
 	if (addr == 0) {
 		zero_addr = addr;
 		goto map;
@@ -396,7 +366,7 @@ retry:
 	err = mlx5_cmd_do(dev, in, inlen, out, sizeof(out));
 	if (err == -EREMOTEIO) {
 		notify_fail = 0;
-		/* if triggered by FW and failed by FW ignore */
+		 
 		if (event) {
 			err = 0;
 			goto out_dropped;
@@ -493,7 +463,7 @@ static int reclaim_pages_cmd(struct mlx5_core_dev *dev,
 	if (!mlx5_cmd_is_down(dev))
 		return mlx5_cmd_do(dev, in, in_size, out, out_size);
 
-	/* No hard feelings, we want our pages back! */
+	 
 	npages = MLX5_GET(manage_pages_in, in, input_num_entries);
 	func_id = MLX5_GET(manage_pages_in, in, function_id);
 	ec_function = MLX5_GET(manage_pages_in, in, embedded_cpu_function);
@@ -547,7 +517,7 @@ static int reclaim_pages(struct mlx5_core_dev *dev, u16 func_id, int npages,
 		npages = MLX5_GET(manage_pages_in, in, input_num_entries);
 		dev->priv.reclaim_pages_discard += npages;
 	}
-	/* if triggered by FW event and failed by FW then ignore */
+	 
 	if (event && err == -EREMOTEIO) {
 		err = 0;
 		goto out_free;
@@ -781,7 +751,7 @@ int mlx5_wait_for_pages(struct mlx5_core_dev *dev, int *pages)
 	unsigned long end = jiffies + recl_vf_pages_to_jiffies;
 	int prev_pages = *pages;
 
-	/* In case of internal error we will free the pages manually later */
+	 
 	if (dev->state == MLX5_DEVICE_STATE_INTERNAL_ERROR) {
 		mlx5_core_warn(dev, "Skipping wait for vf pages stage");
 		return 0;

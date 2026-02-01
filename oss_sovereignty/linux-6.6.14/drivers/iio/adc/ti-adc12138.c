@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ADC12130/ADC12132/ADC12138 12-bit plus sign ADC driver
- *
- * Copyright (c) 2016 Akinobu Mita <akinobu.mita@gmail.com>
- *
- * Datasheet: http://www.ti.com/lit/ds/symlink/adc12138.pdf
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -38,21 +32,17 @@ enum {
 struct adc12138 {
 	struct spi_device *spi;
 	unsigned int id;
-	/* conversion clock */
+	 
 	struct clk *cclk;
-	/* positive analog voltage reference */
+	 
 	struct regulator *vref_p;
-	/* negative analog voltage reference */
+	 
 	struct regulator *vref_n;
 	struct mutex lock;
 	struct completion complete;
-	/* The number of cclk periods for the S/H's acquisition time */
+	 
 	unsigned int acquisition_time;
-	/*
-	 * Maximum size needed: 16x 2 bytes ADC data + 8 bytes timestamp.
-	 * Less may be need if not all channels are enabled, as long as
-	 * the 8 byte alignment of the timestamp is maintained.
-	 */
+	 
 	__be16 data[20] __aligned(8);
 
 	u8 tx_buf[2] __aligned(IIO_DMA_MINALIGN);
@@ -135,7 +125,7 @@ static int adc12138_mode_programming(struct adc12138 *adc, u8 mode,
 	};
 	int ret;
 
-	/* Skip unused bits for ADC12130 and ADC12132 */
+	 
 	if (adc->id != adc12138)
 		mode = (mode & 0xc0) | ((mode & 0x0f) << 2);
 
@@ -192,7 +182,7 @@ static int adc12138_start_and_read_conv(struct adc12138 *adc,
 
 static int adc12138_read_conv_data(struct adc12138 *adc, __be16 *value)
 {
-	/* Issue a read status instruction and read previous conversion data */
+	 
 	return adc12138_mode_programming(adc, ADC12138_MODE_READ_STATUS,
 					 value, sizeof(*value));
 }
@@ -257,7 +247,7 @@ static int adc12138_read_raw(struct iio_dev *iio,
 			*value -= ret;
 		}
 
-		/* convert regulator output voltage to mV */
+		 
 		*value /= 1000;
 		*shift = channel->scan_type.realbits - 1;
 
@@ -271,7 +261,7 @@ static int adc12138_read_raw(struct iio_dev *iio,
 			*value = 0;
 		}
 
-		/* convert regulator output voltage to mV */
+		 
 		*value /= 1000;
 
 		return IIO_VAL_INT;
@@ -297,7 +287,7 @@ static int adc12138_init(struct adc12138 *adc)
 	if (ret)
 		return ret;
 
-	/* data output at this time has no significance */
+	 
 	status = adc12138_read_status(adc);
 	if (status < 0)
 		return status;
@@ -446,10 +436,7 @@ static int adc12138_probe(struct spi_device *spi)
 
 	adc->vref_n = devm_regulator_get_optional(&spi->dev, "vref-n");
 	if (IS_ERR(adc->vref_n)) {
-		/*
-		 * Assume vref_n is 0V if an optional regulator is not
-		 * specified, otherwise return the error code.
-		 */
+		 
 		ret = PTR_ERR(adc->vref_n);
 		if (ret != -ENODEV)
 			return ret;

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "../efuse.h"
@@ -496,7 +496,7 @@ void rtl8723e_set_hw_reg(struct ieee80211_hw *hw, u8 variable, u8 *val)
 			bool fw_current_inps;
 
 			if (b_enter_fwlps) {
-				rpwm_val = 0x02;	/* RF off */
+				rpwm_val = 0x02;	 
 				fw_current_inps = true;
 				rtlpriv->cfg->ops->set_hw_reg(hw,
 						HW_VAR_FW_PSMODE_STATUS,
@@ -509,7 +509,7 @@ void rtl8723e_set_hw_reg(struct ieee80211_hw *hw, u8 variable, u8 *val)
 						HW_VAR_SET_RPWM,
 						(u8 *)(&rpwm_val));
 			} else {
-				rpwm_val = 0x0C;	/* RF on */
+				rpwm_val = 0x0C;	 
 				fw_pwrmode = FW_PS_ACTIVE_MODE;
 				fw_current_inps = false;
 				rtlpriv->cfg->ops->set_hw_reg(hw,
@@ -674,7 +674,7 @@ static bool _rtl8712e_init_mac(struct ieee80211_hw *hw)
 	else
 		mac_func_enable = false;
 
-	/* HW Power on sequence */
+	 
 	if (!rtl_hal_pwrseqcmdparsing(rtlpriv, PWR_CUT_ALL_MSK, PWR_FAB_ALL_MSK,
 		PWR_INTF_PCI_MSK, RTL8723_NIC_ENABLE_FLOW))
 		return false;
@@ -682,13 +682,11 @@ static bool _rtl8712e_init_mac(struct ieee80211_hw *hw)
 	bytetmp = rtl_read_byte(rtlpriv, REG_PCIE_CTRL_REG+2);
 	rtl_write_byte(rtlpriv, REG_PCIE_CTRL_REG+2, bytetmp | BIT(4));
 
-	/* eMAC time out function enable, 0x369[7]=1 */
+	 
 	bytetmp = rtl_read_byte(rtlpriv, 0x369);
 	rtl_write_byte(rtlpriv, 0x369, bytetmp | BIT(7));
 
-	/* ePHY reg 0x1e bit[4]=1 using MDIO interface,
-	 * we should do this before Enabling ASPM backdoor.
-	 */
+	 
 	do {
 		rtl_write_word(rtlpriv, 0x358, 0x5e);
 		udelay(100);
@@ -921,13 +919,7 @@ int rtl8723e_hw_init(struct ieee80211_hw *hw)
 	unsigned long flags;
 
 	rtlpriv->rtlhal.being_init_adapter = true;
-	/* As this function can take a very long time (up to 350 ms)
-	 * and can be called with irqs disabled, reenable the irqs
-	 * to let the other devices continue being serviced.
-	 *
-	 * It is safe doing so since our own interrupts will only be enabled
-	 * in a subsequent step.
-	 */
+	 
 	local_save_flags(flags);
 	local_irq_enable();
 	rtlhal->fw_ready = false;
@@ -951,11 +943,7 @@ int rtl8723e_hw_init(struct ieee80211_hw *hw)
 
 	rtlhal->last_hmeboxnum = 0;
 	rtl8723e_phy_mac_config(hw);
-	/* because last function modify RCR, so we update
-	 * rcr var here, or TP will unstable for receive_config
-	 * is wrong, RX RCR_ACRC32 will cause TP unstable & Rx
-	 * RCR_APP_ICV will cause mac80211 unassoc for cisco 1252
-	 */
+	 
 	rtlpci->receive_config = rtl_read_dword(rtlpriv, REG_RCR);
 	rtlpci->receive_config &= ~(RCR_ACRC32 | RCR_AICV);
 	rtl_write_dword(rtlpriv, REG_RCR, rtlpci->receive_config);
@@ -1038,24 +1026,24 @@ static enum version_8723e _rtl8723e_read_chip_version(struct ieee80211_hw *hw)
 	if (value32 & TRP_VAUX_EN) {
 		version = (enum version_8723e)(version |
 			((value32 & VENDOR_ID) ? CHIP_VENDOR_UMC : 0));
-		/* RTL8723 with BT function. */
+		 
 		version = (enum version_8723e)(version |
 			((value32 & BT_FUNC) ? CHIP_8723 : 0));
 
 	} else {
-		/* Normal mass production chip. */
+		 
 		version = (enum version_8723e) NORMAL_CHIP;
 		version = (enum version_8723e)(version |
 			((value32 & VENDOR_ID) ? CHIP_VENDOR_UMC : 0));
-		/* RTL8723 with BT function. */
+		 
 		version = (enum version_8723e)(version |
 			((value32 & BT_FUNC) ? CHIP_8723 : 0));
 		if (IS_CHIP_VENDOR_UMC(version))
 			version = (enum version_8723e)(version |
-			((value32 & CHIP_VER_RTL_MASK)));/* IC version (CUT) */
+			((value32 & CHIP_VER_RTL_MASK))); 
 		if (IS_8723_SERIES(version)) {
 			value32 = rtl_read_dword(rtlpriv, REG_GPIO_OUTSTS);
-			/* ROM code version. */
+			 
 			version = (enum version_8723e)(version |
 				((value32 & RF_RL_ID)>>20));
 		}
@@ -1134,12 +1122,7 @@ static int _rtl8723e_set_media_status(struct ieee80211_hw *hw,
 		return 1;
 	}
 
-	/* MSR_INFRA == Link in infrastructure network;
-	 * MSR_ADHOC == Link in ad hoc network;
-	 * Therefore, check link state is necessary.
-	 *
-	 * MSR_AP == AP mode; link state is not cared here.
-	 */
+	 
 	if (mode != MSR_AP &&
 	    rtlpriv->mac80211.link_state < MAC80211_LINKED) {
 		mode = MSR_NOLINK;
@@ -1206,9 +1189,7 @@ int rtl8723e_set_network_type(struct ieee80211_hw *hw,
 	return 0;
 }
 
-/* don't set REG_EDCA_BE_PARAM here
- * because mac80211 will send pkt when scan
- */
+ 
 void rtl8723e_set_qos(struct ieee80211_hw *hw, int aci)
 {
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
@@ -1249,7 +1230,7 @@ void rtl8723e_disable_interrupt(struct ieee80211_hw *hw)
 	rtl_write_dword(rtlpriv, 0x3a8, IMR8190_DISABLED);
 	rtl_write_dword(rtlpriv, 0x3ac, IMR8190_DISABLED);
 	rtlpci->irq_enabled = false;
-	/*synchronize_irq(rtlpci->pdev->irq);*/
+	 
 }
 
 static void _rtl8723e_poweroff_adapter(struct ieee80211_hw *hw)
@@ -1258,39 +1239,39 @@ static void _rtl8723e_poweroff_adapter(struct ieee80211_hw *hw)
 	struct rtl_hal *rtlhal = rtl_hal(rtl_priv(hw));
 	u8 u1b_tmp;
 
-	/* Combo (PCIe + USB) Card and PCIe-MF Card */
-	/* 1. Run LPS WL RFOFF flow */
+	 
+	 
 	rtl_hal_pwrseqcmdparsing(rtlpriv, PWR_CUT_ALL_MSK, PWR_FAB_ALL_MSK,
 				 PWR_INTF_PCI_MSK, RTL8723_NIC_LPS_ENTER_FLOW);
 
-	/* 2. 0x1F[7:0] = 0 */
-	/* turn off RF */
+	 
+	 
 	rtl_write_byte(rtlpriv, REG_RF_CTRL, 0x00);
 	if ((rtl_read_byte(rtlpriv, REG_MCUFWDL) & BIT(7)) &&
 	    rtlhal->fw_ready) {
 		rtl8723ae_firmware_selfreset(hw);
 	}
 
-	/* Reset MCU. Suggested by Filen. */
+	 
 	u1b_tmp = rtl_read_byte(rtlpriv, REG_SYS_FUNC_EN+1);
 	rtl_write_byte(rtlpriv, REG_SYS_FUNC_EN+1, (u1b_tmp & (~BIT(2))));
 
-	/* g.	MCUFWDL 0x80[1:0]=0	 */
-	/* reset MCU ready status */
+	 
+	 
 	rtl_write_byte(rtlpriv, REG_MCUFWDL, 0x00);
 
-	/* HW card disable configuration. */
+	 
 	rtl_hal_pwrseqcmdparsing(rtlpriv, PWR_CUT_ALL_MSK, PWR_FAB_ALL_MSK,
 		PWR_INTF_PCI_MSK, RTL8723_NIC_DISABLE_FLOW);
 
-	/* Reset MCU IO Wrapper */
+	 
 	u1b_tmp = rtl_read_byte(rtlpriv, REG_RSV_CTRL + 1);
 	rtl_write_byte(rtlpriv, REG_RSV_CTRL + 1, (u1b_tmp & (~BIT(0))));
 	u1b_tmp = rtl_read_byte(rtlpriv, REG_RSV_CTRL + 1);
 	rtl_write_byte(rtlpriv, REG_RSV_CTRL + 1, u1b_tmp | BIT(0));
 
-	/* 7. RSV_CTRL 0x1C[7:0] = 0x0E */
-	/* lock ISO/CLK/Power control register */
+	 
+	 
 	rtl_write_byte(rtlpriv, REG_RSV_CTRL, 0x0e);
 }
 
@@ -1310,7 +1291,7 @@ void rtl8723e_card_disable(struct ieee80211_hw *hw)
 	RT_SET_PS_LEVEL(ppsc, RT_RF_OFF_LEVL_HALT_NIC);
 	_rtl8723e_poweroff_adapter(hw);
 
-	/* after power off we should do iqk again */
+	 
 	rtlpriv->phy.iqk_initialized = false;
 }
 
@@ -1332,7 +1313,7 @@ void rtl8723e_set_beacon_related_registers(struct ieee80211_hw *hw)
 	u16 bcn_interval, atim_window;
 
 	bcn_interval = mac->beacon_interval;
-	atim_window = 2;	/*FIX MERGE */
+	atim_window = 2;	 
 	rtl8723e_disable_interrupt(hw);
 	rtl_write_word(rtlpriv, REG_ATIMWND, atim_window);
 	rtl_write_word(rtlpriv, REG_BCN_INTERVAL, bcn_interval);
@@ -1611,7 +1592,7 @@ static void _rtl8723e_read_adapter_info(struct ieee80211_hw *hw,
 	u8 *hwinfo;
 
 	if (b_pseudo_test) {
-		/* need add */
+		 
 		return;
 	}
 	hwinfo = kzalloc(HWSET_MAX_SIZE, GFP_KERNEL);
@@ -1938,7 +1919,7 @@ static void rtl8723e_update_hal_rate_mask(struct ieee80211_hw *hw,
 	bool shortgi = false;
 	u8 rate_mask[5];
 	u8 macid = 0;
-	/*u8 mimo_ps = IEEE80211_SMPS_OFF;*/
+	 
 
 	sta_entry = (struct rtl_sta_info *)sta->drv_priv;
 	wirelessmode = sta_entry->wireless_mode;
@@ -2382,11 +2363,11 @@ void rtl8723e_bt_reg_init(struct ieee80211_hw *hw)
 {
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 
-	/* 0:Low, 1:High, 2:From Efuse. */
+	 
 	rtlpriv->btcoexist.reg_bt_iso = 2;
-	/* 0:Idle, 1:None-SCO, 2:SCO, 3:From Counter. */
+	 
 	rtlpriv->btcoexist.reg_bt_sco = 3;
-	/* 0:Disable BT control A-MPDU, 1:Enable BT control A-MPDU. */
+	 
 	rtlpriv->btcoexist.reg_bt_sco = 0;
 }
 

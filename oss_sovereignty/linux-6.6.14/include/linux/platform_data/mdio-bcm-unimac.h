@@ -10,4 +10,4 @@ struct unimac_mdio_pdata {
 
 #define UNIMAC_MDIO_DRV_NAME	"unimac-mdio"
 
-#endif /* __MDIO_BCM_UNIMAC_PDATA_H */
+#endif  

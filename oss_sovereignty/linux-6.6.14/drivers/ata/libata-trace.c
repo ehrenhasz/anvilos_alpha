@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * libata-trace.c - trace functions for libata
- *
- * Copyright 2015 Hannes Reinecke
- * Copyright 2015 SUSE Linux GmbH
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/trace_seq.h>

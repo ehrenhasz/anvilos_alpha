@@ -1,23 +1,21 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/nvmem-consumer.h>
 #include <linux/platform_device.h>
 #include "tsens.h"
 
-/* ----- SROT ------ */
+ 
 #define SROT_CTRL_OFF 0x0000
 
-/* ----- TM ------ */
+ 
 #define TM_INT_EN_OFF				0x0000
 #define TM_Sn_UPPER_LOWER_STATUS_CTRL_OFF	0x0004
 #define TM_Sn_STATUS_OFF			0x0030
 #define TM_TRDY_OFF				0x005c
 
-/* extra data for 8974 */
+ 
 #define BKP_SEL			0x3
 #define BKP_REDUN_SEL		0xe0000000
 
@@ -132,10 +130,7 @@ static void fixup_8974_points(int mode, u32 *p1, u32 *p2)
 		p1[10] += 8;
 	} else {
 		for (i = 0; i < 11; i++) {
-			/*
-			 * ONE_PT_CALIB requires using addition here instead of
-			 * using OR operation.
-			 */
+			 
 			p1[i] += BIT_APPEND;
 			p2[i] += BIT_APPEND;
 		}
@@ -250,7 +245,7 @@ static int __init init_8939(struct tsens_priv *priv) {
 	priv->sensor[6].slope = 2833;
 	priv->sensor[7].slope = 2838;
 	priv->sensor[8].slope = 2840;
-	/* priv->sensor[9].slope = 2852; */
+	 
 
 	return init_common(priv);
 }
@@ -276,7 +271,7 @@ static int __init init_9607(struct tsens_priv *priv)
 	return init_common(priv);
 }
 
-/* v0.1: 8226, 8909, 8916, 8939, 8974, 9607 */
+ 
 
 static struct tsens_features tsens_v0_1_feat = {
 	.ver_major	= VER_0_1,
@@ -290,38 +285,38 @@ static struct tsens_features tsens_v0_1_feat = {
 };
 
 static const struct reg_field tsens_v0_1_regfields[MAX_REGFIELDS] = {
-	/* ----- SROT ------ */
-	/* No VERSION information */
+	 
+	 
 
-	/* CTRL_OFFSET */
+	 
 	[TSENS_EN]     = REG_FIELD(SROT_CTRL_OFF, 0,  0),
 	[TSENS_SW_RST] = REG_FIELD(SROT_CTRL_OFF, 1,  1),
 
-	/* ----- TM ------ */
-	/* INTERRUPT ENABLE */
+	 
+	 
 	[INT_EN] = REG_FIELD(TM_INT_EN_OFF, 0, 0),
 
-	/* UPPER/LOWER TEMPERATURE THRESHOLDS */
+	 
 	REG_FIELD_FOR_EACH_SENSOR11(LOW_THRESH,    TM_Sn_UPPER_LOWER_STATUS_CTRL_OFF,  0,  9),
 	REG_FIELD_FOR_EACH_SENSOR11(UP_THRESH,     TM_Sn_UPPER_LOWER_STATUS_CTRL_OFF, 10, 19),
 
-	/* UPPER/LOWER INTERRUPTS [CLEAR/STATUS] */
+	 
 	REG_FIELD_FOR_EACH_SENSOR11(LOW_INT_CLEAR, TM_Sn_UPPER_LOWER_STATUS_CTRL_OFF, 20, 20),
 	REG_FIELD_FOR_EACH_SENSOR11(UP_INT_CLEAR,  TM_Sn_UPPER_LOWER_STATUS_CTRL_OFF, 21, 21),
 
-	/* NO CRITICAL INTERRUPT SUPPORT on v0.1 */
+	 
 
-	/* Sn_STATUS */
+	 
 	REG_FIELD_FOR_EACH_SENSOR11(LAST_TEMP,    TM_Sn_STATUS_OFF,  0,  9),
-	/* No VALID field on v0.1 */
-	/* xxx_STATUS bits: 1 == threshold violated */
+	 
+	 
 	REG_FIELD_FOR_EACH_SENSOR11(MIN_STATUS,   TM_Sn_STATUS_OFF, 10, 10),
 	REG_FIELD_FOR_EACH_SENSOR11(LOWER_STATUS, TM_Sn_STATUS_OFF, 11, 11),
 	REG_FIELD_FOR_EACH_SENSOR11(UPPER_STATUS, TM_Sn_STATUS_OFF, 12, 12),
-	/* No CRITICAL field on v0.1 */
+	 
 	REG_FIELD_FOR_EACH_SENSOR11(MAX_STATUS,   TM_Sn_STATUS_OFF, 13, 13),
 
-	/* TRDY: 1=ready, 0=in progress */
+	 
 	[TRDY] = REG_FIELD(TM_TRDY_OFF, 0, 0),
 };
 
@@ -381,7 +376,7 @@ static const struct tsens_ops ops_8939 = {
 struct tsens_plat_data data_8939 = {
 	.num_sensors	= 9,
 	.ops		= &ops_8939,
-	.hw_ids		= (unsigned int []){ 0, 1, 2, 3, 5, 6, 7, 8, 9, /* 10 */ },
+	.hw_ids		= (unsigned int []){ 0, 1, 2, 3, 5, 6, 7, 8, 9,   },
 
 	.feat		= &tsens_v0_1_feat,
 	.fields	= tsens_v0_1_regfields,

@@ -1,13 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  cx18 file operation functions
- *
- *  Derived from ivtv-fileops.h
- *
- *  Copyright (C) 2007  Hans Verkuil <hverkuil@xs4all.nl>
- */
+ 
+ 
 
-/* Testing/Debugging */
+ 
 int cx18_v4l2_open(struct file *filp);
 ssize_t cx18_v4l2_read(struct file *filp, char __user *buf, size_t count,
 		      loff_t *pos);
@@ -23,6 +17,6 @@ int cx18_v4l2_mmap(struct file *file, struct vm_area_struct *vma);
 void cx18_clear_queue(struct cx18_stream *s, enum vb2_buffer_state state);
 void cx18_vb_timeout(struct timer_list *t);
 
-/* Shared with cx18-alsa module */
+ 
 int cx18_claim_stream(struct cx18_open_id *id, int type);
 void cx18_release_stream(struct cx18_stream *s);

@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * CALIPSO - Common Architecture Label IPv6 Security Option
- *
- * This is an implementation of the CALIPSO protocol as specified in
- * RFC 5570.
- *
- * Authors: Paul Moore <paul.moore@hp.com>
- *          Huw Davies <huw@codeweavers.com>
- */
 
-/* (c) Copyright Hewlett-Packard Development Company, L.P., 2006, 2008
- * (c) Copyright Huw Davies <huw@codeweavers.com>, 2015
- */
+ 
+
+ 
 
 #include <linux/init.h>
 #include <linux/types.h>
@@ -32,33 +22,23 @@
 #include <asm/unaligned.h>
 #include <linux/crc-ccitt.h>
 
-/* Maximium size of the calipso option including
- * the two-byte TLV header.
- */
+ 
 #define CALIPSO_OPT_LEN_MAX (2 + 252)
 
-/* Size of the minimum calipso option including
- * the two-byte TLV header.
- */
+ 
 #define CALIPSO_HDR_LEN (2 + 8)
 
-/* Maximium size of the calipso option including
- * the two-byte TLV header and upto 3 bytes of
- * leading pad and 7 bytes of trailing pad.
- */
+ 
 #define CALIPSO_OPT_LEN_MAX_WITH_PAD (3 + CALIPSO_OPT_LEN_MAX + 7)
 
- /* Maximium size of u32 aligned buffer required to hold calipso
-  * option.  Max of 3 initial pad bytes starting from buffer + 3.
-  * i.e. the worst case is when the previous tlv finishes on 4n + 3.
-  */
+  
 #define CALIPSO_MAX_BUFFER (6 + CALIPSO_OPT_LEN_MAX)
 
-/* List of available DOI definitions */
+ 
 static DEFINE_SPINLOCK(calipso_doi_list_lock);
 static LIST_HEAD(calipso_doi_list);
 
-/* Label mapping cache */
+ 
 int calipso_cache_enabled = 1;
 int calipso_cache_bucketsize = 10;
 #define CALIPSO_CACHE_BUCKETBITS     7
@@ -86,18 +66,9 @@ static struct calipso_map_cache_bkt *calipso_cache;
 static void calipso_cache_invalidate(void);
 static void calipso_doi_putdef(struct calipso_doi *doi_def);
 
-/* Label Mapping Cache Functions
- */
+ 
 
-/**
- * calipso_cache_entry_free - Frees a cache entry
- * @entry: the entry to free
- *
- * Description:
- * This function frees the memory associated with a cache entry including the
- * LSM cache data if there are no longer any users, i.e. reference count == 0.
- *
- */
+ 
 static void calipso_cache_entry_free(struct calipso_map_cache_entry *entry)
 {
 	if (entry->lsm_data)
@@ -106,29 +77,13 @@ static void calipso_cache_entry_free(struct calipso_map_cache_entry *entry)
 	kfree(entry);
 }
 
-/**
- * calipso_map_cache_hash - Hashing function for the CALIPSO cache
- * @key: the hash key
- * @key_len: the length of the key in bytes
- *
- * Description:
- * The CALIPSO tag hashing function.  Returns a 32-bit hash value.
- *
- */
+ 
 static u32 calipso_map_cache_hash(const unsigned char *key, u32 key_len)
 {
 	return jhash(key, key_len, 0);
 }
 
-/**
- * calipso_cache_init - Initialize the CALIPSO cache
- *
- * Description:
- * Initializes the CALIPSO label mapping cache, this function should be called
- * before any of the other functions defined in this file.  Returns zero on
- * success, negative values on error.
- *
- */
+ 
 static int __init calipso_cache_init(void)
 {
 	u32 iter;
@@ -148,14 +103,7 @@ static int __init calipso_cache_init(void)
 	return 0;
 }
 
-/**
- * calipso_cache_invalidate - Invalidates the current CALIPSO cache
- *
- * Description:
- * Invalidates and frees any entries in the CALIPSO cache.  Returns zero on
- * success and negative values on failure.
- *
- */
+ 
 static void calipso_cache_invalidate(void)
 {
 	struct calipso_map_cache_entry *entry, *tmp_entry;
@@ -174,28 +122,7 @@ static void calipso_cache_invalidate(void)
 	}
 }
 
-/**
- * calipso_cache_check - Check the CALIPSO cache for a label mapping
- * @key: the buffer to check
- * @key_len: buffer length in bytes
- * @secattr: the security attribute struct to use
- *
- * Description:
- * This function checks the cache to see if a label mapping already exists for
- * the given key.  If there is a match then the cache is adjusted and the
- * @secattr struct is populated with the correct LSM security attributes.  The
- * cache is adjusted in the following manner if the entry is not already the
- * first in the cache bucket:
- *
- *  1. The cache entry's activity counter is incremented
- *  2. The previous (higher ranking) entry's activity counter is decremented
- *  3. If the difference between the two activity counters is geater than
- *     CALIPSO_CACHE_REORDERLIMIT the two entries are swapped
- *
- * Returns zero on success, -ENOENT for a cache miss, and other negative values
- * on error.
- *
- */
+ 
 static int calipso_cache_check(const unsigned char *key,
 			       u32 key_len,
 			       struct netlbl_lsm_secattr *secattr)
@@ -246,21 +173,7 @@ static int calipso_cache_check(const unsigned char *key,
 	return -ENOENT;
 }
 
-/**
- * calipso_cache_add - Add an entry to the CALIPSO cache
- * @calipso_ptr: the CALIPSO option
- * @secattr: the packet's security attributes
- *
- * Description:
- * Add a new entry into the CALIPSO label mapping cache.  Add the new entry to
- * head of the cache bucket's list, if the cache bucket is out of room remove
- * the last entry in the list first.  It is important to note that there is
- * currently no checking for duplicate keys.  Returns zero on success,
- * negative values on failure.  The key stored starts at calipso_ptr + 2,
- * i.e. the type and length bytes are not stored, this corresponds to
- * calipso_ptr[1] bytes of data.
- *
- */
+ 
 static int calipso_cache_add(const unsigned char *calipso_ptr,
 			     const struct netlbl_lsm_secattr *secattr)
 {
@@ -310,18 +223,9 @@ cache_add_failure:
 	return ret_val;
 }
 
-/* DOI List Functions
- */
+ 
 
-/**
- * calipso_doi_search - Searches for a DOI definition
- * @doi: the DOI to search for
- *
- * Description:
- * Search the DOI definition list for a DOI definition with a DOI value that
- * matches @doi.  The caller is responsible for calling rcu_read_[un]lock().
- * Returns a pointer to the DOI definition on success and NULL on failure.
- */
+ 
 static struct calipso_doi *calipso_doi_search(u32 doi)
 {
 	struct calipso_doi *iter;
@@ -332,19 +236,7 @@ static struct calipso_doi *calipso_doi_search(u32 doi)
 	return NULL;
 }
 
-/**
- * calipso_doi_add - Add a new DOI to the CALIPSO protocol engine
- * @doi_def: the DOI structure
- * @audit_info: NetLabel audit information
- *
- * Description:
- * The caller defines a new DOI for use by the CALIPSO engine and calls this
- * function to add it to the list of acceptable domains.  The caller must
- * ensure that the mapping table specified in @doi_def->map meets all of the
- * requirements of the mapping type (see calipso.h for details).  Returns
- * zero on success and non-zero on failure.
- *
- */
+ 
 static int calipso_doi_add(struct calipso_doi *doi_def,
 			   struct netlbl_audit *audit_info)
 {
@@ -392,29 +284,13 @@ doi_add_return:
 	return ret_val;
 }
 
-/**
- * calipso_doi_free - Frees a DOI definition
- * @doi_def: the DOI definition
- *
- * Description:
- * This function frees all of the memory associated with a DOI definition.
- *
- */
+ 
 static void calipso_doi_free(struct calipso_doi *doi_def)
 {
 	kfree(doi_def);
 }
 
-/**
- * calipso_doi_free_rcu - Frees a DOI definition via the RCU pointer
- * @entry: the entry's RCU field
- *
- * Description:
- * This function is designed to be used as a callback to the call_rcu()
- * function so that the memory allocated to the DOI definition can be released
- * safely.
- *
- */
+ 
 static void calipso_doi_free_rcu(struct rcu_head *entry)
 {
 	struct calipso_doi *doi_def;
@@ -423,17 +299,7 @@ static void calipso_doi_free_rcu(struct rcu_head *entry)
 	calipso_doi_free(doi_def);
 }
 
-/**
- * calipso_doi_remove - Remove an existing DOI from the CALIPSO protocol engine
- * @doi: the DOI value
- * @audit_info: NetLabel audit information
- *
- * Description:
- * Removes a DOI definition from the CALIPSO engine.  The NetLabel routines will
- * be called to release their own LSM domain mappings as well as our own
- * domain list.  Returns zero on success and negative values on failure.
- *
- */
+ 
 static int calipso_doi_remove(u32 doi, struct netlbl_audit *audit_info)
 {
 	int ret_val;
@@ -465,16 +331,7 @@ doi_remove_return:
 	return ret_val;
 }
 
-/**
- * calipso_doi_getdef - Returns a reference to a valid DOI definition
- * @doi: the DOI value
- *
- * Description:
- * Searches for a valid DOI definition and if one is found it is returned to
- * the caller.  Otherwise NULL is returned.  The caller must ensure that
- * calipso_doi_putdef() is called when the caller is done.
- *
- */
+ 
 static struct calipso_doi *calipso_doi_getdef(u32 doi)
 {
 	struct calipso_doi *doi_def;
@@ -491,14 +348,7 @@ doi_getdef_return:
 	return doi_def;
 }
 
-/**
- * calipso_doi_putdef - Releases a reference for the given DOI definition
- * @doi_def: the DOI definition
- *
- * Description:
- * Releases a DOI definition reference obtained from calipso_doi_getdef().
- *
- */
+ 
 static void calipso_doi_putdef(struct calipso_doi *doi_def)
 {
 	if (!doi_def)
@@ -511,19 +361,7 @@ static void calipso_doi_putdef(struct calipso_doi *doi_def)
 	call_rcu(&doi_def->rcu, calipso_doi_free_rcu);
 }
 
-/**
- * calipso_doi_walk - Iterate through the DOI definitions
- * @skip_cnt: skip past this number of DOI definitions, updated
- * @callback: callback for each DOI definition
- * @cb_arg: argument for the callback function
- *
- * Description:
- * Iterate over the DOI definition list, skipping the first @skip_cnt entries.
- * For each entry call @callback, if @callback returns a negative value stop
- * 'walking' through the list and return.  Updates the value in @skip_cnt upon
- * return.  Returns zero on success, negative values on failure.
- *
- */
+ 
 static int calipso_doi_walk(u32 *skip_cnt,
 			    int (*callback)(struct calipso_doi *doi_def,
 					    void *arg),
@@ -551,22 +389,7 @@ doi_walk_return:
 	return ret_val;
 }
 
-/**
- * calipso_validate - Validate a CALIPSO option
- * @skb: the packet
- * @option: the start of the option
- *
- * Description:
- * This routine is called to validate a CALIPSO option.
- * If the option is valid then %true is returned, otherwise
- * %false is returned.
- *
- * The caller should have already checked that the length of the
- * option (including the TLV header) is >= 10 and that the catmap
- * length is consistent with the option length.
- *
- * We leave checks on the level and categories to the socket layer.
- */
+ 
 bool calipso_validate(const struct sk_buff *skb, const unsigned char *option)
 {
 	struct calipso_doi *doi_def;
@@ -574,8 +397,7 @@ bool calipso_validate(const struct sk_buff *skb, const unsigned char *option)
 	u16 crc, len = option[1] + 2;
 	static const u8 zero[2];
 
-	/* The original CRC runs over the option including the TLV header
-	 * with the CRC-16 field (at offset 8) zeroed out. */
+	 
 	crc = crc_ccitt(0xffff, option, 8);
 	crc = crc_ccitt(crc, zero, sizeof(zero));
 	if (len > 10)
@@ -592,19 +414,7 @@ bool calipso_validate(const struct sk_buff *skb, const unsigned char *option)
 	return ret_val;
 }
 
-/**
- * calipso_map_cat_hton - Perform a category mapping from host to network
- * @doi_def: the DOI definition
- * @secattr: the security attributes
- * @net_cat: the zero'd out category bitmap in network/CALIPSO format
- * @net_cat_len: the length of the CALIPSO bitmap in bytes
- *
- * Description:
- * Perform a label mapping to translate a local MLS category bitmap to the
- * correct CALIPSO bitmap using the given DOI definition.  Returns the minimum
- * size in bytes of the network bitmap on success, negative values otherwise.
- *
- */
+ 
 static int calipso_map_cat_hton(const struct calipso_doi *doi_def,
 				const struct netlbl_lsm_secattr *secattr,
 				unsigned char *net_cat,
@@ -630,19 +440,7 @@ static int calipso_map_cat_hton(const struct calipso_doi *doi_def,
 	return (net_spot_max / 32 + 1) * 4;
 }
 
-/**
- * calipso_map_cat_ntoh - Perform a category mapping from network to host
- * @doi_def: the DOI definition
- * @net_cat: the category bitmap in network/CALIPSO format
- * @net_cat_len: the length of the CALIPSO bitmap in bytes
- * @secattr: the security attributes
- *
- * Description:
- * Perform a label mapping to translate a CALIPSO bitmap to the correct local
- * MLS category bitmap using the given DOI definition.  Returns zero on
- * success, negative values on failure.
- *
- */
+ 
 static int calipso_map_cat_ntoh(const struct calipso_doi *doi_def,
 				const unsigned char *net_cat,
 				u32 net_cat_len,
@@ -673,17 +471,7 @@ static int calipso_map_cat_ntoh(const struct calipso_doi *doi_def,
 	return -EINVAL;
 }
 
-/**
- * calipso_pad_write - Writes pad bytes in TLV format
- * @buf: the buffer
- * @offset: offset from start of buffer to write padding
- * @count: number of pad bytes to write
- *
- * Description:
- * Write @count bytes of TLV padding into @buffer starting at offset @offset.
- * @count should be less than 8 - see RFC 4942.
- *
- */
+ 
 static int calipso_pad_write(unsigned char *buf, unsigned int offset,
 			     unsigned int count)
 {
@@ -706,20 +494,7 @@ static int calipso_pad_write(unsigned char *buf, unsigned int offset,
 	return 0;
 }
 
-/**
- * calipso_genopt - Generate a CALIPSO option
- * @buf: the option buffer
- * @start: offset from which to write
- * @buf_len: the size of opt_buf
- * @doi_def: the CALIPSO DOI to use
- * @secattr: the security attributes
- *
- * Description:
- * Generate a CALIPSO option using the DOI definition and security attributes
- * passed to the function. This also generates upto three bytes of leading
- * padding that ensures that the option is 4n + 2 aligned.  It returns the
- * number of bytes written (including any initial padding).
- */
+ 
 static int calipso_genopt(unsigned char *buf, u32 start, u32 buf_len,
 			  const struct calipso_doi *doi_def,
 			  const struct netlbl_lsm_secattr *secattr)
@@ -730,7 +505,7 @@ static int calipso_genopt(unsigned char *buf, u32 start, u32 buf_len,
 	static const unsigned char padding[4] = {2, 1, 0, 3};
 	unsigned char *calipso;
 
-	/* CALIPSO has 4n + 2 alignment */
+	 
 	pad = padding[start & 3];
 	if (buf_len <= start + pad + CALIPSO_HDR_LEN)
 		return -ENOSPC;
@@ -764,19 +539,9 @@ static int calipso_genopt(unsigned char *buf, u32 start, u32 buf_len,
 	return pad + len;
 }
 
-/* Hop-by-hop hdr helper functions
- */
+ 
 
-/**
- * calipso_opt_update - Replaces socket's hop options with a new set
- * @sk: the socket
- * @hop: new hop options
- *
- * Description:
- * Replaces @sk's hop options with @hop.  @hop may be NULL to leave
- * the socket with no hop options.
- *
- */
+ 
 static int calipso_opt_update(struct sock *sk, struct ipv6_opt_hdr *hop)
 {
 	struct ipv6_txoptions *old = txopt_get(inet6_sk(sk)), *txopts;
@@ -795,16 +560,7 @@ static int calipso_opt_update(struct sock *sk, struct ipv6_opt_hdr *hop)
 	return 0;
 }
 
-/**
- * calipso_tlv_len - Returns the length of the TLV
- * @opt: the option header
- * @offset: offset of the TLV within the header
- *
- * Description:
- * Returns the length of the TLV option at offset @offset within
- * the option header @opt.  Checks that the entire TLV fits inside
- * the option header, returns a negative value if this is not the case.
- */
+ 
 static int calipso_tlv_len(struct ipv6_opt_hdr *opt, unsigned int offset)
 {
 	unsigned char *tlv = (unsigned char *)opt;
@@ -822,27 +578,7 @@ static int calipso_tlv_len(struct ipv6_opt_hdr *opt, unsigned int offset)
 	return tlv_len;
 }
 
-/**
- * calipso_opt_find - Finds the CALIPSO option in an IPv6 hop options header
- * @hop: the hop options header
- * @start: on return holds the offset of any leading padding
- * @end: on return holds the offset of the first non-pad TLV after CALIPSO
- *
- * Description:
- * Finds the space occupied by a CALIPSO option (including any leading and
- * trailing padding).
- *
- * If a CALIPSO option exists set @start and @end to the
- * offsets within @hop of the start of padding before the first
- * CALIPSO option and the end of padding after the first CALIPSO
- * option.  In this case the function returns 0.
- *
- * In the absence of a CALIPSO option, @start and @end will be
- * set to the start and end of any trailing padding in the header.
- * This is useful when appending a new option, as the caller may want
- * to overwrite some of this padding.  In this case the function will
- * return -ENOENT.
- */
+ 
 static int calipso_opt_find(struct ipv6_opt_hdr *hop, unsigned int *start,
 			    unsigned int *end)
 {
@@ -890,20 +626,7 @@ out:
 	return ret_val;
 }
 
-/**
- * calipso_opt_insert - Inserts a CALIPSO option into an IPv6 hop opt hdr
- * @hop: the original hop options header
- * @doi_def: the CALIPSO DOI to use
- * @secattr: the specific security attributes of the socket
- *
- * Description:
- * Creates a new hop options header based on @hop with a
- * CALIPSO option added to it.  If @hop already contains a CALIPSO
- * option this is overwritten, otherwise the new option is appended
- * after any existing options.  If @hop is NULL then the new header
- * will contain just the CALIPSO option and any needed padding.
- *
- */
+ 
 static struct ipv6_opt_hdr *
 calipso_opt_insert(struct ipv6_opt_hdr *hop,
 		   const struct calipso_doi *doi_def,
@@ -939,7 +662,7 @@ calipso_opt_insert(struct ipv6_opt_hdr *hop,
 	}
 
 	buf_len = start + ret_val;
-	/* At this point buf_len aligns to 4n, so (buf_len & 4) pads to 8n */
+	 
 	pad = ((buf_len & 4) + (end & 7)) & 7;
 	calipso_pad_write((unsigned char *)new, buf_len, pad);
 	buf_len += pad;
@@ -954,20 +677,7 @@ calipso_opt_insert(struct ipv6_opt_hdr *hop,
 	return new;
 }
 
-/**
- * calipso_opt_del - Removes the CALIPSO option from an option header
- * @hop: the original header
- * @new: the new header
- *
- * Description:
- * Creates a new header based on @hop without any CALIPSO option.  If @hop
- * doesn't contain a CALIPSO option it returns -ENOENT.  If @hop contains
- * no other non-padding options, it returns zero with @new set to NULL.
- * Otherwise it returns zero, creates a new header without the CALIPSO
- * option (and removing as much padding as possible) and returns with
- * @new set to that header.
- *
- */
+ 
 static int calipso_opt_del(struct ipv6_opt_hdr *hop,
 			   struct ipv6_opt_hdr **new)
 {
@@ -980,7 +690,7 @@ static int calipso_opt_del(struct ipv6_opt_hdr *hop,
 
 	hop_len = ipv6_optlen(hop);
 	if (start == sizeof(*hop) && end == hop_len) {
-		/* There's no other option in the header so return NULL */
+		 
 		*new = NULL;
 		return 0;
 	}
@@ -1001,16 +711,7 @@ static int calipso_opt_del(struct ipv6_opt_hdr *hop,
 	return 0;
 }
 
-/**
- * calipso_opt_getattr - Get the security attributes from a memory block
- * @calipso: the CALIPSO option
- * @secattr: the security attributes
- *
- * Description:
- * Inspect @calipso and return the security attributes in @secattr.
- * Returns zero on success and negative values on failure.
- *
- */
+ 
 static int calipso_opt_getattr(const unsigned char *calipso,
 			       struct netlbl_lsm_secattr *secattr)
 {
@@ -1054,21 +755,9 @@ getattr_return:
 	return ret_val;
 }
 
-/* sock functions.
- */
+ 
 
-/**
- * calipso_sock_getattr - Get the security attributes from a sock
- * @sk: the sock
- * @secattr: the security attributes
- *
- * Description:
- * Query @sk to see if there is a CALIPSO option attached to the sock and if
- * there is return the CALIPSO security attributes in @secattr.  This function
- * requires that @sk be locked, or privately held, but it does not do any
- * locking itself.  Returns zero on success and negative values on failure.
- *
- */
+ 
 static int calipso_sock_getattr(struct sock *sk,
 				struct netlbl_lsm_secattr *secattr)
 {
@@ -1108,20 +797,7 @@ done:
 	return ret_val;
 }
 
-/**
- * calipso_sock_setattr - Add a CALIPSO option to a socket
- * @sk: the socket
- * @doi_def: the CALIPSO DOI to use
- * @secattr: the specific security attributes of the socket
- *
- * Description:
- * Set the CALIPSO option on the given socket using the DOI definition and
- * security attributes passed to the function.  This function requires
- * exclusive access to @sk, which means it either needs to be in the
- * process of being created or locked.  Returns zero on success and negative
- * values on failure.
- *
- */
+ 
 static int calipso_sock_setattr(struct sock *sk,
 				const struct calipso_doi *doi_def,
 				const struct netlbl_lsm_secattr *secattr)
@@ -1145,14 +821,7 @@ static int calipso_sock_setattr(struct sock *sk,
 	return ret_val;
 }
 
-/**
- * calipso_sock_delattr - Delete the CALIPSO option from a socket
- * @sk: the socket
- *
- * Description:
- * Removes the CALIPSO option from a socket, if present.
- *
- */
+ 
 static void calipso_sock_delattr(struct sock *sk)
 {
 	struct ipv6_opt_hdr *new_hop;
@@ -1171,21 +840,9 @@ done:
 	txopt_put(txopts);
 }
 
-/* request sock functions.
- */
+ 
 
-/**
- * calipso_req_setattr - Add a CALIPSO option to a connection request socket
- * @req: the connection request socket
- * @doi_def: the CALIPSO DOI to use
- * @secattr: the specific security attributes of the socket
- *
- * Description:
- * Set the CALIPSO option on the given socket using the DOI definition and
- * security attributes passed to the function.  Returns zero on success and
- * negative values on failure.
- *
- */
+ 
 static int calipso_req_setattr(struct request_sock *req,
 			       const struct calipso_doi *doi_def,
 			       const struct netlbl_lsm_secattr *secattr)
@@ -1220,14 +877,7 @@ static int calipso_req_setattr(struct request_sock *req,
 	return 0;
 }
 
-/**
- * calipso_req_delattr - Delete the CALIPSO option from a request socket
- * @req: the request socket
- *
- * Description:
- * Removes the CALIPSO option from a request socket, if present.
- *
- */
+ 
 static void calipso_req_delattr(struct request_sock *req)
 {
 	struct inet_request_sock *req_inet = inet_rsk(req);
@@ -1239,7 +889,7 @@ static void calipso_req_delattr(struct request_sock *req)
 		return;
 
 	if (calipso_opt_del(req_inet->ipv6_opt->hopopt, &new))
-		return; /* Nothing to do */
+		return;  
 
 	txopts = ipv6_renew_options(sk, req_inet->ipv6_opt, IPV6_HOPOPTS, new);
 
@@ -1253,18 +903,9 @@ static void calipso_req_delattr(struct request_sock *req)
 	kfree(new);
 }
 
-/* skbuff functions.
- */
+ 
 
-/**
- * calipso_skbuff_optptr - Find the CALIPSO option in the packet
- * @skb: the packet
- *
- * Description:
- * Parse the packet's IP header looking for a CALIPSO option.  Returns a pointer
- * to the start of the CALIPSO option on success, NULL if one if not found.
- *
- */
+ 
 static unsigned char *calipso_skbuff_optptr(const struct sk_buff *skb)
 {
 	const struct ipv6hdr *ip6_hdr = ipv6_hdr(skb);
@@ -1280,17 +921,7 @@ static unsigned char *calipso_skbuff_optptr(const struct sk_buff *skb)
 	return NULL;
 }
 
-/**
- * calipso_skbuff_setattr - Set the CALIPSO option on a packet
- * @skb: the packet
- * @doi_def: the CALIPSO DOI to use
- * @secattr: the security attributes
- *
- * Description:
- * Set the CALIPSO option on the given packet based on the security attributes.
- * Returns a pointer to the IP header on success and NULL on failure.
- *
- */
+ 
 static int calipso_skbuff_setattr(struct sk_buff *skb,
 				  const struct calipso_doi *doi_def,
 				  const struct netlbl_lsm_secattr *secattr)
@@ -1319,14 +950,14 @@ static int calipso_skbuff_setattr(struct sk_buff *skb,
 		return ret_val;
 
 	new_end = start + ret_val;
-	/* At this point new_end aligns to 4n, so (new_end & 4) pads to 8n */
+	 
 	pad = ((new_end & 4) + (end & 7)) & 7;
 	len_delta = new_end - (int)end + pad;
 	ret_val = skb_cow(skb, skb_headroom(skb) + len_delta);
 	if (ret_val < 0)
 		return ret_val;
 
-	ip6_hdr = ipv6_hdr(skb); /* Reset as skb_cow() may have moved it */
+	ip6_hdr = ipv6_hdr(skb);  
 
 	if (len_delta) {
 		if (len_delta > 0)
@@ -1357,15 +988,7 @@ static int calipso_skbuff_setattr(struct sk_buff *skb,
 	return 0;
 }
 
-/**
- * calipso_skbuff_delattr - Delete any CALIPSO options from a packet
- * @skb: the packet
- *
- * Description:
- * Removes any and all CALIPSO options from the given packet.  Returns zero on
- * success, negative values on failure.
- *
- */
+ 
 static int calipso_skbuff_delattr(struct sk_buff *skb)
 {
 	int ret_val;
@@ -1376,7 +999,7 @@ static int calipso_skbuff_delattr(struct sk_buff *skb)
 	if (!calipso_skbuff_optptr(skb))
 		return 0;
 
-	/* since we are changing the packet we should make a copy */
+	 
 	ret_val = skb_cow(skb, skb_headroom(skb));
 	if (ret_val < 0)
 		return ret_val;
@@ -1390,8 +1013,7 @@ static int calipso_skbuff_delattr(struct sk_buff *skb)
 		return ret_val;
 
 	if (start == sizeof(*old_hop) && end == old_hop_len) {
-		/* There's no other option in the header so we delete
-		 * the whole thing. */
+		 
 		delta = old_hop_len;
 		size = sizeof(*ip6_hdr);
 		ip6_hdr->nexthdr = old_hop->nexthdr;
@@ -1433,14 +1055,7 @@ static const struct netlbl_calipso_ops ops = {
 	.cache_add        = calipso_cache_add
 };
 
-/**
- * calipso_init - Initialize the CALIPSO module
- *
- * Description:
- * Initialize the CALIPSO module and prepare it for use.  Returns zero on
- * success and negative values on failure.
- *
- */
+ 
 int __init calipso_init(void)
 {
 	int ret_val;

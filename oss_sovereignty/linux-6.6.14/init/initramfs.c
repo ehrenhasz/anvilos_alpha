@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/init.h>
 #include <linux/async.h>
 #include <linux/fs.h>
@@ -27,7 +27,7 @@ static ssize_t __init xwrite(struct file *file, const unsigned char *p,
 {
 	ssize_t out = 0;
 
-	/* sys_write only can write MAX_RW_COUNT aka 2G-4K bytes at most */
+	 
 	while (count) {
 		ssize_t rv = kernel_write(file, p, count, pos);
 
@@ -63,7 +63,7 @@ static void __init error(char *x)
 #define panic_show_mem(fmt, ...) \
 	({ show_mem(); panic(fmt, ##__VA_ARGS__); })
 
-/* link hash */
+ 
 
 #define N_ALIGN(len) ((((len) + 1) & ~3) + 2)
 
@@ -173,7 +173,7 @@ static void __init dir_utime(void) {}
 
 static __initdata time64_t mtime;
 
-/* cpio header parsing */
+ 
 
 static __initdata unsigned long ino, major, minor, nlink;
 static __initdata umode_t mode;
@@ -199,7 +199,7 @@ static void __init parse_header(char *s)
 	uid = parsed[2];
 	gid = parsed[3];
 	nlink = parsed[4];
-	mtime = parsed[5]; /* breaks in y2106 */
+	mtime = parsed[5];  
 	body_len = parsed[6];
 	major = parsed[7];
 	minor = parsed[8];
@@ -208,7 +208,7 @@ static void __init parse_header(char *s)
 	hdr_csum = parsed[12];
 }
 
-/* FSM */
+ 
 
 static __initdata enum state {
 	Start,
@@ -476,7 +476,7 @@ static long __init flush_buffer(void *bufv, unsigned long len)
 	return origLen;
 }
 
-static unsigned long my_inptr __initdata; /* index of next byte to be processed in inbuf */
+static unsigned long my_inptr __initdata;  
 
 #include <linux/decompress/generic.h>
 
@@ -579,17 +579,12 @@ void __init reserve_initrd_mem(void)
 	phys_addr_t start;
 	unsigned long size;
 
-	/* Ignore the virtul address computed during device tree parsing */
+	 
 	initrd_start = initrd_end = 0;
 
 	if (!phys_initrd_size)
 		return;
-	/*
-	 * Round the memory region to page boundaries as per free_initrd_mem()
-	 * This allows us to detect whether the pages overlapping the initrd
-	 * are in use, but more importantly, reserves the entire set of pages
-	 * as we don't want these pages allocated for other purposes.
-	 */
+	 
 	start = round_down(phys_initrd_start, PAGE_SIZE);
 	size = phys_initrd_size + (phys_initrd_start - start);
 	size = round_up(size, PAGE_SIZE);
@@ -607,7 +602,7 @@ void __init reserve_initrd_mem(void)
 	}
 
 	memblock_reserve(start, size);
-	/* Now convert initrd to virtual addresses */
+	 
 	initrd_start = (unsigned long)__va(phys_initrd_start);
 	initrd_end = initrd_start + phys_initrd_size;
 	initrd_below_start_ok = 1;
@@ -638,16 +633,11 @@ static bool __init kexec_free_initrd(void)
 	unsigned long crashk_start = (unsigned long)__va(crashk_res.start);
 	unsigned long crashk_end   = (unsigned long)__va(crashk_res.end);
 
-	/*
-	 * If the initrd region is overlapped with crashkernel reserved region,
-	 * free only memory that is not part of crashkernel region.
-	 */
+	 
 	if (initrd_start >= crashk_end || initrd_end <= crashk_start)
 		return false;
 
-	/*
-	 * Initialize initrd memory region since the kexec boot does not do.
-	 */
+	 
 	memset((void *)initrd_start, 0, initrd_end - initrd_start);
 	if (initrd_start < crashk_start)
 		free_initrd_mem(initrd_start, crashk_start);
@@ -660,7 +650,7 @@ static inline bool kexec_free_initrd(void)
 {
 	return false;
 }
-#endif /* CONFIG_KEXEC_CORE */
+#endif  
 
 #ifdef CONFIG_BLK_DEV_RAM
 static void __init populate_initrd_image(char *err)
@@ -684,14 +674,14 @@ static void __init populate_initrd_image(char *err)
 		       written, initrd_end - initrd_start);
 	fput(file);
 }
-#endif /* CONFIG_BLK_DEV_RAM */
+#endif  
 
 static void __init do_populate_rootfs(void *unused, async_cookie_t cookie)
 {
-	/* Load the built in initramfs */
+	 
 	char *err = unpack_to_rootfs(__initramfs_start, __initramfs_size);
 	if (err)
-		panic_show_mem("%s", err); /* Failed to decompress INTERNAL initramfs */
+		panic_show_mem("%s", err);  
 
 	if (!initrd_start || IS_ENABLED(CONFIG_INITRAMFS_FORCE))
 		goto done;
@@ -711,10 +701,7 @@ static void __init do_populate_rootfs(void *unused, async_cookie_t cookie)
 	}
 
 done:
-	/*
-	 * If the initrd region is overlapped with crashkernel reserved region,
-	 * free only memory that is not part of crashkernel region.
-	 */
+	 
 	if (!do_retain_initrd && initrd_start && !kexec_free_initrd())
 		free_initrd_mem(initrd_start, initrd_end);
 	initrd_start = 0;
@@ -730,12 +717,7 @@ static async_cookie_t initramfs_cookie;
 void wait_for_initramfs(void)
 {
 	if (!initramfs_cookie) {
-		/*
-		 * Something before rootfs_initcall wants to access
-		 * the filesystem/initramfs. Probably a bug. Make a
-		 * note, avoid deadlocking the machine, and let the
-		 * caller's access fail as it used to.
-		 */
+		 
 		pr_warn_once("wait_for_initramfs() called before rootfs_initcalls\n");
 		return;
 	}

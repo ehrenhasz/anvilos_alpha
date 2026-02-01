@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cs47l24.h  --  ALSA SoC Audio driver for Cirrus Logic CS47L24
- *
- * Copyright 2015 Cirrus Logic Inc.
- *
- * Author: Richard Fitzgerald <rf@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -1263,7 +1257,7 @@ static int cs47l24_probe(struct platform_device *pdev)
 			 ARIZONA_IRQ_FLL2_LOCK, ARIZONA_IRQ_FLL2_CLOCK_OK,
 			 &cs47l24->fll[1]);
 
-	/* SR2 fixed at 8kHz, SR3 fixed at 16kHz */
+	 
 	regmap_update_bits(arizona->regmap, ARIZONA_SAMPLE_RATE_2,
 			   ARIZONA_SAMPLE_RATE_2_MASK, 0x11);
 	regmap_update_bits(arizona->regmap, ARIZONA_SAMPLE_RATE_3,
@@ -1272,7 +1266,7 @@ static int cs47l24_probe(struct platform_device *pdev)
 	for (i = 0; i < ARRAY_SIZE(cs47l24_dai); i++)
 		arizona_init_dai(&cs47l24->core, i);
 
-	/* Latch volume update bits */
+	 
 	for (i = 0; i < ARRAY_SIZE(cs47l24_digital_vu); i++)
 		regmap_update_bits(arizona->regmap, cs47l24_digital_vu[i],
 				   CS47L24_DIG_VU, CS47L24_DIG_VU);

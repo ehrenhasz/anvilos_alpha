@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Loongson-2 PM Support
- *
- * Copyright (C) 2023 Loongson Technology Corporation Limited
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/of.h>
@@ -193,7 +189,7 @@ static int loongson2_pm_probe(struct platform_device *pdev)
 	if (loongson_sysconf.suspend_addr)
 		suspend_set_ops(&loongson2_suspend_ops);
 
-	/* Populate children */
+	 
 	retval = devm_of_platform_populate(dev);
 	if (retval)
 		dev_err(dev, "Error populating children, reboot and poweroff might not work properly\n");

@@ -1,30 +1,4 @@
-/******************************************************************* 
- *
- * Copyright (c) 2000 ATecoM GmbH 
- *
- * The author may be reached at ecd@atecom.com.
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
- *
- * THIS  SOFTWARE  IS PROVIDED   ``AS  IS'' AND   ANY  EXPRESS OR   IMPLIED
- * WARRANTIES,   INCLUDING, BUT NOT  LIMITED  TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN
- * NO  EVENT  SHALL   THE AUTHOR  BE    LIABLE FOR ANY   DIRECT,  INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED   TO, PROCUREMENT OF  SUBSTITUTE GOODS  OR SERVICES; LOSS OF
- * USE, DATA,  OR PROFITS; OR  BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN  CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * You should have received a copy of the  GNU General Public License along
- * with this program; if not, write  to the Free Software Foundation, Inc.,
- * 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *******************************************************************/
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -51,7 +25,7 @@
 
 #ifdef CONFIG_ATM_IDT77252_USE_SUNI
 #include "suni.h"
-#endif /* CONFIG_ATM_IDT77252_USE_SUNI */
+#endif  
 
 
 #include "idt77252.h"
@@ -63,11 +37,9 @@ static unsigned int vpibits = 1;
 #define ATM_IDT77252_SEND_IDLE 1
 
 
-/*
- * Debug HACKs.
- */
+ 
 #define DEBUG_MODULE 1
-#undef HAVE_EEPROM	/* does not work, yet. */
+#undef HAVE_EEPROM	 
 
 #ifdef CONFIG_ATM_IDT77252_DEBUG
 static unsigned long debug = DBG_GENERAL;
@@ -77,9 +49,7 @@ static unsigned long debug = DBG_GENERAL;
 #define SAR_RX_DELAY	(SAR_CFG_RXINT_NODELAY)
 
 
-/*
- * SCQ Handling.
- */
+ 
 static struct scq_info *alloc_scq(struct idt77252_dev *, int);
 static void free_scq(struct idt77252_dev *, struct scq_info *);
 static int queue_skb(struct idt77252_dev *, struct vc_map *,
@@ -88,9 +58,7 @@ static void drain_scq(struct idt77252_dev *, struct vc_map *);
 static unsigned long get_free_scd(struct idt77252_dev *, struct vc_map *);
 static void fill_scd(struct idt77252_dev *, struct scq_info *, int);
 
-/*
- * FBQ Handling.
- */
+ 
 static int push_rx_skb(struct idt77252_dev *,
 		       struct sk_buff *, int queue);
 static void recycle_rx_skb(struct idt77252_dev *, struct sk_buff *);
@@ -100,24 +68,18 @@ static void recycle_rx_pool_skb(struct idt77252_dev *,
 static void add_rx_skb(struct idt77252_dev *, int queue,
 		       unsigned int size, unsigned int count);
 
-/*
- * RSQ Handling.
- */
+ 
 static int init_rsq(struct idt77252_dev *);
 static void deinit_rsq(struct idt77252_dev *);
 static void idt77252_rx(struct idt77252_dev *);
 
-/*
- * TSQ handling.
- */
+ 
 static int init_tsq(struct idt77252_dev *);
 static void deinit_tsq(struct idt77252_dev *);
 static void idt77252_tx(struct idt77252_dev *);
 
 
-/*
- * ATM Interface.
- */
+ 
 static void idt77252_dev_close(struct atm_dev *dev);
 static int idt77252_open(struct atm_vcc *vcc);
 static void idt77252_close(struct atm_vcc *vcc);
@@ -151,11 +113,11 @@ static const struct atmdev_ops idt77252_ops =
 static struct idt77252_dev *idt77252_chain = NULL;
 static unsigned int idt77252_sram_write_errors = 0;
 
-/*****************************************************************************/
-/*                                                                           */
-/* I/O and Utility Bus                                                       */
-/*                                                                           */
-/*****************************************************************************/
+ 
+ 
+ 
+ 
+ 
 
 static void
 waitfor_idle(struct idt77252_dev *card)
@@ -245,84 +207,84 @@ static u32 rdsrtab[] =
 {
 	SAR_GP_EECS | SAR_GP_EESCLK,
 	0,
-	SAR_GP_EESCLK,			/* 0 */
+	SAR_GP_EESCLK,			 
 	0,
-	SAR_GP_EESCLK,			/* 0 */
+	SAR_GP_EESCLK,			 
 	0,
-	SAR_GP_EESCLK,			/* 0 */
+	SAR_GP_EESCLK,			 
 	0,
-	SAR_GP_EESCLK,			/* 0 */
+	SAR_GP_EESCLK,			 
 	0,
-	SAR_GP_EESCLK,			/* 0 */
+	SAR_GP_EESCLK,			 
 	SAR_GP_EEDO,
-	SAR_GP_EESCLK | SAR_GP_EEDO,	/* 1 */
+	SAR_GP_EESCLK | SAR_GP_EEDO,	 
 	0,
-	SAR_GP_EESCLK,			/* 0 */
+	SAR_GP_EESCLK,			 
 	SAR_GP_EEDO,
-	SAR_GP_EESCLK | SAR_GP_EEDO	/* 1 */
+	SAR_GP_EESCLK | SAR_GP_EEDO	 
 };
 
 static u32 wrentab[] =
 {
 	SAR_GP_EECS | SAR_GP_EESCLK,
 	0,
-	SAR_GP_EESCLK,			/* 0 */
+	SAR_GP_EESCLK,			 
 	0,
-	SAR_GP_EESCLK,			/* 0 */
+	SAR_GP_EESCLK,			 
 	0,
-	SAR_GP_EESCLK,			/* 0 */
+	SAR_GP_EESCLK,			 
 	0,
-	SAR_GP_EESCLK,			/* 0 */
+	SAR_GP_EESCLK,			 
 	SAR_GP_EEDO,
-	SAR_GP_EESCLK | SAR_GP_EEDO,	/* 1 */
+	SAR_GP_EESCLK | SAR_GP_EEDO,	 
 	SAR_GP_EEDO,
-	SAR_GP_EESCLK | SAR_GP_EEDO,	/* 1 */
+	SAR_GP_EESCLK | SAR_GP_EEDO,	 
 	0,
-	SAR_GP_EESCLK,			/* 0 */
+	SAR_GP_EESCLK,			 
 	0,
-	SAR_GP_EESCLK			/* 0 */
+	SAR_GP_EESCLK			 
 };
 
 static u32 rdtab[] =
 {
 	SAR_GP_EECS | SAR_GP_EESCLK,
 	0,
-	SAR_GP_EESCLK,			/* 0 */
+	SAR_GP_EESCLK,			 
 	0,
-	SAR_GP_EESCLK,			/* 0 */
+	SAR_GP_EESCLK,			 
 	0,
-	SAR_GP_EESCLK,			/* 0 */
+	SAR_GP_EESCLK,			 
 	0,
-	SAR_GP_EESCLK,			/* 0 */
+	SAR_GP_EESCLK,			 
 	0,
-	SAR_GP_EESCLK,			/* 0 */
+	SAR_GP_EESCLK,			 
 	0,
-	SAR_GP_EESCLK,			/* 0 */
+	SAR_GP_EESCLK,			 
 	SAR_GP_EEDO,
-	SAR_GP_EESCLK | SAR_GP_EEDO,	/* 1 */
+	SAR_GP_EESCLK | SAR_GP_EEDO,	 
 	SAR_GP_EEDO,
-	SAR_GP_EESCLK | SAR_GP_EEDO	/* 1 */
+	SAR_GP_EESCLK | SAR_GP_EEDO	 
 };
 
 static u32 wrtab[] =
 {
 	SAR_GP_EECS | SAR_GP_EESCLK,
 	0,
-	SAR_GP_EESCLK,			/* 0 */
+	SAR_GP_EESCLK,			 
 	0,
-	SAR_GP_EESCLK,			/* 0 */
+	SAR_GP_EESCLK,			 
 	0,
-	SAR_GP_EESCLK,			/* 0 */
+	SAR_GP_EESCLK,			 
 	0,
-	SAR_GP_EESCLK,			/* 0 */
+	SAR_GP_EESCLK,			 
 	0,
-	SAR_GP_EESCLK,			/* 0 */
+	SAR_GP_EESCLK,			 
 	0,
-	SAR_GP_EESCLK,			/* 0 */
+	SAR_GP_EESCLK,			 
 	SAR_GP_EEDO,
-	SAR_GP_EESCLK | SAR_GP_EEDO,	/* 1 */
+	SAR_GP_EESCLK | SAR_GP_EEDO,	 
 	0,
-	SAR_GP_EESCLK			/* 0 */
+	SAR_GP_EESCLK			 
 };
 
 static u32 clktab[] =
@@ -524,7 +486,7 @@ idt77252_eeprom_init(struct idt77252_dev *card)
 	idt77252_write_gp(card, gp | SAR_GP_EECS);
 	udelay(5);
 }
-#endif /* HAVE_EEPROM */
+#endif  
 
 
 #ifdef CONFIG_ATM_IDT77252_DEBUG
@@ -572,11 +534,11 @@ idt77252_tx_dump(struct idt77252_dev *card)
 #endif
 
 
-/*****************************************************************************/
-/*                                                                           */
-/* SCQ Handling                                                              */
-/*                                                                           */
-/*****************************************************************************/
+ 
+ 
+ 
+ 
+ 
 
 static int
 sb_pool_add(struct idt77252_dev *card, struct sk_buff *skb, int queue)
@@ -961,11 +923,11 @@ clear_scd(struct idt77252_dev *card, struct scq_info *scq, int class)
 	return;
 }
 
-/*****************************************************************************/
-/*                                                                           */
-/* RSQ Handling                                                              */
-/*                                                                           */
-/*****************************************************************************/
+ 
+ 
+ 
+ 
+ 
 
 static int
 init_rsq(struct idt77252_dev *card)
@@ -1363,11 +1325,11 @@ drop:
 }
 
 
-/*****************************************************************************/
-/*                                                                           */
-/* TSQ Handling                                                              */
-/*                                                                           */
-/*****************************************************************************/
+ 
+ 
+ 
+ 
+ 
 
 static int
 init_tsq(struct idt77252_dev *card)
@@ -1620,9 +1582,7 @@ __fill_tst(struct idt77252_dev *card, struct vc_map *vc,
 
 	idle = card->tst[card->tst_index ^ 1];
 
-	/*
-	 * Fill Soft TST.
-	 */
+	 
 	while (r > 0) {
 		if ((cl >= avail) && (card->soft_tst[e].vc == NULL)) {
 			if (vc)
@@ -1777,11 +1737,11 @@ set_tct(struct idt77252_dev *card, struct vc_map *vc)
 	return 0;
 }
 
-/*****************************************************************************/
-/*                                                                           */
-/* FBQ Handling                                                              */
-/*                                                                           */
-/*****************************************************************************/
+ 
+ 
+ 
+ 
+ 
 
 static __inline__ int
 idt77252_fbq_full(struct idt77252_dev *card, int queue)
@@ -1916,11 +1876,11 @@ recycle_rx_pool_skb(struct idt77252_dev *card, struct rx_pool *rpp)
 	flush_rx_pool(card, rpp);
 }
 
-/*****************************************************************************/
-/*                                                                           */
-/* ATM Interface                                                             */
-/*                                                                           */
-/*****************************************************************************/
+ 
+ 
+ 
+ 
+ 
 
 static void
 idt77252_phy_put(struct atm_dev *dev, unsigned char value, unsigned long addr)
@@ -2050,7 +2010,7 @@ idt77252_int_to_atmfp(unsigned int rate)
 		m = (rate - (1 << e)) << (9 - e);
 	else if (e == 9)
 		m = (rate - (1 << e));
-	else /* e > 9 */
+	else  
 		m = (rate - (1 << e)) >> (e - 9);
 	return 0x4000 | (e << 9) | m;
 }
@@ -2120,8 +2080,8 @@ idt77252_init_est(struct vc_map *vc, int pcr)
 	est->avcps = est->cps << 5;
 	est->vc = vc;
 
-	est->interval = 2;		/* XXX: make this configurable */
-	est->ewma_log = 2;		/* XXX: make this configurable */
+	est->interval = 2;		 
+	est->ewma_log = 2;		 
 	timer_setup(&est->timer, idt77252_est_timer, 0);
 	mod_timer(&est->timer, jiffies + ((HZ / 4) << est->interval));
 
@@ -2339,7 +2299,7 @@ idt77252_init_rx(struct idt77252_dev *card, struct vc_map *vc,
 			rcte |= SAR_RCTE_RCQ;
 			break;
 		case ATM_AAL1:
-			rcte |= SAR_RCTE_OAM; /* Let SAR drop Video */
+			rcte |= SAR_RCTE_OAM;  
 			break;
 		case ATM_AAL34:
 			rcte |= SAR_RCTE_AAL34;
@@ -2688,11 +2648,11 @@ idt77252_proc_read(struct atm_dev *dev, loff_t * pos, char *page)
 	return 0;
 }
 
-/*****************************************************************************/
-/*                                                                           */
-/* Interrupt handler                                                         */
-/*                                                                           */
-/*****************************************************************************/
+ 
+ 
+ 
+ 
+ 
 
 static void
 idt77252_collect_stat(struct idt77252_dev *card)
@@ -2710,7 +2670,7 @@ idt77252_interrupt(int irq, void *dev_id)
 	u32 stat;
 
 	stat = readl(SAR_REG_STAT) & 0xffff;
-	if (!stat)	/* no interrupt for us */
+	if (!stat)	 
 		return IRQ_NONE;
 
 	if (test_and_set_bit(IDT77252_BIT_INTERRUPT, &card->flags)) {
@@ -2718,53 +2678,53 @@ idt77252_interrupt(int irq, void *dev_id)
 		goto out;
 	}
 
-	writel(stat, SAR_REG_STAT);	/* reset interrupt */
+	writel(stat, SAR_REG_STAT);	 
 
-	if (stat & SAR_STAT_TSIF) {	/* entry written to TSQ  */
+	if (stat & SAR_STAT_TSIF) {	 
 		INTPRINTK("%s: TSIF\n", card->name);
 		card->irqstat[15]++;
 		idt77252_tx(card);
 	}
-	if (stat & SAR_STAT_TXICP) {	/* Incomplete CS-PDU has  */
+	if (stat & SAR_STAT_TXICP) {	 
 		INTPRINTK("%s: TXICP\n", card->name);
 		card->irqstat[14]++;
 #ifdef CONFIG_ATM_IDT77252_DEBUG
 		idt77252_tx_dump(card);
 #endif
 	}
-	if (stat & SAR_STAT_TSQF) {	/* TSQ 7/8 full           */
+	if (stat & SAR_STAT_TSQF) {	 
 		INTPRINTK("%s: TSQF\n", card->name);
 		card->irqstat[12]++;
 		idt77252_tx(card);
 	}
-	if (stat & SAR_STAT_TMROF) {	/* Timer overflow         */
+	if (stat & SAR_STAT_TMROF) {	 
 		INTPRINTK("%s: TMROF\n", card->name);
 		card->irqstat[11]++;
 		idt77252_collect_stat(card);
 	}
 
-	if (stat & SAR_STAT_EPDU) {	/* Got complete CS-PDU    */
+	if (stat & SAR_STAT_EPDU) {	 
 		INTPRINTK("%s: EPDU\n", card->name);
 		card->irqstat[5]++;
 		idt77252_rx(card);
 	}
-	if (stat & SAR_STAT_RSQAF) {	/* RSQ is 7/8 full        */
+	if (stat & SAR_STAT_RSQAF) {	 
 		INTPRINTK("%s: RSQAF\n", card->name);
 		card->irqstat[1]++;
 		idt77252_rx(card);
 	}
-	if (stat & SAR_STAT_RSQF) {	/* RSQ is full            */
+	if (stat & SAR_STAT_RSQF) {	 
 		INTPRINTK("%s: RSQF\n", card->name);
 		card->irqstat[6]++;
 		idt77252_rx(card);
 	}
-	if (stat & SAR_STAT_RAWCF) {	/* Raw cell received      */
+	if (stat & SAR_STAT_RAWCF) {	 
 		INTPRINTK("%s: RAWCF\n", card->name);
 		card->irqstat[4]++;
 		idt77252_rx_raw(card);
 	}
 
-	if (stat & SAR_STAT_PHYI) {	/* PHY device interrupt   */
+	if (stat & SAR_STAT_PHYI) {	 
 		INTPRINTK("%s: PHYI", card->name);
 		card->irqstat[10]++;
 		if (card->atmdev->phy && card->atmdev->phy->interrupt)
@@ -2972,21 +2932,21 @@ idt77252_dev_open(struct idt77252_dev *card)
 		return -1;
 	}
 
-	conf = SAR_CFG_RXPTH|	/* enable receive path                  */
-	    SAR_RX_DELAY |	/* interrupt on complete PDU		*/
-	    SAR_CFG_RAWIE |	/* interrupt enable on raw cells        */
-	    SAR_CFG_RQFIE |	/* interrupt on RSQ almost full         */
-	    SAR_CFG_TMOIE |	/* interrupt on timer overflow          */
-	    SAR_CFG_FBIE |	/* interrupt on low free buffers        */
-	    SAR_CFG_TXEN |	/* transmit operation enable            */
-	    SAR_CFG_TXINT |	/* interrupt on transmit status         */
-	    SAR_CFG_TXUIE |	/* interrupt on transmit underrun       */
-	    SAR_CFG_TXSFI |	/* interrupt on TSQ almost full         */
-	    SAR_CFG_PHYIE	/* enable PHY interrupts		*/
+	conf = SAR_CFG_RXPTH|	 
+	    SAR_RX_DELAY |	 
+	    SAR_CFG_RAWIE |	 
+	    SAR_CFG_RQFIE |	 
+	    SAR_CFG_TMOIE |	 
+	    SAR_CFG_FBIE |	 
+	    SAR_CFG_TXEN |	 
+	    SAR_CFG_TXINT |	 
+	    SAR_CFG_TXUIE |	 
+	    SAR_CFG_TXSFI |	 
+	    SAR_CFG_PHYIE	 
 	    ;
 
 #ifdef CONFIG_ATM_IDT77252_RCV_ALL
-	/* Test RAW cell receive. */
+	 
 	conf |= SAR_CFG_VPECA;
 #endif
 
@@ -3014,16 +2974,16 @@ static void idt77252_dev_close(struct atm_dev *dev)
 	close_card_ubr0(card);
 	close_card_oam(card);
 
-	conf = SAR_CFG_RXPTH |	/* enable receive path           */
-	    SAR_RX_DELAY |	/* interrupt on complete PDU     */
-	    SAR_CFG_RAWIE |	/* interrupt enable on raw cells */
-	    SAR_CFG_RQFIE |	/* interrupt on RSQ almost full  */
-	    SAR_CFG_TMOIE |	/* interrupt on timer overflow   */
-	    SAR_CFG_FBIE |	/* interrupt on low free buffers */
-	    SAR_CFG_TXEN |	/* transmit operation enable     */
-	    SAR_CFG_TXINT |	/* interrupt on transmit status  */
-	    SAR_CFG_TXUIE |	/* interrupt on xmit underrun    */
-	    SAR_CFG_TXSFI	/* interrupt on TSQ almost full  */
+	conf = SAR_CFG_RXPTH |	 
+	    SAR_RX_DELAY |	 
+	    SAR_CFG_RAWIE |	 
+	    SAR_CFG_RQFIE |	 
+	    SAR_CFG_TMOIE |	 
+	    SAR_CFG_FBIE |	 
+	    SAR_CFG_TXEN |	 
+	    SAR_CFG_TXINT |	 
+	    SAR_CFG_TXUIE |	 
+	    SAR_CFG_TXSFI	 
 	    ;
 
 	writel(readl(SAR_REG_CFG) & ~(conf), SAR_REG_CFG);
@@ -3032,11 +2992,11 @@ static void idt77252_dev_close(struct atm_dev *dev)
 }
 
 
-/*****************************************************************************/
-/*                                                                           */
-/* Initialisation and Deinitialization of IDT77252                           */
-/*                                                                           */
-/*****************************************************************************/
+ 
+ 
+ 
+ 
+ 
 
 
 static void
@@ -3115,7 +3075,7 @@ static void init_sram(struct idt77252_dev *card)
 	for (i = 0; i < card->sramsize; i += 4)
 		write_sram(card, (i >> 2), 0);
 
-	/* set SRAM layout for THIS card */
+	 
 	if (card->sramsize == (512 * 1024)) {
 		card->tct_base = SAR_SRAM_TCT_128_BASE;
 		card->tct_size = (SAR_SRAM_TCT_128_TOP - card->tct_base + 1)
@@ -3154,7 +3114,7 @@ static void init_sram(struct idt77252_dev *card)
 		card->fifo_size = SAR_RXFD_SIZE_4K;
 	}
 
-	/* Initialize TCT */
+	 
 	for (i = 0; i < card->tct_size; i++) {
 		write_sram(card, i * SAR_SRAM_TCT_SIZE + 0, 0);
 		write_sram(card, i * SAR_SRAM_TCT_SIZE + 1, 0);
@@ -3166,7 +3126,7 @@ static void init_sram(struct idt77252_dev *card)
 		write_sram(card, i * SAR_SRAM_TCT_SIZE + 7, 0);
 	}
 
-	/* Initialize RCT */
+	 
 	for (i = 0; i < card->rct_size; i++) {
 		write_sram(card, card->rct_base + i * SAR_SRAM_RCT_SIZE,
 				    (u32) SAR_RCTE_RAWCELLINTEN);
@@ -3183,7 +3143,7 @@ static void init_sram(struct idt77252_dev *card)
 	writel((SAR_FBQ2_LOW << 28) | (SAR_FB_SIZE_2 / 48), SAR_REG_FBQS2);
 	writel((SAR_FBQ3_LOW << 28) | (SAR_FB_SIZE_3 / 48), SAR_REG_FBQS3);
 
-	/* Initialize rate table  */
+	 
 	for (i = 0; i < 256; i++) {
 		write_sram(card, card->rt_base + i, log_to_rate[i]);
 	}
@@ -3198,7 +3158,7 @@ static void init_sram(struct idt77252_dev *card)
 		write_sram(card, card->rt_base + 256 + i, tmp);
 	}
 
-#if 0 /* Fill RDF and AIR tables. */
+#if 0  
 	for (i = 0; i < 128; i++) {
 		unsigned int tmp;
 
@@ -3219,9 +3179,9 @@ static void init_sram(struct idt77252_dev *card)
 	IPRINTK("%s: initialize rate table ...\n", card->name);
 	writel(card->rt_base << 2, SAR_REG_RTBL);
 
-	/* Initialize TSTs */
+	 
 	IPRINTK("%s: initialize TST ...\n", card->name);
-	card->tst_free = card->tst_size - 2;	/* last two are jumps */
+	card->tst_free = card->tst_size - 2;	 
 
 	for (i = card->tst[0]; i < card->tst[0] + card->tst_size - 2; i++)
 		write_sram(card, i, TSTE_OPC_VAR);
@@ -3239,7 +3199,7 @@ static void init_sram(struct idt77252_dev *card)
 	card->tst_index = 0;
 	writel(card->tst[0] << 2, SAR_REG_TSTB);
 
-	/* Initialize ABRSTD and Receive FIFO */
+	 
 	IPRINTK("%s: initialize ABRSTD ...\n", card->name);
 	writel(card->abrst_size | (card->abrst_base << 2),
 	       SAR_REG_ABRSTD);
@@ -3271,11 +3231,11 @@ static int init_card(struct atm_dev *dev)
 		return -1;
 	}
 
-/*****************************************************************/
-/*   P C I   C O N F I G U R A T I O N                           */
-/*****************************************************************/
+ 
+ 
+ 
 
-	/* Set PCI Retry-Timeout and TRDY timeout */
+	 
 	IPRINTK("%s: Checking PCI retries.\n", card->name);
 	if (pci_read_config_byte(pcidev, 0x40, &pci_byte) != 0) {
 		printk("%s: can't read PCI retry timeout.\n", card->name);
@@ -3307,7 +3267,7 @@ static int init_card(struct atm_dev *dev)
 			return -1;
 		}
 	}
-	/* Reset Timer register */
+	 
 	if (readl(SAR_REG_STAT) & SAR_STAT_TMROF) {
 		printk("%s: resetting timer overflow.\n", card->name);
 		writel(SAR_STAT_TMROF, SAR_REG_STAT);
@@ -3321,18 +3281,18 @@ static int init_card(struct atm_dev *dev)
 	}
 	IPRINTK("got %d.\n", pcidev->irq);
 
-/*****************************************************************/
-/*   C H E C K   A N D   I N I T   S R A M                       */
-/*****************************************************************/
+ 
+ 
+ 
 
 	IPRINTK("%s: Initializing SRAM\n", card->name);
 
-	/* preset size of connecton table, so that init_sram() knows about it */
-	conf =	SAR_CFG_TX_FIFO_SIZE_9 |	/* Use maximum fifo size */
-		SAR_CFG_RXSTQ_SIZE_8k |		/* Receive Status Queue is 8k */
-		SAR_CFG_IDLE_CLP |		/* Set CLP on idle cells */
+	 
+	conf =	SAR_CFG_TX_FIFO_SIZE_9 |	 
+		SAR_CFG_RXSTQ_SIZE_8k |		 
+		SAR_CFG_IDLE_CLP |		 
 #ifndef ATM_IDT77252_SEND_IDLE
-		SAR_CFG_NO_IDLE |		/* Do not send idle cells */
+		SAR_CFG_NO_IDLE |		 
 #endif
 		0;
 
@@ -3361,15 +3321,15 @@ static int init_card(struct atm_dev *dev)
 
 	init_sram(card);
 
-/********************************************************************/
-/*  A L L O C   R A M   A N D   S E T   V A R I O U S   T H I N G S */
-/********************************************************************/
-	/* Initialize TSQ */
+ 
+ 
+ 
+	 
 	if (0 != init_tsq(card)) {
 		deinit_card(card);
 		return -1;
 	}
-	/* Initialize RSQ */
+	 
 	if (0 != init_rsq(card)) {
 		deinit_card(card);
 		return -1;
@@ -3391,10 +3351,10 @@ static int init_card(struct atm_dev *dev)
 	IPRINTK("%s: Setting VPI/VCI mask to zero.\n", card->name);
 	writel(0, SAR_REG_VPM);
 
-	/* Little Endian Order   */
+	 
 	writel(0, SAR_REG_GP);
 
-	/* Initialize RAW Cell Handle Register  */
+	 
 	card->raw_cell_hnd = dma_alloc_coherent(&card->pcidev->dev,
 						2 * sizeof(u32),
 						&card->raw_cell_paddr,
@@ -3453,15 +3413,7 @@ static int init_card(struct atm_dev *dev)
 	}
 
 #ifdef	CONFIG_ATM_IDT77252_USE_SUNI
-	/*
-	 * this is a jhs hack to get around special functionality in the
-	 * phy driver for the atecom hardware; the functionality doesn't
-	 * exist in the linux atm suni driver
-	 *
-	 * it isn't the right way to do things, but as the guy from NIST
-	 * said, talking about their measurement of the fine structure
-	 * constant, "it's good enough for government work."
-	 */
+	 
 	linkrate = 149760000;
 #endif
 
@@ -3498,23 +3450,19 @@ static int init_card(struct atm_dev *dev)
 		);
 	}
 	printk("\n");
-#endif /* HAVE_EEPROM */
+#endif  
 
-	/*
-	 * XXX: <hack>
-	 */
+	 
 	sprintf(tname, "eth%d", card->index);
-	tmp = dev_get_by_name(&init_net, tname);	/* jhs: was "tmp = dev_get(tname);" */
+	tmp = dev_get_by_name(&init_net, tname);	 
 	if (tmp) {
 		memcpy(card->atmdev->esi, tmp->dev_addr, 6);
 		dev_put(tmp);
 		printk("%s: ESI %pM\n", card->name, card->atmdev->esi);
 	}
-	/*
-	 * XXX: </hack>
-	 */
+	 
 
-	/* Set Maximum Deficit Count for now. */
+	 
 	writel(0xffff, SAR_REG_MDFCT);
 
 	set_bit(IDT77252_BIT_INIT, &card->flags);
@@ -3524,20 +3472,20 @@ static int init_card(struct atm_dev *dev)
 }
 
 
-/*****************************************************************************/
-/*                                                                           */
-/* Probing of IDT77252 ABR SAR                                               */
-/*                                                                           */
-/*****************************************************************************/
+ 
+ 
+ 
+ 
+ 
 
 
 static int idt77252_preset(struct idt77252_dev *card)
 {
 	u16 pci_command;
 
-/*****************************************************************/
-/*   P C I   C O N F I G U R A T I O N                           */
-/*****************************************************************/
+ 
+ 
+ 
 
 	XPRINTK("%s: Enable PCI master and memory access for SAR.\n",
 		card->name);
@@ -3558,11 +3506,11 @@ static int idt77252_preset(struct idt77252_dev *card)
 		deinit_card(card);
 		return -1;
 	}
-/*****************************************************************/
-/*   G E N E R I C   R E S E T                                   */
-/*****************************************************************/
+ 
+ 
+ 
 
-	/* Software reset */
+	 
 	writel(SAR_CFG_SWRST, SAR_REG_CFG);
 	mdelay(1);
 	writel(0, SAR_REG_CFG);
@@ -3637,7 +3585,7 @@ static int idt77252_init_one(struct pci_dev *pcidev,
 
 	timer_setup(&card->tst_timer, tst_timer, 0);
 
-	/* Do the I/O remapping... */
+	 
 	card->membase = ioremap(membase, 1024);
 	if (!card->membase) {
 		printk("%s: can't ioremap() membase\n", card->name);
@@ -3668,7 +3616,7 @@ static int idt77252_init_one(struct pci_dev *pcidev,
 		err = -EIO;
 		goto err_out_deinit_card;
 	}
-#endif	/* CONFIG_ATM_IDT77252_USE_SUNI */
+#endif	 
 
 	card->sramsize = probe_sram(card);
 

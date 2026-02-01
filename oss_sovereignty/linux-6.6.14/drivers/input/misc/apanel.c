@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Fujitsu Lifebook Application Panel button drive
- *
- *  Copyright (C) 2007 Stephen Hemminger <shemminger@linux-foundation.org>
- *  Copyright (C) 2001-2003 Jochen Eisinger <jochen@penguin-breeder.org>
- *
- * Many Fujitsu Lifebook laptops have a small panel of buttons that are
- * accessible via the i2c/smbus interface. This driver polls those
- * buttons and generates input events.
- *
- * For more details see:
- *	http://apanel.sourceforge.net/tech.php
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -24,10 +12,10 @@
 #define APANEL_NAME	"Fujitsu Application Panel"
 #define APANEL		"apanel"
 
-/* How often we poll keys - msecs */
+ 
 #define POLL_INTERVAL_DEFAULT	1000
 
-/* Magic constants in BIOS that tell about buttons */
+ 
 enum apanel_devid {
 	APANEL_DEV_NONE	  = 0,
 	APANEL_DEV_APPBTN = 1,
@@ -45,7 +33,7 @@ enum apanel_chip {
 	CHIP_OZ711M3 = 4,
 };
 
-/* Result of BIOS snooping/probing -- what features are supported */
+ 
 static enum apanel_chip device_chip[APANEL_DEV_MAX];
 
 #define MAX_PANEL_KEYS	12
@@ -80,14 +68,7 @@ static void report_key(struct input_dev *input, unsigned keycode)
 	input_sync(input);
 }
 
-/* Poll for key changes
- *
- * Read Application keys via SMI
- *  A (0x4), B (0x8), Internet (0x2), Email (0x1).
- *
- * CD keys:
- * Forward (0x100), Rewind (0x200), Stop (0x400), Pause (0x800)
- */
+ 
 static void apanel_poll(struct input_dev *idev)
 {
 	struct apanel *ap = input_get_drvdata(idev);
@@ -97,9 +78,9 @@ static void apanel_poll(struct input_dev *idev)
 
 	data = i2c_smbus_read_word_data(ap->client, cmd);
 	if (data < 0)
-		return;	/* ignore errors (due to ACPI??) */
+		return;	 
 
-	/* write back to clear latch */
+	 
 	i2c_smbus_write_word_data(ap->client, cmd, 0);
 
 	if (!data)
@@ -206,7 +187,7 @@ static struct i2c_driver apanel_driver = {
 	.id_table	= apanel_id,
 };
 
-/* Scan the system ROM for the signature "FJKEYINF" */
+ 
 static __init const void __iomem *bios_signature(const void __iomem *bios)
 {
 	ssize_t offset;
@@ -230,7 +211,7 @@ static int __init apanel_init(void)
 	unsigned char i2c_addr;
 	int found = 0;
 
-	bios = ioremap(0xF0000, 0x10000); /* Can't fail */
+	bios = ioremap(0xF0000, 0x10000);  
 
 	p = bios_signature(bios);
 	if (!p) {
@@ -238,7 +219,7 @@ static int __init apanel_init(void)
 		return -ENODEV;
 	}
 
-	/* just use the first address */
+	 
 	p += 8;
 	i2c_addr = readb(p + 3) >> 1;
 
@@ -255,7 +236,7 @@ static int __init apanel_init(void)
 			continue;
 		}
 
-		/* translate alternative device numbers */
+		 
 		switch (devno) {
 		case 6:
 			devno = APANEL_DEV_APPBTN;

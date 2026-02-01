@@ -1,20 +1,4 @@
-/* realpath - print the resolved path
-   Copyright (C) 2011-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Pádraig Brady.  */
+ 
 
 #include <config.h>
 #include <getopt.h>
@@ -25,7 +9,7 @@
 #include "canonicalize.h"
 #include "relpath.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "realpath"
 
 #define AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
@@ -257,8 +241,7 @@ main (int argc, char **argv)
         error (EXIT_FAILURE, errno, "%s", quotef (relative_base));
       if (need_dir && !isdir (base))
         error (EXIT_FAILURE, ENOTDIR, "%s", quotef (relative_base));
-      /* --relative-to is a no-op if it does not have --relative-base
-           as a prefix */
+       
       if (path_prefix (base, can_relative_to))
         can_relative_base = base;
       else

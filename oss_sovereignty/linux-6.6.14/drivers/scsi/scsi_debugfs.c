@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/bitops.h>
 #include <linux/seq_file.h>
 #include <scsi/scsi_cmnd.h>

@@ -6,7 +6,7 @@
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_endian.h>
 
-/* Packet parsing state machine helpers. */
+ 
 #define cursor_advance(_cursor, _len) \
 	({ void *_tmp = _cursor; _cursor += _len; _tmp; })
 
@@ -124,13 +124,13 @@ int is_valid_tlv_boundary(struct __sk_buff *skb, struct ip6_srh_t *srh,
 	int err;
 
 	srh_off = (char *)srh - (char *)(long)skb->data;
-	// cur_off = end of segments, start of possible TLVs
+	
 	cur_off = srh_off + sizeof(*srh) +
 		sizeof(struct ip6_addr_t) * (srh->first_segment + 1);
 
 	*pad_off = 0;
 
-	// we can only go as far as ~10 TLVs due to the BPF max stack size
+	
 	#pragma clang loop unroll(full)
 	for (int i = 0; i < 10; i++) {
 		struct sr6_tlv_t tlv;
@@ -160,7 +160,7 @@ int is_valid_tlv_boundary(struct __sk_buff *skb, struct ip6_srh_t *srh,
 		}
 
 		cur_off += sizeof(tlv) + tlv.len;
-	} // we reached the padding or HMAC TLVs, or the end of the SRH
+	} 
 
 	if (*pad_off == 0)
 		*pad_off = cur_off;
@@ -202,14 +202,14 @@ int add_tlv(struct __sk_buff *skb, struct ip6_srh_t *srh, uint32_t tlv_off,
 	if (err)
 		return err;
 
-	// the following can't be moved inside update_tlv_pad because the
-	// bpf verifier has some issues with it
+	
+	
 	pad_off += sizeof(*itlv) + itlv->len;
 	partial_srh_len = pad_off - srh_off;
 	len_remaining = partial_srh_len % 8;
 	new_pad = 8 - len_remaining;
 
-	if (new_pad == 1) // cannot pad for 1 byte only
+	if (new_pad == 1) 
 		new_pad = 9;
 	else if (new_pad == 8)
 		new_pad = 0;
@@ -247,7 +247,7 @@ int delete_tlv(struct __sk_buff *skb, struct ip6_srh_t *srh,
 	partial_srh_len = pad_off - srh_off;
 	len_remaining = partial_srh_len % 8;
 	new_pad = 8 - len_remaining;
-	if (new_pad == 1) // cannot pad for 1 byte only
+	if (new_pad == 1) 
 		new_pad = 9;
 	else if (new_pad == 8)
 		new_pad = 0;
@@ -271,7 +271,7 @@ int has_egr_tlv(struct __sk_buff *skb, struct ip6_srh_t *srh)
 		if (bpf_skb_load_bytes(skb, tlv_offset + 4, &egr_addr, 16))
 			return 0;
 
-		// check if egress TLV value is correct
+		
 		if (bpf_be64_to_cpu(egr_addr.hi) == 0xfd00000000000000 &&
 		    bpf_be64_to_cpu(egr_addr.lo) == 0x4)
 			return 1;
@@ -280,15 +280,15 @@ int has_egr_tlv(struct __sk_buff *skb, struct ip6_srh_t *srh)
 	return 0;
 }
 
-// This function will push a SRH with segments fd00::1, fd00::2, fd00::3,
-// fd00::4
+
+
 SEC("encap_srh")
 int __encap_srh(struct __sk_buff *skb)
 {
 	unsigned long long hi = 0xfd00000000000000;
 	struct ip6_addr_t *seg;
 	struct ip6_srh_t *srh;
-	char srh_buf[72]; // room for 4 segments
+	char srh_buf[72]; 
 	int err;
 
 	srh = (struct ip6_srh_t *)srh_buf;
@@ -316,8 +316,8 @@ int __encap_srh(struct __sk_buff *skb)
 	return BPF_REDIRECT;
 }
 
-// Add an Egress TLV fc00::4, add the flag A,
-// and apply End.X action to fc42::1
+
+
 SEC("add_egr_x")
 int __add_egr_x(struct __sk_buff *skb)
 {
@@ -354,8 +354,8 @@ int __add_egr_x(struct __sk_buff *skb)
 	return BPF_REDIRECT;
 }
 
-// Pop the Egress TLV, reset the flags, change the tag 2442 and finally do a
-// simple End action
+
+
 SEC("pop_egr")
 int __pop_egr(struct __sk_buff *skb)
 {
@@ -370,7 +370,7 @@ int __pop_egr(struct __sk_buff *skb)
 	if (srh->flags != SR6_FLAG_ALERT)
 		return BPF_DROP;
 
-	if (srh->hdrlen != 11) // 4 segments + Egress TLV + Padding TLV
+	if (srh->hdrlen != 11) 
 		return BPF_DROP;
 
 	if (!has_egr_tlv(skb, srh))
@@ -393,8 +393,8 @@ int __pop_egr(struct __sk_buff *skb)
 	return BPF_OK;
 }
 
-// Inspect if the Egress TLV and flag have been removed, if the tag is correct,
-// then apply a End.T action to reach the last segment
+
+
 SEC("inspect_t")
 int __inspect_t(struct __sk_buff *skb)
 {
@@ -411,7 +411,7 @@ int __inspect_t(struct __sk_buff *skb)
 	if (srh->tag != bpf_htons(2442))
 		return BPF_DROP;
 
-	if (srh->hdrlen != 8) // 4 segments
+	if (srh->hdrlen != 8) 
 		return BPF_DROP;
 
 	err = bpf_lwt_seg6_action(skb, SEG6_LOCAL_ACTION_END_T,

@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*********************************************************************
- *
- * msnd_pinnacle.h
- *
- * Turtle Beach MultiSound Sound Card Driver for Linux
- *
- * Some parts of this header file were derived from the Turtle Beach
- * MultiSound Driver Development Kit.
- *
- * Copyright (C) 1998 Andrew Veliath
- * Copyright (C) 1993 Turtle Beach Systems, Inc.
- *
- ********************************************************************/
+ 
+ 
 #ifndef __MSND_PINNACLE_H
 #define __MSND_PINNACLE_H
 
@@ -92,7 +80,7 @@
 #define MIP_HWINIT				0xfe
 #define MIP_MAX					1
 
-/* Pinnacle/Fiji SMA Common Data */
+ 
 #define SMA_wCurrPlayBytes			0x0000
 #define SMA_wCurrRecordBytes			0x0002
 #define SMA_wCurrPlayVolLeft			0x0004
@@ -165,4 +153,4 @@
 #define PERMCODEFILE		"turtlebeach/pndsperm.bin"
 #define LONGNAME		"MultiSound (Pinnacle/Fiji)"
 
-#endif /* __MSND_PINNACLE_H */
+#endif  

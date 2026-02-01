@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2005, 2006, 2007, 2008 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2005, 2006, 2007 Cisco Systems, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *	- Redistributions of source code must retain the above
- *	  copyright notice, this list of conditions and the following
- *	  disclaimer.
- *
- *	- Redistributions in binary form must reproduce the above
- *	  copyright notice, this list of conditions and the following
- *	  disclaimer in the documentation and/or other materials
- *	  provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/interrupt.h>
 #include <linux/slab.h>
@@ -99,22 +68,16 @@ static void eq_set_ci(struct mlx4_eq *eq, int req_not)
 	__raw_writel((__force u32) cpu_to_be32((eq->cons_index & 0xffffff) |
 					       req_not << 31),
 		     eq->doorbell);
-	/* We still want ordering, just not swabbing, so add a barrier */
+	 
 	wmb();
 }
 
 static struct mlx4_eqe *get_eqe(struct mlx4_eq *eq, u32 entry, u8 eqe_factor,
 				u8 eqe_size)
 {
-	/* (entry & (eq->nent - 1)) gives us a cyclic array */
+	 
 	unsigned long offset = (entry & (eq->nent - 1)) * eqe_size;
-	/* CX3 is capable of extending the EQE from 32 to 64 bytes with
-	 * strides of 64B,128B and 256B.
-	 * When 64B EQE is used, the first (in the lower addresses)
-	 * 32 bytes in the 64 byte EQE are reserved and the next 32 bytes
-	 * contain the legacy EQE information.
-	 * In all other cases, the first 32B contains the legacy EQE info.
-	 */
+	 
 	return eq->page_list[offset / PAGE_SIZE].buf + (offset + (eqe_factor ? MLX4_EQ_ENTRY_SIZE : 0)) % PAGE_SIZE;
 }
 
@@ -162,7 +125,7 @@ void mlx4_gen_slave_eqe(struct work_struct *work)
 			if (!mlx4_QUERY_PORT(dev, 2, &port_cap) && port_cap.link_state)
 				goto consume;
 		}
-		/* All active slaves need to receive the event */
+		 
 		if (slave == ALL_SLAVES) {
 			for (i = 0; i <= dev->persist->num_vfs; i++) {
 				phys_port = 0;
@@ -170,7 +133,7 @@ void mlx4_gen_slave_eqe(struct work_struct *work)
 				    eqe->subtype == MLX4_DEV_PMC_SUBTYPE_PORT_INFO) {
 					phys_port  = eqe->event.port_mgmt_change.port;
 					slave_port = mlx4_phys_to_slave_port(dev, i, phys_port);
-					if (slave_port < 0) /* VF doesn't have this port */
+					if (slave_port < 0)  
 						continue;
 					eqe->event.port_mgmt_change.port = slave_port;
 				}
@@ -210,7 +173,7 @@ static void slave_event(struct mlx4_dev *dev, u8 slave, struct mlx4_eqe *eqe)
 
 	memcpy(s_eqe, eqe, sizeof(struct mlx4_eqe) - 1);
 	s_eqe->slave_id = slave;
-	/* ensure all information is written before setting the ownersip bit */
+	 
 	dma_wmb();
 	s_eqe->owner = !!(slave_eq->prod & SLAVE_EVENT_EQ_SIZE) ? 0x0 : 0x80;
 	++slave_eq->prod;
@@ -274,7 +237,7 @@ int mlx4_gen_guid_change_eqe(struct mlx4_dev *dev, int slave, u8 port)
 {
 	struct mlx4_eqe eqe;
 
-	/*don't send if we don't have the that slave */
+	 
 	if (dev->persist->num_vfs < slave)
 		return 0;
 	memset(&eqe, 0, sizeof(eqe));
@@ -293,7 +256,7 @@ int mlx4_gen_port_state_change_eqe(struct mlx4_dev *dev, int slave, u8 port,
 	struct mlx4_eqe eqe;
 	u8 slave_port = mlx4_phys_to_slave_port(dev, slave, port);
 
-	/*don't send if we don't have the that slave */
+	 
 	if (dev->persist->num_vfs < slave)
 		return 0;
 	memset(&eqe, 0, sizeof(eqe));
@@ -354,15 +317,7 @@ static void set_all_slave_state(struct mlx4_dev *dev, u8 port, int event)
 			set_and_calc_slave_port_state(dev, i, port,
 						      event, &gen_event);
 }
-/**************************************************************************
-	The function get as input the new event to that port,
-	and according to the prev state change the slave's port state.
-	The events are:
-		MLX4_PORT_STATE_DEV_EVENT_PORT_DOWN,
-		MLX4_PORT_STATE_DEV_EVENT_PORT_UP
-		MLX4_PORT_STATE_IB_EVENT_GID_VALID
-		MLX4_PORT_STATE_IB_EVENT_GID_INVALID
-***************************************************************************/
+ 
 int set_and_calc_slave_port_state(struct mlx4_dev *dev, int slave,
 				  u8 port, int event,
 				  enum slave_port_gen_event *gen_event)
@@ -468,20 +423,16 @@ void mlx4_master_handle_slave_flr(struct work_struct *work)
 		if (MLX4_COMM_CMD_FLR == slave_state[i].last_cmd) {
 			mlx4_dbg(dev, "mlx4_handle_slave_flr: clean slave: %d\n",
 				 i);
-			/* In case of 'Reset flow' FLR can be generated for
-			 * a slave before mlx4_load_one is done.
-			 * make sure interface is up before trying to delete
-			 * slave resources which weren't allocated yet.
-			 */
+			 
 			if (dev->persist->interface_state &
 			    MLX4_INTERFACE_STATE_UP)
 				mlx4_delete_all_resources_for_slave(dev, i);
-			/*return the slave to running mode*/
+			 
 			spin_lock_irqsave(&priv->mfunc.master.slave_state_lock, flags);
 			slave_state[i].last_cmd = MLX4_COMM_CMD_RESET;
 			slave_state[i].is_slave_going_down = 0;
 			spin_unlock_irqrestore(&priv->mfunc.master.slave_state_lock, flags);
-			/*notify the FW:*/
+			 
 			err = mlx4_cmd(dev, 0, i, 0, MLX4_CMD_INFORM_FLR_DONE,
 				       MLX4_CMD_TIME_CLASS_A, MLX4_CMD_WRAPPED);
 			if (err)
@@ -510,10 +461,7 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 	int eqe_size = dev->caps.eqe_size;
 
 	while ((eqe = next_eqe_sw(eq, dev->caps.eqe_factor, eqe_size))) {
-		/*
-		 * Make sure we read EQ entry contents after we've
-		 * checked the ownership bit.
-		 */
+		 
 		dma_rmb();
 
 		switch (eqe->type) {
@@ -532,7 +480,7 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 		case MLX4_EVENT_TYPE_WQ_ACCESS_ERROR:
 			mlx4_dbg(dev, "event %d arrived\n", eqe->type);
 			if (mlx4_is_master(dev)) {
-				/* forward only to slave owning the QP */
+				 
 				ret = mlx4_get_slave_from_resource_id(dev,
 						RES_QP,
 						be32_to_cpu(eqe->event.qp.qpn)
@@ -561,7 +509,7 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 			fallthrough;
 		case MLX4_EVENT_TYPE_SRQ_CATAS_ERROR:
 			if (mlx4_is_master(dev)) {
-				/* forward only to slave owning the SRQ */
+				 
 				ret = mlx4_get_slave_from_resource_id(dev,
 						RES_SRQ,
 						be32_to_cpu(eqe->event.srq.srqn)
@@ -630,11 +578,11 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 								| (reported_port << 28));
 							mlx4_slave_event(dev, i, eqe);
 						}
-					} else {  /* IB port */
+					} else {   
 						set_and_calc_slave_port_state(dev, i, port,
 									      MLX4_PORT_STATE_DEV_EVENT_PORT_DOWN,
 									      &gen_event);
-						/*we can be in pending state, then do not send port_down event*/
+						 
 						if (SLAVE_PORT_GEN_EVENT_DOWN ==  gen_event) {
 							if (i == mlx4_master_func_num(dev))
 								continue;
@@ -673,10 +621,8 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 							mlx4_slave_event(dev, i, eqe);
 						}
 					}
-				else /* IB port */
-					/* port-up event will be sent to a slave when the
-					 * slave's alias-guid is set. This is done in alias_GUID.c
-					 */
+				else  
+					 
 					set_all_slave_state(dev, port, MLX4_DEV_EVENT_PORT_UP);
 			}
 			break;
@@ -716,9 +662,7 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 
 		case MLX4_EVENT_TYPE_OP_REQUIRED:
 			atomic_inc(&priv->opreq_count);
-			/* FW commands can't be executed from interrupt context
-			 * working in deferred task
-			 */
+			 
 			queue_work(mlx4_wq, &priv->opreq_task);
 			break;
 
@@ -828,13 +772,7 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 		eqes_found = 1;
 		++set_ci;
 
-		/*
-		 * The HCA will think the queue has overflowed if we
-		 * don't tell it we've been processing events.  We
-		 * create our EQs with MLX4_NUM_SPARE_EQE extra
-		 * entries, so we must update our consumer index at
-		 * least that often.
-		 */
+		 
 		if (unlikely(set_ci >= MLX4_NUM_SPARE_EQE)) {
 			eq_set_ci(eq, 0);
 			set_ci = 0;
@@ -868,7 +806,7 @@ static irqreturn_t mlx4_msi_x_interrupt(int irq, void *eq_ptr)
 
 	mlx4_eq_int(dev, eq);
 
-	/* MSI-X vectors always belong to us */
+	 
 	return IRQ_HANDLED;
 }
 
@@ -923,11 +861,7 @@ static int mlx4_HW2SW_EQ(struct mlx4_dev *dev,  int eq_num)
 
 static int mlx4_num_eq_uar(struct mlx4_dev *dev)
 {
-	/*
-	 * Each UAR holds 4 EQ doorbells.  To figure out how many UARs
-	 * we need to map, take the difference of highest index and
-	 * the lowest index we'll use and add 1.
-	 */
+	 
 	return (dev->caps.num_comp_vectors + 1 + dev->caps.reserved_eqs) / 4 -
 		dev->caps.reserved_eqs / 4 + 1;
 }
@@ -982,9 +916,7 @@ static int mlx4_create_eq(struct mlx4_dev *dev, int nent,
 
 	eq->dev   = dev;
 	eq->nent  = roundup_pow_of_two(max(nent, 2));
-	/* CX3 is capable of extending the CQE/EQE from 32 to 64 bytes, with
-	 * strides of 64B,128B and 256B.
-	 */
+	 
 	npages = PAGE_ALIGN(eq->nent * dev->caps.eqe_size) / PAGE_SIZE;
 
 	eq->page_list = kmalloc_array(npages, sizeof(*eq->page_list),
@@ -1091,9 +1023,7 @@ static void mlx4_free_eq(struct mlx4_dev *dev,
 	struct mlx4_priv *priv = mlx4_priv(dev);
 	int err;
 	int i;
-	/* CX3 is capable of extending the CQE/EQE from 32 to 64 bytes, with
-	 * strides of 64B,128B and 256B
-	 */
+	 
 	int npages = PAGE_ALIGN(dev->caps.eqe_size  * eq->nent) / PAGE_SIZE;
 
 	err = mlx4_HW2SW_EQ(dev, eq->eqn);
@@ -1295,7 +1225,7 @@ int mlx4_init_eq_table(struct mlx4_dev *dev)
 		mlx4_warn(dev, "MAP_EQ for async EQ %d failed (%d)\n",
 			   priv->eq_table.eq[MLX4_EQ_ASYNC].eqn, err);
 
-	/* arm ASYNC eq */
+	 
 	eq_set_ci(&priv->eq_table.eq[MLX4_EQ_ASYNC], 1);
 
 	return 0;
@@ -1357,28 +1287,23 @@ void mlx4_cleanup_eq_table(struct mlx4_dev *dev)
 	kfree(priv->eq_table.uar_map);
 }
 
-/* A test that verifies that we can accept interrupts
- * on the vector allocated for asynchronous events
- */
+ 
 int mlx4_test_async(struct mlx4_dev *dev)
 {
 	return mlx4_NOP(dev);
 }
 EXPORT_SYMBOL(mlx4_test_async);
 
-/* A test that verifies that we can accept interrupts
- * on the given irq vector of the tested port.
- * Interrupts are checked using the NOP command.
- */
+ 
 int mlx4_test_interrupt(struct mlx4_dev *dev, int vector)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
 	int err;
 
-	/* Temporary use polling for command completions */
+	 
 	mlx4_cmd_use_polling(dev);
 
-	/* Map the new eq to handle all asynchronous events */
+	 
 	err = mlx4_MAP_EQ(dev, get_async_ev_mask(dev), 0,
 			  priv->eq_table.eq[MLX4_CQ_TO_EQ_VECTOR(vector)].eqn);
 	if (err) {
@@ -1386,11 +1311,11 @@ int mlx4_test_interrupt(struct mlx4_dev *dev, int vector)
 		goto out;
 	}
 
-	/* Go back to using events */
+	 
 	mlx4_cmd_use_events(dev);
 	err = mlx4_NOP(dev);
 
-	/* Return to default */
+	 
 	mlx4_cmd_use_polling(dev);
 out:
 	mlx4_MAP_EQ(dev, get_async_ev_mask(dev), 0,
@@ -1555,9 +1480,7 @@ void mlx4_release_eq(struct mlx4_dev *dev, int vec)
 	mutex_lock(&priv->msix_ctl.pool_lock);
 	priv->eq_table.eq[eq_vec].ref_count--;
 
-	/* once we allocated EQ, we don't release it because it might be binded
-	 * to cpu_rmap.
-	 */
+	 
 	mutex_unlock(&priv->msix_ctl.pool_lock);
 }
 EXPORT_SYMBOL(mlx4_release_eq);

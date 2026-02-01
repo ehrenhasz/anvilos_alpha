@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2009-2013 Solarflare Communications Inc.
- */
 
-/*
- * Driver for PHY related operations via MCDI.
- */
+ 
+
+ 
 
 #include <linux/slab.h>
 #include "efx.h"
@@ -97,12 +92,12 @@ int efx_mcdi_port_probe(struct efx_nic *efx)
 {
 	int rc;
 
-	/* Set up MDIO structure for PHY */
+	 
 	efx->mdio.mode_support = MDIO_SUPPORTS_C45 | MDIO_EMULATE_C22;
 	efx->mdio.mdio_read = efx_mcdi_mdio_read;
 	efx->mdio.mdio_write = efx_mcdi_mdio_write;
 
-	/* Fill out MDIO structure, loopback modes, and initial link state */
+	 
 	rc = efx_mcdi_phy_probe(efx);
 	if (rc != 0)
 		return rc;

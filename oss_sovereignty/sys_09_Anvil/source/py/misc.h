@@ -1,34 +1,10 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 #ifndef MICROPY_INCLUDED_PY_MISC_H
 #define MICROPY_INCLUDED_PY_MISC_H
 
-// a mini library of useful types and functions
 
-/** types *******************************************************/
+
+ 
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -37,7 +13,7 @@
 typedef unsigned char byte;
 typedef unsigned int uint;
 
-/** generic ops *************************************************/
+ 
 
 #ifndef MIN
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
@@ -46,30 +22,30 @@ typedef unsigned int uint;
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
 #endif
 
-// Classical double-indirection stringification of preprocessor macro's value
+
 #define MP_STRINGIFY_HELPER(x) #x
 #define MP_STRINGIFY(x) MP_STRINGIFY_HELPER(x)
 
-// Static assertion macro
+
 #define MP_STATIC_ASSERT(cond) ((void)sizeof(char[1 - 2 * !(cond)]))
-// In C++ things like comparing extern const pointers are not constant-expressions so cannot be used
-// in MP_STATIC_ASSERT. Note that not all possible compiler versions will reject this. Some gcc versions
-// do, others only with -Werror=vla, msvc always does.
-// The (void) is needed to avoid "left operand of comma operator has no effect [-Werror=unused-value]"
-// when using this macro on the left-hand side of a comma.
+
+
+
+
+
 #if defined(_MSC_VER) || defined(__cplusplus)
 #define MP_STATIC_ASSERT_NONCONSTEXPR(cond) ((void)1)
 #else
 #define MP_STATIC_ASSERT_NONCONSTEXPR(cond) MP_STATIC_ASSERT(cond)
 #endif
 
-// Round-up integer division
+
 #define MP_CEIL_DIVIDE(a, b) (((a) + (b) - 1) / (b))
 #define MP_ROUND_DIVIDE(a, b) (((a) + (b) / 2) / (b))
 
-/** memory allocation ******************************************/
+ 
 
-// TODO make a lazy m_renew that can increase by a smaller amount than requested (but by at least 1 more element)
+
 
 #define m_new(type, num) ((type *)(m_malloc(sizeof(type) * (num))))
 #define m_new_maybe(type, num) ((type *)(m_malloc_maybe(sizeof(type) * (num))))
@@ -108,8 +84,8 @@ void m_free(void *ptr);
 NORETURN void m_malloc_fail(size_t num_bytes);
 
 #if MICROPY_TRACKED_ALLOC
-// These alloc/free functions track the pointers in a linked list so the GC does not reclaim
-// them.  They can be used by code that requires traditional C malloc/free semantics.
+
+
 void *m_tracked_calloc(size_t nmemb, size_t size);
 void m_tracked_free(void *ptr_in);
 #endif
@@ -120,22 +96,22 @@ size_t m_get_current_bytes_allocated(void);
 size_t m_get_peak_bytes_allocated(void);
 #endif
 
-/** array helpers ***********************************************/
+ 
 
-// get the number of elements in a fixed-size array
+
 #define MP_ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
-// align ptr to the nearest multiple of "alignment"
+
 #define MP_ALIGN(ptr, alignment) (void *)(((uintptr_t)(ptr) + ((alignment) - 1)) & ~((alignment) - 1))
 
-/** unichar / UTF-8 *********************************************/
+ 
 
 #if MICROPY_PY_BUILTINS_STR_UNICODE
-// with unicode enabled we need a type which can fit chars up to 0x10ffff
+
 typedef uint32_t unichar;
 #else
-// without unicode enabled we can only need to fit chars up to 0xff
-// (on 16-bit archs uint is 16-bits and more efficient than uint32_t)
+
+
 typedef uint unichar;
 #endif
 
@@ -171,7 +147,7 @@ mp_uint_t unichar_xdigit_value(unichar c);
 #define UTF8_IS_NONASCII(ch) ((ch) & 0x80)
 #define UTF8_IS_CONT(ch) (((ch) & 0xC0) == 0x80)
 
-/** variable string *********************************************/
+ 
 
 typedef struct _vstr_t {
     size_t alloc;
@@ -180,7 +156,7 @@ typedef struct _vstr_t {
     bool fixed_buf;
 } vstr_t;
 
-// convenience macro to declare a vstr with a fixed size buffer on the stack
+
 #define VSTR_FIXED(vstr, alloc) vstr_t vstr; char vstr##_buf[(alloc)]; vstr_init_fixed_buf(&vstr, (alloc), vstr##_buf);
 
 void vstr_init(vstr_t *vstr, size_t alloc);
@@ -215,7 +191,7 @@ void vstr_cut_tail_bytes(vstr_t *vstr, size_t bytes_to_cut);
 void vstr_cut_out_bytes(vstr_t *vstr, size_t byte_pos, size_t bytes_to_cut);
 void vstr_printf(vstr_t *vstr, const char *fmt, ...);
 
-/** non-dynamic size-bounded variable buffer/string *************/
+ 
 
 #define CHECKBUF(buf, max_size) char buf[max_size + 1]; size_t buf##_len = max_size; char *buf##_p = buf;
 #define CHECKBUF_RESET(buf, max_size) buf##_len = max_size; buf##_p = buf;
@@ -231,12 +207,12 @@ void vstr_printf(vstr_t *vstr, const char *fmt, ...);
 void vstr_vprintf(vstr_t *vstr, const char *fmt, va_list ap);
 #endif
 
-// Debugging helpers
+
 int DEBUG_printf(const char *fmt, ...);
 
 extern mp_uint_t mp_verbose_flag;
 
-/** float internals *************/
+ 
 
 #if MICROPY_PY_BUILTINS_FLOAT
 
@@ -272,9 +248,9 @@ typedef union _mp_float_union_t {
     mp_float_uint_t i;
 } mp_float_union_t;
 
-#endif // MICROPY_PY_BUILTINS_FLOAT
+#endif 
 
-/** ROM string compression *************/
+ 
 
 #if MICROPY_ROM_TEXT_COMPRESSION
 
@@ -284,19 +260,19 @@ typedef union _mp_float_union_t {
 
 #ifdef NO_QSTR
 
-// Compression enabled but doing QSTR extraction.
-// So leave MP_COMPRESSED_ROM_TEXT in place for makeqstrdefs.py / makecompresseddata.py to find them.
+
+
 
 #else
 
-// Compression enabled and doing a regular build.
-// Map MP_COMPRESSED_ROM_TEXT to the compressed strings.
 
-// Force usage of the MP_ERROR_TEXT macro by requiring an opaque type.
+
+
+
 typedef struct {
     #if defined(__clang__) || defined(_MSC_VER)
-    // Fix "error: empty struct has size 0 in C, size 1 in C++", and the msvc counterpart
-    // "C requires that a struct or union have at least one member"
+    
+    
     char dummy;
     #endif
 } *mp_rom_error_text_t;
@@ -304,11 +280,11 @@ typedef struct {
 #include <string.h>
 
 inline MP_ALWAYSINLINE const char *MP_COMPRESSED_ROM_TEXT(const char *msg) {
-    // "genhdr/compressed.data.h" contains an invocation of the MP_MATCH_COMPRESSED macro for each compressed string.
-    // The giant if(strcmp) tree is optimized by the compiler, which turns this into a direct return of the compressed data.
+    
+    
     #define MP_MATCH_COMPRESSED(a, b) if (strcmp(msg, a) == 0) { return b; } else
 
-    // It also contains a single invocation of the MP_COMPRESSED_DATA macro, we don't need that here.
+    
     #define MP_COMPRESSED_DATA(x)
 
     #include "genhdr/compressed.data.h"
@@ -323,15 +299,15 @@ inline MP_ALWAYSINLINE const char *MP_COMPRESSED_ROM_TEXT(const char *msg) {
 
 #else
 
-// Compression not enabled, just make it a no-op.
+
 
 typedef const char *mp_rom_error_text_t;
 #define MP_COMPRESSED_ROM_TEXT(x) x
 
-#endif // MICROPY_ROM_TEXT_COMPRESSION
+#endif 
 
-// Might add more types of compressed text in the future.
-// For now, forward directly to MP_COMPRESSED_ROM_TEXT.
+
+
 #define MP_ERROR_TEXT(x) (mp_rom_error_text_t)MP_COMPRESSED_ROM_TEXT(x)
 
-#endif // MICROPY_INCLUDED_PY_MISC_H
+#endif 

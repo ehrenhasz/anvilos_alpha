@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Based on sound/arm/pxa2xx-ac97.c and sound/soc/pxa/pxa2xx-ac97.c
- * which contain:
- *
- * Author:	Nicolas Pitre
- * Created:	Dec 02, 2004
- * Copyright:	MontaVista Software Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
@@ -33,15 +26,7 @@ static struct clk *ac97conf_clk;
 static int reset_gpio;
 static void __iomem *ac97_reg_base;
 
-/*
- * Beware PXA27x bugs:
- *
- *   o Slot 12 read from modem space will hang controller.
- *   o CDONE, SDONE interrupt fails after any slot 12 IO.
- *
- * We therefore have an hybrid approach for waiting on SDONE (interrupt or
- * 1 jiffy timeout if interrupt never comes).
- */
+ 
 
 int pxa2xx_ac97_read(int slot, unsigned short reg)
 {
@@ -53,7 +38,7 @@ int pxa2xx_ac97_read(int slot, unsigned short reg)
 
 	mutex_lock(&car_mutex);
 
-	/* set up primary or secondary codec space */
+	 
 	if (cpu_is_pxa25x() && reg == AC97_GPIO_STATUS)
 		reg_addr = ac97_reg_base +
 			   (slot ? SMC_REG_BASE : PMC_REG_BASE);
@@ -62,7 +47,7 @@ int pxa2xx_ac97_read(int slot, unsigned short reg)
 			   (slot ? SAC_REG_BASE : PAC_REG_BASE);
 	reg_addr += (reg >> 1);
 
-	/* start read access across the ac97 link */
+	 
 	writel(GSR_CDONE | GSR_SDONE, ac97_reg_base + GSR);
 	gsr_bits = 0;
 	val = (readl(reg_addr) & 0xffff);
@@ -76,11 +61,11 @@ int pxa2xx_ac97_read(int slot, unsigned short reg)
 		goto out;
 	}
 
-	/* valid data now */
+	 
 	writel(GSR_CDONE | GSR_SDONE, ac97_reg_base + GSR);
 	gsr_bits = 0;
 	val = (readl(reg_addr) & 0xffff);
-	/* but we've just started another cycle... */
+	 
 	wait_event_timeout(gsr_wq, (readl(ac97_reg_base + GSR) | gsr_bits) & GSR_SDONE, 1);
 
 out:	mutex_unlock(&car_mutex);
@@ -95,7 +80,7 @@ int pxa2xx_ac97_write(int slot, unsigned short reg, unsigned short val)
 
 	mutex_lock(&car_mutex);
 
-	/* set up primary or secondary codec space */
+	 
 	if (cpu_is_pxa25x() && reg == AC97_GPIO_STATUS)
 		reg_addr = ac97_reg_base +
 			   (slot ? SMC_REG_BASE : PMC_REG_BASE);
@@ -129,8 +114,8 @@ static inline void pxa_ac97_warm_pxa25x(void)
 
 static inline void pxa_ac97_cold_pxa25x(void)
 {
-	writel(readl(ac97_reg_base + GCR) & ( GCR_COLD_RST), ac97_reg_base + GCR);  /* clear everything but nCRST */
-	writel(readl(ac97_reg_base + GCR) & (~GCR_COLD_RST), ac97_reg_base + GCR);  /* then assert nCRST */
+	writel(readl(ac97_reg_base + GCR) & ( GCR_COLD_RST), ac97_reg_base + GCR);   
+	writel(readl(ac97_reg_base + GCR) & (~GCR_COLD_RST), ac97_reg_base + GCR);   
 
 	gsr_bits = 0;
 
@@ -143,7 +128,7 @@ static inline void pxa_ac97_warm_pxa27x(void)
 {
 	gsr_bits = 0;
 
-	/* warm reset broken on Bulverde, so manually keep AC97 reset high */
+	 
 	pxa27x_configure_ac97reset(reset_gpio, true);
 	udelay(10);
 	writel(readl(ac97_reg_base + GCR) | (GCR_WARM_RST), ac97_reg_base + GCR);
@@ -153,12 +138,12 @@ static inline void pxa_ac97_warm_pxa27x(void)
 
 static inline void pxa_ac97_cold_pxa27x(void)
 {
-	writel(readl(ac97_reg_base + GCR) & ( GCR_COLD_RST), ac97_reg_base + GCR);  /* clear everything but nCRST */
-	writel(readl(ac97_reg_base + GCR) & (~GCR_COLD_RST), ac97_reg_base + GCR);  /* then assert nCRST */
+	writel(readl(ac97_reg_base + GCR) & ( GCR_COLD_RST), ac97_reg_base + GCR);   
+	writel(readl(ac97_reg_base + GCR) & (~GCR_COLD_RST), ac97_reg_base + GCR);   
 
 	gsr_bits = 0;
 
-	/* PXA27x Developers Manual section 13.5.2.2.1 */
+	 
 	clk_prepare_enable(ac97conf_clk);
 	udelay(5);
 	clk_disable_unprepare(ac97conf_clk);
@@ -171,24 +156,24 @@ static inline void pxa_ac97_warm_pxa3xx(void)
 {
 	gsr_bits = 0;
 
-	/* Can't use interrupts */
+	 
 	writel(readl(ac97_reg_base + GCR) | (GCR_WARM_RST), ac97_reg_base + GCR);
 }
 
 static inline void pxa_ac97_cold_pxa3xx(void)
 {
-	/* Hold CLKBPB for 100us */
+	 
 	writel(0, ac97_reg_base + GCR);
 	writel(GCR_CLKBPB, ac97_reg_base + GCR);
 	udelay(100);
 	writel(0, ac97_reg_base + GCR);
 
-	writel(readl(ac97_reg_base + GCR) & ( GCR_COLD_RST), ac97_reg_base + GCR);  /* clear everything but nCRST */
-	writel(readl(ac97_reg_base + GCR) & (~GCR_COLD_RST), ac97_reg_base + GCR);  /* then assert nCRST */
+	writel(readl(ac97_reg_base + GCR) & ( GCR_COLD_RST), ac97_reg_base + GCR);   
+	writel(readl(ac97_reg_base + GCR) & (~GCR_COLD_RST), ac97_reg_base + GCR);   
 
 	gsr_bits = 0;
 
-	/* Can't use interrupts on PXA3xx */
+	 
 	writel(readl(ac97_reg_base + GCR) & (~(GCR_PRIRDY_IEN|GCR_SECRDY_IEN)), ac97_reg_base + GCR);
 
 	writel(GCR_WARM_RST | GCR_COLD_RST, ac97_reg_base + GCR);
@@ -289,9 +274,7 @@ static irqreturn_t pxa2xx_ac97_irq(int irq, void *dev_id)
 		gsr_bits |= status;
 		wake_up(&gsr_wq);
 
-		/* Although we don't use those we still need to clear them
-		   since they tend to spuriously trigger when MMC is used
-		   (hardware bug? go figure)... */
+		 
 		if (cpu_is_pxa27x()) {
 			writel(MISR_EOC, ac97_reg_base + MISR);
 			writel(PISR_EOC, ac97_reg_base + PISR);
@@ -365,12 +348,7 @@ int pxa2xx_ac97_hw_probe(struct platform_device *dev)
 	}
 
 	if (cpu_is_pxa27x()) {
-		/*
-		 * This gpio is needed for a work-around to a bug in the ac97
-		 * controller during warm reset.  The direction and level is set
-		 * here so that it is an output driven high when switching from
-		 * AC97_nRESET alt function to generic gpio.
-		 */
+		 
 		ret = gpio_request_one(reset_gpio, GPIOF_OUT_INIT_HIGH,
 				       "pxa27x ac97 reset");
 		if (ret < 0) {

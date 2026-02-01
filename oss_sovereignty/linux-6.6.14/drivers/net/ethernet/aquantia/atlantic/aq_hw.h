@@ -1,13 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Atlantic Network Driver
- *
- * Copyright (C) 2014-2019 aQuantia Corporation
- * Copyright (C) 2019-2020 Marvell International Ltd.
- */
+ 
+ 
 
-/* File aq_hw.h: Declaration of abstract interface for NIC hardware specific
- * functions.
- */
+ 
 
 #ifndef AQ_HW_H
 #define AQ_HW_H
@@ -38,10 +32,10 @@ enum aq_tc_mode {
 
 #define AQ_FRAC_PER_NS 0x100000000LL
 
-/* Used for rate to Mbps conversion */
-#define AQ_MBPS_DIVISOR         125000 /* 1000000 / 8 */
+ 
+#define AQ_MBPS_DIVISOR         125000  
 
-/* NIC H/W capabilities */
+ 
 struct aq_hw_caps_s {
 	u64 hw_features;
 	u64 link_speed_msk;
@@ -401,4 +395,4 @@ struct aq_fw_ops {
 			       struct macsec_msg_fw_response *resp);
 };
 
-#endif /* AQ_HW_H */
+#endif  

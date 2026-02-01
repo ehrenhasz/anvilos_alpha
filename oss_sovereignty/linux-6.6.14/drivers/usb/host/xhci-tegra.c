@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NVIDIA Tegra xHCI host controller driver
- *
- * Copyright (c) 2014-2020, NVIDIA CORPORATION. All rights reserved.
- * Copyright (C) 2014 Google, Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -36,7 +31,7 @@
 #define TEGRA_XHCI_SS_HIGH_SPEED 120000000
 #define TEGRA_XHCI_SS_LOW_SPEED   12000000
 
-/* FPCI CFG registers */
+ 
 #define XUSB_CFG_1				0x004
 #define  XUSB_IO_SPACE_EN			BIT(0)
 #define  XUSB_MEM_SPACE_EN			BIT(1)
@@ -58,19 +53,19 @@
 #define XUSB_CFG_ARU_CONTEXT_HSFS_PP		0x484
 #define XUSB_CFG_CSB_BASE_ADDR			0x800
 
-/* FPCI mailbox registers */
-/* XUSB_CFG_ARU_MBOX_CMD */
+ 
+ 
 #define  MBOX_DEST_FALC				BIT(27)
 #define  MBOX_DEST_PME				BIT(28)
 #define  MBOX_DEST_SMI				BIT(29)
 #define  MBOX_DEST_XHCI				BIT(30)
 #define  MBOX_INT_EN				BIT(31)
-/* XUSB_CFG_ARU_MBOX_DATA_IN and XUSB_CFG_ARU_MBOX_DATA_OUT */
+ 
 #define  CMD_DATA_SHIFT				0
 #define  CMD_DATA_MASK				0xffffff
 #define  CMD_TYPE_SHIFT				24
 #define  CMD_TYPE_MASK				0xff
-/* XUSB_CFG_ARU_MBOX_OWNER */
+ 
 #define  MBOX_OWNER_NONE			0
 #define  MBOX_OWNER_FW				1
 #define  MBOX_OWNER_SW				2
@@ -78,7 +73,7 @@
 #define  MBOX_SMI_INTR_FW_HANG			BIT(1)
 #define  MBOX_SMI_INTR_EN			BIT(3)
 
-/* BAR2 registers */
+ 
 #define XUSB_BAR2_ARU_MBOX_CMD			0x004
 #define XUSB_BAR2_ARU_MBOX_DATA_IN		0x008
 #define XUSB_BAR2_ARU_MBOX_DATA_OUT		0x00c
@@ -92,7 +87,7 @@
 #define XUSB_BAR2_ARU_FW_SCRATCH		0x1000
 #define XUSB_BAR2_CSB_BASE_ADDR			0x2000
 
-/* IPFS registers */
+ 
 #define IPFS_XUSB_HOST_MSI_BAR_SZ_0		0x0c0
 #define IPFS_XUSB_HOST_MSI_AXI_BAR_ST_0		0x0c4
 #define IPFS_XUSB_HOST_MSI_FPCI_BAR_ST_0	0x0c8
@@ -115,7 +110,7 @@
 				 CSB_PAGE_SELECT_MASK)
 #define CSB_PAGE_OFFSET(addr)	((addr) & CSB_PAGE_OFFSET_MASK)
 
-/* Falcon CSB registers */
+ 
 #define XUSB_FALC_CPUCTL			0x100
 #define  CPUCTL_STARTCPU			BIT(1)
 #define  CPUCTL_STATE_HALTED			BIT(4)
@@ -128,10 +123,10 @@
 #define  IMFILLRNG1_TAG_HI_SHIFT		16
 #define XUSB_FALC_IMFILLCTL			0x158
 
-/* CSB ARU registers */
+ 
 #define XUSB_CSB_ARU_SCRATCH0			0x100100
 
-/* MP CSB registers */
+ 
 #define XUSB_CSB_MP_ILOAD_ATTR			0x101a00
 #define XUSB_CSB_MP_ILOAD_BASE_LO		0x101a04
 #define XUSB_CSB_MP_ILOAD_BASE_HI		0x101a08
@@ -185,7 +180,7 @@ struct tegra_xusb_fw_header {
 	u8 magic[8];
 	__le32 ss_low_power_entry_timeout;
 	u8 num_hsic_port;
-	u8 padding[139]; /* Pad to 256 bytes */
+	u8 padding[139];  
 };
 
 struct tegra_xusb_phy_type {
@@ -302,7 +297,7 @@ struct tegra_xusb {
 	struct notifier_block id_nb;
 	struct work_struct id_work;
 
-	/* Firmware loading related */
+	 
 	struct {
 		size_t size;
 		void *virt;
@@ -417,10 +412,7 @@ static int tegra_xusb_set_ss_clk(struct tegra_xusb *tegra,
 
 	switch (rate) {
 	case TEGRA_XHCI_SS_HIGH_SPEED:
-		/*
-		 * Reparent to PLLU_480M. Set divider first to avoid
-		 * overclocking.
-		 */
+		 
 		old_parent_rate = clk_get_rate(clk_get_parent(clk));
 		new_parent_rate = clk_get_rate(tegra->pll_u_480m);
 		div = new_parent_rate / rate;
@@ -433,10 +425,7 @@ static int tegra_xusb_set_ss_clk(struct tegra_xusb *tegra,
 		if (err)
 			return err;
 
-		/*
-		 * The rate should already be correct, but set it again just
-		 * to be sure.
-		 */
+		 
 		err = clk_set_rate(clk, rate);
 		if (err)
 			return err;
@@ -444,7 +433,7 @@ static int tegra_xusb_set_ss_clk(struct tegra_xusb *tegra,
 		break;
 
 	case TEGRA_XHCI_SS_LOW_SPEED:
-		/* Reparent to CLK_M */
+		 
 		err = clk_set_parent(clk, tegra->clk_m);
 		if (err)
 			return err;
@@ -474,22 +463,22 @@ static unsigned long extract_field(u32 value, unsigned int start,
 	return (value >> start) & ((1 << count) - 1);
 }
 
-/* Command requests from the firmware */
+ 
 enum tegra_xusb_mbox_cmd {
 	MBOX_CMD_MSG_ENABLED = 1,
 	MBOX_CMD_INC_FALC_CLOCK,
 	MBOX_CMD_DEC_FALC_CLOCK,
 	MBOX_CMD_INC_SSPI_CLOCK,
 	MBOX_CMD_DEC_SSPI_CLOCK,
-	MBOX_CMD_SET_BW, /* no ACK/NAK required */
+	MBOX_CMD_SET_BW,  
 	MBOX_CMD_SET_SS_PWR_GATING,
 	MBOX_CMD_SET_SS_PWR_UNGATING,
 	MBOX_CMD_SAVE_DFE_CTLE_CTX,
-	MBOX_CMD_AIRPLANE_MODE_ENABLED, /* unused */
-	MBOX_CMD_AIRPLANE_MODE_DISABLED, /* unused */
+	MBOX_CMD_AIRPLANE_MODE_ENABLED,  
+	MBOX_CMD_AIRPLANE_MODE_DISABLED,  
 	MBOX_CMD_START_HSIC_IDLE,
 	MBOX_CMD_STOP_HSIC_IDLE,
-	MBOX_CMD_DBC_WAKE_STACK, /* unused */
+	MBOX_CMD_DBC_WAKE_STACK,  
 	MBOX_CMD_HSIC_PRETEND_CONNECT,
 	MBOX_CMD_RESET_SSPI,
 	MBOX_CMD_DISABLE_SS_LFPS_DETECTION,
@@ -497,7 +486,7 @@ enum tegra_xusb_mbox_cmd {
 
 	MBOX_CMD_MAX,
 
-	/* Response message to above commands */
+	 
 	MBOX_CMD_ACK = 128,
 	MBOX_CMD_NAK
 };
@@ -539,10 +528,7 @@ static int tegra_xusb_mbox_send(struct tegra_xusb *tegra,
 	bool wait_for_idle = false;
 	u32 value;
 
-	/*
-	 * Acquire the mailbox. The firmware still owns the mailbox for
-	 * ACK/NAK messages.
-	 */
+	 
 	if (!(msg->cmd == MBOX_CMD_ACK || msg->cmd == MBOX_CMD_NAK)) {
 		value = ops->mbox_reg_readl(tegra, tegra->soc->mbox.owner);
 		if (value != MBOX_OWNER_NONE) {
@@ -595,7 +581,7 @@ static irqreturn_t tegra_xusb_mbox_irq(int irq, void *data)
 	const struct tegra_xusb_soc_ops *ops = tegra->soc->ops;
 	u32 value;
 
-	/* clear mailbox interrupts */
+	 
 	value = ops->mbox_reg_readl(tegra, tegra->soc->mbox.smi_intr);
 	ops->mbox_reg_writel(tegra, value, tegra->soc->mbox.smi_intr);
 
@@ -648,11 +634,7 @@ static void tegra_xusb_mbox_handle(struct tegra_xusb *tegra,
 		break;
 
 	case MBOX_CMD_SET_BW:
-		/*
-		 * TODO: Request bandwidth once EMC scaling is supported.
-		 * Ignore for now since ACK/NAK is not required for SET_BW
-		 * messages.
-		 */
+		 
 		break;
 
 	case MBOX_CMD_SAVE_DFE_CTLE_CTX:
@@ -713,10 +695,7 @@ static void tegra_xusb_mbox_handle(struct tegra_xusb *tegra,
 			if (err < 0)
 				break;
 
-			/*
-			 * wait 500us for LFPS detector to be disabled before
-			 * sending ACK
-			 */
+			 
 			if (!enable)
 				usleep_range(500, 1000);
 		}
@@ -766,7 +745,7 @@ static irqreturn_t tegra_xusb_mbox_thread(int irq, void *data)
 	value &= ~MBOX_DEST_SMI;
 	ops->mbox_reg_writel(tegra, value, tegra->soc->mbox.cmd);
 
-	/* clear mailbox owner if no ACK/NAK is required */
+	 
 	if (!tegra_xusb_mbox_cmd_requires_ack(msg.cmd))
 		ops->mbox_reg_writel(tegra, MBOX_OWNER_NONE, tegra->soc->mbox.owner);
 
@@ -790,13 +769,13 @@ static void tegra_xusb_config(struct tegra_xusb *tegra)
 		usleep_range(10, 20);
 	}
 
-	/* Program BAR0 space */
+	 
 	value = fpci_readl(tegra, XUSB_CFG_4);
 	value &= ~(XUSB_BASE_ADDR_MASK << XUSB_BASE_ADDR_SHIFT);
 	value |= regs & (XUSB_BASE_ADDR_MASK << XUSB_BASE_ADDR_SHIFT);
 	fpci_writel(tegra, value, XUSB_CFG_4);
 
-	/* Program BAR2 space */
+	 
 	if (tegra->bar2) {
 		value = fpci_readl(tegra, XUSB_CFG_7);
 		value &= ~(XUSB_BASE2_ADDR_MASK << XUSB_BASE2_ADDR_SHIFT);
@@ -807,18 +786,18 @@ static void tegra_xusb_config(struct tegra_xusb *tegra)
 
 	usleep_range(100, 200);
 
-	/* Enable bus master */
+	 
 	value = fpci_readl(tegra, XUSB_CFG_1);
 	value |= XUSB_IO_SPACE_EN | XUSB_MEM_SPACE_EN | XUSB_BUS_MASTER_EN;
 	fpci_writel(tegra, value, XUSB_CFG_1);
 
 	if (tegra->soc->has_ipfs) {
-		/* Enable interrupt assertion */
+		 
 		value = ipfs_readl(tegra, IPFS_XUSB_HOST_INTR_MASK_0);
 		value |= IPFS_IP_INT_MASK;
 		ipfs_writel(tegra, value, IPFS_XUSB_HOST_INTR_MASK_0);
 
-		/* Set hysteresis */
+		 
 		ipfs_writel(tegra, 0x80, IPFS_XUSB_HOST_CLKGATE_HYSTERESIS_0);
 	}
 }
@@ -958,7 +937,7 @@ static int tegra_xusb_request_firmware(struct tegra_xusb *tegra)
 		return err;
 	}
 
-	/* Load Falcon controller with its firmware. */
+	 
 	header = (struct tegra_xusb_fw_header *)fw->data;
 	tegra->fw.size = le32_to_cpu(header->fwimg_len);
 
@@ -1014,27 +993,21 @@ static int tegra_xusb_load_firmware_rom(struct tegra_xusb *tegra)
 		return 0;
 	}
 
-	/* Program the size of DFI into ILOAD_ATTR. */
+	 
 	csb_writel(tegra, tegra->fw.size, XUSB_CSB_MP_ILOAD_ATTR);
 
-	/*
-	 * Boot code of the firmware reads the ILOAD_BASE registers
-	 * to get to the start of the DFI in system memory.
-	 */
+	 
 	address = tegra->fw.phys + sizeof(*header);
 	csb_writel(tegra, address >> 32, XUSB_CSB_MP_ILOAD_BASE_HI);
 	csb_writel(tegra, address, XUSB_CSB_MP_ILOAD_BASE_LO);
 
-	/* Set BOOTPATH to 1 in APMAP. */
+	 
 	csb_writel(tegra, APMAP_BOOTPATH, XUSB_CSB_MP_APMAP);
 
-	/* Invalidate L2IMEM. */
+	 
 	csb_writel(tegra, L2IMEMOP_INVALIDATE_ALL, XUSB_CSB_MP_L2IMEMOP_TRIG);
 
-	/*
-	 * Initiate fetch of bootcode from system memory into L2IMEM.
-	 * Program bootcode location and size in system memory.
-	 */
+	 
 	code_tag_blocks = DIV_ROUND_UP(le32_to_cpu(header->boot_codetag),
 				       IMEM_BLOCK_SIZE);
 	code_size_blocks = DIV_ROUND_UP(le32_to_cpu(header->boot_codesize),
@@ -1047,11 +1020,11 @@ static int tegra_xusb_load_firmware_rom(struct tegra_xusb *tegra)
 			L2IMEMOP_SIZE_SRC_COUNT_SHIFT);
 	csb_writel(tegra, value, XUSB_CSB_MP_L2IMEMOP_SIZE);
 
-	/* Trigger L2IMEM load operation. */
+	 
 	csb_writel(tegra, L2IMEMOP_LOAD_LOCKED_RESULT,
 		   XUSB_CSB_MP_L2IMEMOP_TRIG);
 
-	/* Setup Falcon auto-fill. */
+	 
 	csb_writel(tegra, code_size_blocks, XUSB_FALC_IMFILLCTL);
 
 	value = ((code_tag_blocks & IMFILLRNG1_TAG_MASK) <<
@@ -1062,7 +1035,7 @@ static int tegra_xusb_load_firmware_rom(struct tegra_xusb *tegra)
 
 	csb_writel(tegra, 0, XUSB_FALC_DMACTL);
 
-	/* wait for RESULT_VLD to get set */
+	 
 #define tegra_csb_readl(offset) csb_readl(tegra, offset)
 	err = readx_poll_timeout(tegra_csb_readl,
 				 XUSB_CSB_MEMPOOL_L2IMEMOP_RESULT, value,
@@ -1076,7 +1049,7 @@ static int tegra_xusb_load_firmware_rom(struct tegra_xusb *tegra)
 	csb_writel(tegra, le32_to_cpu(header->boot_codetag),
 		   XUSB_FALC_BOOTVEC);
 
-	/* Boot Falcon CPU and wait for USBSTS_CNR to get cleared. */
+	 
 	csb_writel(tegra, CPUCTL_STARTCPU, XUSB_FALC_CPUCTL);
 
 	if (tegra_xusb_wait_for_falcon(tegra))
@@ -1091,10 +1064,7 @@ static int tegra_xusb_load_firmware_rom(struct tegra_xusb *tegra)
 
 static u32 tegra_xusb_read_firmware_header(struct tegra_xusb *tegra, u32 offset)
 {
-	/*
-	 * We only accept reading the firmware config table
-	 * The offset should not exceed the fw header structure
-	 */
+	 
 	if (offset >= sizeof(struct tegra_xusb_fw_header))
 		return 0;
 
@@ -1246,7 +1216,7 @@ static int __tegra_xusb_enable_firmware_messages(struct tegra_xusb *tegra)
 	struct tegra_xusb_mbox_msg msg;
 	int err;
 
-	/* Enable firmware messages from controller. */
+	 
 	msg.cmd = MBOX_CMD_MSG_ENABLED;
 	msg.data = 0;
 
@@ -1364,10 +1334,10 @@ static void tegra_xhci_id_work(struct work_struct *work)
 								    tegra->otg_usb2_port);
 
 	if (tegra->host_mode) {
-		/* switch to host mode */
+		 
 		if (tegra->otg_usb3_port >= 0) {
 			if (tegra->soc->otg_reset_sspi) {
-				/* set PP=0 */
+				 
 				tegra_xhci_hc_driver.hub_control(
 					xhci->shared_hcd, GetPortStatus,
 					0, tegra->otg_usb3_port+1,
@@ -1376,7 +1346,7 @@ static void tegra_xhci_id_work(struct work_struct *work)
 					tegra_xhci_set_port_power(tegra, false,
 								  false);
 
-				/* reset OTG port SSPI */
+				 
 				msg.cmd = MBOX_CMD_RESET_SSPI;
 				msg.data = tegra->otg_usb3_port+1;
 
@@ -1512,9 +1482,7 @@ static int tegra_xusb_init_usb_phy(struct tegra_xusb *tegra)
 			dev_dbg(tegra->dev, "usbphy-%d registered", i);
 			otg_set_host(tegra->usbphy[i]->otg, &tegra->hcd->self);
 		} else {
-			/*
-			 * usb-phy is optional, continue if its not available.
-			 */
+			 
 			tegra->usbphy[i] = NULL;
 		}
 	}
@@ -1598,7 +1566,7 @@ static int tegra_xusb_probe(struct platform_device *pdev)
 		err = tegra->padctl_irq;
 		goto put_padctl;
 	} else if (tegra->padctl_irq <= 0) {
-		/* Older device-trees don't have padctrl interrupt */
+		 
 		tegra->padctl_irq = 0;
 		dev_dbg(&pdev->dev,
 			"%pOF is missing an interrupt, disabling PM support\n", np);
@@ -1753,10 +1721,7 @@ static int tegra_xusb_probe(struct platform_device *pdev)
 	tegra->hcd->rsrc_start = regs->start;
 	tegra->hcd->rsrc_len = resource_size(regs);
 
-	/*
-	 * This must happen after usb_create_hcd(), because usb_create_hcd()
-	 * will overwrite the drvdata of the device with the hcd it creates.
-	 */
+	 
 	platform_set_drvdata(pdev, tegra);
 
 	err = tegra_xusb_clk_enable(tegra);
@@ -1777,10 +1742,7 @@ static int tegra_xusb_probe(struct platform_device *pdev)
 		goto disable_regulator;
 	}
 
-	/*
-	 * The XUSB Falcon microcontroller can only address 40 bits, so set
-	 * the DMA mask accordingly.
-	 */
+	 
 	err = dma_set_mask_and_coherent(tegra->dev, DMA_BIT_MASK(40));
 	if (err < 0) {
 		dev_err(&pdev->dev, "failed to set DMA mask: %d\n", err);
@@ -1869,7 +1831,7 @@ static int tegra_xusb_probe(struct platform_device *pdev)
 		goto remove_usb3;
 	}
 
-	/* Enable wake for both USB 2.0 and USB 3.0 roothubs */
+	 
 	device_init_wakeup(&tegra->hcd->self.root_hub->dev, true);
 	device_init_wakeup(&xhci->shared_hcd->self.root_hub->dev, true);
 
@@ -1987,9 +1949,7 @@ static int tegra_xusb_check_ports(struct tegra_xusb *tegra)
 	int err = 0;
 
 	if (bus_state->bus_suspended) {
-		/* xusb_hub_suspend() has just directed one or more USB2 port(s)
-		 * to U3 state, it takes 3ms to enter U3.
-		 */
+		 
 		usleep_range(3000, 4000);
 	}
 
@@ -2737,9 +2697,9 @@ static int tegra_xhci_hub_control(struct usb_hcd *hcd, u16 type_req, u16 value, 
 		return ret;
 
 	if (hcd->speed == HCD_USB2) {
-		/* Use phy where we set previously */
+		 
 		if ((type_req == SetPortFeature) && (value == USB_PORT_FEAT_SUSPEND))
-			/* We don't suspend the PAD while HNP role swap happens on the OTG port */
+			 
 			if (!((hcd->self.otg_port == (port + 1)) && hcd->self.b_hnp_enable))
 				tegra_phy_xusb_utmi_pad_power_down(phy);
 
@@ -2747,9 +2707,7 @@ static int tegra_xhci_hub_control(struct usb_hcd *hcd, u16 type_req, u16 value, 
 			ports = rhub->ports;
 			portsc = readl(ports[port]->addr);
 			if (!(portsc & PORT_CONNECT)) {
-				/* We don't suspend the PAD while HNP role swap happens on the OTG
-				 * port
-				 */
+				 
 				if (!((hcd->self.otg_port == (port + 1)) && hcd->self.b_hnp_enable))
 					tegra_phy_xusb_utmi_pad_power_down(phy);
 			}

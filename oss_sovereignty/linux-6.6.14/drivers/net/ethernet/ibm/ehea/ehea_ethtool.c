@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  linux/drivers/net/ethernet/ibm/ehea/ehea_ethtool.c
- *
- *  eHEA ethernet device driver for IBM eServer System p
- *
- *  (C) Copyright IBM Corp. 2006
- *
- *  Authors:
- *       Christoph Raisch <raisch@de.ibm.com>
- *       Jan-Bernd Themann <themann@de.ibm.com>
- *       Thomas Klein <tklein@de.ibm.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -46,7 +35,7 @@ static int ehea_get_link_ksettings(struct net_device *dev,
 			break;
 		default:
 			speed = -1;
-			break; /* BUG */
+			break;  
 		}
 		cmd->base.duplex = port->full_duplex == 1 ?
 						     DUPLEX_FULL : DUPLEX_HALF;
@@ -266,7 +255,7 @@ static const struct ethtool_ops ehea_ethtool_ops = {
 	.get_strings = ehea_get_strings,
 	.get_sset_count = ehea_get_sset_count,
 	.get_ethtool_stats = ehea_get_ethtool_stats,
-	.nway_reset = ehea_nway_reset,		/* Restart autonegotiation */
+	.nway_reset = ehea_nway_reset,		 
 	.get_link_ksettings = ehea_get_link_ksettings,
 	.set_link_ksettings = ehea_set_link_ksettings,
 };

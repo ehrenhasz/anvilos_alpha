@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * A hwmon driver for the Analog Devices ADT7470
- * Copyright (C) 2007 IBM
- *
- * Author: Darrick J. Wong <darrick.wong@oracle.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -23,10 +18,10 @@
 #include <linux/slab.h>
 #include <linux/util_macros.h>
 
-/* Addresses to scan */
+ 
 static const unsigned short normal_i2c[] = { 0x2C, 0x2E, 0x2F, I2C_CLIENT_END };
 
-/* ADT7470 registers */
+ 
 #define ADT7470_REG_BASE_ADDR			0x20
 #define ADT7470_REG_TEMP_BASE_ADDR		0x20
 #define ADT7470_REG_TEMP_MAX_ADDR		0x29
@@ -112,31 +107,31 @@ static const unsigned short normal_i2c[] = { 0x2C, 0x2E, 0x2F, I2C_CLIENT_END };
 
 #define ADT7470_VENDOR		0x41
 #define ADT7470_DEVICE		0x70
-/* datasheet only mentions a revision 2 */
+ 
 #define ADT7470_REVISION	0x02
 
-/* "all temps" according to hwmon sysfs interface spec */
+ 
 #define ADT7470_PWM_ALL_TEMPS	0x3FF
 
-/* How often do we reread sensors values? (In jiffies) */
+ 
 #define SENSOR_REFRESH_INTERVAL	(5 * HZ)
 
-/* How often do we reread sensor limit values? (In jiffies) */
+ 
 #define LIMIT_REFRESH_INTERVAL	(60 * HZ)
 
-/* Wait at least 200ms per sensor for 10 sensors */
+ 
 #define TEMP_COLLECTION_TIME	2000
 
-/* auto update thing won't fire more than every 2s */
+ 
 #define AUTO_UPDATE_INTERVAL	2000
 
-/* datasheet says to divide this number by the fan reading to get fan rpm */
+ 
 #define FAN_PERIOD_TO_RPM(x)	((90000 * 60) / (x))
 #define FAN_RPM_TO_PERIOD	FAN_PERIOD_TO_RPM
 #define FAN_PERIOD_INVALID	65535
 #define FAN_DATA_VALID(x)	((x) && (x) != FAN_PERIOD_INVALID)
 
-/* Config registers 1 and 2 include fields for selecting the PWM frequency */
+ 
 #define ADT7470_CFG_LF		0x40
 #define ADT7470_FREQ_MASK	0x70
 #define ADT7470_FREQ_SHIFT	4
@@ -146,10 +141,10 @@ struct adt7470_data {
 	struct mutex		lock;
 	char			sensors_valid;
 	char			limits_valid;
-	unsigned long		sensors_last_updated;	/* In jiffies */
-	unsigned long		limits_last_updated;	/* In jiffies */
+	unsigned long		sensors_last_updated;	 
+	unsigned long		limits_last_updated;	 
 
-	int			num_temp_sensors;	/* -1 = probe */
+	int			num_temp_sensors;	 
 	int			temperatures_probed;
 
 	s8			temp[ADT7470_TEMP_COUNT];
@@ -172,10 +167,7 @@ struct adt7470_data {
 	unsigned int		auto_update_interval;
 };
 
-/*
- * 16-bit registers on the ADT7470 are low-byte first.  The data sheet says
- * that the low byte must be read before the high byte.
- */
+ 
 static inline int adt7470_read_word_data(struct adt7470_data *data, unsigned int reg,
 					 unsigned int *val)
 {
@@ -202,7 +194,7 @@ static inline int adt7470_write_word_data(struct adt7470_data *data, unsigned in
 	return regmap_bulk_write(data->regmap, reg, &regval, 2);
 }
 
-/* Probe for temperature sensors.  Assumes lock is held */
+ 
 static int adt7470_read_temperatures(struct adt7470_data *data)
 {
 	unsigned long res;
@@ -211,7 +203,7 @@ static int adt7470_read_temperatures(struct adt7470_data *data)
 	int i;
 	u8 pwm[ADT7470_FAN_COUNT];
 
-	/* save pwm[1-4] config register */
+	 
 	err = regmap_read(data->regmap, ADT7470_REG_PWM_CFG(0), &pwm_cfg[0]);
 	if (err < 0)
 		return err;
@@ -219,13 +211,13 @@ static int adt7470_read_temperatures(struct adt7470_data *data)
 	if (err < 0)
 		return err;
 
-	/* set manual pwm to whatever it is set to now */
+	 
 	err = regmap_bulk_read(data->regmap, ADT7470_REG_PWM(0), &pwm[0],
 			       ADT7470_PWM_COUNT);
 	if (err < 0)
 		return err;
 
-	/* put pwm in manual mode */
+	 
 	err = regmap_update_bits(data->regmap, ADT7470_REG_PWM_CFG(0),
 				 ADT7470_PWM_AUTO_MASK, 0);
 	if (err < 0)
@@ -235,30 +227,30 @@ static int adt7470_read_temperatures(struct adt7470_data *data)
 	if (err < 0)
 		return err;
 
-	/* write pwm control to whatever it was */
+	 
 	err = regmap_bulk_write(data->regmap, ADT7470_REG_PWM(0), &pwm[0],
 				ADT7470_PWM_COUNT);
 	if (err < 0)
 		return err;
 
-	/* start reading temperature sensors */
+	 
 	err = regmap_update_bits(data->regmap, ADT7470_REG_CFG,
 				 ADT7470_T05_STB_MASK, ADT7470_T05_STB_MASK);
 	if (err < 0)
 		return err;
 
-	/* Delay is 200ms * number of temp sensors. */
+	 
 	res = msleep_interruptible((data->num_temp_sensors >= 0 ?
 				    data->num_temp_sensors * 200 :
 				    TEMP_COLLECTION_TIME));
 
-	/* done reading temperature sensors */
+	 
 	err = regmap_update_bits(data->regmap, ADT7470_REG_CFG,
 				 ADT7470_T05_STB_MASK, 0);
 	if (err < 0)
 		return err;
 
-	/* restore pwm[1-4] config registers */
+	 
 	err = regmap_write(data->regmap, ADT7470_REG_PWM_CFG(0), pwm_cfg[0]);
 	if (err < 0)
 		return err;
@@ -269,7 +261,7 @@ static int adt7470_read_temperatures(struct adt7470_data *data)
 	if (res)
 		return -EAGAIN;
 
-	/* Only count fans if we have to */
+	 
 	if (data->num_temp_sensors >= 0)
 		return 0;
 
@@ -429,11 +421,7 @@ static struct adt7470_data *adt7470_update_device(struct device *dev)
 	int need_limits = 1;
 	int err;
 
-	/*
-	 * Figure out if we need to update the shadow registers.
-	 * Lockless means that we may occasionally report out of
-	 * date data.
-	 */
+	 
 	if (time_before(local_jiffies, data->sensors_last_updated +
 			SENSOR_REFRESH_INTERVAL) &&
 	    data->sensors_valid)
@@ -720,7 +708,7 @@ static ssize_t force_pwm_max_store(struct device *dev,
 	return err < 0 ? err : count;
 }
 
-/* These are the valid PWM frequencies to the nearest Hz */
+ 
 static const int adt7470_freq_map[] = {
 	11, 15, 22, 29, 35, 44, 59, 88, 1400, 22500
 };
@@ -785,7 +773,7 @@ static int pwm1_freq_set(struct device *dev, long freq)
 	int index;
 	int err;
 
-	/* Round the user value given to the closest available frequency */
+	 
 	index = find_closest(freq, adt7470_freq_map,
 			     ARRAY_SIZE(adt7470_freq_map));
 
@@ -795,13 +783,13 @@ static int pwm1_freq_set(struct device *dev, long freq)
 	}
 
 	mutex_lock(&data->lock);
-	/* Configuration Register 1 */
+	 
 	err = regmap_update_bits(data->regmap, ADT7470_REG_CFG,
 				 ADT7470_CFG_LF, low_freq);
 	if (err < 0)
 		goto out;
 
-	/* Configuration Register 2 */
+	 
 	err = regmap_update_bits(data->regmap, ADT7470_REG_CFG_2,
 				 ADT7470_FREQ_MASK,
 				 index << ADT7470_FREQ_SHIFT);
@@ -932,7 +920,7 @@ static ssize_t pwm_tmax_show(struct device *dev,
 	if (IS_ERR(data))
 		return PTR_ERR(data);
 
-	/* the datasheet says that tmax = tmin + 20C */
+	 
 	return sprintf(buf, "%d\n", 1000 * (20 + data->pwm_tmin[attr->index]));
 }
 
@@ -1217,7 +1205,7 @@ static const struct hwmon_chip_info adt7470_chip_info = {
 	.info = adt7470_info,
 };
 
-/* Return 0 if detection is successful, -ENODEV otherwise */
+ 
 static int adt7470_detect(struct i2c_client *client,
 			  struct i2c_board_info *info)
 {
@@ -1273,14 +1261,14 @@ static int adt7470_probe(struct i2c_client *client)
 
 	dev_info(&client->dev, "%s chip found\n", client->name);
 
-	/* Initialize the ADT7470 chip */
+	 
 	err = regmap_update_bits(data->regmap, ADT7470_REG_CFG,
 				 ADT7470_STRT_MASK | ADT7470_TEST_MASK,
 				 ADT7470_STRT_MASK | ADT7470_TEST_MASK);
 	if (err < 0)
 		return err;
 
-	/* Register sysfs hooks */
+	 
 	hwmon_dev = devm_hwmon_device_register_with_info(dev, client->name, data,
 							 &adt7470_chip_info,
 							 adt7470_groups);

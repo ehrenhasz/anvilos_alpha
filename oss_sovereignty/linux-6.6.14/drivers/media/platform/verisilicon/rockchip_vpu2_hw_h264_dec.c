@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Hantro VPU codec driver
- *
- * Copyright (c) 2014 Rockchip Electronics Co., Ltd.
- *	Hertz Wong <hertz.wong@rock-chips.com>
- *	Herman Chen <herman.chen@rock-chips.com>
- *
- * Copyright (C) 2014 Google, Inc.
- *	Tomasz Figa <tfiga@chromium.org>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/sort.h>
@@ -411,7 +402,7 @@ static void set_ref(struct hantro_ctx *ctx)
 	reg = VDPU_REG_REFER_VALID_E(ctx->h264_dec.dpb_valid);
 	vdpu_write_relaxed(vpu, reg, VDPU_SWREG(108));
 
-	/* Set up addresses of DPB buffers. */
+	 
 	for (i = 0; i < HANTRO_H264_DPB_SIZE; i++) {
 		dma_addr_t dma_addr = hantro_h264_get_ref_buf(ctx, i);
 
@@ -427,40 +418,37 @@ static void set_buffers(struct hantro_ctx *ctx, struct vb2_v4l2_buffer *src_buf)
 	dma_addr_t src_dma, dst_dma;
 	size_t offset = 0;
 
-	/* Source (stream) buffer. */
+	 
 	src_dma = vb2_dma_contig_plane_dma_addr(&src_buf->vb2_buf, 0);
 	vdpu_write_relaxed(vpu, src_dma, VDPU_REG_RLC_VLC_BASE);
 
-	/* Destination (decoded frame) buffer. */
+	 
 	dst_buf = hantro_get_dst_buf(ctx);
 	dst_dma = hantro_get_dec_buf_addr(ctx, &dst_buf->vb2_buf);
-	/* Adjust dma addr to start at second line for bottom field */
+	 
 	if (ctrls->decode->flags & V4L2_H264_DECODE_PARAM_FLAG_BOTTOM_FIELD)
 		offset = ALIGN(ctx->src_fmt.width, MB_DIM);
 	vdpu_write_relaxed(vpu, dst_dma + offset, VDPU_REG_DEC_OUT_BASE);
 
-	/* Higher profiles require DMV buffer appended to reference frames. */
+	 
 	if (ctrls->sps->profile_idc > 66 && ctrls->decode->nal_ref_idc) {
 		unsigned int bytes_per_mb = 384;
 
-		/* DMV buffer for monochrome start directly after Y-plane */
+		 
 		if (ctrls->sps->profile_idc >= 100 &&
 		    ctrls->sps->chroma_format_idc == 0)
 			bytes_per_mb = 256;
 		offset = bytes_per_mb * MB_WIDTH(ctx->src_fmt.width) *
 			 MB_HEIGHT(ctx->src_fmt.height);
 
-		/*
-		 * DMV buffer is split in two for field encoded frames,
-		 * adjust offset for bottom field
-		 */
+		 
 		if (ctrls->decode->flags & V4L2_H264_DECODE_PARAM_FLAG_BOTTOM_FIELD)
 			offset += 32 * MB_WIDTH(ctx->src_fmt.width) *
 				  MB_HEIGHT(ctx->src_fmt.height);
 		vdpu_write_relaxed(vpu, dst_dma + offset, VDPU_REG_DIR_MV_BASE);
 	}
 
-	/* Auxiliary buffer prepared in hantro_g1_h264_dec_prepare_table(). */
+	 
 	vdpu_write_relaxed(vpu, ctx->h264_dec.priv.dma, VDPU_REG_QTABLE_BASE);
 }
 
@@ -471,7 +459,7 @@ int rockchip_vpu2_h264_dec_run(struct hantro_ctx *ctx)
 	u32 reg;
 	int ret;
 
-	/* Prepare the H264 decoder context. */
+	 
 	ret = hantro_h264_dec_prepare_run(ctx);
 	if (ret)
 		return ret;
@@ -483,7 +471,7 @@ int rockchip_vpu2_h264_dec_run(struct hantro_ctx *ctx)
 
 	hantro_end_prepare_run(ctx);
 
-	/* Start decoding! */
+	 
 	reg = vdpu_read(vpu, VDPU_SWREG(57)) | VDPU_REG_DEC_E(1);
 	vdpu_write(vpu, reg, VDPU_SWREG(57));
 

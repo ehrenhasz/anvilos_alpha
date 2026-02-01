@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI/National Semiconductor LP3943 GPIO driver
- *
- * Copyright 2013 Texas Instruments
- *
- * Author: Milo Kim <milo.kim@ti.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/err.h>
@@ -39,7 +33,7 @@ enum lp3943_gpios {
 struct lp3943_gpio {
 	struct gpio_chip chip;
 	struct lp3943 *lp3943;
-	u16 input_mask;		/* 1 = GPIO is input direction, 0 = output */
+	u16 input_mask;		 
 };
 
 static int lp3943_gpio_request(struct gpio_chip *chip, unsigned int offset)
@@ -47,7 +41,7 @@ static int lp3943_gpio_request(struct gpio_chip *chip, unsigned int offset)
 	struct lp3943_gpio *lp3943_gpio = gpiochip_get_data(chip);
 	struct lp3943 *lp3943 = lp3943_gpio->lp3943;
 
-	/* Return an error if the pin is already assigned */
+	 
 	if (test_and_set_bit(offset, &lp3943->pin_used))
 		return -EBUSY;
 
@@ -132,14 +126,7 @@ static int lp3943_gpio_get(struct gpio_chip *chip, unsigned int offset)
 {
 	struct lp3943_gpio *lp3943_gpio = gpiochip_get_data(chip);
 
-	/*
-	 * Limitation:
-	 *   LP3943 doesn't have the GPIO direction register. It provides
-	 *   only input and output status registers.
-	 *   So, direction info is required to handle the 'get' operation.
-	 *   This variable is updated whenever the direction is changed and
-	 *   it is used here.
-	 */
+	 
 
 	if (lp3943_gpio->input_mask & BIT(offset))
 		return lp3943_get_gpio_in_status(lp3943_gpio, chip, offset);

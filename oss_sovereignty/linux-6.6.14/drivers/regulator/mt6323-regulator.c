@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2016 MediaTek Inc.
-// Author: Chen Zhong <chen.zhong@mediatek.com>
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -17,15 +17,7 @@
 #define MT6323_LDO_MODE_NORMAL	0
 #define MT6323_LDO_MODE_LP	1
 
-/*
- * MT6323 regulators' information
- *
- * @desc: standard fields of regulator description.
- * @qi: Mask for query enable signal status of regulators
- * @vselon_reg: Register sections for hardware control mode of bucks
- * @vselctrl_reg: Register for controlling the buck control mode.
- * @vselctrl_mask: Mask for query buck's voltage control mode.
- */
+ 
 struct mt6323_regulator_info {
 	struct regulator_desc desc;
 	u32 qi;
@@ -263,7 +255,7 @@ static const struct regulator_ops mt6323_volt_fixed_ops = {
 	.get_mode = mt6323_ldo_get_mode,
 };
 
-/* The array is indexed by id(MT6323_ID_XXX) */
+ 
 static struct mt6323_regulator_info mt6323_regulators[] = {
 	MT6323_BUCK("buck_vproc", VPROC, 700000, 1493750, 6250,
 		buck_volt_range1, MT6323_VPROC_CON7, MT6323_VPROC_CON9, 0x7f,
@@ -374,11 +366,11 @@ static int mt6323_regulator_probe(struct platform_device *pdev)
 	int i;
 	u32 reg_value;
 
-	/* Query buck controller to select activated voltage register part */
+	 
 	if (mt6323_set_buck_vosel_reg(pdev))
 		return -EIO;
 
-	/* Read PMIC chip revision to update constraints and voltage table */
+	 
 	if (regmap_read(mt6323->regmap, MT6323_CID, &reg_value) < 0) {
 		dev_err(&pdev->dev, "Failed to read Chip ID\n");
 		return -EIO;
@@ -402,7 +394,7 @@ static int mt6323_regulator_probe(struct platform_device *pdev)
 
 static const struct platform_device_id mt6323_platform_ids[] = {
 	{"mt6323-regulator", 0},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(platform, mt6323_platform_ids);
 

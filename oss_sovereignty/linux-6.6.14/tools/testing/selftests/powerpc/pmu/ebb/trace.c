@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2014, Michael Ellerman, IBM Corp.
- */
+
+ 
 
 #include <errno.h>
 #include <stdio.h>
@@ -42,12 +40,7 @@ static bool trace_check_bounds(struct trace_buffer *tb, void *p)
 
 static bool trace_check_alloc(struct trace_buffer *tb, void *p)
 {
-	/*
-	 * If we ever overflowed don't allow any more input. This prevents us
-	 * from dropping a large item and then later logging a small one. The
-	 * buffer should just stop when overflow happened, not be patchy. If
-	 * you're overflowing, make your buffer bigger.
-	 */
+	 
 	if (tb->overflow)
 		return false;
 
@@ -125,7 +118,7 @@ int trace_log_string(struct trace_buffer *tb, char *str)
 
 	len = strlen(str);
 
-	/* We NULL terminate to make printing easier */
+	 
 	e = trace_alloc_entry(tb, len + 1);
 	if (!e)
 		return -ENOSPC;

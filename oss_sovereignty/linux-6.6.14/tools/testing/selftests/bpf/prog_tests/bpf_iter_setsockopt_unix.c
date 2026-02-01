@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright Amazon.com Inc. or its affiliates. */
+
+ 
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <test_progs.h>

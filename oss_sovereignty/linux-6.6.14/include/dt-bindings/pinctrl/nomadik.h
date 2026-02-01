@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * nomadik.h
- *
- * Copyright (C) ST-Ericsson SA 2013
- * Author: Gabriel Fernandez <gabriel.fernandez@st.com> for ST-Ericsson.
- */
+ 
+ 
 
 #define INPUT_NOPULL		0
 #define INPUT_PULLUP		1

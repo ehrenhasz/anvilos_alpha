@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <linux/file.h>
 #include <linux/sync_file.h>
@@ -17,9 +14,7 @@
 #include "msm_gem.h"
 #include "msm_gpu_trace.h"
 
-/*
- * Cmdstream submission:
- */
+ 
 
 static struct msm_gem_submit *submit_create(struct drm_device *dev,
 		struct msm_gpu *gpu,
@@ -65,7 +60,7 @@ static struct msm_gem_submit *submit_create(struct drm_device *dev,
 	submit->ring = gpu->rb[queue->ring_nr];
 	submit->fault_dumped = false;
 
-	/* Get a unique identifier for the submission for logging purposes */
+	 
 	submit->ident = atomic_inc_return(&ident) - 1;
 
 	INIT_LIST_HEAD(&submit->node);
@@ -87,13 +82,7 @@ void __msm_gem_submit_destroy(struct kref *kref)
 
 	dma_fence_put(submit->user_fence);
 
-	/*
-	 * If the submit is freed before msm_job_run(), then hw_fence is
-	 * just some pre-allocated memory, not a reference counted fence.
-	 * Once the job runs and the hw_fence is initialized, it will
-	 * have a refcount of at least one, since the submit holds a ref
-	 * to the hw_fence.
-	 */
+	 
 	if (kref_read(&submit->hw_fence->refcount) == 0) {
 		kfree(submit->hw_fence);
 	} else {
@@ -120,9 +109,7 @@ static int submit_lookup_objects(struct msm_gem_submit *submit,
 		void __user *userptr =
 			u64_to_user_ptr(args->bos + (i * sizeof(submit_bo)));
 
-		/* make sure we don't have garbage flags, in case we hit
-		 * error path before flags is initialized:
-		 */
+		 
 		submit->bos[i].flags = 0;
 
 		if (copy_from_user(&submit_bo, userptr, sizeof(submit_bo))) {
@@ -131,7 +118,7 @@ static int submit_lookup_objects(struct msm_gem_submit *submit,
 			goto out;
 		}
 
-/* at least one of READ and/or WRITE flags should be set: */
+ 
 #define MANDATORY_FLAGS (MSM_SUBMIT_BO_READ | MSM_SUBMIT_BO_WRITE)
 
 		if ((submit_bo.flags & ~MSM_SUBMIT_BO_FLAGS) ||
@@ -144,7 +131,7 @@ static int submit_lookup_objects(struct msm_gem_submit *submit,
 
 		submit->bos[i].handle = submit_bo.handle;
 		submit->bos[i].flags = submit_bo.flags;
-		/* in validate_objects() we figure out if this is true: */
+		 
 		submit->bos[i].iova  = submit_bo.presumed;
 	}
 
@@ -153,9 +140,7 @@ static int submit_lookup_objects(struct msm_gem_submit *submit,
 	for (i = 0; i < args->nr_bos; i++) {
 		struct drm_gem_object *obj;
 
-		/* normally use drm_gem_object_lookup(), but for bulk lookup
-		 * all under single table_lock just hit object_idr directly:
-		 */
+		 
 		obj = idr_find(&file->object_idr, submit->bos[i].handle);
 		if (!obj) {
 			DRM_ERROR("invalid handle %u at index %u\n", submit->bos[i].handle, i);
@@ -195,7 +180,7 @@ static int submit_lookup_cmds(struct msm_gem_submit *submit,
 			goto out;
 		}
 
-		/* validate input from userspace: */
+		 
 		switch (submit_cmd.type) {
 		case MSM_SUBMIT_CMD_BUF:
 		case MSM_SUBMIT_CMD_IB_TARGET_BUF:
@@ -223,7 +208,7 @@ static int submit_lookup_cmds(struct msm_gem_submit *submit,
 
 		sz = array_size(submit_cmd.nr_relocs,
 				sizeof(struct drm_msm_gem_submit_reloc));
-		/* check for overflow: */
+		 
 		if (sz == SIZE_MAX) {
 			ret = -ENOMEM;
 			goto out;
@@ -244,21 +229,14 @@ out:
 	return ret;
 }
 
-/* Unwind bo state, according to cleanup_flags.  In the success case, only
- * the lock is dropped at the end of the submit (and active/pin ref is dropped
- * later when the submit is retired).
- */
+ 
 static void submit_cleanup_bo(struct msm_gem_submit *submit, int i,
 		unsigned cleanup_flags)
 {
 	struct drm_gem_object *obj = submit->bos[i].obj;
 	unsigned flags = submit->bos[i].flags & cleanup_flags;
 
-	/*
-	 * Clear flags bit before dropping lock, so that the msm_job_run()
-	 * path isn't racing with submit_cleanup() (ie. the read/modify/
-	 * write is protected by the obj lock in all paths)
-	 */
+	 
 	submit->bos[i].flags &= ~cleanup_flags;
 
 	if (flags & BO_PINNED)
@@ -277,7 +255,7 @@ static void submit_unlock_unpin_bo(struct msm_gem_submit *submit, int i)
 		submit->bos[i].iova = 0;
 }
 
-/* This is where we make sure all the bo's are reserved and pin'd: */
+ 
 static int submit_lock_objects(struct msm_gem_submit *submit)
 {
 	int contended, slow_locked = -1, i, ret = 0;
@@ -319,7 +297,7 @@ fail:
 
 	if (ret == -EDEADLK) {
 		struct drm_gem_object *obj = submit->bos[contended].obj;
-		/* we lost out in a seqno race, lock and retry.. */
+		 
 		ret = dma_resv_lock_slow_interruptible(obj->resv,
 						       &submit->ticket);
 		if (!ret) {
@@ -328,10 +306,7 @@ fail:
 			goto retry;
 		}
 
-		/* Not expecting -EALREADY here, if the bo was already
-		 * locked, we should have gotten -EALREADY already from
-		 * the dma_resv_lock_interruptable() call.
-		 */
+		 
 		WARN_ON_ONCE(ret == -EALREADY);
 	}
 
@@ -346,26 +321,16 @@ static int submit_fence_sync(struct msm_gem_submit *submit, bool no_implicit)
 		struct drm_gem_object *obj = submit->bos[i].obj;
 		bool write = submit->bos[i].flags & MSM_SUBMIT_BO_WRITE;
 
-		/* NOTE: _reserve_shared() must happen before
-		 * _add_shared_fence(), which makes this a slightly
-		 * strange place to call it.  OTOH this is a
-		 * convenient can-fail point to hook it in.
-		 */
+		 
 		ret = dma_resv_reserve_fences(obj->resv, 1);
 		if (ret)
 			return ret;
 
-		/* If userspace has determined that explicit fencing is
-		 * used, it can disable implicit sync on the entire
-		 * submit:
-		 */
+		 
 		if (no_implicit)
 			continue;
 
-		/* Otherwise userspace can ask for implicit sync to be
-		 * disabled on specific buffers.  This is useful for internal
-		 * usermode driver managed buffers, suballocation, etc.
-		 */
+		 
 		if (submit->bos[i].flags & MSM_SUBMIT_BO_NO_IMPLICIT)
 			continue;
 
@@ -390,7 +355,7 @@ static int submit_pin_objects(struct msm_gem_submit *submit)
 		struct drm_gem_object *obj = submit->bos[i].obj;
 		struct msm_gem_vma *vma;
 
-		/* if locking succeeded, pin bo: */
+		 
 		vma = msm_gem_get_vma_locked(obj, submit->aspace);
 		if (IS_ERR(vma)) {
 			ret = PTR_ERR(vma);
@@ -405,19 +370,13 @@ static int submit_pin_objects(struct msm_gem_submit *submit)
 			submit->bos[i].flags |= BO_VALID;
 		} else {
 			submit->bos[i].iova = vma->iova;
-			/* iova changed, so address in cmdstream is not valid: */
+			 
 			submit->bos[i].flags &= ~BO_VALID;
 			submit->valid = false;
 		}
 	}
 
-	/*
-	 * A second loop while holding the LRU lock (a) avoids acquiring/dropping
-	 * the LRU lock for each individual bo, while (b) avoiding holding the
-	 * LRU lock while calling msm_gem_pin_vma_locked() (which could trigger
-	 * get_pages() which could trigger reclaim.. and if we held the LRU lock
-	 * could trigger deadlock with the shrinker).
-	 */
+	 
 	mutex_lock(&priv->lru.lock);
 	for (i = 0; i < submit->nr_bos; i++) {
 		msm_gem_pin_obj_locked(submit->bos[i].obj);
@@ -463,7 +422,7 @@ static int submit_bo(struct msm_gem_submit *submit, uint32_t idx,
 	return 0;
 }
 
-/* process the reloc's and patch up the cmdstream as needed: */
+ 
 static int submit_reloc(struct msm_gem_submit *submit, struct drm_gem_object *obj,
 		uint32_t offset, uint32_t nr_relocs, struct drm_msm_gem_submit_reloc *relocs)
 {
@@ -479,9 +438,7 @@ static int submit_reloc(struct msm_gem_submit *submit, struct drm_gem_object *ob
 		return -EINVAL;
 	}
 
-	/* For now, just map the entire thing.  Eventually we probably
-	 * to do it page-by-page, w/ kmap() if not vmap()d..
-	 */
+	 
 	ptr = msm_gem_get_vaddr_locked(obj);
 
 	if (IS_ERR(ptr)) {
@@ -503,7 +460,7 @@ static int submit_reloc(struct msm_gem_submit *submit, struct drm_gem_object *ob
 			goto out;
 		}
 
-		/* offset in dwords: */
+		 
 		off = submit_reloc.submit_offset / 4;
 
 		if ((off >= (obj->size / 4)) ||
@@ -538,10 +495,7 @@ out:
 	return ret;
 }
 
-/* Cleanup submit at end of ioctl.  In the error case, this also drops
- * references, unpins, and drops active refcnt.  In the non-error case,
- * this is done when the submit is retired.
- */
+ 
 static void submit_cleanup(struct msm_gem_submit *submit, bool error)
 {
 	unsigned cleanup_flags = BO_LOCKED;
@@ -764,9 +718,7 @@ int msm_ioctl_gem_submit(struct drm_device *dev, void *data,
 		return -EPERM;
 	}
 
-	/* for now, we just have 3d pipe.. eventually this would need to
-	 * be more clever to dispatch to appropriate gpu module:
-	 */
+	 
 	if (MSM_PIPE_ID(args->flags) != MSM_PIPE_3D0)
 		return -EINVAL;
 
@@ -854,7 +806,7 @@ int msm_ioctl_gem_submit(struct drm_device *dev, void *data,
 	if (ret)
 		goto out;
 
-	/* copy_*_user while holding a ww ticket upsets lockdep */
+	 
 	ww_acquire_init(&submit->ticket, &reservation_ww_class);
 	has_ww_ticket = true;
 	ret = submit_lock_objects(submit);
@@ -913,12 +865,7 @@ int msm_ioctl_gem_submit(struct drm_device *dev, void *data,
 
 	spin_lock(&queue->idr_lock);
 
-	/*
-	 * If using userspace provided seqno fence, validate that the id
-	 * is available before arming sched job.  Since access to fence_idr
-	 * is serialized on the queue lock, the slot should be still avail
-	 * after the job is armed
-	 */
+	 
 	if ((args->flags & MSM_SUBMIT_FENCE_SN_IN) &&
 			(!args->fence || idr_find(&queue->fence_idr, args->fence))) {
 		spin_unlock(&queue->idr_lock);
@@ -932,25 +879,15 @@ int msm_ioctl_gem_submit(struct drm_device *dev, void *data,
 	submit->user_fence = dma_fence_get(&submit->base.s_fence->finished);
 
 	if (args->flags & MSM_SUBMIT_FENCE_SN_IN) {
-		/*
-		 * Userspace has assigned the seqno fence that it wants
-		 * us to use.  It is an error to pick a fence sequence
-		 * number that is not available.
-		 */
+		 
 		submit->fence_id = args->fence;
 		ret = idr_alloc_u32(&queue->fence_idr, submit->user_fence,
 				    &submit->fence_id, submit->fence_id,
 				    GFP_NOWAIT);
-		/*
-		 * We've already validated that the fence_id slot is valid,
-		 * so if idr_alloc_u32 failed, it is a kernel bug
-		 */
+		 
 		WARN_ON(ret);
 	} else {
-		/*
-		 * Allocate an id which can be used by WAIT_FENCE ioctl to map
-		 * back to the underlying fence.
-		 */
+		 
 		submit->fence_id = idr_alloc_cyclic(&queue->fence_idr,
 						    submit->user_fence, 1,
 						    INT_MAX, GFP_NOWAIT);
@@ -976,7 +913,7 @@ int msm_ioctl_gem_submit(struct drm_device *dev, void *data,
 
 	submit_attach_object_fences(submit);
 
-	/* The scheduler owns a ref now: */
+	 
 	msm_gem_submit_get(submit);
 
 	msm_rd_dump_submit(priv->rd, submit, NULL);
@@ -1004,10 +941,7 @@ out_post_unlock:
 	if (!IS_ERR_OR_NULL(submit)) {
 		msm_gem_submit_put(submit);
 	} else {
-		/*
-		 * If the submit hasn't yet taken ownership of the queue
-		 * then we need to drop the reference ourself:
-		 */
+		 
 		msm_submitqueue_put(queue);
 	}
 	if (!IS_ERR_OR_NULL(post_deps)) {

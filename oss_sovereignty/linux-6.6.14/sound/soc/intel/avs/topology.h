@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2021 Intel Corporation. All rights reserved.
- *
- * Authors: Cezary Rojewski <cezary.rojewski@intel.com>
- *          Amadeusz Slawinski <amadeuszx.slawinski@linux.intel.com>
- */
+ 
+ 
 
 #ifndef __SOUND_SOC_INTEL_AVS_TPLG_H
 #define __SOUND_SOC_INTEL_AVS_TPLG_H
@@ -41,7 +36,7 @@ struct avs_tplg_library {
 	char name[SNDRV_CTL_ELEM_ID_NAME_MAXLEN];
 };
 
-/* Matches header of struct avs_mod_cfg_base. */
+ 
 struct avs_tplg_modcfg_base {
 	u32 cpc;
 	u32 ibs;
@@ -66,13 +61,13 @@ struct avs_tplg_modcfg_ext {
 		} generic;
 		struct {
 			struct avs_audio_format *out_fmt;
-			struct avs_audio_format *blob_fmt; /* optional override */
+			struct avs_audio_format *blob_fmt;  
 			u32 feature_mask;
 			union avs_virtual_index vindex;
 			u32 dma_type;
 			u32 dma_buffer_size;
 			u32 config_length;
-			/* config_data part of priv data */
+			 
 		} copier;
 		struct {
 			u32 out_channel_config;
@@ -106,7 +101,7 @@ struct avs_tplg_modcfg_ext {
 	};
 };
 
-/* Specifies path behaviour during PCM ->trigger(START) command. */
+ 
 enum avs_tplg_trigger {
 	AVS_TPLG_TRIGGER_AUTO = 0,
 };
@@ -143,21 +138,21 @@ struct avs_tplg_path_template {
 	struct list_head path_list;
 
 	struct avs_tplg *owner;
-	/* Driver path templates management. */
+	 
 	struct list_head node;
 };
 
 struct avs_tplg_path {
 	u32 id;
 
-	/* Path format requirements. */
+	 
 	struct avs_audio_format *fe_fmt;
 	struct avs_audio_format *be_fmt;
 
 	struct list_head ppl_list;
 
 	struct avs_tplg_path_template *owner;
-	/* Path template path-variants management. */
+	 
 	struct list_head node;
 };
 
@@ -170,7 +165,7 @@ struct avs_tplg_pipeline {
 	struct list_head mod_list;
 
 	struct avs_tplg_path *owner;
-	/* Path pipelines management. */
+	 
 	struct list_head node;
 };
 
@@ -185,7 +180,7 @@ struct avs_tplg_module {
 	u32 ctl_id;
 
 	struct avs_tplg_pipeline *owner;
-	/* Pipeline modules management. */
+	 
 	struct list_head node;
 };
 

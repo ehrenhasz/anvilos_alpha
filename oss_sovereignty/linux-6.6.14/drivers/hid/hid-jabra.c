@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Jabra USB HID Driver
- *
- *  Copyright (c) 2017 Niels Skou Olsen <nolsen@jabra.com>
- */
 
-/*
- */
+ 
+
+ 
 
 #include <linux/hid.h>
 #include <linux/module.h>
@@ -33,7 +28,7 @@ static int jabra_input_mapping(struct hid_device *hdev,
 		usage->usage_index,
 		is_vendor_defined ? "ignored" : "defaulted");
 
-	/* Ignore vendor defined usages, default map standard usages */
+	 
 	return is_vendor_defined ? -1 : 0;
 }
 

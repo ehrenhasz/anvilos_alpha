@@ -1,10 +1,4 @@
-/*
- * Driver for (BCM4706)? GBit MAC core on BCMA bus.
- *
- * Copyright (C) 2012 Rafał Miłecki <zajec5@gmail.com>
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #define pr_fmt(fmt)		KBUILD_MODNAME ": " fmt
 
@@ -29,9 +23,7 @@ static bool bcma_mdio_wait_value(struct bcma_device *core, u16 reg, u32 mask,
 	return false;
 }
 
-/**************************************************
- * PHY ops
- **************************************************/
+ 
 
 static u16 bcma_mdio_phy_read(struct bgmac *bgmac, u8 phyaddr, u8 reg)
 {
@@ -82,61 +74,7 @@ static u16 bcma_mdio_phy_read(struct bgmac *bgmac, u8 phyaddr, u8 reg)
 	return bcma_read32(core, phy_access_addr) & BGMAC_PA_DATA_MASK;
 }
 
-/* http://bcm-v4.sipsolutions.net/mac-gbit/gmac/chipphywr */
-static int bcma_mdio_phy_write(struct bgmac *bgmac, u8 phyaddr, u8 reg,
-			       u16 value)
-{
-	struct bcma_device *core;
-	u16 phy_access_addr;
-	u16 phy_ctl_addr;
-	u32 tmp;
-
-	if (bgmac->bcma.core->id.id == BCMA_CORE_4706_MAC_GBIT) {
-		core = bgmac->bcma.core->bus->drv_gmac_cmn.core;
-		phy_access_addr = BCMA_GMAC_CMN_PHY_ACCESS;
-		phy_ctl_addr = BCMA_GMAC_CMN_PHY_CTL;
-	} else {
-		core = bgmac->bcma.core;
-		phy_access_addr = BGMAC_PHY_ACCESS;
-		phy_ctl_addr = BGMAC_PHY_CNTL;
-	}
-
-	tmp = bcma_read32(core, phy_ctl_addr);
-	tmp &= ~BGMAC_PC_EPA_MASK;
-	tmp |= phyaddr;
-	bcma_write32(core, phy_ctl_addr, tmp);
-
-	bcma_write32(bgmac->bcma.core, BGMAC_INT_STATUS, BGMAC_IS_MDIO);
-	if (bcma_read32(bgmac->bcma.core, BGMAC_INT_STATUS) & BGMAC_IS_MDIO)
-		dev_warn(&core->dev, "Error setting MDIO int\n");
-
-	tmp = BGMAC_PA_START;
-	tmp |= BGMAC_PA_WRITE;
-	tmp |= phyaddr << BGMAC_PA_ADDR_SHIFT;
-	tmp |= reg << BGMAC_PA_REG_SHIFT;
-	tmp |= value;
-	bcma_write32(core, phy_access_addr, tmp);
-
-	if (!bcma_mdio_wait_value(core, phy_access_addr, BGMAC_PA_START, 0,
-				  1000)) {
-		dev_err(&core->dev, "Writing to PHY %d register 0x%X failed\n",
-			phyaddr, reg);
-		return -ETIMEDOUT;
-	}
-
-	return 0;
-}
-
-/* http://bcm-v4.sipsolutions.net/mac-gbit/gmac/chipphyinit */
-static void bcma_mdio_phy_init(struct bgmac *bgmac)
-{
-	struct bcma_chipinfo *ci = &bgmac->bcma.core->bus->chipinfo;
-	u8 i;
-
-	/* For some legacy hardware we do chipset-based PHY initialization here
-	 * without even detecting PHY ID. It's hacky and should be cleaned as
-	 * soon as someone can test it.
-	 */
+ 
 	if (ci->id == BCMA_CHIP_ID_BCM5356) {
 		for (i = 0; i < 5; i++) {
 			bcma_mdio_phy_write(bgmac, i, 0x1f, 0x008b);
@@ -170,32 +108,12 @@ static void bcma_mdio_phy_init(struct bgmac *bgmac)
 		return;
 	}
 
-	/* For all other hw do initialization using PHY subsystem. */
+	 
 	if (bgmac->net_dev && bgmac->net_dev->phydev)
 		phy_init_hw(bgmac->net_dev->phydev);
 }
 
-/* http://bcm-v4.sipsolutions.net/mac-gbit/gmac/chipphyreset */
-static int bcma_mdio_phy_reset(struct mii_bus *bus)
-{
-	struct bgmac *bgmac = bus->priv;
-	u8 phyaddr = bgmac->phyaddr;
-
-	if (phyaddr == BGMAC_PHY_NOREGS)
-		return 0;
-
-	bcma_mdio_phy_write(bgmac, phyaddr, MII_BMCR, BMCR_RESET);
-	udelay(100);
-	if (bcma_mdio_phy_read(bgmac, phyaddr, MII_BMCR) & BMCR_RESET)
-		dev_err(bgmac->dev, "PHY reset failed\n");
-	bcma_mdio_phy_init(bgmac);
-
-	return 0;
-}
-
-/**************************************************
- * MII
- **************************************************/
+ 
 
 static int bcma_mdio_mii_read(struct mii_bus *bus, int mii_id, int regnum)
 {

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_INETDEVICE_H
 #define _LINUX_INETDEVICE_H
 
@@ -28,24 +28,24 @@ struct in_device {
 
 	refcount_t		refcnt;
 	int			dead;
-	struct in_ifaddr	__rcu *ifa_list;/* IP ifaddr chain		*/
+	struct in_ifaddr	__rcu *ifa_list; 
 
-	struct ip_mc_list __rcu	*mc_list;	/* IP multicast filter chain    */
+	struct ip_mc_list __rcu	*mc_list;	 
 	struct ip_mc_list __rcu	* __rcu *mc_hash;
 
-	int			mc_count;	/* Number of installed mcasts	*/
+	int			mc_count;	 
 	spinlock_t		mc_tomb_lock;
 	struct ip_mc_list	*mc_tomb;
 	unsigned long		mr_v1_seen;
 	unsigned long		mr_v2_seen;
 	unsigned long		mr_maxdelay;
-	unsigned long		mr_qi;		/* Query Interval */
-	unsigned long		mr_qri;		/* Query Response Interval */
-	unsigned char		mr_qrv;		/* Query Robustness Variable */
+	unsigned long		mr_qi;		 
+	unsigned long		mr_qri;		 
+	unsigned char		mr_qrv;		 
 	unsigned char		mr_gq_running;
 	u32			mr_ifc_count;
-	struct timer_list	mr_gq_timer;	/* general query timer */
-	struct timer_list	mr_ifc_timer;	/* interface change timer */
+	struct timer_list	mr_gq_timer;	 
+	struct timer_list	mr_ifc_timer;	 
 
 	struct neigh_parms	*arp_parms;
 	struct ipv4_devconf	cnf;
@@ -154,11 +154,11 @@ struct in_ifaddr {
 	__u32			ifa_flags;
 	char			ifa_label[IFNAMSIZ];
 
-	/* In seconds, relative to tstamp. Expiry is at tstamp + HZ * lft. */
+	 
 	__u32			ifa_valid_lft;
 	__u32			ifa_preferred_lft;
-	unsigned long		ifa_cstamp; /* created timestamp */
-	unsigned long		ifa_tstamp; /* updated timestamp */
+	unsigned long		ifa_cstamp;  
+	unsigned long		ifa_tstamp;  
 };
 
 struct in_validator_info {
@@ -205,9 +205,7 @@ static inline bool inet_ifa_match(__be32 addr, const struct in_ifaddr *ifa)
 	return !((addr^ifa->ifa_address)&ifa->ifa_mask);
 }
 
-/*
- *	Check if a mask is acceptable.
- */
+ 
  
 static __inline__ bool bad_mask(__be32 mask, __be32 addr)
 {
@@ -250,7 +248,7 @@ static inline struct in_device *__in_dev_get_rtnl(const struct net_device *dev)
 	return rtnl_dereference(dev->ip_ptr);
 }
 
-/* called with rcu_read_lock or rtnl held */
+ 
 static inline bool ip_ignore_linkdown(const struct net_device *dev)
 {
 	struct in_device *in_dev;
@@ -282,7 +280,7 @@ static inline void in_dev_put(struct in_device *idev)
 #define __in_dev_put(idev)  refcount_dec(&(idev)->refcnt)
 #define in_dev_hold(idev)   refcount_inc(&(idev)->refcnt)
 
-#endif /* __KERNEL__ */
+#endif  
 
 static __inline__ __be32 inet_make_mask(int logmask)
 {
@@ -300,4 +298,4 @@ static __inline__ int inet_mask_len(__be32 mask)
 }
 
 
-#endif /* _LINUX_INETDEVICE_H */
+#endif  

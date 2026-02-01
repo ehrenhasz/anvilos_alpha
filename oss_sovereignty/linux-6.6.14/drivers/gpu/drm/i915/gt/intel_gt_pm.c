@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include <linux/string_helpers.h>
 #include <linux/suspend.h>
@@ -28,7 +26,7 @@ static void user_forcewake(struct intel_gt *gt, bool suspend)
 {
 	int count = atomic_read(&gt->user_wakeref);
 
-	/* Inside suspend/resume so single threaded, no races to worry about. */
+	 
 	if (likely(!count))
 		return;
 
@@ -71,17 +69,7 @@ static int __gt_unpark(struct intel_wakeref *wf)
 
 	GT_TRACE(gt, "\n");
 
-	/*
-	 * It seems that the DMC likes to transition between the DC states a lot
-	 * when there are no connected displays (no active power domains) during
-	 * command submission.
-	 *
-	 * This activity has negative impact on the performance of the chip with
-	 * huge latencies observed in the interrupt handler and elsewhere.
-	 *
-	 * Work around it by grabbing a GT IRQ power domain whilst there is any
-	 * GT activity, preventing any DC state transitions.
-	 */
+	 
 	gt->awake = intel_display_power_get(i915, POWER_DOMAIN_GT_IRQ);
 	GEM_BUG_ON(!gt->awake);
 
@@ -113,10 +101,10 @@ static int __gt_park(struct intel_wakeref *wf)
 	intel_rps_park(&gt->rps);
 	intel_rc6_park(&gt->rc6);
 
-	/* Everything switched off, flush any residual interrupt just in case */
+	 
 	intel_synchronize_irq(i915);
 
-	/* Defer dropping the display power well for 100ms, it's slow! */
+	 
 	GEM_BUG_ON(!wakeref);
 	intel_display_power_put_async(i915, POWER_DOMAIN_GT_IRQ, wakeref);
 
@@ -130,24 +118,14 @@ static const struct intel_wakeref_ops wf_ops = {
 
 void intel_gt_pm_init_early(struct intel_gt *gt)
 {
-	/*
-	 * We access the runtime_pm structure via gt->i915 here rather than
-	 * gt->uncore as we do elsewhere in the file because gt->uncore is not
-	 * yet initialized for all tiles at this point in the driver startup.
-	 * runtime_pm is per-device rather than per-tile, so this is still the
-	 * correct structure.
-	 */
+	 
 	intel_wakeref_init(&gt->wakeref, gt->i915, &wf_ops);
 	seqcount_mutex_init(&gt->stats.lock, &gt->wakeref.mutex);
 }
 
 void intel_gt_pm_init(struct intel_gt *gt)
 {
-	/*
-	 * Enabling power-management should be "self-healing". If we cannot
-	 * enable a feature, simply leave it disabled with a notice to the
-	 * user.
-	 */
+	 
 	intel_rc6_init(&gt->rc6);
 	intel_rps_init(&gt->rps);
 }
@@ -168,22 +146,17 @@ static void gt_sanitize(struct intel_gt *gt, bool force)
 
 	GT_TRACE(gt, "force:%s", str_yes_no(force));
 
-	/* Use a raw wakeref to avoid calling intel_display_power_get early */
+	 
 	wakeref = intel_runtime_pm_get(gt->uncore->rpm);
 	intel_uncore_forcewake_get(gt->uncore, FORCEWAKE_ALL);
 
 	intel_gt_check_clock_frequency(gt);
 
-	/*
-	 * As we have just resumed the machine and woken the device up from
-	 * deep PCI sleep (presumably D3_cold), assume the HW has been reset
-	 * back to defaults, recovering from whatever wedged state we left it
-	 * in and so worth trying to use the device once more.
-	 */
+	 
 	if (intel_gt_is_wedged(gt))
 		intel_gt_unset_wedged(gt);
 
-	/* For GuC mode, ensure submission is disabled before stopping ring */
+	 
 	intel_uc_reset_prepare(&gt->uc);
 
 	for_each_engine(engine, gt, id) {
@@ -228,12 +201,7 @@ int intel_gt_resume(struct intel_gt *gt)
 
 	GT_TRACE(gt, "\n");
 
-	/*
-	 * After resume, we may need to poke into the pinned kernel
-	 * contexts to paper over any damage caused by the sudden suspend.
-	 * Only the kernel contexts should remain pinned over suspend,
-	 * allowing us to fixup the user contexts on their first pin.
-	 */
+	 
 	gt_sanitize(gt, true);
 
 	intel_gt_pm_get(gt);
@@ -245,7 +213,7 @@ int intel_gt_resume(struct intel_gt *gt)
 		goto out_fw;
 	}
 
-	/* Only when the HW is re-initialised, can we replay the requests */
+	 
 	err = intel_gt_init_hw(gt);
 	if (err) {
 		gt_probe_error(gt, "Failed to initialize GPU, declaring it wedged!\n");
@@ -260,7 +228,7 @@ int intel_gt_resume(struct intel_gt *gt)
 	for_each_engine(engine, gt, id) {
 		intel_engine_pm_get(engine);
 
-		engine->serial++; /* kernel context lost */
+		engine->serial++;  
 		err = intel_engine_resume(engine);
 
 		intel_engine_pm_put(engine);
@@ -293,10 +261,7 @@ static void wait_for_suspend(struct intel_gt *gt)
 		return;
 
 	if (intel_gt_wait_for_idle(gt, I915_GT_SUSPEND_IDLE_TIMEOUT) == -ETIME) {
-		/*
-		 * Forcibly cancel outstanding work and leave
-		 * the gpu quiet.
-		 */
+		 
 		intel_gt_set_wedged(gt);
 		intel_gt_retire_requests(gt);
 	}
@@ -323,7 +288,7 @@ void intel_gt_suspend_late(struct intel_gt *gt)
 {
 	intel_wakeref_t wakeref;
 
-	/* We expect to be idle already; but also want to be independent */
+	 
 	wait_for_suspend(gt);
 
 	if (is_mock_gt(gt))
@@ -333,16 +298,7 @@ void intel_gt_suspend_late(struct intel_gt *gt)
 
 	intel_uc_suspend(&gt->uc);
 
-	/*
-	 * On disabling the device, we want to turn off HW access to memory
-	 * that we no longer own.
-	 *
-	 * However, not all suspend-states disable the device. S0 (s2idle)
-	 * is effectively runtime-suspend, the device is left powered on
-	 * but needs to be put into a low power state. We need to keep
-	 * powermanagement enabled, but we also retain system state and so
-	 * it remains safe to keep on using our allocated memory.
-	 */
+	 
 	if (pm_suspend_target() == PM_SUSPEND_TO_IDLE)
 		return;
 

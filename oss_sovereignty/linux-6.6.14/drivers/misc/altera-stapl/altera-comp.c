@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * altera-comp.c
- *
- * altera FPGA driver
- *
- * Copyright (C) Altera Corporation 1998-2001
- * Copyright (C) 2010 NetUP Inc.
- * Copyright (C) 2010 Igor M. Liplianin <liplianin@netup.ru>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include "altera-exprt.h"
@@ -26,7 +18,7 @@ static u32 altera_bits_req(u32 n)
 	if (n == 0)
 		result = 1;
 	else {
-		/* Look for the highest non-zero bit position */
+		 
 		while ((n & (1 << (SHORT_BITS - 1))) == 0) {
 			n <<= 1;
 			--result;
@@ -77,7 +69,7 @@ u32 altera_shrink(u8 *in, u32 in_length, u8 *out, u32 out_length, s32 version)
 	for (i = 0; i < out_length; ++i)
 		out[i] = 0;
 
-	/* Read number of bytes in data. */
+	 
 	for (i = 0; i < sizeof(in_length); ++i) {
 		data_length = data_length | (
 			altera_read_packed(in,
@@ -93,7 +85,7 @@ u32 altera_shrink(u8 *in, u32 in_length, u8 *out, u32 out_length, s32 version)
 
 	i = 0;
 	while (i < data_length) {
-		/* A 0 bit indicates literal data. */
+		 
 		if (altera_read_packed(in, 1, &bits_avail,
 						&in_index) == 0) {
 			for (j = 0; j < DATA_BLOB_LENGTH; ++j) {
@@ -106,7 +98,7 @@ u32 altera_shrink(u8 *in, u32 in_length, u8 *out, u32 out_length, s32 version)
 				}
 			}
 		} else {
-			/* A 1 bit indicates offset/length to follow. */
+			 
 			offset = altera_read_packed(in, altera_bits_req((s16)
 					(i > match_data_length ?
 						match_data_length : i)),

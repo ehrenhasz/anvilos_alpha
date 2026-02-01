@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016 MediaTek Inc.
- * Author: Ming Hsiu Tsai <minghsiu.tsai@mediatek.com>
- *         Rick Chang <rick.chang@mediatek.com>
- */
+ 
+ 
 
 #ifndef _MTK_JPEG_REG_H
 #define _MTK_JPEG_REG_H
@@ -47,4 +43,4 @@
 #define JPGDEC_REG_STATUS		0x0278
 #define JPGDEC_REG_BIT_STREAM_SIZE	0x0344
 
-#endif /* _MTK_JPEG_REG_H */
+#endif  

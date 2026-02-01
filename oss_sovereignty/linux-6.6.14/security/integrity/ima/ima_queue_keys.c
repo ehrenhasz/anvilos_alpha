@@ -1,54 +1,32 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2019 Microsoft Corporation
- *
- * Author: Lakshmi Ramasubramanian (nramas@linux.microsoft.com)
- *
- * File: ima_queue_keys.c
- *       Enables deferred processing of keys
- */
+
+ 
 
 #include <linux/user_namespace.h>
 #include <linux/workqueue.h>
 #include <keys/asymmetric-type.h>
 #include "ima.h"
 
-/*
- * Flag to indicate whether a key can be processed
- * right away or should be queued for processing later.
- */
+ 
 static bool ima_process_keys;
 
-/*
- * To synchronize access to the list of keys that need to be measured
- */
+ 
 static DEFINE_MUTEX(ima_keys_lock);
 static LIST_HEAD(ima_keys);
 
-/*
- * If custom IMA policy is not loaded then keys queued up
- * for measurement should be freed. This worker is used
- * for handling this scenario.
- */
-static long ima_key_queue_timeout = 300000; /* 5 Minutes */
+ 
+static long ima_key_queue_timeout = 300000;  
 static void ima_keys_handler(struct work_struct *work);
 static DECLARE_DELAYED_WORK(ima_keys_delayed_work, ima_keys_handler);
 static bool timer_expired;
 
-/*
- * This worker function frees keys that may still be
- * queued up in case custom IMA policy was not loaded.
- */
+ 
 static void ima_keys_handler(struct work_struct *work)
 {
 	timer_expired = true;
 	ima_process_queued_keys();
 }
 
-/*
- * This function sets up a worker to free queued keys in case
- * custom IMA policy was never loaded.
- */
+ 
 void ima_init_key_queue(void)
 {
 	schedule_delayed_work(&ima_keys_delayed_work,
@@ -124,12 +102,7 @@ bool ima_queue_key(struct key *keyring, const void *payload,
 	return queued;
 }
 
-/*
- * ima_process_queued_keys() - process keys queued for measurement
- *
- * This function sets ima_process_keys to true and processes queued keys.
- * From here on keys will be processed right away (not queued).
- */
+ 
 void ima_process_queued_keys(void)
 {
 	struct ima_key_entry *entry, *tmp;
@@ -138,12 +111,7 @@ void ima_process_queued_keys(void)
 	if (ima_process_keys)
 		return;
 
-	/*
-	 * Since ima_process_keys is set to true, any new key will be
-	 * processed immediately and not be queued to ima_keys list.
-	 * First one setting the ima_process_keys flag to true will
-	 * process the queued keys.
-	 */
+	 
 	mutex_lock(&ima_keys_lock);
 	if (!ima_process_keys) {
 		ima_process_keys = true;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2018-2021 NXP
- *   Dong Aisheng <aisheng.dong@nxp.com>
- */
+
+ 
 
 #include <dt-bindings/firmware/imx/rsrc.h>
 #include <linux/arm-smccc.h>
@@ -38,30 +35,20 @@ struct imx_scu_clk_node {
 
 struct list_head imx_scu_clks[IMX_SC_R_LAST];
 
-/*
- * struct clk_scu - Description of one SCU clock
- * @hw: the common clk_hw
- * @rsrc_id: resource ID of this SCU clock
- * @clk_type: type of this clock resource
- */
+ 
 struct clk_scu {
 	struct clk_hw hw;
 	u16 rsrc_id;
 	u8 clk_type;
 
-	/* for state save&restore */
+	 
 	struct clk_hw *parent;
 	u8 parent_index;
 	bool is_enabled;
 	u32 rate;
 };
 
-/*
- * struct clk_gpr_scu - Description of one SCU GPR clock
- * @hw: the common clk_hw
- * @rsrc_id: resource ID of this SCU clock
- * @gpr_id: GPR ID index to control the divider
- */
+ 
 struct clk_gpr_scu {
 	struct clk_hw hw;
 	u16 rsrc_id;
@@ -72,15 +59,7 @@ struct clk_gpr_scu {
 
 #define to_clk_gpr_scu(_hw) container_of(_hw, struct clk_gpr_scu, hw)
 
-/*
- * struct imx_sc_msg_req_set_clock_rate - clock set rate protocol
- * @hdr: SCU protocol header
- * @rate: rate to set
- * @resource: clock resource to set rate
- * @clk: clk type of this resource
- *
- * This structure describes the SCU protocol of clock rate set
- */
+ 
 struct imx_sc_msg_req_set_clock_rate {
 	struct imx_sc_rpc_msg hdr;
 	__le32 rate;
@@ -97,14 +76,7 @@ struct resp_get_clock_rate {
 	__le32 rate;
 };
 
-/*
- * struct imx_sc_msg_get_clock_rate - clock get rate protocol
- * @hdr: SCU protocol header
- * @req: get rate request protocol
- * @resp: get rate response protocol
- *
- * This structure describes the SCU protocol of clock rate get
- */
+ 
 struct imx_sc_msg_get_clock_rate {
 	struct imx_sc_rpc_msg hdr;
 	union {
@@ -113,14 +85,7 @@ struct imx_sc_msg_get_clock_rate {
 	} data;
 };
 
-/*
- * struct imx_sc_msg_get_clock_parent - clock get parent protocol
- * @hdr: SCU protocol header
- * @req: get parent request protocol
- * @resp: get parent response protocol
- *
- * This structure describes the SCU protocol of clock get parent
- */
+ 
 struct imx_sc_msg_get_clock_parent {
 	struct imx_sc_rpc_msg hdr;
 	union {
@@ -134,13 +99,7 @@ struct imx_sc_msg_get_clock_parent {
 	} data;
 };
 
-/*
- * struct imx_sc_msg_set_clock_parent - clock set parent protocol
- * @hdr: SCU protocol header
- * @req: set parent request protocol
- *
- * This structure describes the SCU protocol of clock set parent
- */
+ 
 struct imx_sc_msg_set_clock_parent {
 	struct imx_sc_rpc_msg hdr;
 	__le16 resource;
@@ -148,16 +107,7 @@ struct imx_sc_msg_set_clock_parent {
 	u8 parent;
 } __packed;
 
-/*
- * struct imx_sc_msg_req_clock_enable - clock gate protocol
- * @hdr: SCU protocol header
- * @resource: clock resource to gate
- * @clk: clk type of this resource
- * @enable: whether gate off the clock
- * @autog: HW auto gate enable
- *
- * This structure describes the SCU protocol of clock gate
- */
+ 
 struct imx_sc_msg_req_clock_enable {
 	struct imx_sc_rpc_msg hdr;
 	__le16 resource;
@@ -205,7 +155,7 @@ int imx_clk_scu_init(struct device_node *np,
 		for (i = 0; i < IMX_SC_R_LAST; i++)
 			INIT_LIST_HEAD(&imx_scu_clks[i]);
 
-		/* pd_np will be used to attach power domains later */
+		 
 		pd_np = of_find_compatible_node(NULL, NULL, "fsl,scu-pd");
 		if (!pd_np)
 			return -EINVAL;
@@ -216,14 +166,7 @@ int imx_clk_scu_init(struct device_node *np,
 	return platform_driver_register(&imx_clk_scu_driver);
 }
 
-/*
- * clk_scu_recalc_rate - Get clock rate for a SCU clock
- * @hw: clock to get rate for
- * @parent_rate: parent rate provided by common clock framework, not used
- *
- * Gets the current clock rate of a SCU clock. Returns the current
- * clock rate, or zero in failure.
- */
+ 
 static unsigned long clk_scu_recalc_rate(struct clk_hw *hw,
 					 unsigned long parent_rate)
 {
@@ -250,38 +193,19 @@ static unsigned long clk_scu_recalc_rate(struct clk_hw *hw,
 	return le32_to_cpu(msg.data.resp.rate);
 }
 
-/*
- * clk_scu_determine_rate - Returns the closest rate for a SCU clock
- * @hw: clock to round rate for
- * @req: clock rate request
- *
- * Returns 0 on success, a negative error on failure
- */
+ 
 static int clk_scu_determine_rate(struct clk_hw *hw,
 				  struct clk_rate_request *req)
 {
-	/*
-	 * Assume we support all the requested rate and let the SCU firmware
-	 * to handle the left work
-	 */
+	 
 	return 0;
 }
 
-/*
- * clk_scu_round_rate - Round clock rate for a SCU clock
- * @hw: clock to round rate for
- * @rate: rate to round
- * @parent_rate: parent rate provided by common clock framework, not used
- *
- * Returns the current clock rate, or zero in failure.
- */
+ 
 static long clk_scu_round_rate(struct clk_hw *hw, unsigned long rate,
 			       unsigned long *parent_rate)
 {
-	/*
-	 * Assume we support all the requested rate and let the SCU firmware
-	 * to handle the left work
-	 */
+	 
 	return rate;
 }
 
@@ -299,22 +223,14 @@ static int clk_scu_atf_set_cpu_rate(struct clk_hw *hw, unsigned long rate,
 	else
 		return -EINVAL;
 
-	/* CPU frequency scaling can ONLY be done by ARM-Trusted-Firmware */
+	 
 	arm_smccc_smc(IMX_SIP_CPUFREQ, IMX_SIP_SET_CPUFREQ,
 		      cluster_id, rate, 0, 0, 0, 0, &res);
 
 	return 0;
 }
 
-/*
- * clk_scu_set_rate - Set rate for a SCU clock
- * @hw: clock to change rate for
- * @rate: target rate for the clock
- * @parent_rate: rate of the clock parent, not used for SCU clocks
- *
- * Sets a clock frequency for a SCU clock. Returns the SCU
- * protocol status.
- */
+ 
 static int clk_scu_set_rate(struct clk_hw *hw, unsigned long rate,
 			    unsigned long parent_rate)
 {
@@ -408,12 +324,7 @@ static int sc_pm_clock_enable(struct imx_sc_ipc *ipc, u16 resource,
 	return imx_scu_call_rpc(ccm_ipc_handle, &msg, true);
 }
 
-/*
- * clk_scu_prepare - Enable a SCU clock
- * @hw: clock to enable
- *
- * Enable the clock at the DSC slice level
- */
+ 
 static int clk_scu_prepare(struct clk_hw *hw)
 {
 	struct clk_scu *clk = to_clk_scu(hw);
@@ -422,12 +333,7 @@ static int clk_scu_prepare(struct clk_hw *hw)
 				  clk->clk_type, true, false);
 }
 
-/*
- * clk_scu_unprepare - Disable a SCU clock
- * @hw: clock to enable
- *
- * Disable the clock at the DSC slice level
- */
+ 
 static void clk_scu_unprepare(struct clk_hw *hw)
 {
 	struct clk_scu *clk = to_clk_scu(hw);
@@ -491,13 +397,7 @@ struct clk_hw *__imx_clk_scu(struct device *dev, const char *name,
 	init.parent_names = parents;
 	init.num_parents = num_parents;
 
-	/*
-	 * Note on MX8, the clocks are tightly coupled with power domain
-	 * that once the power domain is off, the clock status may be
-	 * lost. So we make it NOCACHE to let user to retrieve the real
-	 * clock status from HW instead of using the possible invalid
-	 * cached rate.
-	 */
+	 
 	init.flags = CLK_GET_RATE_NOCACHE;
 	clk->hw.init = &init;
 
@@ -586,7 +486,7 @@ static int __maybe_unused imx_clk_scu_suspend(struct device *dev)
 
 	clk->parent = clk_hw_get_parent(&clk->hw);
 
-	/* DC SS needs to handle bypass clock using non-cached clock rate */
+	 
 	if (clk->rsrc_id == IMX_SC_R_DC_0_VIDEO0 ||
 		clk->rsrc_id == IMX_SC_R_DC_0_VIDEO1 ||
 		clk->rsrc_id == IMX_SC_R_DC_1_VIDEO0 ||
@@ -718,7 +618,7 @@ struct clk_hw *imx_clk_scu_alloc_dev(const char *name,
 		return ERR_PTR(ret);
 	}
 
-	/* For API backwards compatiblilty, simply return NULL for success */
+	 
 	return NULL;
 }
 

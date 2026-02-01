@@ -1,30 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2013, 2019 by Delphix. All rights reserved.
- * Copyright 2014 Nexenta Systems, Inc.  All rights reserved.
- * Copyright (c) 2019 Datto Inc.
- */
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -76,15 +52,11 @@ top:
 	if (rc == -1) {
 		switch (errno) {
 		case ENOMEM:
-			/* expand nvlist memory and try again */
+			 
 			zcmd_expand_dst_nvlist(zhp->zfs_hdl, zc);
 			zc->zc_cookie = orig_cookie;
 			goto top;
-		/*
-		 * An errno value of ESRCH indicates normal completion.
-		 * If ENOENT is returned, then the underlying dataset
-		 * has been removed since we obtained the handle.
-		 */
+		 
 		case ESRCH:
 		case ENOENT:
 			rc = 1;
@@ -99,9 +71,7 @@ top:
 	return (rc);
 }
 
-/*
- * Iterate over all child filesystems
- */
+ 
 int
 zfs_iter_filesystems(zfs_handle_t *zhp, zfs_iter_f func, void *data)
 {
@@ -130,10 +100,7 @@ zfs_iter_filesystems_v2(zfs_handle_t *zhp, int flags, zfs_iter_f func,
 			nzhp = make_dataset_simple_handle_zc(zhp, &zc);
 		else
 			nzhp = make_dataset_handle_zc(zhp->zfs_hdl, &zc);
-		/*
-		 * Silently ignore errors, as the only plausible explanation is
-		 * that the pool has since been removed.
-		 */
+		 
 		if (nzhp == NULL)
 			continue;
 
@@ -146,9 +113,7 @@ zfs_iter_filesystems_v2(zfs_handle_t *zhp, int flags, zfs_iter_f func,
 	return ((ret < 0) ? ret : 0);
 }
 
-/*
- * Iterate over all snapshots
- */
+ 
 int
 zfs_iter_snapshots(zfs_handle_t *zhp, boolean_t simple, zfs_iter_f func,
     void *data, uint64_t min_txg, uint64_t max_txg)
@@ -208,9 +173,7 @@ zfs_iter_snapshots_v2(zfs_handle_t *zhp, int flags, zfs_iter_f func,
 	return ((ret < 0) ? ret : 0);
 }
 
-/*
- * Iterate over all bookmarks
- */
+ 
 int
 zfs_iter_bookmarks(zfs_handle_t *zhp, zfs_iter_f func, void *data)
 {
@@ -230,7 +193,7 @@ zfs_iter_bookmarks_v2(zfs_handle_t *zhp, int flags __maybe_unused,
 	if ((zfs_get_type(zhp) & (ZFS_TYPE_SNAPSHOT | ZFS_TYPE_BOOKMARK)) != 0)
 		return (0);
 
-	/* Setup the requested properties nvlist. */
+	 
 	props = fnvlist_alloc();
 	for (zfs_prop_t p = 0; p < ZFS_NUM_PROPS; p++) {
 		if (zfs_prop_valid_for_type(p, ZFS_TYPE_BOOKMARK, B_FALSE)) {
@@ -272,9 +235,7 @@ out:
 	return (err);
 }
 
-/*
- * Routines for dealing with the sorted snapshot functionality
- */
+ 
 typedef struct zfs_node {
 	zfs_handle_t	*zn_handle;
 	avl_node_t	zn_avlnode;
@@ -290,12 +251,7 @@ zfs_sort_snaps(zfs_handle_t *zhp, void *data)
 	search.zn_handle = zhp;
 	node = avl_find(avl, &search, NULL);
 	if (node) {
-		/*
-		 * If this snapshot was renamed while we were creating the
-		 * AVL tree, it's possible that we already inserted it under
-		 * its old name. Remove the old handle before adding the new
-		 * one.
-		 */
+		 
 		zfs_close(node->zn_handle);
 		avl_remove(avl, node);
 		free(node);
@@ -315,10 +271,7 @@ zfs_snapshot_compare(const void *larg, const void *rarg)
 	zfs_handle_t *r = ((zfs_node_t *)rarg)->zn_handle;
 	uint64_t lcreate, rcreate;
 
-	/*
-	 * Sort them according to creation time.  We use the hidden
-	 * CREATETXG property to get an absolute ordering of snapshots.
-	 */
+	 
 	lcreate = zfs_prop_get_int(l, ZFS_PROP_CREATETXG);
 	rcreate = zfs_prop_get_int(r, ZFS_PROP_CREATETXG);
 
@@ -393,20 +346,7 @@ snapspec_cb(zfs_handle_t *zhp, void *arg)
 	return (err);
 }
 
-/*
- * spec is a string like "A,B%C,D"
- *
- * <snaps>, where <snaps> can be:
- *      <snap>          (single snapshot)
- *      <snap>%<snap>   (range of snapshots, inclusive)
- *      %<snap>         (range of snapshots, starting with earliest)
- *      <snap>%         (range of snapshots, ending with last)
- *      %               (all snapshots)
- *      <snaps>[,...]   (comma separated list of the above)
- *
- * If a snapshot can not be opened, continue trying to open the others, but
- * return ENOENT at the end.
- */
+ 
 int
 zfs_iter_snapspec(zfs_handle_t *fs_zhp, const char *spec_orig,
     zfs_iter_f func, void *arg)
@@ -439,10 +379,7 @@ zfs_iter_snapspec_v2(zfs_handle_t *fs_zhp, int flags, const char *spec_orig,
 			*pct = '\0';
 			ssa.ssa_last = pct + 1;
 
-			/*
-			 * If there is a lastname specified, make sure it
-			 * exists.
-			 */
+			 
 			if (ssa.ssa_last[0] != '\0') {
 				char snapname[ZFS_MAX_DATASET_NAME_LEN];
 				(void) snprintf(snapname, sizeof (snapname),
@@ -484,13 +421,7 @@ zfs_iter_snapspec_v2(zfs_handle_t *fs_zhp, int flags, const char *spec_orig,
 	return (ret);
 }
 
-/*
- * Iterate over all children, snapshots and filesystems
- * Process snapshots before filesystems because they are nearer the input
- * handle: this is extremely important when used with zfs_iter_f functions
- * looking for data, following the logic that we would like to find it as soon
- * and as close as possible.
- */
+ 
 int
 zfs_iter_children(zfs_handle_t *zhp, zfs_iter_f func, void *data)
 {
@@ -537,10 +468,7 @@ iter_dependents_cb(zfs_handle_t *zhp, void *arg)
 		iter_stack_frame_t isf;
 		iter_stack_frame_t *f;
 
-		/*
-		 * check if there is a cycle by seeing if this fs is already
-		 * on the stack.
-		 */
+		 
 		for (f = ida->stack; f != NULL; f = f->next) {
 			if (f->zhp->zfs_dmustats.dds_guid ==
 			    zhp->zfs_dmustats.dds_guid) {
@@ -603,9 +531,7 @@ zfs_iter_dependents_v2(zfs_handle_t *zhp, int flags, boolean_t allowrecursion,
 	return (iter_dependents_cb(zfs_handle_dup(zhp), &ida));
 }
 
-/*
- * Iterate over mounted children of the specified dataset
- */
+ 
 int
 zfs_iter_mounted(zfs_handle_t *zhp, zfs_iter_f func, void *data)
 {
@@ -620,16 +546,16 @@ zfs_iter_mounted(zfs_handle_t *zhp, zfs_iter_f func, void *data)
 		return (ENOENT);
 
 	while (err == 0 && getmntent(mnttab, &entry) == 0) {
-		/* Ignore non-ZFS entries */
+		 
 		if (strcmp(entry.mnt_fstype, MNTTYPE_ZFS) != 0)
 			continue;
 
-		/* Ignore datasets not within the provided dataset */
+		 
 		if (strncmp(entry.mnt_special, zhp->zfs_name, namelen) != 0 ||
 		    entry.mnt_special[namelen] != '/')
 			continue;
 
-		/* Skip snapshot of any child dataset */
+		 
 		if (strchr(entry.mnt_special, '@') != NULL)
 			continue;
 
@@ -637,7 +563,7 @@ zfs_iter_mounted(zfs_handle_t *zhp, zfs_iter_f func, void *data)
 		    ZFS_TYPE_FILESYSTEM)) == NULL)
 			continue;
 
-		/* Ignore legacy mounts as they are user managed */
+		 
 		verify(zfs_prop_get(mtab_zhp, ZFS_PROP_MOUNTPOINT, mnt_prop,
 		    sizeof (mnt_prop), NULL, NULL, 0, B_FALSE) == 0);
 		if (strcmp(mnt_prop, "legacy") == 0) {

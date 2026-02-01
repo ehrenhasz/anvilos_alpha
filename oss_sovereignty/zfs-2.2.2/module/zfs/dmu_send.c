@@ -1,34 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright 2011 Nexenta Systems, Inc. All rights reserved.
- * Copyright (c) 2011, 2018 by Delphix. All rights reserved.
- * Copyright (c) 2014, Joyent, Inc. All rights reserved.
- * Copyright 2014 HybridCluster. All rights reserved.
- * Copyright 2016 RackTop Systems.
- * Copyright (c) 2016 Actifio, Inc. All rights reserved.
- * Copyright (c) 2019, Klara Inc.
- * Copyright (c) 2019, Allan Jude
- */
+ 
+ 
 
 #include <sys/dmu.h>
 #include <sys/dmu_impl.h>
@@ -66,43 +37,23 @@
 #include <sys/zfs_vfsops.h>
 #endif
 
-/* Set this tunable to TRUE to replace corrupt data with 0x2f5baddb10c */
+ 
 static int zfs_send_corrupt_data = B_FALSE;
-/*
- * This tunable controls the amount of data (measured in bytes) that will be
- * prefetched by zfs send.  If the main thread is blocking on reads that haven't
- * completed, this variable might need to be increased.  If instead the main
- * thread is issuing new reads because the prefetches have fallen out of the
- * cache, this may need to be decreased.
- */
+ 
 static uint_t zfs_send_queue_length = SPA_MAXBLOCKSIZE;
-/*
- * This tunable controls the length of the queues that zfs send worker threads
- * use to communicate.  If the send_main_thread is blocking on these queues,
- * this variable may need to be increased.  If there is a significant slowdown
- * at the start of a send as these threads consume all the available IO
- * resources, this variable may need to be decreased.
- */
+ 
 static uint_t zfs_send_no_prefetch_queue_length = 1024 * 1024;
-/*
- * These tunables control the fill fraction of the queues by zfs send.  The fill
- * fraction controls the frequency with which threads have to be cv_signaled.
- * If a lot of cpu time is being spent on cv_signal, then these should be tuned
- * down.  If the queues empty before the signalled thread can catch up, then
- * these should be tuned up.
- */
+ 
 static uint_t zfs_send_queue_ff = 20;
 static uint_t zfs_send_no_prefetch_queue_ff = 20;
 
-/*
- * Use this to override the recordsize calculation for fast zfs send estimates.
- */
+ 
 static uint_t zfs_override_estimate_recordsize = 0;
 
-/* Set this tunable to FALSE to disable setting of DRR_FLAG_FREERECORDS */
+ 
 static const boolean_t zfs_send_set_freerecords_bit = B_TRUE;
 
-/* Set this tunable to FALSE is disable sending unmodified spill blocks. */
+ 
 static int zfs_send_unmodified_spill_blocks = B_TRUE;
 
 static inline boolean_t
@@ -117,9 +68,9 @@ overflow_multiply(uint64_t a, uint64_t b, uint64_t *c)
 
 struct send_thread_arg {
 	bqueue_t	q;
-	objset_t	*os;		/* Objset to traverse */
-	uint64_t	fromtxg;	/* Traverse from this txg */
-	int		flags;		/* flags to pass to traverse_dataset */
+	objset_t	*os;		 
+	uint64_t	fromtxg;	 
+	int		flags;		 
 	int		error_code;
 	boolean_t	cancel;
 	zbookmark_phys_t resume;
@@ -147,7 +98,7 @@ struct send_merge_thread_arg {
 };
 
 struct send_range {
-	boolean_t		eos_marker; /* Marks the end of the stream */
+	boolean_t		eos_marker;  
 	uint64_t		object;
 	uint64_t		start_blkid;
 	uint64_t		end_blkid;
@@ -157,8 +108,8 @@ struct send_range {
 	union {
 		struct srd {
 			dmu_object_type_t	obj_type;
-			uint32_t		datablksz; // logical size
-			uint32_t		datasz; // payload size
+			uint32_t		datablksz;  
+			uint32_t		datasz;  
 			blkptr_t		bp;
 			arc_buf_t		*abuf;
 			abd_t			*abd;
@@ -172,12 +123,7 @@ struct send_range {
 			uint32_t		datablksz;
 		} hole;
 		struct sro {
-			/*
-			 * This is a pointer because embedding it in the
-			 * struct causes these structures to be massively larger
-			 * for all range types; this makes the code much less
-			 * memory efficient.
-			 */
+			 
 			dnode_phys_t		*dnp;
 			blkptr_t		bp;
 		} object;
@@ -190,12 +136,7 @@ struct send_range {
 	} sru;
 };
 
-/*
- * The list of data whose inclusion in a send stream can be pending from
- * one call to backup_cb to another.  Multiple calls to dump_free(),
- * dump_freeobjects(), and dump_redact() can be aggregated into a single
- * DRR_FREE, DRR_FREEOBJECTS, or DRR_REDACT replay record.
- */
+ 
 typedef enum {
 	PENDING_NONE,
 	PENDING_FREE,
@@ -249,11 +190,7 @@ range_free(struct send_range *range)
 	kmem_free(range, sizeof (*range));
 }
 
-/*
- * For all record types except BEGIN, fill in the checksum (overlaid in
- * drr_u.drr_checksum.drr_checksum).  The checksum verifies everything
- * up to the start of the checksum itself.
- */
+ 
 static int
 dump_record(dmu_send_cookie_t *dscp, void *payload, int payload_len)
 {
@@ -283,25 +220,13 @@ dump_record(dmu_send_cookie_t *dscp, void *payload, int payload_len)
 		return (SET_ERROR(EINTR));
 	if (payload_len != 0) {
 		*dscp->dsc_off += payload_len;
-		/*
-		 * payload is null when dso_dryrun == B_TRUE (i.e. when we're
-		 * doing a send size calculation)
-		 */
+		 
 		if (payload != NULL) {
 			(void) fletcher_4_incremental_native(
 			    payload, payload_len, &dscp->dsc_zc);
 		}
 
-		/*
-		 * The code does not rely on this (len being a multiple of 8).
-		 * We keep this assertion because of the corresponding assertion
-		 * in receive_read().  Keeping this assertion ensures that we do
-		 * not inadvertently break backwards compatibility (causing the
-		 * assertion in receive_read() to trigger on old software).
-		 *
-		 * Raw sends cannot be received on old software, and so can
-		 * bypass this assertion.
-		 */
+		 
 
 		ASSERT((payload_len % 8 == 0) ||
 		    (dscp->dsc_featureflags & DMU_BACKUP_FEATURE_RAW));
@@ -314,44 +239,19 @@ dump_record(dmu_send_cookie_t *dscp, void *payload, int payload_len)
 	return (0);
 }
 
-/*
- * Fill in the drr_free struct, or perform aggregation if the previous record is
- * also a free record, and the two are adjacent.
- *
- * Note that we send free records even for a full send, because we want to be
- * able to receive a full send as a clone, which requires a list of all the free
- * and freeobject records that were generated on the source.
- */
+ 
 static int
 dump_free(dmu_send_cookie_t *dscp, uint64_t object, uint64_t offset,
     uint64_t length)
 {
 	struct drr_free *drrf = &(dscp->dsc_drr->drr_u.drr_free);
 
-	/*
-	 * When we receive a free record, dbuf_free_range() assumes
-	 * that the receiving system doesn't have any dbufs in the range
-	 * being freed.  This is always true because there is a one-record
-	 * constraint: we only send one WRITE record for any given
-	 * object,offset.  We know that the one-record constraint is
-	 * true because we always send data in increasing order by
-	 * object,offset.
-	 *
-	 * If the increasing-order constraint ever changes, we should find
-	 * another way to assert that the one-record constraint is still
-	 * satisfied.
-	 */
+	 
 	ASSERT(object > dscp->dsc_last_data_object ||
 	    (object == dscp->dsc_last_data_object &&
 	    offset > dscp->dsc_last_data_offset));
 
-	/*
-	 * If there is a pending op, but it's not PENDING_FREE, push it out,
-	 * since free block aggregation can only be done for blocks of the
-	 * same type (i.e., DRR_FREE records can only be aggregated with
-	 * other DRR_FREE records.  DRR_FREEOBJECTS records can only be
-	 * aggregated with other DRR_FREEOBJECTS records).
-	 */
+	 
 	if (dscp->dsc_pending_op != PENDING_NONE &&
 	    dscp->dsc_pending_op != PENDING_FREE) {
 		if (dump_record(dscp, NULL, 0) != 0)
@@ -360,10 +260,7 @@ dump_free(dmu_send_cookie_t *dscp, uint64_t object, uint64_t offset,
 	}
 
 	if (dscp->dsc_pending_op == PENDING_FREE) {
-		/*
-		 * Check to see whether this free block can be aggregated
-		 * with pending one.
-		 */
+		 
 		if (drrf->drr_object == object && drrf->drr_offset +
 		    drrf->drr_length == offset) {
 			if (offset + length < offset || length == UINT64_MAX)
@@ -372,13 +269,13 @@ dump_free(dmu_send_cookie_t *dscp, uint64_t object, uint64_t offset,
 				drrf->drr_length += length;
 			return (0);
 		} else {
-			/* not a continuation.  Push out pending record */
+			 
 			if (dump_record(dscp, NULL, 0) != 0)
 				return (SET_ERROR(EINTR));
 			dscp->dsc_pending_op = PENDING_NONE;
 		}
 	}
-	/* create a FREE record and make it pending */
+	 
 	memset(dscp->dsc_drr, 0, sizeof (dmu_replay_record_t));
 	dscp->dsc_drr->drr_type = DRR_FREE;
 	drrf->drr_object = object;
@@ -398,22 +295,14 @@ dump_free(dmu_send_cookie_t *dscp, uint64_t object, uint64_t offset,
 	return (0);
 }
 
-/*
- * Fill in the drr_redact struct, or perform aggregation if the previous record
- * is also a redaction record, and the two are adjacent.
- */
+ 
 static int
 dump_redact(dmu_send_cookie_t *dscp, uint64_t object, uint64_t offset,
     uint64_t length)
 {
 	struct drr_redact *drrr = &dscp->dsc_drr->drr_u.drr_redact;
 
-	/*
-	 * If there is a pending op, but it's not PENDING_REDACT, push it out,
-	 * since free block aggregation can only be done for blocks of the
-	 * same type (i.e., DRR_REDACT records can only be aggregated with
-	 * other DRR_REDACT records).
-	 */
+	 
 	if (dscp->dsc_pending_op != PENDING_NONE &&
 	    dscp->dsc_pending_op != PENDING_REDACT) {
 		if (dump_record(dscp, NULL, 0) != 0)
@@ -422,22 +311,19 @@ dump_redact(dmu_send_cookie_t *dscp, uint64_t object, uint64_t offset,
 	}
 
 	if (dscp->dsc_pending_op == PENDING_REDACT) {
-		/*
-		 * Check to see whether this redacted block can be aggregated
-		 * with pending one.
-		 */
+		 
 		if (drrr->drr_object == object && drrr->drr_offset +
 		    drrr->drr_length == offset) {
 			drrr->drr_length += length;
 			return (0);
 		} else {
-			/* not a continuation.  Push out pending record */
+			 
 			if (dump_record(dscp, NULL, 0) != 0)
 				return (SET_ERROR(EINTR));
 			dscp->dsc_pending_op = PENDING_NONE;
 		}
 	}
-	/* create a REDACT record and make it pending */
+	 
 	memset(dscp->dsc_drr, 0, sizeof (dmu_replay_record_t));
 	dscp->dsc_drr->drr_type = DRR_REDACT;
 	drrr->drr_object = object;
@@ -458,28 +344,20 @@ dmu_dump_write(dmu_send_cookie_t *dscp, dmu_object_type_t type, uint64_t object,
 	boolean_t raw = (dscp->dsc_featureflags & DMU_BACKUP_FEATURE_RAW);
 	struct drr_write *drrw = &(dscp->dsc_drr->drr_u.drr_write);
 
-	/*
-	 * We send data in increasing object, offset order.
-	 * See comment in dump_free() for details.
-	 */
+	 
 	ASSERT(object > dscp->dsc_last_data_object ||
 	    (object == dscp->dsc_last_data_object &&
 	    offset > dscp->dsc_last_data_offset));
 	dscp->dsc_last_data_object = object;
 	dscp->dsc_last_data_offset = offset + lsize - 1;
 
-	/*
-	 * If there is any kind of pending aggregation (currently either
-	 * a grouping of free objects or free blocks), push it out to
-	 * the stream, since aggregation can't be done across operations
-	 * of different types.
-	 */
+	 
 	if (dscp->dsc_pending_op != PENDING_NONE) {
 		if (dump_record(dscp, NULL, 0) != 0)
 			return (SET_ERROR(EINTR));
 		dscp->dsc_pending_op = PENDING_NONE;
 	}
-	/* write a WRITE record */
+	 
 	memset(dscp->dsc_drr, 0, sizeof (dmu_replay_record_t));
 	dscp->dsc_drr->drr_type = DRR_WRITE;
 	drrw->drr_object = object;
@@ -488,7 +366,7 @@ dmu_dump_write(dmu_send_cookie_t *dscp, dmu_object_type_t type, uint64_t object,
 	drrw->drr_toguid = dscp->dsc_toguid;
 	drrw->drr_logical_size = lsize;
 
-	/* only set the compression fields if the buf is compressed or raw */
+	 
 	boolean_t compressed =
 	    (bp != NULL ? BP_GET_COMPRESS(bp) != ZIO_COMPRESS_OFF &&
 	    io_compressed : lsize != psize);
@@ -502,19 +380,14 @@ dmu_dump_write(dmu_send_cookie_t *dscp, dmu_object_type_t type, uint64_t object,
 		if (raw) {
 			ASSERT(BP_IS_PROTECTED(bp));
 
-			/*
-			 * This is a raw protected block so we need to pass
-			 * along everything the receiving side will need to
-			 * interpret this block, including the byteswap, salt,
-			 * IV, and MAC.
-			 */
+			 
 			if (BP_SHOULD_BYTESWAP(bp))
 				drrw->drr_flags |= DRR_RAW_BYTESWAP;
 			zio_crypt_decode_params_bp(bp, drrw->drr_salt,
 			    drrw->drr_iv);
 			zio_crypt_decode_mac_bp(bp, drrw->drr_mac);
 		} else {
-			/* this is a compressed block */
+			 
 			ASSERT(dscp->dsc_featureflags &
 			    DMU_BACKUP_FEATURE_COMPRESSED);
 			ASSERT(!BP_SHOULD_BYTESWAP(bp));
@@ -523,7 +396,7 @@ dmu_dump_write(dmu_send_cookie_t *dscp, dmu_object_type_t type, uint64_t object,
 			ASSERT3S(lsize, >=, psize);
 		}
 
-		/* set fields common to compressed and raw sends */
+		 
 		drrw->drr_compressiontype = BP_GET_COMPRESS(bp);
 		drrw->drr_compressed_size = psize;
 		payload_size = drrw->drr_compressed_size;
@@ -532,12 +405,7 @@ dmu_dump_write(dmu_send_cookie_t *dscp, dmu_object_type_t type, uint64_t object,
 	}
 
 	if (bp == NULL || BP_IS_EMBEDDED(bp) || (BP_IS_PROTECTED(bp) && !raw)) {
-		/*
-		 * There's no pre-computed checksum for partial-block writes,
-		 * embedded BP's, or encrypted BP's that are being sent as
-		 * plaintext, so (like fletcher4-checksummed blocks) userland
-		 * will have to compute a dedup-capable checksum itself.
-		 */
+		 
 		drrw->drr_checksumtype = ZIO_CHECKSUM_OFF;
 	} else {
 		drrw->drr_checksumtype = BP_GET_CHECKSUM(bp);
@@ -610,20 +478,20 @@ dump_spill(dmu_send_cookie_t *dscp, const blkptr_t *bp, uint64_t object,
 		dscp->dsc_pending_op = PENDING_NONE;
 	}
 
-	/* write a SPILL record */
+	 
 	memset(dscp->dsc_drr, 0, sizeof (dmu_replay_record_t));
 	dscp->dsc_drr->drr_type = DRR_SPILL;
 	drrs->drr_object = object;
 	drrs->drr_length = blksz;
 	drrs->drr_toguid = dscp->dsc_toguid;
 
-	/* See comment in dump_dnode() for full details */
+	 
 	if (zfs_send_unmodified_spill_blocks &&
 	    (bp->blk_birth <= dscp->dsc_fromtxg)) {
 		drrs->drr_flags |= DRR_SPILL_UNMODIFIED;
 	}
 
-	/* handle raw send fields */
+	 
 	if (dscp->dsc_featureflags & DMU_BACKUP_FEATURE_RAW) {
 		ASSERT(BP_IS_PROTECTED(bp));
 
@@ -648,12 +516,7 @@ dump_freeobjects(dmu_send_cookie_t *dscp, uint64_t firstobj, uint64_t numobjs)
 	uint64_t maxobj = DNODES_PER_BLOCK *
 	    (DMU_META_DNODE(dscp->dsc_os)->dn_maxblkid + 1);
 
-	/*
-	 * ZoL < 0.7 does not handle large FREEOBJECTS records correctly,
-	 * leading to zfs recv never completing. to avoid this issue, don't
-	 * send FREEOBJECTS records for object IDs which cannot exist on the
-	 * receiving side.
-	 */
+	 
 	if (maxobj > 0) {
 		if (maxobj <= firstobj)
 			return (0);
@@ -662,13 +525,7 @@ dump_freeobjects(dmu_send_cookie_t *dscp, uint64_t firstobj, uint64_t numobjs)
 			numobjs = maxobj - firstobj;
 	}
 
-	/*
-	 * If there is a pending op, but it's not PENDING_FREEOBJECTS,
-	 * push it out, since free block aggregation can only be done for
-	 * blocks of the same type (i.e., DRR_FREE records can only be
-	 * aggregated with other DRR_FREE records.  DRR_FREEOBJECTS records
-	 * can only be aggregated with other DRR_FREEOBJECTS records).
-	 */
+	 
 	if (dscp->dsc_pending_op != PENDING_NONE &&
 	    dscp->dsc_pending_op != PENDING_FREEOBJECTS) {
 		if (dump_record(dscp, NULL, 0) != 0)
@@ -677,22 +534,19 @@ dump_freeobjects(dmu_send_cookie_t *dscp, uint64_t firstobj, uint64_t numobjs)
 	}
 
 	if (dscp->dsc_pending_op == PENDING_FREEOBJECTS) {
-		/*
-		 * See whether this free object array can be aggregated
-		 * with pending one
-		 */
+		 
 		if (drrfo->drr_firstobj + drrfo->drr_numobjs == firstobj) {
 			drrfo->drr_numobjs += numobjs;
 			return (0);
 		} else {
-			/* can't be aggregated.  Push out pending record */
+			 
 			if (dump_record(dscp, NULL, 0) != 0)
 				return (SET_ERROR(EINTR));
 			dscp->dsc_pending_op = PENDING_NONE;
 		}
 	}
 
-	/* write a FREEOBJECTS record */
+	 
 	memset(dscp->dsc_drr, 0, sizeof (dmu_replay_record_t));
 	dscp->dsc_drr->drr_type = DRR_FREEOBJECTS;
 	drrfo->drr_firstobj = firstobj;
@@ -712,13 +566,7 @@ dump_dnode(dmu_send_cookie_t *dscp, const blkptr_t *bp, uint64_t object,
 	int bonuslen;
 
 	if (object < dscp->dsc_resume_object) {
-		/*
-		 * Note: when resuming, we will visit all the dnodes in
-		 * the block of dnodes that we are resuming from.  In
-		 * this case it's unnecessary to send the dnodes prior to
-		 * the one we are resuming from.  We should be at most one
-		 * block's worth of dnodes behind the resume point.
-		 */
+		 
 		ASSERT3U(dscp->dsc_resume_object - object, <,
 		    1 << (DNODE_BLOCK_SHIFT - DNODE_SHIFT));
 		return (0);
@@ -733,7 +581,7 @@ dump_dnode(dmu_send_cookie_t *dscp, const blkptr_t *bp, uint64_t object,
 		dscp->dsc_pending_op = PENDING_NONE;
 	}
 
-	/* write an OBJECT record */
+	 
 	memset(dscp->dsc_drr, 0, sizeof (dmu_replay_record_t));
 	dscp->dsc_drr->drr_type = DRR_OBJECT;
 	drro->drr_object = object;
@@ -758,17 +606,13 @@ dump_dnode(dmu_send_cookie_t *dscp, const blkptr_t *bp, uint64_t object,
 		if (BP_SHOULD_BYTESWAP(bp))
 			drro->drr_flags |= DRR_RAW_BYTESWAP;
 
-		/* needed for reconstructing dnp on recv side */
+		 
 		drro->drr_maxblkid = dnp->dn_maxblkid;
 		drro->drr_indblkshift = dnp->dn_indblkshift;
 		drro->drr_nlevels = dnp->dn_nlevels;
 		drro->drr_nblkptr = dnp->dn_nblkptr;
 
-		/*
-		 * Since we encrypt the entire bonus area, the (raw) part
-		 * beyond the bonuslen is actually nonzero, so we need
-		 * to send it.
-		 */
+		 
 		if (bonuslen != 0) {
 			if (drro->drr_bonuslen > DN_MAX_BONUS_LEN(dnp))
 				return (SET_ERROR(EINVAL));
@@ -777,31 +621,19 @@ dump_dnode(dmu_send_cookie_t *dscp, const blkptr_t *bp, uint64_t object,
 		}
 	}
 
-	/*
-	 * DRR_OBJECT_SPILL is set for every dnode which references a
-	 * spill block.	 This allows the receiving pool to definitively
-	 * determine when a spill block should be kept or freed.
-	 */
+	 
 	if (dnp->dn_flags & DNODE_FLAG_SPILL_BLKPTR)
 		drro->drr_flags |= DRR_OBJECT_SPILL;
 
 	if (dump_record(dscp, DN_BONUS(dnp), bonuslen) != 0)
 		return (SET_ERROR(EINTR));
 
-	/* Free anything past the end of the file. */
+	 
 	if (dump_free(dscp, object, (dnp->dn_maxblkid + 1) *
 	    (dnp->dn_datablkszsec << SPA_MINBLOCKSHIFT), DMU_OBJECT_END) != 0)
 		return (SET_ERROR(EINTR));
 
-	/*
-	 * Send DRR_SPILL records for unmodified spill blocks.	This is useful
-	 * because changing certain attributes of the object (e.g. blocksize)
-	 * can cause old versions of ZFS to incorrectly remove a spill block.
-	 * Including these records in the stream forces an up to date version
-	 * to always be written ensuring they're never lost.  Current versions
-	 * of the code which understand the DRR_FLAG_SPILL_BLOCK feature can
-	 * ignore these unmodified spill blocks.
-	 */
+	 
 	if (zfs_send_unmodified_spill_blocks &&
 	    (dnp->dn_flags & DNODE_FLAG_SPILL_BLKPTR) &&
 	    (DN_SPILL_BLKPTR(dnp)->blk_birth <= dscp->dsc_fromtxg)) {
@@ -835,7 +667,7 @@ dump_object_range(dmu_send_cookie_t *dscp, const blkptr_t *bp,
 	struct drr_object_range *drror =
 	    &(dscp->dsc_drr->drr_u.drr_object_range);
 
-	/* we only use this record type for raw sends */
+	 
 	ASSERT(BP_IS_PROTECTED(bp));
 	ASSERT(dscp->dsc_featureflags & DMU_BACKUP_FEATURE_RAW);
 	ASSERT3U(BP_GET_COMPRESS(bp), ==, ZIO_COMPRESS_OFF);
@@ -869,24 +701,17 @@ send_do_embed(const blkptr_t *bp, uint64_t featureflags)
 	if (!BP_IS_EMBEDDED(bp))
 		return (B_FALSE);
 
-	/*
-	 * Compression function must be legacy, or explicitly enabled.
-	 */
+	 
 	if ((BP_GET_COMPRESS(bp) >= ZIO_COMPRESS_LEGACY_FUNCTIONS &&
 	    !(featureflags & DMU_BACKUP_FEATURE_LZ4)))
 		return (B_FALSE);
 
-	/*
-	 * If we have not set the ZSTD feature flag, we can't send ZSTD
-	 * compressed embedded blocks, as the receiver may not support them.
-	 */
+	 
 	if ((BP_GET_COMPRESS(bp) == ZIO_COMPRESS_ZSTD &&
 	    !(featureflags & DMU_BACKUP_FEATURE_ZSTD)))
 		return (B_FALSE);
 
-	/*
-	 * Embed type must be explicitly enabled.
-	 */
+	 
 	switch (BPE_GET_ETYPE(bp)) {
 	case BP_EMBEDDED_TYPE_DATA:
 		if (featureflags & DMU_BACKUP_FEATURE_EMBED_DATA)
@@ -898,11 +723,7 @@ send_do_embed(const blkptr_t *bp, uint64_t featureflags)
 	return (B_FALSE);
 }
 
-/*
- * This function actually handles figuring out what kind of record needs to be
- * dumped, and calling the appropriate helper function.  In most cases,
- * the data has already been read by send_reader_thread().
- */
+ 
 static int
 do_dump(dmu_send_cookie_t *dscp, struct send_range *range)
 {
@@ -977,7 +798,7 @@ do_dump(dmu_send_cookie_t *dscp, struct send_range *range)
 		    (range->object == dscp->dsc_resume_object &&
 		    range->start_blkid * srdp->datablksz >=
 		    dscp->dsc_resume_offset));
-		/* it's a level-0 block of a regular object */
+		 
 
 		mutex_enter(&srdp->lock);
 		while (srdp->io_outstanding)
@@ -988,9 +809,7 @@ do_dump(dmu_send_cookie_t *dscp, struct send_range *range)
 		if (err != 0) {
 			if (zfs_send_corrupt_data &&
 			    !dscp->dsc_dso->dso_dryrun) {
-				/*
-				 * Send a block filled with 0x"zfs badd bloc"
-				 */
+				 
 				srdp->abuf = arc_alloc_buf(spa, &srdp->abuf,
 				    ARC_BUFC_DATA, srdp->datablksz);
 				uint64_t *ptr;
@@ -1016,11 +835,7 @@ do_dump(dmu_send_cookie_t *dscp, struct send_range *range)
 			data = srdp->abuf->b_data;
 		}
 
-		/*
-		 * If we have large blocks stored on disk but the send flags
-		 * don't allow us to send large blocks, we split the data from
-		 * the arc buf into chunks.
-		 */
+		 
 		if (srdp->datablksz > SPA_OLD_MAXBLOCKSIZE &&
 		    !(dscp->dsc_featureflags &
 		    DMU_BACKUP_FEATURE_LARGE_BLOCKS)) {
@@ -1031,11 +846,7 @@ do_dump(dmu_send_cookie_t *dscp, struct send_range *range)
 				    range->object, offset, n, n, NULL, B_FALSE,
 				    data);
 				offset += n;
-				/*
-				 * When doing dry run, data==NULL is used as a
-				 * sentinel value by
-				 * dmu_dump_write()->dump_record().
-				 */
+				 
 				if (data != NULL)
 					data += n;
 				srdp->datablksz -= n;
@@ -1058,11 +869,7 @@ do_dump(dmu_send_cookie_t *dscp, struct send_range *range)
 		}
 		uint64_t offset = 0;
 
-		/*
-		 * If this multiply overflows, we don't need to send this block.
-		 * Even if it has a birth time, it can never not be a hole, so
-		 * we don't need to send records for it.
-		 */
+		 
 		if (!overflow_multiply(range->start_blkid, srhp->datablksz,
 		    &offset)) {
 			return (0);
@@ -1102,10 +909,7 @@ range_alloc(enum type type, uint64_t object, uint64_t start_blkid,
 	return (range);
 }
 
-/*
- * This is the callback function to traverse_dataset that acts as a worker
- * thread for dmu_send_impl.
- */
+ 
 static int
 send_cb(spa_t *spa, zilog_t *zilog, const blkptr_t *bp,
     const zbookmark_phys_t *zb, const struct dnode_phys *dnp, void *arg)
@@ -1117,10 +921,7 @@ send_cb(spa_t *spa, zilog_t *zilog, const blkptr_t *bp,
 	ASSERT(zb->zb_object == DMU_META_DNODE_OBJECT ||
 	    zb->zb_object >= sta->resume.zb_object);
 
-	/*
-	 * All bps of an encrypted os should have the encryption bit set.
-	 * If this is not true it indicates tampering and we report an error.
-	 */
+	 
 	if (sta->os->os_encrypted &&
 	    !BP_IS_HOLE(bp) && !BP_USES_CRYPT(bp)) {
 		spa_log_error(spa, zb, &bp->blk_birth);
@@ -1163,11 +964,7 @@ send_cb(spa_t *spa, zilog_t *zilog, const blkptr_t *bp,
 	uint64_t span = bp_span_in_blocks(dnp->dn_indblkshift, zb->zb_level);
 	uint64_t start;
 
-	/*
-	 * If this multiply overflows, we don't need to send this block.
-	 * Even if it has a birth time, it can never not be a hole, so
-	 * we don't need to send records for it.
-	 */
+	 
 	if (!overflow_multiply(span, zb->zb_blkid, &start) || (!(zb->zb_blkid ==
 	    DMU_SPILL_BLKID || DMU_OT_IS_METADATA(dnp->dn_type)) &&
 	    span * zb->zb_blkid > dnp->dn_maxblkid)) {
@@ -1236,11 +1033,7 @@ redact_list_cb(redact_block_phys_t *rb, void *arg)
 	return (0);
 }
 
-/*
- * This function kicks off the traverse_dataset.  It also handles setting the
- * error code of the thread in case something goes wrong, and pushes the End of
- * Stream record when the traverse_dataset call has finished.
- */
+ 
 static __attribute__((noreturn)) void
 send_traverse_thread(void *arg)
 {
@@ -1261,10 +1054,7 @@ send_traverse_thread(void *arg)
 	thread_exit();
 }
 
-/*
- * Utility function that causes End of Stream records to compare after of all
- * others, so that other threads' comparison logic can stay simple.
- */
+ 
 static int __attribute__((unused))
 send_range_after(const struct send_range *from, const struct send_range *to)
 {
@@ -1306,11 +1096,7 @@ send_range_after(const struct send_range *from, const struct send_range *to)
 	return (0);
 }
 
-/*
- * Pop the new data off the queue, check that the records we receive are in
- * the right order, but do not free the old data.  This is used so that the
- * records can be sent on to the main thread without copying the data.
- */
+ 
 static struct send_range *
 get_next_range_nofree(bqueue_t *bq, struct send_range *prev)
 {
@@ -1319,10 +1105,7 @@ get_next_range_nofree(bqueue_t *bq, struct send_range *prev)
 	return (next);
 }
 
-/*
- * Pop the new data off the queue, check that the records we receive are in
- * the right order, and free the old data.
- */
+ 
 static struct send_range *
 get_next_range(bqueue_t *bq, struct send_range *prev)
 {
@@ -1355,11 +1138,7 @@ redact_list_thread(void *arg)
 	thread_exit();
 }
 
-/*
- * Compare the start point of the two provided ranges. End of stream ranges
- * compare last, objects compare before any data or hole inside that object and
- * multi-object holes that start at the same object.
- */
+ 
 static int
 send_range_start_compare(struct send_range *r1, struct send_range *r2)
 {
@@ -1399,34 +1178,11 @@ enum q_idx {
 	NUM_THREADS
 };
 
-/*
- * This function returns the next range the send_merge_thread should operate on.
- * The inputs are two arrays; the first one stores the range at the front of the
- * queues stored in the second one.  The ranges are sorted in descending
- * priority order; the metadata from earlier ranges overrules metadata from
- * later ranges.  out_mask is used to return which threads the ranges came from;
- * bit i is set if ranges[i] started at the same place as the returned range.
- *
- * This code is not hardcoded to compare a specific number of threads; it could
- * be used with any number, just by changing the q_idx enum.
- *
- * The "next range" is the one with the earliest start; if two starts are equal,
- * the highest-priority range is the next to operate on.  If a higher-priority
- * range starts in the middle of the first range, then the first range will be
- * truncated to end where the higher-priority range starts, and we will operate
- * on that one next time.   In this way, we make sure that each block covered by
- * some range gets covered by a returned range, and each block covered is
- * returned using the metadata of the highest-priority range it appears in.
- *
- * For example, if the three ranges at the front of the queues were [2,4),
- * [3,5), and [1,3), then the ranges returned would be [1,2) with the metadata
- * from the third range, [2,4) with the metadata from the first range, and then
- * [4,5) with the metadata from the second.
- */
+ 
 static struct send_range *
 find_next_range(struct send_range **ranges, bqueue_t **qs, uint64_t *out_mask)
 {
-	int idx = 0; // index of the range with the earliest start
+	int idx = 0;  
 	int i;
 	uint64_t bmask = 0;
 	for (i = 1; i < NUM_THREADS; i++) {
@@ -1438,19 +1194,13 @@ find_next_range(struct send_range **ranges, bqueue_t **qs, uint64_t *out_mask)
 		*out_mask = 0;
 		return (ret);
 	}
-	/*
-	 * Find all the ranges that start at that same point.
-	 */
+	 
 	for (i = 0; i < NUM_THREADS; i++) {
 		if (send_range_start_compare(ranges[i], ranges[idx]) == 0)
 			bmask |= 1 << i;
 	}
 	*out_mask = bmask;
-	/*
-	 * OBJECT_RANGE records only come from the TO thread, and should always
-	 * be treated as overlapping with nothing and sent on immediately.  They
-	 * are only used in raw sends, and are never redacted.
-	 */
+	 
 	if (ranges[idx]->type == OBJECT_RANGE) {
 		ASSERT3U(idx, ==, TO_IDX);
 		ASSERT3U(*out_mask, ==, 1 << TO_IDX);
@@ -1458,9 +1208,7 @@ find_next_range(struct send_range **ranges, bqueue_t **qs, uint64_t *out_mask)
 		ranges[idx] = get_next_range_nofree(qs[idx], ranges[idx]);
 		return (ret);
 	}
-	/*
-	 * Find the first start or end point after the start of the first range.
-	 */
+	 
 	uint64_t first_change = ranges[idx]->end_blkid;
 	for (i = 0; i < NUM_THREADS; i++) {
 		if (i == idx || ranges[i]->eos_marker ||
@@ -1474,13 +1222,7 @@ find_next_range(struct send_range **ranges, bqueue_t **qs, uint64_t *out_mask)
 		else if (first_change > ranges[i]->end_blkid)
 			first_change = ranges[i]->end_blkid;
 	}
-	/*
-	 * Update all ranges to no longer overlap with the range we're
-	 * returning. All such ranges must start at the same place as the range
-	 * being returned, and end at or after first_change. Thus we update
-	 * their start to first_change. If that makes them size 0, then free
-	 * them and pull a new range from that thread.
-	 */
+	 
 	for (i = 0; i < NUM_THREADS; i++) {
 		if (i == idx || (bmask & (1 << i)) == 0)
 			continue;
@@ -1490,21 +1232,14 @@ find_next_range(struct send_range **ranges, bqueue_t **qs, uint64_t *out_mask)
 		if (ranges[i]->start_blkid == ranges[i]->end_blkid)
 			ranges[i] = get_next_range(qs[i], ranges[i]);
 	}
-	/*
-	 * Short-circuit the simple case; if the range doesn't overlap with
-	 * anything else, or it only overlaps with things that start at the same
-	 * place and are longer, send it on.
-	 */
+	 
 	if (first_change == ranges[idx]->end_blkid) {
 		struct send_range *ret = ranges[idx];
 		ranges[idx] = get_next_range_nofree(qs[idx], ranges[idx]);
 		return (ret);
 	}
 
-	/*
-	 * Otherwise, return a truncated copy of ranges[idx] and move the start
-	 * of ranges[idx] back to first_change.
-	 */
+	 
 	struct send_range *ret = kmem_alloc(sizeof (*ret), KM_SLEEP);
 	*ret = *ranges[idx];
 	ret->end_blkid = first_change;
@@ -1514,18 +1249,7 @@ find_next_range(struct send_range **ranges, bqueue_t **qs, uint64_t *out_mask)
 
 #define	FROM_AND_REDACT_BITS ((1 << REDACT_IDX) | (1 << FROM_IDX))
 
-/*
- * Merge the results from the from thread and the to thread, and then hand the
- * records off to send_prefetch_thread to prefetch them.  If this is not a
- * send from a redaction bookmark, the from thread will push an end of stream
- * record and stop, and we'll just send everything that was changed in the
- * to_ds since the ancestor's creation txg. If it is, then since
- * traverse_dataset has a canonical order, we can compare each change as
- * they're pulled off the queues.  That will give us a stream that is
- * appropriately sorted, and covers all records.  In addition, we pull the
- * data from the redact_list_thread and use that to determine which blocks
- * should be redacted.
- */
+ 
 static __attribute__((noreturn)) void
 send_merge_thread(void *arg)
 {
@@ -1555,12 +1279,7 @@ send_merge_thread(void *arg)
 	for (range = find_next_range(front_ranges, queues, &mask);
 	    !range->eos_marker && err == 0 && !smt_arg->cancel;
 	    range = find_next_range(front_ranges, queues, &mask)) {
-		/*
-		 * If the range in question was in both the from redact bookmark
-		 * and the bookmark we're using to redact, then don't send it.
-		 * It's already redacted on the receiving system, so a redaction
-		 * record would be redundant.
-		 */
+		 
 		if ((mask & FROM_AND_REDACT_BITS) == FROM_AND_REDACT_BITS) {
 			ASSERT3U(range->type, ==, REDACT);
 			range_free(range);
@@ -1635,25 +1354,11 @@ issue_data_read(struct send_reader_thread_arg *srta, struct send_range *range)
 
 	ASSERT3U(range->type, ==, DATA);
 	ASSERT3U(range->start_blkid + 1, ==, range->end_blkid);
-	/*
-	 * If we have large blocks stored on disk but
-	 * the send flags don't allow us to send large
-	 * blocks, we split the data from the arc buf
-	 * into chunks.
-	 */
+	 
 	boolean_t split_large_blocks =
 	    srdp->datablksz > SPA_OLD_MAXBLOCKSIZE &&
 	    !(srta->featureflags & DMU_BACKUP_FEATURE_LARGE_BLOCKS);
-	/*
-	 * We should only request compressed data from the ARC if all
-	 * the following are true:
-	 *  - stream compression was requested
-	 *  - we aren't splitting large blocks into smaller chunks
-	 *  - the data won't need to be byteswapped before sending
-	 *  - this isn't an embedded block
-	 *  - this isn't metadata (if receiving on a different endian
-	 *    system it can be byteswapped more easily)
-	 */
+	 
 	boolean_t request_compressed =
 	    (srta->featureflags & DMU_BACKUP_FEATURE_COMPRESSED) &&
 	    !split_large_blocks && !BP_SHOULD_BYTESWAP(bp) &&
@@ -1691,12 +1396,7 @@ issue_data_read(struct send_reader_thread_arg *srta, struct send_range *range)
 	int arc_err = arc_read(NULL, os->os_spa, bp,
 	    arc_getbuf_func, &srdp->abuf, ZIO_PRIORITY_ASYNC_READ,
 	    zioflags, &aflags, &zb);
-	/*
-	 * If the data is not already cached in the ARC, we read directly
-	 * from zio.  This avoids the performance overhead of adding a new
-	 * entry to the ARC, and we also avoid polluting the ARC cache with
-	 * data that is not likely to be used in the future.
-	 */
+	 
 	if (arc_err != 0) {
 		srdp->abd = abd_alloc_linear(srdp->datasz, B_FALSE);
 		srdp->io_outstanding = B_TRUE;
@@ -1706,9 +1406,7 @@ issue_data_read(struct send_reader_thread_arg *srta, struct send_range *range)
 	}
 }
 
-/*
- * Create a new record with the given values.
- */
+ 
 static void
 enqueue_range(struct send_reader_thread_arg *srta, bqueue_t *q, dnode_t *dn,
     uint64_t blkid, uint64_t count, const blkptr_t *bp, uint32_t datablksz)
@@ -1744,13 +1442,7 @@ enqueue_range(struct send_reader_thread_arg *srta, bqueue_t *q, dnode_t *dn,
 	bqueue_enqueue(q, range, datablksz);
 }
 
-/*
- * This thread is responsible for two things: First, it retrieves the correct
- * blkptr in the to ds if we need to send the data because of something from
- * the from thread.  As a result of this, we're the first ones to discover that
- * some indirect blocks can be discarded because they're not holes. Second,
- * it issues prefetches for the data we need to send.
- */
+ 
 static __attribute__((noreturn)) void
 send_reader_thread(void *arg)
 {
@@ -1763,14 +1455,7 @@ send_reader_thread(void *arg)
 	struct send_range *range = bqueue_dequeue(inq);
 	int err = 0;
 
-	/*
-	 * If the record we're analyzing is from a redaction bookmark from the
-	 * fromds, then we need to know whether or not it exists in the tods so
-	 * we know whether to create records for it or not. If it does, we need
-	 * the datablksz so we can generate an appropriate record for it.
-	 * Finally, if it isn't redacted, we need the blkptr so that we can send
-	 * a WRITE record containing the actual data.
-	 */
+	 
 	uint64_t last_obj = UINT64_MAX;
 	uint64_t last_obj_exists = B_TRUE;
 	while (!range->eos_marker && !srta->cancel && smta->error == 0 &&
@@ -1784,41 +1469,17 @@ send_reader_thread(void *arg)
 		case HOLE:
 		case OBJECT:
 		case OBJECT_RANGE:
-		case REDACT: // Redacted blocks must exist
+		case REDACT: 
 			bqueue_enqueue(outq, range, sizeof (*range));
 			range = get_next_range_nofree(inq, range);
 			break;
 		case PREVIOUSLY_REDACTED: {
-			/*
-			 * This entry came from the "from bookmark" when
-			 * sending from a bookmark that has a redaction
-			 * list.  We need to check if this object/blkid
-			 * exists in the target ("to") dataset, and if
-			 * not then we drop this entry.  We also need
-			 * to fill in the block pointer so that we know
-			 * what to prefetch.
-			 *
-			 * To accomplish the above, we first cache whether or
-			 * not the last object we examined exists.  If it
-			 * doesn't, we can drop this record. If it does, we hold
-			 * the dnode and use it to call dbuf_dnode_findbp. We do
-			 * this instead of dbuf_bookmark_findbp because we will
-			 * often operate on large ranges, and holding the dnode
-			 * once is more efficient.
-			 */
+			 
 			boolean_t object_exists = B_TRUE;
-			/*
-			 * If the data is redacted, we only care if it exists,
-			 * so that we don't send records for objects that have
-			 * been deleted.
-			 */
+			 
 			dnode_t *dn;
 			if (range->object == last_obj && !last_obj_exists) {
-				/*
-				 * If we're still examining the same object as
-				 * previously, and it doesn't exist, we don't
-				 * need to call dbuf_bookmark_findbp.
-				 */
+				 
 				object_exists = B_FALSE;
 			} else {
 				err = dnode_hold(os, range->object, FTAG, &dn);
@@ -1833,21 +1494,13 @@ send_reader_thread(void *arg)
 			if (err != 0) {
 				break;
 			} else if (!object_exists) {
-				/*
-				 * The block was modified, but doesn't
-				 * exist in the to dataset; if it was
-				 * deleted in the to dataset, then we'll
-				 * visit the hole bp for it at some point.
-				 */
+				 
 				range = get_next_range(inq, range);
 				continue;
 			}
 			uint64_t file_max =
 			    MIN(dn->dn_maxblkid, range->end_blkid);
-			/*
-			 * The object exists, so we need to try to find the
-			 * blkptr for each block in the range we're processing.
-			 */
+			 
 			rw_enter(&dn->dn_struct_rwlock, RW_READER);
 			for (uint64_t blkid = range->start_blkid;
 			    blkid < file_max; blkid++) {
@@ -1856,14 +1509,7 @@ send_reader_thread(void *arg)
 				    dn->dn_phys->dn_datablkszsec <<
 				    SPA_MINBLOCKSHIFT;
 				uint64_t offset = blkid * datablksz;
-				/*
-				 * This call finds the next non-hole block in
-				 * the object. This is to prevent a
-				 * performance problem where we're unredacting
-				 * a large hole. Using dnode_next_offset to
-				 * skip over the large hole avoids iterating
-				 * over every block in it.
-				 */
+				 
 				err = dnode_next_offset(dn, DNODE_FIND_HAVELOCK,
 				    &offset, 1, 1, 0);
 				if (err == ESRCH) {
@@ -1873,10 +1519,7 @@ send_reader_thread(void *arg)
 					break;
 				}
 				if (offset != blkid * datablksz) {
-					/*
-					 * if there is a hole from here
-					 * (blkid) to offset
-					 */
+					 
 					offset = MIN(offset, file_max *
 					    datablksz);
 					uint64_t nblks = (offset / datablksz) -
@@ -1918,18 +1561,18 @@ send_reader_thread(void *arg)
 #define	NUM_SNAPS_NOT_REDACTED UINT64_MAX
 
 struct dmu_send_params {
-	/* Pool args */
-	const void *tag; // Tag dp was held with, will be used to release dp.
+	 
+	const void *tag;  
 	dsl_pool_t *dp;
-	/* To snapshot args */
+	 
 	const char *tosnap;
 	dsl_dataset_t *to_ds;
-	/* From snapshot args */
+	 
 	zfs_bookmark_phys_t ancestor_zb;
 	uint64_t *fromredactsnaps;
-	/* NUM_SNAPS_NOT_REDACTED if not sending from redaction bookmark */
+	 
 	uint64_t numfromredactsnaps;
-	/* Stream params */
+	 
 	boolean_t is_clone;
 	boolean_t embedok;
 	boolean_t large_block_ok;
@@ -1940,10 +1583,10 @@ struct dmu_send_params {
 	uint64_t resumeoff;
 	uint64_t saved_guid;
 	zfs_bookmark_phys_t *redactbook;
-	/* Stream output params */
+	 
 	dmu_send_outparams_t *dso;
 
-	/* Stream progress params */
+	 
 	offset_t *off;
 	int outfd;
 	char saved_toname[MAXNAMELEN];
@@ -1965,19 +1608,19 @@ setup_featureflags(struct dmu_send_params *dspp, objset_t *os,
 			*featureflags |= DMU_BACKUP_FEATURE_SA_SPILL;
 	}
 
-	/* raw sends imply large_block_ok */
+	 
 	if ((dspp->rawok || dspp->large_block_ok) &&
 	    dsl_dataset_feature_is_active(to_ds, SPA_FEATURE_LARGE_BLOCKS)) {
 		*featureflags |= DMU_BACKUP_FEATURE_LARGE_BLOCKS;
 	}
 
-	/* encrypted datasets will not have embedded blocks */
+	 
 	if ((dspp->embedok || dspp->rawok) && !os->os_encrypted &&
 	    spa_feature_is_active(dp->dp_spa, SPA_FEATURE_EMBEDDED_DATA)) {
 		*featureflags |= DMU_BACKUP_FEATURE_EMBED_DATA;
 	}
 
-	/* raw send implies compressok */
+	 
 	if (dspp->compressok || dspp->rawok)
 		*featureflags |= DMU_BACKUP_FEATURE_COMPRESSED;
 
@@ -1991,11 +1634,7 @@ setup_featureflags(struct dmu_send_params *dspp, objset_t *os,
 		*featureflags |= DMU_BACKUP_FEATURE_LZ4;
 	}
 
-	/*
-	 * We specifically do not include DMU_BACKUP_FEATURE_EMBED_DATA here to
-	 * allow sending ZSTD compressed datasets to a receiver that does not
-	 * support ZSTD
-	 */
+	 
 	if ((*featureflags &
 	    (DMU_BACKUP_FEATURE_COMPRESSED | DMU_BACKUP_FEATURE_RAW)) != 0 &&
 	    dsl_dataset_feature_is_active(to_ds, SPA_FEATURE_ZSTD_COMPRESS)) {
@@ -2091,10 +1730,7 @@ setup_from_thread(struct redact_list_thread_arg *from_arg,
 	from_arg->rl = from_rl;
 	from_arg->mark_redact = B_FALSE;
 	from_arg->num_blocks_visited = &dssp->dss_blocks;
-	/*
-	 * If from_ds is null, send_traverse_thread just returns success and
-	 * enqueues an eos marker.
-	 */
+	 
 	(void) thread_create(NULL, 0, redact_list_thread, from_arg, 0,
 	    curproc, TS_RUN, minclsyspri);
 }
@@ -2177,10 +1813,7 @@ setup_resume_points(struct dmu_send_params *dspp,
 
 		blkid = dspp->resumeoff / to_doi.doi_data_block_size;
 	}
-	/*
-	 * If we're resuming a redacted send, we can skip to the appropriate
-	 * point in the redaction bookmark by binary searching through it.
-	 */
+	 
 	if (redact_rl != NULL) {
 		SET_BOOKMARK(&rlt_arg->resume, to_ds->ds_object, obj, 0, blkid);
 	}
@@ -2188,21 +1821,7 @@ setup_resume_points(struct dmu_send_params *dspp,
 	SET_BOOKMARK(&to_arg->resume, to_ds->ds_object, obj, 0, blkid);
 	if (nvlist_exists(nvl, BEGINNV_REDACT_FROM_SNAPS)) {
 		uint64_t objset = dspp->ancestor_zb.zbm_redaction_obj;
-		/*
-		 * Note: If the resume point is in an object whose
-		 * blocksize is different in the from vs to snapshots,
-		 * we will have divided by the "wrong" blocksize.
-		 * However, in this case fromsnap's send_cb() will
-		 * detect that the blocksize has changed and therefore
-		 * ignore this object.
-		 *
-		 * If we're resuming a send from a redaction bookmark,
-		 * we still cannot accidentally suggest blocks behind
-		 * the to_ds.  In addition, we know that any blocks in
-		 * the object in the to_ds will have to be sent, since
-		 * the size changed.  Therefore, we can't cause any harm
-		 * this way either.
-		 */
+		 
 		SET_BOOKMARK(&from_arg->resume, objset, obj, 0, blkid);
 	}
 	if (resuming) {
@@ -2225,124 +1844,7 @@ setup_send_progress(struct dmu_send_params *dspp)
 	return (dssp);
 }
 
-/*
- * Actually do the bulk of the work in a zfs send.
- *
- * The idea is that we want to do a send from ancestor_zb to to_ds.  We also
- * want to not send any data that has been modified by all the datasets in
- * redactsnaparr, and store the list of blocks that are redacted in this way in
- * a bookmark named redactbook, created on the to_ds.  We do this by creating
- * several worker threads, whose function is described below.
- *
- * There are three cases.
- * The first case is a redacted zfs send.  In this case there are 5 threads.
- * The first thread is the to_ds traversal thread: it calls dataset_traverse on
- * the to_ds and finds all the blocks that have changed since ancestor_zb (if
- * it's a full send, that's all blocks in the dataset).  It then sends those
- * blocks on to the send merge thread. The redact list thread takes the data
- * from the redaction bookmark and sends those blocks on to the send merge
- * thread.  The send merge thread takes the data from the to_ds traversal
- * thread, and combines it with the redaction records from the redact list
- * thread.  If a block appears in both the to_ds's data and the redaction data,
- * the send merge thread will mark it as redacted and send it on to the prefetch
- * thread.  Otherwise, the send merge thread will send the block on to the
- * prefetch thread unchanged. The prefetch thread will issue prefetch reads for
- * any data that isn't redacted, and then send the data on to the main thread.
- * The main thread behaves the same as in a normal send case, issuing demand
- * reads for data blocks and sending out records over the network
- *
- * The graphic below diagrams the flow of data in the case of a redacted zfs
- * send.  Each box represents a thread, and each line represents the flow of
- * data.
- *
- *             Records from the |
- *           redaction bookmark |
- * +--------------------+       |  +---------------------------+
- * |                    |       v  | Send Merge Thread         |
- * | Redact List Thread +----------> Apply redaction marks to  |
- * |                    |          | records as specified by   |
- * +--------------------+          | redaction ranges          |
- *                                 +----^---------------+------+
- *                                      |               | Merged data
- *                                      |               |
- *                                      |  +------------v--------+
- *                                      |  | Prefetch Thread     |
- * +--------------------+               |  | Issues prefetch     |
- * | to_ds Traversal    |               |  | reads of data blocks|
- * | Thread (finds      +---------------+  +------------+--------+
- * | candidate blocks)  |  Blocks modified              | Prefetched data
- * +--------------------+  by to_ds since               |
- *                         ancestor_zb     +------------v----+
- *                                         | Main Thread     |  File Descriptor
- *                                         | Sends data over +->(to zfs receive)
- *                                         | wire            |
- *                                         +-----------------+
- *
- * The second case is an incremental send from a redaction bookmark.  The to_ds
- * traversal thread and the main thread behave the same as in the redacted
- * send case.  The new thread is the from bookmark traversal thread.  It
- * iterates over the redaction list in the redaction bookmark, and enqueues
- * records for each block that was redacted in the original send.  The send
- * merge thread now has to merge the data from the two threads.  For details
- * about that process, see the header comment of send_merge_thread().  Any data
- * it decides to send on will be prefetched by the prefetch thread.  Note that
- * you can perform a redacted send from a redaction bookmark; in that case,
- * the data flow behaves very similarly to the flow in the redacted send case,
- * except with the addition of the bookmark traversal thread iterating over the
- * redaction bookmark.  The send_merge_thread also has to take on the
- * responsibility of merging the redact list thread's records, the bookmark
- * traversal thread's records, and the to_ds records.
- *
- * +---------------------+
- * |                     |
- * | Redact List Thread  +--------------+
- * |                     |              |
- * +---------------------+              |
- *        Blocks in redaction list      | Ranges modified by every secure snap
- *        of from bookmark              | (or EOS if not readcted)
- *                                      |
- * +---------------------+   |     +----v----------------------+
- * | bookmark Traversal  |   v     | Send Merge Thread         |
- * | Thread (finds       +---------> Merges bookmark, rlt, and |
- * | candidate blocks)   |         | to_ds send records        |
- * +---------------------+         +----^---------------+------+
- *                                      |               | Merged data
- *                                      |  +------------v--------+
- *                                      |  | Prefetch Thread     |
- * +--------------------+               |  | Issues prefetch     |
- * | to_ds Traversal    |               |  | reads of data blocks|
- * | Thread (finds      +---------------+  +------------+--------+
- * | candidate blocks)  |  Blocks modified              | Prefetched data
- * +--------------------+  by to_ds since  +------------v----+
- *                         ancestor_zb     | Main Thread     |  File Descriptor
- *                                         | Sends data over +->(to zfs receive)
- *                                         | wire            |
- *                                         +-----------------+
- *
- * The final case is a simple zfs full or incremental send.  The to_ds traversal
- * thread behaves the same as always. The redact list thread is never started.
- * The send merge thread takes all the blocks that the to_ds traversal thread
- * sends it, prefetches the data, and sends the blocks on to the main thread.
- * The main thread sends the data over the wire.
- *
- * To keep performance acceptable, we want to prefetch the data in the worker
- * threads.  While the to_ds thread could simply use the TRAVERSE_PREFETCH
- * feature built into traverse_dataset, the combining and deletion of records
- * due to redaction and sends from redaction bookmarks mean that we could
- * issue many unnecessary prefetches.  As a result, we only prefetch data
- * after we've determined that the record is not going to be redacted.  To
- * prevent the prefetching from getting too far ahead of the main thread, the
- * blocking queues that are used for communication are capped not by the
- * number of entries in the queue, but by the sum of the size of the
- * prefetches associated with them.  The limit on the amount of data that the
- * thread can prefetch beyond what the main thread has reached is controlled
- * by the global variable zfs_send_queue_length.  In addition, to prevent poor
- * performance in the beginning of a send, we also limit the distance ahead
- * that the traversal threads can be.  That distance is controlled by the
- * zfs_send_no_prefetch_queue_length tunable.
- *
- * Note: Releases dp using the specified tag.
- */
+ 
 static int
 dmu_send_impl(struct dmu_send_params *dspp)
 {
@@ -2375,12 +1877,7 @@ dmu_send_impl(struct dmu_send_params *dspp)
 		return (err);
 	}
 
-	/*
-	 * If this is a non-raw send of an encrypted ds, we can ensure that
-	 * the objset_phys_t is authenticated. This is safe because this is
-	 * either a snapshot or we have owned the dataset, ensuring that
-	 * it can't be modified.
-	 */
+	 
 	if (!dspp->rawok && os->os_encrypted &&
 	    arc_is_unauthenticated(os->os_phys_buf)) {
 		zbookmark_phys_t zb;
@@ -2402,9 +1899,7 @@ dmu_send_impl(struct dmu_send_params *dspp)
 		return (err);
 	}
 
-	/*
-	 * If we're doing a redacted send, hold the bookmark's redaction list.
-	 */
+	 
 	if (dspp->redactbook != NULL) {
 		err = dsl_redaction_list_hold_obj(dp,
 		    dspp->redactbook->zbm_redaction_obj, FTAG,
@@ -2416,10 +1911,7 @@ dmu_send_impl(struct dmu_send_params *dspp)
 		dsl_redaction_list_long_hold(dp, redact_rl, FTAG);
 	}
 
-	/*
-	 * If we're sending from a redaction bookmark, hold the redaction list
-	 * so that we can consider sending the redacted blocks.
-	 */
+	 
 	if (ancestor_zb->zbm_redaction_obj != 0) {
 		err = dsl_redaction_list_hold_obj(dp,
 		    ancestor_zb->zbm_redaction_obj, FTAG, &from_rl);
@@ -2462,13 +1954,7 @@ dmu_send_impl(struct dmu_send_params *dspp)
 	size_t payload_len = 0;
 	nvlist_t *nvl = fnvlist_alloc();
 
-	/*
-	 * If we're doing a redacted send, we include the snapshots we're
-	 * redacted with respect to so that the target system knows what send
-	 * streams can be correctly received on top of this dataset. If we're
-	 * instead sending a redacted dataset, we include the snapshots that the
-	 * dataset was created with respect to.
-	 */
+	 
 	if (dspp->redactbook != NULL) {
 		fnvlist_add_uint64_array(nvl, BEGINNV_REDACT_SNAPS,
 		    redact_rl->rl_phys->rlp_snaps,
@@ -2483,20 +1969,14 @@ dmu_send_impl(struct dmu_send_params *dspp)
 		    length);
 	}
 
-	/*
-	 * If we're sending from a redaction bookmark, then we should retrieve
-	 * the guids of that bookmark so we can send them over the wire.
-	 */
+	 
 	if (from_rl != NULL) {
 		fnvlist_add_uint64_array(nvl, BEGINNV_REDACT_FROM_SNAPS,
 		    from_rl->rl_phys->rlp_snaps,
 		    from_rl->rl_phys->rlp_num_snaps);
 	}
 
-	/*
-	 * If the snapshot we're sending from is redacted, include the redaction
-	 * list in the stream.
-	 */
+	 
 	if (dspp->numfromredactsnaps != NUM_SNAPS_NOT_REDACTED) {
 		ASSERT3P(from_rl, ==, NULL);
 		fnvlist_add_uint64_array(nvl, BEGINNV_REDACT_FROM_SNAPS,
@@ -2558,12 +2038,7 @@ dmu_send_impl(struct dmu_send_params *dspp)
 			err = SET_ERROR(EINTR);
 	}
 
-	/*
-	 * If we hit an error or are interrupted, cancel our worker threads and
-	 * clear the queue of any pending records.  The threads will pass the
-	 * cancel up the tree of worker threads, and each one will clean up any
-	 * pending records before exiting.
-	 */
+	 
 	if (err != 0) {
 		srt_arg->cancel = B_TRUE;
 		while (!range->eos_marker) {
@@ -2595,11 +2070,7 @@ dmu_send_impl(struct dmu_send_params *dspp)
 		goto out;
 	}
 
-	/*
-	 * Send the DRR_END record if this is not a saved stream.
-	 * Otherwise, the omitted DRR_END record will signal to
-	 * the receive side that the stream is incomplete.
-	 */
+	 
 	if (!dspp->savedok) {
 		memset(drr, 0, sizeof (dmu_replay_record_t));
 		drr->drr_type = DRR_END;
@@ -2690,7 +2161,7 @@ dmu_send_obj(const char *pool, uint64_t tosnap, uint64_t fromsnap,
 			    &dspp.ancestor_zb.zbm_ivset_guid);
 		}
 
-		/* See dmu_send for the reasons behind this. */
+		 
 		uint64_t *fromredact;
 
 		if (!dsl_dataset_get_uint64_array_feature(fromds,
@@ -2764,24 +2235,10 @@ dmu_send(const char *tosnap, const char *fromsnap, boolean_t embedok,
 		return (err);
 
 	if (strchr(tosnap, '@') == NULL && spa_writeable(dspp.dp->dp_spa)) {
-		/*
-		 * We are sending a filesystem or volume.  Ensure
-		 * that it doesn't change by owning the dataset.
-		 */
+		 
 
 		if (savedok) {
-			/*
-			 * We are looking for the dataset that represents the
-			 * partially received send stream. If this stream was
-			 * received as a new snapshot of an existing dataset,
-			 * this will be saved in a hidden clone named
-			 * "<pool>/<dataset>/%recv". Otherwise, the stream
-			 * will be saved in the live dataset itself. In
-			 * either case we need to use dsl_dataset_own_force()
-			 * because the stream is marked as inconsistent,
-			 * which would normally make it unavailable to be
-			 * owned.
-			 */
+			 
 			char *name = kmem_asprintf("%s/%s", tosnap,
 			    recv_clone_name);
 			err = dsl_dataset_own_force(dspp.dp, name, dsflags,
@@ -2806,7 +2263,7 @@ dmu_send(const char *tosnap, const char *fromsnap, boolean_t embedok,
 				    sizeof (dspp.saved_toname),
 				    dspp.saved_toname);
 			}
-			/* Only disown if there was an error in the lookups */
+			 
 			if (owned && (err != 0))
 				dsl_dataset_disown(dspp.to_ds, dsflags, FTAG);
 
@@ -2823,7 +2280,7 @@ dmu_send(const char *tosnap, const char *fromsnap, boolean_t embedok,
 	}
 
 	if (err != 0) {
-		/* Note: dsl dataset is not owned at this point */
+		 
 		dsl_pool_rele(dspp.dp, FTAG);
 		return (err);
 	}
@@ -2860,10 +2317,7 @@ dmu_send(const char *tosnap, const char *fromsnap, boolean_t embedok,
 		else
 			fsnamelen = strlen(tosnap);
 
-		/*
-		 * If the fromsnap is in a different filesystem, then
-		 * mark the send stream as a clone.
-		 */
+		 
 		if (strncmp(tosnap, fromsnap, fsnamelen) != 0 ||
 		    (fromsnap[fsnamelen] != '@' &&
 		    fromsnap[fsnamelen] != '#')) {
@@ -2877,11 +2331,7 @@ dmu_send(const char *tosnap, const char *fromsnap, boolean_t embedok,
 			if (err != 0) {
 				ASSERT3P(fromds, ==, NULL);
 			} else {
-				/*
-				 * We need to make a deep copy of the redact
-				 * snapshots of the from snapshot, because the
-				 * array will be freed when we evict from_ds.
-				 */
+				 
 				uint64_t *fromredact;
 				if (!dsl_dataset_get_uint64_array_feature(
 				    fromds, SPA_FEATURE_REDACTED_DATASETS,
@@ -2933,7 +2383,7 @@ dmu_send(const char *tosnap, const char *fromsnap, boolean_t embedok,
 		}
 
 		if (err == 0) {
-			/* dmu_send_impl will call dsl_pool_rele for us. */
+			 
 			err = dmu_send_impl(&dspp);
 		} else {
 			if (dspp.fromredactsnaps)
@@ -2959,18 +2409,14 @@ dmu_adjust_send_estimate_for_indirects(dsl_dataset_t *ds, uint64_t uncompressed,
 {
 	int err = 0;
 	uint64_t size;
-	/*
-	 * Assume that space (both on-disk and in-stream) is dominated by
-	 * data.  We will adjust for indirect blocks and the copies property,
-	 * but ignore per-object space used (eg, dnodes and DRR_OBJECT records).
-	 */
+	 
 
 	uint64_t recordsize;
 	uint64_t record_count;
 	objset_t *os;
 	VERIFY0(dmu_objset_from_ds(ds, &os));
 
-	/* Assume all (uncompressed) blocks are recordsize. */
+	 
 	if (zfs_override_estimate_recordsize != 0) {
 		recordsize = zfs_override_estimate_recordsize;
 	} else if (os->os_phys->os_type == DMU_OST_ZVOL) {
@@ -2984,24 +2430,13 @@ dmu_adjust_send_estimate_for_indirects(dsl_dataset_t *ds, uint64_t uncompressed,
 		return (err);
 	record_count = uncompressed / recordsize;
 
-	/*
-	 * If we're estimating a send size for a compressed stream, use the
-	 * compressed data size to estimate the stream size. Otherwise, use the
-	 * uncompressed data size.
-	 */
+	 
 	size = stream_compressed ? compressed : uncompressed;
 
-	/*
-	 * Subtract out approximate space used by indirect blocks.
-	 * Assume most space is used by data blocks (non-indirect, non-dnode).
-	 * Assume no ditto blocks or internal fragmentation.
-	 *
-	 * Therefore, space used by indirect blocks is sizeof(blkptr_t) per
-	 * block.
-	 */
+	 
 	size -= record_count * sizeof (blkptr_t);
 
-	/* Add in the space for the record associated with each block. */
+	 
 	size += record_count * sizeof (dmu_replay_record_t);
 
 	*sizep = size;
@@ -3021,10 +2456,7 @@ dmu_send_estimate_fast(dsl_dataset_t *origds, dsl_dataset_t *fromds,
 	ASSERT(dsl_pool_config_held(origds->ds_dir->dd_pool));
 	ASSERT(fromds == NULL || frombook == NULL);
 
-	/*
-	 * If this is a saved send we may actually be sending
-	 * from the %recv clone used for resuming.
-	 */
+	 
 	if (saved) {
 		objset_t *mos = origds->ds_dir->dd_pool->dp_meta_objset;
 		uint64_t guid;
@@ -3042,7 +2474,7 @@ dmu_send_estimate_fast(dsl_dataset_t *origds, dsl_dataset_t *fromds,
 			ds = origds;
 		}
 
-		/* check that this dataset has partially received data */
+		 
 		err = zap_lookup(mos, ds->ds_object,
 		    DS_FIELD_RESUME_TOGUID, 8, 1, &guid);
 		if (err != 0) {
@@ -3058,7 +2490,7 @@ dmu_send_estimate_fast(dsl_dataset_t *origds, dsl_dataset_t *fromds,
 		}
 	}
 
-	/* tosnap must be a snapshot or the target of a saved send */
+	 
 	if (!ds->ds_is_snapshot && ds == origds)
 		return (SET_ERROR(EINVAL));
 
@@ -3091,9 +2523,7 @@ dmu_send_estimate_fast(dsl_dataset_t *origds, dsl_dataset_t *fromds,
 
 	err = dmu_adjust_send_estimate_for_indirects(ds, uncomp, comp,
 	    stream_compressed, sizep);
-	/*
-	 * Add the size of the BEGIN and END records to the estimate.
-	 */
+	 
 	*sizep += 2 * sizeof (dmu_replay_record_t);
 
 out:

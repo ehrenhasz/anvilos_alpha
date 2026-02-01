@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2018 IBM Corporation
- */
+ 
+ 
 #include <linux/efi.h>
 #include <linux/module.h>
 #include <linux/ima.h>
@@ -49,11 +47,11 @@ bool arch_ima_get_secureboot(void)
 		return false;
 }
 
-/* secureboot arch rules */
+ 
 static const char * const sb_arch_rules[] = {
 #if !IS_ENABLED(CONFIG_KEXEC_SIG)
 	"appraise func=KEXEC_KERNEL_CHECK appraise_type=imasig",
-#endif /* CONFIG_KEXEC_SIG */
+#endif  
 	"measure func=KEXEC_KERNEL_CHECK",
 #if !IS_ENABLED(CONFIG_MODULE_SIG)
 	"appraise func=MODULE_CHECK appraise_type=imasig",

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright (C) 2016-2017 Oracle Corporation
- * This file is based on qxl_irq.c
- * Copyright 2013 Red Hat Inc.
- * Authors: Dave Airlie
- *          Alon Levy
- *          Michael Thayer <michael.thayer@oracle.com,
- *          Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 
 #include <linux/pci.h>
 
@@ -41,12 +33,7 @@ static irqreturn_t vbox_irq_handler(int irq, void *arg)
 	if (!(host_flags & HGSMIHOSTFLAGS_IRQ))
 		return IRQ_NONE;
 
-	/*
-	 * Due to a bug in the initial host implementation of hot-plug irqs,
-	 * the hot-plug and cursor capability flags were never cleared.
-	 * Fortunately we can tell when they would have been set by checking
-	 * that the VSYNC flag is not set.
-	 */
+	 
 	if (host_flags &
 	    (HGSMIHOSTFLAGS_HOTPLUG | HGSMIHOSTFLAGS_CURSOR_CAPABILITIES) &&
 	    !(host_flags & HGSMIHOSTFLAGS_VSYNC))
@@ -57,12 +44,7 @@ static irqreturn_t vbox_irq_handler(int irq, void *arg)
 	return IRQ_HANDLED;
 }
 
-/*
- * Check that the position hints provided by the host are suitable for GNOME
- * shell (i.e. all screens disjoint and hints for all enabled screens) and if
- * not replace them with default ones.  Providing valid hints improves the
- * chances that we will get a known screen layout for pointer mapping.
- */
+ 
 static void validate_or_set_position_hints(struct vbox_private *vbox)
 {
 	struct vbva_modehint *hintsi, *hintsj;
@@ -103,7 +85,7 @@ static void validate_or_set_position_hints(struct vbox_private *vbox)
 		}
 }
 
-/* Query the host for the most recent video mode hints. */
+ 
 static void vbox_update_mode_hints(struct vbox_private *vbox)
 {
 	struct drm_connector_list_iter conn_iter;
@@ -177,7 +159,7 @@ int vbox_irq_init(struct vbox_private *vbox)
 	INIT_WORK(&vbox->hotplug_work, vbox_hotplug_worker);
 	vbox_update_mode_hints(vbox);
 
-	/* PCI devices require shared interrupts. */
+	 
 	return request_irq(pdev->irq, vbox_irq_handler, IRQF_SHARED, dev->driver->name, dev);
 }
 

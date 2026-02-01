@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Cherry Trail ACPI INT33FE pseudo device driver
- *
- * Copyright (C) 2017 Hans de Goede <hdegoede@redhat.com>
- *
- * Some Intel Cherry Trail based device which ship with Windows 10, have
- * this weird INT33FE ACPI device with a CRS table with 4 I2cSerialBusV2
- * resources, for 4 different chips attached to various I²C buses:
- * 1. The Whiskey Cove PMIC, which is also described by the INT34D3 ACPI device
- * 2. Maxim MAX17047 Fuel Gauge Controller
- * 3. FUSB302 USB Type-C Controller
- * 4. PI3USB30532 USB switch
- *
- * So this driver is a stub / pseudo driver whose only purpose is to
- * instantiate I²C clients for chips 2 - 4, so that standard I²C drivers
- * for these chips can bind to the them.
- */
+
+ 
 
 #include <linux/dmi.h>
 #include <linux/i2c.h>
@@ -34,14 +18,7 @@ struct cht_int33fe_data {
 	struct fwnode_handle *dp;
 };
 
-/*
- * Grrr, I severely dislike buggy BIOS-es. At least one BIOS enumerates
- * the max17047 both through the INT33FE ACPI device (it is right there
- * in the resources table) as well as through a separate MAX17047 device.
- *
- * These helpers are used to work around this by checking if an I²C client
- * for the max17047 has already been registered.
- */
+ 
 static int cht_int33fe_check_for_max17047(struct device *dev, void *data)
 {
 	struct i2c_client **max17047 = data;
@@ -51,7 +28,7 @@ static int cht_int33fe_check_for_max17047(struct device *dev, void *data)
 	if (!adev)
 		return 0;
 
-	/* The MAX17047 ACPI node doesn't have an UID, so we don't check that */
+	 
 	if (!acpi_dev_hid_uid_match(adev, "MAX17047", NULL))
 		return 0;
 
@@ -71,11 +48,7 @@ static const struct software_node max17047_node = {
 	.properties = max17047_properties,
 };
 
-/*
- * We are not using inline property here because those are constant,
- * and we need to adjust this one at runtime to point to real
- * software node.
- */
+ 
 static struct software_node_ref_args fusb302_mux_refs[] = {
 	{ .node = NULL },
 };
@@ -167,14 +140,14 @@ static int cht_int33fe_setup_dp(struct cht_int33fe_data *data)
 	if (!fwnode)
 		return -ENODEV;
 
-	/* First let's find the GPU PCI device */
+	 
 	pdev = pci_get_class(PCI_CLASS_DISPLAY_VGA << 8, NULL);
 	if (!pdev || pdev->vendor != PCI_VENDOR_ID_INTEL) {
 		pci_dev_put(pdev);
 		return -ENODEV;
 	}
 
-	/* Then the DP-2 child device node */
+	 
 	data->dp = device_get_named_child_node(&pdev->dev, "DD04");
 	pci_dev_put(pdev);
 	if (!data->dp)
@@ -207,33 +180,21 @@ static int cht_int33fe_add_nodes(struct cht_int33fe_data *data)
 	const struct software_node *mux_ref_node;
 	int ret;
 
-	/*
-	 * There is no ACPI device node for the USB role mux, so we need to wait
-	 * until the mux driver has created software node for the mux device.
-	 * It means we depend on the mux driver. This function will return
-	 * -EPROBE_DEFER until the mux device is registered.
-	 */
+	 
 	mux_ref_node = software_node_find_by_name(NULL, "intel-xhci-usb-sw");
 	if (!mux_ref_node)
 		return -EPROBE_DEFER;
 
-	/*
-	 * Update node used in "usb-role-switch" property. Note that we
-	 * rely on software_node_register_node_group() to use the original
-	 * instance of properties instead of copying them.
-	 */
+	 
 	fusb302_mux_refs[0].node = mux_ref_node;
 
 	ret = software_node_register_node_group(node_group);
 	if (ret)
 		return ret;
 
-	/* The devices that are not created in this driver need extra steps. */
+	 
 
-	/*
-	 * The DP connector does have ACPI device node. In this case we can just
-	 * find that ACPI node and assign our node as the secondary node to it.
-	 */
+	 
 	ret = cht_int33fe_setup_dp(data);
 	if (ret)
 		goto err_remove_nodes;
@@ -260,9 +221,9 @@ cht_int33fe_register_max17047(struct device *dev, struct cht_int33fe_data *data)
 
 	i2c_for_each_dev(&max17047, cht_int33fe_check_for_max17047);
 	if (max17047) {
-		/* Pre-existing I²C client for the max17047, add device properties */
+		 
 		set_secondary_fwnode(&max17047->dev, fwnode);
-		/* And re-probe to get the new device properties applied */
+		 
 		ret = device_reprobe(&max17047->dev);
 		if (ret)
 			dev_warn(dev, "Reprobing max17047 error: %d\n", ret);
@@ -280,14 +241,7 @@ cht_int33fe_register_max17047(struct device *dev, struct cht_int33fe_data *data)
 
 static const struct dmi_system_id cht_int33fe_typec_ids[] = {
 	{
-		/*
-		 * GPD win / GPD pocket mini laptops
-		 *
-		 * This DMI match may not seem unique, but it is. In the 67000+
-		 * DMI decode dumps from linux-hardware.org only 116 have
-		 * board_vendor set to "AMI Corporation" and of those 116 only
-		 * the GPD win's and pocket's board_name is "Default string".
-		 */
+		 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "Default string"),
@@ -316,20 +270,7 @@ static int cht_int33fe_typec_probe(struct platform_device *pdev)
 	if (!data)
 		return -ENOMEM;
 
-	/*
-	 * We expect the WC PMIC to be paired with a TI bq24292i charger-IC.
-	 * We check for the bq24292i vbus regulator here, this has 2 purposes:
-	 * 1) The bq24292i allows charging with up to 12V, setting the fusb302's
-	 *    max-snk voltage to 12V with another charger-IC is not good.
-	 * 2) For the fusb302 driver to get the bq24292i vbus regulator, the
-	 *    regulator-map, which is part of the bq24292i regulator_init_data,
-	 *    must be registered before the fusb302 is instantiated, otherwise
-	 *    it will end up with a dummy-regulator.
-	 * Note "cht_wc_usb_typec_vbus" comes from the regulator_init_data
-	 * which is defined in i2c-cht-wc.c from where the bq24292i I²C client
-	 * gets instantiated. We use regulator_get_optional here so that we
-	 * don't end up getting a dummy-regulator ourselves.
-	 */
+	 
 	regulator = regulator_get_optional(dev, "cht_wc_usb_typec_vbus");
 	if (IS_ERR(regulator)) {
 		ret = PTR_ERR(regulator);
@@ -337,7 +278,7 @@ static int cht_int33fe_typec_probe(struct platform_device *pdev)
 	}
 	regulator_put(regulator);
 
-	/* The FUSB302 uses the IRQ at index 1 and is the only IRQ user */
+	 
 	fusb302_irq = acpi_dev_gpio_irq_get(ACPI_COMPANION(dev), 1);
 	if (fusb302_irq < 0) {
 		if (fusb302_irq != -EPROBE_DEFER)
@@ -349,7 +290,7 @@ static int cht_int33fe_typec_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Work around BIOS bug, see comment on cht_int33fe_check_for_max17047() */
+	 
 	ret = cht_int33fe_register_max17047(dev, data);
 	if (ret)
 		goto out_remove_nodes;

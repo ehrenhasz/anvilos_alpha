@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// mpq7920.c  - regulator driver for mps mpq7920
-//
-// Copyright 2019 Monolithic Power Systems, Inc
-//
-// Author: Saravanan Sekar <sravanhome@gmail.com>
+
+
+
+
+
+
+
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -82,7 +82,7 @@ enum mpq7920_regulators {
 	MPQ7920_BUCK2,
 	MPQ7920_BUCK3,
 	MPQ7920_BUCK4,
-	MPQ7920_LDO1, /* LDORTC */
+	MPQ7920_LDO1,  
 	MPQ7920_LDO2,
 	MPQ7920_LDO3,
 	MPQ7920_LDO4,
@@ -101,19 +101,17 @@ static const struct regmap_config mpq7920_regmap_config = {
 	.max_register = 0x25,
 };
 
-/* Current limits array (in uA)
- * ILIM1 & ILIM3
- */
+ 
 static const unsigned int mpq7920_I_limits1[] = {
 	4600000, 6600000, 7600000, 9300000
 };
 
-/* ILIM2 & ILIM4 */
+ 
 static const unsigned int mpq7920_I_limits2[] = {
 	2700000, 3900000, 5100000, 6100000
 };
 
-/* LDO4 & LDO5 */
+ 
 static const unsigned int mpq7920_I_limits3[] = {
 	300000, 700000
 };
@@ -123,7 +121,7 @@ static int mpq7920_parse_cb(struct device_node *np,
 				const struct regulator_desc *rdesc,
 				struct regulator_config *config);
 
-/* RTCLDO not controllable, always ON */
+ 
 static const struct regulator_ops mpq7920_ldortc_ops = {
 	.list_voltage		= regulator_list_voltage_linear,
 	.map_voltage		= regulator_map_voltage_linear,
@@ -184,12 +182,7 @@ static struct regulator_desc mpq7920_regulators_desc[MPQ7920_MAX_REGULATORS] = {
 			MPQ7920_MASK_LDO_ILIM),
 };
 
-/*
- * DVS ramp rate BUCK1 to BUCK4
- * 00-01: Reserved
- * 10: 8mV/us
- * 11: 4mV/us
- */
+ 
 static int mpq7920_set_ramp_delay(struct regulator_dev *rdev, int ramp_delay)
 {
 	unsigned int ramp_val;

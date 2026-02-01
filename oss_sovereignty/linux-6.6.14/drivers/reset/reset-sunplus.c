@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/*
- * SP7021 reset driver
- *
- * Copyright (C) Sunplus Technology Co., Ltd.
- *       All rights reserved.
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/init.h>
@@ -13,12 +8,12 @@
 #include <linux/reset-controller.h>
 #include <linux/reboot.h>
 
-/* HIWORD_MASK_REG BITS */
+ 
 #define BITS_PER_HWM_REG	16
 
-/* resets HW info: reg_index_shift */
+ 
 static const u32 sp_resets[] = {
-/* SP7021: mo_reset0 ~ mo_reset9 */
+ 
 	0x00,
 	0x02,
 	0x03,
@@ -198,7 +193,7 @@ static int sp_reset_probe(struct platform_device *pdev)
 
 static const struct of_device_id sp_reset_dt_ids[] = {
 	{.compatible = "sunplus,sp7021-reset",},
-	{ /* sentinel */ },
+	{   },
 };
 
 static struct platform_driver sp_reset_driver = {

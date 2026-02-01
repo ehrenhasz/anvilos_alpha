@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #define pr_fmt(fmt) "drbd debugfs: " fmt
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -13,9 +13,7 @@
 #include "drbd_debugfs.h"
 
 
-/**********************************************************************
- * Whenever you change the file format, remember to bump the version. *
- **********************************************************************/
+ 
 
 static struct dentry *drbd_debugfs_root;
 static struct dentry *drbd_debugfs_version;
@@ -50,7 +48,7 @@ static void seq_print_rq_state_bit(struct seq_file *m,
 	__seq_print_rq_state_bit(m, is_set, sep, set_name, NULL);
 }
 
-/* pretty print enum drbd_req_state_bits req->rq_state */
+ 
 static void seq_print_request_state(struct seq_file *m, struct drbd_request *req)
 {
 	unsigned int s = req->rq_state;
@@ -58,7 +56,7 @@ static void seq_print_request_state(struct seq_file *m, struct drbd_request *req
 	seq_printf(m, "\t0x%08x", s);
 	seq_printf(m, "\tmaster: %s", req->master_bio ? "pending" : "completed");
 
-	/* RQ_WRITE ignored, already reported */
+	 
 	seq_puts(m, "\tlocal:");
 	seq_print_rq_state_bit(m, s & RQ_IN_ACT_LOG, &sep, "in-AL");
 	seq_print_rq_state_bit(m, s & RQ_POSTPONED, &sep, "postponed");
@@ -71,7 +69,7 @@ static void seq_print_request_state(struct seq_file *m, struct drbd_request *req
 	if (sep == ' ')
 		seq_puts(m, " -");
 
-	/* for_each_connection ... */
+	 
 	seq_printf(m, "\tnet:");
 	sep = ' ';
 	seq_print_rq_state_bit(m, s & RQ_NET_PENDING, &sep, "pending");
@@ -95,7 +93,7 @@ static void seq_print_request_state(struct seq_file *m, struct drbd_request *req
 
 static void seq_print_one_request(struct seq_file *m, struct drbd_request *req, unsigned long now)
 {
-	/* change anything here, fixup header below! */
+	 
 	unsigned int s = req->rq_state;
 
 #define RQ_HDR_1 "epoch\tsector\tsize\trw"
@@ -134,10 +132,7 @@ static void seq_print_resource_pending_meta_io(struct seq_file *m, struct drbd_r
 	rcu_read_lock();
 	idr_for_each_entry(&resource->devices, device, i) {
 		struct drbd_md_io tmp;
-		/* In theory this is racy,
-		 * in the sense that there could have been a
-		 * drbd_md_put_buffer(); drbd_md_get_buffer();
-		 * between accessing these members here.  */
+		 
 		tmp = device->md_io;
 		if (atomic_read(&tmp.in_use)) {
 			seq_printf(m, "%u\t%u\t%d\t",
@@ -168,8 +163,7 @@ static void seq_print_waiting_for_AL(struct seq_file *m, struct drbd_resource *r
 			spin_lock_irq(&device->resource->req_lock);
 			req = list_first_entry_or_null(&device->pending_master_completion[1],
 				struct drbd_request, req_pending_master_completion);
-			/* if the oldest request does not wait for the activity log
-			 * it is not interesting for us here */
+			 
 			if (req && !(req->rq_state & RQ_IN_ACT_LOG))
 				jif = req->start_jif;
 			else
@@ -226,7 +220,7 @@ static void seq_print_resource_pending_bitmap_io(struct seq_file *m, struct drbd
 	rcu_read_unlock();
 }
 
-/* pretty print enum peer_req->flags */
+ 
 static void seq_print_peer_request_flags(struct seq_file *m, struct drbd_peer_request *peer_req)
 {
 	unsigned long f = peer_req->flags;
@@ -313,7 +307,7 @@ static void seq_print_resource_transfer_log_summary(struct seq_file *m,
 		unsigned int s;
 		++count;
 
-		/* don't disable irq "forever" */
+		 
 		if (!(count & 0x1ff)) {
 			struct drbd_request *req_next;
 			kref_get(&req->kref);
@@ -329,10 +323,7 @@ static void seq_print_resource_transfer_log_summary(struct seq_file *m,
 
 		s = req->rq_state;
 
-		/* This is meant to summarize timing issues, to be able to tell
-		 * local disk problems from network problems.
-		 * Skip requests, if we have shown an even older request with
-		 * similar aspects already.  */
+		 
 		if (req->master_bio == NULL)
 			tmp |= 1;
 		if ((s & RQ_LOCAL_MASK) && (s & RQ_LOCAL_PENDING))
@@ -356,7 +347,7 @@ static void seq_print_resource_transfer_log_summary(struct seq_file *m,
 	spin_unlock_irq(&resource->req_lock);
 }
 
-/* TODO: transfer_log and friends should be moved to resource */
+ 
 static int in_flight_summary_show(struct seq_file *m, void *pos)
 {
 	struct drbd_resource *resource = m->private;
@@ -364,12 +355,11 @@ static int in_flight_summary_show(struct seq_file *m, void *pos)
 	unsigned long jif = jiffies;
 
 	connection = first_connection(resource);
-	/* This does not happen, actually.
-	 * But be robust and prepare for future code changes. */
+	 
 	if (!connection || !kref_get_unless_zero(&connection->kref))
 		return -ESTALE;
 
-	/* BUMP me if you change the file format/content/presentation */
+	 
 	seq_printf(m, "v: %u\n\n", 0);
 
 	seq_puts(m, "oldest bitmap IO\n");
@@ -381,14 +371,14 @@ static int in_flight_summary_show(struct seq_file *m, void *pos)
 	seq_putc(m, '\n');
 
 	seq_puts(m, "socket buffer stats\n");
-	/* for each connection ... once we have more than one */
+	 
 	rcu_read_lock();
 	if (connection->data.socket) {
-		/* open coded SIOCINQ, the "relevant" part */
+		 
 		struct tcp_sock *tp = tcp_sk(connection->data.socket->sk);
 		int answ = tp->rcv_nxt - tp->copied_seq;
 		seq_printf(m, "unread receive buffer: %u Byte\n", answ);
-		/* open coded SIOCOUTQ, the "relevant" part */
+		 
 		answ = tp->write_seq - tp->snd_una;
 		seq_printf(m, "unacked send buffer: %u Byte\n", answ);
 	}
@@ -414,7 +404,7 @@ static int in_flight_summary_show(struct seq_file *m, void *pos)
 	return 0;
 }
 
-/* make sure at *open* time that the respective object won't go away. */
+ 
 static int drbd_single_open(struct file *file, int (*show)(struct seq_file *, void *),
 		                void *data, struct kref *kref,
 				void (*release)(struct kref *))
@@ -422,12 +412,11 @@ static int drbd_single_open(struct file *file, int (*show)(struct seq_file *, vo
 	struct dentry *parent;
 	int ret = -ESTALE;
 
-	/* Are we still linked,
-	 * or has debugfs_remove() already been called? */
+	 
 	parent = file->f_path.dentry->d_parent;
-	/* serialize with d_delete() */
+	 
 	inode_lock(d_inode(parent));
-	/* Make sure the object is still alive */
+	 
 	if (simple_positive(file->f_path.dentry)
 	&& kref_get_unless_zero(kref))
 		ret = 0;
@@ -489,7 +478,7 @@ static void drbd_debugfs_remove(struct dentry **dp)
 
 void drbd_debugfs_resource_cleanup(struct drbd_resource *resource)
 {
-	/* it is ok to call debugfs_remove(NULL) */
+	 
 	drbd_debugfs_remove(&resource->debugfs_res_in_flight_summary);
 	drbd_debugfs_remove(&resource->debugfs_res_connections);
 	drbd_debugfs_remove(&resource->debugfs_res_volumes);
@@ -501,8 +490,7 @@ static void seq_print_one_timing_detail(struct seq_file *m,
 	unsigned long now)
 {
 	struct drbd_thread_timing_details td;
-	/* No locking...
-	 * use temporary assignment to get at consistent data. */
+	 
 	do {
 		td = *tdp;
 	} while (td.cb_nr != tdp->cb_nr);
@@ -523,10 +511,7 @@ static void seq_print_timing_details(struct seq_file *m,
 	unsigned int i;
 
 	seq_printf(m, "%s\n", title);
-	/* If not much is going on, this will result in natural ordering.
-	 * If it is very busy, we will possibly skip events, or even see wrap
-	 * arounds, which could only be avoided with locking.
-	 */
+	 
 	start_idx = cb_nr % DRBD_THREAD_DETAILS_HIST;
 	for (i = start_idx; i < DRBD_THREAD_DETAILS_HIST; i++)
 		seq_print_one_timing_detail(m, tdp+i, now);
@@ -539,7 +524,7 @@ static int callback_history_show(struct seq_file *m, void *ignored)
 	struct drbd_connection *connection = m->private;
 	unsigned long jif = jiffies;
 
-	/* BUMP me if you change the file format/content/presentation */
+	 
 	seq_printf(m, "v: %u\n\n", 0);
 
 	seq_puts(m, "n\tage\tcallsite\tfn\n");
@@ -576,7 +561,7 @@ static int connection_oldest_requests_show(struct seq_file *m, void *ignored)
 	unsigned long now = jiffies;
 	struct drbd_request *r1, *r2;
 
-	/* BUMP me if you change the file format/content/presentation */
+	 
 	seq_printf(m, "v: %u\n\n", 0);
 
 	spin_lock_irq(&connection->resource->req_lock);
@@ -622,9 +607,7 @@ void drbd_debugfs_connection_add(struct drbd_connection *connection)
 	struct dentry *conns_dir = connection->resource->debugfs_res_connections;
 	struct dentry *dentry;
 
-	/* Once we enable mutliple peers,
-	 * these connections will have descriptive names.
-	 * For now, it is just the one connection to the (only) "peer". */
+	 
 	dentry = debugfs_create_dir("peer", conns_dir);
 	connection->debugfs_conn = dentry;
 
@@ -661,7 +644,7 @@ static int device_resync_extents_show(struct seq_file *m, void *ignored)
 {
 	struct drbd_device *device = m->private;
 
-	/* BUMP me if you change the file format/content/presentation */
+	 
 	seq_printf(m, "v: %u\n\n", 0);
 
 	if (get_ldev_if_state(device, D_FAILED)) {
@@ -676,7 +659,7 @@ static int device_act_log_extents_show(struct seq_file *m, void *ignored)
 {
 	struct drbd_device *device = m->private;
 
-	/* BUMP me if you change the file format/content/presentation */
+	 
 	seq_printf(m, "v: %u\n\n", 0);
 
 	if (get_ldev_if_state(device, D_FAILED)) {
@@ -695,12 +678,12 @@ static int device_oldest_requests_show(struct seq_file *m, void *ignored)
 	struct drbd_request *r1, *r2;
 	int i;
 
-	/* BUMP me if you change the file format/content/presentation */
+	 
 	seq_printf(m, "v: %u\n\n", 0);
 
 	seq_puts(m, RQ_HDR);
 	spin_lock_irq(&resource->req_lock);
-	/* WRITE, then READ */
+	 
 	for (i = 1; i >= 0; --i) {
 		r1 = list_first_entry_or_null(&device->pending_master_completion[i],
 			struct drbd_request, req_pending_master_completion);
@@ -771,8 +754,8 @@ drbd_debugfs_device_attr(ed_gen_id)
 void drbd_debugfs_device_add(struct drbd_device *device)
 {
 	struct dentry *vols_dir = device->resource->debugfs_res_volumes;
-	char minor_buf[8]; /* MINORMASK, MINORBITS == 20; */
-	char vnr_buf[8];   /* volume number vnr is even 16 bit only; */
+	char minor_buf[8];  
+	char vnr_buf[8];    
 	char *slink_name = NULL;
 
 	struct dentry *dentry;
@@ -863,8 +846,7 @@ static const struct file_operations drbd_version_fops = {
 	.release = single_release,
 };
 
-/* not __exit, may be indirectly called
- * from the module-load-failure path as well. */
+ 
 void drbd_debugfs_cleanup(void)
 {
 	drbd_debugfs_remove(&drbd_debugfs_resources);

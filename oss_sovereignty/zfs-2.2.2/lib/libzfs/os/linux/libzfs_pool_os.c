@@ -1,34 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright 2015 Nexenta Systems, Inc.  All rights reserved.
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011, 2018 by Delphix. All rights reserved.
- * Copyright 2016 Igor Kozhukhov <ikozhukhov@gmail.com>
- * Copyright (c) 2018 Datto Inc.
- * Copyright (c) 2017 Open-E, Inc. All Rights Reserved.
- * Copyright (c) 2017, Intel Corporation.
- * Copyright (c) 2018, loli10K <ezomori.nozomu@gmail.com>
- */
+ 
 
 #include <errno.h>
 #include <libintl.h>
@@ -52,10 +24,7 @@
 #include "zfs_comutil.h"
 #include "zfeature_common.h"
 
-/*
- * If the device has being dynamically expanded then we need to relabel
- * the disk to use the new unallocated space.
- */
+ 
 int
 zpool_relabel_disk(libzfs_handle_t *hdl, const char *path, const char *msg)
 {
@@ -67,14 +36,10 @@ zpool_relabel_disk(libzfs_handle_t *hdl, const char *path, const char *msg)
 		return (zfs_error(hdl, EZFS_OPENFAILED, msg));
 	}
 
-	/*
-	 * It's possible that we might encounter an error if the device
-	 * does not have any unallocated space left. If so, we simply
-	 * ignore that error and continue on.
-	 */
+	 
 	error = efi_use_whole_disk(fd);
 
-	/* Flush the buffers to disk and invalidate the page cache. */
+	 
 	(void) fsync(fd);
 	(void) ioctl(fd, BLKFLSBUF);
 
@@ -87,12 +52,7 @@ zpool_relabel_disk(libzfs_handle_t *hdl, const char *path, const char *msg)
 	return (0);
 }
 
-/*
- * Read the EFI label from the config, if a label does not exist then
- * pass back the error to the caller. If the caller has passed a non-NULL
- * diskaddr argument then we set it to the starting address of the EFI
- * partition.
- */
+ 
 static int
 read_efi_label(nvlist_t *config, diskaddr_t *sb)
 {
@@ -119,10 +79,7 @@ read_efi_label(nvlist_t *config, diskaddr_t *sb)
 	return (err);
 }
 
-/*
- * determine where a partition starts on a disk in the current
- * configuration
- */
+ 
 static diskaddr_t
 find_start_block(nvlist_t *config)
 {
@@ -177,12 +134,7 @@ zpool_label_disk_check(char *path)
 	return (0);
 }
 
-/*
- * Generate a unique partition name for the ZFS member.  Partitions must
- * have unique names to ensure udev will be able to create symlinks under
- * /dev/disk/by-partlabel/ for all pool members.  The partition names are
- * of the form <pool>-<unique-id>.
- */
+ 
 static void
 zpool_label_name(char *label_name, int label_size)
 {
@@ -203,10 +155,7 @@ zpool_label_name(char *label_name, int label_size)
 	snprintf(label_name, label_size, "zfs-%016llx", (u_longlong_t)id);
 }
 
-/*
- * Label an individual disk.  The name provided is the short name,
- * stripped of any leading /dev path.
- */
+ 
 int
 zpool_label_disk(libzfs_handle_t *hdl, zpool_handle_t *zhp, const char *name)
 {
@@ -218,7 +167,7 @@ zpool_label_disk(libzfs_handle_t *hdl, zpool_handle_t *zhp, const char *name)
 	diskaddr_t start_block;
 	char errbuf[ERRBUFLEN];
 
-	/* prepare an error message just in case */
+	 
 	(void) snprintf(errbuf, sizeof (errbuf),
 	    dgettext(TEXT_DOMAIN, "cannot label '%s'"), name);
 
@@ -232,27 +181,21 @@ zpool_label_disk(libzfs_handle_t *hdl, zpool_handle_t *zhp, const char *name)
 			start_block = zhp->zpool_start_block;
 		zhp->zpool_start_block = start_block;
 	} else {
-		/* new pool */
+		 
 		start_block = NEW_START_BLOCK;
 	}
 
 	(void) snprintf(path, sizeof (path), "%s/%s", DISK_ROOT, name);
 
 	if ((fd = open(path, O_RDWR|O_DIRECT|O_EXCL|O_CLOEXEC)) < 0) {
-		/*
-		 * This shouldn't happen.  We've long since verified that this
-		 * is a valid device.
-		 */
+		 
 		zfs_error_aux(hdl, dgettext(TEXT_DOMAIN, "cannot "
 		    "label '%s': unable to open device: %d"), path, errno);
 		return (zfs_error(hdl, EZFS_OPENFAILED, errbuf));
 	}
 
 	if (efi_alloc_and_init(fd, EFI_NUMPAR, &vtoc) != 0) {
-		/*
-		 * The only way this can fail is if we run out of memory, or we
-		 * were unable to read the disk's capacity
-		 */
+		 
 		if (errno == ENOMEM)
 			(void) no_memory(hdl);
 
@@ -273,15 +216,7 @@ zpool_label_disk(libzfs_handle_t *hdl, zpool_handle_t *zhp, const char *name)
 	vtoc->efi_parts[0].p_start = start_block;
 	vtoc->efi_parts[0].p_size = slice_size;
 
-	/*
-	 * Why we use V_USR: V_BACKUP confuses users, and is considered
-	 * disposable by some EFI utilities (since EFI doesn't have a backup
-	 * slice).  V_UNASSIGNED is supposed to be used only for zero size
-	 * partitions, and efi_write() will fail if we use it.
-	 * Other available types were all pretty specific.
-	 * V_USR is as close to reality as we
-	 * can get, in the absence of V_OTHER.
-	 */
+	 
 	vtoc->efi_parts[0].p_tag = V_USR;
 	zpool_label_name(vtoc->efi_parts[0].p_name, EFI_PART_NAME_LEN);
 
@@ -291,18 +226,14 @@ zpool_label_disk(libzfs_handle_t *hdl, zpool_handle_t *zhp, const char *name)
 
 	rval = efi_write(fd, vtoc);
 
-	/* Flush the buffers to disk and invalidate the page cache. */
+	 
 	(void) fsync(fd);
 	(void) ioctl(fd, BLKFLSBUF);
 
 	if (rval == 0)
 		rval = efi_rescan(fd);
 
-	/*
-	 * Some block drivers (like pcata) may not support EFI GPT labels.
-	 * Print out a helpful error message directing the user to manually
-	 * label the disk and give a specific slice.
-	 */
+	 
 	if (rval != 0) {
 		(void) close(fd);
 		efi_free(vtoc);
@@ -318,7 +249,7 @@ zpool_label_disk(libzfs_handle_t *hdl, zpool_handle_t *zhp, const char *name)
 	(void) snprintf(path, sizeof (path), "%s/%s", DISK_ROOT, name);
 	(void) zfs_append_partition(path, MAXPATHLEN);
 
-	/* Wait to udev to signal use the device has settled. */
+	 
 	rval = zpool_label_disk_wait(path, DISK_LABEL_WAIT);
 	if (rval) {
 		zfs_error_aux(hdl, dgettext(TEXT_DOMAIN, "failed to "
@@ -326,7 +257,7 @@ zpool_label_disk(libzfs_handle_t *hdl, zpool_handle_t *zhp, const char *name)
 		return (zfs_error(hdl, EZFS_LABELFAILED, errbuf));
 	}
 
-	/* We can't be to paranoid.  Read the label back and verify it. */
+	 
 	(void) snprintf(path, sizeof (path), "%s/%s", DISK_ROOT, name);
 	rval = zpool_label_disk_check(path);
 	if (rval) {

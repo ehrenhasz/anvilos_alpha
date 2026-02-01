@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015-2016 MediaTek Inc.
- * Author: Houlong Wei <houlong.wei@mediatek.com>
- *         Ming Hsiu Tsai <minghsiu.tsai@mediatek.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -22,7 +18,7 @@
 #include "mtk_mdp_m2m.h"
 #include "mtk_vpu.h"
 
-/* MDP debug log level (0-3). 3 shows all the logs. */
+ 
 int mtk_mdp_dbg_level;
 EXPORT_SYMBOL(mtk_mdp_dbg_level);
 
@@ -122,7 +118,7 @@ static int mtk_mdp_probe(struct platform_device *pdev)
 	mutex_init(&mdp->lock);
 	mutex_init(&mdp->vpulock);
 
-	/* Old dts had the components as child nodes */
+	 
 	node = of_get_next_child(dev->of_node, NULL);
 	if (node) {
 		of_node_put(node);
@@ -132,7 +128,7 @@ static int mtk_mdp_probe(struct platform_device *pdev)
 		parent = dev->of_node->parent;
 	}
 
-	/* Iterate over sibling MDP function blocks */
+	 
 	for_each_child_of_node(parent, node) {
 		const struct of_device_id *of_id;
 		enum mtk_mdp_comp_type comp_type;

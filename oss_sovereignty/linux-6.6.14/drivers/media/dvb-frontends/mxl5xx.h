@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Driver for the MaxLinear MxL5xx family of tuners/demods
- *
- * Copyright (C) 2014-2015 Ralph Metzler <rjkm@metzlerbros.de>
- *                         Marcus Metzler <mocm@metzlerbros.de>
- *                         developed for Digital Devices GmbH
- *
- * based on code:
- * Copyright (c) 2011-2013 MaxLinear, Inc. All rights reserved
- * which was released under GPL V2
- */
+ 
+ 
 
 #ifndef _MXL5XX_H_
 #define _MXL5XX_H_
@@ -49,6 +39,6 @@ static inline struct dvb_frontend *mxl5xx_attach(struct i2c_adapter *i2c,
 	return NULL;
 }
 
-#endif /* CONFIG_DVB_MXL5XX */
+#endif  
 
-#endif /* _MXL5XX_H_ */
+#endif  

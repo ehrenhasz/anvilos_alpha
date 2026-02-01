@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/hwmon/wm8350-hwmon.c - Wolfson Microelectronics WM8350 PMIC
- *                                  hardware monitoring features.
- *
- * Copyright (C) 2009 Wolfson Microelectronics plc
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

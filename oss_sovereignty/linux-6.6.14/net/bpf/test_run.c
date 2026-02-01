@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2017 Facebook
- */
+
+ 
 #include <linux/bpf.h>
 #include <linux/btf.h>
 #include <linux/btf_ids.h>
@@ -63,7 +62,7 @@ static bool bpf_test_timer_continue(struct bpf_test_timer *t, int iterations,
 {
 	t->i += iterations;
 	if (t->i >= repeat) {
-		/* We're done. */
+		 
 		t->time_spent += ktime_get_ns() - t->time_start;
 		do_div(t->time_spent, t->i);
 		*duration = t->time_spent > U32_MAX ? U32_MAX : (u32)t->time_spent;
@@ -72,20 +71,20 @@ static bool bpf_test_timer_continue(struct bpf_test_timer *t, int iterations,
 	}
 
 	if (signal_pending(current)) {
-		/* During iteration: we've been cancelled, abort. */
+		 
 		*err = -EINTR;
 		goto reset;
 	}
 
 	if (need_resched()) {
-		/* During iteration: we need to reschedule between runs. */
+		 
 		t->time_spent += ktime_get_ns() - t->time_start;
 		bpf_test_timer_leave(t);
 		cond_resched();
 		bpf_test_timer_enter(t);
 	}
 
-	/* Do another round. */
+	 
 	return true;
 
 reset:
@@ -93,15 +92,12 @@ reset:
 	return false;
 }
 
-/* We put this struct at the head of each page with a context and frame
- * initialised when the page is allocated, so we don't have to do this on each
- * repetition of the test run.
- */
+ 
 struct xdp_page_head {
 	struct xdp_buff orig_ctx;
 	struct xdp_buff ctx;
 	union {
-		/* ::data_hard_start starts here */
+		 
 		DECLARE_FLEX_ARRAY(struct xdp_frame, frame);
 		DECLARE_FLEX_ARRAY(u8, data);
 	};
@@ -119,10 +115,7 @@ struct xdp_test_data {
 	u32 frame_cnt;
 };
 
-/* tools/testing/selftests/bpf/prog_tests/xdp_do_redirect.c:%MAX_PKT_SIZE
- * must be updated accordingly this gets changed, otherwise BPF selftests
- * will fail.
- */
+ 
 #define TEST_XDP_FRAME_SIZE (PAGE_SIZE - sizeof(struct xdp_page_head))
 #define TEST_XDP_MAX_BATCH 256
 
@@ -183,16 +176,14 @@ static int xdp_test_run_setup(struct xdp_test_data *xdp, struct xdp_buff *orig_c
 		goto err_pp;
 	}
 
-	/* will copy 'mem.id' into pp->xdp_mem_id */
+	 
 	err = xdp_reg_mem_model(&xdp->mem, MEM_TYPE_PAGE_POOL, pp);
 	if (err)
 		goto err_mmodel;
 
 	xdp->pp = pp;
 
-	/* We create a 'fake' RXQ referencing the original dev, but with an
-	 * xdp_mem_info pointing to our page_pool
-	 */
+	 
 	xdp_rxq_info_reg(&xdp->rxq, orig_ctx->rxq->dev, 0, 0);
 	xdp->rxq.mem.type = MEM_TYPE_PAGE_POOL;
 	xdp->rxq.mem.id = pp->xdp_mem_id;
@@ -220,10 +211,7 @@ static void xdp_test_run_teardown(struct xdp_test_data *xdp)
 
 static bool frame_was_changed(const struct xdp_page_head *head)
 {
-	/* xdp_scrub_frame() zeroes the data pointer, flags is the last field,
-	 * i.e. has the highest chances to be overwritten. If those two are
-	 * untouched, it's most likely safe to skip the context reset.
-	 */
+	 
 	return head->frame->data != head->orig_ctx.data ||
 	       head->frame->flags != head->orig_ctx.flags;
 }
@@ -310,7 +298,7 @@ static int xdp_test_run_batch(struct xdp_test_data *xdp, struct bpf_prog *prog,
 
 		act = bpf_prog_run_xdp(prog, ctx);
 
-		/* if program changed pkt bounds we need to update the xdp_frame */
+		 
 		if (unlikely(ctx_was_changed(head))) {
 			ret = xdp_update_frame_from_buff(ctx, frm);
 			if (ret) {
@@ -321,10 +309,7 @@ static int xdp_test_run_batch(struct xdp_test_data *xdp, struct bpf_prog *prog,
 
 		switch (act) {
 		case XDP_TX:
-			/* we can't do a real XDP_TX since we're not in the
-			 * driver, so turn it into a REDIRECT back to the same
-			 * index
-			 */
+			 
 			ri->tgt_index = xdp->dev->ifindex;
 			ri->map_id = INT_MAX;
 			ri->map_type = BPF_MAP_TYPE_UNSPEC;
@@ -441,9 +426,7 @@ static int bpf_test_finish(const union bpf_attr *kattr,
 	int err = -EFAULT;
 	u32 copy_size = size;
 
-	/* Clamp copy if the user has provided a size hint, but copy the full
-	 * buffer if not to retain old behaviour.
-	 */
+	 
 	if (kattr->test.data_size_out &&
 	    copy_size > kattr->test.data_size_out) {
 		copy_size = kattr->test.data_size_out;
@@ -499,10 +482,7 @@ out:
 	return err;
 }
 
-/* Integer types of various sizes and pointer combinations cover variety of
- * architecture dependent calling conventions. 7+ can be supported in the
- * future.
- */
+ 
 __diag_push();
 __diag_ignore_all("-Wmissing-prototypes",
 		  "Global functions as their definitions will be in vmlinux BTF");
@@ -723,7 +703,7 @@ int bpf_prog_test_run_raw_tp(struct bpf_prog *prog,
 	int cpu = kattr->test.cpu, err = 0;
 	int current_cpu;
 
-	/* doesn't support data_in/out, ctx_out, duration, or repeat */
+	 
 	if (kattr->test.data_in || kattr->test.data_out ||
 	    kattr->test.ctx_out || kattr->test.duration ||
 	    kattr->test.repeat || kattr->test.batch_size)
@@ -751,11 +731,7 @@ int bpf_prog_test_run_raw_tp(struct bpf_prog *prog,
 	    cpu == current_cpu) {
 		__bpf_prog_test_run_raw_tp(&info);
 	} else if (cpu >= nr_cpu_ids || !cpu_online(cpu)) {
-		/* smp_call_function_single() also checks cpu_online()
-		 * after csd_lock(). However, since cpu is from user
-		 * space, let's do an extra quick check to filter out
-		 * invalid value before smp_call_function_single().
-		 */
+		 
 		err = -ENXIO;
 	} else {
 		err = smp_call_function_single(cpu, __bpf_prog_test_run_raw_tp,
@@ -828,15 +804,7 @@ out:
 	return err;
 }
 
-/**
- * range_is_zero - test whether buffer is initialized
- * @buf: buffer to check
- * @from: check from this position
- * @to: check up until (excluding) this position
- *
- * This function returns true if the there is a non-zero byte
- * in the buf in the range [from,to).
- */
+ 
 static inline bool range_is_zero(void *buf, size_t from, size_t to)
 {
 	return !memchr_inv((u8 *)buf + from, 0, to - from);
@@ -849,45 +817,45 @@ static int convert___skb_to_skb(struct sk_buff *skb, struct __sk_buff *__skb)
 	if (!__skb)
 		return 0;
 
-	/* make sure the fields we don't use are zeroed */
+	 
 	if (!range_is_zero(__skb, 0, offsetof(struct __sk_buff, mark)))
 		return -EINVAL;
 
-	/* mark is allowed */
+	 
 
 	if (!range_is_zero(__skb, offsetofend(struct __sk_buff, mark),
 			   offsetof(struct __sk_buff, priority)))
 		return -EINVAL;
 
-	/* priority is allowed */
-	/* ingress_ifindex is allowed */
-	/* ifindex is allowed */
+	 
+	 
+	 
 
 	if (!range_is_zero(__skb, offsetofend(struct __sk_buff, ifindex),
 			   offsetof(struct __sk_buff, cb)))
 		return -EINVAL;
 
-	/* cb is allowed */
+	 
 
 	if (!range_is_zero(__skb, offsetofend(struct __sk_buff, cb),
 			   offsetof(struct __sk_buff, tstamp)))
 		return -EINVAL;
 
-	/* tstamp is allowed */
-	/* wire_len is allowed */
-	/* gso_segs is allowed */
+	 
+	 
+	 
 
 	if (!range_is_zero(__skb, offsetofend(struct __sk_buff, gso_segs),
 			   offsetof(struct __sk_buff, gso_size)))
 		return -EINVAL;
 
-	/* gso_size is allowed */
+	 
 
 	if (!range_is_zero(__skb, offsetofend(struct __sk_buff, gso_size),
 			   offsetof(struct __sk_buff, hwtstamp)))
 		return -EINVAL;
 
-	/* hwtstamp is allowed */
+	 
 
 	if (!range_is_zero(__skb, offsetofend(struct __sk_buff, hwtstamp),
 			   sizeof(struct __sk_buff)))
@@ -1060,7 +1028,7 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
 	convert_skb_to___skb(skb, ctx);
 
 	size = skb->len;
-	/* bpf program can never convert linear skb to non-linear */
+	 
 	if (WARN_ON_ONCE(skb_is_nonlinear(skb)))
 		size = skb_headlen(skb);
 	ret = bpf_test_finish(kattr, uattr, skb->data, NULL, size, retval,
@@ -1110,9 +1078,7 @@ static int xdp_convert_md_to_buff(struct xdp_md *xdp_md, struct xdp_buff *xdp)
 			goto free_dev;
 
 		xdp->rxq = &rxqueue->xdp_rxq;
-		/* The device is now tracked in the xdp->rxq for later
-		 * dev_put()
-		 */
+		 
 	}
 
 	xdp->data = xdp->data_meta + xdp_md->data;
@@ -1178,19 +1144,19 @@ int bpf_prog_test_run_xdp(struct bpf_prog *prog, const union bpf_attr *kattr,
 		return PTR_ERR(ctx);
 
 	if (ctx) {
-		/* There can't be user provided data before the meta data */
+		 
 		if (ctx->data_meta || ctx->data_end != size ||
 		    ctx->data > ctx->data_end ||
 		    unlikely(xdp_metalen_invalid(ctx->data)) ||
 		    (do_live && (kattr->test.data_out || kattr->test.ctx_out)))
 			goto free_ctx;
-		/* Meta data is allocated from the headroom */
+		 
 		headroom -= ctx->data;
 	}
 
 	max_data_sz = 4096 - headroom - tailroom;
 	if (size > max_data_sz) {
-		/* disallow live data mode for jumbo frames */
+		 
 		if (do_live)
 			goto free_ctx;
 		size = max_data_sz;
@@ -1255,10 +1221,7 @@ int bpf_prog_test_run_xdp(struct bpf_prog *prog, const union bpf_attr *kattr,
 		ret = bpf_test_run_xdp_live(prog, &xdp, repeat, batch_size, &duration);
 	else
 		ret = bpf_test_run(prog, &xdp, repeat, &retval, &duration, true);
-	/* We convert the xdp_buff back to an xdp_md before checking the return
-	 * code so the reference count of any held netdevice will be decremented
-	 * even if the test run failed.
-	 */
+	 
 	xdp_convert_buff_to_md(&xdp, ctx);
 	if (ret)
 		goto out;
@@ -1284,11 +1247,11 @@ free_ctx:
 
 static int verify_user_bpf_flow_keys(struct bpf_flow_keys *ctx)
 {
-	/* make sure the fields we don't use are zeroed */
+	 
 	if (!range_is_zero(ctx, 0, offsetof(struct bpf_flow_keys, flags)))
 		return -EINVAL;
 
-	/* flags is allowed */
+	 
 
 	if (!range_is_zero(ctx, offsetofend(struct bpf_flow_keys, flags),
 			   sizeof(struct bpf_flow_keys)))
@@ -1476,7 +1439,7 @@ int bpf_prog_test_run_syscall(struct bpf_prog *prog,
 	u32 retval;
 	int err = 0;
 
-	/* doesn't support data_in/out, ctx_out, duration, or repeat or flags */
+	 
 	if (kattr->test.data_in || kattr->test.data_out ||
 	    kattr->test.ctx_out || kattr->test.duration ||
 	    kattr->test.repeat || kattr->test.flags ||
@@ -1617,7 +1580,7 @@ int bpf_prog_test_run_nf(struct bpf_prog *prog,
 		goto out;
 	}
 
-	data = NULL; /* data released via kfree_skb */
+	data = NULL;  
 
 	skb_reserve(skb, NET_SKB_PAD + NET_IP_ALIGN);
 	__skb_put(skb, size);

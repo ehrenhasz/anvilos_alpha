@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/* Copyright 2019 NXP */
+
+ 
 #include <linux/fsl/enetc_mdio.h>
 #include <linux/of_mdio.h>
 #include "enetc_pf.h"
@@ -96,7 +96,7 @@ static void enetc_pci_mdio_remove(struct pci_dev *pdev)
 
 static const struct pci_device_id enetc_pci_mdio_id_table[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_FREESCALE, ENETC_MDIO_DEV_ID) },
-	{ 0, } /* End of table. */
+	{ 0, }  
 };
 MODULE_DEVICE_TABLE(pci, enetc_pci_mdio_id_table);
 

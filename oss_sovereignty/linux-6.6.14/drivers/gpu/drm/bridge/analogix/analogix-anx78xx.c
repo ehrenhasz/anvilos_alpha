@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright(c) 2016, Analogix Semiconductor.
- *
- * Based on anx7808 driver obtained from chromeos with copyright:
- * Copyright(c) 2013, Google Inc.
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/err.h>
 #include <linux/gpio/consumer.h>
@@ -35,7 +30,7 @@
 #define I2C_IDX_RX_P0		3
 #define I2C_IDX_RX_P1		4
 
-#define XTAL_CLK		270 /* 27M */
+#define XTAL_CLK		270  
 
 static const u8 anx7808_i2c_addresses[] = {
 	[I2C_IDX_TX_P0] = 0x78,
@@ -72,10 +67,7 @@ struct anx78xx {
 	struct anx78xx_platform_data pdata;
 	struct mutex lock;
 
-	/*
-	 * I2C Slave addresses of ANX7814 are mapped as TX_P0, TX_P1, TX_P2,
-	 * RX_P0 and RX_P1.
-	 */
+	 
 	struct i2c_client *i2c_dummy[I2C_NUM_ADDRESSES];
 	struct regmap *map[I2C_NUM_ADDRESSES];
 
@@ -183,7 +175,7 @@ static int anx78xx_rx_initialization(struct anx78xx *anx78xx)
 	if (err)
 		return err;
 
-	/* Sync detect change, GP set mute */
+	 
 	err = anx78xx_set_bits(anx78xx->map[I2C_IDX_RX_P0],
 			       SP_AUD_EXCEPTION_ENABLE_BASE + 1, BIT(5) |
 			       BIT(6));
@@ -211,13 +203,13 @@ static int anx78xx_rx_initialization(struct anx78xx *anx78xx)
 	if (err)
 		return err;
 
-	/* Enable DDC stretch */
+	 
 	err = regmap_write(anx78xx->map[I2C_IDX_TX_P0],
 			   SP_DP_EXTRA_I2C_DEV_ADDR_REG, SP_I2C_EXTRA_ADDR);
 	if (err)
 		return err;
 
-	/* TMDS phy initialization */
+	 
 	err = regmap_multi_reg_write(anx78xx->map[I2C_IDX_RX_P0],
 				     tmds_phy_initialization,
 				     ARRAY_SIZE(tmds_phy_initialization));
@@ -241,18 +233,13 @@ static int anx78xx_link_phy_initialization(struct anx78xx *anx78xx)
 {
 	int err;
 
-	/*
-	 * REVISIT : It is writing to a RESERVED bits in Analog Control 0
-	 * register.
-	 */
+	 
 	err = regmap_write(anx78xx->map[I2C_IDX_TX_P2], SP_ANALOG_CTRL0_REG,
 			   0x02);
 	if (err)
 		return err;
 
-	/*
-	 * Write DP TX output emphasis precise tune bits.
-	 */
+	 
 	err = regmap_bulk_write(anx78xx->map[I2C_IDX_TX_P1],
 				SP_DP_TX_LT_CTRL0_REG,
 				dp_tx_output_precise_tune_bits,
@@ -328,13 +315,13 @@ static int anx78xx_tx_initialization(struct anx78xx *anx78xx)
 {
 	int err;
 
-	/* Set terminal resistor to 50 ohm */
+	 
 	err = regmap_write(anx78xx->map[I2C_IDX_TX_P0], SP_DP_AUX_CH_CTRL2_REG,
 			   0x30);
 	if (err)
 		return err;
 
-	/* Enable aux double diff output */
+	 
 	err = anx78xx_set_bits(anx78xx->map[I2C_IDX_TX_P0],
 			       SP_DP_AUX_CH_CTRL2_REG, 0x08);
 	if (err)
@@ -362,10 +349,7 @@ static int anx78xx_tx_initialization(struct anx78xx *anx78xx)
 	if (err)
 		return err;
 
-	/*
-	 * DP HDCP auto authentication wait timer (when downstream starts to
-	 * auth, DP side will wait for this period then do auth automatically)
-	 */
+	 
 	err = regmap_write(anx78xx->map[I2C_IDX_TX_P0], SP_HDCP_AUTO_TIMER_REG,
 			   0x00);
 	if (err)
@@ -401,10 +385,7 @@ static int anx78xx_tx_initialization(struct anx78xx *anx78xx)
 	if (err)
 		return err;
 
-	/*
-	 * Short the link integrity check timer to speed up bstatus
-	 * polling for HDCP CTS item 1A-07
-	 */
+	 
 	err = regmap_write(anx78xx->map[I2C_IDX_TX_P0],
 			   SP_HDCP_LINK_CHECK_TIMER_REG, 0x1d);
 	if (err)
@@ -415,7 +396,7 @@ static int anx78xx_tx_initialization(struct anx78xx *anx78xx)
 	if (err)
 		return err;
 
-	/* Power down the main link by default */
+	 
 	err = anx78xx_set_bits(anx78xx->map[I2C_IDX_TX_P0],
 			       SP_DP_ANALOG_POWER_DOWN_REG, SP_CH0_PD);
 	if (err)
@@ -425,7 +406,7 @@ static int anx78xx_tx_initialization(struct anx78xx *anx78xx)
 	if (err)
 		return err;
 
-	/* Gen m_clk with downspreading */
+	 
 	err = anx78xx_set_bits(anx78xx->map[I2C_IDX_TX_P0],
 			       SP_DP_M_CALCULATION_CTRL_REG, SP_M_GEN_CLK_SEL);
 	if (err)
@@ -438,10 +419,7 @@ static int anx78xx_enable_interrupts(struct anx78xx *anx78xx)
 {
 	int err;
 
-	/*
-	 * BIT0: INT pin assertion polarity: 1 = assert high
-	 * BIT1: INT pin output type: 0 = push/pull
-	 */
+	 
 	err = regmap_write(anx78xx->map[I2C_IDX_TX_P2], SP_INT_CTRL_REG, 0x01);
 	if (err)
 		return err;
@@ -491,7 +469,7 @@ static void anx78xx_poweron(struct anx78xx *anx78xx)
 
 	gpiod_set_value_cansleep(pdata->gpiod_reset, 0);
 
-	/* Power on registers module */
+	 
 	anx78xx_set_bits(anx78xx->map[I2C_IDX_TX_P2], SP_POWERDOWN_CTRL_REG,
 			 SP_HDCP_PD | SP_AUDIO_PD | SP_VIDEO_PD | SP_LINK_PD);
 	anx78xx_clear_bits(anx78xx->map[I2C_IDX_TX_P2], SP_POWERDOWN_CTRL_REG,
@@ -532,7 +510,7 @@ static int anx78xx_start(struct anx78xx *anx78xx)
 {
 	int err;
 
-	/* Power on all modules */
+	 
 	err = anx78xx_clear_bits(anx78xx->map[I2C_IDX_TX_P2],
 				 SP_POWERDOWN_CTRL_REG,
 				 SP_HDCP_PD | SP_AUDIO_PD | SP_VIDEO_PD |
@@ -556,10 +534,7 @@ static int anx78xx_start(struct anx78xx *anx78xx)
 		goto err_poweroff;
 	}
 
-	/*
-	 * This delay seems to help keep the hardware in a good state. Without
-	 * it, there are times where it fails silently.
-	 */
+	 
 	usleep_range(10000, 15000);
 
 	return 0;
@@ -576,7 +551,7 @@ static int anx78xx_init_pdata(struct anx78xx *anx78xx)
 	struct anx78xx_platform_data *pdata = &anx78xx->pdata;
 	struct device *dev = &anx78xx->client->dev;
 
-	/* 1.0V digital core power regulator  */
+	 
 	pdata->dvdd10 = devm_regulator_get(dev, "dvdd10");
 	if (IS_ERR(pdata->dvdd10)) {
 		if (PTR_ERR(pdata->dvdd10) != -EPROBE_DEFER)
@@ -585,17 +560,17 @@ static int anx78xx_init_pdata(struct anx78xx *anx78xx)
 		return PTR_ERR(pdata->dvdd10);
 	}
 
-	/* GPIO for HPD */
+	 
 	pdata->gpiod_hpd = devm_gpiod_get(dev, "hpd", GPIOD_IN);
 	if (IS_ERR(pdata->gpiod_hpd))
 		return PTR_ERR(pdata->gpiod_hpd);
 
-	/* GPIO for chip power down */
+	 
 	pdata->gpiod_pd = devm_gpiod_get(dev, "pd", GPIOD_OUT_HIGH);
 	if (IS_ERR(pdata->gpiod_pd))
 		return PTR_ERR(pdata->gpiod_pd);
 
-	/* GPIO for chip reset */
+	 
 	pdata->gpiod_reset = devm_gpiod_get(dev, "reset", GPIOD_OUT_LOW);
 
 	return PTR_ERR_OR_ZERO(pdata->gpiod_reset);
@@ -642,7 +617,7 @@ static int anx78xx_dp_link_training(struct anx78xx *anx78xx)
 	if (err)
 		return err;
 
-	/* Get DPCD info */
+	 
 	err = drm_dp_dpcd_read(&anx78xx->aux, DP_DPCD_REV,
 			       &anx78xx->dpcd, DP_RECEIVER_CAP_SIZE);
 	if (err < 0) {
@@ -650,16 +625,13 @@ static int anx78xx_dp_link_training(struct anx78xx *anx78xx)
 		return err;
 	}
 
-	/* Clear channel x SERDES power down */
+	 
 	err = anx78xx_clear_bits(anx78xx->map[I2C_IDX_TX_P0],
 				 SP_DP_ANALOG_POWER_DOWN_REG, SP_CH0_PD);
 	if (err)
 		return err;
 
-	/*
-	 * Power up the sink (DP_SET_POWER register is only available on DPCD
-	 * v1.1 and later).
-	 */
+	 
 	if (anx78xx->dpcd[DP_DPCD_REV] >= 0x11) {
 		err = drm_dp_dpcd_readb(&anx78xx->aux, DP_SET_POWER, &dpcd[0]);
 		if (err < 0) {
@@ -678,15 +650,11 @@ static int anx78xx_dp_link_training(struct anx78xx *anx78xx)
 			return err;
 		}
 
-		/*
-		 * According to the DP 1.1 specification, a "Sink Device must
-		 * exit the power saving state within 1 ms" (Section 2.5.3.1,
-		 * Table 5-52, "Sink Control Field" (register 0x600).
-		 */
+		 
 		usleep_range(1000, 2000);
 	}
 
-	/* Possibly enable downspread on the sink */
+	 
 	err = regmap_write(anx78xx->map[I2C_IDX_TX_P0],
 			   SP_DP_DOWNSPREAD_CTRL1_REG, 0);
 	if (err)
@@ -694,7 +662,7 @@ static int anx78xx_dp_link_training(struct anx78xx *anx78xx)
 
 	if (anx78xx->dpcd[DP_MAX_DOWNSPREAD] & DP_MAX_DOWNSPREAD_0_5) {
 		DRM_DEBUG("Enable downspread on the sink\n");
-		/* 4000PPM */
+		 
 		err = regmap_write(anx78xx->map[I2C_IDX_TX_P0],
 				   SP_DP_DOWNSPREAD_CTRL1_REG, 8);
 		if (err)
@@ -710,7 +678,7 @@ static int anx78xx_dp_link_training(struct anx78xx *anx78xx)
 			return err;
 	}
 
-	/* Set the lane count and the link rate on the sink */
+	 
 	if (drm_dp_enhanced_frame_cap(anx78xx->dpcd))
 		err = anx78xx_set_bits(anx78xx->map[I2C_IDX_TX_P0],
 				       SP_DP_SYSTEM_CTRL_BASE + 4,
@@ -740,7 +708,7 @@ static int anx78xx_dp_link_training(struct anx78xx *anx78xx)
 		return err;
 	}
 
-	/* Start training on the source */
+	 
 	err = regmap_write(anx78xx->map[I2C_IDX_TX_P0], SP_DP_LT_CTRL_REG,
 			   SP_LT_EN);
 	if (err)
@@ -758,7 +726,7 @@ static int anx78xx_config_dp_output(struct anx78xx *anx78xx)
 	if (err)
 		return err;
 
-	/* Enable DP output */
+	 
 	err = anx78xx_set_bits(anx78xx->map[I2C_IDX_TX_P2], SP_VID_CTRL1_REG,
 			       SP_VIDEO_EN);
 	if (err)
@@ -902,7 +870,7 @@ static int anx78xx_bridge_attach(struct drm_bridge *bridge,
 		return -ENODEV;
 	}
 
-	/* Register aux channel */
+	 
 	anx78xx->aux.name = "DP-AUX";
 	anx78xx->aux.dev = &anx78xx->client->dev;
 	anx78xx->aux.drm_dev = bridge->dev;
@@ -961,7 +929,7 @@ anx78xx_bridge_mode_valid(struct drm_bridge *bridge,
 	if (mode->flags & DRM_MODE_FLAG_INTERLACE)
 		return MODE_NO_INTERLACE;
 
-	/* Max 1200p at 5.4 Ghz, one lane */
+	 
 	if (mode->clock > 154000)
 		return MODE_CLOCK_HIGH;
 
@@ -972,7 +940,7 @@ static void anx78xx_bridge_disable(struct drm_bridge *bridge)
 {
 	struct anx78xx *anx78xx = bridge_to_anx78xx(bridge);
 
-	/* Power off all modules except configuration registers access */
+	 
 	anx78xx_set_bits(anx78xx->map[I2C_IDX_TX_P2], SP_POWERDOWN_CTRL_REG,
 			 SP_HDCP_PD | SP_AUDIO_PD | SP_VIDEO_PD | SP_LINK_PD);
 }
@@ -1041,7 +1009,7 @@ static irqreturn_t anx78xx_hpd_threaded_handler(int irq, void *data)
 
 	mutex_lock(&anx78xx->lock);
 
-	/* Cable is pulled, power on the chip */
+	 
 	anx78xx_poweron(anx78xx);
 
 	err = anx78xx_enable_interrupts(anx78xx);
@@ -1090,7 +1058,7 @@ static bool anx78xx_handle_common_int_4(struct anx78xx *anx78xx, u8 irq)
 		DRM_DEBUG_KMS("IRQ: Hot plug detect - cable is pulled out\n");
 		event = true;
 		anx78xx_poweroff(anx78xx);
-		/* Free cached EDID */
+		 
 		kfree(anx78xx->edid);
 		anx78xx->edid = NULL;
 	} else if (irq & SP_HPD_PLUG) {
@@ -1171,7 +1139,7 @@ static irqreturn_t anx78xx_intp_threaded_handler(int unused, void *data)
 	if (irq)
 		event = anx78xx_handle_common_int_4(anx78xx, irq);
 
-	/* Make sure we are still powered after handle HPD events */
+	 
 	if (!anx78xx->powered)
 		goto unlock;
 
@@ -1258,7 +1226,7 @@ static int anx78xx_i2c_probe(struct i2c_client *client)
 		return -ENODEV;
 	}
 
-	/* Map slave addresses of ANX7814 */
+	 
 	i2c_addresses = device_get_match_data(&client->dev);
 	for (i = 0; i < I2C_NUM_ADDRESSES; i++) {
 		struct i2c_client *i2c_dummy;
@@ -1283,7 +1251,7 @@ static int anx78xx_i2c_probe(struct i2c_client *client)
 		}
 	}
 
-	/* Look for supported chip ID */
+	 
 	anx78xx_poweron(anx78xx);
 
 	err = regmap_read(anx78xx->map[I2C_IDX_TX_P2], SP_DEVICE_IDL_REG,
@@ -1342,7 +1310,7 @@ static int anx78xx_i2c_probe(struct i2c_client *client)
 
 	drm_bridge_add(&anx78xx->bridge);
 
-	/* If cable is pulled out, just poweroff and wait for HPD event */
+	 
 	if (!gpiod_get_value(anx78xx->pdata.gpiod_hpd))
 		anx78xx_poweroff(anx78xx);
 
@@ -1369,7 +1337,7 @@ static void anx78xx_i2c_remove(struct i2c_client *client)
 
 static const struct i2c_device_id anx78xx_id[] = {
 	{ "anx7814", 0 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, anx78xx_id);
 
@@ -1378,7 +1346,7 @@ static const struct of_device_id anx78xx_match_table[] = {
 	{ .compatible = "analogix,anx7812", .data = anx781x_i2c_addresses },
 	{ .compatible = "analogix,anx7814", .data = anx781x_i2c_addresses },
 	{ .compatible = "analogix,anx7818", .data = anx781x_i2c_addresses },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, anx78xx_match_table);
 

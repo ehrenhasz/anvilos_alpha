@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// VCPU stall detector.
-//  Copyright (C) Google, 2022
+
+
+
+
 
 #include <linux/cpu.h>
 #include <linux/init.h>
@@ -43,7 +43,7 @@ struct vcpu_stall_priv {
 	bool is_initialized;
 };
 
-/* The vcpu stall configuration structure which applies to all the CPUs */
+ 
 static struct vcpu_stall_detect_config vcpu_stall_config;
 
 #define vcpu_stall_reg_write(vcpu, reg, value)				\
@@ -59,11 +59,7 @@ vcpu_stall_detect_timer_fn(struct hrtimer *hrtimer)
 {
 	u32 ticks, ping_timeout_ms;
 
-	/* Reload the stall detector counter register every
-	 * `ping_timeout_ms` to prevent the virtual device
-	 * from decrementing it to 0. The virtual device decrements this
-	 * register at 'clock_freq_hz' frequency.
-	 */
+	 
 	ticks = vcpu_stall_config.clock_freq_hz *
 		vcpu_stall_config.stall_timeout_sec;
 	vcpu_stall_reg_write(smp_processor_id(),
@@ -87,20 +83,15 @@ static int start_stall_detector_cpu(unsigned int cpu)
 	vcpu_stall_reg_write(cpu, VCPU_STALL_REG_CLOCK_FREQ_HZ,
 			     vcpu_stall_config.clock_freq_hz);
 
-	/* Compute the number of ticks required for the stall detector
-	 * counter register based on the internal clock frequency and the
-	 * timeout value given from the device tree.
-	 */
+	 
 	ticks = vcpu_stall_config.clock_freq_hz *
 		vcpu_stall_config.stall_timeout_sec;
 	vcpu_stall_reg_write(cpu, VCPU_STALL_REG_LOAD_CNT, ticks);
 
-	/* Enable the internal clock and start the stall detector */
+	 
 	vcpu_stall_reg_write(cpu, VCPU_STALL_REG_STATUS, 1);
 
-	/* Pet the stall detector at half of its expiration timeout
-	 * to prevent spurious resets.
-	 */
+	 
 	ping_timeout_ms = vcpu_stall_config.stall_timeout_sec *
 			  MSEC_PER_SEC / 2;
 
@@ -122,7 +113,7 @@ static int stop_stall_detector_cpu(unsigned int cpu)
 	if (!vcpu_stall_detector->is_initialized)
 		return 0;
 
-	/* Disable the stall detector for the current CPU */
+	 
 	hrtimer_cancel(&vcpu_stall_detector->vcpu_hrtimer);
 	vcpu_stall_reg_write(cpu, VCPU_STALL_REG_STATUS, 0);
 	vcpu_stall_detector->is_initialized = false;

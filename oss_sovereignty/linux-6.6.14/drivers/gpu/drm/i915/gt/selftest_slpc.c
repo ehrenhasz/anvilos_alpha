@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2021 Intel Corporation
- */
+
+ 
 
 #define NUM_STEPS 5
 #define H2G_DELAY 50000
@@ -30,7 +28,7 @@ static int slpc_set_min_freq(struct intel_guc_slpc *slpc, u32 freq)
 	ret = intel_guc_slpc_set_min_freq(slpc, freq);
 	if (ret)
 		pr_err("Could not set min frequency to [%u]\n", freq);
-	else /* Delay to ensure h2g completes */
+	else  
 		delay_for_h2g();
 
 	return ret;
@@ -44,7 +42,7 @@ static int slpc_set_max_freq(struct intel_guc_slpc *slpc, u32 freq)
 	if (ret)
 		pr_err("Could not set maximum frequency [%u]\n",
 		       freq);
-	else /* Delay to ensure h2g completes */
+	else  
 		delay_for_h2g();
 
 	return ret;
@@ -115,7 +113,7 @@ static int vary_max_freq(struct intel_guc_slpc *slpc, struct intel_rps *rps,
 	u32 act_freq;
 	int err = 0;
 
-	/* Go from max to min in 5 steps */
+	 
 	step = (slpc->rp0_freq - slpc->min_freq) / NUM_STEPS;
 	*max_act_freq = slpc->min_freq;
 	for (max_freq = slpc->rp0_freq; max_freq > slpc->min_freq;
@@ -126,7 +124,7 @@ static int vary_max_freq(struct intel_guc_slpc *slpc, struct intel_rps *rps,
 
 		req_freq = intel_rps_read_punit_req_frequency(rps);
 
-		/* GuC requests freq in multiples of 50/3 MHz */
+		 
 		if (req_freq > (max_freq + FREQUENCY_REQ_UNIT)) {
 			pr_err("SWReq is %d, should be at most %d\n", req_freq,
 			       max_freq + FREQUENCY_REQ_UNIT);
@@ -151,7 +149,7 @@ static int vary_min_freq(struct intel_guc_slpc *slpc, struct intel_rps *rps,
 	u32 act_freq;
 	int err = 0;
 
-	/* Go from min to max in 5 steps */
+	 
 	step = (slpc->rp0_freq - slpc->min_freq) / NUM_STEPS;
 	*max_act_freq = slpc->min_freq;
 	for (min_freq = slpc->min_freq; min_freq < slpc->rp0_freq;
@@ -162,7 +160,7 @@ static int vary_min_freq(struct intel_guc_slpc *slpc, struct intel_rps *rps,
 
 		req_freq = intel_rps_read_punit_req_frequency(rps);
 
-		/* GuC requests freq in multiples of 50/3 MHz */
+		 
 		if (req_freq < (min_freq - FREQUENCY_REQ_UNIT)) {
 			pr_err("SWReq is %d, should be at least %d\n", req_freq,
 			       min_freq - FREQUENCY_REQ_UNIT);
@@ -189,11 +187,7 @@ static int slpc_power(struct intel_gt *gt, struct intel_engine_cs *engine)
 	} min, max;
 	int err = 0;
 
-	/*
-	 * Our fundamental assumption is that running at lower frequency
-	 * actually saves power. Let's see if our RAPL measurement supports
-	 * that theory.
-	 */
+	 
 	if (!librapl_supported(gt->i915))
 		return 0;
 
@@ -225,7 +219,7 @@ static int slpc_power(struct intel_gt *gt, struct intel_engine_cs *engine)
 		err = -EINVAL;
 	}
 
-	/* Restore min/max frequencies */
+	 
 	slpc_set_max_freq(slpc, slpc->rp0_freq);
 	slpc_set_min_freq(slpc, slpc->min_freq);
 
@@ -244,11 +238,11 @@ static int max_granted_freq(struct intel_guc_slpc *slpc, struct intel_rps *rps, 
 
 	*max_act_freq =  intel_rps_read_actual_frequency(rps);
 	if (*max_act_freq != slpc->rp0_freq) {
-		/* Check if there was some throttling by pcode */
+		 
 		perf_limit_reasons = intel_uncore_read(gt->uncore,
 						       intel_gt_perf_limit_reasons_reg(gt));
 
-		/* If not, this is an error */
+		 
 		if (!(perf_limit_reasons & GT0_PERF_LIMIT_REASONS_MASK)) {
 			pr_err("Pcode did not grant max freq\n");
 			err = -EINVAL;
@@ -291,19 +285,14 @@ static int run_test(struct intel_gt *gt, int test_type)
 		return -EIO;
 	}
 
-	/*
-	 * Set min frequency to RPn so that we can test the whole
-	 * range of RPn-RP0.
-	 */
+	 
 	err = slpc_set_min_freq(slpc, slpc->min_freq);
 	if (err) {
 		pr_err("Unable to update min freq!");
 		return err;
 	}
 
-	/*
-	 * Turn off efficient frequency so RPn/RP0 ranges are obeyed.
-	 */
+	 
 	err = intel_guc_slpc_set_ignore_eff_freq(slpc, true);
 	if (err) {
 		pr_err("Unable to turn off efficient freq!");
@@ -353,7 +342,7 @@ static int run_test(struct intel_gt *gt, int test_type)
 
 		case MAX_GRANTED:
 		case TILE_INTERACTION:
-			/* Media engines have a different RP0 */
+			 
 			if (gt->type != GT_MEDIA && (engine->class == VIDEO_DECODE_CLASS ||
 						     engine->class == VIDEO_ENHANCEMENT_CLASS)) {
 				igt_spinner_end(&spin);
@@ -374,7 +363,7 @@ static int run_test(struct intel_gt *gt, int test_type)
 			pr_info("Max actual frequency for %s was %d\n",
 				engine->name, max_act_freq);
 
-			/* Actual frequency should rise above min */
+			 
 			if (max_act_freq <= slpc->min_freq) {
 				pr_err("Actual freq did not rise above min\n");
 				pr_err("Perf Limit Reasons: 0x%x\n",
@@ -391,7 +380,7 @@ static int run_test(struct intel_gt *gt, int test_type)
 			break;
 	}
 
-	/* Restore min/max/efficient frequencies */
+	 
 	err = slpc_restore_freq(slpc, slpc_min_freq, slpc_max_freq);
 
 	if (igt_flush_test(gt->i915))
@@ -436,7 +425,7 @@ static int live_slpc_vary_max(void *arg)
 	return ret;
 }
 
-/* check if pcode can grant RP0 */
+ 
 static int live_slpc_max_granted(void *arg)
 {
 	struct drm_i915_private *i915 = arg;

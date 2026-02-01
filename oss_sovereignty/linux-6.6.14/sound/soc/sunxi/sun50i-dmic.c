@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-//
-// This driver supports the DMIC in Allwinner's H6 SoCs.
-//
-// Copyright 2021 Ban Tao <fengzheng923@gmail.com>
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -77,7 +77,7 @@ static int sun50i_dmic_startup(struct snd_pcm_substream *substream,
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct sun50i_dmic_dev *host = snd_soc_dai_get_drvdata(asoc_rtd_to_cpu(rtd, 0));
 
-	/* only support capture */
+	 
 	if (substream->stream != SNDRV_PCM_STREAM_CAPTURE)
 		return -EINVAL;
 
@@ -100,7 +100,7 @@ static int sun50i_dmic_hw_params(struct snd_pcm_substream *substream,
 	unsigned int chan_en = (1 << channels) - 1;
 	struct sun50i_dmic_dev *host = snd_soc_dai_get_drvdata(cpu_dai);
 
-	/* DMIC num is N+1 */
+	 
 	regmap_update_bits(host->regmap, SUN50I_DMIC_CH_NUM,
 			   SUN50I_DMIC_CH_NUM_N_MASK,
 			   SUN50I_DMIC_CH_NUM_N(channels - 1));
@@ -124,7 +124,7 @@ static int sun50i_dmic_hw_params(struct snd_pcm_substream *substream,
 		dev_err(cpu_dai->dev, "Invalid format!\n");
 		return -EINVAL;
 	}
-	/* The hardware supports FIFO mode 1 for 24-bit samples */
+	 
 	regmap_update_bits(host->regmap, SUN50I_DMIC_RXFIFO_CTL,
 			   SUN50I_DMIC_RXFIFO_CTL_MODE_MASK,
 			   SUN50I_DMIC_RXFIFO_CTL_MODE_MSB);
@@ -175,7 +175,7 @@ static int sun50i_dmic_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* oversamplerate adjust */
+	 
 	if (params_rate(params) >= 24000)
 		regmap_update_bits(host->regmap, SUN50I_DMIC_CTL,
 				   SUN50I_DMIC_CTL_OVERSAMPLE_RATE,
@@ -200,11 +200,11 @@ static int sun50i_dmic_trigger(struct snd_pcm_substream *substream, int cmd,
 	case SNDRV_PCM_TRIGGER_START:
 	case SNDRV_PCM_TRIGGER_RESUME:
 	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
-		/* DRQ ENABLE */
+		 
 		regmap_update_bits(host->regmap, SUN50I_DMIC_INTC,
 				   SUN50I_DMIC_FIFO_DRQ_EN,
 				   SUN50I_DMIC_FIFO_DRQ_EN);
-		/* Global enable */
+		 
 		regmap_update_bits(host->regmap, SUN50I_DMIC_EN_CTL,
 				   SUN50I_DMIC_EN_CTL_GLOBE,
 				   SUN50I_DMIC_EN_CTL_GLOBE);
@@ -212,10 +212,10 @@ static int sun50i_dmic_trigger(struct snd_pcm_substream *substream, int cmd,
 	case SNDRV_PCM_TRIGGER_STOP:
 	case SNDRV_PCM_TRIGGER_SUSPEND:
 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
-		/* DRQ DISABLE */
+		 
 		regmap_update_bits(host->regmap, SUN50I_DMIC_INTC,
 				   SUN50I_DMIC_FIFO_DRQ_EN, 0);
-		/* Global disable */
+		 
 		regmap_update_bits(host->regmap, SUN50I_DMIC_EN_CTL,
 				   SUN50I_DMIC_EN_CTL_GLOBE, 0);
 		break;
@@ -269,7 +269,7 @@ static const struct of_device_id sun50i_dmic_of_match[] = {
 	{
 		.compatible = "allwinner,sun50i-h6-dmic",
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, sun50i_dmic_of_match);
 
@@ -316,7 +316,7 @@ static int sun50i_dmic_probe(struct platform_device *pdev)
 	if (!host)
 		return -ENOMEM;
 
-	/* Get the addresses */
+	 
 	base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
 	if (IS_ERR(base))
 		return dev_err_probe(&pdev->dev, PTR_ERR(base),
@@ -325,7 +325,7 @@ static int sun50i_dmic_probe(struct platform_device *pdev)
 	host->regmap = devm_regmap_init_mmio(&pdev->dev, base,
 					     &sun50i_dmic_regmap_config);
 
-	/* Clocks */
+	 
 	host->bus_clk = devm_clk_get(&pdev->dev, "bus");
 	if (IS_ERR(host->bus_clk))
 		return dev_err_probe(&pdev->dev, PTR_ERR(host->bus_clk),

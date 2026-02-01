@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2010, Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -97,11 +95,7 @@ static int jz4740_i2s_startup(struct snd_pcm_substream *substream,
 	struct jz4740_i2s *i2s = snd_soc_dai_get_drvdata(dai);
 	int ret;
 
-	/*
-	 * When we can flush FIFOs independently, only flush the FIFO
-	 * that is starting up. We can do this when the DAI is active
-	 * because it does not disturb other active substreams.
-	 */
+	 
 	if (!i2s->soc_info->shared_fifo_flush) {
 		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 			regmap_set_bits(i2s->regmap, JZ_REG_AIC_CTRL, JZ_AIC_CTRL_TFLUSH);
@@ -112,12 +106,7 @@ static int jz4740_i2s_startup(struct snd_pcm_substream *substream,
 	if (snd_soc_dai_active(dai))
 		return 0;
 
-	/*
-	 * When there is a shared flush bit for both FIFOs, the TFLUSH
-	 * bit flushes both FIFOs. Flushing while the DAI is active would
-	 * cause FIFO underruns in other active substreams so we have to
-	 * guard this behind the snd_soc_dai_active() check.
-	 */
+	 
 	if (i2s->soc_info->shared_fifo_flush)
 		regmap_set_bits(i2s->regmap, JZ_REG_AIC_CTRL, JZ_AIC_CTRL_TFLUSH);
 
@@ -233,13 +222,7 @@ static int jz4740_i2s_get_i2sdiv(unsigned long mclk, unsigned long rate,
 	err1 = abs(rate1 - rate);
 	err2 = abs(rate2 - rate);
 
-	/*
-	 * Choose the divider that produces the smallest error in the
-	 * output rate and reject dividers with a 5% or higher error.
-	 * In the event that both dividers are outside the acceptable
-	 * error margin, reject the rate to prevent distorted audio.
-	 * (The number 5% is arbitrary.)
-	 */
+	 
 	if (div <= i2sdiv_max && err1 <= err2 && err1 < rate/20)
 		return div;
 	if (div < i2sdiv_max && err2 < rate/20)
@@ -299,11 +282,7 @@ static int jz4740_i2s_hw_params(struct snd_pcm_substream *substream,
 				     i2s->soc_info->field_i2sdiv_capture.lsb);
 	}
 
-	/*
-	 * Only calculate I2SDIV if we're supplying the bit or frame clock.
-	 * If the codec is supplying both clocks then the divider output is
-	 * unused, and we don't want it to limit the allowed sample rates.
-	 */
+	 
 	if (conf & (JZ_AIC_CONF_BIT_CLK_MASTER | JZ_AIC_CONF_SYNC_CLK_MASTER)) {
 		div = jz4740_i2s_get_i2sdiv(clk_get_rate(i2s->clk_i2s),
 					    params_rate(params), i2sdiv_max);
@@ -494,7 +473,7 @@ static const struct of_device_id jz4740_of_matches[] = {
 	{ .compatible = "ingenic,jz4770-i2s", .data = &jz4770_i2s_soc_info },
 	{ .compatible = "ingenic,jz4780-i2s", .data = &jz4780_i2s_soc_info },
 	{ .compatible = "ingenic,x1000-i2s", .data = &x1000_i2s_soc_info },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, jz4740_of_matches);
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2008
- * Guennadi Liakhovetski, DENX Software Engineering, <lg@denx.de>
- *
- * LED driver for the DAC124S085 SPI DAC
- */
+
+ 
 
 #include <linux/leds.h>
 #include <linux/module.h>

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2021-2022 NVIDIA Corporation
- *
- * Author: Dipen Patel <dipenp@nvidia.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/io.h>
@@ -20,7 +16,7 @@
 
 #define HTE_SUSPEND	0
 
-/* HTE source clock TSC is 31.25MHz */
+ 
 #define HTE_TS_CLK_RATE_HZ	31250000ULL
 #define HTE_CLK_RATE_NS		32
 #define HTE_TS_NS_SHIFT	__builtin_ctz(HTE_CLK_RATE_NS)
@@ -28,11 +24,11 @@
 #define NV_AON_SLICE_INVALID	-1
 #define NV_LINES_IN_SLICE	32
 
-/* AON HTE line map For slice 1 */
+ 
 #define NV_AON_HTE_SLICE1_IRQ_GPIO_28	12
 #define NV_AON_HTE_SLICE1_IRQ_GPIO_29	13
 
-/* AON HTE line map For slice 2 */
+ 
 #define NV_AON_HTE_SLICE2_IRQ_GPIO_0	0
 #define NV_AON_HTE_SLICE2_IRQ_GPIO_1	1
 #define NV_AON_HTE_SLICE2_IRQ_GPIO_2	2
@@ -101,7 +97,7 @@ enum tegra_hte_type {
 struct hte_slices {
 	u32 r_val;
 	unsigned long flags;
-	/* to prevent lines mapped to same slice updating its register */
+	 
 	spinlock_t s_lock;
 };
 
@@ -137,8 +133,8 @@ struct tegra_hte_soc {
 };
 
 static const struct tegra_hte_line_mapped tegra194_aon_gpio_map[] = {
-	/* gpio, slice, bit_index */
-	/* AA port */
+	 
+	 
 	[0]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_11},
 	[1]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_10},
 	[2]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_9},
@@ -147,12 +143,12 @@ static const struct tegra_hte_line_mapped tegra194_aon_gpio_map[] = {
 	[5]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_6},
 	[6]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_5},
 	[7]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_4},
-	/* BB port */
+	 
 	[8]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_3},
 	[9]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_2},
 	[10] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_1},
 	[11] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_0},
-	/* CC port */
+	 
 	[12] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_22},
 	[13] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_21},
 	[14] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_20},
@@ -161,11 +157,11 @@ static const struct tegra_hte_line_mapped tegra194_aon_gpio_map[] = {
 	[17] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_17},
 	[18] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_16},
 	[19] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_15},
-	/* DD port */
+	 
 	[20] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_14},
 	[21] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_13},
 	[22] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_12},
-	/* EE port */
+	 
 	[23] = {1, NV_AON_HTE_SLICE1_IRQ_GPIO_29},
 	[24] = {1, NV_AON_HTE_SLICE1_IRQ_GPIO_28},
 	[25] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_27},
@@ -176,8 +172,8 @@ static const struct tegra_hte_line_mapped tegra194_aon_gpio_map[] = {
 };
 
 static const struct tegra_hte_line_mapped tegra194_aon_gpio_sec_map[] = {
-	/* gpio, slice, bit_index */
-	/* AA port */
+	 
+	 
 	[0]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_11},
 	[1]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_10},
 	[2]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_9},
@@ -186,7 +182,7 @@ static const struct tegra_hte_line_mapped tegra194_aon_gpio_sec_map[] = {
 	[5]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_6},
 	[6]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_5},
 	[7]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_4},
-	/* BB port */
+	 
 	[8]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_3},
 	[9]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_2},
 	[10] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_1},
@@ -195,7 +191,7 @@ static const struct tegra_hte_line_mapped tegra194_aon_gpio_sec_map[] = {
 	[13]  = {NV_AON_SLICE_INVALID, 0},
 	[14] = {NV_AON_SLICE_INVALID, 0},
 	[15] = {NV_AON_SLICE_INVALID, 0},
-	/* CC port */
+	 
 	[16] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_22},
 	[17] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_21},
 	[18] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_20},
@@ -204,7 +200,7 @@ static const struct tegra_hte_line_mapped tegra194_aon_gpio_sec_map[] = {
 	[21] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_17},
 	[22] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_16},
 	[23] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_15},
-	/* DD port */
+	 
 	[24] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_14},
 	[25] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_13},
 	[26] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_12},
@@ -213,7 +209,7 @@ static const struct tegra_hte_line_mapped tegra194_aon_gpio_sec_map[] = {
 	[29] = {NV_AON_SLICE_INVALID, 0},
 	[30] = {NV_AON_SLICE_INVALID, 0},
 	[31] = {NV_AON_SLICE_INVALID, 0},
-	/* EE port */
+	 
 	[32] = {1, NV_AON_HTE_SLICE1_IRQ_GPIO_29},
 	[33] = {1, NV_AON_HTE_SLICE1_IRQ_GPIO_28},
 	[34] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_27},
@@ -225,8 +221,8 @@ static const struct tegra_hte_line_mapped tegra194_aon_gpio_sec_map[] = {
 };
 
 static const struct tegra_hte_line_mapped tegra234_aon_gpio_map[] = {
-	/* gpio, slice, bit_index */
-	/* AA port */
+	 
+	 
 	[0]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_11},
 	[1]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_10},
 	[2]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_9},
@@ -235,12 +231,12 @@ static const struct tegra_hte_line_mapped tegra234_aon_gpio_map[] = {
 	[5]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_6},
 	[6]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_5},
 	[7]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_4},
-	/* BB port */
+	 
 	[8]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_3},
 	[9]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_2},
 	[10] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_1},
 	[11] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_0},
-	/* CC port */
+	 
 	[12] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_22},
 	[13] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_21},
 	[14] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_20},
@@ -249,11 +245,11 @@ static const struct tegra_hte_line_mapped tegra234_aon_gpio_map[] = {
 	[17] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_17},
 	[18] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_16},
 	[19] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_15},
-	/* DD port */
+	 
 	[20] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_14},
 	[21] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_13},
 	[22] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_12},
-	/* EE port */
+	 
 	[23] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_31},
 	[24] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_30},
 	[25] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_29},
@@ -262,13 +258,13 @@ static const struct tegra_hte_line_mapped tegra234_aon_gpio_map[] = {
 	[28] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_26},
 	[29] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_25},
 	[30] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_24},
-	/* GG port */
+	 
 	[31] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_23},
 };
 
 static const struct tegra_hte_line_mapped tegra234_aon_gpio_sec_map[] = {
-	/* gpio, slice, bit_index */
-	/* AA port */
+	 
+	 
 	[0]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_11},
 	[1]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_10},
 	[2]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_9},
@@ -277,7 +273,7 @@ static const struct tegra_hte_line_mapped tegra234_aon_gpio_sec_map[] = {
 	[5]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_6},
 	[6]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_5},
 	[7]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_4},
-	/* BB port */
+	 
 	[8]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_3},
 	[9]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_2},
 	[10] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_1},
@@ -286,7 +282,7 @@ static const struct tegra_hte_line_mapped tegra234_aon_gpio_sec_map[] = {
 	[13] = {NV_AON_SLICE_INVALID, 0},
 	[14] = {NV_AON_SLICE_INVALID, 0},
 	[15] = {NV_AON_SLICE_INVALID, 0},
-	/* CC port */
+	 
 	[16] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_22},
 	[17] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_21},
 	[18] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_20},
@@ -295,7 +291,7 @@ static const struct tegra_hte_line_mapped tegra234_aon_gpio_sec_map[] = {
 	[21] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_17},
 	[22] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_16},
 	[23] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_15},
-	/* DD port */
+	 
 	[24] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_14},
 	[25] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_13},
 	[26] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_12},
@@ -304,7 +300,7 @@ static const struct tegra_hte_line_mapped tegra234_aon_gpio_sec_map[] = {
 	[29] = {NV_AON_SLICE_INVALID, 0},
 	[30] = {NV_AON_SLICE_INVALID, 0},
 	[31] = {NV_AON_SLICE_INVALID, 0},
-	/* EE port */
+	 
 	[32] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_31},
 	[33] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_30},
 	[34] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_29},
@@ -313,7 +309,7 @@ static const struct tegra_hte_line_mapped tegra234_aon_gpio_sec_map[] = {
 	[37] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_26},
 	[38] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_25},
 	[39] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_24},
-	/* GG port */
+	 
 	[40] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_23},
 };
 
@@ -406,17 +402,7 @@ static int tegra_hte_line_xlate(struct hte_chip *gc,
 	if (!gs || !gs->prov_data)
 		return -EINVAL;
 
-	/*
-	 *
-	 * There are two paths GPIO consumers can take as follows:
-	 * 1) The consumer (gpiolib-cdev for example) which uses GPIO global
-	 * number which gets assigned run time.
-	 * 2) The consumer passing GPIO from the DT which is assigned
-	 * statically for example by using TEGRA194_AON_GPIO gpio DT binding.
-	 *
-	 * The code below addresses both the consumer use cases and maps into
-	 * HTE/GTE namespace.
-	 */
+	 
 	if (gs->prov_data->type == HTE_TEGRA_TYPE_GPIO && !args) {
 		line_id = desc->attr.line_id - gs->c->base;
 		map = gs->prov_data->map;

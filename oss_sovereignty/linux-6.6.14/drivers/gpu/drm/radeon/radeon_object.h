@@ -1,42 +1,11 @@
-/*
- * Copyright 2008 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- * Copyright 2009 Jerome Glisse.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- *          Jerome Glisse
- */
+ 
 #ifndef __RADEON_OBJECT_H__
 #define __RADEON_OBJECT_H__
 
 #include <drm/radeon_drm.h>
 #include "radeon.h"
 
-/**
- * radeon_mem_type_to_domain - return domain corresponding to mem_type
- * @mem_type:	ttm memory type
- *
- * Returns corresponding domain of the ttm mem_type
- */
+ 
 static inline unsigned radeon_mem_type_to_domain(u32 mem_type)
 {
 	switch (mem_type) {
@@ -52,15 +21,7 @@ static inline unsigned radeon_mem_type_to_domain(u32 mem_type)
 	return 0;
 }
 
-/**
- * radeon_bo_reserve - reserve bo
- * @bo:		bo structure
- * @no_intr:	don't return -ERESTARTSYS on pending signal
- *
- * Returns:
- * -ERESTARTSYS: A wait for the buffer to become unreserved was interrupted by
- * a signal. Release all buffer reservations and return to user-space.
- */
+ 
 static inline int radeon_bo_reserve(struct radeon_bo *bo, bool no_intr)
 {
 	int r;
@@ -79,15 +40,7 @@ static inline void radeon_bo_unreserve(struct radeon_bo *bo)
 	ttm_bo_unreserve(&bo->tbo);
 }
 
-/**
- * radeon_bo_gpu_offset - return GPU offset of bo
- * @bo:	radeon object for which we query the offset
- *
- * Returns current GPU offset of the object.
- *
- * Note: object should either be pinned or reserved when calling this
- * function, it might be useful to add check for this for debugging.
- */
+ 
 static inline u64 radeon_bo_gpu_offset(struct radeon_bo *bo)
 {
 	struct radeon_device *rdev;
@@ -122,12 +75,7 @@ static inline unsigned radeon_bo_gpu_page_alignment(struct radeon_bo *bo)
 	return (bo->tbo.page_alignment << PAGE_SHIFT) / RADEON_GPU_PAGE_SIZE;
 }
 
-/**
- * radeon_bo_mmap_offset - return mmap offset of bo
- * @bo:	radeon object for which we query the offset
- *
- * Returns mmap offset of the object.
- */
+ 
 static inline u64 radeon_bo_mmap_offset(struct radeon_bo *bo)
 {
 	return drm_vma_node_offset_addr(&bo->tbo.base.vma_node);
@@ -166,9 +114,7 @@ extern int radeon_bo_get_surface_reg(struct radeon_bo *bo);
 extern void radeon_bo_fence(struct radeon_bo *bo, struct radeon_fence *fence,
 			    bool shared);
 
-/*
- * sub allocation
- */
+ 
 static inline struct radeon_sa_manager *
 to_radeon_sa_manager(struct drm_suballoc_manager *manager)
 {

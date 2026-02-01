@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include <test_progs.h>
 #include <bpf/btf.h>
 #include "btf_helpers.h"
@@ -13,13 +13,13 @@ static void test_split_simple() {
 	if (!ASSERT_OK_PTR(btf1, "empty_main_btf"))
 		return;
 
-	btf__set_pointer_size(btf1, 8); /* enforce 64-bit arch */
+	btf__set_pointer_size(btf1, 8);  
 
-	btf__add_int(btf1, "int", 4, BTF_INT_SIGNED);	/* [1] int */
-	btf__add_ptr(btf1, 1);				/* [2] ptr to int */
-	btf__add_struct(btf1, "s1", 4);			/* [3] struct s1 { */
-	btf__add_field(btf1, "f1", 1, 0, 0);		/*      int f1; */
-							/* } */
+	btf__add_int(btf1, "int", 4, BTF_INT_SIGNED);	 
+	btf__add_ptr(btf1, 1);				 
+	btf__add_struct(btf1, "s1", 4);			 
+	btf__add_field(btf1, "f1", 1, 0, 0);		 
+							 
 
 	VALIDATE_RAW_BTF(
 		btf1,

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 #include <linux/export.h>
@@ -10,10 +10,7 @@
 #include "sleep.h"
 #include "internal.h"
 
-/*
- * this file provides support for:
- * /proc/acpi/wakeup
- */
+ 
 
 static int
 acpi_system_wakeup_device_seq_show(struct seq_file *seq, void *offset)
@@ -140,7 +137,7 @@ static const struct proc_ops acpi_system_wakeup_device_proc_ops = {
 
 void __init acpi_sleep_proc_init(void)
 {
-	/* 'wakeup device' [R/W] */
+	 
 	proc_create("wakeup", S_IFREG | S_IRUGO | S_IWUSR,
 		    acpi_root_dir, &acpi_system_wakeup_device_proc_ops);
 }

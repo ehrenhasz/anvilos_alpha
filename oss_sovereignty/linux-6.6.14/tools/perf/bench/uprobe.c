@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/*
- * uprobe.c
- *
- * uprobe benchmarks
- *
- *  Copyright (C) 2023, Red Hat Inc, Arnaldo Carvalho de Melo <acme@redhat.com>
- */
+
+ 
 #include "../perf.h"
 #include "../util/util.h"
 #include <subcmd/parse-options.h>
@@ -45,11 +39,11 @@ static const char * const bench_uprobe_usage[] = {
 #include "bpf_skel/bench_uprobe.skel.h"
 
 #define bench_uprobe__attach_uprobe(prog) \
-	skel->links.prog = bpf_program__attach_uprobe_opts(/*prog=*/skel->progs.prog, \
-							   /*pid=*/-1, \
-							   /*binary_path=*/"/lib64/libc.so.6", \
-							   /*func_offset=*/0, \
-							   /*opts=*/&uprobe_opts); \
+	skel->links.prog = bpf_program__attach_uprobe_opts( skel->progs.prog, \
+							    -1, \
+							    "/lib64/libc.so.6", \
+							    0, \
+							    &uprobe_opts); \
 	if (!skel->links.prog) { \
 		err = -errno; \
 		fprintf(stderr, "Failed to attach bench uprobe \"%s\": %s\n", #prog, strerror(errno)); \
@@ -63,7 +57,7 @@ static int bench_uprobe__setup_bpf_skel(enum bench_uprobe bench)
 	DECLARE_LIBBPF_OPTS(bpf_uprobe_opts, uprobe_opts);
 	int err;
 
-	/* Load and verify BPF application */
+	 
 	skel = bench_uprobe_bpf__open();
 	if (!skel) {
 		fprintf(stderr, "Failed to open and load uprobes bench BPF skeleton\n");
@@ -171,7 +165,7 @@ static int bench_uprobe(int argc, const char **argv, enum bench_uprobe bench)
 		break;
 
 	default:
-		/* reaching here is something of a disaster */
+		 
 		fprintf(stderr, "Unknown format:%d\n", bench_format);
 		exit(1);
 	}

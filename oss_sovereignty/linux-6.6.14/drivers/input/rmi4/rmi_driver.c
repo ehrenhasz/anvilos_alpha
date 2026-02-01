@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2011-2016 Synaptics Incorporated
- * Copyright (c) 2011 Unixphere
- *
- * This driver provides the core support for a single RMI4-based device.
- *
- * The RMI4 specification can be found here (URL split for line length):
- *
- * http://www.synaptics.com/sites/default/files/
- *      511-000136-01-Rev-E-RMI4-Interfacing-Guide.pdf
- */
+
+ 
 
 #include <linux/bitmap.h>
 #include <linux/delay.h>
@@ -39,7 +29,7 @@ void rmi_free_function_list(struct rmi_device *rmi_dev)
 
 	rmi_dbg(RMI_DEBUG_CORE, &rmi_dev->dev, "Freeing function list\n");
 
-	/* Doing it in the reverse order so F01 will be removed last */
+	 
 	list_for_each_entry_safe_reverse(fn, tmp,
 					 &data->function_list, node) {
 		list_del(&fn->node);
@@ -148,10 +138,7 @@ static int rmi_process_interrupt_requests(struct rmi_device *rmi_dev)
 	mutex_lock(&data->irq_mutex);
 	bitmap_and(data->irq_status, data->irq_status, data->fn_irq_bits,
 	       data->irq_count);
-	/*
-	 * At this point, irq_status has all bits that are set in the
-	 * interrupt status register and are enabled.
-	 */
+	 
 	mutex_unlock(&data->irq_mutex);
 
 	for_each_set_bit(i, data->irq_status, data->irq_count)
@@ -332,13 +319,7 @@ int rmi_enable_sensor(struct rmi_device *rmi_dev)
 	return rmi_process_interrupt_requests(rmi_dev);
 }
 
-/**
- * rmi_driver_set_input_params - set input device id and other data.
- *
- * @rmi_dev: Pointer to an RMI device
- * @input: Pointer to input device
- *
- */
+ 
 static int rmi_driver_set_input_params(struct rmi_device *rmi_dev,
 				struct input_dev *input)
 {
@@ -426,10 +407,7 @@ static int rmi_driver_reset_handler(struct rmi_device *rmi_dev)
 	struct rmi_driver_data *data = dev_get_drvdata(&rmi_dev->dev);
 	int error;
 
-	/*
-	 * Can get called before the driver is fully ready to deal with
-	 * this situation.
-	 */
+	 
 	if (!data || !data->f01_container) {
 		dev_warn(&rmi_dev->dev,
 			 "Not ready to handle reset yet!\n");
@@ -526,10 +504,7 @@ static int rmi_scan_pdt_page(struct rmi_device *rmi_dev,
 			return retval;
 	}
 
-	/*
-	 * Count number of empty PDT pages. If a gap of two pages
-	 * or more is found, stop scanning.
-	 */
+	 
 	if (addr == pdt_start)
 		++*empty_pages;
 	else
@@ -571,10 +546,7 @@ int rmi_read_register_desc(struct rmi_device *d, u16 addr,
 	int i;
 	int b;
 
-	/*
-	 * The first register of the register descriptor is the size of
-	 * the register descriptor's presense register.
-	 */
+	 
 	ret = rmi_read(d, addr, &size_presence_reg);
 	if (ret)
 		return ret;
@@ -585,11 +557,7 @@ int rmi_read_register_desc(struct rmi_device *d, u16 addr,
 
 	memset(buf, 0, sizeof(buf));
 
-	/*
-	 * The presence register contains the size of the register structure
-	 * and a bitmap which identified which packet registers are present
-	 * for this particular register type (ie query, control, or data).
-	 */
+	 
 	ret = rmi_read_block(d, addr, buf, size_presence_reg);
 	if (ret)
 		return ret;
@@ -620,21 +588,12 @@ int rmi_read_register_desc(struct rmi_device *d, u16 addr,
 	if (!rdesc->registers)
 		return -ENOMEM;
 
-	/*
-	 * Allocate a temporary buffer to hold the register structure.
-	 * I'm not using devm_kzalloc here since it will not be retained
-	 * after exiting this function
-	 */
+	 
 	struct_buf = kzalloc(rdesc->struct_size, GFP_KERNEL);
 	if (!struct_buf)
 		return -ENOMEM;
 
-	/*
-	 * The register structure contains information about every packet
-	 * register of this type. This includes the size of the packet
-	 * register and a bitmap of all subpackets contained in the packet
-	 * register.
-	 */
+	 
 	ret = rmi_read_block(d, addr, struct_buf, rdesc->struct_size);
 	if (ret)
 		goto free_struct_buff;
@@ -717,7 +676,7 @@ size_t rmi_register_desc_calc_size(struct rmi_register_descriptor *rdesc)
 	return size;
 }
 
-/* Compute the register offset relative to the base address */
+ 
 int rmi_register_desc_calc_reg_offset(
 		struct rmi_register_descriptor *rdesc, u16 reg)
 {
@@ -821,7 +780,7 @@ int rmi_initial_reset(struct rmi_device *rmi_dev, void *ctx,
 		return RMI_SCAN_DONE;
 	}
 
-	/* F01 should always be on page 0. If we don't find it there, fail. */
+	 
 	return pdt->page_start == 0 ? RMI_SCAN_CONTINUE : -ENODEV;
 }
 
@@ -896,10 +855,7 @@ void rmi_enable_irq(struct rmi_device *rmi_dev, bool clear_wake)
 				 retval);
 	}
 
-	/*
-	 * Call rmi_process_interrupt_requests() after enabling irq,
-	 * otherwise we may lose interrupt on edge-triggered systems.
-	 */
+	 
 	irq_flags = irq_get_trigger_type(pdata->irq);
 	if (irq_flags & IRQ_TYPE_EDGE_BOTH)
 		rmi_process_interrupt_requests(rmi_dev);
@@ -931,7 +887,7 @@ void rmi_disable_irq(struct rmi_device *rmi_dev, bool enable_wake)
 				 retval);
 	}
 
-	/* make sure the fifo is clean */
+	 
 	while (!kfifo_is_empty(&data->attn_fifo)) {
 		count = kfifo_get(&data->attn_fifo, &attn_data);
 		if (count)
@@ -1017,12 +973,7 @@ int rmi_probe_interrupts(struct rmi_driver_data *data)
 	size_t size;
 	int retval;
 
-	/*
-	 * We need to count the IRQs and allocate their storage before scanning
-	 * the PDT and creating the function entries, because adding a new
-	 * function can trigger events that result in the IRQ related storage
-	 * being accessed.
-	 */
+	 
 	rmi_dbg(RMI_DEBUG_CORE, dev, "%s: Counting IRQs.\n", __func__);
 	data->bootloader_mode = false;
 
@@ -1035,7 +986,7 @@ int rmi_probe_interrupts(struct rmi_driver_data *data)
 	if (data->bootloader_mode)
 		dev_warn(dev, "Device in bootloader mode.\n");
 
-	/* Allocate and register a linear revmap irq_domain */
+	 
 	data->irqdomain = irq_domain_create_linear(fwnode, irq_count,
 						   &irq_domain_simple_ops,
 						   data);
@@ -1135,37 +1086,14 @@ static int rmi_driver_probe(struct device *dev)
 	data->rmi_dev = rmi_dev;
 	dev_set_drvdata(&rmi_dev->dev, data);
 
-	/*
-	 * Right before a warm boot, the sensor might be in some unusual state,
-	 * such as F54 diagnostics, or F34 bootloader mode after a firmware
-	 * or configuration update.  In order to clear the sensor to a known
-	 * state and/or apply any updates, we issue a initial reset to clear any
-	 * previous settings and force it into normal operation.
-	 *
-	 * We have to do this before actually building the PDT because
-	 * the reflash updates (if any) might cause various registers to move
-	 * around.
-	 *
-	 * For a number of reasons, this initial reset may fail to return
-	 * within the specified time, but we'll still be able to bring up the
-	 * driver normally after that failure.  This occurs most commonly in
-	 * a cold boot situation (where then firmware takes longer to come up
-	 * than from a warm boot) and the reset_delay_ms in the platform data
-	 * has been set too short to accommodate that.  Since the sensor will
-	 * eventually come up and be usable, we don't want to just fail here
-	 * and leave the customer's device unusable.  So we warn them, and
-	 * continue processing.
-	 */
+	 
 	retval = rmi_scan_pdt(rmi_dev, NULL, rmi_initial_reset);
 	if (retval < 0)
 		dev_warn(dev, "RMI initial reset failed! Continuing in spite of this.\n");
 
 	retval = rmi_read(rmi_dev, PDT_PROPERTIES_LOCATION, &data->pdt_props);
 	if (retval < 0) {
-		/*
-		 * we'll print out a warning and continue since
-		 * failure to get the PDT properties is not a cause to fail
-		 */
+		 
 		dev_warn(dev, "Could not read PDT properties from %#06x (code %d). Assuming 0x00.\n",
 			 PDT_PROPERTIES_LOCATION, retval);
 	}
@@ -1178,13 +1106,7 @@ static int rmi_driver_probe(struct device *dev)
 		goto err;
 
 	if (rmi_dev->xport->input) {
-		/*
-		 * The transport driver already has an input device.
-		 * In some cases it is preferable to reuse the transport
-		 * devices input device instead of creating a new one here.
-		 * One example is some HID touchpads report "pass-through"
-		 * button events are not reported by rmi registers.
-		 */
+		 
 		data->input = rmi_dev->xport->input;
 	} else {
 		data->input = devm_input_allocate_device(dev);
@@ -1224,7 +1146,7 @@ static int rmi_driver_probe(struct device *dev)
 		goto err_destroy_functions;
 
 	if (data->f01_container->dev.driver) {
-		/* Driver already bound, so enable ATTN now. */
+		 
 		retval = rmi_enable_sensor(rmi_dev);
 		if (retval)
 			goto err_disable_irq;

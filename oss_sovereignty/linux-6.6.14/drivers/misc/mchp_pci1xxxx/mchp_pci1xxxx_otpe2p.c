@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2022-2023 Microchip Technology Inc.
-// PCI1xxxx OTP/EEPROM driver
+
+
+
 
 #include <linux/auxiliary_bus.h>
 #include <linux/device.h>
@@ -105,12 +105,12 @@ static bool is_eeprom_responsive(struct pci1xxxx_otp_eeprom_device *priv)
 	writel(EEPROM_CMD_EPC_BUSY_BIT,
 	       rb + MMAP_EEPROM_OFFSET(EEPROM_CMD_REG));
 
-	/* Wait for the EPC_BUSY bit to get cleared or timeout bit to get set*/
+	 
 	ret = read_poll_timeout(readl, regval, !(regval & EEPROM_CMD_EPC_BUSY_BIT),
 				STATUS_READ_DELAY_US, STATUS_READ_TIMEOUT_US,
 				true, rb + MMAP_EEPROM_OFFSET(EEPROM_CMD_REG));
 
-	/* Return failure if either of software or hardware timeouts happen */
+	 
 	if (ret < 0 || (!ret && (regval & EEPROM_CMD_EPC_TIMEOUT_BIT)))
 		return false;
 
@@ -288,10 +288,7 @@ static int pci1xxxx_otp_write(void *priv_t, unsigned int off,
 	for (byte = 0; byte < count; byte++) {
 		otp_device_set_address(priv, (u16)(off + byte));
 
-		/*
-		 * Set OTP_PGM_MODE_BYTE command bit in OTP_PRGM_MODE register
-		 * to enable Byte programming
-		 */
+		 
 		data = readl(rb + MMAP_OTP_OFFSET(OTP_PRGM_MODE_OFFSET));
 		writel(data | OTP_PGM_MODE_BYTE_BIT,
 		       rb + MMAP_OTP_OFFSET(OTP_PRGM_MODE_OFFSET));
@@ -358,7 +355,7 @@ static int pci1xxxx_otp_eeprom_probe(struct auxiliary_device *aux_dev,
 	if (ret)
 		return ret;
 
-	/* Set OTP_PWR_DN to 0 to make OTP Operational */
+	 
 	data = readl(priv->reg_base + MMAP_OTP_OFFSET(OTP_PWR_DN_OFFSET));
 	writel(data & ~OTP_PWR_DN_BIT,
 	       priv->reg_base + MMAP_OTP_OFFSET(OTP_PWR_DN_OFFSET));
@@ -413,7 +410,7 @@ static void pci1xxxx_otp_eeprom_remove(struct auxiliary_device *aux_dev)
 	sys_lock = priv->reg_base + MMAP_CFG_OFFSET(CFG_SYS_LOCK_OFFSET);
 	writel(CFG_SYS_LOCK_PF3, sys_lock);
 
-	/* Shut down OTP */
+	 
 	writel(OTP_PWR_DN_BIT,
 	       priv->reg_base + MMAP_OTP_OFFSET(OTP_PWR_DN_OFFSET));
 

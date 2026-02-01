@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NXP Wireless LAN device driver: 802.11h
- *
- * Copyright 2011-2020 NXP
- */
+
+ 
 
 #include "main.h"
 #include "fw.h"
@@ -19,9 +15,7 @@ inline int mwifiex_is_11h_active(struct mwifiex_private *priv)
 {
 	return priv->state_11h.is_11h_active;
 }
-/* This function appends 11h info to a buffer while joining an
- * infrastructure BSS
- */
+ 
 static void
 mwifiex_11h_process_infra_join(struct mwifiex_private *priv, u8 **buffer,
 			       struct mwifiex_bssdescriptor *bss_desc)
@@ -62,16 +56,16 @@ mwifiex_11h_process_infra_join(struct mwifiex_private *priv, u8 **buffer,
 	for (i = 0; i < sband->n_channels; i++) {
 		*(*buffer)++ = ieee80211_frequency_to_channel(
 					sband->channels[i].center_freq);
-		*(*buffer)++ = 1; /* one channel in the subband */
+		*(*buffer)++ = 1;  
 	}
 }
 
-/* Enable or disable the 11h extensions in the firmware */
+ 
 int mwifiex_11h_activate(struct mwifiex_private *priv, bool flag)
 {
 	u32 enable = flag;
 
-	/* enable master mode radar detection on AP interface */
+	 
 	if ((GET_BSS_ROLE(priv) == MWIFIEX_BSS_ROLE_UAP) && enable)
 		enable |= MWIFIEX_MASTER_RADAR_DET_MASK;
 
@@ -79,35 +73,25 @@ int mwifiex_11h_activate(struct mwifiex_private *priv, bool flag)
 				HostCmd_ACT_GEN_SET, DOT11H_I, &enable, true);
 }
 
-/* This functions processes TLV buffer for a pending BSS Join command.
- *
- * Activate 11h functionality in the firmware if the spectrum management
- * capability bit is found in the network we are joining. Also, necessary
- * TLVs are set based on requested network's 11h capability.
- */
+ 
 void mwifiex_11h_process_join(struct mwifiex_private *priv, u8 **buffer,
 			      struct mwifiex_bssdescriptor *bss_desc)
 {
 	if (bss_desc->sensed_11h) {
-		/* Activate 11h functions in firmware, turns on capability
-		 * bit
-		 */
+		 
 		mwifiex_11h_activate(priv, true);
 		priv->state_11h.is_11h_active = true;
 		bss_desc->cap_info_bitmap |= WLAN_CAPABILITY_SPECTRUM_MGMT;
 		mwifiex_11h_process_infra_join(priv, buffer, bss_desc);
 	} else {
-		/* Deactivate 11h functions in the firmware */
+		 
 		mwifiex_11h_activate(priv, false);
 		priv->state_11h.is_11h_active = false;
 		bss_desc->cap_info_bitmap &= ~WLAN_CAPABILITY_SPECTRUM_MGMT;
 	}
 }
 
-/* This is DFS CAC work queue function.
- * This delayed work emits CAC finished event for cfg80211 if
- * CAC was started earlier.
- */
+ 
 void mwifiex_dfs_cac_work_queue(struct work_struct *work)
 {
 	struct cfg80211_chan_def chandef;
@@ -126,9 +110,7 @@ void mwifiex_dfs_cac_work_queue(struct work_struct *work)
 	}
 }
 
-/* This function prepares channel report request command to FW for
- * starting radar detection.
- */
+ 
 int mwifiex_cmd_issue_chan_report_request(struct mwifiex_private *priv,
 					  struct host_cmd_ds_command *cmd,
 					  void *data_buf)
@@ -169,9 +151,7 @@ int mwifiex_stop_radar_detection(struct mwifiex_private *priv,
 				HostCmd_ACT_GEN_SET, 0, &radar_params, true);
 }
 
-/* This function is to abort ongoing CAC upon stopping AP operations
- * or during unload.
- */
+ 
 void mwifiex_abort_cac(struct mwifiex_private *priv)
 {
 	if (priv->wdev.cac_started) {
@@ -186,10 +166,7 @@ void mwifiex_abort_cac(struct mwifiex_private *priv)
 	}
 }
 
-/* This function handles channel report event from FW during CAC period.
- * If radar is detected during CAC, driver indicates the same to cfg80211
- * and also cancels ongoing delayed work.
- */
+ 
 int mwifiex_11h_handle_chanrpt_ready(struct mwifiex_private *priv,
 				     struct sk_buff *skb)
 {
@@ -234,7 +211,7 @@ int mwifiex_11h_handle_chanrpt_ready(struct mwifiex_private *priv,
 	return 0;
 }
 
-/* Handler for radar detected event from FW.*/
+ 
 int mwifiex_11h_handle_radar_detected(struct mwifiex_private *priv,
 				      struct sk_buff *skb)
 {
@@ -257,11 +234,7 @@ int mwifiex_11h_handle_radar_detected(struct mwifiex_private *priv,
 	return 0;
 }
 
-/* This is work queue function for channel switch handling.
- * This function takes care of updating new channel definitin to
- * bss config structure, restart AP and indicate channel switch success
- * to cfg80211.
- */
+ 
 void mwifiex_dfs_chan_sw_work_queue(struct work_struct *work)
 {
 	struct mwifiex_uap_bss_param *bss_cfg;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Unstable Fou Helpers for TC-BPF hook
- *
- * These are called from SCHED_CLS BPF programs. Note that it is
- * allowed to break compatibility for these functions since the interface they
- * are exposed through to BPF programs is explicitly unstable.
- */
+
+ 
 
 #include <linux/bpf.h>
 #include <linux/btf_ids.h>
@@ -26,23 +21,7 @@ __diag_push();
 __diag_ignore_all("-Wmissing-prototypes",
 		  "Global functions as their definitions will be in BTF");
 
-/* bpf_skb_set_fou_encap - Set FOU encap parameters
- *
- * This function allows for using GUE or FOU encapsulation together with an
- * ipip device in collect-metadata mode.
- *
- * It is meant to be used in BPF tc-hooks and after a call to the
- * bpf_skb_set_tunnel_key helper, responsible for setting IP addresses.
- *
- * Parameters:
- * @skb_ctx	Pointer to ctx (__sk_buff) in TC program. Cannot be NULL
- * @encap	Pointer to a `struct bpf_fou_encap` storing UDP src and
- * 		dst ports. If sport is set to 0 the kernel will auto-assign a
- * 		port. This is similar to using `encap-sport auto`.
- * 		Cannot be NULL
- * @type	Encapsulation type for the packet. Their definitions are
- * 		specified in `enum bpf_fou_encap_type`
- */
+ 
 __bpf_kfunc int bpf_skb_set_fou_encap(struct __sk_buff *skb_ctx,
 				      struct bpf_fou_encap *encap, int type)
 {
@@ -75,16 +54,7 @@ __bpf_kfunc int bpf_skb_set_fou_encap(struct __sk_buff *skb_ctx,
 	return 0;
 }
 
-/* bpf_skb_get_fou_encap - Get FOU encap parameters
- *
- * This function allows for reading encap metadata from a packet received
- * on an ipip device in collect-metadata mode.
- *
- * Parameters:
- * @skb_ctx	Pointer to ctx (__sk_buff) in TC program. Cannot be NULL
- * @encap	Pointer to a struct bpf_fou_encap storing UDP source and
- * 		destination port. Cannot be NULL
- */
+ 
 __bpf_kfunc int bpf_skb_get_fou_encap(struct __sk_buff *skb_ctx,
 				      struct bpf_fou_encap *encap)
 {

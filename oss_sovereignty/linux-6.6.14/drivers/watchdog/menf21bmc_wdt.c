@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  MEN 14F021P00 Board Management Controller (BMC) Watchdog Driver.
- *
- *  Copyright (C) 2014 MEN Mikro Elektronik Nuernberg GmbH
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/device.h>
@@ -22,8 +18,8 @@
 #define BMC_WD_OFF_VAL		0x69
 #define BMC_CMD_RST_RSN		0x92
 
-#define BMC_WD_TIMEOUT_MIN	1	/* in sec */
-#define BMC_WD_TIMEOUT_MAX	6553	/* in sec */
+#define BMC_WD_TIMEOUT_MIN	1	 
+#define BMC_WD_TIMEOUT_MAX	6553	 
 
 static bool nowayout = WATCHDOG_NOWAYOUT;
 module_param(nowayout, bool, 0);
@@ -76,11 +72,7 @@ menf21bmc_wdt_settimeout(struct watchdog_device *wdt, unsigned int timeout)
 	int ret;
 	struct menf21bmc_wdt *drv_data = watchdog_get_drvdata(wdt);
 
-	/*
-	 *  BMC Watchdog does have a resolution of 100ms.
-	 *  Watchdog API defines the timeout in seconds, so we have to
-	 *  multiply the value.
-	 */
+	 
 	ret = i2c_smbus_write_word_data(drv_data->i2c_client,
 					BMC_CMD_WD_TIME, timeout * 10);
 	if (ret < 0)
@@ -129,10 +121,7 @@ static int menf21bmc_wdt_probe(struct platform_device *pdev)
 	drv_data->wdt.parent = dev;
 	drv_data->i2c_client = i2c_client;
 
-	/*
-	 * Get the current wdt timeout value from the BMC because
-	 * the BMC will save the value set before if the system restarts.
-	 */
+	 
 	bmc_timeout = i2c_smbus_read_word_data(drv_data->i2c_client,
 					       BMC_CMD_WD_TIME);
 	if (bmc_timeout < 0) {

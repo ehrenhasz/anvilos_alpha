@@ -1,17 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Test key rotation for TFO.
- * New keys are 'rotated' in two steps:
- * 1) Add new key as the 'backup' key 'behind' the primary key
- * 2) Make new key the primary by swapping the backup and primary keys
- *
- * The rotation is done in stages using multiple sockets bound
- * to the same port via SO_REUSEPORT. This simulates key rotation
- * behind say a load balancer. We verify that across the rotation
- * there are no cases in which a cookie is not accepted by verifying
- * that TcpExtTCPFastOpenPassiveFail remains 0.
- */
+
+ 
 #define _GNU_SOURCE
 #include <arpa/inet.h>
 #include <errno.h>
@@ -112,10 +101,7 @@ static void build_rcv_fd(int family, int proto, int *rcv_fds)
 		break;
 	default:
 		error(1, 0, "Unsupported family %d", family);
-		/* clang does not recognize error() above as terminating
-		 * the program, so it complains that saddr, sz are
-		 * not initialized when this code path is taken. Silence it.
-		 */
+		 
 		return;
 	}
 	for (i = 0; i < ARRAY_SIZE(keys); i++)
@@ -178,10 +164,7 @@ static int connect_and_send(int family, int proto)
 		break;
 	default:
 		error(1, 0, "Unsupported family %d", family);
-		/* clang does not recognize error() above as terminating
-		 * the program, so it complains that saddr, daddr, sz are
-		 * not initialized when this code path is taken. Silence it.
-		 */
+		 
 		return -1;
 	}
 	fd = socket(family, proto, 0);
@@ -217,7 +200,7 @@ static void rotate_key(int fd)
 	int i;
 
 	if (iter < N_LISTEN) {
-		/* first set new key as backups */
+		 
 		if (iter == 0) {
 			for (i = 0; i < ARRAY_SIZE(new_key); i++)
 				new_key[i] = rand();
@@ -226,7 +209,7 @@ static void rotate_key(int fd)
 		memcpy(keys + 4, new_key, KEY_LENGTH);
 		set_keys(fd, keys);
 	} else {
-		/* swap the keys */
+		 
 		get_keys(fd, keys);
 		memcpy(tmp_key, keys + 4, KEY_LENGTH);
 		memcpy(keys + 4, keys, KEY_LENGTH);

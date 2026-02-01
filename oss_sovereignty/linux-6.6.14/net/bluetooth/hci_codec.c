@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* Copyright (C) 2021 Intel Corporation */
+
+ 
 
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/hci_core.h>
@@ -61,9 +61,7 @@ static void hci_read_codec_capabilities(struct hci_dev *hdev, __u8 transport,
 
 			cmd->transport = i;
 
-			/* If Read_Codec_Capabilities command is not supported
-			 * then just add codec to the list without caps
-			 */
+			 
 			if (!(hdev->commands[45] & 0x08)) {
 				hci_dev_lock(hdev);
 				hci_codec_list_add(&hdev->local_codecs, cmd,
@@ -90,7 +88,7 @@ static void hci_read_codec_capabilities(struct hci_dev *hdev, __u8 transport,
 
 			if (!rp->num_caps) {
 				len = 0;
-				/* this codec doesn't have capabilities */
+				 
 				goto skip_caps_parse;
 			}
 
@@ -147,12 +145,12 @@ void hci_read_supported_codecs(struct hci_dev *hdev)
 
 	std_codecs = (void *)skb->data;
 
-	/* validate codecs length before accessing */
+	 
 	if (skb->len < flex_array_size(std_codecs, codec, std_codecs->num)
 	    + sizeof(std_codecs->num))
 		goto error;
 
-	/* enumerate codec capabilities of standard codecs */
+	 
 	memset(&caps, 0, sizeof(caps));
 	for (i = 0; i < std_codecs->num; i++) {
 		caps.id = std_codecs->codec[i];
@@ -166,13 +164,13 @@ void hci_read_supported_codecs(struct hci_dev *hdev)
 
 	vnd_codecs = (void *)skb->data;
 
-	/* validate vendor codecs length before accessing */
+	 
 	if (skb->len <
 	    flex_array_size(vnd_codecs, codec, vnd_codecs->num)
 	    + sizeof(vnd_codecs->num))
 		goto error;
 
-	/* enumerate vendor codec capabilities */
+	 
 	for (i = 0; i < vnd_codecs->num; i++) {
 		caps.id = 0xFF;
 		caps.cid = vnd_codecs->codec[i].cid;
@@ -216,7 +214,7 @@ void hci_read_supported_codecs_v2(struct hci_dev *hdev)
 
 	std_codecs = (void *)skb->data;
 
-	/* check for payload data length before accessing */
+	 
 	if (skb->len < flex_array_size(std_codecs, codec, std_codecs->num)
 	    + sizeof(std_codecs->num))
 		goto error;
@@ -234,7 +232,7 @@ void hci_read_supported_codecs_v2(struct hci_dev *hdev)
 
 	vnd_codecs = (void *)skb->data;
 
-	/* check for payload data length before accessing */
+	 
 	if (skb->len <
 	    flex_array_size(vnd_codecs, codec, vnd_codecs->num)
 	    + sizeof(vnd_codecs->num))

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* NXP PCF50633 PMIC Driver
- *
- * (C) 2006-2008 by Openmoko, Inc.
- * Author: Balaji Rao <balajirrao@openmoko.org>
- * All rights reserved.
- *
- * Broken down from monstrous PCF50633 driver mainly by
- * Harald Welte and Andy Green and Werner Almesberger
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -77,7 +69,7 @@ static int pcf50633_regulator_probe(struct platform_device *pdev)
 	struct pcf50633 *pcf;
 	struct regulator_config config = { };
 
-	/* Already set by core driver */
+	 
 	pcf = dev_to_pcf50633(pdev->dev.parent);
 
 	config.dev = &pdev->dev;

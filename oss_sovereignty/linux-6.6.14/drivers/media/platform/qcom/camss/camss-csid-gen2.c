@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * camss-csid-4-7.c
- *
- * Qualcomm MSM Camera Subsystem - CSID (CSI Decoder) Module
- *
- * Copyright (C) 2020 Linaro Ltd.
- */
+
+ 
 #include <linux/completion.h>
 #include <linux/interrupt.h>
 #include <linux/io.h>
@@ -16,11 +10,7 @@
 #include "camss-csid-gen2.h"
 #include "camss.h"
 
-/* The CSID 2 IP-block is different from the others,
- * and is of a bare-bones Lite version, with no PIX
- * interface support. As a result of that it has an
- * alternate register layout.
- */
+ 
 #define IS_LITE		(csid->id >= 2 ? 1 : 0)
 
 #define CSID_HW_VERSION		0x0
@@ -340,7 +330,7 @@ static void __csid_configure_stream(struct csid_device *csid, u8 enable, u8 vc)
 	u32 val;
 	u32 phy_sel = 0;
 	u8 lane_cnt = csid->phy.lane_cnt;
-	/* Source pads matching RDI channels on hardware. Pad 1 -> RDI0, Pad 2 -> RDI1, etc. */
+	 
 	struct v4l2_mbus_framefmt *input_format = &csid->fmt[MSM_CSID_PAD_FIRST_SRC + vc];
 	const struct csid_format *format = csid_get_fmt_entry(csid->formats, csid->nformats,
 							      input_format->code);
@@ -352,22 +342,11 @@ static void __csid_configure_stream(struct csid_device *csid, u8 enable, u8 vc)
 		phy_sel = csid->phy.csiphy_id;
 
 	if (enable) {
-		/*
-		 * DT_ID is a two bit bitfield that is concatenated with
-		 * the four least significant bits of the five bit VC
-		 * bitfield to generate an internal CID value.
-		 *
-		 * CSID_RDI_CFG0(vc)
-		 * DT_ID : 28:27
-		 * VC    : 26:22
-		 * DT    : 21:16
-		 *
-		 * CID   : VC 3:0 << 2 | DT_ID 1:0
-		 */
+		 
 		u8 dt_id = vc & 0x03;
 
 		if (tg->enabled) {
-			/* configure one DT, infinite frames */
+			 
 			val = vc << TPG_VC_CFG0_VC_NUM;
 			val |= INTELEAVING_MODE_ONE_SHOT << TPG_VC_CFG0_LINE_INTERLEAVING_MODE;
 			val |= 0 << TPG_VC_CFG0_NUM_FRAMES;
@@ -399,14 +378,14 @@ static void __csid_configure_stream(struct csid_device *csid, u8 enable, u8 vc)
 		val = 1 << RDI_CFG0_BYTE_CNTR_EN;
 		val |= 1 << RDI_CFG0_FORMAT_MEASURE_EN;
 		val |= 1 << RDI_CFG0_TIMESTAMP_EN;
-		/* note: for non-RDI path, this should be format->decode_format */
+		 
 		val |= DECODE_FORMAT_PAYLOAD_ONLY << RDI_CFG0_DECODE_FORMAT;
 		val |= format->data_type << RDI_CFG0_DATA_TYPE;
 		val |= vc << RDI_CFG0_VIRTUAL_CHANNEL;
 		val |= dt_id << RDI_CFG0_DT_ID;
 		writel_relaxed(val, csid->base + CSID_RDI_CFG0(vc));
 
-		/* CSID_TIMESTAMP_STB_POST_IRQ */
+		 
 		val = 2 << RDI_CFG1_TIMESTAMP_STB_SEL;
 		writel_relaxed(val, csid->base + CSID_RDI_CFG1(vc));
 
@@ -473,7 +452,7 @@ static void __csid_configure_stream(struct csid_device *csid, u8 enable, u8 vc)
 static void csid_configure_stream(struct csid_device *csid, u8 enable)
 {
 	u8 i;
-	/* Loop through all enabled VCs and configure stream for each */
+	 
 	for (i = 0; i < MSM_CSID_MAX_SRC_STREAMS; i++)
 		if (csid->phy.en_vc & BIT(i))
 			__csid_configure_stream(csid, enable, i);
@@ -487,12 +466,7 @@ static int csid_configure_testgen_pattern(struct csid_device *csid, s32 val)
 	return 0;
 }
 
-/*
- * csid_hw_version - CSID hardware version query
- * @csid: CSID device
- *
- * Return HW version or error
- */
+ 
 static u32 csid_hw_version(struct csid_device *csid)
 {
 	u32 hw_version;
@@ -510,13 +484,7 @@ static u32 csid_hw_version(struct csid_device *csid)
 	return hw_version;
 }
 
-/*
- * csid_isr - CSID module interrupt service routine
- * @irq: Interrupt line
- * @dev: CSID device
- *
- * Return IRQ_HANDLED on success
- */
+ 
 static irqreturn_t csid_isr(int irq, void *dev)
 {
 	struct csid_device *csid = dev;
@@ -531,7 +499,7 @@ static irqreturn_t csid_isr(int irq, void *dev)
 	val = readl_relaxed(csid->base + CSID_CSI2_RX_IRQ_STATUS);
 	writel_relaxed(val, csid->base + CSID_CSI2_RX_IRQ_CLEAR);
 
-	/* Read and clear IRQ status for each enabled RDI channel */
+	 
 	for (i = 0; i < MSM_CSID_MAX_SRC_STREAMS; i++)
 		if (csid->phy.en_vc & BIT(i)) {
 			val = readl_relaxed(csid->base + CSID_CSI2_RDIN_IRQ_STATUS(i));
@@ -547,12 +515,7 @@ static irqreturn_t csid_isr(int irq, void *dev)
 	return IRQ_HANDLED;
 }
 
-/*
- * csid_reset - Trigger reset on CSID module and wait to complete
- * @csid: CSID device
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int csid_reset(struct csid_device *csid)
 {
 	unsigned long time;
@@ -565,7 +528,7 @@ static int csid_reset(struct csid_device *csid)
 	writel_relaxed(1, csid->base + CSID_TOP_IRQ_MASK);
 	writel_relaxed(1, csid->base + CSID_IRQ_CMD);
 
-	/* preserve registers */
+	 
 	val = 0x1e << RST_STROBES;
 	writel_relaxed(val, csid->base + CSID_RST_STROBES);
 

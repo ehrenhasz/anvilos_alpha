@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2014
- * Authors: Fabien Dessenne <fabien.dessenne@st.com> for STMicroelectronics.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/pm_runtime.h>
@@ -317,7 +314,7 @@ static void bdisp_dbg_dump_ivmx(struct seq_file *s,
 
 static int last_nodes_show(struct seq_file *s, void *data)
 {
-	/* Not dumping all fields, focusing on significant ones */
+	 
 	struct bdisp_dev *bdisp = s->private;
 	struct bdisp_node *node;
 	int i = 0;
@@ -342,7 +339,7 @@ static int last_nodes_show(struct seq_file *s, void *data)
 		bdisp_dbg_dump_tty(s, node->tty);
 		bdisp_dbg_dump_xy(s, node->txy, "TXY");
 		bdisp_dbg_dump_sz(s, node->tsz, "TSZ");
-		/* Color Fill not dumped */
+		 
 		seq_puts(s, "-- Source 1 --\n");
 		seq_printf(s, "S1BA\t0x%08X\n", node->s1ba);
 		bdisp_dbg_dump_sty(s, node->s1ty, node->s1ba, "S1TY");
@@ -357,11 +354,11 @@ static int last_nodes_show(struct seq_file *s, void *data)
 		bdisp_dbg_dump_sty(s, node->s3ty, node->s3ba, "S3TY");
 		bdisp_dbg_dump_xy(s, node->s3xy, "S3XY");
 		bdisp_dbg_dump_sz(s, node->s3sz, "S3SZ");
-		/* Clipping not dumped */
-		/* CLUT not dumped */
+		 
+		 
 		seq_puts(s, "-- Filter & Mask --\n");
 		bdisp_dbg_dump_fctl(s, node->fctl);
-		/* PMK not dumped */
+		 
 		seq_puts(s, "-- Chroma Filter --\n");
 		bdisp_dbg_dump_rsf(s, node->rsf, "RSF");
 		bdisp_dbg_dump_rzi(s, node->rzi, "RZI");
@@ -372,17 +369,17 @@ static int last_nodes_show(struct seq_file *s, void *data)
 		bdisp_dbg_dump_rzi(s, node->y_rzi, "Y_RZI");
 		seq_printf(s, "Y_HFP\t0x%08X\n", node->y_hfp);
 		seq_printf(s, "Y_VFP\t0x%08X\n", node->y_vfp);
-		/* Flicker not dumped */
-		/* Color key not dumped */
-		/* Reserved not dumped */
-		/* Static Address & User not dumped */
+		 
+		 
+		 
+		 
 		seq_puts(s, "-- Input Versatile Matrix --\n");
 		bdisp_dbg_dump_ivmx(s, node->ivmx0, node->ivmx1,
 				    node->ivmx2, node->ivmx3);
-		/* Output Versatile Matrix not dumped */
-		/* Pace not dumped */
-		/* VC1R & DEI not dumped */
-		/* Gradient Fill not dumped */
+		 
+		 
+		 
+		 
 	} while ((++i < MAX_NB_NODE) && node->nip);
 
 	return 0;

@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2014, Cisco Systems, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+ 
 
 #include <linux/init.h>
 #include <linux/list.h>
@@ -91,7 +60,7 @@ static int interval_cmp(void *priv, const struct list_head *a,
 	node_a = list_entry(a, struct usnic_uiom_interval_node, link);
 	node_b = list_entry(b, struct usnic_uiom_interval_node, link);
 
-	/* long to int */
+	 
 	if (node_a->start < node_b->start)
 		return -1;
 	else if (node_a->start > node_b->start)
@@ -140,10 +109,7 @@ int usnic_uiom_get_intervals_diff(unsigned long start, unsigned long last,
 			pivot = interval->start;
 		}
 
-		/*
-		 * Invariant: Set [start, pivot] is either in diff_set or root,
-		 * but not in both.
-		 */
+		 
 
 		if (pivot > interval->last) {
 			continue;
@@ -191,10 +157,7 @@ int usnic_uiom_insert_interval(struct rb_root_cached *root, unsigned long start,
 						&intersection_set);
 
 	list_for_each_entry(interval, &intersection_set, link) {
-		/*
-		 * Invariant - lpivot is the left edge of next interval to be
-		 * inserted
-		 */
+		 
 		istart = interval->start;
 		ilast = interval->last;
 		iref_cnt = interval->ref_cnt;

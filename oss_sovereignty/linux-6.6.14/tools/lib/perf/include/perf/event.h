@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __LIBPERF_EVENT_H
 #define __LIBPERF_EVENT_H
 
@@ -6,7 +6,7 @@
 #include <linux/types.h>
 #include <linux/limits.h>
 #include <linux/bpf.h>
-#include <sys/types.h> /* pid_t */
+#include <sys/types.h>  
 
 #define event_contains(obj, mem) ((obj).header.size > offsetof(typeof(obj), mem))
 
@@ -77,9 +77,7 @@ struct perf_record_lost_samples {
 	__u64			 lost;
 };
 
-/*
- * PERF_FORMAT_ENABLED | PERF_FORMAT_RUNNING | PERF_FORMAT_ID | PERF_FORMAT_LOST
- */
+ 
 struct perf_record_read {
 	struct perf_event_header header;
 	__u32			 pid, tid;
@@ -116,8 +114,8 @@ struct perf_record_bpf_event {
 	__u16			 flags;
 	__u32			 id;
 
-	/* for bpf_prog types */
-	__u8			 tag[BPF_TAG_SIZE];  // prog tag
+	 
+	__u8			 tag[BPF_TAG_SIZE];  
 };
 
 struct perf_record_cgroup {
@@ -148,16 +146,10 @@ struct perf_record_switch {
 struct perf_record_header_attr {
 	struct perf_event_header header;
 	struct perf_event_attr	 attr;
-	/*
-	 * Array of u64 id follows here but we cannot use a flexible array
-	 * because size of attr in the data can be different then current
-	 * version.  Please use perf_record_header_attr_id() below.
-	 *
-	 * __u64		 id[];  // do not use this
-	 */
+	 
 };
 
-/* Returns the pointer to id array based on the actual attr size. */
+ 
 #define perf_record_header_attr_id(evt)			\
 	((void *)&(evt)->attr.attr + (evt)->attr.attr.size)
 
@@ -167,50 +159,40 @@ enum {
 	PERF_CPU_MAP__RANGE_CPUS = 2,
 };
 
-/*
- * Array encoding of a perf_cpu_map where nr is the number of entries in cpu[]
- * and each entry is a value for a CPU in the map.
- */
+ 
 struct cpu_map_entries {
 	__u16			 nr;
 	__u16			 cpu[];
 };
 
-/* Bitmap encoding of a perf_cpu_map where bitmap entries are 32-bit. */
+ 
 struct perf_record_mask_cpu_map32 {
-	/* Number of mask values. */
+	 
 	__u16			 nr;
-	/* Constant 4. */
+	 
 	__u16			 long_size;
-	/* Bitmap data. */
+	 
 	__u32			 mask[];
 };
 
-/* Bitmap encoding of a perf_cpu_map where bitmap entries are 64-bit. */
+ 
 struct perf_record_mask_cpu_map64 {
-	/* Number of mask values. */
+	 
 	__u16			 nr;
-	/* Constant 8. */
+	 
 	__u16			 long_size;
-	/* Legacy padding. */
+	 
 	char                     __pad[4];
-	/* Bitmap data. */
+	 
 	__u64			 mask[];
 };
 
-/*
- * 'struct perf_record_cpu_map_data' is packed as unfortunately an earlier
- * version had unaligned data and we wish to retain file format compatibility.
- * -irogers
- */
+ 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpacked"
 #pragma GCC diagnostic ignored "-Wattributes"
 
-/*
- * An encoding of a CPU map for a range starting at start_cpu through to
- * end_cpu. If any_cpu is 1, an any CPU (-1) value (aka dummy value) is present.
- */
+ 
 struct perf_record_range_cpu_map {
 	__u8 any_cpu;
 	__u8 __pad;
@@ -221,13 +203,13 @@ struct perf_record_range_cpu_map {
 struct perf_record_cpu_map_data {
 	__u16			 type;
 	union {
-		/* Used when type == PERF_CPU_MAP__CPUS. */
+		 
 		struct cpu_map_entries cpus_data;
-		/* Used when type == PERF_CPU_MAP__MASK and long_size == 4. */
+		 
 		struct perf_record_mask_cpu_map32 mask32_data;
-		/* Used when type == PERF_CPU_MAP__MASK and long_size == 8. */
+		 
 		struct perf_record_mask_cpu_map64 mask64_data;
-		/* Used when type == PERF_CPU_MAP__RANGE_CPUS. */
+		 
 		struct perf_record_range_cpu_map range_cpu_data;
 	};
 } __attribute__((packed));
@@ -259,13 +241,13 @@ struct perf_record_event_update {
 	__u64			 type;
 	__u64			 id;
 	union {
-		/* Used when type == PERF_EVENT_UPDATE__SCALE. */
+		 
 		struct perf_record_event_update_scale scale;
-		/* Used when type == PERF_EVENT_UPDATE__UNIT. */
+		 
 		char unit[0];
-		/* Used when type == PERF_EVENT_UPDATE__NAME. */
+		 
 		char name[0];
-		/* Used when type == PERF_EVENT_UPDATE__CPUS. */
+		 
 		struct perf_record_event_update_cpus cpus;
 	};
 };
@@ -325,7 +307,7 @@ struct perf_record_id_index {
 struct perf_record_auxtrace_info {
 	struct perf_event_header header;
 	__u32			 type;
-	__u32			 reserved__; /* For alignment */
+	__u32			 reserved__;  
 	__u64			 priv[];
 };
 
@@ -337,7 +319,7 @@ struct perf_record_auxtrace {
 	__u32			 idx;
 	__u32			 tid;
 	__u32			 cpu;
-	__u32			 reserved__; /* For alignment */
+	__u32			 reserved__;  
 };
 
 #define MAX_AUXTRACE_ERROR_MSG 64
@@ -437,7 +419,7 @@ struct perf_record_time_conv {
 	__u64			 time_mask;
 	__u8			 cap_user_time_zero;
 	__u8			 cap_user_time_short;
-	__u8			 reserved[6];	/* For alignment */
+	__u8			 reserved[6];	 
 };
 
 struct perf_record_header_feature {
@@ -451,10 +433,10 @@ struct perf_record_compressed {
 	char			 data[];
 };
 
-enum perf_user_event_type { /* above any possible kernel type */
+enum perf_user_event_type {  
 	PERF_RECORD_USER_TYPE_START		= 64,
 	PERF_RECORD_HEADER_ATTR			= 64,
-	PERF_RECORD_HEADER_EVENT_TYPE		= 65, /* deprecated */
+	PERF_RECORD_HEADER_EVENT_TYPE		= 65,  
 	PERF_RECORD_HEADER_TRACING_DATA		= 66,
 	PERF_RECORD_HEADER_BUILD_ID		= 67,
 	PERF_RECORD_FINISHED_ROUND		= 68,
@@ -514,4 +496,4 @@ union perf_event {
 	struct perf_record_compressed		pack;
 };
 
-#endif /* __LIBPERF_EVENT_H */
+#endif  

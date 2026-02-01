@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mtk-base-afe.h  --  Mediatek base afe structure
- *
- * Copyright (c) 2016 MediaTek Inc.
- * Author: Garlic Tseng <garlic.tseng@mediatek.com>
- */
+ 
+ 
 
 #ifndef _MTK_BASE_AFE_H_
 #define _MTK_BASE_AFE_H_
@@ -14,7 +9,7 @@
 #define MTK_STREAM_NUM (SNDRV_PCM_STREAM_LAST + 1)
 #define MTK_SIP_AUDIO_CONTROL MTK_SIP_SMC_CMD(0x517)
 
-/* SMC CALL Operations */
+ 
 enum mtk_audio_smc_call_op {
 	MTK_AUDIO_SMC_OP_INIT = 0,
 	MTK_AUDIO_SMC_OP_DRAM_REQUEST,
@@ -65,7 +60,7 @@ struct mtk_base_memif_data {
 	int ch_num_reg;
 	int ch_num_shift;
 	int ch_num_maskbit;
-	/* playback memif only */
+	 
 	int pbuf_reg;
 	int pbuf_mask;
 	int pbuf_shift;
@@ -102,7 +97,7 @@ struct mtk_base_afe {
 	void __iomem *base_addr;
 	struct device *dev;
 	struct regmap *regmap;
-	struct mutex irq_alloc_lock; /* dynamic alloc irq lock */
+	struct mutex irq_alloc_lock;  
 
 	unsigned int const *reg_back_up_list;
 	unsigned int *reg_back_up;

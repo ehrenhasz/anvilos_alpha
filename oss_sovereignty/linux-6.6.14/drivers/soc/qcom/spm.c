@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2011-2014, The Linux Foundation. All rights reserved.
- * Copyright (c) 2014,2015, Linaro Ltd.
- *
- * SAW power controller driver
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -72,7 +67,7 @@ static const u16 spm_reg_offset_v3_0[SPM_REG_NR] = {
 	[SPM_REG_SEQ_ENTRY]	= 0x400,
 };
 
-/* SPM register data for 8909 */
+ 
 static const struct spm_reg_data spm_reg_8909_cpu = {
 	.reg_offset = spm_reg_offset_v3_0,
 	.spm_cfg = 0x1,
@@ -84,7 +79,7 @@ static const struct spm_reg_data spm_reg_8909_cpu = {
 	.start_index[PM_SLEEP_MODE_SPC] = 5,
 };
 
-/* SPM register data for 8916 */
+ 
 static const struct spm_reg_data spm_reg_8916_cpu = {
 	.reg_offset = spm_reg_offset_v3_0,
 	.spm_cfg = 0x1,
@@ -115,7 +110,7 @@ static const u16 spm_reg_offset_v2_3[SPM_REG_NR] = {
 	[SPM_REG_PMIC_DATA_1]	= 0x44,
 };
 
-/* SPM register data for 8976 */
+ 
 static const struct spm_reg_data spm_reg_8976_gold_l2 = {
 	.reg_offset = spm_reg_offset_v2_3,
 	.spm_cfg = 0x14,
@@ -143,7 +138,7 @@ static const u16 spm_reg_offset_v2_1[SPM_REG_NR] = {
 	[SPM_REG_SEQ_ENTRY]	= 0x80,
 };
 
-/* SPM register data for 8974, 8084 */
+ 
 static const struct spm_reg_data spm_reg_8974_8084_cpu  = {
 	.reg_offset = spm_reg_offset_v2_1,
 	.spm_cfg = 0x1,
@@ -155,7 +150,7 @@ static const struct spm_reg_data spm_reg_8974_8084_cpu  = {
 	.start_index[PM_SLEEP_MODE_SPC] = 3,
 };
 
-/* SPM register data for 8226 */
+ 
 static const struct spm_reg_data spm_reg_8226_cpu  = {
 	.reg_offset = spm_reg_offset_v2_1,
 	.spm_cfg = 0x0,
@@ -176,7 +171,7 @@ static const u16 spm_reg_offset_v1_1[SPM_REG_NR] = {
 	[SPM_REG_SEQ_ENTRY]	= 0x80,
 };
 
-/* SPM register data for 8064 */
+ 
 static const struct spm_reg_data spm_reg_8064_cpu = {
 	.reg_offset = spm_reg_offset_v1_1,
 	.spm_cfg = 0x1F,
@@ -197,7 +192,7 @@ static inline void spm_register_write(struct spm_driver_data *drv,
 				drv->reg_data->reg_offset[reg]);
 }
 
-/* Ensure a guaranteed write, before return */
+ 
 static inline void spm_register_write_sync(struct spm_driver_data *drv,
 					enum spm_reg reg, u32 val)
 {
@@ -290,17 +285,12 @@ static int spm_dev_probe(struct platform_device *pdev)
 	drv->reg_data = match_id->data;
 	platform_set_drvdata(pdev, drv);
 
-	/* Write the SPM sequences first.. */
+	 
 	addr = drv->reg_base + drv->reg_data->reg_offset[SPM_REG_SEQ_ENTRY];
 	__iowrite32_copy(addr, drv->reg_data->seq,
 			ARRAY_SIZE(drv->reg_data->seq) / 4);
 
-	/*
-	 * ..and then the control registers.
-	 * On some SoC if the control registers are written first and if the
-	 * CPU was held in reset, the reset signal could trigger the SPM state
-	 * machine, before the sequences are completely written.
-	 */
+	 
 	spm_register_write(drv, SPM_REG_AVS_CTL, drv->reg_data->avs_ctl);
 	spm_register_write(drv, SPM_REG_AVS_LIMIT, drv->reg_data->avs_limit);
 	spm_register_write(drv, SPM_REG_CFG, drv->reg_data->spm_cfg);
@@ -311,7 +301,7 @@ static int spm_dev_probe(struct platform_device *pdev)
 	spm_register_write(drv, SPM_REG_PMIC_DATA_1,
 				drv->reg_data->pmic_data[1]);
 
-	/* Set up Standby as the default low power mode */
+	 
 	if (drv->reg_data->reg_offset[SPM_REG_SPM_CTL])
 		spm_set_low_power_mode(drv, PM_SLEEP_MODE_STBY);
 

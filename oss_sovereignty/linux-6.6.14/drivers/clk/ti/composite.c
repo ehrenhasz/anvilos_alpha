@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI composite clock support
- *
- * Copyright (C) 2013 Texas Instruments, Inc.
- *
- * Tero Kristo <t-kristo@ti.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/slab.h>
@@ -121,7 +115,7 @@ static void __init _register_composite(void *user,
 	int i;
 	int ret;
 
-	/* Check for presence of each component clock */
+	 
 	for (i = 0; i < CLK_COMPONENT_TYPE_MAX; i++) {
 		if (!cclk->comp_nodes[i])
 			continue;
@@ -144,11 +138,11 @@ static void __init _register_composite(void *user,
 
 		cclk->comp_clks[comp->type] = comp;
 
-		/* Mark this node as found */
+		 
 		cclk->comp_nodes[i] = NULL;
 	}
 
-	/* All components exists, proceed with registration */
+	 
 	for (i = CLK_COMPONENT_TYPE_MAX - 1; i >= 0; i--) {
 		comp = cclk->comp_clks[i];
 		if (!comp)
@@ -185,7 +179,7 @@ static void __init _register_composite(void *user,
 	}
 
 cleanup:
-	/* Free component clock list entries */
+	 
 	for (i = 0; i < CLK_COMPONENT_TYPE_MAX; i++) {
 		if (!cclk->comp_clks[i])
 			continue;
@@ -203,7 +197,7 @@ static void __init of_ti_composite_clk_setup(struct device_node *node)
 	int i;
 	struct clk_hw_omap_comp *cclk;
 
-	/* Number of component clocks to be put inside this clock */
+	 
 	num_clks = of_clk_get_parent_count(node);
 
 	if (!num_clks) {
@@ -215,7 +209,7 @@ static void __init of_ti_composite_clk_setup(struct device_node *node)
 	if (!cclk)
 		return;
 
-	/* Get device node pointers for each component clock */
+	 
 	for (i = 0; i < num_clks; i++)
 		cclk->comp_nodes[i] = _get_component_node(node, i);
 
@@ -224,15 +218,7 @@ static void __init of_ti_composite_clk_setup(struct device_node *node)
 CLK_OF_DECLARE(ti_composite_clock, "ti,composite-clock",
 	       of_ti_composite_clk_setup);
 
-/**
- * ti_clk_add_component - add a component clock to the pool
- * @node: device node of the component clock
- * @hw: hardware clock definition for the component clock
- * @type: type of the component clock
- *
- * Adds a component clock to the list of available components, so that
- * it can be registered by a composite clock.
- */
+ 
 int __init ti_clk_add_component(struct device_node *node, struct clk_hw *hw,
 				int type)
 {

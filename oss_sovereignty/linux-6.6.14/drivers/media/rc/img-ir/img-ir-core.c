@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ImgTec IR Decoder found in PowerDown Controller.
- *
- * Copyright 2010-2014 Imagination Technologies Ltd.
- *
- * This contains core img-ir code for setting up the driver. The two interfaces
- * (raw and hardware decode) are handled separately.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/init.h>
@@ -24,18 +17,18 @@ static irqreturn_t img_ir_isr(int irq, void *dev_id)
 	u32 irq_status;
 
 	spin_lock(&priv->lock);
-	/* we have to clear irqs before reading */
+	 
 	irq_status = img_ir_read(priv, IMG_IR_IRQ_STATUS);
 	img_ir_write(priv, IMG_IR_IRQ_CLEAR, irq_status);
 
-	/* don't handle valid data irqs if we're only interested in matches */
+	 
 	irq_status &= img_ir_read(priv, IMG_IR_IRQ_ENABLE);
 
-	/* hand off edge interrupts to raw decode handler */
+	 
 	if (irq_status & IMG_IR_IRQ_EDGE && img_ir_raw_enabled(&priv->raw))
 		img_ir_isr_raw(priv, irq_status);
 
-	/* hand off hardware match interrupts to hardware decode handler */
+	 
 	if (irq_status & (IMG_IR_IRQ_DATA_MATCH |
 			  IMG_IR_IRQ_DATA_VALID |
 			  IMG_IR_IRQ_DATA2_VALID) &&
@@ -48,7 +41,7 @@ static irqreturn_t img_ir_isr(int irq, void *dev_id)
 
 static void img_ir_setup(struct img_ir_priv *priv)
 {
-	/* start off with interrupts disabled */
+	 
 	img_ir_write(priv, IMG_IR_IRQ_ENABLE, 0);
 
 	img_ir_setup_raw(priv);
@@ -78,12 +71,12 @@ static int img_ir_probe(struct platform_device *pdev)
 	struct img_ir_priv *priv;
 	int irq, error, error2;
 
-	/* Get resources from platform device */
+	 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
 		return irq;
 
-	/* Private driver data */
+	 
 	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;
@@ -92,25 +85,21 @@ static int img_ir_probe(struct platform_device *pdev)
 	priv->dev = &pdev->dev;
 	spin_lock_init(&priv->lock);
 
-	/* Ioremap the registers */
+	 
 	priv->reg_base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(priv->reg_base))
 		return PTR_ERR(priv->reg_base);
 
-	/* Get core clock */
+	 
 	priv->clk = devm_clk_get(&pdev->dev, "core");
 	if (IS_ERR(priv->clk))
 		dev_warn(&pdev->dev, "cannot get core clock resource\n");
 
-	/* Get sys clock */
+	 
 	priv->sys_clk = devm_clk_get(&pdev->dev, "sys");
 	if (IS_ERR(priv->sys_clk))
 		dev_warn(&pdev->dev, "cannot get sys clock resource\n");
-	/*
-	 * Enabling the system clock before the register interface is
-	 * accessed. ISR shouldn't get called with Sys Clock disabled,
-	 * hence exiting probe with an error.
-	 */
+	 
 	if (!IS_ERR(priv->sys_clk)) {
 		error = clk_prepare_enable(priv->sys_clk);
 		if (error) {
@@ -119,7 +108,7 @@ static int img_ir_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Set up raw & hw decoder */
+	 
 	error = img_ir_probe_raw(priv);
 	error2 = img_ir_probe_hw(priv);
 	if (error && error2) {
@@ -128,7 +117,7 @@ static int img_ir_probe(struct platform_device *pdev)
 		goto err_probe;
 	}
 
-	/* Get the IRQ */
+	 
 	priv->irq = irq;
 	error = request_irq(priv->irq, img_ir_isr, 0, "img-ir", priv);
 	if (error) {

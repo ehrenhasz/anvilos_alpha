@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Rockchip usb PHY driver
- *
- * Copyright (C) 2014 Yunzhi Li <lyz@rock-chips.com>
- * Copyright (C) 2014 ROCKCHIP, Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -37,7 +32,7 @@ static int enable_usb_uart;
 #define UOC_CON2_SOFT_CON_SEL				BIT(2)
 
 #define UOC_CON3					0x0c
-/* bits present on rk3188 and rk3288 phys */
+ 
 #define UOC_CON3_UTMI_TERMSEL_FULLSPEED			BIT(5)
 #define UOC_CON3_UTMI_XCVRSEELCT_FSTRANSC		(1 << 3)
 #define UOC_CON3_UTMI_XCVRSEELCT_MASK			(3 << 3)
@@ -100,7 +95,7 @@ static void rockchip_usb_phy480m_disable(struct clk_hw *hw)
 	if (phy->vbus)
 		regulator_disable(phy->vbus);
 
-	/* Power down usb phy analog blocks by set siddq 1 */
+	 
 	rockchip_usb_phy_power(phy, 1);
 }
 
@@ -110,7 +105,7 @@ static int rockchip_usb_phy480m_enable(struct clk_hw *hw)
 						    struct rockchip_usb_phy,
 						    clk480m_hw);
 
-	/* Power up usb phy analog blocks by set siddq 0 */
+	 
 	return rockchip_usb_phy_power(phy, 0);
 }
 
@@ -295,10 +290,7 @@ static int rockchip_usb_phy_init(struct rockchip_usb_phy_base *base,
 		rk_phy->vbus = NULL;
 	}
 
-	/*
-	 * When acting as uart-pipe, just keep clock on otherwise
-	 * only power up usb phy when it use, so disable it when init
-	 */
+	 
 	if (rk_phy->uart_enabled)
 		return clk_prepare_enable(rk_phy->clk);
 	else
@@ -317,7 +309,7 @@ static const struct rockchip_usb_phy_pdata rk3066a_pdata = {
 	.phys = (struct rockchip_usb_phys[]){
 		{ .reg = 0x17c, .pll_name = "sclk_otgphy0_480m" },
 		{ .reg = 0x188, .pll_name = "sclk_otgphy1_480m" },
-		{ /* sentinel */ }
+		{   }
 	},
 };
 
@@ -328,11 +320,7 @@ static int __init rockchip_init_usb_uart_common(struct regmap *grf,
 	int ret;
 	u32 val;
 
-	/*
-	 * COMMON_ON and DISABLE settings are described in the TRM,
-	 * but were not present in the original code.
-	 * Also disable the analog phy components to save power.
-	 */
+	 
 	val = HIWORD_UPDATE(UOC_CON0_COMMON_ON_N
 				| UOC_CON0_DISABLE
 				| UOC_CON0_SIDDQ,
@@ -367,10 +355,7 @@ static int __init rockchip_init_usb_uart_common(struct regmap *grf,
 #define RK3188_UOC0_CON0_BYPASSSEL			BIT(9)
 #define RK3188_UOC0_CON0_BYPASSDMEN			BIT(8)
 
-/*
- * Enable the bypass of uart2 data through the otg usb phy.
- * See description of rk3288-variant for details.
- */
+ 
 static int __init rk3188_init_usb_uart(struct regmap *grf,
 				const struct rockchip_usb_phy_pdata *pdata)
 {
@@ -396,7 +381,7 @@ static const struct rockchip_usb_phy_pdata rk3188_pdata = {
 	.phys = (struct rockchip_usb_phys[]){
 		{ .reg = 0x10c, .pll_name = "sclk_otgphy0_480m" },
 		{ .reg = 0x11c, .pll_name = "sclk_otgphy1_480m" },
-		{ /* sentinel */ }
+		{   }
 	},
 	.init_usb_uart = rk3188_init_usb_uart,
 	.usb_uart_phy = 0,
@@ -406,21 +391,7 @@ static const struct rockchip_usb_phy_pdata rk3188_pdata = {
 #define RK3288_UOC0_CON3_BYPASSDMEN			BIT(6)
 #define RK3288_UOC0_CON3_BYPASSSEL			BIT(7)
 
-/*
- * Enable the bypass of uart2 data through the otg usb phy.
- * Original description in the TRM.
- * 1. Disable the OTG block by setting OTGDISABLE0 to 1’b1.
- * 2. Disable the pull-up resistance on the D+ line by setting
- *    OPMODE0[1:0] to 2’b01.
- * 3. To ensure that the XO, Bias, and PLL blocks are powered down in Suspend
- *    mode, set COMMONONN to 1’b1.
- * 4. Place the USB PHY in Suspend mode by setting SUSPENDM0 to 1’b0.
- * 5. Set BYPASSSEL0 to 1’b1.
- * 6. To transmit data, controls BYPASSDMEN0, and BYPASSDMDATA0.
- * To receive data, monitor FSVPLUS0.
- *
- * The actual code in the vendor kernel does some things differently.
- */
+ 
 static int __init rk3288_init_usb_uart(struct regmap *grf,
 				const struct rockchip_usb_phy_pdata *pdata)
 {
@@ -447,7 +418,7 @@ static const struct rockchip_usb_phy_pdata rk3288_pdata = {
 		{ .reg = 0x320, .pll_name = "sclk_otgphy0_480m" },
 		{ .reg = 0x334, .pll_name = "sclk_otgphy1_480m" },
 		{ .reg = 0x348, .pll_name = "sclk_otgphy2_480m" },
-		{ /* sentinel */ }
+		{   }
 	},
 	.init_usb_uart = rk3288_init_usb_uart,
 	.usb_uart_phy = 0,

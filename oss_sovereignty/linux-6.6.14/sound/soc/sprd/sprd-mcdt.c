@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2019 Spreadtrum Communications Inc.
+
+
 
 #include <linux/errno.h>
 #include <linux/interrupt.h>
@@ -13,7 +13,7 @@
 
 #include "sprd-mcdt.h"
 
-/* MCDT registers definition */
+ 
 #define MCDT_CH0_TXD		0x0
 #define MCDT_CH0_RXD		0x28
 #define MCDT_DAC0_WTMK		0x60
@@ -54,12 +54,12 @@
 #define MCDT_DMA_CFG4		0x15c
 #define MCDT_DMA_CFG5		0x160
 
-/* Channel water mark definition */
+ 
 #define MCDT_CH_FIFO_AE_SHIFT	16
 #define MCDT_CH_FIFO_AE_MASK	GENMASK(24, 16)
 #define MCDT_CH_FIFO_AF_MASK	GENMASK(8, 0)
 
-/* DMA channel select definition */
+ 
 #define MCDT_DMA_CH0_SEL_MASK	GENMASK(3, 0)
 #define MCDT_DMA_CH0_SEL_SHIFT	0
 #define MCDT_DMA_CH1_SEL_MASK	GENMASK(7, 4)
@@ -72,10 +72,10 @@
 #define MCDT_DMA_CH4_SEL_SHIFT	16
 #define MCDT_DAC_DMA_SHIFT	16
 
-/* DMA channel ACK select definition */
+ 
 #define MCDT_DMA_ACK_SEL_MASK	GENMASK(3, 0)
 
-/* Channel FIFO definition */
+ 
 #define MCDT_CH_FIFO_ADDR_SHIFT	16
 #define MCDT_CH_FIFO_ADDR_MASK	GENMASK(9, 0)
 #define MCDT_ADC_FIFO_SHIFT	16
@@ -552,20 +552,7 @@ static irqreturn_t sprd_mcdt_irq_handler(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/**
- * sprd_mcdt_chan_write - write data to the MCDT channel's fifo
- * @chan: the MCDT channel
- * @tx_buf: send buffer
- * @size: data size
- *
- * Note: We can not write data to the channel fifo when enabling the DMA mode,
- * otherwise the channel fifo data will be invalid.
- *
- * If there are not enough space of the channel fifo, it will return errors
- * to users.
- *
- * Returns 0 on success, or an appropriate error code on failure.
- */
+ 
 int sprd_mcdt_chan_write(struct sprd_mcdt_chan *chan, char *tx_buf, u32 size)
 {
 	struct sprd_mcdt_dev *mcdt = chan->mcdt;
@@ -604,19 +591,7 @@ int sprd_mcdt_chan_write(struct sprd_mcdt_chan *chan, char *tx_buf, u32 size)
 }
 EXPORT_SYMBOL_GPL(sprd_mcdt_chan_write);
 
-/**
- * sprd_mcdt_chan_read - read data from the MCDT channel's fifo
- * @chan: the MCDT channel
- * @rx_buf: receive buffer
- * @size: data size
- *
- * Note: We can not read data from the channel fifo when enabling the DMA mode,
- * otherwise the reading data will be invalid.
- *
- * Usually user need start to read data once receiving the fifo full interrupt.
- *
- * Returns data size of reading successfully, or an error code on failure.
- */
+ 
 int sprd_mcdt_chan_read(struct sprd_mcdt_chan *chan, char *rx_buf, u32 size)
 {
 	struct sprd_mcdt_dev *mcdt = chan->mcdt;
@@ -650,24 +625,7 @@ int sprd_mcdt_chan_read(struct sprd_mcdt_chan *chan, char *rx_buf, u32 size)
 }
 EXPORT_SYMBOL_GPL(sprd_mcdt_chan_read);
 
-/**
- * sprd_mcdt_chan_int_enable - enable the interrupt mode for the MCDT channel
- * @chan: the MCDT channel
- * @water_mark: water mark to trigger a interrupt
- * @cb: callback when a interrupt happened
- *
- * Now it only can enable fifo almost full interrupt for ADC channel and fifo
- * almost empty interrupt for DAC channel. Morevoer for interrupt mode, user
- * should use sprd_mcdt_chan_read() or sprd_mcdt_chan_write() to read or write
- * data manually.
- *
- * For ADC channel, user can start to read data once receiving one fifo full
- * interrupt. For DAC channel, user can start to write data once receiving one
- * fifo empty interrupt or just call sprd_mcdt_chan_write() to write data
- * directly.
- *
- * Returns 0 on success, or an error code on failure.
- */
+ 
 int sprd_mcdt_chan_int_enable(struct sprd_mcdt_chan *chan, u32 water_mark,
 			      struct sprd_mcdt_chan_callback *cb)
 {
@@ -718,10 +676,7 @@ int sprd_mcdt_chan_int_enable(struct sprd_mcdt_chan *chan, u32 water_mark,
 }
 EXPORT_SYMBOL_GPL(sprd_mcdt_chan_int_enable);
 
-/**
- * sprd_mcdt_chan_int_disable - disable the interrupt mode for the MCDT channel
- * @chan: the MCDT channel
- */
+ 
 void sprd_mcdt_chan_int_disable(struct sprd_mcdt_chan *chan)
 {
 	struct sprd_mcdt_dev *mcdt = chan->mcdt;
@@ -758,18 +713,7 @@ void sprd_mcdt_chan_int_disable(struct sprd_mcdt_chan *chan)
 }
 EXPORT_SYMBOL_GPL(sprd_mcdt_chan_int_disable);
 
-/**
- * sprd_mcdt_chan_dma_enable - enable the DMA mode for the MCDT channel
- * @chan: the MCDT channel
- * @dma_chan: specify which DMA channel will be used for this MCDT channel
- * @water_mark: water mark to trigger a DMA request
- *
- * Enable the DMA mode for the MCDT channel, that means we can use DMA to
- * transfer data to the channel fifo and do not need reading/writing data
- * manually.
- *
- * Returns 0 on success, or an error code on failure.
- */
+ 
 int sprd_mcdt_chan_dma_enable(struct sprd_mcdt_chan *chan,
 			      enum sprd_mcdt_dma_chan dma_chan,
 			      u32 water_mark)
@@ -820,10 +764,7 @@ int sprd_mcdt_chan_dma_enable(struct sprd_mcdt_chan *chan,
 }
 EXPORT_SYMBOL_GPL(sprd_mcdt_chan_dma_enable);
 
-/**
- * sprd_mcdt_chan_dma_disable - disable the DMA mode for the MCDT channel
- * @chan: the MCDT channel
- */
+ 
 void sprd_mcdt_chan_dma_disable(struct sprd_mcdt_chan *chan)
 {
 	struct sprd_mcdt_dev *mcdt = chan->mcdt;
@@ -856,13 +797,7 @@ void sprd_mcdt_chan_dma_disable(struct sprd_mcdt_chan *chan)
 }
 EXPORT_SYMBOL_GPL(sprd_mcdt_chan_dma_disable);
 
-/**
- * sprd_mcdt_request_chan - request one MCDT channel
- * @channel: channel id
- * @type: channel type, it can be one ADC channel or DAC channel
- *
- * Rreturn NULL if no available channel.
- */
+ 
 struct sprd_mcdt_chan *sprd_mcdt_request_chan(u8 channel,
 					      enum sprd_mcdt_channel_type type)
 {
@@ -886,10 +821,7 @@ struct sprd_mcdt_chan *sprd_mcdt_request_chan(u8 channel,
 }
 EXPORT_SYMBOL_GPL(sprd_mcdt_request_chan);
 
-/**
- * sprd_mcdt_free_chan - free one MCDT channel
- * @chan: the channel to be freed
- */
+ 
 void sprd_mcdt_free_chan(struct sprd_mcdt_chan *chan)
 {
 	struct sprd_mcdt_chan *temp;

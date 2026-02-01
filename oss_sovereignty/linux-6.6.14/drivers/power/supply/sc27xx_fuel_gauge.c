@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2018 Spreadtrum Communications Inc.
+
+
 
 #include <linux/gpio/consumer.h>
 #include <linux/iio/consumer.h>
@@ -14,13 +14,13 @@
 #include <linux/regmap.h>
 #include <linux/slab.h>
 
-/* PMIC global control registers definition */
+ 
 #define SC27XX_MODULE_EN0		0xc08
 #define SC27XX_CLK_EN0			0xc18
 #define SC27XX_FGU_EN			BIT(7)
 #define SC27XX_FGU_RTC_EN		BIT(6)
 
-/* FGU registers definition */
+ 
 #define SC27XX_FGU_START		0x0
 #define SC27XX_FGU_CONFIG		0x4
 #define SC27XX_FGU_ADC_CONFIG		0x8
@@ -65,35 +65,10 @@
 
 #define SC27XX_FGU_CUR_BASIC_ADC	8192
 #define SC27XX_FGU_SAMPLE_HZ		2
-/* micro Ohms */
+ 
 #define SC27XX_FGU_IDEAL_RESISTANCE	20000
 
-/*
- * struct sc27xx_fgu_data: describe the FGU device
- * @regmap: regmap for register access
- * @dev: platform device
- * @battery: battery power supply
- * @base: the base offset for the controller
- * @lock: protect the structure
- * @gpiod: GPIO for battery detection
- * @channel: IIO channel to get battery temperature
- * @charge_chan: IIO channel to get charge voltage
- * @internal_resist: the battery internal resistance in mOhm
- * @total_cap: the total capacity of the battery in mAh
- * @init_cap: the initial capacity of the battery in mAh
- * @alarm_cap: the alarm capacity
- * @init_clbcnt: the initial coulomb counter
- * @max_volt: the maximum constant input voltage in millivolt
- * @min_volt: the minimum drained battery voltage in microvolt
- * @boot_volt: the voltage measured during boot in microvolt
- * @table_len: the capacity table length
- * @resist_table_len: the resistance table length
- * @cur_1000ma_adc: ADC value corresponding to 1000 mA
- * @vol_1000mv_adc: ADC value corresponding to 1000 mV
- * @calib_resist: the real resistance of coulomb counter chip in uOhm
- * @cap_table: capacity table with corresponding ocv
- * @resist_table: resistance percent table with corresponding temperature
- */
+ 
 struct sc27xx_fgu_data {
 	struct regmap *regmap;
 	struct device *dev;
@@ -158,18 +133,11 @@ static bool sc27xx_fgu_is_first_poweron(struct sc27xx_fgu_data *data)
 	if (ret)
 		return false;
 
-	/*
-	 * We use low 4 bits to save the last battery capacity and high 12 bits
-	 * to save the system boot mode.
-	 */
+	 
 	mode = (status & SC27XX_FGU_MODE_AREA_MASK) >> SC27XX_FGU_MODE_AREA_SHIFT;
 	cap = status & SC27XX_FGU_CAP_AREA_MASK;
 
-	/*
-	 * When FGU has been powered down, the user area registers became
-	 * default value (0xffff), which can be used to valid if the system is
-	 * first power on or not.
-	 */
+	 
 	if (mode == SC27XX_FGU_FIRST_POWERTON || cap == SC27XX_FGU_DEFAULT_CAP)
 		return true;
 
@@ -188,12 +156,7 @@ static int sc27xx_fgu_save_boot_mode(struct sc27xx_fgu_data *data,
 	if (ret)
 		return ret;
 
-	/*
-	 * Since the user area registers are put on power always-on region,
-	 * then these registers changing time will be a little long. Thus
-	 * here we should delay 200us to wait until values are updated
-	 * successfully according to the datasheet.
-	 */
+	 
 	udelay(200);
 
 	ret = regmap_update_bits(data->regmap,
@@ -203,19 +166,10 @@ static int sc27xx_fgu_save_boot_mode(struct sc27xx_fgu_data *data,
 	if (ret)
 		return ret;
 
-	/*
-	 * Since the user area registers are put on power always-on region,
-	 * then these registers changing time will be a little long. Thus
-	 * here we should delay 200us to wait until values are updated
-	 * successfully according to the datasheet.
-	 */
+	 
 	udelay(200);
 
-	/*
-	 * According to the datasheet, we should set the USER_AREA_CLEAR to 0 to
-	 * make the user area data available, otherwise we can not save the user
-	 * area data.
-	 */
+	 
 	return regmap_update_bits(data->regmap,
 				  data->base + SC27XX_FGU_USER_AREA_CLEAR,
 				  SC27XX_FGU_MODE_AREA_MASK, 0);
@@ -232,12 +186,7 @@ static int sc27xx_fgu_save_last_cap(struct sc27xx_fgu_data *data, int cap)
 	if (ret)
 		return ret;
 
-	/*
-	 * Since the user area registers are put on power always-on region,
-	 * then these registers changing time will be a little long. Thus
-	 * here we should delay 200us to wait until values are updated
-	 * successfully according to the datasheet.
-	 */
+	 
 	udelay(200);
 
 	ret = regmap_update_bits(data->regmap,
@@ -246,19 +195,10 @@ static int sc27xx_fgu_save_last_cap(struct sc27xx_fgu_data *data, int cap)
 	if (ret)
 		return ret;
 
-	/*
-	 * Since the user area registers are put on power always-on region,
-	 * then these registers changing time will be a little long. Thus
-	 * here we should delay 200us to wait until values are updated
-	 * successfully according to the datasheet.
-	 */
+	 
 	udelay(200);
 
-	/*
-	 * According to the datasheet, we should set the USER_AREA_CLEAR to 0 to
-	 * make the user area data available, otherwise we can not save the user
-	 * area data.
-	 */
+	 
 	return regmap_update_bits(data->regmap,
 				  data->base + SC27XX_FGU_USER_AREA_CLEAR,
 				  SC27XX_FGU_CAP_AREA_MASK, 0);
@@ -277,22 +217,13 @@ static int sc27xx_fgu_read_last_cap(struct sc27xx_fgu_data *data, int *cap)
 	return 0;
 }
 
-/*
- * When system boots on, we can not read battery capacity from coulomb
- * registers, since now the coulomb registers are invalid. So we should
- * calculate the battery open circuit voltage, and get current battery
- * capacity according to the capacity table.
- */
+ 
 static int sc27xx_fgu_get_boot_capacity(struct sc27xx_fgu_data *data, int *cap)
 {
 	int volt, cur, oci, ocv, ret;
 	bool is_first_poweron = sc27xx_fgu_is_first_poweron(data);
 
-	/*
-	 * If system is not the first power on, we should use the last saved
-	 * battery capacity as the initial battery capacity. Otherwise we should
-	 * re-calculate the initial battery capacity.
-	 */
+	 
 	if (!is_first_poweron) {
 		ret = sc27xx_fgu_read_last_cap(data, cap);
 		if (ret)
@@ -301,10 +232,7 @@ static int sc27xx_fgu_get_boot_capacity(struct sc27xx_fgu_data *data, int *cap)
 		return sc27xx_fgu_save_boot_mode(data, SC27XX_FGU_NORMAIL_POWERTON);
 	}
 
-	/*
-	 * After system booting on, the SC27XX_FGU_CLBCNT_QMAXL register saved
-	 * the first sampled open circuit current.
-	 */
+	 
 	ret = regmap_read(data->regmap, data->base + SC27XX_FGU_CLBCNT_QMAXL,
 			  &cur);
 	if (ret)
@@ -313,11 +241,7 @@ static int sc27xx_fgu_get_boot_capacity(struct sc27xx_fgu_data *data, int *cap)
 	cur <<= 1;
 	oci = sc27xx_fgu_adc_to_current(data, cur - SC27XX_FGU_CUR_BASIC_ADC);
 
-	/*
-	 * Should get the OCV from SC27XX_FGU_POCV register at the system
-	 * beginning. It is ADC values reading from registers which need to
-	 * convert the corresponding voltage.
-	 */
+	 
 	ret = regmap_read(data->regmap, data->base + SC27XX_FGU_POCV, &volt);
 	if (ret)
 		return ret;
@@ -326,10 +250,7 @@ static int sc27xx_fgu_get_boot_capacity(struct sc27xx_fgu_data *data, int *cap)
 	ocv = volt * 1000 - oci * data->internal_resist;
 	data->boot_volt = ocv;
 
-	/*
-	 * Parse the capacity table to look up the correct capacity percent
-	 * according to current battery's corresponding OCV values.
-	 */
+	 
 	*cap = power_supply_ocv2cap_simple(data->cap_table, data->table_len,
 					   ocv);
 
@@ -392,10 +313,7 @@ static int sc27xx_fgu_get_vol_now(struct sc27xx_fgu_data *data, int *val)
 	if (ret)
 		return ret;
 
-	/*
-	 * It is ADC values reading from registers which need to convert to
-	 * corresponding voltage values.
-	 */
+	 
 	*val = sc27xx_fgu_adc_to_voltage(data, vol);
 
 	return 0;
@@ -411,10 +329,7 @@ static int sc27xx_fgu_get_cur_now(struct sc27xx_fgu_data *data, int *val)
 	if (ret)
 		return ret;
 
-	/*
-	 * It is ADC values reading from registers which need to convert to
-	 * corresponding current values.
-	 */
+	 
 	*val = sc27xx_fgu_adc_to_current(data, cur - SC27XX_FGU_CUR_BASIC_ADC);
 
 	return 0;
@@ -424,28 +339,22 @@ static int sc27xx_fgu_get_capacity(struct sc27xx_fgu_data *data, int *cap)
 {
 	int ret, cur_clbcnt, delta_clbcnt, delta_cap, temp;
 
-	/* Get current coulomb counters firstly */
+	 
 	ret = sc27xx_fgu_get_clbcnt(data, &cur_clbcnt);
 	if (ret)
 		return ret;
 
 	delta_clbcnt = cur_clbcnt - data->init_clbcnt;
 
-	/*
-	 * Convert coulomb counter to delta capacity (mAh), and set multiplier
-	 * as 10 to improve the precision.
-	 */
+	 
 	temp = DIV_ROUND_CLOSEST(delta_clbcnt * 10, 36 * SC27XX_FGU_SAMPLE_HZ);
 	temp = sc27xx_fgu_adc_to_current(data, temp / 1000);
 
-	/*
-	 * Convert to capacity percent of the battery total capacity,
-	 * and multiplier is 100 too.
-	 */
+	 
 	delta_cap = DIV_ROUND_CLOSEST(temp * 100, data->total_cap);
 	*cap = delta_cap + data->init_cap;
 
-	/* Calibrate the battery capacity in a normal range. */
+	 
 	sc27xx_fgu_capacity_calibration(data, *cap, false);
 
 	return 0;
@@ -459,10 +368,7 @@ static int sc27xx_fgu_get_vbat_vol(struct sc27xx_fgu_data *data, int *val)
 	if (ret)
 		return ret;
 
-	/*
-	 * It is ADC values reading from registers which need to convert to
-	 * corresponding voltage values.
-	 */
+	 
 	*val = sc27xx_fgu_adc_to_voltage(data, vol);
 
 	return 0;
@@ -476,10 +382,7 @@ static int sc27xx_fgu_get_current(struct sc27xx_fgu_data *data, int *val)
 	if (ret)
 		return ret;
 
-	/*
-	 * It is ADC values reading from registers which need to convert to
-	 * corresponding current values.
-	 */
+	 
 	*val = sc27xx_fgu_adc_to_current(data, cur - SC27XX_FGU_CUR_BASIC_ADC);
 
 	return 0;
@@ -508,7 +411,7 @@ static int sc27xx_fgu_get_vbat_ocv(struct sc27xx_fgu_data *data, int *val)
 		resistance = data->internal_resist * resistance / 100;
 	}
 
-	/* Return the battery OCV in micro volts. */
+	 
 	*val = vol * 1000 - cur * resistance;
 
 	return 0;
@@ -799,54 +702,31 @@ static void sc27xx_fgu_capacity_calibration(struct sc27xx_fgu_data *data,
 		return;
 	}
 
-	/*
-	 * If we are in charging mode, then we do not need to calibrate the
-	 * lower capacity.
-	 */
+	 
 	if (chg_sts == POWER_SUPPLY_STATUS_CHARGING)
 		return;
 
 	if ((ocv > data->cap_table[0].ocv && cap < 100) || cap > 100) {
-		/*
-		 * If current OCV value is larger than the max OCV value in
-		 * OCV table, or the current capacity is larger than 100,
-		 * we should force the inititial capacity to 100.
-		 */
+		 
 		sc27xx_fgu_adjust_cap(data, 100);
 	} else if (ocv <= data->cap_table[data->table_len - 1].ocv) {
-		/*
-		 * If current OCV value is leass than the minimum OCV value in
-		 * OCV table, we should force the inititial capacity to 0.
-		 */
+		 
 		sc27xx_fgu_adjust_cap(data, 0);
 	} else if ((ocv > data->cap_table[data->table_len - 1].ocv && cap <= 0) ||
 		   (ocv > data->min_volt && cap <= data->alarm_cap)) {
-		/*
-		 * If current OCV value is not matchable with current capacity,
-		 * we should re-calculate current capacity by looking up the
-		 * OCV table.
-		 */
+		 
 		int cur_cap = power_supply_ocv2cap_simple(data->cap_table,
 							  data->table_len, ocv);
 
 		sc27xx_fgu_adjust_cap(data, cur_cap);
 	} else if (ocv <= data->min_volt) {
-		/*
-		 * If current OCV value is less than the low alarm voltage, but
-		 * current capacity is larger than the alarm capacity, we should
-		 * adjust the inititial capacity to alarm capacity.
-		 */
+		 
 		if (cap > data->alarm_cap) {
 			sc27xx_fgu_adjust_cap(data, data->alarm_cap);
 		} else {
 			int cur_cap;
 
-			/*
-			 * If current capacity is equal with 0 or less than 0
-			 * (some error occurs), we should adjust inititial
-			 * capacity to the capacity corresponding to current OCV
-			 * value.
-			 */
+			 
 			cur_cap = power_supply_ocv2cap_simple(data->cap_table,
 							      data->table_len,
 							      ocv);
@@ -856,10 +736,7 @@ static void sc27xx_fgu_capacity_calibration(struct sc27xx_fgu_data *data,
 		if (!int_mode)
 			return;
 
-		/*
-		 * After adjusting the battery capacity, we should set the
-		 * lowest alarm voltage instead.
-		 */
+		 
 		data->min_volt = data->cap_table[data->table_len - 1].ocv;
 		data->alarm_cap = power_supply_ocv2cap_simple(data->cap_table,
 							      data->table_len,
@@ -890,10 +767,7 @@ static irqreturn_t sc27xx_fgu_interrupt(int irq, void *dev_id)
 	if (ret)
 		goto out;
 
-	/*
-	 * When low overload voltage interrupt happens, we should calibrate the
-	 * battery capacity in lower voltage stage.
-	 */
+	 
 	if (!(status & SC27XX_FGU_LOW_OVERLOAD_INT))
 		goto out;
 
@@ -942,16 +816,10 @@ static void sc27xx_fgu_disable(void *_data)
 
 static int sc27xx_fgu_cap_to_clbcnt(struct sc27xx_fgu_data *data, int capacity)
 {
-	/*
-	 * Get current capacity (mAh) = battery total capacity (mAh) *
-	 * current capacity percent (capacity / 100).
-	 */
+	 
 	int cur_cap = DIV_ROUND_CLOSEST(data->total_cap * capacity, 100);
 
-	/*
-	 * Convert current capacity (mAh) to coulomb counter according to the
-	 * formula: 1 mAh =3.6 coulomb.
-	 */
+	 
 	return DIV_ROUND_CLOSEST(cur_cap * 36 * data->cur_1000ma_adc * SC27XX_FGU_SAMPLE_HZ, 10);
 }
 
@@ -974,11 +842,7 @@ static int sc27xx_fgu_calibration(struct sc27xx_fgu_data *data)
 
 	memcpy(&calib_data, buf, min(len, sizeof(u32)));
 
-	/*
-	 * Get the ADC value corresponding to 4200 mV from eFuse controller
-	 * according to below formula. Then convert to ADC values corresponding
-	 * to 1000 mV and 1000 mA.
-	 */
+	 
 	cal_4200mv = (calib_data & 0x1ff) + 6963 - 4096 - 256;
 	data->vol_1000mv_adc = DIV_ROUND_CLOSEST(cal_4200mv * 10, 42);
 	data->cur_1000ma_adc =
@@ -1006,10 +870,7 @@ static int sc27xx_fgu_hw_init(struct sc27xx_fgu_data *data)
 	data->internal_resist = info->factory_internal_resistance_uohm / 1000;
 	data->min_volt = info->voltage_min_design_uv;
 
-	/*
-	 * For SC27XX fuel gauge device, we only use one ocv-capacity
-	 * table in normal temperature 20 Celsius.
-	 */
+	 
 	table = power_supply_find_ocv2cap_table(info, 20, &data->table_len);
 	if (!table)
 		return -EINVAL;
@@ -1046,7 +907,7 @@ static int sc27xx_fgu_hw_init(struct sc27xx_fgu_data *data)
 	if (ret)
 		return ret;
 
-	/* Enable the FGU module */
+	 
 	ret = regmap_update_bits(data->regmap, SC27XX_MODULE_EN0,
 				 SC27XX_FGU_EN, SC27XX_FGU_EN);
 	if (ret) {
@@ -1054,7 +915,7 @@ static int sc27xx_fgu_hw_init(struct sc27xx_fgu_data *data)
 		return ret;
 	}
 
-	/* Enable the FGU RTC clock to make it work */
+	 
 	ret = regmap_update_bits(data->regmap, SC27XX_CLK_EN0,
 				 SC27XX_FGU_RTC_EN, SC27XX_FGU_RTC_EN);
 	if (ret) {
@@ -1069,11 +930,7 @@ static int sc27xx_fgu_hw_init(struct sc27xx_fgu_data *data)
 		goto disable_clk;
 	}
 
-	/*
-	 * Set the voltage low overload threshold, which means when the battery
-	 * voltage is lower than this threshold, the controller will generate
-	 * one interrupt to notify.
-	 */
+	 
 	alarm_adc = sc27xx_fgu_voltage_to_adc(data, data->min_volt / 1000);
 	ret = regmap_update_bits(data->regmap, data->base + SC27XX_FGU_LOW_OVERLOAD,
 				 SC27XX_FGU_LOW_OVERLOAD_MASK, alarm_adc);
@@ -1082,13 +939,7 @@ static int sc27xx_fgu_hw_init(struct sc27xx_fgu_data *data)
 		goto disable_clk;
 	}
 
-	/*
-	 * Set the coulomb counter delta threshold, that means when the coulomb
-	 * counter change is multiples of the delta threshold, the controller
-	 * will generate one interrupt to notify the users to update the battery
-	 * capacity. Now we set the delta threshold as a counter value of 1%
-	 * capacity.
-	 */
+	 
 	delta_clbcnt = sc27xx_fgu_cap_to_clbcnt(data, 1);
 
 	ret = regmap_update_bits(data->regmap, data->base + SC27XX_FGU_CLBCNT_DELTL,
@@ -1106,21 +957,14 @@ static int sc27xx_fgu_hw_init(struct sc27xx_fgu_data *data)
 		goto disable_clk;
 	}
 
-	/*
-	 * Get the boot battery capacity when system powers on, which is used to
-	 * initialize the coulomb counter. After that, we can read the coulomb
-	 * counter to measure the battery capacity.
-	 */
+	 
 	ret = sc27xx_fgu_get_boot_capacity(data, &data->init_cap);
 	if (ret) {
 		dev_err(data->dev, "failed to get boot capacity\n");
 		goto disable_clk;
 	}
 
-	/*
-	 * Convert battery capacity to the corresponding initial coulomb counter
-	 * and set into coulomb counter registers.
-	 */
+	 
 	data->init_clbcnt = sc27xx_fgu_cap_to_clbcnt(data, data->init_cap);
 	ret = sc27xx_fgu_set_clbcnt(data, data->init_clbcnt);
 	if (ret) {
@@ -1279,10 +1123,7 @@ static int sc27xx_fgu_suspend(struct device *dev)
 	if (ret)
 		return ret;
 
-	/*
-	 * If we are charging, then no need to enable the FGU interrupts to
-	 * adjust the battery capacity.
-	 */
+	 
 	if (status != POWER_SUPPLY_STATUS_NOT_CHARGING &&
 	    status != POWER_SUPPLY_STATUS_DISCHARGING)
 		return 0;
@@ -1299,11 +1140,7 @@ static int sc27xx_fgu_suspend(struct device *dev)
 	if (ret)
 		goto disable_int;
 
-	/*
-	 * If current OCV is less than the minimum voltage, we should enable the
-	 * coulomb counter threshold interrupt to notify events to adjust the
-	 * battery capacity.
-	 */
+	 
 	if (ocv < data->min_volt) {
 		ret = regmap_update_bits(data->regmap,
 					 data->base + SC27XX_FGU_INT_EN,

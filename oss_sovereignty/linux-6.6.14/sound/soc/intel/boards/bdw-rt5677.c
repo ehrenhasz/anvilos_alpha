@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ASoC machine driver for Intel Broadwell platforms with RT5677 codec
- *
- * Copyright (c) 2014, The Chromium OS Authors.  All rights reserved.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/module.h>
@@ -49,31 +45,28 @@ static const struct snd_soc_dapm_widget bdw_rt5677_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route bdw_rt5677_map[] = {
-	/* Speakers */
+	 
 	{"Speaker", NULL, "PDM1L"},
 	{"Speaker", NULL, "PDM1R"},
 
-	/* Headset jack connectors */
+	 
 	{"Headphone", NULL, "LOUT1"},
 	{"Headphone", NULL, "LOUT2"},
 	{"IN1P", NULL, "Headset Mic"},
 	{"IN1N", NULL, "Headset Mic"},
 
-	/* Digital MICs
-	 * Local DMICs: the two DMICs on the mainboard
-	 * Remote DMICs: the two DMICs on the camera module
-	 */
+	 
 	{"DMIC L1", NULL, "Remote DMICs"},
 	{"DMIC R1", NULL, "Remote DMICs"},
 	{"DMIC L2", NULL, "Local DMICs"},
 	{"DMIC R2", NULL, "Local DMICs"},
 
-	/* CODEC BE connections */
+	 
 	{"SSP0 CODEC IN", NULL, "AIF1 Capture"},
 	{"AIF1 Playback", NULL, "SSP0 CODEC OUT"},
 	{"DSP Capture", NULL, "DSP Buffer"},
 
-	/* DSP Clock Connections */
+	 
 	{ "DSP Buffer", NULL, "SSP0 CODEC IN" },
 	{ "SSP0 CODEC IN", NULL, "DSPTX" },
 };
@@ -113,7 +106,7 @@ static struct snd_soc_jack_gpio mic_jack_gpio = {
 	.invert			= 1,
 };
 
-/* GPIO indexes defined by ACPI */
+ 
 enum {
 	RT5677_GPIO_PLUG_DET		= 0,
 	RT5677_GPIO_MIC_PRESENT_L	= 1,
@@ -141,11 +134,11 @@ static int broadwell_ssp0_fixup(struct snd_soc_pcm_runtime *rtd,
 	struct snd_interval *chan = hw_param_interval(params,
 						      SNDRV_PCM_HW_PARAM_CHANNELS);
 
-	/* The ADSP will convert the FE rate to 48k, stereo */
+	 
 	rate->min = rate->max = 48000;
 	chan->min = chan->max = 2;
 
-	/* set SSP0 to 16 bit */
+	 
 	params_set_format(params, SNDRV_PCM_FORMAT_S16_LE);
 	return 0;
 }
@@ -212,7 +205,7 @@ static int bdw_rt5677_fe_startup(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 
-	/* Board supports stereo configuration only */
+	 
 	runtime->hw.channels_max = 2;
 	return snd_pcm_hw_constraint_list(runtime, 0,
 					  SNDRV_PCM_HW_PARAM_CHANNELS,
@@ -235,19 +228,15 @@ static int bdw_rt5677_init(struct snd_soc_pcm_runtime *rtd)
 	if (ret)
 		dev_warn(component->dev, "Failed to add driver gpios\n");
 
-	/* Enable codec ASRC function for Stereo DAC/Stereo1 ADC/DMIC/I2S1.
-	 * The ASRC clock source is clk_i2s1_asrc.
-	 */
+	 
 	rt5677_sel_asrc_clk_src(component, RT5677_DA_STEREO_FILTER |
 			RT5677_AD_STEREO1_FILTER | RT5677_I2S1_SOURCE,
 			RT5677_CLK_SEL_I2S1_ASRC);
-	/* Enable codec ASRC function for Mono ADC L.
-	 * The ASRC clock source is clk_sys2_asrc.
-	 */
+	 
 	rt5677_sel_asrc_clk_src(component, RT5677_AD_MONO_L_FILTER,
 			RT5677_CLK_SEL_SYS2);
 
-	/* Request rt5677 GPIO for headphone amp control */
+	 
 	bdw_rt5677->gpio_hp_en = gpiod_get(component->dev, "headphone-enable",
 					   GPIOD_OUT_LOW);
 	if (IS_ERR(bdw_rt5677->gpio_hp_en)) {
@@ -255,7 +244,7 @@ static int bdw_rt5677_init(struct snd_soc_pcm_runtime *rtd)
 		return PTR_ERR(bdw_rt5677->gpio_hp_en);
 	}
 
-	/* Create and initialize headphone jack */
+	 
 	if (!snd_soc_card_jack_new_pins(rtd->card, "Headphone Jack",
 			SND_JACK_HEADPHONE, &headphone_jack,
 			&headphone_jack_pin, 1)) {
@@ -267,7 +256,7 @@ static int bdw_rt5677_init(struct snd_soc_pcm_runtime *rtd)
 		dev_err(component->dev, "Can't create headphone jack\n");
 	}
 
-	/* Create and initialize mic jack */
+	 
 	if (!snd_soc_card_jack_new_pins(rtd->card, "Mic Jack",
 			SND_JACK_MICROPHONE, &mic_jack,
 			&mic_jack_pin, 1)) {
@@ -288,15 +277,12 @@ static void bdw_rt5677_exit(struct snd_soc_pcm_runtime *rtd)
 	struct bdw_rt5677_priv *bdw_rt5677 =
 			snd_soc_card_get_drvdata(rtd->card);
 
-	/*
-	 * The .exit() can be reached without going through the .init()
-	 * so explicitly test if the gpiod is valid
-	 */
+	 
 	if (!IS_ERR_OR_NULL(bdw_rt5677->gpio_hp_en))
 		gpiod_put(bdw_rt5677->gpio_hp_en);
 }
 
-/* broadwell digital audio interface glue - connects codec <--> CPU */
+ 
 SND_SOC_DAILINK_DEF(dummy,
 	DAILINK_COMP_ARRAY(COMP_DUMMY()));
 
@@ -312,14 +298,14 @@ SND_SOC_DAILINK_DEF(be,
 SND_SOC_DAILINK_DEF(ssp0_port,
 	    DAILINK_COMP_ARRAY(COMP_CPU("ssp0-port")));
 
-/* Wake on voice interface */
+ 
 SND_SOC_DAILINK_DEFS(dsp,
 	DAILINK_COMP_ARRAY(COMP_CPU("spi-RT5677AA:00")),
 	DAILINK_COMP_ARRAY(COMP_CODEC("i2c-RT5677CE:00", "rt5677-dspbuffer")),
 	DAILINK_COMP_ARRAY(COMP_PLATFORM("spi-RT5677AA:00")));
 
 static struct snd_soc_dai_link bdw_rt5677_dais[] = {
-	/* Front End DAI links */
+	 
 	{
 		.name = "System PCM",
 		.stream_name = "System Playback/Capture",
@@ -335,7 +321,7 @@ static struct snd_soc_dai_link bdw_rt5677_dais[] = {
 		SND_SOC_DAILINK_REG(fe, dummy, platform),
 	},
 
-	/* Non-DPCM links */
+	 
 	{
 		.name = "Codec DSP",
 		.stream_name = "Wake on Voice",
@@ -344,9 +330,9 @@ static struct snd_soc_dai_link bdw_rt5677_dais[] = {
 		SND_SOC_DAILINK_REG(dsp),
 	},
 
-	/* Back End DAI links */
+	 
 	{
-		/* SSP0 - Codec */
+		 
 		.name = "Codec",
 		.id = 0,
 		.nonatomic = 1,
@@ -388,14 +374,14 @@ static int bdw_rt5677_resume_post(struct snd_soc_card *card)
 	return 0;
 }
 
-/* use space before codec name to simplify card ID, and simplify driver name */
-#define SOF_CARD_NAME "bdw rt5677" /* card name will be 'sof-bdw rt5677' */
+ 
+#define SOF_CARD_NAME "bdw rt5677"  
 #define SOF_DRIVER_NAME "SOF"
 
 #define CARD_NAME "bdw-rt5677"
-#define DRIVER_NAME NULL /* card name will be used for driver name */
+#define DRIVER_NAME NULL  
 
-/* ASoC machine driver for Broadwell DSP + RT5677 */
+ 
 static struct snd_soc_card bdw_rt5677_card = {
 	.name = CARD_NAME,
 	.driver_name = DRIVER_NAME,
@@ -421,20 +407,20 @@ static int bdw_rt5677_probe(struct platform_device *pdev)
 
 	bdw_rt5677_card.dev = &pdev->dev;
 
-	/* Allocate driver private struct */
+	 
 	bdw_rt5677 = devm_kzalloc(&pdev->dev, sizeof(struct bdw_rt5677_priv),
 		GFP_KERNEL);
 	if (!bdw_rt5677)
 		return -ENOMEM;
 
-	/* override platform name, if required */
+	 
 	mach = pdev->dev.platform_data;
 	ret = snd_soc_fixup_dai_links_platform_name(&bdw_rt5677_card,
 						    mach->mach_params.platform);
 	if (ret)
 		return ret;
 
-	/* set card and driver name */
+	 
 	if (snd_soc_acpi_sof_parent(&pdev->dev)) {
 		bdw_rt5677_card.name = SOF_CARD_NAME;
 		bdw_rt5677_card.driver_name = SOF_DRIVER_NAME;
@@ -458,7 +444,7 @@ static struct platform_driver bdw_rt5677_audio = {
 
 module_platform_driver(bdw_rt5677_audio)
 
-/* Module information */
+ 
 MODULE_AUTHOR("Ben Zhang");
 MODULE_DESCRIPTION("Intel Broadwell RT5677 machine driver");
 MODULE_LICENSE("GPL v2");

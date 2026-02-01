@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2023 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include <linux/rtnetlink.h>
 #include <sys/types.h>
@@ -97,7 +97,7 @@ static int setup_netns(void)
 	SYS(fail, "ip neigh add %s dev veth1 nud failed", IPV4_NUD_FAILED_ADDR);
 	SYS(fail, "ip neigh add %s dev veth1 lladdr %s nud stale", IPV4_NUD_STALE_ADDR, DMAC);
 
-	/* Setup for tbid lookup tests */
+	 
 	SYS(fail, "ip addr add %s/24 dev veth2", IPV4_TBID_ADDR);
 	SYS(fail, "ip route del %s/24 dev veth2", IPV4_TBID_NET);
 	SYS(fail, "ip route add table 100 %s/24 dev veth2", IPV4_TBID_NET);
@@ -164,9 +164,7 @@ void test_fib_lookup(void)
 	struct fib_lookup *skel;
 	int prog_fd, err, ret, i;
 
-	/* The test does not use the skb->data, so
-	 * use pkt_v6 for both v6 and v4 test.
-	 */
+	 
 	LIBBPF_OPTS(bpf_test_run_opts, run_opts,
 		    .data_in = &pkt_v6,
 		    .data_size_in = sizeof(pkt_v6),
@@ -216,7 +214,7 @@ void test_fib_lookup(void)
 			printf("dmac expected %s actual %s ", expected, actual);
 		}
 
-		// ensure tbid is zero'd out after fib lookup.
+		
 		if (tests[i].lookup_flags & BPF_FIB_LOOKUP_DIRECT) {
 			if (!ASSERT_EQ(skel->bss->fib_params.tbid, 0,
 					"expected fib_params.tbid to be zero"))

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/cpu.h>
@@ -29,7 +27,7 @@ enum IMX6_CPUFREQ_CLKS {
 	STEP,
 	PLL1_SW,
 	PLL2_PFD2_396M,
-	/* MX6UL requires two more clks */
+	 
 	PLL2_BUS,
 	SECONDARY_SEL,
 };
@@ -82,7 +80,7 @@ static int imx6q_set_target(struct cpufreq_policy *policy, unsigned int index)
 		old_freq / 1000, volt_old / 1000,
 		new_freq / 1000, volt / 1000);
 
-	/* scaling up?  scale voltage before frequency */
+	 
 	if (new_freq > old_freq) {
 		if (!IS_ERR(pu_reg)) {
 			ret = regulator_set_voltage_tol(pu_reg, imx6_soc_volt[index], 0);
@@ -104,26 +102,10 @@ static int imx6q_set_target(struct cpufreq_policy *policy, unsigned int index)
 		}
 	}
 
-	/*
-	 * The setpoints are selected per PLL/PDF frequencies, so we need to
-	 * reprogram PLL for frequency scaling.  The procedure of reprogramming
-	 * PLL1 is as below.
-	 * For i.MX6UL, it has a secondary clk mux, the cpu frequency change
-	 * flow is slightly different from other i.MX6 OSC.
-	 * The cpu frequeny change flow for i.MX6(except i.MX6UL) is as below:
-	 *  - Enable pll2_pfd2_396m_clk and reparent pll1_sw_clk to it
-	 *  - Reprogram pll1_sys_clk and reparent pll1_sw_clk back to it
-	 *  - Disable pll2_pfd2_396m_clk
-	 */
+	 
 	if (of_machine_is_compatible("fsl,imx6ul") ||
 	    of_machine_is_compatible("fsl,imx6ull")) {
-		/*
-		 * When changing pll1_sw_clk's parent to pll1_sys_clk,
-		 * CPU may run at higher than 528MHz, this will lead to
-		 * the system unstable if the voltage is lower than the
-		 * voltage of 528MHz, so lower the CPU frequency to one
-		 * half before changing CPU frequency.
-		 */
+		 
 		clk_set_rate(clks[ARM].clk, (old_freq >> 1) * 1000);
 		clk_set_parent(clks[PLL1_SW].clk, clks[PLL1_SYS].clk);
 		if (freq_hz > clk_get_rate(clks[PLL2_PFD2_396M].clk))
@@ -145,13 +127,13 @@ static int imx6q_set_target(struct cpufreq_policy *policy, unsigned int index)
 			clk_set_rate(clks[PLL1_SYS].clk, new_freq * 1000);
 			clk_set_parent(clks[PLL1_SW].clk, clks[PLL1_SYS].clk);
 		} else {
-			/* pll1_sys needs to be enabled for divider rate change to work. */
+			 
 			pll1_sys_temp_enabled = true;
 			clk_prepare_enable(clks[PLL1_SYS].clk);
 		}
 	}
 
-	/* Ensure the arm clock divider is what we expect */
+	 
 	ret = clk_set_rate(clks[ARM].clk, new_freq * 1000);
 	if (ret) {
 		int ret1;
@@ -164,11 +146,11 @@ static int imx6q_set_target(struct cpufreq_policy *policy, unsigned int index)
 		return ret;
 	}
 
-	/* PLL1 is only needed until after ARM-PODF is set. */
+	 
 	if (pll1_sys_temp_enabled)
 		clk_disable_unprepare(clks[PLL1_SYS].clk);
 
-	/* scaling down?  scale voltage after frequency */
+	 
 	if (new_freq < old_freq) {
 		ret = regulator_set_voltage_tol(arm_reg, volt, 0);
 		if (ret)
@@ -246,14 +228,7 @@ static int imx6q_opp_check_speed_grading(struct device *dev)
 			return -EFAULT;
 		}
 
-		/*
-		 * SPEED_GRADING[1:0] defines the max speed of ARM:
-		 * 2b'11: 1200000000Hz;
-		 * 2b'10: 996000000Hz;
-		 * 2b'01: 852000000Hz; -- i.MX6Q Only, exclusive with 996MHz.
-		 * 2b'00: 792000000Hz;
-		 * We need to set the max speed of ARM according to fuse map.
-		 */
+		 
 		val = readl_relaxed(base + OCOTP_CFG3);
 		iounmap(base);
 	}
@@ -311,14 +286,7 @@ static int imx6ul_opp_check_speed_grading(struct device *dev)
 		iounmap(base);
 	}
 
-	/*
-	 * Speed GRADING[1:0] defines the max speed of ARM:
-	 * 2b'00: Reserved;
-	 * 2b'01: 528000000Hz;
-	 * 2b'10: 696000000Hz on i.MX6UL, 792000000Hz on i.MX6ULL;
-	 * 2b'11: 900000000Hz on i.MX6ULL only;
-	 * We need to set the max speed of ARM according to fuse map.
-	 */
+	 
 	val >>= OCOTP_CFG3_SPEED_SHIFT;
 	val &= 0x3;
 
@@ -415,7 +383,7 @@ static int imx6q_cpufreq_probe(struct platform_device *pdev)
 		goto out_free_opp;
 	}
 
-	/* Make imx6_soc_volt array's size same as arm opp number */
+	 
 	imx6_soc_volt = devm_kcalloc(cpu_dev, num, sizeof(*imx6_soc_volt),
 				     GFP_KERNEL);
 	if (imx6_soc_volt == NULL) {
@@ -427,10 +395,7 @@ static int imx6q_cpufreq_probe(struct platform_device *pdev)
 	if (!prop || !prop->value)
 		goto soc_opp_out;
 
-	/*
-	 * Each OPP is a set of tuples consisting of frequency and
-	 * voltage like <freq-kHz vol-uV>.
-	 */
+	 
 	nr = prop->length / sizeof(u32);
 	if (nr % 2 || (nr / 2) < num)
 		goto soc_opp_out;
@@ -448,7 +413,7 @@ static int imx6q_cpufreq_probe(struct platform_device *pdev)
 	}
 
 soc_opp_out:
-	/* use fixed soc opp volt if no valid soc opp info found in dtb */
+	 
 	if (soc_opp_count != num) {
 		dev_warn(cpu_dev, "can NOT find valid fsl,soc-operating-points property in dtb, use default value!\n");
 		for (j = 0; j < num; j++)
@@ -460,10 +425,7 @@ soc_opp_out:
 	if (of_property_read_u32(np, "clock-latency", &transition_latency))
 		transition_latency = CPUFREQ_ETERNAL;
 
-	/*
-	 * Calculate the ramp time for max voltage change in the
-	 * VDDSOC and VDDPU regulators.
-	 */
+	 
 	ret = regulator_set_voltage_time(soc_reg, imx6_soc_volt[0], imx6_soc_volt[num - 1]);
 	if (ret > 0)
 		transition_latency += ret * 1000;
@@ -473,11 +435,7 @@ soc_opp_out:
 			transition_latency += ret * 1000;
 	}
 
-	/*
-	 * OPP is maintained in order of increasing frequency, and
-	 * freq_table initialised from OPP is therefore sorted in the
-	 * same order.
-	 */
+	 
 	max_freq = freq_table[--num].frequency;
 	opp = dev_pm_opp_find_freq_exact(cpu_dev,
 				  freq_table[0].frequency * 1000, true);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011 Red Hat, Inc.
- *
- * This file is released under the GPL.
- */
+
+ 
 
 #include "dm-btree-internal.h"
 #include "dm-space-map.h"
@@ -14,11 +10,7 @@
 
 #define DM_MSG_PREFIX "btree"
 
-/*
- *--------------------------------------------------------------
- * Array manipulation
- *--------------------------------------------------------------
- */
+ 
 static void memcpy_disk(void *dest, const void *src, size_t len)
 	__dm_written_to_disk(src)
 {
@@ -38,9 +30,9 @@ static void array_insert(void *base, size_t elt_size, unsigned int nr_elts,
 	memcpy_disk(base + (elt_size * index), elt, elt_size);
 }
 
-/*----------------------------------------------------------------*/
+ 
 
-/* makes the assumption that no two keys are the same. */
+ 
 static int bsearch(struct btree_node *n, uint64_t key, int want_hi)
 {
 	int lo = -1, hi = le32_to_cpu(n->header.nr_entries);
@@ -108,20 +100,17 @@ static int insert_at(size_t value_size, struct btree_node *node, unsigned int in
 	return 0;
 }
 
-/*----------------------------------------------------------------*/
+ 
 
-/*
- * We want 3n entries (for some n).  This works more nicely for repeated
- * insert remove loops than (2n + 1).
- */
+ 
 static uint32_t calc_max_entries(size_t value_size, size_t block_size)
 {
 	uint32_t total, n;
-	size_t elt_size = sizeof(uint64_t) + value_size; /* key + value */
+	size_t elt_size = sizeof(uint64_t) + value_size;  
 
 	block_size -= sizeof(struct node_header);
 	total = block_size / elt_size;
-	n = total / 3;		/* rounds down */
+	n = total / 3;		 
 
 	return 3 * n;
 }
@@ -155,12 +144,9 @@ int dm_btree_empty(struct dm_btree_info *info, dm_block_t *root)
 }
 EXPORT_SYMBOL_GPL(dm_btree_empty);
 
-/*----------------------------------------------------------------*/
+ 
 
-/*
- * Deletion uses a recursive algorithm, since we have limited stack space
- * we explicitly manage our own stack on the heap.
- */
+ 
 #define MAX_SPINE_DEPTH 64
 struct frame {
 	struct dm_block *b;
@@ -223,10 +209,7 @@ static int push_frame(struct del_stack *s, dm_block_t b, unsigned int level)
 		return r;
 
 	if (ref_count > 1)
-		/*
-		 * This is a shared node, so we can just decrement it's
-		 * reference counter and leave the children.
-		 */
+		 
 		dm_tm_dec(s->tm, b);
 
 	else {
@@ -275,11 +258,7 @@ int dm_btree_del(struct dm_btree_info *info, dm_block_t root)
 	int r;
 	struct del_stack *s;
 
-	/*
-	 * dm_btree_del() is called via an ioctl, as such should be
-	 * considered an FS op.  We can't recurse back into the FS, so we
-	 * allocate GFP_NOFS.
-	 */
+	 
 	s = kmalloc(sizeof(*s), GFP_NOFS);
 	if (!s)
 		return -ENOMEM;
@@ -329,7 +308,7 @@ int dm_btree_del(struct dm_btree_info *info, dm_block_t root)
 	}
 out:
 	if (r) {
-		/* cleanup all frames of del_stack */
+		 
 		unlock_all_frames(s);
 	}
 	kfree(s);
@@ -338,7 +317,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(dm_btree_del);
 
-/*----------------------------------------------------------------*/
+ 
 
 static int btree_lookup_raw(struct ro_spine *s, dm_block_t block, uint64_t key,
 			    int (*search_fn)(struct btree_node *, uint64_t),
@@ -435,10 +414,7 @@ static int dm_btree_lookup_next_single(struct dm_btree_info *info, dm_block_t ro
 	if (flags & INTERNAL_NODE) {
 		i = lower_bound(n, key);
 		if (i < 0) {
-			/*
-			 * avoid early -ENODATA return when all entries are
-			 * higher than the search @key.
-			 */
+			 
 			i = 0;
 		}
 		if (i >= nr_entries) {
@@ -498,12 +474,9 @@ out:
 }
 EXPORT_SYMBOL_GPL(dm_btree_lookup_next);
 
-/*----------------------------------------------------------------*/
+ 
 
-/*
- * Copies entries from one region of a btree node to another.  The regions
- * must not overlap.
- */
+ 
 static void copy_entries(struct btree_node *dest, unsigned int dest_offset,
 			 struct btree_node *src, unsigned int src_offset,
 			 unsigned int count)
@@ -514,10 +487,7 @@ static void copy_entries(struct btree_node *dest, unsigned int dest_offset,
 	memcpy(value_ptr(dest, dest_offset), value_ptr(src, src_offset), count * value_size);
 }
 
-/*
- * Moves entries from one region fo a btree node to another.  The regions
- * may overlap.
- */
+ 
 static void move_entries(struct btree_node *dest, unsigned int dest_offset,
 			 struct btree_node *src, unsigned int src_offset,
 			 unsigned int count)
@@ -528,28 +498,19 @@ static void move_entries(struct btree_node *dest, unsigned int dest_offset,
 	memmove(value_ptr(dest, dest_offset), value_ptr(src, src_offset), count * value_size);
 }
 
-/*
- * Erases the first 'count' entries of a btree node, shifting following
- * entries down into their place.
- */
+ 
 static void shift_down(struct btree_node *n, unsigned int count)
 {
 	move_entries(n, 0, n, count, le32_to_cpu(n->header.nr_entries) - count);
 }
 
-/*
- * Moves entries in a btree node up 'count' places, making space for
- * new entries at the start of the node.
- */
+ 
 static void shift_up(struct btree_node *n, unsigned int count)
 {
 	move_entries(n, count, n, 0, le32_to_cpu(n->header.nr_entries));
 }
 
-/*
- * Redistributes entries between two btree nodes to make them
- * have similar numbers of entries.
- */
+ 
 static void redistribute2(struct btree_node *left, struct btree_node *right)
 {
 	unsigned int nr_left = le32_to_cpu(left->header.nr_entries);
@@ -575,10 +536,7 @@ static void redistribute2(struct btree_node *left, struct btree_node *right)
 	right->header.nr_entries = cpu_to_le32(target_right);
 }
 
-/*
- * Redistribute entries between three nodes.  Assumes the central
- * node is empty.
- */
+ 
 static void redistribute3(struct btree_node *left, struct btree_node *center,
 			  struct btree_node *right)
 {
@@ -621,36 +579,7 @@ static void redistribute3(struct btree_node *left, struct btree_node *center,
 	right->header.nr_entries = cpu_to_le32(target_right);
 }
 
-/*
- * Splits a node by creating a sibling node and shifting half the nodes
- * contents across.  Assumes there is a parent node, and it has room for
- * another child.
- *
- * Before:
- *	  +--------+
- *	  | Parent |
- *	  +--------+
- *	     |
- *	     v
- *	+----------+
- *	| A ++++++ |
- *	+----------+
- *
- *
- * After:
- *		+--------+
- *		| Parent |
- *		+--------+
- *		  |	|
- *		  v	+------+
- *	    +---------+	       |
- *	    | A* +++  |	       v
- *	    +---------+	  +-------+
- *			  | B +++ |
- *			  +-------+
- *
- * Where A* is a shadow of A.
- */
+ 
 static int split_one_into_two(struct shadow_spine *s, unsigned int parent_index,
 			      struct dm_btree_value_type *vt, uint64_t key)
 {
@@ -674,7 +603,7 @@ static int split_one_into_two(struct shadow_spine *s, unsigned int parent_index,
 	rn->header.value_size = ln->header.value_size;
 	redistribute2(ln, rn);
 
-	/* patch up the parent */
+	 
 	parent = shadow_parent(s);
 	pn = dm_block_data(parent);
 
@@ -687,7 +616,7 @@ static int split_one_into_two(struct shadow_spine *s, unsigned int parent_index,
 		return r;
 	}
 
-	/* patch up the spine */
+	 
 	if (key < le64_to_cpu(rn->keys[0])) {
 		unlock_block(s->info, right);
 		s->nodes[1] = left;
@@ -699,11 +628,7 @@ static int split_one_into_two(struct shadow_spine *s, unsigned int parent_index,
 	return 0;
 }
 
-/*
- * We often need to modify a sibling node.  This function shadows a particular
- * child of the given parent node.  Making sure to update the parent to point
- * to the new shadow.
- */
+ 
 static int shadow_child(struct dm_btree_info *info, struct dm_btree_value_type *vt,
 			struct btree_node *parent, unsigned int index,
 			struct dm_block **result)
@@ -730,10 +655,7 @@ static int shadow_child(struct dm_btree_info *info, struct dm_btree_value_type *
 	return 0;
 }
 
-/*
- * Splits two nodes into three.  This is more work, but results in fuller
- * nodes, so saves metadata space.
- */
+ 
 static int split_two_into_three(struct shadow_spine *s, unsigned int parent_index,
 				struct dm_btree_value_type *vt, uint64_t key)
 {
@@ -775,7 +697,7 @@ static int split_two_into_three(struct shadow_spine *s, unsigned int parent_inde
 
 	redistribute3(ln, mn, rn);
 
-	/* patch up the parent */
+	 
 	pn->keys[middle_index] = rn->keys[0];
 	location = cpu_to_le64(dm_block_location(middle));
 	__dm_bless_for_disk(&location);
@@ -794,7 +716,7 @@ static int split_two_into_three(struct shadow_spine *s, unsigned int parent_inde
 	}
 
 
-	/* patch up the spine */
+	 
 	if (key < le64_to_cpu(mn->keys[0])) {
 		unlock_block(s->info, middle);
 		unlock_block(s->info, right);
@@ -812,29 +734,9 @@ static int split_two_into_three(struct shadow_spine *s, unsigned int parent_inde
 	return 0;
 }
 
-/*----------------------------------------------------------------*/
+ 
 
-/*
- * Splits a node by creating two new children beneath the given node.
- *
- * Before:
- *	  +----------+
- *	  | A ++++++ |
- *	  +----------+
- *
- *
- * After:
- *	+------------+
- *	| A (shadow) |
- *	+------------+
- *	    |	|
- *   +------+	+----+
- *   |		     |
- *   v		     v
- * +-------+	 +-------+
- * | B +++ |	 | C +++ |
- * +-------+	 +-------+
- */
+ 
 static int btree_split_beneath(struct shadow_spine *s, uint64_t key)
 {
 	int r;
@@ -850,7 +752,7 @@ static int btree_split_beneath(struct shadow_spine *s, uint64_t key)
 	size = le32_to_cpu(pn->header.flags) & INTERNAL_NODE ?
 		sizeof(__le64) : s->info->value_type.size;
 
-	/* create & init the left block */
+	 
 	r = new_block(s->info, &left);
 	if (r < 0)
 		return r;
@@ -865,7 +767,7 @@ static int btree_split_beneath(struct shadow_spine *s, uint64_t key)
 	memcpy(ln->keys, pn->keys, nr_left * sizeof(pn->keys[0]));
 	memcpy(value_ptr(ln, 0), value_ptr(pn, 0), nr_left * size);
 
-	/* create & init the right block */
+	 
 	r = new_block(s->info, &right);
 	if (r < 0) {
 		unlock_block(s->info, left);
@@ -883,7 +785,7 @@ static int btree_split_beneath(struct shadow_spine *s, uint64_t key)
 	memcpy(value_ptr(rn, 0), value_ptr(pn, nr_left),
 	       nr_right * size);
 
-	/* new_parent should just point to l and r now */
+	 
 	pn->header.flags = cpu_to_le32(INTERNAL_NODE);
 	pn->header.nr_entries = cpu_to_le32(2);
 	pn->header.max_entries = cpu_to_le32(
@@ -907,11 +809,9 @@ static int btree_split_beneath(struct shadow_spine *s, uint64_t key)
 	return 0;
 }
 
-/*----------------------------------------------------------------*/
+ 
 
-/*
- * Redistributes a node's entries with its left sibling.
- */
+ 
 static int rebalance_left(struct shadow_spine *s, struct dm_btree_value_type *vt,
 			  unsigned int parent_index, uint64_t key)
 {
@@ -938,9 +838,7 @@ static int rebalance_left(struct shadow_spine *s, struct dm_btree_value_type *vt
 	return 0;
 }
 
-/*
- * Redistributes a nodes entries with its right sibling.
- */
+ 
 static int rebalance_right(struct shadow_spine *s, struct dm_btree_value_type *vt,
 			   unsigned int parent_index, uint64_t key)
 {
@@ -967,9 +865,7 @@ static int rebalance_right(struct shadow_spine *s, struct dm_btree_value_type *v
 	return 0;
 }
 
-/*
- * Returns the number of spare entries in a node.
- */
+ 
 static int get_node_free_space(struct dm_btree_info *info, dm_block_t b, unsigned int *space)
 {
 	int r;
@@ -989,14 +885,7 @@ static int get_node_free_space(struct dm_btree_info *info, dm_block_t b, unsigne
 	return 0;
 }
 
-/*
- * Make space in a node, either by moving some entries to a sibling,
- * or creating a new sibling node.  SPACE_THRESHOLD defines the minimum
- * number of free entries that must be in the sibling to make the move
- * worth while.  If the siblings are shared (eg, part of a snapshot),
- * then they are not touched, since this break sharing and so consume
- * more space than we save.
- */
+ 
 #define SPACE_THRESHOLD 8
 static int rebalance_or_split(struct shadow_spine *s, struct dm_btree_value_type *vt,
 			      unsigned int parent_index, uint64_t key)
@@ -1007,7 +896,7 @@ static int rebalance_or_split(struct shadow_spine *s, struct dm_btree_value_type
 	unsigned int free_space;
 	int left_shared = 0, right_shared = 0;
 
-	/* Should we move entries to the left sibling? */
+	 
 	if (parent_index > 0) {
 		dm_block_t left_b = value64(parent, parent_index - 1);
 
@@ -1025,7 +914,7 @@ static int rebalance_or_split(struct shadow_spine *s, struct dm_btree_value_type
 		}
 	}
 
-	/* Should we move entries to the right sibling? */
+	 
 	if (parent_index < (nr_parent - 1)) {
 		dm_block_t right_b = value64(parent, parent_index + 1);
 
@@ -1043,12 +932,7 @@ static int rebalance_or_split(struct shadow_spine *s, struct dm_btree_value_type
 		}
 	}
 
-	/*
-	 * We need to split the node, normally we split two nodes
-	 * into three.	But when inserting a sequence that is either
-	 * monotonically increasing or decreasing it's better to split
-	 * a single node into two.
-	 */
+	 
 	if (left_shared || right_shared || (nr_parent <= 2) ||
 	    (parent_index == 0) || (parent_index + 1 == nr_parent)) {
 		return split_one_into_two(s, parent_index, vt, key);
@@ -1057,9 +941,7 @@ static int rebalance_or_split(struct shadow_spine *s, struct dm_btree_value_type
 	}
 }
 
-/*
- * Does the node contain a particular key?
- */
+ 
 static bool contains_key(struct btree_node *node, uint64_t key)
 {
 	int i = lower_bound(node, key);
@@ -1070,16 +952,12 @@ static bool contains_key(struct btree_node *node, uint64_t key)
 	return false;
 }
 
-/*
- * In general we preemptively make sure there's a free entry in every
- * node on the spine when doing an insert.  But we can avoid that with
- * leaf nodes if we know it's an overwrite.
- */
+ 
 static bool has_space_for_insert(struct btree_node *node, uint64_t key)
 {
 	if (node->header.nr_entries == node->header.max_entries) {
 		if (le32_to_cpu(node->header.flags) & LEAF_NODE) {
-			/* we don't need space if it's an overwrite */
+			 
 			return contains_key(node, key);
 		}
 
@@ -1103,12 +981,8 @@ static int btree_insert_raw(struct shadow_spine *s, dm_block_t root,
 
 		node = dm_block_data(shadow_current(s));
 
-		/*
-		 * We have to patch up the parent node, ugly, but I don't
-		 * see a way to do this automatically as part of the spine
-		 * op.
-		 */
-		if (shadow_has_parent(s) && i >= 0) { /* FIXME: second clause unness. */
+		 
+		if (shadow_has_parent(s) && i >= 0) {  
 			__le64 location = cpu_to_le64(dm_block_location(shadow_current(s)));
 
 			__dm_bless_for_disk(&location);
@@ -1127,7 +1001,7 @@ static int btree_insert_raw(struct shadow_spine *s, dm_block_t root,
 			if (r < 0)
 				return r;
 
-			/* making space can cause the current node to change */
+			 
 			node = dm_block_data(shadow_current(s));
 		}
 
@@ -1137,7 +1011,7 @@ static int btree_insert_raw(struct shadow_spine *s, dm_block_t root,
 			break;
 
 		if (i < 0) {
-			/* change the bounds on the lowest key */
+			 
 			node->keys[0] = cpu_to_le64(key);
 			i = 0;
 		}
@@ -1167,11 +1041,7 @@ static int __btree_get_overwrite_leaf(struct shadow_spine *s, dm_block_t root,
 
 		node = dm_block_data(shadow_current(s));
 
-		/*
-		 * We have to patch up the parent node, ugly, but I don't
-		 * see a way to do this automatically as part of the spine
-		 * op.
-		 */
+		 
 		if (shadow_has_parent(s) && i >= 0) {
 			__le64 location = cpu_to_le64(dm_block_location(shadow_current(s)));
 
@@ -1213,10 +1083,7 @@ int btree_get_overwrite_leaf(struct dm_btree_info *info, dm_block_t root,
 		*new_root = shadow_root(&spine);
 		*leaf = shadow_current(&spine);
 
-		/*
-		 * Decrement the count so exit_shadow_spine() doesn't
-		 * unlock the leaf.
-		 */
+		 
 		spine.count--;
 	}
 	exit_shadow_spine(&spine);
@@ -1335,7 +1202,7 @@ int dm_btree_insert_notify(struct dm_btree_info *info, dm_block_t root,
 }
 EXPORT_SYMBOL_GPL(dm_btree_insert_notify);
 
-/*----------------------------------------------------------------*/
+ 
 
 static int find_key(struct ro_spine *s, dm_block_t block, bool find_highest,
 		    uint64_t *result_key, dm_block_t *next_block)
@@ -1412,12 +1279,9 @@ int dm_btree_find_lowest_key(struct dm_btree_info *info, dm_block_t root,
 }
 EXPORT_SYMBOL_GPL(dm_btree_find_lowest_key);
 
-/*----------------------------------------------------------------*/
+ 
 
-/*
- * FIXME: We shouldn't use a recursive algorithm when we have limited stack
- * space.  Also this only works for single level trees.
- */
+ 
 static int walk_node(struct dm_btree_info *info, dm_block_t block,
 		     int (*fn)(void *context, uint64_t *keys, void *leaf),
 		     void *context)
@@ -1462,7 +1326,7 @@ int dm_btree_walk(struct dm_btree_info *info, dm_block_t root,
 }
 EXPORT_SYMBOL_GPL(dm_btree_walk);
 
-/*----------------------------------------------------------------*/
+ 
 
 static void prefetch_values(struct dm_btree_cursor *c)
 {

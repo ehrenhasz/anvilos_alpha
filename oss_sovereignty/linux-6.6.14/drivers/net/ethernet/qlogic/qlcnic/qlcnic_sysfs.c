@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic qlcnic NIC Driver
- * Copyright (c) 2009-2013 QLogic Corporation
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/interrupt.h>
@@ -1270,12 +1267,12 @@ static ssize_t qlcnic_hwmon_show_temp(struct device *dev,
 		value = QLC_SHARED_REG_RD32(adapter, QLCNIC_ASIC_TEMP);
 
 	temperature = qlcnic_get_temp_val(value);
-	/* display millidegree celcius */
+	 
 	temperature *= 1000;
 	return sprintf(buf, "%u\n", temperature);
 }
 
-/* hwmon-sysfs attributes */
+ 
 static SENSOR_DEVICE_ATTR(temp1_input, 0444,
 			  qlcnic_hwmon_show_temp, NULL, 1);
 
@@ -1291,7 +1288,7 @@ void qlcnic_register_hwmon_dev(struct qlcnic_adapter *adapter)
 	struct device *dev = &adapter->pdev->dev;
 	struct device *hwmon_dev;
 
-	/* Skip hwmon registration for a VF device */
+	 
 	if (qlcnic_sriov_vf_check(adapter)) {
 		adapter->ahw->hwmon_dev = NULL;
 		return;

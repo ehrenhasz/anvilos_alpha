@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SM3 secure hash, as specified by OSCCA GM/T 0004-2012 SM3 and
- * described at https://tools.ietf.org/html/draft-shen-sm3-hash-01
- *
- * Copyright (C) 2017 ARM Limited or its affiliates.
- * Written by Gilad Ben-Yossef <gilad@benyossef.com>
- * Copyright (C) 2021 Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
- */
+
+ 
 
 #include <crypto/internal/hash.h>
 #include <linux/init.h>

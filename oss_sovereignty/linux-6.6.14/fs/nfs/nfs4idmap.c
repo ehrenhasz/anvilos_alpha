@@ -1,38 +1,4 @@
-/*
- * fs/nfs/idmap.c
- *
- *  UID and GID to name mapping for clients.
- *
- *  Copyright (c) 2002 The Regents of the University of Michigan.
- *  All rights reserved.
- *
- *  Marius Aamodt Eriksen <marius@umich.edu>
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *  1. Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *  2. Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
- *  3. Neither the name of the University nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED
- *  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- *  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
- *  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- *  BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- *  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- *  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 #include <linux/types.h>
 #include <linux/parser.h>
 #include <linux/fs.h>
@@ -80,12 +46,7 @@ static struct user_namespace *idmap_userns(const struct idmap *idmap)
 	return &init_user_ns;
 }
 
-/**
- * nfs_fattr_init_names - initialise the nfs_fattr owner_name/group_name fields
- * @fattr: fully initialised struct nfs_fattr
- * @owner_name: owner name string cache
- * @group_name: group name string cache
- */
+ 
 void nfs_fattr_init_names(struct nfs_fattr *fattr,
 		struct nfs4_string *owner_name,
 		struct nfs4_string *group_name)
@@ -134,10 +95,7 @@ static bool nfs_fattr_map_group_name(struct nfs_server *server, struct nfs_fattr
 	return true;
 }
 
-/**
- * nfs_fattr_free_names - free up the NFSv4 owner and group strings
- * @fattr: a fully initialised nfs_fattr structure
- */
+ 
 void nfs_fattr_free_names(struct nfs_fattr *fattr)
 {
 	if (fattr->valid & NFS_ATTR_FATTR_OWNER_NAME)
@@ -146,14 +104,7 @@ void nfs_fattr_free_names(struct nfs_fattr *fattr)
 		nfs_fattr_free_group_name(fattr);
 }
 
-/**
- * nfs_fattr_map_and_free_names - map owner/group strings into uid/gid and free
- * @server: pointer to the filesystem nfs_server structure
- * @fattr: a fully initialised nfs_fattr structure
- *
- * This helper maps the cached NFSv4 owner/group strings in fattr into
- * their numeric uid/gid equivalents, and then frees the cached strings.
- */
+ 
 void nfs_fattr_map_and_free_names(struct nfs_server *server, struct nfs_fattr *fattr)
 {
 	if (nfs_fattr_map_owner_name(server, fattr))
@@ -248,13 +199,7 @@ void nfs_idmap_quit(void)
 	put_cred(id_resolver_cache);
 }
 
-/*
- * Assemble the description to pass to request_key()
- * This function will allocate a new string and update dest to point
- * at it.  The caller is responsible for freeing dest.
- *
- * On error 0 is returned.  Otherwise, the length of dest is returned.
- */
+ 
 static ssize_t nfs_idmap_get_desc(const char *name, size_t namelen,
 				const char *type, size_t typelen, char **desc)
 {
@@ -346,7 +291,7 @@ out:
 	return ret;
 }
 
-/* ID -> Name */
+ 
 static ssize_t nfs_idmap_lookup_name(__u32 id, const char *type, char *buf,
 				     size_t buflen, struct idmap *idmap)
 {
@@ -361,7 +306,7 @@ static ssize_t nfs_idmap_lookup_name(__u32 id, const char *type, char *buf,
 	return ret;
 }
 
-/* Name -> ID */
+ 
 static int nfs_idmap_lookup_id(const char *name, size_t namelen, const char *type,
 			       __u32 *id, struct idmap *idmap)
 {
@@ -381,7 +326,7 @@ static int nfs_idmap_lookup_id(const char *name, size_t namelen, const char *typ
 	return ret;
 }
 
-/* idmap classic begins here */
+ 
 
 enum {
 	Opt_find_uid, Opt_find_gid, Opt_find_user, Opt_find_group, Opt_find_err
@@ -590,7 +535,7 @@ static int nfs_idmap_legacy_upcall(struct key *authkey, void *aux)
 	if (!aux)
 		goto out1;
 
-	/* msg and im are freed in idmap_pipe_destroy_msg */
+	 
 	ret = -ENOMEM;
 	data = kzalloc(sizeof(*data), GFP_KERNEL);
 	if (!data)
@@ -636,14 +581,14 @@ static int nfs_idmap_read_and_verify_message(struct idmap_msg *im,
 	size_t len;
 	int ret = -ENOKEY;
 
-	/* ret = -ENOKEY */
+	 
 	if (upcall->im_type != im->im_type || upcall->im_conv != im->im_conv)
 		goto out;
 	switch (im->im_conv) {
 	case IDMAP_CONV_NAMETOID:
 		if (strcmp(upcall->im_name, im->im_name) != 0)
 			break;
-		/* Note: here we store the NUL terminator too */
+		 
 		len = 1 + nfs_map_numeric_to_string(im->im_id, id_str,
 						    sizeof(id_str));
 		ret = nfs_idmap_instantiate(key, authkey, id_str, len);
@@ -673,10 +618,7 @@ idmap_pipe_downcall(struct file *filp, const char __user *src, size_t mlen)
 	size_t namelen_in;
 	int ret = -ENOKEY;
 
-	/* If instantiation is successful, anyone waiting for key construction
-	 * will have been woken up and someone else may now have used
-	 * idmap_key_cons - so after this point we may no longer touch it.
-	 */
+	 
 	data = xchg(&idmap->idmap_upcall_data, NULL);
 	if (data == NULL)
 		goto out_noupcall;

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * 1588 PTP support for Cadence GEM device.
- *
- * Copyright (C) 2017 Cadence Design Systems - https://www.cadence.com
- *
- * Authors: Rafal Ozieblo <rafalo@cadence.com>
- *          Bartosz Folta <bfolta@cadence.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/clk.h>
@@ -54,11 +47,9 @@ static int gem_tsu_get_time(struct ptp_clock_info *ptp, struct timespec64 *ts,
 	sech = gem_readl(bp, TSH);
 	second = gem_readl(bp, TN);
 
-	/* test for nsec rollover */
+	 
 	if (first > second) {
-		/* if so, use later read & re-read seconds
-		 * (assume all done within 1s)
-		 */
+		 
 		ptp_read_system_prets(sts);
 		ts->tv_nsec = gem_readl(bp, TN);
 		ptp_read_system_postts(sts);
@@ -87,10 +78,10 @@ static int gem_tsu_set_time(struct ptp_clock_info *ptp,
 
 	spin_lock_irqsave(&bp->tsu_clk_lock, flags);
 
-	/* TSH doesn't latch the time and no atomicity! */
-	gem_writel(bp, TN, 0); /* clear to avoid overflow */
+	 
+	gem_writel(bp, TN, 0);  
 	gem_writel(bp, TSH, sech);
-	/* write lower bits 2nd, for synchronized secs update */
+	 
 	gem_writel(bp, TSL, secl);
 	gem_writel(bp, TN, ns);
 
@@ -103,13 +94,9 @@ static int gem_tsu_incr_set(struct macb *bp, struct tsu_incr *incr_spec)
 {
 	unsigned long flags;
 
-	/* tsu_timer_incr register must be written after
-	 * the tsu_timer_incr_sub_ns register and the write operation
-	 * will cause the value written to the tsu_timer_incr_sub_ns register
-	 * to take effect.
-	 */
+	 
 	spin_lock_irqsave(&bp->tsu_clk_lock, flags);
-	/* RegBit[15:0] = Subns[23:8]; RegBit[31:24] = Subns[7:0] */
+	 
 	gem_writel(bp, TISUBN, GEM_BF(SUBNSINCRL, incr_spec->sub_ns) |
 		   GEM_BF(SUBNSINCRH, (incr_spec->sub_ns >>
 			  GEM_SUBNSINCRL_SIZE)));
@@ -132,18 +119,16 @@ static int gem_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 		scaled_ppm = -scaled_ppm;
 	}
 
-	/* Adjustment is relative to base frequency */
+	 
 	incr_spec.sub_ns = bp->tsu_incr.sub_ns;
 	incr_spec.ns = bp->tsu_incr.ns;
 
-	/* scaling: unused(8bit) | ns(8bit) | fractions(16bit) */
+	 
 	word = ((u64)incr_spec.ns << GEM_SUBNSINCR_SIZE) + incr_spec.sub_ns;
 	adj = (u64)scaled_ppm * word;
-	/* Divide with rounding, equivalent to floating dividing:
-	 * (temp / USEC_PER_SEC) + 0.5
-	 */
+	 
 	adj += (USEC_PER_SEC >> 1);
-	adj >>= PPM_FRACTION; /* remove fractions */
+	adj >>= PPM_FRACTION;  
 	adj = div_u64(adj, USEC_PER_SEC);
 	adj = neg_adj ? (word - adj) : (word + adj);
 
@@ -221,13 +206,13 @@ static void gem_ptp_init_tsu(struct macb *bp)
 {
 	struct timespec64 ts;
 
-	/* 1. get current system time */
+	 
 	ts = ns_to_timespec64(ktime_to_ns(ktime_get_real()));
 
-	/* 2. set ptp timer */
+	 
 	gem_tsu_set_time(&bp->ptp_clock_info, &ts);
 
-	/* 3. set PTP timer increment value to BASE_INCREMENT */
+	 
 	gem_tsu_incr_set(bp, &bp->tsu_incr);
 
 	gem_writel(bp, TA, 0);
@@ -252,18 +237,12 @@ static int gem_hw_timestamp(struct macb *bp, u32 dma_desc_ts_1,
 			GEM_BFEXT(DMA_SECL, dma_desc_ts_1);
 	ts->tv_nsec = GEM_BFEXT(DMA_NSEC, dma_desc_ts_1);
 
-	/* TSU overlapping workaround
-	 * The timestamp only contains lower few bits of seconds,
-	 * so add value from 1588 timer
-	 */
+	 
 	gem_tsu_get_time(&bp->ptp_clock_info, &tsu, NULL);
 
 	ts->tv_sec |= ((~GEM_DMA_SEC_MASK) & tsu.tv_sec);
 
-	/* If the top bit is set in the timestamp,
-	 * but not in 1588 timer, it has rolled over,
-	 * so subtract max size
-	 */
+	 
 	if ((ts->tv_sec & (GEM_DMA_SEC_TOP >> 1)) &&
 	    !(tsu.tv_sec & (GEM_DMA_SEC_TOP >> 1)))
 		ts->tv_sec -= GEM_DMA_SEC_TOP;
@@ -280,7 +259,7 @@ void gem_ptp_rxstamp(struct macb *bp, struct sk_buff *skb,
 
 	if (GEM_BFEXT(DMA_RXVALID, desc->addr)) {
 		desc_ptp = macb_ptp_desc(bp, desc);
-		/* Unlikely but check */
+		 
 		if (!desc_ptp) {
 			dev_warn_ratelimited(&bp->pdev->dev,
 					     "Timestamp not supported in BD\n");
@@ -306,14 +285,14 @@ void gem_ptp_txstamp(struct macb *bp, struct sk_buff *skb,
 	}
 
 	desc_ptp = macb_ptp_desc(bp, desc);
-	/* Unlikely but check */
+	 
 	if (!desc_ptp) {
 		dev_warn_ratelimited(&bp->pdev->dev,
 				     "Timestamp not supported in BD\n");
 		return;
 	}
 
-	/* ensure ts_1/ts_2 is loaded after ctrl (TX_USED check) */
+	 
 	dma_rmb();
 	gem_hw_timestamp(bp, desc_ptp->ts_1, desc_ptp->ts_2, &ts);
 
@@ -328,7 +307,7 @@ void gem_ptp_init(struct net_device *dev)
 
 	bp->ptp_clock_info = gem_ptp_caps_template;
 
-	/* nominal frequency and maximum adjustment in ppb */
+	 
 	bp->tsu_rate = bp->ptp_info->get_tsu_rate(bp);
 	bp->ptp_clock_info.max_adj = bp->ptp_info->get_ptp_max_adj();
 	gem_ptp_init_timer(bp);

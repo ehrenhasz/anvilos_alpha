@@ -1,73 +1,52 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #ifndef _athub_3_0_0_SH_MASK_HEADER
 #define _athub_3_0_0_SH_MASK_HEADER
 
 
-// addressBlock: athub_xpbdec
-//XPB_RTR_SRC_APRTR0
+
+
 #define XPB_RTR_SRC_APRTR0__BASE_ADDR__SHIFT                                                                  0x0
 #define XPB_RTR_SRC_APRTR0__BASE_ADDR_MASK                                                                    0x7FFFFFFFL
-//XPB_RTR_SRC_APRTR1
+
 #define XPB_RTR_SRC_APRTR1__BASE_ADDR__SHIFT                                                                  0x0
 #define XPB_RTR_SRC_APRTR1__BASE_ADDR_MASK                                                                    0x7FFFFFFFL
-//XPB_RTR_SRC_APRTR2
+
 #define XPB_RTR_SRC_APRTR2__BASE_ADDR__SHIFT                                                                  0x0
 #define XPB_RTR_SRC_APRTR2__BASE_ADDR_MASK                                                                    0x7FFFFFFFL
-//XPB_RTR_SRC_APRTR3
+
 #define XPB_RTR_SRC_APRTR3__BASE_ADDR__SHIFT                                                                  0x0
 #define XPB_RTR_SRC_APRTR3__BASE_ADDR_MASK                                                                    0x7FFFFFFFL
-//XPB_RTR_SRC_APRTR4
+
 #define XPB_RTR_SRC_APRTR4__BASE_ADDR__SHIFT                                                                  0x0
 #define XPB_RTR_SRC_APRTR4__BASE_ADDR_MASK                                                                    0x7FFFFFFFL
-//XPB_RTR_SRC_APRTR5
+
 #define XPB_RTR_SRC_APRTR5__BASE_ADDR__SHIFT                                                                  0x0
 #define XPB_RTR_SRC_APRTR5__BASE_ADDR_MASK                                                                    0x7FFFFFFFL
-//XPB_RTR_SRC_APRTR6
+
 #define XPB_RTR_SRC_APRTR6__BASE_ADDR__SHIFT                                                                  0x0
 #define XPB_RTR_SRC_APRTR6__BASE_ADDR_MASK                                                                    0x7FFFFFFFL
-//XPB_RTR_SRC_APRTR7
+
 #define XPB_RTR_SRC_APRTR7__BASE_ADDR__SHIFT                                                                  0x0
 #define XPB_RTR_SRC_APRTR7__BASE_ADDR_MASK                                                                    0x7FFFFFFFL
-//XPB_RTR_SRC_APRTR8
+
 #define XPB_RTR_SRC_APRTR8__BASE_ADDR__SHIFT                                                                  0x0
 #define XPB_RTR_SRC_APRTR8__BASE_ADDR_MASK                                                                    0x7FFFFFFFL
-//XPB_RTR_SRC_APRTR9
+
 #define XPB_RTR_SRC_APRTR9__BASE_ADDR__SHIFT                                                                  0x0
 #define XPB_RTR_SRC_APRTR9__BASE_ADDR_MASK                                                                    0x7FFFFFFFL
-//XPB_RTR_SRC_APRTR10
+
 #define XPB_RTR_SRC_APRTR10__BASE_ADDR__SHIFT                                                                 0x0
 #define XPB_RTR_SRC_APRTR10__BASE_ADDR_MASK                                                                   0x7FFFFFFFL
-//XPB_RTR_SRC_APRTR11
+
 #define XPB_RTR_SRC_APRTR11__BASE_ADDR__SHIFT                                                                 0x0
 #define XPB_RTR_SRC_APRTR11__BASE_ADDR_MASK                                                                   0x7FFFFFFFL
-//XPB_RTR_SRC_APRTR12
+
 #define XPB_RTR_SRC_APRTR12__BASE_ADDR__SHIFT                                                                 0x0
 #define XPB_RTR_SRC_APRTR12__BASE_ADDR_MASK                                                                   0x7FFFFFFFL
-//XPB_RTR_SRC_APRTR13
+
 #define XPB_RTR_SRC_APRTR13__BASE_ADDR__SHIFT                                                                 0x0
 #define XPB_RTR_SRC_APRTR13__BASE_ADDR_MASK                                                                   0x7FFFFFFFL
-//XPB_RTR_DEST_MAP0
+
 #define XPB_RTR_DEST_MAP0__NMR__SHIFT                                                                         0x0
 #define XPB_RTR_DEST_MAP0__DEST_OFFSET__SHIFT                                                                 0x1
 #define XPB_RTR_DEST_MAP0__DEST_SEL__SHIFT                                                                    0x14
@@ -80,7 +59,7 @@
 #define XPB_RTR_DEST_MAP0__DEST_SEL_RPB_MASK                                                                  0x01000000L
 #define XPB_RTR_DEST_MAP0__SIDE_OK_MASK                                                                       0x02000000L
 #define XPB_RTR_DEST_MAP0__APRTR_SIZE_MASK                                                                    0x7C000000L
-//XPB_RTR_DEST_MAP1
+
 #define XPB_RTR_DEST_MAP1__NMR__SHIFT                                                                         0x0
 #define XPB_RTR_DEST_MAP1__DEST_OFFSET__SHIFT                                                                 0x1
 #define XPB_RTR_DEST_MAP1__DEST_SEL__SHIFT                                                                    0x14
@@ -93,7 +72,7 @@
 #define XPB_RTR_DEST_MAP1__DEST_SEL_RPB_MASK                                                                  0x01000000L
 #define XPB_RTR_DEST_MAP1__SIDE_OK_MASK                                                                       0x02000000L
 #define XPB_RTR_DEST_MAP1__APRTR_SIZE_MASK                                                                    0x7C000000L
-//XPB_RTR_DEST_MAP2
+
 #define XPB_RTR_DEST_MAP2__NMR__SHIFT                                                                         0x0
 #define XPB_RTR_DEST_MAP2__DEST_OFFSET__SHIFT                                                                 0x1
 #define XPB_RTR_DEST_MAP2__DEST_SEL__SHIFT                                                                    0x14
@@ -106,7 +85,7 @@
 #define XPB_RTR_DEST_MAP2__DEST_SEL_RPB_MASK                                                                  0x01000000L
 #define XPB_RTR_DEST_MAP2__SIDE_OK_MASK                                                                       0x02000000L
 #define XPB_RTR_DEST_MAP2__APRTR_SIZE_MASK                                                                    0x7C000000L
-//XPB_RTR_DEST_MAP3
+
 #define XPB_RTR_DEST_MAP3__NMR__SHIFT                                                                         0x0
 #define XPB_RTR_DEST_MAP3__DEST_OFFSET__SHIFT                                                                 0x1
 #define XPB_RTR_DEST_MAP3__DEST_SEL__SHIFT                                                                    0x14
@@ -119,7 +98,7 @@
 #define XPB_RTR_DEST_MAP3__DEST_SEL_RPB_MASK                                                                  0x01000000L
 #define XPB_RTR_DEST_MAP3__SIDE_OK_MASK                                                                       0x02000000L
 #define XPB_RTR_DEST_MAP3__APRTR_SIZE_MASK                                                                    0x7C000000L
-//XPB_RTR_DEST_MAP4
+
 #define XPB_RTR_DEST_MAP4__NMR__SHIFT                                                                         0x0
 #define XPB_RTR_DEST_MAP4__DEST_OFFSET__SHIFT                                                                 0x1
 #define XPB_RTR_DEST_MAP4__DEST_SEL__SHIFT                                                                    0x14
@@ -132,7 +111,7 @@
 #define XPB_RTR_DEST_MAP4__DEST_SEL_RPB_MASK                                                                  0x01000000L
 #define XPB_RTR_DEST_MAP4__SIDE_OK_MASK                                                                       0x02000000L
 #define XPB_RTR_DEST_MAP4__APRTR_SIZE_MASK                                                                    0x7C000000L
-//XPB_RTR_DEST_MAP5
+
 #define XPB_RTR_DEST_MAP5__NMR__SHIFT                                                                         0x0
 #define XPB_RTR_DEST_MAP5__DEST_OFFSET__SHIFT                                                                 0x1
 #define XPB_RTR_DEST_MAP5__DEST_SEL__SHIFT                                                                    0x14
@@ -145,7 +124,7 @@
 #define XPB_RTR_DEST_MAP5__DEST_SEL_RPB_MASK                                                                  0x01000000L
 #define XPB_RTR_DEST_MAP5__SIDE_OK_MASK                                                                       0x02000000L
 #define XPB_RTR_DEST_MAP5__APRTR_SIZE_MASK                                                                    0x7C000000L
-//XPB_RTR_DEST_MAP6
+
 #define XPB_RTR_DEST_MAP6__NMR__SHIFT                                                                         0x0
 #define XPB_RTR_DEST_MAP6__DEST_OFFSET__SHIFT                                                                 0x1
 #define XPB_RTR_DEST_MAP6__DEST_SEL__SHIFT                                                                    0x14
@@ -158,7 +137,7 @@
 #define XPB_RTR_DEST_MAP6__DEST_SEL_RPB_MASK                                                                  0x01000000L
 #define XPB_RTR_DEST_MAP6__SIDE_OK_MASK                                                                       0x02000000L
 #define XPB_RTR_DEST_MAP6__APRTR_SIZE_MASK                                                                    0x7C000000L
-//XPB_RTR_DEST_MAP7
+
 #define XPB_RTR_DEST_MAP7__NMR__SHIFT                                                                         0x0
 #define XPB_RTR_DEST_MAP7__DEST_OFFSET__SHIFT                                                                 0x1
 #define XPB_RTR_DEST_MAP7__DEST_SEL__SHIFT                                                                    0x14
@@ -171,7 +150,7 @@
 #define XPB_RTR_DEST_MAP7__DEST_SEL_RPB_MASK                                                                  0x01000000L
 #define XPB_RTR_DEST_MAP7__SIDE_OK_MASK                                                                       0x02000000L
 #define XPB_RTR_DEST_MAP7__APRTR_SIZE_MASK                                                                    0x7C000000L
-//XPB_RTR_DEST_MAP8
+
 #define XPB_RTR_DEST_MAP8__NMR__SHIFT                                                                         0x0
 #define XPB_RTR_DEST_MAP8__DEST_OFFSET__SHIFT                                                                 0x1
 #define XPB_RTR_DEST_MAP8__DEST_SEL__SHIFT                                                                    0x14
@@ -184,7 +163,7 @@
 #define XPB_RTR_DEST_MAP8__DEST_SEL_RPB_MASK                                                                  0x01000000L
 #define XPB_RTR_DEST_MAP8__SIDE_OK_MASK                                                                       0x02000000L
 #define XPB_RTR_DEST_MAP8__APRTR_SIZE_MASK                                                                    0x7C000000L
-//XPB_RTR_DEST_MAP9
+
 #define XPB_RTR_DEST_MAP9__NMR__SHIFT                                                                         0x0
 #define XPB_RTR_DEST_MAP9__DEST_OFFSET__SHIFT                                                                 0x1
 #define XPB_RTR_DEST_MAP9__DEST_SEL__SHIFT                                                                    0x14
@@ -197,7 +176,7 @@
 #define XPB_RTR_DEST_MAP9__DEST_SEL_RPB_MASK                                                                  0x01000000L
 #define XPB_RTR_DEST_MAP9__SIDE_OK_MASK                                                                       0x02000000L
 #define XPB_RTR_DEST_MAP9__APRTR_SIZE_MASK                                                                    0x7C000000L
-//XPB_RTR_DEST_MAP10
+
 #define XPB_RTR_DEST_MAP10__NMR__SHIFT                                                                        0x0
 #define XPB_RTR_DEST_MAP10__DEST_OFFSET__SHIFT                                                                0x1
 #define XPB_RTR_DEST_MAP10__DEST_SEL__SHIFT                                                                   0x14
@@ -210,7 +189,7 @@
 #define XPB_RTR_DEST_MAP10__DEST_SEL_RPB_MASK                                                                 0x01000000L
 #define XPB_RTR_DEST_MAP10__SIDE_OK_MASK                                                                      0x02000000L
 #define XPB_RTR_DEST_MAP10__APRTR_SIZE_MASK                                                                   0x7C000000L
-//XPB_RTR_DEST_MAP11
+
 #define XPB_RTR_DEST_MAP11__NMR__SHIFT                                                                        0x0
 #define XPB_RTR_DEST_MAP11__DEST_OFFSET__SHIFT                                                                0x1
 #define XPB_RTR_DEST_MAP11__DEST_SEL__SHIFT                                                                   0x14
@@ -223,7 +202,7 @@
 #define XPB_RTR_DEST_MAP11__DEST_SEL_RPB_MASK                                                                 0x01000000L
 #define XPB_RTR_DEST_MAP11__SIDE_OK_MASK                                                                      0x02000000L
 #define XPB_RTR_DEST_MAP11__APRTR_SIZE_MASK                                                                   0x7C000000L
-//XPB_RTR_DEST_MAP12
+
 #define XPB_RTR_DEST_MAP12__NMR__SHIFT                                                                        0x0
 #define XPB_RTR_DEST_MAP12__DEST_OFFSET__SHIFT                                                                0x1
 #define XPB_RTR_DEST_MAP12__DEST_SEL__SHIFT                                                                   0x14
@@ -236,7 +215,7 @@
 #define XPB_RTR_DEST_MAP12__DEST_SEL_RPB_MASK                                                                 0x01000000L
 #define XPB_RTR_DEST_MAP12__SIDE_OK_MASK                                                                      0x02000000L
 #define XPB_RTR_DEST_MAP12__APRTR_SIZE_MASK                                                                   0x7C000000L
-//XPB_RTR_DEST_MAP13
+
 #define XPB_RTR_DEST_MAP13__NMR__SHIFT                                                                        0x0
 #define XPB_RTR_DEST_MAP13__DEST_OFFSET__SHIFT                                                                0x1
 #define XPB_RTR_DEST_MAP13__DEST_SEL__SHIFT                                                                   0x14
@@ -249,7 +228,7 @@
 #define XPB_RTR_DEST_MAP13__DEST_SEL_RPB_MASK                                                                 0x01000000L
 #define XPB_RTR_DEST_MAP13__SIDE_OK_MASK                                                                      0x02000000L
 #define XPB_RTR_DEST_MAP13__APRTR_SIZE_MASK                                                                   0x7C000000L
-//XPB_CLG_CFG0
+
 #define XPB_CLG_CFG0__WCB_NUM__SHIFT                                                                          0x0
 #define XPB_CLG_CFG0__LB_TYPE__SHIFT                                                                          0x4
 #define XPB_CLG_CFG0__P2P_BAR__SHIFT                                                                          0x7
@@ -260,7 +239,7 @@
 #define XPB_CLG_CFG0__P2P_BAR_MASK                                                                            0x00000380L
 #define XPB_CLG_CFG0__HOST_FLUSH_MASK                                                                         0x00003C00L
 #define XPB_CLG_CFG0__SIDE_FLUSH_MASK                                                                         0x0003C000L
-//XPB_CLG_CFG1
+
 #define XPB_CLG_CFG1__WCB_NUM__SHIFT                                                                          0x0
 #define XPB_CLG_CFG1__LB_TYPE__SHIFT                                                                          0x4
 #define XPB_CLG_CFG1__P2P_BAR__SHIFT                                                                          0x7
@@ -271,7 +250,7 @@
 #define XPB_CLG_CFG1__P2P_BAR_MASK                                                                            0x00000380L
 #define XPB_CLG_CFG1__HOST_FLUSH_MASK                                                                         0x00003C00L
 #define XPB_CLG_CFG1__SIDE_FLUSH_MASK                                                                         0x0003C000L
-//XPB_CLG_CFG2
+
 #define XPB_CLG_CFG2__WCB_NUM__SHIFT                                                                          0x0
 #define XPB_CLG_CFG2__LB_TYPE__SHIFT                                                                          0x4
 #define XPB_CLG_CFG2__P2P_BAR__SHIFT                                                                          0x7
@@ -282,7 +261,7 @@
 #define XPB_CLG_CFG2__P2P_BAR_MASK                                                                            0x00000380L
 #define XPB_CLG_CFG2__HOST_FLUSH_MASK                                                                         0x00003C00L
 #define XPB_CLG_CFG2__SIDE_FLUSH_MASK                                                                         0x0003C000L
-//XPB_CLG_CFG3
+
 #define XPB_CLG_CFG3__WCB_NUM__SHIFT                                                                          0x0
 #define XPB_CLG_CFG3__LB_TYPE__SHIFT                                                                          0x4
 #define XPB_CLG_CFG3__P2P_BAR__SHIFT                                                                          0x7
@@ -293,7 +272,7 @@
 #define XPB_CLG_CFG3__P2P_BAR_MASK                                                                            0x00000380L
 #define XPB_CLG_CFG3__HOST_FLUSH_MASK                                                                         0x00003C00L
 #define XPB_CLG_CFG3__SIDE_FLUSH_MASK                                                                         0x0003C000L
-//XPB_CLG_CFG4
+
 #define XPB_CLG_CFG4__WCB_NUM__SHIFT                                                                          0x0
 #define XPB_CLG_CFG4__LB_TYPE__SHIFT                                                                          0x4
 #define XPB_CLG_CFG4__P2P_BAR__SHIFT                                                                          0x7
@@ -304,7 +283,7 @@
 #define XPB_CLG_CFG4__P2P_BAR_MASK                                                                            0x00000380L
 #define XPB_CLG_CFG4__HOST_FLUSH_MASK                                                                         0x00003C00L
 #define XPB_CLG_CFG4__SIDE_FLUSH_MASK                                                                         0x0003C000L
-//XPB_CLG_CFG5
+
 #define XPB_CLG_CFG5__WCB_NUM__SHIFT                                                                          0x0
 #define XPB_CLG_CFG5__LB_TYPE__SHIFT                                                                          0x4
 #define XPB_CLG_CFG5__P2P_BAR__SHIFT                                                                          0x7
@@ -315,7 +294,7 @@
 #define XPB_CLG_CFG5__P2P_BAR_MASK                                                                            0x00000380L
 #define XPB_CLG_CFG5__HOST_FLUSH_MASK                                                                         0x00003C00L
 #define XPB_CLG_CFG5__SIDE_FLUSH_MASK                                                                         0x0003C000L
-//XPB_CLG_CFG6
+
 #define XPB_CLG_CFG6__WCB_NUM__SHIFT                                                                          0x0
 #define XPB_CLG_CFG6__LB_TYPE__SHIFT                                                                          0x4
 #define XPB_CLG_CFG6__P2P_BAR__SHIFT                                                                          0x7
@@ -326,7 +305,7 @@
 #define XPB_CLG_CFG6__P2P_BAR_MASK                                                                            0x00000380L
 #define XPB_CLG_CFG6__HOST_FLUSH_MASK                                                                         0x00003C00L
 #define XPB_CLG_CFG6__SIDE_FLUSH_MASK                                                                         0x0003C000L
-//XPB_CLG_CFG7
+
 #define XPB_CLG_CFG7__WCB_NUM__SHIFT                                                                          0x0
 #define XPB_CLG_CFG7__LB_TYPE__SHIFT                                                                          0x4
 #define XPB_CLG_CFG7__P2P_BAR__SHIFT                                                                          0x7
@@ -337,7 +316,7 @@
 #define XPB_CLG_CFG7__P2P_BAR_MASK                                                                            0x00000380L
 #define XPB_CLG_CFG7__HOST_FLUSH_MASK                                                                         0x00003C00L
 #define XPB_CLG_CFG7__SIDE_FLUSH_MASK                                                                         0x0003C000L
-//XPB_CLG_EXTRA
+
 #define XPB_CLG_EXTRA__CMP0_HIGH__SHIFT                                                                       0x0
 #define XPB_CLG_EXTRA__CMP0_LOW__SHIFT                                                                        0x6
 #define XPB_CLG_EXTRA__VLD0__SHIFT                                                                            0xb
@@ -354,7 +333,7 @@
 #define XPB_CLG_EXTRA__CMP1_LOW_MASK                                                                          0x03E00000L
 #define XPB_CLG_EXTRA__VLD1_MASK                                                                              0x04000000L
 #define XPB_CLG_EXTRA__CLG1_NUM_MASK                                                                          0x38000000L
-//XPB_CLG_EXTRA_MSK
+
 #define XPB_CLG_EXTRA_MSK__MSK0_HIGH__SHIFT                                                                   0x0
 #define XPB_CLG_EXTRA_MSK__MSK0_LOW__SHIFT                                                                    0x6
 #define XPB_CLG_EXTRA_MSK__MSK1_HIGH__SHIFT                                                                   0xb
@@ -363,7 +342,7 @@
 #define XPB_CLG_EXTRA_MSK__MSK0_LOW_MASK                                                                      0x000007C0L
 #define XPB_CLG_EXTRA_MSK__MSK1_HIGH_MASK                                                                     0x0001F800L
 #define XPB_CLG_EXTRA_MSK__MSK1_LOW_MASK                                                                      0x003E0000L
-//XPB_LB_ADDR
+
 #define XPB_LB_ADDR__CMP0__SHIFT                                                                              0x0
 #define XPB_LB_ADDR__MASK0__SHIFT                                                                             0xa
 #define XPB_LB_ADDR__CMP1__SHIFT                                                                              0x14
@@ -372,17 +351,17 @@
 #define XPB_LB_ADDR__MASK0_MASK                                                                               0x000FFC00L
 #define XPB_LB_ADDR__CMP1_MASK                                                                                0x03F00000L
 #define XPB_LB_ADDR__MASK1_MASK                                                                               0xFC000000L
-//XPB_WCB_STS
+
 #define XPB_WCB_STS__PBUF_VLD__SHIFT                                                                          0x0
 #define XPB_WCB_STS__WCB_HST_DATA_BUF_CNT__SHIFT                                                              0x10
 #define XPB_WCB_STS__WCB_SID_DATA_BUF_CNT__SHIFT                                                              0x17
 #define XPB_WCB_STS__PBUF_VLD_MASK                                                                            0x0000FFFFL
 #define XPB_WCB_STS__WCB_HST_DATA_BUF_CNT_MASK                                                                0x007F0000L
 #define XPB_WCB_STS__WCB_SID_DATA_BUF_CNT_MASK                                                                0x3F800000L
-//XPB_HST_CFG
+
 #define XPB_HST_CFG__BAR_UP_WR_CMD__SHIFT                                                                     0x0
 #define XPB_HST_CFG__BAR_UP_WR_CMD_MASK                                                                       0x00000001L
-//XPB_P2P_BAR_CFG
+
 #define XPB_P2P_BAR_CFG__ADDR_SIZE__SHIFT                                                                     0x0
 #define XPB_P2P_BAR_CFG__SEND_BAR__SHIFT                                                                      0x4
 #define XPB_P2P_BAR_CFG__SNOOP__SHIFT                                                                         0x6
@@ -401,7 +380,7 @@
 #define XPB_P2P_BAR_CFG__REGBAR_FROM_SYSBAR_MASK                                                              0x00000400L
 #define XPB_P2P_BAR_CFG__RD_EN_MASK                                                                           0x00000800L
 #define XPB_P2P_BAR_CFG__ATC_TRANSLATED_MASK                                                                  0x00001000L
-//XPB_P2P_BAR0
+
 #define XPB_P2P_BAR0__HOST_FLUSH__SHIFT                                                                       0x0
 #define XPB_P2P_BAR0__REG_SYS_BAR__SHIFT                                                                      0x4
 #define XPB_P2P_BAR0__MEM_SYS_BAR__SHIFT                                                                      0x8
@@ -418,7 +397,7 @@
 #define XPB_P2P_BAR0__COMPRESS_DIS_MASK                                                                       0x00004000L
 #define XPB_P2P_BAR0__RESERVE_MASK                                                                            0x00008000L
 #define XPB_P2P_BAR0__ADDRESS_MASK                                                                            0xFFFF0000L
-//XPB_P2P_BAR1
+
 #define XPB_P2P_BAR1__HOST_FLUSH__SHIFT                                                                       0x0
 #define XPB_P2P_BAR1__REG_SYS_BAR__SHIFT                                                                      0x4
 #define XPB_P2P_BAR1__MEM_SYS_BAR__SHIFT                                                                      0x8
@@ -435,7 +414,7 @@
 #define XPB_P2P_BAR1__COMPRESS_DIS_MASK                                                                       0x00004000L
 #define XPB_P2P_BAR1__RESERVE_MASK                                                                            0x00008000L
 #define XPB_P2P_BAR1__ADDRESS_MASK                                                                            0xFFFF0000L
-//XPB_P2P_BAR2
+
 #define XPB_P2P_BAR2__HOST_FLUSH__SHIFT                                                                       0x0
 #define XPB_P2P_BAR2__REG_SYS_BAR__SHIFT                                                                      0x4
 #define XPB_P2P_BAR2__MEM_SYS_BAR__SHIFT                                                                      0x8
@@ -452,7 +431,7 @@
 #define XPB_P2P_BAR2__COMPRESS_DIS_MASK                                                                       0x00004000L
 #define XPB_P2P_BAR2__RESERVE_MASK                                                                            0x00008000L
 #define XPB_P2P_BAR2__ADDRESS_MASK                                                                            0xFFFF0000L
-//XPB_P2P_BAR3
+
 #define XPB_P2P_BAR3__HOST_FLUSH__SHIFT                                                                       0x0
 #define XPB_P2P_BAR3__REG_SYS_BAR__SHIFT                                                                      0x4
 #define XPB_P2P_BAR3__MEM_SYS_BAR__SHIFT                                                                      0x8
@@ -469,7 +448,7 @@
 #define XPB_P2P_BAR3__COMPRESS_DIS_MASK                                                                       0x00004000L
 #define XPB_P2P_BAR3__RESERVE_MASK                                                                            0x00008000L
 #define XPB_P2P_BAR3__ADDRESS_MASK                                                                            0xFFFF0000L
-//XPB_P2P_BAR4
+
 #define XPB_P2P_BAR4__HOST_FLUSH__SHIFT                                                                       0x0
 #define XPB_P2P_BAR4__REG_SYS_BAR__SHIFT                                                                      0x4
 #define XPB_P2P_BAR4__MEM_SYS_BAR__SHIFT                                                                      0x8
@@ -486,7 +465,7 @@
 #define XPB_P2P_BAR4__COMPRESS_DIS_MASK                                                                       0x00004000L
 #define XPB_P2P_BAR4__RESERVE_MASK                                                                            0x00008000L
 #define XPB_P2P_BAR4__ADDRESS_MASK                                                                            0xFFFF0000L
-//XPB_P2P_BAR5
+
 #define XPB_P2P_BAR5__HOST_FLUSH__SHIFT                                                                       0x0
 #define XPB_P2P_BAR5__REG_SYS_BAR__SHIFT                                                                      0x4
 #define XPB_P2P_BAR5__MEM_SYS_BAR__SHIFT                                                                      0x8
@@ -503,7 +482,7 @@
 #define XPB_P2P_BAR5__COMPRESS_DIS_MASK                                                                       0x00004000L
 #define XPB_P2P_BAR5__RESERVE_MASK                                                                            0x00008000L
 #define XPB_P2P_BAR5__ADDRESS_MASK                                                                            0xFFFF0000L
-//XPB_P2P_BAR6
+
 #define XPB_P2P_BAR6__HOST_FLUSH__SHIFT                                                                       0x0
 #define XPB_P2P_BAR6__REG_SYS_BAR__SHIFT                                                                      0x4
 #define XPB_P2P_BAR6__MEM_SYS_BAR__SHIFT                                                                      0x8
@@ -520,7 +499,7 @@
 #define XPB_P2P_BAR6__COMPRESS_DIS_MASK                                                                       0x00004000L
 #define XPB_P2P_BAR6__RESERVE_MASK                                                                            0x00008000L
 #define XPB_P2P_BAR6__ADDRESS_MASK                                                                            0xFFFF0000L
-//XPB_P2P_BAR7
+
 #define XPB_P2P_BAR7__HOST_FLUSH__SHIFT                                                                       0x0
 #define XPB_P2P_BAR7__REG_SYS_BAR__SHIFT                                                                      0x4
 #define XPB_P2P_BAR7__MEM_SYS_BAR__SHIFT                                                                      0x8
@@ -537,7 +516,7 @@
 #define XPB_P2P_BAR7__COMPRESS_DIS_MASK                                                                       0x00004000L
 #define XPB_P2P_BAR7__RESERVE_MASK                                                                            0x00008000L
 #define XPB_P2P_BAR7__ADDRESS_MASK                                                                            0xFFFF0000L
-//XPB_P2P_BAR_SETUP
+
 #define XPB_P2P_BAR_SETUP__SEL__SHIFT                                                                         0x0
 #define XPB_P2P_BAR_SETUP__REG_SYS_BAR__SHIFT                                                                 0x8
 #define XPB_P2P_BAR_SETUP__VALID__SHIFT                                                                       0xc
@@ -552,87 +531,87 @@
 #define XPB_P2P_BAR_SETUP__COMPRESS_DIS_MASK                                                                  0x00004000L
 #define XPB_P2P_BAR_SETUP__RESERVE_MASK                                                                       0x00008000L
 #define XPB_P2P_BAR_SETUP__ADDRESS_MASK                                                                       0xFFFF0000L
-//XPB_P2P_BAR_DELTA_ABOVE
+
 #define XPB_P2P_BAR_DELTA_ABOVE__EN__SHIFT                                                                    0x0
 #define XPB_P2P_BAR_DELTA_ABOVE__DELTA__SHIFT                                                                 0x8
 #define XPB_P2P_BAR_DELTA_ABOVE__EN_MASK                                                                      0x000000FFL
 #define XPB_P2P_BAR_DELTA_ABOVE__DELTA_MASK                                                                   0x0FFFFF00L
-//XPB_P2P_BAR_DELTA_BELOW
+
 #define XPB_P2P_BAR_DELTA_BELOW__EN__SHIFT                                                                    0x0
 #define XPB_P2P_BAR_DELTA_BELOW__DELTA__SHIFT                                                                 0x8
 #define XPB_P2P_BAR_DELTA_BELOW__EN_MASK                                                                      0x000000FFL
 #define XPB_P2P_BAR_DELTA_BELOW__DELTA_MASK                                                                   0x0FFFFF00L
-//XPB_PEER_SYS_BAR0
+
 #define XPB_PEER_SYS_BAR0__VALID__SHIFT                                                                       0x0
 #define XPB_PEER_SYS_BAR0__ADDR__SHIFT                                                                        0x1
 #define XPB_PEER_SYS_BAR0__VALID_MASK                                                                         0x00000001L
 #define XPB_PEER_SYS_BAR0__ADDR_MASK                                                                          0xFFFFFFFEL
-//XPB_PEER_SYS_BAR1
+
 #define XPB_PEER_SYS_BAR1__VALID__SHIFT                                                                       0x0
 #define XPB_PEER_SYS_BAR1__ADDR__SHIFT                                                                        0x1
 #define XPB_PEER_SYS_BAR1__VALID_MASK                                                                         0x00000001L
 #define XPB_PEER_SYS_BAR1__ADDR_MASK                                                                          0xFFFFFFFEL
-//XPB_PEER_SYS_BAR2
+
 #define XPB_PEER_SYS_BAR2__VALID__SHIFT                                                                       0x0
 #define XPB_PEER_SYS_BAR2__ADDR__SHIFT                                                                        0x1
 #define XPB_PEER_SYS_BAR2__VALID_MASK                                                                         0x00000001L
 #define XPB_PEER_SYS_BAR2__ADDR_MASK                                                                          0xFFFFFFFEL
-//XPB_PEER_SYS_BAR3
+
 #define XPB_PEER_SYS_BAR3__VALID__SHIFT                                                                       0x0
 #define XPB_PEER_SYS_BAR3__ADDR__SHIFT                                                                        0x1
 #define XPB_PEER_SYS_BAR3__VALID_MASK                                                                         0x00000001L
 #define XPB_PEER_SYS_BAR3__ADDR_MASK                                                                          0xFFFFFFFEL
-//XPB_PEER_SYS_BAR4
+
 #define XPB_PEER_SYS_BAR4__VALID__SHIFT                                                                       0x0
 #define XPB_PEER_SYS_BAR4__ADDR__SHIFT                                                                        0x1
 #define XPB_PEER_SYS_BAR4__VALID_MASK                                                                         0x00000001L
 #define XPB_PEER_SYS_BAR4__ADDR_MASK                                                                          0xFFFFFFFEL
-//XPB_PEER_SYS_BAR5
+
 #define XPB_PEER_SYS_BAR5__VALID__SHIFT                                                                       0x0
 #define XPB_PEER_SYS_BAR5__ADDR__SHIFT                                                                        0x1
 #define XPB_PEER_SYS_BAR5__VALID_MASK                                                                         0x00000001L
 #define XPB_PEER_SYS_BAR5__ADDR_MASK                                                                          0xFFFFFFFEL
-//XPB_PEER_SYS_BAR6
+
 #define XPB_PEER_SYS_BAR6__VALID__SHIFT                                                                       0x0
 #define XPB_PEER_SYS_BAR6__ADDR__SHIFT                                                                        0x1
 #define XPB_PEER_SYS_BAR6__VALID_MASK                                                                         0x00000001L
 #define XPB_PEER_SYS_BAR6__ADDR_MASK                                                                          0xFFFFFFFEL
-//XPB_PEER_SYS_BAR7
+
 #define XPB_PEER_SYS_BAR7__VALID__SHIFT                                                                       0x0
 #define XPB_PEER_SYS_BAR7__ADDR__SHIFT                                                                        0x1
 #define XPB_PEER_SYS_BAR7__VALID_MASK                                                                         0x00000001L
 #define XPB_PEER_SYS_BAR7__ADDR_MASK                                                                          0xFFFFFFFEL
-//XPB_PEER_SYS_BAR8
+
 #define XPB_PEER_SYS_BAR8__VALID__SHIFT                                                                       0x0
 #define XPB_PEER_SYS_BAR8__ADDR__SHIFT                                                                        0x1
 #define XPB_PEER_SYS_BAR8__VALID_MASK                                                                         0x00000001L
 #define XPB_PEER_SYS_BAR8__ADDR_MASK                                                                          0xFFFFFFFEL
-//XPB_PEER_SYS_BAR9
+
 #define XPB_PEER_SYS_BAR9__VALID__SHIFT                                                                       0x0
 #define XPB_PEER_SYS_BAR9__ADDR__SHIFT                                                                        0x1
 #define XPB_PEER_SYS_BAR9__VALID_MASK                                                                         0x00000001L
 #define XPB_PEER_SYS_BAR9__ADDR_MASK                                                                          0xFFFFFFFEL
-//XPB_PEER_SYS_BAR10
+
 #define XPB_PEER_SYS_BAR10__VALID__SHIFT                                                                      0x0
 #define XPB_PEER_SYS_BAR10__ADDR__SHIFT                                                                       0x1
 #define XPB_PEER_SYS_BAR10__VALID_MASK                                                                        0x00000001L
 #define XPB_PEER_SYS_BAR10__ADDR_MASK                                                                         0xFFFFFFFEL
-//XPB_PEER_SYS_BAR11
+
 #define XPB_PEER_SYS_BAR11__VALID__SHIFT                                                                      0x0
 #define XPB_PEER_SYS_BAR11__ADDR__SHIFT                                                                       0x1
 #define XPB_PEER_SYS_BAR11__VALID_MASK                                                                        0x00000001L
 #define XPB_PEER_SYS_BAR11__ADDR_MASK                                                                         0xFFFFFFFEL
-//XPB_PEER_SYS_BAR12
+
 #define XPB_PEER_SYS_BAR12__VALID__SHIFT                                                                      0x0
 #define XPB_PEER_SYS_BAR12__ADDR__SHIFT                                                                       0x1
 #define XPB_PEER_SYS_BAR12__VALID_MASK                                                                        0x00000001L
 #define XPB_PEER_SYS_BAR12__ADDR_MASK                                                                         0xFFFFFFFEL
-//XPB_PEER_SYS_BAR13
+
 #define XPB_PEER_SYS_BAR13__VALID__SHIFT                                                                      0x0
 #define XPB_PEER_SYS_BAR13__ADDR__SHIFT                                                                       0x1
 #define XPB_PEER_SYS_BAR13__VALID_MASK                                                                        0x00000001L
 #define XPB_PEER_SYS_BAR13__ADDR_MASK                                                                         0xFFFFFFFEL
-//XPB_CLK_GAT
+
 #define XPB_CLK_GAT__ONDLY__SHIFT                                                                             0x0
 #define XPB_CLK_GAT__OFFDLY__SHIFT                                                                            0x6
 #define XPB_CLK_GAT__RDYDLY__SHIFT                                                                            0xc
@@ -643,7 +622,7 @@
 #define XPB_CLK_GAT__RDYDLY_MASK                                                                              0x0003F000L
 #define XPB_CLK_GAT__ENABLE_MASK                                                                              0x00040000L
 #define XPB_CLK_GAT__MEM_LS_ENABLE_MASK                                                                       0x00080000L
-//XPB_INTF_CFG
+
 #define XPB_INTF_CFG__RPB_WRREQ_CRD__SHIFT                                                                    0x0
 #define XPB_INTF_CFG__MC_WRRET_ASK__SHIFT                                                                     0x8
 #define XPB_INTF_CFG__XSP_REQ_CRD__SHIFT                                                                      0x10
@@ -660,7 +639,7 @@
 #define XPB_INTF_CFG__XSP_SNOOP_VAL_MASK                                                                      0x20000000L
 #define XPB_INTF_CFG__XSP_ORDERING_SEL_MASK                                                                   0x40000000L
 #define XPB_INTF_CFG__QUALIFY_P2P_FOR_GPA_MASK                                                                0x80000000L
-//XPB_INTF_STS
+
 #define XPB_INTF_STS__RPB_WRREQ_CRD__SHIFT                                                                    0x0
 #define XPB_INTF_STS__XSP_REQ_CRD__SHIFT                                                                      0x8
 #define XPB_INTF_STS__HOP_DATA_BUF_FULL__SHIFT                                                                0xf
@@ -675,7 +654,7 @@
 #define XPB_INTF_STS__CNS_BUF_FULL_MASK                                                                       0x00020000L
 #define XPB_INTF_STS__CNS_BUF_BUSY_MASK                                                                       0x00040000L
 #define XPB_INTF_STS__RPB_RDREQ_CRD_MASK                                                                      0x07F80000L
-//XPB_PIPE_STS
+
 #define XPB_PIPE_STS__WCB_ANY_PBUF__SHIFT                                                                     0x0
 #define XPB_PIPE_STS__WCB_HST_DATA_BUF_CNT__SHIFT                                                             0x1
 #define XPB_PIPE_STS__WCB_SID_DATA_BUF_CNT__SHIFT                                                             0x8
@@ -702,7 +681,7 @@
 #define XPB_PIPE_STS__WCB_SID_DATA_OBUF_FULL_MASK                                                             0x00400000L
 #define XPB_PIPE_STS__RET_BUF_FULL_MASK                                                                       0x00800000L
 #define XPB_PIPE_STS__XPB_CLK_BUSY_BITS_MASK                                                                  0xFF000000L
-//XPB_SUB_CTRL
+
 #define XPB_SUB_CTRL__WRREQ_BYPASS_XPB__SHIFT                                                                 0x0
 #define XPB_SUB_CTRL__STALL_CNS_RTR_REQ__SHIFT                                                                0x1
 #define XPB_SUB_CTRL__STALL_RTR_RPB_WRREQ__SHIFT                                                              0x2
@@ -743,23 +722,23 @@
 #define XPB_SUB_CTRL__RESET_SID_MASK                                                                          0x00020000L
 #define XPB_SUB_CTRL__RESET_SRB_MASK                                                                          0x00040000L
 #define XPB_SUB_CTRL__RESET_CGR_MASK                                                                          0x00080000L
-//XPB_MAP_INVERT_FLUSH_NUM_LSB
+
 #define XPB_MAP_INVERT_FLUSH_NUM_LSB__ALTER_FLUSH_NUM__SHIFT                                                  0x0
 #define XPB_MAP_INVERT_FLUSH_NUM_LSB__ALTER_FLUSH_NUM_MASK                                                    0x0000FFFFL
-//XPB_PERF_KNOBS
+
 #define XPB_PERF_KNOBS__CNS_FIFO_DEPTH__SHIFT                                                                 0x0
 #define XPB_PERF_KNOBS__WCB_HST_FIFO_DEPTH__SHIFT                                                             0x6
 #define XPB_PERF_KNOBS__WCB_SID_FIFO_DEPTH__SHIFT                                                             0xc
 #define XPB_PERF_KNOBS__CNS_FIFO_DEPTH_MASK                                                                   0x0000003FL
 #define XPB_PERF_KNOBS__WCB_HST_FIFO_DEPTH_MASK                                                               0x00000FC0L
 #define XPB_PERF_KNOBS__WCB_SID_FIFO_DEPTH_MASK                                                               0x0003F000L
-//XPB_STICKY
+
 #define XPB_STICKY__BITS__SHIFT                                                                               0x0
 #define XPB_STICKY__BITS_MASK                                                                                 0xFFFFFFFFL
-//XPB_STICKY_W1C
+
 #define XPB_STICKY_W1C__BITS__SHIFT                                                                           0x0
 #define XPB_STICKY_W1C__BITS_MASK                                                                             0xFFFFFFFFL
-//XPB_MISC_CFG
+
 #define XPB_MISC_CFG__FIELDNAME0__SHIFT                                                                       0x0
 #define XPB_MISC_CFG__FIELDNAME1__SHIFT                                                                       0x8
 #define XPB_MISC_CFG__FIELDNAME2__SHIFT                                                                       0x10
@@ -770,10 +749,10 @@
 #define XPB_MISC_CFG__FIELDNAME2_MASK                                                                         0x00FF0000L
 #define XPB_MISC_CFG__FIELDNAME3_MASK                                                                         0x7F000000L
 #define XPB_MISC_CFG__TRIGGERNAME_MASK                                                                        0x80000000L
-//XPB_INTF_CFG2
+
 #define XPB_INTF_CFG2__RPB_RDREQ_CRD__SHIFT                                                                   0x0
 #define XPB_INTF_CFG2__RPB_RDREQ_CRD_MASK                                                                     0x000000FFL
-//XPB_CLG_EXTRA_RD
+
 #define XPB_CLG_EXTRA_RD__CMP0_HIGH__SHIFT                                                                    0x0
 #define XPB_CLG_EXTRA_RD__CMP0_LOW__SHIFT                                                                     0x6
 #define XPB_CLG_EXTRA_RD__VLD0__SHIFT                                                                         0xb
@@ -790,7 +769,7 @@
 #define XPB_CLG_EXTRA_RD__CMP1_LOW_MASK                                                                       0x03E00000L
 #define XPB_CLG_EXTRA_RD__VLD1_MASK                                                                           0x04000000L
 #define XPB_CLG_EXTRA_RD__CLG1_NUM_MASK                                                                       0x38000000L
-//XPB_CLG_EXTRA_MSK_RD
+
 #define XPB_CLG_EXTRA_MSK_RD__MSK0_HIGH__SHIFT                                                                0x0
 #define XPB_CLG_EXTRA_MSK_RD__MSK0_LOW__SHIFT                                                                 0x6
 #define XPB_CLG_EXTRA_MSK_RD__MSK1_HIGH__SHIFT                                                                0xb
@@ -799,7 +778,7 @@
 #define XPB_CLG_EXTRA_MSK_RD__MSK0_LOW_MASK                                                                   0x000007C0L
 #define XPB_CLG_EXTRA_MSK_RD__MSK1_HIGH_MASK                                                                  0x0001F800L
 #define XPB_CLG_EXTRA_MSK_RD__MSK1_LOW_MASK                                                                   0x003E0000L
-//XPB_CLG_GFX_MATCH
+
 #define XPB_CLG_GFX_MATCH__FARBIRC0_ID__SHIFT                                                                 0x0
 #define XPB_CLG_GFX_MATCH__FARBIRC1_ID__SHIFT                                                                 0x6
 #define XPB_CLG_GFX_MATCH__FARBIRC2_ID__SHIFT                                                                 0xc
@@ -816,7 +795,7 @@
 #define XPB_CLG_GFX_MATCH__FARBIRC1_VLD_MASK                                                                  0x02000000L
 #define XPB_CLG_GFX_MATCH__FARBIRC2_VLD_MASK                                                                  0x04000000L
 #define XPB_CLG_GFX_MATCH__FARBIRC3_VLD_MASK                                                                  0x08000000L
-//XPB_CLG_GFX_MATCH_MSK
+
 #define XPB_CLG_GFX_MATCH_MSK__FARBIRC0_ID_MSK__SHIFT                                                         0x0
 #define XPB_CLG_GFX_MATCH_MSK__FARBIRC1_ID_MSK__SHIFT                                                         0x6
 #define XPB_CLG_GFX_MATCH_MSK__FARBIRC2_ID_MSK__SHIFT                                                         0xc
@@ -825,7 +804,7 @@
 #define XPB_CLG_GFX_MATCH_MSK__FARBIRC1_ID_MSK_MASK                                                           0x00000FC0L
 #define XPB_CLG_GFX_MATCH_MSK__FARBIRC2_ID_MSK_MASK                                                           0x0003F000L
 #define XPB_CLG_GFX_MATCH_MSK__FARBIRC3_ID_MSK_MASK                                                           0x00FC0000L
-//XPB_CLG_MM_MATCH
+
 #define XPB_CLG_MM_MATCH__FARBIRC0_ID__SHIFT                                                                  0x0
 #define XPB_CLG_MM_MATCH__FARBIRC1_ID__SHIFT                                                                  0x6
 #define XPB_CLG_MM_MATCH__FARBIRC0_VLD__SHIFT                                                                 0xc
@@ -834,23 +813,23 @@
 #define XPB_CLG_MM_MATCH__FARBIRC1_ID_MASK                                                                    0x00000FC0L
 #define XPB_CLG_MM_MATCH__FARBIRC0_VLD_MASK                                                                   0x00001000L
 #define XPB_CLG_MM_MATCH__FARBIRC1_VLD_MASK                                                                   0x00002000L
-//XPB_CLG_MM_MATCH_MSK
+
 #define XPB_CLG_MM_MATCH_MSK__FARBIRC0_ID_MSK__SHIFT                                                          0x0
 #define XPB_CLG_MM_MATCH_MSK__FARBIRC1_ID_MSK__SHIFT                                                          0x6
 #define XPB_CLG_MM_MATCH_MSK__FARBIRC0_ID_MSK_MASK                                                            0x0000003FL
 #define XPB_CLG_MM_MATCH_MSK__FARBIRC1_ID_MSK_MASK                                                            0x00000FC0L
-//XPB_CLG_GUS_MATCH
+
 #define XPB_CLG_GUS_MATCH__FARBIRC0_ID__SHIFT                                                                 0x0
 #define XPB_CLG_GUS_MATCH__FARBIRC0_VLD__SHIFT                                                                0x6
 #define XPB_CLG_GUS_MATCH__FARBIRC0_ID_MASK                                                                   0x0000003FL
 #define XPB_CLG_GUS_MATCH__FARBIRC0_VLD_MASK                                                                  0x00000040L
-//XPB_CLG_GUS_MATCH_MSK
+
 #define XPB_CLG_GUS_MATCH_MSK__FARBIRC0_ID_MSK__SHIFT                                                         0x0
 #define XPB_CLG_GUS_MATCH_MSK__FARBIRC0_ID_MSK_MASK                                                           0x0000003FL
 
 
-// addressBlock: athub_rpbdec
-//RPB_PASSPW_CONF
+
+
 #define RPB_PASSPW_CONF__XPB_PASSPW_OVERRIDE__SHIFT                                                           0x0
 #define RPB_PASSPW_CONF__XPB_RSPPASSPW_OVERRIDE__SHIFT                                                        0x1
 #define RPB_PASSPW_CONF__ATC_VC5_TR_PASSPW_OVERRIDE__SHIFT                                                    0x2
@@ -899,7 +878,7 @@
 #define RPB_PASSPW_CONF__WRRSP_PASSPW_OVERRIDE_EN_MASK                                                        0x00200000L
 #define RPB_PASSPW_CONF__RDRSP_PASSPW_OVERRIDE_MASK                                                           0x00400000L
 #define RPB_PASSPW_CONF__RDRSP_PASSPW_OVERRIDE_EN_MASK                                                        0x00800000L
-//RPB_BLOCKLEVEL_CONF
+
 #define RPB_BLOCKLEVEL_CONF__XPB_BLOCKLEVEL_OVERRIDE__SHIFT                                                   0x0
 #define RPB_BLOCKLEVEL_CONF__XPB_BLOCKLEVEL_OVERRIDE_EN__SHIFT                                                0x2
 #define RPB_BLOCKLEVEL_CONF__ATC_VC5_TR_BLOCKLEVEL__SHIFT                                                     0x3
@@ -924,12 +903,12 @@
 #define RPB_BLOCKLEVEL_CONF__IO_RD_BLOCKLEVEL_OVERRIDE_EN_MASK                                                0x00010000L
 #define RPB_BLOCKLEVEL_CONF__ATOMIC_BLOCKLEVEL_OVERRIDE_MASK                                                  0x00060000L
 #define RPB_BLOCKLEVEL_CONF__ATOMIC_BLOCKLEVEL_OVERRIDE_EN_MASK                                               0x00080000L
-//RPB_TAG_CONF
+
 #define RPB_TAG_CONF__RPB_IO_RD__SHIFT                                                                        0x0
 #define RPB_TAG_CONF__RPB_IO_WR__SHIFT                                                                        0xa
 #define RPB_TAG_CONF__RPB_IO_RD_MASK                                                                          0x000003FFL
 #define RPB_TAG_CONF__RPB_IO_WR_MASK                                                                          0x000FFC00L
-//RPB_ARB_CNTL
+
 #define RPB_ARB_CNTL__RD_SWITCH_NUM__SHIFT                                                                    0x0
 #define RPB_ARB_CNTL__WR_SWITCH_NUM__SHIFT                                                                    0x8
 #define RPB_ARB_CNTL__ATC_TR_SWITCH_NUM__SHIFT                                                                0x10
@@ -944,7 +923,7 @@
 #define RPB_ARB_CNTL__SWITCH_NUM_MODE_MASK                                                                    0x02000000L
 #define RPB_ARB_CNTL__RPB_VC0_CRD_MASK                                                                        0x7C000000L
 #define RPB_ARB_CNTL__DISABLE_FED_MASK                                                                        0x80000000L
-//RPB_ARB_CNTL2
+
 #define RPB_ARB_CNTL2__P2P_SWITCH_NUM__SHIFT                                                                  0x0
 #define RPB_ARB_CNTL2__ATOMIC_SWITCH_NUM__SHIFT                                                               0x8
 #define RPB_ARB_CNTL2__ATC_PAGE_SWITCH_NUM__SHIFT                                                             0x10
@@ -953,7 +932,7 @@
 #define RPB_ARB_CNTL2__ATOMIC_SWITCH_NUM_MASK                                                                 0x0000FF00L
 #define RPB_ARB_CNTL2__ATC_PAGE_SWITCH_NUM_MASK                                                               0x00FF0000L
 #define RPB_ARB_CNTL2__RPB_VC1_CRD_MASK                                                                       0x1F000000L
-//RPB_BIF_CNTL
+
 #define RPB_BIF_CNTL__VC0_SWITCH_NUM__SHIFT                                                                   0x0
 #define RPB_BIF_CNTL__VC1_SWITCH_NUM__SHIFT                                                                   0x8
 #define RPB_BIF_CNTL__VC2_SWITCH_NUM__SHIFT                                                                   0x10
@@ -968,7 +947,7 @@
 #define RPB_BIF_CNTL__TR_QOS_VC_MASK                                                                          0x0E000000L
 #define RPB_BIF_CNTL__FATAL_ERROR_ENABLE_MASK                                                                 0x10000000L
 #define RPB_BIF_CNTL__RESERVE_MASK                                                                            0xE0000000L
-//RPB_BIF_CNTL2
+
 #define RPB_BIF_CNTL2__ARB_MODE__SHIFT                                                                        0x0
 #define RPB_BIF_CNTL2__DRAIN_VC_NUM__SHIFT                                                                    0x1
 #define RPB_BIF_CNTL2__SWITCH_ENABLE__SHIFT                                                                   0x3
@@ -991,7 +970,7 @@
 #define RPB_BIF_CNTL2__PARITY_CHECK_EN_MASK                                                                   0x00010000L
 #define RPB_BIF_CNTL2__NBIF_HST_COMPCLKCTL_EN_MASK                                                            0x00020000L
 #define RPB_BIF_CNTL2__RESERVE_MASK                                                                           0xFE000000L
-//ATHUB_MISC_CNTL
+
 #define ATHUB_MISC_CNTL__CG_OFFDLY__SHIFT                                                                     0x0
 #define ATHUB_MISC_CNTL__CG_ENABLE__SHIFT                                                                     0x6
 #define ATHUB_MISC_CNTL__CG_MEM_LS_ENABLE__SHIFT                                                              0x7
@@ -1028,12 +1007,12 @@
 #define ATHUB_MISC_CNTL__LS_DELAY_TIME_MASK                                                                   0x3E000000L
 #define ATHUB_MISC_CNTL__RESETB_PG_CLK_GATING_ENABLE_MASK                                                     0x40000000L
 #define ATHUB_MISC_CNTL__RM_VALID_ENABLE_MASK                                                                 0x80000000L
-//ATHUB_MEM_POWER_LS
+
 #define ATHUB_MEM_POWER_LS__LS_SETUP__SHIFT                                                                   0x0
 #define ATHUB_MEM_POWER_LS__LS_HOLD__SHIFT                                                                    0x6
 #define ATHUB_MEM_POWER_LS__LS_SETUP_MASK                                                                     0x0000003FL
 #define ATHUB_MEM_POWER_LS__LS_HOLD_MASK                                                                      0x0007FFC0L
-//RPB_SDPPORT_CNTL
+
 #define RPB_SDPPORT_CNTL__NBIF_DMA_SELF_ACTIVATE__SHIFT                                                       0x0
 #define RPB_SDPPORT_CNTL__NBIF_DMA_CFG_MODE__SHIFT                                                            0x1
 #define RPB_SDPPORT_CNTL__NBIF_DMA_ENABLE_REISSUE_CREDIT__SHIFT                                               0x3
@@ -1064,7 +1043,7 @@
 #define RPB_SDPPORT_CNTL__DF_SDPVDCI_WRRSPCKENRCV_MASK                                                        0x08000000L
 #define RPB_SDPPORT_CNTL__CG_BUSY_PORT_MASK                                                                   0x10000000L
 #define RPB_SDPPORT_CNTL__RESERVE_MASK                                                                        0xE0000000L
-//RPB_NBIF_SDPPORT_CNTL
+
 #define RPB_NBIF_SDPPORT_CNTL__NBIF_DMA_WRRSP_CRD__SHIFT                                                      0x0
 #define RPB_NBIF_SDPPORT_CNTL__NBIF_DMA_RDRSP_CRD__SHIFT                                                      0x8
 #define RPB_NBIF_SDPPORT_CNTL__NBIF_HST_REQ_CRD__SHIFT                                                        0x10
@@ -1073,7 +1052,7 @@
 #define RPB_NBIF_SDPPORT_CNTL__NBIF_DMA_RDRSP_CRD_MASK                                                        0x0000FF00L
 #define RPB_NBIF_SDPPORT_CNTL__NBIF_HST_REQ_CRD_MASK                                                          0x00FF0000L
 #define RPB_NBIF_SDPPORT_CNTL__NBIF_HST_DATA_CRD_MASK                                                         0xFF000000L
-//RPB_DEINTRLV_COMBINE_CNTL
+
 #define RPB_DEINTRLV_COMBINE_CNTL__WC_CHAINED_FLUSH_TIMER__SHIFT                                              0x0
 #define RPB_DEINTRLV_COMBINE_CNTL__WC_CHAINED_BREAK_EN__SHIFT                                                 0x4
 #define RPB_DEINTRLV_COMBINE_CNTL__WC_HANDLE_CHECK_DISABLE__SHIFT                                             0x5
@@ -1086,7 +1065,7 @@
 #define RPB_DEINTRLV_COMBINE_CNTL__XPB_WRREQ_CRD_MASK                                                         0x00003FC0L
 #define RPB_DEINTRLV_COMBINE_CNTL__WC_CLI_INTLV_EN_MASK                                                       0x00004000L
 #define RPB_DEINTRLV_COMBINE_CNTL__RESERVE_MASK                                                               0xFFFF8000L
-//RPB_VC_SWITCH_RDWR
+
 #define RPB_VC_SWITCH_RDWR__MODE__SHIFT                                                                       0x0
 #define RPB_VC_SWITCH_RDWR__NUM_RD__SHIFT                                                                     0x2
 #define RPB_VC_SWITCH_RDWR__NUM_WR__SHIFT                                                                     0xa
@@ -1097,7 +1076,7 @@
 #define RPB_VC_SWITCH_RDWR__NUM_WR_MASK                                                                       0x0003FC00L
 #define RPB_VC_SWITCH_RDWR__XPB_RDREQ_CRD_MASK                                                                0x03FC0000L
 #define RPB_VC_SWITCH_RDWR__CENTER_MARGIN_MASK                                                                0xFC000000L
-//RPB_PERF_COUNTER_CNTL
+
 #define RPB_PERF_COUNTER_CNTL__PERF_COUNTER_SELECT__SHIFT                                                     0x0
 #define RPB_PERF_COUNTER_CNTL__CLEAR_SELECTED_PERF_COUNTER__SHIFT                                             0x2
 #define RPB_PERF_COUNTER_CNTL__CLEAR_ALL_PERF_COUNTERS__SHIFT                                                 0x3
@@ -1116,18 +1095,18 @@
 #define RPB_PERF_COUNTER_CNTL__PERF_COUNTER_ASSIGN_1_MASK                                                     0x0007C000L
 #define RPB_PERF_COUNTER_CNTL__PERF_COUNTER_ASSIGN_2_MASK                                                     0x00F80000L
 #define RPB_PERF_COUNTER_CNTL__PERF_COUNTER_ASSIGN_3_MASK                                                     0x1F000000L
-//RPB_PERF_COUNTER_STATUS
+
 #define RPB_PERF_COUNTER_STATUS__PERFORMANCE_COUNTER_VALUE__SHIFT                                             0x0
 #define RPB_PERF_COUNTER_STATUS__PERFORMANCE_COUNTER_VALUE_MASK                                               0xFFFFFFFFL
-//RPB_PERFCOUNTER_LO
+
 #define RPB_PERFCOUNTER_LO__COUNTER_LO__SHIFT                                                                 0x0
 #define RPB_PERFCOUNTER_LO__COUNTER_LO_MASK                                                                   0xFFFFFFFFL
-//RPB_PERFCOUNTER_HI
+
 #define RPB_PERFCOUNTER_HI__COUNTER_HI__SHIFT                                                                 0x0
 #define RPB_PERFCOUNTER_HI__COMPARE_VALUE__SHIFT                                                              0x10
 #define RPB_PERFCOUNTER_HI__COUNTER_HI_MASK                                                                   0x0000FFFFL
 #define RPB_PERFCOUNTER_HI__COMPARE_VALUE_MASK                                                                0xFFFF0000L
-//RPB_PERFCOUNTER0_CFG
+
 #define RPB_PERFCOUNTER0_CFG__PERF_SEL__SHIFT                                                                 0x0
 #define RPB_PERFCOUNTER0_CFG__PERF_SEL_END__SHIFT                                                             0x8
 #define RPB_PERFCOUNTER0_CFG__PERF_MODE__SHIFT                                                                0x18
@@ -1138,7 +1117,7 @@
 #define RPB_PERFCOUNTER0_CFG__PERF_MODE_MASK                                                                  0x0F000000L
 #define RPB_PERFCOUNTER0_CFG__ENABLE_MASK                                                                     0x10000000L
 #define RPB_PERFCOUNTER0_CFG__CLEAR_MASK                                                                      0x20000000L
-//RPB_PERFCOUNTER1_CFG
+
 #define RPB_PERFCOUNTER1_CFG__PERF_SEL__SHIFT                                                                 0x0
 #define RPB_PERFCOUNTER1_CFG__PERF_SEL_END__SHIFT                                                             0x8
 #define RPB_PERFCOUNTER1_CFG__PERF_MODE__SHIFT                                                                0x18
@@ -1149,7 +1128,7 @@
 #define RPB_PERFCOUNTER1_CFG__PERF_MODE_MASK                                                                  0x0F000000L
 #define RPB_PERFCOUNTER1_CFG__ENABLE_MASK                                                                     0x10000000L
 #define RPB_PERFCOUNTER1_CFG__CLEAR_MASK                                                                      0x20000000L
-//RPB_PERFCOUNTER2_CFG
+
 #define RPB_PERFCOUNTER2_CFG__PERF_SEL__SHIFT                                                                 0x0
 #define RPB_PERFCOUNTER2_CFG__PERF_SEL_END__SHIFT                                                             0x8
 #define RPB_PERFCOUNTER2_CFG__PERF_MODE__SHIFT                                                                0x18
@@ -1160,7 +1139,7 @@
 #define RPB_PERFCOUNTER2_CFG__PERF_MODE_MASK                                                                  0x0F000000L
 #define RPB_PERFCOUNTER2_CFG__ENABLE_MASK                                                                     0x10000000L
 #define RPB_PERFCOUNTER2_CFG__CLEAR_MASK                                                                      0x20000000L
-//RPB_PERFCOUNTER3_CFG
+
 #define RPB_PERFCOUNTER3_CFG__PERF_SEL__SHIFT                                                                 0x0
 #define RPB_PERFCOUNTER3_CFG__PERF_SEL_END__SHIFT                                                             0x8
 #define RPB_PERFCOUNTER3_CFG__PERF_MODE__SHIFT                                                                0x18
@@ -1171,7 +1150,7 @@
 #define RPB_PERFCOUNTER3_CFG__PERF_MODE_MASK                                                                  0x0F000000L
 #define RPB_PERFCOUNTER3_CFG__ENABLE_MASK                                                                     0x10000000L
 #define RPB_PERFCOUNTER3_CFG__CLEAR_MASK                                                                      0x20000000L
-//RPB_PERFCOUNTER_RSLT_CNTL
+
 #define RPB_PERFCOUNTER_RSLT_CNTL__PERF_COUNTER_SELECT__SHIFT                                                 0x0
 #define RPB_PERFCOUNTER_RSLT_CNTL__START_TRIGGER__SHIFT                                                       0x8
 #define RPB_PERFCOUNTER_RSLT_CNTL__STOP_TRIGGER__SHIFT                                                        0x10
@@ -1184,14 +1163,14 @@
 #define RPB_PERFCOUNTER_RSLT_CNTL__ENABLE_ANY_MASK                                                            0x01000000L
 #define RPB_PERFCOUNTER_RSLT_CNTL__CLEAR_ALL_MASK                                                             0x02000000L
 #define RPB_PERFCOUNTER_RSLT_CNTL__STOP_ALL_ON_SATURATE_MASK                                                  0x04000000L
-//RPB_ATS_CNTL3
+
 #define RPB_ATS_CNTL3__RPB_ATS_VC5_TR__SHIFT                                                                  0x0
 #define RPB_ATS_CNTL3__RPB_ATS_VC0_TR__SHIFT                                                                  0x9
 #define RPB_ATS_CNTL3__RPB_ATS_PR__SHIFT                                                                      0x12
 #define RPB_ATS_CNTL3__RPB_ATS_VC5_TR_MASK                                                                    0x000001FFL
 #define RPB_ATS_CNTL3__RPB_ATS_VC0_TR_MASK                                                                    0x0003FE00L
 #define RPB_ATS_CNTL3__RPB_ATS_PR_MASK                                                                        0x07FC0000L
-//RPB_DF_SDPPORT_CNTL
+
 #define RPB_DF_SDPPORT_CNTL__DF_REQ_CRD__SHIFT                                                                0x0
 #define RPB_DF_SDPPORT_CNTL__DF_DATA_CRD__SHIFT                                                               0x6
 #define RPB_DF_SDPPORT_CNTL__DF_HALT_THRESHOLD__SHIFT                                                         0xc
@@ -1208,7 +1187,7 @@
 #define RPB_DF_SDPPORT_CNTL__DF_BUSY_INCLUDE_CONN_MASK                                                        0x00040000L
 #define RPB_DF_SDPPORT_CNTL__DF_ORIG_ACK_TIMER_MASK                                                           0x07F80000L
 #define RPB_DF_SDPPORT_CNTL__RESERVE_MASK                                                                     0xF8000000L
-//RPB_ATS_CNTL
+
 #define RPB_ATS_CNTL__PAGE_MIN_LATENCY_ENABLE__SHIFT                                                          0x0
 #define RPB_ATS_CNTL__TR_MIN_LATENCY_ENABLE__SHIFT                                                            0x1
 #define RPB_ATS_CNTL__SWITCH_THRESHOLD__SHIFT                                                                 0x2
@@ -1227,7 +1206,7 @@
 #define RPB_ATS_CNTL__WR_AT_MASK                                                                              0x01800000L
 #define RPB_ATS_CNTL__MM_TRANS_VC5_ENABLE_MASK                                                                0x02000000L
 #define RPB_ATS_CNTL__GC_TRANS_VC5_ENABLE_MASK                                                                0x04000000L
-//RPB_ATS_CNTL2
+
 #define RPB_ATS_CNTL2__INVAL_COM_CMD__SHIFT                                                                   0x0
 #define RPB_ATS_CNTL2__TRANS_CMD__SHIFT                                                                       0x6
 #define RPB_ATS_CNTL2__PAGE_REQ_CMD__SHIFT                                                                    0xc

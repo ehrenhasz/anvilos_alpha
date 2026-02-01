@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/bitops.h>
 #include <linux/i2c.h>
@@ -404,7 +404,7 @@ static void rt4505_shutdown(struct i2c_client *client)
 {
 	struct rt4505_priv *priv = i2c_get_clientdata(client);
 
-	/* Reset registers to make sure all off before shutdown */
+	 
 	regmap_write(priv->regmap, RT4505_REG_RESET, RT4505_RESET_MASK);
 }
 

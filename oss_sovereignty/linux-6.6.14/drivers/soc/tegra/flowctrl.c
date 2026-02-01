@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/soc/tegra/flowctrl.c
- *
- * Functions and macros to control the flowcontroller
- *
- * Copyright (c) 2010-2012, NVIDIA Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/cpumask.h>
 #include <linux/init.h>
@@ -43,7 +37,7 @@ static void flowctrl_update(u8 offset, u32 value)
 
 	writel(value, tegra_flowctrl_base + offset);
 
-	/* ensure the update has reached the flow controller */
+	 
 	wmb();
 	readl_relaxed(tegra_flowctrl_base + offset);
 }
@@ -77,42 +71,33 @@ void flowctrl_cpu_suspend_enter(unsigned int cpuid)
 	reg = flowctrl_read_cpu_csr(cpuid);
 	switch (tegra_get_chip_id()) {
 	case TEGRA20:
-		/* clear wfe bitmap */
+		 
 		reg &= ~TEGRA20_FLOW_CTRL_CSR_WFE_BITMAP;
-		/* clear wfi bitmap */
+		 
 		reg &= ~TEGRA20_FLOW_CTRL_CSR_WFI_BITMAP;
-		/* pwr gating on wfe */
+		 
 		reg |= TEGRA20_FLOW_CTRL_CSR_WFE_CPU0 << cpuid;
 		break;
 	case TEGRA30:
 	case TEGRA114:
 	case TEGRA124:
-		/* clear wfe bitmap */
+		 
 		reg &= ~TEGRA30_FLOW_CTRL_CSR_WFE_BITMAP;
-		/* clear wfi bitmap */
+		 
 		reg &= ~TEGRA30_FLOW_CTRL_CSR_WFI_BITMAP;
 
 		if (tegra_get_chip_id() == TEGRA30) {
-			/*
-			 * The wfi doesn't work well on Tegra30 because
-			 * CPU hangs under some odd circumstances after
-			 * power-gating (like memory running off PLLP),
-			 * hence use wfe that is working perfectly fine.
-			 * Note that Tegra30 TRM doc clearly stands that
-			 * wfi should be used for the "Cluster Switching",
-			 * while wfe for the power-gating, just like it
-			 * is done on Tegra20.
-			 */
+			 
 			reg |= TEGRA20_FLOW_CTRL_CSR_WFE_CPU0 << cpuid;
 		} else {
-			/* pwr gating on wfi */
+			 
 			reg |= TEGRA30_FLOW_CTRL_CSR_WFI_CPU0 << cpuid;
 		}
 		break;
 	}
-	reg |= FLOW_CTRL_CSR_INTR_FLAG;			/* clear intr flag */
-	reg |= FLOW_CTRL_CSR_EVENT_FLAG;		/* clear event flag */
-	reg |= FLOW_CTRL_CSR_ENABLE;			/* pwr gating */
+	reg |= FLOW_CTRL_CSR_INTR_FLAG;			 
+	reg |= FLOW_CTRL_CSR_EVENT_FLAG;		 
+	reg |= FLOW_CTRL_CSR_ENABLE;			 
 	flowctrl_write_cpu_csr(cpuid, reg);
 
 	for (i = 0; i < num_possible_cpus(); i++) {
@@ -129,27 +114,27 @@ void flowctrl_cpu_suspend_exit(unsigned int cpuid)
 {
 	unsigned int reg;
 
-	/* Disable powergating via flow controller for CPU0 */
+	 
 	reg = flowctrl_read_cpu_csr(cpuid);
 	switch (tegra_get_chip_id()) {
 	case TEGRA20:
-		/* clear wfe bitmap */
+		 
 		reg &= ~TEGRA20_FLOW_CTRL_CSR_WFE_BITMAP;
-		/* clear wfi bitmap */
+		 
 		reg &= ~TEGRA20_FLOW_CTRL_CSR_WFI_BITMAP;
 		break;
 	case TEGRA30:
 	case TEGRA114:
 	case TEGRA124:
-		/* clear wfe bitmap */
+		 
 		reg &= ~TEGRA30_FLOW_CTRL_CSR_WFE_BITMAP;
-		/* clear wfi bitmap */
+		 
 		reg &= ~TEGRA30_FLOW_CTRL_CSR_WFI_BITMAP;
 		break;
 	}
-	reg &= ~FLOW_CTRL_CSR_ENABLE;			/* clear enable */
-	reg |= FLOW_CTRL_CSR_INTR_FLAG;			/* clear intr */
-	reg |= FLOW_CTRL_CSR_EVENT_FLAG;		/* clear event */
+	reg &= ~FLOW_CTRL_CSR_ENABLE;			 
+	reg |= FLOW_CTRL_CSR_INTR_FLAG;			 
+	reg |= FLOW_CTRL_CSR_EVENT_FLAG;		 
 	flowctrl_write_cpu_csr(cpuid, reg);
 }
 
@@ -201,19 +186,12 @@ static int __init tegra_flowctrl_init(void)
 		}
 		of_node_put(np);
 	} else if (IS_ENABLED(CONFIG_ARM)) {
-		/*
-		 * Hardcoded fallback for 32-bit Tegra
-		 * devices if device tree node is missing.
-		 */
+		 
 		res.start = 0x60007000;
 		res.end = 0x60007fff;
 		res.flags = IORESOURCE_MEM;
 	} else {
-		/*
-		 * At this point we're running on a Tegra,
-		 * that doesn't support the flow controller
-		 * (eg. Tegra186), so just return.
-		 */
+		 
 		return 0;
 	}
 

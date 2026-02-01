@@ -1,21 +1,7 @@
-/*	$OpenBSD: test_helper.h,v 1.9 2018/10/17 23:28:05 djm Exp $	*/
-/*
- * Copyright (c) 2011 Damien Miller <djm@mindrot.org>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
+ 
 
-/* Utility functions/framework for regress tests */
+ 
 
 #ifndef _TEST_HELPER_H
 #define _TEST_HELPER_H
@@ -37,7 +23,7 @@ enum test_predicate {
 };
 typedef void (test_onerror_func_t)(void *);
 
-/* Supplied by test suite */
+ 
 void tests(void);
 
 const char *test_data_file(const char *name);
@@ -285,42 +271,38 @@ void assert_u64(const char *file, int line,
 #define ASSERT_U64_GE(a1, a2) \
 	assert_u64(__FILE__, __LINE__, #a1, #a2, a1, a2, TEST_GE)
 
-/* Fuzzing support */
+ 
 
 struct fuzz;
-#define FUZZ_1_BIT_FLIP		0x00000001	/* Flip one bit at a time */
-#define FUZZ_2_BIT_FLIP		0x00000002	/* Flip two bits at a time */
-#define FUZZ_1_BYTE_FLIP	0x00000004	/* Flip one byte at a time */
-#define FUZZ_2_BYTE_FLIP	0x00000008	/* Flip two bytes at a time */
-#define FUZZ_TRUNCATE_START	0x00000010	/* Truncate from beginning */
-#define FUZZ_TRUNCATE_END	0x00000020	/* Truncate from end */
-#define FUZZ_BASE64		0x00000040	/* Try all base64 chars */
+#define FUZZ_1_BIT_FLIP		0x00000001	 
+#define FUZZ_2_BIT_FLIP		0x00000002	 
+#define FUZZ_1_BYTE_FLIP	0x00000004	 
+#define FUZZ_2_BYTE_FLIP	0x00000008	 
+#define FUZZ_TRUNCATE_START	0x00000010	 
+#define FUZZ_TRUNCATE_END	0x00000020	 
+#define FUZZ_BASE64		0x00000040	 
 #define FUZZ_MAX		FUZZ_BASE64
 
-/* Start fuzzing a blob of data with selected strategies (bitmask) */
+ 
 struct fuzz *fuzz_begin(u_int strategies, const void *p, size_t l);
 
-/* Free a fuzz context */
+ 
 void fuzz_cleanup(struct fuzz *fuzz);
 
-/* Prepare the next fuzz case in the series */
+ 
 void fuzz_next(struct fuzz *fuzz);
 
-/*
- * Check whether this fuzz case is identical to the original
- * This is slow, but useful if the caller needs to ensure that all tests
- * generated change the input (e.g. when fuzzing signatures).
- */
+ 
 int fuzz_matches_original(struct fuzz *fuzz);
 
-/* Determine whether the current fuzz sequence is exhausted (nonzero = yes) */
+ 
 int fuzz_done(struct fuzz *fuzz);
 
-/* Return the length and a pointer to the current fuzzed case */
+ 
 size_t fuzz_len(struct fuzz *fuzz);
 u_char *fuzz_ptr(struct fuzz *fuzz);
 
-/* Dump the current fuzz case to stderr */
+ 
 void fuzz_dump(struct fuzz *fuzz);
 
-#endif /* _TEST_HELPER_H */
+#endif  

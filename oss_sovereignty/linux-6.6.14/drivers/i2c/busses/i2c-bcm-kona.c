@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2013 Broadcom Corporation
+
+
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -12,7 +12,7 @@
 #include <linux/io.h>
 #include <linux/slab.h>
 
-/* Hardware register offsets and field defintions */
+ 
 #define CS_OFFSET				0x00000020
 #define CS_ACK_SHIFT				3
 #define CS_ACK_MASK				0x00000008
@@ -78,18 +78,18 @@
 #define RXFCR_READ_COUNT_SHIFT			0
 #define RXFIFORDOUT_OFFSET			0x0000006c
 
-/* Locally used constants */
-#define MAX_RX_FIFO_SIZE		64U /* bytes */
-#define MAX_TX_FIFO_SIZE		64U /* bytes */
+ 
+#define MAX_RX_FIFO_SIZE		64U  
+#define MAX_TX_FIFO_SIZE		64U  
 
 #define STD_EXT_CLK_FREQ		13000000UL
 #define HS_EXT_CLK_FREQ			104000000UL
 
-#define MASTERCODE			0x08 /* Mastercodes are 0000_1xxxb */
+#define MASTERCODE			0x08  
 
-#define I2C_TIMEOUT			100 /* msecs */
+#define I2C_TIMEOUT			100  
 
-/* Operations that can be commanded to the controller */
+ 
 enum bcm_kona_cmd_t {
 	BCM_CMD_NOACTION = 0,
 	BCM_CMD_START,
@@ -107,28 +107,25 @@ enum hs_bus_speed_index {
 	BCM_SPD_3P4MHZ = 0,
 };
 
-/* Internal divider settings for standard mode, fast mode and fast mode plus */
+ 
 struct bus_speed_cfg {
-	uint8_t time_m;		/* Number of cycles for setup time */
-	uint8_t time_n;		/* Number of cycles for hold time */
-	uint8_t prescale;	/* Prescale divider */
-	uint8_t time_p;		/* Timing coefficient */
-	uint8_t no_div;		/* Disable clock divider */
-	uint8_t time_div;	/* Post-prescale divider */
+	uint8_t time_m;		 
+	uint8_t time_n;		 
+	uint8_t prescale;	 
+	uint8_t time_p;		 
+	uint8_t no_div;		 
+	uint8_t time_div;	 
 };
 
-/* Internal divider settings for high-speed mode */
+ 
 struct hs_bus_speed_cfg {
-	uint8_t hs_hold;	/* Number of clock cycles SCL stays low until
-				   the end of bit period */
-	uint8_t hs_high_phase;	/* Number of clock cycles SCL stays high
-				   before it falls */
-	uint8_t hs_setup;	/* Number of clock cycles SCL stays low
-				   before it rises  */
-	uint8_t prescale;	/* Prescale divider */
-	uint8_t time_p;		/* Timing coefficient */
-	uint8_t no_div;		/* Disable clock divider */
-	uint8_t time_div;	/* Post-prescale divider */
+	uint8_t hs_hold;	 
+	uint8_t hs_high_phase;	 
+	uint8_t hs_setup;	 
+	uint8_t prescale;	 
+	uint8_t time_p;		 
+	uint8_t no_div;		 
+	uint8_t time_div;	 
 };
 
 static const struct bus_speed_cfg std_cfg_table[] = {
@@ -213,7 +210,7 @@ static irqreturn_t bcm_kona_i2c_isr(int irq, void *devid)
 	if ((status & ~ISR_RESERVED_MASK) == 0)
 		return IRQ_NONE;
 
-	/* Must flush the TX FIFO when NAK detected */
+	 
 	if (status & ISR_NOACK_MASK)
 		writel(TXFCR_FIFO_FLUSH_MASK | TXFCR_FIFO_EN_MASK,
 		       dev->base + TXFCR_OFFSET);
@@ -224,7 +221,7 @@ static irqreturn_t bcm_kona_i2c_isr(int irq, void *devid)
 	return IRQ_HANDLED;
 }
 
-/* Wait for ISR_CMDBUSY_MASK to go low before writing to CS, DAT, or RCD */
+ 
 static int bcm_kona_i2c_wait_if_busy(struct bcm_kona_i2c_dev *dev)
 {
 	unsigned long timeout = jiffies + msecs_to_jiffies(I2C_TIMEOUT);
@@ -238,31 +235,31 @@ static int bcm_kona_i2c_wait_if_busy(struct bcm_kona_i2c_dev *dev)
 	return 0;
 }
 
-/* Send command to I2C bus */
+ 
 static int bcm_kona_send_i2c_cmd(struct bcm_kona_i2c_dev *dev,
 				 enum bcm_kona_cmd_t cmd)
 {
 	int rc;
 	unsigned long time_left = msecs_to_jiffies(I2C_TIMEOUT);
 
-	/* Make sure the hardware is ready */
+	 
 	rc = bcm_kona_i2c_wait_if_busy(dev);
 	if (rc < 0)
 		return rc;
 
-	/* Unmask the session done interrupt */
+	 
 	writel(IER_I2C_INT_EN_MASK, dev->base + IER_OFFSET);
 
-	/* Mark as incomplete before sending the command */
+	 
 	reinit_completion(&dev->done);
 
-	/* Send the command */
+	 
 	bcm_kona_i2c_send_cmd_to_ctrl(dev, cmd);
 
-	/* Wait for transaction to finish or timeout */
+	 
 	time_left = wait_for_completion_timeout(&dev->done, time_left);
 
-	/* Mask all interrupts */
+	 
 	writel(0, dev->base + IER_OFFSET);
 
 	if (!time_left) {
@@ -270,34 +267,34 @@ static int bcm_kona_send_i2c_cmd(struct bcm_kona_i2c_dev *dev,
 		rc = -ETIMEDOUT;
 	}
 
-	/* Clear command */
+	 
 	bcm_kona_i2c_send_cmd_to_ctrl(dev, BCM_CMD_NOACTION);
 
 	return rc;
 }
 
-/* Read a single RX FIFO worth of data from the i2c bus */
+ 
 static int bcm_kona_i2c_read_fifo_single(struct bcm_kona_i2c_dev *dev,
 					 uint8_t *buf, unsigned int len,
 					 unsigned int last_byte_nak)
 {
 	unsigned long time_left = msecs_to_jiffies(I2C_TIMEOUT);
 
-	/* Mark as incomplete before starting the RX FIFO */
+	 
 	reinit_completion(&dev->done);
 
-	/* Unmask the read complete interrupt */
+	 
 	writel(IER_READ_COMPLETE_INT_MASK, dev->base + IER_OFFSET);
 
-	/* Start the RX FIFO */
+	 
 	writel((last_byte_nak << RXFCR_NACK_EN_SHIFT) |
 	       (len << RXFCR_READ_COUNT_SHIFT),
 		dev->base + RXFCR_OFFSET);
 
-	/* Wait for FIFO read to complete */
+	 
 	time_left = wait_for_completion_timeout(&dev->done, time_left);
 
-	/* Mask all interrupts */
+	 
 	writel(0, dev->base + IER_OFFSET);
 
 	if (!time_left) {
@@ -305,14 +302,14 @@ static int bcm_kona_i2c_read_fifo_single(struct bcm_kona_i2c_dev *dev,
 		return -EREMOTEIO;
 	}
 
-	/* Read data from FIFO */
+	 
 	for (; len > 0; len--, buf++)
 		*buf = readl(dev->base + RXFIFORDOUT_OFFSET);
 
 	return 0;
 }
 
-/* Read any amount of data using the RX FIFO from the i2c bus */
+ 
 static int bcm_kona_i2c_read_fifo(struct bcm_kona_i2c_dev *dev,
 				  struct i2c_msg *msg)
 {
@@ -325,7 +322,7 @@ static int bcm_kona_i2c_read_fifo(struct bcm_kona_i2c_dev *dev,
 
 	while (bytes_read < msg->len) {
 		if (msg->len - bytes_read <= MAX_RX_FIFO_SIZE) {
-			last_byte_nak = 1; /* NAK last byte of transfer */
+			last_byte_nak = 1;  
 			bytes_to_read = msg->len - bytes_read;
 		}
 
@@ -341,7 +338,7 @@ static int bcm_kona_i2c_read_fifo(struct bcm_kona_i2c_dev *dev,
 	return 0;
 }
 
-/* Write a single byte of data to the i2c bus */
+ 
 static int bcm_kona_i2c_write_byte(struct bcm_kona_i2c_dev *dev, uint8_t data,
 				   unsigned int nak_expected)
 {
@@ -349,27 +346,27 @@ static int bcm_kona_i2c_write_byte(struct bcm_kona_i2c_dev *dev, uint8_t data,
 	unsigned long time_left = msecs_to_jiffies(I2C_TIMEOUT);
 	unsigned int nak_received;
 
-	/* Make sure the hardware is ready */
+	 
 	rc = bcm_kona_i2c_wait_if_busy(dev);
 	if (rc < 0)
 		return rc;
 
-	/* Clear pending session done interrupt */
+	 
 	writel(ISR_SES_DONE_MASK, dev->base + ISR_OFFSET);
 
-	/* Unmask the session done interrupt */
+	 
 	writel(IER_I2C_INT_EN_MASK, dev->base + IER_OFFSET);
 
-	/* Mark as incomplete before sending the data */
+	 
 	reinit_completion(&dev->done);
 
-	/* Send one byte of data */
+	 
 	writel(data, dev->base + DAT_OFFSET);
 
-	/* Wait for byte to be written */
+	 
 	time_left = wait_for_completion_timeout(&dev->done, time_left);
 
-	/* Mask all interrupts */
+	 
 	writel(0, dev->base + IER_OFFSET);
 
 	if (!time_left) {
@@ -387,7 +384,7 @@ static int bcm_kona_i2c_write_byte(struct bcm_kona_i2c_dev *dev, uint8_t data,
 	return 0;
 }
 
-/* Write a single TX FIFO worth of data to the i2c bus */
+ 
 static int bcm_kona_i2c_write_fifo_single(struct bcm_kona_i2c_dev *dev,
 					  uint8_t *buf, unsigned int len)
 {
@@ -395,39 +392,39 @@ static int bcm_kona_i2c_write_fifo_single(struct bcm_kona_i2c_dev *dev,
 	unsigned long time_left = msecs_to_jiffies(I2C_TIMEOUT);
 	unsigned int fifo_status;
 
-	/* Mark as incomplete before sending data to the TX FIFO */
+	 
 	reinit_completion(&dev->done);
 
-	/* Unmask the fifo empty and nak interrupt */
+	 
 	writel(IER_FIFO_INT_EN_MASK | IER_NOACK_EN_MASK,
 	       dev->base + IER_OFFSET);
 
-	/* Disable IRQ to load a FIFO worth of data without interruption */
+	 
 	disable_irq(dev->irq);
 
-	/* Write data into FIFO */
+	 
 	for (k = 0; k < len; k++)
 		writel(buf[k], (dev->base + DAT_OFFSET));
 
-	/* Enable IRQ now that data has been loaded */
+	 
 	enable_irq(dev->irq);
 
-	/* Wait for FIFO to empty */
+	 
 	do {
 		time_left = wait_for_completion_timeout(&dev->done, time_left);
 		fifo_status = readl(dev->base + FIFO_STATUS_OFFSET);
 	} while (time_left && !(fifo_status & FIFO_STATUS_TXFIFO_EMPTY_MASK));
 
-	/* Mask all interrupts */
+	 
 	writel(0, dev->base + IER_OFFSET);
 
-	/* Check if there was a NAK */
+	 
 	if (readl(dev->base + CS_OFFSET) & CS_ACK_MASK) {
 		dev_err(dev->device, "unexpected NAK\n");
 		return -EREMOTEIO;
 	}
 
-	/* Check if a timeout occured */
+	 
 	if (!time_left) {
 		dev_err(dev->device, "completion timed out\n");
 		return -EREMOTEIO;
@@ -437,7 +434,7 @@ static int bcm_kona_i2c_write_fifo_single(struct bcm_kona_i2c_dev *dev,
 }
 
 
-/* Write any amount of data using TX FIFO to the i2c bus */
+ 
 static int bcm_kona_i2c_write_fifo(struct bcm_kona_i2c_dev *dev,
 				   struct i2c_msg *msg)
 {
@@ -463,29 +460,29 @@ static int bcm_kona_i2c_write_fifo(struct bcm_kona_i2c_dev *dev,
 	return 0;
 }
 
-/* Send i2c address */
+ 
 static int bcm_kona_i2c_do_addr(struct bcm_kona_i2c_dev *dev,
 				     struct i2c_msg *msg)
 {
 	unsigned char addr;
 
 	if (msg->flags & I2C_M_TEN) {
-		/* First byte is 11110XX0 where XX is upper 2 bits */
+		 
 		addr = 0xF0 | ((msg->addr & 0x300) >> 7);
 		if (bcm_kona_i2c_write_byte(dev, addr, 0) < 0)
 			return -EREMOTEIO;
 
-		/* Second byte is the remaining 8 bits */
+		 
 		addr = msg->addr & 0xFF;
 		if (bcm_kona_i2c_write_byte(dev, addr, 0) < 0)
 			return -EREMOTEIO;
 
 		if (msg->flags & I2C_M_RD) {
-			/* For read, send restart command */
+			 
 			if (bcm_kona_send_i2c_cmd(dev, BCM_CMD_RESTART) < 0)
 				return -EREMOTEIO;
 
-			/* Then re-send the first byte with the read bit set */
+			 
 			addr = 0xF0 | ((msg->addr & 0x300) >> 7) | 0x01;
 			if (bcm_kona_i2c_write_byte(dev, addr, 0) < 0)
 				return -EREMOTEIO;
@@ -544,14 +541,14 @@ static int bcm_kona_i2c_switch_to_hs(struct bcm_kona_i2c_dev *dev)
 {
 	int rc;
 
-	/* Send mastercode at standard speed */
+	 
 	rc = bcm_kona_i2c_write_byte(dev, MASTERCODE, 1);
 	if (rc < 0) {
 		pr_err("High speed handshake failed\n");
 		return rc;
 	}
 
-	/* Configure external clock to higher frequency */
+	 
 	rc = clk_set_rate(dev->external_clk, HS_EXT_CLK_FREQ);
 	if (rc) {
 		dev_err(dev->device, "%s: clk_set_rate returned %d\n",
@@ -559,10 +556,10 @@ static int bcm_kona_i2c_switch_to_hs(struct bcm_kona_i2c_dev *dev)
 		return rc;
 	}
 
-	/* Reconfigure internal dividers */
+	 
 	bcm_kona_i2c_config_timing_hs(dev);
 
-	/* Send a restart command */
+	 
 	rc = bcm_kona_send_i2c_cmd(dev, BCM_CMD_RESTART);
 	if (rc < 0)
 		dev_err(dev->device, "High speed restart command failed\n");
@@ -574,10 +571,10 @@ static int bcm_kona_i2c_switch_to_std(struct bcm_kona_i2c_dev *dev)
 {
 	int rc;
 
-	/* Reconfigure internal dividers */
+	 
 	bcm_kona_i2c_config_timing(dev);
 
-	/* Configure external clock to lower frequency */
+	 
 	rc = clk_set_rate(dev->external_clk, STD_EXT_CLK_FREQ);
 	if (rc) {
 		dev_err(dev->device, "%s: clk_set_rate returned %d\n",
@@ -587,7 +584,7 @@ static int bcm_kona_i2c_switch_to_std(struct bcm_kona_i2c_dev *dev)
 	return rc;
 }
 
-/* Master transfer function */
+ 
 static int bcm_kona_i2c_xfer(struct i2c_adapter *adapter,
 			     struct i2c_msg msgs[], int num)
 {
@@ -603,31 +600,31 @@ static int bcm_kona_i2c_xfer(struct i2c_adapter *adapter,
 		return rc;
 	}
 
-	/* Enable pad output */
+	 
 	writel(0, dev->base + PADCTL_OFFSET);
 
-	/* Enable internal clocks */
+	 
 	bcm_kona_i2c_enable_clock(dev);
 
-	/* Send start command */
+	 
 	rc = bcm_kona_send_i2c_cmd(dev, BCM_CMD_START);
 	if (rc < 0) {
 		dev_err(dev->device, "Start command failed rc = %d\n", rc);
 		goto xfer_disable_pad;
 	}
 
-	/* Switch to high speed if applicable */
+	 
 	if (dev->hs_cfg) {
 		rc = bcm_kona_i2c_switch_to_hs(dev);
 		if (rc < 0)
 			goto xfer_send_stop;
 	}
 
-	/* Loop through all messages */
+	 
 	for (i = 0; i < num; i++) {
 		pmsg = &msgs[i];
 
-		/* Send restart for subsequent messages */
+		 
 		if ((i != 0) && ((pmsg->flags & I2C_M_NOSTART) == 0)) {
 			rc = bcm_kona_send_i2c_cmd(dev, BCM_CMD_RESTART);
 			if (rc < 0) {
@@ -637,7 +634,7 @@ static int bcm_kona_i2c_xfer(struct i2c_adapter *adapter,
 			}
 		}
 
-		/* Send slave address */
+		 
 		if (!(pmsg->flags & I2C_M_NOSTART)) {
 			rc = bcm_kona_i2c_do_addr(dev, pmsg);
 			if (rc < 0) {
@@ -648,7 +645,7 @@ static int bcm_kona_i2c_xfer(struct i2c_adapter *adapter,
 			}
 		}
 
-		/* Perform data transfer */
+		 
 		if (pmsg->flags & I2C_M_RD) {
 			rc = bcm_kona_i2c_read_fifo(dev, pmsg);
 			if (rc < 0) {
@@ -667,10 +664,10 @@ static int bcm_kona_i2c_xfer(struct i2c_adapter *adapter,
 	rc = num;
 
 xfer_send_stop:
-	/* Send a STOP command */
+	 
 	bcm_kona_send_i2c_cmd(dev, BCM_CMD_STOP);
 
-	/* Return from high speed if applicable */
+	 
 	if (dev->hs_cfg) {
 		int hs_rc = bcm_kona_i2c_switch_to_std(dev);
 
@@ -679,10 +676,10 @@ xfer_send_stop:
 	}
 
 xfer_disable_pad:
-	/* Disable pad output */
+	 
 	writel(PADCTL_PAD_OUT_EN_MASK, dev->base + PADCTL_OFFSET);
 
-	/* Stop internal clock */
+	 
 	bcm_kona_i2c_disable_clock(dev);
 
 	clk_disable_unprepare(dev->external_clk);
@@ -722,7 +719,7 @@ static int bcm_kona_i2c_assign_bus_speed(struct bcm_kona_i2c_dev *dev)
 		dev->std_cfg = &std_cfg_table[BCM_SPD_1MHZ];
 		break;
 	case I2C_MAX_HIGH_SPEED_MODE_FREQ:
-		/* Send mastercode at 100k */
+		 
 		dev->std_cfg = &std_cfg_table[BCM_SPD_100K];
 		dev->hs_cfg = &hs_cfg_table[BCM_SPD_3P4MHZ];
 		break;
@@ -741,7 +738,7 @@ static int bcm_kona_i2c_probe(struct platform_device *pdev)
 	struct bcm_kona_i2c_dev *dev;
 	struct i2c_adapter *adap;
 
-	/* Allocate memory for private data structure */
+	 
 	dev = devm_kzalloc(&pdev->dev, sizeof(*dev), GFP_KERNEL);
 	if (!dev)
 		return -ENOMEM;
@@ -750,12 +747,12 @@ static int bcm_kona_i2c_probe(struct platform_device *pdev)
 	dev->device = &pdev->dev;
 	init_completion(&dev->done);
 
-	/* Map hardware registers */
+	 
 	dev->base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(dev->base))
 		return PTR_ERR(dev->base);
 
-	/* Get and enable external clock */
+	 
 	dev->external_clk = devm_clk_get(dev->device, NULL);
 	if (IS_ERR(dev->external_clk)) {
 		dev_err(dev->device, "couldn't get clock\n");
@@ -775,31 +772,31 @@ static int bcm_kona_i2c_probe(struct platform_device *pdev)
 		return rc;
 	}
 
-	/* Parse bus speed */
+	 
 	rc = bcm_kona_i2c_assign_bus_speed(dev);
 	if (rc)
 		goto probe_disable_clk;
 
-	/* Enable internal clocks */
+	 
 	bcm_kona_i2c_enable_clock(dev);
 
-	/* Configure internal dividers */
+	 
 	bcm_kona_i2c_config_timing(dev);
 
-	/* Disable timeout */
+	 
 	writel(0, dev->base + TOUT_OFFSET);
 
-	/* Enable autosense */
+	 
 	bcm_kona_i2c_enable_autosense(dev);
 
-	/* Enable TX FIFO */
+	 
 	writel(TXFCR_FIFO_FLUSH_MASK | TXFCR_FIFO_EN_MASK,
 	       dev->base + TXFCR_OFFSET);
 
-	/* Mask all interrupts */
+	 
 	writel(0, dev->base + IER_OFFSET);
 
-	/* Clear all pending interrupts */
+	 
 	writel(ISR_CMDBUSY_MASK |
 	       ISR_READ_COMPLETE_MASK |
 	       ISR_SES_DONE_MASK |
@@ -808,14 +805,14 @@ static int bcm_kona_i2c_probe(struct platform_device *pdev)
 	       ISR_NOACK_MASK,
 	       dev->base + ISR_OFFSET);
 
-	/* Get the interrupt number */
+	 
 	dev->irq = platform_get_irq(pdev, 0);
 	if (dev->irq < 0) {
 		rc = dev->irq;
 		goto probe_disable_clk;
 	}
 
-	/* register the ISR handler */
+	 
 	rc = devm_request_irq(&pdev->dev, dev->irq, bcm_kona_i2c_isr,
 			      IRQF_SHARED, pdev->name, dev);
 	if (rc) {
@@ -823,19 +820,19 @@ static int bcm_kona_i2c_probe(struct platform_device *pdev)
 		goto probe_disable_clk;
 	}
 
-	/* Enable the controller but leave it idle */
+	 
 	bcm_kona_i2c_send_cmd_to_ctrl(dev, BCM_CMD_NOACTION);
 
-	/* Disable pad output */
+	 
 	writel(PADCTL_PAD_OUT_EN_MASK, dev->base + PADCTL_OFFSET);
 
-	/* Disable internal clock */
+	 
 	bcm_kona_i2c_disable_clock(dev);
 
-	/* Disable external clock */
+	 
 	clk_disable_unprepare(dev->external_clk);
 
-	/* Add the i2c adapter */
+	 
 	adap = &dev->adapter;
 	i2c_set_adapdata(adap, dev);
 	adap->owner = THIS_MODULE;

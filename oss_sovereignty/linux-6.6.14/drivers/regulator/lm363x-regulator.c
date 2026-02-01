@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI LM363X Regulator Driver
- *
- * Copyright 2015 Texas Instruments
- *
- * Author: Milo Kim <milo.kim@ti.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/kernel.h>
@@ -19,7 +13,7 @@
 #include <linux/regulator/of_regulator.h>
 #include <linux/slab.h>
 
-/* LM3631 */
+ 
 #define LM3631_BOOST_VSEL_MAX		0x25
 #define LM3631_LDO_VSEL_MAX		0x28
 #define LM3631_CONT_VSEL_MAX		0x03
@@ -28,18 +22,18 @@
 #define LM3631_VLDO_MIN			4000000
 #define ENABLE_TIME_USEC		1000
 
-/* LM3632 */
+ 
 #define LM3632_BOOST_VSEL_MAX		0x26
 #define LM3632_LDO_VSEL_MAX		0x28
 #define LM3632_VBOOST_MIN		4500000
 #define LM3632_VLDO_MIN			4000000
 
-/* LM36274 */
+ 
 #define LM36274_BOOST_VSEL_MAX		0x3f
 #define LM36274_LDO_VSEL_MAX		0x32
 #define LM36274_VOLTAGE_MIN		4000000
 
-/* Common */
+ 
 #define LM363X_STEP_50mV		50000
 #define LM363X_STEP_500mV		500000
 
@@ -101,7 +95,7 @@ static const struct regulator_ops lm363x_regulator_voltage_table_ops = {
 };
 
 static const struct regulator_desc lm363x_regulator_desc[] = {
-	/* LM3631 */
+	 
 	{
 		.name           = "vboost",
 		.of_match	= "vboost",
@@ -175,7 +169,7 @@ static const struct regulator_desc lm363x_regulator_desc[] = {
 		.enable_reg     = LM3631_REG_LDO_CTRL1,
 		.enable_mask    = LM3631_EN_VNEG_MASK,
 	},
-	/* LM3632 */
+	 
 	{
 		.name           = "vboost",
 		.of_match	= "vboost",
@@ -220,7 +214,7 @@ static const struct regulator_desc lm363x_regulator_desc[] = {
 		.enable_mask    = LM3632_EN_VNEG_MASK,
 	},
 
-	/* LM36274 */
+	 
 	{
 		.name           = "vboost",
 		.of_match	= "vboost",
@@ -268,12 +262,7 @@ static const struct regulator_desc lm363x_regulator_desc[] = {
 
 static struct gpio_desc *lm363x_regulator_of_get_enable_gpio(struct device *dev, int id)
 {
-	/*
-	 * Check LCM_EN1/2_GPIO is configured.
-	 * Those pins are used for enabling VPOS/VNEG LDOs.
-	 * Do not use devm* here: the regulator core takes over the
-	 * lifecycle management of the GPIO descriptor.
-	 */
+	 
 	switch (id) {
 	case LM3632_LDO_POS:
 	case LM36274_LDO_POS:
@@ -323,10 +312,7 @@ static int lm363x_regulator_probe(struct platform_device *pdev)
 	cfg.dev = dev;
 	cfg.regmap = regmap;
 
-	/*
-	 * LM3632 LDOs can be controlled by external pin.
-	 * Register update is required if the pin is used.
-	 */
+	 
 	gpiod = lm363x_regulator_of_get_enable_gpio(dev, id);
 	if (IS_ERR(gpiod))
 		return PTR_ERR(gpiod);

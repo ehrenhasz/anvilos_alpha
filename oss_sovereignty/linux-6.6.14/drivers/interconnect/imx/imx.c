@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Interconnect framework driver for i.MX SoC
- *
- * Copyright (c) 2019, BayLibre
- * Copyright (c) 2019-2020, NXP
- * Author: Alexandre Bailon <abailon@baylibre.com>
- * Author: Leonard Crestez <leonard.crestez@nxp.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/interconnect-provider.h>
@@ -19,7 +12,7 @@
 
 #include "imx.h"
 
-/* private icc_node data */
+ 
 struct imx_icc_node {
 	const struct imx_icc_node_desc *desc;
 	const struct imx_icc_noc_setting *setting;
@@ -95,7 +88,7 @@ static int imx_icc_set(struct icc_node *src, struct icc_node *dst)
 	return imx_icc_node_set(dst);
 }
 
-/* imx_icc_node_destroy() - Destroy an imx icc_node, including private data */
+ 
 static void imx_icc_node_destroy(struct icc_node *node)
 {
 	struct imx_icc_node *node_data = node->data;
@@ -134,7 +127,7 @@ static int imx_icc_node_init_qos(struct icc_provider *provider,
 				 adj->phandle_name);
 			return -ENODEV;
 		}
-		/* Allow scaling to be disabled on a per-node basis */
+		 
 		if (!of_device_is_available(dn)) {
 			dev_warn(dev, "Missing property %s, skip scaling %s\n",
 				 adj->phandle_name, node->name);
@@ -277,7 +270,7 @@ int imx_icc_register(struct platform_device *pdev,
 	int num_nodes;
 	int ret;
 
-	/* icc_onecell_data is indexed by node_id, unlike nodes param */
+	 
 	num_nodes = get_max_node_id(nodes, nodes_count) + 1;
 	data = devm_kzalloc(dev, struct_size(data, nodes, num_nodes),
 			    GFP_KERNEL);

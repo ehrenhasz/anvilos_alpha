@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * PCIe controller driver for Intel Keem Bay
- * Copyright (C) 2020 Intel Corporation
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -21,7 +18,7 @@
 
 #include "pcie-designware.h"
 
-/* PCIE_REGS_APB_SLV Registers */
+ 
 #define PCIE_REGS_PCIE_CFG		0x0004
 #define  PCIE_DEVICE_TYPE		BIT(8)
 #define  PCIE_RSTN			BIT(0)
@@ -77,12 +74,7 @@ static void keembay_ep_reset_assert(struct keembay_pcie *pcie)
 
 static void keembay_ep_reset_deassert(struct keembay_pcie *pcie)
 {
-	/*
-	 * Ensure that PERST# is asserted for a minimum of 100ms.
-	 *
-	 * For more details, refer to PCI Express Card Electromechanical
-	 * Specification Revision 1.1, Table-2.4.
-	 */
+	 
 	msleep(100);
 
 	gpiod_set_value_cansleep(pcie->reset, 0);
@@ -200,12 +192,7 @@ static int keembay_pcie_probe_clocks(struct keembay_pcie *pcie)
 	return 0;
 }
 
-/*
- * Initialize the internal PCIe PLL in Host mode.
- * See the following sections in Keem Bay data book,
- * (1) 6.4.6.1 PCIe Subsystem Example Initialization,
- * (2) 6.8 PCIe Low Jitter PLL for Ref Clk Generation.
- */
+ 
 static int keembay_pcie_pll_init(struct keembay_pcie *pcie)
 {
 	struct dw_pcie *pci = &pcie->pci;
@@ -238,14 +225,7 @@ static void keembay_pcie_msi_irq_handler(struct irq_desc *desc)
 	u32 val, mask, status;
 	struct dw_pcie_rp *pp;
 
-	/*
-	 * Keem Bay PCIe Controller provides an additional IP logic on top of
-	 * standard DWC IP to clear MSI IRQ by writing '1' to the respective
-	 * bit of the status register.
-	 *
-	 * So, a chained irq handler is defined to handle this additional
-	 * IP logic.
-	 */
+	 
 
 	chained_irq_enter(chip, desc);
 
@@ -296,7 +276,7 @@ static int keembay_pcie_ep_raise_irq(struct dw_pcie_ep *ep, u8 func_no,
 
 	switch (type) {
 	case PCI_EPC_IRQ_LEGACY:
-		/* Legacy interrupts are not supported in Keem Bay */
+		 
 		dev_err(pci->dev, "Legacy IRQ is not supported\n");
 		return -EINVAL;
 	case PCI_EPC_IRQ_MSI:

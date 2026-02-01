@@ -1,9 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-//
-// Spreadtrum composite clock driver
-//
-// Copyright (C) 2017 Spreadtrum, Inc.
-// Author: Chunyan Zhang <chunyan.zhang@spreadtrum.com>
+ 
+
+
+
+
+
 
 #ifndef _SPRD_COMPOSITE_H_
 #define _SPRD_COMPOSITE_H_
@@ -65,4 +65,4 @@ static inline struct sprd_comp *hw_to_sprd_comp(const struct clk_hw *hw)
 
 extern const struct clk_ops sprd_comp_ops;
 
-#endif /* _SPRD_COMPOSITE_H_ */
+#endif  

@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// BQ25980 Battery Charger Driver
-// Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
+
+
+
 
 #include <linux/err.h>
 #include <linux/i2c.h>

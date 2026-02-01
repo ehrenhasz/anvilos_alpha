@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * RDA8810PL SoC timer driver
- *
- * Copyright RDA Microelectronics Company Limited
- * Copyright (c) 2017 Andreas Färber
- * Copyright (c) 2018 Manivannan Sadhasivam
- *
- * RDA8810PL has two independent timers: OSTIMER (56 bit) and HWTIMER (64 bit).
- * Each timer provides optional interrupt support. In this driver, OSTIMER is
- * used for clockevents and HWTIMER is used for clocksource.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -42,11 +32,11 @@ static int rda_ostimer_start(void __iomem *base, bool periodic, u64 cycles)
 	if (periodic)
 		ctrl |= RDA_OSTIMER_CTRL_REPEAT;
 
-	/* Enable ostimer interrupt first */
+	 
 	writel_relaxed(RDA_TIMER_IRQ_MASK_OSTIMER,
 		       base + RDA_TIMER_IRQ_MASK_SET);
 
-	/* Write low 32 bits first, high 24 bits are with ctrl */
+	 
 	writel_relaxed(load_l, base + RDA_OSTIMER_LOADVAL_L);
 	writel_relaxed(ctrl, base + RDA_OSTIMER_CTRL);
 
@@ -55,7 +45,7 @@ static int rda_ostimer_start(void __iomem *base, bool periodic, u64 cycles)
 
 static int rda_ostimer_stop(void __iomem *base)
 {
-	/* Disable ostimer interrupt first */
+	 
 	writel_relaxed(RDA_TIMER_IRQ_MASK_OSTIMER,
 		       base + RDA_TIMER_IRQ_MASK_CLR);
 
@@ -116,7 +106,7 @@ static irqreturn_t rda_ostimer_interrupt(int irq, void *dev_id)
 	struct clock_event_device *evt = dev_id;
 	struct timer_of *to = to_timer_of(evt);
 
-	/* clear timer int */
+	 
 	writel_relaxed(RDA_TIMER_IRQ_CLR_OSTIMER,
 		       timer_of_base(to) + RDA_TIMER_IRQ_CLR);
 
@@ -158,7 +148,7 @@ static u64 rda_hwtimer_read(struct clocksource *cs)
 	void __iomem *base = timer_of_base(&rda_ostimer_of);
 	u32 lo, hi;
 
-	/* Always read low 32 bits first */
+	 
 	do {
 		lo = readl_relaxed(base + RDA_HWTIMER_LOCKVAL_L);
 		hi = readl_relaxed(base + RDA_HWTIMER_LOCKVAL_H);

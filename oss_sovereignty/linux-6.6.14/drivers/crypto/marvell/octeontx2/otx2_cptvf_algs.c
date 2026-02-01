@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2020 Marvell. */
+
+ 
 
 #include <crypto/aes.h>
 #include <crypto/authenc.h>
@@ -18,20 +18,20 @@
 #include "otx2_cptvf_algs.h"
 #include "otx2_cpt_reqmgr.h"
 
-/* Size of salt in AES GCM mode */
+ 
 #define AES_GCM_SALT_SIZE 4
-/* Size of IV in AES GCM mode */
+ 
 #define AES_GCM_IV_SIZE 8
-/* Size of ICV (Integrity Check Value) in AES GCM mode */
+ 
 #define AES_GCM_ICV_SIZE 16
-/* Offset of IV in AES GCM mode */
+ 
 #define AES_GCM_IV_OFFSET 8
 #define CONTROL_WORD_LEN 8
 #define KEY2_OFFSET 48
 #define DMA_MODE_FLAG(dma_mode) \
 	(((dma_mode) == OTX2_CPT_DMA_MODE_SG) ? (1 << 7) : 0)
 
-/* Truncated SHA digest size */
+ 
 #define SHA1_TRUNC_DIGEST_SIZE 12
 #define SHA256_TRUNC_DIGEST_SIZE 16
 #define SHA384_TRUNC_DIGEST_SIZE 24
@@ -63,13 +63,7 @@ static inline int get_se_device(struct pci_dev **pdev, int *cpu_num)
 		return -ENODEV;
 
 	*cpu_num = get_cpu();
-	/*
-	 * On OcteonTX2 platform CPT instruction queue is bound to each
-	 * local function LF, in turn LFs can be attached to PF
-	 * or VF therefore we always use first device. We get maximum
-	 * performance if one CPT queue is available for each cpu
-	 * otherwise CPT queues need to be shared between cpus.
-	 */
+	 
 	if (*cpu_num >= se_devices.desc[0].num_queues)
 		*cpu_num %= se_devices.desc[0].num_queues;
 	*pdev = se_devices.desc[0].dev;
@@ -106,11 +100,7 @@ static void otx2_cpt_aead_callback(int status, void *arg1, void *arg2)
 	if (inst_info) {
 		cpt_req = inst_info->req;
 		if (!status) {
-			/*
-			 * When selected cipher is NULL we need to manually
-			 * verify whether calculated hmac value matches
-			 * received hmac value
-			 */
+			 
 			if (cpt_req->req_type ==
 			    OTX2_CPT_AEAD_ENC_DEC_NULL_REQ &&
 			    !cpt_req->is_enc)
@@ -249,9 +239,9 @@ static inline int create_ctx_hdr(struct skcipher_request *req, u32 enc,
 						 start, ivsize, 0);
 		}
 	}
-	/* Encryption data length */
+	 
 	req_info->req.param1 = req->cryptlen;
-	/* Authentication data length */
+	 
 	req_info->req.param2 = 0;
 
 	fctx->enc.enc_ctrl.e.enc_cipher = ctx->cipher_type;
@@ -267,10 +257,7 @@ static inline int create_ctx_hdr(struct skcipher_request *req, u32 enc,
 
 	cpu_to_be64s(&fctx->enc.enc_ctrl.u);
 
-	/*
-	 * Storing  Packet Data Information in offset
-	 * Control Word First 8 bytes
-	 */
+	 
 	req_info->in[*argcnt].vptr = (u8 *)&rctx->ctrl_word;
 	req_info->in[*argcnt].size = CONTROL_WORD_LEN;
 	req_info->req.dlen += CONTROL_WORD_LEN;
@@ -310,14 +297,7 @@ static inline void create_output_list(struct skcipher_request *req,
 	struct otx2_cpt_req_info *req_info = &rctx->cpt_req;
 	u32 argcnt = 0;
 
-	/*
-	 * OUTPUT Buffer Processing
-	 * AES encryption/decryption output would be
-	 * received in the following format
-	 *
-	 * ------IV--------|------ENCRYPTED/DECRYPTED DATA-----|
-	 * [ 16 Bytes/     [   Request Enc/Dec/ DATA Len AES CBC ]
-	 */
+	 
 	update_output_data(req_info, req->dst, 0, req->cryptlen, &argcnt);
 	req_info->out_cnt = argcnt;
 }
@@ -364,7 +344,7 @@ static inline int cpt_enc_dec(struct skcipher_request *req, u32 enc)
 	if (req->cryptlen > OTX2_CPT_MAX_REQ_SIZE)
 		return skcipher_do_fallback(req, enc);
 
-	/* Clear control words */
+	 
 	rctx->ctrl_word.flags = 0;
 	rctx->fctx.enc.enc_ctrl.u = 0;
 
@@ -384,11 +364,7 @@ static inline int cpt_enc_dec(struct skcipher_request *req, u32 enc)
 	req_info->is_trunc_hmac = false;
 	req_info->ctrl.s.grp = otx2_cpt_get_kcrypto_eng_grp_num(pdev);
 
-	/*
-	 * We perform an asynchronous send and once
-	 * the request is completed the driver would
-	 * intimate through registered call back functions
-	 */
+	 
 	status = otx2_cpt_do_request(pdev, req_info, cpu_num);
 
 	return status;
@@ -532,11 +508,7 @@ static int otx2_cpt_enc_dec_init(struct crypto_skcipher *stfm)
 	struct crypto_alg *alg = tfm->__crt_alg;
 
 	memset(ctx, 0, sizeof(*ctx));
-	/*
-	 * Additional memory for skcipher_request is
-	 * allocated since the cryptd daemon uses
-	 * this memory for request_ctx information
-	 */
+	 
 	crypto_skcipher_set_reqsize_dma(
 		stfm, sizeof(struct otx2_cpt_req_ctx) +
 		      sizeof(struct skcipher_request));
@@ -580,11 +552,7 @@ static int cpt_aead_init(struct crypto_aead *atfm, u8 cipher_type, u8 mac_type)
 	ctx->cipher_type = cipher_type;
 	ctx->mac_type = mac_type;
 
-	/*
-	 * When selected cipher is NULL we use HMAC opcode instead of
-	 * FLEXICRYPTO opcode therefore we don't need to use HASH algorithms
-	 * for calculating ipad and opad
-	 */
+	 
 	if (ctx->cipher_type != OTX2_CPT_CIPHER_NULL) {
 		switch (ctx->mac_type) {
 		case OTX2_CPT_SHA1:
@@ -705,7 +673,7 @@ static int otx2_cpt_aead_gcm_set_authsize(struct crypto_aead *tfm,
 		return -EINVAL;
 
 	tfm->authsize = authsize;
-	/* Set authsize for fallback case */
+	 
 	if (ctx->fbk_cipher)
 		ctx->fbk_cipher->authsize = authsize;
 
@@ -850,12 +818,9 @@ static int aead_hmac_init(struct crypto_aead *cipher)
 		opad[icount] ^= 0x5c;
 	}
 
-	/*
-	 * Partial Hash calculated from the software
-	 * algorithm is retrieved for IPAD & OPAD
-	 */
+	 
 
-	/* IPAD Calculation */
+	 
 	crypto_shash_init(&ctx->sdesc->shash);
 	crypto_shash_update(&ctx->sdesc->shash, ipad, bs);
 	crypto_shash_export(&ctx->sdesc->shash, ipad);
@@ -863,7 +828,7 @@ static int aead_hmac_init(struct crypto_aead *cipher)
 	if (ret)
 		goto calc_fail;
 
-	/* OPAD Calculation */
+	 
 	crypto_shash_init(&ctx->sdesc->shash);
 	crypto_shash_update(&ctx->sdesc->shash, opad, bs);
 	crypto_shash_export(&ctx->sdesc->shash, opad);
@@ -931,7 +896,7 @@ static int otx2_cpt_aead_cbc_aes_sha_setkey(struct crypto_aead *cipher,
 		ctx->key_type = OTX2_CPT_AES_256_BIT;
 		break;
 	default:
-		/* Invalid key length */
+		 
 		return -EINVAL;
 	}
 
@@ -982,10 +947,7 @@ static int otx2_cpt_aead_gcm_aes_setkey(struct crypto_aead *cipher,
 {
 	struct otx2_cpt_aead_ctx *ctx = crypto_aead_ctx_dma(cipher);
 
-	/*
-	 * For aes gcm we expect to get encryption key (16, 24, 32 bytes)
-	 * and salt (4 bytes)
-	 */
+	 
 	switch (keylen) {
 	case AES_KEYSIZE_128 + AES_GCM_SALT_SIZE:
 		ctx->key_type = OTX2_CPT_AES_128_BIT;
@@ -1000,11 +962,11 @@ static int otx2_cpt_aead_gcm_aes_setkey(struct crypto_aead *cipher,
 		ctx->enc_key_len = AES_KEYSIZE_256;
 		break;
 	default:
-		/* Invalid key and salt length */
+		 
 		return -EINVAL;
 	}
 
-	/* Store encryption key and salt */
+	 
 	memcpy(ctx->key, key, keylen);
 
 	return crypto_aead_setkey(ctx->fbk_cipher, key, keylen);
@@ -1029,10 +991,10 @@ static inline int create_aead_ctx_hdr(struct aead_request *req, u32 enc,
 			return -EINVAL;
 
 		fctx->enc.enc_ctrl.e.iv_source = OTX2_CPT_FROM_CPTR;
-		/* Copy encryption key to context */
+		 
 		memcpy(fctx->enc.encr_key, ctx->key + ctx->auth_key_len,
 		       ctx->enc_key_len);
-		/* Copy IV to context */
+		 
 		memcpy(fctx->enc.encr_iv, req->iv, crypto_aead_ivsize(tfm));
 
 		ds = crypto_shash_digestsize(ctx->hashalg);
@@ -1049,9 +1011,9 @@ static inline int create_aead_ctx_hdr(struct aead_request *req, u32 enc,
 			return -EINVAL;
 
 		fctx->enc.enc_ctrl.e.iv_source = OTX2_CPT_FROM_DPTR;
-		/* Copy encryption key to context */
+		 
 		memcpy(fctx->enc.encr_key, ctx->key, ctx->enc_key_len);
-		/* Copy salt to context */
+		 
 		memcpy(fctx->enc.encr_iv, ctx->key + ctx->enc_key_len,
 		       AES_GCM_SALT_SIZE);
 
@@ -1059,7 +1021,7 @@ static inline int create_aead_ctx_hdr(struct aead_request *req, u32 enc,
 		break;
 
 	default:
-		/* Unknown cipher type */
+		 
 		return -EINVAL;
 	}
 	cpu_to_be64s(&rctx->ctrl_word.flags);
@@ -1084,10 +1046,7 @@ static inline int create_aead_ctx_hdr(struct aead_request *req, u32 enc,
 	fctx->enc.enc_ctrl.e.mac_len = mac_len;
 	cpu_to_be64s(&fctx->enc.enc_ctrl.u);
 
-	/*
-	 * Storing Packet Data Information in offset
-	 * Control Word First 8 bytes
-	 */
+	 
 	req_info->in[*argcnt].vptr = (u8 *)&rctx->ctrl_word;
 	req_info->in[*argcnt].size = CONTROL_WORD_LEN;
 	req_info->req.dlen += CONTROL_WORD_LEN;
@@ -1119,7 +1078,7 @@ static inline void create_hmac_ctx_hdr(struct aead_request *req, u32 *argcnt,
 	req_info->req.param1 = ctx->auth_key_len;
 	req_info->req.param2 = ctx->mac_type << 8;
 
-	/* Add authentication key */
+	 
 	req_info->in[*argcnt].vptr = ctx->key;
 	req_info->in[*argcnt].size = round_up(ctx->auth_key_len, 8);
 	req_info->req.dlen += round_up(ctx->auth_key_len, 8);
@@ -1190,10 +1149,7 @@ static inline int create_aead_null_output_list(struct aead_request *req,
 	else
 		inputlen =  req->cryptlen + req->assoclen - mac_len;
 
-	/*
-	 * If source and destination are different
-	 * then copy payload to destination
-	 */
+	 
 	if (req->src != req->dst) {
 
 		ptr = kmalloc(inputlen, (req_info->areq->flags &
@@ -1218,10 +1174,7 @@ static inline int create_aead_null_output_list(struct aead_request *req,
 	}
 
 	if (enc) {
-		/*
-		 * In an encryption scenario hmac needs
-		 * to be appended after payload
-		 */
+		 
 		dst = req->dst;
 		offset = inputlen;
 		while (offset >= dst->length) {
@@ -1233,10 +1186,7 @@ static inline int create_aead_null_output_list(struct aead_request *req,
 
 		update_output_data(req_info, dst, offset, mac_len, &argcnt);
 	} else {
-		/*
-		 * In a decryption scenario calculated hmac for received
-		 * payload needs to be compare with hmac received
-		 */
+		 
 		status = sg_copy_buffer(req->src, sg_nents(req->src),
 					rctx->fctx.hmac.s.hmac_recv, mac_len,
 					inputlen, true);
@@ -1264,7 +1214,7 @@ static int aead_do_fallback(struct aead_request *req, bool is_enc)
 	int ret;
 
 	if (ctx->fbk_cipher) {
-		/* Store the cipher tfm and then use the fallback tfm */
+		 
 		aead_request_set_tfm(&rctx->fbk_req, ctx->fbk_cipher);
 		aead_request_set_callback(&rctx->fbk_req, req->base.flags,
 					  req->base.complete, req->base.data);
@@ -1289,7 +1239,7 @@ static int cpt_aead_enc_dec(struct aead_request *req, u8 reg_type, u8 enc)
 	struct pci_dev *pdev;
 	int status, cpu_num;
 
-	/* Clear control words */
+	 
 	rctx->ctrl_word.flags = 0;
 	rctx->fctx.enc.enc_ctrl.u = 0;
 
@@ -1333,11 +1283,7 @@ static int cpt_aead_enc_dec(struct aead_request *req, u8 reg_type, u8 enc)
 
 	req_info->ctrl.s.grp = otx2_cpt_get_kcrypto_eng_grp_num(pdev);
 
-	/*
-	 * We perform an asynchronous send and once
-	 * the request is completed the driver would
-	 * intimate through registered call back functions
-	 */
+	 
 	return otx2_cpt_do_request(pdev, req_info, cpu_num);
 }
 

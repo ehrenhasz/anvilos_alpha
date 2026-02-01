@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2018 Spreadtrum Communications Inc.
+
+
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -9,13 +9,13 @@
 #include <linux/notifier.h>
 #include <linux/of.h>
 
-/* PMIC global registers definition */
+ 
 #define SC2731_CHARGE_STATUS		0xedc
 #define SC2731_CHARGE_FULL		BIT(4)
 #define SC2731_MODULE_EN1		0xc0c
 #define SC2731_CHARGE_EN		BIT(5)
 
-/* SC2731 switch charger registers definition */
+ 
 #define SC2731_CHG_CFG0			0x0
 #define SC2731_CHG_CFG1			0x4
 #define SC2731_CHG_CFG2			0x8
@@ -23,7 +23,7 @@
 #define SC2731_CHG_CFG4			0x10
 #define SC2731_CHG_CFG5			0x28
 
-/* SC2731_CHG_CFG0 register definition */
+ 
 #define SC2731_PRECHG_RNG_SHIFT		11
 #define SC2731_PRECHG_RNG_MASK		GENMASK(12, 11)
 
@@ -36,14 +36,14 @@
 #define SC2731_CC_EN			BIT(13)
 #define SC2731_CHARGER_PD		BIT(0)
 
-/* SC2731_CHG_CFG1 register definition */
+ 
 #define SC2731_CUR_MASK			GENMASK(5, 0)
 
-/* SC2731_CHG_CFG5 register definition */
+ 
 #define SC2731_CUR_LIMIT_SHIFT		8
 #define SC2731_CUR_LIMIT_MASK		GENMASK(9, 8)
 
-/* Default current definition (unit is mA) */
+ 
 #define SC2731_CURRENT_LIMIT_100	100
 #define SC2731_CURRENT_LIMIT_500	500
 #define SC2731_CURRENT_LIMIT_900	900
@@ -77,13 +77,13 @@ static int sc2731_charger_start_charge(struct sc2731_charger_info *info)
 {
 	int ret;
 
-	/* Enable charger constant current mode */
+	 
 	ret = regmap_update_bits(info->regmap, info->base + SC2731_CHG_CFG0,
 				 SC2731_CC_EN, SC2731_CC_EN);
 	if (ret)
 		return ret;
 
-	/* Start charging */
+	 
 	return regmap_update_bits(info->regmap, info->base + SC2731_CHG_CFG0,
 				  SC2731_CHARGER_PD, 0);
 }
@@ -117,10 +117,10 @@ static int sc2731_charger_set_current(struct sc2731_charger_info *info, u32 cur)
 	else if (cur < SC2731_CURRENT_PRECHG)
 		cur = SC2731_CURRENT_PRECHG;
 
-	/* Calculate the step value, each step is 50 mA */
+	 
 	val = (cur - SC2731_CURRENT_PRECHG) / SC2731_CURRENT_STEP;
 
-	/* Set pre-charge current as 450 mA */
+	 
 	ret = regmap_update_bits(info->regmap, info->base + SC2731_CHG_CFG0,
 				 SC2731_PRECHG_RNG_MASK,
 				 0x3 << SC2731_PRECHG_RNG_SHIFT);
@@ -329,7 +329,7 @@ static void sc2731_charger_work(struct work_struct *data)
 	mutex_lock(&info->lock);
 
 	if (info->limit > 0 && !info->charging) {
-		/* set current limitation and start to charge */
+		 
 		ret = sc2731_charger_set_current_limit(info, info->limit);
 		if (ret)
 			goto out;
@@ -344,7 +344,7 @@ static void sc2731_charger_work(struct work_struct *data)
 
 		info->charging = true;
 	} else if (!info->limit && info->charging) {
-		/* Stop charging */
+		 
 		info->charging = false;
 		sc2731_charger_stop_charge(info);
 	}
@@ -372,7 +372,7 @@ static int sc2731_charger_hw_init(struct sc2731_charger_info *info)
 	u32 term_currrent, term_voltage, cur_val, vol_val;
 	int ret;
 
-	/* Enable charger module */
+	 
 	ret = regmap_update_bits(info->regmap, SC2731_MODULE_EN1,
 				 SC2731_CHARGE_EN, SC2731_CHARGE_EN);
 	if (ret)
@@ -382,11 +382,7 @@ static int sc2731_charger_hw_init(struct sc2731_charger_info *info)
 	if (ret) {
 		dev_warn(info->dev, "no battery information is supplied\n");
 
-		/*
-		 * If no battery information is supplied, we should set
-		 * default charge termination current to 120 mA, and default
-		 * charge termination voltage to 4.35V.
-		 */
+		 
 		cur_val = 0x2;
 		vol_val = 0x1;
 	} else {
@@ -412,13 +408,13 @@ static int sc2731_charger_hw_init(struct sc2731_charger_info *info)
 		power_supply_put_battery_info(info->psy_usb, bat_info);
 	}
 
-	/* Set charge termination current */
+	 
 	ret = regmap_update_bits(info->regmap, info->base + SC2731_CHG_CFG2,
 				 SC2731_TERMINATION_CUR_MASK, cur_val);
 	if (ret)
 		goto error;
 
-	/* Set charge termination voltage */
+	 
 	ret = regmap_update_bits(info->regmap, info->base + SC2731_CHG_CFG0,
 				 SC2731_TERMINATION_VOL_MASK |
 				 SC2731_TERMINATION_VOL_CAL_MASK,
@@ -438,11 +434,7 @@ static void sc2731_charger_detect_status(struct sc2731_charger_info *info)
 {
 	unsigned int min, max;
 
-	/*
-	 * If the USB charger status has been USB_CHARGER_PRESENT before
-	 * registering the notifier, we should start to charge with getting
-	 * the charge current.
-	 */
+	 
 	if (info->usb_phy->chg_state != USB_CHARGER_PRESENT)
 		return;
 

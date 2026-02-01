@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Facebook
+
+
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
 #define ATTR __attribute__((noinline))
@@ -15,7 +15,7 @@ int balancer_ingress(struct __sk_buff *ctx)
 
 	nh_off = 14;
 
-	/* pragma unroll doesn't work on large loops */
+	 
 
 #define C do { \
 	ptr = data + i; \
@@ -24,7 +24,7 @@ int balancer_ingress(struct __sk_buff *ctx)
 	ctx->tc_index = jhash(ptr, nh_off, ctx->cb[0] + i++); \
 	} while (0);
 #define C30 C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;
-	C30;C30;C30; /* 90 calls */
+	C30;C30;C30;  
 	return 0;
 }
 char _license[] SEC("license") = "GPL";

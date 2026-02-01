@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2015 MediaTek Inc.
- * Author:
- *  Zhigang.Wei <zhigang.wei@mediatek.com>
- *  Chunfeng.Yun <chunfeng.yun@mediatek.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -15,21 +10,21 @@
 
 #define SSP_BW_BOUNDARY	130000
 #define SS_BW_BOUNDARY	51000
-/* table 5-5. High-speed Isoc Transaction Limits in usb_20 spec */
+ 
 #define HS_BW_BOUNDARY	6144
-/* usb2 spec section11.18.1: at most 188 FS bytes per microframe */
+ 
 #define FS_PAYLOAD_MAX 188
 
 #define DBG_BUF_EN	64
 
-/* schedule error type */
+ 
 #define ESCH_SS_Y6		1001
 #define ESCH_SS_OVERLAP		1002
 #define ESCH_CS_OVERFLOW	1003
 #define ESCH_BW_OVERFLOW	1004
 #define ESCH_FIXME		1005
 
-/* mtk scheduler bitmasks */
+ 
 #define EP_BPKTS(p)	((p) & 0x7f)
 #define EP_BCSCOUNT(p)	(((p) & 0x7) << 8)
 #define EP_BBM(p)	((p) << 11)
@@ -103,18 +98,7 @@ static u32 get_bw_boundary(enum usb_device_speed speed)
 	return boundary;
 }
 
-/*
-* get the bandwidth domain which @ep belongs to.
-*
-* the bandwidth domain array is saved to @sch_array of struct xhci_hcd_mtk,
-* each HS root port is treated as a single bandwidth domain,
-* but each SS root port is treated as two bandwidth domains, one for IN eps,
-* one for OUT eps.
-* @real_port value is defined as follow according to xHCI spec:
-* 1 for SSport0, ..., N+1 for SSportN, N+2 for HSport0, N+3 for HSport1, etc
-* so the bandwidth domain array is organized as follow for simplification:
-* SSport0-OUT, SSport0-IN, ..., SSportX-OUT, SSportX-IN, HSport0, ..., HSportY
-*/
+ 
 static struct mu3h_sch_bw_info *
 get_bw_info(struct xhci_hcd_mtk *mtk, struct usb_device *udev,
 	    struct usb_host_endpoint *ep)
@@ -135,7 +119,7 @@ get_bw_info(struct xhci_hcd_mtk *mtk, struct usb_device *udev,
 		else
 			bw_index = (virt_dev->real_port - 1) * 2 + 1;
 	} else {
-		/* add one more for each SS port */
+		 
 		bw_index = virt_dev->real_port + xhci->usb3_rhub.num_ports - 1;
 	}
 
@@ -160,17 +144,13 @@ static struct mu3h_sch_tt *find_tt(struct usb_device *udev)
 	bool allocated_index = false;
 
 	if (!utt)
-		return NULL;	/* Not below a TT */
+		return NULL;	 
 
-	/*
-	 * Find/create our data structure.
-	 * For hubs with a single TT, we get it directly.
-	 * For hubs with multiple TTs, there's an extra level of pointers.
-	 */
+	 
 	tt_index = NULL;
 	if (utt->multi) {
 		tt_index = utt->hcpriv;
-		if (!tt_index) {	/* Create the index array */
+		if (!tt_index) {	 
 			tt_index = kcalloc(utt->hub->maxchild,
 					sizeof(*tt_index), GFP_KERNEL);
 			if (!tt_index)
@@ -184,7 +164,7 @@ static struct mu3h_sch_tt *find_tt(struct usb_device *udev)
 	}
 
 	tt = *ptt;
-	if (!tt) {	/* Create the mu3h_sch_tt */
+	if (!tt) {	 
 		tt = kzalloc(sizeof(*tt), GFP_KERNEL);
 		if (!tt) {
 			if (allocated_index) {
@@ -200,7 +180,7 @@ static struct mu3h_sch_tt *find_tt(struct usb_device *udev)
 	return tt;
 }
 
-/* Release the TT above udev, if it's not in use */
+ 
 static void drop_tt(struct usb_device *udev)
 {
 	struct usb_tt *utt = udev->tt;
@@ -208,13 +188,13 @@ static void drop_tt(struct usb_device *udev)
 	int i, cnt;
 
 	if (!utt || !utt->hcpriv)
-		return;		/* Not below a TT, or never allocated */
+		return;		 
 
 	cnt = 0;
 	if (utt->multi) {
 		tt_index = utt->hcpriv;
 		ptt = &tt_index[udev->ttport - 1];
-		/*  How many entries are left in tt_index? */
+		 
 		for (i = 0; i < utt->hub->maxchild; ++i)
 			cnt += !!tt_index[i];
 	} else {
@@ -224,7 +204,7 @@ static void drop_tt(struct usb_device *udev)
 
 	tt = *ptt;
 	if (!tt || !list_empty(&tt->ep_list))
-		return;		/* never allocated , or still in use*/
+		return;		 
 
 	*ptt = NULL;
 	kfree(tt);
@@ -300,29 +280,17 @@ static void setup_sch_info(struct xhci_ep_ctx *ep_ctx,
 	if (sch_ep->speed == USB_SPEED_HIGH) {
 		sch_ep->cs_count = 0;
 
-		/*
-		 * usb_20 spec section5.9
-		 * a single microframe is enough for HS synchromous endpoints
-		 * in a interval
-		 */
+		 
 		sch_ep->num_budget_microframes = 1;
 
-		/*
-		 * xHCI spec section6.2.3.4
-		 * @max_burst is the number of additional transactions
-		 * opportunities per microframe
-		 */
+		 
 		sch_ep->pkts = max_burst + 1;
 		sch_ep->bw_cost_per_microframe = maxpkt * sch_ep->pkts;
 	} else if (sch_ep->speed >= USB_SPEED_SUPER) {
-		/* usb3_r1 spec section4.4.7 & 4.4.8 */
+		 
 		sch_ep->cs_count = 0;
 		sch_ep->burst_mode = 1;
-		/*
-		 * some device's (d)wBytesPerInterval is set as 0,
-		 * then max_esit_payload is 0, so evaluate esit_pkts from
-		 * mult and burst
-		 */
+		 
 		esit_pkts = DIV_ROUND_UP(max_esit_payload, maxpkt);
 		if (esit_pkts == 0)
 			esit_pkts = (mult + 1) * (max_burst + 1);
@@ -349,19 +317,16 @@ static void setup_sch_info(struct xhci_ep_ctx *ep_ctx,
 		}
 		sch_ep->bw_cost_per_microframe = maxpkt * sch_ep->pkts;
 	} else if (is_fs_or_ls(sch_ep->speed)) {
-		sch_ep->pkts = 1; /* at most one packet for each microframe */
+		sch_ep->pkts = 1;  
 
-		/*
-		 * num_budget_microframes and cs_count will be updated when
-		 * check TT for INT_OUT_EP, ISOC/INT_IN_EP type
-		 */
+		 
 		sch_ep->cs_count = DIV_ROUND_UP(maxpkt, FS_PAYLOAD_MAX);
 		sch_ep->num_budget_microframes = sch_ep->cs_count;
 		sch_ep->bw_cost_per_microframe = min_t(u32, maxpkt, FS_PAYLOAD_MAX);
 	}
 }
 
-/* Get maximum bandwidth when we schedule at offset slot. */
+ 
 static u32 get_max_bw(struct mu3h_sch_bw_info *sch_bw,
 	struct mu3h_sch_ep_info *sch_ep, u32 offset)
 {
@@ -408,10 +373,7 @@ static int check_fs_bus_bw(struct mu3h_sch_ep_info *sch_ep, int offset)
 	for (i = 0; i < sch_ep->num_esit; i++) {
 		base = offset + i * sch_ep->esit;
 
-		/*
-		 * Compared with hs bus, no matter what ep type,
-		 * the hub will always delay one uframe to send data
-		 */
+		 
 		for (j = 0; j < sch_ep->num_budget_microframes; j++) {
 			k = XHCI_MTK_BW_INDEX(base + j);
 			tmp = tt->fs_bus_bw[k] + sch_ep->bw_cost_per_microframe;
@@ -436,24 +398,18 @@ static int check_sch_tt(struct mu3h_sch_ep_info *sch_ep, u32 offset)
 	if (sch_ep->ep_type == ISOC_OUT_EP) {
 		last_ss = start_ss + sch_ep->cs_count - 1;
 
-		/*
-		 * usb_20 spec section11.18:
-		 * must never schedule Start-Split in Y6
-		 */
+		 
 		if (!(start_ss == 7 || last_ss < 6))
 			return -ESCH_SS_Y6;
 
 	} else {
 		u32 cs_count = DIV_ROUND_UP(sch_ep->maxpkt, FS_PAYLOAD_MAX);
 
-		/*
-		 * usb_20 spec section11.18:
-		 * must never schedule Start-Split in Y6
-		 */
+		 
 		if (start_ss == 6)
 			return -ESCH_SS_Y6;
 
-		/* one uframe for ss + one uframe for idle */
+		 
 		start_cs = (start_ss + 2) % 8;
 		last_cs = start_cs + cs_count - 1;
 
@@ -461,16 +417,13 @@ static int check_sch_tt(struct mu3h_sch_ep_info *sch_ep, u32 offset)
 			return -ESCH_CS_OVERFLOW;
 
 		if (cs_count > 7)
-			cs_count = 7; /* HW limit */
+			cs_count = 7;  
 
 		sch_ep->cs_count = cs_count;
-		/* ss, idle are ignored */
+		 
 		sch_ep->num_budget_microframes = cs_count;
 
-		/*
-		 * if interval=1, maxp >752, num_budge_micoframe is larger
-		 * than sch_ep->esit, will overstep boundary
-		 */
+		 
 		if (sch_ep->num_budget_microframes > sch_ep->esit)
 			sch_ep->num_budget_microframes = sch_ep->esit;
 	}
@@ -506,7 +459,7 @@ static int load_ep_bw(struct mu3h_sch_bw_info *sch_bw,
 	if (sch_ep->sch_tt)
 		update_sch_tt(sch_ep, loaded);
 
-	/* update bus bandwidth info */
+	 
 	update_bus_bw(sch_bw, sch_ep, loaded);
 	sch_ep->allocated = loaded;
 
@@ -523,10 +476,7 @@ static int check_sch_bw(struct mu3h_sch_ep_info *sch_ep)
 	int min_index = -1;
 	int ret = 0;
 
-	/*
-	 * Search through all possible schedule microframes.
-	 * and find a microframe where its worst bandwidth is minimum.
-	 */
+	 
 	for (offset = 0; offset < sch_ep->esit; offset++) {
 		ret = check_sch_tt(sch_ep, offset);
 		if (ret)
@@ -541,7 +491,7 @@ static int check_sch_bw(struct mu3h_sch_ep_info *sch_ep)
 			min_index = offset;
 		}
 
-		/* use first-fit for LS/FS */
+		 
 		if (sch_ep->sch_tt && min_index >= 0)
 			break;
 
@@ -560,7 +510,7 @@ static int check_sch_bw(struct mu3h_sch_ep_info *sch_ep)
 static void destroy_sch_ep(struct xhci_hcd_mtk *mtk, struct usb_device *udev,
 			   struct mu3h_sch_ep_info *sch_ep)
 {
-	/* only release ep bw check passed by check_sch_bw() */
+	 
 	if (sch_ep->allocated)
 		load_ep_bw(sch_ep->bw_info, sch_ep, false);
 
@@ -577,20 +527,16 @@ static bool need_bw_sch(struct usb_device *udev,
 {
 	bool has_tt = udev->tt && udev->tt->hub->parent;
 
-	/* only for periodic endpoints */
+	 
 	if (usb_endpoint_xfer_control(&ep->desc)
 		|| usb_endpoint_xfer_bulk(&ep->desc))
 		return false;
 
-	/*
-	 * for LS & FS periodic endpoints which its device is not behind
-	 * a TT are also ignored, root-hub will schedule them directly,
-	 * but need set @bpkts field of endpoint context to 1.
-	 */
+	 
 	if (is_fs_or_ls(udev->speed) && !has_tt)
 		return false;
 
-	/* skip endpoint with zero maxpkt */
+	 
 	if (usb_endpoint_maxp(&ep->desc) == 0)
 		return false;
 
@@ -603,7 +549,7 @@ int xhci_mtk_sch_init(struct xhci_hcd_mtk *mtk)
 	struct mu3h_sch_bw_info *sch_array;
 	int num_usb_bus;
 
-	/* ss IN and OUT are separated */
+	 
 	num_usb_bus = xhci->usb3_rhub.num_ports * 2 + xhci->usb2_rhub.num_ports;
 
 	sch_array = kcalloc(num_usb_bus, sizeof(*sch_array), GFP_KERNEL);
@@ -638,10 +584,7 @@ static int add_ep_quirk(struct usb_hcd *hcd, struct usb_device *udev,
 	ep_ctx = xhci_get_ep_ctx(xhci, virt_dev->in_ctx, ep_index);
 
 	if (!need_bw_sch(udev, ep)) {
-		/*
-		 * set @bpkts to 1 if it is LS or FS periodic endpoint, and its
-		 * device does not connected through an external HS hub
-		 */
+		 
 		if (usb_endpoint_xfer_int(&ep->desc)
 			|| usb_endpoint_xfer_isoc(&ep->desc))
 			ep_ctx->reserved[0] = cpu_to_le32(EP_BPKTS(1));
@@ -764,7 +707,7 @@ int xhci_mtk_drop_ep(struct usb_hcd *hcd, struct usb_device *udev,
 	if (ret)
 		return ret;
 
-	/* needn't check @ep->hcpriv, xhci_endpoint_disable set it NULL */
+	 
 	drop_ep_quirk(hcd, udev, ep);
 
 	return 0;

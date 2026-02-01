@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Actions Semi Owl Smart Power System (SPS)
- *
- * Copyright 2012 Actions Semi Inc.
- * Author: Actions Semi, Inc.
- *
- * Copyright (c) 2017 Andreas Färber
- */
+
+ 
 
 #include <linux/of_address.h>
 #include <linux/of_platform.h>

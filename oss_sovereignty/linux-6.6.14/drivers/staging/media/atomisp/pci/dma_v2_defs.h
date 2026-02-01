@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+ 
+ 
 
 #ifndef _dma_v2_defs_h
 #define _dma_v2_defs_h
@@ -35,18 +23,17 @@
 #define _DMA_V2_REG_ALIGN                4
 #define _DMA_V2_REG_ADDR_BITS            2
 
-/* Command word */
+ 
 #define _DMA_V2_CMD_IDX            0
 #define _DMA_V2_CMD_BITS           6
 #define _DMA_V2_CHANNEL_IDX        (_DMA_V2_CMD_IDX + _DMA_V2_CMD_BITS)
 #define _DMA_V2_CHANNEL_BITS       5
 
-/* The command to set a parameter contains the PARAM field next */
+ 
 #define _DMA_V2_PARAM_IDX          (_DMA_V2_CHANNEL_IDX + _DMA_V2_CHANNEL_BITS)
 #define _DMA_V2_PARAM_BITS         4
 
-/* Commands to read, write or init specific blocks contain these
-   three values */
+ 
 #define _DMA_V2_SPEC_DEV_A_XB_IDX  (_DMA_V2_CHANNEL_IDX + _DMA_V2_CHANNEL_BITS)
 #define _DMA_V2_SPEC_DEV_A_XB_BITS 8
 #define _DMA_V2_SPEC_DEV_B_XB_IDX  (_DMA_V2_SPEC_DEV_A_XB_IDX + _DMA_V2_SPEC_DEV_A_XB_BITS)
@@ -54,17 +41,17 @@
 #define _DMA_V2_SPEC_YB_IDX        (_DMA_V2_SPEC_DEV_B_XB_IDX + _DMA_V2_SPEC_DEV_B_XB_BITS)
 #define _DMA_V2_SPEC_YB_BITS       (32 - _DMA_V2_SPEC_DEV_B_XB_BITS - _DMA_V2_SPEC_DEV_A_XB_BITS - _DMA_V2_CMD_BITS - _DMA_V2_CHANNEL_BITS)
 
-/* */
+ 
 #define _DMA_V2_CMD_CTRL_IDX       4
 #define _DMA_V2_CMD_CTRL_BITS      4
 
-/* Packing setup word */
+ 
 #define _DMA_V2_CONNECTION_IDX     0
 #define _DMA_V2_CONNECTION_BITS    4
 #define _DMA_V2_EXTENSION_IDX      (_DMA_V2_CONNECTION_IDX + _DMA_V2_CONNECTION_BITS)
 #define _DMA_V2_EXTENSION_BITS     1
 
-/* Elements packing word */
+ 
 #define _DMA_V2_ELEMENTS_IDX        0
 #define _DMA_V2_ELEMENTS_BITS       8
 #define _DMA_V2_LEFT_CROPPING_IDX  (_DMA_V2_ELEMENTS_IDX + _DMA_V2_ELEMENTS_BITS)
@@ -79,7 +66,7 @@
 #define _DMA_V2_STRIDE_IDX          0
 #define _DMA_V2_STRIDE_BITS        32
 
-/* Command IDs */
+ 
 #define _DMA_V2_MOVE_B2A_COMMAND                             0
 #define _DMA_V2_MOVE_B2A_BLOCK_COMMAND                       1
 #define _DMA_V2_MOVE_B2A_NO_SYNC_CHK_COMMAND                 2
@@ -108,7 +95,7 @@
 #define _DMA_V2_SET_CHANNEL_PARAM_COMMAND                   33
 #define _DMA_V2_SET_CRUN_COMMAND                            62
 
-/* Channel Parameter IDs */
+ 
 #define _DMA_V2_PACKING_SETUP_PARAM                     0
 #define _DMA_V2_STRIDE_A_PARAM                          1
 #define _DMA_V2_ELEM_CROPPING_A_PARAM                   2
@@ -119,11 +106,11 @@
 #define _DMA_V2_HEIGHT_PARAM                            7
 #define _DMA_V2_QUEUED_CMDS                             8
 
-/* Parameter Constants */
+ 
 #define _DMA_V2_ZERO_EXTEND                             0
 #define _DMA_V2_SIGN_EXTEND                             1
 
-/* SLAVE address map */
+ 
 #define _DMA_V2_SEL_FSM_CMD                             0
 #define _DMA_V2_SEL_CH_REG                              1
 #define _DMA_V2_SEL_CONN_GROUP                          2
@@ -197,4 +184,4 @@
 #define _DMA_V2_DEV_INTERF_MAX_BURST_IDX                4
 #define _DMA_V2_DEV_INTERF_CHK_ADDR_ALIGN               5
 
-#endif /* _dma_v2_defs_h */
+#endif  

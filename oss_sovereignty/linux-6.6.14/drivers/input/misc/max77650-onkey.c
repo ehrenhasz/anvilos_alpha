@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (C) 2018 BayLibre SAS
-// Author: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-//
-// ONKEY driver for MAXIM 77650/77651 charger/power-supply.
+
+
+
+
+
+
 
 #include <linux/i2c.h>
 #include <linux/input.h>

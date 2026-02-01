@@ -1,38 +1,4 @@
-/*
- * libcxgb_ppm.c: Chelsio common library for T3/T4/T5 iSCSI PagePod Manager
- *
- * Copyright (c) 2016 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Written by: Karen Xie (kxie@chelsio.com)
- */
+ 
 
 #define DRV_NAME "libcxgb"
 #define pr_fmt(fmt) DRV_NAME ": " fmt
@@ -50,18 +16,9 @@
 
 #include "libcxgb_ppm.h"
 
-/* Direct Data Placement -
- * Directly place the iSCSI Data-In or Data-Out PDU's payload into
- * pre-posted final destination host-memory buffers based on the
- * Initiator Task Tag (ITT) in Data-In or Target Task Tag (TTT)
- * in Data-Out PDUs. The host memory address is programmed into
- * h/w in the format of pagepod entries. The location of the
- * pagepod entry is encoded into ddp tag which is used as the base
- * for ITT/TTT.
- */
+ 
 
-/* Direct-Data Placement page size adjustment
- */
+ 
 int cxgbi_ppm_find_page_index(struct cxgbi_ppm *ppm, unsigned long pgsz)
 {
 	struct cxgbi_tag_format *tformat = &ppm->tformat;
@@ -79,8 +36,7 @@ int cxgbi_ppm_find_page_index(struct cxgbi_ppm *ppm, unsigned long pgsz)
 	return DDP_PGIDX_MAX;
 }
 
-/* DDP setup & teardown
- */
+ 
 static int ppm_find_unused_entries(unsigned long *bmap,
 				   unsigned int max_ppods,
 				   unsigned int start,
@@ -260,9 +216,9 @@ int cxgbi_ppm_ppods_reserve(struct cxgbi_ppm *ppm, unsigned short nr_pages,
 		return -EINVAL;
 	}
 
-	/* grab from cpu pool first */
+	 
 	idx = ppm_get_cpu_entries(ppm, npods, caller_data);
-	/* try the general pool */
+	 
 	if (idx < 0)
 		idx = ppm_get_entries(ppm, npods, caller_data);
 	if (idx < 0) {
@@ -294,9 +250,7 @@ void cxgbi_ppm_make_ppod_hdr(struct cxgbi_ppm *ppm, u32 tag,
 			     unsigned int length,
 			     struct cxgbi_pagepod_hdr *hdr)
 {
-	/* The ddp tag in pagepod should be with bit 31:30 set to 0.
-	 * The ddp Tag on the wire should be with non-zero 31:30 to the peer
-	 */
+	 
 	tag &= 0x3FFFFFFF;
 
 	hdr->vld_tid = htonl(PPOD_VALID_FLAG | PPOD_TID(tid));
@@ -353,11 +307,11 @@ static struct cxgbi_ppm_pool *ppm_alloc_cpu_pool(unsigned int *total,
 	unsigned int count = 0;
 	unsigned int cpu;
 
-	/* make sure per cpu pool fits into PCPU_MIN_UNIT_SIZE */
+	 
 	if (ppmax > max)
 		ppmax = max;
 
-	/* pool size must be multiple of unsigned long */
+	 
 	bmap = ppmax / BITS_PER_TYPE(unsigned long);
 	if (!bmap)
 		return NULL;
@@ -485,7 +439,7 @@ int cxgbi_ppm_init(void **ppm_pp, struct net_device *ndev,
 	ppm->pool_rsvd = ppmax_pool;
 	ppm->pool_index_max = pool_index_max;
 
-	/* check one more time */
+	 
 	if (*ppm_pp) {
 		ppm_free(ppm);
 		ppm = (struct cxgbi_ppm *)(*ppm_pp);

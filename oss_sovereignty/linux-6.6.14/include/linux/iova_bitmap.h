@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2022, Oracle and/or its affiliates.
- * Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved
- */
+ 
+ 
 #ifndef _IOVA_BITMAP_H_
 #define _IOVA_BITMAP_H_
 

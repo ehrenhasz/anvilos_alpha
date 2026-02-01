@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-//
-// Copyright (c) 2018 BayLibre, SAS.
-// Author: Jerome Brunet <jbrunet@baylibre.com>
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -12,12 +12,7 @@
 #include <sound/pcm_params.h>
 #include <sound/pcm_iec958.h>
 
-/*
- * NOTE:
- * The meaning of bits SPDIFOUT_CTRL0_XXX_SEL is actually the opposite
- * of what the documentation says. Manual control on V, U and C bits is
- * applied when the related sel bits are cleared
- */
+ 
 
 #define SPDIFOUT_STAT			0x00
 #define SPDIFOUT_GAIN0			0x04
@@ -64,18 +59,18 @@ struct axg_spdifout {
 
 static void axg_spdifout_enable(struct regmap *map)
 {
-	/* Apply both reset */
+	 
 	regmap_update_bits(map, SPDIFOUT_CTRL0,
 			   SPDIFOUT_CTRL0_RST_OUT | SPDIFOUT_CTRL0_RST_IN,
 			   0);
 
-	/* Clear out reset before in reset */
+	 
 	regmap_update_bits(map, SPDIFOUT_CTRL0,
 			   SPDIFOUT_CTRL0_RST_OUT, SPDIFOUT_CTRL0_RST_OUT);
 	regmap_update_bits(map, SPDIFOUT_CTRL0,
 			   SPDIFOUT_CTRL0_RST_IN,  SPDIFOUT_CTRL0_RST_IN);
 
-	/* Enable spdifout */
+	 
 	regmap_update_bits(map, SPDIFOUT_CTRL0, SPDIFOUT_CTRL0_EN,
 			   SPDIFOUT_CTRL0_EN);
 }
@@ -112,7 +107,7 @@ static int axg_spdifout_mute(struct snd_soc_dai *dai, int mute, int direction)
 {
 	struct axg_spdifout *priv = snd_soc_dai_get_drvdata(dai);
 
-	/* Use spdif valid bit to perform digital mute */
+	 
 	regmap_update_bits(priv->map, SPDIFOUT_CTRL0, SPDIFOUT_CTRL0_VSET,
 			   mute ? SPDIFOUT_CTRL0_VSET : 0);
 
@@ -125,7 +120,7 @@ static int axg_spdifout_sample_fmt(struct snd_pcm_hw_params *params,
 	struct axg_spdifout *priv = snd_soc_dai_get_drvdata(dai);
 	unsigned int val;
 
-	/* Set the samples spdifout will pull from the FIFO */
+	 
 	switch (params_channels(params)) {
 	case 1:
 		val = SPDIFOUT_CTRL0_MASK(0x1);
@@ -142,18 +137,18 @@ static int axg_spdifout_sample_fmt(struct snd_pcm_hw_params *params,
 	regmap_update_bits(priv->map, SPDIFOUT_CTRL0,
 			   SPDIFOUT_CTRL0_MASK_MASK, val);
 
-	/* FIFO data are arranged in chunks of 64bits */
+	 
 	switch (params_physical_width(params)) {
 	case 8:
-		/* 8 samples of 8 bits */
+		 
 		val = SPDIFOUT_CTRL1_TYPE(0);
 		break;
 	case 16:
-		/* 4 samples of 16 bits - right justified */
+		 
 		val = SPDIFOUT_CTRL1_TYPE(2);
 		break;
 	case 32:
-		/* 2 samples of 32 bits - right justified */
+		 
 		val = SPDIFOUT_CTRL1_TYPE(4);
 		break;
 	default:
@@ -162,7 +157,7 @@ static int axg_spdifout_sample_fmt(struct snd_pcm_hw_params *params,
 		return -EINVAL;
 	}
 
-	/* Position of the MSB in FIFO samples */
+	 
 	val |= SPDIFOUT_CTRL1_MSB_POS(params_width(params) - 1);
 
 	regmap_update_bits(priv->map, SPDIFOUT_CTRL1,
@@ -193,18 +188,18 @@ static int axg_spdifout_set_chsts(struct snd_pcm_hw_params *params,
 	}
 	val = cs[0] | cs[1] << 8 | cs[2] << 16 | cs[3] << 24;
 
-	/* Setup channel status A bits [31 - 0]*/
+	 
 	regmap_write(priv->map, SPDIFOUT_CHSTS0, val);
 
-	/* Clear channel status A bits [191 - 32] */
+	 
 	for (offset = SPDIFOUT_CHSTS1; offset <= SPDIFOUT_CHSTS5;
 	     offset += regmap_get_reg_stride(priv->map))
 		regmap_write(priv->map, offset, 0);
 
-	/* Setup channel status B bits [31 - 0]*/
+	 
 	regmap_write(priv->map, SPDIFOUT_CHSTS6, val);
 
-	/* Clear channel status B bits [191 - 32] */
+	 
 	for (offset = SPDIFOUT_CHSTS7; offset <= SPDIFOUT_CHSTSB;
 	     offset += regmap_get_reg_stride(priv->map))
 		regmap_write(priv->map, offset, 0);
@@ -220,7 +215,7 @@ static int axg_spdifout_hw_params(struct snd_pcm_substream *substream,
 	unsigned int rate = params_rate(params);
 	int ret;
 
-	/* 2 * 32bits per subframe * 2 channels = 128 */
+	 
 	ret = clk_set_rate(priv->mclk, rate * 128);
 	if (ret) {
 		dev_err(dai->dev, "failed to set spdif clock\n");
@@ -248,28 +243,28 @@ static int axg_spdifout_startup(struct snd_pcm_substream *substream,
 	struct axg_spdifout *priv = snd_soc_dai_get_drvdata(dai);
 	int ret;
 
-	/* Clock the spdif output block */
+	 
 	ret = clk_prepare_enable(priv->pclk);
 	if (ret) {
 		dev_err(dai->dev, "failed to enable pclk\n");
 		return ret;
 	}
 
-	/* Make sure the block is initially stopped */
+	 
 	axg_spdifout_disable(priv->map);
 
-	/* Insert data from bit 27 lsb first */
+	 
 	regmap_update_bits(priv->map, SPDIFOUT_CTRL0,
 			   SPDIFOUT_CTRL0_MSB_FIRST | SPDIFOUT_CTRL0_DATA_SEL,
 			   0);
 
-	/* Manual control of V, C and U, U = 0 */
+	 
 	regmap_update_bits(priv->map, SPDIFOUT_CTRL0,
 			   SPDIFOUT_CTRL0_CHSTS_SEL | SPDIFOUT_CTRL0_VSEL |
 			   SPDIFOUT_CTRL0_USEL | SPDIFOUT_CTRL0_USET,
 			   0);
 
-	/* Static SWAP configuration ATM */
+	 
 	regmap_write(priv->map, SPDIFOUT_SWAP, 0x10);
 
 	return 0;

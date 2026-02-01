@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/* Copyright 2018-2019 Qiang Yu <yuq825@gmail.com> */
+ 
+ 
 
 #ifndef __LIMA_CTX_H__
 #define __LIMA_CTX_H__
@@ -15,7 +15,7 @@ struct lima_ctx {
 	struct lima_sched_context context[lima_pipe_num];
 	atomic_t guilty;
 
-	/* debug info */
+	 
 	char pname[TASK_COMM_LEN];
 	pid_t pid;
 };

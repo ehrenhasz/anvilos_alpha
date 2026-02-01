@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/mtd/spi-nor.h>
 #include <linux/spi/spi.h>

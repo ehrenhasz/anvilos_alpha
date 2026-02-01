@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Crystal Cove GPIO Driver
- *
- * Copyright (C) 2012, 2014 Intel Corporation. All rights reserved.
- *
- * Author: Yang, Bin <bin.yang@intel.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/gpio/driver.h>
@@ -61,17 +55,9 @@ enum ctrl_register {
 	CTRL_OUT,
 };
 
-/**
- * struct crystalcove_gpio - Crystal Cove GPIO controller
- * @buslock: for bus lock/sync and unlock.
- * @chip: the abstract gpio_chip structure.
- * @regmap: the regmap from the parent device.
- * @update: pending IRQ setting update, to be written to the chip upon unlock.
- * @intcnt_value: the Interrupt Detect value to be written.
- * @set_irq_mask: true if the IRQ mask needs to be set, false to clear.
- */
+ 
 struct crystalcove_gpio {
-	struct mutex buslock; /* irq_bus_lock */
+	struct mutex buslock;  
 	struct gpio_chip chip;
 	struct regmap *regmap;
 	int update;
@@ -84,10 +70,7 @@ static inline int to_reg(int gpio, enum ctrl_register reg_type)
 	int reg;
 
 	if (gpio >= CRYSTALCOVE_GPIO_NUM) {
-		/*
-		 * Virtual GPIO called from ACPI, for now we only support
-		 * the panel ctl.
-		 */
+		 
 		switch (gpio) {
 		case 0x5e:
 			return GPIOPANELCTL;
@@ -358,7 +341,7 @@ static int crystalcove_gpio_probe(struct platform_device *pdev)
 
 	girq = &cg->chip.irq;
 	gpio_irq_chip_set_chip(girq, &crystalcove_irqchip);
-	/* This will let us handle the parent IRQ in the driver */
+	 
 	girq->parent_handler = NULL;
 	girq->num_parents = 0;
 	girq->parents = NULL;
@@ -378,7 +361,7 @@ static int crystalcove_gpio_probe(struct platform_device *pdev)
 	if (retval)
 		return retval;
 
-	/* Distuingish IRQ domain from others sharing (MFD) the same fwnode */
+	 
 	irq_domain_update_bus_token(cg->chip.irq.domain, DOMAIN_BUS_WIRED);
 
 	return 0;

@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
- * Copyright (C) 2019-2023 Linaro Ltd.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/bitfield.h>
@@ -20,10 +18,10 @@
 #include "ipa_table.h"
 #include "gsi_trans.h"
 
-/* "Canary" value placed between memory regions to detect overflow */
+ 
 #define IPA_MEM_CANARY_VAL		cpu_to_le32(0xdeadbeef)
 
-/* SMEM host id representing the modem. */
+ 
 #define QCOM_SMEM_HOST_MODEM	1
 
 const struct ipa_mem *ipa_mem_find(struct ipa *ipa, enum ipa_mem_id mem_id)
@@ -40,7 +38,7 @@ const struct ipa_mem *ipa_mem_find(struct ipa *ipa, enum ipa_mem_id mem_id)
 	return NULL;
 }
 
-/* Add an immediate command to a transaction that zeroes a memory region */
+ 
 static void
 ipa_mem_zero_region_add(struct gsi_trans *trans, enum ipa_mem_id mem_id)
 {
@@ -54,24 +52,7 @@ ipa_mem_zero_region_add(struct gsi_trans *trans, enum ipa_mem_id mem_id)
 	ipa_cmd_dma_shared_mem_add(trans, mem->offset, mem->size, addr, true);
 }
 
-/**
- * ipa_mem_setup() - Set up IPA AP and modem shared memory areas
- * @ipa:	IPA pointer
- *
- * Set up the shared memory regions in IPA local memory.  This involves
- * zero-filling memory regions, and in the case of header memory, telling
- * the IPA where it's located.
- *
- * This function performs the initial setup of this memory.  If the modem
- * crashes, its regions are re-zeroed in ipa_mem_zero_modem().
- *
- * The AP informs the modem where its portions of memory are located
- * in a QMI exchange that occurs at modem startup.
- *
- * There is no need for a matching ipa_mem_teardown() function.
- *
- * Return:	0 if successful, or a negative error code
- */
+ 
 int ipa_mem_setup(struct ipa *ipa)
 {
 	dma_addr_t addr = ipa->zero_addr;
@@ -82,19 +63,14 @@ int ipa_mem_setup(struct ipa *ipa)
 	u16 size;
 	u32 val;
 
-	/* Get a transaction to define the header memory region and to zero
-	 * the processing context and modem memory regions.
-	 */
+	 
 	trans = ipa_cmd_trans_alloc(ipa, 4);
 	if (!trans) {
 		dev_err(&ipa->pdev->dev, "no transaction for memory setup\n");
 		return -EBUSY;
 	}
 
-	/* Initialize IPA-local header memory.  The AP header region, if
-	 * present, is contiguous with and follows the modem header region,
-	 * and they are initialized together.
-	 */
+	 
 	mem = ipa_mem_find(ipa, IPA_MEM_MODEM_HEADER);
 	offset = mem->offset;
 	size = mem->size;
@@ -110,7 +86,7 @@ int ipa_mem_setup(struct ipa *ipa)
 
 	gsi_trans_commit_wait(trans);
 
-	/* Tell the hardware where the processing context area is located */
+	 
 	mem = ipa_mem_find(ipa, IPA_MEM_MODEM_PROC_CTX);
 	offset = ipa->mem_offset + mem->offset;
 
@@ -121,7 +97,7 @@ int ipa_mem_setup(struct ipa *ipa)
 	return 0;
 }
 
-/* Is the given memory region ID is valid for the current IPA version? */
+ 
 static bool ipa_mem_id_valid(struct ipa *ipa, enum ipa_mem_id mem_id)
 {
 	enum ipa_version version = ipa->version;
@@ -146,7 +122,7 @@ static bool ipa_mem_id_valid(struct ipa *ipa, enum ipa_mem_id mem_id)
 	case IPA_MEM_PDN_CONFIG:
 	case IPA_MEM_STATS_QUOTA_MODEM:
 	case IPA_MEM_STATS_QUOTA_AP:
-	case IPA_MEM_END_MARKER:	/* pseudo region */
+	case IPA_MEM_END_MARKER:	 
 		break;
 
 	case IPA_MEM_STATS_TETHERING:
@@ -182,7 +158,7 @@ static bool ipa_mem_id_valid(struct ipa *ipa, enum ipa_mem_id mem_id)
 	return true;
 }
 
-/* Must the given memory region be present in the configuration? */
+ 
 static bool ipa_mem_id_required(struct ipa *ipa, enum ipa_mem_id mem_id)
 {
 	switch (mem_id) {
@@ -211,7 +187,7 @@ static bool ipa_mem_id_required(struct ipa *ipa, enum ipa_mem_id mem_id)
 			ipa->version != IPA_VERSION_5_0;
 
 	default:
-		return false;		/* Anything else is optional */
+		return false;		 
 	}
 }
 
@@ -221,7 +197,7 @@ static bool ipa_mem_valid_one(struct ipa *ipa, const struct ipa_mem *mem)
 	enum ipa_mem_id mem_id = mem->id;
 	u16 size_multiple;
 
-	/* Make sure the memory region is valid for this version of IPA */
+	 
 	if (!ipa_mem_id_valid(ipa, mem_id)) {
 		dev_err(dev, "region id %u not valid\n", mem_id);
 		return false;
@@ -232,7 +208,7 @@ static bool ipa_mem_valid_one(struct ipa *ipa, const struct ipa_mem *mem)
 		return false;
 	}
 
-	/* Other than modem memory, sizes must be a multiple of 8 */
+	 
 	size_multiple = mem_id == IPA_MEM_MODEM ? 4 : 8;
 	if (mem->size % size_multiple)
 		dev_err(dev, "region %u size not a multiple of %u bytes\n",
@@ -250,7 +226,7 @@ static bool ipa_mem_valid_one(struct ipa *ipa, const struct ipa_mem *mem)
 	return false;
 }
 
-/* Verify each defined memory region is valid. */
+ 
 static bool ipa_mem_valid(struct ipa *ipa, const struct ipa_mem_data *mem_data)
 {
 	DECLARE_BITMAP(regions, IPA_MEM_COUNT) = { };
@@ -272,12 +248,12 @@ static bool ipa_mem_valid(struct ipa *ipa, const struct ipa_mem_data *mem_data)
 			return false;
 		}
 
-		/* Defined regions have non-zero size and/or canary count */
+		 
 		if (!ipa_mem_valid_one(ipa, mem))
 			return false;
 	}
 
-	/* Now see if any required regions are not defined */
+	 
 	for_each_clear_bit(mem_id, regions, IPA_MEM_COUNT) {
 		if (ipa_mem_id_required(ipa, mem_id))
 			dev_err(dev, "required memory region %u missing\n",
@@ -287,7 +263,7 @@ static bool ipa_mem_valid(struct ipa *ipa, const struct ipa_mem_data *mem_data)
 	return true;
 }
 
-/* Do all memory regions fit within the IPA local memory? */
+ 
 static bool ipa_mem_size_valid(struct ipa *ipa)
 {
 	struct device *dev = &ipa->pdev->dev;
@@ -309,12 +285,7 @@ static bool ipa_mem_size_valid(struct ipa *ipa)
 	return true;
 }
 
-/**
- * ipa_mem_config() - Configure IPA shared memory
- * @ipa:	IPA pointer
- *
- * Return:	0 if successful, or a negative error code
- */
+ 
 int ipa_mem_config(struct ipa *ipa)
 {
 	struct device *dev = &ipa->pdev->dev;
@@ -326,17 +297,17 @@ int ipa_mem_config(struct ipa *ipa)
 	u32 val;
 	u32 i;
 
-	/* Check the advertised location and size of the shared memory area */
+	 
 	reg = ipa_reg(ipa, SHARED_MEM_SIZE);
 	val = ioread32(ipa->reg_virt + reg_offset(reg));
 
-	/* The fields in the register are in 8 byte units */
+	 
 	ipa->mem_offset = 8 * reg_decode(reg, MEM_BADDR, val);
 
-	/* Make sure the end is within the region's mapped space */
+	 
 	mem_size = 8 * reg_decode(reg, MEM_SIZE, val);
 
-	/* If the sizes don't match, issue a warning */
+	 
 	if (ipa->mem_offset + mem_size < ipa->mem_size) {
 		dev_warn(dev, "limiting IPA memory size to 0x%08x\n",
 			 mem_size);
@@ -346,11 +317,11 @@ int ipa_mem_config(struct ipa *ipa)
 			mem_size);
 	}
 
-	/* We know our memory size; make sure regions are all in range */
+	 
 	if (!ipa_mem_size_valid(ipa))
 		return -EINVAL;
 
-	/* Prealloc DMA memory for zeroing regions */
+	 
 	virt = dma_alloc_coherent(dev, IPA_MEM_MAX, &addr, GFP_KERNEL);
 	if (!virt)
 		return -ENOMEM;
@@ -358,9 +329,7 @@ int ipa_mem_config(struct ipa *ipa)
 	ipa->zero_virt = virt;
 	ipa->zero_size = IPA_MEM_MAX;
 
-	/* For each defined region, write "canary" values in the
-	 * space prior to the region's base address if indicated.
-	 */
+	 
 	for (i = 0; i < ipa->mem_count; i++) {
 		u16 canary_count = ipa->mem[i].canary_count;
 		__le32 *canary;
@@ -368,14 +337,14 @@ int ipa_mem_config(struct ipa *ipa)
 		if (!canary_count)
 			continue;
 
-		/* Write canary values in the space before the region */
+		 
 		canary = ipa->mem_virt + ipa->mem_offset + ipa->mem[i].offset;
 		do
 			*--canary = IPA_MEM_CANARY_VAL;
 		while (--canary_count);
 	}
 
-	/* Verify the microcontroller ring alignment (if defined) */
+	 
 	mem = ipa_mem_find(ipa, IPA_MEM_UC_EVENT_RING);
 	if (mem && mem->offset % 1024) {
 		dev_err(dev, "microcontroller ring not 1024-byte aligned\n");
@@ -390,7 +359,7 @@ err_dma_free:
 	return -EINVAL;
 }
 
-/* Inverse of ipa_mem_config() */
+ 
 void ipa_mem_deconfig(struct ipa *ipa)
 {
 	struct device *dev = &ipa->pdev->dev;
@@ -401,23 +370,12 @@ void ipa_mem_deconfig(struct ipa *ipa)
 	ipa->zero_addr = 0;
 }
 
-/**
- * ipa_mem_zero_modem() - Zero IPA-local memory regions owned by the modem
- * @ipa:	IPA pointer
- *
- * Zero regions of IPA-local memory used by the modem.  These are configured
- * (and initially zeroed) by ipa_mem_setup(), but if the modem crashes and
- * restarts via SSR we need to re-initialize them.  A QMI message tells the
- * modem where to find regions of IPA local memory it needs to know about
- * (these included).
- */
+ 
 int ipa_mem_zero_modem(struct ipa *ipa)
 {
 	struct gsi_trans *trans;
 
-	/* Get a transaction to zero the modem memory, modem header,
-	 * and modem processing context regions.
-	 */
+	 
 	trans = ipa_cmd_trans_alloc(ipa, 3);
 	if (!trans) {
 		dev_err(&ipa->pdev->dev,
@@ -434,22 +392,7 @@ int ipa_mem_zero_modem(struct ipa *ipa)
 	return 0;
 }
 
-/**
- * ipa_imem_init() - Initialize IMEM memory used by the IPA
- * @ipa:	IPA pointer
- * @addr:	Physical address of the IPA region in IMEM
- * @size:	Size (bytes) of the IPA region in IMEM
- *
- * IMEM is a block of shared memory separate from system DRAM, and
- * a portion of this memory is available for the IPA to use.  The
- * modem accesses this memory directly, but the IPA accesses it
- * via the IOMMU, using the AP's credentials.
- *
- * If this region exists (size > 0) we map it for read/write access
- * through the IOMMU using the IPA device.
- *
- * Note: @addr and @size are not guaranteed to be page-aligned.
- */
+ 
 static int ipa_imem_init(struct ipa *ipa, unsigned long addr, size_t size)
 {
 	struct device *dev = &ipa->pdev->dev;
@@ -459,7 +402,7 @@ static int ipa_imem_init(struct ipa *ipa, unsigned long addr, size_t size)
 	int ret;
 
 	if (!size)
-		return 0;	/* IMEM memory not used */
+		return 0;	 
 
 	domain = iommu_get_domain_for_dev(dev);
 	if (!domain) {
@@ -467,10 +410,10 @@ static int ipa_imem_init(struct ipa *ipa, unsigned long addr, size_t size)
 		return -EINVAL;
 	}
 
-	/* Align the address down and the size up to page boundaries */
+	 
 	phys = addr & PAGE_MASK;
 	size = PAGE_ALIGN(size + addr - phys);
-	iova = phys;	/* We just want a direct mapping */
+	iova = phys;	 
 
 	ret = iommu_map(domain, iova, phys, size, IOMMU_READ | IOMMU_WRITE,
 			GFP_KERNEL);
@@ -508,23 +451,7 @@ static void ipa_imem_exit(struct ipa *ipa)
 	ipa->imem_iova = 0;
 }
 
-/**
- * ipa_smem_init() - Initialize SMEM memory used by the IPA
- * @ipa:	IPA pointer
- * @item:	Item ID of SMEM memory
- * @size:	Size (bytes) of SMEM memory region
- *
- * SMEM is a managed block of shared DRAM, from which numbered "items"
- * can be allocated.  One item is designated for use by the IPA.
- *
- * The modem accesses SMEM memory directly, but the IPA accesses it
- * via the IOMMU, using the AP's credentials.
- *
- * If size provided is non-zero, we allocate it and map it for
- * access through the IOMMU.
- *
- * Note: @size and the item address are is not guaranteed to be page-aligned.
- */
+ 
 static int ipa_smem_init(struct ipa *ipa, u32 item, size_t size)
 {
 	struct device *dev = &ipa->pdev->dev;
@@ -537,16 +464,9 @@ static int ipa_smem_init(struct ipa *ipa, u32 item, size_t size)
 	int ret;
 
 	if (!size)
-		return 0;	/* SMEM memory not used */
+		return 0;	 
 
-	/* SMEM is memory shared between the AP and another system entity
-	 * (in this case, the modem).  An allocation from SMEM is persistent
-	 * until the AP reboots; there is no way to free an allocated SMEM
-	 * region.  Allocation only reserves the space; to use it you need
-	 * to "get" a pointer it (this does not imply reference counting).
-	 * The item might have already been allocated, in which case we
-	 * use it unless the size isn't what we expect.
-	 */
+	 
 	ret = qcom_smem_alloc(QCOM_SMEM_HOST_MODEM, item, size);
 	if (ret && ret != -EEXIST) {
 		dev_err(dev, "error %d allocating size %zu SMEM item %u\n",
@@ -554,7 +474,7 @@ static int ipa_smem_init(struct ipa *ipa, u32 item, size_t size)
 		return ret;
 	}
 
-	/* Now get the address of the SMEM memory region */
+	 
 	virt = qcom_smem_get(QCOM_SMEM_HOST_MODEM, item, &actual);
 	if (IS_ERR(virt)) {
 		ret = PTR_ERR(virt);
@@ -562,7 +482,7 @@ static int ipa_smem_init(struct ipa *ipa, u32 item, size_t size)
 		return ret;
 	}
 
-	/* In case the region was already allocated, verify the size */
+	 
 	if (ret && actual != size) {
 		dev_err(dev, "SMEM item %u has size %zu, expected %zu\n",
 			item, actual, size);
@@ -575,11 +495,11 @@ static int ipa_smem_init(struct ipa *ipa, u32 item, size_t size)
 		return -EINVAL;
 	}
 
-	/* Align the address down and the size up to a page boundary */
+	 
 	addr = qcom_smem_virt_to_phys(virt);
 	phys = addr & PAGE_MASK;
 	size = PAGE_ALIGN(size + addr - phys);
-	iova = phys;	/* We just want a direct mapping */
+	iova = phys;	 
 
 	ret = iommu_map(domain, iova, phys, size, IOMMU_READ | IOMMU_WRITE,
 			GFP_KERNEL);
@@ -614,21 +534,21 @@ static void ipa_smem_exit(struct ipa *ipa)
 	ipa->smem_iova = 0;
 }
 
-/* Perform memory region-related initialization */
+ 
 int ipa_mem_init(struct ipa *ipa, const struct ipa_mem_data *mem_data)
 {
 	struct device *dev = &ipa->pdev->dev;
 	struct resource *res;
 	int ret;
 
-	/* Make sure the set of defined memory regions is valid */
+	 
 	if (!ipa_mem_valid(ipa, mem_data))
 		return -EINVAL;
 
 	ipa->mem_count = mem_data->local_count;
 	ipa->mem = mem_data->local;
 
-	/* Check the route and filter table memory regions */
+	 
 	if (!ipa_table_mem_valid(ipa, false))
 		return -EINVAL;
 	if (!ipa_table_mem_valid(ipa, true))
@@ -675,7 +595,7 @@ err_unmap:
 	return ret;
 }
 
-/* Inverse of ipa_mem_init() */
+ 
 void ipa_mem_exit(struct ipa *ipa)
 {
 	ipa_smem_exit(ipa);

@@ -1,23 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Broadcom
- */
 
-/**
- * DOC: VC4 HVS module.
- *
- * The Hardware Video Scaler (HVS) is the piece of hardware that does
- * translation, scaling, colorspace conversion, and compositing of
- * pixels stored in framebuffers into a FIFO of pixels going out to
- * the Pixel Valve (CRTC).  It operates at the system clock rate (the
- * system audio clock gate, specifically), which is much higher than
- * the pixel clock rate.
- *
- * There is a single global HVS, with multiple output FIFOs that can
- * be consumed by the PVs.  This file just manages the resources for
- * the HVS, while the vc4_crtc.c code actually drives HVS setup for
- * each CRTC.
- */
+ 
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -143,21 +127,14 @@ static int vc4_hvs_debugfs_dlist(struct seq_file *m, void *data)
 	return 0;
 }
 
-/* The filter kernel is composed of dwords each containing 3 9-bit
- * signed integers packed next to each other.
- */
+ 
 #define VC4_INT_TO_COEFF(coeff) (coeff & 0x1ff)
 #define VC4_PPF_FILTER_WORD(c0, c1, c2)				\
 	((((c0) & 0x1ff) << 0) |				\
 	 (((c1) & 0x1ff) << 9) |				\
 	 (((c2) & 0x1ff) << 18))
 
-/* The whole filter kernel is arranged as the coefficients 0-16 going
- * up, then a pad, then 17-31 going down and reversed within the
- * dwords.  This means that a linear phase kernel (where it's
- * symmetrical at the boundary between 15 and 16) has the last 5
- * dwords matching the first 5, but reversed.
- */
+ 
 #define VC4_LINEAR_PHASE_KERNEL(c0, c1, c2, c3, c4, c5, c6, c7, c8,	\
 				c9, c10, c11, c12, c13, c14, c15)	\
 	{VC4_PPF_FILTER_WORD(c0, c1, c2),				\
@@ -170,9 +147,7 @@ static int vc4_hvs_debugfs_dlist(struct seq_file *m, void *data)
 #define VC4_LINEAR_PHASE_KERNEL_DWORDS 6
 #define VC4_KERNEL_DWORDS (VC4_LINEAR_PHASE_KERNEL_DWORDS * 2 - 1)
 
-/* Recommended B=1/3, C=1/3 filter choice from Mitchell/Netravali.
- * http://www.cs.utexas.edu/~fussell/courses/cs384g/lectures/mitchell/Mitchell.pdf
- */
+ 
 static const u32 mitchell_netravali_1_3_1_3_kernel[] =
 	VC4_LINEAR_PHASE_KERNEL(0, -2, -6, -8, -10, -8, -3, 2, 18,
 				50, 82, 119, 155, 187, 213, 227);
@@ -184,10 +159,7 @@ static int vc4_hvs_upload_linear_kernel(struct vc4_hvs *hvs,
 	int ret, i;
 	u32 __iomem *dst_kernel;
 
-	/*
-	 * NOTE: We don't need a call to drm_dev_enter()/drm_dev_exit()
-	 * here since that function is only called from vc4_hvs_bind().
-	 */
+	 
 
 	ret = drm_mm_insert_node(&hvs->dlist_mm, space, VC4_KERNEL_DWORDS);
 	if (ret) {
@@ -222,10 +194,7 @@ static void vc4_hvs_lut_load(struct vc4_hvs *hvs,
 	if (!drm_dev_enter(drm, &idx))
 		return;
 
-	/* The LUT memory is laid out with each HVS channel in order,
-	 * each of which takes 256 writes for R, 256 for G, then 256
-	 * for B.
-	 */
+	 
 	HVS_WRITE(SCALER_GAMADDR,
 		  SCALER_GAMADDR_AUTOINC |
 		  (vc4_state->assigned_channel * 3 * crtc->gamma_size));
@@ -294,11 +263,7 @@ int vc4_hvs_get_fifo_from_output(struct vc4_hvs *hvs, unsigned int output)
 	if (!vc4->is_vc5)
 		return output;
 
-	/*
-	 * NOTE: We should probably use drm_dev_enter()/drm_dev_exit()
-	 * here, but this function is only used during the DRM device
-	 * initialization, so we should be fine.
-	 */
+	 
 
 	switch (output) {
 	case 0:
@@ -364,11 +329,7 @@ static int vc4_hvs_init_channel(struct vc4_hvs *hvs, struct drm_crtc *crtc,
 	HVS_WRITE(SCALER_DISPCTRLX(chan), SCALER_DISPCTRLX_RESET);
 	HVS_WRITE(SCALER_DISPCTRLX(chan), 0);
 
-	/* Turn on the scaler, which will wait for vstart to start
-	 * compositing.
-	 * When feeding the transposer, we should operate in oneshot
-	 * mode.
-	 */
+	 
 	dispctrl = SCALER_DISPCTRLX_ENABLE;
 	dispbkgndx = HVS_READ(SCALER_DISPBKGNDX(chan));
 
@@ -397,9 +358,7 @@ static int vc4_hvs_init_channel(struct vc4_hvs *hvs, struct drm_crtc *crtc,
 		  ((!vc4->is_vc5) ? SCALER_DISPBKGND_GAMMA : 0) |
 		  (interlace ? SCALER_DISPBKGND_INTERLACE : 0));
 
-	/* Reload the LUT, since the SRAMs would have been disabled if
-	 * all CRTCs had SCALER_DISPBKGND_GAMMA unset at once.
-	 */
+	 
 	vc4_hvs_lut_load(hvs, vc4_crtc);
 
 	drm_dev_exit(idx);
@@ -423,7 +382,7 @@ void vc4_hvs_stop_channel(struct vc4_hvs *hvs, unsigned int chan)
 	HVS_WRITE(SCALER_DISPCTRLX(chan),
 		  HVS_READ(SCALER_DISPCTRLX(chan)) & ~SCALER_DISPCTRLX_ENABLE);
 
-	/* Once we leave, the scaler should be disabled and its fifo empty. */
+	 
 	WARN_ON_ONCE(HVS_READ(SCALER_DISPCTRLX(chan)) & SCALER_DISPCTRLX_RESET);
 
 	WARN_ON_ONCE(VC4_GET_FIELD(HVS_READ(SCALER_DISPSTATX(chan)),
@@ -450,16 +409,14 @@ int vc4_hvs_atomic_check(struct drm_crtc *crtc, struct drm_atomic_state *state)
 	u32 dlist_count = 0;
 	int ret;
 
-	/* The pixelvalve can only feed one encoder (and encoders are
-	 * 1:1 with connectors.)
-	 */
+	 
 	if (hweight32(crtc_state->connector_mask) > 1)
 		return -EINVAL;
 
 	drm_atomic_crtc_state_for_each_plane_state(plane, plane_state, crtc_state)
 		dlist_count += vc4_plane_dlist_size(plane_state);
 
-	dlist_count++; /* Account for SCALER_CTL0_END. */
+	dlist_count++;  
 
 	spin_lock_irqsave(&vc4->hvs->mm_lock, flags);
 	ret = drm_mm_insert_node(&vc4->hvs->dlist_mm, &vc4_state->mm,
@@ -587,7 +544,7 @@ void vc4_hvs_atomic_flush(struct drm_crtc *crtc,
 		vc4_hvs_dump_state(hvs);
 	}
 
-	/* Copy all the active planes' dlist contents to the hardware dlist. */
+	 
 	do {
 		found = false;
 
@@ -595,16 +552,9 @@ void vc4_hvs_atomic_flush(struct drm_crtc *crtc,
 			if (plane->state->normalized_zpos != zpos)
 				continue;
 
-			/* Is this the first active plane? */
+			 
 			if (dlist_next == dlist_start) {
-				/* We need to enable background fill when a plane
-				 * could be alpha blending from the background, i.e.
-				 * where no other plane is underneath. It suffices to
-				 * consider the first active plane here since we set
-				 * needs_bg_fill such that either the first plane
-				 * already needs it or all planes on top blend from
-				 * the first or a lower plane.
-				 */
+				 
 				vc4_plane_state = to_vc4_plane_state(plane->state);
 				enable_bg_fill = vc4_plane_state->needs_bg_fill;
 			}
@@ -623,20 +573,12 @@ void vc4_hvs_atomic_flush(struct drm_crtc *crtc,
 	WARN_ON_ONCE(dlist_next - dlist_start != vc4_state->mm.size);
 
 	if (enable_bg_fill)
-		/* This sets a black background color fill, as is the case
-		 * with other DRM drivers.
-		 */
+		 
 		HVS_WRITE(SCALER_DISPBKGNDX(channel),
 			  HVS_READ(SCALER_DISPBKGNDX(channel)) |
 			  SCALER_DISPBKGND_FILL);
 
-	/* Only update DISPLIST if the CRTC was already running and is not
-	 * being disabled.
-	 * vc4_crtc_enable() takes care of updating the dlist just after
-	 * re-enabling VBLANK interrupts and before enabling the engine.
-	 * If the CRTC is being disabled, there's no point in updating this
-	 * information.
-	 */
+	 
 	if (crtc->state->active && old_state->active) {
 		vc4_hvs_install_dlist(crtc);
 		vc4_hvs_update_dlist(crtc);
@@ -649,10 +591,7 @@ void vc4_hvs_atomic_flush(struct drm_crtc *crtc,
 			vc4_hvs_update_gamma_lut(hvs, vc4_crtc);
 			dispbkgndx |= SCALER_DISPBKGND_GAMMA;
 		} else {
-			/* Unsetting DISPBKGND_GAMMA skips the gamma lut step
-			 * in hardware, which is the same as a linear lut that
-			 * DRM expects us to use in absence of a user lut.
-			 */
+			 
 			dispbkgndx &= ~SCALER_DISPBKGND_GAMMA;
 		}
 		HVS_WRITE(SCALER_DISPBKGNDX(channel), dispbkgndx);
@@ -723,16 +662,7 @@ static irqreturn_t vc4_hvs_irq_handler(int irq, void *data)
 	u32 status;
 	u32 dspeislur;
 
-	/*
-	 * NOTE: We don't need to protect the register access using
-	 * drm_dev_enter() there because the interrupt handler lifetime
-	 * is tied to the device itself, and not to the DRM device.
-	 *
-	 * So when the device will be gone, one of the first thing we
-	 * will be doing will be to unregister the interrupt handler,
-	 * and then unregister the DRM device. drm_dev_enter() would
-	 * thus always succeed if we are here.
-	 */
+	 
 
 	status = HVS_READ(SCALER_DISPSTAT);
 	control = HVS_READ(SCALER_DISPCTRL);
@@ -740,7 +670,7 @@ static irqreturn_t vc4_hvs_irq_handler(int irq, void *data)
 	for (channel = 0; channel < SCALER_CHANNELS_COUNT; channel++) {
 		dspeislur = vc4->is_vc5 ? SCALER5_DISPCTRL_DSPEISLUR(channel) :
 					  SCALER_DISPCTRL_DSPEISLUR(channel);
-		/* Interrupt masking is not always honored, so check it here. */
+		 
 		if (status & SCALER_DISPSTAT_EUFLOW(channel) &&
 		    control & dspeislur) {
 			vc4_hvs_mask_underrun(hvs, channel);
@@ -750,7 +680,7 @@ static irqreturn_t vc4_hvs_irq_handler(int irq, void *data)
 		}
 	}
 
-	/* Clear every per-channel interrupt flag. */
+	 
 	HVS_WRITE(SCALER_DISPSTAT, SCALER_DISPSTAT_IRQMASK(0) |
 				   SCALER_DISPSTAT_IRQMASK(1) |
 				   SCALER_DISPSTAT_IRQMASK(2));
@@ -795,25 +725,17 @@ struct vc4_hvs *__vc4_hvs_alloc(struct vc4_dev *vc4, struct platform_device *pde
 
 	spin_lock_init(&hvs->mm_lock);
 
-	/* Set up the HVS display list memory manager.  We never
-	 * overwrite the setup from the bootloader (just 128b out of
-	 * our 16K), since we don't want to scramble the screen when
-	 * transitioning from the firmware's boot setup to runtime.
-	 */
+	 
 	drm_mm_init(&hvs->dlist_mm,
 		    HVS_BOOTLOADER_DLIST_END,
 		    (SCALER_DLIST_SIZE >> 2) - HVS_BOOTLOADER_DLIST_END);
 
-	/* Set up the HVS LBM memory manager.  We could have some more
-	 * complicated data structure that allowed reuse of LBM areas
-	 * between planes when they don't overlap on the screen, but
-	 * for now we just allocate globally.
-	 */
+	 
 	if (!vc4->is_vc5)
-		/* 48k words of 2x12-bit pixels */
+		 
 		drm_mm_init(&hvs->lbm_mm, 0, 48 * 1024);
 	else
-		/* 60k words of 4x12-bit pixels */
+		 
 		drm_mm_init(&hvs->lbm_mm, 0, 60 * 1024);
 
 	vc4->hvs = hvs;
@@ -886,9 +808,7 @@ static int vc4_hvs_bind(struct device *dev, struct device *master, void *data)
 	else
 		hvs->dlist = hvs->regs + SCALER5_DLIST_START;
 
-	/* Upload filter kernels.  We only have the one for now, so we
-	 * keep it around for the lifetime of the driver.
-	 */
+	 
 	ret = vc4_hvs_upload_linear_kernel(hvs,
 					   &hvs->mitchell_netravali_filter,
 					   mitchell_netravali_1_3_1_3_kernel);
@@ -951,10 +871,7 @@ static int vc4_hvs_bind(struct device *dev, struct device *master, void *data)
 			      SCALER_DISPCTRL_SCLEIRQ);
 
 
-	/* Set AXI panic mode.
-	 * VC4 panics when < 2 lines in FIFO.
-	 * VC5 panics when less than 1 line in the FIFO.
-	 */
+	 
 	dispctrl &= ~(SCALER_DISPCTRL_PANIC0_MASK |
 		      SCALER_DISPCTRL_PANIC1_MASK |
 		      SCALER_DISPCTRL_PANIC2_MASK);
@@ -964,17 +881,9 @@ static int vc4_hvs_bind(struct device *dev, struct device *master, void *data)
 
 	HVS_WRITE(SCALER_DISPCTRL, dispctrl);
 
-	/* Recompute Composite Output Buffer (COB) allocations for the displays
-	 */
+	 
 	if (!vc4->is_vc5) {
-		/* The COB is 20736 pixels, or just over 10 lines at 2048 wide.
-		 * The bottom 2048 pixels are full 32bpp RGBA (intended for the
-		 * TXP composing RGBA to memory), whilst the remainder are only
-		 * 24bpp RGB.
-		 *
-		 * Assign 3 lines to channels 1 & 2, and just over 4 lines to
-		 * channel 0.
-		 */
+		 
 		#define VC4_COB_SIZE		20736
 		#define VC4_COB_LINE_WIDTH	2048
 		#define VC4_COB_NUM_LINES	3
@@ -991,14 +900,7 @@ static int vc4_hvs_bind(struct device *dev, struct device *master, void *data)
 		reg |= (top - 1) << 16;
 		HVS_WRITE(SCALER_DISPBASE0, reg);
 	} else {
-		/* The COB is 44416 pixels, or 10.8 lines at 4096 wide.
-		 * The bottom 4096 pixels are full RGBA (intended for the TXP
-		 * composing RGBA to memory), whilst the remainder are only
-		 * RGB. Addressing is always pixel wide.
-		 *
-		 * Assign 3 lines of 4096 to channels 1 & 2, and just over 4
-		 * lines. to channel 0.
-		 */
+		 
 		#define VC5_COB_SIZE		44416
 		#define VC5_COB_LINE_WIDTH	4096
 		#define VC5_COB_NUM_LINES	3

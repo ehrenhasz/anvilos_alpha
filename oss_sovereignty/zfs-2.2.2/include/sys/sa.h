@@ -1,39 +1,12 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2010, Oracle and/or its affiliates. All rights reserved.
- */
+ 
+ 
 
 #ifndef	_SYS_SA_H
 #define	_SYS_SA_H
 
 #include <sys/dmu.h>
 
-/*
- * Currently available byteswap functions.
- * If it all possible new attributes should used
- * one of the already defined byteswap functions.
- * If a new byteswap function is added then the
- * ZPL/Pool version will need to be bumped.
- */
+ 
 
 typedef enum sa_bswap_type {
 	SA_UINT64_ARRAY,
@@ -45,57 +18,34 @@ typedef enum sa_bswap_type {
 
 typedef uint16_t	sa_attr_type_t;
 
-/*
- * Attribute to register support for.
- */
+ 
 typedef struct sa_attr_reg {
-	const char 		*sa_name;	/* attribute name */
+	const char 		*sa_name;	 
 	uint16_t 		sa_length;
-	sa_bswap_type_t		sa_byteswap;	/* bswap function enum */
-	sa_attr_type_t 		sa_attr; /* filled in during registration */
+	sa_bswap_type_t		sa_byteswap;	 
+	sa_attr_type_t 		sa_attr;  
 } sa_attr_reg_t;
 
 
 typedef void (sa_data_locator_t)(void **, uint32_t *, uint32_t,
     boolean_t, void *userptr);
 
-/*
- * array of attributes to store.
- *
- * This array should be treated as opaque/private data.
- * The SA_BULK_ADD_ATTR() macro should be used for manipulating
- * the array.
- *
- * When sa_replace_all_by_template() is used the attributes
- * will be stored in the order defined in the array, except that
- * the attributes may be split between the bonus and the spill buffer
- *
- */
+ 
 typedef struct sa_bulk_attr {
 	void			*sa_data;
 	sa_data_locator_t	*sa_data_func;
 	uint16_t		sa_length;
 	sa_attr_type_t		sa_attr;
-	/* the following are private to the sa framework */
+	 
 	void 			*sa_addr;
 	uint16_t		sa_buftype;
 	uint16_t		sa_size;
 } sa_bulk_attr_t;
 
-/*
- * The on-disk format of sa_hdr_phys_t limits SA lengths to 16-bit values.
- */
+ 
 #define	SA_ATTR_MAX_LEN UINT16_MAX
 
-/*
- * special macro for adding entries for bulk attr support
- * bulk - sa_bulk_attr_t
- * count - integer that will be incremented during each add
- * attr - attribute to manipulate
- * func - function for accessing data.
- * data - pointer to data.
- * len - length of data
- */
+ 
 
 #define	SA_ADD_BULK_ATTR(b, idx, attr, func, data, len) \
 { \
@@ -172,4 +122,4 @@ extern "C" {
 }
 #endif
 
-#endif	/* _SYS_SA_H */
+#endif	 

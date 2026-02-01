@@ -1,44 +1,9 @@
-/* mini-gmp, a minimalistic implementation of a GNU GMP subset.
-
-Copyright 2011-2015, 2017, 2019-2021 Free Software Foundation, Inc.
-
-This file is part of the GNU MP Library.
-
-The GNU MP Library is free software; you can redistribute it and/or modify
-it under the terms of either:
-
-  * the GNU Lesser General Public License as published by the Free
-    Software Foundation; either version 3 of the License, or (at your
-    option) any later version.
-
-or
-
-  * the GNU General Public License as published by the Free Software
-    Foundation; either version 2 of the License, or (at your option) any
-    later version.
-
-or both in parallel, as here.
-
-The GNU MP Library is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
-for more details.
-
-You should have received copies of the GNU General Public License and the
-GNU Lesser General Public License along with the GNU MP Library.  If not,
-see https://www.gnu.org/licenses/.  */
-
-/* About mini-gmp: This is a minimal implementation of a subset of the
-   GMP interface. It is intended for inclusion into applications which
-   have modest bignums needs, as a fallback when the real GMP library
-   is not installed.
-
-   This file defines the public interface. */
+ 
 
 #ifndef __MINI_GMP_H__
 #define __MINI_GMP_H__
 
-/* For size_t */
+ 
 #include <stddef.h>
 
 #if defined (__cplusplus)
@@ -66,12 +31,9 @@ typedef const mp_limb_t *mp_srcptr;
 
 typedef struct
 {
-  int _mp_alloc;		/* Number of *limbs* allocated and pointed
-				   to by the _mp_d field.  */
-  int _mp_size;			/* abs(_mp_size) is the number of limbs the
-				   last field points to.  If _mp_size is
-				   negative this is a negative number.  */
-  mp_limb_t *_mp_d;		/* Pointer to the limbs.  */
+  int _mp_alloc;		 
+  int _mp_size;			 
+  mp_limb_t *_mp_d;		 
 } __mpz_struct;
 
 typedef __mpz_struct mpz_t[1];
@@ -278,26 +240,25 @@ char *mpz_get_str (char *, int, const mpz_t);
 int mpz_set_str (mpz_t, const char *, int);
 int mpz_init_set_str (mpz_t, const char *, int);
 
-/* This long list taken from gmp.h. */
-/* For reference, "defined(EOF)" cannot be used here.  In g++ 2.95.4,
-   <iostream> defines EOF but not FILE.  */
+ 
+ 
 #if defined (FILE)                                              \
   || defined (H_STDIO)                                          \
-  || defined (_H_STDIO)               /* AIX */                 \
-  || defined (_STDIO_H)               /* glibc, Sun, SCO */     \
-  || defined (_STDIO_H_)              /* BSD, OSF */            \
-  || defined (__STDIO_H)              /* Borland */             \
-  || defined (__STDIO_H__)            /* IRIX */                \
-  || defined (_STDIO_INCLUDED)        /* HPUX */                \
-  || defined (__dj_include_stdio_h_)  /* DJGPP */               \
-  || defined (_FILE_DEFINED)          /* Microsoft */           \
-  || defined (__STDIO__)              /* Apple MPW MrC */       \
-  || defined (_MSL_STDIO_H)           /* Metrowerks */          \
-  || defined (_STDIO_H_INCLUDED)      /* QNX4 */		\
-  || defined (_ISO_STDIO_ISO_H)       /* Sun C++ */		\
-  || defined (__STDIO_LOADED)         /* VMS */			\
-  || defined (_STDIO)                 /* HPE NonStop */         \
-  || defined (__DEFINED_FILE)         /* musl */
+  || defined (_H_STDIO)                                 \
+  || defined (_STDIO_H)                     \
+  || defined (_STDIO_H_)                           \
+  || defined (__STDIO_H)                            \
+  || defined (__STDIO_H__)                             \
+  || defined (_STDIO_INCLUDED)                         \
+  || defined (__dj_include_stdio_h_)                  \
+  || defined (_FILE_DEFINED)                      \
+  || defined (__STDIO__)                      \
+  || defined (_MSL_STDIO_H)                      \
+  || defined (_STDIO_H_INCLUDED)       		\
+  || defined (_ISO_STDIO_ISO_H)        		\
+  || defined (__STDIO_LOADED)          			\
+  || defined (_STDIO)                           \
+  || defined (__DEFINED_FILE)          
 size_t mpz_out_str (FILE *, int, const mpz_t);
 #endif
 
@@ -307,4 +268,4 @@ void *mpz_export (void *, size_t *, int, size_t, int, size_t, const mpz_t);
 #if defined (__cplusplus)
 }
 #endif
-#endif /* __MINI_GMP_H__ */
+#endif  

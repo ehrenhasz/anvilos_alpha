@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * System Control and Power Interface (SCPI) Protocol based clock driver
- *
- * Copyright (C) 2015 ARM Ltd.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/device.h>
@@ -35,12 +31,7 @@ static unsigned long scpi_clk_recalc_rate(struct clk_hw *hw,
 static long scpi_clk_round_rate(struct clk_hw *hw, unsigned long rate,
 				unsigned long *parent_rate)
 {
-	/*
-	 * We can't figure out what rate it will be, so just return the
-	 * rate back to the caller. scpi_clk_recalc_rate() will be called
-	 * after the rate is set and we'll know what rate the clock is
-	 * running at then.
-	 */
+	 
 	return rate;
 }
 
@@ -58,7 +49,7 @@ static const struct clk_ops scpi_clk_ops = {
 	.set_rate = scpi_clk_set_rate,
 };
 
-/* find closest match to given frequency in OPP table */
+ 
 static long __scpi_dvfs_round_rate(struct scpi_clk *clk, unsigned long rate)
 {
 	int idx;
@@ -282,7 +273,7 @@ static int scpi_clocks_probe(struct platform_device *pdev)
 
 		if (match->data != &scpi_dvfs_ops)
 			continue;
-		/* Add the virtual cpufreq device if it's DVFS clock provider */
+		 
 		cpufreq_dev = platform_device_register_simple("scpi-cpufreq",
 							      -1, NULL, 0);
 		if (IS_ERR(cpufreq_dev))

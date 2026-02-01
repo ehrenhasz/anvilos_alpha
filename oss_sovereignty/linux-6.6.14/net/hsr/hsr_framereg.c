@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright 2011-2014 Autronica Fire and Security AS
- *
- * Author(s):
- *	2011-2014 Arvid Brodin, arvid.brodin@alten.se
- *
- * The HSR spec says never to forward the same frame twice on the same
- * interface. A frame is identified by its source MAC address and its HSR
- * sequence number. This code keeps track of senders and their sequence numbers
- * to allow filtering of duplicate frames, and to detect HSR ring errors.
- * Same code handles filtering of duplicates for PRP as well.
- */
+
+ 
 
 #include <linux/if_ether.h>
 #include <linux/etherdevice.h>
@@ -19,14 +9,10 @@
 #include "hsr_framereg.h"
 #include "hsr_netlink.h"
 
-/* seq_nr_after(a, b) - return true if a is after (higher in sequence than) b,
- * false otherwise.
- */
+ 
 static bool seq_nr_after(u16 a, u16 b)
 {
-	/* Remove inconsistency where
-	 * seq_nr_after(a, b) == seq_nr_before(a, b)
-	 */
+	 
 	if ((int)b - a == 32768)
 		return false;
 
@@ -56,8 +42,7 @@ out:
 	return ret;
 }
 
-/* Search for mac entry. Caller must hold rcu read lock.
- */
+ 
 static struct hsr_node *find_node_by_addr_A(struct list_head *node_db,
 					    const unsigned char addr[ETH_ALEN])
 {
@@ -71,9 +56,7 @@ static struct hsr_node *find_node_by_addr_A(struct list_head *node_db,
 	return NULL;
 }
 
-/* Helper for device init; the self_node is used in hsr_rcv() to recognize
- * frames from self that's been looped over the HSR ring.
- */
+ 
 int hsr_create_self_node(struct hsr_priv *hsr,
 			 const unsigned char addr_a[ETH_ALEN],
 			 const unsigned char addr_b[ETH_ALEN])
@@ -121,7 +104,7 @@ void hsr_del_nodes(struct list_head *node_db)
 void prp_handle_san_frame(bool san, enum hsr_port_type port,
 			  struct hsr_node *node)
 {
-	/* Mark if the SAN node is over LAN_A or LAN_B */
+	 
 	if (port == HSR_PT_SLAVE_A) {
 		node->san_a = true;
 		return;
@@ -131,10 +114,7 @@ void prp_handle_san_frame(bool san, enum hsr_port_type port,
 		node->san_b = true;
 }
 
-/* Allocate an hsr_node and add it to node_db. 'addr' is the node's address_A;
- * seq_out is used to initialize filtering of outgoing duplicate frames
- * originating from the newly added node.
- */
+ 
 static struct hsr_node *hsr_add_node(struct hsr_priv *hsr,
 				     struct list_head *node_db,
 				     unsigned char addr[],
@@ -152,9 +132,7 @@ static struct hsr_node *hsr_add_node(struct hsr_priv *hsr,
 	ether_addr_copy(new_node->macaddress_A, addr);
 	spin_lock_init(&new_node->seq_out_lock);
 
-	/* We are only interested in time diffs here, so use current jiffies
-	 * as initialization. (0 could trigger an spurious ring error warning).
-	 */
+	 
 	now = jiffies;
 	for (i = 0; i < HSR_PT_PORTS; i++) {
 		new_node->time_in[i] = now;
@@ -192,8 +170,7 @@ void prp_update_san_info(struct hsr_node *node, bool is_sup)
 	node->san_b = false;
 }
 
-/* Get the hsr_node from which 'skb' was sent.
- */
+ 
 struct hsr_node *hsr_get_node(struct hsr_port *port, struct list_head *node_db,
 			      struct sk_buff *skb, bool is_sup,
 			      enum hsr_port_type rx_port)
@@ -223,14 +200,10 @@ struct hsr_node *hsr_get_node(struct hsr_port *port, struct list_head *node_db,
 		}
 	}
 
-	/* Everyone may create a node entry, connected node to a HSR/PRP
-	 * device.
-	 */
+	 
 	if (ethhdr->h_proto == htons(ETH_P_PRP) ||
 	    ethhdr->h_proto == htons(ETH_P_HSR)) {
-		/* Use the existing sequence_nr from the tag as starting point
-		 * for filtering duplicate frames.
-		 */
+		 
 		seq_out = hsr_get_skb_sequence_nr(skb) - 1;
 	} else {
 		rct = skb_get_PRP_rct(skb);
@@ -247,10 +220,7 @@ struct hsr_node *hsr_get_node(struct hsr_port *port, struct list_head *node_db,
 			    san, rx_port);
 }
 
-/* Use the Supervision frame's info about an eventual macaddress_B for merging
- * nodes that has previously had their macaddress_B registered as a separate
- * node.
- */
+ 
 void hsr_handle_sup_frame(struct hsr_frame_info *frame)
 {
 	struct hsr_node *node_curr = frame->node_src;
@@ -266,10 +236,7 @@ void hsr_handle_sup_frame(struct hsr_frame_info *frame)
 	unsigned int pull_size = 0;
 	unsigned int total_pull_size = 0;
 
-	/* Here either frame->skb_hsr or frame->skb_prp should be
-	 * valid as supervision frame always will have protocol
-	 * header info.
-	 */
+	 
 	if (frame->skb_hsr)
 		skb = frame->skb_hsr;
 	else if (frame->skb_prp)
@@ -279,69 +246,67 @@ void hsr_handle_sup_frame(struct hsr_frame_info *frame)
 	if (!skb)
 		return;
 
-	/* Leave the ethernet header. */
+	 
 	pull_size = sizeof(struct ethhdr);
 	skb_pull(skb, pull_size);
 	total_pull_size += pull_size;
 
 	ethhdr = (struct ethhdr *)skb_mac_header(skb);
 
-	/* And leave the HSR tag. */
+	 
 	if (ethhdr->h_proto == htons(ETH_P_HSR)) {
 		pull_size = sizeof(struct hsr_tag);
 		skb_pull(skb, pull_size);
 		total_pull_size += pull_size;
 	}
 
-	/* And leave the HSR sup tag. */
+	 
 	pull_size = sizeof(struct hsr_sup_tag);
 	skb_pull(skb, pull_size);
 	total_pull_size += pull_size;
 
-	/* get HSR sup payload */
+	 
 	hsr_sp = (struct hsr_sup_payload *)skb->data;
 
-	/* Merge node_curr (registered on macaddress_B) into node_real */
+	 
 	node_db = &port_rcv->hsr->node_db;
 	node_real = find_node_by_addr_A(node_db, hsr_sp->macaddress_A);
 	if (!node_real)
-		/* No frame received from AddrA of this node yet */
+		 
 		node_real = hsr_add_node(hsr, node_db, hsr_sp->macaddress_A,
 					 HSR_SEQNR_START - 1, true,
 					 port_rcv->type);
 	if (!node_real)
-		goto done; /* No mem */
+		goto done;  
 	if (node_real == node_curr)
-		/* Node has already been merged */
+		 
 		goto done;
 
-	/* Leave the first HSR sup payload. */
+	 
 	pull_size = sizeof(struct hsr_sup_payload);
 	skb_pull(skb, pull_size);
 	total_pull_size += pull_size;
 
-	/* Get second supervision tlv */
+	 
 	hsr_sup_tlv = (struct hsr_sup_tlv *)skb->data;
-	/* And check if it is a redbox mac TLV */
+	 
 	if (hsr_sup_tlv->HSR_TLV_type == PRP_TLV_REDBOX_MAC) {
-		/* We could stop here after pushing hsr_sup_payload,
-		 * or proceed and allow macaddress_B and for redboxes.
-		 */
-		/* Sanity check length */
+		 
+		 
 		if (hsr_sup_tlv->HSR_TLV_length != 6)
 			goto done;
 
-		/* Leave the second HSR sup tlv. */
+		 
 		pull_size = sizeof(struct hsr_sup_tlv);
 		skb_pull(skb, pull_size);
 		total_pull_size += pull_size;
 
-		/* Get redbox mac address. */
+		 
 		hsr_sp = (struct hsr_sup_payload *)skb->data;
 
-		/* Check if redbox mac and node mac are equal. */
+		 
 		if (!ether_addr_equal(node_real->macaddress_A, hsr_sp->macaddress_A)) {
-			/* This is a redbox supervision frame for a VDAN! */
+			 
 			goto done;
 		}
 	}
@@ -370,16 +335,11 @@ void hsr_handle_sup_frame(struct hsr_frame_info *frame)
 	spin_unlock_bh(&hsr->list_lock);
 
 done:
-	/* Push back here */
+	 
 	skb_push(skb, total_pull_size);
 }
 
-/* 'skb' is a frame meant for this host, that is to be passed to upper layers.
- *
- * If the frame was sent by a node's B interface, replace the source
- * address with that node's "official" address (macaddress_A) so that upper
- * layers recognize where it came from.
- */
+ 
 void hsr_addr_subst_source(struct hsr_node *node, struct sk_buff *skb)
 {
 	if (!skb_mac_header_was_set(skb)) {
@@ -390,15 +350,7 @@ void hsr_addr_subst_source(struct hsr_node *node, struct sk_buff *skb)
 	memcpy(&eth_hdr(skb)->h_source, node->macaddress_A, ETH_ALEN);
 }
 
-/* 'skb' is a frame meant for another host.
- * 'port' is the outgoing interface
- *
- * Substitute the target (dest) MAC address if necessary, so the it matches the
- * recipient interface MAC address, regardless of whether that is the
- * recipient's A or B interface.
- * This is needed to keep the packets flowing through switches that learn on
- * which "side" the different interfaces are.
- */
+ 
 void hsr_addr_subst_dest(struct hsr_node *node_src, struct sk_buff *skb,
 			 struct hsr_port *port)
 {
@@ -429,10 +381,7 @@ void hsr_addr_subst_dest(struct hsr_node *node_src, struct sk_buff *skb,
 void hsr_register_frame_in(struct hsr_node *node, struct hsr_port *port,
 			   u16 sequence_nr)
 {
-	/* Don't register incoming frames without a valid sequence number. This
-	 * ensures entries of restarted nodes gets pruned so that they can
-	 * re-register and resume communications.
-	 */
+	 
 	if (!(port->dev->features & NETIF_F_HW_HSR_TAG_RM) &&
 	    seq_nr_before(sequence_nr, node->seq_out[port->type]))
 		return;
@@ -441,14 +390,7 @@ void hsr_register_frame_in(struct hsr_node *node, struct hsr_port *port,
 	node->time_in_stale[port->type] = false;
 }
 
-/* 'skb' is a HSR Ethernet frame (with a HSR tag inserted), with a valid
- * ethhdr->h_source address and skb->mac_header set.
- *
- * Return:
- *	 1 if frame can be shown to have been sent recently on this interface,
- *	 0 otherwise, or
- *	 negative error code on error
- */
+ 
 int hsr_register_frame_out(struct hsr_port *port, struct hsr_node *node,
 			   u16 sequence_nr)
 {
@@ -486,9 +428,7 @@ static struct hsr_port *get_late_port(struct hsr_priv *hsr,
 	return NULL;
 }
 
-/* Remove stale sequence_nr records. Called by timer every
- * HSR_LIFE_CHECK_INTERVAL (two seconds or so).
- */
+ 
 void hsr_prune_nodes(struct timer_list *t)
 {
 	struct hsr_priv *hsr = from_timer(hsr, t, prune_timer);
@@ -500,35 +440,28 @@ void hsr_prune_nodes(struct timer_list *t)
 
 	spin_lock_bh(&hsr->list_lock);
 	list_for_each_entry_safe(node, tmp, &hsr->node_db, mac_list) {
-		/* Don't prune own node. Neither time_in[HSR_PT_SLAVE_A]
-		 * nor time_in[HSR_PT_SLAVE_B], will ever be updated for
-		 * the master port. Thus the master node will be repeatedly
-		 * pruned leading to packet loss.
-		 */
+		 
 		if (hsr_addr_is_self(hsr, node->macaddress_A))
 			continue;
 
-		/* Shorthand */
+		 
 		time_a = node->time_in[HSR_PT_SLAVE_A];
 		time_b = node->time_in[HSR_PT_SLAVE_B];
 
-		/* Check for timestamps old enough to risk wrap-around */
+		 
 		if (time_after(jiffies, time_a + MAX_JIFFY_OFFSET / 2))
 			node->time_in_stale[HSR_PT_SLAVE_A] = true;
 		if (time_after(jiffies, time_b + MAX_JIFFY_OFFSET / 2))
 			node->time_in_stale[HSR_PT_SLAVE_B] = true;
 
-		/* Get age of newest frame from node.
-		 * At least one time_in is OK here; nodes get pruned long
-		 * before both time_ins can get stale
-		 */
+		 
 		timestamp = time_a;
 		if (node->time_in_stale[HSR_PT_SLAVE_A] ||
 		    (!node->time_in_stale[HSR_PT_SLAVE_B] &&
 		    time_after(time_b, time_a)))
 			timestamp = time_b;
 
-		/* Warn of ring error only as long as we get frames at all */
+		 
 		if (time_is_after_jiffies(timestamp +
 				msecs_to_jiffies(1.5 * MAX_SLAVE_DIFF))) {
 			rcu_read_lock();
@@ -538,21 +471,21 @@ void hsr_prune_nodes(struct timer_list *t)
 			rcu_read_unlock();
 		}
 
-		/* Prune old entries */
+		 
 		if (time_is_before_jiffies(timestamp +
 				msecs_to_jiffies(HSR_NODE_FORGET_TIME))) {
 			hsr_nl_nodedown(hsr, node->macaddress_A);
 			if (!node->removed) {
 				list_del_rcu(&node->mac_list);
 				node->removed = true;
-				/* Note that we need to free this entry later: */
+				 
 				kfree_rcu(node, rcu_head);
 			}
 		}
 	}
 	spin_unlock_bh(&hsr->list_lock);
 
-	/* Restart timer */
+	 
 	mod_timer(&hsr->prune_timer,
 		  jiffies + msecs_to_jiffies(PRUNE_PERIOD));
 }
@@ -618,7 +551,7 @@ int hsr_get_node_data(struct hsr_priv *hsr,
 	else
 		*if2_age = jiffies_to_msecs(tdiff);
 
-	/* Present sequence numbers as if they were incoming on interface */
+	 
 	*if1_seq = node->seq_out[HSR_PT_SLAVE_B];
 	*if2_seq = node->seq_out[HSR_PT_SLAVE_A];
 

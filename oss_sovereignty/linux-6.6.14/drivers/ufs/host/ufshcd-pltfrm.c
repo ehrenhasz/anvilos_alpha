@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Universal Flash Storage Host controller Platform bus based glue driver
- * Copyright (C) 2011-2013 Samsung India Software Operations
- *
- * Authors:
- *	Santosh Yaraganavi <santosh.sy@samsung.com>
- *	Vinayak Holikatti <h.vinayak@samsung.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -158,17 +151,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(ufshcd_populate_vreg);
 
-/**
- * ufshcd_parse_regulator_info - get regulator info from device tree
- * @hba: per adapter instance
- *
- * Get regulator info from device tree for vcc, vccq, vccq2 power supplies.
- * If any of the supplies are not defined it is assumed that they are always-on
- * and hence return zero. If the property is defined but parsing is failed
- * then return corresponding error.
- *
- * Return: 0 upon success; < 0 upon failure.
- */
+ 
 static int ufshcd_parse_regulator_info(struct ufs_hba *hba)
 {
 	int err;
@@ -207,15 +190,7 @@ static void ufshcd_init_lanes_per_dir(struct ufs_hba *hba)
 	}
 }
 
-/**
- * ufshcd_get_pwr_dev_param - get finally agreed attributes for
- *                            power mode change
- * @pltfrm_param: pointer to platform parameters
- * @dev_max: pointer to device attributes
- * @agreed_pwr: returned agreed attributes
- *
- * Return: 0 on success, non-zero value on failure.
- */
+ 
 int ufshcd_get_pwr_dev_param(const struct ufs_dev_params *pltfrm_param,
 			     const struct ufs_pa_layer_attr *dev_max,
 			     struct ufs_pa_layer_attr *agreed_pwr)
@@ -237,56 +212,31 @@ int ufshcd_get_pwr_dev_param(const struct ufs_dev_params *pltfrm_param,
 					pltfrm_param->pwm_tx_gear);
 	}
 
-	/*
-	 * device doesn't support HS but
-	 * pltfrm_param->desired_working_mode is HS,
-	 * thus device and pltfrm_param don't agree
-	 */
+	 
 	if (!is_dev_sup_hs && is_pltfrm_max_hs) {
 		pr_info("%s: device doesn't support HS\n",
 			__func__);
 		return -ENOTSUPP;
 	} else if (is_dev_sup_hs && is_pltfrm_max_hs) {
-		/*
-		 * since device supports HS, it supports FAST_MODE.
-		 * since pltfrm_param->desired_working_mode is also HS
-		 * then final decision (FAST/FASTAUTO) is done according
-		 * to pltfrm_params as it is the restricting factor
-		 */
+		 
 		agreed_pwr->pwr_rx = pltfrm_param->rx_pwr_hs;
 		agreed_pwr->pwr_tx = agreed_pwr->pwr_rx;
 	} else {
-		/*
-		 * here pltfrm_param->desired_working_mode is PWM.
-		 * it doesn't matter whether device supports HS or PWM,
-		 * in both cases pltfrm_param->desired_working_mode will
-		 * determine the mode
-		 */
+		 
 		agreed_pwr->pwr_rx = pltfrm_param->rx_pwr_pwm;
 		agreed_pwr->pwr_tx = agreed_pwr->pwr_rx;
 	}
 
-	/*
-	 * we would like tx to work in the minimum number of lanes
-	 * between device capability and vendor preferences.
-	 * the same decision will be made for rx
-	 */
+	 
 	agreed_pwr->lane_tx = min_t(u32, dev_max->lane_tx,
 				    pltfrm_param->tx_lanes);
 	agreed_pwr->lane_rx = min_t(u32, dev_max->lane_rx,
 				    pltfrm_param->rx_lanes);
 
-	/* device maximum gear is the minimum between device rx and tx gears */
+	 
 	min_dev_gear = min_t(u32, dev_max->gear_rx, dev_max->gear_tx);
 
-	/*
-	 * if both device capabilities and vendor pre-defined preferences are
-	 * both HS or both PWM then set the minimum gear to be the chosen
-	 * working gear.
-	 * if one is PWM and one is HS then the one that is PWM get to decide
-	 * what is the gear, as it is the one that also decided previously what
-	 * pwr the device will be configured to.
-	 */
+	 
 	if ((is_dev_sup_hs && is_pltfrm_max_hs) ||
 	    (!is_dev_sup_hs && !is_pltfrm_max_hs)) {
 		agreed_pwr->gear_rx =
@@ -323,13 +273,7 @@ void ufshcd_init_pwr_dev_param(struct ufs_dev_params *dev_param)
 }
 EXPORT_SYMBOL_GPL(ufshcd_init_pwr_dev_param);
 
-/**
- * ufshcd_pltfrm_init - probe routine of the driver
- * @pdev: pointer to Platform device handle
- * @vops: pointer to variant ops
- *
- * Return: 0 on success, non-zero value on failure.
- */
+ 
 int ufshcd_pltfrm_init(struct platform_device *pdev,
 		       const struct ufs_hba_variant_ops *vops)
 {

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2020 Intel Corporation
- */
+ 
+ 
 
 #ifndef _SKL_UNIVERSAL_PLANE_H_
 #define _SKL_UNIVERSAL_PLANE_H_

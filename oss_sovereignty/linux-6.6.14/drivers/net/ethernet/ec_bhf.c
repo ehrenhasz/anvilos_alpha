@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
- /*
- * drivers/net/ethernet/ec_bhf.c
- *
- * Copyright (C) 2014 Darek Marcinkiewicz <reksio@newterm.pl>
- */
 
-/* This is a driver for EtherCAT master module present on CCAT FPGA.
- * Those can be found on Bechhoff CX50xx industrial PCs.
- */
+  
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -183,7 +177,7 @@ static int ec_bhf_desc_sent(struct tx_desc *desc)
 static void ec_bhf_process_tx(struct ec_bhf_priv *priv)
 {
 	if (unlikely(netif_queue_stopped(priv->net_dev))) {
-		/* Make sure that we perceive changes to tx_dnext. */
+		 
 		smp_rmb();
 
 		if (ec_bhf_desc_sent(&priv->tx_descs[priv->tx_dnext]))
@@ -300,9 +294,7 @@ static netdev_tx_t ec_bhf_start_xmit(struct sk_buff *skb,
 	priv->tx_dnext = (priv->tx_dnext + 1) % priv->tx_dcount;
 
 	if (!ec_bhf_desc_sent(&priv->tx_descs[priv->tx_dnext])) {
-		/* Make sure that updates to tx_dnext are perceived
-		 * by timer routine.
-		 */
+		 
 		smp_wmb();
 
 		netif_stop_queue(net_dev);
@@ -329,12 +321,7 @@ static int ec_bhf_alloc_dma_mem(struct ec_bhf_priv *priv,
 	mask = ioread32(priv->dma_io + offset);
 	mask &= DMA_WINDOW_SIZE_MASK;
 
-	/* We want to allocate a chunk of memory that is:
-	 * - aligned to the mask we just read
-	 * - is of size 2^mask bytes (at most)
-	 * In order to ensure that we will allocate buffer of
-	 * 2 * 2^mask bytes.
-	 */
+	 
 	buf->len = min_t(int, ~mask + 1, size);
 	buf->alloc_len = 2 * buf->len;
 

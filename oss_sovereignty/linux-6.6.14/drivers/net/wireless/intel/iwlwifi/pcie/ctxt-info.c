@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2017 Intel Deutschland GmbH
- * Copyright (C) 2018-2022 Intel Corporation
- */
+
+ 
 #include "iwl-trans.h"
 #include "iwl-fh.h"
 #include "iwl-context-info.h"
@@ -70,7 +67,7 @@ void iwl_pcie_ctxt_info_free_paging(struct iwl_trans *trans)
 		return;
 	}
 
-	/* free paging*/
+	 
 	for (i = 0; i < dram->paging_cnt; i++)
 		dma_free_coherent(trans->dev, dram->paging[i].size,
 				  dram->paging[i].block,
@@ -94,9 +91,9 @@ int iwl_pcie_init_fw_sec(struct iwl_trans *trans,
 		iwl_pcie_ctxt_info_free_paging(trans);
 
 	lmac_cnt = iwl_pcie_get_num_sections(fw, 0);
-	/* add 1 due to separator */
+	 
 	umac_cnt = iwl_pcie_get_num_sections(fw, lmac_cnt + 1);
-	/* add 2 due to separators */
+	 
 	paging_cnt = iwl_pcie_get_num_sections(fw, lmac_cnt + umac_cnt + 2);
 
 	dram->fw = kcalloc(umac_cnt + lmac_cnt, sizeof(*dram->fw), GFP_KERNEL);
@@ -106,7 +103,7 @@ int iwl_pcie_init_fw_sec(struct iwl_trans *trans,
 	if (!dram->paging)
 		return -ENOMEM;
 
-	/* initialize lmac sections */
+	 
 	for (i = 0; i < lmac_cnt; i++) {
 		ret = iwl_pcie_ctxt_info_alloc_dma(trans, fw->sec[i].data,
 						   fw->sec[i].len,
@@ -118,9 +115,9 @@ int iwl_pcie_init_fw_sec(struct iwl_trans *trans,
 		dram->fw_cnt++;
 	}
 
-	/* initialize umac sections */
+	 
 	for (i = 0; i < umac_cnt; i++) {
-		/* access FW with +1 to make up for lmac separator */
+		 
 		ret = iwl_pcie_ctxt_info_alloc_dma(trans,
 						   fw->sec[dram->fw_cnt + 1].data,
 						   fw->sec[dram->fw_cnt + 1].len,
@@ -132,18 +129,9 @@ int iwl_pcie_init_fw_sec(struct iwl_trans *trans,
 		dram->fw_cnt++;
 	}
 
-	/*
-	 * Initialize paging.
-	 * Paging memory isn't stored in dram->fw as the umac and lmac - it is
-	 * stored separately.
-	 * This is since the timing of its release is different -
-	 * while fw memory can be released on alive, the paging memory can be
-	 * freed only when the device goes down.
-	 * Given that, the logic here in accessing the fw image is a bit
-	 * different - fw_cnt isn't changing so loop counter is added to it.
-	 */
+	 
 	for (i = 0; i < paging_cnt; i++) {
-		/* access FW with +2 to make up for lmac & umac separators */
+		 
 		int fw_idx = dram->fw_cnt + i + 2;
 
 		ret = iwl_pcie_ctxt_info_alloc_dma(trans, fw->sec[fw_idx].data,
@@ -181,7 +169,7 @@ int iwl_pcie_ctxt_info_init(struct iwl_trans *trans,
 	ctxt_info->version.version = 0;
 	ctxt_info->version.mac_id =
 		cpu_to_le16((u16)iwl_read32(trans, CSR_HW_REV));
-	/* size is in DWs */
+	 
 	ctxt_info->version.size = cpu_to_le16(sizeof(*ctxt_info) / 4);
 
 	switch (trans_pcie->rx_buf_size) {
@@ -210,19 +198,19 @@ int iwl_pcie_ctxt_info_init(struct iwl_trans *trans,
 	control_flags |= u32_encode_bits(rb_size, IWL_CTXT_INFO_RB_SIZE);
 	ctxt_info->control.control_flags = cpu_to_le32(control_flags);
 
-	/* initialize RX default queue */
+	 
 	rx_cfg = &ctxt_info->rbd_cfg;
 	rx_cfg->free_rbd_addr = cpu_to_le64(trans_pcie->rxq->bd_dma);
 	rx_cfg->used_rbd_addr = cpu_to_le64(trans_pcie->rxq->used_bd_dma);
 	rx_cfg->status_wr_ptr = cpu_to_le64(trans_pcie->rxq->rb_stts_dma);
 
-	/* initialize TX command queue */
+	 
 	ctxt_info->hcmd_cfg.cmd_queue_addr =
 		cpu_to_le64(trans->txqs.txq[trans->txqs.cmd.q_id]->dma_addr);
 	ctxt_info->hcmd_cfg.cmd_queue_size =
 		TFD_QUEUE_CB_SIZE(IWL_CMD_QUEUE_SIZE);
 
-	/* allocate ucode sections in dram and set addresses */
+	 
 	ret = iwl_pcie_init_fw_sec(trans, fw, &ctxt_info->dram);
 	if (ret) {
 		dma_free_coherent(trans->dev, sizeof(*trans_pcie->ctxt_info),
@@ -234,14 +222,14 @@ int iwl_pcie_ctxt_info_init(struct iwl_trans *trans,
 
 	iwl_enable_fw_load_int_ctx_info(trans);
 
-	/* Configure debug, if exists */
+	 
 	if (iwl_pcie_dbg_on(trans))
 		iwl_pcie_apply_destination(trans);
 
-	/* kick FW self load */
+	 
 	iwl_write64(trans, CSR_CTXT_INFO_BA, trans_pcie->ctxt_info_dma_addr);
 
-	/* Context info will be released upon alive or failure to get one */
+	 
 
 	return 0;
 }

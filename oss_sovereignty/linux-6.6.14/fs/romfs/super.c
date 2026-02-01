@@ -1,60 +1,4 @@
-/* Block- or MTD-based romfs
- *
- * Copyright © 2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- *
- * Derived from: ROMFS file system, Linux implementation
- *
- * Copyright © 1997-1999  Janos Farkas <chexum@shadow.banki.hu>
- *
- * Using parts of the minix filesystem
- * Copyright © 1991, 1992  Linus Torvalds
- *
- * and parts of the affs filesystem additionally
- * Copyright © 1993  Ray Burr
- * Copyright © 1996  Hans-Joachim Widmaier
- *
- * Changes
- *					Changed for 2.1.19 modules
- *	Jan 1997			Initial release
- *	Jun 1997			2.1.43+ changes
- *					Proper page locking in read_folio
- *					Changed to work with 2.1.45+ fs
- *	Jul 1997			Fixed follow_link
- *			2.1.47
- *					lookup shouldn't return -ENOENT
- *					from Horst von Brand:
- *					  fail on wrong checksum
- *					  double unlock_super was possible
- *					  correct namelen for statfs
- *					spotted by Bill Hawes:
- *					  readlink shouldn't iput()
- *	Jun 1998	2.1.106		from Avery Pennarun: glibc scandir()
- *					  exposed a problem in readdir
- *			2.1.107		code-freeze spellchecker run
- *	Aug 1998			2.1.118+ VFS changes
- *	Sep 1998	2.1.122		another VFS change (follow_link)
- *	Apr 1999	2.2.7		no more EBADF checking in
- *					  lookup/readdir, use ERR_PTR
- *	Jun 1999	2.3.6		d_alloc_root use changed
- *			2.3.9		clean up usage of ENOENT/negative
- *					  dentries in lookup
- *					clean up page flags setting
- *					  (error, uptodate, locking) in
- *					  in read_folio
- *					use init_special_inode for
- *					  fifos/sockets (and streamline) in
- *					  read_inode, fix _ops table order
- *	Aug 1999	2.3.16		__initfunc() => __init change
- *	Oct 1999	2.3.24		page->owner hack obsoleted
- *	Nov 1999	2.3.27		2.3.25+ page->offset => index change
- *
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public Licence
- * as published by the Free Software Foundation; either version
- * 2 of the Licence, or (at your option) any later version.
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -80,14 +24,14 @@
 static struct kmem_cache *romfs_inode_cachep;
 
 static const umode_t romfs_modemap[8] = {
-	0,			/* hard link */
-	S_IFDIR  | 0644,	/* directory */
-	S_IFREG  | 0644,	/* regular file */
-	S_IFLNK  | 0777,	/* symlink */
-	S_IFBLK  | 0600,	/* blockdev */
-	S_IFCHR  | 0600,	/* chardev */
-	S_IFSOCK | 0644,	/* socket */
-	S_IFIFO  | 0644		/* FIFO */
+	0,			 
+	S_IFDIR  | 0644,	 
+	S_IFREG  | 0644,	 
+	S_IFLNK  | 0777,	 
+	S_IFBLK  | 0600,	 
+	S_IFCHR  | 0600,	 
+	S_IFSOCK | 0644,	 
+	S_IFIFO  | 0644		 
 };
 
 static const unsigned char romfs_dtype_table[] = {
@@ -96,9 +40,7 @@ static const unsigned char romfs_dtype_table[] = {
 
 static struct inode *romfs_iget(struct super_block *sb, unsigned long pos);
 
-/*
- * read a page worth of data from the image
- */
+ 
 static int romfs_read_folio(struct file *file, struct folio *folio)
 {
 	struct page *page = &folio->page;
@@ -112,7 +54,7 @@ static int romfs_read_folio(struct file *file, struct folio *folio)
 	if (!buf)
 		return -ENOMEM;
 
-	/* 32 bit warning -- but not for us :) */
+	 
 	offset = page_offset(page);
 	size = i_size_read(inode);
 	fillsize = 0;
@@ -146,16 +88,14 @@ static const struct address_space_operations romfs_aops = {
 	.read_folio	= romfs_read_folio
 };
 
-/*
- * read the entries from a directory
- */
+ 
 static int romfs_readdir(struct file *file, struct dir_context *ctx)
 {
 	struct inode *i = file_inode(file);
 	struct romfs_inode ri;
 	unsigned long offset, maxoff;
 	int j, ino, nextfh;
-	char fsname[ROMFS_MAXFN];	/* XXX dynamic? */
+	char fsname[ROMFS_MAXFN];	 
 	int ret;
 
 	maxoff = romfs_maxsize(i->i_sb);
@@ -169,7 +109,7 @@ static int romfs_readdir(struct file *file, struct dir_context *ctx)
 		offset = be32_to_cpu(ri.spec) & ROMFH_MASK;
 	}
 
-	/* Not really failsafe, but we are read-only... */
+	 
 	for (;;) {
 		if (!offset || offset >= maxoff) {
 			offset = maxoff;
@@ -178,7 +118,7 @@ static int romfs_readdir(struct file *file, struct dir_context *ctx)
 		}
 		ctx->pos = offset;
 
-		/* Fetch inode info */
+		 
 		ret = romfs_dev_read(i->i_sb, offset, &ri, ROMFH_SIZE);
 		if (ret < 0)
 			goto out;
@@ -207,16 +147,14 @@ out:
 	return 0;
 }
 
-/*
- * look up an entry in a directory
- */
+ 
 static struct dentry *romfs_lookup(struct inode *dir, struct dentry *dentry,
 				   unsigned int flags)
 {
 	unsigned long offset, maxoff;
 	struct inode *inode = NULL;
 	struct romfs_inode ri;
-	const char *name;		/* got from dentry */
+	const char *name;		 
 	int len, ret;
 
 	offset = dir->i_ino & ROMFH_MASK;
@@ -224,8 +162,7 @@ static struct dentry *romfs_lookup(struct inode *dir, struct dentry *dentry,
 	if (ret < 0)
 		goto error;
 
-	/* search all the file entries in the list starting from the one
-	 * pointed to by the directory's special data */
+	 
 	maxoff = romfs_maxsize(dir->i_sb);
 	offset = be32_to_cpu(ri.spec) & ROMFH_MASK;
 
@@ -240,20 +177,20 @@ static struct dentry *romfs_lookup(struct inode *dir, struct dentry *dentry,
 		if (ret < 0)
 			goto error;
 
-		/* try to match the first 16 bytes of name */
+		 
 		ret = romfs_dev_strcmp(dir->i_sb, offset + ROMFH_SIZE, name,
 				       len);
 		if (ret < 0)
 			goto error;
 		if (ret == 1) {
-			/* Hard link handling */
+			 
 			if ((be32_to_cpu(ri.next) & ROMFH_TYPE) == ROMFH_HRD)
 				offset = be32_to_cpu(ri.spec) & ROMFH_MASK;
 			inode = romfs_iget(dir->i_sb, offset);
 			break;
 		}
 
-		/* next entry */
+		 
 		offset = be32_to_cpu(ri.next) & ROMFH_MASK;
 	}
 
@@ -272,10 +209,7 @@ static const struct inode_operations romfs_dir_inode_operations = {
 	.lookup		= romfs_lookup,
 };
 
-/*
- * get a romfs inode based on its position in the image (which doubles as the
- * inode number)
- */
+ 
 static struct inode *romfs_iget(struct super_block *sb, unsigned long pos)
 {
 	struct romfs_inode_info *inode;
@@ -286,14 +220,13 @@ static struct inode *romfs_iget(struct super_block *sb, unsigned long pos)
 	int ret;
 	umode_t mode;
 
-	/* we might have to traverse a chain of "hard link" file entries to get
-	 * to the actual file */
+	 
 	for (;;) {
 		ret = romfs_dev_read(sb, pos, &ri, sizeof(ri));
 		if (ret < 0)
 			goto error;
 
-		/* XXX: do romfs_checksum here too (with name) */
+		 
 
 		nextfh = be32_to_cpu(ri.next);
 		if ((nextfh & ROMFH_TYPE) != ROMFH_HRD)
@@ -302,12 +235,12 @@ static struct inode *romfs_iget(struct super_block *sb, unsigned long pos)
 		pos = be32_to_cpu(ri.spec) & ROMFH_MASK;
 	}
 
-	/* determine the length of the filename */
+	 
 	nlen = romfs_dev_strnlen(sb, pos + ROMFH_SIZE, ROMFS_MAXFN);
 	if (IS_ERR_VALUE(nlen))
 		goto eio;
 
-	/* get an inode for this image position */
+	 
 	i = iget_locked(sb, pos);
 	if (!i)
 		return ERR_PTR(-ENOMEM);
@@ -315,16 +248,16 @@ static struct inode *romfs_iget(struct super_block *sb, unsigned long pos)
 	if (!(i->i_state & I_NEW))
 		return i;
 
-	/* precalculate the data offset */
+	 
 	inode = ROMFS_I(i);
 	inode->i_metasize = (ROMFH_SIZE + nlen + 1 + ROMFH_PAD) & ROMFH_MASK;
 	inode->i_dataoffset = pos + inode->i_metasize;
 
-	set_nlink(i, 1);		/* Hard to decide.. */
+	set_nlink(i, 1);		 
 	i->i_size = be32_to_cpu(ri.size);
 	i->i_mtime = i->i_atime = inode_set_ctime(i, 0, 0);
 
-	/* set up mode and ops */
+	 
 	mode = romfs_modemap[nextfh & ROMFH_TYPE];
 
 	switch (nextfh & ROMFH_TYPE) {
@@ -348,7 +281,7 @@ static struct inode *romfs_iget(struct super_block *sb, unsigned long pos)
 		mode |= S_IRWXUGO;
 		break;
 	default:
-		/* depending on MBZ for sock/fifos */
+		 
 		nextfh = be32_to_cpu(ri.spec);
 		init_special_inode(i, mode, MKDEV(nextfh >> 16,
 						  nextfh & 0xffff));
@@ -368,9 +301,7 @@ error:
 	return ERR_PTR(ret);
 }
 
-/*
- * allocate a new inode
- */
+ 
 static struct inode *romfs_alloc_inode(struct super_block *sb)
 {
 	struct romfs_inode_info *inode;
@@ -379,32 +310,19 @@ static struct inode *romfs_alloc_inode(struct super_block *sb)
 	return inode ? &inode->vfs_inode : NULL;
 }
 
-/*
- * return a spent inode to the slab cache
- */
+ 
 static void romfs_free_inode(struct inode *inode)
 {
 	kmem_cache_free(romfs_inode_cachep, ROMFS_I(inode));
 }
 
-/*
- * get filesystem statistics
- */
+ 
 static int romfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 {
 	struct super_block *sb = dentry->d_sb;
 	u64 id = 0;
 
-	/* When calling huge_encode_dev(),
-	 * use sb->s_bdev->bd_dev when,
-	 *   - CONFIG_ROMFS_ON_BLOCK defined
-	 * use sb->s_dev when,
-	 *   - CONFIG_ROMFS_ON_BLOCK undefined and
-	 *   - CONFIG_ROMFS_ON_MTD defined
-	 * leave id as 0 when,
-	 *   - CONFIG_ROMFS_ON_BLOCK undefined and
-	 *   - CONFIG_ROMFS_ON_MTD undefined
-	 */
+	 
 	if (sb->s_bdev)
 		id = huge_encode_dev(sb->s_bdev->bd_dev);
 	else if (sb->s_dev)
@@ -420,9 +338,7 @@ static int romfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 	return 0;
 }
 
-/*
- * remounting must involve read-only
- */
+ 
 static int romfs_reconfigure(struct fs_context *fc)
 {
 	sync_filesystem(fc->root->d_sb);
@@ -436,9 +352,7 @@ static const struct super_operations romfs_super_ops = {
 	.statfs		= romfs_statfs,
 };
 
-/*
- * checksum check on part of a romfs filesystem
- */
+ 
 static __u32 romfs_checksum(const void *data, int size)
 {
 	const __be32 *ptr = data;
@@ -453,9 +367,7 @@ static __u32 romfs_checksum(const void *data, int size)
 	return sum;
 }
 
-/*
- * fill in the superblock
- */
+ 
 static int romfs_fill_super(struct super_block *sb, struct fs_context *fc)
 {
 	struct romfs_super_block *rsb;
@@ -482,11 +394,11 @@ static int romfs_fill_super(struct super_block *sb, struct fs_context *fc)
 	sb->s_op = &romfs_super_ops;
 
 #ifdef CONFIG_ROMFS_ON_MTD
-	/* Use same dev ID from the underlying mtdblock device */
+	 
 	if (sb->s_mtd)
 		sb->s_dev = MKDEV(MTD_BLOCK_MAJOR, sb->s_mtd->index);
 #endif
-	/* read the image superblock and check it */
+	 
 	rsb = kmalloc(512, GFP_KERNEL);
 	if (!rsb)
 		return -ENOMEM;
@@ -526,7 +438,7 @@ static int romfs_fill_super(struct super_block *sb, struct fs_context *fc)
 	kfree(rsb);
 	rsb = NULL;
 
-	/* find the root directory */
+	 
 	pos = (ROMFH_SIZE + len + 1 + ROMFH_PAD) & ROMFH_MASK;
 
 	root = romfs_iget(sb, pos);
@@ -546,9 +458,7 @@ error_rsb:
 	return ret;
 }
 
-/*
- * get a superblock for mounting
- */
+ 
 static int romfs_get_tree(struct fs_context *fc)
 {
 	int ret = -EINVAL;
@@ -568,18 +478,14 @@ static const struct fs_context_operations romfs_context_ops = {
 	.reconfigure	= romfs_reconfigure,
 };
 
-/*
- * Set up the filesystem mount context.
- */
+ 
 static int romfs_init_fs_context(struct fs_context *fc)
 {
 	fc->ops = &romfs_context_ops;
 	return 0;
 }
 
-/*
- * destroy a romfs superblock in the appropriate manner
- */
+ 
 static void romfs_kill_sb(struct super_block *sb)
 {
 	generic_shutdown_super(sb);
@@ -607,9 +513,7 @@ static struct file_system_type romfs_fs_type = {
 };
 MODULE_ALIAS_FS("romfs");
 
-/*
- * inode storage initialiser
- */
+ 
 static void romfs_i_init_once(void *_inode)
 {
 	struct romfs_inode_info *inode = _inode;
@@ -617,9 +521,7 @@ static void romfs_i_init_once(void *_inode)
 	inode_init_once(&inode->vfs_inode);
 }
 
-/*
- * romfs module initialisation
- */
+ 
 static int __init init_romfs_fs(void)
 {
 	int ret;
@@ -648,16 +550,11 @@ error_register:
 	return ret;
 }
 
-/*
- * romfs module removal
- */
+ 
 static void __exit exit_romfs_fs(void)
 {
 	unregister_filesystem(&romfs_fs_type);
-	/*
-	 * Make sure all delayed rcu free inodes are flushed before we
-	 * destroy cache.
-	 */
+	 
 	rcu_barrier();
 	kmem_cache_destroy(romfs_inode_cachep);
 }
@@ -667,4 +564,4 @@ module_exit(exit_romfs_fs);
 
 MODULE_DESCRIPTION("Direct-MTD Capable RomFS");
 MODULE_AUTHOR("Red Hat, Inc.");
-MODULE_LICENSE("GPL"); /* Actually dual-licensed, but it doesn't matter for */
+MODULE_LICENSE("GPL");  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include "dsi.h"
 
@@ -88,17 +86,17 @@ static struct msm_dsi *dsi_init(struct platform_device *pdev)
 	msm_dsi->pdev = pdev;
 	platform_set_drvdata(pdev, msm_dsi);
 
-	/* Init dsi host */
+	 
 	ret = msm_dsi_host_init(msm_dsi);
 	if (ret)
 		goto destroy_dsi;
 
-	/* GET dsi PHY */
+	 
 	ret = dsi_get_phy(msm_dsi);
 	if (ret)
 		goto destroy_dsi;
 
-	/* Register to dsi manager */
+	 
 	ret = msm_dsi_manager_register(msm_dsi);
 	if (ret)
 		goto destroy_dsi;
@@ -152,7 +150,7 @@ static int dsi_dev_probe(struct platform_device *pdev)
 	DBG("");
 	msm_dsi = dsi_init(pdev);
 	if (IS_ERR(msm_dsi)) {
-		/* Don't fail the bind if the dsi port is not connected */
+		 
 		if (PTR_ERR(msm_dsi) == -ENODEV)
 			return 0;
 		else
@@ -175,7 +173,7 @@ static int dsi_dev_remove(struct platform_device *pdev)
 static const struct of_device_id dt_match[] = {
 	{ .compatible = "qcom,mdss-dsi-ctrl" },
 
-	/* Deprecated, don't use */
+	 
 	{ .compatible = "qcom,dsi-ctrl-6g-qcm2290" },
 	{}
 };
@@ -231,10 +229,7 @@ int msm_dsi_modeset_init(struct msm_dsi *msm_dsi, struct drm_device *dev,
 
 	if (msm_dsi_is_bonded_dsi(msm_dsi) &&
 	    !msm_dsi_is_master_dsi(msm_dsi)) {
-		/*
-		 * Do not return an eror here,
-		 * Just skip creating encoder/connector for the slave-DSI.
-		 */
+		 
 		return 0;
 	}
 
@@ -259,7 +254,7 @@ int msm_dsi_modeset_init(struct msm_dsi *msm_dsi, struct drm_device *dev,
 
 	return 0;
 fail:
-	/* bridge/connector are normally destroyed by drm: */
+	 
 	if (msm_dsi->bridge) {
 		msm_dsi_manager_bridge_destroy(msm_dsi->bridge);
 		msm_dsi->bridge = NULL;

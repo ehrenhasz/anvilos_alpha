@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2008-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/dma-mapping.h>
 #include "ath9k.h"
@@ -26,14 +12,7 @@ static inline bool ath9k_check_auto_sleep(struct ath_softc *sc)
 	       (sc->sc_ah->caps.hw_caps & ATH9K_HW_CAP_AUTOSLEEP);
 }
 
-/*
- * Setup and link descriptors.
- *
- * 11N: we can no longer afford to self link the last descriptor.
- * MAC acknowledges BA status as long as it copies frames to host
- * buffer (or rx fifo). This can incorrectly acknowledge packets
- * to a sender if last desc is self-linked.
- */
+ 
 static void ath_rx_buf_link(struct ath_softc *sc, struct ath_rxbuf *bf,
 			    bool flush)
 {
@@ -43,19 +22,15 @@ static void ath_rx_buf_link(struct ath_softc *sc, struct ath_rxbuf *bf,
 	struct sk_buff *skb;
 
 	ds = bf->bf_desc;
-	ds->ds_link = 0; /* link to null */
+	ds->ds_link = 0;  
 	ds->ds_data = bf->bf_buf_addr;
 
-	/* virtual addr of the beginning of the buffer. */
+	 
 	skb = bf->bf_mpdu;
 	BUG_ON(skb == NULL);
 	ds->ds_vdata = skb->data;
 
-	/*
-	 * setup rx descriptors. The rx_bufsize here tells the hardware
-	 * how much data it can DMA to us and that we are prepared
-	 * to process
-	 */
+	 
 	ath9k_hw_setuprxdesc(ah, ds,
 			     common->rx_bufsize,
 			     0);
@@ -79,7 +54,7 @@ static void ath_rx_buf_relink(struct ath_softc *sc, struct ath_rxbuf *bf,
 
 static void ath_setdefantenna(struct ath_softc *sc, u32 antenna)
 {
-	/* XXX block beacon interrupts */
+	 
 	ath9k_hw_setantenna(sc->sc_ah, antenna);
 	sc->rx.defant = antenna;
 	sc->rx.rxotherant = 0;
@@ -92,17 +67,17 @@ static void ath_opmode_init(struct ath_softc *sc)
 
 	u32 rfilt, mfilt[2];
 
-	/* configure rx filter */
+	 
 	rfilt = ath_calcrxfilter(sc);
 	ath9k_hw_setrxfilter(ah, rfilt);
 
-	/* configure bssid mask */
+	 
 	ath_hw_setbssidmask(common);
 
-	/* configure operational mode */
+	 
 	ath9k_hw_setopmode(ah);
 
-	/* calculate and install multicast filter */
+	 
 	mfilt[0] = mfilt[1] = ~0;
 	ath9k_hw_setmcastfilter(ah, mfilt[0], mfilt[1]);
 }
@@ -286,7 +261,7 @@ int ath_rx_init(struct ath_softc *sc, int nbufs)
 	ath_dbg(common, CONFIG, "cachelsz %u rxbufsize %u\n",
 		common->cachelsz, common->rx_bufsize);
 
-	/* Initialize rx descriptors */
+	 
 
 	error = ath_descdma_setup(sc, &sc->rx.rxdma, &sc->rx.rxbuf,
 				  "rx", nbufs, 1, 0);
@@ -353,24 +328,7 @@ void ath_rx_cleanup(struct ath_softc *sc)
 	}
 }
 
-/*
- * Calculate the receive filter according to the
- * operating mode and state:
- *
- * o always accept unicast, broadcast, and multicast traffic
- * o maintain current state of phy error reception (the hal
- *   may enable phy error frames for noise immunity work)
- * o probe request frames are accepted only when operating in
- *   hostap, adhoc, or monitor modes
- * o enable promiscuous mode according to the interface state
- * o accept beacons:
- *   - when operating in adhoc mode so the 802.11 layer creates
- *     node table entries for peers,
- *   - when operating in station mode for collecting rssi data when
- *     the station is otherwise quiet, or
- *   - when operating as a repeater so we see repeater-sta beacons
- *   - when scanning
- */
+ 
 
 u32 ath_calcrxfilter(struct ath_softc *sc)
 {
@@ -383,7 +341,7 @@ u32 ath_calcrxfilter(struct ath_softc *sc)
 	rfilt = ATH9K_RX_FILTER_UCAST | ATH9K_RX_FILTER_BCAST
 		| ATH9K_RX_FILTER_MCAST;
 
-	/* if operating on a DFS channel, enable radar pulse detection */
+	 
 	if (sc->hw->conf.radar_enabled)
 		rfilt |= ATH9K_RX_FILTER_PHYRADAR | ATH9K_RX_FILTER_PHYERR;
 
@@ -415,7 +373,7 @@ u32 ath_calcrxfilter(struct ath_softc *sc)
 
 	if (sc->cur_chan->nvifs > 1 ||
 	    (sc->cur_chan->rxfilter & (FIF_OTHER_BSS | FIF_MCAST_ACTION))) {
-		/* This is needed for older chips */
+		 
 		if (sc->sc_ah->hw_version.macVersion <= AR_SREV_VERSION_9160)
 			rfilt |= ATH9K_RX_FILTER_PROM;
 		rfilt |= ATH9K_RX_FILTER_MCAST_BCAST_ALL;
@@ -457,7 +415,7 @@ void ath_startrecv(struct ath_softc *sc)
 		ath_rx_buf_link(sc, bf, false);
 	}
 
-	/* We could have deleted elements so the list may be empty now */
+	 
 	if (list_empty(&sc->rx.rxbuf))
 		goto start_recv;
 
@@ -504,7 +462,7 @@ bool ath_stoprecv(struct ath_softc *sc)
 
 static bool ath_beacon_dtim_pending_cab(struct sk_buff *skb)
 {
-	/* Check whether the Beacon frame has DTIM indicating buffered bc/mc */
+	 
 	struct ieee80211_mgmt *mgmt;
 	u8 *pos, *end, id, elen;
 	struct ieee80211_tim_ie *tim;
@@ -564,13 +522,7 @@ static void ath_rx_ps_beacon(struct ath_softc *sc, struct sk_buff *skb)
 	}
 
 	if (ath_beacon_dtim_pending_cab(skb)) {
-		/*
-		 * Remain awake waiting for buffered broadcast/multicast
-		 * frames. If the last broadcast/multicast frame is not
-		 * received properly, the next beacon frame will work as
-		 * a backup trigger for returning into NETWORK SLEEP state,
-		 * so we are waiting for it as well.
-		 */
+		 
 		ath_dbg(common, PS,
 			"Received DTIM beacon indicating buffered broadcast/multicast frame(s)\n");
 		sc->ps_flags |= PS_WAIT_FOR_CAB | PS_WAIT_FOR_BEACON;
@@ -578,11 +530,7 @@ static void ath_rx_ps_beacon(struct ath_softc *sc, struct sk_buff *skb)
 	}
 
 	if (sc->ps_flags & PS_WAIT_FOR_CAB) {
-		/*
-		 * This can happen if a broadcast frame is dropped or the AP
-		 * fails to send a frame indicating that all CAB frames have
-		 * been delivered.
-		 */
+		 
 		sc->ps_flags &= ~PS_WAIT_FOR_CAB;
 		ath_dbg(common, PS, "PS wait for CAB frames timed out\n");
 	}
@@ -595,7 +543,7 @@ static void ath_rx_ps(struct ath_softc *sc, struct sk_buff *skb, bool mybeacon)
 
 	hdr = (struct ieee80211_hdr *)skb->data;
 
-	/* Process Beacon and CAB receive in PS state */
+	 
 	if (((sc->ps_flags & PS_WAIT_FOR_BEACON) || ath9k_check_auto_sleep(sc))
 	    && mybeacon) {
 		ath_rx_ps_beacon(sc, skb);
@@ -604,10 +552,7 @@ static void ath_rx_ps(struct ath_softc *sc, struct sk_buff *skb, bool mybeacon)
 		    ieee80211_is_action(hdr->frame_control)) &&
 		   is_multicast_ether_addr(hdr->addr1) &&
 		   !ieee80211_has_moredata(hdr->frame_control)) {
-		/*
-		 * No more broadcast/multicast frames to be received at this
-		 * point.
-		 */
+		 
 		sc->ps_flags &= ~(PS_WAIT_FOR_CAB | PS_WAIT_FOR_BEACON);
 		ath_dbg(common, PS,
 			"All PS CAB frames received, back to sleep\n");
@@ -648,7 +593,7 @@ static bool ath_edma_get_buffers(struct ath_softc *sc,
 
 	ret = ath9k_hw_process_rxdesc_edma(ah, rs, skb->data);
 	if (ret == -EINPROGRESS) {
-		/*let device gain the buffer again*/
+		 
 		dma_sync_single_for_device(sc->dev, bf->bf_buf_addr,
 				common->rx_bufsize, DMA_FROM_DEVICE);
 		return false;
@@ -656,7 +601,7 @@ static bool ath_edma_get_buffers(struct ath_softc *sc,
 
 	__skb_unlink(skb, &rx_edma->rx_fifo);
 	if (ret == -EINVAL) {
-		/* corrupt descriptor, skip this one and the following one */
+		 
 		list_add_tail(&bf->list, &sc->rx.rxbuf);
 		ath_rx_edma_buf_link(sc, qtype);
 
@@ -712,17 +657,7 @@ static struct ath_rxbuf *ath_get_next_rx_buf(struct ath_softc *sc,
 
 	ds = bf->bf_desc;
 
-	/*
-	 * Must provide the virtual address of the current
-	 * descriptor, the physical address, and the virtual
-	 * address of the next descriptor in the h/w chain.
-	 * This allows the HAL to look ahead to see if the
-	 * hardware is done with a descriptor by checking the
-	 * done bit in the following descriptor and the address
-	 * of the current descriptor the DMA engine is working
-	 * on.  All this is necessary because of our use of
-	 * a self-linked list to avoid rx overruns.
-	 */
+	 
 	ret = ath9k_hw_rxprocdesc(ah, ds, rs);
 	if (ret == -EINPROGRESS) {
 		struct ath_rx_status trs;
@@ -737,32 +672,17 @@ static struct ath_rxbuf *ath_get_next_rx_buf(struct ath_softc *sc,
 
 		tbf = list_entry(bf->list.next, struct ath_rxbuf, list);
 
-		/*
-		 * On some hardware the descriptor status words could
-		 * get corrupted, including the done bit. Because of
-		 * this, check if the next descriptor's done bit is
-		 * set or not.
-		 *
-		 * If the next descriptor's done bit is set, the current
-		 * descriptor has been corrupted. Force s/w to discard
-		 * this descriptor and continue...
-		 */
+		 
 
 		tds = tbf->bf_desc;
 		ret = ath9k_hw_rxprocdesc(ah, tds, &trs);
 		if (ret == -EINPROGRESS)
 			return NULL;
 
-		/*
-		 * Re-check previous descriptor, in case it has been filled
-		 * in the mean time.
-		 */
+		 
 		ret = ath9k_hw_rxprocdesc(ah, ds, rs);
 		if (ret == -EINPROGRESS) {
-			/*
-			 * mark descriptor as zero-length and set the 'more'
-			 * flag to ensure that both buffers get discarded
-			 */
+			 
 			rs->rs_datalen = 0;
 			rs->rs_more = true;
 		}
@@ -772,11 +692,7 @@ static struct ath_rxbuf *ath_get_next_rx_buf(struct ath_softc *sc,
 	if (!bf->bf_mpdu)
 		return bf;
 
-	/*
-	 * Synchronize the DMA transfer with CPU before
-	 * 1. accessing the frame
-	 * 2. requeueing the same buffer to h/w
-	 */
+	 
 	dma_sync_single_for_cpu(sc->dev, bf->bf_buf_addr,
 			common->rx_bufsize,
 			DMA_FROM_DEVICE);
@@ -800,11 +716,7 @@ static void ath9k_process_tsf(struct ath_rx_status *rs,
 		rxs->mactime += 0x100000000ULL;
 }
 
-/*
- * For Decrypt or Demic errors, we only mark packet status here and always push
- * up the frame up to let mac80211 handle the actual error case, be it no
- * decryption key or real decryption error. This let us keep statistics there.
- */
+ 
 static int ath9k_rx_skb_preprocess(struct ath_softc *sc,
 				   struct sk_buff *skb,
 				   struct ath_rx_status *rx_stats,
@@ -818,19 +730,13 @@ static int ath9k_rx_skb_preprocess(struct ath_softc *sc,
 	bool discard_current = sc->rx.discard_next;
 	bool is_phyerr;
 
-	/*
-	 * Discard corrupt descriptors which are marked in
-	 * ath_get_next_rx_buf().
-	 */
+	 
 	if (discard_current)
 		goto corrupt;
 
 	sc->rx.discard_next = false;
 
-	/*
-	 * Discard zero-length packets and packets smaller than an ACK
-	 * which are not PHY_ERROR (short radar pulses have a length of 3)
-	 */
+	 
 	is_phyerr = rx_stats->rs_status & ATH9K_RXERR_PHY;
 	if (!rx_stats->rs_datalen ||
 	    (rx_stats->rs_datalen < 10 && !is_phyerr)) {
@@ -838,27 +744,17 @@ static int ath9k_rx_skb_preprocess(struct ath_softc *sc,
 		goto corrupt;
 	}
 
-	/*
-	 * rs_status follows rs_datalen so if rs_datalen is too large
-	 * we can take a hint that hardware corrupted it, so ignore
-	 * those frames.
-	 */
+	 
 	if (rx_stats->rs_datalen > (common->rx_bufsize - ah->caps.rx_status_len)) {
 		RX_STAT_INC(sc, rx_len_err);
 		goto corrupt;
 	}
 
-	/* Only use status info from the last fragment */
+	 
 	if (rx_stats->rs_more)
 		return 0;
 
-	/*
-	 * Return immediately if the RX descriptor has been marked
-	 * as corrupt based on the various error bits.
-	 *
-	 * This is different from the other corrupt descriptor
-	 * condition handled above.
-	 */
+	 
 	if (rx_stats->rs_status & ATH9K_RXERR_CORRUPT_DESC)
 		goto corrupt;
 
@@ -867,18 +763,9 @@ static int ath9k_rx_skb_preprocess(struct ath_softc *sc,
 	ath9k_process_tsf(rx_stats, rx_status, tsf);
 	ath_debug_stat_rx(sc, rx_stats);
 
-	/*
-	 * Process PHY errors and return so that the packet
-	 * can be dropped.
-	 */
+	 
 	if (rx_stats->rs_status & ATH9K_RXERR_PHY) {
-		/*
-		 * DFS and spectral are mutually exclusive
-		 *
-		 * Since some chips use PHYERR_RADAR as indication for both, we
-		 * need to double check which feature is enabled to prevent
-		 * feeding spectral or dfs-detector with wrong frames.
-		 */
+		 
 		if (hw->conf.radar_enabled) {
 			ath9k_dfs_process_phyerr(sc, hdr, rx_stats,
 						 rx_status->mactime);
@@ -890,10 +777,7 @@ static int ath9k_rx_skb_preprocess(struct ath_softc *sc,
 		return -EINVAL;
 	}
 
-	/*
-	 * everything but the rate is checked here, the rate check is done
-	 * separately to avoid doing two lookups for a rate for each frame.
-	 */
+	 
 	spin_lock_bh(&sc->chan_lock);
 	if (!ath9k_cmn_rx_accept(common, hdr, rx_status, rx_stats, decrypt_error,
 				 sc->cur_chan->rxfilter)) {
@@ -907,17 +791,12 @@ static int ath9k_rx_skb_preprocess(struct ath_softc *sc,
 		rx_stats->is_mybeacon = true;
 	}
 
-	/*
-	 * This shouldn't happen, but have a safety check anyway.
-	 */
+	 
 	if (WARN_ON(!ah->curchan))
 		return -EINVAL;
 
 	if (ath9k_cmn_process_rate(common, hw, rx_stats, rx_status)) {
-		/*
-		 * No valid hardware bitrate found -- we should not get here
-		 * because hardware has already validated this frame as OK.
-		 */
+		 
 		ath_dbg(common, ANY, "unsupported hw bitrate detected 0x%02x using 1 Mbit\n",
 			rx_stats->rs_rate);
 		RX_STAT_INC(sc, rx_rate_err);
@@ -950,16 +829,7 @@ corrupt:
 	return -EINVAL;
 }
 
-/*
- * Run the LNA combining algorithm only in these cases:
- *
- * Standalone WLAN cards with both LNA/Antenna diversity
- * enabled in the EEPROM.
- *
- * WLAN+BT cards which are in the supported card list
- * in ath_pci_id_table and the user has loaded the
- * driver with "bt_ant_diversity" set to true.
- */
+ 
 static void ath9k_antenna_check(struct ath_softc *sc,
 				struct ath_rx_status *rs)
 {
@@ -970,10 +840,7 @@ static void ath9k_antenna_check(struct ath_softc *sc,
 	if (!(ah->caps.hw_caps & ATH9K_HW_CAP_ANT_DIV_COMB))
 		return;
 
-	/*
-	 * Change the default rx antenna if rx diversity
-	 * chooses the other antenna 3 times in a row.
-	 */
+	 
 	if (sc->rx.defant != rs->rs_antenna) {
 		if (++sc->rx.rxotherant >= 3)
 			ath_setdefantenna(sc, rs->rs_antenna);
@@ -1040,7 +907,7 @@ static void ath_rx_count_airtime(struct ath_softc *sc,
 	is_sp = !!(rxs->enc_flags & RX_ENC_FLAG_SHORTPRE);
 
 	if (!!(rxs->encoding == RX_ENC_HT)) {
-		/* MCS rates */
+		 
 
 		airtime += ath_pkt_duration(sc, rxs->rate_idx, len,
 					is_40, is_sgi, is_sp);
@@ -1101,10 +968,7 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 		if (!skb)
 			continue;
 
-		/*
-		 * Take frame header from the first fragment and RX status from
-		 * the last one.
-		 */
+		 
 		if (sc->rx.frag)
 			hdr_skb = sc->rx.frag;
 		else
@@ -1118,20 +982,16 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 		if (retval)
 			goto requeue_drop_frag;
 
-		/* Ensure we always have an skb to requeue once we are done
-		 * processing the current buffer's skb */
+		 
 		requeue_skb = ath_rxbuf_alloc(common, common->rx_bufsize, GFP_ATOMIC);
 
-		/* If there is no memory we ignore the current RX'd frame,
-		 * tell hardware it can give us a new frame using the old
-		 * skb and put it at the tail of the sc->rx.rxbuf list for
-		 * processing. */
+		 
 		if (!requeue_skb) {
 			RX_STAT_INC(sc, rx_oom_err);
 			goto requeue_drop_frag;
 		}
 
-		/* We will now give hardware our shiny new allocated skb */
+		 
 		new_buf_addr = dma_map_single(sc->dev, requeue_skb->data,
 					      common->rx_bufsize, dma_type);
 		if (unlikely(dma_mapping_error(sc->dev, new_buf_addr))) {
@@ -1139,7 +999,7 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 			goto requeue_drop_frag;
 		}
 
-		/* Unmap the frame */
+		 
 		dma_unmap_single(sc->dev, bf->bf_buf_addr,
 				 common->rx_bufsize, dma_type);
 
@@ -1156,13 +1016,9 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 
 		if (rs.rs_more) {
 			RX_STAT_INC(sc, rx_frags);
-			/*
-			 * rs_more indicates chained descriptors which can be
-			 * used to link buffers together for a sort of
-			 * scatter-gather operation.
-			 */
+			 
 			if (sc->rx.frag) {
-				/* too many fragments - cannot handle frame */
+				 
 				dev_kfree_skb_any(sc->rx.frag);
 				dev_kfree_skb_any(skb);
 				RX_STAT_INC(sc, rx_too_many_frags_err);

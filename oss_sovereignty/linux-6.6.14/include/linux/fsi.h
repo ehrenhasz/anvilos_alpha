@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* FSI device & driver interfaces
- *
- * Copyright (C) IBM Corporation 2016
- */
+ 
+ 
 
 #ifndef LINUX_FSI_H
 #define LINUX_FSI_H
@@ -49,16 +46,12 @@ struct fsi_driver {
 extern int fsi_driver_register(struct fsi_driver *fsi_drv);
 extern void fsi_driver_unregister(struct fsi_driver *fsi_drv);
 
-/* module_fsi_driver() - Helper macro for drivers that don't do
- * anything special in module init/exit.  This eliminates a lot of
- * boilerplate.  Each module may only use this macro once, and
- * calling it replaces module_init() and module_exit()
- */
+ 
 #define module_fsi_driver(__fsi_driver) \
 		module_driver(__fsi_driver, fsi_driver_register, \
 				fsi_driver_unregister)
 
-/* direct slave API */
+ 
 extern int fsi_slave_claim_range(struct fsi_slave *slave,
 		uint32_t addr, uint32_t size);
 extern void fsi_slave_release_range(struct fsi_slave *slave,
@@ -82,4 +75,4 @@ extern int fsi_get_new_minor(struct fsi_device *fdev, enum fsi_dev_type type,
 			     dev_t *out_dev, int *out_index);
 extern void fsi_free_minor(dev_t dev);
 
-#endif /* LINUX_FSI_H */
+#endif  

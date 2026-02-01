@@ -1,9 +1,4 @@
-/* Copyright (c) 2016, Facebook
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- */
+ 
 #include "vmlinux.h"
 #include <linux/version.h>
 #include <bpf/bpf_helpers.h>
@@ -46,12 +41,12 @@ int foo(struct pt_regs *ctx) \
 	return 0; \
 }
 
-/* add kprobes to all possible *spin* functions */
+ 
 SEC("kprobe.multi/spin_*lock*")PROG(spin_lock)
 SEC("kprobe.multi/*_spin_on_owner")PROG(spin_on_owner)
 SEC("kprobe.multi/_raw_spin_*lock*")PROG(raw_spin_lock)
 
-/* and to inner bpf helpers */
+ 
 SEC("kprobe/htab_map_update_elem")PROG(p15)
 SEC("kprobe/__htab_percpu_map_update_elem")PROG(p16)
 SEC("kprobe/htab_map_alloc")PROG(p17)

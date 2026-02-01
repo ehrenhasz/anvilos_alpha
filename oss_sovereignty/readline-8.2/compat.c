@@ -1,23 +1,6 @@
-/* compat.c -- backwards compatibility functions. */
+ 
 
-/* Copyright (C) 2000-2021 Free Software Foundation, Inc.
-
-   This file is part of the GNU Readline Library (Readline), a library
-   for reading lines of text with interactive input and history editing.
-
-   Readline is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Readline is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Readline.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #define READLINE_LIBRARY
 
@@ -43,7 +26,7 @@ extern char **rl_completion_matches (const char *, rl_compentry_func_t *);
 extern char *rl_username_completion_function (const char *, int);
 extern char *rl_filename_completion_function (const char *, int);
 
-/* Provide backwards-compatible entry points for old function names. */
+ 
 
 void
 free_undo_list (void)

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Common codes for both the skx_edac driver and Intel 10nm server EDAC driver.
- * Originally split out from the skx_edac driver.
- *
- * Copyright (c) 2018, Intel Corporation.
- */
+ 
+ 
 
 #ifndef _SKX_COMM_EDAC_H
 #define _SKX_COMM_EDAC_H
@@ -14,24 +9,20 @@
 
 #define MSG_SIZE		1024
 
-/*
- * Debug macros
- */
+ 
 #define skx_printk(level, fmt, arg...)			\
 	edac_printk(level, "skx", fmt, ##arg)
 
 #define skx_mc_printk(mci, level, fmt, arg...)		\
 	edac_mc_chipset_printk(mci, level, "skx", fmt, ##arg)
 
-/*
- * Get a bit field at register value <v>, from bit <lo> to bit <hi>
- */
+ 
 #define GET_BITFIELD(v, lo, hi) \
 	(((v) & GENMASK_ULL((hi), (lo))) >> (lo))
 
-#define SKX_NUM_IMC		2	/* Memory controllers per socket */
-#define SKX_NUM_CHANNELS	3	/* Channels per memory controller */
-#define SKX_NUM_DIMMS		2	/* Max DIMMS per channel */
+#define SKX_NUM_IMC		2	 
+#define SKX_NUM_CHANNELS	3	 
+#define SKX_NUM_DIMMS		2	 
 
 #define I10NM_NUM_DDR_IMC	12
 #define I10NM_NUM_DDR_CHANNELS	2
@@ -54,56 +45,35 @@
 #define IS_NVDIMM_PRESENT(r, i)		GET_BITFIELD(r, i, i)
 
 #define MCI_MISC_ECC_MODE(m)	(((m) >> 59) & 15)
-#define MCI_MISC_ECC_DDRT	8	/* read from DDRT */
+#define MCI_MISC_ECC_DDRT	8	 
 
-/*
- * According to Intel Architecture spec vol 3B,
- * Table 15-10 "IA32_MCi_Status [15:0] Compound Error Code Encoding"
- * memory errors should fit one of these masks:
- *	000f 0000 1mmm cccc (binary)
- *	000f 0010 1mmm cccc (binary)	[RAM used as cache]
- * where:
- *	f = Correction Report Filtering Bit. If 1, subsequent errors
- *	    won't be shown
- *	mmm = error type
- *	cccc = channel
- */
+ 
 #define MCACOD_MEM_ERR_MASK	0xef80
-/*
- * Errors from either the memory of the 1-level memory system or the
- * 2nd level memory (the slow "far" memory) of the 2-level memory system.
- */
+ 
 #define MCACOD_MEM_CTL_ERR	0x80
-/*
- * Errors from the 1st level memory (the fast "near" memory as cache)
- * of the 2-level memory system.
- */
+ 
 #define MCACOD_EXT_MEM_ERR	0x280
 
-/*
- * Each cpu socket contains some pci devices that provide global
- * information, and also some that are local to each of the two
- * memory controllers on the die.
- */
+ 
 struct skx_dev {
 	struct list_head list;
 	u8 bus[4];
 	int seg;
 	struct pci_dev *sad_all;
 	struct pci_dev *util_all;
-	struct pci_dev *uracu; /* for i10nm CPU */
-	struct pci_dev *pcu_cr3; /* for HBM memory detection */
+	struct pci_dev *uracu;  
+	struct pci_dev *pcu_cr3;  
 	u32 mcroute;
 	struct skx_imc {
 		struct mem_ctl_info *mci;
-		struct pci_dev *mdev; /* for i10nm CPU */
-		void __iomem *mbase;  /* for i10nm CPU */
-		int chan_mmio_sz;     /* for i10nm CPU */
-		int num_channels; /* channels per memory controller */
-		int num_dimms; /* dimms per channel */
+		struct pci_dev *mdev;  
+		void __iomem *mbase;   
+		int chan_mmio_sz;      
+		int num_channels;  
+		int num_dimms;  
 		bool hbm_mc;
-		u8 mc;	/* system wide mc# */
-		u8 lmc;	/* socket relative mc# */
+		u8 mc;	 
+		u8 lmc;	 
 		u8 src_id, node_id;
 		struct skx_channel {
 			struct pci_dev	*cdev;
@@ -182,41 +152,41 @@ struct pci_bdf {
 
 struct res_config {
 	enum type type;
-	/* Configuration agent device ID */
+	 
 	unsigned int decs_did;
-	/* Default bus number configuration register offset */
+	 
 	int busno_cfg_offset;
-	/* DDR memory controllers per socket */
+	 
 	int ddr_imc_num;
-	/* DDR channels per DDR memory controller */
+	 
 	int ddr_chan_num;
-	/* DDR DIMMs per DDR memory channel */
+	 
 	int ddr_dimm_num;
-	/* Per DDR channel memory-mapped I/O size */
+	 
 	int ddr_chan_mmio_sz;
-	/* HBM memory controllers per socket */
+	 
 	int hbm_imc_num;
-	/* HBM channels per HBM memory controller */
+	 
 	int hbm_chan_num;
-	/* HBM DIMMs per HBM memory channel */
+	 
 	int hbm_dimm_num;
-	/* Per HBM channel memory-mapped I/O size */
+	 
 	int hbm_chan_mmio_sz;
 	bool support_ddr5;
-	/* SAD device BDF */
+	 
 	struct pci_bdf sad_all_bdf;
-	/* PCU device BDF */
+	 
 	struct pci_bdf pcu_cr3_bdf;
-	/* UTIL device BDF */
+	 
 	struct pci_bdf util_all_bdf;
-	/* URACU device BDF */
+	 
 	struct pci_bdf uracu_bdf;
-	/* DDR mdev device BDF */
+	 
 	struct pci_bdf ddr_mdev_bdf;
-	/* HBM mdev device BDF */
+	 
 	struct pci_bdf hbm_mdev_bdf;
 	int sad_all_offset;
-	/* Offsets of retry_rd_err_log registers */
+	 
 	u32 *offsets_scrub;
 	u32 *offsets_scrub_hbm0;
 	u32 *offsets_scrub_hbm1;
@@ -260,4 +230,4 @@ int skx_mce_check_error(struct notifier_block *nb, unsigned long val,
 
 void skx_remove(void);
 
-#endif /* _SKX_COMM_EDAC_H */
+#endif  

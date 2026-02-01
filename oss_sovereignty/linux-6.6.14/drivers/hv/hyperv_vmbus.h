@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *
- * Copyright (c) 2011, Microsoft Corporation.
- *
- * Authors:
- *   Haiyang Zhang <haiyangz@microsoft.com>
- *   Hank Janssen  <hjanssen@microsoft.com>
- *   K. Y. Srinivasan <kys@microsoft.com>
- */
+ 
+ 
 
 #ifndef _HYPERV_VMBUS_H
 #define _HYPERV_VMBUS_H
@@ -22,18 +14,14 @@
 
 #include "hv_trace.h"
 
-/*
- * Timeout for services such as KVP and fcopy.
- */
+ 
 #define HV_UTIL_TIMEOUT 30
 
-/*
- * Timeout for guest-host handshake for services.
- */
+ 
 #define HV_UTIL_NEGO_TIMEOUT 55
 
 
-/* Definitions for the monitored notification facility */
+ 
 union hv_monitor_trigger_group {
 	u64 as_uint64;
 	struct {
@@ -57,25 +45,25 @@ union hv_monitor_trigger_state {
 	};
 };
 
-/* struct hv_monitor_page Layout */
-/* ------------------------------------------------------ */
-/* | 0   | TriggerState (4 bytes) | Rsvd1 (4 bytes)     | */
-/* | 8   | TriggerGroup[0]                              | */
-/* | 10  | TriggerGroup[1]                              | */
-/* | 18  | TriggerGroup[2]                              | */
-/* | 20  | TriggerGroup[3]                              | */
-/* | 28  | Rsvd2[0]                                     | */
-/* | 30  | Rsvd2[1]                                     | */
-/* | 38  | Rsvd2[2]                                     | */
-/* | 40  | NextCheckTime[0][0]    | NextCheckTime[0][1] | */
-/* | ...                                                | */
-/* | 240 | Latency[0][0..3]                             | */
-/* | 340 | Rsvz3[0]                                     | */
-/* | 440 | Parameter[0][0]                              | */
-/* | 448 | Parameter[0][1]                              | */
-/* | ...                                                | */
-/* | 840 | Rsvd4[0]                                     | */
-/* ------------------------------------------------------ */
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 struct hv_monitor_page {
 	union hv_monitor_trigger_state trigger_state;
 	u32 rsvdz1;
@@ -95,7 +83,7 @@ struct hv_monitor_page {
 
 #define HV_HYPERCALL_PARAM_ALIGN	sizeof(u64)
 
-/* Definition of the hv_post_message hypercall input structure. */
+ 
 struct hv_input_post_message {
 	union hv_connection_id connectionid;
 	u32 reserved;
@@ -116,50 +104,31 @@ enum {
 	VMBUS_MESSAGE_SINT		= 2,
 };
 
-/*
- * Per cpu state for channel handling
- */
+ 
 struct hv_per_cpu_context {
 	void *synic_message_page;
 	void *synic_event_page;
 
-	/*
-	 * The page is only used in hv_post_message() for a TDX VM (with the
-	 * paravisor) to post a messages to Hyper-V: when such a VM calls
-	 * HVCALL_POST_MESSAGE, it can't use the hyperv_pcpu_input_arg (which
-	 * is encrypted in such a VM) as the hypercall input page, because
-	 * the input page for HVCALL_POST_MESSAGE must be decrypted in such a
-	 * VM, so post_msg_page (which is decrypted in hv_synic_alloc()) is
-	 * introduced for this purpose. See hyperv_init() for more comments.
-	 */
+	 
 	void *post_msg_page;
 
-	/*
-	 * Starting with win8, we can take channel interrupts on any CPU;
-	 * we will manage the tasklet that handles events messages on a per CPU
-	 * basis.
-	 */
+	 
 	struct tasklet_struct msg_dpc;
 };
 
 struct hv_context {
-	/* We only support running on top of Hyper-V
-	 * So at this point this really can only contain the Hyper-V ID
-	 */
+	 
 	u64 guestid;
 
 	struct hv_per_cpu_context __percpu *cpu_context;
 
-	/*
-	 * To manage allocations in a NUMA node.
-	 * Array indexed by numa node ID.
-	 */
+	 
 	struct cpumask *hv_numa_map;
 };
 
 extern struct hv_context hv_context;
 
-/* Hv Interface */
+ 
 
 extern int hv_init(void);
 
@@ -177,7 +146,7 @@ extern int hv_synic_init(unsigned int cpu);
 extern void hv_synic_disable_regs(unsigned int cpu);
 extern int hv_synic_cleanup(unsigned int cpu);
 
-/* Interface */
+ 
 
 void hv_ringbuffer_pre_init(struct vmbus_channel *channel);
 
@@ -194,14 +163,10 @@ int hv_ringbuffer_read(struct vmbus_channel *channel,
 		       void *buffer, u32 buflen, u32 *buffer_actual_len,
 		       u64 *requestid, bool raw);
 
-/*
- * The Maximum number of channels (16384) is determined by the size of the
- * interrupt page, which is HV_HYP_PAGE_SIZE. 1/2 of HV_HYP_PAGE_SIZE is to
- * send endpoint interrupts, and the other is to receive endpoint interrupts.
- */
+ 
 #define MAX_NUM_CHANNELS	((HV_HYP_PAGE_SIZE >> 1) << 3)
 
-/* The value here must be in multiple of 32 */
+ 
 #define MAX_NUM_CHANNELS_SUPPORTED	256
 
 #define MAX_CHANNEL_RELIDS					\
@@ -216,10 +181,7 @@ enum vmbus_connect_state {
 
 #define MAX_SIZE_CHANNEL_MESSAGE	HV_MESSAGE_PAYLOAD_BYTE_COUNT
 
-/*
- * The CPU that Hyper-V will interrupt for VMBUS messages, such as
- * CHANNELMSG_OFFERCHANNEL and CHANNELMSG_RESCIND_CHANNELOFFER.
- */
+ 
 #define VMBUS_CONNECT_CPU	0
 
 struct vmbus_connection {
@@ -232,81 +194,49 @@ struct vmbus_connection {
 	atomic_t next_gpadl_handle;
 
 	struct completion  unload_event;
-	/*
-	 * Represents channel interrupts. Each bit position represents a
-	 * channel.  When a channel sends an interrupt via VMBUS, it finds its
-	 * bit in the sendInterruptPage, set it and calls Hv to generate a port
-	 * event. The other end receives the port event and parse the
-	 * recvInterruptPage to see which bit is set
-	 */
+	 
 	void *int_page;
 	void *send_int_page;
 	void *recv_int_page;
 
-	/*
-	 * 2 pages - 1st page for parent->child notification and 2nd
-	 * is child->parent notification
-	 */
+	 
 	struct hv_monitor_page *monitor_pages[2];
 	struct list_head chn_msg_list;
 	spinlock_t channelmsg_lock;
 
-	/* List of channels */
+	 
 	struct list_head chn_list;
 	struct mutex channel_mutex;
 
-	/* Array of channels */
+	 
 	struct vmbus_channel **channels;
 
-	/*
-	 * An offer message is handled first on the work_queue, and then
-	 * is further handled on handle_primary_chan_wq or
-	 * handle_sub_chan_wq.
-	 */
+	 
 	struct workqueue_struct *work_queue;
 	struct workqueue_struct *handle_primary_chan_wq;
 	struct workqueue_struct *handle_sub_chan_wq;
 	struct workqueue_struct *rescind_work_queue;
 
-	/*
-	 * On suspension of the vmbus, the accumulated offer messages
-	 * must be dropped.
-	 */
+	 
 	bool ignore_any_offer_msg;
 
-	/*
-	 * The number of sub-channels and hv_sock channels that should be
-	 * cleaned up upon suspend: sub-channels will be re-created upon
-	 * resume, and hv_sock channels should not survive suspend.
-	 */
+	 
 	atomic_t nr_chan_close_on_suspend;
-	/*
-	 * vmbus_bus_suspend() waits for "nr_chan_close_on_suspend" to
-	 * drop to zero.
-	 */
+	 
 	struct completion ready_for_suspend_event;
 
-	/*
-	 * The number of primary channels that should be "fixed up"
-	 * upon resume: these channels are re-offered upon resume, and some
-	 * fields of the channel offers (i.e. child_relid and connection_id)
-	 * can change, so the old offermsg must be fixed up, before the resume
-	 * callbacks of the VSC drivers start to further touch the channels.
-	 */
+	 
 	atomic_t nr_chan_fixup_on_resume;
-	/*
-	 * vmbus_bus_resume() waits for "nr_chan_fixup_on_resume" to
-	 * drop to zero.
-	 */
+	 
 	struct completion ready_for_resume_event;
 };
 
 
 struct vmbus_msginfo {
-	/* Bookkeeping stuff */
+	 
 	struct list_head msglist_entry;
 
-	/* The message itself */
+	 
 	unsigned char msg[];
 };
 
@@ -321,10 +251,10 @@ static inline void vmbus_send_interrupt(u32 relid)
 }
 
 enum vmbus_message_handler_type {
-	/* The related handler can sleep. */
+	 
 	VMHT_BLOCKING = 0,
 
-	/* The related handler must NOT sleep. */
+	 
 	VMHT_NON_BLOCKING = 1,
 };
 
@@ -339,7 +269,7 @@ extern const struct vmbus_channel_message_table_entry
 	channel_message_table[CHANNELMSG_COUNT];
 
 
-/* General vmbus interface */
+ 
 
 struct hv_device *vmbus_device_create(const guid_t *type,
 				      const guid_t *instance,
@@ -359,7 +289,7 @@ struct vmbus_channel *relid2channel(u32 relid);
 
 void vmbus_free_channels(void);
 
-/* Connection interface */
+ 
 
 int vmbus_connect(void);
 void vmbus_disconnect(void);
@@ -397,12 +327,12 @@ static inline void hv_poll_channel(struct vmbus_channel *channel,
 }
 
 enum hvutil_device_state {
-	HVUTIL_DEVICE_INIT = 0,  /* driver is loaded, waiting for userspace */
-	HVUTIL_READY,            /* userspace is registered */
-	HVUTIL_HOSTMSG_RECEIVED, /* message from the host was received */
-	HVUTIL_USERSPACE_REQ,    /* request to userspace was sent */
-	HVUTIL_USERSPACE_RECV,   /* reply from userspace was received */
-	HVUTIL_DEVICE_DYING,     /* driver unload is in progress */
+	HVUTIL_DEVICE_INIT = 0,   
+	HVUTIL_READY,             
+	HVUTIL_HOSTMSG_RECEIVED,  
+	HVUTIL_USERSPACE_REQ,     
+	HVUTIL_USERSPACE_RECV,    
+	HVUTIL_DEVICE_DYING,      
 };
 
 enum delay {
@@ -422,10 +352,7 @@ static inline bool hv_is_allocated_cpu(unsigned int cpu)
 	struct vmbus_channel *channel, *sc;
 
 	lockdep_assert_held(&vmbus_connection.channel_mutex);
-	/*
-	 * List additions/deletions as well as updates of the target CPUs are
-	 * protected by channel_mutex.
-	 */
+	 
 	list_for_each_entry(channel, &vmbus_connection.chn_list, listentry) {
 		if (!hv_is_perf_channel(channel))
 			continue;
@@ -466,7 +393,7 @@ void hv_debug_rm_all_dir(void);
 int hv_debug_init(void);
 void hv_debug_delay_test(struct vmbus_channel *channel, enum delay delay_type);
 
-#else /* CONFIG_HYPERV_TESTING */
+#else  
 
 static inline void hv_debug_rm_dev_dir(struct hv_device *dev) {};
 static inline void hv_debug_rm_all_dir(void) {};
@@ -482,6 +409,6 @@ static inline int hv_debug_add_dev_dir(struct hv_device *dev)
 	return -1;
 }
 
-#endif /* CONFIG_HYPERV_TESTING */
+#endif  
 
-#endif /* _HYPERV_VMBUS_H */
+#endif  

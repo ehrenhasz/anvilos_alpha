@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/em_ipt.c IPtables matches Ematch
- *
- * (c) 2018 Eyal Birger <eyal.birger@gmail.com>
- */
+
+ 
 
 #include <linux/gfp.h>
 #include <linux/module.h>

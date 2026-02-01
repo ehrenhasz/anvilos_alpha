@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Request reply cache. This is currently a global cache, but this may
- * change in the future and be a per-client cache.
- *
- * This code is heavily inspired by the 44BSD implementation, although
- * it does things a bit differently.
- *
- * Copyright (C) 1995, 1996 Olaf Kirch <okir@monad.swb.de>
- */
+
+ 
 
 #include <linux/sunrpc/svc_xprt.h>
 #include <linux/slab.h>
@@ -22,11 +14,7 @@
 #include "cache.h"
 #include "trace.h"
 
-/*
- * We use this value to determine the number of hash buckets from the max
- * cache size, the idea being that when the cache is at its maximum number
- * of entries, then this should be the average number of entries per bucket.
- */
+ 
 #define TARGET_BUCKET_SIZE	64
 
 struct nfsd_drc_bucket {
@@ -43,27 +31,7 @@ static unsigned long nfsd_reply_cache_count(struct shrinker *shrink,
 static unsigned long nfsd_reply_cache_scan(struct shrinker *shrink,
 					   struct shrink_control *sc);
 
-/*
- * Put a cap on the size of the DRC based on the amount of available
- * low memory in the machine.
- *
- *  64MB:    8192
- * 128MB:   11585
- * 256MB:   16384
- * 512MB:   23170
- *   1GB:   32768
- *   2GB:   46340
- *   4GB:   65536
- *   8GB:   92681
- *  16GB:  131072
- *
- * ...with a hard cap of 256k entries. In the worst case, each entry will be
- * ~1k, so the above numbers should give a rough max of the amount of memory
- * used in k.
- *
- * XXX: these limits are per-container, so memory used will increase
- * linearly with number of containers.  Maybe that's OK.
- */
+ 
 static unsigned int
 nfsd_cache_size_limit(void)
 {
@@ -74,10 +42,7 @@ nfsd_cache_size_limit(void)
 	return min_t(unsigned int, limit, 256*1024);
 }
 
-/*
- * Compute the number of hash buckets we need. Divide the max cachesize by
- * the "target" max bucket size, and round up to next power of two.
- */
+ 
 static unsigned int
 nfsd_hashsize(unsigned int limit)
 {
@@ -176,22 +141,13 @@ void nfsd_drc_slab_free(void)
 	kmem_cache_destroy(drc_slab);
 }
 
-/**
- * nfsd_net_reply_cache_init - per net namespace reply cache set-up
- * @nn: nfsd_net being initialized
- *
- * Returns zero on succes; otherwise a negative errno is returned.
- */
+ 
 int nfsd_net_reply_cache_init(struct nfsd_net *nn)
 {
 	return nfsd_percpu_counters_init(nn->counter, NFSD_NET_COUNTERS_NUM);
 }
 
-/**
- * nfsd_net_reply_cache_destroy - per net namespace reply cache tear-down
- * @nn: nfsd_net being freed
- *
- */
+ 
 void nfsd_net_reply_cache_destroy(struct nfsd_net *nn)
 {
 	nfsd_percpu_counters_destroy(nn->counter, NFSD_NET_COUNTERS_NUM);
@@ -256,10 +212,7 @@ void nfsd_reply_cache_shutdown(struct nfsd_net *nn)
 
 }
 
-/*
- * Move cache entry to end of LRU list, and queue the cleaner to run if it's
- * not already scheduled.
- */
+ 
 static void
 lru_put_end(struct nfsd_drc_bucket *b, struct nfsd_cacherep *rp)
 {
@@ -275,10 +228,7 @@ nfsd_cache_bucket_find(__be32 xid, struct nfsd_net *nn)
 	return &nn->drc_hashtbl[hash];
 }
 
-/*
- * Remove and return no more than @max expired entries in bucket @b.
- * If @max is zero, do not limit the number of removed entries.
- */
+ 
 static void
 nfsd_prune_bucket_locked(struct nfsd_net *nn, struct nfsd_drc_bucket *b,
 			 unsigned int max, struct list_head *dispose)
@@ -289,12 +239,9 @@ nfsd_prune_bucket_locked(struct nfsd_net *nn, struct nfsd_drc_bucket *b,
 
 	lockdep_assert_held(&b->cache_lock);
 
-	/* The bucket LRU is ordered oldest-first. */
+	 
 	list_for_each_entry_safe(rp, tmp, &b->lru_head, c_lru) {
-		/*
-		 * Don't free entries attached to calls that are still
-		 * in-progress, but do keep scanning the list.
-		 */
+		 
 		if (rp->c_state == RC_INPROG)
 			continue;
 
@@ -310,16 +257,7 @@ nfsd_prune_bucket_locked(struct nfsd_net *nn, struct nfsd_drc_bucket *b,
 	}
 }
 
-/**
- * nfsd_reply_cache_count - count_objects method for the DRC shrinker
- * @shrink: our registered shrinker context
- * @sc: garbage collection parameters
- *
- * Returns the total number of entries in the duplicate reply cache. To
- * keep things simple and quick, this is not the number of expired entries
- * in the cache (ie, the number that would be removed by a call to
- * nfsd_reply_cache_scan).
- */
+ 
 static unsigned long
 nfsd_reply_cache_count(struct shrinker *shrink, struct shrink_control *sc)
 {
@@ -329,17 +267,7 @@ nfsd_reply_cache_count(struct shrinker *shrink, struct shrink_control *sc)
 	return atomic_read(&nn->num_drc_entries);
 }
 
-/**
- * nfsd_reply_cache_scan - scan_objects method for the DRC shrinker
- * @shrink: our registered shrinker context
- * @sc: garbage collection parameters
- *
- * Free expired entries on each bucket's LRU list until we've released
- * nr_to_scan freed objects. Nothing will be released if the cache
- * has not exceeded it's max_drc_entries limit.
- *
- * Returns the number of entries released by this call.
- */
+ 
 static unsigned long
 nfsd_reply_cache_scan(struct shrinker *shrink, struct shrink_control *sc)
 {
@@ -368,23 +296,7 @@ nfsd_reply_cache_scan(struct shrinker *shrink, struct shrink_control *sc)
 	return freed;
 }
 
-/**
- * nfsd_cache_csum - Checksum incoming NFS Call arguments
- * @buf: buffer containing a whole RPC Call message
- * @start: starting byte of the NFS Call header
- * @remaining: size of the NFS Call header, in bytes
- *
- * Compute a weak checksum of the leading bytes of an NFS procedure
- * call header to help verify that a retransmitted Call matches an
- * entry in the duplicate reply cache.
- *
- * To avoid assumptions about how the RPC message is laid out in
- * @buf and what else it might contain (eg, a GSS MIC suffix), the
- * caller passes us the exact location and length of the NFS Call
- * header.
- *
- * Returns a 32-bit checksum value, as defined in RFC 793.
- */
+ 
 static __wsum nfsd_cache_csum(struct xdr_buf *buf, unsigned int start,
 			      unsigned int remaining)
 {
@@ -399,14 +311,14 @@ static __wsum nfsd_cache_csum(struct xdr_buf *buf, unsigned int start,
 	if (xdr_buf_subsegment(buf, &subbuf, start, remaining))
 		return csum;
 
-	/* rq_arg.head first */
+	 
 	if (subbuf.head[0].iov_len) {
 		len = min_t(unsigned int, subbuf.head[0].iov_len, remaining);
 		csum = csum_partial(subbuf.head[0].iov_base, len, csum);
 		remaining -= len;
 	}
 
-	/* Continue into page array */
+	 
 	idx = subbuf.page_base / PAGE_SIZE;
 	base = subbuf.page_base & ~PAGE_MASK;
 	while (remaining) {
@@ -433,11 +345,7 @@ nfsd_cache_key_cmp(const struct nfsd_cacherep *key,
 	return memcmp(&key->c_key, &rp->c_key, sizeof(key->c_key));
 }
 
-/*
- * Search the request hash for an entry that matches the given rqstp.
- * Must be called with cache_lock held. Returns the found entry or
- * inserts an empty key on failure.
- */
+ 
 static struct nfsd_cacherep *
 nfsd_cache_insert(struct nfsd_drc_bucket *b, struct nfsd_cacherep *key,
 			struct nfsd_net *nn)
@@ -466,12 +374,12 @@ nfsd_cache_insert(struct nfsd_drc_bucket *b, struct nfsd_cacherep *key,
 	rb_link_node(&key->c_node, parent, p);
 	rb_insert_color(&key->c_node, &b->rb_head);
 out:
-	/* tally hash chain length stats */
+	 
 	if (entries > nn->longest_chain) {
 		nn->longest_chain = entries;
 		nn->longest_chain_cachesize = atomic_read(&nn->num_drc_entries);
 	} else if (entries == nn->longest_chain) {
-		/* prefer to keep the smallest cachesize possible here */
+		 
 		nn->longest_chain_cachesize = min_t(unsigned int,
 				nn->longest_chain_cachesize,
 				atomic_read(&nn->num_drc_entries));
@@ -481,24 +389,7 @@ out:
 	return ret;
 }
 
-/**
- * nfsd_cache_lookup - Find an entry in the duplicate reply cache
- * @rqstp: Incoming Call to find
- * @start: starting byte in @rqstp->rq_arg of the NFS Call header
- * @len: size of the NFS Call header, in bytes
- * @cacherep: OUT: DRC entry for this request
- *
- * Try to find an entry matching the current call in the cache. When none
- * is found, we try to grab the oldest expired entry off the LRU list. If
- * a suitable one isn't there, then drop the cache_lock and allocate a
- * new one, then search again in case one got inserted while this thread
- * didn't hold the lock.
- *
- * Return values:
- *   %RC_DOIT: Process the request normally
- *   %RC_REPLY: Reply from cache
- *   %RC_DROPIT: Do not process the request further
- */
+ 
 int nfsd_cache_lookup(struct svc_rqst *rqstp, unsigned int start,
 		      unsigned int len, struct nfsd_cacherep **cacherep)
 {
@@ -518,10 +409,7 @@ int nfsd_cache_lookup(struct svc_rqst *rqstp, unsigned int start,
 
 	csum = nfsd_cache_csum(&rqstp->rq_arg, start, len);
 
-	/*
-	 * Since the common case is a cache miss followed by an insert,
-	 * preallocate an entry.
-	 */
+	 
 	nn = net_generic(SVC_NET(rqstp), nfsd_net_id);
 	rp = nfsd_cacherep_alloc(rqstp, csum, nn);
 	if (!rp)
@@ -546,23 +434,22 @@ int nfsd_cache_lookup(struct svc_rqst *rqstp, unsigned int start,
 	goto out;
 
 found_entry:
-	/* We found a matching entry which is either in progress or done. */
+	 
 	nfsd_reply_cache_free_locked(NULL, rp, nn);
 	nfsd_stats_rc_hits_inc();
 	rtn = RC_DROPIT;
 	rp = found;
 
-	/* Request being processed */
+	 
 	if (rp->c_state == RC_INPROG)
 		goto out_trace;
 
-	/* From the hall of fame of impractical attacks:
-	 * Is this a user who tries to snoop on the cache? */
+	 
 	rtn = RC_DOIT;
 	if (!test_bit(RQ_SECURE, &rqstp->rq_flags) && rp->c_secure)
 		goto out_trace;
 
-	/* Compose RPC reply header */
+	 
 	switch (rp->c_type) {
 	case RC_NOCACHE:
 		break;
@@ -572,7 +459,7 @@ found_entry:
 		break;
 	case RC_REPLBUFF:
 		if (!nfsd_cache_append(rqstp, &rp->c_replvec))
-			goto out_unlock; /* should not happen */
+			goto out_unlock;  
 		rtn = RC_REPLY;
 		break;
 	default:
@@ -587,27 +474,7 @@ out:
 	return rtn;
 }
 
-/**
- * nfsd_cache_update - Update an entry in the duplicate reply cache.
- * @rqstp: svc_rqst with a finished Reply
- * @rp: IN: DRC entry for this request
- * @cachetype: which cache to update
- * @statp: pointer to Reply's NFS status code, or NULL
- *
- * This is called from nfsd_dispatch when the procedure has been
- * executed and the complete reply is in rqstp->rq_res.
- *
- * We're copying around data here rather than swapping buffers because
- * the toplevel loop requires max-sized buffers, which would be a waste
- * of memory for a cache with a max reply size of 100 bytes (diropokres).
- *
- * If we should start to use different types of cache entries tailored
- * specifically for attrstat and fh's, we may save even more space.
- *
- * Also note that a cachetype of RC_NOCACHE can legally be passed when
- * nfsd failed to encode a reply that otherwise would have been cached.
- * In this case, nfsd_cache_update is called with statp == NULL.
- */
+ 
 void nfsd_cache_update(struct svc_rqst *rqstp, struct nfsd_cacherep *rp,
 		       int cachetype, __be32 *statp)
 {
@@ -625,7 +492,7 @@ void nfsd_cache_update(struct svc_rqst *rqstp, struct nfsd_cacherep *rp,
 	len = resv->iov_len - ((char*)statp - (char*)resv->iov_base);
 	len >>= 2;
 
-	/* Don't cache excessive amounts of data and XDR failures */
+	 
 	if (!statp || len > (256 >> 2)) {
 		nfsd_reply_cache_free(b, rp, nn);
 		return;
@@ -675,11 +542,7 @@ nfsd_cache_append(struct svc_rqst *rqstp, struct kvec *data)
 	return true;
 }
 
-/*
- * Note that fields may be added, removed or reordered in the future. Programs
- * scraping this file for info should test the labels to ensure they're
- * getting the correct field.
- */
+ 
 int nfsd_reply_cache_stats_show(struct seq_file *m, void *v)
 {
 	struct nfsd_net *nn = net_generic(file_inode(m->file)->i_sb->s_fs_info,

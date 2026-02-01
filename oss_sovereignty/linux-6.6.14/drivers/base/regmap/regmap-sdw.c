@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright(c) 2015-17 Intel Corporation.
+
+
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -13,7 +13,7 @@ static int regmap_sdw_write(void *context, const void *val_buf, size_t val_size)
 {
 	struct device *dev = context;
 	struct sdw_slave *slave = dev_to_sdw_dev(dev);
-	/* First word of buffer contains the destination address */
+	 
 	u32 addr = le32_to_cpu(*(const __le32 *)val_buf);
 	const u8 *val = val_buf;
 
@@ -52,14 +52,14 @@ static const struct regmap_bus regmap_sdw = {
 
 static int regmap_sdw_config_check(const struct regmap_config *config)
 {
-	/* Register addresses are 32 bits wide */
+	 
 	if (config->reg_bits != 32)
 		return -ENOTSUPP;
 
 	if (config->pad_bits != 0)
 		return -ENOTSUPP;
 
-	/* Only bulk writes are supported not multi-register writes */
+	 
 	if (config->can_multi_write)
 		return -ENOTSUPP;
 

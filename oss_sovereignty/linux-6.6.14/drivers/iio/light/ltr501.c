@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Support for Lite-On LTR501 and similar ambient light and proximity sensors.
- *
- * Copyright 2014 Peter Meerwald <pmeerw@pmeerw.net>
- *
- * 7-bit I2C slave address 0x23
- *
- * TODO: IR LED characteristics
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -26,25 +18,25 @@
 
 #define LTR501_DRV_NAME "ltr501"
 
-#define LTR501_ALS_CONTR 0x80 /* ALS operation mode, SW reset */
-#define LTR501_PS_CONTR 0x81 /* PS operation mode */
-#define LTR501_PS_MEAS_RATE 0x84 /* measurement rate*/
-#define LTR501_ALS_MEAS_RATE 0x85 /* ALS integ time, measurement rate*/
+#define LTR501_ALS_CONTR 0x80  
+#define LTR501_PS_CONTR 0x81  
+#define LTR501_PS_MEAS_RATE 0x84  
+#define LTR501_ALS_MEAS_RATE 0x85  
 #define LTR501_PART_ID 0x86
 #define LTR501_MANUFAC_ID 0x87
-#define LTR501_ALS_DATA1 0x88 /* 16-bit, little endian */
-#define LTR501_ALS_DATA1_UPPER 0x89 /* upper 8 bits of LTR501_ALS_DATA1 */
-#define LTR501_ALS_DATA0 0x8a /* 16-bit, little endian */
-#define LTR501_ALS_DATA0_UPPER 0x8b /* upper 8 bits of LTR501_ALS_DATA0 */
+#define LTR501_ALS_DATA1 0x88  
+#define LTR501_ALS_DATA1_UPPER 0x89  
+#define LTR501_ALS_DATA0 0x8a  
+#define LTR501_ALS_DATA0_UPPER 0x8b  
 #define LTR501_ALS_PS_STATUS 0x8c
-#define LTR501_PS_DATA 0x8d /* 16-bit, little endian */
-#define LTR501_PS_DATA_UPPER 0x8e /* upper 8 bits of LTR501_PS_DATA */
-#define LTR501_INTR 0x8f /* output mode, polarity, mode */
-#define LTR501_PS_THRESH_UP 0x90 /* 11 bit, ps upper threshold */
-#define LTR501_PS_THRESH_LOW 0x92 /* 11 bit, ps lower threshold */
-#define LTR501_ALS_THRESH_UP 0x97 /* 16 bit, ALS upper threshold */
-#define LTR501_ALS_THRESH_LOW 0x99 /* 16 bit, ALS lower threshold */
-#define LTR501_INTR_PRST 0x9e /* ps thresh, als thresh */
+#define LTR501_PS_DATA 0x8d  
+#define LTR501_PS_DATA_UPPER 0x8e  
+#define LTR501_INTR 0x8f  
+#define LTR501_PS_THRESH_UP 0x90  
+#define LTR501_PS_THRESH_LOW 0x92  
+#define LTR501_ALS_THRESH_UP 0x97  
+#define LTR501_ALS_THRESH_LOW 0x99  
+#define LTR501_INTR_PRST 0x9e  
 #define LTR501_MAX_REG 0x9f
 
 #define LTR501_ALS_CONTR_SW_RESET BIT(2)
@@ -88,8 +80,8 @@ static const struct reg_field reg_field_ps_prst =
 				REG_FIELD(LTR501_INTR_PRST, 4, 7);
 
 struct ltr501_samp_table {
-	int freq_val;  /* repetition frequency in micro HZ*/
-	int time_val; /* repetition rate in micro seconds */
+	int freq_val;   
+	int time_val;  
 };
 
 #define LTR501_RESERVED_GAIN -1
@@ -130,9 +122,9 @@ static const struct ltr501_gain ltr501_ps_gain_tbl[] = {
 };
 
 static const struct ltr501_gain ltr559_ps_gain_tbl[] = {
-	{0, 62500}, /* x16 gain */
-	{0, 31250}, /* x32 gain */
-	{0, 15625}, /* bits X1 are for x64 gain */
+	{0, 62500},  
+	{0, 31250},  
+	{0, 15625},  
 	{0, 15624},
 };
 
@@ -156,7 +148,7 @@ struct ltr501_data {
 	struct mutex lock_als, lock_ps;
 	const struct ltr501_chip_info *chip_info;
 	u8 als_contr, ps_contr;
-	int als_period, ps_period; /* period in micro seconds */
+	int als_period, ps_period;  
 	struct regmap *regmap;
 	struct regmap_field *reg_it;
 	struct regmap_field *reg_als_intr;
@@ -304,7 +296,7 @@ static int ltr501_ps_read_samp_period(const struct ltr501_data *data, int *val)
 	return IIO_VAL_INT;
 }
 
-/* IR and visible spectrum coeff's are given in data sheet */
+ 
 static unsigned long ltr501_calculate_lux(u16 vis_data, u16 ir_data)
 {
 	unsigned long ratio, lux;
@@ -312,7 +304,7 @@ static unsigned long ltr501_calculate_lux(u16 vis_data, u16 ir_data)
 	if (vis_data == 0)
 		return 0;
 
-	/* multiply numerator by 100 to avoid handling ratio < 1 */
+	 
 	ratio = DIV_ROUND_UP(ir_data * 100, ir_data + vis_data);
 
 	if (ratio < 45)
@@ -355,7 +347,7 @@ static int ltr501_set_it_time(struct ltr501_data *data, int it)
 			break;
 		}
 	}
-	/* Make sure integ time index is valid */
+	 
 	if (index < 0)
 		return -EINVAL;
 
@@ -364,21 +356,18 @@ static int ltr501_set_it_time(struct ltr501_data *data, int it)
 		return ret;
 
 	if (status & LTR501_CONTR_ALS_GAIN_MASK) {
-		/*
-		 * 200 ms and 400 ms integ time can only be
-		 * used in dynamic range 1
-		 */
+		 
 		if (index > 1)
 			return -EINVAL;
 	} else
-		/* 50 ms integ time can only be used in dynamic range 2 */
+		 
 		if (index == 1)
 			return -EINVAL;
 
 	return regmap_field_write(data->reg_it, index);
 }
 
-/* read int time in micro seconds */
+ 
 static int ltr501_read_it_time(const struct ltr501_data *data,
 			       int *val, int *val2)
 {
@@ -388,7 +377,7 @@ static int ltr501_read_it_time(const struct ltr501_data *data,
 	if (ret < 0)
 		return ret;
 
-	/* Make sure integ time index is valid */
+	 
 	if (index < 0 || index >= ARRAY_SIZE(int_time_mapping))
 		return -EINVAL;
 
@@ -405,7 +394,7 @@ static int ltr501_read_als(const struct ltr501_data *data, __le16 buf[2])
 	ret = ltr501_drdy(data, LTR501_STATUS_ALS_RDY);
 	if (ret < 0)
 		return ret;
-	/* always read both ALS channels in given order */
+	 
 	return regmap_bulk_read(data->regmap, LTR501_ALS_DATA1,
 				buf, 2 * sizeof(__le16));
 }
@@ -474,7 +463,7 @@ static int ltr501_write_intr_prst(struct ltr501_data *data,
 	if (val < 0 || val2 < 0)
 		return -EINVAL;
 
-	/* period in microseconds */
+	 
 	period = ((val * 1000000) + val2);
 
 	switch (type) {
@@ -483,7 +472,7 @@ static int ltr501_write_intr_prst(struct ltr501_data *data,
 		if (ret < 0)
 			return ret;
 
-		/* period should be atleast equal to sampling period */
+		 
 		if (period < samp_period)
 			return -EINVAL;
 
@@ -503,7 +492,7 @@ static int ltr501_write_intr_prst(struct ltr501_data *data,
 		if (ret < 0)
 			return ret;
 
-		/* period should be atleast equal to rate */
+		 
 		if (period < samp_period)
 			return -EINVAL;
 
@@ -541,7 +530,7 @@ static const struct iio_chan_spec_ext_info ltr501_ext_info[] = {
 		.shared = IIO_SEPARATE,
 		.read = ltr501_read_near_level,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct iio_event_spec ltr501_als_event_spec[] = {
@@ -835,7 +824,7 @@ static int ltr501_write_raw(struct iio_dev *indio_dev,
 			if (ret < 0)
 				break;
 
-			/* update persistence count when changing frequency */
+			 
 			ret = ltr501_write_intr_prst(data, chan->type,
 						     0, data->als_period);
 
@@ -853,7 +842,7 @@ static int ltr501_write_raw(struct iio_dev *indio_dev,
 			if (ret < 0)
 				break;
 
-			/* update persistence count when changing frequency */
+			 
 			ret = ltr501_write_intr_prst(data, chan->type,
 						     0, data->ps_period);
 
@@ -1082,7 +1071,7 @@ static int ltr501_write_event_config(struct iio_dev *indio_dev,
 	struct ltr501_data *data = iio_priv(indio_dev);
 	int ret;
 
-	/* only 1 and 0 are valid inputs */
+	 
 	if (state != 1  && state != 0)
 		return -EINVAL;
 
@@ -1293,7 +1282,7 @@ static irqreturn_t ltr501_trigger_handler(int irq, void *p)
 
 	memset(&scan, 0, sizeof(scan));
 
-	/* figure out which data needs to be ready */
+	 
 	if (test_bit(0, indio_dev->active_scan_mask) ||
 	    test_bit(1, indio_dev->active_scan_mask))
 		mask |= LTR501_STATUS_ALS_RDY;

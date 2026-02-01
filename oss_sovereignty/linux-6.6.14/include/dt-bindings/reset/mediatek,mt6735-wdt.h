@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+ 
 
 #ifndef _DT_BINDINGS_RESET_MEDIATEK_MT6735_WDT_H_
 #define _DT_BINDINGS_RESET_MEDIATEK_MT6735_WDT_H_

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright (c) 2016-2017 Hisilicon Limited.
+
+
 
 #include "hnae3.h"
 #include "hns3_enet.h"
@@ -82,7 +82,7 @@ static int hns3_dcbnl_ieee_delapp(struct net_device *ndev, struct dcb_app *app)
 	return -EOPNOTSUPP;
 }
 
-/* DCBX configuration */
+ 
 static u8 hns3_dcbnl_getdcbx(struct net_device *ndev)
 {
 	struct hnae3_handle *h = hns3_get_handle(ndev);
@@ -93,7 +93,7 @@ static u8 hns3_dcbnl_getdcbx(struct net_device *ndev)
 	return 0;
 }
 
-/* return 0 if successful, otherwise fail */
+ 
 static u8 hns3_dcbnl_setdcbx(struct net_device *ndev, u8 mode)
 {
 	struct hnae3_handle *h = hns3_get_handle(ndev);
@@ -115,10 +115,7 @@ static const struct dcbnl_rtnl_ops hns3_dcbnl_ops = {
 	.setdcbx	= hns3_dcbnl_setdcbx,
 };
 
-/* hclge_dcbnl_setup - DCBNL setup
- * @handle: the corresponding vport handle
- * Set up DCBNL
- */
+ 
 void hns3_dcbnl_setup(struct hnae3_handle *handle)
 {
 	struct net_device *dev = handle->kinfo.netdev;

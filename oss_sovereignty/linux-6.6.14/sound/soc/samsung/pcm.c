@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// ALSA SoC Audio Layer - S3C PCM-Controller driver
-//
-// Copyright (c) 2009 Samsung Electronics Co. Ltd
-// Author: Jaswinder Singh <jassisinghbrar@gmail.com>
-// based upon I2S drivers by Ben Dooks.
+
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -19,7 +19,7 @@
 #include "dma.h"
 #include "pcm.h"
 
-/*Register Offsets */
+ 
 #define S3C_PCM_CTL		0x00
 #define S3C_PCM_CLKCTL		0x04
 #define S3C_PCM_TXFIFO		0x08
@@ -29,7 +29,7 @@
 #define S3C_PCM_FIFOSTAT	0x18
 #define S3C_PCM_CLRINT		0x20
 
-/* PCM_CTL Bit-Fields */
+ 
 #define S3C_PCM_CTL_TXDIPSTICK_MASK	0x3f
 #define S3C_PCM_CTL_TXDIPSTICK_SHIFT	13
 #define S3C_PCM_CTL_RXDIPSTICK_MASK	0x3f
@@ -42,7 +42,7 @@
 #define S3C_PCM_CTL_RXFIFO_EN		(0x1 << 1)
 #define S3C_PCM_CTL_ENABLE		(0x1 << 0)
 
-/* PCM_CLKCTL Bit-Fields */
+ 
 #define S3C_PCM_CLKCTL_SERCLK_EN	(0x1 << 19)
 #define S3C_PCM_CLKCTL_SERCLKSEL_PCLK	(0x1 << 18)
 #define S3C_PCM_CLKCTL_SCLKDIV_MASK	0x1ff
@@ -50,15 +50,15 @@
 #define S3C_PCM_CLKCTL_SCLKDIV_SHIFT	9
 #define S3C_PCM_CLKCTL_SYNCDIV_SHIFT	0
 
-/* PCM_TXFIFO Bit-Fields */
+ 
 #define S3C_PCM_TXFIFO_DVALID	(0x1 << 16)
 #define S3C_PCM_TXFIFO_DATA_MSK	(0xffff << 0)
 
-/* PCM_RXFIFO Bit-Fields */
+ 
 #define S3C_PCM_RXFIFO_DVALID	(0x1 << 16)
 #define S3C_PCM_RXFIFO_DATA_MSK	(0xffff << 0)
 
-/* PCM_IRQCTL Bit-Fields */
+ 
 #define S3C_PCM_IRQCTL_IRQEN		(0x1 << 14)
 #define S3C_PCM_IRQCTL_WRDEN		(0x1 << 12)
 #define S3C_PCM_IRQCTL_TXEMPTYEN	(0x1 << 11)
@@ -74,7 +74,7 @@
 #define S3C_PCM_IRQCTL_RXSTARVEN	(0x1 << 1)
 #define S3C_PCM_IRQCTL_RXERROVRFLEN	(0x1 << 0)
 
-/* PCM_IRQSTAT Bit-Fields */
+ 
 #define S3C_PCM_IRQSTAT_IRQPND		(0x1 << 13)
 #define S3C_PCM_IRQSTAT_WRD_XFER	(0x1 << 12)
 #define S3C_PCM_IRQSTAT_TXEMPTY		(0x1 << 11)
@@ -90,7 +90,7 @@
 #define S3C_PCM_IRQSTAT_RXSTARV		(0x1 << 1)
 #define S3C_PCM_IRQSTAT_RXERROVRFL	(0x1 << 0)
 
-/* PCM_FIFOSTAT Bit-Fields */
+ 
 #define S3C_PCM_FIFOSTAT_TXCNT_MSK		(0x3f << 14)
 #define S3C_PCM_FIFOSTAT_TXFIFOEMPTY		(0x1 << 13)
 #define S3C_PCM_FIFOSTAT_TXFIFOALMSTEMPTY	(0x1 << 12)
@@ -102,18 +102,7 @@
 #define S3C_PCM_FIFOSTAT_RXFIFOFULL		(0x1 << 1)
 #define S3C_PCM_FIFOSTAT_RXFIFOALMSTFULL	(0x1 << 0)
 
-/**
- * struct s3c_pcm_info - S3C PCM Controller information
- * @lock: Spin lock
- * @dev: The parent device passed to use from the probe.
- * @regs: The pointer to the device register block.
- * @sclk_per_fs: number of sclk per frame sync
- * @idleclk: Whether to keep PCMSCLK enabled even when idle (no active xfer)
- * @pclk: the PCLK_PCM (pcm) clock pointer
- * @cclk: the SCLK_AUDIO (audio-bus) clock pointer
- * @dma_playback: DMA information for playback channel.
- * @dma_capture: DMA information for capture channel.
- */
+ 
 struct s3c_pcm_info {
 	spinlock_t lock;
 	struct device	*dev;
@@ -121,7 +110,7 @@ struct s3c_pcm_info {
 
 	unsigned int sclk_per_fs;
 
-	/* Whether to keep PCMSCLK enabled even when idle(no active xfer) */
+	 
 	unsigned int idleclk;
 
 	struct clk	*pclk;
@@ -270,7 +259,7 @@ static int s3c_pcm_hw_params(struct snd_pcm_substream *substream,
 
 	dev_dbg(pcm->dev, "Entered %s\n", __func__);
 
-	/* Strictly check for sample size */
+	 
 	switch (params_width(params)) {
 	case 16:
 		break;
@@ -280,14 +269,14 @@ static int s3c_pcm_hw_params(struct snd_pcm_substream *substream,
 
 	spin_lock_irqsave(&pcm->lock, flags);
 
-	/* Get hold of the PCMSOURCE_CLK */
+	 
 	clkctl = readl(regs + S3C_PCM_CLKCTL);
 	if (clkctl & S3C_PCM_CLKCTL_SERCLKSEL_PCLK)
 		clk = pcm->pclk;
 	else
 		clk = pcm->cclk;
 
-	/* Set the SCLK divider */
+	 
 	sclk_div = clk_get_rate(clk) / pcm->sclk_per_fs /
 					params_rate(params) / 2 - 1;
 
@@ -296,7 +285,7 @@ static int s3c_pcm_hw_params(struct snd_pcm_substream *substream,
 	clkctl |= ((sclk_div & S3C_PCM_CLKCTL_SCLKDIV_MASK)
 			<< S3C_PCM_CLKCTL_SCLKDIV_SHIFT);
 
-	/* Set the SYNC divider */
+	 
 	sync_div = pcm->sclk_per_fs - 1;
 
 	clkctl &= ~(S3C_PCM_CLKCTL_SYNCDIV_MASK
@@ -332,7 +321,7 @@ static int s3c_pcm_set_fmt(struct snd_soc_dai *cpu_dai,
 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_IB_NF:
-		/* Nothing to do, IB_NF by default */
+		 
 		break;
 	default:
 		dev_err(pcm->dev, "Unsupported clock inversion!\n");
@@ -342,7 +331,7 @@ static int s3c_pcm_set_fmt(struct snd_soc_dai *cpu_dai,
 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_BP_FP:
-		/* Nothing to do, Master by default */
+		 
 		break;
 	default:
 		dev_err(pcm->dev, "Unsupported master/slave format!\n");
@@ -492,7 +481,7 @@ static int s3c_pcm_dev_probe(struct platform_device *pdev)
 	dma_filter_fn filter;
 	int ret;
 
-	/* Check for valid device index */
+	 
 	if ((pdev->id < 0) || pdev->id >= ARRAY_SIZE(s3c_pcm)) {
 		dev_err(&pdev->dev, "id %d out of range\n", pdev->id);
 		return -EINVAL;
@@ -510,7 +499,7 @@ static int s3c_pcm_dev_probe(struct platform_device *pdev)
 
 	spin_lock_init(&pcm->lock);
 
-	/* Default is 128fs */
+	 
 	pcm->sclk_per_fs = 128;
 
 	pcm->regs = devm_platform_get_and_ioremap_resource(pdev, 0, &mem_res);
@@ -526,7 +515,7 @@ static int s3c_pcm_dev_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* record our pcm structure for later use in the callbacks */
+	 
 	dev_set_drvdata(&pdev->dev, pcm);
 
 	pcm->pclk = devm_clk_get(&pdev->dev, "pcm");
@@ -598,7 +587,7 @@ static struct platform_driver s3c_pcm_driver = {
 
 module_platform_driver(s3c_pcm_driver);
 
-/* Module information */
+ 
 MODULE_AUTHOR("Jaswinder Singh, <jassisinghbrar@gmail.com>");
 MODULE_DESCRIPTION("S3C PCM Controller Driver");
 MODULE_LICENSE("GPL");

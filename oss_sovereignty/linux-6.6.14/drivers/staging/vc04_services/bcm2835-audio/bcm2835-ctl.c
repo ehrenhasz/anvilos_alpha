@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright 2011 Broadcom Corporation.  All rights reserved. */
+
+ 
 
 #include <sound/core.h>
 #include <sound/control.h>
@@ -8,15 +8,15 @@
 
 #include "bcm2835.h"
 
-/* volume maximum and minimum in terms of 0.01dB */
+ 
 #define CTRL_VOL_MAX 400
-#define CTRL_VOL_MIN -10239 /* originally -10240 */
+#define CTRL_VOL_MIN -10239  
 
 static int bcm2835_audio_set_chip_ctls(struct bcm2835_chip *chip)
 {
 	int i, err = 0;
 
-	/* change ctls for all substreams */
+	 
 	for (i = 0; i < MAX_SUBSTREAMS; i++) {
 		if (chip->alsa_stream[i]) {
 			err = bcm2835_audio_set_ctls(chip->alsa_stream[i]);
@@ -34,7 +34,7 @@ static int snd_bcm2835_ctl_info(struct snd_kcontrol *kcontrol,
 		uinfo->type = SNDRV_CTL_ELEM_TYPE_INTEGER;
 		uinfo->count = 1;
 		uinfo->value.integer.min = CTRL_VOL_MIN;
-		uinfo->value.integer.max = CTRL_VOL_MAX; /* 2303 */
+		uinfo->value.integer.max = CTRL_VOL_MAX;  
 	} else if (kcontrol->private_value == PCM_PLAYBACK_MUTE) {
 		uinfo->type = SNDRV_CTL_ELEM_TYPE_BOOLEAN;
 		uinfo->count = 1;
@@ -173,10 +173,7 @@ static int snd_bcm2835_spdif_mask_info(struct snd_kcontrol *kcontrol,
 static int snd_bcm2835_spdif_mask_get(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_value *ucontrol)
 {
-	/*
-	 * bcm2835 supports only consumer mode and sets all other format flags
-	 * automatically. So the only thing left is signalling non-audio content
-	 */
+	 
 	ucontrol->value.iec958.status[0] = IEC958_AES0_NONAUDIO;
 	return 0;
 }

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * cdev.c - Character device component for Mostcore
- *
- * Copyright (C) 2013-2015 Microchip Technology Germany II GmbH & Co. KG
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/sched.h>
@@ -29,7 +25,7 @@ static struct cdev_component {
 
 struct comp_channel {
 	wait_queue_head_t wq;
-	spinlock_t unlink;	/* synchronization lock to unlink channels */
+	spinlock_t unlink;	 
 	struct cdev cdev;
 	struct device *dev;
 	struct mutex io_mutex;
@@ -105,14 +101,7 @@ static void destroy_channel(struct comp_channel *c)
 	kfree(c);
 }
 
-/**
- * comp_open - implements the syscall to open the device
- * @inode: inode pointer
- * @filp: file pointer
- *
- * This stores the channel pointer in the private data field of
- * the file structure and activates the channel within the core.
- */
+ 
 static int comp_open(struct inode *inode, struct file *filp)
 {
 	struct comp_channel *c;
@@ -147,13 +136,7 @@ static int comp_open(struct inode *inode, struct file *filp)
 	return ret;
 }
 
-/**
- * comp_close - implements the syscall to close the device
- * @inode: inode pointer
- * @filp: file pointer
- *
- * This stops the channel within the core.
- */
+ 
 static int comp_close(struct inode *inode, struct file *filp)
 {
 	struct comp_channel *c = to_channel(inode->i_cdev);
@@ -172,13 +155,7 @@ static int comp_close(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-/**
- * comp_write - implements the syscall to write to the device
- * @filp: file pointer
- * @buf: pointer to user buffer
- * @count: number of bytes to write
- * @offset: offset from where to start writing
- */
+ 
 static ssize_t comp_write(struct file *filp, const char __user *buf,
 			  size_t count, loff_t *offset)
 {
@@ -226,13 +203,7 @@ unlock:
 	return ret;
 }
 
-/**
- * comp_read - implements the syscall to read from the device
- * @filp: file pointer
- * @buf: pointer to user buffer
- * @count: number of bytes to read
- * @offset: offset from where to start reading
- */
+ 
 static ssize_t
 comp_read(struct file *filp, char __user *buf, size_t count, loff_t *offset)
 {
@@ -252,7 +223,7 @@ comp_read(struct file *filp, char __user *buf, size_t count, loff_t *offset)
 		mutex_lock(&c->io_mutex);
 	}
 
-	/* make sure we don't submit to gone devices */
+	 
 	if (unlikely(!c->dev)) {
 		mutex_unlock(&c->io_mutex);
 		return -ENODEV;
@@ -297,9 +268,7 @@ static __poll_t comp_poll(struct file *filp, poll_table *wait)
 	return mask;
 }
 
-/*
- * Initialization of struct file_operations
- */
+ 
 static const struct file_operations channel_fops = {
 	.owner = THIS_MODULE,
 	.read = comp_read,
@@ -309,14 +278,7 @@ static const struct file_operations channel_fops = {
 	.poll = comp_poll,
 };
 
-/**
- * comp_disconnect_channel - disconnect a channel
- * @iface: pointer to interface instance
- * @channel_id: channel index
- *
- * This frees allocated memory and removes the cdev that represents this
- * channel in user space.
- */
+ 
 static int comp_disconnect_channel(struct most_interface *iface, int channel_id)
 {
 	struct comp_channel *c;
@@ -341,13 +303,7 @@ static int comp_disconnect_channel(struct most_interface *iface, int channel_id)
 	return 0;
 }
 
-/**
- * comp_rx_completion - completion handler for rx channels
- * @mbo: pointer to buffer object that has completed
- *
- * This searches for the channel linked to this MBO and stores it in the local
- * fifo buffer.
- */
+ 
 static int comp_rx_completion(struct mbo *mbo)
 {
 	struct comp_channel *c;
@@ -374,13 +330,7 @@ static int comp_rx_completion(struct mbo *mbo)
 	return 0;
 }
 
-/**
- * comp_tx_completion - completion handler for tx channels
- * @iface: pointer to interface instance
- * @channel_id: channel index/ID
- *
- * This wakes sleeping processes in the wait-queue.
- */
+ 
 static int comp_tx_completion(struct most_interface *iface, int channel_id)
 {
 	struct comp_channel *c;
@@ -398,18 +348,7 @@ static int comp_tx_completion(struct most_interface *iface, int channel_id)
 	return 0;
 }
 
-/**
- * comp_probe - probe function of the driver module
- * @iface: pointer to interface instance
- * @channel_id: channel index/ID
- * @cfg: pointer to actual channel configuration
- * @name: name of the device to be created
- * @args: pointer to array of component parameters (from configfs)
- *
- * This allocates a channel object and creates the device node in /dev
- *
- * Returns 0 on success or error code otherwise.
- */
+ 
 static int comp_probe(struct most_interface *iface, int channel_id,
 		      struct most_channel_config *cfg, char *name, char *args)
 {

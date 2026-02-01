@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017 MediaTek Inc.
- * Author: Chen Zhong <chen.zhong@mediatek.com>
- *	   Sean Wang <sean.wang@mediatek.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/mod_devicetable.h>
@@ -85,7 +81,7 @@ static const struct mtk_clk_desc pcie_desc = {
 static const struct of_device_id of_match_clk_mt7622_hif[] = {
 	{ .compatible = "mediatek,mt7622-pciesys", .data = &pcie_desc },
 	{ .compatible = "mediatek,mt7622-ssusbsys", .data = &ssusb_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt7622_hif);
 

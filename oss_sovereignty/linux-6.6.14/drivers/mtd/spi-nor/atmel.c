@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2005, Intec Automation Inc.
- * Copyright (C) 2014, Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/mtd/spi-nor.h>
 
@@ -10,12 +7,7 @@
 
 #define ATMEL_SR_GLOBAL_PROTECT_MASK GENMASK(5, 2)
 
-/*
- * The Atmel AT25FS010/AT25FS040 parts have some weird configuration for the
- * block protection bits. We don't support them. But legacy behavior in linux
- * is to unlock the whole flash array on startup. Therefore, we have to support
- * exactly this operation.
- */
+ 
 static int at25fs_nor_lock(struct spi_nor *nor, loff_t ofs, uint64_t len)
 {
 	return -EOPNOTSUPP;
@@ -25,11 +17,11 @@ static int at25fs_nor_unlock(struct spi_nor *nor, loff_t ofs, uint64_t len)
 {
 	int ret;
 
-	/* We only support unlocking the whole flash array */
+	 
 	if (ofs || len != nor->params->size)
 		return -EINVAL;
 
-	/* Write 0x00 to the status register to disable write protection */
+	 
 	ret = spi_nor_write_sr_and_check(nor, 0);
 	if (ret)
 		dev_dbg(nor->dev, "unable to clear BP bits, WP# asserted?\n");
@@ -59,22 +51,14 @@ static const struct spi_nor_fixups at25fs_nor_fixups = {
 	.late_init = at25fs_nor_late_init,
 };
 
-/**
- * atmel_nor_set_global_protection - Do a Global Protect or Unprotect command
- * @nor:	pointer to 'struct spi_nor'
- * @ofs:	offset in bytes
- * @len:	len in bytes
- * @is_protect:	if true do a Global Protect otherwise it is a Global Unprotect
- *
- * Return: 0 on success, -error otherwise.
- */
+ 
 static int atmel_nor_set_global_protection(struct spi_nor *nor, loff_t ofs,
 					   uint64_t len, bool is_protect)
 {
 	int ret;
 	u8 sr;
 
-	/* We only support locking the whole flash array */
+	 
 	if (ofs || len != nor->params->size)
 		return -EINVAL;
 
@@ -84,7 +68,7 @@ static int atmel_nor_set_global_protection(struct spi_nor *nor, loff_t ofs,
 
 	sr = nor->bouncebuf[0];
 
-	/* SRWD bit needs to be cleared, otherwise the protection doesn't change */
+	 
 	if (sr & SR_SRWD) {
 		sr &= ~SR_SRWD;
 		ret = spi_nor_write_sr_and_check(nor, sr);
@@ -96,13 +80,7 @@ static int atmel_nor_set_global_protection(struct spi_nor *nor, loff_t ofs,
 
 	if (is_protect) {
 		sr |= ATMEL_SR_GLOBAL_PROTECT_MASK;
-		/*
-		 * Set the SRWD bit again as soon as we are protecting
-		 * anything. This will ensure that the WP# pin is working
-		 * correctly. By doing this we also behave the same as
-		 * spi_nor_sr_lock(), which sets SRWD if any block protection
-		 * is active.
-		 */
+		 
 		sr |= SR_SRWD;
 	} else {
 		sr &= ~ATMEL_SR_GLOBAL_PROTECT_MASK;
@@ -110,11 +88,7 @@ static int atmel_nor_set_global_protection(struct spi_nor *nor, loff_t ofs,
 
 	nor->bouncebuf[0] = sr;
 
-	/*
-	 * We cannot use the spi_nor_write_sr_and_check() because this command
-	 * isn't really setting any bits, instead it is an pseudo command for
-	 * "Global Unprotect" or "Global Protect"
-	 */
+	 
 	return spi_nor_write_sr(nor, nor->bouncebuf, 1);
 }
 
@@ -163,7 +137,7 @@ static const struct spi_nor_fixups atmel_nor_global_protection_fixups = {
 };
 
 static const struct flash_info atmel_nor_parts[] = {
-	/* Atmel -- some are (confusingly) marketed as "DataFlash" */
+	 
 	{ "at25fs010",  INFO(0x1f6601, 0, 32 * 1024,   4)
 		FLAGS(SPI_NOR_HAS_LOCK)
 		NO_SFDP_FLAGS(SECT_4K)

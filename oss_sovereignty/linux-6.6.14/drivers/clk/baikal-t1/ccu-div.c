@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020 BAIKAL ELECTRONICS, JSC
- *
- * Authors:
- *   Serge Semin <Sergey.Semin@baikalelectronics.ru>
- *   Dmitry Dunaev <dmitry.dunaev@baikalelectronics.ru>
- *
- * Baikal-T1 CCU Dividers interface driver
- */
+
+ 
 
 #define pr_fmt(fmt) "bt1-ccu-div: " fmt
 
@@ -43,10 +35,7 @@
 #define CCU_DIV_CLKDIV_MAX(_mask) \
 	((_mask) >> CCU_DIV_CTL_CLKDIV_FLD)
 
-/*
- * Use the next two methods until there are generic field setter and
- * getter available with non-constant mask support.
- */
+ 
 static inline u32 ccu_div_get(u32 mask, u32 val)
 {
 	return (val & mask) >> CCU_DIV_CTL_CLKDIV_FLD;
@@ -92,10 +81,7 @@ static int ccu_div_var_update_clkdiv(struct ccu_div *div,
 	regmap_update_bits(div->sys_regs, div->reg_ctl,
 			   CCU_DIV_CTL_SET_CLKDIV, CCU_DIV_CTL_SET_CLKDIV);
 
-	/*
-	 * Until there is nsec-version of readl_poll_timeout() is available
-	 * we have to implement the next polling loop.
-	 */
+	 
 	count = CCU_DIV_LOCK_CHECK_RETRIES;
 	do {
 		ndelay(nd);
@@ -239,11 +225,7 @@ static long ccu_div_var_round_rate(struct clk_hw *hw, unsigned long rate,
 	return ccu_div_calc_freq(*parent_rate, divider);
 }
 
-/*
- * This method is used for the clock divider blocks, which support the
- * on-the-fly rate change. So due to lacking the EN bit functionality
- * they can't be gated before the rate adjustment.
- */
+ 
 static int ccu_div_var_set_rate_slow(struct clk_hw *hw, unsigned long rate,
 				     unsigned long parent_rate)
 {
@@ -274,10 +256,7 @@ static int ccu_div_var_set_rate_slow(struct clk_hw *hw, unsigned long rate,
 	return ret;
 }
 
-/*
- * This method is used for the clock divider blocks, which don't support
- * the on-the-fly rate change.
- */
+ 
 static int ccu_div_var_set_rate_fast(struct clk_hw *hw, unsigned long rate,
 				     unsigned long parent_rate)
 {
@@ -288,10 +267,7 @@ static int ccu_div_var_set_rate_fast(struct clk_hw *hw, unsigned long rate,
 	divider = ccu_div_var_calc_divider(rate, parent_rate, div->mask);
 	val = ccu_div_prep(div->mask, divider);
 
-	/*
-	 * Also disable the clock divider block if it was enabled by default
-	 * or by the bootloader.
-	 */
+	 
 	spin_lock_irqsave(&div->lock, flags);
 	regmap_update_bits(div->sys_regs, div->reg_ctl,
 			   div->mask | CCU_DIV_CTL_EN, val);
@@ -345,11 +321,7 @@ static const struct ccu_div_dbgfs_bit ccu_div_bits[] = {
 
 #define CCU_DIV_DBGFS_BIT_NUM	ARRAY_SIZE(ccu_div_bits)
 
-/*
- * It can be dangerous to change the Divider settings behind clock framework
- * back, therefore we don't provide any kernel config based compile time option
- * for this feature to enable.
- */
+ 
 #undef CCU_DIV_ALLOW_WRITE_DEBUGFS
 #ifdef CCU_DIV_ALLOW_WRITE_DEBUGFS
 
@@ -386,13 +358,13 @@ static int ccu_div_dbgfs_var_clkdiv_set(void *priv, u64 val)
 
 #define ccu_div_dbgfs_mode		0644
 
-#else /* !CCU_DIV_ALLOW_WRITE_DEBUGFS */
+#else  
 
 #define ccu_div_dbgfs_bit_set		NULL
 #define ccu_div_dbgfs_var_clkdiv_set	NULL
 #define ccu_div_dbgfs_mode		0444
 
-#endif /* !CCU_DIV_ALLOW_WRITE_DEBUGFS */
+#endif  
 
 static int ccu_div_dbgfs_bit_get(void *priv, u64 *val)
 {
@@ -520,14 +492,14 @@ static void ccu_div_fixed_debug_init(struct clk_hw *hw, struct dentry *dentry)
 				   &ccu_div_dbgfs_fixed_clkdiv_fops);
 }
 
-#else /* !CONFIG_DEBUG_FS */
+#else  
 
 #define ccu_div_var_debug_init NULL
 #define ccu_div_gate_debug_init NULL
 #define ccu_div_buf_debug_init NULL
 #define ccu_div_fixed_debug_init NULL
 
-#endif /* !CONFIG_DEBUG_FS */
+#endif  
 
 static const struct clk_ops ccu_div_var_gate_to_set_ops = {
 	.enable = ccu_div_var_enable,
@@ -584,11 +556,7 @@ struct ccu_div *ccu_div_hw_register(const struct ccu_div_init_data *div_init)
 	if (!div)
 		return ERR_PTR(-ENOMEM);
 
-	/*
-	 * Note since Baikal-T1 System Controller registers are MMIO-backed
-	 * we won't check the regmap IO operations return status, because it
-	 * must be zero anyway.
-	 */
+	 
 	div->hw.init = &hw_init;
 	div->id = div_init->id;
 	div->reg_ctl = div_init->base + CCU_DIV_CTL;

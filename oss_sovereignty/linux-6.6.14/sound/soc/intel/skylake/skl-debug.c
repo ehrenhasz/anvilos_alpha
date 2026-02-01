@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  skl-debug.c - Debugfs for skl driver
- *
- *  Copyright (C) 2016-17 Intel Corp
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/debugfs.h>
@@ -198,7 +194,7 @@ static ssize_t fw_softreg_read(struct file *file, char __user *user_buf,
 				   tmp + ret, FW_REG_BUF - ret, 0);
 		ret += strlen(tmp + ret);
 
-		/* print newline for each offset */
+		 
 		if (FW_REG_BUF - ret > 0)
 			tmp[ret++] = '\n';
 	}
@@ -223,13 +219,13 @@ struct skl_debug *skl_debugfs_init(struct skl_dev *skl)
 	if (!d)
 		return NULL;
 
-	/* create the debugfs dir with platform component's debugfs as parent */
+	 
 	d->fs = debugfs_create_dir("dsp", skl->component->debugfs_root);
 
 	d->skl = skl;
 	d->dev = &skl->pci->dev;
 
-	/* now create the module dir */
+	 
 	d->modules = debugfs_create_dir("modules", d->fs);
 
 	debugfs_create_file("fw_soft_regs_rd", 0444, d->fs, d,

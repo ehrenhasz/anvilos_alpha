@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018 Synopsys, Inc. and/or its affiliates.
- *
- * Author: Vitor Soares <vitor.soares@synopsys.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -544,10 +540,7 @@ static int dw_i3c_clk_cfg(struct dw_i3c_master *master)
 	scl_timing = SCL_I3C_TIMING_HCNT(hcnt) | SCL_I3C_TIMING_LCNT(lcnt);
 	writel(scl_timing, master->regs + SCL_I3C_PP_TIMING);
 
-	/*
-	 * In pure i3c mode, MST_FREE represents tCAS. In shared mode, this
-	 * will be set up by dw_i2c_clk_cfg as tLOW.
-	 */
+	 
 	if (master->base.bus.mode == I3C_BUS_MODE_PURE)
 		writel(BUS_I3C_MST_FREE(lcnt), master->regs + BUS_FREE_TIMING);
 
@@ -661,7 +654,7 @@ static int dw_i3c_master_bus_init(struct i3c_master_controller *m)
 	writel(IBI_REQ_REJECT_ALL, master->regs + IBI_SIR_REQ_REJECT);
 	writel(IBI_REQ_REJECT_ALL, master->regs + IBI_MR_REQ_REJECT);
 
-	/* For now don't support Hot-Join */
+	 
 	writel(readl(master->regs + DEVICE_CTRL) | DEV_CTRL_HOT_JOIN_NACK,
 	       master->regs + DEVICE_CTRL);
 
@@ -788,7 +781,7 @@ static int dw_i3c_master_daa(struct i3c_master_controller *m)
 
 	olddevs = ~(master->free_pos);
 
-	/* Prepare DAT before launching DAA. */
+	 
 	for (pos = 0; pos < master->maxdevs; pos++) {
 		if (olddevs & BIT(pos))
 			continue;
@@ -1248,16 +1241,7 @@ static void dw_i3c_master_handle_ibi_sir(struct dw_i3c_master *master,
 	addr = IBI_QUEUE_IBI_ADDR(status);
 	len = IBI_QUEUE_STATUS_DATA_LEN(status);
 
-	/*
-	 * We be tempted to check the error status in bit 30; however, due
-	 * to the PEC errata workaround on some platform implementations (see
-	 * ast2600_i3c_set_dat_ibi()), those will almost always have a PEC
-	 * error on IBI payload data, as well as losing the last byte of
-	 * payload.
-	 *
-	 * If we implement error status checking on that bit, we may need
-	 * a new platform op to validate it.
-	 */
+	 
 
 	spin_lock_irqsave(&master->devs_lock, flags);
 	idx = dw_i3c_master_get_addr_pos(master, addr);
@@ -1305,10 +1289,7 @@ err_drain:
 	spin_unlock_irqrestore(&master->devs_lock, flags);
 }
 
-/* "ibis": referring to In-Band Interrupts, and not
- * https://en.wikipedia.org/wiki/Australian_white_ibis. The latter should
- * not be handled.
- */
+ 
 static void dw_i3c_master_irq_handle_ibis(struct dw_i3c_master *master)
 {
 	unsigned int i, len, n_ibis;
@@ -1393,7 +1374,7 @@ static const struct i3c_master_controller_ops dw_mipi_i3c_ibi_ops = {
 	.recycle_ibi_slot = dw_i3c_master_recycle_ibi_slot,
 };
 
-/* default platform ops implementations */
+ 
 static int dw_i3c_platform_init_nop(struct dw_i3c_master *i3c)
 {
 	return 0;
@@ -1451,7 +1432,7 @@ int dw_i3c_common_probe(struct dw_i3c_master *master,
 
 	platform_set_drvdata(pdev, master);
 
-	/* Information regarding the FIFOs/QUEUEs depth */
+	 
 	ret = readl(master->regs + QUEUE_STATUS_LEVEL);
 	master->caps.cmdfifodepth = QUEUE_STATUS_LEVEL_CMD(ret);
 
@@ -1493,7 +1474,7 @@ void dw_i3c_common_remove(struct dw_i3c_master *master)
 }
 EXPORT_SYMBOL_GPL(dw_i3c_common_remove);
 
-/* base platform implementation */
+ 
 
 static int dw_i3c_probe(struct platform_device *pdev)
 {

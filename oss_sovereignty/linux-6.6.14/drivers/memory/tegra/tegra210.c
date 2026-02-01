@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <dt-bindings/memory/tegra210-mc.h>
 
@@ -666,7 +664,7 @@ static const struct tegra_mc_client tegra210_mc_clients[] = {
 		.swgroup = TEGRA_SWGROUP_GPU,
 		.regs = {
 			.smmu = {
-				/* read-only */
+				 
 				.reg = 0x230,
 				.bit = 24,
 			},
@@ -683,7 +681,7 @@ static const struct tegra_mc_client tegra210_mc_clients[] = {
 		.swgroup = TEGRA_SWGROUP_GPU,
 		.regs = {
 			.smmu = {
-				/* read-only */
+				 
 				.reg = 0x230,
 				.bit = 25,
 			},
@@ -1132,7 +1130,7 @@ static const struct tegra_mc_client tegra210_mc_clients[] = {
 		.swgroup = TEGRA_SWGROUP_GPU,
 		.regs = {
 			.smmu = {
-				/* read-only */
+				 
 				.reg = 0xb98,
 				.bit = 8,
 			},
@@ -1149,7 +1147,7 @@ static const struct tegra_mc_client tegra210_mc_clients[] = {
 		.swgroup = TEGRA_SWGROUP_GPU,
 		.regs = {
 			.smmu = {
-				/* read-only */
+				 
 				.reg = 0xb98,
 				.bit = 9,
 			},

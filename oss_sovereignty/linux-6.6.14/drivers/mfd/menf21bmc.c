@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  MEN 14F021P00 Board Management Controller (BMC) MFD Core Driver.
- *
- *  Copyright (C) 2014 MEN Mikro Elektronik Nuernberg GmbH
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/device.h>
@@ -31,11 +27,7 @@ static int menf21bmc_wdt_exit_prod_mode(struct i2c_client *client)
 	if (val < 0)
 		return val;
 
-	/*
-	 * Production mode should be not active after delivery of the Board.
-	 * To be sure we check it, inform the user and exit the mode
-	 * if active.
-	 */
+	 
 	if (val == 0x00) {
 		dev_info(&client->dev,
 			"BMC in production mode. Exit production mode\n");
@@ -82,10 +74,7 @@ menf21bmc_probe(struct i2c_client *client)
 	dev_info(&client->dev, "FW Revision: %02d.%02d.%02d\n",
 		 rev_major, rev_minor, rev_main);
 
-	/*
-	 * We have to exit the Production Mode of the BMC to activate the
-	 * Watchdog functionality and the BIOS life sign monitoring.
-	 */
+	 
 	ret = menf21bmc_wdt_exit_prod_mode(client);
 	if (ret < 0) {
 		dev_err(&client->dev, "failed to leave production mode\n");

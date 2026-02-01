@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include "test_stacktrace_build_id.skel.h"
 
@@ -25,16 +25,16 @@ retry:
 	if (CHECK(!skel, "skel_open", "skeleton open failed\n"))
 		return;
 
-	/* override program type */
+	 
 	bpf_program__set_type(skel->progs.oncpu, BPF_PROG_TYPE_PERF_EVENT);
 
 	err = test_stacktrace_build_id__load(skel);
 	if (CHECK(err, "skel_load", "skeleton load failed: %d\n", err))
 		goto cleanup;
 
-	pmu_fd = syscall(__NR_perf_event_open, &attr, -1 /* pid */,
-			 0 /* cpu 0 */, -1 /* group id */,
-			 0 /* flags */);
+	pmu_fd = syscall(__NR_perf_event_open, &attr, -1  ,
+			 0  , -1  ,
+			 0  );
 	if (pmu_fd < 0 && errno == ENOENT) {
 		printf("%s:SKIP:no PERF_COUNT_HW_CPU_CYCLES\n", __func__);
 		test__skip();
@@ -51,7 +51,7 @@ retry:
 		goto cleanup;
 	}
 
-	/* find map fds */
+	 
 	control_map_fd = bpf_map__fd(skel->maps.control_map);
 	stackid_hmap_fd = bpf_map__fd(skel->maps.stackid_hmap);
 	stackmap_fd = bpf_map__fd(skel->maps.stackmap);
@@ -60,14 +60,12 @@ retry:
 		goto cleanup;
 	if (CHECK_FAIL(system("taskset 0x1 ./urandom_read 100000")))
 		goto cleanup;
-	/* disable stack trace collection */
+	 
 	key = 0;
 	val = 1;
 	bpf_map_update_elem(control_map_fd, &key, &val, 0);
 
-	/* for every element in stackid_hmap, we can find a corresponding one
-	 * in stackmap, and vise versa.
-	 */
+	 
 	err = compare_map_keys(stackid_hmap_fd, stackmap_fd);
 	if (CHECK(err, "compare_map_keys stackid_hmap vs. stackmap",
 		  "err %d errno %d\n", err, errno))
@@ -105,10 +103,7 @@ retry:
 		prev_key = key;
 	} while (bpf_map__get_next_key(skel->maps.stackmap, &prev_key, &key, sizeof(key)) == 0);
 
-	/* stack_map_get_build_id_offset() is racy and sometimes can return
-	 * BPF_STACK_BUILD_ID_IP instead of BPF_STACK_BUILD_ID_VALID;
-	 * try it one more time.
-	 */
+	 
 	if (build_id_matches < 1 && retry--) {
 		test_stacktrace_build_id__destroy(skel);
 		printf("%s:WARN:Didn't find expected build ID from the map, retrying\n",
@@ -120,12 +115,7 @@ retry:
 		  "Didn't find expected build ID from the map\n"))
 		goto cleanup;
 
-	/*
-	 * We intentionally skip compare_stack_ips(). This is because we
-	 * only support one in_nmi() ips-to-build_id translation per cpu
-	 * at any time, thus stack_amap here will always fallback to
-	 * BPF_STACK_BUILD_ID_IP;
-	 */
+	 
 
 cleanup:
 	test_stacktrace_build_id__destroy(skel);

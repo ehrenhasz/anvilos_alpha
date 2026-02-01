@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * Copyright 2020 Google LLC.
- */
+
+ 
 
 #include <test_progs.h>
 #include <network_helpers.h>

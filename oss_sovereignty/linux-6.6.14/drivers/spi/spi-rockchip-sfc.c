@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Rockchip Serial Flash Controller Driver
- *
- * Copyright (c) 2017-2021, Rockchip Inc.
- * Author: Shawn Lin <shawn.lin@rock-chips.com>
- *	   Chris Morgan <macroalpha82@gmail.com>
- *	   Jon Lin <Jon.lin@rock-chips.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -21,14 +14,14 @@
 #include <linux/interrupt.h>
 #include <linux/spi/spi-mem.h>
 
-/* System control */
+ 
 #define SFC_CTRL			0x0
 #define  SFC_CTRL_PHASE_SEL_NEGETIVE	BIT(1)
 #define  SFC_CTRL_CMD_BITS_SHIFT	8
 #define  SFC_CTRL_ADDR_BITS_SHIFT	10
 #define  SFC_CTRL_DATA_BITS_SHIFT	12
 
-/* Interrupt mask */
+ 
 #define SFC_IMR				0x4
 #define  SFC_IMR_RX_FULL		BIT(0)
 #define  SFC_IMR_RX_UFLOW		BIT(1)
@@ -39,7 +32,7 @@
 #define  SFC_IMR_NSPI_ERR		BIT(6)
 #define  SFC_IMR_DMA			BIT(7)
 
-/* Interrupt clear */
+ 
 #define SFC_ICLR			0x8
 #define  SFC_ICLR_RX_FULL		BIT(0)
 #define  SFC_ICLR_RX_UFLOW		BIT(1)
@@ -50,24 +43,24 @@
 #define  SFC_ICLR_NSPI_ERR		BIT(6)
 #define  SFC_ICLR_DMA			BIT(7)
 
-/* FIFO threshold level */
+ 
 #define SFC_FTLR			0xc
 #define  SFC_FTLR_TX_SHIFT		0
 #define  SFC_FTLR_TX_MASK		0x1f
 #define  SFC_FTLR_RX_SHIFT		8
 #define  SFC_FTLR_RX_MASK		0x1f
 
-/* Reset FSM and FIFO */
+ 
 #define SFC_RCVR			0x10
 #define  SFC_RCVR_RESET			BIT(0)
 
-/* Enhanced mode */
+ 
 #define SFC_AX				0x14
 
-/* Address Bit number */
+ 
 #define SFC_ABIT			0x18
 
-/* Interrupt status */
+ 
 #define SFC_ISR				0x1c
 #define  SFC_ISR_RX_FULL_SHIFT		BIT(0)
 #define  SFC_ISR_RX_UFLOW_SHIFT		BIT(1)
@@ -78,7 +71,7 @@
 #define  SFC_ISR_NSPI_ERR_SHIFT		BIT(6)
 #define  SFC_ISR_DMA_SHIFT		BIT(7)
 
-/* FIFO status */
+ 
 #define SFC_FSR				0x20
 #define  SFC_FSR_TX_IS_FULL		BIT(0)
 #define  SFC_FSR_TX_IS_EMPTY		BIT(1)
@@ -89,12 +82,12 @@
 #define  SFC_FSR_RXLV_MASK		GENMASK(20, 16)
 #define  SFC_FSR_RXLV_SHIFT		16
 
-/* FSM status */
+ 
 #define SFC_SR				0x24
 #define  SFC_SR_IS_IDLE			0x0
 #define  SFC_SR_IS_BUSY			0x1
 
-/* Raw interrupt status */
+ 
 #define SFC_RISR			0x28
 #define  SFC_RISR_RX_FULL		BIT(0)
 #define  SFC_RISR_RX_UNDERFLOW		BIT(1)
@@ -105,31 +98,31 @@
 #define  SFC_RISR_NSPI_ERR		BIT(6)
 #define  SFC_RISR_DMA			BIT(7)
 
-/* Version */
+ 
 #define SFC_VER				0x2C
 #define  SFC_VER_3			0x3
 #define  SFC_VER_4			0x4
 #define  SFC_VER_5			0x5
 
-/* Delay line controller resiter */
+ 
 #define SFC_DLL_CTRL0			0x3C
 #define SFC_DLL_CTRL0_SCLK_SMP_DLL	BIT(15)
 #define SFC_DLL_CTRL0_DLL_MAX_VER4	0xFFU
 #define SFC_DLL_CTRL0_DLL_MAX_VER5	0x1FFU
 
-/* Master trigger */
+ 
 #define SFC_DMA_TRIGGER			0x80
 #define SFC_DMA_TRIGGER_START		1
 
-/* Src or Dst addr for master */
+ 
 #define SFC_DMA_ADDR			0x84
 
-/* Length control register extension 32GB */
+ 
 #define SFC_LEN_CTRL			0x88
 #define SFC_LEN_CTRL_TRB_SEL		1
 #define SFC_LEN_EXT			0x8C
 
-/* Command */
+ 
 #define SFC_CMD				0x100
 #define  SFC_CMD_IDX_SHIFT		0
 #define  SFC_CMD_DUMMY_SHIFT		8
@@ -144,29 +137,22 @@
 #define  SFC_CMD_TRAN_BYTES_SHIFT	16
 #define  SFC_CMD_CS_SHIFT		30
 
-/* Address */
+ 
 #define SFC_ADDR			0x104
 
-/* Data */
+ 
 #define SFC_DATA			0x108
 
-/* The controller and documentation reports that it supports up to 4 CS
- * devices (0-3), however I have only been able to test a single CS (CS 0)
- * due to the configuration of my device.
- */
+ 
 #define SFC_MAX_CHIPSELECT_NUM		4
 
-/* The SFC can transfer max 16KB - 1 at one time
- * we set it to 15.5KB here for alignment.
- */
+ 
 #define SFC_MAX_IOSIZE_VER3		(512 * 31)
 
-/* DMA is only enabled for large data transmission */
+ 
 #define SFC_DMA_TRANS_THRETHOLD		(0x40)
 
-/* Maximum clock values from datasheet suggest keeping clock value under
- * 150MHz. No minimum or average value is suggested.
- */
+ 
 #define SFC_MAX_SPEED		(150 * 1000 * 1000)
 
 struct rockchip_sfc {
@@ -175,7 +161,7 @@ struct rockchip_sfc {
 	struct clk *hclk;
 	struct clk *clk;
 	u32 frequency;
-	/* virtual mapped addr for dma_buffer */
+	 
 	void *buffer;
 	dma_addr_t dma_buffer;
 	struct completion cp;
@@ -197,7 +183,7 @@ static int rockchip_sfc_reset(struct rockchip_sfc *sfc)
 	if (err)
 		dev_err(sfc->dev, "SFC reset never finished\n");
 
-	/* Still need to clear the masked interrupt from RISR */
+	 
 	writel_relaxed(0xFFFFFFFF, sfc->regbase + SFC_ICLR);
 
 	dev_dbg(sfc->dev, "reset\n");
@@ -219,7 +205,7 @@ static void rockchip_sfc_irq_unmask(struct rockchip_sfc *sfc, u32 mask)
 {
 	u32 reg;
 
-	/* Enable transfer complete interrupt */
+	 
 	reg = readl(sfc->regbase + SFC_IMR);
 	reg &= ~mask;
 	writel(reg, sfc->regbase + SFC_IMR);
@@ -229,7 +215,7 @@ static void rockchip_sfc_irq_mask(struct rockchip_sfc *sfc, u32 mask)
 {
 	u32 reg;
 
-	/* Disable transfer finish interrupt */
+	 
 	reg = readl(sfc->regbase + SFC_IMR);
 	reg |= mask;
 	writel(reg, sfc->regbase + SFC_IMR);
@@ -283,10 +269,7 @@ static int rockchip_sfc_wait_rxfifo_ready(struct rockchip_sfc *sfc, u32 timeout_
 static void rockchip_sfc_adjust_op_work(struct spi_mem_op *op)
 {
 	if (unlikely(op->dummy.nbytes && !op->addr.nbytes)) {
-		/*
-		 * SFC not support output DUMMY cycles right after CMD cycles, so
-		 * treat it as ADDR cycles.
-		 */
+		 
 		op->addr.nbytes = op->dummy.nbytes;
 		op->addr.buswidth = op->dummy.buswidth;
 		op->addr.val = 0xFFFFFFFFF;
@@ -302,11 +285,11 @@ static int rockchip_sfc_xfer_setup(struct rockchip_sfc *sfc,
 {
 	u32 ctrl = 0, cmd = 0;
 
-	/* set CMD */
+	 
 	cmd = op->cmd.opcode;
 	ctrl |= ((op->cmd.buswidth >> 1) << SFC_CTRL_CMD_BITS_SHIFT);
 
-	/* set ADDR */
+	 
 	if (op->addr.nbytes) {
 		if (op->addr.nbytes == 4) {
 			cmd |= SFC_CMD_ADDR_32BITS << SFC_CMD_ADDR_SHIFT;
@@ -320,7 +303,7 @@ static int rockchip_sfc_xfer_setup(struct rockchip_sfc *sfc,
 		ctrl |= ((op->addr.buswidth >> 1) << SFC_CTRL_ADDR_BITS_SHIFT);
 	}
 
-	/* set DUMMY */
+	 
 	if (op->dummy.nbytes) {
 		if (op->dummy.buswidth == 4)
 			cmd |= op->dummy.nbytes * 2 << SFC_CMD_DUMMY_SHIFT;
@@ -330,8 +313,8 @@ static int rockchip_sfc_xfer_setup(struct rockchip_sfc *sfc,
 			cmd |= op->dummy.nbytes * 8 << SFC_CMD_DUMMY_SHIFT;
 	}
 
-	/* set DATA */
-	if (sfc->version >= SFC_VER_4) /* Clear it if no data to transfer */
+	 
+	if (sfc->version >= SFC_VER_4)  
 		writel(len, sfc->regbase + SFC_LEN_EXT);
 	else
 		cmd |= len << SFC_CMD_TRAN_BYTES_SHIFT;
@@ -344,7 +327,7 @@ static int rockchip_sfc_xfer_setup(struct rockchip_sfc *sfc,
 	if (!len && op->addr.nbytes)
 		cmd |= SFC_CMD_DIR_WR << SFC_CMD_DIR_SHIFT;
 
-	/* set the Controller */
+	 
 	ctrl |= SFC_CTRL_PHASE_SEL_NEGETIVE;
 	cmd |= spi_get_chipselect(mem->spi, 0) << SFC_CMD_CS_SHIFT;
 
@@ -381,7 +364,7 @@ static int rockchip_sfc_write_fifo(struct rockchip_sfc *sfc, const u8 *buf, int 
 		dwords -= write_words;
 	}
 
-	/* write the rest non word aligned bytes */
+	 
 	if (bytes) {
 		tx_level = rockchip_sfc_wait_txfifo_ready(sfc, 1000);
 		if (tx_level < 0)
@@ -401,7 +384,7 @@ static int rockchip_sfc_read_fifo(struct rockchip_sfc *sfc, u8 *buf, int len)
 	int rx_level;
 	int tmp;
 
-	/* word aligned access only */
+	 
 	dwords = len >> 2;
 	while (dwords) {
 		rx_level = rockchip_sfc_wait_rxfifo_ready(sfc, 1000);
@@ -413,7 +396,7 @@ static int rockchip_sfc_read_fifo(struct rockchip_sfc *sfc, u8 *buf, int len)
 		dwords -= read_words;
 	}
 
-	/* read the rest non word aligned bytes */
+	 
 	if (bytes) {
 		rx_level = rockchip_sfc_wait_rxfifo_ready(sfc, 1000);
 		if (rx_level < 0)
@@ -542,7 +525,7 @@ static irqreturn_t rockchip_sfc_irq_handler(int irq, void *dev_id)
 
 	reg = readl(sfc->regbase + SFC_RISR);
 
-	/* Clear interrupt */
+	 
 	writel_relaxed(reg, sfc->regbase + SFC_ICLR);
 
 	if (reg & SFC_RISR_DMA) {
@@ -620,7 +603,7 @@ static int rockchip_sfc_probe(struct platform_device *pdev)
 		goto err_clk;
 	}
 
-	/* Find the irq */
+	 
 	ret = platform_get_irq(pdev, 0);
 	if (ret < 0)
 		goto err_irq;
@@ -667,7 +650,7 @@ static void rockchip_sfc_remove(struct platform_device *pdev)
 
 static const struct of_device_id rockchip_sfc_dt_ids[] = {
 	{ .compatible = "rockchip,sfc"},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, rockchip_sfc_dt_ids);
 

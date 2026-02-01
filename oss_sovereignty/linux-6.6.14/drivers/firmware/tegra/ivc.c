@@ -1,59 +1,27 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014-2016, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <soc/tegra/ivc.h>
 
 #define TEGRA_IVC_ALIGN 64
 
-/*
- * IVC channel reset protocol.
- *
- * Each end uses its tx_channel.state to indicate its synchronization state.
- */
+ 
 enum tegra_ivc_state {
-	/*
-	 * This value is zero for backwards compatibility with services that
-	 * assume channels to be initially zeroed. Such channels are in an
-	 * initially valid state, but cannot be asynchronously reset, and must
-	 * maintain a valid state at all times.
-	 *
-	 * The transmitting end can enter the established state from the sync or
-	 * ack state when it observes the receiving endpoint in the ack or
-	 * established state, indicating that has cleared the counters in our
-	 * rx_channel.
-	 */
+	 
 	TEGRA_IVC_STATE_ESTABLISHED = 0,
 
-	/*
-	 * If an endpoint is observed in the sync state, the remote endpoint is
-	 * allowed to clear the counters it owns asynchronously with respect to
-	 * the current endpoint. Therefore, the current endpoint is no longer
-	 * allowed to communicate.
-	 */
+	 
 	TEGRA_IVC_STATE_SYNC,
 
-	/*
-	 * When the transmitting end observes the receiving end in the sync
-	 * state, it can clear the w_count and r_count and transition to the ack
-	 * state. If the remote endpoint observes us in the ack state, it can
-	 * return to the established state once it has cleared its counters.
-	 */
+	 
 	TEGRA_IVC_STATE_ACK
 };
 
-/*
- * This structure is divided into two-cache aligned parts, the first is only
- * written through the tx.channel pointer, while the second is only written
- * through the rx.channel pointer. This delineates ownership of the cache
- * lines, which is critical to performance and necessary in non-cache coherent
- * implementations.
- */
+ 
 struct tegra_ivc_header {
 	union {
 		struct {
-			/* fields owned by the transmitting end */
+			 
 			u32 count;
 			u32 state;
 		};
@@ -62,7 +30,7 @@ struct tegra_ivc_header {
 	} tx;
 
 	union {
-		/* fields owned by the receiving end */
+		 
 		u32 count;
 		u8 pad[TEGRA_IVC_ALIGN];
 	} rx;
@@ -94,24 +62,11 @@ static inline void tegra_ivc_flush(struct tegra_ivc *ivc, dma_addr_t phys)
 
 static inline bool tegra_ivc_empty(struct tegra_ivc *ivc, struct iosys_map *map)
 {
-	/*
-	 * This function performs multiple checks on the same values with
-	 * security implications, so create snapshots with READ_ONCE() to
-	 * ensure that these checks use the same values.
-	 */
+	 
 	u32 tx = tegra_ivc_header_read_field(map, tx.count);
 	u32 rx = tegra_ivc_header_read_field(map, rx.count);
 
-	/*
-	 * Perform an over-full check to prevent denial of service attacks
-	 * where a server could be easily fooled into believing that there's
-	 * an extremely large number of frames ready, since receivers are not
-	 * expected to check for full or over-full conditions.
-	 *
-	 * Although the channel isn't empty, this is an invalid case caused by
-	 * a potentially malicious peer, so returning empty is safer, because
-	 * it gives the impression that the channel has gone silent.
-	 */
+	 
 	if (tx - rx > ivc->num_frames)
 		return true;
 
@@ -123,10 +78,7 @@ static inline bool tegra_ivc_full(struct tegra_ivc *ivc, struct iosys_map *map)
 	u32 tx = tegra_ivc_header_read_field(map, tx.count);
 	u32 rx = tegra_ivc_header_read_field(map, rx.count);
 
-	/*
-	 * Invalid cases where the counters indicate that the queue is over
-	 * capacity also appear full.
-	 */
+	 
 	return tx - rx >= ivc->num_frames;
 }
 
@@ -135,12 +87,7 @@ static inline u32 tegra_ivc_available(struct tegra_ivc *ivc, struct iosys_map *m
 	u32 tx = tegra_ivc_header_read_field(map, tx.count);
 	u32 rx = tegra_ivc_header_read_field(map, rx.count);
 
-	/*
-	 * This function isn't expected to be used in scenarios where an
-	 * over-full situation can lead to denial of service attacks. See the
-	 * comment in tegra_ivc_empty() for an explanation about special
-	 * over-full considerations.
-	 */
+	 
 	return tx - rx;
 }
 
@@ -173,25 +120,12 @@ static inline int tegra_ivc_check_read(struct tegra_ivc *ivc)
 	unsigned int offset = offsetof(struct tegra_ivc_header, tx.count);
 	unsigned int state;
 
-	/*
-	 * tx.channel->state is set locally, so it is not synchronized with
-	 * state from the remote peer. The remote peer cannot reset its
-	 * transmit counters until we've acknowledged its synchronization
-	 * request, so no additional synchronization is required because an
-	 * asynchronous transition of rx.channel->state to
-	 * TEGRA_IVC_STATE_ACK is not allowed.
-	 */
+	 
 	state = tegra_ivc_header_read_field(&ivc->tx.map, tx.state);
 	if (state != TEGRA_IVC_STATE_ESTABLISHED)
 		return -ECONNRESET;
 
-	/*
-	 * Avoid unnecessary invalidations when performing repeated accesses
-	 * to an IVC channel by checking the old queue pointers first.
-	 *
-	 * Synchronization is only necessary when these pointers indicate
-	 * empty or full.
-	 */
+	 
 	if (!tegra_ivc_empty(ivc, &ivc->rx.map))
 		return 0;
 
@@ -275,7 +209,7 @@ static inline void tegra_ivc_flush_frame(struct tegra_ivc *ivc,
 	dma_sync_single_for_device(ivc->peer, phys, size, DMA_TO_DEVICE);
 }
 
-/* directly peek at the next frame rx'ed */
+ 
 int tegra_ivc_read_get_next_frame(struct tegra_ivc *ivc, struct iosys_map *map)
 {
 	int err;
@@ -287,10 +221,7 @@ int tegra_ivc_read_get_next_frame(struct tegra_ivc *ivc, struct iosys_map *map)
 	if (err < 0)
 		return err;
 
-	/*
-	 * Order observation of ivc->rx.position potentially indicating new
-	 * data before data read.
-	 */
+	 
 	smp_rmb();
 
 	tegra_ivc_invalidate_frame(ivc, ivc->rx.phys, ivc->rx.position, 0,
@@ -306,11 +237,7 @@ int tegra_ivc_read_advance(struct tegra_ivc *ivc)
 	unsigned int tx = offsetof(struct tegra_ivc_header, tx.count);
 	int err;
 
-	/*
-	 * No read barriers or synchronization here: the caller is expected to
-	 * have already observed the channel non-empty. This check is just to
-	 * catch programming errors.
-	 */
+	 
 	err = tegra_ivc_check_read(ivc);
 	if (err < 0)
 		return err;
@@ -319,17 +246,10 @@ int tegra_ivc_read_advance(struct tegra_ivc *ivc)
 
 	tegra_ivc_flush(ivc, ivc->rx.phys + rx);
 
-	/*
-	 * Ensure our write to ivc->rx.position occurs before our read from
-	 * ivc->tx.position.
-	 */
+	 
 	smp_mb();
 
-	/*
-	 * Notify only upon transition from full to non-full. The available
-	 * count can only asynchronously increase, so the worst possible
-	 * side-effect will be a spurious notification.
-	 */
+	 
 	tegra_ivc_invalidate(ivc, ivc->rx.phys + tx);
 
 	if (tegra_ivc_available(ivc, &ivc->rx.map) == ivc->num_frames - 1)
@@ -339,7 +259,7 @@ int tegra_ivc_read_advance(struct tegra_ivc *ivc)
 }
 EXPORT_SYMBOL(tegra_ivc_read_advance);
 
-/* directly poke at the next frame to be tx'ed */
+ 
 int tegra_ivc_write_get_next_frame(struct tegra_ivc *ivc, struct iosys_map *map)
 {
 	int err;
@@ -352,7 +272,7 @@ int tegra_ivc_write_get_next_frame(struct tegra_ivc *ivc, struct iosys_map *map)
 }
 EXPORT_SYMBOL(tegra_ivc_write_get_next_frame);
 
-/* advance the tx buffer */
+ 
 int tegra_ivc_write_advance(struct tegra_ivc *ivc)
 {
 	unsigned int tx = offsetof(struct tegra_ivc_header, tx.count);
@@ -366,26 +286,16 @@ int tegra_ivc_write_advance(struct tegra_ivc *ivc)
 	tegra_ivc_flush_frame(ivc, ivc->tx.phys, ivc->tx.position, 0,
 			      ivc->frame_size);
 
-	/*
-	 * Order any possible stores to the frame before update of
-	 * ivc->tx.position.
-	 */
+	 
 	smp_wmb();
 
 	tegra_ivc_advance_tx(ivc);
 	tegra_ivc_flush(ivc, ivc->tx.phys + tx);
 
-	/*
-	 * Ensure our write to ivc->tx.position occurs before our read from
-	 * ivc->rx.position.
-	 */
+	 
 	smp_mb();
 
-	/*
-	 * Notify only upon transition from empty to non-empty. The available
-	 * count can only asynchronously decrease, so the worst possible
-	 * side-effect will be a spurious notification.
-	 */
+	 
 	tegra_ivc_invalidate(ivc, ivc->tx.phys + rx);
 
 	if (tegra_ivc_available(ivc, &ivc->tx.map) == 1)
@@ -405,32 +315,14 @@ void tegra_ivc_reset(struct tegra_ivc *ivc)
 }
 EXPORT_SYMBOL(tegra_ivc_reset);
 
-/*
- * =======================================================
- *  IVC State Transition Table - see tegra_ivc_notified()
- * =======================================================
- *
- *	local	remote	action
- *	-----	------	-----------------------------------
- *	SYNC	EST	<none>
- *	SYNC	ACK	reset counters; move to EST; notify
- *	SYNC	SYNC	reset counters; move to ACK; notify
- *	ACK	EST	move to EST; notify
- *	ACK	ACK	move to EST; notify
- *	ACK	SYNC	reset counters; move to ACK; notify
- *	EST	EST	<none>
- *	EST	ACK	<none>
- *	EST	SYNC	reset counters; move to ACK; notify
- *
- * ===============================================================
- */
+ 
 
 int tegra_ivc_notified(struct tegra_ivc *ivc)
 {
 	unsigned int offset = offsetof(struct tegra_ivc_header, tx.count);
 	enum tegra_ivc_state rx_state, tx_state;
 
-	/* Copy the receiver's state out of shared memory. */
+	 
 	tegra_ivc_invalidate(ivc, ivc->rx.phys + offset);
 	rx_state = tegra_ivc_header_read_field(&ivc->rx.map, tx.state);
 	tx_state = tegra_ivc_header_read_field(&ivc->tx.map, tx.state);
@@ -438,112 +330,65 @@ int tegra_ivc_notified(struct tegra_ivc *ivc)
 	if (rx_state == TEGRA_IVC_STATE_SYNC) {
 		offset = offsetof(struct tegra_ivc_header, tx.count);
 
-		/*
-		 * Order observation of TEGRA_IVC_STATE_SYNC before stores
-		 * clearing tx.channel.
-		 */
+		 
 		smp_rmb();
 
-		/*
-		 * Reset tx.channel counters. The remote end is in the SYNC
-		 * state and won't make progress until we change our state,
-		 * so the counters are not in use at this time.
-		 */
+		 
 		tegra_ivc_header_write_field(&ivc->tx.map, tx.count, 0);
 		tegra_ivc_header_write_field(&ivc->rx.map, rx.count, 0);
 
 		ivc->tx.position = 0;
 		ivc->rx.position = 0;
 
-		/*
-		 * Ensure that counters appear cleared before new state can be
-		 * observed.
-		 */
+		 
 		smp_wmb();
 
-		/*
-		 * Move to ACK state. We have just cleared our counters, so it
-		 * is now safe for the remote end to start using these values.
-		 */
+		 
 		tegra_ivc_header_write_field(&ivc->tx.map, tx.state, TEGRA_IVC_STATE_ACK);
 		tegra_ivc_flush(ivc, ivc->tx.phys + offset);
 
-		/*
-		 * Notify remote end to observe state transition.
-		 */
+		 
 		ivc->notify(ivc, ivc->notify_data);
 
 	} else if (tx_state == TEGRA_IVC_STATE_SYNC &&
 		   rx_state == TEGRA_IVC_STATE_ACK) {
 		offset = offsetof(struct tegra_ivc_header, tx.count);
 
-		/*
-		 * Order observation of ivc_state_sync before stores clearing
-		 * tx_channel.
-		 */
+		 
 		smp_rmb();
 
-		/*
-		 * Reset tx.channel counters. The remote end is in the ACK
-		 * state and won't make progress until we change our state,
-		 * so the counters are not in use at this time.
-		 */
+		 
 		tegra_ivc_header_write_field(&ivc->tx.map, tx.count, 0);
 		tegra_ivc_header_write_field(&ivc->rx.map, rx.count, 0);
 
 		ivc->tx.position = 0;
 		ivc->rx.position = 0;
 
-		/*
-		 * Ensure that counters appear cleared before new state can be
-		 * observed.
-		 */
+		 
 		smp_wmb();
 
-		/*
-		 * Move to ESTABLISHED state. We know that the remote end has
-		 * already cleared its counters, so it is safe to start
-		 * writing/reading on this channel.
-		 */
+		 
 		tegra_ivc_header_write_field(&ivc->tx.map, tx.state, TEGRA_IVC_STATE_ESTABLISHED);
 		tegra_ivc_flush(ivc, ivc->tx.phys + offset);
 
-		/*
-		 * Notify remote end to observe state transition.
-		 */
+		 
 		ivc->notify(ivc, ivc->notify_data);
 
 	} else if (tx_state == TEGRA_IVC_STATE_ACK) {
 		offset = offsetof(struct tegra_ivc_header, tx.count);
 
-		/*
-		 * At this point, we have observed the peer to be in either
-		 * the ACK or ESTABLISHED state. Next, order observation of
-		 * peer state before storing to tx.channel.
-		 */
+		 
 		smp_rmb();
 
-		/*
-		 * Move to ESTABLISHED state. We know that we have previously
-		 * cleared our counters, and we know that the remote end has
-		 * cleared its counters, so it is safe to start writing/reading
-		 * on this channel.
-		 */
+		 
 		tegra_ivc_header_write_field(&ivc->tx.map, tx.state, TEGRA_IVC_STATE_ESTABLISHED);
 		tegra_ivc_flush(ivc, ivc->tx.phys + offset);
 
-		/*
-		 * Notify remote end to observe state transition.
-		 */
+		 
 		ivc->notify(ivc, ivc->notify_data);
 
 	} else {
-		/*
-		 * There is no need to handle any further action. Either the
-		 * channel is already fully established, or we are waiting for
-		 * the remote end to catch up with our current state. Refer
-		 * to the diagram in "IVC State Transition Table" above.
-		 */
+		 
 	}
 
 	if (tx_state != TEGRA_IVC_STATE_ESTABLISHED)
@@ -591,10 +436,7 @@ static int tegra_ivc_check_params(unsigned long rx, unsigned long tx,
 		return -EINVAL;
 	}
 
-	/*
-	 * The headers must at least be aligned enough for counters
-	 * to be accessed atomically.
-	 */
+	 
 	if (!IS_ALIGNED(rx, TEGRA_IVC_ALIGN)) {
 		pr_err("IVC channel start not aligned: %#lx\n", rx);
 		return -EINVAL;
@@ -655,10 +497,7 @@ int tegra_ivc_init(struct tegra_ivc *ivc, struct device *peer, const struct iosy
 	if (WARN_ON(!ivc || !notify))
 		return -EINVAL;
 
-	/*
-	 * All sizes that can be returned by communication functions should
-	 * fit in an int.
-	 */
+	 
 	if (frame_size > INT_MAX)
 		return -E2BIG;
 
@@ -695,10 +534,7 @@ int tegra_ivc_init(struct tegra_ivc *ivc, struct device *peer, const struct iosy
 	ivc->frame_size = frame_size;
 	ivc->num_frames = num_frames;
 
-	/*
-	 * These values aren't necessarily correct until the channel has been
-	 * reset.
-	 */
+	 
 	ivc->tx.position = 0;
 	ivc->rx.position = 0;
 

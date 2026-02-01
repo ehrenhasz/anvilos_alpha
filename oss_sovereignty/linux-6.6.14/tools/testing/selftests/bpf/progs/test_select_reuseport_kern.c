@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2018 Facebook */
+
+ 
 
 #include <stdlib.h>
 #include <linux/in.h>
@@ -94,14 +94,7 @@ int _select_by_skb_data(struct sk_reuseport_md *reuse_md)
 			GOTO_DONE(DROP_MISC);
 	}
 
-	/*
-	 * The ip_protocol could be a compile time decision
-	 * if the bpf_prog.o is dedicated to either TCP or
-	 * UDP.
-	 *
-	 * Otherwise, reuse_md->ip_protocol or
-	 * the protocol field in the iphdr can be used.
-	 */
+	 
 	if (data_check.ip_protocol == IPPROTO_TCP) {
 		struct tcphdr *th = data;
 
@@ -112,9 +105,7 @@ int _select_by_skb_data(struct sk_reuseport_md *reuse_md)
 		data_check.skb_ports[1] = th->dest;
 
 		if (th->fin)
-			/* The connection is being torn down at the end of a
-			 * test. It can't contain a cmd, so return early.
-			 */
+			 
 			return SK_PASS;
 
 		if ((th->doff << 2) + sizeof(*cmd) > data_check.len)

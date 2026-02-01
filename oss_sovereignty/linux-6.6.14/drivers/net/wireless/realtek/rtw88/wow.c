@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+
+ 
 
 #include "main.h"
 #include "fw.h"
@@ -38,16 +37,12 @@ static void rtw_wow_show_wakeup_reason(struct rtw_dev *rtwdev)
 		rtw_dbg(rtwdev, RTW_DBG_WOW, "WOW: Rx gtk rekey\n");
 		break;
 	case RTW_WOW_RSN_RX_PATTERN_MATCH:
-		/* Current firmware and driver don't report pattern index
-		 * Use pattern_idx to 0 defaultly.
-		 */
+		 
 		wakeup.pattern_idx = 0;
 		rtw_dbg(rtwdev, RTW_DBG_WOW, "WOW: Rx pattern match packet\n");
 		break;
 	case RTW_WOW_RSN_RX_NLO:
-		/* Current firmware and driver don't report ssid index.
-		 * Use 0 for n_matches based on its comment.
-		 */
+		 
 		nd_info.n_matches = 0;
 		wakeup.net_detect = &nd_info;
 		rtw_dbg(rtwdev, RTW_DBG_WOW, "Rx NLO\n");
@@ -108,7 +103,7 @@ static void rtw_wow_pattern_write_cam_ent(struct rtw_dev *rtwdev, u8 id,
 	rtw_wow_pattern_write_cam(rtwdev, addr, wdata);
 }
 
-/* RTK internal CRC16 for Pattern Cam */
+ 
 static u16 __rtw_cal_crc16(u8 data, u16 crc)
 {
 	u8 shift_in, data_bit;
@@ -155,7 +150,7 @@ static u16 rtw_calc_crc(u8 *pdata, int length)
 	for (i = 0; i < length; i++)
 		crc = __rtw_cal_crc16(pdata[i], crc);
 
-	/* get 1' complement */
+	 
 	return ~crc;
 }
 
@@ -192,41 +187,21 @@ static void rtw_wow_pattern_generate(struct rtw_dev *rtwdev,
 	else
 		rtw_pattern->type = RTW_PATTERN_INVALID;
 
-	/* translate mask from os to mask for hw
-	 * pattern from OS uses 'ethenet frame', like this:
-	 * |    6   |    6   |   2  |     20    |  Variable  |  4  |
-	 * |--------+--------+------+-----------+------------+-----|
-	 * |    802.3 Mac Header    | IP Header | TCP Packet | FCS |
-	 * |   DA   |   SA   | Type |
-	 *
-	 * BUT, packet catched by our HW is in '802.11 frame', begin from LLC
-	 * |     24 or 30      |    6   |   2  |     20    |  Variable  |  4  |
-	 * |-------------------+--------+------+-----------+------------+-----|
-	 * | 802.11 MAC Header |       LLC     | IP Header | TCP Packet | FCS |
-	 *		       | Others | Tpye |
-	 *
-	 * Therefore, we need translate mask_from_OS to mask_to_hw.
-	 * We should left-shift mask by 6 bits, then set the new bit[0~5] = 0,
-	 * because new mask[0~5] means 'SA', but our HW packet begins from LLC,
-	 * bit[0~5] corresponds to first 6 Bytes in LLC, they just don't match.
-	 */
+	 
 
-	/* Shift 6 bits */
+	 
 	for (i = 0; i < mask_len - 1; i++) {
 		mask_hw[i] = u8_get_bits(mask[i], GENMASK(7, 6));
 		mask_hw[i] |= u8_get_bits(mask[i + 1], GENMASK(5, 0)) << 2;
 	}
 	mask_hw[i] = u8_get_bits(mask[i], GENMASK(7, 6));
 
-	/* Set bit 0-5 to zero */
+	 
 	mask_hw[0] &= (~GENMASK(5, 0));
 
 	memcpy(rtw_pattern->mask, mask_hw, RTW_MAX_PATTERN_MASK_SIZE);
 
-	/* To get the wake up pattern from the mask.
-	 * We do not count first 12 bits which means
-	 * DA[6] and SA[6] in the pattern to match HW design.
-	 */
+	 
 	count = 0;
 	for (i = 12; i < len; i++) {
 		if ((mask[i / 8] >> (i % 8)) & 0x01) {
@@ -274,7 +249,7 @@ static void rtw_wow_bb_stop(struct rtw_dev *rtwdev)
 {
 	struct rtw_wow_param *rtw_wow = &rtwdev->wow;
 
-	/* wait 100ms for firmware to finish TX */
+	 
 	msleep(100);
 
 	if (!rtw_read32_mask(rtwdev, REG_BCNQ_INFO, BIT_MGQ_CPU_EMPTY))
@@ -295,7 +270,7 @@ static void rtw_wow_bb_start(struct rtw_dev *rtwdev)
 
 static void rtw_wow_rx_dma_stop(struct rtw_dev *rtwdev)
 {
-	/* wait 100ms for HW to finish rx dma */
+	 
 	msleep(100);
 
 	rtw_write32_set(rtwdev, REG_RXPKT_NUM, BIT_RW_RELEASE);
@@ -434,11 +409,7 @@ static int rtw_wow_fw_stop(struct rtw_dev *rtwdev)
 
 static void rtw_wow_avoid_reset_mac(struct rtw_dev *rtwdev)
 {
-	/* When resuming from wowlan mode, some hosts issue signal
-	 * (PCIE: PREST, USB: SE0RST) to device, and lead to reset
-	 * mac core. If it happens, the connection to AP will be lost.
-	 * Setting REG_RSV_CTRL Register can avoid this process.
-	 */
+	 
 	switch (rtw_hci_type(rtwdev)) {
 	case RTW_HCI_TYPE_PCIE:
 	case RTW_HCI_TYPE_USB:
@@ -638,7 +609,7 @@ static int rtw_wow_enter_linked_ps(struct rtw_dev *rtwdev)
 
 static int rtw_wow_enter_no_link_ps(struct rtw_dev *rtwdev)
 {
-	/* firmware enters deep ps by itself if supported */
+	 
 	set_bit(RTW_FLAG_LEISURE_PS_DEEP, rtwdev->flags);
 
 	return 0;
@@ -716,9 +687,7 @@ static int rtw_wow_stop(struct rtw_dev *rtwdev)
 {
 	int ret;
 
-	/* some HCI related registers will be reset after resume,
-	 * need to set them again.
-	 */
+	 
 	ret = rtw_hci_setup(rtwdev);
 	if (ret) {
 		rtw_err(rtwdev, "failed to setup hci\n");
@@ -781,9 +750,7 @@ static void rtw_wow_vif_iter(void *data, u8 *mac, struct ieee80211_vif *vif)
 	struct rtw_vif *rtwvif = (struct rtw_vif *)vif->drv_priv;
 	struct rtw_wow_param *rtw_wow = &rtwdev->wow;
 
-	/* Current wowlan function support setting of only one STATION vif.
-	 * So when one suitable vif is found, stop the iteration.
-	 */
+	 
 	if (rtw_wow->wow_vif || vif->type != NL80211_IFTYPE_STATION)
 		return;
 
@@ -882,7 +849,7 @@ int rtw_wow_resume(struct rtw_dev *rtwdev)
 {
 	int ret;
 
-	/* If wowlan mode is not enabled, do nothing */
+	 
 	if (!test_bit(RTW_FLAG_WOWLAN, rtwdev->flags)) {
 		rtw_err(rtwdev, "wow is not enabled\n");
 		ret = -EPERM;

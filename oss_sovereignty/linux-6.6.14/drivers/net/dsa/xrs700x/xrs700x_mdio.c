@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020 NovaTech LLC
- * George McCollister <george.mccollister@gmail.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -125,7 +122,7 @@ static int xrs700x_mdio_probe(struct mdio_device *mdiodev)
 
 	ret = xrs700x_switch_register(priv);
 
-	/* Main DSA driver may not be started yet. */
+	 
 	if (ret)
 		return ret;
 

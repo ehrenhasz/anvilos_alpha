@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/types.h>
 #include <linux/kconfig.h>
@@ -13,9 +13,7 @@
 #include "fallback.h"
 #include "firmware.h"
 
-/*
- * firmware fallback configuration table
- */
+ 
 
 struct firmware_fallback_config fw_fallback_config = {
 	.force_sysfs_fallback = IS_ENABLED(CONFIG_FW_LOADER_USER_HELPER_FALLBACK),
@@ -66,4 +64,4 @@ void unregister_firmware_config_sysctl(void)
 }
 EXPORT_SYMBOL_NS_GPL(unregister_firmware_config_sysctl, FIRMWARE_LOADER_PRIVATE);
 
-#endif /* CONFIG_SYSCTL */
+#endif  

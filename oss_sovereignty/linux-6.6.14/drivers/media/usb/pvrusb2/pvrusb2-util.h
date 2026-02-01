@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *
- *  Copyright (C) 2005 Mike Isely <isely@pobox.com>
- */
+ 
+ 
 #ifndef __PVRUSB2_UTIL_H
 #define __PVRUSB2_UTIL_H
 
@@ -35,4 +32,4 @@
      ((u32)((t)[i+3])))
 
 
-#endif /* __PVRUSB2_UTIL_H */
+#endif  

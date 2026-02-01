@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2018 Intel Corporation
- */
+
+ 
 
 #include <linux/crc32.h>
 
@@ -213,7 +211,7 @@ static int igt_global_reset(void *arg)
 	intel_wakeref_t wakeref;
 	int err = 0;
 
-	/* Check that we can issue a global GPU reset */
+	 
 
 	igt_global_reset_lock(gt);
 	wakeref = intel_runtime_pm_get(gt->uncore->rpm);
@@ -241,7 +239,7 @@ static int igt_wedged_reset(void *arg)
 	struct intel_gt *gt = arg;
 	intel_wakeref_t wakeref;
 
-	/* Check that we can recover a wedged device with a GPU reset */
+	 
 
 	igt_global_reset_lock(gt);
 	wakeref = intel_runtime_pm_get(gt->uncore->rpm);
@@ -263,12 +261,12 @@ static int igt_atomic_reset(void *arg)
 	const typeof(*igt_atomic_phases) *p;
 	int err = 0;
 
-	/* Check that the resets are usable from atomic context */
+	 
 
 	intel_gt_pm_get(gt);
 	igt_global_reset_lock(gt);
 
-	/* Flush any requests before we get started and check basics */
+	 
 	if (!igt_force_reset(gt))
 		goto unlock;
 
@@ -291,7 +289,7 @@ static int igt_atomic_reset(void *arg)
 		}
 	}
 
-	/* As we poke around the guts, do a full reset before continuing. */
+	 
 	igt_force_reset(gt);
 
 unlock:
@@ -309,7 +307,7 @@ static int igt_atomic_engine_reset(void *arg)
 	enum intel_engine_id id;
 	int err = 0;
 
-	/* Check that the resets are usable from atomic context */
+	 
 
 	if (!intel_has_reset_engine(gt))
 		return 0;
@@ -320,7 +318,7 @@ static int igt_atomic_engine_reset(void *arg)
 	intel_gt_pm_get(gt);
 	igt_global_reset_lock(gt);
 
-	/* Flush any requests before we get started and check basics */
+	 
 	if (!igt_force_reset(gt))
 		goto out_unlock;
 
@@ -360,7 +358,7 @@ static int igt_atomic_engine_reset(void *arg)
 			break;
 	}
 
-	/* As we poke around the guts, do a full reset before continuing. */
+	 
 	igt_force_reset(gt);
 
 out_unlock:
@@ -373,7 +371,7 @@ out_unlock:
 int intel_reset_live_selftests(struct drm_i915_private *i915)
 {
 	static const struct i915_subtest tests[] = {
-		SUBTEST(igt_global_reset), /* attempt to recover GPU first */
+		SUBTEST(igt_global_reset),  
 		SUBTEST(igt_reset_device_stolen),
 		SUBTEST(igt_reset_engines_stolen),
 		SUBTEST(igt_wedged_reset),
@@ -386,7 +384,7 @@ int intel_reset_live_selftests(struct drm_i915_private *i915)
 		return 0;
 
 	if (intel_gt_is_wedged(gt))
-		return -EIO; /* we're long past hope of a successful reset */
+		return -EIO;  
 
 	return intel_gt_live_subtests(tests, gt);
 }

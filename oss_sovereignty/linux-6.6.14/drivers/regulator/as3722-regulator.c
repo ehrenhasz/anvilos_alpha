@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Voltage regulator support for AMS AS3722 PMIC
- *
- * Copyright (C) 2013 ams
- *
- * Author: Florian Lobmaier <florian.lobmaier@ams.com>
- * Author: Laxman Dewangan <ldewangan@nvidia.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/kernel.h>
@@ -20,7 +13,7 @@
 #include <linux/regulator/of_regulator.h>
 #include <linux/slab.h>
 
-/* Regulator IDs */
+ 
 enum as3722_regulators_id {
 	AS3722_REGULATOR_ID_SD0,
 	AS3722_REGULATOR_ID_SD1,

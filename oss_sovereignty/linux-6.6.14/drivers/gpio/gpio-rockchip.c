@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013 MundoReader S.L.
- * Author: Heiko Stuebner <heiko@sntech.de>
- *
- * Copyright (c) 2021 Rockchip Electronics Co. Ltd.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -26,9 +21,9 @@
 #include "../pinctrl/core.h"
 #include "../pinctrl/pinctrl-rockchip.h"
 
-#define GPIO_TYPE_V1		(0)           /* GPIO Version ID reserved */
-#define GPIO_TYPE_V2		(0x01000C2B)  /* GPIO Version ID 0x01000C2B */
-#define GPIO_TYPE_V2_1		(0x0101157C)  /* GPIO Version ID 0x0101157C */
+#define GPIO_TYPE_V1		(0)            
+#define GPIO_TYPE_V2		(0x01000C2B)   
+#define GPIO_TYPE_V2_1		(0x0101157C)   
 
 static const struct rockchip_gpio_regs gpio_regs_v1 = {
 	.port_dr = 0x00,
@@ -219,10 +214,10 @@ static int rockchip_gpio_set_debounce(struct gpio_chip *gc,
 
 	raw_spin_lock_irqsave(&bank->slock, flags);
 
-	/* Only the v1 needs to configure div_en and div_con for dbclk */
+	 
 	if (debounce) {
 		if (div_debounce_support) {
-			/* Configure the max debounce from consumers */
+			 
 			cur_div_reg = readl(bank->reg_base +
 					    reg->dbclk_div_con);
 			if (cur_div_reg < div_reg)
@@ -243,7 +238,7 @@ static int rockchip_gpio_set_debounce(struct gpio_chip *gc,
 
 	raw_spin_unlock_irqrestore(&bank->slock, flags);
 
-	/* Enable or disable dbclk at last */
+	 
 	if (div_debounce_support) {
 		if (debounce)
 			clk_prepare_enable(bank->db_clk);
@@ -268,11 +263,7 @@ static int rockchip_gpio_direction_output(struct gpio_chip *gc,
 	return rockchip_gpio_set_direction(gc, offset, false);
 }
 
-/*
- * gpiolib set_config callback function. The setting of the pin
- * mux function as 'gpio output' will be handled by the pinctrl subsystem
- * interface.
- */
+ 
 static int rockchip_gpio_set_config(struct gpio_chip *gc, unsigned int offset,
 				  unsigned long config)
 {
@@ -281,27 +272,14 @@ static int rockchip_gpio_set_config(struct gpio_chip *gc, unsigned int offset,
 	switch (param) {
 	case PIN_CONFIG_INPUT_DEBOUNCE:
 		rockchip_gpio_set_debounce(gc, offset, true);
-		/*
-		 * Rockchip's gpio could only support up to one period
-		 * of the debounce clock(pclk), which is far away from
-		 * satisftying the requirement, as pclk is usually near
-		 * 100MHz shared by all peripherals. So the fact is it
-		 * has crippled debounce capability could only be useful
-		 * to prevent any spurious glitches from waking up the system
-		 * if the gpio is conguired as wakeup interrupt source. Let's
-		 * still return -ENOTSUPP as before, to make sure the caller
-		 * of gpiod_set_debounce won't change its behaviour.
-		 */
+		 
 		return -ENOTSUPP;
 	default:
 		return -ENOTSUPP;
 	}
 }
 
-/*
- * gpiod_to_irq() callback function. Creates a mapping between a GPIO pin
- * and a virtual IRQ, if not already present.
- */
+ 
 static int rockchip_gpio_to_irq(struct gpio_chip *gc, unsigned int offset)
 {
 	struct rockchip_pin_bank *bank = gpiochip_get_data(gc);
@@ -343,10 +321,7 @@ static void rockchip_irq_demux(struct irq_desc *desc)
 	for_each_set_bit(irq, &pending, 32) {
 		dev_dbg(bank->dev, "handling irq %d\n", irq);
 
-		/*
-		 * Triggering IRQ on both rising and falling edge
-		 * needs manual intervention.
-		 */
+		 
 		if (bank->toggle_edge_mode & BIT(irq)) {
 			u32 data, data_old, polarity;
 			unsigned long flags;
@@ -417,10 +392,7 @@ static int rockchip_irq_set_type(struct irq_data *d, unsigned int type)
 			bank->toggle_edge_mode |= mask;
 			level &= ~mask;
 
-			/*
-			 * Determine gpio state. If 1 next interrupt should be
-			 * low otherwise high.
-			 */
+			 
 			data = readl(bank->reg_base + bank->gpio_regs->ext_port);
 			if (data & mask)
 				polarity &= ~mask;
@@ -556,11 +528,7 @@ static int rockchip_interrupts_register(struct rockchip_pin_bank *bank)
 	gc->chip_types[0].chip.irq_release_resources = rockchip_irq_relres;
 	gc->wake_enabled = IRQ_MSK(bank->nr_pins);
 
-	/*
-	 * Linux assumes that all interrupts start out disabled/masked.
-	 * Our driver only uses the concept of masked and always keeps
-	 * things enabled, so for us that's all masked and all enabled.
-	 */
+	 
 	rockchip_gpio_writel(bank, 0xffffffff, bank->gpio_regs->int_mask);
 	rockchip_gpio_writel(bank, 0xffffffff, bank->gpio_regs->port_eoi);
 	rockchip_gpio_writel(bank, 0xffffffff, bank->gpio_regs->int_en);
@@ -592,16 +560,7 @@ static int rockchip_gpiolib_register(struct rockchip_pin_bank *bank)
 		return ret;
 	}
 
-	/*
-	 * For DeviceTree-supported systems, the gpio core checks the
-	 * pinctrl's device node for the "gpio-ranges" property.
-	 * If it is present, it takes care of adding the pin ranges
-	 * for the driver. In this case the driver can skip ahead.
-	 *
-	 * In order to remain compatible with older, existing DeviceTree
-	 * files which don't set the "gpio-ranges" property or systems that
-	 * utilize ACPI the driver has to call gpiochip_add_pin_range().
-	 */
+	 
 	if (!of_property_read_bool(bank->of_node, "gpio-ranges")) {
 		struct device_node *pctlnp = of_get_parent(bank->of_node);
 		struct pinctrl_dev *pctldev = NULL;
@@ -661,7 +620,7 @@ static int rockchip_get_bank_data(struct rockchip_pin_bank *bank)
 	clk_prepare_enable(bank->clk);
 	id = readl(bank->reg_base + gpio_regs_v2.version_id);
 
-	/* If not gpio v2, that is default to v1. */
+	 
 	if (id == GPIO_TYPE_V2 || id == GPIO_TYPE_V2_1) {
 		bank->gpio_regs = &gpio_regs_v2;
 		bank->gpio_type = GPIO_TYPE_V2;
@@ -733,10 +692,7 @@ static int rockchip_gpio_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/*
-	 * Prevent clashes with a deferred output setting
-	 * being added right at this moment.
-	 */
+	 
 	mutex_lock(&bank->deferred_lock);
 
 	ret = rockchip_gpiolib_register(bank);

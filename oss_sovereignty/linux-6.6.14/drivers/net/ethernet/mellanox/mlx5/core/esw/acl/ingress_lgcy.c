@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2020 Mellanox Technologies Inc. All rights reserved. */
+
+ 
 
 #include "mlx5_core.h"
 #include "eswitch.h"
@@ -147,15 +147,7 @@ int esw_acl_ingress_lgcy_setup(struct mlx5_eswitch *esw,
 	struct mlx5_fc *counter = NULL;
 	bool vst_check_cvlan = false;
 	bool vst_push_cvlan = false;
-	/* The ingress acl table contains 4 groups
-	 * (2 active rules at the same time -
-	 *      1 allow rule from one of the first 3 groups.
-	 *      1 drop rule from the last group):
-	 * 1)Allow untagged traffic with smac=original mac.
-	 * 2)Allow untagged traffic.
-	 * 3)Allow traffic with smac=original mac.
-	 * 4)Drop all other traffic.
-	 */
+	 
 	int table_size = 4;
 	int dest_num = 0;
 	int err = 0;
@@ -216,7 +208,7 @@ int esw_acl_ingress_lgcy_setup(struct mlx5_eswitch *esw,
 	if (vst_check_cvlan || vport->info.spoofchk)
 		spec->match_criteria_enable = MLX5_MATCH_OUTER_HEADERS;
 
-	/* Create ingress allow rule */
+	 
 	flow_act.action = MLX5_FLOW_CONTEXT_ACTION_ALLOW;
 	if (vst_push_cvlan) {
 		flow_act.action |= MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH;
@@ -256,7 +248,7 @@ int esw_acl_ingress_lgcy_setup(struct mlx5_eswitch *esw,
 
 	memset(&flow_act, 0, sizeof(flow_act));
 	flow_act.action = MLX5_FLOW_CONTEXT_ACTION_DROP;
-	/* Attach drop flow counter */
+	 
 	if (counter) {
 		flow_act.action |= MLX5_FLOW_CONTEXT_ACTION_COUNT;
 		drop_ctr_dst.type = MLX5_FLOW_DESTINATION_TYPE_COUNTER;

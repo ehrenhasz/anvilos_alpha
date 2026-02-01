@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2015, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/debugfs.h>
 #include <linux/list.h>
@@ -233,10 +203,7 @@ static int __mlx5e_add_vlan_rule(struct mlx5e_flow_steering *fs,
 
 	switch (rule_type) {
 	case MLX5E_VLAN_RULE_TYPE_UNTAGGED:
-		/* cvlan_tag enabled in match criteria and
-		 * disabled in match value means both S & C tags
-		 * don't exist (untagged of both)
-		 */
+		 
 		rule_p = &fs->vlan->untagged_rule;
 		MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria,
 				 outer_headers.cvlan_tag);
@@ -263,7 +230,7 @@ static int __mlx5e_add_vlan_rule(struct mlx5e_flow_steering *fs,
 		MLX5_SET(fte_match_param, spec->match_value, outer_headers.first_vid,
 			 vid);
 		break;
-	default: /* MLX5E_VLAN_RULE_TYPE_MATCH_CTAG_VID */
+	default:  
 		rule_p = &fs->vlan->active_cvlans_rule[vid];
 		MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria,
 				 outer_headers.cvlan_tag);
@@ -483,7 +450,7 @@ static int mlx5e_vlan_rx_add_svid(struct mlx5e_flow_steering *fs,
 		return err;
 	}
 
-	/* Need to fix some features.. */
+	 
 	netdev_update_features(netdev);
 	return err;
 }
@@ -561,9 +528,7 @@ static void mlx5e_del_vlan_rules(struct mlx5e_flow_steering *fs)
 
 	mlx5e_remove_vlan_trap(fs);
 
-	/* must be called after DESTROY bit is set and
-	 * set_rx_mode is called and flushed
-	 */
+	 
 	if (fs->vlan->cvlan_filter_disabled)
 		mlx5e_fs_del_any_vid_rules(fs);
 }
@@ -635,7 +600,7 @@ static void mlx5e_fill_addr_array(struct mlx5e_flow_steering *fs, int list_type,
 
 	addr_list = is_uc ? fs->l2.netdev_uc : fs->l2.netdev_mc;
 
-	if (is_uc) /* Make sure our own address is pushed first */
+	if (is_uc)  
 		ether_addr_copy(addr_array[i++], ndev->dev_addr);
 	else if (fs->l2.broadcast_enabled)
 		ether_addr_copy(addr_array[i++], ndev->broadcast);
@@ -1006,7 +971,7 @@ static int mlx5e_add_l2_flow_rule(struct mlx5e_flow_steering *fs,
 #define MLX5E_NUM_L2_GROUPS	   3
 #define MLX5E_L2_GROUP1_SIZE	   BIT(15)
 #define MLX5E_L2_GROUP2_SIZE	   BIT(0)
-#define MLX5E_L2_GROUP_TRAP_SIZE   BIT(0) /* must be last */
+#define MLX5E_L2_GROUP_TRAP_SIZE   BIT(0)  
 #define MLX5E_L2_TABLE_SIZE	   (MLX5E_L2_GROUP1_SIZE +\
 				    MLX5E_L2_GROUP2_SIZE +\
 				    MLX5E_L2_GROUP_TRAP_SIZE)
@@ -1032,7 +997,7 @@ static int mlx5e_create_l2_table_groups(struct mlx5e_l2_table *l2_table)
 	mc = MLX5_ADDR_OF(create_flow_group_in, in, match_criteria);
 	mc_dmac = MLX5_ADDR_OF(fte_match_param, mc,
 			       outer_headers.dmac_47_16);
-	/* Flow Group for full match */
+	 
 	eth_broadcast_addr(mc_dmac);
 	MLX5_SET_CFG(in, match_criteria_enable, MLX5_MATCH_OUTER_HEADERS);
 	MLX5_SET_CFG(in, start_flow_index, ix);
@@ -1043,7 +1008,7 @@ static int mlx5e_create_l2_table_groups(struct mlx5e_l2_table *l2_table)
 		goto err_destroy_groups;
 	ft->num_groups++;
 
-	/* Flow Group for allmulti */
+	 
 	eth_zero_addr(mc_dmac);
 	mc_dmac[0] = 0x01;
 	MLX5_SET_CFG(in, start_flow_index, ix);
@@ -1054,7 +1019,7 @@ static int mlx5e_create_l2_table_groups(struct mlx5e_l2_table *l2_table)
 		goto err_destroy_groups;
 	ft->num_groups++;
 
-	/* Flow Group for l2 traps */
+	 
 	memset(in, 0, inlen);
 	MLX5_SET_CFG(in, start_flow_index, ix);
 	ix += MLX5E_L2_GROUP_TRAP_SIZE;
@@ -1120,7 +1085,7 @@ err_destroy_flow_table:
 #define MLX5E_VLAN_GROUP1_SIZE	BIT(12)
 #define MLX5E_VLAN_GROUP2_SIZE	BIT(1)
 #define MLX5E_VLAN_GROUP3_SIZE	BIT(0)
-#define MLX5E_VLAN_GROUP_TRAP_SIZE BIT(0) /* must be last */
+#define MLX5E_VLAN_GROUP_TRAP_SIZE BIT(0)  
 #define MLX5E_VLAN_TABLE_SIZE	(MLX5E_VLAN_GROUP0_SIZE +\
 				 MLX5E_VLAN_GROUP1_SIZE +\
 				 MLX5E_VLAN_GROUP2_SIZE +\

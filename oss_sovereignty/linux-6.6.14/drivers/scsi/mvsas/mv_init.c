@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Marvell 88SE64xx/88SE94xx pci init
- *
- * Copyright 2007 Red Hat, Inc.
- * Copyright 2008 Marvell. <kewei@marvell.com>
- * Copyright 2009-2011 Marvell. <yuxiangl@marvell.com>
-*/
+
+ 
 
 
 #include "mv_sas.h"
@@ -236,9 +230,7 @@ static int mvs_alloc(struct mvs_info *mvi, struct Scsi_Host *shost)
 		mvi->devices[i].dev_status = MVS_DEV_NORMAL;
 	}
 
-	/*
-	 * alloc and init our DMA areas
-	 */
+	 
 	mvi->tx = dma_alloc_coherent(mvi->dev,
 				     sizeof(*mvi->tx) * MVS_CHIP_SLOT_SZ,
 				     &mvi->tx_dma, GFP_KERNEL);
@@ -294,9 +286,7 @@ int mvs_ioremap(struct mvs_info *mvi, int bar, int bar_ex)
 	unsigned long res_start, res_len, res_flag_ex = 0;
 	struct pci_dev *pdev = mvi->pdev;
 	if (bar_ex != -1) {
-		/*
-		 * ioremap main and peripheral registers
-		 */
+		 
 		res_start = pci_resource_start(pdev, bar_ex);
 		res_len = pci_resource_len(pdev, bar_ex);
 		if (!res_start || !res_len)
@@ -669,19 +659,19 @@ static struct pci_device_id mvs_pci_table[] = {
 		.class_mask	= 0,
 		.driver_data	= chip_9445,
 	},
-	{ PCI_VDEVICE(MARVELL_EXT, 0x9485), chip_9485 }, /* Marvell 9480/9485 (any vendor/model) */
-	{ PCI_VDEVICE(OCZ, 0x1021), chip_9485}, /* OCZ RevoDrive3 */
-	{ PCI_VDEVICE(OCZ, 0x1022), chip_9485}, /* OCZ RevoDrive3/zDriveR4 (exact model unknown) */
-	{ PCI_VDEVICE(OCZ, 0x1040), chip_9485}, /* OCZ RevoDrive3/zDriveR4 (exact model unknown) */
-	{ PCI_VDEVICE(OCZ, 0x1041), chip_9485}, /* OCZ RevoDrive3/zDriveR4 (exact model unknown) */
-	{ PCI_VDEVICE(OCZ, 0x1042), chip_9485}, /* OCZ RevoDrive3/zDriveR4 (exact model unknown) */
-	{ PCI_VDEVICE(OCZ, 0x1043), chip_9485}, /* OCZ RevoDrive3/zDriveR4 (exact model unknown) */
-	{ PCI_VDEVICE(OCZ, 0x1044), chip_9485}, /* OCZ RevoDrive3/zDriveR4 (exact model unknown) */
-	{ PCI_VDEVICE(OCZ, 0x1080), chip_9485}, /* OCZ RevoDrive3/zDriveR4 (exact model unknown) */
-	{ PCI_VDEVICE(OCZ, 0x1083), chip_9485}, /* OCZ RevoDrive3/zDriveR4 (exact model unknown) */
-	{ PCI_VDEVICE(OCZ, 0x1084), chip_9485}, /* OCZ RevoDrive3/zDriveR4 (exact model unknown) */
+	{ PCI_VDEVICE(MARVELL_EXT, 0x9485), chip_9485 },  
+	{ PCI_VDEVICE(OCZ, 0x1021), chip_9485},  
+	{ PCI_VDEVICE(OCZ, 0x1022), chip_9485},  
+	{ PCI_VDEVICE(OCZ, 0x1040), chip_9485},  
+	{ PCI_VDEVICE(OCZ, 0x1041), chip_9485},  
+	{ PCI_VDEVICE(OCZ, 0x1042), chip_9485},  
+	{ PCI_VDEVICE(OCZ, 0x1043), chip_9485},  
+	{ PCI_VDEVICE(OCZ, 0x1044), chip_9485},  
+	{ PCI_VDEVICE(OCZ, 0x1080), chip_9485},  
+	{ PCI_VDEVICE(OCZ, 0x1083), chip_9485},  
+	{ PCI_VDEVICE(OCZ, 0x1084), chip_9485},  
 
-	{ }	/* terminate list */
+	{ }	 
 };
 
 static struct pci_driver mvs_pci_driver = {

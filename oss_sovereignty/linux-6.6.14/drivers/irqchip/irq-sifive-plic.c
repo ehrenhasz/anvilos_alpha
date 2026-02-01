@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2017 SiFive
- * Copyright (C) 2018 Christoph Hellwig
- */
+
+ 
 #define pr_fmt(fmt) "plic: " fmt
 #include <linux/cpu.h>
 #include <linux/interrupt.h>
@@ -20,39 +17,20 @@
 #include <linux/syscore_ops.h>
 #include <asm/smp.h>
 
-/*
- * This driver implements a version of the RISC-V PLIC with the actual layout
- * specified in chapter 8 of the SiFive U5 Coreplex Series Manual:
- *
- *     https://static.dev.sifive.com/U54-MC-RVCoreIP.pdf
- *
- * The largest number supported by devices marked as 'sifive,plic-1.0.0', is
- * 1024, of which device 0 is defined as non-existent by the RISC-V Privileged
- * Spec.
- */
+ 
 
 #define MAX_DEVICES			1024
 #define MAX_CONTEXTS			15872
 
-/*
- * Each interrupt source has a priority register associated with it.
- * We always hardwire it to one in Linux.
- */
+ 
 #define PRIORITY_BASE			0
 #define     PRIORITY_PER_ID		4
 
-/*
- * Each hart context has a vector of interrupt enable bits associated with it.
- * There's one bit for each interrupt source.
- */
+ 
 #define CONTEXT_ENABLE_BASE		0x2000
 #define     CONTEXT_ENABLE_SIZE		0x80
 
-/*
- * Each hart context has a set of control registers associated with it.  Right
- * now there's only two: a source priority threshold over which the hart will
- * take an interrupt, and a register to claim interrupts.
- */
+ 
 #define CONTEXT_BASE			0x200000
 #define     CONTEXT_SIZE		0x1000
 #define     CONTEXT_THRESHOLD		0x00
@@ -75,10 +53,7 @@ struct plic_priv {
 struct plic_handler {
 	bool			present;
 	void __iomem		*hart_base;
-	/*
-	 * Protect mask operations on the registers given that we can't
-	 * assume atomic memory operations work on them.
-	 */
+	 
 	raw_spinlock_t		enable_lock;
 	void __iomem		*enable_base;
 	u32			*enable_save;
@@ -350,12 +325,7 @@ static const struct irq_domain_ops plic_irqdomain_ops = {
 	.free		= irq_domain_free_irqs_top,
 };
 
-/*
- * Handling an interrupt is a two-step process: first you claim the interrupt
- * by reading the claim register, then you complete the interrupt by writing
- * that source ID back to the same claim register.  This automatically enables
- * and disables the interrupt, so there's nothing else to do.
- */
+ 
 static void plic_handle_irq(struct irq_desc *desc)
 {
 	struct plic_handler *handler = this_cpu_ptr(&plic_handlers);
@@ -380,7 +350,7 @@ static void plic_handle_irq(struct irq_desc *desc)
 
 static void plic_set_threshold(struct plic_handler *handler, u32 threshold)
 {
-	/* priority must be > threshold to trigger an interrupt */
+	 
 	writel(threshold, handler->hart_base + CONTEXT_THRESHOLD);
 }
 
@@ -460,12 +430,9 @@ static int __init __plic_init(struct device_node *node,
 			continue;
 		}
 
-		/*
-		 * Skip contexts other than external interrupts for our
-		 * privilege level.
-		 */
+		 
 		if (parent.args[0] != RV_IRQ_EXT) {
-			/* Disable S-mode enable bits if running in M-mode. */
+			 
 			if (IS_ENABLED(CONFIG_RISCV_M_MODE)) {
 				void __iomem *enable_base = priv->regs +
 					CONTEXT_ENABLE_BASE +
@@ -489,7 +456,7 @@ static int __init __plic_init(struct device_node *node,
 			continue;
 		}
 
-		/* Find parent domain and register chained handler */
+		 
 		if (!plic_parent_irq && irq_find_host(parent.np)) {
 			plic_parent_irq = irq_of_parse_and_map(node, i);
 			if (plic_parent_irq)
@@ -497,11 +464,7 @@ static int __init __plic_init(struct device_node *node,
 							plic_handle_irq);
 		}
 
-		/*
-		 * When running in M-mode we need to ignore the S-mode handler.
-		 * Here we assume it always comes later, but that might be a
-		 * little fragile.
-		 */
+		 
 		handler = per_cpu_ptr(&plic_handlers, cpu);
 		if (handler->present) {
 			pr_warn("handler already present for context %d.\n", i);
@@ -531,11 +494,7 @@ done:
 		nr_handlers++;
 	}
 
-	/*
-	 * We can have multiple PLIC instances so setup cpuhp state
-	 * and register syscore operations only when context handler
-	 * for current/boot CPU is present.
-	 */
+	 
 	handler = this_cpu_ptr(&plic_handlers);
 	if (handler->present && !plic_cpuhp_setup_done) {
 		cpuhp_setup_state(CPUHP_AP_IRQ_SIFIVE_PLIC_STARTING,
@@ -570,7 +529,7 @@ static int __init plic_init(struct device_node *node,
 }
 
 IRQCHIP_DECLARE(sifive_plic, "sifive,plic-1.0.0", plic_init);
-IRQCHIP_DECLARE(riscv_plic0, "riscv,plic0", plic_init); /* for legacy systems */
+IRQCHIP_DECLARE(riscv_plic0, "riscv,plic0", plic_init);  
 
 static int __init plic_edge_init(struct device_node *node,
 				 struct device_node *parent)

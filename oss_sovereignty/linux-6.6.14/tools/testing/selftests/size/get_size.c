@@ -1,30 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2014 Sony Mobile Communications Inc.
- *
- * Selftest for runtime system size
- *
- * Prints the amount of RAM that the currently running system is using.
- *
- * This program tries to be as small as possible itself, to
- * avoid perturbing the system memory utilization with its
- * own execution.  It also attempts to have as few dependencies
- * on kernel features as possible.
- *
- * It should be statically linked, with startup libs avoided.  It uses
- * no library calls except the syscall() function for the following 3
- * syscalls:
- *   sysinfo(), write(), and _exit()
- *
- * For output, it avoids printf (which in some C libraries
- * has large external dependencies) by  implementing it's own
- * number output and print routines, and using __builtin_strlen()
- *
- * The test may crash if any of the above syscalls fails because in some
- * libc implementations (e.g. the GNU C Library) errno is saved in
- * thread-local storage, which does not get initialized due to avoiding
- * startup libs.
- */
+
+ 
 
 #include <sys/sysinfo.h>
 #include <unistd.h>
@@ -46,7 +21,7 @@ static inline char *num_to_str(unsigned long num, char *buf, int len)
 {
 	unsigned int digit;
 
-	/* put digits in buffer from back to front */
+	 
 	buf += len - 1;
 	*buf = 0;
 	do {
@@ -80,7 +55,7 @@ static int print_k_value(const char *s, unsigned long num, unsigned long units)
 	return ccode;
 }
 
-/* this program has no main(), as startup libraries are not used */
+ 
 void _start(void)
 {
 	int ccode;
@@ -101,7 +76,7 @@ void _start(void)
 	print("ok 1");
 	print(test_name);
 
-	/* ignore cache complexities for now */
+	 
 	used = info.totalram - info.freeram - info.bufferram;
 	print("# System runtime memory report (units in Kilobytes):\n");
 	print(" ---\n");

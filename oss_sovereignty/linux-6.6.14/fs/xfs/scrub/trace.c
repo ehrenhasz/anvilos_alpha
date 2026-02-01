@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2017-2023 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <djwong@kernel.org>
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -17,7 +14,7 @@
 #include "scrub/xfile.h"
 #include "scrub/xfarray.h"
 
-/* Figure out which block the btree cursor was pointing to. */
+ 
 static inline xfs_fsblock_t
 xchk_btree_cur_fsbno(
 	struct xfs_btree_cur	*cur,
@@ -34,9 +31,6 @@ xchk_btree_cur_fsbno(
 	return NULLFSBLOCK;
 }
 
-/*
- * We include this last to have the helpers above available for the trace
- * event implementations.
- */
+ 
 #define CREATE_TRACE_POINTS
 #include "scrub/trace.h"

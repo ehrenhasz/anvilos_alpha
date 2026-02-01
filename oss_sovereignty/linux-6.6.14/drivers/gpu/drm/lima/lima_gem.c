@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/* Copyright 2017-2019 Qiang Yu <yuq825@gmail.com> */
+
+ 
 
 #include <linux/mm.h>
 #include <linux/iosys-map.h>
@@ -116,7 +116,7 @@ int lima_gem_create_handle(struct drm_device *dev, struct drm_file *file,
 
 	obj = &shmem->base;
 
-	/* Mali Utgard GPU can only support 32bit address space */
+	 
 	mask = mapping_gfp_mask(obj->filp->f_mapping);
 	mask &= ~__GFP_HIGHMEM;
 	mask |= __GFP_DMA32;
@@ -139,7 +139,7 @@ int lima_gem_create_handle(struct drm_device *dev, struct drm_file *file,
 	err = drm_gem_handle_create(file, obj, handle);
 
 out:
-	/* drop reference from allocate - handle holds it now */
+	 
 	drm_gem_object_put(obj);
 
 	return err;
@@ -263,7 +263,7 @@ static int lima_gem_sync_bo(struct lima_sched_task *task, struct lima_bo *bo,
 	if (err)
 		return err;
 
-	/* explicit sync use user passed dep fence */
+	 
 	if (explicit)
 		return 0;
 
@@ -317,9 +317,7 @@ int lima_gem_submit(struct drm_file *file, struct lima_submit *submit)
 
 		bo = to_lima_bo(obj);
 
-		/* increase refcnt of gpu va map to prevent unmapped when executing,
-		 * will be decreased when task done
-		 */
+		 
 		err = lima_vm_bo_add(vm, bo, false);
 		if (err) {
 			drm_gem_object_put(obj);

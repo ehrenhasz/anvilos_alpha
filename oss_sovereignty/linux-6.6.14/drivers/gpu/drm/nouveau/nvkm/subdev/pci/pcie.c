@@ -1,26 +1,4 @@
-/*
- * Copyright 2015 Karol Herbst <nouveau@karolherbst.de>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Karol Herbst <git@karolherbst.de>
- */
+ 
 #include "priv.h"
 
 static char *nvkm_pcie_speeds[] = {
@@ -40,7 +18,7 @@ nvkm_pcie_speed(enum pci_bus_speed speed)
 	case PCIE_SPEED_8_0GT:
 		return NVKM_PCIE_SPEED_8_0;
 	default:
-		/* XXX 0x16 is 8_0, assume 0x17 will be 16_0 for now */
+		 
 		if (speed == 0x17)
 			return NVKM_PCIE_SPEED_8_0;
 		return -1;
@@ -91,7 +69,7 @@ nvkm_pcie_init(struct nvkm_pci *pci)
 	struct nvkm_subdev *subdev = &pci->subdev;
 	int ret;
 
-	/* raise pcie version first */
+	 
 	ret = nvkm_pcie_get_version(pci);
 	if (ret > 0) {
 		int max_version = nvkm_pcie_get_max_version(pci);

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  Copyright (C) 2017 Chelsio Communications.  All rights reserved.
- */
+ 
+ 
 
 #ifndef __CUDBG_ENTITY_H__
 #define __CUDBG_ENTITY_H__
@@ -55,11 +53,11 @@ struct cudbg_hw_sched {
 struct sge_qbase_reg_field {
 	u32 reg_addr;
 	u32 reg_data[SGE_QBASE_DATA_REG_NUM];
-	/* Max supported PFs */
+	 
 	u32 pf_data_value[PCIE_FW_MASTER_M + 1][SGE_QBASE_DATA_REG_NUM];
-	/* Max supported VFs */
+	 
 	u32 vf_data_value[T6_VF_M + 1][SGE_QBASE_DATA_REG_NUM];
-	u32 vfcount; /* Actual number of max vfs in current configuration */
+	u32 vfcount;  
 };
 
 struct ireg_field {
@@ -95,11 +93,11 @@ static const char * const cudbg_region[] = {
 	"On-chip queues:"
 };
 
-/* Memory region info relative to current memory (i.e. wrt 0). */
+ 
 struct cudbg_region_info {
-	bool exist; /* Does region exists in current memory? */
-	u32 start;  /* Start wrt 0 */
-	u32 end;    /* End wrt 0 */
+	bool exist;  
+	u32 start;   
+	u32 end;     
 };
 
 struct cudbg_mem_desc {
@@ -336,17 +334,17 @@ struct cudbg_qdesc_entry {
 	u32 qid;
 	u32 desc_size;
 	u32 num_desc;
-	u8 data[]; /* Must be last */
+	u8 data[];  
 };
 
 struct cudbg_qdesc_info {
 	u32 qdesc_entry_size;
 	u32 num_queues;
-	u8 data[]; /* Must be last */
+	u8 data[];  
 };
 
 #define IREG_NUM_ELEM 4
 
 #define CUDBG_NUM_PCIE_CONFIG_REGS 0x61
 
-#endif /* __CUDBG_ENTITY_H__ */
+#endif  

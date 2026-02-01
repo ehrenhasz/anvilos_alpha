@@ -1,16 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- *  Copyright (C) 2005 Mike Isely <isely@pobox.com>
- *  Copyright (C) 2004 Aurelien Alleaume <slts@free.fr>
- */
 
-/*
+ 
 
-   This source file is specifically designed to interface with the
-   v4l-dvb cs53l32a module.
-
-*/
+ 
 
 #include "pvrusb2-cs53l32a.h"
 
@@ -28,7 +19,7 @@ struct routing_scheme {
 
 
 static const int routing_scheme1[] = {
-	[PVR2_CVAL_INPUT_TV] = 2,  /* 1 or 2 seems to work here */
+	[PVR2_CVAL_INPUT_TV] = 2,   
 	[PVR2_CVAL_INPUT_RADIO] = 2,
 	[PVR2_CVAL_INPUT_COMPOSITE] = 0,
 	[PVR2_CVAL_INPUT_SVIDEO] =  0,

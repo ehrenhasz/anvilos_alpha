@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-// Copyright (C) 2016-2018, Allwinner Technology CO., LTD.
-// Copyright (C) 2019-2020, Cerno
+
+
+
 
 #include <linux/bitfield.h>
 #include <linux/bug.h>
@@ -98,7 +98,7 @@
 struct sun50i_iommu {
 	struct iommu_device iommu;
 
-	/* Lock to modify the IOMMU registers */
+	 
 	spinlock_t iommu_lock;
 
 	struct device *dev;
@@ -114,10 +114,10 @@ struct sun50i_iommu {
 struct sun50i_iommu_domain {
 	struct iommu_domain domain;
 
-	/* Number of devices attached to the domain */
+	 
 	refcount_t refcnt;
 
-	/* L1 Page Table */
+	 
 	u32 *dt;
 	dma_addr_t dt_dma;
 
@@ -144,19 +144,7 @@ static void iommu_write(struct sun50i_iommu *iommu, u32 offset, u32 value)
 	writel(value, iommu->base + offset);
 }
 
-/*
- * The Allwinner H6 IOMMU uses a 2-level page table.
- *
- * The first level is the usual Directory Table (DT), that consists of
- * 4096 4-bytes Directory Table Entries (DTE), each pointing to a Page
- * Table (PT).
- *
- * Each PT consits of 256 4-bytes Page Table Entries (PTE), each
- * pointing to a 4kB page of physical memory.
- *
- * The IOMMU supports a single DT, pointed by the IOMMU_TTB_REG
- * register that contains its physical address.
- */
+ 
 
 #define SUN50I_IOVA_DTE_MASK	GENMASK(31, 20)
 #define SUN50I_IOVA_PTE_MASK	GENMASK(19, 12)
@@ -177,17 +165,7 @@ static u32 sun50i_iova_get_page_offset(dma_addr_t iova)
 	return FIELD_GET(SUN50I_IOVA_PAGE_MASK, iova);
 }
 
-/*
- * Each Directory Table Entry has a Page Table address and a valid
- * bit:
-
- * +---------------------+-----------+-+
- * | PT address          | Reserved  |V|
- * +---------------------+-----------+-+
- *  31:10 - Page Table address
- *   9:2  - Reserved
- *   1:0  - 1 if the entry is valid
- */
+ 
 
 #define SUN50I_DTE_PT_ADDRESS_MASK	GENMASK(31, 10)
 #define SUN50I_DTE_PT_ATTRS		GENMASK(1, 0)
@@ -208,38 +186,7 @@ static u32 sun50i_mk_dte(dma_addr_t pt_dma)
 	return (pt_dma & SUN50I_DTE_PT_ADDRESS_MASK) | SUN50I_DTE_PT_VALID;
 }
 
-/*
- * Each PTE has a Page address, an authority index and a valid bit:
- *
- * +----------------+-----+-----+-----+---+-----+
- * | Page address   | Rsv | ACI | Rsv | V | Rsv |
- * +----------------+-----+-----+-----+---+-----+
- *  31:12 - Page address
- *  11:8  - Reserved
- *   7:4  - Authority Control Index
- *   3:2  - Reserved
- *     1  - 1 if the entry is valid
- *     0  - Reserved
- *
- * The way permissions work is that the IOMMU has 16 "domains" that
- * can be configured to give each masters either read or write
- * permissions through the IOMMU_DM_AUT_CTRL_REG registers. The domain
- * 0 seems like the default domain, and its permissions in the
- * IOMMU_DM_AUT_CTRL_REG are only read-only, so it's not really
- * useful to enforce any particular permission.
- *
- * Each page entry will then have a reference to the domain they are
- * affected to, so that we can actually enforce them on a per-page
- * basis.
- *
- * In order to make it work with the IOMMU framework, we will be using
- * 4 different domains, starting at 1: RD_WR, RD, WR and NONE
- * depending on the permission we want to enforce. Each domain will
- * have each master setup in the same way, since the IOMMU framework
- * doesn't seem to restrict page access on a per-device basis. And
- * then we will use the relevant domain index when generating the page
- * table entry depending on the permissions we want to be enforced.
- */
+ 
 
 enum sun50i_iommu_aci {
 	SUN50I_IOMMU_ACI_DO_NOT_USE = 0,
@@ -386,14 +333,7 @@ static void sun50i_iommu_flush_iotlb_all(struct iommu_domain *domain)
 	struct sun50i_iommu *iommu = sun50i_domain->iommu;
 	unsigned long flags;
 
-	/*
-	 * At boot, we'll have a first call into .flush_iotlb_all right after
-	 * .probe_device, and since we link our (single) domain to our iommu in
-	 * the .attach_device callback, we don't have that pointer set.
-	 *
-	 * It shouldn't really be any trouble to ignore it though since we flush
-	 * all caches as part of the device powerup.
-	 */
+	 
 	if (!iommu)
 		return;
 
@@ -534,7 +474,7 @@ static void *sun50i_iommu_alloc_page_table(struct sun50i_iommu *iommu,
 		return ERR_PTR(-ENOMEM);
 	}
 
-	/* We rely on the physical address and DMA address being the same */
+	 
 	WARN_ON(pt_dma != virt_to_phys(page_table));
 
 	return page_table;
@@ -873,11 +813,7 @@ static phys_addr_t sun50i_iommu_handle_pt_irq(struct sun50i_iommu *iommu,
 	blame = iommu_read(iommu, blame_reg);
 	master = ilog2(blame & IOMMU_INT_MASTER_MASK);
 
-	/*
-	 * If the address is not in the page table, we can't get what
-	 * operation triggered the fault. Assume it's a read
-	 * operation.
-	 */
+	 
 	sun50i_iommu_report_fault(iommu, master, iova, IOMMU_FAULT_READ);
 
 	return iova;
@@ -900,39 +836,25 @@ static phys_addr_t sun50i_iommu_handle_perm_irq(struct sun50i_iommu *iommu)
 					    IOMMU_INT_ERR_DATA_REG(master)));
 
 	switch (aci) {
-		/*
-		 * If we are in the read-only domain, then it means we
-		 * tried to write.
-		 */
+		 
 	case SUN50I_IOMMU_ACI_RD:
 		dir = IOMMU_FAULT_WRITE;
 		break;
 
-		/*
-		 * If we are in the write-only domain, then it means
-		 * we tried to read.
-		 */
+		 
 	case SUN50I_IOMMU_ACI_WR:
 
-		/*
-		 * If we are in the domain without any permission, we
-		 * can't really tell. Let's default to a read
-		 * operation.
-		 */
+		 
 	case SUN50I_IOMMU_ACI_NONE:
 
-		/* WTF? */
+		 
 	case SUN50I_IOMMU_ACI_RD_WR:
 	default:
 		dir = IOMMU_FAULT_READ;
 		break;
 	}
 
-	/*
-	 * If the address is not in the page table, we can't get what
-	 * operation triggered the fault. Assume it's a read
-	 * operation.
-	 */
+	 
 	sun50i_iommu_report_fault(iommu, master, iova, dir);
 
 	return iova;
@@ -1060,7 +982,7 @@ err_free_cache:
 
 static const struct of_device_id sun50i_iommu_dt[] = {
 	{ .compatible = "allwinner,sun50i-h6-iommu", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, sun50i_iommu_dt);
 

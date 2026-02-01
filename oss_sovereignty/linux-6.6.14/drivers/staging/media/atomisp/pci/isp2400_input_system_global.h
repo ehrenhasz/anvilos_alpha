@@ -1,27 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+ 
+ 
 
 #include <type_support.h>
 
-//CSI reveiver has 3 ports.
-#define		N_CSI_PORTS (3)
-//AM: Use previous define for this.
 
-//MIPI allows upto 4 channels.
+#define		N_CSI_PORTS (3)
+
+
+
 #define		N_CHANNELS  (4)
-// 12KB = 256bit x 384 words
+
 #define		IB_CAPACITY_IN_WORDS (384)
 
 typedef enum {
@@ -41,7 +29,7 @@ typedef enum {
 	N_INPUT_SYSTEM_SOURCE
 } input_system_source_t;
 
-/* internal routing configuration */
+ 
 typedef enum {
 	INPUT_SYSTEM_DISCARD_ALL = 0,
 	INPUT_SYSTEM_CSI_BACKEND = 1,
@@ -80,7 +68,7 @@ typedef struct sync_generator_cfg_s	sync_generator_cfg_t;
 typedef struct tpg_cfg_s			tpg_cfg_t;
 typedef struct prbs_cfg_s			prbs_cfg_t;
 
-/* MW: uint16_t should be sufficient */
+ 
 struct isp2400_input_system_cfg_s {
 	u32	no_side_band;
 	u32	fmt_type;
@@ -95,7 +83,7 @@ struct sync_generator_cfg_s {
 	u32	vblank_cycles;
 };
 
-/* MW: tpg & prbs are exclusive */
+ 
 struct tpg_cfg_s {
 	u32	x_mask;
 	u32	y_mask;
@@ -111,14 +99,14 @@ struct prbs_cfg_s {
 };
 
 struct gpfifo_cfg_s {
-// TBD.
+
 	sync_generator_cfg_t sync_gen_cfg;
 };
 
 typedef struct gpfifo_cfg_s		gpfifo_cfg_t;
 
-//ALX:Commented out to pass the compilation.
-//typedef struct isp2400_input_system_cfg_s input_system_cfg_t;
+
+
 
 struct ib_buffer_s {
 	u32	mem_reg_size;
@@ -143,7 +131,7 @@ typedef enum {
 	INPUT_SYSTEM_CFG_FLAG_SET		= 1U << 0,
 	INPUT_SYSTEM_CFG_FLAG_BLOCKED	= 1U << 1,
 	INPUT_SYSTEM_CFG_FLAG_REQUIRED	= 1U << 2,
-	INPUT_SYSTEM_CFG_FLAG_CONFLICT	= 1U << 3	// To mark a conflicting configuration.
+	INPUT_SYSTEM_CFG_FLAG_CONFLICT	= 1U << 3	
 } isp2400_input_system_cfg_flag_t;
 
 typedef u32 input_system_config_flags_t;

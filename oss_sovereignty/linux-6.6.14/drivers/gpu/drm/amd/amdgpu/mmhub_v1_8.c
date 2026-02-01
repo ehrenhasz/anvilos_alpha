@@ -1,25 +1,4 @@
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "amdgpu.h"
 #include "mmhub_v1_8.h"
 
@@ -86,9 +65,7 @@ static void mmhub_v1_8_init_gart_aperture_regs(struct amdgpu_device *adev)
 
 	mmhub_v1_8_setup_vm_pt_regs(adev, 0, pt_base);
 
-	/* If use GART for FB translation, vmid0 page table covers both
-	 * vram and system memory (gart)
-	 */
+	 
 	inst_mask = adev->aid_mask;
 	for_each_inst(i, inst_mask) {
 		if (adev->gmc.pdb0_bo) {
@@ -135,23 +112,21 @@ static void mmhub_v1_8_init_system_aperture_regs(struct amdgpu_device *adev)
 
 	inst_mask = adev->aid_mask;
 	for_each_inst(i, inst_mask) {
-		/* Program the AGP BAR */
+		 
 		WREG32_SOC15(MMHUB, i, regMC_VM_AGP_BASE, 0);
 		WREG32_SOC15(MMHUB, i, regMC_VM_AGP_BOT,
 			     adev->gmc.agp_start >> 24);
 		WREG32_SOC15(MMHUB, i, regMC_VM_AGP_TOP,
 			     adev->gmc.agp_end >> 24);
 
-		/* Program the system aperture low logical page number. */
+		 
 		WREG32_SOC15(MMHUB, i, regMC_VM_SYSTEM_APERTURE_LOW_ADDR,
 			min(adev->gmc.fb_start, adev->gmc.agp_start) >> 18);
 
 		WREG32_SOC15(MMHUB, i, regMC_VM_SYSTEM_APERTURE_HIGH_ADDR,
 			max(adev->gmc.fb_end, adev->gmc.agp_end) >> 18);
 
-		/* In the case squeezing vram into GART aperture, we don't use
-		 * FB aperture and AGP aperture. Disable them.
-		 */
+		 
 		if (adev->gmc.pdb0_bo) {
 			WREG32_SOC15(MMHUB, i, regMC_VM_AGP_BOT, 0xFFFFFF);
 			WREG32_SOC15(MMHUB, i, regMC_VM_AGP_TOP, 0);
@@ -165,14 +140,14 @@ static void mmhub_v1_8_init_system_aperture_regs(struct amdgpu_device *adev)
 				     regMC_VM_SYSTEM_APERTURE_HIGH_ADDR, 0);
 		}
 
-		/* Set default page address. */
+		 
 		value = amdgpu_gmc_vram_mc2pa(adev, adev->mem_scratch.gpu_addr);
 		WREG32_SOC15(MMHUB, i, regMC_VM_SYSTEM_APERTURE_DEFAULT_ADDR_LSB,
 			     (u32)(value >> 12));
 		WREG32_SOC15(MMHUB, i, regMC_VM_SYSTEM_APERTURE_DEFAULT_ADDR_MSB,
 			     (u32)(value >> 44));
 
-		/* Program "protection fault". */
+		 
 		WREG32_SOC15(MMHUB, i,
 			     regVM_L2_PROTECTION_FAULT_DEFAULT_ADDR_LO32,
 			     (u32)(adev->dummy_page_addr >> 12));
@@ -192,7 +167,7 @@ static void mmhub_v1_8_init_tlb_regs(struct amdgpu_device *adev)
 	uint32_t tmp, inst_mask;
 	int i;
 
-	/* Setup TLB control */
+	 
 	inst_mask = adev->aid_mask;
 	for_each_inst(i, inst_mask) {
 		tmp = RREG32_SOC15(MMHUB, i, regMC_VM_MX_L1_TLB_CNTL);
@@ -206,7 +181,7 @@ static void mmhub_v1_8_init_tlb_regs(struct amdgpu_device *adev)
 		tmp = REG_SET_FIELD(tmp, MC_VM_MX_L1_TLB_CNTL,
 				    SYSTEM_APERTURE_UNMAPPED_ACCESS, 0);
 		tmp = REG_SET_FIELD(tmp, MC_VM_MX_L1_TLB_CNTL,
-				    MTYPE, MTYPE_UC);/* XXX for emulation. */
+				    MTYPE, MTYPE_UC); 
 		tmp = REG_SET_FIELD(tmp, MC_VM_MX_L1_TLB_CNTL, ATC_EN, 1);
 
 		WREG32_SOC15(MMHUB, i, regMC_VM_MX_L1_TLB_CNTL, tmp);
@@ -221,14 +196,14 @@ static void mmhub_v1_8_init_cache_regs(struct amdgpu_device *adev)
 	if (amdgpu_sriov_vf(adev))
 		return;
 
-	/* Setup L2 cache */
+	 
 	inst_mask = adev->aid_mask;
 	for_each_inst(i, inst_mask) {
 		tmp = RREG32_SOC15(MMHUB, i, regVM_L2_CNTL);
 		tmp = REG_SET_FIELD(tmp, VM_L2_CNTL, ENABLE_L2_CACHE, 1);
 		tmp = REG_SET_FIELD(tmp, VM_L2_CNTL,
 				    ENABLE_L2_FRAGMENT_PROCESSING, 1);
-		/* XXX for emulation, Refer to closed source code.*/
+		 
 		tmp = REG_SET_FIELD(tmp, VM_L2_CNTL,
 				    L2_PDE0_CACHE_TAG_GENERATION_MODE, 0);
 		tmp = REG_SET_FIELD(tmp, VM_L2_CNTL, PDE_FAULT_CLASSIFICATION,
@@ -258,7 +233,7 @@ static void mmhub_v1_8_init_cache_regs(struct amdgpu_device *adev)
 		WREG32_SOC15(MMHUB, i, regVM_L2_CNTL3, tmp);
 
 		tmp = regVM_L2_CNTL4_DEFAULT;
-		/* For AMD APP APUs setup WC memory */
+		 
 		if (adev->gmc.xgmi.connected_to_cpu || adev->gmc.is_app_apu) {
 			tmp = REG_SET_FIELD(tmp, VM_L2_CNTL4,
 					    VMC_TAP_PDE_REQUEST_PHYSICAL, 1);
@@ -366,10 +341,7 @@ static void mmhub_v1_8_setup_vmid_config(struct amdgpu_device *adev)
 			tmp = REG_SET_FIELD(tmp, VM_CONTEXT1_CNTL,
 					    PAGE_TABLE_BLOCK_SIZE,
 					    block_size);
-			/* On 9.4.3, XNACK can be enabled in the SQ
-			 * per-process. Retry faults need to be enabled for
-			 * that to work.
-			 */
+			 
 			tmp = REG_SET_FIELD(tmp, VM_CONTEXT1_CNTL,
 				RETRY_PERMISSION_OR_INVALID_PAGE_FAULT, 1);
 			WREG32_SOC15_OFFSET(MMHUB, j, regVM_CONTEXT1_CNTL,
@@ -413,7 +385,7 @@ static void mmhub_v1_8_program_invalidation(struct amdgpu_device *adev)
 
 static int mmhub_v1_8_gart_enable(struct amdgpu_device *adev)
 {
-	/* GART Enable. */
+	 
 	mmhub_v1_8_init_gart_aperture_regs(adev);
 	mmhub_v1_8_init_system_aperture_regs(adev);
 	mmhub_v1_8_init_tlb_regs(adev);
@@ -433,7 +405,7 @@ static void mmhub_v1_8_gart_disable(struct amdgpu_device *adev)
 	u32 tmp;
 	u32 i, j, inst_mask;
 
-	/* Disable all tables */
+	 
 	inst_mask = adev->aid_mask;
 	for_each_inst(j, inst_mask) {
 		hub = &adev->vmhub[AMDGPU_MMHUB0(j)];
@@ -441,7 +413,7 @@ static void mmhub_v1_8_gart_disable(struct amdgpu_device *adev)
 			WREG32_SOC15_OFFSET(MMHUB, j, regVM_CONTEXT0_CNTL,
 					    i * hub->ctx_distance, 0);
 
-		/* Setup TLB control */
+		 
 		tmp = RREG32_SOC15(MMHUB, j, regMC_VM_MX_L1_TLB_CNTL);
 		tmp = REG_SET_FIELD(tmp, MC_VM_MX_L1_TLB_CNTL, ENABLE_L1_TLB,
 				    0);
@@ -450,7 +422,7 @@ static void mmhub_v1_8_gart_disable(struct amdgpu_device *adev)
 		WREG32_SOC15(MMHUB, j, regMC_VM_MX_L1_TLB_CNTL, tmp);
 
 		if (!amdgpu_sriov_vf(adev)) {
-			/* Setup L2 cache */
+			 
 			tmp = RREG32_SOC15(MMHUB, j, regVM_L2_CNTL);
 			tmp = REG_SET_FIELD(tmp, VM_L2_CNTL, ENABLE_L2_CACHE,
 					    0);
@@ -460,12 +432,7 @@ static void mmhub_v1_8_gart_disable(struct amdgpu_device *adev)
 	}
 }
 
-/**
- * mmhub_v1_8_set_fault_enable_default - update GART/VM fault handling
- *
- * @adev: amdgpu_device pointer
- * @value: true redirects VM faults to the default page
- */
+ 
 static void mmhub_v1_8_set_fault_enable_default(struct amdgpu_device *adev, bool value)
 {
 	u32 tmp, inst_mask;
@@ -704,7 +671,7 @@ static void mmhub_v1_8_inst_query_ras_err_status(struct amdgpu_device *adev,
 	uint32_t mmea_err_status_addr_dist;
 	uint32_t i;
 
-	/* query mmea ras err status */
+	 
 	mmea_err_status_addr_dist = regMMEA1_ERR_STATUS - regMMEA0_ERR_STATUS;
 	for (i = 0; i < ARRAY_SIZE(mmhub_v1_8_mmea_err_status_reg); i++) {
 		reg_value = RREG32_SOC15_OFFSET(MMHUB, mmhub_inst,
@@ -719,7 +686,7 @@ static void mmhub_v1_8_inst_query_ras_err_status(struct amdgpu_device *adev,
 		}
 	}
 
-	/* query mm_cane ras err status */
+	 
 	reg_value = RREG32_SOC15(MMHUB, mmhub_inst, regMM_CANE_ERR_STATUS);
 	if (REG_GET_FIELD(reg_value, MM_CANE_ERR_STATUS, SDPM_RDRSP_STATUS) ||
 	    REG_GET_FIELD(reg_value, MM_CANE_ERR_STATUS, SDPM_WRRSP_STATUS) ||
@@ -753,13 +720,11 @@ static void mmhub_v1_8_inst_reset_ras_err_status(struct amdgpu_device *adev,
 	uint32_t reg_value;
 	uint32_t i;
 
-	/* reset mmea ras err status */
+	 
 	mmea_cgtt_clk_cntl_addr_dist = regMMEA1_CGTT_CLK_CTRL - regMMEA0_CGTT_CLK_CTRL;
 	mmea_err_status_addr_dist = regMMEA1_ERR_STATUS - regMMEA0_ERR_STATUS;
 	for (i = 0; i < ARRAY_SIZE(mmhub_v1_8_mmea_err_status_reg); i++) {
-		/* force clk branch on for response path
-		 * set MMEA0_CGTT_CLK_CTRL.SOFT_OVERRIDE_RETURN = 1
-		 */
+		 
 		reg_value = RREG32_SOC15_OFFSET(MMHUB, mmhub_inst,
 						regMMEA0_CGTT_CLK_CTRL,
 						i * mmea_cgtt_clk_cntl_addr_dist);
@@ -770,7 +735,7 @@ static void mmhub_v1_8_inst_reset_ras_err_status(struct amdgpu_device *adev,
 				    i * mmea_cgtt_clk_cntl_addr_dist,
 				    reg_value);
 
-		/* set MMEA0_ERR_STATUS.CLEAR_ERROR_STATUS = 1 */
+		 
 		reg_value = RREG32_SOC15_OFFSET(MMHUB, mmhub_inst,
 						regMMEA0_ERR_STATUS,
 						i * mmea_err_status_addr_dist);
@@ -781,7 +746,7 @@ static void mmhub_v1_8_inst_reset_ras_err_status(struct amdgpu_device *adev,
 				    i * mmea_err_status_addr_dist,
 				    reg_value);
 
-		/* set MMEA0_CGTT_CLK_CTRL.SOFT_OVERRIDE_RETURN = 0 */
+		 
 		reg_value = RREG32_SOC15_OFFSET(MMHUB, mmhub_inst,
 						regMMEA0_CGTT_CLK_CTRL,
 						i * mmea_cgtt_clk_cntl_addr_dist);
@@ -793,22 +758,19 @@ static void mmhub_v1_8_inst_reset_ras_err_status(struct amdgpu_device *adev,
 				    reg_value);
 	}
 
-	/* reset mm_cane ras err status
-	 * force clk branch on for response path
-	 * set MM_CANE_ICG_CTRL.SOFT_OVERRIDE_ATRET = 1
-	 */
+	 
 	reg_value = RREG32_SOC15(MMHUB, mmhub_inst, regMM_CANE_ICG_CTRL);
 	reg_value = REG_SET_FIELD(reg_value, MM_CANE_ICG_CTRL,
 				  SOFT_OVERRIDE_ATRET, 1);
 	WREG32_SOC15(MMHUB, mmhub_inst, regMM_CANE_ICG_CTRL, reg_value);
 
-	/* set MM_CANE_ERR_STATUS.CLEAR_ERROR_STATUS = 1 */
+	 
 	reg_value = RREG32_SOC15(MMHUB, mmhub_inst, regMM_CANE_ERR_STATUS);
 	reg_value = REG_SET_FIELD(reg_value, MM_CANE_ERR_STATUS,
 				  CLEAR_ERROR_STATUS, 1);
 	WREG32_SOC15(MMHUB, mmhub_inst, regMM_CANE_ERR_STATUS, reg_value);
 
-	/* set MM_CANE_ICG_CTRL.SOFT_OVERRIDE_ATRET = 0 */
+	 
 	reg_value = RREG32_SOC15(MMHUB, mmhub_inst, regMM_CANE_ICG_CTRL);
 	reg_value = REG_SET_FIELD(reg_value, MM_CANE_ICG_CTRL,
 				  SOFT_OVERRIDE_ATRET, 0);

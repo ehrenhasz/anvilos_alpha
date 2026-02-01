@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 2011-2014 Samsung Electronics Co., Ltd
- *              http://www.samsung.com
- */
+ 
+ 
 
 #ifndef __LINUX_MFD_SEC_RTC_H
 #define __LINUX_MFD_SEC_RTC_H
@@ -84,12 +81,12 @@ enum s2mps_rtc_reg {
 #define S2MPS_ALARM0_STATUS	(1 << 2)
 #define S2MPS_ALARM1_STATUS	(1 << 1)
 
-/* RTC Control Register */
+ 
 #define BCD_EN_SHIFT		0
 #define BCD_EN_MASK		(1 << BCD_EN_SHIFT)
 #define MODEL24_SHIFT		1
 #define MODEL24_MASK		(1 << MODEL24_SHIFT)
-/* RTC Update Register1 */
+ 
 #define S5M_RTC_UDR_SHIFT	0
 #define S5M_RTC_UDR_MASK	(1 << S5M_RTC_UDR_SHIFT)
 #define S2MPS_RTC_WUDR_SHIFT	4
@@ -106,10 +103,7 @@ enum s2mps_rtc_reg {
 #define RTC_TCON_MASK		(1 << RTC_TCON_SHIFT)
 #define S5M_RTC_TIME_EN_SHIFT	3
 #define S5M_RTC_TIME_EN_MASK	(1 << S5M_RTC_TIME_EN_SHIFT)
-/*
- * UDR_T field in S5M_RTC_UDR_CON register determines the time needed
- * for updating alarm and time registers. Default is 7.32 ms.
- */
+ 
 #define S5M_RTC_UDR_T_SHIFT	6
 #define S5M_RTC_UDR_T_MASK	(0x3 << S5M_RTC_UDR_T_SHIFT)
 #define S5M_RTC_UDR_T_7320_US	(0x0 << S5M_RTC_UDR_T_SHIFT)
@@ -117,10 +111,10 @@ enum s2mps_rtc_reg {
 #define S5M_RTC_UDR_T_3660_US	(0x2 << S5M_RTC_UDR_T_SHIFT)
 #define S5M_RTC_UDR_T_450_US	(0x3 << S5M_RTC_UDR_T_SHIFT)
 
-/* RTC Hour register */
+ 
 #define HOUR_PM_SHIFT		6
 #define HOUR_PM_MASK		(1 << HOUR_PM_SHIFT)
-/* RTC Alarm Enable */
+ 
 #define ALARM_ENABLE_SHIFT	7
 #define ALARM_ENABLE_MASK	(1 << ALARM_ENABLE_SHIFT)
 
@@ -130,4 +124,4 @@ enum s2mps_rtc_reg {
 #define WTSR_ENABLE_SHIFT	6
 #define WTSR_ENABLE_MASK	(1 << WTSR_ENABLE_SHIFT)
 
-#endif /*  __LINUX_MFD_SEC_RTC_H */
+#endif  

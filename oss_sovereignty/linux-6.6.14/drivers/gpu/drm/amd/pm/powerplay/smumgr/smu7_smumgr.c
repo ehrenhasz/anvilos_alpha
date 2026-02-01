@@ -1,25 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 
 #include "pp_debug.h"
@@ -41,7 +20,7 @@ static int smu7_set_smc_sram_address(struct pp_hwmgr *hwmgr, uint32_t smc_addr, 
 	PP_ASSERT_WITH_CODE((limit > (smc_addr + 3)), "SMC addr is beyond the SMC RAM area.", return -EINVAL);
 
 	cgs_write_register(hwmgr->device, mmSMC_IND_INDEX_11, smc_addr);
-	PHM_WRITE_FIELD(hwmgr->device, SMC_IND_ACCESS_CNTL, AUTO_INCREMENT_IND_11, 0); /* on ci, SMC_IND_ACCESS_CNTL is different */
+	PHM_WRITE_FIELD(hwmgr->device, SMC_IND_ACCESS_CNTL, AUTO_INCREMENT_IND_11, 0);  
 	return 0;
 }
 
@@ -72,7 +51,7 @@ int smu7_copy_bytes_from_smc(struct pp_hwmgr *hwmgr, uint32_t smc_start_address,
 	if (byte_count) {
 		smu7_read_smc_sram_dword(hwmgr, addr, &data, limit);
 		*pdata = PP_SMC_TO_HOST_UL(data);
-	/* Cast dest into byte type in dest_byte.  This way, we don't overflow if the allocated memory is not 4-byte aligned. */
+	 
 		dest_byte = (uint8_t *)dest;
 		for (i = 0; i < byte_count; i++)
 			dest_byte[i] = data_byte[i];
@@ -97,7 +76,7 @@ int smu7_copy_bytes_to_smc(struct pp_hwmgr *hwmgr, uint32_t smc_start_address,
 	addr = smc_start_address;
 
 	while (byte_count >= 4) {
-	/* Bytes are written into the SMC addres space with the MSB first. */
+	 
 		data = src[0] * 0x1000000 + src[1] * 0x10000 + src[2] * 0x100 + src[3];
 
 		result = smu7_set_smc_sram_address(hwmgr, addr, limit);
@@ -127,7 +106,7 @@ int smu7_copy_bytes_to_smc(struct pp_hwmgr *hwmgr, uint32_t smc_start_address,
 		extra_shift = 8 * (4 - byte_count);
 
 		while (byte_count > 0) {
-			/* Bytes are written into the SMC addres space with the MSB first. */
+			 
 			data = (0x100 * data) + *src++;
 			byte_count--;
 		}
@@ -306,7 +285,7 @@ static int smu7_populate_single_firmware_entry(struct pp_hwmgr *hwmgr,
 		entry->meta_data_addr_high = 0;
 		entry->meta_data_addr_low = 0;
 
-		/* digest need be excluded out */
+		 
 		if (!hwmgr->not_vf)
 			info.image_size -= 20;
 		entry->data_size_byte = info.image_size;
@@ -336,7 +315,7 @@ int smu7_request_smu_load_fw(struct pp_hwmgr *hwmgr)
 					SMU_SoftRegisters, UcodeLoadStatus),
 					0x0);
 
-	if (hwmgr->chip_id > CHIP_TOPAZ) { /* add support for Topaz */
+	if (hwmgr->chip_id > CHIP_TOPAZ) {  
 		if (hwmgr->not_vf) {
 			smum_send_msg_to_smc_with_parameter(hwmgr,
 						PPSMC_MSG_SMU_DRAM_ADDR_HI,
@@ -433,7 +412,7 @@ failed:
 	return r;
 }
 
-/* Check if the FW has been loaded, SMU will not return if loading has not finished. */
+ 
 int smu7_check_fw_load_finish(struct pp_hwmgr *hwmgr, uint32_t fw_type)
 {
 	struct smu7_smumgr *smu_data = (struct smu7_smumgr *)(hwmgr->smu_backend);
@@ -537,13 +516,12 @@ int smu7_init(struct pp_hwmgr *hwmgr)
 {
 	struct smu7_smumgr *smu_data;
 	int r;
-	/* Allocate memory for backend private data */
+	 
 	smu_data = (struct smu7_smumgr *)(hwmgr->smu_backend);
 	smu_data->header_buffer.data_size =
 			((sizeof(struct SMU_DRAMData_TOC) / 4096) + 1) * 4096;
 
-/* Allocate FW image data structure and header buffer and
- * send the header buffer address to SMU */
+ 
 	r = amdgpu_bo_create_kernel((struct amdgpu_device *)hwmgr->adev,
 		smu_data->header_buffer.data_size,
 		PAGE_SIZE,

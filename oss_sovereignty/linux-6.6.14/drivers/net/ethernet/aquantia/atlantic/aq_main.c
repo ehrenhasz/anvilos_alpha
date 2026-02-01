@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Atlantic Network Driver
- *
- * Copyright (C) 2014-2019 aQuantia Corporation
- * Copyright (C) 2019-2020 Marvell International Ltd.
- */
 
-/* File aq_main.c: Main file for aQuantia Linux driver. */
+ 
+
+ 
 
 #include "aq_main.h"
 #include "aq_nic.h"
@@ -106,13 +102,7 @@ static netdev_tx_t aq_ndev_start_xmit(struct sk_buff *skb, struct net_device *nd
 
 #if IS_REACHABLE(CONFIG_PTP_1588_CLOCK)
 	if (unlikely(aq_utils_obj_test(&aq_nic->flags, AQ_NIC_PTP_DPATH_UP))) {
-		/* Hardware adds the Timestamp for PTPv2 802.AS1
-		 * and PTPv2 IPv4 UDP.
-		 * We have to push even general 320 port messages to the ptp
-		 * queue explicitly. This is a limitation of current firmware
-		 * and hardware PTP design of the chip. Otherwise ptp stream
-		 * will fail to sync
-		 */
+		 
 		if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) ||
 		    unlikely((ip_hdr(skb)->version == 4) &&
 			     (ip_hdr(skb)->protocol == IPPROTO_UDP) &&

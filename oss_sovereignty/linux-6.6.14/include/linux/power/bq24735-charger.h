@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- */
+ 
+ 
 
 #ifndef __CHARGER_BQ24735_H_
 #define __CHARGER_BQ24735_H_
@@ -21,4 +20,4 @@ struct bq24735_platform {
 	size_t num_supplicants;
 };
 
-#endif /* __CHARGER_BQ24735_H_ */
+#endif  

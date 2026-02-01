@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * debugfs.c - Designware USB2 DRD controller debugfs
- *
- * Copyright (C) 2015 Intel Corporation
- * Mian Yousaf Kaukab <yousaf.kaukab@intel.com>
- */
+
+ 
 
 #include <linux/spinlock.h>
 #include <linux/debugfs.h>
@@ -17,13 +12,7 @@
 #if IS_ENABLED(CONFIG_USB_DWC2_PERIPHERAL) || \
 	IS_ENABLED(CONFIG_USB_DWC2_DUAL_ROLE)
 
-/**
- * testmode_write() - change usb test mode state.
- * @file: The  file to write to.
- * @ubuf: The buffer where user wrote.
- * @count: The ubuf size.
- * @ppos: Unused parameter.
- */
+ 
 static ssize_t testmode_write(struct file *file, const char __user *ubuf, size_t
 		count, loff_t *ppos)
 {
@@ -55,13 +44,7 @@ static ssize_t testmode_write(struct file *file, const char __user *ubuf, size_t
 	return count;
 }
 
-/**
- * testmode_show() - debugfs: show usb test mode state
- * @s: The seq file to write to.
- * @unused: Unused parameter.
- *
- * This debugfs entry shows which usb test mode is currently enabled.
- */
+ 
 static int testmode_show(struct seq_file *s, void *unused)
 {
 	struct dwc2_hsotg *hsotg = s->private;
@@ -114,15 +97,7 @@ static const struct file_operations testmode_fops = {
 	.release	= single_release,
 };
 
-/**
- * state_show - debugfs: show overall driver and device state.
- * @seq: The seq file to write to.
- * @v: Unused parameter.
- *
- * This debugfs entry shows the overall state of the hardware and
- * some general information about each of the endpoints available
- * to the system.
- */
+ 
 static int state_show(struct seq_file *seq, void *v)
 {
 	struct dwc2_hsotg *hsotg = seq->private;
@@ -172,14 +147,7 @@ static int state_show(struct seq_file *seq, void *v)
 }
 DEFINE_SHOW_ATTRIBUTE(state);
 
-/**
- * fifo_show - debugfs: show the fifo information
- * @seq: The seq_file to write data to.
- * @v: Unused parameter.
- *
- * Show the FIFO information for the overall fifo and all the
- * periodic transmission FIFOs.
- */
+ 
 static int fifo_show(struct seq_file *seq, void *v)
 {
 	struct dwc2_hsotg *hsotg = seq->private;
@@ -214,14 +182,7 @@ static const char *decode_direction(int is_in)
 	return is_in ? "in" : "out";
 }
 
-/**
- * ep_show - debugfs: show the state of an endpoint.
- * @seq: The seq_file to write data to.
- * @v: Unused parameter.
- *
- * This debugfs entry shows the state of the given endpoint (one is
- * registered for each available).
- */
+ 
 static int ep_show(struct seq_file *seq, void *v)
 {
 	struct dwc2_hsotg_ep *ep = seq->private;
@@ -234,7 +195,7 @@ static int ep_show(struct seq_file *seq, void *v)
 	seq_printf(seq, "Endpoint index %d, named %s,  dir %s:\n",
 		   ep->index, ep->ep.name, decode_direction(ep->dir_in));
 
-	/* first show the register state */
+	 
 
 	seq_printf(seq, "\tDIEPCTL=0x%08x, DOEPCTL=0x%08x\n",
 		   dwc2_readl(hsotg, DIEPCTL(index)),
@@ -280,15 +241,7 @@ static int ep_show(struct seq_file *seq, void *v)
 }
 DEFINE_SHOW_ATTRIBUTE(ep);
 
-/**
- * dwc2_hsotg_create_debug - create debugfs directory and files
- * @hsotg: The driver state
- *
- * Create the debugfs files to allow the user to get information
- * about the state of the system. The directory name is created
- * with the same name as the device itself, in case we end up
- * with multiple blocks in future systems.
- */
+ 
 static void dwc2_hsotg_create_debug(struct dwc2_hsotg *hsotg)
 {
 	struct dentry *root;
@@ -296,12 +249,12 @@ static void dwc2_hsotg_create_debug(struct dwc2_hsotg *hsotg)
 
 	root = hsotg->debug_root;
 
-	/* create general state file */
+	 
 	debugfs_create_file("state", 0444, root, hsotg, &state_fops);
 	debugfs_create_file("testmode", 0644, root, hsotg, &testmode_fops);
 	debugfs_create_file("fifo", 0444, root, hsotg, &fifo_fops);
 
-	/* Create one file for each out endpoint */
+	 
 	for (epidx = 0; epidx < hsotg->num_of_eps; epidx++) {
 		struct dwc2_hsotg_ep *ep;
 
@@ -309,7 +262,7 @@ static void dwc2_hsotg_create_debug(struct dwc2_hsotg *hsotg)
 		if (ep)
 			debugfs_create_file(ep->name, 0444, root, ep, &ep_fops);
 	}
-	/* Create one file for each in endpoint. EP0 is handled with out eps */
+	 
 	for (epidx = 1; epidx < hsotg->num_of_eps; epidx++) {
 		struct dwc2_hsotg_ep *ep;
 
@@ -322,7 +275,7 @@ static void dwc2_hsotg_create_debug(struct dwc2_hsotg *hsotg)
 static inline void dwc2_hsotg_create_debug(struct dwc2_hsotg *hsotg) {}
 #endif
 
-/* dwc2_hsotg_delete_debug is removed as cleanup in done in dwc2_debugfs_exit */
+ 
 
 #define dump_register(nm)	\
 {				\
@@ -331,12 +284,7 @@ static inline void dwc2_hsotg_create_debug(struct dwc2_hsotg *hsotg) {}
 }
 
 static const struct debugfs_reg32 dwc2_regs[] = {
-	/*
-	 * Accessing registers like this can trigger mode mismatch interrupt.
-	 * However, according to dwc2 databook, the register access, in this
-	 * case, is completed on the processor bus but is ignored by the core
-	 * and does not affect its operation.
-	 */
+	 
 	dump_register(GOTGCTL),
 	dump_register(GOTGINT),
 	dump_register(GAHBCFG),
@@ -345,7 +293,7 @@ static const struct debugfs_reg32 dwc2_regs[] = {
 	dump_register(GINTSTS),
 	dump_register(GINTMSK),
 	dump_register(GRXSTSR),
-	/* Omit GRXSTSP */
+	 
 	dump_register(GRXFSIZ),
 	dump_register(GNPTXFSIZ),
 	dump_register(GNPTXSTS),
@@ -782,7 +730,7 @@ int dwc2_debugfs_init(struct dwc2_hsotg *hsotg)
 	debugfs_create_file("hw_params", 0444, root, hsotg, &hw_params_fops);
 	debugfs_create_file("dr_mode", 0444, root, hsotg, &dr_mode_fops);
 
-	/* Add gadget debugfs nodes */
+	 
 	dwc2_hsotg_create_debug(hsotg);
 
 	hsotg->regset = devm_kzalloc(hsotg->dev, sizeof(*hsotg->regset),

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <drm/drm_atomic_helper.h>
 #include <drm/drm_simple_kms_helper.h>
@@ -19,23 +19,7 @@
 #include "atom.h"
 #include "amdgpu_irq.h"
 
-/**
- * DOC: amdgpu_vkms
- *
- * The amdgpu vkms interface provides a virtual KMS interface for several use
- * cases: devices without display hardware, platforms where the actual display
- * hardware is not useful (e.g., servers), SR-IOV virtual functions, device
- * emulation/simulation, and device bring up prior to display hardware being
- * usable. We previously emulated a legacy KMS interface, but there was a desire
- * to move to the atomic KMS interface. The vkms driver did everything we
- * needed, but we wanted KMS support natively in the driver without buffer
- * sharing and the ability to support an instance of VKMS per device. We first
- * looked at splitting vkms into a stub driver and a helper module that other
- * drivers could use to implement a virtual display, but this strategy ended up
- * being messy due to driver specific callbacks needed for buffer management.
- * Ultimately, it proved easier to import the vkms code as it mostly used core
- * drm helpers anyway.
- */
+ 
 
 static const u32 amdgpu_vkms_formats[] = {
 	DRM_FORMAT_XRGB8888,
@@ -55,7 +39,7 @@ static enum hrtimer_restart amdgpu_vkms_vblank_simulate(struct hrtimer *timer)
 		DRM_WARN("%s: vblank timer overrun\n", __func__);
 
 	ret = drm_crtc_handle_vblank(crtc);
-	/* Don't queue timer again when vblank is disabled. */
+	 
 	if (!ret)
 		return HRTIMER_NORESTART;
 
@@ -106,13 +90,7 @@ static bool amdgpu_vkms_get_vblank_timestamp(struct drm_crtc *crtc,
 	if (WARN_ON(*vblank_time == vblank->time))
 		return true;
 
-	/*
-	 * To prevent races we roll the hrtimer forward before we do any
-	 * interrupt processing - this is how real hw works (the interrupt is
-	 * only generated after all the vblank registers are updated) and what
-	 * the vblank core expects. Therefore we need to always correct the
-	 * timestampe by one frame.
-	 */
+	 
 	*vblank_time -= output->period_ns;
 
 	return true;
@@ -291,7 +269,7 @@ static int amdgpu_vkms_plane_atomic_check(struct drm_plane *plane,
 	if (ret != 0)
 		return ret;
 
-	/* for now primary plane must be visible and full screen */
+	 
 	if (!new_plane_state->visible)
 		return -EINVAL;
 
@@ -507,7 +485,7 @@ static int amdgpu_vkms_sw_init(void *handle)
 	if (r)
 		return r;
 
-	/* allocate crtcs, encoders, connectors */
+	 
 	for (i = 0; i < adev->mode_info.num_crtc; i++) {
 		r = amdgpu_vkms_output_init(adev_to_drm(adev), &adev->amdgpu_vkms_output[i], i);
 		if (r)
@@ -580,7 +558,7 @@ static int amdgpu_vkms_hw_init(void *handle)
 #ifdef CONFIG_DRM_AMDGPU_SI
 	case CHIP_HAINAN:
 #endif
-		/* no DCE */
+		 
 		break;
 	default:
 		break;

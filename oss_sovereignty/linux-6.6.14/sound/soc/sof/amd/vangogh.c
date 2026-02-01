@@ -1,15 +1,13 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license. When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2023 Advanced Micro Devices, Inc.
-//
-// Authors: Venkata Prasad Potturu <venkataprasad.potturu@amd.com>
 
-/*
- * Hardware interface for Audio DSP on Vangogh platform
- */
+
+
+
+
+
+
+
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/module.h>
@@ -42,7 +40,7 @@ static struct snd_soc_dai_driver vangogh_sof_dai[] = {
 			.rates = SNDRV_PCM_RATE_8000_48000,
 			.formats = SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S8 |
 				   SNDRV_PCM_FMTBIT_U8 | SNDRV_PCM_FMTBIT_S32_LE,
-			/* Supporting only stereo for I2S HS controller capture */
+			 
 			.channels_min = 2,
 			.channels_max = 2,
 			.rate_min = 8000,
@@ -66,7 +64,7 @@ static struct snd_soc_dai_driver vangogh_sof_dai[] = {
 			.rates = SNDRV_PCM_RATE_8000_48000,
 			.formats = SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S8 |
 				   SNDRV_PCM_FMTBIT_U8 | SNDRV_PCM_FMTBIT_S32_LE,
-			/* Supporting only stereo for I2S BT controller capture */
+			 
 			.channels_min = 2,
 			.channels_max = 2,
 			.rate_min = 8000,
@@ -90,7 +88,7 @@ static struct snd_soc_dai_driver vangogh_sof_dai[] = {
 			.rates = SNDRV_PCM_RATE_8000_48000,
 			.formats = SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S8 |
 				   SNDRV_PCM_FMTBIT_U8 | SNDRV_PCM_FMTBIT_S32_LE,
-			/* Supporting only stereo for I2S SP controller capture */
+			 
 			.channels_min = 2,
 			.channels_max = 2,
 			.rate_min = 8000,
@@ -127,7 +125,7 @@ static struct snd_soc_dai_driver vangogh_sof_dai[] = {
 			.rates = SNDRV_PCM_RATE_8000_48000,
 			.formats = SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S8 |
 				   SNDRV_PCM_FMTBIT_U8 | SNDRV_PCM_FMTBIT_S32_LE,
-			/* Supporting only stereo for I2S HS-Virtual controller capture */
+			 
 			.channels_min = 2,
 			.channels_max = 2,
 			.rate_min = 8000,
@@ -136,7 +134,7 @@ static struct snd_soc_dai_driver vangogh_sof_dai[] = {
 	},
 };
 
-/* Vangogh ops */
+ 
 struct snd_sof_dsp_ops sof_vangogh_ops;
 EXPORT_SYMBOL_NS(sof_vangogh_ops, SND_SOC_SOF_AMD_COMMON);
 
@@ -144,7 +142,7 @@ int sof_vangogh_ops_init(struct snd_sof_dev *sdev)
 {
 	const struct dmi_system_id *dmi_id;
 
-	/* common defaults */
+	 
 	memcpy(&sof_vangogh_ops, &sof_acp_common_ops, sizeof(struct snd_sof_dsp_ops));
 
 	sof_vangogh_ops.drv = vangogh_sof_dai;

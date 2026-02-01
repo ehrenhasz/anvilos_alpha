@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __FSNOTIFY_FDINFO_H__
 #define __FSNOTIFY_FDINFO_H__
 
@@ -18,11 +18,11 @@ void inotify_show_fdinfo(struct seq_file *m, struct file *f);
 void fanotify_show_fdinfo(struct seq_file *m, struct file *f);
 #endif
 
-#else /* CONFIG_PROC_FS */
+#else  
 
 #define inotify_show_fdinfo	NULL
 #define fanotify_show_fdinfo	NULL
 
-#endif /* CONFIG_PROC_FS */
+#endif  
 
-#endif /* __FSNOTIFY_FDINFO_H__ */
+#endif  

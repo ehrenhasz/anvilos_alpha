@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2014 Filipe David Borba Manana <fdmanana@gmail.com>
- */
+
+ 
 
 #include <linux/hashtable.h>
 #include "messages.h"
@@ -80,18 +78,7 @@ int btrfs_validate_prop(const struct btrfs_inode *inode, const char *name,
 	return handler->validate(inode, value, value_len);
 }
 
-/*
- * Check if a property should be ignored (not set) for an inode.
- *
- * @inode:     The target inode.
- * @name:      The property's name.
- *
- * The caller must be sure the given property name is valid, for example by
- * having previously called btrfs_validate_prop().
- *
- * Returns:    true if the property should be ignored for the given inode
- *             false if the property must not be ignored for the given inode
- */
+ 
 bool btrfs_ignore_prop(const struct btrfs_inode *inode, const char *name)
 {
 	const struct prop_handler *handler;
@@ -304,7 +291,7 @@ static int prop_compression_apply(struct inode *inode, const char *value,
 	struct btrfs_fs_info *fs_info = btrfs_sb(inode->i_sb);
 	int type;
 
-	/* Reset to defaults */
+	 
 	if (len == 0) {
 		BTRFS_I(inode)->flags &= ~BTRFS_INODE_COMPRESS;
 		BTRFS_I(inode)->flags &= ~BTRFS_INODE_NOCOMPRESS;
@@ -312,7 +299,7 @@ static int prop_compression_apply(struct inode *inode, const char *value,
 		return 0;
 	}
 
-	/* Set NOCOMPRESS flag */
+	 
 	if ((len == 2 && strncmp("no", value, 2) == 0) ||
 	    (len == 4 && strncmp("none", value, 4) == 0)) {
 		BTRFS_I(inode)->flags |= BTRFS_INODE_NOCOMPRESS;
@@ -343,13 +330,7 @@ static int prop_compression_apply(struct inode *inode, const char *value,
 
 static bool prop_compression_ignore(const struct btrfs_inode *inode)
 {
-	/*
-	 * Compression only has effect for regular files, and for directories
-	 * we set it just to propagate it to new files created inside them.
-	 * Everything else (symlinks, devices, sockets, fifos) is pointless as
-	 * it will do nothing, so don't waste metadata space on a compression
-	 * xattr for anything that is neither a file nor a directory.
-	 */
+	 
 	if (!S_ISREG(inode->vfs_inode.i_mode) &&
 	    !S_ISDIR(inode->vfs_inode.i_mode))
 		return true;
@@ -410,21 +391,12 @@ int btrfs_inode_inherit_props(struct btrfs_trans_handle *trans,
 		if (!value)
 			continue;
 
-		/*
-		 * This is not strictly necessary as the property should be
-		 * valid, but in case it isn't, don't propagate it further.
-		 */
+		 
 		ret = h->validate(BTRFS_I(inode), value, strlen(value));
 		if (ret)
 			continue;
 
-		/*
-		 * Currently callers should be reserving 1 item for properties,
-		 * since we only have 1 property that we currently support.  If
-		 * we add more in the future we need to try and reserve more
-		 * space for them.  But we should also revisit how we do space
-		 * reservations if we do add more properties in the future.
-		 */
+		 
 		if (need_reserve) {
 			num_bytes = btrfs_calc_insert_metadata_size(fs_info, 1);
 			ret = btrfs_block_rsv_add(fs_info, trans->block_rsv,

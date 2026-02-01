@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * misc.c
- *
- * This is a collection of several routines used to extract the kernel
- * which includes KASLR relocation, decompression, ELF parsing, and
- * relocation processing. Additionally included are the screen and serial
- * output functions and related debugging support functions.
- *
- * malloc by Hannu Savolainen 1993 and Matthias Urlichs 1994
- * puts by Nick Holloway 1993, better puts by Martin Mares 1995
- * High loaded stuff by Hans Lermen & Werner Almesberger, Feb. 1996
- */
+
+ 
 
 #include "misc.h"
 #include "error.h"
@@ -19,33 +8,23 @@
 #include "../voffset.h"
 #include <asm/bootparam_utils.h>
 
-/*
- * WARNING!!
- * This code is compiled with -fPIC and it is relocated dynamically at
- * run time, but no relocation processing is performed. This means that
- * it is not safe to place pointers in static structures.
- */
+ 
 
-/* Macros used by the included decompressor code below. */
+ 
 #define STATIC		static
-/* Define an externally visible malloc()/free(). */
+ 
 #define MALLOC_VISIBLE
 #include <linux/decompress/mm.h>
 
-/*
- * Provide definitions of memzero and memmove as some of the decompressors will
- * try to define their own functions if these are not defined as macros.
- */
+ 
 #define memzero(s, n)	memset((s), 0, (n))
 #ifndef memmove
 #define memmove		memmove
-/* Functions used by the included decompressor code below. */
+ 
 void *memmove(void *dest, const void *src, size_t n);
 #endif
 
-/*
- * This is set up by the setup-routine at boot-time
- */
+ 
 struct boot_params *boot_params;
 
 struct port_io_ops pio_ops;
@@ -56,7 +35,7 @@ memptr free_mem_end_ptr;
 static char *vidmem;
 static int vidport;
 
-/* These might be accessed before .bss is cleared, so use .data instead. */
+ 
 static int lines __section(".data");
 static int cols __section(".data");
 
@@ -87,10 +66,7 @@ static int cols __section(".data");
 #ifdef CONFIG_KERNEL_ZSTD
 #include "../../../../lib/decompress_unzstd.c"
 #endif
-/*
- * NOTE: When adding a new decompressor, please update the analysis in
- * ../header.S.
- */
+ 
 
 static void scroll(void)
 {
@@ -103,8 +79,8 @@ static void scroll(void)
 
 #define XMTRDY          0x20
 
-#define TXR             0       /*  Transmit register (WRITE) */
-#define LSR             5       /*  Line Status               */
+#define TXR             0        
+#define LSR             5        
 static void serial_putchar(int ch)
 {
 	unsigned timeout = 0xffff;
@@ -157,7 +133,7 @@ void __putstr(const char *s)
 	boot_params->screen_info.orig_x = x;
 	boot_params->screen_info.orig_y = y;
 
-	pos = (x + cols * y) * 2;	/* Update cursor position */
+	pos = (x + cols * y) * 2;	 
 	outb(14, vidport);
 	outb(0xff & (pos >> 9), vidport+1);
 	outb(15, vidport);
@@ -190,26 +166,13 @@ static void handle_relocations(void *output, unsigned long output_len,
 	unsigned long min_addr = (unsigned long)output;
 	unsigned long max_addr = min_addr + (VO___bss_start - VO__text);
 
-	/*
-	 * Calculate the delta between where vmlinux was linked to load
-	 * and where it was actually loaded.
-	 */
+	 
 	delta = min_addr - LOAD_PHYSICAL_ADDR;
 
-	/*
-	 * The kernel contains a table of relocation addresses. Those
-	 * addresses have the final load address of the kernel in virtual
-	 * memory. We are currently working in the self map. So we need to
-	 * create an adjustment for kernel memory addresses to the self map.
-	 * This will involve subtracting out the base address of the kernel.
-	 */
+	 
 	map = delta - __START_KERNEL_map;
 
-	/*
-	 * 32-bit always performs relocations. 64-bit relocations are only
-	 * needed if KASLR has chosen a different starting address offset
-	 * from __START_KERNEL_map.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_X86_64))
 		delta = virt_addr - LOAD_PHYSICAL_ADDR;
 
@@ -219,25 +182,7 @@ static void handle_relocations(void *output, unsigned long output_len,
 	}
 	debug_putstr("Performing relocations... ");
 
-	/*
-	 * Process relocations: 32 bit relocations first then 64 bit after.
-	 * Three sets of binary relocations are added to the end of the kernel
-	 * before compression. Each relocation table entry is the kernel
-	 * address of the location which needs to be updated stored as a
-	 * 32-bit value which is sign extended to 64 bits.
-	 *
-	 * Format is:
-	 *
-	 * kernel bits...
-	 * 0 - zero terminator for 64 bit relocations
-	 * 64 bit relocation repeated
-	 * 0 - zero terminator for inverse 32 bit relocations
-	 * 32 bit inverse relocation repeated
-	 * 0 - zero terminator for 32 bit relocations
-	 * 32 bit relocation repeated
-	 *
-	 * So we work backwards from the end of the decompressed image.
-	 */
+	 
 	for (reloc = output + output_len - sizeof(*reloc); *reloc; reloc--) {
 		long extended = *reloc;
 		extended += map;
@@ -321,7 +266,7 @@ static size_t parse_elf(void *output)
 #endif
 			memmove(dest, output + phdr->p_offset, phdr->p_filesz);
 			break;
-		default: /* Ignore other PT_* */ break;
+		default:   break;
 		}
 	}
 
@@ -357,23 +302,7 @@ unsigned long decompress_kernel(unsigned char *outbuf, unsigned long virt_addr,
 	return entry;
 }
 
-/*
- * The compressed kernel image (ZO), has been moved so that its position
- * is against the end of the buffer used to hold the uncompressed kernel
- * image (VO) and the execution environment (.bss, .brk), which makes sure
- * there is room to do the in-place decompression. (See header.S for the
- * calculations.)
- *
- *                             |-----compressed kernel image------|
- *                             V                                  V
- * 0                       extract_offset                      +INIT_SIZE
- * |-----------|---------------|-------------------------|--------|
- *             |               |                         |        |
- *           VO__text      startup_32 of ZO          VO__end    ZO__end
- *             ^                                         ^
- *             |-------uncompressed kernel image---------|
- *
- */
+ 
 asmlinkage __visible void *extract_kernel(void *rmode, unsigned char *output)
 {
 	unsigned long virt_addr = LOAD_PHYSICAL_ADDR;
@@ -381,10 +310,10 @@ asmlinkage __visible void *extract_kernel(void *rmode, unsigned char *output)
 	unsigned long needed_size;
 	size_t entry_offset;
 
-	/* Retain x86 boot parameters pointer passed from startup_32/64. */
+	 
 	boot_params = rmode;
 
-	/* Clear flags intended for solely in-kernel use. */
+	 
 	boot_params->hdr.loadflags &= ~KASLR_FLAG;
 
 	sanitize_boot_params(boot_params);
@@ -402,45 +331,26 @@ asmlinkage __visible void *extract_kernel(void *rmode, unsigned char *output)
 
 	init_default_io_ops();
 
-	/*
-	 * Detect TDX guest environment.
-	 *
-	 * It has to be done before console_init() in order to use
-	 * paravirtualized port I/O operations if needed.
-	 */
+	 
 	early_tdx_detect();
 
 	console_init();
 
-	/*
-	 * Save RSDP address for later use. Have this after console_init()
-	 * so that early debugging output from the RSDP parsing code can be
-	 * collected.
-	 */
+	 
 	boot_params->acpi_rsdp_addr = get_rsdp_addr();
 
 	debug_putstr("early console in extract_kernel\n");
 
-	free_mem_ptr     = heap;	/* Heap */
+	free_mem_ptr     = heap;	 
 	free_mem_end_ptr = heap + BOOT_HEAP_SIZE;
 
-	/*
-	 * The memory hole needed for the kernel is the larger of either
-	 * the entire decompressed kernel plus relocation table, or the
-	 * entire decompressed kernel plus .bss and .brk sections.
-	 *
-	 * On X86_64, the memory is mapped with PMD pages. Round the
-	 * size up so that the full extent of PMD pages mapped is
-	 * included in the check against the valid memory table
-	 * entries. This ensures the full mapped area is usable RAM
-	 * and doesn't include any reserved areas.
-	 */
+	 
 	needed_size = max_t(unsigned long, output_len, kernel_total_size);
 #ifdef CONFIG_X86_64
 	needed_size = ALIGN(needed_size, MIN_KERNEL_ALIGN);
 #endif
 
-	/* Report initial kernel position details. */
+	 
 	debug_putaddr(input_data);
 	debug_putaddr(input_len);
 	debug_putaddr(output);
@@ -449,7 +359,7 @@ asmlinkage __visible void *extract_kernel(void *rmode, unsigned char *output)
 	debug_putaddr(needed_size);
 
 #ifdef CONFIG_X86_64
-	/* Report address of 32-bit trampoline */
+	 
 	debug_putaddr(trampoline_32bit);
 #endif
 
@@ -458,7 +368,7 @@ asmlinkage __visible void *extract_kernel(void *rmode, unsigned char *output)
 				needed_size,
 				&virt_addr);
 
-	/* Validate memory location choices. */
+	 
 	if ((unsigned long)output & (MIN_KERNEL_ALIGN - 1))
 		error("Destination physical address inappropriately aligned");
 	if (virt_addr & (MIN_KERNEL_ALIGN - 1))
@@ -490,7 +400,7 @@ asmlinkage __visible void *extract_kernel(void *rmode, unsigned char *output)
 	debug_puthex(entry_offset);
 	debug_putstr(").\n");
 
-	/* Disable exception handling before booting the kernel */
+	 
 	cleanup_exception_handling();
 
 	return output + entry_offset;

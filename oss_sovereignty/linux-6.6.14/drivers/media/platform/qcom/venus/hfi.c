@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
- * Copyright (C) 2017 Linaro Ltd.
- */
+
+ 
 #include <linux/slab.h>
 #include <linux/mutex.h>
 #include <linux/list.h>
@@ -217,11 +214,7 @@ int hfi_session_init(struct venus_inst *inst, u32 pixfmt)
 	const struct hfi_ops *ops = core->ops;
 	int ret;
 
-	/*
-	 * If core shutdown is in progress or if we are in system
-	 * recovery, return an error as during system error recovery
-	 * session_init() can't pass successfully
-	 */
+	 
 	mutex_lock(&core->lock);
 	if (!core->ops || test_bit(0, &inst->core->sys_error)) {
 		mutex_unlock(&core->lock);

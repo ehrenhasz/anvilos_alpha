@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2013-2015, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/highmem.h>
 #include <linux/module.h>
@@ -243,7 +213,7 @@ static void mlx5_set_driver_version(struct mlx5_core_dev *dev)
 		LINUX_VERSION_MAJOR, LINUX_VERSION_PATCHLEVEL,
 		LINUX_VERSION_SUBLEVEL);
 
-	/*Send the command*/
+	 
 	MLX5_SET(set_driver_version_in, in, opcode,
 		 MLX5_CMD_OP_SET_DRIVER_VERSION);
 
@@ -453,7 +423,7 @@ static int handle_hca_cap_atomic(struct mlx5_core_dev *dev, void *set_ctx)
 
 	set_hca_cap = MLX5_ADDR_OF(set_hca_cap_in, set_ctx, capability);
 
-	/* Set requestor to host endianness */
+	 
 	MLX5_SET(atomic_caps, set_hca_cap, atomic_req_8B_endianness_mode,
 		 MLX5_ATOMIC_REQ_MODE_HOST_ENDIANNESS);
 
@@ -585,11 +555,11 @@ static int handle_hca_cap(struct mlx5_core_dev *dev, void *set_ctx)
 	mlx5_core_dbg(dev, "Current Pkey table size %d Setting new size %d\n",
 		      mlx5_to_sw_pkey_sz(MLX5_CAP_GEN(dev, pkey_table_size)),
 		      128);
-	/* we limit the size of the pkey table to 128 entries for now */
+	 
 	MLX5_SET(cmd_hca_cap, set_hca_cap, pkey_table_size,
 		 to_fw_pkey_sz(dev, 128));
 
-	/* Check log_max_qp from HCA caps to set in current profile */
+	 
 	if (prof->log_max_qp == LOG_MAX_SUPPORTED_QPS) {
 		prof->log_max_qp = min_t(u8, 18, MLX5_CAP_GEN_MAX(dev, log_max_qp));
 	} else if (MLX5_CAP_GEN_MAX(dev, log_max_qp) < prof->log_max_qp) {
@@ -602,12 +572,10 @@ static int handle_hca_cap(struct mlx5_core_dev *dev, void *set_ctx)
 		MLX5_SET(cmd_hca_cap, set_hca_cap, log_max_qp,
 			 prof->log_max_qp);
 
-	/* disable cmdif checksum */
+	 
 	MLX5_SET(cmd_hca_cap, set_hca_cap, cmdif_checksum, 0);
 
-	/* Enable 4K UAR only when HCA supports it and page size is bigger
-	 * than 4K.
-	 */
+	 
 	if (MLX5_CAP_GEN_MAX(dev, uar_4k) && PAGE_SIZE > 4096)
 		MLX5_SET(cmd_hca_cap, set_hca_cap, uar_4k, 1);
 
@@ -658,20 +626,7 @@ static int handle_hca_cap(struct mlx5_core_dev *dev, void *set_ctx)
 	return set_caps(dev, set_ctx, MLX5_SET_HCA_CAP_OP_MOD_GENERAL_DEVICE);
 }
 
-/* Cached MLX5_CAP_GEN(dev, roce) can be out of sync this early in the
- * boot process.
- * In case RoCE cap is writable in FW and user/devlink requested to change the
- * cap, we are yet to query the final state of the above cap.
- * Hence, the need for this function.
- *
- * Returns
- * True:
- * 1) RoCE cap is read only in FW and already disabled
- * OR:
- * 2) RoCE cap is writable in FW and user/devlink requested it off.
- *
- * In any other case, return False.
- */
+ 
 static bool is_roce_fw_disabled(struct mlx5_core_dev *dev)
 {
 	return (MLX5_CAP_GEN(dev, roce_rw_supported) && !mlx5_is_roce_on(dev)) ||
@@ -810,7 +765,7 @@ static int mlx5_core_set_hca_defaults(struct mlx5_core_dev *dev)
 {
 	int ret = 0;
 
-	/* Disable local_lb by default */
+	 
 	if (MLX5_CAP_GEN(dev, port_type) == MLX5_CAP_PORT_TYPE_ETH)
 		ret = mlx5_nic_vport_update_local_lb(dev, false);
 
@@ -942,10 +897,7 @@ err_disable:
 
 static void mlx5_pci_close(struct mlx5_core_dev *dev)
 {
-	/* health work might still be active, and it needs pci bar in
-	 * order to know the NIC state. Therefore, drain the health WQ
-	 * before removing the pci bars
-	 */
+	 
 	mlx5_drain_health_wq(dev);
 	iounmap(dev->iseg);
 	release_bar(dev->pdev);
@@ -1133,12 +1085,11 @@ static int mlx5_function_enable(struct mlx5_core_dev *dev, bool boot, u64 timeou
 	mlx5_core_info(dev, "firmware version: %d.%d.%d\n", fw_rev_maj(dev),
 		       fw_rev_min(dev), fw_rev_sub(dev));
 
-	/* Only PFs hold the relevant PCIe information for this query */
+	 
 	if (mlx5_core_is_pf(dev))
 		pcie_print_link_status(dev->pdev);
 
-	/* wait for firmware to accept initialization segments configurations
-	 */
+	 
 	err = wait_fw_init(dev, timeout,
 			   mlx5_tout_ms(dev, FW_PRE_INIT_WARN_MESSAGE_INTERVAL));
 	if (err) {
@@ -1450,9 +1401,7 @@ int mlx5_init_one_devl_locked(struct mlx5_core_dev *dev)
 		goto function_teardown;
 	}
 
-	/* In case of light_probe, mlx5_devlink is already registered.
-	 * Hence, don't register devlink again.
-	 */
+	 
 	if (!light_probe) {
 		err = mlx5_devlink_params_register(priv_to_devlink(dev));
 		if (err)
@@ -1537,7 +1486,7 @@ int mlx5_load_one_devl_locked(struct mlx5_core_dev *dev, bool recovery)
 		mlx5_core_warn(dev, "interface is up, NOP\n");
 		goto out;
 	}
-	/* remove any previous indication of internal error */
+	 
 	dev->state = MLX5_DEVICE_STATE_UP;
 
 	if (recovery)
@@ -1613,9 +1562,7 @@ void mlx5_unload_one(struct mlx5_core_dev *dev, bool suspend)
 	devl_unlock(devlink);
 }
 
-/* In case of light probe, we don't need a full query of hca_caps, but only the bellow caps.
- * A full query of hca_caps will be done when the device will reload.
- */
+ 
 static int mlx5_query_hca_caps_light(struct mlx5_core_dev *dev)
 {
 	int err;
@@ -1697,10 +1644,7 @@ void mlx5_uninit_one_light(struct mlx5_core_dev *dev)
 	mlx5_function_disable(dev, true);
 }
 
-/* xxx_light() function are used in order to configure the device without full
- * init (light init). e.g.: There isn't a point in reload a device to light state.
- * Hence, mlx5_load_one_light() isn't needed.
- */
+ 
 
 void mlx5_unload_one_light(struct mlx5_core_dev *dev)
 {
@@ -1831,11 +1775,7 @@ int mlx5_mdev_init(struct mlx5_core_dev *dev, int profile_idx)
 	if (err)
 		goto err_hca_caps;
 
-	/* The conjunction of sw_vhca_id with sw_owner_id will be a global
-	 * unique id per function which uses mlx5_core.
-	 * Those values are supplied to FW as part of the init HCA command to
-	 * be used by both driver and FW when it's applicable.
-	 */
+	 
 	dev->priv.sw_vhca_id = ida_alloc_range(&sw_vhca_ida, 1,
 					       MAX_SW_VHCA_ID,
 					       GFP_KERNEL);
@@ -1962,10 +1902,7 @@ static void remove_one(struct pci_dev *pdev)
 	struct devlink *devlink = priv_to_devlink(dev);
 
 	set_bit(MLX5_BREAK_FW_WAIT, &dev->intf_state);
-	/* mlx5_drain_fw_reset() and mlx5_drain_health_wq() are using
-	 * devlink notify APIs.
-	 * Hence, we must drain them before unregistering the devlink.
-	 */
+	 
 	mlx5_drain_fw_reset(dev);
 	mlx5_drain_health_wq(dev);
 	devlink_unregister(devlink);
@@ -2016,9 +1953,7 @@ static pci_ers_result_t mlx5_pci_err_detected(struct pci_dev *pdev,
 	return res;
 }
 
-/* wait for the device to show vital signs by waiting
- * for the health counter to start counting.
- */
+ 
 static int wait_vital(struct pci_dev *pdev)
 {
 	struct mlx5_core_dev *dev = pci_get_drvdata(pdev);
@@ -2121,9 +2056,7 @@ static int mlx5_try_fast_unload(struct mlx5_core_dev *dev)
 		return -EAGAIN;
 	}
 
-	/* Panic tear down fw command will stop the PCI bus communication
-	 * with the HCA, so the health poll is no longer needed.
-	 */
+	 
 	mlx5_drain_health_wq(dev);
 	mlx5_stop_health_poll(dev, false);
 
@@ -2142,11 +2075,7 @@ static int mlx5_try_fast_unload(struct mlx5_core_dev *dev)
 succeed:
 	mlx5_enter_error_state(dev, true);
 
-	/* Some platforms requiring freeing the IRQ's in the shutdown
-	 * flow. If they aren't freed they can't be allocated after
-	 * kexec. There is no need to cleanup the mlx5_core software
-	 * contexts.
-	 */
+	 
 	mlx5_core_eq_free_irqs(dev);
 
 	return 0;
@@ -2183,27 +2112,27 @@ static int mlx5_resume(struct pci_dev *pdev)
 
 static const struct pci_device_id mlx5_core_pci_table[] = {
 	{ PCI_VDEVICE(MELLANOX, PCI_DEVICE_ID_MELLANOX_CONNECTIB) },
-	{ PCI_VDEVICE(MELLANOX, 0x1012), MLX5_PCI_DEV_IS_VF},	/* Connect-IB VF */
+	{ PCI_VDEVICE(MELLANOX, 0x1012), MLX5_PCI_DEV_IS_VF},	 
 	{ PCI_VDEVICE(MELLANOX, PCI_DEVICE_ID_MELLANOX_CONNECTX4) },
-	{ PCI_VDEVICE(MELLANOX, 0x1014), MLX5_PCI_DEV_IS_VF},	/* ConnectX-4 VF */
+	{ PCI_VDEVICE(MELLANOX, 0x1014), MLX5_PCI_DEV_IS_VF},	 
 	{ PCI_VDEVICE(MELLANOX, PCI_DEVICE_ID_MELLANOX_CONNECTX4_LX) },
-	{ PCI_VDEVICE(MELLANOX, 0x1016), MLX5_PCI_DEV_IS_VF},	/* ConnectX-4LX VF */
-	{ PCI_VDEVICE(MELLANOX, 0x1017) },			/* ConnectX-5, PCIe 3.0 */
-	{ PCI_VDEVICE(MELLANOX, 0x1018), MLX5_PCI_DEV_IS_VF},	/* ConnectX-5 VF */
-	{ PCI_VDEVICE(MELLANOX, 0x1019) },			/* ConnectX-5 Ex */
-	{ PCI_VDEVICE(MELLANOX, 0x101a), MLX5_PCI_DEV_IS_VF},	/* ConnectX-5 Ex VF */
-	{ PCI_VDEVICE(MELLANOX, 0x101b) },			/* ConnectX-6 */
-	{ PCI_VDEVICE(MELLANOX, 0x101c), MLX5_PCI_DEV_IS_VF},	/* ConnectX-6 VF */
-	{ PCI_VDEVICE(MELLANOX, 0x101d) },			/* ConnectX-6 Dx */
-	{ PCI_VDEVICE(MELLANOX, 0x101e), MLX5_PCI_DEV_IS_VF},	/* ConnectX Family mlx5Gen Virtual Function */
-	{ PCI_VDEVICE(MELLANOX, 0x101f) },			/* ConnectX-6 LX */
-	{ PCI_VDEVICE(MELLANOX, 0x1021) },			/* ConnectX-7 */
-	{ PCI_VDEVICE(MELLANOX, 0x1023) },			/* ConnectX-8 */
-	{ PCI_VDEVICE(MELLANOX, 0xa2d2) },			/* BlueField integrated ConnectX-5 network controller */
-	{ PCI_VDEVICE(MELLANOX, 0xa2d3), MLX5_PCI_DEV_IS_VF},	/* BlueField integrated ConnectX-5 network controller VF */
-	{ PCI_VDEVICE(MELLANOX, 0xa2d6) },			/* BlueField-2 integrated ConnectX-6 Dx network controller */
-	{ PCI_VDEVICE(MELLANOX, 0xa2dc) },			/* BlueField-3 integrated ConnectX-7 network controller */
-	{ PCI_VDEVICE(MELLANOX, 0xa2df) },			/* BlueField-4 integrated ConnectX-8 network controller */
+	{ PCI_VDEVICE(MELLANOX, 0x1016), MLX5_PCI_DEV_IS_VF},	 
+	{ PCI_VDEVICE(MELLANOX, 0x1017) },			 
+	{ PCI_VDEVICE(MELLANOX, 0x1018), MLX5_PCI_DEV_IS_VF},	 
+	{ PCI_VDEVICE(MELLANOX, 0x1019) },			 
+	{ PCI_VDEVICE(MELLANOX, 0x101a), MLX5_PCI_DEV_IS_VF},	 
+	{ PCI_VDEVICE(MELLANOX, 0x101b) },			 
+	{ PCI_VDEVICE(MELLANOX, 0x101c), MLX5_PCI_DEV_IS_VF},	 
+	{ PCI_VDEVICE(MELLANOX, 0x101d) },			 
+	{ PCI_VDEVICE(MELLANOX, 0x101e), MLX5_PCI_DEV_IS_VF},	 
+	{ PCI_VDEVICE(MELLANOX, 0x101f) },			 
+	{ PCI_VDEVICE(MELLANOX, 0x1021) },			 
+	{ PCI_VDEVICE(MELLANOX, 0x1023) },			 
+	{ PCI_VDEVICE(MELLANOX, 0xa2d2) },			 
+	{ PCI_VDEVICE(MELLANOX, 0xa2d3), MLX5_PCI_DEV_IS_VF},	 
+	{ PCI_VDEVICE(MELLANOX, 0xa2d6) },			 
+	{ PCI_VDEVICE(MELLANOX, 0xa2dc) },			 
+	{ PCI_VDEVICE(MELLANOX, 0xa2df) },			 
 	{ 0, }
 };
 
@@ -2240,17 +2169,7 @@ static struct pci_driver mlx5_core_driver = {
 	.sriov_set_msix_vec_count = mlx5_core_sriov_set_msix_vec_count,
 };
 
-/**
- * mlx5_vf_get_core_dev - Get the mlx5 core device from a given VF PCI device if
- *                     mlx5_core is its driver.
- * @pdev: The associated PCI device.
- *
- * Upon return the interface state lock stay held to let caller uses it safely.
- * Caller must ensure to use the returned mlx5 device for a narrow window
- * and put it back with mlx5_vf_put_core_dev() immediately once usage was over.
- *
- * Return: Pointer to the associated mlx5_core_dev or NULL.
- */
+ 
 struct mlx5_core_dev *mlx5_vf_get_core_dev(struct pci_dev *pdev)
 {
 	struct mlx5_core_dev *mdev;
@@ -2269,13 +2188,7 @@ struct mlx5_core_dev *mlx5_vf_get_core_dev(struct pci_dev *pdev)
 }
 EXPORT_SYMBOL(mlx5_vf_get_core_dev);
 
-/**
- * mlx5_vf_put_core_dev - Put the mlx5 core device back.
- * @mdev: The mlx5 core device.
- *
- * Upon return the interface state lock is unlocked and caller should not
- * access the mdev any more.
- */
+ 
 void mlx5_vf_put_core_dev(struct mlx5_core_dev *mdev)
 {
 	mutex_unlock(&mdev->intf_state_mutex);

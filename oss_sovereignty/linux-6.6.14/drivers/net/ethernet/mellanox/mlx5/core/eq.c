@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2013-2021, Mellanox Technologies inc.  All rights reserved.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/notifier.h>
@@ -36,10 +34,7 @@ enum {
 	MLX5_EQ_DOORBEL_OFFSET	= 0x40,
 };
 
-/* budget must be smaller than MLX5_NUM_SPARE_EQE to guarantee that we update
- * the ci before we polled all the entries in the EQ. MLX5_NUM_SPARE_EQE is
- * used to set the EQ size, budget must be smaller than the EQ size.
- */
+ 
 enum {
 	MLX5_EQ_POLLING_BUDGET	= 128,
 };
@@ -54,11 +49,11 @@ struct mlx5_eq_table {
 
 	struct atomic_notifier_head nh[MLX5_EVENT_TYPE_MAX];
 
-	/* Since CQ DB is stored in async_eq */
+	 
 	struct mlx5_nb          cq_err_nb;
 
-	struct mutex            lock; /* sync async eqs creations */
-	struct mutex            comp_lock; /* sync comp eqs creations */
+	struct mutex            lock;  
+	struct mutex            comp_lock;  
 	int			curr_comp_eqs;
 	int			max_comp_eqs;
 	struct mlx5_irq_table	*irq_table;
@@ -90,7 +85,7 @@ static int mlx5_cmd_destroy_eq(struct mlx5_core_dev *dev, u8 eqn)
 	return mlx5_cmd_exec_in(dev, destroy_eq, in);
 }
 
-/* caller must eventually call mlx5_cq_put on the returned cq */
+ 
 static struct mlx5_core_cq *mlx5_eq_cq_get(struct mlx5_eq *eq, u32 cqn)
 {
 	struct mlx5_cq_table *table = &eq->cq_table;
@@ -123,11 +118,9 @@ static int mlx5_eq_comp_int(struct notifier_block *nb,
 	do {
 		struct mlx5_core_cq *cq;
 
-		/* Make sure we read EQ entry contents after we've
-		 * checked the ownership bit.
-		 */
+		 
 		dma_rmb();
-		/* Assume (eqe->type) is always MLX5_EVENT_TYPE_COMP */
+		 
 		cqn = be32_to_cpu(eqe->data.comp.cqn) & 0xffffff;
 
 		cq = mlx5_eq_cq_get(eq, cqn);
@@ -153,11 +146,7 @@ out:
 	return 0;
 }
 
-/* Some architectures don't latch interrupts when they are disabled, so using
- * mlx5_eq_poll_irq_disabled could end up losing interrupts while trying to
- * avoid losing them.  It is not recommended to use it, unless this is the last
- * resort.
- */
+ 
 u32 mlx5_eq_poll_irq_disabled(struct mlx5_eq_comp *eq)
 {
 	u32 count_eqe;
@@ -220,10 +209,7 @@ static int mlx5_eq_async_int(struct notifier_block *nb,
 		goto out;
 
 	do {
-		/*
-		 * Make sure we read EQ entry contents after we've
-		 * checked the ownership bit.
-		 */
+		 
 		dma_rmb();
 
 		atomic_notifier_call_chain(&eqt->nh[eqe->type], eqe->type, eqe);
@@ -278,7 +264,7 @@ create_map_eq(struct mlx5_core_dev *dev, struct mlx5_eq *eq,
 	int err;
 	int i;
 
-	/* Init CQ table */
+	 
 	memset(cq_table, 0, sizeof(*cq_table));
 	spin_lock_init(&cq_table->lock);
 	INIT_RADIX_TREE(&cq_table->tree, GFP_ATOMIC);
@@ -351,16 +337,7 @@ err_buf:
 	return err;
 }
 
-/**
- * mlx5_eq_enable - Enable EQ for receiving EQEs
- * @dev : Device which owns the eq
- * @eq  : EQ to enable
- * @nb  : Notifier call block
- *
- * Must be called after EQ is created in device.
- *
- * @return: 0 if no error
- */
+ 
 int mlx5_eq_enable(struct mlx5_core_dev *dev, struct mlx5_eq *eq,
 		   struct notifier_block *nb)
 {
@@ -374,14 +351,7 @@ int mlx5_eq_enable(struct mlx5_core_dev *dev, struct mlx5_eq *eq,
 }
 EXPORT_SYMBOL(mlx5_eq_enable);
 
-/**
- * mlx5_eq_disable - Disable EQ for receiving EQEs
- * @dev : Device which owns the eq
- * @eq  : EQ to disable
- * @nb  : Notifier call block
- *
- * Must be called before EQ is destroyed.
- */
+ 
 void mlx5_eq_disable(struct mlx5_core_dev *dev, struct mlx5_eq *eq,
 		     struct notifier_block *nb)
 {
@@ -473,7 +443,7 @@ void mlx5_eq_table_cleanup(struct mlx5_core_dev *dev)
 	kvfree(table);
 }
 
-/* Async EQs */
+ 
 
 static int create_async_eq(struct mlx5_core_dev *dev,
 			   struct mlx5_eq *eq, struct mlx5_eq_param *param)
@@ -507,7 +477,7 @@ static int cq_err_event_notifier(struct notifier_block *nb,
 	struct mlx5_eq *eq;
 	u32 cqn;
 
-	/* type == MLX5_EVENT_TYPE_CQ_ERROR */
+	 
 
 	eqt = mlx5_nb_cof(nb, struct mlx5_eq_table, cq_err_nb);
 	eq  = &eqt->async_eq.core;
@@ -655,9 +625,7 @@ static int create_async_eqs(struct mlx5_core_dev *dev)
 	struct mlx5_eq_param param = {};
 	int err;
 
-	/* All the async_eqs are using single IRQ, request one IRQ and share its
-	 * index among all the async_eqs of this device.
-	 */
+	 
 	table->ctrl_irq = mlx5_ctrl_irq_request(dev);
 	if (IS_ERR(table->ctrl_irq))
 		return PTR_ERR(table->ctrl_irq);
@@ -690,7 +658,7 @@ static int create_async_eqs(struct mlx5_core_dev *dev)
 
 	param = (struct mlx5_eq_param) {
 		.irq = table->ctrl_irq,
-		.nent = /* TODO: sriov max_vf + */ 1,
+		.nent =   1,
 		.mask[0] = 1ull << MLX5_EVENT_TYPE_PAGE_REQUEST,
 	};
 
@@ -741,9 +709,7 @@ void mlx5_eq_synchronize_cmd_irq(struct mlx5_core_dev *dev)
 	synchronize_irq(dev->priv.eq_table->cmd_eq.core.irqn);
 }
 
-/* Generic EQ API for mlx5_core consumers
- * Needed For RDMA ODP EQ for now
- */
+ 
 struct mlx5_eq *
 mlx5_eq_create_generic(struct mlx5_core_dev *dev,
 		       struct mlx5_eq_param *param)
@@ -791,9 +757,7 @@ struct mlx5_eqe *mlx5_eq_get_eqe(struct mlx5_eq *eq, u32 cc)
 
 	eqe = get_eqe(eq, ci & (nent - 1));
 	eqe = ((eqe->owner & 1) ^ !!(ci & nent)) ? NULL : eqe;
-	/* Make sure we read EQ entry contents after we've
-	 * checked the ownership bit.
-	 */
+	 
 	if (eqe)
 		dma_rmb();
 
@@ -810,7 +774,7 @@ void mlx5_eq_update_ci(struct mlx5_eq *eq, u32 cc, bool arm)
 	val = (eq->cons_index & 0xffffff) | (eq->eqn << 24);
 
 	__raw_writel((__force u32)cpu_to_be32(val), addr);
-	/* We still want ordering, just not swabbing, so add a barrier */
+	 
 	wmb();
 }
 EXPORT_SYMBOL(mlx5_eq_update_ci);
@@ -904,7 +868,7 @@ static int comp_irq_request_sf(struct mlx5_core_dev *dev, u16 vecidx)
 	struct irq_affinity_desc af_desc = {};
 	struct mlx5_irq *irq;
 
-	/* In case SF irq pool does not exist, fallback to the PF irqs*/
+	 
 	if (!mlx5_irq_pool_is_sf_pool(pool))
 		return comp_irq_request_pci(dev, vecidx);
 
@@ -941,12 +905,7 @@ static int alloc_rmap(struct mlx5_core_dev *mdev)
 {
 	struct mlx5_eq_table *eq_table = mdev->priv.eq_table;
 
-	/* rmap is a mapping between irq number and queue number.
-	 * Each irq can be assigned only to a single rmap.
-	 * Since SFs share IRQs, rmap mapping cannot function correctly
-	 * for irqs that are shared between different core/netdev RX rings.
-	 * Hence we don't allow netdev rmap for SFs.
-	 */
+	 
 	if (mlx5_core_is_sf(mdev))
 		return 0;
 
@@ -1000,7 +959,7 @@ static u16 comp_eq_depth_devlink_param_get(struct mlx5_core_dev *dev)
 	return MLX5_COMP_EQ_SIZE;
 }
 
-/* Must be called with EQ table comp_lock held */
+ 
 static int create_comp_eq(struct mlx5_core_dev *dev, u16 vecidx)
 {
 	struct mlx5_eq_table *table = dev->priv.eq_table;
@@ -1100,7 +1059,7 @@ int mlx5_comp_irqn_get(struct mlx5_core_dev *dev, int vector, unsigned int *irqn
 	int eqn;
 	int err;
 
-	/* Allocate the EQ if not allocated yet */
+	 
 	err = mlx5_comp_eqn_get(dev, vector, &eqn);
 	if (err)
 		return err;
@@ -1164,7 +1123,7 @@ struct mlx5_eq_comp *mlx5_eqn2comp_eq(struct mlx5_core_dev *dev, int eqn)
 	return ERR_PTR(-ENOENT);
 }
 
-/* This function should only be called after mlx5_cmd_force_teardown_hca */
+ 
 void mlx5_core_eq_free_irqs(struct mlx5_core_dev *dev)
 {
 	mlx5_irq_table_free_irqs(dev);
@@ -1183,10 +1142,7 @@ static int get_num_eqs(struct mlx5_core_dev *dev)
 	int max_eqs_sf;
 	int num_eqs;
 
-	/* If ethernet is disabled we use just a single completion vector to
-	 * have the other vectors available for other drivers using mlx5_core. For
-	 * example, mlx5_vdpa
-	 */
+	 
 	if (!mlx5_core_is_eth_enabled(dev) && mlx5_eth_supported(dev))
 		return 1;
 

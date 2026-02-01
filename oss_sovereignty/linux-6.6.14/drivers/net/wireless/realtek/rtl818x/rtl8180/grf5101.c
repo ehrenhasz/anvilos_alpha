@@ -1,20 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * Radio tuning for GCT GRF5101 on RTL8180
- *
- * Copyright 2007 Andrea Merello <andrea.merello@gmail.com>
- *
- * Code from the BSD driver and the rtl8181 project have been
- * very useful to understand certain things
- *
- * I want to thanks the Authors of such projects and the Ndiswrapper
- * project Authors.
- *
- * A special Big Thanks also is for all people who donated me cards,
- * making possible the creation of the original rtl8180 driver
- * from which this code is derived!
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/delay.h>
@@ -42,7 +28,7 @@ static void write_grf5101(struct ieee80211_hw *dev, u8 addr, u32 data)
 	phy_config |= (addr & 1) << 16;
 	phy_config |= grf5101_encode[(data & 0xf000) >> 12] << 24;
 
-	/* MAC will bang bits to the chip */
+	 
 	phy_config |= 0x90000000;
 
 	rtl818x_iowrite32(priv,
@@ -70,7 +56,7 @@ static u8 grf5101_rf_calc_rssi(u8 agc, u8 sq)
 	if (agc > 60)
 		return 65;
 
-	/* TODO(?): just return agc (or agc + 5) to avoid mult / div */
+	 
 	return 65 * agc / 60;
 }
 
@@ -83,13 +69,13 @@ static void grf5101_rf_set_channel(struct ieee80211_hw *dev,
 	u32 txpw = priv->channels[channel - 1].hw_value & 0xFF;
 	u32 chan = channel - 1;
 
-	/* set TX power */
+	 
 	write_grf5101(dev, 0x15, 0x0);
 	write_grf5101(dev, 0x06, txpw);
 	write_grf5101(dev, 0x15, 0x10);
 	write_grf5101(dev, 0x15, 0x0);
 
-	/* set frequency */
+	 
 	write_grf5101(dev, 0x07, 0x0);
 	write_grf5101(dev, 0x0B, chan);
 	write_grf5101(dev, 0x07, 0x1000);
@@ -134,7 +120,7 @@ static void grf5101_rf_init(struct ieee80211_hw *dev)
 	write_grf5101(dev, 0x02, 0x4971);
 	write_grf5101(dev, 0x03, 0x41de);
 	write_grf5101(dev, 0x04, 0x2d80);
-	write_grf5101(dev, 0x05, 0x68ff);	/* 0x61ff original value */
+	write_grf5101(dev, 0x05, 0x68ff);	 
 	write_grf5101(dev, 0x06, 0x0);
 	write_grf5101(dev, 0x07, 0x0);
 	write_grf5101(dev, 0x08, 0x7533);
@@ -153,7 +139,7 @@ static void grf5101_rf_init(struct ieee80211_hw *dev)
 
 	write_grf5101(dev, 0x07, 0x1000);
 
-	/* baseband configuration */
+	 
 	rtl8180_write_phy(dev, 0, 0xa8);
 	rtl8180_write_phy(dev, 3, 0x0);
 	rtl8180_write_phy(dev, 4, 0xc0);
@@ -167,9 +153,9 @@ static void grf5101_rf_init(struct ieee80211_hw *dev)
 
 	if (rtl818x_ioread8(priv, &priv->map->CONFIG2) &
 	    RTL818X_CONFIG2_ANTENNA_DIV)
-		rtl8180_write_phy(dev, 0x12, 0xc0); /* enable ant diversity */
+		rtl8180_write_phy(dev, 0x12, 0xc0);  
 	else
-		rtl8180_write_phy(dev, 0x12, 0x40); /* disable ant diversity */
+		rtl8180_write_phy(dev, 0x12, 0x40);  
 
 	rtl8180_write_phy(dev, 0x13, 0x90 | priv->csthreshold);
 

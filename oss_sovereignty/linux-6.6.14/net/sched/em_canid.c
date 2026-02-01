@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * em_canid.c  Ematch rule to match CAN frames according to their CAN IDs
- *
- * Idea:       Oliver Hartkopp <oliver.hartkopp@volkswagen.de>
- * Copyright:  (c) 2011 Czech Technical University in Prague
- *             (c) 2011 Volkswagen Group Research
- * Authors:    Michal Sojka <sojkam1@fel.cvut.cz>
- *             Pavel Pisa <pisa@cmp.felk.cvut.cz>
- *             Rostislav Lisovy <lisovy@gmail.cz>
- * Funded by:  Volkswagen Group Research
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -23,28 +13,21 @@
 #define EM_CAN_RULES_MAX 500
 
 struct canid_match {
-	/* For each SFF CAN ID (11 bit) there is one record in this bitfield */
+	 
 	DECLARE_BITMAP(match_sff, (1 << CAN_SFF_ID_BITS));
 
 	int rules_count;
 	int sff_rules_count;
 	int eff_rules_count;
 
-	/*
-	 * Raw rules copied from netlink message; Used for sending
-	 * information to userspace (when 'tc filter show' is invoked)
-	 * AND when matching EFF frames
-	 */
+	 
 	struct can_filter rules_raw[];
 };
 
-/**
- * em_canid_get_id() - Extracts Can ID out of the sk_buff structure.
- * @skb: buffer to extract Can ID from
- */
+ 
 static canid_t em_canid_get_id(struct sk_buff *skb)
 {
-	/* CAN ID is stored within the data field */
+	 
 	struct can_frame *cf = (struct can_frame *)skb->data;
 
 	return cf->can_id;
@@ -55,30 +38,23 @@ static void em_canid_sff_match_add(struct canid_match *cm, u32 can_id,
 {
 	int i;
 
-	/*
-	 * Limit can_mask and can_id to SFF range to
-	 * protect against write after end of array
-	 */
+	 
 	can_mask &= CAN_SFF_MASK;
 	can_id &= can_mask;
 
-	/* Single frame */
+	 
 	if (can_mask == CAN_SFF_MASK) {
 		set_bit(can_id, cm->match_sff);
 		return;
 	}
 
-	/* All frames */
+	 
 	if (can_mask == 0) {
 		bitmap_fill(cm->match_sff, (1 << CAN_SFF_ID_BITS));
 		return;
 	}
 
-	/*
-	 * Individual frame filter.
-	 * Add record (set bit to 1) for each ID that
-	 * conforms particular rule
-	 */
+	 
 	for (i = 0; i < (1 << CAN_SFF_ID_BITS); i++) {
 		if ((i & can_mask) == can_id)
 			set_bit(i, cm->match_sff);
@@ -109,7 +85,7 @@ static int em_canid_match(struct sk_buff *skb, struct tcf_ematch *m,
 				break;
 			}
 		}
-	} else { /* SFF */
+	} else {  
 		can_id &= CAN_SFF_MASK;
 		match = (test_bit(can_id, cm->match_sff) ? 1 : 0);
 	}
@@ -120,7 +96,7 @@ static int em_canid_match(struct sk_buff *skb, struct tcf_ematch *m,
 static int em_canid_change(struct net *net, void *data, int len,
 			  struct tcf_ematch *m)
 {
-	struct can_filter *conf = data; /* Array with rules */
+	struct can_filter *conf = data;  
 	struct canid_match *cm;
 	int i;
 
@@ -139,17 +115,9 @@ static int em_canid_change(struct net *net, void *data, int len,
 
 	cm->rules_count = len / sizeof(struct can_filter);
 
-	/*
-	 * We need two for() loops for copying rules into two contiguous
-	 * areas in rules_raw to process all eff rules with a simple loop.
-	 * NB: The configuration interface supports sff and eff rules.
-	 * We do not support filters here that match for the same can_id
-	 * provided in a SFF and EFF frame (e.g. 0x123 / 0x80000123).
-	 * For this (unusual case) two filters have to be specified. The
-	 * SFF/EFF separation is done with the CAN_EFF_FLAG in the can_id.
-	 */
+	 
 
-	/* Fill rules_raw with EFF rules first */
+	 
 	for (i = 0; i < cm->rules_count; i++) {
 		if (conf[i].can_id & CAN_EFF_FLAG) {
 			memcpy(cm->rules_raw + cm->eff_rules_count,
@@ -160,7 +128,7 @@ static int em_canid_change(struct net *net, void *data, int len,
 		}
 	}
 
-	/* append SFF frame rules */
+	 
 	for (i = 0; i < cm->rules_count; i++) {
 		if (!(conf[i].can_id & CAN_EFF_FLAG)) {
 			memcpy(cm->rules_raw
@@ -191,10 +159,7 @@ static int em_canid_dump(struct sk_buff *skb, struct tcf_ematch *m)
 {
 	struct canid_match *cm = em_canid_priv(m);
 
-	/*
-	 * When configuring this ematch 'rules_count' is set not to exceed
-	 * 'rules_raw' array size
-	 */
+	 
 	if (nla_put_nohdr(skb, sizeof(struct can_filter) * cm->rules_count,
 	    &cm->rules_raw) < 0)
 		return -EMSGSIZE;

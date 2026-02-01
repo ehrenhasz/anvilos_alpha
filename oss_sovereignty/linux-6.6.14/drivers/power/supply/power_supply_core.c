@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Universal power supply monitor class
- *
- *  Copyright © 2007  Anton Vorontsov <cbou@mail.ru>
- *  Copyright © 2004  Szabolcs Gyurko
- *  Copyright © 2003  Ian Molton <spyro@f2s.com>
- *
- *  Modified: 2004, Oct     Szabolcs Gyurko
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -25,7 +17,7 @@
 #include "power_supply.h"
 #include "samsung-sdi-battery.h"
 
-/* exported for the APM Power driver, APM emulation */
+ 
 struct class *power_supply_class;
 EXPORT_SYMBOL_GPL(power_supply_class);
 
@@ -44,7 +36,7 @@ static bool __power_supply_is_supplied_by(struct power_supply *supplier,
 	if (!supply->supplied_from && !supplier->supplied_to)
 		return false;
 
-	/* Support both supplied_to and supplied_from modes */
+	 
 	if (supply->supplied_from) {
 		if (!supplier->desc->name)
 			return false;
@@ -84,13 +76,7 @@ static void power_supply_changed_work(struct work_struct *work)
 	dev_dbg(&psy->dev, "%s\n", __func__);
 
 	spin_lock_irqsave(&psy->changed_lock, flags);
-	/*
-	 * Check 'changed' here to avoid issues due to race between
-	 * power_supply_changed() and this routine. In worst case
-	 * power_supply_changed() can be called again just before we take above
-	 * lock. During the first call of this routine we will mark 'changed' as
-	 * false and it will stay false for the next call as well.
-	 */
+	 
 	if (likely(psy->changed)) {
 		psy->changed = false;
 		spin_unlock_irqrestore(&psy->changed_lock, flags);
@@ -103,11 +89,7 @@ static void power_supply_changed_work(struct work_struct *work)
 		spin_lock_irqsave(&psy->changed_lock, flags);
 	}
 
-	/*
-	 * Hold the wakeup_source until all events are processed.
-	 * power_supply_changed() might have called again and have set 'changed'
-	 * to true.
-	 */
+	 
 	if (likely(!psy->changed))
 		pm_relax(&psy->dev);
 	spin_unlock_irqrestore(&psy->changed_lock, flags);
@@ -127,16 +109,7 @@ void power_supply_changed(struct power_supply *psy)
 }
 EXPORT_SYMBOL_GPL(power_supply_changed);
 
-/*
- * Notify that power supply was registered after parent finished the probing.
- *
- * Often power supply is registered from driver's probe function. However
- * calling power_supply_changed() directly from power_supply_register()
- * would lead to execution of get_property() function provided by the driver
- * too early - before the probe ends.
- *
- * Avoid that by waiting on parent's mutex.
- */
+ 
 static void power_supply_deferred_register_work(struct work_struct *work)
 {
 	struct power_supply *psy = container_of(work, struct power_supply,
@@ -202,7 +175,7 @@ static int  __power_supply_find_supply_from_node(struct device *dev,
 	struct device_node *np = data;
 	struct power_supply *epsy = dev_get_drvdata(dev);
 
-	/* returning non-zero breaks out of class_for_each_device loop */
+	 
 	if (epsy->of_node == np)
 		return 1;
 
@@ -213,16 +186,7 @@ static int power_supply_find_supply_from_node(struct device_node *supply_node)
 {
 	int error;
 
-	/*
-	 * class_for_each_device() either returns its own errors or values
-	 * returned by __power_supply_find_supply_from_node().
-	 *
-	 * __power_supply_find_supply_from_node() will return 0 (no match)
-	 * or 1 (match).
-	 *
-	 * We return 0 if class_for_each_device() returned 1, -EPROBE_DEFER if
-	 * it returned 0, or error as returned by it.
-	 */
+	 
 	error = class_for_each_device(power_supply_class, NULL, supply_node,
 				       __power_supply_find_supply_from_node);
 
@@ -234,11 +198,11 @@ static int power_supply_check_supplies(struct power_supply *psy)
 	struct device_node *np;
 	int cnt = 0;
 
-	/* If there is already a list honor it */
+	 
 	if (psy->supplied_from && psy->num_supplies > 0)
 		return 0;
 
-	/* No device node found, nothing to do */
+	 
 	if (!psy->of_node)
 		return 0;
 
@@ -258,11 +222,11 @@ static int power_supply_check_supplies(struct power_supply *psy)
 		}
 	} while (np);
 
-	/* Missing valid "power-supplies" entries */
+	 
 	if (cnt == 1)
 		return 0;
 
-	/* All supplies found, allocate char ** array for filling */
+	 
 	psy->supplied_from = devm_kzalloc(&psy->dev, sizeof(*psy->supplied_from),
 					  GFP_KERNEL);
 	if (!psy->supplied_from)
@@ -369,10 +333,7 @@ int power_supply_is_system_supplied(void)
 	error = class_for_each_device(power_supply_class, NULL, &count,
 				      __power_supply_is_system_supplied);
 
-	/*
-	 * If no system scope power class device was found at all, most probably we
-	 * are running on a desktop system, so assume we are on mains power.
-	 */
+	 
 	if (count == 0)
 		return 1;
 
@@ -393,9 +354,9 @@ static int __power_supply_get_supplier_property(struct device *dev, void *_data)
 
 	if (__power_supply_is_supplied_by(epsy, data->psy))
 		if (!power_supply_get_property(epsy, data->psp, data->val))
-			return 1; /* Success */
+			return 1;  
 
-	return 0; /* Continue iterating */
+	return 0;  
 }
 
 int power_supply_get_property_from_supplier(struct power_supply *psy,
@@ -409,10 +370,7 @@ int power_supply_get_property_from_supplier(struct power_supply *psy,
 	};
 	int ret;
 
-	/*
-	 * This function is not intended for use with a supply with multiple
-	 * suppliers, we simply pick the first supply to report the psp.
-	 */
+	 
 	ret = class_for_each_device(power_supply_class, NULL, &data,
 				    __power_supply_get_supplier_property);
 	if (ret < 0)
@@ -445,17 +403,7 @@ static int power_supply_match_device_by_name(struct device *dev, const void *dat
 	return strcmp(psy->desc->name, name) == 0;
 }
 
-/**
- * power_supply_get_by_name() - Search for a power supply and returns its ref
- * @name: Power supply name to fetch
- *
- * If power supply was found, it increases reference count for the
- * internal power supply's device. The user should power_supply_put()
- * after usage.
- *
- * Return: On success returns a reference to a power supply with
- * matching name equals to @name, a NULL otherwise.
- */
+ 
 struct power_supply *power_supply_get_by_name(const char *name)
 {
 	struct power_supply *psy = NULL;
@@ -471,13 +419,7 @@ struct power_supply *power_supply_get_by_name(const char *name)
 }
 EXPORT_SYMBOL_GPL(power_supply_get_by_name);
 
-/**
- * power_supply_put() - Drop reference obtained with power_supply_get_by_name
- * @psy: Reference to put
- *
- * The reference to power supply should be put before unregistering
- * the power supply.
- */
+ 
 void power_supply_put(struct power_supply *psy)
 {
 	might_sleep();
@@ -493,18 +435,7 @@ static int power_supply_match_device_node(struct device *dev, const void *data)
 	return dev->parent && dev->parent->of_node == data;
 }
 
-/**
- * power_supply_get_by_phandle() - Search for a power supply and returns its ref
- * @np: Pointer to device node holding phandle property
- * @property: Name of property holding a power supply name
- *
- * If power supply was found, it increases reference count for the
- * internal power supply's device. The user should power_supply_put()
- * after usage.
- *
- * Return: On success returns a reference to a power supply with
- * matching name equals to value under @property, NULL or ERR_PTR otherwise.
- */
+ 
 struct power_supply *power_supply_get_by_phandle(struct device_node *np,
 							const char *property)
 {
@@ -537,15 +468,7 @@ static void devm_power_supply_put(struct device *dev, void *res)
 	power_supply_put(*psy);
 }
 
-/**
- * devm_power_supply_get_by_phandle() - Resource managed version of
- *  power_supply_get_by_phandle()
- * @dev: Pointer to device holding phandle property
- * @property: Name of property holding a power supply phandle
- *
- * Return: On success returns a reference to a power supply with
- * matching name equals to value under @property, NULL or ERR_PTR otherwise.
- */
+ 
 struct power_supply *devm_power_supply_get_by_phandle(struct device *dev,
 						      const char *property)
 {
@@ -568,7 +491,7 @@ struct power_supply *devm_power_supply_get_by_phandle(struct device *dev,
 	return psy;
 }
 EXPORT_SYMBOL_GPL(devm_power_supply_get_by_phandle);
-#endif /* CONFIG_OF */
+#endif  
 
 int power_supply_get_battery_info(struct power_supply *psy,
 				  struct power_supply_battery_info **info_out)
@@ -607,15 +530,12 @@ int power_supply_get_battery_info(struct power_supply *psy,
 		goto out_put_node;
 
 
-	/* Try static batteries first */
+	 
 	err = samsung_sdi_battery_get_info(&psy->dev, value, &info);
 	if (!err)
 		goto out_ret_pointer;
 	else if (err == -ENODEV)
-		/*
-		 * Device does not have a static battery.
-		 * Proceed to look for a simple battery.
-		 */
+		 
 		err = 0;
 
 	if (strcmp("simple-battery", value)) {
@@ -664,10 +584,7 @@ int power_supply_get_battery_info(struct power_supply *psy,
 		info->ocv_table_size[index]  = -EINVAL;
 	}
 
-	/* The property and field names below must correspond to elements
-	 * in enum power_supply_property. For reasoning, see
-	 * Documentation/power/power_supply_class.rst.
-	 */
+	 
 
 	if (!fwnode_property_read_string(fwnode, "device-chemistry", &value)) {
 		if (!strcmp("nickel-cadmium", value))
@@ -675,7 +592,7 @@ int power_supply_get_battery_info(struct power_supply *psy,
 		else if (!strcmp("nickel-metal-hydride", value))
 			info->technology = POWER_SUPPLY_TECHNOLOGY_NiMH;
 		else if (!strcmp("lithium-ion", value))
-			/* Imprecise lithium-ion type */
+			 
 			info->technology = POWER_SUPPLY_TECHNOLOGY_LION;
 		else if (!strcmp("lithium-ion-polymer", value))
 			info->technology = POWER_SUPPLY_TECHNOLOGY_LIPO;
@@ -730,11 +647,7 @@ int power_supply_get_battery_info(struct power_supply *psy,
 		info->temp_max = min_max[1];
 	}
 
-	/*
-	 * The below code uses raw of-data parsing to parse
-	 * /schemas/types.yaml#/definitions/uint32-matrix
-	 * data, so for now this is only support with of.
-	 */
+	 
 	if (!battery_np)
 		goto out_ret_pointer;
 
@@ -812,7 +725,7 @@ int power_supply_get_battery_info(struct power_supply *psy,
 	}
 
 out_ret_pointer:
-	/* Finally return the whole thing */
+	 
 	*info_out = info;
 
 out_put_node:
@@ -966,20 +879,7 @@ int power_supply_battery_info_get_prop(struct power_supply_battery_info *info,
 }
 EXPORT_SYMBOL_GPL(power_supply_battery_info_get_prop);
 
-/**
- * power_supply_temp2resist_simple() - find the battery internal resistance
- * percent from temperature
- * @table: Pointer to battery resistance temperature table
- * @table_len: The table length
- * @temp: Current temperature
- *
- * This helper function is used to look up battery internal resistance percent
- * according to current temperature value from the resistance temperature table,
- * and the table must be ordered descending. Then the actual battery internal
- * resistance = the ideal battery internal resistance * percent / 100.
- *
- * Return: the battery internal resistance percent
- */
+ 
 int power_supply_temp2resist_simple(struct power_supply_resistance_temp_table *table,
 				    int table_len, int temp)
 {
@@ -989,7 +889,7 @@ int power_supply_temp2resist_simple(struct power_supply_resistance_temp_table *t
 		if (temp > table[i].temp)
 			break;
 
-	/* The library function will deal with high == low */
+	 
 	if (i == 0)
 		high = low = i;
 	else if (i == table_len)
@@ -1005,19 +905,7 @@ int power_supply_temp2resist_simple(struct power_supply_resistance_temp_table *t
 }
 EXPORT_SYMBOL_GPL(power_supply_temp2resist_simple);
 
-/**
- * power_supply_vbat2ri() - find the battery internal resistance
- * from the battery voltage
- * @info: The battery information container
- * @vbat_uv: The battery voltage in microvolt
- * @charging: If we are charging (true) or not (false)
- *
- * This helper function is used to look up battery internal resistance
- * according to current battery voltage. Depending on whether the battery
- * is currently charging or not, different resistance will be returned.
- *
- * Returns the internal resistance in microohm or negative error code.
- */
+ 
 int power_supply_vbat2ri(struct power_supply_battery_info *info,
 			 int vbat_uv, bool charging)
 {
@@ -1025,11 +913,7 @@ int power_supply_vbat2ri(struct power_supply_battery_info *info,
 	int table_len;
 	int i, high, low;
 
-	/*
-	 * If we are charging, and the battery supplies a separate table
-	 * for this state, we use that in order to compensate for the
-	 * charging voltage. Otherwise we use the main table.
-	 */
+	 
 	if (charging && info->vbat2ri_charging) {
 		vbat2ri = info->vbat2ri_charging;
 		table_len = info->vbat2ri_charging_size;
@@ -1038,10 +922,7 @@ int power_supply_vbat2ri(struct power_supply_battery_info *info,
 		table_len = info->vbat2ri_discharging_size;
 	}
 
-	/*
-	 * If no tables are specified, or if we are above the highest voltage in
-	 * the voltage table, just return the factory specified internal resistance.
-	 */
+	 
 	if (!vbat2ri || (table_len <= 0) || (vbat_uv > vbat2ri[0].vbat_uv)) {
 		if (charging && (info->factory_internal_resistance_charging_uohm > 0))
 			return info->factory_internal_resistance_charging_uohm;
@@ -1049,12 +930,12 @@ int power_supply_vbat2ri(struct power_supply_battery_info *info,
 			return info->factory_internal_resistance_uohm;
 	}
 
-	/* Break loop at table_len - 1 because that is the highest index */
+	 
 	for (i = 0; i < table_len - 1; i++)
 		if (vbat_uv > vbat2ri[i].vbat_uv)
 			break;
 
-	/* The library function will deal with high == low */
+	 
 	if ((i == 0) || (i == (table_len - 1)))
 		high = i;
 	else
@@ -1079,18 +960,7 @@ power_supply_get_maintenance_charging_setting(struct power_supply_battery_info *
 }
 EXPORT_SYMBOL_GPL(power_supply_get_maintenance_charging_setting);
 
-/**
- * power_supply_ocv2cap_simple() - find the battery capacity
- * @table: Pointer to battery OCV lookup table
- * @table_len: OCV table length
- * @ocv: Current OCV value
- *
- * This helper function is used to look up battery capacity according to
- * current OCV value from one OCV table, and the OCV table must be ordered
- * descending.
- *
- * Return: the battery capacity.
- */
+ 
 int power_supply_ocv2cap_simple(struct power_supply_battery_ocv_table *table,
 				int table_len, int ocv)
 {
@@ -1100,7 +970,7 @@ int power_supply_ocv2cap_simple(struct power_supply_battery_ocv_table *table,
 		if (ocv > table[i].ocv)
 			break;
 
-	/* The library function will deal with high == low */
+	 
 	if (i == 0)
 		high = low = i;
 	else if (i == table_len)
@@ -1127,7 +997,7 @@ power_supply_find_ocv2cap_table(struct power_supply_battery_info *info,
 		return NULL;
 
 	for (i = 0; i < POWER_SUPPLY_OCV_TEMP_MAX; i++) {
-		/* Out of capacity tables */
+		 
 		if (!info->ocv_table[i])
 			break;
 
@@ -1163,11 +1033,11 @@ bool power_supply_battery_bti_in_range(struct power_supply_battery_info *info,
 {
 	int low, high;
 
-	/* Nothing like this can be checked */
+	 
 	if (info->bti_resistance_ohm <= 0)
 		return false;
 
-	/* This will be extremely strict and unlikely to work */
+	 
 	if (info->bti_resistance_tolerance <= 0)
 		return (info->bti_resistance_ohm == resistance);
 
@@ -1286,7 +1156,7 @@ static int power_supply_read_temp(struct thermal_zone_device *tzd,
 	if (ret)
 		return ret;
 
-	/* Convert tenths of degree Celsius to milli degree Celsius. */
+	 
 	*temp = val.intval * 100;
 
 	return ret;
@@ -1303,9 +1173,9 @@ static int psy_register_thermal(struct power_supply *psy)
 	if (psy->desc->no_thermal)
 		return 0;
 
-	/* Register battery zone device psy reports temperature */
+	 
 	if (psy_has_property(psy->desc, POWER_SUPPLY_PROP_TEMP)) {
-		/* Prefer our hwmon device and avoid duplicates */
+		 
 		struct thermal_zone_params tzp = {
 			.no_hwmon = IS_ENABLED(CONFIG_POWER_SUPPLY_HWMON)
 		};
@@ -1398,11 +1268,7 @@ __power_supply_register(struct device *parent,
 		goto check_supplies_failed;
 	}
 
-	/*
-	 * Expose constant battery info, if it is available. While there are
-	 * some chargers accessing constant battery data, we only want to
-	 * expose battery data to userspace for battery devices.
-	 */
+	 
 	if (desc->type == POWER_SUPPLY_TYPE_BATTERY) {
 		rc = power_supply_get_battery_info(psy, &psy->battery_info);
 		if (rc && rc != -ENODEV && rc != -ENOENT)
@@ -1430,15 +1296,7 @@ __power_supply_register(struct device *parent,
 	if (rc)
 		goto add_hwmon_sysfs_failed;
 
-	/*
-	 * Update use_cnt after any uevents (most notably from device_add()).
-	 * We are here still during driver's probe but
-	 * the power_supply_uevent() calls back driver's get_property
-	 * method so:
-	 * 1. Driver did not assigned the returned struct power_supply,
-	 * 2. Driver could not finish initialization (anything in its probe
-	 *    after calling power_supply_register()).
-	 */
+	 
 	atomic_inc(&psy->use_cnt);
 	psy->initialized = true;
 
@@ -1462,20 +1320,7 @@ dev_set_name_failed:
 	return ERR_PTR(rc);
 }
 
-/**
- * power_supply_register() - Register new power supply
- * @parent:	Device to be a parent of power supply's device, usually
- *		the device which probe function calls this
- * @desc:	Description of power supply, must be valid through whole
- *		lifetime of this power supply
- * @cfg:	Run-time specific configuration accessed during registering,
- *		may be NULL
- *
- * Return: A pointer to newly allocated power_supply on success
- * or ERR_PTR otherwise.
- * Use power_supply_unregister() on returned power_supply pointer to release
- * resources.
- */
+ 
 struct power_supply *__must_check power_supply_register(struct device *parent,
 		const struct power_supply_desc *desc,
 		const struct power_supply_config *cfg)
@@ -1484,20 +1329,7 @@ struct power_supply *__must_check power_supply_register(struct device *parent,
 }
 EXPORT_SYMBOL_GPL(power_supply_register);
 
-/**
- * power_supply_register_no_ws() - Register new non-waking-source power supply
- * @parent:	Device to be a parent of power supply's device, usually
- *		the device which probe function calls this
- * @desc:	Description of power supply, must be valid through whole
- *		lifetime of this power supply
- * @cfg:	Run-time specific configuration accessed during registering,
- *		may be NULL
- *
- * Return: A pointer to newly allocated power_supply on success
- * or ERR_PTR otherwise.
- * Use power_supply_unregister() on returned power_supply pointer to release
- * resources.
- */
+ 
 struct power_supply *__must_check
 power_supply_register_no_ws(struct device *parent,
 		const struct power_supply_desc *desc,
@@ -1514,20 +1346,7 @@ static void devm_power_supply_release(struct device *dev, void *res)
 	power_supply_unregister(*psy);
 }
 
-/**
- * devm_power_supply_register() - Register managed power supply
- * @parent:	Device to be a parent of power supply's device, usually
- *		the device which probe function calls this
- * @desc:	Description of power supply, must be valid through whole
- *		lifetime of this power supply
- * @cfg:	Run-time specific configuration accessed during registering,
- *		may be NULL
- *
- * Return: A pointer to newly allocated power_supply on success
- * or ERR_PTR otherwise.
- * The returned power_supply pointer will be automatically unregistered
- * on driver detach.
- */
+ 
 struct power_supply *__must_check
 devm_power_supply_register(struct device *parent,
 		const struct power_supply_desc *desc,
@@ -1550,20 +1369,7 @@ devm_power_supply_register(struct device *parent,
 }
 EXPORT_SYMBOL_GPL(devm_power_supply_register);
 
-/**
- * devm_power_supply_register_no_ws() - Register managed non-waking-source power supply
- * @parent:	Device to be a parent of power supply's device, usually
- *		the device which probe function calls this
- * @desc:	Description of power supply, must be valid through whole
- *		lifetime of this power supply
- * @cfg:	Run-time specific configuration accessed during registering,
- *		may be NULL
- *
- * Return: A pointer to newly allocated power_supply on success
- * or ERR_PTR otherwise.
- * The returned power_supply pointer will be automatically unregistered
- * on driver detach.
- */
+ 
 struct power_supply *__must_check
 devm_power_supply_register_no_ws(struct device *parent,
 		const struct power_supply_desc *desc,
@@ -1586,13 +1392,7 @@ devm_power_supply_register_no_ws(struct device *parent,
 }
 EXPORT_SYMBOL_GPL(devm_power_supply_register_no_ws);
 
-/**
- * power_supply_unregister() - Remove this power supply from system
- * @psy:	Pointer to power supply to unregister
- *
- * Remove this power supply from the system. The resources of power supply
- * will be freed here or on last power_supply_put() call.
- */
+ 
 void power_supply_unregister(struct power_supply *psy)
 {
 	WARN_ON(atomic_dec_return(&psy->use_cnt));

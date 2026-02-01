@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Oleh Kravchenko <oleg@kaa.org.ua>
- *
- * SparkFun Qwiic Joystick
- * Product page:https://www.sparkfun.com/products/15168
- * Firmware and hardware sources:https://github.com/sparkfun/Qwiic_Joystick
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/i2c.h>
@@ -123,7 +117,7 @@ static const struct of_device_id of_qwiic_match[] = {
 	{ },
 };
 MODULE_DEVICE_TABLE(of, of_qwiic_match);
-#endif /* CONFIG_OF */
+#endif  
 
 static const struct i2c_device_id qwiic_id_table[] = {
 	{ KBUILD_MODNAME, 0 },

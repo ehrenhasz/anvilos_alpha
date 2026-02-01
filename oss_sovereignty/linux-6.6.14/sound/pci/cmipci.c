@@ -1,11 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for C-Media CMI8338 and 8738 PCI soundcards.
- * Copyright (c) 2000 by Takashi Iwai <tiwai@suse.de>
- */
+
  
-/* Does not work. Warning may block system in capture mode */
-/* #define USE_VAR48KRATE */
+ 
+ 
+ 
 
 #include <linux/io.h>
 #include <linux/delay.h>
@@ -35,9 +32,9 @@ MODULE_LICENSE("GPL");
 #define SUPPORT_JOYSTICK 1
 #endif
 
-static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
-static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
-static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP;	/* Enable switches */
+static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	 
+static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	 
+static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP;	 
 static long mpu_port[SNDRV_CARDS] = {[0 ... (SNDRV_CARDS-1)] = 1};
 static long fm_port[SNDRV_CARDS] = {[0 ... (SNDRV_CARDS-1)]=1};
 static bool soft_ac3[SNDRV_CARDS] = {[0 ... (SNDRV_CARDS-1)]=1};
@@ -62,51 +59,49 @@ module_param_hw_array(joystick_port, int, ioport, NULL, 0444);
 MODULE_PARM_DESC(joystick_port, "Joystick port address.");
 #endif
 
-/*
- * CM8x38 registers definition
- */
+ 
 
 #define CM_REG_FUNCTRL0		0x00
 #define CM_RST_CH1		0x00080000
 #define CM_RST_CH0		0x00040000
-#define CM_CHEN1		0x00020000	/* ch1: enable */
-#define CM_CHEN0		0x00010000	/* ch0: enable */
-#define CM_PAUSE1		0x00000008	/* ch1: pause */
-#define CM_PAUSE0		0x00000004	/* ch0: pause */
-#define CM_CHADC1		0x00000002	/* ch1, 0:playback, 1:record */
-#define CM_CHADC0		0x00000001	/* ch0, 0:playback, 1:record */
+#define CM_CHEN1		0x00020000	 
+#define CM_CHEN0		0x00010000	 
+#define CM_PAUSE1		0x00000008	 
+#define CM_PAUSE0		0x00000004	 
+#define CM_CHADC1		0x00000002	 
+#define CM_CHADC0		0x00000001	 
 
 #define CM_REG_FUNCTRL1		0x04
-#define CM_DSFC_MASK		0x0000E000	/* channel 1 (DAC?) sampling frequency */
+#define CM_DSFC_MASK		0x0000E000	 
 #define CM_DSFC_SHIFT		13
-#define CM_ASFC_MASK		0x00001C00	/* channel 0 (ADC?) sampling frequency */
+#define CM_ASFC_MASK		0x00001C00	 
 #define CM_ASFC_SHIFT		10
-#define CM_SPDF_1		0x00000200	/* SPDIF IN/OUT at channel B */
-#define CM_SPDF_0		0x00000100	/* SPDIF OUT only channel A */
-#define CM_SPDFLOOP		0x00000080	/* ext. SPDIIF/IN -> OUT loopback */
-#define CM_SPDO2DAC		0x00000040	/* SPDIF/OUT can be heard from internal DAC */
-#define CM_INTRM		0x00000020	/* master control block (MCB) interrupt enabled */
-#define CM_BREQ			0x00000010	/* bus master enabled */
-#define CM_VOICE_EN		0x00000008	/* legacy voice (SB16,FM) */
-#define CM_UART_EN		0x00000004	/* legacy UART */
-#define CM_JYSTK_EN		0x00000002	/* legacy joystick */
-#define CM_ZVPORT		0x00000001	/* ZVPORT */
+#define CM_SPDF_1		0x00000200	 
+#define CM_SPDF_0		0x00000100	 
+#define CM_SPDFLOOP		0x00000080	 
+#define CM_SPDO2DAC		0x00000040	 
+#define CM_INTRM		0x00000020	 
+#define CM_BREQ			0x00000010	 
+#define CM_VOICE_EN		0x00000008	 
+#define CM_UART_EN		0x00000004	 
+#define CM_JYSTK_EN		0x00000002	 
+#define CM_ZVPORT		0x00000001	 
 
 #define CM_REG_CHFORMAT		0x08
 
-#define CM_CHB3D5C		0x80000000	/* 5,6 channels */
-#define CM_FMOFFSET2		0x40000000	/* initial FM PCM offset 2 when Fmute=1 */
-#define CM_CHB3D		0x20000000	/* 4 channels */
+#define CM_CHB3D5C		0x80000000	 
+#define CM_FMOFFSET2		0x40000000	 
+#define CM_CHB3D		0x20000000	 
 
 #define CM_CHIP_MASK1		0x1f000000
 #define CM_CHIP_037		0x01000000
-#define CM_SETLAT48		0x00800000	/* set latency timer 48h */
-#define CM_EDGEIRQ		0x00400000	/* emulated edge trigger legacy IRQ */
-#define CM_SPD24SEL39		0x00200000	/* 24-bit spdif: model 039 */
-#define CM_AC3EN1		0x00100000	/* enable AC3: model 037 */
-#define CM_SPDIF_SELECT1	0x00080000	/* for model <= 037 ? */
-#define CM_SPD24SEL		0x00020000	/* 24bit spdif: model 037 */
-/* #define CM_SPDIF_INVERSE	0x00010000 */ /* ??? */
+#define CM_SETLAT48		0x00800000	 
+#define CM_EDGEIRQ		0x00400000	 
+#define CM_SPD24SEL39		0x00200000	 
+#define CM_AC3EN1		0x00100000	 
+#define CM_SPDIF_SELECT1	0x00080000	 
+#define CM_SPD24SEL		0x00020000	 
+   
 
 #define CM_ADCBITLEN_MASK	0x0000C000	
 #define CM_ADCBITLEN_16		0x00000000
@@ -114,35 +109,35 @@ MODULE_PARM_DESC(joystick_port, "Joystick port address.");
 #define CM_ADCBITLEN_14		0x00008000
 #define CM_ADCBITLEN_13		0x0000C000
 
-#define CM_ADCDACLEN_MASK	0x00003000	/* model 037 */
+#define CM_ADCDACLEN_MASK	0x00003000	 
 #define CM_ADCDACLEN_060	0x00000000
 #define CM_ADCDACLEN_066	0x00001000
 #define CM_ADCDACLEN_130	0x00002000
 #define CM_ADCDACLEN_280	0x00003000
 
-#define CM_ADCDLEN_MASK		0x00003000	/* model 039 */
+#define CM_ADCDLEN_MASK		0x00003000	 
 #define CM_ADCDLEN_ORIGINAL	0x00000000
 #define CM_ADCDLEN_EXTRA	0x00001000
 #define CM_ADCDLEN_24K		0x00002000
 #define CM_ADCDLEN_WEIGHT	0x00003000
 
 #define CM_CH1_SRATE_176K	0x00000800
-#define CM_CH1_SRATE_96K	0x00000800	/* model 055? */
+#define CM_CH1_SRATE_96K	0x00000800	 
 #define CM_CH1_SRATE_88K	0x00000400
 #define CM_CH0_SRATE_176K	0x00000200
-#define CM_CH0_SRATE_96K	0x00000200	/* model 055? */
+#define CM_CH0_SRATE_96K	0x00000200	 
 #define CM_CH0_SRATE_88K	0x00000100
 #define CM_CH0_SRATE_128K	0x00000300
 #define CM_CH0_SRATE_MASK	0x00000300
 
-#define CM_SPDIF_INVERSE2	0x00000080	/* model 055? */
-#define CM_DBLSPDS		0x00000040	/* double SPDIF sample rate 88.2/96 */
-#define CM_POLVALID		0x00000020	/* inverse SPDIF/IN valid bit */
+#define CM_SPDIF_INVERSE2	0x00000080	 
+#define CM_DBLSPDS		0x00000040	 
+#define CM_POLVALID		0x00000020	 
 #define CM_SPDLOCKED		0x00000010
 
-#define CM_CH1FMT_MASK		0x0000000C	/* bit 3: 16 bits, bit 2: stereo */
+#define CM_CH1FMT_MASK		0x0000000C	 
 #define CM_CH1FMT_SHIFT		2
-#define CM_CH0FMT_MASK		0x00000003	/* bit 1: 16 bits, bit 0: stereo */
+#define CM_CH0FMT_MASK		0x00000003	 
 #define CM_CH0FMT_SHIFT		0
 
 #define CM_REG_INT_HLDCLR	0x0C
@@ -151,151 +146,151 @@ MODULE_PARM_DESC(joystick_port, "Joystick port address.");
 #define CM_CHIP_055		0x08000000
 #define CM_CHIP_039		0x04000000
 #define CM_CHIP_039_6CH		0x01000000
-#define CM_UNKNOWN_INT_EN	0x00080000	/* ? */
+#define CM_UNKNOWN_INT_EN	0x00080000	 
 #define CM_TDMA_INT_EN		0x00040000
 #define CM_CH1_INT_EN		0x00020000
 #define CM_CH0_INT_EN		0x00010000
 
 #define CM_REG_INT_STATUS	0x10
 #define CM_INTR			0x80000000
-#define CM_VCO			0x08000000	/* Voice Control? CMI8738 */
-#define CM_MCBINT		0x04000000	/* Master Control Block abort cond.? */
+#define CM_VCO			0x08000000	 
+#define CM_MCBINT		0x04000000	 
 #define CM_UARTINT		0x00010000
 #define CM_LTDMAINT		0x00008000
 #define CM_HTDMAINT		0x00004000
-#define CM_XDO46		0x00000080	/* Modell 033? Direct programming EEPROM (read data register) */
-#define CM_LHBTOG		0x00000040	/* High/Low status from DMA ctrl register */
-#define CM_LEG_HDMA		0x00000020	/* Legacy is in High DMA channel */
-#define CM_LEG_STEREO		0x00000010	/* Legacy is in Stereo mode */
+#define CM_XDO46		0x00000080	 
+#define CM_LHBTOG		0x00000040	 
+#define CM_LEG_HDMA		0x00000020	 
+#define CM_LEG_STEREO		0x00000010	 
 #define CM_CH1BUSY		0x00000008
 #define CM_CH0BUSY		0x00000004
 #define CM_CHINT1		0x00000002
 #define CM_CHINT0		0x00000001
 
 #define CM_REG_LEGACY_CTRL	0x14
-#define CM_NXCHG		0x80000000	/* don't map base reg dword->sample */
-#define CM_VMPU_MASK		0x60000000	/* MPU401 i/o port address */
+#define CM_NXCHG		0x80000000	 
+#define CM_VMPU_MASK		0x60000000	 
 #define CM_VMPU_330		0x00000000
 #define CM_VMPU_320		0x20000000
 #define CM_VMPU_310		0x40000000
 #define CM_VMPU_300		0x60000000
-#define CM_ENWR8237		0x10000000	/* enable bus master to write 8237 base reg */
-#define CM_VSBSEL_MASK		0x0C000000	/* SB16 base address */
+#define CM_ENWR8237		0x10000000	 
+#define CM_VSBSEL_MASK		0x0C000000	 
 #define CM_VSBSEL_220		0x00000000
 #define CM_VSBSEL_240		0x04000000
 #define CM_VSBSEL_260		0x08000000
 #define CM_VSBSEL_280		0x0C000000
-#define CM_FMSEL_MASK		0x03000000	/* FM OPL3 base address */
+#define CM_FMSEL_MASK		0x03000000	 
 #define CM_FMSEL_388		0x00000000
 #define CM_FMSEL_3C8		0x01000000
 #define CM_FMSEL_3E0		0x02000000
 #define CM_FMSEL_3E8		0x03000000
-#define CM_ENSPDOUT		0x00800000	/* enable XSPDIF/OUT to I/O interface */
-#define CM_SPDCOPYRHT		0x00400000	/* spdif in/out copyright bit */
-#define CM_DAC2SPDO		0x00200000	/* enable wave+fm_midi -> SPDIF/OUT */
-#define CM_INVIDWEN		0x00100000	/* internal vendor ID write enable, model 039? */
-#define CM_SETRETRY		0x00100000	/* 0: legacy i/o wait (default), 1: legacy i/o bus retry */
-#define CM_C_EEACCESS		0x00080000	/* direct programming eeprom regs */
+#define CM_ENSPDOUT		0x00800000	 
+#define CM_SPDCOPYRHT		0x00400000	 
+#define CM_DAC2SPDO		0x00200000	 
+#define CM_INVIDWEN		0x00100000	 
+#define CM_SETRETRY		0x00100000	 
+#define CM_C_EEACCESS		0x00080000	 
 #define CM_C_EECS		0x00040000
 #define CM_C_EEDI46		0x00020000
 #define CM_C_EECK46		0x00010000
-#define CM_CHB3D6C		0x00008000	/* 5.1 channels support */
-#define CM_CENTR2LIN		0x00004000	/* line-in as center out */
-#define CM_BASE2LIN		0x00002000	/* line-in as bass out */
-#define CM_EXBASEN		0x00001000	/* external bass input enable */
+#define CM_CHB3D6C		0x00008000	 
+#define CM_CENTR2LIN		0x00004000	 
+#define CM_BASE2LIN		0x00002000	 
+#define CM_EXBASEN		0x00001000	 
 
 #define CM_REG_MISC_CTRL	0x18
-#define CM_PWD			0x80000000	/* power down */
+#define CM_PWD			0x80000000	 
 #define CM_RESET		0x40000000
-#define CM_SFIL_MASK		0x30000000	/* filter control at front end DAC, model 037? */
-#define CM_VMGAIN		0x10000000	/* analog master amp +6dB, model 039? */
-#define CM_TXVX			0x08000000	/* model 037? */
-#define CM_N4SPK3D		0x04000000	/* copy front to rear */
-#define CM_SPDO5V		0x02000000	/* 5V spdif output (1 = 0.5v (coax)) */
-#define CM_SPDIF48K		0x01000000	/* write */
-#define CM_SPATUS48K		0x01000000	/* read */
-#define CM_ENDBDAC		0x00800000	/* enable double dac */
-#define CM_XCHGDAC		0x00400000	/* 0: front=ch0, 1: front=ch1 */
-#define CM_SPD32SEL		0x00200000	/* 0: 16bit SPDIF, 1: 32bit */
-#define CM_SPDFLOOPI		0x00100000	/* int. SPDIF-OUT -> int. IN */
-#define CM_FM_EN		0x00080000	/* enable legacy FM */
-#define CM_AC3EN2		0x00040000	/* enable AC3: model 039 */
-#define CM_ENWRASID		0x00010000	/* choose writable internal SUBID (audio) */
-#define CM_VIDWPDSB		0x00010000	/* model 037? */
-#define CM_SPDF_AC97		0x00008000	/* 0: SPDIF/OUT 44.1K, 1: 48K */
-#define CM_MASK_EN		0x00004000	/* activate channel mask on legacy DMA */
-#define CM_ENWRMSID		0x00002000	/* choose writable internal SUBID (modem) */
-#define CM_VIDWPPRT		0x00002000	/* model 037? */
-#define CM_SFILENB		0x00001000	/* filter stepping at front end DAC, model 037? */
-#define CM_MMODE_MASK		0x00000E00	/* model DAA interface mode */
-#define CM_SPDIF_SELECT2	0x00000100	/* for model > 039 ? */
+#define CM_SFIL_MASK		0x30000000	 
+#define CM_VMGAIN		0x10000000	 
+#define CM_TXVX			0x08000000	 
+#define CM_N4SPK3D		0x04000000	 
+#define CM_SPDO5V		0x02000000	 
+#define CM_SPDIF48K		0x01000000	 
+#define CM_SPATUS48K		0x01000000	 
+#define CM_ENDBDAC		0x00800000	 
+#define CM_XCHGDAC		0x00400000	 
+#define CM_SPD32SEL		0x00200000	 
+#define CM_SPDFLOOPI		0x00100000	 
+#define CM_FM_EN		0x00080000	 
+#define CM_AC3EN2		0x00040000	 
+#define CM_ENWRASID		0x00010000	 
+#define CM_VIDWPDSB		0x00010000	 
+#define CM_SPDF_AC97		0x00008000	 
+#define CM_MASK_EN		0x00004000	 
+#define CM_ENWRMSID		0x00002000	 
+#define CM_VIDWPPRT		0x00002000	 
+#define CM_SFILENB		0x00001000	 
+#define CM_MMODE_MASK		0x00000E00	 
+#define CM_SPDIF_SELECT2	0x00000100	 
 #define CM_ENCENTER		0x00000080
-#define CM_FLINKON		0x00000040	/* force modem link detection on, model 037 */
-#define CM_MUTECH1		0x00000040	/* mute PCI ch1 to DAC */
-#define CM_FLINKOFF		0x00000020	/* force modem link detection off, model 037 */
-#define CM_MIDSMP		0x00000010	/* 1/2 interpolation at front end DAC */
-#define CM_UPDDMA_MASK		0x0000000C	/* TDMA position update notification */
+#define CM_FLINKON		0x00000040	 
+#define CM_MUTECH1		0x00000040	 
+#define CM_FLINKOFF		0x00000020	 
+#define CM_MIDSMP		0x00000010	 
+#define CM_UPDDMA_MASK		0x0000000C	 
 #define CM_UPDDMA_2048		0x00000000
 #define CM_UPDDMA_1024		0x00000004
 #define CM_UPDDMA_512		0x00000008
 #define CM_UPDDMA_256		0x0000000C		
-#define CM_TWAIT_MASK		0x00000003	/* model 037 */
-#define CM_TWAIT1		0x00000002	/* FM i/o cycle, 0: 48, 1: 64 PCICLKs */
-#define CM_TWAIT0		0x00000001	/* i/o cycle, 0: 4, 1: 6 PCICLKs */
+#define CM_TWAIT_MASK		0x00000003	 
+#define CM_TWAIT1		0x00000002	 
+#define CM_TWAIT0		0x00000001	 
 
 #define CM_REG_TDMA_POSITION	0x1C
-#define CM_TDMA_CNT_MASK	0xFFFF0000	/* current byte/word count */
-#define CM_TDMA_ADR_MASK	0x0000FFFF	/* current address */
+#define CM_TDMA_CNT_MASK	0xFFFF0000	 
+#define CM_TDMA_ADR_MASK	0x0000FFFF	 
 
-	/* byte */
+	 
 #define CM_REG_MIXER0		0x20
-#define CM_REG_SBVR		0x20		/* write: sb16 version */
-#define CM_REG_DEV		0x20		/* read: hardware device version */
+#define CM_REG_SBVR		0x20		 
+#define CM_REG_DEV		0x20		 
 
 #define CM_REG_MIXER21		0x21
-#define CM_UNKNOWN_21_MASK	0x78		/* ? */
-#define CM_X_ADPCM		0x04		/* SB16 ADPCM enable */
-#define CM_PROINV		0x02		/* SBPro left/right channel switching */
-#define CM_X_SB16		0x01		/* SB16 compatible */
+#define CM_UNKNOWN_21_MASK	0x78		 
+#define CM_X_ADPCM		0x04		 
+#define CM_PROINV		0x02		 
+#define CM_X_SB16		0x01		 
 
 #define CM_REG_SB16_DATA	0x22
 #define CM_REG_SB16_ADDR	0x23
 
-#define CM_REFFREQ_XIN		(315*1000*1000)/22	/* 14.31818 Mhz reference clock frequency pin XIN */
-#define CM_ADCMULT_XIN		512			/* Guessed (487 best for 44.1kHz, not for 88/176kHz) */
-#define CM_TOLERANCE_RATE	0.001			/* Tolerance sample rate pitch (1000ppm) */
-#define CM_MAXIMUM_RATE		80000000		/* Note more than 80MHz */
+#define CM_REFFREQ_XIN		(315*1000*1000)/22	 
+#define CM_ADCMULT_XIN		512			 
+#define CM_TOLERANCE_RATE	0.001			 
+#define CM_MAXIMUM_RATE		80000000		 
 
 #define CM_REG_MIXER1		0x24
-#define CM_FMMUTE		0x80	/* mute FM */
+#define CM_FMMUTE		0x80	 
 #define CM_FMMUTE_SHIFT		7
-#define CM_WSMUTE		0x40	/* mute PCM */
+#define CM_WSMUTE		0x40	 
 #define CM_WSMUTE_SHIFT		6
-#define CM_REAR2LIN		0x20	/* lin-in -> rear line out */
+#define CM_REAR2LIN		0x20	 
 #define CM_REAR2LIN_SHIFT	5
-#define CM_REAR2FRONT		0x10	/* exchange rear/front */
+#define CM_REAR2FRONT		0x10	 
 #define CM_REAR2FRONT_SHIFT	4
-#define CM_WAVEINL		0x08	/* digital wave rec. left chan */
+#define CM_WAVEINL		0x08	 
 #define CM_WAVEINL_SHIFT	3
-#define CM_WAVEINR		0x04	/* digical wave rec. right */
+#define CM_WAVEINR		0x04	 
 #define CM_WAVEINR_SHIFT	2
-#define CM_X3DEN		0x02	/* 3D surround enable */
+#define CM_X3DEN		0x02	 
 #define CM_X3DEN_SHIFT		1
-#define CM_CDPLAY		0x01	/* enable SPDIF/IN PCM -> DAC */
+#define CM_CDPLAY		0x01	 
 #define CM_CDPLAY_SHIFT		0
 
 #define CM_REG_MIXER2		0x25
-#define CM_RAUXREN		0x80	/* AUX right capture */
+#define CM_RAUXREN		0x80	 
 #define CM_RAUXREN_SHIFT	7
-#define CM_RAUXLEN		0x40	/* AUX left capture */
+#define CM_RAUXLEN		0x40	 
 #define CM_RAUXLEN_SHIFT	6
-#define CM_VAUXRM		0x20	/* AUX right mute */
+#define CM_VAUXRM		0x20	 
 #define CM_VAUXRM_SHIFT		5
-#define CM_VAUXLM		0x10	/* AUX left mute */
+#define CM_VAUXLM		0x10	 
 #define CM_VAUXLM_SHIFT		4
-#define CM_VADMIC_MASK		0x0e	/* mic gain level (0-3) << 1 */
+#define CM_VADMIC_MASK		0x0e	 
 #define CM_VADMIC_SHIFT		1
-#define CM_MICGAINZ		0x01	/* mic boost */
+#define CM_MICGAINZ		0x01	 
 #define CM_MICGAINZ_SHIFT	0
 
 #define CM_REG_AUX_VOL		0x26
@@ -303,85 +298,64 @@ MODULE_PARM_DESC(joystick_port, "Joystick port address.");
 #define CM_VAUXR_MASK		0x0f
 
 #define CM_REG_MISC		0x27
-#define CM_UNKNOWN_27_MASK	0xd8	/* ? */
+#define CM_UNKNOWN_27_MASK	0xd8	 
 #define CM_XGPO1		0x20
-// #define CM_XGPBIO		0x04
-#define CM_MIC_CENTER_LFE	0x04	/* mic as center/lfe out? (model 039 or later?) */
-#define CM_SPDIF_INVERSE	0x04	/* spdif input phase inverse (model 037) */
-#define CM_SPDVALID		0x02	/* spdif input valid check */
-#define CM_DMAUTO		0x01	/* SB16 DMA auto detect */
+ 
+#define CM_MIC_CENTER_LFE	0x04	 
+#define CM_SPDIF_INVERSE	0x04	 
+#define CM_SPDVALID		0x02	 
+#define CM_DMAUTO		0x01	 
 
-#define CM_REG_AC97		0x28	/* hmmm.. do we have ac97 link? */
-/*
- * For CMI-8338 (0x28 - 0x2b) .. is this valid for CMI-8738
- * or identical with AC97 codec?
- */
+#define CM_REG_AC97		0x28	 
+ 
 #define CM_REG_EXTERN_CODEC	CM_REG_AC97
 
-/*
- * MPU401 pci port index address 0x40 - 0x4f (CMI-8738 spec ver. 0.6)
- */
+ 
 #define CM_REG_MPU_PCI		0x40
 
-/*
- * FM pci port index address 0x50 - 0x5f (CMI-8738 spec ver. 0.6)
- */
+ 
 #define CM_REG_FM_PCI		0x50
 
-/*
- * access from SB-mixer port
- */
+ 
 #define CM_REG_EXTENT_IND	0xf0
-#define CM_VPHONE_MASK		0xe0	/* Phone volume control (0-3) << 5 */
+#define CM_VPHONE_MASK		0xe0	 
 #define CM_VPHONE_SHIFT		5
-#define CM_VPHOM		0x10	/* Phone mute control */
-#define CM_VSPKM		0x08	/* Speaker mute control, default high */
-#define CM_RLOOPREN		0x04    /* Rec. R-channel enable */
-#define CM_RLOOPLEN		0x02	/* Rec. L-channel enable */
-#define CM_VADMIC3		0x01	/* Mic record boost */
+#define CM_VPHOM		0x10	 
+#define CM_VSPKM		0x08	 
+#define CM_RLOOPREN		0x04     
+#define CM_RLOOPLEN		0x02	 
+#define CM_VADMIC3		0x01	 
 
-/*
- * CMI-8338 spec ver 0.5 (this is not valid for CMI-8738):
- * the 8 registers 0xf8 - 0xff are used for programming m/n counter by the PLL
- * unit (readonly?).
- */
+ 
 #define CM_REG_PLL		0xf8
 
-/*
- * extended registers
- */
-#define CM_REG_CH0_FRAME1	0x80	/* write: base address */
-#define CM_REG_CH0_FRAME2	0x84	/* read: current address */
-#define CM_REG_CH1_FRAME1	0x88	/* 0-15: count of samples at bus master; buffer size */
-#define CM_REG_CH1_FRAME2	0x8C	/* 16-31: count of samples at codec; fragment size */
+ 
+#define CM_REG_CH0_FRAME1	0x80	 
+#define CM_REG_CH0_FRAME2	0x84	 
+#define CM_REG_CH1_FRAME1	0x88	 
+#define CM_REG_CH1_FRAME2	0x8C	 
 
 #define CM_REG_EXT_MISC		0x90
-#define CM_ADC48K44K		0x10000000	/* ADC parameters group, 0: 44k, 1: 48k */
-#define CM_CHB3D8C		0x00200000	/* 7.1 channels support */
-#define CM_SPD32FMT		0x00100000	/* SPDIF/IN 32k sample rate */
-#define CM_ADC2SPDIF		0x00080000	/* ADC output to SPDIF/OUT */
-#define CM_SHAREADC		0x00040000	/* DAC in ADC as Center/LFE */
-#define CM_REALTCMP		0x00020000	/* monitor the CMPL/CMPR of ADC */
-#define CM_INVLRCK		0x00010000	/* invert ZVPORT's LRCK */
-#define CM_UNKNOWN_90_MASK	0x0000FFFF	/* ? */
+#define CM_ADC48K44K		0x10000000	 
+#define CM_CHB3D8C		0x00200000	 
+#define CM_SPD32FMT		0x00100000	 
+#define CM_ADC2SPDIF		0x00080000	 
+#define CM_SHAREADC		0x00040000	 
+#define CM_REALTCMP		0x00020000	 
+#define CM_INVLRCK		0x00010000	 
+#define CM_UNKNOWN_90_MASK	0x0000FFFF	 
 
-/*
- * size of i/o region
- */
+ 
 #define CM_EXTENT_CODEC	  0x100
 #define CM_EXTENT_MIDI	  0x2
 #define CM_EXTENT_SYNTH	  0x4
 
 
-/*
- * channels for playback / capture
- */
+ 
 #define CM_CH_PLAY	0
 #define CM_CH_CAPT	1
 
-/*
- * flags to check device open/close
- */
+ 
 #define CM_OPEN_NONE	0
 #define CM_OPEN_CH_MASK	0x01
 #define CM_OPEN_DAC	0x10
@@ -407,32 +381,30 @@ MODULE_PARM_DESC(joystick_port, "Joystick port address.");
 #endif
 
 
-/*
- * driver data
- */
+ 
 
 struct cmipci_pcm {
 	struct snd_pcm_substream *substream;
-	u8 running;		/* dac/adc running? */
-	u8 fmt;			/* format bits */
+	u8 running;		 
+	u8 fmt;			 
 	u8 is_dac;
 	u8 needs_silencing;
-	unsigned int dma_size;	/* in frames */
+	unsigned int dma_size;	 
 	unsigned int shift;
-	unsigned int ch;	/* channel (0/1) */
-	unsigned int offset;	/* physical address of the buffer */
+	unsigned int ch;	 
+	unsigned int offset;	 
 };
 
-/* mixer elements toggled/resumed during ac3 playback */
+ 
 struct cmipci_mixer_auto_switches {
-	const char *name;	/* switch to toggle */
-	int toggle_on;		/* value to change when ac3 mode */
+	const char *name;	 
+	int toggle_on;		 
 };
 static const struct cmipci_mixer_auto_switches cm_saved_mixer[] = {
 	{"PCM Playback Switch", 0},
 	{"IEC958 Output Switch", 1},
 	{"IEC958 Mix Analog", 0},
-	// {"IEC958 Out To DAC", 1}, // no longer used
+	
 	{"IEC958 Loop", 0},
 };
 #define CM_SAVED_MIXERS		ARRAY_SIZE(cm_saved_mixer)
@@ -441,43 +413,43 @@ struct cmipci {
 	struct snd_card *card;
 
 	struct pci_dev *pci;
-	unsigned int device;	/* device ID */
+	unsigned int device;	 
 	int irq;
 
 	unsigned long iobase;
-	unsigned int ctrl;	/* FUNCTRL0 current value */
+	unsigned int ctrl;	 
 
-	struct snd_pcm *pcm;		/* DAC/ADC PCM */
-	struct snd_pcm *pcm2;	/* 2nd DAC */
-	struct snd_pcm *pcm_spdif;	/* SPDIF */
+	struct snd_pcm *pcm;		 
+	struct snd_pcm *pcm2;	 
+	struct snd_pcm *pcm_spdif;	 
 
 	int chip_version;
 	int max_channels;
 	unsigned int can_ac3_sw: 1;
 	unsigned int can_ac3_hw: 1;
 	unsigned int can_multi_ch: 1;
-	unsigned int can_96k: 1;	/* samplerate above 48k */
+	unsigned int can_96k: 1;	 
 	unsigned int do_soft_ac3: 1;
 
-	unsigned int spdif_playback_avail: 1;	/* spdif ready? */
-	unsigned int spdif_playback_enabled: 1;	/* spdif switch enabled? */
-	int spdif_counter;	/* for software AC3 */
+	unsigned int spdif_playback_avail: 1;	 
+	unsigned int spdif_playback_enabled: 1;	 
+	int spdif_counter;	 
 
 	unsigned int dig_status;
 	unsigned int dig_pcm_status;
 
-	struct snd_pcm_hardware *hw_info[3]; /* for playbacks */
+	struct snd_pcm_hardware *hw_info[3];  
 
-	int opened[2];	/* open mode */
+	int opened[2];	 
 	struct mutex open_mutex;
 
 	unsigned int mixer_insensitive: 1;
 	struct snd_kcontrol *mixer_res_ctl[CM_SAVED_MIXERS];
 	int mixer_res_status[CM_SAVED_MIXERS];
 
-	struct cmipci_pcm channel[2];	/* ch0 - DAC, ch1 - ADC or 2nd DAC */
+	struct cmipci_pcm channel[2];	 
 
-	/* external MIDI */
+	 
 	struct snd_rawmidi *rmidi;
 
 #ifdef SUPPORT_JOYSTICK
@@ -493,7 +465,7 @@ struct cmipci {
 };
 
 
-/* read/write operations for dword register */
+ 
 static inline void snd_cmipci_write(struct cmipci *cm, unsigned int cmd, unsigned int data)
 {
 	outl(data, cm->iobase + cmd);
@@ -504,7 +476,7 @@ static inline unsigned int snd_cmipci_read(struct cmipci *cm, unsigned int cmd)
 	return inl(cm->iobase + cmd);
 }
 
-/* read/write operations for word register */
+ 
 static inline void snd_cmipci_write_w(struct cmipci *cm, unsigned int cmd, unsigned short data)
 {
 	outw(data, cm->iobase + cmd);
@@ -515,7 +487,7 @@ static inline unsigned short snd_cmipci_read_w(struct cmipci *cm, unsigned int c
 	return inw(cm->iobase + cmd);
 }
 
-/* read/write operations for byte register */
+ 
 static inline void snd_cmipci_write_b(struct cmipci *cm, unsigned int cmd, unsigned char data)
 {
 	outb(data, cm->iobase + cmd);
@@ -526,7 +498,7 @@ static inline unsigned char snd_cmipci_read_b(struct cmipci *cm, unsigned int cm
 	return inb(cm->iobase + cmd);
 }
 
-/* bit operations for dword register */
+ 
 static int snd_cmipci_set_bit(struct cmipci *cm, unsigned int cmd, unsigned int flag)
 {
 	unsigned int val, oval;
@@ -549,7 +521,7 @@ static int snd_cmipci_clear_bit(struct cmipci *cm, unsigned int cmd, unsigned in
 	return 1;
 }
 
-/* bit operations for byte register */
+ 
 static int snd_cmipci_set_bit_b(struct cmipci *cm, unsigned int cmd, unsigned char flag)
 {
 	unsigned char val, oval;
@@ -573,13 +545,9 @@ static int snd_cmipci_clear_bit_b(struct cmipci *cm, unsigned int cmd, unsigned 
 }
 
 
-/*
- * PCM interface
- */
+ 
 
-/*
- * calculate frequency
- */
+ 
 
 static const unsigned int rates[] = { 5512, 11025, 22050, 44100, 8000, 16000, 32000, 48000 };
 
@@ -596,11 +564,7 @@ static unsigned int snd_cmipci_rate_freq(unsigned int rate)
 }
 
 #ifdef USE_VAR48KRATE
-/*
- * Determine PLL values for frequency setup, maybe the CMI8338 (CMI8738???)
- * does it this way .. maybe not.  Never get any information from C-Media about
- * that <werner@suse.de>.
- */
+ 
 static int snd_cmipci_pll_rmn(unsigned int rate, unsigned int adcmult, int *r, int *m, int *n)
 {
 	unsigned int delta, tolerance;
@@ -622,10 +586,7 @@ static int snd_cmipci_pll_rmn(unsigned int rate, unsigned int adcmult, int *r, i
 			else
 				delta = xr - rate;
 
-			/*
-			 * If we found one, remember this,
-			 * and try to find a closer one
-			 */
+			 
 			if (delta < tolerance) {
 				tolerance = delta;
 				*m = xm - 2;
@@ -637,29 +598,21 @@ out:
 	return (*n > -1);
 }
 
-/*
- * Program pll register bits, I assume that the 8 registers 0xf8 up to 0xff
- * are mapped onto the 8 ADC/DAC sampling frequency which can be chosen
- * at the register CM_REG_FUNCTRL1 (0x04).
- * Problem: other ways are also possible (any information about that?)
- */
+ 
 static void snd_cmipci_set_pll(struct cmipci *cm, unsigned int rate, unsigned int slot)
 {
 	unsigned int reg = CM_REG_PLL + slot;
-	/*
-	 * Guess that this programs at reg. 0x04 the pos 15:13/12:10
-	 * for DSFC/ASFC (000 up to 111).
-	 */
+	 
 
-	/* FIXME: Init (Do we've to set an other register first before programming?) */
+	 
 
-	/* FIXME: Is this correct? Or shouldn't the m/n/r values be used for that? */
+	 
 	snd_cmipci_write_b(cm, reg, rate>>8);
 	snd_cmipci_write_b(cm, reg, rate&0xff);
 
-	/* FIXME: Setup (Do we've to set an other register first to enable this?) */
+	 
 }
-#endif /* USE_VAR48KRATE */
+#endif  
 
 static int snd_cmipci_playback2_hw_params(struct snd_pcm_substream *substream,
 					  struct snd_pcm_hw_params *hw_params)
@@ -671,7 +624,7 @@ static int snd_cmipci_playback2_hw_params(struct snd_pcm_substream *substream,
 			mutex_unlock(&cm->open_mutex);
 			return -EBUSY;
 		}
-		/* reserve the channel A */
+		 
 		cm->opened[CM_CH_PLAY] = CM_OPEN_PLAYBACK_MULTI;
 		mutex_unlock(&cm->open_mutex);
 	}
@@ -687,8 +640,7 @@ static void snd_cmipci_ch_reset(struct cmipci *cm, int ch)
 }
 
 
-/*
- */
+ 
 
 static const unsigned int hw_channels[] = {1, 2, 4, 6, 8};
 static const struct snd_pcm_hw_constraint_list hw_constraints_channels_4 = {
@@ -712,7 +664,7 @@ static int set_dac_channels(struct cmipci *cm, struct cmipci_pcm *rec, int chann
 	if (channels > 2) {
 		if (!cm->can_multi_ch || !rec->ch)
 			return -EINVAL;
-		if (rec->fmt != 0x03) /* stereo 16bit only */
+		if (rec->fmt != 0x03)  
 			return -EINVAL;
 	}
 
@@ -746,10 +698,7 @@ static int set_dac_channels(struct cmipci *cm, struct cmipci_pcm *rec, int chann
 }
 
 
-/*
- * prepare playback/capture channel
- * channel to be used must have been set in rec->ch.
- */
+ 
 static int snd_cmipci_pcm_prepare(struct cmipci *cm, struct cmipci_pcm *rec,
 				 struct snd_pcm_substream *substream)
 {
@@ -762,7 +711,7 @@ static int snd_cmipci_pcm_prepare(struct cmipci *cm, struct cmipci_pcm *rec,
 	if (snd_pcm_format_width(runtime->format) >= 16) {
 		rec->fmt |= 0x02;
 		if (snd_pcm_format_width(runtime->format) > 16)
-			rec->shift++; /* 24/32bit */
+			rec->shift++;  
 	}
 	if (runtime->channels > 1)
 		rec->fmt |= 0x01;
@@ -772,35 +721,35 @@ static int snd_cmipci_pcm_prepare(struct cmipci *cm, struct cmipci_pcm *rec,
 	}
 
 	rec->offset = runtime->dma_addr;
-	/* buffer and period sizes in frame */
+	 
 	rec->dma_size = runtime->buffer_size << rec->shift;
 	period_size = runtime->period_size << rec->shift;
 	if (runtime->channels > 2) {
-		/* multi-channels */
+		 
 		rec->dma_size = (rec->dma_size * runtime->channels) / 2;
 		period_size = (period_size * runtime->channels) / 2;
 	}
 
 	spin_lock_irq(&cm->reg_lock);
 
-	/* set buffer address */
+	 
 	reg = rec->ch ? CM_REG_CH1_FRAME1 : CM_REG_CH0_FRAME1;
 	snd_cmipci_write(cm, reg, rec->offset);
-	/* program sample counts */
+	 
 	reg = rec->ch ? CM_REG_CH1_FRAME2 : CM_REG_CH0_FRAME2;
 	snd_cmipci_write_w(cm, reg, rec->dma_size - 1);
 	snd_cmipci_write_w(cm, reg + 2, period_size - 1);
 
-	/* set adc/dac flag */
+	 
 	val = rec->ch ? CM_CHADC1 : CM_CHADC0;
 	if (rec->is_dac)
 		cm->ctrl &= ~val;
 	else
 		cm->ctrl |= val;
 	snd_cmipci_write(cm, CM_REG_FUNCTRL0, cm->ctrl);
-	/* dev_dbg(cm->card->dev, "functrl0 = %08x\n", cm->ctrl); */
+	 
 
-	/* set sample rate */
+	 
 	freq = 0;
 	freq_ext = 0;
 	if (runtime->rate > 48000)
@@ -823,7 +772,7 @@ static int snd_cmipci_pcm_prepare(struct cmipci *cm, struct cmipci_pcm *rec,
 	snd_cmipci_write(cm, CM_REG_FUNCTRL1, val);
 	dev_dbg(cm->card->dev, "functrl1 = %08x\n", val);
 
-	/* set format */
+	 
 	val = snd_cmipci_read(cm, CM_REG_CHFORMAT);
 	if (rec->ch) {
 		val &= ~CM_CH1FMT_MASK;
@@ -852,9 +801,7 @@ static int snd_cmipci_pcm_prepare(struct cmipci *cm, struct cmipci_pcm *rec,
 	return 0;
 }
 
-/*
- * PCM trigger/stop
- */
+ 
 static int snd_cmipci_pcm_trigger(struct cmipci *cm, struct cmipci_pcm *rec,
 				  int cmd)
 {
@@ -870,18 +817,18 @@ static int snd_cmipci_pcm_trigger(struct cmipci *cm, struct cmipci_pcm *rec,
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
 		rec->running = 1;
-		/* set interrupt */
+		 
 		snd_cmipci_set_bit(cm, CM_REG_INT_HLDCLR, inthld);
 		cm->ctrl |= chen;
-		/* enable channel */
+		 
 		snd_cmipci_write(cm, CM_REG_FUNCTRL0, cm->ctrl);
 		dev_dbg(cm->card->dev, "functrl0 = %08x\n", cm->ctrl);
 		break;
 	case SNDRV_PCM_TRIGGER_STOP:
 		rec->running = 0;
-		/* disable interrupt */
+		 
 		snd_cmipci_clear_bit(cm, CM_REG_INT_HLDCLR, inthld);
-		/* reset */
+		 
 		cm->ctrl &= ~chen;
 		snd_cmipci_write(cm, CM_REG_FUNCTRL0, cm->ctrl | reset);
 		snd_cmipci_write(cm, CM_REG_FUNCTRL0, cm->ctrl & ~reset);
@@ -905,9 +852,7 @@ static int snd_cmipci_pcm_trigger(struct cmipci *cm, struct cmipci_pcm *rec,
 	return result;
 }
 
-/*
- * return the current pointer
- */
+ 
 static snd_pcm_uframes_t snd_cmipci_pcm_pointer(struct cmipci *cm, struct cmipci_pcm *rec,
 						struct snd_pcm_substream *substream)
 {
@@ -916,7 +861,7 @@ static snd_pcm_uframes_t snd_cmipci_pcm_pointer(struct cmipci *cm, struct cmipci
 
 	if (!rec->running)
 		return 0;
-#if 1 // this seems better..
+#if 1  
 	reg = rec->ch ? CM_REG_CH1_FRAME2 : CM_REG_CH0_FRAME2;
 	for (tries = 0; tries < 3; tries++) {
 		rem = snd_cmipci_read_w(cm, reg);
@@ -937,9 +882,7 @@ ok:
 	return ptr;
 }
 
-/*
- * playback
- */
+ 
 
 static int snd_cmipci_playback_trigger(struct snd_pcm_substream *substream,
 				       int cmd)
@@ -956,9 +899,7 @@ static snd_pcm_uframes_t snd_cmipci_playback_pointer(struct snd_pcm_substream *s
 
 
 
-/*
- * capture
- */
+ 
 
 static int snd_cmipci_capture_trigger(struct snd_pcm_substream *substream,
 				     int cmd)
@@ -974,9 +915,7 @@ static snd_pcm_uframes_t snd_cmipci_capture_pointer(struct snd_pcm_substream *su
 }
 
 
-/*
- * hw preparation for spdif
- */
+ 
 
 static int snd_cmipci_spdif_default_info(struct snd_kcontrol *kcontrol,
 					 struct snd_ctl_elem_info *uinfo)
@@ -1100,10 +1039,9 @@ static const struct snd_kcontrol_new snd_cmipci_spdif_stream =
 	.put =		snd_cmipci_spdif_stream_put
 };
 
-/*
- */
+ 
 
-/* save mixer setting and mute for AC3 playback */
+ 
 static int save_mixer_state(struct cmipci *cm)
 {
 	if (! cm->mixer_insensitive) {
@@ -1123,7 +1061,7 @@ static int save_mixer_state(struct cmipci *cm)
 				val->value.integer.value[0] = cm_saved_mixer[i].toggle_on;
 				event = SNDRV_CTL_EVENT_MASK_INFO;
 				if (cm->mixer_res_status[i] != val->value.integer.value[0]) {
-					ctl->put(ctl, val); /* toggle */
+					ctl->put(ctl, val);  
 					event |= SNDRV_CTL_EVENT_MASK_VALUE;
 				}
 				ctl->vd[0].access |= SNDRV_CTL_ELEM_ACCESS_INACTIVE;
@@ -1137,7 +1075,7 @@ static int save_mixer_state(struct cmipci *cm)
 }
 
 
-/* restore the previously saved mixer status */
+ 
 static void restore_mixer_state(struct cmipci *cm)
 {
 	if (cm->mixer_insensitive) {
@@ -1147,8 +1085,7 @@ static void restore_mixer_state(struct cmipci *cm)
 		val = kmalloc(sizeof(*val), GFP_KERNEL);
 		if (!val)
 			return;
-		cm->mixer_insensitive = 0; /* at first clear this;
-					      otherwise the changes will be ignored */
+		cm->mixer_insensitive = 0;  
 		for (i = 0; i < CM_SAVED_MIXERS; i++) {
 			struct snd_kcontrol *ctl = cm->mixer_res_ctl[i];
 			if (ctl) {
@@ -1170,24 +1107,24 @@ static void restore_mixer_state(struct cmipci *cm)
 	}
 }
 
-/* spinlock held! */
+ 
 static void setup_ac3(struct cmipci *cm, struct snd_pcm_substream *subs, int do_ac3, int rate)
 {
 	if (do_ac3) {
-		/* AC3EN for 037 */
+		 
 		snd_cmipci_set_bit(cm, CM_REG_CHFORMAT, CM_AC3EN1);
-		/* AC3EN for 039 */
+		 
 		snd_cmipci_set_bit(cm, CM_REG_MISC_CTRL, CM_AC3EN2);
 	
 		if (cm->can_ac3_hw) {
-			/* SPD24SEL for 037, 0x02 */
-			/* SPD24SEL for 039, 0x20, but cannot be set */
+			 
+			 
 			snd_cmipci_set_bit(cm, CM_REG_CHFORMAT, CM_SPD24SEL);
 			snd_cmipci_clear_bit(cm, CM_REG_MISC_CTRL, CM_SPD32SEL);
-		} else { /* can_ac3_sw */
-			/* SPD32SEL for 037 & 039, 0x20 */
+		} else {  
+			 
 			snd_cmipci_set_bit(cm, CM_REG_MISC_CTRL, CM_SPD32SEL);
-			/* set 176K sample rate to fix 033 HW bug */
+			 
 			if (cm->chip_version == 33) {
 				if (rate >= 48000) {
 					snd_cmipci_set_bit(cm, CM_REG_CHFORMAT, CM_PLAYBACK_SRATE_176K);
@@ -1202,7 +1139,7 @@ static void setup_ac3(struct cmipci *cm, struct snd_pcm_substream *subs, int do_
 		snd_cmipci_clear_bit(cm, CM_REG_MISC_CTRL, CM_AC3EN2);
 
 		if (cm->can_ac3_hw) {
-			/* chip model >= 37 */
+			 
 			if (snd_pcm_format_width(subs->runtime->format) > 16) {
 				snd_cmipci_set_bit(cm, CM_REG_MISC_CTRL, CM_SPD32SEL);
 				snd_cmipci_set_bit(cm, CM_REG_CHFORMAT, CM_SPD24SEL);
@@ -1233,9 +1170,9 @@ static int setup_spdif_playback(struct cmipci *cm, struct snd_pcm_substream *sub
 	spin_lock_irq(&cm->reg_lock);
 	cm->spdif_playback_avail = up;
 	if (up) {
-		/* they are controlled via "IEC958 Output Switch" */
-		/* snd_cmipci_set_bit(cm, CM_REG_LEGACY_CTRL, CM_ENSPDOUT); */
-		/* snd_cmipci_set_bit(cm, CM_REG_FUNCTRL1, CM_SPDO2DAC); */
+		 
+		 
+		 
 		if (cm->spdif_playback_enabled)
 			snd_cmipci_set_bit(cm, CM_REG_FUNCTRL1, CM_PLAYBACK_SPDF);
 		setup_ac3(cm, subs, do_ac3, rate);
@@ -1249,9 +1186,9 @@ static int setup_spdif_playback(struct cmipci *cm, struct snd_pcm_substream *sub
 		else
 			snd_cmipci_clear_bit(cm, CM_REG_CHFORMAT, CM_DBLSPDS);
 	} else {
-		/* they are controlled via "IEC958 Output Switch" */
-		/* snd_cmipci_clear_bit(cm, CM_REG_LEGACY_CTRL, CM_ENSPDOUT); */
-		/* snd_cmipci_clear_bit(cm, CM_REG_FUNCTRL1, CM_SPDO2DAC); */
+		 
+		 
+		 
 		snd_cmipci_clear_bit(cm, CM_REG_CHFORMAT, CM_DBLSPDS);
 		snd_cmipci_clear_bit(cm, CM_REG_FUNCTRL1, CM_PLAYBACK_SPDF);
 		setup_ac3(cm, subs, 0, 0);
@@ -1261,11 +1198,9 @@ static int setup_spdif_playback(struct cmipci *cm, struct snd_pcm_substream *sub
 }
 
 
-/*
- * preparation
- */
+ 
 
-/* playback - enable spdif only on the certain condition */
+ 
 static int snd_cmipci_playback_prepare(struct snd_pcm_substream *substream)
 {
 	struct cmipci *cm = snd_pcm_substream_chip(substream);
@@ -1283,7 +1218,7 @@ static int snd_cmipci_playback_prepare(struct snd_pcm_substream *substream)
 	return snd_cmipci_pcm_prepare(cm, &cm->channel[CM_CH_PLAY], substream);
 }
 
-/* playback  (via device #2) - enable spdif always */
+ 
 static int snd_cmipci_playback_spdif_prepare(struct snd_pcm_substream *substream)
 {
 	struct cmipci *cm = snd_pcm_substream_chip(substream);
@@ -1292,34 +1227,27 @@ static int snd_cmipci_playback_spdif_prepare(struct snd_pcm_substream *substream
 	if (cm->can_ac3_hw) 
 		do_ac3 = cm->dig_pcm_status & IEC958_AES0_NONAUDIO;
 	else
-		do_ac3 = 1; /* doesn't matter */
+		do_ac3 = 1;  
 	err = setup_spdif_playback(cm, substream, 1, do_ac3);
 	if (err < 0)
 		return err;
 	return snd_cmipci_pcm_prepare(cm, &cm->channel[CM_CH_PLAY], substream);
 }
 
-/*
- * Apparently, the samples last played on channel A stay in some buffer, even
- * after the channel is reset, and get added to the data for the rear DACs when
- * playing a multichannel stream on channel B.  This is likely to generate
- * wraparounds and thus distortions.
- * To avoid this, we play at least one zero sample after the actual stream has
- * stopped.
- */
+ 
 static void snd_cmipci_silence_hack(struct cmipci *cm, struct cmipci_pcm *rec)
 {
 	struct snd_pcm_runtime *runtime = rec->substream->runtime;
 	unsigned int reg, val;
 
 	if (rec->needs_silencing && runtime && runtime->dma_area) {
-		/* set up a small silence buffer */
+		 
 		memset(runtime->dma_area, 0, PAGE_SIZE);
 		reg = rec->ch ? CM_REG_CH1_FRAME2 : CM_REG_CH0_FRAME2;
 		val = ((PAGE_SIZE / 4) - 1) | (((PAGE_SIZE / 4) / 2 - 1) << 16);
 		snd_cmipci_write(cm, reg, val);
 	
-		/* configure for 16 bits, 2 channels, 8 kHz */
+		 
 		if (runtime->channels > 2)
 			set_dac_channels(cm, rec, 2);
 		spin_lock_irq(&cm->reg_lock);
@@ -1334,14 +1262,14 @@ static void snd_cmipci_silence_hack(struct cmipci *cm, struct cmipci_pcm *rec)
 			val &= ~(CM_CH0_SRATE_MASK << (rec->ch * 2));
 		snd_cmipci_write(cm, CM_REG_CHFORMAT, val);
 	
-		/* start stream (we don't need interrupts) */
+		 
 		cm->ctrl |= CM_CHEN0 << rec->ch;
 		snd_cmipci_write(cm, CM_REG_FUNCTRL0, cm->ctrl);
 		spin_unlock_irq(&cm->reg_lock);
 
 		msleep(1);
 
-		/* stop and reset stream */
+		 
 		spin_lock_irq(&cm->reg_lock);
 		cm->ctrl &= ~(CM_CHEN0 << rec->ch);
 		val = CM_RST_CH0 << rec->ch;
@@ -1369,14 +1297,14 @@ static int snd_cmipci_playback2_hw_free(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-/* capture */
+ 
 static int snd_cmipci_capture_prepare(struct snd_pcm_substream *substream)
 {
 	struct cmipci *cm = snd_pcm_substream_chip(substream);
 	return snd_cmipci_pcm_prepare(cm, &cm->channel[CM_CH_CAPT], substream);
 }
 
-/* capture with spdif (via device #2) */
+ 
 static int snd_cmipci_capture_spdif_prepare(struct snd_pcm_substream *substream)
 {
 	struct cmipci *cm = snd_pcm_substream_chip(substream);
@@ -1412,20 +1340,18 @@ static int snd_cmipci_capture_spdif_hw_free(struct snd_pcm_substream *subs)
 }
 
 
-/*
- * interrupt handler
- */
+ 
 static irqreturn_t snd_cmipci_interrupt(int irq, void *dev_id)
 {
 	struct cmipci *cm = dev_id;
 	unsigned int status, mask = 0;
 	
-	/* fastpath out, to ease interrupt sharing */
+	 
 	status = snd_cmipci_read(cm, CM_REG_INT_STATUS);
 	if (!(status & CM_INTR))
 		return IRQ_NONE;
 
-	/* acknowledge interrupt */
+	 
 	spin_lock(&cm->reg_lock);
 	if (status & CM_CHINT0)
 		mask |= CM_CH0_INT_EN;
@@ -1447,11 +1373,9 @@ static irqreturn_t snd_cmipci_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * h/w infos
- */
+ 
 
-/* playback on channel A */
+ 
 static const struct snd_pcm_hardware snd_cmipci_playback =
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
@@ -1471,7 +1395,7 @@ static const struct snd_pcm_hardware snd_cmipci_playback =
 	.fifo_size =		0,
 };
 
-/* capture on channel B */
+ 
 static const struct snd_pcm_hardware snd_cmipci_capture =
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
@@ -1491,7 +1415,7 @@ static const struct snd_pcm_hardware snd_cmipci_capture =
 	.fifo_size =		0,
 };
 
-/* playback on channel B - stereo 16bit only? */
+ 
 static const struct snd_pcm_hardware snd_cmipci_playback2 =
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
@@ -1511,7 +1435,7 @@ static const struct snd_pcm_hardware snd_cmipci_playback2 =
 	.fifo_size =		0,
 };
 
-/* spdif playback on channel A */
+ 
 static const struct snd_pcm_hardware snd_cmipci_playback_spdif =
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
@@ -1531,7 +1455,7 @@ static const struct snd_pcm_hardware snd_cmipci_playback_spdif =
 	.fifo_size =		0,
 };
 
-/* spdif playback on channel A (32bit, IEC958 subframes) */
+ 
 static const struct snd_pcm_hardware snd_cmipci_playback_iec958_subframe =
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
@@ -1551,7 +1475,7 @@ static const struct snd_pcm_hardware snd_cmipci_playback_iec958_subframe =
 	.fifo_size =		0,
 };
 
-/* spdif capture on channel B */
+ 
 static const struct snd_pcm_hardware snd_cmipci_capture_spdif =
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
@@ -1580,18 +1504,12 @@ static const struct snd_pcm_hw_constraint_list hw_constraints_rates = {
 		.mask = 0,
 };
 
-/*
- * check device open/close
- */
+ 
 static int open_device_check(struct cmipci *cm, int mode, struct snd_pcm_substream *subs)
 {
 	int ch = mode & CM_OPEN_CH_MASK;
 
-	/* FIXME: a file should wait until the device becomes free
-	 * when it's opened on blocking mode.  however, since the current
-	 * pcm framework doesn't pass file pointer before actually opened,
-	 * we can't know whether blocking mode or not in open callback..
-	 */
+	 
 	mutex_lock(&cm->open_mutex);
 	if (cm->opened[ch]) {
 		mutex_unlock(&cm->open_mutex);
@@ -1600,7 +1518,7 @@ static int open_device_check(struct cmipci *cm, int mode, struct snd_pcm_substre
 	cm->opened[ch] = mode;
 	cm->channel[ch].substream = subs;
 	if (! (mode & CM_OPEN_DAC)) {
-		/* disable dual DAC mode */
+		 
 		cm->channel[ch].is_dac = 0;
 		spin_lock_irq(&cm->reg_lock);
 		snd_cmipci_clear_bit(cm, CM_REG_MISC_CTRL, CM_ENDBDAC);
@@ -1623,7 +1541,7 @@ static void close_device_check(struct cmipci *cm, int mode)
 		}
 		cm->opened[ch] = 0;
 		if (! cm->channel[ch].is_dac) {
-			/* enable dual DAC mode again */
+			 
 			cm->channel[ch].is_dac = 1;
 			spin_lock_irq(&cm->reg_lock);
 			snd_cmipci_set_bit(cm, CM_REG_MISC_CTRL, CM_ENDBDAC);
@@ -1633,8 +1551,7 @@ static void close_device_check(struct cmipci *cm, int mode)
 	mutex_unlock(&cm->open_mutex);
 }
 
-/*
- */
+ 
 
 static int snd_cmipci_playback_open(struct snd_pcm_substream *substream)
 {
@@ -1673,7 +1590,7 @@ static int snd_cmipci_capture_open(struct snd_pcm_substream *substream)
 	if (err < 0)
 		return err;
 	runtime->hw = snd_cmipci_capture;
-	if (cm->chip_version == 68) {	// 8768 only supports 44k/48k recording
+	if (cm->chip_version == 68) {	
 		runtime->hw.rate_min = 41000;
 		runtime->hw.rates = SNDRV_PCM_RATE_44100 | SNDRV_PCM_RATE_48000;
 	} else if (cm->chip_version == 55) {
@@ -1694,7 +1611,7 @@ static int snd_cmipci_playback2_open(struct snd_pcm_substream *substream)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	int err;
 
-	/* use channel B */
+	 
 	err = open_device_check(cm, CM_OPEN_PLAYBACK2, substream);
 	if (err < 0)
 		return err;
@@ -1734,7 +1651,7 @@ static int snd_cmipci_playback_spdif_open(struct snd_pcm_substream *substream)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	int err;
 
-	/* use channel A */
+	 
 	err = open_device_check(cm, CM_OPEN_SPDIF_PLAYBACK, substream);
 	if (err < 0)
 		return err;
@@ -1763,7 +1680,7 @@ static int snd_cmipci_capture_spdif_open(struct snd_pcm_substream *substream)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	int err;
 
-	/* use channel B */
+	 
 	err = open_device_check(cm, CM_OPEN_SPDIF_CAPTURE, substream);
 	if (err < 0)
 		return err;
@@ -1778,8 +1695,7 @@ static int snd_cmipci_capture_spdif_open(struct snd_pcm_substream *substream)
 }
 
 
-/*
- */
+ 
 
 static int snd_cmipci_playback_close(struct snd_pcm_substream *substream)
 {
@@ -1818,8 +1734,7 @@ static int snd_cmipci_capture_spdif_close(struct snd_pcm_substream *substream)
 }
 
 
-/*
- */
+ 
 
 static const struct snd_pcm_ops snd_cmipci_playback_ops = {
 	.open =		snd_cmipci_playback_open,
@@ -1843,16 +1758,16 @@ static const struct snd_pcm_ops snd_cmipci_playback2_ops = {
 	.close =	snd_cmipci_playback2_close,
 	.hw_params =	snd_cmipci_playback2_hw_params,
 	.hw_free =	snd_cmipci_playback2_hw_free,
-	.prepare =	snd_cmipci_capture_prepare,	/* channel B */
-	.trigger =	snd_cmipci_capture_trigger,	/* channel B */
-	.pointer =	snd_cmipci_capture_pointer,	/* channel B */
+	.prepare =	snd_cmipci_capture_prepare,	 
+	.trigger =	snd_cmipci_capture_trigger,	 
+	.pointer =	snd_cmipci_capture_pointer,	 
 };
 
 static const struct snd_pcm_ops snd_cmipci_playback_spdif_ops = {
 	.open =		snd_cmipci_playback_spdif_open,
 	.close =	snd_cmipci_playback_spdif_close,
 	.hw_free =	snd_cmipci_playback_hw_free,
-	.prepare =	snd_cmipci_playback_spdif_prepare,	/* set up rate */
+	.prepare =	snd_cmipci_playback_spdif_prepare,	 
 	.trigger =	snd_cmipci_playback_trigger,
 	.pointer =	snd_cmipci_playback_pointer,
 };
@@ -1867,8 +1782,7 @@ static const struct snd_pcm_ops snd_cmipci_capture_spdif_ops = {
 };
 
 
-/*
- */
+ 
 
 static int snd_cmipci_pcm_new(struct cmipci *cm, int device)
 {
@@ -1944,14 +1858,7 @@ static int snd_cmipci_pcm_spdif_new(struct cmipci *cm, int device)
 	return 0;
 }
 
-/*
- * mixer interface:
- * - CM8338/8738 has a compatible mixer interface with SB16, but
- *   lack of some elements like tone control, i/o gain and AGC.
- * - Access to native registers:
- *   - A 3D switch
- *   - Output mute switches
- */
+ 
 
 static void snd_cmipci_mixer_write(struct cmipci *s, unsigned char idx, unsigned char data)
 {
@@ -1968,9 +1875,7 @@ static unsigned char snd_cmipci_mixer_read(struct cmipci *s, unsigned char idx)
 	return v;
 }
 
-/*
- * general mixer element
- */
+ 
 struct cmipci_sb_reg {
 	unsigned int left_reg, right_reg;
 	unsigned int left_shift, right_shift;
@@ -2080,9 +1985,7 @@ static int snd_cmipci_put_volume(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
-/*
- * input route (left,right) -> (left,right)
- */
+ 
 #define CMIPCI_SB_INPUT_SW(xname, left_shift, right_shift) \
 { .iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = xname, \
   .info = snd_cmipci_info_input_sw, \
@@ -2144,9 +2047,7 @@ static int snd_cmipci_put_input_sw(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
-/*
- * native mixer switches/volumes
- */
+ 
 
 #define CMIPCI_MIXER_SW_STEREO(xname, reg, lshift, rshift, invert) \
 { .iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = xname, \
@@ -2241,13 +2142,11 @@ static int snd_cmipci_put_native_mixer(struct snd_kcontrol *kcontrol,
 	return (nreg != oreg);
 }
 
-/*
- * special case - check mixer sensitivity
- */
+ 
 static int snd_cmipci_get_native_mixer_sensitive(struct snd_kcontrol *kcontrol,
 						 struct snd_ctl_elem_value *ucontrol)
 {
-	//struct cmipci *cm = snd_kcontrol_chip(kcontrol);
+	
 	return snd_cmipci_get_native_mixer(kcontrol, ucontrol);
 }
 
@@ -2256,7 +2155,7 @@ static int snd_cmipci_put_native_mixer_sensitive(struct snd_kcontrol *kcontrol,
 {
 	struct cmipci *cm = snd_kcontrol_chip(kcontrol);
 	if (cm->mixer_insensitive) {
-		/* ignored */
+		 
 		return 0;
 	}
 	return snd_cmipci_put_native_mixer(kcontrol, ucontrol);
@@ -2267,8 +2166,8 @@ static const struct snd_kcontrol_new snd_cmipci_mixers[] = {
 	CMIPCI_SB_VOL_STEREO("Master Playback Volume", SB_DSP4_MASTER_DEV, 3, 31),
 	CMIPCI_MIXER_SW_MONO("3D Control - Switch", CM_REG_MIXER1, CM_X3DEN_SHIFT, 0),
 	CMIPCI_SB_VOL_STEREO("PCM Playback Volume", SB_DSP4_PCM_DEV, 3, 31),
-	//CMIPCI_MIXER_SW_MONO("PCM Playback Switch", CM_REG_MIXER1, CM_WSMUTE_SHIFT, 1),
-	{ /* switch with sensitivity */
+	
+	{  
 		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 		.name = "PCM Playback Switch",
 		.info = snd_cmipci_info_native_mixer,
@@ -2301,18 +2200,14 @@ static const struct snd_kcontrol_new snd_cmipci_mixers[] = {
 	CMIPCI_DOUBLE("Mic Boost Capture Switch", CM_REG_EXTENT_IND, CM_REG_EXTENT_IND, 0, 0, 1, 0, 0),
 };
 
-/*
- * other switches
- */
+ 
 
 struct cmipci_switch_args {
-	int reg;		/* register index */
-	unsigned int mask;	/* mask bits */
-	unsigned int mask_on;	/* mask bits to turn on */
-	unsigned int is_byte: 1;		/* byte access? */
-	unsigned int ac3_sensitive: 1;	/* access forbidden during
-					 * non-audio operation?
-					 */
+	int reg;		 
+	unsigned int mask;	 
+	unsigned int mask_on;	 
+	unsigned int is_byte: 1;		 
+	unsigned int ac3_sensitive: 1;	 
 };
 
 #define snd_cmipci_uswitch_info		snd_ctl_boolean_mono_info
@@ -2359,7 +2254,7 @@ static int _snd_cmipci_uswitch_put(struct snd_kcontrol *kcontrol,
 
 	spin_lock_irq(&cm->reg_lock);
 	if (args->ac3_sensitive && cm->mixer_insensitive) {
-		/* ignored */
+		 
 		spin_unlock_irq(&cm->reg_lock);
 		return 0;
 	}
@@ -2406,7 +2301,7 @@ static struct cmipci_switch_args cmipci_switch_arg_##sname = { \
 #define DEFINE_BIT_SWITCH_ARG(sname, xreg, xmask, xis_byte, xac3) \
 	DEFINE_SWITCH_ARG(sname, xreg, xmask, xmask, xis_byte, xac3)
 
-#if 0 /* these will be controlled in pcm device */
+#if 0  
 DEFINE_BIT_SWITCH_ARG(spdif_in, CM_REG_FUNCTRL1, CM_SPDF_1, 0, 0);
 DEFINE_BIT_SWITCH_ARG(spdif_out, CM_REG_FUNCTRL1, CM_SPDF_0, 0, 0);
 #endif
@@ -2417,22 +2312,22 @@ DEFINE_BIT_SWITCH_ARG(spdo2dac, CM_REG_FUNCTRL1, CM_SPDO2DAC, 0, 1);
 DEFINE_BIT_SWITCH_ARG(spdi_valid, CM_REG_MISC, CM_SPDVALID, 1, 0);
 DEFINE_BIT_SWITCH_ARG(spdif_copyright, CM_REG_LEGACY_CTRL, CM_SPDCOPYRHT, 0, 0);
 DEFINE_BIT_SWITCH_ARG(spdif_dac_out, CM_REG_LEGACY_CTRL, CM_DAC2SPDO, 0, 1);
-DEFINE_SWITCH_ARG(spdo_5v, CM_REG_MISC_CTRL, CM_SPDO5V, 0, 0, 0); /* inverse: 0 = 5V */
-// DEFINE_BIT_SWITCH_ARG(spdo_48k, CM_REG_MISC_CTRL, CM_SPDF_AC97|CM_SPDIF48K, 0, 1);
+DEFINE_SWITCH_ARG(spdo_5v, CM_REG_MISC_CTRL, CM_SPDO5V, 0, 0, 0);  
+
 DEFINE_BIT_SWITCH_ARG(spdif_loop, CM_REG_FUNCTRL1, CM_SPDFLOOP, 0, 1);
 DEFINE_BIT_SWITCH_ARG(spdi_monitor, CM_REG_MIXER1, CM_CDPLAY, 1, 0);
-/* DEFINE_BIT_SWITCH_ARG(spdi_phase, CM_REG_CHFORMAT, CM_SPDIF_INVERSE, 0, 0); */
+ 
 DEFINE_BIT_SWITCH_ARG(spdi_phase, CM_REG_MISC, CM_SPDIF_INVERSE, 1, 0);
 DEFINE_BIT_SWITCH_ARG(spdi_phase2, CM_REG_CHFORMAT, CM_SPDIF_INVERSE2, 0, 0);
 #if CM_CH_PLAY == 1
-DEFINE_SWITCH_ARG(exchange_dac, CM_REG_MISC_CTRL, CM_XCHGDAC, 0, 0, 0); /* reversed */
+DEFINE_SWITCH_ARG(exchange_dac, CM_REG_MISC_CTRL, CM_XCHGDAC, 0, 0, 0);  
 #else
 DEFINE_SWITCH_ARG(exchange_dac, CM_REG_MISC_CTRL, CM_XCHGDAC, CM_XCHGDAC, 0, 0);
 #endif
 DEFINE_BIT_SWITCH_ARG(fourch, CM_REG_MISC_CTRL, CM_N4SPK3D, 0, 0);
-// DEFINE_BIT_SWITCH_ARG(line_rear, CM_REG_MIXER1, CM_REAR2LIN, 1, 0);
-// DEFINE_BIT_SWITCH_ARG(line_bass, CM_REG_LEGACY_CTRL, CM_CENTR2LIN|CM_BASE2LIN, 0, 0);
-// DEFINE_BIT_SWITCH_ARG(joystick, CM_REG_FUNCTRL1, CM_JYSTK_EN, 0, 0); /* now module option */
+
+
+
 DEFINE_SWITCH_ARG(modem, CM_REG_MISC_CTRL, CM_FLINKON|CM_FLINKOFF, CM_FLINKON, 0, 0);
 
 #define DEFINE_SWITCH(sname, stype, sarg) \
@@ -2448,10 +2343,7 @@ DEFINE_SWITCH_ARG(modem, CM_REG_MISC_CTRL, CM_FLINKON|CM_FLINKOFF, CM_FLINKON, 0
 #define DEFINE_MIXER_SWITCH(sname, sarg) DEFINE_SWITCH(sname, SNDRV_CTL_ELEM_IFACE_MIXER, sarg)
 
 
-/*
- * callbacks for spdif output switch
- * needs toggle two registers..
- */
+ 
 static int snd_cmipci_spdout_enable_get(struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_value *ucontrol)
 {
@@ -2550,7 +2442,7 @@ static int snd_cmipci_mic_in_mode_get(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_value *ucontrol)
 {
 	struct cmipci *cm = snd_kcontrol_chip(kcontrol);
-	/* same bit as spdi_phase */
+	 
 	spin_lock_irq(&cm->reg_lock);
 	ucontrol->value.enumerated.item[0] = 
 		(snd_cmipci_read_b(cm, CM_REG_MISC) & CM_SPDIF_INVERSE) ? 1 : 0;
@@ -2573,7 +2465,7 @@ static int snd_cmipci_mic_in_mode_put(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
-/* both for CM8338/8738 */
+ 
 static const struct snd_kcontrol_new snd_cmipci_mixer_switches[] = {
 	DEFINE_MIXER_SWITCH("Four Channel Mode", fourch),
 	{
@@ -2585,18 +2477,18 @@ static const struct snd_kcontrol_new snd_cmipci_mixer_switches[] = {
 	},
 };
 
-/* for non-multichannel chips */
+ 
 static const struct snd_kcontrol_new snd_cmipci_nomulti_switch =
 DEFINE_MIXER_SWITCH("Exchange DAC", exchange_dac);
 
-/* only for CM8738 */
+ 
 static const struct snd_kcontrol_new snd_cmipci_8738_mixer_switches[] = {
-#if 0 /* controlled in pcm device */
+#if 0  
 	DEFINE_MIXER_SWITCH("IEC958 In Record", spdif_in),
 	DEFINE_MIXER_SWITCH("IEC958 Out", spdif_out),
 	DEFINE_MIXER_SWITCH("IEC958 Out To DAC", spdo2dac),
 #endif
-	// DEFINE_MIXER_SWITCH("IEC958 Output Switch", spdif_enable),
+	
 	{ .name = "IEC958 Output Switch",
 	  .iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	  .info = snd_cmipci_uswitch_info,
@@ -2606,19 +2498,19 @@ static const struct snd_kcontrol_new snd_cmipci_8738_mixer_switches[] = {
 	DEFINE_MIXER_SWITCH("IEC958 In Valid", spdi_valid),
 	DEFINE_MIXER_SWITCH("IEC958 Copyright", spdif_copyright),
 	DEFINE_MIXER_SWITCH("IEC958 5V", spdo_5v),
-//	DEFINE_MIXER_SWITCH("IEC958 In/Out 48KHz", spdo_48k),
+
 	DEFINE_MIXER_SWITCH("IEC958 Loop", spdif_loop),
 	DEFINE_MIXER_SWITCH("IEC958 In Monitor", spdi_monitor),
 };
 
-/* only for model 033/037 */
+ 
 static const struct snd_kcontrol_new snd_cmipci_old_mixer_switches[] = {
 	DEFINE_MIXER_SWITCH("IEC958 Mix Analog", spdif_dac_out),
 	DEFINE_MIXER_SWITCH("IEC958 In Phase Inverse", spdi_phase),
 	DEFINE_MIXER_SWITCH("IEC958 In Select", spdif_in_sel1),
 };
 
-/* only for model 039 or later */
+ 
 static const struct snd_kcontrol_new snd_cmipci_extra_mixer_switches[] = {
 	DEFINE_MIXER_SWITCH("IEC958 In Select", spdif_in_sel2),
 	DEFINE_MIXER_SWITCH("IEC958 In Phase Inverse", spdi_phase2),
@@ -2631,7 +2523,7 @@ static const struct snd_kcontrol_new snd_cmipci_extra_mixer_switches[] = {
 	}
 };
 
-/* card control switches */
+ 
 static const struct snd_kcontrol_new snd_cmipci_modem_switch =
 DEFINE_CARD_SWITCH("Modem", modem);
 
@@ -2652,11 +2544,11 @@ static int snd_cmipci_mixer_new(struct cmipci *cm, int pcm_spdif_device)
 	strcpy(card->mixername, "CMedia PCI");
 
 	spin_lock_irq(&cm->reg_lock);
-	snd_cmipci_mixer_write(cm, 0x00, 0x00);		/* mixer reset */
+	snd_cmipci_mixer_write(cm, 0x00, 0x00);		 
 	spin_unlock_irq(&cm->reg_lock);
 
 	for (idx = 0; idx < ARRAY_SIZE(snd_cmipci_mixers); idx++) {
-		if (cm->chip_version == 68) {	// 8768 has no PCM volume
+		if (cm->chip_version == 68) {	
 			if (!strcmp(snd_cmipci_mixers[idx].name,
 				"PCM Playback Volume"))
 				continue;
@@ -2666,7 +2558,7 @@ static int snd_cmipci_mixer_new(struct cmipci *cm, int pcm_spdif_device)
 			return err;
 	}
 
-	/* mixer switches */
+	 
 	sw = snd_cmipci_mixer_switches;
 	for (idx = 0; idx < ARRAY_SIZE(snd_cmipci_mixer_switches); idx++, sw++) {
 		err = snd_ctl_add(cm->card, snd_ctl_new1(sw, cm));
@@ -2721,11 +2613,8 @@ static int snd_cmipci_mixer_new(struct cmipci *cm, int pcm_spdif_device)
 		}
 	}
 
-	/* card switches */
-	/*
-	 * newer chips don't have the register bits to force modem link
-	 * detection; the bit that was FLINKON now mutes CH1
-	 */
+	 
+	 
 	if (cm->chip_version < 39) {
 		err = snd_ctl_add(cm->card,
 				  snd_ctl_new1(&snd_cmipci_modem_switch, cm));
@@ -2744,9 +2633,7 @@ static int snd_cmipci_mixer_new(struct cmipci *cm, int pcm_spdif_device)
 }
 
 
-/*
- * proc interface
- */
+ 
 
 static void snd_cmipci_proc_read(struct snd_info_entry *entry, 
 				 struct snd_info_buffer *buffer)
@@ -2781,18 +2668,15 @@ static const struct pci_device_id snd_cmipci_ids[] = {
 };
 
 
-/*
- * check chip version and capabilities
- * driver name is modified according to the chip model
- */
+ 
 static void query_chip(struct cmipci *cm)
 {
 	unsigned int detect;
 
-	/* check reg 0Ch, bit 24-31 */
+	 
 	detect = snd_cmipci_read(cm, CM_REG_INT_HLDCLR) & CM_CHIP_MASK2;
 	if (! detect) {
-		/* check reg 08h, bit 24-28 */
+		 
 		detect = snd_cmipci_read(cm, CM_REG_CHFORMAT) & CM_CHIP_MASK1;
 		switch (detect) {
 		case 0:
@@ -2815,7 +2699,7 @@ static void query_chip(struct cmipci *cm)
 	} else {
 		if (detect & CM_CHIP_039) {
 			cm->chip_version = 39;
-			if (detect & CM_CHIP_039_6CH) /* 4 or 6 channels */
+			if (detect & CM_CHIP_039_6CH)  
 				cm->max_channels = 6;
 			else
 				cm->max_channels = 4;
@@ -2836,7 +2720,7 @@ static void query_chip(struct cmipci *cm)
 #ifdef SUPPORT_JOYSTICK
 static int snd_cmipci_create_gameport(struct cmipci *cm, int dev)
 {
-	static const int ports[] = { 0x201, 0x200, 0 }; /* FIXME: majority is 0x201? */
+	static const int ports[] = { 0x201, 0x200, 0 };  
 	struct gameport *gp;
 	struct resource *r = NULL;
 	int i, io_port = 0;
@@ -2844,7 +2728,7 @@ static int snd_cmipci_create_gameport(struct cmipci *cm, int dev)
 	if (joystick_port[dev] == 0)
 		return -ENODEV;
 
-	if (joystick_port[dev] == 1) { /* auto-detect */
+	if (joystick_port[dev] == 1) {  
 		for (i = 0; ports[i]; i++) {
 			io_port = ports[i];
 			r = devm_request_region(&cm->pci->dev, io_port, 1,
@@ -2900,13 +2784,13 @@ static void snd_cmipci_free(struct snd_card *card)
 
 	snd_cmipci_clear_bit(cm, CM_REG_MISC_CTRL, CM_FM_EN);
 	snd_cmipci_clear_bit(cm, CM_REG_LEGACY_CTRL, CM_ENSPDOUT);
-	snd_cmipci_write(cm, CM_REG_INT_HLDCLR, 0);  /* disable ints */
+	snd_cmipci_write(cm, CM_REG_INT_HLDCLR, 0);   
 	snd_cmipci_ch_reset(cm, CM_CH_PLAY);
 	snd_cmipci_ch_reset(cm, CM_CH_CAPT);
-	snd_cmipci_write(cm, CM_REG_FUNCTRL0, 0); /* disable channels */
+	snd_cmipci_write(cm, CM_REG_FUNCTRL0, 0);  
 	snd_cmipci_write(cm, CM_REG_FUNCTRL1, 0);
 
-	/* reset mixer */
+	 
 	snd_cmipci_mixer_write(cm, 0, 0);
 
 	snd_cmipci_free_gameport(cm);
@@ -2923,7 +2807,7 @@ static int snd_cmipci_create_fm(struct cmipci *cm, long fm_port)
 		goto disable_fm;
 
 	if (cm->chip_version >= 39) {
-		/* first try FM regs in PCI port range */
+		 
 		iosynth = cm->iobase + CM_REG_FM_PCI;
 		err = snd_opl3_create(cm->card, iosynth, iosynth + 2,
 				      OPL3_HW_OPL3, 1, &opl3);
@@ -2931,7 +2815,7 @@ static int snd_cmipci_create_fm(struct cmipci *cm, long fm_port)
 		err = -EIO;
 	}
 	if (err < 0) {
-		/* then try legacy ports */
+		 
 		val = snd_cmipci_read(cm, CM_REG_LEGACY_CTRL) & ~CM_FMSEL_MASK;
 		iosynth = fm_port;
 		switch (iosynth) {
@@ -2943,7 +2827,7 @@ static int snd_cmipci_create_fm(struct cmipci *cm, long fm_port)
 			goto disable_fm;
 		}
 		snd_cmipci_write(cm, CM_REG_LEGACY_CTRL, val);
-		/* enable FM */
+		 
 		snd_cmipci_set_bit(cm, CM_REG_MISC_CTRL, CM_FM_EN);
 
 		if (snd_opl3_create(cm->card, iosynth, iosynth + 2,
@@ -2994,7 +2878,7 @@ static int snd_cmipci_create(struct snd_card *card, struct pci_dev *pci,
 	cm->irq = -1;
 	cm->channel[0].ch = 0;
 	cm->channel[1].ch = 1;
-	cm->channel[0].is_dac = cm->channel[1].is_dac = 1; /* dual DAC mode */
+	cm->channel[0].is_dac = cm->channel[1].is_dac = 1;  
 
 	err = pci_request_regions(pci, card->driver);
 	if (err < 0)
@@ -3012,9 +2896,7 @@ static int snd_cmipci_create(struct snd_card *card, struct pci_dev *pci,
 
 	pci_set_master(cm->pci);
 
-	/*
-	 * check chip version, max channels and capabilities
-	 */
+	 
 
 	cm->chip_version = 0;
 	cm->max_channels = 2;
@@ -3023,7 +2905,7 @@ static int snd_cmipci_create(struct snd_card *card, struct pci_dev *pci,
 	if (pci->device != PCI_DEVICE_ID_CMEDIA_CM8338A &&
 	    pci->device != PCI_DEVICE_ID_CMEDIA_CM8338B)
 		query_chip(cm);
-	/* added -MCx suffix for chip supporting multi-channels */
+	 
 	if (cm->can_multi_ch)
 		sprintf(cm->card->driver + strlen(cm->card->driver),
 			"-MC%d", cm->max_channels);
@@ -3034,18 +2916,18 @@ static int snd_cmipci_create(struct snd_card *card, struct pci_dev *pci,
 	cm->dig_pcm_status = SNDRV_PCM_DEFAULT_CON_SPDIF;
 
 #if CM_CH_PLAY == 1
-	cm->ctrl = CM_CHADC0;	/* default FUNCNTRL0 */
+	cm->ctrl = CM_CHADC0;	 
 #else
-	cm->ctrl = CM_CHADC1;	/* default FUNCNTRL0 */
+	cm->ctrl = CM_CHADC1;	 
 #endif
 
-	/* initialize codec registers */
+	 
 	snd_cmipci_set_bit(cm, CM_REG_MISC_CTRL, CM_RESET);
 	snd_cmipci_clear_bit(cm, CM_REG_MISC_CTRL, CM_RESET);
-	snd_cmipci_write(cm, CM_REG_INT_HLDCLR, 0);	/* disable ints */
+	snd_cmipci_write(cm, CM_REG_INT_HLDCLR, 0);	 
 	snd_cmipci_ch_reset(cm, CM_CH_PLAY);
 	snd_cmipci_ch_reset(cm, CM_CH_CAPT);
-	snd_cmipci_write(cm, CM_REG_FUNCTRL0, 0);	/* disable channels */
+	snd_cmipci_write(cm, CM_REG_FUNCTRL0, 0);	 
 	snd_cmipci_write(cm, CM_REG_FUNCTRL1, 0);
 
 	snd_cmipci_write(cm, CM_REG_CHFORMAT, 0);
@@ -3056,13 +2938,13 @@ static int snd_cmipci_create(struct snd_card *card, struct pci_dev *pci,
 	snd_cmipci_clear_bit(cm, CM_REG_MISC_CTRL, CM_XCHGDAC);
 #endif
 	if (cm->chip_version) {
-		snd_cmipci_write_b(cm, CM_REG_EXT_MISC, 0x20); /* magic */
-		snd_cmipci_write_b(cm, CM_REG_EXT_MISC + 1, 0x09); /* more magic */
+		snd_cmipci_write_b(cm, CM_REG_EXT_MISC, 0x20);  
+		snd_cmipci_write_b(cm, CM_REG_EXT_MISC + 1, 0x09);  
 	}
-	/* Set Bus Master Request */
+	 
 	snd_cmipci_set_bit(cm, CM_REG_FUNCTRL1, CM_BREQ);
 
-	/* Assume TX and compatible chip set (Autodetection required for VX chip sets) */
+	 
 	switch (pci->device) {
 	case PCI_DEVICE_ID_CMEDIA_CM8738:
 	case PCI_DEVICE_ID_CMEDIA_CM8738B:
@@ -3131,7 +3013,7 @@ static int snd_cmipci_create(struct snd_card *card, struct pci_dev *pci,
 		}
 		if (iomidi > 0) {
 			snd_cmipci_write(cm, CM_REG_LEGACY_CTRL, val);
-			/* enable UART */
+			 
 			snd_cmipci_set_bit(cm, CM_REG_FUNCTRL1, CM_UART_EN);
 			if (inb(iomidi + 1) == 0xff) {
 				dev_err(cm->card->dev,
@@ -3150,12 +3032,12 @@ static int snd_cmipci_create(struct snd_card *card, struct pci_dev *pci,
 			return err;
 	}
 
-	/* reset mixer */
+	 
 	snd_cmipci_mixer_write(cm, 0, 0);
 
 	snd_cmipci_proc_init(cm);
 
-	/* create pcm devices */
+	 
 	pcm_index = pcm_spdif_index = 0;
 	err = snd_cmipci_pcm_new(cm, pcm_index);
 	if (err < 0)
@@ -3172,7 +3054,7 @@ static int snd_cmipci_create(struct snd_card *card, struct pci_dev *pci,
 			return err;
 	}
 
-	/* create mixer interface & switches */
+	 
 	err = snd_cmipci_mixer_new(cm, pcm_spdif_index);
 	if (err < 0)
 		return err;
@@ -3193,11 +3075,9 @@ static int snd_cmipci_create(struct snd_card *card, struct pci_dev *pci,
 	for (val = 0; val < ARRAY_SIZE(rates); val++)
 		snd_cmipci_set_pll(cm, rates[val], val);
 
-	/*
-	 * (Re-)Enable external switch spdo_48k
-	 */
+	 
 	snd_cmipci_set_bit(cm, CM_REG_MISC_CTRL, CM_SPDIF48K|CM_SPDF_AC97);
-#endif /* USE_VAR48KRATE */
+#endif  
 
 	if (snd_cmipci_create_gameport(cm, dev) < 0)
 		snd_cmipci_clear_bit(cm, CM_REG_FUNCTRL1, CM_JYSTK_EN);
@@ -3205,8 +3085,7 @@ static int snd_cmipci_create(struct snd_card *card, struct pci_dev *pci,
 	return 0;
 }
 
-/*
- */
+ 
 
 MODULE_DEVICE_TABLE(pci, snd_cmipci_ids);
 
@@ -3261,9 +3140,7 @@ static int snd_cmipci_probe(struct pci_dev *pci,
 }
 
 #ifdef CONFIG_PM_SLEEP
-/*
- * power management
- */
+ 
 static const unsigned char saved_regs[] = {
 	CM_REG_FUNCTRL1, CM_REG_CHFORMAT, CM_REG_LEGACY_CTRL, CM_REG_MISC_CTRL,
 	CM_REG_MIXER0, CM_REG_MIXER1, CM_REG_MIXER2, CM_REG_AUX_VOL, CM_REG_PLL,
@@ -3291,13 +3168,13 @@ static int snd_cmipci_suspend(struct device *dev)
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
 	
-	/* save registers */
+	 
 	for (i = 0; i < ARRAY_SIZE(saved_regs); i++)
 		cm->saved_regs[i] = snd_cmipci_read(cm, saved_regs[i]);
 	for (i = 0; i < ARRAY_SIZE(saved_mixers); i++)
 		cm->saved_mixers[i] = snd_cmipci_mixer_read(cm, saved_mixers[i]);
 
-	/* disable ints */
+	 
 	snd_cmipci_write(cm, CM_REG_INT_HLDCLR, 0);
 	return 0;
 }
@@ -3308,13 +3185,13 @@ static int snd_cmipci_resume(struct device *dev)
 	struct cmipci *cm = card->private_data;
 	int i;
 
-	/* reset / initialize to a sane state */
+	 
 	snd_cmipci_write(cm, CM_REG_INT_HLDCLR, 0);
 	snd_cmipci_ch_reset(cm, CM_CH_PLAY);
 	snd_cmipci_ch_reset(cm, CM_CH_CAPT);
 	snd_cmipci_mixer_write(cm, 0, 0);
 
-	/* restore registers */
+	 
 	for (i = 0; i < ARRAY_SIZE(saved_regs); i++)
 		snd_cmipci_write(cm, saved_regs[i], cm->saved_regs[i]);
 	for (i = 0; i < ARRAY_SIZE(saved_mixers); i++)
@@ -3328,7 +3205,7 @@ static SIMPLE_DEV_PM_OPS(snd_cmipci_pm, snd_cmipci_suspend, snd_cmipci_resume);
 #define SND_CMIPCI_PM_OPS	&snd_cmipci_pm
 #else
 #define SND_CMIPCI_PM_OPS	NULL
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static struct pci_driver cmipci_driver = {
 	.name = KBUILD_MODNAME,

@@ -1,29 +1,4 @@
-/*
-** z2ram - Amiga pseudo-driver to access 16bit-RAM in ZorroII space
-**         as a block device, to be used as a RAM disk or swap space
-** 
-** Copyright (C) 1994 by Ingo Wilken (Ingo.Wilken@informatik.uni-oldenburg.de)
-**
-** ++Geert: support for zorro_unused_z2ram, better range checking
-** ++roman: translate accesses via an array
-** ++Milan: support for ChipRAM usage
-** ++yambo: converted to 2.0 kernel
-** ++yambo: modularized and support added for 3 minor devices including:
-**          MAJOR  MINOR  DESCRIPTION
-**          -----  -----  ----------------------------------------------
-**          37     0       Use Zorro II and Chip ram
-**          37     1       Use only Zorro II ram
-**          37     2       Use only Chip ram
-**          37     4-7     Use memory list entry 1-4 (first is 0)
-** ++jskov: support for 1-4th memory list entry.
-**
-** Permission to use, copy, modify, and distribute this software and its
-** documentation for any purpose and without fee is hereby granted, provided
-** that the above copyright notice appear in all copies and that both that
-** copyright notice and this permission notice appear in supporting
-** documentation.  This software is provided "as is" without express or
-** implied warranty.
-*/
+ 
 
 #define DEVICE_NAME "Z2RAM"
 
@@ -49,7 +24,7 @@
 #define Z2MINOR_MEMLIST2      (5)
 #define Z2MINOR_MEMLIST3      (6)
 #define Z2MINOR_MEMLIST4      (7)
-#define Z2MINOR_COUNT         (8)	/* Move this down when adding a new minor */
+#define Z2MINOR_COUNT         (8)	 
 
 #define Z2RAM_CHUNK1024       ( Z2RAM_CHUNKSIZE >> 10 )
 
@@ -160,7 +135,7 @@ static int z2_open(struct gendisk *disk, blk_mode_t mode)
 		list_count = 0;
 		z2ram_size = 0;
 
-		/* Use a specific list entry. */
+		 
 		if (device >= Z2MINOR_MEMLIST1 && device <= Z2MINOR_MEMLIST4) {
 			int index = device - Z2MINOR_MEMLIST1 + 1;
 			unsigned long size, paddr, vaddr;
@@ -175,7 +150,7 @@ static int z2_open(struct gendisk *disk, blk_mode_t mode)
 			size = m68k_memory[index].size & ~(Z2RAM_CHUNKSIZE - 1);
 
 #ifdef __powerpc__
-			/* FIXME: ioremap doesn't build correct memory tables. */
+			 
 			{
 				vfree(vmalloc(size));
 			}
@@ -296,9 +271,7 @@ static void z2_release(struct gendisk *disk)
 		return;
 	}
 	mutex_unlock(&z2ram_mutex);
-	/*
-	 * FIXME: unmap memory
-	 */
+	 
 }
 
 static const struct block_device_operations z2_fops = {

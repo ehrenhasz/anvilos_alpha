@@ -1,25 +1,4 @@
-/*
- * Copyright 2013 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef SMU7_DISCRETE_H
 #define SMU7_DISCRETE_H
@@ -304,7 +283,7 @@ struct SMU7_Discrete_DpmTable
     uint32_t                            MvddLevelCount;
 
     SMU7_Discrete_VoltageLevel          VddcLevel               [SMU7_MAX_LEVELS_VDDC];
-//    SMU7_Discrete_VoltageLevel          VddcStandardReference   [SMU7_MAX_LEVELS_VDDC];
+
     SMU7_Discrete_VoltageLevel          VddciLevel              [SMU7_MAX_LEVELS_VDDCI];
     SMU7_Discrete_VoltageLevel          MvddLevel               [SMU7_MAX_LEVELS_MVDD];
 
@@ -318,7 +297,7 @@ struct SMU7_Discrete_DpmTable
     uint8_t                             MasterDeepSleepControl;
     uint32_t                            VRConfig;
     uint32_t                            Reserved[4];
-//    uint32_t                            SamuDefaultLevel;
+
 
     SMU7_Discrete_GraphicsLevel         GraphicsLevel           [SMU7_MAX_LEVELS_GRAPHICS];
     SMU7_Discrete_MemoryLevel           MemoryACPILevel;
@@ -458,50 +437,50 @@ typedef struct SMU7_Discrete_FanTable SMU7_Discrete_FanTable;
 
 
 struct SMU7_Discrete_PmFuses {
-  // dw0-dw1
+  
   uint8_t BapmVddCVidHiSidd[8];
 
-  // dw2-dw3
+  
   uint8_t BapmVddCVidLoSidd[8];
 
-  // dw4-dw5
+  
   uint8_t VddCVid[8];
 
-  // dw6
+  
   uint8_t SviLoadLineEn;
   uint8_t SviLoadLineVddC;
   uint8_t SviLoadLineTrimVddC;
   uint8_t SviLoadLineOffsetVddC;
 
-  // dw7
+  
   uint16_t TDC_VDDC_PkgLimit;
   uint8_t TDC_VDDC_ThrottleReleaseLimitPerc;
   uint8_t TDC_MAWt;
 
-  // dw8
+  
   uint8_t TdcWaterfallCtl;
   uint8_t LPMLTemperatureMin;
   uint8_t LPMLTemperatureMax;
   uint8_t Reserved;
 
-  // dw9-dw10
+  
   uint8_t BapmVddCVidHiSidd2[8];
 
-  // dw11-dw12
+  
   int16_t FuzzyFan_ErrorSetDelta;
   int16_t FuzzyFan_ErrorRateSetDelta;
   int16_t FuzzyFan_PwmSetDelta;
   uint16_t CalcMeasPowerBlend;
 
-  // dw13-dw16
+  
   uint8_t GnbLPML[16];
 
-  // dw17
+  
   uint8_t GnbLPMLMaxVid;
   uint8_t GnbLPMLMinVid;
   uint8_t Reserved1[2];
 
-  // dw18
+  
   uint16_t BapmVddCBaseLeakageHiSidd;
   uint16_t BapmVddCBaseLeakageLoSidd;
 };

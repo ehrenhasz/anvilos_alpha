@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AD5686R, AD5685R, AD5684R Digital to analog converters  driver
- *
- * Copyright 2011 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/fs.h>
@@ -94,7 +90,7 @@ static ssize_t ad5686_write_dac_powerdown(struct iio_dev *indio_dev,
 	case AD5686_REGMAP:
 		shift = 0;
 		ref_bit_msk = 0;
-		/* AD5674R/AD5679R have 16 channels and 2 powerdown registers */
+		 
 		if (chan->channel > 0x7)
 			address = 0x8;
 		break;
@@ -489,7 +485,7 @@ int ad5686_probe(struct device *dev,
 	else
 		st->vref_mv = st->chip_info->int_vref_mv;
 
-	/* Set all the power down mode for all channels to 1K pulldown */
+	 
 	for (i = 0; i < st->chip_info->num_channels; i++)
 		st->pwr_down_mode |= (0x01 << (i * 2));
 

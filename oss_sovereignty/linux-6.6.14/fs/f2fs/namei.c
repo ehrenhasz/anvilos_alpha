@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * fs/f2fs/namei.c
- *
- * Copyright (c) 2012 Samsung Electronics Co., Ltd.
- *             http://www.samsung.com/
- */
+
+ 
 #include <linux/fs.h>
 #include <linux/f2fs_fs.h>
 #include <linux/pagemap.h>
@@ -32,15 +27,12 @@ static inline bool is_extension_exist(const unsigned char *s, const char *sub,
 	if (sublen == 1 && *sub == '*')
 		return true;
 
-	/*
-	 * filename format of multimedia file should be defined as:
-	 * "filename + '.' + extension + (optional: '.' + temp extension)".
-	 */
+	 
 	if (slen < sublen + 2)
 		return false;
 
 	if (!tmp_ext) {
-		/* file has no temp extension */
+		 
 		if (s[slen - sublen - 1] != '.')
 			return false;
 		return !strncasecmp(s + slen - sublen, sub, sublen);
@@ -153,11 +145,11 @@ static void set_compress_new_inode(struct f2fs_sb_info *sbi, struct inode *dir,
 	if (S_ISDIR(inode->i_mode))
 		goto inherit_comp;
 
-	/* This name comes only from normal files. */
+	 
 	if (!name)
 		return;
 
-	/* Don't compress hot files. */
+	 
 	f2fs_down_read(&sbi->sb_lock);
 	cold_count = le32_to_cpu(sbi->raw_super->extension_count);
 	hot_count = sbi->raw_super->hot_ext_count;
@@ -168,12 +160,12 @@ static void set_compress_new_inode(struct f2fs_sb_info *sbi, struct inode *dir,
 	if (i < (cold_count + hot_count))
 		return;
 
-	/* Don't compress unallowed extension. */
+	 
 	for (i = 0; i < noext_cnt; i++)
 		if (is_compress_extension(name, noext[i]))
 			return;
 
-	/* Compress wanting extension. */
+	 
 	for (i = 0; i < ext_cnt; i++) {
 		if (is_compress_extension(name, ext[i])) {
 			set_compress_context(inode);
@@ -181,7 +173,7 @@ static void set_compress_new_inode(struct f2fs_sb_info *sbi, struct inode *dir,
 		}
 	}
 inherit_comp:
-	/* Inherit the {no-}compression flag in directory */
+	 
 	if (F2FS_I(dir)->i_flags & F2FS_NOCOMP_FL) {
 		F2FS_I(inode)->i_flags |= F2FS_NOCOMP_FL;
 		f2fs_mark_inode_dirty_sync(inode, true);
@@ -190,9 +182,7 @@ inherit_comp:
 	}
 }
 
-/*
- * Set file's temperature for hot/cold data separation
- */
+ 
 static void set_file_temperature(struct f2fs_sb_info *sbi, struct inode *inode,
 		const unsigned char *name)
 {
@@ -291,7 +281,7 @@ static struct inode *f2fs_new_inode(struct mnt_idmap *idmap,
 		f2fs_bug_on(sbi, !f2fs_has_extra_attr(inode));
 		if (f2fs_has_inline_xattr(inode))
 			xattr_size = F2FS_OPTION(sbi).inline_xattr_size;
-		/* Otherwise, will be 0 */
+		 
 	} else if (f2fs_has_inline_xattr(inode) ||
 				f2fs_has_inline_dentry(inode)) {
 		xattr_size = DEFAULT_INLINE_XATTR_ADDRS;
@@ -307,10 +297,10 @@ static struct inode *f2fs_new_inode(struct mnt_idmap *idmap,
 	if (F2FS_I(inode)->i_flags & F2FS_PROJINHERIT_FL)
 		set_inode_flag(inode, FI_PROJ_INHERIT);
 
-	/* Check compression first. */
+	 
 	set_compress_new_inode(sbi, dir, inode, name);
 
-	/* Should enable inline_data after compression set */
+	 
 	if (test_opt(sbi, INLINE_DATA) && f2fs_may_inline_data(inode))
 		set_inode_flag(inode, FI_INLINE_DATA);
 
@@ -580,11 +570,7 @@ static struct dentry *f2fs_lookup(struct inode *dir, struct dentry *dentry,
 out_splice:
 #if IS_ENABLED(CONFIG_UNICODE)
 	if (!inode && IS_CASEFOLDED(dir)) {
-		/* Eventually we want to call d_add_ci(dentry, NULL)
-		 * for negative dentries in the encoding case as
-		 * well.  For now, prevent the negative dentry
-		 * from being cached.
-		 */
+		 
 		trace_f2fs_lookup_end(dir, dentry, ino, err);
 		return NULL;
 	}
@@ -642,12 +628,7 @@ static int f2fs_unlink(struct inode *dir, struct dentry *dentry)
 	f2fs_unlock_op(sbi);
 
 #if IS_ENABLED(CONFIG_UNICODE)
-	/* VFS negative dentries are incompatible with Encoding and
-	 * Case-insensitiveness. Eventually we'll want avoid
-	 * invalidating the dentries here, alongside with returning the
-	 * negative dentries at f2fs_lookup(), when it is better
-	 * supported by the VFS for the CI case.
-	 */
+	 
 	if (IS_CASEFOLDED(dir))
 		d_invalidate(dentry);
 #endif
@@ -665,7 +646,7 @@ static const char *f2fs_get_link(struct dentry *dentry,
 	const char *link = page_get_link(dentry, inode, done);
 
 	if (!IS_ERR(link) && !*link) {
-		/* this is broken symlink case */
+		 
 		do_delayed_call(done);
 		clear_delayed_call(done);
 		link = ERR_PTR(-ENOENT);
@@ -723,15 +704,7 @@ static int f2fs_symlink(struct mnt_idmap *idmap, struct inode *dir,
 err_out:
 	d_instantiate_new(dentry, inode);
 
-	/*
-	 * Let's flush symlink data in order to avoid broken symlink as much as
-	 * possible. Nevertheless, fsyncing is the best way, but there is no
-	 * way to get a file descriptor in order to flush that.
-	 *
-	 * Note that, it needs to do dir->fsync to make this recoverable.
-	 * If the symlink path is stored into inline_data, there is no
-	 * performance regression.
-	 */
+	 
 	if (!err) {
 		filemap_write_and_wait_range(inode->i_mapping, 0,
 							disk_link.len - 1);
@@ -885,10 +858,7 @@ static int __f2fs_tmpfile(struct mnt_idmap *idmap, struct inode *dir,
 	if (err)
 		goto release_out;
 
-	/*
-	 * add this non-linked tmpfile to orphan list, in this way we could
-	 * remove all unused data of tmpfile after abnormal power-off.
-	 */
+	 
 	f2fs_add_orphan_inode(inode);
 	f2fs_alloc_nid_done(sbi, inode->i_ino);
 
@@ -904,7 +874,7 @@ static int __f2fs_tmpfile(struct mnt_idmap *idmap, struct inode *dir,
 		else
 			f2fs_i_links_write(inode, false);
 	}
-	/* link_count was changed by d_tmpfile as well. */
+	 
 	f2fs_unlock_op(sbi);
 	unlock_new_inode(inode);
 
@@ -975,14 +945,7 @@ static int f2fs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 			F2FS_I(old_dentry->d_inode)->i_projid)))
 		return -EXDEV;
 
-	/*
-	 * If new_inode is null, the below renaming flow will
-	 * add a link in old_dir which can convert inline_dir.
-	 * After then, if we failed to get the entry due to other
-	 * reasons like ENOMEM, we had to remove the new entry.
-	 * Instead of adding such the error handling routine, let's
-	 * simply convert first here.
-	 */
+	 
 	if (old_dir == new_dir && !new_inode) {
 		err = f2fs_try_convert_inline_dir(old_dir, new_dentry);
 		if (err)
@@ -1082,7 +1045,7 @@ static int f2fs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 	if (!old_dir_entry || whiteout)
 		file_lost_pino(old_inode);
 	else
-		/* adjust dir's i_pino to pass fsck check */
+		 
 		f2fs_i_pino_write(old_inode, new_dir->i_ino);
 	f2fs_up_write(&F2FS_I(old_inode)->i_sem);
 
@@ -1190,7 +1153,7 @@ static int f2fs_cross_rename(struct inode *old_dir, struct dentry *old_dentry,
 		goto out_old;
 	}
 
-	/* prepare for updating ".." directory entry info later */
+	 
 	if (old_dir != new_dir) {
 		if (S_ISDIR(old_inode->i_mode)) {
 			old_dir_entry = f2fs_parent_dir(old_inode,
@@ -1213,11 +1176,7 @@ static int f2fs_cross_rename(struct inode *old_dir, struct dentry *old_dentry,
 		}
 	}
 
-	/*
-	 * If cross rename between file and directory those are not
-	 * in the same directory, we will inc nlink of file's parent
-	 * later, so we should check upper boundary of its nlink.
-	 */
+	 
 	if ((!old_dir_entry || !new_dir_entry) &&
 				old_dir_entry != new_dir_entry) {
 		old_nlink = old_dir_entry ? -1 : 1;
@@ -1232,22 +1191,22 @@ static int f2fs_cross_rename(struct inode *old_dir, struct dentry *old_dentry,
 
 	f2fs_lock_op(sbi);
 
-	/* update ".." directory entry info of old dentry */
+	 
 	if (old_dir_entry)
 		f2fs_set_link(old_inode, old_dir_entry, old_dir_page, new_dir);
 
-	/* update ".." directory entry info of new dentry */
+	 
 	if (new_dir_entry)
 		f2fs_set_link(new_inode, new_dir_entry, new_dir_page, old_dir);
 
-	/* update directory entry info of old dir inode */
+	 
 	f2fs_set_link(old_dir, old_entry, old_page, new_inode);
 
 	f2fs_down_write(&F2FS_I(old_inode)->i_sem);
 	if (!old_dir_entry)
 		file_lost_pino(old_inode);
 	else
-		/* adjust dir's i_pino to pass fsck check */
+		 
 		f2fs_i_pino_write(old_inode, new_dir->i_ino);
 	f2fs_up_write(&F2FS_I(old_inode)->i_sem);
 
@@ -1259,14 +1218,14 @@ static int f2fs_cross_rename(struct inode *old_dir, struct dentry *old_dentry,
 	}
 	f2fs_mark_inode_dirty_sync(old_dir, false);
 
-	/* update directory entry info of new dir inode */
+	 
 	f2fs_set_link(new_dir, new_entry, new_page, old_inode);
 
 	f2fs_down_write(&F2FS_I(new_inode)->i_sem);
 	if (!new_dir_entry)
 		file_lost_pino(new_inode);
 	else
-		/* adjust dir's i_pino to pass fsck check */
+		 
 		f2fs_i_pino_write(new_inode, old_dir->i_ino);
 	f2fs_up_write(&F2FS_I(new_inode)->i_sem);
 
@@ -1325,10 +1284,7 @@ static int f2fs_rename2(struct mnt_idmap *idmap,
 		return f2fs_cross_rename(old_dir, old_dentry,
 					 new_dir, new_dentry);
 	}
-	/*
-	 * VFS has already handled the new dentry existence case,
-	 * here, we just deal with "RENAME_NOREPLACE" as regular rename.
-	 */
+	 
 	return f2fs_rename(idmap, old_dir, old_dentry,
 					new_dir, new_dentry, flags);
 }

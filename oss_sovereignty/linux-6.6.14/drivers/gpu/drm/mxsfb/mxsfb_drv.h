@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2016 Marek Vasut <marex@denx.de>
- *
- * i.MX23/i.MX28/i.MX6SX MXSFB LCD controller driver.
- */
+ 
+ 
 
 #ifndef __MXSFB_DRV_H__
 #define __MXSFB_DRV_H__
@@ -29,7 +25,7 @@ struct mxsfb_devdata {
 struct mxsfb_drm_private {
 	const struct mxsfb_devdata	*devdata;
 
-	void __iomem			*base;	/* registers */
+	void __iomem			*base;	 
 	struct clk			*clk;
 	struct clk			*clk_axi;
 	struct clk			*clk_disp_axi;
@@ -60,4 +56,4 @@ void mxsfb_disable_axi_clk(struct mxsfb_drm_private *mxsfb);
 
 int mxsfb_kms_init(struct mxsfb_drm_private *mxsfb);
 
-#endif /* __MXSFB_DRV_H__ */
+#endif  

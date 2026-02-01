@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Author: Dan Scally <djrscally@gmail.com> */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bitfield.h>
@@ -15,13 +15,7 @@
 
 #include "common.h"
 
-/*
- * 79234640-9e10-4fea-a5c1-b5aa8b19756f
- * This _DSM GUID returns information about the GPIO lines mapped to a
- * discrete INT3472 device. Function number 1 returns a count of the GPIO
- * lines that are mapped. Subsequent functions return 32 bit ints encoding
- * information about the GPIO line, including its purpose.
- */
+ 
 static const guid_t int3472_gpio_guid =
 	GUID_INIT(0x79234640, 0x9e10, 0x4fea,
 		  0xa5, 0xc1, 0xb5, 0xaa, 0x8b, 0x19, 0x75, 0x6f);
@@ -30,11 +24,7 @@ static const guid_t int3472_gpio_guid =
 #define INT3472_GPIO_DSM_PIN				GENMASK(15, 8)
 #define INT3472_GPIO_DSM_SENSOR_ON_VAL			GENMASK(31, 24)
 
-/*
- * 822ace8f-2814-4174-a56b-5f029fe079ee
- * This _DSM GUID returns a string from the sensor device, which acts as a
- * module identifier.
- */
+ 
 static const guid_t cio2_sensor_module_guid =
 	GUID_INIT(0x822ace8f, 0x2814, 0x4174,
 		  0xa5, 0x6b, 0x5f, 0x02, 0x9f, 0xe0, 0x79, 0xee);
@@ -117,38 +107,7 @@ static void int3472_get_func_and_polarity(u8 type, const char **func, u32 *polar
 	}
 }
 
-/**
- * skl_int3472_handle_gpio_resources: Map PMIC resources to consuming sensor
- * @ares: A pointer to a &struct acpi_resource
- * @data: A pointer to a &struct int3472_discrete_device
- *
- * This function handles GPIO resources that are against an INT3472
- * ACPI device, by checking the value of the corresponding _DSM entry.
- * This will return a 32bit int, where the lowest byte represents the
- * function of the GPIO pin:
- *
- * 0x00 Reset
- * 0x01 Power down
- * 0x0b Power enable
- * 0x0c Clock enable
- * 0x0d Privacy LED
- *
- * There are some known platform specific quirks where that does not quite
- * hold up; for example where a pin with type 0x01 (Power down) is mapped to
- * a sensor pin that performs a reset function or entries in _CRS and _DSM that
- * do not actually correspond to a physical connection. These will be handled
- * by the mapping sub-functions.
- *
- * GPIOs will either be mapped directly to the sensor device or else used
- * to create clocks and regulators via the usual frameworks.
- *
- * Return:
- * * 1		- To continue the loop
- * * 0		- When all resources found are handled properly.
- * * -EINVAL	- If the resource is not a GPIO IO resource
- * * -ENODEV	- If the resource has no corresponding _DSM entry
- * * -Other	- Errors propagated from one of the sub-functions.
- */
+ 
 static int skl_int3472_handle_gpio_resources(struct acpi_resource *ares,
 					     void *data)
 {
@@ -164,10 +123,7 @@ static int skl_int3472_handle_gpio_resources(struct acpi_resource *ares,
 	if (!acpi_gpio_get_io_resource(ares, &agpio))
 		return 1;
 
-	/*
-	 * ngpios + 2 because the index of this _DSM function is 1-based and
-	 * the first function is just a count.
-	 */
+	 
 	obj = acpi_evaluate_dsm_typed(int3472->adev->handle,
 				      &int3472_gpio_guid, 0x00,
 				      int3472->ngpios + 2,
@@ -255,7 +211,7 @@ static int skl_int3472_parse_crs(struct int3472_discrete_device *int3472)
 
 	acpi_dev_free_resource_list(&resource_list);
 
-	/* Register _DSM based clock (no-op if a GPIO clock was already registered) */
+	 
 	ret = skl_int3472_register_dsm_clock(int3472);
 	if (ret < 0)
 		return ret;
@@ -296,7 +252,7 @@ static int skl_int3472_discrete_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* Max num GPIOs we've seen plus a terminator */
+	 
 	int3472 = devm_kzalloc(&pdev->dev, struct_size(int3472, gpios.table,
 			       INT3472_MAX_SENSOR_GPIOS + 1), GFP_KERNEL);
 	if (!int3472)
@@ -312,10 +268,7 @@ static int skl_int3472_discrete_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/*
-	 * Initialising this list means we can call gpiod_remove_lookup_table()
-	 * in failure paths without issue.
-	 */
+	 
 	INIT_LIST_HEAD(&int3472->gpios.list);
 
 	ret = skl_int3472_parse_crs(int3472);

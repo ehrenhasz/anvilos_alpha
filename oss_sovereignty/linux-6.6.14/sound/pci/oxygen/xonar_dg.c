@@ -1,47 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * card driver for the Xonar DG/DGX
- *
- * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
- * Copyright (c) Roman Volkov <v1ron@mail.ru>
- */
 
-/*
- * Xonar DG/DGX
- * ------------
- *
- * CS4245 and CS4361 both will mute all outputs if any clock ratio
- * is invalid.
- *
- * CMI8788:
- *
- *   SPI 0 -> CS4245
- *
- *   Playback:
- *   I²S 1 -> CS4245
- *   I²S 2 -> CS4361 (center/LFE)
- *   I²S 3 -> CS4361 (surround)
- *   I²S 4 -> CS4361 (front)
- *   Capture:
- *   I²S ADC 1 <- CS4245
- *
- *   GPIO 3 <- ?
- *   GPIO 4 <- headphone detect
- *   GPIO 5 -> enable ADC analog circuit for the left channel
- *   GPIO 6 -> enable ADC analog circuit for the right channel
- *   GPIO 7 -> switch green rear output jack between CS4245 and the first
- *             channel of CS4361 (mechanical relay)
- *   GPIO 8 -> enable output to speakers
- *
- * CS4245:
- *
- *   input 0 <- mic
- *   input 1 <- aux
- *   input 2 <- front mic
- *   input 4 <- line
- *   DAC out -> headphones
- *   aux out -> front panel headphones
- */
+ 
+
+ 
 
 #include <linux/pci.h>
 #include <linux/delay.h>
@@ -117,14 +77,10 @@ static void cs4245_init(struct oxygen *chip)
 {
 	struct dg *data = chip->model_data;
 
-	/* save the initial state: codec version, registers */
+	 
 	cs4245_shadow_control(chip, CS4245_SAVE_TO_SHADOW);
 
-	/*
-	 * Power up the CODEC internals, enable soft ramp & zero cross, work in
-	 * async. mode, enable aux output from DAC. Invert DAC output as in the
-	 * Windows driver.
-	 */
+	 
 	data->cs4245_shadow[CS4245_POWER_CTRL] = 0;
 	data->cs4245_shadow[CS4245_SIGNAL_SEL] =
 		CS4245_A_OUT_SEL_DAC | CS4245_ASYNCH;
@@ -155,7 +111,7 @@ void dg_init(struct oxygen *chip)
 	cs4245_init(chip);
 	oxygen_write16(chip, OXYGEN_GPIO_CONTROL,
 		       GPIO_OUTPUT_ENABLE | GPIO_HP_REAR | GPIO_INPUT_ROUTE);
-	/* anti-pop delay, wait some time before enabling the output */
+	 
 	msleep(2500);
 	oxygen_write16(chip, OXYGEN_GPIO_DATA,
 		       GPIO_OUTPUT_ENABLE | GPIO_INPUT_ROUTE);

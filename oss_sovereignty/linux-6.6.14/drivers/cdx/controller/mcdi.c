@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Management-Controller-to-Driver Interface
- *
- * Copyright 2008-2013 Solarflare Communications Inc.
- * Copyright (C) 2022-2023, Advanced Micro Devices, Inc.
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/slab.h>
 #include <linux/io.h>
@@ -72,7 +67,7 @@ static void _cdx_mcdi_remove_cmd(struct cdx_mcdi_iface *mcdi,
 				 struct cdx_mcdi_cmd *cmd,
 				 struct list_head *cleanup_list)
 {
-	/* if cancelled, the completers have already been called */
+	 
 	if (cdx_cmd_cancelled(cmd))
 		return;
 
@@ -159,7 +154,7 @@ static bool cdx_mcdi_flushed(struct cdx_mcdi_iface *mcdi, bool ignore_cleanups)
 	return flushed;
 }
 
-/* Wait for outstanding MCDI commands to complete. */
+ 
 static void cdx_mcdi_wait_for_cleanup(struct cdx_mcdi *cdx)
 {
 	struct cdx_mcdi_iface *mcdi = cdx_mcdi_if(cdx);
@@ -241,7 +236,7 @@ static void cdx_mcdi_send_request(struct cdx_mcdi *cdx,
 	not_epoch = !mcdi->new_epoch;
 	xflags = 0;
 
-	/* MCDI v2 */
+	 
 	WARN_ON(inlen > MCDI_CTL_SDU_LEN_MAX_V2);
 	CDX_POPULATE_DWORD_7(hdr[0],
 			     MCDI_HEADER_RESPONSE, 0,
@@ -361,7 +356,7 @@ static void _cdx_mcdi_cancel_cmd(struct cdx_mcdi_iface *mcdi,
 			case MCDI_STATE_RETRY:
 				pr_debug("command %#x inlen %zu cancelled in queue\n",
 					 cmd->cmd, cmd->inlen);
-				/* if not yet running, properly cancel it */
+				 
 				cmd->rc = -EPIPE;
 				cdx_mcdi_remove_cmd(mcdi, cmd, cleanup_list);
 				break;
@@ -369,7 +364,7 @@ static void _cdx_mcdi_cancel_cmd(struct cdx_mcdi_iface *mcdi,
 			case MCDI_STATE_RUNNING_CANCELLED:
 			case MCDI_STATE_FINISHED:
 			default:
-				/* invalid state? */
+				 
 				WARN_ON(1);
 			}
 			break;
@@ -416,7 +411,7 @@ static void cdx_mcdi_rpc_completer(struct cdx_mcdi *cdx, unsigned long cookie,
 	memcpy(wait_data->outbuf, outbuf,
 	       min(outlen_actual, wait_data->outlen));
 	wait_data->outlen_actual = outlen_actual;
-	/* memory barrier */
+	 
 	smp_wmb();
 	wait_data->done = true;
 	wake_up(&wait_data->wq);
@@ -460,7 +455,7 @@ static int cdx_mcdi_rpc_sync(struct cdx_mcdi *cdx, unsigned int cmd,
 	cmd_item->inlen = inlen;
 	cmd_item->inbuf = inbuf;
 
-	/* Claim an extra reference for the completer to put. */
+	 
 	kref_get(&wait_data->ref);
 	rc = cdx_mcdi_rpc_async_internal(cdx, cmd_item, &handle);
 	if (rc) {
@@ -545,7 +540,7 @@ static void cdx_mcdi_cmd_start_or_queue(struct cdx_mcdi_iface *mcdi,
 	}
 }
 
-/* try to advance other commands */
+ 
 static void cdx_mcdi_start_or_queue(struct cdx_mcdi_iface *mcdi,
 				    bool allow_retry)
 {
@@ -610,11 +605,7 @@ static void cdx_mcdi_cmd_work(struct work_struct *context)
 	mutex_unlock(&mcdi->iface_lock);
 }
 
-/*
- * Returns true if the MCDI module is finished with the command.
- * (examples of false would be if the command was proxied, or it was
- * rejected by the MC due to lack of resources and requeued).
- */
+ 
 static bool cdx_mcdi_complete_cmd(struct cdx_mcdi_iface *mcdi,
 				  struct cdx_mcdi_cmd *cmd,
 				  struct cdx_dword *outbuf,
@@ -627,7 +618,7 @@ static bool cdx_mcdi_complete_cmd(struct cdx_mcdi_iface *mcdi,
 	bool completed = false;
 	int rc;
 
-	/* ensure the command can't go away before this function returns */
+	 
 	kref_get(&cmd->ref);
 
 	respcmd = CDX_DWORD_FIELD(outbuf[0], MCDI_HEADER_CODE);
@@ -656,7 +647,7 @@ static bool cdx_mcdi_complete_cmd(struct cdx_mcdi_iface *mcdi,
 			     outbuf + (resp_hdr_len / 4), resp_data_len, false);
 
 	if (error && resp_data_len == 0) {
-		/* MC rebooted during command */
+		 
 		rc = -EIO;
 	} else {
 		if (WARN_ON_ONCE(error && resp_data_len < 4))
@@ -682,7 +673,7 @@ static bool cdx_mcdi_complete_cmd(struct cdx_mcdi_iface *mcdi,
 		}
 	}
 
-	/* free doorbell */
+	 
 	if (mcdi->db_held_by == cmd)
 		mcdi->db_held_by = NULL;
 
@@ -700,12 +691,12 @@ static bool cdx_mcdi_complete_cmd(struct cdx_mcdi_iface *mcdi,
 		completed = true;
 	}
 
-	/* free sequence number and buffer */
+	 
 	mcdi->seq_held_by[cmd->seq] = NULL;
 
 	cdx_mcdi_start_or_queue(mcdi, rc != MC_CMD_ERR_QUEUE_FULL);
 
-	/* wake up anyone waiting for flush */
+	 
 	wake_up(&mcdi->cmd_complete_wq);
 
 	kref_put(&cmd->ref, cdx_mcdi_cmd_release);
@@ -729,30 +720,7 @@ static void cdx_mcdi_timeout_cmd(struct cdx_mcdi_iface *mcdi,
 	cdx_mcdi_mode_fail(cdx, cleanup_list);
 }
 
-/**
- * cdx_mcdi_rpc - Issue an MCDI command and wait for completion
- * @cdx: NIC through which to issue the command
- * @cmd: Command type number
- * @inbuf: Command parameters
- * @inlen: Length of command parameters, in bytes. Must be a multiple
- *	of 4 and no greater than %MCDI_CTL_SDU_LEN_MAX_V1.
- * @outbuf: Response buffer. May be %NULL if @outlen is 0.
- * @outlen: Length of response buffer, in bytes. If the actual
- *	response is longer than @outlen & ~3, it will be truncated
- *	to that length.
- * @outlen_actual: Pointer through which to return the actual response
- *	length. May be %NULL if this is not needed.
- *
- * This function may sleep and therefore must be called in process
- * context.
- *
- * Return: A negative error code, or zero if successful. The error
- *	code may come from the MCDI response or may indicate a failure
- *	to communicate with the MC. In the former case, the response
- *	will still be copied to @outbuf and *@outlen_actual will be
- *	set accordingly. In the latter case, *@outlen_actual will be
- *	set to zero.
- */
+ 
 int cdx_mcdi_rpc(struct cdx_mcdi *cdx, unsigned int cmd,
 		 const struct cdx_dword *inbuf, size_t inlen,
 		 struct cdx_dword *outbuf, size_t outlen,
@@ -762,24 +730,7 @@ int cdx_mcdi_rpc(struct cdx_mcdi *cdx, unsigned int cmd,
 				 outlen_actual, false);
 }
 
-/**
- * cdx_mcdi_rpc_async - Schedule an MCDI command to run asynchronously
- * @cdx: NIC through which to issue the command
- * @cmd: Command type number
- * @inbuf: Command parameters
- * @inlen: Length of command parameters, in bytes
- * @complete: Function to be called on completion or cancellation.
- * @cookie: Arbitrary value to be passed to @complete.
- *
- * This function does not sleep and therefore may be called in atomic
- * context.  It will fail if event queues are disabled or if MCDI
- * event completions have been disabled due to an error.
- *
- * If it succeeds, the @complete function will be called exactly once
- * in process context, when one of the following occurs:
- * (a) the completion event is received (in process context)
- * (b) event queues are disabled (in the process that disables them)
- */
+ 
 int
 cdx_mcdi_rpc_async(struct cdx_mcdi *cdx, unsigned int cmd,
 		   const struct cdx_dword *inbuf, size_t inlen,
@@ -797,7 +748,7 @@ cdx_mcdi_rpc_async(struct cdx_mcdi *cdx, unsigned int cmd,
 	cmd_item->completer = complete;
 	cmd_item->cmd = cmd;
 	cmd_item->inlen = inlen;
-	/* inbuf is probably not valid after return, so take a copy */
+	 
 	cmd_item->inbuf = (struct cdx_dword *)(cmd_item + 1);
 	memcpy(cmd_item + 1, inbuf, inlen);
 
@@ -811,11 +762,7 @@ static void _cdx_mcdi_display_error(struct cdx_mcdi *cdx, unsigned int cmd,
 	       cmd, (int)inlen, err_no, raw, arg);
 }
 
-/*
- * Set MCDI mode to fail to prevent any new commands, then cancel any
- * outstanding commands.
- * Caller must hold the mcdi iface_lock.
- */
+ 
 static void cdx_mcdi_mode_fail(struct cdx_mcdi *cdx, struct list_head *cleanup_list)
 {
 	struct cdx_mcdi_iface *mcdi = cdx_mcdi_if(cdx);

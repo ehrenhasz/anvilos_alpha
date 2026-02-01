@@ -1,14 +1,12 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2023 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_PPS_REGS_H__
 #define __INTEL_PPS_REGS_H__
 
 #include "intel_display_reg_defs.h"
 
-/* Panel power sequencing */
+ 
 #define PPS_BASE			0x61200
 #define VLV_PPS_BASE			(VLV_DISPLAY_BASE + PPS_BASE)
 #define PCH_PPS_BASE			0xC7200
@@ -20,13 +18,7 @@
 #define _PP_STATUS			0x61200
 #define PP_STATUS(pps_idx)		_MMIO_PPS(pps_idx, _PP_STATUS)
 #define   PP_ON				REG_BIT(31)
-/*
- * Indicates that all dependencies of the panel are on:
- *
- * - PLL enabled
- * - pipe enabled
- * - LVDS/DVOB/DVOC on
- */
+ 
 #define   PP_READY			REG_BIT(30)
 #define   PP_SEQUENCE_MASK		REG_GENMASK(29, 28)
 #define   PP_SEQUENCE_NONE		REG_FIELD_PREP(PP_SEQUENCE_MASK, 0)
@@ -75,4 +67,4 @@
 #define  PP_REFERENCE_DIVIDER_MASK	REG_GENMASK(31, 8)
 #define  PANEL_POWER_CYCLE_DELAY_MASK	REG_GENMASK(4, 0)
 
-#endif /* __INTEL_PPS_REGS_H__ */
+#endif  

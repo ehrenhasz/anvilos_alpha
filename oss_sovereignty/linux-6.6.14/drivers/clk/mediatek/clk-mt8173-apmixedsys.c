@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Copyright (c) 2022 Collabora Ltd.
- * Author: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
- */
+
+ 
 
 #include <dt-bindings/clock/mt8173-clk.h>
 #include <linux/of_address.h>
@@ -54,7 +50,7 @@ static const struct mtk_pll_div_table mmpll_div_table[] = {
 	{ .div = 2, .freq = 702000000 },
 	{ .div = 3, .freq = 253500000 },
 	{ .div = 4, .freq = 126750000 },
-	{ } /* sentinel */
+	{ }  
 };
 
 static const struct mtk_pll_data plls[] = {
@@ -133,7 +129,7 @@ static struct mtk_pllfh_data pllfhs[] = {
 
 static const struct of_device_id of_match_clk_mt8173_apmixed[] = {
 	{ .compatible = "mediatek,mt8173-apmixedsys" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8173_apmixed);
 

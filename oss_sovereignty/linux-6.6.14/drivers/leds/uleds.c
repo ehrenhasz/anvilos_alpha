@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Userspace driver for the LED subsystem
- *
- * Copyright (C) 2016 David Lechner <david@lechnology.com>
- *
- * Based on uinput.c: Aristeu Sergio Rozanski Filho <aris@cathedrallabs.org>
- */
+
+ 
 #include <linux/fs.h>
 #include <linux/init.h>
 #include <linux/leds.h>

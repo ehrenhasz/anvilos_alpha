@@ -1,25 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Medifield PNW Camera Imaging ISP subsystem.
- *
- * Copyright (c) 2012 Intel Corporation. All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- *
- */
+ 
+ 
 
 #ifndef ATOMISP_REGS_H
 #define ATOMISP_REGS_H
 
-/* common register definitions */
+ 
 #define PCICMDSTS		0x01
 #define INTR			0x0f
 #define MSI_CAPID		0x24
@@ -33,7 +18,7 @@
 #define PCI_INTERRUPT_CTRL	0x9C
 #define PCI_I_CONTROL		0xfc
 
-/* MRFLD specific register definitions */
+ 
 #define MRFLD_CSI_AFE		0x39
 #define MRFLD_CSI_CONTROL	0x3a
 #define MRFLD_CSI_RCOMP		0x3d
@@ -47,32 +32,18 @@
 #define MRFLD_PCI_CSI_DEADLINE_CONTROL	0xec
 #define MRFLD_PCI_CSI_RCOMP_CONTROL	0xf4
 
-/* Select Arasan (legacy)/Intel input system */
+ 
 #define MRFLD_PCI_CSI_CONTROL_PARPATHEN	BIT(24)
-/* Enable CSI interface (ANN B0/K0) */
+ 
 #define MRFLD_PCI_CSI_CONTROL_CSI_READY	BIT(25)
 
-/*
- * Enables the combining of adjacent 32-byte read requests to the same
- * cache line. When cleared, each 32-byte read request is sent as a
- * separate request on the IB interface.
- */
+ 
 #define MRFLD_PCI_I_CONTROL_ENABLE_READ_COMBINING	0x1
 
-/*
- * Register: MRFLD_PCI_CSI_RCOMP_CONTROL
- * If cleared, the high speed clock going to the digital logic is gated when
- * RCOMP update is happening. The clock is gated for a minimum of 100 nsec.
- * If this bit is set, then the high speed clock is not gated during the
- * update cycle.
- */
+ 
 #define MRFLD_PCI_CSI_HS_OVR_CLK_GATE_ON_UPDATE		0x800000
 
-/*
- * Enables the combining of adjacent 32-byte write requests to the same
- * cache line. When cleared, each 32-byte write request is sent as a
- * separate request on the IB interface.
- */
+ 
 #define MRFLD_PCI_I_CONTROL_ENABLE_WRITE_COMBINING	0x2
 
 #define MRFLD_PCI_I_CONTROL_SRSE_RESET_MASK		0xc
@@ -85,12 +56,7 @@
 #define MRFLD_PCI_CSI3_HSRXCLKTRIM_SHIFT	28
 #define MRFLD_PCI_CSI_HSRXCLKTRIM_MASK		0xf
 
-/*
- * This register is IUINT MMIO register, it is used to select the CSI
- * receiver backend.
- * 1: SH CSI backend
- * 0: Arasan CSI backend
- */
+ 
 #define MRFLD_CSI_RECEIVER_SELECTION_REG       0x8081c
 
 #define MRFLD_INTR_CLEAR_REG		       0x50c
@@ -99,7 +65,7 @@
 
 #define MRFLD_MAX_ZOOM_FACTOR	1024
 
-/* MRFLD ISP POWER related */
+ 
 #define MRFLD_ISPSSPM0         0x39
 #define MRFLD_ISPSSPM0_ISPSSC_OFFSET   0
 #define MRFLD_ISPSSPM0_ISPSSS_OFFSET   24
@@ -110,7 +76,7 @@
 #define MRFLD_BIT0			0x0001
 #define MRFLD_BIT1			0x0002
 
-/* MRFLD CSI lane configuration related */
+ 
 #define MRFLD_PORT_CONFIG_NUM  8
 #define MRFLD_PORT1_ENABLE_SHIFT       0
 #define MRFLD_PORT2_ENABLE_SHIFT       1
@@ -150,7 +116,7 @@
 #define CCK_FUSE_REG_0			0x08
 #define CCK_FUSE_HPLL_FREQ_MASK		0x03
 
-/* ISP2401 CSI2+ receiver delay settings */
+ 
 #define CSI2_PORT_A_BASE					0xC0000
 #define CSI2_PORT_B_BASE					0xC2000
 #define CSI2_PORT_C_BASE					0xC4000
@@ -193,4 +159,4 @@
 
 #define ISP_DFS_TRY_TIMES	2
 
-#endif /* ATOMISP_REGS_H */
+#endif  

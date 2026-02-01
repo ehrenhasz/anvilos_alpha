@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IMG I2S input controller driver
- *
- * Copyright (C) 2015 Imagination Technologies Ltd.
- *
- * Author: Damien Horsley <Damien.Horsley@imgtec.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/init.h>
@@ -349,9 +343,7 @@ static int img_i2s_in_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	for (i = 0; i < i2s->active_channels; i++)
 		img_i2s_in_ch_disable(i2s, i);
 
-	/*
-	 * BLKP and LRD must be set during separate register writes
-	 */
+	 
 	for (i = 0; i < i2s->max_i2s_chan; i++) {
 		reg = img_i2s_in_ch_readl(i2s, i, IMG_I2S_IN_CH_CTL);
 		reg = (reg & ~chan_control_mask) | chan_control_set;

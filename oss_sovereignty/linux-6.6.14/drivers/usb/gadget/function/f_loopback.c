@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * f_loopback.c - USB peripheral loopback configuration driver
- *
- * Copyright (C) 2003-2008 David Brownell
- * Copyright (C) 2008 by Nokia Corporation
- */
 
-/* #define VERBOSE_DEBUG */
+ 
+
+ 
 
 #include <linux/slab.h>
 #include <linux/kernel.h>
@@ -18,13 +13,7 @@
 #include "g_zero.h"
 #include "u_f.h"
 
-/*
- * LOOPBACK FUNCTION ... a testing vehicle for USB peripherals,
- *
- * This takes messages of various sizes written OUT to a device, and loops
- * them back so they can be read IN from it.  It has been used by certain
- * test applications.  It supports limited testing of data queueing logic.
- */
+ 
 struct f_loopback {
 	struct usb_function	function;
 
@@ -40,7 +29,7 @@ static inline struct f_loopback *func_to_loop(struct usb_function *f)
 	return container_of(f, struct f_loopback, function);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static struct usb_interface_descriptor loopback_intf = {
 	.bLength =		sizeof(loopback_intf),
@@ -48,10 +37,10 @@ static struct usb_interface_descriptor loopback_intf = {
 
 	.bNumEndpoints =	2,
 	.bInterfaceClass =	USB_CLASS_VENDOR_SPEC,
-	/* .iInterface = DYNAMIC */
+	 
 };
 
-/* full speed support: */
+ 
 
 static struct usb_endpoint_descriptor fs_loop_source_desc = {
 	.bLength =		USB_DT_ENDPOINT_SIZE,
@@ -76,7 +65,7 @@ static struct usb_descriptor_header *fs_loopback_descs[] = {
 	NULL,
 };
 
-/* high speed support: */
+ 
 
 static struct usb_endpoint_descriptor hs_loop_source_desc = {
 	.bLength =		USB_DT_ENDPOINT_SIZE,
@@ -101,7 +90,7 @@ static struct usb_descriptor_header *hs_loopback_descs[] = {
 	NULL,
 };
 
-/* super speed support: */
+ 
 
 static struct usb_endpoint_descriptor ss_loop_source_desc = {
 	.bLength =		USB_DT_ENDPOINT_SIZE,
@@ -144,15 +133,15 @@ static struct usb_descriptor_header *ss_loopback_descs[] = {
 	NULL,
 };
 
-/* function-specific strings: */
+ 
 
 static struct usb_string strings_loopback[] = {
 	[0].s = "loop input to output",
-	{  }			/* end of list */
+	{  }			 
 };
 
 static struct usb_gadget_strings stringtab_loop = {
-	.language	= 0x0409,	/* en-us */
+	.language	= 0x0409,	 
 	.strings	= strings_loopback,
 };
 
@@ -161,7 +150,7 @@ static struct usb_gadget_strings *loopback_strings[] = {
 	NULL,
 };
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static int loopback_bind(struct usb_configuration *c, struct usb_function *f)
 {
@@ -170,7 +159,7 @@ static int loopback_bind(struct usb_configuration *c, struct usb_function *f)
 	int			id;
 	int ret;
 
-	/* allocate interface ID(s) */
+	 
 	id = usb_interface_id(c, f);
 	if (id < 0)
 		return id;
@@ -182,7 +171,7 @@ static int loopback_bind(struct usb_configuration *c, struct usb_function *f)
 	strings_loopback[0].id = id;
 	loopback_intf.iInterface = id;
 
-	/* allocate endpoints */
+	 
 
 	loop->in_ep = usb_ep_autoconfig(cdev->gadget, &fs_loop_source_desc);
 	if (!loop->in_ep) {
@@ -196,12 +185,12 @@ autoconf_fail:
 	if (!loop->out_ep)
 		goto autoconf_fail;
 
-	/* support high speed hardware */
+	 
 	hs_loop_source_desc.bEndpointAddress =
 		fs_loop_source_desc.bEndpointAddress;
 	hs_loop_sink_desc.bEndpointAddress = fs_loop_sink_desc.bEndpointAddress;
 
-	/* support super speed hardware */
+	 
 	ss_loop_source_desc.bEndpointAddress =
 		fs_loop_source_desc.bEndpointAddress;
 	ss_loop_sink_desc.bEndpointAddress = fs_loop_sink_desc.bEndpointAddress;
@@ -237,12 +226,9 @@ static void loopback_complete(struct usb_ep *ep, struct usb_request *req)
 	int			status = req->status;
 
 	switch (status) {
-	case 0:				/* normal completion? */
+	case 0:				 
 		if (ep == loop->out_ep) {
-			/*
-			 * We received some data from the host so let's
-			 * queue it so host can read the from our in ep
-			 */
+			 
 			struct usb_request *in_req = req->context;
 
 			in_req->zero = (req->actual < req->length);
@@ -250,15 +236,12 @@ static void loopback_complete(struct usb_ep *ep, struct usb_request *req)
 			ep = loop->in_ep;
 			req = in_req;
 		} else {
-			/*
-			 * We have just looped back a bunch of data
-			 * to host. Now let's wait for some more data.
-			 */
+			 
 			req = req->context;
 			ep = loop->out_ep;
 		}
 
-		/* queue the buffer back to host or for next bunch of data */
+		 
 		status = usb_ep_queue(ep, req, GFP_ATOMIC);
 		if (status == 0) {
 			return;
@@ -268,20 +251,16 @@ static void loopback_complete(struct usb_ep *ep, struct usb_request *req)
 			goto free_req;
 		}
 
-		/* "should never get here" */
+		 
 	default:
 		ERROR(cdev, "%s loop complete --> %d, %d/%d\n", ep->name,
 				status, req->actual, req->length);
 		fallthrough;
 
-	/* NOTE:  since this driver doesn't maintain an explicit record
-	 * of requests it submitted (just maintains qlen count), we
-	 * rely on the hardware driver to clean up on disconnect or
-	 * endpoint disable.
-	 */
-	case -ECONNABORTED:		/* hardware forced ep reset */
-	case -ECONNRESET:		/* request dequeued */
-	case -ESHUTDOWN:		/* disconnect from host */
+	 
+	case -ECONNABORTED:		 
+	case -ECONNRESET:		 
+	case -ESHUTDOWN:		 
 free_req:
 		usb_ep_free_request(ep == loop->in_ep ?
 				    loop->out_ep : loop->in_ep,
@@ -312,12 +291,7 @@ static int alloc_requests(struct usb_composite_dev *cdev,
 	int i;
 	int result = 0;
 
-	/*
-	 * allocate a bunch of read buffers and queue them all at once.
-	 * we buffer at most 'qlen' transfers; We allocate buffers only
-	 * for out transfer and reuse them in IN transfers to implement
-	 * our loopback functionality
-	 */
+	 
 	for (i = 0; i < loop->qlen && result == 0; i++) {
 		result = -ENOMEM;
 
@@ -333,7 +307,7 @@ static int alloc_requests(struct usb_composite_dev *cdev,
 		out_req->complete = loopback_complete;
 
 		in_req->buf = out_req->buf;
-		/* length will be set in complete routine */
+		 
 		in_req->context = out_req;
 		out_req->context = in_req;
 
@@ -408,7 +382,7 @@ static int loopback_set_alt(struct usb_function *f,
 	struct f_loopback	*loop = func_to_loop(f);
 	struct usb_composite_dev *cdev = f->config->cdev;
 
-	/* we know alt is zero */
+	 
 	disable_loopback(loop);
 	return enable_loopback(cdev, loop);
 }

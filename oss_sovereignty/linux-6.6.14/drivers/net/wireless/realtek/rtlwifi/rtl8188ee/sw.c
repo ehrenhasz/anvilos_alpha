@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2013  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "../core.h"
@@ -21,40 +21,22 @@ static void rtl88e_init_aspm_vars(struct ieee80211_hw *hw)
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 	struct rtl_pci *rtlpci = rtl_pcidev(rtl_pcipriv(hw));
 
-	/*close ASPM for AMD defaultly */
+	 
 	rtlpci->const_amdpci_aspm = 0;
 
-	/* ASPM PS mode.
-	 * 0 - Disable ASPM,
-	 * 1 - Enable ASPM without Clock Req,
-	 * 2 - Enable ASPM with Clock Req,
-	 * 3 - Alwyas Enable ASPM with Clock Req,
-	 * 4 - Always Enable ASPM without Clock Req.
-	 * set defult to RTL8192CE:3 RTL8192E:2
-	 */
+	 
 	rtlpci->const_pci_aspm = 3;
 
-	/*Setting for PCI-E device */
+	 
 	rtlpci->const_devicepci_aspm_setting = 0x03;
 
-	/*Setting for PCI-E bridge */
+	 
 	rtlpci->const_hostpci_aspm_setting = 0x02;
 
-	/* In Hw/Sw Radio Off situation.
-	 * 0 - Default,
-	 * 1 - From ASPM setting without low Mac Pwr,
-	 * 2 - From ASPM setting with low Mac Pwr,
-	 * 3 - Bus D3
-	 * set default to RTL8192CE:0 RTL8192SE:2
-	 */
+	 
 	rtlpci->const_hwsw_rfoff_d3 = 0;
 
-	/* This setting works for those device with
-	 * backdoor ASPM setting such as EPHY setting.
-	 * 0 - Not support ASPM,
-	 * 1 - Support ASPM,
-	 * 2 - According to chipset.
-	 */
+	 
 	rtlpci->const_support_pciaspm = rtlpriv->cfg->mod_params->aspm_support;
 }
 
@@ -73,7 +55,7 @@ static int rtl88e_init_sw_vars(struct ieee80211_hw *hw)
 	rtlpriv->dm.thermalvalue = 0;
 	rtlpci->transmit_config = CFENDFORM | BIT(15);
 
-	/* compatible 5G band 88ce just 2.4G band & smsp */
+	 
 	rtlpriv->rtlhal.current_bandtype = BAND_ON_2_4G;
 	rtlpriv->rtlhal.bandset = BAND_ON_2_4G;
 	rtlpriv->rtlhal.macphymode = SINGLEMAC_SINGLEPHY;
@@ -109,7 +91,7 @@ static int rtl88e_init_sw_vars(struct ieee80211_hw *hw)
 	rtlpci->irq_mask[1] = (u32) (IMR_RXFOVW | 0);
 	rtlpci->sys_irq_mask = (u32) (HSIMR_PDN_INT_EN | HSIMR_RON_INT_EN);
 
-	/* for LPS & IPS */
+	 
 	rtlpriv->psc.inactiveps = rtlpriv->cfg->mod_params->inactiveps;
 	rtlpriv->psc.swctrl_lps = rtlpriv->cfg->mod_params->swctrl_lps;
 	rtlpriv->psc.fwctrl_lps = rtlpriv->cfg->mod_params->fwctrl_lps;
@@ -122,9 +104,7 @@ static int rtl88e_init_sw_vars(struct ieee80211_hw *hw)
 		pr_info("rtl8188ee: FW Power Save off (module option)\n");
 	rtlpriv->psc.reg_fwctrl_lps = 3;
 	rtlpriv->psc.reg_max_lps_awakeintvl = 5;
-	/* for ASPM, you can close aspm through
-	 * set const_support_pciaspm = 0
-	 */
+	 
 	rtl88e_init_aspm_vars(hw);
 
 	if (rtlpriv->psc.reg_fwctrl_lps == 1)
@@ -134,7 +114,7 @@ static int rtl88e_init_sw_vars(struct ieee80211_hw *hw)
 	else if (rtlpriv->psc.reg_fwctrl_lps == 3)
 		rtlpriv->psc.fwctrl_psmode = FW_PS_DTIM_MODE;
 
-	/* for firmware buf */
+	 
 	rtlpriv->rtlhal.pfirmware = vzalloc(0x8000);
 	if (!rtlpriv->rtlhal.pfirmware) {
 		pr_info("Can't alloc buffer for fw.\n");
@@ -154,13 +134,13 @@ static int rtl88e_init_sw_vars(struct ieee80211_hw *hw)
 		return 1;
 	}
 
-	/* for early mode */
+	 
 	rtlpriv->rtlhal.earlymode_enable = false;
 	rtlpriv->rtlhal.max_earlymode_num = 10;
 	for (tid = 0; tid < 8; tid++)
 		skb_queue_head_init(&rtlpriv->mac80211.skb_waitq[tid]);
 
-	/*low power */
+	 
 	rtlpriv->psc.low_power_enable = false;
 	if (rtlpriv->psc.low_power_enable) {
 		timer_setup(&rtlpriv->works.fw_clockoff_timer,
@@ -187,7 +167,7 @@ static void rtl88e_deinit_sw_vars(struct ieee80211_hw *hw)
 	del_timer_sync(&rtlpriv->works.fast_antenna_training_timer);
 }
 
-/* get bt coexist status */
+ 
 static bool rtl88e_get_btc_status(void)
 {
 	return false;
@@ -197,7 +177,7 @@ static struct rtl_hal_ops rtl8188ee_hal_ops = {
 	.init_sw_vars = rtl88e_init_sw_vars,
 	.deinit_sw_vars = rtl88e_deinit_sw_vars,
 	.read_eeprom_info = rtl88ee_read_eeprom_info,
-	.interrupt_recognized = rtl88ee_interrupt_recognized,/*need check*/
+	.interrupt_recognized = rtl88ee_interrupt_recognized, 
 	.hw_init = rtl88ee_hw_init,
 	.hw_disable = rtl88ee_card_disable,
 	.hw_suspend = rtl88ee_suspend,
@@ -299,7 +279,7 @@ static const struct rtl_hal_cfg rtl88ee_hal_cfg = {
 	.maps[RTL_IMR_BCNDMAINT3] = IMR_BCNDMAINT3,
 	.maps[RTL_IMR_BCNDMAINT2] = IMR_BCNDMAINT2,
 	.maps[RTL_IMR_BCNDMAINT1] = IMR_BCNDMAINT1,
-/*	.maps[RTL_IMR_BCNDOK8] = IMR_BCNDOK8,     */   /*need check*/
+     
 	.maps[RTL_IMR_BCNDOK7] = IMR_BCNDOK7,
 	.maps[RTL_IMR_BCNDOK6] = IMR_BCNDOK6,
 	.maps[RTL_IMR_BCNDOK5] = IMR_BCNDOK5,
@@ -307,8 +287,8 @@ static const struct rtl_hal_cfg rtl88ee_hal_cfg = {
 	.maps[RTL_IMR_BCNDOK3] = IMR_BCNDOK3,
 	.maps[RTL_IMR_BCNDOK2] = IMR_BCNDOK2,
 	.maps[RTL_IMR_BCNDOK1] = IMR_BCNDOK1,
-/*	.maps[RTL_IMR_TIMEOUT2] = IMR_TIMEOUT2,*/
-/*	.maps[RTL_IMR_TIMEOUT1] = IMR_TIMEOUT1,*/
+ 
+ 
 
 	.maps[RTL_IMR_TXFOVW] = IMR_TXFOVW,
 	.maps[RTL_IMR_PSTIMEOUT] = IMR_PSTIMEOUT,

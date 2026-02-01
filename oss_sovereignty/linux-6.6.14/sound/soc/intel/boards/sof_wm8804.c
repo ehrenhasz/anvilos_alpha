@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2018-2020, Intel Corporation
-//
-// sof-wm8804.c - ASoC machine driver for Up and Up2 board
-// based on WM8804/Hifiberry Digi+
+
+
+
+
+
 
 
 #include <linux/acpi.h>
@@ -53,7 +53,7 @@ static int sof_wm8804_hw_params(struct snd_pcm_substream *substream,
 	struct sof_card_private *ctx = snd_soc_card_get_drvdata(rtd->card);
 	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
 	struct snd_soc_component *codec = codec_dai->component;
-	const int sysclk = 27000000; /* This is fixed on this board */
+	const int sysclk = 27000000;  
 	int samplerate;
 	long mclk_freq;
 	int mclk_div;
@@ -104,16 +104,13 @@ static int sof_wm8804_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	if (samplerate % 16000)
-		clk_44 = true; /* use 44.1 kHz root frequency */
+		clk_44 = true;  
 	else
 		clk_44 = false;
 
 	if (!(IS_ERR_OR_NULL(ctx->gpio_44) ||
 	      IS_ERR_OR_NULL(ctx->gpio_48))) {
-		/*
-		 * ensure both GPIOs are LOW first, then drive the
-		 * relevant one to HIGH
-		 */
+		 
 		if (clk_44) {
 			gpiod_set_value_cansleep(ctx->gpio_48, !clk_44);
 			gpiod_set_value_cansleep(ctx->gpio_44, clk_44);
@@ -138,7 +135,7 @@ static int sof_wm8804_hw_params(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
-	/* set sampling frequency status bits */
+	 
 	snd_soc_component_update_bits(codec, WM8804_SPDTX4, 0x0f,
 				      sampling_freq);
 
@@ -147,7 +144,7 @@ static int sof_wm8804_hw_params(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-/* machine stream operations */
+ 
 static struct snd_soc_ops sof_wm8804_ops = {
 	.hw_params = sof_wm8804_hw_params,
 };
@@ -162,7 +159,7 @@ SND_SOC_DAILINK_DEF(platform,
 	DAILINK_COMP_ARRAY(COMP_PLATFORM("0000:00:0e.0")));
 
 static struct snd_soc_dai_link dailink[] = {
-	/* back ends */
+	 
 	{
 		.name = "SSP5-Codec",
 		.id = 0,
@@ -174,29 +171,21 @@ static struct snd_soc_dai_link dailink[] = {
 	},
 };
 
-/* SoC card */
+ 
 static struct snd_soc_card sof_wm8804_card = {
-	.name = "wm8804", /* sof- prefix added automatically */
+	.name = "wm8804",  
 	.owner = THIS_MODULE,
 	.dai_link = dailink,
 	.num_links = ARRAY_SIZE(dailink),
 };
 
- /* i2c-<HID>:00 with HID being 8 chars */
+  
 static char codec_name[SND_ACPI_I2C_ID_LEN];
 
-/*
- * to control the HifiBerry Digi+ PRO, it's required to toggle GPIO to
- * select the clock source. On the Up2 board, this means
- * Pin29/BCM5/Linux GPIO 430 and Pin 31/BCM6/ Linux GPIO 404.
- *
- * Using the ACPI device name is not very nice, but since we only use
- * the value for the Up2 board there is no risk of conflict with other
- * platforms.
- */
+ 
 
 static struct gpiod_lookup_table up2_gpios_table = {
-	/* .dev_id is set during probe */
+	 
 	.table = {
 		GPIO_LOOKUP("INT3452:01", 73, "BCM-GPIO5", GPIO_ACTIVE_HIGH),
 		GPIO_LOOKUP("INT3452:01", 74, "BCM-GPIO6", GPIO_ACTIVE_HIGH),
@@ -228,12 +217,7 @@ static int sof_wm8804_probe(struct platform_device *pdev)
 		up2_gpios_table.dev_id = dev_name(&pdev->dev);
 		gpiod_add_lookup_table(&up2_gpios_table);
 
-		/*
-		 * The gpios are required for specific boards with
-		 * local oscillators, and optional in other cases.
-		 * Since we can't identify when they are needed, use
-		 * the GPIO as non-optional
-		 */
+		 
 
 		ctx->gpio_44 = devm_gpiod_get(&pdev->dev, "BCM-GPIO5",
 					      GPIOD_OUT_LOW);
@@ -256,7 +240,7 @@ static int sof_wm8804_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* fix index of codec dai */
+	 
 	for (i = 0; i < ARRAY_SIZE(dailink); i++) {
 		if (!strcmp(dailink[i].codecs->name, "i2c-1AEC8804:00")) {
 			dai_index = i;
@@ -264,7 +248,7 @@ static int sof_wm8804_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* fixup codec name based on HID */
+	 
 	adev = acpi_dev_get_first_match_dev(mach->id, NULL, -1);
 	if (adev) {
 		snprintf(codec_name, sizeof(codec_name),

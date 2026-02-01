@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
- *
- */
+ 
+ 
 
 #ifndef _MHI_INT_H
 #define _MHI_INT_H
@@ -11,7 +8,7 @@
 
 extern struct bus_type mhi_bus_type;
 
-/* Host request register */
+ 
 #define MHI_SOC_RESET_REQ_OFFSET			0xb0
 #define MHI_SOC_RESET_REQ				BIT(0)
 
@@ -76,7 +73,7 @@ extern const char * const dev_state_tran_str[DEV_ST_TRANSITION_MAX];
 #define TO_DEV_STATE_TRANS_STR(state) (((state) >= DEV_ST_TRANSITION_MAX) ? \
 				"INVALID_STATE" : dev_state_tran_str[state])
 
-/* internal power states */
+ 
 enum mhi_pm_state {
 	MHI_PM_STATE_DISABLE,
 	MHI_PM_STATE_POR,
@@ -100,12 +97,12 @@ enum mhi_pm_state {
 #define MHI_PM_M3_ENTER					BIT(4)
 #define MHI_PM_M3					BIT(5)
 #define MHI_PM_M3_EXIT					BIT(6)
-/* firmware download failure state */
+ 
 #define MHI_PM_FW_DL_ERR				BIT(7)
 #define MHI_PM_SYS_ERR_DETECT				BIT(8)
 #define MHI_PM_SYS_ERR_PROCESS				BIT(9)
 #define MHI_PM_SHUTDOWN_PROCESS				BIT(10)
-/* link not accessible */
+ 
 #define MHI_PM_LD_ERR_FATAL_DETECT			BIT(11)
 
 #define MHI_REG_ACCESS_VALID(pm_state)			((pm_state & (MHI_PM_POR | MHI_PM_M0 | \
@@ -160,7 +157,7 @@ struct state_transition {
 struct mhi_ring {
 	dma_addr_t dma_handle;
 	dma_addr_t iommu_base;
-	__le64 *ctxt_wp; /* point to ctxt wp */
+	__le64 *ctxt_wp;  
 	void *pre_aligned;
 	void *base;
 	void *rp;
@@ -185,17 +182,17 @@ struct mhi_buf_info {
 	dma_addr_t p_addr;
 	size_t len;
 	enum dma_data_direction dir;
-	bool used; /* Indicates whether the buffer is used or not */
-	bool pre_mapped; /* Already pre-mapped by client */
+	bool used;  
+	bool pre_mapped;  
 };
 
 struct mhi_event {
 	struct mhi_controller *mhi_cntrl;
-	struct mhi_chan *mhi_chan; /* dedicated to channel */
+	struct mhi_chan *mhi_chan;  
 	u32 er_index;
 	u32 intmod;
 	u32 irq;
-	int chan; /* this event ring is dedicated to a channel (optional) */
+	int chan;  
 	u32 priority;
 	enum mhi_er_data_type data_type;
 	struct mhi_ring ring;
@@ -207,16 +204,12 @@ struct mhi_event {
 			     u32 event_quota);
 	bool hw_ring;
 	bool cl_manage;
-	bool offload_ev; /* managed by a device driver */
+	bool offload_ev;  
 };
 
 struct mhi_chan {
 	const char *name;
-	/*
-	 * Important: When consuming, increment tre_ring first and when
-	 * releasing, decrement buf_ring first. If tre_ring has space, buf_ring
-	 * is guranteed to have space so we do not need to check both rings.
-	 */
+	 
 	struct mhi_ring buf_ring;
 	struct mhi_ring tre_ring;
 	u32 chan;
@@ -241,10 +234,10 @@ struct mhi_chan {
 	bool wake_capable;
 };
 
-/* Default MHI timeout */
+ 
 #define MHI_TIMEOUT_MS (1000)
 
-/* debugfs related functions */
+ 
 #ifdef CONFIG_MHI_BUS_DEBUG
 void mhi_create_debugfs(struct mhi_controller *mhi_cntrl);
 void mhi_destroy_debugfs(struct mhi_controller *mhi_cntrl);
@@ -278,7 +271,7 @@ int mhi_alloc_bhie_table(struct mhi_controller *mhi_cntrl,
 void mhi_free_bhie_table(struct mhi_controller *mhi_cntrl,
 			 struct image_info *image_info);
 
-/* Power management APIs */
+ 
 enum mhi_pm_state __must_check mhi_tryset_pm_state(
 					struct mhi_controller *mhi_cntrl,
 					enum mhi_pm_state state);
@@ -308,7 +301,7 @@ static inline void mhi_trigger_resume(struct mhi_controller *mhi_cntrl)
 	mhi_cntrl->runtime_put(mhi_cntrl);
 }
 
-/* Register access methods */
+ 
 void mhi_db_brstmode(struct mhi_controller *mhi_cntrl, struct db_cfg *db_cfg,
 		     void __iomem *db_addr, dma_addr_t db_val);
 void mhi_db_brstmode_disable(struct mhi_controller *mhi_cntrl,
@@ -334,7 +327,7 @@ void mhi_ring_cmd_db(struct mhi_controller *mhi_cntrl, struct mhi_cmd *mhi_cmd);
 void mhi_ring_chan_db(struct mhi_controller *mhi_cntrl,
 		      struct mhi_chan *mhi_chan);
 
-/* Initialization methods */
+ 
 int mhi_init_mmio(struct mhi_controller *mhi_cntrl);
 int mhi_init_dev_ctxt(struct mhi_controller *mhi_cntrl);
 void mhi_deinit_dev_ctxt(struct mhi_controller *mhi_cntrl);
@@ -344,7 +337,7 @@ int mhi_rddm_prepare(struct mhi_controller *mhi_cntrl,
 		      struct image_info *img_info);
 void mhi_fw_load_handler(struct mhi_controller *mhi_cntrl);
 
-/* Automatically allocate and queue inbound buffers */
+ 
 #define MHI_CH_INBOUND_ALLOC_BUFS BIT(0)
 int mhi_prepare_channel(struct mhi_controller *mhi_cntrl,
 			struct mhi_chan *mhi_chan, unsigned int flags);
@@ -356,7 +349,7 @@ void mhi_deinit_chan_ctxt(struct mhi_controller *mhi_cntrl,
 void mhi_reset_chan(struct mhi_controller *mhi_cntrl,
 		    struct mhi_chan *mhi_chan);
 
-/* Event processing methods */
+ 
 void mhi_ctrl_ev_task(unsigned long data);
 void mhi_ev_task(unsigned long data);
 int mhi_process_data_event_ring(struct mhi_controller *mhi_cntrl,
@@ -364,7 +357,7 @@ int mhi_process_data_event_ring(struct mhi_controller *mhi_cntrl,
 int mhi_process_ctrl_ev_ring(struct mhi_controller *mhi_cntrl,
 			     struct mhi_event *mhi_event, u32 event_quota);
 
-/* ISR handlers */
+ 
 irqreturn_t mhi_irq_handler(int irq_number, void *dev);
 irqreturn_t mhi_intvec_threaded_handler(int irq_number, void *dev);
 irqreturn_t mhi_intvec_handler(int irq_number, void *dev);
@@ -380,4 +373,4 @@ void mhi_unmap_single_no_bb(struct mhi_controller *mhi_cntrl,
 void mhi_unmap_single_use_bb(struct mhi_controller *mhi_cntrl,
 			     struct mhi_buf_info *buf_info);
 
-#endif /* _MHI_INT_H */
+#endif  

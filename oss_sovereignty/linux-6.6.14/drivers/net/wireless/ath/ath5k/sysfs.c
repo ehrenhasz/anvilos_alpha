@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/device.h>
@@ -45,7 +45,7 @@ static ssize_t ath5k_attr_show_##name(struct device *dev,		\
 }									\
 static DEVICE_ATTR(name, 0444, ath5k_attr_show_##name, NULL)
 
-/*** ANI ***/
+ 
 
 SIMPLE_SHOW_STORE(ani_mode, ah->ani_state.ani_mode, ath5k_ani_init);
 SIMPLE_SHOW_STORE(noise_immunity_level, ah->ani_state.noise_imm_level,
@@ -97,7 +97,7 @@ static struct attribute_group ath5k_attribute_group_ani = {
 };
 
 
-/*** register / unregister ***/
+ 
 
 int
 ath5k_sysfs_register(struct ath5k_hw *ah)

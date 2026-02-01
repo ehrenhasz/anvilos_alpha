@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  Copyright IBM Corp. 2019
- *  Author(s): Harald Freudenberger <freude@linux.ibm.com>
- *
- *  Collection of EP11 misc functions used by zcrypt and pkey
- */
+
+ 
 
 #define KMSG_COMPONENT "zcrypt"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -31,11 +26,11 @@
 
 #define EP11_PINBLOB_V1_BYTES 56
 
-/* default iv used here */
+ 
 static const u8 def_iv[16] = { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
 			       0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff };
 
-/* ep11 card info cache */
+ 
 struct card_list_entry {
 	struct list_head list;
 	u16 cardnr;
@@ -130,12 +125,12 @@ static int ep11_kb_split(const u8 *kb, size_t kblen, u32 kbver,
 
 	switch (kbver) {
 	case TOKVER_EP11_AES:
-		/* header overlays the payload */
+		 
 		hdrsize = 0;
 		break;
 	case TOKVER_EP11_ECC_WITH_HEADER:
 	case TOKVER_EP11_AES_WITH_HEADER:
-		/* payload starts after the header */
+		 
 		hdrsize = sizeof(struct ep11kblob_header);
 		break;
 	default:
@@ -204,10 +199,7 @@ out:
 	return rc;
 }
 
-/*
- * For valid ep11 keyblobs, returns a reference to the wrappingkey verification
- * pattern. Otherwise NULL.
- */
+ 
 const u8 *ep11_kb_wkvp(const u8 *keyblob, size_t keybloblen)
 {
 	struct ep11keyblob *kb;
@@ -218,9 +210,7 @@ const u8 *ep11_kb_wkvp(const u8 *keyblob, size_t keybloblen)
 }
 EXPORT_SYMBOL(ep11_kb_wkvp);
 
-/*
- * Simple check if the key blob is a valid EP11 AES key blob with header.
- */
+ 
 int ep11_check_aes_key_with_hdr(debug_info_t *dbg, int dbflvl,
 				const u8 *key, size_t keylen, int checkcpacfexp)
 {
@@ -285,9 +275,7 @@ int ep11_check_aes_key_with_hdr(debug_info_t *dbg, int dbflvl,
 }
 EXPORT_SYMBOL(ep11_check_aes_key_with_hdr);
 
-/*
- * Simple check if the key blob is a valid EP11 ECC key blob with header.
- */
+ 
 int ep11_check_ecc_key_with_hdr(debug_info_t *dbg, int dbflvl,
 				const u8 *key, size_t keylen, int checkcpacfexp)
 {
@@ -352,10 +340,7 @@ int ep11_check_ecc_key_with_hdr(debug_info_t *dbg, int dbflvl,
 }
 EXPORT_SYMBOL(ep11_check_ecc_key_with_hdr);
 
-/*
- * Simple check if the key blob is a valid EP11 AES key blob with
- * the header in the session field (old style EP11 AES key).
- */
+ 
 int ep11_check_aes_key(debug_info_t *dbg, int dbflvl,
 		       const u8 *key, size_t keylen, int checkcpacfexp)
 {
@@ -413,9 +398,7 @@ int ep11_check_aes_key(debug_info_t *dbg, int dbflvl,
 }
 EXPORT_SYMBOL(ep11_check_aes_key);
 
-/*
- * Allocate and prepare ep11 cprb plus additional payload.
- */
+ 
 static inline struct ep11_cprb *alloc_cprb(size_t payload_len)
 {
 	size_t len = sizeof(struct ep11_cprb) + payload_len;
@@ -434,10 +417,7 @@ static inline struct ep11_cprb *alloc_cprb(size_t payload_len)
 	return cprb;
 }
 
-/*
- * Some helper functions related to ASN1 encoding.
- * Limited to length info <= 2 byte.
- */
+ 
 
 #define ASN1TAGLEN(x) (2 + (x) + ((x) > 127 ? 1 : 0) + ((x) > 255 ? 1 : 0))
 
@@ -461,7 +441,7 @@ static int asn1tag_write(u8 *ptr, u8 tag, const u8 *pvalue, u16 valuelen)
 	return 2 + valuelen;
 }
 
-/* EP11 payload > 127 bytes starts with this struct */
+ 
 struct pl_head {
 	u8  tag;
 	u8  lenfmt;
@@ -474,7 +454,7 @@ struct pl_head {
 	u32 dom;
 } __packed;
 
-/* prep ep11 payload head helper function */
+ 
 static inline void prep_head(struct pl_head *h,
 			     size_t pl_size, int api, int func)
 {
@@ -488,7 +468,7 @@ static inline void prep_head(struct pl_head *h,
 	h->dom_len = sizeof(u32);
 }
 
-/* prep urb helper function */
+ 
 static inline void prep_urb(struct ep11_urb *u,
 			    struct ep11_target_dev *t, int nt,
 			    struct ep11_cprb *req, size_t req_len,
@@ -502,19 +482,19 @@ static inline void prep_urb(struct ep11_urb *u,
 	u->resp_len = rep_len;
 }
 
-/* Check ep11 reply payload, return 0 or suggested errno value. */
+ 
 static int check_reply_pl(const u8 *pl, const char *func)
 {
 	int len;
 	u32 ret;
 
-	/* start tag */
+	 
 	if (*pl++ != 0x30) {
 		DEBUG_ERR("%s reply start tag mismatch\n", func);
 		return -EIO;
 	}
 
-	/* payload length format */
+	 
 	if (*pl < 127) {
 		len = *pl;
 		pl++;
@@ -532,27 +512,27 @@ static int check_reply_pl(const u8 *pl, const char *func)
 		return -EIO;
 	}
 
-	/* len should cover at least 3 fields with 32 bit value each */
+	 
 	if (len < 3 * 6) {
 		DEBUG_ERR("%s reply length %d too small\n", func, len);
 		return -EIO;
 	}
 
-	/* function tag, length and value */
+	 
 	if (pl[0] != 0x04 || pl[1] != 0x04) {
 		DEBUG_ERR("%s function tag or length mismatch\n", func);
 		return -EIO;
 	}
 	pl += 6;
 
-	/* dom tag, length and value */
+	 
 	if (pl[0] != 0x04 || pl[1] != 0x04) {
 		DEBUG_ERR("%s dom tag or length mismatch\n", func);
 		return -EIO;
 	}
 	pl += 6;
 
-	/* return value tag, length and value */
+	 
 	if (pl[0] != 0x04 || pl[1] != 0x04) {
 		DEBUG_ERR("%s return value tag or length mismatch\n", func);
 		return -EIO;
@@ -567,9 +547,7 @@ static int check_reply_pl(const u8 *pl, const char *func)
 	return 0;
 }
 
-/*
- * Helper function which does an ep11 query with given query type.
- */
+ 
 static int ep11_query_info(u16 cardnr, u16 domain, u32 query_type,
 			   size_t buflen, u8 *buf)
 {
@@ -596,25 +574,25 @@ static int ep11_query_info(u16 cardnr, u16 domain, u32 query_type,
 	struct ep11_urb *urb = NULL;
 	int api = EP11_API_V1, rc = -ENOMEM;
 
-	/* request cprb and payload */
+	 
 	req = alloc_cprb(sizeof(struct ep11_info_req_pl));
 	if (!req)
 		goto out;
 	req_pl = (struct ep11_info_req_pl *)(((u8 *)req) + sizeof(*req));
-	prep_head(&req_pl->head, sizeof(*req_pl), api, 38); /* get xcp info */
+	prep_head(&req_pl->head, sizeof(*req_pl), api, 38);  
 	req_pl->query_type_tag = 0x04;
 	req_pl->query_type_len = sizeof(u32);
 	req_pl->query_type = query_type;
 	req_pl->query_subtype_tag = 0x04;
 	req_pl->query_subtype_len = sizeof(u32);
 
-	/* reply cprb and payload */
+	 
 	rep = alloc_cprb(sizeof(struct ep11_info_rep_pl) + buflen);
 	if (!rep)
 		goto out;
 	rep_pl = (struct ep11_info_rep_pl *)(((u8 *)rep) + sizeof(*rep));
 
-	/* urb and target */
+	 
 	urb = kmalloc(sizeof(*urb), GFP_KERNEL);
 	if (!urb)
 		goto out;
@@ -656,9 +634,7 @@ out:
 	return rc;
 }
 
-/*
- * Provide information about an EP11 card.
- */
+ 
 int ep11_get_card_info(u16 card, struct ep11_card_info *info, int verify)
 {
 	int rc;
@@ -695,7 +671,7 @@ int ep11_get_card_info(u16 card, struct ep11_card_info *info, int verify)
 		if (!pmqi)
 			return -ENOMEM;
 		rc = ep11_query_info(card, AUTOSEL_DOM,
-				     0x01 /* module info query */,
+				     0x01  ,
 				     sizeof(*pmqi), (u8 *)pmqi);
 		if (rc) {
 			if (rc == -ENODEV)
@@ -717,9 +693,7 @@ out:
 }
 EXPORT_SYMBOL(ep11_get_card_info);
 
-/*
- * Provide information about a domain within an EP11 card.
- */
+ 
 int ep11_get_domain_info(u16 card, u16 domain, struct ep11_domain_info *info)
 {
 	int rc;
@@ -735,7 +709,7 @@ int ep11_get_domain_info(u16 card, u16 domain, struct ep11_domain_info *info)
 	if (!p_dom_info)
 		return -ENOMEM;
 
-	rc = ep11_query_info(card, domain, 0x03 /* domain info query */,
+	rc = ep11_query_info(card, domain, 0x03  ,
 			     sizeof(*p_dom_info), (u8 *)p_dom_info);
 	if (rc)
 		goto out;
@@ -743,13 +717,13 @@ int ep11_get_domain_info(u16 card, u16 domain, struct ep11_domain_info *info)
 	memset(info, 0, sizeof(*info));
 	info->cur_wk_state = '0';
 	info->new_wk_state = '0';
-	if (p_dom_info->dom_flags & 0x10 /* left imprint mode */) {
-		if (p_dom_info->dom_flags & 0x02 /* cur wk valid */) {
+	if (p_dom_info->dom_flags & 0x10  ) {
+		if (p_dom_info->dom_flags & 0x02  ) {
 			info->cur_wk_state = '1';
 			memcpy(info->cur_wkvp, p_dom_info->cur_WK_VP, 32);
 		}
-		if (p_dom_info->dom_flags & 0x04 || /* new wk present */
-		    p_dom_info->dom_flags & 0x08 /* new wk committed */) {
+		if (p_dom_info->dom_flags & 0x04 ||  
+		    p_dom_info->dom_flags & 0x08  ) {
 			info->new_wk_state =
 				p_dom_info->dom_flags & 0x08 ? '2' : '1';
 			memcpy(info->new_wkvp, p_dom_info->new_WK_VP, 32);
@@ -763,10 +737,7 @@ out:
 }
 EXPORT_SYMBOL(ep11_get_domain_info);
 
-/*
- * Default EP11 AES key generate attributes, used when no keygenflags given:
- * XCP_BLOB_ENCRYPT | XCP_BLOB_DECRYPT | XCP_BLOB_PROTKEY_EXTRACTABLE
- */
+ 
 #define KEY_ATTR_DEFAULTS 0x00200c00
 
 static int _ep11_genaeskey(u16 card, u16 domain,
@@ -791,7 +762,7 @@ static int _ep11_genaeskey(u16 card, u16 domain,
 		u32 attr_bool_bits;
 		u32 attr_val_len_type;
 		u32 attr_val_len_value;
-		/* followed by empty pin tag or empty pinblob tag */
+		 
 	} __packed * req_pl;
 	struct keygen_rep_pl {
 		struct pl_head head;
@@ -823,14 +794,11 @@ static int _ep11_genaeskey(u16 card, u16 domain,
 		goto out;
 	}
 
-	/* request cprb and payload */
+	 
 	api = (!keygenflags || keygenflags & 0x00200000) ?
 		EP11_API_V4 : EP11_API_V1;
 	if (ap_is_se_guest()) {
-		/*
-		 * genkey within SE environment requires API ordinal 6
-		 * with empty pinblob
-		 */
+		 
 		api = EP11_API_V6;
 		pinblob_size = EP11_PINBLOB_V1_BYTES;
 	}
@@ -839,7 +807,7 @@ static int _ep11_genaeskey(u16 card, u16 domain,
 	if (!req)
 		goto out;
 	req_pl = (struct keygen_req_pl *)(((u8 *)req) + sizeof(*req));
-	prep_head(&req_pl->head, req_pl_size, api, 21); /* GenerateKey */
+	prep_head(&req_pl->head, req_pl_size, api, 21);  
 	req_pl->var_tag = 0x04;
 	req_pl->var_len = sizeof(u32);
 	req_pl->keybytes_tag = 0x04;
@@ -847,26 +815,26 @@ static int _ep11_genaeskey(u16 card, u16 domain,
 	req_pl->keybytes = keybitsize / 8;
 	req_pl->mech_tag = 0x04;
 	req_pl->mech_len = sizeof(u32);
-	req_pl->mech = 0x00001080; /* CKM_AES_KEY_GEN */
+	req_pl->mech = 0x00001080;  
 	req_pl->attr_tag = 0x04;
 	req_pl->attr_len = 5 * sizeof(u32);
 	req_pl->attr_header = 0x10010000;
 	req_pl->attr_bool_mask = keygenflags ? keygenflags : KEY_ATTR_DEFAULTS;
 	req_pl->attr_bool_bits = keygenflags ? keygenflags : KEY_ATTR_DEFAULTS;
-	req_pl->attr_val_len_type = 0x00000161; /* CKA_VALUE_LEN */
+	req_pl->attr_val_len_type = 0x00000161;  
 	req_pl->attr_val_len_value = keybitsize / 8;
 	p = ((u8 *)req_pl) + sizeof(*req_pl);
-	/* pin tag */
+	 
 	*p++ = 0x04;
 	*p++ = pinblob_size;
 
-	/* reply cprb and payload */
+	 
 	rep = alloc_cprb(sizeof(struct keygen_rep_pl));
 	if (!rep)
 		goto out;
 	rep_pl = (struct keygen_rep_pl *)(((u8 *)rep) + sizeof(*rep));
 
-	/* urb and target */
+	 
 	urb = kmalloc(sizeof(*urb), GFP_KERNEL);
 	if (!urb)
 		goto out;
@@ -899,7 +867,7 @@ static int _ep11_genaeskey(u16 card, u16 domain,
 		goto out;
 	}
 
-	/* copy key blob */
+	 
 	memcpy(keybuf, rep_pl->data, rep_pl->data_len);
 	*keybufsize = rep_pl->data_len;
 
@@ -938,7 +906,7 @@ int ep11_genaeskey(u16 card, u16 domain, u32 keybitsize, u32 keygenflags,
 
 	*keybufsize = hdr_size + pl_size;
 
-	/* update header information */
+	 
 	hdr->type = TOKTYPE_NON_CCA;
 	hdr->len = *keybufsize;
 	hdr->version = keybufver;
@@ -962,11 +930,7 @@ static int ep11_cryptsingle(u16 card, u16 domain,
 		u8  mech_tag;
 		u8  mech_len;
 		u32 mech;
-		/*
-		 * maybe followed by iv data
-		 * followed by key tag + key blob
-		 * followed by plaintext tag + plaintext
-		 */
+		 
 	} __packed * req_pl;
 	struct crypt_rep_pl {
 		struct pl_head head;
@@ -975,7 +939,7 @@ static int ep11_cryptsingle(u16 card, u16 domain,
 		u32 rc;
 		u8  data_tag;
 		u8  data_lenfmt;
-		/* data follows */
+		 
 	} __packed * rep_pl;
 	struct ep11_cprb *req = NULL, *rep = NULL;
 	struct ep11_target_dev target;
@@ -984,11 +948,11 @@ static int ep11_cryptsingle(u16 card, u16 domain,
 	int n, api = EP11_API_V1, rc = -ENOMEM;
 	u8 *p;
 
-	/* the simple asn1 coding used has length limits */
+	 
 	if (keysize > 0xFFFF || inbufsize > 0xFFFF)
 		return -EINVAL;
 
-	/* request cprb and payload */
+	 
 	req_pl_size = sizeof(struct crypt_req_pl) + (iv ? 16 : 0)
 		+ ASN1TAGLEN(keysize) + ASN1TAGLEN(inbufsize);
 	req = alloc_cprb(req_pl_size);
@@ -998,27 +962,27 @@ static int ep11_cryptsingle(u16 card, u16 domain,
 	prep_head(&req_pl->head, req_pl_size, api, (mode ? 20 : 19));
 	req_pl->var_tag = 0x04;
 	req_pl->var_len = sizeof(u32);
-	/* mech is mech + mech params (iv here) */
+	 
 	req_pl->mech_tag = 0x04;
 	req_pl->mech_len = sizeof(u32) + (iv ? 16 : 0);
-	req_pl->mech = (mech ? mech : 0x00001085); /* CKM_AES_CBC_PAD */
+	req_pl->mech = (mech ? mech : 0x00001085);  
 	p = ((u8 *)req_pl) + sizeof(*req_pl);
 	if (iv) {
 		memcpy(p, iv, 16);
 		p += 16;
 	}
-	/* key and input data */
+	 
 	p += asn1tag_write(p, 0x04, key, keysize);
 	p += asn1tag_write(p, 0x04, inbuf, inbufsize);
 
-	/* reply cprb and payload, assume out data size <= in data size + 32 */
+	 
 	rep_pl_size = sizeof(struct crypt_rep_pl) + ASN1TAGLEN(inbufsize + 32);
 	rep = alloc_cprb(rep_pl_size);
 	if (!rep)
 		goto out;
 	rep_pl = (struct crypt_rep_pl *)(((u8 *)rep) + sizeof(*rep));
 
-	/* urb and target */
+	 
 	urb = kmalloc(sizeof(*urb), GFP_KERNEL);
 	if (!urb)
 		goto out;
@@ -1096,13 +1060,7 @@ static int _ep11_unwrapkey(u16 card, u16 domain,
 		u8  mech_tag;
 		u8  mech_len;
 		u32 mech;
-		/*
-		 * maybe followed by iv data
-		 * followed by kek tag + kek blob
-		 * followed by empty mac tag
-		 * followed by empty pin tag or empty pinblob tag
-		 * followed by encryted key tag + bytes
-		 */
+		 
 	} __packed * req_pl;
 	struct uw_rep_pl {
 		struct pl_head head;
@@ -1121,14 +1079,11 @@ static int _ep11_unwrapkey(u16 card, u16 domain,
 	int api, rc = -ENOMEM;
 	u8 *p;
 
-	/* request cprb and payload */
+	 
 	api = (!keygenflags || keygenflags & 0x00200000) ?
 		EP11_API_V4 : EP11_API_V1;
 	if (ap_is_se_guest()) {
-		/*
-		 * unwrap within SE environment requires API ordinal 6
-		 * with empty pinblob
-		 */
+		 
 		api = EP11_API_V6;
 		pinblob_size = EP11_PINBLOB_V1_BYTES;
 	}
@@ -1139,44 +1094,44 @@ static int _ep11_unwrapkey(u16 card, u16 domain,
 	if (!req)
 		goto out;
 	req_pl = (struct uw_req_pl *)(((u8 *)req) + sizeof(*req));
-	prep_head(&req_pl->head, req_pl_size, api, 34); /* UnwrapKey */
+	prep_head(&req_pl->head, req_pl_size, api, 34);  
 	req_pl->attr_tag = 0x04;
 	req_pl->attr_len = 7 * sizeof(u32);
 	req_pl->attr_header = 0x10020000;
 	req_pl->attr_bool_mask = keygenflags ? keygenflags : KEY_ATTR_DEFAULTS;
 	req_pl->attr_bool_bits = keygenflags ? keygenflags : KEY_ATTR_DEFAULTS;
-	req_pl->attr_key_type = 0x00000100; /* CKA_KEY_TYPE */
-	req_pl->attr_key_type_value = 0x0000001f; /* CKK_AES */
-	req_pl->attr_val_len = 0x00000161; /* CKA_VALUE_LEN */
+	req_pl->attr_key_type = 0x00000100;  
+	req_pl->attr_key_type_value = 0x0000001f;  
+	req_pl->attr_val_len = 0x00000161;  
 	req_pl->attr_val_len_value = keybitsize / 8;
-	/* mech is mech + mech params (iv here) */
+	 
 	req_pl->mech_tag = 0x04;
 	req_pl->mech_len = sizeof(u32) + (iv ? 16 : 0);
-	req_pl->mech = (mech ? mech : 0x00001085); /* CKM_AES_CBC_PAD */
+	req_pl->mech = (mech ? mech : 0x00001085);  
 	p = ((u8 *)req_pl) + sizeof(*req_pl);
 	if (iv) {
 		memcpy(p, iv, 16);
 		p += 16;
 	}
-	/* kek */
+	 
 	p += asn1tag_write(p, 0x04, kek, keksize);
-	/* empty mac key tag */
+	 
 	*p++ = 0x04;
 	*p++ = 0;
-	/* pin tag */
+	 
 	*p++ = 0x04;
 	*p++ = pinblob_size;
 	p += pinblob_size;
-	/* encrypted key value tag and bytes */
+	 
 	p += asn1tag_write(p, 0x04, enckey, enckeysize);
 
-	/* reply cprb and payload */
+	 
 	rep = alloc_cprb(sizeof(struct uw_rep_pl));
 	if (!rep)
 		goto out;
 	rep_pl = (struct uw_rep_pl *)(((u8 *)rep) + sizeof(*rep));
 
-	/* urb and target */
+	 
 	urb = kmalloc(sizeof(*urb), GFP_KERNEL);
 	if (!urb)
 		goto out;
@@ -1209,7 +1164,7 @@ static int _ep11_unwrapkey(u16 card, u16 domain,
 		goto out;
 	}
 
-	/* copy key blob */
+	 
 	memcpy(keybuf, rep_pl->data, rep_pl->data_len);
 	*keybufsize = rep_pl->data_len;
 
@@ -1246,7 +1201,7 @@ static int ep11_unwrapkey(u16 card, u16 domain,
 
 	*keybufsize = hdr_size + pl_size;
 
-	/* update header information */
+	 
 	hdr = (struct ep11kblob_header *)keybuf;
 	hdr->type = TOKTYPE_NON_CCA;
 	hdr->len = *keybufsize;
@@ -1269,12 +1224,7 @@ static int _ep11_wrapkey(u16 card, u16 domain,
 		u8  mech_tag;
 		u8  mech_len;
 		u32 mech;
-		/*
-		 * followed by iv data
-		 * followed by key tag + key blob
-		 * followed by dummy kek param
-		 * followed by dummy mac param
-		 */
+		 
 	} __packed * req_pl;
 	struct wk_rep_pl {
 		struct pl_head head;
@@ -1293,45 +1243,45 @@ static int _ep11_wrapkey(u16 card, u16 domain,
 	int api, rc = -ENOMEM;
 	u8 *p;
 
-	/* request cprb and payload */
+	 
 	req_pl_size = sizeof(struct wk_req_pl) + (iv ? 16 : 0)
 		+ ASN1TAGLEN(keysize) + 4;
 	req = alloc_cprb(req_pl_size);
 	if (!req)
 		goto out;
 	if (!mech || mech == 0x80060001)
-		req->flags |= 0x20; /* CPACF_WRAP needs special bit */
+		req->flags |= 0x20;  
 	req_pl = (struct wk_req_pl *)(((u8 *)req) + sizeof(*req));
-	api = (!mech || mech == 0x80060001) ? /* CKM_IBM_CPACF_WRAP */
+	api = (!mech || mech == 0x80060001) ?  
 		EP11_API_V4 : EP11_API_V1;
-	prep_head(&req_pl->head, req_pl_size, api, 33); /* WrapKey */
+	prep_head(&req_pl->head, req_pl_size, api, 33);  
 	req_pl->var_tag = 0x04;
 	req_pl->var_len = sizeof(u32);
-	/* mech is mech + mech params (iv here) */
+	 
 	req_pl->mech_tag = 0x04;
 	req_pl->mech_len = sizeof(u32) + (iv ? 16 : 0);
-	req_pl->mech = (mech ? mech : 0x80060001); /* CKM_IBM_CPACF_WRAP */
+	req_pl->mech = (mech ? mech : 0x80060001);  
 	p = ((u8 *)req_pl) + sizeof(*req_pl);
 	if (iv) {
 		memcpy(p, iv, 16);
 		p += 16;
 	}
-	/* key blob */
+	 
 	p += asn1tag_write(p, 0x04, key, keysize);
-	/* empty kek tag */
+	 
 	*p++ = 0x04;
 	*p++ = 0;
-	/* empty mac tag */
+	 
 	*p++ = 0x04;
 	*p++ = 0;
 
-	/* reply cprb and payload */
+	 
 	rep = alloc_cprb(sizeof(struct wk_rep_pl));
 	if (!rep)
 		goto out;
 	rep_pl = (struct wk_rep_pl *)(((u8 *)rep) + sizeof(*rep));
 
-	/* urb and target */
+	 
 	urb = kmalloc(sizeof(*urb), GFP_KERNEL);
 	if (!urb)
 		goto out;
@@ -1364,7 +1314,7 @@ static int _ep11_wrapkey(u16 card, u16 domain,
 		goto out;
 	}
 
-	/* copy the data from the cprb to the data buffer */
+	 
 	memcpy(databuf, rep_pl->data, rep_pl->data_len);
 	*datasize = rep_pl->data_len;
 
@@ -1392,7 +1342,7 @@ int ep11_clr2keyblob(u16 card, u16 domain, u32 keybitsize, u32 keygenflags,
 		return -EINVAL;
 	}
 
-	/* allocate memory for the temp kek */
+	 
 	keklen = MAXEP11AESKEYBLOBSIZE;
 	kek = kmalloc(keklen, GFP_ATOMIC);
 	if (!kek) {
@@ -1400,9 +1350,9 @@ int ep11_clr2keyblob(u16 card, u16 domain, u32 keybitsize, u32 keygenflags,
 		goto out;
 	}
 
-	/* Step 1: generate AES 256 bit random kek key */
+	 
 	rc = _ep11_genaeskey(card, domain, 256,
-			     0x00006c00, /* EN/DECRYPT, WRAP/UNWRAP */
+			     0x00006c00,  
 			     kek, &keklen);
 	if (rc) {
 		DEBUG_ERR(
@@ -1411,7 +1361,7 @@ int ep11_clr2keyblob(u16 card, u16 domain, u32 keybitsize, u32 keygenflags,
 		goto out;
 	}
 
-	/* Step 2: encrypt clear key value with the kek key */
+	 
 	rc = ep11_cryptsingle(card, domain, 0, 0, def_iv, kek, keklen,
 			      clrkey, clrkeylen, encbuf, &encbuflen);
 	if (rc) {
@@ -1421,7 +1371,7 @@ int ep11_clr2keyblob(u16 card, u16 domain, u32 keybitsize, u32 keygenflags,
 		goto out;
 	}
 
-	/* Step 3: import the encrypted key value as a new key */
+	 
 	rc = ep11_unwrapkey(card, domain, kek, keklen,
 			    encbuf, encbuflen, 0, def_iv,
 			    keybitsize, 0, keybuf, keybufsize, keytype);
@@ -1461,18 +1411,18 @@ int ep11_kblob2protkey(u16 card, u16 dom,
 		return -EINVAL;
 
 	if (hdr->version == TOKVER_EP11_AES) {
-		/* wipe overlayed header */
+		 
 		memset(hdr, 0, sizeof(*hdr));
 	}
-	/* !!! hdr is no longer a valid header !!! */
+	 
 
-	/* alloc temp working buffer */
+	 
 	wkbuflen = (keylen + AES_BLOCK_SIZE) & (~(AES_BLOCK_SIZE - 1));
 	wkbuf = kmalloc(wkbuflen, GFP_ATOMIC);
 	if (!wkbuf)
 		return -ENOMEM;
 
-	/* ep11 secure key -> protected key + info */
+	 
 	rc = _ep11_wrapkey(card, dom, (u8 *)key, keylen,
 			   0, def_iv, wkbuf, &wkbuflen);
 	if (rc) {
@@ -1483,7 +1433,7 @@ int ep11_kblob2protkey(u16 card, u16 dom,
 	}
 	wki = (struct wk_info *)wkbuf;
 
-	/* check struct version and pkey type */
+	 
 	if (wki->version != 1 || wki->pkeytype < 1 || wki->pkeytype > 5) {
 		DEBUG_ERR("%s wk info version %d or pkeytype %d mismatch.\n",
 			  __func__, (int)wki->version, (int)wki->pkeytype);
@@ -1491,22 +1441,22 @@ int ep11_kblob2protkey(u16 card, u16 dom,
 		goto out;
 	}
 
-	/* check protected key type field */
+	 
 	switch (wki->pkeytype) {
-	case 1: /* AES */
+	case 1:  
 		switch (wki->pkeysize) {
 		case 16 + 32:
-			/* AES 128 protected key */
+			 
 			if (protkeytype)
 				*protkeytype = PKEY_KEYTYPE_AES_128;
 			break;
 		case 24 + 32:
-			/* AES 192 protected key */
+			 
 			if (protkeytype)
 				*protkeytype = PKEY_KEYTYPE_AES_192;
 			break;
 		case 32 + 32:
-			/* AES 256 protected key */
+			 
 			if (protkeytype)
 				*protkeytype = PKEY_KEYTYPE_AES_256;
 			break;
@@ -1517,13 +1467,13 @@ int ep11_kblob2protkey(u16 card, u16 dom,
 			goto out;
 		}
 		break;
-	case 3: /* EC-P */
-	case 4: /* EC-ED */
-	case 5: /* EC-BP */
+	case 3:  
+	case 4:  
+	case 5:  
 		if (protkeytype)
 			*protkeytype = PKEY_KEYTYPE_ECC;
 		break;
-	case 2: /* TDES */
+	case 2:  
 	default:
 		DEBUG_ERR("%s unknown/unsupported key type %d\n",
 			  __func__, (int)wki->pkeytype);
@@ -1531,7 +1481,7 @@ int ep11_kblob2protkey(u16 card, u16 dom,
 		goto out;
 	}
 
-	/* copy the translated protected key */
+	 
 	if (wki->pkeysize > *protkeylen) {
 		DEBUG_ERR("%s wk info pkeysize %llu > protkeysize %u\n",
 			  __func__, wki->pkeysize, *protkeylen);
@@ -1556,7 +1506,7 @@ int ep11_findcard2(u32 **apqns, u32 *nr_apqns, u16 cardnr, u16 domain,
 	struct ep11_domain_info edi;
 	struct ep11_card_info eci;
 
-	/* fetch status of all crypto cards */
+	 
 	device_status = kvmalloc_array(MAX_ZDEV_ENTRIES_EXT,
 				       sizeof(struct zcrypt_device_status_ext),
 				       GFP_KERNEL);
@@ -1564,40 +1514,40 @@ int ep11_findcard2(u32 **apqns, u32 *nr_apqns, u16 cardnr, u16 domain,
 		return -ENOMEM;
 	zcrypt_device_status_mask_ext(device_status);
 
-	/* allocate 1k space for up to 256 apqns */
+	 
 	_apqns = kmalloc_array(256, sizeof(u32), GFP_KERNEL);
 	if (!_apqns) {
 		kvfree(device_status);
 		return -ENOMEM;
 	}
 
-	/* walk through all the crypto apqnss */
+	 
 	for (i = 0; i < MAX_ZDEV_ENTRIES_EXT; i++) {
 		card = AP_QID_CARD(device_status[i].qid);
 		dom = AP_QID_QUEUE(device_status[i].qid);
-		/* check online state */
+		 
 		if (!device_status[i].online)
 			continue;
-		/* check for ep11 functions */
+		 
 		if (!(device_status[i].functions & 0x01))
 			continue;
-		/* check cardnr */
+		 
 		if (cardnr != 0xFFFF && card != cardnr)
 			continue;
-		/* check domain */
+		 
 		if (domain != 0xFFFF && dom != domain)
 			continue;
-		/* check min hardware type */
+		 
 		if (minhwtype && device_status[i].hwtype < minhwtype)
 			continue;
-		/* check min api version if given */
+		 
 		if (minapi > 0) {
 			if (ep11_get_card_info(card, &eci, 0))
 				continue;
 			if (minapi > eci.API_ord_nr)
 				continue;
 		}
-		/* check wkvp if given */
+		 
 		if (wkvp) {
 			if (ep11_get_domain_info(card, dom, &edi))
 				continue;
@@ -1606,17 +1556,17 @@ int ep11_findcard2(u32 **apqns, u32 *nr_apqns, u16 cardnr, u16 domain,
 			if (memcmp(wkvp, edi.cur_wkvp, 16))
 				continue;
 		}
-		/* apqn passed all filtering criterons, add to the array */
+		 
 		if (_nr_apqns < 256)
 			_apqns[_nr_apqns++] = (((u16)card) << 16) | ((u16)dom);
 	}
 
-	/* nothing found ? */
+	 
 	if (!_nr_apqns) {
 		kfree(_apqns);
 		rc = -ENODEV;
 	} else {
-		/* no re-allocation, simple return the _apqns array */
+		 
 		*apqns = _apqns;
 		*nr_apqns = _nr_apqns;
 		rc = 0;

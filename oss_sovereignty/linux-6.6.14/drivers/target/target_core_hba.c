@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- * Filename:  target_core_hba.c
- *
- * This file contains the TCM HBA Transport related functions.
- *
- * (c) Copyright 2003-2013 Datera, Inc.
- *
- * Nicholas A. Bellinger <nab@kernel.org>
- *
- ******************************************************************************/
+
+ 
 
 #include <linux/net.h>
 #include <linux/string.h>
@@ -72,12 +63,7 @@ void target_backend_unregister(const struct target_backend_ops *ops)
 		if (tb->ops == ops) {
 			list_del(&tb->list);
 			mutex_unlock(&backend_mutex);
-			/*
-			 * Wait for any outstanding backend driver ->rcu_head
-			 * callbacks to complete post TBO->free_device() ->
-			 * call_rcu(), before allowing backend driver module
-			 * unload of target_backend_ops->owner to proceed.
-			 */
+			 
 			rcu_barrier();
 			kfree(tb);
 			return;

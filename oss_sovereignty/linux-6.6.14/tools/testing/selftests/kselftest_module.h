@@ -1,14 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
+ 
 #ifndef __KSELFTEST_MODULE_H
 #define __KSELFTEST_MODULE_H
 
 #include <linux/module.h>
 #include <linux/panic.h>
 
-/*
- * Test framework for writing test modules to be loaded by kselftest.
- * See Documentation/dev-tools/kselftest.rst for an example test module.
- */
+ 
 
 #define KSTM_MODULE_GLOBALS()			\
 static unsigned int total_tests __initdata;	\
@@ -55,4 +52,4 @@ module_exit(__module##_exit)
 
 MODULE_INFO(test, "Y");
 
-#endif	/* __KSELFTEST_MODULE_H */
+#endif	 

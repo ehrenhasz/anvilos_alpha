@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2017-2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -74,9 +74,9 @@ static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
 
 	act = flow_action_first_entry_get(flow_action);
 	if (act->hw_stats & FLOW_ACTION_HW_STATS_DISABLED) {
-		/* Nothing to do */
+		 
 	} else if (act->hw_stats & FLOW_ACTION_HW_STATS_IMMEDIATE) {
-		/* Count action is inserted first */
+		 
 		err = mlxsw_sp_acl_rulei_act_count(mlxsw_sp, rulei, extack);
 		if (err)
 			return err;
@@ -109,10 +109,7 @@ static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
 				return err;
 			}
 
-			/* Forbid block with this rulei to be bound
-			 * to ingress/egress in future. Ingress rule is
-			 * a blocker for egress and vice versa.
-			 */
+			 
 			if (ingress)
 				rulei->egress_bind_blocker = 1;
 			else
@@ -155,14 +152,10 @@ static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
 				return -EOPNOTSUPP;
 			}
 
-			/* Forbid block with this rulei to be bound
-			 * to egress in future.
-			 */
+			 
 			rulei->egress_bind_blocker = 1;
 
-			/* Ignore learning and security lookup as redirection
-			 * using ingress filters happens before the bridge.
-			 */
+			 
 			err = mlxsw_sp_acl_rulei_act_ignore(mlxsw_sp, rulei,
 							    true, true);
 			if (err) {
@@ -245,11 +238,7 @@ static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
 			if (err)
 				return err;
 
-			/* The kernel might adjust the requested burst size so
-			 * that it is not exactly a power of two. Re-adjust it
-			 * here since the hardware only supports burst sizes
-			 * that are a power of two.
-			 */
+			 
 			burst = roundup_pow_of_two(act->police.burst);
 			err = mlxsw_sp_acl_rulei_act_police(mlxsw_sp, rulei,
 							    act->hw_index,
@@ -651,9 +640,7 @@ static int mlxsw_sp_flower_parse(struct mlxsw_sp *mlxsw_sp,
 			return -EOPNOTSUPP;
 		}
 
-		/* Forbid block with this rulei to be bound
-		 * to egress in future.
-		 */
+		 
 		rulei->egress_bind_blocker = 1;
 
 		if (match.mask->vlan_id != 0)
@@ -707,7 +694,7 @@ static int mlxsw_sp_flower_mall_prio_check(struct mlxsw_sp_flow_block *block,
 				     &mall_min_prio, &mall_max_prio);
 	if (err) {
 		if (err == -ENOENT)
-			/* No matchall filters installed on this chain. */
+			 
 			return 0;
 		NL_SET_ERR_MSG(f->common.extack, "Failed to get matchall priorities");
 		return err;
@@ -852,7 +839,7 @@ int mlxsw_sp_flower_tmplt_create(struct mlxsw_sp *mlxsw_sp,
 					   MLXSW_SP_ACL_PROFILE_FLOWER,
 					   &rulei.values.elusage);
 
-	/* keep the reference to the ruleset */
+	 
 	return PTR_ERR_OR_ZERO(ruleset);
 }
 
@@ -867,7 +854,7 @@ void mlxsw_sp_flower_tmplt_destroy(struct mlxsw_sp *mlxsw_sp,
 					   MLXSW_SP_ACL_PROFILE_FLOWER, NULL);
 	if (IS_ERR(ruleset))
 		return;
-	/* put the reference to the ruleset kept in create */
+	 
 	mlxsw_sp_acl_ruleset_put(mlxsw_sp, ruleset);
 	mlxsw_sp_acl_ruleset_put(mlxsw_sp, ruleset);
 }
@@ -883,10 +870,7 @@ int mlxsw_sp_flower_prio_get(struct mlxsw_sp *mlxsw_sp,
 					      chain_index,
 					      MLXSW_SP_ACL_PROFILE_FLOWER);
 	if (IS_ERR(ruleset))
-		/* In case there are no flower rules, the caller
-		 * receives -ENOENT to indicate there is no need
-		 * to check the priorities.
-		 */
+		 
 		return PTR_ERR(ruleset);
 	mlxsw_sp_acl_ruleset_prio_get(ruleset, p_min_prio, p_max_prio);
 	return 0;

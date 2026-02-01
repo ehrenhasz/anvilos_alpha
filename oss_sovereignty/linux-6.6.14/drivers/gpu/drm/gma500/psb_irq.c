@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/**************************************************************************
- * Copyright (c) 2007, Intel Corporation.
- * All Rights Reserved.
- *
- * Intel funded Tungsten Graphics (http://www.tungstengraphics.com) to
- * develop this driver.
- *
- **************************************************************************/
+
+ 
 
 #include <drm/drm_drv.h>
 #include <drm/drm_vblank.h>
@@ -17,9 +10,7 @@
 #include "psb_irq.h"
 #include "psb_reg.h"
 
-/*
- * inline functions
- */
+ 
 
 static inline u32 gma_pipestat(int pipe)
 {
@@ -48,7 +39,7 @@ void gma_enable_pipestat(struct drm_psb_private *dev_priv, int pipe, u32 mask)
 	if ((dev_priv->pipestat[pipe] & mask) != mask) {
 		u32 reg = gma_pipestat(pipe);
 		dev_priv->pipestat[pipe] |= mask;
-		/* Enable the interrupt, clear any pending status */
+		 
 		if (gma_power_begin(&dev_priv->dev, false)) {
 			u32 writeVal = PSB_RVDC32(reg);
 			writeVal |= (mask | (mask >> 16));
@@ -74,9 +65,7 @@ void gma_disable_pipestat(struct drm_psb_private *dev_priv, int pipe, u32 mask)
 	}
 }
 
-/*
- * Display controller interrupt handler for pipe event.
- */
+ 
 static void gma_pipe_event_handler(struct drm_device *dev, int pipe)
 {
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
@@ -96,8 +85,7 @@ static void gma_pipe_event_handler(struct drm_device *dev, int pipe)
 
 	spin_unlock(&dev_priv->irqmask_lock);
 
-	/* Clear the 2nd level interrupt status bits
-	 * Sometimes the bits are very sticky so we repeat until they unstick */
+	 
 	for (i = 0; i < 0xffff; i++) {
 		PSB_WVDC32(PSB_RVDC32(pipe_stat_reg), pipe_stat_reg);
 		pipe_clear = PSB_RVDC32(pipe_stat_reg) & pipe_status;
@@ -129,9 +117,7 @@ static void gma_pipe_event_handler(struct drm_device *dev, int pipe)
 	}
 }
 
-/*
- * Display controller interrupt handler.
- */
+ 
 static void gma_vdc_interrupt(struct drm_device *dev, uint32_t vdc_stat)
 {
 	if (vdc_stat & _PSB_IRQ_ASLE)
@@ -144,9 +130,7 @@ static void gma_vdc_interrupt(struct drm_device *dev, uint32_t vdc_stat)
 		gma_pipe_event_handler(dev, 1);
 }
 
-/*
- * SGX interrupt handler
- */
+ 
 static void gma_sgx_interrupt(struct drm_device *dev, u32 stat_1, u32 stat_2)
 {
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
@@ -188,7 +172,7 @@ static void gma_sgx_interrupt(struct drm_device *dev, u32 stat_1, u32 stat_2)
 		}
 	}
 
-	/* Clear bits */
+	 
 	PSB_WSGX32(stat_1, PSB_CR_EVENT_HOST_CLEAR);
 	PSB_WSGX32(stat_2, PSB_CR_EVENT_HOST_CLEAR2);
 	PSB_RSGX32(PSB_CR_EVENT_HOST_CLEAR2);
@@ -229,8 +213,7 @@ static irqreturn_t gma_irq_handler(int irq, void *arg)
 		handled = 1;
 	}
 
-	/* Note: this bit has other meanings on some devices, so we will
-	   need to address that later if it ever matters */
+	 
 	if (hotplug_int && dev_priv->ops->hotplug) {
 		handled = dev_priv->ops->hotplug(dev);
 		REG_WRITE(PORT_HOTPLUG_STAT, REG_READ(PORT_HOTPLUG_STAT));
@@ -264,12 +247,12 @@ void gma_irq_preinstall(struct drm_device *dev)
 	if (dev->vblank[1].enabled)
 		dev_priv->vdc_irq_mask |= _PSB_VSYNC_PIPEB_FLAG;
 
-	/* Revisit this area - want per device masks ? */
+	 
 	if (dev_priv->ops->hotplug)
 		dev_priv->vdc_irq_mask |= _PSB_IRQ_DISP_HOTSYNC;
 	dev_priv->vdc_irq_mask |= _PSB_IRQ_ASLE | _PSB_IRQ_SGX_FLAG;
 
-	/* This register is safe even if display island is off */
+	 
 	PSB_WVDC32(~dev_priv->vdc_irq_mask, PSB_INT_MASK_R);
 	spin_unlock_irqrestore(&dev_priv->irqmask_lock, irqflags);
 }
@@ -282,12 +265,12 @@ void gma_irq_postinstall(struct drm_device *dev)
 
 	spin_lock_irqsave(&dev_priv->irqmask_lock, irqflags);
 
-	/* Enable 2D and MMU fault interrupts */
+	 
 	PSB_WSGX32(_PSB_CE2_BIF_REQUESTER_FAULT, PSB_CR_EVENT_HOST_ENABLE2);
 	PSB_WSGX32(_PSB_CE_TWOD_COMPLETE, PSB_CR_EVENT_HOST_ENABLE);
-	PSB_RSGX32(PSB_CR_EVENT_HOST_ENABLE); /* Post */
+	PSB_RSGX32(PSB_CR_EVENT_HOST_ENABLE);  
 
-	/* This register is safe even if display island is off */
+	 
 	PSB_WVDC32(dev_priv->vdc_irq_mask, PSB_INT_ENABLE_R);
 	PSB_WVDC32(0xFFFFFFFF, PSB_HWSTAM);
 
@@ -320,7 +303,7 @@ int gma_irq_install(struct drm_device *dev)
 
 	gma_irq_preinstall(dev);
 
-	/* PCI devices require shared interrupts. */
+	 
 	ret = request_irq(pdev->irq, gma_irq_handler, IRQF_SHARED, dev->driver->name, dev);
 	if (ret)
 		return ret;
@@ -358,13 +341,13 @@ void gma_irq_uninstall(struct drm_device *dev)
 				  _PSB_IRQ_MSVDX_FLAG |
 				  _LNC_IRQ_TOPAZ_FLAG;
 
-	/* These two registers are safe even if display island is off */
+	 
 	PSB_WVDC32(~dev_priv->vdc_irq_mask, PSB_INT_MASK_R);
 	PSB_WVDC32(dev_priv->vdc_irq_mask, PSB_INT_ENABLE_R);
 
 	wmb();
 
-	/* This register is safe even if display island is off */
+	 
 	PSB_WVDC32(PSB_RVDC32(PSB_INT_IDENTITY_R), PSB_INT_IDENTITY_R);
 	spin_unlock_irqrestore(&dev_priv->irqmask_lock, irqflags);
 
@@ -427,9 +410,7 @@ void gma_crtc_disable_vblank(struct drm_crtc *crtc)
 	spin_unlock_irqrestore(&dev_priv->irqmask_lock, irqflags);
 }
 
-/* Called from drm generic code, passed a 'crtc', which
- * we use as a pipe index
- */
+ 
 u32 gma_crtc_get_vblank_counter(struct drm_crtc *crtc)
 {
 	struct drm_device *dev = crtc->dev;
@@ -469,11 +450,7 @@ u32 gma_crtc_get_vblank_counter(struct drm_crtc *crtc)
 		goto err_gma_power_end;
 	}
 
-	/*
-	 * High & low register fields aren't synchronized, so make sure
-	 * we get a low value that's stable across two reads of the high
-	 * register.
-	 */
+	 
 	do {
 		high1 = ((REG_READ(high_frame) & PIPE_FRAME_HIGH_MASK) >>
 			 PIPE_FRAME_HIGH_SHIFT);

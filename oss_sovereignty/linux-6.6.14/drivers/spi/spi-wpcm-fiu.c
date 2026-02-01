@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2022 Jonathan Neuschäfer
+
+
 
 #include <linux/clk.h>
 #include <linux/mfd/syscon.h>
@@ -44,13 +44,10 @@
 #define SHM_FLASH_SIZE	0x02
 #define SHM_FLASH_SIZE_STALL_HOST BIT(6)
 
-/*
- * I observed a typical wait time of 16 iterations for a UMA transfer to
- * finish, so this should be a safe limit.
- */
+ 
 #define UMA_WAIT_ITERATIONS 100
 
-/* The memory-mapped view of flash is 16 MiB long */
+ 
 #define MAX_MEMORY_SIZE_PER_CS	(16 << 20)
 #define MAX_MEMORY_SIZE_TOTAL	(4 * MAX_MEMORY_SIZE_PER_CS)
 
@@ -91,9 +88,7 @@ static void wpcm_fiu_get_data(struct wpcm_fiu_spi *fiu, u8 *data, unsigned int n
 		data[i] = readb(fiu->regs + FIU_UMA_DB0 + i);
 }
 
-/*
- * Perform a UMA (User Mode Access) operation, i.e. a software-controlled SPI transfer.
- */
+ 
 static int wpcm_fiu_do_uma(struct wpcm_fiu_spi *fiu, unsigned int cs,
 			   bool use_addr, bool write, int data_bytes)
 {
@@ -139,7 +134,7 @@ struct wpcm_fiu_op_shape {
 
 static bool wpcm_fiu_normal_match(const struct spi_mem_op *op)
 {
-	// Opcode 0x0b (FAST READ) is treated differently in hardware
+	
 	if (op->cmd.opcode == 0x0b)
 		return false;
 
@@ -179,14 +174,7 @@ static int wpcm_fiu_fast_read_exec(struct spi_mem *mem, const struct spi_mem_op 
 	return -EINVAL;
 }
 
-/*
- * 4-byte addressing.
- *
- * Flash view:  [ C  A  A  A   A     D  D  D  D]
- * bytes:        13 aa bb cc  dd -> 5a a5 f0 0f
- * FIU's view:  [ C  A  A  A][ C     D  D  D  D]
- * FIU mode:    [ read/write][      read       ]
- */
+ 
 static bool wpcm_fiu_4ba_match(const struct spi_mem_op *op)
 {
 	return op->addr.nbytes == 4 && op->dummy.nbytes == 0 && op->data.nbytes <= 4;
@@ -217,19 +205,7 @@ static int wpcm_fiu_4ba_exec(struct spi_mem *mem, const struct spi_mem_op *op)
 	return 0;
 }
 
-/*
- * RDID (Read Identification) needs special handling because Linux expects to
- * be able to read 6 ID bytes and FIU can only read up to 4 at once.
- *
- * We're lucky in this case, because executing the RDID instruction twice will
- * result in the same result.
- *
- * What we do is as follows (C: write command/opcode byte, D: read data byte,
- * A: write address byte):
- *
- *  1. C D D D
- *  2. C A A A D D D
- */
+ 
 static bool wpcm_fiu_rdid_match(const struct spi_mem_op *op)
 {
 	return op->cmd.opcode == 0x9f && op->addr.nbytes == 0 &&
@@ -242,13 +218,13 @@ static int wpcm_fiu_rdid_exec(struct spi_mem *mem, const struct spi_mem_op *op)
 	struct wpcm_fiu_spi *fiu = spi_controller_get_devdata(mem->spi->controller);
 	int cs = spi_get_chipselect(mem->spi, 0);
 
-	/* First transfer */
+	 
 	wpcm_fiu_set_opcode(fiu, op->cmd.opcode);
 	wpcm_fiu_set_addr(fiu, 0);
 	wpcm_fiu_do_uma(fiu, cs, false, false, 3);
 	wpcm_fiu_get_data(fiu, op->data.buf.in, 3);
 
-	/* Second transfer */
+	 
 	wpcm_fiu_set_opcode(fiu, op->cmd.opcode);
 	wpcm_fiu_set_addr(fiu, 0);
 	wpcm_fiu_do_uma(fiu, cs, true, false, 3);
@@ -257,15 +233,10 @@ static int wpcm_fiu_rdid_exec(struct spi_mem *mem, const struct spi_mem_op *op)
 	return 0;
 }
 
-/*
- * With some dummy bytes.
- *
- *  C A A A  X*  X D D D D
- * [C A A A  D*][C D D D D]
- */
+ 
 static bool wpcm_fiu_dummy_match(const struct spi_mem_op *op)
 {
-	// Opcode 0x0b (FAST READ) is treated differently in hardware
+	
 	if (op->cmd.opcode == 0x0b)
 		return false;
 
@@ -281,12 +252,12 @@ static int wpcm_fiu_dummy_exec(struct spi_mem *mem, const struct spi_mem_op *op)
 
 	wpcm_fiu_ects_assert(fiu, cs);
 
-	/* First transfer */
+	 
 	wpcm_fiu_set_opcode(fiu, op->cmd.opcode);
 	wpcm_fiu_set_addr(fiu, op->addr.val);
 	wpcm_fiu_do_uma(fiu, cs, op->addr.nbytes != 0, true, op->dummy.nbytes - 1);
 
-	/* Second transfer */
+	 
 	wpcm_fiu_set_opcode(fiu, 0);
 	wpcm_fiu_set_addr(fiu, 0);
 	wpcm_fiu_do_uma(fiu, cs, false, false, op->data.nbytes);
@@ -334,10 +305,7 @@ static bool wpcm_fiu_supports_op(struct spi_mem *mem, const struct spi_mem_op *o
 	return wpcm_fiu_find_op_shape(op) != NULL;
 }
 
-/*
- * In order to ensure the integrity of SPI transfers performed via UMA,
- * temporarily disable (stall) memory accesses coming from the host CPU.
- */
+ 
 static void wpcm_fiu_stall_host(struct wpcm_fiu_spi *fiu, bool stall)
 {
 	if (fiu->shm_regmap) {
@@ -380,16 +348,11 @@ static int wpcm_fiu_dirmap_create(struct spi_mem_dirmap_desc *desc)
 	if (desc->info.op_tmpl.data.dir != SPI_MEM_DATA_IN)
 		return -ENOTSUPP;
 
-	/*
-	 * Unfortunately, FIU only supports a 16 MiB direct mapping window (per
-	 * attached flash chip), but the SPI MEM core doesn't support partial
-	 * direct mappings. This means that we can't support direct mapping on
-	 * flashes that are bigger than 16 MiB.
-	 */
+	 
 	if (desc->info.offset + desc->info.length > MAX_MEMORY_SIZE_PER_CS)
 		return -ENOTSUPP;
 
-	/* Don't read past the memory window */
+	 
 	if (cs * MAX_MEMORY_SIZE_PER_CS + desc->info.offset + desc->info.length > fiu->memory_size)
 		return -ENOTSUPP;
 
@@ -425,12 +388,12 @@ static const struct spi_controller_mem_ops wpcm_fiu_mem_ops = {
 
 static void wpcm_fiu_hw_init(struct wpcm_fiu_spi *fiu)
 {
-	/* Configure memory-mapped flash access */
+	 
 	writeb(FIU_BURST_CFG_R16, fiu->regs + FIU_BURST_BFG);
 	writeb(MAX_MEMORY_SIZE_TOTAL / (512 << 10), fiu->regs + FIU_CFG);
 	writeb(MAX_MEMORY_SIZE_PER_CS / (512 << 10) | BIT(6), fiu->regs + FIU_SPI_FL_CFG);
 
-	/* Deassert all manually asserted chip selects */
+	 
 	writeb(0x0f, fiu->regs + FIU_UMA_ECTS);
 }
 
@@ -476,10 +439,7 @@ static int wpcm_fiu_probe(struct platform_device *pdev)
 	ctrl->num_chipselect = 4;
 	ctrl->dev.of_node = dev->of_node;
 
-	/*
-	 * The FIU doesn't include a clock divider, the clock is entirely
-	 * determined by the AHB3 bus clock.
-	 */
+	 
 	ctrl->min_speed_hz = clk_get_rate(fiu->clk);
 	ctrl->max_speed_hz = clk_get_rate(fiu->clk);
 

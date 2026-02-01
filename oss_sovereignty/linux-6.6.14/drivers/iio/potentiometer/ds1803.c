@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Maxim Integrated DS1803 and similar digital potentiometer driver
- * Copyright (c) 2016 Slawomir Stepien
- * Copyright (c) 2022 Jagath Jog J
- *
- * Datasheet: https://datasheets.maximintegrated.com/en/ds/DS1803.pdf
- * Datasheet: https://datasheets.maximintegrated.com/en/ds/DS3502.pdf
- *
- * DEVID	#Wipers	#Positions	Resistor Opts (kOhm)	i2c address
- * ds1803	2	256		10, 50, 100		0101xxx
- * ds3502	1	128		10			01010xx
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/export.h>
@@ -149,7 +138,7 @@ static int ds1803_read_raw(struct iio_dev *indio_dev,
 
 	case IIO_CHAN_INFO_SCALE:
 		*val = 1000 * data->cfg->kohms;
-		*val2 = data->cfg->avail[2]; /* Max wiper position */
+		*val2 = data->cfg->avail[2];  
 		return IIO_VAL_FRACTIONAL;
 	}
 

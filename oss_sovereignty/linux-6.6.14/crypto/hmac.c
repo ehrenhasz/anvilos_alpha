@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cryptographic API.
- *
- * HMAC: Keyed-Hashing for Message Authentication (RFC2104).
- *
- * Copyright (c) 2002 James Morris <jmorris@intercode.com.au>
- * Copyright (c) 2006 Herbert Xu <herbert@gondor.apana.org.au>
- *
- * The HMAC implementation is derived from USAGI.
- * Copyright (c) 2002 Kazunori Miyazawa <miyazawa@linux-ipv6.org> / USAGI
- */
+
+ 
 
 #include <crypto/hmac.h>
 #include <crypto/internal/hash.h>
@@ -208,7 +198,7 @@ static int hmac_create(struct crypto_template *tmpl, struct rtattr **tb)
 	salg = crypto_spawn_shash_alg(spawn);
 	alg = &salg->base;
 
-	/* The underlying hash algorithm must not require a key */
+	 
 	err = -EINVAL;
 	if (crypto_shash_alg_needs_key(salg))
 		goto err_free_inst;

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * max6639.c - Support for Maxim MAX6639
- *
- * 2-Channel Temperature Monitor with Dual PWM Fan-Speed Controller
- *
- * Copyright (C) 2010, 2011 Roland Stigge <stigge@antcom.de>
- *
- * based on the initial MAX6639 support from semptian.net
- * by He Changqing <hechangqing@semptian.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -21,10 +12,10 @@
 #include <linux/mutex.h>
 #include <linux/platform_data/max6639.h>
 
-/* Addresses to scan */
+ 
 static const unsigned short normal_i2c[] = { 0x2c, 0x2e, 0x2f, I2C_CLIENT_END };
 
-/* The MAX6639 registers, valid channel numbers: 0, 1 */
+ 
 #define MAX6639_REG_TEMP(ch)			(0x00 + (ch))
 #define MAX6639_REG_STATUS			0x02
 #define MAX6639_REG_OUTPUT_MASK			0x03
@@ -46,7 +37,7 @@ static const unsigned short normal_i2c[] = { 0x2c, 0x2e, 0x2f, I2C_CLIENT_END };
 #define MAX6639_REG_MANUID			0x3E
 #define MAX6639_REG_DEVREV			0x3F
 
-/* Register bits */
+ 
 #define MAX6639_GCONFIG_STANDBY			0x80
 #define MAX6639_GCONFIG_POR			0x40
 #define MAX6639_GCONFIG_DISABLE_TIMEOUT		0x20
@@ -63,32 +54,30 @@ static const int rpm_ranges[] = { 2000, 4000, 8000, 16000 };
 				0 : (rpm_ranges[rpm_range] * 30) / (val))
 #define TEMP_LIMIT_TO_REG(val)	clamp_val((val) / 1000, 0, 255)
 
-/*
- * Client data (each client gets its own)
- */
+ 
 struct max6639_data {
 	struct i2c_client *client;
 	struct mutex update_lock;
-	bool valid;		/* true if following fields are valid */
-	unsigned long last_updated;	/* In jiffies */
+	bool valid;		 
+	unsigned long last_updated;	 
 
-	/* Register values sampled regularly */
-	u16 temp[2];		/* Temperature, in 1/8 C, 0..255 C */
-	bool temp_fault[2];	/* Detected temperature diode failure */
-	u8 fan[2];		/* Register value: TACH count for fans >=30 */
-	u8 status;		/* Detected channel alarms and fan failures */
+	 
+	u16 temp[2];		 
+	bool temp_fault[2];	 
+	u8 fan[2];		 
+	u8 status;		 
 
-	/* Register values only written to */
-	u8 pwm[2];		/* Register value: Duty cycle 0..120 */
-	u8 temp_therm[2];	/* THERM Temperature, 0..255 C (->_max) */
-	u8 temp_alert[2];	/* ALERT Temperature, 0..255 C (->_crit) */
-	u8 temp_ot[2];		/* OT Temperature, 0..255 C (->_emergency) */
+	 
+	u8 pwm[2];		 
+	u8 temp_therm[2];	 
+	u8 temp_alert[2];	 
+	u8 temp_ot[2];		 
 
-	/* Register values initialized only once */
-	u8 ppr;			/* Pulses per rotation 0..3 for 1..4 ppr */
-	u8 rpm_range;		/* Index in above rpm_ranges table */
+	 
+	u8 ppr;			 
+	u8 rpm_range;		 
 
-	/* Optional regulator for FAN supply */
+	 
 	struct regulator *reg;
 };
 
@@ -385,10 +374,7 @@ static struct attribute *max6639_attrs[] = {
 };
 ATTRIBUTE_GROUPS(max6639);
 
-/*
- *  returns respective index in rpm_ranges table
- *  1 by default on invalid range
- */
+ 
 static int rpm_range_to_reg(int range)
 {
 	int i;
@@ -398,7 +384,7 @@ static int rpm_range_to_reg(int range)
 			return i;
 	}
 
-	return 1; /* default: 4000 RPM */
+	return 1;  
 }
 
 static int max6639_init_client(struct i2c_client *client,
@@ -407,16 +393,16 @@ static int max6639_init_client(struct i2c_client *client,
 	struct max6639_platform_data *max6639_info =
 		dev_get_platdata(&client->dev);
 	int i;
-	int rpm_range = 1; /* default: 4000 RPM */
+	int rpm_range = 1;  
 	int err;
 
-	/* Reset chip to default values, see below for GCONFIG setup */
+	 
 	err = i2c_smbus_write_byte_data(client, MAX6639_REG_GCONFIG,
 				  MAX6639_GCONFIG_POR);
 	if (err)
 		goto exit;
 
-	/* Fans pulse per revolution is 2 by default */
+	 
 	if (max6639_info && max6639_info->ppr > 0 &&
 			max6639_info->ppr < 5)
 		data->ppr = max6639_info->ppr;
@@ -430,21 +416,21 @@ static int max6639_init_client(struct i2c_client *client,
 
 	for (i = 0; i < 2; i++) {
 
-		/* Set Fan pulse per revolution */
+		 
 		err = i2c_smbus_write_byte_data(client,
 				MAX6639_REG_FAN_PPR(i),
 				data->ppr << 6);
 		if (err)
 			goto exit;
 
-		/* Fans config PWM, RPM */
+		 
 		err = i2c_smbus_write_byte_data(client,
 			MAX6639_REG_FAN_CONFIG1(i),
 			MAX6639_FAN_CONFIG1_PWM | rpm_range);
 		if (err)
 			goto exit;
 
-		/* Fans PWM polarity high by default */
+		 
 		if (max6639_info && max6639_info->pwm_polarity == 0)
 			err = i2c_smbus_write_byte_data(client,
 				MAX6639_REG_FAN_CONFIG2a(i), 0x00);
@@ -454,17 +440,14 @@ static int max6639_init_client(struct i2c_client *client,
 		if (err)
 			goto exit;
 
-		/*
-		 * /THERM full speed enable,
-		 * PWM frequency 25kHz, see also GCONFIG below
-		 */
+		 
 		err = i2c_smbus_write_byte_data(client,
 			MAX6639_REG_FAN_CONFIG3(i),
 			MAX6639_FAN_CONFIG3_THERM_FULL_SPEED | 0x03);
 		if (err)
 			goto exit;
 
-		/* Max. temp. 80C/90C/100C */
+		 
 		data->temp_therm[i] = 80;
 		data->temp_alert[i] = 90;
 		data->temp_ot[i] = 100;
@@ -483,14 +466,14 @@ static int max6639_init_client(struct i2c_client *client,
 		if (err)
 			goto exit;
 
-		/* PWM 120/120 (i.e. 100%) */
+		 
 		data->pwm[i] = 120;
 		err = i2c_smbus_write_byte_data(client,
 				MAX6639_REG_TARGTDUTY(i), data->pwm[i]);
 		if (err)
 			goto exit;
 	}
-	/* Start monitoring */
+	 
 	err = i2c_smbus_write_byte_data(client, MAX6639_REG_GCONFIG,
 		MAX6639_GCONFIG_DISABLE_TIMEOUT | MAX6639_GCONFIG_CH2_LOCAL |
 		MAX6639_GCONFIG_PWM_FREQ_HI);
@@ -498,7 +481,7 @@ exit:
 	return err;
 }
 
-/* Return 0 if detection is successful, -ENODEV otherwise */
+ 
 static int max6639_detect(struct i2c_client *client,
 			  struct i2c_board_info *info)
 {
@@ -508,7 +491,7 @@ static int max6639_detect(struct i2c_client *client,
 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -ENODEV;
 
-	/* Actual detection via device and manufacturer ID */
+	 
 	dev_id = i2c_smbus_read_byte_data(client, MAX6639_REG_DEVID);
 	manu_id = i2c_smbus_read_byte_data(client, MAX6639_REG_MANUID);
 	if (dev_id != 0x58 || manu_id != 0x4D)
@@ -544,7 +527,7 @@ static int max6639_probe(struct i2c_client *client)
 
 		data->reg = NULL;
 	} else {
-		/* Spin up fans */
+		 
 		err = regulator_enable(data->reg);
 		if (err) {
 			dev_err(dev, "Failed to enable fan supply: %d\n", err);
@@ -560,7 +543,7 @@ static int max6639_probe(struct i2c_client *client)
 
 	mutex_init(&data->update_lock);
 
-	/* Initialize the max6639 chip */
+	 
 	err = max6639_init_client(client, data);
 	if (err < 0)
 		return err;

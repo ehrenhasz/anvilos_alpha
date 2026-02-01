@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2023 MediaTek Inc. */
+
+ 
 
 #include <linux/module.h>
 
@@ -203,7 +203,7 @@ void mt792x_mac_reset_counters(struct mt792x_phy *phy)
 	dev->mt76.phy.survey_time = ktime_get_boottime();
 	memset(phy->mt76->aggr_stats, 0, sizeof(phy->mt76->aggr_stats));
 
-	/* reset airtime counters */
+	 
 	mt76_rr(dev, MT_MIB_SDR9(0));
 	mt76_rr(dev, MT_MIB_SDR36(0));
 	mt76_rr(dev, MT_MIB_SDR37(0));
@@ -259,7 +259,7 @@ void mt792x_update_channel(struct mt76_phy *mphy)
 		return;
 
 	mt792x_phy_update_channel(mphy, 0);
-	/* reset obss airtime */
+	 
 	mt76_set(dev, MT_WF_RMAC_MIB_TIME0(0), MT_WF_RMAC_MIB_RXTIME_CLR);
 	mt76_connac_power_save_sched(mphy, &dev->pm);
 }
@@ -296,15 +296,15 @@ void mt792x_mac_init_band(struct mt792x_dev *dev, u8 band)
 	mt76_set(dev, MT_WF_RMAC_MIB_TIME0(band), MT_WF_RMAC_MIB_RXTIME_EN);
 	mt76_set(dev, MT_WF_RMAC_MIB_AIRTIME0(band), MT_WF_RMAC_MIB_RXTIME_EN);
 
-	/* enable MIB tx-rx time reporting */
+	 
 	mt76_set(dev, MT_MIB_SCR1(band), MT_MIB_TXDUR_EN);
 	mt76_set(dev, MT_MIB_SCR1(band), MT_MIB_RXDUR_EN);
 
 	mt76_rmw_field(dev, MT_DMA_DCR0(band), MT_DMA_DCR0_MAX_RX_LEN, 1536);
-	/* disable rx rate report by default due to hw issues */
+	 
 	mt76_clear(dev, MT_DMA_DCR0(band), MT_DMA_DCR0_RXD_G5_EN);
 
-	/* filter out non-resp frames and get instantaneous signal reporting */
+	 
 	mask = MT_WTBLOFF_TOP_RSCR_RCPI_MODE | MT_WTBLOFF_TOP_RSCR_RCPI_PARAM;
 	set = FIELD_PREP(MT_WTBLOFF_TOP_RSCR_RCPI_MODE, 0) |
 	      FIELD_PREP(MT_WTBLOFF_TOP_RSCR_RCPI_PARAM, 0x3);
@@ -363,11 +363,7 @@ void mt792x_pm_power_save_work(struct work_struct *work)
 		goto out;
 
 	if (mutex_is_locked(&dev->mt76.mutex))
-		/* if mt76 mutex is held we should not put the device
-		 * to sleep since we are currently accessing device
-		 * register map. We need to wait for the next power_save
-		 * trigger.
-		 */
+		 
 		goto out;
 
 	if (time_is_after_jiffies(dev->pm.last_activity + delta)) {

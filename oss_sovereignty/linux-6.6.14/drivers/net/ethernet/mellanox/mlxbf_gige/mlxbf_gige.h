@@ -1,11 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only OR BSD-3-Clause */
+ 
 
-/* Header file for Gigabit Ethernet driver for Mellanox BlueField SoC
- * - this file contains software data structures and any chip-specific
- *   data structures (e.g. TX WQE format) that are memory resident.
- *
- * Copyright (C) 2020-2021 NVIDIA CORPORATION & AFFILIATES
- */
+ 
 
 #ifndef __MLXBF_GIGE_H__
 #define __MLXBF_GIGE_H__
@@ -16,11 +11,7 @@
 #include <linux/irq.h>
 #include <linux/phy.h>
 
-/* The silicon design supports a maximum RX ring size of
- * 32K entries. Based on current testing this maximum size
- * is not required to be supported.  Instead the RX ring
- * will be capped at a realistic value of 1024 entries.
- */
+ 
 #define MLXBF_GIGE_MIN_RXQ_SZ     32
 #define MLXBF_GIGE_MAX_RXQ_SZ     1024
 #define MLXBF_GIGE_DEFAULT_RXQ_SZ 128
@@ -34,21 +25,14 @@
 #define MLXBF_GIGE_DMA_PAGE_SZ    4096
 #define MLXBF_GIGE_DMA_PAGE_SHIFT 12
 
-/* There are four individual MAC RX filters. Currently
- * two of them are being used: one for the broadcast MAC
- * (index 0) and one for local MAC (index 1)
- */
+ 
 #define MLXBF_GIGE_BCAST_MAC_FILTER_IDX 0
 #define MLXBF_GIGE_LOCAL_MAC_FILTER_IDX 1
 
-/* Define for broadcast MAC literal */
+ 
 #define BCAST_MAC_ADDR 0xFFFFFFFFFFFF
 
-/* There are three individual interrupts:
- *   1) Errors, "OOB" interrupt line
- *   2) Receive Packet, "OOB_LLU" interrupt line
- *   3) LLU and PLU Events, "OOB_PLU" interrupt line
- */
+ 
 #define MLXBF_GIGE_ERROR_INTR_IDX       0
 #define MLXBF_GIGE_RECEIVE_PKT_INTR_IDX 1
 #define MLXBF_GIGE_LLU_PLU_INTR_IDX     2
@@ -101,7 +85,7 @@ struct mlxbf_gige {
 	void __iomem *mdio_io;
 	void __iomem *clk_io;
 	struct mii_bus *mdiobus;
-	spinlock_t lock;      /* for packet processing indices */
+	spinlock_t lock;       
 	u16 rx_q_entries;
 	u16 tx_q_entries;
 	u64 *tx_wqe_base;
@@ -131,10 +115,10 @@ struct mlxbf_gige {
 	int prev_speed;
 };
 
-/* Rx Work Queue Element definitions */
+ 
 #define MLXBF_GIGE_RX_WQE_SZ                   8
 
-/* Rx Completion Queue Element definitions */
+ 
 #define MLXBF_GIGE_RX_CQE_SZ                   8
 #define MLXBF_GIGE_RX_CQE_PKT_LEN_MASK         GENMASK(10, 0)
 #define MLXBF_GIGE_RX_CQE_VALID_MASK           GENMASK(11, 11)
@@ -143,7 +127,7 @@ struct mlxbf_gige {
 #define MLXBF_GIGE_RX_CQE_PKT_STATUS_TRUNCATED GENMASK(13, 13)
 #define MLXBF_GIGE_RX_CQE_CHKSUM_MASK          GENMASK(31, 16)
 
-/* Tx Work Queue Element definitions */
+ 
 #define MLXBF_GIGE_TX_WQE_SZ_QWORDS            2
 #define MLXBF_GIGE_TX_WQE_SZ                   16
 #define MLXBF_GIGE_TX_WQE_PKT_LEN_MASK         GENMASK(10, 0)
@@ -152,14 +136,14 @@ struct mlxbf_gige {
 #define MLXBF_GIGE_TX_WQE_CHKSUM_START_MASK    GENMASK(55, 48)
 #define MLXBF_GIGE_TX_WQE_CHKSUM_OFFSET_MASK   GENMASK(63, 56)
 
-/* Macro to return packet length of specified TX WQE */
+ 
 #define MLXBF_GIGE_TX_WQE_PKT_LEN(tx_wqe_addr) \
 	(*((tx_wqe_addr) + 1) & MLXBF_GIGE_TX_WQE_PKT_LEN_MASK)
 
-/* Tx Completion Count */
+ 
 #define MLXBF_GIGE_TX_CC_SZ                    8
 
-/* List of resources in ACPI table */
+ 
 enum mlxbf_gige_res {
 	MLXBF_GIGE_RES_MAC,
 	MLXBF_GIGE_RES_MDIO9,
@@ -169,7 +153,7 @@ enum mlxbf_gige_res {
 	MLXBF_GIGE_RES_CLK
 };
 
-/* Version of register data returned by mlxbf_gige_get_regs() */
+ 
 #define MLXBF_GIGE_REGS_VERSION 1
 
 int mlxbf_gige_mdio_probe(struct platform_device *pdev,
@@ -198,4 +182,4 @@ int mlxbf_gige_poll(struct napi_struct *napi, int budget);
 extern const struct ethtool_ops mlxbf_gige_ethtool_ops;
 void mlxbf_gige_update_tx_wqe_next(struct mlxbf_gige *priv);
 
-#endif /* !defined(__MLXBF_GIGE_H__) */
+#endif  

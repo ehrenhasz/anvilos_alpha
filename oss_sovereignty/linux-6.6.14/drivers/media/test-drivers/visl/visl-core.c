@@ -1,42 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * A virtual stateless decoder device for stateless uAPI development purposes.
- *
- * This tool's objective is to help the development and testing of userspace
- * applications that use the V4L2 stateless API to decode media.
- *
- * A userspace implementation can use visl to run a decoding loop even when no
- * hardware is available or when the kernel uAPI for the codec has not been
- * upstreamed yet. This can reveal bugs at an early stage.
- *
- * This driver can also trace the contents of the V4L2 controls submitted to it.
- * It can also dump the contents of the vb2 buffers through a debugfs
- * interface. This is in many ways similar to the tracing infrastructure
- * available for other popular encode/decode APIs out there and can help develop
- * a userspace application by using another (working) one as a reference.
- *
- * Note that no actual decoding of video frames is performed by visl. The V4L2
- * test pattern generator is used to write various debug information to the
- * capture buffers instead.
- *
- * Copyright (C) 2022 Collabora, Ltd.
- *
- * Based on the vim2m driver, that is:
- *
- * Copyright (c) 2009-2010 Samsung Electronics Co., Ltd.
- * Pawel Osciak, <pawel@osciak.com>
- * Marek Szyprowski, <m.szyprowski@samsung.com>
- *
- * Based on the vicodec driver, that is:
- *
- * Copyright 2018 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- *
- * Based on the Cedrus VPU driver, that is:
- *
- * Copyright (C) 2016 Florent Revest <florent.revest@free-electrons.com>
- * Copyright (C) 2018 Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- * Copyright (C) 2018 Bootlin
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/module.h>
@@ -59,10 +22,7 @@ unsigned int visl_transtime_ms;
 module_param(visl_transtime_ms, uint, 0644);
 MODULE_PARM_DESC(visl_transtime_ms, " simulated process time in milliseconds.");
 
-/*
- * dprintk can be slow through serial. This lets one limit the tracing to a
- * particular number of frames
- */
+ 
 int visl_dprintk_frame_start = -1;
 module_param(visl_dprintk_frame_start, int, 0);
 MODULE_PARM_DESC(visl_dprintk_frame_start,
@@ -182,7 +142,7 @@ static const struct visl_ctrl_desc visl_hevc_ctrl_descs[] = {
 	},
 	{
 		.cfg.id = V4L2_CID_STATELESS_HEVC_SLICE_PARAMS,
-		/* The absolute maximum for level > 6 */
+		 
 		.cfg.dims = { 600 },
 	},
 	{
@@ -468,7 +428,7 @@ error_m2m_mc:
 	v4l2_m2m_unregister_media_controller(dev->m2m_dev);
 error_v4l2:
 	video_unregister_device(&dev->vfd);
-	/* visl_device_release called by video_unregister_device to release various objects */
+	 
 	return ret;
 error_m2m:
 	v4l2_m2m_release(dev->m2m_dev);

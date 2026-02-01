@@ -1,18 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * These are the scheduling policy related scheduler files, built
- * in a single compilation unit for build efficiency reasons.
- *
- * ( Incidentally, the size of the compilation unit is roughly
- *   comparable to core.c and fair.c, the other two big
- *   compilation units. This helps balance build time, while
- *   coalescing source files to amortize header inclusion
- *   cost. )
- *
- * core.c and fair.c are built separately.
- */
 
-/* Headers: */
+ 
+
+ 
 #include <linux/sched/clock.h>
 #include <linux/sched/cputime.h>
 #include <linux/sched/hotplug.h>
@@ -38,7 +27,7 @@
 #include "stats.h"
 #include "pelt.h"
 
-/* Source code modules: */
+ 
 
 #include "idle.c"
 

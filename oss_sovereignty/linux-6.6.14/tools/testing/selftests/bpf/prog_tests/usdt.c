@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 #include <test_progs.h>
 
 #define _SDT_HAS_SEMAPHORES 1
@@ -58,10 +58,10 @@ static void subtest_basic_usdt(void)
 	if (!ASSERT_OK(err, "skel_attach"))
 		goto cleanup;
 
-	/* usdt0 won't be auto-attached */
+	 
 	opts.usdt_cookie = 0xcafedeadbeeffeed;
 	skel->links.usdt0 = bpf_program__attach_usdt(skel->progs.usdt0,
-						     0 /*self*/, "/proc/self/exe",
+						     0  , "/proc/self/exe",
 						     "test", "usdt0", &opts);
 	if (!ASSERT_OK_PTR(skel->links.usdt0, "usdt0_link"))
 		goto cleanup;
@@ -76,7 +76,7 @@ static void subtest_basic_usdt(void)
 	ASSERT_EQ(bss->usdt0_arg_cnt, 0, "usdt0_arg_cnt");
 	ASSERT_EQ(bss->usdt0_arg_ret, -ENOENT, "usdt0_arg_ret");
 
-	/* auto-attached usdt3 gets default zero cookie value */
+	 
 	ASSERT_EQ(bss->usdt3_cookie, 0, "usdt3_cookie");
 	ASSERT_EQ(bss->usdt3_arg_cnt, 3, "usdt3_arg_cnt");
 
@@ -87,7 +87,7 @@ static void subtest_basic_usdt(void)
 	ASSERT_EQ(bss->usdt3_args[1], 42, "usdt3_arg2");
 	ASSERT_EQ(bss->usdt3_args[2], (uintptr_t)&bla, "usdt3_arg3");
 
-	/* auto-attached usdt12 gets default zero cookie value */
+	 
 	ASSERT_EQ(bss->usdt12_cookie, 0, "usdt12_cookie");
 	ASSERT_EQ(bss->usdt12_arg_cnt, 12, "usdt12_arg_cnt");
 
@@ -104,19 +104,14 @@ static void subtest_basic_usdt(void)
 	ASSERT_EQ(bss->usdt12_args[10], nums[idx], "usdt12_arg11");
 	ASSERT_EQ(bss->usdt12_args[11], t1.y, "usdt12_arg12");
 
-	/* trigger_func() is marked __always_inline, so USDT invocations will be
-	 * inlined in two different places, meaning that each USDT will have
-	 * at least 2 different places to be attached to. This verifies that
-	 * bpf_program__attach_usdt() handles this properly and attaches to
-	 * all possible places of USDT invocation.
-	 */
+	 
 	trigger_func(2);
 
 	ASSERT_EQ(bss->usdt0_called, 2, "usdt0_called");
 	ASSERT_EQ(bss->usdt3_called, 2, "usdt3_called");
 	ASSERT_EQ(bss->usdt12_called, 2, "usdt12_called");
 
-	/* only check values that depend on trigger_func()'s input value */
+	 
 	ASSERT_EQ(bss->usdt3_args[0], 2, "usdt3_arg1");
 
 	ASSERT_EQ(bss->usdt12_args[0], 2, "usdt12_arg1");
@@ -124,11 +119,11 @@ static void subtest_basic_usdt(void)
 	ASSERT_EQ(bss->usdt12_args[3], 42 + 2, "usdt12_arg4");
 	ASSERT_EQ(bss->usdt12_args[9], nums[2], "usdt12_arg10");
 
-	/* detach and re-attach usdt3 */
+	 
 	bpf_link__destroy(skel->links.usdt3);
 
 	opts.usdt_cookie = 0xBADC00C51E;
-	skel->links.usdt3 = bpf_program__attach_usdt(skel->progs.usdt3, -1 /* any pid */,
+	skel->links.usdt3 = bpf_program__attach_usdt(skel->progs.usdt3, -1  ,
 						     "/proc/self/exe", "test", "usdt3", &opts);
 	if (!ASSERT_OK_PTR(skel->links.usdt3, "usdt3_reattach"))
 		goto cleanup;
@@ -136,7 +131,7 @@ static void subtest_basic_usdt(void)
 	trigger_func(3);
 
 	ASSERT_EQ(bss->usdt3_called, 3, "usdt3_called");
-	/* this time usdt3 has custom cookie */
+	 
 	ASSERT_EQ(bss->usdt3_cookie, 0xBADC00C51E, "usdt3_cookie");
 	ASSERT_EQ(bss->usdt3_arg_cnt, 3, "usdt3_arg_cnt");
 
@@ -160,7 +155,7 @@ unsigned short test_usdt_400_semaphore SEC(".probes");
 #define R100(F, X) R10(F,X+ 0);R10(F,X+10);R10(F,X+20);R10(F,X+30);R10(F,X+40); \
 		   R10(F,X+50);R10(F,X+60);R10(F,X+70);R10(F,X+80);R10(F,X+90);
 
-/* carefully control that we get exactly 100 inlines by preventing inlining */
+ 
 static void __always_inline f100(int x)
 {
 	STAP_PROBE1(test, usdt_100, x);
@@ -171,11 +166,7 @@ __weak void trigger_100_usdts(void)
 	R100(f100, 0);
 }
 
-/* we shouldn't be able to attach to test:usdt2_300 USDT as we don't have as
- * many slots for specs. It's important that each STAP_PROBE2() invocation
- * (after untolling) gets different arg spec due to compiler inlining i as
- * a constant
- */
+ 
 static void __always_inline f300(int x)
 {
 	STAP_PROBE1(test, usdt_300, x);
@@ -193,11 +184,7 @@ static void __always_inline f400(int x __attribute__((unused)))
 	STAP_PROBE1(test, usdt_400, 400);
 }
 
-/* this time we have 400 different USDT call sites, but they have uniform
- * argument location, so libbpf's spec string deduplication logic should keep
- * spec count use very small and so we should be able to attach to all 400
- * call sites
- */
+ 
 __weak void trigger_400_usdts(void)
 {
 	R100(f400, 0);
@@ -224,20 +211,13 @@ static void subtest_multispec_usdt(void)
 	if (!ASSERT_OK(err, "skel_attach"))
 		goto cleanup;
 
-	/* usdt_100 is auto-attached and there are 100 inlined call sites,
-	 * let's validate that all of them are properly attached to and
-	 * handled from BPF side
-	 */
+	 
 	trigger_100_usdts();
 
 	ASSERT_EQ(bss->usdt_100_called, 100, "usdt_100_called");
 	ASSERT_EQ(bss->usdt_100_sum, 99 * 100 / 2, "usdt_100_sum");
 
-	/* Stress test free spec ID tracking. By default libbpf allows up to
-	 * 256 specs to be used, so if we don't return free spec IDs back
-	 * after few detachments and re-attachments we should run out of
-	 * available spec IDs.
-	 */
+	 
 	for (i = 0; i < 2; i++) {
 		bpf_link__destroy(skel->links.usdt_100);
 
@@ -254,14 +234,10 @@ static void subtest_multispec_usdt(void)
 		ASSERT_EQ(bss->usdt_100_sum, 99 * 100 / 2, "usdt_100_sum");
 	}
 
-	/* Now let's step it up and try to attach USDT that requires more than
-	 * 256 attach points with different specs for each.
-	 * Note that we need trigger_300_usdts() only to actually have 300
-	 * USDT call sites, we are not going to actually trace them.
-	 */
+	 
 	trigger_300_usdts();
 
-	/* we'll reuse usdt_100 BPF program for usdt_300 test */
+	 
 	bpf_link__destroy(skel->links.usdt_100);
 	skel->links.usdt_100 = bpf_program__attach_usdt(skel->progs.usdt_100, -1, "/proc/self/exe",
 							"test", "usdt_300", NULL);
@@ -270,24 +246,16 @@ static void subtest_multispec_usdt(void)
 		goto cleanup;
 	ASSERT_EQ(err, -E2BIG, "usdt_300_attach_err");
 
-	/* let's check that there are no "dangling" BPF programs attached due
-	 * to partial success of the above test:usdt_300 attachment
-	 */
+	 
 	bss->usdt_100_called = 0;
 	bss->usdt_100_sum = 0;
 
-	f300(777); /* this is 301st instance of usdt_300 */
+	f300(777);  
 
 	ASSERT_EQ(bss->usdt_100_called, 0, "usdt_301_called");
 	ASSERT_EQ(bss->usdt_100_sum, 0, "usdt_301_sum");
 
-	/* This time we have USDT with 400 inlined invocations, but arg specs
-	 * should be the same across all sites, so libbpf will only need to
-	 * use one spec and thus we'll be able to attach 400 uprobes
-	 * successfully.
-	 *
-	 * Again, we are reusing usdt_100 BPF program.
-	 */
+	 
 	skel->links.usdt_100 = bpf_program__attach_usdt(skel->progs.usdt_100, -1,
 							"/proc/self/exe",
 							"test", "usdt_400", NULL);
@@ -307,7 +275,7 @@ static FILE *urand_spawn(int *pid)
 {
 	FILE *f;
 
-	/* urandom_read's stdout is wired into f */
+	 
 	f = popen("./urandom_read 1 report-pid", "r");
 	if (!f)
 		return NULL;
@@ -325,7 +293,7 @@ static int urand_trigger(FILE **urand_pipe)
 {
 	int exit_code;
 
-	/* pclose() waits for child process to exit and returns their exit code */
+	 
 	exit_code = pclose(*urand_pipe);
 	*urand_pipe = NULL;
 
@@ -386,7 +354,7 @@ static void subtest_urandom_usdt(bool auto_attach)
 
 	}
 
-	/* trigger urandom_read USDTs */
+	 
 	ASSERT_OK(urand_trigger(&urand_pipe), "urand_exit_code");
 
 	ASSERT_EQ(bss->urand_read_without_sema_call_cnt, 1, "urand_wo_sema_cnt");
@@ -414,7 +382,7 @@ void test_usdt(void)
 	if (test__start_subtest("multispec"))
 		subtest_multispec_usdt();
 	if (test__start_subtest("urand_auto_attach"))
-		subtest_urandom_usdt(true /* auto_attach */);
+		subtest_urandom_usdt(true  );
 	if (test__start_subtest("urand_pid_attach"))
-		subtest_urandom_usdt(false /* auto_attach */);
+		subtest_urandom_usdt(false  );
 }

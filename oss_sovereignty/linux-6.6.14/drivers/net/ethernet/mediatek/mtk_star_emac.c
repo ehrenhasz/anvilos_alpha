@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2020 MediaTek Corporation
- * Copyright (c) 2020 BayLibre SAS
- *
- * Author: Bartosz Golaszewski <bgolaszewski@baylibre.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -34,15 +29,13 @@
 #define MTK_STAR_HASHTABLE_SIZE_MAX		512
 #define MTK_STAR_DESC_NEEDED			(MAX_SKB_FRAGS + 4)
 
-/* Normally we'd use NET_IP_ALIGN but on arm64 its value is 0 and it doesn't
- * work for this controller.
- */
+ 
 #define MTK_STAR_IP_ALIGN			2
 
 static const char *const mtk_star_clk_names[] = { "core", "reg", "trans" };
 #define MTK_STAR_NCLKS ARRAY_SIZE(mtk_star_clk_names)
 
-/* PHY Control Register 0 */
+ 
 #define MTK_STAR_REG_PHY_CTRL0			0x0000
 #define MTK_STAR_BIT_PHY_CTRL0_WTCMD		BIT(13)
 #define MTK_STAR_BIT_PHY_CTRL0_RDCMD		BIT(14)
@@ -52,7 +45,7 @@ static const char *const mtk_star_clk_names[] = { "core", "reg", "trans" };
 #define MTK_STAR_MSK_PHY_CTRL0_RWDATA		GENMASK(31, 16)
 #define MTK_STAR_OFF_PHY_CTRL0_RWDATA		16
 
-/* PHY Control Register 1 */
+ 
 #define MTK_STAR_REG_PHY_CTRL1			0x0004
 #define MTK_STAR_BIT_PHY_CTRL1_LINK_ST		BIT(0)
 #define MTK_STAR_BIT_PHY_CTRL1_AN_EN		BIT(8)
@@ -64,7 +57,7 @@ static const char *const mtk_star_clk_names[] = { "core", "reg", "trans" };
 #define MTK_STAR_BIT_PHY_CTRL1_FORCE_FC_RX	BIT(12)
 #define MTK_STAR_BIT_PHY_CTRL1_FORCE_FC_TX	BIT(13)
 
-/* MAC Configuration Register */
+ 
 #define MTK_STAR_REG_MAC_CFG			0x0008
 #define MTK_STAR_OFF_MAC_CFG_IPG		10
 #define MTK_STAR_VAL_MAC_CFG_IPG_96BIT		GENMASK(4, 0)
@@ -74,7 +67,7 @@ static const char *const mtk_star_clk_names[] = { "core", "reg", "trans" };
 #define MTK_STAR_BIT_MAC_CFG_VLAN_STRIP		BIT(22)
 #define MTK_STAR_BIT_MAC_CFG_NIC_PD		BIT(31)
 
-/* Flow-Control Configuration Register */
+ 
 #define MTK_STAR_REG_FC_CFG			0x000c
 #define MTK_STAR_BIT_FC_CFG_BP_EN		BIT(7)
 #define MTK_STAR_BIT_FC_CFG_UC_PAUSE_DIR	BIT(8)
@@ -82,16 +75,16 @@ static const char *const mtk_star_clk_names[] = { "core", "reg", "trans" };
 #define MTK_STAR_MSK_FC_CFG_SEND_PAUSE_TH	GENMASK(27, 16)
 #define MTK_STAR_VAL_FC_CFG_SEND_PAUSE_TH_2K	0x800
 
-/* ARL Configuration Register */
+ 
 #define MTK_STAR_REG_ARL_CFG			0x0010
 #define MTK_STAR_BIT_ARL_CFG_HASH_ALG		BIT(0)
 #define MTK_STAR_BIT_ARL_CFG_MISC_MODE		BIT(4)
 
-/* MAC High and Low Bytes Registers */
+ 
 #define MTK_STAR_REG_MY_MAC_H			0x0014
 #define MTK_STAR_REG_MY_MAC_L			0x0018
 
-/* Hash Table Control Register */
+ 
 #define MTK_STAR_REG_HASH_CTRL			0x001c
 #define MTK_STAR_MSK_HASH_CTRL_HASH_BIT_ADDR	GENMASK(8, 0)
 #define MTK_STAR_BIT_HASH_CTRL_HASH_BIT_DATA	BIT(12)
@@ -101,63 +94,63 @@ static const char *const mtk_star_clk_names[] = { "core", "reg", "trans" };
 #define MTK_STAR_BIT_HASH_CTRL_BIST_DONE	BIT(17)
 #define MTK_STAR_BIT_HASH_CTRL_BIST_EN		BIT(31)
 
-/* TX DMA Control Register */
+ 
 #define MTK_STAR_REG_TX_DMA_CTRL		0x0034
 #define MTK_STAR_BIT_TX_DMA_CTRL_START		BIT(0)
 #define MTK_STAR_BIT_TX_DMA_CTRL_STOP		BIT(1)
 #define MTK_STAR_BIT_TX_DMA_CTRL_RESUME		BIT(2)
 
-/* RX DMA Control Register */
+ 
 #define MTK_STAR_REG_RX_DMA_CTRL		0x0038
 #define MTK_STAR_BIT_RX_DMA_CTRL_START		BIT(0)
 #define MTK_STAR_BIT_RX_DMA_CTRL_STOP		BIT(1)
 #define MTK_STAR_BIT_RX_DMA_CTRL_RESUME		BIT(2)
 
-/* DMA Address Registers */
+ 
 #define MTK_STAR_REG_TX_DPTR			0x003c
 #define MTK_STAR_REG_RX_DPTR			0x0040
 #define MTK_STAR_REG_TX_BASE_ADDR		0x0044
 #define MTK_STAR_REG_RX_BASE_ADDR		0x0048
 
-/* Interrupt Status Register */
+ 
 #define MTK_STAR_REG_INT_STS			0x0050
 #define MTK_STAR_REG_INT_STS_PORT_STS_CHG	BIT(2)
 #define MTK_STAR_REG_INT_STS_MIB_CNT_TH		BIT(3)
 #define MTK_STAR_BIT_INT_STS_FNRC		BIT(6)
 #define MTK_STAR_BIT_INT_STS_TNTC		BIT(8)
 
-/* Interrupt Mask Register */
+ 
 #define MTK_STAR_REG_INT_MASK			0x0054
 #define MTK_STAR_BIT_INT_MASK_FNRC		BIT(6)
 
-/* Delay-Macro Register */
+ 
 #define MTK_STAR_REG_TEST0			0x0058
 #define MTK_STAR_BIT_INV_RX_CLK			BIT(30)
 #define MTK_STAR_BIT_INV_TX_CLK			BIT(31)
 
-/* Misc. Config Register */
+ 
 #define MTK_STAR_REG_TEST1			0x005c
 #define MTK_STAR_BIT_TEST1_RST_HASH_MBIST	BIT(31)
 
-/* Extended Configuration Register */
+ 
 #define MTK_STAR_REG_EXT_CFG			0x0060
 #define MTK_STAR_OFF_EXT_CFG_SND_PAUSE_RLS	16
 #define MTK_STAR_MSK_EXT_CFG_SND_PAUSE_RLS	GENMASK(26, 16)
 #define MTK_STAR_VAL_EXT_CFG_SND_PAUSE_RLS_1K	0x400
 
-/* EthSys Configuration Register */
+ 
 #define MTK_STAR_REG_SYS_CONF			0x0094
 #define MTK_STAR_BIT_MII_PAD_OUT_ENABLE		BIT(0)
 #define MTK_STAR_BIT_EXT_MDC_MODE		BIT(1)
 #define MTK_STAR_BIT_SWC_MII_MODE		BIT(2)
 
-/* MAC Clock Configuration Register */
+ 
 #define MTK_STAR_REG_MAC_CLK_CONF		0x00ac
 #define MTK_STAR_MSK_MAC_CLK_CONF		GENMASK(7, 0)
 #define MTK_STAR_BIT_CLK_DIV_10			0x0a
 #define MTK_STAR_BIT_CLK_DIV_50			0x32
 
-/* Counter registers. */
+ 
 #define MTK_STAR_REG_C_RXOKPKT			0x0100
 #define MTK_STAR_REG_C_RXOKBYTE			0x0104
 #define MTK_STAR_REG_C_RXRUNT			0x0108
@@ -187,7 +180,7 @@ static const char *const mtk_star_clk_names[] = { "core", "reg", "trans" };
 #define MTK_STAR_REG_C_RX_LENGTHERR		0x0214
 #define MTK_STAR_REG_C_RX_TWIST			0x0218
 
-/* Ethernet CFG Control */
+ 
 #define MTK_PERICFG_REG_NIC_CFG0_CON		0x03c4
 #define MTK_PERICFG_REG_NIC_CFG1_CON		0x03c8
 #define MTK_PERICFG_REG_NIC_CFG_CON_V2		0x0c10
@@ -197,12 +190,9 @@ static const char *const mtk_star_clk_names[] = { "core", "reg", "trans" };
 #define MTK_PERICFG_BIT_NIC_CFG_CON_CLK		BIT(0)
 #define MTK_PERICFG_BIT_NIC_CFG_CON_CLK_V2	BIT(8)
 
-/* Represents the actual structure of descriptors used by the MAC. We can
- * reuse the same structure for both TX and RX - the layout is the same, only
- * the flags differ slightly.
- */
+ 
 struct mtk_star_ring_desc {
-	/* Contains both the status flags as well as packet length. */
+	 
 	u32 status;
 	u32 data_ptr;
 	u32 vtag;
@@ -218,9 +208,7 @@ struct mtk_star_ring_desc {
 #define MTK_STAR_DESC_BIT_EOR			BIT(30)
 #define MTK_STAR_DESC_BIT_COWN			BIT(31)
 
-/* Helper structure for storing data read from/written to descriptors in order
- * to limit reads from/writes to DMA memory.
- */
+ 
 struct mtk_star_ring_desc_data {
 	unsigned int len;
 	unsigned int flags;
@@ -280,7 +268,7 @@ struct mtk_star_priv {
 
 	const struct mtk_star_compat *compat_data;
 
-	/* Protects against concurrent descriptor access. */
+	 
 	spinlock_t lock;
 
 	struct rtnl_link_stats64 stats;
@@ -314,7 +302,7 @@ static int mtk_star_ring_pop_tail(struct mtk_star_ring *ring,
 	unsigned int status;
 
 	status = READ_ONCE(desc->status);
-	dma_rmb(); /* Make sure we read the status bits before checking it. */
+	dma_rmb();  
 
 	if (!(status & MTK_STAR_DESC_BIT_COWN))
 		return -1;
@@ -356,7 +344,7 @@ static void mtk_star_ring_push_head(struct mtk_star_ring *ring,
 	WRITE_ONCE(desc->data_ptr, desc_data->dma_addr);
 	WRITE_ONCE(desc->status, status);
 	status &= ~MTK_STAR_DESC_BIT_COWN;
-	/* Flush previous modifications before ownership change. */
+	 
 	dma_wmb();
 	WRITE_ONCE(desc->status, status);
 
@@ -398,7 +386,7 @@ static dma_addr_t mtk_star_dma_map_rx(struct mtk_star_priv *priv,
 {
 	struct device *dev = mtk_star_get_dev(priv);
 
-	/* Data pointer for the RX DMA descriptor must be aligned to 4N + 2. */
+	 
 	return dma_map_single(dev, skb_tail_pointer(skb) - 2,
 			      skb_tailroom(skb), DMA_FROM_DEVICE);
 }
@@ -465,7 +453,7 @@ static void mtk_star_disable_dma_irq(struct mtk_star_priv *priv,
 	regmap_write(priv->regs, MTK_STAR_REG_INT_MASK, value);
 }
 
-/* Unmask the three interrupts we care about, mask all others. */
+ 
 static void mtk_star_intr_enable(struct mtk_star_priv *priv)
 {
 	unsigned int val = MTK_STAR_BIT_INT_STS_TNTC |
@@ -512,7 +500,7 @@ static void mtk_star_dma_init(struct mtk_star_priv *priv)
 	mtk_star_ring_init(&priv->rx_ring,
 			   priv->descs_base + MTK_STAR_NUM_TX_DESCS);
 
-	/* Set DMA pointers. */
+	 
 	val = (unsigned int)priv->dma_addr;
 	regmap_write(priv->regs, MTK_STAR_REG_TX_BASE_ADDR, val);
 	regmap_write(priv->regs, MTK_STAR_REG_TX_DPTR, val);
@@ -544,7 +532,7 @@ static void mtk_star_dma_disable(struct mtk_star_priv *priv)
 
 	mtk_star_dma_stop(priv);
 
-	/* Take back all descriptors. */
+	 
 	for (i = 0; i < MTK_STAR_NUM_DESCS_TOTAL; i++)
 		priv->descs_base[i].status |= MTK_STAR_DESC_BIT_COWN;
 }
@@ -623,31 +611,29 @@ static void mtk_star_update_stat(struct mtk_star_priv *priv,
 	*stat += val;
 }
 
-/* Try to get as many stats as possible from the internal registers instead
- * of tracking them ourselves.
- */
+ 
 static void mtk_star_update_stats(struct mtk_star_priv *priv)
 {
 	struct rtnl_link_stats64 *stats = &priv->stats;
 
-	/* OK packets and bytes. */
+	 
 	mtk_star_update_stat(priv, MTK_STAR_REG_C_RXOKPKT, &stats->rx_packets);
 	mtk_star_update_stat(priv, MTK_STAR_REG_C_TXOKPKT, &stats->tx_packets);
 	mtk_star_update_stat(priv, MTK_STAR_REG_C_RXOKBYTE, &stats->rx_bytes);
 	mtk_star_update_stat(priv, MTK_STAR_REG_C_TXOKBYTE, &stats->tx_bytes);
 
-	/* RX & TX multicast. */
+	 
 	mtk_star_update_stat(priv, MTK_STAR_REG_C_RX_MULTI, &stats->multicast);
 	mtk_star_update_stat(priv, MTK_STAR_REG_C_TX_MULTI, &stats->multicast);
 
-	/* Collisions. */
+	 
 	mtk_star_update_stat(priv, MTK_STAR_REG_C_TXPAUSECOL,
 			     &stats->collisions);
 	mtk_star_update_stat(priv, MTK_STAR_REG_C_TX_LATECOL,
 			     &stats->collisions);
 	mtk_star_update_stat(priv, MTK_STAR_REG_C_RXRUNT, &stats->collisions);
 
-	/* RX Errors. */
+	 
 	mtk_star_update_stat(priv, MTK_STAR_REG_C_RX_LENGTHERR,
 			     &stats->rx_length_errors);
 	mtk_star_update_stat(priv, MTK_STAR_REG_C_RXLONG,
@@ -657,7 +643,7 @@ static void mtk_star_update_stats(struct mtk_star_priv *priv)
 			     &stats->rx_frame_errors);
 	mtk_star_update_stat(priv, MTK_STAR_REG_C_RXDROP,
 			     &stats->rx_fifo_errors);
-	/* Sum of the general RX error counter + all of the above. */
+	 
 	mtk_star_update_stat(priv, MTK_STAR_REG_C_RX_RERR, &stats->rx_errors);
 	stats->rx_errors += stats->rx_length_errors;
 	stats->rx_errors += stats->rx_over_errors;
@@ -675,16 +661,14 @@ static struct sk_buff *mtk_star_alloc_skb(struct net_device *ndev)
 	if (!skb)
 		return NULL;
 
-	/* Align to 16 bytes. */
+	 
 	tail = (uintptr_t)skb_tail_pointer(skb);
 	if (tail & (MTK_STAR_SKB_ALIGNMENT - 1)) {
 		offset = tail & (MTK_STAR_SKB_ALIGNMENT - 1);
 		skb_reserve(skb, MTK_STAR_SKB_ALIGNMENT - offset);
 	}
 
-	/* Ensure 16-byte alignment of the skb pointer: eth_type_trans() will
-	 * extract the Ethernet header (14 bytes) so we need two more bytes.
-	 */
+	 
 	skb_reserve(skb, MTK_STAR_IP_ALIGN);
 
 	return skb;
@@ -756,16 +740,7 @@ static void mtk_star_free_tx_skbs(struct mtk_star_priv *priv)
 	mtk_star_ring_free_skbs(priv, ring, mtk_star_dma_unmap_tx);
 }
 
-/**
- * mtk_star_handle_irq - Interrupt Handler.
- * @irq: interrupt number.
- * @data: pointer to a network interface device structure.
- * Description : this is the driver interrupt service routine.
- * it mainly handles:
- *  1. tx complete interrupt for frame transmission.
- *  2. rx complete interrupt for frame reception.
- *  3. MAC Management Counter interrupt to avoid counter overflow.
- **/
+ 
 static irqreturn_t mtk_star_handle_irq(int irq, void *data)
 {
 	struct net_device *ndev = data;
@@ -780,7 +755,7 @@ static irqreturn_t mtk_star_handle_irq(int irq, void *data)
 
 	if (rx || tx) {
 		spin_lock(&priv->lock);
-		/* mask Rx and TX Complete interrupt */
+		 
 		mtk_star_disable_dma_irq(priv, rx, tx);
 		spin_unlock(&priv->lock);
 
@@ -790,7 +765,7 @@ static irqreturn_t mtk_star_handle_irq(int irq, void *data)
 			__napi_schedule(&priv->tx_napi);
 	}
 
-	/* interrupt is triggered once any counters reach 0x8000000 */
+	 
 	if (intr_status & MTK_STAR_REG_INT_STS_MIB_CNT_TH) {
 		mtk_star_update_stats(priv);
 		mtk_star_reset_counters(priv);
@@ -799,9 +774,7 @@ static irqreturn_t mtk_star_handle_irq(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/* Wait for the completion of any previous command - CMD_START bit must be
- * cleared by hardware.
- */
+ 
 static int mtk_star_hash_wait_cmd_start(struct mtk_star_priv *priv)
 {
 	unsigned int val;
@@ -817,7 +790,7 @@ static int mtk_star_hash_wait_ok(struct mtk_star_priv *priv)
 	unsigned int val;
 	int ret;
 
-	/* Wait for BIST_DONE bit. */
+	 
 	ret = regmap_read_poll_timeout_atomic(priv->regs,
 					MTK_STAR_REG_HASH_CTRL, val,
 					val & MTK_STAR_BIT_HASH_CTRL_BIST_DONE,
@@ -825,7 +798,7 @@ static int mtk_star_hash_wait_ok(struct mtk_star_priv *priv)
 	if (ret)
 		return ret;
 
-	/* Check the BIST_OK bit. */
+	 
 	if (!regmap_test_bits(priv->regs, MTK_STAR_REG_HASH_CTRL,
 			      MTK_STAR_BIT_HASH_CTRL_BIST_OK))
 		return -EIO;
@@ -968,7 +941,7 @@ static int mtk_star_enable(struct net_device *ndev)
 
 	mtk_star_set_mac_addr(ndev);
 
-	/* Configure the MAC */
+	 
 	val = MTK_STAR_VAL_MAC_CFG_IPG_96BIT;
 	val <<= MTK_STAR_OFF_MAC_CFG_IPG;
 	val |= MTK_STAR_BIT_MAC_CFG_MAXLEN_1522;
@@ -976,28 +949,28 @@ static int mtk_star_enable(struct net_device *ndev)
 	val |= MTK_STAR_BIT_MAC_CFG_CRC_STRIP;
 	regmap_write(priv->regs, MTK_STAR_REG_MAC_CFG, val);
 
-	/* Enable Hash Table BIST and reset it */
+	 
 	ret = mtk_star_reset_hash_table(priv);
 	if (ret)
 		return ret;
 
-	/* Setup the hashing algorithm */
+	 
 	regmap_clear_bits(priv->regs, MTK_STAR_REG_ARL_CFG,
 			  MTK_STAR_BIT_ARL_CFG_HASH_ALG |
 			  MTK_STAR_BIT_ARL_CFG_MISC_MODE);
 
-	/* Don't strip VLAN tags */
+	 
 	regmap_clear_bits(priv->regs, MTK_STAR_REG_MAC_CFG,
 			  MTK_STAR_BIT_MAC_CFG_VLAN_STRIP);
 
-	/* Setup DMA */
+	 
 	mtk_star_dma_init(priv);
 
 	ret = mtk_star_prepare_rx_skbs(ndev);
 	if (ret)
 		goto err_out;
 
-	/* Request the interrupt */
+	 
 	ret = request_irq(ndev->irq, mtk_star_handle_irq,
 			  IRQF_TRIGGER_NONE, ndev->name, ndev);
 	if (ret)
@@ -1009,7 +982,7 @@ static int mtk_star_enable(struct net_device *ndev)
 	mtk_star_intr_ack_all(priv);
 	mtk_star_intr_enable(priv);
 
-	/* Connect to and start PHY */
+	 
 	priv->phydev = of_phy_connect(ndev, priv->phy_node,
 				      mtk_star_adjust_link, 0, priv->phy_intf);
 	if (!priv->phydev) {
@@ -1076,7 +1049,7 @@ static int __mtk_star_maybe_stop_tx(struct mtk_star_priv *priv, u16 size)
 {
 	netif_stop_queue(priv->ndev);
 
-	/* Might race with mtk_star_tx_poll, check again */
+	 
 	smp_mb();
 	if (likely(mtk_star_tx_ring_avail(&priv->tx_ring) < size))
 		return -EBUSY;
@@ -1106,7 +1079,7 @@ static netdev_tx_t mtk_star_netdev_start_xmit(struct sk_buff *skb,
 	if (unlikely(mtk_star_tx_ring_avail(ring) < nfrags + 1)) {
 		if (!netif_queue_stopped(ndev)) {
 			netif_stop_queue(ndev);
-			/* This is a hard error, log it. */
+			 
 			pr_err_ratelimited("Tx ring full when queue awake\n");
 		}
 		return NETDEV_TX_BUSY;
@@ -1134,9 +1107,7 @@ err_drop_packet:
 	return NETDEV_TX_OK;
 }
 
-/* Returns the number of bytes sent or a negative number on the first
- * descriptor owned by DMA.
- */
+ 
 static int mtk_star_tx_complete_one(struct mtk_star_priv *priv)
 {
 	struct mtk_star_ring *ring = &priv->tx_ring;
@@ -1218,7 +1189,7 @@ static void mtk_star_set_rx_mode(struct net_device *ndev)
 				goto hash_fail;
 		}
 	} else {
-		/* Clear previous settings. */
+		 
 		ret = mtk_star_reset_hash_table(priv);
 		if (ret)
 			goto hash_fail;
@@ -1238,7 +1209,7 @@ hash_fail:
 	if (ret == -ETIMEDOUT)
 		netdev_err(ndev, "setting hash bit timed out\n");
 	else
-		/* Should be -EIO */
+		 
 		netdev_err(ndev, "unable to set hash bit");
 }
 
@@ -1259,7 +1230,7 @@ static void mtk_star_get_drvinfo(struct net_device *dev,
 	strscpy(info->driver, MTK_STAR_DRVNAME, sizeof(info->driver));
 }
 
-/* TODO Add ethtool stats. */
+ 
 static const struct ethtool_ops mtk_star_ethtool_ops = {
 	.get_drvinfo		= mtk_star_get_drvinfo,
 	.get_link		= ethtool_op_get_link,
@@ -1286,14 +1257,12 @@ static int mtk_star_rx(struct mtk_star_priv *priv, int budget)
 
 		if ((desc_data.flags & MTK_STAR_DESC_BIT_RX_CRCE) ||
 		    (desc_data.flags & MTK_STAR_DESC_BIT_RX_OSIZE)) {
-			/* Error packet -> drop and reuse skb. */
+			 
 			new_skb = curr_skb;
 			goto push_new_skb;
 		}
 
-		/* Prepare new skb before receiving the current one.
-		 * Reuse the current skb if we fail at any point.
-		 */
+		 
 		new_skb = mtk_star_alloc_skb(ndev);
 		if (!new_skb) {
 			ndev->stats.rx_dropped++;
@@ -1310,9 +1279,7 @@ static int mtk_star_rx(struct mtk_star_priv *priv, int budget)
 			goto push_new_skb;
 		}
 
-		/* We can't fail anymore at this point:
-		 * it's safe to unmap the skb.
-		 */
+		 
 		mtk_star_dma_unmap_rx(priv, &desc_data);
 
 		skb_put(desc_data.skb, desc_data.len);
@@ -1321,7 +1288,7 @@ static int mtk_star_rx(struct mtk_star_priv *priv, int budget)
 		desc_data.skb->dev = ndev;
 		netif_receive_skb(desc_data.skb);
 
-		/* update dma_addr for new skb */
+		 
 		desc_data.dma_addr = new_dma_addr;
 
 push_new_skb:
@@ -1551,10 +1518,7 @@ static int mtk_star_probe(struct platform_device *pdev)
 	if (IS_ERR(base))
 		return PTR_ERR(base);
 
-	/* We won't be checking the return values of regmap read & write
-	 * functions. They can only fail for mmio if there's a clock attached
-	 * to regmap which is not the case here.
-	 */
+	 
 	priv->regs = devm_regmap_init_mmio(dev, base,
 					   &mtk_star_regmap_config);
 	if (IS_ERR(priv->regs))

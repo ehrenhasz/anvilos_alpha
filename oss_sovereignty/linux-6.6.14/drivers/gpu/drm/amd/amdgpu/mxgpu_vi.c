@@ -1,26 +1,4 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Xiangliang.Yu@amd.com
- */
+ 
 
 #include "amdgpu.h"
 #include "vi.h"
@@ -44,7 +22,7 @@
 
 #include "amdgpu_reset.h"
 
-/* VI golden setting */
+ 
 static const u32 xgpu_fiji_mgcg_cgcg_init[] = {
 	mmRLC_CGTT_MGCG_OVERRIDE, 0xffffffff, 0xffffffff,
 	mmGRBM_GFX_INDEX, 0xffffffff, 0xe0000000,
@@ -313,9 +291,7 @@ void xgpu_vi_init_golden_registers(struct amdgpu_device *adev)
 	}
 }
 
-/*
- * Mailbox communication between GPU hypervisor and VFs
- */
+ 
 static void xgpu_vi_mailbox_send_ack(struct amdgpu_device *adev)
 {
 	u32 reg;
@@ -326,7 +302,7 @@ static void xgpu_vi_mailbox_send_ack(struct amdgpu_device *adev)
 	reg = REG_SET_FIELD(reg, MAILBOX_CONTROL, RCV_MSG_ACK, 1);
 	WREG32_NO_KIQ(mmMAILBOX_CONTROL, reg);
 
-	/*Wait for RCV_MSG_VALID to be 0*/
+	 
 	reg = RREG32_NO_KIQ(mmMAILBOX_CONTROL);
 	while (reg & mask) {
 		if (timeout <= 0) {
@@ -369,7 +345,7 @@ static int xgpu_vi_mailbox_rcv_msg(struct amdgpu_device *adev,
 	u32 reg;
 	u32 mask = REG_FIELD_MASK(MAILBOX_CONTROL, RCV_MSG_VALID);
 
-	/* workaround: host driver doesn't set VALID for CMPL now */
+	 
 	if (event != IDH_FLR_NOTIFICATION_CMPL) {
 		reg = RREG32_NO_KIQ(mmMAILBOX_CONTROL);
 		if (!(reg & mask))
@@ -380,7 +356,7 @@ static int xgpu_vi_mailbox_rcv_msg(struct amdgpu_device *adev,
 	if (reg != event)
 		return -ENOENT;
 
-	/* send ack to PF */
+	 
 	xgpu_vi_mailbox_send_ack(adev);
 
 	return 0;
@@ -435,14 +411,14 @@ static int xgpu_vi_send_access_requests(struct amdgpu_device *adev,
 
 	xgpu_vi_mailbox_trans_msg(adev, request);
 
-	/* start to poll ack */
+	 
 	r = xgpu_vi_poll_ack(adev);
 	if (r)
 		return r;
 
 	xgpu_vi_mailbox_set_valid(adev, false);
 
-	/* start to check msg if request is idh_req_gpu_init_access */
+	 
 	if (request == IDH_REQ_GPU_INIT_ACCESS ||
 		request == IDH_REQ_GPU_FINI_ACCESS ||
 		request == IDH_REQ_GPU_RESET_ACCESS) {
@@ -487,7 +463,7 @@ static int xgpu_vi_release_full_gpu_access(struct amdgpu_device *adev,
 	return r;
 }
 
-/* add support mailbox interrupts */
+ 
 static int xgpu_vi_mailbox_ack_irq(struct amdgpu_device *adev,
 				   struct amdgpu_irq_src *source,
 				   struct amdgpu_iv_entry *entry)
@@ -515,13 +491,13 @@ static void xgpu_vi_mailbox_flr_work(struct work_struct *work)
 	struct amdgpu_virt *virt = container_of(work, struct amdgpu_virt, flr_work);
 	struct amdgpu_device *adev = container_of(virt, struct amdgpu_device, virt);
 
-	/* wait until RCV_MSG become 3 */
+	 
 	if (xgpu_vi_poll_msg(adev, IDH_FLR_NOTIFICATION_CMPL)) {
 		pr_err("failed to receive FLR_CMPL\n");
 		return;
 	}
 
-	/* Trigger recovery due to world switch failure */
+	 
 	if (amdgpu_device_should_recover_gpu(adev)) {
 		struct amdgpu_reset_context reset_context;
 		memset(&reset_context, 0, sizeof(reset_context));
@@ -554,12 +530,12 @@ static int xgpu_vi_mailbox_rcv_irq(struct amdgpu_device *adev,
 {
 	int r;
 
-	/* trigger gpu-reset by hypervisor only if TDR disabled */
+	 
 	if (!amdgpu_gpu_recovery) {
-		/* see what event we get */
+		 
 		r = xgpu_vi_mailbox_rcv_msg(adev, IDH_FLR_NOTIFICATION);
 
-		/* only handle FLR_NOTIFY now */
+		 
 		if (!r && !amdgpu_in_reset(adev))
 			WARN_ONCE(!amdgpu_reset_domain_schedule(adev->reset_domain,
 								&adev->virt.flr_work),
@@ -634,5 +610,5 @@ const struct amdgpu_virt_ops xgpu_vi_virt_ops = {
 	.rel_full_gpu		= xgpu_vi_release_full_gpu_access,
 	.reset_gpu		= xgpu_vi_request_reset,
 	.wait_reset             = xgpu_vi_wait_reset_cmpl,
-	.trans_msg		= NULL, /* Does not need to trans VF errors to host. */
+	.trans_msg		= NULL,  
 };

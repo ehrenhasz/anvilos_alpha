@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This is for all the tests relating directly to heap memory, including
- * page allocation and slab allocations.
- */
+
+ 
 #include "lkdtm.h"
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
@@ -12,20 +9,10 @@ static struct kmem_cache *double_free_cache;
 static struct kmem_cache *a_cache;
 static struct kmem_cache *b_cache;
 
-/*
- * Using volatile here means the compiler cannot ever make assumptions
- * about this value. This means compile-time length checks involving
- * this variable cannot be performed; only run-time checks.
- */
+ 
 static volatile int __offset = 1;
 
-/*
- * If there aren't guard pages, it's likely that a consecutive allocation will
- * let us overflow into the second allocation without overwriting something real.
- *
- * This should always be caught because there is an unconditional unmapped
- * page after vmap allocations.
- */
+ 
 static void lkdtm_VMALLOC_LINEAR_OVERFLOW(void)
 {
 	char *one, *two;
@@ -41,14 +28,7 @@ static void lkdtm_VMALLOC_LINEAR_OVERFLOW(void)
 	vfree(one);
 }
 
-/*
- * This tries to stay within the next largest power-of-2 kmalloc cache
- * to avoid actually overwriting anything important if it's not detected
- * correctly.
- *
- * This should get caught by either memory tagging, KASan, or by using
- * CONFIG_SLUB_DEBUG=y and slub_debug=ZF (or CONFIG_SLUB_DEBUG_ON=y).
- */
+ 
 static void lkdtm_SLAB_LINEAR_OVERFLOW(void)
 {
 	size_t len = 1020;
@@ -66,11 +46,7 @@ static void lkdtm_WRITE_AFTER_FREE(void)
 {
 	int *base, *again;
 	size_t len = 1024;
-	/*
-	 * The slub allocator uses the first word to store the free
-	 * pointer in some configurations. Use the middle of the
-	 * allocation to avoid running into the freelist
-	 */
+	 
 	size_t offset = (len / sizeof(*base)) / 2;
 
 	base = kmalloc(len, GFP_KERNEL);
@@ -81,7 +57,7 @@ static void lkdtm_WRITE_AFTER_FREE(void)
 		&base[offset]);
 	kfree(base);
 	base[offset] = 0x0abcdef0;
-	/* Attempt to notice the overwrite. */
+	 
 	again = kmalloc(len, GFP_KERNEL);
 	kfree(again);
 	if (again != base)
@@ -92,12 +68,7 @@ static void lkdtm_READ_AFTER_FREE(void)
 {
 	int *base, *val, saw;
 	size_t len = 1024;
-	/*
-	 * The slub allocator will use the either the first word or
-	 * the middle of the allocation to store the free pointer,
-	 * depending on configurations. Store in the second word to
-	 * avoid running into the freelist.
-	 */
+	 
 	size_t offset = sizeof(*base);
 
 	base = kmalloc(len, GFP_KERNEL);
@@ -122,7 +93,7 @@ static void lkdtm_READ_AFTER_FREE(void)
 	pr_info("Attempting bad read from freed memory\n");
 	saw = base[offset];
 	if (saw != *val) {
-		/* Good! Poisoning happened, so declare a win. */
+		 
 		pr_info("Memory correctly poisoned (%x)\n", saw);
 	} else {
 		pr_err("FAIL: Memory was not poisoned!\n");
@@ -146,7 +117,7 @@ static void lkdtm_WRITE_BUDDY_AFTER_FREE(void)
 	schedule();
 	pr_info("Attempting bad write to the buddy page after free\n");
 	memset((void *)p, 0x78, PAGE_SIZE);
-	/* Attempt to notice the overwrite. */
+	 
 	p = __get_free_page(GFP_KERNEL);
 	free_page(p);
 	schedule();
@@ -179,7 +150,7 @@ static void lkdtm_READ_BUDDY_AFTER_FREE(void)
 	pr_info("Attempting to read from freed memory\n");
 	saw = base[0];
 	if (saw != *val) {
-		/* Good! Poisoning happened, so declare a win. */
+		 
 		pr_info("Memory correctly poisoned (%x)\n", saw);
 	} else {
 		pr_err("FAIL: Buddy page was not poisoned!\n");
@@ -264,7 +235,7 @@ static void lkdtm_SLAB_FREE_DOUBLE(void)
 		return;
 	}
 
-	/* Just make sure we got real memory. */
+	 
 	*val = 0x12345678;
 	pr_info("Attempting double slab free ...\n");
 	kmem_cache_free(double_free_cache, val);
@@ -281,7 +252,7 @@ static void lkdtm_SLAB_FREE_CROSS(void)
 		return;
 	}
 
-	/* Just make sure we got real memory. */
+	 
 	*val = 0x12345679;
 	pr_info("Attempting cross-cache slab free ...\n");
 	kmem_cache_free(b_cache, val);
@@ -296,10 +267,7 @@ static void lkdtm_SLAB_FREE_PAGE(void)
 	free_page(p);
 }
 
-/*
- * We have constructors to keep the caches distinctly separated without
- * needing to boot with "slab_nomerge".
- */
+ 
 static void ctor_double_free(void *region)
 { }
 static void ctor_a(void *region)

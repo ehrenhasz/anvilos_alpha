@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/dsa/tag_none.c - Traffic handling for switches with no tag
- * Copyright (c) 2008-2009 Marvell Semiconductor
- * Copyright (c) 2013 Florian Fainelli <florian@openwrt.org>
- *
- * WARNING: do not use this for new switches. In case of no hardware
- * tagging support, look at tag_8021q.c instead.
- */
+
+ 
 
 #include "tag.h"
 
@@ -15,7 +8,7 @@
 static struct sk_buff *dsa_slave_notag_xmit(struct sk_buff *skb,
 					    struct net_device *dev)
 {
-	/* Just return the original SKB */
+	 
 	return skb;
 }
 

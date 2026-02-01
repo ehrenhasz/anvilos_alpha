@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* QLogic qed NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/types.h>
 #include <asm/byteorder.h>
@@ -45,7 +42,7 @@ struct qed_l2_info {
 	u32 queues;
 	unsigned long **pp_qid_usage;
 
-	/* The lock is meant to synchronize access to the qid usage */
+	 
 	struct mutex lock;
 };
 
@@ -110,7 +107,7 @@ void qed_l2_free(struct qed_hwfn *p_hwfn)
 	if (!p_hwfn->p_l2_info->pp_qid_usage)
 		goto out_l2_info;
 
-	/* Free until hit first uninitialized entry */
+	 
 	for (i = 0; i < p_hwfn->p_l2_info->queues; i++) {
 		if (!p_hwfn->p_l2_info->pp_qid_usage[i])
 			break;
@@ -176,16 +173,14 @@ void qed_eth_queue_cid_release(struct qed_hwfn *p_hwfn,
 	if (IS_PF(p_hwfn->cdev) && !b_legacy_vf)
 		_qed_cxt_release_cid(p_hwfn, p_cid->cid, p_cid->vfid);
 
-	/* For PF's VFs we maintain the index inside queue-zone in IOV */
+	 
 	if (p_cid->vfid == QED_QUEUE_CID_SELF)
 		qed_eth_queue_qid_usage_del(p_hwfn, p_cid);
 
 	vfree(p_cid);
 }
 
-/* The internal is only meant to be directly called by PFs initializeing CIDs
- * for their VFs.
- */
+ 
 static struct qed_queue_cid *
 _qed_eth_queue_to_cid(struct qed_hwfn *p_hwfn,
 		      u16 opaque_fid,
@@ -205,7 +200,7 @@ _qed_eth_queue_to_cid(struct qed_hwfn *p_hwfn,
 	p_cid->cid = cid;
 	p_cid->p_owner = p_hwfn;
 
-	/* Fill in parameters */
+	 
 	p_cid->rel.vport_id = p_params->vport_id;
 	p_cid->rel.queue_id = p_params->queue_id;
 	p_cid->rel.stats_id = p_params->stats_id;
@@ -213,7 +208,7 @@ _qed_eth_queue_to_cid(struct qed_hwfn *p_hwfn,
 	p_cid->b_is_rx = b_is_rx;
 	p_cid->sb_idx = p_params->sb_idx;
 
-	/* Fill-in bits related to VFs' queues if information was provided */
+	 
 	if (p_vf_params) {
 		p_cid->vfid = p_vf_params->vfid;
 		p_cid->vf_qid = p_vf_params->vf_qid;
@@ -222,16 +217,13 @@ _qed_eth_queue_to_cid(struct qed_hwfn *p_hwfn,
 		p_cid->vfid = QED_QUEUE_CID_SELF;
 	}
 
-	/* Don't try calculating the absolute indices for VFs */
+	 
 	if (IS_VF(p_hwfn->cdev)) {
 		p_cid->abs = p_cid->rel;
 		goto out;
 	}
 
-	/* Calculate the engine-absolute indices of the resources.
-	 * This would guarantee they're valid later on.
-	 * In some cases [SBs] we already have the right values.
-	 */
+	 
 	rc = qed_fw_vport(p_hwfn, p_cid->rel.vport_id, &p_cid->abs.vport_id);
 	if (rc)
 		goto fail;
@@ -240,9 +232,7 @@ _qed_eth_queue_to_cid(struct qed_hwfn *p_hwfn,
 	if (rc)
 		goto fail;
 
-	/* In case of a PF configuring its VF's queues, the stats-id is already
-	 * absolute [since there's a single index that's suitable per-VF].
-	 */
+	 
 	if (p_cid->vfid == QED_QUEUE_CID_SELF) {
 		rc = qed_fw_vport(p_hwfn, p_cid->rel.stats_id,
 				  &p_cid->abs.stats_id);
@@ -253,9 +243,7 @@ _qed_eth_queue_to_cid(struct qed_hwfn *p_hwfn,
 	}
 
 out:
-	/* VF-images have provided the qid_usage_idx on their own.
-	 * Otherwise, we need to allocate a unique one.
-	 */
+	 
 	if (!p_vf_params) {
 		if (!qed_eth_queue_qid_usage_add(p_hwfn, p_cid))
 			goto fail;
@@ -295,10 +283,7 @@ qed_eth_queue_to_cid(struct qed_hwfn *p_hwfn,
 	bool b_legacy_vf = false;
 	u32 cid = 0;
 
-	/* In case of legacy VFs, The CID can be derived from the additional
-	 * VF parameters - the VF assumes queue X uses CID X, so we can simply
-	 * use the vf_qid for this purpose as well.
-	 */
+	 
 	if (p_vf_params) {
 		vfid = p_vf_params->vfid;
 
@@ -308,10 +293,7 @@ qed_eth_queue_to_cid(struct qed_hwfn *p_hwfn,
 		}
 	}
 
-	/* Get a unique firmware CID for this queue, in case it's a PF.
-	 * VF's don't need a CID as the queue configuration will be done
-	 * by PF.
-	 */
+	 
 	if (IS_PF(p_hwfn->cdev) && !b_legacy_vf) {
 		if (_qed_cxt_acquire_cid(p_hwfn, PROTOCOLID_ETH,
 					 &cid, vfid)) {
@@ -378,7 +360,7 @@ int qed_sp_eth_vport_start(struct qed_hwfn *p_hwfn,
 
 	p_ramrod->rx_mode.state = cpu_to_le16(rx_mode);
 
-	/* TPA related fields */
+	 
 	tpa_param = &p_ramrod->tpa_param;
 	memset(tpa_param, 0, sizeof(*tpa_param));
 
@@ -406,7 +388,7 @@ int qed_sp_eth_vport_start(struct qed_hwfn *p_hwfn,
 	p_ramrod->ctl_frame_mac_check_en = !!p_params->check_mac;
 	p_ramrod->ctl_frame_ethtype_check_en = !!p_params->check_ethtype;
 
-	/* Software Function ID in hwfn (PFs are 0 - 15, VFs are 16 - 135) */
+	 
 	p_ramrod->sw_fid = qed_concrete_to_sw_fid(p_hwfn->cdev,
 						  p_params->concrete_fid);
 
@@ -543,7 +525,7 @@ qed_sp_update_accept_mode(struct qed_hwfn *p_hwfn,
 	p_ramrod->common.update_tx_mode_flg =
 		accept_flags.update_tx_mode_config;
 
-	/* Set Rx mode accept flags */
+	 
 	if (p_ramrod->common.update_rx_mode_flg) {
 		u8 accept_filter = accept_flags.rx_accept_filter;
 		u16 state = 0;
@@ -574,7 +556,7 @@ qed_sp_update_accept_mode(struct qed_hwfn *p_hwfn,
 			   "p_ramrod->rx_mode.state = 0x%x\n", state);
 	}
 
-	/* Set Tx mode accept flags */
+	 
 	if (p_ramrod->common.update_tx_mode_flg) {
 		u8 accept_filter = accept_flags.tx_accept_filter;
 		u16 state = 0;
@@ -689,7 +671,7 @@ int qed_sp_vport_update(struct qed_hwfn *p_hwfn,
 	if (rc)
 		return rc;
 
-	/* Copy input params to ramrod according to FW struct */
+	 
 	p_ramrod = &p_ent->ramrod.vport_update;
 	p_cmn = &p_ramrod->common;
 
@@ -733,7 +715,7 @@ int qed_sp_vport_update(struct qed_hwfn *p_hwfn,
 		p_cmn->ctl_frame_ethtype_check_en = p_params->ethtype_chk_en;
 	}
 
-	/* Update mcast bins for VFs, PF doesn't use this functionality */
+	 
 	qed_sp_update_mcast_bin(p_hwfn, p_ramrod, p_params);
 
 	qed_sp_update_accept_mode(p_hwfn, p_ramrod, p_params->accept_flags);
@@ -797,7 +779,7 @@ static int qed_filter_accept_cmd(struct qed_dev *cdev,
 	struct qed_sp_vport_update_params vport_update_params;
 	int i, rc;
 
-	/* Prepare and send the vport rx_mode change */
+	 
 	memset(&vport_update_params, 0, sizeof(vport_update_params));
 	vport_update_params.vport_id = vport;
 	vport_update_params.accept_flags = accept_flags;
@@ -852,7 +834,7 @@ int qed_eth_rxq_start_ramrod(struct qed_hwfn *p_hwfn,
 		   p_cid->opaque_fid, p_cid->cid,
 		   p_cid->abs.queue_id, p_cid->abs.vport_id, p_cid->sb_igu_id);
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = p_cid->cid;
 	init_data.opaque_fid = p_cid->opaque_fid;
@@ -909,7 +891,7 @@ qed_eth_pf_rx_queue_start(struct qed_hwfn *p_hwfn,
 	    GET_GTT_REG_ADDR(GTT_BAR0_MAP_REG_MSDM_RAM,
 			     MSTORM_ETH_PF_PRODS, p_cid->abs.queue_id);
 
-	/* Init the rcq, rx bd and rx sge (if valid) producers to 0 */
+	 
 	__internal_ram_wr(p_hwfn, *pp_prod, sizeof(u32),
 			  (u32 *)(&init_prod_val));
 
@@ -932,7 +914,7 @@ qed_eth_rx_queue_start(struct qed_hwfn *p_hwfn,
 	struct qed_queue_cid *p_cid;
 	int rc;
 
-	/* Allocate a CID for the queue */
+	 
 	p_cid = qed_eth_queue_to_cid_pf(p_hwfn, opaque_fid, true, p_params);
 	if (!p_cid)
 		return -ENOMEM;
@@ -951,7 +933,7 @@ qed_eth_rx_queue_start(struct qed_hwfn *p_hwfn,
 					 cqe_pbl_size, &p_ret_params->p_prod);
 	}
 
-	/* Provide the caller with a reference to as handler */
+	 
 	if (rc)
 		qed_eth_queue_cid_release(p_hwfn, p_cid);
 	else
@@ -982,7 +964,7 @@ int qed_sp_eth_rx_queues_update(struct qed_hwfn *p_hwfn,
 	for (i = 0; i < num_rxqs; i++) {
 		p_cid = ((struct qed_queue_cid **)pp_rxq_handles)[i];
 
-		/* Get SPQ entry */
+		 
 		init_data.cid = p_cid->cid;
 		init_data.opaque_fid = p_cid->opaque_fid;
 
@@ -1032,9 +1014,7 @@ qed_eth_pf_rx_queue_stop(struct qed_hwfn *p_hwfn,
 	p_ramrod->vport_id = p_cid->abs.vport_id;
 	p_ramrod->rx_queue_id = cpu_to_le16(p_cid->abs.queue_id);
 
-	/* Cleaning the queue requires the completion to arrive there.
-	 * In addition, VFs require the answer to come as eqe to PF.
-	 */
+	 
 	p_ramrod->complete_cqe_flg = ((p_cid->vfid == QED_QUEUE_CID_SELF) &&
 				      !b_eq_completion_only) ||
 				     b_cqe_completion;
@@ -1073,7 +1053,7 @@ qed_eth_txq_start_ramrod(struct qed_hwfn *p_hwfn,
 	struct qed_sp_init_data init_data;
 	int rc = -EINVAL;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = p_cid->cid;
 	init_data.opaque_fid = p_cid->opaque_fid;
@@ -1118,7 +1098,7 @@ qed_eth_pf_tx_queue_start(struct qed_hwfn *p_hwfn,
 	if (rc)
 		return rc;
 
-	/* Provide the caller with the necessary return values */
+	 
 	*pp_doorbell = p_hwfn->doorbells +
 		       qed_db_addr(p_cid->cid, DQ_DEMS_LEGACY);
 
@@ -1242,7 +1222,7 @@ qed_filter_ucast_common(struct qed_hwfn *p_hwfn,
 	if (rc)
 		return rc;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = qed_spq_get_cid(p_hwfn);
 	init_data.opaque_fid = opaque_fid;
@@ -1412,12 +1392,7 @@ int qed_sp_eth_filter_ucast(struct qed_hwfn *p_hwfn,
 	return 0;
 }
 
-/*******************************************************************************
- * Description:
- *         Calculates crc 32 on a buffer
- *         Note: crc32_length MUST be aligned to 8
- * Return:
- ******************************************************************************/
+ 
 static u32 qed_calc_crc32c(u8 *crc32_packet,
 			   u32 crc32_length, u32 crc32_seed, u8 complement)
 {
@@ -1435,7 +1410,7 @@ static u32 qed_calc_crc32c(u8 *crc32_packet,
 			crc32_result = crc32_result << 1;
 			if (msb != (0x1 & (current_byte >> bit))) {
 				crc32_result = crc32_result ^ CRC32_POLY;
-				crc32_result |= 1; /*crc32_result[0] = 1;*/
+				crc32_result |= 1;  
 			}
 		}
 	}
@@ -1481,7 +1456,7 @@ qed_sp_eth_filter_mcast(struct qed_hwfn *p_hwfn,
 	if (rc)
 		return rc;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = qed_spq_get_cid(p_hwfn);
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -1499,13 +1474,11 @@ qed_sp_eth_filter_mcast(struct qed_hwfn *p_hwfn,
 	p_ramrod = &p_ent->ramrod.vport_update;
 	p_ramrod->common.update_approx_mcast_flg = 1;
 
-	/* explicitly clear out the entire vector */
+	 
 	memset(&p_ramrod->approx_mcast.bins, 0,
 	       sizeof(p_ramrod->approx_mcast.bins));
 	memset(bins, 0, sizeof(bins));
-	/* filter ADD op is explicit set op and it removes
-	 *  any existing filters for the vport
-	 */
+	 
 	if (p_filter_cmd->opcode == QED_FILTER_ADD) {
 		for (i = 0; i < p_filter_cmd->num_mc_addrs; i++) {
 			u32 bit, nbits;
@@ -1515,7 +1488,7 @@ qed_sp_eth_filter_mcast(struct qed_hwfn *p_hwfn,
 			bins[bit / nbits] |= 1 << (bit % nbits);
 		}
 
-		/* Convert to correct endianity */
+		 
 		for (i = 0; i < ETH_MULTICAST_MAC_BINS_IN_REGS; i++) {
 			struct vport_update_ramrod_mcast *p_ramrod_bins;
 
@@ -1537,7 +1510,7 @@ static int qed_filter_mcast_cmd(struct qed_dev *cdev,
 	int rc = 0;
 	int i;
 
-	/* only ADD and REMOVE operations are supported for multi-cast */
+	 
 	if ((p_filter_cmd->opcode != QED_FILTER_ADD &&
 	     (p_filter_cmd->opcode != QED_FILTER_REMOVE)) ||
 	    (p_filter_cmd->num_mc_addrs > QED_MAX_MC_ADDRS))
@@ -1593,7 +1566,7 @@ static int qed_filter_ucast_cmd(struct qed_dev *cdev,
 	return rc;
 }
 
-/* Statistics related code */
+ 
 static void __qed_get_vport_pstats_addrlen(struct qed_hwfn *p_hwfn,
 					   u32 *p_addr,
 					   u32 *p_len, u16 statistics_bin)
@@ -1879,7 +1852,7 @@ static void _qed_get_vport_stats(struct qed_dev *cdev,
 		p_ptt = IS_PF(cdev) ? qed_ptt_acquire_context(p_hwfn, is_atomic)
 				    : NULL;
 		if (IS_PF(cdev)) {
-			/* The main vport index is relative first */
+			 
 			if (qed_fw_vport(p_hwfn, 0, &fw_vport)) {
 				DP_ERR(p_hwfn, "No vport available!\n");
 				goto out;
@@ -1922,12 +1895,12 @@ void qed_get_vport_stats_context(struct qed_dev *cdev,
 	if (!cdev->reset_stats)
 		return;
 
-	/* Reduce the statistics baseline */
+	 
 	for (i = 0; i < sizeof(struct qed_eth_stats) / sizeof(u64); i++)
 		((u64 *)stats)[i] -= ((u64 *)cdev->reset_stats)[i];
 }
 
-/* zeroes V-PORT specific portion of stats (Port stats remains untouched) */
+ 
 void qed_reset_vport_stats(struct qed_dev *cdev)
 {
 	int i;
@@ -1962,10 +1935,7 @@ void qed_reset_vport_stats(struct qed_dev *cdev)
 			qed_ptt_release(p_hwfn, p_ptt);
 	}
 
-	/* PORT statistics are not necessarily reset, so we need to
-	 * read and create a baseline for future statistics.
-	 * Link change stat is maintained by MFW, return its value as is.
-	 */
+	 
 	if (!cdev->reset_stats) {
 		DP_INFO(cdev, "Reset stats not allocated\n");
 	} else {
@@ -2026,7 +1996,7 @@ qed_configure_rfs_ntuple_filter(struct qed_hwfn *p_hwfn,
 	u8 abs_vport_id = 0;
 	int rc = -EINVAL;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = qed_spq_get_cid(p_hwfn);
 
@@ -2207,10 +2177,7 @@ static int qed_fill_eth_dev_info(struct qed_dev *cdev,
 		if (cdev->int_params.out.int_mode == QED_INT_MODE_MSIX) {
 			u16 num_queues = 0;
 
-			/* Since the feature controls only queue-zones,
-			 * make sure we have the contexts [rx, xdp, tcs] to
-			 * match.
-			 */
+			 
 			for_each_hwfn(cdev, i) {
 				struct qed_hwfn *hwfn = &cdev->hwfns[i];
 				u16 l2_queues = (u16)FEAT_NUM(hwfn,
@@ -2222,9 +2189,7 @@ static int qed_fill_eth_dev_info(struct qed_dev *cdev,
 				num_queues += min_t(u16, l2_queues, cids);
 			}
 
-			/* queues might theoretically be >256, but interrupts'
-			 * upper-limit guarantes that it would fit in a u8.
-			 */
+			 
 			if (cdev->int_params.fp_msix_cnt) {
 				u8 irqs = cdev->int_params.fp_msix_cnt;
 
@@ -2257,7 +2222,7 @@ static int qed_fill_eth_dev_info(struct qed_dev *cdev,
 
 		info->num_tc = 1;
 
-		/* Determine queues &  XDP support */
+		 
 		for_each_hwfn(cdev, i) {
 			struct qed_hwfn *p_hwfn = &cdev->hwfns[i];
 			u8 queues, cids;
@@ -2268,7 +2233,7 @@ static int qed_fill_eth_dev_info(struct qed_dev *cdev,
 			total_cids += cids;
 		}
 
-		/* Enable VF XDP in case PF guarntees sufficient connections */
+		 
 		if (total_cids >= info->num_queues * 3)
 			info->xdp_supported = true;
 
@@ -2295,7 +2260,7 @@ static void qed_register_eth_ops(struct qed_dev *cdev,
 	cdev->protocol_ops.eth = ops;
 	cdev->ops_cookie = cookie;
 
-	/* For VF, we start bulletin reading */
+	 
 	if (IS_VF(cdev))
 		qed_vf_start_iov_wq(cdev);
 }
@@ -2320,7 +2285,7 @@ static int qed_start_vport(struct qed_dev *cdev,
 		start.tpa_mode = params->gro_enable ? QED_TPA_MODE_GRO :
 							QED_TPA_MODE_NONE;
 		start.remove_inner_vlan = params->remove_inner_vlan;
-		start.only_untagged = true;	/* untagged only */
+		start.only_untagged = true;	 
 		start.drop_ttl0 = params->drop_ttl0;
 		start.opaque_fid = p_hwfn->hw_info.opaque_fid;
 		start.concrete_fid = p_hwfn->hw_info.concrete_fid;
@@ -2376,7 +2341,7 @@ static int qed_update_vport_rss(struct qed_dev *cdev,
 {
 	int i, fn;
 
-	/* Update configuration with what's correct regardless of CMT */
+	 
 	rss->update_rss_config = 1;
 	rss->rss_enable = 1;
 	rss->update_rss_capabilities = 1;
@@ -2385,12 +2350,7 @@ static int qed_update_vport_rss(struct qed_dev *cdev,
 	rss->rss_caps = input->rss_caps;
 	memcpy(rss->rss_key, input->rss_key, QED_RSS_KEY_SIZE * sizeof(u32));
 
-	/* In regular scenario, we'd simply need to take input handlers.
-	 * But in CMT, we'd have to split the handlers according to the
-	 * engine they were configured on. We'd then have to understand
-	 * whether RSS is really required, since 2-queues on CMT doesn't
-	 * require RSS.
-	 */
+	 
 	if (cdev->num_hwfns == 1) {
 		memcpy(rss->rss_ind_table,
 		       input->rss_ind_table,
@@ -2399,10 +2359,10 @@ static int qed_update_vport_rss(struct qed_dev *cdev,
 		return 0;
 	}
 
-	/* Start by copying the non-spcific information to the 2nd copy */
+	 
 	memcpy(&rss[1], &rss[0], sizeof(struct qed_rss_params));
 
-	/* CMT should be round-robin */
+	 
 	for (i = 0; i < QED_RSS_IND_TABLE_SIZE; i++) {
 		struct qed_queue_cid *cid = input->rss_ind_table[i];
 		struct qed_rss_params *t_rss;
@@ -2415,7 +2375,7 @@ static int qed_update_vport_rss(struct qed_dev *cdev,
 		t_rss->rss_ind_table[i / cdev->num_hwfns] = cid;
 	}
 
-	/* Make sure RSS is actually required */
+	 
 	for_each_hwfn(cdev, fn) {
 		for (i = 1; i < QED_RSS_IND_TABLE_SIZE / cdev->num_hwfns; i++) {
 			if (rss[fn].rss_ind_table[i] !=
@@ -2449,7 +2409,7 @@ static int qed_update_vport(struct qed_dev *cdev,
 
 	memset(&sp_params, 0, sizeof(sp_params));
 
-	/* Translate protocol params into sp params */
+	 
 	sp_params.vport_id = params->vport_id;
 	sp_params.update_vport_active_rx_flg = params->update_vport_active_flg;
 	sp_params.update_vport_active_tx_flg = params->update_vport_active_flg;
@@ -2461,7 +2421,7 @@ static int qed_update_vport(struct qed_dev *cdev,
 	sp_params.update_accept_any_vlan_flg =
 		params->update_accept_any_vlan_flg;
 
-	/* Prepare the RSS configuration */
+	 
 	if (params->update_rss_flg)
 		if (qed_update_vport_rss(cdev, &params->rss_params, rss))
 			params->update_rss_flg = 0;
@@ -2915,6 +2875,6 @@ EXPORT_SYMBOL(qed_get_eth_ops);
 
 void qed_put_eth_ops(void)
 {
-	/* TODO - reference count for module? */
+	 
 }
 EXPORT_SYMBOL(qed_put_eth_ops);

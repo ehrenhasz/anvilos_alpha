@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_QUIRKS_H__
 #define __INTEL_QUIRKS_H__
@@ -22,4 +20,4 @@ enum intel_quirk_id {
 void intel_init_quirks(struct drm_i915_private *i915);
 bool intel_has_quirk(struct drm_i915_private *i915, enum intel_quirk_id quirk);
 
-#endif /* __INTEL_QUIRKS_H__ */
+#endif  

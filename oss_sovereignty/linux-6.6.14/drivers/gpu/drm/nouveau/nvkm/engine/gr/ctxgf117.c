@@ -1,34 +1,10 @@
-/*
- * Copyright 2013 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs <bskeggs@redhat.com>
- */
+ 
 #include "ctxgf100.h"
 
 #include <subdev/fb.h>
 #include <subdev/mc.h>
 
-/*******************************************************************************
- * PGRAPH context register lists
- ******************************************************************************/
+ 
 
 static const struct gf100_gr_init
 gf117_grctx_init_ds_0[] = {
@@ -180,9 +156,7 @@ gf117_grctx_pack_ppc[] = {
 	{}
 };
 
-/*******************************************************************************
- * PGRAPH context implementation
- ******************************************************************************/
+ 
 
 void
 gf117_grctx_generate_dist_skip_table(struct gf100_gr *gr)
@@ -202,11 +176,11 @@ gf117_grctx_generate_rop_mapping(struct gf100_gr *gr)
 	u8  shift, ntpcv;
 	int i;
 
-	/* Pack tile map into register format. */
+	 
 	for (i = 0; i < 32; i++)
 		data[i / 6] |= (gr->tile[i] & 0x07) << ((i % 6) * 5);
 
-	/* Magic. */
+	 
 	shift = 0;
 	ntpcv = gr->tpc_total;
 	while (!(ntpcv & (1 << 4))) {
@@ -220,20 +194,20 @@ gf117_grctx_generate_rop_mapping(struct gf100_gr *gr)
 	for (i = 1; i < 7; i++)
 		data2[1] |= ((1 << (i + 5)) % ntpcv) << ((i - 1) * 5);
 
-	/* GPC_BROADCAST */
+	 
 	nvkm_wr32(device, 0x418bb8, (gr->tpc_total << 8) |
 				     gr->screen_tile_row_offset);
 	for (i = 0; i < 6; i++)
 		nvkm_wr32(device, 0x418b08 + (i * 4), data[i]);
 
-	/* GPC_BROADCAST.TP_BROADCAST */
+	 
 	nvkm_wr32(device, 0x41bfd0, (gr->tpc_total << 8) |
 				     gr->screen_tile_row_offset | data2[0]);
 	nvkm_wr32(device, 0x41bfe4, data2[1]);
 	for (i = 0; i < 6; i++)
 		nvkm_wr32(device, 0x41bf00 + (i * 4), data[i]);
 
-	/* UNK78xx */
+	 
 	nvkm_wr32(device, 0x4078bc, (gr->tpc_total << 8) |
 				     gr->screen_tile_row_offset);
 	for (i = 0; i < 6; i++)

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * debugfs.c - DesignWare USB3 DRD Controller DebugFS file
- *
- * Copyright (C) 2010-2011 Texas Instruments Incorporated - https://www.ti.com
- *
- * Authors: Felipe Balbi <balbi@ti.com>,
- *	    Sebastian Andrzej Siewior <bigeasy@linutronix.de>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -699,7 +692,7 @@ static int dwc3_tx_fifo_size_show(struct seq_file *s, void *unused)
 	spin_lock_irqsave(&dwc->lock, flags);
 	val = dwc3_core_fifo_space(dep, DWC3_TXFIFO);
 
-	/* Convert to bytes */
+	 
 	mdwidth = dwc3_mdwidth(dwc);
 
 	val *= mdwidth;
@@ -728,7 +721,7 @@ static int dwc3_rx_fifo_size_show(struct seq_file *s, void *unused)
 	spin_lock_irqsave(&dwc->lock, flags);
 	val = dwc3_core_fifo_space(dep, DWC3_RXFIFO);
 
-	/* Convert to bytes */
+	 
 	mdwidth = dwc3_mdwidth(dwc);
 
 	val *= mdwidth;

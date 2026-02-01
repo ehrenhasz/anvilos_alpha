@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * NXP TDA18218HN silicon tuner driver
- *
- * Copyright (C) 2010 Antti Palosaari <crope@iki.fi>
- */
+ 
+ 
 
 #ifndef TDA18218_H
 #define TDA18218_H

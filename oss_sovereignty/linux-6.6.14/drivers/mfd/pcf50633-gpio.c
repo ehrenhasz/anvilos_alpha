@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* NXP PCF50633 GPIO Driver
- *
- * (C) 2006-2008 by Openmoko, Inc.
- * Author: Balaji Rao <balajirrao@openmoko.org>
- * All rights reserved.
- *
- * Broken down from monstrous PCF50633 driver mainly by
- * Harald Welte, Andy Green and Werner Almesberger
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -78,7 +70,7 @@ int pcf50633_gpio_power_supply_set(struct pcf50633 *pcf,
 {
 	u8 reg, val, mask;
 
-	/* the *ENA register is always one after the *OUT register */
+	 
 	reg = pcf50633_regulator_registers[regulator] + 1;
 
 	val = !!on << (gpio - PCF50633_GPIO1);

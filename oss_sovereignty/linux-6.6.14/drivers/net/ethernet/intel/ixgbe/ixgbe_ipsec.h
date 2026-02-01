@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2017 Oracle and/or its affiliates. All rights reserved. */
+ 
+ 
 
 #ifndef _IXGBE_IPSEC_H_
 #define _IXGBE_IPSEC_H_
@@ -80,4 +80,4 @@ struct sa_mbx_msg {
 	__be32 addr[4];
 	u32 key[5];
 };
-#endif /* _IXGBE_IPSEC_H_ */
+#endif  

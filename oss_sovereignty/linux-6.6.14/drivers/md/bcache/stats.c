@@ -1,37 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * bcache stats code
- *
- * Copyright 2012 Google, Inc.
- */
+
+ 
 
 #include "bcache.h"
 #include "stats.h"
 #include "btree.h"
 #include "sysfs.h"
 
-/*
- * We keep absolute totals of various statistics, and addionally a set of three
- * rolling averages.
- *
- * Every so often, a timer goes off and rescales the rolling averages.
- * accounting_rescale[] is how many times the timer has to go off before we
- * rescale each set of numbers; that gets us half lives of 5 minutes, one hour,
- * and one day.
- *
- * accounting_delay is how often the timer goes off - 22 times in 5 minutes,
- * and accounting_weight is what we use to rescale:
- *
- * pow(31 / 32, 22) ~= 1/2
- *
- * So that we don't have to increment each set of numbers every time we (say)
- * get a cache hit, we increment a single atomic_t in acc->collector, and when
- * the rescale function runs it resets the atomic counter to 0 and adds its
- * old value to each of the exported numbers.
- *
- * To reduce rounding error, the numbers in struct cache_stats are all
- * stored left shifted by 16, and scaled back in the sysfs show() function.
- */
+ 
 
 static const unsigned int DAY_RESCALE		= 288;
 static const unsigned int HOUR_RESCALE		= 12;
@@ -39,7 +14,7 @@ static const unsigned int FIVE_MINUTE_RESCALE	= 1;
 static const unsigned int accounting_delay	= (HZ * 300) / 22;
 static const unsigned int accounting_weight	= 32;
 
-/* sysfs reading/writing */
+ 
 
 read_attribute(cache_hits);
 read_attribute(cache_misses);
@@ -127,7 +102,7 @@ void bch_cache_accounting_destroy(struct cache_accounting *acc)
 		closure_return(&acc->cl);
 }
 
-/* EWMA scaling */
+ 
 
 static void scale_stat(unsigned long *stat)
 {

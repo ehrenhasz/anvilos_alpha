@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Thermal sensor driver for Allwinner SOC
- * Copyright (C) 2019 Yangtao Li
- *
- * Based on the work of Icenowy Zheng <icenowy@aosc.io>
- * Based on the work of Ondrej Jirman <megous@megous.com>
- * Based on the work of Josef Gajdusek <atx@atx.name>
- */
+
+ 
 
 #include <linux/bitmap.h>
 #include <linux/clk.h>
@@ -88,7 +81,7 @@ struct ths_device {
 	struct tsensor				sensor[MAX_SENSOR_NUM];
 };
 
-/* Temp Unit: millidegree Celsius */
+ 
 static int sun8i_ths_calc_temp(struct ths_device *tmdev,
 			       int id, int reg)
 {
@@ -115,19 +108,12 @@ static int sun8i_ths_get_temp(struct thermal_zone_device *tz, int *temp)
 	regmap_read(tmdev->regmap, tmdev->chip->temp_data_base +
 		    0x4 * s->id, &val);
 
-	/* ths have no data yet */
+	 
 	if (!val)
 		return -EAGAIN;
 
 	*temp = tmdev->chip->calc_temp(tmdev, s->id, val);
-	/*
-	 * According to the original sdk, there are some platforms(rarely)
-	 * that add a fixed offset value after calculating the temperature
-	 * value. We can't simply put it on the formula for calculating the
-	 * temperature above, because the formula for calculating the
-	 * temperature above is also used when the sensor is calibrated. If
-	 * do this, the correct calibration formula is hard to know.
-	 */
+	 
 	*temp += tmdev->chip->ft_deviation;
 
 	return 0;
@@ -224,22 +210,7 @@ static int sun50i_h6_ths_calibrate(struct ths_device *tmdev,
 	if (!caldata[0] || callen < 2 + 2 * tmdev->chip->sensor_num)
 		return -EINVAL;
 
-	/*
-	 * efuse layout:
-	 *
-	 *	0   11  16	 32
-	 *	+-------+-------+-------+
-	 *	|temp|  |sensor0|sensor1|
-	 *	+-------+-------+-------+
-	 *
-	 * The calibration data on the H6 is the ambient temperature and
-	 * sensor values that are filled during the factory test stage.
-	 *
-	 * The unit of stored FT temperature is 0.1 degree celsius.
-	 *
-	 * We need to calculate a delta between measured and caluclated
-	 * register values and this will become a calibration offset.
-	 */
+	 
 	ft_temp = (caldata[0] & FT_TEMP_MASK) * 100;
 
 	for (i = 0; i < tmdev->chip->sensor_num; i++) {
@@ -247,21 +218,11 @@ static int sun50i_h6_ths_calibrate(struct ths_device *tmdev,
 		int cdata, offset;
 		int sensor_temp = tmdev->chip->calc_temp(tmdev, i, sensor_reg);
 
-		/*
-		 * Calibration data is CALIBRATE_DEFAULT - (calculated
-		 * temperature from sensor reading at factory temperature
-		 * minus actual factory temperature) * 14.88 (scale from
-		 * temperature to register values)
-		 */
+		 
 		cdata = CALIBRATE_DEFAULT -
 			((sensor_temp - ft_temp) * 10 / tmdev->chip->scale);
 		if (cdata & ~TEMP_CALIB_MASK) {
-			/*
-			 * Calibration value more than 12-bit, but calibration
-			 * register is 12-bit. In this case, ths hardware can
-			 * still work without calibration, although the data
-			 * won't be so accurate.
-			 */
+			 
 			dev_warn(dev, "sensor%d is not calibrated.\n", i);
 			continue;
 		}
@@ -288,19 +249,7 @@ static int sun8i_ths_calibrate(struct ths_device *tmdev)
 	if (IS_ERR(calcell)) {
 		if (PTR_ERR(calcell) == -EPROBE_DEFER)
 			return -EPROBE_DEFER;
-		/*
-		 * Even if the external calibration data stored in sid is
-		 * not accessible, the THS hardware can still work, although
-		 * the data won't be so accurate.
-		 *
-		 * The default value of calibration register is 0x800 for
-		 * every sensor, and the calibration value is usually 0x7xx
-		 * or 0x8xx, so they won't be away from the default value
-		 * for a lot.
-		 *
-		 * So here we do not return error if the calibration data is
-		 * not available, except the probe needs deferring.
-		 */
+		 
 		goto out;
 	}
 
@@ -379,28 +328,15 @@ static int sun8i_h3_thermal_init(struct ths_device *tmdev)
 {
 	int val;
 
-	/* average over 4 samples */
+	 
 	regmap_write(tmdev->regmap, SUN8I_THS_MFC,
 		     SUN50I_THS_FILTER_EN |
 		     SUN50I_THS_FILTER_TYPE(1));
-	/*
-	 * clkin = 24MHz
-	 * filter_samples = 4
-	 * period = 0.25s
-	 *
-	 * x = period * clkin / 4096 / filter_samples - 1
-	 *   = 365
-	 */
+	 
 	val = GENMASK(7 + tmdev->chip->sensor_num, 8);
 	regmap_write(tmdev->regmap, SUN8I_THS_IC,
 		     SUN50I_H6_THS_PC_TEMP_PERIOD(365) | val);
-	/*
-	 * T_acq = 20us
-	 * clkin = 24MHz
-	 *
-	 * x = T_acq * clkin - 1
-	 *   = 479
-	 */
+	 
 	regmap_write(tmdev->regmap, SUN8I_THS_CTRL0,
 		     SUN8I_THS_CTRL0_T_ACQ0(479));
 	val = GENMASK(tmdev->chip->sensor_num - 1, 0);
@@ -410,43 +346,27 @@ static int sun8i_h3_thermal_init(struct ths_device *tmdev)
 	return 0;
 }
 
-/*
- * Without this undocumented value, the returned temperatures would
- * be higher than real ones by about 20C.
- */
+ 
 #define SUN50I_H6_CTRL0_UNK 0x0000002f
 
 static int sun50i_h6_thermal_init(struct ths_device *tmdev)
 {
 	int val;
 
-	/*
-	 * T_acq = 20us
-	 * clkin = 24MHz
-	 *
-	 * x = T_acq * clkin - 1
-	 *   = 479
-	 */
+	 
 	regmap_write(tmdev->regmap, SUN50I_THS_CTRL0,
 		     SUN50I_H6_CTRL0_UNK | SUN50I_THS_CTRL0_T_ACQ(479));
-	/* average over 4 samples */
+	 
 	regmap_write(tmdev->regmap, SUN50I_H6_THS_MFC,
 		     SUN50I_THS_FILTER_EN |
 		     SUN50I_THS_FILTER_TYPE(1));
-	/*
-	 * clkin = 24MHz
-	 * filter_samples = 4
-	 * period = 0.25s
-	 *
-	 * x = period * clkin / 4096 / filter_samples - 1
-	 *   = 365
-	 */
+	 
 	regmap_write(tmdev->regmap, SUN50I_H6_THS_PC,
 		     SUN50I_H6_THS_PC_TEMP_PERIOD(365));
-	/* enable sensor */
+	 
 	val = GENMASK(tmdev->chip->sensor_num - 1, 0);
 	regmap_write(tmdev->regmap, SUN50I_H6_THS_ENABLE, val);
-	/* thermal data interrupt enable */
+	 
 	val = GENMASK(tmdev->chip->sensor_num - 1, 0);
 	regmap_write(tmdev->regmap, SUN50I_H6_THS_DIC, val);
 
@@ -505,11 +425,7 @@ static int sun8i_ths_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/*
-	 * Avoid entering the interrupt handler, the thermal device is not
-	 * registered yet, we deffer the registration of the interrupt to
-	 * the end.
-	 */
+	 
 	ret = devm_request_threaded_irq(dev, irq, NULL,
 					sun8i_irq_thread,
 					IRQF_ONESHOT, "ths", tmdev);
@@ -614,7 +530,7 @@ static const struct of_device_id of_ths_match[] = {
 	{ .compatible = "allwinner,sun50i-a100-ths", .data = &sun50i_a100_ths },
 	{ .compatible = "allwinner,sun50i-h5-ths", .data = &sun50i_h5_ths },
 	{ .compatible = "allwinner,sun50i-h6-ths", .data = &sun50i_h6_ths },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, of_ths_match);
 

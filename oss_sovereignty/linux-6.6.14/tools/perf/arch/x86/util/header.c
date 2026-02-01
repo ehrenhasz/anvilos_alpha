@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <sys/types.h>
 #include <errno.h>
 #include <unistd.h>
@@ -35,21 +35,21 @@ __get_cpuid(char *buffer, size_t sz, const char *fmt)
 	if (lvl >= 1) {
 		cpuid(1, 0, &a, &b, &c, &d);
 
-		family = (a >> 8) & 0xf;  /* bits 11 - 8 */
-		model  = (a >> 4) & 0xf;  /* Bits  7 - 4 */
+		family = (a >> 8) & 0xf;   
+		model  = (a >> 4) & 0xf;   
 		step   = a & 0xf;
 
-		/* extended family */
+		 
 		if (family == 0xf)
 			family += (a >> 20) & 0xff;
 
-		/* extended model */
+		 
 		if (family >= 0x6)
 			model += ((a >> 16) & 0xf) << 4;
 	}
 	nb = scnprintf(buffer, sz, fmt, vendor, family, model, step);
 
-	/* look for end marker to ensure the entire data fit */
+	 
 	if (strchr(buffer, '$')) {
 		buffer[nb-1] = '\0';
 		return 0;
@@ -75,7 +75,7 @@ get_cpuid_str(struct perf_pmu *pmu __maybe_unused)
 	return buf;
 }
 
-/* Full CPUID format for x86 is vendor-family-model-stepping */
+ 
 static bool is_full_cpuid(const char *id)
 {
 	const char *tmp = id;
@@ -100,10 +100,7 @@ int strcmp_cpuid_str(const char *mapcpuid, const char *id)
 	bool full_mapcpuid = is_full_cpuid(mapcpuid);
 	bool full_cpuid = is_full_cpuid(id);
 
-	/*
-	 * Full CPUID format is required to identify a platform.
-	 * Error out if the cpuid string is incomplete.
-	 */
+	 
 	if (full_mapcpuid && !full_cpuid) {
 		pr_info("Invalid CPUID %s. Full CPUID is required, "
 			"vendor-family-model-stepping\n", id);
@@ -111,7 +108,7 @@ int strcmp_cpuid_str(const char *mapcpuid, const char *id)
 	}
 
 	if (regcomp(&re, mapcpuid, REG_EXTENDED) != 0) {
-		/* Warn unable to generate match particular string. */
+		 
 		pr_info("Invalid regular expression %s\n", mapcpuid);
 		return 1;
 	}
@@ -122,15 +119,13 @@ int strcmp_cpuid_str(const char *mapcpuid, const char *id)
 		size_t match_len = (pmatch[0].rm_eo - pmatch[0].rm_so);
 		size_t cpuid_len;
 
-		/* If the full CPUID format isn't required,
-		 * ignoring the stepping.
-		 */
+		 
 		if (!full_mapcpuid && full_cpuid)
 			cpuid_len = strrchr(id, '-') - id;
 		else
 			cpuid_len = strlen(id);
 
-		/* Verify the entire string matched. */
+		 
 		if (match_len == cpuid_len)
 			return 0;
 	}

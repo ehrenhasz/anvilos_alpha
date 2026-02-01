@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Watchdog driver for the MEN z069 IP-Core
- *
- * Copyright (C) 2018 Johannes Thumshirn <jth@kernel.org>
- */
+
+ 
 #include <linux/io.h>
 #include <linux/kernel.h>
 #include <linux/mcb.h>
@@ -21,7 +17,7 @@ struct men_z069_drv {
 #define MEN_Z069_WTR_WDET_MASK		0x7fff
 #define MEN_Z069_WVR			0x14
 
-#define MEN_Z069_TIMER_FREQ		500 /* 500 Hz */
+#define MEN_Z069_TIMER_FREQ		500  
 #define MEN_Z069_WDT_COUNTER_MIN	1
 #define MEN_Z069_WDT_COUNTER_MAX	0x7fff
 #define MEN_Z069_DEFAULT_TIMEOUT	30
@@ -60,7 +56,7 @@ static int men_z069_wdt_ping(struct watchdog_device *wdt)
 	struct men_z069_drv *drv = watchdog_get_drvdata(wdt);
 	u16 val;
 
-	/* The watchdog trigger value toggles between 0x5555 and 0xaaaa */
+	 
 	val = readw(drv->base + MEN_Z069_WVR);
 	val ^= 0xffff;
 	writew(val, drv->base + MEN_Z069_WVR);

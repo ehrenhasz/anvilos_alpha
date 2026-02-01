@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/skbuff.h>
 #include <linux/slab.h>
 #include <linux/netdevice.h>
@@ -46,7 +46,7 @@ unlock:
 }
 EXPORT_SYMBOL(gro_cells_receive);
 
-/* called under BH context */
+ 
 static int gro_cell_poll(struct napi_struct *napi, int budget)
 {
 	struct gro_cell *cell = container_of(napi, struct gro_cell, napi);
@@ -116,20 +116,13 @@ void gro_cells_destroy(struct gro_cells *gcells)
 		__netif_napi_del(&cell->napi);
 		__skb_queue_purge(&cell->napi_skbs);
 	}
-	/* We need to observe an rcu grace period before freeing ->cells,
-	 * because netpoll could access dev->napi_list under rcu protection.
-	 * Try hard using call_rcu() instead of synchronize_rcu(),
-	 * because we might be called from cleanup_net(), and we
-	 * definitely do not want to block this critical task.
-	 */
+	 
 	defer = kmalloc(sizeof(*defer), GFP_KERNEL | __GFP_NOWARN);
 	if (likely(defer)) {
 		defer->ptr = gcells->cells;
 		call_rcu(&defer->rcu, percpu_free_defer_callback);
 	} else {
-		/* We do not hold RTNL at this point, synchronize_net()
-		 * would not be able to expedite this sync.
-		 */
+		 
 		synchronize_rcu_expedited();
 		free_percpu(gcells->cells);
 	}

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file contians vfs address (mmap) ops for 9P2000.
- *
- *  Copyright (C) 2005 by Eric Van Hensbergen <ericvh@gmail.com>
- *  Copyright (C) 2002 by Ron Minnich <rminnich@lanl.gov>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/errno.h>
@@ -25,10 +20,7 @@
 #include "cache.h"
 #include "fid.h"
 
-/**
- * v9fs_issue_read - Issue a read from 9P
- * @subreq: The read to make
- */
+ 
 static void v9fs_issue_read(struct netfs_io_subrequest *subreq)
 {
 	struct netfs_io_request *rreq = subreq->rreq;
@@ -42,27 +34,20 @@ static void v9fs_issue_read(struct netfs_io_subrequest *subreq)
 
 	total = p9_client_read(fid, pos, &to, &err);
 
-	/* if we just extended the file size, any portion not in
-	 * cache won't be on server and is zeroes */
+	 
 	__set_bit(NETFS_SREQ_CLEAR_TAIL, &subreq->flags);
 
 	netfs_subreq_terminated(subreq, err ?: total, false);
 }
 
-/**
- * v9fs_init_request - Initialise a read request
- * @rreq: The read request
- * @file: The file being read from
- */
+ 
 static int v9fs_init_request(struct netfs_io_request *rreq, struct file *file)
 {
 	struct p9_fid *fid = file->private_data;
 
 	BUG_ON(!fid);
 
-	/* we might need to read from a fid that was opened write-only
-	 * for read-modify-write of page cache, use the writeback fid
-	 * for that */
+	 
 	WARN_ON(rreq->origin == NETFS_READ_FOR_WRITE &&
 			!(fid->mode & P9_ORDWR));
 
@@ -71,10 +56,7 @@ static int v9fs_init_request(struct netfs_io_request *rreq, struct file *file)
 	return 0;
 }
 
-/**
- * v9fs_free_request - Cleanup request initialized by v9fs_init_rreq
- * @rreq: The I/O request to clean up
- */
+ 
 static void v9fs_free_request(struct netfs_io_request *rreq)
 {
 	struct p9_fid *fid = rreq->netfs_priv;
@@ -82,10 +64,7 @@ static void v9fs_free_request(struct netfs_io_request *rreq)
 	p9_fid_put(fid);
 }
 
-/**
- * v9fs_begin_cache_operation - Begin a cache operation for a read
- * @rreq: The read request
- */
+ 
 static int v9fs_begin_cache_operation(struct netfs_io_request *rreq)
 {
 #ifdef CONFIG_9P_FSCACHE
@@ -104,13 +83,7 @@ const struct netfs_request_ops v9fs_req_ops = {
 	.issue_read		= v9fs_issue_read,
 };
 
-/**
- * v9fs_release_folio - release the private state associated with a folio
- * @folio: The folio to be released
- * @gfp: The caller's allocation restrictions
- *
- * Returns true if the page can be released, false otherwise.
- */
+ 
 
 static bool v9fs_release_folio(struct folio *folio, gfp_t gfp)
 {
@@ -162,7 +135,7 @@ static int v9fs_vfs_write_folio_locked(struct folio *folio)
 	struct fscache_cookie __maybe_unused *cookie = v9fs_inode_cookie(v9inode);
 
 	if (start >= i_size)
-		return 0; /* Simultaneous truncation occurred */
+		return 0;  
 
 	len = min_t(loff_t, i_size - start, len);
 
@@ -233,22 +206,7 @@ static int v9fs_launder_folio(struct folio *folio)
 	return 0;
 }
 
-/**
- * v9fs_direct_IO - 9P address space operation for direct I/O
- * @iocb: target I/O control block
- * @iter: The data/buffer to use
- *
- * The presence of v9fs_direct_IO() in the address space ops vector
- * allowes open() O_DIRECT flags which would have failed otherwise.
- *
- * In the non-cached mode, we shunt off direct read and write requests before
- * the VFS gets them, so this method should never be called.
- *
- * Direct IO is not 'yet' supported in the cached mode. Hence when
- * this routine is called through generic_file_aio_read(), the read/write fails
- * with an error.
- *
- */
+ 
 static ssize_t
 v9fs_direct_IO(struct kiocb *iocb, struct iov_iter *iter)
 {
@@ -282,10 +240,7 @@ static int v9fs_write_begin(struct file *filp, struct address_space *mapping,
 
 	p9_debug(P9_DEBUG_VFS, "filp %p, mapping %p\n", filp, mapping);
 
-	/* Prefetch area to be written into the cache if we're caching this
-	 * file.  We need to do this before we get a lock on the page in case
-	 * there's more than one writer competing for the same cache block.
-	 */
+	 
 	retval = netfs_write_begin(&v9inode->netfs, filp, mapping, pos, len, &folio, fsdata);
 	if (retval < 0)
 		return retval;
@@ -313,10 +268,7 @@ static int v9fs_write_end(struct file *filp, struct address_space *mapping,
 		folio_mark_uptodate(folio);
 	}
 
-	/*
-	 * No need to use i_size_read() here, the i_size
-	 * cannot change under us because we hold the i_mutex.
-	 */
+	 
 	if (last_pos > inode->i_size) {
 		inode_add_bytes(inode, last_pos - inode->i_size);
 		i_size_write(inode, last_pos);
@@ -334,10 +286,7 @@ out:
 }
 
 #ifdef CONFIG_9P_FSCACHE
-/*
- * Mark a page as having been made dirty and thus needing writeback.  We also
- * need to pin the cache object to write back to.
- */
+ 
 static bool v9fs_dirty_folio(struct address_space *mapping, struct folio *folio)
 {
 	struct v9fs_inode *v9inode = V9FS_I(mapping->host);

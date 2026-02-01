@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2014 Intel Corporation
- */
+ 
+ 
 
 #ifndef _INTEL_RENDERSTATE_H_
 #define _INTEL_RENDERSTATE_H_
@@ -49,4 +47,4 @@ int intel_renderstate_emit(struct intel_renderstate *so,
 void intel_renderstate_fini(struct intel_renderstate *so,
 			    struct intel_context *ce);
 
-#endif /* _INTEL_RENDERSTATE_H_ */
+#endif  

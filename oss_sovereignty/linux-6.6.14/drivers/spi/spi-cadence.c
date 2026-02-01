@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cadence SPI controller driver (host and target mode)
- *
- * Copyright (C) 2008 - 2014 Xilinx, Inc.
- *
- * based on Blackfin On-Chip SPI Driver (spi_bfin5xx.c)
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -20,98 +14,65 @@
 #include <linux/pm_runtime.h>
 #include <linux/spi/spi.h>
 
-/* Name of this driver */
+ 
 #define CDNS_SPI_NAME		"cdns-spi"
 
-/* Register offset definitions */
-#define CDNS_SPI_CR	0x00 /* Configuration  Register, RW */
-#define CDNS_SPI_ISR	0x04 /* Interrupt Status Register, RO */
-#define CDNS_SPI_IER	0x08 /* Interrupt Enable Register, WO */
-#define CDNS_SPI_IDR	0x0c /* Interrupt Disable Register, WO */
-#define CDNS_SPI_IMR	0x10 /* Interrupt Enabled Mask Register, RO */
-#define CDNS_SPI_ER	0x14 /* Enable/Disable Register, RW */
-#define CDNS_SPI_DR	0x18 /* Delay Register, RW */
-#define CDNS_SPI_TXD	0x1C /* Data Transmit Register, WO */
-#define CDNS_SPI_RXD	0x20 /* Data Receive Register, RO */
-#define CDNS_SPI_SICR	0x24 /* Slave Idle Count Register, RW */
-#define CDNS_SPI_THLD	0x28 /* Transmit FIFO Watermark Register,RW */
+ 
+#define CDNS_SPI_CR	0x00  
+#define CDNS_SPI_ISR	0x04  
+#define CDNS_SPI_IER	0x08  
+#define CDNS_SPI_IDR	0x0c  
+#define CDNS_SPI_IMR	0x10  
+#define CDNS_SPI_ER	0x14  
+#define CDNS_SPI_DR	0x18  
+#define CDNS_SPI_TXD	0x1C  
+#define CDNS_SPI_RXD	0x20  
+#define CDNS_SPI_SICR	0x24  
+#define CDNS_SPI_THLD	0x28  
 
 #define SPI_AUTOSUSPEND_TIMEOUT		3000
-/*
- * SPI Configuration Register bit Masks
- *
- * This register contains various control bits that affect the operation
- * of the SPI controller
- */
-#define CDNS_SPI_CR_MANSTRT	0x00010000 /* Manual TX Start */
-#define CDNS_SPI_CR_CPHA		0x00000004 /* Clock Phase Control */
-#define CDNS_SPI_CR_CPOL		0x00000002 /* Clock Polarity Control */
-#define CDNS_SPI_CR_SSCTRL		0x00003C00 /* Slave Select Mask */
-#define CDNS_SPI_CR_PERI_SEL	0x00000200 /* Peripheral Select Decode */
-#define CDNS_SPI_CR_BAUD_DIV	0x00000038 /* Baud Rate Divisor Mask */
-#define CDNS_SPI_CR_MSTREN		0x00000001 /* Master Enable Mask */
-#define CDNS_SPI_CR_MANSTRTEN	0x00008000 /* Manual TX Enable Mask */
-#define CDNS_SPI_CR_SSFORCE	0x00004000 /* Manual SS Enable Mask */
-#define CDNS_SPI_CR_BAUD_DIV_4	0x00000008 /* Default Baud Div Mask */
+ 
+#define CDNS_SPI_CR_MANSTRT	0x00010000  
+#define CDNS_SPI_CR_CPHA		0x00000004  
+#define CDNS_SPI_CR_CPOL		0x00000002  
+#define CDNS_SPI_CR_SSCTRL		0x00003C00  
+#define CDNS_SPI_CR_PERI_SEL	0x00000200  
+#define CDNS_SPI_CR_BAUD_DIV	0x00000038  
+#define CDNS_SPI_CR_MSTREN		0x00000001  
+#define CDNS_SPI_CR_MANSTRTEN	0x00008000  
+#define CDNS_SPI_CR_SSFORCE	0x00004000  
+#define CDNS_SPI_CR_BAUD_DIV_4	0x00000008  
 #define CDNS_SPI_CR_DEFAULT	(CDNS_SPI_CR_MSTREN | \
 					CDNS_SPI_CR_SSCTRL | \
 					CDNS_SPI_CR_SSFORCE | \
 					CDNS_SPI_CR_BAUD_DIV_4)
 
-/*
- * SPI Configuration Register - Baud rate and target select
- *
- * These are the values used in the calculation of baud rate divisor and
- * setting the target select.
- */
+ 
 
-#define CDNS_SPI_BAUD_DIV_MAX		7 /* Baud rate divisor maximum */
-#define CDNS_SPI_BAUD_DIV_MIN		1 /* Baud rate divisor minimum */
-#define CDNS_SPI_BAUD_DIV_SHIFT		3 /* Baud rate divisor shift in CR */
-#define CDNS_SPI_SS_SHIFT		10 /* Slave Select field shift in CR */
-#define CDNS_SPI_SS0			0x1 /* Slave Select zero */
-#define CDNS_SPI_NOSS			0xF /* No Slave select */
+#define CDNS_SPI_BAUD_DIV_MAX		7  
+#define CDNS_SPI_BAUD_DIV_MIN		1  
+#define CDNS_SPI_BAUD_DIV_SHIFT		3  
+#define CDNS_SPI_SS_SHIFT		10  
+#define CDNS_SPI_SS0			0x1  
+#define CDNS_SPI_NOSS			0xF  
 
-/*
- * SPI Interrupt Registers bit Masks
- *
- * All the four interrupt registers (Status/Mask/Enable/Disable) have the same
- * bit definitions.
- */
-#define CDNS_SPI_IXR_TXOW	0x00000004 /* SPI TX FIFO Overwater */
-#define CDNS_SPI_IXR_MODF	0x00000002 /* SPI Mode Fault */
-#define CDNS_SPI_IXR_RXNEMTY 0x00000010 /* SPI RX FIFO Not Empty */
+ 
+#define CDNS_SPI_IXR_TXOW	0x00000004  
+#define CDNS_SPI_IXR_MODF	0x00000002  
+#define CDNS_SPI_IXR_RXNEMTY 0x00000010  
 #define CDNS_SPI_IXR_DEFAULT	(CDNS_SPI_IXR_TXOW | \
 					CDNS_SPI_IXR_MODF)
-#define CDNS_SPI_IXR_TXFULL	0x00000008 /* SPI TX Full */
-#define CDNS_SPI_IXR_ALL	0x0000007F /* SPI all interrupts */
+#define CDNS_SPI_IXR_TXFULL	0x00000008  
+#define CDNS_SPI_IXR_ALL	0x0000007F  
 
-/*
- * SPI Enable Register bit Masks
- *
- * This register is used to enable or disable the SPI controller
- */
-#define CDNS_SPI_ER_ENABLE	0x00000001 /* SPI Enable Bit Mask */
-#define CDNS_SPI_ER_DISABLE	0x0 /* SPI Disable Bit Mask */
+ 
+#define CDNS_SPI_ER_ENABLE	0x00000001  
+#define CDNS_SPI_ER_DISABLE	0x0  
 
-/* Default number of chip select lines */
+ 
 #define CDNS_SPI_DEFAULT_NUM_CS		4
 
-/**
- * struct cdns_spi - This definition defines spi driver instance
- * @regs:		Virtual address of the SPI controller registers
- * @ref_clk:		Pointer to the peripheral clock
- * @pclk:		Pointer to the APB clock
- * @clk_rate:		Reference clock frequency, taken from @ref_clk
- * @speed_hz:		Current SPI bus clock speed in Hz
- * @txbuf:		Pointer	to the TX buffer
- * @rxbuf:		Pointer to the RX buffer
- * @tx_bytes:		Number of bytes left to transfer
- * @rx_bytes:		Number of bytes requested
- * @dev_busy:		Device busy flag
- * @is_decoded_cs:	Flag for decoder property set or not
- * @tx_fifo_depth:	Depth of the TX FIFO
- */
+ 
 struct cdns_spi {
 	void __iomem *regs;
 	struct clk *ref_clk;
@@ -127,7 +88,7 @@ struct cdns_spi {
 	unsigned int tx_fifo_depth;
 };
 
-/* Macros for the SPI controller read/write */
+ 
 static inline u32 cdns_spi_read(struct cdns_spi *xspi, u32 offset)
 {
 	return readl_relaxed(xspi->regs + offset);
@@ -138,18 +99,7 @@ static inline void cdns_spi_write(struct cdns_spi *xspi, u32 offset, u32 val)
 	writel_relaxed(val, xspi->regs + offset);
 }
 
-/**
- * cdns_spi_init_hw - Initialize the hardware and configure the SPI controller
- * @xspi:	Pointer to the cdns_spi structure
- * @is_target:	Flag to indicate target or host mode
- * * On reset the SPI controller is configured to target or host mode.
- * In host mode baud rate divisor is set to 4, threshold value for TX FIFO
- * not full interrupt is set to 1 and size of the word to be transferred as 8 bit.
- *
- * This function initializes the SPI controller to disable and clear all the
- * interrupts, enable manual target select and manual start, deselect all the
- * chip select lines, and enable the SPI controller.
- */
+ 
 static void cdns_spi_init_hw(struct cdns_spi *xspi, bool is_target)
 {
 	u32 ctrl_reg = 0;
@@ -163,7 +113,7 @@ static void cdns_spi_init_hw(struct cdns_spi *xspi, bool is_target)
 	cdns_spi_write(xspi, CDNS_SPI_ER, CDNS_SPI_ER_DISABLE);
 	cdns_spi_write(xspi, CDNS_SPI_IDR, CDNS_SPI_IXR_ALL);
 
-	/* Clear the RX FIFO */
+	 
 	while (cdns_spi_read(xspi, CDNS_SPI_ISR) & CDNS_SPI_IXR_RXNEMTY)
 		cdns_spi_read(xspi, CDNS_SPI_RXD);
 
@@ -172,11 +122,7 @@ static void cdns_spi_init_hw(struct cdns_spi *xspi, bool is_target)
 	cdns_spi_write(xspi, CDNS_SPI_ER, CDNS_SPI_ER_ENABLE);
 }
 
-/**
- * cdns_spi_chipselect - Select or deselect the chip select line
- * @spi:	Pointer to the spi_device structure
- * @is_high:	Select(0) or deselect (1) the chip select line
- */
+ 
 static void cdns_spi_chipselect(struct spi_device *spi, bool is_high)
 {
 	struct cdns_spi *xspi = spi_controller_get_devdata(spi->controller);
@@ -185,10 +131,10 @@ static void cdns_spi_chipselect(struct spi_device *spi, bool is_high)
 	ctrl_reg = cdns_spi_read(xspi, CDNS_SPI_CR);
 
 	if (is_high) {
-		/* Deselect the target */
+		 
 		ctrl_reg |= CDNS_SPI_CR_SSCTRL;
 	} else {
-		/* Select the target */
+		 
 		ctrl_reg &= ~CDNS_SPI_CR_SSCTRL;
 		if (!(xspi->is_decoded_cs))
 			ctrl_reg |= ((~(CDNS_SPI_SS0 << spi_get_chipselect(spi, 0))) <<
@@ -202,12 +148,7 @@ static void cdns_spi_chipselect(struct spi_device *spi, bool is_high)
 	cdns_spi_write(xspi, CDNS_SPI_CR, ctrl_reg);
 }
 
-/**
- * cdns_spi_config_clock_mode - Sets clock polarity and phase
- * @spi:	Pointer to the spi_device structure
- *
- * Sets the requested clock polarity and phase.
- */
+ 
 static void cdns_spi_config_clock_mode(struct spi_device *spi)
 {
 	struct cdns_spi *xspi = spi_controller_get_devdata(spi->controller);
@@ -216,7 +157,7 @@ static void cdns_spi_config_clock_mode(struct spi_device *spi)
 	new_ctrl_reg = cdns_spi_read(xspi, CDNS_SPI_CR);
 	ctrl_reg = new_ctrl_reg;
 
-	/* Set the SPI clock phase and clock polarity */
+	 
 	new_ctrl_reg &= ~(CDNS_SPI_CR_CPHA | CDNS_SPI_CR_CPOL);
 	if (spi->mode & SPI_CPHA)
 		new_ctrl_reg |= CDNS_SPI_CR_CPHA;
@@ -224,32 +165,14 @@ static void cdns_spi_config_clock_mode(struct spi_device *spi)
 		new_ctrl_reg |= CDNS_SPI_CR_CPOL;
 
 	if (new_ctrl_reg != ctrl_reg) {
-		/*
-		 * Just writing the CR register does not seem to apply the clock
-		 * setting changes. This is problematic when changing the clock
-		 * polarity as it will cause the SPI target to see spurious clock
-		 * transitions. To workaround the issue toggle the ER register.
-		 */
+		 
 		cdns_spi_write(xspi, CDNS_SPI_ER, CDNS_SPI_ER_DISABLE);
 		cdns_spi_write(xspi, CDNS_SPI_CR, new_ctrl_reg);
 		cdns_spi_write(xspi, CDNS_SPI_ER, CDNS_SPI_ER_ENABLE);
 	}
 }
 
-/**
- * cdns_spi_config_clock_freq - Sets clock frequency
- * @spi:	Pointer to the spi_device structure
- * @transfer:	Pointer to the spi_transfer structure which provides
- *		information about next transfer setup parameters
- *
- * Sets the requested clock frequency.
- * Note: If the requested frequency is not an exact match with what can be
- * obtained using the prescalar value the driver sets the clock frequency which
- * is lower than the requested frequency (maximum lower) for the transfer. If
- * the requested frequency is higher or lower than that is supported by the SPI
- * controller the driver will set the highest or lowest frequency supported by
- * controller.
- */
+ 
 static void cdns_spi_config_clock_freq(struct spi_device *spi,
 				       struct spi_transfer *transfer)
 {
@@ -261,9 +184,9 @@ static void cdns_spi_config_clock_freq(struct spi_device *spi,
 
 	ctrl_reg = cdns_spi_read(xspi, CDNS_SPI_CR);
 
-	/* Set the clock frequency */
+	 
 	if (xspi->speed_hz != transfer->speed_hz) {
-		/* first valid value is 1 */
+		 
 		baud_rate_val = CDNS_SPI_BAUD_DIV_MIN;
 		while ((baud_rate_val < CDNS_SPI_BAUD_DIV_MAX) &&
 		       (frequency / (2 << baud_rate_val)) > transfer->speed_hz)
@@ -277,17 +200,7 @@ static void cdns_spi_config_clock_freq(struct spi_device *spi,
 	cdns_spi_write(xspi, CDNS_SPI_CR, ctrl_reg);
 }
 
-/**
- * cdns_spi_setup_transfer - Configure SPI controller for specified transfer
- * @spi:	Pointer to the spi_device structure
- * @transfer:	Pointer to the spi_transfer structure which provides
- *		information about next transfer setup parameters
- *
- * Sets the operational mode of SPI controller for the next SPI transfer and
- * sets the requested clock frequency.
- *
- * Return:	Always 0
- */
+ 
 static int cdns_spi_setup_transfer(struct spi_device *spi,
 				   struct spi_transfer *transfer)
 {
@@ -302,12 +215,7 @@ static int cdns_spi_setup_transfer(struct spi_device *spi,
 	return 0;
 }
 
-/**
- * cdns_spi_process_fifo - Fills the TX FIFO, and drain the RX FIFO
- * @xspi:	Pointer to the cdns_spi structure
- * @ntx:	Number of bytes to pack into the TX FIFO
- * @nrx:	Number of bytes to drain from the RX FIFO
- */
+ 
 static void cdns_spi_process_fifo(struct cdns_spi *xspi, int ntx, int nrx)
 {
 	ntx = clamp(ntx, 0, xspi->tx_bytes);
@@ -337,20 +245,7 @@ static void cdns_spi_process_fifo(struct cdns_spi *xspi, int ntx, int nrx)
 	}
 }
 
-/**
- * cdns_spi_irq - Interrupt service routine of the SPI controller
- * @irq:	IRQ number
- * @dev_id:	Pointer to the xspi structure
- *
- * This function handles TX empty and Mode Fault interrupts only.
- * On TX empty interrupt this function reads the received data from RX FIFO and
- * fills the TX FIFO if there is any data remaining to be transferred.
- * On Mode Fault interrupt this function indicates that transfer is completed,
- * the SPI subsystem will identify the error as the remaining bytes to be
- * transferred is non-zero.
- *
- * Return:	IRQ_HANDLED when handled; IRQ_NONE otherwise.
- */
+ 
 static irqreturn_t cdns_spi_irq(int irq, void *dev_id)
 {
 	struct spi_controller *ctlr = dev_id;
@@ -363,10 +258,7 @@ static irqreturn_t cdns_spi_irq(int irq, void *dev_id)
 	cdns_spi_write(xspi, CDNS_SPI_ISR, intr_status);
 
 	if (intr_status & CDNS_SPI_IXR_MODF) {
-		/* Indicate that transfer is completed, the SPI subsystem will
-		 * identify the error as the remaining bytes to be
-		 * transferred is non-zero
-		 */
+		 
 		cdns_spi_write(xspi, CDNS_SPI_IDR, CDNS_SPI_IXR_DEFAULT);
 		spi_finalize_current_transfer(ctlr);
 		status = IRQ_HANDLED;
@@ -377,19 +269,14 @@ static irqreturn_t cdns_spi_irq(int irq, void *dev_id)
 		if (threshold > 1)
 			trans_cnt -= threshold;
 
-		/* Set threshold to one if number of pending are
-		 * less than half fifo
-		 */
+		 
 		if (xspi->tx_bytes < xspi->tx_fifo_depth >> 1)
 			cdns_spi_write(xspi, CDNS_SPI_THLD, 1);
 
 		if (xspi->tx_bytes) {
 			cdns_spi_process_fifo(xspi, trans_cnt, trans_cnt);
 		} else {
-			/* Fixed delay due to controller limitation with
-			 * RX_NEMPTY incorrect status
-			 * Xilinx AR:65885 contains more details
-			 */
+			 
 			udelay(10);
 			cdns_spi_process_fifo(xspi, 0, trans_cnt);
 			cdns_spi_write(xspi, CDNS_SPI_IDR,
@@ -410,19 +297,7 @@ static int cdns_prepare_message(struct spi_controller *ctlr,
 	return 0;
 }
 
-/**
- * cdns_transfer_one - Initiates the SPI transfer
- * @ctlr:	Pointer to spi_controller structure
- * @spi:	Pointer to the spi_device structure
- * @transfer:	Pointer to the spi_transfer structure which provides
- *		information about next transfer parameters
- *
- * This function in host mode fills the TX FIFO, starts the SPI transfer and
- * returns a positive transfer count so that core will wait for completion.
- * This function in target mode fills the TX FIFO and wait for transfer trigger.
- *
- * Return:	Number of bytes transferred in the last transfer
- */
+ 
 static int cdns_transfer_one(struct spi_controller *ctlr,
 			     struct spi_device *spi,
 			     struct spi_transfer *transfer)
@@ -437,16 +312,12 @@ static int cdns_transfer_one(struct spi_controller *ctlr,
 	if (!spi_controller_is_target(ctlr)) {
 		cdns_spi_setup_transfer(spi, transfer);
 	} else {
-		/* Set TX empty threshold to half of FIFO depth
-		 * only if TX bytes are more than FIFO depth.
-		 */
+		 
 		if (xspi->tx_bytes > xspi->tx_fifo_depth)
 			cdns_spi_write(xspi, CDNS_SPI_THLD, xspi->tx_fifo_depth >> 1);
 	}
 
-	/* When xspi in busy condition, bytes may send failed,
-	 * then spi control didn't work thoroughly, add one byte delay
-	 */
+	 
 	if (cdns_spi_read(xspi, CDNS_SPI_ISR) & CDNS_SPI_IXR_TXFULL)
 		udelay(10);
 
@@ -456,15 +327,7 @@ static int cdns_transfer_one(struct spi_controller *ctlr,
 	return transfer->len;
 }
 
-/**
- * cdns_prepare_transfer_hardware - Prepares hardware for transfer.
- * @ctlr:	Pointer to the spi_controller structure which provides
- *		information about the controller.
- *
- * This function enables SPI host controller.
- *
- * Return:	0 always
- */
+ 
 static int cdns_prepare_transfer_hardware(struct spi_controller *ctlr)
 {
 	struct cdns_spi *xspi = spi_controller_get_devdata(ctlr);
@@ -474,16 +337,7 @@ static int cdns_prepare_transfer_hardware(struct spi_controller *ctlr)
 	return 0;
 }
 
-/**
- * cdns_unprepare_transfer_hardware - Relaxes hardware after transfer
- * @ctlr:	Pointer to the spi_controller structure which provides
- *		information about the controller.
- *
- * This function disables the SPI host controller when no target selected.
- * This function flush out if any pending data in FIFO.
- *
- * Return:	0 always
- */
+ 
 static int cdns_unprepare_transfer_hardware(struct spi_controller *ctlr)
 {
 	struct cdns_spi *xspi = spi_controller_get_devdata(ctlr);
@@ -495,43 +349,29 @@ static int cdns_unprepare_transfer_hardware(struct spi_controller *ctlr)
 			cdns_spi_read(xspi, CDNS_SPI_RXD);
 	}
 
-	/* Disable the SPI if target is deselected */
+	 
 	ctrl_reg = cdns_spi_read(xspi, CDNS_SPI_CR);
 	ctrl_reg = (ctrl_reg & CDNS_SPI_CR_SSCTRL) >>  CDNS_SPI_SS_SHIFT;
 	if (ctrl_reg == CDNS_SPI_NOSS || spi_controller_is_target(ctlr))
 		cdns_spi_write(xspi, CDNS_SPI_ER, CDNS_SPI_ER_DISABLE);
 
-	/* Reset to default */
+	 
 	cdns_spi_write(xspi, CDNS_SPI_THLD, 0x1);
 	return 0;
 }
 
-/**
- * cdns_spi_detect_fifo_depth - Detect the FIFO depth of the hardware
- * @xspi:	Pointer to the cdns_spi structure
- *
- * The depth of the TX FIFO is a synthesis configuration parameter of the SPI
- * IP. The FIFO threshold register is sized so that its maximum value can be the
- * FIFO size - 1. This is used to detect the size of the FIFO.
- */
+ 
 static void cdns_spi_detect_fifo_depth(struct cdns_spi *xspi)
 {
-	/* The MSBs will get truncated giving us the size of the FIFO */
+	 
 	cdns_spi_write(xspi, CDNS_SPI_THLD, 0xffff);
 	xspi->tx_fifo_depth = cdns_spi_read(xspi, CDNS_SPI_THLD) + 1;
 
-	/* Reset to default */
+	 
 	cdns_spi_write(xspi, CDNS_SPI_THLD, 0x1);
 }
 
-/**
- * cdns_target_abort - Abort target transfer
- * @ctlr:	Pointer to the spi_controller structure
- *
- * This function abort target transfer if there any transfer timeout.
- *
- * Return:      0 always
- */
+ 
 static int cdns_target_abort(struct spi_controller *ctlr)
 {
 	struct cdns_spi *xspi = spi_controller_get_devdata(ctlr);
@@ -545,14 +385,7 @@ static int cdns_target_abort(struct spi_controller *ctlr)
 	return 0;
 }
 
-/**
- * cdns_spi_probe - Probe method for the SPI driver
- * @pdev:	Pointer to the platform_device structure
- *
- * This function initializes the driver data structures and the hardware.
- *
- * Return:	0 on success and error value on error
- */
+ 
 static int cdns_spi_probe(struct platform_device *pdev)
 {
 	int ret = 0, irq;
@@ -627,7 +460,7 @@ static int cdns_spi_probe(struct platform_device *pdev)
 
 	cdns_spi_detect_fifo_depth(xspi);
 
-	/* SPI controller initializations */
+	 
 	cdns_spi_init_hw(xspi, spi_controller_is_target(ctlr));
 
 	irq = platform_get_irq(pdev, 0);
@@ -657,7 +490,7 @@ static int cdns_spi_probe(struct platform_device *pdev)
 		ctlr->set_cs = cdns_spi_chipselect;
 		ctlr->auto_runtime_pm = true;
 		xspi->clk_rate = clk_get_rate(xspi->ref_clk);
-		/* Set to default valid value */
+		 
 		ctlr->max_speed_hz = xspi->clk_rate / 4;
 		xspi->speed_hz = ctlr->max_speed_hz;
 		pm_runtime_mark_last_busy(&pdev->dev);
@@ -687,14 +520,7 @@ remove_ctlr:
 	return ret;
 }
 
-/**
- * cdns_spi_remove - Remove method for the SPI driver
- * @pdev:	Pointer to the platform_device structure
- *
- * This function is called if a device is physically removed from the system or
- * if the driver module is being unloaded. It frees all resources allocated to
- * the device.
- */
+ 
 static void cdns_spi_remove(struct platform_device *pdev)
 {
 	struct spi_controller *ctlr = platform_get_drvdata(pdev);
@@ -710,15 +536,7 @@ static void cdns_spi_remove(struct platform_device *pdev)
 	spi_unregister_controller(ctlr);
 }
 
-/**
- * cdns_spi_suspend - Suspend method for the SPI driver
- * @dev:	Address of the platform_device structure
- *
- * This function disables the SPI controller and
- * changes the driver state to "suspend"
- *
- * Return:	0 on success and error value on error
- */
+ 
 static int __maybe_unused cdns_spi_suspend(struct device *dev)
 {
 	struct spi_controller *ctlr = dev_get_drvdata(dev);
@@ -726,14 +544,7 @@ static int __maybe_unused cdns_spi_suspend(struct device *dev)
 	return spi_controller_suspend(ctlr);
 }
 
-/**
- * cdns_spi_resume - Resume method for the SPI driver
- * @dev:	Address of the platform_device structure
- *
- * This function changes the driver state to "ready"
- *
- * Return:	0 on success and error value on error
- */
+ 
 static int __maybe_unused cdns_spi_resume(struct device *dev)
 {
 	struct spi_controller *ctlr = dev_get_drvdata(dev);
@@ -743,14 +554,7 @@ static int __maybe_unused cdns_spi_resume(struct device *dev)
 	return spi_controller_resume(ctlr);
 }
 
-/**
- * cdns_spi_runtime_resume - Runtime resume method for the SPI driver
- * @dev:	Address of the platform_device structure
- *
- * This function enables the clocks
- *
- * Return:	0 on success and error value on error
- */
+ 
 static int __maybe_unused cdns_spi_runtime_resume(struct device *dev)
 {
 	struct spi_controller *ctlr = dev_get_drvdata(dev);
@@ -772,14 +576,7 @@ static int __maybe_unused cdns_spi_runtime_resume(struct device *dev)
 	return 0;
 }
 
-/**
- * cdns_spi_runtime_suspend - Runtime suspend method for the SPI driver
- * @dev:	Address of the platform_device structure
- *
- * This function disables the clocks
- *
- * Return:	Always 0
- */
+ 
 static int __maybe_unused cdns_spi_runtime_suspend(struct device *dev)
 {
 	struct spi_controller *ctlr = dev_get_drvdata(dev);
@@ -800,11 +597,11 @@ static const struct dev_pm_ops cdns_spi_dev_pm_ops = {
 static const struct of_device_id cdns_spi_of_match[] = {
 	{ .compatible = "xlnx,zynq-spi-r1p6" },
 	{ .compatible = "cdns,spi-r1p6" },
-	{ /* end of table */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, cdns_spi_of_match);
 
-/* cdns_spi_driver - This structure defines the SPI subsystem platform driver */
+ 
 static struct platform_driver cdns_spi_driver = {
 	.probe	= cdns_spi_probe,
 	.remove_new = cdns_spi_remove,

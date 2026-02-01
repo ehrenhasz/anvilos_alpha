@@ -1,8 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
+ 
 
-/*
- * Copyright 2018 IBM Corporation.
- */
+ 
 
 #ifndef _SELFTESTS_POWERPC_SECURITY_FLUSH_UTILS_H
 #define _SELFTESTS_POWERPC_SECURITY_FLUSH_UTILS_H
@@ -21,4 +19,4 @@ void syscall_loop_uaccess(char *p, unsigned long iterations,
 
 void set_dscr(unsigned long val);
 
-#endif /* _SELFTESTS_POWERPC_SECURITY_FLUSH_UTILS_H */
+#endif  

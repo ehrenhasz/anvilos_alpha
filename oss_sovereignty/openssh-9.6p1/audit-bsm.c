@@ -1,36 +1,7 @@
-/*
- * TODO
- *
- * - deal with overlap between this and sys_auth_allowed_user
- *   sys_auth_record_login and record_failed_login.
- */
+ 
 
-/*
- * Copyright 1988-2002 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- */
-/* #pragma ident	"@(#)bsmaudit.c	1.1	01/09/17 SMI" */
+ 
+ 
 
 #include "includes.h"
 #if defined(USE_BSM_AUDIT)
@@ -116,18 +87,13 @@ extern Authctxt *the_authctxt;
 static AuditInfoTermID ssh_bsm_tid;
 
 #ifdef BROKEN_BSM_API
-/* For some reason this constant is no longer defined
-   in Solaris 11. */
+ 
 #define BSM_TEXTBUFSZ 256
 #endif
 
-/* Below is the low-level BSM interface code */
+ 
 
-/*
- * aug_get_machine is only required on IPv6 capable machines, we use a
- * different mechanism in audit_connection_from() for IPv4-only machines.
- * getaudit_addr() is only present on IPv6 capable machines.
- */
+ 
 #if defined(HAVE_AUG_GET_MACHINE) || !defined(HAVE_GETAUDIT_ADDR)
 extern int aug_get_machine(char *, u_int32_t *, u_int32_t *);
 #else
@@ -169,12 +135,7 @@ aug_get_machine(char *host, u_int32_t *addr, u_int32_t *type)
 #endif
 
 #ifdef BROKEN_BSM_API
-/*
-  In Solaris 11 the audit daemon has been moved to SMF. In the process
-  they simply dropped getacna() from the API, since it read from a now
-  non-existent config file. This function re-implements getacna() to
-  read from the SMF repository instead.
- */
+ 
 int
 getacna(char *auditstring, int len)
 {
@@ -183,12 +144,7 @@ getacna(char *auditstring, int len)
 	scf_value_t *value = NULL;
 	int ret = 0;
 
-	/*
-	 * The man page for getacna on Solaris 10 states we should return -2
-	 * in case of error and set errno to indicate the error. We don't
-	 * bother with errno here, though, since the only use of this function
-	 * below doesn't check for errors anyway.
-	*/
+	 
 	handle = scf_handle_create(SCF_VERSION);
 	if (handle == NULL) 
 		return -2;
@@ -227,10 +183,7 @@ getacna(char *auditstring, int len)
 }
 #endif
 
-/*
- * Check if the specified event is selected (enabled) for auditing.
- * Returns 1 if the event is selected, 0 if not and -1 on failure.
- */
+ 
 static int
 selected(char *username, uid_t uid, au_event_t event, int sf)
 {
@@ -240,7 +193,7 @@ selected(char *username, uid_t uid, au_event_t event, int sf)
 
 	mask.am_success = mask.am_failure = 0;
 	if (uid < 0) {
-		/* get flags for non-attributable (to a real user) events */
+		 
 		rc = getacna(naflags, sizeof(naflags));
 		if (rc == 0)
 			(void) getauditflagsbin(naflags, &mask);
@@ -269,7 +222,7 @@ bsm_audit_record(int typ, char *string, au_event_t event_no)
 	sel = selected(the_authctxt->user, uid, event_no, rc);
 	debug3("BSM audit: typ %d rc %d \"%s\"", typ, rc, string);
 	if (!sel)
-		return;	/* audit event does not match mask, do not write */
+		return;	 
 
 	debug3("BSM audit: writing audit new record");
 	ad = au_open();
@@ -280,10 +233,7 @@ bsm_audit_record(int typ, char *string, au_event_t event_no)
 	(void) au_write(ad, AUToReturnFunc(typ, rc));
 
 #ifdef BROKEN_BSM_API
-	/*
-	 * The last argument is the event modifier flags. For some seemingly
-	 * undocumented reason it was added in Solaris 11.
-	 */
+	 
 	rc = au_close(ad, AU_TO_WRITE, event_no, 0);
 #else
 	rc = au_close(ad, AU_TO_WRITE, event_no);
@@ -345,7 +295,7 @@ bsm_audit_bad_login(const char *what)
 	}
 }
 
-/* Below is the sshd audit API code */
+ 
 
 void
 audit_connection_from(const char *host, int port)
@@ -357,7 +307,7 @@ audit_connection_from(const char *host, int port)
 		return;
 	debug3("BSM audit: connection from %.100s port %d", host, port);
 
-	/* populate our terminal id structure */
+	 
 #if defined(HAVE_GETAUDIT_ADDR)
 	tid->at_port = (dev_t)port;
 	aug_get_machine((char *)host, &(tid->at_addr[0]), &(tid->at_type));
@@ -365,7 +315,7 @@ audit_connection_from(const char *host, int port)
 	    tid->at_addr[1], tid->at_addr[2], tid->at_addr[3]);
 	debug3("BSM audit: iptype %d machine ID %s", (int)tid->at_type, buf);
 #else
-	/* this is used on IPv4-only machines */
+	 
 	tid->port = (dev_t)port;
 	tid->machine = inet_addr(host);
 	snprintf(buf, sizeof(buf), "%08x", tid->machine);
@@ -376,19 +326,19 @@ audit_connection_from(const char *host, int port)
 void
 audit_run_command(const char *command)
 {
-	/* not implemented */
+	 
 }
 
 void
 audit_session_open(struct logininfo *li)
 {
-	/* not implemented */
+	 
 }
 
 void
 audit_session_close(struct logininfo *li)
 {
-	/* not implemented */
+	 
 }
 
 void
@@ -411,10 +361,7 @@ audit_event(struct ssh *ssh, ssh_audit_event_t event)
 		break;
 
 	case SSH_CONNECTION_CLOSE:
-		/*
-		 * We can also get a close event if the user attempted auth
-		 * but never succeeded.
-		 */
+		 
 		if (logged_in) {
 			snprintf(textbuf, sizeof(textbuf),
 			    gettext("sshd logout %s"), the_authctxt->user);
@@ -452,4 +399,4 @@ audit_event(struct ssh *ssh, ssh_audit_event_t event)
 		debug("%s: unhandled event %d", __func__, event);
 	}
 }
-#endif /* BSM */
+#endif  

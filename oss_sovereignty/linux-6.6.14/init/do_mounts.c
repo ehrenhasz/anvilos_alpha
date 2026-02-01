@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/module.h>
 #include <linux/sched.h>
 #include <linux/ctype.h>
@@ -95,7 +95,7 @@ static int __init rootwait_timeout_setup(char *str)
 	return 1;
 
 ignore:
-	/* Fallback to indefinite wait */
+	 
 	root_wait = -1;
 
 	return 1;
@@ -128,7 +128,7 @@ __setup("rootflags=", root_data_setup);
 __setup("rootfstype=", fs_names_setup);
 __setup("rootdelay=", root_delay_setup);
 
-/* This can return zero length strings. Caller should check */
+ 
 static int __init split_fs_names(char *page, size_t size)
 {
 	int count = 1;
@@ -154,12 +154,12 @@ static int __init do_mount_root(const char *name, const char *fs,
 	int ret;
 
 	if (data) {
-		/* init_mount() requires a full page as fifth argument */
+		 
 		p = alloc_page(GFP_KERNEL);
 		if (!p)
 			return -ENOMEM;
 		data_page = page_address(p);
-		/* zero-pad. init_mount() will make sure it's terminated */
+		 
 		strncpy(data_page, data, PAGE_SIZE);
 	}
 
@@ -210,11 +210,7 @@ retry:
 			case -EINVAL:
 				continue;
 		}
-	        /*
-		 * Allow the user to distinguish between failed sys_open
-		 * and bad superblock on root device.
-		 * and give them a list of the available devices
-		 */
+	         
 		printk("VFS: Cannot open root device \"%s\" or %s: error %d\n",
 				pretty_name, b, err);
 		printk("Please append a correct \"root=\" boot option; here are the available partitions:\n");
@@ -264,11 +260,7 @@ static void __init mount_nfs_root(void)
 	if (nfs_root_data(&root_dev, &root_data))
 		goto fail;
 
-	/*
-	 * The server or network may not be ready, so try several
-	 * times.  Stop after a few tries in case the client wants
-	 * to fall back to other boot methods.
-	 */
+	 
 	timeout = NFSROOT_TIMEOUT_MIN;
 	for (try = 1; ; try++) {
 		if (!do_mount_root(root_dev, "nfs", root_mountflags, root_data))
@@ -276,7 +268,7 @@ static void __init mount_nfs_root(void)
 		if (try > NFSROOT_RETRY_MAX)
 			break;
 
-		/* Wait, in case the server refused us immediately */
+		 
 		ssleep(timeout);
 		timeout <<= 1;
 		if (timeout > NFSROOT_TIMEOUT_MAX)
@@ -289,7 +281,7 @@ fail:
 static inline void mount_nfs_root(void)
 {
 }
-#endif /* CONFIG_ROOT_NFS */
+#endif  
 
 #ifdef CONFIG_CIFS_ROOT
 
@@ -326,7 +318,7 @@ fail:
 static inline void mount_cifs_root(void)
 {
 }
-#endif /* CONFIG_CIFS_ROOT */
+#endif  
 
 static bool __init fs_is_nodev(char *fstype)
 {
@@ -381,7 +373,7 @@ static void __init mount_block_root(char *root_device_name)
 static inline void mount_block_root(char *root_device_name)
 {
 }
-#endif /* CONFIG_BLOCK */
+#endif  
 
 void __init mount_root(char *root_device_name)
 {
@@ -407,7 +399,7 @@ void __init mount_root(char *root_device_name)
 	}
 }
 
-/* wait for any asynchronous scanning to complete */
+ 
 static void __init wait_for_root(char *root_device_name)
 {
 	ktime_t end;
@@ -456,9 +448,7 @@ static dev_t __init parse_root_device(char *root_device_name)
 	return dev;
 }
 
-/*
- * Prepare the namespace - decide what/where to mount, load ramdisks, etc.
- */
+ 
 void __init prepare_namespace(void)
 {
 	if (root_delay) {
@@ -467,13 +457,7 @@ void __init prepare_namespace(void)
 		ssleep(root_delay);
 	}
 
-	/*
-	 * wait for the known devices to complete their probing
-	 *
-	 * Note: this is a potential source of long boot delays.
-	 * For example, it is not atypical to wait 5 seconds here
-	 * for the touchpad of a laptop to initialize.
-	 */
+	 
 	wait_for_device_probe();
 
 	md_run_setup();

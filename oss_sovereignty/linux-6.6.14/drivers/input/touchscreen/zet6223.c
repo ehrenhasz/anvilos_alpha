@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016, Jelle van der Waa <jelle@vdwaa.nl>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -55,10 +53,7 @@ static irqreturn_t zet6223_irq(int irq, void *dev_id)
 	struct zet6223_ts *ts = dev_id;
 	u16 finger_bits;
 
-	/*
-	 * First 3 bytes are an identifier, two bytes of finger data.
-	 * X, Y data per finger is 4 bytes.
-	 */
+	 
 	u8 bufsize = 3 + 4 * ts->fingernum;
 	u8 buf[ZET6223_MAX_PKT_SIZE];
 	int i;

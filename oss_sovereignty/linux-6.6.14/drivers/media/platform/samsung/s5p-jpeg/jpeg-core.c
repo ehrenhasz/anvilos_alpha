@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* linux/drivers/media/platform/samsung/s5p-jpeg/jpeg-core.c
- *
- * Copyright (c) 2011-2014 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Author: Andrzej Pietrasiewicz <andrzejtp2010@gmail.com>
- * Author: Jacek Anaszewski <j.anaszewski@samsung.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -345,7 +338,7 @@ static struct s5p_jpeg_fmt sjpeg_formats[] = {
 #define SJPEG_NUM_FORMATS ARRAY_SIZE(sjpeg_formats)
 
 static const unsigned char qtbl_luminance[4][64] = {
-	{/*level 0 - high compression quality */
+	{ 
 		20, 16, 25, 39, 50, 46, 62, 68,
 		16, 18, 23, 38, 38, 53, 65, 68,
 		25, 23, 31, 38, 53, 65, 68, 68,
@@ -355,7 +348,7 @@ static const unsigned char qtbl_luminance[4][64] = {
 		62, 65, 68, 68, 68, 68, 68, 68,
 		68, 68, 68, 68, 68, 68, 68, 68
 	},
-	{/* level 1 */
+	{ 
 		16, 11, 11, 16, 23, 27, 31, 30,
 		11, 12, 12, 15, 20, 23, 23, 30,
 		11, 12, 13, 16, 23, 26, 35, 47,
@@ -365,7 +358,7 @@ static const unsigned char qtbl_luminance[4][64] = {
 		31, 23, 35, 47, 64, 64, 64, 64,
 		30, 30, 47, 64, 64, 64, 64, 64
 	},
-	{/* level 2 */
+	{ 
 		12,  8,  8, 12, 17, 21, 24, 23,
 		 8,  9,  9, 11, 15, 19, 18, 23,
 		 8,  9, 10, 12, 19, 20, 27, 36,
@@ -375,7 +368,7 @@ static const unsigned char qtbl_luminance[4][64] = {
 		24, 18, 27, 36, 51, 59, 59, 59,
 		23, 23, 36, 53, 59, 59, 59, 59
 	},
-	{/* level 3 - low compression quality */
+	{ 
 		 8,  6,  6,  8, 12, 14, 16, 17,
 		 6,  6,  6,  8, 10, 13, 12, 15,
 		 6,  6,  7,  8, 13, 14, 18, 24,
@@ -388,7 +381,7 @@ static const unsigned char qtbl_luminance[4][64] = {
 };
 
 static const unsigned char qtbl_chrominance[4][64] = {
-	{/*level 0 - high compression quality */
+	{ 
 		21, 25, 32, 38, 54, 68, 68, 68,
 		25, 28, 24, 38, 54, 68, 68, 68,
 		32, 24, 32, 43, 66, 68, 68, 68,
@@ -398,7 +391,7 @@ static const unsigned char qtbl_chrominance[4][64] = {
 		68, 68, 68, 68, 68, 68, 68, 68,
 		68, 68, 68, 68, 68, 68, 68, 68
 	},
-	{/* level 1 */
+	{ 
 		17, 15, 17, 21, 20, 26, 38, 48,
 		15, 19, 18, 17, 20, 26, 35, 43,
 		17, 18, 20, 22, 26, 30, 46, 53,
@@ -408,7 +401,7 @@ static const unsigned char qtbl_chrominance[4][64] = {
 		38, 35, 46, 53, 64, 64, 64, 64,
 		48, 43, 53, 64, 64, 64, 64, 64
 	},
-	{/* level 2 */
+	{ 
 		13, 11, 13, 16, 20, 20, 29, 37,
 		11, 14, 14, 14, 16, 20, 26, 32,
 		13, 14, 15, 17, 20, 23, 35, 40,
@@ -418,7 +411,7 @@ static const unsigned char qtbl_chrominance[4][64] = {
 		29, 26, 35, 40, 50, 59, 59, 59,
 		37, 32, 40, 50, 59, 59, 59, 59
 	},
-	{/* level 3 - low compression quality */
+	{ 
 		 9,  8,  9, 11, 14, 17, 19, 24,
 		 8, 10,  9, 11, 14, 13, 17, 22,
 		 9,  9, 13, 14, 13, 15, 23, 26,
@@ -464,13 +457,7 @@ static const unsigned char hactblg0[162] = {
 	0xf9, 0xfa
 };
 
-/*
- * Fourcc downgrade schema lookup tables for 422 and 420
- * chroma subsampling - fourcc on each position maps on the
- * fourcc from the table fourcc_to_dwngrd_schema_id which allows
- * to get the most suitable fourcc counterpart for the given
- * downgraded subsampling property.
- */
+ 
 static const u32 subs422_fourcc_dwngrd_schema[] = {
 	V4L2_PIX_FMT_NV16,
 	V4L2_PIX_FMT_NV61,
@@ -489,11 +476,7 @@ static const u32 subs420_fourcc_dwngrd_schema[] = {
 	V4L2_PIX_FMT_GREY,
 };
 
-/*
- * Lookup table for translation of a fourcc to the position
- * of its downgraded counterpart in the *fourcc_dwngrd_schema
- * tables.
- */
+ 
 static const u32 fourcc_to_dwngrd_schema_id[] = {
 	V4L2_PIX_FMT_NV24,
 	V4L2_PIX_FMT_NV42,
@@ -605,7 +588,7 @@ static int s5p_jpeg_to_user_subsampling(struct s5p_jpeg_ctx *ctx)
 			return V4L2_JPEG_CHROMA_SUBSAMPLING_420;
 		return exynos4x12_decoded_subsampling[ctx->subsampling];
 	case SJPEG_EXYNOS5433:
-		return ctx->subsampling; /* parsed from header */
+		return ctx->subsampling;  
 	default:
 		WARN_ON(ctx->subsampling > 3);
 		return V4L2_JPEG_CHROMA_SUBSAMPLING_GRAY;
@@ -624,7 +607,7 @@ static inline void s5p_jpeg_set_qtbl(void __iomem *regs,
 
 static inline void s5p_jpeg_set_qtbl_lum(void __iomem *regs, int quality)
 {
-	/* this driver fills quantisation table 0 with data for luma */
+	 
 	s5p_jpeg_set_qtbl(regs, qtbl_luminance[quality],
 			  S5P_JPG_QTBL_CONTENT(0),
 			  ARRAY_SIZE(qtbl_luminance[quality]));
@@ -632,7 +615,7 @@ static inline void s5p_jpeg_set_qtbl_lum(void __iomem *regs, int quality)
 
 static inline void s5p_jpeg_set_qtbl_chr(void __iomem *regs, int quality)
 {
-	/* this driver fills quantisation table 1 with data for chroma */
+	 
 	s5p_jpeg_set_qtbl(regs, qtbl_chrominance[quality],
 			  S5P_JPG_QTBL_CONTENT(1),
 			  ARRAY_SIZE(qtbl_chrominance[quality]));
@@ -650,28 +633,28 @@ static inline void s5p_jpeg_set_htbl(void __iomem *regs,
 
 static inline void s5p_jpeg_set_hdctbl(void __iomem *regs)
 {
-	/* this driver fills table 0 for this component */
+	 
 	s5p_jpeg_set_htbl(regs, hdctbl0, S5P_JPG_HDCTBL(0),
 						ARRAY_SIZE(hdctbl0));
 }
 
 static inline void s5p_jpeg_set_hdctblg(void __iomem *regs)
 {
-	/* this driver fills table 0 for this component */
+	 
 	s5p_jpeg_set_htbl(regs, hdctblg0, S5P_JPG_HDCTBLG(0),
 						ARRAY_SIZE(hdctblg0));
 }
 
 static inline void s5p_jpeg_set_hactbl(void __iomem *regs)
 {
-	/* this driver fills table 0 for this component */
+	 
 	s5p_jpeg_set_htbl(regs, hactbl0, S5P_JPG_HACTBL(0),
 						ARRAY_SIZE(hactbl0));
 }
 
 static inline void s5p_jpeg_set_hactblg(void __iomem *regs)
 {
-	/* this driver fills table 0 for this component */
+	 
 	s5p_jpeg_set_htbl(regs, hactblg0, S5P_JPG_HACTBLG(0),
 						ARRAY_SIZE(hactblg0));
 }
@@ -694,7 +677,7 @@ static inline void exynos4_jpeg_set_tbl(void __iomem *regs,
 
 static inline void exynos4_jpeg_set_qtbl_lum(void __iomem *regs, int quality)
 {
-	/* this driver fills quantisation table 0 with data for luma */
+	 
 	exynos4_jpeg_set_tbl(regs, qtbl_luminance[quality],
 			     EXYNOS4_QTBL_CONTENT(0),
 			     ARRAY_SIZE(qtbl_luminance[quality]));
@@ -702,7 +685,7 @@ static inline void exynos4_jpeg_set_qtbl_lum(void __iomem *regs, int quality)
 
 static inline void exynos4_jpeg_set_qtbl_chr(void __iomem *regs, int quality)
 {
-	/* this driver fills quantisation table 1 with data for chroma */
+	 
 	exynos4_jpeg_set_tbl(regs, qtbl_chrominance[quality],
 			     EXYNOS4_QTBL_CONTENT(1),
 			     ARRAY_SIZE(qtbl_chrominance[quality]));
@@ -730,10 +713,7 @@ static void exynos4_jpeg_set_huff_tbl(void __iomem *base)
 
 static inline int __exynos4_huff_tbl(int class, int id, bool lenval)
 {
-	/*
-	 * class: 0 - DC, 1 - AC
-	 * id: 0 - Y, 1 - Cb/Cr
-	 */
+	 
 	if (class) {
 		if (id)
 			return lenval ? EXYNOS4_HUFF_TBL_HACCL :
@@ -741,7 +721,7 @@ static inline int __exynos4_huff_tbl(int class, int id, bool lenval)
 		return lenval ? EXYNOS4_HUFF_TBL_HACLL : EXYNOS4_HUFF_TBL_HACLV;
 
 	}
-	/* class == 0 */
+	 
 	if (id)
 		return lenval ? EXYNOS4_HUFF_TBL_HDCCL : EXYNOS4_HUFF_TBL_HDCCV;
 
@@ -770,7 +750,7 @@ static void exynos4_jpeg_parse_decode_h_tbl(struct s5p_jpeg_ctx *ctx)
 	unsigned int word;
 	int c, x, components;
 
-	jpeg_buffer.size = 2; /* Ls */
+	jpeg_buffer.size = 2;  
 	jpeg_buffer.data =
 		(unsigned long)vb2_plane_vaddr(&vb->vb2_buf, 0) + ctx->out_q.sos + 2;
 	jpeg_buffer.curr = 0;
@@ -870,7 +850,7 @@ static void exynos4_jpeg_parse_decode_q_tbl(struct s5p_jpeg_ctx *ctx)
 		(unsigned long)vb2_plane_vaddr(&vb->vb2_buf, 0) + ctx->out_q.sof;
 	jpeg_buffer.curr = 0;
 
-	skip(&jpeg_buffer, 5); /* P, Y, X */
+	skip(&jpeg_buffer, 5);  
 	components = get_byte(&jpeg_buffer);
 	if (components == -1)
 		return;
@@ -911,7 +891,7 @@ static void exynos4_jpeg_parse_q_tbl(struct s5p_jpeg_ctx *ctx)
 			if (c == -1)
 				return;
 			id = c & 0xf;
-			/* nonzero means extended mode - not supported */
+			 
 			if ((c >> 4) & 0xf)
 				return;
 			for (i = 0; i < 64; ++i) {
@@ -930,11 +910,7 @@ static void exynos4_jpeg_parse_q_tbl(struct s5p_jpeg_ctx *ctx)
 	}
 }
 
-/*
- * ============================================================================
- * Device file operations
- * ============================================================================
- */
+ 
 
 static int queue_init(void *priv, struct vb2_queue *src_vq,
 		      struct vb2_queue *dst_vq);
@@ -960,7 +936,7 @@ static int s5p_jpeg_open(struct file *file)
 	}
 
 	v4l2_fh_init(&ctx->fh, vfd);
-	/* Use separate control handler per file handle */
+	 
 	ctx->fh.ctrl_handler = &ctx->ctrl_handler;
 	file->private_data = &ctx->fh;
 	v4l2_fh_add(&ctx->fh);
@@ -1031,11 +1007,7 @@ static const struct v4l2_file_operations s5p_jpeg_fops = {
 	.mmap		= v4l2_m2m_fop_mmap,
 };
 
-/*
- * ============================================================================
- * video ioctl operations
- * ============================================================================
- */
+ 
 
 static int get_byte(struct s5p_jpeg_buffer *buf)
 {
@@ -1089,10 +1061,7 @@ static bool s5p_jpeg_subsampling_decode(struct s5p_jpeg_ctx *ctx,
 		ctx->subsampling = V4L2_JPEG_CHROMA_SUBSAMPLING_GRAY;
 		break;
 	case 0x41:
-		/*
-		 * 4:1:1 subsampling only supported by 3250, 5420, and 5433
-		 * variants
-		 */
+		 
 		version = ctx->jpeg->variant->version;
 		if (version != SJPEG_EXYNOS3250 &&
 		    version != SJPEG_EXYNOS5420 &&
@@ -1140,14 +1109,14 @@ static bool s5p_jpeg_parse_hdr(struct s5p_jpeg_q_data *result,
 			continue;
 		length = 0;
 		switch (c) {
-		/* JPEG_MARKER_SOF0: baseline JPEG */
+		 
 		case JPEG_MARKER_SOF0:
 			if (get_word_be(&jpeg_buffer, &word))
 				break;
 			length = (long)word - 2;
 			if (!length)
 				return false;
-			sof = jpeg_buffer.curr; /* after 0xffc0 */
+			sof = jpeg_buffer.curr;  
 			sof_len = length;
 			if (get_byte(&jpeg_buffer) == -1)
 				break;
@@ -1180,7 +1149,7 @@ static bool s5p_jpeg_parse_hdr(struct s5p_jpeg_q_data *result,
 				return false;
 			if (n_dqt >= S5P_JPEG_MAX_MARKER)
 				return false;
-			dqt[n_dqt] = jpeg_buffer.curr; /* after 0xffdb */
+			dqt[n_dqt] = jpeg_buffer.curr;  
 			dqt_len[n_dqt++] = length;
 			skip(&jpeg_buffer, length);
 			break;
@@ -1193,23 +1162,23 @@ static bool s5p_jpeg_parse_hdr(struct s5p_jpeg_q_data *result,
 				return false;
 			if (n_dht >= S5P_JPEG_MAX_MARKER)
 				return false;
-			dht[n_dht] = jpeg_buffer.curr; /* after 0xffc4 */
+			dht[n_dht] = jpeg_buffer.curr;  
 			dht_len[n_dht++] = length;
 			skip(&jpeg_buffer, length);
 			break;
 
 		case JPEG_MARKER_SOS:
-			sos = jpeg_buffer.curr - 2; /* 0xffda */
+			sos = jpeg_buffer.curr - 2;  
 			break;
 
-		/* skip payload-less markers */
+		 
 		case JPEG_MARKER_RST ... JPEG_MARKER_RST + 7:
 		case JPEG_MARKER_SOI:
 		case JPEG_MARKER_EOI:
 		case JPEG_MARKER_TEM:
 			break;
 
-		/* skip uninteresting payload markers */
+		 
 		default:
 			if (get_word_be(&jpeg_buffer, &word))
 				break;
@@ -1270,17 +1239,15 @@ static int enum_fmt(struct s5p_jpeg_ctx *ctx,
 	for (i = 0; i < n; ++i) {
 		if (sjpeg_formats[i].flags & type &&
 		    sjpeg_formats[i].flags & fmt_ver_flag) {
-			/* index-th format of type type found ? */
+			 
 			if (num == f->index)
 				break;
-			/* Correct type but haven't reached our index yet,
-			 * just increment per-type index
-			 */
+			 
 			++num;
 		}
 	}
 
-	/* Format not found */
+	 
 	if (i >= n)
 		return -EINVAL;
 
@@ -1402,13 +1369,7 @@ static void jpeg_bound_align_image(struct s5p_jpeg_ctx *ctx,
 	h_step = 1 << halign;
 
 	if (ctx->jpeg->variant->hw3250_compat) {
-		/*
-		 * Rightmost and bottommost pixels are cropped by the
-		 * Exynos3250/compatible JPEG IP for RGB formats, for the
-		 * specific width and height values respectively. This
-		 * assignment will result in v4l_bound_align_image returning
-		 * dimensions reduced by 1 for the aforementioned cases.
-		 */
+		 
 		if (w_step == 4 && ((width & 3) == 1)) {
 			wmax = width;
 			hmax = height;
@@ -1433,9 +1394,7 @@ static int vidioc_try_fmt(struct v4l2_format *f, struct s5p_jpeg_fmt *fmt,
 	else if (pix->field != V4L2_FIELD_NONE)
 		return -EINVAL;
 
-	/* V4L2 specification suggests the driver corrects the format struct
-	 * if any of the dimensions is unsupported
-	 */
+	 
 	if (q_type == FMT_TYPE_OUTPUT)
 		jpeg_bound_align_image(ctx, &pix->width, S5P_JPEG_MIN_WIDTH,
 				       S5P_JPEG_MAX_WIDTH, 0,
@@ -1455,9 +1414,9 @@ static int vidioc_try_fmt(struct v4l2_format *f, struct s5p_jpeg_fmt *fmt,
 		u32 bpl = pix->bytesperline;
 
 		if (fmt->colplanes > 1 && bpl < pix->width)
-			bpl = pix->width; /* planar */
+			bpl = pix->width;  
 
-		if (fmt->colplanes == 1 && /* packed */
+		if (fmt->colplanes == 1 &&  
 		    (bpl << 3) / fmt->depth < pix->width)
 			bpl = (pix->width * fmt->depth) >> 3;
 
@@ -1488,12 +1447,7 @@ static int s5p_jpeg_try_fmt_vid_cap(struct file *file, void *priv,
 	if (!ctx->jpeg->variant->hw_ex4_compat || ctx->mode != S5P_JPEG_DECODE)
 		goto exit;
 
-	/*
-	 * The exynos4x12 device requires resulting YUV image
-	 * subsampling not to be lower than the input jpeg subsampling.
-	 * If this requirement is not met then downgrade the requested
-	 * capture format to the one with subsampling equal to the input jpeg.
-	 */
+	 
 	if ((fmt->flags & SJPEG_FMT_NON_RGB) &&
 	    (fmt->subsampling < ctx->subsampling)) {
 		ret = s5p_jpeg_adjust_fourcc_to_subsampling(ctx->subsampling,
@@ -1507,12 +1461,7 @@ static int s5p_jpeg_try_fmt_vid_cap(struct file *file, void *priv,
 							FMT_TYPE_CAPTURE);
 	}
 
-	/*
-	 * Decompression of a JPEG file with 4:2:0 subsampling and odd
-	 * width to the YUV 4:2:0 compliant formats produces a raw image
-	 * with broken luma component. Adjust capture format to RGB565
-	 * in such a case.
-	 */
+	 
 	if (ctx->subsampling == V4L2_JPEG_CHROMA_SUBSAMPLING_420 &&
 	    (ctx->out_q.w & 1) &&
 	    (pix->pixelformat == V4L2_PIX_FMT_NV12 ||
@@ -1611,12 +1560,7 @@ static int s5p_jpeg_s_fmt(struct s5p_jpeg_ctx *ct, struct v4l2_format *f)
 		q_data->h = pix->height;
 	}
 	if (q_data->fmt->fourcc != V4L2_PIX_FMT_JPEG) {
-		/*
-		 * During encoding Exynos4x12 SoCs access wider memory area
-		 * than it results from Image_x and Image_y values written to
-		 * the JPEG_IMAGE_SIZE register. In order to avoid sysmmu
-		 * page fault calculate proper buffer size in such a case.
-		 */
+		 
 		if (ct->jpeg->variant->hw_ex4_compat &&
 		    f_type == FMT_TYPE_OUTPUT && ct->mode == S5P_JPEG_ENCODE)
 			q_data->size = exynos4_jpeg_get_output_buffer_size(ct,
@@ -1637,12 +1581,7 @@ static int s5p_jpeg_s_fmt(struct s5p_jpeg_ctx *ct, struct v4l2_format *f)
 		ct->crop_altered = false;
 	}
 
-	/*
-	 * For decoding init crop_rect with capture buffer dimmensions which
-	 * contain aligned dimensions of the input JPEG image and do it only
-	 * if crop rectangle hasn't been altered by the user space e.g. with
-	 * S_SELECTION ioctl. For encoding assign output buffer dimensions.
-	 */
+	 
 	if (!ct->crop_altered &&
 	    ((ct->mode == S5P_JPEG_DECODE && f_type == FMT_TYPE_CAPTURE) ||
 	     (ct->mode == S5P_JPEG_ENCODE && f_type == FMT_TYPE_OUTPUT))) {
@@ -1650,11 +1589,7 @@ static int s5p_jpeg_s_fmt(struct s5p_jpeg_ctx *ct, struct v4l2_format *f)
 		ct->crop_rect.height = pix->height;
 	}
 
-	/*
-	 * Prevent downscaling to YUV420 format by more than 2
-	 * for Exynos3250/compatible SoC as it produces broken raw image
-	 * in such cases.
-	 */
+	 
 	if (ct->mode == S5P_JPEG_DECODE &&
 	    f_type == FMT_TYPE_CAPTURE &&
 	    ct->jpeg->variant->hw3250_compat &&
@@ -1712,7 +1647,7 @@ static int exynos3250_jpeg_try_downscale(struct s5p_jpeg_ctx *ctx,
 	scale_factor = max(w_ratio, h_ratio);
 	scale_factor = clamp_val(scale_factor, 1, 8);
 
-	/* Align scale ratio to the nearest power of 2 */
+	 
 	for (i = 0; i <= 3; ++i) {
 		cur_ratio = 1 << i;
 		if (scale_factor <= cur_ratio) {
@@ -1779,9 +1714,7 @@ static int exynos3250_jpeg_try_crop(struct s5p_jpeg_ctx *ctx,
 	return 0;
 }
 
-/*
- * V4L2 controls
- */
+ 
 
 static int s5p_jpeg_g_selection(struct file *file, void *priv,
 			 struct v4l2_selection *s)
@@ -1792,7 +1725,7 @@ static int s5p_jpeg_g_selection(struct file *file, void *priv,
 	    s->type != V4L2_BUF_TYPE_VIDEO_CAPTURE)
 		return -EINVAL;
 
-	/* For JPEG blob active == default == bounds */
+	 
 	switch (s->target) {
 	case V4L2_SEL_TGT_CROP:
 	case V4L2_SEL_TGT_CROP_BOUNDS:
@@ -1817,9 +1750,7 @@ static int s5p_jpeg_g_selection(struct file *file, void *priv,
 	return 0;
 }
 
-/*
- * V4L2 controls
- */
+ 
 static int s5p_jpeg_s_selection(struct file *file, void *fh,
 				  struct v4l2_selection *s)
 {
@@ -1869,30 +1800,19 @@ static int s5p_jpeg_adjust_subs_ctrl(struct s5p_jpeg_ctx *ctx, int *ctrl_val)
 		return 0;
 	case SJPEG_EXYNOS3250:
 	case SJPEG_EXYNOS5420:
-		/*
-		 * The exynos3250/compatible device can produce JPEG image only
-		 * of 4:4:4 subsampling when given RGB32 source image.
-		 */
+		 
 		if (ctx->out_q.fmt->fourcc == V4L2_PIX_FMT_RGB32)
 			*ctrl_val = 0;
 		break;
 	case SJPEG_EXYNOS4:
-		/*
-		 * The exynos4x12 device requires input raw image fourcc
-		 * to be V4L2_PIX_FMT_GREY if gray jpeg format
-		 * is to be set.
-		 */
+		 
 		if (ctx->out_q.fmt->fourcc != V4L2_PIX_FMT_GREY &&
 		    *ctrl_val == V4L2_JPEG_CHROMA_SUBSAMPLING_GRAY)
 			return -EINVAL;
 		break;
 	}
 
-	/*
-	 * The exynos4x12 and exynos3250/compatible devices require resulting
-	 * jpeg subsampling not to be lower than the input raw image
-	 * subsampling.
-	 */
+	 
 	if (ctx->out_q.fmt->subsampling > *ctrl_val)
 		*ctrl_val = ctx->out_q.fmt->subsampling;
 
@@ -1945,7 +1865,7 @@ static const struct v4l2_ctrl_ops s5p_jpeg_ctrl_ops = {
 
 static int s5p_jpeg_controls_create(struct s5p_jpeg_ctx *ctx)
 {
-	unsigned int mask = ~0x27; /* 444, 422, 420, GRAY */
+	unsigned int mask = ~0x27;  
 	struct v4l2_ctrl *ctrl;
 	int ret;
 
@@ -1960,7 +1880,7 @@ static int s5p_jpeg_controls_create(struct s5p_jpeg_ctx *ctx)
 				  V4L2_CID_JPEG_RESTART_INTERVAL,
 				  0, 0xffff, 1, 0);
 		if (ctx->jpeg->variant->version == SJPEG_S5P)
-			mask = ~0x06; /* 422, 420 */
+			mask = ~0x06;  
 	}
 
 	ctrl = v4l2_ctrl_new_std_menu(&ctx->ctrl_handler, &s5p_jpeg_ctrl_ops,
@@ -2018,11 +1938,7 @@ static const struct v4l2_ioctl_ops s5p_jpeg_ioctl_ops = {
 	.vidioc_unsubscribe_event	= v4l2_event_unsubscribe,
 };
 
-/*
- * ============================================================================
- * mem2mem callbacks
- * ============================================================================
- */
+ 
 
 static void s5p_jpeg_device_run(void *priv)
 {
@@ -2055,10 +1971,10 @@ static void s5p_jpeg_device_run(void *priv)
 		s5p_jpeg_imgadr(jpeg->regs, src_addr);
 		s5p_jpeg_jpgadr(jpeg->regs, dst_addr);
 
-		/* ultimately comes from sizeimage from userspace */
+		 
 		s5p_jpeg_enc_stream_int(jpeg->regs, ctx->cap_q.size);
 
-		/* JPEG RGB to YCbCr conversion matrix */
+		 
 		s5p_jpeg_coef(jpeg->regs, 1, 1, S5P_JPEG_COEF11);
 		s5p_jpeg_coef(jpeg->regs, 1, 2, S5P_JPEG_COEF12);
 		s5p_jpeg_coef(jpeg->regs, 1, 3, S5P_JPEG_COEF13);
@@ -2069,26 +1985,23 @@ static void s5p_jpeg_device_run(void *priv)
 		s5p_jpeg_coef(jpeg->regs, 3, 2, S5P_JPEG_COEF32);
 		s5p_jpeg_coef(jpeg->regs, 3, 3, S5P_JPEG_COEF33);
 
-		/*
-		 * JPEG IP allows storing 4 quantization tables
-		 * We fill table 0 for luma and table 1 for chroma
-		 */
+		 
 		s5p_jpeg_set_qtbl_lum(jpeg->regs, ctx->compr_quality);
 		s5p_jpeg_set_qtbl_chr(jpeg->regs, ctx->compr_quality);
-		/* use table 0 for Y */
+		 
 		s5p_jpeg_qtbl(jpeg->regs, 1, 0);
-		/* use table 1 for Cb and Cr*/
+		 
 		s5p_jpeg_qtbl(jpeg->regs, 2, 1);
 		s5p_jpeg_qtbl(jpeg->regs, 3, 1);
 
-		/* Y, Cb, Cr use Huffman table 0 */
+		 
 		s5p_jpeg_htbl_ac(jpeg->regs, 1);
 		s5p_jpeg_htbl_dc(jpeg->regs, 1);
 		s5p_jpeg_htbl_ac(jpeg->regs, 2);
 		s5p_jpeg_htbl_dc(jpeg->regs, 2);
 		s5p_jpeg_htbl_ac(jpeg->regs, 3);
 		s5p_jpeg_htbl_dc(jpeg->regs, 3);
-	} else { /* S5P_JPEG_DECODE */
+	} else {  
 		s5p_jpeg_rst_int_enable(jpeg->regs, true);
 		s5p_jpeg_data_num_int_enable(jpeg->regs, true);
 		s5p_jpeg_final_mcu_num_int_enable(jpeg->regs, true);
@@ -2201,10 +2114,7 @@ static void exynos4_jpeg_device_run(void *priv)
 
 		exynos4_jpeg_set_huff_tbl(jpeg->regs);
 
-		/*
-		 * JPEG IP allows storing 4 quantization tables
-		 * We fill table 0 for luma and table 1 for chroma
-		 */
+		 
 		exynos4_jpeg_set_qtbl_lum(jpeg->regs, ctx->compr_quality);
 		exynos4_jpeg_set_qtbl_chr(jpeg->regs, ctx->compr_quality);
 
@@ -2333,21 +2243,16 @@ static void exynos3250_jpeg_device_run(void *priv)
 					      ctx->out_q.fmt->fourcc);
 		exynos3250_jpeg_dri(jpeg->regs, ctx->restart_interval);
 
-		/*
-		 * JPEG IP allows storing 4 quantization tables
-		 * We fill table 0 for luma and table 1 for chroma
-		 */
+		 
 		s5p_jpeg_set_qtbl_lum(jpeg->regs, ctx->compr_quality);
 		s5p_jpeg_set_qtbl_chr(jpeg->regs, ctx->compr_quality);
-		/* use table 0 for Y */
+		 
 		exynos3250_jpeg_qtbl(jpeg->regs, 1, 0);
-		/* use table 1 for Cb and Cr*/
+		 
 		exynos3250_jpeg_qtbl(jpeg->regs, 2, 1);
 		exynos3250_jpeg_qtbl(jpeg->regs, 3, 1);
 
-		/*
-		 * Some SoCs require setting Huffman tables before each run
-		 */
+		 
 		if (jpeg->variant->htbl_reinit) {
 			s5p_jpeg_set_hdctbl(jpeg->regs);
 			s5p_jpeg_set_hdctblg(jpeg->regs);
@@ -2355,7 +2260,7 @@ static void exynos3250_jpeg_device_run(void *priv)
 			s5p_jpeg_set_hactblg(jpeg->regs);
 		}
 
-		/* Y, Cb, Cr use Huffman table 0 */
+		 
 		exynos3250_jpeg_htbl_ac(jpeg->regs, 1);
 		exynos3250_jpeg_htbl_dc(jpeg->regs, 1);
 		exynos3250_jpeg_htbl_ac(jpeg->regs, 2);
@@ -2373,7 +2278,7 @@ static void exynos3250_jpeg_device_run(void *priv)
 		exynos3250_jpeg_set_jpeg_addr(ctx);
 		exynos3250_jpeg_subsampling_mode(jpeg->regs, ctx->subsampling);
 
-		/* ultimately comes from sizeimage from userspace */
+		 
 		exynos3250_jpeg_enc_stream_bound(jpeg->regs, ctx->cap_q.size);
 
 		if (ctx->out_q.fmt->fourcc == V4L2_PIX_FMT_RGB565 ||
@@ -2395,7 +2300,7 @@ static void exynos3250_jpeg_device_run(void *priv)
 
 	exynos3250_jpeg_interrupts_enable(jpeg->regs);
 
-	/* JPEG RGB to YCbCr conversion matrix */
+	 
 	exynos3250_jpeg_coef(jpeg->regs, ctx->mode);
 
 	exynos3250_jpeg_set_timer(jpeg->regs, EXYNOS3250_IRQ_TIMEOUT);
@@ -2410,10 +2315,7 @@ static int s5p_jpeg_job_ready(void *priv)
 	struct s5p_jpeg_ctx *ctx = priv;
 
 	if (ctx->mode == S5P_JPEG_DECODE) {
-		/*
-		 * We have only one input buffer and one output buffer. If there
-		 * is a resolution change event, no need to continue decoding.
-		 */
+		 
 		if (ctx->state == JPEGCTX_RESOLUTION_CHANGE)
 			return 0;
 
@@ -2438,11 +2340,7 @@ static const struct v4l2_m2m_ops exynos4_jpeg_m2m_ops = {
 	.job_ready	= s5p_jpeg_job_ready,
 };
 
-/*
- * ============================================================================
- * Queue operations
- * ============================================================================
- */
+ 
 
 static int s5p_jpeg_queue_setup(struct vb2_queue *vq,
 			   unsigned int *nbuffers, unsigned int *nplanes,
@@ -2457,10 +2355,7 @@ static int s5p_jpeg_queue_setup(struct vb2_queue *vq,
 
 	size = q_data->size;
 
-	/*
-	 * header is parsed during decoding and parsed information stored
-	 * in the context so we do not allow another buffer to overwrite it
-	 */
+	 
 	if (ctx->mode == S5P_JPEG_DECODE)
 		count = 1;
 
@@ -2498,15 +2393,7 @@ static void s5p_jpeg_set_capture_queue_data(struct s5p_jpeg_ctx *ctx)
 	q_data->w = ctx->out_q.w;
 	q_data->h = ctx->out_q.h;
 
-	/*
-	 * This call to jpeg_bound_align_image() takes care of width and
-	 * height values alignment when user space calls the QBUF of
-	 * OUTPUT buffer after the S_FMT of CAPTURE buffer.
-	 * Please note that on Exynos4x12 SoCs, resigning from executing
-	 * S_FMT on capture buffer for each JPEG image can result in a
-	 * hardware hangup if subsampling is lower than the one of input
-	 * JPEG.
-	 */
+	 
 	jpeg_bound_align_image(ctx, &q_data->w, S5P_JPEG_MIN_WIDTH,
 			       S5P_JPEG_MAX_WIDTH, q_data->fmt->h_align,
 			       &q_data->h, S5P_JPEG_MIN_HEIGHT,
@@ -2544,11 +2431,7 @@ static void s5p_jpeg_buf_queue(struct vb2_buffer *vb)
 			return;
 		}
 
-		/*
-		 * If there is a resolution change event, only update capture
-		 * queue when it is not streaming. Otherwise, update it in
-		 * STREAMOFF. See s5p_jpeg_stop_streaming for detail.
-		 */
+		 
 		if (ctx->out_q.w != ori_w || ctx->out_q.h != ori_h) {
 			v4l2_event_queue_fh(&ctx->fh, &ev_src_ch);
 			if (vb2_is_streaming(dst_vq))
@@ -2572,11 +2455,7 @@ static void s5p_jpeg_stop_streaming(struct vb2_queue *q)
 {
 	struct s5p_jpeg_ctx *ctx = vb2_get_drv_priv(q);
 
-	/*
-	 * STREAMOFF is an acknowledgment for resolution change event.
-	 * Before STREAMOFF, we still have to return the old resolution and
-	 * subsampling. Update capture queue when the stream is off.
-	 */
+	 
 	if (ctx->state == JPEGCTX_RESOLUTION_CHANGE &&
 	    q->type == V4L2_BUF_TYPE_VIDEO_CAPTURE) {
 		s5p_jpeg_set_capture_queue_data(ctx);
@@ -2629,11 +2508,7 @@ static int queue_init(void *priv, struct vb2_queue *src_vq,
 	return vb2_queue_init(dst_vq);
 }
 
-/*
- * ============================================================================
- * ISR
- * ============================================================================
- */
+ 
 
 static irqreturn_t s5p_jpeg_irq(int irq, void *dev_id)
 {
@@ -2839,18 +2714,14 @@ exit_unlock:
 
 static void *jpeg_get_drv_data(struct device *dev);
 
-/*
- * ============================================================================
- * Driver basic infrastructure
- * ============================================================================
- */
+ 
 
 static int s5p_jpeg_probe(struct platform_device *pdev)
 {
 	struct s5p_jpeg *jpeg;
 	int i, ret;
 
-	/* JPEG IP abstraction struct */
+	 
 	jpeg = devm_kzalloc(&pdev->dev, sizeof(struct s5p_jpeg), GFP_KERNEL);
 	if (!jpeg)
 		return -ENOMEM;
@@ -2863,12 +2734,12 @@ static int s5p_jpeg_probe(struct platform_device *pdev)
 	spin_lock_init(&jpeg->slock);
 	jpeg->dev = &pdev->dev;
 
-	/* memory-mapped registers */
+	 
 	jpeg->regs = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(jpeg->regs))
 		return PTR_ERR(jpeg->regs);
 
-	/* interrupt service routine registration */
+	 
 	jpeg->irq = ret = platform_get_irq(pdev, 0);
 	if (ret < 0)
 		return ret;
@@ -2880,7 +2751,7 @@ static int s5p_jpeg_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* clocks */
+	 
 	for (i = 0; i < jpeg->variant->num_clocks; i++) {
 		jpeg->clocks[i] = devm_clk_get(&pdev->dev,
 					      jpeg->variant->clk_names[i]);
@@ -2891,14 +2762,14 @@ static int s5p_jpeg_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* v4l2 device */
+	 
 	ret = v4l2_device_register(&pdev->dev, &jpeg->v4l2_dev);
 	if (ret) {
 		dev_err(&pdev->dev, "Failed to register v4l2 device\n");
 		return ret;
 	}
 
-	/* mem2mem device */
+	 
 	jpeg->m2m_dev = v4l2_m2m_init(jpeg->variant->m2m_ops);
 	if (IS_ERR(jpeg->m2m_dev)) {
 		v4l2_err(&jpeg->v4l2_dev, "Failed to init mem2mem device\n");
@@ -2908,7 +2779,7 @@ static int s5p_jpeg_probe(struct platform_device *pdev)
 
 	vb2_dma_contig_set_max_seg_size(&pdev->dev, DMA_BIT_MASK(32));
 
-	/* JPEG encoder /dev/videoX node */
+	 
 	jpeg->vfd_encoder = video_device_alloc();
 	if (!jpeg->vfd_encoder) {
 		v4l2_err(&jpeg->v4l2_dev, "Failed to allocate video device\n");
@@ -2938,7 +2809,7 @@ static int s5p_jpeg_probe(struct platform_device *pdev)
 		  "encoder device registered as /dev/video%d\n",
 		  jpeg->vfd_encoder->num);
 
-	/* JPEG decoder /dev/videoX node */
+	 
 	jpeg->vfd_decoder = video_device_alloc();
 	if (!jpeg->vfd_decoder) {
 		v4l2_err(&jpeg->v4l2_dev, "Failed to allocate video device\n");
@@ -2968,7 +2839,7 @@ static int s5p_jpeg_probe(struct platform_device *pdev)
 		  "decoder device registered as /dev/video%d\n",
 		  jpeg->vfd_decoder->num);
 
-	/* final statements & power management */
+	 
 	platform_set_drvdata(pdev, jpeg);
 
 	pm_runtime_enable(&pdev->dev);
@@ -3037,14 +2908,7 @@ static int s5p_jpeg_runtime_resume(struct device *dev)
 
 	spin_lock_irqsave(&jpeg->slock, flags);
 
-	/*
-	 * JPEG IP allows storing two Huffman tables for each component.
-	 * We fill table 0 for each component and do this here only
-	 * for S5PC210 and Exynos3250 SoCs. Exynos4x12 and Exynos542x SoC
-	 * require programming their Huffman tables each time the encoding
-	 * process is initialized, and thus it is accomplished in the
-	 * device_run callback of m2m_ops.
-	 */
+	 
 	if (!jpeg->variant->htbl_reinit) {
 		s5p_jpeg_set_hdctbl(jpeg->regs);
 		s5p_jpeg_set_hdctblg(jpeg->regs);
@@ -3056,7 +2920,7 @@ static int s5p_jpeg_runtime_resume(struct device *dev)
 
 	return 0;
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct dev_pm_ops s5p_jpeg_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
@@ -3097,9 +2961,9 @@ static struct s5p_jpeg_variant exynos4_jpeg_drvdata = {
 
 static struct s5p_jpeg_variant exynos5420_jpeg_drvdata = {
 	.version	= SJPEG_EXYNOS5420,
-	.jpeg_irq	= exynos3250_jpeg_irq,		/* intentionally 3250 */
-	.m2m_ops	= &exynos3250_jpeg_m2m_ops,	/* intentionally 3250 */
-	.fmt_ver_flag	= SJPEG_FMT_FLAG_EXYNOS3250,	/* intentionally 3250 */
+	.jpeg_irq	= exynos3250_jpeg_irq,		 
+	.m2m_ops	= &exynos3250_jpeg_m2m_ops,	 
+	.fmt_ver_flag	= SJPEG_FMT_FLAG_EXYNOS3250,	 
 	.hw3250_compat	= 1,
 	.htbl_reinit	= 1,
 	.clk_names	= {"jpeg"},

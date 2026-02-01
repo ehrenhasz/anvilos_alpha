@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TS3A227E Autonomous Audio Accessory Detection and Configuration Switch
- *
- * Copyright (C) 2014 Google, Inc.
- */
+
+ 
 
 #include <linux/gpio.h>
 #include <linux/i2c.h>
@@ -30,7 +26,7 @@ struct ts3a227e {
 	int irq;
 };
 
-/* Button values to be reported on the jack */
+ 
 static const int ts3a227e_buttons[] = {
 	SND_JACK_BTN_0,
 	SND_JACK_BTN_1,
@@ -46,7 +42,7 @@ static const int ts3a227e_buttons[] = {
 			    SND_JACK_BTN_2 | \
 			    SND_JACK_BTN_3)
 
-/* TS3A227E registers */
+ 
 #define TS3A227E_REG_DEVICE_ID		0x00
 #define TS3A227E_REG_INTERRUPT		0x01
 #define TS3A227E_REG_KP_INTERRUPT	0x02
@@ -64,28 +60,28 @@ static const int ts3a227e_buttons[] = {
 #define TS3A227E_REG_KP_THRESHOLD_2	0x0e
 #define TS3A227E_REG_KP_THRESHOLD_3	0x0f
 
-/* TS3A227E_REG_INTERRUPT 0x01 */
+ 
 #define INS_REM_EVENT 0x01
 #define DETECTION_COMPLETE_EVENT 0x02
 
-/* TS3A227E_REG_KP_INTERRUPT 0x02 */
+ 
 #define PRESS_MASK(idx) (0x01 << (2 * (idx)))
 #define RELEASE_MASK(idx) (0x02 << (2 * (idx)))
 
-/* TS3A227E_REG_INTERRUPT_DISABLE 0x03 */
+ 
 #define INS_REM_INT_DISABLE 0x01
 #define DETECTION_COMPLETE_INT_DISABLE 0x02
 #define ADC_COMPLETE_INT_DISABLE 0x04
 #define INTB_DISABLE 0x08
 
-/* TS3A227E_REG_SETTING_1 0x4 */
+ 
 #define DEBOUNCE_INSERTION_SETTING_SFT (0)
 #define DEBOUNCE_INSERTION_SETTING_MASK (0x7 << DEBOUNCE_PRESS_SETTING_SFT)
 
-/* TS3A227E_REG_SETTING_2 0x05 */
+ 
 #define KP_ENABLE 0x04
 
-/* TS3A227E_REG_SETTING_3 0x06 */
+ 
 #define MICBIAS_SETTING_SFT 3
 #define MICBIAS_SETTING_MASK (0x7 << MICBIAS_SETTING_SFT)
 #define DEBOUNCE_RELEASE_SETTING_SFT 2
@@ -93,7 +89,7 @@ static const int ts3a227e_buttons[] = {
 #define DEBOUNCE_PRESS_SETTING_SFT 0
 #define DEBOUNCE_PRESS_SETTING_MASK (0x3 << DEBOUNCE_PRESS_SETTING_SFT)
 
-/* TS3A227E_REG_ACCESSORY_STATUS  0x0b */
+ 
 #define TYPE_3_POLE 0x01
 #define TYPE_4_POLE_OMTP 0x02
 #define TYPE_4_POLE_STANDARD 0x04
@@ -184,7 +180,7 @@ static void ts3a227e_new_jack_state(struct ts3a227e *ts3a227e, unsigned acc_reg)
 		ts3a227e->mic_present = mic_present;
 		ts3a227e->buttons_held = 0;
 		if (mic_present) {
-			/* Enable key press detection. */
+			 
 			regmap_update_bits(ts3a227e->regmap,
 					   TS3A227E_REG_SETTING_2,
 					   KP_ENABLE, KP_ENABLE);
@@ -200,7 +196,7 @@ static irqreturn_t ts3a227e_interrupt(int irq, void *data)
 	struct device *dev = ts3a227e->dev;
 	int ret;
 
-	/* Check for plug/unplug. */
+	 
 	ret = regmap_read(regmap, TS3A227E_REG_INTERRUPT, &int_reg);
 	if (ret) {
 		dev_err(dev, "failed to clear interrupt ret=%d\n", ret);
@@ -212,7 +208,7 @@ static irqreturn_t ts3a227e_interrupt(int irq, void *data)
 		ts3a227e_new_jack_state(ts3a227e, acc_reg);
 	}
 
-	/* Report any key events. */
+	 
 	ret = regmap_read(regmap, TS3A227E_REG_KP_INTERRUPT, &kp_int_reg);
 	if (ret) {
 		dev_err(dev, "failed to clear key interrupt ret=%d\n", ret);
@@ -231,16 +227,7 @@ static irqreturn_t ts3a227e_interrupt(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/**
- * ts3a227e_enable_jack_detect - Specify a jack for event reporting
- *
- * @component:  component to register the jack with
- * @jack: jack to use to report headset and button events on
- *
- * After this function has been called the headset insert/remove and button
- * events 0-3 will be routed to the given jack.  Jack can be null to stop
- * reporting.
- */
+ 
 int ts3a227e_enable_jack_detect(struct snd_soc_component *component,
 				struct snd_soc_jack *jack)
 {
@@ -387,12 +374,12 @@ static int ts3a227e_i2c_probe(struct i2c_client *i2c)
 	if (ret)
 		return ret;
 
-	/* Enable interrupts except for ADC complete. */
+	 
 	regmap_update_bits(ts3a227e->regmap, TS3A227E_REG_INTERRUPT_DISABLE,
 			   INTB_DISABLE | ADC_COMPLETE_INT_DISABLE,
 			   ADC_COMPLETE_INT_DISABLE);
 
-	/* Read jack status because chip might not trigger interrupt at boot. */
+	 
 	regmap_read(ts3a227e->regmap, TS3A227E_REG_ACCESSORY_STATUS, &acc_reg);
 	ts3a227e_new_jack_state(ts3a227e, acc_reg);
 	ts3a227e_jack_report(ts3a227e);

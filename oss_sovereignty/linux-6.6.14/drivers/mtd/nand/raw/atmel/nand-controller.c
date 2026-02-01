@@ -1,49 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2017 ATMEL
- * Copyright 2017 Free Electrons
- *
- * Author: Boris Brezillon <boris.brezillon@free-electrons.com>
- *
- * Derived from the atmel_nand.c driver which contained the following
- * copyrights:
- *
- *   Copyright 2003 Rick Bronson
- *
- *   Derived from drivers/mtd/nand/autcpu12.c (removed in v3.8)
- *	Copyright 2001 Thomas Gleixner (gleixner@autronix.de)
- *
- *   Derived from drivers/mtd/spia.c (removed in v3.8)
- *	Copyright 2000 Steven J. Hill (sjhill@cotw.com)
- *
- *
- *   Add Hardware ECC support for AT91SAM9260 / AT91SAM9263
- *	Richard Genoud (richard.genoud@gmail.com), Adeneo Copyright 2007
- *
- *   Derived from Das U-Boot source code
- *	(u-boot-1.1.5/board/atmel/at91sam9263ek/nand.c)
- *	Copyright 2006 ATMEL Rousset, Lacressonniere Nicolas
- *
- *   Add Programmable Multibit ECC support for various AT91 SoC
- *	Copyright 2012 ATMEL, Hong Xu
- *
- *   Add Nand Flash Controller support for SAMA5 SoC
- *	Copyright 2013 ATMEL, Josh Wu (josh.wu@atmel.com)
- *
- * A few words about the naming convention in this file. This convention
- * applies to structure and function names.
- *
- * Prefixes:
- *
- * - atmel_nand_: all generic structures/functions
- * - atmel_smc_nand_: all structures/functions specific to the SMC interface
- *		      (at91sam9 and avr32 SoCs)
- * - atmel_hsmc_nand_: all structures/functions specific to the HSMC interface
- *		       (sama5 SoCs and later)
- * - atmel_nfc_: all structures/functions used to manipulate the NFC sub-block
- *		 that is available in the HSMC block
- * - <soc>_nand_: all SoC specific structures/functions
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -264,7 +220,7 @@ struct atmel_hsmc_nand_controller {
 	u32 cfg;
 	int irq;
 
-	/* Only used when instantiating from legacy DT bindings. */
+	 
 	struct clk *clk;
 };
 
@@ -450,10 +406,10 @@ static int atmel_nfc_exec_op(struct atmel_hsmc_nand_controller *nc, bool poll)
 			op |= ATMEL_NFC_NFCWR;
 	}
 
-	/* Clear all flags. */
+	 
 	regmap_read(nc->base.smc, ATMEL_HSMC_NFC_SR, &val);
 
-	/* Send the command. */
+	 
 	regmap_write(nc->io, op, addr);
 
 	ret = atmel_nfc_wait(nc, poll, 0);
@@ -462,7 +418,7 @@ static int atmel_nfc_exec_op(struct atmel_hsmc_nand_controller *nc, bool poll)
 			"Failed to send NAND command (err = %d)!",
 			ret);
 
-	/* Reset the op state. */
+	 
 	memset(&nc->op, 0, sizeof(nc->op));
 
 	return ret;
@@ -475,11 +431,7 @@ static void atmel_nand_data_in(struct atmel_nand *nand, void *buf,
 
 	nc = to_nand_controller(nand->base.controller);
 
-	/*
-	 * If the controller supports DMA, the buffer address is DMA-able and
-	 * len is long enough to make DMA transfers profitable, let's trigger
-	 * a DMA transfer. If it fails, fallback to PIO mode.
-	 */
+	 
 	if (nc->dmac && virt_addr_valid(buf) &&
 	    len >= MIN_DMA_LEN && !force_8bit &&
 	    !atmel_nand_dma_transfer(nc, buf, nand->activecs->io.dma, len,
@@ -499,11 +451,7 @@ static void atmel_nand_data_out(struct atmel_nand *nand, const void *buf,
 
 	nc = to_nand_controller(nand->base.controller);
 
-	/*
-	 * If the controller supports DMA, the buffer address is DMA-able and
-	 * len is long enough to make DMA transfers profitable, let's trigger
-	 * a DMA transfer. If it fails, fallback to PIO mode.
-	 */
+	 
 	if (nc->dmac && virt_addr_valid(buf) &&
 	    len >= MIN_DMA_LEN && !force_8bit &&
 	    !atmel_nand_dma_transfer(nc, (void *)buf, nand->activecs->io.dma,
@@ -728,7 +676,7 @@ static void atmel_nfc_copy_to_sram(struct nand_chip *chip, const u8 *buf,
 					      nc->sram.dma, mtd->writesize,
 					      DMA_TO_DEVICE);
 
-	/* Falling back to CPU copy. */
+	 
 	if (ret)
 		memcpy_toio(nc->sram.virt, buf, mtd->writesize);
 
@@ -750,7 +698,7 @@ static void atmel_nfc_copy_from_sram(struct nand_chip *chip, u8 *buf,
 		ret = atmel_nand_dma_transfer(&nc->base, buf, nc->sram.dma,
 					      mtd->writesize, DMA_FROM_DEVICE);
 
-	/* Falling back to CPU copy. */
+	 
 	if (ret)
 		memcpy_fromio(buf, nc->sram.virt, mtd->writesize);
 
@@ -769,9 +717,7 @@ static void atmel_nfc_set_op_addr(struct nand_chip *chip, int page, int column)
 	if (column >= 0) {
 		nc->op.addrs[nc->op.naddrs++] = column;
 
-		/*
-		 * 2 address cycles for the column offset on large page NANDs.
-		 */
+		 
 		if (mtd->writesize > 512)
 			nc->op.addrs[nc->op.naddrs++] = column >> 8;
 	}
@@ -1052,11 +998,7 @@ static int atmel_hsmc_nand_pmecc_read_pg(struct nand_chip *chip, u8 *buf,
 	atmel_hsmc_nand_select_target(nand, chip->cur_cs);
 	nc = to_hsmc_nand_controller(chip->controller);
 
-	/*
-	 * Optimized read page accessors only work when the NAND R/B pin is
-	 * connected to a native SoC R/B pin. If that's not the case, fallback
-	 * to the non-optimized one.
-	 */
+	 
 	if (nand->activecs->rb.type != ATMEL_NAND_NATIVE_RB)
 		return atmel_nand_pmecc_read_pg(chip, buf, oob_required, page,
 						raw);
@@ -1190,9 +1132,7 @@ static int atmel_nand_ecc_init(struct nand_chip *chip)
 	switch (chip->ecc.engine_type) {
 	case NAND_ECC_ENGINE_TYPE_NONE:
 	case NAND_ECC_ENGINE_TYPE_SOFT:
-		/*
-		 * Nothing to do, the core will initialize everything for us.
-		 */
+		 
 		break;
 
 	case NAND_ECC_ENGINE_TYPE_ON_HOST:
@@ -1207,7 +1147,7 @@ static int atmel_nand_ecc_init(struct nand_chip *chip)
 		break;
 
 	default:
-		/* Other modes are not supported. */
+		 
 		dev_err(nc->dev, "Unsupported ECC mode: %d\n",
 			chip->ecc.engine_type);
 		return -ENOTSUPP;
@@ -1227,7 +1167,7 @@ static int atmel_hsmc_nand_ecc_init(struct nand_chip *chip)
 	if (chip->ecc.engine_type != NAND_ECC_ENGINE_TYPE_ON_HOST)
 		return 0;
 
-	/* Adjust the ECC operations for the HSMC IP. */
+	 
 	chip->ecc.read_page = atmel_hsmc_nand_pmecc_read_page;
 	chip->ecc.write_page = atmel_hsmc_nand_pmecc_write_page;
 	chip->ecc.read_page_raw = atmel_hsmc_nand_pmecc_read_page_raw;
@@ -1246,14 +1186,11 @@ static int atmel_smc_nand_prepare_smcconf(struct atmel_nand *nand,
 
 	nc = to_nand_controller(nand->base.controller);
 
-	/* DDR interface not supported. */
+	 
 	if (!nand_interface_is_sdr(conf))
 		return -ENOTSUPP;
 
-	/*
-	 * tRC < 30ns implies EDO mode. This controller does not support this
-	 * mode.
-	 */
+	 
 	if (conf->timings.sdr.tRC_min < 30000)
 		return -ENOTSUPP;
 
@@ -1262,11 +1199,7 @@ static int atmel_smc_nand_prepare_smcconf(struct atmel_nand *nand,
 	mckperiodps = NSEC_PER_SEC / clk_get_rate(nc->mck);
 	mckperiodps *= 1000;
 
-	/*
-	 * Set write pulse timing. This one is easy to extract:
-	 *
-	 * NWE_PULSE = tWP
-	 */
+	 
 	ncycles = DIV_ROUND_UP(conf->timings.sdr.tWP_min, mckperiodps);
 	totalcycles = ncycles;
 	ret = atmel_smc_cs_conf_set_pulse(smcconf, ATMEL_SMC_NWE_SHIFT,
@@ -1274,17 +1207,7 @@ static int atmel_smc_nand_prepare_smcconf(struct atmel_nand *nand,
 	if (ret)
 		return ret;
 
-	/*
-	 * The write setup timing depends on the operation done on the NAND.
-	 * All operations goes through the same data bus, but the operation
-	 * type depends on the address we are writing to (ALE/CLE address
-	 * lines).
-	 * Since we have no way to differentiate the different operations at
-	 * the SMC level, we must consider the worst case (the biggest setup
-	 * time among all operation types):
-	 *
-	 * NWE_SETUP = max(tCLS, tCS, tALS, tDS) - NWE_PULSE
-	 */
+	 
 	timeps = max3(conf->timings.sdr.tCLS_min, conf->timings.sdr.tCS_min,
 		      conf->timings.sdr.tALS_min);
 	timeps = max(timeps, conf->timings.sdr.tDS_min);
@@ -1296,12 +1219,7 @@ static int atmel_smc_nand_prepare_smcconf(struct atmel_nand *nand,
 	if (ret)
 		return ret;
 
-	/*
-	 * As for the write setup timing, the write hold timing depends on the
-	 * operation done on the NAND:
-	 *
-	 * NWE_HOLD = max(tCLH, tCH, tALH, tDH, tWH)
-	 */
+	 
 	timeps = max3(conf->timings.sdr.tCLH_min, conf->timings.sdr.tCH_min,
 		      conf->timings.sdr.tALH_min);
 	timeps = max3(timeps, conf->timings.sdr.tDH_min,
@@ -1309,13 +1227,7 @@ static int atmel_smc_nand_prepare_smcconf(struct atmel_nand *nand,
 	ncycles = DIV_ROUND_UP(timeps, mckperiodps);
 	totalcycles += ncycles;
 
-	/*
-	 * The write cycle timing is directly matching tWC, but is also
-	 * dependent on the other timings on the setup and hold timings we
-	 * calculated earlier, which gives:
-	 *
-	 * NWE_CYCLE = max(tWC, NWE_SETUP + NWE_PULSE + NWE_HOLD)
-	 */
+	 
 	ncycles = DIV_ROUND_UP(conf->timings.sdr.tWC_min, mckperiodps);
 	ncycles = max(totalcycles, ncycles);
 	ret = atmel_smc_cs_conf_set_cycle(smcconf, ATMEL_SMC_NWE_SHIFT,
@@ -1323,40 +1235,22 @@ static int atmel_smc_nand_prepare_smcconf(struct atmel_nand *nand,
 	if (ret)
 		return ret;
 
-	/*
-	 * We don't want the CS line to be toggled between each byte/word
-	 * transfer to the NAND. The only way to guarantee that is to have the
-	 * NCS_{WR,RD}_{SETUP,HOLD} timings set to 0, which in turn means:
-	 *
-	 * NCS_WR_PULSE = NWE_CYCLE
-	 */
+	 
 	ret = atmel_smc_cs_conf_set_pulse(smcconf, ATMEL_SMC_NCS_WR_SHIFT,
 					  ncycles);
 	if (ret)
 		return ret;
 
-	/*
-	 * As for the write setup timing, the read hold timing depends on the
-	 * operation done on the NAND:
-	 *
-	 * NRD_HOLD = max(tREH, tRHOH)
-	 */
+	 
 	timeps = max(conf->timings.sdr.tREH_min, conf->timings.sdr.tRHOH_min);
 	ncycles = DIV_ROUND_UP(timeps, mckperiodps);
 	totalcycles = ncycles;
 
-	/*
-	 * TDF = tRHZ - NRD_HOLD
-	 */
+	 
 	ncycles = DIV_ROUND_UP(conf->timings.sdr.tRHZ_max, mckperiodps);
 	ncycles -= totalcycles;
 
-	/*
-	 * In ONFI 4.0 specs, tRHZ has been increased to support EDO NANDs and
-	 * we might end up with a config that does not fit in the TDF field.
-	 * Just take the max value in this case and hope that the NAND is more
-	 * tolerant than advertised.
-	 */
+	 
 	if (ncycles > ATMEL_SMC_MODE_TDF_MAX)
 		ncycles = ATMEL_SMC_MODE_TDF_MAX;
 	else if (ncycles < ATMEL_SMC_MODE_TDF_MIN)
@@ -1365,11 +1259,7 @@ static int atmel_smc_nand_prepare_smcconf(struct atmel_nand *nand,
 	smcconf->mode |= ATMEL_SMC_MODE_TDF(ncycles) |
 			 ATMEL_SMC_MODE_TDFMODE_OPTIMIZED;
 
-	/*
-	 * Read pulse timing directly matches tRP:
-	 *
-	 * NRD_PULSE = tRP
-	 */
+	 
 	ncycles = DIV_ROUND_UP(conf->timings.sdr.tRP_min, mckperiodps);
 	totalcycles += ncycles;
 	ret = atmel_smc_cs_conf_set_pulse(smcconf, ATMEL_SMC_NRD_SHIFT,
@@ -1377,15 +1267,7 @@ static int atmel_smc_nand_prepare_smcconf(struct atmel_nand *nand,
 	if (ret)
 		return ret;
 
-	/*
-	 * The write cycle timing is directly matching tWC, but is also
-	 * dependent on the setup and hold timings we calculated earlier,
-	 * which gives:
-	 *
-	 * NRD_CYCLE = max(tRC, NRD_PULSE + NRD_HOLD)
-	 *
-	 * NRD_SETUP is always 0.
-	 */
+	 
 	ncycles = DIV_ROUND_UP(conf->timings.sdr.tRC_min, mckperiodps);
 	ncycles = max(totalcycles, ncycles);
 	ret = atmel_smc_cs_conf_set_cycle(smcconf, ATMEL_SMC_NRD_SHIFT,
@@ -1393,19 +1275,13 @@ static int atmel_smc_nand_prepare_smcconf(struct atmel_nand *nand,
 	if (ret)
 		return ret;
 
-	/*
-	 * We don't want the CS line to be toggled between each byte/word
-	 * transfer from the NAND. The only way to guarantee that is to have
-	 * the NCS_{WR,RD}_{SETUP,HOLD} timings set to 0, which in turn means:
-	 *
-	 * NCS_RD_PULSE = NRD_CYCLE
-	 */
+	 
 	ret = atmel_smc_cs_conf_set_pulse(smcconf, ATMEL_SMC_NCS_RD_SHIFT,
 					  ncycles);
 	if (ret)
 		return ret;
 
-	/* Txxx timings are directly matching tXXX ones. */
+	 
 	ncycles = DIV_ROUND_UP(conf->timings.sdr.tCLR_min, mckperiodps);
 	ret = atmel_smc_cs_conf_set_timing(smcconf,
 					   ATMEL_HSMC_TIMINGS_TCLR_SHIFT,
@@ -1417,17 +1293,7 @@ static int atmel_smc_nand_prepare_smcconf(struct atmel_nand *nand,
 	ret = atmel_smc_cs_conf_set_timing(smcconf,
 					   ATMEL_HSMC_TIMINGS_TADL_SHIFT,
 					   ncycles);
-	/*
-	 * Version 4 of the ONFI spec mandates that tADL be at least 400
-	 * nanoseconds, but, depending on the master clock rate, 400 ns may not
-	 * fit in the tADL field of the SMC reg. We need to relax the check and
-	 * accept the -ERANGE return code.
-	 *
-	 * Note that previous versions of the ONFI spec had a lower tADL_min
-	 * (100 or 200 ns). It's not clear why this timing constraint got
-	 * increased but it seems most NANDs are fine with values lower than
-	 * 400ns, so we should be safe.
-	 */
+	 
 	if (ret && ret != -ERANGE)
 		return ret;
 
@@ -1452,14 +1318,14 @@ static int atmel_smc_nand_prepare_smcconf(struct atmel_nand *nand,
 	if (ret)
 		return ret;
 
-	/* Attach the CS line to the NFC logic. */
+	 
 	smcconf->timings |= ATMEL_HSMC_TIMINGS_NFSEL;
 
-	/* Set the appropriate data bus width. */
+	 
 	if (nand->base.options & NAND_BUSWIDTH_16)
 		smcconf->mode |= ATMEL_SMC_MODE_DBW_16;
 
-	/* Operate in NRD/NWE READ/WRITEMODE. */
+	 
 	smcconf->mode |= ATMEL_SMC_MODE_READMODE_NRD |
 			 ATMEL_SMC_MODE_WRITEMODE_NWE;
 
@@ -1565,14 +1431,11 @@ static void atmel_nand_init(struct atmel_nand_controller *nc,
 	if (!nc->mck || !nc->caps->ops->setup_interface)
 		chip->options |= NAND_KEEP_TIMINGS;
 
-	/*
-	 * Use a bounce buffer when the buffer passed by the MTD user is not
-	 * suitable for DMA.
-	 */
+	 
 	if (nc->dmac)
 		chip->options |= NAND_USES_DMA;
 
-	/* Default to HW ECC if pmecc is available. */
+	 
 	if (nc->pmecc)
 		chip->ecc.engine_type = NAND_ECC_ENGINE_TYPE_ON_HOST;
 }
@@ -1590,7 +1453,7 @@ static void atmel_smc_nand_init(struct atmel_nand_controller *nc,
 	if (!smc_nc->ebi_csa_regmap)
 		return;
 
-	/* Attach the CS to the NAND Flash logic. */
+	 
 	for (i = 0; i < nand->numcs; i++)
 		regmap_update_bits(smc_nc->ebi_csa_regmap,
 				   smc_nc->ebi_csa->offs,
@@ -1730,7 +1593,7 @@ atmel_nand_controller_add_nand(struct atmel_nand_controller *nc,
 	struct mtd_info *mtd = nand_to_mtd(chip);
 	int ret;
 
-	/* No card inserted, skip this NAND. */
+	 
 	if (nand->cdgpio && gpiod_get_value(nand->cdgpio)) {
 		dev_info(nc->dev, "No SmartMedia card inserted.\n");
 		return 0;
@@ -1780,10 +1643,7 @@ atmel_nand_controller_legacy_add_nands(struct atmel_nand_controller *nc)
 	struct gpio_desc *gpio;
 	struct resource *res;
 
-	/*
-	 * Legacy bindings only allow connecting a single NAND with a unique CS
-	 * line to the controller.
-	 */
+	 
 	nand = devm_kzalloc(nc->dev, sizeof(*nand) + sizeof(*nand->cs),
 			    GFP_KERNEL);
 	if (!nand)
@@ -1797,17 +1657,10 @@ atmel_nand_controller_legacy_add_nands(struct atmel_nand_controller *nc)
 
 	nand->cs[0].io.dma = res->start;
 
-	/*
-	 * The old driver was hardcoding the CS id to 3 for all sama5
-	 * controllers. Since this id is only meaningful for the sama5
-	 * controller we can safely assign this id to 3 no matter the
-	 * controller.
-	 * If one wants to connect a NAND to a different CS line, he will
-	 * have to use the new bindings.
-	 */
+	 
 	nand->cs[0].id = 3;
 
-	/* R/B GPIO. */
+	 
 	gpio = devm_gpiod_get_index_optional(dev, NULL, 0,  GPIOD_IN);
 	if (IS_ERR(gpio)) {
 		dev_err(dev, "Failed to get R/B gpio (err = %ld)\n",
@@ -1820,7 +1673,7 @@ atmel_nand_controller_legacy_add_nands(struct atmel_nand_controller *nc)
 		nand->cs[0].rb.gpio = gpio;
 	}
 
-	/* CS GPIO. */
+	 
 	gpio = devm_gpiod_get_index_optional(dev, NULL, 1, GPIOD_OUT_HIGH);
 	if (IS_ERR(gpio)) {
 		dev_err(dev, "Failed to get CS gpio (err = %ld)\n",
@@ -1830,7 +1683,7 @@ atmel_nand_controller_legacy_add_nands(struct atmel_nand_controller *nc)
 
 	nand->cs[0].csgpio = gpio;
 
-	/* Card detect GPIO. */
+	 
 	gpio = devm_gpiod_get_index_optional(nc->dev, NULL, 2, GPIOD_IN);
 	if (IS_ERR(gpio)) {
 		dev_err(dev,
@@ -1853,7 +1706,7 @@ static int atmel_nand_controller_add_nands(struct atmel_nand_controller *nc)
 	int ret, reg_cells;
 	u32 val;
 
-	/* We do not retrieve the SMC syscon when parsing old DTs. */
+	 
 	if (nc->caps->legacy_of_bindings)
 		return atmel_nand_controller_legacy_add_nands(nc);
 
@@ -1971,7 +1824,7 @@ static const struct of_device_id __maybe_unused atmel_ebi_csa_regmap_of_ids[] = 
 		.compatible = "microchip,sam9x60-sfr",
 		.data = &sam9x60_ebi_csa,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 
 static int atmel_nand_attach_chip(struct nand_chip *chip)
@@ -1986,23 +1839,10 @@ static int atmel_nand_attach_chip(struct nand_chip *chip)
 		return ret;
 
 	if (nc->caps->legacy_of_bindings || !nc->dev->of_node) {
-		/*
-		 * We keep the MTD name unchanged to avoid breaking platforms
-		 * where the MTD cmdline parser is used and the bootloader
-		 * has not been updated to use the new naming scheme.
-		 */
+		 
 		mtd->name = "atmel_nand";
 	} else if (!mtd->name) {
-		/*
-		 * If the new bindings are used and the bootloader has not been
-		 * updated to pass a new mtdparts parameter on the cmdline, you
-		 * should define the following property in your nand node:
-		 *
-		 *	label = "atmel_nand";
-		 *
-		 * This way, mtd->name will be set by the core when
-		 * nand_set_flash_node() is called.
-		 */
+		 
 		mtd->name = devm_kasprintf(nc->dev, GFP_KERNEL,
 					   "%s:nand.%d", dev_name(nc->dev),
 					   nand->cs[0].id);
@@ -2053,7 +1893,7 @@ static int atmel_nand_controller_init(struct atmel_nand_controller *nc,
 			dev_err(nc->dev, "Failed to request DMA channel\n");
 	}
 
-	/* We do not retrieve the SMC syscon when parsing old DTs. */
+	 
 	if (nc->caps->legacy_of_bindings)
 		return 0;
 
@@ -2096,7 +1936,7 @@ atmel_smc_nand_controller_init(struct atmel_smc_nand_controller *nc)
 	struct device_node *np;
 	int ret;
 
-	/* We do not retrieve the EBICSA regmap when parsing old DTs. */
+	 
 	if (nc->base.caps->legacy_of_bindings)
 		return 0;
 
@@ -2121,10 +1961,7 @@ atmel_smc_nand_controller_init(struct atmel_smc_nand_controller *nc)
 
 	nc->ebi_csa = (struct atmel_smc_nand_ebi_csa_cfg *)match->data;
 
-	/*
-	 * The at91sam9263 has 2 EBIs, if the NAND controller is under EBI1
-	 * add 4 to ->ebi_csa->offs.
-	 */
+	 
 	if (of_device_is_compatible(dev->parent->of_node,
 				    "atmel,at91sam9263-ebi1"))
 		nc->ebi_csa->offs += 4;
@@ -2355,7 +2192,7 @@ static int atmel_hsmc_nand_controller_probe(struct platform_device *pdev,
 	if (ret)
 		return ret;
 
-	/* Make sure all irqs are masked before registering our IRQ handler. */
+	 
 	regmap_write(nc->base.smc, ATMEL_HSMC_NFC_IDR, 0xffffffff);
 	ret = devm_request_irq(dev, nc->irq, atmel_nfc_interrupt,
 			       IRQF_SHARED, "nfc", nc);
@@ -2366,7 +2203,7 @@ static int atmel_hsmc_nand_controller_probe(struct platform_device *pdev,
 		goto err;
 	}
 
-	/* Initial NFC configuration. */
+	 
 	regmap_write(nc->base.smc, ATMEL_HSMC_NFC_CFG,
 		     ATMEL_HSMC_NFC_CFG_DTO_MAX);
 	regmap_write(nc->base.smc, ATMEL_HSMC_NFC_CTRL,
@@ -2400,7 +2237,7 @@ static const struct atmel_nand_controller_caps atmel_sama5_nc_caps = {
 	.ops = &atmel_hsmc_nc_ops,
 };
 
-/* Only used to parse old bindings. */
+ 
 static const struct atmel_nand_controller_caps atmel_sama5_nand_caps = {
 	.has_dma = true,
 	.ale_offs = BIT(21),
@@ -2445,13 +2282,7 @@ atmel_smc_nand_controller_remove(struct atmel_nand_controller *nc)
 	return 0;
 }
 
-/*
- * The SMC reg layout of at91rm9200 is completely different which prevents us
- * from re-using atmel_smc_nand_setup_interface() for the
- * ->setup_interface() hook.
- * At this point, there's no support for the at91rm9200 SMC IP, so we leave
- * ->setup_interface() unassigned.
- */
+ 
 static const struct atmel_nand_controller_ops at91rm9200_nc_ops = {
 	.probe = atmel_smc_nand_controller_probe,
 	.remove = atmel_smc_nand_controller_remove,
@@ -2506,7 +2337,7 @@ static const struct atmel_nand_controller_caps microchip_sam9x60_nc_caps = {
 	.ops = &atmel_smc_nc_ops,
 };
 
-/* Only used to parse old bindings. */
+ 
 static const struct atmel_nand_controller_caps atmel_rm9200_nand_caps = {
 	.ale_offs = BIT(21),
 	.cle_offs = BIT(22),
@@ -2554,7 +2385,7 @@ static const struct of_device_id atmel_nand_controller_of_ids[] = {
 		.compatible = "microchip,sam9x60-nand-controller",
 		.data = &microchip_sam9x60_nc_caps,
 	},
-	/* Support for old/deprecated bindings: */
+	 
 	{
 		.compatible = "atmel,at91rm9200-nand",
 		.data = &atmel_rm9200_nand_caps,
@@ -2567,7 +2398,7 @@ static const struct of_device_id atmel_nand_controller_of_ids[] = {
 		.compatible = "atmel,sama5d2-nand",
 		.data = &atmel_rm9200_nand_caps,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, atmel_nand_controller_of_ids);
 
@@ -2589,10 +2420,7 @@ static int atmel_nand_controller_probe(struct platform_device *pdev)
 		struct device_node *nfc_node;
 		u32 ale_offs = 21;
 
-		/*
-		 * If we are parsing legacy DT props and the DT contains a
-		 * valid NFC node, forward the request to the sama5 logic.
-		 */
+		 
 		nfc_node = of_get_compatible_child(pdev->dev.of_node,
 						   "atmel,sama5d3-nfc");
 		if (nfc_node) {
@@ -2600,22 +2428,13 @@ static int atmel_nand_controller_probe(struct platform_device *pdev)
 			of_node_put(nfc_node);
 		}
 
-		/*
-		 * Even if the compatible says we are dealing with an
-		 * at91rm9200 controller, the atmel,nand-has-dma specify that
-		 * this controller supports DMA, which means we are in fact
-		 * dealing with an at91sam9g45+ controller.
-		 */
+		 
 		if (!caps->has_dma &&
 		    of_property_read_bool(pdev->dev.of_node,
 					  "atmel,nand-has-dma"))
 			caps = &atmel_sam9g45_nand_caps;
 
-		/*
-		 * All SoCs except the at91sam9261 are assigning ALE to A21 and
-		 * CLE to A22. If atmel,nand-addr-offset != 21 this means we're
-		 * actually dealing with an at91sam9261 controller.
-		 */
+		 
 		of_property_read_u32(pdev->dev.of_node,
 				     "atmel,nand-addr-offset", &ale_offs);
 		if (ale_offs != 21)

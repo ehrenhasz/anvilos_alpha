@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2007 Oracle.  All rights reserved.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/uuid.h>
@@ -17,13 +15,7 @@
 #include "root-tree.h"
 #include "orphan.h"
 
-/*
- * Read a root item from the tree. In case we detect a root item smaller then
- * sizeof(root_item), we know it's an old version of the root structure and
- * initialize all new fields to zero. The same happens if we detect mismatching
- * generation numbers as then we know the root was once mounted with an older
- * kernel that was not aware of the root item structure change.
- */
+ 
 static void btrfs_read_root_item(struct extent_buffer *eb, int slot,
 				struct btrfs_root_item *item)
 {
@@ -44,26 +36,13 @@ static void btrfs_read_root_item(struct extent_buffer *eb, int slot,
 		need_reset = 1;
 	}
 	if (need_reset) {
-		/* Clear all members from generation_v2 onwards. */
+		 
 		memset_startat(item, 0, generation_v2);
 		generate_random_guid(item->uuid);
 	}
 }
 
-/*
- * btrfs_find_root - lookup the root by the key.
- * root: the root of the root tree
- * search_key: the key to search
- * path: the path we search
- * root_item: the root item of the tree we look for
- * root_key: the root key of the tree we look for
- *
- * If ->offset of 'search_key' is -1ULL, it means we are not sure the offset
- * of the search key, just lookup the root with the highest offset for a
- * given objectid.
- *
- * If we find something return 0, otherwise > 0, < 0 on error.
- */
+ 
 int btrfs_find_root(struct btrfs_root *root, const struct btrfs_key *search_key,
 		    struct btrfs_path *path, struct btrfs_root_item *root_item,
 		    struct btrfs_key *root_key)
@@ -77,11 +56,11 @@ int btrfs_find_root(struct btrfs_root *root, const struct btrfs_key *search_key,
 	if (ret < 0)
 		return ret;
 
-	if (search_key->offset != -1ULL) {	/* the search key is exact */
+	if (search_key->offset != -1ULL) {	 
 		if (ret > 0)
 			goto out;
 	} else {
-		BUG_ON(ret == 0);		/* Logical error */
+		BUG_ON(ret == 0);		 
 		if (path->slots[0] == 0)
 			goto out;
 		path->slots[0]--;
@@ -115,9 +94,7 @@ void btrfs_set_root_node(struct btrfs_root_item *item,
 	btrfs_set_root_generation(item, btrfs_header_generation(node));
 }
 
-/*
- * copy the data in 'item' into the btree
- */
+ 
 int btrfs_update_root(struct btrfs_trans_handle *trans, struct btrfs_root
 		      *root, struct btrfs_key *key, struct btrfs_root_item
 		      *item)
@@ -153,11 +130,7 @@ int btrfs_update_root(struct btrfs_trans_handle *trans, struct btrfs_root
 	ptr = btrfs_item_ptr_offset(l, slot);
 	old_len = btrfs_item_size(l, slot);
 
-	/*
-	 * If this is the first time we update the root item which originated
-	 * from an older kernel, we need to enlarge the item size to make room
-	 * for the added fields.
-	 */
+	 
 	if (old_len < sizeof(*item)) {
 		btrfs_release_path(path);
 		ret = btrfs_search_slot(trans, root, key, path,
@@ -184,10 +157,7 @@ int btrfs_update_root(struct btrfs_trans_handle *trans, struct btrfs_root
 		ptr = btrfs_item_ptr_offset(l, slot);
 	}
 
-	/*
-	 * Update generation_v2 so at the next mount we know the new root
-	 * fields are valid.
-	 */
+	 
 	btrfs_set_root_generation_v2(item, btrfs_root_generation(item));
 
 	write_extent_buffer(l, item, ptr, sizeof(*item));
@@ -200,9 +170,7 @@ out:
 int btrfs_insert_root(struct btrfs_trans_handle *trans, struct btrfs_root *root,
 		      const struct btrfs_key *key, struct btrfs_root_item *item)
 {
-	/*
-	 * Make sure generation v1 and v2 match. See update_root for details.
-	 */
+	 
 	btrfs_set_root_generation_v2(item, btrfs_root_generation(item));
 	return btrfs_insert_item(trans, root, key, item, sizeof(*item));
 }
@@ -286,12 +254,7 @@ int btrfs_find_orphan_roots(struct btrfs_fs_info *fs_info)
 			struct btrfs_key drop_key;
 
 			btrfs_disk_key_to_cpu(&drop_key, &root->root_item.drop_progress);
-			/*
-			 * If we have a non-zero drop_progress then we know we
-			 * made it partly through deleting this snapshot, and
-			 * thus we need to make sure we block any balance from
-			 * happening until this snapshot is completely dropped.
-			 */
+			 
 			if (drop_key.objectid != 0 || drop_key.type != 0 ||
 			    drop_key.offset != 0) {
 				set_bit(BTRFS_FS_UNFINISHED_DROPS, &fs_info->flags);
@@ -308,7 +271,7 @@ int btrfs_find_orphan_roots(struct btrfs_fs_info *fs_info)
 	return err;
 }
 
-/* drop the root item for 'key' from the tree root */
+ 
 int btrfs_del_root(struct btrfs_trans_handle *trans,
 		   const struct btrfs_key *key)
 {
@@ -388,21 +351,7 @@ out:
 	return ret;
 }
 
-/*
- * add a btrfs_root_ref item.  type is either BTRFS_ROOT_REF_KEY
- * or BTRFS_ROOT_BACKREF_KEY.
- *
- * The dirid, sequence, name and name_len refer to the directory entry
- * that is referencing the root.
- *
- * For a forward ref, the root_id is the id of the tree referencing
- * the root and ref_id is the id of the subvol  or snapshot.
- *
- * For a back ref the root_id is the id of the subvol or snapshot and
- * ref_id is the id of the tree referencing it.
- *
- * Will return 0, -ENOMEM, or anything from the CoW path
- */
+ 
 int btrfs_add_root_ref(struct btrfs_trans_handle *trans, u64 root_id,
 		       u64 ref_id, u64 dirid, u64 sequence,
 		       const struct fscrypt_str *name)
@@ -452,12 +401,7 @@ again:
 	return 0;
 }
 
-/*
- * Old btrfs forgets to init root_item->flags and root_item->byte_limit
- * for subvolumes. To work around this problem, we steal a bit from
- * root_item->inode_item->flags, and use it to indicate if those fields
- * have been properly initialized.
- */
+ 
 void btrfs_check_and_init_root_item(struct btrfs_root_item *root_item)
 {
 	u64 inode_flags = btrfs_stack_inode_flags(&root_item->inode);
@@ -484,20 +428,7 @@ void btrfs_update_root_times(struct btrfs_trans_handle *trans,
 	spin_unlock(&root->root_item_lock);
 }
 
-/*
- * btrfs_subvolume_reserve_metadata() - reserve space for subvolume operation
- * root: the root of the parent directory
- * rsv: block reservation
- * items: the number of items that we need do reservation
- * use_global_rsv: allow fallback to the global block reservation
- *
- * This function is used to reserve the space for snapshot/subvolume
- * creation and deletion. Those operations are different with the
- * common file/directory operations, they change two fs/file trees
- * and root tree, the number of items that the qgroup reserves is
- * different with the free space reservation. So we can not use
- * the space reservation mechanism in start_transaction().
- */
+ 
 int btrfs_subvolume_reserve_metadata(struct btrfs_root *root,
 				     struct btrfs_block_rsv *rsv, int items,
 				     bool use_global_rsv)
@@ -509,7 +440,7 @@ int btrfs_subvolume_reserve_metadata(struct btrfs_root *root,
 	struct btrfs_block_rsv *global_rsv = &fs_info->global_block_rsv;
 
 	if (test_bit(BTRFS_FS_QUOTA_ENABLED, &fs_info->flags)) {
-		/* One for parent inode, two for dir entries */
+		 
 		qgroup_num_bytes = 3 * fs_info->nodesize;
 		ret = btrfs_qgroup_reserve_meta_prealloc(root,
 							 qgroup_num_bytes, true,

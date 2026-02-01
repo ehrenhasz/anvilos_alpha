@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell CN10K LLC-TAD perf driver
- *
- * Copyright (C) 2021 Marvell
- */
+
+ 
 
 #define pr_fmt(fmt) "tad_pmu: " fmt
 
@@ -64,9 +61,7 @@ static void tad_pmu_event_counter_stop(struct perf_event *event, int flags)
 	u32 counter_idx = hwc->idx;
 	int i;
 
-	/* TAD()_PFC() stop counting on the write
-	 * which sets TAD()_PRF()[CNTSEL] == 0
-	 */
+	 
 	for (i = 0; i < tad_pmu->region_cnt; i++) {
 		writeq_relaxed(0, tad_pmu->regions[i].base +
 			       TAD_PRF(counter_idx));
@@ -87,14 +82,12 @@ static void tad_pmu_event_counter_start(struct perf_event *event, int flags)
 
 	hwc->state = 0;
 
-	/* Typically TAD_PFC() are zeroed to start counting */
+	 
 	for (i = 0; i < tad_pmu->region_cnt; i++)
 		writeq_relaxed(0, tad_pmu->regions[i].base +
 			       TAD_PFC(counter_idx));
 
-	/* TAD()_PFC() start counting on the write
-	 * which sets TAD()_PRF()[CNTSEL] != 0
-	 */
+	 
 	for (i = 0; i < tad_pmu->region_cnt; i++) {
 		reg_val = event_idx & 0xFF;
 		writeq_relaxed(reg_val,	tad_pmu->regions[i].base +
@@ -119,7 +112,7 @@ static int tad_pmu_event_counter_add(struct perf_event *event, int flags)
 	struct hw_perf_event *hwc = &event->hw;
 	int idx;
 
-	/* Get a free counter for this event */
+	 
 	idx = find_first_zero_bit(tad_pmu->counters_map, TAD_MAX_COUNTERS);
 	if (idx == TAD_MAX_COUNTERS)
 		return -EAGAIN;
@@ -301,7 +294,7 @@ static int tad_pmu_probe(struct platform_device *pdev)
 	if (!regions)
 		return -ENOMEM;
 
-	/* ioremap the distributed TAD pmu regions */
+	 
 	for (i = 0; i < tad_cnt && res->start < res->end; i++) {
 		regions[i].base = devm_ioremap(&pdev->dev,
 					       res->start,
@@ -334,7 +327,7 @@ static int tad_pmu_probe(struct platform_device *pdev)
 
 	tad_pmu->cpu = raw_smp_processor_id();
 
-	/* Register pmu instance for cpu hotplug */
+	 
 	ret = cpuhp_state_add_instance_nocalls(tad_pmu_cpuhp_state,
 					       &tad_pmu->node);
 	if (ret) {

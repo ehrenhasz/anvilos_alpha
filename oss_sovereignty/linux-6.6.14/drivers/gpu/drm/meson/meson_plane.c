@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- * Copyright (C) 2015 Amlogic, Inc. All rights reserved.
- * Copyright (C) 2014 Endless Mobile
- *
- * Written by:
- *     Jasper St. Pierre <jstpierre@mecheye.net>
- */
+
+ 
 
 #include <linux/bitfield.h>
 
@@ -26,20 +18,20 @@
 #include "meson_viu.h"
 #include "meson_osd_afbcd.h"
 
-/* OSD_SCI_WH_M1 */
+ 
 #define SCI_WH_M1_W(w)			FIELD_PREP(GENMASK(28, 16), w)
 #define SCI_WH_M1_H(h)			FIELD_PREP(GENMASK(12, 0), h)
 
-/* OSD_SCO_H_START_END */
-/* OSD_SCO_V_START_END */
+ 
+ 
 #define SCO_HV_START(start)		FIELD_PREP(GENMASK(27, 16), start)
 #define SCO_HV_END(end)			FIELD_PREP(GENMASK(11, 0), end)
 
-/* OSD_SC_CTRL0 */
+ 
 #define SC_CTRL0_PATH_EN		BIT(3)
 #define SC_CTRL0_SEL_OSD1		BIT(2)
 
-/* OSD_VSC_CTRL0 */
+ 
 #define VSC_BANK_LEN(value)		FIELD_PREP(GENMASK(2, 0), value)
 #define VSC_TOP_INI_RCV_NUM(value)	FIELD_PREP(GENMASK(6, 3), value)
 #define VSC_TOP_RPT_L0_NUM(value)	FIELD_PREP(GENMASK(9, 8), value)
@@ -48,18 +40,18 @@
 #define VSC_PROG_INTERLACE		BIT(23)
 #define VSC_VERTICAL_SCALER_EN		BIT(24)
 
-/* OSD_VSC_INI_PHASE */
+ 
 #define VSC_INI_PHASE_BOT(bottom)	FIELD_PREP(GENMASK(31, 16), bottom)
 #define VSC_INI_PHASE_TOP(top)		FIELD_PREP(GENMASK(15, 0), top)
 
-/* OSD_HSC_CTRL0 */
+ 
 #define HSC_BANK_LENGTH(value)		FIELD_PREP(GENMASK(2, 0), value)
 #define HSC_INI_RCV_NUM0(value)		FIELD_PREP(GENMASK(6, 3), value)
 #define HSC_RPT_P0_NUM0(value)		FIELD_PREP(GENMASK(9, 8), value)
 #define HSC_HORIZ_SCALER_EN		BIT(22)
 
-/* VPP_OSD_VSC_PHASE_STEP */
-/* VPP_OSD_HSC_PHASE_STEP */
+ 
+ 
 #define SC_PHASE_STEP(value)		FIELD_PREP(GENMASK(27, 0), value)
 
 struct meson_plane {
@@ -86,11 +78,7 @@ static int meson_plane_atomic_check(struct drm_plane *plane,
 	if (IS_ERR(crtc_state))
 		return PTR_ERR(crtc_state);
 
-	/*
-	 * Only allow :
-	 * - Upscaling up to 5x, vertical and horizontal
-	 * - Final coordinates must match crtc size
-	 */
+	 
 	return drm_atomic_helper_check_plane_state(new_plane_state,
 						   crtc_state,
 						   FRAC_16_16(1, 5),
@@ -104,7 +92,7 @@ static int meson_plane_atomic_check(struct drm_plane *plane,
 				   AFBC_FORMAT_MOD_SPARSE |		\
 				   AFBC_FORMAT_MOD_SPLIT)
 
-/* Takes a fixed 16.16 number and converts it to integer. */
+ 
 static inline int64_t fixed16_to_int(int64_t value)
 {
 	return value >> 16;
@@ -151,15 +139,10 @@ static void meson_plane_atomic_update(struct drm_plane *plane,
 	int vf_bank_len;
 	u8 canvas_id_osd1;
 
-	/*
-	 * Update Coordinates
-	 * Update Formats
-	 * Update Buffer
-	 * Enable Plane
-	 */
+	 
 	spin_lock_irqsave(&priv->drm->event_lock, flags);
 
-	/* Check if AFBC decoder is required for this buffer */
+	 
 	if ((meson_vpu_is_compatible(priv, VPU_COMPATIBLE_GXM) ||
 	     meson_vpu_is_compatible(priv, VPU_COMPATIBLE_G12A)) &&
 	    fb->modifier & DRM_FORMAT_MOD_ARM_AFBC(MESON_MOD_AFBC_VALID_BITS))
@@ -167,7 +150,7 @@ static void meson_plane_atomic_update(struct drm_plane *plane,
 	else
 		priv->viu.osd1_afbcd = false;
 
-	/* Enable OSD and BLK0, set max global alpha */
+	 
 	priv->viu.osd1_ctrl_stat = OSD_ENABLE |
 				   (0x100 << OSD_GLOBAL_ALPHA_SHIFT) |
 				   OSD_BLK0_ENABLE;
@@ -177,12 +160,12 @@ static void meson_plane_atomic_update(struct drm_plane *plane,
 
 	canvas_id_osd1 = priv->canvas_id_osd1;
 
-	/* Set up BLK0 to point to the right canvas */
+	 
 	priv->viu.osd1_blk0_cfg[0] = canvas_id_osd1 << OSD_CANVAS_SEL;
 
 	if (priv->viu.osd1_afbcd) {
 		if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_G12A)) {
-			/* This is the internal decoding memory address */
+			 
 			priv->viu.osd1_blk1_cfg4 = MESON_G12A_AFBCD_OUT_ADDR;
 			priv->viu.osd1_blk0_cfg[0] |= OSD_ENDIANNESS_BE;
 			priv->viu.osd1_ctrl_stat2 |= OSD_PENDING_STAT_CLEAN;
@@ -200,7 +183,7 @@ static void meson_plane_atomic_update(struct drm_plane *plane,
 			priv->viu.osd1_ctrl_stat2 &= ~OSD_DPATH_MALI_AFBCD;
 	}
 
-	/* On GXBB, Use the old non-HDR RGB2YUV converter */
+	 
 	if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_GXBB))
 		priv->viu.osd1_blk0_cfg[0] |= OSD_OUTPUT_COLOR_RGB;
 
@@ -235,17 +218,17 @@ static void meson_plane_atomic_update(struct drm_plane *plane,
 	switch (fb->format->format) {
 	case DRM_FORMAT_XRGB8888:
 	case DRM_FORMAT_XBGR8888:
-		/* For XRGB, replace the pixel's alpha by 0xFF */
+		 
 		priv->viu.osd1_ctrl_stat2 |= OSD_REPLACE_EN;
 		break;
 	case DRM_FORMAT_ARGB8888:
 	case DRM_FORMAT_ABGR8888:
-		/* For ARGB, use the pixel's alpha */
+		 
 		priv->viu.osd1_ctrl_stat2 &= ~OSD_REPLACE_EN;
 		break;
 	}
 
-	/* Default scaler parameters */
+	 
 	vsc_bot_rcv_num = 0;
 	vsc_bot_rpt_p0_num = 0;
 	hf_bank_len = 4;
@@ -266,13 +249,7 @@ static void meson_plane_atomic_update(struct drm_plane *plane,
 	dst_w = new_state->crtc_w;
 	dst_h = new_state->crtc_h;
 
-	/*
-	 * When the output is interlaced, the OSD must switch between
-	 * each field using the INTERLACE_SEL_ODD (0) of VIU_OSD1_BLK0_CFG_W0
-	 * at each vsync.
-	 * But the vertical scaler can provide such funtionnality if
-	 * is configured for 2:1 scaling with interlace options enabled.
-	 */
+	 
 	if (new_state->crtc->mode.flags & DRM_MODE_FLAG_INTERLACE) {
 		dest.y1 /= 2;
 		dest.y2 /= 2;
@@ -289,7 +266,7 @@ static void meson_plane_atomic_update(struct drm_plane *plane,
 
 	vf_phase_step = (vf_phase_step << 4);
 
-	/* In interlaced mode, scaler is always active */
+	 
 	if (src_h != dst_h || src_w != dst_w) {
 		priv->viu.osd_sc_i_wh_m1 = SCI_WH_M1_W(src_w - 1) |
 					   SCI_WH_M1_H(src_h - 1);
@@ -297,7 +274,7 @@ static void meson_plane_atomic_update(struct drm_plane *plane,
 						 SCO_HV_END(dest.x2 - 1);
 		priv->viu.osd_sc_o_v_start_end = SCO_HV_START(dest.y1) |
 						 SCO_HV_END(dest.y2 - 1);
-		/* Enable OSD Scaler */
+		 
 		priv->viu.osd_sc_ctrl0 = SC_CTRL0_PATH_EN | SC_CTRL0_SEL_OSD1;
 	} else {
 		priv->viu.osd_sc_i_wh_m1 = 0;
@@ -306,7 +283,7 @@ static void meson_plane_atomic_update(struct drm_plane *plane,
 		priv->viu.osd_sc_ctrl0 = 0;
 	}
 
-	/* In interlaced mode, vertical scaler is always active */
+	 
 	if (src_h != dst_h) {
 		priv->viu.osd_sc_v_ctrl0 =
 					VSC_BANK_LEN(vf_bank_len) |
@@ -328,7 +305,7 @@ static void meson_plane_atomic_update(struct drm_plane *plane,
 		priv->viu.osd_sc_v_ini_phase = 0;
 	}
 
-	/* Horizontal scaler is only used if width does not match */
+	 
 	if (src_w != dst_w) {
 		priv->viu.osd_sc_h_ctrl0 =
 					HSC_BANK_LENGTH(hf_bank_len) |
@@ -343,11 +320,7 @@ static void meson_plane_atomic_update(struct drm_plane *plane,
 		priv->viu.osd_sc_h_ini_phase = 0;
 	}
 
-	/*
-	 * The format of these registers is (x2 << 16 | x1),
-	 * where x2 is exclusive.
-	 * e.g. +30x1920 would be (1919 << 16) | 30
-	 */
+	 
 	priv->viu.osd1_blk0_cfg[1] =
 				((fixed16_to_int(new_state->src.x2) - 1) << 16) |
 				fixed16_to_int(new_state->src.x1);
@@ -364,7 +337,7 @@ static void meson_plane_atomic_update(struct drm_plane *plane,
 		priv->viu.osb_blend1_size = dst_h << 16 | dst_w;
 	}
 
-	/* Update Canvas with buffer address */
+	 
 	gem = drm_fb_dma_get_gem_obj(fb, 0);
 
 	priv->viu.osd1_addr = gem->dma_addr;
@@ -376,14 +349,14 @@ static void meson_plane_atomic_update(struct drm_plane *plane,
 		priv->afbcd.modifier = fb->modifier;
 		priv->afbcd.format = fb->format->format;
 
-		/* Calculate decoder write stride */
+		 
 		if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_G12A))
 			priv->viu.osd1_blk2_cfg4 =
 				meson_g12a_afbcd_line_stride(priv);
 	}
 
 	if (!meson_plane->enabled) {
-		/* Reset OSD1 before enabling it on GXL+ SoCs */
+		 
 		if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_GXM) ||
 		    meson_vpu_is_compatible(priv, VPU_COMPATIBLE_GXL))
 			meson_viu_osd1_reset(priv);
@@ -407,7 +380,7 @@ static void meson_plane_atomic_disable(struct drm_plane *plane,
 		priv->afbcd.ops->disable(priv);
 	}
 
-	/* Disable OSD1 */
+	 
 	if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_G12A))
 		writel_bits_relaxed(VIU_OSD1_POSTBLD_SRC_OSD1, 0,
 				    priv->io_base + _REG(OSD1_BLEND_SRC_CTRL));
@@ -484,7 +457,7 @@ static const uint64_t format_modifiers_afbc_gxm[] = {
 	DRM_FORMAT_MOD_ARM_AFBC(AFBC_FORMAT_MOD_BLOCK_SIZE_16x16 |
 				AFBC_FORMAT_MOD_SPARSE |
 				AFBC_FORMAT_MOD_YTR),
-	/* SPLIT mandates SPARSE, RGB modes mandates YTR */
+	 
 	DRM_FORMAT_MOD_ARM_AFBC(AFBC_FORMAT_MOD_BLOCK_SIZE_16x16 |
 				AFBC_FORMAT_MOD_YTR |
 				AFBC_FORMAT_MOD_SPARSE |
@@ -494,13 +467,7 @@ static const uint64_t format_modifiers_afbc_gxm[] = {
 };
 
 static const uint64_t format_modifiers_afbc_g12a[] = {
-	/*
-	 * - TOFIX Support AFBC modifiers for YUV formats (16x16 + TILED)
-	 * - SPLIT is mandatory for performances reasons when in 16x16
-	 *   block size
-	 * - 32x8 block size + SPLIT is mandatory with 4K frame size
-	 *   for performances reasons
-	 */
+	 
 	DRM_FORMAT_MOD_ARM_AFBC(AFBC_FORMAT_MOD_BLOCK_SIZE_16x16 |
 				AFBC_FORMAT_MOD_SPARSE |
 				AFBC_FORMAT_MOD_SPLIT),
@@ -557,7 +524,7 @@ int meson_plane_create(struct meson_drm *priv)
 
 	drm_plane_helper_add(plane, &meson_plane_helper_funcs);
 
-	/* For now, OSD Primary plane is always on the front */
+	 
 	drm_plane_create_zpos_immutable_property(plane, 1);
 
 	priv->primary_plane = plane;

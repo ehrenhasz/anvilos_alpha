@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for FPGA Device Feature List (DFL) PCIe device
- *
- * Copyright (C) 2017-2018 Intel Corporation, Inc.
- *
- * Authors:
- *   Zhang Yi <Yi.Z.Zhang@intel.com>
- *   Xiao Guangrong <guangrong.xiao@linux.intel.com>
- *   Joseph Grecco <joe.grecco@intel.com>
- *   Enno Luebbers <enno.luebbers@intel.com>
- *   Tim Whisonant <tim.whisonant@intel.com>
- *   Ananda Ravuri <ananda.ravuri@intel.com>
- *   Henry Mitchel <henry.mitchel@intel.com>
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/dma-mapping.h>
@@ -36,7 +23,7 @@
 #define PCI_VNDR_DFLS_RES_OFF_MASK GENMASK(31, 3)
 
 struct cci_drvdata {
-	struct dfl_fpga_cdev *cdev;	/* container device */
+	struct dfl_fpga_cdev *cdev;	 
 };
 
 static void __iomem *cci_pci_ioremap_bar0(struct pci_dev *pcidev)
@@ -68,7 +55,7 @@ static void cci_pci_free_irq(struct pci_dev *pcidev)
 	pci_free_irq_vectors(pcidev);
 }
 
-/* PCI Device ID */
+ 
 #define PCIE_DEVICE_ID_PF_INT_5_X		0xBCBD
 #define PCIE_DEVICE_ID_PF_INT_6_X		0xBCC0
 #define PCIE_DEVICE_ID_PF_DSC_1_X		0x09C4
@@ -77,12 +64,12 @@ static void cci_pci_free_irq(struct pci_dev *pcidev)
 #define PCIE_DEVICE_ID_SILICOM_PAC_N5010	0x1000
 #define PCIE_DEVICE_ID_SILICOM_PAC_N5011	0x1001
 #define PCIE_DEVICE_ID_INTEL_DFL		0xbcce
-/* PCI Subdevice ID for PCIE_DEVICE_ID_INTEL_DFL */
+ 
 #define PCIE_SUBDEVICE_ID_INTEL_N6000		0x1770
 #define PCIE_SUBDEVICE_ID_INTEL_N6001		0x1771
 #define PCIE_SUBDEVICE_ID_INTEL_C6100		0x17d4
 
-/* VF Device */
+ 
 #define PCIE_DEVICE_ID_VF_INT_5_X		0xBCBF
 #define PCIE_DEVICE_ID_VF_INT_6_X		0xBCC1
 #define PCIE_DEVICE_ID_VF_DSC_1_X		0x09C5
@@ -134,7 +121,7 @@ static void cci_remove_feature_devs(struct pci_dev *pcidev)
 {
 	struct cci_drvdata *drvdata = pci_get_drvdata(pcidev);
 
-	/* remove all children feature devices */
+	 
 	dfl_fpga_feature_devs_remove(drvdata->cdev);
 	cci_pci_free_irq(pcidev);
 }
@@ -221,7 +208,7 @@ static int find_dfls_by_vsec(struct pci_dev *pcidev, struct dfl_fpga_enum_info *
 	return 0;
 }
 
-/* default method of finding dfls starting at offset 0 of bar 0 */
+ 
 static int find_dfls_by_default(struct pci_dev *pcidev,
 				struct dfl_fpga_enum_info *info)
 {
@@ -231,26 +218,19 @@ static int find_dfls_by_default(struct pci_dev *pcidev,
 	u32 offset;
 	u64 v;
 
-	/* start to find Device Feature List from Bar 0 */
+	 
 	base = cci_pci_ioremap_bar0(pcidev);
 	if (!base)
 		return -ENOMEM;
 
-	/*
-	 * PF device has FME and Ports/AFUs, and VF device only has one
-	 * Port/AFU. Check them and add related "Device Feature List" info
-	 * for the next step enumeration.
-	 */
+	 
 	if (dfl_feature_is_fme(base)) {
 		start = pci_resource_start(pcidev, 0);
 		len = pci_resource_len(pcidev, 0);
 
 		dfl_fpga_enum_info_add_dfl(info, start, len);
 
-		/*
-		 * find more Device Feature Lists (e.g. Ports) per information
-		 * indicated by FME module.
-		 */
+		 
 		v = readq(base + FME_HDR_CAP);
 		port_num = FIELD_GET(FME_CAP_NUM_PORTS, v);
 
@@ -259,14 +239,11 @@ static int find_dfls_by_default(struct pci_dev *pcidev,
 		for (i = 0; i < port_num; i++) {
 			v = readq(base + FME_HDR_PORT_OFST(i));
 
-			/* skip ports which are not implemented. */
+			 
 			if (!(v & FME_PORT_OFST_IMP))
 				continue;
 
-			/*
-			 * add Port's Device Feature List information for next
-			 * step enumeration.
-			 */
+			 
 			bar = FIELD_GET(FME_PORT_OFST_BAR_ID, v);
 			offset = FIELD_GET(FME_PORT_OFST_DFH_OFST, v);
 			if (bar == FME_PORT_OFST_BAR_SKIP) {
@@ -292,13 +269,13 @@ static int find_dfls_by_default(struct pci_dev *pcidev,
 		ret = -ENODEV;
 	}
 
-	/* release I/O mappings for next step enumeration */
+	 
 	pcim_iounmap_regions(pcidev, BIT(0));
 
 	return ret;
 }
 
-/* enumerate feature devices under pci device */
+ 
 static int cci_enumerate_feature_devs(struct pci_dev *pcidev)
 {
 	struct cci_drvdata *drvdata = pci_get_drvdata(pcidev);
@@ -307,12 +284,12 @@ static int cci_enumerate_feature_devs(struct pci_dev *pcidev)
 	int nvec, ret = 0;
 	int *irq_table;
 
-	/* allocate enumeration info via pci_dev */
+	 
 	info = dfl_fpga_enum_info_alloc(&pcidev->dev);
 	if (!info)
 		return -ENOMEM;
 
-	/* add irq info for enumeration if the device support irq */
+	 
 	nvec = cci_pci_alloc_irq(pcidev);
 	if (nvec < 0) {
 		dev_err(&pcidev->dev, "Fail to alloc irq %d.\n", nvec);
@@ -338,7 +315,7 @@ static int cci_enumerate_feature_devs(struct pci_dev *pcidev)
 	if (ret)
 		goto irq_free_exit;
 
-	/* start enumeration with prepared enumeration information */
+	 
 	cdev = dfl_fpga_feature_devs_enumerate(info);
 	if (IS_ERR(cdev)) {
 		dev_err(&pcidev->dev, "Enumeration failure\n");
@@ -399,10 +376,7 @@ static int cci_pci_sriov_configure(struct pci_dev *pcidev, int num_vfs)
 	struct dfl_fpga_cdev *cdev = drvdata->cdev;
 
 	if (!num_vfs) {
-		/*
-		 * disable SRIOV and then put released ports back to default
-		 * PF access mode.
-		 */
+		 
 		pci_disable_sriov(pcidev);
 
 		dfl_fpga_cdev_config_ports_pf(cdev);
@@ -410,10 +384,7 @@ static int cci_pci_sriov_configure(struct pci_dev *pcidev, int num_vfs)
 	} else {
 		int ret;
 
-		/*
-		 * before enable SRIOV, put released ports into VF access mode
-		 * first of all.
-		 */
+		 
 		ret = dfl_fpga_cdev_config_ports_vf(cdev, num_vfs);
 		if (ret)
 			return ret;

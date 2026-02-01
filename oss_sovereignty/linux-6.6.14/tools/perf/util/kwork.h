@@ -32,48 +32,7 @@ enum kwork_trace_type {
 	KWORK_TRACE_MAX,
 };
 
-/*
- * data structure:
- *
- *                 +==================+ +============+ +======================+
- *                 |      class       | |    work    | |         atom         |
- *                 +==================+ +============+ +======================+
- * +------------+  |  +-----+         | |  +------+  | |  +-------+   +-----+ |
- * | perf_kwork | +-> | irq | --------|+-> | eth0 | --+-> | raise | - | ... | --+   +-----------+
- * +-----+------+ ||  +-----+         |||  +------+  |||  +-------+   +-----+ | |   |           |
- *       |        ||                  |||            |||                      | +-> | atom_page |
- *       |        ||                  |||            |||  +-------+   +-----+ |     |           |
- *       |  class_list                |||            |+-> | entry | - | ... | ----> |           |
- *       |        ||                  |||            |||  +-------+   +-----+ |     |           |
- *       |        ||                  |||            |||                      | +-> |           |
- *       |        ||                  |||            |||  +-------+   +-----+ | |   |           |
- *       |        ||                  |||            |+-> | exit  | - | ... | --+   +-----+-----+
- *       |        ||                  |||            | |  +-------+   +-----+ |           |
- *       |        ||                  |||            | |                      |           |
- *       |        ||                  |||  +-----+   | |                      |           |
- *       |        ||                  |+-> | ... |   | |                      |           |
- *       |        ||                  | |  +-----+   | |                      |           |
- *       |        ||                  | |            | |                      |           |
- *       |        ||  +---------+     | |  +-----+   | |  +-------+   +-----+ |           |
- *       |        +-> | softirq | -------> | RCU | ---+-> | raise | - | ... | --+   +-----+-----+
- *       |        ||  +---------+     | |  +-----+   |||  +-------+   +-----+ | |   |           |
- *       |        ||                  | |            |||                      | +-> | atom_page |
- *       |        ||                  | |            |||  +-------+   +-----+ |     |           |
- *       |        ||                  | |            |+-> | entry | - | ... | ----> |           |
- *       |        ||                  | |            |||  +-------+   +-----+ |     |           |
- *       |        ||                  | |            |||                      | +-> |           |
- *       |        ||                  | |            |||  +-------+   +-----+ | |   |           |
- *       |        ||                  | |            |+-> | exit  | - | ... | --+   +-----+-----+
- *       |        ||                  | |            | |  +-------+   +-----+ |           |
- *       |        ||                  | |            | |                      |           |
- *       |        ||  +-----------+   | |  +-----+   | |                      |           |
- *       |        +-> | workqueue | -----> | ... |   | |                      |           |
- *       |         |  +-----------+   | |  +-----+   | |                      |           |
- *       |         +==================+ +============+ +======================+           |
- *       |                                                                                |
- *       +---->  atom_page_list  ---------------------------------------------------------+
- *
- */
+ 
 
 struct kwork_atom {
 	struct list_head list;
@@ -93,36 +52,26 @@ struct kwork_atom_page {
 
 struct kwork_class;
 struct kwork_work {
-	/*
-	 * class field
-	 */
+	 
 	struct rb_node node;
 	struct kwork_class *class;
 
-	/*
-	 * work field
-	 */
+	 
 	u64 id;
 	int cpu;
 	char *name;
 
-	/*
-	 * atom field
-	 */
+	 
 	u64 nr_atoms;
 	struct list_head atom_list[KWORK_TRACE_MAX];
 
-	/*
-	 * runtime report
-	 */
+	 
 	u64 max_runtime;
 	u64 max_runtime_start;
 	u64 max_runtime_end;
 	u64 total_runtime;
 
-	/*
-	 * latency report
-	 */
+	 
 	u64 max_latency;
 	u64 max_latency_start;
 	u64 max_latency_end;
@@ -168,9 +117,7 @@ struct trace_kwork_handler {
 };
 
 struct perf_kwork {
-	/*
-	 * metadata
-	 */
+	 
 	struct perf_tool tool;
 	struct list_head class_list;
 	struct list_head atom_page_list;
@@ -178,9 +125,7 @@ struct perf_kwork {
 	struct rb_root_cached sorted_work_root;
 	const struct trace_kwork_handler *tp_handler;
 
-	/*
-	 * profile filters
-	 */
+	 
 	const char *profile_name;
 
 	const char *cpu_list;
@@ -189,25 +134,19 @@ struct perf_kwork {
 	const char *time_str;
 	struct perf_time_interval ptime;
 
-	/*
-	 * options for command
-	 */
+	 
 	bool force;
 	const char *event_list_str;
 	enum kwork_report_type report;
 
-	/*
-	 * options for subcommand
-	 */
+	 
 	bool summary;
 	const char *sort_order;
 	bool show_callchain;
 	unsigned int max_stack;
 	bool use_bpf;
 
-	/*
-	 * statistics
-	 */
+	 
 	u64 timestart;
 	u64 timeend;
 
@@ -233,7 +172,7 @@ void perf_kwork__report_cleanup_bpf(void);
 void perf_kwork__trace_start(void);
 void perf_kwork__trace_finish(void);
 
-#else  /* !HAVE_BPF_SKEL */
+#else   
 
 static inline int
 perf_kwork__trace_prepare_bpf(struct perf_kwork *kwork __maybe_unused)
@@ -252,6 +191,6 @@ static inline void perf_kwork__report_cleanup_bpf(void) {}
 static inline void perf_kwork__trace_start(void) {}
 static inline void perf_kwork__trace_finish(void) {}
 
-#endif  /* HAVE_BPF_SKEL */
+#endif   
 
-#endif  /* PERF_UTIL_KWORK_H */
+#endif   

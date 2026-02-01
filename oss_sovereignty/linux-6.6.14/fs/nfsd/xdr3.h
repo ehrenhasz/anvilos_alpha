@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * XDR types for NFSv3 in nfsd.
- *
- * Copyright (C) 1996-1998, Olaf Kirch <okir@monad.swb.de>
- */
+ 
+ 
 
 #ifndef _LINUX_NFSD_XDR3_H
 #define _LINUX_NFSD_XDR3_H
@@ -119,7 +115,7 @@ struct nfsd3_attrstat {
 	struct kstat            stat;
 };
 
-/* LOOKUP, CREATE, MKDIR, SYMLINK, MKNOD */
+ 
 struct nfsd3_diropres  {
 	__be32			status;
 	struct svc_fh		dirfh;
@@ -169,12 +165,12 @@ struct nfsd3_linkres {
 };
 
 struct nfsd3_readdirres {
-	/* Components of the reply */
+	 
 	__be32			status;
 	struct svc_fh		fh;
 	__be32			verf[2];
 
-	/* Used to encode the reply's entry list */
+	 
 	struct xdr_stream	xdr;
 	struct xdr_buf		dirlist;
 	struct svc_fh		scratch;
@@ -228,16 +224,14 @@ struct nfsd3_getaclres {
 	struct kstat		stat;
 };
 
-/* dummy type for release */
+ 
 struct nfsd3_fhandle_pair {
 	__u32			dummy;
 	struct svc_fh		fh1;
 	struct svc_fh		fh2;
 };
 
-/*
- * Storage requirements for XDR arguments and results.
- */
+ 
 union nfsd3_xdrstore {
 	struct nfsd3_sattrargs		sattrargs;
 	struct nfsd3_diropargs		diropargs;
@@ -305,10 +299,10 @@ int nfs3svc_encode_entry3(void *data, const char *name, int namlen,
 			  loff_t offset, u64 ino, unsigned int d_type);
 int nfs3svc_encode_entryplus3(void *data, const char *name, int namlen,
 			      loff_t offset, u64 ino, unsigned int d_type);
-/* Helper functions for NFSv3 ACL code */
+ 
 bool svcxdr_decode_nfs_fh3(struct xdr_stream *xdr, struct svc_fh *fhp);
 bool svcxdr_encode_nfsstat3(struct xdr_stream *xdr, __be32 status);
 bool svcxdr_encode_post_op_attr(struct svc_rqst *rqstp, struct xdr_stream *xdr,
 				const struct svc_fh *fhp);
 
-#endif /* _LINUX_NFSD_XDR3_H */
+#endif  

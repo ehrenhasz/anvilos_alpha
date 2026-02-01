@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Serpent Cipher 8-way parallel algorithm (x86_64/SSE2)
- *
- * Copyright (C) 2011 Jussi Kivilinna <jussi.kivilinna@mbnet.fi>
- *
- * Based on crypto/serpent.c by
- *  Copyright (C) 2002 Dag Arne Osvik <osvik@ii.uib.no>
- *                2003 Herbert Valerio Riedel <hvr@gnu.org>
- */
+ 
+ 
 
 #include <linux/linkage.h>
 
@@ -16,9 +8,7 @@
 
 #define CTX %rdi
 
-/**********************************************************************
-  8-way SSE2 serpent
- **********************************************************************/
+ 
 #define RA1 %xmm0
 #define RB1 %xmm1
 #define RC1 %xmm2
@@ -620,12 +610,7 @@
 	movdqu x3,		(3*4*4)(out);
 
 SYM_FUNC_START(__serpent_enc_blk_8way)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	%rsi: dst
-	 *	%rdx: src
-	 *	%rcx: bool, if true: xor output
-	 */
+	 
 
 	pcmpeqd RNOT, RNOT;
 
@@ -685,11 +670,7 @@ SYM_FUNC_START(__serpent_enc_blk_8way)
 SYM_FUNC_END(__serpent_enc_blk_8way)
 
 SYM_FUNC_START(serpent_dec_blk_8way)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	%rsi: dst
-	 *	%rdx: src
-	 */
+	 
 
 	pcmpeqd RNOT, RNOT;
 

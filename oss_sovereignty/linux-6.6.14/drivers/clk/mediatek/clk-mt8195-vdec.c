@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright (c) 2021 MediaTek Inc.
-// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
+
+
+
+
 
 #include "clk-gate.h"
 #include "clk-mtk.h"
@@ -38,29 +38,29 @@ static const struct mtk_gate_regs vdec2_cg_regs = {
 	GATE_MTK(_id, _name, _parent, &vdec2_cg_regs, _shift, &mtk_clk_gate_ops_setclr_inv)
 
 static const struct mtk_gate vdec_clks[] = {
-	/* VDEC0 */
+	 
 	GATE_VDEC0(CLK_VDEC_VDEC, "vdec_vdec", "top_vdec", 0),
-	/* VDEC1 */
+	 
 	GATE_VDEC1(CLK_VDEC_LAT, "vdec_lat", "top_vdec", 0),
-	/* VDEC2 */
+	 
 	GATE_VDEC2(CLK_VDEC_LARB1, "vdec_larb1", "top_vdec", 0),
 };
 
 static const struct mtk_gate vdec_core1_clks[] = {
-	/* VDEC0 */
+	 
 	GATE_VDEC0(CLK_VDEC_CORE1_VDEC, "vdec_core1_vdec", "top_vdec", 0),
-	/* VDEC1 */
+	 
 	GATE_VDEC1(CLK_VDEC_CORE1_LAT, "vdec_core1_lat", "top_vdec", 0),
-	/* VDEC2 */
+	 
 	GATE_VDEC2(CLK_VDEC_CORE1_LARB1, "vdec_core1_larb1", "top_vdec", 0),
 };
 
 static const struct mtk_gate vdec_soc_clks[] = {
-	/* VDEC0 */
+	 
 	GATE_VDEC0(CLK_VDEC_SOC_VDEC, "vdec_soc_vdec", "top_vdec", 0),
-	/* VDEC1 */
+	 
 	GATE_VDEC1(CLK_VDEC_SOC_LAT, "vdec_soc_lat", "top_vdec", 0),
-	/* VDEC2 */
+	 
 	GATE_VDEC2(CLK_VDEC_SOC_LARB1, "vdec_soc_larb1", "top_vdec", 0),
 };
 
@@ -90,7 +90,7 @@ static const struct of_device_id of_match_clk_mt8195_vdec[] = {
 		.compatible = "mediatek,mt8195-vdecsys_soc",
 		.data = &vdec_soc_desc,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8195_vdec);

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2018 Synopsys, Inc. and/or its affiliates.
+
+
 
 #include <linux/regmap.h>
 #include <linux/i3c/device.h>

@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright(c) 2013 Mauro Carvalho Chehab
+
+
+
 
 #include "smscoreapi.h"
 
@@ -302,7 +302,7 @@ static ssize_t smsdvb_stats_read(struct file *file, char __user *user_buf,
 	}
 
 	if (debug_data->stats_was_read) {
-		rc = 0;	/* EOF */
+		rc = 0;	 
 		goto ret;
 	}
 
@@ -328,7 +328,7 @@ static int smsdvb_stats_release(struct inode *inode, struct file *file)
 	struct smsdvb_debugfs *debug_data = file->private_data;
 
 	spin_lock(&debug_data->lock);
-	debug_data->stats_was_read = true;	/* return EOF to read() */
+	debug_data->stats_was_read = true;	 
 	spin_unlock(&debug_data->lock);
 	wake_up_interruptible_sync(&debug_data->stats_queue);
 
@@ -346,9 +346,7 @@ static const struct file_operations debugfs_stats_ops = {
 	.llseek = generic_file_llseek,
 };
 
-/*
- * Functions used by smsdvb, in order to create the interfaces
- */
+ 
 
 int smsdvb_debugfs_create(struct smsdvb_client_t *client)
 {
@@ -410,16 +408,7 @@ void smsdvb_debugfs_register(void)
 {
 	struct dentry *d;
 
-	/*
-	 * FIXME: This was written to debug Siano USB devices. So, it creates
-	 * the debugfs node under <debugfs>/usb.
-	 * A similar logic would be needed for Siano sdio devices, but, in that
-	 * case, usb_debug_root is not a good choice.
-	 *
-	 * Perhaps the right fix here would be to create another sysfs root
-	 * node for sdio-based boards, but this may need some logic at sdio
-	 * subsystem.
-	 */
+	 
 	d = debugfs_create_dir("smsdvb", usb_debug_root);
 	if (IS_ERR_OR_NULL(d)) {
 		pr_err("Couldn't create sysfs node for smsdvb\n");

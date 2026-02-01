@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2010, Paul Cercueil <paul@crapouillou.net>
- *  JZ4740 Watchdog driver
- */
+
+ 
 
 #include <linux/mfd/ingenic-tcu.h>
 #include <linux/mfd/syscon.h>
@@ -86,7 +83,7 @@ static int jz4740_wdt_start(struct watchdog_device *wdt_dev)
 
 	jz4740_wdt_set_timeout(wdt_dev, wdt_dev->timeout);
 
-	/* Start watchdog if it wasn't started already */
+	 
 	if (!(tcer & TCU_WDT_TCER_TCEN))
 		regmap_write(drvdata->map, TCU_REG_WDT_TCER, TCU_WDT_TCER_TCEN);
 
@@ -129,7 +126,7 @@ static const struct watchdog_ops jz4740_wdt_ops = {
 static const struct of_device_id jz4740_wdt_of_matches[] = {
 	{ .compatible = "ingenic,jz4740-watchdog", },
 	{ .compatible = "ingenic,jz4780-watchdog", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, jz4740_wdt_of_matches);
 #endif
@@ -153,7 +150,7 @@ static int jz4740_wdt_probe(struct platform_device *pdev)
 		return PTR_ERR(drvdata->clk);
 	}
 
-	/* Set smallest clock possible */
+	 
 	rate = clk_round_rate(drvdata->clk, 1);
 	if (rate < 0)
 		return rate;

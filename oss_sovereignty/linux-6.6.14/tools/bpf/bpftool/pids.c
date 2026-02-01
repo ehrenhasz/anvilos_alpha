@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2020 Facebook */
+
+ 
 #include <errno.h>
 #include <linux/err.h>
 #include <stdbool.h>
@@ -24,7 +24,7 @@ void delete_obj_refs_table(struct hashmap *map) {}
 void emit_obj_refs_plain(struct hashmap *map, __u32 id, const char *prefix) {}
 void emit_obj_refs_json(struct hashmap *map, __u32 id, json_writer_t *json_writer) {}
 
-#else /* BPFTOOL_WITHOUT_SKELETONS */
+#else  
 
 #include "pid_iter.skel.h"
 
@@ -59,7 +59,7 @@ static void add_ref(struct hashmap *map, struct pid_iter_entry *e)
 		return;
 	}
 
-	/* new ref */
+	 
 	refs = calloc(1, sizeof(*refs));
 	if (!refs) {
 		p_err("failed to alloc memory for ID %u, PID %d, COMM %s...",
@@ -118,20 +118,18 @@ int build_obj_refs_table(struct hashmap **map, enum bpf_obj_type type)
 
 	skel->rodata->obj_type = type;
 
-	/* we don't want output polluted with libbpf errors if bpf_iter is not
-	 * supported
-	 */
+	 
 	default_print = libbpf_set_print(libbpf_print_none);
 	err = pid_iter_bpf__load(skel);
 	libbpf_set_print(default_print);
 	if (err) {
-		/* too bad, kernel doesn't support BPF iterators yet */
+		 
 		err = 0;
 		goto out;
 	}
 	err = pid_iter_bpf__attach(skel);
 	if (err) {
-		/* if we loaded above successfully, attach has to succeed */
+		 
 		p_err("failed to attach PID iterator: %d", err);
 		goto out;
 	}

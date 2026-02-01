@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Remote processor messaging - sample client driver
- *
- * Copyright (C) 2011 Texas Instruments, Inc.
- * Copyright (C) 2011 Google, Inc.
- *
- * Ohad Ben-Cohen <ohad@wizery.com>
- * Brian Swetland <swetland@google.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -34,13 +26,13 @@ static int rpmsg_sample_cb(struct rpmsg_device *rpdev, void *data, int len,
 	print_hex_dump_debug(__func__, DUMP_PREFIX_NONE, 16, 1, data, len,
 			     true);
 
-	/* samples should not live forever */
+	 
 	if (idata->rx_count >= count) {
 		dev_info(&rpdev->dev, "goodbye!\n");
 		return 0;
 	}
 
-	/* send a new message now */
+	 
 	ret = rpmsg_send(rpdev->ept, MSG, strlen(MSG));
 	if (ret)
 		dev_err(&rpdev->dev, "rpmsg_send failed: %d\n", ret);
@@ -62,7 +54,7 @@ static int rpmsg_sample_probe(struct rpmsg_device *rpdev)
 
 	dev_set_drvdata(&rpdev->dev, idata);
 
-	/* send a message to our remote processor */
+	 
 	ret = rpmsg_send(rpdev->ept, MSG, strlen(MSG));
 	if (ret) {
 		dev_err(&rpdev->dev, "rpmsg_send failed: %d\n", ret);

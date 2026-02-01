@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 Imagination Technologies
- * Author: Paul Burton <paul.burton@mips.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/io.h>
@@ -18,27 +15,14 @@
 
 struct img_ascii_lcd_ctx;
 
-/**
- * struct img_ascii_lcd_config - Configuration information about an LCD model
- * @num_chars: the number of characters the LCD can display
- * @external_regmap: true if registers are in a system controller, else false
- * @update: function called to update the LCD
- */
+ 
 struct img_ascii_lcd_config {
 	unsigned int num_chars;
 	bool external_regmap;
 	void (*update)(struct linedisp *linedisp);
 };
 
-/**
- * struct img_ascii_lcd_ctx - Private data structure
- * @base: the base address of the LCD registers
- * @regmap: the regmap through which LCD registers are accessed
- * @offset: the offset within regmap to the start of the LCD registers
- * @cfg: pointer to the LCD model configuration
- * @linedisp: line display structure
- * @curr: the string currently displayed on the LCD
- */
+ 
 struct img_ascii_lcd_ctx {
 	union {
 		void __iomem *base;
@@ -50,9 +34,7 @@ struct img_ascii_lcd_ctx {
 	char curr[] __aligned(8);
 };
 
-/*
- * MIPS Boston development board
- */
+ 
 
 static void boston_update(struct linedisp *linedisp)
 {
@@ -78,9 +60,7 @@ static struct img_ascii_lcd_config boston_config = {
 	.update = boston_update,
 };
 
-/*
- * MIPS Malta development board
- */
+ 
 
 static void malta_update(struct linedisp *linedisp)
 {
@@ -106,9 +86,7 @@ static struct img_ascii_lcd_config malta_config = {
 	.update = malta_update,
 };
 
-/*
- * MIPS SEAD3 development board
- */
+ 
 
 enum {
 	SEAD3_REG_LCD_CTRL		= 0x00,
@@ -210,19 +188,11 @@ static const struct of_device_id img_ascii_lcd_matches[] = {
 	{ .compatible = "img,boston-lcd", .data = &boston_config },
 	{ .compatible = "mti,malta-lcd", .data = &malta_config },
 	{ .compatible = "mti,sead3-lcd", .data = &sead3_config },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, img_ascii_lcd_matches);
 
-/**
- * img_ascii_lcd_probe() - probe an LCD display device
- * @pdev: the LCD platform device
- *
- * Probe an LCD display device, ensuring that we have the required resources in
- * order to access the LCD & setting up private data as well as sysfs files.
- *
- * Return: 0 on success, else -ERRNO
- */
+ 
 static int img_ascii_lcd_probe(struct platform_device *pdev)
 {
 	const struct of_device_id *match;
@@ -258,7 +228,7 @@ static int img_ascii_lcd_probe(struct platform_device *pdev)
 	if (err)
 		return err;
 
-	/* for backwards compatibility */
+	 
 	err = compat_only_sysfs_link_entry_to_kobj(&dev->kobj,
 						   &ctx->linedisp.dev.kobj,
 						   "message", NULL);
@@ -273,15 +243,7 @@ err_unregister:
 	return err;
 }
 
-/**
- * img_ascii_lcd_remove() - remove an LCD display device
- * @pdev: the LCD platform device
- *
- * Remove an LCD display device, freeing private resources & ensuring that the
- * driver stops using the LCD display registers.
- *
- * Return: 0
- */
+ 
 static int img_ascii_lcd_remove(struct platform_device *pdev)
 {
 	struct img_ascii_lcd_ctx *ctx = platform_get_drvdata(pdev);

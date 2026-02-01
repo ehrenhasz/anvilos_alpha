@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c)  2020 Intel Corporation */
+
+ 
 
 #include "igc.h"
 #include "igc_diag.h"
@@ -86,11 +86,7 @@ bool igc_reg_test(struct igc_adapter *adapter, u64 *data)
 	u32 value, before, after;
 	u32 i, toggle, b = false;
 
-	/* Because the status register is such a special case,
-	 * we handle it separately from the rest of the register
-	 * tests.  Some bits are read-only, some toggle, and some
-	 * are writeable.
-	 */
+	 
 	toggle = 0x6800D3;
 	before = rd32(IGC_STATUS);
 	value = before & toggle;
@@ -103,12 +99,10 @@ bool igc_reg_test(struct igc_adapter *adapter, u64 *data)
 		*data = 1;
 		return false;
 	}
-	/* restore previous status */
+	 
 	wr32(IGC_STATUS, before);
 
-	/* Perform the remainder of the register test, looping through
-	 * the test table until we either fail or reach the null entry.
-	 */
+	 
 	while (test->reg) {
 		for (i = 0; i < test->array_len; i++) {
 			switch (test->test_type) {
@@ -172,7 +166,7 @@ bool igc_link_test(struct igc_adapter *adapter, u64 *data)
 
 	*data = 0;
 
-	/* add delay to give enough time for autonegotioation to finish */
+	 
 	if (adapter->hw.mac.autoneg)
 		ssleep(5);
 

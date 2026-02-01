@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Thunderbolt driver - quirks
- *
- * Copyright (c) 2020 Mario Limonciello <mario.limonciello@dell.com>
- */
+
+ 
 
 #include "tb.h"
 
@@ -52,18 +48,12 @@ struct tb_quirk {
 };
 
 static const struct tb_quirk tb_quirks[] = {
-	/* Dell WD19TB supports self-authentication on unplug */
+	 
 	{ 0x0000, 0x0000, 0x00d4, 0xb070, quirk_force_power_link },
 	{ 0x0000, 0x0000, 0x00d4, 0xb071, quirk_force_power_link },
-	/*
-	 * Intel Goshen Ridge NVM 27 and before report wrong number of
-	 * DP buffers.
-	 */
+	 
 	{ 0x8087, 0x0b26, 0x0000, 0x0000, quirk_dp_credit_allocation },
-	/*
-	 * Limit the maximum USB3 bandwidth for the following Intel USB4
-	 * host routers due to a hardware issue.
-	 */
+	 
 	{ 0x8087, PCI_DEVICE_ID_INTEL_ADL_NHI0, 0x0000, 0x0000,
 		  quirk_usb3_maximum_bandwidth },
 	{ 0x8087, PCI_DEVICE_ID_INTEL_ADL_NHI1, 0x0000, 0x0000,
@@ -86,21 +76,14 @@ static const struct tb_quirk tb_quirks[] = {
 		  quirk_usb3_maximum_bandwidth },
 	{ 0x8087, PCI_DEVICE_ID_INTEL_BARLOW_RIDGE_HUB_40G_BRIDGE, 0x0000, 0x0000,
 		  quirk_usb3_maximum_bandwidth },
-	/*
-	 * CLx is not supported on AMD USB4 Yellow Carp and Pink Sardine platforms.
-	 */
+	 
 	{ 0x0438, 0x0208, 0x0000, 0x0000, quirk_clx_disable },
 	{ 0x0438, 0x0209, 0x0000, 0x0000, quirk_clx_disable },
 	{ 0x0438, 0x020a, 0x0000, 0x0000, quirk_clx_disable },
 	{ 0x0438, 0x020b, 0x0000, 0x0000, quirk_clx_disable },
 };
 
-/**
- * tb_check_quirks() - Check for quirks to apply
- * @sw: Thunderbolt switch
- *
- * Apply any quirks for the Thunderbolt controller.
- */
+ 
 void tb_check_quirks(struct tb_switch *sw)
 {
 	int i;

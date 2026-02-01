@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Hisilicon's Hi6220 mailbox driver
- *
- * Copyright (c) 2015 HiSilicon Limited.
- * Copyright (c) 2015 Linaro Limited.
- *
- * Author: Leo Yan <leo.yan@linaro.org>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -23,10 +16,10 @@
 
 #define MBOX_TX				0x1
 
-/* Mailbox message length: 8 words */
+ 
 #define MBOX_MSG_LEN			8
 
-/* Mailbox Registers */
+ 
 #define MBOX_OFF(m)			(0x40 * (m))
 #define MBOX_MODE_REG(m)		(MBOX_OFF(m) + 0x0)
 #define MBOX_DATA_REG(m)		(MBOX_OFF(m) + 0x4)
@@ -40,7 +33,7 @@
 #define MBOX_ACK_AUTOMATIC		(0x1 << 0)
 #define MBOX_ACK_IRQ			(0x0 << 0)
 
-/* IPC registers */
+ 
 #define ACK_INT_RAW_REG(i)		((i) + 0x400)
 #define ACK_INT_MSK_REG(i)		((i) + 0x404)
 #define ACK_INT_STAT_REG(i)		((i) + 0x408)
@@ -52,13 +45,7 @@
 
 struct hi6220_mbox_chan {
 
-	/*
-	 * Description for channel's hardware info:
-	 *  - direction: tx or rx
-	 *  - dst irq: peer core's irq number
-	 *  - ack irq: local irq number
-	 *  - slot number
-	 */
+	 
 	unsigned int dir, dst_irq, ack_irq;
 	unsigned int slot;
 
@@ -70,13 +57,13 @@ struct hi6220_mbox {
 
 	int irq;
 
-	/* flag of enabling tx's irq mode */
+	 
 	bool tx_irq_mode;
 
-	/* region for ipc event */
+	 
 	void __iomem *ipc;
 
-	/* region for mailbox */
+	 
 	void __iomem *base;
 
 	unsigned int chan_num;
@@ -113,7 +100,7 @@ static bool hi6220_mbox_last_tx_done(struct mbox_chan *chan)
 	struct hi6220_mbox *mbox = mchan->parent;
 	u32 state;
 
-	/* Only set idle state for polling mode */
+	 
 	BUG_ON(mbox->tx_irq_mode);
 
 	state = readl(mbox->base + MBOX_MODE_REG(mchan->slot));
@@ -128,7 +115,7 @@ static int hi6220_mbox_send_data(struct mbox_chan *chan, void *msg)
 	u32 *buf = msg;
 	int i;
 
-	/* indicate as a TX channel */
+	 
 	mchan->dir = MBOX_TX;
 
 	mbox_set_state(mbox, slot, MBOX_STATE_TX);
@@ -141,7 +128,7 @@ static int hi6220_mbox_send_data(struct mbox_chan *chan, void *msg)
 	for (i = 0; i < MBOX_MSG_LEN; i++)
 		writel(buf[i], mbox->base + MBOX_DATA_REG(slot) + i * 4);
 
-	/* trigger remote request */
+	 
 	writel(BIT(mchan->dst_irq), DST_INT_RAW_REG(mbox->ipc));
 	return 0;
 }
@@ -183,7 +170,7 @@ static irqreturn_t hi6220_mbox_interrupt(int irq, void *p)
 			mbox_chan_received_data(chan, (void *)msg);
 		}
 
-		/* clear IRQ source */
+		 
 		writel(BIT(mchan->ack_irq), ACK_INT_CLR_REG(mbox->ipc));
 		mbox_set_state(mbox, mchan->slot, MBOX_STATE_IDLE);
 	}
@@ -198,7 +185,7 @@ static int hi6220_mbox_startup(struct mbox_chan *chan)
 
 	mchan->dir = 0;
 
-	/* enable interrupt */
+	 
 	writel(BIT(mchan->ack_irq), ACK_INT_ENA_REG(mbox->ipc));
 	return 0;
 }
@@ -208,7 +195,7 @@ static void hi6220_mbox_shutdown(struct mbox_chan *chan)
 	struct hi6220_mbox_chan *mchan = chan->con_priv;
 	struct hi6220_mbox *mbox = mchan->parent;
 
-	/* disable interrupt */
+	 
 	writel(BIT(mchan->ack_irq), ACK_INT_DIS_REG(mbox->ipc));
 	mbox->irq_map_chan[mchan->ack_irq] = NULL;
 }
@@ -230,7 +217,7 @@ static struct mbox_chan *hi6220_mbox_xlate(struct mbox_controller *controller,
 	unsigned int dst_irq = spec->args[1];
 	unsigned int ack_irq = spec->args[2];
 
-	/* Bounds checking */
+	 
 	if (i >= mbox->chan_num || dst_irq >= mbox->chan_num ||
 	    ack_irq >= mbox->chan_num) {
 		dev_err(mbox->dev,
@@ -239,7 +226,7 @@ static struct mbox_chan *hi6220_mbox_xlate(struct mbox_controller *controller,
 		return ERR_PTR(-EINVAL);
 	}
 
-	/* Is requested channel free? */
+	 
 	chan = &mbox->chan[i];
 	if (mbox->irq_map_chan[ack_irq] == (void *)chan) {
 		dev_err(mbox->dev, "Channel in use\n");
@@ -321,11 +308,11 @@ static int hi6220_mbox_probe(struct platform_device *pdev)
 		mbox->mchan[i].slot   = i;
 	}
 
-	/* mask and clear all interrupt vectors */
+	 
 	writel(0x0,  ACK_INT_MSK_REG(mbox->ipc));
 	writel(~0x0, ACK_INT_CLR_REG(mbox->ipc));
 
-	/* use interrupt for tx's ack */
+	 
 	mbox->tx_irq_mode = !of_property_read_bool(node, "hi6220,mbox-tx-noirq");
 
 	if (mbox->tx_irq_mode)

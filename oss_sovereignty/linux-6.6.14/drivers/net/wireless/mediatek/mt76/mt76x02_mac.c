@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- * Copyright (C) 2018 Stanislaw Gruszka <stf_xl@wp.pl>
- */
+
+ 
 
 #include "mt76x02.h"
 #include "mt76x02_trace.h"
@@ -171,7 +168,7 @@ void mt76x02_mac_wcid_set_drop(struct mt76x02_dev *dev, u8 idx, bool drop)
 	u32 val = mt76_rr(dev, MT_WCID_DROP(idx));
 	u32 bit = MT_WCID_DROP_MASK(idx);
 
-	/* prevent unnecessary writes */
+	 
 	if ((val & bit) != (bit * drop))
 		mt76_wr(dev, MT_WCID_DROP(idx), (val & ~bit) | (bit * drop));
 }
@@ -460,7 +457,7 @@ mt76x02_tx_rate_fallback(struct ieee80211_tx_rate *rates, int idx, int phy)
 		break;
 	case MT_PHY_TYPE_HT_GF:
 	case MT_PHY_TYPE_HT:
-		/* MCS 8 falls back to MCS 0 */
+		 
 		if (rates[0].idx == 8) {
 			rates[1].idx = 0;
 			break;
@@ -749,9 +746,9 @@ void mt76x02_mac_setaddr(struct mt76x02_dev *dev, const u8 *addr)
 		get_unaligned_le32(dev->mphy.macaddr));
 	mt76_wr(dev, MT_MAC_BSSID_DW1,
 		get_unaligned_le16(dev->mphy.macaddr + 4) |
-		FIELD_PREP(MT_MAC_BSSID_DW1_MBSS_MODE, 3) | /* 8 APs + 8 STAs */
+		FIELD_PREP(MT_MAC_BSSID_DW1_MBSS_MODE, 3) |  
 		MT_MAC_BSSID_DW1_MBSS_LOCAL_BIT);
-	/* enable 7 additional beacon slots and control them with bypass mask */
+	 
 	mt76_rmw_field(dev, MT_MAC_BSSID_DW1, MT_MAC_BSSID_DW1_MBEACON_N, 7);
 
 	for (i = 0; i < 16; i++)
@@ -818,10 +815,7 @@ int mt76x02_mac_process_rx(struct mt76x02_dev *dev, struct sk_buff *skb,
 		status->iv[4] = data[1];
 		status->iv[5] = data[0];
 
-		/*
-		 * Driver CCMP validation can't deal with fragments.
-		 * Let mac80211 take care of it.
-		 */
+		 
 		if (rxinfo & MT_RXINFO_FRAG) {
 			status->flag &= ~RX_FLAG_IV_STRIPPED;
 		} else {
@@ -839,11 +833,7 @@ int mt76x02_mac_process_rx(struct mt76x02_dev *dev, struct sk_buff *skb,
 		status->flag |= RX_FLAG_AMPDU_DETAILS;
 		status->ampdu_ref = dev->ampdu_ref;
 
-		/*
-		 * When receiving an A-MPDU subframe and RSSI info is not valid,
-		 * we can assume that more subframes belonging to the same A-MPDU
-		 * are coming. The last one will have valid RSSI info
-		 */
+		 
 		if (rxinfo & MT_RXINFO_RSSI) {
 			if (!++dev->ampdu_ref)
 				dev->ampdu_ref++;
@@ -1082,7 +1072,7 @@ mt76x02_edcca_tx_enable(struct mt76x02_dev *dev, bool enable)
 
 		mt76_set(dev, MT_MAC_SYS_CTRL, MT_MAC_SYS_CTRL_ENABLE_TX);
 		mt76_set(dev, MT_AUTO_RSP_CFG, MT_AUTO_RSP_EN);
-		/* enable pa-lna */
+		 
 		data = mt76_rr(dev, MT_TX_PIN_CFG);
 		data |= MT_TX_PIN_CFG_TXANT |
 			MT_TX_PIN_CFG_RXANT |
@@ -1092,7 +1082,7 @@ mt76x02_edcca_tx_enable(struct mt76x02_dev *dev, bool enable)
 	} else {
 		mt76_clear(dev, MT_MAC_SYS_CTRL, MT_MAC_SYS_CTRL_ENABLE_TX);
 		mt76_clear(dev, MT_AUTO_RSP_CFG, MT_AUTO_RSP_EN);
-		/* disable pa-lna */
+		 
 		mt76_clear(dev, MT_TX_PIN_CFG, MT_TX_PIN_CFG_TXANT);
 		mt76_clear(dev, MT_TX_PIN_CFG, MT_TX_PIN_CFG_RXANT);
 	}
@@ -1129,7 +1119,7 @@ void mt76x02_edcca_init(struct mt76x02_dev *dev)
 	mt76x02_edcca_tx_enable(dev, true);
 	dev->ed_monitor_learning = true;
 
-	/* clear previous CCA timer value */
+	 
 	mt76_rr(dev, MT_ED_CCA_TIMER);
 	dev->ed_time = ktime_get_boottime();
 }
@@ -1225,7 +1215,7 @@ void mt76x02_mac_cc_reset(struct mt76x02_dev *dev)
 		MT_CH_CCA_RC_EN |
 		FIELD_PREP(MT_CH_TIME_CFG_CH_TIMER_CLR, 1));
 
-	/* channel cycle counters read-and-clear */
+	 
 	mt76_rr(dev, MT_CH_BUSY);
 	mt76_rr(dev, MT_CH_IDLE);
 }

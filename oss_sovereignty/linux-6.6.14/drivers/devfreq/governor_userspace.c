@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/drivers/devfreq/governor_userspace.c
- *
- *  Copyright (C) 2011 Samsung Electronics
- *	MyungJoo Ham <myungjoo.ham@samsung.com>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/device.h>
@@ -26,7 +21,7 @@ static int devfreq_userspace_func(struct devfreq *df, unsigned long *freq)
 	if (data->valid)
 		*freq = data->user_frequency;
 	else
-		*freq = df->previous_freq; /* No user freq specified yet */
+		*freq = df->previous_freq;  
 
 	return 0;
 }
@@ -100,10 +95,7 @@ out:
 
 static void userspace_exit(struct devfreq *devfreq)
 {
-	/*
-	 * Remove the sysfs entry, unless this is being called after
-	 * device_del(), which should have done this already via kobject_del().
-	 */
+	 
 	if (devfreq->dev.kobj.sd)
 		sysfs_remove_group(&devfreq->dev.kobj, &dev_attr_group);
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2010-2011 Canonical Ltd <jeremy.kerr@canonical.com>
- * Copyright (C) 2011-2012 Mike Turquette, Linaro Ltd <mturquette@linaro.org>
- *
- * Gated clock implementation
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/export.h>
@@ -15,15 +10,7 @@
 #include <linux/string.h>
 #include "clk.h"
 
-/**
- * DOC: basic gateable clock which can gate and ungate its output
- *
- * Traits of this clock:
- * prepare - clk_(un)prepare only ensures parent is (un)prepared
- * enable - clk_enable and clk_disable are functional & control gating
- * rate - inherits rate from parent.  No clk_set_rate support
- * parent - fixed parent.  No clk_set_parent support
- */
+ 
 
 struct clk_gate2 {
 	struct clk_hw hw;
@@ -148,7 +135,7 @@ struct clk_hw *clk_hw_register_gate2(struct device *dev, const char *name,
 	if (!gate)
 		return ERR_PTR(-ENOMEM);
 
-	/* struct clk_gate2 assignments */
+	 
 	gate->reg = reg;
 	gate->bit_idx = bit_idx;
 	gate->cgr_val = cgr_val;

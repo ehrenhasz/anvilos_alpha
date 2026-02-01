@@ -1,12 +1,4 @@
-/*
- * Pinctrl driver for NXP LPC18xx/LPC43xx System Control Unit (SCU)
- *
- * Copyright (C) 2015 Joachim Eastwood <manabian@gmail.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -23,13 +15,13 @@
 #include "core.h"
 #include "pinctrl-utils.h"
 
-/* LPC18XX SCU analog function registers */
+ 
 #define LPC18XX_SCU_REG_ENAIO0		0xc88
 #define LPC18XX_SCU_REG_ENAIO1		0xc8c
 #define LPC18XX_SCU_REG_ENAIO2		0xc90
 #define LPC18XX_SCU_REG_ENAIO2_DAC	BIT(0)
 
-/* LPC18XX SCU pin register definitions */
+ 
 #define LPC18XX_SCU_PIN_MODE_MASK	0x7
 #define LPC18XX_SCU_PIN_EPD		BIT(3)
 #define LPC18XX_SCU_PIN_EPUN		BIT(4)
@@ -51,7 +43,7 @@
 
 #define LPC18XX_SCU_FUNC_PER_PIN	8
 
-/* LPC18XX SCU pin interrupt select registers */
+ 
 #define LPC18XX_SCU_PINTSEL0		0xe00
 #define LPC18XX_SCU_PINTSEL1		0xe04
 #define LPC18XX_SCU_PINTSEL_VAL_MASK	0xff
@@ -63,18 +55,18 @@
 #define LPC18XX_SCU_PINTSEL_VAL(val, n) \
 	((val) << (((n) % LPC18XX_SCU_IRQ_PER_PINTSEL) * 8))
 
-/* LPC18xx pin types */
+ 
 enum {
-	TYPE_ND,	/* Normal-drive */
-	TYPE_HD,	/* High-drive */
-	TYPE_HS,	/* High-speed */
+	TYPE_ND,	 
+	TYPE_HD,	 
+	TYPE_HS,	 
 	TYPE_I2C0,
 	TYPE_USB1,
 };
 
-/* LPC18xx pin functions */
+ 
 enum {
-	FUNC_R,		/* Reserved */
+	FUNC_R,		 
 	FUNC_ADC,
 	FUNC_ADCTRIG,
 	FUNC_CAN0,
@@ -199,10 +191,10 @@ struct lpc18xx_pin_caps {
 	unsigned char type;
 };
 
-/* Analog pins are required to have both bias and input disabled */
+ 
 #define LPC18XX_SCU_ANALOG_PIN_CFG	0x10
 
-/* Macros to maniupluate analog member in lpc18xx_pin_caps */
+ 
 #define LPC18XX_ANALOG_PIN		BIT(7)
 #define LPC18XX_ANALOG_ADC(a)		((a >> 5) & 0x3)
 #define LPC18XX_ANALOG_BIT_MASK		0x1f
@@ -235,8 +227,8 @@ static struct lpc18xx_pin_caps lpc18xx_pin_##pname = {		\
 }
 
 
-/* Pinmuxing table taken from data sheet */
-/*    Pin    FUNC0  FUNC1  FUNC2  FUNC3   FUNC4   FUNC5   FUNC6    FUNC7 ANALOG TYPE */
+ 
+ 
 LPC_P(0,0,   GPIO,  SSP1,  ENET,  SGPIO,      R,      R, I2S0_TX_WS,I2S1,     0, ND);
 LPC_P(0,1,   GPIO,  SSP1,ENET_ALT,SGPIO,      R,      R,   ENET,    I2S1,     0, ND);
 LPC_P(1,0,   GPIO,  CTIN,   EMC,      R,      R,   SSP0,  SGPIO,       R,     0, ND);
@@ -412,7 +404,7 @@ LPC_P(f,9,      R, UART0, CTOUT,      R,   GPIO,      R,  SGPIO,      R, ADC1|2,
 LPC_P(f,10,     R, UART0,     R,      R,   GPIO,      R,  SDMMC,      R, ADC0|5, ND);
 LPC_P(f,11,     R, UART0,     R,      R,   GPIO,      R,  SDMMC,      R, ADC1|5, ND);
 
-/*    Pin      Offset FUNC0  FUNC1  FUNC2  FUNC3  FUNC4    FUNC5   FUNC6      FUNC7 ANALOG TYPE */
+ 
 LPC_N(clk0,     0xc00, EMC, CLKOUT,   R,     R,  SDMMC,   EMC_ALT,  SSP1,      ENET,  0, HS);
 LPC_N(clk1,     0xc04, EMC, CLKOUT,   R,     R,      R,   CGU_OUT,   R,        I2S1,  0, HS);
 LPC_N(clk2,     0xc08, EMC, CLKOUT,   R,     R,  SDMMC,   EMC_ALT,I2S0_TX_MCLK,I2S1,  0, HS);
@@ -428,7 +420,7 @@ LPC_N(i2c0_sda, 0xc84, R,      R,     R,     R,      R,      R,      R,         
 	.drv_data = &lpc18xx_pin_p##port##_##pin 	\
 }
 
-/* Pin numbers for special pins */
+ 
 enum {
 	PIN_CLK0 = 600,
 	PIN_CLK1,
@@ -632,7 +624,7 @@ static const struct pinctrl_pin_desc lpc18xx_pins[] = {
 	LPC18XX_PIN(i2c0_sda, PIN_I2C0_SDA),
 };
 
-/* PIN_CONFIG_GPIO_PIN_INT: route gpio to the gpio pin interrupt controller */
+ 
 #define PIN_CONFIG_GPIO_PIN_INT		(PIN_CONFIG_END + 1)
 
 static const struct pinconf_generic_params lpc18xx_params[] = {
@@ -771,10 +763,7 @@ static int lpc18xx_pconf_get_gpio_pin_int(struct pinctrl_dev *pctldev,
 
 	val = lpc18xx_gpio_to_pintsel_val(gpio);
 
-	/*
-	 * Check if this pin has been enabled as a interrupt in any of the two
-	 * PINTSEL registers. *arg indicates which interrupt number (0-7).
-	 */
+	 
 	*arg = 0;
 	ret = lpc18xx_get_pintsel(scu->base + LPC18XX_SCU_PINTSEL0, val, arg);
 	if (ret == 0)
@@ -1159,7 +1148,7 @@ static int lpc18xx_pmx_set(struct pinctrl_dev *pctldev, unsigned function,
 	int func;
 	u32 reg;
 
-	/* Dedicated USB1 and I2C0 pins doesn't support muxing */
+	 
 	if (pin->type == TYPE_USB1) {
 		if (function == FUNC_USB1)
 			return 0;

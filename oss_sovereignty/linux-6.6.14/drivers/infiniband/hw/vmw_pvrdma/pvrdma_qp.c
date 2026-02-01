@@ -1,47 +1,4 @@
-/*
- * Copyright (c) 2012-2016 VMware, Inc.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of EITHER the GNU General Public License
- * version 2 as published by the Free Software Foundation or the BSD
- * 2-Clause License. This program is distributed in the hope that it
- * will be useful, but WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED
- * WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License version 2 for more details at
- * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program available in the file COPYING in the main
- * directory of this source tree.
- *
- * The BSD 2-Clause License
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include <asm/page.h>
 #include <linux/io.h>
@@ -103,7 +60,7 @@ static void pvrdma_reset_qp(struct pvrdma_qp *qp)
 	struct pvrdma_cq *scq, *rcq;
 	unsigned long scq_flags, rcq_flags;
 
-	/* Clean up cqes */
+	 
 	get_cqs(qp, &scq, &rcq);
 	pvrdma_lock_cqs(scq, rcq, &scq_flags, &rcq_flags);
 
@@ -113,10 +70,7 @@ static void pvrdma_reset_qp(struct pvrdma_qp *qp)
 
 	pvrdma_unlock_cqs(scq, rcq, &scq_flags, &rcq_flags);
 
-	/*
-	 * Reset queuepair. The checks are because usermode queuepairs won't
-	 * have kernel ringstates.
-	 */
+	 
 	if (qp->rq.ring) {
 		atomic_set(&qp->rq.ring->cons_head, 0);
 		atomic_set(&qp->rq.ring->prod_tail, 0);
@@ -140,7 +94,7 @@ static int pvrdma_set_rq_size(struct pvrdma_dev *dev,
 	qp->rq.wqe_cnt = roundup_pow_of_two(max(1U, req_cap->max_recv_wr));
 	qp->rq.max_sg = roundup_pow_of_two(max(1U, req_cap->max_recv_sge));
 
-	/* Write back */
+	 
 	req_cap->max_recv_wr = qp->rq.wqe_cnt;
 	req_cap->max_recv_sge = qp->rq.max_sg;
 
@@ -165,14 +119,14 @@ static int pvrdma_set_sq_size(struct pvrdma_dev *dev, struct ib_qp_cap *req_cap,
 	qp->sq.wqe_cnt = roundup_pow_of_two(max(1U, req_cap->max_send_wr));
 	qp->sq.max_sg = roundup_pow_of_two(max(1U, req_cap->max_send_sge));
 
-	/* Write back */
+	 
 	req_cap->max_send_wr = qp->sq.wqe_cnt;
 	req_cap->max_send_sge = qp->sq.max_sg;
 
 	qp->sq.wqe_size = roundup_pow_of_two(sizeof(struct pvrdma_sq_wqe_hdr) +
 					     sizeof(struct pvrdma_sge) *
 					     qp->sq.max_sg);
-	/* Note: one extra page for the header. */
+	 
 	qp->npages_send = PVRDMA_QP_NUM_HEADER_PAGES +
 			  (qp->sq.wqe_cnt * qp->sq.wqe_size + PAGE_SIZE - 1) /
 								PAGE_SIZE;
@@ -180,14 +134,7 @@ static int pvrdma_set_sq_size(struct pvrdma_dev *dev, struct ib_qp_cap *req_cap,
 	return 0;
 }
 
-/**
- * pvrdma_create_qp - create queue pair
- * @ibqp: queue pair
- * @init_attr: queue pair attributes
- * @udata: user data
- *
- * @return: the 0 on success, otherwise returns an errno.
- */
+ 
 int pvrdma_create_qp(struct ib_qp *ibqp, struct ib_qp_init_attr *init_attr,
 		     struct ib_udata *udata)
 {
@@ -257,7 +204,7 @@ int pvrdma_create_qp(struct ib_qp *ibqp, struct ib_qp_init_attr *init_attr,
 				goto err_qp;
 			}
 
-			/* Userspace supports qpn and qp handles? */
+			 
 			if (dev->dsr_version >= PVRDMA_QPHANDLE_VERSION &&
 			    udata->outlen < sizeof(qp_resp)) {
 				dev_warn(&dev->pdev->dev,
@@ -267,7 +214,7 @@ int pvrdma_create_qp(struct ib_qp *ibqp, struct ib_qp_init_attr *init_attr,
 			}
 
 			if (!is_srq) {
-				/* set qp->sq.wqe_cnt, shift, buf_size.. */
+				 
 				qp->rumem = ib_umem_get(ibqp->device,
 							ucmd.rbuf_addr,
 							ucmd.rbuf_size, 0);
@@ -311,10 +258,10 @@ int pvrdma_create_qp(struct ib_qp *ibqp, struct ib_qp_init_attr *init_attr,
 
 			qp->npages = qp->npages_send + qp->npages_recv;
 
-			/* Skip header page. */
+			 
 			qp->sq.offset = PVRDMA_QP_NUM_HEADER_PAGES * PAGE_SIZE;
 
-			/* Recv queue pages are after send pages. */
+			 
 			qp->rq.offset = qp->npages_send * PAGE_SIZE;
 		}
 
@@ -340,7 +287,7 @@ int pvrdma_create_qp(struct ib_qp *ibqp, struct ib_qp_init_attr *init_attr,
 							    qp->rumem,
 							    qp->npages_send);
 		} else {
-			/* Ring state is always the first page. */
+			 
 			qp->sq.ring = qp->pdir.pages[0];
 			qp->rq.ring = is_srq ? NULL : &qp->sq.ring[1];
 		}
@@ -350,7 +297,7 @@ int pvrdma_create_qp(struct ib_qp *ibqp, struct ib_qp_init_attr *init_attr,
 		goto err_qp;
 	}
 
-	/* Not supported */
+	 
 	init_attr->cap.max_inline_data = 0;
 
 	memset(cmd, 0, sizeof(*cmd));
@@ -387,7 +334,7 @@ int pvrdma_create_qp(struct ib_qp *ibqp, struct ib_qp_init_attr *init_attr,
 		goto err_pdir;
 	}
 
-	/* max_send_wr/_recv_wr/_send_sge/_recv_sge/_inline_data */
+	 
 	qp->port = init_attr->port_num;
 
 	if (dev->dsr_version >= PVRDMA_QPHANDLE_VERSION) {
@@ -454,7 +401,7 @@ static void pvrdma_free_qp(struct pvrdma_qp *qp)
 	struct pvrdma_cq *rcq;
 	unsigned long scq_flags, rcq_flags;
 
-	/* In case cq is polling */
+	 
 	get_cqs(qp, &scq, &rcq);
 	pvrdma_lock_cqs(scq, rcq, &scq_flags, &rcq_flags);
 
@@ -462,11 +409,7 @@ static void pvrdma_free_qp(struct pvrdma_qp *qp)
 	if (scq != rcq)
 		_pvrdma_flush_cqe(qp, rcq);
 
-	/*
-	 * We're now unlocking the CQs before clearing out the qp handle this
-	 * should still be safe. We have destroyed the backend QP and flushed
-	 * the CQEs so there should be no other completions for this QP.
-	 */
+	 
 	pvrdma_unlock_cqs(scq, rcq, &scq_flags, &rcq_flags);
 
 	_pvrdma_free_qp(qp);
@@ -489,13 +432,7 @@ static inline void _pvrdma_destroy_qp_work(struct pvrdma_dev *dev,
 			 "destroy queuepair failed, error: %d\n", ret);
 }
 
-/**
- * pvrdma_destroy_qp - destroy a queue pair
- * @qp: the queue pair to destroy
- * @udata: user data or null for kernel object
- *
- * @return: always 0.
- */
+ 
 int pvrdma_destroy_qp(struct ib_qp *qp, struct ib_udata *udata)
 {
 	struct pvrdma_qp *vqp = to_vqp(qp);
@@ -513,15 +450,7 @@ static void __pvrdma_destroy_qp(struct pvrdma_dev *dev,
 	_pvrdma_free_qp(qp);
 }
 
-/**
- * pvrdma_modify_qp - modify queue pair attributes
- * @ibqp: the queue pair
- * @attr: the new queue pair's attributes
- * @attr_mask: attributes mask
- * @udata: user data
- *
- * @returns 0 on success, otherwise returns an errno.
- */
+ 
 int pvrdma_modify_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr,
 		     int attr_mask, struct ib_udata *udata)
 {
@@ -536,7 +465,7 @@ int pvrdma_modify_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr,
 	if (attr_mask & ~IB_QP_ATTR_STANDARD_BITS)
 		return -EOPNOTSUPP;
 
-	/* Sanity checking. Should need lock here */
+	 
 	mutex_lock(&qp->mutex);
 	cur_state = (attr_mask & IB_QP_CUR_STATE) ? attr->cur_qp_state :
 		qp->state;
@@ -660,14 +589,7 @@ static int set_reg_seg(struct pvrdma_sq_wqe_hdr *wqe_hdr,
 						mr->npages);
 }
 
-/**
- * pvrdma_post_send - post send work request entries on a QP
- * @ibqp: the QP
- * @wr: work request list to post
- * @bad_wr: the first bad WR returned
- *
- * @return: 0 on success, otherwise errno returned.
- */
+ 
 int pvrdma_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 		     const struct ib_send_wr **bad_wr)
 {
@@ -678,10 +600,7 @@ int pvrdma_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 	struct pvrdma_sge *sge;
 	int i, ret;
 
-	/*
-	 * In states lower than RTS, we can fail immediately. In other states,
-	 * just post and let the device figure it out.
-	 */
+	 
 	if (qp->state < IB_QPS_RTS) {
 		*bad_wr = wr;
 		return -EINVAL;
@@ -709,24 +628,7 @@ int pvrdma_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 			goto out;
 		}
 
-		/*
-		 * Only support UD, RC.
-		 * Need to check opcode table for thorough checking.
-		 * opcode		_UD	_UC	_RC
-		 * _SEND		x	x	x
-		 * _SEND_WITH_IMM	x	x	x
-		 * _RDMA_WRITE			x	x
-		 * _RDMA_WRITE_WITH_IMM		x	x
-		 * _LOCAL_INV			x	x
-		 * _SEND_WITH_INV		x	x
-		 * _RDMA_READ				x
-		 * _ATOMIC_CMP_AND_SWP			x
-		 * _ATOMIC_FETCH_AND_ADD		x
-		 * _MASK_ATOMIC_CMP_AND_SWP		x
-		 * _MASK_ATOMIC_FETCH_AND_ADD		x
-		 * _REG_MR				x
-		 *
-		 */
+		 
 		if (qp->ibqp.qp_type != IB_QPT_UD &&
 		    qp->ibqp.qp_type != IB_QPT_RC &&
 			wr->opcode != IB_WR_SEND) {
@@ -774,10 +676,7 @@ int pvrdma_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 				goto out;
 			}
 
-			/*
-			 * Use qkey from qp context if high order bit set,
-			 * otherwise from work request.
-			 */
+			 
 			wqe_hdr->wr.ud.remote_qpn = ud_wr(wr)->remote_qpn;
 			wqe_hdr->wr.ud.remote_qkey =
 				ud_wr(wr)->remote_qkey & 0x80000000 ?
@@ -834,17 +733,17 @@ int pvrdma_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 
 		sge = (struct pvrdma_sge *)(wqe_hdr + 1);
 		for (i = 0; i < wr->num_sge; i++) {
-			/* Need to check wqe_size 0 or max size */
+			 
 			sge->addr = wr->sg_list[i].addr;
 			sge->length = wr->sg_list[i].length;
 			sge->lkey = wr->sg_list[i].lkey;
 			sge++;
 		}
 
-		/* Make sure wqe is written before index update */
+		 
 		smp_wmb();
 
-		/* Update shared sq ring */
+		 
 		pvrdma_idx_ring_inc(&qp->sq.ring->prod_tail,
 				    qp->sq.wqe_cnt);
 
@@ -862,14 +761,7 @@ out:
 	return ret;
 }
 
-/**
- * pvrdma_post_recv - post receive work request entries on a QP
- * @ibqp: the QP
- * @wr: the work request list to post
- * @bad_wr: the first bad WR returned
- *
- * @return: 0 on success, otherwise errno returned.
- */
+ 
 int pvrdma_post_recv(struct ib_qp *ibqp, const struct ib_recv_wr *wr,
 		     const struct ib_recv_wr **bad_wr)
 {
@@ -881,10 +773,7 @@ int pvrdma_post_recv(struct ib_qp *ibqp, const struct ib_recv_wr *wr,
 	int ret = 0;
 	int i;
 
-	/*
-	 * In the RESET state, we can fail immediately. For other states,
-	 * just post and let the device figure it out.
-	 */
+	 
 	if (qp->state == IB_QPS_RESET) {
 		*bad_wr = wr;
 		return -EINVAL;
@@ -932,10 +821,10 @@ int pvrdma_post_recv(struct ib_qp *ibqp, const struct ib_recv_wr *wr,
 			sge++;
 		}
 
-		/* Make sure wqe is written before index update */
+		 
 		smp_wmb();
 
-		/* Update shared rq ring */
+		 
 		pvrdma_idx_ring_inc(&qp->rq.ring->prod_tail,
 				    qp->rq.wqe_cnt);
 
@@ -954,15 +843,7 @@ out:
 	return ret;
 }
 
-/**
- * pvrdma_query_qp - query a queue pair's attributes
- * @ibqp: the queue pair to query
- * @attr: the queue pair's attributes
- * @attr_mask: attributes mask
- * @init_attr: initial queue pair attributes
- *
- * @returns 0 on success, otherwise returns an errno.
- */
+ 
 int pvrdma_query_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr,
 		    int attr_mask, struct ib_qp_init_attr *init_attr)
 {

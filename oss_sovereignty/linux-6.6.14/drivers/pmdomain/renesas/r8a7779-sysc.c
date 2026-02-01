@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas R-Car H1 System Controller
- *
- * Copyright (C) 2016 Glider bvba
- */
+
+ 
 
 #include <linux/kernel.h>
 

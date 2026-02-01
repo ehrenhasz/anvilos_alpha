@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2001-2021, Huawei Tech. Co., Ltd.
- * Author: chenjun <chenjun14@huawei.com>
- *
- * Copyright (c) 2018, Linaro Ltd.
- * Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
- */
+
+ 
 
 #include <dt-bindings/clock/hi3670-clock.h>
 #include <linux/clk-provider.h>
@@ -36,7 +30,7 @@ static const struct hisi_fixed_rate_clock hi3670_fixed_rate_clks[] = {
 	{ HI3670_CLK_INVALID, "clk_invalid", NULL, 0, 10000000, },
 };
 
-/* crgctrl */
+ 
 static const struct hisi_fixed_factor_clock hi3670_crg_fixed_factor_clks[] = {
 	{ HI3670_CLK_DIV_SYSBUS, "clk_div_sysbus", "clk_mux_sysbus",
 	  1, 7, 0, },
@@ -538,13 +532,13 @@ static const struct hisi_divider_clock hi3670_crgctrl_divider_clks[] = {
 	  CLK_SET_RATE_PARENT, 0xE4, 9, 6, CLK_DIVIDER_HIWORD_MASK, },
 };
 
-/* clk_pmuctrl */
+ 
 static const struct hisi_gate_clock hi3670_pmu_gate_clks[] = {
 	{ HI3670_GATE_ABB_192, "clk_gate_abb_192", "clkin_sys",
 	  CLK_SET_RATE_PARENT, (0x037 << 2), 0, 0, },
 };
 
-/* clk_pctrl */
+ 
 static const struct hisi_gate_clock hi3670_pctrl_gate_clks[] = {
 	{ HI3670_GATE_UFS_TCXO_EN, "clk_gate_ufs_tcxo_en", "clk_gate_abb_192",
 	  CLK_SET_RATE_PARENT, 0x10, 0, CLK_GATE_HIWORD_MASK, },
@@ -552,7 +546,7 @@ static const struct hisi_gate_clock hi3670_pctrl_gate_clks[] = {
 	  CLK_SET_RATE_PARENT, 0x10, 1, CLK_GATE_HIWORD_MASK, },
 };
 
-/* clk_sctrl */
+ 
 static const struct hisi_gate_clock hi3670_sctrl_gate_sep_clks[] = {
 	{ HI3670_PPLL0_EN_ACPU, "ppll0_en_acpu", "clk_ppll0",
 	  CLK_SET_RATE_PARENT, 0x190, 26, 0, },
@@ -665,7 +659,7 @@ static const struct hisi_divider_clock hi3670_sctrl_divider_clks[] = {
 	  CLK_SET_RATE_PARENT, 0x250, 0, 3, CLK_DIVIDER_HIWORD_MASK, },
 };
 
-/* clk_iomcu */
+ 
 static const struct hisi_fixed_factor_clock hi3670_iomcu_fixed_factor_clks[] = {
 	{ HI3670_CLK_GATE_I2C0, "clk_gate_i2c0", "clk_i2c0_gate_iomcu", 1, 4, 0, },
 	{ HI3670_CLK_GATE_I2C1, "clk_gate_i2c1", "clk_i2c1_gate_iomcu", 1, 4, 0, },
@@ -692,7 +686,7 @@ static const struct hisi_gate_clock hi3670_iomcu_gate_sep_clks[] = {
 	  CLK_SET_RATE_PARENT, 0x90, 0, 0, },
 };
 
-/* clk_media1 */
+ 
 static const struct hisi_gate_clock hi3670_media1_gate_sep_clks[] = {
 	{ HI3670_ACLK_GATE_NOC_DSS, "aclk_gate_noc_dss", "aclk_gate_disp_noc_subsys",
 	  CLK_SET_RATE_PARENT, 0x10, 21, 0, },
@@ -812,7 +806,7 @@ static const struct hisi_divider_clock hi3670_media1_divider_clks[] = {
 	  CLK_SET_RATE_PARENT, 0x78, 0, 2, CLK_DIVIDER_HIWORD_MASK, },
 };
 
-/* clk_media2 */
+ 
 static const struct hisi_gate_clock hi3670_media2_gate_sep_clks[] = {
 	{ HI3670_CLK_GATE_VDECFREQ, "clk_gate_vdecfreq", "clk_div_vdec",
 	  CLK_SET_RATE_PARENT, 0x00, 8, 0, },

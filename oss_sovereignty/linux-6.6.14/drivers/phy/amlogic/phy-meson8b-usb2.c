@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Meson8, Meson8b and GXBB USB2 PHY driver
- *
- * Copyright (C) 2016 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -47,7 +43,7 @@
 
 #define REG_ENDP_INTR					0x08
 
-/* bits [31:26], [24:21] and [15:3] seem to be read-only */
+ 
 #define REG_ADP_BC					0x0c
 	#define REG_ADP_BC_VBUS_VLD_EXT_SEL		BIT(0)
 	#define REG_ADP_BC_VBUS_VLD_EXT			BIT(1)
@@ -175,7 +171,7 @@ static int phy_meson8b_usb2_power_on(struct phy *phy)
 	regmap_update_bits(priv->regmap, REG_CTRL, REG_CTRL_FSEL_MASK,
 			   0x5 << REG_CTRL_FSEL_SHIFT);
 
-	/* reset the PHY */
+	 
 	regmap_update_bits(priv->regmap, REG_CTRL, REG_CTRL_POWER_ON_RESET,
 			   REG_CTRL_POWER_ON_RESET);
 	udelay(RESET_COMPLETE_TIME);
@@ -223,7 +219,7 @@ static int phy_meson8b_usb2_power_off(struct phy *phy)
 	clk_disable_unprepare(priv->clk_usb_general);
 	reset_control_rearm(priv->reset);
 
-	/* power off the PHY by putting it into reset mode */
+	 
 	regmap_update_bits(priv->regmap, REG_CTRL, REG_CTRL_POWER_ON_RESET,
 			   REG_CTRL_POWER_ON_RESET);
 
@@ -319,7 +315,7 @@ static const struct of_device_id phy_meson8b_usb2_of_match[] = {
 		.compatible = "amlogic,meson-gxbb-usb2-phy",
 		.data = &phy_meson8b_usb2_match_data
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, phy_meson8b_usb2_of_match);
 

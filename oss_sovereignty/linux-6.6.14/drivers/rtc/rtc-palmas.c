@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * rtc-palmas.c -- Palmas Real Time Clock driver.
 
- * RTC driver for TI Palma series devices like TPS65913,
- * TPS65914 power management IC.
- *
- * Copyright (c) 2012, NVIDIA Corporation.
- *
- * Author: Laxman Dewangan <ldewangan@nvidia.com>
- */
+ 
 
 #include <linux/bcd.h>
 #include <linux/errno.h>
@@ -29,7 +20,7 @@ struct palmas_rtc {
 	unsigned int		irq;
 };
 
-/* Total number of RTC registers needed to set time*/
+ 
 #define PALMAS_NUM_TIME_REGS	(PALMAS_YEARS_REG - PALMAS_SECONDS_REG + 1)
 
 static int palmas_rtc_read_time(struct device *dev, struct rtc_time *tm)
@@ -38,7 +29,7 @@ static int palmas_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	struct palmas *palmas = dev_get_drvdata(dev->parent);
 	int ret;
 
-	/* Copy RTC counting registers to static registers or latches */
+	 
 	ret = palmas_update_bits(palmas, PALMAS_RTC_BASE, PALMAS_RTC_CTRL_REG,
 		PALMAS_RTC_CTRL_REG_GET_TIME, PALMAS_RTC_CTRL_REG_GET_TIME);
 	if (ret < 0) {
@@ -76,7 +67,7 @@ static int palmas_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	rtc_data[4] = bin2bcd(tm->tm_mon + 1);
 	rtc_data[5] = bin2bcd(tm->tm_year - 100);
 
-	/* Stop RTC while updating the RTC time registers */
+	 
 	ret = palmas_update_bits(palmas, PALMAS_RTC_BASE, PALMAS_RTC_CTRL_REG,
 		PALMAS_RTC_CTRL_REG_STOP_RTC, 0);
 	if (ret < 0) {
@@ -91,7 +82,7 @@ static int palmas_rtc_set_time(struct device *dev, struct rtc_time *tm)
 		return ret;
 	}
 
-	/* Start back RTC */
+	 
 	ret = palmas_update_bits(palmas, PALMAS_RTC_BASE, PALMAS_RTC_CTRL_REG,
 		PALMAS_RTC_CTRL_REG_STOP_RTC, PALMAS_RTC_CTRL_REG_STOP_RTC);
 	if (ret < 0)
@@ -240,7 +231,7 @@ static int palmas_rtc_probe(struct platform_device *pdev)
 	if (!palmas_rtc)
 		return -ENOMEM;
 
-	/* Clear pending interrupts */
+	 
 	ret = palmas_clear_interrupts(&pdev->dev);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "clear RTC int failed, err = %d\n", ret);
@@ -276,7 +267,7 @@ static int palmas_rtc_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Start RTC */
+	 
 	ret = palmas_update_bits(palmas, PALMAS_RTC_BASE, PALMAS_RTC_CTRL_REG,
 			PALMAS_RTC_CTRL_REG_STOP_RTC,
 			PALMAS_RTC_CTRL_REG_STOP_RTC);

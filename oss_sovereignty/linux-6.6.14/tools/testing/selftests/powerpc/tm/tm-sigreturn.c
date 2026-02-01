@@ -1,16 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2015, Laurent Dufour, IBM Corp.
- *
- * Test the kernel's signal returning code to check reclaim is done if the
- * sigreturn() is called while in a transaction (suspended since active is
- * already dropped trough the system call path).
- *
- * The kernel must discard the transaction when entering sigreturn, since
- * restoring the potential TM SPRS from the signal frame is requiring to not be
- * in a transaction.
- */
+
+ 
 
 #include <signal.h>
 #include <stdio.h>
@@ -43,9 +33,7 @@ void handler(int sig)
 	if (ret)
 		exit(1);
 
-	/*
-	 * We return from the signal handle while in a suspended transaction
-	 */
+	 
 }
 
 
@@ -69,7 +57,7 @@ int tm_sigreturn(void)
 		"tbegin.                        ;"
 		"beq            1f              ;"
 		"li             3,0             ;"
-		"std            3,0(3)          ;" /* trigger SEGV */
+		"std            3,0(3)          ;"  
 		"li             3,1             ;"
 		"std%X[ret]     3,%[ret]        ;"
 		"tend.                          ;"

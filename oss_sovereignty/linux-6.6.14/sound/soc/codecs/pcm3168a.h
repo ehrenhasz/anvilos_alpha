@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * PCM3168A codec driver header
- *
- * Copyright (C) 2015 Imagination Technologies Ltd.
- *
- * Author: Damien Horsley <Damien.Horsley@imgtec.com>
- */
+ 
+ 
 
 #ifndef __PCM3168A_H__
 #define __PCM3168A_H__

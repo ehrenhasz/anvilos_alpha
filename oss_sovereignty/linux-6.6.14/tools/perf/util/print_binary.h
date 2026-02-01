@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef PERF_PRINT_BINARY_H
 #define PERF_PRINT_BINARY_H
 
@@ -34,4 +34,4 @@ static inline void print_binary(unsigned char *data, size_t len,
 
 int is_printable_array(char *p, unsigned int len);
 
-#endif /* PERF_PRINT_BINARY_H */
+#endif  

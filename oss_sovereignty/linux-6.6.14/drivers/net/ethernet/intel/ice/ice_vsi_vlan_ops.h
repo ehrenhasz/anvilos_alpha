@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2019-2021, Intel Corporation. */
+ 
+ 
 
 #ifndef _ICE_VSI_VLAN_OPS_H_
 #define _ICE_VSI_VLAN_OPS_H_
@@ -27,4 +27,4 @@ struct ice_vsi_vlan_ops {
 void ice_vsi_init_vlan_ops(struct ice_vsi *vsi);
 struct ice_vsi_vlan_ops *ice_get_compat_vsi_vlan_ops(struct ice_vsi *vsi);
 
-#endif /* _ICE_VSI_VLAN_OPS_H_ */
+#endif  

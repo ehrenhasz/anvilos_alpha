@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Texas Instruments' TPS65217 and TPS65218 Power Button Input Driver
- *
- * Copyright (C) 2014 Texas Instruments Incorporated - http://www.ti.com/
- * Author: Felipe Balbi <balbi@ti.com>
- * Author: Marcin Niestroj <m.niestroj@grinn-global.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/input.h>
@@ -141,7 +135,7 @@ static int tps6521x_pb_probe(struct platform_device *pdev)
 static const struct platform_device_id tps6521x_pwrbtn_id_table[] = {
 	{ "tps65218-pwrbutton", },
 	{ "tps65217-pwrbutton", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, tps6521x_pwrbtn_id_table);
 

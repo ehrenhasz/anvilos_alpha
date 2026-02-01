@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 Facebook */
+
+ 
 
 #include <linux/bpf.h>
 #include <netinet/in.h>
@@ -109,7 +109,7 @@ static void tpcpy(struct bpf_tcp_sock *dst,
 	dst->bytes_acked = src->bytes_acked;
 }
 
-/* Always return CG_OK so that no pkt will be filtered out */
+ 
 #define CG_OK 1
 
 #define RET_LOG() ({						\
@@ -134,32 +134,30 @@ int egress_read_sock_fields(struct __sk_buff *skb)
 	if (!sk)
 		RET_LOG();
 
-	/* Not testing the egress traffic or the listening socket,
-	 * which are covered by the cgroup_skb/ingress test program.
-	 */
+	 
 	if (sk->family != AF_INET6 || !is_loopback6(sk->src_ip6) ||
 	    sk->state == BPF_TCP_LISTEN)
 		return CG_OK;
 
 	if (sk->src_port == bpf_ntohs(srv_sa6.sin6_port)) {
-		/* Server socket */
+		 
 		sk_ret = &srv_sk;
 		tp_ret = &srv_tp;
 	} else if (sk->dst_port == srv_sa6.sin6_port) {
-		/* Client socket */
+		 
 		sk_ret = &cli_sk;
 		tp_ret = &cli_tp;
 	} else {
-		/* Not the testing egress traffic */
+		 
 		return CG_OK;
 	}
 
-	/* It must be a fullsock for cgroup_skb/egress prog */
+	 
 	sk = bpf_sk_fullsock(sk);
 	if (!sk)
 		RET_LOG();
 
-	/* Not the testing egress traffic */
+	 
 	if (sk->protocol != IPPROTO_TCP)
 		return CG_OK;
 
@@ -186,7 +184,7 @@ int egress_read_sock_fields(struct __sk_buff *skb)
 		if (!parent_cg_id)
 			RET_LOG();
 
-		/* The userspace has created it for srv sk */
+		 
 		pkt_out_cnt = bpf_sk_storage_get(&sk_pkt_out_cnt, ktp, 0, 0);
 		pkt_out_cnt10 = bpf_sk_storage_get(&sk_pkt_out_cnt10, ktp,
 						   0, 0);
@@ -202,10 +200,7 @@ int egress_read_sock_fields(struct __sk_buff *skb)
 	if (!pkt_out_cnt || !pkt_out_cnt10)
 		RET_LOG();
 
-	/* Even both cnt and cnt10 have lock defined in their BTF,
-	 * intentionally one cnt takes lock while one does not
-	 * as a test for the spinlock support in BPF_MAP_TYPE_SK_STORAGE.
-	 */
+	 
 	pkt_out_cnt->cnt += 1;
 	bpf_spin_lock(&pkt_out_cnt10->lock);
 	pkt_out_cnt10->cnt += 10;
@@ -227,16 +222,16 @@ int ingress_read_sock_fields(struct __sk_buff *skb)
 	if (!sk)
 		RET_LOG();
 
-	/* Not the testing ingress traffic to the server */
+	 
 	if (sk->family != AF_INET6 || !is_loopback6(sk->src_ip6) ||
 	    sk->src_port != bpf_ntohs(srv_sa6.sin6_port))
 		return CG_OK;
 
-	/* Only interested in the listening socket */
+	 
 	if (sk->state != BPF_TCP_LISTEN)
 		return CG_OK;
 
-	/* It must be a fullsock for cgroup_skb/ingress prog */
+	 
 	sk = bpf_sk_fullsock(sk);
 	if (!sk)
 		RET_LOG();
@@ -251,12 +246,7 @@ int ingress_read_sock_fields(struct __sk_buff *skb)
 	return CG_OK;
 }
 
-/*
- * NOTE: 4-byte load from bpf_sock at dst_port offset is quirky. It
- * gets rewritten by the access converter to a 2-byte load for
- * backward compatibility. Treating the load result as a be16 value
- * makes the code portable across little- and big-endian platforms.
- */
+ 
 static __noinline bool sk_dst_port__load_word(struct bpf_sock *sk)
 {
 	__u32 *word = (__u32 *)&sk->dst_port;
@@ -290,7 +280,7 @@ int read_sk_dst_port(struct __sk_buff *skb)
 	if (!sk)
 		RET_LOG();
 
-	/* Ignore everything but the SYN from the client socket */
+	 
 	if (sk->state != BPF_TCP_SYN_SENT)
 		return CG_OK;
 

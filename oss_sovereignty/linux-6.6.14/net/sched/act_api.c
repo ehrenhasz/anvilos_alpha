@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/act_api.c	Packet action API.
- *
- * Author:	Jamal Hadi Salim
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -112,11 +108,7 @@ struct tcf_chain *tcf_action_set_ctrlact(struct tc_action *a, int action,
 }
 EXPORT_SYMBOL(tcf_action_set_ctrlact);
 
-/* XXX: For standalone actions, we don't need a RCU grace period either, because
- * actions are always connected to filters and filters are already destroyed in
- * RCU callbacks, so after a RCU grace period actions are already disconnected
- * from filters. Readers later can not find us.
- */
+ 
 static void free_tcf(struct tc_action *p)
 {
 	struct tcf_chain *chain = rcu_dereference_protected(p->goto_chain, 1);
@@ -169,7 +161,7 @@ static bool tc_act_skip_sw(u32 flags)
 	return (flags & TCA_ACT_FLAGS_SKIP_SW) ? true : false;
 }
 
-/* SKIP_HW and SKIP_SW are mutually exclusive flags. */
+ 
 static bool tc_act_flags_valid(u32 flags)
 {
 	flags &= TCA_ACT_FLAGS_SKIP_HW | TCA_ACT_FLAGS_SKIP_SW;
@@ -291,7 +283,7 @@ fl_err:
 	return err;
 }
 
-/* offload the tc action after it is inserted */
+ 
 static int tcf_action_offload_add(struct tc_action *action,
 				  struct netlink_ext_ack *extack)
 {
@@ -348,7 +340,7 @@ static int tcf_action_offload_del_ex(struct tc_action *action,
 	if (!cb && action->in_hw_count != in_hw_count)
 		return -EINVAL;
 
-	/* do not need to update hw state when deleting action */
+	 
 	if (cb && in_hw_count)
 		offload_action_hw_count_dec(action, in_hw_count);
 
@@ -394,18 +386,7 @@ static int __tcf_idr_release(struct tc_action *p, bool bind, bool strict)
 {
 	int ret = 0;
 
-	/* Release with strict==1 and bind==0 is only called through act API
-	 * interface (classifiers always bind). Only case when action with
-	 * positive reference count and zero bind count can exist is when it was
-	 * also created with act API (unbinding last classifier will destroy the
-	 * action if it was created by classifier). So only case when bind count
-	 * can be changed after initial check is when unbound action is
-	 * destroyed by act API while classifier binds to action with same id
-	 * concurrently. This result either creation of new action(same behavior
-	 * as before), or reusing existing action if concurrent process
-	 * increments reference count before action is deleted. Both scenarios
-	 * are acceptable.
-	 */
+	 
 	if (p) {
 		if (!bind && strict && atomic_read(&p->tcfa_bindcnt) > 0)
 			return -EPERM;
@@ -441,27 +422,27 @@ static size_t tcf_action_shared_attrs_size(const struct tc_action *act)
 		cookie_len = nla_total_size(user_cookie->len);
 	rcu_read_unlock();
 
-	return  nla_total_size(0) /* action number nested */
-		+ nla_total_size(IFNAMSIZ) /* TCA_ACT_KIND */
-		+ cookie_len /* TCA_ACT_COOKIE */
-		+ nla_total_size(sizeof(struct nla_bitfield32)) /* TCA_ACT_HW_STATS */
-		+ nla_total_size(0) /* TCA_ACT_STATS nested */
-		+ nla_total_size(sizeof(struct nla_bitfield32)) /* TCA_ACT_FLAGS */
-		/* TCA_STATS_BASIC */
+	return  nla_total_size(0)  
+		+ nla_total_size(IFNAMSIZ)  
+		+ cookie_len  
+		+ nla_total_size(sizeof(struct nla_bitfield32))  
+		+ nla_total_size(0)  
+		+ nla_total_size(sizeof(struct nla_bitfield32))  
+		 
 		+ nla_total_size_64bit(sizeof(struct gnet_stats_basic))
-		/* TCA_STATS_PKT64 */
+		 
 		+ nla_total_size_64bit(sizeof(u64))
-		/* TCA_STATS_QUEUE */
+		 
 		+ nla_total_size_64bit(sizeof(struct gnet_stats_queue))
-		+ nla_total_size(0) /* TCA_ACT_OPTIONS nested */
-		+ nla_total_size(sizeof(struct tcf_t)); /* TCA_GACT_TM */
+		+ nla_total_size(0)  
+		+ nla_total_size(sizeof(struct tcf_t));  
 }
 
 static size_t tcf_action_full_attrs_size(size_t sz)
 {
-	return NLMSG_HDRLEN                     /* struct nlmsghdr */
+	return NLMSG_HDRLEN                      
 		+ sizeof(struct tcamsg)
-		+ nla_total_size(0)             /* TCA_ACT_TAB nested */
+		+ nla_total_size(0)              
 		+ sz;
 }
 
@@ -793,30 +774,26 @@ int tcf_idr_create_from_flags(struct tc_action_net *tn, u32 index,
 			      const struct tc_action_ops *ops, int bind,
 			      u32 flags)
 {
-	/* Set cpustats according to actions flags. */
+	 
 	return tcf_idr_create(tn, index, est, a, ops, bind,
 			      !(flags & TCA_ACT_FLAGS_NO_PERCPU_STATS), flags);
 }
 EXPORT_SYMBOL(tcf_idr_create_from_flags);
 
-/* Cleanup idr index that was allocated but not initialized. */
+ 
 
 void tcf_idr_cleanup(struct tc_action_net *tn, u32 index)
 {
 	struct tcf_idrinfo *idrinfo = tn->idrinfo;
 
 	mutex_lock(&idrinfo->lock);
-	/* Remove ERR_PTR(-EBUSY) allocated by tcf_idr_check_alloc */
+	 
 	WARN_ON(!IS_ERR(idr_remove(&idrinfo->action_idr, index)));
 	mutex_unlock(&idrinfo->lock);
 }
 EXPORT_SYMBOL(tcf_idr_cleanup);
 
-/* Check if action with specified index exists. If actions is found, increments
- * its reference and bind counters, and return 1. Otherwise insert temporary
- * error pointer (to prevent concurrent users from inserting actions with same
- * index) and return 0.
- */
+ 
 
 int tcf_idr_check_alloc(struct tc_action_net *tn, u32 *index,
 			struct tc_action **a, int bind)
@@ -830,9 +807,7 @@ again:
 	if (*index) {
 		p = idr_find(&idrinfo->action_idr, *index);
 		if (IS_ERR(p)) {
-			/* This means that another process allocated
-			 * index but did not assign the pointer yet.
-			 */
+			 
 			mutex_unlock(&idrinfo->lock);
 			goto again;
 		}
@@ -887,11 +862,7 @@ EXPORT_SYMBOL(tcf_idrinfo_destroy);
 
 static LIST_HEAD(act_base);
 static DEFINE_RWLOCK(act_mod_lock);
-/* since act ops id is stored in pernet subsystem list,
- * then there is no way to walk through only all the action
- * subsystem, so we keep tc action pernet ops id for
- * reoffload to walk through.
- */
+ 
 static LIST_HEAD(act_pernet_id_list);
 static DEFINE_MUTEX(act_id_mutex);
 struct tc_act_pernet_id {
@@ -950,10 +921,7 @@ int tcf_register_action(struct tc_action_ops *act,
 	if (!act->act || !act->dump || !act->init)
 		return -EINVAL;
 
-	/* We have to register pernet ops before making the action ops visible,
-	 * otherwise tcf_action_init_1() could get a partially initialized
-	 * netns.
-	 */
+	 
 	ret = register_pernet_subsys(ops);
 	if (ret)
 		return ret;
@@ -1010,7 +978,7 @@ int tcf_unregister_action(struct tc_action_ops *act,
 }
 EXPORT_SYMBOL(tcf_unregister_action);
 
-/* lookup by name */
+ 
 static struct tc_action_ops *tc_lookup_action_n(char *kind)
 {
 	struct tc_action_ops *a, *res = NULL;
@@ -1029,7 +997,7 @@ static struct tc_action_ops *tc_lookup_action_n(char *kind)
 	return res;
 }
 
-/* lookup by nlattr */
+ 
 static struct tc_action_ops *tc_lookup_action(struct nlattr *kind)
 {
 	struct tc_action_ops *a, *res = NULL;
@@ -1048,13 +1016,13 @@ static struct tc_action_ops *tc_lookup_action(struct nlattr *kind)
 	return res;
 }
 
-/*TCA_ACT_MAX_PRIO is 32, there count up to 32 */
+ 
 #define TCA_ACT_MAX_PRIO_MASK 0x1FF
 int tcf_action_exec(struct sk_buff *skb, struct tc_action **actions,
 		    int nr_actions, struct tcf_result *res)
 {
 	u32 jmp_prgcnt = 0;
-	u32 jmp_ttl = TCA_ACT_MAX_PRIO; /*matches actions per filter */
+	u32 jmp_ttl = TCA_ACT_MAX_PRIO;  
 	int i;
 	int ret = TC_ACT_OK;
 
@@ -1080,20 +1048,20 @@ repeat:
 		if (unlikely(ret == TC_ACT_REPEAT)) {
 			if (--repeat_ttl != 0)
 				goto repeat;
-			/* suspicious opcode, stop pipeline */
+			 
 			net_warn_ratelimited("TC_ACT_REPEAT abuse ?\n");
 			return TC_ACT_OK;
 		}
 		if (TC_ACT_EXT_CMP(ret, TC_ACT_JUMP)) {
 			jmp_prgcnt = ret & TCA_ACT_MAX_PRIO_MASK;
 			if (!jmp_prgcnt || (jmp_prgcnt > nr_actions)) {
-				/* faulty opcode, stop pipeline */
+				 
 				return TC_ACT_OK;
 			} else {
 				jmp_ttl -= 1;
 				if (jmp_ttl > 0)
 					goto restart_act_graph;
-				else /* faulty graph, stop pipeline */
+				else  
 					return TC_ACT_OK;
 			}
 		} else if (TC_ACT_EXT_CMP(ret, TC_ACT_GOTO_CHAIN)) {
@@ -1136,7 +1104,7 @@ static int tcf_action_put(struct tc_action *p)
 	return __tcf_action_put(p, false);
 }
 
-/* Put all actions in this array, skip those NULL's. */
+ 
 static void tcf_action_put_many(struct tc_action *actions[])
 {
 	int i;
@@ -1252,10 +1220,7 @@ static u8 tcf_action_hw_stats_get(struct nlattr *hw_stats_attr)
 {
 	struct nla_bitfield32 hw_stats_bf;
 
-	/* If the user did not pass the attr, that means he does
-	 * not care about the type. Return "any" in that case
-	 * which is setting on all supported types.
-	 */
+	 
 	if (!hw_stats_attr)
 		return TCA_ACT_HW_STATS_ANY;
 	hw_stats_bf = nla_get_bitfield32(hw_stats_attr);
@@ -1286,9 +1251,7 @@ void tcf_idr_insert_many(struct tc_action *actions[])
 			continue;
 		idrinfo = a->idrinfo;
 		mutex_lock(&idrinfo->lock);
-		/* Replace ERR_PTR(-EBUSY) allocated by tcf_idr_check_alloc if
-		 * it is just created, otherwise this is just a nop.
-		 */
+		 
 		idr_replace(&idrinfo->action_idr, a, a->tcfa_index);
 		mutex_unlock(&idrinfo->lock);
 	}
@@ -1337,12 +1300,7 @@ struct tc_action_ops *tc_action_load_ops(struct nlattr *nla, bool police,
 
 		a_o = tc_lookup_action_n(act_name);
 
-		/* We dropped the RTNL semaphore in order to
-		 * perform the module load.  So, even if we
-		 * succeeded in loading the module we have to
-		 * tell the caller to replay the request.  We
-		 * indicate this using -EAGAIN.
-		 */
+		 
 		if (a_o != NULL) {
 			module_put(a_o->owner);
 			return ERR_PTR(-EAGAIN);
@@ -1368,7 +1326,7 @@ struct tc_action *tcf_action_init_1(struct net *net, struct tcf_proto *tp,
 	struct tc_action *a;
 	int err;
 
-	/* backward compatibility for policer */
+	 
 	if (!police) {
 		err = nla_parse_nested_deprecated(tb, TCA_ACT_MAX, nla,
 						  tcf_action_policy, extack);
@@ -1422,7 +1380,7 @@ static bool tc_act_bind(u32 flags)
 	return !!(flags & TCA_ACT_FLAGS_BIND);
 }
 
-/* Returns numbers of initialized actions or negative error. */
+ 
 
 int tcf_action_init(struct net *net, struct tcf_proto *tp, struct nlattr *nla,
 		    struct nlattr *est, struct tc_action *actions[],
@@ -1463,7 +1421,7 @@ int tcf_action_init(struct net *net, struct tcf_proto *tp, struct nlattr *nla,
 			goto err;
 		}
 		sz += tcf_action_fill_size(act);
-		/* Start from index 0 */
+		 
 		actions[i - 1] = act;
 		if (tc_act_bind(flags)) {
 			bool skip_sw = tc_skip_sw(fl_flags);
@@ -1485,9 +1443,7 @@ int tcf_action_init(struct net *net, struct tcf_proto *tp, struct nlattr *nla,
 		}
 	}
 
-	/* We have to commit them all together, because if any error happened in
-	 * between, we could not handle the failure gracefully.
-	 */
+	 
 	tcf_idr_insert_many(actions);
 
 	*attr_size = tcf_action_full_attrs_size(sz);
@@ -1534,9 +1490,7 @@ int tcf_action_copy_stats(struct sk_buff *skb, struct tc_action *p,
 	if (p == NULL)
 		goto errout;
 
-	/* compat_mode being true specifies a call that is supposed
-	 * to add additional backward compatibility statistic TLVs.
-	 */
+	 
 	if (compat_mode) {
 		if (p->type == TCA_OLD_COMPAT)
 			err = gnet_stats_start_copy_compat(skb, 0,
@@ -1656,7 +1610,7 @@ static struct tc_action *tcf_action_get_1(struct net *net, struct nlattr *nla,
 
 	err = -EINVAL;
 	ops = tc_lookup_action(tb[TCA_ACT_KIND]);
-	if (!ops) { /* could happen in batch of actions */
+	if (!ops) {  
 		NL_SET_ERR_MSG(extack, "Specified TC action kind not found");
 		goto err_out;
 	}
@@ -1704,7 +1658,7 @@ static int tca_action_flush(struct net *net, struct nlattr *nla,
 	err = -EINVAL;
 	kind = tb[TCA_ACT_KIND];
 	ops = tc_lookup_action(kind);
-	if (!ops) { /*some idjot trying to flush unknown action */
+	if (!ops) {  
 		NL_SET_ERR_MSG(extack, "Cannot flush unknown TC action");
 		goto err_out;
 	}
@@ -1758,20 +1712,18 @@ static int tcf_action_delete(struct net *net, struct tc_action *actions[])
 	for (i = 0; i < TCA_ACT_MAX_PRIO && actions[i]; i++) {
 		struct tc_action *a = actions[i];
 		const struct tc_action_ops *ops = a->ops;
-		/* Actions can be deleted concurrently so we must save their
-		 * type and id to search again after reference is released.
-		 */
+		 
 		struct tcf_idrinfo *idrinfo = a->idrinfo;
 		u32 act_index = a->tcfa_index;
 
 		actions[i] = NULL;
 		if (tcf_action_put(a)) {
-			/* last reference, action was deleted concurrently */
+			 
 			module_put(ops->owner);
 		} else  {
 			int ret;
 
-			/* now do the delete */
+			 
 			ret = tcf_idr_delete_index(idrinfo, act_index);
 			if (ret < 0)
 				return ret;
@@ -1853,7 +1805,7 @@ int tcf_action_reoffload_cb(flow_indr_block_bind_cb_t *cb,
 					continue;
 				}
 
-				/* cb unregister to update hw count */
+				 
 				ret = tcf_action_offload_del_ex(p, cb, cb_priv);
 				if (ret < 0)
 					continue;
@@ -1889,7 +1841,7 @@ tcf_del_notify(struct net *net, struct nlmsghdr *n, struct tc_action *actions[],
 		return -EINVAL;
 	}
 
-	/* now do the delete */
+	 
 	ret = tcf_action_delete(net, actions);
 	if (ret < 0) {
 		NL_SET_ERR_MSG(extack, "Failed to delete TC action");
@@ -1939,7 +1891,7 @@ tca_action_gd(struct net *net, struct nlattr *nla, struct nlmsghdr *n,
 
 	if (event == RTM_GETACTION)
 		ret = tcf_get_notify(net, portid, n, actions, event, extack);
-	else { /* delete */
+	else {  
 		ret = tcf_del_notify(net, n, actions, portid, attr_size, extack);
 		if (ret)
 			goto err;
@@ -1992,7 +1944,7 @@ static int tcf_action_add(struct net *net, struct nlattr *nla,
 		return ret;
 	ret = tcf_add_notify(net, n, actions, portid, attr_size, extack);
 
-	/* only put existing actions */
+	 
 	for (i = 0; i < TCA_ACT_MAX_PRIO; i++)
 		if (init_res[i] == ACT_P_CREATED)
 			actions[i] = NULL;
@@ -2030,15 +1982,10 @@ static int tc_ctl_action(struct sk_buff *skb, struct nlmsghdr *n,
 		return -EINVAL;
 	}
 
-	/* n->nlmsg_flags & NLM_F_CREATE */
+	 
 	switch (n->nlmsg_type) {
 	case RTM_NEWACTION:
-		/* we are going to assume all other flags
-		 * imply create only if it doesn't exist
-		 * Note that CREATE | EXCL implies that
-		 * but since we want avoid ambiguity (eg when flags
-		 * is zero) then just set this
-		 */
+		 
 		if (n->nlmsg_flags & NLM_F_REPLACE)
 			flags = TCA_ACT_FLAGS_REPLACE;
 		ret = tcf_action_add(net, tca[TCA_ACT_TAB], n, portid, flags,

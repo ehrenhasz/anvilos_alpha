@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2004 Koninklijke Philips Electronics NV
- *
- * Conversion to platform driver and DT:
- * Copyright 2014 Linaro Ltd.
- *
- * 14/04/2005 Initial version, colin.king@philips.com
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/of_address.h>
@@ -96,10 +89,7 @@ static int versatile_pci_probe(struct platform_device *pdev)
 		}
 	}
 
-	/*
-	 * We need to discover the PCI core first to configure itself
-	 * before the main PCI probing is performed
-	 */
+	 
 	for (i = 0; i < 32; i++) {
 		if ((readl(versatile_cfg_base[0] + (i << 11) + PCI_VENDOR_ID) == VP_PCI_DEVICE_ID) &&
 		    (readl(versatile_cfg_base[0] + (i << 11) + PCI_CLASS_REVISION) == VP_PCI_CLASS_ID)) {
@@ -111,9 +101,7 @@ static int versatile_pci_probe(struct platform_device *pdev)
 		dev_err(dev, "Cannot find PCI core!\n");
 		return -EIO;
 	}
-	/*
-	 * Do not to map Versatile FPGA PCI device into memory space
-	 */
+	 
 	pci_slot_ignore |= (1 << myslot);
 
 	dev_info(dev, "PCI core found (slot %d)\n", myslot);
@@ -125,24 +113,12 @@ static int versatile_pci_probe(struct platform_device *pdev)
 	val |= PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER | PCI_COMMAND_INVALIDATE;
 	writel(val, local_pci_cfg_base + PCI_COMMAND);
 
-	/*
-	 * Configure the PCI inbound memory windows to be 1:1 mapped to SDRAM
-	 */
+	 
 	writel(__pa(PAGE_OFFSET), local_pci_cfg_base + PCI_BASE_ADDRESS_0);
 	writel(__pa(PAGE_OFFSET), local_pci_cfg_base + PCI_BASE_ADDRESS_1);
 	writel(__pa(PAGE_OFFSET), local_pci_cfg_base + PCI_BASE_ADDRESS_2);
 
-	/*
-	 * For many years the kernel and QEMU were symbiotically buggy
-	 * in that they both assumed the same broken IRQ mapping.
-	 * QEMU therefore attempts to auto-detect old broken kernels
-	 * so that they still work on newer QEMU as they did on old
-	 * QEMU. Since we now use the correct (ie matching-hardware)
-	 * IRQ mapping we write a definitely different value to a
-	 * PCI_INTERRUPT_LINE register to tell QEMU that we expect
-	 * real hardware behaviour and it need not be backwards
-	 * compatible for us. This write is harmless on real hardware.
-	 */
+	 
 	writel(0, versatile_cfg_base[0] + PCI_INTERRUPT_LINE);
 
 	pci_add_flags(PCI_REASSIGN_ALL_BUS);

@@ -1,15 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+ 
 #ifndef _LINUX_UPROBES_H
 #define _LINUX_UPROBES_H
-/*
- * User-space Probes (UProbes)
- *
- * Copyright (C) IBM Corporation, 2008-2012
- * Authors:
- *	Srikar Dronamraju
- *	Jim Keniston
- * Copyright (C) 2011-2012 Red Hat, Inc., Peter Zijlstra
- */
+ 
 
 #include <linux/errno.h>
 #include <linux/rbtree.h>
@@ -55,9 +47,7 @@ enum uprobe_task_state {
 	UTASK_SSTEP_TRAPPED,
 };
 
-/*
- * uprobe_task: Metadata of a task while it singlesteps.
- */
+ 
 struct uprobe_task {
 	enum uprobe_task_state		state;
 
@@ -83,11 +73,11 @@ struct uprobe_task {
 struct return_instance {
 	struct uprobe		*uprobe;
 	unsigned long		func;
-	unsigned long		stack;		/* stack pointer */
-	unsigned long		orig_ret_vaddr; /* original return address */
-	bool			chained;	/* true, if instance is nested */
+	unsigned long		stack;		 
+	unsigned long		orig_ret_vaddr;  
+	bool			chained;	 
 
-	struct return_instance	*next;		/* keep as stack */
+	struct return_instance	*next;		 
 };
 
 enum rp_check {
@@ -138,7 +128,7 @@ extern bool arch_uretprobe_is_alive(struct return_instance *ret, enum rp_check c
 extern bool arch_uprobe_ignore(struct arch_uprobe *aup, struct pt_regs *regs);
 extern void arch_uprobe_copy_ixol(struct page *page, unsigned long vaddr,
 					 void *src, unsigned long len);
-#else /* !CONFIG_UPROBES */
+#else  
 struct uprobes_state {
 };
 
@@ -200,5 +190,5 @@ static inline void uprobe_copy_process(struct task_struct *t, unsigned long flag
 static inline void uprobe_clear_state(struct mm_struct *mm)
 {
 }
-#endif /* !CONFIG_UPROBES */
-#endif	/* _LINUX_UPROBES_H */
+#endif  
+#endif	 

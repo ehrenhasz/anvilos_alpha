@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2019 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/kernel.h>
@@ -21,7 +21,7 @@ struct mlxsw_sp_trap_group_item {
 	struct devlink_trap_group group;
 	u16 hw_group_id;
 	u8 priority;
-	u8 fixed_policer:1; /* Whether policer binding can change */
+	u8 fixed_policer:1;  
 };
 
 #define MLXSW_SP_TRAP_LISTENERS_MAX 3
@@ -32,9 +32,7 @@ struct mlxsw_sp_trap_item {
 	u8 is_source:1;
 };
 
-/* All driver-specific traps must be documented in
- * Documentation/networking/devlink/mlxsw.rst
- */
+ 
 enum {
 	DEVLINK_MLXSW_TRAP_ID_BASE = DEVLINK_TRAP_GENERIC_ID_MAX,
 	DEVLINK_MLXSW_TRAP_ID_IRIF_DISABLED,
@@ -49,13 +47,13 @@ enum {
 #define MLXSW_SP_TRAP_METADATA DEVLINK_TRAP_METADATA_TYPE_F_IN_PORT
 
 enum {
-	/* Packet was mirrored from ingress. */
+	 
 	MLXSW_SP_MIRROR_REASON_INGRESS = 1,
-	/* Packet was mirrored from policy engine. */
+	 
 	MLXSW_SP_MIRROR_REASON_POLICY_ENGINE = 2,
-	/* Packet was early dropped. */
+	 
 	MLXSW_SP_MIRROR_REASON_INGRESS_WRED = 9,
-	/* Packet was mirrored from egress. */
+	 
 	MLXSW_SP_MIRROR_REASON_EGRESS = 14,
 };
 
@@ -201,9 +199,7 @@ static void mlxsw_sp_rx_ptp_listener(struct sk_buff *skb, u16 local_port,
 	if (err)
 		return;
 
-	/* The PTP handler expects skb->data to point to the start of the
-	 * Ethernet header.
-	 */
+	 
 	skb_push(skb, ETH_HLEN);
 	mlxsw_sp_ptp_receive(mlxsw_sp, skb, local_port);
 }
@@ -230,9 +226,7 @@ mlxsw_sp_sample_tx_port_get(struct mlxsw_sp *mlxsw_sp,
 	return mlxsw_sp->ports[local_port];
 }
 
-/* The latency units are determined according to MOGCR.mirror_latency_units. It
- * defaults to 64 nanoseconds.
- */
+ 
 #define MLXSW_SP_MIRROR_LATENCY_SHIFT	6
 
 static void mlxsw_sp_psample_md_init(struct mlxsw_sp *mlxsw_sp,
@@ -281,9 +275,7 @@ static void mlxsw_sp_rx_sample_listener(struct sk_buff *skb, u16 local_port,
 	if (!params)
 		goto out;
 
-	/* The psample module expects skb->data to point to the start of the
-	 * Ethernet header.
-	 */
+	 
 	skb_push(skb, ETH_HLEN);
 	mlxsw_sp_psample_md_init(mlxsw_sp, &md, skb,
 				 mlxsw_sp_port->dev->ifindex, params->truncate,
@@ -304,9 +296,7 @@ static void mlxsw_sp_rx_sample_tx_listener(struct sk_buff *skb, u16 local_port,
 	struct psample_metadata md = {};
 	int err;
 
-	/* Locally generated packets are not reported from the policy engine
-	 * trigger, so do not report them from the egress trigger as well.
-	 */
+	 
 	if (local_port == MLXSW_PORT_CPU_PORT)
 		goto out;
 
@@ -318,9 +308,7 @@ static void mlxsw_sp_rx_sample_tx_listener(struct sk_buff *skb, u16 local_port,
 	if (!mlxsw_sp_port)
 		goto out;
 
-	/* Packet was sampled from Tx, so we need to retrieve the sample
-	 * parameters based on the Tx port and not the Rx port.
-	 */
+	 
 	mlxsw_sp_port_tx = mlxsw_sp_sample_tx_port_get(mlxsw_sp, rx_md_info);
 	if (!mlxsw_sp_port_tx)
 		goto out;
@@ -331,9 +319,7 @@ static void mlxsw_sp_rx_sample_tx_listener(struct sk_buff *skb, u16 local_port,
 	if (!params)
 		goto out;
 
-	/* The psample module expects skb->data to point to the start of the
-	 * Ethernet header.
-	 */
+	 
 	skb_push(skb, ETH_HLEN);
 	mlxsw_sp_psample_md_init(mlxsw_sp, &md, skb,
 				 mlxsw_sp_port->dev->ifindex, params->truncate,
@@ -367,9 +353,7 @@ static void mlxsw_sp_rx_sample_acl_listener(struct sk_buff *skb, u16 local_port,
 	if (!params)
 		goto out;
 
-	/* The psample module expects skb->data to point to the start of the
-	 * Ethernet header.
-	 */
+	 
 	skb_push(skb, ETH_HLEN);
 	mlxsw_sp_psample_md_init(mlxsw_sp, &md, skb,
 				 mlxsw_sp_port->dev->ifindex, params->truncate,
@@ -447,7 +431,7 @@ out:
 			     1 << MLXSW_REG_QPCR_HIGHEST_CBS,		      \
 			     1 << MLXSW_REG_QPCR_LOWEST_CBS)
 
-/* Ordered by policer identifier */
+ 
 static const struct mlxsw_sp_trap_policer_item
 mlxsw_sp_trap_policer_items_arr[] = {
 	{
@@ -1096,9 +1080,7 @@ static const struct mlxsw_sp_trap_item mlxsw_sp_trap_items_arr[] = {
 		},
 	},
 	{
-		/* IPV6_ROUTER_ALERT is defined in uAPI as 22, but it is not
-		 * used in this file, so undefine it.
-		 */
+		 
 		#undef IPV6_ROUTER_ALERT
 		.trap = MLXSW_SP_TRAP_CONTROL(IPV6_ROUTER_ALERT, LOCAL_DELIVERY,
 					      TRAP),
@@ -1235,9 +1217,7 @@ static int mlxsw_sp_trap_cpu_policers_set(struct mlxsw_sp *mlxsw_sp)
 	char qpcr_pl[MLXSW_REG_QPCR_LEN];
 	u16 hw_id;
 
-	/* The purpose of "thin" policer is to drop as many packets
-	 * as possible. The dummy group is using it.
-	 */
+	 
 	hw_id = find_first_zero_bit(trap->policers_usage, trap->max_policers);
 	if (WARN_ON(hw_id == trap->max_policers))
 		return -ENOBUFS;
@@ -1281,20 +1261,16 @@ static int mlxsw_sp_trap_policer_items_arr_init(struct mlxsw_sp *mlxsw_sp)
 
 	trap->policers_count = free_policers;
 
-	/* Initialize policer items array with pre-defined policers. */
+	 
 	memcpy(trap->policer_items_arr, mlxsw_sp_trap_policer_items_arr,
 	       elem_size * arr_size);
 
-	/* Initialize policer items array with the rest of the available
-	 * policers.
-	 */
+	 
 	last_id = mlxsw_sp_trap_policer_items_arr[arr_size - 1].policer.id;
 	for (i = arr_size; i < trap->policers_count; i++) {
 		const struct mlxsw_sp_trap_policer_item *policer_item;
 
-		/* Use parameters set for first policer and override
-		 * relevant ones.
-		 */
+		 
 		policer_item = &mlxsw_sp_trap_policer_items_arr[0];
 		trap->policer_items_arr[i] = *policer_item;
 		trap->policer_items_arr[i].policer.id = ++last_id;
@@ -1370,9 +1346,7 @@ static int mlxsw_sp_trap_group_items_arr_init(struct mlxsw_sp *mlxsw_sp)
 	if (err)
 		return err;
 
-	/* The group items array is created by concatenating the common trap
-	 * group items and the ASIC-specific trap group items.
-	 */
+	 
 	groups_count = common_groups_count + spec_groups_count;
 	trap->group_items_arr = kcalloc(groups_count, elem_size, GFP_KERNEL);
 	if (!trap->group_items_arr)
@@ -1457,9 +1431,7 @@ static int mlxsw_sp_trap_items_arr_init(struct mlxsw_sp *mlxsw_sp)
 	if (err)
 		return err;
 
-	/* The trap items array is created by concatenating the common trap
-	 * items and the ASIC-specific trap items.
-	 */
+	 
 	traps_count = common_traps_count + spec_traps_count;
 	trap->trap_items_arr = kcalloc(traps_count, elem_size, GFP_KERNEL);
 	if (!trap->trap_items_arr)
@@ -1716,10 +1688,7 @@ mlxsw_sp_trap_policer_item_init(struct mlxsw_sp *mlxsw_sp,
 	struct mlxsw_sp_trap *trap = mlxsw_sp->trap;
 	u16 hw_id;
 
-	/* We should be able to allocate a policer because the number of
-	 * policers we registered with devlink is in according with the number
-	 * of available policers.
-	 */
+	 
 	hw_id = find_first_zero_bit(trap->policers_usage, trap->max_policers);
 	if (WARN_ON(hw_id == trap->max_policers))
 		return -ENOBUFS;

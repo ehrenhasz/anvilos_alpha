@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net-sysfs.c - network device class and attributes
- *
- * Copyright (c) 2003 Stephen Hemminger <shemminger@osdl.org>
- */
+
+ 
 
 #include <linux/capability.h>
 #include <linux/kernel.h>
@@ -34,13 +30,13 @@ static const char fmt_dec[] = "%d\n";
 static const char fmt_ulong[] = "%lu\n";
 static const char fmt_u64[] = "%llu\n";
 
-/* Caller holds RTNL or dev_base_lock */
+ 
 static inline int dev_isalive(const struct net_device *dev)
 {
 	return dev->reg_state <= NETREG_REGISTERED;
 }
 
-/* use same locking rules as GIF* ioctl's */
+ 
 static ssize_t netdev_show(const struct device *dev,
 			   struct device_attribute *attr, char *buf,
 			   ssize_t (*format)(const struct net_device *, char *))
@@ -56,7 +52,7 @@ static ssize_t netdev_show(const struct device *dev,
 	return ret;
 }
 
-/* generate a show function for simple field */
+ 
 #define NETDEVICE_SHOW(field, format_string)				\
 static ssize_t format_##field(const struct net_device *dev, char *buf)	\
 {									\
@@ -76,7 +72,7 @@ static DEVICE_ATTR_RO(field)
 NETDEVICE_SHOW(field, format_string);					\
 static DEVICE_ATTR_RW(field)
 
-/* use same locking and permission rules as SIF* ioctl's */
+ 
 static ssize_t netdev_store(struct device *dev, struct device_attribute *attr,
 			    const char *buf, size_t len,
 			    int (*set)(struct net_device *, unsigned long))
@@ -142,7 +138,7 @@ static ssize_t name_assign_type_show(struct device *dev,
 }
 static DEVICE_ATTR_RO(name_assign_type);
 
-/* use same locking rules as GIFHWADDR ioctl's */
+ 
 static ssize_t address_show(struct device *dev, struct device_attribute *attr,
 			    char *buf)
 {
@@ -180,9 +176,7 @@ static ssize_t carrier_store(struct device *dev, struct device_attribute *attr,
 {
 	struct net_device *netdev = to_net_dev(dev);
 
-	/* The check is also done in change_carrier; this helps returning early
-	 * without hitting the trylock/restart in netdev_store.
-	 */
+	 
 	if (!netdev->netdev_ops->ndo_change_carrier)
 		return -EOPNOTSUPP;
 
@@ -207,9 +201,7 @@ static ssize_t speed_show(struct device *dev,
 	struct net_device *netdev = to_net_dev(dev);
 	int ret = -EINVAL;
 
-	/* The check is also done in __ethtool_get_link_ksettings; this helps
-	 * returning early without hitting the trylock/restart below.
-	 */
+	 
 	if (!netdev->ethtool_ops->get_link_ksettings)
 		return ret;
 
@@ -233,9 +225,7 @@ static ssize_t duplex_show(struct device *dev,
 	struct net_device *netdev = to_net_dev(dev);
 	int ret = -EINVAL;
 
-	/* The check is also done in __ethtool_get_link_ksettings; this helps
-	 * returning early without hitting the trylock/restart below.
-	 */
+	 
 	if (!netdev->ethtool_ops->get_link_ksettings)
 		return ret;
 
@@ -293,7 +283,7 @@ static DEVICE_ATTR_RO(dormant);
 
 static const char *const operstates[] = {
 	"unknown",
-	"notpresent", /* currently unused */
+	"notpresent",  
 	"down",
 	"lowerlayerdown",
 	"testing",
@@ -314,7 +304,7 @@ static ssize_t operstate_show(struct device *dev,
 	read_unlock(&dev_base_lock);
 
 	if (operstate >= ARRAY_SIZE(operstates))
-		return -EINVAL; /* should not happen */
+		return -EINVAL;  
 
 	return sysfs_emit(buf, "%s\n", operstates[operstate]);
 }
@@ -352,7 +342,7 @@ static ssize_t carrier_down_count_show(struct device *dev,
 }
 static DEVICE_ATTR_RO(carrier_down_count);
 
-/* read-write attributes */
+ 
 
 static int change_mtu(struct net_device *dev, unsigned long new_mtu)
 {
@@ -434,7 +424,7 @@ static ssize_t ifalias_store(struct device *dev, struct device_attribute *attr,
 	if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
 		return -EPERM;
 
-	/* ignore trailing newline */
+	 
 	if (len >  0 && buf[len - 1] == '\n')
 		--count;
 
@@ -501,9 +491,7 @@ static ssize_t phys_port_id_show(struct device *dev,
 	struct net_device *netdev = to_net_dev(dev);
 	ssize_t ret = -EINVAL;
 
-	/* The check is also done in dev_get_phys_port_id; this helps returning
-	 * early without hitting the trylock/restart below.
-	 */
+	 
 	if (!netdev->netdev_ops->ndo_get_phys_port_id)
 		return -EOPNOTSUPP;
 
@@ -529,9 +517,7 @@ static ssize_t phys_port_name_show(struct device *dev,
 	struct net_device *netdev = to_net_dev(dev);
 	ssize_t ret = -EINVAL;
 
-	/* The checks are also done in dev_get_phys_port_name; this helps
-	 * returning early without hitting the trylock/restart below.
-	 */
+	 
 	if (!netdev->netdev_ops->ndo_get_phys_port_name &&
 	    !netdev->devlink_port)
 		return -EOPNOTSUPP;
@@ -558,10 +544,7 @@ static ssize_t phys_switch_id_show(struct device *dev,
 	struct net_device *netdev = to_net_dev(dev);
 	ssize_t ret = -EINVAL;
 
-	/* The checks are also done in dev_get_phys_port_name; this helps
-	 * returning early without hitting the trylock/restart below. This works
-	 * because recurse is false when calling dev_get_port_parent_id.
-	 */
+	 
 	if (!netdev->netdev_ops->ndo_get_port_parent_id &&
 	    !netdev->devlink_port)
 		return -EOPNOTSUPP;
@@ -658,7 +641,7 @@ static struct attribute *net_class_attrs[] __ro_after_init = {
 };
 ATTRIBUTE_GROUPS(net_class);
 
-/* Show a given an attribute in the statistics group */
+ 
 static ssize_t netstat_show(const struct device *d,
 			    struct device_attribute *attr, char *buf,
 			    unsigned long offset)
@@ -680,7 +663,7 @@ static ssize_t netstat_show(const struct device *d,
 	return ret;
 }
 
-/* generate a read-only statistics attribute */
+ 
 #define NETSTAT_ENTRY(name)						\
 static ssize_t name##_show(struct device *d,				\
 			   struct device_attribute *attr, char *buf)	\
@@ -770,9 +753,9 @@ static bool wireless_group_needed(struct net_device *ndev)
 	return false;
 }
 
-#else /* CONFIG_SYSFS */
+#else  
 #define net_class_groups	NULL
-#endif /* CONFIG_SYSFS */
+#endif  
 
 #ifdef CONFIG_SYSFS
 #define to_rx_queue_attr(_attr) \
@@ -950,22 +933,17 @@ static ssize_t store_rps_dev_flow_table_cnt(struct netdev_rx_queue *queue,
 
 	if (count) {
 		mask = count - 1;
-		/* mask = roundup_pow_of_two(count) - 1;
-		 * without overflows...
-		 */
+		 
 		while ((mask | (mask >> 1)) != mask)
 			mask |= (mask >> 1);
-		/* On 64 bit arches, must check mask fits in table->mask (u32),
-		 * and on 32bit arches, must check
-		 * RPS_DEV_FLOW_TABLE_SIZE(mask + 1) doesn't overflow.
-		 */
+		 
 #if BITS_PER_LONG > 32
 		if (mask > (unsigned long)(u32)mask)
 			return -EINVAL;
 #else
 		if (mask > (ULONG_MAX - RPS_DEV_FLOW_TABLE_SIZE(1))
 				/ sizeof(struct rps_dev_flow)) {
-			/* Enforce a limit to prevent overflow */
+			 
 			return -EINVAL;
 		}
 #endif
@@ -998,7 +976,7 @@ static struct rx_queue_attribute rps_cpus_attribute __ro_after_init
 static struct rx_queue_attribute rps_dev_flow_table_cnt_attribute __ro_after_init
 	= __ATTR(rps_flow_cnt, 0644,
 		 show_rps_dev_flow_table_cnt, store_rps_dev_flow_table_cnt);
-#endif /* CONFIG_RPS */
+#endif  
 
 static struct attribute *rx_queue_default_attrs[] __ro_after_init = {
 #ifdef CONFIG_RPS
@@ -1079,9 +1057,7 @@ static int rx_queue_add_kobject(struct net_device *dev, int index)
 	struct kobject *kobj = &queue->kobj;
 	int error = 0;
 
-	/* Kobject_put later will trigger rx_queue_release call which
-	 * decreases dev refcount: Take that reference here
-	 */
+	 
 	netdev_hold(queue->dev, &queue->dev_tracker, GFP_KERNEL);
 
 	kobj->kset = dev->queues_kset;
@@ -1126,7 +1102,7 @@ static int rx_queue_change_owner(struct net_device *dev, int index, kuid_t kuid,
 
 	return error;
 }
-#endif /* CONFIG_SYSFS */
+#endif  
 
 int
 net_rx_queue_update_kobjects(struct net_device *dev, int old_num, int new_num)
@@ -1187,9 +1163,7 @@ static int net_rx_queue_change_owner(struct net_device *dev, int num,
 }
 
 #ifdef CONFIG_SYSFS
-/*
- * netdev_queue sysfs structures and functions.
- */
+ 
 struct netdev_queue_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct netdev_queue *queue, char *buf);
@@ -1266,7 +1240,7 @@ static ssize_t traffic_class_show(struct netdev_queue *queue,
 
 	index = get_netdev_queue_index(queue);
 
-	/* If queue belongs to subordinate dev use its TC mapping */
+	 
 	dev = netdev_get_tx_queue(dev, index)->sb_dev ? : dev;
 
 	num_tc = dev->num_tc;
@@ -1277,13 +1251,7 @@ static ssize_t traffic_class_show(struct netdev_queue *queue,
 	if (tc < 0)
 		return -EINVAL;
 
-	/* We can report the traffic class one of two ways:
-	 * Subordinate device traffic classes are reported with the traffic
-	 * class first, and then the subordinate class so for example TC0 on
-	 * subordinate device 2 will be reported as "0-2". If the queue
-	 * belongs to the root device it will be reported with just the
-	 * traffic class, so just "0" for TC 0 for example.
-	 */
+	 
 	return num_tc < 0 ? sysfs_emit(buf, "%d%d\n", tc, num_tc) :
 			    sysfs_emit(buf, "%d\n", tc);
 }
@@ -1305,9 +1273,7 @@ static ssize_t tx_maxrate_store(struct netdev_queue *queue,
 	if (!capable(CAP_NET_ADMIN))
 		return -EPERM;
 
-	/* The check is also done later; this helps returning early without
-	 * hitting the trylock/restart below.
-	 */
+	 
 	if (!dev->netdev_ops->ndo_set_tx_maxrate)
 		return -EOPNOTSUPP;
 
@@ -1341,9 +1307,7 @@ static struct netdev_queue_attribute queue_traffic_class __ro_after_init
 	= __ATTR_RO(traffic_class);
 
 #ifdef CONFIG_BQL
-/*
- * Byte queue limits sysfs structures and functions.
- */
+ 
 static ssize_t bql_show(char *buf, unsigned int value)
 {
 	return sysfs_emit(buf, "%u\n", value);
@@ -1443,7 +1407,7 @@ static const struct attribute_group dql_group = {
 	.name  = "byte_queue_limits",
 	.attrs  = dql_attrs,
 };
-#endif /* CONFIG_BQL */
+#endif  
 
 #ifdef CONFIG_XPS
 static ssize_t xps_queue_show(struct net_device *dev, unsigned int index,
@@ -1457,9 +1421,7 @@ static ssize_t xps_queue_show(struct net_device *dev, unsigned int index,
 	rcu_read_lock();
 	dev_maps = rcu_dereference(dev->xps_maps[type]);
 
-	/* Default to nr_cpu_ids/dev->num_rx_queues and do not just return 0
-	 * when dev_maps hasn't been allocated yet, to be backward compatible.
-	 */
+	 
 	nr_ids = dev_maps ? dev_maps->nr_ids :
 		 (type == XPS_CPUS ? nr_cpu_ids : dev->num_rx_queues);
 
@@ -1510,7 +1472,7 @@ static ssize_t xps_cpus_show(struct netdev_queue *queue, char *buf)
 	if (!rtnl_trylock())
 		return restart_syscall();
 
-	/* If queue belongs to subordinate dev use its map */
+	 
 	dev = netdev_get_tx_queue(dev, index)->sb_dev ? : dev;
 
 	tc = netdev_txq_to_tc(dev, index);
@@ -1519,7 +1481,7 @@ static ssize_t xps_cpus_show(struct netdev_queue *queue, char *buf)
 		return -EINVAL;
 	}
 
-	/* Make sure the subordinate device can't be freed */
+	 
 	get_device(&dev->dev);
 	rtnl_unlock();
 
@@ -1630,7 +1592,7 @@ static ssize_t xps_rxqs_store(struct netdev_queue *queue, const char *buf,
 
 static struct netdev_queue_attribute xps_rxqs_attribute __ro_after_init
 	= __ATTR_RW(xps_rxqs);
-#endif /* CONFIG_XPS */
+#endif  
 
 static struct attribute *netdev_queue_default_attrs[] __ro_after_init = {
 	&queue_trans_timeout.attr,
@@ -1686,9 +1648,7 @@ static int netdev_queue_add_kobject(struct net_device *dev, int index)
 	struct kobject *kobj = &queue->kobj;
 	int error = 0;
 
-	/* Kobject_put later will trigger netdev_queue_release call
-	 * which decreases dev refcount: Take that reference here
-	 */
+	 
 	netdev_hold(queue->dev, &queue->dev_tracker, GFP_KERNEL);
 
 	kobj->kset = dev->queues_kset;
@@ -1727,7 +1687,7 @@ static int tx_queue_change_owner(struct net_device *ndev, int index,
 #endif
 	return error;
 }
-#endif /* CONFIG_SYSFS */
+#endif  
 
 int
 netdev_queue_update_kobjects(struct net_device *dev, int old_num, int new_num)
@@ -1736,10 +1696,7 @@ netdev_queue_update_kobjects(struct net_device *dev, int old_num, int new_num)
 	int i;
 	int error = 0;
 
-	/* Tx queue kobjects are allowed to be updated when a device is being
-	 * unregistered, but solely to remove queues from qdiscs. Any path
-	 * adding queues should be fixed.
-	 */
+	 
 	WARN(dev->reg_state == NETREG_UNREGISTERING && new_num > old_num,
 	     "New queues can't be registered after device unregistration.");
 
@@ -1765,7 +1722,7 @@ netdev_queue_update_kobjects(struct net_device *dev, int old_num, int new_num)
 	return error;
 #else
 	return 0;
-#endif /* CONFIG_SYSFS */
+#endif  
 }
 
 static int net_tx_queue_change_owner(struct net_device *dev, int num,
@@ -1784,7 +1741,7 @@ static int net_tx_queue_change_owner(struct net_device *dev, int num,
 	return error;
 #else
 	return 0;
-#endif /* CONFIG_SYSFS */
+#endif  
 }
 
 static int register_queue_kobjects(struct net_device *dev)
@@ -1907,34 +1864,26 @@ static int netdev_uevent(const struct device *d, struct kobj_uevent_env *env)
 	const struct net_device *dev = to_net_dev(d);
 	int retval;
 
-	/* pass interface to uevent. */
+	 
 	retval = add_uevent_var(env, "INTERFACE=%s", dev->name);
 	if (retval)
 		goto exit;
 
-	/* pass ifindex to uevent.
-	 * ifindex is useful as it won't change (interface name may change)
-	 * and is what RtNetlink uses natively.
-	 */
+	 
 	retval = add_uevent_var(env, "IFINDEX=%d", dev->ifindex);
 
 exit:
 	return retval;
 }
 
-/*
- *	netdev_release -- destroy and free a dead device.
- *	Called when last reference to device kobject is gone.
- */
+ 
 static void netdev_release(struct device *d)
 {
 	struct net_device *dev = to_net_dev(d);
 
 	BUG_ON(dev->reg_state != NETREG_RELEASED);
 
-	/* no need to wait for rcu grace period:
-	 * device is dead and about to be freed.
-	 */
+	 
 	kfree(rcu_access_pointer(dev->ifalias));
 	netdev_freemem(dev);
 }
@@ -1975,15 +1924,7 @@ static int of_dev_node_match(struct device *dev, const void *data)
 	return 0;
 }
 
-/*
- * of_find_net_device_by_node - lookup the net device for the device node
- * @np: OF device node
- *
- * Looks up the net_device structure corresponding with the device node.
- * If successful, returns a pointer to the net_device with the embedded
- * struct device refcount incremented by one, or NULL on failure. The
- * refcount must be dropped when done with the net_device.
- */
+ 
 struct net_device *of_find_net_device_by_node(struct device_node *np)
 {
 	struct device *dev;
@@ -1997,9 +1938,7 @@ struct net_device *of_find_net_device_by_node(struct device_node *np)
 EXPORT_SYMBOL(of_find_net_device_by_node);
 #endif
 
-/* Delete sysfs entries but hold kobject reference until after all
- * netdev references are gone.
- */
+ 
 void netdev_unregister_kobject(struct net_device *ndev)
 {
 	struct device *dev = &ndev->dev;
@@ -2016,7 +1955,7 @@ void netdev_unregister_kobject(struct net_device *ndev)
 	device_del(dev);
 }
 
-/* Create sysfs entries for network device. */
+ 
 int netdev_register_kobject(struct net_device *ndev)
 {
 	struct device *dev = &ndev->dev;
@@ -2031,7 +1970,7 @@ int netdev_register_kobject(struct net_device *ndev)
 	dev_set_name(dev, "%s", ndev->name);
 
 #ifdef CONFIG_SYSFS
-	/* Allow for a device specific group */
+	 
 	if (*groups)
 		groups++;
 
@@ -2039,7 +1978,7 @@ int netdev_register_kobject(struct net_device *ndev)
 
 	if (wireless_group_needed(ndev))
 		*groups++ = &wireless_group;
-#endif /* CONFIG_SYSFS */
+#endif  
 
 	error = device_add(dev);
 	if (error)
@@ -2056,9 +1995,7 @@ int netdev_register_kobject(struct net_device *ndev)
 	return error;
 }
 
-/* Change owner for sysfs entries when moving network devices across network
- * namespaces owned by different user namespaces.
- */
+ 
 int netdev_change_owner(struct net_device *ndev, const struct net *net_old,
 			const struct net *net_new)
 {
@@ -2070,9 +2007,7 @@ int netdev_change_owner(struct net_device *ndev, const struct net *net_old,
 	net_ns_get_ownership(net_old, &old_uid, &old_gid);
 	net_ns_get_ownership(net_new, &new_uid, &new_gid);
 
-	/* The network namespace was changed but the owning user namespace is
-	 * identical so there's no need to change the owner of sysfs entries.
-	 */
+	 
 	if (uid_eq(old_uid, new_uid) && gid_eq(old_gid, new_gid))
 		return 0;
 

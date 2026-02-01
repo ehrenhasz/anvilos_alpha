@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2023 Advanced Micro Devices, Inc. */
+
+ 
 
 #include <linux/interval_tree.h>
 #include <linux/vfio.h>
@@ -198,7 +198,7 @@ static int pds_vfio_dirty_enable(struct pds_vfio_pci_device *pds_vfio,
 	if (pds_vfio_dirty_is_enabled(pds_vfio))
 		return -EINVAL;
 
-	/* find if dirty tracking is disabled, i.e. num_regions == 0 */
+	 
 	err = pds_vfio_dirty_status_cmd(pds_vfio, 0, &max_regions,
 					&num_regions);
 	if (err < 0) {
@@ -217,15 +217,7 @@ static int pds_vfio_dirty_enable(struct pds_vfio_pci_device *pds_vfio,
 		return -EOPNOTSUPP;
 	}
 
-	/*
-	 * Only support 1 region for now. If there are any large gaps in the
-	 * VM's address regions, then this would be a waste of memory as we are
-	 * generating 2 bitmaps (ack/seq) from the min address to the max
-	 * address of the VM's address regions. In the future, if we support
-	 * more than one region in the device/driver we can split the bitmaps
-	 * on the largest address region gaps. We can do this split up to the
-	 * max_regions times returned from the dirty_status command.
-	 */
+	 
 	max_regions = 1;
 	if (num_ranges > max_regions) {
 		vfio_combine_iova_ranges(ranges, nnodes, max_regions);
@@ -263,10 +255,7 @@ static int pds_vfio_dirty_enable(struct pds_vfio_pci_device *pds_vfio,
 	if (err)
 		goto out_free_region_info;
 
-	/*
-	 * page_count might be adjusted by the device,
-	 * update it before freeing region_info DMA
-	 */
+	 
 	page_count = le32_to_cpu(region_info->page_count);
 
 	dev_dbg(&pdev->dev,
@@ -343,11 +332,7 @@ static int pds_vfio_dirty_seq_ack(struct pds_vfio_pci_device *pds_vfio,
 	page_offset = offset_in_page(bmp);
 	bmp -= page_offset;
 
-	/*
-	 * Start and end of bitmap section to seq/ack might not be page
-	 * aligned, so use the page_offset to account for that so there
-	 * will be enough pages to represent the bmp_bytes
-	 */
+	 
 	npages = DIV_ROUND_UP_ULL(bmp_bytes + page_offset, PAGE_SIZE);
 	pages = kmalloc_array(npages, sizeof(*pages), GFP_KERNEL);
 	if (!pages)
@@ -434,7 +419,7 @@ static int pds_vfio_dirty_process_bitmaps(struct pds_vfio_pci_device *pds_vfio,
 	for (int i = 0; i < dword_count; i++) {
 		u64 xor = le64_to_cpu(seq[i]) ^ le64_to_cpu(ack[i]);
 
-		/* prepare for next write_ack call */
+		 
 		ack[i] = seq[i];
 
 		for (u8 bit_i = 0; bit_i < BITS_PER_TYPE(u64); ++bit_i) {
@@ -484,7 +469,7 @@ static int pds_vfio_dirty_sync(struct pds_vfio_pci_device *pds_vfio,
 		return -EINVAL;
 	}
 
-	/* bitmap is modified in 64 bit chunks */
+	 
 	bmp_bytes = ALIGN(DIV_ROUND_UP(length / dirty->region_page_size,
 				       sizeof(u64)),
 			  sizeof(u64));

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Silicon Labs Si2168 DVB-T/T2/C demodulator driver
- *
- * Copyright (C) 2014 Antti Palosaari <crope@iki.fi>
- */
+ 
+ 
 
 #ifndef SI2168_PRIV_H
 #define SI2168_PRIV_H
@@ -19,7 +15,7 @@
 #define SI2168_B40_FIRMWARE "dvb-demod-si2168-b40-01.fw"
 #define SI2168_D60_FIRMWARE "dvb-demod-si2168-d60-01.fw"
 
-/* state struct */
+ 
 struct si2168_dev {
 	struct mutex i2c_mutex;
 	struct i2c_mux_core *muxc;
@@ -42,7 +38,7 @@ struct si2168_dev {
 	unsigned int spectral_inversion:1;
 };
 
-/* firmware command struct */
+ 
 #define SI2168_ARGLEN      30
 struct si2168_cmd {
 	u8 args[SI2168_ARGLEN];

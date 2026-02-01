@@ -1,29 +1,8 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include "dm_services.h"
 
-/* include DCE11 register header files */
+ 
 #include "dce/dce_11_0_d.h"
 #include "dce/dce_11_0_sh_mask.h"
 
@@ -40,22 +19,13 @@
 
 #define DC_LOGGER \
 	tg->ctx->logger
-/** ********************************************************************************
- *
- * DCE11 Timing Generator Implementation
- *
- **********************************************************************************/
+ 
 
-/*
- * Enable CRTCV
- */
+ 
 
 static bool dce110_timing_generator_v_enable_crtc(struct timing_generator *tg)
 {
-/*
- * Set MASTER_UPDATE_MODE to 0
- * This is needed for DRR, and also suggested to be default value by Syed.
- */
+ 
 	uint32_t value;
 
 	value = 0;
@@ -64,7 +34,7 @@ static bool dce110_timing_generator_v_enable_crtc(struct timing_generator *tg)
 	dm_write_reg(tg->ctx,
 			mmCRTCV_MASTER_UPDATE_MODE, value);
 
-	/* TODO: may want this on for looking for underflow */
+	 
 	value = 0;
 	dm_write_reg(tg->ctx, mmCRTCV_MASTER_UPDATE_MODE, value);
 
@@ -89,10 +59,7 @@ static bool dce110_timing_generator_v_disable_crtc(struct timing_generator *tg)
 				CRTCV_CONTROL, CRTC_MASTER_EN);
 	dm_write_reg(tg->ctx,
 			mmCRTCV_CONTROL, value);
-	/*
-	 * TODO: call this when adding stereo support
-	 * tg->funcs->disable_stereo(tg);
-	 */
+	 
 	return true;
 }
 
@@ -189,33 +156,28 @@ static bool dce110_timing_generator_v_is_counter_moving(struct timing_generator 
 
 static void dce110_timing_generator_v_wait_for_vblank(struct timing_generator *tg)
 {
-	/* We want to catch beginning of VBlank here, so if the first try are
-	 * in VBlank, we might be very close to Active, in this case wait for
-	 * another frame
-	 */
+	 
 	while (dce110_timing_generator_v_is_in_vertical_blank(tg)) {
 		if (!dce110_timing_generator_v_is_counter_moving(tg)) {
-			/* error - no point to wait if counter is not moving */
+			 
 			break;
 		}
 	}
 
 	while (!dce110_timing_generator_v_is_in_vertical_blank(tg)) {
 		if (!dce110_timing_generator_v_is_counter_moving(tg)) {
-			/* error - no point to wait if counter is not moving */
+			 
 			break;
 		}
 	}
 }
 
-/*
- * Wait till we are in VActive (anywhere in VActive)
- */
+ 
 static void dce110_timing_generator_v_wait_for_vactive(struct timing_generator *tg)
 {
 	while (dce110_timing_generator_v_is_in_vertical_blank(tg)) {
 		if (!dce110_timing_generator_v_is_counter_moving(tg)) {
-			/* error - no point to wait if counter is not moving */
+			 
 			break;
 		}
 	}
@@ -503,20 +465,11 @@ static void dce110_timing_generator_v_set_overscan_color_black(
 	dm_write_reg(ctx, addr, value);
 	addr = mmCRTCV_BLACK_COLOR;
 	dm_write_reg(ctx, addr, value);
-	/* This is desirable to have a constant DAC output voltage during the
-	 * blank time that is higher than the 0 volt reference level that the
-	 * DAC outputs when the NBLANK signal
-	 * is asserted low, such as for output to an analog TV. */
+	 
 	addr = mmCRTCV_BLANK_DATA_COLOR;
 	dm_write_reg(ctx, addr, value);
 
-	/* TO DO we have to program EXT registers and we need to know LB DATA
-	 * format because it is used when more 10 , i.e. 12 bits per color
-	 *
-	 * m_mmDxCRTC_OVERSCAN_COLOR_EXT
-	 * m_mmDxCRTC_BLACK_COLOR_EXT
-	 * m_mmDxCRTC_BLANK_DATA_COLOR_EXT
-	 */
+	 
 }
 
 static void dce110_tg_v_program_blank_color(struct timing_generator *tg,
@@ -652,18 +605,14 @@ static void dce110_timing_generator_v_disable_vga(
 	return;
 }
 
-/** ********************************************************************************************
- *
- * DCE11 Timing Generator Constructor / Destructor
- *
- *********************************************************************************************/
+ 
 static const struct timing_generator_funcs dce110_tg_v_funcs = {
 		.validate_timing = dce110_tg_validate_timing,
 		.program_timing = dce110_timing_generator_v_program_timing,
 		.enable_crtc = dce110_timing_generator_v_enable_crtc,
 		.disable_crtc = dce110_timing_generator_v_disable_crtc,
 		.is_counter_moving = dce110_timing_generator_v_is_counter_moving,
-		.get_position = NULL, /* Not to be implemented for underlay*/
+		.get_position = NULL,  
 		.get_frame_count = dce110_timing_generator_v_get_vblank_counter,
 		.set_early_control = dce110_timing_generator_v_set_early_control,
 		.wait_for_state = dce110_timing_generator_v_wait_for_state,

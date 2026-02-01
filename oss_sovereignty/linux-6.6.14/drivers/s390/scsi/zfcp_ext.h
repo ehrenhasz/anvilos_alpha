@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * zfcp device driver
- *
- * External function declarations.
- *
- * Copyright IBM Corp. 2002, 2023
- */
+ 
+ 
 
 #ifndef ZFCP_EXT_H
 #define ZFCP_EXT_H
@@ -16,7 +10,7 @@
 #include "zfcp_def.h"
 #include "zfcp_fc.h"
 
-/* zfcp_aux.c */
+ 
 extern struct zfcp_port *zfcp_get_port_by_wwpn(struct zfcp_adapter *, u64);
 extern struct zfcp_adapter *zfcp_adapter_enqueue(struct ccw_device *);
 extern struct zfcp_port *zfcp_port_enqueue(struct zfcp_adapter *, u64, u32,
@@ -24,12 +18,12 @@ extern struct zfcp_port *zfcp_port_enqueue(struct zfcp_adapter *, u64, u32,
 extern void zfcp_adapter_release(struct kref *);
 extern void zfcp_adapter_unregister(struct zfcp_adapter *);
 
-/* zfcp_ccw.c */
+ 
 extern struct ccw_driver zfcp_ccw_driver;
 extern struct zfcp_adapter *zfcp_ccw_adapter_by_cdev(struct ccw_device *);
 extern void zfcp_ccw_adapter_put(struct zfcp_adapter *);
 
-/* zfcp_dbf.c */
+ 
 extern int zfcp_dbf_adapter_register(struct zfcp_adapter *);
 extern void zfcp_dbf_adapter_unregister(struct zfcp_adapter *);
 extern void zfcp_dbf_rec_trig(char *, struct zfcp_adapter *,
@@ -60,7 +54,7 @@ extern void zfcp_dbf_scsi_common(char *tag, int level, struct scsi_device *sdev,
 extern void zfcp_dbf_scsi_eh(char *tag, struct zfcp_adapter *adapter,
 			     unsigned int scsi_id, int ret);
 
-/* zfcp_erp.c */
+ 
 extern void zfcp_erp_set_adapter_status(struct zfcp_adapter *, u32);
 extern void zfcp_erp_clear_adapter_status(struct zfcp_adapter *, u32);
 extern void zfcp_erp_port_forced_no_port_dbf(char *dbftag,
@@ -89,7 +83,7 @@ extern void zfcp_erp_timeout_handler(struct timer_list *t);
 extern void zfcp_erp_adapter_reset_sync(struct zfcp_adapter *adapter,
 					char *dbftag);
 
-/* zfcp_fc.c */
+ 
 extern struct kmem_cache *zfcp_fc_req_cache;
 extern void zfcp_fc_enqueue_event(struct zfcp_adapter *,
 				enum fc_host_event_code event_code, u32);
@@ -111,7 +105,7 @@ extern unsigned int zfcp_fc_port_scan_backoff(void);
 extern void zfcp_fc_conditional_port_scan(struct zfcp_adapter *);
 extern void zfcp_fc_inverse_conditional_port_scan(struct zfcp_adapter *);
 
-/* zfcp_fsf.c */
+ 
 extern struct kmem_cache *zfcp_fsf_qtcb_cache;
 extern int zfcp_fsf_open_port(struct zfcp_erp_action *);
 extern int zfcp_fsf_open_wka_port(struct zfcp_fc_wka_port *);
@@ -149,7 +143,7 @@ extern ssize_t zfcp_fsf_scnprint_fc_security(char *buf, size_t size,
 					     u32 fc_security,
 					     enum zfcp_fsf_print_fmt fmt);
 
-/* zfcp_qdio.c */
+ 
 extern int zfcp_qdio_setup(struct zfcp_adapter *);
 extern void zfcp_qdio_destroy(struct zfcp_qdio *);
 extern int zfcp_qdio_sbal_get(struct zfcp_qdio *);
@@ -162,7 +156,7 @@ extern int zfcp_qdio_open(struct zfcp_qdio *);
 extern void zfcp_qdio_close(struct zfcp_qdio *);
 extern void zfcp_qdio_siosl(struct zfcp_adapter *);
 
-/* zfcp_scsi.c */
+ 
 extern bool zfcp_experimental_dix;
 extern struct scsi_transport_template *zfcp_scsi_transport_template;
 extern int zfcp_scsi_adapter_register(struct zfcp_adapter *);
@@ -182,7 +176,7 @@ extern void zfcp_scsi_shost_update_port_data(
 	struct zfcp_adapter *const adapter,
 	const struct fsf_qtcb_bottom_port *const bottom);
 
-/* zfcp_sysfs.c */
+ 
 extern const struct attribute_group *zfcp_sysfs_adapter_attr_groups[];
 extern const struct attribute_group *zfcp_unit_attr_groups[];
 extern const struct attribute_group *zfcp_port_attr_groups[];
@@ -191,7 +185,7 @@ extern const struct attribute_group *zfcp_sysfs_sdev_attr_groups[];
 extern const struct attribute_group *zfcp_sysfs_shost_attr_groups[];
 bool zfcp_sysfs_port_is_removing(const struct zfcp_port *const port);
 
-/* zfcp_unit.c */
+ 
 extern int zfcp_unit_add(struct zfcp_port *, u64);
 extern int zfcp_unit_remove(struct zfcp_port *, u64);
 extern struct zfcp_unit *zfcp_unit_find(struct zfcp_port *, u64);
@@ -200,4 +194,4 @@ extern void zfcp_unit_scsi_scan(struct zfcp_unit *);
 extern void zfcp_unit_queue_scsi_scan(struct zfcp_port *);
 extern unsigned int zfcp_unit_sdev_status(struct zfcp_unit *);
 
-#endif	/* ZFCP_EXT_H */
+#endif	 

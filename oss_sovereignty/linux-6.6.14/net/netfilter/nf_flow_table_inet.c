@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/module.h>
@@ -114,5 +114,5 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Pablo Neira Ayuso <pablo@netfilter.org>");
 MODULE_ALIAS_NF_FLOWTABLE(AF_INET);
 MODULE_ALIAS_NF_FLOWTABLE(AF_INET6);
-MODULE_ALIAS_NF_FLOWTABLE(1); /* NFPROTO_INET */
+MODULE_ALIAS_NF_FLOWTABLE(1);  
 MODULE_DESCRIPTION("Netfilter flow table mixed IPv4/IPv6 module");

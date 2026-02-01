@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/* Copyright (C) 2023 Corigine, Inc. */
+ 
+ 
 
 #ifndef __NFP_NIC_H__
 #define __NFP_NIC_H__ 1
@@ -7,7 +7,7 @@
 #include <linux/netdevice.h>
 
 #ifdef CONFIG_DCB
-/* DCB feature definitions */
+ 
 #define NFP_NET_MAX_DSCP	64
 #define NFP_NET_MAX_TC		IEEE_8021QAZ_MAX_TCS
 #define NFP_NET_MAX_PRIO	8

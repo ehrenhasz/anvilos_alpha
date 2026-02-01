@@ -1,27 +1,4 @@
-/*
- * Copyright (c) 2007 Dave Airlie <airlied@linux.ie>
- * Copyright (c) 2007, 2010 Intel Corporation
- *   Jesse Barnes <jesse.barnes@intel.com>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include <linux/i2c.h>
 #include <linux/slab.h>
@@ -41,12 +18,7 @@ int intel_connector_init(struct intel_connector *connector)
 {
 	struct intel_digital_connector_state *conn_state;
 
-	/*
-	 * Allocate enough memory to hold intel_digital_connector_state,
-	 * This might be a few bytes too many, but for connectors that don't
-	 * need it we'll free the state and allocate a smaller one on the first
-	 * successful commit anyway.
-	 */
+	 
 	conn_state = kzalloc(sizeof(*conn_state), GFP_KERNEL);
 	if (!conn_state)
 		return -ENOMEM;
@@ -75,22 +47,14 @@ struct intel_connector *intel_connector_alloc(void)
 	return connector;
 }
 
-/*
- * Free the bits allocated by intel_connector_alloc.
- * This should only be used after intel_connector_alloc has returned
- * successfully, and before drm_connector_init returns successfully.
- * Otherwise the destroy callbacks for the connector and the state should
- * take care of proper cleanup/free (see intel_connector_destroy).
- */
+ 
 void intel_connector_free(struct intel_connector *connector)
 {
 	kfree(to_intel_digital_connector_state(connector->base.state));
 	kfree(connector);
 }
 
-/*
- * Connector type independent destroy hook for drm_connector_funcs.
- */
+ 
 void intel_connector_destroy(struct drm_connector *connector)
 {
 	struct intel_connector *intel_connector = to_intel_connector(connector);
@@ -147,11 +111,7 @@ void intel_connector_attach_encoder(struct intel_connector *connector,
 	drm_connector_attach_encoder(&connector->base, &encoder->base);
 }
 
-/*
- * Simple connector->get_hw_state implementation for encoders that support only
- * one connector and no cloning and hence the encoder state determines the state
- * of the connector.
- */
+ 
 bool intel_connector_get_hw_state(struct intel_connector *connector)
 {
 	enum pipe pipe = 0;
@@ -173,11 +133,7 @@ enum pipe intel_connector_get_pipe(struct intel_connector *connector)
 	return to_intel_crtc(connector->base.state->crtc)->pipe;
 }
 
-/**
- * intel_connector_update_modes - update connector from edid
- * @connector: DRM connector device to use
- * @drm_edid: previously read EDID information
- */
+ 
 int intel_connector_update_modes(struct drm_connector *connector,
 				 const struct drm_edid *drm_edid)
 {
@@ -189,13 +145,7 @@ int intel_connector_update_modes(struct drm_connector *connector,
 	return ret;
 }
 
-/**
- * intel_ddc_get_modes - get modelist from monitor
- * @connector: DRM connector device to use
- * @adapter: i2c adapter
- *
- * Fetch the EDID information from @connector using the DDC bus.
- */
+ 
 int intel_ddc_get_modes(struct drm_connector *connector,
 			struct i2c_adapter *adapter)
 {
@@ -300,7 +250,7 @@ intel_attach_scaling_mode_property(struct drm_connector *connector)
 	scaling_modes = BIT(DRM_MODE_SCALE_ASPECT) |
 		BIT(DRM_MODE_SCALE_FULLSCREEN);
 
-	/* On GMCH platforms borders are only possible on the LVDS port */
+	 
 	if (!HAS_GMCH(i915) || connector->connector_type == DRM_MODE_CONNECTOR_LVDS)
 		scaling_modes |= BIT(DRM_MODE_SCALE_CENTER);
 

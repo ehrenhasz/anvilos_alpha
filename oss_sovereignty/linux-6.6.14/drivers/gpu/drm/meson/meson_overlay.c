@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2018 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- * Copyright (C) 2015 Amlogic, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/bitfield.h>
 
@@ -22,7 +18,7 @@
 #include "meson_viu.h"
 #include "meson_vpp.h"
 
-/* VD1_IF0_GEN_REG */
+ 
 #define VD_URGENT_CHROMA		BIT(28)
 #define VD_URGENT_LUMA			BIT(27)
 #define VD_HOLD_LINES(lines)		FIELD_PREP(GENMASK(24, 19), lines)
@@ -33,23 +29,23 @@
 #define VD_SEPARATE_EN			BIT(1)
 #define VD_ENABLE			BIT(0)
 
-/* VD1_IF0_CANVAS0 */
+ 
 #define CANVAS_ADDR2(addr)		FIELD_PREP(GENMASK(23, 16), addr)
 #define CANVAS_ADDR1(addr)		FIELD_PREP(GENMASK(15, 8), addr)
 #define CANVAS_ADDR0(addr)		FIELD_PREP(GENMASK(7, 0), addr)
 
-/* VD1_IF0_LUMA_X0 VD1_IF0_CHROMA_X0 */
+ 
 #define VD_X_START(value)		FIELD_PREP(GENMASK(14, 0), value)
 #define VD_X_END(value)			FIELD_PREP(GENMASK(30, 16), value)
 
-/* VD1_IF0_LUMA_Y0 VD1_IF0_CHROMA_Y0 */
+ 
 #define VD_Y_START(value)		FIELD_PREP(GENMASK(12, 0), value)
 #define VD_Y_END(value)			FIELD_PREP(GENMASK(28, 16), value)
 
-/* VD1_IF0_GEN_REG2 */
+ 
 #define VD_COLOR_MAP(value)		FIELD_PREP(GENMASK(1, 0), value)
 
-/* VIU_VD1_FMT_CTRL */
+ 
 #define VD_HORZ_Y_C_RATIO(value)	FIELD_PREP(GENMASK(22, 21), value)
 #define VD_HORZ_FMT_EN			BIT(20)
 #define VD_VERT_RPT_LINE0		BIT(16)
@@ -57,32 +53,32 @@
 #define VD_VERT_PHASE_STEP(value)	FIELD_PREP(GENMASK(7, 1), value)
 #define VD_VERT_FMT_EN			BIT(0)
 
-/* VPP_POSTBLEND_VD1_H_START_END */
+ 
 #define VD_H_END(value)			FIELD_PREP(GENMASK(11, 0), value)
 #define VD_H_START(value)		FIELD_PREP(GENMASK(27, 16), \
 						   ((value) & GENMASK(13, 0)))
 
-/* VPP_POSTBLEND_VD1_V_START_END */
+ 
 #define VD_V_END(value)			FIELD_PREP(GENMASK(11, 0), value)
 #define VD_V_START(value)		FIELD_PREP(GENMASK(27, 16), value)
 
-/* VPP_BLEND_VD2_V_START_END */
+ 
 #define VD2_V_END(value)		FIELD_PREP(GENMASK(11, 0), value)
 #define VD2_V_START(value)		FIELD_PREP(GENMASK(27, 16), value)
 
-/* VIU_VD1_FMT_W */
+ 
 #define VD_V_WIDTH(value)		FIELD_PREP(GENMASK(11, 0), value)
 #define VD_H_WIDTH(value)		FIELD_PREP(GENMASK(27, 16), value)
 
-/* VPP_HSC_REGION12_STARTP VPP_HSC_REGION34_STARTP */
+ 
 #define VD_REGION24_START(value)	FIELD_PREP(GENMASK(11, 0), value)
 #define VD_REGION13_END(value)		FIELD_PREP(GENMASK(27, 16), value)
 
-/* AFBC_ENABLE */
+ 
 #define AFBC_DEC_ENABLE			BIT(8)
 #define AFBC_FRM_START			BIT(0)
 
-/* AFBC_MODE */
+ 
 #define AFBC_HORZ_SKIP_UV(value)	FIELD_PREP(GENMASK(1, 0), value)
 #define AFBC_VERT_SKIP_UV(value)	FIELD_PREP(GENMASK(3, 2), value)
 #define AFBC_HORZ_SKIP_Y(value)		FIELD_PREP(GENMASK(5, 4), value)
@@ -98,33 +94,33 @@
 #define AFBC_SCATTER_MODE		BIT(29)
 #define AFBC_SOFT_RESET			BIT(31)
 
-/* AFBC_SIZE_IN */
+ 
 #define AFBC_HSIZE_IN(value)		FIELD_PREP(GENMASK(28, 16), value)
 #define AFBC_VSIZE_IN(value)		FIELD_PREP(GENMASK(12, 0), value)
 
-/* AFBC_DEC_DEF_COLOR */
+ 
 #define AFBC_DEF_COLOR_Y(value)		FIELD_PREP(GENMASK(29, 20), value)
 #define AFBC_DEF_COLOR_U(value)		FIELD_PREP(GENMASK(19, 10), value)
 #define AFBC_DEF_COLOR_V(value)		FIELD_PREP(GENMASK(9, 0), value)
 
-/* AFBC_CONV_CTRL */
+ 
 #define AFBC_CONV_LBUF_LEN(value)	FIELD_PREP(GENMASK(11, 0), value)
 
-/* AFBC_LBUF_DEPTH */
+ 
 #define AFBC_DEC_LBUF_DEPTH(value)	FIELD_PREP(GENMASK(27, 16), value)
 #define AFBC_MIF_LBUF_DEPTH(value)	FIELD_PREP(GENMASK(11, 0), value)
 
-/* AFBC_OUT_XSCOPE/AFBC_SIZE_OUT */
+ 
 #define AFBC_HSIZE_OUT(value)		FIELD_PREP(GENMASK(28, 16), value)
 #define AFBC_VSIZE_OUT(value)		FIELD_PREP(GENMASK(12, 0), value)
 #define AFBC_OUT_HORZ_BGN(value)	FIELD_PREP(GENMASK(28, 16), value)
 #define AFBC_OUT_HORZ_END(value)	FIELD_PREP(GENMASK(12, 0), value)
 
-/* AFBC_OUT_YSCOPE */
+ 
 #define AFBC_OUT_VERT_BGN(value)	FIELD_PREP(GENMASK(28, 16), value)
 #define AFBC_OUT_VERT_END(value)	FIELD_PREP(GENMASK(12, 0), value)
 
-/* AFBC_VD_CFMT_CTRL */
+ 
 #define AFBC_HORZ_RPT_PIXEL0		BIT(23)
 #define AFBC_HORZ_Y_C_RATIO(value)	FIELD_PREP(GENMASK(22, 21), value)
 #define AFBC_HORZ_FMT_EN		BIT(20)
@@ -133,28 +129,28 @@
 #define AFBC_VERT_PHASE_STEP(value)	FIELD_PREP(GENMASK(7, 1), value)
 #define AFBC_VERT_FMT_EN		BIT(0)
 
-/* AFBC_VD_CFMT_W */
+ 
 #define AFBC_VD_V_WIDTH(value)		FIELD_PREP(GENMASK(11, 0), value)
 #define AFBC_VD_H_WIDTH(value)		FIELD_PREP(GENMASK(27, 16), value)
 
-/* AFBC_MIF_HOR_SCOPE */
+ 
 #define AFBC_MIF_BLK_BGN_H(value)	FIELD_PREP(GENMASK(25, 16), value)
 #define AFBC_MIF_BLK_END_H(value)	FIELD_PREP(GENMASK(9, 0), value)
 
-/* AFBC_MIF_VER_SCOPE */
+ 
 #define AFBC_MIF_BLK_BGN_V(value)	FIELD_PREP(GENMASK(27, 16), value)
 #define AFBC_MIF_BLK_END_V(value)	FIELD_PREP(GENMASK(11, 0), value)
 
-/* AFBC_PIXEL_HOR_SCOPE */
+ 
 #define AFBC_DEC_PIXEL_BGN_H(value)	FIELD_PREP(GENMASK(28, 16), \
 						   ((value) & GENMASK(12, 0)))
 #define AFBC_DEC_PIXEL_END_H(value)	FIELD_PREP(GENMASK(12, 0), value)
 
-/* AFBC_PIXEL_VER_SCOPE */
+ 
 #define AFBC_DEC_PIXEL_BGN_V(value)	FIELD_PREP(GENMASK(28, 16), value)
 #define AFBC_DEC_PIXEL_END_V(value)	FIELD_PREP(GENMASK(12, 0), value)
 
-/* AFBC_VD_CFMT_H */
+ 
 #define AFBC_VD_HEIGHT(value)		FIELD_PREP(GENMASK(12, 0), value)
 
 struct meson_overlay {
@@ -187,7 +183,7 @@ static int meson_overlay_atomic_check(struct drm_plane *plane,
 						   true, true);
 }
 
-/* Takes a fixed 16.16 number and converts it to integer. */
+ 
 static inline int64_t fixed16_to_int(int64_t value)
 {
 	return value >> 16;
@@ -285,7 +281,7 @@ static void meson_overlay_setup_scaler_params(struct meson_drm *priv,
 
 	DRM_DEBUG("vphase 0x%x skip %d\n", vphase, vphase_repeat_skip);
 
-	/* Vertical */
+	 
 
 	start = video_top + video_height / 2 - ((h_in << 17) / ratio_y);
 	end = (h_in << 18) / ratio_y + start - 1;
@@ -312,11 +308,7 @@ static void meson_overlay_setup_scaler_params(struct meson_drm *priv,
 	vd_start_lines += crop_left;
 	vd_end_lines += crop_left;
 
-	/*
-	 * TOFIX: Input frames are handled and scaled like progressive frames,
-	 * proper handling of interlaced field input frames need to be figured
-	 * out using the proper framebuffer flags set by userspace.
-	 */
+	 
 	if (interlace_mode) {
 		start >>= 1;
 		end >>= 1;
@@ -339,7 +331,7 @@ static void meson_overlay_setup_scaler_params(struct meson_drm *priv,
 	DRM_DEBUG("afbc top %d (src %d) bottom %d (src %d)\n",
 		  afbc_top, afbc_top_src, afbc_bottom, afbc_bottom_src);
 
-	/* Horizontal */
+	 
 
 	start = video_left + video_width / 2 - ((w_in << 17) / ratio_x);
 	end = (w_in << 18) / ratio_x + start - 1;
@@ -508,7 +500,7 @@ static void meson_overlay_atomic_update(struct drm_plane *plane,
 
 		priv->viu.vd1_afbc_dec_def_color = AFBC_DEF_COLOR_Y(1023);
 
-		/* 420: horizontal / 2, vertical / 4 */
+		 
 		priv->viu.vd1_afbc_vd_cfmt_ctrl = AFBC_HORZ_RPT_PIXEL0 |
 						  AFBC_HORZ_Y_C_RATIO(1) |
 						  AFBC_HORZ_FMT_EN |
@@ -518,7 +510,7 @@ static void meson_overlay_atomic_update(struct drm_plane *plane,
 						  AFBC_VERT_FMT_EN;
 
 		switch (fb->format->format) {
-		/* AFBC Only formats */
+		 
 		case DRM_FORMAT_YUV420_10BIT:
 			priv->viu.vd1_afbc_mode |=
 				AFBC_COMPBITS_YUV(AFBC_COMPBITS_10BIT);
@@ -546,7 +538,7 @@ static void meson_overlay_atomic_update(struct drm_plane *plane,
 					    VD_ENABLE;
 	}
 
-	/* Setup scaler params */
+	 
 	meson_overlay_setup_scaler_params(priv, plane, interlace_mode);
 
 	priv->viu.vd1_if0_repeat_loop = 0;
@@ -556,24 +548,24 @@ static void meson_overlay_atomic_update(struct drm_plane *plane,
 	priv->viu.vd1_range_map_cb = 0;
 	priv->viu.vd1_range_map_cr = 0;
 
-	/* Default values for RGB888/YUV444 */
+	 
 	priv->viu.vd1_if0_gen_reg2 = 0;
 	priv->viu.viu_vd1_fmt_ctrl = 0;
 
-	/* None will match for AFBC Only formats */
+	 
 	switch (fb->format->format) {
-	/* TOFIX DRM_FORMAT_RGB888 should be supported */
+	 
 	case DRM_FORMAT_YUYV:
 		priv->viu.vd1_if0_gen_reg |= VD_BYTES_PER_PIXEL(1);
 		priv->viu.vd1_if0_canvas0 =
 					CANVAS_ADDR2(priv->canvas_id_vd1_0) |
 					CANVAS_ADDR1(priv->canvas_id_vd1_0) |
 					CANVAS_ADDR0(priv->canvas_id_vd1_0);
-		priv->viu.viu_vd1_fmt_ctrl = VD_HORZ_Y_C_RATIO(1) | /* /2 */
+		priv->viu.viu_vd1_fmt_ctrl = VD_HORZ_Y_C_RATIO(1) |  
 					     VD_HORZ_FMT_EN |
 					     VD_VERT_RPT_LINE0 |
 					     VD_VERT_INITIAL_PHASE(12) |
-					     VD_VERT_PHASE_STEP(16) | /* /2 */
+					     VD_VERT_PHASE_STEP(16) |  
 					     VD_VERT_FMT_EN;
 		break;
 	case DRM_FORMAT_NV12:
@@ -587,11 +579,11 @@ static void meson_overlay_atomic_update(struct drm_plane *plane,
 			priv->viu.vd1_if0_gen_reg2 = VD_COLOR_MAP(1);
 		else
 			priv->viu.vd1_if0_gen_reg2 = VD_COLOR_MAP(2);
-		priv->viu.viu_vd1_fmt_ctrl = VD_HORZ_Y_C_RATIO(1) | /* /2 */
+		priv->viu.viu_vd1_fmt_ctrl = VD_HORZ_Y_C_RATIO(1) |  
 					     VD_HORZ_FMT_EN |
 					     VD_VERT_RPT_LINE0 |
 					     VD_VERT_INITIAL_PHASE(12) |
-					     VD_VERT_PHASE_STEP(8) | /* /4 */
+					     VD_VERT_PHASE_STEP(8) |  
 					     VD_VERT_FMT_EN;
 		break;
 	case DRM_FORMAT_YUV444:
@@ -607,45 +599,45 @@ static void meson_overlay_atomic_update(struct drm_plane *plane,
 		switch (fb->format->format) {
 		case DRM_FORMAT_YUV422:
 			priv->viu.viu_vd1_fmt_ctrl =
-					VD_HORZ_Y_C_RATIO(1) | /* /2 */
+					VD_HORZ_Y_C_RATIO(1) |  
 					VD_HORZ_FMT_EN |
 					VD_VERT_RPT_LINE0 |
 					VD_VERT_INITIAL_PHASE(12) |
-					VD_VERT_PHASE_STEP(16) | /* /2 */
+					VD_VERT_PHASE_STEP(16) |  
 					VD_VERT_FMT_EN;
 			break;
 		case DRM_FORMAT_YUV420:
 			priv->viu.viu_vd1_fmt_ctrl =
-					VD_HORZ_Y_C_RATIO(1) | /* /2 */
+					VD_HORZ_Y_C_RATIO(1) |  
 					VD_HORZ_FMT_EN |
 					VD_VERT_RPT_LINE0 |
 					VD_VERT_INITIAL_PHASE(12) |
-					VD_VERT_PHASE_STEP(8) | /* /4 */
+					VD_VERT_PHASE_STEP(8) |  
 					VD_VERT_FMT_EN;
 			break;
 		case DRM_FORMAT_YUV411:
 			priv->viu.viu_vd1_fmt_ctrl =
-					VD_HORZ_Y_C_RATIO(2) | /* /4 */
+					VD_HORZ_Y_C_RATIO(2) |  
 					VD_HORZ_FMT_EN |
 					VD_VERT_RPT_LINE0 |
 					VD_VERT_INITIAL_PHASE(12) |
-					VD_VERT_PHASE_STEP(16) | /* /2 */
+					VD_VERT_PHASE_STEP(16) |  
 					VD_VERT_FMT_EN;
 			break;
 		case DRM_FORMAT_YUV410:
 			priv->viu.viu_vd1_fmt_ctrl =
-					VD_HORZ_Y_C_RATIO(2) | /* /4 */
+					VD_HORZ_Y_C_RATIO(2) |  
 					VD_HORZ_FMT_EN |
 					VD_VERT_RPT_LINE0 |
 					VD_VERT_INITIAL_PHASE(12) |
-					VD_VERT_PHASE_STEP(8) | /* /4 */
+					VD_VERT_PHASE_STEP(8) |  
 					VD_VERT_FMT_EN;
 			break;
 		}
 		break;
 	}
 
-	/* Update Canvas with buffer address */
+	 
 	priv->viu.vd1_planes = fb->format->num_planes;
 
 	switch (priv->viu.vd1_planes) {
@@ -688,19 +680,15 @@ static void meson_overlay_atomic_update(struct drm_plane *plane,
 
 	if (priv->viu.vd1_afbc) {
 		if (priv->viu.vd1_afbc_mode & AFBC_SCATTER_MODE) {
-			/*
-			 * In Scatter mode, the header contains the physical
-			 * body content layout, thus the body content
-			 * size isn't needed.
-			 */
+			 
 			priv->viu.vd1_afbc_head_addr = priv->viu.vd1_addr0 >> 4;
 			priv->viu.vd1_afbc_body_addr = 0;
 		} else {
-			/* Default mode is 4k per superblock */
+			 
 			unsigned long block_size = 4096;
 			unsigned long body_size;
 
-			/* 8bit mem saving mode is 3072bytes per superblock */
+			 
 			if (priv->viu.vd1_afbc_mode & AFBC_BLK_MEM_MODE)
 				block_size = 3072;
 
@@ -709,7 +697,7 @@ static void meson_overlay_atomic_update(struct drm_plane *plane,
 				    block_size;
 
 			priv->viu.vd1_afbc_body_addr = priv->viu.vd1_addr0 >> 4;
-			/* Header is after body content */
+			 
 			priv->viu.vd1_afbc_head_addr = (priv->viu.vd1_addr0 +
 							body_size) >> 4;
 		}
@@ -732,7 +720,7 @@ static void meson_overlay_atomic_disable(struct drm_plane *plane,
 
 	priv->viu.vd1_enabled = false;
 
-	/* Disable VD1 */
+	 
 	if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_G12A)) {
 		writel_relaxed(0, priv->io_base + _REG(VD1_BLEND_SRC_CTRL));
 		writel_relaxed(0, priv->io_base + _REG(VD2_BLEND_SRC_CTRL));
@@ -816,8 +804,8 @@ static const uint32_t supported_drm_formats[] = {
 	DRM_FORMAT_YUV420,
 	DRM_FORMAT_YUV411,
 	DRM_FORMAT_YUV410,
-	DRM_FORMAT_YUV420_8BIT, /* Amlogic FBC Only */
-	DRM_FORMAT_YUV420_10BIT, /* Amlogic FBC Only */
+	DRM_FORMAT_YUV420_8BIT,  
+	DRM_FORMAT_YUV420_10BIT,  
 };
 
 static const uint64_t format_modifiers[] = {
@@ -855,7 +843,7 @@ int meson_overlay_create(struct meson_drm *priv)
 
 	drm_plane_helper_add(plane, &meson_overlay_helper_funcs);
 
-	/* For now, VD Overlay plane is always on the back */
+	 
 	drm_plane_create_zpos_immutable_property(plane, 0);
 
 	priv->overlay_plane = plane;

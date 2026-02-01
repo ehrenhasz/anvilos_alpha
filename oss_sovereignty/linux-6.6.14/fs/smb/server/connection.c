@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   Copyright (C) 2016 Namjae Jeon <namjae.jeon@protocolfreedom.org>
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/mutex.h>
 #include <linux/freezer.h>
@@ -22,14 +19,7 @@ static struct ksmbd_conn_ops default_conn_ops;
 LIST_HEAD(conn_list);
 DECLARE_RWSEM(conn_list_lock);
 
-/**
- * ksmbd_conn_free() - free resources of the connection instance
- *
- * @conn:	connection instance to be cleand up
- *
- * During the thread termination, the corresponding conn instance
- * resources(sock/memory) are released and finally the conn object is freed.
- */
+ 
 void ksmbd_conn_free(struct ksmbd_conn *conn)
 {
 	down_write(&conn_list_lock);
@@ -42,11 +32,7 @@ void ksmbd_conn_free(struct ksmbd_conn *conn)
 	kfree(conn);
 }
 
-/**
- * ksmbd_conn_alloc() - initialize a new connection instance
- *
- * Return:	ksmbd_conn struct on success, otherwise NULL
- */
+ 
 struct ksmbd_conn *ksmbd_conn_alloc(void)
 {
 	struct ksmbd_conn *conn;
@@ -244,11 +230,7 @@ bool ksmbd_conn_alive(struct ksmbd_conn *conn)
 	if (atomic_read(&conn->stats.open_files_count) > 0)
 		return true;
 
-	/*
-	 * Stop current session if the time that get last request from client
-	 * is bigger than deadtime user configured and opening file count is
-	 * zero.
-	 */
+	 
 	if (server_conf.deadtime > 0 &&
 	    time_after(jiffies, conn->last_active + server_conf.deadtime)) {
 		ksmbd_debug(CONN, "No response from client in %lu minutes\n",
@@ -261,14 +243,7 @@ bool ksmbd_conn_alive(struct ksmbd_conn *conn)
 #define SMB1_MIN_SUPPORTED_HEADER_SIZE (sizeof(struct smb_hdr))
 #define SMB2_MIN_SUPPORTED_HEADER_SIZE (sizeof(struct smb2_hdr) + 4)
 
-/**
- * ksmbd_conn_handler_loop() - session thread to listen on new smb requests
- * @p:		connection instance
- *
- * One thread each per connection
- *
- * Return:	0 on success
- */
+ 
 int ksmbd_conn_handler_loop(void *p)
 {
 	struct ksmbd_conn *conn = (struct ksmbd_conn *)p;
@@ -311,17 +286,15 @@ int ksmbd_conn_handler_loop(void *p)
 			break;
 		}
 
-		/*
-		 * Check maximum pdu size(0x00FFFFFF).
-		 */
+		 
 		if (pdu_size > MAX_STREAM_PROT_LEN)
 			break;
 
 		if (pdu_size < SMB1_MIN_SUPPORTED_HEADER_SIZE)
 			break;
 
-		/* 4 for rfc1002 length field */
-		/* 1 for implied bcc[0] */
+		 
+		 
 		size = pdu_size + 4 + 1;
 		conn->request_buf = kvmalloc(size, GFP_KERNEL);
 		if (!conn->request_buf)
@@ -329,10 +302,7 @@ int ksmbd_conn_handler_loop(void *p)
 
 		memcpy(conn->request_buf, hdr_buf, sizeof(hdr_buf));
 
-		/*
-		 * We already read 4 bytes to find out PDU size, now
-		 * read in PDU
-		 */
+		 
 		size = t->ops->read(t, conn->request_buf + 4, pdu_size, 2);
 		if (size < 0) {
 			pr_err("sock_read failed: %d\n", size);
@@ -367,7 +337,7 @@ int ksmbd_conn_handler_loop(void *p)
 
 out:
 	ksmbd_conn_set_releasing(conn);
-	/* Wait till all reference dropped to the Server object*/
+	 
 	wait_event(conn->r_count_q, atomic_read(&conn->r_count) == 0);
 
 	if (IS_ENABLED(CONFIG_UNICODE))
@@ -426,7 +396,7 @@ again:
 	up_read(&conn_list_lock);
 
 	if (!list_empty(&conn_list)) {
-		schedule_timeout_interruptible(HZ / 10); /* 100ms */
+		schedule_timeout_interruptible(HZ / 10);  
 		goto again;
 	}
 }

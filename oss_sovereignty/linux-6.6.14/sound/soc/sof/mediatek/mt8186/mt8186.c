@@ -1,13 +1,11 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// Copyright(c) 2022 Mediatek Inc. All rights reserved.
-//
-// Author: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-//         Tinghan Shen <tinghan.shen@mediatek.com>
 
-/*
- * Hardware interface for audio DSP on mt8186
- */
+
+
+
+
+
+
+ 
 
 #include <linux/delay.h>
 #include <linux/firmware.h>
@@ -62,20 +60,20 @@ static void mt8186_dsp_handle_reply(struct mtk_adsp_ipc *ipc)
 static void mt8186_dsp_handle_request(struct mtk_adsp_ipc *ipc)
 {
 	struct adsp_priv *priv = mtk_adsp_ipc_get_data(ipc);
-	u32 p; /* panic code */
+	u32 p;  
 	int ret;
 
-	/* Read the message from the debug box. */
+	 
 	sof_mailbox_read(priv->sdev, priv->sdev->debug_box.offset + 4,
 			 &p, sizeof(p));
 
-	/* Check to see if the message is a panic code 0x0dead*** */
+	 
 	if ((p & SOF_IPC_PANIC_MAGIC_MASK) == SOF_IPC_PANIC_MAGIC) {
 		snd_sof_dsp_panic(priv->sdev, p, true);
 	} else {
 		snd_sof_ipc_msgs_rx(priv->sdev);
 
-		/* tell DSP cmd is done */
+		 
 		ret = mtk_adsp_ipc_send(priv->dsp_ipc, MTK_ADSP_IPC_RSP, MTK_ADSP_IPC_OP_RSP);
 		if (ret)
 			dev_err(priv->dev, "request send ipc failed");
@@ -225,7 +223,7 @@ static void adsp_sram_power_off(struct snd_sof_dev *sdev)
 				DSP_SRAM_POOL_PD_MASK, DSP_SRAM_POOL_PD_MASK);
 }
 
-/*  Init the basic DSP DRAM address */
+ 
 static int adsp_memory_remap_init(struct snd_sof_dev *sdev, struct mtk_adsp_chip_info *adsp)
 {
 	u32 offset;
@@ -253,7 +251,7 @@ static int adsp_shared_base_ioremap(struct platform_device *pdev, void *data)
 	struct device *dev = &pdev->dev;
 	struct mtk_adsp_chip_info *adsp = data;
 
-	/* remap shared-dram base to be non-cachable */
+	 
 	adsp->shared_dram = devm_ioremap(dev, adsp->pa_shared_dram,
 					 adsp->shared_size);
 	if (!adsp->shared_dram) {
@@ -337,7 +335,7 @@ static int mt8186_dsp_probe(struct snd_sof_dev *sdev)
 	sdev->mmio_bar = SOF_FW_BLK_TYPE_SRAM;
 	sdev->mailbox_bar = SOF_FW_BLK_TYPE_SRAM;
 
-	/* set default mailbox offset for FW ready message */
+	 
 	sdev->dsp_box.offset = mt8186_get_mailbox_offset(sdev);
 
 	ret = adsp_memory_remap_init(sdev, priv->adsp);
@@ -346,7 +344,7 @@ static int mt8186_dsp_probe(struct snd_sof_dev *sdev)
 		return ret;
 	}
 
-	/* enable adsp clock before touching registers */
+	 
 	ret = mt8186_adsp_init_clock(sdev);
 	if (ret) {
 		dev_err(sdev->dev, "mt8186_adsp_init_clock failed\n");
@@ -432,7 +430,7 @@ static int mt8186_dsp_resume(struct snd_sof_dev *sdev)
 	return ret;
 }
 
-/* on mt8186 there is 1 to 1 match between type and BAR idx */
+ 
 static int mt8186_get_bar_index(struct snd_sof_dev *sdev, u32 type)
 {
 	return type;
@@ -484,7 +482,7 @@ static void mt8186_adsp_dump(struct snd_sof_dev *sdev, u32 flags)
 {
 	u32 dbg_pc, dbg_data, dbg_inst, dbg_ls0stat, dbg_status, faultinfo;
 
-	/* dump debug registers */
+	 
 	dbg_pc = snd_sof_dsp_read(sdev, DSP_REG_BAR, DSP_PDEBUGPC);
 	dbg_data = snd_sof_dsp_read(sdev, DSP_REG_BAR, DSP_PDEBUGDATA);
 	dbg_inst = snd_sof_dsp_read(sdev, DSP_REG_BAR, DSP_PDEBUGINST);
@@ -531,65 +529,65 @@ static struct snd_soc_dai_driver mt8186_dai[] = {
 },
 };
 
-/* mt8186 ops */
+ 
 static struct snd_sof_dsp_ops sof_mt8186_ops = {
-	/* probe and remove */
+	 
 	.probe		= mt8186_dsp_probe,
 	.remove		= mt8186_dsp_remove,
 	.shutdown	= mt8186_dsp_shutdown,
 
-	/* DSP core boot */
+	 
 	.run		= mt8186_run,
 
-	/* Block IO */
+	 
 	.block_read	= sof_block_read,
 	.block_write	= sof_block_write,
 
-	/* Mailbox IO */
+	 
 	.mailbox_read	= sof_mailbox_read,
 	.mailbox_write	= sof_mailbox_write,
 
-	/* Register IO */
+	 
 	.write		= sof_io_write,
 	.read		= sof_io_read,
 	.write64	= sof_io_write64,
 	.read64		= sof_io_read64,
 
-	/* ipc */
+	 
 	.send_msg		= mt8186_send_msg,
 	.get_mailbox_offset	= mt8186_get_mailbox_offset,
 	.get_window_offset	= mt8186_get_window_offset,
 	.ipc_msg_data		= sof_ipc_msg_data,
 	.set_stream_data_offset = sof_set_stream_data_offset,
 
-	/* misc */
+	 
 	.get_bar_index	= mt8186_get_bar_index,
 
-	/* stream callbacks */
+	 
 	.pcm_open	= sof_stream_pcm_open,
 	.pcm_hw_params	= mt8186_pcm_hw_params,
 	.pcm_pointer	= mt8186_pcm_pointer,
 	.pcm_close	= sof_stream_pcm_close,
 
-	/* firmware loading */
+	 
 	.load_firmware	= snd_sof_load_firmware_memcpy,
 
-	/* Firmware ops */
+	 
 	.dsp_arch_ops = &sof_xtensa_arch_ops,
 
-	/* DAI drivers */
+	 
 	.drv		= mt8186_dai,
 	.num_drv	= ARRAY_SIZE(mt8186_dai),
 
-	/* Debug information */
+	 
 	.dbg_dump = mt8186_adsp_dump,
 	.debugfs_add_region_item = snd_sof_debugfs_add_region_item_iomem,
 
-	/* PM */
+	 
 	.suspend	= mt8186_dsp_suspend,
 	.resume		= mt8186_dsp_resume,
 
-	/* ALSA HW info flags */
+	 
 	.hw_info =	SNDRV_PCM_INFO_MMAP |
 			SNDRV_PCM_INFO_MMAP_VALID |
 			SNDRV_PCM_INFO_INTERLEAVED |
@@ -622,10 +620,7 @@ static const struct sof_dev_desc sof_of_mt8186_desc = {
 	.ops = &sof_mt8186_ops,
 };
 
-/*
- * DL2, DL3, UL4, UL5 are registered as SOF FE, so creating the corresponding
- * SOF BE to complete the pipeline.
- */
+ 
 static struct snd_soc_dai_driver mt8188_dai[] = {
 {
 	.name = "SOF_DL2",
@@ -657,12 +652,12 @@ static struct snd_soc_dai_driver mt8188_dai[] = {
 },
 };
 
-/* mt8188 ops */
+ 
 static struct snd_sof_dsp_ops sof_mt8188_ops;
 
 static int sof_mt8188_ops_init(struct snd_sof_dev *sdev)
 {
-	/* common defaults */
+	 
 	memcpy(&sof_mt8188_ops, &sof_mt8186_ops, sizeof(sof_mt8188_ops));
 
 	sof_mt8188_ops.drv = mt8188_dai;
@@ -704,7 +699,7 @@ static const struct of_device_id sof_of_mt8186_ids[] = {
 };
 MODULE_DEVICE_TABLE(of, sof_of_mt8186_ids);
 
-/* DT driver definition */
+ 
 static struct platform_driver snd_sof_of_mt8186_driver = {
 	.probe = sof_of_probe,
 	.remove = sof_of_remove,

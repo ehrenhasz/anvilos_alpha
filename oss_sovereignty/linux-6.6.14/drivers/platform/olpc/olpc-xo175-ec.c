@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for the OLPC XO-1.75 Embedded Controller.
- *
- * The EC protocol is documented at:
- * http://wiki.laptop.org/go/XO_1.75_HOST_to_EC_Protocol
- *
- * Copyright (C) 2010 One Laptop per Child Foundation.
- * Copyright (C) 2018 Lubomir Rintel <lkundrak@v3.sk>
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/ctype.h>
@@ -40,94 +32,85 @@ enum ec_chan_t {
 	CHAN_CMD_ERROR,
 };
 
-/*
- * EC events
- */
-#define EVENT_AC_CHANGE			1  /* AC plugged/unplugged */
-#define EVENT_BATTERY_STATUS		2  /* Battery low/full/error/gone */
-#define EVENT_BATTERY_CRITICAL		3  /* Battery critical voltage */
-#define EVENT_BATTERY_SOC_CHANGE	4  /* 1% SOC Change */
-#define EVENT_BATTERY_ERROR		5  /* Abnormal error, query for cause */
-#define EVENT_POWER_PRESSED		6  /* Power button was pressed */
-#define EVENT_POWER_PRESS_WAKE		7  /* Woken up with a power button */
-#define EVENT_TIMED_HOST_WAKE		8  /* Host wake timer */
-#define EVENT_OLS_HIGH_LIMIT		9  /* OLS crossed dark threshold */
-#define EVENT_OLS_LOW_LIMIT		10 /* OLS crossed light threshold */
+ 
+#define EVENT_AC_CHANGE			1   
+#define EVENT_BATTERY_STATUS		2   
+#define EVENT_BATTERY_CRITICAL		3   
+#define EVENT_BATTERY_SOC_CHANGE	4   
+#define EVENT_BATTERY_ERROR		5   
+#define EVENT_POWER_PRESSED		6   
+#define EVENT_POWER_PRESS_WAKE		7   
+#define EVENT_TIMED_HOST_WAKE		8   
+#define EVENT_OLS_HIGH_LIMIT		9   
+#define EVENT_OLS_LOW_LIMIT		10  
 
-/*
- * EC commands
- * (from http://dev.laptop.org/git/users/rsmith/ec-1.75/tree/ec_cmd.h)
- */
-#define CMD_GET_API_VERSION		0x08 /* out: u8 */
-#define CMD_READ_VOLTAGE		0x10 /* out: u16, *9.76/32, mV */
-#define CMD_READ_CURRENT		0x11 /* out: s16, *15.625/120, mA */
-#define CMD_READ_ACR			0x12 /* out: s16, *6250/15, uAh */
-#define CMD_READ_BATT_TEMPERATURE	0x13 /* out: u16, *100/256, deg C */
-#define CMD_READ_AMBIENT_TEMPERATURE	0x14 /* unimplemented, no hardware */
-#define CMD_READ_BATTERY_STATUS		0x15 /* out: u8, bitmask */
-#define CMD_READ_SOC			0x16 /* out: u8, percentage */
-#define CMD_READ_GAUGE_ID		0x17 /* out: u8 * 8 */
-#define CMD_READ_GAUGE_DATA		0x18 /* in: u8 addr, out: u8 data */
-#define CMD_READ_BOARD_ID		0x19 /* out: u16 (platform id) */
-#define CMD_READ_BATT_ERR_CODE		0x1f /* out: u8, error bitmask */
-#define CMD_SET_DCON_POWER		0x26 /* in: u8 */
-#define CMD_RESET_EC			0x28 /* none */
-#define CMD_READ_BATTERY_TYPE		0x2c /* out: u8 */
-#define CMD_SET_AUTOWAK			0x33 /* out: u8 */
-#define CMD_SET_EC_WAKEUP_TIMER		0x36 /* in: u32, out: ? */
-#define CMD_READ_EXT_SCI_MASK		0x37 /* ? */
-#define CMD_WRITE_EXT_SCI_MASK		0x38 /* ? */
-#define CMD_CLEAR_EC_WAKEUP_TIMER	0x39 /* none */
-#define CMD_ENABLE_RUNIN_DISCHARGE	0x3B /* none */
-#define CMD_DISABLE_RUNIN_DISCHARGE	0x3C /* none */
-#define CMD_READ_MPPT_ACTIVE		0x3d /* out: u8 */
-#define CMD_READ_MPPT_LIMIT		0x3e /* out: u8 */
-#define CMD_SET_MPPT_LIMIT		0x3f /* in: u8 */
-#define CMD_DISABLE_MPPT		0x40 /* none */
-#define CMD_ENABLE_MPPT			0x41 /* none */
-#define CMD_READ_VIN			0x42 /* out: u16 */
-#define CMD_EXT_SCI_QUERY		0x43 /* ? */
-#define RSP_KEYBOARD_DATA		0x48 /* ? */
-#define RSP_TOUCHPAD_DATA		0x49 /* ? */
-#define CMD_GET_FW_VERSION		0x4a /* out: u8 * 16 */
-#define CMD_POWER_CYCLE			0x4b /* none */
-#define CMD_POWER_OFF			0x4c /* none */
-#define CMD_RESET_EC_SOFT		0x4d /* none */
-#define CMD_READ_GAUGE_U16		0x4e /* ? */
-#define CMD_ENABLE_MOUSE		0x4f /* ? */
-#define CMD_ECHO			0x52 /* in: u8 * 5, out: u8 * 5 */
-#define CMD_GET_FW_DATE			0x53 /* out: u8 * 16 */
-#define CMD_GET_FW_USER			0x54 /* out: u8 * 16 */
-#define CMD_TURN_OFF_POWER		0x55 /* none (same as 0x4c) */
-#define CMD_READ_OLS			0x56 /* out: u16 */
-#define CMD_OLS_SMT_LEDON		0x57 /* none */
-#define CMD_OLS_SMT_LEDOFF		0x58 /* none */
-#define CMD_START_OLS_ASSY		0x59 /* none */
-#define CMD_STOP_OLS_ASSY		0x5a /* none */
-#define CMD_OLS_SMTTEST_STOP		0x5b /* none */
-#define CMD_READ_VIN_SCALED		0x5c /* out: u16 */
-#define CMD_READ_BAT_MIN_W		0x5d /* out: u16 */
-#define CMD_READ_BAR_MAX_W		0x5e /* out: u16 */
-#define CMD_RESET_BAT_MINMAX_W		0x5f /* none */
-#define CMD_READ_LOCATION		0x60 /* in: u16 addr, out: u8 data */
-#define CMD_WRITE_LOCATION		0x61 /* in: u16 addr, u8 data */
-#define CMD_KEYBOARD_CMD		0x62 /* in: u8, out: ? */
-#define CMD_TOUCHPAD_CMD		0x63 /* in: u8, out: ? */
-#define CMD_GET_FW_HASH			0x64 /* out: u8 * 16 */
-#define CMD_SUSPEND_HINT		0x65 /* in: u8 */
-#define CMD_ENABLE_WAKE_TIMER		0x66 /* in: u8 */
-#define CMD_SET_WAKE_TIMER		0x67 /* in: 32 */
-#define CMD_ENABLE_WAKE_AUTORESET	0x68 /* in: u8 */
-#define CMD_OLS_SET_LIMITS		0x69 /* in: u16, u16 */
-#define CMD_OLS_GET_LIMITS		0x6a /* out: u16, u16 */
-#define CMD_OLS_SET_CEILING		0x6b /* in: u16 */
-#define CMD_OLS_GET_CEILING		0x6c /* out: u16 */
+ 
+#define CMD_GET_API_VERSION		0x08  
+#define CMD_READ_VOLTAGE		0x10  
+#define CMD_READ_CURRENT		0x11  
+#define CMD_READ_ACR			0x12  
+#define CMD_READ_BATT_TEMPERATURE	0x13  
+#define CMD_READ_AMBIENT_TEMPERATURE	0x14  
+#define CMD_READ_BATTERY_STATUS		0x15  
+#define CMD_READ_SOC			0x16  
+#define CMD_READ_GAUGE_ID		0x17  
+#define CMD_READ_GAUGE_DATA		0x18  
+#define CMD_READ_BOARD_ID		0x19  
+#define CMD_READ_BATT_ERR_CODE		0x1f  
+#define CMD_SET_DCON_POWER		0x26  
+#define CMD_RESET_EC			0x28  
+#define CMD_READ_BATTERY_TYPE		0x2c  
+#define CMD_SET_AUTOWAK			0x33  
+#define CMD_SET_EC_WAKEUP_TIMER		0x36  
+#define CMD_READ_EXT_SCI_MASK		0x37  
+#define CMD_WRITE_EXT_SCI_MASK		0x38  
+#define CMD_CLEAR_EC_WAKEUP_TIMER	0x39  
+#define CMD_ENABLE_RUNIN_DISCHARGE	0x3B  
+#define CMD_DISABLE_RUNIN_DISCHARGE	0x3C  
+#define CMD_READ_MPPT_ACTIVE		0x3d  
+#define CMD_READ_MPPT_LIMIT		0x3e  
+#define CMD_SET_MPPT_LIMIT		0x3f  
+#define CMD_DISABLE_MPPT		0x40  
+#define CMD_ENABLE_MPPT			0x41  
+#define CMD_READ_VIN			0x42  
+#define CMD_EXT_SCI_QUERY		0x43  
+#define RSP_KEYBOARD_DATA		0x48  
+#define RSP_TOUCHPAD_DATA		0x49  
+#define CMD_GET_FW_VERSION		0x4a  
+#define CMD_POWER_CYCLE			0x4b  
+#define CMD_POWER_OFF			0x4c  
+#define CMD_RESET_EC_SOFT		0x4d  
+#define CMD_READ_GAUGE_U16		0x4e  
+#define CMD_ENABLE_MOUSE		0x4f  
+#define CMD_ECHO			0x52  
+#define CMD_GET_FW_DATE			0x53  
+#define CMD_GET_FW_USER			0x54  
+#define CMD_TURN_OFF_POWER		0x55  
+#define CMD_READ_OLS			0x56  
+#define CMD_OLS_SMT_LEDON		0x57  
+#define CMD_OLS_SMT_LEDOFF		0x58  
+#define CMD_START_OLS_ASSY		0x59  
+#define CMD_STOP_OLS_ASSY		0x5a  
+#define CMD_OLS_SMTTEST_STOP		0x5b  
+#define CMD_READ_VIN_SCALED		0x5c  
+#define CMD_READ_BAT_MIN_W		0x5d  
+#define CMD_READ_BAR_MAX_W		0x5e  
+#define CMD_RESET_BAT_MINMAX_W		0x5f  
+#define CMD_READ_LOCATION		0x60  
+#define CMD_WRITE_LOCATION		0x61  
+#define CMD_KEYBOARD_CMD		0x62  
+#define CMD_TOUCHPAD_CMD		0x63  
+#define CMD_GET_FW_HASH			0x64  
+#define CMD_SUSPEND_HINT		0x65  
+#define CMD_ENABLE_WAKE_TIMER		0x66  
+#define CMD_SET_WAKE_TIMER		0x67  
+#define CMD_ENABLE_WAKE_AUTORESET	0x68  
+#define CMD_OLS_SET_LIMITS		0x69  
+#define CMD_OLS_GET_LIMITS		0x6a  
+#define CMD_OLS_SET_CEILING		0x6b  
+#define CMD_OLS_GET_CEILING		0x6c  
 
-/*
- * Accepted EC commands, and how many bytes they return. There are plenty
- * of EC commands that are no longer implemented, or are implemented only on
- * certain older boards.
- */
+ 
 static const struct ec_cmd_t olpc_xo175_ec_cmds[] = {
 	{ CMD_GET_API_VERSION, 1 },
 	{ CMD_READ_VOLTAGE, 2 },
@@ -219,7 +202,7 @@ struct olpc_xo175_ec_resp {
 struct olpc_xo175_ec {
 	bool suspended;
 
-	/* SPI related stuff. */
+	 
 	struct spi_device *spi;
 	struct spi_transfer xfer;
 	struct spi_message msg;
@@ -228,10 +211,10 @@ struct olpc_xo175_ec {
 		struct olpc_xo175_ec_resp resp;
 	} tx_buf, rx_buf;
 
-	/* GPIO for the CMD signals. */
+	 
 	struct gpio_desc *gpio_cmd;
 
-	/* Command handling related state. */
+	 
 	spinlock_t cmd_state_lock;
 	int cmd_state;
 	bool cmd_running;
@@ -241,10 +224,10 @@ struct olpc_xo175_ec {
 	int expected_resp_len;
 	int resp_len;
 
-	/* Power button. */
+	 
 	struct input_dev *pwrbtn;
 
-	/* Debug handling. */
+	 
 	char logbuf[LOG_BUF_SIZE];
 	int logbuf_len;
 };
@@ -333,7 +316,7 @@ static void olpc_xo175_ec_complete(void *arg)
 		spin_lock_irqsave(&priv->cmd_state_lock, flags);
 
 		if (!priv->cmd_running) {
-			/* We can safely ignore these */
+			 
 			dev_err(dev, "spurious FIFO read packet\n");
 			spin_unlock_irqrestore(&priv->cmd_state_lock, flags);
 			return;
@@ -351,7 +334,7 @@ static void olpc_xo175_ec_complete(void *arg)
 		spin_lock_irqsave(&priv->cmd_state_lock, flags);
 
 		if (!priv->cmd_running) {
-			/* Just go with the flow */
+			 
 			dev_err(dev, "spurious SWITCH packet\n");
 			memset(&priv->cmd, 0, sizeof(priv->cmd));
 			priv->cmd.command = CMD_ECHO;
@@ -359,7 +342,7 @@ static void olpc_xo175_ec_complete(void *arg)
 
 		priv->cmd_state = CMD_STATE_CMD_IN_TX_FIFO;
 
-		/* Throw command into TxFIFO */
+		 
 		gpiod_set_value_cansleep(priv->gpio_cmd, 0);
 		olpc_xo175_ec_send_command(priv, &priv->cmd, sizeof(priv->cmd));
 
@@ -458,18 +441,11 @@ static void olpc_xo175_ec_complete(void *arg)
 		break;
 	}
 
-	/* Most non-command packets get the TxFIFO refilled and an ACK. */
+	 
 	olpc_xo175_ec_read_packet(priv);
 }
 
-/*
- * This function is protected with a mutex. We can safely assume that
- * there will be only one instance of this function running at a time.
- * One of the ways in which we enforce this is by waiting until we get
- * all response bytes back from the EC, rather than just the number that
- * the caller requests (otherwise, we might start a new command while an
- * old command's response bytes are still incoming).
- */
+ 
 static int olpc_xo175_ec_cmd(u8 cmd, u8 *inbuf, size_t inlen, u8 *resp,
 					size_t resp_len, void *ec_cb_arg)
 {
@@ -486,20 +462,16 @@ static int olpc_xo175_ec_cmd(u8 cmd, u8 *inbuf, size_t inlen, u8 *resp,
 		return -EOVERFLOW;
 	}
 
-	/* Suspending in the middle of an EC command hoses things badly! */
+	 
 	if (WARN_ON(priv->suspended))
 		return -EBUSY;
 
-	/* Ensure a valid command and return bytes */
+	 
 	ret = olpc_xo175_ec_resp_len(cmd);
 	if (ret < 0) {
 		dev_err_ratelimited(dev, "unknown command 0x%x\n", cmd);
 
-		/*
-		 * Assume the best in our callers, and allow unknown commands
-		 * through. I'm not the charitable type, but it was beaten
-		 * into me. Just maintain a minimum standard of sanity.
-		 */
+		 
 		if (resp_len > sizeof(priv->resp_data)) {
 			dev_err(dev, "response too big: %zd!\n", resp_len);
 			return -EOVERFLOW;
@@ -513,7 +485,7 @@ static int olpc_xo175_ec_cmd(u8 cmd, u8 *inbuf, size_t inlen, u8 *resp,
 
 	spin_lock_irqsave(&priv->cmd_state_lock, flags);
 
-	/* Initialize the state machine */
+	 
 	init_completion(&priv->cmd_done);
 	priv->cmd_running = true;
 	priv->cmd_state = CMD_STATE_WAITING_FOR_SWITCH;
@@ -525,12 +497,12 @@ static int olpc_xo175_ec_cmd(u8 cmd, u8 *inbuf, size_t inlen, u8 *resp,
 	priv->expected_resp_len = nr_bytes;
 	priv->resp_len = 0;
 
-	/* Tickle the cmd gpio to get things started */
+	 
 	gpiod_set_value_cansleep(priv->gpio_cmd, 1);
 
 	spin_unlock_irqrestore(&priv->cmd_state_lock, flags);
 
-	/* The irq handler should do the rest */
+	 
 	if (!wait_for_completion_timeout(&priv->cmd_done,
 			msecs_to_jiffies(4000))) {
 		dev_err(dev, "EC cmd error: timeout in STATE %d\n",
@@ -543,9 +515,9 @@ static int olpc_xo175_ec_cmd(u8 cmd, u8 *inbuf, size_t inlen, u8 *resp,
 
 	spin_lock_irqsave(&priv->cmd_state_lock, flags);
 
-	/* Deal with the results. */
+	 
 	if (priv->cmd_state == CMD_STATE_ERROR_RECEIVED) {
-		/* EC-provided error is in the single response byte */
+		 
 		dev_err(dev, "command 0x%x returned error 0x%x\n",
 						cmd, priv->resp_data[0]);
 		ret = -EREMOTEIO;
@@ -554,16 +526,11 @@ static int olpc_xo175_ec_cmd(u8 cmd, u8 *inbuf, size_t inlen, u8 *resp,
 						cmd, priv->resp_len, nr_bytes);
 		ret = -EREMOTEIO;
 	} else {
-		/*
-		 * We may have 8 bytes in priv->resp, but we only care about
-		 * what we've been asked for. If the caller asked for only 2
-		 * bytes, give them that. We've guaranteed that
-		 * resp_len <= priv->resp_len and priv->resp_len == nr_bytes.
-		 */
+		 
 		memcpy(resp, priv->resp_data, resp_len);
 	}
 
-	/* This should already be low, but just in case. */
+	 
 	gpiod_set_value_cansleep(priv->gpio_cmd, 0);
 	priv->cmd_running = false;
 
@@ -598,21 +565,13 @@ static int __maybe_unused olpc_xo175_ec_suspend(struct device *dev)
 	} __packed hintargs;
 	static unsigned int suspend_count;
 
-	/*
-	 * SOC_SLEEP is not wired to the EC on B3 and earlier boards.
-	 * This command lets the EC know instead. The suspend count doesn't seem
-	 * to be used anywhere but in the EC debug output.
-	 */
+	 
 	hintargs.suspend = 1;
 	hintargs.suspend_count = suspend_count++;
 	olpc_ec_cmd(CMD_SUSPEND_HINT, (void *)&hintargs, sizeof(hintargs),
 								NULL, 0);
 
-	/*
-	 * After we've sent the suspend hint, don't allow further EC commands
-	 * to be run until we've resumed. Userspace tasks should be frozen,
-	 * but kernel threads and interrupts could still schedule EC commands.
-	 */
+	 
 	priv->suspended = true;
 
 	return 0;
@@ -631,14 +590,10 @@ static int __maybe_unused olpc_xo175_ec_resume(struct device *dev)
 {
 	u8 x = 0;
 
-	/*
-	 * The resume hint is only needed if no other commands are
-	 * being sent during resume. all it does is tell the EC
-	 * the SoC is definitely awake.
-	 */
+	 
 	olpc_ec_cmd(CMD_SUSPEND_HINT, &x, 1, NULL, 0);
 
-	/* Enable all EC events while we're awake */
+	 
 	olpc_xo175_ec_set_event_mask(EC_ALL_EVENTS);
 
 	return 0;
@@ -688,7 +643,7 @@ static int olpc_xo175_ec_probe(struct spi_device *spi)
 
 	priv->logbuf_len = 0;
 
-	/* Set up power button input device */
+	 
 	priv->pwrbtn = devm_input_allocate_device(&spi->dev);
 	if (!priv->pwrbtn)
 		return -ENOMEM;
@@ -712,7 +667,7 @@ static int olpc_xo175_ec_probe(struct spi_device *spi)
 	olpc_ec = platform_device_register_resndata(&spi->dev, "olpc-ec", -1,
 							NULL, 0, NULL, 0);
 
-	/* Enable all EC events while we're awake */
+	 
 	olpc_xo175_ec_set_event_mask(EC_ALL_EVENTS);
 
 	if (pm_power_off == NULL)
@@ -753,6 +708,6 @@ static struct spi_driver olpc_xo175_ec_spi_driver = {
 module_spi_driver(olpc_xo175_ec_spi_driver);
 
 MODULE_DESCRIPTION("OLPC XO-1.75 Embedded Controller driver");
-MODULE_AUTHOR("Lennert Buytenhek <buytenh@wantstofly.org>"); /* Functionality */
-MODULE_AUTHOR("Lubomir Rintel <lkundrak@v3.sk>"); /* Bugs */
+MODULE_AUTHOR("Lennert Buytenhek <buytenh@wantstofly.org>");  
+MODULE_AUTHOR("Lubomir Rintel <lkundrak@v3.sk>");  
 MODULE_LICENSE("GPL");

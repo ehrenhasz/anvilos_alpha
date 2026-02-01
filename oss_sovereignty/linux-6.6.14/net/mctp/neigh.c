@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Management Component Transport Protocol (MCTP) - routing
- * implementation.
- *
- * This is currently based on a simple routing table, with no dst cache. The
- * number of routes should stay fairly small, so the lookup cost is small.
- *
- * Copyright (c) 2021 Code Construct
- * Copyright (c) 2021 Google
- */
+
+ 
 
 #include <linux/idr.h>
 #include <linux/mctp.h>
@@ -67,7 +58,7 @@ static void __mctp_neigh_free(struct rcu_head *rcu)
 	kfree(neigh);
 }
 
-/* Removes all neighbour entries referring to a device */
+ 
 void mctp_neigh_remove_dev(struct mctp_dev *mdev)
 {
 	struct net *net = dev_net(mdev->dev);
@@ -77,7 +68,7 @@ void mctp_neigh_remove_dev(struct mctp_dev *mdev)
 	list_for_each_entry_safe(neigh, tmp, &net->mctp.neighbours, list) {
 		if (neigh->dev == mdev) {
 			list_del_rcu(&neigh->list);
-			/* TODO: immediate RTM_DELNEIGH */
+			 
 			call_rcu(&neigh->rcu, __mctp_neigh_free);
 		}
 	}
@@ -97,7 +88,7 @@ static int mctp_neigh_remove(struct mctp_dev *mdev, mctp_eid_t eid,
 		if (neigh->dev == mdev && neigh->eid == eid &&
 		    neigh->source == source) {
 			list_del_rcu(&neigh->list);
-			/* TODO: immediate RTM_DELNEIGH */
+			 
 			call_rcu(&neigh->rcu, __mctp_neigh_free);
 			dropped = true;
 		}
@@ -220,11 +211,11 @@ static int mctp_fill_neigh(struct sk_buff *skb, u32 portid, u32 seq, int event,
 	hdr = nlmsg_data(nlh);
 	hdr->ndm_family = AF_MCTP;
 	hdr->ndm_ifindex = dev->ifindex;
-	hdr->ndm_state = 0; // TODO other state bits?
+	hdr->ndm_state = 0; 
 	if (neigh->source == MCTP_NEIGH_STATIC)
 		hdr->ndm_state |= NUD_PERMANENT;
 	hdr->ndm_flags = 0;
-	hdr->ndm_type = RTN_UNICAST; // TODO: is loopback RTN_LOCAL?
+	hdr->ndm_type = RTN_UNICAST; 
 
 	if (nla_put_u8(skb, NDA_DST, neigh->eid))
 		goto cancel;
@@ -280,7 +271,7 @@ int mctp_neigh_lookup(struct mctp_dev *mdev, mctp_eid_t eid, void *ret_hwaddr)
 {
 	struct net *net = dev_net(mdev->dev);
 	struct mctp_neigh *neigh;
-	int rc = -EHOSTUNREACH; // TODO: or ENOENT?
+	int rc = -EHOSTUNREACH; 
 
 	rcu_read_lock();
 	list_for_each_entry_rcu(neigh, &net->mctp.neighbours, list) {
@@ -296,7 +287,7 @@ int mctp_neigh_lookup(struct mctp_dev *mdev, mctp_eid_t eid, void *ret_hwaddr)
 	return rc;
 }
 
-/* namespace registration */
+ 
 static int __net_init mctp_neigh_net_init(struct net *net)
 {
 	struct netns_mctp *ns = &net->mctp;
@@ -315,7 +306,7 @@ static void __net_exit mctp_neigh_net_exit(struct net *net)
 		call_rcu(&neigh->rcu, __mctp_neigh_free);
 }
 
-/* net namespace implementation */
+ 
 
 static struct pernet_operations mctp_net_ops = {
 	.init = mctp_neigh_net_init,

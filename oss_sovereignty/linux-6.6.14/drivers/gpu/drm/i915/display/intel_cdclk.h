@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_CDCLK_H__
 #define __INTEL_CDCLK_H__
@@ -23,33 +21,26 @@ struct intel_cdclk_config {
 struct intel_cdclk_state {
 	struct intel_global_state base;
 
-	/*
-	 * Logical configuration of cdclk (used for all scaling,
-	 * watermark, etc. calculations and checks). This is
-	 * computed as if all enabled crtcs were active.
-	 */
+	 
 	struct intel_cdclk_config logical;
 
-	/*
-	 * Actual configuration of cdclk, can be different from the
-	 * logical configuration only when all crtc's are DPMS off.
-	 */
+	 
 	struct intel_cdclk_config actual;
 
-	/* minimum acceptable cdclk to satisfy bandwidth requirements */
+	 
 	int bw_min_cdclk;
-	/* minimum acceptable cdclk for each pipe */
+	 
 	int min_cdclk[I915_MAX_PIPES];
-	/* minimum acceptable voltage level for each pipe */
+	 
 	u8 min_voltage_level[I915_MAX_PIPES];
 
-	/* pipe to which cd2x update is synchronized */
+	 
 	enum pipe pipe;
 
-	/* forced minimum cdclk for glk+ audio w/a */
+	 
 	int force_min_cdclk;
 
-	/* bitmask of active pipes */
+	 
 	u8 active_pipes;
 };
 
@@ -84,4 +75,4 @@ intel_atomic_get_cdclk_state(struct intel_atomic_state *state);
 int intel_cdclk_init(struct drm_i915_private *dev_priv);
 void intel_cdclk_debugfs_register(struct drm_i915_private *i915);
 
-#endif /* __INTEL_CDCLK_H__ */
+#endif  

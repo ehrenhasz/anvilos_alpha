@@ -1,17 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  net/dccp/qpolicy.c
- *
- *  Policy-based packet dequeueing interface for DCCP.
- *
- *  Copyright (c) 2008 Tomasz Grobelny <tomasz@grobelny.oswiecenia.net>
- */
+
+ 
 #include "dccp.h"
 
-/*
- *	Simple Dequeueing Policy:
- *	If tx_qlen is different from 0, enqueue up to tx_qlen elements.
- */
+ 
 static void qpolicy_simple_push(struct sock *sk, struct sk_buff *skb)
 {
 	skb_queue_tail(&sk->sk_write_queue, skb);
@@ -28,11 +19,7 @@ static struct sk_buff *qpolicy_simple_top(struct sock *sk)
 	return skb_peek(&sk->sk_write_queue);
 }
 
-/*
- *	Priority-based Dequeueing Policy:
- *	If tx_qlen is different from 0 and the queue has reached its upper bound
- *	of tx_qlen elements, replace older packets lowest-priority-first.
- */
+ 
 static struct sk_buff *qpolicy_prio_best_skb(struct sock *sk)
 {
 	struct sk_buff *skb, *best = NULL;
@@ -60,13 +47,7 @@ static bool qpolicy_prio_full(struct sock *sk)
 	return false;
 }
 
-/**
- * struct dccp_qpolicy_operations  -  TX Packet Dequeueing Interface
- * @push: add a new @skb to the write queue
- * @full: indicates that no more packets will be admitted
- * @top:  peeks at whatever the queueing policy defines as its `top'
- * @params: parameter passed to policy operation
- */
+ 
 struct dccp_qpolicy_operations {
 	void		(*push)	(struct sock *sk, struct sk_buff *skb);
 	bool		(*full) (struct sock *sk);
@@ -89,9 +70,7 @@ static struct dccp_qpolicy_operations qpol_table[DCCPQ_POLICY_MAX] = {
 	},
 };
 
-/*
- *	Externally visible interface
- */
+ 
 void dccp_qpolicy_push(struct sock *sk, struct sk_buff *skb)
 {
 	qpol_table[dccp_sk(sk)->dccps_qpolicy].push(sk, skb);
@@ -120,7 +99,7 @@ struct sk_buff *dccp_qpolicy_pop(struct sock *sk)
 	struct sk_buff *skb = dccp_qpolicy_top(sk);
 
 	if (skb != NULL) {
-		/* Clear any skb fields that we used internally */
+		 
 		skb->priority = 0;
 		skb_unlink(skb, &sk->sk_write_queue);
 	}
@@ -129,7 +108,7 @@ struct sk_buff *dccp_qpolicy_pop(struct sock *sk)
 
 bool dccp_qpolicy_param_ok(struct sock *sk, __be32 param)
 {
-	/* check if exactly one bit is set */
+	 
 	if (!param || (param & (param - 1)))
 		return false;
 	return (qpol_table[dccp_sk(sk)->dccps_qpolicy].params & param) == param;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include "mt76.h"
@@ -197,7 +195,7 @@ mt76_dma_queue_reset(struct mt76_dev *dev, struct mt76_queue *q)
 	if (!q || !q->ndesc)
 		return;
 
-	/* clear descriptors */
+	 
 	for (i = 0; i < q->ndesc; i++)
 		q->desc[i].ctrl = cpu_to_le32(MT_DMA_CTL_DMA_DONE);
 
@@ -567,7 +565,7 @@ unmap:
 
 free:
 #ifdef CONFIG_NL80211_TESTMODE
-	/* fix tx_done accounting on queue overflow */
+	 
 	if (mt76_is_testmode_skb(dev, skb, &hw)) {
 		struct mt76_phy *phy = hw->priv;
 
@@ -660,7 +658,7 @@ int mt76_dma_wed_setup(struct mt76_dev *dev, struct mt76_queue *q, bool reset)
 			q->wed_regs = wed->tx_ring[ring].reg_base;
 		break;
 	case MT76_WED_Q_TXFREE:
-		/* WED txfree queue needs ring to be initialized before setup */
+		 
 		q->flags = 0;
 		mt76_dma_queue_reset(dev, q);
 		mt76_dma_rx_fill(dev, q, false);
@@ -766,7 +764,7 @@ mt76_dma_rx_reset(struct mt76_dev *dev, enum mt76_rxq_id qid)
 
 	mt76_dma_rx_cleanup(dev, q);
 
-	/* reset WED rx queues */
+	 
 	mt76_dma_wed_setup(dev, q, true);
 	if (q->flags != MT_WED_Q_TXFREE) {
 		mt76_dma_sync_idx(dev, q);

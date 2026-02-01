@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2015 - 2021 Intel Corporation */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/completion.h>
 #include <linux/minmax.h>
@@ -15,21 +15,13 @@
 #define ADF_PFVF_MSG_ACK_DELAY			2
 #define ADF_PFVF_MSG_ACK_MAX_RETRY		100
 
-/* How often to retry if there is no response */
+ 
 #define ADF_PFVF_MSG_RESP_RETRIES	5
 #define ADF_PFVF_MSG_RESP_TIMEOUT	(ADF_PFVF_MSG_ACK_DELAY * \
 					 ADF_PFVF_MSG_ACK_MAX_RETRY + \
 					 ADF_PFVF_MSG_COLLISION_DETECT_DELAY)
 
-/**
- * adf_send_vf2pf_msg() - send VF to PF message
- * @accel_dev:	Pointer to acceleration device
- * @msg:	Message to send
- *
- * This function allows the VF to send a message to the PF.
- *
- * Return: 0 on success, error code otherwise.
- */
+ 
 int adf_send_vf2pf_msg(struct adf_accel_dev *accel_dev, struct pfvf_message msg)
 {
 	struct adf_pfvf_ops *pfvf_ops = GET_PFVF_OPS(accel_dev);
@@ -39,14 +31,7 @@ int adf_send_vf2pf_msg(struct adf_accel_dev *accel_dev, struct pfvf_message msg)
 				  &accel_dev->vf.vf2pf_lock);
 }
 
-/**
- * adf_recv_pf2vf_msg() - receive a PF to VF message
- * @accel_dev:	Pointer to acceleration device
- *
- * This function allows the VF to receive a message from the PF.
- *
- * Return: a valid message on success, zero otherwise.
- */
+ 
 static struct pfvf_message adf_recv_pf2vf_msg(struct adf_accel_dev *accel_dev)
 {
 	struct adf_pfvf_ops *pfvf_ops = GET_PFVF_OPS(accel_dev);
@@ -55,17 +40,7 @@ static struct pfvf_message adf_recv_pf2vf_msg(struct adf_accel_dev *accel_dev)
 	return pfvf_ops->recv_msg(accel_dev, pfvf_offset, accel_dev->vf.pf_compat_ver);
 }
 
-/**
- * adf_send_vf2pf_req() - send VF2PF request message
- * @accel_dev:	Pointer to acceleration device.
- * @msg:	Request message to send
- * @resp:	Returned PF response
- *
- * This function sends a message that requires a response from the VF to the PF
- * and waits for a reply.
- *
- * Return: 0 on success, error code otherwise.
- */
+ 
 int adf_send_vf2pf_req(struct adf_accel_dev *accel_dev, struct pfvf_message msg,
 		       struct pfvf_message *resp)
 {
@@ -75,7 +50,7 @@ int adf_send_vf2pf_req(struct adf_accel_dev *accel_dev, struct pfvf_message msg,
 
 	reinit_completion(&accel_dev->vf.msg_received);
 
-	/* Send request from VF to PF */
+	 
 	do {
 		ret = adf_send_vf2pf_msg(accel_dev, msg);
 		if (ret) {
@@ -84,14 +59,14 @@ int adf_send_vf2pf_req(struct adf_accel_dev *accel_dev, struct pfvf_message msg,
 			return ret;
 		}
 
-		/* Wait for response, if it times out retry */
+		 
 		ret = wait_for_completion_timeout(&accel_dev->vf.msg_received,
 						  timeout);
 		if (ret) {
 			if (likely(resp))
 				*resp = accel_dev->vf.response;
 
-			/* Once copied, set to an invalid value */
+			 
 			accel_dev->vf.response.type = 0;
 
 			return 0;
@@ -114,7 +89,7 @@ static int adf_vf2pf_blkmsg_data_req(struct adf_accel_dev *accel_dev, bool crc,
 	u8 max_data;
 	int err;
 
-	/* Convert the block type to {small, medium, large} size category */
+	 
 	if (*type <= ADF_VF2PF_SMALL_BLOCK_TYPE_MAX) {
 		msg_type = ADF_VF2PF_MSGTYPE_SMALL_BLOCK_REQ;
 		blk_type = FIELD_PREP(ADF_VF2PF_SMALL_BLOCK_TYPE_MASK, *type);
@@ -137,7 +112,7 @@ static int adf_vf2pf_blkmsg_data_req(struct adf_accel_dev *accel_dev, bool crc,
 		return -EINVAL;
 	}
 
-	/* Sanity check */
+	 
 	if (*data > max_data) {
 		dev_err(&GET_DEV(accel_dev),
 			"Invalid byte %s %u for message type %u\n",
@@ -145,7 +120,7 @@ static int adf_vf2pf_blkmsg_data_req(struct adf_accel_dev *accel_dev, bool crc,
 		return -EINVAL;
 	}
 
-	/* Build the block message */
+	 
 	req.type = msg_type;
 	req.data = blk_type | blk_byte | FIELD_PREP(ADF_VF2PF_BLOCK_CRC_REQ_MASK, crc);
 
@@ -184,10 +159,7 @@ static int adf_vf2pf_blkmsg_get_crc(struct adf_accel_dev *accel_dev, u8 type,
 {
 	int ret;
 
-	/* The count of bytes refers to a length, however shift it to a 0-based
-	 * count to avoid overflows. Thus, a request for 0 bytes is technically
-	 * valid.
-	 */
+	 
 	--bytes;
 
 	ret = adf_vf2pf_blkmsg_data_req(accel_dev, true, &type, &bytes);
@@ -205,21 +177,7 @@ static int adf_vf2pf_blkmsg_get_crc(struct adf_accel_dev *accel_dev, u8 type,
 	return 0;
 }
 
-/**
- * adf_send_vf2pf_blkmsg_req() - retrieve block message
- * @accel_dev:	Pointer to acceleration VF device.
- * @type:	The block message type, see adf_pfvf_msg.h for allowed values
- * @buffer:	input buffer where to place the received data
- * @buffer_len:	buffer length as input, the amount of written bytes on output
- *
- * Request a message of type 'type' over the block message transport.
- * This function will send the required amount block message requests and
- * return the overall content back to the caller through the provided buffer.
- * The buffer should be large enough to contain the requested message type,
- * otherwise the response will be truncated.
- *
- * Return: 0 on success, error code otherwise.
- */
+ 
 int adf_send_vf2pf_blkmsg_req(struct adf_accel_dev *accel_dev, u8 type,
 			      u8 *buffer, unsigned int *buffer_len)
 {
@@ -265,17 +223,11 @@ int adf_send_vf2pf_blkmsg_req(struct adf_accel_dev *accel_dev, u8 type,
 		return -EFAULT;
 	}
 
-	/* We need to pick the minimum since there is no way to request a
-	 * specific version. As a consequence any scenario is possible:
-	 * - PF has a newer (longer) version which doesn't fit in the buffer
-	 * - VF expects a newer (longer) version, so we must not ask for
-	 *   bytes in excess
-	 * - PF and VF share the same version, no problem
-	 */
+	 
 	msg_len = ADF_PFVF_BLKMSG_HEADER_SIZE + buffer[ADF_PFVF_BLKMSG_LEN_BYTE];
 	msg_len = min(*buffer_len, msg_len);
 
-	/* Get the payload */
+	 
 	for (index = ADF_PFVF_BLKMSG_HEADER_SIZE; index < msg_len; index++) {
 		ret = adf_vf2pf_blkmsg_get_byte(accel_dev, type, index,
 						&buffer[index]);
@@ -331,21 +283,15 @@ bool adf_recv_and_handle_pf2vf_msg(struct adf_accel_dev *accel_dev)
 	struct pfvf_message msg;
 
 	msg = adf_recv_pf2vf_msg(accel_dev);
-	if (msg.type)  /* Invalid or no message */
+	if (msg.type)   
 		return adf_handle_pf2vf_msg(accel_dev, msg);
 
-	/* No replies for PF->VF messages at present */
+	 
 
 	return true;
 }
 
-/**
- * adf_enable_vf2pf_comms() - Function enables communication from vf to pf
- *
- * @accel_dev:	Pointer to acceleration device virtual function.
- *
- * Return: 0 on success, error code otherwise.
- */
+ 
 int adf_enable_vf2pf_comms(struct adf_accel_dev *accel_dev)
 {
 	int ret;

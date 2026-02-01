@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * System Control and Power Interface (SCPI) based CPUFreq Interface driver
- *
- * Copyright (C) 2015 ARM Ltd.
- * Sudeep Holla <sudeep.holla@arm.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -144,7 +139,7 @@ static int scpi_cpufreq_init(struct cpufreq_policy *policy)
 	policy->driver_data = priv;
 	policy->freq_table = freq_table;
 
-	/* scpi allows DVFS request for any domain from any CPU */
+	 
 	policy->dvfs_possible_from_any_cpu = true;
 
 	latency = scpi_ops->get_transition_latency(cpu_dev);

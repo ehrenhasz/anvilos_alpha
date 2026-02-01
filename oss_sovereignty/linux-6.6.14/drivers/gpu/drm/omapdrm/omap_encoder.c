@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Rob Clark <rob@ti.com>
- */
+
+ 
 
 #include <linux/list.h>
 
@@ -13,17 +10,11 @@
 
 #include "omap_drv.h"
 
-/*
- * encoder funcs
- */
+ 
 
 #define to_omap_encoder(x) container_of(x, struct omap_encoder, base)
 
-/* The encoder and connector both map to same dssdev.. the encoder
- * handles the 'active' parts, ie. anything the modifies the state
- * of the hw, and the connector handles the 'read-only' parts, like
- * detecting connection and reading edid.
- */
+ 
 struct omap_encoder {
 	struct drm_encoder base;
 	struct omap_dss_device *output;
@@ -88,15 +79,7 @@ static void omap_encoder_mode_set(struct drm_encoder *encoder,
 
 	drm_display_mode_to_videomode(adjusted_mode, &vm);
 
-	/*
-	 * HACK: This fixes the vm flags.
-	 * struct drm_display_mode does not contain the VSYNC/HSYNC/DE flags and
-	 * they get lost when converting back and forth between struct
-	 * drm_display_mode and struct videomode. The hack below goes and
-	 * fetches the missing flags.
-	 *
-	 * A better solution is to use DRM's bus-flags through the whole driver.
-	 */
+	 
 	for (bridge = output->bridge; bridge;
 	     bridge = drm_bridge_get_next_bridge(bridge)) {
 		if (!bridge->timings)
@@ -109,7 +92,7 @@ static void omap_encoder_mode_set(struct drm_encoder *encoder,
 	bus_flags = connector->display_info.bus_flags;
 	omap_encoder_update_videomode_flags(&vm, bus_flags);
 
-	/* Set timings for all devices in the display pipeline. */
+	 
 	dss_mgr_set_timings(output, &vm);
 }
 
@@ -117,7 +100,7 @@ static const struct drm_encoder_helper_funcs omap_encoder_helper_funcs = {
 	.mode_set = omap_encoder_mode_set,
 };
 
-/* initialize encoder */
+ 
 struct drm_encoder *omap_encoder_init(struct drm_device *dev,
 				      struct omap_dss_device *output)
 {

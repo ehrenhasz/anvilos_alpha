@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Janz MODULbus VMOD-TTL GPIO Driver
- *
- * Copyright (c) 2010 Ira W. Snyder <iws@ovro.caltech.edu>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -44,7 +40,7 @@ struct ttl_control_regs {
 struct ttl_module {
 	struct gpio_chip gpio;
 
-	/* base address of registers */
+	 
 	struct ttl_control_regs __iomem *regs;
 
 	u8 portc_shadow;
@@ -113,27 +109,27 @@ static void ttl_write_reg(struct ttl_module *mod, u8 reg, u16 val)
 
 static void ttl_setup_device(struct ttl_module *mod)
 {
-	/* reset the device to a known state */
+	 
 	iowrite16be(0x0000, &mod->regs->control);
 	iowrite16be(0x0001, &mod->regs->control);
 	iowrite16be(0x0000, &mod->regs->control);
 
-	/* put all ports in open-drain mode */
+	 
 	ttl_write_reg(mod, PORTA_IOCTL, 0x00ff);
 	ttl_write_reg(mod, PORTB_IOCTL, 0x00ff);
 	ttl_write_reg(mod, PORTC_IOCTL, 0x000f);
 
-	/* set all ports as outputs */
+	 
 	ttl_write_reg(mod, PORTA_DIRECTION, 0x0000);
 	ttl_write_reg(mod, PORTB_DIRECTION, 0x0000);
 	ttl_write_reg(mod, PORTC_DIRECTION, 0x0000);
 
-	/* set all ports to drive zeroes */
+	 
 	iowrite16be(0x0000, &mod->regs->porta);
 	iowrite16be(0x0000, &mod->regs->portb);
 	iowrite16be(0x0000, &mod->regs->portc);
 
-	/* enable all ports */
+	 
 	ttl_write_reg(mod, MASTER_CONF_CTL, CONF_PAE | CONF_PBE | CONF_PCE);
 }
 
@@ -157,14 +153,14 @@ static int ttl_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, mod);
 	spin_lock_init(&mod->lock);
 
-	/* get access to the MODULbus registers for this module */
+	 
 	mod->regs = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(mod->regs))
 		return PTR_ERR(mod->regs);
 
 	ttl_setup_device(mod);
 
-	/* Initialize the GPIO data structures */
+	 
 	gpio = &mod->gpio;
 	gpio->parent = &pdev->dev;
 	gpio->label = pdev->name;
@@ -172,7 +168,7 @@ static int ttl_probe(struct platform_device *pdev)
 	gpio->set = ttl_set_value;
 	gpio->owner = THIS_MODULE;
 
-	/* request dynamic allocation */
+	 
 	gpio->base = -1;
 	gpio->ngpio = 20;
 

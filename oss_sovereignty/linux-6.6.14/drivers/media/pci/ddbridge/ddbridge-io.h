@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * ddbridge-io.h: Digital Devices bridge I/O inline functions
- *
- * Copyright (C) 2010-2017 Digital Devices GmbH
- *                         Ralph Metzler <rjkm@metzlerbros.de>
- *                         Marcus Metzler <mocm@metzlerbros.de>
- */
+ 
+ 
 
 #ifndef __DDBRIDGE_IO_H__
 #define __DDBRIDGE_IO_H__
@@ -14,7 +8,7 @@
 
 #include "ddbridge.h"
 
-/******************************************************************************/
+ 
 
 static inline u32 ddblreadl(struct ddb_link *link, u32 adr)
 {
@@ -50,7 +44,7 @@ static inline u32 safe_ddbreadl(struct ddb *dev, u32 adr)
 {
 	u32 val = ddbreadl(dev, adr);
 
-	/* (ddb)readl returns (uint)-1 (all bits set) on failure, catch that */
+	 
 	if (val == ~0) {
 		dev_err(&dev->pdev->dev, "ddbreadl failure, adr=%08x\n", adr);
 		return 0;
@@ -59,4 +53,4 @@ static inline u32 safe_ddbreadl(struct ddb *dev, u32 adr)
 	return val;
 }
 
-#endif /* __DDBRIDGE_IO_H__ */
+#endif  

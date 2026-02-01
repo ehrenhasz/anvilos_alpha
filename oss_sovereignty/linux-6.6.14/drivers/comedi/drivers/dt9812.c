@@ -1,33 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * comedi/drivers/dt9812.c
- *   COMEDI driver for DataTranslation DT9812 USB module
- *
- * Copyright (C) 2005 Anders Blomdell <anders.blomdell@control.lth.se>
- *
- * COMEDI - Linux Control and Measurement Device Interface
- */
 
-/*
- * Driver: dt9812
- * Description: Data Translation DT9812 USB module
- * Devices: [Data Translation] DT9812 (dt9812)
- * Author: anders.blomdell@control.lth.se (Anders Blomdell)
- * Status: in development
- * Updated: Sun Nov 20 20:18:34 EST 2005
- *
- * This driver works, but bulk transfers not implemented. Might be a
- * starting point for someone else. I found out too late that USB has
- * too high latencies (>1 ms) for my needs.
- */
+ 
 
-/*
- * Nota Bene:
- *   1. All writes to command pipe has to be 32 bytes (ISP1181B SHRTP=0 ?)
- *   2. The DDK source (as of sep 2005) is in error regarding the
- *      input MUX bits (example code says P4, but firmware schematics
- *      says P1).
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -40,12 +16,10 @@
 #define DT9812_MAX_WRITE_CMD_PIPE_SIZE	32
 #define DT9812_MAX_READ_CMD_PIPE_SIZE	32
 
-/* usb_bulk_msg() timeout in milliseconds */
+ 
 #define DT9812_USB_TIMEOUT		1000
 
-/*
- * See Silican Laboratories C8051F020/1/2/3 manual
- */
+ 
 #define F020_SFR_P4			0x84
 #define F020_SFR_P1			0x90
 #define F020_SFR_P2			0xa0
@@ -74,9 +48,9 @@
 #define F020_MASK_DACXCN_DACXEN		0x80
 
 enum {
-					/* A/D  D/A  DI  DO  CT */
-	DT9812_DEVID_DT9812_10,		/*  8    2   8   8   1  +/- 10V */
-	DT9812_DEVID_DT9812_2PT5,	/*  8    2   8   8   1  0-2.44V */
+					 
+	DT9812_DEVID_DT9812_10,		 
+	DT9812_DEVID_DT9812_2PT5,	 
 };
 
 enum dt9812_gain {
@@ -91,83 +65,77 @@ enum dt9812_gain {
 
 enum {
 	DT9812_LEAST_USB_FIRMWARE_CMD_CODE = 0,
-	/* Write Flash memory */
+	 
 	DT9812_W_FLASH_DATA = 0,
-	/* Read Flash memory misc config info */
+	 
 	DT9812_R_FLASH_DATA = 1,
 
-	/*
-	 * Register read/write commands for processor
-	 */
+	 
 
-	/* Read a single byte of USB memory */
+	 
 	DT9812_R_SINGLE_BYTE_REG = 2,
-	/* Write a single byte of USB memory */
+	 
 	DT9812_W_SINGLE_BYTE_REG = 3,
-	/* Multiple Reads of USB memory */
+	 
 	DT9812_R_MULTI_BYTE_REG = 4,
-	/* Multiple Writes of USB memory */
+	 
 	DT9812_W_MULTI_BYTE_REG = 5,
-	/* Read, (AND) with mask, OR value, then write (single) */
+	 
 	DT9812_RMW_SINGLE_BYTE_REG = 6,
-	/* Read, (AND) with mask, OR value, then write (multiple) */
+	 
 	DT9812_RMW_MULTI_BYTE_REG = 7,
 
-	/*
-	 * Register read/write commands for SMBus
-	 */
+	 
 
-	/* Read a single byte of SMBus */
+	 
 	DT9812_R_SINGLE_BYTE_SMBUS = 8,
-	/* Write a single byte of SMBus */
+	 
 	DT9812_W_SINGLE_BYTE_SMBUS = 9,
-	/* Multiple Reads of SMBus */
+	 
 	DT9812_R_MULTI_BYTE_SMBUS = 10,
-	/* Multiple Writes of SMBus */
+	 
 	DT9812_W_MULTI_BYTE_SMBUS = 11,
 
-	/*
-	 * Register read/write commands for a device
-	 */
+	 
 
-	/* Read a single byte of a device */
+	 
 	DT9812_R_SINGLE_BYTE_DEV = 12,
-	/* Write a single byte of a device */
+	 
 	DT9812_W_SINGLE_BYTE_DEV = 13,
-	/* Multiple Reads of a device */
+	 
 	DT9812_R_MULTI_BYTE_DEV = 14,
-	/* Multiple Writes of a device */
+	 
 	DT9812_W_MULTI_BYTE_DEV = 15,
 
-	/* Not sure if we'll need this */
+	 
 	DT9812_W_DAC_THRESHOLD = 16,
 
-	/* Set interrupt on change mask */
+	 
 	DT9812_W_INT_ON_CHANGE_MASK = 17,
 
-	/* Write (or Clear) the CGL for the ADC */
+	 
 	DT9812_W_CGL = 18,
-	/* Multiple Reads of USB memory */
+	 
 	DT9812_R_MULTI_BYTE_USBMEM = 19,
-	/* Multiple Writes to USB memory */
+	 
 	DT9812_W_MULTI_BYTE_USBMEM = 20,
 
-	/* Issue a start command to a given subsystem */
+	 
 	DT9812_START_SUBSYSTEM = 21,
-	/* Issue a stop command to a given subsystem */
+	 
 	DT9812_STOP_SUBSYSTEM = 22,
 
-	/* calibrate the board using CAL_POT_CMD */
+	 
 	DT9812_CALIBRATE_POT = 23,
-	/* set the DAC FIFO size */
+	 
 	DT9812_W_DAC_FIFO_SIZE = 24,
-	/* Write or Clear the CGL for the DAC */
+	 
 	DT9812_W_CGL_DAC = 25,
-	/* Read a single value from a subsystem */
+	 
 	DT9812_R_SINGLE_VALUE_CMD = 26,
-	/* Write a single value to a subsystem */
+	 
 	DT9812_W_SINGLE_VALUE_CMD = 27,
-	/* Valid DT9812_USB_FIRMWARE_CMD_CODE's will be less than this number */
+	 
 	DT9812_MAX_USB_FIRMWARE_CMD_CODE,
 };
 
@@ -255,7 +223,7 @@ static int dt9812_read_info(struct comedi_device *dev,
 	    cpu_to_le16(DT9812_DIAGS_BOARD_INFO_ADDR + offset);
 	cmd->u.flash_data_info.numbytes = cpu_to_le16(buf_size);
 
-	/* DT9812 only responds to 32 byte writes!! */
+	 
 	ret = usb_bulk_msg(usb, usb_sndbulkpipe(usb, devpriv->cmd_wr.addr),
 			   cmd, sizeof(*cmd), &count, DT9812_USB_TIMEOUT);
 	if (ret)
@@ -299,7 +267,7 @@ static int dt9812_read_multiple_registers(struct comedi_device *dev,
 	for (i = 0; i < reg_count; i++)
 		cmd->u.read_multi_info.address[i] = address[i];
 
-	/* DT9812 only responds to 32 byte writes!! */
+	 
 	ret = usb_bulk_msg(usb, usb_sndbulkpipe(usb, devpriv->cmd_wr.addr),
 			   cmd, sizeof(*cmd), &count, DT9812_USB_TIMEOUT);
 	if (ret)
@@ -340,7 +308,7 @@ static int dt9812_write_multiple_registers(struct comedi_device *dev,
 		cmd->u.write_multi_info.write[i].value = value[i];
 	}
 
-	/* DT9812 only responds to 32 byte writes!! */
+	 
 	ret = usb_bulk_msg(usb, usb_sndbulkpipe(usb, devpriv->cmd_wr.addr),
 			   cmd, sizeof(*cmd), &count, DT9812_USB_TIMEOUT);
 	kfree(cmd);
@@ -367,7 +335,7 @@ static int dt9812_rmw_multiple_registers(struct comedi_device *dev,
 	for (i = 0; i < reg_count; i++)
 		cmd->u.rmw_multi_info.rmw[i] = rmw[i];
 
-	/* DT9812 only responds to 32 byte writes!! */
+	 
 	ret = usb_bulk_msg(usb, usb_sndbulkpipe(usb, devpriv->cmd_wr.addr),
 			   cmd, sizeof(*cmd), &count, DT9812_USB_TIMEOUT);
 	kfree(cmd);
@@ -385,11 +353,7 @@ static int dt9812_digital_in(struct comedi_device *dev, u8 *bits)
 	mutex_lock(&devpriv->mut);
 	ret = dt9812_read_multiple_registers(dev, 2, reg, value);
 	if (ret == 0) {
-		/*
-		 * bits 0-6 in F020_SFR_P3 are bits 0-6 in the digital
-		 * input port bit 3 in F020_SFR_P1 is bit 7 in the
-		 * digital input port
-		 */
+		 
 		*bits = (value[0] & 0x7f) | ((value[1] & 0x08) << 4);
 	}
 	mutex_unlock(&devpriv->mut);
@@ -417,12 +381,12 @@ static void dt9812_configure_mux(struct comedi_device *dev,
 	struct dt9812_private *devpriv = dev->private;
 
 	if (devpriv->device == DT9812_DEVID_DT9812_10) {
-		/* In the DT9812/10V MUX is selected by P1.5-7 */
+		 
 		rmw->address = F020_SFR_P1;
 		rmw->and_mask = 0xe0;
 		rmw->or_value = channel << 5;
 	} else {
-		/* In the DT9812/2.5V, internal mux is selected by bits 0:2 */
+		 
 		rmw->address = F020_SFR_AMX0SL;
 		rmw->and_mask = 0xff;
 		rmw->or_value = channel & 0x07;
@@ -435,7 +399,7 @@ static void dt9812_configure_gain(struct comedi_device *dev,
 {
 	struct dt9812_private *devpriv = dev->private;
 
-	/* In the DT9812/10V, there is an external gain of 0.5 */
+	 
 	if (devpriv->device == DT9812_DEVID_DT9812_10)
 		gain <<= 1;
 
@@ -445,20 +409,13 @@ static void dt9812_configure_gain(struct comedi_device *dev,
 			F020_MASK_ADC0CF_AMP0GN0;
 
 	switch (gain) {
-		/*
-		 * 000 -> Gain =  1
-		 * 001 -> Gain =  2
-		 * 010 -> Gain =  4
-		 * 011 -> Gain =  8
-		 * 10x -> Gain = 16
-		 * 11x -> Gain =  0.5
-		 */
+		 
 	case DT9812_GAIN_0PT5:
 		rmw->or_value = F020_MASK_ADC0CF_AMP0GN2 |
 				F020_MASK_ADC0CF_AMP0GN1;
 		break;
 	default:
-		/* this should never happen, just use a gain of 1 */
+		 
 	case DT9812_GAIN_1:
 		rmw->or_value = 0x00;
 		break;
@@ -493,13 +450,13 @@ static int dt9812_analog_in(struct comedi_device *dev,
 
 	mutex_lock(&devpriv->mut);
 
-	/* 1 select the gain */
+	 
 	dt9812_configure_gain(dev, &rmw[0], gain);
 
-	/* 2 set the MUX to select the channel */
+	 
 	dt9812_configure_mux(dev, &rmw[1], channel);
 
-	/* 3 start conversion */
+	 
 	rmw[2].address = F020_SFR_ADC0CN;
 	rmw[2].and_mask = 0xff;
 	rmw[2].or_value = F020_MASK_ADC0CN_AD0EN | F020_MASK_ADC0CN_AD0BUSY;
@@ -508,29 +465,17 @@ static int dt9812_analog_in(struct comedi_device *dev,
 	if (ret)
 		goto exit;
 
-	/* read the status and ADC */
+	 
 	ret = dt9812_read_multiple_registers(dev, 3, reg, val);
 	if (ret)
 		goto exit;
 
-	/*
-	 * An ADC conversion takes 16 SAR clocks cycles, i.e. about 9us.
-	 * Therefore, between the instant that AD0BUSY was set via
-	 * dt9812_rmw_multiple_registers and the read of AD0BUSY via
-	 * dt9812_read_multiple_registers, the conversion should be complete
-	 * since these two operations require two USB transactions each taking
-	 * at least a millisecond to complete.  However, lets make sure that
-	 * conversion is finished.
-	 */
+	 
 	if ((val[0] & (F020_MASK_ADC0CN_AD0INT | F020_MASK_ADC0CN_AD0BUSY)) ==
 	    F020_MASK_ADC0CN_AD0INT) {
 		switch (devpriv->device) {
 		case DT9812_DEVID_DT9812_10:
-			/*
-			 * For DT9812-10V the personality module set the
-			 * encoding to 2's complement. Hence, convert it before
-			 * returning it
-			 */
+			 
 			*value = ((val[1] << 8) | val[2]) + 0x800;
 			break;
 		case DT9812_DEVID_DT9812_2PT5:
@@ -555,34 +500,34 @@ static int dt9812_analog_out(struct comedi_device *dev, int channel, u16 value)
 
 	switch (channel) {
 	case 0:
-		/* 1. Set DAC mode */
+		 
 		rmw[0].address = F020_SFR_DAC0CN;
 		rmw[0].and_mask = 0xff;
 		rmw[0].or_value = F020_MASK_DACXCN_DACXEN;
 
-		/* 2. load lsb of DAC value first */
+		 
 		rmw[1].address = F020_SFR_DAC0L;
 		rmw[1].and_mask = 0xff;
 		rmw[1].or_value = value & 0xff;
 
-		/* 3. load msb of DAC value next to latch the 12-bit value */
+		 
 		rmw[2].address = F020_SFR_DAC0H;
 		rmw[2].and_mask = 0xff;
 		rmw[2].or_value = (value >> 8) & 0xf;
 		break;
 
 	case 1:
-		/* 1. Set DAC mode */
+		 
 		rmw[0].address = F020_SFR_DAC1CN;
 		rmw[0].and_mask = 0xff;
 		rmw[0].or_value = F020_MASK_DACXCN_DACXEN;
 
-		/* 2. load lsb of DAC value first */
+		 
 		rmw[1].address = F020_SFR_DAC1L;
 		rmw[1].and_mask = 0xff;
 		rmw[1].or_value = value & 0xff;
 
-		/* 3. load msb of DAC value next to latch the 12-bit value */
+		 
 		rmw[2].address = F020_SFR_DAC1H;
 		rmw[2].and_mask = 0xff;
 		rmw[2].or_value = (value >> 8) & 0xf;
@@ -701,7 +646,7 @@ static int dt9812_find_endpoints(struct comedi_device *dev)
 		ep = &host->endpoint[i].desc;
 		switch (i) {
 		case 0:
-			/* unused message pipe */
+			 
 			dir = USB_DIR_IN;
 			break;
 		case 1:
@@ -715,11 +660,11 @@ static int dt9812_find_endpoints(struct comedi_device *dev)
 			devpriv->cmd_rd.size = usb_endpoint_maxp(ep);
 			break;
 		case 3:
-			/* unused write stream */
+			 
 			dir = USB_DIR_OUT;
 			break;
 		case 4:
-			/* unused read stream */
+			 
 			dir = USB_DIR_IN;
 			break;
 		}
@@ -747,10 +692,7 @@ static int dt9812_reset_device(struct comedi_device *dev)
 
 	ret = dt9812_read_info(dev, 0, &tmp8, sizeof(tmp8));
 	if (ret) {
-		/*
-		 * Seems like a configuration reset is necessary if driver is
-		 * reloaded while device is attached
-		 */
+		 
 		usb_reset_configuration(usb);
 		for (i = 0; i < 10; i++) {
 			ret = dt9812_read_info(dev, 1, &tmp8, sizeof(tmp8));
@@ -792,7 +734,7 @@ static int dt9812_reset_device(struct comedi_device *dev)
 	}
 	serial = le32_to_cpu(tmp32);
 
-	/* let the user know what node this device is now attached to */
+	 
 	dev_info(dev->class_dev, "USB DT9812 (%4.4x.%4.4x.%4.4x) #0x%8.8x\n",
 		 vendor, product, devpriv->device, serial);
 
@@ -836,7 +778,7 @@ static int dt9812_auto_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* Digital Input subdevice */
+	 
 	s = &dev->subdevices[0];
 	s->type		= COMEDI_SUBD_DI;
 	s->subdev_flags	= SDF_READABLE;
@@ -845,7 +787,7 @@ static int dt9812_auto_attach(struct comedi_device *dev,
 	s->range_table	= &range_digital;
 	s->insn_bits	= dt9812_di_insn_bits;
 
-	/* Digital Output subdevice */
+	 
 	s = &dev->subdevices[1];
 	s->type		= COMEDI_SUBD_DO;
 	s->subdev_flags	= SDF_WRITABLE;
@@ -854,7 +796,7 @@ static int dt9812_auto_attach(struct comedi_device *dev,
 	s->range_table	= &range_digital;
 	s->insn_bits	= dt9812_do_insn_bits;
 
-	/* Analog Input subdevice */
+	 
 	s = &dev->subdevices[2];
 	s->type		= COMEDI_SUBD_AI;
 	s->subdev_flags	= SDF_READABLE | SDF_GROUND;
@@ -863,7 +805,7 @@ static int dt9812_auto_attach(struct comedi_device *dev,
 	s->range_table	= is_unipolar ? &range_unipolar2_5 : &range_bipolar10;
 	s->insn_read	= dt9812_ai_insn_read;
 
-	/* Analog Output subdevice */
+	 
 	s = &dev->subdevices[3];
 	s->type		= COMEDI_SUBD_AO;
 	s->subdev_flags	= SDF_WRITABLE;

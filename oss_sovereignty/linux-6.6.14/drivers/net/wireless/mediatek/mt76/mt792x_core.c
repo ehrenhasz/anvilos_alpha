@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2023 MediaTek Inc. */
+
+ 
 
 #include <linux/module.h>
 #include <linux/firmware.h>
@@ -125,7 +125,7 @@ int mt792x_conf_tx(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 {
 	struct mt792x_vif *mvif = (struct mt792x_vif *)vif->drv_priv;
 
-	/* no need to update right away, we'll get BSS_CHANGED_QOS */
+	 
 	queue = mt76_connac_lmac_mapping(queue);
 	mvif->queue_params[queue] = *params;
 
@@ -166,7 +166,7 @@ u64 mt792x_get_tsf(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
 	mt792x_mutex_acquire(dev);
 
 	n = omac_idx > HW_BSSID_MAX ? HW_BSSID_0 : omac_idx;
-	/* TSF software read */
+	 
 	mt76_set(dev, MT_LPON_TCR(0, n), MT_LPON_TCR_SW_MODE);
 	tsf.t32[0] = mt76_rr(dev, MT_LPON_UTTR0(0));
 	tsf.t32[1] = mt76_rr(dev, MT_LPON_UTTR1(0));
@@ -194,7 +194,7 @@ void mt792x_set_tsf(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 	n = omac_idx > HW_BSSID_MAX ? HW_BSSID_0 : omac_idx;
 	mt76_wr(dev, MT_LPON_UTTR0(0), tsf.t32[0]);
 	mt76_wr(dev, MT_LPON_UTTR1(0), tsf.t32[1]);
-	/* TSF software overwrite */
+	 
 	mt76_set(dev, MT_LPON_TCR(0, n), MT_LPON_TCR_SW_WRITE);
 
 	mt792x_mutex_release(dev);
@@ -274,7 +274,7 @@ void mt792x_set_wakeup(struct ieee80211_hw *hw, bool enabled)
 EXPORT_SYMBOL_GPL(mt792x_set_wakeup);
 
 static const char mt792x_gstrings_stats[][ETH_GSTRING_LEN] = {
-	/* tx counters */
+	 
 	"tx_ampdu_cnt",
 	"tx_mpdu_attempts",
 	"tx_mpdu_success",
@@ -310,12 +310,12 @@ static const char mt792x_gstrings_stats[][ETH_GSTRING_LEN] = {
 	"tx_msdu_pack_6",
 	"tx_msdu_pack_7",
 	"tx_msdu_pack_8",
-	/* rx counters */
+	 
 	"rx_mpdu_cnt",
 	"rx_ampdu_cnt",
 	"rx_ampdu_bytes_cnt",
 	"rx_ba_cnt",
-	/* per vif counters */
+	 
 	"v_tx_mode_cck",
 	"v_tx_mode_ofdm",
 	"v_tx_mode_ht",
@@ -412,33 +412,33 @@ void mt792x_get_et_stats(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 	data[ei++] = mib->tx_pkt_ebf_cnt;
 	data[ei++] = mib->tx_pkt_ibf_cnt;
 
-	/* Tx ampdu stat */
+	 
 	for (i = 0; i < 15; i++)
 		data[ei++] = phy->mt76->aggr_stats[i];
 
 	data[ei++] = phy->mib.ba_miss_cnt;
 
-	/* Tx Beamformer monitor */
+	 
 	data[ei++] = mib->tx_bf_ibf_ppdu_cnt;
 	data[ei++] = mib->tx_bf_ebf_ppdu_cnt;
 
-	/* Tx Beamformer Rx feedback monitor */
+	 
 	data[ei++] = mib->tx_bf_rx_fb_all_cnt;
 	data[ei++] = mib->tx_bf_rx_fb_he_cnt;
 	data[ei++] = mib->tx_bf_rx_fb_vht_cnt;
 	data[ei++] = mib->tx_bf_rx_fb_ht_cnt;
 
-	/* Tx amsdu info (pack-count histogram) */
+	 
 	for (i = 0; i < ARRAY_SIZE(mib->tx_amsdu); i++)
 		data[ei++] = mib->tx_amsdu[i];
 
-	/* rx counters */
+	 
 	data[ei++] = mib->rx_mpdu_cnt;
 	data[ei++] = mib->rx_ampdu_cnt;
 	data[ei++] = mib->rx_ampdu_bytes_cnt;
 	data[ei++] = mib->rx_ba_cnt;
 
-	/* Add values for all stations owned by this vif */
+	 
 	wi.initial_stat_idx = ei;
 	ieee80211_iterate_stations_atomic(hw, mt792x_ethtool_worker, &wi);
 
@@ -678,7 +678,7 @@ int mt792x_init_wcid(struct mt792x_dev *dev)
 {
 	int idx;
 
-	/* Beacon and mgmt frames should occupy wcid 0 */
+	 
 	idx = mt76_wcid_alloc(dev->mt76.wcid_mask, MT792x_WTBL_STA - 1);
 	if (idx)
 		return -ENOSPC;
@@ -813,7 +813,7 @@ int mt792x_load_firmware(struct mt792x_dev *dev)
 		return ret;
 
 	if (mt76_is_sdio(&dev->mt76)) {
-		/* activate again */
+		 
 		ret = __mt792x_mcu_fw_pmctrl(dev);
 		if (!ret)
 			ret = __mt792x_mcu_drv_pmctrl(dev);
@@ -832,7 +832,7 @@ int mt792x_load_firmware(struct mt792x_dev *dev)
 
 #ifdef CONFIG_PM
 	dev->mt76.hw->wiphy->wowlan = &mt76_connac_wowlan_support;
-#endif /* CONFIG_PM */
+#endif  
 
 	dev_dbg(dev->mt76.dev, "Firmware init done\n");
 

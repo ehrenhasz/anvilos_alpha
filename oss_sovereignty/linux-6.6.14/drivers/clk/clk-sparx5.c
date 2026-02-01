@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Microchip Sparx5 SoC Clock driver.
- *
- * Copyright (c) 2019 Microchip Inc.
- *
- * Author: Lars Povlsen <lars.povlsen@microchip.com>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/module.h>
@@ -83,7 +77,7 @@ static void s5_search_fractional(unsigned long rate,
 
 	memset(conf, 0, sizeof(*conf));
 	conf->div = div;
-	conf->rot_ena = 1;	/* Fractional rate */
+	conf->rot_ena = 1;	 
 
 	for (d = 0; best_offset > 0 && d <= 1 ; d++) {
 		conf->rot_dir = !!d;
@@ -101,7 +95,7 @@ static void s5_search_fractional(unsigned long rate,
 		}
 	}
 
-	/* Best match */
+	 
 	*conf = best;
 }
 
@@ -116,16 +110,16 @@ static unsigned long s5_calc_params(unsigned long rate,
 		div = DIV_ROUND_CLOSEST_ULL(parent_rate, rate);
 		s5_search_fractional(rate, parent_rate, div, &alt1);
 
-		/* Straight match? */
+		 
 		if (alt1.freq == rate) {
 			*conf = alt1;
 		} else {
-			/* Try without rounding divider */
+			 
 			div = parent_rate / rate;
 			if (div != alt1.div) {
 				s5_search_fractional(rate, parent_rate, div,
 						     &alt2);
-				/* Select the better match */
+				 
 				if (abs(rate - alt1.freq) <
 				    abs(rate - alt2.freq))
 					*conf = alt1;
@@ -134,7 +128,7 @@ static unsigned long s5_calc_params(unsigned long rate,
 			}
 		}
 	} else {
-		/* Straight fit */
+		 
 		memset(conf, 0, sizeof(*conf));
 		conf->div = parent_rate / rate;
 	}

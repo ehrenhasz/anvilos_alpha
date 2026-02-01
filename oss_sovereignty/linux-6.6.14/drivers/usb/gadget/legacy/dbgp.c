@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * dbgp.c -- EHCI Debug Port device gadget
- *
- * Copyright (C) 2010 Stephane Duverger
- *
- * Released under the GPLv2.
- */
 
-/* verbose messages */
+ 
+
+ 
 #include <linux/kernel.h>
 #include <linux/device.h>
 #include <linux/module.h>
@@ -16,8 +10,8 @@
 
 #include "u_serial.h"
 
-#define DRIVER_VENDOR_ID	0x0525 /* NetChip */
-#define DRIVER_PRODUCT_ID	0xc0de /* undefined */
+#define DRIVER_VENDOR_ID	0x0525  
+#define DRIVER_PRODUCT_ID	0xc0de  
 
 #define USB_DEBUG_MAX_PACKET_SIZE     8
 #define DBGP_REQ_EP0_LEN              128
@@ -347,7 +341,7 @@ static int dbgp_setup(struct usb_gadget *gadget,
 
 	if (length > DBGP_REQ_LEN) {
 		if (ctrl->bRequestType & USB_DIR_IN) {
-			/* Cast away the const, we are going to overwrite on purpose. */
+			 
 			__le16 *temp = (__le16 *)&ctrl->wLength;
 
 			*temp = cpu_to_le16(DBGP_REQ_LEN);

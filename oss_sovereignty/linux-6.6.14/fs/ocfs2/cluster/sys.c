@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * sys.c
- *
- * OCFS2 cluster sysfs interface
- *
- * Copyright (C) 2005 Oracle.  All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

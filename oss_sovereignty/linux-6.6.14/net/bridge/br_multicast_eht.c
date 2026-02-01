@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-// Copyright (c) 2020, Nikolay Aleksandrov <nikolay@nvidia.com>
+
+
 #include <linux/err.h>
 #include <linux/export.h>
 #include <linux/if_ether.h>
@@ -306,7 +306,7 @@ __eht_lookup_create_set_entry(struct net_bridge *br,
 			return this;
 	}
 
-	/* always allow auto-created zero entry */
+	 
 	if (!allow_zero_src && eht_host->num_entries >= PG_SRC_ENT_LIMIT)
 		return NULL;
 
@@ -325,9 +325,7 @@ __eht_lookup_create_set_entry(struct net_bridge *br,
 	hlist_add_head(&set_h->host_list, &eht_host->set_entries);
 	rb_link_node(&set_h->rb_node, parent, link);
 	rb_insert_color(&set_h->rb_node, &eht_set->entry_tree);
-	/* we must not count the auto-created zero entry otherwise we won't be
-	 * able to track the full list of PG_SRC_ENT_LIMIT entries
-	 */
+	 
 	if (!allow_zero_src)
 		eht_host->num_entries++;
 
@@ -501,7 +499,7 @@ static void br_multicast_del_eht_host(struct net_bridge_port_group *pg,
 					       &set_h->h_addr);
 }
 
-/* create new set entries from reports */
+ 
 static void __eht_create_set_entries(const struct net_bridge_mcast *brmctx,
 				     struct net_bridge_port_group *pg,
 				     union net_bridge_eht_addr *h_addr,
@@ -522,7 +520,7 @@ static void __eht_create_set_entries(const struct net_bridge_mcast *brmctx,
 	}
 }
 
-/* delete existing set entries and their (S,G) entries if they were the last */
+ 
 static bool __eht_del_set_entries(struct net_bridge_port_group *pg,
 				  union net_bridge_eht_addr *h_addr,
 				  void *srcs,
@@ -599,7 +597,7 @@ static bool br_multicast_eht_block(const struct net_bridge_mcast *brmctx,
 	return changed;
 }
 
-/* flush_entries is true when changing mode */
+ 
 static bool __eht_inc_exc(const struct net_bridge_mcast *brmctx,
 			  struct net_bridge_port_group *pg,
 			  union net_bridge_eht_addr *h_addr,
@@ -616,12 +614,12 @@ static bool __eht_inc_exc(const struct net_bridge_mcast *brmctx,
 		flush_entries = true;
 
 	memset(&eht_src_addr, 0, sizeof(eht_src_addr));
-	/* if we're changing mode del host and its entries */
+	 
 	if (flush_entries)
 		br_multicast_del_eht_host(pg, h_addr);
 	__eht_create_set_entries(brmctx, pg, h_addr, srcs, nsrcs, addr_size,
 				 filter_mode);
-	/* we can be missing sets only if we've deleted some entries */
+	 
 	if (flush_entries) {
 		struct net_bridge_group_eht_set *eht_set;
 		struct net_bridge_group_src *src_ent;
@@ -635,16 +633,7 @@ static bool __eht_inc_exc(const struct net_bridge_mcast *brmctx,
 				changed = true;
 				continue;
 			}
-			/* this is an optimization for TO_INCLUDE where we lower
-			 * the set's timeout to LMQT to catch timeout hosts:
-			 * - host A (timing out): set entries X, Y
-			 * - host B: set entry Z (new from current TO_INCLUDE)
-			 *           sends BLOCK Z after LMQT but host A's EHT
-			 *           entries still exist (unless lowered to LMQT
-			 *           so they can timeout with the S,Gs)
-			 * => we wait another LMQT, when we can just delete the
-			 *    group immediately
-			 */
+			 
 			if (!(src_ent->flags & BR_SGRP_F_SEND) ||
 			    filter_mode != MCAST_INCLUDE ||
 			    !to_report)
@@ -772,7 +761,7 @@ static bool __eht_ip6_handle(const struct net_bridge_mcast *brmctx,
 }
 #endif
 
-/* true means an entry was deleted */
+ 
 bool br_multicast_eht_handle(const struct net_bridge_mcast *brmctx,
 			     struct net_bridge_port_group *pg,
 			     void *h_addr,

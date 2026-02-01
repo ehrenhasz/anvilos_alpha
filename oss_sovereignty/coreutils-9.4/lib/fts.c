@@ -1,48 +1,4 @@
-/* Traverse a file hierarchy.
-
-   Copyright (C) 2004-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/*-
- * Copyright (c) 1990, 1993, 1994
- *      The Regents of the University of California.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 4. Neither the name of the University nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- */
+ 
 
 #include <config.h>
 
@@ -83,9 +39,9 @@ static char sccsid[] = "@(#)fts.c       8.6 (Berkeley) 8/14/94";
 #endif
 
 #if HAVE_STRUCT_DIRENT_D_TYPE
-/* True if the type of the directory entry D is known.  */
+ 
 # define DT_IS_KNOWN(d) ((d)->d_type != DT_UNKNOWN)
-/* True if the type of the directory entry D must be T.  */
+ 
 # define DT_MUST_BE(d, t) ((d)->d_type == (t))
 # define D_TYPE(d) ((d)->d_type)
 #else
@@ -96,8 +52,7 @@ static char sccsid[] = "@(#)fts.c       8.6 (Berkeley) 8/14/94";
 # undef DT_UNKNOWN
 # define DT_UNKNOWN 0
 
-/* Any nonzero values will do here, so long as they're distinct.
-   Undef any existing macros out of the way.  */
+ 
 # undef DT_BLK
 # undef DT_CHR
 # undef DT_DIR
@@ -132,21 +87,16 @@ enum
 #ifdef D_INO_IN_DIRENT
 # define D_INO(dp) (dp)->d_ino
 #else
-/* Some systems don't have inodes, so fake them to avoid lots of ifdefs.  */
+ 
 # define D_INO(dp) NOT_AN_INODE_NUMBER
 #endif
 
-/* If possible (see max_entries, below), read no more than this many directory
-   entries at a time.  Without this limit (i.e., when using non-NULL
-   fts_compar), processing a directory with 4,000,000 entries requires ~1GiB
-   of memory, and handling 64M entries would require 16GiB of memory.  */
+ 
 #ifndef FTS_MAX_READDIR_ENTRIES
 # define FTS_MAX_READDIR_ENTRIES 100000
 #endif
 
-/* If there are more than this many entries in a directory,
-   and the conditions mentioned below are satisfied, then sort
-   the entries on inode number before any further processing.  */
+ 
 #ifndef FTS_INODE_SORT_DIR_ENTRIES_THRESHOLD
 # define FTS_INODE_SORT_DIR_ENTRIES_THRESHOLD 10000
 #endif
@@ -175,15 +125,14 @@ enum Fts_stat
 # define readdir __readdir
 #else
 # undef internal_function
-# define internal_function /* empty */
+# define internal_function  
 #endif
 
 #ifndef __set_errno
 # define __set_errno(Val) errno = (Val)
 #endif
 
-/* If this host provides the openat function, then we can avoid
-   attempting to open "." in some initialization code below.  */
+ 
 #ifdef HAVE_OPENAT
 # define HAVE_OPENAT_SUPPORT 1
 #else
@@ -239,19 +188,18 @@ static int      fts_safe_changedir (FTS *, FTSENT *, int, const char *)
 #define ISSET(opt)      ((sp->fts_options & (opt)) != 0)
 #define SET(opt)        (sp->fts_options |= (opt))
 
-/* FIXME: FTS_NOCHDIR is now misnamed.
-   Call it FTS_USE_FULL_RELATIVE_FILE_NAMES instead. */
+ 
 #define FCHDIR(sp, fd)                                  \
   (!ISSET(FTS_NOCHDIR) && (ISSET(FTS_CWDFD)             \
                            ? (cwd_advance_fd ((sp), (fd), true), 0) \
                            : fchdir (fd)))
 
 
-/* fts_build flags */
-/* FIXME: make this an enum */
-#define BCHILD          1               /* fts_children */
-#define BNAMES          2               /* fts_children, names only */
-#define BREAD           3               /* fts_read */
+ 
+ 
+#define BCHILD          1                
+#define BNAMES          2                
+#define BREAD           3                
 
 #if GNULIB_FTS_DEBUG
 # include <inttypes.h>
@@ -286,9 +234,7 @@ fd_ring_clear (I_ring *fd_ring)
     }
 }
 
-/* Overload the fts_statp->st_size member (otherwise unused, when
-   fts_info is FTS_NSOK) to indicate whether fts_read should stat
-   this entry or not.  */
+ 
 static void
 fts_set_stat_required (FTSENT *p, bool required)
 {
@@ -298,11 +244,7 @@ fts_set_stat_required (FTSENT *p, bool required)
                            : FTS_NO_STAT_REQUIRED);
 }
 
-/* Virtual fchdir.  Advance SP's working directory file descriptor,
-   SP->fts_cwd_fd, to FD, and push the previous value onto the fd_ring.
-   CHDIR_DOWN_ONE is true if FD corresponds to an entry in the directory
-   open on sp->fts_cwd_fd; i.e., to move the working directory one level
-   down.  */
+ 
 static void
 internal_function
 cwd_advance_fd (FTS *sp, int fd, bool chdir_down_one)
@@ -312,26 +254,22 @@ cwd_advance_fd (FTS *sp, int fd, bool chdir_down_one)
 
   if (chdir_down_one)
     {
-      /* Push "old" onto the ring.
-         If the displaced file descriptor is non-negative, close it.  */
+       
       int prev_fd_in_slot = i_ring_push (&sp->fts_fd_ring, old);
       fd_ring_print (sp, stderr, "post-push");
       if (0 <= prev_fd_in_slot)
-        close (prev_fd_in_slot); /* ignore any close failure */
+        close (prev_fd_in_slot);  
     }
   else if ( ! ISSET (FTS_NOCHDIR))
     {
       if (0 <= old)
-        close (old); /* ignore any close failure */
+        close (old);  
     }
 
   sp->fts_cwd_fd = fd;
 }
 
-/* Restore the initial, pre-traversal, "working directory".
-   In FTS_CWDFD mode, we merely call cwd_advance_fd, otherwise,
-   we may actually change the working directory.
-   Return 0 upon success. Upon failure, set errno and return nonzero.  */
+ 
 static int
 restore_initial_cwd (FTS *sp)
 {
@@ -340,9 +278,7 @@ restore_initial_cwd (FTS *sp)
   return fail;
 }
 
-/* Open the directory DIR if possible, and return a file
-   descriptor.  Return -1 and set errno on failure.  It doesn't matter
-   whether the file descriptor has read or write access.  */
+ 
 
 static int
 internal_function
@@ -366,10 +302,10 @@ fts_open (char * const *argv,
         register FTSENT *p, *root;
         register size_t nitems;
         FTSENT *parent = NULL;
-        FTSENT *tmp = NULL;     /* pacify gcc */
+        FTSENT *tmp = NULL;      
         bool defer_stat;
 
-        /* Options check. */
+         
         if (options & ~FTS_OPTIONMASK) {
                 __set_errno (EINVAL);
                 return (NULL);
@@ -383,41 +319,28 @@ fts_open (char * const *argv,
                 return (NULL);
         }
 
-        /* Allocate/initialize the stream */
+         
         sp = calloc (1, sizeof *sp);
         if (sp == NULL)
                 return (NULL);
         sp->fts_compar = compar;
         sp->fts_options = options;
 
-        /* Logical walks turn on NOCHDIR; symbolic links are too hard. */
+         
         if (ISSET(FTS_LOGICAL)) {
                 SET(FTS_NOCHDIR);
                 CLR(FTS_CWDFD);
         }
 
-        /* Initialize fts_cwd_fd.  */
+         
         sp->fts_cwd_fd = AT_FDCWD;
         if ( ISSET(FTS_CWDFD) && ! HAVE_OPENAT_SUPPORT)
           {
-            /* While it isn't technically necessary to open "." this
-               early, doing it here saves us the trouble of ensuring
-               later (where it'd be messier) that "." can in fact
-               be opened.  If not, revert to FTS_NOCHDIR mode.  */
+             
             int fd = open (".", O_SEARCH | O_CLOEXEC);
             if (fd < 0)
               {
-                /* Even if "." is unreadable, don't revert to FTS_NOCHDIR mode
-                   on systems like Linux+PROC_FS, where our openat emulation
-                   is good enough.  Note: on a system that emulates
-                   openat via /proc, this technique can still fail, but
-                   only in extreme conditions, e.g., when the working
-                   directory cannot be saved (i.e. save_cwd fails) --
-                   and that happens on Linux only when "." is unreadable
-                   and the CWD would be longer than PATH_MAX.
-                   FIXME: once Linux kernel openat support is well established,
-                   replace the above open call and this entire if/else block
-                   with the body of the if-block below.  */
+                 
                 if ( openat_needs_fchdir ())
                   {
                     SET(FTS_NOCHDIR);
@@ -430,10 +353,7 @@ fts_open (char * const *argv,
               }
           }
 
-        /*
-         * Start out with 1K of file name space, and enough, in any case,
-         * to hold the user's file names.
-         */
+         
 #ifndef MAXPATHLEN
 # define MAXPATHLEN 1024
 #endif
@@ -443,35 +363,24 @@ fts_open (char * const *argv,
                   goto mem1;
         }
 
-        /* Allocate/initialize root's parent. */
+         
         if (*argv != NULL) {
                 if ((parent = fts_alloc(sp, "", 0)) == NULL)
                         goto mem2;
                 parent->fts_level = FTS_ROOTPARENTLEVEL;
           }
 
-        /* The classic fts implementation would call fts_stat with
-           a new entry for each iteration of the loop below.
-           If the comparison function is not specified or if the
-           FTS_DEFER_STAT option is in effect, don't stat any entry
-           in this loop.  This is an attempt to minimize the interval
-           between the initial stat/lstat/fstatat and the point at which
-           a directory argument is first opened.  This matters for any
-           directory command line argument that resides on a file system
-           without genuine i-nodes.  If you specify FTS_DEFER_STAT along
-           with a comparison function, that function must not access any
-           data via the fts_statp pointer.  */
+         
         defer_stat = (compar == NULL || ISSET(FTS_DEFER_STAT));
 
-        /* Allocate/initialize root(s). */
+         
         for (root = NULL, nitems = 0; *argv != NULL; ++argv, ++nitems) {
-                /* *Do* allow zero-length file names. */
+                 
                 size_t len = strlen(*argv);
 
                 if ( ! (options & FTS_VERBATIM))
                   {
-                    /* If there are two or more trailing slashes, trim all but one,
-                       but don't change "//" to "/", and do map "///" to "/".  */
+                     
                     char const *v = *argv;
                     if (2 < len && v[len - 1] == '/')
                       while (1 < len && v[len - 2] == '/')
@@ -483,9 +392,7 @@ fts_open (char * const *argv,
                 p->fts_level = FTS_ROOTLEVEL;
                 p->fts_parent = parent;
                 p->fts_accpath = p->fts_name;
-                /* Even when defer_stat is true, be sure to stat the first
-                   command line argument, since fts_read (at least with
-                   FTS_XDEV) requires that.  */
+                 
                 if (defer_stat && root != NULL) {
                         p->fts_info = FTS_NSOK;
                         fts_set_stat_required(p, true);
@@ -493,10 +400,7 @@ fts_open (char * const *argv,
                         p->fts_info = fts_stat(sp, p, false);
                 }
 
-                /*
-                 * If comparison routine supplied, traverse in sorted
-                 * order; otherwise traverse in the order specified.
-                 */
+                 
                 if (compar) {
                         p->fts_link = root;
                         root = p;
@@ -513,11 +417,7 @@ fts_open (char * const *argv,
         if (compar && nitems > 1)
                 root = fts_sort(sp, root, nitems);
 
-        /*
-         * Allocate a dummy pointer and make fts_read think that we've just
-         * finished the node before the root(s); set p->fts_info to FTS_INIT
-         * so that everything about the "current" node is ignored.
-         */
+         
         if ((sp->fts_cur = fts_alloc(sp, "", 0)) == NULL)
                 goto mem3;
         sp->fts_cur->fts_link = root;
@@ -526,13 +426,7 @@ fts_open (char * const *argv,
         if (! setup_dir (sp))
                 goto mem3;
 
-        /*
-         * If using chdir(2), grab a file descriptor pointing to dot to ensure
-         * that we can get back here; this could be avoided for some file names,
-         * but almost certainly not worth the effort.  Slashes, symbolic links,
-         * and ".." are all fairly nasty problems.  Note, if we can't get the
-         * descriptor we run anyway, just more slowly.
-         */
+         
         if (!ISSET(FTS_NOCHDIR) && !ISSET(FTS_CWDFD)
             && (sp->fts_rfd = diropen (sp, ".")) < 0)
                 SET(FTS_NOCHDIR);
@@ -554,13 +448,7 @@ fts_load (FTS *sp, register FTSENT *p)
         register size_t len;
         register char *cp;
 
-        /*
-         * Load the stream structure for the next traversal.  Since we don't
-         * actually enter the directory until after the preorder visit, set
-         * the fts_accpath field specially so the chdir gets done to the right
-         * place and the user can access the first node.  From fts_open it's
-         * known that the file name will fit.
-         */
+         
         len = p->fts_pathlen = p->fts_namelen;
         memmove(sp->fts_path, p->fts_name, len + 1);
         if ((cp = strrchr(p->fts_name, '/')) && (cp != p->fts_name || cp[1])) {
@@ -577,11 +465,7 @@ fts_close (FTS *sp)
         register FTSENT *freep, *p;
         int saved_errno = 0;
 
-        /*
-         * This still works if we haven't read anything -- the dummy structure
-         * points to the root list, so we step through to the end of the root
-         * list which has a valid parent pointer.
-         */
+         
         if (sp->fts_cur) {
                 for (p = sp->fts_cur; p->fts_level >= FTS_ROOTLEVEL;) {
                         freep = p;
@@ -591,7 +475,7 @@ fts_close (FTS *sp)
                 free(p);
         }
 
-        /* Free up child linked list, sort array, file name buffer. */
+         
         if (sp->fts_child)
                 fts_lfree(sp->fts_child);
         free(sp->fts_array);
@@ -605,12 +489,11 @@ fts_close (FTS *sp)
           }
         else if (!ISSET(FTS_NOCHDIR))
           {
-            /* Return to original directory, save errno if necessary. */
+             
             if (fchdir(sp->fts_rfd))
               saved_errno = errno;
 
-            /* If close fails, record errno only if saved_errno is zero,
-               so that we report the probably-more-meaningful fchdir errno.  */
+             
             if (close (sp->fts_rfd))
               if (saved_errno == 0)
                 saved_errno = errno;
@@ -623,10 +506,10 @@ fts_close (FTS *sp)
 
         free_dir (sp);
 
-        /* Free up the stream pointer. */
+         
         free(sp);
 
-        /* Set errno and return. */
+         
         if (saved_errno) {
                 __set_errno (saved_errno);
                 return (-1);
@@ -635,18 +518,16 @@ fts_close (FTS *sp)
         return (0);
 }
 
-/* Minimum link count of a traditional Unix directory.  When leaf
-   optimization is OK and a directory's st_nlink == MIN_DIR_NLINK,
-   then the directory has no subdirectories.  */
+ 
 enum { MIN_DIR_NLINK = 2 };
 
-/* Whether leaf optimization is OK for a directory.  */
+ 
 enum leaf_optimization
   {
-    /* st_nlink is not reliable for this directory's subdirectories.  */
+     
     NO_LEAF_OPTIMIZATION,
 
-    /* st_nlink == 2 means the directory lacks subdirectories.  */
+     
     OK_LEAF_OPTIMIZATION
   };
 
@@ -655,7 +536,7 @@ enum leaf_optimization
 
 # include <sys/vfs.h>
 
-/* Linux-specific constants from coreutils' src/fs.h */
+ 
 # define S_MAGIC_AFS 0x5346414F
 # define S_MAGIC_CIFS 0xFF534D42
 # define S_MAGIC_NFS 0x6969
@@ -668,16 +549,14 @@ typedef __fsword_t fsword;
 typedef long int fsword;
 # endif
 
-/* Map a stat.st_dev number to a file system type number f_ftype.  */
+ 
 struct dev_type
 {
   dev_t st_dev;
   fsword f_type;
 };
 
-/* Use a tiny initial size.  If a traversal encounters more than
-   a few devices, the cost of growing/rehashing this table will be
-   rendered negligible by the number of inodes processed.  */
+ 
 enum { DEV_TYPE_HT_INITIAL_SIZE = 13 };
 
 static size_t
@@ -696,9 +575,7 @@ dev_type_compare (void const *x, void const *y)
   return ax->st_dev == ay->st_dev;
 }
 
-/* Return the file system type of P with file descriptor FD, or 0 if not known.
-   If FD is negative, P's file descriptor is unavailable.
-   Try to cache known values.  */
+ 
 
 static fsword
 filesystem_type (FTSENT const *p, int fd)
@@ -708,8 +585,7 @@ filesystem_type (FTSENT const *p, int fd)
   struct dev_type *ent;
   struct statfs fs_buf;
 
-  /* If we're not in CWDFD mode, don't bother with this optimization,
-     since the caller is not serious about performance.  */
+   
   if (!ISSET (FTS_CWDFD))
     return 0;
 
@@ -726,7 +602,7 @@ filesystem_type (FTSENT const *p, int fd)
         return ent->f_type;
     }
 
-  /* Look-up failed.  Query directly and cache the result.  */
+   
   if (fd < 0 || fstatfs (fd, &fs_buf) != 0)
     return 0;
 
@@ -749,26 +625,18 @@ filesystem_type (FTSENT const *p, int fd)
   return fs_buf.f_type;
 }
 
-/* Return true if sorting dirents on inode numbers is known to improve
-   traversal performance for the directory P with descriptor DIR_FD.
-   Return false otherwise.  When in doubt, return true.
-   DIR_FD is negative if unavailable.  */
+ 
 static bool
 dirent_inode_sort_may_be_useful (FTSENT const *p, int dir_fd)
 {
-  /* Skip the sort only if we can determine efficiently
-     that skipping it is the right thing to do.
-     The cost of performing an unnecessary sort is negligible,
-     while the cost of *not* performing it can be O(N^2) with
-     a very large constant.  */
+   
 
   switch (filesystem_type (p, dir_fd))
     {
     case S_MAGIC_CIFS:
     case S_MAGIC_NFS:
     case S_MAGIC_TMPFS:
-      /* On a file system of any of these types, sorting
-         is unnecessary, and hence wasteful.  */
+       
       return false;
 
     default:
@@ -776,36 +644,26 @@ dirent_inode_sort_may_be_useful (FTSENT const *p, int dir_fd)
     }
 }
 
-/* Given an FTS entry P for a directory with descriptor DIR_FD,
-   return whether it is valid to apply leaf optimization.
-   The optimization is valid if a directory's st_nlink value equal
-   to MIN_DIR_NLINK means the directory has no subdirectories.
-   DIR_FD is negative if unavailable.  */
+ 
 static enum leaf_optimization
 leaf_optimization (FTSENT const *p, int dir_fd)
 {
   switch (filesystem_type (p, dir_fd))
     {
     case 0:
-      /* Leaf optimization is unsafe if the file system type is unknown.  */
+       
       FALLTHROUGH;
     case S_MAGIC_AFS:
-      /* Although AFS mount points are not counted in st_nlink, they
-         act like directories.  See <https://bugs.debian.org/143111>.  */
+       
       FALLTHROUGH;
     case S_MAGIC_CIFS:
-      /* Leaf optimization causes 'find' to abort.  See
-         <https://lists.gnu.org/r/bug-gnulib/2018-04/msg00015.html>.  */
+       
       FALLTHROUGH;
     case S_MAGIC_NFS:
-      /* NFS provides usable dirent.d_type but not necessarily for all entries
-         of large directories, so as per <https://bugzilla.redhat.com/1252549>
-         NFS should return true.  However st_nlink values are not accurate on
-         all implementations as per <https://bugzilla.redhat.com/1299169>.  */
+       
       FALLTHROUGH;
     case S_MAGIC_PROC:
-      /* Per <https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=143111> /proc
-         may have bogus stat.st_nlink values.  */
+       
       return NO_LEAF_OPTIMIZATION;
 
     default:
@@ -827,10 +685,7 @@ leaf_optimization (_GL_UNUSED FTSENT const *p, _GL_UNUSED int dir_fd)
 }
 #endif
 
-/*
- * Special case of "/" at the end of the file name so that slashes aren't
- * appended which would cause file names to be written as "....//foo".
- */
+ 
 #define NAPPEND(p)                                                      \
         (p->fts_path[p->fts_pathlen - 1] == '/'                         \
             ? p->fts_pathlen - 1 : p->fts_pathlen)
@@ -842,18 +697,18 @@ fts_read (register FTS *sp)
         register unsigned short int instr;
         register char *t;
 
-        /* If finished or unrecoverable error, return NULL. */
+         
         if (sp->fts_cur == NULL || ISSET(FTS_STOP))
                 return (NULL);
 
-        /* Set current node pointer. */
+         
         p = sp->fts_cur;
 
-        /* Save and zero out user instructions. */
+         
         instr = p->fts_instr;
         p->fts_instr = FTS_NOINSTR;
 
-        /* Any type of file may be re-visited; re-stat and re-turn. */
+         
         if (instr == FTS_AGAIN) {
                 p->fts_info = fts_stat(sp, p, false);
                 return (p);
@@ -861,12 +716,7 @@ fts_read (register FTS *sp)
         Dprintf (("fts_read: p=%s\n",
                   p->fts_info == FTS_INIT ? "" : p->fts_path));
 
-        /*
-         * Following a symlink -- SLNONE test allows application to see
-         * SLNONE and recover.  If indirecting through a symlink, have
-         * keep a pointer to current location.  If unable to get that
-         * pointer, follow fails.
-         */
+         
         if (instr == FTS_FOLLOW &&
             (p->fts_info == FTS_SL || p->fts_info == FTS_SLNONE)) {
                 p->fts_info = fts_stat(sp, p, true);
@@ -880,9 +730,9 @@ fts_read (register FTS *sp)
                 goto check_for_dir;
         }
 
-        /* Directory in pre-order. */
+         
         if (p->fts_info == FTS_D) {
-                /* If skipped or crossed mount point, do post-order visit. */
+                 
                 if (instr == FTS_SKIP ||
                     (ISSET(FTS_XDEV) && p->fts_statp->st_dev != sp->fts_dev)) {
                         if (p->fts_flags & FTS_SYMFOLLOW)
@@ -896,25 +746,14 @@ fts_read (register FTS *sp)
                         return (p);
                 }
 
-                /* Rebuild if only read the names and now traversing. */
+                 
                 if (sp->fts_child != NULL && ISSET(FTS_NAMEONLY)) {
                         CLR(FTS_NAMEONLY);
                         fts_lfree(sp->fts_child);
                         sp->fts_child = NULL;
                 }
 
-                /*
-                 * Cd to the subdirectory.
-                 *
-                 * If have already read and now fail to chdir, whack the list
-                 * to make the names come out right, and set the parent errno
-                 * so the application will eventually get an error condition.
-                 * Set the FTS_DONTCHDIR flag so that when we logically change
-                 * directories back to the parent we don't do a chdir.
-                 *
-                 * If haven't read do so.  If the read fails, fts_build sets
-                 * FTS_STOP or the fts_info field of the node.
-                 */
+                 
                 if (sp->fts_child != NULL) {
                         if (fts_safe_changedir(sp, p, -1, p->fts_accpath)) {
                                 p->fts_errno = errno;
@@ -927,9 +766,7 @@ fts_read (register FTS *sp)
                 } else if ((sp->fts_child = fts_build(sp, BREAD)) == NULL) {
                         if (ISSET(FTS_STOP))
                                 return (NULL);
-                        /* If fts_build's call to fts_safe_changedir failed
-                           because it was not able to fchdir into a
-                           subdirectory, tell the caller.  */
+                         
                         if (p->fts_errno && p->fts_info != FTS_DNR)
                                 p->fts_info = FTS_ERR;
                         LEAVE_DIR (sp, p, "2");
@@ -940,12 +777,10 @@ fts_read (register FTS *sp)
                 goto name;
         }
 
-        /* Move to the next node on this level. */
+         
 next:   tmp = p;
 
-        /* If we have so many directory entries that we're reading them
-           in batches, and we've reached the end of the current batch,
-           read in a new batch.  */
+         
         if (p->fts_link == NULL && p->fts_parent->fts_dirp)
           {
             p = tmp->fts_parent;
@@ -967,11 +802,7 @@ next:   tmp = p;
                 sp->fts_cur = p;
                 free(tmp);
 
-                /*
-                 * If reached the top, return to the original directory (or
-                 * the root of the tree), and load the file names for the next
-                 * root.
-                 */
+                 
                 if (p->fts_level == FTS_ROOTLEVEL) {
                         if (restore_initial_cwd(sp)) {
                                 SET(FTS_STOP);
@@ -986,11 +817,7 @@ next:   tmp = p;
                         goto check_for_dir;
                 }
 
-                /*
-                 * User may have called fts_set on the node.  If skipped,
-                 * ignore.  If followed, get a file descriptor so we can
-                 * get back if necessary.
-                 */
+                 
                 if (p->fts_instr == FTS_SKIP)
                         goto next;
                 if (p->fts_instr == FTS_FOLLOW) {
@@ -1020,9 +847,7 @@ check_for_dir:
 
                 if (p->fts_info == FTS_D)
                   {
-                    /* Now that P->fts_statp is guaranteed to be valid,
-                       if this is a command-line directory, record its
-                       device number, to be used for FTS_XDEV.  */
+                     
                     if (p->fts_level == FTS_ROOTLEVEL)
                       sp->fts_dev = p->fts_statp->st_dev;
                     Dprintf (("  entering: %s\n", p->fts_path));
@@ -1033,16 +858,13 @@ check_for_dir:
         }
 cd_dot_dot:
 
-        /* Move up to the parent node. */
+         
         p = tmp->fts_parent;
         sp->fts_cur = p;
         free(tmp);
 
         if (p->fts_level == FTS_ROOTPARENTLEVEL) {
-                /*
-                 * Done; free everything up and set errno to 0 so the user
-                 * can distinguish between error and EOF.
-                 */
+                 
                 free(p);
                 __set_errno (0);
                 return (sp->fts_cur = NULL);
@@ -1050,15 +872,10 @@ cd_dot_dot:
 
         fts_assert (p->fts_info != FTS_NSOK);
 
-        /* NUL terminate the file name.  */
+         
         sp->fts_path[p->fts_pathlen] = '\0';
 
-        /*
-         * Return to the parent directory.  If at a root node, restore
-         * the initial working directory.  If we came through a symlink,
-         * go back through the file descriptor.  Otherwise, move up
-         * one level, via "..".
-         */
+         
         if (p->fts_level == FTS_ROOTLEVEL) {
                 if (restore_initial_cwd(sp)) {
                         p->fts_errno = errno;
@@ -1076,9 +893,7 @@ cd_dot_dot:
                 SET(FTS_STOP);
         }
 
-        /* If the directory causes a cycle, preserve the FTS_DC flag and keep
-           the corresponding dev/ino pair in the hash table.  It is going to be
-           removed when leaving the original directory.  */
+         
         if (p->fts_info != FTS_DC) {
                 p->fts_info = p->fts_errno ? FTS_ERR : FTS_DP;
                 if (p->fts_errno == 0)
@@ -1087,13 +902,8 @@ cd_dot_dot:
         return ISSET(FTS_STOP) ? NULL : p;
 }
 
-/*
- * Fts_set takes the stream as an argument although it's not used in this
- * implementation; it would be necessary if anyone wanted to add global
- * semantics to fts using fts_set.  An error return is allowed for similar
- * reasons.
- */
-/* ARGSUSED */
+ 
+ 
 int
 fts_set(_GL_UNUSED FTS *sp, FTSENT *p, int instr)
 {
@@ -1117,32 +927,25 @@ fts_children (register FTS *sp, int instr)
                 return (NULL);
         }
 
-        /* Set current node pointer. */
+         
         p = sp->fts_cur;
 
-        /*
-         * Errno set to 0 so user can distinguish empty directory from
-         * an error.
-         */
+         
         __set_errno (0);
 
-        /* Fatal errors stop here. */
+         
         if (ISSET(FTS_STOP))
                 return (NULL);
 
-        /* Return logical hierarchy of user's arguments. */
+         
         if (p->fts_info == FTS_INIT)
                 return (p->fts_link);
 
-        /*
-         * If not a directory being visited in pre-order, stop here.  Could
-         * allow FTS_DNR, assuming the user has fixed the problem, but the
-         * same effect is available with FTS_AGAIN.
-         */
-        if (p->fts_info != FTS_D /* && p->fts_info != FTS_DNR */)
+         
+        if (p->fts_info != FTS_D  )
                 return (NULL);
 
-        /* Free up any previous child list. */
+         
         if (sp->fts_child != NULL)
                 fts_lfree(sp->fts_child);
 
@@ -1152,13 +955,7 @@ fts_children (register FTS *sp, int instr)
         } else
                 instr = BCHILD;
 
-        /*
-         * If using chdir on a relative file name and called BEFORE fts_read
-         * does its chdir to the root of a traversal, we can lose -- we need to
-         * chdir into the subdirectory, and we don't know where the current
-         * directory is, so we can't get back so that the upcoming chdir by
-         * fts_read will work.
-         */
+         
         if (p->fts_level != FTS_ROOTLEVEL || p->fts_accpath[0] == '/' ||
             ISSET(FTS_NOCHDIR))
                 return (sp->fts_child = fts_build(sp, instr));
@@ -1184,19 +981,14 @@ fts_children (register FTS *sp, int instr)
         return (sp->fts_child);
 }
 
-/* A comparison function to sort on increasing inode number.
-   For some file system types, sorting either way makes a huge
-   performance difference for a directory with very many entries,
-   but sorting on increasing values is slightly better than sorting
-   on decreasing values.  The difference is in the 5% range.  */
+ 
 static int
 fts_compare_ino (struct _ftsent const **a, struct _ftsent const **b)
 {
   return _GL_CMP (a[0]->fts_statp->st_ino, b[0]->fts_statp->st_ino);
 }
 
-/* Map the dirent.d_type value, DTYPE, to the corresponding stat.st_mode
-   S_IF* bit and set ST.st_mode, thus clearing all other bits in that field.  */
+ 
 static void
 set_stat_type (struct stat *st, unsigned int dtype)
 {
@@ -1248,20 +1040,7 @@ set_stat_type (struct stat *st, unsigned int dtype)
                     ? O_NOFOLLOW : 0)),                         \
                   Pdir_fd)
 
-/*
- * This is the tricky part -- do not casually change *anything* in here.  The
- * idea is to build the linked list of entries that are used by fts_children
- * and fts_read.  There are lots of special cases.
- *
- * The real slowdown in walking the tree is the stat calls.  If FTS_NOSTAT is
- * set and it's a physical walk (so that symbolic links can't be directories),
- * we can do things quickly.  First, if it's a 4.4BSD file system, the type
- * of the file is in the directory entry.  Otherwise, we assume that the number
- * of subdirectories in a node is equal to the number of links to the parent.
- * The former skips all stat calls.  The latter skips stat calls in any leaf
- * directories and for any files after the subdirectories in the directory have
- * been found, cutting the stat calls by about 2/3.
- */
+ 
 static FTSENT *
 internal_function
 fts_build (register FTS *sp, int type)
@@ -1281,9 +1060,7 @@ fts_build (register FTS *sp, int type)
         bool sort_by_inode = false;
         size_t max_entries;
 
-        /* When cur->fts_dirp is non-NULL, that means we should
-           continue calling readdir on that existing DIR* pointer
-           rather than opening a new one.  */
+         
         if (continue_readdir)
           {
             DIR *dp = cur->fts_dirp;
@@ -1302,8 +1079,7 @@ fts_build (register FTS *sp, int type)
           }
         else
           {
-            /* Open the directory for reading.  If this fails, we're done.
-               If being called from fts_read, set the fts_info field. */
+             
             if ((cur->fts_dirp = fts_opendir(cur->fts_accpath, &dir_fd)) == NULL)
               {
                 if (type == BREAD)
@@ -1313,17 +1089,11 @@ fts_build (register FTS *sp, int type)
                   }
                 return NULL;
               }
-            /* Rather than calling fts_stat for each and every entry encountered
-               in the readdir loop (below), stat each directory only right after
-               opening it.  */
+             
             bool stat_optimization = cur->fts_info == FTS_NSOK;
 
             if (stat_optimization
-                /* Also read the stat info again after opening a directory to
-                   reveal eventual changes caused by a submount triggered by
-                   the traversal.  But do it only for utilities which use
-                   FTS_TIGHT_CYCLE_CHECK.  Therefore, only find and du
-                   benefit/suffer from this feature for now.  */
+                 
                 || ISSET (FTS_TIGHT_CYCLE_CHECK))
               {
                 if (!stat_optimization)
@@ -1352,40 +1122,18 @@ fts_build (register FTS *sp, int type)
               }
           }
 
-        /* Maximum number of readdir entries to read at one time.  This
-           limitation is to avoid reading millions of entries into memory
-           at once.  When an fts_compar function is specified, we have no
-           choice: we must read all entries into memory before calling that
-           function.  But when no such function is specified, we can read
-           entries in batches that are large enough to help us with inode-
-           sorting, yet not so large that we risk exhausting memory.  */
+         
         max_entries = sp->fts_compar ? SIZE_MAX : FTS_MAX_READDIR_ENTRIES;
 
-        /*
-         * If we're going to need to stat anything or we want to descend
-         * and stay in the directory, chdir.  If this fails we keep going,
-         * but set a flag so we don't chdir after the post-order visit.
-         * We won't be able to stat anything, but we can still return the
-         * names themselves.  Note, that since fts_read won't be able to
-         * chdir into the directory, it will have to return different file
-         * names than before, i.e. "a/b" instead of "b".  Since the node
-         * has already been visited in pre-order, have to wait until the
-         * post-order visit to return the error.  There is a special case
-         * here, if there was nothing to stat then it's not an error to
-         * not be able to stat.  This is all fairly nasty.  If a program
-         * needed sorted entries or stat information, they had better be
-         * checking FTS_NS on the returned nodes.
-         */
+         
         if (continue_readdir)
           {
-            /* When resuming a short readdir run, we already have
-               the required dirp and dir_fd.  */
+             
             descend = true;
           }
         else
           {
-            /* Try to descend unless it is a names-only fts_children,
-               or the directory is known to lack subdirectories.  */
+             
             descend = (type != BNAMES
                        && ! (ISSET (FTS_NOSTAT) && ISSET (FTS_PHYSICAL)
                              && ! ISSET (FTS_SEEDOT)
@@ -1410,22 +1158,13 @@ fts_build (register FTS *sp, int type)
               }
           }
 
-        /*
-         * Figure out the max file name length that can be stored in the
-         * current buffer -- the inner loop allocates more space as necessary.
-         * We really wouldn't have to do the maxlen calculations here, we
-         * could do them in fts_read before returning the name, but it's a
-         * lot easier here since the length is part of the dirent structure.
-         *
-         * If not changing directories set a pointer so that can just append
-         * each new component into the file name.
-         */
+         
         len = NAPPEND(cur);
         if (ISSET(FTS_NOCHDIR)) {
                 cp = sp->fts_path + len;
                 *cp++ = '/';
         } else {
-                /* GCC, you're too verbose. */
+                 
                 cp = NULL;
         }
         len++;
@@ -1433,7 +1172,7 @@ fts_build (register FTS *sp, int type)
 
         level = cur->fts_level + 1;
 
-        /* Read the directory, attaching each entry to the "link" pointer. */
+         
         doadjust = false;
         head = NULL;
         tail = NULL;
@@ -1445,8 +1184,7 @@ fts_build (register FTS *sp, int type)
                 if (dp == NULL) {
                         if (errno) {
                                 cur->fts_errno = errno;
-                                /* If we've not read any items yet, treat
-                                   the error as if we can't access the dir.  */
+                                 
                                 cur->fts_info = (continue_readdir || nitems)
                                                 ? FTS_ERR : FTS_DNR;
                         }
@@ -1461,14 +1199,10 @@ fts_build (register FTS *sp, int type)
                 if (!p)
                         goto mem1;
                 if (d_namelen >= maxlen) {
-                        /* include space for NUL */
+                         
                         uintptr_t oldaddr = (uintptr_t) sp->fts_path;
                         if (! fts_palloc(sp, d_namelen + len + 1)) {
-                                /*
-                                 * No more memory.  Save
-                                 * errno, free up the current structure and the
-                                 * structures already allocated.
-                                 */
+                                 
 mem1:                           saved_errno = errno;
                                 free(p);
                                 fts_lfree(head);
@@ -1478,7 +1212,7 @@ mem1:                           saved_errno = errno;
                                 __set_errno (saved_errno);
                                 return (NULL);
                         }
-                        /* Did realloc() change the pointer? */
+                         
                         if (oldaddr != (uintptr_t) sp->fts_path) {
                                 doadjust = true;
                                 if (ISSET(FTS_NOCHDIR))
@@ -1489,12 +1223,7 @@ mem1:                           saved_errno = errno;
 
                 new_len = len + d_namelen;
                 if (new_len < len) {
-                        /*
-                         * In the unlikely event that we would end up
-                         * with a file name longer than SIZE_MAX, free up
-                         * the current structure and the structures already
-                         * allocated, then error out with ENAMETOOLONG.
-                         */
+                         
                         free(p);
                         fts_lfree(head);
                         closedir_and_clear(cur->fts_dirp);
@@ -1507,11 +1236,10 @@ mem1:                           saved_errno = errno;
                 p->fts_parent = sp->fts_cur;
                 p->fts_pathlen = new_len;
 
-                /* Store dirent.d_ino, in case we need to sort
-                   entries before processing them.  */
+                 
                 p->fts_statp->st_ino = D_INO (dp);
 
-                /* Build a file name for fts_stat to stat. */
+                 
                 if (ISSET(FTS_NOCHDIR)) {
                         p->fts_accpath = p->fts_path;
                         memmove(cp, p->fts_name, p->fts_namelen + 1);
@@ -1519,33 +1247,21 @@ mem1:                           saved_errno = errno;
                         p->fts_accpath = p->fts_name;
 
                 if (sp->fts_compar == NULL || ISSET(FTS_DEFER_STAT)) {
-                        /* Record what fts_read will have to do with this
-                           entry. In many cases, it will simply fts_stat it,
-                           but we can take advantage of any d_type information
-                           to optimize away the unnecessary stat calls.  I.e.,
-                           if FTS_NOSTAT is in effect and we're not following
-                           symlinks (FTS_PHYSICAL) and d_type indicates this
-                           is *not* a directory, then we won't have to stat it
-                           at all.  If it *is* a directory, then (currently)
-                           we stat it regardless, in order to get device and
-                           inode numbers.  Some day we might optimize that
-                           away, too, for directories where d_ino is known to
-                           be valid.  */
+                         
                         bool skip_stat = (ISSET(FTS_NOSTAT)
                                           && DT_IS_KNOWN(dp)
                                           && ! DT_MUST_BE(dp, DT_DIR)
                                           && (ISSET(FTS_PHYSICAL)
                                               || ! DT_MUST_BE(dp, DT_LNK)));
                         p->fts_info = FTS_NSOK;
-                        /* Propagate dirent.d_type information back
-                           to caller, when possible.  */
+                         
                         set_stat_type (p->fts_statp, D_TYPE (dp));
                         fts_set_stat_required(p, !skip_stat);
                 } else {
                         p->fts_info = fts_stat(sp, p, false);
                 }
 
-                /* We walk in directory order so "ls -f" doesn't get upset. */
+                 
                 p->fts_link = NULL;
                 if (head == NULL)
                         head = tail = p;
@@ -1554,51 +1270,30 @@ mem1:                           saved_errno = errno;
                         tail = p;
                 }
 
-                /* If there are many entries, no sorting function has been
-                   specified, and this file system is of a type that may be
-                   slow with a large number of entries, arrange to sort the
-                   directory entries on increasing inode numbers.
-
-                   The NITEMS comparison uses ==, not >, because the test
-                   needs to be tried at most once once, and NITEMS will exceed
-                   the threshold after it is incremented below.  */
+                 
                 if (nitems == _FTS_INODE_SORT_DIR_ENTRIES_THRESHOLD
                     && !sp->fts_compar)
                   sort_by_inode = dirent_inode_sort_may_be_useful (cur, dir_fd);
 
                 ++nitems;
                 if (max_entries <= nitems) {
-                        /* When there are too many dir entries, leave
-                           fts_dirp open, so that a subsequent fts_read
-                           can take up where we leave off.  */
+                         
                         break;
                 }
         }
 
-        /*
-         * If realloc() changed the address of the file name, adjust the
-         * addresses for the rest of the tree and the dir list.
-         */
+         
         if (doadjust)
                 fts_padjust(sp, head);
 
-        /*
-         * If not changing directories, reset the file name back to original
-         * state.
-         */
+         
         if (ISSET(FTS_NOCHDIR)) {
                 if (len == sp->fts_pathlen || nitems == 0)
                         --cp;
                 *cp = '\0';
         }
 
-        /*
-         * If descended after called from fts_children or after called from
-         * fts_read and nothing found, get back.  At the root level we use
-         * the saved fd; if one of fts_open()'s arguments is a relative name
-         * to an empty directory, we wind up here with no other way back.  If
-         * can't get back, we're done.
-         */
+         
         if (!continue_readdir && descend && (type == BCHILD || !nitems) &&
             (cur->fts_level == FTS_ROOTLEVEL
              ? restore_initial_cwd(sp)
@@ -1609,7 +1304,7 @@ mem1:                           saved_errno = errno;
                 return (NULL);
         }
 
-        /* If didn't find anything, return NULL. */
+         
         if (!nitems) {
                 if (type == BREAD
                     && cur->fts_info != FTS_DNR && cur->fts_info != FTS_ERR)
@@ -1624,7 +1319,7 @@ mem1:                           saved_errno = errno;
                 sp->fts_compar = NULL;
         }
 
-        /* Sort the entries. */
+         
         if (sp->fts_compar && nitems > 1)
                 head = fts_sort(sp, head, nitems);
         return (head);
@@ -1648,9 +1343,7 @@ getdevino (int fd)
           : (struct devino) { -1, errno });
 }
 
-/* Walk ->fts_parent links starting at E_CURR, until the root of the
-   current hierarchy.  There should be a directory with dev/inode
-   matching those of AD.  If not, print a lot of diagnostics.  */
+ 
 static void
 find_matching_ancestor (FTSENT const *e_curr, struct Active_dir const *ad)
 {
@@ -1683,7 +1376,7 @@ fts_cross_check (FTS const *sp)
     return;
 
   Dprintf (("fts-cross-check cur=%s\n", ent->fts_path));
-  /* Make sure every parent dir is in the tree.  */
+   
   for (t = ent->fts_parent; t->fts_level >= FTS_ROOTLEVEL; t = t->fts_parent)
     {
       struct Active_dir ad;
@@ -1693,8 +1386,7 @@ fts_cross_check (FTS const *sp)
         printf ("ERROR: active dir, %s, not in tree\n", t->fts_path);
     }
 
-  /* Make sure every dir in the tree is an active dir.
-     But ENT is not necessarily a directory.  If so, just skip this part. */
+   
   if (ent->fts_parent->fts_level >= FTS_ROOTLEVEL
       && (ent->fts_info == FTS_DP
           || ent->fts_info == FTS_D))
@@ -1745,15 +1437,14 @@ fd_ring_print (FTS const *sp, FILE *stream, char const *msg)
     }
 }
 
-/* Ensure that each file descriptor on the fd_ring matches a
-   parent, grandparent, etc. of the current working directory.  */
+ 
 static void
 fd_ring_check (FTS const *sp)
 {
   if (!fts_debug)
     return;
 
-  /* Make a writable copy.  */
+   
   I_ring fd_w = sp->fts_fd_ring;
 
   int cwd_fd = sp->fts_cwd_fd;
@@ -1770,7 +1461,7 @@ fd_ring_check (FTS const *sp)
           int parent_fd = openat (cwd_fd, "..", open_flags);
           if (parent_fd < 0)
             {
-              // Warn?
+               
               break;
             }
           if (!same_fd (fd, parent_fd))
@@ -1799,11 +1490,7 @@ fts_stat(FTS *sp, register FTSENT *p, bool follow)
             || (ISSET (FTS_COMFOLLOW) && p->fts_level == FTS_ROOTLEVEL))
                 follow = true;
 
-        /*
-         * If doing a logical walk, or application requested FTS_FOLLOW, do
-         * a stat(2).  If that fails, check for a nonexistent symlink.  If
-         * fail, set the errno from the stat call.
-         */
+         
         int flags = follow ? 0 : AT_SYMLINK_NOFOLLOW;
         if (fstatat (sp->fts_cwd_fd, p->fts_accpath, sbp, flags) < 0)
           {
@@ -1822,7 +1509,7 @@ fts_stat(FTS *sp, register FTSENT *p, bool follow)
 
         if (S_ISDIR(sbp->st_mode)) {
                 if (ISDOT(p->fts_name)) {
-                        /* Command-line "." and ".." are real directories. */
+                         
                         return (p->fts_level == FTS_ROOTLEVEL ? FTS_D : FTS_DOT);
                 }
 
@@ -1838,11 +1525,7 @@ fts_stat(FTS *sp, register FTSENT *p, bool follow)
 static int
 fts_compar (void const *a, void const *b)
 {
-  /* Convert A and B to the correct types, to pacify the compiler, and
-     for portability to bizarre hosts where "void const *" and "FTSENT
-     const **" differ in runtime representation.  The comparison
-     function cannot modify *a and *b, but there is no compile-time
-     check for this.  */
+   
   FTSENT const **pa = (FTSENT const **) a;
   FTSENT const **pb = (FTSENT const **) b;
   return pa[0]->fts_fts->fts_compar (pa, pb);
@@ -1854,13 +1537,7 @@ fts_sort (FTS *sp, FTSENT *head, register size_t nitems)
 {
         register FTSENT **ap, *p;
 
-        /* On most modern hosts, void * and FTSENT ** have the same
-           run-time representation, and one can convert sp->fts_compar to
-           the type qsort expects without problem.  Use the heuristic that
-           this is OK if the two pointer types are the same size, and if
-           converting FTSENT ** to long int is the same as converting
-           FTSENT ** to void * and then to long int.  This heuristic isn't
-           valid in general but we don't know of any counterexamples.  */
+         
         FTSENT *dummy;
         int (*compare) (void const *, void const *) =
           ((sizeof &dummy == sizeof (void *)
@@ -1868,13 +1545,7 @@ fts_sort (FTS *sp, FTSENT *head, register size_t nitems)
            ? (int (*) (void const *, void const *)) sp->fts_compar
            : fts_compar);
 
-        /*
-         * Construct an array of pointers to the structures and call qsort(3).
-         * Reassemble the array in the order returned by qsort.  If unable to
-         * sort for memory reasons, return the directory entries in their
-         * current order.  Allocate enough space for the current needs plus
-         * 40 so don't realloc one entry at a time.
-         */
+         
         if (nitems > sp->fts_nitems) {
                 FTSENT **a;
 
@@ -1905,15 +1576,12 @@ fts_alloc (FTS *sp, const char *name, register size_t namelen)
         register FTSENT *p;
         size_t len;
 
-        /*
-         * The file name is a variable length array.  Allocate the FTSENT
-         * structure and the file name in one chunk.
-         */
+         
         len = FLEXSIZEOF(FTSENT, fts_name, namelen + 1);
         if ((p = malloc(len)) == NULL)
                 return (NULL);
 
-        /* Copy the name and guarantee NUL termination. */
+         
         memcpy(p->fts_name, name, namelen);
         p->fts_name[namelen] = '\0';
 
@@ -1936,7 +1604,7 @@ fts_lfree (register FTSENT *head)
         register FTSENT *p;
         int err = errno;
 
-        /* Free a linked list of structures. */
+         
         while ((p = head)) {
                 head = head->fts_link;
                 if (p->fts_dirp)
@@ -1947,13 +1615,7 @@ fts_lfree (register FTSENT *head)
         __set_errno (err);
 }
 
-/*
- * Allow essentially unlimited file name lengths; find, rm, ls should
- * all work on any tree.  Most systems will allow creation of file
- * names much longer than MAXPATHLEN, even though the kernel won't
- * resolve them.  Add the size (not just what's needed) plus 256 bytes
- * so don't realloc the file name 2 bytes at a time.
- */
+ 
 static bool
 internal_function
 fts_palloc (FTS *sp, size_t more)
@@ -1961,9 +1623,7 @@ fts_palloc (FTS *sp, size_t more)
         char *p;
         size_t new_len = sp->fts_pathlen + more + 256;
 
-        /*
-         * See if fts_pathlen would overflow.
-         */
+         
         if (new_len < sp->fts_pathlen) {
                 free(sp->fts_path);
                 sp->fts_path = NULL;
@@ -1981,10 +1641,7 @@ fts_palloc (FTS *sp, size_t more)
         return true;
 }
 
-/*
- * When the file name is realloc'd, have to fix all of the pointers in
- *  structures already returned.
- */
+ 
 static void
 internal_function
 fts_padjust (FTS *sp, FTSENT *head)
@@ -1992,9 +1649,7 @@ fts_padjust (FTS *sp, FTSENT *head)
         FTSENT *p;
         char *addr = sp->fts_path;
 
-        /* This code looks at bit-patterns of freed pointers to
-           relocate them, so it relies on undefined behavior.  If this
-           trick does not work on your platform, please report a bug.  */
+         
 
 #define ADJUST(p) do {                                                  \
         uintptr_t old_accpath = (uintptr_t) (p)->fts_accpath;           \
@@ -2004,11 +1659,11 @@ fts_padjust (FTS *sp, FTSENT *head)
         }                                                               \
         (p)->fts_path = addr;                                           \
 } while (0)
-        /* Adjust the current set of children. */
+         
         for (p = sp->fts_child; p; p = p->fts_link)
                 ADJUST(p);
 
-        /* Adjust the rest of the tree, including the current level. */
+         
         for (p = head; p->fts_level >= FTS_ROOTLEVEL;) {
                 ADJUST(p);
                 p = p->fts_link ? p->fts_link : p->fts_parent;
@@ -2027,15 +1682,7 @@ fts_maxarglen (char * const *argv)
         return (max + 1);
 }
 
-/*
- * Change to dir specified by fd or file name without getting
- * tricked by someone changing the world out from underneath us.
- * Assumes p->fts_statp->st_dev and p->fts_statp->st_ino are filled in.
- * If FD is non-negative, expect it to be used after this function returns,
- * and to be closed eventually.  So don't pass e.g., 'dirfd(dirp)' and then
- * do closedir(dirp), because that would invalidate the saved FD.
- * Upon failure, close FD immediately and return nonzero.
- */
+ 
 static int
 internal_function
 fts_safe_changedir (FTS *sp, FTSENT *p, int fd, char const *dir)
@@ -2044,10 +1691,7 @@ fts_safe_changedir (FTS *sp, FTSENT *p, int fd, char const *dir)
         bool is_dotdot = dir && STREQ (dir, "..");
         int newfd;
 
-        /* This clause handles the unusual case in which FTS_NOCHDIR
-           is specified, along with FTS_CWDFD.  In that case, there is
-           no need to change even the virtual cwd file descriptor.
-           However, if FD is non-negative, we do close it here.  */
+         
         if (ISSET (FTS_NOCHDIR))
           {
             if (ISSET (FTS_CWDFD) && 0 <= fd)
@@ -2057,11 +1701,7 @@ fts_safe_changedir (FTS *sp, FTSENT *p, int fd, char const *dir)
 
         if (fd < 0 && is_dotdot && ISSET (FTS_CWDFD))
           {
-            /* When possible, skip the diropen and subsequent fstat+dev/ino
-               comparison.  I.e., when changing to parent directory
-               (chdir ("..")), use a file descriptor from the ring and
-               save the overhead of diropen+fstat, as well as avoiding
-               failure when we lack "x" access to the virtual cwd.  */
+             
             if ( ! i_ring_empty (&sp->fts_fd_ring))
               {
                 int parent_fd;
@@ -2079,13 +1719,7 @@ fts_safe_changedir (FTS *sp, FTSENT *p, int fd, char const *dir)
         if (fd < 0 && (newfd = diropen (sp, dir)) < 0)
           return -1;
 
-        /* The following dev/inode check is necessary if we're doing a
-           "logical" traversal (through symlinks, a la chown -L), if the
-           system lacks O_NOFOLLOW support, or if we're changing to ".."
-           (but not via a popped file descriptor).  When changing to the
-           name "..", O_NOFOLLOW can't help.  In general, when the target is
-           not "..", diropen's use of O_NOFOLLOW ensures we don't mistakenly
-           follow a symlink, so we can avoid the expense of this fstat.  */
+         
         if (ISSET(FTS_LOGICAL) || ! HAVE_WORKING_O_NOFOLLOW
             || (dir && STREQ (dir, "..")))
           {
@@ -2098,7 +1732,7 @@ fts_safe_changedir (FTS *sp, FTSENT *p, int fd, char const *dir)
             if (p->fts_statp->st_dev != sb.st_dev
                 || p->fts_statp->st_ino != sb.st_ino)
               {
-                __set_errno (ENOENT);           /* disinformation */
+                __set_errno (ENOENT);            
                 ret = -1;
                 goto bail;
               }

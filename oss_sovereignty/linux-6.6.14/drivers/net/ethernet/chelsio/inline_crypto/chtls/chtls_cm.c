@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2018 Chelsio Communications, Inc.
- *
- * Written by: Atul Gupta (atul.gupta@chelsio.com)
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/list.h>
@@ -34,25 +30,21 @@
 #include "clip_tbl.h"
 #include "t4_tcb.h"
 
-/*
- * State transitions and actions for close.  Note that if we are in SYN_SENT
- * we remain in that state as we cannot control a connection while it's in
- * SYN_SENT; such connections are allowed to establish and are then aborted.
- */
+ 
 static unsigned char new_state[16] = {
-	/* current state:     new state:      action: */
-	/* (Invalid)       */ TCP_CLOSE,
-	/* TCP_ESTABLISHED */ TCP_FIN_WAIT1 | TCP_ACTION_FIN,
-	/* TCP_SYN_SENT    */ TCP_SYN_SENT,
-	/* TCP_SYN_RECV    */ TCP_FIN_WAIT1 | TCP_ACTION_FIN,
-	/* TCP_FIN_WAIT1   */ TCP_FIN_WAIT1,
-	/* TCP_FIN_WAIT2   */ TCP_FIN_WAIT2,
-	/* TCP_TIME_WAIT   */ TCP_CLOSE,
-	/* TCP_CLOSE       */ TCP_CLOSE,
-	/* TCP_CLOSE_WAIT  */ TCP_LAST_ACK | TCP_ACTION_FIN,
-	/* TCP_LAST_ACK    */ TCP_LAST_ACK,
-	/* TCP_LISTEN      */ TCP_CLOSE,
-	/* TCP_CLOSING     */ TCP_CLOSING,
+	 
+	  TCP_CLOSE,
+	  TCP_FIN_WAIT1 | TCP_ACTION_FIN,
+	  TCP_SYN_SENT,
+	  TCP_FIN_WAIT1 | TCP_ACTION_FIN,
+	  TCP_FIN_WAIT1,
+	  TCP_FIN_WAIT2,
+	  TCP_CLOSE,
+	  TCP_CLOSE,
+	  TCP_LAST_ACK | TCP_ACTION_FIN,
+	  TCP_LAST_ACK,
+	  TCP_CLOSE,
+	  TCP_CLOSING,
 };
 
 static struct chtls_sock *chtls_sock_create(struct chtls_dev *cdev)
@@ -322,11 +314,7 @@ static void chtls_close_conn(struct sock *sk)
 		chtls_push_frames(csk, 1);
 }
 
-/*
- * Perform a state transition during close and return the actions indicated
- * for the transition.  Do not make this function inline, the main reason
- * it exists at all is to avoid multiple inlining of tcp_set_state.
- */
+ 
 static int make_close_transition(struct sock *sk)
 {
 	int next = (int)new_state[sk->sk_state];
@@ -396,9 +384,7 @@ out:
 	sock_put(sk);
 }
 
-/*
- * Wait until a socket enters on of the given states.
- */
+ 
 static int wait_for_states(struct sock *sk, unsigned int states)
 {
 	DECLARE_WAITQUEUE(wait, current);
@@ -408,10 +394,7 @@ static int wait_for_states(struct sock *sk, unsigned int states)
 
 	current_timeo = 200;
 
-	/*
-	 * We want this to work even when there's no associated struct socket.
-	 * In that case we provide a temporary wait_queue_head_t.
-	 */
+	 
 	if (!sk->sk_wq) {
 		init_waitqueue_head(&_sk_wq.wait);
 		_sk_wq.fasync_list = NULL;
@@ -663,7 +646,7 @@ int chtls_listen_start(struct chtls_dev *cdev, struct sock *sk)
 	if (!(adap->flags & CXGB4_FULL_INIT_DONE))
 		return -EBADF;
 
-	if (listen_hash_find(cdev, sk) >= 0)   /* already have it */
+	if (listen_hash_find(cdev, sk) >= 0)    
 		return -EADDRINUSE;
 
 	ctx = kmalloc(sizeof(*ctx), GFP_KERNEL);
@@ -855,20 +838,10 @@ static void chtls_conn_done(struct sock *sk)
 
 static void do_abort_syn_rcv(struct sock *child, struct sock *parent)
 {
-	/*
-	 * If the server is still open we clean up the child connection,
-	 * otherwise the server already did the clean up as it was purging
-	 * its SYN queue and the skb was just sitting in its backlog.
-	 */
+	 
 	if (likely(parent->sk_state == TCP_LISTEN)) {
 		cleanup_syn_rcv_conn(child, parent);
-		/* Without the below call to sock_orphan,
-		 * we leak the socket resource with syn_flood test
-		 * as inet_csk_destroy_sock will not be called
-		 * in tcp_done since SOCK_DEAD flag is not set.
-		 * Kernel handles this differently where new socket is
-		 * created only after 3 way handshake is done.
-		 */
+		 
 		sock_orphan(child);
 		INC_ORPHAN_COUNT(child);
 		chtls_release_resources(child);
@@ -905,11 +878,7 @@ static void chtls_pass_open_arp_failure(struct sock *sk,
 	csk = rcu_dereference_sk_user_data(sk);
 	cdev = csk->cdev;
 
-	/*
-	 * If the connection is being aborted due to the parent listening
-	 * socket going away there's nothing to do, the ABORT_REQ will close
-	 * the connection.
-	 */
+	 
 	if (csk_flag(sk, CSK_ABORT_RPL_PENDING)) {
 		kfree_skb(skb);
 		return;
@@ -1241,7 +1210,7 @@ static struct sock *chtls_recv_sock(struct sock *lsk,
 	neigh_release(n);
 	inet_inherit_port(lsk, newsk);
 	csk_set_flag(csk, CSK_CONN_INLINE);
-	bh_unlock_sock(newsk); /* tcp_create_openreq_child ->sk_clone_lock */
+	bh_unlock_sock(newsk);  
 
 	return newsk;
 free_csk:
@@ -1258,9 +1227,7 @@ free_oreq:
 	return NULL;
 }
 
-/*
- * Populate a TID_RELEASE WR.  The skb must be already propely sized.
- */
+ 
 static  void mk_tid_release(struct sk_buff *skb,
 			    unsigned int chan, unsigned int tid)
 {
@@ -1305,7 +1272,7 @@ static void chtls_pass_accept_request(struct sock *sk,
 	unsigned int len;
 	unsigned int tid;
 	bool th_ecn, ect;
-	__u8 ip_dsfield; /* IPv4 tos or IPv6 dsfield */
+	__u8 ip_dsfield;  
 	u16 eth_hdr_len;
 	bool ecn_ok;
 
@@ -1420,9 +1387,7 @@ reject:
 	kfree_skb(skb);
 }
 
-/*
- * Handle a CPL_PASS_ACCEPT_REQ message.
- */
+ 
 static int chtls_pass_accept_req(struct chtls_dev *cdev, struct sk_buff *skb)
 {
 	struct cpl_pass_accept_req *req = cplhdr(skb) + RSS_HDR;
@@ -1452,12 +1417,7 @@ static int chtls_pass_accept_req(struct chtls_dev *cdev, struct sk_buff *skb)
 	return 0;
 }
 
-/*
- * Completes some final bits of initialization for just established connections
- * and changes their state to TCP_ESTABLISHED.
- *
- * snd_isn here is the ISN after the SYN, i.e., the true ISN + 1.
- */
+ 
 static void make_established(struct sock *sk, u32 snd_isn, unsigned int opt)
 {
 	struct tcp_sock *tp = tcp_sk(sk);
@@ -1488,9 +1448,7 @@ static void chtls_abort_conn(struct sock *sk, struct sk_buff *skb)
 static struct sock *reap_list;
 static DEFINE_SPINLOCK(reap_list_lock);
 
-/*
- * Process the reap list.
- */
+ 
 DECLARE_TASK_FUNC(process_reap_list, task_param)
 {
 	spin_lock_bh(&reap_list_lock);
@@ -1522,7 +1480,7 @@ static void add_to_reap_list(struct sock *sk)
 	struct chtls_sock *csk = sk->sk_user_data;
 
 	local_bh_disable();
-	release_tcp_port(sk); /* release the port immediately */
+	release_tcp_port(sk);  
 
 	spin_lock(&reap_list_lock);
 	csk->passive_reap_next = reap_list;
@@ -1599,7 +1557,7 @@ static int chtls_pass_establish(struct chtls_dev *cdev, struct sk_buff *skb)
 
 		data = lookup_stid(cdev->tids, stid);
 		if (!data) {
-			/* listening server close */
+			 
 			kfree_skb(skb);
 			goto unlock;
 		}
@@ -1607,7 +1565,7 @@ static int chtls_pass_establish(struct chtls_dev *cdev, struct sk_buff *skb)
 
 		bh_lock_sock(lsk);
 		if (unlikely(skb_queue_empty(&csk->listen_ctx->synq))) {
-			/* removed from synq */
+			 
 			bh_unlock_sock(lsk);
 			kfree_skb(skb);
 			goto unlock;
@@ -1630,16 +1588,14 @@ unlock:
 	return 0;
 }
 
-/*
- * Handle receipt of an urgent pointer.
- */
+ 
 static void handle_urg_ptr(struct sock *sk, u32 urg_seq)
 {
 	struct tcp_sock *tp = tcp_sk(sk);
 
 	urg_seq--;
 	if (tp->urg_data && !after(urg_seq, tp->urg_seq))
-		return;	/* duplicate pointer */
+		return;	 
 
 	sk_send_sigurg(sk);
 	if (tp->urg_seq == tp->copied_seq && tp->urg_data &&
@@ -1665,10 +1621,7 @@ static void check_sk_callbacks(struct chtls_sock *csk)
 		csk_set_flag(csk, CSK_CALLBACKS_CHKD);
 }
 
-/*
- * Handles Rx data that arrives in a state where the socket isn't accepting
- * new data.
- */
+ 
 static void handle_excess_rx(struct sock *sk, struct sk_buff *skb)
 {
 	if (!csk_flag(sk, CSK_ABORT_SHUTDOWN))
@@ -1902,7 +1855,7 @@ static void chtls_peer_close(struct sock *sk, struct sk_buff *skb)
 
 	if (!sock_flag(sk, SOCK_DEAD)) {
 		sk->sk_state_change(sk);
-		/* Do not send POLL_HUP for half duplex close. */
+		 
 
 		if ((sk->sk_shutdown & SEND_SHUTDOWN) ||
 		    sk->sk_state == TCP_CLOSE)
@@ -1927,7 +1880,7 @@ static void chtls_close_con_rpl(struct sock *sk, struct sk_buff *skb)
 
 	tp = tcp_sk(sk);
 
-	tp->snd_una = ntohl(rpl->snd_nxt) - 1;  /* exclude FIN */
+	tp->snd_una = ntohl(rpl->snd_nxt) - 1;   
 
 	switch (sk->sk_state) {
 	case TCP_CLOSING:
@@ -1999,9 +1952,7 @@ static void send_defer_abort_rpl(struct chtls_dev *cdev, struct sk_buff *skb)
 	kfree_skb(skb);
 }
 
-/*
- * Add an skb to the deferred skb queue for processing from process context.
- */
+ 
 static void t4_defer_reply(struct sk_buff *skb, struct chtls_dev *cdev,
 			   defer_handler_t handler)
 {
@@ -2046,10 +1997,7 @@ static void chtls_send_abort_rpl(struct sock *sk, struct sk_buff *skb,
 	cxgb4_ofld_send(cdev->lldi->ports[0], reply_skb);
 }
 
-/*
- * This is run from a listener's backlog to abort a child connection in
- * SYN_RCV state (i.e., one on the listener's SYN queue).
- */
+ 
 static void bl_abort_syn_rcv(struct sock *lsk, struct sk_buff *skb)
 {
 	struct chtls_sock *csk;
@@ -2197,10 +2145,7 @@ static int chtls_conn_cpl(struct chtls_dev *cdev, struct sk_buff *skb)
 		fn = chtls_close_con_rpl;
 		break;
 	case CPL_ABORT_REQ_RSS:
-		/*
-		 * Save the offload device in the skb, we may process this
-		 * message after the socket has closed.
-		 */
+		 
 		BLOG_SKB_CB(skb)->cdev = csk->cdev;
 		fn = chtls_abort_req_rss;
 		break;
@@ -2303,13 +2248,11 @@ static int chtls_set_tcb_rpl(struct chtls_dev *cdev, struct sk_buff *skb)
 
 	sk = lookup_tid(cdev->tids, hwtid);
 
-	/* return EINVAL if socket doesn't exist */
+	 
 	if (!sk)
 		return -EINVAL;
 
-	/* Reusing the skb as size of cpl_set_tcb_field structure
-	 * is greater than cpl_abort_req
-	 */
+	 
 	if (TCB_COOKIE_G(rpl->cookie) == TCB_FIELD_COOKIE_TFLAG)
 		chtls_send_abort(sk, CPL_ABORT_SEND_RST, NULL);
 

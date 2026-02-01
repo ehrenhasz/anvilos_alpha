@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011-2017, Red Hat Inc, Arnaldo Carvalho de Melo <acme@redhat.com>
- *
- * Parts came from evlist.c builtin-{top,stat,record}.c, see those files for further
- * copyright notes.
- */
+
+ 
 
 #include <sys/mman.h>
 #include <inttypes.h>
@@ -12,7 +7,7 @@
 #include <linux/zalloc.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h> // sysconf()
+#include <unistd.h> 
 #include <perf/mmap.h>
 #ifdef HAVE_LIBNUMA_SUPPORT
 #include <numaif.h>
@@ -22,7 +17,7 @@
 #include "event.h"
 #include "mmap.h"
 #include "../perf.h"
-#include <internal/lib.h> /* page_size */
+#include <internal/lib.h>  
 #include <linux/bitmap.h>
 
 #define MASK_SIZE 1023
@@ -122,7 +117,7 @@ static int perf_mmap__aio_bind(struct mmap *map, int idx, struct perf_cpu cpu, i
 
 	return err;
 }
-#else /* !HAVE_LIBNUMA_SUPPORT */
+#else  
 static int perf_mmap__aio_alloc(struct mmap *map, int idx)
 {
 	map->aio.data[idx] = malloc(mmap__mmap_len(map));
@@ -175,21 +170,9 @@ static int perf_mmap__aio_mmap(struct mmap *map, struct mmap_params *mp)
 			ret = perf_mmap__aio_bind(map, i, map->core.cpu, mp->affinity);
 			if (ret == -1)
 				return -1;
-			/*
-			 * Use cblock.aio_fildes value different from -1
-			 * to denote started aio write operation on the
-			 * cblock so it requires explicit record__aio_sync()
-			 * call prior the cblock may be reused again.
-			 */
+			 
 			map->aio.cblocks[i].aio_fildes = -1;
-			/*
-			 * Allocate cblocks with priority delta to have
-			 * faster aio write system calls because queued requests
-			 * are kept in separate per-prio queues and adding
-			 * a new request will iterate thru shorter per-prio
-			 * list. Blocks with numbers higher than
-			 *  _SC_AIO_PRIO_DELTA_MAX go with priority 0.
-			 */
+			 
 			prio = delta_max - i;
 			map->aio.cblocks[i].aio_reqprio = prio >= 0 ? prio : 0;
 		}
@@ -209,7 +192,7 @@ static void perf_mmap__aio_munmap(struct mmap *map)
 	zfree(&map->aio.cblocks);
 	zfree(&map->aio.aiocb);
 }
-#else /* !HAVE_AIO_SUPPORT */
+#else  
 static int perf_mmap__aio_enabled(struct mmap *map __maybe_unused)
 {
 	return 0;
@@ -254,7 +237,7 @@ static void build_node_mask(int node, struct mmap_cpu_mask *mask)
 
 	nr_cpus = perf_cpu_map__nr(cpu_map);
 	for (idx = 0; idx < nr_cpus; idx++) {
-		cpu = perf_cpu_map__cpu(cpu_map, idx); /* map c index to online cpu index */
+		cpu = perf_cpu_map__cpu(cpu_map, idx);  
 		if (cpu__get_node(cpu) == node)
 			__set_bit(cpu.cpu, mask->bits);
 	}

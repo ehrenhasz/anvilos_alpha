@@ -1,28 +1,4 @@
-/*
- * Copyright © 2013 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- * Author: Damien Lespiau <damien.lespiau@intel.com>
- *
- */
+ 
 
 #include <linux/ctype.h>
 #include <linux/debugfs.h>
@@ -157,15 +133,7 @@ static int vlv_pipe_crc_ctl_reg(struct drm_i915_private *dev_priv,
 		return -EINVAL;
 	}
 
-	/*
-	 * When the pipe CRC tap point is after the transcoders we need
-	 * to tweak symbol-level features to produce a deterministic series of
-	 * symbols for a given frame. We need to reset those features only once
-	 * a frame (instead of every nth symbol):
-	 *   - DC-balance: used to ensure a better clock recovery from the data
-	 *     link (SDVO)
-	 *   - DisplayPort scrambling: used for EMI reduction
-	 */
+	 
 	if (need_stable_symbols) {
 		u32 tmp = intel_de_read(dev_priv, PORT_DFT2_G4X);
 
@@ -210,16 +178,7 @@ static int i9xx_pipe_crc_ctl_reg(struct drm_i915_private *dev_priv,
 		*val = 0;
 		break;
 	default:
-		/*
-		 * The DP CRC source doesn't work on g4x.
-		 * It can be made to work to some degree by selecting
-		 * the correct CRC source before the port is enabled,
-		 * and not touching the CRC source bits again until
-		 * the port is disabled. But even then the bits
-		 * eventually get stuck and a reboot is needed to get
-		 * working CRCs on the pipe again. Let's simply
-		 * refuse to use DP CRCs on g4x.
-		 */
+		 
 		return -EINVAL;
 	}
 
@@ -582,7 +541,7 @@ int intel_crtc_set_crc_source(struct drm_crtc *_crtc, const char *source_name)
 	enum intel_pipe_crc_source source;
 	enum pipe pipe = crtc->pipe;
 	intel_wakeref_t wakeref;
-	u32 val = 0; /* shut up gcc */
+	u32 val = 0;  
 	int ret = 0;
 	bool enable;
 
@@ -640,7 +599,7 @@ void intel_crtc_enable_pipe_crc(struct intel_crtc *crtc)
 	if (get_new_crc_ctl_reg(dev_priv, pipe, &pipe_crc->source, &val) < 0)
 		return;
 
-	/* Don't need pipe_crc->lock here, IRQs are not generated. */
+	 
 	pipe_crc->skipped = 0;
 
 	intel_de_write(dev_priv, PIPE_CRC_CTL(pipe), val);
@@ -653,7 +612,7 @@ void intel_crtc_disable_pipe_crc(struct intel_crtc *crtc)
 	struct intel_pipe_crc *pipe_crc = &crtc->pipe_crc;
 	enum pipe pipe = crtc->pipe;
 
-	/* Swallow crc's until we stop generating them. */
+	 
 	spin_lock_irq(&pipe_crc->lock);
 	pipe_crc->skipped = INT_MIN;
 	spin_unlock_irq(&pipe_crc->lock);

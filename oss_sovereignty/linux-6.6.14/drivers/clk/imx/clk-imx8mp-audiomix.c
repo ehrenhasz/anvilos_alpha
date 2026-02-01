@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for i.MX8M Plus Audio BLK_CTRL
- *
- * Copyright (C) 2022 Marek Vasut <marex@denx.de>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/device.h>
@@ -18,7 +14,7 @@
 
 #define CLKEN0			0x000
 #define CLKEN1			0x004
-#define SAI_MCLK_SEL(n)		(0x300 + 4 * (n))	/* n in 0..5 */
+#define SAI_MCLK_SEL(n)		(0x300 + 4 * (n))	 
 #define PDM_SEL			0x318
 #define SAI_PLL_GNRL_CTL	0x400
 
@@ -144,8 +140,8 @@ static const struct clk_parent_data clk_imx8mp_audiomix_pll_bypass_sels[] = {
 struct clk_imx8mp_audiomix_sel {
 	const char			*name;
 	int				clkid;
-	const struct clk_parent_data	parent;		/* For gate */
-	const struct clk_parent_data	*parents;	/* For mux */
+	const struct clk_parent_data	parent;		 
+	const struct clk_parent_data	*parents;	 
 	int				num_parents;
 	u16				reg;
 	u8				width;
@@ -217,7 +213,7 @@ static int clk_imx8mp_audiomix_probe(struct platform_device *pdev)
 		priv->hws[sels[i].clkid] = hw;
 	}
 
-	/* SAI PLL */
+	 
 	hw = devm_clk_hw_register_mux_parent_data_table(dev,
 		"sai_pll_ref_sel", clk_imx8mp_audiomix_pll_parents,
 		ARRAY_SIZE(clk_imx8mp_audiomix_pll_parents),
@@ -258,7 +254,7 @@ static int clk_imx8mp_audiomix_probe(struct platform_device *pdev)
 
 static const struct of_device_id clk_imx8mp_audiomix_of_match[] = {
 	{ .compatible = "fsl,imx8mp-audio-blk-ctrl" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, clk_imx8mp_audiomix_of_match);
 

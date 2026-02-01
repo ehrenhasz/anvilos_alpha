@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* IPVS:        Power of Twos Choice Scheduling module
- *
- * Authors:     Darby Payne <darby.payne@applovin.com>
- */
+
+ 
 
 #define KMSG_COMPONENT "IPVS"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -13,34 +10,7 @@
 
 #include <net/ip_vs.h>
 
-/*    Power of Twos Choice scheduling, algorithm originally described by
- *    Michael Mitzenmacher.
- *
- *    Randomly picks two destinations and picks the one with the least
- *    amount of connections
- *
- *    The algorithm calculates a few variables
- *    - total_weight = sum of all weights
- *    - rweight1 = random number between [0,total_weight]
- *    - rweight2 = random number between [0,total_weight]
- *
- *    For each destination
- *      decrement rweight1 and rweight2 by the destination weight
- *      pick choice1 when rweight1 is <= 0
- *      pick choice2 when rweight2 is <= 0
- *
- *    Return choice2 if choice2 has less connections than choice 1 normalized
- *    by weight
- *
- * References
- * ----------
- *
- * [Mitzenmacher 2016]
- *    The Power of Two Random Choices: A Survey of Techniques and Results
- *    Michael Mitzenmacher, Andrea W. Richa y, Ramesh Sitaraman
- *    http://www.eecs.harvard.edu/~michaelm/NEWWORK/postscripts/twosurvey.pdf
- *
- */
+ 
 static struct ip_vs_dest *ip_vs_twos_schedule(struct ip_vs_service *svc,
 					      const struct sk_buff *skb,
 					      struct ip_vs_iphdr *iph)
@@ -51,7 +21,7 @@ static struct ip_vs_dest *ip_vs_twos_schedule(struct ip_vs_service *svc,
 
 	IP_VS_DBG(6, "%s(): Scheduling...\n", __func__);
 
-	/* Generate a random weight between [0,sum of all weights) */
+	 
 	list_for_each_entry_rcu(dest, &svc->destinations, n_list) {
 		if (!(dest->flags & IP_VS_DEST_F_OVERLOAD)) {
 			weight = atomic_read(&dest->weight);
@@ -67,14 +37,12 @@ static struct ip_vs_dest *ip_vs_twos_schedule(struct ip_vs_service *svc,
 		return NULL;
 	}
 
-	/* Add 1 to total_weight so that the random weights are inclusive
-	 * from 0 to total_weight
-	 */
+	 
 	total_weight += 1;
 	rweight1 = get_random_u32_below(total_weight);
 	rweight2 = get_random_u32_below(total_weight);
 
-	/* Pick two weighted servers */
+	 
 	list_for_each_entry_rcu(dest, &svc->destinations, n_list) {
 		if (dest->flags & IP_VS_DEST_F_OVERLOAD)
 			continue;

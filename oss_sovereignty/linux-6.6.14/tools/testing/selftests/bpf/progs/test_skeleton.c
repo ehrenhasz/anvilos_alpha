@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 Facebook */
+
+ 
 
 #include <stdbool.h>
 #include <linux/bpf.h>
@@ -12,25 +12,25 @@ struct s {
 	long long b;
 } __attribute__((packed));
 
-/* .data section */
+ 
 int in1 = -1;
 long long in2 = -1;
 
-/* .bss section */
+ 
 char in3 = '\0';
 long long in4 __attribute__((aligned(64))) = 0;
 struct s in5 = {};
 
-/* .rodata section */
+ 
 const volatile struct {
 	const int in6;
 } in = {};
 
-/* .data section */
+ 
 int out1 = -1;
 long long out2 = -1;
 
-/* .bss section */
+ 
 char out3 = 0;
 long long out4 = 0;
 int out6 = 0;
@@ -53,7 +53,7 @@ int out_mostly_var;
 
 char huge_arr[16 * 1024 * 1024];
 
-/* non-mmapable custom .data section */
+ 
 
 struct my_value { int x, y, z; };
 
@@ -89,7 +89,7 @@ int handler(const void *ctx)
 
 	huge_arr[sizeof(huge_arr) - 1] = 123;
 
-	/* make sure zero_key and zero_value are not optimized out */
+	 
 	bpf_map_update_elem(&my_map, &zero_key, &zero_value, BPF_ANY);
 
 	return 0;

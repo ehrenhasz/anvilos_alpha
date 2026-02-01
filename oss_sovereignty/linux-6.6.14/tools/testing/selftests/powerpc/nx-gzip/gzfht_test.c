@@ -1,48 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
 
-/* P9 gzip sample code for demonstrating the P9 NX hardware interface.
- * Not intended for productive uses or for performance or compression
- * ratio measurements.  For simplicity of demonstration, this sample
- * code compresses in to fixed Huffman blocks only (Deflate btype=1)
- * and has very simple memory management.  Dynamic Huffman blocks
- * (Deflate btype=2) are more involved as detailed in the user guide.
- * Note also that /dev/crypto/gzip, VAS and skiboot support are
- * required.
- *
- * Copyright 2020 IBM Corp.
- *
- * https://github.com/libnxz/power-gzip for zlib api and other utils
- *
- * Author: Bulent Abali <abali@us.ibm.com>
- *
- * Definitions of acronyms used here. See
- * P9 NX Gzip Accelerator User's Manual for details:
- * https://github.com/libnxz/power-gzip/blob/develop/doc/power_nx_gzip_um.pdf
- *
- * adler/crc: 32 bit checksums appended to stream tail
- * ce:       completion extension
- * cpb:      coprocessor parameter block (metadata)
- * crb:      coprocessor request block (command)
- * csb:      coprocessor status block (status)
- * dht:      dynamic huffman table
- * dde:      data descriptor element (address, length)
- * ddl:      list of ddes
- * dh/fh:    dynamic and fixed huffman types
- * fc:       coprocessor function code
- * histlen:  history/dictionary length
- * history:  sliding window of up to 32KB of data
- * lzcount:  Deflate LZ symbol counts
- * rembytecnt: remaining byte count
- * sfbt:     source final block type; last block's type during decomp
- * spbc:     source processed byte count
- * subc:     source unprocessed bit count
- * tebc:     target ending bit count; valid bits in the last byte
- * tpbc:     target processed byte count
- * vas:      virtual accelerator switch; the user mode interface
- */
 
-#define _ISOC11_SOURCE	// For aligned_alloc()
-#define _DEFAULT_SOURCE	// For endian.h
+ 
+
+#define _ISOC11_SOURCE	
+#define _DEFAULT_SOURCE	
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -73,9 +34,7 @@ FILE *nx_gzip_log;
 
 #define SYSFS_MAX_REQ_BUF_PATH "devices/vio/ibm,compression-v1/nx_gzip_caps/req_max_processed_len"
 
-/*
- * LZ counts returned in the user supplied nx_gzip_crb_cpb_t structure.
- */
+ 
 static int compress_fht_sample(char *src, uint32_t srclen, char *dst,
 				uint32_t dstlen, int with_count,
 				struct nx_gzip_crb_cpb_t *cmdp, void *handle)
@@ -84,84 +43,75 @@ static int compress_fht_sample(char *src, uint32_t srclen, char *dst,
 
 	assert(!!cmdp);
 
-	put32(cmdp->crb, gzip_fc, 0);  /* clear */
+	put32(cmdp->crb, gzip_fc, 0);   
 	fc = (with_count) ? GZIP_FC_COMPRESS_RESUME_FHT_COUNT :
 			    GZIP_FC_COMPRESS_RESUME_FHT;
 	putnn(cmdp->crb, gzip_fc, fc);
-	putnn(cmdp->cpb, in_histlen, 0); /* resuming with no history */
+	putnn(cmdp->cpb, in_histlen, 0);  
 	memset((void *) &cmdp->crb.csb, 0, sizeof(cmdp->crb.csb));
 
-	/* Section 6.6 programming notes; spbc may be in two different
-	 * places depending on FC.
-	 */
+	 
 	if (!with_count)
 		put32(cmdp->cpb, out_spbc_comp, 0);
 	else
 		put32(cmdp->cpb, out_spbc_comp_with_count, 0);
 
-	/* Figure 6-3 6-4; CSB location */
+	 
 	put64(cmdp->crb, csb_address, 0);
 	put64(cmdp->crb, csb_address,
 	      (uint64_t) &cmdp->crb.csb & csb_address_mask);
 
-	/* Source direct dde (scatter-gather list) */
+	 
 	clear_dde(cmdp->crb.source_dde);
 	putnn(cmdp->crb.source_dde, dde_count, 0);
 	put32(cmdp->crb.source_dde, ddebc, srclen);
 	put64(cmdp->crb.source_dde, ddead, (uint64_t) src);
 
-	/* Target direct dde (scatter-gather list) */
+	 
 	clear_dde(cmdp->crb.target_dde);
 	putnn(cmdp->crb.target_dde, dde_count, 0);
 	put32(cmdp->crb.target_dde, ddebc, dstlen);
 	put64(cmdp->crb.target_dde, ddead, (uint64_t) dst);
 
-	/* Submit the crb, the job descriptor, to the accelerator */
+	 
 	return nxu_submit_job(cmdp, handle);
 }
 
-/*
- * Prepares a blank no filename no timestamp gzip header and returns
- * the number of bytes written to buf.
- * Gzip specification at https://tools.ietf.org/html/rfc1952
- */
+ 
 int gzip_header_blank(char *buf)
 {
 	int i = 0;
 
-	buf[i++] = 0x1f; /* ID1 */
-	buf[i++] = 0x8b; /* ID2 */
-	buf[i++] = 0x08; /* CM  */
-	buf[i++] = 0x00; /* FLG */
-	buf[i++] = 0x00; /* MTIME */
-	buf[i++] = 0x00; /* MTIME */
-	buf[i++] = 0x00; /* MTIME */
-	buf[i++] = 0x00; /* MTIME */
-	buf[i++] = 0x04; /* XFL 4=fastest */
-	buf[i++] = 0x03; /* OS UNIX */
+	buf[i++] = 0x1f;  
+	buf[i++] = 0x8b;  
+	buf[i++] = 0x08;  
+	buf[i++] = 0x00;  
+	buf[i++] = 0x00;  
+	buf[i++] = 0x00;  
+	buf[i++] = 0x00;  
+	buf[i++] = 0x00;  
+	buf[i++] = 0x04;  
+	buf[i++] = 0x03;  
 
 	return i;
 }
 
-/*
- * Z_SYNC_FLUSH as described in zlib.h.
- * Returns number of appended bytes
- */
+ 
 int append_sync_flush(char *buf, int tebc, int final)
 {
 	uint64_t flush;
 	int shift = (tebc & 0x7);
 
 	if (tebc > 0) {
-		/* Last byte is partially full */
+		 
 		buf = buf - 1;
 		*buf = *buf & (unsigned char) ((1<<tebc)-1);
 	} else
 		*buf = 0;
 	flush = ((0x1ULL & final) << shift) | *buf;
-	shift = shift + 3; /* BFINAL and BTYPE written */
+	shift = shift + 3;  
 	shift = (shift <= 8) ? 8 : 16;
-	flush |= (0xFFFF0000ULL) << shift; /* Zero length block */
+	flush |= (0xFFFF0000ULL) << shift;  
 	shift = shift + 32;
 	while (shift > 0) {
 		*buf++ = (unsigned char) (flush & 0xffULL);
@@ -171,10 +121,7 @@ int append_sync_flush(char *buf, int tebc, int final)
 	return(((tebc > 5) || (tebc == 0)) ? 5 : 4);
 }
 
-/*
- * Final deflate block bit.  This call assumes the block
- * beginning is byte aligned.
- */
+ 
 static void set_bfinal(void *buf, int bfinal)
 {
 	char *b = buf;
@@ -213,25 +160,22 @@ int compress_file(int argc, char **argv, void *handle)
 		exit(-1);
 	fprintf(stderr, "file %s read, %ld bytes\n", argv[1], inlen);
 
-	/* Generous output buffer for header/trailer */
+	 
 	outlen = 2 * inlen + 1024;
 
 	assert(NULL != (outbuf = (char *)malloc(outlen)));
 	nxu_touch_pages(outbuf, outlen, pagelen, 1);
 
-	/*
-	 * On PowerVM, the hypervisor defines the maximum request buffer
-	 * size is defined and this value is available via sysfs.
-	 */
+	 
 	if (!read_sysfs_file(SYSFS_MAX_REQ_BUF_PATH, buf, sizeof(buf))) {
 		chunk = atoi(buf);
 	} else {
-		/* sysfs entry is not available on PowerNV */
-		/* Compress piecemeal in smallish chunks */
+		 
+		 
 		chunk = 1<<22;
 	}
 
-	/* Write the gzip header to the stream */
+	 
 	num_hdr_bytes = gzip_header_blank(outbuf);
 	dstbuf    = outbuf + num_hdr_bytes;
 	outlen    = outlen - num_hdr_bytes;
@@ -240,26 +184,22 @@ int compress_file(int argc, char **argv, void *handle)
 	srcbuf    = inbuf;
 	srctotlen = 0;
 
-	/* Init the CRB, the coprocessor request block */
+	 
 	memset(&cmdp->crb, 0, sizeof(cmdp->crb));
 
-	/* Initial gzip crc32 */
+	 
 	put32(cmdp->cpb, in_crc, 0);
 
 	while (inlen > 0) {
 
-		/* Submit chunk size source data per job */
+		 
 		srclen = NX_MIN(chunk, inlen);
-		/* Supply large target in case data expands */
+		 
 		dstlen = NX_MIN(2*srclen, outlen);
 
-		/* Page faults are handled by the user code */
+		 
 
-		/* Fault-in pages; an improved code wouldn't touch so
-		 * many pages but would try to estimate the
-		 * compression ratio and adjust both the src and dst
-		 * touch amounts.
-		 */
+		 
 		nxu_touch_pages(cmdp, sizeof(struct nx_gzip_crb_cpb_t), pagelen,
 				1);
 		nxu_touch_pages(srcbuf, srclen, pagelen, 0);
@@ -276,7 +216,7 @@ int compress_file(int argc, char **argv, void *handle)
 			exit(-1);
 		}
 
-		/* Page faults are handled by the user code */
+		 
 		if (cc == ERR_NX_AT_FAULT) {
 			NXPRT(fprintf(stderr, "page fault: cc= %d, ", cc));
 			NXPRT(fprintf(stderr, "try= %d, fsa= %08llx\n",
@@ -292,57 +232,51 @@ int compress_file(int argc, char **argv, void *handle)
 			}
 		}
 
-		fault_tries = NX_MAX_FAULTS; /* Reset for the next chunk */
+		fault_tries = NX_MAX_FAULTS;  
 
 		inlen     = inlen - srclen;
 		srcbuf    = srcbuf + srclen;
 		srctotlen = srctotlen + srclen;
 
-		/* Two possible locations for spbc depending on the function
-		 * code.
-		 */
+		 
 		spbc = (!lzcounts) ? get32(cmdp->cpb, out_spbc_comp) :
 			get32(cmdp->cpb, out_spbc_comp_with_count);
 		assert(spbc == srclen);
 
-		/* Target byte count */
+		 
 		tpbc = get32(cmdp->crb.csb, tpbc);
-		/* Target ending bit count */
+		 
 		tebc = getnn(cmdp->cpb, out_tebc);
 		NXPRT(fprintf(stderr, "compressed chunk %d ", spbc));
 		NXPRT(fprintf(stderr, "to %d bytes, tebc= %d\n", tpbc, tebc));
 
-		if (inlen > 0) { /* More chunks to go */
+		if (inlen > 0) {  
 			set_bfinal(dstbuf, 0);
 			dstbuf    = dstbuf + tpbc;
 			dsttotlen = dsttotlen + tpbc;
 			outlen    = outlen - tpbc;
-			/* Round up to the next byte with a flush
-			 * block; do not set the BFINAqL bit.
-			 */
+			 
 			flushlen  = append_sync_flush(dstbuf, tebc, 0);
 			dsttotlen = dsttotlen + flushlen;
 			outlen    = outlen - flushlen;
 			dstbuf    = dstbuf + flushlen;
 			NXPRT(fprintf(stderr, "added sync_flush %d bytes\n",
 					flushlen));
-		} else {  /* Done */
-			/* Set the BFINAL bit of the last block per Deflate
-			 * specification.
-			 */
+		} else {   
+			 
 			set_bfinal(dstbuf, 1);
 			dstbuf    = dstbuf + tpbc;
 			dsttotlen = dsttotlen + tpbc;
 			outlen    = outlen - tpbc;
 		}
 
-		/* Resuming crc32 for the next chunk */
+		 
 		crc = get32(cmdp->cpb, out_crc);
 		put32(cmdp->cpb, in_crc, crc);
 		crc = be32toh(crc);
 	}
 
-	/* Append crc32 and ISIZE to the end */
+	 
 	memcpy(dstbuf, &crc, 4);
 	memcpy(dstbuf+4, &srctotlen, 4);
 	dsttotlen = dsttotlen + 8;

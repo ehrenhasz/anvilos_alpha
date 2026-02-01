@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2018, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 #ifndef __MLX5_EN_XDP_H__
 #define __MLX5_EN_XDP_H__
 
@@ -50,40 +20,19 @@ struct mlx5e_xdp_buff {
 	struct mlx5e_rq *rq;
 };
 
-/* XDP packets can be transmitted in different ways. On completion, we need to
- * distinguish between them to clean up things in a proper way.
- */
+ 
 enum mlx5e_xdp_xmit_mode {
-	/* An xdp_frame was transmitted due to either XDP_REDIRECT from another
-	 * device or XDP_TX from an XSK RQ. The frame has to be unmapped and
-	 * returned.
-	 */
+	 
 	MLX5E_XDP_XMIT_MODE_FRAME,
 
-	/* The xdp_frame was created in place as a result of XDP_TX from a
-	 * regular RQ. No DMA remapping happened, and the page belongs to us.
-	 */
+	 
 	MLX5E_XDP_XMIT_MODE_PAGE,
 
-	/* No xdp_frame was created at all, the transmit happened from a UMEM
-	 * page. The UMEM Completion Ring producer pointer has to be increased.
-	 */
+	 
 	MLX5E_XDP_XMIT_MODE_XSK,
 };
 
-/* xmit_mode entry is pushed to the fifo per packet, followed by multiple
- * entries, as follows:
- *
- * MLX5E_XDP_XMIT_MODE_FRAME:
- *    xdpf, dma_addr_1, dma_addr_2, ... , dma_addr_num.
- *    'num' is derived from xdpf.
- *
- * MLX5E_XDP_XMIT_MODE_PAGE:
- *    num, page_1, page_2, ... , page_num.
- *
- * MLX5E_XDP_XMIT_MODE_XSK:
- *    none.
- */
+ 
 #define MLX5E_XDP_FIFO_ENTRIES2DS_MAX_RATIO 4
 
 union mlx5e_xdp_info {
@@ -136,7 +85,7 @@ static inline void mlx5e_xdp_tx_disable(struct mlx5e_priv *priv)
 		clear_bit(MLX5E_STATE_XDP_ACTIVE, &priv->state);
 
 	clear_bit(MLX5E_STATE_XDP_TX_ENABLED, &priv->state);
-	/* Let other device's napi(s) and XSK wakeups see our new state. */
+	 
 	synchronize_net();
 }
 
@@ -158,9 +107,7 @@ static inline void mlx5e_xmit_xdp_doorbell(struct mlx5e_xdpsq *sq)
 	}
 }
 
-/* Enable inline WQEs to shift some load from a congested HCA (HW) to
- * a less congested cpu (SW).
- */
+ 
 static inline bool mlx5e_xdp_get_inline_state(struct mlx5e_xdpsq *sq, bool cur)
 {
 	u16 outstanding = sq->xdpi_fifo_pc - sq->xdpi_fifo_cc;

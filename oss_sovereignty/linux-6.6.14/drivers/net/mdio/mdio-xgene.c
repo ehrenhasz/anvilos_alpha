@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Applied Micro X-Gene SoC MDIO Driver
- *
- * Copyright (c) 2016, Applied Micro Circuits Corporation
- * Author: Iyappan Subramanian <isubramanian@apm.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/clk.h>
@@ -404,7 +400,7 @@ static int xgene_mdio_probe(struct platform_device *pdev)
 		ret = of_mdiobus_register(mdio_bus, dev->of_node);
 	} else {
 #ifdef CONFIG_ACPI
-		/* Mask out all PHYs from auto probing. */
+		 
 		mdio_bus->phy_mask = ~0;
 		ret = mdiobus_register(mdio_bus);
 		if (ret)

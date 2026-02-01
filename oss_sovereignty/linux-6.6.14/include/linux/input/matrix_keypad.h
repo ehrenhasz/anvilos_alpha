@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _MATRIX_KEYPAD_H
 #define _MATRIX_KEYPAD_H
 
@@ -20,43 +20,13 @@ struct input_dev;
 
 #define MATRIX_SCAN_CODE(row, col, row_shift)	(((row) << (row_shift)) + (col))
 
-/**
- * struct matrix_keymap_data - keymap for matrix keyboards
- * @keymap: pointer to array of uint32 values encoded with KEY() macro
- *	representing keymap
- * @keymap_size: number of entries (initialized) in this keymap
- *
- * This structure is supposed to be used by platform code to supply
- * keymaps to drivers that implement matrix-like keypads/keyboards.
- */
+ 
 struct matrix_keymap_data {
 	const uint32_t *keymap;
 	unsigned int	keymap_size;
 };
 
-/**
- * struct matrix_keypad_platform_data - platform-dependent keypad data
- * @keymap_data: pointer to &matrix_keymap_data
- * @row_gpios: pointer to array of gpio numbers representing rows
- * @col_gpios: pointer to array of gpio numbers reporesenting colums
- * @num_row_gpios: actual number of row gpios used by device
- * @num_col_gpios: actual number of col gpios used by device
- * @col_scan_delay_us: delay, measured in microseconds, that is
- *	needed before we can keypad after activating column gpio
- * @debounce_ms: debounce interval in milliseconds
- * @clustered_irq: may be specified if interrupts of all row/column GPIOs
- *	are bundled to one single irq
- * @clustered_irq_flags: flags that are needed for the clustered irq
- * @active_low: gpio polarity
- * @wakeup: controls whether the device should be set up as wakeup
- *	source
- * @no_autorepeat: disable key autorepeat
- * @drive_inactive_cols: drive inactive columns during scan, rather than
- *	making them inputs.
- *
- * This structure represents platform-specific data that use used by
- * matrix_keypad driver to perform proper initialization.
- */
+ 
 struct matrix_keypad_platform_data {
 	const struct matrix_keymap_data *keymap_data;
 
@@ -68,7 +38,7 @@ struct matrix_keypad_platform_data {
 
 	unsigned int	col_scan_delay_us;
 
-	/* key debounce interval in milli-second */
+	 
 	unsigned int	debounce_ms;
 
 	unsigned int	clustered_irq;
@@ -90,4 +60,4 @@ int matrix_keypad_parse_properties(struct device *dev,
 
 #define matrix_keypad_parse_of_params matrix_keypad_parse_properties
 
-#endif /* _MATRIX_KEYPAD_H */
+#endif  

@@ -1,14 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * Linux device driver for PCI based Prism54
- *
- * Copyright (c) 2006, Michael Wu <flamingice@sourmilk.net>
- * Copyright (c) 2008, Christian Lamparter <chunkeey@web.de>
- *
- * Based on the islsm (softmac prism54) driver, which is:
- * Copyright 2004-2006 Jean-Baptiste Note <jean-baptiste.note@m4x.org>, et al.
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/slab.h>
@@ -30,15 +22,15 @@ MODULE_ALIAS("prism54pci");
 MODULE_FIRMWARE("isl3886pci");
 
 static const struct pci_device_id p54p_table[] = {
-	/* Intersil PRISM Duette/Prism GT Wireless LAN adapter */
+	 
 	{ PCI_DEVICE(0x1260, 0x3890) },
-	/* 3COM 3CRWE154G72 Wireless LAN adapter */
+	 
 	{ PCI_DEVICE(0x10b7, 0x6001) },
-	/* Intersil PRISM Indigo Wireless LAN adapter */
+	 
 	{ PCI_DEVICE(0x1260, 0x3877) },
-	/* Intersil PRISM Javelin/Xbow Wireless LAN adapter */
+	 
 	{ PCI_DEVICE(0x1260, 0x3886) },
-	/* Intersil PRISM Xbow Wireless LAN adapter (Symbol AP-300) */
+	 
 	{ PCI_DEVICE(0x1260, 0xffff) },
 	{ },
 };
@@ -73,7 +65,7 @@ static int p54p_upload_firmware(struct ieee80211_hw *dev)
 	P54P_WRITE(ctrl_stat, reg);
 	wmb();
 
-	/* wait for the firmware to reset properly */
+	 
 	mdelay(10);
 
 	err = p54_parse_firmware(dev, priv->firmware);
@@ -123,7 +115,7 @@ static int p54p_upload_firmware(struct ieee80211_hw *dev)
 	wmb();
 	udelay(10);
 
-	/* wait for the firmware to boot properly */
+	 
 	mdelay(100);
 
 	return 0;
@@ -166,7 +158,7 @@ static void p54p_refill_rx_ring(struct ieee80211_hw *dev,
 			}
 
 			desc->host_addr = cpu_to_le32(mapping);
-			desc->device_addr = 0;	// FIXME: necessary?
+			desc->device_addr = 0;	
 			desc->len = cpu_to_le16(priv->common.rx_mtu + 32);
 			desc->flags = 0;
 			rx_buf[i] = skb;
@@ -531,11 +523,7 @@ out:
 		if (parent)
 			device_lock(parent);
 
-		/*
-		 * This will indirectly result in a call to p54p_remove.
-		 * Hence, we don't need to bother with freeing any
-		 * allocated ressources at all.
-		 */
+		 
 		device_release_driver(&pdev->dev);
 
 		if (parent)
@@ -695,7 +683,7 @@ static SIMPLE_DEV_PM_OPS(p54pci_pm_ops, p54p_suspend, p54p_resume);
 #define P54P_PM_OPS (&p54pci_pm_ops)
 #else
 #define P54P_PM_OPS (NULL)
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static struct pci_driver p54p_driver = {
 	.name		= "p54pci",

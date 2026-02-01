@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  tw68 functions to handle video data
- *
- *  Much of this code is derived from the cx88 and sa7134 drivers, which
- *  were in turn derived from the bt87x driver.  The original work was by
- *  Gerd Knorr; more recently the code was enhanced by Mauro Carvalho Chehab,
- *  Hans Verkuil, Andy Walls and many others.  Their work is gratefully
- *  acknowledged.  Full credit goes to them - any problems within this code
- *  are mine.
- *
- *  Copyright (C) 2009  William M. Brack
- *
- *  Refactored and updated to the latest v4l core frameworks:
- *
- *  Copyright (C) 2014 Hans Verkuil <hverkuil@xs4all.nl>
- */
+
+ 
 
 #include <linux/module.h>
 #include <media/v4l2-common.h>
@@ -24,14 +9,9 @@
 #include "tw68.h"
 #include "tw68-reg.h"
 
-/* ------------------------------------------------------------------ */
-/* data structs for video                                             */
-/*
- * FIXME -
- * Note that the saa7134 has formats, e.g. YUV420, which are classified
- * as "planar".  These affect overlay mode, and are flagged with a field
- * ".planar" in the format.  Do we need to implement this in this driver?
- */
+ 
+ 
+ 
 static const struct tw68_format formats[] = {
 	{
 		.fourcc		= V4L2_PIX_FMT_RGB555,
@@ -102,14 +82,10 @@ static const struct tw68_format formats[] = {
 		.video_v_stop	= 262,	\
 		.vbi_v_start_1	= 273
 
-/*
- * The following table is searched by tw68_s_std, first for a specific
- * match, then for an entry which contains the desired id.  The table
- * entries should therefore be ordered in ascending order of specificity.
- */
+ 
 static const struct tw68_tvnorm tvnorms[] = {
 	{
-		.name		= "PAL", /* autodetect */
+		.name		= "PAL",  
 		.id		= V4L2_STD_PAL,
 		NORM_625_50,
 
@@ -203,11 +179,8 @@ static const struct tw68_format *format_by_fourcc(unsigned int fourcc)
 }
 
 
-/* ------------------------------------------------------------------ */
-/*
- * Note that the cropping rectangles are described in terms of a single
- * frame, i.e. line positions are only 1/2 the interlaced equivalent
- */
+ 
+ 
 static void set_tvnorm(struct tw68_dev *dev, const struct tw68_tvnorm *norm)
 {
 	if (norm != dev->tvnorm) {
@@ -218,46 +191,18 @@ static void set_tvnorm(struct tw68_dev *dev, const struct tw68_tvnorm *norm)
 	}
 }
 
-/*
- * tw68_set_scale
- *
- * Scaling and Cropping for video decoding
- *
- * We are working with 3 values for horizontal and vertical - scale,
- * delay and active.
- *
- * HACTIVE represent the actual number of pixels in the "usable" image,
- * before scaling.  HDELAY represents the number of pixels skipped
- * between the start of the horizontal sync and the start of the image.
- * HSCALE is calculated using the formula
- *	HSCALE = (HACTIVE / (#pixels desired)) * 256
- *
- * The vertical registers are similar, except based upon the total number
- * of lines in the image, and the first line of the image (i.e. ignoring
- * vertical sync and VBI).
- *
- * Note that the number of bytes reaching the FIFO (and hence needing
- * to be processed by the DMAP program) is completely dependent upon
- * these values, especially HSCALE.
- *
- * Parameters:
- *	@dev		pointer to the device structure, needed for
- *			getting current norm (as well as debug print)
- *	@width		actual image width (from user buffer)
- *	@height		actual image height
- *	@field		indicates Top, Bottom or Interlaced
- */
+ 
 static int tw68_set_scale(struct tw68_dev *dev, unsigned int width,
 			  unsigned int height, enum v4l2_field field)
 {
 	const struct tw68_tvnorm *norm = dev->tvnorm;
-	/* set individually for debugging clarity */
+	 
 	int hactive, hdelay, hscale;
 	int vactive, vdelay, vscale;
 	int comb;
 
-	if (V4L2_FIELD_HAS_BOTH(field))	/* if field is interlaced */
-		height /= 2;		/* we must set for 1-frame */
+	if (V4L2_FIELD_HAS_BOTH(field))	 
+		height /= 2;		 
 
 	pr_debug("%s: width=%d, height=%d, both=%d\n"
 		 "  tvnorm h_delay=%d, h_start=%d, h_stop=%d, v_delay=%d, v_start=%d, v_stop=%d\n",
@@ -315,22 +260,18 @@ static int tw68_set_scale(struct tw68_dev *dev, unsigned int width,
 	return 0;
 }
 
-/* ------------------------------------------------------------------ */
+ 
 
 int tw68_video_start_dma(struct tw68_dev *dev, struct tw68_buf *buf)
 {
-	/* Set cropping and scaling */
+	 
 	tw68_set_scale(dev, dev->width, dev->height, dev->field);
-	/*
-	 *  Set start address for RISC program.  Note that if the DMAP
-	 *  processor is currently running, it must be stopped before
-	 *  a new address can be set.
-	 */
+	 
 	tw_clearl(TW68_DMAC, TW68_DMAP_EN);
 	tw_writel(TW68_DMAP_SA, buf->dma);
-	/* Clear any pending interrupts */
+	 
 	tw_writel(TW68_INTSTAT, dev->board_virqmask);
-	/* Enable the risc engine and the fifo */
+	 
 	tw_andorl(TW68_DMAC, 0xff, dev->fmt->twformat |
 		ColorFormatGamma | TW68_DMAP_EN | TW68_FIFO_EN);
 	dev->pci_irqmask |= dev->board_virqmask;
@@ -338,10 +279,9 @@ int tw68_video_start_dma(struct tw68_dev *dev, struct tw68_buf *buf)
 	return 0;
 }
 
-/* ------------------------------------------------------------------ */
+ 
 
-/* calc max # of buffers from size (must not exceed the 4MB virtual
- * address space per DMA channel) */
+ 
 static int tw68_buffer_count(unsigned int size, unsigned int count)
 {
 	unsigned int maxcount;
@@ -352,8 +292,8 @@ static int tw68_buffer_count(unsigned int size, unsigned int count)
 	return count;
 }
 
-/* ------------------------------------------------------------- */
-/* vb2 queue operations                                          */
+ 
+ 
 
 static int tw68_queue_setup(struct vb2_queue *q,
 			   unsigned int *num_buffers, unsigned int *num_planes,
@@ -367,11 +307,7 @@ static int tw68_queue_setup(struct vb2_queue *q,
 		tot_bufs = 2;
 	tot_bufs = tw68_buffer_count(size, tot_bufs);
 	*num_buffers = tot_bufs - q->num_buffers;
-	/*
-	 * We allow create_bufs, but only if the sizeimage is >= as the
-	 * current sizeimage. The tw68_buffer_count calculation becomes quite
-	 * difficult otherwise.
-	 */
+	 
 	if (*num_planes)
 		return sizes[0] < size ? -EINVAL : 0;
 	*num_planes = 1;
@@ -380,26 +316,7 @@ static int tw68_queue_setup(struct vb2_queue *q,
 	return 0;
 }
 
-/*
- * The risc program for each buffers works as follows: it starts with a simple
- * 'JUMP to addr + 8', which is effectively a NOP. Then the program to DMA the
- * buffer follows and at the end we have a JUMP back to the start + 8 (skipping
- * the initial JUMP).
- *
- * This is the program of the first buffer to be queued if the active list is
- * empty and it just keeps DMAing this buffer without generating any interrupts.
- *
- * If a new buffer is added then the initial JUMP in the program generates an
- * interrupt as well which signals that the previous buffer has been DMAed
- * successfully and that it can be returned to userspace.
- *
- * It also sets the final jump of the previous buffer to the start of the new
- * buffer, thus chaining the new buffer into the DMA chain. This is a single
- * atomic u32 write, so there is no race condition.
- *
- * The end-result of all this that you only get an interrupt when a buffer
- * is ready, so the control flow is very easy.
- */
+ 
 static void tw68_buf_queue(struct vb2_buffer *vb)
 {
 	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
@@ -411,7 +328,7 @@ static void tw68_buf_queue(struct vb2_buffer *vb)
 
 	spin_lock_irqsave(&dev->slock, flags);
 
-	/* append a 'JUMP to start of buffer' to the buffer risc program */
+	 
 	buf->jmp[0] = cpu_to_le32(RISC_JUMP);
 	buf->jmp[1] = cpu_to_le32(buf->dma + 8);
 
@@ -424,17 +341,7 @@ static void tw68_buf_queue(struct vb2_buffer *vb)
 	spin_unlock_irqrestore(&dev->slock, flags);
 }
 
-/*
- * buffer_prepare
- *
- * Set the ancillary information into the buffer structure.  This
- * includes generating the necessary risc program if it hasn't already
- * been done for the current buffer format.
- * The structure fh contains the details of the format requested by the
- * user - type, width, height and #fields.  This is compared with the
- * last format set for the current buffer.  If they differ, the risc
- * code (which controls the filling of the buffer) is (re-)generated.
- */
+ 
 static int tw68_buf_prepare(struct vb2_buffer *vb)
 {
 	int ret;
@@ -505,7 +412,7 @@ static void tw68_stop_streaming(struct vb2_queue *q)
 {
 	struct tw68_dev *dev = vb2_get_drv_priv(q);
 
-	/* Stop risc & fifo */
+	 
 	tw_clearl(TW68_DMAC, TW68_DMAP_EN | TW68_FIFO_EN);
 	while (!list_empty(&dev->active)) {
 		struct tw68_buf *buf =
@@ -527,7 +434,7 @@ static const struct vb2_ops tw68_video_qops = {
 	.wait_finish	= vb2_ops_wait_finish,
 };
 
-/* ------------------------------------------------------------------ */
+ 
 
 static int tw68_s_ctrl(struct v4l2_ctrl *ctrl)
 {
@@ -564,12 +471,9 @@ static int tw68_s_ctrl(struct v4l2_ctrl *ctrl)
 	return 0;
 }
 
-/* ------------------------------------------------------------------ */
+ 
 
-/*
- * Note that this routine returns what is stored in the fh structure, and
- * does not interrogate any of the device registers.
- */
+ 
 static int tw68_g_fmt_vid_cap(struct file *file, void *priv,
 				struct v4l2_format *f)
 {
@@ -636,12 +540,7 @@ static int tw68_try_fmt_vid_cap(struct file *file, void *priv,
 	return 0;
 }
 
-/*
- * Note that tw68_s_fmt_vid_cap sets the information into the fh structure,
- * and it will be used for all future new buffers.  However, there could be
- * some number of buffers on the "active" chain which will be filled before
- * the change takes place.
- */
+ 
 static int tw68_s_fmt_vid_cap(struct file *file, void *priv,
 					struct v4l2_format *f)
 {
@@ -672,7 +571,7 @@ static int tw68_enum_input(struct file *file, void *priv,
 	i->type = V4L2_INPUT_TYPE_CAMERA;
 	snprintf(i->name, sizeof(i->name), "Composite %d", n);
 
-	/* If the query is for the current input, get live data */
+	 
 	if (n == dev->input) {
 		int v1 = tw_readb(TW68_STATUS1);
 		int v2 = tw_readb(TW68_MVSN);
@@ -728,23 +627,23 @@ static int tw68_s_std(struct file *file, void *priv, v4l2_std_id id)
 	if (vb2_is_busy(&dev->vidq))
 		return -EBUSY;
 
-	/* Look for match on complete norm id (may have mult bits) */
+	 
 	for (i = 0; i < TVNORMS; i++) {
 		if (id == tvnorms[i].id)
 			break;
 	}
 
-	/* If no exact match, look for norm which contains this one */
+	 
 	if (i == TVNORMS) {
 		for (i = 0; i < TVNORMS; i++)
 			if (id & tvnorms[i].id)
 				break;
 	}
-	/* If still not matched, give up */
+	 
 	if (i == TVNORMS)
 		return -EINVAL;
 
-	set_tvnorm(dev, &tvnorms[i]);	/* do the actual setting */
+	set_tvnorm(dev, &tvnorms[i]);	 
 	return 0;
 }
 
@@ -767,10 +666,7 @@ static int tw68_enum_fmt_vid_cap(struct file *file, void  *priv,
 	return 0;
 }
 
-/*
- * Used strictly for internal development and debugging, this routine
- * prints out the current register contents for the tw68xx device.
- */
+ 
 static void tw68_dump_regs(struct tw68_dev *dev)
 {
 	unsigned char line[80];
@@ -778,11 +674,11 @@ static void tw68_dump_regs(struct tw68_dev *dev)
 	unsigned char *cptr;
 
 	pr_info("Full dump of TW68 registers:\n");
-	/* First we do the PCI regs, 8 4-byte regs per line */
+	 
 	for (i = 0; i < 0x100; i += 32) {
 		cptr = line;
 		cptr += sprintf(cptr, "%03x  ", i);
-		/* j steps through the next 4 words */
+		 
 		for (j = i; j < i + 16; j += 4)
 			cptr += sprintf(cptr, "%08x ", tw_readl(j));
 		*cptr++ = ' ';
@@ -792,11 +688,11 @@ static void tw68_dump_regs(struct tw68_dev *dev)
 		*cptr = 0;
 		pr_info("%s", line);
 	}
-	/* Next the control regs, which are single-byte, address mod 4 */
+	 
 	while (i < 0x400) {
 		cptr = line;
 		cptr += sprintf(cptr, "%03x ", i);
-		/* Print out 4 groups of 4 bytes */
+		 
 		for (j = 0; j < 4; j++) {
 			for (k = 0; k < 4; k++) {
 				cptr += sprintf(cptr, "%02x ",
@@ -896,8 +792,8 @@ static const struct video_device tw68_video_template = {
 				  V4L2_CAP_STREAMING,
 };
 
-/* ------------------------------------------------------------------ */
-/* exported stuff                                                     */
+ 
+ 
 void tw68_set_tvnorm_hw(struct tw68_dev *dev)
 {
 	tw_andorb(TW68_SDT, 0x07, dev->tvnorm->format);
@@ -914,7 +810,7 @@ int tw68_video_init1(struct tw68_dev *dev)
 			V4L2_CID_CONTRAST, 0, 255, 1, 100);
 	v4l2_ctrl_new_std(hdl, &tw68_ctrl_ops,
 			V4L2_CID_SATURATION, 0, 255, 1, 128);
-	/* NTSC only */
+	 
 	v4l2_ctrl_new_std(hdl, &tw68_ctrl_ops,
 			V4L2_CID_HUE, -128, 127, 1, 0);
 	v4l2_ctrl_new_std(hdl, &tw68_ctrl_ops,
@@ -964,21 +860,14 @@ int tw68_video_init2(struct tw68_dev *dev, int video_nr)
 	return video_register_device(&dev->vdev, VFL_TYPE_VIDEO, video_nr);
 }
 
-/*
- * tw68_irq_video_done
- */
+ 
 void tw68_irq_video_done(struct tw68_dev *dev, unsigned long status)
 {
 	__u32 reg;
 
-	/* reset interrupts handled by this routine */
+	 
 	tw_writel(TW68_INTSTAT, status);
-	/*
-	 * Check most likely first
-	 *
-	 * DMAPI shows we have reached the end of the risc code
-	 * for the current buffer.
-	 */
+	 
 	if (status & TW68_DMAPI) {
 		struct tw68_buf *buf;
 
@@ -1000,14 +889,11 @@ void tw68_irq_video_done(struct tw68_dev *dev, unsigned long status)
 		dev_err(&dev->pci->dev, "PABORT interrupt\n");
 	if (status & TW68_DMAPERR)
 		dev_err(&dev->pci->dev, "DMAPERR interrupt\n");
-	/*
-	 * On TW6800, FDMIS is apparently generated if video input is switched
-	 * during operation.  Therefore, it is not enabled for that chip.
-	 */
+	 
 	if (status & TW68_FDMIS)
 		dev_dbg(&dev->pci->dev, "FDMIS interrupt\n");
 	if (status & TW68_FFOF) {
-		/* probably a logic error */
+		 
 		reg = tw_readl(TW68_DMAC) & TW68_FIFO_EN;
 		tw_clearl(TW68_DMAC, TW68_FIFO_EN);
 		dev_dbg(&dev->pci->dev, "FFOF interrupt\n");

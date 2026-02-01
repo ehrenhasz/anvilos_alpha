@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Simplest possible simple frame-buffer driver, as a platform device
- *
- * Copyright (c) 2013, Stephen Warren
- *
- * Based on q40fb.c, which was:
- * Copyright (C) 2001 Richard Zidlicky <rz@linux-m68k.org>
- *
- * Also based on offb.c, which was:
- * Copyright (C) 1997 Geert Uytterhoeven
- * Copyright (C) 1996 Paul Mackerras
- */
+
+ 
 
 #include <linux/aperture.h>
 #include <linux/errno.h>
@@ -87,10 +76,7 @@ struct simplefb_par {
 static void simplefb_clocks_destroy(struct simplefb_par *par);
 static void simplefb_regulators_destroy(struct simplefb_par *par);
 
-/*
- * fb_ops.fb_destroy is called by the last put_fb_info() call at the end
- * of unregister_framebuffer() or fb_release(). Do any cleanup here.
- */
+ 
 static void simplefb_destroy(struct fb_info *info)
 {
 	struct simplefb_par *par = info->par;
@@ -197,24 +183,7 @@ static int simplefb_parse_pd(struct platform_device *pdev,
 }
 
 #if defined CONFIG_OF && defined CONFIG_COMMON_CLK
-/*
- * Clock handling code.
- *
- * Here we handle the clocks property of our "simple-framebuffer" dt node.
- * This is necessary so that we can make sure that any clocks needed by
- * the display engine that the bootloader set up for us (and for which it
- * provided a simplefb dt node), stay up, for the life of the simplefb
- * driver.
- *
- * When the driver unloads, we cleanly disable, and then release the clocks.
- *
- * We only complain about errors here, no action is taken as the most likely
- * error can only happen due to a mismatch between the bootloader which set
- * up simplefb, and the clock definitions in the device tree. Chances are
- * that there are no adverse effects, and if there are, a clean teardown of
- * the fb probe will not help us much either. So just complain and carry on,
- * and hope that the user actually gets a working fb at the end of things.
- */
+ 
 static int simplefb_clocks_get(struct simplefb_par *par,
 			       struct platform_device *pdev)
 {
@@ -302,25 +271,7 @@ static void simplefb_clocks_destroy(struct simplefb_par *par) { }
 
 #define SUPPLY_SUFFIX "-supply"
 
-/*
- * Regulator handling code.
- *
- * Here we handle the num-supplies and vin*-supply properties of our
- * "simple-framebuffer" dt node. This is necessary so that we can make sure
- * that any regulators needed by the display hardware that the bootloader
- * set up for us (and for which it provided a simplefb dt node), stay up,
- * for the life of the simplefb driver.
- *
- * When the driver unloads, we cleanly disable, and then release the
- * regulators.
- *
- * We only complain about errors here, no action is taken as the most likely
- * error can only happen due to a mismatch between the bootloader which set
- * up simplefb, and the regulator definitions in the device tree. Chances are
- * that there are no adverse effects, and if there are, a clean teardown of
- * the fb probe will not help us much either. So just complain and carry on,
- * and hope that the user actually gets a working fb at the end of things.
- */
+ 
 static int simplefb_regulators_get(struct simplefb_par *par,
 				   struct platform_device *pdev)
 {
@@ -333,7 +284,7 @@ static int simplefb_regulators_get(struct simplefb_par *par,
 	if (dev_get_platdata(&pdev->dev) || !np)
 		return 0;
 
-	/* Count the number of regulator supplies */
+	 
 	for_each_property_of_node(np, prop) {
 		p = strstr(prop->name, SUPPLY_SUFFIX);
 		if (p && p != prop->name)
@@ -348,9 +299,9 @@ static int simplefb_regulators_get(struct simplefb_par *par,
 	if (!par->regulators)
 		return -ENOMEM;
 
-	/* Get all the regulators */
+	 
 	for_each_property_of_node(np, prop) {
-		char name[32]; /* 32 is max size of property name */
+		char name[32];  
 
 		p = strstr(prop->name, SUPPLY_SUFFIX);
 		if (!p || p == prop->name)
@@ -378,7 +329,7 @@ static void simplefb_regulators_enable(struct simplefb_par *par,
 {
 	int i, ret;
 
-	/* Enable all the regulators */
+	 
 	for (i = 0; i < par->regulator_count; i++) {
 		ret = regulator_enable(par->regulators[i]);
 		if (ret) {
@@ -439,11 +390,7 @@ static int simplefb_probe(struct platform_device *pdev)
 
 	mem = request_mem_region(res->start, resource_size(res), "simplefb");
 	if (!mem) {
-		/*
-		 * We cannot make this fatal. Sometimes this comes from magic
-		 * spaces our resource handlers simply don't know about. Use
-		 * the I/O-memory resource as-is and try to map that instead.
-		 */
+		 
 		dev_warn(&pdev->dev, "simplefb: cannot reserve video memory at %pR\n", res);
 		mem = res;
 	}
@@ -504,7 +451,7 @@ static int simplefb_probe(struct platform_device *pdev)
 			     info->var.bits_per_pixel, info->fix.line_length);
 
 	if (mem != res)
-		par->mem = mem; /* release in clean-up handler */
+		par->mem = mem;  
 
 	ret = devm_aperture_acquire_for_platform_device(pdev, par->base, par->size);
 	if (ret) {
@@ -539,7 +486,7 @@ static void simplefb_remove(struct platform_device *pdev)
 {
 	struct fb_info *info = platform_get_drvdata(pdev);
 
-	/* simplefb_destroy takes care of info cleanup */
+	 
 	unregister_framebuffer(info);
 }
 

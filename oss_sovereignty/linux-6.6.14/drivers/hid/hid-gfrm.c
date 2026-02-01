@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * HID driver for Google Fiber TV Box remote controls
- *
- * Copyright (c) 2014-2015 Google Inc.
- *
- * Author: Petri Gynther <pgynther@google.com>
- */
+
+ 
 #include <linux/device.h>
 #include <linux/hid.h>
 #include <linux/input.h>
@@ -13,8 +7,8 @@
 
 #include "hid-ids.h"
 
-#define GFRM100  1  /* Google Fiber GFRM100 (Bluetooth classic) */
-#define GFRM200  2  /* Google Fiber GFRM200 (Bluetooth LE) */
+#define GFRM100  1   
+#define GFRM200  2   
 
 #define GFRM100_SEARCH_KEY_REPORT_ID   0xF7
 #define GFRM100_SEARCH_KEY_DOWN        0x0
@@ -32,13 +26,13 @@ static int gfrm_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 
 	if (hdev_type == GFRM100) {
 		if (usage->hid == (HID_UP_CONSUMER | 0x4)) {
-			/* Consumer.0004 -> KEY_INFO */
+			 
 			hid_map_usage_clear(hi, usage, bit, max, EV_KEY, KEY_INFO);
 			return 1;
 		}
 
 		if (usage->hid == (HID_UP_CONSUMER | 0x41)) {
-			/* Consumer.0041 -> KEY_OK */
+			 
 			hid_map_usage_clear(hi, usage, bit, max, EV_KEY, KEY_OK);
 			return 1;
 		}
@@ -59,10 +53,7 @@ static int gfrm_raw_event(struct hid_device *hdev, struct hid_report *report,
 	if (size < 2 || data[0] != GFRM100_SEARCH_KEY_REPORT_ID)
 		return 0;
 
-	/*
-	 * Convert GFRM100 Search key reports into Consumer.0221 (Key.Search)
-	 * reports. Ignore audio data.
-	 */
+	 
 	switch (data[1]) {
 	case GFRM100_SEARCH_KEY_DOWN:
 		ret = hid_report_raw_event(hdev, HID_INPUT_REPORT, search_key_dn,
@@ -86,11 +77,7 @@ static int gfrm_raw_event(struct hid_device *hdev, struct hid_report *report,
 
 static int gfrm_input_configured(struct hid_device *hid, struct hid_input *hidinput)
 {
-	/*
-	 * Enable software autorepeat with:
-	 * - repeat delay: 400 msec
-	 * - repeat period: 100 msec
-	 */
+	 
 	input_enable_softrepeat(hidinput->input, 400, 100);
 	return 0;
 }
@@ -106,11 +93,7 @@ static int gfrm_probe(struct hid_device *hdev, const struct hid_device_id *id)
 		goto done;
 
 	if (id->driver_data == GFRM100) {
-		/*
-		 * GFRM100 HID Report Descriptor does not describe the Search
-		 * key reports. Thus, we need to add it manually here, so that
-		 * those reports reach gfrm_raw_event() from hid_input_report().
-		 */
+		 
 		if (!hid_register_report(hdev, HID_INPUT_REPORT,
 					 GFRM100_SEARCH_KEY_REPORT_ID, 0)) {
 			ret = -ENOMEM;

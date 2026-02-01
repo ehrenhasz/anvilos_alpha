@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020 Intel Corporation
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -9,13 +7,9 @@
 #include <linux/module.h>
 #include <linux/printk.h>
 
-/* a tiny module only meant to test
- *
- *   set/clear_bit
- *   get_count_order/long
- */
+ 
 
-/* use an enum because that's the most common BITMAP usage */
+ 
 enum bitops_fun {
 	BITOPS_4 = 4,
 	BITOPS_7 = 7,

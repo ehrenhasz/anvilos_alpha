@@ -1,29 +1,25 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Keytable for the Astrometa T2hybrid remote controller
- *
- * Copyright (C) 2017 Oleh Kravchenko <oleg@kaa.org.ua>
- */
+
+ 
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
 static struct rc_map_table t2hybrid[] = {
 	{ 0x4d, KEY_POWER2 },
-	{ 0x54, KEY_VIDEO }, /* Source */
+	{ 0x54, KEY_VIDEO },  
 	{ 0x16, KEY_MUTE },
 
 	{ 0x4c, KEY_RECORD },
 	{ 0x05, KEY_CHANNELUP },
-	{ 0x0c, KEY_TIME}, /* Timeshift */
+	{ 0x0c, KEY_TIME},  
 
 	{ 0x0a, KEY_VOLUMEDOWN },
-	{ 0x40, KEY_ZOOM }, /* Fullscreen */
+	{ 0x40, KEY_ZOOM },  
 	{ 0x1e, KEY_VOLUMEUP },
 
 	{ 0x12, KEY_NUMERIC_0 },
 	{ 0x02, KEY_CHANNELDOWN },
-	{ 0x1c, KEY_AGAIN }, /* Recall */
+	{ 0x1c, KEY_AGAIN },  
 
 	{ 0x09, KEY_NUMERIC_1 },
 	{ 0x1d, KEY_NUMERIC_2 },

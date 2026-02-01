@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cs42l83-i2c.c -- CS42L83 ALSA SoC audio driver for I2C
- *
- * Based on cs42l42-i2c.c:
- *   Copyright 2016, 2022 Cirrus Logic, Inc.
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/module.h>
@@ -17,7 +12,7 @@
 static const struct reg_default cs42l83_reg_defaults[] = {
 	{ CS42L42_FRZ_CTL,			0x00 },
 	{ CS42L42_SRC_CTL,			0x10 },
-	{ CS42L42_MCLK_CTL,			0x00 }, /* <- only deviation from CS42L42 */
+	{ CS42L42_MCLK_CTL,			0x00 },  
 	{ CS42L42_SFTRAMP_RATE,			0xA4 },
 	{ CS42L42_SLOW_START_ENABLE,		0x70 },
 	{ CS42L42_I2C_DEBOUNCE,			0x88 },
@@ -141,10 +136,7 @@ static const struct reg_default cs42l83_reg_defaults[] = {
 	{ CS42L42_ASP_RX_DAI1_CH2_BIT_LSB,	0x00 },
 };
 
-/*
- * This is all the same as for CS42L42 but we
- * replace the on-reset register defaults.
- */
+ 
 static const struct regmap_config cs42l83_regmap = {
 	.reg_bits = 8,
 	.val_bits = 8,

@@ -1,27 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 
@@ -67,17 +44,11 @@ enum dcn10_coef_filter_type_sel {
 enum dscl_autocal_mode {
 	AUTOCAL_MODE_OFF = 0,
 
-	/* Autocal calculate the scaling ratio and initial phase and the
-	 * DSCL_MODE_SEL must be set to 1
-	 */
+	 
 	AUTOCAL_MODE_AUTOSCALE = 1,
-	/* Autocal perform auto centering without replication and the
-	 * DSCL_MODE_SEL must be set to 0
-	 */
+	 
 	AUTOCAL_MODE_AUTOCENTER = 2,
-	/* Autocal perform auto centering and auto replication and the
-	 * DSCL_MODE_SEL must be set to 0
-	 */
+	 
 	AUTOCAL_MODE_AUTOREPLICATE = 3
 };
 
@@ -126,7 +97,7 @@ bool dpp1_get_optimal_number_of_taps(
 		struct scaler_data *scl_data,
 		const struct scaling_taps *in_taps)
 {
-	/* Some ASICs does not support  FP16 scaling, so we reject modes require this*/
+	 
 	if (scl_data->format == PIXEL_FORMAT_FP16 &&
 		dpp->caps->dscl_data_proc_format == DSCL_DATA_PRCESSING_FIXED_FORMAT &&
 		scl_data->ratios.horz.value != dc_fixpt_one.value &&
@@ -138,9 +109,9 @@ bool dpp1_get_optimal_number_of_taps(
 		scl_data->viewport.width > dpp->ctx->dc->debug.max_downscale_src_width)
 		return false;
 
-	/* TODO: add lb check */
+	 
 
-	/* No support for programming ratio of 4, drop to 3.99999.. */
+	 
 	if (scl_data->ratios.horz.value == (4ll << 32))
 		scl_data->ratios.horz.value--;
 	if (scl_data->ratios.vert.value == (4ll << 32))
@@ -150,7 +121,7 @@ bool dpp1_get_optimal_number_of_taps(
 	if (scl_data->ratios.vert_c.value == (4ll << 32))
 		scl_data->ratios.vert_c.value--;
 
-	/* Set default taps if none are provided */
+	 
 	if (in_taps->h_taps == 0)
 		scl_data->taps.h_taps = 4;
 	else
@@ -165,7 +136,7 @@ bool dpp1_get_optimal_number_of_taps(
 		scl_data->taps.v_taps_c = in_taps->v_taps_c;
 	if (in_taps->h_taps_c == 0)
 		scl_data->taps.h_taps_c = 2;
-	/* Only 1 and even h_taps_c are supported by hw */
+	 
 	else if ((in_taps->h_taps_c % 2) != 0 && in_taps->h_taps_c != 1)
 		scl_data->taps.h_taps_c = in_taps->h_taps_c - 1;
 	else
@@ -300,7 +271,7 @@ void dpp1_cnv_setup (
 	switch (fmt) {
 	case PIXEL_FORMAT_FIXED:
 	case PIXEL_FORMAT_FIXED16:
-	/*when output is float then FORMAT_CONTROL__OUTPUT_FP=1*/
+	 
 		REG_SET_3(FORMAT_CONTROL, 0,
 			CNVC_BYPASS, 0,
 			FORMAT_EXPANSION_MODE, mode,
@@ -362,7 +333,7 @@ void dpp1_cnv_setup (
 		break;
 	case SURFACE_PIXEL_FORMAT_GRPH_ARGB16161616:
 	case SURFACE_PIXEL_FORMAT_GRPH_ABGR16161616:
-		pixel_format = 26; /* ARGB16161616_UNORM */
+		pixel_format = 26;  
 		break;
 	case SURFACE_PIXEL_FORMAT_GRPH_ARGB16161616F:
 		pixel_format = 24;
@@ -374,14 +345,14 @@ void dpp1_cnv_setup (
 		break;
 	}
 
-	/* Set default color space based on format if none is given. */
+	 
 	color_space = input_color_space ? input_color_space : color_space;
 
 	REG_SET(CNVC_SURFACE_PIXEL_FORMAT, 0,
 			CNVC_SURFACE_PIXEL_FORMAT, pixel_format);
 	REG_UPDATE(FORMAT_CONTROL, FORMAT_CONTROL__ALPHA_EN, alpha_en);
 
-	// if input adjustments exist, program icsc with those values
+	
 
 	if (input_csc_color_matrix.enable_adjustment
 				== true) {
@@ -419,7 +390,7 @@ void dpp1_set_cursor_attributes(
 			CUR0_EXPANSION_MODE, 0);
 
 	if (color_format == CURSOR_MODE_MONO) {
-		/* todo: clarify what to program these to */
+		 
 		REG_UPDATE(CURSOR0_COLOR0,
 				CUR0_COLOR0, 0x00000000);
 		REG_UPDATE(CURSOR0_COLOR1,
@@ -446,22 +417,22 @@ void dpp1_set_cursor_position(
 	int cursor_width = (int)width;
 	uint32_t cur_en = pos->enable ? 1 : 0;
 
-	// Transform cursor width / height and hotspots for offset calculations
+	
 	if (param->rotation == ROTATION_ANGLE_90 || param->rotation == ROTATION_ANGLE_270) {
 		swap(cursor_height, cursor_width);
 		swap(x_hotspot, y_hotspot);
 
 		if (param->rotation == ROTATION_ANGLE_90) {
-			// hotspot = (-y, x)
+			
 			src_x_offset = x_pos - (cursor_width - x_hotspot);
 			src_y_offset = y_pos - y_hotspot;
 		} else if (param->rotation == ROTATION_ANGLE_270) {
-			// hotspot = (y, -x)
+			
 			src_x_offset = x_pos - x_hotspot;
 			src_y_offset = y_pos - (cursor_height - y_hotspot);
 		}
 	} else if (param->rotation == ROTATION_ANGLE_180) {
-		// hotspot = (-x, -y)
+		
 		if (!param->mirror)
 			src_x_offset = x_pos - (cursor_width - x_hotspot);
 
@@ -469,16 +440,16 @@ void dpp1_set_cursor_position(
 	}
 
 	if (src_x_offset >= (int)param->viewport.width)
-		cur_en = 0;  /* not visible beyond right edge*/
+		cur_en = 0;   
 
 	if (src_x_offset + cursor_width <= 0)
-		cur_en = 0;  /* not visible beyond left edge*/
+		cur_en = 0;   
 
 	if (src_y_offset >= (int)param->viewport.height)
-		cur_en = 0;  /* not visible beyond bottom edge*/
+		cur_en = 0;   
 
 	if (src_y_offset + cursor_height <= 0)
-		cur_en = 0;  /* not visible beyond top edge*/
+		cur_en = 0;   
 
 	REG_UPDATE(CURSOR0_CONTROL,
 			CUR0_ENABLE, cur_en);
@@ -551,9 +522,9 @@ static struct dpp_caps dcn10_dpp_cap = {
 	.dscl_calc_lb_num_partitions = dpp1_dscl_calc_lb_num_partitions,
 };
 
-/*****************************************/
-/* Constructor, Destructor               */
-/*****************************************/
+ 
+ 
+ 
 
 void dpp1_construct(
 	struct dcn10_dpp *dpp,
@@ -580,5 +551,5 @@ void dpp1_construct(
 		LB_PIXEL_DEPTH_36BPP;
 
 	dpp->lb_bits_per_entry = LB_BITS_PER_ENTRY;
-	dpp->lb_memory_size = LB_TOTAL_NUMBER_OF_ENTRIES; /*0x1404*/
+	dpp->lb_memory_size = LB_TOTAL_NUMBER_OF_ENTRIES;  
 }

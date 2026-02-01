@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Russell King
- */
+
+ 
 
 #include <linux/dma-buf.h>
 #include <linux/dma-mapping.h>
@@ -50,11 +48,11 @@ void armada_gem_free_object(struct drm_gem_object *obj)
 	might_lock(&priv->linear_lock);
 
 	if (dobj->page) {
-		/* page backed memory */
+		 
 		unsigned int order = get_order(dobj->obj.size);
 		__free_pages(dobj->page, order);
 	} else if (dobj->linear) {
-		/* linear backed memory */
+		 
 		mutex_lock(&priv->linear_lock);
 		drm_mm_remove_node(dobj->linear);
 		mutex_unlock(&priv->linear_lock);
@@ -64,7 +62,7 @@ void armada_gem_free_object(struct drm_gem_object *obj)
 	}
 
 	if (dobj->obj.import_attach) {
-		/* We only ever display imported data */
+		 
 		if (dobj->sgt)
 			dma_buf_unmap_attachment_unlocked(dobj->obj.import_attach,
 							  dobj->sgt, DMA_TO_DEVICE);
@@ -85,14 +83,7 @@ armada_gem_linear_back(struct drm_device *dev, struct armada_gem_object *obj)
 	if (obj->page || obj->linear)
 		return 0;
 
-	/*
-	 * If it is a small allocation (typically cursor, which will
-	 * be 32x64 or 64x32 ARGB pixels) try to get it from the system.
-	 * Framebuffers will never be this small (our minimum size for
-	 * framebuffers is larger than this anyway.)  Such objects are
-	 * only accessed by the CPU so we don't need any special handing
-	 * here.
-	 */
+	 
 	if (size <= 8192) {
 		unsigned int order = get_order(size);
 		struct page *p = alloc_pages(GFP_KERNEL, order);
@@ -106,30 +97,9 @@ armada_gem_linear_back(struct drm_device *dev, struct armada_gem_object *obj)
 		}
 	}
 
-	/*
-	 * We could grab something from DMA if it's enabled, but that
-	 * involves building in a problem:
-	 *
-	 * GEM DMA helper interface uses dma_alloc_coherent(), which provides
-	 * us with an CPU virtual address and a device address.
-	 *
-	 * The CPU virtual address may be either an address in the kernel
-	 * direct mapped region (for example, as it would be on x86) or
-	 * it may be remapped into another part of kernel memory space
-	 * (eg, as it would be on ARM.)  This means virt_to_phys() on the
-	 * returned virtual address is invalid depending on the architecture
-	 * implementation.
-	 *
-	 * The device address may also not be a physical address; it may
-	 * be that there is some kind of remapping between the device and
-	 * system RAM, which makes the use of the device address also
-	 * unsafe to re-use as a physical address.
-	 *
-	 * This makes DRM usage of dma_alloc_coherent() in a generic way
-	 * at best very questionable and unsafe.
-	 */
+	 
 
-	/* Otherwise, grab it from our linear allocation */
+	 
 	if (!obj->page) {
 		struct drm_mm_node *node;
 		unsigned align = min_t(unsigned, size, SZ_2M);
@@ -151,7 +121,7 @@ armada_gem_linear_back(struct drm_device *dev, struct armada_gem_object *obj)
 
 		obj->linear = node;
 
-		/* Ensure that the memory we're returning is cleared. */
+		 
 		ptr = ioremap_wc(obj->linear->start, size);
 		if (!ptr) {
 			mutex_lock(&priv->linear_lock);
@@ -180,7 +150,7 @@ armada_gem_linear_back(struct drm_device *dev, struct armada_gem_object *obj)
 void *
 armada_gem_map_object(struct drm_device *dev, struct armada_gem_object *dobj)
 {
-	/* only linear objects need to be ioremap'd */
+	 
 	if (!dobj->addr && dobj->linear)
 		dobj->addr = ioremap_wc(dobj->phys_addr, dobj->obj.size);
 	return dobj->addr;
@@ -239,7 +209,7 @@ static struct armada_gem_object *armada_gem_alloc_object(struct drm_device *dev,
 	return obj;
 }
 
-/* Dumb alloc support */
+ 
 int armada_gem_dumb_create(struct drm_file *file, struct drm_device *dev,
 	struct drm_mode_create_dumb *args)
 {
@@ -265,14 +235,14 @@ int armada_gem_dumb_create(struct drm_file *file, struct drm_device *dev,
 
 	args->handle = handle;
 
-	/* drop reference from allocate - handle holds it now */
+	 
 	DRM_DEBUG_DRIVER("obj %p size %zu handle %#x\n", dobj, size, handle);
  err:
 	drm_gem_object_put(&dobj->obj);
 	return ret;
 }
 
-/* Private driver gem ioctls */
+ 
 int armada_gem_create_ioctl(struct drm_device *dev, void *data,
 	struct drm_file *file)
 {
@@ -297,14 +267,14 @@ int armada_gem_create_ioctl(struct drm_device *dev, void *data,
 
 	args->handle = handle;
 
-	/* drop reference from allocate - handle holds it now */
+	 
 	DRM_DEBUG_DRIVER("obj %p size %zu handle %#x\n", dobj, size, handle);
  err:
 	drm_gem_object_put(&dobj->obj);
 	return ret;
 }
 
-/* Map a shmem-backed object into process memory space */
+ 
 int armada_gem_mmap_ioctl(struct drm_device *dev, void *data,
 	struct drm_file *file)
 {
@@ -358,7 +328,7 @@ int armada_gem_pwrite_ioctl(struct drm_device *dev, void *data,
 	if (dobj == NULL)
 		return -ENOENT;
 
-	/* Must be a kernel-mapped object */
+	 
 	if (!dobj->addr)
 		return -EINVAL;
 
@@ -381,7 +351,7 @@ int armada_gem_pwrite_ioctl(struct drm_device *dev, void *data,
 	return ret;
 }
 
-/* Prime support */
+ 
 static struct sg_table *
 armada_gem_prime_map_dma_buf(struct dma_buf_attachment *attach,
 	enum dma_data_direction dir)
@@ -419,7 +389,7 @@ armada_gem_prime_map_dma_buf(struct dma_buf_attachment *attach,
 		if (dma_map_sgtable(attach->dev, sgt, dir, 0))
 			goto release;
 	} else if (dobj->page) {
-		/* Single contiguous page */
+		 
 		if (sg_alloc_table(sgt, 1, GFP_KERNEL))
 			goto free_sgt;
 
@@ -428,7 +398,7 @@ armada_gem_prime_map_dma_buf(struct dma_buf_attachment *attach,
 		if (dma_map_sgtable(attach->dev, sgt, dir, 0))
 			goto free_table;
 	} else if (dobj->linear) {
-		/* Single contiguous physical region - no struct page */
+		 
 		if (sg_alloc_table(sgt, 1, GFP_KERNEL))
 			goto free_sgt;
 		sg_dma_address(sgt->sgl) = dobj->dev_addr;
@@ -505,10 +475,7 @@ armada_gem_prime_import(struct drm_device *dev, struct dma_buf *buf)
 	if (buf->ops == &armada_gem_prime_dmabuf_ops) {
 		struct drm_gem_object *obj = buf->priv;
 		if (obj->dev == dev) {
-			/*
-			 * Importing our own dmabuf(s) increases the
-			 * refcount on the gem object itself.
-			 */
+			 
 			drm_gem_object_get(obj);
 			return obj;
 		}
@@ -527,11 +494,7 @@ armada_gem_prime_import(struct drm_device *dev, struct dma_buf *buf)
 	dobj->obj.import_attach = attach;
 	get_dma_buf(buf);
 
-	/*
-	 * Don't call dma_buf_map_attachment() here - it maps the
-	 * scatterlist immediately for DMA, and this is not always
-	 * an appropriate thing to do.
-	 */
+	 
 	return &dobj->obj;
 }
 

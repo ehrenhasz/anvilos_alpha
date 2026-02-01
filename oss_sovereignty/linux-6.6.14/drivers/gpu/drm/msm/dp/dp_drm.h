@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2017-2020, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DP_DRM_H_
 #define _DP_DRM_H_
@@ -40,4 +38,4 @@ void dp_bridge_hpd_disable(struct drm_bridge *bridge);
 void dp_bridge_hpd_notify(struct drm_bridge *bridge,
 			  enum drm_connector_status status);
 
-#endif /* _DP_DRM_H_ */
+#endif  

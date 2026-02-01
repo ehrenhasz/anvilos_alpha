@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013-2022, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/clk.h>
@@ -20,7 +18,7 @@
 
 #define FUSE_BEGIN	0x100
 
-/* Tegra30 and later */
+ 
 #define FUSE_VENDOR_CODE	0x100
 #define FUSE_FAB_CODE		0x104
 #define FUSE_LOT_CODE_0		0x108

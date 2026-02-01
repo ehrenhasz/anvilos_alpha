@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/*
- * DSA driver for:
- * Hirschmann Hellcreek TSN switch.
- *
- * Copyright (C) 2019,2020 Hochschule Offenburg
- * Copyright (C) 2019,2020 Linutronix GmbH
- * Authors: Kurt Kanzenbach <kurt@linutronix.de>
- *	    Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>
- */
+ 
+ 
 
 #ifndef _HELLCREEK_PTP_H_
 #define _HELLCREEK_PTP_H_
@@ -17,20 +9,20 @@
 
 #include "hellcreek.h"
 
-/* Every jump in time is 7 ns */
+ 
 #define MAX_NS_PER_STEP			7L
 
-/* Correct offset at every clock cycle */
+ 
 #define MIN_CLK_CYCLES_BETWEEN_STEPS	0
 
-/* Maximum available slow offset resources */
+ 
 #define MAX_SLOW_OFFSET_ADJ					\
 	((unsigned long long)((1 << 30) - 1) * MAX_NS_PER_STEP)
 
-/* four times a second overflow check */
+ 
 #define HELLCREEK_OVERFLOW_PERIOD	(HZ / 4)
 
-/* PTP Register */
+ 
 #define PR_SETTINGS_C			(0x09 * 2)
 #define PR_SETTINGS_C_RES3TS		BIT(4)
 #define PR_SETTINGS_C_TS_SRC_TK_SHIFT	8
@@ -73,4 +65,4 @@ u64 hellcreek_ptp_gettime_seconds(struct hellcreek *hellcreek, u64 ns);
 #define led_to_hellcreek(ldev, led)				\
 	container_of(ldev, struct hellcreek, led)
 
-#endif /* _HELLCREEK_PTP_H_ */
+#endif  

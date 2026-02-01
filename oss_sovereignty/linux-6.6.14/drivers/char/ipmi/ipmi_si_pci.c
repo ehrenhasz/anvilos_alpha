@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * ipmi_si_pci.c
- *
- * Handling for IPMI devices on the PCI bus.
- */
+
+ 
 
 #define pr_fmt(fmt) "ipmi_pci: " fmt
 
@@ -30,16 +26,16 @@ static int ipmi_pci_probe_regspacing(struct si_sm_io *io)
 		io->regsize = DEFAULT_REGSIZE;
 		io->regshift = 0;
 
-		/* detect 1, 4, 16byte spacing */
+		 
 		for (regspacing = DEFAULT_REGSPACING; regspacing <= 16;) {
 			io->regspacing = regspacing;
 			if (io->io_setup(io)) {
 				dev_err(io->dev, "Could not setup I/O space\n");
 				return DEFAULT_REGSPACING;
 			}
-			/* write invalid cmd */
+			 
 			io->outputb(io, 1, 0x10);
-			/* read status back */
+			 
 			status = io->inputb(io, 1);
 			io->io_cleanup(io);
 			if (status)
@@ -51,10 +47,7 @@ static int ipmi_pci_probe_regspacing(struct si_sm_io *io)
 }
 
 static struct pci_device_id ipmi_pci_blacklist[] = {
-	/*
-	 * This is a "Virtual IPMI device", whatever that is.  It appears
-	 * as a KCS device by the class, but it is not one.
-	 */
+	 
 	{ PCI_VDEVICE(REALTEK, 0x816c) },
 	{ 0, }
 };

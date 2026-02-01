@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Broadcom BCM590xx PMU
- *
- * Copyright 2014 Linaro Limited
- * Author: Matt Porter <mporter@linaro.org>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -58,7 +53,7 @@ static int bcm590xx_i2c_probe(struct i2c_client *i2c_pri)
 		return ret;
 	}
 
-	/* Secondary I2C slave address is the base address with A(2) asserted */
+	 
 	bcm590xx->i2c_sec = i2c_new_dummy_device(i2c_pri->adapter,
 					  i2c_pri->addr | BIT(2));
 	if (IS_ERR(bcm590xx->i2c_sec)) {

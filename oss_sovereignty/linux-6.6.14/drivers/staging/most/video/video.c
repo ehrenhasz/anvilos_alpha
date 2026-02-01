@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * video.c - V4L2 component for Mostcore
- *
- * Copyright (C) 2015, Microchip Technology Germany II GmbH & Co. KG
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -46,7 +42,7 @@ struct most_video_dev {
 };
 
 struct comp_fh {
-	/* must be the first field of this struct! */
+	 
 	struct v4l2_fh fh;
 	struct most_video_dev *mdev;
 	u32 offs;
@@ -119,14 +115,7 @@ static int comp_vdev_close(struct file *filp)
 	struct most_video_dev *mdev = fh->mdev;
 	struct mbo *mbo, *tmp;
 
-	/*
-	 * We need to put MBOs back before we call most_stop_channel()
-	 * to deallocate MBOs.
-	 * From the other hand mostcore still calling rx_completion()
-	 * to deliver MBOs until most_stop_channel() is called.
-	 * Use mute to work around this issue.
-	 * This must be implemented in core.
-	 */
+	 
 
 	spin_lock_irq(&mdev->list_lock);
 	mdev->mute = true;
@@ -161,7 +150,7 @@ static ssize_t comp_vdev_read(struct file *filp, char __user *buf,
 	if (!mdev)
 		return -ENODEV;
 
-	/* wait for the first buffer */
+	 
 	if (!(filp->f_flags & O_NONBLOCK)) {
 		if (wait_event_interruptible(mdev->wait_data, data_ready(mdev)))
 			return -ERESTARTSYS;
@@ -204,7 +193,7 @@ static __poll_t comp_vdev_poll(struct file *filp, poll_table *wait)
 	struct most_video_dev *mdev = fh->mdev;
 	__poll_t mask = 0;
 
-	/* only wait if no data is available */
+	 
 	if (!data_ready(mdev))
 		poll_wait(filp, &mdev->wait_data, wait);
 	if (data_ready(mdev))
@@ -363,7 +352,7 @@ static const struct video_device comp_videodev_template = {
 	.device_caps = V4L2_CAP_READWRITE | V4L2_CAP_VIDEO_CAPTURE,
 };
 
-/**************************************************************************/
+ 
 
 static struct most_video_dev *get_comp_dev(struct most_interface *iface, int channel_idx)
 {
@@ -408,19 +397,19 @@ static int comp_register_videodev(struct most_video_dev *mdev)
 
 	init_waitqueue_head(&mdev->wait_data);
 
-	/* allocate and fill v4l2 video struct */
+	 
 	mdev->vdev = video_device_alloc();
 	if (!mdev->vdev)
 		return -ENOMEM;
 
-	/* Fill the video capture device struct */
+	 
 	*mdev->vdev = comp_videodev_template;
 	mdev->vdev->v4l2_dev = &mdev->v4l2_dev;
 	mdev->vdev->lock = &mdev->lock;
 	snprintf(mdev->vdev->name, sizeof(mdev->vdev->name), "MOST: %s",
 		 mdev->v4l2_dev.name);
 
-	/* Register the v4l2 device */
+	 
 	video_set_drvdata(mdev->vdev, mdev);
 	ret = video_register_device(mdev->vdev, VFL_TYPE_VIDEO, -1);
 	if (ret) {
@@ -481,7 +470,7 @@ static int comp_probe_channel(struct most_interface *iface, int channel_idx,
 	mdev->ch_idx = channel_idx;
 	mdev->v4l2_dev.release = comp_v4l2_dev_release;
 
-	/* Create the v4l2_device */
+	 
 	strscpy(mdev->v4l2_dev.name, name, sizeof(mdev->v4l2_dev.name));
 	ret = v4l2_device_register(NULL, &mdev->v4l2_dev);
 	if (ret) {
@@ -552,12 +541,7 @@ static void __exit comp_exit(void)
 {
 	struct most_video_dev *mdev, *tmp;
 
-	/*
-	 * As the mostcore currently doesn't call disconnect_channel()
-	 * for linked channels while we call most_deregister_component()
-	 * we simulate this call here.
-	 * This must be fixed in core.
-	 */
+	 
 	spin_lock_irq(&list_lock);
 	list_for_each_entry_safe(mdev, tmp, &video_devices, list) {
 		list_del(&mdev->list);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the Diolan DLN-2 USB-ADC adapter
- *
- * Copyright (c) 2017 Jack Andersen
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -45,10 +41,7 @@
 #define DLN2_ADC_MAX_CHANNELS 8
 #define DLN2_ADC_DATA_BITS 10
 
-/*
- * Plays similar role to iio_demux_table in subsystem core; except allocated
- * in a fixed 8-element array.
- */
+ 
 struct dln2_adc_demux_table {
 	unsigned int from;
 	unsigned int to;
@@ -61,12 +54,12 @@ struct dln2_adc {
 	int port, trigger_chan;
 	struct iio_trigger *trig;
 	struct mutex mutex;
-	/* Cached sample period in milliseconds */
+	 
 	unsigned int sample_period;
-	/* Demux table */
+	 
 	unsigned int demux_count;
 	struct dln2_adc_demux_table demux[DLN2_ADC_MAX_CHANNELS];
-	/* Precomputed timestamp padding offset and length */
+	 
 	unsigned int ts_pad_offset, ts_pad_length;
 };
 
@@ -104,10 +97,10 @@ static void dln2_adc_update_demux(struct dln2_adc *dln2)
 	unsigned int in_loc = 0, out_loc = 0;
 	struct iio_dev *indio_dev = platform_get_drvdata(dln2->pdev);
 
-	/* Clear out any old demux */
+	 
 	dln2->demux_count = 0;
 
-	/* Optimize all 8-channels case */
+	 
 	if (indio_dev->masklength &&
 	    (*indio_dev->active_scan_mask & 0xff) == 0xff) {
 		dln2_adc_add_demux(dln2, 0, 0, 16);
@@ -116,11 +109,11 @@ static void dln2_adc_update_demux(struct dln2_adc *dln2)
 		return;
 	}
 
-	/* Build demux table from fixed 8-channels to active_scan_mask */
+	 
 	for_each_set_bit(out_ind,
 			 indio_dev->active_scan_mask,
 			 indio_dev->masklength) {
-		/* Handle timestamp separately */
+		 
 		if (out_ind == DLN2_ADC_MAX_CHANNELS)
 			break;
 		for (++in_ind; in_ind != out_ind; ++in_ind)
@@ -271,10 +264,7 @@ static int dln2_adc_read(struct dln2_adc *dln2, unsigned int channel)
 		goto disable_chan;
 	}
 
-	/*
-	 * Call GET_VAL twice due to initial zero-return immediately after
-	 * enabling channel.
-	 */
+	 
 	for (i = 0; i < 2; ++i) {
 		ret = dln2_transfer(dln2->pdev, DLN2_ADC_CHANNEL_GET_VAL,
 				    &port_chan, sizeof(port_chan),
@@ -347,10 +337,7 @@ static int dln2_adc_read_raw(struct iio_dev *indio_dev,
 		return IIO_VAL_INT;
 
 	case IIO_CHAN_INFO_SCALE:
-		/*
-		 * Voltage reference is fixed at 3.3v
-		 *  3.3 / (1 << 10) * 1000000000
-		 */
+		 
 		*val = 0;
 		*val2 = 3222656;
 		return IIO_VAL_INT_PLUS_NANO;
@@ -396,13 +383,7 @@ static int dln2_adc_write_raw(struct iio_dev *indio_dev,
 				 "clamping period to 65535ms\n");
 		}
 
-		/*
-		 * The first requested channel is arbitrated as a shared
-		 * trigger source, so only one event is registered with the
-		 * DLN. The event handler will then read all enabled channel
-		 * values using DLN2_ADC_CHANNEL_GET_ALL_VAL to maintain
-		 * synchronization between ADC readings.
-		 */
+		 
 		if (dln2->trigger_chan != -1)
 			ret = dln2_adc_set_chan_period(dln2,
 				dln2->trigger_chan, dln2->sample_period);
@@ -461,7 +442,7 @@ static int dln2_update_scan_mode(struct iio_dev *indio_dev,
 	lval.scan_type.endianness = IIO_LE;				\
 }
 
-/* Assignment version of IIO_CHAN_SOFT_TIMESTAMP */
+ 
 #define IIO_CHAN_SOFT_TIMESTAMP_ASSIGN(lval, _si) {	\
 	lval.type = IIO_TIMESTAMP;			\
 	lval.channel = -1;				\
@@ -496,14 +477,14 @@ static irqreturn_t dln2_adc_trigger_h(int irq, void *p)
 	if (ret < 0)
 		goto done;
 
-	/* Demux operation */
+	 
 	for (i = 0; i < dln2->demux_count; ++i) {
 		t = &dln2->demux[i];
 		memcpy((void *)data.values + t->to,
 		       (void *)dev_data.values + t->from, t->length);
 	}
 
-	/* Zero padding space between values and timestamp */
+	 
 	if (dln2->ts_pad_length)
 		memset((void *)data.values + dln2->ts_pad_offset,
 		       0, dln2->ts_pad_length);
@@ -525,7 +506,7 @@ static int dln2_adc_triggered_buffer_postenable(struct iio_dev *indio_dev)
 
 	mutex_lock(&dln2->mutex);
 
-	/* Enable ADC */
+	 
 	ret = dln2_adc_set_port_enabled(dln2, true, &conflict);
 	if (ret < 0) {
 		mutex_unlock(&dln2->mutex);
@@ -539,7 +520,7 @@ static int dln2_adc_triggered_buffer_postenable(struct iio_dev *indio_dev)
 		return ret;
 	}
 
-	/* Assign trigger channel based on first enabled channel */
+	 
 	trigger_chan = find_first_bit(indio_dev->active_scan_mask,
 				      indio_dev->masklength);
 	if (trigger_chan < DLN2_ADC_MAX_CHANNELS) {
@@ -566,13 +547,13 @@ static int dln2_adc_triggered_buffer_predisable(struct iio_dev *indio_dev)
 
 	mutex_lock(&dln2->mutex);
 
-	/* Disable trigger channel */
+	 
 	if (dln2->trigger_chan != -1) {
 		dln2_adc_set_chan_period(dln2, dln2->trigger_chan, 0);
 		dln2->trigger_chan = -1;
 	}
 
-	/* Disable ADC */
+	 
 	ret = dln2_adc_set_port_enabled(dln2, false, NULL);
 
 	mutex_unlock(&dln2->mutex);
@@ -593,7 +574,7 @@ static void dln2_adc_event(struct platform_device *pdev, u16 echo,
 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
 	struct dln2_adc *dln2 = iio_priv(indio_dev);
 
-	/* Called via URB completion handler */
+	 
 	iio_trigger_poll(dln2->trig);
 }
 

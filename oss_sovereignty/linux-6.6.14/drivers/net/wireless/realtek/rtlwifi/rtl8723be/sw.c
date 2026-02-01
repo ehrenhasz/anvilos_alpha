@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2014  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "../core.h"
@@ -26,40 +26,22 @@ static void rtl8723be_init_aspm_vars(struct ieee80211_hw *hw)
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 	struct rtl_pci *rtlpci = rtl_pcidev(rtl_pcipriv(hw));
 
-	/*close ASPM for AMD defaultly */
+	 
 	rtlpci->const_amdpci_aspm = 0;
 
-	/* ASPM PS mode.
-	 * 0 - Disable ASPM,
-	 * 1 - Enable ASPM without Clock Req,
-	 * 2 - Enable ASPM with Clock Req,
-	 * 3 - Alwyas Enable ASPM with Clock Req,
-	 * 4 - Always Enable ASPM without Clock Req.
-	 * set defult to RTL8192CE:3 RTL8192E:2
-	 */
+	 
 	rtlpci->const_pci_aspm = 3;
 
-	/*Setting for PCI-E device */
+	 
 	rtlpci->const_devicepci_aspm_setting = 0x03;
 
-	/*Setting for PCI-E bridge */
+	 
 	rtlpci->const_hostpci_aspm_setting = 0x02;
 
-	/* In Hw/Sw Radio Off situation.
-	 * 0 - Default,
-	 * 1 - From ASPM setting without low Mac Pwr,
-	 * 2 - From ASPM setting with low Mac Pwr,
-	 * 3 - Bus D3
-	 * set default to RTL8192CE:0 RTL8192SE:2
-	 */
+	 
 	rtlpci->const_hwsw_rfoff_d3 = 0;
 
-	/* This setting works for those device with
-	 * backdoor ASPM setting such as EPHY setting.
-	 * 0 - Not support ASPM,
-	 * 1 - Support ASPM,
-	 * 2 - According to chipset.
-	 */
+	 
 	rtlpci->const_support_pciaspm = rtlpriv->cfg->mod_params->aspm_support;
 }
 
@@ -84,7 +66,7 @@ static int rtl8723be_init_sw_vars(struct ieee80211_hw *hw)
 
 	mac->ht_enable = true;
 
-	/* compatible 5G band 88ce just 2.4G band & smsp */
+	 
 	rtlpriv->rtlhal.current_bandtype = BAND_ON_2_4G;
 	rtlpriv->rtlhal.bandset = BAND_ON_2_4G;
 	rtlpriv->rtlhal.macphymode = SINGLEMAC_SINGLEPHY;
@@ -122,7 +104,7 @@ static int rtl8723be_init_sw_vars(struct ieee80211_hw *hw)
 				     HSIMR_RON_INT_EN	|
 				     0);
 
-	/* for LPS & IPS */
+	 
 	rtlpriv->psc.inactiveps = rtlpriv->cfg->mod_params->inactiveps;
 	rtlpriv->psc.swctrl_lps = rtlpriv->cfg->mod_params->swctrl_lps;
 	rtlpriv->psc.fwctrl_lps = rtlpriv->cfg->mod_params->fwctrl_lps;
@@ -131,9 +113,7 @@ static int rtl8723be_init_sw_vars(struct ieee80211_hw *hw)
 		pr_info("watchdog disabled\n");
 	rtlpriv->psc.reg_fwctrl_lps = 2;
 	rtlpriv->psc.reg_max_lps_awakeintvl = 2;
-	/* for ASPM, you can close aspm through
-	 * set const_support_pciaspm = 0
-	 */
+	 
 	rtl8723be_init_aspm_vars(hw);
 
 	if (rtlpriv->psc.reg_fwctrl_lps == 1)
@@ -143,12 +123,12 @@ static int rtl8723be_init_sw_vars(struct ieee80211_hw *hw)
 	else if (rtlpriv->psc.reg_fwctrl_lps == 3)
 		rtlpriv->psc.fwctrl_psmode = FW_PS_DTIM_MODE;
 
-	/*low power: Disable 32k */
+	 
 	rtlpriv->psc.low_power_enable = false;
 
 	rtlpriv->rtlhal.earlymode_enable = false;
 
-	/* for firmware buf */
+	 
 	rtlpriv->rtlhal.pfirmware = vzalloc(0x8000);
 	if (!rtlpriv->rtlhal.pfirmware) {
 		pr_err("Can't alloc buffer for fw.\n");
@@ -179,7 +159,7 @@ static void rtl8723be_deinit_sw_vars(struct ieee80211_hw *hw)
 	}
 }
 
-/* get bt coexist status */
+ 
 static bool rtl8723be_get_btc_status(void)
 {
 	return true;
@@ -300,7 +280,7 @@ static const struct rtl_hal_cfg rtl8723be_hal_cfg = {
 	.maps[RTL_IMR_BCNDMAINT3] = IMR_BCNDMAINT3,
 	.maps[RTL_IMR_BCNDMAINT2] = IMR_BCNDMAINT2,
 	.maps[RTL_IMR_BCNDMAINT1] = IMR_BCNDMAINT1,
-/*	.maps[RTL_IMR_BCNDOK8] = IMR_BCNDOK8,     */   /*need check*/
+     
 	.maps[RTL_IMR_BCNDOK7] = IMR_BCNDOK7,
 	.maps[RTL_IMR_BCNDOK6] = IMR_BCNDOK6,
 	.maps[RTL_IMR_BCNDOK5] = IMR_BCNDOK5,
@@ -308,8 +288,8 @@ static const struct rtl_hal_cfg rtl8723be_hal_cfg = {
 	.maps[RTL_IMR_BCNDOK3] = IMR_BCNDOK3,
 	.maps[RTL_IMR_BCNDOK2] = IMR_BCNDOK2,
 	.maps[RTL_IMR_BCNDOK1] = IMR_BCNDOK1,
-/*	.maps[RTL_IMR_TIMEOUT2] = IMR_TIMEOUT2,*/
-/*	.maps[RTL_IMR_TIMEOUT1] = IMR_TIMEOUT1,*/
+ 
+ 
 
 	.maps[RTL_IMR_TXFOVW] = IMR_TXFOVW,
 	.maps[RTL_IMR_PSTIMEOUT] = IMR_PSTIMEOUT,

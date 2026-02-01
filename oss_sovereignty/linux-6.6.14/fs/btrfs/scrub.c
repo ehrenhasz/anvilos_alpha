@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2011, 2012 STRATO.  All rights reserved.
- */
+
+ 
 
 #include <linux/blkdev.h>
 #include <linux/ratelimit.h>
@@ -25,86 +23,48 @@
 #include "file-item.h"
 #include "scrub.h"
 
-/*
- * This is only the first step towards a full-features scrub. It reads all
- * extent and super block and verifies the checksums. In case a bad checksum
- * is found or the extent cannot be read, good data will be written back if
- * any can be found.
- *
- * Future enhancements:
- *  - In case an unrepairable extent is encountered, track which files are
- *    affected and report them
- *  - track and record media errors, throw out bad devices
- *  - add a mode to also read unallocated space
- */
+ 
 
 struct scrub_ctx;
 
-/*
- * The following value only influences the performance.
- *
- * This detemines how many stripes would be submitted in one go,
- * which is 512KiB (BTRFS_STRIPE_LEN * SCRUB_STRIPES_PER_GROUP).
- */
+ 
 #define SCRUB_STRIPES_PER_GROUP		8
 
-/*
- * How many groups we have for each sctx.
- *
- * This would be 8M per device, the same value as the old scrub in-flight bios
- * size limit.
- */
+ 
 #define SCRUB_GROUPS_PER_SCTX		16
 
 #define SCRUB_TOTAL_STRIPES		(SCRUB_GROUPS_PER_SCTX * SCRUB_STRIPES_PER_GROUP)
 
-/*
- * The following value times PAGE_SIZE needs to be large enough to match the
- * largest node/leaf/sector size that shall be supported.
- */
+ 
 #define SCRUB_MAX_SECTORS_PER_BLOCK	(BTRFS_MAX_METADATA_BLOCKSIZE / SZ_4K)
 
-/* Represent one sector and its needed info to verify the content. */
+ 
 struct scrub_sector_verification {
 	bool is_metadata;
 
 	union {
-		/*
-		 * Csum pointer for data csum verification.  Should point to a
-		 * sector csum inside scrub_stripe::csums.
-		 *
-		 * NULL if this data sector has no csum.
-		 */
+		 
 		u8 *csum;
 
-		/*
-		 * Extra info for metadata verification.  All sectors inside a
-		 * tree block share the same generation.
-		 */
+		 
 		u64 generation;
 	};
 };
 
 enum scrub_stripe_flags {
-	/* Set when @mirror_num, @dev, @physical and @logical are set. */
+	 
 	SCRUB_STRIPE_FLAG_INITIALIZED,
 
-	/* Set when the read-repair is finished. */
+	 
 	SCRUB_STRIPE_FLAG_REPAIR_DONE,
 
-	/*
-	 * Set for data stripes if it's triggered from P/Q stripe.
-	 * During such scrub, we should not report errors in data stripes, nor
-	 * update the accounting.
-	 */
+	 
 	SCRUB_STRIPE_FLAG_NO_REPORT,
 };
 
 #define SCRUB_STRIPE_PAGES		(BTRFS_STRIPE_LEN / PAGE_SIZE)
 
-/*
- * Represent one contiguous range with a length of BTRFS_STRIPE_LEN.
- */
+ 
 struct scrub_stripe {
 	struct scrub_ctx *sctx;
 	struct btrfs_block_group *bg;
@@ -118,13 +78,10 @@ struct scrub_stripe {
 
 	u16 mirror_num;
 
-	/* Should be BTRFS_STRIPE_LEN / sectorsize. */
+	 
 	u16 nr_sectors;
 
-	/*
-	 * How many data/meta extents are in this stripe.  Only for scrub status
-	 * reporting purposes.
-	 */
+	 
 	u16 nr_data_extents;
 	u16 nr_meta_extents;
 
@@ -132,51 +89,31 @@ struct scrub_stripe {
 	wait_queue_head_t io_wait;
 	wait_queue_head_t repair_wait;
 
-	/*
-	 * Indicate the states of the stripe.  Bits are defined in
-	 * scrub_stripe_flags enum.
-	 */
+	 
 	unsigned long state;
 
-	/* Indicate which sectors are covered by extent items. */
+	 
 	unsigned long extent_sector_bitmap;
 
-	/*
-	 * The errors hit during the initial read of the stripe.
-	 *
-	 * Would be utilized for error reporting and repair.
-	 *
-	 * The remaining init_nr_* records the number of errors hit, only used
-	 * by error reporting.
-	 */
+	 
 	unsigned long init_error_bitmap;
 	unsigned int init_nr_io_errors;
 	unsigned int init_nr_csum_errors;
 	unsigned int init_nr_meta_errors;
 
-	/*
-	 * The following error bitmaps are all for the current status.
-	 * Every time we submit a new read, these bitmaps may be updated.
-	 *
-	 * error_bitmap = io_error_bitmap | csum_error_bitmap | meta_error_bitmap;
-	 *
-	 * IO and csum errors can happen for both metadata and data.
-	 */
+	 
 	unsigned long error_bitmap;
 	unsigned long io_error_bitmap;
 	unsigned long csum_error_bitmap;
 	unsigned long meta_error_bitmap;
 
-	/* For writeback (repair or replace) error reporting. */
+	 
 	unsigned long write_error_bitmap;
 
-	/* Writeback can be concurrent, thus we need to protect the bitmap. */
+	 
 	spinlock_t write_error_lock;
 
-	/*
-	 * Checksum for the whole stripe if this stripe is inside a data block
-	 * group.
-	 */
+	 
 	u8 *csums;
 
 	struct work_struct work;
@@ -194,7 +131,7 @@ struct scrub_ctx {
 	int			readonly;
 	int			sectors_per_bio;
 
-	/* State of IO submission throttling affecting the associated device */
+	 
 	ktime_t			throttle_deadline;
 	u64			throttle_sent;
 
@@ -204,19 +141,11 @@ struct scrub_ctx {
 	struct mutex            wr_lock;
 	struct btrfs_device     *wr_tgtdev;
 
-	/*
-	 * statistics
-	 */
+	 
 	struct btrfs_scrub_progress stat;
 	spinlock_t		stat_lock;
 
-	/*
-	 * Use a ref counter to avoid use-after-free issues. Scrub workers
-	 * decrement bios_in_flight and workers_pending and then do a wakeup
-	 * on the list_wait wait queue. We must ensure the main scrub task
-	 * doesn't free the scrub context before or while the workers are
-	 * doing the wakeup() call.
-	 */
+	 
 	refcount_t              refs;
 };
 
@@ -346,9 +275,7 @@ static noinline_for_stack struct scrub_ctx *scrub_setup_ctx(
 	struct scrub_ctx *sctx;
 	int		i;
 
-	/* Since sctx has inline 128 stripes, it can go beyond 64K easily.  Use
-	 * kvzalloc().
-	 */
+	 
 	sctx = kvzalloc(sizeof(*sctx), GFP_KERNEL);
 	if (!sctx)
 		goto nomem;
@@ -407,9 +334,7 @@ static int scrub_print_warning_inode(u64 inum, u64 offset, u64 num_bytes,
 		goto err;
 	}
 
-	/*
-	 * this makes the path point to (inum INODE_ITEM ioff)
-	 */
+	 
 	key.objectid = inum;
 	key.type = BTRFS_INODE_ITEM_KEY;
 	key.offset = 0;
@@ -427,11 +352,7 @@ static int scrub_print_warning_inode(u64 inum, u64 offset, u64 num_bytes,
 	nlink = btrfs_inode_nlink(eb, inode_item);
 	btrfs_release_path(swarn->path);
 
-	/*
-	 * init_path might indirectly call vmalloc, or use GFP_KERNEL. Scrub
-	 * uses GFP_NOFS in this context, so we keep it consistent but it does
-	 * not seem to be strictly necessary.
-	 */
+	 
 	nofs_flag = memalloc_nofs_save();
 	ipath = init_ipath(4096, local_root, swarn->path);
 	memalloc_nofs_restore(nofs_flag);
@@ -446,10 +367,7 @@ static int scrub_print_warning_inode(u64 inum, u64 offset, u64 num_bytes,
 	if (ret < 0)
 		goto err;
 
-	/*
-	 * we deliberately ignore the bit ipath might have been too small to
-	 * hold all of the paths here
-	 */
+	 
 	for (i = 0; i < ipath->fspath->elem_cnt; ++i)
 		btrfs_warn_in_rcu(fs_info,
 "%s at logical %llu on dev %s, physical %llu, root %llu, inode %llu, offset %llu, length %u, links %u (path: %s)",
@@ -489,7 +407,7 @@ static void scrub_print_common_warning(const char *errstr, struct btrfs_device *
 	u32 item_size;
 	int ret;
 
-	/* Super block error, no need to search extent tree. */
+	 
 	if (is_super) {
 		btrfs_warn_in_rcu(fs_info, "%s on device %s, physical %llu",
 				  errstr, btrfs_dev_name(dev), physical);
@@ -608,11 +526,7 @@ static void scrub_verify_one_metadata(struct scrub_stripe *stripe, int sector_nr
 	u8 calculated_csum[BTRFS_CSUM_SIZE];
 	struct btrfs_header *header;
 
-	/*
-	 * Here we don't have a good way to attach the pages (and subpages)
-	 * to a dummy extent buffer, thus we have to directly grab the members
-	 * from pages.
-	 */
+	 
 	header = (struct btrfs_header *)(page_address(first_page) + first_off);
 	memcpy(on_disk_csum, header->csum, fs_info->csum_size);
 
@@ -646,7 +560,7 @@ static void scrub_verify_one_metadata(struct scrub_stripe *stripe, int sector_nr
 		return;
 	}
 
-	/* Now check tree block csum. */
+	 
 	shash->tfm = fs_info->csum_shash;
 	crypto_shash_init(shash);
 	crypto_shash_update(shash, page_address(first_page) + first_off +
@@ -699,24 +613,17 @@ static void scrub_verify_one_sector(struct scrub_stripe *stripe, int sector_nr)
 
 	ASSERT(sector_nr >= 0 && sector_nr < stripe->nr_sectors);
 
-	/* Sector not utilized, skip it. */
+	 
 	if (!test_bit(sector_nr, &stripe->extent_sector_bitmap))
 		return;
 
-	/* IO error, no need to check. */
+	 
 	if (test_bit(sector_nr, &stripe->io_error_bitmap))
 		return;
 
-	/* Metadata, verify the full tree block. */
+	 
 	if (sector->is_metadata) {
-		/*
-		 * Check if the tree block crosses the stripe boudary.  If
-		 * crossed the boundary, we cannot verify it but only give a
-		 * warning.
-		 *
-		 * This can only happen on a very old filesystem where chunks
-		 * are not ensured to be stripe aligned.
-		 */
+		 
 		if (unlikely(sector_nr + sectors_per_tree > stripe->nr_sectors)) {
 			btrfs_warn_rl(fs_info,
 			"tree block at %llu crosses stripe boundary %llu",
@@ -729,10 +636,7 @@ static void scrub_verify_one_sector(struct scrub_stripe *stripe, int sector_nr)
 		return;
 	}
 
-	/*
-	 * Data is easier, we just verify the data csum (if we have it).  For
-	 * cases without csum, we have no other choice but to trust it.
-	 */
+	 
 	if (!sector->csum) {
 		clear_bit(sector_nr, &stripe->error_bitmap);
 		return;
@@ -748,7 +652,7 @@ static void scrub_verify_one_sector(struct scrub_stripe *stripe, int sector_nr)
 	}
 }
 
-/* Verify specified sectors of a stripe. */
+ 
 static void scrub_verify_one_stripe(struct scrub_stripe *stripe, unsigned long bitmap)
 {
 	struct btrfs_fs_info *fs_info = stripe->bg->fs_info;
@@ -775,12 +679,7 @@ static int calc_sector_number(struct scrub_stripe *stripe, struct bio_vec *first
 	return i;
 }
 
-/*
- * Repair read is different to the regular read:
- *
- * - Only reads the failed sectors
- * - May have extra blocksize limits
- */
+ 
 static void scrub_repair_read_endio(struct btrfs_bio *bbio)
 {
 	struct scrub_stripe *stripe = bbio->private;
@@ -834,7 +733,7 @@ static void scrub_stripe_submit_repair_read(struct scrub_stripe *stripe,
 		page = scrub_stripe_get_page(stripe, i);
 		pgoff = scrub_stripe_get_page_offset(stripe, i);
 
-		/* The current sector cannot be merged, submit the bio. */
+		 
 		if (bbio && ((i > 0 && !test_bit(i - 1, &stripe->error_bitmap)) ||
 			     bbio->bio.bi_iter.bi_size >= blocksize)) {
 			ASSERT(bbio->bio.bi_iter.bi_size);
@@ -881,27 +780,19 @@ static void scrub_stripe_report_errors(struct scrub_ctx *sctx,
 	if (test_bit(SCRUB_STRIPE_FLAG_NO_REPORT, &stripe->state))
 		return;
 
-	/*
-	 * Init needed infos for error reporting.
-	 *
-	 * Although our scrub_stripe infrastucture is mostly based on btrfs_submit_bio()
-	 * thus no need for dev/physical, error reporting still needs dev and physical.
-	 */
+	 
 	if (!bitmap_empty(&stripe->init_error_bitmap, stripe->nr_sectors)) {
 		u64 mapped_len = fs_info->sectorsize;
 		struct btrfs_io_context *bioc = NULL;
 		int stripe_index = stripe->mirror_num - 1;
 		int ret;
 
-		/* For scrub, our mirror_num should always start at 1. */
+		 
 		ASSERT(stripe->mirror_num >= 1);
 		ret = btrfs_map_block(fs_info, BTRFS_MAP_GET_READ_MIRRORS,
 				      stripe->logical, &mapped_len, &bioc,
 				      NULL, NULL, 1);
-		/*
-		 * If we failed, dev will be NULL, and later detailed reports
-		 * will just be skipped.
-		 */
+		 
 		if (ret < 0)
 			goto skip;
 		physical = bioc->stripes[stripe_index].physical;
@@ -927,14 +818,11 @@ skip:
 			repaired = true;
 		}
 
-		/* Good sector from the beginning, nothing need to be done. */
+		 
 		if (!test_bit(sector_nr, &stripe->init_error_bitmap))
 			continue;
 
-		/*
-		 * Report error for the corrupted sectors.  If repaired, just
-		 * output the message of repaired message.
-		 */
+		 
 		if (repaired) {
 			if (dev) {
 				btrfs_err_rl_in_rcu(fs_info,
@@ -949,7 +837,7 @@ skip:
 			continue;
 		}
 
-		/* The remaining are all for unrepaired. */
+		 
 		if (dev) {
 			btrfs_err_rl_in_rcu(fs_info,
 	"unable to fixup (regular) error at logical %llu on dev %s physical %llu",
@@ -993,19 +881,7 @@ skip:
 static void scrub_write_sectors(struct scrub_ctx *sctx, struct scrub_stripe *stripe,
 				unsigned long write_bitmap, bool dev_replace);
 
-/*
- * The main entrance for all read related scrub work, including:
- *
- * - Wait for the initial read to finish
- * - Verify and locate any bad sectors
- * - Go through the remaining mirrors and try to read as large blocksize as
- *   possible
- * - Go through all mirrors (including the failed mirror) sector-by-sector
- * - Submit writeback for repaired sectors
- *
- * Writeback for dev-replace does not happen here, it needs extra
- * synchronization for zoned devices.
- */
+ 
 static void scrub_stripe_read_repair_worker(struct work_struct *work)
 {
 	struct scrub_stripe *stripe = container_of(work, struct scrub_stripe, work);
@@ -1020,7 +896,7 @@ static void scrub_stripe_read_repair_worker(struct work_struct *work)
 
 	wait_scrub_stripe_io(stripe);
 	scrub_verify_one_stripe(stripe, stripe->extent_sector_bitmap);
-	/* Save the initial failed bitmap for later repair and report usage. */
+	 
 	stripe->init_error_bitmap = stripe->error_bitmap;
 	stripe->init_nr_io_errors = bitmap_weight(&stripe->io_error_bitmap,
 						  stripe->nr_sectors);
@@ -1032,12 +908,7 @@ static void scrub_stripe_read_repair_worker(struct work_struct *work)
 	if (bitmap_empty(&stripe->init_error_bitmap, stripe->nr_sectors))
 		goto out;
 
-	/*
-	 * Try all remaining mirrors.
-	 *
-	 * Here we still try to read as large block as possible, as this is
-	 * faster and we have extra safety nets to rely on.
-	 */
+	 
 	for (mirror = calc_next_mirror(stripe->mirror_num, num_copies);
 	     mirror != stripe->mirror_num;
 	     mirror = calc_next_mirror(mirror, num_copies)) {
@@ -1051,16 +922,7 @@ static void scrub_stripe_read_repair_worker(struct work_struct *work)
 			goto out;
 	}
 
-	/*
-	 * Last safety net, try re-checking all mirrors, including the failed
-	 * one, sector-by-sector.
-	 *
-	 * As if one sector failed the drive's internal csum, the whole read
-	 * containing the offending sector would be marked as error.
-	 * Thus here we do sector-by-sector read.
-	 *
-	 * This can be slow, thus we only try it as the last resort.
-	 */
+	 
 
 	for (i = 0, mirror = stripe->mirror_num;
 	     i < num_copies;
@@ -1075,10 +937,7 @@ static void scrub_stripe_read_repair_worker(struct work_struct *work)
 			goto out;
 	}
 out:
-	/*
-	 * Submit the repaired sectors.  For zoned case, we cannot do repair
-	 * in-place, but queue the bg to be relocated.
-	 */
+	 
 	if (btrfs_is_zoned(fs_info)) {
 		if (!bitmap_empty(&stripe->error_bitmap, stripe->nr_sectors))
 			btrfs_repair_one_zone(fs_info, sctx->stripes[0].bg->start);
@@ -1154,34 +1013,16 @@ static void scrub_submit_write_bio(struct scrub_ctx *sctx,
 	btrfs_submit_repair_write(bbio, stripe->mirror_num, dev_replace);
 	if (!btrfs_is_zoned(fs_info))
 		return;
-	/*
-	 * For zoned writeback, queue depth must be 1, thus we must wait for
-	 * the write to finish before the next write.
-	 */
+	 
 	wait_scrub_stripe_io(stripe);
 
-	/*
-	 * And also need to update the write pointer if write finished
-	 * successfully.
-	 */
+	 
 	if (!test_bit(bio_off >> fs_info->sectorsize_bits,
 		      &stripe->write_error_bitmap))
 		sctx->write_pointer += bio_len;
 }
 
-/*
- * Submit the write bio(s) for the sectors specified by @write_bitmap.
- *
- * Here we utilize btrfs_submit_repair_write(), which has some extra benefits:
- *
- * - Only needs logical bytenr and mirror_num
- *   Just like the scrub read path
- *
- * - Would only result in writes to the specified mirror
- *   Unlike the regular writeback path, which would write back to all stripes
- *
- * - Handle dev-replace and read-repair writeback differently
- */
+ 
 static void scrub_write_sectors(struct scrub_ctx *sctx, struct scrub_stripe *stripe,
 				unsigned long write_bitmap, bool dev_replace)
 {
@@ -1194,10 +1035,10 @@ static void scrub_write_sectors(struct scrub_ctx *sctx, struct scrub_stripe *str
 		unsigned int pgoff = scrub_stripe_get_page_offset(stripe, sector_nr);
 		int ret;
 
-		/* We should only writeback sectors covered by an extent. */
+		 
 		ASSERT(test_bit(sector_nr, &stripe->extent_sector_bitmap));
 
-		/* Cannot merge with previous sector, submit the current one. */
+		 
 		if (bbio && sector_nr && !test_bit(sector_nr - 1, &write_bitmap)) {
 			scrub_submit_write_bio(sctx, stripe, bbio, dev_replace);
 			bbio = NULL;
@@ -1216,10 +1057,7 @@ static void scrub_write_sectors(struct scrub_ctx *sctx, struct scrub_stripe *str
 		scrub_submit_write_bio(sctx, stripe, bbio, dev_replace);
 }
 
-/*
- * Throttling of IO submission, bandwidth-limit based, the timeslice is 1
- * second.  Limit can be set via /sys/fs/UUID/devinfo/devid/scrub_speed_max.
- */
+ 
 static void scrub_throttle_dev_io(struct scrub_ctx *sctx, struct btrfs_device *device,
 				  unsigned int bio_size)
 {
@@ -1233,31 +1071,28 @@ static void scrub_throttle_dev_io(struct scrub_ctx *sctx, struct btrfs_device *d
 	if (bwlimit == 0)
 		return;
 
-	/*
-	 * Slice is divided into intervals when the IO is submitted, adjust by
-	 * bwlimit and maximum of 64 intervals.
-	 */
+	 
 	div = max_t(u32, 1, (u32)(bwlimit / (16 * 1024 * 1024)));
 	div = min_t(u32, 64, div);
 
-	/* Start new epoch, set deadline */
+	 
 	now = ktime_get();
 	if (sctx->throttle_deadline == 0) {
 		sctx->throttle_deadline = ktime_add_ms(now, time_slice / div);
 		sctx->throttle_sent = 0;
 	}
 
-	/* Still in the time to send? */
+	 
 	if (ktime_before(now, sctx->throttle_deadline)) {
-		/* If current bio is within the limit, send it */
+		 
 		sctx->throttle_sent += bio_size;
 		if (sctx->throttle_sent <= div_u64(bwlimit, div))
 			return;
 
-		/* We're over the limit, sleep until the rest of the slice */
+		 
 		delta = ktime_ms_delta(sctx->throttle_deadline, now);
 	} else {
-		/* New request after deadline, start new epoch */
+		 
 		delta = 0;
 	}
 
@@ -1268,17 +1103,11 @@ static void scrub_throttle_dev_io(struct scrub_ctx *sctx, struct btrfs_device *d
 		schedule_timeout_interruptible(timeout);
 	}
 
-	/* Next call will start the deadline period */
+	 
 	sctx->throttle_deadline = 0;
 }
 
-/*
- * Given a physical address, this will calculate it's
- * logical offset. if this is a parity stripe, it will return
- * the most left data stripe's logical offset.
- *
- * return 0 if it is a data stripe, 1 means parity stripe.
- */
+ 
 static int get_raid56_logic_offset(u64 physical, int num,
 				   struct map_lookup *map, u64 *offset,
 				   u64 *stripe_start)
@@ -1302,9 +1131,9 @@ static int get_raid56_logic_offset(u64 physical, int num,
 
 		stripe_nr = (u32)(*offset >> BTRFS_STRIPE_LEN_SHIFT) / data_stripes;
 
-		/* Work out the disk rotation on this stripe-set */
+		 
 		rot = stripe_nr % map->num_stripes;
-		/* calculate which stripe this data locates */
+		 
 		rot += i;
 		stripe_index = rot % map->num_stripes;
 		if (stripe_index == num)
@@ -1316,11 +1145,7 @@ static int get_raid56_logic_offset(u64 physical, int num,
 	return 1;
 }
 
-/*
- * Return 0 if the extent item range covers any byte of the range.
- * Return <0 if the extent item is before @search_start.
- * Return >0 if the extent item is after @start_start + @search_len.
- */
+ 
 static int compare_extent_item_range(struct btrfs_path *path,
 				     u64 search_start, u64 search_len)
 {
@@ -1343,22 +1168,7 @@ static int compare_extent_item_range(struct btrfs_path *path,
 	return 0;
 }
 
-/*
- * Locate one extent item which covers any byte in range
- * [@search_start, @search_start + @search_length)
- *
- * If the path is not initialized, we will initialize the search by doing
- * a btrfs_search_slot().
- * If the path is already initialized, we will use the path as the initial
- * slot, to avoid duplicated btrfs_search_slot() calls.
- *
- * NOTE: If an extent item starts before @search_start, we will still
- * return the extent item. This is for data extent crossing stripe boundary.
- *
- * Return 0 if we found such extent item, and @path will point to the extent item.
- * Return >0 if no such extent item can be found, and @path will be released.
- * Return <0 if hit fatal error, and @path will be released.
- */
+ 
 static int find_first_extent_item(struct btrfs_root *extent_root,
 				  struct btrfs_path *path,
 				  u64 search_start, u64 search_len)
@@ -1367,7 +1177,7 @@ static int find_first_extent_item(struct btrfs_root *extent_root,
 	struct btrfs_key key;
 	int ret;
 
-	/* Continue using the existing path */
+	 
 	if (path->nodes[0])
 		goto search_forward;
 
@@ -1383,17 +1193,11 @@ static int find_first_extent_item(struct btrfs_root *extent_root,
 		return ret;
 
 	ASSERT(ret > 0);
-	/*
-	 * Here we intentionally pass 0 as @min_objectid, as there could be
-	 * an extent item starting before @search_start.
-	 */
+	 
 	ret = btrfs_previous_extent_item(extent_root, path, 0);
 	if (ret < 0)
 		return ret;
-	/*
-	 * No matter whether we have found an extent item, the next loop will
-	 * properly do every check on the key.
-	 */
+	 
 search_forward:
 	while (true) {
 		btrfs_item_key_to_cpu(path->nodes[0], &key, path->slots[0]);
@@ -1413,7 +1217,7 @@ next:
 		if (path->slots[0] >= btrfs_header_nritems(path->nodes[0])) {
 			ret = btrfs_next_leaf(extent_root, path);
 			if (ret) {
-				/* Either no more item or fatal error */
+				 
 				btrfs_release_path(path);
 				return ret;
 			}
@@ -1501,13 +1305,7 @@ static void scrub_stripe_reset_bitmaps(struct scrub_stripe *stripe)
 	stripe->meta_error_bitmap = 0;
 }
 
-/*
- * Locate one stripe which has at least one extent in its range.
- *
- * Return 0 if found such stripe, and store its info into @stripe.
- * Return >0 if there is no such stripe in the specified range.
- * Return <0 for error.
- */
+ 
 static int scrub_find_fill_first_stripe(struct btrfs_block_group *bg,
 					struct btrfs_path *extent_path,
 					struct btrfs_path *csum_path,
@@ -1532,12 +1330,12 @@ static int scrub_find_fill_first_stripe(struct btrfs_block_group *bg,
 				   stripe->nr_sectors);
 	scrub_stripe_reset_bitmaps(stripe);
 
-	/* The range must be inside the bg. */
+	 
 	ASSERT(logical_start >= bg->start && logical_end <= bg->start + bg->length);
 
 	ret = find_first_extent_item(extent_root, extent_path, logical_start,
 				     logical_len);
-	/* Either error or not found. */
+	 
 	if (ret)
 		goto out;
 	get_extent_info(extent_path, &extent_start, &extent_len, &extent_flags,
@@ -1548,12 +1346,7 @@ static int scrub_find_fill_first_stripe(struct btrfs_block_group *bg,
 		stripe->nr_data_extents++;
 	cur_logical = max(extent_start, cur_logical);
 
-	/*
-	 * Round down to stripe boundary.
-	 *
-	 * The extra calculation against bg->start is to handle block groups
-	 * whose logical bytenr is not BTRFS_STRIPE_LEN aligned.
-	 */
+	 
 	stripe->logical = round_down(cur_logical - bg->start, BTRFS_STRIPE_LEN) +
 			  bg->start;
 	stripe->physical = physical + stripe->logical - logical_start;
@@ -1562,12 +1355,12 @@ static int scrub_find_fill_first_stripe(struct btrfs_block_group *bg,
 	stripe->mirror_num = mirror_num;
 	stripe_end = stripe->logical + BTRFS_STRIPE_LEN - 1;
 
-	/* Fill the first extent info into stripe->sectors[] array. */
+	 
 	fill_one_extent_info(fs_info, stripe, extent_start, extent_len,
 			     extent_flags, extent_gen);
 	cur_logical = extent_start + extent_len;
 
-	/* Fill the extent info for the remaining sectors. */
+	 
 	while (cur_logical <= stripe_end) {
 		ret = find_first_extent_item(extent_root, extent_path, cur_logical,
 					     stripe_end - cur_logical + 1);
@@ -1588,18 +1381,15 @@ static int scrub_find_fill_first_stripe(struct btrfs_block_group *bg,
 		cur_logical = extent_start + extent_len;
 	}
 
-	/* Now fill the data csum. */
+	 
 	if (bg->flags & BTRFS_BLOCK_GROUP_DATA) {
 		int sector_nr;
 		unsigned long csum_bitmap = 0;
 
-		/* Csum space should have already been allocated. */
+		 
 		ASSERT(stripe->csums);
 
-		/*
-		 * Our csum bitmap should be large enough, as BTRFS_STRIPE_LEN
-		 * should contain at most 16 sectors.
-		 */
+		 
 		ASSERT(BITS_PER_LONG >= BTRFS_STRIPE_LEN >> fs_info->sectorsize_bits);
 
 		ret = btrfs_lookup_csums_bitmap(csum_root, csum_path,
@@ -1649,21 +1439,18 @@ static void scrub_submit_initial_read(struct scrub_ctx *sctx,
 	bbio = btrfs_bio_alloc(SCRUB_STRIPE_PAGES, REQ_OP_READ, fs_info,
 			       scrub_read_endio, stripe);
 
-	/* Read the whole stripe. */
+	 
 	bbio->bio.bi_iter.bi_sector = stripe->logical >> SECTOR_SHIFT;
 	for (int i = 0; i < BTRFS_STRIPE_LEN >> PAGE_SHIFT; i++) {
 		int ret;
 
 		ret = bio_add_page(&bbio->bio, stripe->pages[i], PAGE_SIZE, 0);
-		/* We should have allocated enough bio vectors. */
+		 
 		ASSERT(ret == PAGE_SIZE);
 	}
 	atomic_inc(&stripe->pending_io);
 
-	/*
-	 * For dev-replace, either user asks to avoid the source dev, or
-	 * the device is missing, we try the next mirror instead.
-	 */
+	 
 	if (sctx->is_dev_replace &&
 	    (fs_info->dev_replace.cont_reading_from_srcdev_mode ==
 	     BTRFS_DEV_REPLACE_ITEM_CONT_READING_FROM_SRCDEV_MODE_AVOID ||
@@ -1709,7 +1496,7 @@ static void submit_initial_group_read(struct scrub_ctx *sctx,
 	for (int i = 0; i < nr_stripes; i++) {
 		struct scrub_stripe *stripe = &sctx->stripes[first_slot + i];
 
-		/* Those stripes should be initialized. */
+		 
 		ASSERT(test_bit(SCRUB_STRIPE_FLAG_INITIALIZED, &stripe->state));
 		scrub_submit_initial_read(sctx, stripe);
 	}
@@ -1728,7 +1515,7 @@ static int flush_scrub_stripes(struct scrub_ctx *sctx)
 
 	ASSERT(test_bit(SCRUB_STRIPE_FLAG_INITIALIZED, &sctx->stripes[0].state));
 
-	/* Submit the stripes which are populated but not submitted. */
+	 
 	if (nr_stripes % SCRUB_STRIPES_PER_GROUP) {
 		const int first_slot = round_down(nr_stripes, SCRUB_STRIPES_PER_GROUP);
 
@@ -1742,12 +1529,9 @@ static int flush_scrub_stripes(struct scrub_ctx *sctx)
 			   test_bit(SCRUB_STRIPE_FLAG_REPAIR_DONE, &stripe->state));
 	}
 
-	/* Submit for dev-replace. */
+	 
 	if (sctx->is_dev_replace) {
-		/*
-		 * For dev-replace, if we know there is something wrong with
-		 * metadata, we should immedately abort.
-		 */
+		 
 		for (int i = 0; i < nr_stripes; i++) {
 			if (stripe_has_metadata_error(&sctx->stripes[i])) {
 				ret = -EIO;
@@ -1767,7 +1551,7 @@ static int flush_scrub_stripes(struct scrub_ctx *sctx)
 		}
 	}
 
-	/* Wait for the above writebacks to finish. */
+	 
 	for (int i = 0; i < nr_stripes; i++) {
 		stripe = &sctx->stripes[i];
 
@@ -1792,13 +1576,10 @@ static int queue_scrub_stripe(struct scrub_ctx *sctx, struct btrfs_block_group *
 	struct scrub_stripe *stripe;
 	int ret;
 
-	/*
-	 * There should always be one slot left, as caller filling the last
-	 * slot should flush them all.
-	 */
+	 
 	ASSERT(sctx->cur_stripe < SCRUB_TOTAL_STRIPES);
 
-	/* @found_logical_ret must be specified. */
+	 
 	ASSERT(found_logical_ret);
 
 	stripe = &sctx->stripes[sctx->cur_stripe];
@@ -1806,20 +1587,20 @@ static int queue_scrub_stripe(struct scrub_ctx *sctx, struct btrfs_block_group *
 	ret = scrub_find_fill_first_stripe(bg, &sctx->extent_path,
 					   &sctx->csum_path, dev, physical,
 					   mirror_num, logical, length, stripe);
-	/* Either >0 as no more extents or <0 for error. */
+	 
 	if (ret)
 		return ret;
 	*found_logical_ret = stripe->logical;
 	sctx->cur_stripe++;
 
-	/* We filled one group, submit it. */
+	 
 	if (sctx->cur_stripe % SCRUB_STRIPES_PER_GROUP == 0) {
 		const int first_slot = sctx->cur_stripe - SCRUB_STRIPES_PER_GROUP;
 
 		submit_initial_group_read(sctx, first_slot, SCRUB_STRIPES_PER_GROUP);
 	}
 
-	/* Last slot used, flush them all. */
+	 
 	if (sctx->cur_stripe == SCRUB_TOTAL_STRIPES)
 		return flush_scrub_stripes(sctx);
 	return 0;
@@ -1847,11 +1628,7 @@ static int scrub_raid56_parity_stripe(struct scrub_ctx *sctx,
 
 	ASSERT(sctx->raid56_data_stripes);
 
-	/*
-	 * For data stripe search, we cannot re-use the same extent/csum paths,
-	 * as the data stripe bytenr may be smaller than previous extent.  Thus
-	 * we have to use our own extent/csum paths.
-	 */
+	 
 	extent_path.search_commit_root = 1;
 	extent_path.skip_locking = 1;
 	csum_path.search_commit_root = 1;
@@ -1877,10 +1654,7 @@ static int scrub_raid56_parity_stripe(struct scrub_ctx *sctx,
 				BTRFS_STRIPE_LEN, stripe);
 		if (ret < 0)
 			goto out;
-		/*
-		 * No extent in this data stripe, need to manually mark them
-		 * initialized to make later read submission happy.
-		 */
+		 
 		if (ret > 0) {
 			stripe->logical = full_stripe_start +
 					  btrfs_stripe_nr_to_offset(i);
@@ -1890,7 +1664,7 @@ static int scrub_raid56_parity_stripe(struct scrub_ctx *sctx,
 		}
 	}
 
-	/* Check if all data stripes are empty. */
+	 
 	for (int i = 0; i < data_stripes; i++) {
 		stripe = &sctx->raid56_data_stripes[i];
 		if (!bitmap_empty(&stripe->extent_sector_bitmap, stripe->nr_sectors)) {
@@ -1913,25 +1687,16 @@ static int scrub_raid56_parity_stripe(struct scrub_ctx *sctx,
 		wait_event(stripe->repair_wait,
 			   test_bit(SCRUB_STRIPE_FLAG_REPAIR_DONE, &stripe->state));
 	}
-	/* For now, no zoned support for RAID56. */
+	 
 	ASSERT(!btrfs_is_zoned(sctx->fs_info));
 
-	/*
-	 * Now all data stripes are properly verified. Check if we have any
-	 * unrepaired, if so abort immediately or we could further corrupt the
-	 * P/Q stripes.
-	 *
-	 * During the loop, also populate extent_bitmap.
-	 */
+	 
 	for (int i = 0; i < data_stripes; i++) {
 		unsigned long error;
 
 		stripe = &sctx->raid56_data_stripes[i];
 
-		/*
-		 * We should only check the errors where there is an extent.
-		 * As we may hit an empty data stripe while it's missing.
-		 */
+		 
 		bitmap_and(&error, &stripe->error_bitmap,
 			   &stripe->extent_sector_bitmap, stripe->nr_sectors);
 		if (!bitmap_empty(&error, stripe->nr_sectors)) {
@@ -1946,7 +1711,7 @@ static int scrub_raid56_parity_stripe(struct scrub_ctx *sctx,
 			  &stripe->extent_sector_bitmap, stripe->nr_sectors);
 	}
 
-	/* Now we can check and regenerate the P/Q stripe. */
+	 
 	bio = bio_alloc(NULL, 1, REQ_OP_READ, GFP_NOFS);
 	bio->bi_iter.bi_sector = full_stripe_start >> SECTOR_SHIFT;
 	bio->bi_private = &io_done;
@@ -1968,7 +1733,7 @@ static int scrub_raid56_parity_stripe(struct scrub_ctx *sctx,
 		btrfs_bio_counter_dec(fs_info);
 		goto out;
 	}
-	/* Use the recovered stripes as cache to avoid read them from disk again. */
+	 
 	for (int i = 0; i < data_stripes; i++) {
 		stripe = &sctx->raid56_data_stripes[i];
 
@@ -1987,14 +1752,7 @@ out:
 	return ret;
 }
 
-/*
- * Scrub one range which can only has simple mirror based profile.
- * (Including all range in SINGLE/DUP/RAID1/RAID1C*, and each stripe in
- *  RAID0/RAID10).
- *
- * Since we may need to handle a subset of block group, we need @logical_start
- * and @logical_length parameter.
- */
+ 
 static int scrub_simple_mirror(struct scrub_ctx *sctx,
 			       struct btrfs_block_group *bg,
 			       struct map_lookup *map,
@@ -2007,26 +1765,26 @@ static int scrub_simple_mirror(struct scrub_ctx *sctx,
 	u64 cur_logical = logical_start;
 	int ret;
 
-	/* The range must be inside the bg */
+	 
 	ASSERT(logical_start >= bg->start && logical_end <= bg->start + bg->length);
 
-	/* Go through each extent items inside the logical range */
+	 
 	while (cur_logical < logical_end) {
 		u64 found_logical = U64_MAX;
 		u64 cur_physical = physical + cur_logical - logical_start;
 
-		/* Canceled? */
+		 
 		if (atomic_read(&fs_info->scrub_cancel_req) ||
 		    atomic_read(&sctx->cancel_req)) {
 			ret = -ECANCELED;
 			break;
 		}
-		/* Paused? */
+		 
 		if (atomic_read(&fs_info->scrub_pause_req)) {
-			/* Push queued extents */
+			 
 			scrub_blocked_if_needed(fs_info);
 		}
-		/* Block group removed? */
+		 
 		spin_lock(&bg->lock);
 		if (test_bit(BLOCK_GROUP_FLAG_REMOVED, &bg->runtime_flags)) {
 			spin_unlock(&bg->lock);
@@ -2039,7 +1797,7 @@ static int scrub_simple_mirror(struct scrub_ctx *sctx,
 					 cur_logical, logical_end - cur_logical,
 					 cur_physical, &found_logical);
 		if (ret > 0) {
-			/* No more extent, just update the accounting */
+			 
 			sctx->stat.last_physical = physical + logical_length;
 			ret = 0;
 			break;
@@ -2047,17 +1805,17 @@ static int scrub_simple_mirror(struct scrub_ctx *sctx,
 		if (ret < 0)
 			break;
 
-		/* queue_scrub_stripe() returned 0, @found_logical must be updated. */
+		 
 		ASSERT(found_logical != U64_MAX);
 		cur_logical = found_logical + BTRFS_STRIPE_LEN;
 
-		/* Don't hold CPU for too long time */
+		 
 		cond_resched();
 	}
 	return ret;
 }
 
-/* Calculate the full stripe length for simple stripe based profiles */
+ 
 static u64 simple_stripe_full_stripe_len(const struct map_lookup *map)
 {
 	ASSERT(map->type & (BTRFS_BLOCK_GROUP_RAID0 |
@@ -2066,7 +1824,7 @@ static u64 simple_stripe_full_stripe_len(const struct map_lookup *map)
 	return btrfs_stripe_nr_to_offset(map->num_stripes / map->sub_stripes);
 }
 
-/* Get the logical bytenr for the stripe */
+ 
 static u64 simple_stripe_get_logical(struct map_lookup *map,
 				     struct btrfs_block_group *bg,
 				     int stripe_index)
@@ -2075,22 +1833,19 @@ static u64 simple_stripe_get_logical(struct map_lookup *map,
 			    BTRFS_BLOCK_GROUP_RAID10));
 	ASSERT(stripe_index < map->num_stripes);
 
-	/*
-	 * (stripe_index / sub_stripes) gives how many data stripes we need to
-	 * skip.
-	 */
+	 
 	return btrfs_stripe_nr_to_offset(stripe_index / map->sub_stripes) +
 	       bg->start;
 }
 
-/* Get the mirror number for the stripe */
+ 
 static int simple_stripe_mirror_num(struct map_lookup *map, int stripe_index)
 {
 	ASSERT(map->type & (BTRFS_BLOCK_GROUP_RAID0 |
 			    BTRFS_BLOCK_GROUP_RAID10));
 	ASSERT(stripe_index < map->num_stripes);
 
-	/* For RAID0, it's fixed to 1, for RAID10 it's 0,1,0,1... */
+	 
 	return stripe_index % map->sub_stripes + 1;
 }
 
@@ -2109,19 +1864,15 @@ static int scrub_simple_stripe(struct scrub_ctx *sctx,
 	int ret = 0;
 
 	while (cur_logical < bg->start + bg->length) {
-		/*
-		 * Inside each stripe, RAID0 is just SINGLE, and RAID10 is
-		 * just RAID1, so we can reuse scrub_simple_mirror() to scrub
-		 * this stripe.
-		 */
+		 
 		ret = scrub_simple_mirror(sctx, bg, map, cur_logical,
 					  BTRFS_STRIPE_LEN, device, cur_physical,
 					  mirror_num);
 		if (ret)
 			return ret;
-		/* Skip to next stripe which belongs to the target device */
+		 
 		cur_logical += logical_increment;
-		/* For physical offset, we just go to next stripe */
+		 
 		cur_physical += BTRFS_STRIPE_LEN;
 	}
 	return ret;
@@ -2144,14 +1895,14 @@ static noinline_for_stack int scrub_stripe(struct scrub_ctx *sctx,
 	const u64 physical_end = physical + dev_stripe_len;
 	u64 logical;
 	u64 logic_end;
-	/* The logical increment after finishing one stripe */
+	 
 	u64 increment;
-	/* Offset inside the chunk */
+	 
 	u64 offset;
 	u64 stripe_logical;
 	int stop_loop = 0;
 
-	/* Extent_path should be released by now. */
+	 
 	ASSERT(sctx->extent_path.nodes[0] == NULL);
 
 	scrub_blocked_if_needed(fs_info);
@@ -2163,7 +1914,7 @@ static noinline_for_stack int scrub_stripe(struct scrub_ctx *sctx,
 		mutex_unlock(&sctx->wr_lock);
 	}
 
-	/* Prepare the extra data stripes used by RAID56. */
+	 
 	if (profile & BTRFS_BLOCK_GROUP_RAID56_MASK) {
 		ASSERT(sctx->raid56_data_stripes == NULL);
 
@@ -2183,23 +1934,10 @@ static noinline_for_stack int scrub_stripe(struct scrub_ctx *sctx,
 			sctx->raid56_data_stripes[i].sctx = sctx;
 		}
 	}
-	/*
-	 * There used to be a big double loop to handle all profiles using the
-	 * same routine, which grows larger and more gross over time.
-	 *
-	 * So here we handle each profile differently, so simpler profiles
-	 * have simpler scrubbing function.
-	 */
+	 
 	if (!(profile & (BTRFS_BLOCK_GROUP_RAID0 | BTRFS_BLOCK_GROUP_RAID10 |
 			 BTRFS_BLOCK_GROUP_RAID56_MASK))) {
-		/*
-		 * Above check rules out all complex profile, the remaining
-		 * profiles are SINGLE|DUP|RAID1|RAID1C*, which is simple
-		 * mirrored duplication without stripe.
-		 *
-		 * Only @physical and @mirror_num needs to calculated using
-		 * @stripe_index.
-		 */
+		 
 		ret = scrub_simple_mirror(sctx, bg, map, bg->start, bg->length,
 				scrub_dev, map->stripes[stripe_index].physical,
 				stripe_index + 1);
@@ -2212,29 +1950,26 @@ static noinline_for_stack int scrub_stripe(struct scrub_ctx *sctx,
 		goto out;
 	}
 
-	/* Only RAID56 goes through the old code */
+	 
 	ASSERT(map->type & BTRFS_BLOCK_GROUP_RAID56_MASK);
 	ret = 0;
 
-	/* Calculate the logical end of the stripe */
+	 
 	get_raid56_logic_offset(physical_end, stripe_index,
 				map, &logic_end, NULL);
 	logic_end += chunk_logical;
 
-	/* Initialize @offset in case we need to go to out: label */
+	 
 	get_raid56_logic_offset(physical, stripe_index, map, &offset, NULL);
 	increment = btrfs_stripe_nr_to_offset(nr_data_stripes(map));
 
-	/*
-	 * Due to the rotation, for RAID56 it's better to iterate each stripe
-	 * using their physical offset.
-	 */
+	 
 	while (physical < physical_end) {
 		ret = get_raid56_logic_offset(physical, stripe_index, map,
 					      &logical, &stripe_logical);
 		logical += chunk_logical;
 		if (ret) {
-			/* it is parity strip */
+			 
 			stripe_logical += chunk_logical;
 			ret = scrub_raid56_parity_stripe(sctx, scrub_dev, bg,
 							 map, stripe_logical);
@@ -2243,14 +1978,7 @@ static noinline_for_stack int scrub_stripe(struct scrub_ctx *sctx,
 			goto next;
 		}
 
-		/*
-		 * Now we're at a data stripe, scrub each extents in the range.
-		 *
-		 * At this stage, if we ignore the repair part, inside each data
-		 * stripe it is no different than SINGLE profile.
-		 * We can reuse scrub_simple_mirror() here, as the repair part
-		 * is still based on @mirror_num.
-		 */
+		 
 		ret = scrub_simple_mirror(sctx, bg, map, logical, BTRFS_STRIPE_LEN,
 					  scrub_dev, physical, 1);
 		if (ret < 0)
@@ -2314,10 +2042,7 @@ static noinline_for_stack int scrub_chunk(struct scrub_ctx *sctx,
 	read_unlock(&map_tree->lock);
 
 	if (!em) {
-		/*
-		 * Might have been an unused block group deleted by the cleaner
-		 * kthread or relocation.
-		 */
+		 
 		spin_lock(&bg->lock);
 		if (!test_bit(BLOCK_GROUP_FLAG_REMOVED, &bg->runtime_flags))
 			ret = -EINVAL;
@@ -2440,37 +2165,15 @@ int scrub_enumerate_chunks(struct scrub_ctx *sctx,
 
 		chunk_offset = btrfs_dev_extent_chunk_offset(l, dev_extent);
 
-		/*
-		 * get a reference on the corresponding block group to prevent
-		 * the chunk from going away while we scrub it
-		 */
+		 
 		cache = btrfs_lookup_block_group(fs_info, chunk_offset);
 
-		/* some chunks are removed but not committed to disk yet,
-		 * continue scrubbing */
+		 
 		if (!cache)
 			goto skip;
 
 		ASSERT(cache->start <= chunk_offset);
-		/*
-		 * We are using the commit root to search for device extents, so
-		 * that means we could have found a device extent item from a
-		 * block group that was deleted in the current transaction. The
-		 * logical start offset of the deleted block group, stored at
-		 * @chunk_offset, might be part of the logical address range of
-		 * a new block group (which uses different physical extents).
-		 * In this case btrfs_lookup_block_group() has returned the new
-		 * block group, and its start address is less than @chunk_offset.
-		 *
-		 * We skip such new block groups, because it's pointless to
-		 * process them, as we won't find their extents because we search
-		 * for them using the commit root of the extent tree. For a device
-		 * replace it's also fine to skip it, we won't miss copying them
-		 * to the target device because we have the write duplication
-		 * setup through the regular write path (by btrfs_map_block()),
-		 * and we have committed a transaction when we started the device
-		 * replace, right after setting up the device replace state.
-		 */
+		 
 		if (cache->start < chunk_offset) {
 			btrfs_put_block_group(cache);
 			goto skip;
@@ -2483,14 +2186,7 @@ int scrub_enumerate_chunks(struct scrub_ctx *sctx,
 			}
 		}
 
-		/*
-		 * Make sure that while we are scrubbing the corresponding block
-		 * group doesn't get its logical address and its device extents
-		 * reused for another block group, which can possibly be of a
-		 * different type and different profile. We do this to prevent
-		 * false error detections and crashes due to bogus attempts to
-		 * repair extents.
-		 */
+		 
 		spin_lock(&cache->lock);
 		if (test_bit(BLOCK_GROUP_FLAG_REMOVED, &cache->runtime_flags)) {
 			spin_unlock(&cache->lock);
@@ -2500,46 +2196,10 @@ int scrub_enumerate_chunks(struct scrub_ctx *sctx,
 		btrfs_freeze_block_group(cache);
 		spin_unlock(&cache->lock);
 
-		/*
-		 * we need call btrfs_inc_block_group_ro() with scrubs_paused,
-		 * to avoid deadlock caused by:
-		 * btrfs_inc_block_group_ro()
-		 * -> btrfs_wait_for_commit()
-		 * -> btrfs_commit_transaction()
-		 * -> btrfs_scrub_pause()
-		 */
+		 
 		scrub_pause_on(fs_info);
 
-		/*
-		 * Don't do chunk preallocation for scrub.
-		 *
-		 * This is especially important for SYSTEM bgs, or we can hit
-		 * -EFBIG from btrfs_finish_chunk_alloc() like:
-		 * 1. The only SYSTEM bg is marked RO.
-		 *    Since SYSTEM bg is small, that's pretty common.
-		 * 2. New SYSTEM bg will be allocated
-		 *    Due to regular version will allocate new chunk.
-		 * 3. New SYSTEM bg is empty and will get cleaned up
-		 *    Before cleanup really happens, it's marked RO again.
-		 * 4. Empty SYSTEM bg get scrubbed
-		 *    We go back to 2.
-		 *
-		 * This can easily boost the amount of SYSTEM chunks if cleaner
-		 * thread can't be triggered fast enough, and use up all space
-		 * of btrfs_super_block::sys_chunk_array
-		 *
-		 * While for dev replace, we need to try our best to mark block
-		 * group RO, to prevent race between:
-		 * - Write duplication
-		 *   Contains latest data
-		 * - Scrub copy
-		 *   Contains data from commit tree
-		 *
-		 * If target block group is not marked RO, nocow writes can
-		 * be overwritten by scrub copy, causing data corruption.
-		 * So for dev-replace, it's not allowed to continue if a block
-		 * group is not RO.
-		 */
+		 
 		ret = btrfs_inc_block_group_ro(cache, sctx->is_dev_replace);
 		if (!ret && sctx->is_dev_replace) {
 			ret = finish_extent_writes_for_zoned(root, cache);
@@ -2555,19 +2215,7 @@ int scrub_enumerate_chunks(struct scrub_ctx *sctx,
 			ro_set = 1;
 		} else if (ret == -ENOSPC && !sctx->is_dev_replace &&
 			   !(cache->flags & BTRFS_BLOCK_GROUP_RAID56_MASK)) {
-			/*
-			 * btrfs_inc_block_group_ro return -ENOSPC when it
-			 * failed in creating new chunk for metadata.
-			 * It is not a problem for scrub, because
-			 * metadata are always cowed, and our scrub paused
-			 * commit_transactions.
-			 *
-			 * For RAID56 chunks, we have to mark them read-only
-			 * for scrub, as later we would use our own cache
-			 * out of RAID56 realm.
-			 * Thus we want the RAID56 bg to be marked RO to
-			 * prevent RMW from screwing up out cache.
-			 */
+			 
 			ro_set = 0;
 		} else if (ret == -ETXTBSY) {
 			btrfs_warn(fs_info,
@@ -2585,11 +2233,7 @@ int scrub_enumerate_chunks(struct scrub_ctx *sctx,
 			break;
 		}
 
-		/*
-		 * Now the target block is marked RO, wait for nocow writes to
-		 * finish before dev-replace.
-		 * COW is fine, as COW never overwrites extents in commit tree.
-		 */
+		 
 		if (sctx->is_dev_replace) {
 			btrfs_wait_nocow_writers(cache);
 			btrfs_wait_ordered_roots(fs_info, U64_MAX, cache->start,
@@ -2618,13 +2262,7 @@ int scrub_enumerate_chunks(struct scrub_ctx *sctx,
 		if (ro_set)
 			btrfs_dec_block_group_ro(cache);
 
-		/*
-		 * We might have prevented the cleaner kthread from deleting
-		 * this block group if it was already unused because we raced
-		 * and set it to RO mode first. So add it back to the unused
-		 * list, otherwise it might not ever be deleted unless a manual
-		 * balance is triggered or it becomes used and unused again.
-		 */
+		 
 		spin_lock(&cache->lock);
 		if (!test_bit(BLOCK_GROUP_FLAG_REMOVED, &cache->runtime_flags) &&
 		    !cache->ro && cache->reserved == 0 && cache->used == 0) {
@@ -2717,7 +2355,7 @@ static noinline_for_stack int scrub_supers(struct scrub_ctx *sctx,
 		return -ENOMEM;
 	}
 
-	/* Seed devices of a new filesystem has their own generation. */
+	 
 	if (scrub_dev->fs_devices != fs_info->fs_devices)
 		gen = scrub_dev->generation;
 	else
@@ -2756,9 +2394,7 @@ static void scrub_workers_put(struct btrfs_fs_info *fs_info)
 	}
 }
 
-/*
- * get a reference count on fs_info->scrub_workers. start worker if necessary
- */
+ 
 static noinline_for_stack int scrub_workers_get(struct btrfs_fs_info *fs_info)
 {
 	struct workqueue_struct *scrub_workers = NULL;
@@ -2781,7 +2417,7 @@ static noinline_for_stack int scrub_workers_get(struct btrfs_fs_info *fs_info)
 		mutex_unlock(&fs_info->scrub_lock);
 		return 0;
 	}
-	/* Other thread raced in and created the workers for us */
+	 
 	refcount_inc(&fs_info->scrub_workers_refcnt);
 	mutex_unlock(&fs_info->scrub_lock);
 
@@ -2805,18 +2441,14 @@ int btrfs_scrub_dev(struct btrfs_fs_info *fs_info, u64 devid, u64 start,
 	if (btrfs_fs_closing(fs_info))
 		return -EAGAIN;
 
-	/* At mount time we have ensured nodesize is in the range of [4K, 64K]. */
+	 
 	ASSERT(fs_info->nodesize <= BTRFS_STRIPE_LEN);
 
-	/*
-	 * SCRUB_MAX_SECTORS_PER_BLOCK is calculated using the largest possible
-	 * value (max nodesize / min sectorsize), thus nodesize should always
-	 * be fine.
-	 */
+	 
 	ASSERT(fs_info->nodesize <=
 	       SCRUB_MAX_SECTORS_PER_BLOCK << fs_info->sectorsize_bits);
 
-	/* Allocate outside of device_list_mutex */
+	 
 	sctx = scrub_setup_ctx(fs_info, is_dev_replace);
 	if (IS_ERR(sctx))
 		return PTR_ERR(sctx);
@@ -2869,23 +2501,12 @@ int btrfs_scrub_dev(struct btrfs_fs_info *fs_info, u64 devid, u64 start,
 	dev->scrub_ctx = sctx;
 	mutex_unlock(&fs_info->fs_devices->device_list_mutex);
 
-	/*
-	 * checking @scrub_pause_req here, we can avoid
-	 * race between committing transaction and scrubbing.
-	 */
+	 
 	__scrub_blocked_if_needed(fs_info);
 	atomic_inc(&fs_info->scrubs_running);
 	mutex_unlock(&fs_info->scrub_lock);
 
-	/*
-	 * In order to avoid deadlock with reclaim when there is a transaction
-	 * trying to pause scrub, make sure we use GFP_NOFS for all the
-	 * allocations done at btrfs_scrub_sectors() and scrub_sectors_for_parity()
-	 * invoked by our callees. The pausing request is done when the
-	 * transaction commit starts, and it blocks the transaction until scrub
-	 * is paused (done at specific points at scrub_stripe() or right above
-	 * before incrementing fs_info->scrubs_running).
-	 */
+	 
 	nofs_flag = memalloc_nofs_save();
 	if (!is_dev_replace) {
 		u64 old_super_errors;
@@ -2895,20 +2516,13 @@ int btrfs_scrub_dev(struct btrfs_fs_info *fs_info, u64 devid, u64 start,
 		spin_unlock(&sctx->stat_lock);
 
 		btrfs_info(fs_info, "scrub: started on devid %llu", devid);
-		/*
-		 * by holding device list mutex, we can
-		 * kick off writing super in log tree sync.
-		 */
+		 
 		mutex_lock(&fs_info->fs_devices->device_list_mutex);
 		ret = scrub_supers(sctx, dev);
 		mutex_unlock(&fs_info->fs_devices->device_list_mutex);
 
 		spin_lock(&sctx->stat_lock);
-		/*
-		 * Super block errors found, but we can not commit transaction
-		 * at current context, since btrfs_commit_transaction() needs
-		 * to pause the current running scrub (hold by ourselves).
-		 */
+		 
 		if (sctx->stat.super_errors > old_super_errors && !sctx->readonly)
 			need_commit = true;
 		spin_unlock(&sctx->stat_lock);
@@ -2935,10 +2549,7 @@ int btrfs_scrub_dev(struct btrfs_fs_info *fs_info, u64 devid, u64 start,
 	scrub_workers_put(fs_info);
 	scrub_put_ctx(sctx);
 
-	/*
-	 * We found some super block errors before, now try to force a
-	 * transaction commit, as scrub has finished.
-	 */
+	 
 	if (need_commit) {
 		struct btrfs_trans_handle *trans;
 

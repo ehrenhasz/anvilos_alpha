@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 #ifndef __RTL8712_EDCASETTING_REGDEF_H__
 #define __RTL8712_EDCASETTING_REGDEF_H__
 
@@ -20,5 +16,5 @@
 #define BE_ADMTIME		(RTL8712_EDCASETTING_ + 0x20)
 #define RL			(RTL8712_EDCASETTING_ + 0x24)
 
-#endif /* __RTL8712_EDCASETTING_REGDEF_H__ */
+#endif  
 

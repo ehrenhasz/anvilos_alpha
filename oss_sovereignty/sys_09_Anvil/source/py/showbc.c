@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdio.h>
 #include <assert.h>
@@ -87,7 +63,7 @@ void mp_bytecode_print(const mp_print_t *print, const mp_raw_code_t *rc, size_t 
     const byte *ip_start = rc->fun_data;
     const byte *ip = rc->fun_data;
 
-    // Decode prelude
+    
     MP_BC_PRELUDE_SIG_DECODE(ip);
     MP_BC_PRELUDE_SIZE_DECODE(ip);
     const byte *code_info = ip;
@@ -102,7 +78,7 @@ void mp_bytecode_print(const mp_print_t *print, const mp_raw_code_t *rc, size_t 
     mp_printf(print, "File %s, code block '%s' (descriptor: %p, bytecode @%p %u bytes)\n",
         qstr_str(source_file), qstr_str(block_name), rc, ip_start, (unsigned)fun_data_len);
 
-    // raw bytecode dump
+    
     size_t prelude_size = ip - ip_start + n_info + n_cell;
     mp_printf(print, "Raw bytecode (code_info_size=%u, bytecode_size=%u):\n",
         (unsigned)prelude_size, (unsigned)(fun_data_len - prelude_size));
@@ -114,7 +90,7 @@ void mp_bytecode_print(const mp_print_t *print, const mp_raw_code_t *rc, size_t 
     }
     mp_printf(print, "\n");
 
-    // bytecode prelude: arg names (as qstr objects)
+    
     mp_printf(print, "arg names:");
     for (mp_uint_t i = 0; i < n_pos_args + n_kwonly_args; i++) {
         qstr qst = mp_decode_uint(&code_info);
@@ -128,29 +104,29 @@ void mp_bytecode_print(const mp_print_t *print, const mp_raw_code_t *rc, size_t 
     mp_printf(print, "(N_STATE %u)\n", (unsigned)n_state);
     mp_printf(print, "(N_EXC_STACK %u)\n", (unsigned)n_exc_stack);
 
-    // skip over code_info
+    
     ip += n_info;
     const byte *line_info_top = ip;
 
-    // bytecode prelude: initialise closed over variables
+    
     for (size_t i = 0; i < n_cell; ++i) {
         uint local_num = *ip++;
         mp_printf(print, "(INIT_CELL %u)\n", local_num);
     }
 
-    // print out line number info
+    
     {
         mp_int_t bc = 0;
         mp_uint_t source_line = 1;
         mp_printf(print, "  bc=" INT_FMT " line=" UINT_FMT "\n", bc, source_line);
         for (const byte *ci = code_info; ci < line_info_top;) {
             if ((ci[0] & 0x80) == 0) {
-                // 0b0LLBBBBB encoding
+                
                 bc += ci[0] & 0x1f;
                 source_line += ci[0] >> 5;
                 ci += 1;
             } else {
-                // 0b1LLLBBBB 0bLLLLLLLL encoding (l's LSB in second byte)
+                
                 bc += ci[0] & 0xf;
                 source_line += ((ci[0] << 4) & 0x700) | ci[1];
                 ci += 2;
@@ -185,7 +161,7 @@ const byte *mp_bytecode_print_str(const mp_print_t *print, const byte *ip_start,
         case MP_BC_LOAD_CONST_SMALL_INT: {
             mp_int_t num = 0;
             if ((ip[0] & 0x40) != 0) {
-                // Number is negative
+                
                 num--;
             }
             do {
@@ -348,7 +324,7 @@ const byte *mp_bytecode_print_str(const mp_print_t *print, const byte *ip_start,
             break;
 
         case MP_BC_SETUP_WITH:
-            DECODE_ULABEL; // loop-like labels are always forward
+            DECODE_ULABEL; 
             mp_printf(print, "SETUP_WITH " UINT_FMT, (mp_uint_t)(ip + unum - ip_start));
             break;
 
@@ -363,20 +339,20 @@ const byte *mp_bytecode_print_str(const mp_print_t *print, const byte *ip_start,
             break;
 
         case MP_BC_SETUP_EXCEPT:
-            DECODE_ULABEL; // except labels are always forward
+            DECODE_ULABEL; 
             mp_printf(print, "SETUP_EXCEPT " UINT_FMT, (mp_uint_t)(ip + unum - ip_start));
             break;
 
         case MP_BC_SETUP_FINALLY:
-            DECODE_ULABEL; // except labels are always forward
+            DECODE_ULABEL; 
             mp_printf(print, "SETUP_FINALLY " UINT_FMT, (mp_uint_t)(ip + unum - ip_start));
             break;
 
         case MP_BC_END_FINALLY:
-            // if TOS is an exception, reraises the exception (3 values on TOS)
-            // if TOS is an integer, does something else
-            // if TOS is None, just pops it and continues
-            // else error
+            
+            
+            
+            
             mp_printf(print, "END_FINALLY");
             break;
 
@@ -389,12 +365,12 @@ const byte *mp_bytecode_print_str(const mp_print_t *print, const byte *ip_start,
             break;
 
         case MP_BC_FOR_ITER:
-            DECODE_ULABEL; // the jump offset if iteration finishes; for labels are always forward
+            DECODE_ULABEL; 
             mp_printf(print, "FOR_ITER " UINT_FMT, (mp_uint_t)(ip + unum - ip_start));
             break;
 
         case MP_BC_POP_EXCEPT_JUMP:
-            DECODE_ULABEL; // these labels are always forward
+            DECODE_ULABEL; 
             mp_printf(print, "POP_EXCEPT_JUMP " UINT_FMT, (mp_uint_t)(ip + unum - ip_start));
             break;
 
@@ -559,4 +535,4 @@ void mp_bytecode_print2(const mp_print_t *print, const byte *ip, size_t len, mp_
     }
 }
 
-#endif // MICROPY_DEBUG_PRINTERS
+#endif 

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Rockchip Video Decoder H264 backend
- *
- * Copyright (C) 2019 Collabora, Ltd.
- *	Boris Brezillon <boris.brezillon@collabora.com>
- *
- * Copyright (C) 2016 Rockchip Electronics Co., Ltd.
- *	Jeffy Chen <jeffy.chen@rock-chips.com>
- */
+
+ 
 
 #include <media/v4l2-h264.h>
 #include <media/v4l2-mem2mem.h>
@@ -15,7 +7,7 @@
 #include "rkvdec.h"
 #include "rkvdec-regs.h"
 
-/* Size with u32 units. */
+ 
 #define RKV_CABAC_INIT_BUFFER_SIZE	(3680 + 128)
 #define RKV_RPS_SIZE			((128 + 128) / 4)
 #define RKV_ERROR_INFO_SIZE		(256 * 144 * 4)
@@ -88,7 +80,7 @@ struct rkvdec_ps_field {
 #define BOTTOM_FLAG(i, j)				PS_FIELD(DPB_OFFS(i, j) + 5, 1)
 #define VIEW_INDEX_OFF(i, j)				PS_FIELD(DPB_OFFS(i, j) + 6, 1)
 
-/* Data structure describing auxiliary buffer format. */
+ 
 struct rkvdec_h264_priv_tbl {
 	s8 cabac_table[4][464][2];
 	struct rkvdec_h264_scaling_list scaling_list;
@@ -124,13 +116,9 @@ struct rkvdec_h264_ctx {
 	[2][(ctxidx)] = {idc2_m, idc2_n},			\
 	[3][(ctxidx)] = {intra_m, intra_n}
 
-/*
- * Constant CABAC table.
- * Built from the tables described in section '9.3.1.1 Initialisation process
- * for context variables' of the H264 spec.
- */
+ 
 static const s8 rkvdec_h264_cabac_table[4][464][2] = {
-	/* Table 9-12 – Values of variables m and n for ctxIdx from 0 to 10 */
+	 
 	CABAC_ENTRY(0, 20, -15, 20, -15, 20, -15, 20, -15),
 	CABAC_ENTRY(1, 2, 54, 2, 54, 2, 54, 2, 54),
 	CABAC_ENTRY(2, 3, 74, 3, 74, 3, 74, 3, 74),
@@ -143,7 +131,7 @@ static const s8 rkvdec_h264_cabac_table[4][464][2] = {
 	CABAC_ENTRY(9, -1, 54, -1, 54, -1, 54, -1, 54),
 	CABAC_ENTRY(10, 7, 51, 7, 51, 7, 51, 7, 51),
 
-	/* Table 9-13 – Values of variables m and n for ctxIdx from 11 to 23 */
+	 
 	CABAC_ENTRY(11, 23, 33, 22, 25, 29, 16, 0, 0),
 	CABAC_ENTRY(12, 23, 2, 34, 0, 25, 0, 0, 0),
 	CABAC_ENTRY(13, 21, 0, 16, 0, 14, 0, 0, 0),
@@ -158,7 +146,7 @@ static const s8 rkvdec_h264_cabac_table[4][464][2] = {
 	CABAC_ENTRY(22, -4, 73, -3, 70, -17, 73, 0, 0),
 	CABAC_ENTRY(23, 17, 50, 10, 54, 14, 57, 0, 0),
 
-	/* Table 9-14 – Values of variables m and n for ctxIdx from 24 to 39 */
+	 
 	CABAC_ENTRY(24, 18, 64, 26, 34, 20, 40, 0, 0),
 	CABAC_ENTRY(25, 9, 43, 19, 22, 20, 10, 0, 0),
 	CABAC_ENTRY(26, 29, 0, 40, 0, 29, 0, 0, 0),
@@ -176,7 +164,7 @@ static const s8 rkvdec_h264_cabac_table[4][464][2] = {
 	CABAC_ENTRY(38, -6, 61, 0, 52, -6, 44, 0, 0),
 	CABAC_ENTRY(39, 9, 45, 8, 43, 4, 55, 0, 0),
 
-	/* Table 9-15 – Values of variables m and n for ctxIdx from 40 to 53 */
+	 
 	CABAC_ENTRY(40, -3, 69, -2, 69, -11, 89, 0, 0),
 	CABAC_ENTRY(41, -6, 81, -5, 82, -15, 103, 0, 0),
 	CABAC_ENTRY(42, -11, 96, -10, 96, -21, 116, 0, 0),
@@ -192,7 +180,7 @@ static const s8 rkvdec_h264_cabac_table[4][464][2] = {
 	CABAC_ENTRY(52, -3, 81, -7, 86, -3, 90, 0, 0),
 	CABAC_ENTRY(53, 0, 88, -5, 95, -1, 101, 0, 0),
 
-	/* Table 9-16 – Values of variables m and n for ctxIdx from 54 to 59 */
+	 
 	CABAC_ENTRY(54, -7, 67, -1, 66, 3, 55, 0, 0),
 	CABAC_ENTRY(55, -5, 74, -1, 77, -4, 79, 0, 0),
 	CABAC_ENTRY(56, -4, 74, 1, 70, -2, 75, 0, 0),
@@ -200,7 +188,7 @@ static const s8 rkvdec_h264_cabac_table[4][464][2] = {
 	CABAC_ENTRY(58, -7, 72, -5, 72, -7, 50, 0, 0),
 	CABAC_ENTRY(59, 1, 58, 0, 61, 1, 60, 0, 0),
 
-	/* Table 9-17 – Values of variables m and n for ctxIdx from 60 to 69 */
+	 
 	CABAC_ENTRY(60, 0, 41, 0, 41, 0, 41, 0, 41),
 	CABAC_ENTRY(61, 0, 63, 0, 63, 0, 63, 0, 63),
 	CABAC_ENTRY(62, 0, 63, 0, 63, 0, 63, 0, 63),
@@ -212,7 +200,7 @@ static const s8 rkvdec_h264_cabac_table[4][464][2] = {
 	CABAC_ENTRY(68, 13, 41, 13, 41, 13, 41, 13, 41),
 	CABAC_ENTRY(69, 3, 62, 3, 62, 3, 62, 3, 62),
 
-	/* Table 9-18 – Values of variables m and n for ctxIdx from 70 to 104 */
+	 
 	CABAC_ENTRY(70, 0, 45, 13, 15, 7, 34, 0, 11),
 	CABAC_ENTRY(71, -4, 78, 7, 51, -9, 88, 1, 55),
 	CABAC_ENTRY(72, -3, 96, 2, 80, -20, 127, 0, 69),
@@ -249,7 +237,7 @@ static const s8 rkvdec_h264_cabac_table[4][464][2] = {
 	CABAC_ENTRY(103, -4, 69, -7, 74, -8, 71, -7, 76),
 	CABAC_ENTRY(104, -8, 88, -9, 88, -13, 98, -22, 125),
 
-	/* Table 9-19 – Values of variables m and n for ctxIdx from 105 to 165 */
+	 
 	CABAC_ENTRY(105, -2, 85, -13, 103, -4, 86, -7, 93),
 	CABAC_ENTRY(106, -6, 78, -13, 91, -12, 88, -11, 87),
 	CABAC_ENTRY(107, -1, 75, -9, 89, -5, 82, -3, 77),
@@ -312,7 +300,7 @@ static const s8 rkvdec_h264_cabac_table[4][464][2] = {
 	CABAC_ENTRY(164, 0, 60, 9, 34, 50, -34, 0, 62),
 	CABAC_ENTRY(165, 9, 69, 0, 89, -22, 127, 12, 72),
 
-	/* Table 9-20 – Values of variables m and n for ctxIdx from 166 to 226 */
+	 
 	CABAC_ENTRY(166, 11, 28, 4, 45, 4, 39, 24, 0),
 	CABAC_ENTRY(167, 2, 40, 10, 28, 0, 42, 15, 9),
 	CABAC_ENTRY(168, 3, 44, 10, 31, 7, 34, 8, 25),
@@ -375,7 +363,7 @@ static const s8 rkvdec_h264_cabac_table[4][464][2] = {
 	CABAC_ENTRY(225, -2, 89, 10, 67, 26, 38, 12, 68),
 	CABAC_ENTRY(226, -9, 108, -10, 116, -24, 127, 2, 97),
 
-	/* Table 9-21 – Values of variables m and n for ctxIdx from 227 to 275 */
+	 
 	CABAC_ENTRY(227, -6, 76, -23, 112, -24, 115, -3, 71),
 	CABAC_ENTRY(228, -2, 44, -15, 71, -22, 82, -6, 42),
 	CABAC_ENTRY(229, 0, 45, -7, 61, -9, 62, -5, 50),
@@ -426,7 +414,7 @@ static const s8 rkvdec_h264_cabac_table[4][464][2] = {
 	CABAC_ENTRY(274, -6, 79, -1, 70, -9, 83, -13, 90),
 	CABAC_ENTRY(275, -8, 85, -4, 78, -10, 87, -14, 97),
 
-	/* Table 9-22 – Values of variables m and n for ctxIdx from 277 to 337 */
+	 
 	CABAC_ENTRY(277, -13, 106, -21, 126, -22, 127, -6, 93),
 	CABAC_ENTRY(278, -16, 106, -23, 124, -25, 127, -6, 84),
 	CABAC_ENTRY(279, -10, 87, -20, 110, -25, 120, -8, 79),
@@ -489,7 +477,7 @@ static const s8 rkvdec_h264_cabac_table[4][464][2] = {
 	CABAC_ENTRY(336, 10, 57, 3, 66, -2, 77, 5, 64),
 	CABAC_ENTRY(337, 26, 43, 18, 50, 25, 42, 12, 70),
 
-	/* Table 9-23 – Values of variables m and n for ctxIdx from 338 to 398 */
+	 
 	CABAC_ENTRY(338, 14, 11, 19, -6, 17, -13, 15, 6),
 	CABAC_ENTRY(339, 11, 14, 18, -6, 16, -9, 6, 19),
 	CABAC_ENTRY(340, 9, 11, 14, 0, 17, -12, 7, 16),
@@ -552,7 +540,7 @@ static const s8 rkvdec_h264_cabac_table[4][464][2] = {
 	CABAC_ENTRY(397, 22, 61, 14, 71, 22, 56, 29, 39),
 	CABAC_ENTRY(398, 11, 86, 11, 83, 25, 61, 19, 66),
 
-	/* Values of variables m and n for ctxIdx from 399 to 463 (not documented) */
+	 
 	CABAC_ENTRY(399, 12, 40, 25, 32, 21, 33, 31, 21),
 	CABAC_ENTRY(400, 11, 51, 21, 49, 19, 50, 31, 31),
 	CABAC_ENTRY(401, 14, 59, 21, 54, 17, 61, 25, 50),
@@ -644,17 +632,12 @@ static void assemble_hw_pps(struct rkvdec_ctx *ctx,
 	u32 scaling_distance;
 	u32 i;
 
-	/*
-	 * HW read the SPS/PPS information from PPS packet index by PPS id.
-	 * offset from the base can be calculated by PPS_id * 32 (size per PPS
-	 * packet unit). so the driver copy SPS/PPS information to the exact PPS
-	 * packet unit for HW accessing.
-	 */
+	 
 	hw_ps = &priv_tbl->param_set[pps->pic_parameter_set_id];
 	memset(hw_ps, 0, sizeof(*hw_ps));
 
 #define WRITE_PPS(value, field) set_ps_field(hw_ps->info, field, value)
-	/* write sps */
+	 
 	WRITE_PPS(0xf, SEQ_PARAMETER_SET_ID);
 	WRITE_PPS(0xff, PROFILE_IDC);
 	WRITE_PPS(1, CONSTRAINT_SET3_FLAG);
@@ -670,13 +653,7 @@ static void assemble_hw_pps(struct rkvdec_ctx *ctx,
 	WRITE_PPS(!!(sps->flags & V4L2_H264_SPS_FLAG_DELTA_PIC_ORDER_ALWAYS_ZERO),
 		  DELTA_PIC_ORDER_ALWAYS_ZERO_FLAG);
 
-	/*
-	 * Use the SPS values since they are already in macroblocks
-	 * dimensions, height can be field height (halved) if
-	 * V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY is not set and also it allows
-	 * decoding smaller images into larger allocation which can be used
-	 * to implementing SVC spatial layer support.
-	 */
+	 
 	WRITE_PPS(sps->pic_width_in_mbs_minus1 + 1, PIC_WIDTH_IN_MBS);
 	WRITE_PPS(sps->pic_height_in_map_units_minus1 + 1, PIC_HEIGHT_IN_MBS);
 
@@ -687,7 +664,7 @@ static void assemble_hw_pps(struct rkvdec_ctx *ctx,
 	WRITE_PPS(!!(sps->flags & V4L2_H264_SPS_FLAG_DIRECT_8X8_INFERENCE),
 		  DIRECT_8X8_INFERENCE_FLAG);
 
-	/* write pps */
+	 
 	WRITE_PPS(0xff, PIC_PARAMETER_SET_ID);
 	WRITE_PPS(0x1f, PPS_SEQ_PARAMETER_SET_ID);
 	WRITE_PPS(!!(pps->flags & V4L2_H264_PPS_FLAG_ENTROPY_CODING_MODE),
@@ -717,7 +694,7 @@ static void assemble_hw_pps(struct rkvdec_ctx *ctx,
 
 	WRITE_PPS(!!(pps->flags & V4L2_H264_PPS_FLAG_SCALING_MATRIX_PRESENT),
 		  SCALING_LIST_ENABLE_FLAG);
-	/* To be on the safe side, program the scaling matrix address */
+	 
 	scaling_distance = offsetof(struct rkvdec_h264_priv_tbl, scaling_list);
 	scaling_list_address = h264_ctx->priv_tbl.dma + scaling_distance;
 	WRITE_PPS(scaling_list_address, SCALING_LIST_ADDRESS);
@@ -770,12 +747,7 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
 
 	memset(hw_rps, 0, sizeof(priv_tbl->rps));
 
-	/*
-	 * Assign an invalid pic_num if DPB entry at that position is inactive.
-	 * If we assign 0 in that position hardware will treat that as a real
-	 * reference picture with pic_num 0, triggering output picture
-	 * corruption.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(dec_params->dpb); i++) {
 		if (!(dpb[i].flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE))
 			continue;
@@ -839,9 +811,7 @@ static void assemble_hw_scaling_list(struct rkvdec_ctx *ctx,
 	       sizeof(scaling->scaling_list_8x8));
 }
 
-/*
- * dpb poc related registers table
- */
+ 
 static const u32 poc_reg_tbl_top_field[16] = {
 	RKVDEC_REG_H264_POC_REFER0(0),
 	RKVDEC_REG_H264_POC_REFER0(2),
@@ -926,7 +896,7 @@ static void config_registers(struct rkvdec_ctx *ctx,
 	      RKVDEC_SLICE_NUM_LOWBITS(0x7ff);
 	writel_relaxed(reg, rkvdec->regs + RKVDEC_REG_PICPAR);
 
-	/* config rlc base address */
+	 
 	rlc_addr = vb2_dma_contig_plane_dma_addr(&src_buf->vb2_buf, 0);
 	writel_relaxed(rlc_addr, rkvdec->regs + RKVDEC_REG_STRM_RLC_BASE);
 	writel_relaxed(rlc_addr, rkvdec->regs + RKVDEC_REG_RLCWRITE_BASE);
@@ -935,12 +905,12 @@ static void config_registers(struct rkvdec_ctx *ctx,
 	reg = RKVDEC_STRM_LEN(rlc_len);
 	writel_relaxed(reg, rkvdec->regs + RKVDEC_REG_STRM_LEN);
 
-	/* config cabac table */
+	 
 	offset = offsetof(struct rkvdec_h264_priv_tbl, cabac_table);
 	writel_relaxed(priv_start_addr + offset,
 		       rkvdec->regs + RKVDEC_REG_CABACTBL_PROB_BASE);
 
-	/* config output base address */
+	 
 	dst_addr = vb2_dma_contig_plane_dma_addr(&dst_buf->vb2_buf, 0);
 	writel_relaxed(dst_addr, rkvdec->regs + RKVDEC_REG_DECOUT_BASE);
 
@@ -950,14 +920,11 @@ static void config_registers(struct rkvdec_ctx *ctx,
 	reg = RKVDEC_YUV_VIRSTRIDE(yuv_virstride / 16);
 	writel_relaxed(reg, rkvdec->regs + RKVDEC_REG_YUV_VIRSTRIDE);
 
-	/* config ref pic address & poc */
+	 
 	for (i = 0; i < ARRAY_SIZE(dec_params->dpb); i++) {
 		struct vb2_buffer *vb_buf = run->ref_buf[i];
 
-		/*
-		 * If a DPB entry is unused or invalid, address of current destination
-		 * buffer is returned.
-		 */
+		 
 		if (!vb_buf)
 			vb_buf = &dst_buf->vb2_buf;
 		refer_addr = vb2_dma_contig_plane_dma_addr(vb_buf, 0);
@@ -991,12 +958,12 @@ static void config_registers(struct rkvdec_ctx *ctx,
 	reg = RKVDEC_CUR_POC(dec_params->bottom_field_order_cnt);
 	writel_relaxed(reg, rkvdec->regs + RKVDEC_REG_CUR_POC1);
 
-	/* config hw pps address */
+	 
 	offset = offsetof(struct rkvdec_h264_priv_tbl, param_set);
 	writel_relaxed(priv_start_addr + offset,
 		       rkvdec->regs + RKVDEC_REG_PPS_BASE);
 
-	/* config hw rps address */
+	 
 	offset = offsetof(struct rkvdec_h264_priv_tbl, rps);
 	writel_relaxed(priv_start_addr + offset,
 		       rkvdec->regs + RKVDEC_REG_RPS_BASE);
@@ -1031,29 +998,21 @@ static int rkvdec_h264_validate_sps(struct rkvdec_ctx *ctx,
 {
 	unsigned int width, height;
 
-	/*
-	 * TODO: The hardware supports 10-bit and 4:2:2 profiles,
-	 * but it's currently broken in the driver.
-	 * Reject them for now, until it's fixed.
-	 */
+	 
 	if (sps->chroma_format_idc > 1)
-		/* Only 4:0:0 and 4:2:0 are supported */
+		 
 		return -EINVAL;
 	if (sps->bit_depth_luma_minus8 != sps->bit_depth_chroma_minus8)
-		/* Luma and chroma bit depth mismatch */
+		 
 		return -EINVAL;
 	if (sps->bit_depth_luma_minus8 != 0)
-		/* Only 8-bit is supported */
+		 
 		return -EINVAL;
 
 	width = (sps->pic_width_in_mbs_minus1 + 1) * 16;
 	height = (sps->pic_height_in_map_units_minus1 + 1) * 16;
 
-	/*
-	 * When frame_mbs_only_flag is not set, this is field height,
-	 * which is half the final height (see (7-18) in the
-	 * specification)
-	 */
+	 
 	if (!(sps->flags & V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY))
 		height *= 2;
 
@@ -1145,7 +1104,7 @@ static int rkvdec_h264_run(struct rkvdec_ctx *ctx)
 
 	rkvdec_h264_run_preamble(ctx, &run);
 
-	/* Build the P/B{0,1} ref lists. */
+	 
 	v4l2_h264_init_reflist_builder(&reflist_builder, run.decode_params,
 				       run.sps, run.decode_params->dpb);
 	v4l2_h264_build_p_ref_list(&reflist_builder, h264_ctx->reflists.p);
@@ -1167,7 +1126,7 @@ static int rkvdec_h264_run(struct rkvdec_ctx *ctx)
 	writel(1, rkvdec->regs + RKVDEC_REG_PREF_LUMA_CACHE_COMMAND);
 	writel(1, rkvdec->regs + RKVDEC_REG_PREF_CHR_CACHE_COMMAND);
 
-	/* Start decoding! */
+	 
 	writel(RKVDEC_INTERRUPT_DEC_E | RKVDEC_CONFIG_DEC_CLK_GATE_E |
 	       RKVDEC_TIMEOUT_E | RKVDEC_BUF_EMPTY_E,
 	       rkvdec->regs + RKVDEC_REG_INTERRUPT);

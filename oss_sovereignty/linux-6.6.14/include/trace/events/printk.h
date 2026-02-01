@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM printk
 
@@ -17,11 +17,7 @@ TRACE_EVENT(console,
 	),
 
 	TP_fast_assign(
-		/*
-		 * Each trace entry is printed in a new line.
-		 * If the msg finishes with '\n', cut it off
-		 * to avoid blank lines in the trace.
-		 */
+		 
 		if ((len > 0) && (text[len-1] == '\n'))
 			len -= 1;
 
@@ -31,7 +27,7 @@ TRACE_EVENT(console,
 
 	TP_printk("%s", __get_str(msg))
 );
-#endif /* _TRACE_PRINTK_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

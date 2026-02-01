@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_DISPLAY_POWER_H__
 #define __INTEL_DISPLAY_POWER_H__
@@ -18,11 +16,7 @@ struct i915_power_well;
 struct intel_encoder;
 struct seq_file;
 
-/*
- * Keep the pipe, transcoder, port (DDI_LANES,DDI_IO,AUX) domain instances
- * consecutive, so that the pipe,transcoder,port -> power domain macros
- * work correctly.
- */
+ 
 enum intel_display_power_domain {
 	POWER_DOMAIN_DISPLAY_CORE,
 	POWER_DOMAIN_PIPE_A,
@@ -41,7 +35,7 @@ enum intel_display_power_domain {
 	POWER_DOMAIN_TRANSCODER_DSI_A,
 	POWER_DOMAIN_TRANSCODER_DSI_C,
 
-	/* VDSC/joining for eDP/DSI transcoder (ICL) or pipe A (TGL) */
+	 
 	POWER_DOMAIN_TRANSCODER_VDSC_PW2,
 
 	POWER_DOMAIN_PORT_DDI_LANES_A,
@@ -130,10 +124,7 @@ struct intel_power_domain_mask {
 };
 
 struct i915_power_domains {
-	/*
-	 * Power wells needed for initialization at driver init and suspend
-	 * time are on. They are kept on until after the first modeset.
-	 */
+	 
 	bool initializing;
 	bool display_core_suspended;
 	int power_well_count;
@@ -286,10 +277,7 @@ intel_display_power_legacy_aux_domain(struct drm_i915_private *i915, enum aux_ch
 enum intel_display_power_domain
 intel_display_power_tbt_aux_domain(struct drm_i915_private *i915, enum aux_ch aux_ch);
 
-/*
- * FIXME: We should probably switch this to a 0-based scheme to be consistent
- * with how we now name/number DBUF_CTL instances.
- */
+ 
 enum dbuf_slice {
 	DBUF_S1,
 	DBUF_S2,
@@ -309,4 +297,4 @@ void gen9_dbuf_slices_update(struct drm_i915_private *dev_priv,
 	for ((wf) = intel_display_power_get_if_enabled((i915), (domain)); (wf); \
 	     intel_display_power_put_async((i915), (domain), (wf)), (wf) = 0)
 
-#endif /* __INTEL_DISPLAY_POWER_H__ */
+#endif  

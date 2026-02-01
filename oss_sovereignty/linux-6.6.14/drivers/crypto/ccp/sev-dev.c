@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AMD Secure Encrypted Virtualization (SEV) interface
- *
- * Copyright (C) 2016,2019 Advanced Micro Devices, Inc.
- *
- * Author: Brijesh Singh <brijesh.singh@amd.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/module.h>
@@ -56,27 +50,19 @@ static bool psp_init_on_probe = true;
 module_param(psp_init_on_probe, bool, 0444);
 MODULE_PARM_DESC(psp_init_on_probe, "  if true, the PSP will be initialized on module init. Else the PSP will be initialized on the first command requiring it");
 
-MODULE_FIRMWARE("amd/amd_sev_fam17h_model0xh.sbin"); /* 1st gen EPYC */
-MODULE_FIRMWARE("amd/amd_sev_fam17h_model3xh.sbin"); /* 2nd gen EPYC */
-MODULE_FIRMWARE("amd/amd_sev_fam19h_model0xh.sbin"); /* 3rd gen EPYC */
-MODULE_FIRMWARE("amd/amd_sev_fam19h_model1xh.sbin"); /* 4th gen EPYC */
+MODULE_FIRMWARE("amd/amd_sev_fam17h_model0xh.sbin");  
+MODULE_FIRMWARE("amd/amd_sev_fam17h_model3xh.sbin");  
+MODULE_FIRMWARE("amd/amd_sev_fam19h_model0xh.sbin");  
+MODULE_FIRMWARE("amd/amd_sev_fam19h_model1xh.sbin");  
 
 static bool psp_dead;
 static int psp_timeout;
 
-/* Trusted Memory Region (TMR):
- *   The TMR is a 1MB area that must be 1MB aligned.  Use the page allocator
- *   to allocate the memory, which will return aligned memory for the specified
- *   allocation order.
- */
+ 
 #define SEV_ES_TMR_SIZE		(1024 * 1024)
 static void *sev_es_tmr;
 
-/* INIT_EX NV Storage:
- *   The NV Storage is a 32Kb area and must be 4Kb page aligned.  Use the page
- *   allocator to allocate the memory, which will return aligned memory for the
- *   specified allocation order.
- */
+ 
 #define NV_LENGTH (32 * 1024)
 static void *sev_init_ex_buffer;
 
@@ -98,11 +84,11 @@ static void sev_irq_handler(int irq, void *data, unsigned int status)
 	struct sev_device *sev = data;
 	int reg;
 
-	/* Check if it is command completion: */
+	 
 	if (!(status & SEV_CMD_COMPLETE))
 		return;
 
-	/* Check if it is SEV command completion: */
+	 
 	reg = ioread32(sev->io_regs + sev->vdata->cmdresp_reg);
 	if (FIELD_GET(PSP_CMDRESP_RESP, reg)) {
 		sev->int_rcvd = 1;
@@ -286,11 +272,7 @@ static int sev_write_init_ex_file_if_required(int cmd_id)
 	if (!sev_init_ex_buffer)
 		return 0;
 
-	/*
-	 * Only a few platform commands modify the SPI/NV area, but none of the
-	 * non-platform commands do. Only INIT(_EX), PLATFORM_RESET, PEK_GEN,
-	 * PEK_CERT_IMPORT, and PDH_GEN do.
-	 */
+	 
 	switch (cmd_id) {
 	case SEV_CMD_FACTORY_RESET:
 	case SEV_CMD_INIT_EX:
@@ -325,15 +307,11 @@ static int __sev_do_cmd_locked(int cmd, void *data, int *psp_ret)
 	if (WARN_ON_ONCE(!data != !buf_len))
 		return -EINVAL;
 
-	/*
-	 * Copy the incoming data to driver's scratch buffer as __pa() will not
-	 * work for some memory, e.g. vmalloc'd addresses, and @data may not be
-	 * physically contiguous.
-	 */
+	 
 	if (data)
 		memcpy(sev->cmd_buf, data, buf_len);
 
-	/* Get the physical address of the command buffer */
+	 
 	phys_lsb = data ? lower_32_bits(__psp_pa(sev->cmd_buf)) : 0;
 	phys_msb = data ? upper_32_bits(__psp_pa(sev->cmd_buf)) : 0;
 
@@ -351,7 +329,7 @@ static int __sev_do_cmd_locked(int cmd, void *data, int *psp_ret)
 	reg = FIELD_PREP(SEV_CMDRESP_CMD, cmd) | SEV_CMDRESP_IOC;
 	iowrite32(reg, sev->io_regs + sev->vdata->cmdresp_reg);
 
-	/* wait for command completion */
+	 
 	ret = sev_wait_cmd_ioc(sev, &reg, psp_timeout);
 	if (ret) {
 		if (psp_ret)
@@ -379,10 +357,7 @@ static int __sev_do_cmd_locked(int cmd, void *data, int *psp_ret)
 	print_hex_dump_debug("(out): ", DUMP_PREFIX_OFFSET, 16, 2, data,
 			     buf_len, false);
 
-	/*
-	 * Copy potential output from the PSP back to data.  Do this even on
-	 * failure in case the caller wants to glean something from the error.
-	 */
+	 
 	if (data)
 		memcpy(data, sev->cmd_buf, buf_len);
 
@@ -406,10 +381,7 @@ static int __sev_init_locked(int *error)
 
 	memset(&data, 0, sizeof(data));
 	if (sev_es_tmr) {
-		/*
-		 * Do not include the encryption mask on the physical
-		 * address of the TMR (firmware should clear it anyway).
-		 */
+		 
 		data.tmr_address = __pa(sev_es_tmr);
 
 		data.flags |= SEV_INIT_FLAGS_SEV_ES;
@@ -429,10 +401,7 @@ static int __sev_init_ex_locked(int *error)
 	data.nv_len = NV_LENGTH;
 
 	if (sev_es_tmr) {
-		/*
-		 * Do not include the encryption mask on the physical
-		 * address of the TMR (firmware should clear it anyway).
-		 */
+		 
 		data.tmr_address = __pa(sev_es_tmr);
 
 		data.flags |= SEV_INIT_FLAGS_SEV_ES;
@@ -472,13 +441,7 @@ static int __sev_platform_init_locked(int *error)
 
 	rc = __sev_do_init_locked(&psp_ret);
 	if (rc && psp_ret == SEV_RET_SECURE_DATA_INVALID) {
-		/*
-		 * Initialization command returned an integrity check failure
-		 * status code, meaning that firmware load and validation of SEV
-		 * related persistent data has failed. Retrying the
-		 * initialization function should succeed by replacing the state
-		 * with a reset state.
-		 */
+		 
 		dev_err(sev->dev,
 "SEV: retrying INIT command because of SECURE_DATA_INVALID error. Retrying once to reset PSP SEV state.");
 		rc = __sev_do_init_locked(&psp_ret);
@@ -492,7 +455,7 @@ static int __sev_platform_init_locked(int *error)
 
 	sev->state = SEV_STATE_INIT;
 
-	/* Prepare for first SEV guest launch after INIT */
+	 
 	wbinvd_on_all_cpus();
 	rc = __sev_do_cmd_locked(SEV_CMD_DF_FLUSH, NULL, error);
 	if (rc)
@@ -567,15 +530,7 @@ static int sev_ioctl_do_reset(struct sev_issue_cmd *argp, bool writable)
 	if (!writable)
 		return -EPERM;
 
-	/*
-	 * The SEV spec requires that FACTORY_RESET must be issued in
-	 * UNINIT state. Before we go further lets check if any guest is
-	 * active.
-	 *
-	 * If FW is in WORKING state then deny the request otherwise issue
-	 * SHUTDOWN command do INIT -> UNINIT before issuing the FACTORY_RESET.
-	 *
-	 */
+	 
 	rc = sev_get_platform_state(&state, &argp->error);
 	if (rc)
 		return rc;
@@ -643,11 +598,11 @@ static int sev_ioctl_do_pek_csr(struct sev_issue_cmd *argp, bool writable)
 
 	memset(&data, 0, sizeof(data));
 
-	/* userspace wants to query CSR length */
+	 
 	if (!input.address || !input.length)
 		goto cmd;
 
-	/* allocate a physically contiguous buffer to store the CSR blob */
+	 
 	input_address = (void __user *)input.address;
 	if (input.length > SEV_FW_BLOB_MAX_SIZE)
 		return -EFAULT;
@@ -668,7 +623,7 @@ cmd:
 
 	ret = __sev_do_cmd_locked(SEV_CMD_PEK_CSR, &data, &argp->error);
 
-	 /* If we query the CSR length, FW responded with expected data. */
+	  
 	input.length = data.len;
 
 	if (copy_to_user((void __user *)argp->data, &input, sizeof(input))) {
@@ -691,7 +646,7 @@ void *psp_copy_user_blob(u64 uaddr, u32 len)
 	if (!uaddr || !len)
 		return ERR_PTR(-EINVAL);
 
-	/* verify that blob length does not exceed our limit */
+	 
 	if (len > SEV_FW_BLOB_MAX_SIZE)
 		return ERR_PTR(-EINVAL);
 
@@ -734,19 +689,7 @@ static int sev_get_firmware(struct device *dev,
 		 "amd/amd_sev_fam%.2xh_model%.1xxh.sbin",
 		 boot_cpu_data.x86, (boot_cpu_data.x86_model & 0xf0) >> 4);
 
-	/* Check for SEV FW for a particular model.
-	 * Ex. amd_sev_fam17h_model00h.sbin for Family 17h Model 00h
-	 *
-	 * or
-	 *
-	 * Check for SEV FW common to a subset of models.
-	 * Ex. amd_sev_fam17h_model0xh.sbin for
-	 *     Family 17h Model 00h -- Family 17h Model 0Fh
-	 *
-	 * or
-	 *
-	 * Fall-back to using generic name: sev.fw
-	 */
+	 
 	if ((firmware_request_nowarn(firmware, fw_name_specific, dev) >= 0) ||
 	    (firmware_request_nowarn(firmware, fw_name_subset, dev) >= 0) ||
 	    (firmware_request_nowarn(firmware, SEV_FW_FILE, dev) >= 0))
@@ -755,7 +698,7 @@ static int sev_get_firmware(struct device *dev,
 	return -ENOENT;
 }
 
-/* Don't fail if SEV FW couldn't be updated. Continue with existing SEV FW */
+ 
 static int sev_update_firmware(struct device *dev)
 {
 	struct sev_data_download_firmware *data;
@@ -774,13 +717,7 @@ static int sev_update_firmware(struct device *dev)
 		return -1;
 	}
 
-	/*
-	 * SEV FW expects the physical address given to it to be 32
-	 * byte aligned. Memory allocated has structure placed at the
-	 * beginning followed by the firmware being passed to the SEV
-	 * FW. Allocate enough memory for data structure + alignment
-	 * padding + SEV FW.
-	 */
+	 
 	data_size = ALIGN(sizeof(struct sev_data_download_firmware), 32);
 
 	order = get_order(firmware->size + data_size);
@@ -790,10 +727,7 @@ static int sev_update_firmware(struct device *dev)
 		goto fw_err;
 	}
 
-	/*
-	 * Copy firmware data to a kernel allocated contiguous
-	 * memory region.
-	 */
+	 
 	data = page_address(p);
 	memcpy(page_address(p) + data_size, firmware->data, firmware->size);
 
@@ -802,10 +736,7 @@ static int sev_update_firmware(struct device *dev)
 
 	ret = sev_do_cmd(SEV_CMD_DOWNLOAD_FIRMWARE, data, &error);
 
-	/*
-	 * A quirk for fixing the committed TCB version, when upgrading from
-	 * earlier firmware version than 1.50.
-	 */
+	 
 	if (!ret && !sev_version_greater_or_equal(1, 50))
 		ret = sev_do_cmd(SEV_CMD_DOWNLOAD_FIRMWARE, data, &error);
 
@@ -836,7 +767,7 @@ static int sev_ioctl_do_pek_import(struct sev_issue_cmd *argp, bool writable)
 	if (copy_from_user(&input, (void __user *)argp->data, sizeof(input)))
 		return -EFAULT;
 
-	/* copy PEK certificate blobs from userspace */
+	 
 	pek_blob = psp_copy_user_blob(input.pek_cert_address, input.pek_cert_len);
 	if (IS_ERR(pek_blob))
 		return PTR_ERR(pek_blob);
@@ -845,7 +776,7 @@ static int sev_ioctl_do_pek_import(struct sev_issue_cmd *argp, bool writable)
 	data.pek_cert_address = __psp_pa(pek_blob);
 	data.pek_cert_len = input.pek_cert_len;
 
-	/* copy PEK certificate blobs from userspace */
+	 
 	oca_blob = psp_copy_user_blob(input.oca_cert_address, input.oca_cert_len);
 	if (IS_ERR(oca_blob)) {
 		ret = PTR_ERR(oca_blob);
@@ -855,7 +786,7 @@ static int sev_ioctl_do_pek_import(struct sev_issue_cmd *argp, bool writable)
 	data.oca_cert_address = __psp_pa(oca_blob);
 	data.oca_cert_len = input.oca_cert_len;
 
-	/* If platform is not in INIT state then transition it to INIT */
+	 
 	if (sev->state != SEV_STATE_INIT) {
 		ret = __sev_platform_init_locked(&argp->error);
 		if (ret)
@@ -879,7 +810,7 @@ static int sev_ioctl_do_get_id2(struct sev_issue_cmd *argp)
 	void *id_blob = NULL;
 	int ret;
 
-	/* SEV GET_ID is available from SEV API v0.16 and up */
+	 
 	if (!sev_version_greater_or_equal(0, 16))
 		return -ENOTSUPP;
 
@@ -889,13 +820,7 @@ static int sev_ioctl_do_get_id2(struct sev_issue_cmd *argp)
 	input_address = (void __user *)input.address;
 
 	if (input.address && input.length) {
-		/*
-		 * The length of the ID shouldn't be assumed by software since
-		 * it may change in the future.  The allocation size is limited
-		 * to 1 << (PAGE_SHIFT + MAX_ORDER) by the page allocator.
-		 * If the allocation fails, simply return ENOMEM rather than
-		 * warning in the kernel log.
-		 */
+		 
 		id_blob = kzalloc(input.length, GFP_KERNEL | __GFP_NOWARN);
 		if (!id_blob)
 			return -ENOMEM;
@@ -909,10 +834,7 @@ static int sev_ioctl_do_get_id2(struct sev_issue_cmd *argp)
 
 	ret = __sev_do_cmd_locked(SEV_CMD_GET_ID, &data, &argp->error);
 
-	/*
-	 * Firmware will return the length of the ID value (either the minimum
-	 * required length or the actual length written), return it to the user.
-	 */
+	 
 	input.length = data.len;
 
 	if (copy_to_user((void __user *)argp->data, &input, sizeof(input))) {
@@ -940,15 +862,11 @@ static int sev_ioctl_do_get_id(struct sev_issue_cmd *argp)
 	void *id_blob, *mem;
 	int ret;
 
-	/* SEV GET_ID available from SEV API v0.16 and up */
+	 
 	if (!sev_version_greater_or_equal(0, 16))
 		return -ENOTSUPP;
 
-	/* SEV FW expects the buffer it fills with the ID to be
-	 * 8-byte aligned. Memory allocated should be enough to
-	 * hold data structure + alignment padding + memory
-	 * where SEV FW writes the ID.
-	 */
+	 
 	data_size = ALIGN(sizeof(struct sev_data_get_id), 8);
 	user_size = sizeof(struct sev_user_data_get_id);
 
@@ -983,7 +901,7 @@ static int sev_ioctl_do_pdh_export(struct sev_issue_cmd *argp, bool writable)
 	void __user *input_pdh_cert_address;
 	int ret;
 
-	/* If platform is not in INIT state then transition it to INIT. */
+	 
 	if (sev->state != SEV_STATE_INIT) {
 		if (!writable)
 			return -EPERM;
@@ -998,7 +916,7 @@ static int sev_ioctl_do_pdh_export(struct sev_issue_cmd *argp, bool writable)
 
 	memset(&data, 0, sizeof(data));
 
-	/* Userspace wants to query the certificate length. */
+	 
 	if (!input.pdh_cert_address ||
 	    !input.pdh_cert_len ||
 	    !input.cert_chain_address)
@@ -1007,11 +925,11 @@ static int sev_ioctl_do_pdh_export(struct sev_issue_cmd *argp, bool writable)
 	input_pdh_cert_address = (void __user *)input.pdh_cert_address;
 	input_cert_chain_address = (void __user *)input.cert_chain_address;
 
-	/* Allocate a physically contiguous buffer to store the PDH blob. */
+	 
 	if (input.pdh_cert_len > SEV_FW_BLOB_MAX_SIZE)
 		return -EFAULT;
 
-	/* Allocate a physically contiguous buffer to store the cert chain blob. */
+	 
 	if (input.cert_chain_len > SEV_FW_BLOB_MAX_SIZE)
 		return -EFAULT;
 
@@ -1034,7 +952,7 @@ static int sev_ioctl_do_pdh_export(struct sev_issue_cmd *argp, bool writable)
 cmd:
 	ret = __sev_do_cmd_locked(SEV_CMD_PDH_CERT_EXPORT, &data, &argp->error);
 
-	/* If we query the length, FW responded with expected data. */
+	 
 	input.cert_chain_len = data.cert_chain_len;
 	input.pdh_cert_len = data.pdh_cert_len;
 
@@ -1175,13 +1093,7 @@ static int sev_misc_init(struct sev_device *sev)
 	struct device *dev = sev->dev;
 	int ret;
 
-	/*
-	 * SEV feature support can be detected on multiple devices but the SEV
-	 * FW commands must be issued on the master. During probe, we do not
-	 * know the master hence we create /dev/sev on the first device probe.
-	 * sev_do_cmd() finds the right master device to which to issue the
-	 * command to the firmware.
-	 */
+	 
 	if (!misc_dev) {
 		struct miscdevice *misc;
 
@@ -1272,7 +1184,7 @@ static void sev_firmware_shutdown(struct sev_device *sev)
 	sev_platform_shutdown(NULL);
 
 	if (sev_es_tmr) {
-		/* The TMR area was encrypted, flush it from the cache */
+		 
 		wbinvd_on_all_cpus();
 
 		free_pages((unsigned long)sev_es_tmr,
@@ -1328,9 +1240,7 @@ void sev_pci_init(void)
 	if (sev_update_firmware(sev->dev) == 0)
 		sev_get_api_version();
 
-	/* If an init_ex_path is provided rely on INIT_EX for PSP initialization
-	 * instead of INIT.
-	 */
+	 
 	if (init_ex_path) {
 		sev_init_ex_buffer = sev_fw_alloc(NV_LENGTH);
 		if (!sev_init_ex_buffer) {
@@ -1340,10 +1250,10 @@ void sev_pci_init(void)
 		}
 	}
 
-	/* Obtain the TMR memory area for SEV-ES use */
+	 
 	sev_es_tmr = sev_fw_alloc(SEV_ES_TMR_SIZE);
 	if (sev_es_tmr)
-		/* Must flush the cache before giving it to the firmware */
+		 
 		clflush_cache_range(sev_es_tmr, SEV_ES_TMR_SIZE);
 	else
 		dev_warn(sev->dev,
@@ -1352,7 +1262,7 @@ void sev_pci_init(void)
 	if (!psp_init_on_probe)
 		return;
 
-	/* Initialize the platform */
+	 
 	rc = sev_platform_init(&error);
 	if (rc)
 		dev_err(sev->dev, "SEV: failed to INIT error %#x, rc %d\n",

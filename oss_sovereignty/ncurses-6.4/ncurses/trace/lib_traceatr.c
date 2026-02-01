@@ -1,42 +1,8 @@
-/****************************************************************************
- * Copyright 2018-2020,2022 Thomas E. Dickey                                *
- * Copyright 1998-2017,2018 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Thomas Dickey                           1996-on                 *
- *     and: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Juergen Pfeifer                                                 *
- ****************************************************************************/
+ 
 
-/*
- *	lib_traceatr.c - Tracing/Debugging routines (attributes)
- */
+ 
 
 #include <curses.priv.h>
 
@@ -81,7 +47,7 @@ color_of(int c)
 
 #undef my_buffer
 #undef my_select
-#endif /* !USE_TERMLIB */
+#endif  
 
 NCURSES_EXPORT(char *)
 _traceattr2(int bufnum, chtype newmode)
@@ -121,7 +87,7 @@ _traceattr2(int bufnum, chtype newmode)
 	    DATA(COLOR_CYAN),
 	    DATA(COLOR_WHITE),
     }
-#endif /* !USE_TERMLIB */
+#endif  
     ;
 #undef DATA
     char *result = _nc_trace_buf(bufnum, (size_t) BUFSIZ);
@@ -145,7 +111,7 @@ _traceattr2(int bufnum, chtype newmode)
 		    char temp[80];
 		    short pairnum = (short) PairNumber(newmode);
 #ifdef USE_TERMLIB
-		    /* pair_content lives in libncurses */
+		     
 		    _nc_SPRINTF(temp, _nc_SLIMIT(sizeof(temp))
 				"{%d}", pairnum);
 #else
@@ -184,7 +150,7 @@ _traceattr(attr_t newmode)
     return _traceattr2(0, newmode);
 }
 
-/* Trace 'int' return-values */
+ 
 NCURSES_EXPORT(int)
 _nc_retrace_int_attr_t(attr_t code)
 {
@@ -192,7 +158,7 @@ _nc_retrace_int_attr_t(attr_t code)
     return (int) code;
 }
 
-/* Trace 'attr_t' return-values */
+ 
 NCURSES_EXPORT(attr_t)
 _nc_retrace_attr_t(attr_t code)
 {
@@ -213,38 +179,38 @@ _nc_altcharset_name(attr_t attr, chtype ch)
 #endif
     static const ALT_NAMES names[] =
     {
-	DATA('l', ACS_ULCORNER),	/* upper left corner */
-	DATA('m', ACS_LLCORNER),	/* lower left corner */
-	DATA('k', ACS_URCORNER),	/* upper right corner */
-	DATA('j', ACS_LRCORNER),	/* lower right corner */
-	DATA('t', ACS_LTEE),	/* tee pointing right */
-	DATA('u', ACS_RTEE),	/* tee pointing left */
-	DATA('v', ACS_BTEE),	/* tee pointing up */
-	DATA('w', ACS_TTEE),	/* tee pointing down */
-	DATA('q', ACS_HLINE),	/* horizontal line */
-	DATA('x', ACS_VLINE),	/* vertical line */
-	DATA('n', ACS_PLUS),	/* large plus or crossover */
-	DATA('o', ACS_S1),	/* scan line 1 */
-	DATA('s', ACS_S9),	/* scan line 9 */
-	DATA('`', ACS_DIAMOND),	/* diamond */
-	DATA('a', ACS_CKBOARD),	/* checker board (stipple) */
-	DATA('f', ACS_DEGREE),	/* degree symbol */
-	DATA('g', ACS_PLMINUS),	/* plus/minus */
-	DATA('~', ACS_BULLET),	/* bullet */
-	DATA(',', ACS_LARROW),	/* arrow pointing left */
-	DATA('+', ACS_RARROW),	/* arrow pointing right */
-	DATA('.', ACS_DARROW),	/* arrow pointing down */
-	DATA('-', ACS_UARROW),	/* arrow pointing up */
-	DATA('h', ACS_BOARD),	/* board of squares */
-	DATA('i', ACS_LANTERN),	/* lantern symbol */
-	DATA('0', ACS_BLOCK),	/* solid square block */
-	DATA('p', ACS_S3),	/* scan line 3 */
-	DATA('r', ACS_S7),	/* scan line 7 */
-	DATA('y', ACS_LEQUAL),	/* less/equal */
-	DATA('z', ACS_GEQUAL),	/* greater/equal */
-	DATA('{', ACS_PI),	/* Pi */
-	DATA('|', ACS_NEQUAL),	/* not equal */
-	DATA('}', ACS_STERLING),	/* UK pound sign */
+	DATA('l', ACS_ULCORNER),	 
+	DATA('m', ACS_LLCORNER),	 
+	DATA('k', ACS_URCORNER),	 
+	DATA('j', ACS_LRCORNER),	 
+	DATA('t', ACS_LTEE),	 
+	DATA('u', ACS_RTEE),	 
+	DATA('v', ACS_BTEE),	 
+	DATA('w', ACS_TTEE),	 
+	DATA('q', ACS_HLINE),	 
+	DATA('x', ACS_VLINE),	 
+	DATA('n', ACS_PLUS),	 
+	DATA('o', ACS_S1),	 
+	DATA('s', ACS_S9),	 
+	DATA('`', ACS_DIAMOND),	 
+	DATA('a', ACS_CKBOARD),	 
+	DATA('f', ACS_DEGREE),	 
+	DATA('g', ACS_PLMINUS),	 
+	DATA('~', ACS_BULLET),	 
+	DATA(',', ACS_LARROW),	 
+	DATA('+', ACS_RARROW),	 
+	DATA('.', ACS_DARROW),	 
+	DATA('-', ACS_UARROW),	 
+	DATA('h', ACS_BOARD),	 
+	DATA('i', ACS_LANTERN),	 
+	DATA('0', ACS_BLOCK),	 
+	DATA('p', ACS_S3),	 
+	DATA('r', ACS_S7),	 
+	DATA('y', ACS_LEQUAL),	 
+	DATA('z', ACS_GEQUAL),	 
+	DATA('{', ACS_PI),	 
+	DATA('|', ACS_NEQUAL),	 
+	DATA('}', ACS_STERLING),	 
     };
 #undef DATA
 
@@ -260,7 +226,7 @@ _nc_altcharset_name(attr_t attr, chtype ch)
 	for (cp = acs_chars; cp[0] && cp[1]; cp += 2) {
 	    if (ChCharOf(UChar(cp[1])) == ChCharOf(ch)) {
 		found = cp;
-		/* don't exit from loop - there may be redefinitions */
+		 
 	    }
 	}
 
@@ -314,7 +280,7 @@ _tracechtype(chtype ch)
     return _tracechtype2(0, ch);
 }
 
-/* Trace 'chtype' return-values */
+ 
 NCURSES_EXPORT(chtype)
 _nc_retrace_chtype(chtype code)
 {
@@ -356,7 +322,7 @@ _tracecchar_t2(int bufnum, const cchar_t *ch)
 		    PUTC_n = (int) wcrtomb(PUTC_buf, ch->chars[PUTC_i], &PUT_st);
 		    if (PUTC_n <= 0) {
 			if (PUTC_ch != L'\0') {
-			    /* it could not be a multibyte sequence */
+			     
 			    (void) _nc_trace_bufcat(bufnum,
 						    _nc_tracechar(CURRENT_SCREEN,
 								  UChar(ch->chars[PUTC_i])));
@@ -369,7 +335,7 @@ _tracecchar_t2(int bufnum, const cchar_t *ch)
 				    _nc_wacs_width(ch->chars[PUTC_i]),
 				    (unsigned long) ch->chars[PUTC_i]);
 			(void) _nc_trace_bufcat(bufnum, temp);
-			attr &= ~A_CHARTEXT;	/* ignore WidecExt(ch) */
+			attr &= ~A_CHARTEXT;	 
 		    } else {
 			for (n = 0; n < PUTC_n; n++) {
 			    if (n)
@@ -387,10 +353,7 @@ _tracecchar_t2(int bufnum, const cchar_t *ch)
 		(void) _nc_trace_bufcat(bufnum, _traceattr2(bufnum + 20, attr));
 	    }
 #if NCURSES_EXT_COLORS
-	    /*
-	     * Just in case the extended color is different from the chtype
-	     * value, trace both.
-	     */
+	     
 	    if (ch->ext_color != PairNumber(attr)) {
 		char temp[80];
 		_nc_SPRINTF(temp, _nc_SLIMIT(sizeof(temp))
@@ -414,4 +377,4 @@ _tracecchar_t(const cchar_t *ch)
 
 #else
 EMPTY_MODULE(_nc_lib_traceatr)
-#endif /* TRACE */
+#endif  

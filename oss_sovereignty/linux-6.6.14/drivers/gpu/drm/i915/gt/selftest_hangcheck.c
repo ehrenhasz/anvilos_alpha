@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2016 Intel Corporation
- */
+
+ 
 
 #include <linux/kthread.h>
 
@@ -27,7 +25,7 @@
 #include "gem/selftests/mock_context.h"
 #include "gem/selftests/igt_gem_utils.h"
 
-#define IGT_IDLE_TIMEOUT 50 /* ms; time to wait after flushing between tests */
+#define IGT_IDLE_TIMEOUT 50  
 
 struct hang {
 	struct intel_gt *gt;
@@ -222,7 +220,7 @@ hang_create_request(struct hang *h, struct intel_engine_cs *engine)
 		*batch++ = MI_BATCH_BUFFER_START | 2 << 6;
 		*batch++ = lower_32_bits(i915_vma_offset(vma));
 	}
-	*batch++ = MI_BATCH_BUFFER_END; /* not reached */
+	*batch++ = MI_BATCH_BUFFER_END;  
 	intel_gt_chipset_flush(engine->gt);
 
 	if (rq->engine->emit_init_breadcrumb) {
@@ -290,7 +288,7 @@ static int igt_hang_sanitycheck(void *arg)
 	struct hang h;
 	int err;
 
-	/* Basic check that we can execute our hanging batch */
+	 
 
 	err = hang_init(&h, gt);
 	if (err)
@@ -319,7 +317,7 @@ static int igt_hang_sanitycheck(void *arg)
 		i915_request_add(rq);
 
 		timeout = 0;
-		intel_wedge_on_timeout(&w, gt, HZ / 10 /* 100ms */)
+		intel_wedge_on_timeout(&w, gt, HZ / 10  )
 			timeout = i915_request_wait(rq, 0,
 						    MAX_SCHEDULE_TIMEOUT);
 		if (intel_gt_is_wedged(gt))
@@ -355,7 +353,7 @@ static int igt_reset_nop(void *arg)
 	IGT_TIMEOUT(end_time);
 	int err = 0;
 
-	/* Check that we can reset during non-user portions of requests */
+	 
 
 	reset_count = i915_reset_count(global);
 	count = 0;
@@ -428,7 +426,7 @@ static int igt_reset_nop_engine(void *arg)
 	struct intel_engine_cs *engine;
 	enum intel_engine_id id;
 
-	/* Check that we can engine-reset during non-user portions */
+	 
 
 	if (!intel_has_reset_engine(gt))
 		return 0;
@@ -440,10 +438,7 @@ static int igt_reset_nop_engine(void *arg)
 		int err;
 
 		if (intel_engine_uses_guc(engine)) {
-			/* Engine level resets are triggered by GuC when a hang
-			 * is detected. They can't be triggered by the KMD any
-			 * more. Thus a nop batch cannot be used as a reset test
-			 */
+			 
 			continue;
 		}
 
@@ -548,7 +543,7 @@ static int igt_reset_fail_engine(void *arg)
 	struct intel_engine_cs *engine;
 	enum intel_engine_id id;
 
-	/* Check that we can recover from engine-reset failues */
+	 
 
 	if (!intel_has_reset_engine(gt))
 		return 0;
@@ -559,7 +554,7 @@ static int igt_reset_fail_engine(void *arg)
 		IGT_TIMEOUT(end_time);
 		int err;
 
-		/* Can't manually break the reset if i915 doesn't perform it */
+		 
 		if (intel_engine_uses_guc(engine))
 			continue;
 
@@ -576,7 +571,7 @@ static int igt_reset_fail_engine(void *arg)
 		force_reset_timeout(engine);
 		err = intel_engine_reset(engine, NULL);
 		cancel_reset_timeout(engine);
-		if (err == 0) /* timeouts only generated on gen8+ */
+		if (err == 0)  
 			goto skip;
 
 		count = 0;
@@ -689,7 +684,7 @@ static int __igt_reset_engine(struct intel_gt *gt, bool active)
 	struct hang h;
 	int err = 0;
 
-	/* Check that we can issue an engine reset on an idle engine (no-op) */
+	 
 
 	if (!intel_has_reset_engine(gt))
 		return 0;
@@ -774,7 +769,7 @@ static int __igt_reset_engine(struct intel_gt *gt, bool active)
 			}
 
 			if (rq) {
-				/* Ensure the reset happens and kills the engine */
+				 
 				err = intel_selftest_wait_for_rq(rq);
 				if (err)
 					pr_err("[%s] Wait for request %lld:%lld [0x%04X] failed: %d!\n",
@@ -792,7 +787,7 @@ skip:
 				goto restore;
 			}
 
-			/* GuC based resets are not logged per engine */
+			 
 			if (!using_guc) {
 				if (i915_reset_engine_count(global, engine) !=
 				    ++reset_engine_count) {
@@ -949,7 +944,7 @@ static void active_engine(struct kthread_work *work)
 		if (err)
 			pr_err("[%s] Request put #%ld failed: %d!\n", engine->name, count, err);
 
-		/* Keep the first error */
+		 
 		if (!err)
 			err = err__;
 
@@ -970,9 +965,7 @@ static int __igt_reset_engines(struct intel_gt *gt,
 	struct hang h;
 	int err = 0;
 
-	/* Check that issuing a reset on one engine does not interfere
-	 * with any other engine.
-	 */
+	 
 
 	if (!intel_has_reset_engine(gt))
 		return 0;
@@ -1094,7 +1087,7 @@ static int __igt_reset_engines(struct intel_gt *gt,
 			}
 
 			if (rq) {
-				/* Ensure the reset happens and kills the engine */
+				 
 				err = intel_selftest_wait_for_rq(rq);
 				if (err)
 					pr_err("[%s] Wait for request %lld:%lld [0x%04X] failed: %d!\n",
@@ -1172,7 +1165,7 @@ restore:
 		pr_info("i915_reset_engine(%s:%s): %lu resets\n",
 			engine->name, test_name, count);
 
-		/* GuC based resets are not logged per engine */
+		 
 		if (!using_guc) {
 			reported = i915_reset_engine_count(global, engine);
 			reported -= threads[engine->id].resets;
@@ -1203,7 +1196,7 @@ unwind:
 
 			kthread_destroy_worker(threads[tmp].worker);
 
-			/* GuC based resets are not logged per engine */
+			 
 			if (!using_guc) {
 				if (other->uabi_class != engine->uabi_class &&
 				    threads[tmp].resets !=
@@ -1308,7 +1301,7 @@ static int igt_reset_wait(void *arg)
 	if (!engine || !intel_engine_can_store_dword(engine))
 		return 0;
 
-	/* Check that we detect a stuck waiter and issue a reset */
+	 
 
 	igt_global_reset_lock(gt);
 
@@ -1398,7 +1391,7 @@ static int evict_fence(void *data)
 
 	complete(&arg->completion);
 
-	/* Mark the fence register as dirty to force the mmio update. */
+	 
 	err = i915_gem_object_set_tiling(arg->vma->obj, I915_TILING_Y, 512);
 	if (err) {
 		pr_err("Invalid Y-tiling settings; err:%d\n", err);
@@ -1445,7 +1438,7 @@ static int __igt_reset_evict_vma(struct intel_gt *gt,
 	if (!engine || !intel_engine_can_store_dword(engine))
 		return 0;
 
-	/* Check that we can recover an unbind stuck on a hanging request */
+	 
 
 	err = hang_init(&h, gt);
 	if (err) {
@@ -1559,8 +1552,8 @@ out_reset:
 	if (tsk) {
 		struct intel_wedge_me w;
 
-		/* The reset, even indirectly, should take less than 10ms. */
-		intel_wedge_on_timeout(&w, gt, HZ / 10 /* 100ms */)
+		 
+		intel_wedge_on_timeout(&w, gt, HZ / 10  )
 			err = kthread_stop(tsk);
 
 		put_task_struct(tsk);
@@ -1592,7 +1585,7 @@ static int igt_reset_evict_ppgtt(void *arg)
 	struct i915_ppgtt *ppgtt;
 	int err;
 
-	/* aliasing == global gtt locking, covered above */
+	 
 	if (INTEL_PPGTT(gt->i915) < INTEL_PPGTT_FULL)
 		return 0;
 
@@ -1641,7 +1634,7 @@ static int igt_reset_queue(void *arg)
 	struct hang h;
 	int err;
 
-	/* Check that we replay pending requests following a hang */
+	 
 
 	igt_global_reset_lock(gt);
 
@@ -1693,16 +1686,7 @@ static int igt_reset_queue(void *arg)
 			i915_request_get(rq);
 			i915_request_add(rq);
 
-			/*
-			 * XXX We don't handle resetting the kernel context
-			 * very well. If we trigger a device reset twice in
-			 * quick succession while the kernel context is
-			 * executing, we may end up skipping the breadcrumb.
-			 * This is really only a problem for the selftest as
-			 * normally there is a large interlude between resets
-			 * (hangcheck), or we focus on resetting just one
-			 * engine and so avoid repeatedly resetting innocents.
-			 */
+			 
 			err = wait_for_others(gt, engine);
 			if (err) {
 				pr_err("%s(%s): Failed to idle other inactive engines after device reset\n",
@@ -1816,7 +1800,7 @@ static int igt_handle_error(void *arg)
 
 	engine = intel_selftest_find_any_engine(gt);
 
-	/* Check that we can issue a global GPU and engine reset */
+	 
 
 	if (!intel_has_reset_engine(gt))
 		return 0;
@@ -1853,7 +1837,7 @@ static int igt_handle_error(void *arg)
 		goto err_request;
 	}
 
-	/* Temporarily disable error capture */
+	 
 	error = xchg(&global->first_error, (void *)-1);
 
 	intel_gt_handle_error(gt, engine->mask, 0, NULL);
@@ -1946,7 +1930,7 @@ static int igt_atomic_reset_engine(struct intel_engine_cs *engine,
 	if (err == 0) {
 		struct intel_wedge_me w;
 
-		intel_wedge_on_timeout(&w, engine->gt, HZ / 20 /* 50ms */)
+		intel_wedge_on_timeout(&w, engine->gt, HZ / 20  )
 			i915_request_wait(rq, 0, MAX_SCHEDULE_TIMEOUT);
 		if (intel_gt_is_wedged(engine->gt))
 			err = -EIO;
@@ -1964,7 +1948,7 @@ static int igt_reset_engines_atomic(void *arg)
 	const typeof(*igt_atomic_phases) *p;
 	int err = 0;
 
-	/* Check that the engines resets are usable from atomic context */
+	 
 
 	if (!intel_has_reset_engine(gt))
 		return 0;
@@ -1974,7 +1958,7 @@ static int igt_reset_engines_atomic(void *arg)
 
 	igt_global_reset_lock(gt);
 
-	/* Flush any requests before we get started and check basics */
+	 
 	if (!igt_force_reset(gt))
 		goto unlock;
 
@@ -1990,7 +1974,7 @@ static int igt_reset_engines_atomic(void *arg)
 	}
 
 out:
-	/* As we poke around the guts, do a full reset before continuing. */
+	 
 	igt_force_reset(gt);
 unlock:
 	igt_global_reset_unlock(gt);
@@ -2024,7 +2008,7 @@ int intel_hangcheck_live_selftests(struct drm_i915_private *i915)
 		return 0;
 
 	if (intel_gt_is_wedged(gt))
-		return -EIO; /* we're long past hope of a successful reset */
+		return -EIO;  
 
 	wakeref = intel_runtime_pm_get(gt->uncore->rpm);
 

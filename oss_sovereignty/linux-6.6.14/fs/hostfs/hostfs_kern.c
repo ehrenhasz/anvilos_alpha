@@ -1,10 +1,4 @@
-/*
- * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
- * Licensed under the GPL
- *
- * Ported the filesystem routines to 2.5.
- * 2003-02-10 Petr Baudis <pasky@ucw.cz>
- */
+ 
 
 #include <linux/fs.h>
 #include <linux/magic.h>
@@ -38,7 +32,7 @@ static inline struct hostfs_inode_info *HOSTFS_I(struct inode *inode)
 
 static struct kmem_cache *hostfs_inode_cache;
 
-/* Changed in hostfs_args before the kernel starts running */
+ 
 static char *root_ino = "";
 static int append = 0;
 
@@ -98,10 +92,7 @@ static char *__dentry_name(struct dentry *dentry, char *name)
 		return NULL;
 	}
 
-	/*
-	 * This function relies on the fact that dentry_path_raw() will place
-	 * the path name at the end of the provided buffer.
-	 */
+	 
 	BUG_ON(p + strlen(p) + 1 != name + PATH_MAX);
 
 	strscpy(name, root, PATH_MAX);
@@ -185,11 +176,7 @@ static char *follow_link(char *link)
 
 static int hostfs_statfs(struct dentry *dentry, struct kstatfs *sf)
 {
-	/*
-	 * do_statfs uses struct statfs64 internally, but the linux kernel
-	 * struct statfs still has 32-bit versions for most of these fields,
-	 * so we convert them here
-	 */
+	 
 	int err;
 	long long f_blocks;
 	long long f_bfree;
@@ -323,7 +310,7 @@ retry:
 		return fd;
 
 	mutex_lock(&HOSTFS_I(ino)->open_mutex);
-	/* somebody else had handled it first? */
+	 
 	if ((mode & HOSTFS_I(ino)->mode) == mode) {
 		mutex_unlock(&HOSTFS_I(ino)->open_mutex);
 		close_file(&fd);
@@ -488,10 +475,7 @@ static int hostfs_write_end(struct file *file, struct address_space *mapping,
 	if (!PageUptodate(page) && err == PAGE_SIZE)
 		SetPageUptodate(page);
 
-	/*
-	 * If err > 0, write_file has added err to pos, so we are comparing
-	 * i_size against the last byte written.
-	 */
+	 
 	if (err > 0 && (pos > inode->i_size))
 		inode->i_size = pos;
 	unlock_page(page);
@@ -528,7 +512,7 @@ static int hostfs_inode_set(struct inode *ino, void *data)
 	struct hostfs_stat *st = data;
 	dev_t rdev;
 
-	/* Reencode maj and min with the kernel encoding.*/
+	 
 	rdev = MKDEV(st->maj, st->min);
 
 	switch (st->mode & S_IFMT) {
@@ -938,7 +922,7 @@ static int hostfs_fill_sb_common(struct super_block *sb, void *d, int silent)
 	if (err)
 		return err;
 
-	/* NULL is printed as '(null)' by printf(): avoid that. */
+	 
 	if (req_root == NULL)
 		req_root = "";
 

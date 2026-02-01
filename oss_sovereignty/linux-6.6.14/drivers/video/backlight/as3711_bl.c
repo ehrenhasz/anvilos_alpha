@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AS3711 PMIC backlight driver, using DCDC Step Up Converters
- *
- * Copyright (C) 2012 Renesas Electronics Corporation
- * Author: Guennadi Liakhovetski, <g.liakhovetski@gmx.de>
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -56,7 +51,7 @@ static int as3711_set_brightness_auto_i(struct as3711_bl_data *data,
 	const struct as3711_bl_pdata *pdata = supply->pdata;
 	int ret = 0;
 
-	/* Only all equal current values are supported */
+	 
 	if (pdata->su2_auto_curr1)
 		ret = regmap_write(as3711->regmap, AS3711_CURR1_VALUE,
 				   brightness);
@@ -95,10 +90,7 @@ static int as3711_bl_su2_reset(struct as3711_bl_supply *supply)
 	return ret;
 }
 
-/*
- * Someone with less fragile or less expensive hardware could try to simplify
- * the brightness adjustment procedure.
- */
+ 
 static int as3711_bl_update_status(struct backlight_device *bl)
 {
 	struct as3711_bl_data *data = bl_get_data(bl);
@@ -135,7 +127,7 @@ static int as3711_bl_update_status(struct backlight_device *bl)
 						AS3711_STEPUP_CONTROL_2, 1, 0);
 			}
 			break;
-		/* Manual one current feedback pin below */
+		 
 		case AS3711_SU2_CURR1:
 			ret = regmap_write(as3711->regmap, AS3711_CURR1_VALUE,
 					   brightness);
@@ -179,7 +171,7 @@ static int as3711_bl_init_su2(struct as3711_bl_supply *supply)
 
 	dev_dbg(as3711->dev, "%s(): use %u\n", __func__, pdata->su2_feedback);
 
-	/* Turn SU2 off */
+	 
 	ret = regmap_write(as3711->regmap, AS3711_STEPUP_CONTROL_2, 0);
 	if (ret < 0)
 		return ret;
@@ -225,7 +217,7 @@ static int as3711_bl_register(struct platform_device *pdev,
 	struct backlight_properties props = {.type = BACKLIGHT_RAW,};
 	struct backlight_device *bl;
 
-	/* max tuning I = 31uA for voltage- and 38250uA for current-feedback */
+	 
 	props.max_brightness = max_brightness;
 
 	bl = devm_backlight_device_register(&pdev->dev,
@@ -347,10 +339,7 @@ static int as3711_backlight_parse_dt(struct device *dev)
 			count++;
 		}
 
-		/*
-		 * At least one su2-auto-curr* must be specified iff
-		 * AS3711_SU2_CURR_AUTO is used
-		 */
+		 
 		if (!count ^ (pdata->su2_feedback != AS3711_SU2_CURR_AUTO)) {
 			ret = -EINVAL;
 			goto err_put_bl;
@@ -394,11 +383,7 @@ static int as3711_backlight_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/*
-	 * Due to possible hardware damage I chose to block all modes,
-	 * unsupported on my hardware. Anyone, wishing to use any of those modes
-	 * will have to first review the code, then activate and test it.
-	 */
+	 
 	if (pdata->su1_fb ||
 	    pdata->su2_fbprot != AS3711_SU2_GPIO4 ||
 	    pdata->su2_feedback != AS3711_SU2_CURR_AUTO) {

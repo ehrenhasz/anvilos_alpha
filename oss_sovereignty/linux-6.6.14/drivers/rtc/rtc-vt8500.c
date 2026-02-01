@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/rtc/rtc-vt8500.c
- *
- *  Copyright (C) 2010 Alexey Charkov <alchark@gmail.com>
- *
- * Based on rtc-pxa.c
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/rtc.h>
@@ -17,19 +11,17 @@
 #include <linux/slab.h>
 #include <linux/of.h>
 
-/*
- * Register definitions
- */
-#define VT8500_RTC_TS		0x00	/* Time set */
-#define VT8500_RTC_DS		0x04	/* Date set */
-#define VT8500_RTC_AS		0x08	/* Alarm set */
-#define VT8500_RTC_CR		0x0c	/* Control */
-#define VT8500_RTC_TR		0x10	/* Time read */
-#define VT8500_RTC_DR		0x14	/* Date read */
-#define VT8500_RTC_WS		0x18	/* Write status */
-#define VT8500_RTC_CL		0x20	/* Calibration */
-#define VT8500_RTC_IS		0x24	/* Interrupt status */
-#define VT8500_RTC_ST		0x28	/* Status */
+ 
+#define VT8500_RTC_TS		0x00	 
+#define VT8500_RTC_DS		0x04	 
+#define VT8500_RTC_AS		0x08	 
+#define VT8500_RTC_CR		0x0c	 
+#define VT8500_RTC_TR		0x10	 
+#define VT8500_RTC_DR		0x14	 
+#define VT8500_RTC_WS		0x18	 
+#define VT8500_RTC_CL		0x20	 
+#define VT8500_RTC_IS		0x24	 
+#define VT8500_RTC_ST		0x28	 
 
 #define INVALID_TIME_BIT	(1 << 31)
 
@@ -61,19 +53,19 @@
 				| ALARM_MIN_BIT \
 				| ALARM_SEC_BIT)
 
-#define VT8500_RTC_CR_ENABLE	(1 << 0)	/* Enable RTC */
-#define VT8500_RTC_CR_12H	(1 << 1)	/* 12h time format */
-#define VT8500_RTC_CR_SM_ENABLE	(1 << 2)	/* Enable periodic irqs */
-#define VT8500_RTC_CR_SM_SEC	(1 << 3)	/* 0: 1Hz/60, 1: 1Hz */
-#define VT8500_RTC_CR_CALIB	(1 << 4)	/* Enable calibration */
+#define VT8500_RTC_CR_ENABLE	(1 << 0)	 
+#define VT8500_RTC_CR_12H	(1 << 1)	 
+#define VT8500_RTC_CR_SM_ENABLE	(1 << 2)	 
+#define VT8500_RTC_CR_SM_SEC	(1 << 3)	 
+#define VT8500_RTC_CR_CALIB	(1 << 4)	 
 
-#define VT8500_RTC_IS_ALARM	(1 << 0)	/* Alarm interrupt status */
+#define VT8500_RTC_IS_ALARM	(1 << 0)	 
 
 struct vt8500_rtc {
 	void __iomem		*regbase;
 	int			irq_alarm;
 	struct rtc_device	*rtc;
-	spinlock_t		lock;		/* Protects this structure */
+	spinlock_t		lock;		 
 };
 
 static irqreturn_t vt8500_rtc_irq(int irq, void *dev_id)
@@ -84,7 +76,7 @@ static irqreturn_t vt8500_rtc_irq(int irq, void *dev_id)
 
 	spin_lock(&vt8500_rtc->lock);
 
-	/* clear interrupt sources */
+	 
 	isr = readl(vt8500_rtc->regbase + VT8500_RTC_IS);
 	writel(isr, vt8500_rtc->regbase + VT8500_RTC_IS);
 
@@ -212,7 +204,7 @@ static int vt8500_rtc_probe(struct platform_device *pdev)
 	if (IS_ERR(vt8500_rtc->regbase))
 		return PTR_ERR(vt8500_rtc->regbase);
 
-	/* Enable RTC and set it to 24-hour mode */
+	 
 	writel(VT8500_RTC_CR_ENABLE,
 	       vt8500_rtc->regbase + VT8500_RTC_CR);
 
@@ -239,7 +231,7 @@ static void vt8500_rtc_remove(struct platform_device *pdev)
 {
 	struct vt8500_rtc *vt8500_rtc = platform_get_drvdata(pdev);
 
-	/* Disable alarm matching */
+	 
 	writel(0, vt8500_rtc->regbase + VT8500_RTC_IS);
 }
 

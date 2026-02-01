@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Generic platform ohci driver
- *
- * Copyright 2007 Michael Buesch <m@bues.ch>
- * Copyright 2011-2012 Hauke Mehrtens <hauke@hauke-m.de>
- * Copyright 2014 Hans de Goede <hdegoede@redhat.com>
- *
- * Derived from the OCHI-SSB driver
- * Derived from the OHCI-PCI driver
- * Copyright 1999 Roman Weissgaerber
- * Copyright 2000-2002 David Brownell
- * Copyright 1999 Linus Torvalds
- * Copyright 1999 Gregory P. Smith
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -98,10 +85,7 @@ static int ohci_platform_probe(struct platform_device *dev)
 	if (usb_disabled())
 		return -ENODEV;
 
-	/*
-	 * Use reasonable defaults so platforms don't have to provide these
-	 * with DT probing on ARM.
-	 */
+	 
 	if (!pdata)
 		pdata = &ohci_platform_defaults;
 
@@ -314,7 +298,7 @@ static int ohci_platform_restore(struct device *dev)
 {
 	return ohci_platform_resume_common(dev, true);
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct of_device_id ohci_platform_ids[] = {
 	{ .compatible = "generic-ohci", },

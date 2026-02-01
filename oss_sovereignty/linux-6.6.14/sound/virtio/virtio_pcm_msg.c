@@ -1,20 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * virtio-snd: Virtio sound device
- * Copyright (C) 2021 OpenSynergy GmbH
- */
+
+ 
 #include <sound/pcm_params.h>
 
 #include "virtio_card.h"
 
-/**
- * struct virtio_pcm_msg - VirtIO I/O message.
- * @substream: VirtIO PCM substream.
- * @xfer: Request header payload.
- * @status: Response header payload.
- * @length: Data length in bytes.
- * @sgs: Payload scatter-gather table.
- */
+ 
 struct virtio_pcm_msg {
 	struct virtio_pcm_substream *substream;
 	struct virtio_snd_pcm_xfer xfer;
@@ -23,28 +13,14 @@ struct virtio_pcm_msg {
 	struct scatterlist sgs[];
 };
 
-/**
- * enum pcm_msg_sg_index - Index values for the virtio_pcm_msg->sgs field in
- *                         an I/O message.
- * @PCM_MSG_SG_XFER: Element containing a virtio_snd_pcm_xfer structure.
- * @PCM_MSG_SG_STATUS: Element containing a virtio_snd_pcm_status structure.
- * @PCM_MSG_SG_DATA: The first element containing a data buffer.
- */
+ 
 enum pcm_msg_sg_index {
 	PCM_MSG_SG_XFER = 0,
 	PCM_MSG_SG_STATUS,
 	PCM_MSG_SG_DATA
 };
 
-/**
- * virtsnd_pcm_sg_num() - Count the number of sg-elements required to represent
- *                        vmalloc'ed buffer.
- * @data: Pointer to vmalloc'ed buffer.
- * @length: Buffer size.
- *
- * Context: Any context.
- * Return: Number of physically contiguous parts in the @data.
- */
+ 
 static int virtsnd_pcm_sg_num(u8 *data, unsigned int length)
 {
 	phys_addr_t sg_address;
@@ -75,18 +51,7 @@ static int virtsnd_pcm_sg_num(u8 *data, unsigned int length)
 	return num;
 }
 
-/**
- * virtsnd_pcm_sg_from() - Build sg-list from vmalloc'ed buffer.
- * @sgs: Preallocated sg-list to populate.
- * @nsgs: The maximum number of elements in the @sgs.
- * @data: Pointer to vmalloc'ed buffer.
- * @length: Buffer size.
- *
- * Splits the buffer into physically contiguous parts and makes an sg-list of
- * such parts.
- *
- * Context: Any context.
- */
+ 
 static void virtsnd_pcm_sg_from(struct scatterlist *sgs, int nsgs, u8 *data,
 				unsigned int length)
 {
@@ -117,18 +82,7 @@ static void virtsnd_pcm_sg_from(struct scatterlist *sgs, int nsgs, u8 *data,
 	sg_mark_end(&sgs[idx]);
 }
 
-/**
- * virtsnd_pcm_msg_alloc() - Allocate I/O messages.
- * @vss: VirtIO PCM substream.
- * @periods: Current number of periods.
- * @period_bytes: Current period size in bytes.
- *
- * The function slices the buffer into @periods parts (each with the size of
- * @period_bytes), and creates @periods corresponding I/O messages.
- *
- * Context: Any context that permits to sleep.
- * Return: 0 on success, -ENOMEM on failure.
- */
+ 
 int virtsnd_pcm_msg_alloc(struct virtio_pcm_substream *vss,
 			  unsigned int periods, unsigned int period_bytes)
 {
@@ -165,12 +119,7 @@ int virtsnd_pcm_msg_alloc(struct virtio_pcm_substream *vss,
 	return 0;
 }
 
-/**
- * virtsnd_pcm_msg_free() - Free all allocated I/O messages.
- * @vss: VirtIO PCM substream.
- *
- * Context: Any context.
- */
+ 
 void virtsnd_pcm_msg_free(struct virtio_pcm_substream *vss)
 {
 	unsigned int i;
@@ -183,21 +132,7 @@ void virtsnd_pcm_msg_free(struct virtio_pcm_substream *vss)
 	vss->nmsgs = 0;
 }
 
-/**
- * virtsnd_pcm_msg_send() - Send asynchronous I/O messages.
- * @vss: VirtIO PCM substream.
- *
- * All messages are organized in an ordered circular list. Each time the
- * function is called, all currently non-enqueued messages are added to the
- * virtqueue. For this, the function keeps track of two values:
- *
- *   msg_last_enqueued = index of the last enqueued message,
- *   msg_count = # of pending messages in the virtqueue.
- *
- * Context: Any context. Expects the tx/rx queue and the VirtIO substream
- *          spinlocks to be held by caller.
- * Return: 0 on success, -errno on failure.
- */
+ 
 int virtsnd_pcm_msg_send(struct virtio_pcm_substream *vss)
 {
 	struct snd_pcm_runtime *runtime = vss->substream->runtime;
@@ -250,13 +185,7 @@ int virtsnd_pcm_msg_send(struct virtio_pcm_substream *vss)
 	return 0;
 }
 
-/**
- * virtsnd_pcm_msg_pending_num() - Returns the number of pending I/O messages.
- * @vss: VirtIO substream.
- *
- * Context: Any context.
- * Return: Number of messages.
- */
+ 
 unsigned int virtsnd_pcm_msg_pending_num(struct virtio_pcm_substream *vss)
 {
 	unsigned int num;
@@ -269,37 +198,15 @@ unsigned int virtsnd_pcm_msg_pending_num(struct virtio_pcm_substream *vss)
 	return num;
 }
 
-/**
- * virtsnd_pcm_msg_complete() - Complete an I/O message.
- * @msg: I/O message.
- * @written_bytes: Number of bytes written to the message.
- *
- * Completion of the message means the elapsed period. If transmission is
- * allowed, then each completed message is immediately placed back at the end
- * of the queue.
- *
- * For the playback substream, @written_bytes is equal to sizeof(msg->status).
- *
- * For the capture substream, @written_bytes is equal to sizeof(msg->status)
- * plus the number of captured bytes.
- *
- * Context: Interrupt context. Takes and releases the VirtIO substream spinlock.
- */
+ 
 static void virtsnd_pcm_msg_complete(struct virtio_pcm_msg *msg,
 				     size_t written_bytes)
 {
 	struct virtio_pcm_substream *vss = msg->substream;
 
-	/*
-	 * hw_ptr always indicates the buffer position of the first I/O message
-	 * in the virtqueue. Therefore, on each completion of an I/O message,
-	 * the hw_ptr value is unconditionally advanced.
-	 */
+	 
 	spin_lock(&vss->lock);
-	/*
-	 * If the capture substream returned an incorrect status, then just
-	 * increase the hw_ptr by the message size.
-	 */
+	 
 	if (vss->direction == SNDRV_PCM_STREAM_PLAYBACK ||
 	    written_bytes <= sizeof(msg->status))
 		vss->hw_ptr += msg->length;
@@ -328,12 +235,7 @@ static void virtsnd_pcm_msg_complete(struct virtio_pcm_msg *msg,
 	spin_unlock(&vss->lock);
 }
 
-/**
- * virtsnd_pcm_notify_cb() - Process all completed I/O messages.
- * @queue: Underlying tx/rx virtqueue.
- *
- * Context: Interrupt context. Takes and releases the tx/rx queue spinlock.
- */
+ 
 static inline void virtsnd_pcm_notify_cb(struct virtio_snd_queue *queue)
 {
 	struct virtio_pcm_msg *msg;
@@ -351,12 +253,7 @@ static inline void virtsnd_pcm_notify_cb(struct virtio_snd_queue *queue)
 	spin_unlock_irqrestore(&queue->lock, flags);
 }
 
-/**
- * virtsnd_pcm_tx_notify_cb() - Process all completed TX messages.
- * @vqueue: Underlying tx virtqueue.
- *
- * Context: Interrupt context.
- */
+ 
 void virtsnd_pcm_tx_notify_cb(struct virtqueue *vqueue)
 {
 	struct virtio_snd *snd = vqueue->vdev->priv;
@@ -364,12 +261,7 @@ void virtsnd_pcm_tx_notify_cb(struct virtqueue *vqueue)
 	virtsnd_pcm_notify_cb(virtsnd_tx_queue(snd));
 }
 
-/**
- * virtsnd_pcm_rx_notify_cb() - Process all completed RX messages.
- * @vqueue: Underlying rx virtqueue.
- *
- * Context: Interrupt context.
- */
+ 
 void virtsnd_pcm_rx_notify_cb(struct virtqueue *vqueue)
 {
 	struct virtio_snd *snd = vqueue->vdev->priv;
@@ -377,16 +269,7 @@ void virtsnd_pcm_rx_notify_cb(struct virtqueue *vqueue)
 	virtsnd_pcm_notify_cb(virtsnd_rx_queue(snd));
 }
 
-/**
- * virtsnd_pcm_ctl_msg_alloc() - Allocate and initialize the PCM device control
- *                               message for the specified substream.
- * @vss: VirtIO PCM substream.
- * @command: Control request code (VIRTIO_SND_R_PCM_XXX).
- * @gfp: Kernel flags for memory allocation.
- *
- * Context: Any context. May sleep if @gfp flags permit.
- * Return: Allocated message on success, NULL on failure.
- */
+ 
 struct virtio_snd_msg *
 virtsnd_pcm_ctl_msg_alloc(struct virtio_pcm_substream *vss,
 			  unsigned int command, gfp_t gfp)

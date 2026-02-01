@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2007 Red Hat, Inc.  All rights reserved.
- */
+
+ 
 
 #include <linux/sched.h>
 #include <linux/slab.h>
@@ -34,28 +31,19 @@
 
 static void gfs2_log_shutdown(struct gfs2_sbd *sdp);
 
-/**
- * gfs2_struct2blk - compute stuff
- * @sdp: the filesystem
- * @nstruct: the number of structures
- *
- * Compute the number of log descriptor blocks needed to hold a certain number
- * of structures of a certain size.
- *
- * Returns: the number of blocks needed (minimum is always 1)
- */
+ 
 
 unsigned int gfs2_struct2blk(struct gfs2_sbd *sdp, unsigned int nstruct)
 {
 	unsigned int blks;
 	unsigned int first, second;
 
-	/* The initial struct gfs2_log_descriptor block */
+	 
 	blks = 1;
 	first = sdp->sd_ldptrs;
 
 	if (nstruct > first) {
-		/* Subsequent struct gfs2_meta_header blocks */
+		 
 		second = sdp->sd_inptrs;
 		blks += DIV_ROUND_UP(nstruct - first, second);
 	}
@@ -63,13 +51,7 @@ unsigned int gfs2_struct2blk(struct gfs2_sbd *sdp, unsigned int nstruct)
 	return blks;
 }
 
-/**
- * gfs2_remove_from_ail - Remove an entry from the ail lists, updating counters
- * @bd: The gfs2_bufdata to remove
- *
- * The ail lock _must_ be held when calling this function
- *
- */
+ 
 
 void gfs2_remove_from_ail(struct gfs2_bufdata *bd)
 {
@@ -89,13 +71,7 @@ static int __gfs2_writepage(struct folio *folio, struct writeback_control *wbc,
 	return ret;
 }
 
-/**
- * gfs2_ail1_start_one - Start I/O on a transaction
- * @sdp: The superblock
- * @wbc: The writeback control structure
- * @tr: The transaction to start I/O on
- * @plug: The block plug currently active
- */
+ 
 
 static int gfs2_ail1_start_one(struct gfs2_sbd *sdp,
 			       struct writeback_control *wbc,
@@ -147,8 +123,8 @@ __acquires(&sdp->sd_ail_lock)
 			blk_start_plug(plug);
 		}
 		spin_lock(&sdp->sd_ail_lock);
-		if (ret == -ENODATA) /* if a jdata write into a new hole */
-			ret = 0; /* ignore it */
+		if (ret == -ENODATA)  
+			ret = 0;  
 		if (ret || wbc->nr_to_write <= 0)
 			break;
 		return -EBUSY;
@@ -189,14 +165,7 @@ static void dump_ail_list(struct gfs2_sbd *sdp)
 	}
 }
 
-/**
- * gfs2_ail1_flush - start writeback of some ail1 entries 
- * @sdp: The super block
- * @wbc: The writeback control structure
- *
- * Writes back some ail1 entries, according to the limits in the
- * writeback control structure
- */
+ 
 
 void gfs2_ail1_flush(struct gfs2_sbd *sdp, struct writeback_control *wbc)
 {
@@ -237,10 +206,7 @@ out:
 	trace_gfs2_ail_flush(sdp, wbc, 0);
 }
 
-/**
- * gfs2_ail1_start - start writeback of all ail1 entries
- * @sdp: The superblock
- */
+ 
 
 static void gfs2_ail1_start(struct gfs2_sbd *sdp)
 {
@@ -276,9 +242,7 @@ static void gfs2_log_update_head(struct gfs2_sbd *sdp)
 	sdp->sd_log_head = new_head;
 }
 
-/*
- * gfs2_ail_empty_tr - empty one of the ail lists of a transaction
- */
+ 
 
 static void gfs2_ail_empty_tr(struct gfs2_sbd *sdp, struct gfs2_trans *tr,
 			      struct list_head *head)
@@ -293,14 +257,7 @@ static void gfs2_ail_empty_tr(struct gfs2_sbd *sdp, struct gfs2_trans *tr,
 	}
 }
 
-/**
- * gfs2_ail1_empty_one - Check whether or not a trans in the AIL has been synced
- * @sdp: the filesystem
- * @tr: the transaction
- * @max_revokes: If nonzero, issue revokes for the bd items for written buffers
- *
- * returns: the transaction's count of remaining active items
- */
+ 
 
 static int gfs2_ail1_empty_one(struct gfs2_sbd *sdp, struct gfs2_trans *tr,
 				int *max_revokes)
@@ -313,15 +270,7 @@ static int gfs2_ail1_empty_one(struct gfs2_sbd *sdp, struct gfs2_trans *tr,
 					 bd_ail_st_list) {
 		bh = bd->bd_bh;
 		gfs2_assert(sdp, bd->bd_tr == tr);
-		/*
-		 * If another process flagged an io error, e.g. writing to the
-		 * journal, error all other bhs and move them off the ail1 to
-		 * prevent a tight loop when unmount tries to flush ail1,
-		 * regardless of whether they're still busy. If no outside
-		 * errors were found and the buffer is busy, move to the next.
-		 * If the ail buffer is not busy and caught an error, flag it
-		 * for others.
-		 */
+		 
 		if (!sdp->sd_log_error && buffer_busy(bh)) {
 			active_count++;
 			continue;
@@ -331,12 +280,7 @@ static int gfs2_ail1_empty_one(struct gfs2_sbd *sdp, struct gfs2_trans *tr,
 			gfs2_io_error_bh(sdp, bh);
 			gfs2_withdraw_delayed(sdp);
 		}
-		/*
-		 * If we have space for revokes and the bd is no longer on any
-		 * buf list, we can just add a revoke for it immediately and
-		 * avoid having to put it on the ail2 list, where it would need
-		 * to be revoked later.
-		 */
+		 
 		if (*max_revokes && list_empty(&bd->bd_list)) {
 			gfs2_add_revoke(sdp, bd);
 			(*max_revokes)--;
@@ -347,13 +291,7 @@ static int gfs2_ail1_empty_one(struct gfs2_sbd *sdp, struct gfs2_trans *tr,
 	return active_count;
 }
 
-/**
- * gfs2_ail1_empty - Try to empty the ail1 lists
- * @sdp: The superblock
- * @max_revokes: If non-zero, add revokes where appropriate
- *
- * Tries to empty the ail1 lists, starting with the oldest first
- */
+ 
 
 static int gfs2_ail1_empty(struct gfs2_sbd *sdp, int max_revokes)
 {
@@ -432,10 +370,7 @@ static void ail2_empty(struct gfs2_sbd *sdp, unsigned int new_tail)
 	spin_unlock(&sdp->sd_ail_lock);
 }
 
-/**
- * gfs2_log_is_empty - Check if the log is empty
- * @sdp: The GFS2 superblock
- */
+ 
 
 bool gfs2_log_is_empty(struct gfs2_sbd *sdp) {
 	return atomic_read(&sdp->sd_log_blks_free) == sdp->sd_jdesc->jd_blocks;
@@ -454,25 +389,14 @@ static bool __gfs2_log_try_reserve_revokes(struct gfs2_sbd *sdp, unsigned int re
 	return false;
 }
 
-/**
- * gfs2_log_release_revokes - Release a given number of revokes
- * @sdp: The GFS2 superblock
- * @revokes: The number of revokes to release
- *
- * sdp->sd_log_flush_lock must be held.
- */
+ 
 void gfs2_log_release_revokes(struct gfs2_sbd *sdp, unsigned int revokes)
 {
 	if (revokes)
 		atomic_add(revokes, &sdp->sd_log_revokes_available);
 }
 
-/**
- * gfs2_log_release - Release a given number of log blocks
- * @sdp: The GFS2 superblock
- * @blks: The number of blocks
- *
- */
+ 
 
 void gfs2_log_release(struct gfs2_sbd *sdp, unsigned int blks)
 {
@@ -484,15 +408,7 @@ void gfs2_log_release(struct gfs2_sbd *sdp, unsigned int blks)
 		wake_up(&sdp->sd_log_waitq);
 }
 
-/**
- * __gfs2_log_try_reserve - Try to make a log reservation
- * @sdp: The GFS2 superblock
- * @blks: The number of blocks to reserve
- * @taboo_blks: The number of blocks to leave free
- *
- * Try to do the same as __gfs2_log_reserve(), but fail if no more log
- * space is immediately available.
- */
+ 
 static bool __gfs2_log_try_reserve(struct gfs2_sbd *sdp, unsigned int blks,
 				   unsigned int taboo_blks)
 {
@@ -510,24 +426,7 @@ static bool __gfs2_log_try_reserve(struct gfs2_sbd *sdp, unsigned int blks,
 	return false;
 }
 
-/**
- * __gfs2_log_reserve - Make a log reservation
- * @sdp: The GFS2 superblock
- * @blks: The number of blocks to reserve
- * @taboo_blks: The number of blocks to leave free
- *
- * @taboo_blks is set to 0 for logd, and to GFS2_LOG_FLUSH_MIN_BLOCKS
- * for all other processes.  This ensures that when the log is almost full,
- * logd will still be able to call gfs2_log_flush one more time  without
- * blocking, which will advance the tail and make some more log space
- * available.
- *
- * We no longer flush the log here, instead we wake up logd to do that
- * for us. To avoid the thundering herd and to ensure that we deal fairly
- * with queued waiters, we use an exclusive wait. This means that when we
- * get woken with enough journal space to get our reservation, we need to
- * wake the next waiter on the list.
- */
+ 
 
 static void __gfs2_log_reserve(struct gfs2_sbd *sdp, unsigned int blks,
 			       unsigned int taboo_blks)
@@ -556,15 +455,7 @@ reserved:
 		wake_up(&sdp->sd_log_waitq);
 }
 
-/**
- * gfs2_log_try_reserve - Try to make a log reservation
- * @sdp: The GFS2 superblock
- * @tr: The transaction
- * @extra_revokes: The number of additional revokes reserved (output)
- *
- * This is similar to gfs2_log_reserve, but sdp->sd_log_flush_lock must be
- * held for correct revoke accounting.
- */
+ 
 
 bool gfs2_log_try_reserve(struct gfs2_sbd *sdp, struct gfs2_trans *tr,
 			  unsigned int *extra_revokes)
@@ -588,14 +479,7 @@ bool gfs2_log_try_reserve(struct gfs2_sbd *sdp, struct gfs2_trans *tr,
 	return false;
 }
 
-/**
- * gfs2_log_reserve - Make a log reservation
- * @sdp: The GFS2 superblock
- * @tr: The transaction
- * @extra_revokes: The number of additional revokes reserved (output)
- *
- * sdp->sd_log_flush_lock must not be held.
- */
+ 
 
 void gfs2_log_reserve(struct gfs2_sbd *sdp, struct gfs2_trans *tr,
 		      unsigned int *extra_revokes)
@@ -613,17 +497,7 @@ void gfs2_log_reserve(struct gfs2_sbd *sdp, struct gfs2_trans *tr,
 	__gfs2_log_reserve(sdp, blks, GFS2_LOG_FLUSH_MIN_BLOCKS);
 }
 
-/**
- * log_distance - Compute distance between two journal blocks
- * @sdp: The GFS2 superblock
- * @newer: The most recent journal block of the pair
- * @older: The older journal block of the pair
- *
- *   Compute the distance (in the journal direction) between two
- *   blocks in the journal
- *
- * Returns: the distance in blocks
- */
+ 
 
 static inline unsigned int log_distance(struct gfs2_sbd *sdp, unsigned int newer,
 					unsigned int older)
@@ -637,27 +511,7 @@ static inline unsigned int log_distance(struct gfs2_sbd *sdp, unsigned int newer
 	return dist;
 }
 
-/**
- * calc_reserved - Calculate the number of blocks to keep reserved
- * @sdp: The GFS2 superblock
- *
- * This is complex.  We need to reserve room for all our currently used
- * metadata blocks (e.g. normal file I/O rewriting file time stamps) and
- * all our journaled data blocks for journaled files (e.g. files in the
- * meta_fs like rindex, or files for which chattr +j was done.)
- * If we don't reserve enough space, corruption will follow.
- *
- * We can have metadata blocks and jdata blocks in the same journal.  Each
- * type gets its own log descriptor, for which we need to reserve a block.
- * In fact, each type has the potential for needing more than one log descriptor
- * in cases where we have more blocks than will fit in a log descriptor.
- * Metadata journal entries take up half the space of journaled buffer entries.
- *
- * Also, we need to reserve blocks for revoke journal entries and one for an
- * overall header for the lot.
- *
- * Returns: the number of blocks reserved
- */
+ 
 static unsigned int calc_reserved(struct gfs2_sbd *sdp)
 {
 	unsigned int reserved = GFS2_LOG_FLUSH_MIN_BLOCKS;
@@ -780,7 +634,7 @@ void gfs2_add_revoke(struct gfs2_sbd *sdp, struct gfs2_bufdata *bd)
 		gfs2_glock_hold(gl);
 	bh->b_private = NULL;
 	bd->bd_blkno = bh->b_blocknr;
-	gfs2_remove_from_ail(bd); /* drops ref on bh */
+	gfs2_remove_from_ail(bd);  
 	bd->bd_bh = NULL;
 	set_bit(GLF_LFLUSH, &gl->gl_flags);
 	list_add(&bd->bd_list, &sdp->sd_log_revokes);
@@ -794,21 +648,10 @@ void gfs2_glock_remove_revoke(struct gfs2_glock *gl)
 	}
 }
 
-/**
- * gfs2_flush_revokes - Add as many revokes to the system transaction as we can
- * @sdp: The GFS2 superblock
- *
- * Our usual strategy is to defer writing revokes as much as we can in the hope
- * that we'll eventually overwrite the journal, which will make those revokes
- * go away.  This changes when we flush the log: at that point, there will
- * likely be some left-over space in the last revoke block of that transaction.
- * We can fill that space with additional revokes for blocks that have already
- * been written back.  This will basically come at no cost now, and will save
- * us from having to keep track of those blocks on the AIL2 list later.
- */
+ 
 void gfs2_flush_revokes(struct gfs2_sbd *sdp)
 {
-	/* number of revokes we still have room for */
+	 
 	unsigned int max_revokes = atomic_read(&sdp->sd_log_revokes_available);
 
 	gfs2_log_lock(sdp);
@@ -816,18 +659,7 @@ void gfs2_flush_revokes(struct gfs2_sbd *sdp)
 	gfs2_log_unlock(sdp);
 }
 
-/**
- * gfs2_write_log_header - Write a journal log header buffer at lblock
- * @sdp: The GFS2 superblock
- * @jd: journal descriptor of the journal to which we are writing
- * @seq: sequence number
- * @tail: tail of the log
- * @lblock: value for lh_blkno (block number relative to start of journal)
- * @flags: log header flags GFS2_LOG_HEAD_*
- * @op_flags: flags to pass to the bio
- *
- * Returns: the initialized log buffer descriptor
- */
+ 
 
 void gfs2_write_log_header(struct gfs2_sbd *sdp, struct gfs2_jdesc *jd,
 			   u64 seq, u32 tail, u32 lblock, u32 flags,
@@ -877,9 +709,7 @@ void gfs2_write_log_header(struct gfs2_sbd *sdp, struct gfs2_jdesc *jd,
 	lh->lh_addr = cpu_to_be64(dblock);
 	lh->lh_jinode = cpu_to_be64(GFS2_I(jd->jd_inode)->i_no_addr);
 
-	/* We may only write local statfs, quota, etc., when writing to our
-	   own journal. The values are left 0 when recovering a journal
-	   different from our own. */
+	 
 	if (!(flags & GFS2_LOG_HEAD_RECOVERY)) {
 		lh->lh_statfs_addr =
 			cpu_to_be64(GFS2_I(sdp->sd_sc_inode)->i_no_addr);
@@ -903,13 +733,7 @@ void gfs2_write_log_header(struct gfs2_sbd *sdp, struct gfs2_jdesc *jd,
 	gfs2_log_submit_bio(&jd->jd_log_bio, REQ_OP_WRITE | op_flags);
 }
 
-/**
- * log_write_header - Get and initialize a journal header buffer
- * @sdp: The GFS2 superblock
- * @flags: The log header flags, including log header origin
- *
- * Returns: the initialized log buffer descriptor
- */
+ 
 
 static void log_write_header(struct gfs2_sbd *sdp, u32 flags)
 {
@@ -932,22 +756,13 @@ static void log_write_header(struct gfs2_sbd *sdp, u32 flags)
 	gfs2_log_update_head(sdp);
 }
 
-/**
- * gfs2_ail_drain - drain the ail lists after a withdraw
- * @sdp: Pointer to GFS2 superblock
- */
+ 
 void gfs2_ail_drain(struct gfs2_sbd *sdp)
 {
 	struct gfs2_trans *tr;
 
 	spin_lock(&sdp->sd_ail_lock);
-	/*
-	 * For transactions on the sd_ail1_list we need to drain both the
-	 * ail1 and ail2 lists. That's because function gfs2_ail1_start_one
-	 * (temporarily) moves items from its tr_ail1 list to tr_ail2 list
-	 * before revokes are sent for that block. Items on the sd_ail2_list
-	 * should have already gotten beyond that point, so no need.
-	 */
+	 
 	while (!list_empty(&sdp->sd_ail1_list)) {
 		tr = list_first_entry(&sdp->sd_ail1_list, struct gfs2_trans,
 				      tr_list);
@@ -967,10 +782,7 @@ void gfs2_ail_drain(struct gfs2_sbd *sdp)
 	spin_unlock(&sdp->sd_ail_lock);
 }
 
-/**
- * empty_ail1_list - try to start IO and empty the ail1 list
- * @sdp: Pointer to GFS2 superblock
- */
+ 
 static void empty_ail1_list(struct gfs2_sbd *sdp)
 {
 	unsigned long start = jiffies;
@@ -989,14 +801,7 @@ static void empty_ail1_list(struct gfs2_sbd *sdp)
 	}
 }
 
-/**
- * trans_drain - drain the buf and databuf queue for a failed transaction
- * @tr: the transaction to drain
- *
- * When this is called, we're taking an error exit for a log write that failed
- * but since we bypassed the after_commit functions, we need to remove the
- * items from the buf and databuf queue.
- */
+ 
 static void trans_drain(struct gfs2_trans *tr)
 {
 	struct gfs2_bufdata *bd;
@@ -1023,13 +828,7 @@ static void trans_drain(struct gfs2_trans *tr)
 	}
 }
 
-/**
- * gfs2_log_flush - flush incore transaction(s)
- * @sdp: The filesystem
- * @gl: The glock structure to flush.  If NULL, flush the whole incore log
- * @flags: The log header flags: GFS2_LOG_HEAD_FLUSH_* and debug flags
- *
- */
+ 
 
 void gfs2_log_flush(struct gfs2_sbd *sdp, struct gfs2_glock *gl, u32 flags)
 {
@@ -1043,14 +842,11 @@ void gfs2_log_flush(struct gfs2_sbd *sdp, struct gfs2_glock *gl, u32 flags)
 	trace_gfs2_log_flush(sdp, 1, flags);
 
 repeat:
-	/*
-	 * Do this check while holding the log_flush_lock to prevent new
-	 * buffers from being added to the ail via gfs2_pin()
-	 */
+	 
 	if (gfs2_withdrawn(sdp) || !test_bit(SDF_JOURNAL_LIVE, &sdp->sd_flags))
 		goto out;
 
-	/* Log might have been flushed while we waited for the flush lock */
+	 
 	if (gl && !test_bit(GLF_LFLUSH, &gl->gl_flags))
 		goto out;
 
@@ -1158,12 +954,7 @@ out:
 
 out_withdraw:
 	trans_drain(tr);
-	/**
-	 * If the tr_list is empty, we're withdrawing during a log
-	 * flush that targets a transaction, but the transaction was
-	 * never queued onto any of the ail lists. Here we add it to
-	 * ail1 just so that ail_drain() will find and free it.
-	 */
+	 
 	spin_lock(&sdp->sd_ail_lock);
 	if (tr && list_empty(&tr->tr_list))
 		list_add(&tr->tr_list, &sdp->sd_ail1_list);
@@ -1172,11 +963,7 @@ out_withdraw:
 	goto out_end;
 }
 
-/**
- * gfs2_merge_trans - Merge a new transaction into a cached transaction
- * @sdp: the filesystem
- * @new: New transaction to be merged
- */
+ 
 
 static void gfs2_merge_trans(struct gfs2_sbd *sdp, struct gfs2_trans *new)
 {
@@ -1242,20 +1029,7 @@ static inline int gfs2_ail_flush_reqd(struct gfs2_sbd *sdp)
 	       atomic_read(&sdp->sd_log_thresh2);
 }
 
-/**
- * gfs2_log_commit - Commit a transaction to the log
- * @sdp: the filesystem
- * @tr: the transaction
- *
- * We wake up gfs2_logd if the number of pinned blocks exceed thresh1
- * or the total number of used blocks (pinned blocks plus AIL blocks)
- * is greater than thresh2.
- *
- * At mount time thresh1 is 2/5ths of journal size, thresh2 is 4/5ths of
- * journal size.
- *
- * Returns: errno
- */
+ 
 
 void gfs2_log_commit(struct gfs2_sbd *sdp, struct gfs2_trans *tr)
 {
@@ -1265,11 +1039,7 @@ void gfs2_log_commit(struct gfs2_sbd *sdp, struct gfs2_trans *tr)
 		wake_up(&sdp->sd_logd_waitq);
 }
 
-/**
- * gfs2_log_shutdown - write a shutdown header into a journal
- * @sdp: the filesystem
- *
- */
+ 
 
 static void gfs2_log_shutdown(struct gfs2_sbd *sdp)
 {
@@ -1284,13 +1054,7 @@ static void gfs2_log_shutdown(struct gfs2_sbd *sdp)
 	gfs2_assert_warn(sdp, list_empty(&sdp->sd_ail2_list));
 }
 
-/**
- * gfs2_logd - Update log tail as Active Items get flushed to in-place blocks
- * @data: Pointer to GFS2 superblock
- *
- * Also, periodically check to make sure that we're using the most recent
- * journal index.
- */
+ 
 
 int gfs2_logd(void *data)
 {
@@ -1301,7 +1065,7 @@ int gfs2_logd(void *data)
 		if (gfs2_withdrawn(sdp))
 			break;
 
-		/* Check for errors writing to the journal */
+		 
 		if (sdp->sd_log_error) {
 			gfs2_lm(sdp,
 				"GFS2: fsid=%s: error %d: "

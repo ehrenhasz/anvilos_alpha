@@ -1,30 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2023-2024 Arduino SA
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * OpenAMP's remoteproc store.
- */
+ 
 
 #if MICROPY_PY_OPENAMP_REMOTEPROC
 
@@ -47,9 +21,9 @@
 
 #if MICROPY_PY_OPENAMP_REMOTEPROC_STORE_ENABLE
 
-// Note the initial file buffer size needs to be at least 512 to read
-// enough of the elf headers on the first call to store_open(), and on
-// subsequent calls to store functions, it gets reallocated if needed.
+ 
+ 
+ 
 #define RPROC_FILE_STORE_BUF_SIZE   (1024)
 
 typedef struct openamp_remoteproc_filestore {
@@ -59,7 +33,7 @@ typedef struct openamp_remoteproc_filestore {
 } openamp_remoteproc_filestore_t;
 
 void *mp_openamp_remoteproc_store_alloc(void) {
-    // Allocate an rproc filestore.
+     
     openamp_remoteproc_filestore_t *fstore;
     fstore = metal_allocate_memory(sizeof(openamp_remoteproc_filestore_t));
     fstore->len = RPROC_FILE_STORE_BUF_SIZE;
@@ -108,7 +82,7 @@ static int openamp_remoteproc_store_load(void *store, size_t offset, size_t size
 
     if (pa == METAL_BAD_PHYS) {
         if (size > fstore->len) {
-            // Note tracked allocs don't support realloc.
+             
             fstore->len = size;
             fstore->buf = metal_allocate_memory(size);
             metal_log(METAL_LOG_DEBUG, "store_load() realloc to %lu\n", fstore->len);
@@ -139,6 +113,6 @@ const struct image_store_ops openamp_remoteproc_store_ops = {
     .features = SUPPORT_SEEK,
 };
 
-#endif // MICROPY_PY_OPENAMP_REMOTEPROC_STORE_ENABLE
+#endif 
 
-#endif // MICROPY_PY_OPENAMP_REMOTEPROC
+#endif 

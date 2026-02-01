@@ -1,24 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Infineon Technologies AG
- * Copyright (C) 2016 STMicroelectronics SAS
- *
- * Authors:
- * Peter Huewe <peter.huewe@infineon.com>
- * Christophe Ricard <christophe-h.ricard@st.com>
- *
- * Maintained by: <tpmdd-devel@lists.sourceforge.net>
- *
- * Device driver for TCG/TCPA TPM (trusted platform module).
- * Specifications at www.trustedcomputinggroup.org
- *
- * This device driver implements the TPM interface as defined in
- * the TCG TPM Interface Spec version 1.3, revision 27 via _raw/native
- * SPI access_.
- *
- * It is based on the original tpm_tis device driver from Leendert van
- * Dorn and Kyleen Hall and Jarko Sakkinnen.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/completion.h>
@@ -38,13 +19,7 @@
 
 #define MAX_SPI_FRAMESIZE 64
 
-/*
- * TCG SPI flow control is documented in section 6.4 of the spec[1]. In short,
- * keep trying to read from the device until MISO goes high indicating the
- * wait state has ended.
- *
- * [1] https://trustedcomputinggroup.org/resource/pc-client-platform-tpm-profile-ptp-specification/
- */
+ 
 static int tpm_tis_spi_flow_control(struct tpm_tis_spi_phy *phy,
 				    struct spi_transfer *spi_xfer)
 {
@@ -52,7 +27,7 @@ static int tpm_tis_spi_flow_control(struct tpm_tis_spi_phy *phy,
 	int ret, i;
 
 	if ((phy->iobuf[3] & 0x01) == 0) {
-		// handle SPI wait states
+		
 		for (i = 0; i < TPM_RETRY; i++) {
 			spi_xfer->len = 1;
 			spi_message_init(&m);
@@ -71,12 +46,7 @@ static int tpm_tis_spi_flow_control(struct tpm_tis_spi_phy *phy,
 	return 0;
 }
 
-/*
- * Half duplex controller with support for TPM wait state detection like
- * Tegra QSPI need CMD, ADDR & DATA sent in single message to manage HW flow
- * control. Each phase sent in different transfer for controller to idenity
- * phase.
- */
+ 
 static int tpm_tis_spi_transfer_half(struct tpm_tis_data *data,	u32 addr,
 				     u16 len, u8 *in, const u8 *out)
 {
@@ -168,7 +138,7 @@ static int tpm_tis_spi_transfer_full(struct tpm_tis_data *data, u32 addr,
 		if (ret < 0)
 			goto exit;
 
-		/* Flow control transfers are receive only */
+		 
 		spi_xfer.tx_buf = NULL;
 		ret = phy->flow_control(phy, &spi_xfer);
 		if (ret < 0)
@@ -203,7 +173,7 @@ static int tpm_tis_spi_transfer_full(struct tpm_tis_data *data, u32 addr,
 
 exit:
 	if (ret < 0) {
-		/* Deactivate chip select */
+		 
 		memset(&spi_xfer, 0, sizeof(spi_xfer));
 		spi_message_init(&m);
 		spi_message_add_tail(&spi_xfer, &m);
@@ -220,12 +190,7 @@ int tpm_tis_spi_transfer(struct tpm_tis_data *data, u32 addr, u16 len,
 	struct tpm_tis_spi_phy *phy = to_tpm_tis_spi_phy(data);
 	struct spi_controller *ctlr = phy->spi_device->controller;
 
-	/*
-	 * TPM flow control over SPI requires full duplex support.
-	 * Send entire message to a half duplex controller to handle
-	 * wait polling in controller.
-	 * Set TPM HW flow control flag..
-	 */
+	 
 	if (ctlr->flags & SPI_CONTROLLER_HALF_DUPLEX)
 		return tpm_tis_spi_transfer_half(data, addr, len, in, out);
 	else
@@ -276,7 +241,7 @@ static int tpm_tis_spi_probe(struct spi_device *dev)
 	if (dev->controller->flags & SPI_CONTROLLER_HALF_DUPLEX)
 		dev->mode |= SPI_TPM_HW_FLOW;
 
-	/* If the SPI device has an IRQ then use that */
+	 
 	if (dev->irq > 0)
 		irq = dev->irq;
 	else

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * bebob_focusrite.c - a part of driver for BeBoB based devices
- *
- * Copyright (c) 2013-2014 Takashi Sakamoto
- */
+
+ 
 
 #include "./bebob.h"
 
@@ -18,7 +14,7 @@
 #define SAFFIRE_OFFSET_CLOCK_SOURCE		0x00f8
 #define SAFFIREPRO_OFFSET_CLOCK_SOURCE		0x0174
 
-/* whether sync to external device or not */
+ 
 #define SAFFIRE_OFFSET_CLOCK_SYNC_EXT		0x013c
 #define SAFFIRE_LE_OFFSET_CLOCK_SYNC_EXT	0x0432
 #define SAFFIREPRO_OFFSET_CLOCK_SYNC_EXT	0x0164
@@ -26,23 +22,23 @@
 #define SAFFIRE_CLOCK_SOURCE_INTERNAL		0
 #define SAFFIRE_CLOCK_SOURCE_SPDIF		1
 
-/* clock sources as returned from register of Saffire Pro 10 and 26 */
+ 
 #define SAFFIREPRO_CLOCK_SOURCE_SELECT_MASK	0x000000ff
 #define SAFFIREPRO_CLOCK_SOURCE_DETECT_MASK	0x0000ff00
 #define SAFFIREPRO_CLOCK_SOURCE_INTERNAL	0
-#define SAFFIREPRO_CLOCK_SOURCE_SKIP		1 /* never used on hardware */
+#define SAFFIREPRO_CLOCK_SOURCE_SKIP		1  
 #define SAFFIREPRO_CLOCK_SOURCE_SPDIF		2
-#define SAFFIREPRO_CLOCK_SOURCE_ADAT1		3 /* not used on s.pro. 10 */
-#define SAFFIREPRO_CLOCK_SOURCE_ADAT2		4 /* not used on s.pro. 10 */
+#define SAFFIREPRO_CLOCK_SOURCE_ADAT1		3  
+#define SAFFIREPRO_CLOCK_SOURCE_ADAT2		4  
 #define SAFFIREPRO_CLOCK_SOURCE_WORDCLOCK	5
 #define SAFFIREPRO_CLOCK_SOURCE_COUNT		6
 
-/* S/PDIF, ADAT1, ADAT2 is enabled or not. three quadlets */
+ 
 #define SAFFIREPRO_ENABLE_DIG_IFACES		0x01a4
 
-/* saffirepro has its own parameter for sampling frequency */
+ 
 #define SAFFIREPRO_RATE_NOREBOOT		0x01cc
-/* index is the value for this register */
+ 
 static const unsigned int rates[] = {
 	[0] = 0,
 	[1] = 44100,
@@ -53,7 +49,7 @@ static const unsigned int rates[] = {
 	[6] = 192000
 };
 
-/* saffire(no label)/saffire LE has metering */
+ 
 #define SAFFIRE_OFFSET_METER			0x0100
 #define SAFFIRE_LE_OFFSET_METER			0x0168
 
@@ -106,31 +102,31 @@ saffire_write_quad(struct snd_bebob *bebob, u64 offset, u32 value)
 
 static const enum snd_bebob_clock_type saffirepro_10_clk_src_types[] = {
 	SND_BEBOB_CLOCK_TYPE_INTERNAL,
-	SND_BEBOB_CLOCK_TYPE_EXTERNAL,	/* S/PDIF */
-	SND_BEBOB_CLOCK_TYPE_EXTERNAL,	/* Word Clock */
+	SND_BEBOB_CLOCK_TYPE_EXTERNAL,	 
+	SND_BEBOB_CLOCK_TYPE_EXTERNAL,	 
 };
 static const enum snd_bebob_clock_type saffirepro_26_clk_src_types[] = {
 	SND_BEBOB_CLOCK_TYPE_INTERNAL,
-	SND_BEBOB_CLOCK_TYPE_EXTERNAL,	/* S/PDIF */
-	SND_BEBOB_CLOCK_TYPE_EXTERNAL,	/* ADAT1 */
-	SND_BEBOB_CLOCK_TYPE_EXTERNAL,	/* ADAT2 */
-	SND_BEBOB_CLOCK_TYPE_EXTERNAL,	/* Word Clock */
+	SND_BEBOB_CLOCK_TYPE_EXTERNAL,	 
+	SND_BEBOB_CLOCK_TYPE_EXTERNAL,	 
+	SND_BEBOB_CLOCK_TYPE_EXTERNAL,	 
+	SND_BEBOB_CLOCK_TYPE_EXTERNAL,	 
 };
-/* Value maps between registers and labels for SaffirePro 10/26. */
+ 
 static const signed char saffirepro_clk_maps[][SAFFIREPRO_CLOCK_SOURCE_COUNT] = {
-	/* SaffirePro 10 */
+	 
 	[0] = {
 		[SAFFIREPRO_CLOCK_SOURCE_INTERNAL]  =  0,
-		[SAFFIREPRO_CLOCK_SOURCE_SKIP]      = -1, /* not supported */
+		[SAFFIREPRO_CLOCK_SOURCE_SKIP]      = -1,  
 		[SAFFIREPRO_CLOCK_SOURCE_SPDIF]     =  1,
-		[SAFFIREPRO_CLOCK_SOURCE_ADAT1]     = -1, /* not supported */
-		[SAFFIREPRO_CLOCK_SOURCE_ADAT2]     = -1, /* not supported */
+		[SAFFIREPRO_CLOCK_SOURCE_ADAT1]     = -1,  
+		[SAFFIREPRO_CLOCK_SOURCE_ADAT2]     = -1,  
 		[SAFFIREPRO_CLOCK_SOURCE_WORDCLOCK] =  2,
 	},
-	/* SaffirePro 26 */
+	 
 	[1] = {
 		[SAFFIREPRO_CLOCK_SOURCE_INTERNAL]  =  0,
-		[SAFFIREPRO_CLOCK_SOURCE_SKIP]      = -1, /* not supported */
+		[SAFFIREPRO_CLOCK_SOURCE_SKIP]      = -1,  
 		[SAFFIREPRO_CLOCK_SOURCE_SPDIF]     =  1,
 		[SAFFIREPRO_CLOCK_SOURCE_ADAT1]     =  2,
 		[SAFFIREPRO_CLOCK_SOURCE_ADAT2]     =  3,
@@ -169,28 +165,25 @@ saffirepro_both_clk_freq_set(struct snd_bebob *bebob, unsigned int rate)
 	return saffire_write_quad(bebob, SAFFIREPRO_RATE_NOREBOOT, id);
 }
 
-/*
- * query hardware for current clock source, return our internally
- * used clock index in *id, depending on hardware.
- */
+ 
 static int
 saffirepro_both_clk_src_get(struct snd_bebob *bebob, unsigned int *id)
 {
 	int err;
-	u32 value;       /* clock source read from hw register */
+	u32 value;        
 	const signed char *map;
 
 	err = saffire_read_quad(bebob, SAFFIREPRO_OFFSET_CLOCK_SOURCE, &value);
 	if (err < 0)
 		goto end;
 
-	/* depending on hardware, use a different mapping */
+	 
 	if (bebob->spec->clock->types == saffirepro_10_clk_src_types)
 		map = saffirepro_clk_maps[0];
 	else
 		map = saffirepro_clk_maps[1];
 
-	/* In a case that this driver cannot handle the value of register. */
+	 
 	value &= SAFFIREPRO_CLOCK_SOURCE_SELECT_MASK;
 	if (value >= SAFFIREPRO_CLOCK_SOURCE_COUNT || map[value] < 0) {
 		err = -EIO;
@@ -266,7 +259,7 @@ static const struct snd_bebob_rate_spec saffirepro_both_rate_spec = {
 	.get	= &saffirepro_both_clk_freq_get,
 	.set	= &saffirepro_both_clk_freq_set,
 };
-/* Saffire Pro 26 I/O  */
+ 
 static const struct snd_bebob_clock_spec saffirepro_26_clk_spec = {
 	.num	= ARRAY_SIZE(saffirepro_26_clk_src_types),
 	.types	= saffirepro_26_clk_src_types,
@@ -277,7 +270,7 @@ const struct snd_bebob_spec saffirepro_26_spec = {
 	.rate	= &saffirepro_both_rate_spec,
 	.meter	= NULL
 };
-/* Saffire Pro 10 I/O */
+ 
 static const struct snd_bebob_clock_spec saffirepro_10_clk_spec = {
 	.num	= ARRAY_SIZE(saffirepro_10_clk_src_types),
 	.types	= saffirepro_10_clk_src_types,
@@ -298,7 +291,7 @@ static const struct snd_bebob_clock_spec saffire_both_clk_spec = {
 	.types	= saffire_both_clk_src_types,
 	.get	= &saffire_both_clk_src_get,
 };
-/* Saffire LE */
+ 
 static const struct snd_bebob_meter_spec saffire_le_meter_spec = {
 	.num	= ARRAY_SIZE(saffire_le_meter_labels),
 	.labels	= saffire_le_meter_labels,
@@ -309,7 +302,7 @@ const struct snd_bebob_spec saffire_le_spec = {
 	.rate	= &saffire_both_rate_spec,
 	.meter	= &saffire_le_meter_spec
 };
-/* Saffire */
+ 
 static const struct snd_bebob_meter_spec saffire_meter_spec = {
 	.num	= ARRAY_SIZE(saffire_meter_labels),
 	.labels	= saffire_meter_labels,

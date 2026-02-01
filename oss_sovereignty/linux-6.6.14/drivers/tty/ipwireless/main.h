@@ -1,20 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * IPWireless 3G PCMCIA Network Driver
- *
- * Original code
- *   by Stephen Blackheath <stephen@blacksapphire.com>,
- *      Ben Martel <benm@symmetric.co.nz>
- *
- * Copyrighted as follows:
- *   Copyright (C) 2004 by Symmetric Systems Ltd (NZ)
- *
- * Various driver changes and rewrites, port to new kernels
- *   Copyright (C) 2006-2007 Jiri Kosina
- *
- * Misc code cleanups and updates
- *   Copyright (C) 2007 David Sterba
- */
+ 
+ 
 
 #ifndef _IPWIRELESS_CS_H_
 #define _IPWIRELESS_CS_H_
@@ -49,19 +34,19 @@ struct ipw_dev {
 
 	void __iomem *common_memory;
 
-	/* Reference to attribute memory, containing CIS data */
+	 
 	void *attribute_memory;
 
-	/* Hardware context */
+	 
 	struct ipw_hardware *hardware;
-	/* Network layer context */
+	 
 	struct ipw_network *network;
-	/* TTY device context */
+	 
 	struct ipw_tty *tty;
 	struct work_struct work_reboot;
 };
 
-/* Module parametres */
+ 
 extern int ipwireless_debug;
 extern int ipwireless_loopback;
 extern int ipwireless_out_queue;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * i2c-exynos5.c - Samsung Exynos5 I2C Controller Driver
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
-*/
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -21,19 +17,9 @@
 #include <linux/of.h>
 #include <linux/spinlock.h>
 
-/*
- * HSI2C controller from Samsung supports 2 modes of operation
- * 1. Auto mode: Where in master automatically controls the whole transaction
- * 2. Manual mode: Software controls the transaction by issuing commands
- *    START, READ, WRITE, STOP, RESTART in I2C_MANUAL_CMD register.
- *
- * Operation mode can be selected by setting AUTO_MODE bit in I2C_CONF register
- *
- * Special bits are available for both modes of operation to set commands
- * and for checking transfer status
- */
+ 
 
-/* Register Map */
+ 
 #define HSI2C_CTL		0x00
 #define HSI2C_FIFO_CTL		0x04
 #define HSI2C_TRAILIG_CTL	0x08
@@ -59,28 +45,28 @@
 #define HSI2C_TIMING_SLA	0x6C
 #define HSI2C_ADDR		0x70
 
-/* I2C_CTL Register bits */
+ 
 #define HSI2C_FUNC_MODE_I2C			(1u << 0)
 #define HSI2C_MASTER				(1u << 3)
 #define HSI2C_RXCHON				(1u << 6)
 #define HSI2C_TXCHON				(1u << 7)
 #define HSI2C_SW_RST				(1u << 31)
 
-/* I2C_FIFO_CTL Register bits */
+ 
 #define HSI2C_RXFIFO_EN				(1u << 0)
 #define HSI2C_TXFIFO_EN				(1u << 1)
 #define HSI2C_RXFIFO_TRIGGER_LEVEL(x)		((x) << 4)
 #define HSI2C_TXFIFO_TRIGGER_LEVEL(x)		((x) << 16)
 
-/* I2C_TRAILING_CTL Register bits */
+ 
 #define HSI2C_TRAILING_COUNT			(0xf)
 
-/* I2C_INT_EN Register bits */
+ 
 #define HSI2C_INT_TX_ALMOSTEMPTY_EN		(1u << 0)
 #define HSI2C_INT_RX_ALMOSTFULL_EN		(1u << 1)
 #define HSI2C_INT_TRAILING_EN			(1u << 6)
 
-/* I2C_INT_STAT Register bits */
+ 
 #define HSI2C_INT_TX_ALMOSTEMPTY		(1u << 0)
 #define HSI2C_INT_RX_ALMOSTFULL			(1u << 1)
 #define HSI2C_INT_TX_UNDERRUN			(1u << 2)
@@ -101,7 +87,7 @@
 						HSI2C_INT_NO_DEV |	\
 						HSI2C_INT_TIMEOUT)
 
-/* I2C_FIFO_STAT Register bits */
+ 
 #define HSI2C_RX_FIFO_EMPTY			(1u << 24)
 #define HSI2C_RX_FIFO_FULL			(1u << 23)
 #define HSI2C_RX_FIFO_LVL(x)			((x >> 16) & 0x7f)
@@ -109,36 +95,36 @@
 #define HSI2C_TX_FIFO_FULL			(1u << 7)
 #define HSI2C_TX_FIFO_LVL(x)			((x >> 0) & 0x7f)
 
-/* I2C_CONF Register bits */
+ 
 #define HSI2C_AUTO_MODE				(1u << 31)
 #define HSI2C_10BIT_ADDR_MODE			(1u << 30)
 #define HSI2C_HS_MODE				(1u << 29)
 
-/* I2C_AUTO_CONF Register bits */
+ 
 #define HSI2C_READ_WRITE			(1u << 16)
 #define HSI2C_STOP_AFTER_TRANS			(1u << 17)
 #define HSI2C_MASTER_RUN			(1u << 31)
 
-/* I2C_TIMEOUT Register bits */
+ 
 #define HSI2C_TIMEOUT_EN			(1u << 31)
 #define HSI2C_TIMEOUT_MASK			0xff
 
-/* I2C_MANUAL_CMD register bits */
+ 
 #define HSI2C_CMD_READ_DATA			(1u << 4)
 #define HSI2C_CMD_SEND_STOP			(1u << 2)
 
-/* I2C_TRANS_STATUS register bits */
+ 
 #define HSI2C_MASTER_BUSY			(1u << 17)
 #define HSI2C_SLAVE_BUSY			(1u << 16)
 
-/* I2C_TRANS_STATUS register bits for Exynos5 variant */
+ 
 #define HSI2C_TIMEOUT_AUTO			(1u << 4)
 #define HSI2C_NO_DEV				(1u << 3)
 #define HSI2C_NO_DEV_ACK			(1u << 2)
 #define HSI2C_TRANS_ABORT			(1u << 1)
 #define HSI2C_TRANS_DONE			(1u << 0)
 
-/* I2C_TRANS_STATUS register bits for Exynos7 variant */
+ 
 #define HSI2C_MASTER_ST_MASK			0xf
 #define HSI2C_MASTER_ST_IDLE			0x0
 #define HSI2C_MASTER_ST_START			0x1
@@ -156,7 +142,7 @@
 #define HSI2C_MASTER_ST_WAIT			0xd
 #define HSI2C_MASTER_ST_WAIT_CMD		0xe
 
-/* I2C_ADDR register bits */
+ 
 #define HSI2C_SLV_ADDR_SLV(x)			((x & 0x3ff) << 0)
 #define HSI2C_SLV_ADDR_MAS(x)			((x & 0x3ff) << 10)
 #define HSI2C_MASTER_ID(x)			((x & 0xff) << 24)
@@ -180,36 +166,24 @@ struct exynos5_i2c {
 	unsigned int		irq;
 
 	void __iomem		*regs;
-	struct clk		*clk;		/* operating clock */
-	struct clk		*pclk;		/* bus clock */
+	struct clk		*clk;		 
+	struct clk		*pclk;		 
 	struct device		*dev;
 	int			state;
 
-	spinlock_t		lock;		/* IRQ synchronization */
+	spinlock_t		lock;		 
 
-	/*
-	 * Since the TRANS_DONE bit is cleared on read, and we may read it
-	 * either during an IRQ or after a transaction, keep track of its
-	 * state here.
-	 */
+	 
 	int			trans_done;
 
-	/* Controller operating frequency */
+	 
 	unsigned int		op_clock;
 
-	/* Version of HS-I2C Hardware */
+	 
 	const struct exynos_hsi2c_variant *variant;
 };
 
-/**
- * struct exynos_hsi2c_variant - platform specific HSI2C driver data
- * @fifo_depth: the fifo depth supported by the HSI2C module
- * @hw: the hardware variant of Exynos I2C controller
- *
- * Specifies platform specific configuration of HSI2C module.
- * Note: A structure for driver specific platform data is used for future
- * expansion of its usage.
- */
+ 
 struct exynos_hsi2c_variant {
 	unsigned int		fifo_depth;
 	enum i2c_type_exynos	hw;
@@ -261,16 +235,7 @@ static void exynos5_i2c_clr_pend_irq(struct exynos5_i2c *i2c)
 				i2c->regs + HSI2C_INT_STATUS);
 }
 
-/*
- * exynos5_i2c_set_timing: updates the registers with appropriate
- * timing values calculated
- *
- * Timing values for operation are calculated against either 100kHz
- * or 1MHz controller operating frequency.
- *
- * Returns 0 on success, -EINVAL if the cycle length cannot
- * be calculated.
- */
+ 
 static int exynos5_i2c_set_timing(struct exynos5_i2c *i2c, bool hs_timings)
 {
 	u32 i2c_timing_s1;
@@ -289,20 +254,7 @@ static int exynos5_i2c_set_timing(struct exynos5_i2c *i2c, bool hs_timings)
 		i2c->op_clock;
 	int div, clk_cycle, temp;
 
-	/*
-	 * In case of HSI2C controllers in ExynosAutoV9:
-	 *
-	 * FSCL = IPCLK / ((CLK_DIV + 1) * 16)
-	 * T_SCL_LOW = IPCLK * (CLK_DIV + 1) * (N + M)
-	 *   [N : number of 0's in the TSCL_H_HS]
-	 *   [M : number of 0's in the TSCL_L_HS]
-	 * T_SCL_HIGH = IPCLK * (CLK_DIV + 1) * (N + M)
-	 *   [N : number of 1's in the TSCL_H_HS]
-	 *   [M : number of 1's in the TSCL_L_HS]
-	 *
-	 * Result of (N + M) is always 8.
-	 * In general case, we don't need to control timing_s1 and timing_s2.
-	 */
+	 
 	if (i2c->variant->hw == I2C_TYPE_EXYNOSAUTOV9) {
 		div = ((clkin / (16 * i2c->op_clock)) - 1);
 		i2c_timing_s3 = div << 16;
@@ -314,21 +266,7 @@ static int exynos5_i2c_set_timing(struct exynos5_i2c *i2c, bool hs_timings)
 		return 0;
 	}
 
-	/*
-	 * In case of HSI2C controller in Exynos5 series
-	 * FPCLK / FI2C =
-	 * (CLK_DIV + 1) * (TSCLK_L + TSCLK_H + 2) + 8 + 2 * FLT_CYCLE
-	 *
-	 * In case of HSI2C controllers in Exynos7 series
-	 * FPCLK / FI2C =
-	 * (CLK_DIV + 1) * (TSCLK_L + TSCLK_H + 2) + 8 + FLT_CYCLE
-	 *
-	 * clk_cycle := TSCLK_L + TSCLK_H
-	 * temp := (CLK_DIV + 1) * (clk_cycle + 2)
-	 *
-	 * Constraints: 4 <= temp, 0 <= CLK_DIV < 256, 2 <= clk_cycle <= 510
-	 *
-	 */
+	 
 	t_ftl_cycle = (readl(i2c->regs + HSI2C_CONF) >> 16) & 0x7;
 	temp = clkin / op_clk - 8 - t_ftl_cycle;
 	if (i2c->variant->hw != I2C_TYPE_EXYNOS7)
@@ -379,7 +317,7 @@ static int exynos5_i2c_set_timing(struct exynos5_i2c *i2c, bool hs_timings)
 
 static int exynos5_hsi2c_clock_setup(struct exynos5_i2c *i2c)
 {
-	/* always set Fast Speed timings */
+	 
 	int ret = exynos5_i2c_set_timing(i2c, false);
 
 	if (ret < 0 || i2c->op_clock < I2C_MAX_FAST_MODE_PLUS_FREQ)
@@ -388,16 +326,13 @@ static int exynos5_hsi2c_clock_setup(struct exynos5_i2c *i2c)
 	return exynos5_i2c_set_timing(i2c, true);
 }
 
-/*
- * exynos5_i2c_init: configures the controller for I2C functionality
- * Programs I2C controller for Master mode operation
- */
+ 
 static void exynos5_i2c_init(struct exynos5_i2c *i2c)
 {
 	u32 i2c_conf = readl(i2c->regs + HSI2C_CONF);
 	u32 i2c_timeout = readl(i2c->regs + HSI2C_TIMEOUT);
 
-	/* Clear to disable Timeout */
+	 
 	i2c_timeout &= ~HSI2C_TIMEOUT_EN;
 	writel(i2c_timeout, i2c->regs + HSI2C_TIMEOUT);
 
@@ -418,7 +353,7 @@ static void exynos5_i2c_reset(struct exynos5_i2c *i2c)
 {
 	u32 i2c_ctl;
 
-	/* Set and clear the bit for reset */
+	 
 	i2c_ctl = readl(i2c->regs + HSI2C_CTL);
 	i2c_ctl |= HSI2C_SW_RST;
 	writel(i2c_ctl, i2c->regs + HSI2C_CTL);
@@ -427,19 +362,13 @@ static void exynos5_i2c_reset(struct exynos5_i2c *i2c)
 	i2c_ctl &= ~HSI2C_SW_RST;
 	writel(i2c_ctl, i2c->regs + HSI2C_CTL);
 
-	/* We don't expect calculations to fail during the run */
+	 
 	exynos5_hsi2c_clock_setup(i2c);
-	/* Initialize the configure registers */
+	 
 	exynos5_i2c_init(i2c);
 }
 
-/*
- * exynos5_i2c_irq: top level IRQ servicing routine
- *
- * INT_STATUS registers gives the interrupt details. Further,
- * FIFO_STATUS or TRANS_STATUS registers are to be check for detailed
- * state of the bus.
- */
+ 
 static irqreturn_t exynos5_i2c_irq(int irqno, void *dev_id)
 {
 	struct exynos5_i2c *i2c = dev_id;
@@ -454,7 +383,7 @@ static irqreturn_t exynos5_i2c_irq(int irqno, void *dev_id)
 	int_status = readl(i2c->regs + HSI2C_INT_STATUS);
 	writel(int_status, i2c->regs + HSI2C_INT_STATUS);
 
-	/* handle interrupt related to the transfer status */
+	 
 	switch (i2c->variant->hw) {
 	case I2C_TYPE_EXYNOSAUTOV9:
 		fallthrough;
@@ -557,20 +486,13 @@ static irqreturn_t exynos5_i2c_irq(int irqno, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * exynos5_i2c_wait_bus_idle
- *
- * Wait for the bus to go idle, indicated by the MASTER_BUSY bit being
- * cleared.
- *
- * Returns -EBUSY if the bus cannot be bought to idle
- */
+ 
 static int exynos5_i2c_wait_bus_idle(struct exynos5_i2c *i2c)
 {
 	unsigned long stop_time;
 	u32 trans_status;
 
-	/* wait for 100 milli seconds for the bus to be idle */
+	 
 	stop_time = jiffies + msecs_to_jiffies(100) + 1;
 	do {
 		trans_status = readl(i2c->regs + HSI2C_TRANS_STATUS);
@@ -592,11 +514,7 @@ static void exynos5_i2c_bus_recover(struct exynos5_i2c *i2c)
 	val = readl(i2c->regs + HSI2C_CONF) & ~HSI2C_AUTO_MODE;
 	writel(val, i2c->regs + HSI2C_CONF);
 
-	/*
-	 * Specification says master should send nine clock pulses. It can be
-	 * emulated by sending manual read command (nine pulses for read eight
-	 * bits + one pulse for NACK).
-	 */
+	 
 	writel(HSI2C_CMD_READ_DATA, i2c->regs + HSI2C_MANUAL_CMD);
 	exynos5_i2c_wait_bus_idle(i2c);
 	writel(HSI2C_CMD_SEND_STOP, i2c->regs + HSI2C_MANUAL_CMD);
@@ -615,11 +533,7 @@ static void exynos5_i2c_bus_check(struct exynos5_i2c *i2c)
 	if (i2c->variant->hw == I2C_TYPE_EXYNOS5)
 		return;
 
-	/*
-	 * HSI2C_MASTER_ST_LOSE state (in Exynos7 and ExynosAutoV9 variants)
-	 * before transaction indicates that bus is stuck (SDA is low).
-	 * In such case bus recovery can be performed.
-	 */
+	 
 	timeout = jiffies + msecs_to_jiffies(100);
 	for (;;) {
 		u32 st = readl(i2c->regs + HSI2C_TRANS_STATUS);
@@ -634,16 +548,7 @@ static void exynos5_i2c_bus_check(struct exynos5_i2c *i2c)
 	}
 }
 
-/*
- * exynos5_i2c_message_start: Configures the bus and starts the xfer
- * i2c: struct exynos5_i2c pointer for the current bus
- * stop: Enables stop after transfer if set. Set for last transfer of
- *       in the list of messages.
- *
- * Configures the bus for read/write function
- * Sets chip address to talk to, message length to be sent.
- * Enables appropriate interrupts and sends start xfer command.
- */
+ 
 static void exynos5_i2c_message_start(struct exynos5_i2c *i2c, int stop)
 {
 	u32 i2c_ctl;
@@ -696,10 +601,7 @@ static void exynos5_i2c_message_start(struct exynos5_i2c *i2c, int stop)
 
 	exynos5_i2c_bus_check(i2c);
 
-	/*
-	 * Enable interrupts before starting the transfer so that we don't
-	 * miss any INT_I2C interrupts.
-	 */
+	 
 	spin_lock_irqsave(&i2c->lock, flags);
 	writel(int_en, i2c->regs + HSI2C_INT_ENABLE);
 
@@ -732,10 +634,7 @@ static int exynos5_i2c_xfer_msg(struct exynos5_i2c *i2c,
 	else
 		ret = i2c->state;
 
-	/*
-	 * If this is the last message to be transfered (stop == 1)
-	 * Then check if the bus can be brought back to idle.
-	 */
+	 
 	if (ret == 0 && stop)
 		ret = exynos5_i2c_wait_bus_idle(i2c);
 
@@ -746,7 +645,7 @@ static int exynos5_i2c_xfer_msg(struct exynos5_i2c *i2c,
 				 (msgs->flags & I2C_M_RD) ? "rx" : "tx");
 	}
 
-	/* Return the state as in interrupt routine */
+	 
 	return ret;
 }
 
@@ -836,7 +735,7 @@ static int exynos5_i2c_probe(struct platform_device *pdev)
 	i2c->adap.algo_data = i2c;
 	i2c->adap.dev.parent = &pdev->dev;
 
-	/* Clear pending interrupts from u-boot or misc causes */
+	 
 	exynos5_i2c_clr_pend_irq(i2c);
 
 	spin_lock_init(&i2c->lock);

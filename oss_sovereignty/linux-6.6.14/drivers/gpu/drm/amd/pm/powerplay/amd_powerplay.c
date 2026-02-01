@@ -1,25 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "pp_debug.h"
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -102,21 +81,14 @@ static void pp_swctf_delayed_work_handler(struct work_struct *work)
 	uint32_t gpu_temperature, size;
 	int ret;
 
-	/*
-	 * If the hotspot/edge temperature is confirmed as below SW CTF setting point
-	 * after the delay enforced, nothing will be done.
-	 * Otherwise, a graceful shutdown will be performed to prevent further damage.
-	 */
+	 
 	if (range->sw_ctf_threshold &&
 	    hwmgr->hwmgr_func->read_sensor) {
 		ret = hwmgr->hwmgr_func->read_sensor(hwmgr,
 						     AMDGPU_PP_SENSOR_HOTSPOT_TEMP,
 						     &gpu_temperature,
 						     &size);
-		/*
-		 * For some legacy ASICs, hotspot temperature retrieving might be not
-		 * supported. Check the edge temperature instead then.
-		 */
+		 
 		if (ret == -EOPNOTSUPP)
 			ret = hwmgr->hwmgr_func->read_sensor(hwmgr,
 							     AMDGPU_PP_SENSOR_EDGE_TEMP,
@@ -313,11 +285,7 @@ const struct amdgpu_ip_block_version pp_smu_ip_block =
 	.funcs = &pp_ip_funcs,
 };
 
-/* This interface only be supported On Vi,
- * because only smu7/8 can help to load gfx/sdma fw,
- * smu need to be enabled before load other ip's fw.
- * so call start smu to load smu7 fw and other ip's fw
- */
+ 
 static int pp_dpm_load_fw(void *handle)
 {
 	struct pp_hwmgr *hwmgr = handle;
@@ -362,13 +330,13 @@ static void pp_dpm_en_umd_pstate(struct pp_hwmgr  *hwmgr,
 					AMD_DPM_FORCED_LEVEL_PROFILE_PEAK;
 
 	if (!(hwmgr->dpm_level & profile_mode_mask)) {
-		/* enter umd pstate, save current level, disable gfx cg*/
+		 
 		if (*level & profile_mode_mask) {
 			hwmgr->saved_dpm_level = hwmgr->dpm_level;
 			hwmgr->en_umd_pstate = true;
 		}
 	} else {
-		/* exit umd pstate, restore level, enable gfx cg*/
+		 
 		if (!(*level & profile_mode_mask)) {
 			if (*level == AMD_DPM_FORCED_LEVEL_PROFILE_EXIT)
 				*level = hwmgr->saved_dpm_level;
@@ -1252,10 +1220,7 @@ static int pp_set_powergating_by_smu(void *handle,
 		pp_dpm_powergate_vce(handle, gate);
 		break;
 	case AMD_IP_BLOCK_TYPE_GMC:
-		/*
-		 * For now, this is only used on PICASSO.
-		 * And only "gate" operation is supported.
-		 */
+		 
 		if (gate)
 			pp_dpm_powergate_mmhub(handle);
 		break;
@@ -1566,9 +1531,7 @@ static void pp_pm_compute_clocks(void *handle)
 		adev->pm.pm_display_cfg.num_display = adev->pm.dpm.new_active_crtc_count;
 		adev->pm.pm_display_cfg.vrefresh = amdgpu_dpm_get_vrefresh(adev);
 		adev->pm.pm_display_cfg.min_vblank_time = amdgpu_dpm_get_vblank_time(adev);
-		/* we have issues with mclk switching with
-		 * refresh rates over 120 hz on the non-DC code.
-		 */
+		 
 		if (adev->pm.pm_display_cfg.vrefresh > 120)
 			adev->pm.pm_display_cfg.min_vblank_time = 0;
 
@@ -1616,7 +1579,7 @@ static const struct amd_pm_funcs pp_dpm_funcs = {
 	.set_mp1_state = pp_dpm_set_mp1_state,
 	.set_power_limit = pp_set_power_limit,
 	.get_power_limit = pp_get_power_limit,
-/* export to DC */
+ 
 	.get_sclk = pp_dpm_get_sclk,
 	.get_mclk = pp_dpm_get_mclk,
 	.display_configuration_change = pp_display_configuration_change,

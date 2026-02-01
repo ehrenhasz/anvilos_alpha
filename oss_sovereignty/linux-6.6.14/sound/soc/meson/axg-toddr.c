@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-//
-// Copyright (c) 2018 BayLibre, SAS.
-// Author: Jerome Brunet <jbrunet@baylibre.com>
 
-/* This driver implements the frontend capture DAI of AXG based SoCs */
+
+
+
+
+ 
 
 #include <linux/clk.h>
 #include <linux/regmap.h>
@@ -41,7 +41,7 @@ static int g12a_toddr_dai_prepare(struct snd_pcm_substream *substream,
 {
 	struct axg_fifo *fifo = snd_soc_dai_get_drvdata(dai);
 
-	/* Reset the write pointer to the FIFO_INIT_ADDR */
+	 
 	regmap_update_bits(fifo->map, FIFO_CTRL1,
 			   CTRL1_TODDR_FORCE_FINISH, 0);
 	regmap_update_bits(fifo->map, FIFO_CTRL1,
@@ -61,13 +61,13 @@ static int axg_toddr_dai_hw_params(struct snd_pcm_substream *substream,
 
 	switch (params_physical_width(params)) {
 	case 8:
-		type = 0; /* 8 samples of 8 bits */
+		type = 0;  
 		break;
 	case 16:
-		type = 2; /* 4 samples of 16 bits - right justified */
+		type = 2;  
 		break;
 	case 32:
-		type = 4; /* 2 samples of 32 bits - right justified */
+		type = 4;  
 		break;
 	default:
 		return -EINVAL;
@@ -92,19 +92,19 @@ static int axg_toddr_dai_startup(struct snd_pcm_substream *substream,
 	struct axg_fifo *fifo = snd_soc_dai_get_drvdata(dai);
 	int ret;
 
-	/* Enable pclk to access registers and clock the fifo ip */
+	 
 	ret = clk_prepare_enable(fifo->pclk);
 	if (ret)
 		return ret;
 
-	/* Select orginal data - resampling not supported ATM */
+	 
 	regmap_update_bits(fifo->map, FIFO_CTRL0, CTRL0_TODDR_SEL_RESAMPLE, 0);
 
-	/* Only signed format are supported ATM */
+	 
 	regmap_update_bits(fifo->map, FIFO_CTRL0, CTRL0_TODDR_EXT_SIGNED,
 			   CTRL0_TODDR_EXT_SIGNED);
 
-	/* Apply single buffer mode to the interface */
+	 
 	regmap_update_bits(fifo->map, FIFO_CTRL0, CTRL0_TODDR_PP_MODE, 0);
 
 	return 0;
@@ -201,11 +201,7 @@ static int g12a_toddr_dai_startup(struct snd_pcm_substream *substream,
 	if (ret)
 		return ret;
 
-	/*
-	 * Make sure the first channel ends up in the at beginning of the output
-	 * As weird as it looks, without this the first channel may be misplaced
-	 * in memory, with a random shift of 2 channels.
-	 */
+	 
 	regmap_update_bits(fifo->map, FIFO_CTRL0, CTRL0_TODDR_SYNC_CH,
 			   CTRL0_TODDR_SYNC_CH);
 

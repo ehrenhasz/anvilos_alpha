@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (c) 2013 Samsung Electronics Co., Ltd
-//		http://www.samsung.com
+
+
+
+
 
 #include <linux/bug.h>
 #include <linux/err.h>
@@ -182,7 +182,7 @@ static int s2mpa01_set_ramp_delay(struct regulator_dev *rdev, int ramp_delay)
 	if (!ramp_enable)
 		goto ramp_disable;
 
-	/* Ramp delay can be enabled/disabled only for buck[1234] */
+	 
 	if (rdev_get_id(rdev) >= S2MPA01_BUCK1 &&
 			rdev_get_id(rdev) <= S2MPA01_BUCK4) {
 		ret = regmap_update_bits(rdev->regmap, S2MPA01_REG_RAMP1,
@@ -383,7 +383,7 @@ static struct platform_driver s2mpa01_pmic_driver = {
 
 module_platform_driver(s2mpa01_pmic_driver);
 
-/* Module information */
+ 
 MODULE_AUTHOR("Sangbeom Kim <sbkim73@samsung.com>");
 MODULE_AUTHOR("Sachin Kamat <sachin.kamat@samsung.com>");
 MODULE_DESCRIPTION("Samsung S2MPA01 Regulator Driver");

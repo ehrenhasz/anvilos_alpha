@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// MediaTek ALSA SoC Audio DAI ADDA Control
-//
-// Copyright (c) 2020 MediaTek Inc.
-// Author: Shane Chien <shane.chien@mediatek.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/delay.h>
 #include <linux/regmap.h>
@@ -26,8 +26,8 @@ enum {
 enum {
 	AUDIO_SDM_LEVEL_MUTE = 0,
 	AUDIO_SDM_LEVEL_NORMAL = 0x1d,
-	/* if you change level normal */
-	/* you need to change formula of hp impedance and dc trim too */
+	 
+	 
 };
 
 enum {
@@ -122,7 +122,7 @@ static unsigned int adda_ul_rate_transform(struct mtk_base_afe *afe,
 	}
 }
 
-/* dai component */
+ 
 static const struct snd_kcontrol_new mtk_adda_dl_ch1_mix[] = {
 	SOC_DAPM_SINGLE_AUTODISABLE("DL1_CH1", AFE_CONN3, I_DL1_CH1, 1, 0),
 	SOC_DAPM_SINGLE_AUTODISABLE("DL12_CH1", AFE_CONN3, I_DL12_CH1, 1, 0),
@@ -273,7 +273,7 @@ static int mtk_adda_ul_src_dmic(struct mtk_base_afe *afe, int id)
 		return -EINVAL;
 	}
 
-	/* dmic mode, 3.25M*/
+	 
 	regmap_update_bits(afe->regmap, reg,
 			   DIGMIC_3P25M_1P625M_SEL_CTL_MASK_SFT,
 			   0x0);
@@ -281,7 +281,7 @@ static int mtk_adda_ul_src_dmic(struct mtk_base_afe *afe, int id)
 			   DMIC_LOW_POWER_MODE_CTL_MASK_SFT,
 			   0x0);
 
-	/* turn on dmic, ch1, ch2 */
+	 
 	regmap_update_bits(afe->regmap, reg,
 			   UL_SDM_3_LEVEL_CTL_MASK_SFT,
 			   0x1 << UL_SDM_3_LEVEL_CTL_SFT);
@@ -307,13 +307,13 @@ static int mtk_adda_ul_event(struct snd_soc_dapm_widget *w,
 	case SND_SOC_DAPM_PRE_PMU:
 		mt8192_afe_gpio_request(afe->dev, true, MT8192_DAI_ADDA, 1);
 
-		/* update setting to dmic */
+		 
 		if (mtkaif_dmic) {
-			/* mtkaif_rxif_data_mode = 1, dmic */
+			 
 			regmap_update_bits(afe->regmap, AFE_ADDA_MTKAIF_RX_CFG0,
 					   0x1, 0x1);
 
-			/* dmic mode, 3.25M*/
+			 
 			regmap_update_bits(afe->regmap, AFE_ADDA_MTKAIF_RX_CFG0,
 					   MTKAIF_RXIF_VOICE_MODE_MASK_SFT,
 					   0x0);
@@ -321,7 +321,7 @@ static int mtk_adda_ul_event(struct snd_soc_dapm_widget *w,
 		}
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/* should delayed 1/fs(smallest is 8k) = 125us before afe off */
+		 
 		usleep_range(125, 135);
 		mt8192_afe_gpio_request(afe->dev, false, MT8192_DAI_ADDA, 1);
 		break;
@@ -347,14 +347,14 @@ static int mtk_adda_ch34_ul_event(struct snd_soc_dapm_widget *w,
 		mt8192_afe_gpio_request(afe->dev, true, MT8192_DAI_ADDA_CH34,
 					1);
 
-		/* update setting to dmic */
+		 
 		if (mtkaif_dmic) {
-			/* mtkaif_rxif_data_mode = 1, dmic */
+			 
 			regmap_update_bits(afe->regmap,
 					   AFE_ADDA6_MTKAIF_RX_CFG0,
 					   0x1, 0x1);
 
-			/* dmic mode, 3.25M*/
+			 
 			regmap_update_bits(afe->regmap,
 					   AFE_ADDA6_MTKAIF_RX_CFG0,
 					   MTKAIF_RXIF_VOICE_MODE_MASK_SFT,
@@ -362,10 +362,7 @@ static int mtk_adda_ch34_ul_event(struct snd_soc_dapm_widget *w,
 			mtk_adda_ul_src_dmic(afe, MT8192_DAI_ADDA_CH34);
 		}
 
-		/* when using adda6 without adda enabled,
-		 * RG_ADDA6_MTKAIF_RX_SYNC_WORD2_DISABLE_SFT need to be set or
-		 * data cannot be received.
-		 */
+		 
 		if (mtkaif_adda6_only) {
 			regmap_update_bits(afe->regmap,
 					   AFE_ADDA_MTKAIF_SYNCWORD_CFG,
@@ -373,12 +370,12 @@ static int mtk_adda_ch34_ul_event(struct snd_soc_dapm_widget *w,
 		}
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/* should delayed 1/fs(smallest is 8k) = 125us before afe off */
+		 
 		usleep_range(125, 135);
 		mt8192_afe_gpio_request(afe->dev, false, MT8192_DAI_ADDA_CH34,
 					1);
 
-		/* reset dmic */
+		 
 		afe_priv->mtkaif_dmic_ch34 = 0;
 
 		if (mtkaif_adda6_only) {
@@ -429,7 +426,7 @@ static int mtk_adda_mtkaif_cfg_event(struct snd_soc_dapm_widget *w,
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
 		if (afe_priv->mtkaif_protocol == MTKAIF_PROTOCOL_2_CLK_P2) {
-			/* set protocol 2 */
+			 
 			regmap_write(afe->regmap, AFE_ADDA_MTKAIF_CFG0,
 				     0x00010000);
 			regmap_write(afe->regmap, AFE_ADDA6_MTKAIF_CFG0,
@@ -453,7 +450,7 @@ static int mtk_adda_mtkaif_cfg_event(struct snd_soc_dapm_widget *w,
 				break;
 			}
 
-			/* mtkaif_rxif_clkinv_adc inverse for calibration */
+			 
 			regmap_update_bits(afe->regmap, AFE_ADDA_MTKAIF_CFG0,
 					   MTKAIF_RXIF_CLKINV_ADC_MASK_SFT,
 					   0x1 << MTKAIF_RXIF_CLKINV_ADC_SFT);
@@ -461,7 +458,7 @@ static int mtk_adda_mtkaif_cfg_event(struct snd_soc_dapm_widget *w,
 					   MTKAIF_RXIF_CLKINV_ADC_MASK_SFT,
 					   0x1 << MTKAIF_RXIF_CLKINV_ADC_SFT);
 
-			/* set delay for ch12 */
+			 
 			if (afe_priv->mtkaif_phase_cycle[0] >=
 			    afe_priv->mtkaif_phase_cycle[1]) {
 				delay_data = DELAY_DATA_MISO1;
@@ -485,14 +482,14 @@ static int mtk_adda_mtkaif_cfg_event(struct snd_soc_dapm_widget *w,
 					   delay_cycle <<
 					   MTKAIF_RXIF_DELAY_CYCLE_SFT);
 
-			/* set delay between ch3 and ch2 */
+			 
 			if (afe_priv->mtkaif_phase_cycle[2] >=
 			    afe_priv->mtkaif_phase_cycle[1]) {
-				delay_data = DELAY_DATA_MISO1;	/* ch3 */
+				delay_data = DELAY_DATA_MISO1;	 
 				delay_cycle = afe_priv->mtkaif_phase_cycle[2] -
 					      afe_priv->mtkaif_phase_cycle[1];
 			} else {
-				delay_data = DELAY_DATA_MISO2;	/* ch2 */
+				delay_data = DELAY_DATA_MISO2;	 
 				delay_cycle = afe_priv->mtkaif_phase_cycle[1] -
 					      afe_priv->mtkaif_phase_cycle[2];
 			}
@@ -536,7 +533,7 @@ static int mtk_adda_dl_event(struct snd_soc_dapm_widget *w,
 		mt8192_afe_gpio_request(afe->dev, true, MT8192_DAI_ADDA, 0);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/* should delayed 1/fs(smallest is 8k) = 125us before afe off */
+		 
 		usleep_range(125, 135);
 		mt8192_afe_gpio_request(afe->dev, false, MT8192_DAI_ADDA, 0);
 		break;
@@ -560,7 +557,7 @@ static int mtk_adda_ch34_dl_event(struct snd_soc_dapm_widget *w,
 					0);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/* should delayed 1/fs(smallest is 8k) = 125us before afe off */
+		 
 		usleep_range(125, 135);
 		mt8192_afe_gpio_request(afe->dev, false, MT8192_DAI_ADDA_CH34,
 					0);
@@ -572,7 +569,7 @@ static int mtk_adda_ch34_dl_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-/* stf */
+ 
 static int stf_positive_gain_get(struct snd_kcontrol *kcontrol,
 				 struct snd_ctl_elem_value *ucontrol)
 {
@@ -743,7 +740,7 @@ static int mtk_stf_event(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		/* set side tone gain = 0 */
+		 
 		regmap_update_bits(afe->regmap,
 				   AFE_SIDETONE_GAIN,
 				   SIDE_TONE_GAIN_MASK_SFT,
@@ -752,18 +749,18 @@ static int mtk_stf_event(struct snd_soc_dapm_widget *w,
 				   AFE_SIDETONE_GAIN,
 				   POSITIVE_GAIN_MASK_SFT,
 				   0);
-		/* don't bypass stf */
+		 
 		regmap_update_bits(afe->regmap,
 				   AFE_SIDETONE_CON1,
 				   0x1f << 27,
 				   0x0);
-		/* set stf half tap num */
+		 
 		regmap_update_bits(afe->regmap,
 				   AFE_SIDETONE_CON1,
 				   SIDE_TONE_HALF_TAP_NUM_MASK_SFT,
 				   half_tap_num << SIDE_TONE_HALF_TAP_NUM_SFT);
 
-		/* set side tone coefficient */
+		 
 		regmap_read(afe->regmap, AFE_SIDETONE_CON0, &reg_value);
 		for (coef_addr = 0; coef_addr < half_tap_num; coef_addr++) {
 			bool old_w_ready = (reg_value >> W_RDY_SFT) & 0x1;
@@ -780,13 +777,13 @@ static int mtk_stf_event(struct snd_soc_dapm_widget *w,
 					   SIDE_TONE_COEFFICIENT_ADDR_SFT) |
 					   stf_coeff_table[coef_addr]);
 
-			/* wait until flag write_ready changed */
+			 
 			for (try_cnt = 0; try_cnt < 10; try_cnt++) {
 				regmap_read(afe->regmap,
 					    AFE_SIDETONE_CON0, &reg_value);
 				new_w_ready = (reg_value >> W_RDY_SFT) & 0x1;
 
-				/* flip => ok */
+				 
 				if (new_w_ready == old_w_ready) {
 					udelay(3);
 					if (try_cnt == 9) {
@@ -798,7 +795,7 @@ static int mtk_stf_event(struct snd_soc_dapm_widget *w,
 					break;
 				}
 			}
-			/* need write -> read -> write to write next coeff */
+			 
 			regmap_update_bits(afe->regmap,
 					   AFE_SIDETONE_CON0,
 					   R_W_SEL_MASK_SFT,
@@ -806,13 +803,13 @@ static int mtk_stf_event(struct snd_soc_dapm_widget *w,
 		}
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/* bypass stf */
+		 
 		regmap_update_bits(afe->regmap,
 				   AFE_SIDETONE_CON1,
 				   0x1f << 27,
 				   0x1f << 27);
 
-		/* set side tone gain = 0 */
+		 
 		regmap_update_bits(afe->regmap,
 				   AFE_SIDETONE_GAIN,
 				   SIDE_TONE_GAIN_MASK_SFT,
@@ -829,7 +826,7 @@ static int mtk_stf_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-/* stf mux */
+ 
 enum {
 	STF_SRC_ADDA_ADDA6 = 0,
 	STF_SRC_O19O20,
@@ -880,7 +877,7 @@ static SOC_VALUE_ENUM_SINGLE_DECL(stf_adda_mux_map_enum,
 static const struct snd_kcontrol_new stf_adda_mux_control =
 	SOC_DAPM_ENUM("STF_ADDA_MUX", stf_adda_mux_map_enum);
 
-/* ADDA UL MUX */
+ 
 enum {
 	ADDA_UL_MUX_MTKAIF = 0,
 	ADDA_UL_MUX_AP_DMIC,
@@ -910,7 +907,7 @@ static const struct snd_kcontrol_new adda_ch34_ul_mux_control =
 	SOC_DAPM_ENUM("ADDA_CH34_UL_MUX Select", adda_ul_mux_map_enum);
 
 static const struct snd_soc_dapm_widget mtk_dai_adda_widgets[] = {
-	/* inter-connections */
+	 
 	SND_SOC_DAPM_MIXER("ADDA_DL_CH1", SND_SOC_NOPM, 0, 0,
 			   mtk_adda_dl_ch1_mix,
 			   ARRAY_SIZE(mtk_adda_dl_ch1_mix)),
@@ -992,7 +989,7 @@ static const struct snd_soc_dapm_widget mtk_dai_adda_widgets[] = {
 	SND_SOC_DAPM_INPUT("AP_DMIC_INPUT"),
 	SND_SOC_DAPM_INPUT("AP_DMIC_CH34_INPUT"),
 
-	/* stf */
+	 
 	SND_SOC_DAPM_SWITCH_E("Sidetone Filter",
 			      AFE_SIDETONE_CON1, SIDE_TONE_ON_SFT, 0,
 			      &stf_ctl,
@@ -1011,7 +1008,7 @@ static const struct snd_soc_dapm_widget mtk_dai_adda_widgets[] = {
 			   ARRAY_SIZE(mtk_stf_ch2_mix)),
 	SND_SOC_DAPM_OUTPUT("STF_OUTPUT"),
 
-	/* clock */
+	 
 	SND_SOC_DAPM_CLOCK_SUPPLY("top_mux_audio_h"),
 
 	SND_SOC_DAPM_CLOCK_SUPPLY("aud_dac_clk"),
@@ -1024,7 +1021,7 @@ static const struct snd_soc_dapm_widget mtk_dai_adda_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route mtk_dai_adda_routes[] = {
-	/* playback */
+	 
 	{"ADDA_DL_CH1", "DL1_CH1", "DL1"},
 	{"ADDA_DL_CH2", "DL1_CH1", "DL1"},
 	{"ADDA_DL_CH2", "DL1_CH2", "DL1"},
@@ -1088,7 +1085,7 @@ static const struct snd_soc_dapm_route mtk_dai_adda_routes[] = {
 	{"ADDA CH34 Playback", NULL, "ADDA Enable"},
 	{"ADDA CH34 Playback", NULL, "ADDA CH34 Playback Enable"},
 
-	/* capture */
+	 
 	{"ADDA_UL_Mux", "MTKAIF", "ADDA Capture"},
 	{"ADDA_UL_Mux", "AP_DMIC", "AP DMIC Capture"},
 
@@ -1118,7 +1115,7 @@ static const struct snd_soc_dapm_route mtk_dai_adda_routes[] = {
 	{"AP DMIC Capture", NULL, "AP_DMIC_INPUT"},
 	{"AP DMIC CH34 Capture", NULL, "AP_DMIC_CH34_INPUT"},
 
-	/* sidetone filter */
+	 
 	{"STF_ADDA_MUX", "ADDA", "ADDA_UL_Mux"},
 	{"STF_ADDA_MUX", "ADDA6", "ADDA_CH34_UL_Mux"},
 
@@ -1131,7 +1128,7 @@ static const struct snd_soc_dapm_route mtk_dai_adda_routes[] = {
 	{"ADDA Playback", NULL, "Sidetone Filter"},
 	{"ADDA CH34 Playback", NULL, "Sidetone Filter"},
 
-	/* clk */
+	 
 	{"ADDA Playback", NULL, "aud_dac_clk"},
 	{"ADDA Playback", NULL, "aud_dac_predis_clk"},
 
@@ -1142,7 +1139,7 @@ static const struct snd_soc_dapm_route mtk_dai_adda_routes[] = {
 	{"ADDA CH34 Capture Enable", NULL, "aud_adda6_adc_clk"},
 };
 
-/* dai ops */
+ 
 static int mtk_dai_adda_hw_params(struct snd_pcm_substream *substream,
 				  struct snd_pcm_hw_params *params,
 				  struct snd_soc_dai *dai)
@@ -1155,30 +1152,30 @@ static int mtk_dai_adda_hw_params(struct snd_pcm_substream *substream,
 		unsigned int dl_src2_con0 = 0;
 		unsigned int dl_src2_con1 = 0;
 
-		/* set sampling rate */
+		 
 		dl_src2_con0 = adda_dl_rate_transform(afe, rate) <<
 			       DL_2_INPUT_MODE_CTL_SFT;
 
-		/* set output mode, UP_SAMPLING_RATE_X8 */
+		 
 		dl_src2_con0 |= (0x3 << DL_2_OUTPUT_SEL_CTL_SFT);
 
-		/* turn off mute function */
+		 
 		dl_src2_con0 |= (0x01 << DL_2_MUTE_CH2_OFF_CTL_PRE_SFT);
 		dl_src2_con0 |= (0x01 << DL_2_MUTE_CH1_OFF_CTL_PRE_SFT);
 
-		/* set voice input data if input sample rate is 8k or 16k */
+		 
 		if (rate == 8000 || rate == 16000)
 			dl_src2_con0 |= 0x01 << DL_2_VOICE_MODE_CTL_PRE_SFT;
 
-		/* SA suggest apply -0.3db to audio/speech path */
+		 
 		dl_src2_con1 = MTK_AFE_ADDA_DL_GAIN_NORMAL <<
 			       DL_2_GAIN_CTL_PRE_SFT;
 
-		/* turn on down-link gain */
+		 
 		dl_src2_con0 |= (0x01 << DL_2_GAIN_ON_CTL_PRE_SFT);
 
 		if (id == MT8192_DAI_ADDA) {
-			/* clean predistortion */
+			 
 			regmap_write(afe->regmap, AFE_ADDA_PREDIS_CON0, 0);
 			regmap_write(afe->regmap, AFE_ADDA_PREDIS_CON1, 0);
 
@@ -1187,20 +1184,20 @@ static int mtk_dai_adda_hw_params(struct snd_pcm_substream *substream,
 			regmap_write(afe->regmap,
 				     AFE_ADDA_DL_SRC2_CON1, dl_src2_con1);
 
-			/* set sdm gain */
+			 
 			regmap_update_bits(afe->regmap,
 					   AFE_ADDA_DL_SDM_DCCOMP_CON,
 					   ATTGAIN_CTL_MASK_SFT,
 					   AUDIO_SDM_LEVEL_NORMAL <<
 					   ATTGAIN_CTL_SFT);
 
-			/* 2nd sdm */
+			 
 			regmap_update_bits(afe->regmap,
 					   AFE_ADDA_DL_SDM_DCCOMP_CON,
 					   USE_3RD_SDM_MASK_SFT,
 					   AUDIO_SDM_2ND << USE_3RD_SDM_SFT);
 
-			/* sdm auto reset */
+			 
 			regmap_write(afe->regmap,
 				     AFE_ADDA_DL_SDM_AUTO_RESET_CON,
 				     SDM_AUTO_RESET_THRESHOLD);
@@ -1209,7 +1206,7 @@ static int mtk_dai_adda_hw_params(struct snd_pcm_substream *substream,
 					   ADDA_SDM_AUTO_RESET_ONOFF_MASK_SFT,
 					   0x1 << ADDA_SDM_AUTO_RESET_ONOFF_SFT);
 		} else {
-			/* clean predistortion */
+			 
 			regmap_write(afe->regmap,
 				     AFE_ADDA_3RD_DAC_PREDIS_CON0, 0);
 			regmap_write(afe->regmap,
@@ -1220,20 +1217,20 @@ static int mtk_dai_adda_hw_params(struct snd_pcm_substream *substream,
 			regmap_write(afe->regmap, AFE_ADDA_3RD_DAC_DL_SRC2_CON1,
 				     dl_src2_con1);
 
-			/* set sdm gain */
+			 
 			regmap_update_bits(afe->regmap,
 					   AFE_ADDA_3RD_DAC_DL_SDM_DCCOMP_CON,
 					   ATTGAIN_CTL_MASK_SFT,
 					   AUDIO_SDM_LEVEL_NORMAL <<
 					   ATTGAIN_CTL_SFT);
 
-			/* 2nd sdm */
+			 
 			regmap_update_bits(afe->regmap,
 					   AFE_ADDA_3RD_DAC_DL_SDM_DCCOMP_CON,
 					   USE_3RD_SDM_MASK_SFT,
 					   AUDIO_SDM_2ND << USE_3RD_SDM_SFT);
 
-			/* sdm auto reset */
+			 
 			regmap_write(afe->regmap,
 				     AFE_ADDA_3RD_DAC_DL_SDM_AUTO_RESET_CON,
 				     SDM_AUTO_RESET_THRESHOLD);
@@ -1244,13 +1241,13 @@ static int mtk_dai_adda_hw_params(struct snd_pcm_substream *substream,
 		}
 	} else {
 		unsigned int voice_mode = 0;
-		unsigned int ul_src_con0 = 0;	/* default value */
+		unsigned int ul_src_con0 = 0;	 
 
 		voice_mode = adda_ul_rate_transform(afe, rate);
 
 		ul_src_con0 |= (voice_mode << 17) & (0x7 << 17);
 
-		/* enable iir */
+		 
 		ul_src_con0 |= (1 << UL_IIR_ON_TMP_CTL_SFT) &
 			       UL_IIR_ON_TMP_CTL_MASK_SFT;
 		ul_src_con0 |= (UL_IIR_SW << UL_IIRMODE_CTL_SFT) &
@@ -1259,7 +1256,7 @@ static int mtk_dai_adda_hw_params(struct snd_pcm_substream *substream,
 		switch (id) {
 		case MT8192_DAI_ADDA:
 		case MT8192_DAI_AP_DMIC:
-			/* 35Hz @ 48k */
+			 
 			regmap_write(afe->regmap,
 				     AFE_ADDA_IIR_COEF_02_01, 0x00000000);
 			regmap_write(afe->regmap,
@@ -1274,13 +1271,13 @@ static int mtk_dai_adda_hw_params(struct snd_pcm_substream *substream,
 			regmap_write(afe->regmap,
 				     AFE_ADDA_UL_SRC_CON0, ul_src_con0);
 
-			/* Using Internal ADC */
+			 
 			regmap_update_bits(afe->regmap,
 					   AFE_ADDA_TOP_CON0,
 					   0x1 << 0,
 					   0x0 << 0);
 
-			/* mtkaif_rxif_data_mode = 0, amic */
+			 
 			regmap_update_bits(afe->regmap,
 					   AFE_ADDA_MTKAIF_RX_CFG0,
 					   0x1 << 0,
@@ -1288,7 +1285,7 @@ static int mtk_dai_adda_hw_params(struct snd_pcm_substream *substream,
 			break;
 		case MT8192_DAI_ADDA_CH34:
 		case MT8192_DAI_AP_DMIC_CH34:
-			/* 35Hz @ 48k */
+			 
 			regmap_write(afe->regmap,
 				     AFE_ADDA6_IIR_COEF_02_01, 0x00000000);
 			regmap_write(afe->regmap,
@@ -1303,13 +1300,13 @@ static int mtk_dai_adda_hw_params(struct snd_pcm_substream *substream,
 			regmap_write(afe->regmap,
 				     AFE_ADDA6_UL_SRC_CON0, ul_src_con0);
 
-			/* Using Internal ADC */
+			 
 			regmap_update_bits(afe->regmap,
 					   AFE_ADDA6_TOP_CON0,
 					   0x1 << 0,
 					   0x0 << 0);
 
-			/* mtkaif_rxif_data_mode = 0, amic */
+			 
 			regmap_update_bits(afe->regmap,
 					   AFE_ADDA6_MTKAIF_RX_CFG0,
 					   0x1 << 0,
@@ -1319,7 +1316,7 @@ static int mtk_dai_adda_hw_params(struct snd_pcm_substream *substream,
 			break;
 		}
 
-		/* ap dmic */
+		 
 		switch (id) {
 		case MT8192_DAI_AP_DMIC:
 		case MT8192_DAI_AP_DMIC_CH34:
@@ -1337,7 +1334,7 @@ static const struct snd_soc_dai_ops mtk_dai_adda_ops = {
 	.hw_params = mtk_dai_adda_hw_params,
 };
 
-/* dai driver */
+ 
 #define MTK_ADDA_PLAYBACK_RATES (SNDRV_PCM_RATE_8000_48000 |\
 				 SNDRV_PCM_RATE_96000 |\
 				 SNDRV_PCM_RATE_192000)
@@ -1439,7 +1436,7 @@ int mt8192_dai_adda_register(struct mtk_base_afe *afe)
 	dai->dapm_routes = mtk_dai_adda_routes;
 	dai->num_dapm_routes = ARRAY_SIZE(mtk_dai_adda_routes);
 
-	/* ap dmic priv share with adda */
+	 
 	afe_priv->dai_priv[MT8192_DAI_AP_DMIC] =
 		afe_priv->dai_priv[MT8192_DAI_ADDA];
 	afe_priv->dai_priv[MT8192_DAI_AP_DMIC_CH34] =

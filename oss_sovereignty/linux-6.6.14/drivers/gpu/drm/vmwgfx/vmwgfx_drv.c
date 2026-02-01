@@ -1,29 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/**************************************************************************
- *
- * Copyright 2009-2023 VMware, Inc., Palo Alto, CA., USA
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- **************************************************************************/
+
+ 
 
 
 #include "vmwgfx_drv.h"
@@ -56,9 +32,7 @@
 
 #define VMWGFX_DRIVER_DESC "Linux drm driver for VMware graphics devices"
 
-/*
- * Fully encoded drm commands. Might move to vmw_drm.h
- */
+ 
 
 #define DRM_IOCTL_VMW_GET_PARAM					\
 	DRM_IOWR(DRM_COMMAND_BASE + DRM_VMW_GET_PARAM,		\
@@ -161,9 +135,7 @@
 	DRM_IOW(DRM_COMMAND_BASE + DRM_VMW_MKSSTAT_REMOVE,	\
 		struct drm_vmw_mksstat_remove_arg)
 
-/*
- * Ioctl definitions.
- */
+ 
 
 static const struct drm_ioctl_desc vmw_ioctls[] = {
 	DRM_IOCTL_DEF_DRV(VMW_GET_PARAM, vmw_getparam_ioctl,
@@ -207,17 +179,13 @@ static const struct drm_ioctl_desc vmw_ioctls[] = {
 	DRM_IOCTL_DEF_DRV(VMW_GET_3D_CAP, vmw_get_cap_3d_ioctl,
 			  DRM_RENDER_ALLOW),
 
-	/* these allow direct access to the framebuffers mark as master only */
+	 
 	DRM_IOCTL_DEF_DRV(VMW_PRESENT, vmw_present_ioctl,
 			  DRM_MASTER | DRM_AUTH),
 	DRM_IOCTL_DEF_DRV(VMW_PRESENT_READBACK,
 			  vmw_present_readback_ioctl,
 			  DRM_MASTER | DRM_AUTH),
-	/*
-	 * The permissions of the below ioctl are overridden in
-	 * vmw_generic_ioctl(). We require either
-	 * DRM_MASTER or capable(CAP_SYS_ADMIN).
-	 */
+	 
 	DRM_IOCTL_DEF_DRV(VMW_UPDATE_LAYOUT,
 			  vmw_kms_update_layout_ioctl,
 			  DRM_RENDER_ALLOW),
@@ -374,19 +342,7 @@ static void vmw_print_sm_type(struct vmw_private *dev_priv)
 		 names[dev_priv->sm_type]);
 }
 
-/**
- * vmw_dummy_query_bo_create - create a bo to hold a dummy query result
- *
- * @dev_priv: A device private structure.
- *
- * This function creates a small buffer object that holds the query
- * result for dummy queries emitted as query barriers.
- * The function will then map the first page and initialize a pending
- * occlusion query result structure, Finally it will unmap the buffer.
- * No interruptible waits are done within this function.
- *
- * Returns an error if bo creation or initialization fails.
- */
+ 
 static int vmw_dummy_query_bo_create(struct vmw_private *dev_priv)
 {
 	int ret;
@@ -402,11 +358,7 @@ static int vmw_dummy_query_bo_create(struct vmw_private *dev_priv)
 		.pin = true
 	};
 
-	/*
-	 * Create the vbo as pinned, so that a tryreserve will
-	 * immediately succeed. This is because we're the only
-	 * user of the bo currently.
-	 */
+	 
 	ret = vmw_bo_create(dev_priv, &bo_params, &vbo);
 	if (unlikely(ret != 0))
 		return ret;
@@ -466,9 +418,7 @@ static int vmw_device_init(struct vmw_private *dev_priv)
 
 static void vmw_device_fini(struct vmw_private *vmw)
 {
-	/*
-	 * Legacy sync
-	 */
+	 
 	vmw_write(vmw, SVGA_REG_SYNC, SVGA_SYNC_GENERIC);
 	while (vmw_read(vmw, SVGA_REG_BUSY) != 0)
 		;
@@ -485,16 +435,7 @@ static void vmw_device_fini(struct vmw_private *vmw)
 	vmw_fifo_destroy(vmw);
 }
 
-/**
- * vmw_request_device_late - Perform late device setup
- *
- * @dev_priv: Pointer to device private.
- *
- * This function performs setup of otables and enables large command
- * buffer submission. These tasks are split out to a separate function
- * because it reverts vmw_release_device_early and is intended to be used
- * by an error path in the hibernation code.
- */
+ 
 static int vmw_request_device_late(struct vmw_private *dev_priv)
 {
 	int ret;
@@ -565,20 +506,10 @@ out_no_mob:
 	return ret;
 }
 
-/**
- * vmw_release_device_early - Early part of fifo takedown.
- *
- * @dev_priv: Pointer to device private struct.
- *
- * This is the first part of command submission takedown, to be called before
- * buffer management is taken down.
- */
+ 
 static void vmw_release_device_early(struct vmw_private *dev_priv)
 {
-	/*
-	 * Previous destructions should've released
-	 * the pinned bo.
-	 */
+	 
 
 	BUG_ON(dev_priv->pinned_bo != NULL);
 
@@ -595,14 +526,7 @@ static void vmw_release_device_early(struct vmw_private *dev_priv)
 	}
 }
 
-/**
- * vmw_release_device_late - Late part of fifo takedown.
- *
- * @dev_priv: Pointer to device private struct.
- *
- * This is the last part of the command submission takedown, to be called when
- * command submission is no longer needed. It may wait on pending fences.
- */
+ 
 static void vmw_release_device_late(struct vmw_private *dev_priv)
 {
 	vmw_fence_fifo_down(dev_priv->fman);
@@ -612,15 +536,7 @@ static void vmw_release_device_late(struct vmw_private *dev_priv)
 	vmw_device_fini(dev_priv);
 }
 
-/*
- * Sets the initial_[width|height] fields on the given vmw_private.
- *
- * It does so by reading SVGA_REG_[WIDTH|HEIGHT] regs and then
- * clamping the value to fb_max_[width|height] fields and the
- * VMW_MIN_INITIAL_[WIDTH|HEIGHT].
- * If the values appear to be invalid, set them to
- * VMW_MIN_INITIAL_[WIDTH|HEIGHT].
- */
+ 
 static void vmw_get_initial_size(struct vmw_private *dev_priv)
 {
 	uint32_t width;
@@ -635,9 +551,7 @@ static void vmw_get_initial_size(struct vmw_private *dev_priv)
 	if (width > dev_priv->fb_max_width ||
 	    height > dev_priv->fb_max_height) {
 
-		/*
-		 * This is a host error and shouldn't occur.
-		 */
+		 
 
 		width  = VMWGFX_MIN_INITIAL_WIDTH;
 		height = VMWGFX_MIN_INITIAL_HEIGHT;
@@ -647,18 +561,7 @@ static void vmw_get_initial_size(struct vmw_private *dev_priv)
 	dev_priv->initial_height = height;
 }
 
-/**
- * vmw_dma_select_mode - Determine how DMA mappings should be set up for this
- * system.
- *
- * @dev_priv: Pointer to a struct vmw_private
- *
- * This functions tries to determine what actions need to be taken by the
- * driver to make system pages visible to the device.
- * If this function decides that DMA is not possible, it returns -EINVAL.
- * The driver may then try to disable features of the device that require
- * DMA.
- */
+ 
 static int vmw_dma_select_mode(struct vmw_private *dev_priv)
 {
 	static const char *names[vmw_dma_map_max] = {
@@ -666,7 +569,7 @@ static int vmw_dma_select_mode(struct vmw_private *dev_priv)
 		[vmw_dma_map_populate] = "Caching DMA mappings.",
 		[vmw_dma_map_bind] = "Giving up DMA mappings early."};
 
-	/* TTM currently doesn't fully support SEV encryption. */
+	 
 	if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
 		return -EINVAL;
 
@@ -682,14 +585,7 @@ static int vmw_dma_select_mode(struct vmw_private *dev_priv)
 	return 0;
 }
 
-/**
- * vmw_dma_masks - set required page- and dma masks
- *
- * @dev_priv: Pointer to struct drm-device
- *
- * With 32-bit we can only handle 32 bit PFNs. Optionally set that
- * restriction also for 64-bit systems.
- */
+ 
 static int vmw_dma_masks(struct vmw_private *dev_priv)
 {
 	struct drm_device *dev = &dev_priv->drm;
@@ -780,12 +676,7 @@ static int vmw_setup_pci_resources(struct vmw_private *dev,
 		return -EINVAL;
 	}
 
-	/*
-	 * This is approximate size of the vram, the exact size will only
-	 * be known after we read SVGA_REG_VRAM_SIZE. The PCI resource
-	 * size will be equal to or bigger than the size reported by
-	 * SVGA_REG_VRAM_SIZE.
-	 */
+	 
 	drm_info(&dev->drm,
 		 "VRAM at %pa size is %llu kiB\n",
 		 &dev->vram_start, (uint64_t)dev->vram_size / 1024);
@@ -936,10 +827,7 @@ static int vmw_driver_load(struct vmw_private *dev_priv, u32 pci_id)
 			vmw_read(dev_priv, SVGA_REG_MEMORY_SIZE);
 		dev_priv->memory_size -= dev_priv->vram_size;
 	} else {
-		/*
-		 * An arbitrary limit of 512MiB on surface
-		 * memory. But all HWV8 hardware supports GMR2.
-		 */
+		 
 		dev_priv->memory_size = 512*1024*1024;
 	}
 	dev_priv->max_mob_pages = 0;
@@ -955,10 +843,7 @@ static int vmw_driver_load(struct vmw_private *dev_priv, u32 pci_id)
 				vmw_read(dev_priv,
 					 SVGA_REG_SUGGESTED_GBOBJECT_MEM_SIZE_KB);
 
-		/*
-		 * Workaround for low memory 2D VMs to compensate for the
-		 * allocation taken by fbdev
-		 */
+		 
 		if (!(dev_priv->capabilities & SVGA_CAP_3D))
 			mem_size *= 3;
 
@@ -1013,7 +898,7 @@ static int vmw_driver_load(struct vmw_private *dev_priv, u32 pci_id)
 		 "Maximum display memory size is %llu kiB\n",
 		 (uint64_t)dev_priv->max_primary_mem / 1024);
 
-	/* Need mmio memory to check for fifo pitchlock cap. */
+	 
 	if (!(dev_priv->capabilities & SVGA_CAP_DISPLAY_TOPOLOGY) &&
 	    !(dev_priv->capabilities & SVGA_CAP_PITCHLOCK) &&
 	    !vmw_fifo_have_pitchlock(dev_priv)) {
@@ -1058,10 +943,7 @@ static int vmw_driver_load(struct vmw_private *dev_priv, u32 pci_id)
 		goto out_no_bdev;
 	}
 
-	/*
-	 * Enable VRAM, but initially don't use it until SVGA is enabled and
-	 * unhidden.
-	 */
+	 
 
 	ret = vmw_vram_manager_init(dev_priv);
 	if (unlikely(ret != 0)) {
@@ -1077,13 +959,9 @@ static int vmw_driver_load(struct vmw_private *dev_priv, u32 pci_id)
 		goto out_no_vram;
 	}
 
-	/*
-	 * "Guest Memory Regions" is an aperture like feature with
-	 *  one slot per bo. There is an upper limit of the number of
-	 *  slots as well as the bo size.
-	 */
+	 
 	dev_priv->has_gmr = true;
-	/* TODO: This is most likely not correct */
+	 
 	if (((dev_priv->capabilities & (SVGA_CAP_GMR | SVGA_CAP_GMR2)) == 0) ||
 	    refuse_dma ||
 	    vmw_gmrid_man_init(dev_priv, VMW_PL_GMR) != 0) {
@@ -1115,7 +993,7 @@ static int vmw_driver_load(struct vmw_private *dev_priv, u32 pci_id)
 			dev_priv->sm_type = VMW_SM_4;
 	}
 
-	/* SVGA_CAP2_DX2 (DefineGBSurface_v3) is needed for SM4_1 support */
+	 
 	if (has_sm4_context(dev_priv) &&
 	    (dev_priv->capabilities2 & SVGA_CAP2_DX2)) {
 		if (vmw_devcap_get(dev_priv, SVGA3D_DEVCAP_SM41))
@@ -1266,9 +1144,7 @@ static long vmw_generic_ioctl(struct file *filp, unsigned int cmd,
 	unsigned int nr = DRM_IOCTL_NR(cmd);
 	unsigned int flags;
 
-	/*
-	 * Do extra checking on driver private ioctls.
-	 */
+	 
 
 	if ((nr >= DRM_COMMAND_BASE) && (nr < DRM_COMMAND_END)
 	    && (nr < DRM_COMMAND_BASE + dev->driver->num_ioctls)) {
@@ -1317,10 +1193,7 @@ static void vmw_master_set(struct drm_device *dev,
 			   struct drm_file *file_priv,
 			   bool from_open)
 {
-	/*
-	 * Inform a new master that the layout may have changed while
-	 * it was gone.
-	 */
+	 
 	if (!from_open)
 		drm_sysfs_hotplug_event(dev);
 }
@@ -1338,9 +1211,7 @@ bool vmwgfx_supported(struct vmw_private *vmw)
 #if defined(CONFIG_X86)
 	return hypervisor_is_type(X86_HYPER_VMWARE);
 #elif defined(CONFIG_ARM64)
-	/*
-	 * On aarch64 only svga3 is supported
-	 */
+	 
 	return vmw->pci_id == VMWGFX_PCI_ID_SVGA3;
 #else
 	drm_warn_once(&vmw->drm,
@@ -1349,12 +1220,7 @@ bool vmwgfx_supported(struct vmw_private *vmw)
 #endif
 }
 
-/**
- * __vmw_svga_enable - Enable SVGA mode, FIFO and use of VRAM.
- *
- * @dev_priv: Pointer to device private struct.
- * Needs the reservation sem to be held in non-exclusive mode.
- */
+ 
 static void __vmw_svga_enable(struct vmw_private *dev_priv)
 {
 	struct ttm_resource_manager *man = ttm_manager_type(&dev_priv->bdev, TTM_PL_VRAM);
@@ -1365,23 +1231,13 @@ static void __vmw_svga_enable(struct vmw_private *dev_priv)
 	}
 }
 
-/**
- * vmw_svga_enable - Enable SVGA mode, FIFO and use of VRAM.
- *
- * @dev_priv: Pointer to device private struct.
- */
+ 
 void vmw_svga_enable(struct vmw_private *dev_priv)
 {
 	__vmw_svga_enable(dev_priv);
 }
 
-/**
- * __vmw_svga_disable - Disable SVGA mode and use of VRAM.
- *
- * @dev_priv: Pointer to device private struct.
- * Needs the reservation sem to be held in exclusive mode.
- * Will not empty VRAM. VRAM must be emptied by caller.
- */
+ 
 static void __vmw_svga_disable(struct vmw_private *dev_priv)
 {
 	struct ttm_resource_manager *man = ttm_manager_type(&dev_priv->bdev, TTM_PL_VRAM);
@@ -1394,28 +1250,11 @@ static void __vmw_svga_disable(struct vmw_private *dev_priv)
 	}
 }
 
-/**
- * vmw_svga_disable - Disable SVGA_MODE, and use of VRAM. Keep the fifo
- * running.
- *
- * @dev_priv: Pointer to device private struct.
- * Will empty VRAM.
- */
+ 
 void vmw_svga_disable(struct vmw_private *dev_priv)
 {
 	struct ttm_resource_manager *man = ttm_manager_type(&dev_priv->bdev, TTM_PL_VRAM);
-	/*
-	 * Disabling SVGA will turn off device modesetting capabilities, so
-	 * notify KMS about that so that it doesn't cache atomic state that
-	 * isn't valid anymore, for example crtcs turned on.
-	 * Strictly we'd want to do this under the SVGA lock (or an SVGA mutex),
-	 * but vmw_kms_lost_device() takes the reservation sem and thus we'll
-	 * end up with lock order reversal. Thus, a master may actually perform
-	 * a new modeset just after we call vmw_kms_lost_device() and race with
-	 * vmw_svga_disable(), but that should at worst cause atomic KMS state
-	 * to be inconsistent with the device, causing modesetting problems.
-	 *
-	 */
+	 
 	vmw_kms_lost_device(&dev_priv->drm);
 	if (ttm_resource_manager_used(man)) {
 		if (ttm_resource_manager_evict_all(&dev_priv->bdev, man))
@@ -1460,14 +1299,7 @@ static int vmwgfx_pm_notifier(struct notifier_block *nb, unsigned long val,
 
 	switch (val) {
 	case PM_HIBERNATION_PREPARE:
-		/*
-		 * Take the reservation sem in write mode, which will make sure
-		 * there are no other processes holding a buffer object
-		 * reservation, meaning we should be able to evict all buffer
-		 * objects if needed.
-		 * Once user-space processes have been frozen, we can release
-		 * the lock again.
-		 */
+		 
 		dev_priv->suspend_locked = true;
 		break;
 	case PM_POST_HIBERNATION:
@@ -1531,9 +1363,7 @@ static int vmw_pm_freeze(struct device *kdev)
 	};
 	int ret;
 
-	/*
-	 * No user-space processes should be running now.
-	 */
+	 
 	ret = vmw_kms_suspend(&dev_priv->drm);
 	if (ret) {
 		DRM_ERROR("Failed to freeze modesetting.\n");

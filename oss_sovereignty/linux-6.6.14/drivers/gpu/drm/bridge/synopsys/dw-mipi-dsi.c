@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2016, Fuzhou Rockchip Electronics Co., Ltd
- * Copyright (C) STMicroelectronics SA 2017
- *
- * Modified by Philippe Cornu <philippe.cornu@st.com>
- * This generic Synopsys DesignWare MIPI DSI host driver is based on the
- * Rockchip version from rockchip/dw-mipi-dsi.c with phy & bridge APIs.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -28,7 +21,7 @@
 #include <drm/drm_of.h>
 #include <drm/drm_print.h>
 
-#define HWVER_131			0x31333100	/* IP version 1.31 */
+#define HWVER_131			0x31333100	 
 
 #define DSI_VERSION			0x00
 #define VERSION				GENMASK(31, 8)
@@ -235,7 +228,7 @@ struct debugfs_entries {
 	u32					mask;
 	struct dw_mipi_dsi			*dsi;
 };
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 
 struct dw_mipi_dsi {
 	struct drm_bridge bridge;
@@ -246,7 +239,7 @@ struct dw_mipi_dsi {
 
 	struct clk *pclk;
 
-	unsigned int lane_mbps; /* per lane */
+	unsigned int lane_mbps;  
 	u32 channel;
 	u32 lanes;
 	u32 format;
@@ -260,27 +253,22 @@ struct dw_mipi_dsi {
 		bool vpg_horizontal;
 		bool vpg_ber_pattern;
 	} vpg_defs;
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 
-	struct dw_mipi_dsi *master; /* dual-dsi master ptr */
-	struct dw_mipi_dsi *slave; /* dual-dsi slave ptr */
+	struct dw_mipi_dsi *master;  
+	struct dw_mipi_dsi *slave;  
 
 	struct drm_display_mode mode;
 	const struct dw_mipi_dsi_plat_data *plat_data;
 };
 
-/*
- * Check if either a link to a master or slave is present
- */
+ 
 static inline bool dw_mipi_is_dual_mode(struct dw_mipi_dsi *dsi)
 {
 	return dsi->slave || dsi->master;
 }
 
-/*
- * The controller should generate 2 frames before
- * preparing the peripheral.
- */
+ 
 static void dw_mipi_dsi_wait_for_two_frames(const struct drm_display_mode *mode)
 {
 	int refresh, two_frames;
@@ -373,12 +361,7 @@ static void dw_mipi_message_config(struct dw_mipi_dsi *dsi,
 	bool lpm = msg->flags & MIPI_DSI_MSG_USE_LPM;
 	u32 val = 0;
 
-	/*
-	 * TODO dw drv improvements
-	 * largest packet sizes during hfp or during vsa/vpb/vfp
-	 * should be computed according to byte lane, lane number and only
-	 * if sending lp cmds in high speed is enable (PHY_TXREQUESTCLKHS)
-	 */
+	 
 	dsi_write(dsi, DSI_DPI_LP_CMD_TIM, OUTVACT_LPCMD_TIME(16)
 		  | INVACT_LPCMD_TIME(4));
 
@@ -467,7 +450,7 @@ static int dw_mipi_dsi_read(struct dw_mipi_dsi *dsi,
 	u8 *buf = msg->rx_buf;
 	u32 val;
 
-	/* Wait end of the read operation */
+	 
 	ret = readl_poll_timeout(dsi->base + DSI_CMD_PKT_STATUS,
 				 val, !(val & GEN_RD_CMD_BUSY),
 				 1000, CMD_PKT_STATUS_TIMEOUT_US);
@@ -477,7 +460,7 @@ static int dw_mipi_dsi_read(struct dw_mipi_dsi *dsi,
 	}
 
 	for (i = 0; i < len; i += 4) {
-		/* Read fifo must not be empty before all bytes are read */
+		 
 		ret = readl_poll_timeout(dsi->base + DSI_CMD_PKT_STATUS,
 					 val, !(val & GEN_PLD_R_EMPTY),
 					 1000, CMD_PKT_STATUS_TIMEOUT_US);
@@ -542,11 +525,7 @@ static void dw_mipi_dsi_video_mode_config(struct dw_mipi_dsi *dsi)
 {
 	u32 val;
 
-	/*
-	 * TODO dw drv improvements
-	 * enabling low power is panel-dependent, we should use the
-	 * panel configuration here...
-	 */
+	 
 	val = ENABLE_LOW_POWER;
 
 	if (dsi->mode_flags & MIPI_DSI_MODE_VIDEO_BURST)
@@ -563,7 +542,7 @@ static void dw_mipi_dsi_video_mode_config(struct dw_mipi_dsi *dsi)
 		       VID_MODE_VPG_HORIZONTAL : 0;
 		val |= dsi->vpg_defs.vpg_ber_pattern ? VID_MODE_VPG_MODE : 0;
 	}
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 
 	dsi_write(dsi, DSI_VID_MODE_CFG, val);
 }
@@ -599,37 +578,25 @@ static void dw_mipi_dsi_disable(struct dw_mipi_dsi *dsi)
 static void dw_mipi_dsi_init(struct dw_mipi_dsi *dsi)
 {
 	const struct dw_mipi_dsi_phy_ops *phy_ops = dsi->plat_data->phy_ops;
-	unsigned int esc_rate; /* in MHz */
+	unsigned int esc_rate;  
 	u32 esc_clk_division;
 	int ret;
 
-	/*
-	 * The maximum permitted escape clock is 20MHz and it is derived from
-	 * lanebyteclk, which is running at "lane_mbps / 8".
-	 */
+	 
 	if (phy_ops->get_esc_clk_rate) {
 		ret = phy_ops->get_esc_clk_rate(dsi->plat_data->priv_data,
 						&esc_rate);
 		if (ret)
 			DRM_DEBUG_DRIVER("Phy get_esc_clk_rate() failed\n");
 	} else
-		esc_rate = 20; /* Default to 20MHz */
+		esc_rate = 20;  
 
-	/*
-	 * We want :
-	 *     (lane_mbps >> 3) / esc_clk_division < X
-	 * which is:
-	 *     (lane_mbps >> 3) / X > esc_clk_division
-	 */
+	 
 	esc_clk_division = (dsi->lane_mbps >> 3) / esc_rate + 1;
 
 	dsi_write(dsi, DSI_PWR_UP, RESET);
 
-	/*
-	 * TODO dw drv improvements
-	 * timeout clock division should be computed with the
-	 * high speed transmission counter timeout and byte lane...
-	 */
+	 
 	dsi_write(dsi, DSI_CLKMGR_CFG, TO_CLK_DIVISION(10) |
 		  TX_ESC_CLK_DIVISION(esc_clk_division));
 }
@@ -672,13 +639,7 @@ static void dw_mipi_dsi_packet_handler_config(struct dw_mipi_dsi *dsi)
 static void dw_mipi_dsi_video_packet_config(struct dw_mipi_dsi *dsi,
 					    const struct drm_display_mode *mode)
 {
-	/*
-	 * TODO dw drv improvements
-	 * only burst mode is supported here. For non-burst video modes,
-	 * we should compute DSI_VID_PKT_SIZE, DSI_VCCR.NUMC &
-	 * DSI_VNPCR.NPSIZE... especially because this driver supports
-	 * non-burst video modes, see dw_mipi_dsi_video_mode_config()...
-	 */
+	 
 
 	dsi_write(dsi, DSI_VID_PKT_SIZE,
 		       dw_mipi_is_dual_mode(dsi) ?
@@ -688,22 +649,14 @@ static void dw_mipi_dsi_video_packet_config(struct dw_mipi_dsi *dsi,
 
 static void dw_mipi_dsi_command_mode_config(struct dw_mipi_dsi *dsi)
 {
-	/*
-	 * TODO dw drv improvements
-	 * compute high speed transmission counter timeout according
-	 * to the timeout clock division (TO_CLK_DIVISION) and byte lane...
-	 */
+	 
 	dsi_write(dsi, DSI_TO_CNT_CFG, HSTX_TO_CNT(1000) | LPRX_TO_CNT(1000));
-	/*
-	 * TODO dw drv improvements
-	 * the Bus-Turn-Around Timeout Counter should be computed
-	 * according to byte lane...
-	 */
+	 
 	dsi_write(dsi, DSI_BTA_TO_CNT, 0xd00);
 	dsi_write(dsi, DSI_MODE_CFG, ENABLE_CMD_MODE);
 }
 
-/* Get lane byte clock cycles. */
+ 
 static u32 dw_mipi_dsi_get_hcomponent_lbcc(struct dw_mipi_dsi *dsi,
 					   const struct drm_display_mode *mode,
 					   u32 hcomponent)
@@ -729,10 +682,7 @@ static void dw_mipi_dsi_line_timer_config(struct dw_mipi_dsi *dsi,
 	hsa = mode->hsync_end - mode->hsync_start;
 	hbp = mode->htotal - mode->hsync_end;
 
-	/*
-	 * TODO dw drv improvements
-	 * computations below may be improved...
-	 */
+	 
 	lbcc = dw_mipi_dsi_get_hcomponent_lbcc(dsi, mode, htotal);
 	dsi_write(dsi, DSI_VID_HLINE_TIME, lbcc);
 
@@ -771,13 +721,7 @@ static void dw_mipi_dsi_dphy_timing_config(struct dw_mipi_dsi *dsi)
 	if (ret)
 		DRM_DEV_ERROR(dsi->dev, "Retrieving phy timings failed\n");
 
-	/*
-	 * TODO dw drv improvements
-	 * data & clock lane timers should be computed according to panel
-	 * blankings and to the automatic clock lane control mode...
-	 * note: DSI_PHY_TMR_CFG.MAX_RD_TIME should be in line with
-	 * DSI_CMD_MODE_CFG.MAX_RD_PKT_SIZE_LP (see CMD_MODE_ALL_LP)
-	 */
+	 
 
 	hw_version = dsi_read(dsi, DSI_VERSION) & VERSION;
 
@@ -800,18 +744,14 @@ static void dw_mipi_dsi_dphy_timing_config(struct dw_mipi_dsi *dsi)
 
 static void dw_mipi_dsi_dphy_interface_config(struct dw_mipi_dsi *dsi)
 {
-	/*
-	 * TODO dw drv improvements
-	 * stop wait time should be the maximum between host dsi
-	 * and panel stop wait times
-	 */
+	 
 	dsi_write(dsi, DSI_PHY_IF_CFG, PHY_STOP_WAIT_TIME(0x20) |
 		  N_LANES(dsi->lanes));
 }
 
 static void dw_mipi_dsi_dphy_init(struct dw_mipi_dsi *dsi)
 {
-	/* Clear PHY state */
+	 
 	dsi_write(dsi, DSI_PHY_RSTZ, PHY_DISFORCEPLL | PHY_DISABLECLK
 		  | PHY_RSTZ | PHY_SHUTDOWNZ);
 	dsi_write(dsi, DSI_PHY_TST_CTRL0, PHY_UNTESTCLR);
@@ -853,12 +793,7 @@ static void dw_mipi_dsi_bridge_post_atomic_disable(struct drm_bridge *bridge,
 	struct dw_mipi_dsi *dsi = bridge_to_dsi(bridge);
 	const struct dw_mipi_dsi_phy_ops *phy_ops = dsi->plat_data->phy_ops;
 
-	/*
-	 * Switch to command mode before panel-bridge post_disable &
-	 * panel unprepare.
-	 * Note: panel-bridge disable & panel disable has been called
-	 * before by the drm framework.
-	 */
+	 
 	dw_mipi_dsi_set_mode(dsi, 0);
 
 	if (phy_ops->power_off)
@@ -877,15 +812,15 @@ static void dw_mipi_dsi_bridge_post_atomic_disable(struct drm_bridge *bridge,
 
 static unsigned int dw_mipi_dsi_get_lanes(struct dw_mipi_dsi *dsi)
 {
-	/* this instance is the slave, so add the master's lanes */
+	 
 	if (dsi->master)
 		return dsi->master->lanes + dsi->lanes;
 
-	/* this instance is the master, so add the slave's lanes */
+	 
 	if (dsi->slave)
 		return dsi->lanes + dsi->slave->lanes;
 
-	/* single-dsi, so no other instance to consider */
+	 
 	return dsi->lanes;
 }
 
@@ -928,7 +863,7 @@ static void dw_mipi_dsi_mode_set(struct dw_mipi_dsi *dsi,
 
 	dw_mipi_dsi_wait_for_two_frames(adjusted_mode);
 
-	/* Switch to cmd mode for panel-bridge pre_enable & panel prepare */
+	 
 	dw_mipi_dsi_set_mode(dsi, 0);
 
 	if (phy_ops->power_on)
@@ -940,7 +875,7 @@ static void dw_mipi_dsi_bridge_atomic_pre_enable(struct drm_bridge *bridge,
 {
 	struct dw_mipi_dsi *dsi = bridge_to_dsi(bridge);
 
-	/* Power up the dsi ctl into a command mode */
+	 
 	dw_mipi_dsi_mode_set(dsi, &dsi->mode);
 	if (dsi->slave)
 		dw_mipi_dsi_mode_set(dsi->slave, &dsi->mode);
@@ -952,7 +887,7 @@ static void dw_mipi_dsi_bridge_mode_set(struct drm_bridge *bridge,
 {
 	struct dw_mipi_dsi *dsi = bridge_to_dsi(bridge);
 
-	/* Store the display mode for later use in pre_enable callback */
+	 
 	drm_mode_copy(&dsi->mode, adjusted_mode);
 }
 
@@ -961,7 +896,7 @@ static void dw_mipi_dsi_bridge_atomic_enable(struct drm_bridge *bridge,
 {
 	struct dw_mipi_dsi *dsi = bridge_to_dsi(bridge);
 
-	/* Switch to video mode for panel-bridge enable & panel enable */
+	 
 	dw_mipi_dsi_set_mode(dsi, MIPI_DSI_MODE_VIDEO);
 	if (dsi->slave)
 		dw_mipi_dsi_set_mode(dsi->slave, MIPI_DSI_MODE_VIDEO);
@@ -995,10 +930,10 @@ static int dw_mipi_dsi_bridge_attach(struct drm_bridge *bridge,
 		return -ENODEV;
 	}
 
-	/* Set the encoder type as caller does not know it */
+	 
 	bridge->encoder->encoder_type = DRM_MODE_ENCODER_DSI;
 
-	/* Attach the panel-bridge to the dsi bridge */
+	 
 	return drm_bridge_attach(bridge->encoder, dsi->panel_bridge, bridge,
 				 flags);
 }
@@ -1099,7 +1034,7 @@ static void dw_mipi_dsi_debugfs_remove(struct dw_mipi_dsi *dsi)
 static void dw_mipi_dsi_debugfs_init(struct dw_mipi_dsi *dsi) { }
 static void dw_mipi_dsi_debugfs_remove(struct dw_mipi_dsi *dsi) { }
 
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 
 static struct dw_mipi_dsi *
 __dw_mipi_dsi_probe(struct platform_device *pdev,
@@ -1139,10 +1074,7 @@ __dw_mipi_dsi_probe(struct platform_device *pdev,
 		return ERR_PTR(ret);
 	}
 
-	/*
-	 * Note that the reset was not defined in the initial device tree, so
-	 * we have to be prepared for it not being found.
-	 */
+	 
 	apb_rst = devm_reset_control_get_optional_exclusive(dev, "apb");
 	if (IS_ERR(apb_rst)) {
 		ret = PTR_ERR(apb_rst);
@@ -1199,11 +1131,11 @@ static void __dw_mipi_dsi_remove(struct dw_mipi_dsi *dsi)
 
 void dw_mipi_dsi_set_slave(struct dw_mipi_dsi *dsi, struct dw_mipi_dsi *slave)
 {
-	/* introduce controllers to each other */
+	 
 	dsi->slave = slave;
 	dsi->slave->master = dsi;
 
-	/* migrate settings for already attached displays */
+	 
 	dsi->slave->lanes = dsi->lanes;
 	dsi->slave->channel = dsi->channel;
 	dsi->slave->format = dsi->format;
@@ -1211,9 +1143,7 @@ void dw_mipi_dsi_set_slave(struct dw_mipi_dsi *dsi, struct dw_mipi_dsi *slave)
 }
 EXPORT_SYMBOL_GPL(dw_mipi_dsi_set_slave);
 
-/*
- * Probe/remove API, used from platforms based on the DRM bridge API.
- */
+ 
 struct dw_mipi_dsi *
 dw_mipi_dsi_probe(struct platform_device *pdev,
 		  const struct dw_mipi_dsi_plat_data *plat_data)
@@ -1228,9 +1158,7 @@ void dw_mipi_dsi_remove(struct dw_mipi_dsi *dsi)
 }
 EXPORT_SYMBOL_GPL(dw_mipi_dsi_remove);
 
-/*
- * Bind/unbind API, used from platforms based on the component framework.
- */
+ 
 int dw_mipi_dsi_bind(struct dw_mipi_dsi *dsi, struct drm_encoder *encoder)
 {
 	return drm_bridge_attach(encoder, &dsi->bridge, NULL, 0);

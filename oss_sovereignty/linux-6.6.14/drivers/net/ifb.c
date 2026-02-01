@@ -1,27 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* drivers/net/ifb.c:
 
-	The purpose of this driver is to provide a device that allows
-	for sharing of resources:
-
-	1) qdiscs/policies that are per device as opposed to system wide.
-	ifb allows for a device which can be redirected to thus providing
-	an impression of sharing.
-
-	2) Allows for queueing incoming traffic for shaping instead of
-	dropping.
-
-	The original concept is based on what is known as the IMQ
-	driver initially written by Martin Devera, later rewritten
-	by Patrick McHardy and then maintained by Andre Correa.
-
-	You need the tc action  mirror or redirect to feed this device
-	packets.
-
-
-	Authors:	Jamal Hadi Salim (2005)
-
-*/
+ 
 
 
 #include <linux/module.h>
@@ -59,7 +37,7 @@ struct ifb_dev_private {
 	struct ifb_q_private *tx_private;
 };
 
-/* For ethtools stats. */
+ 
 struct ifb_q_stats_desc {
 	char	desc[ETH_GSTRING_LEN];
 	size_t	offset;
@@ -102,7 +80,7 @@ static void ifb_ri_tasklet(struct tasklet_struct *t)
 	}
 
 	while ((skb = __skb_dequeue(&txp->tq)) != NULL) {
-		/* Skip tc and netfilter to prevent redirection loop. */
+		 
 		skb->redirected = 0;
 #ifdef CONFIG_NET_CLS_ACT
 		skb->tc_skip_classify = 1;
@@ -309,11 +287,11 @@ static void ifb_dev_free(struct net_device *dev)
 
 static void ifb_setup(struct net_device *dev)
 {
-	/* Initialize the device structure. */
+	 
 	dev->netdev_ops = &ifb_netdev_ops;
 	dev->ethtool_ops = &ifb_ethtool_ops;
 
-	/* Fill in device structure with ethernet-generic values. */
+	 
 	ether_setup(dev);
 	dev->tx_queue_len = TX_Q_LIMIT;
 
@@ -391,10 +369,7 @@ static struct rtnl_link_ops ifb_link_ops __read_mostly = {
 	.validate	= ifb_validate,
 };
 
-/* Number of ifb devices to be set up by this module.
- * Note that these legacy devices have one queue.
- * Prefer something like : ip link add ifb10 numtxqueues 8 type ifb
- */
+ 
 static int numifbs = 2;
 module_param(numifbs, int, 0);
 MODULE_PARM_DESC(numifbs, "Number of ifb devices");

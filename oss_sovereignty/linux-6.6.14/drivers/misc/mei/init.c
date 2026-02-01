@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2012-2022, Intel Corporation. All rights reserved.
- * Intel Management Engine Interface (Intel MEI) Linux driver
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/sched.h>
@@ -45,15 +42,7 @@ const char *mei_pg_state_str(enum mei_pg_state state)
 #undef MEI_PG_STATE
 }
 
-/**
- * mei_fw_status2str - convert fw status registers to printable string
- *
- * @fw_status:  firmware status
- * @buf: string buffer at minimal size MEI_FW_STATUS_STR_SZ
- * @len: buffer len must be >= MEI_FW_STATUS_STR_SZ
- *
- * Return: number of bytes written or -EINVAL if buffer is to small
- */
+ 
 ssize_t mei_fw_status2str(struct mei_fw_status *fw_status,
 			  char *buf, size_t len)
 {
@@ -69,17 +58,13 @@ ssize_t mei_fw_status2str(struct mei_fw_status *fw_status,
 		cnt += scnprintf(buf + cnt, len - cnt, "%08X ",
 				fw_status->status[i]);
 
-	/* drop last space */
+	 
 	buf[cnt] = '\0';
 	return cnt;
 }
 EXPORT_SYMBOL_GPL(mei_fw_status2str);
 
-/**
- * mei_cancel_work - Cancel mei background jobs
- *
- * @dev: the device structure
- */
+ 
 void mei_cancel_work(struct mei_device *dev)
 {
 	cancel_work_sync(&dev->reset_work);
@@ -89,13 +74,7 @@ void mei_cancel_work(struct mei_device *dev)
 }
 EXPORT_SYMBOL_GPL(mei_cancel_work);
 
-/**
- * mei_reset - resets host and fw.
- *
- * @dev: the device structure
- *
- * Return: 0 on success or < 0 if the reset hasn't succeeded
- */
+ 
 int mei_reset(struct mei_device *dev)
 {
 	enum mei_dev_state state = dev->dev_state;
@@ -115,14 +94,10 @@ int mei_reset(struct mei_device *dev)
 
 	mei_clear_interrupts(dev);
 
-	/* we're already in reset, cancel the init timer
-	 * if the reset was called due the hbm protocol error
-	 * we need to call it before hw start
-	 * so the hbm watchdog won't kick in
-	 */
+	 
 	mei_hbm_idle(dev);
 
-	/* enter reset flow */
+	 
 	interrupts_enabled = state != MEI_DEV_POWER_DOWN;
 	mei_set_devstate(dev, MEI_DEV_RESETTING);
 
@@ -134,15 +109,15 @@ int mei_reset(struct mei_device *dev)
 	}
 
 	ret = mei_hw_reset(dev, interrupts_enabled);
-	/* fall through and remove the sw state even if hw reset has failed */
+	 
 
-	/* no need to clean up software state in case of power up */
+	 
 	if (state != MEI_DEV_INITIALIZING && state != MEI_DEV_POWER_UP)
 		mei_cl_all_disconnect(dev);
 
 	mei_hbm_reset(dev);
 
-	/* clean stale FW version */
+	 
 	dev->fw_ver_received = 0;
 
 	memset(dev->rd_msg_hdr, 0, sizeof(dev->rd_msg_hdr));
@@ -186,20 +161,14 @@ int mei_reset(struct mei_device *dev)
 }
 EXPORT_SYMBOL_GPL(mei_reset);
 
-/**
- * mei_start - initializes host and fw to start work.
- *
- * @dev: the device structure
- *
- * Return: 0 on success, <0 on failure.
- */
+ 
 int mei_start(struct mei_device *dev)
 {
 	int ret;
 
 	mutex_lock(&dev->device_lock);
 
-	/* acknowledge interrupt and stop interrupts */
+	 
 	mei_clear_interrupts(dev);
 
 	ret = mei_hw_config(dev);
@@ -241,13 +210,7 @@ err:
 }
 EXPORT_SYMBOL_GPL(mei_start);
 
-/**
- * mei_restart - restart device after suspend
- *
- * @dev: the device structure
- *
- * Return: 0 on success or -ENODEV if the restart hasn't succeeded
- */
+ 
 int mei_restart(struct mei_device *dev)
 {
 	int err;
@@ -266,7 +229,7 @@ int mei_restart(struct mei_device *dev)
 		return -ENODEV;
 	}
 
-	/* try to start again */
+	 
 	if (err)
 		schedule_work(&dev->reset_work);
 
@@ -295,7 +258,7 @@ static void mei_reset_work(struct work_struct *work)
 		return;
 	}
 
-	/* retry reset in case of failure */
+	 
 	if (ret)
 		schedule_work(&dev->reset_work);
 }
@@ -316,26 +279,20 @@ void mei_stop(struct mei_device *dev)
 
 	mei_clear_interrupts(dev);
 	mei_synchronize_irq(dev);
-	/* to catch HW-initiated reset */
+	 
 	mei_cancel_work(dev);
 
 	mutex_lock(&dev->device_lock);
 
 	mei_reset(dev);
-	/* move device to disabled state unconditionally */
+	 
 	mei_set_devstate(dev, MEI_DEV_DISABLED);
 
 	mutex_unlock(&dev->device_lock);
 }
 EXPORT_SYMBOL_GPL(mei_stop);
 
-/**
- * mei_write_is_idle - check if the write queues are idle
- *
- * @dev: the device structure
- *
- * Return: true of there is no pending write
- */
+ 
 bool mei_write_is_idle(struct mei_device *dev)
 {
 	bool idle = (dev->dev_state == MEI_DEV_ENABLED &&
@@ -354,20 +311,13 @@ bool mei_write_is_idle(struct mei_device *dev)
 }
 EXPORT_SYMBOL_GPL(mei_write_is_idle);
 
-/**
- * mei_device_init - initialize mei_device structure
- *
- * @dev: the mei device
- * @device: the device structure
- * @slow_fw: configure longer timeouts as FW is slow
- * @hw_ops: hw operations
- */
+ 
 void mei_device_init(struct mei_device *dev,
 		     struct device *device,
 		     bool slow_fw,
 		     const struct mei_hw_ops *hw_ops)
 {
-	/* setup our list array */
+	 
 	INIT_LIST_HEAD(&dev->file_list);
 	INIT_LIST_HEAD(&dev->device_list);
 	INIT_LIST_HEAD(&dev->me_clients);
@@ -395,10 +345,7 @@ void mei_device_init(struct mei_device *dev,
 
 	dev->pxp_mode = MEI_DEV_PXP_DEFAULT;
 
-	/*
-	 * Reserving the first client ID
-	 * 0: Reserved for MEI Bus Message communications
-	 */
+	 
 	bitmap_set(dev->host_clients_map, 0, 1);
 
 	dev->pg_event = MEI_PG_EVENT_IDLE;

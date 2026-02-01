@@ -1,26 +1,4 @@
-/*
- * Copyright 2013 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "nv50.h"
 
 #include <subdev/bios.h>
@@ -93,19 +71,14 @@ nv50_devinit_preinit(struct nvkm_devinit *base)
 	struct nvkm_subdev *subdev = &base->subdev;
 	struct nvkm_device *device = subdev->device;
 
-	/* our heuristics can't detect whether the board has had its
-	 * devinit scripts executed or not if the display engine is
-	 * missing, assume it's a secondary gpu which requires post
-	 */
+	 
 	if (!base->post) {
 		nvkm_devinit_disable(base);
 		if (!device->disp)
 			base->post = true;
 	}
 
-	/* magic to detect whether or not x86 vbios code has executed
-	 * the devinit scripts to initialise the board
-	 */
+	 
 	if (!base->post) {
 		if (!nvkm_rdvgac(device, 0, 0x00) &&
 		    !nvkm_rdvgac(device, 0, 0x1a)) {
@@ -127,10 +100,7 @@ nv50_devinit_init(struct nvkm_devinit *base)
 	u8  ver = 0xff, hdr, cnt, len;
 	int i = 0;
 
-	/* if we ran the init tables, we have to execute the first script
-	 * pointer of each dcb entry's display encoder table in order
-	 * to properly initialise each encoder.
-	 */
+	 
 	while (init->base.post && dcb_outp_parse(bios, i, &ver, &hdr, &outp)) {
 		if (nvbios_outp_match(bios, outp.hasht, outp.hashm,
 				      &ver, &hdr, &cnt, &len, &info)) {

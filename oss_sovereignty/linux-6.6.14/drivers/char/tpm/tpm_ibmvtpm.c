@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012-2020 IBM Corporation
- *
- * Author: Ashley Lai <ashleydlai@gmail.com>
- *
- * Maintained by: <tpmdd-devel@lists.sourceforge.net>
- *
- * Device driver for TCG/TCPA TPM (trusted platform module).
- * Specifications at www.trustedcomputinggroup.org
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/dmapool.h>
@@ -34,56 +25,13 @@ static const struct vio_device_id tpm_ibmvtpm_device_table[] = {
 };
 MODULE_DEVICE_TABLE(vio, tpm_ibmvtpm_device_table);
 
-/**
- * ibmvtpm_send_crq_word() - Send a CRQ request
- * @vdev:	vio device struct
- * @w1:		pre-constructed first word of tpm crq (second word is reserved)
- *
- * Return:
- *	0 - Success
- *	Non-zero - Failure
- */
+ 
 static int ibmvtpm_send_crq_word(struct vio_dev *vdev, u64 w1)
 {
 	return plpar_hcall_norets(H_SEND_CRQ, vdev->unit_address, w1, 0);
 }
 
-/**
- * ibmvtpm_send_crq() - Send a CRQ request
- *
- * @vdev:	vio device struct
- * @valid:	Valid field
- * @msg:	Type field
- * @len:	Length field
- * @data:	Data field
- *
- * The ibmvtpm crq is defined as follows:
- *
- * Byte  |   0   |   1   |   2   |   3   |   4   |   5   |   6   |   7
- * -----------------------------------------------------------------------
- * Word0 | Valid | Type  |     Length    |              Data
- * -----------------------------------------------------------------------
- * Word1 |                Reserved
- * -----------------------------------------------------------------------
- *
- * Which matches the following structure (on bigendian host):
- *
- * struct ibmvtpm_crq {
- *         u8 valid;
- *         u8 msg;
- *         __be16 len;
- *         __be32 data;
- *         __be64 reserved;
- * } __attribute__((packed, aligned(8)));
- *
- * However, the value is passed in a register so just compute the numeric value
- * to load into the register avoiding byteswap altogether. Endian only affects
- * memory loads and stores - registers are internally represented the same.
- *
- * Return:
- *	0 (H_SUCCESS) - Success
- *	Non-zero - Failure
- */
+ 
 static int ibmvtpm_send_crq(struct vio_dev *vdev,
 		u8 valid, u8 msg, u16 len, u32 data)
 {
@@ -92,16 +40,7 @@ static int ibmvtpm_send_crq(struct vio_dev *vdev,
 	return ibmvtpm_send_crq_word(vdev, w1);
 }
 
-/**
- * tpm_ibmvtpm_recv - Receive data after send
- *
- * @chip:	tpm chip struct
- * @buf:	buffer to read
- * @count:	size of buffer
- *
- * Return:
- *	Number of bytes read
- */
+ 
 static int tpm_ibmvtpm_recv(struct tpm_chip *chip, u8 *buf, size_t count)
 {
 	struct ibmvtpm_dev *ibmvtpm = dev_get_drvdata(&chip->dev);
@@ -129,14 +68,7 @@ static int tpm_ibmvtpm_recv(struct tpm_chip *chip, u8 *buf, size_t count)
 	return len;
 }
 
-/**
- * ibmvtpm_crq_send_init - Send a CRQ initialize message
- * @ibmvtpm:	vtpm device struct
- *
- * Return:
- *	0 on success.
- *	Non-zero on failure.
- */
+ 
 static int ibmvtpm_crq_send_init(struct ibmvtpm_dev *ibmvtpm)
 {
 	int rc;
@@ -149,13 +81,7 @@ static int ibmvtpm_crq_send_init(struct ibmvtpm_dev *ibmvtpm)
 	return rc;
 }
 
-/**
- * tpm_ibmvtpm_resume - Resume from suspend
- *
- * @dev:	device struct
- *
- * Return: Always 0.
- */
+ 
 static int tpm_ibmvtpm_resume(struct device *dev)
 {
 	struct tpm_chip *chip = dev_get_drvdata(dev);
@@ -187,16 +113,7 @@ static int tpm_ibmvtpm_resume(struct device *dev)
 	return rc;
 }
 
-/**
- * tpm_ibmvtpm_send() - Send a TPM command
- * @chip:	tpm chip struct
- * @buf:	buffer contains data to send
- * @count:	size of buffer
- *
- * Return:
- *   0 on success,
- *   -errno on error
- */
+ 
 static int tpm_ibmvtpm_send(struct tpm_chip *chip, u8 *buf, size_t count)
 {
 	struct ibmvtpm_dev *ibmvtpm = dev_get_drvdata(&chip->dev);
@@ -218,7 +135,7 @@ static int tpm_ibmvtpm_send(struct tpm_chip *chip, u8 *buf, size_t count)
 	if (ibmvtpm->tpm_processing_cmd) {
 		dev_info(ibmvtpm->dev,
 		         "Need to wait for TPM to finish\n");
-		/* wait for previous command to finish */
+		 
 		sig = wait_event_interruptible(ibmvtpm->wq, !ibmvtpm->tpm_processing_cmd);
 		if (sig)
 			return -EINTR;
@@ -228,10 +145,7 @@ static int tpm_ibmvtpm_send(struct tpm_chip *chip, u8 *buf, size_t count)
 	ibmvtpm->res_len = 0;
 	memcpy((void *)ibmvtpm->rtce_buf, (void *)buf, count);
 
-	/*
-	 * set the processing flag before the Hcall, since we may get the
-	 * result (interrupt) before even being able to check rc.
-	 */
+	 
 	ibmvtpm->tpm_processing_cmd = 1;
 
 again:
@@ -239,11 +153,7 @@ again:
 			IBMVTPM_VALID_CMD, VTPM_TPM_COMMAND,
 			count, ibmvtpm->rtce_dma_handle);
 	if (rc != H_SUCCESS) {
-		/*
-		 * H_CLOSED can be returned after LPM resume.  Call
-		 * tpm_ibmvtpm_resume() to re-enable the CRQ then retry
-		 * ibmvtpm_send_crq() once before failing.
-		 */
+		 
 		if (rc == H_CLOSED && retry) {
 			tpm_ibmvtpm_resume(ibmvtpm->dev);
 			retry = false;
@@ -269,15 +179,7 @@ static u8 tpm_ibmvtpm_status(struct tpm_chip *chip)
 	return ibmvtpm->tpm_processing_cmd;
 }
 
-/**
- * ibmvtpm_crq_get_rtce_size - Send a CRQ request to get rtce size
- *
- * @ibmvtpm:	vtpm device struct
- *
- * Return:
- *	0 on success.
- *	Non-zero on failure.
- */
+ 
 static int ibmvtpm_crq_get_rtce_size(struct ibmvtpm_dev *ibmvtpm)
 {
 	int rc;
@@ -291,16 +193,7 @@ static int ibmvtpm_crq_get_rtce_size(struct ibmvtpm_dev *ibmvtpm)
 	return rc;
 }
 
-/**
- * ibmvtpm_crq_get_version - Send a CRQ request to get vtpm version
- *			   - Note that this is vtpm version and not tpm version
- *
- * @ibmvtpm:	vtpm device struct
- *
- * Return:
- *	0 on success.
- *	Non-zero on failure.
- */
+ 
 static int ibmvtpm_crq_get_version(struct ibmvtpm_dev *ibmvtpm)
 {
 	int rc;
@@ -314,14 +207,7 @@ static int ibmvtpm_crq_get_version(struct ibmvtpm_dev *ibmvtpm)
 	return rc;
 }
 
-/**
- * ibmvtpm_crq_send_init_complete - Send a CRQ initialize complete message
- * @ibmvtpm:	vtpm device struct
- *
- * Return:
- *	0 on success.
- *	Non-zero on failure.
- */
+ 
 static int ibmvtpm_crq_send_init_complete(struct ibmvtpm_dev *ibmvtpm)
 {
 	int rc;
@@ -334,12 +220,7 @@ static int ibmvtpm_crq_send_init_complete(struct ibmvtpm_dev *ibmvtpm)
 	return rc;
 }
 
-/**
- * tpm_ibmvtpm_remove - ibm vtpm remove entry point
- * @vdev:	vio device struct
- *
- * Return: Always 0.
- */
+ 
 static void tpm_ibmvtpm_remove(struct vio_dev *vdev)
 {
 	struct tpm_chip *chip = dev_get_drvdata(&vdev->dev);
@@ -367,27 +248,17 @@ static void tpm_ibmvtpm_remove(struct vio_dev *vdev)
 	}
 
 	kfree(ibmvtpm);
-	/* For tpm_ibmvtpm_get_desired_dma */
+	 
 	dev_set_drvdata(&vdev->dev, NULL);
 }
 
-/**
- * tpm_ibmvtpm_get_desired_dma - Get DMA size needed by this driver
- * @vdev:	vio device struct
- *
- * Return:
- *	Number of bytes the driver needs to DMA map.
- */
+ 
 static unsigned long tpm_ibmvtpm_get_desired_dma(struct vio_dev *vdev)
 {
 	struct tpm_chip *chip = dev_get_drvdata(&vdev->dev);
 	struct ibmvtpm_dev *ibmvtpm;
 
-	/*
-	 * ibmvtpm initializes at probe time, so the data we are
-	 * asking for may not be set yet. Estimate that 4K required
-	 * for TCE-mapped buffer in addition to CRQ.
-	 */
+	 
 	if (chip)
 		ibmvtpm = dev_get_drvdata(&chip->dev);
 	else
@@ -396,12 +267,7 @@ static unsigned long tpm_ibmvtpm_get_desired_dma(struct vio_dev *vdev)
 	return CRQ_RES_BUF_SIZE + ibmvtpm->rtce_size;
 }
 
-/**
- * tpm_ibmvtpm_suspend - Suspend
- * @dev:	device struct
- *
- * Return: Always 0.
- */
+ 
 static int tpm_ibmvtpm_suspend(struct device *dev)
 {
 	struct tpm_chip *chip = dev_get_drvdata(dev);
@@ -417,15 +283,7 @@ static int tpm_ibmvtpm_suspend(struct device *dev)
 	return rc;
 }
 
-/**
- * ibmvtpm_reset_crq - Reset CRQ
- *
- * @ibmvtpm:	ibm vtpm struct
- *
- * Return:
- *	0 on success.
- *	Non-zero on failure.
- */
+ 
 static int ibmvtpm_reset_crq(struct ibmvtpm_dev *ibmvtpm)
 {
 	int rc = 0;
@@ -464,13 +322,7 @@ static const struct dev_pm_ops tpm_ibmvtpm_pm_ops = {
 	.resume = tpm_ibmvtpm_resume,
 };
 
-/**
- * ibmvtpm_crq_get_next - Get next responded crq
- *
- * @ibmvtpm:	vtpm device struct
- *
- * Return: vtpm crq pointer or NULL.
- */
+ 
 static struct ibmvtpm_crq *ibmvtpm_crq_get_next(struct ibmvtpm_dev *ibmvtpm)
 {
 	struct ibmvtpm_crq_queue *crq_q = &ibmvtpm->crq_queue;
@@ -485,13 +337,7 @@ static struct ibmvtpm_crq *ibmvtpm_crq_get_next(struct ibmvtpm_dev *ibmvtpm)
 	return crq;
 }
 
-/**
- * ibmvtpm_crq_process - Process responded crq
- *
- * @crq:	crq to be processed
- * @ibmvtpm:	vtpm device struct
- *
- */
+ 
 static void ibmvtpm_crq_process(struct ibmvtpm_crq *crq,
 				struct ibmvtpm_dev *ibmvtpm)
 {
@@ -545,7 +391,7 @@ static void ibmvtpm_crq_process(struct ibmvtpm_crq *crq,
 			ibmvtpm->vtpm_version = be32_to_cpu(crq->data);
 			return;
 		case VTPM_TPM_COMMAND_RES:
-			/* len of the data in rtce buffer */
+			 
 			ibmvtpm->res_len = be16_to_cpu(crq->len);
 			ibmvtpm->tpm_processing_cmd = 0;
 			wake_up_interruptible(&ibmvtpm->wq);
@@ -557,24 +403,13 @@ static void ibmvtpm_crq_process(struct ibmvtpm_crq *crq,
 	return;
 }
 
-/**
- * ibmvtpm_interrupt -	Interrupt handler
- *
- * @irq:		irq number to handle
- * @vtpm_instance:	vtpm that received interrupt
- *
- * Returns:
- *	IRQ_HANDLED
- **/
+ 
 static irqreturn_t ibmvtpm_interrupt(int irq, void *vtpm_instance)
 {
 	struct ibmvtpm_dev *ibmvtpm = (struct ibmvtpm_dev *) vtpm_instance;
 	struct ibmvtpm_crq *crq;
 
-	/* while loop is needed for initial setup (get version and
-	 * get rtce_size). There should be only one tpm request at any
-	 * given time.
-	 */
+	 
 	while ((crq = ibmvtpm_crq_get_next(ibmvtpm)) != NULL) {
 		ibmvtpm_crq_process(crq, ibmvtpm);
 		wake_up_interruptible(&ibmvtpm->crq_queue.wq);
@@ -585,16 +420,7 @@ static irqreturn_t ibmvtpm_interrupt(int irq, void *vtpm_instance)
 	return IRQ_HANDLED;
 }
 
-/**
- * tpm_ibmvtpm_probe - ibm vtpm initialize entry point
- *
- * @vio_dev:	vio device struct
- * @id:		vio device id struct
- *
- * Return:
- *	0 on success.
- *	Non-zero on failure.
- */
+ 
 static int tpm_ibmvtpm_probe(struct vio_dev *vio_dev,
 				   const struct vio_device_id *id)
 {
@@ -727,22 +553,13 @@ static struct vio_driver ibmvtpm_driver = {
 	.pm		 = &tpm_ibmvtpm_pm_ops,
 };
 
-/**
- * ibmvtpm_module_init - Initialize ibm vtpm module.
- *
- *
- * Return:
- *	0 on success.
- *	Non-zero on failure.
- */
+ 
 static int __init ibmvtpm_module_init(void)
 {
 	return vio_register_driver(&ibmvtpm_driver);
 }
 
-/**
- * ibmvtpm_module_exit - Tear down ibm vtpm module.
- */
+ 
 static void __exit ibmvtpm_module_exit(void)
 {
 	vio_unregister_driver(&ibmvtpm_driver);

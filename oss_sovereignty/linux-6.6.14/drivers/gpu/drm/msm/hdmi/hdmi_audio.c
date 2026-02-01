@@ -1,16 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <linux/hdmi.h>
 #include "hdmi.h"
 
-/* maps MSM_HDMI_AUDIO_CHANNEL_n consts used by audio driver to # of channels: */
+ 
 static int nchannels[] = { 2, 4, 6, 8 };
 
-/* Supported HDMI Audio sample rates */
+ 
 #define MSM_HDMI_SAMPLE_RATE_32KHZ		0
 #define MSM_HDMI_SAMPLE_RATE_44_1KHZ		1
 #define MSM_HDMI_SAMPLE_RATE_48KHZ		2
@@ -22,8 +19,8 @@ static int nchannels[] = { 2, 4, 6, 8 };
 
 
 struct hdmi_msm_audio_acr {
-	uint32_t n;	/* N parameter for clock regeneration */
-	uint32_t cts;	/* CTS parameter for clock regeneration */
+	uint32_t n;	 
+	uint32_t cts;	 
 };
 
 struct hdmi_msm_audio_arcs {
@@ -33,26 +30,26 @@ struct hdmi_msm_audio_arcs {
 
 #define HDMI_MSM_AUDIO_ARCS(pclk, ...) { (1000 * (pclk)), __VA_ARGS__ }
 
-/* Audio constants lookup table for hdmi_msm_audio_acr_setup */
-/* Valid Pixel-Clock rates: 25.2MHz, 27MHz, 27.03MHz, 74.25MHz, 148.5MHz */
+ 
+ 
 static const struct hdmi_msm_audio_arcs acr_lut[] = {
-	/*  25.200MHz  */
+	 
 	HDMI_MSM_AUDIO_ARCS(25200, {
 		{4096, 25200}, {6272, 28000}, {6144, 25200}, {12544, 28000},
 		{12288, 25200}, {25088, 28000}, {24576, 25200} }),
-	/*  27.000MHz  */
+	 
 	HDMI_MSM_AUDIO_ARCS(27000, {
 		{4096, 27000}, {6272, 30000}, {6144, 27000}, {12544, 30000},
 		{12288, 27000}, {25088, 30000}, {24576, 27000} }),
-	/*  27.027MHz */
+	 
 	HDMI_MSM_AUDIO_ARCS(27030, {
 		{4096, 27027}, {6272, 30030}, {6144, 27027}, {12544, 30030},
 		{12288, 27027}, {25088, 30030}, {24576, 27027} }),
-	/*  74.250MHz */
+	 
 	HDMI_MSM_AUDIO_ARCS(74250, {
 		{4096, 74250}, {6272, 82500}, {6144, 74250}, {12544, 82500},
 		{12288, 74250}, {25088, 82500}, {24576, 74250} }),
-	/* 148.500MHz */
+	 
 	HDMI_MSM_AUDIO_ARCS(148500, {
 		{4096, 148500}, {6272, 165000}, {6144, 148500}, {12544, 165000},
 		{12288, 148500}, {25088, 165000}, {24576, 148500} }),
@@ -100,14 +97,14 @@ int msm_hdmi_audio_update(struct hdmi *hdmi)
 		}
 	}
 
-	/* Read first before writing */
+	 
 	acr_pkt_ctrl = hdmi_read(hdmi, REG_HDMI_ACR_PKT_CTRL);
 	vbi_pkt_ctrl = hdmi_read(hdmi, REG_HDMI_VBI_PKT_CTRL);
 	aud_pkt_ctrl = hdmi_read(hdmi, REG_HDMI_AUDIO_PKT_CTRL1);
 	infofrm_ctrl = hdmi_read(hdmi, REG_HDMI_INFOFRAME_CTRL0);
 	audio_config = hdmi_read(hdmi, REG_HDMI_AUDIO_CFG);
 
-	/* Clear N/CTS selection bits */
+	 
 	acr_pkt_ctrl &= ~HDMI_ACR_PKT_CTRL_SELECT__MASK;
 
 	if (enabled) {
@@ -121,11 +118,11 @@ int msm_hdmi_audio_update(struct hdmi *hdmi)
 		if ((MSM_HDMI_SAMPLE_RATE_192KHZ == audio->rate) ||
 				(MSM_HDMI_SAMPLE_RATE_176_4KHZ == audio->rate)) {
 			multiplier = 4;
-			n >>= 2; /* divide N by 4 and use multiplier */
+			n >>= 2;  
 		} else if ((MSM_HDMI_SAMPLE_RATE_96KHZ == audio->rate) ||
 				(MSM_HDMI_SAMPLE_RATE_88_2KHZ == audio->rate)) {
 			multiplier = 2;
-			n >>= 1; /* divide N by 2 and use multiplier */
+			n >>= 1;  
 		} else {
 			multiplier = 1;
 		}
@@ -144,7 +141,7 @@ int msm_hdmi_audio_update(struct hdmi *hdmi)
 				(MSM_HDMI_SAMPLE_RATE_88_2KHZ == audio->rate) ||
 				(MSM_HDMI_SAMPLE_RATE_176_4KHZ == audio->rate))
 			select = ACR_44;
-		else /* default to 32k */
+		else  
 			select = ACR_32;
 
 		acr_pkt_ctrl |= HDMI_ACR_PKT_CTRL_SELECT(select);
@@ -161,7 +158,7 @@ int msm_hdmi_audio_update(struct hdmi *hdmi)
 		acr_pkt_ctrl |= HDMI_ACR_PKT_CTRL_CONT;
 		acr_pkt_ctrl |= HDMI_ACR_PKT_CTRL_SEND;
 
-		/* configure infoframe: */
+		 
 		hdmi_audio_infoframe_pack(info, buf, sizeof(buf));
 		hdmi_write(hdmi, REG_HDMI_AUDIO_INFO0,
 				(buf[3] <<  0) | (buf[4] <<  8) |

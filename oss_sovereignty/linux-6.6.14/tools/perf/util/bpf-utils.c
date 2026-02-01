@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+
 
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
@@ -13,11 +13,9 @@
 #include "debug.h"
 
 struct bpil_array_desc {
-	int	array_offset;	/* e.g. offset of jited_prog_insns */
-	int	count_offset;	/* e.g. offset of jited_prog_len */
-	int	size_offset;	/* > 0: offset of rec size,
-				 * < 0: fix size of -size_offset
-				 */
+	int	array_offset;	 
+	int	count_offset;	 
+	int	size_offset;	 
 };
 
 static struct bpil_array_desc bpil_array_desc[] = {
@@ -120,14 +118,14 @@ get_bpf_prog_info_linear(int fd, __u64 arrays)
 	if (arrays >> PERF_BPIL_LAST_ARRAY)
 		return ERR_PTR(-EINVAL);
 
-	/* step 1: get array dimensions */
+	 
 	err = bpf_obj_get_info_by_fd(fd, &info, &info_len);
 	if (err) {
 		pr_debug("can't get prog info: %s", strerror(errno));
 		return ERR_PTR(-EFAULT);
 	}
 
-	/* step 2: calculate total size of all arrays */
+	 
 	for (i = PERF_BPIL_FIRST_ARRAY; i < PERF_BPIL_LAST_ARRAY; ++i) {
 		bool include_array = (arrays & (1UL << i)) > 0;
 		struct bpil_array_desc *desc;
@@ -135,14 +133,14 @@ get_bpf_prog_info_linear(int fd, __u64 arrays)
 
 		desc = bpil_array_desc + i;
 
-		/* kernel is too old to support this field */
+		 
 		if (info_len < desc->array_offset + sizeof(__u32) ||
 		    info_len < desc->count_offset + sizeof(__u32) ||
 		    (desc->size_offset > 0 && info_len < (__u32)desc->size_offset))
 			include_array = false;
 
 		if (!include_array) {
-			arrays &= ~(1UL << i);	/* clear the bit */
+			arrays &= ~(1UL << i);	 
 			continue;
 		}
 
@@ -152,12 +150,12 @@ get_bpf_prog_info_linear(int fd, __u64 arrays)
 		data_len += roundup(count * size, sizeof(__u64));
 	}
 
-	/* step 3: allocate continuous memory */
+	 
 	info_linear = malloc(sizeof(struct perf_bpil) + data_len);
 	if (!info_linear)
 		return ERR_PTR(-ENOMEM);
 
-	/* step 4: fill data to info_linear->info */
+	 
 	info_linear->arrays = arrays;
 	memset(&info_linear->info, 0, sizeof(info));
 	ptr = info_linear->data;
@@ -182,7 +180,7 @@ get_bpf_prog_info_linear(int fd, __u64 arrays)
 		ptr += roundup(count * size, sizeof(__u64));
 	}
 
-	/* step 5: call syscall again to get required arrays */
+	 
 	err = bpf_obj_get_info_by_fd(fd, &info_linear->info, &info_len);
 	if (err) {
 		pr_debug("can't get prog info: %s", strerror(errno));
@@ -190,7 +188,7 @@ get_bpf_prog_info_linear(int fd, __u64 arrays)
 		return ERR_PTR(-EFAULT);
 	}
 
-	/* step 6: verify the data */
+	 
 	for (i = PERF_BPIL_FIRST_ARRAY; i < PERF_BPIL_LAST_ARRAY; ++i) {
 		struct bpil_array_desc *desc;
 		__u32 v1, v2;
@@ -212,7 +210,7 @@ get_bpf_prog_info_linear(int fd, __u64 arrays)
 			pr_warning("%s: mismatch in rec size\n", __func__);
 	}
 
-	/* step 7: update info_len and data_len */
+	 
 	info_linear->info_len = sizeof(struct bpf_prog_info);
 	info_linear->data_len = data_len;
 

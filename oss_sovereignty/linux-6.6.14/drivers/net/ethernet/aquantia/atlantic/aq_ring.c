@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Atlantic Network Driver
- *
- * Copyright (C) 2014-2019 aQuantia Corporation
- * Copyright (C) 2019-2020 Marvell International Ltd.
- */
 
-/* File aq_ring.c: Definition of functions for Rx/Tx rings. */
+ 
+
+ 
 
 #include "aq_nic.h"
 #include "aq_hw.h"
@@ -44,7 +40,7 @@ static inline void aq_free_rxpage(struct aq_rxpage *rxpage, struct device *dev)
 
 	dma_unmap_page(dev, rxpage->daddr, len, DMA_FROM_DEVICE);
 
-	/* Drop the ref for being in the ring. */
+	 
 	__free_pages(rxpage->page, rxpage->order);
 	rxpage->page = NULL;
 }
@@ -90,9 +86,9 @@ static int aq_get_rxpages(struct aq_ring_s *self, struct aq_ring_buff_s *rxbuf)
 	int ret;
 
 	if (rxbuf->rxdata.page) {
-		/* One means ring is the only user and can reuse */
+		 
 		if (page_ref_count(rxbuf->rxdata.page) > 1) {
-			/* Try reuse buffer */
+			 
 			rxbuf->rxdata.pg_off += frame_max + page_offset +
 						tail_size;
 			if (rxbuf->rxdata.pg_off + frame_max + tail_size <=
@@ -102,9 +98,7 @@ static int aq_get_rxpages(struct aq_ring_s *self, struct aq_ring_buff_s *rxbuf)
 				u64_stats_update_end(&self->stats.rx.syncp);
 
 			} else {
-				/* Buffer exhausted. We have other users and
-				 * should release this page and realloc
-				 */
+				 
 				aq_free_rxpage(&rxbuf->rxdata,
 					       aq_nic_get_dev(self->aq_nic));
 				u64_stats_update_begin(&self->stats.rx.syncp);
@@ -203,7 +197,7 @@ struct aq_ring_s *aq_ring_rx_alloc(struct aq_ring_s *self,
 	self->xdp_prog = aq_nic->xdp_prog;
 	self->frame_max = AQ_CFG_RX_FRAME_MAX;
 
-	/* Only order-2 is allowed if XDP is enabled */
+	 
 	if (READ_ONCE(self->xdp_prog)) {
 		self->page_offset = AQ_XDP_HEADROOM;
 		self->page_order = AQ_CFG_XDP_PAGEORDER;
@@ -452,9 +446,9 @@ static struct sk_buff *aq_xdp_run_prog(struct aq_nic_s *aq_nic,
 	if (!prog)
 		return aq_xdp_build_skb(xdp, aq_nic->ndev, buff);
 
-	prefetchw(xdp->data_hard_start); /* xdp_frame write */
+	prefetchw(xdp->data_hard_start);  
 
-	/* single buffer XDP program, but packet is multi buffer, aborted */
+	 
 	if (xdp_buff_has_frags(xdp) && !prog->aux->xdp_has_frags)
 		goto out_aborted;
 
@@ -706,7 +700,7 @@ static int __aq_ring_rx_clean(struct aq_ring_s *self, struct napi_struct *napi,
 		skb_set_hash(skb, buff->rss_hash,
 			     buff->is_hash_l4 ? PKT_HASH_TYPE_L4 :
 			     PKT_HASH_TYPE_NONE);
-		/* Send all PTP traffic to 0 queue */
+		 
 		skb_record_rx_queue(skb,
 				    is_ptp_ring ? 0
 						: AQ_NIC_RING2QMAP(self->aq_nic,
@@ -849,7 +843,7 @@ static int __aq_ring_xdp_clean(struct aq_ring_s *rx_ring,
 		skb_set_hash(skb, buff->rss_hash,
 			     buff->is_hash_l4 ? PKT_HASH_TYPE_L4 :
 			     PKT_HASH_TYPE_NONE);
-		/* Send all PTP traffic to 0 queue */
+		 
 		skb_record_rx_queue(skb,
 				    is_ptp_ring ? 0
 						: AQ_NIC_RING2QMAP(rx_ring->aq_nic,
@@ -954,7 +948,7 @@ unsigned int aq_ring_fill_stats_data(struct aq_ring_s *self, u64 *data)
 	unsigned int start;
 
 	if (self->ring_type == ATL_RING_RX) {
-		/* This data should mimic aq_ethtool_queue_rx_stat_names structure */
+		 
 		do {
 			count = 0;
 			start = u64_stats_fetch_begin(&self->stats.rx.syncp);
@@ -976,7 +970,7 @@ unsigned int aq_ring_fill_stats_data(struct aq_ring_s *self, u64 *data)
 			data[++count] = self->stats.rx.xdp_redirect;
 		} while (u64_stats_fetch_retry(&self->stats.rx.syncp, start));
 	} else {
-		/* This data should mimic aq_ethtool_queue_tx_stat_names structure */
+		 
 		do {
 			count = 0;
 			start = u64_stats_fetch_begin(&self->stats.tx.syncp);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *	IEEE 802.1D Generic Attribute Registration Protocol (GARP)
- *
- *	Copyright (c) 2008 Patrick McHardy <kaber@trash.net>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/timer.h>
 #include <linux/skbuff.h>
@@ -180,7 +176,7 @@ static struct garp_attr *garp_attr_create(struct garp_applicant *app,
 		else if (d < 0)
 			p = &parent->rb_right;
 		else {
-			/* The attribute already exists; re-use it. */
+			 
 			return attr;
 		}
 	}
@@ -333,15 +329,13 @@ static void garp_attr_event(struct garp_applicant *app,
 	case GARP_ACTION_NONE:
 		break;
 	case GARP_ACTION_S_JOIN_IN:
-		/* When appending the attribute fails, don't update state in
-		 * order to retry on next TRANSMIT_PDU event. */
+		 
 		if (garp_pdu_append_attr(app, attr, GARP_JOIN_IN) < 0)
 			return;
 		break;
 	case GARP_ACTION_S_LEAVE_EMPTY:
 		garp_pdu_append_attr(app, attr, GARP_LEAVE_EMPTY);
-		/* As a pure applicant, sending a leave message implies that
-		 * the attribute was unregistered and can be destroyed. */
+		 
 		garp_attr_destroy(app, attr);
 		return;
 	default:
@@ -616,8 +610,7 @@ void garp_uninit_applicant(struct net_device *dev, struct garp_application *appl
 
 	RCU_INIT_POINTER(port->applicants[appl->type], NULL);
 
-	/* Delete timer and generate a final TRANSMIT_PDU event to flush out
-	 * all pending messages before the applicant is gone. */
+	 
 	timer_shutdown_sync(&app->join_timer);
 
 	spin_lock_bh(&app->lock);

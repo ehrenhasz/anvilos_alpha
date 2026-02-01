@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * HID driver for the Creative SB0540 receiver
- *
- * Copyright (C) 2019 Red Hat Inc. All Rights Reserved
- *
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/hid.h>
@@ -17,18 +12,18 @@ MODULE_LICENSE("GPL");
 
 static const unsigned short creative_sb0540_key_table[] = {
 	KEY_POWER,
-	KEY_RESERVED,		/* text: 24bit */
-	KEY_RESERVED,		/* 24bit wheel up */
-	KEY_RESERVED,		/* 24bit wheel down */
-	KEY_RESERVED,		/* text: CMSS */
-	KEY_RESERVED,		/* CMSS wheel Up */
-	KEY_RESERVED,		/* CMSS wheel Down */
-	KEY_RESERVED,		/* text: EAX */
-	KEY_RESERVED,		/* EAX wheel up */
-	KEY_RESERVED,		/* EAX wheel down */
-	KEY_RESERVED,		/* text: 3D Midi */
-	KEY_RESERVED,		/* 3D Midi wheel up */
-	KEY_RESERVED,		/* 3D Midi wheel down */
+	KEY_RESERVED,		 
+	KEY_RESERVED,		 
+	KEY_RESERVED,		 
+	KEY_RESERVED,		 
+	KEY_RESERVED,		 
+	KEY_RESERVED,		 
+	KEY_RESERVED,		 
+	KEY_RESERVED,		 
+	KEY_RESERVED,		 
+	KEY_RESERVED,		 
+	KEY_RESERVED,		 
+	KEY_RESERVED,		 
 	KEY_MUTE,
 	KEY_VOLUMEUP,
 	KEY_VOLUMEDOWN,
@@ -39,12 +34,12 @@ static const unsigned short creative_sb0540_key_table[] = {
 	KEY_OK,
 	KEY_FASTFORWARD,
 	KEY_DOWN,
-	KEY_AGAIN,		/* text: Return, symbol: Jump to */
-	KEY_PLAY,		/* text: Start */
-	KEY_ESC,		/* text: Cancel */
+	KEY_AGAIN,		 
+	KEY_PLAY,		 
+	KEY_ESC,		 
 	KEY_RECORD,
 	KEY_OPTION,
-	KEY_MENU,		/* text: Display */
+	KEY_MENU,		 
 	KEY_PREVIOUS,
 	KEY_PLAYPAUSE,
 	KEY_NEXT,
@@ -62,11 +57,7 @@ static const unsigned short creative_sb0540_key_table[] = {
 	KEY_NUMERIC_0
 };
 
-/*
- * Codes and keys from lirc's
- * remotes/creative/lircd.conf.alsa_usb
- * order and size must match creative_sb0540_key_table[] above
- */
+ 
 static const unsigned short creative_sb0540_codes[] = {
 	0x619E,
 	0x916E,
@@ -156,14 +147,11 @@ static int creative_sb0540_raw_event(struct hid_device *hid,
 	if (len != 6)
 		return 0;
 
-	/* From daemons/hw_hiddev.c sb0540_rec() in lirc */
+	 
 	code = reverse(data[5], 8);
 	main_code = (code << 8) + ((~code) & 0xff);
 
-	/*
-	 * Flip to get values in the same format as
-	 * remotes/creative/lircd.conf.alsa_usb in lirc
-	 */
+	 
 	main_code = ((main_code & 0xff) << 8) +
 		((main_code & 0xff00) >> 8);
 
@@ -178,7 +166,7 @@ static int creative_sb0540_raw_event(struct hid_device *hid,
 	input_report_key(creative_sb0540->input_dev, key, 0);
 	input_sync(creative_sb0540->input_dev);
 
-	/* let hidraw and hiddev handle the report */
+	 
 	return 0;
 }
 
@@ -210,10 +198,7 @@ static int creative_sb0540_input_mapping(struct hid_device *hid,
 		struct hid_input *hi, struct hid_field *field,
 		struct hid_usage *usage, unsigned long **bit, int *max)
 {
-	/*
-	 * We are remapping the keys ourselves, so ignore the hid-input
-	 * keymap processing.
-	 */
+	 
 	return -1;
 }
 
@@ -231,7 +216,7 @@ static int creative_sb0540_probe(struct hid_device *hid,
 
 	creative_sb0540->hid = hid;
 
-	/* force input as some remotes bypass the input registration */
+	 
 	hid->quirks |= HID_QUIRK_HIDINPUT_FORCE;
 
 	hid_set_drvdata(hid, creative_sb0540);

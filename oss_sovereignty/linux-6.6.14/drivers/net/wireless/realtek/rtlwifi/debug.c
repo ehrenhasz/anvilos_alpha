@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+
+ 
 
 #include "wifi.h"
 #include "cam.h"
@@ -199,7 +199,7 @@ static int rtl_debug_get_cam_register(struct seq_file *m, void *v)
 	int i = 100, j = 0;
 	int end = (start + 11 > TOTAL_CAM_ENTRY ? TOTAL_CAM_ENTRY : start + 11);
 
-	/* This dump the current register page */
+	 
 	seq_printf(m,
 		   "\n#################### SECURITY CAM (%d-%d) ##################\n",
 		   start, end - 1);
@@ -207,11 +207,11 @@ static int rtl_debug_get_cam_register(struct seq_file *m, void *v)
 	for (j = start; j < end; j++) {
 		seq_printf(m, "\nD:  %2x > ", j);
 		for (entry_i = 0; entry_i < CAM_CONTENT_COUNT; entry_i++) {
-			/* polling bit, and No Write enable, and address  */
+			 
 			target_cmd = entry_i + CAM_CONTENT_COUNT * j;
 			target_cmd = target_cmd | BIT(31);
 
-			/* Check polling bit is clear */
+			 
 			while ((i--) >= 0) {
 				ulstatus =
 				    rtl_read_dword(rtlpriv,
@@ -283,7 +283,7 @@ static ssize_t rtl_debugfs_set_write_reg(struct file *filp,
 
 	tmp[tmp_len] = '\0';
 
-	/* write BB/MAC register */
+	 
 	num = sscanf(tmp, "%x %x %x", &addr, &val, &len);
 
 	if (num !=  3)
@@ -300,7 +300,7 @@ static ssize_t rtl_debugfs_set_write_reg(struct file *filp,
 		rtl_write_dword(rtlpriv, addr, val);
 		break;
 	default:
-		/*printk("error write length=%d", len);*/
+		 
 		break;
 	}
 
@@ -321,7 +321,7 @@ static ssize_t rtl_debugfs_set_write_h2c(struct file *filp,
 	char tmp[32 + 1];
 	int tmp_len;
 	u8 h2c_len, h2c_data_packed[8];
-	int h2c_data[8];	/* idx 0: cmd */
+	int h2c_data[8];	 
 	int i;
 
 	if (count < 3)

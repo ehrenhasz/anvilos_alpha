@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * System Control and Management Interface (SCMI) System Power Protocol
- *
- * Copyright (C) 2020-2022 ARM Ltd.
- */
+
+ 
 
 #define pr_fmt(fmt) "SCMI Notifications SYSTEM - " fmt
 

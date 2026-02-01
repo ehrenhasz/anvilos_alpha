@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/crc8.h>
 #include <linux/etherdevice.h>
@@ -89,7 +89,7 @@ static int sl28vpd_add_cells(struct device *dev, struct nvmem_device *nvmem,
 	struct sl28vpd_header hdr;
 	int ret, i;
 
-	/* check header */
+	 
 	ret = nvmem_device_read(nvmem, 0, sizeof(hdr), &hdr);
 	if (ret < 0)
 		return ret;

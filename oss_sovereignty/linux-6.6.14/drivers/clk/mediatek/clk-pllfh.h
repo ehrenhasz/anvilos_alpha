@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Edward-JW Yang <edward-jw.yang@mediatek.com>
- */
+ 
+ 
 
 #ifndef __CLK_PLLFH_H
 #define __CLK_PLLFH_H
@@ -80,4 +77,4 @@ void mtk_clk_unregister_pllfhs(const struct mtk_pll_data *plls, int num_plls,
 void fhctl_parse_dt(const u8 *compatible_node, struct mtk_pllfh_data *pllfhs,
 		    int num_pllfhs);
 
-#endif /* __CLK_PLLFH_H */
+#endif  

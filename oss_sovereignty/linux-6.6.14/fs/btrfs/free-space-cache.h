@@ -1,19 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2009 Oracle.  All rights reserved.
- */
+ 
+ 
 
 #ifndef BTRFS_FREE_SPACE_CACHE_H
 #define BTRFS_FREE_SPACE_CACHE_H
 
-/*
- * This is the trim state of an extent or bitmap.
- *
- * BTRFS_TRIM_STATE_TRIMMING is special and used to maintain the state of a
- * bitmap as we may need several trims to fully trim a single bitmap entry.
- * This is reset should any free space other than trimmed space be added to the
- * bitmap.
- */
+ 
 enum btrfs_trim_state {
 	BTRFS_TRIM_STATE_UNTRIMMED,
 	BTRFS_TRIM_STATE_TRIMMED,
@@ -43,11 +34,7 @@ static inline bool btrfs_free_space_trimming_bitmap(
 	return (info->trim_state == BTRFS_TRIM_STATE_TRIMMING);
 }
 
-/*
- * Deltas are an effective way to populate global statistics.  Give macro names
- * to make it clear what we're doing.  An example is discard_extents in
- * btrfs_free_space_ctl.
- */
+ 
 enum {
 	BTRFS_STAT_CURR,
 	BTRFS_STAT_PREV,
@@ -152,7 +139,7 @@ int btrfs_trim_block_group_bitmaps(struct btrfs_block_group *block_group,
 
 bool btrfs_free_space_cache_v1_active(struct btrfs_fs_info *fs_info);
 int btrfs_set_free_space_cache_v1_active(struct btrfs_fs_info *fs_info, bool active);
-/* Support functions for running our sanity tests */
+ 
 #ifdef CONFIG_BTRFS_FS_RUN_SANITY_TESTS
 int test_add_free_space_entry(struct btrfs_block_group *cache,
 			      u64 offset, u64 bytes, bool bitmap);

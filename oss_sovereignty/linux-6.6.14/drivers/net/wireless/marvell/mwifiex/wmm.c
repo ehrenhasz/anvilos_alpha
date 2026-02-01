@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NXP Wireless LAN device driver: WMM
- *
- * Copyright 2011-2020 NXP
- */
+
+ 
 
 #include "decl.h"
 #include "ioctl.h"
@@ -14,7 +10,7 @@
 #include "11n.h"
 
 
-/* Maximum value FW can accept for driver delay in packet transmission */
+ 
 #define DRV_PKT_DELAY_TO_FW_MAX   512
 
 
@@ -22,20 +18,17 @@
 
 #define WMM_QUEUED_PACKET_UPPER_LIMIT   200
 
-/* Offset for TOS field in the IP header */
+ 
 #define IPTOS_OFFSET 5
 
 static bool disable_tx_amsdu;
 module_param(disable_tx_amsdu, bool, 0644);
 
-/* This table inverses the tos_to_tid operation to get a priority
- * which is in sequential order, and can be compared.
- * Use this to compare the priority of two different TIDs.
- */
+ 
 const u8 tos_to_tid_inv[] = {
-	0x02,  /* from tos_to_tid[2] = 0 */
-	0x00,  /* from tos_to_tid[0] = 1 */
-	0x01,  /* from tos_to_tid[1] = 2 */
+	0x02,   
+	0x00,   
+	0x01,   
 	0x03,
 	0x04,
 	0x05,
@@ -43,7 +36,7 @@ const u8 tos_to_tid_inv[] = {
 	0x07
 };
 
-/* WMM information IE */
+ 
 static const u8 wmm_info_ie[] = { WLAN_EID_VENDOR_SPECIFIC, 0x07,
 	0x00, 0x50, 0xf2, 0x02,
 	0x00, 0x01, 0x00
@@ -56,22 +49,20 @@ static const u8 wmm_aci_to_qidx_map[] = { WMM_AC_BE,
 };
 
 static u8 tos_to_tid[] = {
-	/* TID DSCP_P2 DSCP_P1 DSCP_P0 WMM_AC */
-	0x01,			/* 0 1 0 AC_BK */
-	0x02,			/* 0 0 0 AC_BK */
-	0x00,			/* 0 0 1 AC_BE */
-	0x03,			/* 0 1 1 AC_BE */
-	0x04,			/* 1 0 0 AC_VI */
-	0x05,			/* 1 0 1 AC_VI */
-	0x06,			/* 1 1 0 AC_VO */
-	0x07			/* 1 1 1 AC_VO */
+	 
+	0x01,			 
+	0x02,			 
+	0x00,			 
+	0x03,			 
+	0x04,			 
+	0x05,			 
+	0x06,			 
+	0x07			 
 };
 
 static u8 ac_to_tid[4][2] = { {1, 2}, {0, 3}, {4, 5}, {6, 7} };
 
-/*
- * This function debug prints the priority parameters for a WMM AC.
- */
+ 
 static void
 mwifiex_wmm_ac_debug_print(const struct ieee_types_wmm_ac_parameters *ac_param)
 {
@@ -89,11 +80,7 @@ mwifiex_wmm_ac_debug_print(const struct ieee_types_wmm_ac_parameters *ac_param)
 		 le16_to_cpu(ac_param->tx_op_limit));
 }
 
-/*
- * This function allocates a route address list.
- *
- * The function also initializes the list with the provided RA.
- */
+ 
 static struct mwifiex_ra_list_tbl *
 mwifiex_wmm_allocate_ralist_node(struct mwifiex_adapter *adapter, const u8 *ra)
 {
@@ -115,26 +102,18 @@ mwifiex_wmm_allocate_ralist_node(struct mwifiex_adapter *adapter, const u8 *ra)
 	return ra_list;
 }
 
-/* This function returns random no between 16 and 32 to be used as threshold
- * for no of packets after which BA setup is initiated.
- */
+ 
 static u8 mwifiex_get_random_ba_threshold(void)
 {
 	u64 ns;
-	/* setup ba_packet_threshold here random number between
-	 * [BA_SETUP_PACKET_OFFSET,
-	 * BA_SETUP_PACKET_OFFSET+BA_SETUP_MAX_PACKET_THRESHOLD-1]
-	 */
+	 
 	ns = ktime_get_ns();
 	ns += (ns >> 32) + (ns >> 16);
 
 	return ((u8)ns % BA_SETUP_MAX_PACKET_THRESHOLD) + BA_SETUP_PACKET_OFFSET;
 }
 
-/*
- * This function allocates and adds a RA list for all TIDs
- * with the given RA.
- */
+ 
 void mwifiex_ralist_add(struct mwifiex_private *priv, const u8 *ra)
 {
 	int i;
@@ -189,21 +168,17 @@ void mwifiex_ralist_add(struct mwifiex_private *priv, const u8 *ra)
 	}
 }
 
-/*
- * This function sets the WMM queue priorities to their default values.
- */
+ 
 static void mwifiex_wmm_default_queue_priorities(struct mwifiex_private *priv)
 {
-	/* Default queue priorities: VO->VI->BE->BK */
+	 
 	priv->wmm.queue_priority[0] = WMM_AC_VO;
 	priv->wmm.queue_priority[1] = WMM_AC_VI;
 	priv->wmm.queue_priority[2] = WMM_AC_BE;
 	priv->wmm.queue_priority[3] = WMM_AC_BK;
 }
 
-/*
- * This function map ACs to TIDs.
- */
+ 
 static void
 mwifiex_wmm_queue_priorities_tid(struct mwifiex_private *priv)
 {
@@ -222,9 +197,7 @@ mwifiex_wmm_queue_priorities_tid(struct mwifiex_private *priv)
 	atomic_set(&wmm->highest_queued_prio, HIGH_PRIO_TID);
 }
 
-/*
- * This function initializes WMM priority queues.
- */
+ 
 void
 mwifiex_wmm_setup_queue_priorities(struct mwifiex_private *priv,
 				   struct ieee_types_wmm_parameter *wmm_ie)
@@ -234,7 +207,7 @@ mwifiex_wmm_setup_queue_priorities(struct mwifiex_private *priv,
 	u8 ac_idx;
 
 	if (!wmm_ie || !priv->wmm_enabled) {
-		/* WMM is not enabled, just set the defaults and return */
+		 
 		mwifiex_wmm_default_queue_priorities(priv);
 		return;
 	}
@@ -263,7 +236,7 @@ mwifiex_wmm_setup_queue_priorities(struct mwifiex_private *priv,
 		mwifiex_wmm_ac_debug_print(&wmm_ie->ac_params[num_ac]);
 	}
 
-	/* Bubble sort */
+	 
 	for (i = 0; i < num_ac; i++) {
 		for (j = 1; j < num_ac - i; j++) {
 			if (tmp[j - 1] > tmp[j]) {
@@ -282,12 +255,7 @@ mwifiex_wmm_setup_queue_priorities(struct mwifiex_private *priv,
 	mwifiex_wmm_queue_priorities_tid(priv);
 }
 
-/*
- * This function evaluates whether or not an AC is to be downgraded.
- *
- * In case the AC is not enabled, the highest AC is returned that is
- * enabled and does not require admission control.
- */
+ 
 static enum mwifiex_wmm_ac_e
 mwifiex_wmm_eval_downgrade_ac(struct mwifiex_private *priv,
 			      enum mwifiex_wmm_ac_e eval_ac)
@@ -299,34 +267,25 @@ mwifiex_wmm_eval_downgrade_ac(struct mwifiex_private *priv,
 	ac_status = &priv->wmm.ac_status[eval_ac];
 
 	if (!ac_status->disabled)
-		/* Okay to use this AC, its enabled */
+		 
 		return eval_ac;
 
-	/* Setup a default return value of the lowest priority */
+	 
 	ret_ac = WMM_AC_BK;
 
-	/*
-	 *  Find the highest AC that is enabled and does not require
-	 *  admission control. The spec disallows downgrading to an AC,
-	 *  which is enabled due to a completed admission control.
-	 *  Unadmitted traffic is not to be sent on an AC with admitted
-	 *  traffic.
-	 */
+	 
 	for (down_ac = WMM_AC_BK; down_ac < eval_ac; down_ac++) {
 		ac_status = &priv->wmm.ac_status[down_ac];
 
 		if (!ac_status->disabled && !ac_status->flow_required)
-			/* AC is enabled and does not require admission
-			   control */
+			 
 			ret_ac = (enum mwifiex_wmm_ac_e) down_ac;
 	}
 
 	return ret_ac;
 }
 
-/*
- * This function downgrades WMM priority queue.
- */
+ 
 void
 mwifiex_wmm_setup_ac_downgrade(struct mwifiex_private *priv)
 {
@@ -336,7 +295,7 @@ mwifiex_wmm_setup_ac_downgrade(struct mwifiex_private *priv)
 		    "BK(0), BE(1), VI(2), VO(3)\n");
 
 	if (!priv->wmm_enabled) {
-		/* WMM is not enabled, default priorities */
+		 
 		for (ac_val = WMM_AC_BK; ac_val <= WMM_AC_VO; ac_val++)
 			priv->wmm.ac_down_graded_vals[ac_val] =
 						(enum mwifiex_wmm_ac_e) ac_val;
@@ -353,14 +312,11 @@ mwifiex_wmm_setup_ac_downgrade(struct mwifiex_private *priv)
 	}
 }
 
-/*
- * This function converts the IP TOS field to an WMM AC
- * Queue assignment.
- */
+ 
 static enum mwifiex_wmm_ac_e
 mwifiex_wmm_convert_tos_to_ac(struct mwifiex_adapter *adapter, u32 tos)
 {
-	/* Map of TOS UP values to WMM AC */
+	 
 	static const enum mwifiex_wmm_ac_e tos_to_ac[] = {
 		WMM_AC_BE,
 		WMM_AC_BK,
@@ -378,12 +334,7 @@ mwifiex_wmm_convert_tos_to_ac(struct mwifiex_adapter *adapter, u32 tos)
 	return tos_to_ac[tos];
 }
 
-/*
- * This function evaluates a given TID and downgrades it to a lower
- * TID if the WMM Parameter IE received from the AP indicates that the
- * AP is disabled (due to call admission control (ACM bit). Mapping
- * of TID to AC is taken care of internally.
- */
+ 
 u8 mwifiex_wmm_downgrade_tid(struct mwifiex_private *priv, u32 tid)
 {
 	enum mwifiex_wmm_ac_e ac, ac_down;
@@ -392,18 +343,13 @@ u8 mwifiex_wmm_downgrade_tid(struct mwifiex_private *priv, u32 tid)
 	ac = mwifiex_wmm_convert_tos_to_ac(priv->adapter, tid);
 	ac_down = priv->wmm.ac_down_graded_vals[ac];
 
-	/* Send the index to tid array, picking from the array will be
-	 * taken care by dequeuing function
-	 */
+	 
 	new_tid = ac_to_tid[ac_down][tid % 2];
 
 	return new_tid;
 }
 
-/*
- * This function initializes the WMM state information and the
- * WMM data path queues.
- */
+ 
 void
 mwifiex_wmm_init(struct mwifiex_adapter *adapter)
 {
@@ -466,9 +412,7 @@ int mwifiex_bypass_txlist_empty(struct mwifiex_adapter *adapter)
 	return true;
 }
 
-/*
- * This function checks if WMM Tx queue is empty.
- */
+ 
 int
 mwifiex_wmm_lists_empty(struct mwifiex_adapter *adapter)
 {
@@ -492,13 +436,7 @@ mwifiex_wmm_lists_empty(struct mwifiex_adapter *adapter)
 	return true;
 }
 
-/*
- * This function deletes all packets in an RA list node.
- *
- * The packet sent completion callback handler are called with
- * status failure, after they are dequeued to ensure proper
- * cleanup. The RA list node itself is freed at the end.
- */
+ 
 static void
 mwifiex_wmm_del_pkts_in_ralist_node(struct mwifiex_private *priv,
 				    struct mwifiex_ra_list_tbl *ra_list)
@@ -512,12 +450,7 @@ mwifiex_wmm_del_pkts_in_ralist_node(struct mwifiex_private *priv,
 	}
 }
 
-/*
- * This function deletes all packets in an RA list.
- *
- * Each nodes in the RA list are freed individually first, and then
- * the RA list itself is freed.
- */
+ 
 static void
 mwifiex_wmm_del_pkts_in_ralist(struct mwifiex_private *priv,
 			       struct list_head *ra_list_head)
@@ -528,9 +461,7 @@ mwifiex_wmm_del_pkts_in_ralist(struct mwifiex_private *priv,
 		mwifiex_wmm_del_pkts_in_ralist_node(priv, ra_list);
 }
 
-/*
- * This function deletes all packets in all RA lists.
- */
+ 
 static void mwifiex_wmm_cleanup_queues(struct mwifiex_private *priv)
 {
 	int i;
@@ -543,9 +474,7 @@ static void mwifiex_wmm_cleanup_queues(struct mwifiex_private *priv)
 	atomic_set(&priv->wmm.highest_queued_prio, HIGH_PRIO_TID);
 }
 
-/*
- * This function deletes all route addresses from all RA lists.
- */
+ 
 static void mwifiex_wmm_delete_all_ralist(struct mwifiex_private *priv)
 {
 	struct mwifiex_ra_list_tbl *ra_list, *tmp_node;
@@ -572,16 +501,7 @@ static int mwifiex_free_ack_frame(int id, void *p, void *data)
 	return 0;
 }
 
-/*
- * This function cleans up the Tx and Rx queues.
- *
- * Cleanup includes -
- *      - All packets in RA lists
- *      - All entries in Rx reorder table
- *      - All entries in Tx BA stream table
- *      - MPA buffer (if required)
- *      - All RA lists
- */
+ 
 void
 mwifiex_clean_txrx(struct mwifiex_private *priv)
 {
@@ -619,10 +539,7 @@ mwifiex_clean_txrx(struct mwifiex_private *priv)
 	idr_destroy(&priv->ack_status_frames);
 }
 
-/*
- * This function retrieves a particular RA list node, matching with the
- * given TID and RA address.
- */
+ 
 struct mwifiex_ra_list_tbl *
 mwifiex_wmm_get_ralist_node(struct mwifiex_private *priv, u8 tid,
 			    const u8 *ra_addr)
@@ -674,9 +591,7 @@ void mwifiex_update_ralist_tx_pause(struct mwifiex_private *priv, u8 *mac,
 	spin_unlock_bh(&priv->wmm.ra_list_spinlock);
 }
 
-/* This function updates non-tdls peer ralist tx_pause while
- * tdls channel switching
- */
+ 
 void mwifiex_update_ralist_tx_pause_in_tdls_cs(struct mwifiex_private *priv,
 					       u8 *mac, u8 tx_pause)
 {
@@ -718,13 +633,7 @@ void mwifiex_update_ralist_tx_pause_in_tdls_cs(struct mwifiex_private *priv,
 	spin_unlock_bh(&priv->wmm.ra_list_spinlock);
 }
 
-/*
- * This function retrieves an RA list node for a given TID and
- * RA address pair.
- *
- * If no such node is found, a new node is added first and then
- * retrieved.
- */
+ 
 struct mwifiex_ra_list_tbl *
 mwifiex_wmm_get_queue_raptr(struct mwifiex_private *priv, u8 tid,
 			    const u8 *ra_addr)
@@ -739,10 +648,7 @@ mwifiex_wmm_get_queue_raptr(struct mwifiex_private *priv, u8 tid,
 	return mwifiex_wmm_get_ralist_node(priv, tid, ra_addr);
 }
 
-/*
- * This function deletes RA list nodes for given mac for all TIDs.
- * Function also decrements TX pending count accordingly.
- */
+ 
 void
 mwifiex_wmm_del_peer_ra_list(struct mwifiex_private *priv, const u8 *ra_addr)
 {
@@ -768,10 +674,7 @@ mwifiex_wmm_del_peer_ra_list(struct mwifiex_private *priv, const u8 *ra_addr)
 	spin_unlock_bh(&priv->wmm.ra_list_spinlock);
 }
 
-/*
- * This function checks if a particular RA list node exists in a given TID
- * table index.
- */
+ 
 int
 mwifiex_is_ralist_valid(struct mwifiex_private *priv,
 			struct mwifiex_ra_list_tbl *ra_list, int ptr_index)
@@ -787,11 +690,7 @@ mwifiex_is_ralist_valid(struct mwifiex_private *priv,
 	return false;
 }
 
-/*
- * This function adds a packet to bypass TX queue.
- * This is special TX queue for packets which can be sent even when port_open
- * is false.
- */
+ 
 void
 mwifiex_wmm_add_buf_bypass_txqueue(struct mwifiex_private *priv,
 				   struct sk_buff *skb)
@@ -799,15 +698,7 @@ mwifiex_wmm_add_buf_bypass_txqueue(struct mwifiex_private *priv,
 	skb_queue_tail(&priv->bypass_txq, skb);
 }
 
-/*
- * This function adds a packet to WMM queue.
- *
- * In disconnected state the packet is immediately dropped and the
- * packet send completion callback is called with status failure.
- *
- * Otherwise, the correct RA list node is located and the packet
- * is queued at the list tail.
- */
+ 
 void
 mwifiex_wmm_add_buf_txqueue(struct mwifiex_private *priv,
 			    struct sk_buff *skb)
@@ -845,9 +736,7 @@ mwifiex_wmm_add_buf_txqueue(struct mwifiex_private *priv,
 
 	tid_down = mwifiex_wmm_downgrade_tid(priv, tid);
 
-	/* In case of infra as we have already created the list during
-	   association we just don't have to call get_queue_raptr, we will
-	   have only 1 raptr for a tid in case of infra */
+	 
 	if (!mwifiex_queuing_ra_based(priv) &&
 	    !mwifiex_is_skb_mgmt_frame(skb)) {
 		switch (tdls_status) {
@@ -900,17 +789,7 @@ mwifiex_wmm_add_buf_txqueue(struct mwifiex_private *priv,
 	spin_unlock_bh(&priv->wmm.ra_list_spinlock);
 }
 
-/*
- * This function processes the get WMM status command response from firmware.
- *
- * The response may contain multiple TLVs -
- *      - AC Queue status TLVs
- *      - Current WMM Parameter IE TLV
- *      - Admission Control action frame TLVs
- *
- * This function parses the TLVs and then calls further specific functions
- * to process any changes in the queue prioritize or state.
- */
+ 
 int mwifiex_ret_wmm_get_status(struct mwifiex_private *priv,
 			       const struct host_cmd_ds_command *resp)
 {
@@ -956,10 +835,7 @@ int mwifiex_ret_wmm_get_status(struct mwifiex_private *priv,
 			break;
 
 		case WLAN_EID_VENDOR_SPECIFIC:
-			/*
-			 * Point the regular IEEE IE 2 bytes into the Marvell IE
-			 *   and setup the IEEE IE type and length byte fields
-			 */
+			 
 
 			wmm_param_ie =
 				(struct ieee_types_wmm_parameter *) (curr +
@@ -998,13 +874,7 @@ int mwifiex_ret_wmm_get_status(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * Callback handler from the command module to allow insertion of a WMM TLV.
- *
- * If the BSS we are associating to supports WMM, this function adds the
- * required WMM Information IE to the association request command buffer in
- * the form of a Marvell extended IEEE IE.
- */
+ 
 u32
 mwifiex_wmm_process_association_req(struct mwifiex_private *priv,
 				    u8 **assoc_buf,
@@ -1014,7 +884,7 @@ mwifiex_wmm_process_association_req(struct mwifiex_private *priv,
 	struct mwifiex_ie_types_wmm_param_set *wmm_tlv;
 	u32 ret_len = 0;
 
-	/* Null checks */
+	 
 	if (!assoc_buf)
 		return 0;
 	if (!(*assoc_buf))
@@ -1051,15 +921,7 @@ mwifiex_wmm_process_association_req(struct mwifiex_private *priv,
 	return ret_len;
 }
 
-/*
- * This function computes the time delay in the driver queues for a
- * given packet.
- *
- * When the packet is received at the OS/Driver interface, the current
- * time is set in the packet structure. The difference between the present
- * time and that received time is computed in this function and limited
- * based on pre-compiled limits in the driver.
- */
+ 
 u8
 mwifiex_wmm_compute_drv_pkt_delay(struct mwifiex_private *priv,
 				  const struct sk_buff *skb)
@@ -1067,12 +929,7 @@ mwifiex_wmm_compute_drv_pkt_delay(struct mwifiex_private *priv,
 	u32 queue_delay = ktime_to_ms(net_timedelta(skb->tstamp));
 	u8 ret_val;
 
-	/*
-	 * Queue delay is passed as a uint8 in units of 2ms (ms shifted
-	 *  by 1). Min value (other than 0) is therefore 2ms, max is 510ms.
-	 *
-	 * Pass max value if queue_delay is beyond the uint8 range
-	 */
+	 
 	ret_val = (u8) (min(queue_delay, priv->wmm.drv_pkt_delay_max) >> 1);
 
 	mwifiex_dbg(priv->adapter, DATA, "data: WMM: Pkt Delay: %d ms,\t"
@@ -1081,9 +938,7 @@ mwifiex_wmm_compute_drv_pkt_delay(struct mwifiex_private *priv,
 	return ret_val;
 }
 
-/*
- * This function retrieves the highest priority RA list table pointer.
- */
+ 
 static struct mwifiex_ra_list_tbl *
 mwifiex_wmm_get_highest_priolist_ptr(struct mwifiex_adapter *adapter,
 				     struct mwifiex_private **priv, int *tid)
@@ -1094,9 +949,9 @@ mwifiex_wmm_get_highest_priolist_ptr(struct mwifiex_adapter *adapter,
 	atomic_t *hqp;
 	int i, j;
 
-	/* check the BSS with highest priority first */
+	 
 	for (j = adapter->priv_num - 1; j >= 0; --j) {
-		/* iterate over BSS with the equal priority */
+		 
 		list_for_each_entry(adapter->bss_prio_tbl[j].bss_prio_cur,
 				    &adapter->bss_prio_tbl[j].bss_prio_head,
 				    list) {
@@ -1113,7 +968,7 @@ try_again:
 			    !adapter->if_ops.is_port_ready(priv_tmp))
 				continue;
 
-			/* iterate over the WMM queues of the BSS */
+			 
 			hqp = &priv_tmp->wmm.highest_queued_prio;
 			for (i = atomic_read(hqp); i >= LOW_PRIO_TID; --i) {
 
@@ -1122,13 +977,13 @@ try_again:
 				tid_ptr = &(priv_tmp)->wmm.
 					tid_tbl_ptr[tos_to_tid[i]];
 
-				/* iterate over receiver addresses */
+				 
 				list_for_each_entry(ptr, &tid_ptr->ra_list,
 						    list) {
 
 					if (!ptr->tx_paused &&
 					    !skb_queue_empty(&ptr->skb_head))
-						/* holds both locks */
+						 
 						goto found;
 				}
 
@@ -1138,9 +993,7 @@ try_again:
 			if (atomic_read(&priv_tmp->wmm.tx_pkts_queued) != 0) {
 				atomic_set(&priv_tmp->wmm.highest_queued_prio,
 					   HIGH_PRIO_TID);
-				/* Iterate current private once more, since
-				 * there still exist packets in data queue
-				 */
+				 
 				goto try_again;
 			} else
 				atomic_set(&priv_tmp->wmm.highest_queued_prio,
@@ -1151,7 +1004,7 @@ try_again:
 	return NULL;
 
 found:
-	/* holds ra_list_spinlock */
+	 
 	if (atomic_read(hqp) > i)
 		atomic_set(hqp, i);
 	spin_unlock_bh(&priv_tmp->wmm.ra_list_spinlock);
@@ -1162,15 +1015,7 @@ found:
 	return ptr;
 }
 
-/* This functions rotates ra and bss lists so packets are picked round robin.
- *
- * After a packet is successfully transmitted, rotate the ra list, so the ra
- * next to the one transmitted, will come first in the list. This way we pick
- * the ra' in a round robin fashion. Same applies to bss nodes of equal
- * priority.
- *
- * Function also increments wmm.packets_out counter.
- */
+ 
 void mwifiex_rotate_priolists(struct mwifiex_private *priv,
 				 struct mwifiex_ra_list_tbl *ra,
 				 int tid)
@@ -1180,10 +1025,7 @@ void mwifiex_rotate_priolists(struct mwifiex_private *priv,
 	struct mwifiex_tid_tbl *tid_ptr = &priv->wmm.tid_tbl_ptr[tid];
 
 	spin_lock_bh(&tbl[priv->bss_priority].bss_prio_lock);
-	/*
-	 * dirty trick: we remove 'head' temporarily and reinsert it after
-	 * curr bss node. imagine list to stay fixed while head is moved
-	 */
+	 
 	list_move(&tbl[priv->bss_priority].bss_prio_head,
 		  &tbl[priv->bss_priority].bss_prio_cur->list);
 	spin_unlock_bh(&tbl[priv->bss_priority].bss_prio_lock);
@@ -1191,15 +1033,13 @@ void mwifiex_rotate_priolists(struct mwifiex_private *priv,
 	spin_lock_bh(&priv->wmm.ra_list_spinlock);
 	if (mwifiex_is_ralist_valid(priv, ra, tid)) {
 		priv->wmm.packets_out[tid]++;
-		/* same as above */
+		 
 		list_move(&tid_ptr->ra_list, &ra->list);
 	}
 	spin_unlock_bh(&priv->wmm.ra_list_spinlock);
 }
 
-/*
- * This function checks if 11n aggregation is possible.
- */
+ 
 static int
 mwifiex_is_11n_aggragation_possible(struct mwifiex_private *priv,
 				    struct mwifiex_ra_list_tbl *ptr,
@@ -1226,9 +1066,7 @@ mwifiex_is_11n_aggragation_possible(struct mwifiex_private *priv,
 	return false;
 }
 
-/*
- * This function sends a single packet to firmware for transmission.
- */
+ 
 static void
 mwifiex_send_single_packet(struct mwifiex_private *priv,
 			   struct mwifiex_ra_list_tbl *ptr, int ptr_index)
@@ -1264,7 +1102,7 @@ mwifiex_send_single_packet(struct mwifiex_private *priv,
 				sizeof(struct txpd) : 0);
 
 	if (mwifiex_process_tx(priv, skb, &tx_param) == -EBUSY) {
-		/* Queue the packet back at the head */
+		 
 		spin_lock_bh(&priv->wmm.ra_list_spinlock);
 
 		if (!mwifiex_is_ralist_valid(priv, ptr, ptr_index)) {
@@ -1285,10 +1123,7 @@ mwifiex_send_single_packet(struct mwifiex_private *priv,
 	}
 }
 
-/*
- * This function checks if the first packet in the given RA list
- * is already processed or not.
- */
+ 
 static int
 mwifiex_is_ptr_processed(struct mwifiex_private *priv,
 			 struct mwifiex_ra_list_tbl *ptr)
@@ -1308,10 +1143,7 @@ mwifiex_is_ptr_processed(struct mwifiex_private *priv,
 	return false;
 }
 
-/*
- * This function sends a single processed packet to firmware for
- * transmission.
- */
+ 
 static void
 mwifiex_send_processed_packet(struct mwifiex_private *priv,
 			      struct mwifiex_ra_list_tbl *ptr, int ptr_index)
@@ -1397,10 +1229,7 @@ mwifiex_send_processed_packet(struct mwifiex_private *priv,
 	}
 }
 
-/*
- * This function dequeues a packet from the highest priority list
- * and transmits it.
- */
+ 
 static int
 mwifiex_dequeue_tx_packet(struct mwifiex_adapter *adapter)
 {
@@ -1426,8 +1255,7 @@ mwifiex_dequeue_tx_packet(struct mwifiex_adapter *adapter)
 
 	if (mwifiex_is_ptr_processed(priv, ptr)) {
 		mwifiex_send_processed_packet(priv, ptr, ptr_index);
-		/* ra_list_spinlock has been freed in
-		   mwifiex_send_processed_packet() */
+		 
 		return 0;
 	}
 
@@ -1441,14 +1269,10 @@ mwifiex_dequeue_tx_packet(struct mwifiex_adapter *adapter)
 			mwifiex_is_11n_aggragation_possible(priv, ptr,
 							adapter->tx_buf_size))
 			mwifiex_11n_aggregate_pkt(priv, ptr, ptr_index);
-			/* ra_list_spinlock has been freed in
-			 * mwifiex_11n_aggregate_pkt()
-			 */
+			 
 		else
 			mwifiex_send_single_packet(priv, ptr, ptr_index);
-			/* ra_list_spinlock has been freed in
-			 * mwifiex_send_single_packet()
-			 */
+			 
 	} else {
 		if (mwifiex_is_ampdu_allowed(priv, ptr, tid) &&
 		    ptr->ba_pkt_count > ptr->ba_packet_thr) {
@@ -1467,12 +1291,10 @@ mwifiex_dequeue_tx_packet(struct mwifiex_adapter *adapter)
 		    mwifiex_is_11n_aggragation_possible(priv, ptr,
 							adapter->tx_buf_size))
 			mwifiex_11n_aggregate_pkt(priv, ptr, ptr_index);
-			/* ra_list_spinlock has been freed in
-			   mwifiex_11n_aggregate_pkt() */
+			 
 		else
 			mwifiex_send_single_packet(priv, ptr, ptr_index);
-			/* ra_list_spinlock has been freed in
-			   mwifiex_send_single_packet() */
+			 
 	}
 	return 0;
 }
@@ -1504,7 +1326,7 @@ void mwifiex_process_bypass_tx(struct mwifiex_adapter *adapter)
 		skb = skb_dequeue(&priv->bypass_txq);
 		tx_info = MWIFIEX_SKB_TXCB(skb);
 
-		/* no aggregation for bypass packets */
+		 
 		tx_param.next_pkt_len = 0;
 
 		if (mwifiex_process_tx(priv, skb, &tx_param) == -EBUSY) {
@@ -1516,10 +1338,7 @@ void mwifiex_process_bypass_tx(struct mwifiex_adapter *adapter)
 	}
 }
 
-/*
- * This function transmits the highest priority packet awaiting in the
- * WMM Queues.
- */
+ 
 void
 mwifiex_wmm_process_tx(struct mwifiex_adapter *adapter)
 {

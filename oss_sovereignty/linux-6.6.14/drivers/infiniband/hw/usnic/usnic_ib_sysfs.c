@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2013, Cisco Systems, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+ 
 
 #include <linux/init.h>
 #include <linux/errno.h>
@@ -60,9 +29,7 @@ static ssize_t board_id_show(struct device *device,
 }
 static DEVICE_ATTR_RO(board_id);
 
-/*
- * Report the configuration for this PF
- */
+ 
 static ssize_t
 config_show(struct device *device, struct device_attribute *attr, char *buf)
 {
@@ -75,10 +42,7 @@ config_show(struct device *device, struct device_attribute *attr, char *buf)
 	if (kref_read(&us_ibdev->vf_cnt) > 0) {
 		char *busname;
 		char *sep = "";
-		/*
-		 * bus name seems to come with annoying prefix.
-		 * Remove it if it is predictable
-		 */
+		 
 		busname = us_ibdev->pdev->bus->name;
 		if (strncmp(busname, "PCI Bus ", 8) == 0)
 			busname += 8;
@@ -179,9 +143,7 @@ struct qpn_attribute {
 	ssize_t (*show)(struct usnic_ib_qp_grp *, char *buf);
 };
 
-/*
- * Definitions for supporting QPN entries in sysfs
- */
+ 
 static ssize_t
 usnic_ib_qpn_attr_show(struct kobject *kobj, struct attribute *attr, char *buf)
 {
@@ -251,7 +213,7 @@ static struct kobj_type usnic_ib_qpn_type = {
 
 int usnic_ib_sysfs_register_usdev(struct usnic_ib_dev *us_ibdev)
 {
-	/* create kernel object for looking at individual QPs */
+	 
 	kobject_get(&us_ibdev->ib_dev.dev.kobj);
 	us_ibdev->qpn_kobj = kobject_create_and_add("qpn",
 			&us_ibdev->ib_dev.dev.kobj);

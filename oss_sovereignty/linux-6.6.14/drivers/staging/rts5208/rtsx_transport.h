@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Driver for Realtek PCI-Express card reader
- *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Wei WANG (wei_wang@realsil.com.cn)
- *   Micky Ching (micky_ching@realsil.com.cn)
- */
+ 
+ 
 
 #ifndef __REALTEK_RTSX_TRANSPORT_H
 #define __REALTEK_RTSX_TRANSPORT_H
@@ -54,4 +46,4 @@ int rtsx_transfer_data_partial(struct rtsx_chip *chip, u8 card,	void *buf,
 			       unsigned int *offset,
 			       enum dma_data_direction dma_dir, int timeout);
 
-#endif   /* __REALTEK_RTSX_TRANSPORT_H */
+#endif    

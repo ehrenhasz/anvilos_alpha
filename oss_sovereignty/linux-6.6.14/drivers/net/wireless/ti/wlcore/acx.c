@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl1271
- *
- * Copyright (C) 2008-2009 Nokia Corporation
- *
- * Contact: Luciano Coelho <luciano.coelho@nokia.com>
- */
+
+ 
 
 #include "acx.h"
 
@@ -123,7 +117,7 @@ int wl1271_acx_feature_cfg(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 		goto out;
 	}
 
-	/* DF_ENCRYPTION_DISABLE and DF_SNIFF_MODE_ENABLE are disabled */
+	 
 	feature->role_id = wlvif->role_id;
 	feature->data_flow_options = 0;
 	feature->options = 0;
@@ -224,7 +218,7 @@ int wl1271_acx_group_address_tbl(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 		goto out;
 	}
 
-	/* MAC filtering */
+	 
 	acx->role_id = wlvif->role_id;
 	acx->enabled = enable;
 	acx->num_groups = mc_list_len;
@@ -279,10 +273,7 @@ int wl1271_acx_rts_threshold(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 	struct acx_rts_threshold *rts;
 	int ret;
 
-	/*
-	 * If the RTS threshold is not configured or out of range, use the
-	 * default value.
-	 */
+	 
 	if (rts_threshold > IEEE80211_MAX_RTS_THRESHOLD)
 		rts_threshold = wl->conf.rx.rts_threshold;
 
@@ -359,10 +350,7 @@ int wl1271_acx_beacon_filter_opt(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 	beacon_filter->role_id = wlvif->role_id;
 	beacon_filter->enable = enable_filter;
 
-	/*
-	 * When set to zero, and the filter is enabled, beacons
-	 * without the unicast TIM bit set are dropped.
-	 */
+	 
 	beacon_filter->max_num_beacons = 0;
 
 	ret = wl1271_cmd_configure(wl, ACX_BEACON_FILTER_OPT,
@@ -393,7 +381,7 @@ int wl1271_acx_beacon_filter_table(struct wl1271 *wl,
 		goto out;
 	}
 
-	/* configure default beacon pass-through rules */
+	 
 	ie_table->role_id = wlvif->role_id;
 	ie_table->num_ie = 0;
 	for (i = 0; i < wl->conf.conn.bcn_filt_ie_count; i++) {
@@ -402,12 +390,11 @@ int wl1271_acx_beacon_filter_table(struct wl1271 *wl,
 		ie_table->table[idx++] = r->rule;
 
 		if (r->ie == WLAN_EID_VENDOR_SPECIFIC) {
-			/* only one vendor specific ie allowed */
+			 
 			if (vendor_spec)
 				continue;
 
-			/* for vendor specific rules configure the
-			   additional fields */
+			 
 			memcpy(&(ie_table->table[idx]), r->oui,
 			       CONF_BCN_IE_OUI_LEN);
 			idx += CONF_BCN_IE_OUI_LEN;
@@ -518,7 +505,7 @@ int wl12xx_acx_sg_cfg(struct wl1271 *wl)
 		goto out;
 	}
 
-	/* BT-WLAN coext parameters */
+	 
 	for (i = 0; i < WLCORE_CONF_SG_PARAMS_MAX; i++)
 		param->params[i] = cpu_to_le32(c->params[i]);
 	param->param_idx = WLCORE_CONF_SG_PARAMS_ALL;
@@ -630,7 +617,7 @@ int wl1271_acx_event_mbox_mask(struct wl1271 *wl, u32 event_mask)
 		goto out;
 	}
 
-	/* high event mask is unused */
+	 
 	mask->high_event_mask = cpu_to_le32(0xffffffff);
 	mask->event_mask = cpu_to_le32(event_mask);
 
@@ -737,7 +724,7 @@ int wl1271_acx_sta_rate_policies(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 	wl1271_debug(DEBUG_ACX, "basic_rate: 0x%x, full_rate: 0x%x",
 		wlvif->basic_rate, wlvif->rate_set);
 
-	/* configure one basic rate class */
+	 
 	acx->rate_policy_idx = cpu_to_le32(wlvif->sta.basic_rate_idx);
 	acx->rate_policy.enabled_rates = cpu_to_le32(wlvif->basic_rate);
 	acx->rate_policy.short_retry_limit = c->short_retry_limit;
@@ -750,10 +737,10 @@ int wl1271_acx_sta_rate_policies(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 		goto out;
 	}
 
-	/* configure one AP supported rate class */
+	 
 	acx->rate_policy_idx = cpu_to_le32(wlvif->sta.ap_rate_idx);
 
-	/* the AP policy is HW specific */
+	 
 	acx->rate_policy.enabled_rates =
 		cpu_to_le32(wlcore_hw_sta_get_ap_rate_mask(wl, wlvif));
 	acx->rate_policy.short_retry_limit = c->short_retry_limit;
@@ -766,11 +753,7 @@ int wl1271_acx_sta_rate_policies(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 		goto out;
 	}
 
-	/*
-	 * configure one rate class for basic p2p operations.
-	 * (p2p packets should always go out with OFDM rates, even
-	 * if we are currently connected to 11b AP)
-	 */
+	 
 	acx->rate_policy_idx = cpu_to_le32(wlvif->sta.p2p_rate_idx);
 	acx->rate_policy.enabled_rates =
 				cpu_to_le32(CONF_TX_RATE_MASK_BASIC_P2P);
@@ -898,10 +881,7 @@ int wl1271_acx_frag_threshold(struct wl1271 *wl, u32 frag_threshold)
 	struct acx_frag_threshold *acx;
 	int ret = 0;
 
-	/*
-	 * If the fragmentation is not configured or out of range, use the
-	 * default value.
-	 */
+	 
 	if (frag_threshold > IEEE80211_MAX_FRAG_THRESHOLD)
 		frag_threshold = wl->conf.tx.frag_threshold;
 
@@ -969,7 +949,7 @@ int wl12xx_acx_mem_cfg(struct wl1271 *wl)
 
 	mem = &wl->conf.mem;
 
-	/* memory config */
+	 
 	mem_conf->num_stations = mem->num_stations;
 	mem_conf->rx_mem_block_num = mem->rx_block_num;
 	mem_conf->tx_min_mem_block_num = mem->tx_min_block_num;
@@ -1005,7 +985,7 @@ int wl1271_acx_init_mem_config(struct wl1271 *wl)
 		return -ENOMEM;
 	}
 
-	/* we now ask for the firmware built memory map */
+	 
 	ret = wl1271_acx_mem_map(wl, (void *)wl->target_mem_map,
 				 sizeof(struct wl1271_acx_mem_map));
 	if (ret < 0) {
@@ -1015,7 +995,7 @@ int wl1271_acx_init_mem_config(struct wl1271 *wl)
 		return ret;
 	}
 
-	/* initialize TX block book keeping */
+	 
 	wl->tx_blocks_available =
 		le32_to_cpu(wl->target_mem_map->num_tx_mem_blocks);
 	wl1271_debug(DEBUG_TX, "available tx blocks: %d",
@@ -1301,16 +1281,13 @@ int wl1271_acx_set_ht_capabilities(struct wl1271 *wl,
 	}
 
 	if (allow_ht_operation && ht_cap->ht_supported) {
-		/* no need to translate capabilities - use the spec values */
+		 
 		ht_capabilites = ht_cap->cap;
 
-		/*
-		 * this bit is not employed by the spec but only by FW to
-		 * indicate peer HT support
-		 */
+		 
 		ht_capabilites |= WL12XX_HT_CAP_HT_OPERATION;
 
-		/* get data from A-MPDU parameters field */
+		 
 		acx->ampdu_max_length = ht_cap->ampdu_factor;
 		acx->ampdu_min_spacing = ht_cap->ampdu_density;
 	}
@@ -1367,7 +1344,7 @@ out:
 	return ret;
 }
 
-/* Configure BA session initiator/receiver parameters setting in the FW. */
+ 
 int wl12xx_acx_set_ba_initiator_policy(struct wl1271 *wl,
 				       struct wl12xx_vif *wlvif)
 {
@@ -1382,7 +1359,7 @@ int wl12xx_acx_set_ba_initiator_policy(struct wl1271 *wl,
 		goto out;
 	}
 
-	/* set for the current role */
+	 
 	acx->role_id = wlvif->role_id;
 	acx->tid_bitmap = wl->conf.ht.tx_ba_tid_bitmap;
 	acx->win_size = wl->conf.ht.tx_ba_win_size;
@@ -1402,7 +1379,7 @@ out:
 	return ret;
 }
 
-/* setup BA session receiver setting in the FW. */
+ 
 int wl12xx_acx_set_ba_receiver_session(struct wl1271 *wl, u8 tid_index,
 				       u16 ssn, bool enable, u8 peer_hlid,
 				       u8 win_size)
@@ -1432,7 +1409,7 @@ int wl12xx_acx_set_ba_receiver_session(struct wl1271 *wl, u8 tid_index,
 		goto out;
 	}
 
-	/* sometimes we can't start the session */
+	 
 	if (ret == CMD_STATUS_NO_RX_BA_SESSION) {
 		wl1271_warning("no fw rx ba on tid %d", tid_index);
 		ret = -EBUSY;
@@ -1496,11 +1473,7 @@ int wl1271_acx_ps_rx_streaming(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 		enable_queues = 0;
 
 	for (i = 0; i < 8; i++) {
-		/*
-		 * Skip non-changed queues, to avoid redundant acxs.
-		 * this check assumes conf.rx_streaming.queues can't
-		 * be changed while rx_streaming is enabled.
-		 */
+		 
 		if (!(conf_queues & BIT(i)))
 			continue;
 
@@ -1757,7 +1730,7 @@ out:
 }
 
 #ifdef CONFIG_PM
-/* Set the global behaviour of RX filters - On/Off + default action */
+ 
 int wl1271_acx_default_rx_filter_enable(struct wl1271 *wl, bool enable,
 					enum rx_filter_action action)
 {
@@ -1786,7 +1759,7 @@ out:
 	return ret;
 }
 
-/* Configure or disable a specific RX filter pattern */
+ 
 int wl1271_acx_set_rx_filter(struct wl1271 *wl, u8 index, bool enable,
 			     struct wl12xx_rx_filter *filter)
 {
@@ -1836,4 +1809,4 @@ out:
 	kfree(acx);
 	return ret;
 }
-#endif /* CONFIG_PM */
+#endif  

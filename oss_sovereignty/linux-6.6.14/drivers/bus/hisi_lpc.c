@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2017 Hisilicon Limited, All Rights Reserved.
- * Author: Zhichang Yuan <yuanzhichang@hisilicon.com>
- * Author: Zou Rongrong <zourongrong@huawei.com>
- * Author: John Garry <john.garry@huawei.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/console.h>
@@ -21,16 +16,12 @@
 
 #define DRV_NAME "hisi-lpc"
 
-/*
- * Setting this bit means each IO operation will target a different port
- * address; 0 means repeated IO operations will use the same port,
- * such as BT.
- */
+ 
 #define FG_INCRADDR_LPC		0x02
 
 struct lpc_cycle_para {
 	unsigned int opflags;
-	unsigned int csize; /* data length of each operation */
+	unsigned int csize;  
 };
 
 struct hisi_lpc_dev {
@@ -39,7 +30,7 @@ struct hisi_lpc_dev {
 	struct logic_pio_hwaddr *io_host;
 };
 
-/* The max IO cycle counts supported is four per operation at maximum */
+ 
 #define LPC_MAX_DWIDTH	4
 
 #define LPC_REG_STARTUP_SIGNAL		0x00
@@ -47,31 +38,21 @@ struct hisi_lpc_dev {
 #define LPC_REG_OP_STATUS		0x04
 #define LPC_REG_OP_STATUS_IDLE		BIT(0)
 #define LPC_REG_OP_STATUS_FINISHED	BIT(1)
-#define LPC_REG_OP_LEN			0x10 /* LPC cycles count per start */
+#define LPC_REG_OP_LEN			0x10  
 #define LPC_REG_CMD			0x14
-#define LPC_REG_CMD_OP			BIT(0) /* 0: read, 1: write */
+#define LPC_REG_CMD_OP			BIT(0)  
 #define LPC_REG_CMD_SAMEADDR		BIT(3)
-#define LPC_REG_ADDR			0x20 /* target address */
-#define LPC_REG_WDATA			0x24 /* write FIFO */
-#define LPC_REG_RDATA			0x28 /* read FIFO */
+#define LPC_REG_ADDR			0x20  
+#define LPC_REG_WDATA			0x24  
+#define LPC_REG_RDATA			0x28  
 
-/* The minimal nanosecond interval for each query on LPC cycle status */
+ 
 #define LPC_NSEC_PERWAIT	100
 
-/*
- * The maximum waiting time is about 128us.  It is specific for stream I/O,
- * such as ins.
- *
- * The fastest IO cycle time is about 390ns, but the worst case will wait
- * for extra 256 lpc clocks, so (256 + 13) * 30ns = 8 us. The maximum burst
- * cycles is 16. So, the maximum waiting time is about 128us under worst
- * case.
- *
- * Choose 1300 as the maximum.
- */
+ 
 #define LPC_MAX_WAITCNT		1300
 
-/* About 10us. This is specific for single IO operations, such as inb */
+ 
 #define LPC_PEROP_WAITCNT	100
 
 static int wait_lpc_idle(void __iomem *mbase, unsigned int waitcnt)
@@ -88,16 +69,7 @@ static int wait_lpc_idle(void __iomem *mbase, unsigned int waitcnt)
 	return -ETIMEDOUT;
 }
 
-/*
- * hisi_lpc_target_in - trigger a series of LPC cycles for read operation
- * @lpcdev: pointer to hisi lpc device
- * @para: some parameters used to control the lpc I/O operations
- * @addr: the lpc I/O target port address
- * @buf: where the read back data is stored
- * @opcnt: how many I/O operations required, i.e. data width
- *
- * Returns 0 on success, non-zero on fail.
- */
+ 
 static int hisi_lpc_target_in(struct hisi_lpc_dev *lpcdev,
 			      struct lpc_cycle_para *para, unsigned long addr,
 			      unsigned char *buf, unsigned long opcnt)
@@ -110,14 +82,14 @@ static int hisi_lpc_target_in(struct hisi_lpc_dev *lpcdev,
 	if (!buf || !opcnt || !para || !para->csize || !lpcdev)
 		return -EINVAL;
 
-	cmd_word = 0; /* IO mode, Read */
+	cmd_word = 0;  
 	waitcnt = LPC_PEROP_WAITCNT;
 	if (!(para->opflags & FG_INCRADDR_LPC)) {
 		cmd_word |= LPC_REG_CMD_SAMEADDR;
 		waitcnt = LPC_MAX_WAITCNT;
 	}
 
-	/* whole operation must be atomic */
+	 
 	spin_lock_irqsave(&lpcdev->cycle_lock, flags);
 
 	writel_relaxed(opcnt, lpcdev->membase + LPC_REG_OP_LEN);
@@ -127,7 +99,7 @@ static int hisi_lpc_target_in(struct hisi_lpc_dev *lpcdev,
 	writel(LPC_REG_STARTUP_SIGNAL_START,
 	       lpcdev->membase + LPC_REG_STARTUP_SIGNAL);
 
-	/* whether the operation is finished */
+	 
 	ret = wait_lpc_idle(lpcdev->membase, waitcnt);
 	if (ret) {
 		spin_unlock_irqrestore(&lpcdev->cycle_lock, flags);
@@ -141,16 +113,7 @@ static int hisi_lpc_target_in(struct hisi_lpc_dev *lpcdev,
 	return 0;
 }
 
-/*
- * hisi_lpc_target_out - trigger a series of LPC cycles for write operation
- * @lpcdev: pointer to hisi lpc device
- * @para: some parameters used to control the lpc I/O operations
- * @addr: the lpc I/O target port address
- * @buf: where the data to be written is stored
- * @opcnt: how many I/O operations required, i.e. data width
- *
- * Returns 0 on success, non-zero on fail.
- */
+ 
 static int hisi_lpc_target_out(struct hisi_lpc_dev *lpcdev,
 			       struct lpc_cycle_para *para, unsigned long addr,
 			       const unsigned char *buf, unsigned long opcnt)
@@ -163,8 +126,8 @@ static int hisi_lpc_target_out(struct hisi_lpc_dev *lpcdev,
 	if (!buf || !opcnt || !para || !lpcdev)
 		return -EINVAL;
 
-	/* default is increasing address */
-	cmd_word = LPC_REG_CMD_OP; /* IO mode, write */
+	 
+	cmd_word = LPC_REG_CMD_OP;  
 	waitcnt = LPC_PEROP_WAITCNT;
 	if (!(para->opflags & FG_INCRADDR_LPC)) {
 		cmd_word |= LPC_REG_CMD_SAMEADDR;
@@ -182,7 +145,7 @@ static int hisi_lpc_target_out(struct hisi_lpc_dev *lpcdev,
 	writel(LPC_REG_STARTUP_SIGNAL_START,
 	       lpcdev->membase + LPC_REG_STARTUP_SIGNAL);
 
-	/* whether the operation is finished */
+	 
 	ret = wait_lpc_idle(lpcdev->membase, waitcnt);
 
 	spin_unlock_irqrestore(&lpcdev->cycle_lock, flags);
@@ -196,14 +159,7 @@ static unsigned long hisi_lpc_pio_to_addr(struct hisi_lpc_dev *lpcdev,
 	return pio - lpcdev->io_host->io_start + lpcdev->io_host->hw_start;
 }
 
-/*
- * hisi_lpc_comm_in - input the data in a single operation
- * @hostdata: pointer to the device information relevant to LPC controller
- * @pio: the target I/O port address
- * @dwidth: the data length required to read from the target I/O port
- *
- * When success, data is returned. Otherwise, ~0 is returned.
- */
+ 
 static u32 hisi_lpc_comm_in(void *hostdata, unsigned long pio, size_t dwidth)
 {
 	struct hisi_lpc_dev *lpcdev = hostdata;
@@ -228,15 +184,7 @@ static u32 hisi_lpc_comm_in(void *hostdata, unsigned long pio, size_t dwidth)
 	return le32_to_cpu(rd_data);
 }
 
-/*
- * hisi_lpc_comm_out - output the data in a single operation
- * @hostdata: pointer to the device information relevant to LPC controller
- * @pio: the target I/O port address
- * @val: a value to be output from caller, maximum is four bytes
- * @dwidth: the data width required writing to the target I/O port
- *
- * This function corresponds to out(b,w,l) only.
- */
+ 
 static void hisi_lpc_comm_out(void *hostdata, unsigned long pio,
 			      u32 val, size_t dwidth)
 {
@@ -258,17 +206,7 @@ static void hisi_lpc_comm_out(void *hostdata, unsigned long pio,
 	hisi_lpc_target_out(lpcdev, &iopara, addr, buf, dwidth);
 }
 
-/*
- * hisi_lpc_comm_ins - input the data in the buffer in multiple operations
- * @hostdata: pointer to the device information relevant to LPC controller
- * @pio: the target I/O port address
- * @buffer: a buffer where read/input data bytes are stored
- * @dwidth: the data width required writing to the target I/O port
- * @count: how many data units whose length is dwidth will be read
- *
- * When success, the data read back is stored in buffer pointed by buffer.
- * Returns 0 on success, -errno otherwise.
- */
+ 
 static u32 hisi_lpc_comm_ins(void *hostdata, unsigned long pio, void *buffer,
 			     size_t dwidth, unsigned int count)
 {
@@ -299,14 +237,7 @@ static u32 hisi_lpc_comm_ins(void *hostdata, unsigned long pio, void *buffer,
 	return 0;
 }
 
-/*
- * hisi_lpc_comm_outs - output the data in the buffer in multiple operations
- * @hostdata: pointer to the device information relevant to LPC controller
- * @pio: the target I/O port address
- * @buffer: a buffer where write/output data bytes are stored
- * @dwidth: the data width required writing to the target I/O port
- * @count: how many data units whose length is dwidth will be written
- */
+ 
 static void hisi_lpc_comm_outs(void *hostdata, unsigned long pio,
 			       const void *buffer, size_t dwidth,
 			       unsigned int count)
@@ -357,11 +288,7 @@ static int hisi_lpc_acpi_xlat_io_res(struct acpi_device *adev,
 	return 0;
 }
 
-/*
- * Released firmware describes the IO port max address as 0x3fff, which is
- * the max host bus address. Fixup to a proper range. This will probably
- * never be fixed in firmware.
- */
+ 
 static void hisi_lpc_acpi_fixup_child_resource(struct device *hostdev,
 					       struct resource *r)
 {
@@ -377,19 +304,7 @@ static void hisi_lpc_acpi_fixup_child_resource(struct device *hostdev,
 			 r);
 }
 
-/*
- * hisi_lpc_acpi_set_io_res - set the resources for a child
- * @adev: ACPI companion of the device node to be updated the I/O resource
- * @hostdev: the device node associated with host controller
- * @res: double pointer to be set to the address of translated resources
- * @num_res: pointer to variable to hold the number of translated resources
- *
- * Returns 0 when successful, and a negative value for failure.
- *
- * For a given host controller, each child device will have an associated
- * host-relative address resource.  This function will return the translated
- * logical PIO addresses for each child devices resources.
- */
+ 
 static int hisi_lpc_acpi_set_io_res(struct acpi_device *adev,
 				    struct device *hostdev,
 				    const struct resource **res, int *num_res)
@@ -411,11 +326,7 @@ static int hisi_lpc_acpi_set_io_res(struct acpi_device *adev,
 		return -EIO;
 	}
 
-	/*
-	 * The following code segment to retrieve the resources is common to
-	 * acpi_create_platform_device(), so consider a common helper function
-	 * in future.
-	 */
+	 
 	count = acpi_dev_get_resources(adev, &resource_list, NULL, NULL);
 	if (count <= 0) {
 		dev_dbg(&adev->dev, "failed to get resources\n");
@@ -439,7 +350,7 @@ static int hisi_lpc_acpi_set_io_res(struct acpi_device *adev,
 
 	acpi_dev_free_resource_list(&resource_list);
 
-	/* translate the I/O resources */
+	 
 	for (i = 0; i < count; i++) {
 		int ret;
 
@@ -500,7 +411,7 @@ static int hisi_lpc_acpi_add_child(struct acpi_device *child, void *data)
 	}
 
 	cell = (struct hisi_lpc_acpi_cell []){
-		/* ipmi */
+		 
 		{
 			.hid = "IPI0001",
 			.pdevinfo = (struct platform_device_info []) {
@@ -514,7 +425,7 @@ static int hisi_lpc_acpi_add_child(struct acpi_device *child, void *data)
 				},
 			},
 		},
-		/* 8250-compatible uart */
+		 
 		{
 			.hid = "HISI1031",
 			.pdevinfo = (struct platform_device_info []) {
@@ -563,21 +474,12 @@ static int hisi_lpc_acpi_add_child(struct acpi_device *child, void *data)
 	return 0;
 }
 
-/*
- * hisi_lpc_acpi_probe - probe children for ACPI FW
- * @hostdev: LPC host device pointer
- *
- * Returns 0 when successful, and a negative value for failure.
- *
- * Create a platform device per child, fixing up the resources
- * from bus addresses to Logical PIO addresses.
- *
- */
+ 
 static int hisi_lpc_acpi_probe(struct device *hostdev)
 {
 	int ret;
 
-	/* Only consider the children of the host */
+	 
 	ret = acpi_dev_for_each_child(ACPI_COMPANION(hostdev),
 				      hisi_lpc_acpi_add_child, hostdev);
 	if (ret)
@@ -594,15 +496,9 @@ static int hisi_lpc_acpi_probe(struct device *dev)
 static void hisi_lpc_acpi_remove(struct device *hostdev)
 {
 }
-#endif // CONFIG_ACPI
+#endif 
 
-/*
- * hisi_lpc_probe - the probe callback function for hisi lpc host,
- *		   will finish all the initialization.
- * @pdev: the platform device corresponding to hisi lpc host
- *
- * Returns 0 on success, non-zero on fail.
- */
+ 
 static int hisi_lpc_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -638,7 +534,7 @@ static int hisi_lpc_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* register the LPC host PIO resources */
+	 
 	if (is_acpi_device_node(range->fwnode))
 		ret = hisi_lpc_acpi_probe(dev);
 	else

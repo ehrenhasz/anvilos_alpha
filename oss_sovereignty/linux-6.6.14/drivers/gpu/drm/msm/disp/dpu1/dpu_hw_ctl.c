@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2015-2018, The Linux Foundation. All rights reserved.
- * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/delay.h>
 #include "dpu_hwio.h"
@@ -45,7 +43,7 @@
 #define  DSC_IDX        22
 #define  INTF_IDX       31
 #define WB_IDX          16
-#define  DSPP_IDX       29  /* From DPU hw rev 7.x.x */
+#define  DSPP_IDX       29   
 #define CTL_INVALID_BIT                 0xffff
 #define CTL_DEFAULT_GROUP_ID		0xf
 
@@ -353,10 +351,7 @@ static u32 dpu_hw_ctl_poll_reset_status(struct dpu_hw_ctl *ctx, u32 timeout_us)
 
 	timeout = ktime_add_us(ktime_get(), timeout_us);
 
-	/*
-	 * it takes around 30us to have mdp finish resetting its ctl path
-	 * poll every 50us so that reset should be completed at 1st poll
-	 */
+	 
 	do {
 		status = DPU_REG_READ(c, CTL_SW_RESET);
 		status &= 0x1;
@@ -460,13 +455,13 @@ static void dpu_hw_ctl_setup_blendstage(struct dpu_hw_ctl *ctx,
 	else
 		pipes_per_stage = 1;
 
-	mixercfg[0] = CTL_MIXER_BORDER_OUT; /* always set BORDER_OUT */
+	mixercfg[0] = CTL_MIXER_BORDER_OUT;  
 
 	if (!stage_cfg)
 		goto exit;
 
 	for (i = 0; i <= stages; i++) {
-		/* overflow to ext register if 'i + 1 > 7' */
+		 
 		mix = (i + 1) & 0x7;
 		ext = i >= 7;
 		mix_ext = (i + 1) & 0xf;
@@ -478,10 +473,7 @@ static void dpu_hw_ctl_setup_blendstage(struct dpu_hw_ctl *ctx,
 			const struct ctl_blend_config *cfg =
 				&ctl_blend_config[pipe][rect_index == DPU_SSPP_RECT_1];
 
-			/*
-			 * CTL_LAYER has 3-bit field (and extra bits in EXT register),
-			 * all EXT registers has 4-bit fields.
-			 */
+			 
 			if (cfg->idx == -1) {
 				continue;
 			} else if (cfg->idx == 0) {
@@ -511,10 +503,7 @@ static void dpu_hw_ctl_intf_cfg_v1(struct dpu_hw_ctl *ctx,
 	u32 wb_active = 0;
 	u32 mode_sel = 0;
 
-	/* CTL_TOP[31:28] carries group_id to collate CTL paths
-	 * per VM. Explicitly disable it until VM support is
-	 * added in SW. Power on reset value is not disable.
-	 */
+	 
 	if ((test_bit(DPU_CTL_VM_CFG, &ctx->caps->features)))
 		mode_sel = CTL_DEFAULT_GROUP_ID  << 28;
 
@@ -584,14 +573,7 @@ static void dpu_hw_ctl_reset_intf_cfg_v1(struct dpu_hw_ctl *ctx,
 	u32 merge3d_active = 0;
 	u32 dsc_active;
 
-	/*
-	 * This API resets each portion of the CTL path namely,
-	 * clearing the sspps staged on the lm, merge_3d block,
-	 * interfaces , writeback etc to ensure clean teardown of the pipeline.
-	 * This will be used for writeback to begin with to have a
-	 * proper teardown of the writeback session but upon further
-	 * validation, this can be extended to all interfaces.
-	 */
+	 
 	if (cfg->merge_3d) {
 		merge3d_active = DPU_REG_READ(c, CTL_MERGE_3D_ACTIVE);
 		merge3d_active &= ~BIT(cfg->merge_3d - MERGE_3D_0);

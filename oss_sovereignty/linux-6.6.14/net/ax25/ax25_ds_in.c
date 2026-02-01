@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- * Copyright (C) Jonathan Naylor G4KLX (g4klx@g4klx.demon.co.uk)
- * Copyright (C) Joerg Reuter DL1BKE (jreuter@yaina.de)
- */
+
+ 
 #include <linux/errno.h>
 #include <linux/types.h>
 #include <linux/socket.h>
@@ -24,11 +20,7 @@
 #include <linux/mm.h>
 #include <linux/interrupt.h>
 
-/*
- *	State machine for state 1, Awaiting Connection State.
- *	The handling of the timer(s) is in file ax25_ds_timer.c.
- *	Handling of state 0 and connection release is in ax25.c.
- */
+ 
 static int ax25_ds_state1_machine(ax25_cb *ax25, struct sk_buff *skb, int frametype, int pf, int type)
 {
 	switch (frametype) {
@@ -61,19 +53,14 @@ static int ax25_ds_state1_machine(ax25_cb *ax25, struct sk_buff *skb, int framet
 		if (ax25->sk != NULL) {
 			bh_lock_sock(ax25->sk);
 			ax25->sk->sk_state = TCP_ESTABLISHED;
-			/*
-			 * For WAIT_SABM connections we will produce an accept
-			 * ready socket here
-			 */
+			 
 			if (!sock_flag(ax25->sk, SOCK_DEAD))
 				ax25->sk->sk_state_change(ax25->sk);
 			bh_unlock_sock(ax25->sk);
 		}
 		ax25_dama_on(ax25);
 
-		/* according to DK4EG's spec we are required to
-		 * send a RR RESPONSE FINAL NR=0.
-		 */
+		 
 
 		ax25_std_enquiry_response(ax25);
 		break;
@@ -92,11 +79,7 @@ static int ax25_ds_state1_machine(ax25_cb *ax25, struct sk_buff *skb, int framet
 	return 0;
 }
 
-/*
- *	State machine for state 2, Awaiting Release State.
- *	The handling of the timer(s) is in file ax25_ds_timer.c
- *	Handling of state 0 and connection release is in ax25.c.
- */
+ 
 static int ax25_ds_state2_machine(ax25_cb *ax25, struct sk_buff *skb, int frametype, int pf, int type)
 {
 	switch (frametype) {
@@ -137,11 +120,7 @@ static int ax25_ds_state2_machine(ax25_cb *ax25, struct sk_buff *skb, int framet
 	return 0;
 }
 
-/*
- *	State machine for state 3, Connected State.
- *	The handling of the timer(s) is in file ax25_timer.c
- *	Handling of state 0 and connection release is in ax25.c.
- */
+ 
 static int ax25_ds_state3_machine(ax25_cb *ax25, struct sk_buff *skb, int frametype, int ns, int nr, int pf, int type)
 {
 	int queued = 0;
@@ -239,7 +218,7 @@ static int ax25_ds_state3_machine(ax25_cb *ax25, struct sk_buff *skb, int framet
 			ax25->vr = (ax25->vr + 1) % ax25->modulus;
 			queued = ax25_rx_iframe(ax25, skb);
 			if (ax25->condition & AX25_COND_OWN_RX_BUSY)
-				ax25->vr = ns;	/* ax25->vr - 1 */
+				ax25->vr = ns;	 
 			ax25->condition &= ~AX25_COND_REJECT;
 			if (pf) {
 				ax25_ds_enquiry_response(ax25);
@@ -273,9 +252,7 @@ static int ax25_ds_state3_machine(ax25_cb *ax25, struct sk_buff *skb, int framet
 	return queued;
 }
 
-/*
- *	Higher level upcall for a LAPB frame
- */
+ 
 int ax25_ds_frame_in(ax25_cb *ax25, struct sk_buff *skb, int type)
 {
 	int queued = 0, frametype, ns, nr, pf;

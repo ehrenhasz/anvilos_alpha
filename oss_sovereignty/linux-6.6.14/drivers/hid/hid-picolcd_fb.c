@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/***************************************************************************
- *   Copyright (C) 2010-2012 by Bruno Prémont <bonbons@linux-vserver.org>  *
- *                                                                         *
- *   Based on Logitech G13 driver (v0.4)                                   *
- *     Copyright (C) 2009 by Rick L. Vinyard, Jr. <rvinyard@cs.nmsu.edu>   *
- *                                                                         *
- ***************************************************************************/
+
+ 
 
 #include <linux/hid.h>
 #include <linux/vmalloc.h>
@@ -15,26 +9,7 @@
 
 #include "hid-picolcd.h"
 
-/* Framebuffer
- *
- * The PicoLCD use a Topway LCD module of 256x64 pixel
- * This display area is tiled over 4 controllers with 8 tiles
- * each. Each tile has 8x64 pixel, each data byte representing
- * a 1-bit wide vertical line of the tile.
- *
- * The display can be updated at a tile granularity.
- *
- *       Chip 1           Chip 2           Chip 3           Chip 4
- * +----------------+----------------+----------------+----------------+
- * |     Tile 1     |     Tile 1     |     Tile 1     |     Tile 1     |
- * +----------------+----------------+----------------+----------------+
- * |     Tile 2     |     Tile 2     |     Tile 2     |     Tile 2     |
- * +----------------+----------------+----------------+----------------+
- *                                  ...
- * +----------------+----------------+----------------+----------------+
- * |     Tile 8     |     Tile 8     |     Tile 8     |     Tile 8     |
- * +----------------+----------------+----------------+----------------+
- */
+ 
 #define PICOLCDFB_NAME "picolcdfb"
 #define PICOLCDFB_WIDTH (256)
 #define PICOLCDFB_HEIGHT (64)
@@ -43,7 +18,7 @@
 #define PICOLCDFB_UPDATE_RATE_LIMIT   10
 #define PICOLCDFB_UPDATE_RATE_DEFAULT  2
 
-/* Framebuffer visual structures */
+ 
 static const struct fb_fix_screeninfo picolcdfb_fix = {
 	.id          = PICOLCDFB_NAME,
 	.type        = FB_TYPE_PACKED_PIXELS,
@@ -86,7 +61,7 @@ static const struct fb_var_screeninfo picolcdfb_var = {
 	},
 };
 
-/* Send a given tile to PicoLCD */
+ 
 static int picolcd_fb_send_tile(struct picolcd_data *data, u8 *vbitmap,
 		int chip, int tile)
 {
@@ -137,7 +112,7 @@ static int picolcd_fb_send_tile(struct picolcd_data *data, u8 *vbitmap,
 	return 0;
 }
 
-/* Translate a single tile*/
+ 
 static int picolcd_fb_update_tile(u8 *vbitmap, const u8 *bitmap, int bpp,
 		int chip, int tile)
 {
@@ -162,7 +137,7 @@ static int picolcd_fb_update_tile(u8 *vbitmap, const u8 *bitmap, int bpp,
 			}
 		}
 	} else {
-		/* Oops, we should never get here! */
+		 
 		WARN_ON(1);
 		return 0;
 	}
@@ -181,7 +156,7 @@ void picolcd_fb_refresh(struct picolcd_data *data)
 		schedule_delayed_work(&data->fb_info->deferred_work, 0);
 }
 
-/* Reconfigure LCD display */
+ 
 int picolcd_fb_reset(struct picolcd_data *data, int clear)
 {
 	struct hid_report *report = picolcd_out_report(REPORT_LCD_CMD, data->hdev);
@@ -212,7 +187,7 @@ int picolcd_fb_reset(struct picolcd_data *data, int clear)
 	}
 	fbdata->force = 1;
 
-	/* schedule first output of framebuffer */
+	 
 	if (fbdata->ready)
 		schedule_delayed_work(&data->fb_info->deferred_work, 0);
 	else
@@ -221,7 +196,7 @@ int picolcd_fb_reset(struct picolcd_data *data, int clear)
 	return 0;
 }
 
-/* Update fb_vbitmap from the screen_buffer and send changed tiles to device */
+ 
 static void picolcd_fb_update(struct fb_info *info)
 {
 	int chip, tile, n;
@@ -236,13 +211,7 @@ static void picolcd_fb_update(struct fb_info *info)
 		picolcd_fb_reset(fbdata->picolcd, 0);
 	spin_unlock_irqrestore(&fbdata->lock, flags);
 
-	/*
-	 * Translate the framebuffer into the format needed by the PicoLCD.
-	 * See display layout above.
-	 * Do this one tile after the other and push those tiles that changed.
-	 *
-	 * Wait for our IO to complete as otherwise we might flood the queue!
-	 */
+	 
 	n = 0;
 	for (chip = 0; chip < 4; chip++)
 		for (tile = 0; tile < 8; tile++) {
@@ -283,7 +252,7 @@ out:
 	mutex_unlock(&info->lock);
 }
 
-/* Stub to call the system default and update the image on the picoLCD */
+ 
 static void picolcd_fb_fillrect(struct fb_info *info,
 		const struct fb_fillrect *rect)
 {
@@ -294,7 +263,7 @@ static void picolcd_fb_fillrect(struct fb_info *info,
 	schedule_delayed_work(&info->deferred_work, 0);
 }
 
-/* Stub to call the system default and update the image on the picoLCD */
+ 
 static void picolcd_fb_copyarea(struct fb_info *info,
 		const struct fb_copyarea *area)
 {
@@ -305,7 +274,7 @@ static void picolcd_fb_copyarea(struct fb_info *info,
 	schedule_delayed_work(&info->deferred_work, 0);
 }
 
-/* Stub to call the system default and update the image on the picoLCD */
+ 
 static void picolcd_fb_imageblit(struct fb_info *info, const struct fb_image *image)
 {
 	if (!info->par)
@@ -315,10 +284,7 @@ static void picolcd_fb_imageblit(struct fb_info *info, const struct fb_image *im
 	schedule_delayed_work(&info->deferred_work, 0);
 }
 
-/*
- * this is the slow path from userspace. they can seek and write to
- * the fb. it's inefficient to do anything less than a full screen draw
- */
+ 
 static ssize_t picolcd_fb_write(struct fb_info *info, const char __user *buf,
 		size_t count, loff_t *ppos)
 {
@@ -333,7 +299,7 @@ static ssize_t picolcd_fb_write(struct fb_info *info, const char __user *buf,
 
 static int picolcd_fb_blank(int blank, struct fb_info *info)
 {
-	/* We let fb notification do this for us via lcd/backlight device */
+	 
 	return 0;
 }
 
@@ -341,10 +307,10 @@ static void picolcd_fb_destroy(struct fb_info *info)
 {
 	struct picolcd_fb_data *fbdata = info->par;
 
-	/* make sure no work is deferred */
+	 
 	fb_deferred_io_cleanup(info);
 
-	/* No thridparty should ever unregister our framebuffer! */
+	 
 	WARN_ON(fbdata->picolcd != NULL);
 
 	vfree((u8 *)info->fix.smem_start);
@@ -356,7 +322,7 @@ static int picolcd_fb_check_var(struct fb_var_screeninfo *var, struct fb_info *i
 	__u32 bpp      = var->bits_per_pixel;
 	__u32 activate = var->activate;
 
-	/* only allow 1/8 bit depth (8-bit is grayscale) */
+	 
 	*var = picolcdfb_var;
 	var->activate = activate;
 	if (bpp >= 8) {
@@ -379,7 +345,7 @@ static int picolcd_set_par(struct fb_info *info)
 	u8 *tmp_fb, *o_fb;
 	if (info->var.bits_per_pixel == fbdata->bpp)
 		return 0;
-	/* switch between 1/8 bit depths */
+	 
 	if (info->var.bits_per_pixel != 1 && info->var.bits_per_pixel != 8)
 		return -EINVAL;
 
@@ -389,7 +355,7 @@ static int picolcd_set_par(struct fb_info *info)
 	if (!tmp_fb)
 		return -ENOMEM;
 
-	/* translate FB content to new bits-per-pixel */
+	 
 	if (info->var.bits_per_pixel == 1) {
 		int i, b;
 		for (i = 0; i < PICOLCDFB_SIZE; i++) {
@@ -432,7 +398,7 @@ static const struct fb_ops picolcdfb_ops = {
 };
 
 
-/* Callback from deferred IO workqueue */
+ 
 static void picolcd_fb_deferred_io(struct fb_info *info, struct list_head *pagereflist)
 {
 	picolcd_fb_update(info);
@@ -444,9 +410,7 @@ static const struct fb_deferred_io picolcd_fb_defio = {
 };
 
 
-/*
- * The "fb_update_rate" sysfs attribute
- */
+ 
 static ssize_t picolcd_fb_update_rate_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
@@ -495,7 +459,7 @@ static ssize_t picolcd_fb_update_rate_store(struct device *dev,
 static DEVICE_ATTR(fb_update_rate, 0664, picolcd_fb_update_rate_show,
 		picolcd_fb_update_rate_store);
 
-/* initialize Framebuffer device */
+ 
 int picolcd_init_framebuffer(struct picolcd_data *data)
 {
 	struct device *dev = &data->hdev->dev;
@@ -504,10 +468,7 @@ int picolcd_init_framebuffer(struct picolcd_data *data)
 	int i, error = -ENOMEM;
 	u32 *palette;
 
-	/* The extra memory is:
-	 * - 256*u32 for pseudo_palette
-	 * - struct fb_deferred_io
-	 */
+	 
 	info = framebuffer_alloc(256 * sizeof(u32) +
 			sizeof(struct fb_deferred_io) +
 			sizeof(struct picolcd_fb_data) +
@@ -590,14 +551,12 @@ void picolcd_exit_framebuffer(struct picolcd_data *data)
 	device_remove_file(&data->hdev->dev, &dev_attr_fb_update_rate);
 	fbdata = info->par;
 
-	/* disconnect framebuffer from HID dev */
+	 
 	spin_lock_irqsave(&fbdata->lock, flags);
 	fbdata->picolcd = NULL;
 	spin_unlock_irqrestore(&fbdata->lock, flags);
 
-	/* make sure there is no running update - thus that fbdata->picolcd
-	 * once obtained under lock is guaranteed not to get free() under
-	 * the feet of the deferred work */
+	 
 	flush_delayed_work(&info->deferred_work);
 
 	data->fb_info = NULL;

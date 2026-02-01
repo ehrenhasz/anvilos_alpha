@@ -1,25 +1,4 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef _VEGA12_HWMGR_H_
 #define _VEGA12_HWMGR_H_
@@ -331,7 +310,7 @@ struct vega12_hwmgr {
 	struct vega12_odn_dpm_table       odn_dpm_table;
 	struct vega12_odn_fan_table       odn_fan_table;
 
-	/* ---- General data ---- */
+	 
 	uint8_t                           need_update_dpm_table;
 
 	bool                           cac_enabled;
@@ -345,7 +324,7 @@ struct vega12_hwmgr {
 
 	struct vega12_display_timing display_timing;
 
-	/* ---- Vega12 Dyn Register Settings ---- */
+	 
 
 	uint32_t                       debug_settings;
 	uint32_t                       lowest_uclk_reserved_for_ulv;
@@ -367,33 +346,33 @@ struct vega12_hwmgr {
 	uint32_t                       phy_clk_quad_eqn_b;
 	uint32_t                       phy_clk_quad_eqn_c;
 
-	/* ---- Thermal Temperature Setting ---- */
+	 
 	struct vega12_dpmlevel_enable_mask     dpm_level_enable_mask;
 
-	/* ---- Power Gating States ---- */
+	 
 	bool                           uvd_power_gated;
 	bool                           vce_power_gated;
 	bool                           samu_power_gated;
 	bool                           need_long_memory_training;
 
-	/* Internal settings to apply the application power optimization parameters */
+	 
 	bool                           apply_optimized_settings;
 	uint32_t                       disable_dpm_mask;
 
-	/* ---- Overdrive next setting ---- */
+	 
 	uint32_t                       apply_overdrive_next_settings_mask;
 
-	/* ---- Workload Mask ---- */
+	 
 	uint32_t                       workload_mask;
 
-	/* ---- SMU9 ---- */
+	 
 	uint32_t                       smu_version;
 	struct smu_features            smu_features[GNLD_FEATURES_MAX];
 	struct vega12_smc_state_table  smc_state_table;
 
 	struct vega12_clock_range      clk_range[PPCLK_COUNT];
 
-	/* ---- Gfxoff ---- */
+	 
 	bool                           gfxoff_controlled_by_driver;
 
 	unsigned long                  metrics_time;
@@ -426,7 +405,7 @@ struct vega12_hwmgr {
 #define VEGA12_VOLTAGE_CONTROL_BY_GPIO                0x1
 #define VEGA12_VOLTAGE_CONTROL_BY_SVID2               0x2
 #define VEGA12_VOLTAGE_CONTROL_MERGED                 0x3
-/* To convert to Q8.8 format for firmware */
+ 
 #define VEGA12_Q88_FORMAT_CONVERSION_UNIT             256
 
 #define VEGA12_UNUSED_GPIO_PIN       0x7F
@@ -438,10 +417,10 @@ struct vega12_hwmgr {
 #define PPVEGA12_VEGA12DISPLAYVOLTAGEMODE_DFLT   0xffffffff
 #define PPREGKEY_VEGA12QUADRATICEQUATION_DFLT    0xffffffff
 
-#define PPVEGA12_VEGA12GFXCLKAVERAGEALPHA_DFLT       25 /* 10% * 255 = 25 */
-#define PPVEGA12_VEGA12SOCCLKAVERAGEALPHA_DFLT       25 /* 10% * 255 = 25 */
-#define PPVEGA12_VEGA12UCLKCLKAVERAGEALPHA_DFLT      25 /* 10% * 255 = 25 */
-#define PPVEGA12_VEGA12GFXACTIVITYAVERAGEALPHA_DFLT  25 /* 10% * 255 = 25 */
+#define PPVEGA12_VEGA12GFXCLKAVERAGEALPHA_DFLT       25  
+#define PPVEGA12_VEGA12SOCCLKAVERAGEALPHA_DFLT       25  
+#define PPVEGA12_VEGA12UCLKCLKAVERAGEALPHA_DFLT      25  
+#define PPVEGA12_VEGA12GFXACTIVITYAVERAGEALPHA_DFLT  25  
 #define PPVEGA12_VEGA12LOWESTUCLKRESERVEDFORULV_DFLT   0xffffffff
 #define PPVEGA12_VEGA12DISPLAYVOLTAGEMODE_DFLT         0xffffffff
 #define PPREGKEY_VEGA12QUADRATICEQUATION_DFLT          0xffffffff
@@ -454,4 +433,4 @@ struct vega12_hwmgr {
 
 int vega12_enable_disable_vce_dpm(struct pp_hwmgr *hwmgr, bool enable);
 
-#endif /* _VEGA12_HWMGR_H_ */
+#endif  

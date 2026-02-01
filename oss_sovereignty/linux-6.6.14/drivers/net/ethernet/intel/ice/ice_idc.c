@@ -1,20 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2021, Intel Corporation. */
 
-/* Inter-Driver Communication */
+ 
+
+ 
 #include "ice.h"
 #include "ice_lib.h"
 #include "ice_dcb_lib.h"
 
 static DEFINE_XARRAY_ALLOC1(ice_aux_id);
 
-/**
- * ice_get_auxiliary_drv - retrieve iidc_auxiliary_drv struct
- * @pf: pointer to PF struct
- *
- * This function has to be called with a device_lock on the
- * pf->adev.dev to avoid race conditions.
- */
+ 
 static struct iidc_auxiliary_drv *ice_get_auxiliary_drv(struct ice_pf *pf)
 {
 	struct auxiliary_device *adev;
@@ -27,11 +21,7 @@ static struct iidc_auxiliary_drv *ice_get_auxiliary_drv(struct ice_pf *pf)
 			    adrv.driver);
 }
 
-/**
- * ice_send_event_to_aux - send event to RDMA AUX driver
- * @pf: pointer to PF struct
- * @event: event struct
- */
+ 
 void ice_send_event_to_aux(struct ice_pf *pf, struct iidc_event *event)
 {
 	struct iidc_auxiliary_drv *iadrv;
@@ -52,11 +42,7 @@ finish:
 	mutex_unlock(&pf->adev_mutex);
 }
 
-/**
- * ice_add_rdma_qset - Add Leaf Node for RDMA Qset
- * @pf: PF struct
- * @qset: Resource to be allocated
- */
+ 
 int ice_add_rdma_qset(struct ice_pf *pf, struct iidc_rdma_qset_params *qset)
 {
 	u16 max_rdmaqs[ICE_MAX_TRAFFIC_CLASS];
@@ -107,11 +93,7 @@ int ice_add_rdma_qset(struct ice_pf *pf, struct iidc_rdma_qset_params *qset)
 }
 EXPORT_SYMBOL_GPL(ice_add_rdma_qset);
 
-/**
- * ice_del_rdma_qset - Delete leaf node for RDMA Qset
- * @pf: PF struct
- * @qset: Resource to be freed
- */
+ 
 int ice_del_rdma_qset(struct ice_pf *pf, struct iidc_rdma_qset_params *qset)
 {
 	struct ice_vsi *vsi;
@@ -136,11 +118,7 @@ int ice_del_rdma_qset(struct ice_pf *pf, struct iidc_rdma_qset_params *qset)
 }
 EXPORT_SYMBOL_GPL(ice_del_rdma_qset);
 
-/**
- * ice_rdma_request_reset - accept request from RDMA to perform a reset
- * @pf: struct for PF
- * @reset_type: type of reset
- */
+ 
 int ice_rdma_request_reset(struct ice_pf *pf, enum iidc_reset_type reset_type)
 {
 	enum ice_reset_req reset;
@@ -167,12 +145,7 @@ int ice_rdma_request_reset(struct ice_pf *pf, enum iidc_reset_type reset_type)
 }
 EXPORT_SYMBOL_GPL(ice_rdma_request_reset);
 
-/**
- * ice_rdma_update_vsi_filter - update main VSI filters for RDMA
- * @pf: pointer to struct for PF
- * @vsi_id: VSI HW idx to update filter on
- * @enable: bool whether to enable or disable filters
- */
+ 
 int ice_rdma_update_vsi_filter(struct ice_pf *pf, u16 vsi_id, bool enable)
 {
 	struct ice_vsi *vsi;
@@ -200,11 +173,7 @@ int ice_rdma_update_vsi_filter(struct ice_pf *pf, u16 vsi_id, bool enable)
 }
 EXPORT_SYMBOL_GPL(ice_rdma_update_vsi_filter);
 
-/**
- * ice_get_qos_params - parse QoS params for RDMA consumption
- * @pf: pointer to PF struct
- * @qos: set of QoS values
- */
+ 
 void ice_get_qos_params(struct ice_pf *pf, struct iidc_qos_params *qos)
 {
 	struct ice_dcbx_cfg *dcbx_cfg;
@@ -228,10 +197,7 @@ void ice_get_qos_params(struct ice_pf *pf, struct iidc_qos_params *qos)
 }
 EXPORT_SYMBOL_GPL(ice_get_qos_params);
 
-/**
- * ice_alloc_rdma_qvectors - Allocate vector resources for RDMA driver
- * @pf: board private structure to initialize
- */
+ 
 static int ice_alloc_rdma_qvectors(struct ice_pf *pf)
 {
 	if (ice_is_rdma_ena(pf)) {
@@ -243,7 +209,7 @@ static int ice_alloc_rdma_qvectors(struct ice_pf *pf)
 		if (!pf->msix_entries)
 			return -ENOMEM;
 
-		/* RDMA is the only user of pf->msix_entries array */
+		 
 		pf->rdma_base_vector = 0;
 
 		for (i = 0; i < pf->num_rdma_msix; i++) {
@@ -261,10 +227,7 @@ static int ice_alloc_rdma_qvectors(struct ice_pf *pf)
 	return 0;
 }
 
-/**
- * ice_free_rdma_qvector - free vector resources reserved for RDMA driver
- * @pf: board private structure to initialize
- */
+ 
 static void ice_free_rdma_qvector(struct ice_pf *pf)
 {
 	int i;
@@ -284,10 +247,7 @@ static void ice_free_rdma_qvector(struct ice_pf *pf)
 	pf->msix_entries = NULL;
 }
 
-/**
- * ice_adev_release - function to be mapped to AUX dev's release op
- * @dev: pointer to device to free
- */
+ 
 static void ice_adev_release(struct device *dev)
 {
 	struct iidc_auxiliary_dev *iadev;
@@ -296,19 +256,14 @@ static void ice_adev_release(struct device *dev)
 	kfree(iadev);
 }
 
-/**
- * ice_plug_aux_dev - allocate and register AUX device
- * @pf: pointer to pf struct
- */
+ 
 int ice_plug_aux_dev(struct ice_pf *pf)
 {
 	struct iidc_auxiliary_dev *iadev;
 	struct auxiliary_device *adev;
 	int ret;
 
-	/* if this PF doesn't support a technology that requires auxiliary
-	 * devices, then gracefully exit
-	 */
+	 
 	if (!ice_is_rdma_ena(pf))
 		return 0;
 
@@ -343,9 +298,7 @@ int ice_plug_aux_dev(struct ice_pf *pf)
 	return 0;
 }
 
-/* ice_unplug_aux_dev - unregister and free AUX device
- * @pf: pointer to pf struct
- */
+ 
 void ice_unplug_aux_dev(struct ice_pf *pf)
 {
 	struct auxiliary_device *adev;
@@ -361,10 +314,7 @@ void ice_unplug_aux_dev(struct ice_pf *pf)
 	}
 }
 
-/**
- * ice_init_rdma - initializes PF for RDMA use
- * @pf: ptr to ice_pf
- */
+ 
 int ice_init_rdma(struct ice_pf *pf)
 {
 	struct device *dev = &pf->pdev->dev;
@@ -382,7 +332,7 @@ int ice_init_rdma(struct ice_pf *pf)
 		return -ENOMEM;
 	}
 
-	/* Reserve vector resources */
+	 
 	ret = ice_alloc_rdma_qvectors(pf);
 	if (ret < 0) {
 		dev_err(dev, "failed to reserve vectors for RDMA\n");
@@ -402,10 +352,7 @@ err_reserve_rdma_qvector:
 	return ret;
 }
 
-/**
- * ice_deinit_rdma - deinitialize RDMA on PF
- * @pf: ptr to ice_pf
- */
+ 
 void ice_deinit_rdma(struct ice_pf *pf)
 {
 	if (!ice_is_rdma_ena(pf))

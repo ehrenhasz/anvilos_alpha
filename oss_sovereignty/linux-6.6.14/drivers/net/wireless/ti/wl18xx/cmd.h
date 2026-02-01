@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This file is part of wl18xx
- *
- * Copyright (C) 2011 Texas Instruments. All rights reserved.
- */
+ 
+ 
 
 #ifndef __WL18XX_CMD_H__
 #define __WL18XX_CMD_H__
@@ -16,11 +12,11 @@ struct wl18xx_cmd_channel_switch {
 
 	u8 role_id;
 
-	/* The new serving channel */
+	 
 	u8 channel;
-	/* Relative time of the serving channel switch in TBTT units */
+	 
 	u8 switch_time;
-	/* Stop the role TX, should expect it after radar detection */
+	 
 	u8 stop_tx;
 
 	__le32 local_supported_rates;
@@ -59,7 +55,7 @@ struct wl18xx_cmd_dfs_master_restart {
 	u8 padding[3];
 } __packed;
 
-/* cac_start and cac_stop share the same params */
+ 
 struct wlcore_cmd_cac_start {
 	struct wl1271_cmd_header header;
 

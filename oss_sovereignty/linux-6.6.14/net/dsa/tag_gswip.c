@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel / Lantiq GSWIP V2.0 PMAC tag support
- *
- * Copyright (C) 2017 - 2018 Hauke Mehrtens <hauke@hauke-m.de>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/etherdevice.h>
@@ -16,9 +12,9 @@
 
 #define GSWIP_TX_HEADER_LEN		4
 
-/* special tag in TX path header */
-/* Byte 0 */
-#define GSWIP_TX_SLPID_SHIFT		0	/* source port ID */
+ 
+ 
+#define GSWIP_TX_SLPID_SHIFT		0	 
 #define  GSWIP_TX_SLPID_CPU		2
 #define  GSWIP_TX_SLPID_APP1		3
 #define  GSWIP_TX_SLPID_APP2		4
@@ -26,9 +22,9 @@
 #define  GSWIP_TX_SLPID_APP4		6
 #define  GSWIP_TX_SLPID_APP5		7
 
-/* Byte 1 */
+ 
 #define GSWIP_TX_CRCGEN_DIS		BIT(7)
-#define GSWIP_TX_DPID_SHIFT		0	/* destination group ID */
+#define GSWIP_TX_DPID_SHIFT		0	 
 #define  GSWIP_TX_DPID_ELAN		0
 #define  GSWIP_TX_DPID_EWAN		1
 #define  GSWIP_TX_DPID_CPU		2
@@ -38,7 +34,7 @@
 #define  GSWIP_TX_DPID_APP4		6
 #define  GSWIP_TX_DPID_APP5		7
 
-/* Byte 2 */
+ 
 #define GSWIP_TX_PORT_MAP_EN		BIT(7)
 #define GSWIP_TX_PORT_MAP_SEL		BIT(6)
 #define GSWIP_TX_LRN_DIS		BIT(5)
@@ -46,15 +42,15 @@
 #define GSWIP_TX_CLASS_SHIFT		0
 #define GSWIP_TX_CLASS_MASK		GENMASK(3, 0)
 
-/* Byte 3 */
+ 
 #define GSWIP_TX_DPID_EN		BIT(0)
 #define GSWIP_TX_PORT_MAP_SHIFT		1
 #define GSWIP_TX_PORT_MAP_MASK		GENMASK(6, 1)
 
 #define GSWIP_RX_HEADER_LEN	8
 
-/* special tag in RX path header */
-/* Byte 7 */
+ 
+ 
 #define GSWIP_RX_SPPID_SHIFT		4
 #define GSWIP_RX_SPPID_MASK		GENMASK(6, 4)
 
@@ -87,13 +83,13 @@ static struct sk_buff *gswip_tag_rcv(struct sk_buff *skb,
 
 	gswip_tag = skb->data - ETH_HLEN;
 
-	/* Get source port information */
+	 
 	port = (gswip_tag[7] & GSWIP_RX_SPPID_MASK) >> GSWIP_RX_SPPID_SHIFT;
 	skb->dev = dsa_master_find_slave(dev, 0, port);
 	if (!skb->dev)
 		return NULL;
 
-	/* remove GSWIP tag */
+	 
 	skb_pull_rcsum(skb, GSWIP_RX_HEADER_LEN);
 
 	return skb;

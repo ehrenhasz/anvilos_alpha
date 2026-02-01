@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Marvell Bluetooth driver: global definitions & declarations
- *
- * Copyright (C) 2009, Marvell International Ltd.
- */
+ 
+ 
 
 #include <linux/kthread.h>
 #include <linux/bitops.h>
@@ -21,9 +17,9 @@
 #define BTM_HEADER_LEN			4
 #define BTM_UPLD_SIZE			2312
 
-/* Time to wait until Host Sleep state change in millisecond */
+ 
 #define WAIT_UNTIL_HS_STATE_CHANGED	msecs_to_jiffies(5000)
-/* Time to wait for command response in millisecond */
+ 
 #define WAIT_UNTIL_CMD_RESP		msecs_to_jiffies(5000)
 
 enum rdwr_status {
@@ -63,7 +59,7 @@ struct btmrvl_device {
 	u8 hsmode;
 	u8 hscmd;
 
-	/* Low byte is gap, high byte is GPIO */
+	 
 	u16 gpio_gap;
 
 	u8 hscfgcmd;
@@ -94,7 +90,7 @@ struct btmrvl_private {
 				u8 *payload, u16 nb);
 	int (*hw_wakeup_firmware)(struct btmrvl_private *priv);
 	int (*hw_process_int_status)(struct btmrvl_private *priv);
-	spinlock_t driver_lock;		/* spinlock used by driver */
+	spinlock_t driver_lock;		 
 #ifdef CONFIG_DEBUG_FS
 	void *debugfs_data;
 #endif
@@ -103,7 +99,7 @@ struct btmrvl_private {
 
 #define MRVL_VENDOR_PKT			0xFE
 
-/* Vendor specific Bluetooth commands */
+ 
 #define BT_CMD_PSCAN_WIN_REPORT_ENABLE	0xFC03
 #define BT_CMD_ROUTE_SCO_TO_HOST	0xFC1D
 #define BT_CMD_SET_BDADDR		0xFC22
@@ -113,30 +109,30 @@ struct btmrvl_private {
 #define BT_CMD_MODULE_CFG_REQ		0xFC5B
 #define BT_CMD_LOAD_CONFIG_DATA		0xFC61
 
-/* Sub-commands: Module Bringup/Shutdown Request/Response */
+ 
 #define MODULE_BRINGUP_REQ		0xF1
 #define MODULE_BROUGHT_UP		0x00
 #define MODULE_ALREADY_UP		0x0C
 
 #define MODULE_SHUTDOWN_REQ		0xF2
 
-/* Vendor specific Bluetooth events */
+ 
 #define BT_EVENT_AUTO_SLEEP_MODE	0x23
 #define BT_EVENT_HOST_SLEEP_CONFIG	0x59
 #define BT_EVENT_HOST_SLEEP_ENABLE	0x5A
 #define BT_EVENT_MODULE_CFG_REQ		0x5B
 #define BT_EVENT_POWER_STATE		0x20
 
-/* Bluetooth Power States */
+ 
 #define BT_PS_ENABLE			0x02
 #define BT_PS_DISABLE			0x03
 #define BT_PS_SLEEP			0x01
 
-/* Host Sleep states */
+ 
 #define HS_ACTIVATED			0x01
 #define HS_DEACTIVATED			0x00
 
-/* Power Save modes */
+ 
 #define PS_SLEEP			0x01
 #define PS_AWAKE			0x00
 
@@ -144,12 +140,12 @@ struct btmrvl_private {
 #define BT_CAL_DATA_SIZE		28
 
 struct btmrvl_event {
-	u8 ec;		/* event counter */
+	u8 ec;		 
 	u8 length;
 	u8 data[4];
 } __packed;
 
-/* Prototype of global function */
+ 
 
 int btmrvl_register_hdev(struct btmrvl_private *priv);
 struct btmrvl_private *btmrvl_add_card(void *card);

@@ -1,21 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * si7020.c - Silicon Labs Si7013/20/21 Relative Humidity and Temp Sensors
- * Copyright (c) 2013,2014  Uplogix, Inc.
- * David Barksdale <dbarksdale@uplogix.com>
- */
 
-/*
- * The Silicon Labs Si7013/20/21 Relative Humidity and Temperature Sensors
- * are i2c devices which have an identical programming interface for
- * measuring relative humidity and temperature. The Si7013 has an additional
- * temperature input which this driver does not support.
- *
- * Data Sheets:
- *   Si7013: http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7013.pdf
- *   Si7020: http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7020.pdf
- *   Si7021: http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7021.pdf
- */
+ 
+
+ 
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -27,11 +13,11 @@
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
 
-/* Measure Relative Humidity, Hold Master Mode */
+ 
 #define SI7020CMD_RH_HOLD	0xE5
-/* Measure Temperature, Hold Master Mode */
+ 
 #define SI7020CMD_TEMP_HOLD	0xE3
-/* Software Reset */
+ 
 #define SI7020CMD_RESET		0xFE
 
 static int si7020_read_raw(struct iio_dev *indio_dev,
@@ -50,34 +36,23 @@ static int si7020_read_raw(struct iio_dev *indio_dev,
 		if (ret < 0)
 			return ret;
 		*val = ret >> 2;
-		/*
-		 * Humidity values can slightly exceed the 0-100%RH
-		 * range and should be corrected by software
-		 */
+		 
 		if (chan->type == IIO_HUMIDITYRELATIVE)
 			*val = clamp_val(*val, 786, 13893);
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SCALE:
 		if (chan->type == IIO_TEMP)
-			*val = 175720; /* = 175.72 * 1000 */
+			*val = 175720;  
 		else
 			*val = 125 * 1000;
 		*val2 = 65536 >> 2;
 		return IIO_VAL_FRACTIONAL;
 	case IIO_CHAN_INFO_OFFSET:
-		/*
-		 * Since iio_convert_raw_to_processed_unlocked assumes offset
-		 * is an integer we have to round these values and lose
-		 * accuracy.
-		 * Relative humidity will be 0.0032959% too high and
-		 * temperature will be 0.00277344 degrees too high.
-		 * This is no big deal because it's within the accuracy of the
-		 * sensor.
-		 */
+		 
 		if (chan->type == IIO_TEMP)
-			*val = -4368; /* = -46.85 * (65536 >> 2) / 175.72 */
+			*val = -4368;  
 		else
-			*val = -786; /* = -6 * (65536 >> 2) / 125 */
+			*val = -786;  
 		return IIO_VAL_INT;
 	default:
 		break;
@@ -114,11 +89,11 @@ static int si7020_probe(struct i2c_client *client)
 				     I2C_FUNC_SMBUS_READ_WORD_DATA))
 		return -EOPNOTSUPP;
 
-	/* Reset device, loads default settings. */
+	 
 	ret = i2c_smbus_write_byte(client, SI7020CMD_RESET);
 	if (ret < 0)
 		return ret;
-	/* Wait the maximum power-up time after software reset. */
+	 
 	msleep(15);
 
 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));

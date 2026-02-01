@@ -1,12 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Based on Christian Brauner's clone3() example.
- * These tests are assuming to be running in the host's
- * PID namespace.
- */
 
-/* capabilities related code based on selftests/bpf/test_verifier.c */
+ 
+
+ 
 
 #define _GNU_SOURCE
 #include <errno.h>
@@ -109,7 +105,7 @@ static int set_capability(void)
 		return -1;
 	}
 
-	/* Drop all capabilities */
+	 
 	if (cap_clear(caps)) {
 		perror("cap_clear");
 		goto out;
@@ -120,7 +116,7 @@ static int set_capability(void)
 
 	cap = (struct libcap *) caps;
 
-	/* 40 -> CAP_CHECKPOINT_RESTORE */
+	 
 	cap->data[1].effective |= 1 << (40 - 32);
 	cap->data[1].permitted |= 1 << (40 - 32);
 
@@ -149,7 +145,7 @@ TEST(clone3_cap_checkpoint_restore)
 
 	memset(&set_tid, 0, sizeof(set_tid));
 
-	/* Find the current active PID */
+	 
 	pid = fork();
 	if (pid == 0) {
 		TH_LOG("Child has PID %d", getpid());
@@ -158,7 +154,7 @@ TEST(clone3_cap_checkpoint_restore)
 	ASSERT_GT(waitpid(pid, &status, 0), 0)
 		TH_LOG("Waiting for child %d failed", pid);
 
-	/* After the child has finished, its PID should be free. */
+	 
 	set_tid[0] = pid;
 
 	ASSERT_EQ(set_capability(), 0)
@@ -171,11 +167,11 @@ TEST(clone3_cap_checkpoint_restore)
 	ASSERT_EQ(setuid(65534), 0);
 
 	set_tid[0] = pid;
-	/* This would fail without CAP_CHECKPOINT_RESTORE */
+	 
 	ASSERT_EQ(test_clone3_set_tid(_metadata, set_tid, 1), -EPERM);
 	ASSERT_EQ(set_capability(), 0)
 		TH_LOG("Could not set CAP_CHECKPOINT_RESTORE");
-	/* This should work as we have CAP_CHECKPOINT_RESTORE as non-root */
+	 
 	ASSERT_EQ(test_clone3_set_tid(_metadata, set_tid, 1), 0);
 }
 

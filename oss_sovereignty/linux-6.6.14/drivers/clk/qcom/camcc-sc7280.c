@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -45,7 +43,7 @@ static struct pll_vco zonda_vco[] = {
 	{ 595200000UL, 3600000000UL, 0 },
 };
 
-/* 1200MHz Configuration */
+ 
 static const struct alpha_pll_config cam_cc_pll0_config = {
 	.l = 0x3E,
 	.alpha = 0x8000,
@@ -120,7 +118,7 @@ static struct clk_alpha_pll_postdiv cam_cc_pll0_out_odd = {
 	},
 };
 
-/* 600MHz Configuration */
+ 
 static const struct alpha_pll_config cam_cc_pll1_config = {
 	.l = 0x1F,
 	.alpha = 0x4000,
@@ -172,7 +170,7 @@ static struct clk_alpha_pll_postdiv cam_cc_pll1_out_even = {
 	},
 };
 
-/* 1440MHz Configuration */
+ 
 static const struct alpha_pll_config cam_cc_pll2_config = {
 	.l = 0x4B,
 	.alpha = 0x0,
@@ -245,7 +243,7 @@ static struct clk_alpha_pll_postdiv cam_cc_pll2_out_aux2 = {
 	},
 };
 
-/* 760MHz Configuration */
+ 
 static const struct alpha_pll_config cam_cc_pll3_config = {
 	.l = 0x27,
 	.alpha = 0x9555,
@@ -297,7 +295,7 @@ static struct clk_alpha_pll_postdiv cam_cc_pll3_out_even = {
 	},
 };
 
-/* 760MHz Configuration */
+ 
 static const struct alpha_pll_config cam_cc_pll4_config = {
 	.l = 0x27,
 	.alpha = 0x9555,
@@ -349,7 +347,7 @@ static struct clk_alpha_pll_postdiv cam_cc_pll4_out_even = {
 	},
 };
 
-/* 760MHz Configuration */
+ 
 static const struct alpha_pll_config cam_cc_pll5_config = {
 	.l = 0x27,
 	.alpha = 0x9555,
@@ -401,7 +399,7 @@ static struct clk_alpha_pll_postdiv cam_cc_pll5_out_even = {
 	},
 };
 
-/* 960MHz Configuration */
+ 
 static const struct alpha_pll_config cam_cc_pll6_config = {
 	.l = 0x32,
 	.alpha = 0x0,

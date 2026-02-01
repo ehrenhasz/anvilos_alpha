@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Driver for Xceive XC5000 "QAM/8VSB single chip tuner"
- *
- *  Copyright (c) 2007 Steven Toth <stoth@linuxtv.org>
- */
+ 
+ 
 
 #ifndef __XC5000_H__
 #define __XC5000_H__
@@ -26,22 +22,16 @@ struct xc5000_config {
 	int chip_id;
 };
 
-/* xc5000 callback command */
+ 
 #define XC5000_TUNER_RESET		0
 
-/* Possible Radio inputs */
+ 
 #define XC5000_RADIO_NOT_CONFIGURED		0
 #define XC5000_RADIO_FM1			1
 #define XC5000_RADIO_FM2			2
 #define XC5000_RADIO_FM1_MONO			3
 
-/* For each bridge framework, when it attaches either analog or digital,
- * it has to store a reference back to its _core equivalent structure,
- * so that it can service the hardware by steering gpio's etc.
- * Each bridge implementation is different so cast devptr accordingly.
- * The xc5000 driver cares not for this value, other than ensuring
- * it's passed back to a bridge during tuner_callback().
- */
+ 
 
 #if IS_REACHABLE(CONFIG_MEDIA_TUNER_XC5000)
 extern struct dvb_frontend *xc5000_attach(struct dvb_frontend *fe,

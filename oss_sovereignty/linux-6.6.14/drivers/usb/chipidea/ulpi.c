@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2016 Linaro Ltd.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/usb/chipidea.h>
@@ -68,10 +66,7 @@ int ci_ulpi_init(struct ci_hdrc *ci)
 	if (ci->platdata->phy_mode != USBPHY_INTERFACE_MODE_ULPI)
 		return 0;
 
-	/*
-	 * Set PORTSC correctly so we can read/write ULPI registers for
-	 * identification purposes
-	 */
+	 
 	hw_phymode_configure(ci);
 
 	ci->ulpi_ops.read = ci_ulpi_read;

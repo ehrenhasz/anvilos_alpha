@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * extent_map.h
- *
- * In-memory file extent mappings for OCFS2.
- *
- * Copyright (C) 2004 Oracle.  All rights reserved.
- */
+ 
+ 
 
 #ifndef _EXTENT_MAP_H
 #define _EXTENT_MAP_H
@@ -77,4 +71,4 @@ bail:
 }
 
 
-#endif  /* _EXTENT_MAP_H */
+#endif   

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2019 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/pm_domain.h>
@@ -20,20 +17,16 @@
 #include <dt-bindings/power/meson-gxbb-power.h>
 #include <dt-bindings/power/meson-sm1-power.h>
 
-/* AO Offsets */
+ 
 
 #define GX_AO_RTI_GEN_PWR_SLEEP0	(0x3a << 2)
 #define GX_AO_RTI_GEN_PWR_ISO0		(0x3b << 2)
 
-/*
- * Meson8/Meson8b/Meson8m2 only expose the power management registers of the
- * AO-bus as syscon. 0x3a from GX translates to 0x02, 0x3b translates to 0x03
- * and so on.
- */
+ 
 #define MESON8_AO_RTI_GEN_PWR_SLEEP0	(0x02 << 2)
 #define MESON8_AO_RTI_GEN_PWR_ISO0	(0x03 << 2)
 
-/* HHI Offsets */
+ 
 
 #define HHI_MEM_PD_REG0			(0x40 << 2)
 #define HHI_VPU_MEM_PD_REG0		(0x41 << 2)
@@ -78,7 +71,7 @@ struct meson_ee_pwrc_domain_data {
 	struct meson_ee_pwrc_domain_desc *domains;
 };
 
-/* TOP Power Domains */
+ 
 
 static struct meson_ee_pwrc_top_domain gx_pwrc_vpu = {
 	.sleep_reg = GX_AO_RTI_GEN_PWR_SLEEP0,
@@ -115,7 +108,7 @@ static struct meson_ee_pwrc_top_domain g12a_pwrc_nna = {
 	.iso_mask = BIT(16) | BIT(17),
 };
 
-/* Memory PD Domains */
+ 
 
 #define VPU_MEMPD(__reg)					\
 	{ __reg, GENMASK(1, 0) },				\
@@ -450,17 +443,7 @@ static int meson_ee_pwrc_init_domain(struct platform_device *pdev,
 	dom->base.power_on = meson_ee_pwrc_on;
 	dom->base.power_off = meson_ee_pwrc_off;
 
-	/*
-         * TOFIX: This is a special case for the VPU power domain, which can
-	 * be enabled previously by the bootloader. In this case the VPU
-         * pipeline may be functional but no driver maybe never attach
-         * to this power domain, and if the domain is disabled it could
-         * cause system errors. This is why the pm_domain_always_on_gov
-         * is used here.
-         * For the same reason, the clocks should be enabled in case
-         * we need to power the domain off, otherwise the internal clocks
-         * prepare/enable counters won't be in sync.
-         */
+	 
 	if (dom->num_clks && dom->desc.is_powered_off && !dom->desc.is_powered_off(dom)) {
 		ret = clk_bulk_prepare_enable(dom->num_clks, dom->clks);
 		if (ret)
@@ -619,7 +602,7 @@ static const struct of_device_id meson_ee_pwrc_match_table[] = {
 		.compatible = "amlogic,meson-sm1-pwrc",
 		.data = &meson_ee_sm1_pwrc_data,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, meson_ee_pwrc_match_table);
 

@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * drivers/net/ethernet/ibm/emac/debug.h
- *
- * Driver for PowerPC 4xx on-chip ethernet controller, debug print routines.
- *
- * Copyright 2007 Benjamin Herrenschmidt, IBM Corp.
- *                <benh@kernel.crashing.org>
- *
- * Based on the arch/ppc version of the driver:
- *
- * Copyright (c) 2004, 2005 Zultys Technologies
- * Eugene Surovegin <eugene.surovegin@zultys.com> or <ebs@ebshome.net>
- */
+ 
+ 
 #ifndef __IBM_NEWEMAC_DEBUG_H
 #define __IBM_NEWEMAC_DEBUG_H
 
@@ -52,4 +40,4 @@
 #  define RGMII_DBG2(d,f,x...) 	((void)0)
 #endif
 
-#endif /* __IBM_NEWEMAC_DEBUG_H */
+#endif  

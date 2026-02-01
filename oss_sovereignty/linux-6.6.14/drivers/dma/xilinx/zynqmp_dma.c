@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * DMA driver for Xilinx ZynqMP DMA Engine
- *
- * Copyright (C) 2016 Xilinx, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/dma-mapping.h>
@@ -21,7 +17,7 @@
 
 #include "../dmaengine.h"
 
-/* Register Offsets */
+ 
 #define ZYNQMP_DMA_ISR			0x100
 #define ZYNQMP_DMA_IMR			0x104
 #define ZYNQMP_DMA_IER			0x108
@@ -48,7 +44,7 @@
 #define ZYNQMP_DMA_IRQ_DST_ACCT		0x194
 #define ZYNQMP_DMA_CTRL2		0x200
 
-/* Interrupt registers bit field definitions */
+ 
 #define ZYNQMP_DMA_DONE			BIT(10)
 #define ZYNQMP_DMA_AXI_WR_DATA		BIT(9)
 #define ZYNQMP_DMA_AXI_RD_DATA		BIT(8)
@@ -60,15 +56,15 @@
 #define ZYNQMP_DMA_DST_DSCR_DONE	BIT(2)
 #define ZYNQMP_DMA_INV_APB		BIT(0)
 
-/* Control 0 register bit field definitions */
+ 
 #define ZYNQMP_DMA_OVR_FETCH		BIT(7)
 #define ZYNQMP_DMA_POINT_TYPE_SG	BIT(6)
 #define ZYNQMP_DMA_RATE_CTRL_EN		BIT(3)
 
-/* Control 1 register bit field definitions */
+ 
 #define ZYNQMP_DMA_SRC_ISSUE		GENMASK(4, 0)
 
-/* Data Attribute register bit field definitions */
+ 
 #define ZYNQMP_DMA_ARBURST		GENMASK(27, 26)
 #define ZYNQMP_DMA_ARCACHE		GENMASK(25, 22)
 #define ZYNQMP_DMA_ARCACHE_OFST		22
@@ -84,23 +80,23 @@
 #define ZYNQMP_DMA_AWLEN		GENMASK(3, 0)
 #define ZYNQMP_DMA_AWLEN_OFST		0
 
-/* Descriptor Attribute register bit field definitions */
+ 
 #define ZYNQMP_DMA_AXCOHRNT		BIT(8)
 #define ZYNQMP_DMA_AXCACHE		GENMASK(7, 4)
 #define ZYNQMP_DMA_AXCACHE_OFST		4
 #define ZYNQMP_DMA_AXQOS		GENMASK(3, 0)
 #define ZYNQMP_DMA_AXQOS_OFST		0
 
-/* Control register 2 bit field definitions */
+ 
 #define ZYNQMP_DMA_ENABLE		BIT(0)
 
-/* Buffer Descriptor definitions */
+ 
 #define ZYNQMP_DMA_DESC_CTRL_STOP	0x10
 #define ZYNQMP_DMA_DESC_CTRL_COMP_INT	0x4
 #define ZYNQMP_DMA_DESC_CTRL_SIZE_256	0x2
 #define ZYNQMP_DMA_DESC_CTRL_COHRNT	0x1
 
-/* Interrupt Mask specific definitions */
+ 
 #define ZYNQMP_DMA_INT_ERR	(ZYNQMP_DMA_AXI_RD_DATA | \
 				ZYNQMP_DMA_AXI_WR_DATA | \
 				ZYNQMP_DMA_AXI_RD_DST_DSCR | \
@@ -115,24 +111,24 @@
 					ZYNQMP_DMA_INT_OVRFL | \
 					ZYNQMP_DMA_DST_DSCR_DONE)
 
-/* Max number of descriptors per channel */
+ 
 #define ZYNQMP_DMA_NUM_DESCS	32
 
-/* Max transfer size per descriptor */
+ 
 #define ZYNQMP_DMA_MAX_TRANS_LEN	0x40000000
 
-/* Max burst lengths */
+ 
 #define ZYNQMP_DMA_MAX_DST_BURST_LEN    32768U
 #define ZYNQMP_DMA_MAX_SRC_BURST_LEN    32768U
 
-/* Reset values for data attributes */
+ 
 #define ZYNQMP_DMA_AXCACHE_VAL		0xF
 
 #define ZYNQMP_DMA_SRC_ISSUE_RST_VAL	0x1F
 
 #define ZYNQMP_DMA_IDS_DEFAULT_MASK	0xFFF
 
-/* Bus width in bits */
+ 
 #define ZYNQMP_DMA_BUS_WIDTH_64		64
 #define ZYNQMP_DMA_BUS_WIDTH_128	128
 
@@ -145,14 +141,7 @@
 #define tx_to_desc(tx)		container_of(tx, struct zynqmp_dma_desc_sw, \
 					     async_tx)
 
-/**
- * struct zynqmp_dma_desc_ll - Hw linked list descriptor
- * @addr: Buffer address
- * @size: Size of the buffer
- * @ctrl: Control word
- * @nxtdscraddr: Next descriptor base address
- * @rsvd: Reserved field and for Hw internal use.
- */
+ 
 struct zynqmp_dma_desc_ll {
 	u64 addr;
 	u32 size;
@@ -161,19 +150,7 @@ struct zynqmp_dma_desc_ll {
 	u64 rsvd;
 };
 
-/**
- * struct zynqmp_dma_desc_sw - Per Transaction structure
- * @src: Source address for simple mode dma
- * @dst: Destination address for simple mode dma
- * @len: Transfer length for simple mode dma
- * @node: Node in the channel descriptor list
- * @tx_list: List head for the current transfer
- * @async_tx: Async transaction descriptor
- * @src_v: Virtual address of the src descriptor
- * @src_p: Physical address of the src descriptor
- * @dst_v: Virtual address of the dst descriptor
- * @dst_p: Physical address of the dst descriptor
- */
+ 
 struct zynqmp_dma_desc_sw {
 	u64 src;
 	u64 dst;
@@ -187,31 +164,7 @@ struct zynqmp_dma_desc_sw {
 	dma_addr_t dst_p;
 };
 
-/**
- * struct zynqmp_dma_chan - Driver specific DMA channel structure
- * @zdev: Driver specific device structure
- * @regs: Control registers offset
- * @lock: Descriptor operation lock
- * @pending_list: Descriptors waiting
- * @free_list: Descriptors free
- * @active_list: Descriptors active
- * @sw_desc_pool: SW descriptor pool
- * @done_list: Complete descriptors
- * @common: DMA common channel
- * @desc_pool_v: Statically allocated descriptor base
- * @desc_pool_p: Physical allocated descriptor base
- * @desc_free_cnt: Descriptor available count
- * @dev: The dma device
- * @irq: Channel IRQ
- * @is_dmacoherent: Tells whether dma operations are coherent or not
- * @tasklet: Cleanup work after irq
- * @idle : Channel status;
- * @desc_size: Size of the low level descriptor
- * @err: Channel has errors
- * @bus_width: Bus width
- * @src_burst_len: Source burst length
- * @dst_burst_len: Dest burst length
- */
+ 
 struct zynqmp_dma_chan {
 	struct zynqmp_dma_device *zdev;
 	void __iomem *regs;
@@ -237,14 +190,7 @@ struct zynqmp_dma_chan {
 	u32 dst_burst_len;
 };
 
-/**
- * struct zynqmp_dma_device - DMA device structure
- * @dev: Device Structure
- * @common: DMA device structure
- * @chan: Driver specific DMA channel
- * @clk_main: Pointer to main clock
- * @clk_apb: Pointer to apb clock
- */
+ 
 struct zynqmp_dma_device {
 	struct device *dev;
 	struct dma_device common;
@@ -259,11 +205,7 @@ static inline void zynqmp_dma_writeq(struct zynqmp_dma_chan *chan, u32 reg,
 	lo_hi_writeq(value, chan->regs + reg);
 }
 
-/**
- * zynqmp_dma_update_desc_to_ctrlr - Updates descriptor to the controller
- * @chan: ZynqMP DMA DMA channel pointer
- * @desc: Transaction descriptor pointer
- */
+ 
 static void zynqmp_dma_update_desc_to_ctrlr(struct zynqmp_dma_chan *chan,
 				      struct zynqmp_dma_desc_sw *desc)
 {
@@ -275,11 +217,7 @@ static void zynqmp_dma_update_desc_to_ctrlr(struct zynqmp_dma_chan *chan,
 	zynqmp_dma_writeq(chan, ZYNQMP_DMA_DST_START_LSB, addr);
 }
 
-/**
- * zynqmp_dma_desc_config_eod - Mark the descriptor as end descriptor
- * @chan: ZynqMP DMA channel pointer
- * @desc: Hw descriptor pointer
- */
+ 
 static void zynqmp_dma_desc_config_eod(struct zynqmp_dma_chan *chan,
 				       void *desc)
 {
@@ -290,15 +228,7 @@ static void zynqmp_dma_desc_config_eod(struct zynqmp_dma_chan *chan,
 	hw->ctrl |= ZYNQMP_DMA_DESC_CTRL_COMP_INT | ZYNQMP_DMA_DESC_CTRL_STOP;
 }
 
-/**
- * zynqmp_dma_config_sg_ll_desc - Configure the linked list descriptor
- * @chan: ZynqMP DMA channel pointer
- * @sdesc: Hw descriptor pointer
- * @src: Source buffer address
- * @dst: Destination buffer address
- * @len: Transfer length
- * @prev: Previous hw descriptor pointer
- */
+ 
 static void zynqmp_dma_config_sg_ll_desc(struct zynqmp_dma_chan *chan,
 				   struct zynqmp_dma_desc_ll *sdesc,
 				   dma_addr_t src, dma_addr_t dst, size_t len,
@@ -325,10 +255,7 @@ static void zynqmp_dma_config_sg_ll_desc(struct zynqmp_dma_chan *chan,
 	}
 }
 
-/**
- * zynqmp_dma_init - Initialize the channel
- * @chan: ZynqMP DMA channel pointer
- */
+ 
 static void zynqmp_dma_init(struct zynqmp_dma_chan *chan)
 {
 	u32 val;
@@ -353,19 +280,14 @@ static void zynqmp_dma_init(struct zynqmp_dma_chan *chan)
 	}
 	writel(val, chan->regs + ZYNQMP_DMA_DATA_ATTR);
 
-	/* Clearing the interrupt account rgisters */
+	 
 	val = readl(chan->regs + ZYNQMP_DMA_IRQ_SRC_ACCT);
 	val = readl(chan->regs + ZYNQMP_DMA_IRQ_DST_ACCT);
 
 	chan->idle = true;
 }
 
-/**
- * zynqmp_dma_tx_submit - Submit DMA transaction
- * @tx: Async transaction descriptor pointer
- *
- * Return: cookie value
- */
+ 
 static dma_cookie_t zynqmp_dma_tx_submit(struct dma_async_tx_descriptor *tx)
 {
 	struct zynqmp_dma_chan *chan = to_chan(tx->chan);
@@ -395,12 +317,7 @@ static dma_cookie_t zynqmp_dma_tx_submit(struct dma_async_tx_descriptor *tx)
 	return cookie;
 }
 
-/**
- * zynqmp_dma_get_descriptor - Get the sw descriptor from the pool
- * @chan: ZynqMP DMA channel pointer
- *
- * Return: The sw descriptor
- */
+ 
 static struct zynqmp_dma_desc_sw *
 zynqmp_dma_get_descriptor(struct zynqmp_dma_chan *chan)
 {
@@ -414,18 +331,14 @@ zynqmp_dma_get_descriptor(struct zynqmp_dma_chan *chan)
 	spin_unlock_irqrestore(&chan->lock, irqflags);
 
 	INIT_LIST_HEAD(&desc->tx_list);
-	/* Clear the src and dst descriptor memory */
+	 
 	memset((void *)desc->src_v, 0, ZYNQMP_DMA_DESC_SIZE(chan));
 	memset((void *)desc->dst_v, 0, ZYNQMP_DMA_DESC_SIZE(chan));
 
 	return desc;
 }
 
-/**
- * zynqmp_dma_free_descriptor - Issue pending transactions
- * @chan: ZynqMP DMA channel pointer
- * @sdesc: Transaction descriptor pointer
- */
+ 
 static void zynqmp_dma_free_descriptor(struct zynqmp_dma_chan *chan,
 				 struct zynqmp_dma_desc_sw *sdesc)
 {
@@ -439,11 +352,7 @@ static void zynqmp_dma_free_descriptor(struct zynqmp_dma_chan *chan,
 	}
 }
 
-/**
- * zynqmp_dma_free_desc_list - Free descriptors list
- * @chan: ZynqMP DMA channel pointer
- * @list: List to parse and delete the descriptor
- */
+ 
 static void zynqmp_dma_free_desc_list(struct zynqmp_dma_chan *chan,
 				      struct list_head *list)
 {
@@ -453,12 +362,7 @@ static void zynqmp_dma_free_desc_list(struct zynqmp_dma_chan *chan,
 		zynqmp_dma_free_descriptor(chan, desc);
 }
 
-/**
- * zynqmp_dma_alloc_chan_resources - Allocate channel resources
- * @dchan: DMA channel
- *
- * Return: Number of descriptors on success and failure value on error
- */
+ 
 static int zynqmp_dma_alloc_chan_resources(struct dma_chan *dchan)
 {
 	struct zynqmp_dma_chan *chan = to_chan(dchan);
@@ -506,10 +410,7 @@ static int zynqmp_dma_alloc_chan_resources(struct dma_chan *dchan)
 	return ZYNQMP_DMA_NUM_DESCS;
 }
 
-/**
- * zynqmp_dma_start - Start DMA channel
- * @chan: ZynqMP DMA channel pointer
- */
+ 
 static void zynqmp_dma_start(struct zynqmp_dma_chan *chan)
 {
 	writel(ZYNQMP_DMA_INT_EN_DEFAULT_MASK, chan->regs + ZYNQMP_DMA_IER);
@@ -518,11 +419,7 @@ static void zynqmp_dma_start(struct zynqmp_dma_chan *chan)
 	writel(ZYNQMP_DMA_ENABLE, chan->regs + ZYNQMP_DMA_CTRL2);
 }
 
-/**
- * zynqmp_dma_handle_ovfl_int - Process the overflow interrupt
- * @chan: ZynqMP DMA channel pointer
- * @status: Interrupt status value
- */
+ 
 static void zynqmp_dma_handle_ovfl_int(struct zynqmp_dma_chan *chan, u32 status)
 {
 	if (status & ZYNQMP_DMA_BYTE_CNT_OVRFL)
@@ -551,13 +448,7 @@ static void zynqmp_dma_config(struct zynqmp_dma_chan *chan)
 	writel(val, chan->regs + ZYNQMP_DMA_DATA_ATTR);
 }
 
-/**
- * zynqmp_dma_device_config - Zynqmp dma device configuration
- * @dchan: DMA channel
- * @config: DMA device config
- *
- * Return: 0 always
- */
+ 
 static int zynqmp_dma_device_config(struct dma_chan *dchan,
 				    struct dma_slave_config *config)
 {
@@ -571,10 +462,7 @@ static int zynqmp_dma_device_config(struct dma_chan *dchan,
 	return 0;
 }
 
-/**
- * zynqmp_dma_start_transfer - Initiate the new transfer
- * @chan: ZynqMP DMA channel pointer
- */
+ 
 static void zynqmp_dma_start_transfer(struct zynqmp_dma_chan *chan)
 {
 	struct zynqmp_dma_desc_sw *desc;
@@ -595,10 +483,7 @@ static void zynqmp_dma_start_transfer(struct zynqmp_dma_chan *chan)
 }
 
 
-/**
- * zynqmp_dma_chan_desc_cleanup - Cleanup the completed descriptors
- * @chan: ZynqMP DMA channel
- */
+ 
 static void zynqmp_dma_chan_desc_cleanup(struct zynqmp_dma_chan *chan)
 {
 	struct zynqmp_dma_desc_sw *desc, *next;
@@ -616,17 +501,14 @@ static void zynqmp_dma_chan_desc_cleanup(struct zynqmp_dma_chan *chan)
 			spin_lock_irqsave(&chan->lock, irqflags);
 		}
 
-		/* Run any dependencies, then free the descriptor */
+		 
 		zynqmp_dma_free_descriptor(chan, desc);
 	}
 
 	spin_unlock_irqrestore(&chan->lock, irqflags);
 }
 
-/**
- * zynqmp_dma_complete_descriptor - Mark the active descriptor as complete
- * @chan: ZynqMP DMA channel pointer
- */
+ 
 static void zynqmp_dma_complete_descriptor(struct zynqmp_dma_chan *chan)
 {
 	struct zynqmp_dma_desc_sw *desc;
@@ -640,10 +522,7 @@ static void zynqmp_dma_complete_descriptor(struct zynqmp_dma_chan *chan)
 	list_add_tail(&desc->node, &chan->done_list);
 }
 
-/**
- * zynqmp_dma_issue_pending - Issue pending transactions
- * @dchan: DMA channel pointer
- */
+ 
 static void zynqmp_dma_issue_pending(struct dma_chan *dchan)
 {
 	struct zynqmp_dma_chan *chan = to_chan(dchan);
@@ -654,10 +533,7 @@ static void zynqmp_dma_issue_pending(struct dma_chan *dchan)
 	spin_unlock_irqrestore(&chan->lock, irqflags);
 }
 
-/**
- * zynqmp_dma_free_descriptors - Free channel descriptors
- * @chan: ZynqMP DMA channel pointer
- */
+ 
 static void zynqmp_dma_free_descriptors(struct zynqmp_dma_chan *chan)
 {
 	unsigned long irqflags;
@@ -669,10 +545,7 @@ static void zynqmp_dma_free_descriptors(struct zynqmp_dma_chan *chan)
 	spin_unlock_irqrestore(&chan->lock, irqflags);
 }
 
-/**
- * zynqmp_dma_free_chan_resources - Free channel resources
- * @dchan: DMA channel pointer
- */
+ 
 static void zynqmp_dma_free_chan_resources(struct dma_chan *dchan)
 {
 	struct zynqmp_dma_chan *chan = to_chan(dchan);
@@ -686,10 +559,7 @@ static void zynqmp_dma_free_chan_resources(struct dma_chan *dchan)
 	pm_runtime_put_autosuspend(chan->dev);
 }
 
-/**
- * zynqmp_dma_reset - Reset the channel
- * @chan: ZynqMP DMA channel pointer
- */
+ 
 static void zynqmp_dma_reset(struct zynqmp_dma_chan *chan)
 {
 	unsigned long irqflags;
@@ -705,13 +575,7 @@ static void zynqmp_dma_reset(struct zynqmp_dma_chan *chan)
 	zynqmp_dma_init(chan);
 }
 
-/**
- * zynqmp_dma_irq_handler - ZynqMP DMA Interrupt handler
- * @irq: IRQ number
- * @data: Pointer to the ZynqMP DMA channel structure
- *
- * Return: IRQ_HANDLED/IRQ_NONE
- */
+ 
 static irqreturn_t zynqmp_dma_irq_handler(int irq, void *data)
 {
 	struct zynqmp_dma_chan *chan = (struct zynqmp_dma_chan *)data;
@@ -747,10 +611,7 @@ static irqreturn_t zynqmp_dma_irq_handler(int irq, void *data)
 	return ret;
 }
 
-/**
- * zynqmp_dma_do_tasklet - Schedule completion tasklet
- * @t: Pointer to the ZynqMP DMA channel structure
- */
+ 
 static void zynqmp_dma_do_tasklet(struct tasklet_struct *t)
 {
 	struct zynqmp_dma_chan *chan = from_tasklet(chan, t, tasklet);
@@ -780,12 +641,7 @@ static void zynqmp_dma_do_tasklet(struct tasklet_struct *t)
 	}
 }
 
-/**
- * zynqmp_dma_device_terminate_all - Aborts all transfers on a channel
- * @dchan: DMA channel pointer
- *
- * Return: Always '0'
- */
+ 
 static int zynqmp_dma_device_terminate_all(struct dma_chan *dchan)
 {
 	struct zynqmp_dma_chan *chan = to_chan(dchan);
@@ -796,10 +652,7 @@ static int zynqmp_dma_device_terminate_all(struct dma_chan *dchan)
 	return 0;
 }
 
-/**
- * zynqmp_dma_synchronize - Synchronizes the termination of a transfers to the current context.
- * @dchan: DMA channel pointer
- */
+ 
 static void zynqmp_dma_synchronize(struct dma_chan *dchan)
 {
 	struct zynqmp_dma_chan *chan = to_chan(dchan);
@@ -807,16 +660,7 @@ static void zynqmp_dma_synchronize(struct dma_chan *dchan)
 	tasklet_kill(&chan->tasklet);
 }
 
-/**
- * zynqmp_dma_prep_memcpy - prepare descriptors for memcpy transaction
- * @dchan: DMA channel
- * @dma_dst: Destination buffer address
- * @dma_src: Source buffer address
- * @len: Transfer length
- * @flags: transfer ack flags
- *
- * Return: Async transaction descriptor on success and NULL on failure
- */
+ 
 static struct dma_async_tx_descriptor *zynqmp_dma_prep_memcpy(
 				struct dma_chan *dchan, dma_addr_t dma_dst,
 				dma_addr_t dma_src, size_t len, ulong flags)
@@ -842,7 +686,7 @@ static struct dma_async_tx_descriptor *zynqmp_dma_prep_memcpy(
 	spin_unlock_irqrestore(&chan->lock, irqflags);
 
 	do {
-		/* Allocate and populate the descriptor */
+		 
 		new = zynqmp_dma_get_descriptor(chan);
 
 		copy = min_t(size_t, len, ZYNQMP_DMA_MAX_TRANS_LEN);
@@ -865,10 +709,7 @@ static struct dma_async_tx_descriptor *zynqmp_dma_prep_memcpy(
 	return &first->async_tx;
 }
 
-/**
- * zynqmp_dma_chan_remove - Channel remove function
- * @chan: ZynqMP DMA channel pointer
- */
+ 
 static void zynqmp_dma_chan_remove(struct zynqmp_dma_chan *chan)
 {
 	if (!chan)
@@ -880,13 +721,7 @@ static void zynqmp_dma_chan_remove(struct zynqmp_dma_chan *chan)
 	list_del(&chan->common.device_node);
 }
 
-/**
- * zynqmp_dma_chan_probe - Per Channel Probing
- * @zdev: Driver specific device structure
- * @pdev: Pointer to the platform_device structure
- *
- * Return: '0' on success and failure value on error
- */
+ 
 static int zynqmp_dma_chan_probe(struct zynqmp_dma_device *zdev,
 			   struct platform_device *pdev)
 {
@@ -946,13 +781,7 @@ static int zynqmp_dma_chan_probe(struct zynqmp_dma_device *zdev,
 	return 0;
 }
 
-/**
- * of_zynqmp_dma_xlate - Translation function
- * @dma_spec: Pointer to DMA specifier as found in the device tree
- * @ofdma: Pointer to DMA controller data
- *
- * Return: DMA channel pointer on success and NULL on error
- */
+ 
 static struct dma_chan *of_zynqmp_dma_xlate(struct of_phandle_args *dma_spec,
 					    struct of_dma *ofdma)
 {
@@ -961,13 +790,7 @@ static struct dma_chan *of_zynqmp_dma_xlate(struct of_phandle_args *dma_spec,
 	return dma_get_slave_channel(&zdev->chan->common);
 }
 
-/**
- * zynqmp_dma_suspend - Suspend method for the driver
- * @dev:	Address of the device structure
- *
- * Put the driver into low power mode.
- * Return: 0 on success and failure value on error
- */
+ 
 static int __maybe_unused zynqmp_dma_suspend(struct device *dev)
 {
 	if (!device_may_wakeup(dev))
@@ -976,13 +799,7 @@ static int __maybe_unused zynqmp_dma_suspend(struct device *dev)
 	return 0;
 }
 
-/**
- * zynqmp_dma_resume - Resume from suspend
- * @dev:	Address of the device structure
- *
- * Resume operation after suspend.
- * Return: 0 on success and failure value on error
- */
+ 
 static int __maybe_unused zynqmp_dma_resume(struct device *dev)
 {
 	if (!device_may_wakeup(dev))
@@ -991,13 +808,7 @@ static int __maybe_unused zynqmp_dma_resume(struct device *dev)
 	return 0;
 }
 
-/**
- * zynqmp_dma_runtime_suspend - Runtime suspend method for the driver
- * @dev:	Address of the device structure
- *
- * Put the driver into low power mode.
- * Return: 0 always
- */
+ 
 static int __maybe_unused zynqmp_dma_runtime_suspend(struct device *dev)
 {
 	struct zynqmp_dma_device *zdev = dev_get_drvdata(dev);
@@ -1008,13 +819,7 @@ static int __maybe_unused zynqmp_dma_runtime_suspend(struct device *dev)
 	return 0;
 }
 
-/**
- * zynqmp_dma_runtime_resume - Runtime suspend method for the driver
- * @dev:	Address of the device structure
- *
- * Put the driver into low power mode.
- * Return: 0 always
- */
+ 
 static int __maybe_unused zynqmp_dma_runtime_resume(struct device *dev)
 {
 	struct zynqmp_dma_device *zdev = dev_get_drvdata(dev);
@@ -1042,12 +847,7 @@ static const struct dev_pm_ops zynqmp_dma_dev_pm_ops = {
 			   zynqmp_dma_runtime_resume, NULL)
 };
 
-/**
- * zynqmp_dma_probe - Driver probe function
- * @pdev: Pointer to the platform_device structure
- *
- * Return: '0' on success and failure value on error
- */
+ 
 static int zynqmp_dma_probe(struct platform_device *pdev)
 {
 	struct zynqmp_dma_device *zdev;
@@ -1141,12 +941,7 @@ err_disable_pm:
 	return ret;
 }
 
-/**
- * zynqmp_dma_remove - Driver remove function
- * @pdev: Pointer to the platform_device structure
- *
- * Return: Always '0'
- */
+ 
 static int zynqmp_dma_remove(struct platform_device *pdev)
 {
 	struct zynqmp_dma_device *zdev = platform_get_drvdata(pdev);

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2019 MediaTek Inc.
- *
- * Author: Felix Fietkau <nbd@nbd.name>
- *	   Lorenzo Bianconi <lorenzo@kernel.org>
- *	   Sean Wang <sean.wang@mediatek.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -256,7 +251,7 @@ static int mt7663u_resume(struct usb_interface *intf)
 
 	return err;
 }
-#endif /* CONFIG_PM */
+#endif  
 
 MODULE_DEVICE_TABLE(usb, mt7615_device_table);
 MODULE_FIRMWARE(MT7663_OFFLOAD_FIRMWARE_N9);
@@ -273,7 +268,7 @@ static struct usb_driver mt7663u_driver = {
 	.suspend	= mt7663u_suspend,
 	.resume		= mt7663u_resume,
 	.reset_resume	= mt7663u_resume,
-#endif /* CONFIG_PM */
+#endif  
 	.soft_unbind	= 1,
 	.disable_hub_initiated_lpm = 1,
 };

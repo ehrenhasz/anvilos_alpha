@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// Copyright 2019 NXP
-//
-// Author: Daniel Baluta <daniel.baluta@nxp.com>
-//
+
+
+
+
+
+
 
 #include <linux/firmware.h>
 #include <linux/module.h>
@@ -33,7 +33,7 @@ EXPORT_SYMBOL(sof_of_pm);
 
 static void sof_of_probe_complete(struct device *dev)
 {
-	/* allow runtime_pm */
+	 
 	pm_runtime_set_autosuspend_delay(dev, SND_SOF_SUSPEND_DELAY_MS);
 	pm_runtime_use_autosuspend(dev);
 	pm_runtime_mark_last_busy(dev);
@@ -76,10 +76,10 @@ int sof_of_probe(struct platform_device *pdev)
 	else
 		sof_pdata->tplg_filename_prefix = sof_pdata->desc->default_tplg_path[SOF_IPC];
 
-	/* set callback to be called on successful device probe to enable runtime_pm */
+	 
 	sof_pdata->sof_probe_complete = sof_of_probe_complete;
 
-	/* call sof helper for DSP hardware probe */
+	 
 	return snd_sof_device_probe(dev, sof_pdata);
 }
 EXPORT_SYMBOL(sof_of_probe);
@@ -88,7 +88,7 @@ int sof_of_remove(struct platform_device *pdev)
 {
 	pm_runtime_disable(&pdev->dev);
 
-	/* call sof helper for DSP hardware remove */
+	 
 	snd_sof_device_remove(&pdev->dev);
 
 	return 0;

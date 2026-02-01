@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * RapidIO sysfs attributes and support
- *
- * Copyright 2005 MontaVista Software, Inc.
- * Matt Porter <mporter@kernel.crashing.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/rio.h>
@@ -14,7 +9,7 @@
 
 #include "rio.h"
 
-/* Sysfs support */
+ 
 #define rio_config_attr(field, format_string)					\
 static ssize_t								\
 field##_show(struct device *dev, struct device_attribute *attr, char *buf)			\
@@ -105,7 +100,7 @@ static struct attribute *rio_dev_attrs[] = {
 	&dev_attr_destid.attr,
 	&dev_attr_modalias.attr,
 
-	/* Switch-only attributes */
+	 
 	&dev_attr_routes.attr,
 	&dev_attr_lnext.attr,
 	&dev_attr_hopcount.attr,
@@ -122,7 +117,7 @@ rio_read_config(struct file *filp, struct kobject *kobj,
 	loff_t init_off = off;
 	u8 *data = (u8 *) buf;
 
-	/* Several chips lock up trying to read undefined config space */
+	 
 	if (capable(CAP_SYS_ADMIN))
 		size = RIO_MAINT_SPACE_SZ;
 
@@ -266,9 +261,7 @@ static umode_t rio_dev_is_attr_visible(struct kobject *kobj,
 	    (attr == &dev_attr_routes.attr ||
 	     attr == &dev_attr_lnext.attr ||
 	     attr == &dev_attr_hopcount.attr)) {
-		/*
-		 * Hide switch-specific attributes for a non-switch device.
-		 */
+		 
 		mode = 0;
 	}
 

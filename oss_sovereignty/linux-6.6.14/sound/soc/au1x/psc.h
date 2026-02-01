@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Alchemy ALSA ASoC audio support.
- *
- * (c) 2007-2011 MSC Vertriebsges.m.b.H.,
- *	Manuel Lauss <manuel.lauss@gmail.com>
- */
+ 
+ 
 
 #ifndef _AU1X_PCM_H
 #define _AU1X_PCM_H
@@ -22,7 +17,7 @@ struct au1xpsc_audio_data {
 	int dmaids[2];
 };
 
-/* easy access macros */
+ 
 #define PSC_CTRL(x)	((x)->mmio + PSC_CTRL_OFFSET)
 #define PSC_SEL(x)	((x)->mmio + PSC_SEL_OFFSET)
 #define I2S_STAT(x)	((x)->mmio + PSC_I2SSTAT_OFFSET)

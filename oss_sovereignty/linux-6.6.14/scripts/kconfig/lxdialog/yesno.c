@@ -1,16 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  yesno.c -- implements the yes/no box
- *
- *  ORIGINAL AUTHOR: Savio Lam (lam836@cs.cuhk.hk)
- *  MODIFIED FOR LINUX KERNEL CONFIG BY: William Roadcap (roadcap@cfw.com)
- */
+
+ 
 
 #include "dialog.h"
 
-/*
- * Display termination buttons
- */
+ 
 static void print_buttons(WINDOW * dialog, int height, int width, int selected)
 {
 	int x = width / 2 - 10;
@@ -23,9 +16,7 @@ static void print_buttons(WINDOW * dialog, int height, int width, int selected)
 	wrefresh(dialog);
 }
 
-/*
- * Display a dialog box with two buttons - Yes and No
- */
+ 
 int dialog_yesno(const char *title, const char *prompt, int height, int width)
 {
 	int i, x, y, key = 0, button = 0;
@@ -37,7 +28,7 @@ do_resize:
 	if (getmaxx(stdscr) < (width + YESNO_WIDTH_MIN))
 		return -ERRDISPLAYTOOSMALL;
 
-	/* center dialog box on screen */
+	 
 	x = (getmaxx(stdscr) - width) / 2;
 	y = (getmaxy(stdscr) - height) / 2;
 
@@ -97,5 +88,5 @@ do_resize:
 	}
 
 	delwin(dialog);
-	return key;		/* ESC pressed */
+	return key;		 
 }

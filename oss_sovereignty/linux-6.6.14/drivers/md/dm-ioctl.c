@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2001, 2002 Sistina Software (UK) Limited.
- * Copyright (C) 2004 - 2006 Red Hat, Inc. All rights reserved.
- *
- * This file is released under the GPL.
- */
+
+ 
 
 #include "dm-core.h"
 #include "dm-ima.h"
@@ -28,19 +23,11 @@
 #define DM_DRIVER_EMAIL "dm-devel@redhat.com"
 
 struct dm_file {
-	/*
-	 * poll will wait until the global event number is greater than
-	 * this value.
-	 */
+	 
 	volatile unsigned int global_event_nr;
 };
 
-/*
- *---------------------------------------------------------------
- * The ioctl interface needs to be able to look up devices by
- * name or uuid.
- *---------------------------------------------------------------
- */
+ 
 struct hash_cell {
 	struct rb_node name_node;
 	struct rb_node uuid_node;
@@ -66,14 +53,10 @@ static struct rb_root uuid_rb_tree = RB_ROOT;
 
 static void dm_hash_remove_all(bool keep_open_devices, bool mark_deferred, bool only_deferred);
 
-/*
- * Guards access to both hash tables.
- */
+ 
 static DECLARE_RWSEM(_hash_lock);
 
-/*
- * Protects use of mdptr to obtain hash cell name and uuid from mapped device.
- */
+ 
 static DEFINE_MUTEX(dm_hash_cells_mutex);
 
 static void dm_hash_exit(void)
@@ -81,11 +64,7 @@ static void dm_hash_exit(void)
 	dm_hash_remove_all(false, false, false);
 }
 
-/*
- *---------------------------------------------------------------
- * Code for looking up a device by name
- *---------------------------------------------------------------
- */
+ 
 static struct hash_cell *__get_name_cell(const char *str)
 {
 	struct rb_node *n = name_rb_tree.rb_node;
@@ -208,11 +187,7 @@ static struct hash_cell *__get_dev_cell(uint64_t dev)
 	return hc;
 }
 
-/*
- *---------------------------------------------------------------
- * Inserting, removing and renaming a device.
- *---------------------------------------------------------------
- */
+ 
 static struct hash_cell *alloc_cell(const char *name, const char *uuid,
 				    struct mapped_device *md)
 {
@@ -255,24 +230,17 @@ static void free_cell(struct hash_cell *hc)
 	}
 }
 
-/*
- * The kdev_t and uuid of a device can never change once it is
- * initially inserted.
- */
+ 
 static int dm_hash_insert(const char *name, const char *uuid, struct mapped_device *md)
 {
 	struct hash_cell *cell, *hc;
 
-	/*
-	 * Allocate the new cells.
-	 */
+	 
 	cell = alloc_cell(name, uuid, md);
 	if (!cell)
 		return -ENOMEM;
 
-	/*
-	 * Insert the cell into both hash tables.
-	 */
+	 
 	down_write(&_hash_lock);
 	hc = __get_name_cell(name);
 	if (hc) {
@@ -312,7 +280,7 @@ static struct dm_table *__hash_remove(struct hash_cell *hc)
 
 	lockdep_assert_held(&_hash_lock);
 
-	/* remove from the dev trees */
+	 
 	__unlink_name(hc);
 	__unlink_uuid(hc);
 	mutex_lock(&dm_hash_cells_mutex);
@@ -373,12 +341,7 @@ retry:
 		else
 			dm_destroy_immediate(md);
 
-		/*
-		 * Some mapped devices may be using other mapped
-		 * devices, so repeat until we make no further
-		 * progress.  If a new mapped device is created
-		 * here it will also get removed.
-		 */
+		 
 		goto retry;
 	}
 
@@ -388,9 +351,7 @@ retry:
 		DMWARN("remove_all left %d open device(s)", dev_skipped);
 }
 
-/*
- * Set the uuid of a hash_cell that isn't already set.
- */
+ 
 static void __set_cell_uuid(struct hash_cell *hc, char *new_uuid)
 {
 	mutex_lock(&dm_hash_cells_mutex);
@@ -400,17 +361,12 @@ static void __set_cell_uuid(struct hash_cell *hc, char *new_uuid)
 	__link_uuid(hc);
 }
 
-/*
- * Changes the name of a hash_cell and returns the old name for
- * the caller to free.
- */
+ 
 static char *__change_cell_name(struct hash_cell *hc, char *new_name)
 {
 	char *old_name;
 
-	/*
-	 * Rename and move the name cell.
-	 */
+	 
 	__unlink_name(hc);
 	old_name = hc->name;
 
@@ -433,18 +389,14 @@ static struct mapped_device *dm_hash_rename(struct dm_ioctl *param,
 	unsigned int change_uuid = (param->flags & DM_UUID_FLAG) ? 1 : 0;
 	int srcu_idx;
 
-	/*
-	 * duplicate new.
-	 */
+	 
 	new_data = kstrdup(new, GFP_KERNEL);
 	if (!new_data)
 		return ERR_PTR(-ENOMEM);
 
 	down_write(&_hash_lock);
 
-	/*
-	 * Is new free ?
-	 */
+	 
 	if (change_uuid)
 		hc = __get_uuid_cell(new);
 	else
@@ -460,9 +412,7 @@ static struct mapped_device *dm_hash_rename(struct dm_ioctl *param,
 		return ERR_PTR(-EBUSY);
 	}
 
-	/*
-	 * Is there such a device as 'old' ?
-	 */
+	 
 	hc = __get_name_cell(param->name);
 	if (!hc) {
 		DMERR("Unable to rename non-existent device, %s to %s%s",
@@ -472,9 +422,7 @@ static struct mapped_device *dm_hash_rename(struct dm_ioctl *param,
 		return ERR_PTR(-ENXIO);
 	}
 
-	/*
-	 * Does this device already have a uuid?
-	 */
+	 
 	if (change_uuid && hc->uuid) {
 		DMERR("Unable to change uuid of mapped device %s to %s "
 		      "because uuid is already set to %s",
@@ -490,9 +438,7 @@ static struct mapped_device *dm_hash_rename(struct dm_ioctl *param,
 	else
 		old_name = __change_cell_name(hc, new_data);
 
-	/*
-	 * Wake up any dm event waiters.
-	 */
+	 
 	table = dm_get_live_table(hc->md, &srcu_idx);
 	if (table)
 		dm_table_event(table);
@@ -516,15 +462,8 @@ void dm_deferred_remove(void)
 	dm_hash_remove_all(true, false, true);
 }
 
-/*
- *---------------------------------------------------------------
- * Implementation of the ioctl commands
- *---------------------------------------------------------------
- */
-/*
- * All the ioctl commands get dispatched to functions with this
- * prototype.
- */
+ 
+ 
 typedef int (*ioctl_fn)(struct file *filp, struct dm_ioctl *param, size_t param_size);
 
 static int remove_all(struct file *filp, struct dm_ioctl *param, size_t param_size)
@@ -534,9 +473,7 @@ static int remove_all(struct file *filp, struct dm_ioctl *param, size_t param_si
 	return 0;
 }
 
-/*
- * Round up the ptr to an 8-byte boundary.
- */
+ 
 #define ALIGN_MASK 7
 static inline size_t align_val(size_t val)
 {
@@ -547,10 +484,7 @@ static inline void *align_ptr(void *ptr)
 	return (void *)align_val((size_t)ptr);
 }
 
-/*
- * Retrieves the data payload buffer from an already allocated
- * struct dm_ioctl.
- */
+ 
 static void *get_result_buffer(struct dm_ioctl *param, size_t param_size,
 			       size_t *len)
 {
@@ -599,10 +533,7 @@ static int list_devices(struct file *filp, struct dm_ioctl *param, size_t param_
 
 	down_write(&_hash_lock);
 
-	/*
-	 * Loop through all the devices working out how much
-	 * space we need.
-	 */
+	 
 	for (n = rb_first(&name_rb_tree); n; n = rb_next(n)) {
 		hc = container_of(n, struct hash_cell, name_node);
 		if (!filter_device(hc, param->name, param->uuid))
@@ -613,9 +544,7 @@ static int list_devices(struct file *filp, struct dm_ioctl *param, size_t param_
 			needed += align_val(strlen(hc->uuid) + 1);
 	}
 
-	/*
-	 * Grab our output buffer.
-	 */
+	 
 	nl = orig_nl = get_result_buffer(param, param_size, &len);
 	if (len < needed || len < sizeof(nl->dev)) {
 		param->flags |= DM_BUFFER_FULL_FLAG;
@@ -623,11 +552,9 @@ static int list_devices(struct file *filp, struct dm_ioctl *param, size_t param_
 	}
 	param->data_size = param->data_start + needed;
 
-	nl->dev = 0;	/* Flags no data */
+	nl->dev = 0;	 
 
-	/*
-	 * Now loop through filling out the names.
-	 */
+	 
 	for (n = rb_first(&name_rb_tree); n; n = rb_next(n)) {
 		void *uuid_ptr;
 
@@ -658,10 +585,7 @@ static int list_devices(struct file *filp, struct dm_ioctl *param, size_t param_
 		}
 		nl = uuid_ptr;
 	}
-	/*
-	 * If mismatch happens, security may be compromised due to buffer
-	 * overflow, so it's better to crash.
-	 */
+	 
 	BUG_ON((char *)nl - (char *)orig_nl != needed);
 
  out:
@@ -682,7 +606,7 @@ static void list_version_get_info(struct target_type *tt, void *param)
 {
 	struct vers_iter *info = param;
 
-	/* Check space - it might have changed since the first iteration */
+	 
 	if ((char *)info->vers + sizeof(tt->version) + strlen(tt->name) + 1 > info->end) {
 		info->flags = DM_BUFFER_FULL_FLAG;
 		return;
@@ -714,18 +638,13 @@ static int __list_versions(struct dm_ioctl *param, size_t param_size, const char
 			return -EINVAL;
 	}
 
-	/*
-	 * Loop through all the devices working out how much
-	 * space we need.
-	 */
+	 
 	if (!tt)
 		dm_target_iterate(list_version_get_needed, &needed);
 	else
 		list_version_get_needed(tt, &needed);
 
-	/*
-	 * Grab our output buffer.
-	 */
+	 
 	vers = get_result_buffer(param, param_size, &len);
 	if (len < needed) {
 		param->flags |= DM_BUFFER_FULL_FLAG;
@@ -739,9 +658,7 @@ static int __list_versions(struct dm_ioctl *param, size_t param_size, const char
 	iter_info.flags = 0;
 	iter_info.end = (char *)vers + needed;
 
-	/*
-	 * Now loop through filling out the names & versions.
-	 */
+	 
 	if (!tt)
 		dm_target_iterate(list_version_get_info, &iter_info);
 	else
@@ -781,17 +698,13 @@ static int check_name(const char *name)
 	return 0;
 }
 
-/*
- * On successful return, the caller must not attempt to acquire
- * _hash_lock without first calling dm_put_live_table, because dm_table_destroy
- * waits for this dm_put_live_table and could be called under this lock.
- */
+ 
 static struct dm_table *dm_get_inactive_table(struct mapped_device *md, int *srcu_idx)
 {
 	struct hash_cell *hc;
 	struct dm_table *table = NULL;
 
-	/* increment rcu count, we don't care about the table pointer */
+	 
 	dm_get_live_table(md, srcu_idx);
 
 	down_read(&_hash_lock);
@@ -817,10 +730,7 @@ static struct dm_table *dm_get_live_or_inactive_table(struct mapped_device *md,
 		dm_get_inactive_table(md, srcu_idx) : dm_get_live_table(md, srcu_idx);
 }
 
-/*
- * Fills in a dm_ioctl structure, ready for sending back to
- * userland.
- */
+ 
 static void __dev_status(struct mapped_device *md, struct dm_ioctl *param)
 {
 	struct gendisk *disk = dm_disk(md);
@@ -841,11 +751,7 @@ static void __dev_status(struct mapped_device *md, struct dm_ioctl *param)
 
 	param->dev = huge_encode_dev(disk_devt(disk));
 
-	/*
-	 * Yes, this will be out of date by the time it gets back
-	 * to userland, but it is still very useful for
-	 * debugging.
-	 */
+	 
 	param->open_count = dm_open_count(md);
 
 	param->event_nr = dm_get_event_nr(md);
@@ -908,9 +814,7 @@ static int dev_create(struct file *filp, struct dm_ioctl *param, size_t param_si
 	return 0;
 }
 
-/*
- * Always use UUID for lookups if it's present, otherwise use name or dev.
- */
+ 
 static struct hash_cell *__find_device_hash_cell(struct dm_ioctl *param)
 {
 	struct hash_cell *hc = NULL;
@@ -942,10 +846,7 @@ static struct hash_cell *__find_device_hash_cell(struct dm_ioctl *param)
 	} else
 		return NULL;
 
-	/*
-	 * Sneakily write in both the name and the uuid
-	 * while we have the cell.
-	 */
+	 
 	strscpy(param->name, hc->name, sizeof(param->name));
 	if (hc->uuid)
 		strscpy(param->uuid, hc->uuid, sizeof(param->uuid));
@@ -992,9 +893,7 @@ static int dev_remove(struct file *filp, struct dm_ioctl *param, size_t param_si
 
 	md = hc->md;
 
-	/*
-	 * Ensure the device is not open and nothing further can open it.
-	 */
+	 
 	r = dm_lock_for_deletion(md, !!(param->flags & DM_DEFERRED_REMOVE), false);
 	if (r) {
 		if (r == -EBUSY && param->flags & DM_DEFERRED_REMOVE) {
@@ -1028,10 +927,7 @@ static int dev_remove(struct file *filp, struct dm_ioctl *param, size_t param_si
 	return 0;
 }
 
-/*
- * Check a string doesn't overrun the chunk of
- * memory we copied from userland.
- */
+ 
 static int invalid_str(char *str, void *end)
 {
 	while ((void *) str < end)
@@ -1172,11 +1068,11 @@ static int do_resume(struct dm_ioctl *param)
 
 	up_write(&_hash_lock);
 
-	/* Do we need to load a new map ? */
+	 
 	if (new_map) {
 		sector_t old_size, new_size;
 
-		/* Suspend if it isn't already suspended */
+		 
 		if (param->flags & DM_SKIP_LOCKFS_FLAG)
 			suspend_flags &= ~DM_SUSPEND_LOCKFS_FLAG;
 		if (param->flags & DM_NOFLUSH_FLAG)
@@ -1212,10 +1108,7 @@ static int do_resume(struct dm_ioctl *param)
 		}
 	}
 
-	/*
-	 * Since dm_swap_table synchronizes RCU, nobody should be in
-	 * read-side critical section already.
-	 */
+	 
 	if (old_map)
 		dm_table_destroy(old_map);
 
@@ -1226,10 +1119,7 @@ static int do_resume(struct dm_ioctl *param)
 	return r;
 }
 
-/*
- * Set or unset the suspension state of a device.
- * If the device already is in the requested state we just return its status.
- */
+ 
 static int dev_suspend(struct file *filp, struct dm_ioctl *param, size_t param_size)
 {
 	if (param->flags & DM_SUSPEND_FLAG)
@@ -1238,10 +1128,7 @@ static int dev_suspend(struct file *filp, struct dm_ioctl *param, size_t param_s
 	return do_resume(param);
 }
 
-/*
- * Copies device info back to user space, used by
- * the create and info ioctls.
- */
+ 
 static int dev_status(struct file *filp, struct dm_ioctl *param, size_t param_size)
 {
 	struct mapped_device *md;
@@ -1256,9 +1143,7 @@ static int dev_status(struct file *filp, struct dm_ioctl *param, size_t param_si
 	return 0;
 }
 
-/*
- * Build up the status struct for each target
- */
+ 
 static void retrieve_status(struct dm_table *table,
 			    struct dm_ioctl *param, size_t param_size)
 {
@@ -1278,7 +1163,7 @@ static void retrieve_status(struct dm_table *table,
 	else
 		type = STATUSTYPE_INFO;
 
-	/* Get all the target info */
+	 
 	num_targets = table->num_targets;
 	for (i = 0; i < num_targets; i++) {
 		struct dm_target *ti = dm_table_get_target(table, i);
@@ -1305,7 +1190,7 @@ static void retrieve_status(struct dm_table *table,
 			break;
 		}
 
-		/* Get the status/table string from the target driver */
+		 
 		if (ti->type->status) {
 			if (param->flags & DM_NOFLUSH_FLAG)
 				status_flags |= DM_STATUS_NOFLUSH_FLAG;
@@ -1332,9 +1217,7 @@ static void retrieve_status(struct dm_table *table,
 	param->target_count = num_targets;
 }
 
-/*
- * Wait for a device to report an event
- */
+ 
 static int dev_wait(struct file *filp, struct dm_ioctl *param, size_t param_size)
 {
 	int r = 0;
@@ -1346,19 +1229,13 @@ static int dev_wait(struct file *filp, struct dm_ioctl *param, size_t param_size
 	if (!md)
 		return -ENXIO;
 
-	/*
-	 * Wait for a notification event
-	 */
+	 
 	if (dm_wait_event(md, param->event_nr)) {
 		r = -ERESTARTSYS;
 		goto out;
 	}
 
-	/*
-	 * The userland program is going to want to know what
-	 * changed to trigger the event, so we may as well tell
-	 * him and save an ioctl.
-	 */
+	 
 	__dev_status(md, param);
 
 	table = dm_get_live_or_inactive_table(md, param, &srcu_idx);
@@ -1372,10 +1249,7 @@ out:
 	return r;
 }
 
-/*
- * Remember the global event number and make it possible to poll
- * for further events.
- */
+ 
 static int dev_arm_poll(struct file *filp, struct dm_ioctl *param, size_t param_size)
 {
 	struct dm_file *priv = filp->private_data;
@@ -1401,17 +1275,10 @@ static int next_target(struct dm_target_spec *last, uint32_t next, const char *e
 	static_assert(__alignof__(struct dm_target_spec) <= 8,
 		"struct dm_target_spec must not require more than 8-byte alignment");
 
-	/*
-	 * Number of bytes remaining, starting with last. This is always
-	 * sizeof(struct dm_target_spec) or more, as otherwise *last was
-	 * out of bounds already.
-	 */
+	 
 	size_t remaining = end - (char *)last;
 
-	/*
-	 * There must be room for both the next target spec and the
-	 * NUL-terminator of the target itself.
-	 */
+	 
 	if (remaining - sizeof(struct dm_target_spec) <= next) {
 		DMERR("Target spec extends beyond end of parameters");
 		return -EINVAL;
@@ -1466,7 +1333,7 @@ static int populate_table(struct dm_table *table,
 			return -EINVAL;
 		}
 
-		/* Add 1 for NUL terminator */
+		 
 		min_size = (size_t)(nul_terminator - (const char *)spec) + 1;
 
 		r = dm_table_add_target(table, spec->target_type,
@@ -1509,7 +1376,7 @@ static int table_load(struct file *filp, struct dm_ioctl *param, size_t param_si
 	if (r)
 		goto err;
 
-	/* Protect md->type and md->queue against concurrent table loads. */
+	 
 	dm_lock_md_type(md);
 	r = populate_table(t, param, param_size);
 	if (r)
@@ -1528,7 +1395,7 @@ static int table_load(struct file *filp, struct dm_ioctl *param, size_t param_si
 	}
 
 	if (dm_get_md_type(md) == DM_TYPE_NONE) {
-		/* setup md->queue to reflect md's type (may block) */
+		 
 		r = dm_setup_md_queue(md, t);
 		if (r) {
 			DMERR("unable to set up device queue for new table.");
@@ -1543,7 +1410,7 @@ static int table_load(struct file *filp, struct dm_ioctl *param, size_t param_si
 
 	dm_unlock_md_type(md);
 
-	/* stage inactive table */
+	 
 	down_write(&_hash_lock);
 	hc = dm_get_mdptr(md);
 	if (!hc) {
@@ -1618,9 +1485,7 @@ static int table_clear(struct file *filp, struct dm_ioctl *param, size_t param_s
 	return 0;
 }
 
-/*
- * Retrieves a list of devices used by a particular dm device.
- */
+ 
 static void retrieve_deps(struct dm_table *table,
 			  struct dm_ioctl *param, size_t param_size)
 {
@@ -1634,24 +1499,18 @@ static void retrieve_deps(struct dm_table *table,
 
 	deps = get_result_buffer(param, param_size, &len);
 
-	/*
-	 * Count the devices.
-	 */
+	 
 	list_for_each(tmp, dm_table_get_devices(table))
 		count++;
 
-	/*
-	 * Check we have enough space.
-	 */
+	 
 	needed = struct_size(deps, dev, count);
 	if (len < needed) {
 		param->flags |= DM_BUFFER_FULL_FLAG;
 		goto out;
 	}
 
-	/*
-	 * Fill in the devices.
-	 */
+	 
 	deps->count = count;
 	count = 0;
 	list_for_each_entry(dd, dm_table_get_devices(table), list)
@@ -1685,10 +1544,7 @@ static int table_deps(struct file *filp, struct dm_ioctl *param, size_t param_si
 	return 0;
 }
 
-/*
- * Return the status of a device as a text string for each
- * target.
- */
+ 
 static int table_status(struct file *filp, struct dm_ioctl *param, size_t param_size)
 {
 	struct mapped_device *md;
@@ -1711,19 +1567,14 @@ static int table_status(struct file *filp, struct dm_ioctl *param, size_t param_
 	return 0;
 }
 
-/*
- * Process device-mapper dependent messages.  Messages prefixed with '@'
- * are processed by the DM core.  All others are delivered to the target.
- * Returns a number <= 1 if message was processed by device mapper.
- * Returns 2 if message should be delivered to the target.
- */
+ 
 static int message_for_md(struct mapped_device *md, unsigned int argc, char **argv,
 			  char *result, unsigned int maxlen)
 {
 	int r;
 
 	if (**argv != '@')
-		return 2; /* no '@' prefix, deliver to target */
+		return 2;  
 
 	if (!strcasecmp(argv[0], "@cancel_deferred_remove")) {
 		if (argc != 1) {
@@ -1741,9 +1592,7 @@ static int message_for_md(struct mapped_device *md, unsigned int argc, char **ar
 	return -EINVAL;
 }
 
-/*
- * Pass a message to the target that's at the supplied device offset.
- */
+ 
 static int target_message(struct file *filp, struct dm_ioctl *param, size_t param_size)
 {
 	int r, argc;
@@ -1824,20 +1673,11 @@ static int target_message(struct file *filp, struct dm_ioctl *param, size_t para
 	return r;
 }
 
-/*
- * The ioctl parameter block consists of two parts, a dm_ioctl struct
- * followed by a data buffer.  This flag is set if the second part,
- * which has a variable size, is not used by the function processing
- * the ioctl.
- */
+ 
 #define IOCTL_FLAGS_NO_PARAMS		1
 #define IOCTL_FLAGS_ISSUE_GLOBAL_EVENT	2
 
-/*
- *---------------------------------------------------------------
- * Implementation of open/close/ioctl on the special char device.
- *---------------------------------------------------------------
- */
+ 
 static ioctl_fn lookup_ioctl(unsigned int cmd, int *ioctl_flags)
 {
 	static const struct {
@@ -1845,7 +1685,7 @@ static ioctl_fn lookup_ioctl(unsigned int cmd, int *ioctl_flags)
 		int flags;
 		ioctl_fn fn;
 	} _ioctls[] = {
-		{DM_VERSION_CMD, 0, NULL}, /* version is dealt with elsewhere */
+		{DM_VERSION_CMD, 0, NULL},  
 		{DM_REMOVE_ALL_CMD, IOCTL_FLAGS_NO_PARAMS | IOCTL_FLAGS_ISSUE_GLOBAL_EVENT, remove_all},
 		{DM_LIST_DEVICES_CMD, 0, list_devices},
 
@@ -1877,16 +1717,13 @@ static ioctl_fn lookup_ioctl(unsigned int cmd, int *ioctl_flags)
 	return _ioctls[cmd].fn;
 }
 
-/*
- * As well as checking the version compatibility this always
- * copies the kernel interface version out.
- */
+ 
 static int check_version(unsigned int cmd, struct dm_ioctl __user *user,
 			 struct dm_ioctl *kernel_params)
 {
 	int r = 0;
 
-	/* Make certain version is first member of dm_ioctl struct */
+	 
 	BUILD_BUG_ON(offsetof(struct dm_ioctl, version) != 0);
 
 	if (copy_from_user(kernel_params->version, user->version, sizeof(kernel_params->version)))
@@ -1904,9 +1741,7 @@ static int check_version(unsigned int cmd, struct dm_ioctl __user *user,
 		r = -EINVAL;
 	}
 
-	/*
-	 * Fill in the kernel version.
-	 */
+	 
 	kernel_params->version[0] = DM_VERSION_MAJOR;
 	kernel_params->version[1] = DM_VERSION_MINOR;
 	kernel_params->version[2] = DM_VERSION_PATCHLEVEL;
@@ -1916,8 +1751,8 @@ static int check_version(unsigned int cmd, struct dm_ioctl __user *user,
 	return r;
 }
 
-#define DM_PARAMS_MALLOC	0x0001	/* Params allocated with kvmalloc() */
-#define DM_WIPE_BUFFER		0x0010	/* Wipe input buffer before returning from ioctl */
+#define DM_PARAMS_MALLOC	0x0001	 
+#define DM_WIPE_BUFFER		0x0010	 
 
 static void free_params(struct dm_ioctl *param, size_t param_size, int param_flags)
 {
@@ -1935,7 +1770,7 @@ static int copy_params(struct dm_ioctl __user *user, struct dm_ioctl *param_kern
 	int secure_data;
 	const size_t minimum_data_size = offsetof(struct dm_ioctl, data);
 
-	/* check_version() already copied version from userspace, avoid TOCTOU */
+	 
 	if (copy_from_user((char *)param_kernel + sizeof(param_kernel->version),
 			   (char __user *)user + sizeof(param_kernel->version),
 			   minimum_data_size - sizeof(param_kernel->version)))
@@ -1957,11 +1792,7 @@ static int copy_params(struct dm_ioctl __user *user, struct dm_ioctl *param_kern
 		goto data_copied;
 	}
 
-	/*
-	 * Use __GFP_HIGH to avoid low memory issues when a device is
-	 * suspended and the ioctl is needed to resume it.
-	 * Use kmalloc() rather than vmalloc() when we can.
-	 */
+	 
 	dmi = NULL;
 	dmi = kvmalloc(param_kernel->data_size, GFP_NOIO | __GFP_HIGH);
 
@@ -1973,14 +1804,14 @@ static int copy_params(struct dm_ioctl __user *user, struct dm_ioctl *param_kern
 
 	*param_flags |= DM_PARAMS_MALLOC;
 
-	/* Copy from param_kernel (which was already copied from user) */
+	 
 	memcpy(dmi, param_kernel, minimum_data_size);
 
 	if (copy_from_user(&dmi->data, (char __user *)user + minimum_data_size,
 			   param_kernel->data_size - minimum_data_size))
 		goto bad;
 data_copied:
-	/* Wipe the user buffer so we do not return it to userspace */
+	 
 	if (secure_data && clear_user(user, param_kernel->data_size))
 		goto bad;
 
@@ -1995,13 +1826,13 @@ bad:
 
 static int validate_params(uint cmd, struct dm_ioctl *param)
 {
-	/* Always clear this flag */
+	 
 	param->flags &= ~DM_BUFFER_FULL_FLAG;
 	param->flags &= ~DM_UEVENT_GENERATED_FLAG;
 	param->flags &= ~DM_SECURE_DATA_FLAG;
 	param->flags &= ~DM_DATA_OUT_FLAG;
 
-	/* Ignores parameters */
+	 
 	if (cmd == DM_REMOVE_ALL_CMD ||
 	    cmd == DM_LIST_DEVICES_CMD ||
 	    cmd == DM_LIST_VERSIONS_CMD)
@@ -2017,7 +1848,7 @@ static int validate_params(uint cmd, struct dm_ioctl *param)
 		return -EINVAL;
 	}
 
-	/* Ensure strings are terminated */
+	 
 	param->name[DM_NAME_LEN - 1] = '\0';
 	param->uuid[DM_UUID_LEN - 1] = '\0';
 
@@ -2035,7 +1866,7 @@ static int ctl_ioctl(struct file *file, uint command, struct dm_ioctl __user *us
 	size_t input_param_size;
 	struct dm_ioctl param_kernel;
 
-	/* only root can play with this */
+	 
 	if (!capable(CAP_SYS_ADMIN))
 		return -EACCES;
 
@@ -2044,17 +1875,12 @@ static int ctl_ioctl(struct file *file, uint command, struct dm_ioctl __user *us
 
 	cmd = _IOC_NR(command);
 
-	/*
-	 * Check the interface version passed in.  This also
-	 * writes out the kernel's interface version.
-	 */
+	 
 	r = check_version(cmd, user, &param_kernel);
 	if (r)
 		return r;
 
-	/*
-	 * Nothing more to do for the version command.
-	 */
+	 
 	if (cmd == DM_VERSION_CMD)
 		return 0;
 
@@ -2064,9 +1890,7 @@ static int ctl_ioctl(struct file *file, uint command, struct dm_ioctl __user *us
 		return -ENOTTY;
 	}
 
-	/*
-	 * Copy the parameters into kernel space.
-	 */
+	 
 	r = copy_params(user, &param_kernel, ioctl_flags, &param, &param_flags);
 
 	if (r)
@@ -2087,9 +1911,7 @@ static int ctl_ioctl(struct file *file, uint command, struct dm_ioctl __user *us
 	if (!r && ioctl_flags & IOCTL_FLAGS_ISSUE_GLOBAL_EVENT)
 		dm_issue_global_event();
 
-	/*
-	 * Copy the results back to userland.
-	 */
+	 
 	if (!r && copy_to_user(user, param, param->data_size))
 		r = -EFAULT;
 
@@ -2169,9 +1991,7 @@ static struct miscdevice _dm_misc = {
 MODULE_ALIAS_MISCDEV(MAPPER_CTRL_MINOR);
 MODULE_ALIAS("devname:" DM_DIR "/" DM_CONTROL_NODE);
 
-/*
- * Create misc character device and link to DM_DIR/control.
- */
+ 
 int __init dm_interface_init(void)
 {
 	int r;
@@ -2194,12 +2014,7 @@ void dm_interface_exit(void)
 	dm_hash_exit();
 }
 
-/**
- * dm_copy_name_and_uuid - Copy mapped device name & uuid into supplied buffers
- * @md: Pointer to mapped_device
- * @name: Buffer (size DM_NAME_LEN) for name
- * @uuid: Buffer (size DM_UUID_LEN) for uuid or empty string if uuid not defined
- */
+ 
 int dm_copy_name_and_uuid(struct mapped_device *md, char *name, char *uuid)
 {
 	int r = 0;
@@ -2227,23 +2042,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(dm_copy_name_and_uuid);
 
-/**
- * dm_early_create - create a mapped device in early boot.
- *
- * @dmi: Contains main information of the device mapping to be created.
- * @spec_array: array of pointers to struct dm_target_spec. Describes the
- * mapping table of the device.
- * @target_params_array: array of strings with the parameters to a specific
- * target.
- *
- * Instead of having the struct dm_target_spec and the parameters for every
- * target embedded at the end of struct dm_ioctl (as performed in a normal
- * ioctl), pass them as arguments, so the caller doesn't need to serialize them.
- * The size of the spec_array and target_params_array is given by
- * @dmi->target_count.
- * This function is supposed to be called in early boot, so locking mechanisms
- * to protect against concurrent loads are not required.
- */
+ 
 int __init dm_early_create(struct dm_ioctl *dmi,
 			   struct dm_target_spec **spec_array,
 			   char **target_params_array)
@@ -2263,22 +2062,22 @@ int __init dm_early_create(struct dm_ioctl *dmi,
 	if (dmi->flags & DM_PERSISTENT_DEV_FLAG)
 		m = MINOR(huge_decode_dev(dmi->dev));
 
-	/* alloc dm device */
+	 
 	r = dm_create(m, &md);
 	if (r)
 		return r;
 
-	/* hash insert */
+	 
 	r = dm_hash_insert(dmi->name, *dmi->uuid ? dmi->uuid : NULL, md);
 	if (r)
 		goto err_destroy_dm;
 
-	/* alloc table */
+	 
 	r = dm_table_create(&t, get_mode(dmi), dmi->target_count, md);
 	if (r)
 		goto err_hash_remove;
 
-	/* add targets */
+	 
 	for (i = 0; i < dmi->target_count; i++) {
 		r = dm_table_add_target(t, spec_array[i]->target_type,
 					(sector_t) spec_array[i]->sector_start,
@@ -2290,19 +2089,19 @@ int __init dm_early_create(struct dm_ioctl *dmi,
 		}
 	}
 
-	/* finish table */
+	 
 	r = dm_table_complete(t);
 	if (r)
 		goto err_destroy_table;
 
-	/* setup md->queue to reflect md's type (may block) */
+	 
 	r = dm_setup_md_queue(md, t);
 	if (r) {
 		DMERR("unable to set up device queue for new table.");
 		goto err_destroy_table;
 	}
 
-	/* Set new map */
+	 
 	dm_suspend(md, 0);
 	old_map = dm_swap_table(md, t);
 	if (IS_ERR(old_map)) {
@@ -2311,7 +2110,7 @@ int __init dm_early_create(struct dm_ioctl *dmi,
 	}
 	set_disk_ro(dm_disk(md), !!(dmi->flags & DM_READONLY_FLAG));
 
-	/* resume device */
+	 
 	r = dm_resume(md);
 	if (r)
 		goto err_destroy_table;
@@ -2326,7 +2125,7 @@ err_hash_remove:
 	down_write(&_hash_lock);
 	(void) __hash_remove(__get_name_cell(dmi->name));
 	up_write(&_hash_lock);
-	/* release reference from __get_name_cell */
+	 
 	dm_put(md);
 err_destroy_dm:
 	dm_put(md);

@@ -1,20 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Rockchip Video Decoder VP9 backend
- *
- * Copyright (C) 2019 Collabora, Ltd.
- *	Boris Brezillon <boris.brezillon@collabora.com>
- * Copyright (C) 2021 Collabora, Ltd.
- *	Andrzej Pietrasiewicz <andrzej.p@collabora.com>
- *
- * Copyright (C) 2016 Rockchip Electronics Co., Ltd.
- *	Alpha Lin <Alpha.Lin@rock-chips.com>
- */
 
-/*
- * For following the vp9 spec please start reading this driver
- * code from rkvdec_vp9_run() followed by rkvdec_vp9_done().
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/vmalloc.h>
@@ -78,17 +65,17 @@ struct rkvdec_vp9_probs {
 	u8 tx16[2][2];
 	u8 tx8[2][1];
 	u8 is_inter[4];
-	/* 128 bit alignment */
+	 
 	u8 padding0[3];
 	union {
 		struct rkvdec_vp9_inter_frame_probs inter;
 		struct rkvdec_vp9_intra_only_frame_probs intra_only;
 	};
-	/* 128 bit alignment */
+	 
 	u8 padding1[11];
 };
 
-/* Data structure describing auxiliary buffer format. */
+ 
 struct rkvdec_vp9_priv_tbl {
 	struct rkvdec_vp9_probs probs;
 	u8 segmap[2][RKVDEC_VP9_MAX_SEGMAP_SIZE];
@@ -115,7 +102,7 @@ struct rkvdec_vp9_inter_frame_symbol_counts {
 	u32 filter[4][3];
 	u32 mv_joint[4];
 	u32 sign[2][2];
-	/* add 1 element for align */
+	 
 	u32 classes[2][11 + 1];
 	u32 class0[2][2];
 	u32 bits[2][10][2];
@@ -198,22 +185,19 @@ static void init_intra_only_probs(struct rkvdec_ctx *ctx,
 	rkprobs = &tbl->probs.intra_only;
 	probs = &vp9_ctx->probability_tables;
 
-	/*
-	 * intra only 149 x 128 bits ,aligned to 152 x 128 bits coeff related
-	 * prob 64 x 128 bits
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(probs->coef); i++) {
 		for (j = 0; j < ARRAY_SIZE(probs->coef[0]); j++)
 			write_coeff_plane(probs->coef[i][j][0],
 					  rkprobs->coef_intra[i][j]);
 	}
 
-	/* intra mode prob  80 x 128 bits */
+	 
 	for (i = 0; i < ARRAY_SIZE(v4l2_vp9_kf_y_mode_prob); i++) {
 		unsigned int byte_count = 0;
 		int idx = 0;
 
-		/* vp9_kf_y_mode_prob */
+		 
 		for (j = 0; j < ARRAY_SIZE(v4l2_vp9_kf_y_mode_prob[0]); j++) {
 			for (k = 0; k < ARRAY_SIZE(v4l2_vp9_kf_y_mode_prob[0][0]);
 			     k++) {
@@ -248,12 +232,7 @@ static void init_inter_probs(struct rkvdec_ctx *ctx,
 	rkprobs = &tbl->probs.inter;
 	probs = &vp9_ctx->probability_tables;
 
-	/*
-	 * inter probs
-	 * 151 x 128 bits, aligned to 152 x 128 bits
-	 * inter only
-	 * intra_y_mode & inter_block info 6 x 128 bits
-	 */
+	 
 
 	memcpy(rkprobs->y_mode, probs->y_mode, sizeof(rkprobs->y_mode));
 	memcpy(rkprobs->comp_mode, probs->comp_mode,
@@ -267,7 +246,7 @@ static void init_inter_probs(struct rkvdec_ctx *ctx,
 	memcpy(rkprobs->interp_filter, probs->interp_filter,
 	       sizeof(rkprobs->interp_filter));
 
-	/* 128 x 128 bits coeff related */
+	 
 	for (i = 0; i < ARRAY_SIZE(probs->coef); i++) {
 		for (j = 0; j < ARRAY_SIZE(probs->coef[0]); j++) {
 			for (k = 0; k < ARRAY_SIZE(probs->coef[0][0]); k++)
@@ -276,7 +255,7 @@ static void init_inter_probs(struct rkvdec_ctx *ctx,
 		}
 	}
 
-	/* intra uv mode 6 x 128 */
+	 
 	memcpy(rkprobs->uv_mode_0_2, &probs->uv_mode[0],
 	       sizeof(rkprobs->uv_mode_0_2));
 	memcpy(rkprobs->uv_mode_3_5, &probs->uv_mode[3],
@@ -286,7 +265,7 @@ static void init_inter_probs(struct rkvdec_ctx *ctx,
 	memcpy(rkprobs->uv_mode_9, &probs->uv_mode[9],
 	       sizeof(rkprobs->uv_mode_9));
 
-	/* mv related 6 x 128 */
+	 
 	memcpy(rkprobs->mv.joint, probs->mv.joint,
 	       sizeof(rkprobs->mv.joint));
 	memcpy(rkprobs->mv.sign, probs->mv.sign,
@@ -328,7 +307,7 @@ static void init_probs(struct rkvdec_ctx *ctx,
 			(V4L2_VP9_FRAME_FLAG_KEY_FRAME |
 			 V4L2_VP9_FRAME_FLAG_INTRA_ONLY));
 
-	/* sb info  5 x 128 bit */
+	 
 	memcpy(rkprobs->partition,
 	       intra_only ? v4l2_vp9_kf_partition_probs : probs->partition,
 	       sizeof(rkprobs->partition));
@@ -386,10 +365,7 @@ get_ref_buf(struct rkvdec_ctx *ctx, struct vb2_v4l2_buffer *dst, u64 timestamp)
 	struct vb2_queue *cap_q = &m2m_ctx->cap_q_ctx.q;
 	struct vb2_buffer *buf;
 
-	/*
-	 * If a ref is unused or invalid, address of current destination
-	 * buffer is returned.
-	 */
+	 
 	buf = vb2_find_buffer(cap_q, timestamp);
 	if (!buf)
 		buf = &dst->vb2_buf;
@@ -572,11 +548,7 @@ static void config_registers(struct rkvdec_ctx *ctx,
 	writel_relaxed(RKVDEC_STRM_LEN(stream_len),
 		       rkvdec->regs + RKVDEC_REG_STRM_LEN);
 
-	/*
-	 * Reset count buffer, because decoder only output intra related syntax
-	 * counts when decoding intra frame, but update entropy need to update
-	 * all the probabilities.
-	 */
+	 
 	if (intra_only)
 		memset(vp9_ctx->count_tbl.cpu, 0, vp9_ctx->count_tbl.size);
 
@@ -698,7 +670,7 @@ static int validate_dec_params(struct rkvdec_ctx *ctx,
 {
 	unsigned int aligned_width, aligned_height;
 
-	/* We only support profile 0. */
+	 
 	if (dec_params->profile != 0) {
 		dev_err(ctx->dev->dev, "unsupported profile %d\n",
 			dec_params->profile);
@@ -708,10 +680,7 @@ static int validate_dec_params(struct rkvdec_ctx *ctx,
 	aligned_width = round_up(dec_params->frame_width_minus_1 + 1, 64);
 	aligned_height = round_up(dec_params->frame_height_minus_1 + 1, 64);
 
-	/*
-	 * Userspace should update the capture/decoded format when the
-	 * resolution changes.
-	 */
+	 
 	if (aligned_width != ctx->decoded_fmt.fmt.pix_mp.width ||
 	    aligned_height != ctx->decoded_fmt.fmt.pix_mp.height) {
 		dev_err(ctx->dev->dev,
@@ -734,7 +703,7 @@ static int rkvdec_vp9_run_preamble(struct rkvdec_ctx *ctx,
 	unsigned int fctx_idx;
 	int ret;
 
-	/* v4l2-specific stuff */
+	 
 	rkvdec_run_preamble(ctx, &run->base);
 
 	ctrl = v4l2_ctrl_find(&ctx->ctrl_hdl,
@@ -755,44 +724,14 @@ static int rkvdec_vp9_run_preamble(struct rkvdec_ctx *ctx,
 	prob_updates = ctrl->p_cur.p;
 	vp9_ctx->cur.tx_mode = prob_updates->tx_mode;
 
-	/*
-	 * vp9 stuff
-	 *
-	 * by this point the userspace has done all parts of 6.2 uncompressed_header()
-	 * except this fragment:
-	 * if ( FrameIsIntra || error_resilient_mode ) {
-	 *	setup_past_independence ( )
-	 *	if ( frame_type == KEY_FRAME || error_resilient_mode == 1 ||
-	 *	     reset_frame_context == 3 ) {
-	 *		for ( i = 0; i < 4; i ++ ) {
-	 *			save_probs( i )
-	 *		}
-	 *	} else if ( reset_frame_context == 2 ) {
-	 *		save_probs( frame_context_idx )
-	 *	}
-	 *	frame_context_idx = 0
-	 * }
-	 */
+	 
 	fctx_idx = v4l2_vp9_reset_frame_ctx(dec_params, vp9_ctx->frame_context);
 	vp9_ctx->cur.frame_context_idx = fctx_idx;
 
-	/* 6.1 frame(sz): load_probs() and load_probs2() */
+	 
 	vp9_ctx->probability_tables = vp9_ctx->frame_context[fctx_idx];
 
-	/*
-	 * The userspace has also performed 6.3 compressed_header(), but handling the
-	 * probs in a special way. All probs which need updating, except MV-related,
-	 * have been read from the bitstream and translated through inv_map_table[],
-	 * but no 6.3.6 inv_recenter_nonneg(v, m) has been performed. The values passed
-	 * by userspace are either translated values (there are no 0 values in
-	 * inv_map_table[]), or zero to indicate no update. All MV-related probs which need
-	 * updating have been read from the bitstream and (mv_prob << 1) | 1 has been
-	 * performed. The values passed by userspace are either new values
-	 * to replace old ones (the above mentioned shift and bitwise or never result in
-	 * a zero) or zero to indicate no update.
-	 * fw_update_probs() performs actual probs updates or leaves probs as-is
-	 * for values for which a zero was passed from userspace.
-	 */
+	 
 	v4l2_vp9_fw_update_probs(&vp9_ctx->probability_tables, prob_updates, dec_params);
 
 	return 0;
@@ -810,10 +749,10 @@ static int rkvdec_vp9_run(struct rkvdec_ctx *ctx)
 		return ret;
 	}
 
-	/* Prepare probs. */
+	 
 	init_probs(ctx, &run);
 
-	/* Configure hardware registers. */
+	 
 	config_registers(ctx, &run);
 
 	rkvdec_run_postamble(ctx, &run.base);
@@ -824,7 +763,7 @@ static int rkvdec_vp9_run(struct rkvdec_ctx *ctx)
 	writel(1, rkvdec->regs + RKVDEC_REG_PREF_CHR_CACHE_COMMAND);
 
 	writel(0xe, rkvdec->regs + RKVDEC_REG_STRMD_ERR_EN);
-	/* Start decoding! */
+	 
 	writel(RKVDEC_INTERRUPT_DEC_E | RKVDEC_CONFIG_DEC_CLK_GATE_E |
 	       RKVDEC_TIMEOUT_E | RKVDEC_BUF_EMPTY_E,
 	       rkvdec->regs + RKVDEC_REG_INTERRUPT);
@@ -848,29 +787,18 @@ static void rkvdec_vp9_done(struct rkvdec_ctx *ctx,
 	struct rkvdec_vp9_ctx *vp9_ctx = ctx->priv;
 	unsigned int fctx_idx;
 
-	/* v4l2-specific stuff */
+	 
 	if (result == VB2_BUF_STATE_ERROR)
 		goto out_update_last;
 
-	/*
-	 * vp9 stuff
-	 *
-	 * 6.1.2 refresh_probs()
-	 *
-	 * In the spec a complementary condition goes last in 6.1.2 refresh_probs(),
-	 * but it makes no sense to perform all the activities from the first "if"
-	 * there if we actually are not refreshing the frame context. On top of that,
-	 * because of 6.2 uncompressed_header() whenever error_resilient_mode == 1,
-	 * refresh_frame_context == 0. Consequently, if we don't jump to out_update_last
-	 * it means error_resilient_mode must be 0.
-	 */
+	 
 	if (!(vp9_ctx->cur.flags & V4L2_VP9_FRAME_FLAG_REFRESH_FRAME_CTX))
 		goto out_update_last;
 
 	fctx_idx = vp9_ctx->cur.frame_context_idx;
 
 	if (!(vp9_ctx->cur.flags & V4L2_VP9_FRAME_FLAG_PARALLEL_DEC_MODE)) {
-		/* error_resilient_mode == 0 && frame_parallel_decoding_mode == 0 */
+		 
 		struct v4l2_vp9_frame_context *probs = &vp9_ctx->probability_tables;
 		bool frame_is_intra = vp9_ctx->cur.flags &
 		    (V4L2_VP9_FRAME_FLAG_KEY_FRAME | V4L2_VP9_FRAME_FLAG_INTRA_ONLY);
@@ -882,14 +810,14 @@ static void rkvdec_vp9_done(struct rkvdec_ctx *ctx,
 		} _tx_skip, *tx_skip = &_tx_skip;
 		struct v4l2_vp9_frame_symbol_counts *counts;
 
-		/* buffer the forward-updated TX and skip probs */
+		 
 		if (frame_is_intra)
 			copy_tx_and_skip(tx_skip, probs);
 
-		/* 6.1.2 refresh_probs(): load_probs() and load_probs2() */
+		 
 		*probs = vp9_ctx->frame_context[fctx_idx];
 
-		/* if FrameIsIntra then undo the effect of load_probs2() */
+		 
 		if (frame_is_intra)
 			copy_tx_and_skip(probs, tx_skip);
 
@@ -908,7 +836,7 @@ static void rkvdec_vp9_done(struct rkvdec_ctx *ctx,
 				memcpy(classes[i], inter_cnts->classes[i], sizeof(classes[0]));
 			counts->classes = &classes;
 
-			/* load_probs2() already done */
+			 
 			v4l2_vp9_adapt_noncoef_probs(&vp9_ctx->probability_tables, counts,
 						     vp9_ctx->cur.reference_mode,
 						     vp9_ctx->cur.interpolation_filter,
@@ -916,7 +844,7 @@ static void rkvdec_vp9_done(struct rkvdec_ctx *ctx,
 		}
 	}
 
-	/* 6.1.2 refresh_probs(): save_probs(fctx_idx) */
+	 
 	vp9_ctx->frame_context[fctx_idx] = vp9_ctx->probability_tables;
 
 out_update_last:
@@ -953,12 +881,7 @@ static void rkvdec_init_v4l2_vp9_count_tbl(struct rkvdec_ctx *ctx)
 	vp9_ctx->inter_cnts.filter = &inter_cnts->filter;
 	vp9_ctx->inter_cnts.mv_joint = &inter_cnts->mv_joint;
 	vp9_ctx->inter_cnts.sign = &inter_cnts->sign;
-	/*
-	 * rk hardware actually uses "u32 classes[2][11 + 1];"
-	 * instead of "u32 classes[2][11];", so this must be explicitly
-	 * copied into vp9_ctx->classes when passing the data to the
-	 * vp9 library function
-	 */
+	 
 	vp9_ctx->inter_cnts.class0 = &inter_cnts->class0;
 	vp9_ctx->inter_cnts.bits = &inter_cnts->bits;
 	vp9_ctx->inter_cnts.class0_fp = &inter_cnts->class0_fp;
@@ -1007,7 +930,7 @@ static int rkvdec_vp9_start(struct rkvdec_ctx *ctx)
 
 	ctx->priv = vp9_ctx;
 
-	BUILD_BUG_ON(sizeof(priv_tbl->probs) % 16); /* ensure probs size is 128-bit aligned */
+	BUILD_BUG_ON(sizeof(priv_tbl->probs) % 16);  
 	priv_tbl = dma_alloc_coherent(rkvdec->dev, sizeof(*priv_tbl),
 				      &vp9_ctx->priv_tbl.dma, GFP_KERNEL);
 	if (!priv_tbl) {

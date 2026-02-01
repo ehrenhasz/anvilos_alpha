@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Fintek F81604 USB-to-2CAN controller driver.
- *
- * Copyright (C) 2023 Ji-Ze Hong (Peter Hong) <peter_hong@fintek.com.tw>
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/netdevice.h>
 #include <linux/units.h>
@@ -15,7 +12,7 @@
 
 #include <asm-generic/unaligned.h>
 
-/* vendor and product id */
+ 
 #define F81604_VENDOR_ID 0x2c42
 #define F81604_PRODUCT_ID 0x1709
 #define F81604_CAN_CLOCK (12 * MEGA)
@@ -46,7 +43,7 @@
 #define F81604_CLEAR_ECC 1
 #define F81604_CLEAR_OVERRUN 2
 
-/* device setting */
+ 
 #define F81604_CTRL_MODE_REG 0x80
 #define F81604_TX_ONESHOT (0x03 << 3)
 #define F81604_TX_NORMAL (0x01 << 3)
@@ -60,7 +57,7 @@
 #define F81604_TERMINATION_DISABLED CAN_TERMINATION_DISABLED
 #define F81604_TERMINATION_ENABLED 120
 
-/* SJA1000 registers - manual section 6.4 (Pelican Mode) */
+ 
 #define F81604_SJA1000_MOD 0x00
 #define F81604_SJA1000_CMR 0x01
 #define F81604_SJA1000_IR 0x03
@@ -73,22 +70,22 @@
 #define F81604_SJA1000_ACCM0 0x14
 #define F81604_MAX_FILTER_CNT 4
 
-/* Common registers - manual section 6.5 */
+ 
 #define F81604_SJA1000_BTR0 0x06
 #define F81604_SJA1000_BTR1 0x07
 #define F81604_SJA1000_BTR1_SAMPLE_TRIPLE BIT(7)
 #define F81604_SJA1000_OCR 0x08
 #define F81604_SJA1000_CDR 0x1F
 
-/* mode register */
+ 
 #define F81604_SJA1000_MOD_RM 0x01
 #define F81604_SJA1000_MOD_LOM 0x02
 #define F81604_SJA1000_MOD_STM 0x04
 
-/* commands */
+ 
 #define F81604_SJA1000_CMD_CDO 0x08
 
-/* interrupt sources */
+ 
 #define F81604_SJA1000_IRQ_BEI 0x80
 #define F81604_SJA1000_IRQ_ALI 0x40
 #define F81604_SJA1000_IRQ_EPI 0x20
@@ -99,12 +96,12 @@
 #define F81604_SJA1000_IRQ_ALL 0xFF
 #define F81604_SJA1000_IRQ_OFF 0x00
 
-/* status register content */
+ 
 #define F81604_SJA1000_SR_BS 0x80
 #define F81604_SJA1000_SR_ES 0x40
 #define F81604_SJA1000_SR_TCS 0x08
 
-/* ECC register */
+ 
 #define F81604_SJA1000_ECC_SEG 0x1F
 #define F81604_SJA1000_ECC_DIR 0x20
 #define F81604_SJA1000_ECC_BIT 0x00
@@ -112,13 +109,13 @@
 #define F81604_SJA1000_ECC_STUFF 0x80
 #define F81604_SJA1000_ECC_MASK 0xc0
 
-/* ALC register */
+ 
 #define F81604_SJA1000_ALC_MASK 0x1f
 
-/* table of devices that work with this driver */
+ 
 static const struct usb_device_id f81604_table[] = {
 	{ USB_DEVICE(F81604_VENDOR_ID, F81604_PRODUCT_ID) },
-	{} /* Terminating entry */
+	{}  
 };
 
 MODULE_DEVICE_TABLE(usb, f81604_table);
@@ -148,17 +145,7 @@ struct f81604_port_priv {
 	struct usb_anchor urbs_anchor;
 };
 
-/* Interrupt endpoint data format:
- *	Byte 0: Status register.
- *	Byte 1: Interrupt register.
- *	Byte 2: Interrupt enable register.
- *	Byte 3: Arbitration lost capture(ALC) register.
- *	Byte 4: Error code capture(ECC) register.
- *	Byte 5: Error warning limit register.
- *	Byte 6: RX error counter register.
- *	Byte 7: TX error counter register.
- *	Byte 8: Reserved.
- */
+ 
 struct f81604_int_data {
 	u8 sr;
 	u8 isrc;
@@ -184,11 +171,7 @@ struct f81604_eff {
 struct f81604_can_frame {
 	u8 cmd;
 
-	/* According for F81604 DLC define:
-	 *	bit 3~0: data length (0~8)
-	 *	bit6: is RTR flag.
-	 *	bit7: is EFF frame.
-	 */
+	 
 	u8 dlc;
 
 	union {
@@ -273,7 +256,7 @@ static int f81604_set_reset_mode(struct f81604_port_priv *priv)
 	int ret, i;
 	u8 tmp;
 
-	/* disable interrupts */
+	 
 	ret = f81604_sja1000_write(priv, F81604_SJA1000_IER,
 				   F81604_SJA1000_IRQ_OFF);
 	if (ret)
@@ -284,13 +267,13 @@ static int f81604_set_reset_mode(struct f81604_port_priv *priv)
 		if (ret)
 			return ret;
 
-		/* check reset bit */
+		 
 		if (tmp & F81604_SJA1000_MOD_RM) {
 			priv->can.state = CAN_STATE_STOPPED;
 			return 0;
 		}
 
-		/* reset chip */
+		 
 		ret = f81604_sja1000_write(priv, F81604_SJA1000_MOD,
 					   F81604_SJA1000_MOD_RM);
 		if (ret)
@@ -311,10 +294,10 @@ static int f81604_set_normal_mode(struct f81604_port_priv *priv)
 		if (ret)
 			return ret;
 
-		/* check reset bit */
+		 
 		if ((tmp & F81604_SJA1000_MOD_RM) == 0) {
 			priv->can.state = CAN_STATE_ERROR_ACTIVE;
-			/* enable interrupts, RI handled by bulk-in */
+			 
 			ier = F81604_SJA1000_IRQ_ALL & ~F81604_SJA1000_IRQ_RI;
 			if (!(priv->can.ctrlmode &
 			      CAN_CTRLMODE_BERR_REPORTING))
@@ -324,7 +307,7 @@ static int f81604_set_normal_mode(struct f81604_port_priv *priv)
 						    ier);
 		}
 
-		/* set chip to normal mode */
+		 
 		if (priv->can.ctrlmode & CAN_CTRLMODE_LISTENONLY)
 			mod_reg |= F81604_SJA1000_MOD_LOM;
 		if (priv->can.ctrlmode & CAN_CTRLMODE_PRESUME_ACK)
@@ -342,13 +325,13 @@ static int f81604_chipset_init(struct f81604_port_priv *priv)
 {
 	int i, ret;
 
-	/* set clock divider and output control register */
+	 
 	ret = f81604_sja1000_write(priv, F81604_SJA1000_CDR,
 				   CDR_CBP | CDR_PELICAN);
 	if (ret)
 		return ret;
 
-	/* set acceptance filter (accept all) */
+	 
 	for (i = 0; i < F81604_MAX_FILTER_CNT; ++i) {
 		ret = f81604_sja1000_write(priv, F81604_SJA1000_ACCC0 + i, 0);
 		if (ret)
@@ -423,7 +406,7 @@ static void f81604_read_bulk_callback(struct urb *urb)
 			    ERR_PTR(urb->status));
 
 	switch (urb->status) {
-	case 0: /* success */
+	case 0:  
 		break;
 
 	case -ENOENT:
@@ -460,13 +443,13 @@ static void f81604_handle_tx(struct f81604_port_priv *priv,
 	struct net_device *netdev = priv->netdev;
 	struct net_device_stats *stats = &netdev->stats;
 
-	/* transmission buffer released */
+	 
 	if (priv->can.ctrlmode & CAN_CTRLMODE_ONE_SHOT &&
 	    !(data->sr & F81604_SJA1000_SR_TCS)) {
 		stats->tx_errors++;
 		can_free_echo_skb(netdev, 0, NULL);
 	} else {
-		/* transmission complete */
+		 
 		stats->tx_bytes += can_get_echo_skb(netdev, 0, NULL);
 		stats->tx_packets++;
 	}
@@ -483,9 +466,7 @@ static void f81604_handle_can_bus_errors(struct f81604_port_priv *priv,
 	struct can_frame *cf;
 	struct sk_buff *skb;
 
-	/* Note: ALC/ECC will not auto clear by read here, must be cleared by
-	 * read register (via clear_reg_work).
-	 */
+	 
 
 	skb = alloc_can_err_skb(netdev, &cf);
 	if (skb) {
@@ -495,7 +476,7 @@ static void f81604_handle_can_bus_errors(struct f81604_port_priv *priv,
 	}
 
 	if (data->isrc & F81604_SJA1000_IRQ_DOI) {
-		/* data overrun interrupt */
+		 
 		netdev_dbg(netdev, "data overrun interrupt\n");
 
 		if (skb) {
@@ -510,7 +491,7 @@ static void f81604_handle_can_bus_errors(struct f81604_port_priv *priv,
 	}
 
 	if (data->isrc & F81604_SJA1000_IRQ_EI) {
-		/* error warning interrupt */
+		 
 		netdev_dbg(netdev, "error warning interrupt\n");
 
 		if (data->sr & F81604_SJA1000_SR_BS)
@@ -522,7 +503,7 @@ static void f81604_handle_can_bus_errors(struct f81604_port_priv *priv,
 	}
 
 	if (data->isrc & F81604_SJA1000_IRQ_BEI) {
-		/* bus error interrupt */
+		 
 		netdev_dbg(netdev, "bus error interrupt\n");
 
 		priv->can.can_stats.bus_error++;
@@ -531,7 +512,7 @@ static void f81604_handle_can_bus_errors(struct f81604_port_priv *priv,
 		if (skb) {
 			cf->can_id |= CAN_ERR_PROT | CAN_ERR_BUSERROR;
 
-			/* set error type */
+			 
 			switch (data->ecc & F81604_SJA1000_ECC_MASK) {
 			case F81604_SJA1000_ECC_BIT:
 				cf->data[2] |= CAN_ERR_PROT_BIT;
@@ -546,10 +527,10 @@ static void f81604_handle_can_bus_errors(struct f81604_port_priv *priv,
 				break;
 			}
 
-			/* set error location */
+			 
 			cf->data[3] = data->ecc & F81604_SJA1000_ECC_SEG;
 
-			/* Error occurred during transmission? */
+			 
 			if ((data->ecc & F81604_SJA1000_ECC_DIR) == 0)
 				cf->data[2] |= CAN_ERR_PROT_TX;
 		}
@@ -563,12 +544,12 @@ static void f81604_handle_can_bus_errors(struct f81604_port_priv *priv,
 		else
 			can_state = CAN_STATE_ERROR_PASSIVE;
 
-		/* error passive interrupt */
+		 
 		netdev_dbg(netdev, "error passive interrupt: %d\n", can_state);
 	}
 
 	if (data->isrc & F81604_SJA1000_IRQ_ALI) {
-		/* arbitration lost interrupt */
+		 
 		netdev_dbg(netdev, "arbitration lost interrupt\n");
 
 		priv->can.can_stats.arbitration_lost++;
@@ -617,7 +598,7 @@ static void f81604_read_int_callback(struct urb *urb)
 			    ERR_PTR(urb->status));
 
 	switch (urb->status) {
-	case 0: /* success */
+	case 0:  
 		break;
 
 	case -ENOENT:
@@ -630,13 +611,13 @@ static void f81604_read_int_callback(struct urb *urb)
 		goto resubmit_urb;
 	}
 
-	/* handle Errors */
+	 
 	if (data->isrc & (F81604_SJA1000_IRQ_DOI | F81604_SJA1000_IRQ_EI |
 			  F81604_SJA1000_IRQ_BEI | F81604_SJA1000_IRQ_EPI |
 			  F81604_SJA1000_IRQ_ALI))
 		f81604_handle_can_bus_errors(priv, data);
 
-	/* handle TX */
+	 
 	if (priv->can.state != CAN_STATE_BUS_OFF &&
 	    (data->isrc & F81604_SJA1000_IRQ_TI))
 		f81604_handle_tx(priv, data);
@@ -696,7 +677,7 @@ static int f81604_register_urbs(struct f81604_port_priv *priv)
 			break;
 		}
 
-		/* Drop reference, USB core will take care of freeing it */
+		 
 		usb_free_urb(rx_urb);
 	}
 
@@ -738,7 +719,7 @@ static int f81604_register_urbs(struct f81604_port_priv *priv)
 		goto error;
 	}
 
-	/* Drop reference, USB core will take care of freeing it */
+	 
 	usb_free_urb(int_urb);
 
 	return 0;
@@ -757,7 +738,7 @@ static int f81604_start(struct net_device *netdev)
 
 	mode = F81604_RX_AUTO_RELEASE_BUF | F81604_INT_WHEN_CHANGE;
 
-	/* Set TR/AT mode */
+	 
 	if (priv->can.ctrlmode & CAN_CTRLMODE_ONE_SHOT)
 		mode |= F81604_TX_ONESHOT;
 	else
@@ -767,7 +748,7 @@ static int f81604_start(struct net_device *netdev)
 	if (ret)
 		return ret;
 
-	/* set reset mode */
+	 
 	ret = f81604_set_reset_mode(priv);
 	if (ret)
 		return ret;
@@ -776,7 +757,7 @@ static int f81604_start(struct net_device *netdev)
 	if (ret)
 		return ret;
 
-	/* Clear error counters and error code capture */
+	 
 	ret = f81604_sja1000_write(priv, F81604_SJA1000_TXERR, 0);
 	if (ret)
 		return ret;
@@ -785,7 +766,7 @@ static int f81604_start(struct net_device *netdev)
 	if (ret)
 		return ret;
 
-	/* Read clear for ECC/ALC/IR register */
+	 
 	ret = f81604_sja1000_read(priv, F81604_SJA1000_ECC, &tmp);
 	if (ret)
 		return ret;
@@ -882,15 +863,15 @@ static void f81604_clear_reg_work(struct work_struct *work)
 
 	priv = container_of(work, struct f81604_port_priv, clear_reg_work);
 
-	/* dummy read for clear Arbitration lost capture(ALC) register. */
+	 
 	if (test_and_clear_bit(F81604_CLEAR_ALC, &priv->clear_flags))
 		f81604_sja1000_read(priv, F81604_SJA1000_ALC, &tmp);
 
-	/* dummy read for clear Error code capture(ECC) register. */
+	 
 	if (test_and_clear_bit(F81604_CLEAR_ECC, &priv->clear_flags))
 		f81604_sja1000_read(priv, F81604_SJA1000_ECC, &tmp);
 
-	/* dummy write for clear data overrun flag. */
+	 
 	if (test_and_clear_bit(F81604_CLEAR_OVERRUN, &priv->clear_flags))
 		f81604_sja1000_write(priv, F81604_SJA1000_CMR,
 				     F81604_SJA1000_CMD_CDO);
@@ -968,7 +949,7 @@ static netdev_tx_t f81604_start_xmit(struct sk_buff *skb,
 			netif_wake_queue(netdev);
 	}
 
-	/* let usb core take care of this urb */
+	 
 	usb_free_urb(write_urb);
 
 	return NETDEV_TX_OK;
@@ -1006,7 +987,7 @@ static int f81604_get_berr_counter(const struct net_device *netdev,
 	return 0;
 }
 
-/* Open USB device */
+ 
 static int f81604_open(struct net_device *netdev)
 {
 	int ret;
@@ -1028,7 +1009,7 @@ static int f81604_open(struct net_device *netdev)
 	return 0;
 }
 
-/* Close USB device */
+ 
 static int f81604_close(struct net_device *netdev)
 {
 	struct f81604_port_priv *priv = netdev_priv(netdev);
@@ -1063,7 +1044,7 @@ static const struct can_bittiming_const f81604_bittiming_const = {
 	.brp_inc = 1,
 };
 
-/* Called by the usb core when driver is unloaded or device is removed */
+ 
 static void f81604_disconnect(struct usb_interface *intf)
 {
 	struct f81604_priv *priv = usb_get_intfdata(intf);

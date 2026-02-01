@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Interconnect framework driver for i.MX8MP SoC
- *
- * Copyright 2022 NXP
- * Peng Fan <peng.fan@nxp.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -181,7 +176,7 @@ static struct imx_icc_noc_setting noc_setting_nodes[] = {
 	},
 };
 
-/* Describe bus masters, slaves and connections between them */
+ 
 static struct imx_icc_node_desc nodes[] = {
 	DEFINE_BUS_INTERCONNECT("NOC", IMX8MP_ICN_NOC, &imx8mp_noc_adj,
 				IMX8MP_ICS_DRAM, IMX8MP_ICN_MAIN),

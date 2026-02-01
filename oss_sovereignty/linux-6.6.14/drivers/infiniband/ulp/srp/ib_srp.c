@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2005 Cisco Systems.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -378,10 +348,7 @@ static int srp_new_cm_id(struct srp_rdma_ch *ch)
 		srp_new_ib_cm_id(ch);
 }
 
-/**
- * srp_destroy_fr_pool() - free the resources owned by a pool
- * @pool: Fast registration pool to be destroyed.
- */
+ 
 static void srp_destroy_fr_pool(struct srp_fr_pool *pool)
 {
 	int i;
@@ -397,13 +364,7 @@ static void srp_destroy_fr_pool(struct srp_fr_pool *pool)
 	kfree(pool);
 }
 
-/**
- * srp_create_fr_pool() - allocate and initialize a pool for fast registration
- * @device:            IB device to allocate fast registration descriptors for.
- * @pd:                Protection domain associated with the FR descriptors.
- * @pool_size:         Number of descriptors to allocate.
- * @max_page_list_len: Maximum fast registration work request page list length.
- */
+ 
 static struct srp_fr_pool *srp_create_fr_pool(struct ib_device *device,
 					      struct ib_pd *pd, int pool_size,
 					      int max_page_list_len)
@@ -454,10 +415,7 @@ err:
 	goto out;
 }
 
-/**
- * srp_fr_pool_get() - obtain a descriptor suitable for fast registration
- * @pool: Pool to obtain descriptor from.
- */
+ 
 static struct srp_fr_desc *srp_fr_pool_get(struct srp_fr_pool *pool)
 {
 	struct srp_fr_desc *d = NULL;
@@ -473,15 +431,7 @@ static struct srp_fr_desc *srp_fr_pool_get(struct srp_fr_pool *pool)
 	return d;
 }
 
-/**
- * srp_fr_pool_put() - put an FR descriptor back in the free list
- * @pool: Pool the descriptor was allocated from.
- * @desc: Pointer to an array of fast registration descriptor pointers.
- * @n:    Number of descriptors to put back.
- *
- * Note: The caller must already have queued an invalidation request for
- * desc->mr->rkey before calling this function.
- */
+ 
 static void srp_fr_pool_put(struct srp_fr_pool *pool, struct srp_fr_desc **desc,
 			    int n)
 {
@@ -502,14 +452,7 @@ static struct srp_fr_pool *srp_alloc_fr_pool(struct srp_target_port *target)
 				  dev->max_pages_per_mr);
 }
 
-/**
- * srp_destroy_qp() - destroy an RDMA queue pair
- * @ch: SRP RDMA channel.
- *
- * Drain the qp before destroying it.  This avoids that the receive
- * completion handler can access the queue pair while it is
- * being destroyed.
- */
+ 
 static void srp_destroy_qp(struct srp_rdma_ch *ch)
 {
 	spin_lock_irq(&ch->lock);
@@ -536,7 +479,7 @@ static int srp_create_ch_ib(struct srp_rdma_ch *ch)
 	if (!init_attr)
 		return -ENOMEM;
 
-	/* queue_size + 1 for ib_drain_rq() */
+	 
 	recv_cq = ib_alloc_cq(dev->dev, ch, target->queue_size + 1,
 				ch->comp_vector, IB_POLL_SOFTIRQ);
 	if (IS_ERR(recv_cq)) {
@@ -629,10 +572,7 @@ err:
 	return ret;
 }
 
-/*
- * Note: this function may be called without srp_alloc_iu_bufs() having been
- * invoked. Hence the ch->[rt]x_ring checks.
- */
+ 
 static void srp_free_ch_ib(struct srp_target_port *target,
 			   struct srp_rdma_ch *ch)
 {
@@ -654,7 +594,7 @@ static void srp_free_ch_ib(struct srp_target_port *target,
 		}
 	}
 
-	/* If srp_new_cm_id() succeeded but srp_create_ch_ib() not, return. */
+	 
 	if (!ch->qp)
 		return;
 
@@ -667,12 +607,7 @@ static void srp_free_ch_ib(struct srp_target_port *target,
 	ib_free_cq(ch->send_cq);
 	ib_free_cq(ch->recv_cq);
 
-	/*
-	 * Avoid that the SCSI error handler tries to use this channel after
-	 * it has been freed. The SCSI error handler can namely continue
-	 * trying to perform recovery actions after scsi_remove_host()
-	 * returned.
-	 */
+	 
 	ch->target = NULL;
 
 	ch->qp = NULL;
@@ -812,10 +747,7 @@ static int srp_send_req(struct srp_rdma_ch *ch, uint32_t max_iu_len,
 	req->ib_param.flow_control = 1;
 	req->ib_param.retry_count = target->tl_retry_count;
 
-	/*
-	 * Pick some arbitrary defaults here; we could make these
-	 * module parameters if anyone cared about setting them.
-	 */
+	 
 	req->ib_param.responder_resources = 4;
 	req->ib_param.rnr_retry_count = 7;
 	req->ib_param.max_cm_retries = 15;
@@ -872,15 +804,7 @@ static int srp_send_req(struct srp_rdma_ch *ch, uint32_t max_iu_len,
 		tpi = req->ib_req.target_port_id;
 	}
 
-	/*
-	 * In the published SRP specification (draft rev. 16a), the
-	 * port identifier format is 8 bytes of ID extension followed
-	 * by 8 bytes of GUID.  Older drafts put the two halves in the
-	 * opposite order, so that the GUID comes first.
-	 *
-	 * Targets conforming to these obsolete drafts can be
-	 * recognized by the I/O Class they report.
-	 */
+	 
 	if (target->io_class == SRP_REV10_IB_IO_CLASS) {
 		memcpy(ipi,     &target->sgid.global.interface_id, 8);
 		memcpy(ipi + 8, &target->initiator_ext, 8);
@@ -893,11 +817,7 @@ static int srp_send_req(struct srp_rdma_ch *ch, uint32_t max_iu_len,
 		memcpy(tpi + 8, &target->ioc_guid, 8);
 	}
 
-	/*
-	 * Topspin/Cisco SRP targets will reject our login unless we
-	 * zero out the first 8 bytes of our initiator port ID and set
-	 * the second 8 bytes to the local node GUID.
-	 */
+	 
 	if (srp_target_is_topspin(target)) {
 		shost_printk(KERN_DEBUG, target->scsi_host,
 			     PFX "Topspin/Cisco initiator port ID workaround "
@@ -939,7 +859,7 @@ static void srp_disconnect_target(struct srp_target_port *target)
 	struct srp_rdma_ch *ch;
 	int i, ret;
 
-	/* XXX should send SRP_I_LOGOUT request */
+	 
 
 	for (i = 0; i < target->ch_count; i++) {
 		ch = &target->ch[i];
@@ -1012,13 +932,7 @@ out:
 	return ret;
 }
 
-/**
- * srp_del_scsi_host_attr() - Remove attributes defined in the host template.
- * @shost: SCSI host whose attributes to remove from sysfs.
- *
- * Note: Any attributes defined in the host template and that did not exist
- * before invocation of this function will be ignored.
- */
+ 
 static void srp_del_scsi_host_attr(struct Scsi_Host *shost)
 {
 	const struct attribute_group **g;
@@ -1081,10 +995,7 @@ static void srp_rport_delete(struct srp_rport *rport)
 	srp_queue_remove_work(target);
 }
 
-/**
- * srp_connected_ch() - number of connected channels
- * @target: SRP target port.
- */
+ 
 static int srp_connected_ch(struct srp_target_port *target)
 {
 	int i, c = 0;
@@ -1116,12 +1027,7 @@ static int srp_connect_ch(struct srp_rdma_ch *ch, uint32_t max_iu_len,
 		if (ret < 0)
 			goto out;
 
-		/*
-		 * The CM event handling code will set status to
-		 * SRP_PORT_REDIRECT if we get a port redirect REJ
-		 * back, or SRP_DLID_REDIRECT if we get a lid/qp
-		 * redirect REJ back.
-		 */
+		 
 		ret = ch->status;
 		switch (ret) {
 		case 0:
@@ -1209,17 +1115,7 @@ static void srp_unmap_data(struct scsi_cmnd *scmnd,
 			scmnd->sc_data_direction);
 }
 
-/**
- * srp_claim_req - Take ownership of the scmnd associated with a request.
- * @ch: SRP RDMA channel.
- * @req: SRP request.
- * @sdev: If not NULL, only take ownership for this SCSI device.
- * @scmnd: If NULL, take ownership of @req->scmnd. If not NULL, only take
- *         ownership of @req->scmnd if it equals @scmnd.
- *
- * Return value:
- * Either NULL or a pointer to the SCSI command the caller became owner of.
- */
+ 
 static struct scsi_cmnd *srp_claim_req(struct srp_rdma_ch *ch,
 				       struct srp_request *req,
 				       struct scsi_device *sdev,
@@ -1241,13 +1137,7 @@ static struct scsi_cmnd *srp_claim_req(struct srp_rdma_ch *ch,
 	return scmnd;
 }
 
-/**
- * srp_free_req() - Unmap data and adjust ch->req_lim.
- * @ch:     SRP RDMA channel.
- * @req:    Request to be freed.
- * @scmnd:  SCSI command associated with @req.
- * @req_lim_delta: Amount to be added to @target->req_lim.
- */
+ 
 static void srp_free_req(struct srp_rdma_ch *ch, struct srp_request *req,
 			 struct scsi_cmnd *scmnd, s32 req_lim_delta)
 {
@@ -1299,7 +1189,7 @@ static void srp_terminate_io(struct srp_rport *rport)
 	scsi_host_busy_iter(target->scsi_host, srp_terminate_cmd, &context);
 }
 
-/* Calculate maximum initiator to target information unit length. */
+ 
 static uint32_t srp_max_it_iu_len(int cmd_sg_cnt, bool use_imm_data,
 				  uint32_t max_it_iu_size)
 {
@@ -1319,15 +1209,7 @@ static uint32_t srp_max_it_iu_len(int cmd_sg_cnt, bool use_imm_data,
 	return max_iu_len;
 }
 
-/*
- * It is up to the caller to ensure that srp_rport_reconnect() calls are
- * serialized and that no concurrent srp_queuecommand(), srp_abort(),
- * srp_reset_device() or srp_reset_host() calls will occur while this function
- * is in progress. One way to realize that is not to call this function
- * directly but to call srp_reconnect_rport() instead since that last function
- * serializes calls of this function via rport->mutex and also blocks
- * srp_queuecommand() calls before invoking this function.
- */
+ 
 static int srp_rport_reconnect(struct srp_rport *rport)
 {
 	struct srp_target_port *target = rport->lld_data;
@@ -1343,11 +1225,7 @@ static int srp_rport_reconnect(struct srp_rport *rport)
 	if (target->state == SRP_TARGET_SCANNING)
 		return -ENODEV;
 
-	/*
-	 * Now get a new local CM ID so that we avoid confusing the target in
-	 * case things are really fouled up. Doing so also ensures that all CM
-	 * callbacks will have finished before a new QP is allocated.
-	 */
+	 
 	for (i = 0; i < target->ch_count; i++) {
 		ch = &target->ch[i];
 		ret += srp_new_cm_id(ch);
@@ -1361,11 +1239,7 @@ static int srp_rport_reconnect(struct srp_rport *rport)
 	}
 	for (i = 0; i < target->ch_count; i++) {
 		ch = &target->ch[i];
-		/*
-		 * Whether or not creating a new CM ID succeeded, create a new
-		 * QP. This guarantees that all completion callback function
-		 * invocations have finished before request resetting starts.
-		 */
+		 
 		ret += srp_create_ch_ib(ch);
 
 		INIT_LIST_HEAD(&ch->free_tx);
@@ -1411,12 +1285,7 @@ static void srp_reg_mr_err_done(struct ib_cq *cq, struct ib_wc *wc)
 	srp_handle_qp_err(cq, wc, "FAST REG");
 }
 
-/*
- * Map up to sg_nents elements of state->sg where *sg_offset_p is the offset
- * where to start in the first element. If sg_offset_p != NULL then
- * *sg_offset_p is updated to the offset in state->sg[retval] of the first
- * byte that has not yet been mapped.
- */
+ 
 static int srp_map_finish_fr(struct srp_map_state *state,
 			     struct srp_request *req,
 			     struct srp_rdma_ch *ch, int sg_nents,
@@ -1540,13 +1409,7 @@ static int srp_map_sg_dma(struct srp_map_state *state, struct srp_rdma_ch *ch,
 	return 0;
 }
 
-/*
- * Register the indirect data buffer descriptor with the HCA.
- *
- * Note: since the indirect data buffer descriptor has been allocated with
- * kmalloc() it is guaranteed that this buffer is a physically contiguous
- * memory buffer.
- */
+ 
 static int srp_map_idb(struct srp_rdma_ch *ch, struct srp_request *req,
 		       void **next_mr, void **end_mr, u32 idb_len,
 		       __be32 *idb_rkey)
@@ -1569,9 +1432,9 @@ static int srp_map_idb(struct srp_rdma_ch *ch, struct srp_request *req,
 	if (dev->use_fast_reg) {
 		state.sg = idb_sg;
 		sg_init_one(idb_sg, req->indirect_desc, idb_len);
-		idb_sg->dma_address = req->indirect_dma_addr; /* hack! */
+		idb_sg->dma_address = req->indirect_dma_addr;  
 #ifdef CONFIG_NEED_SG_DMA_LENGTH
-		idb_sg->dma_length = idb_sg->length;	      /* hack^2 */
+		idb_sg->dma_length = idb_sg->length;	       
 #endif
 		ret = srp_map_finish_fr(&state, req, ch, 1, NULL);
 		if (ret < 0)
@@ -1607,16 +1470,7 @@ static void srp_check_mapping(struct srp_map_state *state,
 		       state->ndesc, state->nmdesc);
 }
 
-/**
- * srp_map_data() - map SCSI data buffer onto an SRP request
- * @scmnd: SCSI command to map
- * @ch: SRP RDMA channel
- * @req: SRP request
- *
- * Returns the length in bytes of the SRP_CMD IU or a negative value if
- * mapping failed. The size of any immediate data is not included in the
- * return value.
- */
+ 
 static int srp_map_data(struct scsi_cmnd *scmnd, struct srp_rdma_ch *ch,
 			struct srp_request *req)
 {
@@ -1684,12 +1538,7 @@ static int srp_map_data(struct scsi_cmnd *scmnd, struct srp_rdma_ch *ch,
 		sizeof(struct srp_direct_buf);
 
 	if (count == 1 && target->global_rkey) {
-		/*
-		 * The midlayer only generated a single gather/scatter
-		 * entry, or DMA mapping coalesced everything to a
-		 * single entry.  So a direct descriptor along with
-		 * the DMA MR suffices.
-		 */
+		 
 		struct srp_direct_buf *buf;
 
 		buf = (void *)cmd->add_data + cmd->add_cdb_len;
@@ -1701,10 +1550,7 @@ static int srp_map_data(struct scsi_cmnd *scmnd, struct srp_rdma_ch *ch,
 		goto map_complete;
 	}
 
-	/*
-	 * We have more than one scatter/gather entry, so build our indirect
-	 * descriptor table, trying to merge as many entries as we can.
-	 */
+	 
 	indirect_hdr = (void *)cmd->add_data + cmd->add_cdb_len;
 
 	ib_dma_sync_single_for_cpu(ibdev, req->indirect_dma_addr,
@@ -1727,17 +1573,9 @@ static int srp_map_data(struct scsi_cmnd *scmnd, struct srp_rdma_ch *ch,
 			srp_check_mapping(&state, ch, req, scat, count);
 	}
 
-	/* We've mapped the request, now pull as much of the indirect
-	 * descriptor table as we can into the command buffer. If this
-	 * target is not using an external indirect table, we are
-	 * guaranteed to fit into the command, as the SCSI layer won't
-	 * give us more S/G entries than we allow.
-	 */
+	 
 	if (state.ndesc == 1) {
-		/*
-		 * Memory registration collapsed the sg-list into one entry,
-		 * so use a direct descriptor.
-		 */
+		 
 		struct srp_direct_buf *buf;
 
 		buf = (void *)cmd->add_data + cmd->add_cdb_len;
@@ -1803,9 +1641,7 @@ unmap:
 	return ret;
 }
 
-/*
- * Return an IU and possible credit to the free pool
- */
+ 
 static void srp_put_tx_iu(struct srp_rdma_ch *ch, struct srp_iu *iu,
 			  enum srp_iu_type iu_type)
 {
@@ -1818,19 +1654,7 @@ static void srp_put_tx_iu(struct srp_rdma_ch *ch, struct srp_iu *iu,
 	spin_unlock_irqrestore(&ch->lock, flags);
 }
 
-/*
- * Must be called with ch->lock held to protect req_lim and free_tx.
- * If IU is not sent, it must be returned using srp_put_tx_iu().
- *
- * Note:
- * An upper limit for the number of allocated information units for each
- * request type is:
- * - SRP_IU_CMD: SRP_CMD_SQ_SIZE, since the SCSI mid-layer never queues
- *   more than Scsi_Host.can_queue requests.
- * - SRP_IU_TSK_MGMT: SRP_TSK_MGMT_SQ_SIZE.
- * - SRP_IU_RSP: 1, since a conforming SRP target never sends more than
- *   one unanswered SRP request to an initiator.
- */
+ 
 static struct srp_iu *__srp_get_tx_iu(struct srp_rdma_ch *ch,
 				      enum srp_iu_type iu_type)
 {
@@ -1845,7 +1669,7 @@ static struct srp_iu *__srp_get_tx_iu(struct srp_rdma_ch *ch,
 	if (list_empty(&ch->free_tx))
 		return NULL;
 
-	/* Initiator responses to target requests do not consume credits */
+	 
 	if (iu_type != SRP_IU_RSP) {
 		if (ch->req_lim <= rsv) {
 			++target->zero_req_lim;
@@ -1860,11 +1684,7 @@ static struct srp_iu *__srp_get_tx_iu(struct srp_rdma_ch *ch,
 	return iu;
 }
 
-/*
- * Note: if this function is called from inside ib_drain_sq() then it will
- * be called without ch->lock being held. If ib_drain_sq() dequeues a WQE
- * with status IB_WC_SUCCESS then that's a bug.
- */
+ 
 static void srp_send_done(struct ib_cq *cq, struct ib_wc *wc)
 {
 	struct srp_iu *iu = container_of(wc->wr_cqe, struct srp_iu, cqe);
@@ -1880,12 +1700,7 @@ static void srp_send_done(struct ib_cq *cq, struct ib_wc *wc)
 	list_add(&iu->list, &ch->free_tx);
 }
 
-/**
- * srp_post_send() - send an SRP information unit
- * @ch: RDMA channel over which to send the information unit.
- * @iu: Information unit to send.
- * @len: Length of the information unit excluding immediate data.
- */
+ 
 static int srp_post_send(struct srp_rdma_ch *ch, struct srp_iu *iu, int len)
 {
 	struct srp_target_port *target = ch->target;
@@ -2096,7 +1911,7 @@ static void srp_recv_done(struct ib_cq *cq, struct ib_wc *wc)
 		break;
 
 	case SRP_T_LOGOUT:
-		/* XXX Handle target logout */
+		 
 		shost_printk(KERN_WARNING, target->scsi_host,
 			     PFX "Got target logout request\n");
 		break;
@@ -2116,13 +1931,7 @@ static void srp_recv_done(struct ib_cq *cq, struct ib_wc *wc)
 			     PFX "Recv failed with error code %d\n", res);
 }
 
-/**
- * srp_tl_err_work() - handle a transport layer error
- * @work: Work structure embedded in an SRP target port.
- *
- * Note: This function may get invoked before the rport has been created,
- * hence the target->rport test.
- */
+ 
 static void srp_tl_err_work(struct work_struct *work)
 {
 	struct srp_target_port *target;
@@ -2201,12 +2010,7 @@ static int srp_queuecommand(struct Scsi_Host *shost, struct scsi_cmnd *scmnd)
 	if (len < 0) {
 		shost_printk(KERN_ERR, target->scsi_host,
 			     PFX "Failed to map data (%d)\n", len);
-		/*
-		 * If we ran out of memory descriptors (-ENOMEM) because an
-		 * application is queuing many requests with more than
-		 * max_pages_per_mr sg-list elements, tell the SCSI mid-layer
-		 * to reduce queue depth temporarily.
-		 */
+		 
 		scmnd->result = len == -ENOMEM ?
 			DID_OK << 16 | SAM_STAT_TASK_SET_FULL : DID_ERROR << 16;
 		goto err_iu;
@@ -2229,10 +2033,7 @@ err_unmap:
 err_iu:
 	srp_put_tx_iu(ch, iu, SRP_IU_CMD);
 
-	/*
-	 * Avoid that the loops that iterate over the request ring can
-	 * encounter a dangling SCSI command pointer.
-	 */
+	 
 	req->scmnd = NULL;
 
 err:
@@ -2246,10 +2047,7 @@ err:
 	return ret;
 }
 
-/*
- * Note: the resources allocated in this function are freed in
- * srp_free_ch_ib().
- */
+ 
 static int srp_alloc_iu_bufs(struct srp_rdma_ch *ch)
 {
 	struct srp_target_port *target = ch->target;
@@ -2305,20 +2103,11 @@ static uint32_t srp_compute_rq_tmo(struct ib_qp_attr *qp_attr, int attr_mask)
 	uint64_t T_tr_ns, max_compl_time_ms;
 	uint32_t rq_tmo_jiffies;
 
-	/*
-	 * According to section 11.2.4.2 in the IBTA spec (Modify Queue Pair,
-	 * table 91), both the QP timeout and the retry count have to be set
-	 * for RC QP's during the RTR to RTS transition.
-	 */
+	 
 	WARN_ON_ONCE((attr_mask & (IB_QP_TIMEOUT | IB_QP_RETRY_CNT)) !=
 		     (IB_QP_TIMEOUT | IB_QP_RETRY_CNT));
 
-	/*
-	 * Set target->rq_tmo_jiffies to one second more than the largest time
-	 * it can take before an error completion is generated. See also
-	 * C9-140..142 in the IBTA spec for more information about how to
-	 * convert the QP Local ACK Timeout value to nanoseconds.
-	 */
+	 
 	T_tr_ns = 4096 * (1ULL << qp_attr->timeout);
 	max_compl_time_ms = qp_attr->retry_cnt * 4 * T_tr_ns;
 	do_div(max_compl_time_ms, NSEC_PER_MSEC);
@@ -2352,10 +2141,7 @@ static void srp_cm_rep_handler(struct ib_cm_id *cm_id,
 			shost_printk(KERN_DEBUG, target->scsi_host,
 				     PFX "using immediate data\n");
 
-		/*
-		 * Reserve credits for task management so we don't
-		 * bounce requests back to the SCSI mid-layer.
-		 */
+		 
 		target->scsi_host->can_queue
 			= min(ch->req_lim - SRP_TSK_MGMT_SQ_SIZE,
 			      target->scsi_host->can_queue);
@@ -2445,11 +2231,7 @@ static void srp_ib_cm_rej_handler(struct ib_cm_id *cm_id,
 		if (srp_target_is_topspin(target)) {
 			union ib_gid *dgid = &ch->ib_cm.path.dgid;
 
-			/*
-			 * Topspin/Cisco SRP gateways incorrectly send
-			 * reject reason code 25 when they mean 24
-			 * (port redirect).
-			 */
+			 
 			memcpy(dgid->raw, event->param.rej_rcvd.ari, 16);
 
 			shost_printk(KERN_DEBUG, shost,
@@ -2696,13 +2478,7 @@ static int srp_rdma_cm_handler(struct rdma_cm_id *cm_id,
 	return 0;
 }
 
-/**
- * srp_change_queue_depth - setting device queue depth
- * @sdev: scsi device struct
- * @qdepth: requested queue depth
- *
- * Returns queue depth.
- */
+ 
 static int
 srp_change_queue_depth(struct scsi_device *sdev, int qdepth)
 {
@@ -2724,10 +2500,7 @@ static int srp_send_tsk_mgmt(struct srp_rdma_ch *ch, u64 req_tag, u64 lun,
 	if (!ch->connected || target->qp_in_error)
 		return -1;
 
-	/*
-	 * Lock the rport mutex to avoid that srp_create_ch_ib() is
-	 * invoked while a task management function is being sent.
-	 */
+	 
 	mutex_lock(&rport->mutex);
 	spin_lock_irq(&ch->lock);
 	iu = __srp_get_tx_iu(ch, SRP_IU_TSK_MGMT);
@@ -3098,13 +2871,7 @@ static int srp_sdev_count(struct Scsi_Host *host)
 	return c;
 }
 
-/*
- * Return values:
- * < 0 upon failure. Caller is responsible for SRP target port cleanup.
- * 0 and target->state == SRP_TARGET_REMOVED if asynchronous target port
- *    removal has been scheduled.
- * 0 and target->state != SRP_TARGET_REMOVED upon success.
- */
+ 
 static int srp_add_target(struct srp_host *host, struct srp_target_port *target)
 {
 	struct srp_rport_identifiers ids;
@@ -3175,11 +2942,7 @@ static struct class srp_class = {
 	.dev_release = srp_release_dev
 };
 
-/**
- * srp_conn_unique() - check whether the connection to a target is unique
- * @host:   SRP host.
- * @target: SRP target port.
- */
+ 
 static bool srp_conn_unique(struct srp_host *host,
 			    struct srp_target_port *target)
 {
@@ -3207,17 +2970,7 @@ out:
 	return ret;
 }
 
-/*
- * Target ports are added by writing
- *
- *     id_ext=<SRP ID ext>,ioc_guid=<SRP IOC GUID>,dgid=<dest GID>,
- *     pkey=<P_Key>,service_id=<service ID>
- * or
- *     id_ext=<SRP ID ext>,ioc_guid=<SRP IOC GUID>,
- *     [src=<IPv4 address>,]dest=<IPv4 address>:<port number>
- *
- * to the add_target sysfs attribute.
- */
+ 
 enum {
 	SRP_OPT_ERR		= 0,
 	SRP_OPT_ID_EXT		= 1 << 0,
@@ -3277,17 +3030,7 @@ static const match_table_t srp_opt_tokens = {
 	{ SRP_OPT_ERR,			NULL 			}
 };
 
-/**
- * srp_parse_in - parse an IP address and port number combination
- * @net:	   [in]  Network namespace.
- * @sa:		   [out] Address family, IP address and port number.
- * @addr_port_str: [in]  IP address and port number.
- * @has_port:	   [out] Whether or not @addr_port_str includes a port number.
- *
- * Parse the following address formats:
- * - IPv4: <ip_address>:<port>, e.g. 1.2.3.4:5.
- * - IPv6: \[<ipv6_address>\]:<port>, e.g. [1::2:3%4]:5.
- */
+ 
 static int srp_parse_in(struct net *net, struct sockaddr_storage *sa,
 			const char *addr_port_str, bool *has_port)
 {
@@ -3723,10 +3466,7 @@ static ssize_t add_target_store(struct device *dev,
 	target->tl_retry_count	= 7;
 	target->queue_size	= SRP_DEFAULT_QUEUE_SIZE;
 
-	/*
-	 * Avoid that the SCSI host can be removed by srp_remove_target()
-	 * before this function returns.
-	 */
+	 
 	scsi_host_get(target->scsi_host);
 
 	ret = mutex_lock_interruptible(&host->add_target_mutex);
@@ -3768,19 +3508,7 @@ static ssize_t add_target_store(struct device *dev,
 		max_sectors_per_mr = srp_dev->max_pages_per_mr <<
 				  (ilog2(srp_dev->mr_page_size) - 9);
 		if (!gaps_reg) {
-			/*
-			 * FR can only map one HCA page per entry. If the start
-			 * address is not aligned on a HCA page boundary two
-			 * entries will be used for the head and the tail
-			 * although these two entries combined contain at most
-			 * one HCA page of data. Hence the "+ 1" in the
-			 * calculation below.
-			 *
-			 * The indirect data buffer descriptor is contiguous
-			 * so the memory for that buffer will only be
-			 * registered if register_always is true. Hence add
-			 * one to mr_per_cmd if register_always has been set.
-			 */
+			 
 			mr_per_cmd = register_always +
 				(target->scsi_host->max_sectors + 1 +
 				 max_sectors_per_mr - 1) / max_sectors_per_mr;
@@ -3898,11 +3626,7 @@ out:
 put:
 	scsi_host_put(target->scsi_host);
 	if (ret < 0) {
-		/*
-		 * If a call to srp_remove_target() has not been scheduled,
-		 * drop the network namespace reference now that was obtained
-		 * earlier in this function.
-		 */
+		 
 		if (target->state != SRP_TARGET_REMOVED)
 			kobj_ns_drop(KOBJ_NS_TYPE_NET, target->net);
 		scsi_host_put(target->scsi_host);
@@ -4011,11 +3735,7 @@ static int srp_add_one(struct ib_device *device)
 	if (!srp_dev)
 		return -ENOMEM;
 
-	/*
-	 * Use the smallest page size supported by the HCA, down to a
-	 * minimum of 4096 bytes. We're unlikely to build large sglists
-	 * out of smaller entries.
-	 */
+	 
 	mr_page_shift		= max(12, ffs(attr->page_size_cap) - 1);
 	srp_dev->mr_page_size	= 1 << mr_page_shift;
 	srp_dev->mr_page_mask	= ~((u64) srp_dev->mr_page_size - 1);
@@ -4085,26 +3805,16 @@ static void srp_remove_one(struct ib_device *device, void *client_data)
 	srp_dev = client_data;
 
 	list_for_each_entry_safe(host, tmp_host, &srp_dev->dev_list, list) {
-		/*
-		 * Remove the add_target sysfs entry so that no new target ports
-		 * can be created.
-		 */
+		 
 		device_del(&host->dev);
 
-		/*
-		 * Remove all target ports.
-		 */
+		 
 		spin_lock(&host->target_lock);
 		list_for_each_entry(target, &host->target_list, list)
 			srp_queue_remove_work(target);
 		spin_unlock(&host->target_lock);
 
-		/*
-		 * srp_queue_remove_work() queues a call to
-		 * srp_remove_target(). The latter function cancels
-		 * target->tl_err_work so waiting for the remove works to
-		 * finish is sufficient.
-		 */
+		 
 		flush_workqueue(srp_remove_wq);
 
 		put_device(&host->dev);

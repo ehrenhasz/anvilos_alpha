@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2018 Mellanox Technologies. */
+
+ 
 
 #include <net/ip_tunnels.h>
 #include <net/vxlan.h>
@@ -28,7 +28,7 @@ static int mlx5e_tc_tun_check_udp_dport_vxlan(struct mlx5e_priv *priv,
 
 	flow_rule_match_enc_ports(rule, &enc_ports);
 
-	/* check the UDP destination port validity */
+	 
 
 	if (!mlx5_vxlan_lookup_port(priv->mdev->vxlan,
 				    be16_to_cpu(enc_ports.key->dst))) {
@@ -184,7 +184,7 @@ static int mlx5e_tc_tun_parse_vxlan(struct mlx5e_priv *priv,
 			return err;
 	}
 
-	/* match on VNI is required */
+	 
 
 	if (!MLX5_CAP_ESW_FLOWTABLE_FDB(priv->mdev,
 					ft_field_support.outer_vxlan_vni)) {

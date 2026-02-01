@@ -1,21 +1,4 @@
-/* Measure nanosleep timer latency
- *              by: john stultz (john.stultz@linaro.org)
- *		(C) Copyright Linaro 2013
- *              Licensed under the GPLv2
- *
- *  To build:
- *	$ gcc nsleep-lat.c -o nsleep-lat -lrt
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- */
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,7 +11,7 @@
 
 #define NSEC_PER_SEC 1000000000ULL
 
-#define UNRESONABLE_LATENCY 40000000 /* 40ms in nanosecs */
+#define UNRESONABLE_LATENCY 40000000  
 
 
 #define CLOCK_REALTIME			0
@@ -111,7 +94,7 @@ int nanosleep_lat_test(int clockid, long long ns)
 
 	count = 10;
 
-	/* First check relative latency */
+	 
 	clock_gettime(clockid, &start);
 	for (i = 0; i < count; i++)
 		clock_nanosleep(clockid, 0, &target, NULL);
@@ -122,7 +105,7 @@ int nanosleep_lat_test(int clockid, long long ns)
 		return -1;
 	}
 
-	/* Next check absolute latency */
+	 
 	for (i = 0; i < count; i++) {
 		clock_gettime(clockid, &start);
 		target = timespec_add(start, ns);
@@ -148,7 +131,7 @@ int main(int argc, char **argv)
 
 	for (clockid = CLOCK_REALTIME; clockid < NR_CLOCKIDS; clockid++) {
 
-		/* Skip cputime clockids since nanosleep won't increment cputime */
+		 
 		if (clockid == CLOCK_PROCESS_CPUTIME_ID ||
 				clockid == CLOCK_THREAD_CPUTIME_ID ||
 				clockid == CLOCK_HWSPECIFIC)

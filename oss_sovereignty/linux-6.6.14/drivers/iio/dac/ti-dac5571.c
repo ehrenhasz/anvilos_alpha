@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ti-dac5571.c - Texas Instruments 8/10/12-bit 1/4-channel DAC driver
- *
- * Copyright (C) 2018 Prevas A/S
- *
- * https://www.ti.com/lit/ds/symlink/dac5571.pdf
- * https://www.ti.com/lit/ds/symlink/dac6571.pdf
- * https://www.ti.com/lit/ds/symlink/dac7571.pdf
- * https://www.ti.com/lit/ds/symlink/dac5574.pdf
- * https://www.ti.com/lit/ds/symlink/dac6574.pdf
- * https://www.ti.com/lit/ds/symlink/dac7574.pdf
- * https://www.ti.com/lit/ds/symlink/dac5573.pdf
- * https://www.ti.com/lit/ds/symlink/dac6573.pdf
- * https://www.ti.com/lit/ds/symlink/dac7573.pdf
- * https://www.ti.com/lit/ds/symlink/dac121c081.pdf
- */
+
+ 
 
 #include <linux/iio/iio.h>
 #include <linux/i2c.h>

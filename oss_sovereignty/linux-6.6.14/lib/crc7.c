@@ -1,19 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *      crc7.c
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/module.h>
 #include <linux/crc7.h>
 
 
-/*
- * Table for CRC-7 (polynomial x^7 + x^3 + 1).
- * This is a big-endian CRC (msbit is highest power of x),
- * aligned so the msbit of the byte is the x^6 coefficient
- * and the lsbit is not used.
- */
+ 
 const u8 crc7_be_syndrome_table[256] = {
 	0x00, 0x12, 0x24, 0x36, 0x48, 0x5a, 0x6c, 0x7e,
 	0x90, 0x82, 0xb4, 0xa6, 0xd8, 0xca, 0xfc, 0xee,
@@ -50,18 +43,7 @@ const u8 crc7_be_syndrome_table[256] = {
 };
 EXPORT_SYMBOL(crc7_be_syndrome_table);
 
-/**
- * crc7_be - update the CRC7 for the data buffer
- * @crc:     previous CRC7 value
- * @buffer:  data pointer
- * @len:     number of bytes in the buffer
- * Context: any
- *
- * Returns the updated CRC7 value.
- * The CRC7 is left-aligned in the byte (the lsbit is always 0), as that
- * makes the computation easier, and all callers want it in that form.
- *
- */
+ 
 u8 crc7_be(u8 crc, const u8 *buffer, size_t len)
 {
 	while (len--)

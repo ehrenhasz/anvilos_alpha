@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016 Marek Vasut <marex@denx.de>
- *
- * Driver for Hope RF HP03 digital temperature and pressure sensor.
- */
+
+ 
 
 #define pr_fmt(fmt) "hp03: " fmt
 
@@ -15,11 +11,7 @@
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
 
-/*
- * The HP03 sensor occupies two fixed I2C addresses:
- *  0x50 ... read-only EEPROM with calibration data
- *  0x77 ... read-write ADC for pressure and temperature
- */
+ 
 #define HP03_EEPROM_ADDR		0x50
 #define HP03_ADC_ADDR			0x77
 
@@ -29,8 +21,8 @@
 
 #define HP03_ADC_WRITE_REG		0xff
 #define HP03_ADC_READ_REG		0xfd
-#define HP03_ADC_READ_PRESSURE		0xf0	/* D1 in datasheet */
-#define HP03_ADC_READ_TEMP		0xe8	/* D2 in datasheet */
+#define HP03_ADC_READ_PRESSURE		0xf0	 
+#define HP03_ADC_READ_TEMP		0xe8	 
 
 struct hp03_priv {
 	struct i2c_client	*client;
@@ -40,8 +32,8 @@ struct hp03_priv {
 	struct i2c_client	*eeprom_client;
 	struct regmap		*eeprom_regmap;
 
-	s32			pressure;	/* kPa */
-	s32			temp;		/* Deg. C */
+	s32			pressure;	 
+	s32			temp;		 
 };
 
 static const struct iio_chan_spec hp03_channels[] = {
@@ -86,7 +78,7 @@ static int hp03_get_temp_pressure(struct hp03_priv *priv, const u8 reg)
 	if (ret < 0)
 		return ret;
 
-	msleep(50);	/* Wait for conversion to finish */
+	msleep(50);	 
 
 	return i2c_smbus_read_word_data(priv->client, HP03_ADC_READ_REG);
 }
@@ -99,7 +91,7 @@ static int hp03_update_temp_pressure(struct hp03_priv *priv)
 	int ab_val, d1_val, d2_val, diff_val, dut, off, sens, x;
 	int i, ret;
 
-	/* Sample coefficients from EEPROM */
+	 
 	ret = regmap_bulk_read(priv->eeprom_regmap, HP03_EEPROM_CX_OFFSET,
 			       coefs, sizeof(coefs));
 	if (ret < 0) {
@@ -108,7 +100,7 @@ static int hp03_update_temp_pressure(struct hp03_priv *priv)
 		return ret;
 	}
 
-	/* Sample Temperature and Pressure */
+	 
 	gpiod_set_value_cansleep(priv->xclr_gpio, 1);
 
 	ret = hp03_get_temp_pressure(priv, HP03_ADC_READ_PRESSURE);
@@ -127,17 +119,17 @@ static int hp03_update_temp_pressure(struct hp03_priv *priv)
 
 	gpiod_set_value_cansleep(priv->xclr_gpio, 0);
 
-	/* The Cx coefficients and Temp/Pressure values are MSB first. */
+	 
 	for (i = 0; i < 7; i++)
 		cx_val[i] = (coefs[2 * i] << 8) | (coefs[(2 * i) + 1] << 0);
 	d1_val = ((d1_val >> 8) & 0xff) | ((d1_val & 0xff) << 8);
 	d2_val = ((d2_val >> 8) & 0xff) | ((d2_val & 0xff) << 8);
 
-	/* Coefficient voodoo from the HP03 datasheet. */
+	 
 	if (d2_val >= cx_val[4])
-		ab_val = coefs[14];	/* A-value */
+		ab_val = coefs[14];	 
 	else
-		ab_val = coefs[15];	/* B-value */
+		ab_val = coefs[15];	 
 
 	diff_val = d2_val - cx_val[4];
 	dut = (ab_val * (diff_val >> 7) * (diff_val >> 7)) >> coefs[16];
@@ -237,11 +229,7 @@ static int hp03_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/*
-	 * Allocate another device for the on-sensor EEPROM,
-	 * which has it's dedicated I2C address and contains
-	 * the calibration constants for the sensor.
-	 */
+	 
 	priv->eeprom_client = devm_i2c_new_dummy_device(dev, client->adapter,
 							HP03_EEPROM_ADDR);
 	if (IS_ERR(priv->eeprom_client)) {

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2014-2018 Nuvoton Technologies tomer.maimon@nuvoton.com
- * All rights reserved.
- *
- * Copyright 2017 Google, Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/sched.h>
@@ -18,15 +13,15 @@
 #include <linux/of_address.h>
 #include "timer-of.h"
 
-/* Timers registers */
-#define NPCM7XX_REG_TCSR0	0x0 /* Timer 0 Control and Status Register */
-#define NPCM7XX_REG_TICR0	0x8 /* Timer 0 Initial Count Register */
-#define NPCM7XX_REG_TCSR1	0x4 /* Timer 1 Control and Status Register */
-#define NPCM7XX_REG_TICR1	0xc /* Timer 1 Initial Count Register */
-#define NPCM7XX_REG_TDR1	0x14 /* Timer 1 Data Register */
-#define NPCM7XX_REG_TISR	0x18 /* Timer Interrupt Status Register */
+ 
+#define NPCM7XX_REG_TCSR0	0x0  
+#define NPCM7XX_REG_TICR0	0x8  
+#define NPCM7XX_REG_TCSR1	0x4  
+#define NPCM7XX_REG_TICR1	0xc  
+#define NPCM7XX_REG_TDR1	0x14  
+#define NPCM7XX_REG_TISR	0x18  
 
-/* Timers control */
+ 
 #define NPCM7XX_Tx_RESETINT		0x1f
 #define NPCM7XX_Tx_PERIOD		BIT(27)
 #define NPCM7XX_Tx_INTEN		BIT(29)
@@ -39,7 +34,7 @@
 #define NPCM7XX_T0_CLR_INT		0x1
 #define NPCM7XX_Tx_CLR_CSR		0x0
 
-/* Timers operating mode */
+ 
 #define NPCM7XX_START_PERIODIC_Tx (NPCM7XX_Tx_PERIOD | NPCM7XX_Tx_COUNTEN | \
 					NPCM7XX_Tx_INTEN | \
 					NPCM7XX_Tx_MIN_PRESCALE)
@@ -195,12 +190,12 @@ static int __init npcm7xx_timer_init(struct device_node *np)
 	if (ret)
 		return ret;
 
-	/* Clock input is divided by PRESCALE + 1 before it is fed */
-	/* to the counter */
+	 
+	 
 	npcm7xx_to.of_clk.rate = npcm7xx_to.of_clk.rate /
 		(NPCM7XX_Tx_MIN_PRESCALE + 1);
 
-	/* Enable the clock for timer1, if it exists */
+	 
 	clk = of_clk_get(np, 1);
 	if (clk) {
 		if (!IS_ERR(clk))

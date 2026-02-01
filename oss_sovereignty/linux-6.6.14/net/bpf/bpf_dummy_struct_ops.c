@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021. Huawei Technologies Co., Ltd
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/bpf_verifier.h>
 #include <linux/bpf.h>
@@ -9,7 +7,7 @@
 
 extern struct bpf_struct_ops bpf_bpf_dummy_ops;
 
-/* A common type for test_N with return value in bpf_dummy_ops */
+ 
 typedef int (*dummy_ops_test_ret_fn)(struct bpf_dummy_ops_state *state, ...);
 
 struct bpf_dummy_ops_test_args {
@@ -37,7 +35,7 @@ dummy_ops_init_args(const union bpf_attr *kattr, unsigned int nr)
 	if (copy_from_user(args->args, ctx_in, size_in))
 		goto out;
 
-	/* args[0] is 0 means state argument of test_N will be NULL */
+	 
 	u_state = u64_to_user_ptr(args->args[0]);
 	if (u_state && copy_from_user(&args->state, u_state,
 				      sizeof(args->state)))
@@ -65,7 +63,7 @@ static int dummy_ops_call_op(void *image, struct bpf_dummy_ops_test_args *args)
 	dummy_ops_test_ret_fn test = (void *)image;
 	struct bpf_dummy_ops_state *state = NULL;
 
-	/* state needs to be NULL if args[0] is 0 */
+	 
 	if (args->args[0])
 		state = &args->state;
 	return test(state, args->args[1], args->args[2],
@@ -113,7 +111,7 @@ int bpf_struct_ops_test_run(struct bpf_prog *prog, const union bpf_attr *kattr,
 		err = -ENOMEM;
 		goto out;
 	}
-	/* prog doesn't take the ownership of the reference from caller */
+	 
 	bpf_prog_inc(prog);
 	bpf_link_init(&link->link, BPF_LINK_TYPE_STRUCT_OPS, &bpf_struct_ops_link_lops, prog);
 

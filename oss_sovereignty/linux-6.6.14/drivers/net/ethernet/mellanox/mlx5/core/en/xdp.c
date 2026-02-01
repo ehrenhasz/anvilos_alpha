@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2018, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/bpf_trace.h>
 #include <net/xdp_sock_drv.h>
@@ -41,18 +11,7 @@ int mlx5e_xdp_max_mtu(struct mlx5e_params *params, struct mlx5e_xsk_param *xsk)
 {
 	int hr = mlx5e_get_linear_rq_headroom(params, xsk);
 
-	/* Let S := SKB_DATA_ALIGN(sizeof(struct skb_shared_info)).
-	 * The condition checked in mlx5e_rx_is_linear_skb is:
-	 *   SKB_DATA_ALIGN(sw_mtu + hard_mtu + hr) + S <= PAGE_SIZE         (1)
-	 *   (Note that hw_mtu == sw_mtu + hard_mtu.)
-	 * What is returned from this function is:
-	 *   max_mtu = PAGE_SIZE - S - hr - hard_mtu                         (2)
-	 * After assigning sw_mtu := max_mtu, the left side of (1) turns to
-	 * SKB_DATA_ALIGN(PAGE_SIZE - S) + S, which is equal to PAGE_SIZE,
-	 * because both PAGE_SIZE and S are already aligned. Any number greater
-	 * than max_mtu would make the left side of (1) greater than PAGE_SIZE,
-	 * so max_mtu is the maximum MTU allowed.
-	 */
+	 
 
 	return MLX5E_HW2SW_MTU(params, SKB_MAX_HEAD(hr));
 }
@@ -78,17 +37,10 @@ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
 	xdptxd->has_frags = xdp_frame_has_frags(xdpf);
 
 	if (xdp->rxq->mem.type == MEM_TYPE_XSK_BUFF_POOL) {
-		/* The xdp_buff was in the UMEM and was copied into a newly
-		 * allocated page. The UMEM page was returned via the ZCA, and
-		 * this new page has to be mapped at this point and has to be
-		 * unmapped and returned via xdp_return_frame on completion.
-		 */
+		 
 
-		/* Prevent double recycling of the UMEM page. Even in case this
-		 * function returns false, the xdp_buff shouldn't be recycled,
-		 * as it was already done in xdp_convert_zc_to_xdp_frame.
-		 */
-		__set_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags); /* non-atomic */
+		 
+		__set_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags);  
 
 		if (unlikely(xdptxd->has_frags))
 			return false;
@@ -106,7 +58,7 @@ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
 					      mlx5e_xmit_xdp_frame, sq, xdptxd, 0)))
 			return false;
 
-		/* xmit_mode == MLX5E_XDP_XMIT_MODE_FRAME */
+		 
 		mlx5e_xdpi_fifo_push(&sq->db.xdpi_fifo,
 				     (union mlx5e_xdp_info) { .mode = MLX5E_XDP_XMIT_MODE_FRAME });
 		mlx5e_xdpi_fifo_push(&sq->db.xdpi_fifo,
@@ -116,11 +68,7 @@ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
 		return true;
 	}
 
-	/* Driver assumes that xdp_convert_buff_to_frame returns an xdp_frame
-	 * that points to the same memory region as the original xdp_buff. It
-	 * allows to map the memory only once and to use the DMA_BIDIRECTIONAL
-	 * mode.
-	 */
+	 
 
 	dma_addr = page_pool_get_dma_addr(page) + (xdpf->data - (void *)xdpf);
 	dma_sync_single_for_device(sq->pdev, dma_addr, xdptxd->len, DMA_BIDIRECTIONAL);
@@ -148,7 +96,7 @@ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
 				      mlx5e_xmit_xdp_frame, sq, xdptxd, 0)))
 		return false;
 
-	/* xmit_mode == MLX5E_XDP_XMIT_MODE_PAGE */
+	 
 	mlx5e_xdpi_fifo_push(&sq->db.xdpi_fifo,
 			     (union mlx5e_xdp_info) { .mode = MLX5E_XDP_XMIT_MODE_PAGE });
 
@@ -187,12 +135,12 @@ static int mlx5e_xdp_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp)
 	return 0;
 }
 
-/* Mapping HW RSS Type bits CQE_RSS_HTYPE_IP + CQE_RSS_HTYPE_L4 into 4-bits*/
-#define RSS_TYPE_MAX_TABLE	16 /* 4-bits max 16 entries */
+ 
+#define RSS_TYPE_MAX_TABLE	16  
 #define RSS_L4		GENMASK(1, 0)
-#define RSS_L3		GENMASK(3, 2) /* Same as CQE_RSS_HTYPE_IP */
+#define RSS_L3		GENMASK(3, 2)  
 
-/* Valid combinations of CQE_RSS_HTYPE_IP + CQE_RSS_HTYPE_L4 sorted numerical */
+ 
 enum mlx5_rss_hash_type {
 	RSS_TYPE_NO_HASH	= (FIELD_PREP_CONST(RSS_L3, CQE_RSS_IP_NONE) |
 				   FIELD_PREP_CONST(RSS_L4, CQE_RSS_L4_NONE)),
@@ -214,12 +162,12 @@ enum mlx5_rss_hash_type {
 				   FIELD_PREP_CONST(RSS_L4, CQE_RSS_L4_IPSEC)),
 };
 
-/* Invalid combinations will simply return zero, allows no boundary checks */
+ 
 static const enum xdp_rss_hash_type mlx5_xdp_rss_type[RSS_TYPE_MAX_TABLE] = {
 	[RSS_TYPE_NO_HASH]	 = XDP_RSS_TYPE_NONE,
-	[1]			 = XDP_RSS_TYPE_NONE, /* Implicit zero */
-	[2]			 = XDP_RSS_TYPE_NONE, /* Implicit zero */
-	[3]			 = XDP_RSS_TYPE_NONE, /* Implicit zero */
+	[1]			 = XDP_RSS_TYPE_NONE,  
+	[2]			 = XDP_RSS_TYPE_NONE,  
+	[3]			 = XDP_RSS_TYPE_NONE,  
 	[RSS_TYPE_L3_IPV4]	 = XDP_RSS_TYPE_L3_IPV4,
 	[RSS_TYPE_L4_IPV4_TCP]	 = XDP_RSS_TYPE_L4_IPV4_TCP,
 	[RSS_TYPE_L4_IPV4_UDP]	 = XDP_RSS_TYPE_L4_IPV4_UDP,
@@ -228,10 +176,10 @@ static const enum xdp_rss_hash_type mlx5_xdp_rss_type[RSS_TYPE_MAX_TABLE] = {
 	[RSS_TYPE_L4_IPV6_TCP]	 = XDP_RSS_TYPE_L4_IPV6_TCP,
 	[RSS_TYPE_L4_IPV6_UDP]   = XDP_RSS_TYPE_L4_IPV6_UDP,
 	[RSS_TYPE_L4_IPV6_IPSEC] = XDP_RSS_TYPE_L4_IPV6_IPSEC,
-	[12]			 = XDP_RSS_TYPE_NONE, /* Implicit zero */
-	[13]			 = XDP_RSS_TYPE_NONE, /* Implicit zero */
-	[14]			 = XDP_RSS_TYPE_NONE, /* Implicit zero */
-	[15]			 = XDP_RSS_TYPE_NONE, /* Implicit zero */
+	[12]			 = XDP_RSS_TYPE_NONE,  
+	[13]			 = XDP_RSS_TYPE_NONE,  
+	[14]			 = XDP_RSS_TYPE_NONE,  
+	[15]			 = XDP_RSS_TYPE_NONE,  
 };
 
 static int mlx5e_xdp_rx_hash(const struct xdp_md *ctx, u32 *hash,
@@ -247,7 +195,7 @@ static int mlx5e_xdp_rx_hash(const struct xdp_md *ctx, u32 *hash,
 	*hash = be32_to_cpu(cqe->rss_hash_result);
 
 	hash_type = cqe->rss_hash_type;
-	BUILD_BUG_ON(CQE_RSS_HTYPE_IP != RSS_L3); /* same mask */
+	BUILD_BUG_ON(CQE_RSS_HTYPE_IP != RSS_L3);  
 	ip_type = hash_type & CQE_RSS_HTYPE_IP;
 	l4_type = FIELD_GET(CQE_RSS_HTYPE_L4, hash_type);
 	lookup = ip_type | l4_type;
@@ -261,7 +209,7 @@ const struct xdp_metadata_ops mlx5e_xdp_metadata_ops = {
 	.xmo_rx_hash			= mlx5e_xdp_rx_hash,
 };
 
-/* returns true if packet was consumed by xdp */
+ 
 bool mlx5e_xdp_handle(struct mlx5e_rq *rq,
 		      struct bpf_prog *prog, struct mlx5e_xdp_buff *mxbuf)
 {
@@ -276,10 +224,10 @@ bool mlx5e_xdp_handle(struct mlx5e_rq *rq,
 	case XDP_TX:
 		if (unlikely(!mlx5e_xmit_xdp_buff(rq->xdpsq, rq, xdp)))
 			goto xdp_abort;
-		__set_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags); /* non-atomic */
+		__set_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags);  
 		return true;
 	case XDP_REDIRECT:
-		/* When XDP enabled then page-refcnt==1 here */
+		 
 		err = xdp_do_redirect(rq->netdev, xdp, prog);
 		if (unlikely(err))
 			goto xdp_abort;
@@ -313,7 +261,7 @@ static u16 mlx5e_xdpsq_get_next_pi(struct mlx5e_xdpsq *sq, u16 size)
 		wi = &sq->db.wqe_info[pi];
 		edge_wi = wi + contig_wqebbs;
 
-		/* Fill SQ frag edge with NOPs to avoid WQE wrapping two pages. */
+		 
 		for (; wi < edge_wi; wi++) {
 			*wi = (struct mlx5e_xdp_wqe_info) {
 				.num_wqebbs = 1,
@@ -371,7 +319,7 @@ void mlx5e_xdp_mpwqe_complete(struct mlx5e_xdpsq *sq)
 
 	sq->doorbell_cseg = cseg;
 
-	session->wqe = NULL; /* Close session */
+	session->wqe = NULL;  
 }
 
 enum {
@@ -384,7 +332,7 @@ INDIRECT_CALLABLE_SCOPE int mlx5e_xmit_xdp_frame_check_mpwqe(struct mlx5e_xdpsq 
 	if (unlikely(!sq->mpwqe.wqe)) {
 		if (unlikely(!mlx5e_wqc_has_room_for(&sq->wq, sq->cc, sq->pc,
 						     sq->stop_room))) {
-			/* SQ is full, ring doorbell */
+			 
 			mlx5e_xmit_xdp_doorbell(sq);
 			sq->stats->full++;
 			return -EBUSY;
@@ -414,10 +362,7 @@ mlx5e_xmit_xdp_frame_mpwqe(struct mlx5e_xdpsq *sq, struct mlx5e_xmit_data *xdptx
 			container_of(xdptxd, struct mlx5e_xmit_data_frags, xd);
 
 		if (!!xdptxd->len + xdptxdf->sinfo->nr_frags > 1) {
-			/* MPWQE is enabled, but a multi-buffer packet is queued for
-			 * transmission. MPWQE can't send fragmented packets, so close
-			 * the current session and fall back to a regular WQE.
-			 */
+			 
 			if (unlikely(sq->mpwqe.wqe))
 				mlx5e_xdp_mpwqe_complete(sq);
 			return mlx5e_xmit_xdp_frame(sq, xdptxd, 0);
@@ -445,10 +390,7 @@ mlx5e_xmit_xdp_frame_mpwqe(struct mlx5e_xdpsq *sq, struct mlx5e_xmit_data *xdptx
 		return false;
 
 	if (check_result == MLX5E_XDP_CHECK_START_MPWQE) {
-		/* Start the session when nothing can fail, so it's guaranteed
-		 * that if there is an active session, it has at least one dseg,
-		 * and it's safe to complete it at any time.
-		 */
+		 
 		mlx5e_xdp_mpwqe_session_start(sq);
 	}
 
@@ -464,7 +406,7 @@ mlx5e_xmit_xdp_frame_mpwqe(struct mlx5e_xdpsq *sq, struct mlx5e_xmit_data *xdptx
 static int mlx5e_xmit_xdp_frame_check_stop_room(struct mlx5e_xdpsq *sq, int stop_room)
 {
 	if (unlikely(!mlx5e_wqc_has_room_for(&sq->wq, sq->cc, sq->pc, stop_room))) {
-		/* SQ is full, ring doorbell */
+		 
 		mlx5e_xmit_xdp_doorbell(sq);
 		sq->stats->full++;
 		return -EBUSY;
@@ -518,7 +460,7 @@ mlx5e_xmit_xdp_frame(struct mlx5e_xdpsq *sq, struct mlx5e_xmit_data *xdptxd,
 	linear = !!(dma_len - inline_hdr_sz);
 	ds_cnt = MLX5E_TX_WQE_EMPTY_DS_COUNT + linear + !!inline_hdr_sz;
 
-	/* check_result must be 0 if sinfo is passed. */
+	 
 	if (!check_result) {
 		int stop_room = 1;
 
@@ -526,9 +468,7 @@ mlx5e_xmit_xdp_frame(struct mlx5e_xdpsq *sq, struct mlx5e_xmit_data *xdptxd,
 			ds_cnt += xdptxdf->sinfo->nr_frags;
 			num_frags = xdptxdf->sinfo->nr_frags;
 			num_wqebbs = DIV_ROUND_UP(ds_cnt, MLX5_SEND_WQEBB_NUM_DS);
-			/* Assuming MLX5_CAP_GEN(mdev, max_wqe_sz_sq) is big
-			 * enough to hold all fragments.
-			 */
+			 
 			stop_room = MLX5E_STOP_ROOM(num_wqebbs);
 		}
 
@@ -545,7 +485,7 @@ mlx5e_xmit_xdp_frame(struct mlx5e_xdpsq *sq, struct mlx5e_xmit_data *xdptxd,
 	eseg = &wqe->eth;
 	dseg = wqe->data;
 
-	/* copy the inline part if required */
+	 
 	if (inline_hdr_sz) {
 		memcpy(eseg->inline_hdr.start, xdptxd->data, sizeof(eseg->inline_hdr.start));
 		memcpy(dseg, xdptxd->data + sizeof(eseg->inline_hdr.start),
@@ -555,7 +495,7 @@ mlx5e_xmit_xdp_frame(struct mlx5e_xdpsq *sq, struct mlx5e_xmit_data *xdptxd,
 		dseg++;
 	}
 
-	/* write the dma part */
+	 
 	if (linear) {
 		dseg->addr       = cpu_to_be64(dma_addr);
 		dseg->byte_count = cpu_to_be32(dma_len);
@@ -620,7 +560,7 @@ static void mlx5e_free_xdpsq_desc(struct mlx5e_xdpsq *sq,
 
 		switch (xdpi.mode) {
 		case MLX5E_XDP_XMIT_MODE_FRAME: {
-			/* XDP_TX from the XSK RQ and XDP_REDIRECT */
+			 
 			struct xdp_frame *xdpf;
 			dma_addr_t dma_addr;
 
@@ -650,7 +590,7 @@ static void mlx5e_free_xdpsq_desc(struct mlx5e_xdpsq *sq,
 			break;
 		}
 		case MLX5E_XDP_XMIT_MODE_PAGE: {
-			/* XDP_TX from the regular RQ */
+			 
 			u8 num, n = 0;
 
 			xdpi = mlx5e_xdpi_fifo_pop(xdpi_fifo);
@@ -662,16 +602,14 @@ static void mlx5e_free_xdpsq_desc(struct mlx5e_xdpsq *sq,
 				xdpi = mlx5e_xdpi_fifo_pop(xdpi_fifo);
 				page = xdpi.page.page;
 
-				/* No need to check ((page->pp_magic & ~0x3UL) == PP_SIGNATURE)
-				 * as we know this is a page_pool page.
-				 */
+				 
 				page_pool_recycle_direct(page->pp, page);
 			} while (++n < num);
 
 			break;
 		}
 		case MLX5E_XDP_XMIT_MODE_XSK:
-			/* AF_XDP send */
+			 
 			(*xsk_frames)++;
 			break;
 		default:
@@ -700,9 +638,7 @@ bool mlx5e_poll_xdpsq_cq(struct mlx5e_cq *cq)
 	if (!cqe)
 		return false;
 
-	/* sq->cc must be updated only after mlx5_cqwq_update_db_record(),
-	 * otherwise a cq overrun may occur
-	 */
+	 
 	sqcc = sq->cc;
 
 	i = 0;
@@ -744,7 +680,7 @@ bool mlx5e_poll_xdpsq_cq(struct mlx5e_cq *cq)
 
 	mlx5_cqwq_update_db_record(&cq->wq);
 
-	/* ensure cq space is freed before enabling more cqes */
+	 
 	wmb();
 
 	sq->cc = sqcc;
@@ -758,7 +694,7 @@ void mlx5e_free_xdpsq_descs(struct mlx5e_xdpsq *sq)
 
 	xdp_frame_bulk_init(&bq);
 
-	rcu_read_lock(); /* need for xdp_return_frame_bulk */
+	rcu_read_lock();  
 
 	while (sq->cc != sq->pc) {
 		struct mlx5e_xdp_wqe_info *wi;
@@ -788,7 +724,7 @@ int mlx5e_xdp_xmit(struct net_device *dev, int n, struct xdp_frame **frames,
 	int sq_num;
 	int i;
 
-	/* this flag is sufficient, no need to test internal sq state */
+	 
 	if (unlikely(!mlx5e_xdp_tx_is_enabled(priv)))
 		return -ENETDOWN;
 
@@ -832,7 +768,7 @@ int mlx5e_xdp_xmit(struct net_device *dev, int n, struct xdp_frame **frames,
 
 				if (!dma_mapping_error(sq->pdev, dma_arr[j]))
 					continue;
-				/* mapping error */
+				 
 				while (--j >= 0)
 					dma_unmap_single(sq->pdev, dma_arr[j],
 							 skb_frag_size(&xdptxdf.sinfo->frags[j]),
@@ -857,7 +793,7 @@ int mlx5e_xdp_xmit(struct net_device *dev, int n, struct xdp_frame **frames,
 			break;
 		}
 
-		/* xmit_mode == MLX5E_XDP_XMIT_MODE_FRAME */
+		 
 		mlx5e_xdpi_fifo_push(&sq->db.xdpi_fifo,
 				     (union mlx5e_xdp_info) { .mode = MLX5E_XDP_XMIT_MODE_FRAME });
 		mlx5e_xdpi_fifo_push(&sq->db.xdpi_fifo,

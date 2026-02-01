@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- *  Copyright (C) 2005 Mike Isely <isely@pobox.com>
- */
+
+ 
 
 #include <linux/string.h>
 #include <linux/slab.h>
@@ -11,7 +8,7 @@
 #include "pvrusb2-debug.h"
 #ifdef CONFIG_VIDEO_PVRUSB2_DEBUGIFC
 #include "pvrusb2-debugifc.h"
-#endif /* CONFIG_VIDEO_PVRUSB2_DEBUGIFC */
+#endif  
 
 #define pvr2_sysfs_trace(...) pvr2_trace(PVR2_TRACE_SYSFS,__VA_ARGS__)
 
@@ -20,7 +17,7 @@ struct pvr2_sysfs {
 	struct device *class_dev;
 #ifdef CONFIG_VIDEO_PVRUSB2_DEBUGIFC
 	struct pvr2_sysfs_debugifc *debugifc;
-#endif /* CONFIG_VIDEO_PVRUSB2_DEBUGIFC */
+#endif  
 	struct pvr2_sysfs_ctl_item *item_first;
 	struct pvr2_sysfs_ctl_item *item_last;
 	struct device_attribute attr_v4l_minor_number;
@@ -44,7 +41,7 @@ struct pvr2_sysfs_debugifc {
 	int debugcmd_created_ok;
 	int debuginfo_created_ok;
 };
-#endif /* CONFIG_VIDEO_PVRUSB2_DEBUGIFC */
+#endif  
 
 struct pvr2_sysfs_ctl_item {
 	struct device_attribute attr_name;
@@ -367,16 +364,16 @@ static void pvr2_sysfs_add_control(struct pvr2_sysfs *sfp,int ctl_id)
 	}
 	switch (pvr2_ctrl_get_type(cptr)) {
 	case pvr2_ctl_enum:
-		// Control is an enumeration
+		
 		cip->attr_gen[acnt++] = &cip->attr_enum.attr;
 		break;
 	case pvr2_ctl_int:
-		// Control is an integer
+		
 		cip->attr_gen[acnt++] = &cip->attr_min.attr;
 		cip->attr_gen[acnt++] = &cip->attr_max.attr;
 		break;
 	case pvr2_ctl_bitmask:
-		// Control is an bitmask
+		
 		cip->attr_gen[acnt++] = &cip->attr_bits.attr;
 		break;
 	default: break;
@@ -456,7 +453,7 @@ static void pvr2_sysfs_tear_down_debugifc(struct pvr2_sysfs *sfp)
 	kfree(sfp->debugifc);
 	sfp->debugifc = NULL;
 }
-#endif /* CONFIG_VIDEO_PVRUSB2_DEBUGIFC */
+#endif  
 
 
 static void pvr2_sysfs_add_controls(struct pvr2_sysfs *sfp)
@@ -502,7 +499,7 @@ static void class_dev_destroy(struct pvr2_sysfs *sfp)
 	if (!sfp->class_dev) return;
 #ifdef CONFIG_VIDEO_PVRUSB2_DEBUGIFC
 	pvr2_sysfs_tear_down_debugifc(sfp);
-#endif /* CONFIG_VIDEO_PVRUSB2_DEBUGIFC */
+#endif  
 	pvr2_sysfs_tear_down_controls(sfp);
 	if (sfp->hdw_desc_created_ok) {
 		device_remove_file(sfp->class_dev,
@@ -729,7 +726,7 @@ static void class_dev_create(struct pvr2_sysfs *sfp)
 	pvr2_sysfs_add_controls(sfp);
 #ifdef CONFIG_VIDEO_PVRUSB2_DEBUGIFC
 	pvr2_sysfs_add_debugifc(sfp);
-#endif /* CONFIG_VIDEO_PVRUSB2_DEBUGIFC */
+#endif  
 }
 
 
@@ -808,4 +805,4 @@ static ssize_t debugcmd_store(struct device *class_dev,
 	if (ret < 0) return ret;
 	return count;
 }
-#endif /* CONFIG_VIDEO_PVRUSB2_DEBUGIFC */
+#endif  

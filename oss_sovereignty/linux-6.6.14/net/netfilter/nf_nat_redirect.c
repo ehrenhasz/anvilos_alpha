@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * (C) 1999-2001 Paul `Rusty' Russell
- * (C) 2002-2006 Netfilter Core Team <coreteam@netfilter.org>
- * Copyright (c) 2011 Patrick McHardy <kaber@trash.net>
- *
- * Based on Rusty Russell's IPv4 REDIRECT target. Development of IPv6
- * NAT funded by Astaro.
- */
+
+ 
 
 #include <linux/if.h>
 #include <linux/inetdevice.h>
@@ -55,7 +48,7 @@ nf_nat_redirect_ipv4(struct sk_buff *skb, const struct nf_nat_range2 *range,
 	WARN_ON(hooknum != NF_INET_PRE_ROUTING &&
 		hooknum != NF_INET_LOCAL_OUT);
 
-	/* Local packets: make them go to loopback */
+	 
 	if (hooknum == NF_INET_LOCAL_OUT) {
 		newdst.ip = htonl(INADDR_LOOPBACK);
 	} else {

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Netlink interface for IEEE 802.15.4 stack
- *
- * Copyright 2007, 2008 Siemens AG
- *
- * Written by:
- * Sergey Lapin <slapin@ossfans.org>
- * Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
- * Maxim Osipov <maxim.osipov@siemens.com>
- */
+
+ 
 
 #include <linux/gfp.h>
 #include <linux/kernel.h>
@@ -141,7 +132,7 @@ out:
 	return -EMSGSIZE;
 }
 
-/* Requests from userspace */
+ 
 static struct net_device *ieee802154_nl_get_dev(struct genl_info *info)
 {
 	struct net_device *dev;
@@ -288,10 +279,7 @@ out:
 	return ret;
 }
 
-/* PANid, channel, beacon_order = 15, superframe_order = 15,
- * PAN_coordinator, battery_life_extension = 0,
- * coord_realignment = 0, security_enable = 0
-*/
+ 
 int ieee802154_start_req(struct sk_buff *skb, struct genl_info *info)
 {
 	struct net_device *dev;
@@ -354,9 +342,7 @@ int ieee802154_start_req(struct sk_buff *skb, struct genl_info *info)
 		bcn_ord, sf_ord, pan_coord, blx, coord_realign);
 	rtnl_unlock();
 
-	/* FIXME: add validation for unused parameters to be sane
-	 * for SoftMAC
-	 */
+	 
 	ieee802154_nl_start_confirm(dev, IEEE802154_SUCCESS);
 
 out:
@@ -403,9 +389,7 @@ out:
 
 int ieee802154_list_iface(struct sk_buff *skb, struct genl_info *info)
 {
-	/* Request for interface name, index, type, IEEE address,
-	 * PAN Id, short address
-	 */
+	 
 	struct sk_buff *msg;
 	struct net_device *dev = NULL;
 	int rc = -ENOBUFS;

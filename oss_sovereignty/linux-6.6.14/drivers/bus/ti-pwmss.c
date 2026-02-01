@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * TI PWM Subsystem driver
- *
- * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -25,7 +21,7 @@ static int pwmss_probe(struct platform_device *pdev)
 
 	pm_runtime_enable(&pdev->dev);
 
-	/* Populate all the child nodes here... */
+	 
 	ret = of_platform_populate(node, NULL, NULL, &pdev->dev);
 	if (ret)
 		dev_err(&pdev->dev, "no child node found\n");

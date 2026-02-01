@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2016 Icenowy Zheng <icenowy@aosc.io>
- *
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -31,7 +28,7 @@ static struct ccu_nkmp pll_cpu_clk = {
 	.n	= _SUNXI_CCU_MULT(8, 5),
 	.k	= _SUNXI_CCU_MULT(4, 2),
 	.m	= _SUNXI_CCU_DIV(0, 2),
-	/* MAX is guessed by the BSP table */
+	 
 	.p	= _SUNXI_CCU_DIV_MAX(16, 2, 4),
 
 	.common	= {
@@ -42,55 +39,48 @@ static struct ccu_nkmp pll_cpu_clk = {
 	},
 };
 
-/*
- * The Audio PLL is supposed to have 4 outputs: 3 fixed factors from
- * the base (2x, 4x and 8x), and one variable divider (the one true
- * pll audio).
- *
- * We don't have any need for the variable divider for now, so we just
- * hardcode it to match with the clock names
- */
+ 
 #define SUNIV_PLL_AUDIO_REG	0x008
 
 static SUNXI_CCU_NM_WITH_GATE_LOCK(pll_audio_base_clk, "pll-audio-base",
 				   "osc24M", 0x008,
-				   8, 7,		/* N */
-				   0, 5,		/* M */
-				   BIT(31),		/* gate */
-				   BIT(28),		/* lock */
+				   8, 7,		 
+				   0, 5,		 
+				   BIT(31),		 
+				   BIT(28),		 
 				   CLK_SET_RATE_UNGATE);
 
 static SUNXI_CCU_NM_WITH_FRAC_GATE_LOCK(pll_video_clk, "pll-video",
 					"osc24M", 0x010,
-					8, 7,		/* N */
-					0, 4,		/* M */
-					BIT(24),	/* frac enable */
-					BIT(25),	/* frac select */
-					270000000,	/* frac rate 0 */
-					297000000,	/* frac rate 1 */
-					BIT(31),	/* gate */
-					BIT(28),	/* lock */
+					8, 7,		 
+					0, 4,		 
+					BIT(24),	 
+					BIT(25),	 
+					270000000,	 
+					297000000,	 
+					BIT(31),	 
+					BIT(28),	 
 					CLK_SET_RATE_UNGATE);
 
 static SUNXI_CCU_NM_WITH_FRAC_GATE_LOCK(pll_ve_clk, "pll-ve",
 					"osc24M", 0x018,
-					8, 7,		/* N */
-					0, 4,		/* M */
-					BIT(24),	/* frac enable */
-					BIT(25),	/* frac select */
-					270000000,	/* frac rate 0 */
-					297000000,	/* frac rate 1 */
-					BIT(31),	/* gate */
-					BIT(28),	/* lock */
+					8, 7,		 
+					0, 4,		 
+					BIT(24),	 
+					BIT(25),	 
+					270000000,	 
+					297000000,	 
+					BIT(31),	 
+					BIT(28),	 
 					CLK_SET_RATE_UNGATE);
 
 static SUNXI_CCU_NKM_WITH_GATE_LOCK(pll_ddr0_clk, "pll-ddr",
 				    "osc24M", 0x020,
-				    8, 5,		/* N */
-				    4, 2,		/* K */
-				    0, 2,		/* M */
-				    BIT(31),		/* gate */
-				    BIT(28),		/* lock */
+				    8, 5,		 
+				    4, 2,		 
+				    0, 2,		 
+				    BIT(31),		 
+				    BIT(28),		 
 				    CLK_IS_CRITICAL);
 
 static struct ccu_nk pll_periph_clk = {
@@ -141,7 +131,7 @@ static struct clk_div_table apb_div_table[] = {
 	{ .val = 1, .div = 2 },
 	{ .val = 2, .div = 4 },
 	{ .val = 3, .div = 8 },
-	{ /* Sentinel */ },
+	{   },
 };
 static SUNXI_CCU_DIV_TABLE(apb_clk, "apb", "ahb",
 			   0x054, 8, 2, apb_div_table, 0);
@@ -205,10 +195,10 @@ static SUNXI_CCU_GATE(bus_uart2_clk,	"bus-uart2",	"apb",
 
 static const char * const mod0_default_parents[] = { "osc24M", "pll-periph" };
 static SUNXI_CCU_MP_WITH_MUX_GATE(mmc0_clk, "mmc0", mod0_default_parents, 0x088,
-				  0, 4,		/* M */
-				  16, 2,	/* P */
-				  24, 2,	/* mux */
-				  BIT(31),	/* gate */
+				  0, 4,		 
+				  16, 2,	 
+				  24, 2,	 
+				  BIT(31),	 
 				  0);
 
 static SUNXI_CCU_PHASE(mmc0_sample_clk, "mmc0_sample", "mmc0",
@@ -217,10 +207,10 @@ static SUNXI_CCU_PHASE(mmc0_output_clk, "mmc0_output", "mmc0",
 		       0x088, 8, 3, 0);
 
 static SUNXI_CCU_MP_WITH_MUX_GATE(mmc1_clk, "mmc1", mod0_default_parents, 0x08c,
-				  0, 4,		/* M */
-				  16, 2,	/* P */
-				  24, 2,	/* mux */
-				  BIT(31),	/* gate */
+				  0, 4,		 
+				  16, 2,	 
+				  24, 2,	 
+				  BIT(31),	 
 				  0);
 
 static SUNXI_CCU_PHASE(mmc1_sample_clk, "mmc1_sample", "mmc1",
@@ -242,10 +232,10 @@ static SUNXI_CCU_MUX_WITH_GATE(spdif_clk, "spdif", i2s_spdif_parents,
 static const char * const ir_parents[] = { "osc32k", "osc24M" };
 static SUNXI_CCU_MP_WITH_MUX_GATE(ir_clk, "ir",
 				  ir_parents, 0x0b8,
-				  0, 4,		/* M */
-				  16, 2,	/* P */
-				  24, 2,        /* mux */
-				  BIT(31),      /* gate */
+				  0, 4,		 
+				  16, 2,	 
+				  24, 2,         
+				  BIT(31),       
 				  0);
 
 static SUNXI_CCU_GATE(usb_phy0_clk,	"usb-phy0",	"osc24M",
@@ -307,10 +297,7 @@ static const u8 csi_table[] = { 0, 5, };
 static SUNXI_CCU_M_WITH_MUX_TABLE_GATE(csi_clk, "csi", csi_parents, csi_table,
 				       0x120, 0, 4, 8, 3, BIT(15), 0);
 
-/*
- * TODO: BSP says the parent is pll-audio, however common sense and experience
- * told us it should be pll-ve. pll-ve is totally not used in BSP code.
- */
+ 
 static SUNXI_CCU_GATE(ve_clk, "ve", "pll-audio", 0x13c, BIT(31), 0);
 
 static SUNXI_CCU_GATE(codec_clk, "codec", "pll-audio", 0x140, BIT(31), 0);
@@ -520,7 +507,7 @@ static const struct sunxi_ccu_desc suniv_ccu_desc = {
 
 static struct ccu_pll_nb suniv_pll_cpu_nb = {
 	.common	= &pll_cpu_clk.common,
-	/* copy from pll_cpu_clk */
+	 
 	.enable	= BIT(31),
 	.lock	= BIT(28),
 };
@@ -528,8 +515,8 @@ static struct ccu_pll_nb suniv_pll_cpu_nb = {
 static struct ccu_mux_nb suniv_cpu_nb = {
 	.common		= &cpu_clk.common,
 	.cm		= &cpu_clk.mux,
-	.delay_us	= 1, /* > 8 clock cycles at 24 MHz */
-	.bypass_index	= 1, /* index of 24 MHz oscillator */
+	.delay_us	= 1,  
+	.bypass_index	= 1,  
 };
 
 static int suniv_f1c100s_ccu_probe(struct platform_device *pdev)
@@ -542,7 +529,7 @@ static int suniv_f1c100s_ccu_probe(struct platform_device *pdev)
 	if (IS_ERR(reg))
 		return PTR_ERR(reg);
 
-	/* Force the PLL-Audio-1x divider to 4 */
+	 
 	val = readl(reg + SUNIV_PLL_AUDIO_REG);
 	val &= ~GENMASK(19, 16);
 	writel(val | (3 << 16), reg + SUNIV_PLL_AUDIO_REG);
@@ -551,10 +538,10 @@ static int suniv_f1c100s_ccu_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Gate then ungate PLL CPU after any rate changes */
+	 
 	ccu_pll_notifier_register(&suniv_pll_cpu_nb);
 
-	/* Reparent CPU during PLL CPU rate changes */
+	 
 	ccu_mux_notifier_register(pll_cpu_clk.common.hw.clk,
 				  &suniv_cpu_nb);
 

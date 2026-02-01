@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  TW5864 driver  - common header file
- *
- *  Copyright (C) 2016 Bluecherry, LLC <maintainers@bluecherrydvr.com>
- */
+ 
+ 
 
 #include <linux/pci.h>
 #include <linux/videodev2.h>
@@ -25,38 +21,35 @@
 
 #define TW5864_NORMS V4L2_STD_ALL
 
-/* ----------------------------------------------------------- */
-/* card configuration   */
+ 
+ 
 
 #define TW5864_INPUTS 4
 
-/* The TW5864 uses 192 (16x12) detection cells in full screen for motion
- * detection. Each detection cell is composed of 44 pixels and 20 lines for
- * NTSC and 24 lines for PAL.
- */
+ 
 #define MD_CELLS_HOR 16
 #define MD_CELLS_VERT 12
 #define MD_CELLS (MD_CELLS_HOR * MD_CELLS_VERT)
 
 #define H264_VLC_BUF_SIZE 0x80000
-#define H264_MV_BUF_SIZE 0x2000 /* device writes 5396 bytes */
+#define H264_MV_BUF_SIZE 0x2000  
 #define QP_VALUE 28
 #define MAX_GOP_SIZE 255
 #define GOP_SIZE MAX_GOP_SIZE
 
 enum resolution {
 	D1 = 1,
-	HD1 = 2, /* half d1 - 360x(240|288) */
+	HD1 = 2,  
 	CIF = 3,
 	QCIF = 4,
 };
 
-/* ----------------------------------------------------------- */
-/* device / file handle status                                 */
+ 
+ 
 
-struct tw5864_dev; /* forward delclaration */
+struct tw5864_dev;  
 
-/* buffer for one video/vbi/ts frame */
+ 
 struct tw5864_buf {
 	struct vb2_v4l2_buffer vb;
 	struct list_head list;
@@ -70,22 +63,22 @@ struct tw5864_dma_buf {
 };
 
 enum tw5864_vid_std {
-	STD_NTSC = 0, /* NTSC (M) */
-	STD_PAL = 1, /* PAL (B, D, G, H, I) */
-	STD_SECAM = 2, /* SECAM */
-	STD_NTSC443 = 3, /* NTSC4.43 */
-	STD_PAL_M = 4, /* PAL (M) */
-	STD_PAL_CN = 5, /* PAL (CN) */
-	STD_PAL_60 = 6, /* PAL 60 */
+	STD_NTSC = 0,  
+	STD_PAL = 1,  
+	STD_SECAM = 2,  
+	STD_NTSC443 = 3,  
+	STD_PAL_M = 4,  
+	STD_PAL_CN = 5,  
+	STD_PAL_60 = 6,  
 	STD_INVALID = 7,
 	STD_AUTO = 7,
 };
 
 struct tw5864_input {
-	int nr; /* input number */
+	int nr;  
 	struct tw5864_dev *root;
-	struct mutex lock; /* used for vidq and vdev */
-	spinlock_t slock; /* used for sync between ISR, tasklet & V4L2 API */
+	struct mutex lock;  
+	spinlock_t slock;  
 	struct video_device vdev;
 	struct v4l2_ctrl_handler hdl;
 	struct vb2_queue vidq;
@@ -120,11 +113,7 @@ struct tw5864_input {
 	int qp;
 	int gop;
 
-	/*
-	 * In (1/MAX_FPS) units.
-	 * For max FPS (default), set to 1.
-	 * For 1 FPS, set to e.g. 32.
-	 */
+	 
 	int frame_interval;
 	unsigned long new_frame_deadline;
 };
@@ -140,9 +129,9 @@ struct tw5864_h264_frame {
 	unsigned int gop_seqno;
 };
 
-/* global device status */
+ 
 struct tw5864_dev {
-	spinlock_t slock; /* used for sync between ISR, tasklet & V4L2 API */
+	spinlock_t slock;  
 	struct v4l2_device v4l2_dev;
 	struct tw5864_input inputs[TW5864_INPUTS];
 #define H264_BUF_CNT 4
@@ -153,10 +142,10 @@ struct tw5864_dev {
 	struct tasklet_struct tasklet;
 
 	int encoder_busy;
-	/* Input number to check next for ready raw picture (in RR fashion) */
+	 
 	int next_input;
 
-	/* pci i/o */
+	 
 	char name[64];
 	struct pci_dev *pci;
 	void __iomem *mmio;

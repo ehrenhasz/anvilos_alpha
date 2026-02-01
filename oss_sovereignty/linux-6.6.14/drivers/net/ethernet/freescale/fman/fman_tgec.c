@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later
-/*
- * Copyright 2008 - 2015 Freescale Semiconductor Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -15,10 +13,10 @@
 #include <linux/crc32.h>
 #include <linux/netdevice.h>
 
-/* Transmit Inter-Packet Gap Length Register (TX_IPG_LENGTH) */
+ 
 #define TGEC_TX_IPG_LENGTH_MASK	0x000003ff
 
-/* Command and Configuration Register (COMMAND_CONFIG) */
+ 
 #define CMD_CFG_EN_TIMESTAMP		0x00100000
 #define CMD_CFG_NO_LEN_CHK		0x00020000
 #define CMD_CFG_PAUSE_IGNORE		0x00000100
@@ -27,7 +25,7 @@
 #define CMD_CFG_RX_EN			0x00000002
 #define CMD_CFG_TX_EN			0x00000001
 
-/* Interrupt Mask Register (IMASK) */
+ 
 #define TGEC_IMASK_MDIO_SCAN_EVENT	0x00010000
 #define TGEC_IMASK_MDIO_CMD_CMPL	0x00008000
 #define TGEC_IMASK_REM_FAULT		0x00004000
@@ -46,7 +44,7 @@
 #define TGEC_IMASK_RX_CRC_ER		0x00000002
 #define TGEC_IMASK_RX_ALIGN_ER		0x00000001
 
-/* Hashtable Control Register (HASHTABLE_CTRL) */
+ 
 #define TGEC_HASH_MCAST_SHIFT		23
 #define TGEC_HASH_MCAST_EN		0x00000200
 #define TGEC_HASH_ADR_MSK		0x000001ff
@@ -55,116 +53,116 @@
 #define DEFAULT_MAX_FRAME_LENGTH		0x600
 #define DEFAULT_PAUSE_QUANT			0xf000
 
-/* number of pattern match registers (entries) */
+ 
 #define TGEC_NUM_OF_PADDRS          1
 
-/* Group address bit indication */
+ 
 #define GROUP_ADDRESS               0x0000010000000000LL
 
-/* Hash table size (= 32 bits*8 regs) */
+ 
 #define TGEC_HASH_TABLE_SIZE             512
 
-/* tGEC memory map */
+ 
 struct tgec_regs {
-	u32 tgec_id;		/* 0x000 Controller ID */
-	u32 reserved001[1];	/* 0x004 */
-	u32 command_config;	/* 0x008 Control and configuration */
-	u32 mac_addr_0;		/* 0x00c Lower 32 bits of the MAC adr */
-	u32 mac_addr_1;		/* 0x010 Upper 16 bits of the MAC adr */
-	u32 maxfrm;		/* 0x014 Maximum frame length */
-	u32 pause_quant;	/* 0x018 Pause quanta */
-	u32 rx_fifo_sections;	/* 0x01c  */
-	u32 tx_fifo_sections;	/* 0x020  */
-	u32 rx_fifo_almost_f_e;	/* 0x024  */
-	u32 tx_fifo_almost_f_e;	/* 0x028  */
-	u32 hashtable_ctrl;	/* 0x02c Hash table control */
-	u32 mdio_cfg_status;	/* 0x030  */
-	u32 mdio_command;	/* 0x034  */
-	u32 mdio_data;		/* 0x038  */
-	u32 mdio_regaddr;	/* 0x03c  */
-	u32 status;		/* 0x040  */
-	u32 tx_ipg_len;		/* 0x044 Transmitter inter-packet-gap */
-	u32 mac_addr_2;		/* 0x048 Lower 32 bits of 2nd MAC adr */
-	u32 mac_addr_3;		/* 0x04c Upper 16 bits of 2nd MAC adr */
-	u32 rx_fifo_ptr_rd;	/* 0x050  */
-	u32 rx_fifo_ptr_wr;	/* 0x054  */
-	u32 tx_fifo_ptr_rd;	/* 0x058  */
-	u32 tx_fifo_ptr_wr;	/* 0x05c  */
-	u32 imask;		/* 0x060 Interrupt mask */
-	u32 ievent;		/* 0x064 Interrupt event */
-	u32 udp_port;		/* 0x068 Defines a UDP Port number */
-	u32 type_1588v2;	/* 0x06c Type field for 1588v2 */
-	u32 reserved070[4];	/* 0x070 */
-	/* 10Ge Statistics Counter */
-	u32 tfrm_u;		/* 80 aFramesTransmittedOK */
-	u32 tfrm_l;		/* 84 aFramesTransmittedOK */
-	u32 rfrm_u;		/* 88 aFramesReceivedOK */
-	u32 rfrm_l;		/* 8c aFramesReceivedOK */
-	u32 rfcs_u;		/* 90 aFrameCheckSequenceErrors */
-	u32 rfcs_l;		/* 94 aFrameCheckSequenceErrors */
-	u32 raln_u;		/* 98 aAlignmentErrors */
-	u32 raln_l;		/* 9c aAlignmentErrors */
-	u32 txpf_u;		/* A0 aPAUSEMACCtrlFramesTransmitted */
-	u32 txpf_l;		/* A4 aPAUSEMACCtrlFramesTransmitted */
-	u32 rxpf_u;		/* A8 aPAUSEMACCtrlFramesReceived */
-	u32 rxpf_l;		/* Ac aPAUSEMACCtrlFramesReceived */
-	u32 rlong_u;		/* B0 aFrameTooLongErrors */
-	u32 rlong_l;		/* B4 aFrameTooLongErrors */
-	u32 rflr_u;		/* B8 aInRangeLengthErrors */
-	u32 rflr_l;		/* Bc aInRangeLengthErrors */
-	u32 tvlan_u;		/* C0 VLANTransmittedOK */
-	u32 tvlan_l;		/* C4 VLANTransmittedOK */
-	u32 rvlan_u;		/* C8 VLANReceivedOK */
-	u32 rvlan_l;		/* Cc VLANReceivedOK */
-	u32 toct_u;		/* D0 if_out_octets */
-	u32 toct_l;		/* D4 if_out_octets */
-	u32 roct_u;		/* D8 if_in_octets */
-	u32 roct_l;		/* Dc if_in_octets */
-	u32 ruca_u;		/* E0 if_in_ucast_pkts */
-	u32 ruca_l;		/* E4 if_in_ucast_pkts */
-	u32 rmca_u;		/* E8 ifInMulticastPkts */
-	u32 rmca_l;		/* Ec ifInMulticastPkts */
-	u32 rbca_u;		/* F0 ifInBroadcastPkts */
-	u32 rbca_l;		/* F4 ifInBroadcastPkts */
-	u32 terr_u;		/* F8 if_out_errors */
-	u32 terr_l;		/* Fc if_out_errors */
-	u32 reserved100[2];	/* 100-108 */
-	u32 tuca_u;		/* 108 if_out_ucast_pkts */
-	u32 tuca_l;		/* 10c if_out_ucast_pkts */
-	u32 tmca_u;		/* 110 ifOutMulticastPkts */
-	u32 tmca_l;		/* 114 ifOutMulticastPkts */
-	u32 tbca_u;		/* 118 ifOutBroadcastPkts */
-	u32 tbca_l;		/* 11c ifOutBroadcastPkts */
-	u32 rdrp_u;		/* 120 etherStatsDropEvents */
-	u32 rdrp_l;		/* 124 etherStatsDropEvents */
-	u32 reoct_u;		/* 128 etherStatsOctets */
-	u32 reoct_l;		/* 12c etherStatsOctets */
-	u32 rpkt_u;		/* 130 etherStatsPkts */
-	u32 rpkt_l;		/* 134 etherStatsPkts */
-	u32 trund_u;		/* 138 etherStatsUndersizePkts */
-	u32 trund_l;		/* 13c etherStatsUndersizePkts */
-	u32 r64_u;		/* 140 etherStatsPkts64Octets */
-	u32 r64_l;		/* 144 etherStatsPkts64Octets */
-	u32 r127_u;		/* 148 etherStatsPkts65to127Octets */
-	u32 r127_l;		/* 14c etherStatsPkts65to127Octets */
-	u32 r255_u;		/* 150 etherStatsPkts128to255Octets */
-	u32 r255_l;		/* 154 etherStatsPkts128to255Octets */
-	u32 r511_u;		/* 158 etherStatsPkts256to511Octets */
-	u32 r511_l;		/* 15c etherStatsPkts256to511Octets */
-	u32 r1023_u;		/* 160 etherStatsPkts512to1023Octets */
-	u32 r1023_l;		/* 164 etherStatsPkts512to1023Octets */
-	u32 r1518_u;		/* 168 etherStatsPkts1024to1518Octets */
-	u32 r1518_l;		/* 16c etherStatsPkts1024to1518Octets */
-	u32 r1519x_u;		/* 170 etherStatsPkts1519toX */
-	u32 r1519x_l;		/* 174 etherStatsPkts1519toX */
-	u32 trovr_u;		/* 178 etherStatsOversizePkts */
-	u32 trovr_l;		/* 17c etherStatsOversizePkts */
-	u32 trjbr_u;		/* 180 etherStatsJabbers */
-	u32 trjbr_l;		/* 184 etherStatsJabbers */
-	u32 trfrg_u;		/* 188 etherStatsFragments */
-	u32 trfrg_l;		/* 18C etherStatsFragments */
-	u32 rerr_u;		/* 190 if_in_errors */
-	u32 rerr_l;		/* 194 if_in_errors */
+	u32 tgec_id;		 
+	u32 reserved001[1];	 
+	u32 command_config;	 
+	u32 mac_addr_0;		 
+	u32 mac_addr_1;		 
+	u32 maxfrm;		 
+	u32 pause_quant;	 
+	u32 rx_fifo_sections;	 
+	u32 tx_fifo_sections;	 
+	u32 rx_fifo_almost_f_e;	 
+	u32 tx_fifo_almost_f_e;	 
+	u32 hashtable_ctrl;	 
+	u32 mdio_cfg_status;	 
+	u32 mdio_command;	 
+	u32 mdio_data;		 
+	u32 mdio_regaddr;	 
+	u32 status;		 
+	u32 tx_ipg_len;		 
+	u32 mac_addr_2;		 
+	u32 mac_addr_3;		 
+	u32 rx_fifo_ptr_rd;	 
+	u32 rx_fifo_ptr_wr;	 
+	u32 tx_fifo_ptr_rd;	 
+	u32 tx_fifo_ptr_wr;	 
+	u32 imask;		 
+	u32 ievent;		 
+	u32 udp_port;		 
+	u32 type_1588v2;	 
+	u32 reserved070[4];	 
+	 
+	u32 tfrm_u;		 
+	u32 tfrm_l;		 
+	u32 rfrm_u;		 
+	u32 rfrm_l;		 
+	u32 rfcs_u;		 
+	u32 rfcs_l;		 
+	u32 raln_u;		 
+	u32 raln_l;		 
+	u32 txpf_u;		 
+	u32 txpf_l;		 
+	u32 rxpf_u;		 
+	u32 rxpf_l;		 
+	u32 rlong_u;		 
+	u32 rlong_l;		 
+	u32 rflr_u;		 
+	u32 rflr_l;		 
+	u32 tvlan_u;		 
+	u32 tvlan_l;		 
+	u32 rvlan_u;		 
+	u32 rvlan_l;		 
+	u32 toct_u;		 
+	u32 toct_l;		 
+	u32 roct_u;		 
+	u32 roct_l;		 
+	u32 ruca_u;		 
+	u32 ruca_l;		 
+	u32 rmca_u;		 
+	u32 rmca_l;		 
+	u32 rbca_u;		 
+	u32 rbca_l;		 
+	u32 terr_u;		 
+	u32 terr_l;		 
+	u32 reserved100[2];	 
+	u32 tuca_u;		 
+	u32 tuca_l;		 
+	u32 tmca_u;		 
+	u32 tmca_l;		 
+	u32 tbca_u;		 
+	u32 tbca_l;		 
+	u32 rdrp_u;		 
+	u32 rdrp_l;		 
+	u32 reoct_u;		 
+	u32 reoct_l;		 
+	u32 rpkt_u;		 
+	u32 rpkt_l;		 
+	u32 trund_u;		 
+	u32 trund_l;		 
+	u32 r64_u;		 
+	u32 r64_l;		 
+	u32 r127_u;		 
+	u32 r127_l;		 
+	u32 r255_u;		 
+	u32 r255_l;		 
+	u32 r511_u;		 
+	u32 r511_l;		 
+	u32 r1023_u;		 
+	u32 r1023_l;		 
+	u32 r1518_u;		 
+	u32 r1518_l;		 
+	u32 r1519x_u;		 
+	u32 r1519x_l;		 
+	u32 trovr_u;		 
+	u32 trovr_l;		 
+	u32 trjbr_u;		 
+	u32 trjbr_l;		 
+	u32 trfrg_u;		 
+	u32 trfrg_l;		 
+	u32 rerr_u;		 
+	u32 rerr_l;		 
 };
 
 struct tgec_cfg {
@@ -176,17 +174,17 @@ struct tgec_cfg {
 };
 
 struct fman_mac {
-	/* Pointer to the memory mapped registers. */
+	 
 	struct tgec_regs __iomem *regs;
-	/* MAC address of device; */
+	 
 	u64 addr;
 	u16 max_speed;
-	struct mac_device *dev_id; /* device cookie used by the exception cbs */
+	struct mac_device *dev_id;  
 	fman_mac_exception_cb *exception_cb;
 	fman_mac_exception_cb *event_cb;
-	/* pointer to driver's global address hash table  */
+	 
 	struct eth_hash_t *multicast_addr_hash;
-	/* pointer to driver's individual address hash table  */
+	 
 	struct eth_hash_t *unicast_addr_hash;
 	u8 mac_id;
 	u32 exceptions;
@@ -220,22 +218,22 @@ static int init(struct tgec_regs __iomem *regs, struct tgec_cfg *cfg,
 {
 	u32 tmp;
 
-	/* Config */
+	 
 	tmp = CMF_CFG_CRC_FWD;
 	if (cfg->promiscuous_mode_enable)
 		tmp |= CMD_CFG_PROMIS_EN;
 	if (cfg->pause_ignore)
 		tmp |= CMD_CFG_PAUSE_IGNORE;
-	/* Payload length check disable */
+	 
 	tmp |= CMD_CFG_NO_LEN_CHK;
 	iowrite32be(tmp, &regs->command_config);
 
-	/* Max Frame Length */
+	 
 	iowrite32be((u32)cfg->max_frame_length, &regs->maxfrm);
-	/* Pause Time */
+	 
 	iowrite32be(cfg->pause_quant, &regs->pause_quant);
 
-	/* clear all pending events and set-up interrupts */
+	 
 	iowrite32be(0xffffffff, &regs->ievent);
 	iowrite32be(ioread32be(&regs->imask) | exception_mask, &regs->imask);
 
@@ -326,7 +324,7 @@ static void tgec_err_exception(void *handle)
 	struct tgec_regs __iomem *regs = tgec->regs;
 	u32 event;
 
-	/* do not handle MDIO events */
+	 
 	event = ioread32be(&regs->ievent) &
 			   ~(TGEC_IMASK_MDIO_SCAN_EVENT |
 			   TGEC_IMASK_MDIO_CMD_CMPL);
@@ -372,11 +370,11 @@ static void free_init_resources(struct fman_mac *tgec)
 	fman_unregister_intr(tgec->fm, FMAN_MOD_MAC, tgec->mac_id,
 			     FMAN_INTR_TYPE_ERR);
 
-	/* release the driver's group hash table */
+	 
 	free_hash_table(tgec->multicast_addr_hash);
 	tgec->multicast_addr_hash = NULL;
 
-	/* release the driver's individual hash table */
+	 
 	free_hash_table(tgec->unicast_addr_hash);
 	tgec->unicast_addr_hash = NULL;
 }
@@ -494,17 +492,17 @@ static int tgec_add_hash_mac_address(struct fman_mac *tgec,
 	addr = ENET_ADDR_TO_UINT64(*eth_addr);
 
 	if (!(addr & GROUP_ADDRESS)) {
-		/* Unicast addresses not supported in hash */
+		 
 		pr_err("Unicast Address\n");
 		return -EINVAL;
 	}
-	/* CRC calculation */
+	 
 	crc = crc32_le(crc, (u8 *)eth_addr, ETH_ALEN);
 	crc = bitrev32(crc);
-	/* Take 9 MSB bits */
+	 
 	hash = (crc >> TGEC_HASH_MCAST_SHIFT) & TGEC_HASH_ADR_MSK;
 
-	/* Create element to be added to the driver hash table */
+	 
 	hash_entry = kmalloc(sizeof(*hash_entry), GFP_ATOMIC);
 	if (!hash_entry)
 		return -ENOMEM;
@@ -566,10 +564,10 @@ static int tgec_del_hash_mac_address(struct fman_mac *tgec,
 
 	addr = ((*(u64 *)eth_addr) >> 16);
 
-	/* CRC calculation */
+	 
 	crc = crc32_le(crc, (u8 *)eth_addr, ETH_ALEN);
 	crc = bitrev32(crc);
-	/* Take 9 MSB bits */
+	 
 	hash = (crc >> TGEC_HASH_MCAST_SHIFT) & TGEC_HASH_ADR_MSK;
 
 	list_for_each(pos, &tgec->multicast_addr_hash->lsts[hash]) {
@@ -637,8 +635,8 @@ static int tgec_init(struct fman_mac *tgec)
 		set_mac_address(tgec->regs, (const u8 *)eth_addr);
 	}
 
-	/* interrupts */
-	/* FM_10G_REM_N_LCL_FLT_EX_10GMAC_ERRATA_SW005 Errata workaround */
+	 
+	 
 	if (tgec->fm_rev_info.major <= 2)
 		tgec->exceptions &= ~(TGEC_IMASK_REM_FAULT |
 				      TGEC_IMASK_LOC_FAULT);
@@ -650,7 +648,7 @@ static int tgec_init(struct fman_mac *tgec)
 		return err;
 	}
 
-	/* Max Frame Length */
+	 
 	err = fman_set_mac_max_frame(tgec->fm, tgec->mac_id,
 				     cfg->max_frame_length);
 	if (err) {
@@ -659,12 +657,12 @@ static int tgec_init(struct fman_mac *tgec)
 		return -EINVAL;
 	}
 
-	/* FM_TX_FIFO_CORRUPTION_ERRATA_10GMAC_A007 Errata workaround */
+	 
 	if (tgec->fm_rev_info.major == 2) {
 		struct tgec_regs __iomem *regs = tgec->regs;
 		u32 tmp;
 
-		/* restore the default tx ipg Length */
+		 
 		tmp = (ioread32be(&regs->tx_ipg_len) &
 		       ~TGEC_TX_IPG_LENGTH_MASK) | 12;
 
@@ -710,19 +708,19 @@ static struct fman_mac *tgec_config(struct mac_device *mac_dev,
 	struct fman_mac *tgec;
 	struct tgec_cfg *cfg;
 
-	/* allocate memory for the UCC GETH data structure. */
+	 
 	tgec = kzalloc(sizeof(*tgec), GFP_KERNEL);
 	if (!tgec)
 		return NULL;
 
-	/* allocate memory for the 10G MAC driver parameters data structure. */
+	 
 	cfg = kzalloc(sizeof(*cfg), GFP_KERNEL);
 	if (!cfg) {
 		tgec_free(tgec);
 		return NULL;
 	}
 
-	/* Plant parameter structure pointer */
+	 
 	tgec->cfg = cfg;
 
 	set_dflts(cfg);
@@ -750,7 +748,7 @@ static struct fman_mac *tgec_config(struct mac_device *mac_dev,
 	tgec->dev_id = mac_dev;
 	tgec->fm = params->fm;
 
-	/* Save FMan revision */
+	 
 	fman_get_revision(tgec->fm, &tgec->fm_rev_info);
 
 	return tgec;
@@ -781,11 +779,7 @@ int tgec_initialization(struct mac_device *mac_dev,
 		goto _return;
 	}
 
-	/* The internal connection to the serdes is XGMII, but this isn't
-	 * really correct for the phy mode (which is the external connection).
-	 * However, this is how all older device trees say that they want
-	 * XAUI, so just convert it for them.
-	 */
+	 
 	if (mac_dev->phy_if == PHY_INTERFACE_MODE_XGMII)
 		mac_dev->phy_if = PHY_INTERFACE_MODE_XAUI;
 
@@ -800,7 +794,7 @@ int tgec_initialization(struct mac_device *mac_dev,
 	if (err < 0)
 		goto _return_fm_mac_free;
 
-	/* For 10G MAC, disable Tx ECC exception */
+	 
 	err = tgec_set_exception(tgec, FM_MAC_EX_10G_TX_ECC_ER, false);
 	if (err < 0)
 		goto _return_fm_mac_free;

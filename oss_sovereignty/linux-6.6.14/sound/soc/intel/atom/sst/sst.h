@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  sst.h - Intel SST Driver for audio engine
- *
- *  Copyright (C) 2008-14 Intel Corporation
- *  Authors:	Vinod Koul <vinod.koul@intel.com>
- *		Harsha Priya <priya.harsha@intel.com>
- *		Dharageswari R <dharageswari.r@intel.com>
- *		KP Jeeja <jeeja.kp@intel.com>
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- *  Common private declarations for SST
- */
+ 
+ 
 #ifndef __SST_H__
 #define __SST_H__
 
 #include <linux/firmware.h>
 
-/* driver names */
+ 
 #define SST_DRV_NAME "intel_sst_driver"
 
 #define SST_SUSPEND_DELAY 2000
@@ -31,12 +18,12 @@
 #define MRFLD_FW_FEATURE_BASE_OFFSET 0x4
 #define MRFLD_FW_BSS_RESET_BIT 0
 
-/* SST Shim register map */
+ 
 #define SST_CSR			0x00
 #define SST_ISRX		0x18
 #define SST_IMRX		0x28
-#define SST_IPCX		0x38 /* IPC IA -> SST */
-#define SST_IPCD		0x40 /* IPC SST -> IA */
+#define SST_IPCX		0x38  
+#define SST_IPCD		0x40  
 
 extern const struct dev_pm_ops intel_sst_pm;
 enum sst_states {
@@ -56,22 +43,22 @@ enum sst_algo_ops {
 #define FW_SIGNATURE_SIZE	4
 #define FW_NAME_SIZE		32
 
-/* stream states */
+ 
 enum sst_stream_states {
-	STREAM_UN_INIT	= 0,	/* Freed/Not used stream */
-	STREAM_RUNNING	= 1,	/* Running */
-	STREAM_PAUSED	= 2,	/* Paused stream */
-	STREAM_INIT	= 3,	/* stream init, waiting for data */
+	STREAM_UN_INIT	= 0,	 
+	STREAM_RUNNING	= 1,	 
+	STREAM_PAUSED	= 2,	 
+	STREAM_INIT	= 3,	 
 };
 
 enum sst_ram_type {
 	SST_IRAM	= 1,
 	SST_DRAM	= 2,
 	SST_DDR	= 5,
-	SST_CUSTOM_INFO	= 7,	/* consists of FW binary information */
+	SST_CUSTOM_INFO	= 7,	 
 };
 
-/* SST shim registers to structure mapping */
+ 
 union interrupt_reg {
 	struct {
 		u64 done_interrupt:1;
@@ -146,19 +133,7 @@ union sst_imr_reg_mrfld {
 	u64 full;
 };
 
-/**
- * struct sst_block - This structure is used to block a user/fw data call to another
- * fw/user call
- *
- * @condition: condition for blocking check
- * @ret_code: ret code when block is released
- * @data: data ptr
- * @size: size of data
- * @on: block condition
- * @msg_id: msg_id = msgid in mfld/ctp, mrfld = NULL
- * @drv_id: str_id in mfld/ctp, = drv_id in mrfld
- * @node: list head node
- */
+ 
 struct sst_block {
 	bool	condition;
 	int	ret_code;
@@ -170,20 +145,7 @@ struct sst_block {
 	struct list_head node;
 };
 
-/**
- * struct stream_info - structure that holds the stream information
- *
- * @status : stream current state
- * @prev : stream prev state
- * @resume_status : stream current state to restore on resume
- * @resume_prev : stream prev state to restore on resume
- * @lock : stream mutex for protecting state
- * @alloc_param : parameters used for stream (re-)allocation
- * @pcm_substream : PCM substream
- * @period_elapsed : PCM period elapsed callback
- * @sfreq : stream sampling freq
- * @cumm_bytes : cummulative bytes decoded
- */
+ 
 struct stream_info {
 	unsigned int		status;
 	unsigned int		prev;
@@ -212,15 +174,7 @@ struct stream_info {
 #define SST_FW_SIGN "$SST"
 #define SST_FW_LIB_SIGN "$LIB"
 
-/**
- * struct sst_fw_header - FW file headers
- *
- * @signature : FW signature
- * @file_size: size of fw image
- * @modules : # of modules
- * @file_format : version of header format
- * @reserved : reserved fields
- */
+ 
 struct sst_fw_header {
 	unsigned char signature[FW_SIGNATURE_SIZE];
 	u32 file_size;
@@ -229,15 +183,7 @@ struct sst_fw_header {
 	u32 reserved[4];
 };
 
-/**
- * struct fw_module_header - module header in FW
- *
- * @signature: module signature
- * @mod_size: size of module
- * @blocks: block count
- * @type: block type
- * @entry_point: module netry point
- */
+ 
 struct fw_module_header {
 	unsigned char signature[FW_SIGNATURE_SIZE];
 	u32 mod_size;
@@ -246,13 +192,7 @@ struct fw_module_header {
 	u32 entry_point;
 };
 
-/**
- * struct fw_block_info - block header for FW
- *
- * @type: block ram type I/D
- * @size: size of block
- * @ram_offset: offset in ram
- */
+ 
 struct fw_block_info {
 	enum sst_ram_type	type;
 	u32			size;
@@ -279,7 +219,7 @@ struct sst_memcpy_list {
 	bool is_io;
 };
 
-/*Firmware Module Information*/
+ 
 enum sst_lib_dwnld_status {
 	SST_LIB_NOT_FOUND = 0,
 	SST_LIB_FOUND,
@@ -287,18 +227,15 @@ enum sst_lib_dwnld_status {
 };
 
 struct sst_module_info {
-	const char *name; /*Library name*/
-	u32	id; /*Module ID*/
-	u32	entry_pt; /*Module entry point*/
-	u8	status; /*module status*/
+	const char *name;  
+	u32	id;  
+	u32	entry_pt;  
+	u8	status;  
 	u8	rsvd1;
 	u16	rsvd2;
 };
 
-/*
- * Structure for managing the Library Region(1.5MB)
- * in DDR in Merrifield
- */
+ 
 struct sst_mem_mgr {
 	phys_addr_t current_base;
 	int avail;
@@ -311,47 +248,13 @@ struct sst_ipc_reg {
 };
 
 struct sst_fw_save {
-	void *iram;	/* allocated via kvmalloc() */
-	void *dram;	/* allocated via kvmalloc() */
-	void *sram;	/* allocated via kvmalloc() */
-	void *ddr;	/* allocated via kvmalloc() */
+	void *iram;	 
+	void *dram;	 
+	void *sram;	 
+	void *ddr;	 
 };
 
-/**
- * struct intel_sst_drv - driver ops
- *
- * @sst_state : current sst device state
- * @dev_id : device identifier, pci_id for pci devices and acpi_id for acpi
- * 	     devices
- * @shim : SST shim pointer
- * @mailbox : SST mailbox pointer
- * @iram : SST IRAM pointer
- * @dram : SST DRAM pointer
- * @pdata : SST info passed as a part of pci platform data
- * @shim_phy_add : SST shim phy addr
- * @ipc_dispatch_list : ipc messages dispatched
- * @rx_list : to copy the process_reply/process_msg from DSP
- * @ipc_post_msg_wq : wq to post IPC messages context
- * @mad_ops : MAD driver operations registered
- * @mad_wq : MAD driver wq
- * @post_msg_wq : wq to post IPC messages
- * @streams : sst stream contexts
- * @list_lock : sst driver list lock (deprecated)
- * @ipc_spin_lock : spin lock to handle audio shim access and ipc queue
- * @block_lock : spin lock to add block to block_list and assign pvt_id
- * @rx_msg_lock : spin lock to handle the rx messages from the DSP
- * @scard_ops : sst card ops
- * @pci : sst pci device struture
- * @dev : pointer to current device struct
- * @sst_lock : sst device lock
- * @pvt_id : sst private id
- * @stream_cnt : total sst active stream count
- * @pb_streams : total active pb streams
- * @cp_streams : total active cp streams
- * @audio_start : audio status
- * @qos		: PM Qos struct
- * firmware_name : Firmware / Library name
- */
+ 
 struct intel_sst_drv {
 	int			sst_state;
 	int			irq_num;
@@ -378,7 +281,7 @@ struct intel_sst_drv {
 	wait_queue_head_t	wait_queue;
 	struct workqueue_struct *post_msg_wq;
 	unsigned int		tstamp;
-	/* str_id 0 is not used */
+	 
 	struct stream_info	streams[MAX_NUM_STREAMS+1];
 	spinlock_t		ipc_spin_lock;
 	spinlock_t              block_lock;
@@ -401,17 +304,14 @@ struct intel_sst_drv {
 	struct list_head	memcpy_list;
 	struct sst_ipc_reg	ipc_reg;
 	struct sst_mem_mgr      lib_mem_mgr;
-	/*
-	 * Holder for firmware name. Due to async call it needs to be
-	 * persistent till worker thread gets called
-	 */
+	 
 	char firmware_name[FW_NAME_SIZE];
 
 	struct snd_sst_fw_version fw_version;
 	struct sst_fw_save	*fw_save;
 };
 
-/* misc definitions */
+ 
 #define FW_DWNL_ID 0x01
 
 struct intel_sst_ops {

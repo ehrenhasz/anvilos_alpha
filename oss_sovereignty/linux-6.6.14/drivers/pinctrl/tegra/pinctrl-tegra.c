@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the NVIDIA Tegra pinmux
- *
- * Copyright (c) 2011-2012, NVIDIA CORPORATION.  All rights reserved.
- *
- * Derived from code:
- * Copyright (C) 2010 Google, Inc.
- * Copyright (C) 2010 NVIDIA Corporation
- * Copyright (C) 2009-2011 ST-Ericsson AB
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -35,7 +26,7 @@ static inline u32 pmx_readl(struct tegra_pmx *pmx, u32 bank, u32 reg)
 static inline void pmx_writel(struct tegra_pmx *pmx, u32 val, u32 bank, u32 reg)
 {
 	writel_relaxed(val, pmx->regs[bank] + reg);
-	/* make sure pinmux register write completed */
+	 
 	pmx_readl(pmx, bank, reg);
 }
 
@@ -117,7 +108,7 @@ static int tegra_pinctrl_dt_subnode_to_map(struct pinctrl_dev *pctldev,
 
 	ret = of_property_read_string(np, "nvidia,function", &function);
 	if (ret < 0) {
-		/* EINVAL=missing, which is fine since it's optional */
+		 
 		if (ret != -EINVAL)
 			dev_err(dev,
 				"could not parse property nvidia,function\n");
@@ -132,7 +123,7 @@ static int tegra_pinctrl_dt_subnode_to_map(struct pinctrl_dev *pctldev,
 					&num_configs, config);
 			if (ret < 0)
 				goto exit;
-		/* EINVAL=missing, which is fine since it's optional */
+		 
 		} else if (ret != -EINVAL) {
 			dev_err(dev, "could not parse property %s\n",
 				cfg_params[i].property);
@@ -566,7 +557,7 @@ static int tegra_pinconf_group_set(struct pinctrl_dev *pctldev,
 
 		val = pmx_readl(pmx, bank, reg);
 
-		/* LOCK can't be cleared */
+		 
 		if (param == TEGRA_PINCONF_PARAM_LOCK) {
 			if ((val & BIT(bit)) && !arg) {
 				dev_err(pctldev->dev, "LOCK bit cannot be cleared\n");
@@ -574,11 +565,11 @@ static int tegra_pinconf_group_set(struct pinctrl_dev *pctldev,
 			}
 		}
 
-		/* Special-case Boolean values; allow any non-zero as true */
+		 
 		if (width == 1)
 			arg = !!arg;
 
-		/* Range-check user-supplied value */
+		 
 		mask = (1 << width) - 1;
 		if (arg & ~mask) {
 			dev_err(pctldev->dev,
@@ -587,11 +578,11 @@ static int tegra_pinconf_group_set(struct pinctrl_dev *pctldev,
 			return -EINVAL;
 		}
 
-		/* Update register */
+		 
 		val &= ~(mask << bit);
 		val |= arg << bit;
 		pmx_writel(pmx, val, bank, reg);
-	} /* for each config */
+	}  
 
 	return 0;
 }
@@ -740,9 +731,9 @@ static int tegra_pinctrl_resume(struct device *dev)
 			writel_relaxed(*backup_regs++, regs++);
 	}
 
-	/* flush all the prior writes */
+	 
 	readl_relaxed(pmx->regs[0]);
-	/* wait for pinctrl register read to complete */
+	 
 	rmb();
 	return 0;
 }
@@ -782,10 +773,7 @@ int tegra_pinctrl_probe(struct platform_device *pdev,
 	pmx->dev = &pdev->dev;
 	pmx->soc = soc_data;
 
-	/*
-	 * Each mux group will appear in 4 functions' list of groups.
-	 * This over-allocates slightly, since not all groups are mux groups.
-	 */
+	 
 	pmx->group_pins = devm_kcalloc(&pdev->dev, pmx->soc->ngroups * 4,
 				       sizeof(*pmx->group_pins), GFP_KERNEL);
 	if (!pmx->group_pins)

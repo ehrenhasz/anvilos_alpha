@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2019 Bootlin
- * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/gpio/driver.h>
@@ -32,14 +29,14 @@ static void logicvc_gpio_offset(struct logicvc_gpio *logicvc, unsigned offset,
 	if (offset >= LOGICVC_CTRL_GPIO_BITS) {
 		*reg = LOGICVC_POWER_CTRL_REG;
 
-		/* To the (virtual) power ctrl offset. */
+		 
 		offset -= LOGICVC_CTRL_GPIO_BITS;
-		/* To the actual bit offset in reg. */
+		 
 		offset += LOGICVC_POWER_CTRL_GPIO_SHIFT;
 	} else {
 		*reg = LOGICVC_CTRL_REG;
 
-		/* To the actual bit offset in reg. */
+		 
 		offset += LOGICVC_CTRL_GPIO_SHIFT;
 	}
 
@@ -74,7 +71,7 @@ static void logicvc_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 static int logicvc_gpio_direction_output(struct gpio_chip *chip,
 					 unsigned offset, int value)
 {
-	/* Pins are always configured as output, so just set the value. */
+	 
 	logicvc_gpio_set(chip, offset, value);
 
 	return 0;
@@ -98,10 +95,10 @@ static int logicvc_gpio_probe(struct platform_device *pdev)
 	if (!logicvc)
 		return -ENOMEM;
 
-	/* Try to get regmap from parent first. */
+	 
 	logicvc->regmap = syscon_node_to_regmap(of_node->parent);
 
-	/* Grab our own regmap if that fails. */
+	 
 	if (IS_ERR(logicvc->regmap)) {
 		struct resource res;
 		void __iomem *base;

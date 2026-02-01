@@ -1,12 +1,4 @@
-/*
- * Driver for MMC and SSD cards for Cavium OCTEON SOCs.
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 2012-2017 Cavium Inc.
- */
+ 
 #include <linux/dma-mapping.h>
 #include <linux/gpio/consumer.h>
 #include <linux/interrupt.h>
@@ -21,47 +13,38 @@
 
 #define CVMX_MIO_BOOT_CTL CVMX_ADD_IO_SEG(0x00011800000000D0ull)
 
-/*
- * The l2c* functions below are used for the EMMC-17978 workaround.
- *
- * Due to a bug in the design of the MMC bus hardware, the 2nd to last
- * cache block of a DMA read must be locked into the L2 Cache.
- * Otherwise, data corruption may occur.
- */
+ 
 static inline void *phys_to_ptr(u64 address)
 {
-	return (void *)(address | (1ull << 63)); /* XKPHYS */
+	return (void *)(address | (1ull << 63));  
 }
 
-/*
- * Lock a single line into L2. The line is zeroed before locking
- * to make sure no dram accesses are made.
- */
+ 
 static void l2c_lock_line(u64 addr)
 {
 	char *addr_ptr = phys_to_ptr(addr);
 
 	asm volatile (
-		"cache 31, %[line]"	/* Unlock the line */
+		"cache 31, %[line]"	 
 		::[line] "m" (*addr_ptr));
 }
 
-/* Unlock a single line in the L2 cache. */
+ 
 static void l2c_unlock_line(u64 addr)
 {
 	char *addr_ptr = phys_to_ptr(addr);
 
 	asm volatile (
-		"cache 23, %[line]"	/* Unlock the line */
+		"cache 23, %[line]"	 
 		::[line] "m" (*addr_ptr));
 }
 
-/* Locks a memory region in the L2 cache. */
+ 
 static void l2c_lock_mem_region(u64 start, u64 len)
 {
 	u64 end;
 
-	/* Round start/end to cache line boundaries */
+	 
 	end = ALIGN(start + len - 1, CVMX_CACHE_LINE_SIZE);
 	start = ALIGN(start, CVMX_CACHE_LINE_SIZE);
 
@@ -72,12 +55,12 @@ static void l2c_lock_mem_region(u64 start, u64 len)
 	asm volatile("sync");
 }
 
-/* Unlock a memory region in the L2 cache. */
+ 
 static void l2c_unlock_mem_region(u64 start, u64 len)
 {
 	u64 end;
 
-	/* Round start/end to cache line boundaries */
+	 
 	end = ALIGN(start + len - 1, CVMX_CACHE_LINE_SIZE);
 	start = ALIGN(start, CVMX_CACHE_LINE_SIZE);
 
@@ -91,7 +74,7 @@ static void octeon_mmc_acquire_bus(struct cvm_mmc_host *host)
 {
 	if (!host->has_ciu3) {
 		down(&octeon_bootbus_sem);
-		/* For CN70XX, switch the MMC controller onto the bus. */
+		 
 		if (OCTEON_IS_MODEL(OCTEON_CN70XX))
 			writeq(0, (void __iomem *)CVMX_MIO_BOOT_CTL);
 	} else {
@@ -180,23 +163,20 @@ static int octeon_mmc_probe(struct platform_device *pdev)
 		host->need_irq_handler_lock = true;
 		host->has_ciu3 = true;
 		host->use_sg = true;
-		/*
-		 * First seven are the EMM_INT bits 0..6, then two for
-		 * the EMM_DMA_INT bits
-		 */
+		 
 		for (i = 0; i < 9; i++) {
 			mmc_irq[i] = platform_get_irq(pdev, i);
 			if (mmc_irq[i] < 0)
 				return mmc_irq[i];
 
-			/* work around legacy u-boot device trees */
+			 
 			irq_set_irq_type(mmc_irq[i], IRQ_TYPE_EDGE_RISING);
 		}
 	} else {
 		host->big_dma_addr = false;
 		host->need_irq_handler_lock = false;
 		host->has_ciu3 = false;
-		/* First one is EMM second DMA */
+		 
 		for (i = 0; i < 2; i++) {
 			mmc_irq[i] = platform_get_irq(pdev, i);
 			if (mmc_irq[i] < 0)
@@ -216,26 +196,19 @@ static int octeon_mmc_probe(struct platform_device *pdev)
 	if (IS_ERR(base))
 		return PTR_ERR(base);
 	host->dma_base = base;
-	/*
-	 * To keep the register addresses shared we intentionaly use
-	 * a negative offset here, first register used on Octeon therefore
-	 * starts at 0x20 (MIO_EMM_DMA_CFG).
-	 */
+	 
 	host->reg_off_dma = -0x20;
 
 	ret = dma_set_mask(&pdev->dev, DMA_BIT_MASK(64));
 	if (ret)
 		return ret;
 
-	/*
-	 * Clear out any pending interrupts that may be left over from
-	 * bootloader.
-	 */
+	 
 	val = readq(host->base + MIO_EMM_INT(host));
 	writeq(val, host->base + MIO_EMM_INT(host));
 
 	if (host->has_ciu3) {
-		/* Only CMD_DONE, DMA_DONE, CMD_ERR, DMA_ERR */
+		 
 		for (i = 1; i <= 4; i++) {
 			ret = devm_request_irq(&pdev->dev, mmc_irq[i],
 					       cvm_mmc_interrupt,

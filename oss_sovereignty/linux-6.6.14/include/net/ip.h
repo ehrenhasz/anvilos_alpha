@@ -1,20 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the  BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		Definitions for the IP module.
- *
- * Version:	@(#)ip.h	1.0.2	05/07/93
- *
- * Authors:	Ross Biro
- *		Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
- *		Alan Cox, <gw4pts@gw4pts.ampr.org>
- *
- * Changes:
- *		Mike McLagan    :       Routing by source
- */
+ 
+ 
 #ifndef _IP_H
 #define _IP_H
 
@@ -34,8 +19,8 @@
 #include <net/netns/hash.h>
 #include <net/lwtunnel.h>
 
-#define IPV4_MAX_PMTU		65535U		/* RFC 2675, Section 5.1 */
-#define IPV4_MIN_MTU		68			/* RFC 791 */
+#define IPV4_MAX_PMTU		65535U		 
+#define IPV4_MIN_MTU		68			 
 
 extern unsigned int sysctl_fib_sync_mem;
 extern unsigned int sysctl_fib_sync_mem_min;
@@ -45,7 +30,7 @@ struct sock;
 
 struct inet_skb_parm {
 	int			iif;
-	struct ip_options	opt;		/* Compiled IP options		*/
+	struct ip_options	opt;		 
 	u16			flags;
 
 #define IPSKB_FORWARDED		BIT(0)
@@ -104,7 +89,7 @@ static inline void ipcm_init_sk(struct ipcm_cookie *ipcm,
 #define IPCB(skb) ((struct inet_skb_parm*)((skb)->cb))
 #define PKTINFO_SKB_CB(skb) ((struct in_pktinfo *)((skb)->cb))
 
-/* return enslaved device index if relevant */
+ 
 static inline int inet_sdif(const struct sk_buff *skb)
 {
 #if IS_ENABLED(CONFIG_NET_L3_MASTER_DEV)
@@ -114,16 +99,7 @@ static inline int inet_sdif(const struct sk_buff *skb)
 	return 0;
 }
 
-/* Special input handler for packets caught by router alert option.
-   They are selected only by protocol field, and then processed likely
-   local ones; but only if someone wants them! Otherwise, router
-   not running rsvpd will kill RSVP.
-
-   It is user level problem, what it will make with them.
-   I have no idea, how it will masquearde or NAT them (it is joke, joke :-)),
-   but receiver should be enough clever f.e. to forward mtrace requests,
-   sent to multicast group to reach destination designated router.
- */
+ 
 
 struct ip_ra_chain {
 	struct ip_ra_chain __rcu *next;
@@ -135,13 +111,13 @@ struct ip_ra_chain {
 	struct rcu_head		rcu;
 };
 
-/* IP flags. */
-#define IP_CE		0x8000		/* Flag: "Congestion"		*/
-#define IP_DF		0x4000		/* Flag: "Don't Fragment"	*/
-#define IP_MF		0x2000		/* Flag: "More Fragments"	*/
-#define IP_OFFSET	0x1FFF		/* "Fragment Offset" part	*/
+ 
+#define IP_CE		0x8000		 
+#define IP_DF		0x4000		 
+#define IP_MF		0x2000		 
+#define IP_OFFSET	0x1FFF		 
 
-#define IP_FRAG_TIME	(30 * HZ)		/* fragment lifetime	*/
+#define IP_FRAG_TIME	(30 * HZ)		 
 
 struct msghdr;
 struct net_device;
@@ -151,9 +127,7 @@ struct sockaddr;
 
 int igmp_mc_init(void);
 
-/*
- *	Functions provided by ip.c
- */
+ 
 
 int ip_build_and_send_pkt(struct sk_buff *skb, const struct sock *sk,
 			  __be32 saddr, __be32 daddr,
@@ -243,7 +217,7 @@ static inline struct sk_buff *ip_finish_skb(struct sock *sk, struct flowi4 *fl4)
 	return __ip_make_skb(sk, fl4, &sk->sk_write_queue, &inet_sk(sk)->cork.base);
 }
 
-/* Get the route scope that should be used when sending a packet. */
+ 
 static inline u8 ip_sendmsg_scope(const struct inet_sock *inet,
 				  const struct ipcm_cookie *ipc,
 				  const struct msghdr *msg)
@@ -261,7 +235,7 @@ static inline __u8 get_rttos(struct ipcm_cookie* ipc, struct inet_sock *inet)
 	return (ipc->tos != -1) ? RT_TOS(ipc->tos) : RT_TOS(inet->tos);
 }
 
-/* datagram.c */
+ 
 int __ip4_datagram_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len);
 int ip4_datagram_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len);
 
@@ -271,8 +245,8 @@ struct ip_reply_arg {
 	struct kvec iov[1];
 	int	    flags;
 	__wsum 	    csum;
-	int	    csumoffset; /* u16 offset of csum in iov[0].iov_base */
-				/* -1 if not needed */
+	int	    csumoffset;  
+				 
 	int	    bound_dev_if;
 	u8  	    tos;
 	kuid_t	    uid;
@@ -384,7 +358,7 @@ static inline bool inet_port_requires_bind_service(struct net *net, unsigned sho
 
 __be32 inet_current_timestamp(void);
 
-/* From inetpeer.c */
+ 
 extern int inet_peer_threshold;
 extern int inet_peer_minttl;
 extern int inet_peer_maxttl;
@@ -404,8 +378,7 @@ static inline bool ip_is_fragment(const struct iphdr *iph)
 #ifdef CONFIG_INET
 #include <net/dst.h>
 
-/* The function in 2.2 was invalid, producing wrong result for
- * check=0xFEFF. It was noticed by Arthur Skawina _year_ ago. --ANK(000625) */
+ 
 static inline
 int ip_decrease_ttl(struct iphdr *iph)
 {
@@ -464,7 +437,7 @@ static inline unsigned int ip_dst_mtu_maybe_forward(const struct dst_entry *dst,
 			goto out;
 	}
 
-	/* 'forwarding = true' case should always honour route mtu */
+	 
 	mtu = dst_metric_raw(dst, RTAX_MTU);
 	if (mtu)
 		goto out;
@@ -507,7 +480,7 @@ static inline void ip_fib_metrics_put(struct dst_metrics *fib_metrics)
 		kfree(fib_metrics);
 }
 
-/* ipv4 and ipv6 both use refcounted metrics if it is not the default */
+ 
 static inline
 void ip_dst_init_metrics(struct dst_entry *dst, struct dst_metrics *fib_metrics)
 {
@@ -535,15 +508,11 @@ static inline void ip_select_ident_segs(struct net *net, struct sk_buff *skb,
 {
 	struct iphdr *iph = ip_hdr(skb);
 
-	/* We had many attacks based on IPID, use the private
-	 * generator as much as we can.
-	 */
+	 
 	if (sk && inet_sk(sk)->inet_daddr) {
 		int val;
 
-		/* avoid atomic operations for TCP,
-		 * as we hold socket lock at this point.
-		 */
+		 
 		if (sk_is_tcp(sk)) {
 			sock_owned_by_me(sk);
 			val = atomic_read(&inet_sk(sk)->inet_id);
@@ -557,7 +526,7 @@ static inline void ip_select_ident_segs(struct net *net, struct sk_buff *skb,
 	if ((iph->frag_off & htons(IP_DF)) && !skb->ignore_df) {
 		iph->id = 0;
 	} else {
-		/* Unfortunately we need the big hammer to get a suitable IPID */
+		 
 		__ip_select_ident(net, iph, segs);
 	}
 }
@@ -574,10 +543,7 @@ static inline __wsum inet_compute_pseudo(struct sk_buff *skb, int proto)
 				  skb->len, proto, 0);
 }
 
-/* copy IPv4 saddr & daddr to flow_keys, possibly using 64bit load/store
- * Equivalent to :	flow->v4addrs.src = iph->saddr;
- *			flow->v4addrs.dst = iph->daddr;
- */
+ 
 static inline void iph_to_flow_copy_v4addrs(struct flow_keys *flow,
 					    const struct iphdr *iph)
 {
@@ -588,9 +554,7 @@ static inline void iph_to_flow_copy_v4addrs(struct flow_keys *flow,
 	flow->control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
 }
 
-/*
- *	Map a multicast IP onto multicast MAC for type ethernet.
- */
+ 
 
 static inline void ip_eth_mc_map(__be32 naddr, char *buf)
 {
@@ -605,26 +569,23 @@ static inline void ip_eth_mc_map(__be32 naddr, char *buf)
 	buf[3]=addr&0x7F;
 }
 
-/*
- *	Map a multicast IP onto multicast MAC for type IP-over-InfiniBand.
- *	Leave P_Key as 0 to be filled in by driver.
- */
+ 
 
 static inline void ip_ib_mc_map(__be32 naddr, const unsigned char *broadcast, char *buf)
 {
 	__u32 addr;
 	unsigned char scope = broadcast[5] & 0xF;
 
-	buf[0]  = 0;		/* Reserved */
-	buf[1]  = 0xff;		/* Multicast QPN */
+	buf[0]  = 0;		 
+	buf[1]  = 0xff;		 
 	buf[2]  = 0xff;
 	buf[3]  = 0xff;
 	addr    = ntohl(naddr);
 	buf[4]  = 0xff;
-	buf[5]  = 0x10 | scope;	/* scope from broadcast address */
-	buf[6]  = 0x40;		/* IPv4 signature */
+	buf[5]  = 0x10 | scope;	 
+	buf[6]  = 0x40;		 
 	buf[7]  = 0x1b;
-	buf[8]  = broadcast[8];		/* P_Key */
+	buf[8]  = broadcast[8];		 
 	buf[9]  = broadcast[9];
 	buf[10] = 0;
 	buf[11] = 0;
@@ -682,9 +643,7 @@ static inline u32 ipv4_portaddr_hash(const struct net *net,
 
 bool ip_call_ra_chain(struct sk_buff *skb);
 
-/*
- *	Functions provided by ip_fragment.c
- */
+ 
 
 enum ip_defrag_users {
 	IP_DEFRAG_LOCAL_DELIVER,
@@ -702,9 +661,7 @@ enum ip_defrag_users {
 	IP_DEFRAG_MACVLAN,
 };
 
-/* Return true if the value of 'user' is between 'lower_bond'
- * and 'upper_bond' inclusively.
- */
+ 
 static inline bool ip_defrag_user_in_between(u32 user,
 					     enum ip_defrag_users lower_bond,
 					     enum ip_defrag_users upper_bond)
@@ -722,15 +679,11 @@ static inline struct sk_buff *ip_check_defrag(struct net *net, struct sk_buff *s
 }
 #endif
 
-/*
- *	Functions provided by ip_forward.c
- */
+ 
 
 int ip_forward(struct sk_buff *skb);
 
-/*
- *	Functions provided by ip_options.c
- */
+ 
 
 void ip_options_build(struct sk_buff *skb, struct ip_options *opt,
 		      __be32 daddr, struct rtable *rt);
@@ -754,9 +707,7 @@ void ip_options_undo(struct ip_options *opt);
 void ip_forward_options(struct sk_buff *skb);
 int ip_options_rcv_srr(struct sk_buff *skb, struct net_device *dev);
 
-/*
- *	Functions provided by ip_sockglue.c
- */
+ 
 
 void ipv4_pktinfo_prepare(const struct sock *sk, struct sk_buff *skb);
 void ip_cmsg_recv_offset(struct msghdr *msg, struct sock *sk,
@@ -809,4 +760,4 @@ void ip_sock_set_recverr(struct sock *sk);
 void ip_sock_set_tos(struct sock *sk, int val);
 void  __ip_sock_set_tos(struct sock *sk, int val);
 
-#endif	/* _IP_H */
+#endif	 

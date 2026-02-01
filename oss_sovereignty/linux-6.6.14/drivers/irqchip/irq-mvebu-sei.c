@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define pr_fmt(fmt) "mvebu-sei: " fmt
 
@@ -14,9 +14,9 @@
 #include <linux/of_irq.h>
 #include <linux/of_platform.h>
 
-/* Cause register */
+ 
 #define GICP_SECR(idx)		(0x0  + ((idx) * 0x4))
-/* Mask register */
+ 
 #define GICP_SEMR(idx)		(0x20 + ((idx) * 0x4))
 #define GICP_SET_SEI_OFFSET	0x30
 
@@ -45,11 +45,11 @@ struct mvebu_sei {
 	struct irq_domain *cp_domain;
 	const struct mvebu_sei_caps *caps;
 
-	/* Lock on MSI allocations/releases */
+	 
 	struct mutex cp_msi_lock;
 	DECLARE_BITMAP(cp_msi_bitmap, SEI_IRQ_COUNT);
 
-	/* Lock on IRQ masking register */
+	 
 	raw_spinlock_t mask_lock;
 };
 
@@ -68,7 +68,7 @@ static void mvebu_sei_mask_irq(struct irq_data *d)
 	u32 reg, reg_idx = SEI_IRQ_REG_IDX(d->hwirq);
 	unsigned long flags;
 
-	/* 1 disables the interrupt */
+	 
 	raw_spin_lock_irqsave(&sei->mask_lock, flags);
 	reg = readl_relaxed(sei->base + GICP_SEMR(reg_idx));
 	reg |= BIT(SEI_IRQ_REG_BIT(d->hwirq));
@@ -82,7 +82,7 @@ static void mvebu_sei_unmask_irq(struct irq_data *d)
 	u32 reg, reg_idx = SEI_IRQ_REG_IDX(d->hwirq);
 	unsigned long flags;
 
-	/* 0 enables the interrupt */
+	 
 	raw_spin_lock_irqsave(&sei->mask_lock, flags);
 	reg = readl_relaxed(sei->base + GICP_SEMR(reg_idx));
 	reg &= ~BIT(SEI_IRQ_REG_BIT(d->hwirq));
@@ -101,7 +101,7 @@ static int mvebu_sei_set_irqchip_state(struct irq_data *d,
 				       enum irqchip_irq_state which,
 				       bool state)
 {
-	/* We can only clear the pending state by acking the interrupt */
+	 
 	if (which != IRQCHIP_STATE_PENDING || state)
 		return -EINVAL;
 
@@ -170,7 +170,7 @@ static int mvebu_sei_domain_alloc(struct irq_domain *domain, unsigned int virq,
 	struct mvebu_sei *sei = domain->host_data;
 	struct irq_fwspec *fwspec = arg;
 
-	/* Not much to do, just setup the irqdata */
+	 
 	irq_domain_set_hwirq_and_chip(domain, virq, fwspec->param[0],
 				      &mvebu_sei_irq_chip, sei);
 
@@ -254,7 +254,7 @@ static int mvebu_sei_cp_domain_alloc(struct irq_domain *domain,
 	unsigned long hwirq;
 	int ret;
 
-	/* The software only supports single allocations for now */
+	 
 	if (nr_irqs != 1)
 		return -ENOTSUPP;
 
@@ -353,7 +353,7 @@ static void mvebu_sei_reset(struct mvebu_sei *sei)
 {
 	u32 reg_idx;
 
-	/* Clear IRQ cause registers, mask all interrupts */
+	 
 	for (reg_idx = 0; reg_idx < SEI_IRQ_REG_COUNT; reg_idx++) {
 		writel_relaxed(0xFFFFFFFF, sei->base + GICP_SECR(reg_idx));
 		writel_relaxed(0xFFFFFFFF, sei->base + GICP_SEMR(reg_idx));
@@ -381,7 +381,7 @@ static int mvebu_sei_probe(struct platform_device *pdev)
 	if (IS_ERR(sei->base))
 		return PTR_ERR(sei->base);
 
-	/* Retrieve the SEI capabilities with the interrupt ranges */
+	 
 	sei->caps = of_device_get_match_data(&pdev->dev);
 	if (!sei->caps) {
 		dev_err(sei->dev,
@@ -389,17 +389,14 @@ static int mvebu_sei_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/*
-	 * Reserve the single (top-level) parent SPI IRQ from which all the
-	 * interrupts handled by this driver will be signaled.
-	 */
+	 
 	parent_irq = irq_of_parse_and_map(node, 0);
 	if (parent_irq <= 0) {
 		dev_err(sei->dev, "Failed to retrieve top-level SPI IRQ\n");
 		return -ENODEV;
 	}
 
-	/* Create the root SEI domain */
+	 
 	sei->sei_domain = irq_domain_create_linear(of_node_to_fwnode(node),
 						   (sei->caps->ap_range.size +
 						    sei->caps->cp_range.size),
@@ -413,7 +410,7 @@ static int mvebu_sei_probe(struct platform_device *pdev)
 
 	irq_domain_update_bus_token(sei->sei_domain, DOMAIN_BUS_NEXUS);
 
-	/* Create the 'wired' domain */
+	 
 	sei->ap_domain = irq_domain_create_hierarchy(sei->sei_domain, 0,
 						     sei->caps->ap_range.size,
 						     of_node_to_fwnode(node),
@@ -427,7 +424,7 @@ static int mvebu_sei_probe(struct platform_device *pdev)
 
 	irq_domain_update_bus_token(sei->ap_domain, DOMAIN_BUS_WIRED);
 
-	/* Create the 'MSI' domain */
+	 
 	sei->cp_domain = irq_domain_create_hierarchy(sei->sei_domain, 0,
 						     sei->caps->cp_range.size,
 						     of_node_to_fwnode(node),

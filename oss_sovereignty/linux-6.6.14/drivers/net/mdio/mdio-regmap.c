@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Driver for MMIO-Mapped MDIO devices. Some IPs expose internal PHYs or PCS
- * within the MMIO-mapped area
- *
- * Copyright (C) 2023 Maxime Chevallier <maxime.chevallier@bootlin.com>
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
 #include <linux/mdio.h>

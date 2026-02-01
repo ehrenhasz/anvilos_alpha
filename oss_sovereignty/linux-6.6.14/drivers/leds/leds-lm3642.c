@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
-* Simple driver for Texas Instruments LM3642 LED Flash driver chip
-* Copyright (C) 2012 Texas Instruments
-*/
+
+ 
 #include <linux/module.h>
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -83,13 +80,13 @@ struct lm3642_chip_data {
 	unsigned int last_flag;
 };
 
-/* chip initialize */
+ 
 static int lm3642_chip_init(struct lm3642_chip_data *chip)
 {
 	int ret;
 	struct lm3642_platform_data *pdata = chip->pdata;
 
-	/* set enable register */
+	 
 	ret = regmap_update_bits(chip->regmap, REG_ENABLE, EX_PIN_ENABLE_MASK,
 				 pdata->tx_pin);
 	if (ret < 0)
@@ -97,7 +94,7 @@ static int lm3642_chip_init(struct lm3642_chip_data *chip)
 	return ret;
 }
 
-/* chip control */
+ 
 static int lm3642_control(struct lm3642_chip_data *chip,
 			  u8 brightness, enum lm3642_mode opmode)
 {
@@ -112,7 +109,7 @@ static int lm3642_control(struct lm3642_chip_data *chip,
 	if (chip->last_flag)
 		dev_info(chip->dev, "Last FLAG is 0x%x\n", chip->last_flag);
 
-	/* brightness 0 means off-state */
+	 
 	if (!brightness)
 		opmode = MODES_STASNDBY;
 
@@ -162,9 +159,9 @@ static int lm3642_control(struct lm3642_chip_data *chip,
 	return ret;
 }
 
-/* torch */
+ 
 
-/* torch pin config for lm3642 */
+ 
 static ssize_t torch_pin_store(struct device *dev,
 			       struct device_attribute *attr,
 			       const char *buf, size_t size)
@@ -209,9 +206,9 @@ static int lm3642_torch_brightness_set(struct led_classdev *cdev,
 	return ret;
 }
 
-/* flash */
+ 
 
-/* strobe pin config for lm3642*/
+ 
 static ssize_t strobe_pin_store(struct device *dev,
 				struct device_attribute *attr,
 				const char *buf, size_t size)
@@ -256,7 +253,7 @@ static int lm3642_strobe_brightness_set(struct led_classdev *cdev,
 	return ret;
 }
 
-/* indicator */
+ 
 static int lm3642_indicator_brightness_set(struct led_classdev *cdev,
 					    enum led_brightness brightness)
 {
@@ -333,7 +330,7 @@ static int lm3642_probe(struct i2c_client *client)
 	if (err < 0)
 		goto err_out;
 
-	/* flash */
+	 
 	chip->cdev_flash.name = "flash";
 	chip->cdev_flash.max_brightness = 16;
 	chip->cdev_flash.brightness_set_blocking = lm3642_strobe_brightness_set;
@@ -345,7 +342,7 @@ static int lm3642_probe(struct i2c_client *client)
 		goto err_out;
 	}
 
-	/* torch */
+	 
 	chip->cdev_torch.name = "torch";
 	chip->cdev_torch.max_brightness = 8;
 	chip->cdev_torch.brightness_set_blocking = lm3642_torch_brightness_set;
@@ -357,7 +354,7 @@ static int lm3642_probe(struct i2c_client *client)
 		goto err_create_torch_file;
 	}
 
-	/* indicator */
+	 
 	chip->cdev_indicator.name = "indicator";
 	chip->cdev_indicator.max_brightness = 8;
 	chip->cdev_indicator.brightness_set_blocking =

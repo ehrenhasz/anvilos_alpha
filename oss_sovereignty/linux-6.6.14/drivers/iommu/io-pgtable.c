@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Generic page table allocator for IOMMUs.
- *
- * Copyright (C) 2014 ARM Limited
- *
- * Author: Will Deacon <will.deacon@arm.com>
- */
+
+ 
 
 #include <linux/bug.h>
 #include <linux/io-pgtable.h>
@@ -60,10 +54,7 @@ struct io_pgtable_ops *alloc_io_pgtable_ops(enum io_pgtable_fmt fmt,
 }
 EXPORT_SYMBOL_GPL(alloc_io_pgtable_ops);
 
-/*
- * It is the IOMMU driver's responsibility to ensure that the page table
- * is no longer accessible to the walker by this point.
- */
+ 
 void free_io_pgtable_ops(struct io_pgtable_ops *ops)
 {
 	struct io_pgtable *iop;

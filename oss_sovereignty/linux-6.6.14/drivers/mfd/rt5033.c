@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MFD core driver for the Richtek RT5033.
- *
- * RT5033 comprises multiple sub-devices switcing charger, fuel gauge,
- * flash LED, current source, LDO and BUCK regulators.
- *
- * Copyright (C) 2014 Samsung Electronics, Co., Ltd.
- * Author: Beomho Seo <beomho.seo@samsung.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/mod_devicetable.h>

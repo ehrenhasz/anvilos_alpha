@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * socket_sysfs.c -- most of socket-related sysfs output
- *
- * (C) 2003 - 2004		Dominik Brodowski
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>

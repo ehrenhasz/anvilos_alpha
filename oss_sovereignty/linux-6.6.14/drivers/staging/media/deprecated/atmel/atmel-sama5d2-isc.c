@@ -1,27 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Microchip Image Sensor Controller (ISC) driver
- *
- * Copyright (C) 2016-2019 Microchip Technology, Inc.
- *
- * Author: Songjun Wu
- * Author: Eugen Hristev <eugen.hristev@microchip.com>
- *
- *
- * Sensor-->PFE-->WB-->CFA-->CC-->GAM-->CSC-->CBC-->SUB-->RLP-->DMA
- *
- * ISC video pipeline integrates the following submodules:
- * PFE: Parallel Front End to sample the camera sensor input stream
- *  WB: Programmable white balance in the Bayer domain
- * CFA: Color filter array interpolation module
- *  CC: Programmable color correction
- * GAM: Gamma correction
- * CSC: Programmable color space conversion
- * CBC: Contrast and Brightness control
- * SUB: This module performs YCbCr444 to YCbCr420 chrominance subsampling
- * RLP: This module performs rounding, range limiting
- *      and packing of the incoming data
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clkdev.h>
@@ -56,7 +34,7 @@
 	(WB_ENABLE | CFA_ENABLE | CC_ENABLE | GAM_ENABLES | CSC_ENABLE | \
 	CBC_ENABLE | SUB422_ENABLE | SUB420_ENABLE)
 
-/* This is a list of the formats that the ISC can *output* */
+ 
 static const struct isc_format sama5d2_controller_formats[] = {
 	{
 		.fourcc		= V4L2_PIX_FMT_ARGB444,
@@ -97,7 +75,7 @@ static const struct isc_format sama5d2_controller_formats[] = {
 	},
 };
 
-/* This is a list of formats that the ISC can receive as *input* */
+ 
 static struct isc_format sama5d2_formats_list[] = {
 	{
 		.fourcc		= V4L2_PIX_FMT_SBGGR8,
@@ -198,7 +176,7 @@ static void isc_sama5d2_config_csc(struct isc_device *isc)
 {
 	struct regmap *regmap = isc->regmap;
 
-	/* Convert RGB to YUV */
+	 
 	regmap_write(regmap, ISC_CSC_YR_YG + isc->offsets.csc,
 		     0x42 | (0x81 << 16));
 	regmap_write(regmap, ISC_CSC_YB_OY + isc->offsets.csc,
@@ -227,7 +205,7 @@ static void isc_sama5d2_config_cc(struct isc_device *isc)
 {
 	struct regmap *regmap = isc->regmap;
 
-	/* Configure each register at the neutral fixed point 1.0 or 0.0 */
+	 
 	regmap_write(regmap, ISC_CC_RR_RG, (1 << 8));
 	regmap_write(regmap, ISC_CC_RB_OR, 0);
 	regmap_write(regmap, ISC_CC_GR_GG, (1 << 8) << 16);
@@ -249,12 +227,12 @@ static void isc_sama5d2_config_ctrls(struct isc_device *isc,
 
 static void isc_sama5d2_config_dpc(struct isc_device *isc)
 {
-	/* This module is not present on sama5d2 pipeline */
+	 
 }
 
 static void isc_sama5d2_config_gam(struct isc_device *isc)
 {
-	/* No specific gamma configuration */
+	 
 }
 
 static void isc_sama5d2_config_rlp(struct isc_device *isc)
@@ -262,18 +240,7 @@ static void isc_sama5d2_config_rlp(struct isc_device *isc)
 	struct regmap *regmap = isc->regmap;
 	u32 rlp_mode = isc->config.rlp_cfg_mode;
 
-	/*
-	 * In sama5d2, the YUV planar modes and the YUYV modes are treated
-	 * in the same way in RLP register.
-	 * Normally, YYCC mode should be Luma(n) - Color B(n) - Color R (n)
-	 * and YCYC should be Luma(n + 1) - Color B (n) - Luma (n) - Color R (n)
-	 * but in sama5d2, the YCYC mode does not exist, and YYCC must be
-	 * selected for both planar and interleaved modes, as in fact
-	 * both modes are supported.
-	 *
-	 * Thus, if the YCYC mode is selected, replace it with the
-	 * sama5d2-compliant mode which is YYCC .
-	 */
+	 
 	if ((rlp_mode & ISC_RLP_CFG_MODE_MASK) == ISC_RLP_CFG_MODE_YCYC) {
 		rlp_mode &= ~ISC_RLP_CFG_MODE_MASK;
 		rlp_mode |= ISC_RLP_CFG_MODE_YYCC;
@@ -288,9 +255,9 @@ static void isc_sama5d2_adapt_pipeline(struct isc_device *isc)
 	isc->try_config.bits_pipeline &= ISC_SAMA5D2_PIPELINE;
 }
 
-/* Gamma table with gamma 1/2.2 */
+ 
 static const u32 isc_sama5d2_gamma_table[][GAMMA_ENTRIES] = {
-	/* 0 --> gamma 1/1.8 */
+	 
 	{      0x65,  0x66002F,  0x950025,  0xBB0020,  0xDB001D,  0xF8001A,
 	  0x1130018, 0x12B0017, 0x1420016, 0x1580014, 0x16D0013, 0x1810012,
 	  0x1940012, 0x1A60012, 0x1B80011, 0x1C90010, 0x1DA0010, 0x1EA000F,
@@ -303,7 +270,7 @@ static const u32 isc_sama5d2_gamma_table[][GAMMA_ENTRIES] = {
 	  0x3A30009, 0x3AD0009, 0x3B60009, 0x3BF000A, 0x3C90009, 0x3D20009,
 	  0x3DB0009, 0x3E40009, 0x3ED0009, 0x3F60009 },
 
-	/* 1 --> gamma 1/2 */
+	 
 	{      0x7F,  0x800034,  0xB50028,  0xDE0021, 0x100001E, 0x11E001B,
 	  0x1390019, 0x1520017, 0x16A0015, 0x1800014, 0x1940014, 0x1A80013,
 	  0x1BB0012, 0x1CD0011, 0x1DF0010, 0x1EF0010, 0x200000F, 0x20F000F,
@@ -316,7 +283,7 @@ static const u32 isc_sama5d2_gamma_table[][GAMMA_ENTRIES] = {
 	  0x3AC0008, 0x3B40009, 0x3BD0008, 0x3C60008, 0x3CE0008, 0x3D60009,
 	  0x3DF0008, 0x3E70008, 0x3EF0008, 0x3F70008 },
 
-	/* 2 --> gamma 1/2.2 */
+	 
 	{      0x99,  0x9B0038,  0xD4002A,  0xFF0023, 0x122001F, 0x141001B,
 	  0x15D0019, 0x1760017, 0x18E0015, 0x1A30015, 0x1B80013, 0x1CC0012,
 	  0x1DE0011, 0x1F00010, 0x2010010, 0x2110010, 0x221000F, 0x230000F,
@@ -456,10 +423,10 @@ static int atmel_isc_probe(struct platform_device *pdev)
 	isc->formats_list = sama5d2_formats_list;
 	isc->formats_list_size = ARRAY_SIZE(sama5d2_formats_list);
 
-	/* sama5d2-isc - 8 bits per beat */
+	 
 	isc->dcfg = ISC_DCFG_YMBSIZE_BEATS8 | ISC_DCFG_CMBSIZE_BEATS8;
 
-	/* sama5d2-isc : ISPCK is required and mandatory */
+	 
 	isc->ispck_required = true;
 
 	ret = atmel_isc_pipeline_init(isc);
@@ -545,7 +512,7 @@ static int atmel_isc_probe(struct platform_device *pdev)
 		goto disable_pm;
 	}
 
-	/* ispck should be greater or equal to hclock */
+	 
 	ret = clk_set_rate(isc->ispck, clk_get_rate(isc->hclock));
 	if (ret) {
 		dev_err(dev, "failed to set ispck rate: %d\n", ret);

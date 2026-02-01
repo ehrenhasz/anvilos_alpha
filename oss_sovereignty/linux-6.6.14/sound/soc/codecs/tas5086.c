@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * TAS5086 ASoC codec driver
- *
- * Copyright (c) 2013 Daniel Mack <zonque@gmail.com>
- *
- * TODO:
- *  - implement DAPM and input muxing
- *  - implement modulation limit
- *  - implement non-default PWM start
- *
- * Note that this chip has a very unusual register layout, specifically
- * because the registers are of unequal size, and multi-byte registers
- * require bulk writes to take effect. Regmap does not support that kind
- * of devices.
- *
- * Currently, the driver does not touch any of the registers >= 0x20, so
- * it doesn't matter because the entire map can be accessed as 8-bit
- * array. In case more features will be added in the future
- * that require access to higher registers, the entire regmap H/W I/O
- * routines have to be open-coded.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -47,10 +27,8 @@
 			     SNDRV_PCM_RATE_96000 | SNDRV_PCM_RATE_176400 | \
 			     SNDRV_PCM_RATE_192000)
 
-/*
- * TAS5086 registers
- */
-#define TAS5086_CLOCK_CONTROL		0x00	/* Clock control register  */
+ 
+#define TAS5086_CLOCK_CONTROL		0x00	 
 #define TAS5086_CLOCK_RATE(val)		(val << 5)
 #define TAS5086_CLOCK_RATE_MASK		(0x7 << 5)
 #define TAS5086_CLOCK_RATIO(val)	(val << 2)
@@ -61,20 +39,20 @@
 #define TAS5086_DEEMPH_MASK		0x03
 #define TAS5086_SOFT_MUTE_ALL		0x3f
 
-#define TAS5086_DEV_ID			0x01	/* Device ID register */
-#define TAS5086_ERROR_STATUS		0x02	/* Error status register */
-#define TAS5086_SYS_CONTROL_1		0x03	/* System control register 1 */
-#define TAS5086_SERIAL_DATA_IF		0x04	/* Serial data interface register  */
-#define TAS5086_SYS_CONTROL_2		0x05	/* System control register 2 */
-#define TAS5086_SOFT_MUTE		0x06	/* Soft mute register */
-#define TAS5086_MASTER_VOL		0x07	/* Master volume  */
-#define TAS5086_CHANNEL_VOL(X)		(0x08 + (X))	/* Channel 1-6 volume */
-#define TAS5086_VOLUME_CONTROL		0x09	/* Volume control register */
-#define TAS5086_MOD_LIMIT		0x10	/* Modulation limit register */
-#define TAS5086_PWM_START		0x18	/* PWM start register */
-#define TAS5086_SURROUND		0x19	/* Surround register */
-#define TAS5086_SPLIT_CAP_CHARGE	0x1a	/* Split cap charge period register */
-#define TAS5086_OSC_TRIM		0x1b	/* Oscillator trim register */
+#define TAS5086_DEV_ID			0x01	 
+#define TAS5086_ERROR_STATUS		0x02	 
+#define TAS5086_SYS_CONTROL_1		0x03	 
+#define TAS5086_SERIAL_DATA_IF		0x04	 
+#define TAS5086_SYS_CONTROL_2		0x05	 
+#define TAS5086_SOFT_MUTE		0x06	 
+#define TAS5086_MASTER_VOL		0x07	 
+#define TAS5086_CHANNEL_VOL(X)		(0x08 + (X))	 
+#define TAS5086_VOLUME_CONTROL		0x09	 
+#define TAS5086_MOD_LIMIT		0x10	 
+#define TAS5086_PWM_START		0x18	 
+#define TAS5086_SURROUND		0x19	 
+#define TAS5086_SPLIT_CAP_CHARGE	0x1a	 
+#define TAS5086_OSC_TRIM		0x1b	 
 #define TAS5086_BKNDERR 		0x1c
 #define TAS5086_INPUT_MUX		0x20
 #define TAS5086_PWM_OUTPUT_MUX		0x25
@@ -85,9 +63,7 @@
 #define TAS5086_PWM_START_MIDZ_FOR_START_2	(1 << 6)
 #define TAS5086_PWM_START_CHANNEL_MASK		(0x3f)
 
-/*
- * Default TAS5086 power-up configuration
- */
+ 
 static const struct reg_default tas5086_reg_defaults[] = {
 	{ 0x00,	0x6c },
 	{ 0x01,	0x03 },
@@ -243,9 +219,9 @@ struct tas5086_private {
 	bool		deemph;
 	unsigned int	charge_period;
 	unsigned int	pwm_start_mid_z;
-	/* Current sample rate for de-emphasis control */
+	 
 	int		rate;
-	/* GPIO driving Reset pin, if any */
+	 
 	int		gpio_nreset;
 	struct		regulator_bulk_data supplies[ARRAY_SIZE(supply_names)];
 };
@@ -317,13 +293,13 @@ static int tas5086_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	struct snd_soc_component *component = codec_dai->component;
 	struct tas5086_private *priv = snd_soc_component_get_drvdata(component);
 
-	/* The TAS5086 can only be slave to all clocks */
+	 
 	if ((format & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) != SND_SOC_DAIFMT_CBC_CFC) {
 		dev_err(component->dev, "Invalid clocking mode\n");
 		return -EINVAL;
 	}
 
-	/* we need to refer to the data format from hw_params() */
+	 
 	priv->format = format;
 
 	return 0;
@@ -359,7 +335,7 @@ static int tas5086_hw_params(struct snd_pcm_substream *substream,
 
 	priv->rate = params_rate(params);
 
-	/* Look up the sample rate and refer to the offset in the list */
+	 
 	val = index_in_array(tas5086_sample_rates,
 			     ARRAY_SIZE(tas5086_sample_rates), priv->rate);
 
@@ -374,7 +350,7 @@ static int tas5086_hw_params(struct snd_pcm_substream *substream,
 	if (ret < 0)
 		return ret;
 
-	/* MCLK / Fs ratio */
+	 
 	val = index_in_array(tas5086_ratios, ARRAY_SIZE(tas5086_ratios),
 			     priv->mclk / priv->rate);
 	if (val < 0) {
@@ -396,14 +372,7 @@ static int tas5086_hw_params(struct snd_pcm_substream *substream,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * The chip has a very unituitive register mapping and muxes information
-	 * about data format and sample depth into the same register, but not on
-	 * a logical bit-boundary. Hence, we have to refer to the format passed
-	 * in the set_dai_fmt() callback and set up everything from here.
-	 *
-	 * First, determine the 'base' value, using the format ...
-	 */
+	 
 	switch (priv->format & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_RIGHT_J:
 		val = 0x00;
@@ -419,7 +388,7 @@ static int tas5086_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* ... then add the offset for the sample bit depth. */
+	 
 	switch (params_width(params)) {
         case 16:
 		val += 0;
@@ -439,7 +408,7 @@ static int tas5086_hw_params(struct snd_pcm_substream *substream,
 	if (ret < 0)
 		return ret;
 
-	/* clock is considered valid now */
+	 
 	ret = regmap_update_bits(priv->regmap, TAS5086_CLOCK_CONTROL,
 				 TAS5086_CLOCK_VALID, TAS5086_CLOCK_VALID);
 	if (ret < 0)
@@ -463,17 +432,17 @@ static int tas5086_mute_stream(struct snd_soc_dai *dai, int mute, int stream)
 static void tas5086_reset(struct tas5086_private *priv)
 {
 	if (gpio_is_valid(priv->gpio_nreset)) {
-		/* Reset codec - minimum assertion time is 400ns */
+		 
 		gpio_direction_output(priv->gpio_nreset, 0);
 		udelay(1);
 		gpio_set_value(priv->gpio_nreset, 1);
 
-		/* Codec needs ~15ms to wake up */
+		 
 		msleep(15);
 	}
 }
 
-/* charge period values in microseconds */
+ 
 static const int tas5086_charge_period[] = {
 	  13000,  16900,   23400,   31200,   41600,   54600,   72800,   96200,
 	 130000, 156000,  234000,  312000,  416000,  546000,  728000,  962000,
@@ -484,17 +453,13 @@ static int tas5086_init(struct device *dev, struct tas5086_private *priv)
 {
 	int ret, i;
 
-	/*
-	 * If any of the channels is configured to start in Mid-Z mode,
-	 * configure 'part 1' of the PWM starts to use Mid-Z, and tell
-	 * all configured mid-z channels to start under 'part 1'.
-	 */
+	 
 	if (priv->pwm_start_mid_z)
 		regmap_write(priv->regmap, TAS5086_PWM_START,
 			     TAS5086_PWM_START_MIDZ_FOR_START_1 |
 				priv->pwm_start_mid_z);
 
-	/* lookup and set split-capacitor charge period */
+	 
 	if (priv->charge_period == 0) {
 		regmap_write(priv->regmap, TAS5086_SPLIT_CAP_CHARGE, 0);
 	} else {
@@ -510,17 +475,17 @@ static int tas5086_init(struct device *dev, struct tas5086_private *priv)
 				 priv->charge_period);
 	}
 
-	/* enable factory trim */
+	 
 	ret = regmap_write(priv->regmap, TAS5086_OSC_TRIM, 0x00);
 	if (ret < 0)
 		return ret;
 
-	/* start all channels */
+	 
 	ret = regmap_write(priv->regmap, TAS5086_SYS_CONTROL_2, 0x20);
 	if (ret < 0)
 		return ret;
 
-	/* mute all channels for now */
+	 
 	ret = regmap_write(priv->regmap, TAS5086_SOFT_MUTE,
 			   TAS5086_SOFT_MUTE_ALL);
 	if (ret < 0)
@@ -529,7 +494,7 @@ static int tas5086_init(struct device *dev, struct tas5086_private *priv)
 	return 0;
 }
 
-/* TAS5086 controls */
+ 
 static const DECLARE_TLV_DB_SCALE(tas5086_dac_tlv, -10350, 50, 1);
 
 static const struct snd_kcontrol_new tas5086_controls[] = {
@@ -548,7 +513,7 @@ static const struct snd_kcontrol_new tas5086_controls[] = {
 			    tas5086_get_deemph, tas5086_put_deemph),
 };
 
-/* Input mux controls */
+ 
 static const char *tas5086_dapm_sdin_texts[] =
 {
 	"SDIN1-L", "SDIN1-R", "SDIN2-L", "SDIN2-R",
@@ -573,7 +538,7 @@ static const struct snd_kcontrol_new tas5086_dapm_input_mux_controls[] = {
 	SOC_DAPM_ENUM("Channel 6 input", tas5086_dapm_input_mux_enum[5]),
 };
 
-/* Output mux controls */
+ 
 static const char *tas5086_dapm_channel_texts[] =
 	{ "Channel 1 Mux", "Channel 2 Mux", "Channel 3 Mux",
 	  "Channel 4 Mux", "Channel 5 Mux", "Channel 6 Mux" };
@@ -641,7 +606,7 @@ static const struct snd_soc_dapm_widget tas5086_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route tas5086_dapm_routes[] = {
-	/* SDIN inputs -> channel muxes */
+	 
 	{ "Channel 1 Mux", "SDIN1-L", "SDIN1-L" },
 	{ "Channel 1 Mux", "SDIN1-R", "SDIN1-R" },
 	{ "Channel 1 Mux", "SDIN2-L", "SDIN2-L" },
@@ -691,7 +656,7 @@ static const struct snd_soc_dapm_route tas5086_dapm_routes[] = {
 	{ "Channel 6 Mux", "SDIN3-L", "SDIN3-L" },
 	{ "Channel 6 Mux", "SDIN3-R", "SDIN3-R" },
 
-	/* Channel muxes -> PWM muxes */
+	 
 	{ "PWM1 Mux", "Channel 1 Mux", "Channel 1 Mux" },
 	{ "PWM2 Mux", "Channel 1 Mux", "Channel 1 Mux" },
 	{ "PWM3 Mux", "Channel 1 Mux", "Channel 1 Mux" },
@@ -734,7 +699,7 @@ static const struct snd_soc_dapm_route tas5086_dapm_routes[] = {
 	{ "PWM5 Mux", "Channel 6 Mux", "Channel 6 Mux" },
 	{ "PWM6 Mux", "Channel 6 Mux", "Channel 6 Mux" },
 
-	/* The PWM muxes are directly connected to the PWM outputs */
+	 
 	{ "PWM1", NULL, "PWM1 Mux" },
 	{ "PWM2", NULL, "PWM2 Mux" },
 	{ "PWM3", NULL, "PWM3 Mux" },
@@ -769,7 +734,7 @@ static int tas5086_soc_suspend(struct snd_soc_component *component)
 	struct tas5086_private *priv = snd_soc_component_get_drvdata(component);
 	int ret;
 
-	/* Shut down all channels */
+	 
 	ret = regmap_write(priv->regmap, TAS5086_SYS_CONTROL_2, 0x60);
 	if (ret < 0)
 		return ret;
@@ -804,7 +769,7 @@ static int tas5086_soc_resume(struct snd_soc_component *component)
 #else
 #define tas5086_soc_suspend	NULL
 #define tas5086_soc_resume	NULL
-#endif /* CONFIG_PM */
+#endif  
 
 #ifdef CONFIG_OF
 static const struct of_device_id tas5086_dt_ids[] = {
@@ -826,7 +791,7 @@ static int tas5086_probe(struct snd_soc_component *component)
 	}
 
 	priv->pwm_start_mid_z = 0;
-	priv->charge_period = 1300000; /* hardware default is 1300 ms */
+	priv->charge_period = 1300000;  
 
 	if (of_match_device(of_match_ptr(tas5086_dt_ids), component->dev)) {
 		struct device_node *of_node = component->dev->of_node;
@@ -850,7 +815,7 @@ static int tas5086_probe(struct snd_soc_component *component)
 	if (ret < 0)
 		goto exit_disable_regulators;
 
-	/* set master volume to 0 dB */
+	 
 	ret = regmap_write(priv->regmap, TAS5086_MASTER_VOL, 0x30);
 	if (ret < 0)
 		goto exit_disable_regulators;
@@ -868,7 +833,7 @@ static void tas5086_remove(struct snd_soc_component *component)
 	struct tas5086_private *priv = snd_soc_component_get_drvdata(component);
 
 	if (gpio_is_valid(priv->gpio_nreset))
-		/* Set codec to the reset state */
+		 
 		gpio_set_value(priv->gpio_nreset, 0);
 
 	regulator_bulk_disable(ARRAY_SIZE(priv->supplies), priv->supplies);
@@ -959,7 +924,7 @@ static int tas5086_i2c_probe(struct i2c_client *i2c)
 
 	tas5086_reset(priv);
 
-	/* The TAS5086 always returns 0x03 in its TAS5086_DEV_ID register */
+	 
 	ret = regmap_read(priv->regmap, TAS5086_DEV_ID, &i);
 	if (ret == 0 && i != 0x3) {
 		dev_err(dev,
@@ -967,10 +932,7 @@ static int tas5086_i2c_probe(struct i2c_client *i2c)
 		ret = -ENODEV;
 	}
 
-	/*
-	 * The chip has been identified, so we can turn off the power
-	 * again until the dai link is set up.
-	 */
+	 
 	regulator_bulk_disable(ARRAY_SIZE(priv->supplies), priv->supplies);
 
 	if (ret == 0)

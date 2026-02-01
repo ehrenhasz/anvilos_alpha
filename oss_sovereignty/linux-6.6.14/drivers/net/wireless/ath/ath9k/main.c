@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2008-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/nl80211.h>
 #include <linux/delay.h>
@@ -24,25 +10,14 @@ static void ath9k_flush(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 
 u8 ath9k_parse_mpdudensity(u8 mpdudensity)
 {
-	/*
-	 * 802.11n D2.0 defined values for "Minimum MPDU Start Spacing":
-	 *   0 for no restriction
-	 *   1 for 1/4 us
-	 *   2 for 1/2 us
-	 *   3 for 1 us
-	 *   4 for 2 us
-	 *   5 for 4 us
-	 *   6 for 8 us
-	 *   7 for 16 us
-	 */
+	 
 	switch (mpdudensity) {
 	case 0:
 		return 0;
 	case 1:
 	case 2:
 	case 3:
-		/* Our lower layer calculations limit our precision to
-		   1 microsecond */
+		 
 		return 1;
 	case 4:
 		return 2;
@@ -127,11 +102,7 @@ void ath9k_ps_wakeup(struct ath_softc *sc)
 	power_mode = sc->sc_ah->power_mode;
 	ath9k_hw_setpower(sc->sc_ah, ATH9K_PM_AWAKE);
 
-	/*
-	 * While the hardware is asleep, the cycle counters contain no
-	 * useful data. Better clear them now so that they don't mess up
-	 * survey data results.
-	 */
+	 
 	if (power_mode != ATH9K_PM_AWAKE) {
 		spin_lock(&common->cc_lock);
 		ath_hw_cycle_counters_update(common);
@@ -246,7 +217,7 @@ static bool ath_complete_reset(struct ath_softc *sc, bool start)
 	clear_bit(ATH_OP_HW_RESET, &common->op_flags);
 
 	if (!sc->cur_chan->offchannel && start) {
-		/* restore per chanctx TSF timer */
+		 
 		if (sc->cur_chan->tsf_val) {
 			u32 offset;
 
@@ -432,10 +403,7 @@ void ath9k_tasklet(struct tasklet_struct *t)
 
 	spin_lock_irqsave(&sc->sc_pm_lock, flags);
 	if ((status & ATH9K_INT_TSFOOR) && sc->ps_enabled) {
-		/*
-		 * TSF sync does not look correct; remain awake to sync with
-		 * the next Beacon.
-		 */
+		 
 		ath_dbg(common, PS, "TSFOOR - Sync with next Beacon\n");
 		sc->ps_flags |= PS_WAIT_FOR_BEACON | PS_BEACON_SYNC;
 	}
@@ -448,7 +416,7 @@ void ath9k_tasklet(struct tasklet_struct *t)
 		rxmask = (ATH9K_INT_RX | ATH9K_INT_RXEOL | ATH9K_INT_RXORN);
 
 	if (status & rxmask) {
-		/* Check for high priority Rx first */
+		 
 		if ((ah->caps.hw_caps & ATH9K_HW_CAP_EDMA) &&
 		    (status & ATH9K_INT_RXHP))
 			ath_rx_tasklet(sc, 0, true);
@@ -458,12 +426,7 @@ void ath9k_tasklet(struct tasklet_struct *t)
 
 	if (status & ATH9K_INT_TX) {
 		if (ah->caps.hw_caps & ATH9K_HW_CAP_EDMA) {
-			/*
-			 * For EDMA chips, TX completion is enabled for the
-			 * beacon queue, so if a beacon has been transmitted
-			 * successfully after a GTT interrupt, the GTT counter
-			 * gets reset to zero here.
-			 */
+			 
 			sc->gtt_cnt = 0;
 
 			ath_tx_edma_tasklet(sc);
@@ -479,7 +442,7 @@ void ath9k_tasklet(struct tasklet_struct *t)
 
 	ath9k_btcoex_handle_interrupt(sc, status);
 
-	/* re-enable hardware interrupt */
+	 
 	ath9k_hw_resume_interrupts(ah);
 out:
 	spin_unlock(&sc->sc_pcu_lock);
@@ -511,41 +474,29 @@ irqreturn_t ath_isr(int irq, void *dev)
 	u32 sync_cause = 0;
 	bool sched = false;
 
-	/*
-	 * The hardware is not ready/present, don't
-	 * touch anything. Note this can happen early
-	 * on if the IRQ is shared.
-	 */
+	 
 	if (!ah || test_bit(ATH_OP_INVALID, &common->op_flags))
 		return IRQ_NONE;
 
-	/* shared irq, not for us */
+	 
 	if (!ath9k_hw_intrpend(ah))
 		return IRQ_NONE;
 
-	/*
-	 * Figure out the reason(s) for the interrupt.  Note
-	 * that the hal returns a pseudo-ISR that may include
-	 * bits we haven't explicitly enabled so we mask the
-	 * value to insure we only process bits we requested.
-	 */
-	ath9k_hw_getisr(ah, &status, &sync_cause); /* NB: clears ISR too */
+	 
+	ath9k_hw_getisr(ah, &status, &sync_cause);  
 	ath9k_debug_sync_cause(sc, sync_cause);
-	status &= ah->imask;	/* discard unasked-for bits */
+	status &= ah->imask;	 
 
 	if (test_bit(ATH_OP_HW_RESET, &common->op_flags)) {
 		ath9k_hw_kill_interrupts(sc->sc_ah);
 		return IRQ_HANDLED;
 	}
 
-	/*
-	 * If there are no status bits set, then this interrupt was not
-	 * for me (should have been caught above).
-	 */
+	 
 	if (!status)
 		return IRQ_NONE;
 
-	/* Cache the status */
+	 
 	spin_lock(&sc->intr_lock);
 	sc->intrstatus |= status;
 	spin_unlock(&sc->intr_lock);
@@ -553,10 +504,7 @@ irqreturn_t ath_isr(int irq, void *dev)
 	if (status & SCHED_INTR)
 		sched = true;
 
-	/*
-	 * If a FATAL interrupt is received, we have to reset the chip
-	 * immediately.
-	 */
+	 
 	if (status & ATH9K_INT_FATAL)
 		goto chip_reset;
 
@@ -579,8 +527,7 @@ irqreturn_t ath_isr(int irq, void *dev)
 		if (status & ATH9K_INT_TIM_TIMER) {
 			if (ATH_DBG_WARN_ON_ONCE(sc->ps_idle))
 				goto chip_reset;
-			/* Clear RxAbort bit so that we can
-			 * receive frames */
+			 
 			ath9k_setpower(sc, ATH9K_PM_AWAKE);
 			spin_lock(&sc->sc_pm_lock);
 			ath9k_hw_setrxabort(sc->sc_ah, 0);
@@ -593,7 +540,7 @@ chip_reset:
 	ath_debug_stat_interrupt(sc, status);
 
 	if (sched) {
-		/* turn off every interrupt */
+		 
 		ath9k_hw_kill_interrupts(ah);
 		tasklet_schedule(&sc->intr_tq);
 	}
@@ -603,10 +550,7 @@ chip_reset:
 #undef SCHED_INTR
 }
 
-/*
- * This function is called when a HW reset cannot be deferred
- * and has to be immediate.
- */
+ 
 int ath_reset(struct ath_softc *sc, struct ath9k_channel *hchan)
 {
 	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
@@ -622,11 +566,7 @@ int ath_reset(struct ath_softc *sc, struct ath9k_channel *hchan)
 	return r;
 }
 
-/*
- * When a HW reset can be deferred, it is added to the
- * hw_reset_work workqueue, but we set ATH_OP_HW_RESET before
- * queueing.
- */
+ 
 void ath9k_queue_reset(struct ath_softc *sc, enum ath_reset_type type)
 {
 	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
@@ -647,9 +587,9 @@ void ath_reset_work(struct work_struct *work)
 	ath9k_ps_restore(sc);
 }
 
-/**********************/
-/* mac80211 callbacks */
-/**********************/
+ 
+ 
+ 
 
 static int ath9k_start(struct ieee80211_hw *hw)
 {
@@ -671,16 +611,10 @@ static int ath9k_start(struct ieee80211_hw *hw)
 	init_channel = ath9k_cmn_get_channel(hw, ah, &ctx->chandef);
 	sc->cur_chandef = hw->conf.chandef;
 
-	/* Reset SERDES registers */
+	 
 	ath9k_hw_configpcipowersave(ah, false);
 
-	/*
-	 * The basic interface to setting the hardware in a good
-	 * state is ``reset''.  On return the hardware is known to
-	 * be powered up and with interrupts disabled.  This must
-	 * be followed by initialization of the appropriate bits
-	 * and then setup of the interrupt mask.
-	 */
+	 
 	spin_lock_bh(&sc->sc_pcu_lock);
 
 	atomic_set(&ah->intr_ref_cnt, -1);
@@ -693,7 +627,7 @@ static int ath9k_start(struct ieee80211_hw *hw)
 		ah->reset_power_on = false;
 	}
 
-	/* Setup our intr mask. */
+	 
 	ah->imask = ATH9K_INT_TX | ATH9K_INT_RXEOL |
 		    ATH9K_INT_RXORN | ATH9K_INT_FATAL |
 		    ATH9K_INT_GLOBAL;
@@ -707,10 +641,7 @@ static int ath9k_start(struct ieee80211_hw *hw)
 	if (ah->config.hw_hang_checks & HW_BB_WATCHDOG)
 		ah->imask |= ATH9K_INT_BB_WATCHDOG;
 
-	/*
-	 * Enable GTT interrupts only for AR9003/AR9004 chips
-	 * for now.
-	 */
+	 
 	if (AR_SREV_9300_20_OR_LATER(ah))
 		ah->imask |= ATH9K_INT_GTT;
 
@@ -732,10 +663,7 @@ static int ath9k_start(struct ieee80211_hw *hw)
 					  AR_GPIO_OUTPUT_MUX_AS_OUTPUT);
 	}
 
-	/*
-	 * Reset key cache to sane defaults (all entries cleared) instead of
-	 * semi-random values after suspend/resume.
-	 */
+	 
 	ath9k_cmn_init_crypto(sc->sc_ah);
 
 	ath9k_hw_reset_tsf(ah);
@@ -762,10 +690,7 @@ static void ath9k_tx(struct ieee80211_hw *hw,
 	unsigned long flags;
 
 	if (sc->ps_enabled) {
-		/*
-		 * mac80211 does not set PM field for normal data frames, so we
-		 * need to update that based on the current PS mode.
-		 */
+		 
 		if (ieee80211_is_data(hdr->frame_control) &&
 		    !ieee80211_is_nullfunc(hdr->frame_control) &&
 		    !ieee80211_has_pm(hdr->frame_control)) {
@@ -776,11 +701,7 @@ static void ath9k_tx(struct ieee80211_hw *hw,
 	}
 
 	if (unlikely(sc->sc_ah->power_mode == ATH9K_PM_NETWORK_SLEEP)) {
-		/*
-		 * We are using PS-Poll and mac80211 can request TX while in
-		 * power save mode. Need to wake up hardware for the TX to be
-		 * completed and if needed, also for RX of buffered frames.
-		 */
+		 
 		ath9k_ps_wakeup(sc);
 		spin_lock_irqsave(&sc->sc_pm_lock, flags);
 		if (!(sc->sc_ah->caps.hw_caps & ATH9K_HW_CAP_AUTOSLEEP))
@@ -793,19 +714,12 @@ static void ath9k_tx(struct ieee80211_hw *hw,
 			ath_dbg(common, PS, "Wake up to complete TX\n");
 			sc->ps_flags |= PS_WAIT_FOR_TX_ACK;
 		}
-		/*
-		 * The actual restore operation will happen only after
-		 * the ps_flags bit is cleared. We are just dropping
-		 * the ps_usecount here.
-		 */
+		 
 		spin_unlock_irqrestore(&sc->sc_pm_lock, flags);
 		ath9k_ps_restore(sc);
 	}
 
-	/*
-	 * Cannot tx while the hardware is in full sleep, it first needs a full
-	 * chip reset to recover from that
-	 */
+	 
 	if (unlikely(sc->sc_ah->power_mode == ATH9K_PM_FULL_SLEEP)) {
 		ath_err(common, "TX while HW is in FULL_SLEEP mode\n");
 		goto exit;
@@ -891,7 +805,7 @@ static void ath9k_pending_key_del(struct ath_softc *sc, u8 keyix)
 	    ath9k_txq_has_key(sc, keyix))
 		return;
 
-	/* No more TXQ frames point to this key cache entry, so delete it. */
+	 
 	clear_bit(keyix, ah->pending_del_keymap);
 	ath_key_delete(common, keyix);
 }
@@ -918,22 +832,20 @@ static void ath9k_stop(struct ieee80211_hw *hw)
 		return;
 	}
 
-	/* Ensure HW is awake when we try to shut it down. */
+	 
 	ath9k_ps_wakeup(sc);
 
 	spin_lock_bh(&sc->sc_pcu_lock);
 
-	/* prevent tasklets to enable interrupts once we disable them */
+	 
 	ah->imask &= ~ATH9K_INT_GLOBAL;
 
-	/* make sure h/w will not generate any interrupt
-	 * before setting the invalid flag. */
+	 
 	ath9k_hw_disable_interrupts(ah);
 
 	spin_unlock_bh(&sc->sc_pcu_lock);
 
-	/* we can now sync irq and kill any running tasklets, since we already
-	 * disabled interrupts and not holding a spin lock */
+	 
 	synchronize_irq(sc->irq);
 	tasklet_kill(&sc->intr_tq);
 	tasklet_kill(&sc->bcon_tasklet);
@@ -973,9 +885,7 @@ static void ath9k_stop(struct ieee80211_hw *hw)
 	for (i = 0; i < ATH_KEYMAX; i++)
 		ath9k_pending_key_del(sc, i);
 
-	/* Clear key cache entries explicitly to get rid of any potentially
-	 * remaining keys.
-	 */
+	 
 	ath9k_cmn_init_crypto(sc->sc_ah);
 
 	ath9k_ps_restore(sc);
@@ -1002,7 +912,7 @@ static bool ath9k_uses_beacons(int type)
 static void ath9k_vif_iter_set_beacon(struct ath9k_vif_iter_data *iter_data,
 				      struct ieee80211_vif *vif)
 {
-	/* Use the first (configured) interface, but prefering AP interfaces. */
+	 
 	if (!iter_data->primary_beacon_vif) {
 		iter_data->primary_beacon_vif = vif;
 	} else {
@@ -1082,7 +992,7 @@ static void ath9k_update_bssid_mask(struct ath_softc *sc,
 
 		ether_addr_copy(common->curbssid, avp->bssid);
 
-		/* perm_addr will be used as the p2p device address. */
+		 
 		for (i = 0; i < ETH_ALEN; i++)
 			iter_data->mask[i] &=
 				~(iter_data->hw_macaddr[i] ^
@@ -1090,17 +1000,14 @@ static void ath9k_update_bssid_mask(struct ath_softc *sc,
 	}
 }
 
-/* Called with sc->mutex held. */
+ 
 void ath9k_calculate_iter_data(struct ath_softc *sc,
 			       struct ath_chanctx *ctx,
 			       struct ath9k_vif_iter_data *iter_data)
 {
 	struct ath_vif *avp;
 
-	/*
-	 * The hardware will use primary station addr together with the
-	 * BSSID mask when matching addresses.
-	 */
+	 
 	memset(iter_data, 0, sizeof(*iter_data));
 	eth_broadcast_addr(iter_data->mask);
 	iter_data->slottime = 9;
@@ -1178,7 +1085,7 @@ exit:
 }
 #endif
 
-/* Called with sc->mutex held. */
+ 
 void ath9k_calculate_summary_state(struct ath_softc *sc,
 				   struct ath_chanctx *ctx)
 {
@@ -1285,7 +1192,7 @@ static void ath9k_tpc_vif_iter(void *data, u8 *mac, struct ieee80211_vif *vif)
 		*power = vif->bss_conf.txpower;
 }
 
-/* Called with sc->mutex held. */
+ 
 void ath9k_set_txpower(struct ath_softc *sc, struct ieee80211_vif *vif)
 {
 	int power;
@@ -1503,20 +1410,12 @@ static int ath9k_config(struct ieee80211_hw *hw, u32 changed)
 			ath9k_stop_btcoex(sc);
 		} else {
 			ath9k_start_btcoex(sc);
-			/*
-			 * The chip needs a reset to properly wake up from
-			 * full sleep
-			 */
+			 
 			ath_chanctx_set_channel(sc, ctx, &ctx->chandef);
 		}
 	}
 
-	/*
-	 * We just prepare to enable PS. We have to wait until our AP has
-	 * ACK'd our null data frame to disable RX otherwise we'll ignore
-	 * those ACKs and end up retransmitting the same null data frames.
-	 * IEEE80211_CONF_CHANGE_PS is only passed by mac80211 for STA mode.
-	 */
+	 
 	if (changed & IEEE80211_CONF_CHANGE_PS) {
 		unsigned long flags;
 		spin_lock_irqsave(&sc->sc_pm_lock, flags);
@@ -1561,7 +1460,7 @@ static int ath9k_config(struct ieee80211_hw *hw, u32 changed)
 	FIF_MCAST_ACTION |			\
 	FIF_FCSFAIL)
 
-/* FIXME: sc->sc_full_reset ? */
+ 
 static void ath9k_configure_filter(struct ieee80211_hw *hw,
 				   unsigned int changed_flags,
 				   unsigned int *total_flags,
@@ -1772,19 +1671,11 @@ static int ath9k_set_key(struct ieee80211_hw *hw,
 	    (key->cipher == WLAN_CIPHER_SUITE_TKIP ||
 	     key->cipher == WLAN_CIPHER_SUITE_CCMP) &&
 	    !(key->flags & IEEE80211_KEY_FLAG_PAIRWISE)) {
-		/*
-		 * For now, disable hw crypto for the RSN IBSS group keys. This
-		 * could be optimized in the future to use a modified key cache
-		 * design to support per-STA RX GTK, but until that gets
-		 * implemented, use of software crypto for group addressed
-		 * frames is a acceptable to allow RSN IBSS to be used.
-		 */
+		 
 		return -EOPNOTSUPP;
 	}
 
-	/* There may be MPDUs queued for the outgoing PTK key. Flush queues to
-	 * make sure these are not send unencrypted or with a wrong (new) key
-	 */
+	 
 	if (cmd == DISABLE_KEY && key->flags & IEEE80211_KEY_FLAG_PAIRWISE) {
 		ieee80211_stop_queues(hw);
 		ath9k_flush(hw, vif, 0, true);
@@ -1797,9 +1688,7 @@ static int ath9k_set_key(struct ieee80211_hw *hw,
 	if (sta)
 		an = (struct ath_node *)sta->drv_priv;
 
-	/* Delete pending key cache entries if no more frames are pointing to
-	 * them in TXQs.
-	 */
+	 
 	for (i = 0; i < ATH_KEYMAX; i++)
 		ath9k_pending_key_del(sc, i);
 
@@ -1812,7 +1701,7 @@ static int ath9k_set_key(struct ieee80211_hw *hw,
 		ret = ath_key_config(common, vif, sta, key);
 		if (ret >= 0) {
 			key->hw_key_idx = ret;
-			/* push IV and Michael MIC generation to stack */
+			 
 			key->flags |= IEEE80211_KEY_FLAG_GENERATE_IV;
 			if (key->cipher == WLAN_CIPHER_SUITE_TKIP)
 				key->flags |= IEEE80211_KEY_FLAG_GENERATE_MMIC;
@@ -1833,9 +1722,7 @@ static int ath9k_set_key(struct ieee80211_hw *hw,
 		break;
 	case DISABLE_KEY:
 		if (ath9k_txq_has_key(sc, key->hw_key_idx)) {
-			/* Delay key cache entry deletion until there are no
-			 * remaining TXQ frames pointing to this entry.
-			 */
+			 
 			set_bit(key->hw_key_idx, sc->sc_ah->pending_del_keymap);
 			ath_hw_keysetmac(common, key->hw_key_idx, NULL);
 		} else {
@@ -1912,11 +1799,7 @@ static void ath9k_bss_info_changed(struct ieee80211_hw *hw,
 			slottime = 20;
 
 		if (vif->type == NL80211_IFTYPE_AP) {
-			/*
-			 * Defer update, so that connected stations can adjust
-			 * their settings at the same time.
-			 * See beacon.c for more details
-			 */
+			 
 			sc->beacon.slottime = slottime;
 			sc->beacon.updateslot = UPDATE;
 		} else {
@@ -1951,7 +1834,7 @@ static u64 ath9k_get_tsf(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
 
 	mutex_lock(&sc->mutex);
 	ath9k_ps_wakeup(sc);
-	/* Get current TSF either from HW or kernel time. */
+	 
 	if (sc->cur_chan == avp->chanctx) {
 		tsf = ath9k_hw_gettsf64(sc->sc_ah);
 	} else {
@@ -2172,16 +2055,7 @@ static void ath9k_flush(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 		if (!test_bit(ATH_OP_MULTI_CHANNEL, &common->op_flags))
 			goto flush;
 
-		/*
-		 * If MCC is active, extend the flush timeout
-		 * and wait for the HW/SW queues to become
-		 * empty. This needs to be done outside the
-		 * sc->mutex lock to allow the channel scheduler
-		 * to switch channel contexts.
-		 *
-		 * The vif queues have been stopped in mac80211,
-		 * so there won't be any incoming frames.
-		 */
+		 
 		__ath9k_flush(hw, queues, drop, true, true);
 		return;
 	}
@@ -2356,7 +2230,7 @@ static int ath9k_set_antenna(struct ieee80211_hw *hw, u32 tx_ant, u32 rx_ant)
 	if (ah->caps.rx_chainmask == 1)
 		return 0;
 
-	/* AR9100 runs into calibration issues if not all rx chains are enabled */
+	 
 	if (AR_SREV_9100(ah))
 		ah->rxchainmask = 0x7;
 	else
@@ -2691,10 +2565,7 @@ static void ath9k_mgd_prepare_tx(struct ieee80211_hw *hw,
 	go_ctx = ath_is_go_chanctx_present(sc);
 
 	if (go_ctx) {
-		/*
-		 * Wait till the GO interface gets a chance
-		 * to send out an NoA.
-		 */
+		 
 		spin_lock_bh(&sc->chan_lock);
 		sc->sched.mgd_prepare_tx = true;
 		cur_conf = &go_ctx->beacon;

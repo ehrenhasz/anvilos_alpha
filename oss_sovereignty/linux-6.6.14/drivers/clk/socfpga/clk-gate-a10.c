@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Altera Corporation. All rights reserved
- */
+
+ 
 #include <linux/slab.h>
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -15,7 +13,7 @@
 
 #define to_socfpga_gate_clk(p) container_of(p, struct socfpga_gate_clk, hw.hw)
 
-/* SDMMC Group for System Manager defines */
+ 
 #define SYSMGR_SDMMCGRP_CTRL_OFFSET	0x28
 
 static unsigned long socfpga_gate_clk_recalc_rate(struct clk_hw *hwclk,

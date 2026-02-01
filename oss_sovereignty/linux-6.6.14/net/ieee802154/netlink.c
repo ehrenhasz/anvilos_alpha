@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Netlink interface for IEEE 802.15.4 stack
- *
- * Copyright 2007, 2008 Siemens AG
- *
- * Written by:
- * Sergey Lapin <slapin@ossfans.org>
- * Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
- * Maxim Osipov <maxim.osipov@siemens.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/gfp.h>
@@ -20,7 +11,7 @@
 static unsigned int ieee802154_seq_num;
 static DEFINE_SPINLOCK(ieee802154_seq_lock);
 
-/* Requests to userspace */
+ 
 struct sk_buff *ieee802154_nl_create(int flags, u8 req)
 {
 	void *hdr;
@@ -82,12 +73,12 @@ int ieee802154_nl_reply(struct sk_buff *msg, struct genl_info *info)
 }
 
 static const struct genl_small_ops ieee802154_ops[] = {
-	/* see nl-phy.c */
+	 
 	IEEE802154_DUMP(IEEE802154_LIST_PHY, ieee802154_list_phy,
 			ieee802154_dump_phy),
 	IEEE802154_OP(IEEE802154_ADD_IFACE, ieee802154_add_iface),
 	IEEE802154_OP(IEEE802154_DEL_IFACE, ieee802154_del_iface),
-	/* see nl-mac.c */
+	 
 	IEEE802154_OP(IEEE802154_ASSOCIATE_REQ, ieee802154_associate_req),
 	IEEE802154_OP(IEEE802154_ASSOCIATE_RESP, ieee802154_associate_resp),
 	IEEE802154_OP(IEEE802154_DISASSOCIATE_REQ, ieee802154_disassociate_req),

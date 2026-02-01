@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Conexant Cx231xx audio extension
- *
- *  Copyright (C) 2008 <srinivasa.deevi at conexant dot com>
- *       Based on em28xx driver
- */
+
+ 
 
 #include "cx231xx.h"
 #include <linux/kernel.h>
@@ -92,14 +87,14 @@ static void cx231xx_audio_isocirq(struct urb *urb)
 		return;
 
 	switch (urb->status) {
-	case 0:		/* success */
-	case -ETIMEDOUT:	/* NAK */
+	case 0:		 
+	case -ETIMEDOUT:	 
 		break;
-	case -ECONNRESET:	/* kill */
+	case -ECONNRESET:	 
 	case -ENOENT:
 	case -ESHUTDOWN:
 		return;
-	default:		/* error */
+	default:		 
 		dev_dbg(dev->dev, "urb completion error %d.\n",
 			urb->status);
 		break;
@@ -183,14 +178,14 @@ static void cx231xx_audio_bulkirq(struct urb *urb)
 		return;
 
 	switch (urb->status) {
-	case 0:		/* success */
-	case -ETIMEDOUT:	/* NAK */
+	case 0:		 
+	case -ETIMEDOUT:	 
 		break;
-	case -ECONNRESET:	/* kill */
+	case -ECONNRESET:	 
 	case -ENOENT:
 	case -ESHUTDOWN:
 		return;
-	default:		/* error */
+	default:		 
 		dev_dbg(dev->dev, "urb completion error %d.\n",
 			urb->status);
 		break;
@@ -385,11 +380,11 @@ static const struct snd_pcm_hardware snd_cx231xx_hw_capture = {
 	.rate_max = 48000,
 	.channels_min = 2,
 	.channels_max = 2,
-	.buffer_bytes_max = 62720 * 8,	/* just about the value in usbaudio.c */
-	.period_bytes_min = 64,		/* 12544/2, */
+	.buffer_bytes_max = 62720 * 8,	 
+	.period_bytes_min = 64,		 
 	.period_bytes_max = 12544,
 	.periods_min = 2,
-	.periods_max = 98,		/* 12544, */
+	.periods_max = 98,		 
 };
 
 static int snd_cx231xx_capture_open(struct snd_pcm_substream *substream)
@@ -407,8 +402,8 @@ static int snd_cx231xx_capture_open(struct snd_pcm_substream *substream)
 		return -ENODEV;
 	}
 
-	/* set alternate setting for audio interface */
-	/* 1 - 48000 samples per sec */
+	 
+	 
 	mutex_lock(&dev->lock);
 	if (dev->USE_ISO)
 		ret = cx231xx_set_alt_setting(dev, INDEX_AUDIO, 1);
@@ -425,7 +420,7 @@ static int snd_cx231xx_capture_open(struct snd_pcm_substream *substream)
 	runtime->hw = snd_cx231xx_hw_capture;
 
 	mutex_lock(&dev->lock);
-	/* inform hardware to start streaming */
+	 
 	ret = cx231xx_capture_start(dev, 1, Audio);
 
 	dev->adev.users++;
@@ -445,12 +440,12 @@ static int snd_cx231xx_pcm_close(struct snd_pcm_substream *substream)
 
 	dev_dbg(dev->dev, "closing device\n");
 
-	/* inform hardware to stop streaming */
+	 
 	mutex_lock(&dev->lock);
 	ret = cx231xx_capture_start(dev, 0, Audio);
 
-	/* set alternate setting for audio interface */
-	/* 1 - 48000 samples per sec */
+	 
+	 
 	ret = cx231xx_set_alt_setting(dev, INDEX_AUDIO, 0);
 	if (ret < 0) {
 		dev_err(dev->dev,
@@ -567,9 +562,7 @@ static int cx231xx_audio_init(struct cx231xx *dev)
 	int i, isoc_pipe = 0;
 
 	if (dev->has_alsa_audio != 1) {
-		/* This device does not support the extension (in this case
-		   the device is expecting the snd-usb-audio module or
-		   doesn't have analog audio support at all) */
+		 
 		return 0;
 	}
 
@@ -605,7 +598,7 @@ static int cx231xx_audio_init(struct cx231xx *dev)
 	adev->sndcard = card;
 	adev->udev = dev->udev;
 
-	/* compute alternate max packet sizes for Audio */
+	 
 	uif =
 	    dev->udev->actconfig->interface[dev->current_pcb_config.
 					    hs_config_info[0].interface_info.
@@ -663,9 +656,7 @@ static int cx231xx_audio_fini(struct cx231xx *dev)
 		return 0;
 
 	if (dev->has_alsa_audio != 1) {
-		/* This device does not support the extension (in this case
-		   the device is expecting the snd-usb-audio module or
-		   doesn't have analog audio support at all) */
+		 
 		return 0;
 	}
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * osk5912.c  --  SoC audio for OSK 5912
- *
- * Copyright (C) 2008 Mistral Solutions
- *
- * Contact: Arun KS  <arunks@mistralsolutions.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/platform_device.h>
@@ -42,7 +36,7 @@ static int osk_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
 	int err;
 
-	/* Set the codec system clock for DAC and ADC */
+	 
 	err =
 	    snd_soc_dai_set_sysclk(codec_dai, 0, CODEC_CLOCK, SND_SOC_CLOCK_IN);
 
@@ -76,7 +70,7 @@ static const struct snd_soc_dapm_route audio_map[] = {
 	{"MICIN", NULL, "Mic Jack"},
 };
 
-/* Digital audio interface glue - connects codec <--> CPU */
+ 
 SND_SOC_DAILINK_DEFS(aic23,
 	DAILINK_COMP_ARRAY(COMP_CPU("omap-mcbsp.1")),
 	DAILINK_COMP_ARRAY(COMP_CODEC("tlv320aic23-codec",
@@ -92,7 +86,7 @@ static struct snd_soc_dai_link osk_dai = {
 	SND_SOC_DAILINK_REG(aic23),
 };
 
-/* Audio machine driver */
+ 
 static struct snd_soc_card snd_soc_card_osk = {
 	.name = "OSK5912",
 	.owner = THIS_MODULE,
@@ -134,9 +128,7 @@ static int __init osk_soc_init(void)
 		goto err2;
 	}
 
-	/*
-	 * Configure 12 MHz output on MCLK.
-	 */
+	 
 	curRate = (uint) clk_get_rate(tlv320aic23_mclk);
 	if (curRate != CODEC_CLOCK) {
 		if (clk_set_rate(tlv320aic23_mclk, CODEC_CLOCK)) {

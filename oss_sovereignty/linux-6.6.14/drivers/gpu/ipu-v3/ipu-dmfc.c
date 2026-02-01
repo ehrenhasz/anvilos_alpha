@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2010 Sascha Hauer <s.hauer@pengutronix.de>
- * Copyright (C) 2005-2009 Freescale Semiconductor, Inc.
- */
+
+ 
 #include <linux/export.h>
 #include <linux/types.h>
 #include <linux/errno.h>

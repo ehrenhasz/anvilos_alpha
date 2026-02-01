@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2008 Patrick McHardy <kaber@trash.net>
- *
- * Development of this code funded by Astaro AG (http://www.astaro.com/)
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/kernel.h>
@@ -28,7 +24,7 @@ struct nft_exthdr {
 
 static unsigned int optlen(const u8 *opt, unsigned int offset)
 {
-	/* Beware zero-length options: make finite progress */
+	 
 	if (opt[offset] <= TCPOPT_NOP || opt[offset + 1] == 0)
 		return 1;
 	else
@@ -71,14 +67,7 @@ err:
 	regs->verdict.code = NFT_BREAK;
 }
 
-/* find the offset to specified option.
- *
- * If target header is found, its offset is set in *offset and return option
- * number. Otherwise, return negative error.
- *
- * If the first fragment doesn't contain the End of Options it is considered
- * invalid.
- */
+ 
 static int ipv4_find_option(struct net *net, struct sk_buff *skb,
 			    unsigned int *offset, int target)
 {
@@ -100,9 +89,7 @@ static int ipv4_find_option(struct net *net, struct sk_buff *skb,
 		return -ENOENT;
 
 	memset(opt, 0, sizeof(struct ip_options));
-	/* Copy the options since __ip_options_compile() modifies
-	 * the options.
-	 */
+	 
 	if (skb_copy_bits(skb, start, opt->__data, optlen))
 		return -EBADMSG;
 	opt->optlen = optlen;
@@ -275,7 +262,7 @@ static void nft_exthdr_tcp_set_eval(const struct nft_expr *expr,
 
 			switch (priv->type) {
 			case TCPOPT_MSS:
-				/* increase can cause connection to stall */
+				 
 				if (ntohs(old.v16) <= ntohs(new.v16))
 					return;
 			break;
@@ -356,15 +343,13 @@ static void nft_exthdr_tcp_strip_eval(const struct nft_expr *expr,
 		return;
 	}
 
-	/* option not found, continue. This allows to do multiple
-	 * option removals per rule.
-	 */
+	 
 	return;
 err:
 	regs->verdict.code = NFT_BREAK;
 	return;
 drop:
-	/* can't remove, no choice but to drop */
+	 
 	regs->verdict.code = NF_DROP;
 }
 
@@ -436,16 +421,7 @@ static void nft_exthdr_dccp_eval(const struct nft_expr *expr,
 	optlen = dataoff - optoff;
 
 	for (i = 0; i < optlen; ) {
-		/* Options 0 (DCCPO_PADDING) - 31 (DCCPO_MAX_RESERVED) are 1B in
-		 * the length; the remaining options are at least 2B long.  In
-		 * all cases, the first byte contains the option type.  In
-		 * multi-byte options, the second byte contains the option
-		 * length, which must be at least two: 1 for the type plus 1 for
-		 * the length plus 0-253 for any following option data.  We
-		 * aren't interested in the option data, only the type and the
-		 * length, so we don't need to read more than two bytes at a
-		 * time.
-		 */
+		 
 		unsigned int buflen = optlen - i;
 		u8 buf[2], *bufp;
 		u8 type, len;

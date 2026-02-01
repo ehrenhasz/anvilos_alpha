@@ -1,26 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  das08_pci.c
- *  comedi driver for DAS08 PCI boards
- *
- *  COMEDI - Linux Control and Measurement Device Interface
- *  Copyright (C) 2000 David A. Schleef <ds@schleef.org>
- *  Copyright (C) 2001,2002,2003 Frank Mori Hess <fmhess@users.sourceforge.net>
- *  Copyright (C) 2004 Salvador E. Tropea <set@users.sf.net> <set@ieee.org>
- */
 
-/*
- * Driver: das08_pci
- * Description: DAS-08 PCI compatible boards
- * Devices: [ComputerBoards] PCI-DAS08 (pci-das08)
- * Author: Warren Jasper, ds, Frank Hess
- * Updated: Fri, 31 Aug 2012 19:19:06 +0100
- * Status: works
- *
- * This is the PCI-specific support split off from the das08 driver.
- *
- * Configuration Options: not applicable, uses PCI auto config
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/comedi/comedi_pci.h>
@@ -51,7 +32,7 @@ static int das08_pci_auto_attach(struct comedi_device *dev,
 	if (!devpriv)
 		return -ENOMEM;
 
-	/* The das08 driver needs the board_ptr */
+	 
 	dev->board_ptr = &das08_pci_boards[0];
 
 	ret = comedi_pci_enable(dev);

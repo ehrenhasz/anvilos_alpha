@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for generic Bluetooth SCO link
- * Copyright 2011 Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>

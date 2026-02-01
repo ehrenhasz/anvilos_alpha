@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Generic on-chip SRAM allocation driver
- *
- * Copyright (C) 2012 Philipp Zabel, Pengutronix
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -184,10 +180,7 @@ static int sram_reserve_regions(struct sram_dev *sram, struct resource *res)
 
 	size = resource_size(res);
 
-	/*
-	 * We need an additional block to mark the end of the memory region
-	 * after the reserved blocks from the dt are processed.
-	 */
+	 
 	nblocks = (np) ? of_get_available_child_count(np) + 1 : 1;
 	rblocks = kcalloc(nblocks, sizeof(*rblocks), GFP_KERNEL);
 	if (!rblocks)
@@ -257,7 +250,7 @@ static int sram_reserve_regions(struct sram_dev *sram, struct resource *res)
 	}
 	child = NULL;
 
-	/* the last chunk marks the end of the region */
+	 
 	rblocks[nblocks - 1].start = size;
 	rblocks[nblocks - 1].size = 0;
 	list_add_tail(&rblocks[nblocks - 1].list, &reserve_list);
@@ -276,7 +269,7 @@ static int sram_reserve_regions(struct sram_dev *sram, struct resource *res)
 
 	cur_start = 0;
 	list_for_each_entry(block, &reserve_list, list) {
-		/* can only happen if sections overlap */
+		 
 		if (block->start < cur_start) {
 			dev_err(sram->dev,
 				"block at 0x%x starts after current offset 0x%lx\n",
@@ -296,17 +289,13 @@ static int sram_reserve_regions(struct sram_dev *sram, struct resource *res)
 			}
 		}
 
-		/* current start is in a reserved block, so continue after it */
+		 
 		if (block->start == cur_start) {
 			cur_start = block->start + block->size;
 			continue;
 		}
 
-		/*
-		 * allocate the space between the current starting
-		 * address and the following reserved block, or the
-		 * end of the region.
-		 */
+		 
 		cur_size = block->start - cur_start;
 
 		if (sram->pool) {
@@ -322,7 +311,7 @@ static int sram_reserve_regions(struct sram_dev *sram, struct resource *res)
 			}
 		}
 
-		/* next allocation after this reserved block */
+		 
 		cur_start = block->start + block->size;
 	}
 
@@ -351,13 +340,7 @@ static const struct sram_config atmel_securam_config = {
 	.init = atmel_securam_wait,
 };
 
-/*
- * SYSRAM contains areas that are not accessible by the
- * kernel, such as the first 256K that is reserved for TZ.
- * Accesses to those areas (including speculative accesses)
- * trigger SErrors. As such we must map only the areas of
- * SYSRAM specified in the device tree.
- */
+ 
 static const struct sram_config tegra_sysram_config = {
 	.map_only_reserved = true,
 };

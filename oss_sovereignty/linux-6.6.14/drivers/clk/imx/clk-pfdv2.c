@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2016 Freescale Semiconductor, Inc.
- * Copyright 2017~2018 NXP
- *
- * Author: Dong Aisheng <aisheng.dong@nxp.com>
- *
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -15,14 +9,7 @@
 
 #include "clk.h"
 
-/**
- * struct clk_pfdv2 - IMX PFD clock
- * @hw:		clock source
- * @reg:	PFD register address
- * @gate_bit:	Gate bit offset
- * @vld_bit:	Valid bit offset
- * @frac_off:	PLL Fractional Divider offset
- */
+ 
 
 struct clk_pfdv2 {
 	struct clk_hw	hw;
@@ -161,15 +148,7 @@ static int clk_pfdv2_set_rate(struct clk_hw *hw, unsigned long rate,
 	if (!rate)
 		return -EINVAL;
 
-	/*
-	 * PFD can NOT change rate without gating.
-	 * as the PFDs may enabled in HW by default but no
-	 * consumer used it, the enable count is '0', so the
-	 * 'SET_RATE_GATE' can NOT help on blocking the set_rate
-	 * ops especially for 'assigned-clock-xxx'. In order
-	 * to simplify the case, just disable the PFD if it is
-	 * enabled in HW but not in SW.
-	 */
+	 
 	if (clk_pfdv2_is_enabled(hw))
 		clk_pfdv2_disable(hw);
 

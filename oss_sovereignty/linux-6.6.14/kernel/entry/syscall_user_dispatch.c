@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020 Collabora Ltd.
- */
+
+ 
 #include <linux/sched.h>
 #include <linux/prctl.h>
 #include <linux/ptrace.h>
@@ -44,10 +42,7 @@ bool syscall_user_dispatch(struct pt_regs *regs)
 		return false;
 
 	if (likely(sd->selector)) {
-		/*
-		 * access_ok() is performed once, at prctl time, when
-		 * the selector is loaded by userspace.
-		 */
+		 
 		if (unlikely(__get_user(state, sd->selector))) {
 			force_exit_sig(SIGSEGV);
 			return true;
@@ -79,24 +74,11 @@ static int task_set_syscall_user_dispatch(struct task_struct *task, unsigned lon
 			return -EINVAL;
 		break;
 	case PR_SYS_DISPATCH_ON:
-		/*
-		 * Validate the direct dispatcher region just for basic
-		 * sanity against overflow and a 0-sized dispatcher
-		 * region.  If the user is able to submit a syscall from
-		 * an address, that address is obviously valid.
-		 */
+		 
 		if (offset && offset + len <= offset)
 			return -EINVAL;
 
-		/*
-		 * access_ok() will clear memory tags for tagged addresses
-		 * if current has memory tagging enabled.
-
-		 * To enable a tracer to set a tracees selector the
-		 * selector address must be untagged for access_ok(),
-		 * otherwise an untagged tracer will always fail to set a
-		 * tagged tracees selector.
-		 */
+		 
 		if (selector && !access_ok(untagged_addr(selector), sizeof(*selector)))
 			return -EFAULT;
 

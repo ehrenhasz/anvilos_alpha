@@ -1,22 +1,6 @@
-/* locale.c - Miscellaneous internationalization functions. */
+ 
 
-/* Copyright (C) 1996-2009,2012,2016-2021 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include "config.h"
 
@@ -37,44 +21,40 @@
 #include <errno.h>
 
 #include "shell.h"
-#include "input.h"	/* For bash_input */
+#include "input.h"	 
 
 #ifndef errno
 extern int errno;
 #endif
 
 int locale_utf8locale;
-int locale_mb_cur_max;	/* value of MB_CUR_MAX for current locale (LC_CTYPE) */
+int locale_mb_cur_max;	 
 int locale_shiftstates = 0;
 
-int singlequote_translations = 0;	/* single-quote output of $"..." */
+int singlequote_translations = 0;	 
 
 extern int dump_translatable_strings, dump_po_strings;
 
-/* The current locale when the program begins */
+ 
 static char *default_locale;
 
-/* The current domain for textdomain(3). */
+ 
 static char *default_domain;
 static char *default_dir;
 
-/* tracks the value of LC_ALL; used to override values for other locale
-   categories */
+ 
 static char *lc_all;
 
-/* tracks the value of LC_ALL; used to provide defaults for locale
-   categories */
+ 
 static char *lang;
 
-/* Called to reset all of the locale variables to their appropriate values
-   if (and only if) LC_ALL has not been assigned a value. */
+ 
 static int reset_locale_vars PARAMS((void));
 
 static void locale_setblanks PARAMS((void));
 static int locale_isutf8 PARAMS((char *));
 
-/* Set the value of default_locale and make the current locale the
-   system default locale.  This should be called very early in main(). */
+ 
 void
 set_default_locale ()
 {
@@ -84,7 +64,7 @@ set_default_locale ()
     default_locale = savestring (default_locale);
 #else
   default_locale = savestring ("C");
-#endif /* HAVE_SETLOCALE */
+#endif  
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
@@ -97,9 +77,7 @@ set_default_locale ()
 #endif
 }
 
-/* Set default values for LC_CTYPE, LC_COLLATE, LC_MESSAGES, LC_NUMERIC and
-   LC_TIME if they are not specified in the environment, but LC_ALL is.  This
-   should be called from main() after parsing the environment. */
+ 
 void
 set_default_locale_vars ()
 {
@@ -130,27 +108,27 @@ set_default_locale_vars ()
   val = get_string_value ("LC_COLLATE");
   if (val == 0 && lc_all && *lc_all)
     setlocale (LC_COLLATE, lc_all);
-#  endif /* LC_COLLATE */
+#  endif  
 
 #  if defined (LC_MESSAGES)
   val = get_string_value ("LC_MESSAGES");
   if (val == 0 && lc_all && *lc_all)
     setlocale (LC_MESSAGES, lc_all);
-#  endif /* LC_MESSAGES */
+#  endif  
 
 #  if defined (LC_NUMERIC)
   val = get_string_value ("LC_NUMERIC");
   if (val == 0 && lc_all && *lc_all)
     setlocale (LC_NUMERIC, lc_all);
-#  endif /* LC_NUMERIC */
+#  endif  
 
 #  if defined (LC_TIME)
   val = get_string_value ("LC_TIME");
   if (val == 0 && lc_all && *lc_all)
     setlocale (LC_TIME, lc_all);
-#  endif /* LC_TIME */
+#  endif  
 
-#endif /* HAVE_SETLOCALE */
+#endif  
 
   val = get_string_value ("TEXTDOMAIN");
   if (val && *val)
@@ -171,8 +149,7 @@ set_default_locale_vars ()
     }
 }
 
-/* Set one of the locale categories (specified by VAR) to VALUE.  Returns 1
-  if successful, 0 otherwise. */
+ 
 int
 set_locale_var (var, value)
      char *var, *value;
@@ -182,7 +159,7 @@ set_locale_var (var, value)
 
   x = "";
   errno = 0;
-  if (var[0] == 'T' && var[10] == 0)		/* TEXTDOMAIN */
+  if (var[0] == 'T' && var[10] == 0)		 
     {
       FREE (default_domain);
       default_domain = value ? savestring (value) : (char *)NULL;
@@ -190,7 +167,7 @@ set_locale_var (var, value)
 	bindtextdomain (default_domain, default_dir);
       return (1);
     }
-  else if (var[0] == 'T')			/* TEXTDOMAINDIR */
+  else if (var[0] == 'T')			 
     {
       FREE (default_dir);
       default_dir = value ? savestring (value) : (char *)NULL;
@@ -199,9 +176,9 @@ set_locale_var (var, value)
       return (1);
     }
 
-  /* var[0] == 'L' && var[1] == 'C' && var[2] == '_' */
+   
 
-  else if (var[3] == 'A')			/* LC_ALL */
+  else if (var[3] == 'A')			 
     {
       FREE (lc_all);
       if (value)
@@ -222,7 +199,7 @@ set_locale_var (var, value)
 	}
       locale_setblanks ();
       locale_mb_cur_max = MB_CUR_MAX;
-      /* if LC_ALL == "", reset_locale_vars has already called this */
+       
       if (*lc_all && x)
 	locale_utf8locale = locale_isutf8 (lc_all);
 #  if defined (HANDLE_MULTIBYTE)
@@ -238,7 +215,7 @@ set_locale_var (var, value)
     }
 
 #if defined (HAVE_SETLOCALE)
-  else if (var[3] == 'C' && var[4] == 'T')	/* LC_CTYPE */
+  else if (var[3] == 'C' && var[4] == 'T')	 
     {
 #  if defined (LC_CTYPE)
       if (lc_all == 0 || *lc_all == '\0')
@@ -246,7 +223,7 @@ set_locale_var (var, value)
 	  x = setlocale (LC_CTYPE, get_locale_var ("LC_CTYPE"));
 	  locale_setblanks ();
 	  locale_mb_cur_max = MB_CUR_MAX;
-	  /* if setlocale() returns NULL, the locale is not changed */
+	   
 	  if (x)
 	    locale_utf8locale = locale_isutf8 (x);
 #if defined (HANDLE_MULTIBYTE)
@@ -258,35 +235,35 @@ set_locale_var (var, value)
 	}
 #  endif
     }
-  else if (var[3] == 'C' && var[4] == 'O')	/* LC_COLLATE */
+  else if (var[3] == 'C' && var[4] == 'O')	 
     {
 #  if defined (LC_COLLATE)
       if (lc_all == 0 || *lc_all == '\0')
 	x = setlocale (LC_COLLATE, get_locale_var ("LC_COLLATE"));
-#  endif /* LC_COLLATE */
+#  endif  
     }
-  else if (var[3] == 'M' && var[4] == 'E')	/* LC_MESSAGES */
+  else if (var[3] == 'M' && var[4] == 'E')	 
     {
 #  if defined (LC_MESSAGES)
       if (lc_all == 0 || *lc_all == '\0')
 	x = setlocale (LC_MESSAGES, get_locale_var ("LC_MESSAGES"));
-#  endif /* LC_MESSAGES */
+#  endif  
     }
-  else if (var[3] == 'N' && var[4] == 'U')	/* LC_NUMERIC */
+  else if (var[3] == 'N' && var[4] == 'U')	 
     {
 #  if defined (LC_NUMERIC)
       if (lc_all == 0 || *lc_all == '\0')
 	x = setlocale (LC_NUMERIC, get_locale_var ("LC_NUMERIC"));
-#  endif /* LC_NUMERIC */
+#  endif  
     }
-  else if (var[3] == 'T' && var[4] == 'I')	/* LC_TIME */
+  else if (var[3] == 'T' && var[4] == 'I')	 
     {
 #  if defined (LC_TIME)
       if (lc_all == 0 || *lc_all == '\0')
 	x = setlocale (LC_TIME, get_locale_var ("LC_TIME"));
-#  endif /* LC_TIME */
+#  endif  
     }
-#endif /* HAVE_SETLOCALE */
+#endif  
   
   if (x == 0)
     {
@@ -299,9 +276,7 @@ set_locale_var (var, value)
   return (x != 0);
 }
 
-/* Called when LANG is assigned a value.  Tracks value in `lang'.  Calls
-   reset_locale_vars() to reset any default values if LC_ALL is unset or
-   null. */
+ 
 int
 set_lang (var, value)
      char *var, *value;
@@ -318,8 +293,7 @@ set_lang (var, value)
   return ((lc_all == 0 || *lc_all == 0) ? reset_locale_vars () : 0);
 }
 
-/* Set default values for LANG and LC_ALL.  Default values for all other
-   locale-related variables depend on these. */
+ 
 void
 set_default_lang ()
 {
@@ -332,9 +306,7 @@ set_default_lang ()
   set_lang ("LANG", v);
 }
 
-/* Get the value of one of the locale variables (LC_MESSAGES, LC_CTYPE).
-   The precedence is as POSIX.2 specifies:  LC_ALL has precedence over
-   the specific locale variables, and LANG, if set, is used as the default. */
+ 
 char *
 get_locale_var (var)
      char *var;
@@ -344,28 +316,26 @@ get_locale_var (var)
   locale = lc_all;
 
   if (locale == 0 || *locale == 0)
-    locale = get_string_value (var);	/* XXX - no mem leak */
+    locale = get_string_value (var);	 
   if (locale == 0 || *locale == 0)
     locale = lang;
   if (locale == 0 || *locale == 0)
 #if 0
-    locale = default_locale;	/* system-dependent; not really portable.  should it be "C"? */
+    locale = default_locale;	 
 #else
     locale = "";
 #endif
   return (locale);
 }
 
-/* Called to reset all of the locale variables to their appropriate values
-   if (and only if) LC_ALL has not been assigned a value.  DO NOT CALL THIS
-   IF LC_ALL HAS BEEN ASSIGNED A VALUE. */
+ 
 static int
 reset_locale_vars ()
 {
   char *t, *x;
 #if defined (HAVE_SETLOCALE)
   if (lang == 0 || *lang == '\0')
-    maybe_make_export_env ();		/* trust that this will change environment for setlocale */
+    maybe_make_export_env ();		 
   if (setlocale (LC_ALL, lang ? lang : "") == 0)
     return 0;
 
@@ -401,10 +371,7 @@ reset_locale_vars ()
 }
 
 #if defined (TRANSLATABLE_STRINGS)
-/* Translate the contents of STRING, a $"..." quoted string, according
-   to the current locale.  In the `C' or `POSIX' locale, or if gettext()
-   is not available, the passed string is returned unchanged.  The
-   length of the translated string is returned in LENP, if non-null. */
+ 
 char *
 localetrans (string, len, lenp)
      char *string;
@@ -414,7 +381,7 @@ localetrans (string, len, lenp)
   char *translated;
   int tlen;
 
-  /* Don't try to translate null strings. */
+   
   if (string == 0 || *string == 0)
     {
       if (lenp)
@@ -424,9 +391,7 @@ localetrans (string, len, lenp)
 
   locale = get_locale_var ("LC_MESSAGES");
 
-  /* If we don't have setlocale() or the current locale is `C' or `POSIX',
-     just return the string.  If we don't have gettext(), there's no use
-     doing anything else. */
+   
   if (locale == 0 || locale[0] == '\0' ||
       (locale[0] == 'C' && locale[1] == '\0') || STREQ (locale, "POSIX"))
     {
@@ -437,13 +402,13 @@ localetrans (string, len, lenp)
       return (t);
     }
 
-  /* Now try to translate it. */
+   
   if (default_domain && *default_domain)
     translated = dgettext (default_domain, string);
   else
     translated = string;
 
-  if (translated == string)	/* gettext returns its argument if untranslatable */
+  if (translated == string)	 
     {
       t = (char *)xmalloc (len + 1);
       strcpy (t, string);
@@ -461,8 +426,7 @@ localetrans (string, len, lenp)
   return (t);
 }
 
-/* Change a bash string into a string suitable for inclusion in a `po' file.
-   This backslash-escapes `"' and `\' and changes newlines into \\\n"\n". */
+ 
 char *
 mk_msgstr (string, foundnlp)
      char *string;
@@ -485,7 +449,7 @@ mk_msgstr (string, foundnlp)
 
   for (s = string; s && (c = *s); s++)
     {
-      if (c == '\n')	/* <NL> -> \n"<NL>" */
+      if (c == '\n')	 
 	{
 	  *r++ = '\\';
 	  *r++ = 'n';
@@ -507,13 +471,7 @@ mk_msgstr (string, foundnlp)
   return result;
 }
 
-/* $"..." -- Translate the portion of STRING between START and END
-   according to current locale using gettext (if available) and return
-   the result.  The caller will take care of leaving the quotes intact.
-   The string will be left without the leading `$' by the caller.
-   If translation is performed, the translated string will be double-quoted
-   by the caller.  The length of the translated string is returned in LENP,
-   if non-null. */
+ 
 char *
 locale_expand (string, start, end, lineno, lenp)
      char *string;
@@ -527,13 +485,7 @@ locale_expand (string, start, end, lineno, lenp)
     temp[tlen++] = string[len++];
   temp[tlen] = '\0';
 
-  /* If we're just dumping translatable strings, don't do anything with the
-     string itself, but if we're dumping in `po' file format, convert it into
-     a form more palatable to gettext(3) and friends by quoting `"' and `\'
-     with backslashes and converting <NL> into `\n"<NL>"'.  If we find a
-     newline in TEMP, we first output a `msgid ""' line and then the
-     translated string; otherwise we output the `msgid' and translated
-     string all on one line. */
+   
   if (dump_translatable_strings)
     {
       if (dump_po_strings)
@@ -570,8 +522,7 @@ locale_expand (string, start, end, lineno, lenp)
 }
 #endif
 
-/* Set every character in the <blank> character class to be a shell break
-   character for the lexical analyzer when the locale changes. */
+ 
 static void
 locale_setblanks ()
 {
@@ -591,9 +542,7 @@ locale_setblanks ()
     }
 }
 
-/* Parse a locale specification
-     language[_territory][.codeset][@modifier][+special][,[sponsor][_revision]]
-   and return TRUE if the codeset is UTF-8 or utf8 */
+ 
 static int
 locale_isutf8 (lspec)
      char *lspec;
@@ -607,14 +556,14 @@ locale_isutf8 (lspec)
   cp = locale_charset ();
   return (STREQ (cp, "UTF-8") || STREQ (cp, "utf8"));
 #else
-  /* Take a shot */
+   
   for (cp = lspec; *cp && *cp != '@' && *cp != '+' && *cp != ','; cp++)
     {
       if (*cp == '.')
 	{
 	  for (encoding = ++cp; *cp && *cp != '@' && *cp != '+' && *cp != ','; cp++)
 	    ;
-	  /* The encoding (codeset) is the substring between encoding and cp */
+	   
 	  if ((cp - encoding == 5 && STREQN (encoding, "UTF-8", 5)) ||
 	      (cp - encoding == 4 && STREQN (encoding, "utf8", 4)))
 	    return 1;

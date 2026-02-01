@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * efi.c - EFI subsystem
- *
- * Copyright (C) 2001,2003,2004 Dell <Matt_Domsch@dell.com>
- * Copyright (C) 2004 Intel Corporation <matthew.e.tolentino@intel.com>
- * Copyright (C) 2013 Tom Gundersen <teg@jklm.no>
- *
- * This code registers /sys/firmware/efi{,/efivars} when EFI is supported,
- * allowing the efivarfs to be mounted or the efivars module to be loaded.
- * The existance of /sys/firmware/efi may also be used by userspace to
- * determine that the system supports EFI.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -119,12 +108,7 @@ early_param("efi", parse_efi_cmdline);
 
 struct kobject *efi_kobj;
 
-/*
- * Let's not leave out systab information that snuck into
- * the efivars driver
- * Note, do not add more fields in systab sysfs file as it breaks sysfs
- * one value per file rule!
- */
+ 
 static ssize_t systab_show(struct kobject *kobj,
 			   struct kobj_attribute *attr, char *buf)
 {
@@ -137,11 +121,7 @@ static ssize_t systab_show(struct kobject *kobj,
 		str += sprintf(str, "ACPI20=0x%lx\n", efi.acpi20);
 	if (efi.acpi != EFI_INVALID_TABLE_ADDR)
 		str += sprintf(str, "ACPI=0x%lx\n", efi.acpi);
-	/*
-	 * If both SMBIOS and SMBIOS3 entry points are implemented, the
-	 * SMBIOS3 entry point shall be preferred, so we list it first to
-	 * let applications stop parsing after the first match.
-	 */
+	 
 	if (efi.smbios3 != EFI_INVALID_TABLE_ADDR)
 		str += sprintf(str, "SMBIOS3=0x%lx\n", efi.smbios3);
 	if (efi.smbios != EFI_INVALID_TABLE_ADDR)
@@ -369,11 +349,7 @@ static void __init efi_debugfs_init(void)
 static inline void efi_debugfs_init(void) {}
 #endif
 
-/*
- * We register the efi subsystem with the firmware subsystem and the
- * efivars subsystem with the efi subsystem, if the system was booted with
- * EFI.
- */
+ 
 static int __init efisubsys_init(void)
 {
 	int error;
@@ -385,11 +361,7 @@ static int __init efisubsys_init(void)
 		return 0;
 
 	if (efi.runtime_supported_mask) {
-		/*
-		 * Since we process only one efi_runtime_service() at a time, an
-		 * ordered workqueue (which creates only one execution context)
-		 * should suffice for all our needs.
-		 */
+		 
 		efi_rts_wq = alloc_ordered_workqueue("efi_rts_wq", 0);
 		if (!efi_rts_wq) {
 			pr_err("Creating efi_rts_wq failed, EFI runtime services disabled.\n");
@@ -402,7 +374,7 @@ static int __init efisubsys_init(void)
 	if (efi_rt_services_supported(EFI_RT_SUPPORTED_TIME_SERVICES))
 		platform_device_register_simple("rtc-efi", 0, NULL, 0);
 
-	/* We register the efi directory at /sys/firmware/efi */
+	 
 	efi_kobj = kobject_create_and_add("efi", firmware_kobj);
 	if (!efi_kobj) {
 		pr_err("efi: Firmware registration failed.\n");
@@ -426,7 +398,7 @@ static int __init efisubsys_init(void)
 		goto err_unregister;
 	}
 
-	/* and the standard mountpoint for efivarfs */
+	 
 	error = sysfs_create_mount_point(efi_kobj, "efivars");
 	if (error) {
 		pr_err("efivars: Subsystem registration failed.\n");
@@ -484,12 +456,7 @@ void __init efi_find_mirror(void)
 			mirror_size>>20, total_size>>20);
 }
 
-/*
- * Find the efi memory descriptor for a given physical address.  Given a
- * physical address, determine if it exists within an EFI Memory Map entry,
- * and if so, populate the supplied memory descriptor with the appropriate
- * data.
- */
+ 
 int __efi_mem_desc_lookup(u64 phys_addr, efi_memory_desc_t *out_md)
 {
 	efi_memory_desc_t *md;
@@ -508,7 +475,7 @@ int __efi_mem_desc_lookup(u64 phys_addr, efi_memory_desc_t *out_md)
 		u64 size;
 		u64 end;
 
-		/* skip bogus entries (including empty ones) */
+		 
 		if ((md->phys_addr & (EFI_PAGE_SIZE - 1)) ||
 		    (md->num_pages <= 0) ||
 		    (md->num_pages > (U64_MAX - md->phys_addr) >> EFI_PAGE_SHIFT))
@@ -527,9 +494,7 @@ int __efi_mem_desc_lookup(u64 phys_addr, efi_memory_desc_t *out_md)
 extern int efi_mem_desc_lookup(u64 phys_addr, efi_memory_desc_t *out_md)
 	__weak __alias(__efi_mem_desc_lookup);
 
-/*
- * Calculate the highest address of an efi memory descriptor.
- */
+ 
 u64 __init efi_mem_desc_end(efi_memory_desc_t *md)
 {
 	u64 size = md->num_pages << EFI_PAGE_SHIFT;
@@ -539,34 +504,17 @@ u64 __init efi_mem_desc_end(efi_memory_desc_t *md)
 
 void __init __weak efi_arch_mem_reserve(phys_addr_t addr, u64 size) {}
 
-/**
- * efi_mem_reserve - Reserve an EFI memory region
- * @addr: Physical address to reserve
- * @size: Size of reservation
- *
- * Mark a region as reserved from general kernel allocation and
- * prevent it being released by efi_free_boot_services().
- *
- * This function should be called drivers once they've parsed EFI
- * configuration tables to figure out where their data lives, e.g.
- * efi_esrt_init().
- */
+ 
 void __init efi_mem_reserve(phys_addr_t addr, u64 size)
 {
-	/* efi_mem_reserve() does not work under Xen */
+	 
 	if (WARN_ON_ONCE(efi_enabled(EFI_PARAVIRT)))
 		return;
 
 	if (!memblock_is_region_reserved(addr, size))
 		memblock_reserve(addr, size);
 
-	/*
-	 * Some architectures (x86) reserve all boot services ranges
-	 * until efi_free_boot_services() because of buggy firmware
-	 * implementations. This means the above memblock_reserve() is
-	 * superfluous on x86 and instead what it needs to do is
-	 * ensure the @start, @size is not freed.
-	 */
+	 
 	efi_arch_mem_reserve(addr, size);
 }
 
@@ -627,22 +575,7 @@ static __init int match_config_table(const efi_guid_t *guid,
 	return 0;
 }
 
-/**
- * reserve_unaccepted - Map and reserve unaccepted configuration table
- * @unaccepted: Pointer to unaccepted memory table
- *
- * memblock_add() makes sure that the table is mapped in direct mapping. During
- * normal boot it happens automatically because the table is allocated from
- * usable memory. But during crashkernel boot only memory specifically reserved
- * for crash scenario is mapped. memblock_add() forces the table to be mapped
- * in crashkernel case.
- *
- * Align the range to the nearest page borders. Ranges smaller than page size
- * are not going to be mapped.
- *
- * memblock_reserve() makes sure that future allocations will not touch the
- * table.
- */
+ 
 
 static __init void reserve_unaccepted(struct efi_unaccepted_memory *unaccepted)
 {
@@ -697,7 +630,7 @@ int __init efi_config_parse_tables(const efi_config_table_t *config_tables,
 
 		seed = early_memremap(efi_rng_seed, sizeof(*seed));
 		if (seed != NULL) {
-			size = min_t(u32, seed->size, SZ_1K); // sanity check
+			size = min_t(u32, seed->size, SZ_1K); 
 			early_memunmap(seed, sizeof(*seed));
 		} else {
 			pr_err("Could not map UEFI random seed!\n");
@@ -727,11 +660,7 @@ int __init efi_config_parse_tables(const efi_config_table_t *config_tables,
 			struct linux_efi_memreserve *rsv;
 			u8 *p;
 
-			/*
-			 * Just map a full page: that is what we will get
-			 * anyway, and it permits us to map the entire entry
-			 * before knowing its size.
-			 */
+			 
 			p = early_memremap(ALIGN_DOWN(prsv, PAGE_SIZE),
 					   PAGE_SIZE);
 			if (p == NULL) {
@@ -741,7 +670,7 @@ int __init efi_config_parse_tables(const efi_config_table_t *config_tables,
 
 			rsv = (void *)(p + prsv % PAGE_SIZE);
 
-			/* reserve the entry itself */
+			 
 			memblock_reserve(prsv,
 					 struct_size(rsv, entry, rsv->size));
 
@@ -929,19 +858,9 @@ char * __init efi_md_typeattr_format(char *buf, size_t size,
 	return buf;
 }
 
-/*
- * IA64 has a funky EFI memory map that doesn't work the same way as
- * other architectures.
- */
+ 
 #ifndef CONFIG_IA64
-/*
- * efi_mem_attributes - lookup memmap attributes for physical address
- * @phys_addr: the physical address to lookup
- *
- * Search in the EFI memory map for the region covering
- * @phys_addr. Returns the EFI memory attributes if the region
- * was found in the memory map, 0 otherwise.
- */
+ 
 u64 efi_mem_attributes(unsigned long phys_addr)
 {
 	efi_memory_desc_t *md;
@@ -958,14 +877,7 @@ u64 efi_mem_attributes(unsigned long phys_addr)
 	return 0;
 }
 
-/*
- * efi_mem_type - lookup memmap type for physical address
- * @phys_addr: the physical address to lookup
- *
- * Search in the EFI memory map for the region covering @phys_addr.
- * Returns the EFI memory type if the region was found in the memory
- * map, -EINVAL otherwise.
- */
+ 
 int efi_mem_type(unsigned long phys_addr)
 {
 	const efi_memory_desc_t *md;
@@ -1050,15 +962,11 @@ static int efi_mem_reserve_iomem(phys_addr_t addr, u64 size)
 	res->start	= addr;
 	res->end	= addr + size - 1;
 
-	/* we expect a conflict with a 'System RAM' region */
+	 
 	parent = request_resource_conflict(&iomem_resource, res);
 	ret = parent ? request_resource(parent, res) : 0;
 
-	/*
-	 * Given that efi_mem_reserve_iomem() can be called at any
-	 * time, only call memblock_reserve() if the architecture
-	 * keeps the infrastructure around.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_ARCH_KEEP_MEMBLOCK) && !ret)
 		memblock_reserve(addr, size);
 
@@ -1080,7 +988,7 @@ int __ref efi_mem_reserve_persistent(phys_addr_t addr, u64 size)
 			return rc;
 	}
 
-	/* first try to find a slot in an existing linked list entry */
+	 
 	for (prsv = efi_memreserve_root->next; prsv; ) {
 		rsv = memremap(prsv, sizeof(*rsv), MEMREMAP_WB);
 		if (!rsv)
@@ -1097,7 +1005,7 @@ int __ref efi_mem_reserve_persistent(phys_addr_t addr, u64 size)
 		memunmap(rsv);
 	}
 
-	/* no slot found - allocate a new linked list entry */
+	 
 	rsv = (struct linux_efi_memreserve *)__get_free_page(GFP_ATOMIC);
 	if (!rsv)
 		return -ENOMEM;
@@ -1108,12 +1016,7 @@ int __ref efi_mem_reserve_persistent(phys_addr_t addr, u64 size)
 		return rc;
 	}
 
-	/*
-	 * The memremap() call above assumes that a linux_efi_memreserve entry
-	 * never crosses a page boundary, so let's ensure that this remains true
-	 * even when kexec'ing a 4k pages kernel from a >4k pages kernel, by
-	 * using SZ_4K explicitly in the size calculation below.
-	 */
+	 
 	rsv->size = EFI_MEMRESERVE_COUNT(SZ_4K);
 	atomic_set(&rsv->count, 1);
 	rsv->entry[0].base = addr;

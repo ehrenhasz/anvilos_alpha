@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Remote Processor Framework
- *
- * Copyright (C) 2011 Texas Instruments, Inc.
- * Copyright (C) 2011 Google, Inc.
- *
- * Ohad Ben-Cohen <ohad@wizery.com>
- * Mark Grosen <mgrosen@ti.com>
- * Brian Swetland <swetland@google.com>
- * Fernando Guzman Lugo <fernando.lugo@ti.com>
- * Suman Anna <s-anna@ti.com>
- * Robert Tivy <rtivy@ti.com>
- * Armando Uribe De Leon <x0095078@ti.com>
- */
+
+ 
 
 #define pr_fmt(fmt)    "%s: " fmt, __func__
 
@@ -24,21 +11,17 @@
 
 #include "remoteproc_internal.h"
 
-/* remoteproc debugfs parent dir */
+ 
 static struct dentry *rproc_dbg;
 
-/*
- * A coredump-configuration-to-string lookup table, for exposing a
- * human readable configuration via debugfs. Always keep in sync with
- * enum rproc_coredump_mechanism
- */
+ 
 static const char * const rproc_coredump_str[] = {
 	[RPROC_COREDUMP_DISABLED]	= "disabled",
 	[RPROC_COREDUMP_ENABLED]	= "enabled",
 	[RPROC_COREDUMP_INLINE]		= "inline",
 };
 
-/* Expose the current coredump configuration via debugfs */
+ 
 static ssize_t rproc_coredump_read(struct file *filp, char __user *userbuf,
 				   size_t count, loff_t *ppos)
 {
@@ -52,22 +35,7 @@ static ssize_t rproc_coredump_read(struct file *filp, char __user *userbuf,
 	return simple_read_from_buffer(userbuf, count, ppos, buf, len);
 }
 
-/*
- * By writing to the 'coredump' debugfs entry, we control the behavior of the
- * coredump mechanism dynamically. The default value of this entry is "disabled".
- *
- * The 'coredump' debugfs entry supports these commands:
- *
- * disabled:	By default coredump collection is disabled. Recovery will
- *		proceed without collecting any dump.
- *
- * enabled:	When the remoteproc crashes the entire coredump will be copied
- *		to a separate buffer and exposed to userspace.
- *
- * inline:	The coredump will not be copied to a separate buffer and the
- *		recovery process will have to wait until data is read by
- *		userspace. But this avoid usage of extra memory.
- */
+ 
 static ssize_t rproc_coredump_write(struct file *filp,
 				    const char __user *user_buf, size_t count,
 				    loff_t *ppos)
@@ -83,7 +51,7 @@ static ssize_t rproc_coredump_write(struct file *filp,
 	if (ret)
 		return -EFAULT;
 
-	/* remove end of line */
+	 
 	if (buf[count - 1] == '\n')
 		buf[count - 1] = '\0';
 
@@ -114,15 +82,7 @@ static const struct file_operations rproc_coredump_fops = {
 	.llseek = generic_file_llseek,
 };
 
-/*
- * Some remote processors may support dumping trace logs into a shared
- * memory buffer. We expose this trace buffer using debugfs, so users
- * can easily tell what's going on remotely.
- *
- * We will most probably improve the rproc tracing facilities later on,
- * but this kind of lightweight and simple mechanism is always good to have,
- * as it provides very early tracing with little to no dependencies at all.
- */
+ 
 static ssize_t rproc_trace_read(struct file *filp, char __user *userbuf,
 				size_t count, loff_t *ppos)
 {
@@ -151,12 +111,12 @@ static const struct file_operations trace_rproc_ops = {
 	.llseek	= generic_file_llseek,
 };
 
-/* expose the name of the remote processor via debugfs */
+ 
 static ssize_t rproc_name_read(struct file *filp, char __user *userbuf,
 			       size_t count, loff_t *ppos)
 {
 	struct rproc *rproc = filp->private_data;
-	/* need room for the name, a newline and a terminating null */
+	 
 	char buf[100];
 	int i;
 
@@ -171,7 +131,7 @@ static const struct file_operations rproc_name_ops = {
 	.llseek	= generic_file_llseek,
 };
 
-/* expose recovery flag via debugfs */
+ 
 static ssize_t rproc_recovery_read(struct file *filp, char __user *userbuf,
 				   size_t count, loff_t *ppos)
 {
@@ -181,30 +141,7 @@ static ssize_t rproc_recovery_read(struct file *filp, char __user *userbuf,
 	return simple_read_from_buffer(userbuf, count, ppos, buf, strlen(buf));
 }
 
-/*
- * By writing to the 'recovery' debugfs entry, we control the behavior of the
- * recovery mechanism dynamically. The default value of this entry is "enabled".
- *
- * The 'recovery' debugfs entry supports these commands:
- *
- * enabled:	When enabled, the remote processor will be automatically
- *		recovered whenever it crashes. Moreover, if the remote
- *		processor crashes while recovery is disabled, it will
- *		be automatically recovered too as soon as recovery is enabled.
- *
- * disabled:	When disabled, a remote processor will remain in a crashed
- *		state if it crashes. This is useful for debugging purposes;
- *		without it, debugging a crash is substantially harder.
- *
- * recover:	This function will trigger an immediate recovery if the
- *		remote processor is in a crashed state, without changing
- *		or checking the recovery state (enabled/disabled).
- *		This is useful during debugging sessions, when one expects
- *		additional crashes to happen after enabling recovery. In this
- *		case, enabling recovery will make it hard to debug subsequent
- *		crashes, so it's recommended to keep recovery disabled, and
- *		instead use the "recover" command as needed.
- */
+ 
 static ssize_t
 rproc_recovery_write(struct file *filp, const char __user *user_buf,
 		     size_t count, loff_t *ppos)
@@ -220,18 +157,18 @@ rproc_recovery_write(struct file *filp, const char __user *user_buf,
 	if (ret)
 		return -EFAULT;
 
-	/* remove end of line */
+	 
 	if (buf[count - 1] == '\n')
 		buf[count - 1] = '\0';
 
 	if (!strncmp(buf, "enabled", count)) {
-		/* change the flag and begin the recovery process if needed */
+		 
 		rproc->recovery_disabled = false;
 		rproc_trigger_recovery(rproc);
 	} else if (!strncmp(buf, "disabled", count)) {
 		rproc->recovery_disabled = true;
 	} else if (!strncmp(buf, "recover", count)) {
-		/* begin the recovery process without changing the flag */
+		 
 		rproc_trigger_recovery(rproc);
 	} else {
 		return -EINVAL;
@@ -247,7 +184,7 @@ static const struct file_operations rproc_recovery_ops = {
 	.llseek = generic_file_llseek,
 };
 
-/* expose the crash trigger via debugfs */
+ 
 static ssize_t
 rproc_crash_write(struct file *filp, const char __user *user_buf,
 		  size_t count, loff_t *ppos)
@@ -271,7 +208,7 @@ static const struct file_operations rproc_crash_ops = {
 	.llseek = generic_file_llseek,
 };
 
-/* Expose resource table content via debugfs */
+ 
 static int rproc_rsc_table_show(struct seq_file *seq, void *p)
 {
 	static const char * const types[] = {"carveout", "devmem", "trace", "vdev"};
@@ -358,7 +295,7 @@ static int rproc_rsc_table_show(struct seq_file *seq, void *p)
 
 DEFINE_SHOW_ATTRIBUTE(rproc_rsc_table);
 
-/* Expose carveout content via debugfs */
+ 
 static int rproc_carveouts_show(struct seq_file *seq, void *p)
 {
 	struct rproc *rproc = seq->private;

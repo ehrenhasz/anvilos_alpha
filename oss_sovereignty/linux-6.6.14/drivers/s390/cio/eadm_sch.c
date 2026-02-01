@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for s390 eadm subchannels
- *
- * Copyright IBM Corp. 2012
- * Author(s): Sebastian Ott <sebott@linux.vnet.ibm.com>
- */
+
+ 
 
 #include <linux/kernel_stat.h>
 #include <linux/completion.h>
@@ -75,10 +70,10 @@ static int eadm_subchannel_start(struct subchannel *sch, struct aob *aob)
 	case 0:
 		sch->schib.scsw.eadm.actl |= SCSW_ACTL_START_PEND;
 		break;
-	case 1:		/* status pending */
-	case 2:		/* busy */
+	case 1:		 
+	case 2:		 
 		return -EBUSY;
-	case 3:		/* not operational */
+	case 3:		 
 		return -ENODEV;
 	}
 	return 0;
@@ -196,7 +191,7 @@ int eadm_start_aob(struct aob *aob)
 	if (!ret)
 		goto out_unlock;
 
-	/* Handle start subchannel failure. */
+	 
 	eadm_subchannel_set_timeout(sch, 0);
 	private = get_eadm_private(sch);
 	private->state = EADM_NOT_OPER;
@@ -294,16 +289,7 @@ static void eadm_subchannel_shutdown(struct subchannel *sch)
 	eadm_quiesce(sch);
 }
 
-/**
- * eadm_subchannel_sch_event - process subchannel event
- * @sch: subchannel
- * @process: non-zero if function is called in process context
- *
- * An unspecified event occurred for this subchannel. Adjust data according
- * to the current operational state of the subchannel. Return zero when the
- * event has been handled sufficiently or -EAGAIN when this function should
- * be called again in process context.
- */
+ 
 static int eadm_subchannel_sch_event(struct subchannel *sch, int process)
 {
 	struct eadm_private *private;
@@ -332,7 +318,7 @@ out_unlock:
 
 static struct css_device_id eadm_subchannel_ids[] = {
 	{ .match_flags = 0x1, .type = SUBCHANNEL_TYPE_ADM, },
-	{ /* end of list */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(css, eadm_subchannel_ids);
 

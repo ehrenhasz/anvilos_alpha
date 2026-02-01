@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) 2000-2001 Vojtech Pavlik
- */
 
-/*
- * Gunze AHL-51S touchscreen driver for Linux
- */
+ 
+
+ 
 
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -20,15 +16,11 @@ MODULE_AUTHOR("Vojtech Pavlik <vojtech@ucw.cz>");
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL");
 
-/*
- * Definitions & global arrays.
- */
+ 
 
 #define	GUNZE_MAX_LENGTH	10
 
-/*
- * Per-touchscreen data.
- */
+ 
 
 struct gunze {
 	struct input_dev *dev;
@@ -69,9 +61,7 @@ static irqreturn_t gunze_interrupt(struct serio *serio,
 	return IRQ_HANDLED;
 }
 
-/*
- * gunze_disconnect() is the opposite of gunze_connect()
- */
+ 
 
 static void gunze_disconnect(struct serio *serio)
 {
@@ -85,11 +75,7 @@ static void gunze_disconnect(struct serio *serio)
 	kfree(gunze);
 }
 
-/*
- * gunze_connect() is the routine that is called when someone adds a
- * new serio device that supports Gunze protocol and registers it as
- * an input device.
- */
+ 
 
 static int gunze_connect(struct serio *serio, struct serio_driver *drv)
 {
@@ -139,9 +125,7 @@ static int gunze_connect(struct serio *serio, struct serio_driver *drv)
 	return err;
 }
 
-/*
- * The serio driver structure.
- */
+ 
 
 static const struct serio_device_id gunze_serio_ids[] = {
 	{

@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2013 Eugene Krasnikov <k.eugene.e@gmail.com>
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
- * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #ifndef _WCN36XX_H_
 #define _WCN36XX_H_
@@ -112,13 +98,7 @@ struct nv_data {
 	u8	table;
 };
 
-/**
- * struct wcn36xx_vif - holds VIF related fields
- *
- * @bss_index: bss_index is initially set to 0xFF. bss_index is received from
- * HW after first config_bss call and must be used in delete_bss and
- * enter/exit_bmps.
- */
+ 
 struct wcn36xx_vif {
 	struct list_head list;
 	u8 dtim_period;
@@ -128,22 +108,22 @@ struct wcn36xx_vif {
 	struct wcn36xx_hal_mac_ssid ssid;
 	enum wcn36xx_hal_bss_type bss_type;
 
-	/* Power management */
+	 
 	enum wcn36xx_power_state pw_state;
 
 	u8 bss_index;
-	/* Returned from WCN36XX_HAL_ADD_STA_SELF_RSP */
+	 
 	u8 self_sta_index;
 	u8 self_dpu_desc_index;
 	u8 self_ucast_dpu_sign;
 
 #if IS_ENABLED(CONFIG_IPV6)
-	/* IPv6 addresses for WoWLAN */
+	 
 	struct in6_addr target_ipv6_addrs[WCN36XX_HAL_IPV6_OFFLOAD_ADDR_MAX];
 	unsigned long tentative_addrs[BITS_TO_LONGS(WCN36XX_HAL_IPV6_OFFLOAD_ADDR_MAX)];
 	int num_target_ipv6_addrs;
 #endif
-	/* WoWLAN GTK rekey data */
+	 
 	struct {
 		u8 kck[NL80211_KCK_LEN], kek[NL80211_KEK_LEN];
 		__le64 replay_ctr;
@@ -155,28 +135,7 @@ struct wcn36xx_vif {
 	int bmps_fail_ct;
 };
 
-/**
- * struct wcn36xx_sta - holds STA related fields
- *
- * @tid: traffic ID that is used during AMPDU and in TX BD.
- * @sta_index: STA index is returned from HW after config_sta call and is
- * used in both SMD channel and TX BD.
- * @dpu_desc_index: DPU descriptor index is returned from HW after config_sta
- * call and is used in TX BD.
- * @bss_sta_index: STA index is returned from HW after config_bss call and is
- * used in both SMD channel and TX BD. See table bellow when it is used.
- * @bss_dpu_desc_index: DPU descriptor index is returned from HW after
- * config_bss call and is used in TX BD.
- * ______________________________________________
- * |		  |	STA	|	AP	|
- * |______________|_____________|_______________|
- * |    TX BD     |bss_sta_index|   sta_index   |
- * |______________|_____________|_______________|
- * |all SMD calls |bss_sta_index|   sta_index	|
- * |______________|_____________|_______________|
- * |smd_delete_sta|  sta_index  |   sta_index	|
- * |______________|_____________|_______________|
- */
+ 
 struct wcn36xx_sta {
 	struct list_head list;
 	struct wcn36xx_vif *vif;
@@ -188,10 +147,10 @@ struct wcn36xx_sta {
 	u8 bss_sta_index;
 	u8 bss_dpu_desc_index;
 	bool is_data_encrypted;
-	/* Rates */
+	 
 	struct wcn36xx_hal_supported_rates_v1 supported_rates;
 
-	spinlock_t ampdu_lock;		/* protects next two fields */
+	spinlock_t ampdu_lock;		 
 	enum wcn36xx_ampdu_state ampdu_state[16];
 	int non_agg_frame_ct;
 };
@@ -219,13 +178,13 @@ struct wcn36xx {
 	bool			is_pronto;
 	bool			is_pronto_v3;
 
-	/* extra byte for the NULL termination */
+	 
 	u8			crm_version[WCN36XX_HAL_VERSION_LENGTH + 1];
 	u8			wlan_version[WCN36XX_HAL_VERSION_LENGTH + 1];
 
 	bool		first_boot;
 
-	/* IRQs */
+	 
 	int			tx_irq;
 	int			rx_irq;
 	void __iomem		*ccu_base;
@@ -238,13 +197,10 @@ struct wcn36xx {
 	struct qcom_smem_state	*tx_rings_empty_state;
 	unsigned		tx_rings_empty_state_bit;
 
-	/* prevents concurrent FW reconfiguration */
+	 
 	struct mutex		conf_mutex;
 
-	/*
-	 * smd_buf must be protected with smd_mutex to garantee
-	 * that all messages are sent one after another
-	 */
+	 
 	u8			*hal_buf;
 	size_t			hal_rsp_len;
 	struct mutex		hal_mutex;
@@ -263,38 +219,38 @@ struct wcn36xx {
 	struct mutex		scan_lock;
 	bool			scan_aborted;
 
-	/* DXE channels */
-	struct wcn36xx_dxe_ch	dxe_tx_l_ch;	/* TX low */
-	struct wcn36xx_dxe_ch	dxe_tx_h_ch;	/* TX high */
-	struct wcn36xx_dxe_ch	dxe_rx_l_ch;	/* RX low */
-	struct wcn36xx_dxe_ch	dxe_rx_h_ch;	/* RX high */
+	 
+	struct wcn36xx_dxe_ch	dxe_tx_l_ch;	 
+	struct wcn36xx_dxe_ch	dxe_tx_h_ch;	 
+	struct wcn36xx_dxe_ch	dxe_rx_l_ch;	 
+	struct wcn36xx_dxe_ch	dxe_rx_h_ch;	 
 
-	/* For synchronization of DXE resources from BH, IRQ and WQ contexts */
+	 
 	spinlock_t	dxe_lock;
 	bool                    queues_stopped;
 
-	/* Memory pools */
+	 
 	struct wcn36xx_dxe_mem_pool mgmt_mem_pool;
 	struct wcn36xx_dxe_mem_pool data_mem_pool;
 
 	struct sk_buff		*tx_ack_skb;
 	struct timer_list	tx_ack_timer;
 
-	/* For A-MSDU re-aggregation */
+	 
 	struct sk_buff_head amsdu;
 
-	/* RF module */
+	 
 	unsigned		rf_id;
 
 #ifdef CONFIG_WCN36XX_DEBUGFS
-	/* Debug file system entry */
+	 
 	struct wcn36xx_dfs_entry    dfs;
-#endif /* CONFIG_WCN36XX_DEBUGFS */
+#endif  
 
 	struct ieee80211_supported_band *band;
 	struct ieee80211_channel *channel;
 
-	spinlock_t survey_lock;		/* protects chan_survey */
+	spinlock_t survey_lock;		 
 	struct wcn36xx_chan_survey	*chan_survey;
 };
 
@@ -336,4 +292,4 @@ struct wcn36xx_sta *wcn36xx_sta_to_priv(struct ieee80211_sta *sta)
 	return (struct wcn36xx_sta *)sta->drv_priv;
 }
 
-#endif	/* _WCN36XX_H_ */
+#endif	 

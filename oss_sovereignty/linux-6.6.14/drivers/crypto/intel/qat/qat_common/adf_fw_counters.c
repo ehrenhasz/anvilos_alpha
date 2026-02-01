@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2023 Intel Corporation */
+
+ 
 #include <linux/bitops.h>
 #include <linux/debugfs.h>
 #include <linux/err.h>
@@ -53,7 +53,7 @@ static int adf_fw_counters_load_from_device(struct adf_accel_dev *accel_dev,
 	unsigned int i;
 	unsigned long ae;
 
-	/* Ignore the admin AEs */
+	 
 	ae_mask = hw_data->ae_mask & ~hw_data->admin_ae_mask;
 
 	if (hweight_long(ae_mask) > fw_counters->ae_count)
@@ -91,18 +91,7 @@ static struct adf_fw_counters *adf_fw_counters_allocate(unsigned long ae_count)
 	return fw_counters;
 }
 
-/**
- * adf_fw_counters_get() - Return FW counters for the provided device.
- * @accel_dev: Pointer to a QAT acceleration device
- *
- * Allocates and returns a table of counters containing execution statistics
- * for each non-admin AE available through the supplied acceleration device.
- * The caller becomes the owner of such memory and is responsible for
- * the deallocation through a call to kfree().
- *
- * Returns: a pointer to a dynamically allocated struct adf_fw_counters
- *          on success, or a negative value on error.
- */
+ 
 static struct adf_fw_counters *adf_fw_counters_get(struct adf_accel_dev *accel_dev)
 {
 	struct adf_hw_device_data *hw_data = GET_HW_DATA(accel_dev);
@@ -115,7 +104,7 @@ static struct adf_fw_counters *adf_fw_counters_get(struct adf_accel_dev *accel_d
 		return ERR_PTR(-EFAULT);
 	}
 
-	/* Ignore the admin AEs */
+	 
 	ae_count = hweight_long(hw_data->ae_mask & ~hw_data->admin_ae_mask);
 
 	fw_counters = adf_fw_counters_allocate(ae_count);
@@ -228,18 +217,7 @@ static const struct file_operations qat_fw_counters_fops = {
 	.release = qat_fw_counters_file_release,
 };
 
-/**
- * adf_fw_counters_dbgfs_add() - Create a debugfs file containing FW
- * execution counters.
- * @accel_dev:  Pointer to a QAT acceleration device
- *
- * Function creates a file to display a table with statistics for the given
- * QAT acceleration device. The table stores device specific execution values
- * for each AE, such as the number of requests sent to the FW and responses
- * received from the FW.
- *
- * Return: void
- */
+ 
 void adf_fw_counters_dbgfs_add(struct adf_accel_dev *accel_dev)
 {
 	accel_dev->fw_cntr_dbgfile = debugfs_create_file("fw_counters", 0400,
@@ -248,15 +226,7 @@ void adf_fw_counters_dbgfs_add(struct adf_accel_dev *accel_dev)
 							 &qat_fw_counters_fops);
 }
 
-/**
- * adf_fw_counters_dbgfs_rm() - Remove the debugfs file containing FW counters.
- * @accel_dev:  Pointer to a QAT acceleration device.
- *
- * Function removes the file providing the table of statistics for the given
- * QAT acceleration device.
- *
- * Return: void
- */
+ 
 void adf_fw_counters_dbgfs_rm(struct adf_accel_dev *accel_dev)
 {
 	debugfs_remove(accel_dev->fw_cntr_dbgfile);

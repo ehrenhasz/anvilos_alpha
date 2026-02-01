@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * spcp8x5 USB to serial adaptor driver
- *
- * Copyright (C) 2010-2013 Johan Hovold (jhovold@gmail.com)
- * Copyright (C) 2006 Linxb (xubin.lin@worldplus.com.cn)
- * Copyright (C) 2006 S1 Corp.
- *
- * Original driver for 2.6.10 pl2303 driver by
- *   Greg Kroah-Hartman (greg@kroah.com)
- * Changes for 2.6.20 by Harald Klein <hari@vt100.at>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/slab.h>
@@ -45,7 +35,7 @@ static const struct usb_device_id id_table[] = {
 	{ USB_DEVICE(SPCP8x5_007_VID, SPCP8x5_007_PID),
 	  .driver_info = SPCP825_QUIRK_NO_UART_STATUS |
 				SPCP825_QUIRK_NO_WORK_MODE },
-	{ }					/* Terminating entry */
+	{ }					 
 };
 MODULE_DEVICE_TABLE(usb, id_table);
 
@@ -59,7 +49,7 @@ struct spcp8x5_usb_ctrl_arg {
 };
 
 
-/* spcp8x5 spec register define */
+ 
 #define MCR_CONTROL_LINE_RTS		0x02
 #define MCR_CONTROL_LINE_DTR		0x01
 #define MCR_DTR				0x01
@@ -70,7 +60,7 @@ struct spcp8x5_usb_ctrl_arg {
 #define MSR_STATUS_LINE_DSR		0x20
 #define MSR_STATUS_LINE_CTS		0x10
 
-/* verdor command here , we should define myself */
+ 
 #define SET_DEFAULT			0x40
 #define SET_DEFAULT_TYPE		0x20
 
@@ -124,7 +114,7 @@ struct spcp8x5_usb_ctrl_arg {
 #define GET_RAM				0xc0
 #define GET_RAM_TYPE			0x32
 
-/* how come ??? */
+ 
 #define UART_STATE			0x08
 #define UART_STATE_TRANSIENT_MASK	0x75
 #define UART_DCD			0x01
@@ -296,11 +286,11 @@ static void spcp8x5_set_termios(struct tty_struct *tty,
 	int i;
 	u8 control;
 
-	/* check that they really want us to change something */
+	 
 	if (old_termios && !tty_termios_hw_change(&tty->termios, old_termios))
 		return;
 
-	/* set DTR/RTS active */
+	 
 	spin_lock_irqsave(&priv->lock, flags);
 	control = priv->line_control;
 	if (old_termios && (old_termios->c_cflag & CBAUD) == B0) {
@@ -316,7 +306,7 @@ static void spcp8x5_set_termios(struct tty_struct *tty,
 		spin_unlock_irqrestore(&priv->lock, flags);
 	}
 
-	/* Set Baud Rate */
+	 
 	baud = tty_get_baud_rate(tty);
 	switch (baud) {
 	case 300:	buf[0] = 0x00;	break;
@@ -332,10 +322,10 @@ static void spcp8x5_set_termios(struct tty_struct *tty,
 	case 230400:	buf[0] = 0x0c;	break;
 	case 460800:	buf[0] = 0x0d;	break;
 	case 921600:	buf[0] = 0x0e;	break;
-/*	case 1200000:	buf[0] = 0x0f;	break; */
-/*	case 2400000:	buf[0] = 0x10;	break; */
+ 
+ 
 	case 3000000:	buf[0] = 0x11;	break;
-/*	case 6000000:	buf[0] = 0x12;	break; */
+ 
 	case 0:
 	case 1000000:
 			buf[0] = 0x0b;	break;
@@ -343,7 +333,7 @@ static void spcp8x5_set_termios(struct tty_struct *tty,
 		dev_err(&port->dev, "unsupported baudrate, using 9600\n");
 	}
 
-	/* Set Data Length : 00:5bit, 01:6bit, 10:7bit, 11:8bit */
+	 
 	switch (cflag & CSIZE) {
 	case CS5:
 		buf[1] |= SET_UART_FORMAT_SIZE_5;
@@ -360,11 +350,11 @@ static void spcp8x5_set_termios(struct tty_struct *tty,
 		break;
 	}
 
-	/* Set Stop bit2 : 0:1bit 1:2bit */
+	 
 	buf[1] |= (cflag & CSTOPB) ? SET_UART_FORMAT_STOP_2 :
 				     SET_UART_FORMAT_STOP_1;
 
-	/* Set Parity bit3-4 01:Odd 11:Even */
+	 
 	if (cflag & PARENB) {
 		buf[1] |= (cflag & PARODD) ?
 		SET_UART_FORMAT_PAR_ODD : SET_UART_FORMAT_PAR_EVEN ;
@@ -382,7 +372,7 @@ static void spcp8x5_set_termios(struct tty_struct *tty,
 	dev_dbg(&port->dev, "0x21:0x40:0:0  %d\n", i);
 
 	if (cflag & CRTSCTS) {
-		/* enable hardware flow control */
+		 
 		spcp8x5_set_work_mode(port, 0x000a, SET_WORKING_MODE_U2C);
 	}
 }

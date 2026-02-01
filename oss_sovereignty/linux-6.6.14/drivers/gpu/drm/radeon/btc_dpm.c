@@ -1,26 +1,4 @@
-/*
- * Copyright 2011 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Alex Deucher
- */
+ 
 
 #include <linux/pci.h>
 #include <linux/seq_file.h>
@@ -52,10 +30,10 @@
 
 extern int ni_mc_load_microcode(struct radeon_device *rdev);
 
-//********* BARTS **************//
+
 static const u32 barts_cgcg_cgls_default[] =
 {
-	/* Register,   Value,     Mask bits */
+	 
 	0x000008f8, 0x00000010, 0xffffffff,
 	0x000008fc, 0x00000000, 0xffffffff,
 	0x000008f8, 0x00000011, 0xffffffff,
@@ -164,7 +142,7 @@ static const u32 barts_cgcg_cgls_disable[] =
 
 static const u32 barts_cgcg_cgls_enable[] =
 {
-	/* 0x0000c124, 0x84180000, 0x00180000, */
+	 
 	0x00000644, 0x000f7892, 0x001f4080,
 	0x000008f8, 0x00000010, 0xffffffff,
 	0x000008fc, 0x00000000, 0xffffffff,
@@ -396,7 +374,7 @@ static const u32 barts_mgcg_enable[] =
 };
 #define BARTS_MGCG_ENABLE_LENGTH sizeof(barts_mgcg_enable) / (3 * sizeof(u32))
 
-//********* CAICOS **************//
+
 static const u32 caicos_cgcg_cgls_default[] =
 {
 	0x000008f8, 0x00000010, 0xffffffff,
@@ -507,7 +485,7 @@ static const u32 caicos_cgcg_cgls_disable[] =
 
 static const u32 caicos_cgcg_cgls_enable[] =
 {
-	/* 0x0000c124, 0x84180000, 0x00180000, */
+	 
 	0x00000644, 0x000f7892, 0x001f4080,
 	0x000008f8, 0x00000010, 0xffffffff,
 	0x000008fc, 0x00000000, 0xffffffff,
@@ -670,7 +648,7 @@ static const u32 caicos_mgcg_enable[] =
 };
 #define CAICOS_MGCG_ENABLE_LENGTH sizeof(caicos_mgcg_enable) / (3 * sizeof(u32))
 
-//********* TURKS **************//
+
 static const u32 turks_cgcg_cgls_default[] =
 {
 	0x000008f8, 0x00000010, 0xffffffff,
@@ -781,7 +759,7 @@ static const u32 turks_cgcg_cgls_disable[] =
 
 static const u32 turks_cgcg_cgls_enable[] =
 {
-	/* 0x0000c124, 0x84180000, 0x00180000, */
+	 
 	0x00000644, 0x000f7892, 0x001f4080,
 	0x000008f8, 0x00000010, 0xffffffff,
 	0x000008fc, 0x00000000, 0xffffffff,
@@ -834,7 +812,7 @@ static const u32 turks_cgcg_cgls_enable[] =
 };
 #define TURKS_CGCG_CGLS_ENABLE_LENGTH sizeof(turks_cgcg_cgls_enable) / (3 * sizeof(u32))
 
-// These are the sequences for turks_mgcg_shls
+
 static const u32 turks_mgcg_default[] =
 {
 	0x0000802c, 0xc0000000, 0xffffffff,
@@ -971,10 +949,10 @@ static const u32 turks_mgcg_enable[] =
 #define BTC_SYSLS_SEQUENCE  100
 
 
-//********* BARTS **************//
+
 static const u32 barts_sysls_default[] =
 {
-	/* Register,   Value,     Mask bits */
+	 
 	0x000055e8, 0x00000000, 0xffffffff,
 	0x0000d0bc, 0x00000000, 0xffffffff,
 	0x000015c0, 0x000c1401, 0xffffffff,
@@ -1033,7 +1011,7 @@ static const u32 barts_sysls_enable[] =
 };
 #define BARTS_SYSLS_ENABLE_LENGTH sizeof(barts_sysls_enable) / (3 * sizeof(u32))
 
-//********* CAICOS **************//
+
 static const u32 caicos_sysls_default[] =
 {
 	0x000055e8, 0x00000000, 0xffffffff,
@@ -1091,7 +1069,7 @@ static const u32 caicos_sysls_enable[] =
 };
 #define CAICOS_SYSLS_ENABLE_LENGTH sizeof(caicos_sysls_enable) / (3 * sizeof(u32))
 
-//********* TURKS **************//
+
 static const u32 turks_sysls_default[] =
 {
 	0x000055e8, 0x00000000, 0xffffffff,
@@ -1799,7 +1777,7 @@ static bool btc_is_state_ulv_compatible(struct radeon_device *rdev,
 	if (state->low.vddci != ulv_pl->vddci)
 		return false;
 
-	/* XXX check minclocks, etc. */
+	 
 
 	return true;
 }
@@ -1840,7 +1818,7 @@ static int btc_set_power_state_conditionally_enable_ulv(struct radeon_device *rd
 
 	if (eg_pi->ulv.supported) {
 		if (btc_is_state_ulv_compatible(rdev, radeon_new_state)) {
-			// Set ARB[0] to reflect the DRAM timing needed for ULV.
+			
 			ret = btc_set_ulv_dram_timing(rdev);
 			if (ret == 0)
 				ret = btc_enable_ulv(rdev);
@@ -2024,7 +2002,7 @@ static int btc_initialize_mc_reg_table(struct radeon_device *rdev)
 	if (!table)
 		return -ENOMEM;
 
-	/* Program additional LP registers that are no longer programmed by VBIOS */
+	 
 	WREG32(MC_SEQ_RAS_TIMING_LP, RREG32(MC_SEQ_RAS_TIMING));
 	WREG32(MC_SEQ_CAS_TIMING_LP, RREG32(MC_SEQ_CAS_TIMING));
 	WREG32(MC_SEQ_MISC_TIMING_LP, RREG32(MC_SEQ_MISC_TIMING));
@@ -2139,7 +2117,7 @@ static void btc_apply_state_adjust_rules(struct radeon_device *rdev,
 			ps->low.vddci = max_limits->vddci;
 	}
 
-	/* XXX validate the min clocks required for display */
+	 
 
 	if (disable_mclk_switching) {
 		sclk = ps->low.sclk;
@@ -2153,7 +2131,7 @@ static void btc_apply_state_adjust_rules(struct radeon_device *rdev,
 		vddci = ps->low.vddci;
 	}
 
-	/* adjusted low state */
+	 
 	ps->low.sclk = sclk;
 	ps->low.mclk = mclk;
 	ps->low.vddc = vddc;
@@ -2162,7 +2140,7 @@ static void btc_apply_state_adjust_rules(struct radeon_device *rdev,
 	btc_skip_blacklist_clocks(rdev, max_limits->sclk, max_limits->mclk,
 				  &ps->low.sclk, &ps->low.mclk);
 
-	/* adjusted medium, high states */
+	 
 	if (ps->medium.sclk < ps->low.sclk)
 		ps->medium.sclk = ps->low.sclk;
 	if (ps->medium.vddc < ps->low.vddc)
@@ -2708,7 +2686,7 @@ int btc_dpm_init(struct radeon_device *rdev)
 	else
 		rdev->pm.dpm.dyn_state.sclk_mclk_delta = 10000;
 
-	/* make sure dc limits are valid */
+	 
 	if ((rdev->pm.dpm.dyn_state.max_clock_voltage_on_dc.sclk == 0) ||
 	    (rdev->pm.dpm.dyn_state.max_clock_voltage_on_dc.mclk == 0))
 		rdev->pm.dpm.dyn_state.max_clock_voltage_on_dc =
@@ -2748,7 +2726,7 @@ void btc_dpm_debugfs_print_current_performance_level(struct radeon_device *rdev,
 			pl = &ps->low;
 		else if (current_index == 1)
 			pl = &ps->medium;
-		else /* current_index == 2 */
+		else  
 			pl = &ps->high;
 		seq_printf(m, "uvd    vclk: %d dclk: %d\n", rps->vclk, rps->dclk);
 		seq_printf(m, "power level %d    sclk: %u mclk: %u vddc: %u vddci: %u\n",
@@ -2773,7 +2751,7 @@ u32 btc_dpm_get_current_sclk(struct radeon_device *rdev)
 			pl = &ps->low;
 		else if (current_index == 1)
 			pl = &ps->medium;
-		else /* current_index == 2 */
+		else  
 			pl = &ps->high;
 		return pl->sclk;
 	}
@@ -2796,7 +2774,7 @@ u32 btc_dpm_get_current_mclk(struct radeon_device *rdev)
 			pl = &ps->low;
 		else if (current_index == 1)
 			pl = &ps->medium;
-		else /* current_index == 2 */
+		else  
 			pl = &ps->high;
 		return pl->mclk;
 	}

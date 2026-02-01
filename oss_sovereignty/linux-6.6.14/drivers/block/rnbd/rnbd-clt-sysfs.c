@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * RDMA Network Block Driver
- *
- * Copyright (c) 2014 - 2018 ProfitBricks GmbH. All rights reserved.
- * Copyright (c) 2018 - 2019 1&1 IONOS Cloud GmbH. All rights reserved.
- * Copyright (c) 2019 - 2020 1&1 IONOS SE. All rights reserved.
- */
+
+ 
 
 #undef pr_fmt
 #define pr_fmt(fmt) KBUILD_MODNAME " L" __stringify(__LINE__) ": " fmt
@@ -233,10 +227,10 @@ static ssize_t state_show(struct kobject *kobj,
 	case DEV_STATE_INIT:
 		return sysfs_emit(page, "init\n");
 	case DEV_STATE_MAPPED:
-		/* TODO fix cli tool before changing to proper state */
+		 
 		return sysfs_emit(page, "open\n");
 	case DEV_STATE_MAPPED_DISCONNECTED:
-		/* TODO fix cli tool before changing to proper state */
+		 
 		return sysfs_emit(page, "closed\n");
 	case DEV_STATE_UNMAPPED:
 		return sysfs_emit(page, "unmapped\n");
@@ -323,10 +317,7 @@ static ssize_t rnbd_clt_unmap_dev_store(struct kobject *kobj,
 	rnbd_clt_info(dev, "Unmapping device, option: %s.\n",
 		       force ? "force" : "normal");
 
-	/*
-	 * We take explicit module reference only for one reason: do not
-	 * race with lockless rnbd_destroy_sessions().
-	 */
+	 
 	if (!try_module_get(THIS_MODULE)) {
 		err = -ENODEV;
 		goto out;
@@ -338,9 +329,7 @@ static ssize_t rnbd_clt_unmap_dev_store(struct kobject *kobj,
 		goto module_put;
 	}
 
-	/*
-	 * Here device can be vanished!
-	 */
+	 
 
 	err = count;
 
@@ -458,18 +447,13 @@ ATTRIBUTE_GROUPS(rnbd_dev);
 
 void rnbd_clt_remove_dev_symlink(struct rnbd_clt_dev *dev)
 {
-	/*
-	 * The module unload rnbd_client_exit path is racing with unmapping of
-	 * the last single device from the sysfs manually
-	 * i.e. rnbd_clt_unmap_dev_store() leading to a sysfs warning because
-	 * of sysfs link already was removed already.
-	 */
+	 
 	if (dev->blk_symlink_name) {
 		if (try_module_get(THIS_MODULE)) {
 			sysfs_remove_link(rnbd_devs_kobj, dev->blk_symlink_name);
 			module_put(THIS_MODULE);
 		}
-		/* It should be freed always. */
+		 
 		kfree(dev->blk_symlink_name);
 		dev->blk_symlink_name = NULL;
 	}

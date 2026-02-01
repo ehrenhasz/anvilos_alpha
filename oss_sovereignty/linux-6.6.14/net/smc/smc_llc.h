@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  Shared Memory Communications over RDMA (SMC-R) and RoCE
- *
- *  Definitions for LLC (link layer control) message handling
- *
- *  Copyright IBM Corp. 2016
- *
- *  Author(s):  Klaus Wacker <Klaus.Wacker@de.ibm.com>
- *              Ursula Braun <ubraun@linux.vnet.ibm.com>
- */
+ 
+ 
 
 #ifndef SMC_LLC_H
 #define SMC_LLC_H
@@ -36,7 +27,7 @@ enum smc_llc_msg_type {
 	SMC_LLC_TEST_LINK		= 0x07,
 	SMC_LLC_CONFIRM_RKEY_CONT	= 0x08,
 	SMC_LLC_DELETE_RKEY		= 0x09,
-	/* V2 types */
+	 
 	SMC_LLC_CONFIRM_LINK_V2		= 0x21,
 	SMC_LLC_ADD_LINK_V2		= 0x22,
 	SMC_LLC_DELETE_LINK_V2		= 0x24,
@@ -49,17 +40,17 @@ enum smc_llc_msg_type {
 #define smc_link_downing(state) \
 	(cmpxchg(state, SMC_LNK_ACTIVE, SMC_LNK_INACTIVE) == SMC_LNK_ACTIVE)
 
-/* LLC DELETE LINK Request Reason Codes */
+ 
 #define SMC_LLC_DEL_LOST_PATH		0x00010000
 #define SMC_LLC_DEL_OP_INIT_TERM	0x00020000
 #define SMC_LLC_DEL_PROG_INIT_TERM	0x00030000
 #define SMC_LLC_DEL_PROT_VIOL		0x00040000
 #define SMC_LLC_DEL_NO_ASYM_NEEDED	0x00050000
-/* LLC DELETE LINK Response Reason Codes */
-#define SMC_LLC_DEL_NOLNK	0x00100000  /* Unknown Link ID (no link) */
-#define SMC_LLC_DEL_NOLGR	0x00200000  /* Unknown Link Group */
+ 
+#define SMC_LLC_DEL_NOLNK	0x00100000   
+#define SMC_LLC_DEL_NOLGR	0x00200000   
 
-/* returns a usable link of the link group, or NULL */
+ 
 static inline struct smc_link *smc_llc_usable_link(struct smc_link_group *lgr)
 {
 	int i;
@@ -70,7 +61,7 @@ static inline struct smc_link *smc_llc_usable_link(struct smc_link_group *lgr)
 	return NULL;
 }
 
-/* set the termination reason code for the link group */
+ 
 static inline void smc_llc_set_termination_rsn(struct smc_link_group *lgr,
 					       u32 rsn)
 {
@@ -78,7 +69,7 @@ static inline void smc_llc_set_termination_rsn(struct smc_link_group *lgr,
 		lgr->llc_termination_rsn = rsn;
 }
 
-/* transmit */
+ 
 int smc_llc_send_confirm_link(struct smc_link *lnk,
 			      enum smc_llc_reqresp reqresp);
 int smc_llc_send_add_link(struct smc_link *link, u8 mac[], u8 gid[],
@@ -117,4 +108,4 @@ int smc_llc_srv_add_link(struct smc_link *link,
 void smc_llc_add_link_local(struct smc_link *link);
 int smc_llc_init(void) __init;
 
-#endif /* SMC_LLC_H */
+#endif  

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file contains driver for the Cadence Triple Timer Counter Rev 06
- *
- *  Copyright (C) 2011-2013 Xilinx
- *
- * based on arch/mips/kernel/time.c timer driver
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -19,58 +13,32 @@
 #include <linux/module.h>
 #include <linux/of_platform.h>
 
-/*
- * This driver configures the 2 16/32-bit count-up timers as follows:
- *
- * T1: Timer 1, clocksource for generic timekeeping
- * T2: Timer 2, clockevent source for hrtimers
- * T3: Timer 3, <unused>
- *
- * The input frequency to the timer module for emulation is 2.5MHz which is
- * common to all the timer channels (T1, T2, and T3). With a pre-scaler of 32,
- * the timers are clocked at 78.125KHz (12.8 us resolution).
+ 
 
- * The input frequency to the timer module in silicon is configurable and
- * obtained from device tree. The pre-scaler of 32 is used.
- */
-
-/*
- * Timer Register Offset Definitions of Timer 1, Increment base address by 4
- * and use same offsets for Timer 2
- */
-#define TTC_CLK_CNTRL_OFFSET		0x00 /* Clock Control Reg, RW */
-#define TTC_CNT_CNTRL_OFFSET		0x0C /* Counter Control Reg, RW */
-#define TTC_COUNT_VAL_OFFSET		0x18 /* Counter Value Reg, RO */
-#define TTC_INTR_VAL_OFFSET		0x24 /* Interval Count Reg, RW */
-#define TTC_ISR_OFFSET		0x54 /* Interrupt Status Reg, RO */
-#define TTC_IER_OFFSET		0x60 /* Interrupt Enable Reg, RW */
+ 
+#define TTC_CLK_CNTRL_OFFSET		0x00  
+#define TTC_CNT_CNTRL_OFFSET		0x0C  
+#define TTC_COUNT_VAL_OFFSET		0x18  
+#define TTC_INTR_VAL_OFFSET		0x24  
+#define TTC_ISR_OFFSET		0x54  
+#define TTC_IER_OFFSET		0x60  
 
 #define TTC_CNT_CNTRL_DISABLE_MASK	0x1
 
-#define TTC_CLK_CNTRL_CSRC_MASK		(1 << 5)	/* clock source */
+#define TTC_CLK_CNTRL_CSRC_MASK		(1 << 5)	 
 #define TTC_CLK_CNTRL_PSV_MASK		0x1e
 #define TTC_CLK_CNTRL_PSV_SHIFT		1
 
-/*
- * Setup the timers to use pre-scaling, using a fixed value for now that will
- * work across most input frequency, but it may need to be more dynamic
- */
-#define PRESCALE_EXPONENT	11	/* 2 ^ PRESCALE_EXPONENT = PRESCALE */
-#define PRESCALE		2048	/* The exponent must match this */
+ 
+#define PRESCALE_EXPONENT	11	 
+#define PRESCALE		2048	 
 #define CLK_CNTRL_PRESCALE	((PRESCALE_EXPONENT - 1) << 1)
 #define CLK_CNTRL_PRESCALE_EN	1
 #define CNT_CNTRL_RESET		(1 << 4)
 
 #define MAX_F_ERR 50
 
-/**
- * struct ttc_timer - This definition defines local timer structure
- *
- * @base_addr:	Base address of timer
- * @freq:	Timer input clock frequency
- * @clk:	Associated clock source
- * @clk_rate_change_nb	Notifier block for clock rate changes
- */
+ 
 struct ttc_timer {
 	void __iomem *base_addr;
 	unsigned long freq;
@@ -101,47 +69,32 @@ struct ttc_timer_clockevent {
 
 static void __iomem *ttc_sched_clock_val_reg;
 
-/**
- * ttc_set_interval - Set the timer interval value
- *
- * @timer:	Pointer to the timer instance
- * @cycles:	Timer interval ticks
- **/
+ 
 static void ttc_set_interval(struct ttc_timer *timer,
 					unsigned long cycles)
 {
 	u32 ctrl_reg;
 
-	/* Disable the counter, set the counter value  and re-enable counter */
+	 
 	ctrl_reg = readl_relaxed(timer->base_addr + TTC_CNT_CNTRL_OFFSET);
 	ctrl_reg |= TTC_CNT_CNTRL_DISABLE_MASK;
 	writel_relaxed(ctrl_reg, timer->base_addr + TTC_CNT_CNTRL_OFFSET);
 
 	writel_relaxed(cycles, timer->base_addr + TTC_INTR_VAL_OFFSET);
 
-	/*
-	 * Reset the counter (0x10) so that it starts from 0, one-shot
-	 * mode makes this needed for timing to be right.
-	 */
+	 
 	ctrl_reg |= CNT_CNTRL_RESET;
 	ctrl_reg &= ~TTC_CNT_CNTRL_DISABLE_MASK;
 	writel_relaxed(ctrl_reg, timer->base_addr + TTC_CNT_CNTRL_OFFSET);
 }
 
-/**
- * ttc_clock_event_interrupt - Clock event timer interrupt handler
- *
- * @irq:	IRQ number of the Timer
- * @dev_id:	void pointer to the ttc_timer instance
- *
- * returns: Always IRQ_HANDLED - success
- **/
+ 
 static irqreturn_t ttc_clock_event_interrupt(int irq, void *dev_id)
 {
 	struct ttc_timer_clockevent *ttce = dev_id;
 	struct ttc_timer *timer = &ttce->ttc;
 
-	/* Acknowledge the interrupt and call event handler */
+	 
 	readl_relaxed(timer->base_addr + TTC_ISR_OFFSET);
 
 	ttce->ce.event_handler(&ttce->ce);
@@ -149,11 +102,7 @@ static irqreturn_t ttc_clock_event_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/**
- * __ttc_clocksource_read - Reads the timer counter register
- *
- * returns: Current timer counter register value
- **/
+ 
 static u64 __ttc_clocksource_read(struct clocksource *cs)
 {
 	struct ttc_timer *timer = &to_ttc_timer_clksrc(cs)->ttc;
@@ -167,14 +116,7 @@ static u64 notrace ttc_sched_clock_read(void)
 	return readl_relaxed(ttc_sched_clock_val_reg);
 }
 
-/**
- * ttc_set_next_event - Sets the time interval for next event
- *
- * @cycles:	Timer interval ticks
- * @evt:	Address of clock event instance
- *
- * returns: Always 0 - success
- **/
+ 
 static int ttc_set_next_event(unsigned long cycles,
 					struct clock_event_device *evt)
 {
@@ -185,11 +127,7 @@ static int ttc_set_next_event(unsigned long cycles,
 	return 0;
 }
 
-/**
- * ttc_set_{shutdown|oneshot|periodic} - Sets the state of timer
- *
- * @evt:	Address of clock event instance
- **/
+ 
 static int ttc_shutdown(struct clock_event_device *evt)
 {
 	struct ttc_timer_clockevent *ttce = to_ttc_timer_clkevent(evt);
@@ -258,10 +196,7 @@ static int ttc_rate_change_clocksource_cb(struct notifier_block *nb,
 
 		factor = __ilog2_u32(factor);
 
-		/*
-		 * store timer clock ctrl register so we can restore it in case
-		 * of an abort.
-		 */
+		 
 		ttccs->scale_clk_ctrl_reg_old =
 			readl_relaxed(ttccs->ttc.base_addr +
 			TTC_CLK_CNTRL_OFFSET);
@@ -274,7 +209,7 @@ static int ttc_rate_change_clocksource_cb(struct notifier_block *nb,
 		else
 			psv += factor;
 
-		/* prescaler within legal range? */
+		 
 		if (psv & ~(TTC_CLK_CNTRL_PSV_MASK >> TTC_CLK_CNTRL_PSV_SHIFT))
 			return NOTIFY_BAD;
 
@@ -283,31 +218,31 @@ static int ttc_rate_change_clocksource_cb(struct notifier_block *nb,
 		ttccs->scale_clk_ctrl_reg_new |= psv << TTC_CLK_CNTRL_PSV_SHIFT;
 
 
-		/* scale down: adjust divider in post-change notification */
+		 
 		if (ndata->new_rate < ndata->old_rate)
 			return NOTIFY_DONE;
 
-		/* scale up: adjust divider now - before frequency change */
+		 
 		writel_relaxed(ttccs->scale_clk_ctrl_reg_new,
 			       ttccs->ttc.base_addr + TTC_CLK_CNTRL_OFFSET);
 		break;
 	}
 	case POST_RATE_CHANGE:
-		/* scale up: pre-change notification did the adjustment */
+		 
 		if (ndata->new_rate > ndata->old_rate)
 			return NOTIFY_OK;
 
-		/* scale down: adjust divider now - after frequency change */
+		 
 		writel_relaxed(ttccs->scale_clk_ctrl_reg_new,
 			       ttccs->ttc.base_addr + TTC_CLK_CNTRL_OFFSET);
 		break;
 
 	case ABORT_RATE_CHANGE:
-		/* we have to undo the adjustment in case we scale up */
+		 
 		if (ndata->new_rate < ndata->old_rate)
 			return NOTIFY_OK;
 
-		/* restore original register value */
+		 
 		writel_relaxed(ttccs->scale_clk_ctrl_reg_old,
 			       ttccs->ttc.base_addr + TTC_CLK_CNTRL_OFFSET);
 		fallthrough;
@@ -354,11 +289,7 @@ static int __init ttc_setup_clocksource(struct clk *clk, void __iomem *base,
 	ttccs->cs.mask = CLOCKSOURCE_MASK(timer_width);
 	ttccs->cs.flags = CLOCK_SOURCE_IS_CONTINUOUS;
 
-	/*
-	 * Setup the clock source counter to be an incrementing counter
-	 * with no interrupt and it rolls over at 0xFFFF. Pre-scale
-	 * it by 32 also. Let it start running now.
-	 */
+	 
 	writel_relaxed(0x0,  ttccs->ttc.base_addr + TTC_IER_OFFSET);
 	writel_relaxed(CLK_CNTRL_PRESCALE | CLK_CNTRL_PRESCALE_EN,
 		     ttccs->ttc.base_addr + TTC_CLK_CNTRL_OFFSET);
@@ -388,7 +319,7 @@ static int ttc_rate_change_clockevent_cb(struct notifier_block *nb,
 
 	switch (event) {
 	case POST_RATE_CHANGE:
-		/* update cached frequency */
+		 
 		ttc->freq = ndata->new_rate;
 
 		clockevents_update_freq(&ttcce->ce, ndata->new_rate / PRESCALE);
@@ -442,11 +373,7 @@ static int __init ttc_setup_clockevent(struct clk *clk,
 	ttcce->ce.irq = irq;
 	ttcce->ce.cpumask = cpu_possible_mask;
 
-	/*
-	 * Setup the clock event timer to be an interval timer which
-	 * is prescaled by 32 using the interval interrupt. Leave it
-	 * disabled for now.
-	 */
+	 
 	writel_relaxed(0x23, ttcce->ttc.base_addr + TTC_CNT_CNTRL_OFFSET);
 	writel_relaxed(CLK_CNTRL_PRESCALE | CLK_CNTRL_PRESCALE_EN,
 		     ttcce->ttc.base_addr + TTC_CLK_CNTRL_OFFSET);
@@ -482,11 +409,7 @@ static int __init ttc_timer_probe(struct platform_device *pdev)
 
 	initialized = 1;
 
-	/*
-	 * Get the 1st Triple Timer Counter (TTC) block from the device tree
-	 * and use it. Note that the event timer uses the interrupt and it's the
-	 * 2nd TTC hence the irq_of_parse_and_map(,1)
-	 */
+	 
 	timer_baseaddr = devm_of_iomap(&pdev->dev, timer, 0, NULL);
 	if (IS_ERR(timer_baseaddr)) {
 		pr_err("ERROR: invalid timer base address\n");

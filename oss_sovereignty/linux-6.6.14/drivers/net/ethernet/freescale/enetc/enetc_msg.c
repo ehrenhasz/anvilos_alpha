@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/* Copyright 2017-2019 NXP */
+
+ 
 
 #include "enetc_pf.h"
 
 static void enetc_msg_disable_mr_int(struct enetc_hw *hw)
 {
 	u32 psiier = enetc_rd(hw, ENETC_PSIIER);
-	/* disable MR int source(s) */
+	 
 	enetc_wr(hw, ENETC_PSIIER, psiier & ~ENETC_PSIIER_MR_MASK);
 }
 
@@ -38,7 +38,7 @@ static void enetc_msg_task(struct work_struct *work)
 	for (;;) {
 		mr_mask = enetc_rd(hw, ENETC_PSIMSGRR) & ENETC_PSIMSGRR_MR_MASK;
 		if (!mr_mask) {
-			/* re-arm MR interrupts, w1c the IDR reg */
+			 
 			enetc_wr(hw, ENETC_PSIIDR, ENETC_PSIIER_MR_MASK);
 			enetc_msg_enable_mr_int(hw);
 			return;
@@ -54,13 +54,13 @@ static void enetc_msg_task(struct work_struct *work)
 			enetc_msg_handle_rxmsg(pf, i, &msg_code);
 
 			psimsgrr = ENETC_SIMSGSR_SET_MC(msg_code);
-			psimsgrr |= ENETC_PSIMSGRR_MR(i); /* w1c */
+			psimsgrr |= ENETC_PSIMSGRR_MR(i);  
 			enetc_wr(hw, ENETC_PSIMSGRR, psimsgrr);
 		}
 	}
 }
 
-/* Init */
+ 
 static int enetc_msg_alloc_mbx(struct enetc_si *si, int idx)
 {
 	struct enetc_pf *pf = enetc_si_priv(si);
@@ -70,7 +70,7 @@ static int enetc_msg_alloc_mbx(struct enetc_si *si, int idx)
 	u32 val;
 
 	msg = &pf->rxmsg[idx];
-	/* allocate and set receive buffer */
+	 
 	msg->size = ENETC_DEFAULT_MSG_SIZE;
 
 	msg->vaddr = dma_alloc_coherent(dev, msg->size, &msg->dma,
@@ -81,7 +81,7 @@ static int enetc_msg_alloc_mbx(struct enetc_si *si, int idx)
 		return -ENOMEM;
 	}
 
-	/* set multiple of 32 bytes */
+	 
 	val = lower_32_bits(msg->dma);
 	enetc_wr(hw, ENETC_PSIVMSGRCVAR0(idx), val);
 	val = upper_32_bits(msg->dma);
@@ -109,7 +109,7 @@ int enetc_msg_psi_init(struct enetc_pf *pf)
 	struct enetc_si *si = pf->si;
 	int vector, i, err;
 
-	/* register message passing interrupt handler */
+	 
 	snprintf(pf->msg_int_name, sizeof(pf->msg_int_name), "%s-vfmsg",
 		 si->ndev->name);
 	vector = pci_irq_vector(si->pdev, ENETC_SI_INT_IDX);
@@ -120,10 +120,10 @@ int enetc_msg_psi_init(struct enetc_pf *pf)
 		return err;
 	}
 
-	/* set one IRQ entry for PSI message receive notification (SI int) */
+	 
 	enetc_wr(&si->hw, ENETC_SIMSIVR, ENETC_SI_INT_IDX);
 
-	/* initialize PSI mailbox */
+	 
 	INIT_WORK(&pf->msg_task, enetc_msg_task);
 
 	for (i = 0; i < pf->num_vfs; i++) {
@@ -132,7 +132,7 @@ int enetc_msg_psi_init(struct enetc_pf *pf)
 			goto err_init_mbx;
 	}
 
-	/* enable MR interrupts */
+	 
 	enetc_msg_enable_mr_int(&si->hw);
 
 	return 0;
@@ -153,12 +153,12 @@ void enetc_msg_psi_free(struct enetc_pf *pf)
 
 	cancel_work_sync(&pf->msg_task);
 
-	/* disable MR interrupts */
+	 
 	enetc_msg_disable_mr_int(&si->hw);
 
 	for (i = 0; i < pf->num_vfs; i++)
 		enetc_msg_free_mbx(si, i);
 
-	/* de-register message passing interrupt handler */
+	 
 	free_irq(pci_irq_vector(si->pdev, ENETC_SI_INT_IDX), si);
 }

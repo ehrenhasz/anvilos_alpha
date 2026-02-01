@@ -1,11 +1,8 @@
-/* Firmware file reading and download helpers
- *
- * See copyright notice in main.c
- */
+ 
 #ifndef _ORINOCO_FW_H_
 #define _ORINOCO_FW_H_
 
-/* Forward declations */
+ 
 struct orinoco_private;
 
 int orinoco_download(struct orinoco_private *priv);
@@ -18,4 +15,4 @@ void orinoco_uncache_fw(struct orinoco_private *priv);
 #define orinoco_uncache_fw(priv) do { } while (0)
 #endif
 
-#endif /* _ORINOCO_FW_H_ */
+#endif  

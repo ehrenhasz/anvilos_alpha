@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_INSTMEM_H__
 #define __NVKM_INSTMEM_H__
 #include <core/subdev.h>
@@ -13,9 +13,7 @@ struct nvkm_instmem {
 	struct list_head boot;
 	u32 reserved;
 
-	/* <=nv4x: protects NV_PRAMIN/BAR2 MM
-	 * >=nv50: protects BAR2 MM & LRU
-	 */
+	 
 	struct mutex mutex;
 
 	struct nvkm_memory *vbios;

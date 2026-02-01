@@ -1,20 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2013 Texas Instruments Inc.
- *
- * David Griego, <dagriego@biglakesoftware.com>
- * Dale Farnsworth, <dale@farnsworth.org>
- * Archit Taneja, <archit@ti.com>
- */
+ 
+ 
 
 #ifndef __TI_VPDMA_H_
 #define __TI_VPDMA_H_
 
 #define VPDMA_MAX_NUM_LIST		8
-/*
- * A vpdma_buf tracks the size, DMA address and mapping status of each
- * driver DMA area.
- */
+ 
 struct vpdma_buf {
 	void			*addr;
 	dma_addr_t		dma_addr;
@@ -36,7 +27,7 @@ struct vpdma_data {
 	spinlock_t		lock;
 	bool			hwlist_used[VPDMA_MAX_NUM_LIST];
 	void			*hwlist_priv[VPDMA_MAX_NUM_LIST];
-	/* callback to VPE driver when the firmware is loaded */
+	 
 	void (*cb)(struct platform_device *pdev);
 };
 
@@ -52,14 +43,11 @@ struct vpdma_data_format {
 	u8 depth;
 };
 
-#define VPDMA_DESC_ALIGN		16	/* 16-byte descriptor alignment */
-#define VPDMA_STRIDE_ALIGN		16	/*
-						 * line stride of source and dest
-						 * buffers should be 16 byte aligned
-						 */
-#define VPDMA_MAX_STRIDE		65520	/* Max line stride 16 byte aligned */
-#define VPDMA_DTD_DESC_SIZE		32	/* 8 words */
-#define VPDMA_CFD_CTD_DESC_SIZE		16	/* 4 words */
+#define VPDMA_DESC_ALIGN		16	 
+#define VPDMA_STRIDE_ALIGN		16	 
+#define VPDMA_MAX_STRIDE		65520	 
+#define VPDMA_DTD_DESC_SIZE		32	 
+#define VPDMA_CFD_CTD_DESC_SIZE		16	 
 
 #define VPDMA_LIST_TYPE_NORMAL		0
 #define VPDMA_LIST_TYPE_SELF_MODIFYING	1
@@ -128,7 +116,7 @@ enum vpdma_frame_start_event {
 	VPDMA_FSEVENT_CHANNEL_ACTIVE,
 };
 
-/* max width configurations */
+ 
 enum vpdma_max_width {
 	MAX_OUT_WIDTH_UNLIMITED = 0,
 	MAX_OUT_WIDTH_REG1,
@@ -140,7 +128,7 @@ enum vpdma_max_width {
 	MAX_OUT_WIDTH_1920,
 };
 
-/* max height configurations */
+ 
 enum vpdma_max_height {
 	MAX_OUT_HEIGHT_UNLIMITED = 0,
 	MAX_OUT_HEIGHT_REG1,
@@ -152,9 +140,7 @@ enum vpdma_max_height {
 	MAX_OUT_HEIGHT_1080,
 };
 
-/*
- * VPDMA channel numbers
- */
+ 
 enum vpdma_channel {
 	VPE_CHAN_LUMA1_IN,
 	VPE_CHAN_CHROMA1_IN,
@@ -176,19 +162,17 @@ enum vpdma_channel {
 
 #define VPDMA_MAX_CHANNELS		256
 
-/* flags for VPDMA data descriptors */
+ 
 #define VPDMA_DATA_ODD_LINE_SKIP	(1 << 0)
 #define VPDMA_DATA_EVEN_LINE_SKIP	(1 << 1)
 #define VPDMA_DATA_FRAME_1D		(1 << 2)
 #define VPDMA_DATA_MODE_TILED		(1 << 3)
 
-/*
- * client identifiers used for configuration descriptors
- */
+ 
 #define CFD_MMR_CLIENT		0
 #define CFD_SC_CLIENT		4
 
-/* Address data block header format */
+ 
 struct vpdma_adb_hdr {
 	u32			offset;
 	u32			nwords;
@@ -196,7 +180,7 @@ struct vpdma_adb_hdr {
 	u32			reserved1;
 };
 
-/* helpers for creating ADB headers for config descriptors MMRs as client */
+ 
 #define ADB_ADDR(dma_buf, str, fld)	((dma_buf)->addr + offsetof(str, fld))
 #define MMR_ADB_ADDR(buf, str, fld)	ADB_ADDR(&(buf), struct str, fld)
 
@@ -209,13 +193,13 @@ struct vpdma_adb_hdr {
 		h->nwords = sizeof(adb->regs) >> 2;		\
 	} while (0)
 
-/* vpdma descriptor buffer allocation and management */
+ 
 int vpdma_alloc_desc_buf(struct vpdma_buf *buf, size_t size);
 void vpdma_free_desc_buf(struct vpdma_buf *buf);
 int vpdma_map_desc_buf(struct vpdma_data *vpdma, struct vpdma_buf *buf);
 void vpdma_unmap_desc_buf(struct vpdma_data *vpdma, struct vpdma_buf *buf);
 
-/* vpdma descriptor list funcs */
+ 
 int vpdma_create_desc_list(struct vpdma_desc_list *list, size_t size, int type);
 void vpdma_reset_desc_list(struct vpdma_desc_list *list);
 void vpdma_free_desc_list(struct vpdma_desc_list *list);
@@ -226,12 +210,12 @@ void vpdma_update_dma_addr(struct vpdma_data *vpdma,
 	struct vpdma_desc_list *list, dma_addr_t dma_addr,
 	void *write_dtd, int drop, int idx);
 
-/* VPDMA hardware list funcs */
+ 
 int vpdma_hwlist_alloc(struct vpdma_data *vpdma, void *priv);
 void *vpdma_hwlist_get_priv(struct vpdma_data *vpdma, int list_num);
 void *vpdma_hwlist_release(struct vpdma_data *vpdma, int list_num);
 
-/* helpers for creating vpdma descriptors */
+ 
 void vpdma_add_cfd_block(struct vpdma_desc_list *list, int client,
 		struct vpdma_buf *blk, u32 dest_offset);
 void vpdma_add_cfd_adb(struct vpdma_desc_list *list, int client,
@@ -257,7 +241,7 @@ void vpdma_add_in_dtd(struct vpdma_desc_list *list, int width,
 int vpdma_list_cleanup(struct vpdma_data *vpdma, int list_num,
 		int *channels, int size);
 
-/* vpdma list interrupt management */
+ 
 void vpdma_enable_list_complete_irq(struct vpdma_data *vpdma, int irq_num,
 		int list_num, bool enable);
 void vpdma_clear_list_stat(struct vpdma_data *vpdma, int irq_num,
@@ -265,7 +249,7 @@ void vpdma_clear_list_stat(struct vpdma_data *vpdma, int irq_num,
 unsigned int vpdma_get_list_stat(struct vpdma_data *vpdma, int irq_num);
 unsigned int vpdma_get_list_mask(struct vpdma_data *vpdma, int irq_num);
 
-/* vpdma client configuration */
+ 
 void vpdma_set_line_mode(struct vpdma_data *vpdma, int line_mode,
 		enum vpdma_channel chan);
 void vpdma_set_frame_start_event(struct vpdma_data *vpdma,
@@ -277,7 +261,7 @@ void vpdma_set_bg_color(struct vpdma_data *vpdma,
 			struct vpdma_data_format *fmt, u32 color);
 void vpdma_dump_regs(struct vpdma_data *vpdma);
 
-/* initialize vpdma, passed with VPE's platform device pointer */
+ 
 int vpdma_create(struct platform_device *pdev, struct vpdma_data *vpdma,
 		void (*cb)(struct platform_device *pdev));
 

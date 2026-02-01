@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * ST stm32 Chrom-Art - 2D Graphics Accelerator Driver
- *
- * Copyright (c) 2021 Dillon Min
- * Dillon Min, <dillon.minfei@gmail.com>
- *
- * based on s5p-g2d
- *
- * Copyright (c) 2011 Samsung Electronics Co., Ltd.
- * Kamil Debski, <k.debski@samsung.com>
- */
+ 
+ 
 
 #ifndef __DMA2D_REGS_H__
 #define __DMA2D_REGS_H__
@@ -99,7 +89,7 @@
 #define NLR_PL_MASK		GENMASK(29, 16)
 #define NLR_NL_MASK		GENMASK(15, 0)
 
-/* Hardware limits */
+ 
 #define MAX_WIDTH		2592
 #define MAX_HEIGHT		2592
 
@@ -110,4 +100,4 @@
 #define CM_MODE_ARGB8888	0x00
 #define CM_MODE_ARGB4444	0x04
 #define CM_MODE_A4		0x0a
-#endif /* __DMA2D_REGS_H__ */
+#endif  

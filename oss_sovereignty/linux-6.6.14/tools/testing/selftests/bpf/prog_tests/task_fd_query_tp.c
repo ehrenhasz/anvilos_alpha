@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 
 static void test_task_fd_query_tp_core(const char *probe_name,
@@ -38,9 +38,9 @@ static void test_task_fd_query_tp_core(const char *probe_name,
 	attr.sample_type = PERF_SAMPLE_RAW;
 	attr.sample_period = 1;
 	attr.wakeup_events = 1;
-	pmu_fd = syscall(__NR_perf_event_open, &attr, -1 /* pid */,
-			 0 /* cpu 0 */, -1 /* group id */,
-			 0 /* flags */);
+	pmu_fd = syscall(__NR_perf_event_open, &attr, -1  ,
+			 0  , -1  ,
+			 0  );
 	if (CHECK(err, "perf_event_open", "err %d errno %d\n", err, errno))
 		goto close_pmu;
 
@@ -54,7 +54,7 @@ static void test_task_fd_query_tp_core(const char *probe_name,
 		  errno))
 		goto close_pmu;
 
-	/* query (getpid(), pmu_fd) */
+	 
 	len = sizeof(buf);
 	err = bpf_task_fd_query(getpid(), pmu_fd, 0, buf, &len, &prog_id,
 				&fd_type, &probe_offset, &probe_addr);

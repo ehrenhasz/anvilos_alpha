@@ -1,21 +1,10 @@
-// SPDX-License-Identifier: LGPL-2.1
-/*
- * trace/beauty/ioctl.c
- *
- *  Copyright (C) 2017, Red Hat Inc, Arnaldo Carvalho de Melo <acme@redhat.com>
- */
+
+ 
 
 #include "trace/beauty/beauty.h"
 #include <linux/kernel.h>
 
-/*
- * FIXME: to support all arches we have to improve this, for
- * now, to build on older systems without things like TIOCGEXCL,
- * get it directly from our copy.
- *
- * Right now only x86 is being supported for beautifying ioctl args
- * in 'perf trace', see tools/perf/trace/beauty/Build and builtin-trace.c
- */
+ 
 #include <uapi/asm-generic/ioctls.h>
 
 static size_t ioctl__scnprintf_tty_cmd(int nr, int dir, char *bf, size_t size)
@@ -134,7 +123,7 @@ static size_t ioctl__scnprintf_cmd(unsigned long cmd, char *bf, size_t size, boo
 	static const struct ioctl_type {
 		int	type;
 		size_t	(*scnprintf)(int nr, int dir, char *bf, size_t size);
-	} ioctl_types[] = { /* Must be ordered by type */
+	} ioctl_types[] = {  
 			      { .type	= '$', .scnprintf = ioctl__scnprintf_perf_cmd, },
 		['A' - '$'] = { .type	= 'A', .scnprintf = ioctl__scnprintf_sndrv_pcm_cmd, },
 		['T' - '$'] = { .type	= 'T', .scnprintf = ioctl__scnprintf_tty_cmd, },
@@ -170,7 +159,7 @@ static size_t ioctl__scnprintf_cmd(unsigned long cmd, char *bf, size_t size, boo
 
 #ifndef USB_DEVICE_MAJOR
 #define USB_DEVICE_MAJOR 189
-#endif // USB_DEVICE_MAJOR
+#endif 
 
 size_t syscall_arg__scnprintf_ioctl_cmd(char *bf, size_t size, struct syscall_arg *arg)
 {

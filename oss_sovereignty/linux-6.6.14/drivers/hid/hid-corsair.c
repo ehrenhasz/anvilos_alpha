@@ -1,20 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * HID driver for Corsair devices
- *
- * Supported devices:
- *  - Vengeance K70 Keyboard
- *  - K70 RAPIDFIRE Keyboard
- *  - Vengeance K90 Keyboard
- *  - Scimitar PRO RGB Gaming Mouse
- *
- * Copyright (c) 2015 Clement Vuchener
- * Copyright (c) 2017 Oscar Campos
- * Copyright (c) 2017 Aaron Bottegal
- */
 
-/*
- */
+ 
+
+ 
 
 #include <linux/hid.h>
 #include <linux/module.h>
@@ -47,10 +34,10 @@ struct corsair_drvdata {
 
 static int corsair_usage_to_gkey(unsigned int usage)
 {
-	/* G1 (0xd0) to G16 (0xdf) */
+	 
 	if (usage >= 0xd0 && usage <= 0xdf)
 		return usage - 0xd0 + 1;
-	/* G17 (0xe8) to G18 (0xe9) */
+	 
 	if (usage >= 0xe8 && usage <= 0xe9)
 		return usage - 0xe8 + 17;
 	return 0;
@@ -121,7 +108,7 @@ MODULE_PARM_DESC(profilekey_codes, "Key codes for the profile buttons");
 #define CORSAIR_USAGE_LIGHT_BRIGHT 0xfd
 #define CORSAIR_USAGE_LIGHT_MAX 0xfd
 
-/* USB control protocol */
+ 
 
 #define K90_REQUEST_BRIGHTNESS 49
 #define K90_REQUEST_MACRO_MODE 2
@@ -135,9 +122,7 @@ MODULE_PARM_DESC(profilekey_codes, "Key codes for the profile buttons");
 #define K90_MACRO_LED_ON  0x0020
 #define K90_MACRO_LED_OFF 0x0040
 
-/*
- * LED class devices
- */
+ 
 
 #define K90_BACKLIGHT_LED_SUFFIX "::backlight"
 #define K90_RECORD_LED_SUFFIX "::record"
@@ -254,9 +239,7 @@ static void k90_record_led_work(struct work_struct *work)
 			 ret);
 }
 
-/*
- * Keyboard attributes
- */
+ 
 
 static ssize_t k90_show_macro_mode(struct device *dev,
 				   struct device_attribute *attr, char *buf)
@@ -416,9 +399,7 @@ static const struct attribute_group k90_attr_group = {
 	.attrs = k90_attrs,
 };
 
-/*
- * Driver functions
- */
+ 
 
 static int k90_init_backlight(struct hid_device *dev)
 {
@@ -478,7 +459,7 @@ static int k90_init_macro_functions(struct hid_device *dev)
 	}
 	drvdata->k90 = k90;
 
-	/* Init LED device for record LED */
+	 
 	name_sz = strlen(dev_name(&dev->dev)) + sizeof(K90_RECORD_LED_SUFFIX);
 	name = kzalloc(name_sz, GFP_KERNEL);
 	if (!name) {
@@ -498,7 +479,7 @@ static int k90_init_macro_functions(struct hid_device *dev)
 	if (ret != 0)
 		goto fail_record_led;
 
-	/* Init attributes */
+	 
 	ret = sysfs_create_group(&dev->dev.kobj, &k90_attr_group);
 	if (ret != 0)
 		goto fail_sysfs;
@@ -677,18 +658,7 @@ static int corsair_input_mapping(struct hid_device *dev,
 	return 0;
 }
 
-/*
- * The report descriptor of some of the Corsair gaming mice is
- * non parseable as they define two consecutive Logical Minimum for
- * the Usage Page (Consumer) in rdescs bytes 75 and 77 being 77 0x16
- * that should be obviousy 0x26 for Logical Magimum of 16 bits. This
- * prevents poper parsing of the report descriptor due Logical
- * Minimum being larger than Logical Maximum.
- *
- * This driver fixes the report descriptor for:
- * - USB ID 1b1c:1b34, sold as GLAIVE RGB Gaming mouse
- * - USB ID 1b1c:1b3e, sold as Scimitar RGB Pro Gaming mouse
- */
+ 
 
 static __u8 *corsair_mouse_report_fixup(struct hid_device *hdev, __u8 *rdesc,
         unsigned int *rsize)
@@ -696,13 +666,7 @@ static __u8 *corsair_mouse_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 	struct usb_interface *intf = to_usb_interface(hdev->dev.parent);
 
 	if (intf->cur_altsetting->desc.bInterfaceNumber == 1) {
-		/*
-		 * Corsair GLAIVE RGB and Scimitar RGB Pro report descriptor is
-		 * broken and defines two different Logical Minimum for the
-		 * Consumer Application. The byte 77 should be a 0x26 defining
-		 * a 16 bits integer for the Logical Maximum but it is a 0x16
-		 * instead (Logical Minimum)
-		 */
+		 
 		switch (hdev->product) {
 		case USB_DEVICE_ID_CORSAIR_GLAIVE_RGB:
 		case USB_DEVICE_ID_CORSAIR_SCIMITAR_PRO_RGB:
@@ -726,9 +690,7 @@ static const struct hid_device_id corsair_devices[] = {
             USB_DEVICE_ID_CORSAIR_GLAIVE_RGB) },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_CORSAIR,
             USB_DEVICE_ID_CORSAIR_SCIMITAR_PRO_RGB) },
-	/*
-	 * Vengeance K70 and K70 RAPIDFIRE share product IDs.
-	 */
+	 
 	{ HID_USB_DEVICE(USB_VENDOR_ID_CORSAIR,
             USB_DEVICE_ID_CORSAIR_K70R) },
 	{}
@@ -749,8 +711,8 @@ static struct hid_driver corsair_driver = {
 module_hid_driver(corsair_driver);
 
 MODULE_LICENSE("GPL");
-/* Original K90 driver author */
+ 
 MODULE_AUTHOR("Clement Vuchener");
-/* Scimitar PRO RGB driver author */
+ 
 MODULE_AUTHOR("Oscar Campos");
 MODULE_DESCRIPTION("HID driver for Corsair devices");

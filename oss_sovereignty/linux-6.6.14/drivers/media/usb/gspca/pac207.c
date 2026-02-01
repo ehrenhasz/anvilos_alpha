@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Pixart PAC207BCA library
- *
- * Copyright (C) 2008 Hans de Goede <hdegoede@redhat.com>
- * Copyright (C) 2005 Thomas Kaiser thomas@kaiser-linux.li
- * Copyleft (C) 2005 Michel Xhaard mxhaard@magic.fr
- *
- * V4L2 by Jean-Francois Moine <http://moinejf.free.fr>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -15,14 +7,14 @@
 
 #include <linux/input.h>
 #include "gspca.h"
-/* Include pac common sof detection functions */
+ 
 #include "pac_common.h"
 
 MODULE_AUTHOR("Hans de Goede <hdegoede@redhat.com>");
 MODULE_DESCRIPTION("Pixart PAC207");
 MODULE_LICENSE("GPL");
 
-#define PAC207_CTRL_TIMEOUT		100  /* ms */
+#define PAC207_CTRL_TIMEOUT		100   
 
 #define PAC207_BRIGHTNESS_MIN		0
 #define PAC207_BRIGHTNESS_MAX		255
@@ -30,25 +22,25 @@ MODULE_LICENSE("GPL");
 #define PAC207_BRIGHTNESS_REG		0x08
 
 #define PAC207_EXPOSURE_MIN		3
-#define PAC207_EXPOSURE_MAX		90 /* 1 sec expo time / 1 fps */
-#define PAC207_EXPOSURE_DEFAULT		5 /* power on default: 3 */
+#define PAC207_EXPOSURE_MAX		90  
+#define PAC207_EXPOSURE_DEFAULT		5  
 #define PAC207_EXPOSURE_REG		0x02
 
 #define PAC207_GAIN_MIN			0
 #define PAC207_GAIN_MAX			31
-#define PAC207_GAIN_DEFAULT		7 /* power on default: 9 */
+#define PAC207_GAIN_DEFAULT		7  
 #define PAC207_GAIN_REG			0x0e
 
 #define PAC207_AUTOGAIN_DEADZONE	30
 
-/* global parameters */
+ 
 static int led_invert;
 module_param(led_invert, int, 0644);
 MODULE_PARM_DESC(led_invert, "Invert led");
 
-/* specific webcam descriptor */
+ 
 struct sd {
-	struct gspca_dev gspca_dev;		/* !! must be the first item */
+	struct gspca_dev gspca_dev;		 
 
 	struct v4l2_ctrl *brightness;
 
@@ -64,13 +56,12 @@ static const struct v4l2_pix_format sif_mode[] = {
 	{176, 144, V4L2_PIX_FMT_PAC207, V4L2_FIELD_NONE,
 		.bytesperline = 176,
 		.sizeimage = (176 + 2) * 144,
-			/* uncompressed, add 2 bytes / line for line header */
+			 
 		.colorspace = V4L2_COLORSPACE_SRGB,
 		.priv = 1},
 	{352, 288, V4L2_PIX_FMT_PAC207, V4L2_FIELD_NONE,
 		.bytesperline = 352,
-			/* compressed, but only when needed (not compressed
-			   when the framerate is low) */
+			 
 		.sizeimage = (352 + 2) * 288,
 		.colorspace = V4L2_COLORSPACE_SRGB,
 		.priv = 0},
@@ -145,7 +136,7 @@ static int pac207_read_reg(struct gspca_dev *gspca_dev, u16 index)
 	return gspca_dev->usb_buf[0];
 }
 
-/* this function is called at probe time */
+ 
 static int sd_config(struct gspca_dev *gspca_dev,
 			const struct usb_device_id *id)
 {
@@ -175,18 +166,18 @@ static int sd_config(struct gspca_dev *gspca_dev,
 	return 0;
 }
 
-/* this function is called at probe and resume time */
+ 
 static int sd_init(struct gspca_dev *gspca_dev)
 {
 	u8 mode;
 
-	/* mode: Image Format (Bit 0), LED (1), Compr. test mode (2) */
+	 
 	if (led_invert)
 		mode = 0x02;
 	else
 		mode = 0x00;
 	pac207_write_reg(gspca_dev, 0x41, mode);
-	pac207_write_reg(gspca_dev, 0x0f, 0x00); /* Power Control */
+	pac207_write_reg(gspca_dev, 0x0f, 0x00);  
 
 	return gspca_dev->usb_err;
 }
@@ -194,8 +185,8 @@ static int sd_init(struct gspca_dev *gspca_dev)
 static void setcontrol(struct gspca_dev *gspca_dev, u16 reg, u16 val)
 {
 	pac207_write_reg(gspca_dev, reg, val);
-	pac207_write_reg(gspca_dev, 0x13, 0x01);	/* Bit 0, auto clear */
-	pac207_write_reg(gspca_dev, 0x1c, 0x01);	/* not documented */
+	pac207_write_reg(gspca_dev, 0x13, 0x01);	 
+	pac207_write_reg(gspca_dev, 0x1c, 0x01);	 
 }
 
 static int sd_s_ctrl(struct v4l2_ctrl *ctrl)
@@ -207,10 +198,7 @@ static int sd_s_ctrl(struct v4l2_ctrl *ctrl)
 	gspca_dev->usb_err = 0;
 
 	if (ctrl->id == V4L2_CID_AUTOGAIN && ctrl->is_new && ctrl->val) {
-		/* when switching to autogain set defaults to make sure
-		   we are on a valid point of the autogain gain /
-		   exposure knee graph, and give this change time to
-		   take effect before doing autogain. */
+		 
 		gspca_dev->exposure->val    = PAC207_EXPOSURE_DEFAULT;
 		gspca_dev->gain->val        = PAC207_GAIN_DEFAULT;
 		sd->autogain_ignore_frames  = PAC_AUTOGAIN_IGNORE_FRAMES;
@@ -241,7 +229,7 @@ static const struct v4l2_ctrl_ops sd_ctrl_ops = {
 	.s_ctrl = sd_s_ctrl,
 };
 
-/* this function is called at probe time */
+ 
 static int sd_init_controls(struct gspca_dev *gspca_dev)
 {
 	struct sd *sd = (struct sd *) gspca_dev;
@@ -272,49 +260,49 @@ static int sd_init_controls(struct gspca_dev *gspca_dev)
 	return 0;
 }
 
-/* -- start the camera -- */
+ 
 static int sd_start(struct gspca_dev *gspca_dev)
 {
 	struct sd *sd = (struct sd *) gspca_dev;
 	__u8 mode;
 
-	pac207_write_reg(gspca_dev, 0x0f, 0x10); /* Power control (Bit 6-0) */
+	pac207_write_reg(gspca_dev, 0x0f, 0x10);  
 	pac207_write_regs(gspca_dev, 0x0002, pac207_sensor_init[0], 8);
 	pac207_write_regs(gspca_dev, 0x000a, pac207_sensor_init[1], 8);
 	pac207_write_regs(gspca_dev, 0x0012, pac207_sensor_init[2], 8);
 	pac207_write_regs(gspca_dev, 0x0042, pac207_sensor_init[3], 8);
 
-	/* Compression Balance */
+	 
 	if (gspca_dev->pixfmt.width == 176)
 		pac207_write_reg(gspca_dev, 0x4a, 0xff);
 	else
 		pac207_write_reg(gspca_dev, 0x4a, 0x30);
-	pac207_write_reg(gspca_dev, 0x4b, 0x00); /* Sram test value */
+	pac207_write_reg(gspca_dev, 0x4b, 0x00);  
 	pac207_write_reg(gspca_dev, 0x08, v4l2_ctrl_g_ctrl(sd->brightness));
 
-	/* PGA global gain (Bit 4-0) */
+	 
 	pac207_write_reg(gspca_dev, 0x0e,
 		v4l2_ctrl_g_ctrl(gspca_dev->gain));
 	pac207_write_reg(gspca_dev, 0x02,
-		v4l2_ctrl_g_ctrl(gspca_dev->exposure)); /* PXCK = 12MHz /n */
+		v4l2_ctrl_g_ctrl(gspca_dev->exposure));  
 
-	/* mode: Image Format (Bit 0), LED (1), Compr. test mode (2) */
+	 
 	if (led_invert)
 		mode = 0x00;
 	else
 		mode = 0x02;
-	if (gspca_dev->pixfmt.width == 176) {	/* 176x144 */
+	if (gspca_dev->pixfmt.width == 176) {	 
 		mode |= 0x01;
 		gspca_dbg(gspca_dev, D_STREAM, "pac207_start mode 176x144\n");
-	} else {				/* 352x288 */
+	} else {				 
 		gspca_dbg(gspca_dev, D_STREAM, "pac207_start mode 352x288\n");
 	}
 	pac207_write_reg(gspca_dev, 0x41, mode);
 
-	pac207_write_reg(gspca_dev, 0x13, 0x01); /* Bit 0, auto clear */
-	pac207_write_reg(gspca_dev, 0x1c, 0x01); /* not documented */
+	pac207_write_reg(gspca_dev, 0x13, 0x01);  
+	pac207_write_reg(gspca_dev, 0x1c, 0x01);  
 	msleep(10);
-	pac207_write_reg(gspca_dev, 0x40, 0x01); /* Start ISO pipe */
+	pac207_write_reg(gspca_dev, 0x40, 0x01);  
 
 	sd->sof_read = 0;
 	sd->autogain_ignore_frames = 0;
@@ -326,14 +314,14 @@ static void sd_stopN(struct gspca_dev *gspca_dev)
 {
 	u8 mode;
 
-	/* mode: Image Format (Bit 0), LED (1), Compr. test mode (2) */
+	 
 	if (led_invert)
 		mode = 0x02;
 	else
 		mode = 0x00;
-	pac207_write_reg(gspca_dev, 0x40, 0x00); /* Stop ISO pipe */
-	pac207_write_reg(gspca_dev, 0x41, mode); /* Turn off LED */
-	pac207_write_reg(gspca_dev, 0x0f, 0x00); /* Power Control */
+	pac207_write_reg(gspca_dev, 0x40, 0x00);  
+	pac207_write_reg(gspca_dev, 0x41, mode);  
+	pac207_write_reg(gspca_dev, 0x0f, 0x00);  
 }
 
 
@@ -363,7 +351,7 @@ static void sd_pkt_scan(struct gspca_dev *gspca_dev,
 	if (sof) {
 		int n;
 
-		/* finish decoding current frame */
+		 
 		n = sof - data;
 		if (n > sizeof pac_sof_marker)
 			n -= sizeof pac_sof_marker;
@@ -379,13 +367,13 @@ static void sd_pkt_scan(struct gspca_dev *gspca_dev,
 	if (sd->header_read < 11) {
 		int needed;
 
-		/* get average lumination from frame header (byte 5) */
+		 
 		if (sd->header_read < 5) {
 			needed = 5 - sd->header_read;
 			if (len >= needed)
 				atomic_set(&sd->avg_lum, data[needed - 1]);
 		}
-		/* skip the rest of the header */
+		 
 		needed = 11 - sd->header_read;
 		if (len <= needed) {
 			sd->header_read += len;
@@ -401,8 +389,8 @@ static void sd_pkt_scan(struct gspca_dev *gspca_dev,
 
 #if IS_ENABLED(CONFIG_INPUT)
 static int sd_int_pkt_scan(struct gspca_dev *gspca_dev,
-			u8 *data,		/* interrupt packet data */
-			int len)		/* interrupt packet length */
+			u8 *data,		 
+			int len)		 
 {
 	int ret = -EINVAL;
 
@@ -418,7 +406,7 @@ static int sd_int_pkt_scan(struct gspca_dev *gspca_dev,
 }
 #endif
 
-/* sub-driver description */
+ 
 static const struct sd_desc sd_desc = {
 	.name = MODULE_NAME,
 	.config = sd_config,
@@ -433,7 +421,7 @@ static const struct sd_desc sd_desc = {
 #endif
 };
 
-/* -- module initialisation -- */
+ 
 static const struct usb_device_id device_table[] = {
 	{USB_DEVICE(0x041e, 0x4028)},
 	{USB_DEVICE(0x093a, 0x2460)},
@@ -452,7 +440,7 @@ static const struct usb_device_id device_table[] = {
 };
 MODULE_DEVICE_TABLE(usb, device_table);
 
-/* -- device connect -- */
+ 
 static int sd_probe(struct usb_interface *intf,
 			const struct usb_device_id *id)
 {

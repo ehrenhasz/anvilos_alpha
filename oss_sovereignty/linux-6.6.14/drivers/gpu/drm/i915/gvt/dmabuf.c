@@ -1,32 +1,4 @@
-/*
- * Copyright 2017 Intel Corporation. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- *
- * Authors:
- *    Zhiyuan Lv <zhiyuan.lv@intel.com>
- *
- * Contributors:
- *    Xiaoguang Chen
- *    Tina Zhang <tina.zhang@intel.com>
- */
+ 
 
 #include <linux/dma-buf.h>
 #include <linux/mdev.h>
@@ -51,7 +23,7 @@ static int vgpu_gem_get_pages(struct drm_i915_gem_object *obj)
 	int i, j, ret;
 	gen8_pte_t __iomem *gtt_entries;
 	struct intel_vgpu_fb_info *fb_info;
-	unsigned int page_num; /* limited by sg_alloc_table */
+	unsigned int page_num;  
 
 	if (overflows_type(obj->base.size >> PAGE_SHIFT, page_num))
 		return -E2BIG;
@@ -150,7 +122,7 @@ static void dmabuf_gem_object_free(struct kref *kref)
 			}
 		}
 	} else {
-		/* Free the orphan dmabuf_objs here */
+		 
 		kfree(obj->info);
 		kfree(obj);
 	}
@@ -180,7 +152,7 @@ static void vgpu_gem_release(struct drm_i915_gem_object *gem_obj)
 		dmabuf_obj_put(obj);
 		mutex_unlock(&vgpu->dmabuf_lock);
 	} else {
-		/* vgpu is NULL, as it has been removed already */
+		 
 		gem_obj->base.dma_buf = NULL;
 		dmabuf_obj_put(obj);
 	}
@@ -420,16 +392,13 @@ int intel_vgpu_query_plane(struct intel_vgpu *vgpu, void *args)
 		goto out;
 
 	mutex_lock(&vgpu->dmabuf_lock);
-	/* If exists, pick up the exposed dmabuf_obj */
+	 
 	dmabuf_obj = pick_dmabuf_by_info(vgpu, &fb_info);
 	if (dmabuf_obj) {
 		update_fb_info(gfx_plane_info, &fb_info);
 		gfx_plane_info->dmabuf_id = dmabuf_obj->dmabuf_id;
 
-		/* This buffer may be released between query_plane ioctl and
-		 * get_dmabuf ioctl. Add the refcount to make sure it won't
-		 * be released between the two ioctls.
-		 */
+		 
 		if (!dmabuf_obj->initref) {
 			dmabuf_obj->initref = true;
 			dmabuf_obj_get(dmabuf_obj);
@@ -444,7 +413,7 @@ int intel_vgpu_query_plane(struct intel_vgpu *vgpu, void *args)
 
 	mutex_unlock(&vgpu->dmabuf_lock);
 
-	/* Need to allocate a new one*/
+	 
 	dmabuf_obj = kmalloc(sizeof(struct intel_vgpu_dmabuf_obj), GFP_KERNEL);
 	if (unlikely(!dmabuf_obj)) {
 		gvt_vgpu_err("alloc dmabuf_obj failed\n");
@@ -492,11 +461,11 @@ out_free_info:
 out_free_dmabuf:
 	kfree(dmabuf_obj);
 out:
-	/* ENODEV means plane isn't ready, which might be a normal case. */
+	 
 	return (ret == -ENODEV) ? 0 : ret;
 }
 
-/* To associate an exposed dmabuf with the dmabuf_obj */
+ 
 int intel_vgpu_get_dmabuf(struct intel_vgpu *vgpu, unsigned int dmabuf_id)
 {
 	struct drm_device *dev = &vgpu->gvt->gt->i915->drm;
@@ -581,7 +550,7 @@ void intel_vgpu_dmabuf_cleanup(struct intel_vgpu *vgpu)
 		idr_remove(&vgpu->object_idr, dmabuf_obj->dmabuf_id);
 		list_del(pos);
 
-		/* dmabuf_obj might be freed in dmabuf_obj_put */
+		 
 		if (dmabuf_obj->initref) {
 			dmabuf_obj->initref = false;
 			dmabuf_obj_put(dmabuf_obj);

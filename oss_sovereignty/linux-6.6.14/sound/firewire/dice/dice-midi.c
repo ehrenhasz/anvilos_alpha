@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * dice_midi.c - a part of driver for Dice based devices
- *
- * Copyright (c) 2014 Takashi Sakamoto
- */
+
+ 
 #include "dice.h"
 
 static int midi_open(struct snd_rawmidi_substream *substream)
@@ -121,7 +117,7 @@ int snd_dice_create_midi(struct snd_dice *dice)
 	if (midi_in_ports + midi_out_ports == 0)
 		return 0;
 
-	/* create midi ports */
+	 
 	err = snd_rawmidi_new(dice->card, dice->card->driver, 0,
 			      midi_out_ports, midi_in_ports,
 			      &rmidi);

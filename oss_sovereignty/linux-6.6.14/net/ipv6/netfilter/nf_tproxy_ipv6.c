@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <net/netfilter/nf_tproxy.h>
 #include <linux/module.h>
 #include <net/inet6_hashtables.h>
@@ -52,8 +52,7 @@ nf_tproxy_handle_time_wait6(struct sk_buff *skb, int tproto, int thoff,
 	}
 
 	if (hp->syn && !hp->rst && !hp->ack && !hp->fin) {
-		/* SYN to a TIME_WAIT socket, we'd rather redirect it
-		 * to a listener socket if there's one */
+		 
 		struct sock *sk2;
 
 		sk2 = nf_tproxy_get_sock_v6(net, skb, thoff, tproto,
@@ -102,11 +101,7 @@ nf_tproxy_get_sock_v6(struct net *net, struct sk_buff *skb, int thoff,
 
 			if (sk && !refcount_inc_not_zero(&sk->sk_refcnt))
 				sk = NULL;
-			/* NOTE: we return listeners even if bound to
-			 * 0.0.0.0, those are filtered out in
-			 * xt_socket, since xt_TPROXY needs 0 bound
-			 * listeners too
-			 */
+			 
 			break;
 		case NF_TPROXY_LOOKUP_ESTABLISHED:
 			sk = __inet6_lookup_established(net, hinfo, saddr, sport, daddr,
@@ -124,11 +119,7 @@ nf_tproxy_get_sock_v6(struct net *net, struct sk_buff *skb, int thoff,
 			int connected = (sk->sk_state == TCP_ESTABLISHED);
 			int wildcard = ipv6_addr_any(&sk->sk_v6_rcv_saddr);
 
-			/* NOTE: we return listeners even if bound to
-			 * 0.0.0.0, those are filtered out in
-			 * xt_socket, since xt_TPROXY needs 0 bound
-			 * listeners too
-			 */
+			 
 			if ((lookup_type == NF_TPROXY_LOOKUP_ESTABLISHED && (!connected || wildcard)) ||
 			    (lookup_type == NF_TPROXY_LOOKUP_LISTENER && connected)) {
 				sock_put(sk);

@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * A V4L2 driver for Sony IMX219 cameras.
- * Copyright (C) 2019, Raspberry Pi (Trading) Ltd
- *
- * Based on Sony imx258 camera driver
- * Copyright (C) 2018 Intel Corporation
- *
- * DT / fwnode changes, and regulator / GPIO control taken from imx214 driver
- * Copyright 2018 Qtechnology A/S
- *
- * Flip handling taken from the Sony IMX319 driver.
- * Copyright (C) 2018 Intel Corporation
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -29,7 +16,7 @@
 #include <media/v4l2-fwnode.h>
 #include <media/v4l2-mediabus.h>
 
-/* Chip ID */
+ 
 #define IMX219_REG_CHIP_ID		CCI_REG16(0x0000)
 #define IMX219_CHIP_ID			0x0219
 
@@ -46,30 +33,30 @@
 #define IMX219_DPHY_CTRL_TIMING_MANUAL	1
 
 #define IMX219_REG_EXCK_FREQ		CCI_REG16(0x012a)
-#define IMX219_EXCK_FREQ(n)		((n) * 256)		/* n expressed in MHz */
+#define IMX219_EXCK_FREQ(n)		((n) * 256)		 
 
-/* Analog gain control */
+ 
 #define IMX219_REG_ANALOG_GAIN		CCI_REG8(0x0157)
 #define IMX219_ANA_GAIN_MIN		0
 #define IMX219_ANA_GAIN_MAX		232
 #define IMX219_ANA_GAIN_STEP		1
 #define IMX219_ANA_GAIN_DEFAULT		0x0
 
-/* Digital gain control */
+ 
 #define IMX219_REG_DIGITAL_GAIN		CCI_REG16(0x0158)
 #define IMX219_DGTL_GAIN_MIN		0x0100
 #define IMX219_DGTL_GAIN_MAX		0x0fff
 #define IMX219_DGTL_GAIN_DEFAULT	0x0100
 #define IMX219_DGTL_GAIN_STEP		1
 
-/* Exposure control */
+ 
 #define IMX219_REG_EXPOSURE		CCI_REG16(0x015a)
 #define IMX219_EXPOSURE_MIN		4
 #define IMX219_EXPOSURE_STEP		1
 #define IMX219_EXPOSURE_DEFAULT		0x640
 #define IMX219_EXPOSURE_MAX		65535
 
-/* V_TIMING internal */
+ 
 #define IMX219_REG_VTS			CCI_REG16(0x0160)
 #define IMX219_VTS_15FPS		0x0dc6
 #define IMX219_VTS_30FPS_1080P		0x06e3
@@ -79,13 +66,13 @@
 
 #define IMX219_VBLANK_MIN		4
 
-/*Frame Length Line*/
+ 
 #define IMX219_FLL_MIN			0x08a6
 #define IMX219_FLL_MAX			0xffff
 #define IMX219_FLL_STEP			1
 #define IMX219_FLL_DEFAULT		0x0c98
 
-/* HBLANK control - read only */
+ 
 #define IMX219_PPL_DEFAULT		3448
 
 #define IMX219_REG_LINE_LENGTH_A	CCI_REG16(0x0162)
@@ -99,7 +86,7 @@
 #define IMX219_REG_Y_ODD_INC_A		CCI_REG8(0x0171)
 #define IMX219_REG_ORIENTATION		CCI_REG8(0x0172)
 
-/* Binning  Mode */
+ 
 #define IMX219_REG_BINNING_MODE		CCI_REG16(0x0174)
 #define IMX219_BINNING_NONE		0x0000
 #define IMX219_BINNING_2X2		0x0101
@@ -107,7 +94,7 @@
 
 #define IMX219_REG_CSI_DATA_FORMAT_A	CCI_REG16(0x018c)
 
-/* PLL Settings */
+ 
 #define IMX219_REG_VTPXCK_DIV		CCI_REG8(0x0301)
 #define IMX219_REG_VTSYCK_DIV		CCI_REG8(0x0303)
 #define IMX219_REG_PREPLLCK_VT_DIV	CCI_REG8(0x0304)
@@ -117,7 +104,7 @@
 #define IMX219_REG_OPSYCK_DIV		CCI_REG8(0x030b)
 #define IMX219_REG_PLL_OP_MPY		CCI_REG16(0x030c)
 
-/* Test Pattern Control */
+ 
 #define IMX219_REG_TEST_PATTERN		CCI_REG16(0x0600)
 #define IMX219_TEST_PATTERN_DISABLE	0
 #define IMX219_TEST_PATTERN_SOLID_COLOR	1
@@ -125,7 +112,7 @@
 #define IMX219_TEST_PATTERN_GREY_COLOR	3
 #define IMX219_TEST_PATTERN_PN9		4
 
-/* Test pattern colour components */
+ 
 #define IMX219_REG_TESTP_RED		CCI_REG16(0x0602)
 #define IMX219_REG_TESTP_GREENR		CCI_REG16(0x0604)
 #define IMX219_REG_TESTP_BLUE		CCI_REG16(0x0606)
@@ -141,17 +128,17 @@
 #define IMX219_REG_TP_WINDOW_WIDTH	CCI_REG16(0x0624)
 #define IMX219_REG_TP_WINDOW_HEIGHT	CCI_REG16(0x0626)
 
-/* External clock frequency is 24.0M */
+ 
 #define IMX219_XCLK_FREQ		24000000
 
-/* Pixel rate is fixed for all the modes */
+ 
 #define IMX219_PIXEL_RATE		182400000
 #define IMX219_PIXEL_RATE_4LANE		280800000
 
 #define IMX219_DEFAULT_LINK_FREQ	456000000
 #define IMX219_DEFAULT_LINK_FREQ_4LANE	363000000
 
-/* IMX219 native and active pixel array size. */
+ 
 #define IMX219_NATIVE_WIDTH		3296U
 #define IMX219_NATIVE_HEIGHT		2480U
 #define IMX219_PIXEL_ARRAY_LEFT		8U
@@ -164,30 +151,30 @@ struct imx219_reg_list {
 	const struct cci_reg_sequence *regs;
 };
 
-/* Mode : resolution and related config&values */
+ 
 struct imx219_mode {
-	/* Frame width */
+	 
 	unsigned int width;
-	/* Frame height */
+	 
 	unsigned int height;
 
-	/* Analog crop rectangle. */
+	 
 	struct v4l2_rect crop;
 
-	/* V-timing */
+	 
 	unsigned int vts_def;
 
-	/* Default register values */
+	 
 	struct imx219_reg_list reg_list;
 
-	/* 2x2 binning is used */
+	 
 	bool binning;
 };
 
 static const struct cci_reg_sequence imx219_common_regs[] = {
-	{ IMX219_REG_MODE_SELECT, 0x00 },	/* Mode Select */
+	{ IMX219_REG_MODE_SELECT, 0x00 },	 
 
-	/* To Access Addresses 3000-5fff, send the following commands */
+	 
 	{ CCI_REG8(0x30eb), 0x0c },
 	{ CCI_REG8(0x30eb), 0x05 },
 	{ CCI_REG8(0x300a), 0xff },
@@ -195,16 +182,16 @@ static const struct cci_reg_sequence imx219_common_regs[] = {
 	{ CCI_REG8(0x30eb), 0x05 },
 	{ CCI_REG8(0x30eb), 0x09 },
 
-	/* PLL Clock Table */
+	 
 	{ IMX219_REG_VTPXCK_DIV, 5 },
 	{ IMX219_REG_VTSYCK_DIV, 1 },
-	{ IMX219_REG_PREPLLCK_VT_DIV, 3 },	/* 0x03 = AUTO set */
-	{ IMX219_REG_PREPLLCK_OP_DIV, 3 },	/* 0x03 = AUTO set */
+	{ IMX219_REG_PREPLLCK_VT_DIV, 3 },	 
+	{ IMX219_REG_PREPLLCK_OP_DIV, 3 },	 
 	{ IMX219_REG_PLL_VT_MPY, 57 },
 	{ IMX219_REG_OPSYCK_DIV, 1 },
 	{ IMX219_REG_PLL_OP_MPY, 114 },
 
-	/* Undocumented registers */
+	 
 	{ CCI_REG8(0x455e), 0x00 },
 	{ CCI_REG8(0x471e), 0x4b },
 	{ CCI_REG8(0x4767), 0x0f },
@@ -218,21 +205,17 @@ static const struct cci_reg_sequence imx219_common_regs[] = {
 	{ CCI_REG8(0x4797), 0x0e },
 	{ CCI_REG8(0x479b), 0x0e },
 
-	/* Frame Bank Register Group "A" */
+	 
 	{ IMX219_REG_LINE_LENGTH_A, 3448 },
 	{ IMX219_REG_X_ODD_INC_A, 1 },
 	{ IMX219_REG_Y_ODD_INC_A, 1 },
 
-	/* Output setup registers */
+	 
 	{ IMX219_REG_DPHY_CTRL, IMX219_DPHY_CTRL_TIMING_AUTO },
 	{ IMX219_REG_EXCK_FREQ, IMX219_EXCK_FREQ(IMX219_XCLK_FREQ / 1000000) },
 };
 
-/*
- * Register sets lifted off the i2C interface from the Raspberry Pi firmware
- * driver.
- * 3280x2464 = mode 2, 1920x1080 = mode 1, 1640x1232 = mode 4, 640x480 = mode 7.
- */
+ 
 static const struct cci_reg_sequence mode_3280x2464_regs[] = {
 	{ IMX219_REG_X_ADD_STA_A, 0 },
 	{ IMX219_REG_X_ADD_END_A, 3279 },
@@ -311,25 +294,17 @@ static const int imx219_test_pattern_val[] = {
 	IMX219_TEST_PATTERN_PN9,
 };
 
-/* regulator supplies */
+ 
 static const char * const imx219_supply_name[] = {
-	/* Supplies can be enabled in any order */
-	"VANA",  /* Analog (2.8V) supply */
-	"VDIG",  /* Digital Core (1.8V) supply */
-	"VDDL",  /* IF (1.2V) supply */
+	 
+	"VANA",   
+	"VDIG",   
+	"VDDL",   
 };
 
 #define IMX219_NUM_SUPPLIES ARRAY_SIZE(imx219_supply_name)
 
-/*
- * The supported formats.
- * This table MUST contain 4 entries per format, to cover the various flip
- * combinations in the order
- * - no flip
- * - h flip
- * - v flip
- * - h&v flips
- */
+ 
 static const u32 imx219_mbus_formats[] = {
 	MEDIA_BUS_FMT_SRGGB10_1X10,
 	MEDIA_BUS_FMT_SGRBG10_1X10,
@@ -342,37 +317,14 @@ static const u32 imx219_mbus_formats[] = {
 	MEDIA_BUS_FMT_SBGGR8_1X8,
 };
 
-/*
- * Initialisation delay between XCLR low->high and the moment when the sensor
- * can start capture (i.e. can leave software stanby) must be not less than:
- *   t4 + max(t5, t6 + <time to initialize the sensor register over I2C>)
- * where
- *   t4 is fixed, and is max 200uS,
- *   t5 is fixed, and is 6000uS,
- *   t6 depends on the sensor external clock, and is max 32000 clock periods.
- * As per sensor datasheet, the external clock must be from 6MHz to 27MHz.
- * So for any acceptable external clock t6 is always within the range of
- * 1185 to 5333 uS, and is always less than t5.
- * For this reason this is always safe to wait (t4 + t5) = 6200 uS, then
- * initialize the sensor over I2C, and then exit the software standby.
- *
- * This start-up time can be optimized a bit more, if we start the writes
- * over I2C after (t4+t6), but before (t4+t5) expires. But then sensor
- * initialization over I2C may complete before (t4+t5) expires, and we must
- * ensure that capture is not started before (t4+t5).
- *
- * This delay doesn't account for the power supply startup time. If needed,
- * this should be taken care of via the regulator framework. E.g. in the
- * case of DT for regulator-fixed one should define the startup-delay-us
- * property.
- */
+ 
 #define IMX219_XCLR_MIN_DELAY_US	6200
 #define IMX219_XCLR_DELAY_RANGE_US	1000
 
-/* Mode configs */
+ 
 static const struct imx219_mode supported_modes[] = {
 	{
-		/* 8MPix 15fps mode */
+		 
 		.width = 3280,
 		.height = 2464,
 		.crop = {
@@ -389,7 +341,7 @@ static const struct imx219_mode supported_modes[] = {
 		.binning = false,
 	},
 	{
-		/* 1080P 30fps cropped */
+		 
 		.width = 1920,
 		.height = 1080,
 		.crop = {
@@ -406,7 +358,7 @@ static const struct imx219_mode supported_modes[] = {
 		.binning = false,
 	},
 	{
-		/* 2x2 binned 30fps mode */
+		 
 		.width = 1640,
 		.height = 1232,
 		.crop = {
@@ -423,7 +375,7 @@ static const struct imx219_mode supported_modes[] = {
 		.binning = true,
 	},
 	{
-		/* 640x480 30fps mode */
+		 
 		.width = 640,
 		.height = 480,
 		.crop = {
@@ -446,14 +398,14 @@ struct imx219 {
 	struct media_pad pad;
 
 	struct regmap *regmap;
-	struct clk *xclk; /* system clock to IMX219 */
+	struct clk *xclk;  
 	u32 xclk_freq;
 
 	struct gpio_desc *reset_gpio;
 	struct regulator_bulk_data supplies[IMX219_NUM_SUPPLIES];
 
 	struct v4l2_ctrl_handler ctrl_handler;
-	/* V4L2 Controls */
+	 
 	struct v4l2_ctrl *pixel_rate;
 	struct v4l2_ctrl *link_freq;
 	struct v4l2_ctrl *exposure;
@@ -462,13 +414,13 @@ struct imx219 {
 	struct v4l2_ctrl *vblank;
 	struct v4l2_ctrl *hblank;
 
-	/* Current mode */
+	 
 	const struct imx219_mode *mode;
 
-	/* Streaming on/off */
+	 
 	bool streaming;
 
-	/* Two or Four lanes */
+	 
 	u8 lanes;
 };
 
@@ -477,7 +429,7 @@ static inline struct imx219 *to_imx219(struct v4l2_subdev *_sd)
 	return container_of(_sd, struct imx219, sd);
 }
 
-/* Get bayer order based on flip setting. */
+ 
 static u32 imx219_get_format_code(struct imx219 *imx219, u32 code)
 {
 	unsigned int i;
@@ -505,7 +457,7 @@ static int imx219_set_ctrl(struct v4l2_ctrl *ctrl)
 	if (ctrl->id == V4L2_CID_VBLANK) {
 		int exposure_max, exposure_def;
 
-		/* Update max exposure while meeting expected vblanking */
+		 
 		exposure_max = imx219->mode->height + ctrl->val - 4;
 		exposure_def = (exposure_max < IMX219_EXPOSURE_DEFAULT) ?
 			exposure_max : IMX219_EXPOSURE_DEFAULT;
@@ -515,10 +467,7 @@ static int imx219_set_ctrl(struct v4l2_ctrl *ctrl)
 					 exposure_def);
 	}
 
-	/*
-	 * Applying V4L2 control value only happens
-	 * when power is up for streaming
-	 */
+	 
 	if (pm_runtime_get_if_in_use(&client->dev) == 0)
 		return 0;
 
@@ -585,7 +534,7 @@ static void imx219_update_pad_format(struct imx219 *imx219,
 				     const struct imx219_mode *mode,
 				     struct v4l2_mbus_framefmt *fmt, u32 code)
 {
-	/* Bayer order varies with flips */
+	 
 	fmt->code = imx219_get_format_code(imx219, code);
 	fmt->width = mode->width;
 	fmt->height = mode->height;
@@ -602,12 +551,12 @@ static int imx219_init_cfg(struct v4l2_subdev *sd,
 	struct v4l2_mbus_framefmt *format;
 	struct v4l2_rect *crop;
 
-	/* Initialize the format. */
+	 
 	format = v4l2_subdev_get_pad_format(sd, state, 0);
 	imx219_update_pad_format(imx219, &supported_modes[0], format,
 				 MEDIA_BUS_FMT_SRGGB10_1X10);
 
-	/* Initialize the crop rectangle. */
+	 
 	crop = v4l2_subdev_get_pad_crop(sd, state, 0);
 	crop->top = IMX219_PIXEL_ARRAY_TOP;
 	crop->left = IMX219_PIXEL_ARRAY_LEFT;
@@ -678,13 +627,13 @@ static int imx219_set_pad_format(struct v4l2_subdev *sd,
 
 	if (fmt->which == V4L2_SUBDEV_FORMAT_ACTIVE) {
 		imx219->mode = mode;
-		/* Update limits and set FPS to default */
+		 
 		__v4l2_ctrl_modify_range(imx219->vblank, IMX219_VBLANK_MIN,
 					 IMX219_VTS_MAX - mode->height, 1,
 					 mode->vts_def - mode->height);
 		__v4l2_ctrl_s_ctrl(imx219->vblank,
 				   mode->vts_def - mode->height);
-		/* Update max exposure while meeting expected vblanking */
+		 
 		exposure_max = mode->vts_def - 4;
 		exposure_def = (exposure_max < IMX219_EXPOSURE_DEFAULT) ?
 			exposure_max : IMX219_EXPOSURE_DEFAULT;
@@ -692,11 +641,7 @@ static int imx219_set_pad_format(struct v4l2_subdev *sd,
 					 imx219->exposure->minimum,
 					 exposure_max, imx219->exposure->step,
 					 exposure_def);
-		/*
-		 * Currently PPL is fixed to IMX219_PPL_DEFAULT, so hblank
-		 * depends on mode->width only, and is not changeble in any
-		 * way other than changing the mode.
-		 */
+		 
 		hblank = IMX219_PPL_DEFAULT - mode->width;
 		__v4l2_ctrl_modify_range(imx219->hblank, hblank, hblank, 1,
 					 hblank);
@@ -803,7 +748,7 @@ static int imx219_start_streaming(struct imx219 *imx219,
 	if (ret < 0)
 		return ret;
 
-	/* Send all registers that are common to all modes */
+	 
 	ret = cci_multi_reg_write(imx219->regmap, imx219_common_regs,
 				  ARRAY_SIZE(imx219_common_regs), NULL);
 	if (ret) {
@@ -811,14 +756,14 @@ static int imx219_start_streaming(struct imx219 *imx219,
 		goto err_rpm_put;
 	}
 
-	/* Configure two or four Lane mode */
+	 
 	ret = imx219_configure_lanes(imx219);
 	if (ret) {
 		dev_err(&client->dev, "%s failed to configure lanes\n", __func__);
 		goto err_rpm_put;
 	}
 
-	/* Apply default values of current mode */
+	 
 	reg_list = &imx219->mode->reg_list;
 	ret = cci_multi_reg_write(imx219->regmap, reg_list->regs,
 				  reg_list->num_of_regs, NULL);
@@ -842,18 +787,18 @@ static int imx219_start_streaming(struct imx219 *imx219,
 		goto err_rpm_put;
 	}
 
-	/* Apply customized values from user */
+	 
 	ret =  __v4l2_ctrl_handler_setup(imx219->sd.ctrl_handler);
 	if (ret)
 		goto err_rpm_put;
 
-	/* set stream on register */
+	 
 	ret = cci_write(imx219->regmap, IMX219_REG_MODE_SELECT,
 			IMX219_MODE_STREAMING, NULL);
 	if (ret)
 		goto err_rpm_put;
 
-	/* vflip and hflip cannot change during streaming */
+	 
 	__v4l2_ctrl_grab(imx219->vflip, true);
 	__v4l2_ctrl_grab(imx219->hflip, true);
 
@@ -869,7 +814,7 @@ static void imx219_stop_streaming(struct imx219 *imx219)
 	struct i2c_client *client = v4l2_get_subdevdata(&imx219->sd);
 	int ret;
 
-	/* set stream off register */
+	 
 	ret = cci_write(imx219->regmap, IMX219_REG_MODE_SELECT,
 			IMX219_MODE_STANDBY, NULL);
 	if (ret)
@@ -893,10 +838,7 @@ static int imx219_set_stream(struct v4l2_subdev *sd, int enable)
 		goto unlock;
 
 	if (enable) {
-		/*
-		 * Apply default & customized values
-		 * and then start streaming.
-		 */
+		 
 		ret = imx219_start_streaming(imx219, state);
 		if (ret)
 			goto unlock;
@@ -911,7 +853,7 @@ unlock:
 	return ret;
 }
 
-/* Power/clock management functions */
+ 
 static int imx219_power_on(struct device *dev)
 {
 	struct v4l2_subdev *sd = dev_get_drvdata(dev);
@@ -1005,7 +947,7 @@ static int imx219_get_regulators(struct imx219 *imx219)
 				       imx219->supplies);
 }
 
-/* Verify chip ID */
+ 
 static int imx219_identify_module(struct imx219 *imx219)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&imx219->sd);
@@ -1058,7 +1000,7 @@ static unsigned long imx219_get_pixel_rate(struct imx219 *imx219)
 	return (imx219->lanes == 2) ? IMX219_PIXEL_RATE : IMX219_PIXEL_RATE_4LANE;
 }
 
-/* Initialize control handlers */
+ 
 static int imx219_init_controls(struct imx219 *imx219)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&imx219->sd);
@@ -1073,7 +1015,7 @@ static int imx219_init_controls(struct imx219 *imx219)
 	if (ret)
 		return ret;
 
-	/* By default, PIXEL_RATE is read only */
+	 
 	imx219->pixel_rate = v4l2_ctrl_new_std(ctrl_hdlr, &imx219_ctrl_ops,
 					       V4L2_CID_PIXEL_RATE,
 					       imx219_get_pixel_rate(imx219),
@@ -1089,7 +1031,7 @@ static int imx219_init_controls(struct imx219 *imx219)
 	if (imx219->link_freq)
 		imx219->link_freq->flags |= V4L2_CTRL_FLAG_READ_ONLY;
 
-	/* Initial vblank/hblank/exposure parameters based on current mode */
+	 
 	imx219->vblank = v4l2_ctrl_new_std(ctrl_hdlr, &imx219_ctrl_ops,
 					   V4L2_CID_VBLANK, IMX219_VBLANK_MIN,
 					   IMX219_VTS_MAX - height, 1,
@@ -1132,19 +1074,14 @@ static int imx219_init_controls(struct imx219 *imx219)
 				     ARRAY_SIZE(imx219_test_pattern_menu) - 1,
 				     0, 0, imx219_test_pattern_menu);
 	for (i = 0; i < 4; i++) {
-		/*
-		 * The assumption is that
-		 * V4L2_CID_TEST_PATTERN_GREENR == V4L2_CID_TEST_PATTERN_RED + 1
-		 * V4L2_CID_TEST_PATTERN_BLUE   == V4L2_CID_TEST_PATTERN_RED + 2
-		 * V4L2_CID_TEST_PATTERN_GREENB == V4L2_CID_TEST_PATTERN_RED + 3
-		 */
+		 
 		v4l2_ctrl_new_std(ctrl_hdlr, &imx219_ctrl_ops,
 				  V4L2_CID_TEST_PATTERN_RED + i,
 				  IMX219_TESTP_COLOUR_MIN,
 				  IMX219_TESTP_COLOUR_MAX,
 				  IMX219_TESTP_COLOUR_STEP,
 				  IMX219_TESTP_COLOUR_MAX);
-		/* The "Solid color" pattern is white by default */
+		 
 	}
 
 	if (ctrl_hdlr->error) {
@@ -1197,7 +1134,7 @@ static int imx219_check_hwcfg(struct device *dev, struct imx219 *imx219)
 		goto error_out;
 	}
 
-	/* Check the number of MIPI CSI2 data lanes */
+	 
 	if (ep_cfg.bus.mipi_csi2.num_data_lanes != 2 &&
 	    ep_cfg.bus.mipi_csi2.num_data_lanes != 4) {
 		dev_err(dev, "only 2 or 4 data lanes are currently supported\n");
@@ -1205,7 +1142,7 @@ static int imx219_check_hwcfg(struct device *dev, struct imx219 *imx219)
 	}
 	imx219->lanes = ep_cfg.bus.mipi_csi2.num_data_lanes;
 
-	/* Check the link frequency set in device tree */
+	 
 	if (!ep_cfg.nr_of_link_frequencies) {
 		dev_err(dev, "link-frequency property not found in DT\n");
 		goto error_out;
@@ -1240,7 +1177,7 @@ static int imx219_probe(struct i2c_client *client)
 
 	v4l2_i2c_subdev_init(&imx219->sd, client, &imx219_subdev_ops);
 
-	/* Check the hardware configuration in device tree */
+	 
 	if (imx219_check_hwcfg(dev, imx219))
 		return -EINVAL;
 
@@ -1251,7 +1188,7 @@ static int imx219_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/* Get system clock (xclk) */
+	 
 	imx219->xclk = devm_clk_get(dev, NULL);
 	if (IS_ERR(imx219->xclk)) {
 		dev_err(dev, "failed to get xclk\n");
@@ -1271,14 +1208,11 @@ static int imx219_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/* Request optional enable pin */
+	 
 	imx219->reset_gpio = devm_gpiod_get_optional(dev, "reset",
 						     GPIOD_OUT_HIGH);
 
-	/*
-	 * The sensor must be powered for imx219_identify_module()
-	 * to be able to read the CHIP_ID register
-	 */
+	 
 	ret = imx219_power_on(dev);
 	if (ret)
 		return ret;
@@ -1287,13 +1221,10 @@ static int imx219_probe(struct i2c_client *client)
 	if (ret)
 		goto error_power_off;
 
-	/* Set default mode to max resolution */
+	 
 	imx219->mode = &supported_modes[0];
 
-	/* sensor doesn't enter LP-11 state upon power up until and unless
-	 * streaming is started, so upon power up switch the modes to:
-	 * streaming -> standby
-	 */
+	 
 	ret = cci_write(imx219->regmap, IMX219_REG_MODE_SELECT,
 			IMX219_MODE_STREAMING, NULL);
 	if (ret < 0)
@@ -1301,7 +1232,7 @@ static int imx219_probe(struct i2c_client *client)
 
 	usleep_range(100, 110);
 
-	/* put sensor back to standby mode */
+	 
 	ret = cci_write(imx219->regmap, IMX219_REG_MODE_SELECT,
 			IMX219_MODE_STANDBY, NULL);
 	if (ret < 0)
@@ -1313,12 +1244,12 @@ static int imx219_probe(struct i2c_client *client)
 	if (ret)
 		goto error_power_off;
 
-	/* Initialize subdev */
+	 
 	imx219->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE |
 			    V4L2_SUBDEV_FL_HAS_EVENTS;
 	imx219->sd.entity.function = MEDIA_ENT_F_CAM_SENSOR;
 
-	/* Initialize source pad */
+	 
 	imx219->pad.flags = MEDIA_PAD_FL_SOURCE;
 
 	ret = media_entity_pads_init(&imx219->sd.entity, 1, &imx219->pad);
@@ -1340,7 +1271,7 @@ static int imx219_probe(struct i2c_client *client)
 		goto error_subdev_cleanup;
 	}
 
-	/* Enable runtime PM and turn off the device */
+	 
 	pm_runtime_set_active(dev);
 	pm_runtime_enable(dev);
 	pm_runtime_idle(dev);
@@ -1380,7 +1311,7 @@ static void imx219_remove(struct i2c_client *client)
 
 static const struct of_device_id imx219_dt_ids[] = {
 	{ .compatible = "sony,imx219" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx219_dt_ids);
 

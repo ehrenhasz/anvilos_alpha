@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013-2016 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <linux/dma-fence.h>
 
@@ -31,7 +28,7 @@ static void deadline_work(struct kthread_work *work)
 	struct msm_fence_context *fctx = container_of(work,
 			struct msm_fence_context, deadline_work);
 
-	/* If deadline fence has already passed, nothing to do: */
+	 
 	if (msm_fence_completed(fctx, fctx->next_deadline_fence))
 		return;
 
@@ -57,10 +54,7 @@ msm_fence_context_alloc(struct drm_device *dev, volatile uint32_t *fenceptr,
 	fctx->fenceptr = fenceptr;
 	spin_lock_init(&fctx->spinlock);
 
-	/*
-	 * Start out close to the 32b fence rollover point, so we can
-	 * catch bugs with fence comparisons.
-	 */
+	 
 	fctx->last_fence = 0xffffff00;
 	fctx->completed_fence = fctx->last_fence;
 	*fctx->fenceptr = fctx->last_fence;
@@ -82,15 +76,12 @@ void msm_fence_context_free(struct msm_fence_context *fctx)
 
 bool msm_fence_completed(struct msm_fence_context *fctx, uint32_t fence)
 {
-	/*
-	 * Note: Check completed_fence first, as fenceptr is in a write-combine
-	 * mapping, so it will be more expensive to read.
-	 */
+	 
 	return (int32_t)(fctx->completed_fence - fence) >= 0 ||
 		(int32_t)(*fctx->fenceptr - fence) >= 0;
 }
 
-/* called from irq handler and workqueue (in recover path) */
+ 
 void msm_update_fence(struct msm_fence_context *fctx, uint32_t fence)
 {
 	unsigned long flags;
@@ -146,11 +137,7 @@ static void msm_fence_set_deadline(struct dma_fence *fence, ktime_t deadline)
 		fctx->next_deadline_fence =
 			max(fctx->next_deadline_fence, (uint32_t)fence->seqno);
 
-		/*
-		 * Set timer to trigger boost 3ms before deadline, or
-		 * if we are already less than 3ms before the deadline
-		 * schedule boost work immediately.
-		 */
+		 
 		deadline = ktime_sub(deadline, ms_to_ktime(3));
 
 		if (ktime_after(now, deadline)) {
@@ -191,10 +178,7 @@ msm_fence_init(struct dma_fence *fence, struct msm_fence_context *fctx)
 
 	f->fctx = fctx;
 
-	/*
-	 * Until this point, the fence was just some pre-allocated memory,
-	 * no-one should have taken a reference to it yet.
-	 */
+	 
 	WARN_ON(kref_read(&fence->refcount));
 
 	dma_fence_init(&f->base, &msm_fence_ops, &fctx->spinlock,

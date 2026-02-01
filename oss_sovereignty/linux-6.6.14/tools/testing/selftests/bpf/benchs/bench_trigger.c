@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include "bench.h"
 #include "trigger_bench.skel.h"
 #include "trace_helpers.h"
 
-/* BPF triggering benchmarks */
+ 
 static struct trigger_ctx {
 	struct trigger_bench *skel;
 } ctx;
@@ -103,16 +103,7 @@ static void trigger_fmodret_setup(void)
 	attach_bpf(ctx.skel->progs.bench_trigger_fmodret);
 }
 
-/* make sure call is not inlined and not avoided by compiler, so __weak and
- * inline asm volatile in the body of the function
- *
- * There is a performance difference between uprobing at nop location vs other
- * instructions. So use two different targets, one of which starts with nop
- * and another doesn't.
- *
- * GCC doesn't generate stack setup preample for these functions due to them
- * having no input arguments and doing nothing in the body.
- */
+ 
 __weak void uprobe_target_with_nop(void)
 {
 	asm volatile ("nop");
@@ -166,7 +157,7 @@ static void usetup(bool use_retprobe, bool use_nop)
 
 	link = bpf_program__attach_uprobe(ctx.skel->progs.bench_trigger_uprobe,
 					  use_retprobe,
-					  -1 /* all PIDs */,
+					  -1  ,
 					  "/proc/self/exe",
 					  uprobe_offset);
 	if (!link) {
@@ -267,7 +258,7 @@ const struct bench bench_trig_fmodret = {
 
 const struct bench bench_trig_uprobe_base = {
 	.name = "trig-uprobe-base",
-	.setup = NULL, /* no uprobe/uretprobe is attached */
+	.setup = NULL,  
 	.producer_thread = uprobe_base_producer,
 	.measure = trigger_base_measure,
 	.report_progress = hits_drops_report_progress,

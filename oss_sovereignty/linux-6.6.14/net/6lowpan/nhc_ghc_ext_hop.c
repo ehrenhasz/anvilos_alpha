@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	6LoWPAN Extension Header compression according to RFC7400
- */
+
+ 
 
 #include "nhc.h"
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Hardware monitoring driver for Infineon TDA38640
- *
- * Copyright (c) 2023 9elements GmbH
- *
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -56,7 +51,7 @@ static const struct of_device_id __maybe_unused tda38640_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, tda38640_of_match);
 
-/* This is the driver that will be inserted */
+ 
 static struct i2c_driver tda38640_driver = {
 	.driver = {
 		.name = "tda38640",

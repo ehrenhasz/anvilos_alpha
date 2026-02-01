@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright © 2015 Broadcom Corporation
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>

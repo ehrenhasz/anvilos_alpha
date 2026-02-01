@@ -1,26 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright (c) 2019 Facebook
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- *
- * Include file for Host Bandwidth Management (HBM) programs
- */
+ 
 struct hbm_vqueue {
 	struct bpf_spin_lock lock;
-	/* 4 byte hole */
-	unsigned long long lasttime;	/* In ns */
-	int credit;			/* In bytes */
-	unsigned int rate;		/* In bytes per NS << 20 */
+	 
+	unsigned long long lasttime;	 
+	int credit;			 
+	unsigned int rate;		 
 };
 
 struct hbm_queue_stats {
-	unsigned long rate;		/* in Mbps*/
-	unsigned long stats:1,		/* get HBM stats (marked, dropped,..) */
-		loopback:1,		/* also limit flows using loopback */
-		no_cn:1;		/* do not use cn flags */
+	unsigned long rate;		 
+	unsigned long stats:1,		 
+		loopback:1,		 
+		no_cn:1;		 
 	unsigned long long pkts_marked;
 	unsigned long long bytes_marked;
 	unsigned long long pkts_dropped;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Driver for the MDIO interface of Microsemi network switches.
- *
- * Author: Alexandre Belloni <alexandre.belloni@bootlin.com>
- * Copyright (c) 2017 Microsemi Corporation
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -59,9 +54,7 @@ struct mscc_miim_dev {
 	u32 bus_freq;
 };
 
-/* When high resolution timers aren't built-in: we can't use usleep_range() as
- * we would sleep way too long. Use udelay() instead.
- */
+ 
 #define mscc_readx_poll_timeout(op, addr, val, cond, delay_us, timeout_us)\
 ({									  \
 	if (!IS_ENABLED(CONFIG_HIGH_RES_TIMERS))			  \
@@ -250,7 +243,7 @@ static int mscc_miim_clk_set(struct mii_bus *bus)
 	unsigned long rate;
 	u32 div;
 
-	/* Keep the current settings */
+	 
 	if (!miim->bus_freq)
 		return 0;
 
@@ -281,7 +274,7 @@ static int mscc_miim_probe(struct platform_device *pdev)
 		return dev_err_probe(dev, PTR_ERR(mii_regmap),
 				     "Unable to create MIIM regmap\n");
 
-	/* This resource is optional */
+	 
 	phy_regmap = ocelot_regmap_from_resource_optional(pdev, 1,
 						 &mscc_miim_phy_regmap_config);
 	if (IS_ERR(phy_regmap))

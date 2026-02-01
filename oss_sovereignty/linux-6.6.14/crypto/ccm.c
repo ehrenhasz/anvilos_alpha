@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * CCM: Counter with CBC-MAC
- *
- * (C) Copyright IBM Corp. 2007 - Joy Latten <latten@us.ibm.com>
- */
+
+ 
 
 #include <crypto/internal/aead.h>
 #include <crypto/internal/cipher.h>
@@ -136,9 +132,7 @@ static int format_input(u8 *info, struct aead_request *req,
 
 	memcpy(info, req->iv, 16);
 
-	/* format control info per RFC 3610 and
-	 * NIST Special Publication 800-38C
-	 */
+	 
 	*info |= (8 * ((m - 2) / 2));
 	if (req->assoclen)
 		*info |= 64;
@@ -150,9 +144,7 @@ static int format_adata(u8 *adata, unsigned int a)
 {
 	int len = 0;
 
-	/* add control info for associated data
-	 * RFC 3610 and NIST Special Publication 800-38C
-	 */
+	 
 	if (a < 65280) {
 		*(__be16 *)adata = cpu_to_be16(a);
 		len = 2;
@@ -178,7 +170,7 @@ static int crypto_ccm_auth(struct aead_request *req, struct scatterlist *plain,
 	u8 *idata = pctx->idata;
 	int ilen, err;
 
-	/* format control data for input */
+	 
 	err = format_input(odata, req, cryptlen);
 	if (err)
 		goto out;
@@ -186,7 +178,7 @@ static int crypto_ccm_auth(struct aead_request *req, struct scatterlist *plain,
 	sg_init_table(sg, 3);
 	sg_set_buf(&sg[0], odata, 16);
 
-	/* format associated data and compute into mac */
+	 
 	if (assoclen) {
 		ilen = format_adata(idata, assoclen);
 		sg_set_buf(&sg[1], idata, ilen);
@@ -206,7 +198,7 @@ static int crypto_ccm_auth(struct aead_request *req, struct scatterlist *plain,
 	if (err)
 		goto out;
 
-	/* we need to pad the MAC input to a round multiple of the block size */
+	 
 	ilen = 16 - (assoclen + ilen) % 16;
 	if (ilen < 16) {
 		memset(idata, 0, ilen);
@@ -240,7 +232,7 @@ static void crypto_ccm_encrypt_done(void *data, int err)
 
 static inline int crypto_ccm_check_iv(const u8 *iv)
 {
-	/* 2 <= L <= 8, so 1 <= L' <= 7. */
+	 
 	if (1 > iv[0] || iv[0] > 7)
 		return -EINVAL;
 
@@ -260,9 +252,7 @@ static int crypto_ccm_init_crypt(struct aead_request *req, u8 *tag)
 
 	pctx->flags = aead_request_flags(req);
 
-	 /* Note: rfc 3610 and NIST 800-38C require counter of
-	 * zero to encrypt auth tag.
-	 */
+	  
 	memset(iv + 15 - iv[0], 0, iv[0] + 1);
 
 	sg_init_table(pctx->src, 3);
@@ -314,7 +304,7 @@ static int crypto_ccm_encrypt(struct aead_request *req)
 	if (err)
 		return err;
 
-	/* copy authtag to end of dst */
+	 
 	scatterwalk_map_and_copy(odata, sg_next(dst), cryptlen,
 				 crypto_aead_authsize(aead), 1);
 	return err;
@@ -382,7 +372,7 @@ static int crypto_ccm_decrypt(struct aead_request *req)
 	if (err)
 		return err;
 
-	/* verify */
+	 
 	if (crypto_memneq(authtag, odata, authsize))
 		return -EBADMSG;
 
@@ -480,14 +470,14 @@ static int crypto_ccm_create_common(struct crypto_template *tmpl,
 		goto err_free_inst;
 	ctr = crypto_spawn_skcipher_alg(&ictx->ctr);
 
-	/* The skcipher algorithm must be CTR mode, using 16-byte blocks. */
+	 
 	err = -EINVAL;
 	if (strncmp(ctr->base.cra_name, "ctr(", 4) != 0 ||
 	    crypto_skcipher_alg_ivsize(ctr) != 16 ||
 	    ctr->base.cra_blocksize != 1)
 		goto err_free_inst;
 
-	/* ctr and cbcmac must use the same underlying block cipher. */
+	 
 	if (strcmp(ctr->base.cra_name + 4, mac->base.cra_name + 7) != 0)
 		goto err_free_inst;
 
@@ -611,7 +601,7 @@ static struct aead_request *crypto_rfc4309_crypt(struct aead_request *req)
 	u8 *iv = PTR_ALIGN((u8 *)(subreq + 1) + crypto_aead_reqsize(child),
 			   crypto_aead_alignmask(child) + 1);
 
-	/* L' */
+	 
 	iv[0] = 3;
 
 	memcpy(iv + 1, ctx->nonce, 3);
@@ -729,11 +719,11 @@ static int crypto_rfc4309_create(struct crypto_template *tmpl,
 
 	err = -EINVAL;
 
-	/* We only support 16-byte blocks. */
+	 
 	if (crypto_aead_alg_ivsize(alg) != 16)
 		goto err_free_inst;
 
-	/* Not a stream cipher? */
+	 
 	if (alg->base.cra_blocksize != 1)
 		goto err_free_inst;
 

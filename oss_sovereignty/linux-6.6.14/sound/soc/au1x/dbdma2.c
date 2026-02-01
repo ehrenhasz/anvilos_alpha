@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Au12x0/Au1550 PSC ALSA ASoC audio support.
- *
- * (c) 2007-2008 MSC Vertriebsges.m.b.H.,
- *	Manuel Lauss <manuel.lauss@gmail.com>
- *
- * DMA glue for Au1x-PSC audio.
- */
+
+ 
 
 
 #include <linux/module.h>
@@ -26,7 +19,7 @@
 
 #include "psc.h"
 
-/*#define PCM_DEBUG*/
+ 
 
 #define DRV_NAME "dbdma2"
 
@@ -38,41 +31,38 @@
 #endif
 
 struct au1xpsc_audio_dmadata {
-	/* DDMA control data */
-	unsigned int ddma_id;		/* DDMA direction ID for this PSC */
-	u32 ddma_chan;			/* DDMA context */
+	 
+	unsigned int ddma_id;		 
+	u32 ddma_chan;			 
 
-	/* PCM context (for irq handlers) */
+	 
 	struct snd_pcm_substream *substream;
-	unsigned long curr_period;	/* current segment DDMA is working on */
-	unsigned long q_period;		/* queue period(s) */
-	dma_addr_t dma_area;		/* address of queued DMA area */
-	dma_addr_t dma_area_s;		/* start address of DMA area */
-	unsigned long pos;		/* current byte position being played */
-	unsigned long periods;		/* number of SG segments in total */
-	unsigned long period_bytes;	/* size in bytes of one SG segment */
+	unsigned long curr_period;	 
+	unsigned long q_period;		 
+	dma_addr_t dma_area;		 
+	dma_addr_t dma_area_s;		 
+	unsigned long pos;		 
+	unsigned long periods;		 
+	unsigned long period_bytes;	 
 
-	/* runtime data */
+	 
 	int msbits;
 };
 
-/*
- * These settings are somewhat okay, at least on my machine audio plays
- * almost skip-free. Especially the 64kB buffer seems to help a LOT.
- */
+ 
 #define AU1XPSC_PERIOD_MIN_BYTES	1024
 #define AU1XPSC_BUFFER_MIN_BYTES	65536
 
-/* PCM hardware DMA capabilities - platform specific */
+ 
 static const struct snd_pcm_hardware au1xpsc_pcm_hardware = {
 	.info		  = SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_MMAP_VALID |
 			    SNDRV_PCM_INFO_INTERLEAVED | SNDRV_PCM_INFO_BATCH,
 	.period_bytes_min = AU1XPSC_PERIOD_MIN_BYTES,
 	.period_bytes_max = 4096 * 1024 - 1,
 	.periods_min	  = 2,
-	.periods_max	  = 4096,	/* 2 to as-much-as-you-like */
+	.periods_max	  = 4096,	 
 	.buffer_bytes_max = 4096 * 1024 - 1,
-	.fifo_size	  = 16,		/* fifo entries of AC97/I2S PSC */
+	.fifo_size	  = 16,		 
 };
 
 static void au1x_pcm_queue_tx(struct au1xpsc_audio_dmadata *cd)
@@ -80,7 +70,7 @@ static void au1x_pcm_queue_tx(struct au1xpsc_audio_dmadata *cd)
 	au1xxx_dbdma_put_source(cd->ddma_chan, cd->dma_area,
 				cd->period_bytes, DDMA_FLAGS_IE);
 
-	/* update next-to-queue period */
+	 
 	++cd->q_period;
 	cd->dma_area += cd->period_bytes;
 	if (cd->q_period >= cd->periods) {
@@ -94,7 +84,7 @@ static void au1x_pcm_queue_rx(struct au1xpsc_audio_dmadata *cd)
 	au1xxx_dbdma_put_dest(cd->ddma_chan, cd->dma_area,
 			      cd->period_bytes, DDMA_FLAGS_IE);
 
-	/* update next-to-queue period */
+	 
 	++cd->q_period;
 	cd->dma_area += cd->period_bytes;
 	if (cd->q_period >= cd->periods) {
@@ -140,21 +130,17 @@ static void au1x_pcm_dbdma_free(struct au1xpsc_audio_dmadata *pcd)
 	}
 }
 
-/* in case of missing DMA ring or changed TX-source / RX-dest bit widths,
- * allocate (or reallocate) a 2-descriptor DMA ring with bit depth according
- * to ALSA-supplied sample depth.  This is due to limitations in the dbdma api
- * (cannot adjust source/dest widths of already allocated descriptor ring).
- */
+ 
 static int au1x_pcm_dbdma_realloc(struct au1xpsc_audio_dmadata *pcd,
 				 int stype, int msbits)
 {
-	/* DMA only in 8/16/32 bit widths */
+	 
 	if (msbits == 24)
 		msbits = 32;
 
-	/* check current config: correct bits and descriptors allocated? */
+	 
 	if ((pcd->ddma_chan) && (msbits == pcd->msbits))
-		goto out;	/* all ok! */
+		goto out;	 
 
 	au1x_pcm_dbdma_free(pcd);
 
@@ -283,7 +269,7 @@ static int au1xpsc_pcm_open(struct snd_soc_component *component,
 
 	dmaids = snd_soc_dai_get_dma_data(asoc_rtd_to_cpu(rtd, 0), substream);
 	if (!dmaids)
-		return -ENODEV;	/* whoa, has ordering changed? */
+		return -ENODEV;	 
 
 	pcd->ddma_id = dmaids[stype];
 
@@ -310,7 +296,7 @@ static int au1xpsc_pcm_new(struct snd_soc_component *component,
 	return 0;
 }
 
-/* au1xpsc audio platform */
+ 
 static struct snd_soc_component_driver au1xpsc_soc_component = {
 	.name		= DRV_NAME,
 	.open		= au1xpsc_pcm_open,

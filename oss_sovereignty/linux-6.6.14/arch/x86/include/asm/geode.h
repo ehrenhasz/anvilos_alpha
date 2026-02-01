@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * AMD Geode definitions
- * Copyright (C) 2006, Advanced Micro Devices, Inc.
- */
+ 
+ 
 
 #ifndef _ASM_X86_GEODE_H
 #define _ASM_X86_GEODE_H
@@ -30,4 +27,4 @@ static inline int is_geode(void)
 	return (is_geode_gx() || is_geode_lx());
 }
 
-#endif /* _ASM_X86_GEODE_H */
+#endif  

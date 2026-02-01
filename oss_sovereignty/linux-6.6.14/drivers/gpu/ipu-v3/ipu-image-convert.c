@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2012-2016 Mentor Graphics Inc.
- *
- * Queued image conversion support, with tiling and rotation.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/dma-mapping.h>
@@ -13,55 +9,7 @@
 
 #include "ipu-prv.h"
 
-/*
- * The IC Resizer has a restriction that the output frame from the
- * resizer must be 1024 or less in both width (pixels) and height
- * (lines).
- *
- * The image converter attempts to split up a conversion when
- * the desired output (converted) frame resolution exceeds the
- * IC resizer limit of 1024 in either dimension.
- *
- * If either dimension of the output frame exceeds the limit, the
- * dimension is split into 1, 2, or 4 equal stripes, for a maximum
- * of 4*4 or 16 tiles. A conversion is then carried out for each
- * tile (but taking care to pass the full frame stride length to
- * the DMA channel's parameter memory!). IDMA double-buffering is used
- * to convert each tile back-to-back when possible (see note below
- * when double_buffering boolean is set).
- *
- * Note that the input frame must be split up into the same number
- * of tiles as the output frame:
- *
- *                       +---------+-----+
- *   +-----+---+         |  A      | B   |
- *   | A   | B |         |         |     |
- *   +-----+---+   -->   +---------+-----+
- *   | C   | D |         |  C      | D   |
- *   +-----+---+         |         |     |
- *                       +---------+-----+
- *
- * Clockwise 90° rotations are handled by first rescaling into a
- * reusable temporary tile buffer and then rotating with the 8x8
- * block rotator, writing to the correct destination:
- *
- *                                         +-----+-----+
- *                                         |     |     |
- *   +-----+---+         +---------+       | C   | A   |
- *   | A   | B |         | A,B, |  |       |     |     |
- *   +-----+---+   -->   | C,D  |  |  -->  |     |     |
- *   | C   | D |         +---------+       +-----+-----+
- *   +-----+---+                           | D   | B   |
- *                                         |     |     |
- *                                         +-----+-----+
- *
- * If the 8x8 block rotator is used, horizontal or vertical flipping
- * is done during the rotation step, otherwise flipping is done
- * during the scaling step.
- * With rotation or flipping, tile order changes between input and
- * output image. Tiles are numbered row major from top left to bottom
- * right for both input and output image.
- */
+ 
 
 #define MAX_STRIPES_W    4
 #define MAX_STRIPES_H    4
@@ -93,21 +41,21 @@ struct ipu_image_convert_dma_chan {
 	int vdi_in_n;
 };
 
-/* dimensions of one tile */
+ 
 struct ipu_image_tile {
 	u32 width;
 	u32 height;
 	u32 left;
 	u32 top;
-	/* size and strides are in bytes */
+	 
 	u32 size;
 	u32 stride;
 	u32 rot_stride;
-	/* start Y or packed offset of this tile */
+	 
 	u32 offset;
-	/* offset from start to tile in U plane, for planar formats */
+	 
 	u32 u_off;
-	/* offset from start to tile in V plane, for planar formats */
+	 
 	u32 v_off;
 };
 
@@ -118,22 +66,22 @@ struct ipu_image_convert_image {
 	const struct ipu_image_pixfmt *fmt;
 	unsigned int stride;
 
-	/* # of rows (horizontal stripes) if dest height is > 1024 */
+	 
 	unsigned int num_rows;
-	/* # of columns (vertical stripes) if dest width is > 1024 */
+	 
 	unsigned int num_cols;
 
 	struct ipu_image_tile tile[MAX_TILES];
 };
 
 struct ipu_image_pixfmt {
-	u32	fourcc;        /* V4L2 fourcc */
-	int     bpp;           /* total bpp */
-	int     uv_width_dec;  /* decimation in width for U/V planes */
-	int     uv_height_dec; /* decimation in height for U/V planes */
-	bool    planar;        /* planar format */
-	bool    uv_swapped;    /* U and V planes are swapped */
-	bool    uv_packed;     /* partial planar (U and V in same plane) */
+	u32	fourcc;         
+	int     bpp;            
+	int     uv_width_dec;   
+	int     uv_height_dec;  
+	bool    planar;         
+	bool    uv_swapped;     
+	bool    uv_packed;      
 };
 
 struct ipu_image_convert_ctx;
@@ -157,7 +105,7 @@ struct ipu_image_convert_ctx {
 	ipu_image_convert_cb_t complete;
 	void *complete_context;
 
-	/* Source/destination image data and rotation mode */
+	 
 	struct ipu_image_convert_image in;
 	struct ipu_image_convert_image out;
 	struct ipu_ic_csc csc;
@@ -169,25 +117,25 @@ struct ipu_image_convert_ctx {
 	u32 resize_coeffs_h[MAX_STRIPES_W];
 	u32 resize_coeffs_v[MAX_STRIPES_H];
 
-	/* intermediate buffer for rotation */
+	 
 	struct ipu_image_convert_dma_buf rot_intermediate[2];
 
-	/* current buffer number for double buffering */
+	 
 	int cur_buf_num;
 
 	bool aborting;
 	struct completion aborted;
 
-	/* can we use double-buffering for this conversion operation? */
+	 
 	bool double_buffering;
-	/* num_rows * num_cols */
+	 
 	unsigned int num_tiles;
-	/* next tile to process */
+	 
 	unsigned int next_tile;
-	/* where to place converted tile in dest image */
+	 
 	unsigned int out_tile_map[MAX_TILES];
 
-	/* mask of completed EOF irqs at every tile conversion */
+	 
 	enum eof_irq_mask eof_mask;
 
 	struct list_head list;
@@ -205,7 +153,7 @@ struct ipu_image_convert_chan {
 	struct ipuv3_channel *rotation_in_chan;
 	struct ipuv3_channel *rotation_out_chan;
 
-	/* the IPU end-of-frame irqs */
+	 
 	int in_eof_irq;
 	int rot_in_eof_irq;
 	int out_eof_irq;
@@ -213,14 +161,14 @@ struct ipu_image_convert_chan {
 
 	spinlock_t irqlock;
 
-	/* list of convert contexts */
+	 
 	struct list_head ctx_list;
-	/* queue of conversion runs */
+	 
 	struct list_head pending_q;
-	/* queue of completed runs */
+	 
 	struct list_head done_q;
 
-	/* the current conversion run */
+	 
 	struct ipu_image_convert_run *current_run;
 };
 
@@ -362,7 +310,7 @@ int ipu_image_convert_enum_format(int index, u32 *fourcc)
 	if (index >= (int)ARRAY_SIZE(image_convert_formats))
 		return -EINVAL;
 
-	/* Format found */
+	 
 	fmt = &image_convert_formats[index];
 	*fourcc = fmt->fourcc;
 	return 0;
@@ -399,14 +347,7 @@ static inline int num_stripes(int dim)
 	return (dim - 1) / 1024 + 1;
 }
 
-/*
- * Calculate downsizing coefficients, which are the same for all tiles,
- * and initial bilinear resizing coefficients, which are used to find the
- * best seam positions.
- * Also determine the number of tiles necessary to guarantee that no tile
- * is larger than 1024 pixels in either dimension at the output and between
- * IC downsizing and main processing sections.
- */
+ 
 static int calc_image_resize_coefficients(struct ipu_image_convert_ctx *ctx,
 					  struct ipu_image *in,
 					  struct ipu_image *out)
@@ -427,7 +368,7 @@ static int calc_image_resize_coefficients(struct ipu_image_convert_ctx *ctx,
 		resized_height = out->rect.width;
 	}
 
-	/* Do not let invalid input lead to an endless loop below */
+	 
 	if (WARN_ON(resized_width == 0 || resized_height == 0))
 		return -EINVAL;
 
@@ -441,20 +382,11 @@ static int calc_image_resize_coefficients(struct ipu_image_convert_ctx *ctx,
 		downsize_coeff_v++;
 	}
 
-	/*
-	 * Calculate the bilinear resizing coefficients that could be used if
-	 * we were converting with a single tile. The bottom right output pixel
-	 * should sample as close as possible to the bottom right input pixel
-	 * out of the decimator, but not overshoot it:
-	 */
+	 
 	resize_coeff_h = 8192 * (downsized_width - 1) / (resized_width - 1);
 	resize_coeff_v = 8192 * (downsized_height - 1) / (resized_height - 1);
 
-	/*
-	 * Both the output of the IC downsizing section before being passed to
-	 * the IC main processing section and the final output of the IC main
-	 * processing section must be <= 1024 pixels in both dimensions.
-	 */
+	 
 	cols = num_stripes(max_t(u32, downsized_width, resized_width));
 	rows = num_stripes(max_t(u32, downsized_height, resized_height));
 
@@ -479,25 +411,7 @@ static int calc_image_resize_coefficients(struct ipu_image_convert_ctx *ctx,
 
 #define round_closest(x, y) round_down((x) + (y)/2, (y))
 
-/*
- * Find the best aligned seam position for the given column / row index.
- * Rotation and image offsets are out of scope.
- *
- * @index: column / row index, used to calculate valid interval
- * @in_edge: input right / bottom edge
- * @out_edge: output right / bottom edge
- * @in_align: input alignment, either horizontal 8-byte line start address
- *            alignment, or pixel alignment due to image format
- * @out_align: output alignment, either horizontal 8-byte line start address
- *             alignment, or pixel alignment due to image format or rotator
- *             block size
- * @in_burst: horizontal input burst size in case of horizontal flip
- * @out_burst: horizontal output burst size or rotator block size
- * @downsize_coeff: downsizing section coefficient
- * @resize_coeff: main processing section resizing coefficient
- * @_in_seam: aligned input seam position return value
- * @_out_seam: aligned output seam position return value
- */
+ 
 static void find_best_seam(struct ipu_image_convert_ctx *ctx,
 			   unsigned int index,
 			   unsigned int in_edge,
@@ -513,7 +427,7 @@ static void find_best_seam(struct ipu_image_convert_ctx *ctx,
 {
 	struct device *dev = ctx->chan->priv->ipu->dev;
 	unsigned int out_pos;
-	/* Input / output seam position candidates */
+	 
 	unsigned int out_seam = 0;
 	unsigned int in_seam = 0;
 	unsigned int min_diff = UINT_MAX;
@@ -522,25 +436,18 @@ static void find_best_seam(struct ipu_image_convert_ctx *ctx,
 	unsigned int in_start;
 	unsigned int in_end;
 
-	/* Start within 1024 pixels of the right / bottom edge */
+	 
 	out_start = max_t(int, index * out_align, out_edge - 1024);
-	/* End before having to add more columns to the left / rows above */
+	 
 	out_end = min_t(unsigned int, out_edge, index * 1024 + 1);
 
-	/*
-	 * Limit input seam position to make sure that the downsized input tile
-	 * to the right or bottom does not exceed 1024 pixels.
-	 */
+	 
 	in_start = max_t(int, index * in_align,
 			 in_edge - (1024 << downsize_coeff));
 	in_end = min_t(unsigned int, in_edge,
 		       index * (1024 << downsize_coeff) + 1);
 
-	/*
-	 * Output tiles must start at a multiple of 8 bytes horizontally and
-	 * possibly at an even line horizontally depending on the pixel format.
-	 * Only consider output aligned positions for the seam.
-	 */
+	 
 	out_start = round_up(out_start, out_align);
 	for (out_pos = out_start; out_pos < out_end; out_pos += out_align) {
 		unsigned int in_pos;
@@ -548,25 +455,15 @@ static void find_best_seam(struct ipu_image_convert_ctx *ctx,
 		unsigned int in_pos_rounded;
 		unsigned int diff;
 
-		/*
-		 * Tiles in the right row / bottom column may not be allowed to
-		 * overshoot horizontally / vertically. out_burst may be the
-		 * actual DMA burst size, or the rotator block size.
-		 */
+		 
 		if ((out_burst > 1) && (out_edge - out_pos) % out_burst)
 			continue;
 
-		/*
-		 * Input sample position, corresponding to out_pos, 19.13 fixed
-		 * point.
-		 */
+		 
 		in_pos = (out_pos * resize_coeff) << downsize_coeff;
-		/*
-		 * The closest input sample position that we could actually
-		 * start the input tile at, 19.13 fixed point.
-		 */
+		 
 		in_pos_aligned = round_closest(in_pos, 8192U * in_align);
-		/* Convert 19.13 fixed point to integer */
+		 
 		in_pos_rounded = in_pos_aligned / 8192U;
 
 		if (in_pos_rounded < in_start)
@@ -595,10 +492,7 @@ static void find_best_seam(struct ipu_image_convert_ctx *ctx,
 		DIV_ROUND_CLOSEST(min_diff % 8192 * 1000, 8192));
 }
 
-/*
- * Tile left edges are required to be aligned to multiples of 8 bytes
- * by the IDMAC.
- */
+ 
 static inline u32 tile_left_align(const struct ipu_image_pixfmt *fmt)
 {
 	if (fmt->planar)
@@ -607,9 +501,7 @@ static inline u32 tile_left_align(const struct ipu_image_pixfmt *fmt)
 		return fmt->bpp == 32 ? 2 : fmt->bpp == 16 ? 4 : 8;
 }
 
-/*
- * Tile top edge alignment is only limited by chroma subsampling.
- */
+ 
 static inline u32 tile_top_align(const struct ipu_image_pixfmt *fmt)
 {
 	return fmt->uv_height_dec > 1 ? 2 : 1;
@@ -620,22 +512,12 @@ static inline u32 tile_width_align(enum ipu_image_convert_type type,
 				   enum ipu_rotate_mode rot_mode)
 {
 	if (type == IMAGE_CONVERT_IN) {
-		/*
-		 * The IC burst reads 8 pixels at a time. Reading beyond the
-		 * end of the line is usually acceptable. Those pixels are
-		 * ignored, unless the IC has to write the scaled line in
-		 * reverse.
-		 */
+		 
 		return (!ipu_rot_mode_is_irt(rot_mode) &&
 			(rot_mode & IPU_ROT_BIT_HFLIP)) ? 8 : 2;
 	}
 
-	/*
-	 * Align to 16x16 pixel blocks for planar 4:2:0 chroma subsampled
-	 * formats to guarantee 8-byte aligned line start addresses in the
-	 * chroma planes when IRT is used. Align to 8x8 pixel IRT block size
-	 * for all other formats.
-	 */
+	 
 	return (ipu_rot_mode_is_irt(rot_mode) &&
 		fmt->planar && !fmt->uv_packed) ?
 		8 * fmt->uv_width_dec : 8;
@@ -648,20 +530,11 @@ static inline u32 tile_height_align(enum ipu_image_convert_type type,
 	if (type == IMAGE_CONVERT_IN || !ipu_rot_mode_is_irt(rot_mode))
 		return 2;
 
-	/*
-	 * Align to 16x16 pixel blocks for planar 4:2:0 chroma subsampled
-	 * formats to guarantee 8-byte aligned line start addresses in the
-	 * chroma planes when IRT is used. Align to 8x8 pixel IRT block size
-	 * for all other formats.
-	 */
+	 
 	return (fmt->planar && !fmt->uv_packed) ? 8 * fmt->uv_width_dec : 8;
 }
 
-/*
- * Fill in left position and width and for all tiles in an input column, and
- * for all corresponding output tiles. If the 90° rotator is used, the output
- * tiles are in a row, and output tile top position and height are set.
- */
+ 
 static void fill_tile_column(struct ipu_image_convert_ctx *ctx,
 			     unsigned int col,
 			     struct ipu_image_convert_image *in,
@@ -690,11 +563,7 @@ static void fill_tile_column(struct ipu_image_convert_ctx *ctx,
 	}
 }
 
-/*
- * Fill in top position and height and for all tiles in an input row, and
- * for all corresponding output tiles. If the 90° rotator is used, the output
- * tiles are in a column, and output tile left position and width are set.
- */
+ 
 static void fill_tile_row(struct ipu_image_convert_ctx *ctx, unsigned int row,
 			  struct ipu_image_convert_image *in,
 			  unsigned int in_top, unsigned int in_height,
@@ -722,11 +591,7 @@ static void fill_tile_row(struct ipu_image_convert_ctx *ctx, unsigned int row,
 	}
 }
 
-/*
- * Find the best horizontal and vertical seam positions to split into tiles.
- * Minimize the fractional part of the input sampling position for the
- * top / left pixels of each tile.
- */
+ 
 static void find_seams(struct ipu_image_convert_ctx *ctx,
 		       struct ipu_image_convert_image *in,
 		       struct ipu_image_convert_image *out)
@@ -752,7 +617,7 @@ static void find_seams(struct ipu_image_convert_ctx *ctx,
 	unsigned int flipped_out_top;
 
 	if (ipu_rot_mode_is_irt(ctx->rot_mode)) {
-		/* Switch width/height and align top left to IRT block size */
+		 
 		resized_width = out->base.rect.height;
 		resized_height = out->base.rect.width;
 		out_left_align = out_height_align;
@@ -771,15 +636,12 @@ static void find_seams(struct ipu_image_convert_ctx *ctx,
 		unsigned int in_left;
 		unsigned int out_left;
 
-		/*
-		 * Align input width to burst length if the scaling step flips
-		 * horizontally.
-		 */
+		 
 
 		find_best_seam(ctx, col,
 			       in_right, out_right,
 			       in_left_align, out_left_align,
-			       allow_in_overshoot ? 1 : 8 /* burst length */,
+			       allow_in_overshoot ? 1 : 8  ,
 			       allow_out_overshoot ? 1 : out_width_align,
 			       ctx->downsize_coeff_h, ctx->image_resize_coeff_h,
 			       &in_left, &out_left);
@@ -861,7 +723,7 @@ static int calc_tile_dimensions(struct ipu_image_convert_ctx *ctx,
 	unsigned int i;
 
 	if (image->type == IMAGE_CONVERT_IN) {
-		/* Up to 4096x4096 input tile size */
+		 
 		max_width <<= ctx->downsize_coeff_h;
 		max_height <<= ctx->downsize_coeff_v;
 	}
@@ -908,12 +770,7 @@ static int calc_tile_dimensions(struct ipu_image_convert_ctx *ctx,
 	return 0;
 }
 
-/*
- * Use the rotation transformation to find the tile coordinates
- * (row, col) of a tile in the destination frame that corresponds
- * to the given tile coordinates of a source frame. The destination
- * coordinate is then converted to a tile index.
- */
+ 
 static int transform_tile_index(struct ipu_image_convert_ctx *ctx,
 				int src_row, int src_col)
 {
@@ -923,18 +780,15 @@ static int transform_tile_index(struct ipu_image_convert_ctx *ctx,
 	struct ipu_image_convert_image *d_image = &ctx->out;
 	int dst_row, dst_col;
 
-	/* with no rotation it's a 1:1 mapping */
+	 
 	if (ctx->rot_mode == IPU_ROTATE_NONE)
 		return src_row * s_image->num_cols + src_col;
 
-	/*
-	 * before doing the transform, first we have to translate
-	 * source row,col for an origin in the center of s_image
-	 */
+	 
 	src_row = src_row * 2 - (s_image->num_rows - 1);
 	src_col = src_col * 2 - (s_image->num_cols - 1);
 
-	/* do the rotation transform */
+	 
 	if (ctx->rot_mode & IPU_ROT_BIT_90) {
 		dst_col = -src_row;
 		dst_row = src_col;
@@ -943,7 +797,7 @@ static int transform_tile_index(struct ipu_image_convert_ctx *ctx,
 		dst_row = src_row;
 	}
 
-	/* apply flip */
+	 
 	if (ctx->rot_mode & IPU_ROT_BIT_HFLIP)
 		dst_col = -dst_col;
 	if (ctx->rot_mode & IPU_ROT_BIT_VFLIP)
@@ -952,10 +806,7 @@ static int transform_tile_index(struct ipu_image_convert_ctx *ctx,
 	dev_dbg(priv->ipu->dev, "task %u: ctx %p: [%d,%d] --> [%d,%d]\n",
 		chan->ic_task, ctx, src_col, src_row, dst_col, dst_row);
 
-	/*
-	 * finally translate dest row,col using an origin in upper
-	 * left of d_image
-	 */
+	 
 	dst_row += d_image->num_rows - 1;
 	dst_col += d_image->num_cols - 1;
 	dst_row /= 2;
@@ -964,9 +815,7 @@ static int transform_tile_index(struct ipu_image_convert_ctx *ctx,
 	return dst_row * d_image->num_cols + dst_col;
 }
 
-/*
- * Fill the out_tile_map[] with transformed destination tile indeces.
- */
+ 
 static void calc_out_tile_map(struct ipu_image_convert_ctx *ctx)
 {
 	struct ipu_image_convert_image *s_image = &ctx->in;
@@ -993,7 +842,7 @@ static int calc_tile_offsets_planar(struct ipu_image_convert_ctx *ctx,
 	u32 y_row_off, y_col_off, y_off;
 	u32 y_size, uv_size;
 
-	/* setup some convenience vars */
+	 
 	H = image->base.pix.height;
 
 	y_stride = image->stride;
@@ -1053,7 +902,7 @@ static int calc_tile_offsets_packed(struct ipu_image_convert_ctx *ctx,
 	u32 bpp, stride, offset;
 	u32 row_off, col_off;
 
-	/* setup some convenience vars */
+	 
 	stride = image->stride;
 	bpp = fmt->bpp;
 
@@ -1094,15 +943,7 @@ static int calc_tile_offsets(struct ipu_image_convert_ctx *ctx,
 	return calc_tile_offsets_packed(ctx, image);
 }
 
-/*
- * Calculate the resizing ratio for the IC main processing section given input
- * size, fixed downsizing coefficient, and output size.
- * Either round to closest for the next tile's first pixel to minimize seams
- * and distortion (for all but right column / bottom row), or round down to
- * avoid sampling beyond the edges of the input image for this tile's last
- * pixel.
- * Returns the resizing coefficient, resizing ratio is 8192.0 / resize_coeff.
- */
+ 
 static u32 calc_resize_coeff(u32 input_size, u32 downsize_coeff,
 			     u32 output_size, bool allow_overshoot)
 {
@@ -1114,12 +955,7 @@ static u32 calc_resize_coeff(u32 input_size, u32 downsize_coeff,
 		return 8192 * (downsized - 1) / (output_size - 1);
 }
 
-/*
- * Slightly modify resize coefficients per tile to hide the bilinear
- * interpolator reset at tile borders, shifting the right / bottom edge
- * by up to a half input pixel. This removes noticeable seams between
- * tiles at higher upscaling factors.
- */
+ 
 static void calc_tile_resize_coefficients(struct ipu_image_convert_ctx *ctx)
 {
 	struct ipu_image_convert_chan *chan = ctx->chan;
@@ -1151,17 +987,10 @@ static void calc_tile_resize_coefficients(struct ipu_image_convert_ctx *ctx)
 		dev_dbg(priv->ipu->dev, "%s: column %u hscale: *8192/%u\n",
 			__func__, col, resize_coeff_h);
 
-		/*
-		 * With the horizontal scaling factor known, round up resized
-		 * width (output width or height) to burst size.
-		 */
+		 
 		resized_width = round_up(resized_width, 8);
 
-		/*
-		 * Calculate input width from the last accessed input pixel
-		 * given resized width and scaling coefficients. Round up to
-		 * burst size.
-		 */
+		 
 		last_output = resized_width - 1;
 		if (closest && ((last_output * resize_coeff_h) % 8192))
 			last_output++;
@@ -1208,17 +1037,10 @@ static void calc_tile_resize_coefficients(struct ipu_image_convert_ctx *ctx)
 		dev_dbg(priv->ipu->dev, "%s: row %u vscale: *8192/%u\n",
 			__func__, row, resize_coeff_v);
 
-		/*
-		 * With the vertical scaling factor known, round up resized
-		 * height (output width or height) to IDMAC limitations.
-		 */
+		 
 		resized_height = round_up(resized_height, 2);
 
-		/*
-		 * Calculate input width from the last accessed input pixel
-		 * given resized height and scaling coefficients. Align to
-		 * IDMAC restrictions.
-		 */
+		 
 		last_output = resized_height - 1;
 		if (closest && ((last_output * resize_coeff_v) % 8192))
 			last_output++;
@@ -1243,10 +1065,7 @@ static void calc_tile_resize_coefficients(struct ipu_image_convert_ctx *ctx)
 	}
 }
 
-/*
- * return the number of runs in given queue (pending_q or done_q)
- * for this context. hold irqlock when calling.
- */
+ 
 static int get_run_count(struct ipu_image_convert_ctx *ctx,
 			 struct list_head *q)
 {
@@ -1272,7 +1091,7 @@ static void convert_stop(struct ipu_image_convert_run *run)
 	dev_dbg(priv->ipu->dev, "%s: task %u: stopping ctx %p run %p\n",
 		__func__, chan->ic_task, ctx, run);
 
-	/* disable IC tasks and the channels */
+	 
 	ipu_ic_task_disable(chan->ic);
 	ipu_idmac_disable_channel(chan->in_chan);
 	ipu_idmac_disable_channel(chan->out_chan);
@@ -1345,10 +1164,7 @@ static void init_idmac_channel(struct ipu_image_convert_ctx *ctx,
 	if (rot_mode)
 		ipu_cpmem_set_rotation(channel, rot_mode);
 
-	/*
-	 * Skip writing U and V components to odd rows in the output
-	 * channels for planar 4:2:0.
-	 */
+	 
 	if ((channel == chan->out_chan ||
 	     channel == chan->rotation_out_chan) &&
 	    image->fmt->planar && image->fmt->uv_height_dec == 2)
@@ -1366,10 +1182,7 @@ static void init_idmac_channel(struct ipu_image_convert_ctx *ctx,
 	ipu_ic_task_idma_init(chan->ic, channel, width, height,
 			      burst_size, rot_mode);
 
-	/*
-	 * Setting a non-zero AXI ID collides with the PRG AXI snooping, so
-	 * only do this when there is no PRG present.
-	 */
+	 
 	if (!channel->ipu->prg_priv)
 		ipu_cpmem_set_axi_id(channel, 1);
 
@@ -1392,11 +1205,11 @@ static int convert_start(struct ipu_image_convert_run *run, unsigned int tile)
 	dev_dbg(priv->ipu->dev, "%s: task %u: starting ctx %p run %p tile %u -> %u\n",
 		__func__, chan->ic_task, ctx, run, tile, dst_tile);
 
-	/* clear EOF irq mask */
+	 
 	ctx->eof_mask = 0;
 
 	if (ipu_rot_mode_is_irt(ctx->rot_mode)) {
-		/* swap width/height for resizer */
+		 
 		dest_width = d_image->tile[dst_tile].height;
 		dest_height = d_image->tile[dst_tile].width;
 	} else {
@@ -1416,7 +1229,7 @@ static int convert_start(struct ipu_image_convert_run *run, unsigned int tile)
 		__func__, s_image->tile[tile].width,
 		s_image->tile[tile].height, dest_width, dest_height, rsc);
 
-	/* setup the IC resizer and CSC */
+	 
 	ret = ipu_ic_task_init_rsc(chan->ic, &ctx->csc,
 				   s_image->tile[tile].width,
 				   s_image->tile[tile].height,
@@ -1428,35 +1241,35 @@ static int convert_start(struct ipu_image_convert_run *run, unsigned int tile)
 		return ret;
 	}
 
-	/* init the source MEM-->IC PP IDMAC channel */
+	 
 	init_idmac_channel(ctx, chan->in_chan, s_image,
 			   IPU_ROTATE_NONE, false, tile);
 
 	if (ipu_rot_mode_is_irt(ctx->rot_mode)) {
-		/* init the IC PP-->MEM IDMAC channel */
+		 
 		init_idmac_channel(ctx, chan->out_chan, d_image,
 				   IPU_ROTATE_NONE, true, tile);
 
-		/* init the MEM-->IC PP ROT IDMAC channel */
+		 
 		init_idmac_channel(ctx, chan->rotation_in_chan, d_image,
 				   ctx->rot_mode, true, tile);
 
-		/* init the destination IC PP ROT-->MEM IDMAC channel */
+		 
 		init_idmac_channel(ctx, chan->rotation_out_chan, d_image,
 				   IPU_ROTATE_NONE, false, tile);
 
-		/* now link IC PP-->MEM to MEM-->IC PP ROT */
+		 
 		ipu_idmac_link(chan->out_chan, chan->rotation_in_chan);
 	} else {
-		/* init the destination IC PP-->MEM IDMAC channel */
+		 
 		init_idmac_channel(ctx, chan->out_chan, d_image,
 				   ctx->rot_mode, false, tile);
 	}
 
-	/* enable the IC */
+	 
 	ipu_ic_enable(chan->ic);
 
-	/* set buffers ready */
+	 
 	ipu_idmac_select_buffer(chan->in_chan, 0);
 	ipu_idmac_select_buffer(chan->out_chan, 0);
 	if (ipu_rot_mode_is_irt(ctx->rot_mode))
@@ -1468,7 +1281,7 @@ static int convert_start(struct ipu_image_convert_run *run, unsigned int tile)
 			ipu_idmac_select_buffer(chan->rotation_out_chan, 1);
 	}
 
-	/* enable the channels! */
+	 
 	ipu_idmac_enable_channel(chan->in_chan);
 	ipu_idmac_enable_channel(chan->out_chan);
 	if (ipu_rot_mode_is_irt(ctx->rot_mode)) {
@@ -1490,7 +1303,7 @@ static int convert_start(struct ipu_image_convert_run *run, unsigned int tile)
 	return 0;
 }
 
-/* hold irqlock when calling */
+ 
 static int do_run(struct ipu_image_convert_run *run)
 {
 	struct ipu_image_convert_ctx *ctx = run->ctx;
@@ -1504,14 +1317,14 @@ static int do_run(struct ipu_image_convert_run *run)
 	ctx->cur_buf_num = 0;
 	ctx->next_tile = 1;
 
-	/* remove run from pending_q and set as current */
+	 
 	list_del(&run->list);
 	chan->current_run = run;
 
 	return convert_start(run, 0);
 }
 
-/* hold irqlock when calling */
+ 
 static void run_next(struct ipu_image_convert_chan *chan)
 {
 	struct ipu_image_convert_priv *priv = chan->priv;
@@ -1521,7 +1334,7 @@ static void run_next(struct ipu_image_convert_chan *chan)
 	lockdep_assert_held(&chan->irqlock);
 
 	list_for_each_entry_safe(run, tmp, &chan->pending_q, list) {
-		/* skip contexts that are aborting */
+		 
 		if (run->ctx->aborting) {
 			dev_dbg(priv->ipu->dev,
 				"%s: task %u: skipping aborting ctx %p run %p\n",
@@ -1533,11 +1346,7 @@ static void run_next(struct ipu_image_convert_chan *chan)
 		if (!ret)
 			break;
 
-		/*
-		 * something went wrong with start, add the run
-		 * to done q and continue to the next run in the
-		 * pending q.
-		 */
+		 
 		run->status = ret;
 		list_add_tail(&run->list, &chan->done_q);
 		chan->current_run = NULL;
@@ -1563,7 +1372,7 @@ static void empty_done_q(struct ipu_image_convert_chan *chan)
 			"%s: task %u: completing ctx %p run %p with %d\n",
 			__func__, chan->ic_task, run->ctx, run, run->status);
 
-		/* call the completion callback and free the run */
+		 
 		spin_unlock_irqrestore(&chan->irqlock, flags);
 		run->ctx->complete(run, run->ctx->complete_context);
 		spin_lock_irqsave(&chan->irqlock, flags);
@@ -1572,10 +1381,7 @@ static void empty_done_q(struct ipu_image_convert_chan *chan)
 	spin_unlock_irqrestore(&chan->irqlock, flags);
 }
 
-/*
- * the bottom half thread clears out the done_q, calling the
- * completion handler for each.
- */
+ 
 static irqreturn_t do_bh(int irq, void *dev_id)
 {
 	struct ipu_image_convert_chan *chan = dev_id;
@@ -1590,10 +1396,7 @@ static irqreturn_t do_bh(int irq, void *dev_id)
 
 	spin_lock_irqsave(&chan->irqlock, flags);
 
-	/*
-	 * the done_q is cleared out, signal any contexts
-	 * that are aborting that abort can complete.
-	 */
+	 
 	list_for_each_entry(ctx, &chan->ctx_list, list) {
 		if (ctx->aborting) {
 			dev_dbg(priv->ipu->dev,
@@ -1629,7 +1432,7 @@ static bool ic_settings_changed(struct ipu_image_convert_ctx *ctx)
 	return false;
 }
 
-/* hold irqlock when calling */
+ 
 static irqreturn_t do_tile_complete(struct ipu_image_convert_run *run)
 {
 	struct ipu_image_convert_ctx *ctx = run->ctx;
@@ -1645,14 +1448,7 @@ static irqreturn_t do_tile_complete(struct ipu_image_convert_run *run)
 	outch = ipu_rot_mode_is_irt(ctx->rot_mode) ?
 		chan->rotation_out_chan : chan->out_chan;
 
-	/*
-	 * It is difficult to stop the channel DMA before the channels
-	 * enter the paused state. Without double-buffering the channels
-	 * are always in a paused state when the EOF irq occurs, so it
-	 * is safe to stop the channels now. For double-buffering we
-	 * just ignore the abort until the operation completes, when it
-	 * is safe to shut down.
-	 */
+	 
 	if (ctx->aborting && !ctx->double_buffering) {
 		convert_stop(run);
 		run->status = -EIO;
@@ -1660,17 +1456,13 @@ static irqreturn_t do_tile_complete(struct ipu_image_convert_run *run)
 	}
 
 	if (ctx->next_tile == ctx->num_tiles) {
-		/*
-		 * the conversion is complete
-		 */
+		 
 		convert_stop(run);
 		run->status = 0;
 		goto done;
 	}
 
-	/*
-	 * not done, place the next tile buffers.
-	 */
+	 
 	if (!ctx->double_buffering) {
 		if (ic_settings_changed(ctx)) {
 			convert_stop(run);
@@ -1715,7 +1507,7 @@ static irqreturn_t do_tile_complete(struct ipu_image_convert_run *run)
 		ctx->cur_buf_num ^= 1;
 	}
 
-	ctx->eof_mask = 0; /* clear EOF irq mask for next tile */
+	ctx->eof_mask = 0;  
 	ctx->next_tile++;
 	return IRQ_HANDLED;
 done:
@@ -1737,7 +1529,7 @@ static irqreturn_t eof_irq(int irq, void *data)
 
 	spin_lock_irqsave(&chan->irqlock, flags);
 
-	/* get current run and its context */
+	 
 	run = chan->current_run;
 	if (!run) {
 		ret = IRQ_NONE;
@@ -1753,7 +1545,7 @@ static irqreturn_t eof_irq(int irq, void *data)
 	} else if (irq == chan->rot_in_eof_irq ||
 		   irq == chan->rot_out_eof_irq) {
 		if (!ipu_rot_mode_is_irt(ctx->rot_mode)) {
-			/* this was NOT a rotation op, shouldn't happen */
+			 
 			dev_err(priv->ipu->dev,
 				"Unexpected rotation interrupt\n");
 			goto out;
@@ -1778,10 +1570,7 @@ out:
 	return ret;
 }
 
-/*
- * try to force the completion of runs for this ctx. Called when
- * abort wait times out in ipu_image_convert_abort().
- */
+ 
 static void force_abort(struct ipu_image_convert_ctx *ctx)
 {
 	struct ipu_image_convert_chan *chan = ctx->chan;
@@ -1857,7 +1646,7 @@ static int get_ipu_resources(struct ipu_image_convert_chan *chan)
 	struct ipu_image_convert_priv *priv = chan->priv;
 	int ret;
 
-	/* get IC */
+	 
 	chan->ic = ipu_ic_get(priv->ipu, chan->ic_task);
 	if (IS_ERR(chan->ic)) {
 		dev_err(priv->ipu->dev, "could not acquire IC\n");
@@ -1865,7 +1654,7 @@ static int get_ipu_resources(struct ipu_image_convert_chan *chan)
 		goto err;
 	}
 
-	/* get IDMAC channels */
+	 
 	chan->in_chan = ipu_idmac_get(priv->ipu, dma->in);
 	chan->out_chan = ipu_idmac_get(priv->ipu, dma->out);
 	if (IS_ERR(chan->in_chan) || IS_ERR(chan->out_chan)) {
@@ -1883,7 +1672,7 @@ static int get_ipu_resources(struct ipu_image_convert_chan *chan)
 		goto err;
 	}
 
-	/* acquire the EOF interrupts */
+	 
 	ret = get_eof_irq(chan, chan->in_chan);
 	if (ret < 0) {
 		chan->in_eof_irq = -1;
@@ -1943,24 +1732,24 @@ static int fill_image(struct ipu_image_convert_ctx *ctx,
 	return 0;
 }
 
-/* borrowed from drivers/media/v4l2-core/v4l2-common.c */
+ 
 static unsigned int clamp_align(unsigned int x, unsigned int min,
 				unsigned int max, unsigned int align)
 {
-	/* Bits that must be zero to be aligned */
+	 
 	unsigned int mask = ~((1 << align) - 1);
 
-	/* Clamp to aligned min and max */
+	 
 	x = clamp(x, (min + ~mask) & mask, max & mask);
 
-	/* Round to nearest aligned value */
+	 
 	if (align)
 		x = (x + (1 << (align - 1))) & mask;
 
 	return x;
 }
 
-/* Adjusts input/output images to IPU restrictions */
+ 
 void ipu_image_convert_adjust(struct ipu_image *in, struct ipu_image *out,
 			      enum ipu_rotate_mode rot_mode)
 {
@@ -1971,7 +1760,7 @@ void ipu_image_convert_adjust(struct ipu_image *in, struct ipu_image *out,
 	infmt = get_format(in->pix.pixelformat);
 	outfmt = get_format(out->pix.pixelformat);
 
-	/* set some default pixel formats if needed */
+	 
 	if (!infmt) {
 		in->pix.pixelformat = V4L2_PIX_FMT_RGB24;
 		infmt = get_format(V4L2_PIX_FMT_RGB24);
@@ -1981,10 +1770,10 @@ void ipu_image_convert_adjust(struct ipu_image *in, struct ipu_image *out,
 		outfmt = get_format(V4L2_PIX_FMT_RGB24);
 	}
 
-	/* image converter does not handle fields */
+	 
 	in->pix.field = out->pix.field = V4L2_FIELD_NONE;
 
-	/* resizer cannot downsize more than 4:1 */
+	 
 	if (ipu_rot_mode_is_irt(rot_mode)) {
 		out->pix.height = max_t(__u32, out->pix.height,
 					in->pix.width / 4);
@@ -1997,7 +1786,7 @@ void ipu_image_convert_adjust(struct ipu_image *in, struct ipu_image *out,
 					in->pix.height / 4);
 	}
 
-	/* align input width/height */
+	 
 	w_align_in = ilog2(tile_width_align(IMAGE_CONVERT_IN, infmt,
 					    rot_mode));
 	h_align_in = ilog2(tile_height_align(IMAGE_CONVERT_IN, infmt,
@@ -2007,7 +1796,7 @@ void ipu_image_convert_adjust(struct ipu_image *in, struct ipu_image *out,
 	in->pix.height = clamp_align(in->pix.height, MIN_H, MAX_H,
 				     h_align_in);
 
-	/* align output width/height */
+	 
 	w_align_out = ilog2(tile_width_align(IMAGE_CONVERT_OUT, outfmt,
 					     rot_mode));
 	h_align_out = ilog2(tile_height_align(IMAGE_CONVERT_OUT, outfmt,
@@ -2017,7 +1806,7 @@ void ipu_image_convert_adjust(struct ipu_image *in, struct ipu_image *out,
 	out->pix.height = clamp_align(out->pix.height, MIN_H, MAX_H,
 				      h_align_out);
 
-	/* set input/output strides and image sizes */
+	 
 	in->pix.bytesperline = infmt->planar ?
 		clamp_align(in->pix.width, 2 << w_align_in, MAX_W,
 			    w_align_in) :
@@ -2036,11 +1825,7 @@ void ipu_image_convert_adjust(struct ipu_image *in, struct ipu_image *out,
 }
 EXPORT_SYMBOL_GPL(ipu_image_convert_adjust);
 
-/*
- * this is used by ipu_image_convert_prepare() to verify set input and
- * output images are valid before starting the conversion. Clients can
- * also call it before calling ipu_image_convert_prepare().
- */
+ 
 int ipu_image_convert_verify(struct ipu_image *in, struct ipu_image *out,
 			     enum ipu_rotate_mode rot_mode)
 {
@@ -2061,10 +1846,7 @@ int ipu_image_convert_verify(struct ipu_image *in, struct ipu_image *out,
 }
 EXPORT_SYMBOL_GPL(ipu_image_convert_verify);
 
-/*
- * Call ipu_image_convert_prepare() to prepare for the conversion of
- * given images and rotation mode. Returns a new conversion context.
- */
+ 
 struct ipu_image_convert_ctx *
 ipu_image_convert_prepare(struct ipu_soc *ipu, enum ipu_ic_task ic_task,
 			  struct ipu_image *in, struct ipu_image *out,
@@ -2086,7 +1868,7 @@ ipu_image_convert_prepare(struct ipu_soc *ipu, enum ipu_ic_task ic_task,
 	     ic_task != IC_TASK_POST_PROCESSOR))
 		return ERR_PTR(-EINVAL);
 
-	/* verify the in/out images before continuing */
+	 
 	ret = ipu_image_convert_verify(in, out, rot_mode);
 	if (ret) {
 		dev_err(priv->ipu->dev, "%s: in/out formats invalid\n",
@@ -2108,7 +1890,7 @@ ipu_image_convert_prepare(struct ipu_soc *ipu, enum ipu_ic_task ic_task,
 
 	ctx->rot_mode = rot_mode;
 
-	/* Sets ctx->in.num_rows/cols as well */
+	 
 	ret = calc_image_resize_coefficients(ctx, in, out);
 	if (ret)
 		goto out_free;
@@ -2116,7 +1898,7 @@ ipu_image_convert_prepare(struct ipu_soc *ipu, enum ipu_ic_task ic_task,
 	s_image = &ctx->in;
 	d_image = &ctx->out;
 
-	/* set tiling and rotation */
+	 
 	if (ipu_rot_mode_is_irt(rot_mode)) {
 		d_image->num_rows = s_image->num_cols;
 		d_image->num_cols = s_image->num_rows;
@@ -2169,19 +1951,7 @@ ipu_image_convert_prepare(struct ipu_soc *ipu, enum ipu_ic_task ic_task,
 	ctx->complete = complete;
 	ctx->complete_context = complete_context;
 
-	/*
-	 * Can we use double-buffering for this operation? If there is
-	 * only one tile (the whole image can be converted in a single
-	 * operation) there's no point in using double-buffering. Also,
-	 * the IPU's IDMAC channels allow only a single U and V plane
-	 * offset shared between both buffers, but these offsets change
-	 * for every tile, and therefore would have to be updated for
-	 * each buffer which is not possible. So double-buffering is
-	 * impossible when either the source or destination images are
-	 * a planar format (YUV420, YUV422P, etc.). Further, differently
-	 * sized tiles or different resizing coefficients per tile
-	 * prevent double-buffering as well.
-	 */
+	 
 	ctx->double_buffering = (ctx->num_tiles > 1 &&
 				 !s_image->fmt->planar &&
 				 !d_image->fmt->planar);
@@ -2257,11 +2027,7 @@ out_free:
 }
 EXPORT_SYMBOL_GPL(ipu_image_convert_prepare);
 
-/*
- * Carry out a single image conversion run. Only the physaddr's of the input
- * and output image buffers are needed. The conversion context must have
- * been created previously with ipu_image_convert_prepare().
- */
+ 
 int ipu_image_convert_queue(struct ipu_image_convert_run *run)
 {
 	struct ipu_image_convert_chan *chan;
@@ -2302,7 +2068,7 @@ unlock:
 }
 EXPORT_SYMBOL_GPL(ipu_image_convert_queue);
 
-/* Abort any active or pending conversions for this context */
+ 
 static void __ipu_image_convert_abort(struct ipu_image_convert_ctx *ctx)
 {
 	struct ipu_image_convert_chan *chan = ctx->chan;
@@ -2313,7 +2079,7 @@ static void __ipu_image_convert_abort(struct ipu_image_convert_ctx *ctx)
 
 	spin_lock_irqsave(&chan->irqlock, flags);
 
-	/* move all remaining pending runs in this context to done_q */
+	 
 	list_for_each_entry_safe(run, tmp, &chan->pending_q, list) {
 		if (run->ctx != ctx)
 			continue;
@@ -2363,7 +2129,7 @@ void ipu_image_convert_abort(struct ipu_image_convert_ctx *ctx)
 }
 EXPORT_SYMBOL_GPL(ipu_image_convert_abort);
 
-/* Unprepare image conversion context */
+ 
 void ipu_image_convert_unprepare(struct ipu_image_convert_ctx *ctx)
 {
 	struct ipu_image_convert_chan *chan = ctx->chan;
@@ -2371,7 +2137,7 @@ void ipu_image_convert_unprepare(struct ipu_image_convert_ctx *ctx)
 	unsigned long flags;
 	bool put_res;
 
-	/* make sure no runs are hanging around */
+	 
 	__ipu_image_convert_abort(ctx);
 
 	dev_dbg(priv->ipu->dev, "%s: task %u: removing ctx %p\n", __func__,
@@ -2395,11 +2161,7 @@ void ipu_image_convert_unprepare(struct ipu_image_convert_ctx *ctx)
 }
 EXPORT_SYMBOL_GPL(ipu_image_convert_unprepare);
 
-/*
- * "Canned" asynchronous single image conversion. Allocates and returns
- * a new conversion run.  On successful return the caller must free the
- * run and call ipu_image_convert_unprepare() after conversion completes.
- */
+ 
 struct ipu_image_convert_run *
 ipu_image_convert(struct ipu_soc *ipu, enum ipu_ic_task ic_task,
 		  struct ipu_image *in, struct ipu_image *out,
@@ -2437,7 +2199,7 @@ ipu_image_convert(struct ipu_soc *ipu, enum ipu_ic_task ic_task,
 }
 EXPORT_SYMBOL_GPL(ipu_image_convert);
 
-/* "Canned" synchronous single image conversion */
+ 
 static void image_convert_sync_complete(struct ipu_image_convert_run *run,
 					void *data)
 {

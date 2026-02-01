@@ -1,19 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for GE FPGA based GPIO
- *
- * Author: Martyn Welch <martyn.welch@ge.com>
- *
- * 2008 (c) GE Intelligent Platforms Embedded Systems, Inc.
- */
 
-/*
- * TODO:
- *
- * Configuration of output modes (totem-pole/open-drain).
- * Interrupt configuration - interrupts are always generated, the FPGA relies
- * on the I/O interrupt controllers mask to stop them from being propagated.
- */
+ 
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/io.h>
@@ -70,7 +58,7 @@ static int __init gef_gpio_probe(struct platform_device *pdev)
 	if (ret)
 		return dev_err_probe(dev, ret, "bgpio_init failed\n");
 
-	/* Setup pointers to chip functions */
+	 
 	gc->label = devm_kasprintf(dev, GFP_KERNEL, "%pfw", dev_fwnode(dev));
 	if (!gc->label)
 		return -ENOMEM;
@@ -78,7 +66,7 @@ static int __init gef_gpio_probe(struct platform_device *pdev)
 	gc->base = -1;
 	gc->ngpio = (uintptr_t)device_get_match_data(dev);
 
-	/* This function adds a memory mapped GPIO chip */
+	 
 	ret = devm_gpiochip_add_data(dev, gc, NULL);
 	if (ret)
 		return dev_err_probe(dev, ret, "GPIO chip registration failed\n");

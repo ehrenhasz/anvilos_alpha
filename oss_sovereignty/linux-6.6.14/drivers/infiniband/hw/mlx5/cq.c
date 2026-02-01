@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2013-2015, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/kref.h>
 #include <rdma/ib_umem.h>
@@ -430,7 +400,7 @@ static void mlx5_ib_poll_sw_comp(struct mlx5_ib_cq *cq, int num_entries,
 	struct mlx5_ib_qp *qp;
 
 	*npolled = 0;
-	/* Find uncompleted WQEs belonging to that cq and return mmics ones */
+	 
 	list_for_each_entry(qp, &cq->list_send_qp, cq_send_list) {
 		sw_comp(qp, num_entries, wc + *npolled, npolled, true);
 		if (*npolled >= num_entries)
@@ -468,9 +438,7 @@ repoll:
 
 	++cq->mcq.cons_index;
 
-	/* Make sure we read CQ entry contents after we've checked the
-	 * ownership bit.
-	 */
+	 
 	rmb();
 
 	opcode = get_cqe_opcode(cqe64);
@@ -488,10 +456,7 @@ repoll:
 
 	qpn = ntohl(cqe64->sop_drop_qpn) & 0xffffff;
 	if (!*cur_qp || (qpn != (*cur_qp)->ibqp.qp_num)) {
-		/* We do not have to take the QP table lock here,
-		 * because CQs will be locked while QPs are removed
-		 * from the table.
-		 */
+		 
 		mqp = radix_tree_lookup(&dev->qp_table.tree, qpn);
 		*cur_qp = to_mibqp(mqp);
 	}
@@ -616,7 +581,7 @@ int mlx5_ib_poll_cq(struct ib_cq *ibcq, int num_entries, struct ib_wc *wc)
 
 	spin_lock_irqsave(&cq->lock, flags);
 	if (mdev->state == MLX5_DEVICE_STATE_INTERNAL_ERROR) {
-		/* make sure no soft wqe's are waiting */
+		 
 		if (unlikely(!list_empty(&cq->wc_list)))
 			soft_polled = poll_soft_wc(cq, num_entries, wc, true);
 
@@ -1079,19 +1044,12 @@ void __mlx5_ib_cq_clean(struct mlx5_ib_cq *cq, u32 rsn, struct mlx5_ib_srq *srq)
 	if (!cq)
 		return;
 
-	/* First we need to find the current producer index, so we
-	 * know where to start cleaning from.  It doesn't matter if HW
-	 * adds new entries after this loop -- the QP we're worried
-	 * about is already in RESET, so the new entries won't come
-	 * from our QP and therefore don't need to be checked.
-	 */
+	 
 	for (prod_index = cq->mcq.cons_index; get_sw_cqe(cq, prod_index); prod_index++)
 		if (prod_index == cq->mcq.cons_index + cq->ibcq.cqe)
 			break;
 
-	/* Now sweep backwards through the CQ, removing CQ entries
-	 * that match our QP by copying older entries on top of them.
-	 */
+	 
 	while ((int) --prod_index - (int) cq->mcq.cons_index >= 0) {
 		cqe = get_cqe(cq, prod_index & cq->ibcq.cqe);
 		cqe64 = (cq->mcq.cqe_sz == 64) ? cqe : cqe + 64;
@@ -1111,9 +1069,7 @@ void __mlx5_ib_cq_clean(struct mlx5_ib_cq *cq, u32 rsn, struct mlx5_ib_srq *srq)
 
 	if (nfreed) {
 		cq->mcq.cons_index += nfreed;
-		/* Make sure update of buffer contents is done before
-		 * updating consumer index.
-		 */
+		 
 		wmb();
 		mlx5_cq_set_ci(&cq->mcq);
 	}
@@ -1164,7 +1120,7 @@ static int resize_user(struct mlx5_ib_dev *dev, struct mlx5_ib_cq *cq,
 	if (ucmd.reserved0 || ucmd.reserved1)
 		return -EINVAL;
 
-	/* check multiplication overflow */
+	 
 	if (ucmd.cqe_size && SIZE_MAX / ucmd.cqe_size <= entries - 1)
 		return -EINVAL;
 
@@ -1419,7 +1375,7 @@ int mlx5_ib_get_cqe_size(struct ib_cq *ibcq)
 	return cq->cqe_size;
 }
 
-/* Called from atomic context */
+ 
 int mlx5_ib_generate_wc(struct ib_cq *ibcq, struct ib_wc *wc)
 {
 	struct mlx5_ib_wc *soft_wc;

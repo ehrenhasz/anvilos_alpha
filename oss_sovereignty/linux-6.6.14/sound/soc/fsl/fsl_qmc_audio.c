@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ALSA SoC using the QUICC Multichannel Controller (QMC)
- *
- * Copyright 2022 CS GROUP France
- *
- * Author: Herve Codina <herve.codina@bootlin.com>
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/module.h>
@@ -142,7 +136,7 @@ static int qmc_audio_pcm_trigger(struct snd_soc_component *component,
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
 		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
-			/* Submit first chunk ... */
+			 
 			ret = qmc_chan_write_submit(prtd->qmc_dai->qmc_chan,
 				prtd->period_ptr_submitted, prtd->period_size,
 				qmc_audio_pcm_write_complete, prtd);
@@ -152,12 +146,12 @@ static int qmc_audio_pcm_trigger(struct snd_soc_component *component,
 				return ret;
 			}
 
-			/* ... prepare next one ... */
+			 
 			prtd->period_ptr_submitted += prtd->period_size;
 			if (prtd->period_ptr_submitted >= prtd->dma_buffer_end)
 				prtd->period_ptr_submitted = prtd->dma_buffer_start;
 
-			/* ... and send it */
+			 
 			ret = qmc_chan_write_submit(prtd->qmc_dai->qmc_chan,
 				prtd->period_ptr_submitted, prtd->period_size,
 				qmc_audio_pcm_write_complete, prtd);
@@ -167,7 +161,7 @@ static int qmc_audio_pcm_trigger(struct snd_soc_component *component,
 				return ret;
 			}
 		} else {
-			/* Submit first chunk ... */
+			 
 			ret = qmc_chan_read_submit(prtd->qmc_dai->qmc_chan,
 				prtd->period_ptr_submitted, prtd->period_size,
 				qmc_audio_pcm_read_complete, prtd);
@@ -177,12 +171,12 @@ static int qmc_audio_pcm_trigger(struct snd_soc_component *component,
 				return ret;
 			}
 
-			/* ... prepare next one ... */
+			 
 			prtd->period_ptr_submitted += prtd->period_size;
 			if (prtd->period_ptr_submitted >= prtd->dma_buffer_end)
 				prtd->period_ptr_submitted = prtd->dma_buffer_start;
 
-			/* ... and send it */
+			 
 			ret = qmc_chan_read_submit(prtd->qmc_dai->qmc_chan,
 				prtd->period_ptr_submitted, prtd->period_size,
 				qmc_audio_pcm_read_complete, prtd);
@@ -260,7 +254,7 @@ static int qmc_audio_pcm_open(struct snd_soc_component *component,
 
 	snd_soc_set_runtime_hwparams(substream, &qmc_audio_pcm_hardware);
 
-	/* ensure that buffer size is a multiple of period size */
+	 
 	ret = snd_pcm_hw_constraint_integer(runtime, SNDRV_PCM_HW_PARAM_PERIODS);
 	if (ret < 0)
 		return ret;
@@ -312,10 +306,7 @@ static struct qmc_dai *qmc_dai_get_data(struct snd_soc_dai *dai)
 	return qmc_audio->dais + index;
 }
 
-/*
- * The constraints for format/channel is to match with the number of 8bit
- * time-slots available.
- */
+ 
 static int qmc_dai_hw_rule_channels_by_format(struct qmc_dai *qmc_dai,
 					      struct snd_pcm_hw_params *params,
 					      unsigned int nb_ts)
@@ -562,22 +553,16 @@ static u64 qmc_audio_formats(u8 nb_ts)
 	formats_mask = 0;
 	chan_width = nb_ts * 8;
 	pcm_for_each_format(format) {
-		/*
-		 * Support format other than little-endian (ie big-endian or
-		 * without endianness such as 8bit formats)
-		 */
+		 
 		if (snd_pcm_format_little_endian(format) == 1)
 			continue;
 
-		/* Support physical width multiple of 8bit */
+		 
 		format_width = snd_pcm_format_physical_width(format);
 		if (format_width == 0 || format_width % 8)
 			continue;
 
-		/*
-		 * And support physical width that can fit N times in the
-		 * channel
-		 */
+		 
 		if (format_width > chan_width || chan_width % format_width)
 			continue;
 
@@ -717,7 +702,7 @@ static int qmc_audio_probe(struct platform_device *pdev)
 
 static const struct of_device_id qmc_audio_id_table[] = {
 	{ .compatible = "fsl,qmc-audio" },
-	{} /* sentinel */
+	{}  
 };
 MODULE_DEVICE_TABLE(of, qmc_audio_id_table);
 

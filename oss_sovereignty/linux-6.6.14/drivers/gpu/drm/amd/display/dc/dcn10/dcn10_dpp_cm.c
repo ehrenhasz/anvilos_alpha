@@ -1,27 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 
@@ -64,17 +41,11 @@ enum dcn10_coef_filter_type_sel {
 enum dscl_autocal_mode {
 	AUTOCAL_MODE_OFF = 0,
 
-	/* Autocal calculate the scaling ratio and initial phase and the
-	 * DSCL_MODE_SEL must be set to 1
-	 */
+	 
 	AUTOCAL_MODE_AUTOSCALE = 1,
-	/* Autocal perform auto centering without replication and the
-	 * DSCL_MODE_SEL must be set to 0
-	 */
+	 
 	AUTOCAL_MODE_AUTOCENTER = 2,
-	/* Autocal perform auto centering and auto replication and the
-	 * DSCL_MODE_SEL must be set to 0
-	 */
+	 
 	AUTOCAL_MODE_AUTOREPLICATE = 3
 };
 
@@ -165,7 +136,7 @@ void dpp1_cm_set_gamut_remap(
 	int i = 0;
 
 	if (adjust->gamut_adjust_type != GRAPHICS_GAMUT_ADJUST_TYPE_SW)
-		/* Bypass if type is bypass or hw */
+		 
 		program_gamut_remap(dpp, NULL, GAMUT_REMAP_BYPASS);
 	else {
 		struct fixed31_32 arr_matrix[12];
@@ -194,10 +165,7 @@ static void dpp1_cm_program_color_matrix(
 		return;
 	}
 
-	/* determine which CSC matrix (ocsc or comb) we are using
-	 * currently.  select the alternate set to double buffer
-	 * the CSC update so CSC is updated on frame boundary
-	 */
+	 
 	REG_SET(CM_TEST_DEBUG_INDEX, 0,
 			CM_TEST_DEBUG_INDEX, 9);
 
@@ -360,7 +328,7 @@ void dpp1_cm_configure_regamma_lut(
 	REG_SET(CM_RGAM_LUT_INDEX, 0, CM_RGAM_LUT_INDEX, 0);
 }
 
-/*program re gamma RAM A*/
+ 
 void dpp1_cm_program_regamma_luta_settings(
 		struct dpp *dpp_base,
 		const struct pwl_params *params)
@@ -389,7 +357,7 @@ void dpp1_cm_program_regamma_luta_settings(
 
 }
 
-/*program re gamma RAM B*/
+ 
 void dpp1_cm_program_regamma_lutb_settings(
 		struct dpp *dpp_base,
 		const struct pwl_params *params)
@@ -451,10 +419,7 @@ void dpp1_program_input_csc(
 		regval = tbl_entry->regval;
 	}
 
-	/* determine which CSC matrix (icsc or coma) we are using
-	 * currently.  select the alternate set to double buffer
-	 * the CSC update so CSC is updated on frame boundary
-	 */
+	 
 	REG_SET(CM_TEST_DEBUG_INDEX, 0,
 			CM_TEST_DEBUG_INDEX, 9);
 
@@ -492,7 +457,7 @@ void dpp1_program_input_csc(
 				CM_ICSC_MODE, select);
 }
 
-//keep here for now, decide multi dce support later
+
 void dpp1_program_bias_and_scale(
 	struct dpp *dpp_base,
 	struct dc_bias_and_scale *params)
@@ -513,7 +478,7 @@ void dpp1_program_bias_and_scale(
 
 }
 
-/*program de gamma RAM B*/
+ 
 void dpp1_program_degamma_lutb_settings(
 		struct dpp *dpp_base,
 		const struct pwl_params *params)
@@ -542,7 +507,7 @@ void dpp1_program_degamma_lutb_settings(
 	cm_helper_program_xfer_func(dpp->base.ctx, params, &gam_regs);
 }
 
-/*program de gamma RAM A*/
+ 
 void dpp1_program_degamma_luta_settings(
 		struct dpp *dpp_base,
 		const struct pwl_params *params)
@@ -599,7 +564,7 @@ void dpp1_set_degamma(
 
 	switch (mode) {
 	case IPP_DEGAMMA_MODE_BYPASS:
-		/* Setting de gamma bypass for now */
+		 
 		REG_UPDATE(CM_DGAM_CONTROL, CM_DGAM_LUT_MODE, 0);
 		break;
 	case IPP_DEGAMMA_MODE_HW_sRGB:
@@ -706,23 +671,23 @@ void dpp1_full_bypass(struct dpp *dpp_base)
 {
 	struct dcn10_dpp *dpp = TO_DCN10_DPP(dpp_base);
 
-	/* Input pixel format: ARGB8888 */
+	 
 	REG_SET(CNVC_SURFACE_PIXEL_FORMAT, 0,
 			CNVC_SURFACE_PIXEL_FORMAT, 0x8);
 
-	/* Zero expansion */
+	 
 	REG_SET_3(FORMAT_CONTROL, 0,
 			CNVC_BYPASS, 0,
 			FORMAT_CONTROL__ALPHA_EN, 0,
 			FORMAT_EXPANSION_MODE, 0);
 
-	/* COLOR_KEYER_CONTROL.COLOR_KEYER_EN = 0 this should be default */
+	 
 	if (dpp->tf_mask->CM_BYPASS_EN)
 		REG_SET(CM_CONTROL, 0, CM_BYPASS_EN, 1);
 	else
 		REG_SET(CM_CONTROL, 0, CM_BYPASS, 1);
 
-	/* Setting degamma bypass for now */
+	 
 	REG_SET(CM_DGAM_CONTROL, 0, CM_DGAM_LUT_MODE, 0);
 }
 
@@ -736,11 +701,11 @@ static bool dpp1_ingamma_ram_inuse(struct dpp *dpp_base,
 	REG_GET(CM_IGAM_LUT_RW_CONTROL, CM_IGAM_DGAM_CONFIG_STATUS,
 				&status_reg);
 
-	// 1 => IGAM_RAMA, 3 => IGAM_RAMA & DGAM_ROMA, 4 => IGAM_RAMA & DGAM_ROMB
+	
 	if (status_reg == 1 || status_reg == 3 || status_reg == 4) {
 		*ram_a_inuse = true;
 		in_use = true;
-	// 2 => IGAM_RAMB, 5 => IGAM_RAMB & DGAM_ROMA, 6 => IGAM_RAMB & DGAM_ROMB
+	
 	} else if (status_reg == 2 || status_reg == 5 || status_reg == 6) {
 		*ram_a_inuse = false;
 		in_use = true;
@@ -748,15 +713,7 @@ static bool dpp1_ingamma_ram_inuse(struct dpp *dpp_base,
 	return in_use;
 }
 
-/*
- * Input gamma LUT currently supports 256 values only. This means input color
- * can have a maximum of 8 bits per channel (= 256 possible values) in order to
- * have a one-to-one mapping with the LUT. Truncation will occur with color
- * values greater than 8 bits.
- *
- * In the future, this function should support additional input gamma methods,
- * such as piecewise linear mapping, and input gamma bypass.
- */
+ 
 void dpp1_program_input_lut(
 		struct dpp *dpp_base,
 		const struct dc_gamma *gamma)
@@ -765,28 +722,28 @@ void dpp1_program_input_lut(
 	struct dcn10_dpp *dpp = TO_DCN10_DPP(dpp_base);
 	bool rama_occupied = false;
 	uint32_t ram_num;
-	// Power on LUT memory.
+	
 	REG_SET(CM_MEM_PWR_CTRL, 0, SHARED_MEM_PWR_DIS, 1);
 	dpp1_enable_cm_block(dpp_base);
-	// Determine whether to use RAM A or RAM B
+	
 	dpp1_ingamma_ram_inuse(dpp_base, &rama_occupied);
 	if (!rama_occupied)
 		REG_UPDATE(CM_IGAM_LUT_RW_CONTROL, CM_IGAM_LUT_SEL, 0);
 	else
 		REG_UPDATE(CM_IGAM_LUT_RW_CONTROL, CM_IGAM_LUT_SEL, 1);
-	// RW mode is 256-entry LUT
+	
 	REG_UPDATE(CM_IGAM_LUT_RW_CONTROL, CM_IGAM_LUT_RW_MODE, 0);
-	// IGAM Input format should be 8 bits per channel.
+	
 	REG_UPDATE(CM_IGAM_CONTROL, CM_IGAM_INPUT_FORMAT, 0);
-	// Do not mask any R,G,B values
+	
 	REG_UPDATE(CM_IGAM_LUT_RW_CONTROL, CM_IGAM_LUT_WRITE_EN_MASK, 7);
-	// LUT-256, unsigned, integer, new u0.12 format
+	
 	REG_UPDATE_3(
 		CM_IGAM_CONTROL,
 		CM_IGAM_LUT_FORMAT_R, 3,
 		CM_IGAM_LUT_FORMAT_G, 3,
 		CM_IGAM_LUT_FORMAT_B, 3);
-	// Start at index 0 of IGAM LUT
+	
 	REG_UPDATE(CM_IGAM_LUT_RW_INDEX, CM_IGAM_LUT_RW_INDEX, 0);
 	for (i = 0; i < gamma->num_entries; i++) {
 		REG_SET(CM_IGAM_LUT_SEQ_COLOR, 0, CM_IGAM_LUT_SEQ_COLOR,
@@ -799,9 +756,9 @@ void dpp1_program_input_lut(
 				dc_fixpt_round(
 					gamma->entries.blue[i]));
 	}
-	// Power off LUT memory
+	
 	REG_SET(CM_MEM_PWR_CTRL, 0, SHARED_MEM_PWR_DIS, 0);
-	// Enable IGAM LUT on ram we just wrote to. 2 => RAMA, 3 => RAMB
+	
 	REG_UPDATE(CM_IGAM_CONTROL, CM_IGAM_LUT_MODE, rama_occupied ? 3 : 2);
 	REG_GET(CM_IGAM_CONTROL, CM_IGAM_LUT_MODE, &ram_num);
 }

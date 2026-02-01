@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2022, STMicroelectronics
- * Copyright (c) 2016, Linaro Ltd.
- * Copyright (c) 2012, Michal Simek <monstr@monstr.eu>
- * Copyright (c) 2012, PetaLogix
- * Copyright (c) 2011, Texas Instruments, Inc.
- * Copyright (c) 2011, Google, Inc.
- *
- * Based on rpmsg performance statistics driver by Michal Simek, which in turn
- * was based on TI & Google OMX rpmsg driver.
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -39,22 +29,7 @@ static DEFINE_IDA(rpmsg_minor_ida);
 #define dev_to_eptdev(dev) container_of(dev, struct rpmsg_eptdev, dev)
 #define cdev_to_eptdev(i_cdev) container_of(i_cdev, struct rpmsg_eptdev, cdev)
 
-/**
- * struct rpmsg_eptdev - endpoint device context
- * @dev:	endpoint device
- * @cdev:	cdev for the endpoint device
- * @rpdev:	underlaying rpmsg device
- * @chinfo:	info used to open the endpoint
- * @ept_lock:	synchronization of @ept modifications
- * @ept:	rpmsg endpoint reference, when open
- * @queue_lock:	synchronization of @queue operations
- * @queue:	incoming message queue
- * @readq:	wait object for incoming queue
- * @default_ept: set to channel default endpoint if the default endpoint should be re-used
- *              on device open to prevent endpoint address update.
- * remote_flow_restricted: to indicate if the remote has requested for flow to be limited
- * remote_flow_updated: to indicate if the flow control has been requested
- */
+ 
 struct rpmsg_eptdev {
 	struct device dev;
 	struct cdev cdev;
@@ -81,14 +56,14 @@ int rpmsg_chrdev_eptdev_destroy(struct device *dev, void *data)
 	mutex_lock(&eptdev->ept_lock);
 	eptdev->rpdev = NULL;
 	if (eptdev->ept) {
-		/* The default endpoint is released by the rpmsg core */
+		 
 		if (!eptdev->default_ept)
 			rpmsg_destroy_ept(eptdev->ept);
 		eptdev->ept = NULL;
 	}
 	mutex_unlock(&eptdev->ept_lock);
 
-	/* wake up any blocked readers */
+	 
 	wake_up_interruptible(&eptdev->readq);
 
 	cdev_device_del(&eptdev->cdev, &eptdev->dev);
@@ -114,7 +89,7 @@ static int rpmsg_ept_cb(struct rpmsg_device *rpdev, void *buf, int len,
 	skb_queue_tail(&eptdev->queue, skb);
 	spin_unlock(&eptdev->queue_lock);
 
-	/* wake up any blocking processes, waiting for new data */
+	 
 	wake_up_interruptible(&eptdev->readq);
 
 	return 0;
@@ -152,10 +127,7 @@ static int rpmsg_eptdev_open(struct inode *inode, struct file *filp)
 
 	get_device(dev);
 
-	/*
-	 * If the default_ept is set, the rpmsg device default endpoint is used.
-	 * Else a new endpoint is created on open that will be destroyed on release.
-	 */
+	 
 	if (eptdev->default_ept)
 		ept = eptdev->default_ept;
 	else
@@ -181,7 +153,7 @@ static int rpmsg_eptdev_release(struct inode *inode, struct file *filp)
 	struct rpmsg_eptdev *eptdev = cdev_to_eptdev(inode->i_cdev);
 	struct device *dev = &eptdev->dev;
 
-	/* Close the endpoint, if it's not already destroyed by the parent */
+	 
 	mutex_lock(&eptdev->ept_lock);
 	if (eptdev->ept) {
 		if (!eptdev->default_ept)
@@ -191,7 +163,7 @@ static int rpmsg_eptdev_release(struct inode *inode, struct file *filp)
 	mutex_unlock(&eptdev->ept_lock);
 	eptdev->remote_flow_updated = false;
 
-	/* Discard all SKBs */
+	 
 	skb_queue_purge(&eptdev->queue);
 
 	put_device(dev);
@@ -212,20 +184,20 @@ static ssize_t rpmsg_eptdev_read_iter(struct kiocb *iocb, struct iov_iter *to)
 
 	spin_lock_irqsave(&eptdev->queue_lock, flags);
 
-	/* Wait for data in the queue */
+	 
 	if (skb_queue_empty(&eptdev->queue)) {
 		spin_unlock_irqrestore(&eptdev->queue_lock, flags);
 
 		if (filp->f_flags & O_NONBLOCK)
 			return -EAGAIN;
 
-		/* Wait until we get data or the endpoint goes away */
+		 
 		if (wait_event_interruptible(eptdev->readq,
 					     !skb_queue_empty(&eptdev->queue) ||
 					     !eptdev->ept))
 			return -ERESTARTSYS;
 
-		/* We lost the endpoint while waiting */
+		 
 		if (!eptdev->ept)
 			return -EPIPE;
 
@@ -335,7 +307,7 @@ static long rpmsg_eptdev_ioctl(struct file *fp, unsigned int cmd,
 		ret = rpmsg_set_flow_control(eptdev->ept, set, eptdev->chinfo.dst);
 		break;
 	case RPMSG_DESTROY_EPT_IOCTL:
-		/* Don't allow to destroy a default endpoint. */
+		 
 		if (eptdev->default_ept) {
 			ret = -EINVAL;
 			break;
@@ -456,7 +428,7 @@ static int rpmsg_chrdev_eptdev_add(struct rpmsg_eptdev *eptdev, struct rpmsg_cha
 	if (ret)
 		goto free_ept_ida;
 
-	/* We can now rely on the release function for cleanup */
+	 
 	dev->release = rpmsg_eptdev_release_device;
 
 	return ret;
@@ -499,13 +471,10 @@ static int rpmsg_chrdev_probe(struct rpmsg_device *rpdev)
 	if (IS_ERR(eptdev))
 		return PTR_ERR(eptdev);
 
-	/* Set the default_ept to the rpmsg device endpoint */
+	 
 	eptdev->default_ept = rpdev->ept;
 
-	/*
-	 * The rpmsg_ept_cb uses *priv parameter to get its rpmsg_eptdev context.
-	 * Storedit in default_ept *priv field.
-	 */
+	 
 	eptdev->default_ept->priv = eptdev;
 
 	return rpmsg_chrdev_eptdev_add(eptdev, chinfo);

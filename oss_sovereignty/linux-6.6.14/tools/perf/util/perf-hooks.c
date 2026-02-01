@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * perf_hooks.c
- *
- * Copyright (C) 2016 Wang Nan <wangnan0@huawei.com>
- * Copyright (C) 2016 Huawei Inc.
- */
+
+ 
 
 #include <errno.h>
 #include <stdlib.h>

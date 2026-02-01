@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * digi00x.c - a part of driver for Digidesign Digi 002/003 family
- *
- * Copyright (c) 2014-2015 Takashi Sakamoto
- */
+
+ 
 
 #include "digi00x.h"
 
@@ -125,12 +121,12 @@ static void snd_dg00x_remove(struct fw_unit *unit)
 {
 	struct snd_dg00x *dg00x = dev_get_drvdata(&unit->device);
 
-	// Block till all of ALSA character devices are released.
+	
 	snd_card_free(dg00x->card);
 }
 
 static const struct ieee1394_device_id snd_dg00x_id_table[] = {
-	/* Both of 002/003 use the same ID. */
+	 
 	{
 		.match_flags = IEEE1394_MATCH_VENDOR_ID |
 			       IEEE1394_MATCH_VERSION |

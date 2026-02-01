@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * DVB USB Linux driver for Alcor Micro AU6610 DVB-T USB2.0.
- *
- * Copyright (C) 2006 Antti Palosaari <crope@iki.fi>
- */
+
+ 
 
 #include "au6610.h"
 #include "zl10353.h"
@@ -18,10 +14,7 @@ static int au6610_usb_msg(struct dvb_usb_device *d, u8 operation, u8 addr,
 	u16 index;
 	u8 *usb_buf;
 
-	/*
-	 * allocate enough for all known requests,
-	 * read returns 5 and write 6 bytes
-	 */
+	 
 	usb_buf = kmalloc(6, GFP_KERNEL);
 	if (!usb_buf)
 		return -ENOMEM;
@@ -55,7 +48,7 @@ static int au6610_usb_msg(struct dvb_usb_device *d, u8 operation, u8 addr,
 	switch (operation) {
 	case AU6610_REQ_I2C_READ:
 	case AU6610_REQ_USB_READ:
-		/* requested value is always 5th byte in buffer */
+		 
 		rbuf[0] = usb_buf[4];
 	}
 error:
@@ -67,11 +60,11 @@ static int au6610_i2c_msg(struct dvb_usb_device *d, u8 addr,
 			  u8 *wbuf, u16 wlen, u8 *rbuf, u16 rlen)
 {
 	u8 request;
-	u8 wo = (rbuf == NULL || rlen == 0); /* write-only */
+	u8 wo = (rbuf == NULL || rlen == 0);  
 
 	if (wo) {
 		request = AU6610_REQ_I2C_WRITE;
-	} else { /* rw */
+	} else {  
 		request = AU6610_REQ_I2C_READ;
 	}
 
@@ -79,7 +72,7 @@ static int au6610_i2c_msg(struct dvb_usb_device *d, u8 addr,
 }
 
 
-/* I2C */
+ 
 static int au6610_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 			   int num)
 {
@@ -93,7 +86,7 @@ static int au6610_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 		return -EAGAIN;
 
 	for (i = 0; i < num; i++) {
-		/* write/read request */
+		 
 		if (i+1 < num && (msg[i+1].flags & I2C_M_RD)) {
 			if (au6610_i2c_msg(d, msg[i].addr, msg[i].buf,
 					   msg[i].len, msg[i+1].buf,
@@ -120,7 +113,7 @@ static struct i2c_algorithm au6610_i2c_algo = {
 	.functionality = au6610_i2c_func,
 };
 
-/* Callbacks for DVB USB */
+ 
 static struct zl10353_config au6610_zl10353_config = {
 	.demod_address = 0x0f,
 	.no_tuner = 1,
@@ -150,8 +143,8 @@ static int au6610_qt1010_tuner_attach(struct dvb_usb_adapter *adap)
 
 static int au6610_init(struct dvb_usb_device *d)
 {
-	/* TODO: this functionality belongs likely to the streaming control */
-	/* bInterfaceNumber 0, bAlternateSetting 5 */
+	 
+	 
 	return usb_set_interface(d->udev, 0, 5);
 }
 

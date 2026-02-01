@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
-* Driver for EHCI HCD on SPEAr SOC
-*
-* Copyright (C) 2010 ST Micro Electronics,
-* Deepak Sikri <deepak.sikri@st.com>
-*
-* Based on various ehci-*.c drivers
-*/
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -69,11 +62,7 @@ static int spear_ehci_hcd_drv_probe(struct platform_device *pdev)
 		goto fail;
 	}
 
-	/*
-	 * Right now device-tree probed devices don't get dma_mask set.
-	 * Since shared usb code relies on it, set it here for now.
-	 * Once we have dma capability bindings this can go away.
-	 */
+	 
 	retval = dma_coerce_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
 	if (retval)
 		goto fail;
@@ -102,7 +91,7 @@ static int spear_ehci_hcd_drv_probe(struct platform_device *pdev)
 	sehci = to_spear_ehci(hcd);
 	sehci->clk = usbh_clk;
 
-	/* registers start at offset 0x0 */
+	 
 	hcd_to_ehci(hcd)->caps = hcd->regs;
 
 	clk_prepare_enable(sehci->clk);

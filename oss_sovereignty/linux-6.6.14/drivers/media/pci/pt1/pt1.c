@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * driver for Earthsoft PT1/PT2
- *
- * Copyright (C) 2009 HIRANO Takahito <hiranotaka@zng.info>
- *
- * based on pt1dvr - http://pt1dvr.sourceforge.jp/
- *	by Tomoaki Ishikawa <tomy@users.sourceforge.jp>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/sched.h>
@@ -61,8 +54,8 @@ struct pt1_table {
 };
 
 enum pt1_fe_clk {
-	PT1_FE_CLK_20MHZ,	/* PT1 */
-	PT1_FE_CLK_25MHZ,	/* PT2 */
+	PT1_FE_CLK_20MHZ,	 
+	PT1_FE_CLK_25MHZ,	 
 };
 
 #define PT1_NR_ADAPS 4
@@ -218,7 +211,7 @@ static int config_demod(struct i2c_client *cl, enum pt1_fe_clk clk)
 			return -EIO;
 	}
 
-	/* frontend init */
+	 
 	if (clk == PT1_FE_CLK_20MHZ) {
 		if (is_sat) {
 			cfg_data = va1j5jf8007s_20mhz_configs;
@@ -245,12 +238,7 @@ static int config_demod(struct i2c_client *cl, enum pt1_fe_clk clk)
 	return 0;
 }
 
-/*
- * Init registers for (each pair of) terrestrial/satellite block in demod.
- * Note that resetting terr. block also resets its peer sat. block as well.
- * This function must be called before configuring any demod block
- * (before pt1_wakeup(), fe->ops.init()).
- */
+ 
 static int pt1_demod_block_init(struct pt1 *pt1)
 {
 	struct i2c_client *cl;
@@ -258,7 +246,7 @@ static int pt1_demod_block_init(struct pt1 *pt1)
 	int ret;
 	int i;
 
-	/* reset all terr. & sat. pairs first */
+	 
 	for (i = 0; i < PT1_NR_ADAPS; i++) {
 		cl = pt1->adaps[i]->demod_i2c_client;
 		if (strncmp(cl->name, TC90522_I2C_DEV_TER,
@@ -748,17 +736,17 @@ pt1_update_power(struct pt1 *pt1)
 	for (i = 0; i < PT1_NR_ADAPS; i++) {
 		adap = pt1->adaps[i];
 		switch (adap->voltage) {
-		case SEC_VOLTAGE_13: /* actually 11V */
+		case SEC_VOLTAGE_13:  
 			bits |= 1 << 2;
 			break;
-		case SEC_VOLTAGE_18: /* actually 15V */
+		case SEC_VOLTAGE_18:  
 			bits |= 1 << 1 | 1 << 2;
 			break;
 		default:
 			break;
 		}
 
-		/* XXX: The bits should be changed depending on adap->sleep. */
+		 
 		bits |= sleep_bits[i];
 	}
 	pt1_write_reg(pt1, 1, bits);
@@ -1123,7 +1111,7 @@ static void pt1_i2c_begin(struct pt1 *pt1, int *addrp)
 {
 	int addr = 0;
 
-	pt1_i2c_emit(pt1, addr,     0, 0, 1, 1, addr /* itself */);
+	pt1_i2c_emit(pt1, addr,     0, 0, 1, 1, addr  );
 	addr = addr + 1;
 
 	if (!pt1->i2c_running) {
@@ -1300,10 +1288,10 @@ static int pt1_resume(struct device *dev)
 
 resume_err:
 	dev_info(&pt1->pdev->dev, "failed to resume PT1/PT2.");
-	return 0;	/* resume anyway */
+	return 0;	 
 }
 
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static void pt1_remove(struct pci_dev *pdev)
 {

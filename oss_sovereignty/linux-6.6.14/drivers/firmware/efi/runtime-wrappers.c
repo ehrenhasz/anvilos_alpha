@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * runtime-wrappers.c - Runtime Services function call wrappers
- *
- * Implementation summary:
- * -----------------------
- * 1. When user/kernel thread requests to execute efi_runtime_service(),
- * enqueue work to efi_rts_wq.
- * 2. Caller thread waits for completion until the work is finished
- * because it's dependent on the return status and execution of
- * efi_runtime_service().
- * For instance, get_variable() and get_next_variable().
- *
- * Copyright (C) 2014 Linaro Ltd. <ard.biesheuvel@linaro.org>
- *
- * Split off from arch/x86/platform/efi/efi.c
- *
- * Copyright (C) 1999 VA Linux Systems
- * Copyright (C) 1999 Walt Drummond <drummond@valinux.com>
- * Copyright (C) 1999-2002 Hewlett-Packard Co.
- * Copyright (C) 2005-2008 Intel Co.
- * Copyright (C) 2013 SuSE Labs
- */
+
+ 
 
 #define pr_fmt(fmt)	"efi: " fmt
 
@@ -35,10 +14,7 @@
 
 #include <asm/efi.h>
 
-/*
- * Wrap around the new efi_call_virt_generic() macros so that the
- * code doesn't get too cluttered:
- */
+ 
 #define efi_call_virt(f, args...)   \
 	arch_efi_call_virt(efi.runtime, f, args)
 
@@ -118,16 +94,7 @@ union efi_rts_args {
 
 struct efi_runtime_work efi_rts_work;
 
-/*
- * efi_queue_work:	Queue EFI runtime service call and wait for completion
- * @_rts:		EFI runtime service function identifier
- * @_args:		Arguments to pass to the EFI runtime service
- *
- * Accesses to efi_runtime_services() are serialized by a binary
- * semaphore (efi_runtime_lock) and caller waits until the work is
- * finished, hence _only_ one work is queued at a time and the caller
- * thread waits for completion.
- */
+ 
 #define efi_queue_work(_rts, _args...)					\
 	__efi_queue_work(EFI_ ## _rts,					\
 			 &(union efi_rts_args){ ._rts = { _args }})
@@ -161,58 +128,15 @@ void efi_call_virt_check_flags(unsigned long flags, const void *caller)
 	arch_efi_restore_flags(flags);
 }
 
-/*
- * According to section 7.1 of the UEFI spec, Runtime Services are not fully
- * reentrant, and there are particular combinations of calls that need to be
- * serialized. (source: UEFI Specification v2.4A)
- *
- * Table 31. Rules for Reentry Into Runtime Services
- * +------------------------------------+-------------------------------+
- * | If previous call is busy in	| Forbidden to call		|
- * +------------------------------------+-------------------------------+
- * | Any				| SetVirtualAddressMap()	|
- * +------------------------------------+-------------------------------+
- * | ConvertPointer()			| ConvertPointer()		|
- * +------------------------------------+-------------------------------+
- * | SetVariable()			| ResetSystem()			|
- * | UpdateCapsule()			|				|
- * | SetTime()				|				|
- * | SetWakeupTime()			|				|
- * | GetNextHighMonotonicCount()	|				|
- * +------------------------------------+-------------------------------+
- * | GetVariable()			| GetVariable()			|
- * | GetNextVariableName()		| GetNextVariableName()		|
- * | SetVariable()			| SetVariable()			|
- * | QueryVariableInfo()		| QueryVariableInfo()		|
- * | UpdateCapsule()			| UpdateCapsule()		|
- * | QueryCapsuleCapabilities()		| QueryCapsuleCapabilities()	|
- * | GetNextHighMonotonicCount()	| GetNextHighMonotonicCount()	|
- * +------------------------------------+-------------------------------+
- * | GetTime()				| GetTime()			|
- * | SetTime()				| SetTime()			|
- * | GetWakeupTime()			| GetWakeupTime()		|
- * | SetWakeupTime()			| SetWakeupTime()		|
- * +------------------------------------+-------------------------------+
- *
- * Due to the fact that the EFI pstore may write to the variable store in
- * interrupt context, we need to use a lock for at least the groups that
- * contain SetVariable() and QueryVariableInfo(). That leaves little else, as
- * none of the remaining functions are actually ever called at runtime.
- * So let's just use a single lock to serialize all Runtime Services calls.
- */
+ 
 static DEFINE_SEMAPHORE(efi_runtime_lock, 1);
 
-/*
- * Expose the EFI runtime lock to the UV platform
- */
+ 
 #ifdef CONFIG_X86_UV
 extern struct semaphore __efi_uv_runtime_lock __alias(efi_runtime_lock);
 #endif
 
-/*
- * Calls the appropriate efi_runtime_service() with the appropriate
- * arguments.
- */
+ 
 static void efi_call_rts(struct work_struct *work)
 {
 	const union efi_rts_args *args = efi_rts_work.args;
@@ -297,11 +221,7 @@ static void efi_call_rts(struct work_struct *work)
 		break;
 #endif
 	default:
-		/*
-		 * Ideally, we should never reach here because a caller of this
-		 * function should have put the right efi_runtime_service()
-		 * function identifier into efi_rts_work->efi_rts_id
-		 */
+		 
 		pr_err("Requested executing invalid EFI Runtime Service.\n");
 	}
 
@@ -329,10 +249,7 @@ static efi_status_t __efi_queue_work(enum efi_rts_ids id,
 	init_completion(&efi_rts_work.efi_rts_comp);
 	INIT_WORK(&efi_rts_work.work, efi_call_rts);
 
-	/*
-	 * queue_work() returns 0 if work was already on queue,
-	 * _ideally_ this should never happen.
-	 */
+	 
 	if (queue_work(efi_rts_wq, &efi_rts_work.work))
 		wait_for_completion(&efi_rts_work.efi_rts_comp);
 	else

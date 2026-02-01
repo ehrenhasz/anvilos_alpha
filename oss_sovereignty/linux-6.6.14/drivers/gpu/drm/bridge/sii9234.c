@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2017 Samsung Electronics
- *
- * Authors:
- *    Tomasz Stanislawski <t.stanislaws@samsung.com>
- *    Maciej Purski <m.purski@samsung.com>
- *
- * Based on sii9234 driver created by:
- *    Adam Hampson <ahampson@sta.samsung.com>
- *    Erik Gilling <konkers@android.com>
- *    Shankar Bandal <shankar.b@samsung.com>
- *    Dharam Kumar <dharam.kr@samsung.com>
- */
+
+ 
 #include <drm/bridge/mhl.h>
 #include <drm/drm_bridge.h>
 #include <drm/drm_crtc.h>
@@ -40,7 +28,7 @@
 #define MHL_HPD_OUT_OVR_VAL		BIT(5)
 #define MHL_INIT_TIMEOUT		0x0C
 
-/* MHL Tx registers and bits */
+ 
 #define MHL_TX_SRST			0x05
 #define MHL_TX_SYSSTAT_REG		0x09
 #define MHL_TX_INTR1_REG		0x71
@@ -112,7 +100,7 @@
 #define RGND_INTP_1K			2
 #define RGND_INTP_SHORT			3
 
-/* HDMI registers */
+ 
 #define HDMI_RX_TMDS0_CCTRL1_REG	0x10
 #define HDMI_RX_TMDS_CLK_EN_REG		0x11
 #define HDMI_RX_TMDS_CH_EN_REG		0x12
@@ -126,7 +114,7 @@
 #define HDMI_RX_TMDS_ZONE_CTRL_REG	0x4C
 #define HDMI_RX_TMDS_MODE_CTRL_REG	0x4D
 
-/* CBUS registers */
+ 
 #define CBUS_INT_STATUS_1_REG		0x08
 #define CBUS_INTR1_ENABLE_REG		0x09
 #define CBUS_MSC_REQ_ABORT_REASON_REG	0x0D
@@ -139,16 +127,16 @@
 #define BIT_CBUS_RESET			BIT(3)
 #define SET_HPD_DOWNSTREAM		BIT(6)
 
-/* TPI registers */
+ 
 #define TPI_DPD_REG			0x3D
 
-/* Timeouts in msec */
+ 
 #define T_SRC_VBUS_CBUS_TO_STABLE	200
 #define T_SRC_CBUS_FLOAT		100
 #define T_SRC_CBUS_DEGLITCH		2
 #define T_SRC_RXSENSE_DEGLITCH		110
 
-#define MHL1_MAX_CLK			75000 /* in kHz */
+#define MHL1_MAX_CLK			75000  
 
 #define I2C_TPI_ADDR			0x3D
 #define I2C_HDMI_ADDR			0x49
@@ -173,7 +161,7 @@ struct sii9234 {
 	int i2c_error;
 	struct regulator_bulk_data supplies[4];
 
-	struct mutex lock; /* Protects fields below and device registers */
+	struct mutex lock;  
 	enum sii9234_state state;
 };
 
@@ -324,22 +312,16 @@ static int sii9234_cbus_reset(struct sii9234 *ctx)
 	mhl_tx_writebm(ctx, MHL_TX_SRST, 0, BIT_CBUS_RESET);
 
 	for (i = 0; i < 4; i++) {
-		/*
-		 * Enable WRITE_STAT interrupt for writes to all
-		 * 4 MSC Status registers.
-		 */
+		 
 		cbus_writeb(ctx, 0xE0 + i, 0xF2);
-		/*
-		 * Enable SET_INT interrupt for writes to all
-		 * 4 MSC Interrupt registers.
-		 */
+		 
 		cbus_writeb(ctx, 0xF0 + i, 0xF2);
 	}
 
 	return sii9234_clear_error(ctx);
 }
 
-/* Require to chek mhl imformation of samsung in cbus_init_register */
+ 
 static int sii9234_cbus_init(struct sii9234 *ctx)
 {
 	cbus_writeb(ctx, 0x07, 0xF2);
@@ -350,7 +332,7 @@ static int sii9234_cbus_init(struct sii9234 *ctx)
 	cbus_writeb(ctx, 0x1C, 0x01);
 	cbus_writeb(ctx, 0x1D, 0x0F);
 	cbus_writeb(ctx, 0x44, 0x02);
-	/* Setup our devcap */
+	 
 	cbus_writeb(ctx, CBUS_DEVCAP_OFFSET + MHL_DCAP_DEV_STATE, 0x00);
 	cbus_writeb(ctx, CBUS_DEVCAP_OFFSET + MHL_DCAP_MHL_VERSION,
 		    SII9234_MHL_VERSION);
@@ -388,33 +370,33 @@ static int sii9234_cbus_init(struct sii9234 *ctx)
 
 static void force_usb_id_switch_open(struct sii9234 *ctx)
 {
-	/* Disable CBUS discovery */
+	 
 	mhl_tx_writebm(ctx, MHL_TX_DISC_CTRL1_REG, 0, 0x01);
-	/* Force USB ID switch to open */
+	 
 	mhl_tx_writebm(ctx, MHL_TX_DISC_CTRL6_REG, ~0, USB_ID_OVR);
 	mhl_tx_writebm(ctx, MHL_TX_DISC_CTRL3_REG, ~0, 0x86);
-	/* Force upstream HPD to 0 when not in MHL mode. */
+	 
 	mhl_tx_writebm(ctx, MHL_TX_INT_CTRL_REG, 0, 0x30);
 }
 
 static void release_usb_id_switch_open(struct sii9234 *ctx)
 {
 	msleep(T_SRC_CBUS_FLOAT);
-	/* Clear USB ID switch to open */
+	 
 	mhl_tx_writebm(ctx, MHL_TX_DISC_CTRL6_REG, 0, USB_ID_OVR);
-	/* Enable CBUS discovery */
+	 
 	mhl_tx_writebm(ctx, MHL_TX_DISC_CTRL1_REG, ~0, 0x01);
 }
 
 static int sii9234_power_init(struct sii9234 *ctx)
 {
-	/* Force the SiI9234 into the D0 state. */
+	 
 	tpi_writeb(ctx, TPI_DPD_REG, 0x3F);
-	/* Enable TxPLL Clock */
+	 
 	hdmi_writeb(ctx, HDMI_RX_TMDS_CLK_EN_REG, 0x01);
-	/* Enable Tx Clock Path & Equalizer */
+	 
 	hdmi_writeb(ctx, HDMI_RX_TMDS_CH_EN_REG, 0x15);
-	/* Power Up TMDS */
+	 
 	mhl_tx_writeb(ctx, 0x08, 0x35);
 	return sii9234_clear_error(ctx);
 }
@@ -468,49 +450,34 @@ static int sii9234_reset(struct sii9234 *ctx)
 	if (ret < 0)
 		return ret;
 
-	/* Enable HDCP Compliance safety */
+	 
 	mhl_tx_writeb(ctx, 0x2B, 0x01);
-	/* CBUS discovery cycle time for each drive and float = 150us */
+	 
 	mhl_tx_writebm(ctx, MHL_TX_DISC_CTRL1_REG, 0x04, 0x06);
-	/* Clear bit 6 (reg_skip_rgnd) */
-	mhl_tx_writeb(ctx, MHL_TX_DISC_CTRL2_REG, (1 << 7) /* Reserved */
+	 
+	mhl_tx_writeb(ctx, MHL_TX_DISC_CTRL2_REG, (1 << 7)  
 		      | 2 << ATT_THRESH_SHIFT | DEGLITCH_TIME_50MS);
-	/*
-	 * Changed from 66 to 65 for 94[1:0] = 01 = 5k reg_cbusmhl_pup_sel
-	 * 1.8V CBUS VTH & GND threshold
-	 * to meet CTS 3.3.7.2 spec
-	 */
+	 
 	mhl_tx_writeb(ctx, MHL_TX_DISC_CTRL5_REG, 0x77);
 	cbus_writebm(ctx, CBUS_LINK_CONTROL_2_REG, ~0, MHL_INIT_TIMEOUT);
 	mhl_tx_writeb(ctx, MHL_TX_MHLTX_CTL6_REG, 0xA0);
-	/* RGND & single discovery attempt (RGND blocking) */
+	 
 	mhl_tx_writeb(ctx, MHL_TX_DISC_CTRL6_REG, BLOCK_RGND_INT |
 		      DVRFLT_SEL | SINGLE_ATT);
-	/* Use VBUS path of discovery state machine */
+	 
 	mhl_tx_writeb(ctx, MHL_TX_DISC_CTRL8_REG, 0);
-	/* 0x92[3] sets the CBUS / ID switch */
+	 
 	mhl_tx_writebm(ctx, MHL_TX_DISC_CTRL6_REG, ~0, USB_ID_OVR);
-	/*
-	 * To allow RGND engine to operate correctly.
-	 * When moving the chip from D2 to D0 (power up, init regs)
-	 * the values should be
-	 * 94[1:0] = 01  reg_cbusmhl_pup_sel[1:0] should be set for 5k
-	 * 93[7:6] = 10  reg_cbusdisc_pup_sel[1:0] should be
-	 * set for 10k (default)
-	 * 93[5:4] = 00  reg_cbusidle_pup_sel[1:0] = open (default)
-	 */
+	 
 	mhl_tx_writebm(ctx, MHL_TX_DISC_CTRL3_REG, ~0, 0x86);
-	/*
-	 * Change from CC to 8C to match 5K
-	 * to meet CTS 3.3.72 spec
-	 */
+	 
 	mhl_tx_writebm(ctx, MHL_TX_DISC_CTRL4_REG, ~0, 0x8C);
-	/* Configure the interrupt as active high */
+	 
 	mhl_tx_writebm(ctx, MHL_TX_INT_CTRL_REG, 0, 0x06);
 
 	msleep(25);
 
-	/* Release usb_id switch */
+	 
 	mhl_tx_writebm(ctx, MHL_TX_DISC_CTRL6_REG, 0,  USB_ID_OVR);
 	mhl_tx_writeb(ctx, MHL_TX_DISC_CTRL1_REG, 0x27);
 
@@ -521,22 +488,22 @@ static int sii9234_reset(struct sii9234 *ctx)
 	if (ret < 0)
 		return ret;
 
-	/* Enable Auto soft reset on SCDT = 0 */
+	 
 	mhl_tx_writeb(ctx, 0x05, 0x04);
-	/* HDMI Transcode mode enable */
+	 
 	mhl_tx_writeb(ctx, 0x0D, 0x1C);
 	mhl_tx_writeb(ctx, MHL_TX_INTR4_ENABLE_REG,
 		      RGND_READY_MASK | CBUS_LKOUT_MASK
 			| MHL_DISC_FAIL_MASK | MHL_EST_MASK);
 	mhl_tx_writeb(ctx, MHL_TX_INTR1_ENABLE_REG, 0x60);
 
-	/* This point is very important before measure RGND impedance */
+	 
 	force_usb_id_switch_open(ctx);
 	mhl_tx_writebm(ctx, MHL_TX_DISC_CTRL4_REG, 0, 0xF0);
 	mhl_tx_writebm(ctx, MHL_TX_DISC_CTRL5_REG, 0, 0x03);
 	release_usb_id_switch_open(ctx);
 
-	/* Force upstream HPD to 0 when not in MHL mode */
+	 
 	mhl_tx_writebm(ctx, MHL_TX_INT_CTRL_REG, 0, 1 << 5);
 	mhl_tx_writebm(ctx, MHL_TX_INT_CTRL_REG, ~0, 1 << 4);
 
@@ -555,7 +522,7 @@ static int sii9234_goto_d3(struct sii9234 *ctx)
 
 	hdmi_writeb(ctx, 0x01, 0x03);
 	tpi_writebm(ctx, TPI_DPD_REG, 0, 1);
-	/* I2C above is expected to fail because power goes down */
+	 
 	sii9234_clear_error(ctx);
 
 	ctx->state = ST_D3;
@@ -598,7 +565,7 @@ static void sii9234_cable_in(struct sii9234 *ctx)
 
 	sii9234_hw_reset(ctx);
 	sii9234_goto_d3(ctx);
-	/* To avoid irq storm, when hw is in meta state */
+	 
 	enable_irq(to_i2c_client(ctx->dev)->irq);
 
 unlock:
@@ -614,7 +581,7 @@ static void sii9234_cable_out(struct sii9234 *ctx)
 
 	disable_irq(to_i2c_client(ctx->dev)->irq);
 	tpi_writeb(ctx, TPI_DPD_REG, 0);
-	/* Turn on&off hpd festure for only QCT HDMI */
+	 
 	sii9234_hw_off(ctx);
 
 	ctx->state = ST_OFF;
@@ -642,7 +609,7 @@ static enum sii9234_state sii9234_rgnd_ready_irq(struct sii9234 *ctx)
 		return ST_RGND_INIT;
 	}
 
-	/* Got interrupt in inappropriate state */
+	 
 	if (ctx->state != ST_RGND_INIT)
 		return ST_FAILURE;
 
@@ -669,12 +636,12 @@ static enum sii9234_state sii9234_mhl_established(struct sii9234 *ctx)
 {
 	dev_dbg(ctx->dev, "mhl est interrupt\n");
 
-	/* Discovery override */
+	 
 	mhl_tx_writeb(ctx, MHL_TX_MHLTX_CTL1_REG, 0x10);
-	/* Increase DDC translation layer timer (byte mode) */
+	 
 	cbus_writeb(ctx, 0x07, 0x32);
 	cbus_writebm(ctx, 0x44, ~0, 1 << 1);
-	/* Keep the discovery enabled. Need RGND interrupt */
+	 
 	mhl_tx_writebm(ctx, MHL_TX_DISC_CTRL1_REG, ~0, 1);
 	mhl_tx_writeb(ctx, MHL_TX_INTR1_ENABLE_REG,
 		      RSEN_CHANGE_INT_MASK | HPD_CHANGE_INT_MASK);
@@ -694,10 +661,10 @@ static enum sii9234_state sii9234_hpd_change(struct sii9234 *ctx)
 		return ST_FAILURE;
 
 	if (value & SET_HPD_DOWNSTREAM) {
-		/* Downstream HPD High, Enable TMDS */
+		 
 		sii9234_tmds_control(ctx, true);
 	} else {
-		/* Downstream HPD Low, Disable TMDS */
+		 
 		sii9234_tmds_control(ctx, false);
 	}
 
@@ -708,7 +675,7 @@ static enum sii9234_state sii9234_rsen_change(struct sii9234 *ctx)
 {
 	int value;
 
-	/* Work_around code to handle wrong interrupt */
+	 
 	if (ctx->state != ST_RGND_1K) {
 		dev_err(ctx->dev, "RSEN_HIGH without RGND_1K\n");
 		return ST_FAILURE;
@@ -722,13 +689,7 @@ static enum sii9234_state sii9234_rsen_change(struct sii9234 *ctx)
 		return ST_RSEN_HIGH;
 	}
 	dev_dbg(ctx->dev, "RSEN lost\n");
-	/*
-	 * Once RSEN loss is confirmed,we need to check
-	 * based on cable status and chip power status,whether
-	 * it is SINK Loss(HDMI cable not connected, TV Off)
-	 * or MHL cable disconnection
-	 * TODO: Define the below mhl_disconnection()
-	 */
+	 
 	msleep(T_SRC_RXSENSE_DEGLITCH);
 	value = mhl_tx_readb(ctx, MHL_TX_SYSSTAT_REG);
 	if (value < 0)
@@ -740,7 +701,7 @@ static enum sii9234_state sii9234_rsen_change(struct sii9234 *ctx)
 		return ST_RSEN_HIGH;
 	}
 	dev_dbg(ctx->dev, "RSEN Really LOW\n");
-	/* To meet CTS 3.3.22.2 spec */
+	 
 	sii9234_tmds_control(ctx, false);
 	force_usb_id_switch_open(ctx);
 	release_usb_id_switch_open(ctx);
@@ -786,7 +747,7 @@ static irqreturn_t sii9234_irq_thread(int irq, void *data)
 		ctx->state = ST_FAILURE_DISCOVERY;
 
  done:
-	/* Clean interrupt status and pending flags */
+	 
 	mhl_tx_writeb(ctx, MHL_TX_INTR1_REG, intr1);
 	mhl_tx_writeb(ctx, MHL_TX_INTR4_REG, intr4);
 	cbus_writeb(ctx, CBUS_MHL_STATUS_REG_0, 0xFF);

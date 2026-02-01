@@ -1,35 +1,12 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 #ifndef SMU13_DRIVER_IF_DCN32_H
 #define SMU13_DRIVER_IF_DCN32_H
 
-// *** IMPORTANT ***
-// PMFW TEAM: Always increment the interface version on any change to this file
+
+
 #define SMU13_DRIVER_IF_VERSION  0x18
 
-//Only Clks that have DPM descriptors are listed here
+
 typedef enum {
   PPCLK_GFXCLK = 0,
   PPCLK_SOCCLK,
@@ -71,7 +48,7 @@ typedef enum {
 } WATERMARKS_FLAGS_e;
 
 typedef struct {
-  // Watermarks
+  
   WatermarkRowGeneric_t WatermarkRow[NUM_WM_RANGES];
 } Watermarks_t;
 
@@ -79,19 +56,19 @@ typedef struct {
   Watermarks_t Watermarks;
   uint32_t  Spare[16];
 
-  uint32_t     MmHubPadding[8]; // SMU internal use
+  uint32_t     MmHubPadding[8]; 
 } WatermarksExternal_t;
 
-// These defines are used with the following messages:
-// SMC_MSG_TransferTableDram2Smu
-// SMC_MSG_TransferTableSmu2Dram
 
-// Table transfer status
+
+
+
+
 #define TABLE_TRANSFER_OK         0x0
 #define TABLE_TRANSFER_FAILED     0xFF
 #define TABLE_TRANSFER_PENDING    0xAB
 
-// Table types
+
 #define TABLE_PMFW_PPTABLE            0
 #define TABLE_COMBO_PPTABLE           1
 #define TABLE_WATERMARKS              2

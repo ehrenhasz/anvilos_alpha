@@ -1,13 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This file is based on code from OCTEON SDK by Cavium Networks.
- *
- * Copyright (c) 2003-2010 Cavium Networks
- */
+ 
+ 
 
-/*
- * External interface for the Cavium Octeon ethernet driver.
- */
+ 
 #ifndef OCTEON_ETHERNET_H
 #define OCTEON_ETHERNET_H
 
@@ -42,33 +36,27 @@
 
 #endif
 
-/**
- * This is the definition of the Ethernet driver's private
- * driver state stored in netdev_priv(dev).
- */
+ 
 struct octeon_ethernet {
-	/* PKO hardware output port */
+	 
 	int port;
-	/* PKO hardware queue for the port */
+	 
 	int queue;
-	/* Hardware fetch and add to count outstanding tx buffers */
+	 
 	int fau;
-	/* My netdev. */
+	 
 	struct net_device *netdev;
-	/*
-	 * Type of port. This is one of the enums in
-	 * cvmx_helper_interface_mode_t
-	 */
+	 
 	int imode;
-	/* PHY mode */
+	 
 	phy_interface_t phy_mode;
-	/* List of outstanding tx buffers per queue */
+	 
 	struct sk_buff_head tx_free_list[16];
 	unsigned int last_speed;
 	unsigned int last_link;
-	/* Last negotiated link state */
+	 
 	u64 link_info;
-	/* Called periodically to check link status */
+	 
 	void (*poll)(struct net_device *dev);
 	struct delayed_work	port_periodic_work;
 	struct device_node	*of_node;

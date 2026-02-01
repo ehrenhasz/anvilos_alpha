@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  linux/include/linux/sunrpc/clnt.h
- *
- *  Declarations for the high-level RPC client interface
- *
- *  Copyright (C) 1995, 1996, Olaf Kirch <okir@monad.swb.de>
- */
+ 
+ 
 
 #ifndef _LINUX_SUNRPC_CLNT_H
 #define _LINUX_SUNRPC_CLNT_H
@@ -38,95 +32,87 @@ struct rpc_sysfs_client {
 };
 
 
-/*
- * The high-level client handle
- */
+ 
 struct rpc_clnt {
-	refcount_t		cl_count;	/* Number of references */
-	unsigned int		cl_clid;	/* client id */
-	struct list_head	cl_clients;	/* Global list of clients */
-	struct list_head	cl_tasks;	/* List of tasks */
-	atomic_t		cl_pid;		/* task PID counter */
-	spinlock_t		cl_lock;	/* spinlock */
-	struct rpc_xprt __rcu *	cl_xprt;	/* transport */
-	const struct rpc_procinfo *cl_procinfo;	/* procedure info */
-	u32			cl_prog,	/* RPC program number */
-				cl_vers,	/* RPC version number */
-				cl_maxproc;	/* max procedure number */
+	refcount_t		cl_count;	 
+	unsigned int		cl_clid;	 
+	struct list_head	cl_clients;	 
+	struct list_head	cl_tasks;	 
+	atomic_t		cl_pid;		 
+	spinlock_t		cl_lock;	 
+	struct rpc_xprt __rcu *	cl_xprt;	 
+	const struct rpc_procinfo *cl_procinfo;	 
+	u32			cl_prog,	 
+				cl_vers,	 
+				cl_maxproc;	 
 
-	struct rpc_auth *	cl_auth;	/* authenticator */
-	struct rpc_stat *	cl_stats;	/* per-program statistics */
-	struct rpc_iostats *	cl_metrics;	/* per-client statistics */
+	struct rpc_auth *	cl_auth;	 
+	struct rpc_stat *	cl_stats;	 
+	struct rpc_iostats *	cl_metrics;	 
 
-	unsigned int		cl_softrtry : 1,/* soft timeouts */
-				cl_softerr  : 1,/* Timeouts return errors */
-				cl_discrtry : 1,/* disconnect before retry */
-				cl_noretranstimeo: 1,/* No retransmit timeouts */
-				cl_autobind : 1,/* use getport() */
-				cl_chatty   : 1,/* be verbose */
-				cl_shutdown : 1;/* rpc immediate -EIO */
-	struct xprtsec_parms	cl_xprtsec;	/* transport security policy */
+	unsigned int		cl_softrtry : 1, 
+				cl_softerr  : 1, 
+				cl_discrtry : 1, 
+				cl_noretranstimeo: 1, 
+				cl_autobind : 1, 
+				cl_chatty   : 1, 
+				cl_shutdown : 1; 
+	struct xprtsec_parms	cl_xprtsec;	 
 
-	struct rpc_rtt *	cl_rtt;		/* RTO estimator data */
-	const struct rpc_timeout *cl_timeout;	/* Timeout strategy */
+	struct rpc_rtt *	cl_rtt;		 
+	const struct rpc_timeout *cl_timeout;	 
 
-	atomic_t		cl_swapper;	/* swapfile count */
-	int			cl_nodelen;	/* nodename length */
+	atomic_t		cl_swapper;	 
+	int			cl_nodelen;	 
 	char 			cl_nodename[UNX_MAXNODENAME+1];
 	struct rpc_pipe_dir_head cl_pipedir_objects;
-	struct rpc_clnt *	cl_parent;	/* Points to parent of clones */
+	struct rpc_clnt *	cl_parent;	 
 	struct rpc_rtt		cl_rtt_default;
 	struct rpc_timeout	cl_timeout_default;
 	const struct rpc_program *cl_program;
-	const char *		cl_principal;	/* use for machine cred */
+	const char *		cl_principal;	 
 #if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
-	struct dentry		*cl_debugfs;	/* debugfs directory */
+	struct dentry		*cl_debugfs;	 
 #endif
-	struct rpc_sysfs_client *cl_sysfs;	/* sysfs directory */
-	/* cl_work is only needed after cl_xpi is no longer used,
-	 * and that are of similar size
-	 */
+	struct rpc_sysfs_client *cl_sysfs;	 
+	 
 	union {
 		struct rpc_xprt_iter	cl_xpi;
 		struct work_struct	cl_work;
 	};
 	const struct cred	*cl_cred;
-	unsigned int		cl_max_connect; /* max number of transports not to the same IP */
+	unsigned int		cl_max_connect;  
 	struct super_block *pipefs_sb;
 };
 
-/*
- * General RPC program info
- */
+ 
 #define RPC_MAXVERSION		4
 struct rpc_program {
-	const char *		name;		/* protocol name */
-	u32			number;		/* program number */
-	unsigned int		nrvers;		/* number of versions */
-	const struct rpc_version **	version;	/* version array */
-	struct rpc_stat *	stats;		/* statistics */
-	const char *		pipe_dir_name;	/* path to rpc_pipefs dir */
+	const char *		name;		 
+	u32			number;		 
+	unsigned int		nrvers;		 
+	const struct rpc_version **	version;	 
+	struct rpc_stat *	stats;		 
+	const char *		pipe_dir_name;	 
 };
 
 struct rpc_version {
-	u32			number;		/* version number */
-	unsigned int		nrprocs;	/* number of procs */
-	const struct rpc_procinfo *procs;	/* procedure array */
-	unsigned int		*counts;	/* call counts */
+	u32			number;		 
+	unsigned int		nrprocs;	 
+	const struct rpc_procinfo *procs;	 
+	unsigned int		*counts;	 
 };
 
-/*
- * Procedure information
- */
+ 
 struct rpc_procinfo {
-	u32			p_proc;		/* RPC procedure number */
-	kxdreproc_t		p_encode;	/* XDR encode function */
-	kxdrdproc_t		p_decode;	/* XDR decode function */
-	unsigned int		p_arglen;	/* argument hdr length (u32) */
-	unsigned int		p_replen;	/* reply hdr length (u32) */
-	unsigned int		p_timer;	/* Which RTT timer to use */
-	u32			p_statidx;	/* Which procedure to account */
-	const char *		p_name;		/* name of procedure */
+	u32			p_proc;		 
+	kxdreproc_t		p_encode;	 
+	kxdrdproc_t		p_decode;	 
+	unsigned int		p_arglen;	 
+	unsigned int		p_replen;	 
+	unsigned int		p_timer;	 
+	u32			p_statidx;	 
+	const char *		p_name;		 
 };
 
 struct rpc_create_args {
@@ -139,13 +125,13 @@ struct rpc_create_args {
 	const char		*servername;
 	const char		*nodename;
 	const struct rpc_program *program;
-	u32			prognumber;	/* overrides program->number */
+	u32			prognumber;	 
 	u32			version;
 	rpc_authflavor_t	authflavor;
 	u32			nconnect;
 	unsigned long		flags;
 	char			*client_name;
-	struct svc_xprt		*bc_xprt;	/* NFSv4.1 backchannel */
+	struct svc_xprt		*bc_xprt;	 
 	const struct cred	*cred;
 	unsigned int		max_connect;
 	struct xprtsec_parms	xprtsec;
@@ -160,7 +146,7 @@ struct rpc_add_xprt_test {
 	void *data;
 };
 
-/* Values for "flags" field */
+ 
 #define RPC_CLNT_CREATE_HARDRTRY	(1UL << 0)
 #define RPC_CLNT_CREATE_AUTOBIND	(1UL << 2)
 #define RPC_CLNT_CREATE_NONPRIVPORT	(1UL << 3)
@@ -272,4 +258,4 @@ static inline void rpc_task_close_connection(struct rpc_task *task)
 	if (task->tk_xprt)
 		xprt_force_disconnect(task->tk_xprt);
 }
-#endif /* _LINUX_SUNRPC_CLNT_H */
+#endif  

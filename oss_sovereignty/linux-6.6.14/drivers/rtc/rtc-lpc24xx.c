@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * RTC driver for NXP LPC178x/18xx/43xx Real-Time Clock (RTC)
- *
- * Copyright (C) 2011 NXP Semiconductors
- * Copyright (C) 2015 Joachim Eastwood <manabian@gmail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -14,7 +9,7 @@
 #include <linux/platform_device.h>
 #include <linux/rtc.h>
 
-/* LPC24xx RTC register offsets and bits */
+ 
 #define LPC24XX_ILR		0x00
 #define  LPC24XX_RTCCIF		BIT(0)
 #define  LPC24XX_RTCALF		BIT(1)
@@ -45,7 +40,7 @@
 #define LPC24XX_ALMON		0x78
 #define LPC24XX_ALYEAR		0x7c
 
-/* Macros to read fields in consolidated time (CT) registers */
+ 
 #define CT0_SECS(x)		(((x) >> 0)  & 0x3f)
 #define CT0_MINS(x)		(((x) >> 8)  & 0x3f)
 #define CT0_HOURS(x)		(((x) >> 16) & 0x1f)
@@ -69,7 +64,7 @@ static int lpc24xx_rtc_set_time(struct device *dev, struct rtc_time *tm)
 {
 	struct lpc24xx_rtc *rtc = dev_get_drvdata(dev);
 
-	/* Disable RTC during update */
+	 
 	rtc_writel(rtc, LPC24XX_CCR, LPC178X_CCALEN);
 
 	rtc_writel(rtc, LPC24XX_SEC,	tm->tm_sec);
@@ -132,7 +127,7 @@ static int lpc24xx_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *wkalrm)
 	struct lpc24xx_rtc *rtc = dev_get_drvdata(dev);
 	struct rtc_time *tm = &wkalrm->time;
 
-	/* Disable alarm irq during update */
+	 
 	rtc_writel(rtc, LPC24XX_AMR, LPC24XX_ALARM_DISABLE);
 
 	rtc_writel(rtc, LPC24XX_ALSEC,  tm->tm_sec);
@@ -168,14 +163,14 @@ static irqreturn_t lpc24xx_rtc_interrupt(int irq, void *data)
 	struct lpc24xx_rtc *rtc = data;
 	u32 rtc_iir;
 
-	/* Check interrupt cause */
+	 
 	rtc_iir = rtc_readl(rtc, LPC24XX_ILR);
 	if (rtc_iir & LPC24XX_RTCALF) {
 		events |= RTC_AF;
 		rtc_writel(rtc, LPC24XX_AMR, LPC24XX_ALARM_DISABLE);
 	}
 
-	/* Clear interrupt status and report event */
+	 
 	rtc_writel(rtc, LPC24XX_ILR, rtc_iir);
 	rtc_update_irq(rtc->rtc, 1, events);
 
@@ -233,10 +228,10 @@ static int lpc24xx_rtc_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, rtc);
 
-	/* Clear any pending interrupts */
+	 
 	rtc_writel(rtc, LPC24XX_ILR, LPC24XX_RTCCIF | LPC24XX_RTCALF);
 
-	/* Enable RTC count */
+	 
 	rtc_writel(rtc, LPC24XX_CCR, LPC24XX_CLKEN | LPC178X_CCALEN);
 
 	ret = devm_request_irq(&pdev->dev, irq, lpc24xx_rtc_interrupt, 0,
@@ -267,7 +262,7 @@ static void lpc24xx_rtc_remove(struct platform_device *pdev)
 {
 	struct lpc24xx_rtc *rtc = platform_get_drvdata(pdev);
 
-	/* Ensure all interrupt sources are masked */
+	 
 	rtc_writel(rtc, LPC24XX_AMR, LPC24XX_ALARM_DISABLE);
 	rtc_writel(rtc, LPC24XX_CIIR, 0);
 

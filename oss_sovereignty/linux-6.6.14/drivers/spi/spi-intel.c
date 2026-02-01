@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel PCH/PCU SPI flash driver.
- *
- * Copyright (C) 2016 - 2022, Intel Corporation
- * Author: Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #include <linux/iopoll.h>
 #include <linux/module.h>
@@ -18,7 +13,7 @@
 
 #include "spi-intel.h"
 
-/* Offsets are from @ispi->base */
+ 
 #define BFPREG				0x00
 
 #define HSFSTS_CTL			0x04
@@ -28,7 +23,7 @@
 
 #define HSFSTS_CTL_FCYCLE_SHIFT		17
 #define HSFSTS_CTL_FCYCLE_MASK		(0x0f << HSFSTS_CTL_FCYCLE_SHIFT)
-/* HW sequencer opcodes */
+ 
 #define HSFSTS_CTL_FCYCLE_READ		(0x00 << HSFSTS_CTL_FCYCLE_SHIFT)
 #define HSFSTS_CTL_FCYCLE_WRITE		(0x02 << HSFSTS_CTL_FCYCLE_SHIFT)
 #define HSFSTS_CTL_FCYCLE_ERASE		(0x03 << HSFSTS_CTL_FCYCLE_SHIFT)
@@ -57,7 +52,7 @@
 #define FREG_LIMIT_SHIFT		16
 #define FREG_LIMIT_MASK			GENMASK(30, 16)
 
-/* Offset is from @ispi->pregs */
+ 
 #define PR(n)				((n) * 4)
 #define PR_WPE				BIT(31)
 #define PR_LIMIT_SHIFT			16
@@ -65,7 +60,7 @@
 #define PR_RPE				BIT(15)
 #define PR_BASE_MASK			GENMASK(14, 0)
 
-/* Offsets are from @ispi->sregs */
+ 
 #define SSFSTS_CTL			0x00
 #define SSFSTS_CTL_FSMIE		BIT(23)
 #define SSFSTS_CTL_DS			BIT(22)
@@ -90,7 +85,7 @@
 #define OPTYPE_READ_WITH_ADDR		2
 #define OPTYPE_WRITE_WITH_ADDR		3
 
-/* CPU specifics */
+ 
 #define BYT_PR				0x74
 #define BYT_SSFSTS_CTL			0x90
 #define BYT_FREG_NUM			5
@@ -117,7 +112,7 @@
 #define ERASE_64K_OPCODE_SHIFT		16
 #define ERASE_64K_OPCODE_MASK		(0xff << ERASE_64K_OPCODE_SHIFT)
 
-/* Flash descriptor fields */
+ 
 #define FLVALSIG_MAGIC			0x0ff0a55a
 #define FLMAP0_NC_MASK			GENMASK(9, 8)
 #define FLMAP0_NC_SHIFT			8
@@ -133,28 +128,10 @@
 #define FLCOMP_C0DEN_32M		0x06
 #define FLCOMP_C0DEN_64M		0x07
 
-#define INTEL_SPI_TIMEOUT		5000 /* ms */
+#define INTEL_SPI_TIMEOUT		5000  
 #define INTEL_SPI_FIFO_SZ		64
 
-/**
- * struct intel_spi - Driver private data
- * @dev: Device pointer
- * @info: Pointer to board specific info
- * @base: Beginning of MMIO space
- * @pregs: Start of protection registers
- * @sregs: Start of software sequencer registers
- * @host: Pointer to the SPI controller structure
- * @nregions: Maximum number of regions
- * @pr_num: Maximum number of protected range registers
- * @chip0_size: Size of the first flash chip in bytes
- * @locked: Is SPI setting locked
- * @swseq_reg: Use SW sequencer in register reads/writes
- * @swseq_erase: Use SW sequencer in erase operation
- * @atomic_preopcode: Holds preopcode when atomic sequence is requested
- * @opcodes: Opcodes which are supported. This are programmed by BIOS
- *           before it locks down the controller.
- * @mem_ops: Pointer to SPI MEM ops supported by the controller
- */
+ 
 struct intel_spi {
 	struct device *dev;
 	const struct intel_spi_boardinfo *info;
@@ -265,7 +242,7 @@ static void intel_spi_dump_regs(struct intel_spi *ispi)
 		ispi->swseq_erase ? 'S' : 'H');
 }
 
-/* Reads max INTEL_SPI_FIFO_SZ bytes from the device fifo */
+ 
 static int intel_spi_read_block(struct intel_spi *ispi, void *buf, size_t size)
 {
 	size_t bytes;
@@ -285,7 +262,7 @@ static int intel_spi_read_block(struct intel_spi *ispi, void *buf, size_t size)
 	return 0;
 }
 
-/* Writes max INTEL_SPI_FIFO_SZ bytes to the device fifo */
+ 
 static int intel_spi_write_block(struct intel_spi *ispi, const void *buf,
 				 size_t size)
 {
@@ -345,7 +322,7 @@ static int intel_spi_opcode_index(struct intel_spi *ispi, u8 opcode, int optype)
 		return -EINVAL;
 	}
 
-	/* The lock is off, so just use index 0 */
+	 
 	writel(opcode, ispi->sregs + OPMENU0);
 	preop = readw(ispi->sregs + PREOP_OPTYPE);
 	writel(optype << 16 | preop, ispi->sregs + PREOP_OPTYPE);
@@ -394,14 +371,11 @@ static int intel_spi_sw_cycle(struct intel_spi *ispi, u8 opcode, size_t len,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Always clear it after each SW sequencer operation regardless
-	 * of whether it is successful or not.
-	 */
+	 
 	atomic_preopcode = ispi->atomic_preopcode;
 	ispi->atomic_preopcode = 0;
 
-	/* Only mark 'Data Cycle' bit when there is data to be transferred */
+	 
 	if (len > 0)
 		val = ((len - 1) << SSFSTS_CTL_DBC_SHIFT) | SSFSTS_CTL_DS;
 	val |= ret << SSFSTS_CTL_COP_SHIFT;
@@ -413,16 +387,16 @@ static int intel_spi_sw_cycle(struct intel_spi *ispi, u8 opcode, size_t len,
 		switch (optype) {
 		case OPTYPE_WRITE_NO_ADDR:
 		case OPTYPE_WRITE_WITH_ADDR:
-			/* Pick matching preopcode for the atomic sequence */
+			 
 			preop = readw(ispi->sregs + PREOP_OPTYPE);
 			if ((preop & 0xff) == atomic_preopcode)
-				; /* Do nothing */
+				;  
 			else if ((preop >> 8) == atomic_preopcode)
 				val |= SSFSTS_CTL_SPOP;
 			else
 				return -EINVAL;
 
-			/* Enable atomic sequence */
+			 
 			val |= SSFSTS_CTL_ACS;
 			break;
 
@@ -448,7 +422,7 @@ static int intel_spi_sw_cycle(struct intel_spi *ispi, u8 opcode, size_t len,
 static u32 intel_spi_chip_addr(const struct intel_spi *ispi,
 			       const struct spi_mem *mem)
 {
-	/* Pick up the correct start address */
+	 
 	if (!mem)
 		return 0;
 	return (spi_get_chipselect(mem->spi, 0) == 1) ? ispi->chip0_size : 0;
@@ -486,15 +460,7 @@ static int intel_spi_write_reg(struct intel_spi *ispi, const struct spi_mem *mem
 	u8 opcode = op->cmd.opcode;
 	int ret;
 
-	/*
-	 * This is handled with atomic operation and preop code in Intel
-	 * controller so we only verify that it is available. If the
-	 * controller is not locked, program the opcode to the PREOP
-	 * register for later use.
-	 *
-	 * When hardware sequencer is used there is no need to program
-	 * any opcodes (it handles them automatically as part of a command).
-	 */
+	 
 	if (opcode == SPINOR_OP_WREN) {
 		u16 preop;
 
@@ -508,26 +474,18 @@ static int intel_spi_write_reg(struct intel_spi *ispi, const struct spi_mem *mem
 			writel(opcode, ispi->sregs + PREOP_OPTYPE);
 		}
 
-		/*
-		 * This enables atomic sequence on next SW sycle. Will
-		 * be cleared after next operation.
-		 */
+		 
 		ispi->atomic_preopcode = opcode;
 		return 0;
 	}
 
-	/*
-	 * We hope that HW sequencer will do the right thing automatically and
-	 * with the SW sequencer we cannot use preopcode anyway, so just ignore
-	 * the Write Disable operation and pretend it was completed
-	 * successfully.
-	 */
+	 
 	if (opcode == SPINOR_OP_WRDI)
 		return 0;
 
 	writel(addr, ispi->base + FADDR);
 
-	/* Write the value beforehand */
+	 
 	ret = intel_spi_write_block(ispi, op->data.buf.out, nbytes);
 	if (ret)
 		return ret;
@@ -548,17 +506,14 @@ static int intel_spi_read(struct intel_spi *ispi, const struct spi_mem *mem,
 	u32 val, status;
 	int ret;
 
-	/*
-	 * Atomic sequence is not expected with HW sequencer reads. Make
-	 * sure it is cleared regardless.
-	 */
+	 
 	if (WARN_ON_ONCE(ispi->atomic_preopcode))
 		ispi->atomic_preopcode = 0;
 
 	while (nbytes > 0) {
 		block_size = min_t(size_t, nbytes, INTEL_SPI_FIFO_SZ);
 
-		/* Read cannot cross 4K boundary */
+		 
 		block_size = min_t(loff_t, addr + block_size,
 				   round_up(addr + 1, SZ_4K)) - addr;
 
@@ -609,13 +564,13 @@ static int intel_spi_write(struct intel_spi *ispi, const struct spi_mem *mem,
 	u32 val, status;
 	int ret;
 
-	/* Not needed with HW sequencer write, make sure it is cleared */
+	 
 	ispi->atomic_preopcode = 0;
 
 	while (nbytes > 0) {
 		block_size = min_t(size_t, nbytes, INTEL_SPI_FIFO_SZ);
 
-		/* Write cannot cross 4K boundary */
+		 
 		block_size = min_t(loff_t, addr + block_size,
 				   round_up(addr + 1, SZ_4K)) - addr;
 
@@ -633,7 +588,7 @@ static int intel_spi_write(struct intel_spi *ispi, const struct spi_mem *mem,
 			return ret;
 		}
 
-		/* Start the write now */
+		 
 		val |= HSFSTS_CTL_FGO;
 		writel(val, ispi->base + HSFSTS_CTL);
 
@@ -677,7 +632,7 @@ static int intel_spi_erase(struct intel_spi *ispi, const struct spi_mem *mem,
 		return intel_spi_sw_cycle(ispi, opcode, 0,
 					  OPTYPE_WRITE_WITH_ADDR);
 
-	/* Not needed with HW sequencer erase, make sure it is cleared */
+	 
 	ispi->atomic_preopcode = 0;
 
 	val = readl(ispi->base + HSFSTS_CTL);
@@ -756,14 +711,11 @@ static bool intel_spi_supports_mem_op(struct spi_mem *mem,
 		return false;
 	}
 
-	/*
-	 * For software sequencer check that the opcode is actually
-	 * present in the opmenu if it is locked.
-	 */
+	 
 	if (ispi->swseq_reg && ispi->locked) {
 		int i;
 
-		/* Check if it is in the locked opcodes list */
+		 
 		for (i = 0; i < ARRAY_SIZE(ispi->opcodes); i++) {
 			if (ispi->opcodes[i] == op->cmd.opcode)
 				return true;
@@ -792,10 +744,7 @@ static const char *intel_spi_get_name(struct spi_mem *mem)
 {
 	const struct intel_spi *ispi = spi_controller_get_devdata(mem->spi->controller);
 
-	/*
-	 * Return name of the flash controller device to be compatible
-	 * with the MTD version.
-	 */
+	 
 	return dev_name(ispi->dev);
 }
 
@@ -820,7 +769,7 @@ static ssize_t intel_spi_dirmap_read(struct spi_mem_dirmap_desc *desc, u64 offs,
 	struct spi_mem_op op = desc->info.op_tmpl;
 	int ret;
 
-	/* Fill in the gaps */
+	 
 	op.addr.val = offs;
 	op.data.nbytes = len;
 	op.data.buf.in = buf;
@@ -898,14 +847,9 @@ static const struct spi_controller_mem_ops intel_spi_mem_ops = {
 		.replacement_op = __repl,				\
 	}
 
-/*
- * The controller handles pretty much everything internally based on the
- * SFDP data but we want to make sure we only support the operations
- * actually possible. Only check buswidth and transfer direction, the
- * core validates data.
- */
+ 
 #define INTEL_SPI_GENERIC_OPS						\
-	/* Status register operations */				\
+	 				\
 	INTEL_SPI_MEM_OP_REPL(SPI_MEM_OP_CMD(SPINOR_OP_RDID, 1),	\
 			      SPI_MEM_OP_NO_ADDR,			\
 			      INTEL_SPI_OP_DATA_IN(1),			\
@@ -926,7 +870,7 @@ static const struct spi_controller_mem_ops intel_spi_mem_ops = {
 			      INTEL_SPI_OP_DATA_IN(1),			\
 			      intel_spi_read_reg,			\
 			      HSFSTS_CTL_FCYCLE_RDSFDP),		\
-	/* Normal read */						\
+	 						\
 	INTEL_SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_READ, 1),		\
 			 INTEL_SPI_OP_ADDR(3),				\
 			 INTEL_SPI_OP_DATA_IN(1),			\
@@ -951,7 +895,7 @@ static const struct spi_controller_mem_ops intel_spi_mem_ops = {
 			 INTEL_SPI_OP_ADDR(4),				\
 			 INTEL_SPI_OP_DATA_IN(4),			\
 			 intel_spi_read),				\
-	/* Fast read */							\
+	 							\
 	INTEL_SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_READ_FAST, 1),	\
 			 INTEL_SPI_OP_ADDR(3),				\
 			 INTEL_SPI_OP_DATA_IN(1),			\
@@ -976,7 +920,7 @@ static const struct spi_controller_mem_ops intel_spi_mem_ops = {
 			 INTEL_SPI_OP_ADDR(4),				\
 			 INTEL_SPI_OP_DATA_IN(4),			\
 			 intel_spi_read),				\
-	/* Read with 4-byte address opcode */				\
+	 				\
 	INTEL_SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_READ_4B, 1),		\
 			 INTEL_SPI_OP_ADDR(4),				\
 			 INTEL_SPI_OP_DATA_IN(1),			\
@@ -989,7 +933,7 @@ static const struct spi_controller_mem_ops intel_spi_mem_ops = {
 			 INTEL_SPI_OP_ADDR(4),				\
 			 INTEL_SPI_OP_DATA_IN(4),			\
 			 intel_spi_read),				\
-	/* Fast read with 4-byte address opcode */			\
+	 			\
 	INTEL_SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_READ_FAST_4B, 1),	\
 			 INTEL_SPI_OP_ADDR(4),				\
 			 INTEL_SPI_OP_DATA_IN(1),			\
@@ -1002,7 +946,7 @@ static const struct spi_controller_mem_ops intel_spi_mem_ops = {
 			 INTEL_SPI_OP_ADDR(4),				\
 			 INTEL_SPI_OP_DATA_IN(4),			\
 			 intel_spi_read),				\
-	/* Write operations */						\
+	 						\
 	INTEL_SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_PP, 1),		\
 			 INTEL_SPI_OP_ADDR(3),				\
 			 INTEL_SPI_OP_DATA_OUT(1),			\
@@ -1023,7 +967,7 @@ static const struct spi_controller_mem_ops intel_spi_mem_ops = {
 			 SPI_MEM_OP_NO_ADDR,				\
 			 SPI_MEM_OP_NO_DATA,				\
 			 intel_spi_write_reg),				\
-	/* Erase operations */						\
+	 						\
 	INTEL_SPI_MEM_OP_REPL(SPI_MEM_OP_CMD(SPINOR_OP_BE_4K, 1),	\
 			      INTEL_SPI_OP_ADDR(3),			\
 			      SPI_MEM_OP_NO_DATA,			\
@@ -1047,7 +991,7 @@ static const struct intel_spi_mem_op generic_mem_ops[] = {
 
 static const struct intel_spi_mem_op erase_64k_mem_ops[] = {
 	INTEL_SPI_GENERIC_OPS,
-	/* 64k sector erase operations */
+	 
 	INTEL_SPI_MEM_OP_REPL(SPI_MEM_OP_CMD(SPINOR_OP_SE, 1),
 			      INTEL_SPI_OP_ADDR(3),
 			      SPI_MEM_OP_NO_DATA,
@@ -1109,30 +1053,23 @@ static int intel_spi_init(struct intel_spi *ispi)
 		return -EINVAL;
 	}
 
-	/* Try to disable write protection if user asked to do so */
+	 
 	if (writeable && !intel_spi_set_writeable(ispi)) {
 		dev_warn(ispi->dev, "can't disable chip write protection\n");
 		writeable = false;
 	}
 
-	/* Disable #SMI generation from HW sequencer */
+	 
 	val = readl(ispi->base + HSFSTS_CTL);
 	val &= ~HSFSTS_CTL_FSMIE;
 	writel(val, ispi->base + HSFSTS_CTL);
 
-	/*
-	 * Determine whether erase operation should use HW or SW sequencer.
-	 *
-	 * The HW sequencer has a predefined list of opcodes, with only the
-	 * erase opcode being programmable in LVSCC and UVSCC registers.
-	 * If these registers don't contain a valid erase opcode, erase
-	 * cannot be done using HW sequencer.
-	 */
+	 
 	lvscc = readl(ispi->base + LVSCC);
 	uvscc = readl(ispi->base + UVSCC);
 	if (!(lvscc & ERASE_OPCODE_MASK) || !(uvscc & ERASE_OPCODE_MASK))
 		ispi->swseq_erase = true;
-	/* SPI controller on Intel BXT supports 64K erase opcode */
+	 
 	if (ispi->info->type == INTEL_SPI_BXT && !ispi->swseq_erase)
 		if (!(lvscc & ERASE_64K_OPCODE_MASK) ||
 		    !(uvscc & ERASE_64K_OPCODE_MASK))
@@ -1143,28 +1080,20 @@ static int intel_spi_init(struct intel_spi *ispi)
 		return -EINVAL;
 	}
 
-	/*
-	 * Some controllers can only do basic operations using hardware
-	 * sequencer. All other operations are supposed to be carried out
-	 * using software sequencer.
-	 */
+	 
 	if (ispi->swseq_reg) {
-		/* Disable #SMI generation from SW sequencer */
+		 
 		val = readl(ispi->sregs + SSFSTS_CTL);
 		val &= ~SSFSTS_CTL_FSMIE;
 		writel(val, ispi->sregs + SSFSTS_CTL);
 	}
 
-	/* Check controller's lock status */
+	 
 	val = readl(ispi->base + HSFSTS_CTL);
 	ispi->locked = !!(val & HSFSTS_CTL_FLOCKDN);
 
 	if (ispi->locked && ispi->sregs) {
-		/*
-		 * BIOS programs allowed opcodes and then locks down the
-		 * register. So read back what opcodes it decided to support.
-		 * That's the set we are going to support as well.
-		 */
+		 
 		opmenu0 = readl(ispi->sregs + OPMENU0);
 		opmenu1 = readl(ispi->sregs + OPMENU1);
 
@@ -1210,10 +1139,7 @@ static bool intel_spi_is_protected(const struct intel_spi *ispi,
 	return false;
 }
 
-/*
- * There will be a single partition holding all enabled flash regions. We
- * call this "BIOS".
- */
+ 
 static void intel_spi_fill_partition(struct intel_spi *ispi,
 				     struct mtd_partition *part)
 {
@@ -1222,14 +1148,11 @@ static void intel_spi_fill_partition(struct intel_spi *ispi,
 
 	memset(part, 0, sizeof(*part));
 
-	/* Start from the mandatory descriptor region */
+	 
 	part->size = 4096;
 	part->name = "BIOS";
 
-	/*
-	 * Now try to find where this partition ends based on the flash
-	 * region registers.
-	 */
+	 
 	for (i = 1; i < ispi->nregions; i++) {
 		u32 region, base, limit;
 
@@ -1240,13 +1163,7 @@ static void intel_spi_fill_partition(struct intel_spi *ispi,
 		if (base >= limit || limit == 0)
 			continue;
 
-		/*
-		 * If any of the regions have protection bits set, make the
-		 * whole partition read-only to be on the safe side.
-		 *
-		 * Also if the user did not ask the chip to be writeable
-		 * mask the bit too.
-		 */
+		 
 		if (!writeable || intel_spi_is_protected(ispi, base, limit))
 			part->mask_flags |= MTD_WRITEABLE;
 
@@ -1372,7 +1289,7 @@ static int intel_spi_populate_chip(struct intel_spi *ispi)
 	if (ret)
 		return ret;
 
-	/* Add the second chip if present */
+	 
 	if (ispi->host->num_chipselect < 2)
 		return 0;
 
@@ -1384,15 +1301,7 @@ static int intel_spi_populate_chip(struct intel_spi *ispi)
 	return 0;
 }
 
-/**
- * intel_spi_probe() - Probe the Intel SPI flash controller
- * @dev: Pointer to the parent device
- * @mem: MMIO resource
- * @info: Platform specific information
- *
- * Probes Intel SPI flash controller and creates the flash chip device.
- * Returns %0 on success and negative errno in case of failure.
- */
+ 
 int intel_spi_probe(struct device *dev, struct resource *mem,
 		    const struct intel_spi_boardinfo *info)
 {

@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Standard Hot Plug Controller Driver
- *
- * Copyright (C) 1995,2001 Compaq Computer Corporation
- * Copyright (C) 2001 Greg Kroah-Hartman (greg@kroah.com)
- * Copyright (C) 2001 IBM Corp.
- * Copyright (C) 2003-2004 Intel Corporation
- *
- * All rights reserved.
- *
- * Send feedback to <greg@kroah.com>, <kristen.c.accardi@intel.com>
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -21,7 +9,7 @@
 #include <linux/pci.h>
 #include "shpchp.h"
 
-/* Global variables */
+ 
 bool shpchp_debug;
 bool shpchp_poll_mode;
 int shpchp_poll_time;
@@ -93,7 +81,7 @@ static int init_slots(struct controller *ctrl)
 		mutex_init(&slot->lock);
 		INIT_DELAYED_WORK(&slot->work, shpchp_queue_pushbutton_work);
 
-		/* register this slot with the hotplug pci core */
+		 
 		snprintf(name, SLOT_NAME_SIZE, "%d", slot->number);
 		hotplug_slot->ops = &shpchp_hotplug_slot_ops;
 
@@ -139,9 +127,7 @@ void cleanup_slots(struct controller *ctrl)
 	}
 }
 
-/*
- * set_attention_status - Turns the Amber LED for a slot on, off or blink
- */
+ 
 static int set_attention_status(struct hotplug_slot *hotplug_slot, u8 status)
 {
 	struct slot *slot = get_slot(hotplug_slot);
@@ -237,10 +223,7 @@ static int get_adapter_status(struct hotplug_slot *hotplug_slot, u8 *value)
 
 static bool shpc_capable(struct pci_dev *bridge)
 {
-	/*
-	 * It is assumed that AMD GOLAM chips support SHPC but they do not
-	 * have SHPC capability.
-	 */
+	 
 	if (bridge->vendor == PCI_VENDOR_ID_AMD &&
 	    bridge->device == PCI_DEVICE_ID_AMD_GOLAM_7450)
 		return true;
@@ -276,7 +259,7 @@ static int shpc_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	pci_set_drvdata(pdev, ctrl);
 
-	/* Setup the slot information structures */
+	 
 	rc = init_slots(ctrl);
 	if (rc) {
 		ctrl_err(ctrl, "Slot initialization failed\n");
@@ -312,7 +295,7 @@ static void shpc_remove(struct pci_dev *dev)
 
 static const struct pci_device_id shpcd_pci_tbl[] = {
 	{PCI_DEVICE_CLASS(PCI_CLASS_BRIDGE_PCI_NORMAL, ~0)},
-	{ /* end: all zeroes */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(pci, shpcd_pci_tbl);
 

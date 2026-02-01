@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// tegra210_adx.c - Tegra210 ADX driver
-//
-// Copyright (c) 2021-2023 NVIDIA CORPORATION.  All rights reserved.
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -57,7 +57,7 @@ static int tegra210_adx_startup(struct snd_pcm_substream *substream,
 	unsigned int val;
 	int err;
 
-	/* Ensure if ADX status is disabled */
+	 
 	err = regmap_read_poll_timeout_atomic(adx->regmap, TEGRA210_ADX_STATUS,
 					      val, !(val & 0x1), 10, 10000);
 	if (err < 0) {
@@ -65,12 +65,7 @@ static int tegra210_adx_startup(struct snd_pcm_substream *substream,
 		return err;
 	}
 
-	/*
-	 * Soft Reset: Below performs module soft reset which clears
-	 * all FSM logic, flushes flow control of FIFO and resets the
-	 * state register. It also brings module back to disabled
-	 * state (without flushing the data in the pipe).
-	 */
+	 
 	regmap_update_bits(adx->regmap, TEGRA210_ADX_SOFT_RESET,
 			   TEGRA210_ADX_SOFT_RESET_SOFT_RESET_MASK,
 			   TEGRA210_ADX_SOFT_RESET_SOFT_EN);
@@ -175,16 +170,7 @@ static int tegra210_adx_get_byte_map(struct snd_kcontrol *kcontrol,
 	mc = (struct soc_mixer_control *)kcontrol->private_value;
 	enabled = adx->byte_mask[mc->reg / 32] & (1 << (mc->reg % 32));
 
-	/*
-	 * TODO: Simplify this logic to just return from bytes_map[]
-	 *
-	 * Presently below is required since bytes_map[] is
-	 * tightly packed and cannot store the control value of 256.
-	 * Byte mask state is used to know if 256 needs to be returned.
-	 * Note that for control value of 256, the put() call stores 0
-	 * in the bytes_map[] and disables the corresponding bit in
-	 * byte_mask[].
-	 */
+	 
 	if (enabled)
 		ucontrol->value.integer.value[0] = bytes_map[mc->reg];
 	else
@@ -212,7 +198,7 @@ static int tegra210_adx_put_byte_map(struct snd_kcontrol *kcontrol,
 	if (mask_val == adx->byte_mask[mc->reg / 32])
 		return 0;
 
-	/* Update byte map and slot */
+	 
 	bytes_map[mc->reg] = value % 256;
 	adx->byte_mask[mc->reg / 32] = mask_val;
 

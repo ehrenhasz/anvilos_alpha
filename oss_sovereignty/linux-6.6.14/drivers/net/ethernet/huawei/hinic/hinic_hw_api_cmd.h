@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Huawei HiNIC PCI Express Linux driver
- * Copyright(c) 2017 Huawei Technologies Co., Ltd
- */
+ 
+ 
 
 #ifndef HINIC_HW_API_CMD_H
 #define HINIC_HW_API_CMD_H
@@ -139,16 +136,16 @@ struct hinic_api_cmd_status {
 	u64     rsvd3;
 };
 
-/* HW struct */
+ 
 struct hinic_api_cmd_cell {
 	u64 ctrl;
 
-	/* address is 64 bit in HW struct */
+	 
 	u64 next_cell_paddr;
 
 	u64 desc;
 
-	/* HW struct */
+	 
 	union {
 		struct {
 			u64 hw_cmd_paddr;
@@ -176,7 +173,7 @@ struct hinic_api_cmd_chain {
 	u32                             num_cells;
 	u16                             cell_size;
 
-	/* HW members in 24 bit format */
+	 
 	u32                             prod_idx;
 	u32                             cons_idx;
 

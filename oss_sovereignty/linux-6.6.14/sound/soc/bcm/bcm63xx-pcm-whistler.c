@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-// linux/sound/bcm/bcm63xx-pcm-whistler.c
-// BCM63xx whistler pcm interface
-// Copyright (c) 2020 Broadcom Corporation
-// Author: Kevin-Ke Li <kevin-ke.li@broadcom.com>
+
+
+
+
+
 
 #include <linux/dma-mapping.h>
 #include <linux/io.h>
@@ -33,7 +33,7 @@ static const struct snd_pcm_hardware bcm63xx_pcm_hardware = {
 		SNDRV_PCM_INFO_INTERLEAVED |
 		SNDRV_PCM_INFO_PAUSE |
 		SNDRV_PCM_INFO_RESUME,
-	.formats = SNDRV_PCM_FMTBIT_S32_LE, /* support S32 only */
+	.formats = SNDRV_PCM_FMTBIT_S32_LE,  
 	.period_bytes_max = 8192 - 32,
 	.periods_min = 1,
 	.periods_max = PAGE_SIZE/sizeof(struct i2s_dma_desc),
@@ -244,7 +244,7 @@ static irqreturn_t i2s_dma_isr(int irq, void *bcm_i2s_priv)
 	i2s_priv = (struct bcm_i2s_priv *)bcm_i2s_priv;
 	regmap_i2s = i2s_priv->regmap_i2s;
 
-	/* rx */
+	 
 	regmap_read(regmap_i2s, I2S_RX_IRQ_CTL, &int_status);
 
 	if (int_status & I2S_RX_DESC_OFF_INTR_EN_MSK) {
@@ -287,12 +287,12 @@ static irqreturn_t i2s_dma_isr(int irq, void *bcm_i2s_priv)
 
 		snd_pcm_period_elapsed(substream);
 
-		/* Clear interrupt by writing 0 */
+		 
 		regmap_update_bits(regmap_i2s, I2S_RX_IRQ_CTL,
 				   I2S_RX_INTR_MASK, 0);
 	}
 
-	/* tx */
+	 
 	regmap_read(regmap_i2s, I2S_TX_IRQ_CTL, &int_status);
 
 	if (int_status & I2S_TX_DESC_OFF_INTR_EN_MSK) {
@@ -337,7 +337,7 @@ static irqreturn_t i2s_dma_isr(int irq, void *bcm_i2s_priv)
 
 		snd_pcm_period_elapsed(substream);
 
-		/* Clear interrupt by writing 0 */
+		 
 		regmap_update_bits(regmap_i2s, I2S_TX_IRQ_CTL,
 				   I2S_TX_INTR_MASK, 0);
 	}

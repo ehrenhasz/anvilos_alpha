@@ -1,42 +1,7 @@
-/****************************************************************************
- * Copyright 2019-2021,2022 Thomas E. Dickey                                *
- * Copyright 1998-2015,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Thomas E. Dickey                    1997-on                     *
- ****************************************************************************/
-/*
- * $Id: progs.priv.h,v 1.59 2022/09/17 18:58:05 tom Exp $
- *
- *	progs.priv.h
- *
- *	Header file for curses utility programs
- */
+ 
+ 
 
 #ifndef PROGS_PRIV_H
 #define PROGS_PRIV_H 1
@@ -46,7 +11,7 @@
 #if USE_RCS_IDS
 #define MODULE_ID(id) static const char Ident[] = id;
 #else
-#define MODULE_ID(id)		/*nothing */
+#define MODULE_ID(id)		 
 #endif
 
 #include <stdlib.h>
@@ -108,12 +73,10 @@ extern int errno;
 #if HAVE_GETOPT_H
 #include <getopt.h>
 #elif !defined(HAVE_GETOPT_HEADER)
-/* 'getopt()' may be prototyped in <stdlib.h>, but declaring its
- * variables doesn't hurt.
- */
+ 
 extern char *optarg;
 extern int optind;
-#endif /* HAVE_GETOPT_H */
+#endif  
 
 #undef _NC_WINDOWS
 #if (defined(_WIN32) || defined(_WIN64))
@@ -126,7 +89,7 @@ extern int optind;
 #include <curses.h>
 
 #if !(defined(NCURSES_WGETCH_EVENTS) && defined(NEED_KEY_EVENT))
-#undef KEY_EVENT		/* reduce compiler-warnings with Visual C++ */
+#undef KEY_EVENT		 
 #endif
 
 #include <term_entry.h>
@@ -147,7 +110,7 @@ extern int optind;
 #endif
 #endif
 
-/* error-returns for tput */
+ 
 #define ErrUsage	2
 #define ErrTermType	3
 #define ErrCapName	4
@@ -157,9 +120,9 @@ extern int optind;
 #define IGNORE_RC(func) errno = (int) func
 #else
 #define IGNORE_RC(func) (void) func
-#endif /* gcc workarounds */
+#endif  
 
-/* usually in <unistd.h> */
+ 
 #ifndef STDIN_FILENO
 #define STDIN_FILENO 0
 #endif
@@ -181,22 +144,22 @@ extern int optind;
 #endif
 
 #ifndef R_OK
-#define	R_OK	4		/* Test for readable.  */
+#define	R_OK	4		 
 #endif
 
 #ifndef W_OK
-#define	W_OK	2		/* Test for writable.  */
+#define	W_OK	2		 
 #endif
 
 #ifndef X_OK
-#define	X_OK	1		/* Test for executable.  */
+#define	X_OK	1		 
 #endif
 
 #ifndef F_OK
-#define	F_OK	0		/* Test for existence.  */
+#define	F_OK	0		 
 #endif
 
-/* usually in <unistd.h> */
+ 
 #ifndef STDOUT_FILENO
 #define STDOUT_FILENO 1
 #endif
@@ -205,26 +168,24 @@ extern int optind;
 #define STDERR_FILENO 2
 #endif
 
-/* may be in limits.h, included from various places */
+ 
 #ifndef PATH_MAX
 # if defined(_POSIX_PATH_MAX)
 #  define PATH_MAX _POSIX_PATH_MAX
 # elif defined(MAXPATHLEN)
 #  define PATH_MAX MAXPATHLEN
 # else
-#  define PATH_MAX 255		/* the Posix minimum pathsize */
+#  define PATH_MAX 255		 
 # endif
 #endif
 
-/* We use isascii only to guard against use of 7-bit ctype tables in the
- * isprint test in infocmp.
- */
+ 
 #if !HAVE_ISASCII
 # undef isascii
 # if ('z'-'a' == 25) && ('z' < 127) && ('Z'-'A' == 25) && ('Z' < 127) && ('9' < 127)
 #  define isascii(c) (UChar(c) <= 127)
 # else
-#  define isascii(c) 1		/* not really ascii anyway */
+#  define isascii(c) 1		 
 # endif
 #endif
 
@@ -234,10 +195,7 @@ extern int optind;
 
 #define VtoTrace(opt) (unsigned) ((opt > 0) ? opt : (opt == 0))
 
-/*
- * If configured for tracing, the debug- and trace-output are merged together
- * in the trace file for "upper" levels of the verbose option.
- */
+ 
 #ifdef TRACE
 #define use_verbosity(level) do { \
  		set_trace_level(level); \
@@ -260,4 +218,4 @@ extern int optind;
 #define _nc_read_entry2(n,f,t) _nc_read_entry(n,f,t)
 #endif
 
-#endif /* PROGS_PRIV_H */
+#endif  

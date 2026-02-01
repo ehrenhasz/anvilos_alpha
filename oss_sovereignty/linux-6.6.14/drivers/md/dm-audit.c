@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Creating audit records for mapped devices.
- *
- * Copyright (C) 2021 Fraunhofer AISEC. All rights reserved.
- *
- * Authors: Michael Weiß <michael.weiss@aisec.fraunhofer.de>
- */
+
+ 
 
 #include <linux/audit.h>
 #include <linux/module.h>
@@ -57,7 +51,7 @@ void dm_audit_log_ti(int audit_type, const char *dm_msg_prefix, const char *op,
 		audit_log_format(ab, " dev=%d:%d sector=?", dev_major,
 				 dev_minor);
 		break;
-	default: /* unintended use */
+	default:  
 		return;
 	}
 

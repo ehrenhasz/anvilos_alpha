@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ov2685 driver
- *
- * Copyright (C) 2017 Fuzhou Rockchip Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -63,9 +59,9 @@
 #define OV2685_BITS_PER_SAMPLE		10
 
 static const char * const ov2685_supply_names[] = {
-	"avdd",		/* Analog power */
-	"dovdd",	/* Digital I/O power */
-	"dvdd",		/* Digital core power */
+	"avdd",		 
+	"dovdd",	 
+	"dvdd",		 
 };
 
 #define OV2685_NUM_SUPPLIES ARRAY_SIZE(ov2685_supply_names)
@@ -107,7 +103,7 @@ struct ov2685 {
 
 #define to_ov2685(sd) container_of(sd, struct ov2685, subdev)
 
-/* PLL settings bases on 24M xvclk */
+ 
 static struct regval ov2685_1600x1200_regs[] = {
 	{0x0103, 0x01},
 	{0x0100, 0x00},
@@ -254,7 +250,7 @@ static const struct ov2685_mode supported_modes[] = {
 	},
 };
 
-/* Write registers up to 4 at a time */
+ 
 static int ov2685_write_reg(struct i2c_client *client, u16 reg,
 			    u32 len, u32 val)
 {
@@ -296,7 +292,7 @@ static int ov2685_write_array(struct i2c_client *client,
 	return ret;
 }
 
-/* Read registers up to 4 at a time */
+ 
 static int ov2685_read_reg(struct i2c_client *client, u16 reg,
 			   u32 len, u32 *val)
 {
@@ -310,13 +306,13 @@ static int ov2685_read_reg(struct i2c_client *client, u16 reg,
 		return -EINVAL;
 
 	data_be_p = (u8 *)&data_be;
-	/* Write register address */
+	 
 	msgs[0].addr = client->addr;
 	msgs[0].flags = 0;
 	msgs[0].len = 2;
 	msgs[0].buf = (u8 *)&reg_addr_be;
 
-	/* Read data from register */
+	 
 	msgs[1].addr = client->addr;
 	msgs[1].flags = I2C_M_RD;
 	msgs[1].len = len;
@@ -347,7 +343,7 @@ static int ov2685_set_fmt(struct v4l2_subdev *sd,
 	struct ov2685 *ov2685 = to_ov2685(sd);
 	struct v4l2_mbus_framefmt *mbus_fmt = &fmt->format;
 
-	/* only one mode supported for now */
+	 
 	ov2685_fill_fmt(ov2685->cur_mode, mbus_fmt);
 
 	return 0;
@@ -443,7 +439,7 @@ static int ov2685_get_selection(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/* Calculate the delay in us by clock rate and clock cycles */
+ 
 static inline u32 ov2685_cal_delay(u32 cycles)
 {
 	return DIV_ROUND_UP(cycles, OV2685_XVCLK_FREQ / 1000 / 1000);
@@ -469,15 +465,13 @@ static int __ov2685_power_on(struct ov2685 *ov2685)
 		goto disable_clk;
 	}
 
-	/* The minimum delay between power supplies and reset rising can be 0 */
+	 
 	gpiod_set_value_cansleep(ov2685->reset_gpio, 0);
-	/* 8192 xvclk cycles prior to the first SCCB transaction */
+	 
 	delay_us = ov2685_cal_delay(8192);
 	usleep_range(delay_us, delay_us * 2);
 
-	/* HACK: ov2685 would output messy data after reset(R0103),
-	 * writing register before .s_stream() as a workaround
-	 */
+	 
 	ret = ov2685_write_array(ov2685->client, ov2685->cur_mode->reg_list);
 	if (ret) {
 		dev_err(dev, "Failed to set regs for power on\n");
@@ -496,7 +490,7 @@ disable_clk:
 
 static void __ov2685_power_off(struct ov2685 *ov2685)
 {
-	/* 512 xvclk cycles after the last SCCB transaction or MIPI frame end */
+	 
 	u32 delay_us = ov2685_cal_delay(512);
 
 	usleep_range(delay_us, delay_us * 2);
@@ -556,7 +550,7 @@ static int ov2685_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 	mutex_lock(&ov2685->mutex);
 
 	try_fmt = v4l2_subdev_get_try_format(sd, fh->state, 0);
-	/* Initialize try_fmt */
+	 
 	ov2685_fill_fmt(&supported_modes[0], try_fmt);
 
 	mutex_unlock(&ov2685->mutex);
@@ -596,10 +590,10 @@ static int ov2685_set_ctrl(struct v4l2_ctrl *ctrl)
 	s64 max_expo;
 	int ret;
 
-	/* Propagate change of current control to all related controls */
+	 
 	switch (ctrl->id) {
 	case V4L2_CID_VBLANK:
-		/* Update max exposure while meeting expected vblanking */
+		 
 		max_expo = ov2685->cur_mode->height + ctrl->val - 4;
 		__v4l2_ctrl_modify_range(ov2685->exposure,
 					 ov2685->exposure->minimum, max_expo,
@@ -724,7 +718,7 @@ static int ov2685_initialize_controls(struct ov2685 *ov2685)
 				ARRAY_SIZE(ov2685_test_pattern_menu) - 1,
 				0, 0, ov2685_test_pattern_menu);
 
-	/* set properties from fwnode (e.g. rotation, orientation) */
+	 
 	ret = v4l2_fwnode_device_parse(&ov2685->client->dev, &props);
 	if (ret)
 		goto err_free_handler;

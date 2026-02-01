@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Test KVM debugging features. */
+
+ 
 #include "kvm_util.h"
 #include "test_util.h"
 
@@ -11,7 +11,7 @@
 #define IPA0_DIAG 0x8300
 #define PGM_SPECIFICATION 0x06
 
-/* Common code for testing single-stepping interruptions. */
+ 
 extern char int_handler[];
 asm("int_handler:\n"
     "j .\n");
@@ -52,7 +52,7 @@ static void test_step_int(void *guest_code, size_t new_psw_off)
 	kvm_vm_free(vm);
 }
 
-/* Test single-stepping "boring" program interruptions. */
+ 
 extern char test_step_pgm_guest_code[];
 asm("test_step_pgm_guest_code:\n"
     ".insn rr,0x1d00,%r1,%r0 /* dr %r1,%r0 */\n"
@@ -63,10 +63,7 @@ static void test_step_pgm(void)
 	test_step_int(test_step_pgm_guest_code, __LC_PGM_NEW_PSW);
 }
 
-/*
- * Test single-stepping program interruptions caused by DIAG.
- * Userspace emulation must not interfere with single-stepping.
- */
+ 
 extern char test_step_pgm_diag_guest_code[];
 asm("test_step_pgm_diag_guest_code:\n"
     "diag %r0,%r0,0\n"
@@ -95,10 +92,7 @@ static void test_step_pgm_diag(void)
 	kvm_vm_free(vm);
 }
 
-/*
- * Test single-stepping program interruptions caused by ISKE.
- * CPUSTAT_KSS handling must not interfere with single-stepping.
- */
+ 
 extern char test_step_pgm_iske_guest_code[];
 asm("test_step_pgm_iske_guest_code:\n"
     "iske %r2,%r2\n"
@@ -109,10 +103,7 @@ static void test_step_pgm_iske(void)
 	test_step_int(test_step_pgm_iske_guest_code, __LC_PGM_NEW_PSW);
 }
 
-/*
- * Test single-stepping program interruptions caused by LCTL.
- * KVM emulation must not interfere with single-stepping.
- */
+ 
 extern char test_step_pgm_lctl_guest_code[];
 asm("test_step_pgm_lctl_guest_code:\n"
     "lctl %c0,%c0,1\n"
@@ -123,7 +114,7 @@ static void test_step_pgm_lctl(void)
 	test_step_int(test_step_pgm_lctl_guest_code, __LC_PGM_NEW_PSW);
 }
 
-/* Test single-stepping supervisor-call interruptions. */
+ 
 extern char test_step_svc_guest_code[];
 asm("test_step_svc_guest_code:\n"
     "svc 0\n"
@@ -134,7 +125,7 @@ static void test_step_svc(void)
 	test_step_int(test_step_svc_guest_code, __LC_SVC_NEW_PSW);
 }
 
-/* Run all tests above. */
+ 
 static struct testdef {
 	const char *name;
 	void (*test)(void);

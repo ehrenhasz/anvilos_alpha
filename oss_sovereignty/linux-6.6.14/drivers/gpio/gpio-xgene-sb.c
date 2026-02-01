@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AppliedMicro X-Gene SoC GPIO-Standby Driver
- *
- * Copyright (c) 2014, Applied Micro Circuits Corporation
- * Author:	Tin Huynh <tnhuynh@apm.com>.
- *		Y Vo <yvo@apm.com>.
- *		Quan Nguyen <qnguyen@apm.com>.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/io.h>
@@ -18,7 +11,7 @@
 #include "gpiolib.h"
 #include "gpiolib-acpi.h"
 
-/* Common property names */
+ 
 #define XGENE_NIRQ_PROPERTY		"apm,nr-irqs"
 #define XGENE_NGPIO_PROPERTY		"apm,nr-gpios"
 #define XGENE_IRQ_START_PROPERTY	"apm,irq-start"
@@ -37,15 +30,7 @@
 #define GPIO_INT_LEVEL_H	0x000001
 #define GPIO_INT_LEVEL_L	0x000000
 
-/**
- * struct xgene_gpio_sb - GPIO-Standby private data structure.
- * @gc:				memory-mapped GPIO controllers.
- * @regs:			GPIO register base offset
- * @irq_domain:			GPIO interrupt domain
- * @irq_start:			GPIO pin that start support interrupt
- * @nirq:			Number of GPIO pins that supports interrupt
- * @parent_irq_base:		Start parent HWIRQ
- */
+ 
 struct xgene_gpio_sb {
 	struct gpio_chip	gc;
 	void __iomem		*regs;
@@ -95,7 +80,7 @@ static int xgene_gpio_sb_irq_set_type(struct irq_data *d, unsigned int type)
 	xgene_gpio_set_bit(&priv->gc, priv->regs + MPA_GPIO_INT_LVL,
 			d->hwirq, lvl_type);
 
-	/* Propagate IRQ type setting to parent */
+	 
 	if (type & IRQ_TYPE_EDGE_BOTH)
 		return irq_chip_set_type_parent(d, IRQ_TYPE_EDGE_RISING);
 	else
@@ -191,8 +176,8 @@ static int xgene_gpio_sb_domain_alloc(struct irq_domain *domain,
 	parent_fwspec.fwnode = domain->parent->fwnode;
 	if (is_of_node(parent_fwspec.fwnode)) {
 		parent_fwspec.param_count = 3;
-		parent_fwspec.param[0] = 0;/* SPI */
-		/* Skip SGIs and PPIs*/
+		parent_fwspec.param[0] = 0; 
+		 
 		parent_fwspec.param[1] = hwirq + priv->parent_irq_base - 32;
 		parent_fwspec.param[2] = fwspec->param[1];
 	} else if (is_fwnode_irqchip(parent_fwspec.fwnode)) {
@@ -251,18 +236,18 @@ static int xgene_gpio_sb_probe(struct platform_device *pdev)
 
 	priv->gc.to_irq = xgene_gpio_sb_to_irq;
 
-	/* Retrieve start irq pin, use default if property not found */
+	 
 	priv->irq_start = XGENE_DFLT_IRQ_START_PIN;
 	if (!device_property_read_u32(&pdev->dev,
 					XGENE_IRQ_START_PROPERTY, &val32))
 		priv->irq_start = val32;
 
-	/* Retrieve number irqs, use default if property not found */
+	 
 	priv->nirq = XGENE_DFLT_MAX_NIRQ;
 	if (!device_property_read_u32(&pdev->dev, XGENE_NIRQ_PROPERTY, &val32))
 		priv->nirq = val32;
 
-	/* Retrieve number gpio, use default if property not found */
+	 
 	priv->gc.ngpio = XGENE_DFLT_MAX_NGPIO;
 	if (!device_property_read_u32(&pdev->dev, XGENE_NGPIO_PROPERTY, &val32))
 		priv->gc.ngpio = val32;
@@ -290,7 +275,7 @@ static int xgene_gpio_sb_probe(struct platform_device *pdev)
 
 	dev_info(&pdev->dev, "X-Gene GPIO Standby driver registered\n");
 
-	/* Register interrupt handlers for GPIO signaled ACPI Events */
+	 
 	acpi_gpiochip_request_interrupts(&priv->gc);
 
 	return ret;

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Lontium LT9211 bridge driver
- *
- * LT9211 is capable of converting:
- *   2xDSI/2xLVDS/1xDPI -> 2xDSI/2xLVDS/1xDPI
- * Currently supported is:
- *   1xDSI -> 1xLVDS
- *
- * Copyright (C) 2022 Marek Vasut <marex@denx.de>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -37,7 +28,7 @@
 #define REG_CHIPID2_VALUE			0xe3
 
 #define REG_DSI_LANE				0xd000
-/* DSI lane count - 0 means 4 lanes ; 1, 2, 3 means 1, 2, 3 lanes. */
+ 
 #define REG_DSI_LANE_COUNT(n)			((n) & 3)
 
 struct lt9211 {
@@ -112,14 +103,14 @@ static int lt9211_read_chipid(struct lt9211 *ctx)
 	u8 chipid[3];
 	int ret;
 
-	/* Read Chip ID registers and verify the chip can communicate. */
+	 
 	ret = regmap_bulk_read(ctx->regmap, REG_CHIPID0, chipid, 3);
 	if (ret < 0) {
 		dev_err(ctx->dev, "Failed to read Chip ID: %d\n", ret);
 		return ret;
 	}
 
-	/* Test for known Chip ID. */
+	 
 	if (chipid[0] != REG_CHIPID0_VALUE || chipid[1] != REG_CHIPID1_VALUE ||
 	    chipid[2] != REG_CHIPID2_VALUE) {
 		dev_err(ctx->dev, "Unknown Chip ID: 0x%02x 0x%02x 0x%02x\n",
@@ -157,7 +148,7 @@ static int lt9211_configure_rx(struct lt9211 *ctx)
 		{ 0x8205, 0x22 },
 		{ 0x8207, 0x9f },
 		{ 0x8208, 0xfc },
-		/* ORR with 0xf8 here to enable DSI DN/DP swap. */
+		 
 		{ 0x8209, 0x01 },
 		{ 0x8217, 0x0c },
 		{ 0x8633, 0x1b },
@@ -170,7 +161,7 @@ static int lt9211_configure_rx(struct lt9211 *ctx)
 
 	const struct reg_sequence lt9211_rx_dig_seq[] = {
 		{ 0x8630, 0x85 },
-		/* 0x8588: BIT 6 set = MIPI-RX, BIT 4 unset = LVDS-TX */
+		 
 		{ 0x8588, 0x40 },
 		{ 0x85ff, 0xd0 },
 		{ REG_DSI_LANE, REG_DSI_LANE_COUNT(ctx->dsi->lanes) },
@@ -225,23 +216,23 @@ static int lt9211_autodetect_rx(struct lt9211 *ctx,
 	u8 bc[3];
 	int ret;
 
-	/* Measure ByteClock frequency. */
+	 
 	ret = regmap_write(ctx->regmap, 0x8600, 0x01);
 	if (ret)
 		return ret;
 
-	/* Give the chip time to lock onto RX stream. */
+	 
 	msleep(100);
 
-	/* Read the ByteClock frequency from the chip. */
+	 
 	ret = regmap_bulk_read(ctx->regmap, 0x8608, bc, sizeof(bc));
 	if (ret)
 		return ret;
 
-	/* RX ByteClock in kHz */
+	 
 	byteclk = ((bc[0] & 0xf) << 16) | (bc[1] << 8) | bc[2];
 
-	/* Width/Height/Format Auto-detection */
+	 
 	ret = regmap_bulk_read(ctx->regmap, 0xd082, buf, sizeof(buf));
 	if (ret)
 		return ret;
@@ -250,9 +241,9 @@ static int lt9211_autodetect_rx(struct lt9211 *ctx,
 	height = (buf[3] << 8) | buf[4];
 	format = buf[2] & 0xf;
 
-	if (format == 0x3) {		/* YUV422 16bit */
+	if (format == 0x3) {		 
 		width /= 2;
-	} else if (format == 0xa) {	/* RGB888 24bit */
+	} else if (format == 0xa) {	 
 		width /= 3;
 	} else {
 		dev_err(ctx->dev, "Unsupported DSI pixel format 0x%01x\n",
@@ -327,7 +318,7 @@ static int lt9211_configure_plls(struct lt9211 *ctx,
 	unsigned int pval;
 	int ret;
 
-	/* DeSSC PLL reference clock is 25 MHz XTal. */
+	 
 	ret = regmap_write(ctx->regmap, 0x822d, 0x48);
 	if (ret)
 		return ret;
@@ -348,7 +339,7 @@ static int lt9211_configure_plls(struct lt9211 *ctx,
 	if (ret)
 		return ret;
 
-	/* Wait for the DeSSC PLL to stabilize. */
+	 
 	msleep(100);
 
 	ret = regmap_multi_reg_write(ctx->regmap, lt9211_pcr_seq,
@@ -356,7 +347,7 @@ static int lt9211_configure_plls(struct lt9211 *ctx,
 	if (ret)
 		return ret;
 
-	/* PCR stability test takes seconds. */
+	 
 	ret = regmap_read_poll_timeout(ctx->regmap, 0xd087, pval, pval & 0x8,
 				       20000, 10000000);
 	if (ret)
@@ -369,9 +360,9 @@ static int lt9211_configure_tx(struct lt9211 *ctx, bool jeida,
 			       bool bpp24, bool de)
 {
 	const struct reg_sequence system_lt9211_tx_phy_seq[] = {
-		/* DPI output disable */
+		 
 		{ 0x8262, 0x00 },
-		/* BIT(7) is LVDS dual-port */
+		 
 		{ 0x823b, 0x38 | (ctx->lvds_dual_link ? BIT(7) : 0) },
 		{ 0x823e, 0x92 },
 		{ 0x823f, 0x48 },
@@ -386,7 +377,7 @@ static int lt9211_configure_tx(struct lt9211 *ctx, bool jeida,
 		{ 0x8250, 0x00 },
 		{ 0x8253, 0x00 },
 		{ 0x8254, 0x01 },
-		/* LVDS channel order, Odd:Even 0x10..A:B, 0x40..B:A */
+		 
 		{ 0x8646, ctx->lvds_dual_link_even_odd_swap ? 0x40 : 0x10 },
 		{ 0x8120, 0x7b },
 		{ 0x816b, 0xff },
@@ -408,7 +399,7 @@ static int lt9211_configure_tx(struct lt9211 *ctx, bool jeida,
 	};
 
 	const struct reg_sequence system_lt9211_tx_pll_seq[] = {
-		/* TX PLL power down */
+		 
 		{ 0x8236, 0x01 },
 		{ 0x8237, ctx->lvds_dual_link ? 0x2a : 0x29 },
 		{ 0x8238, 0x06 },
@@ -475,11 +466,11 @@ static void lt9211_atomic_enable(struct drm_bridge *bridge,
 		return;
 	}
 
-	/* Deassert reset */
+	 
 	gpiod_set_value(ctx->reset_gpio, 1);
-	usleep_range(20000, 21000);	/* Very long post-reset delay. */
+	usleep_range(20000, 21000);	 
 
-	/* Get the LVDS format from the bridge state. */
+	 
 	bridge_state = drm_atomic_get_new_bridge_state(state, bridge);
 	bus_flags = bridge_state->output_bus_cfg.flags;
 
@@ -497,11 +488,7 @@ static void lt9211_atomic_enable(struct drm_bridge *bridge,
 		lvds_format_jeida = false;
 		break;
 	default:
-		/*
-		 * Some bridges still don't set the correct
-		 * LVDS bus pixel format, use SPWG24 default
-		 * format until those are fixed.
-		 */
+		 
 		lvds_format_24bpp = true;
 		lvds_format_jeida = false;
 		dev_warn(ctx->dev,
@@ -510,10 +497,7 @@ static void lt9211_atomic_enable(struct drm_bridge *bridge,
 		break;
 	}
 
-	/*
-	 * Retrieve the CRTC adjusted mode. This requires a little dance to go
-	 * from the bridge to the encoder, to the connector and to the CRTC.
-	 */
+	 
 	connector = drm_atomic_get_new_connector_for_encoder(state,
 							     bridge->encoder);
 	crtc = drm_atomic_get_new_connector_state(state, connector)->crtc;
@@ -558,12 +542,9 @@ static void lt9211_atomic_disable(struct drm_bridge *bridge,
 	struct lt9211 *ctx = bridge_to_lt9211(bridge);
 	int ret;
 
-	/*
-	 * Put the chip in reset, pull nRST line low,
-	 * and assure lengthy 10ms reset low timing.
-	 */
+	 
 	gpiod_set_value(ctx->reset_gpio, 0);
-	usleep_range(10000, 11000);	/* Very long reset duration. */
+	usleep_range(10000, 11000);	 
 
 	ret = regulator_disable(ctx->vccio);
 	if (ret)
@@ -577,7 +558,7 @@ lt9211_mode_valid(struct drm_bridge *bridge,
 		  const struct drm_display_info *info,
 		  const struct drm_display_mode *mode)
 {
-	/* LVDS output clock range 25..176 MHz */
+	 
 	if (mode->clock < 25000)
 		return MODE_CLOCK_LOW;
 	if (mode->clock > 176000)
@@ -605,7 +586,7 @@ lt9211_atomic_get_input_bus_fmts(struct drm_bridge *bridge,
 	if (!input_fmts)
 		return NULL;
 
-	/* This is the DSI-end bus format */
+	 
 	input_fmts[0] = MEDIA_BUS_FMT_RGB888_1X24;
 	*num_input_fmts = 1;
 
@@ -648,11 +629,11 @@ static int lt9211_parse_dt(struct lt9211 *ctx)
 
 	if (dual_link == DRM_LVDS_DUAL_LINK_ODD_EVEN_PIXELS) {
 		ctx->lvds_dual_link = true;
-		/* Odd pixels to LVDS Channel A, even pixels to B */
+		 
 		ctx->lvds_dual_link_even_odd_swap = false;
 	} else if (dual_link == DRM_LVDS_DUAL_LINK_EVEN_ODD_PIXELS) {
 		ctx->lvds_dual_link = true;
-		/* Even pixels to LVDS Channel A, odd pixels to B */
+		 
 		ctx->lvds_dual_link_even_odd_swap = true;
 	}
 
@@ -733,16 +714,13 @@ static int lt9211_probe(struct i2c_client *client)
 
 	ctx->dev = dev;
 
-	/*
-	 * Put the chip in reset, pull nRST line low,
-	 * and assure lengthy 10ms reset low timing.
-	 */
+	 
 	ctx->reset_gpio = devm_gpiod_get_optional(ctx->dev, "reset",
 						  GPIOD_OUT_LOW);
 	if (IS_ERR(ctx->reset_gpio))
 		return PTR_ERR(ctx->reset_gpio);
 
-	usleep_range(10000, 11000);	/* Very long reset duration. */
+	usleep_range(10000, 11000);	 
 
 	ret = lt9211_parse_dt(ctx);
 	if (ret)

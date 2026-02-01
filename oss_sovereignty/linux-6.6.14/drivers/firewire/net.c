@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IPv4 over IEEE 1394, per RFC 2734
- * IPv6 over IEEE 1394, per RFC 3146
- *
- * Copyright (C) 2009 Jay Fenlason <fenlason@redhat.com>
- *
- * based on eth1394 by Ben Collins et al
- */
+
+ 
 
 #include <linux/bug.h>
 #include <linux/compiler.h>
@@ -32,14 +25,14 @@
 #include <net/arp.h>
 #include <net/firewire.h>
 
-/* rx limits */
-#define FWNET_MAX_FRAGMENTS		30 /* arbitrary, > TX queue depth */
+ 
+#define FWNET_MAX_FRAGMENTS		30  
 #define FWNET_ISO_PAGE_COUNT		(PAGE_SIZE < 16*1024 ? 4 : 2)
 
-/* tx limits */
-#define FWNET_MAX_QUEUED_DATAGRAMS	20 /* < 64 = number of tlabels */
-#define FWNET_MIN_QUEUED_DATAGRAMS	10 /* should keep AT DMA busy enough */
-#define FWNET_TX_QUEUE_LEN		FWNET_MAX_QUEUED_DATAGRAMS /* ? */
+ 
+#define FWNET_MAX_QUEUED_DATAGRAMS	20  
+#define FWNET_MIN_QUEUED_DATAGRAMS	10  
+#define FWNET_TX_QUEUE_LEN		FWNET_MAX_QUEUED_DATAGRAMS  
 
 #define IEEE1394_BROADCAST_CHANNEL	31
 #define IEEE1394_ALL_NODES		(0xffc0 | 0x003f)
@@ -56,17 +49,17 @@
 #define RFC2374_FRAG_HDR_SIZE	8
 #define RFC2374_FRAG_OVERHEAD	4
 
-#define RFC2374_HDR_UNFRAG	0	/* unfragmented		*/
-#define RFC2374_HDR_FIRSTFRAG	1	/* first fragment	*/
-#define RFC2374_HDR_LASTFRAG	2	/* last fragment	*/
-#define RFC2374_HDR_INTFRAG	3	/* interior fragment	*/
+#define RFC2374_HDR_UNFRAG	0	 
+#define RFC2374_HDR_FIRSTFRAG	1	 
+#define RFC2374_HDR_LASTFRAG	2	 
+#define RFC2374_HDR_INTFRAG	3	 
 
 static bool fwnet_hwaddr_is_multicast(u8 *ha)
 {
 	return !!(*ha & 1);
 }
 
-/* IPv4 and IPv6 encapsulation header */
+ 
 struct rfc2734_header {
 	u32 w0;
 	u32 w1;
@@ -110,7 +103,7 @@ static inline void fwnet_make_sf_hdr(struct rfc2734_header *hdr,
 	hdr->w1 = fwnet_set_hdr_dgl(dgl);
 }
 
-/* This list keeps track of what parts of the datagram have been filled in */
+ 
 struct fwnet_fragment_info {
 	struct list_head fi_link;
 	u16 offset;
@@ -121,7 +114,7 @@ struct fwnet_partial_datagram {
 	struct list_head pd_link;
 	struct list_head fi_list;
 	struct sk_buff *skb;
-	/* FIXME Why not use skb->data? */
+	 
 	char *pbuf;
 	u16 datagram_label;
 	u16 ether_type;
@@ -145,22 +138,15 @@ struct fwnet_device {
 	unsigned broadcast_rcv_next_ptr;
 	unsigned num_broadcast_rcv_ptrs;
 	unsigned rcv_buffer_size;
-	/*
-	 * This value is the maximum unfragmented datagram size that can be
-	 * sent by the hardware.  It already has the GASP overhead and the
-	 * unfragmented datagram header overhead calculated into it.
-	 */
+	 
 	unsigned broadcast_xmt_max_payload;
 	u16 broadcast_xmt_datagramlabel;
 
-	/*
-	 * The CSR address that remote nodes must send datagrams to for us to
-	 * receive them.
-	 */
+	 
 	struct fw_address_handler handler;
 	u64 local_fifo;
 
-	/* Number of tx datagrams that have been queued but not yet acked */
+	 
 	int queued_datagrams;
 
 	int peer_count;
@@ -174,18 +160,18 @@ struct fwnet_peer {
 	struct fwnet_device *dev;
 	u64 guid;
 
-	/* guarded by dev->lock */
-	struct list_head pd_list; /* received partial datagrams */
-	unsigned pdg_size;        /* pd_list size */
+	 
+	struct list_head pd_list;  
+	unsigned pdg_size;         
 
-	u16 datagram_label;       /* outgoing datagram label */
-	u16 max_payload;          /* includes RFC2374_FRAG_HDR_SIZE overhead */
+	u16 datagram_label;        
+	u16 max_payload;           
 	int node_id;
 	int generation;
 	unsigned speed;
 };
 
-/* This is our task struct. It's used for the packet complete callback.  */
+ 
 struct fwnet_packet_task {
 	struct fw_transaction transaction;
 	struct rfc2734_header hdr;
@@ -201,10 +187,7 @@ struct fwnet_packet_task {
 	u8 enqueued;
 };
 
-/*
- * saddr == NULL means use device source address.
- * daddr == NULL means leave destination address (eg unresolved arp).
- */
+ 
 static int fwnet_header_create(struct sk_buff *skb, struct net_device *net,
 			unsigned short type, const void *daddr,
 			const void *saddr, unsigned len)
@@ -242,15 +225,13 @@ static int fwnet_header_cache(const struct neighbour *neigh,
 	h->h_proto = type;
 	memcpy(h->h_dest, neigh->ha, net->addr_len);
 
-	/* Pairs with the READ_ONCE() in neigh_resolve_output(),
-	 * neigh_hh_output() and neigh_update_hhs().
-	 */
+	 
 	smp_store_release(&hh->hh_len, FWNET_HLEN);
 
 	return 0;
 }
 
-/* Called by Address Resolution module to notify changes in address. */
+ 
 static void fwnet_header_cache_update(struct hh_cache *hh,
 		const struct net_device *net, const unsigned char *haddr)
 {
@@ -271,7 +252,7 @@ static const struct header_ops fwnet_header_ops = {
 	.parse          = fwnet_header_parse,
 };
 
-/* FIXME: is this correct for all cases? */
+ 
 static bool fwnet_frag_overlap(struct fwnet_partial_datagram *pd,
 			       unsigned offset, unsigned len)
 {
@@ -285,7 +266,7 @@ static bool fwnet_frag_overlap(struct fwnet_partial_datagram *pd,
 	return false;
 }
 
-/* Assumes that new fragment does not overlap any existing fragments */
+ 
 static struct fwnet_fragment_info *fwnet_frag_new(
 	struct fwnet_partial_datagram *pd, unsigned offset, unsigned len)
 {
@@ -295,12 +276,12 @@ static struct fwnet_fragment_info *fwnet_frag_new(
 	list = &pd->fi_list;
 	list_for_each_entry(fi, &pd->fi_list, fi_link) {
 		if (fi->offset + fi->len == offset) {
-			/* The new fragment can be tacked on to the end */
-			/* Did the new fragment plug a hole? */
+			 
+			 
 			fi2 = list_entry(fi->fi_link.next,
 					 struct fwnet_fragment_info, fi_link);
 			if (fi->offset + fi->len == fi2->offset) {
-				/* glue fragments together */
+				 
 				fi->len += len + fi2->len;
 				list_del(&fi2->fi_link);
 				kfree(fi2);
@@ -311,12 +292,12 @@ static struct fwnet_fragment_info *fwnet_frag_new(
 			return fi;
 		}
 		if (offset + len == fi->offset) {
-			/* The new fragment can be tacked on to the beginning */
-			/* Did the new fragment plug a hole? */
+			 
+			 
 			fi2 = list_entry(fi->fi_link.prev,
 					 struct fwnet_fragment_info, fi_link);
 			if (fi2->offset + fi2->len == fi->offset) {
-				/* glue fragments together */
+				 
 				fi2->len += fi->len + len;
 				list_del(&fi->fi_link);
 				kfree(fi);
@@ -420,10 +401,7 @@ static bool fwnet_pd_update(struct fwnet_peer *peer,
 
 	memcpy(pd->pbuf + frag_off, frag_buf, frag_len);
 
-	/*
-	 * Move list entry to beginning of list so that oldest partial
-	 * datagrams percolate to the end of the list
-	 */
+	 
 	list_move_tail(&pd->pd_link, &peer->pd_list);
 
 	return true;
@@ -438,7 +416,7 @@ static bool fwnet_pd_is_complete(struct fwnet_partial_datagram *pd)
 	return fi->len == pd->datagram_size;
 }
 
-/* caller must hold dev->lock */
+ 
 static struct fwnet_peer *fwnet_peer_find_by_guid(struct fwnet_device *dev,
 						  u64 guid)
 {
@@ -451,7 +429,7 @@ static struct fwnet_peer *fwnet_peer_find_by_guid(struct fwnet_device *dev,
 	return NULL;
 }
 
-/* caller must hold dev->lock */
+ 
 static struct fwnet_peer *fwnet_peer_find_by_node_id(struct fwnet_device *dev,
 						int node_id, int generation)
 {
@@ -465,11 +443,11 @@ static struct fwnet_peer *fwnet_peer_find_by_node_id(struct fwnet_device *dev,
 	return NULL;
 }
 
-/* See IEEE 1394-2008 table 6-4, table 8-8, table 16-18. */
+ 
 static unsigned fwnet_max_payload(unsigned max_rec, unsigned speed)
 {
 	max_rec = min(max_rec, speed + 8);
-	max_rec = clamp(max_rec, 8U, 11U); /* 512...4096 */
+	max_rec = clamp(max_rec, 8U, 11U);  
 
 	return (1 << (max_rec + 1)) - RFC2374_FRAG_HDR_SIZE;
 }
@@ -492,14 +470,11 @@ static int fwnet_finish_incoming_packet(struct net_device *net,
 		goto err;
 	}
 
-	/* Write metadata, and then pass to the receive level */
+	 
 	skb->dev = net;
 	skb->ip_summed = CHECKSUM_NONE;
 
-	/*
-	 * Parse the encapsulation header. This actually does the job of
-	 * converting to an ethernet-like pseudo frame header.
-	 */
+	 
 	if (dev_hard_header(skb, net, ether_type,
 			   is_broadcast ? net->broadcast : net->dev_addr,
 			   NULL, skb->len) >= 0) {
@@ -578,11 +553,7 @@ static int fwnet_incoming_packet(struct fwnet_device *dev, __be32 *buf, int len,
 	hdr.w0 = be32_to_cpu(buf[0]);
 	lf = fwnet_get_hdr_lf(&hdr);
 	if (lf == RFC2374_HDR_UNFRAG) {
-		/*
-		 * An unfragmented datagram has been received by the ieee1394
-		 * bus. Build an skbuff around it so we can pass it to the
-		 * high level network layer.
-		 */
+		 
 		ether_type = fwnet_get_hdr_ether_type(&hdr);
 		buf++;
 		len -= RFC2374_UNFRAG_HDR_SIZE;
@@ -600,7 +571,7 @@ static int fwnet_incoming_packet(struct fwnet_device *dev, __be32 *buf, int len,
 						    is_broadcast, ether_type);
 	}
 
-	/* A datagram fragment has been received, now the fun begins. */
+	 
 
 	if (len <= RFC2374_FRAG_HDR_SIZE)
 		return 0;
@@ -632,7 +603,7 @@ static int fwnet_incoming_packet(struct fwnet_device *dev, __be32 *buf, int len,
 	pd = fwnet_pd_find(peer, datagram_label);
 	if (pd == NULL) {
 		while (peer->pdg_size >= FWNET_MAX_FRAGMENTS) {
-			/* remove the oldest */
+			 
 			fwnet_pd_delete(list_first_entry(&peer->pd_list,
 				struct fwnet_partial_datagram, pd_link));
 			peer->pdg_size--;
@@ -647,10 +618,7 @@ static int fwnet_incoming_packet(struct fwnet_device *dev, __be32 *buf, int len,
 	} else {
 		if (fwnet_frag_overlap(pd, fg_off, len) ||
 		    pd->datagram_size != dg_size) {
-			/*
-			 * Differing datagram sizes or overlapping fragments,
-			 * discard old datagram and start a new one.
-			 */
+			 
 			fwnet_pd_delete(pd);
 			pd = fwnet_pd_new(net, peer, datagram_label,
 					  dg_size, buf, fg_off, len);
@@ -661,18 +629,14 @@ static int fwnet_incoming_packet(struct fwnet_device *dev, __be32 *buf, int len,
 			}
 		} else {
 			if (!fwnet_pd_update(peer, pd, buf, fg_off, len)) {
-				/*
-				 * Couldn't save off fragment anyway
-				 * so might as well obliterate the
-				 * datagram now.
-				 */
+				 
 				fwnet_pd_delete(pd);
 				peer->pdg_size--;
 				retval = -ENOMEM;
 				goto fail;
 			}
 		}
-	} /* new datagram or add to existing one */
+	}  
 
 	if (lf == RFC2374_HDR_FIRSTFRAG)
 		pd->ether_type = ether_type;
@@ -688,10 +652,7 @@ static int fwnet_incoming_packet(struct fwnet_device *dev, __be32 *buf, int len,
 		return fwnet_finish_incoming_packet(net, skb, source_node_id,
 						    false, ether_type);
 	}
-	/*
-	 * Datagram is not complete, we're done for the
-	 * moment.
-	 */
+	 
 	retval = 0;
  fail:
 	spin_unlock_irqrestore(&dev->lock, flags);
@@ -708,10 +669,10 @@ static void fwnet_receive_packet(struct fw_card *card, struct fw_request *r,
 	int rcode;
 
 	if (destination == IEEE1394_ALL_NODES) {
-		// Although the response to the broadcast packet is not necessarily required, the
-		// fw_send_response() function should still be called to maintain the reference
-		// counting of the object. In the case, the call of function just releases the
-		// object as a result to decrease the reference counting.
+		 
+		 
+		 
+		 
 		rcode = RCODE_COMPLETE;
 	} else if (offset != dev->handler.offset) {
 		rcode = RCODE_ADDRESS_ERROR;
@@ -809,7 +770,7 @@ static void fwnet_free_ptask(struct fwnet_packet_task *ptask)
 	kmem_cache_free(fwnet_packet_task_cache, ptask);
 }
 
-/* Caller must hold dev->lock. */
+ 
 static void dec_queued_datagrams(struct fwnet_device *dev)
 {
 	if (--dev->queued_datagrams == FWNET_MIN_QUEUED_DATAGRAMS)
@@ -829,7 +790,7 @@ static void fwnet_transmit_packet_done(struct fwnet_packet_task *ptask)
 
 	ptask->outstanding_pkts--;
 
-	/* Check whether we or the networking TX soft-IRQ is last user. */
+	 
 	free = (ptask->outstanding_pkts == 0 && ptask->enqueued);
 	if (free)
 		dec_queued_datagrams(dev);
@@ -847,7 +808,7 @@ static void fwnet_transmit_packet_done(struct fwnet_packet_task *ptask)
 		u16 datagram_label;
 		u16 lf;
 
-		/* Update the ptask to point to the next fragment and send it */
+		 
 		lf = fwnet_get_hdr_lf(&ptask->hdr);
 		switch (lf) {
 		case RFC2374_HDR_LASTFRAG:
@@ -860,7 +821,7 @@ static void fwnet_transmit_packet_done(struct fwnet_packet_task *ptask)
 			BUG();
 
 		case RFC2374_HDR_FIRSTFRAG:
-			/* Set frag type here for future interior fragments */
+			 
 			dg_size = fwnet_get_hdr_dg_size(&ptask->hdr);
 			fg_off = ptask->max_payload - RFC2374_FRAG_HDR_SIZE;
 			datagram_label = fwnet_get_hdr_dgl(&ptask->hdr);
@@ -903,10 +864,10 @@ static void fwnet_transmit_packet_failed(struct fwnet_packet_task *ptask)
 
 	spin_lock_irqsave(&dev->lock, flags);
 
-	/* One fragment failed; don't try to send remaining fragments. */
+	 
 	ptask->outstanding_pkts = 0;
 
-	/* Check whether we or the networking TX soft-IRQ is last user. */
+	 
 	free = ptask->enqueued;
 	if (free)
 		dec_queued_datagrams(dev);
@@ -977,7 +938,7 @@ static int fwnet_send_packet(struct fwnet_packet_task *ptask)
 		int node_id;
 		unsigned int sw_version;
 
-		/* ptask->generation may not have been set yet */
+		 
 		generation = dev->card->generation;
 		smp_rmb();
 		node_id = dev->card->node_id;
@@ -997,7 +958,7 @@ static int fwnet_send_packet(struct fwnet_packet_task *ptask)
 		put_unaligned_be32((IANA_SPECIFIER_ID & 0xff) << 24
 						| sw_version, &p[4]);
 
-		/* We should not transmit if broadcast_channel.valid == 0. */
+		 
 		fw_send_request(dev->card, &ptask->transaction,
 				TCODE_STREAM_DATA,
 				fw_stream_packet_destination_id(3,
@@ -1007,7 +968,7 @@ static int fwnet_send_packet(struct fwnet_packet_task *ptask)
 
 		spin_lock_irqsave(&dev->lock, flags);
 
-		/* If the AT tasklet already ran, we may be last user. */
+		 
 		free = (ptask->outstanding_pkts == 0 && !ptask->enqueued);
 		if (!free)
 			ptask->enqueued = true;
@@ -1026,7 +987,7 @@ static int fwnet_send_packet(struct fwnet_packet_task *ptask)
 
 	spin_lock_irqsave(&dev->lock, flags);
 
-	/* If the AT tasklet already ran, we may be last user. */
+	 
 	free = (ptask->outstanding_pkts == 0 && !ptask->enqueued);
 	if (!free)
 		ptask->enqueued = true;
@@ -1169,11 +1130,11 @@ static int fwnet_broadcast_start(struct fwnet_device *dev)
 	dev->rcv_buffer_size = max_receive;
 	dev->broadcast_rcv_next_ptr = 0U;
 	retval = fw_iso_context_start(context, -1, 0,
-			FW_ISO_CONTEXT_MATCH_ALL_TAGS); /* ??? sync */
+			FW_ISO_CONTEXT_MATCH_ALL_TAGS);  
 	if (retval < 0)
 		goto failed;
 
-	/* FIXME: adjust it according to the min. speed of all known peers? */
+	 
 	dev->broadcast_xmt_max_payload = IEEE1394_MAX_PAYLOAD_S100
 			- IEEE1394_GASP_HDR_SIZE - RFC2374_UNFRAG_HDR_SIZE;
 	dev->broadcast_state = FWNET_BROADCAST_RUNNING;
@@ -1193,7 +1154,7 @@ static void set_carrier_state(struct fwnet_device *dev)
 		netif_carrier_off(dev->netdev);
 }
 
-/* ifup */
+ 
 static int fwnet_open(struct net_device *net)
 {
 	struct fwnet_device *dev = netdev_priv(net);
@@ -1212,7 +1173,7 @@ static int fwnet_open(struct net_device *net)
 	return 0;
 }
 
-/* ifdown */
+ 
 static int fwnet_stop(struct net_device *net)
 {
 	struct fwnet_device *dev = netdev_priv(net);
@@ -1238,7 +1199,7 @@ static netdev_tx_t fwnet_tx(struct sk_buff *skb, struct net_device *net)
 
 	spin_lock_irqsave(&dev->lock, flags);
 
-	/* Can this happen? */
+	 
 	if (netif_queue_stopped(dev->netdev)) {
 		spin_unlock_irqrestore(&dev->lock, flags);
 
@@ -1253,10 +1214,7 @@ static netdev_tx_t fwnet_tx(struct sk_buff *skb, struct net_device *net)
 	if (!skb)
 		goto fail;
 
-	/*
-	 * Make a copy of the driver-specific header.
-	 * We might need to rebuild the header on tx failure.
-	 */
+	 
 	memcpy(&hdr_buf, skb->data, sizeof(hdr_buf));
 	proto = hdr_buf.h_proto;
 
@@ -1274,10 +1232,7 @@ static netdev_tx_t fwnet_tx(struct sk_buff *skb, struct net_device *net)
 	skb_pull(skb, sizeof(hdr_buf));
 	dg_size = skb->len;
 
-	/*
-	 * Set the transmission type for the packet.  ARP packets and IP
-	 * broadcast packets are sent via GASP.
-	 */
+	 
 	if (fwnet_hwaddr_is_multicast(hdr_buf.h_dest)) {
 		max_payload        = dev->broadcast_xmt_max_payload;
 		datagram_label_ptr = &dev->broadcast_xmt_datagramlabel;
@@ -1311,7 +1266,7 @@ static netdev_tx_t fwnet_tx(struct sk_buff *skb, struct net_device *net)
 	ptask->skb = skb;
 	ptask->dev = dev;
 
-	/* Does it all fit in one packet? */
+	 
 	if (dg_size <= max_payload) {
 		fwnet_make_uf_hdr(&ptask->hdr, ntohs(proto));
 		ptask->outstanding_pkts = 1;
@@ -1351,13 +1306,7 @@ static netdev_tx_t fwnet_tx(struct sk_buff *skb, struct net_device *net)
 	net->stats.tx_dropped++;
 	net->stats.tx_errors++;
 
-	/*
-	 * FIXME: According to a patch from 2003-02-26, "returning non-zero
-	 * causes serious problems" here, allegedly.  Before that patch,
-	 * -ERRNO was returned which is not appropriate under Linux 2.6.
-	 * Perhaps more needs to be done?  Stop the queue in serious
-	 * conditions and restart it elsewhere?
-	 */
+	 
 	return NETDEV_TX_OK;
 }
 
@@ -1385,7 +1334,7 @@ static void fwnet_init_dev(struct net_device *net)
 	net->ethtool_ops	= &fwnet_ethtool_ops;
 }
 
-/* caller must hold fwnet_device_mutex */
+ 
 static struct fwnet_device *fwnet_dev_find(struct fw_card *card)
 {
 	struct fwnet_device *dev;
@@ -1475,16 +1424,12 @@ static int fwnet_probe(struct fw_unit *unit,
 		goto out;
 	dev->local_fifo = dev->handler.offset;
 
-	/*
-	 * default MTU: RFC 2734 cl. 4, RFC 3146 cl. 4
-	 * maximum MTU: RFC 2734 cl. 4.2, fragment encapsulation header's
-	 *              maximum possible datagram_size + 1 = 0xfff + 1
-	 */
+	 
 	net->mtu = 1500U;
 	net->min_mtu = ETH_MIN_MTU;
 	net->max_mtu = 4096U;
 
-	/* Set our hardware address while we're at it */
+	 
 	ha.uc.uniq_id = cpu_to_be64(card->guid);
 	ha.uc.max_rec = dev->card->max_receive;
 	ha.uc.sspd = dev->card->link_speed;
@@ -1515,10 +1460,7 @@ static int fwnet_probe(struct fw_unit *unit,
 	return ret;
 }
 
-/*
- * FIXME abort partially sent fragmented datagrams,
- * discard partially received fragmented datagrams
- */
+ 
 static void fwnet_update(struct fw_unit *unit)
 {
 	struct fw_device *device = fw_parent_device(unit);
@@ -1609,19 +1551,19 @@ static struct fw_driver fwnet_driver = {
 };
 
 static const u32 rfc2374_unit_directory_data[] = {
-	0x00040000,	/* directory_length		*/
-	0x1200005e,	/* unit_specifier_id: IANA	*/
-	0x81000003,	/* textual descriptor offset	*/
-	0x13000001,	/* unit_sw_version: RFC 2734	*/
-	0x81000005,	/* textual descriptor offset	*/
-	0x00030000,	/* descriptor_length		*/
-	0x00000000,	/* text				*/
-	0x00000000,	/* minimal ASCII, en		*/
-	0x49414e41,	/* I A N A			*/
-	0x00030000,	/* descriptor_length		*/
-	0x00000000,	/* text				*/
-	0x00000000,	/* minimal ASCII, en		*/
-	0x49507634,	/* I P v 4			*/
+	0x00040000,	 
+	0x1200005e,	 
+	0x81000003,	 
+	0x13000001,	 
+	0x81000005,	 
+	0x00030000,	 
+	0x00000000,	 
+	0x00000000,	 
+	0x49414e41,	 
+	0x00030000,	 
+	0x00000000,	 
+	0x00000000,	 
+	0x49507634,	 
 };
 
 static struct fw_descriptor rfc2374_unit_directory = {
@@ -1632,19 +1574,19 @@ static struct fw_descriptor rfc2374_unit_directory = {
 
 #if IS_ENABLED(CONFIG_IPV6)
 static const u32 rfc3146_unit_directory_data[] = {
-	0x00040000,	/* directory_length		*/
-	0x1200005e,	/* unit_specifier_id: IANA	*/
-	0x81000003,	/* textual descriptor offset	*/
-	0x13000002,	/* unit_sw_version: RFC 3146	*/
-	0x81000005,	/* textual descriptor offset	*/
-	0x00030000,	/* descriptor_length		*/
-	0x00000000,	/* text				*/
-	0x00000000,	/* minimal ASCII, en		*/
-	0x49414e41,	/* I A N A			*/
-	0x00030000,	/* descriptor_length		*/
-	0x00000000,	/* text				*/
-	0x00000000,	/* minimal ASCII, en		*/
-	0x49507636,	/* I P v 6			*/
+	0x00040000,	 
+	0x1200005e,	 
+	0x81000003,	 
+	0x13000002,	 
+	0x81000005,	 
+	0x00030000,	 
+	0x00000000,	 
+	0x00000000,	 
+	0x49414e41,	 
+	0x00030000,	 
+	0x00000000,	 
+	0x00000000,	 
+	0x49507636,	 
 };
 
 static struct fw_descriptor rfc3146_unit_directory = {

@@ -1,27 +1,4 @@
-/*
- * Copyright © 2016 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- *
- *
- */
+ 
 
 #include <drm/display/drm_dp_dual_mode_helper.h>
 #include <drm/display/drm_hdmi_helper.h>
@@ -35,20 +12,20 @@
 #include "intel_lspcon.h"
 #include "intel_hdmi.h"
 
-/* LSPCON OUI Vendor ID(signatures) */
+ 
 #define LSPCON_VENDOR_PARADE_OUI 0x001CF8
 #define LSPCON_VENDOR_MCA_OUI 0x0060AD
 
 #define DPCD_MCA_LSPCON_HDR_STATUS	0x70003
 #define DPCD_PARADE_LSPCON_HDR_STATUS	0x00511
 
-/* AUX addresses to write MCA AVI IF */
+ 
 #define LSPCON_MCA_AVI_IF_WRITE_OFFSET 0x5C0
 #define LSPCON_MCA_AVI_IF_CTRL 0x5DF
 #define  LSPCON_MCA_AVI_IF_KICKOFF (1 << 0)
 #define  LSPCON_MCA_AVI_IF_HANDLED (1 << 1)
 
-/* AUX addresses to write Parade AVI IF */
+ 
 #define LSPCON_PARADE_AVI_IF_WRITE_OFFSET 0x516
 #define LSPCON_PARADE_AVI_IF_CTRL 0x51E
 #define  LSPCON_PARADE_AVI_IF_KICKOFF (1 << 7)
@@ -239,7 +216,7 @@ static bool lspcon_probe(struct intel_lspcon *lspcon)
 	expected_mode = lspcon_wake_native_aux_ch(lspcon) ?
 			DRM_LSPCON_MODE_PCON : DRM_LSPCON_MODE_LS;
 
-	/* Lets probe the adaptor and check its type */
+	 
 	for (retry = 0; retry < 6; retry++) {
 		if (retry)
 			usleep_range(500, 1000);
@@ -255,15 +232,11 @@ static bool lspcon_probe(struct intel_lspcon *lspcon)
 		return false;
 	}
 
-	/* Yay ... got a LSPCON device */
+	 
 	drm_dbg_kms(&i915->drm, "LSPCON detected\n");
 	lspcon->mode = lspcon_wait_mode(lspcon, expected_mode);
 
-	/*
-	 * In the SW state machine, lets Put LSPCON in PCON mode only.
-	 * In this way, it will work with both HDMI 1.4 sinks as well as HDMI
-	 * 2.0 sinks.
-	 */
+	 
 	if (lspcon->mode != DRM_LSPCON_MODE_PCON) {
 		if (lspcon_change_mode(lspcon, DRM_LSPCON_MODE_PCON) < 0) {
 			drm_err(&i915->drm, "LSPCON mode change to PCON failed\n");
@@ -302,7 +275,7 @@ static bool lspcon_parade_fw_ready(struct drm_dp_aux *aux)
 	u8 retry;
 	ssize_t ret;
 
-	/* Check if LSPCON FW is ready for data */
+	 
 	for (retry = 0; retry < 5; retry++) {
 		if (retry)
 			usleep_range(200, 300);
@@ -347,12 +320,7 @@ static bool _lspcon_parade_write_infoframe_blocks(struct drm_dp_aux *aux,
 			return false;
 		}
 
-		/*
-		 * Once a block of data is written, we have to inform the FW
-		 * about this by writing into avi infoframe control register:
-		 * - set the kickoff bit[7] to 1
-		 * - write the block no. to bits[1:0]
-		 */
+		 
 		reg = LSPCON_PARADE_AVI_IF_CTRL;
 		avi_if_ctrl = LSPCON_PARADE_AVI_IF_KICKOFF | block_count;
 		ret = drm_dp_dpcd_write(aux, reg, &avi_if_ctrl, 1);
@@ -375,16 +343,7 @@ static bool _lspcon_write_avi_infoframe_parade(struct drm_dp_aux *aux,
 {
 	u8 avi_if[LSPCON_PARADE_AVI_IF_DATA_SIZE] = {1, };
 
-	/*
-	 * Parade's frames contains 32 bytes of data, divided
-	 * into 4 frames:
-	 *	Token byte (first byte of first frame, must be non-zero)
-	 *	HB0 to HB2	 from AVI IF (3 bytes header)
-	 *	PB0 to PB27 from AVI IF (28 bytes data)
-	 * So it should look like this
-	 *	first block: | <token> <HB0-HB2> <DB0-DB3> |
-	 *	next 3 blocks: |<DB4-DB11>|<DB12-DB19>|<DB20-DB28>|
-	 */
+	 
 
 	if (len > LSPCON_PARADE_AVI_IF_DATA_SIZE - 1) {
 		drm_err(aux->drm_dev, "Invalid length of infoframes\n");
@@ -412,7 +371,7 @@ static bool _lspcon_write_avi_infoframe_mca(struct drm_dp_aux *aux,
 
 	reg = LSPCON_MCA_AVI_IF_WRITE_OFFSET;
 	while (val < len) {
-		/* DPCD write for AVI IF can fail on a slow FW day, so retry */
+		 
 		for (retry = 0; retry < 5; retry++) {
 			ret = drm_dp_dpcd_write(aux, reg, (void *)data, 1);
 			if (ret == 1) {
@@ -436,7 +395,7 @@ static bool _lspcon_write_avi_infoframe_mca(struct drm_dp_aux *aux,
 		return false;
 	}
 
-	/* Indicate LSPCON chip about infoframe, clear bit 1 and set bit 0 */
+	 
 	val &= ~LSPCON_MCA_AVI_IF_HANDLED;
 	val |= LSPCON_MCA_AVI_IF_KICKOFF;
 
@@ -480,7 +439,7 @@ void lspcon_write_infoframe(struct intel_encoder *encoder,
 		break;
 	case HDMI_PACKET_TYPE_GAMUT_METADATA:
 		drm_dbg_kms(&i915->drm, "Update HDR metadata for lspcon\n");
-		/* It uses the legacy hsw implementation for the same */
+		 
 		hsw_write_infoframe(encoder, crtc_state, type, frame, len);
 		break;
 	default:
@@ -498,7 +457,7 @@ void lspcon_read_infoframe(struct intel_encoder *encoder,
 			   unsigned int type,
 			   void *frame, ssize_t len)
 {
-	/* FIXME implement for AVI Infoframe as well */
+	 
 	if (type == HDMI_PACKET_TYPE_GAMUT_METADATA)
 		hsw_read_infoframe(encoder, crtc_state, type,
 				   frame, len);
@@ -523,7 +482,7 @@ void lspcon_set_infoframes(struct intel_encoder *encoder,
 		return;
 	}
 
-	/* FIXME precompute infoframes */
+	 
 
 	ret = drm_hdmi_avi_infoframe_from_display_mode(&frame.avi,
 						       conn_state->connector,
@@ -533,24 +492,16 @@ void lspcon_set_infoframes(struct intel_encoder *encoder,
 		return;
 	}
 
-	/*
-	 * Currently there is no interface defined to
-	 * check user preference between RGB/YCBCR444
-	 * or YCBCR420. So the only possible case for
-	 * YCBCR444 usage is driving YCBCR420 output
-	 * with LSPCON, when pipe is configured for
-	 * YCBCR444 output and LSPCON takes care of
-	 * downsampling it.
-	 */
+	 
 	if (crtc_state->output_format == INTEL_OUTPUT_FORMAT_YCBCR444)
 		frame.avi.colorspace = HDMI_COLORSPACE_YUV420;
 	else
 		frame.avi.colorspace = HDMI_COLORSPACE_RGB;
 
-	/* Set the Colorspace as per the HDMI spec */
+	 
 	drm_hdmi_avi_infoframe_colorimetry(&frame.avi, conn_state);
 
-	/* nonsense combination */
+	 
 	drm_WARN_ON(encoder->base.dev, crtc_state->limited_color_range &&
 		    crtc_state->output_format != INTEL_OUTPUT_FORMAT_RGB);
 

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * MFD core driver for Ricoh RN5T618 PMIC
- *
- * Copyright (C) 2014 Beniamino Galvani <b.galvani@gmail.com>
- */
+ 
+ 
 
 #ifndef __LINUX_MFD_RN5T618_H
 #define __LINUX_MFD_RN5T618_H
@@ -263,7 +259,7 @@ enum {
 	RC5T619,
 };
 
-/* RN5T618 IRQ definitions */
+ 
 enum {
 	RN5T618_IRQ_SYS = 0,
 	RN5T618_IRQ_DCDC,
@@ -283,4 +279,4 @@ struct rn5t618 {
 	struct regmap_irq_chip_data *irq_data;
 };
 
-#endif /* __LINUX_MFD_RN5T618_H */
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 Lucas Stach <l.stach@pengutronix.de>, Pengutronix
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -44,21 +42,21 @@ static int clk_cpu_set_rate(struct clk_hw *hw, unsigned long rate,
 	struct clk_cpu *cpu = to_clk_cpu(hw);
 	int ret;
 
-	/* switch to PLL bypass clock */
+	 
 	ret = clk_set_parent(cpu->mux, cpu->step);
 	if (ret)
 		return ret;
 
-	/* reprogram PLL */
+	 
 	ret = clk_set_rate(cpu->pll, rate);
 	if (ret) {
 		clk_set_parent(cpu->mux, cpu->pll);
 		return ret;
 	}
-	/* switch back to PLL clock */
+	 
 	clk_set_parent(cpu->mux, cpu->pll);
 
-	/* Ensure the divider is what we expect */
+	 
 	clk_set_rate(cpu->div, rate);
 
 	return 0;

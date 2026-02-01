@@ -1,10 +1,7 @@
 #ifndef __DT_BINDINGS_DMA_JZ4780_DMA_H__
 #define __DT_BINDINGS_DMA_JZ4780_DMA_H__
 
-/*
- * Request type numbers for the JZ4780 DMA controller (written to the DRTn
- * register for the channel).
- */
+ 
 #define JZ4780_DMA_I2S1_TX	0x4
 #define JZ4780_DMA_I2S1_RX	0x5
 #define JZ4780_DMA_I2S0_TX	0x6
@@ -46,4 +43,4 @@
 #define JZ4780_DMA_DES_TX	0x2e
 #define JZ4780_DMA_DES_RX	0x2f
 
-#endif /* __DT_BINDINGS_DMA_JZ4780_DMA_H__ */
+#endif  

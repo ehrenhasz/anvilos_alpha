@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* stnic.c : A SH7750 specific part of driver for NS DP83902A ST-NIC.
- *
- * Copyright (C) 1999 kaz Kojima
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -32,12 +29,12 @@
 #define vhalf	volatile unsigned short
 #define vword	volatile unsigned int
 
-#define STNIC_RUN	0x01	/* 1 == Run, 0 == reset. */
+#define STNIC_RUN	0x01	 
 
-#define START_PG	0	/* First page of TX buffer */
-#define STOP_PG		128	/* Last page +1 of RX ring */
+#define START_PG	0	 
+#define STOP_PG		128	 
 
-/* Alias */
+ 
 #define STNIC_CR	E8390_CMD
 #define PG0_RSAR0	EN0_RSARLO
 #define PG0_RSAR1	EN0_RSARHI
@@ -50,7 +47,7 @@
 #define CR_STA		E8390_START
 #define CR_RDMA		E8390_NODMA
 
-/* FIXME! YOU MUST SET YOUR OWN ETHER ADDRESS.  */
+ 
 static byte stnic_eadr[6] =
 {0x00, 0xc0, 0x6e, 0x00, 0x00, 0x07};
 
@@ -71,7 +68,7 @@ static u32 stnic_msg_enable;
 module_param_named(msg_enable, stnic_msg_enable, uint, 0444);
 MODULE_PARM_DESC(msg_enable, "Debug message level (see linux/netdevice.h for bitmap)");
 
-/* SH7750 specific read/write io. */
+ 
 static inline void
 STNIC_DELAY (void)
 {
@@ -104,11 +101,11 @@ static int __init stnic_probe(void)
   struct ei_device *ei_local;
   int err;
 
-  /* If we are not running on a SolutionEngine, give up now */
+   
   if (! MACH_SE)
     return -ENODEV;
 
-  /* New style probing API */
+   
   dev = alloc_ei_netdev();
   if (!dev)
 	return -ENOMEM;
@@ -118,13 +115,12 @@ static int __init stnic_probe(void)
 #endif
   eth_hw_addr_set(dev, stnic_eadr);
 
-  /* Set the base address to point to the NIC, not the "real" base! */
+   
   dev->base_addr = 0x1000;
   dev->irq = IRQ_STNIC;
   dev->netdev_ops = &ei_netdev_ops;
 
-  /* Snarf the interrupt now.  There's no point in waiting since we cannot
-     share and the board will usually be enabled. */
+   
   err = request_irq (dev->irq, ei_interrupt, 0, DRV_NAME, dev);
   if (err)  {
 	netdev_emerg(dev, " unable to get IRQ %d.\n", dev->irq);
@@ -209,10 +205,7 @@ stnic_get_hdr (struct net_device *dev, struct e8390_pkt_hdr *hdr,
   STNIC_WRITE (STNIC_CR, CR_RDMA | CR_PG0 | CR_STA);
 }
 
-/* Block input and output, similar to the Crynwr packet driver. If you are
-   porting to a new ethercard look at the packet driver source for hints.
-   The HP LAN doesn't use shared memory -- we put the packet
-   out through the "remote DMA" dataport. */
+ 
 
 static void
 stnic_block_input (struct net_device *dev, int length, struct sk_buff *skb,
@@ -251,7 +244,7 @@ static void
 stnic_block_output (struct net_device *dev, int length,
 		    const unsigned char *buf, int output_page)
 {
-  STNIC_WRITE (PG0_RBCR0, 1);	/* Write non-zero value */
+  STNIC_WRITE (PG0_RBCR0, 1);	 
   STNIC_WRITE (STNIC_CR, CR_RRD | CR_PG0 | CR_STA);
   STNIC_DELAY ();
 
@@ -279,7 +272,7 @@ stnic_block_output (struct net_device *dev, int length,
   STNIC_WRITE (STNIC_CR, CR_RDMA | CR_PG0 | CR_STA);
 }
 
-/* This function resets the STNIC if something screws up.  */
+ 
 static void
 stnic_init (struct net_device *dev)
 {

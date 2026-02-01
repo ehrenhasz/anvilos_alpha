@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Qualcomm SDX55 APCS clock controller driver
- *
- * Copyright (c) 2020, Linaro Limited
- * Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -27,10 +22,7 @@ static const struct clk_parent_data pdata[] = {
 	{ .fw_name = "pll" },
 };
 
-/*
- * We use the notifier function for switching to a temporary safe configuration
- * (mux and divider), while the A7 PLL is reconfigured.
- */
+ 
 static int a7cc_notifier_cb(struct notifier_block *nb, unsigned long event,
 			    void *data)
 {
@@ -39,7 +31,7 @@ static int a7cc_notifier_cb(struct notifier_block *nb, unsigned long event,
 						     struct clk_regmap_mux_div,
 						     clk_nb);
 	if (event == PRE_RATE_CHANGE)
-		/* set the mux and divider to safe frequency (400mhz) */
+		 
 		ret = mux_div_set_src_div(md, 1, 2);
 
 	return notifier_from_errno(ret);
@@ -105,11 +97,7 @@ static int qcom_apcs_sdx55_clk_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, a7cc);
 
-	/*
-	 * Attach the power domain to cpudev. Since there is no dedicated driver
-	 * for CPUs and the SDX55 platform lacks hardware specific CPUFreq
-	 * driver, there seems to be no better place to do this. So do it here!
-	 */
+	 
 	cpu_dev = get_cpu_device(0);
 	dev_pm_domain_attach(cpu_dev, true);
 

@@ -1,13 +1,4 @@
-/*
- *  SGI GBE frame buffer driver
- *
- *  Copyright (C) 1999 Silicon Graphics, Inc. - Jeffrey Newquist
- *  Copyright (C) 2002 Vivien Chappelier <vivien.chappelier@linux-mips.org>
- *
- *  This file is subject to the terms and conditions of the GNU General Public
- *  License. See the file COPYING in the main directory of this archive for
- *  more details.
- */
+ 
 
 #include <linux/delay.h>
 #include <linux/platform_device.h>
@@ -39,9 +30,9 @@ struct gbefb_par {
 	int valid;
 };
 
-#define GBE_BASE	0x16000000 /* SGI O2 */
+#define GBE_BASE	0x16000000  
 
-/* macro for fastest write-though access to the framebuffer */
+ 
 #ifdef CONFIG_MIPS
 #ifdef CONFIG_CPU_R10000
 #define pgprot_fb(_prot) (((_prot) & (~_CACHE_MASK)) | _CACHE_UNCACHED_ACCELERATED)
@@ -50,10 +41,7 @@ struct gbefb_par {
 #endif
 #endif
 
-/*
- *  RAM we reserve for the frame buffer. This defines the maximum screen
- *  size
- */
+ 
 #if CONFIG_FB_GBE_MEM > 8
 #error GBE Framebuffer cannot use more than 8MB of memory
 #endif
@@ -78,13 +66,13 @@ static int ypan, ywrap;
 
 static uint32_t pseudo_palette[16];
 static uint32_t gbe_cmap[256];
-static int gbe_turned_on; /* 0 turned off, 1 turned on */
+static int gbe_turned_on;  
 
 static char *mode_option = NULL;
 
-/* default CRT mode */
+ 
 static struct fb_var_screeninfo default_var_CRT = {
-	/* 640x480, 60 Hz, Non-Interlaced (25.175 MHz dotclock) */
+	 
 	.xres		= 640,
 	.yres		= 480,
 	.xres_virtual	= 640,
@@ -102,7 +90,7 @@ static struct fb_var_screeninfo default_var_CRT = {
 	.height		= -1,
 	.width		= -1,
 	.accel_flags	= 0,
-	.pixclock	= 39722,	/* picoseconds */
+	.pixclock	= 39722,	 
 	.left_margin	= 48,
 	.right_margin	= 16,
 	.upper_margin	= 33,
@@ -113,9 +101,9 @@ static struct fb_var_screeninfo default_var_CRT = {
 	.vmode		= FB_VMODE_NONINTERLACED,
 };
 
-/* default LCD mode */
+ 
 static struct fb_var_screeninfo default_var_LCD = {
-	/* 1600x1024, 8 bpp */
+	 
 	.xres		= 1600,
 	.yres		= 1024,
 	.xres_virtual	= 1600,
@@ -144,8 +132,8 @@ static struct fb_var_screeninfo default_var_LCD = {
 	.vmode		= FB_VMODE_NONINTERLACED
 };
 
-/* default modedb mode */
-/* 640x480, 60 Hz, Non-Interlaced (25.172 MHz dotclock) */
+ 
+ 
 static struct fb_videomode default_mode_CRT = {
 	.refresh	= 60,
 	.xres		= 640,
@@ -160,9 +148,9 @@ static struct fb_videomode default_mode_CRT = {
 	.sync		= 0,
 	.vmode		= FB_VMODE_NONINTERLACED,
 };
-/* 1600x1024 SGI flatpanel 1600sw */
+ 
 static struct fb_videomode default_mode_LCD = {
-	/* 1600x1024, 8 bpp */
+	 
 	.xres		= 1600,
 	.yres		= 1024,
 	.pixclock	= 9353,
@@ -182,18 +170,12 @@ static int flat_panel_enabled = 0;
 
 static void gbe_reset(void)
 {
-	/* Turn on dotclock PLL */
+	 
 	gbe->ctrlstat = 0x300aa000;
 }
 
 
-/*
- * Function:	gbe_turn_off
- * Parameters:	(None)
- * Description:	This should turn off the monitor and gbe.  This is used
- *              when switching between the serial console and the graphics
- *              console.
- */
+ 
 
 static void gbe_turn_off(void)
 {
@@ -202,12 +184,12 @@ static void gbe_turn_off(void)
 
 	gbe_turned_on = 0;
 
-	/* check if pixel counter is on */
+	 
 	val = gbe->vt_xy;
 	if (GET_GBE_FIELD(VT_XY, FREEZE, val) == 1)
 		return;
 
-	/* turn off DMA */
+	 
 	val = gbe->ovr_control;
 	SET_GBE_FIELD(OVR_CONTROL, OVR_DMA_ENABLE, val, 0);
 	gbe->ovr_control = val;
@@ -221,8 +203,7 @@ static void gbe_turn_off(void)
 	gbe->did_control = val;
 	udelay(1000);
 
-	/* We have to wait through two vertical retrace periods before
-	 * the pixel DMA is turned off for sure. */
+	 
 	for (i = 0; i < 10000; i++) {
 		val = gbe->frm_inhwctrl;
 		if (GET_GBE_FIELD(FRM_INHWCTRL, FRM_DMA_ENABLE, val)) {
@@ -243,7 +224,7 @@ static void gbe_turn_off(void)
 	if (i == 10000)
 		printk(KERN_ERR "gbefb: turn off DMA timed out\n");
 
-	/* wait for vpixen_off */
+	 
 	val = gbe->vt_vpixen;
 	vpixen_off = GET_GBE_FIELD(VT_VPIXEN, VPIXEN_OFF, val);
 
@@ -267,7 +248,7 @@ static void gbe_turn_off(void)
 	if (i == 10000)
 		printk(KERN_ERR "gbefb: wait for vpixen_off timed out\n");
 
-	/* turn off pixel counter */
+	 
 	val = 0;
 	SET_GBE_FIELD(VT_XY, FREEZE, val, 1);
 	gbe->vt_xy = val;
@@ -282,7 +263,7 @@ static void gbe_turn_off(void)
 	if (i == 10000)
 		printk(KERN_ERR "gbefb: turn off pixel clock timed out\n");
 
-	/* turn off dot clock */
+	 
 	val = gbe->dotclock;
 	SET_GBE_FIELD(DOTCLK, RUN, val, 0);
 	gbe->dotclock = val;
@@ -297,7 +278,7 @@ static void gbe_turn_off(void)
 	if (i == 10000)
 		printk(KERN_ERR "gbefb: turn off dotclock timed out\n");
 
-	/* reset the frame DMA FIFO */
+	 
 	val = gbe->frm_size_tile;
 	SET_GBE_FIELD(FRM_SIZE_TILE, FRM_FIFO_RESET, val, 1);
 	gbe->frm_size_tile = val;
@@ -309,17 +290,14 @@ static void gbe_turn_on(void)
 {
 	unsigned int val, i;
 
-	/*
-	 * Check if pixel counter is off, for unknown reason this
-	 * code hangs Visual Workstations
-	 */
+	 
 	if (gbe_revision < 2) {
 		val = gbe->vt_xy;
 		if (GET_GBE_FIELD(VT_XY, FREEZE, val) == 0)
 			return;
 	}
 
-	/* turn on dot clock */
+	 
 	val = gbe->dotclock;
 	SET_GBE_FIELD(DOTCLK, RUN, val, 1);
 	gbe->dotclock = val;
@@ -334,7 +312,7 @@ static void gbe_turn_on(void)
 	if (i == 10000)
 		printk(KERN_ERR "gbefb: turn on dotclock timed out\n");
 
-	/* turn on pixel counter */
+	 
 	val = 0;
 	SET_GBE_FIELD(VT_XY, FREEZE, val, 0);
 	gbe->vt_xy = val;
@@ -349,7 +327,7 @@ static void gbe_turn_on(void)
 	if (i == 10000)
 		printk(KERN_ERR "gbefb: turn on pixel clock timed out\n");
 
-	/* turn on DMA */
+	 
 	val = gbe->frm_control;
 	SET_GBE_FIELD(FRM_CONTROL, FRM_DMA_ENABLE, val, 1);
 	gbe->frm_control = val;
@@ -381,32 +359,28 @@ static void gbe_loadcmap(void)
 	}
 }
 
-/*
- *  Blank the display.
- */
+ 
 static int gbefb_blank(int blank, struct fb_info *info)
 {
-	/* 0 unblank, 1 blank, 2 no vsync, 3 no hsync, 4 off */
+	 
 	switch (blank) {
-	case FB_BLANK_UNBLANK:		/* unblank */
+	case FB_BLANK_UNBLANK:		 
 		gbe_turn_on();
 		gbe_loadcmap();
 		break;
 
-	case FB_BLANK_NORMAL:		/* blank */
+	case FB_BLANK_NORMAL:		 
 		gbe_turn_off();
 		break;
 
 	default:
-		/* Nothing */
+		 
 		break;
 	}
 	return 0;
 }
 
-/*
- *  Setup flatpanel related registers.
- */
+ 
 static void gbefb_setup_flatpanel(struct gbe_timing_info *timing)
 {
 	int fp_wid, fp_hgt, fp_vbs, fp_vbe;
@@ -418,7 +392,7 @@ static void gbefb_setup_flatpanel(struct gbe_timing_info *timing)
 		(timing->flags & FB_SYNC_VERT_HIGH_ACT) ? 0 : 1);
 	gbe->vt_flags = outputVal;
 
-	/* Turn on the flat panel */
+	 
 	fp_wid = 1600;
 	fp_hgt = 1024;
 	fp_vbs = 0;
@@ -463,11 +437,7 @@ static int compute_gbe_timing(struct fb_var_screeninfo *var,
 	else
 		gbe_pll = &gbe_pll_table[1];
 
-	/* Determine valid resolution and timing
-	 * GBE crystal runs at 20Mhz or 27Mhz
-	 * pll_m, pll_n, pll_p define the following frequencies
-	 * fvco = pll_m * 20Mhz / pll_n
-	 * fout = fvco / (2**pll_p) */
+	 
 	best_error = 1000000000;
 	best_n = best_m = best_p = 0;
 	for (pll_p = 0; pll_p < 4; pll_p++)
@@ -494,12 +464,12 @@ static int compute_gbe_timing(struct fb_var_screeninfo *var,
 			}
 
 	if (!best_n || !best_m)
-		return -EINVAL;	/* Resolution to high */
+		return -EINVAL;	 
 
 	pixclock = (1000000 / gbe_pll->clock_rate) *
 		(best_n << best_p) / best_m;
 
-	/* set video timing information */
+	 
 	if (timing) {
 		timing->width = var->xres;
 		timing->height = var->yres;
@@ -532,22 +502,22 @@ static void gbe_set_timing_info(struct gbe_timing_info *timing)
 	int temp;
 	unsigned int val;
 
-	/* setup dot clock PLL */
+	 
 	val = 0;
 	SET_GBE_FIELD(DOTCLK, M, val, timing->pll_m - 1);
 	SET_GBE_FIELD(DOTCLK, N, val, timing->pll_n - 1);
 	SET_GBE_FIELD(DOTCLK, P, val, timing->pll_p);
-	SET_GBE_FIELD(DOTCLK, RUN, val, 0);	/* do not start yet */
+	SET_GBE_FIELD(DOTCLK, RUN, val, 0);	 
 	gbe->dotclock = val;
 	mdelay(10);
 
-	/* setup pixel counter */
+	 
 	val = 0;
 	SET_GBE_FIELD(VT_XYMAX, MAXX, val, timing->htotal);
 	SET_GBE_FIELD(VT_XYMAX, MAXY, val, timing->vtotal);
 	gbe->vt_xymax = val;
 
-	/* setup video timing signals */
+	 
 	val = 0;
 	SET_GBE_FIELD(VT_VSYNC, VSYNC_ON, val, timing->vsync_start);
 	SET_GBE_FIELD(VT_VSYNC, VSYNC_OFF, val, timing->vsync_end);
@@ -567,7 +537,7 @@ static void gbe_set_timing_info(struct gbe_timing_info *timing)
 		      timing->hblank_end - 3);
 	gbe->vt_hblank = val;
 
-	/* setup internal timing signals */
+	 
 	val = 0;
 	SET_GBE_FIELD(VT_VCMAP, VCMAP_ON, val, timing->vblank_start);
 	SET_GBE_FIELD(VT_VCMAP, VCMAP_OFF, val, timing->vblank_end);
@@ -613,7 +583,7 @@ static void gbe_set_timing_info(struct gbe_timing_info *timing)
 	val = 0;
 	temp = timing->hblank_end - GBE_PIXEN_MAGIC_ON;
 	if (temp < 0)
-		temp += timing->htotal;	/* allow blank to wrap around */
+		temp += timing->htotal;	 
 
 	SET_GBE_FIELD(VT_HPIXEN, HPIXEN_ON, val, temp);
 	SET_GBE_FIELD(VT_HPIXEN, HPIXEN_OFF, val,
@@ -626,15 +596,13 @@ static void gbe_set_timing_info(struct gbe_timing_info *timing)
 	SET_GBE_FIELD(VT_VPIXEN, VPIXEN_OFF, val, timing->vblank_start);
 	gbe->vt_vpixen = val;
 
-	/* turn off sync on green */
+	 
 	val = 0;
 	SET_GBE_FIELD(VT_FLAGS, SYNC_LOW, val, 1);
 	gbe->vt_flags = val;
 }
 
-/*
- *  Set the hardware according to 'par'.
- */
+ 
 
 static int gbefb_set_par(struct fb_info *info)
 {
@@ -642,8 +610,8 @@ static int gbefb_set_par(struct fb_info *info)
 	unsigned int val;
 	int wholeTilesX, partTilesX, maxPixelsPerTileX;
 	int height_pix;
-	int xpmax, ypmax;	/* Monitor resolution */
-	int bytesPerPixel;	/* Bytes per pixel */
+	int xpmax, ypmax;	 
+	int bytesPerPixel;	 
 	struct gbefb_par *par = (struct gbefb_par *) info->par;
 
 	compute_gbe_timing(&info->var, &par->timing);
@@ -653,13 +621,13 @@ static int gbefb_set_par(struct fb_info *info)
 	xpmax = par->timing.width;
 	ypmax = par->timing.height;
 
-	/* turn off GBE */
+	 
 	gbe_turn_off();
 
-	/* set timing info */
+	 
 	gbe_set_timing_info(&par->timing);
 
-	/* initialize DIDs */
+	 
 	val = 0;
 	switch (bytesPerPixel) {
 	case 1:
@@ -680,80 +648,19 @@ static int gbefb_set_par(struct fb_info *info)
 	for (i = 0; i < 32; i++)
 		gbe->mode_regs[i] = val;
 
-	/* Initialize interrupts */
+	 
 	gbe->vt_intr01 = 0xffffffff;
 	gbe->vt_intr23 = 0xffffffff;
 
-	/* HACK:
-	   The GBE hardware uses a tiled memory to screen mapping. Tiles are
-	   blocks of 512x128, 256x128 or 128x128 pixels, respectively for 8bit,
-	   16bit and 32 bit modes (64 kB). They cover the screen with partial
-	   tiles on the right and/or bottom of the screen if needed.
-	   For example in 640x480 8 bit mode the mapping is:
+	 
 
-	   <-------- 640 ----->
-	   <---- 512 ----><128|384 offscreen>
-	   ^  ^
-	   | 128    [tile 0]        [tile 1]
-	   |  v
-	   ^
-	   4 128    [tile 2]        [tile 3]
-	   8  v
-	   0  ^
-	   128    [tile 4]        [tile 5]
-	   |  v
-	   |  ^
-	   v  96    [tile 6]        [tile 7]
-	   32 offscreen
-
-	   Tiles have the advantage that they can be allocated individually in
-	   memory. However, this mapping is not linear at all, which is not
-	   really convenient. In order to support linear addressing, the GBE
-	   DMA hardware is fooled into thinking the screen is only one tile
-	   large and but has a greater height, so that the DMA transfer covers
-	   the same region.
-	   Tiles are still allocated as independent chunks of 64KB of
-	   continuous physical memory and remapped so that the kernel sees the
-	   framebuffer as a continuous virtual memory. The GBE tile table is
-	   set up so that each tile references one of these 64k blocks:
-
-	   GBE -> tile list    framebuffer           TLB   <------------ CPU
-	          [ tile 0 ] -> [ 64KB ]  <- [ 16x 4KB page entries ]     ^
-	             ...           ...              ...       linear virtual FB
-	          [ tile n ] -> [ 64KB ]  <- [ 16x 4KB page entries ]     v
-
-
-	   The GBE hardware is then told that the buffer is 512*tweaked_height,
-	   with tweaked_height = real_width*real_height/pixels_per_tile.
-	   Thus the GBE hardware will scan the first tile, filing the first 64k
-	   covered region of the screen, and then will proceed to the next
-	   tile, until the whole screen is covered.
-
-	   Here is what would happen at 640x480 8bit:
-
-	   normal tiling               linear
-	   ^   11111111111111112222    11111111111111111111  ^
-	   128 11111111111111112222    11111111111111111111 102 lines
-	       11111111111111112222    11111111111111111111  v
-	   V   11111111111111112222    11111111222222222222
-	       33333333333333334444    22222222222222222222
-	       33333333333333334444    22222222222222222222
-	       <      512     >        <  256 >               102*640+256 = 64k
-
-	   NOTE: The only mode for which this is not working is 800x600 8bit,
-	   as 800*600/512 = 937.5 which is not integer and thus causes
-	   flickering.
-	   I guess this is not so important as one can use 640x480 8bit or
-	   800x600 16bit anyway.
-	 */
-
-	/* Tell gbe about the tiles table location */
-	/* tile_ptr -> [ tile 1 ] -> FB mem */
-	/*             [ tile 2 ] -> FB mem */
-	/*               ...                */
+	 
+	 
+	 
+	 
 	val = 0;
 	SET_GBE_FIELD(FRM_CONTROL, FRM_TILE_PTR, val, gbe_tiles.dma >> 9);
-	SET_GBE_FIELD(FRM_CONTROL, FRM_DMA_ENABLE, val, 0); /* do not start */
+	SET_GBE_FIELD(FRM_CONTROL, FRM_DMA_ENABLE, val, 0);  
 	SET_GBE_FIELD(FRM_CONTROL, FRM_LINEAR, val, 0);
 	gbe->frm_control = val;
 
@@ -761,7 +668,7 @@ static int gbefb_set_par(struct fb_info *info)
 	wholeTilesX = 1;
 	partTilesX = 0;
 
-	/* Initialize the framebuffer */
+	 
 	val = 0;
 	SET_GBE_FIELD(FRM_SIZE_TILE, FRM_WIDTH_TILE, val, wholeTilesX);
 	SET_GBE_FIELD(FRM_SIZE_TILE, FRM_RHS, val, partTilesX);
@@ -782,29 +689,29 @@ static int gbefb_set_par(struct fb_info *info)
 	}
 	gbe->frm_size_tile = val;
 
-	/* compute tweaked height */
+	 
 	height_pix = xpmax * ypmax / maxPixelsPerTileX;
 
 	val = 0;
 	SET_GBE_FIELD(FRM_SIZE_PIXEL, FB_HEIGHT_PIX, val, height_pix);
 	gbe->frm_size_pixel = val;
 
-	/* turn off DID and overlay DMA */
+	 
 	gbe->did_control = 0;
 	gbe->ovr_width_tile = 0;
 
-	/* Turn off mouse cursor */
+	 
 	gbe->crs_ctl = 0;
 
-	/* Turn on GBE */
+	 
 	gbe_turn_on();
 
-	/* Initialize the gamma map */
+	 
 	udelay(10);
 	for (i = 0; i < 256; i++)
 		gbe->gmap[i] = (i << 24) | (i << 16) | (i << 8);
 
-	/* Initialize the color map */
+	 
 	for (i = 0; i < 256; i++)
 		gbe_cmap[i] = (i << 8) | (i << 16) | (i << 24);
 
@@ -839,11 +746,7 @@ static void gbefb_encode_fix(struct fb_fix_screeninfo *fix,
 	fix->mmio_len = sizeof(struct sgi_gbe);
 }
 
-/*
- *  Set a single color register. The values supplied are already
- *  rounded down to the hardware's capabilities (according to the
- *  entries in the var structure). Return != 0 for invalid regno.
- */
+ 
 
 static int gbefb_setcolreg(unsigned regno, unsigned red, unsigned green,
 			     unsigned blue, unsigned transp,
@@ -860,7 +763,7 @@ static int gbefb_setcolreg(unsigned regno, unsigned red, unsigned green,
 	if (info->var.bits_per_pixel <= 8) {
 		gbe_cmap[regno] = (red << 24) | (green << 16) | (blue << 8);
 		if (gbe_turned_on) {
-			/* wait for the color map FIFO to have a free entry */
+			 
 			for (i = 0; i < 1000 && gbe->cm_fifo >= 63; i++)
 				udelay(10);
 			if (i == 1000) {
@@ -893,16 +796,14 @@ static int gbefb_setcolreg(unsigned regno, unsigned red, unsigned green,
 	return 0;
 }
 
-/*
- *  Check video mode validity, eventually modify var to best match.
- */
+ 
 static int gbefb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
 {
 	unsigned int line_length;
 	struct gbe_timing_info timing;
 	int ret;
 
-	/* Limit bpp to 8, 16, and 32 */
+	 
 	if (var->bits_per_pixel <= 8)
 		var->bits_per_pixel = 8;
 	else if (var->bits_per_pixel <= 16)
@@ -912,19 +813,19 @@ static int gbefb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
 	else
 		return -EINVAL;
 
-	/* Check the mode can be mapped linearly with the tile table trick. */
-	/* This requires width x height x bytes/pixel be a multiple of 512 */
+	 
+	 
 	if ((var->xres * var->yres * var->bits_per_pixel) & 4095)
 		return -EINVAL;
 
-	var->grayscale = 0;	/* No grayscale for now */
+	var->grayscale = 0;	 
 
 	ret = compute_gbe_timing(var, &timing);
 	var->pixclock = ret;
 	if (ret < 0)
 		return -EINVAL;
 
-	/* Adjust virtual resolution, if necessary */
+	 
 	if (var->xres > var->xres_virtual || (!ywrap && !ypan))
 		var->xres_virtual = var->xres;
 	if (var->yres > var->yres_virtual || (!ywrap && !ypan))
@@ -936,13 +837,13 @@ static int gbefb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
 		var->yoffset = info->var.yoffset;
 	}
 
-	/* No grayscale for now */
+	 
 	var->grayscale = 0;
 
-	/* Memory limit */
+	 
 	line_length = var->xres_virtual * var->bits_per_pixel / 8;
 	if (line_length * var->yres_virtual > gbe_mem_size)
-		return -ENOMEM;	/* Virtual resolution too high */
+		return -ENOMEM;	 
 
 	switch (var->bits_per_pixel) {
 	case 8:
@@ -955,7 +856,7 @@ static int gbefb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
 		var->transp.offset = 0;
 		var->transp.length = 0;
 		break;
-	case 16:		/* RGB 1555 */
+	case 16:		 
 		var->red.offset = 10;
 		var->red.length = 5;
 		var->green.offset = 5;
@@ -965,7 +866,7 @@ static int gbefb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
 		var->transp.offset = 0;
 		var->transp.length = 0;
 		break;
-	case 32:		/* RGB 8888 */
+	case 32:		 
 		var->red.offset = 24;
 		var->red.length = 8;
 		var->green.offset = 16;
@@ -1000,7 +901,7 @@ static int gbefb_mmap(struct fb_info *info,
 	unsigned long phys_addr, phys_size;
 	u16 *tile;
 
-	/* check range */
+	 
 	if (vma->vm_pgoff > (~0UL >> PAGE_SHIFT))
 		return -EINVAL;
 	if (size > gbe_mem_size)
@@ -1008,20 +909,20 @@ static int gbefb_mmap(struct fb_info *info,
 	if (offset > gbe_mem_size - size)
 		return -EINVAL;
 
-	/* remap using the fastest write-through mode on architecture */
-	/* try not polluting the cache when possible */
+	 
+	 
 #ifdef CONFIG_MIPS
 	pgprot_val(vma->vm_page_prot) =
 		pgprot_fb(pgprot_val(vma->vm_page_prot));
 #endif
-	/* VM_IO | VM_DONTEXPAND | VM_DONTDUMP are set by remap_pfn_range() */
+	 
 
-	/* look for the starting tile */
+	 
 	tile = &gbe_tiles.cpu[offset >> TILE_SHIFT];
 	addr = vma->vm_start;
 	offset &= TILE_MASK;
 
-	/* remap each tile separately */
+	 
 	do {
 		phys_addr = (((unsigned long) (*tile)) << TILE_SHIFT) + offset;
 		if ((offset + size) < TILE_SIZE)
@@ -1054,9 +955,7 @@ static const struct fb_ops gbefb_ops = {
 	.fb_imageblit	= cfb_imageblit,
 };
 
-/*
- * sysfs
- */
+ 
 
 static ssize_t gbefb_show_memsize(struct device *dev, struct device_attribute *attr, char *buf)
 {
@@ -1079,9 +978,7 @@ static struct attribute *gbefb_attrs[] = {
 };
 ATTRIBUTE_GROUPS(gbefb);
 
-/*
- * Initialization
- */
+ 
 
 static int gbefb_setup(char *options)
 {
@@ -1160,7 +1057,7 @@ static int gbefb_probe(struct platform_device *p_dev)
 	}
 
 	if (gbe_mem_phys) {
-		/* memory was allocated at boot time */
+		 
 		gbe_mem = devm_ioremap_wc(&p_dev->dev, gbe_mem_phys,
 					  gbe_mem_size);
 		if (!gbe_mem) {
@@ -1171,8 +1068,7 @@ static int gbefb_probe(struct platform_device *p_dev)
 
 		gbe_dma_addr = 0;
 	} else {
-		/* try to allocate memory with the classical allocator
-		 * this has high chance to fail on low memory machines */
+		 
 		gbe_mem = dmam_alloc_attrs(&p_dev->dev, gbe_mem_size,
 				&gbe_dma_addr, GFP_KERNEL,
 				DMA_ATTR_WRITE_COMBINE);
@@ -1188,7 +1084,7 @@ static int gbefb_probe(struct platform_device *p_dev)
 	par = info->par;
 	par->wc_cookie = arch_phys_wc_add(gbe_mem_phys, gbe_mem_size);
 
-	/* map framebuffer memory into tiles table */
+	 
 	for (i = 0; i < (gbe_mem_size >> TILE_SHIFT); i++)
 		gbe_tiles.cpu[i] = (gbe_mem_phys >> TILE_SHIFT) + i;
 
@@ -1197,10 +1093,10 @@ static int gbefb_probe(struct platform_device *p_dev)
 	info->screen_base = gbe_mem;
 	fb_alloc_cmap(&info->cmap, 256, 0);
 
-	/* reset GBE */
+	 
 	gbe_reset();
 
-	/* turn on default video mode */
+	 
 	if (fb_find_mode(&par->var, info, mode_option, NULL, 0,
 			 default_mode, 8) == 0)
 		par->var = *default_var;

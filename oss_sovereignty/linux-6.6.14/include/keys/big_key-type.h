@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Big capacity key type.
- *
- * Copyright (C) 2013 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+ 
+ 
 
 #ifndef _KEYS_BIG_KEY_TYPE_H
 #define _KEYS_BIG_KEY_TYPE_H
@@ -20,4 +16,4 @@ extern void big_key_describe(const struct key *big_key, struct seq_file *m);
 extern long big_key_read(const struct key *key, char *buffer, size_t buflen);
 extern int big_key_update(struct key *key, struct key_preparsed_payload *prep);
 
-#endif /* _KEYS_BIG_KEY_TYPE_H */
+#endif  

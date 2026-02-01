@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 - Marcin Malagowski <mrc@bourne.st>
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/device.h>
 #include <linux/err.h>
@@ -13,20 +11,20 @@
 
 #define ABP060MG_ERROR_MASK   0xC000
 #define ABP060MG_RESP_TIME_MS 40
-#define ABP060MG_MIN_COUNTS   1638  /* = 0x0666 (10% of u14) */
-#define ABP060MG_MAX_COUNTS   14745 /* = 0x3999 (90% of u14) */
+#define ABP060MG_MIN_COUNTS   1638   
+#define ABP060MG_MAX_COUNTS   14745  
 #define ABP060MG_NUM_COUNTS   (ABP060MG_MAX_COUNTS - ABP060MG_MIN_COUNTS)
 
 enum abp_variant {
-	/* gage [kPa] */
+	 
 	ABP006KG, ABP010KG, ABP016KG, ABP025KG, ABP040KG, ABP060KG, ABP100KG,
 	ABP160KG, ABP250KG, ABP400KG, ABP600KG, ABP001GG,
-	/* differential [kPa] */
+	 
 	ABP006KD, ABP010KD, ABP016KD, ABP025KD, ABP040KD, ABP060KD, ABP100KD,
 	ABP160KD, ABP250KD, ABP400KD,
-	/* gage [psi] */
+	 
 	ABP001PG, ABP005PG, ABP015PG, ABP030PG, ABP060PG, ABP100PG, ABP150PG,
-	/* differential [psi] */
+	 
 	ABP001PD, ABP005PD, ABP015PD, ABP030PD, ABP060PD,
 };
 
@@ -36,7 +34,7 @@ struct abp_config {
 };
 
 static struct abp_config abp_config[] = {
-	/* mbar & kPa variants */
+	 
 	[ABP006KG] = { .min =       0, .max =     6000 },
 	[ABP010KG] = { .min =       0, .max =    10000 },
 	[ABP016KG] = { .min =       0, .max =    16000 },
@@ -59,7 +57,7 @@ static struct abp_config abp_config[] = {
 	[ABP160KD] = { .min = -160000, .max =   160000 },
 	[ABP250KD] = { .min = -250000, .max =   250000 },
 	[ABP400KD] = { .min = -400000, .max =   400000 },
-	/* psi variants (1 psi ~ 6895 Pa) */
+	 
 	[ABP001PG] = { .min =       0, .max =     6985 },
 	[ABP005PG] = { .min =       0, .max =    34474 },
 	[ABP015PG] = { .min =       0, .max =   103421 },
@@ -78,13 +76,10 @@ struct abp_state {
 	struct i2c_client *client;
 	struct mutex lock;
 
-	/*
-	 * bus-dependent MEASURE_REQUEST length.
-	 * If no SMBUS_QUICK support, need to send dummy byte
-	 */
+	 
 	int mreq_len;
 
-	/* model-dependent values (calculated on probe) */
+	 
 	int scale;
 	int offset;
 };
@@ -146,7 +141,7 @@ static int abp060mg_read_raw(struct iio_dev *indio_dev,
 		break;
 	case IIO_CHAN_INFO_SCALE:
 		*val = state->scale;
-		*val2 = ABP060MG_NUM_COUNTS * 1000; /* to kPa */
+		*val2 = ABP060MG_NUM_COUNTS * 1000;  
 		ret = IIO_VAL_FRACTIONAL;
 		break;
 	default:
@@ -170,7 +165,7 @@ static void abp060mg_init_device(struct iio_dev *indio_dev, unsigned long id)
 	state->scale = cfg->max - cfg->min;
 	state->offset = -ABP060MG_MIN_COUNTS;
 
-	if (cfg->min < 0) /* differential */
+	if (cfg->min < 0)  
 		state->offset -= ABP060MG_NUM_COUNTS >> 1;
 }
 
@@ -207,8 +202,8 @@ static int abp060mg_probe(struct i2c_client *client)
 }
 
 static const struct i2c_device_id abp060mg_id_table[] = {
-	/* mbar & kPa variants (abp060m [60 mbar] == abp006k [6 kPa]) */
-	/*    gage: */
+	 
+	 
 	{ "abp060mg", ABP006KG }, { "abp006kg", ABP006KG },
 	{ "abp100mg", ABP010KG }, { "abp010kg", ABP010KG },
 	{ "abp160mg", ABP016KG }, { "abp016kg", ABP016KG },
@@ -221,7 +216,7 @@ static const struct i2c_device_id abp060mg_id_table[] = {
 	{ "abp004bg", ABP400KG }, { "abp400kg", ABP400KG },
 	{ "abp006bg", ABP600KG }, { "abp600kg", ABP600KG },
 	{ "abp010bg", ABP001GG }, { "abp001gg", ABP001GG },
-	/*    differential: */
+	 
 	{ "abp060md", ABP006KD }, { "abp006kd", ABP006KD },
 	{ "abp100md", ABP010KD }, { "abp010kd", ABP010KD },
 	{ "abp160md", ABP016KD }, { "abp016kd", ABP016KD },
@@ -232,8 +227,8 @@ static const struct i2c_device_id abp060mg_id_table[] = {
 	{ "abp1_6bd", ABP160KD }, { "abp160kd", ABP160KD },
 	{ "abp2_5bd", ABP250KD }, { "abp250kd", ABP250KD },
 	{ "abp004bd", ABP400KD }, { "abp400kd", ABP400KD },
-	/* psi variants */
-	/*    gage: */
+	 
+	 
 	{ "abp001pg", ABP001PG },
 	{ "abp005pg", ABP005PG },
 	{ "abp015pg", ABP015PG },
@@ -241,13 +236,13 @@ static const struct i2c_device_id abp060mg_id_table[] = {
 	{ "abp060pg", ABP060PG },
 	{ "abp100pg", ABP100PG },
 	{ "abp150pg", ABP150PG },
-	/*    differential: */
+	 
 	{ "abp001pd", ABP001PD },
 	{ "abp005pd", ABP005PD },
 	{ "abp015pd", ABP015PD },
 	{ "abp030pd", ABP030PD },
 	{ "abp060pd", ABP060PD },
-	{ /* empty */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(i2c, abp060mg_id_table);
 

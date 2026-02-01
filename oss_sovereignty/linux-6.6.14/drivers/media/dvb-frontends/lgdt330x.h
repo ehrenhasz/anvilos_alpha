@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *    Support for LGDT3302 and LGDT3303 - VSB/QAM
- *
- *    Copyright (C) 2005 Wilson Michaels <wilsonmichaels@earthlink.net>
- */
+ 
+ 
 
 #ifndef LGDT330X_H
 #define LGDT330X_H
@@ -16,21 +12,7 @@ typedef enum lg_chip_t {
 		LGDT3303
 }lg_chip_type;
 
-/**
- * struct lgdt330x_config - contains lgdt330x configuration
- *
- * @demod_chip:		LG demodulator chip LGDT3302 or LGDT3303
- * @serial_mpeg:	MPEG hardware interface - 0:parallel 1:serial
- * @pll_rf_set:		Callback function to set PLL interface
- * @set_ts_params:	Callback function to set device param for start_dma
- * @clock_polarity_flip:
- *	Flip the polarity of the mpeg data transfer clock using alternate
- *	init data.
- *	This option applies ONLY to LGDT3303 - 0:disabled (default) 1:enabled
- * @get_dvb_frontend:
- *	returns the frontend associated with this I2C client.
- *	Filled by the driver.
- */
+ 
 struct lgdt330x_config
 {
 	lg_chip_type demod_chip;
@@ -55,6 +37,6 @@ struct dvb_frontend *lgdt330x_attach(const struct lgdt330x_config *config,
 	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
 	return NULL;
 }
-#endif // CONFIG_DVB_LGDT330X
+#endif 
 
-#endif /* LGDT330X_H */
+#endif  

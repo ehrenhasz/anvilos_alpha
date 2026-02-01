@@ -1,26 +1,4 @@
-/*
- * Copyright © 2016 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/pm_domain.h>
 #include <linux/pm_runtime.h>
@@ -126,7 +104,7 @@ static const struct intel_device_info mock_info = {
 	.memory_regions = REGION_SMEM,
 	.platform_engine_mask = BIT(0),
 
-	/* simply use legacy cache level for mock device */
+	 
 	.max_pat_index = 3,
 	.cachelevel_to_pat = {
 		[I915_CACHE_NONE]   = 0,
@@ -155,7 +133,7 @@ struct drm_i915_private *mock_gem_device(void)
 	dma_coerce_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
 
 #if IS_ENABLED(CONFIG_IOMMU_API) && defined(CONFIG_INTEL_IOMMU)
-	/* HACK to disable iommu for the fake device; force identity mapping */
+	 
 	pdev->dev.iommu = &fake_iommu;
 #endif
 	if (!devres_open_group(&pdev->dev, NULL, GFP_KERNEL)) {
@@ -175,10 +153,10 @@ struct drm_i915_private *mock_gem_device(void)
 
 	pci_set_drvdata(pdev, i915);
 
-	/* Device parameters start as a copy of module parameters. */
+	 
 	i915_params_copy(&i915->params, &i915_modparams);
 
-	/* Set up device info and initial runtime info. */
+	 
 	intel_device_info_driver_create(i915, pdev->device, &mock_info);
 
 	dev_pm_domain_set(&pdev->dev, &pm_domain);
@@ -188,10 +166,10 @@ struct drm_i915_private *mock_gem_device(void)
 		WARN_ON(pm_runtime_get_sync(&pdev->dev));
 
 	intel_runtime_pm_init_early(&i915->runtime_pm);
-	/* wakeref tracking has significant overhead */
+	 
 	i915->runtime_pm.no_wakeref_tracking = true;
 
-	/* Using the global GTT may ask questions about KMS users, so prepare */
+	 
 	drm_mode_config_init(&i915->drm);
 
 	intel_memory_regions_hw_probe(i915);
@@ -201,7 +179,7 @@ struct drm_i915_private *mock_gem_device(void)
 	i915_gem_init__mm(i915);
 	intel_root_gt_init_early(i915);
 	mock_uncore_init(&i915->uncore, i915);
-	atomic_inc(&to_gt(i915)->wakeref.count); /* disable; no hw support */
+	atomic_inc(&to_gt(i915)->wakeref.count);  
 	to_gt(i915)->awake = -ENODEV;
 	mock_gt_probe(i915);
 
@@ -219,7 +197,7 @@ struct drm_i915_private *mock_gem_device(void)
 
 	mock_init_contexts(i915);
 
-	/* allocate the ggtt */
+	 
 	ret = intel_gt_assign_ggtt(to_gt(i915));
 	if (ret)
 		goto err_unlock;

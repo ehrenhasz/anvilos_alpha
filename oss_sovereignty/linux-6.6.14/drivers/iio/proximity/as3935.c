@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * as3935.c - Support for AS3935 Franklin lightning sensor
- *
- * Copyright (C) 2014, 2017-2018
- * Author: Matt Ranostay <matt.ranostay@konsulko.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -60,7 +55,7 @@ struct as3935_state {
 	unsigned long noise_tripped;
 	u32 tune_cap;
 	u32 nflwdth_reg;
-	/* Ensure timestamp is naturally aligned */
+	 
 	struct {
 		u8 chan;
 		s64 timestamp __aligned(8);
@@ -194,7 +189,7 @@ static int as3935_read_raw(struct iio_dev *indio_dev,
 		if (ret)
 			return ret;
 
-		/* storm out of range */
+		 
 		if (*val == AS3935_DATA_MASK)
 			return -EINVAL;
 
@@ -274,10 +269,7 @@ static irqreturn_t as3935_interrupt_handler(int irq, void *private)
 	struct iio_dev *indio_dev = private;
 	struct as3935_state *st = iio_priv(indio_dev);
 
-	/*
-	 * Delay work for >2 milliseconds after an interrupt to allow
-	 * estimated distance to recalculated.
-	 */
+	 
 
 	schedule_delayed_work(&st->work, msecs_to_jiffies(3));
 
@@ -347,7 +339,7 @@ static int as3935_probe(struct spi_device *spi)
 	struct as3935_state *st;
 	int ret;
 
-	/* Be sure lightning event interrupt is specified */
+	 
 	if (!spi->irq) {
 		dev_err(dev, "unable to get event interrupt\n");
 		return -EINVAL;
@@ -444,7 +436,7 @@ static int as3935_probe(struct spi_device *spi)
 
 static const struct of_device_id as3935_of_match[] = {
 	{ .compatible = "ams,as3935", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, as3935_of_match);
 

@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Watchdog driver for IMX2 and later processors
- *
- *  Copyright (C) 2010 Wolfram Sang, Pengutronix e.K. <kernel@pengutronix.de>
- *  Copyright (C) 2014 Freescale Semiconductor, Inc.
- *
- * some parts adapted by similar drivers from Darius Augulis and Vladimir
- * Zapolskiy, additional improvements by Wim Van Sebroeck.
- *
- * NOTE: MX1 has a slightly different Watchdog than MX2 and later:
- *
- *			MX1:		MX2+:
- *			----		-----
- * Registers:		32-bit		16-bit
- * Stopable timer:	Yes		No
- * Need to enable clk:	No		Yes
- * Halt on suspend:	Manual		Can be automatic
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -33,31 +16,31 @@
 
 #define DRIVER_NAME "imx2-wdt"
 
-#define IMX2_WDT_WCR		0x00		/* Control Register */
-#define IMX2_WDT_WCR_WT		(0xFF << 8)	/* -> Watchdog Timeout Field */
-#define IMX2_WDT_WCR_WDW	BIT(7)		/* -> Watchdog disable for WAIT */
-#define IMX2_WDT_WCR_WDA	BIT(5)		/* -> External Reset WDOG_B */
-#define IMX2_WDT_WCR_SRS	BIT(4)		/* -> Software Reset Signal */
-#define IMX2_WDT_WCR_WRE	BIT(3)		/* -> WDOG Reset Enable */
-#define IMX2_WDT_WCR_WDE	BIT(2)		/* -> Watchdog Enable */
-#define IMX2_WDT_WCR_WDZST	BIT(0)		/* -> Watchdog timer Suspend */
+#define IMX2_WDT_WCR		0x00		 
+#define IMX2_WDT_WCR_WT		(0xFF << 8)	 
+#define IMX2_WDT_WCR_WDW	BIT(7)		 
+#define IMX2_WDT_WCR_WDA	BIT(5)		 
+#define IMX2_WDT_WCR_SRS	BIT(4)		 
+#define IMX2_WDT_WCR_WRE	BIT(3)		 
+#define IMX2_WDT_WCR_WDE	BIT(2)		 
+#define IMX2_WDT_WCR_WDZST	BIT(0)		 
 
-#define IMX2_WDT_WSR		0x02		/* Service Register */
-#define IMX2_WDT_SEQ1		0x5555		/* -> service sequence 1 */
-#define IMX2_WDT_SEQ2		0xAAAA		/* -> service sequence 2 */
+#define IMX2_WDT_WSR		0x02		 
+#define IMX2_WDT_SEQ1		0x5555		 
+#define IMX2_WDT_SEQ2		0xAAAA		 
 
-#define IMX2_WDT_WRSR		0x04		/* Reset Status Register */
-#define IMX2_WDT_WRSR_TOUT	BIT(1)		/* -> Reset due to Timeout */
+#define IMX2_WDT_WRSR		0x04		 
+#define IMX2_WDT_WRSR_TOUT	BIT(1)		 
 
-#define IMX2_WDT_WICR		0x06		/* Interrupt Control Register */
-#define IMX2_WDT_WICR_WIE	BIT(15)		/* -> Interrupt Enable */
-#define IMX2_WDT_WICR_WTIS	BIT(14)		/* -> Interrupt Status */
-#define IMX2_WDT_WICR_WICT	0xFF		/* -> Interrupt Count Timeout */
+#define IMX2_WDT_WICR		0x06		 
+#define IMX2_WDT_WICR_WIE	BIT(15)		 
+#define IMX2_WDT_WICR_WTIS	BIT(14)		 
+#define IMX2_WDT_WICR_WICT	0xFF		 
 
-#define IMX2_WDT_WMCR		0x08		/* Misc Register */
+#define IMX2_WDT_WMCR		0x08		 
 
 #define IMX2_WDT_MAX_TIME	128U
-#define IMX2_WDT_DEFAULT_TIME	60		/* in seconds */
+#define IMX2_WDT_DEFAULT_TIME	60		 
 
 #define WDOG_SEC_TO_COUNT(s)	((s * 2 - 1) << 8)
 
@@ -103,25 +86,19 @@ static int imx2_wdt_restart(struct watchdog_device *wdog, unsigned long action,
 	struct imx2_wdt_device *wdev = watchdog_get_drvdata(wdog);
 	unsigned int wcr_enable = IMX2_WDT_WCR_WDE;
 
-	/* Use internal reset or external - not both */
+	 
 	if (wdev->ext_reset)
-		wcr_enable |= IMX2_WDT_WCR_SRS; /* do not assert int reset */
+		wcr_enable |= IMX2_WDT_WCR_SRS;  
 	else
-		wcr_enable |= IMX2_WDT_WCR_WDA; /* do not assert ext-reset */
+		wcr_enable |= IMX2_WDT_WCR_WDA;  
 
-	/* Assert SRS signal */
+	 
 	regmap_write(wdev->regmap, IMX2_WDT_WCR, wcr_enable);
-	/*
-	 * Due to imx6q errata ERR004346 (WDOG: WDOG SRS bit requires to be
-	 * written twice), we add another two writes to ensure there must be at
-	 * least two writes happen in the same one 32kHz clock period.  We save
-	 * the target check here, since the writes shouldn't be a huge burden
-	 * for other platforms.
-	 */
+	 
 	regmap_write(wdev->regmap, IMX2_WDT_WCR, wcr_enable);
 	regmap_write(wdev->regmap, IMX2_WDT_WCR, wcr_enable);
 
-	/* wait for reset to assert... */
+	 
 	mdelay(500);
 
 	return 0;
@@ -134,27 +111,27 @@ static inline void imx2_wdt_setup(struct watchdog_device *wdog)
 
 	regmap_read(wdev->regmap, IMX2_WDT_WCR, &val);
 
-	/* Suspend timer in low power mode, write once-only */
+	 
 	val |= IMX2_WDT_WCR_WDZST;
-	/* Suspend timer in low power WAIT mode, write once-only */
+	 
 	if (wdev->sleep_wait)
 		val |= IMX2_WDT_WCR_WDW;
-	/* Strip the old watchdog Time-Out value */
+	 
 	val &= ~IMX2_WDT_WCR_WT;
-	/* Generate internal chip-level reset if WDOG times out */
+	 
 	if (!wdev->ext_reset)
 		val &= ~IMX2_WDT_WCR_WRE;
-	/* Or if external-reset assert WDOG_B reset only on time-out */
+	 
 	else
 		val |= IMX2_WDT_WCR_WRE;
-	/* Keep Watchdog Disabled */
+	 
 	val &= ~IMX2_WDT_WCR_WDE;
-	/* Set the watchdog's Time-Out value */
+	 
 	val |= WDOG_SEC_TO_COUNT(wdog->timeout);
 
 	regmap_write(wdev->regmap, IMX2_WDT_WCR, val);
 
-	/* enable the watchdog */
+	 
 	val |= IMX2_WDT_WCR_WDE;
 	regmap_write(wdev->regmap, IMX2_WDT_WCR, val);
 }
@@ -334,10 +311,7 @@ static int __init imx2_wdt_probe(struct platform_device *pdev)
 		wdev->sleep_wait = true;
 	}
 
-	/*
-	 * The i.MX7D doesn't support low power mode, so we need to ping the watchdog
-	 * during suspend. Interaction with "fsl,suspend-in-wait" is unknown!
-	 */
+	 
 	wdev->no_ping = !of_device_is_compatible(dev->of_node, "fsl,imx7d-wdt");
 	platform_set_drvdata(pdev, wdog);
 	watchdog_set_drvdata(wdog, wdev);
@@ -352,11 +326,7 @@ static int __init imx2_wdt_probe(struct platform_device *pdev)
 		set_bit(WDOG_HW_RUNNING, &wdog->status);
 	}
 
-	/*
-	 * Disable the watchdog power down counter at boot. Otherwise the power
-	 * down counter will pull down the #WDOG interrupt line for one clock
-	 * cycle.
-	 */
+	 
 	regmap_write(wdev->regmap, IMX2_WDT_WMCR, 0);
 
 	return devm_watchdog_register_device(dev, wdog);
@@ -368,28 +338,22 @@ static void imx2_wdt_shutdown(struct platform_device *pdev)
 	struct imx2_wdt_device *wdev = watchdog_get_drvdata(wdog);
 
 	if (imx2_wdt_is_running(wdev)) {
-		/*
-		 * We are running, configure max timeout before reboot
-		 * will take place.
-		 */
+		 
 		imx2_wdt_set_timeout(wdog, IMX2_WDT_MAX_TIME);
 		imx2_wdt_ping(wdog);
 		dev_crit(&pdev->dev, "Device shutdown.\n");
 	}
 }
 
-/* Disable watchdog if it is active or non-active but still running */
+ 
 static int __maybe_unused imx2_wdt_suspend(struct device *dev)
 {
 	struct watchdog_device *wdog = dev_get_drvdata(dev);
 	struct imx2_wdt_device *wdev = watchdog_get_drvdata(wdog);
 
-	/* The watchdog IP block is running */
+	 
 	if (imx2_wdt_is_running(wdev)) {
-		/*
-		 * Don't update wdog->timeout, we'll restore the current value
-		 * during resume.
-		 */
+		 
 		__imx2_wdt_set_timeout(wdog, IMX2_WDT_MAX_TIME);
 		imx2_wdt_ping(wdog);
 	}
@@ -403,7 +367,7 @@ static int __maybe_unused imx2_wdt_suspend(struct device *dev)
 	return 0;
 }
 
-/* Enable watchdog and configure it if necessary */
+ 
 static int __maybe_unused imx2_wdt_resume(struct device *dev)
 {
 	struct watchdog_device *wdog = dev_get_drvdata(dev);
@@ -420,11 +384,7 @@ static int __maybe_unused imx2_wdt_resume(struct device *dev)
 	}
 
 	if (watchdog_active(wdog) && !imx2_wdt_is_running(wdev)) {
-		/*
-		 * If the watchdog is still active and resumes
-		 * from deep sleep state, need to restart the
-		 * watchdog again.
-		 */
+		 
 		imx2_wdt_setup(wdog);
 	}
 	if (imx2_wdt_is_running(wdev)) {
@@ -468,7 +428,7 @@ static const struct of_device_id imx2_wdt_dt_ids[] = {
 	{ .compatible = "fsl,ls1012a-wdt", .data = &imx_wdt_legacy },
 	{ .compatible = "fsl,ls1043a-wdt", .data = &imx_wdt_legacy },
 	{ .compatible = "fsl,vf610-wdt", .data = &imx_wdt },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx2_wdt_dt_ids);
 

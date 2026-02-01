@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Clkout driver for Rockchip RK808
- *
- * Copyright (c) 2014, Fuzhou Rockchip Electronics Co., Ltd
- *
- * Author:Chris Zhong <zyw@rock-chips.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -134,12 +128,7 @@ static const struct clk_ops *rkpmic_get_ops(long variant)
 	case RK809_ID:
 	case RK817_ID:
 		return &rk817_clkout2_ops;
-	/*
-	 * For the default case, it match the following PMIC type.
-	 * RK805_ID
-	 * RK808_ID
-	 * RK818_ID
-	 */
+	 
 	default:
 		return &rk808_clkout2_ops;
 	}
@@ -170,7 +159,7 @@ static int rk808_clkout_probe(struct platform_device *pdev)
 	init.ops = &rk808_clkout1_ops;
 	rk808_clkout->clkout1_hw.init = &init;
 
-	/* optional override of the clockname */
+	 
 	of_property_read_string_index(dev->of_node, "clock-output-names",
 				      0, &init.name);
 
@@ -182,7 +171,7 @@ static int rk808_clkout_probe(struct platform_device *pdev)
 	init.ops = rkpmic_get_ops(rk808->variant);
 	rk808_clkout->clkout2_hw.init = &init;
 
-	/* optional override of the clockname */
+	 
 	of_property_read_string_index(dev->of_node, "clock-output-names",
 				      1, &init.name);
 

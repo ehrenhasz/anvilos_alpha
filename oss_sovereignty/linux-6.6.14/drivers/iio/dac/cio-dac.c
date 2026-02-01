@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IIO driver for the Measurement Computing CIO-DAC
- * Copyright (C) 2016 William Breathitt Gray
- *
- * This driver supports the following Measurement Computing devices: CIO-DAC16,
- * CIO-DAC08, and PC104-DAC06.
- */
+
+ 
 #include <linux/bits.h>
 #include <linux/device.h>
 #include <linux/err.h>
@@ -39,10 +33,7 @@ MODULE_PARM_DESC(base, "Measurement Computing CIO-DAC base addresses");
 
 static bool cio_dac_precious_reg(struct device *dev, unsigned int reg)
 {
-	/*
-	 * All registers are considered precious; if the XFER jumper is set on
-	 * the device, then no update occurs until a DAC register is read.
-	 */
+	 
 	return true;
 }
 
@@ -55,10 +46,7 @@ static const struct regmap_config cio_dac_regmap_config = {
 	.precious_reg = cio_dac_precious_reg,
 };
 
-/**
- * struct cio_dac_iio - IIO device private data structure
- * @map: Regmap for the device
- */
+ 
 struct cio_dac_iio {
 	struct regmap *map;
 };
@@ -92,7 +80,7 @@ static int cio_dac_write_raw(struct iio_dev *indio_dev,
 	if (mask != IIO_CHAN_INFO_RAW)
 		return -EINVAL;
 
-	/* DAC can only accept up to a 12-bit value */
+	 
 	if ((unsigned int)val > 4095)
 		return -EINVAL;
 

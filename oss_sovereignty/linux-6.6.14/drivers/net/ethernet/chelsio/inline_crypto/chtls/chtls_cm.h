@@ -1,21 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2018 Chelsio Communications, Inc.
- */
+ 
+ 
 
 #ifndef __CHTLS_CM_H__
 #define __CHTLS_CM_H__
 
-/*
- * TCB settings
- */
-/* 3:0 */
+ 
+ 
 #define TCB_ULP_TYPE_W    0
 #define TCB_ULP_TYPE_S    0
 #define TCB_ULP_TYPE_M    0xfULL
 #define TCB_ULP_TYPE_V(x) ((x) << TCB_ULP_TYPE_S)
 
-/* 11:4 */
+ 
 #define TCB_ULP_RAW_W    0
 #define TCB_ULP_RAW_S    4
 #define TCB_ULP_RAW_M    0xffULL
@@ -36,21 +32,15 @@
 #define TF_RX_QUIESCE_S    15
 #define TF_RX_QUIESCE_V(x) ((x) << TF_RX_QUIESCE_S)
 
-/*
- * Max receive window supported by HW in bytes.  Only a small part of it can
- * be set through option0, the rest needs to be set through RX_DATA_ACK.
- */
+ 
 #define MAX_RCV_WND ((1U << 27) - 1)
 #define MAX_MSS     65536
 
-/*
- * Min receive window.  We want it to be large enough to accommodate receive
- * coalescing, handle jumbo frames, and not trigger sender SWS avoidance.
- */
+ 
 #define MIN_RCV_WND (24 * 1024U)
 #define LOOPBACK(x)     (((x) & htonl(0xff000000)) == htonl(0x7f000000))
 
-/* for TX: a skb must have a headroom of at least TX_HEADER_LEN bytes */
+ 
 #define TX_HEADER_LEN \
 	(sizeof(struct fw_ofld_tx_data_wr) + sizeof(struct sge_opaque_hdr))
 #define TX_TLSHDR_LEN \
@@ -97,16 +87,14 @@ struct deferred_skb_cb {
 #define SACK_OK(tp) ((tp)->rx_opt.sack_ok)
 #define INC_ORPHAN_COUNT(sk) this_cpu_inc(*(sk)->sk_prot->orphan_count)
 
-/* TLS SKB */
+ 
 #define skb_ulp_tls_inline(skb)      (ULP_SKB_CB(skb)->ulp.tls.ofld)
 #define skb_ulp_tls_iv_imm(skb)      (ULP_SKB_CB(skb)->ulp.tls.iv)
 
 void chtls_defer_reply(struct sk_buff *skb, struct chtls_dev *dev,
 		       defer_handler_t handler);
 
-/*
- * Returns true if the socket is in one of the supplied states.
- */
+ 
 static inline unsigned int sk_in_state(const struct sock *sk,
 				       unsigned int states)
 {
@@ -115,7 +103,7 @@ static inline unsigned int sk_in_state(const struct sock *sk,
 
 static void chtls_rsk_destructor(struct request_sock *req)
 {
-	/* do nothing */
+	 
 }
 
 static inline void chtls_init_rsk_ops(struct proto *chtls_tcp_prot,
@@ -210,7 +198,7 @@ static inline struct sk_buff *dequeue_wr(struct sock *sk)
 	skb = csk->wr_skb_head;
 
 	if (likely(skb)) {
-	 /* Don't bother clearing the tail */
+	  
 		csk->wr_skb_head = WR_SKB_CB(skb)->next_wr;
 		WR_SKB_CB(skb)->next_wr = NULL;
 	}

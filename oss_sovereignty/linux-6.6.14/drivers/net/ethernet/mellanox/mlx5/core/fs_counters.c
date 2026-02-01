@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2016, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/mlx5/driver.h>
 #include <linux/mlx5/fs.h>
@@ -39,7 +9,7 @@
 
 #define MLX5_FC_STATS_PERIOD msecs_to_jiffies(1000)
 #define MLX5_FC_BULK_QUERY_ALLOC_PERIOD msecs_to_jiffies(180 * 1000)
-/* Max number of counters to query in bulk read is 32K */
+ 
 #define MLX5_SW_MAX_COUNTERS_BULK BIT(15)
 #define MLX5_INIT_COUNTERS_BULK 8
 #define MLX5_FC_POOL_MAX_THRESHOLD BIT(18)
@@ -56,9 +26,7 @@ struct mlx5_fc {
 	struct llist_node addlist;
 	struct llist_node dellist;
 
-	/* last{packets,bytes} members are used when calculating the delta since
-	 * last reading
-	 */
+	 
 	u64 lastpackets;
 	u64 lastbytes;
 
@@ -74,37 +42,7 @@ static void mlx5_fc_pool_cleanup(struct mlx5_fc_pool *fc_pool);
 static struct mlx5_fc *mlx5_fc_pool_acquire_counter(struct mlx5_fc_pool *fc_pool);
 static void mlx5_fc_pool_release_counter(struct mlx5_fc_pool *fc_pool, struct mlx5_fc *fc);
 
-/* locking scheme:
- *
- * It is the responsibility of the user to prevent concurrent calls or bad
- * ordering to mlx5_fc_create(), mlx5_fc_destroy() and accessing a reference
- * to struct mlx5_fc.
- * e.g en_tc.c is protected by RTNL lock of its caller, and will never call a
- * dump (access to struct mlx5_fc) after a counter is destroyed.
- *
- * access to counter list:
- * - create (user context)
- *   - mlx5_fc_create() only adds to an addlist to be used by
- *     mlx5_fc_stats_work(). addlist is a lockless single linked list
- *     that doesn't require any additional synchronization when adding single
- *     node.
- *   - spawn thread to do the actual destroy
- *
- * - destroy (user context)
- *   - add a counter to lockless dellist
- *   - spawn thread to do the actual del
- *
- * - dump (user context)
- *   user should not call dump after destroy
- *
- * - query (single thread workqueue context)
- *   destroy/dump - no conflict (see destroy)
- *   query/dump - packets and bytes might be inconsistent (since update is not
- *                atomic)
- *   query/create - no conflict (see create)
- *   since every create/destroy spawn the work, only after necessary time has
- *   elapsed, the thread will actually query the hardware.
- */
+ 
 
 static struct list_head *mlx5_fc_counters_lookup_next(struct mlx5_core_dev *dev,
 						      u32 id)
@@ -115,7 +53,7 @@ static struct list_head *mlx5_fc_counters_lookup_next(struct mlx5_core_dev *dev,
 	unsigned long tmp;
 
 	rcu_read_lock();
-	/* skip counters that are in idr, but not yet in counters list */
+	 
 	idr_for_each_entry_continue_ul(&fc_stats->counters_idr,
 				       counter, tmp, next_id) {
 		if (!list_empty(&counter->list))
@@ -188,10 +126,10 @@ static void mlx5_fc_stats_query_counter_range(struct mlx5_core_dev *dev,
 	int err;
 
 	while (query_more_counters) {
-		/* first id must be aligned to 4 when using bulk query */
+		 
 		bulk_base_id = counter->id & ~0x3;
 
-		/* number of counters to query inc. the last counter */
+		 
 		bulk_len = min_t(int, cur_bulk_len,
 				 ALIGN(last_id - bulk_base_id + 1, 4));
 
@@ -273,9 +211,7 @@ static void mlx5_fc_stats_work(struct work_struct *work)
 	struct mlx5_core_dev *dev = container_of(work, struct mlx5_core_dev,
 						 priv.fc_stats.work.work);
 	struct mlx5_fc_stats *fc_stats = &dev->priv.fc_stats;
-	/* Take dellist first to ensure that counters cannot be deleted before
-	 * they are inserted.
-	 */
+	 
 	struct llist_node *dellist = llist_del_all(&fc_stats->dellist);
 	struct llist_node *addlist = llist_del_all(&fc_stats->addlist);
 	struct mlx5_fc *counter = NULL, *last = NULL, *tmp;
@@ -532,7 +468,7 @@ void mlx5_fc_update_sampling_interval(struct mlx5_core_dev *dev,
 					    fc_stats->sampling_interval);
 }
 
-/* Flow counter bluks */
+ 
 
 struct mlx5_fc_bulk {
 	struct list_head pool_list;
@@ -633,7 +569,7 @@ static int mlx5_fc_bulk_release_fc(struct mlx5_fc_bulk *bulk, struct mlx5_fc *fc
 	return 0;
 }
 
-/* Flow counters pool API */
+ 
 
 static void mlx5_fc_pool_init(struct mlx5_fc_pool *fc_pool, struct mlx5_core_dev *dev)
 {

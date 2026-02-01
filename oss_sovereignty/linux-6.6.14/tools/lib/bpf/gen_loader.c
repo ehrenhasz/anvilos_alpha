@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
-/* Copyright (c) 2021 Facebook */
+
+ 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,17 +20,7 @@
 #define MAX_KFUNC_DESCS 256
 #define MAX_FD_ARRAY_SZ (MAX_USED_MAPS + MAX_KFUNC_DESCS)
 
-/* The following structure describes the stack layout of the loader program.
- * In addition R6 contains the pointer to context.
- * R7 contains the result of the last sys_bpf command (typically error or FD).
- * R9 contains the result of the last sys_close command.
- *
- * Naming convention:
- * ctx - bpf program context
- * stack - bpf program stack
- * blob - bpf_attr-s, strings, insns, map data.
- *        All the bytes that loader prog will use for read/write.
- */
+ 
 struct loader_stack {
 	__u32 btf_fd;
 	__u32 inner_map_fd;
@@ -117,30 +107,28 @@ void bpf_gen__init(struct bpf_gen *gen, int log_level, int nr_progs, int nr_maps
 
 	gen->fd_array = add_data(gen, NULL, MAX_FD_ARRAY_SZ * sizeof(int));
 	gen->log_level = log_level;
-	/* save ctx pointer into R6 */
+	 
 	emit(gen, BPF_MOV64_REG(BPF_REG_6, BPF_REG_1));
 
-	/* bzero stack */
+	 
 	emit(gen, BPF_MOV64_REG(BPF_REG_1, BPF_REG_10));
 	emit(gen, BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -stack_sz));
 	emit(gen, BPF_MOV64_IMM(BPF_REG_2, stack_sz));
 	emit(gen, BPF_MOV64_IMM(BPF_REG_3, 0));
 	emit(gen, BPF_EMIT_CALL(BPF_FUNC_probe_read_kernel));
 
-	/* amount of stack actually used, only used to calculate iterations, not stack offset */
+	 
 	nr_progs_sz = offsetof(struct loader_stack, prog_fd[nr_progs]);
-	/* jump over cleanup code */
+	 
 	emit(gen, BPF_JMP_IMM(BPF_JA, 0, 0,
-			      /* size of cleanup code below (including map fd cleanup) */
+			       
 			      (nr_progs_sz / 4) * 3 + 2 +
-			      /* 6 insns for emit_sys_close_blob,
-			       * 6 insns for debug_regs in emit_sys_close_blob
-			       */
+			       
 			      nr_maps * (6 + (gen->log_level ? 6 : 0))));
 
-	/* remember the label where all error branches will jump to */
+	 
 	gen->cleanup_label = gen->insn_cur - gen->insn_start;
-	/* emit cleanup code: close all temp FDs */
+	 
 	for (i = 0; i < nr_progs_sz; i += 4) {
 		emit(gen, BPF_LDX_MEM(BPF_W, BPF_REG_1, BPF_REG_10, -stack_sz + i));
 		emit(gen, BPF_JMP_IMM(BPF_JSLE, BPF_REG_1, 0, 1));
@@ -148,7 +136,7 @@ void bpf_gen__init(struct bpf_gen *gen, int log_level, int nr_progs, int nr_maps
 	}
 	for (i = 0; i < nr_maps; i++)
 		emit_sys_close_blob(gen, blob_fd_array_off(gen, i));
-	/* R7 contains the error code from sys_bpf. Copy it into R0 and exit. */
+	 
 	emit(gen, BPF_MOV64_REG(BPF_REG_0, BPF_REG_7));
 	emit(gen, BPF_EXIT_INSN());
 }
@@ -172,9 +160,7 @@ static int add_data(struct bpf_gen *gen, const void *data, __u32 size)
 	return prev - gen->data_start;
 }
 
-/* Get index for map_fd/btf_fd slot in reserved fd_array, or in data relative
- * to start of fd_array. Caller can decide if it is usable or not.
- */
+ 
 static int add_map_fd(struct bpf_gen *gen)
 {
 	if (gen->nr_maps == MAX_USED_MAPS) {
@@ -207,7 +193,7 @@ static int insn_bytes_to_bpf_size(__u32 sz)
 	}
 }
 
-/* *(u64 *)(blob + off) = (u64)(void *)(blob + data) */
+ 
 static void emit_rel_store(struct bpf_gen *gen, int off, int data)
 {
 	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_0, BPF_PSEUDO_MAP_IDX_VALUE,
@@ -240,9 +226,7 @@ static void move_ctx2blob(struct bpf_gen *gen, int off, int size, int ctx_off,
 {
 	emit(gen, BPF_LDX_MEM(insn_bytes_to_bpf_size(size), BPF_REG_0, BPF_REG_6, ctx_off));
 	if (check_non_zero)
-		/* If value in ctx is zero don't update the blob.
-		 * For example: when ctx->map.max_entries == 0, keep default max_entries from bpf.c
-		 */
+		 
 		emit(gen, BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 3));
 	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_1, BPF_PSEUDO_MAP_IDX_VALUE,
 					 0, 0, 0, off));
@@ -270,7 +254,7 @@ static void emit_sys_bpf(struct bpf_gen *gen, int cmd, int attr, int attr_size)
 					 0, 0, 0, attr));
 	emit(gen, BPF_MOV64_IMM(BPF_REG_3, attr_size));
 	emit(gen, BPF_EMIT_CALL(BPF_FUNC_sys_bpf));
-	/* remember the result in R7 */
+	 
 	emit(gen, BPF_MOV64_REG(BPF_REG_7, BPF_REG_0));
 }
 
@@ -283,9 +267,7 @@ static void emit_check_err(struct bpf_gen *gen)
 {
 	__s64 off = -(gen->insn_cur - gen->insn_start - gen->cleanup_label) / 8 - 1;
 
-	/* R7 contains result of last sys_bpf command.
-	 * if (R7 < 0) goto cleanup;
-	 */
+	 
 	if (is_simm16(off)) {
 		emit(gen, BPF_JMP_IMM(BPF_JSLT, BPF_REG_7, 0, off));
 	} else {
@@ -294,7 +276,7 @@ static void emit_check_err(struct bpf_gen *gen)
 	}
 }
 
-/* reg1 and reg2 should not be R1 - R5. They can be R0, R6 - R10 */
+ 
 static void emit_debug(struct bpf_gen *gen, int reg1, int reg2,
 		       const char *fmt, va_list args)
 {
@@ -305,10 +287,7 @@ static void emit_debug(struct bpf_gen *gen, int reg1, int reg2,
 		return;
 	ret = vsnprintf(buf, sizeof(buf), fmt, args);
 	if (ret < 1024 - 7 && reg1 >= 0 && reg2 < 0)
-		/* The special case to accommodate common debug_ret():
-		 * to avoid specifying BPF_REG_7 and adding " r=%%d" to
-		 * prints explicitly.
-		 */
+		 
 		strcat(buf, " r=%d");
 	len = strlen(buf) + 1;
 	addr = add_data(gen, buf, len);
@@ -344,9 +323,7 @@ static void debug_ret(struct bpf_gen *gen, const char *fmt, ...)
 static void __emit_sys_close(struct bpf_gen *gen)
 {
 	emit(gen, BPF_JMP_IMM(BPF_JSLE, BPF_REG_1, 0,
-			      /* 2 is the number of the following insns
-			       * * 6 is additional insns in debug_regs
-			       */
+			       
 			      2 + (gen->log_level ? 6 : 0)));
 	emit(gen, BPF_MOV64_REG(BPF_REG_9, BPF_REG_1));
 	emit(gen, BPF_EMIT_CALL(BPF_FUNC_sys_close));
@@ -428,20 +405,20 @@ void bpf_gen__load_btf(struct bpf_gen *gen, const void *btf_raw_data,
 	attr.btf_size = btf_raw_size;
 	btf_load_attr = add_data(gen, &attr, attr_size);
 
-	/* populate union bpf_attr with user provided log details */
+	 
 	move_ctx2blob(gen, attr_field(btf_load_attr, btf_log_level), 4,
 		      offsetof(struct bpf_loader_ctx, log_level), false);
 	move_ctx2blob(gen, attr_field(btf_load_attr, btf_log_size), 4,
 		      offsetof(struct bpf_loader_ctx, log_size), false);
 	move_ctx2blob(gen, attr_field(btf_load_attr, btf_log_buf), 8,
 		      offsetof(struct bpf_loader_ctx, log_buf), false);
-	/* populate union bpf_attr with a pointer to the BTF data */
+	 
 	emit_rel_store(gen, attr_field(btf_load_attr, btf), btf_data);
-	/* emit BTF_LOAD command */
+	 
 	emit_sys_bpf(gen, BPF_BTF_LOAD, btf_load_attr, attr_size);
 	debug_ret(gen, "btf_load size %d", btf_raw_size);
 	emit_check_err(gen);
-	/* remember btf_fd in the stack, if successful */
+	 
 	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_10, BPF_REG_7, stack_off(btf_fd)));
 }
 
@@ -475,7 +452,7 @@ void bpf_gen__map_create(struct bpf_gen *gen,
 
 	map_create_attr = add_data(gen, &attr, attr_size);
 	if (attr.btf_value_type_id)
-		/* populate union bpf_attr with btf_fd saved in the stack earlier */
+		 
 		move_stack2blob(gen, attr_field(map_create_attr, btf_fd), 4,
 				stack_off(btf_fd));
 	switch (attr.map_type) {
@@ -488,32 +465,29 @@ void bpf_gen__map_create(struct bpf_gen *gen,
 	default:
 		break;
 	}
-	/* conditionally update max_entries */
+	 
 	if (map_idx >= 0)
 		move_ctx2blob(gen, attr_field(map_create_attr, max_entries), 4,
 			      sizeof(struct bpf_loader_ctx) +
 			      sizeof(struct bpf_map_desc) * map_idx +
 			      offsetof(struct bpf_map_desc, max_entries),
-			      true /* check that max_entries != 0 */);
-	/* emit MAP_CREATE command */
+			      true  );
+	 
 	emit_sys_bpf(gen, BPF_MAP_CREATE, map_create_attr, attr_size);
 	debug_ret(gen, "map_create %s idx %d type %d value_size %d value_btf_id %d",
 		  attr.map_name, map_idx, map_type, value_size,
 		  attr.btf_value_type_id);
 	emit_check_err(gen);
-	/* remember map_fd in the stack, if successful */
+	 
 	if (map_idx < 0) {
-		/* This bpf_gen__map_create() function is called with map_idx >= 0
-		 * for all maps that libbpf loading logic tracks.
-		 * It's called with -1 to create an inner map.
-		 */
+		 
 		emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_10, BPF_REG_7,
 				      stack_off(inner_map_fd)));
 	} else if (map_idx != gen->nr_maps) {
-		gen->error = -EDOM; /* internal bug */
+		gen->error = -EDOM;  
 		return;
 	} else {
-		/* add_map_fd does gen->nr_maps++ */
+		 
 		idx = add_map_fd(gen);
 		emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_1, BPF_PSEUDO_MAP_IDX_VALUE,
 						 0, 0, 0, blob_fd_array_off(gen, idx)));
@@ -554,9 +528,7 @@ static void emit_find_attach_target(struct bpf_gen *gen)
 	debug_ret(gen, "find_by_name_kind(%s,%d)",
 		  gen->attach_target, gen->attach_kind);
 	emit_check_err(gen);
-	/* if successful, btf_id is in lower 32-bit of R7 and
-	 * btf_obj_fd is in upper 32-bit
-	 */
+	 
 }
 
 void bpf_gen__record_extern(struct bpf_gen *gen, const char *name, bool is_weak,
@@ -580,7 +552,7 @@ void bpf_gen__record_extern(struct bpf_gen *gen, const char *name, bool is_weak,
 	gen->relo_cnt++;
 }
 
-/* returns existing ksym_desc with ref incremented, or inserts a new one */
+ 
 static struct ksym_desc *get_ksym_desc(struct bpf_gen *gen, struct ksym_relo_desc *relo)
 {
 	struct ksym_desc *kdesc;
@@ -610,9 +582,7 @@ static struct ksym_desc *get_ksym_desc(struct bpf_gen *gen, struct ksym_relo_des
 	return kdesc;
 }
 
-/* Overwrites BPF_REG_{0, 1, 2, 3, 4, 7}
- * Returns result in BPF_REG_7
- */
+ 
 static void emit_bpf_find_by_name_kind(struct bpf_gen *gen, struct ksym_relo_desc *relo)
 {
 	int name_off, len = strlen(relo->name) + 1;
@@ -628,16 +598,13 @@ static void emit_bpf_find_by_name_kind(struct bpf_gen *gen, struct ksym_relo_des
 	debug_ret(gen, "find_by_name_kind(%s,%d)", relo->name, relo->kind);
 }
 
-/* Overwrites BPF_REG_{0, 1, 2, 3, 4, 7}
- * Returns result in BPF_REG_7
- * Returns u64 symbol addr in BPF_REG_9
- */
+ 
 static void emit_bpf_kallsyms_lookup_name(struct bpf_gen *gen, struct ksym_relo_desc *relo)
 {
 	int name_off, len = strlen(relo->name) + 1, res_off;
 
 	name_off = add_data(gen, relo->name, len);
-	res_off = add_data(gen, NULL, 8); /* res is u64 */
+	res_off = add_data(gen, NULL, 8);  
 	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_1, BPF_PSEUDO_MAP_IDX_VALUE,
 					 0, 0, 0, name_off));
 	emit(gen, BPF_MOV64_IMM(BPF_REG_2, len));
@@ -651,16 +618,7 @@ static void emit_bpf_kallsyms_lookup_name(struct bpf_gen *gen, struct ksym_relo_
 	debug_ret(gen, "kallsyms_lookup_name(%s,%d)", relo->name, relo->kind);
 }
 
-/* Expects:
- * BPF_REG_8 - pointer to instruction
- *
- * We need to reuse BTF fd for same symbol otherwise each relocation takes a new
- * index, while kernel limits total kfunc BTFs to 256. For duplicate symbols,
- * this would mean a new BTF fd index for each entry. By pairing symbol name
- * with index, we get the insn->imm, insn->off pairing that kernel uses for
- * kfunc_tab, which becomes the effective limit even though all of them may
- * share same index in fd_array (such that kfunc_btf_tab has 1 element).
- */
+ 
 static void emit_relo_kfunc_btf(struct bpf_gen *gen, struct ksym_relo_desc *relo, int insn)
 {
 	struct ksym_desc *kdesc;
@@ -669,7 +627,7 @@ static void emit_relo_kfunc_btf(struct bpf_gen *gen, struct ksym_relo_desc *relo
 	kdesc = get_ksym_desc(gen, relo);
 	if (!kdesc)
 		return;
-	/* try to copy from existing bpf_insn */
+	 
 	if (kdesc->ref > 1) {
 		move_blob2blob(gen, insn + offsetof(struct bpf_insn, imm), 4,
 			       kdesc->insn + offsetof(struct bpf_insn, imm));
@@ -677,12 +635,12 @@ static void emit_relo_kfunc_btf(struct bpf_gen *gen, struct ksym_relo_desc *relo
 			       kdesc->insn + offsetof(struct bpf_insn, off));
 		goto log;
 	}
-	/* remember insn offset, so we can copy BTF ID and FD later */
+	 
 	kdesc->insn = insn;
 	emit_bpf_find_by_name_kind(gen, relo);
 	if (!relo->is_weak)
 		emit_check_err(gen);
-	/* get index in fd_array to store BTF FD at */
+	 
 	btf_fd_idx = add_kfunc_btf_fd(gen);
 	if (btf_fd_idx > INT16_MAX) {
 		pr_warn("BTF fd off %d for kfunc %s exceeds INT16_MAX, cannot process relocation\n",
@@ -691,30 +649,30 @@ static void emit_relo_kfunc_btf(struct bpf_gen *gen, struct ksym_relo_desc *relo
 		return;
 	}
 	kdesc->off = btf_fd_idx;
-	/* jump to success case */
+	 
 	emit(gen, BPF_JMP_IMM(BPF_JSGE, BPF_REG_7, 0, 3));
-	/* set value for imm, off as 0 */
+	 
 	emit(gen, BPF_ST_MEM(BPF_W, BPF_REG_8, offsetof(struct bpf_insn, imm), 0));
 	emit(gen, BPF_ST_MEM(BPF_H, BPF_REG_8, offsetof(struct bpf_insn, off), 0));
-	/* skip success case for ret < 0 */
+	 
 	emit(gen, BPF_JMP_IMM(BPF_JA, 0, 0, 10));
-	/* store btf_id into insn[insn_idx].imm */
+	 
 	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_8, BPF_REG_7, offsetof(struct bpf_insn, imm)));
-	/* obtain fd in BPF_REG_9 */
+	 
 	emit(gen, BPF_MOV64_REG(BPF_REG_9, BPF_REG_7));
 	emit(gen, BPF_ALU64_IMM(BPF_RSH, BPF_REG_9, 32));
-	/* load fd_array slot pointer */
+	 
 	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_0, BPF_PSEUDO_MAP_IDX_VALUE,
 					 0, 0, 0, blob_fd_array_off(gen, btf_fd_idx)));
-	/* store BTF fd in slot, 0 for vmlinux */
+	 
 	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_0, BPF_REG_9, 0));
-	/* jump to insn[insn_idx].off store if fd denotes module BTF */
+	 
 	emit(gen, BPF_JMP_IMM(BPF_JNE, BPF_REG_9, 0, 2));
-	/* set the default value for off */
+	 
 	emit(gen, BPF_ST_MEM(BPF_H, BPF_REG_8, offsetof(struct bpf_insn, off), 0));
-	/* skip BTF fd store for vmlinux BTF */
+	 
 	emit(gen, BPF_JMP_IMM(BPF_JA, 0, 0, 1));
-	/* store index into insn[insn_idx].off */
+	 
 	emit(gen, BPF_ST_MEM(BPF_H, BPF_REG_8, offsetof(struct bpf_insn, off), btf_fd_idx));
 log:
 	if (!gen->log_level)
@@ -748,9 +706,7 @@ static void emit_ksym_relo_log(struct bpf_gen *gen, struct ksym_relo_desc *relo,
 		   relo->is_typeless, relo->is_weak, relo->name, ref);
 }
 
-/* Expects:
- * BPF_REG_8 - pointer to instruction
- */
+ 
 static void emit_relo_ksym_typeless(struct bpf_gen *gen,
 				    struct ksym_relo_desc *relo, int insn)
 {
@@ -759,7 +715,7 @@ static void emit_relo_ksym_typeless(struct bpf_gen *gen,
 	kdesc = get_ksym_desc(gen, relo);
 	if (!kdesc)
 		return;
-	/* try to copy from existing ldimm64 insn */
+	 
 	if (kdesc->ref > 1) {
 		move_blob2blob(gen, insn + offsetof(struct bpf_insn, imm), 4,
 			       kdesc->insn + offsetof(struct bpf_insn, imm));
@@ -767,16 +723,16 @@ static void emit_relo_ksym_typeless(struct bpf_gen *gen,
 			       kdesc->insn + sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm));
 		goto log;
 	}
-	/* remember insn offset, so we can copy ksym addr later */
+	 
 	kdesc->insn = insn;
-	/* skip typeless ksym_desc in fd closing loop in cleanup_relos */
+	 
 	kdesc->typeless = true;
 	emit_bpf_kallsyms_lookup_name(gen, relo);
 	emit(gen, BPF_JMP_IMM(BPF_JEQ, BPF_REG_7, -ENOENT, 1));
 	emit_check_err(gen);
-	/* store lower half of addr into insn[insn_idx].imm */
+	 
 	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_8, BPF_REG_9, offsetof(struct bpf_insn, imm)));
-	/* store upper half of addr into insn[insn_idx + 1].imm */
+	 
 	emit(gen, BPF_ALU64_IMM(BPF_RSH, BPF_REG_9, 32));
 	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_8, BPF_REG_9,
 		      sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm)));
@@ -787,17 +743,15 @@ log:
 static __u32 src_reg_mask(void)
 {
 #if defined(__LITTLE_ENDIAN_BITFIELD)
-	return 0x0f; /* src_reg,dst_reg,... */
+	return 0x0f;  
 #elif defined(__BIG_ENDIAN_BITFIELD)
-	return 0xf0; /* dst_reg,src_reg,... */
+	return 0xf0;  
 #else
 #error "Unsupported bit endianness, cannot proceed"
 #endif
 }
 
-/* Expects:
- * BPF_REG_8 - pointer to instruction
- */
+ 
 static void emit_relo_ksym_btf(struct bpf_gen *gen, struct ksym_relo_desc *relo, int insn)
 {
 	struct ksym_desc *kdesc;
@@ -806,40 +760,38 @@ static void emit_relo_ksym_btf(struct bpf_gen *gen, struct ksym_relo_desc *relo,
 	kdesc = get_ksym_desc(gen, relo);
 	if (!kdesc)
 		return;
-	/* try to copy from existing ldimm64 insn */
+	 
 	if (kdesc->ref > 1) {
 		move_blob2blob(gen, insn + sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm), 4,
 			       kdesc->insn + sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm));
 		move_blob2blob(gen, insn + offsetof(struct bpf_insn, imm), 4,
 			       kdesc->insn + offsetof(struct bpf_insn, imm));
-		/* jump over src_reg adjustment if imm (btf_id) is not 0, reuse BPF_REG_0 from move_blob2blob
-		 * If btf_id is zero, clear BPF_PSEUDO_BTF_ID flag in src_reg of ld_imm64 insn
-		 */
+		 
 		emit(gen, BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 3));
 		goto clear_src_reg;
 	}
-	/* remember insn offset, so we can copy BTF ID and FD later */
+	 
 	kdesc->insn = insn;
 	emit_bpf_find_by_name_kind(gen, relo);
 	if (!relo->is_weak)
 		emit_check_err(gen);
-	/* jump to success case */
+	 
 	emit(gen, BPF_JMP_IMM(BPF_JSGE, BPF_REG_7, 0, 3));
-	/* set values for insn[insn_idx].imm, insn[insn_idx + 1].imm as 0 */
+	 
 	emit(gen, BPF_ST_MEM(BPF_W, BPF_REG_8, offsetof(struct bpf_insn, imm), 0));
 	emit(gen, BPF_ST_MEM(BPF_W, BPF_REG_8, sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm), 0));
-	/* skip success case for ret < 0 */
+	 
 	emit(gen, BPF_JMP_IMM(BPF_JA, 0, 0, 4));
-	/* store btf_id into insn[insn_idx].imm */
+	 
 	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_8, BPF_REG_7, offsetof(struct bpf_insn, imm)));
-	/* store btf_obj_fd into insn[insn_idx + 1].imm */
+	 
 	emit(gen, BPF_ALU64_IMM(BPF_RSH, BPF_REG_7, 32));
 	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_8, BPF_REG_7,
 			      sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm)));
-	/* skip src_reg adjustment */
+	 
 	emit(gen, BPF_JMP_IMM(BPF_JA, 0, 0, 3));
 clear_src_reg:
-	/* clear bpf_object__relocate_data's src_reg assignment, otherwise we get a verifier failure */
+	 
 	reg_mask = src_reg_mask();
 	emit(gen, BPF_LDX_MEM(BPF_B, BPF_REG_9, BPF_REG_8, offsetofend(struct bpf_insn, code)));
 	emit(gen, BPF_ALU32_IMM(BPF_AND, BPF_REG_9, reg_mask));
@@ -906,9 +858,9 @@ static void cleanup_relos(struct bpf_gen *gen, int insns)
 
 	for (i = 0; i < gen->nr_ksyms; i++) {
 		kdesc = &gen->ksyms[i];
-		/* only close fds for typed ksyms and kfuncs */
+		 
 		if (kdesc->is_ld64 && !kdesc->typeless) {
-			/* close fd recorded in insn[insn_idx + 1].imm */
+			 
 			insn = kdesc->insn;
 			insn += sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm);
 			emit_sys_close_blob(gen, insn);
@@ -943,9 +895,9 @@ void bpf_gen__prog_load(struct bpf_gen *gen,
 	memset(&attr, 0, attr_size);
 	pr_debug("gen: prog_load: type %d insns_cnt %zd progi_idx %d\n",
 		 prog_type, insn_cnt, prog_idx);
-	/* add license string to blob of bytes */
+	 
 	license_off = add_data(gen, license, strlen(license) + 1);
-	/* add insns to blob of bytes */
+	 
 	insns_off = add_data(gen, insns, insn_cnt * sizeof(struct bpf_insn));
 
 	attr.prog_type = prog_type;
@@ -974,37 +926,37 @@ void bpf_gen__prog_load(struct bpf_gen *gen,
 	libbpf_strlcpy(attr.prog_name, prog_name, sizeof(attr.prog_name));
 	prog_load_attr = add_data(gen, &attr, attr_size);
 
-	/* populate union bpf_attr with a pointer to license */
+	 
 	emit_rel_store(gen, attr_field(prog_load_attr, license), license_off);
 
-	/* populate union bpf_attr with a pointer to instructions */
+	 
 	emit_rel_store(gen, attr_field(prog_load_attr, insns), insns_off);
 
-	/* populate union bpf_attr with a pointer to func_info */
+	 
 	emit_rel_store(gen, attr_field(prog_load_attr, func_info), func_info);
 
-	/* populate union bpf_attr with a pointer to line_info */
+	 
 	emit_rel_store(gen, attr_field(prog_load_attr, line_info), line_info);
 
-	/* populate union bpf_attr with a pointer to core_relos */
+	 
 	emit_rel_store(gen, attr_field(prog_load_attr, core_relos), core_relos);
 
-	/* populate union bpf_attr fd_array with a pointer to data where map_fds are saved */
+	 
 	emit_rel_store(gen, attr_field(prog_load_attr, fd_array), gen->fd_array);
 
-	/* populate union bpf_attr with user provided log details */
+	 
 	move_ctx2blob(gen, attr_field(prog_load_attr, log_level), 4,
 		      offsetof(struct bpf_loader_ctx, log_level), false);
 	move_ctx2blob(gen, attr_field(prog_load_attr, log_size), 4,
 		      offsetof(struct bpf_loader_ctx, log_size), false);
 	move_ctx2blob(gen, attr_field(prog_load_attr, log_buf), 8,
 		      offsetof(struct bpf_loader_ctx, log_buf), false);
-	/* populate union bpf_attr with btf_fd saved in the stack earlier */
+	 
 	move_stack2blob(gen, attr_field(prog_load_attr, prog_btf_fd), 4,
 			stack_off(btf_fd));
 	if (gen->attach_kind) {
 		emit_find_attach_target(gen);
-		/* populate union bpf_attr with btf_id and btf_obj_fd found by helper */
+		 
 		emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_0, BPF_PSEUDO_MAP_IDX_VALUE,
 						 0, 0, 0, prog_load_attr));
 		emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_0, BPF_REG_7,
@@ -1014,10 +966,10 @@ void bpf_gen__prog_load(struct bpf_gen *gen,
 				      offsetof(union bpf_attr, attach_btf_obj_fd)));
 	}
 	emit_relos(gen, insns_off);
-	/* emit PROG_LOAD command */
+	 
 	emit_sys_bpf(gen, BPF_PROG_LOAD, prog_load_attr, attr_size);
 	debug_ret(gen, "prog_load %s insn_cnt %d", attr.prog_name, attr.insn_cnt);
-	/* successful or not, close btf module FDs used in extern ksyms and attach_btf_obj_fd */
+	 
 	cleanup_relos(gen, insns_off);
 	if (gen->attach_kind) {
 		emit_sys_close_blob(gen,
@@ -1025,7 +977,7 @@ void bpf_gen__prog_load(struct bpf_gen *gen,
 		gen->attach_kind = 0;
 	}
 	emit_check_err(gen);
-	/* remember prog_fd in the stack, if successful */
+	 
 	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_10, BPF_REG_7,
 			      stack_off(prog_fd[gen->nr_progs])));
 	gen->nr_progs++;
@@ -1045,13 +997,7 @@ void bpf_gen__map_update_elem(struct bpf_gen *gen, int map_idx, void *pvalue,
 	value = add_data(gen, pvalue, value_size);
 	key = add_data(gen, &zero, sizeof(zero));
 
-	/* if (map_desc[map_idx].initial_value) {
-	 *    if (ctx->flags & BPF_SKEL_KERNEL)
-	 *        bpf_probe_read_kernel(value, value_size, initial_value);
-	 *    else
-	 *        bpf_copy_from_user(value, value_size, initial_value);
-	 * }
-	 */
+	 
 	emit(gen, BPF_LDX_MEM(BPF_DW, BPF_REG_3, BPF_REG_6,
 			      sizeof(struct bpf_loader_ctx) +
 			      sizeof(struct bpf_map_desc) * map_idx +
@@ -1072,7 +1018,7 @@ void bpf_gen__map_update_elem(struct bpf_gen *gen, int map_idx, void *pvalue,
 		       blob_fd_array_off(gen, map_idx));
 	emit_rel_store(gen, attr_field(map_update_attr, key), key);
 	emit_rel_store(gen, attr_field(map_update_attr, value), value);
-	/* emit MAP_UPDATE_ELEM command */
+	 
 	emit_sys_bpf(gen, BPF_MAP_UPDATE_ELEM, map_update_attr, attr_size);
 	debug_ret(gen, "update_elem idx %d value_size %d", map_idx, value_size);
 	emit_check_err(gen);
@@ -1098,7 +1044,7 @@ void bpf_gen__populate_outer_map(struct bpf_gen *gen, int outer_map_idx, int slo
 	emit_rel_store(gen, attr_field(map_update_attr, value),
 		       blob_fd_array_off(gen, inner_map_idx));
 
-	/* emit MAP_UPDATE_ELEM command */
+	 
 	emit_sys_bpf(gen, BPF_MAP_UPDATE_ELEM, map_update_attr, attr_size);
 	debug_ret(gen, "populate_outer_map outer %d key %d inner %d",
 		  outer_map_idx, slot, inner_map_idx);
@@ -1116,7 +1062,7 @@ void bpf_gen__map_freeze(struct bpf_gen *gen, int map_idx)
 	map_freeze_attr = add_data(gen, &attr, attr_size);
 	move_blob2blob(gen, attr_field(map_freeze_attr, map_fd), 4,
 		       blob_fd_array_off(gen, map_idx));
-	/* emit MAP_FREEZE command */
+	 
 	emit_sys_bpf(gen, BPF_MAP_FREEZE, map_freeze_attr, attr_size);
 	debug_ret(gen, "map_freeze");
 	emit_check_err(gen);

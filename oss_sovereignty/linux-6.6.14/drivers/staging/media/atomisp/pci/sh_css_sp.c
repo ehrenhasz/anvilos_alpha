@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include "hmm.h"
 
@@ -21,7 +9,7 @@
 #include "input_formatter.h"
 #endif
 
-#include "dma.h"	/* N_DMA_CHANNEL_ID */
+#include "dma.h"	 
 
 #include "ia_css_buffer.h"
 #include "ia_css_binary.h"
@@ -40,14 +28,14 @@
 #include "ia_css_frame_comm.h"
 #include "ia_css_isys.h"
 
-#include "gdc_device.h"				/* HRT_GDC_N */
+#include "gdc_device.h"				 
 
-/*#include "sp.h"*/	/* host2sp_enqueue_frame_data() */
+ 	 
 
 
 #include "assert_support.h"
 
-#include "sw_event_global.h"			/* Event IDs.*/
+#include "sw_event_global.h"			 
 #include "ia_css_event.h"
 #include "mmu_device.h"
 #include "ia_css_spctrl.h"
@@ -70,9 +58,9 @@ struct sh_css_isp_stage		sh_css_isp_stage;
 static struct sh_css_sp_output		sh_css_sp_output;
 static struct sh_css_sp_per_frame_data per_frame_data;
 
-/* true if SP supports frame loop and host2sp_commands */
-/* For the moment there is only code that sets this bool to true */
-/* TODO: add code that sets this bool to false */
+ 
+ 
+ 
 static bool sp_running;
 
 static int
@@ -91,7 +79,7 @@ initialize_frame_buffer_attribute(struct ia_css_buffer_sp *buf_attr);
 static void
 initialize_stage_frames(struct ia_css_frames_sp *frames);
 
-/* This data is stored every frame */
+ 
 void
 store_sp_group_data(void)
 {
@@ -101,7 +89,7 @@ store_sp_group_data(void)
 static void
 copy_isp_stage_to_sp_stage(void)
 {
-	/* [WW07.5]type casting will cause potential issues */
+	 
 	sh_css_sp_stage.num_stripes = (uint8_t)
 				      sh_css_isp_stage.binary_info.iterator.num_stripes;
 	sh_css_sp_stage.row_stripes_height = (uint16_t)
@@ -110,11 +98,7 @@ copy_isp_stage_to_sp_stage(void)
 		sh_css_isp_stage.binary_info.iterator.row_stripes_overlap_lines;
 	sh_css_sp_stage.top_cropping = (uint16_t)
 				       sh_css_isp_stage.binary_info.pipeline.top_cropping;
-	/* moved to sh_css_sp_init_stage
-	   sh_css_sp_stage.enable.vf_output =
-	   sh_css_isp_stage.binary_info.enable.vf_veceven ||
-	   sh_css_isp_stage.binary_info.num_output_pins > 1;
-	*/
+	 
 	sh_css_sp_stage.enable.sdis = sh_css_isp_stage.binary_info.enable.dis;
 	sh_css_sp_stage.enable.s3a = sh_css_isp_stage.binary_info.enable.s3a;
 }
@@ -133,7 +117,7 @@ store_sp_stage_data(enum ia_css_pipe_id id, unsigned int pipe_num,
 	sh_css_sp_group.pipe[thread_id].sp_stage_addr[stage] =
 	    sh_css_store_sp_stage_to_ddr(pipe_num, stage);
 
-	/* Clear for next frame */
+	 
 	sh_css_sp_stage.program_input_circuit = false;
 }
 
@@ -187,7 +171,7 @@ sh_css_sp_get_debug_state(struct sh_css_sp_debug_state *state)
 
 	assert(state);
 
-	(void)HIVE_ADDR_sp_output; /* To get rid of warning in CRUN */
+	(void)HIVE_ADDR_sp_output;  
 	for (i = 0; i < sizeof(*state) / sizeof(int); i++)
 		((unsigned *)state)[i] = load_sp_array_uint(sp_output, i + offset);
 }
@@ -214,7 +198,7 @@ sh_css_sp_start_binary_copy(unsigned int pipe_num,
 	pipe->pipe_id = pipe_id;
 	pipe->pipe_num = pipe_num;
 	pipe->thread_id = thread_id;
-	pipe->pipe_config = 0x0; /* No parameters */
+	pipe->pipe_config = 0x0;  
 	pipe->pipe_qos_config = QOS_INVALID;
 
 	if (pipe->inout_port_config == 0) {
@@ -241,8 +225,8 @@ sh_css_sp_start_binary_copy(unsigned int pipe_num,
 
 	set_output_frame_buffer(out_frame, 0);
 
-	/* sp_bin_copy_init on the SP does not deal with dynamica/static yet */
-	/* For now always update the dynamic data from out frames. */
+	 
+	 
 	sh_css_store_sp_per_frame_data(pipe_id, pipe_num, &sh_css_sp_fw);
 }
 
@@ -262,11 +246,7 @@ sh_css_sp_start_raw_copy(struct ia_css_frame *out_frame,
 	assert(out_frame);
 
 	{
-		/*
-		 * Clear sh_css_sp_stage for easy debugging.
-		 * program_input_circuit must be saved as it is set outside
-		 * this function.
-		 */
+		 
 		u8 program_input_circuit;
 
 		program_input_circuit = sh_css_sp_stage.program_input_circuit;
@@ -285,8 +265,7 @@ sh_css_sp_start_raw_copy(struct ia_css_frame *out_frame,
 	pipe->copy.raw.max_input_width = max_input_width;
 	pipe->num_stages = 1;
 	pipe->pipe_id = pipe_id;
-	/* TODO: next indicates from which queues parameters need to be
-		 sampled, needs checking/improvement */
+	 
 	if (pipe_conf_override == SH_CSS_PIPE_CONFIG_OVRD_NO_OVRD)
 		pipe->pipe_config =
 		    (SH_CSS_PIPE_CONFIG_SAMPLE_PARAMS << thread_id);
@@ -336,11 +315,7 @@ sh_css_sp_start_isys_copy(struct ia_css_frame *out_frame,
 	assert(out_frame);
 
 	{
-		/*
-		 * Clear sh_css_sp_stage for easy debugging.
-		 * program_input_circuit must be saved as it is set outside
-		 * this function.
-		 */
+		 
 		u8 program_input_circuit;
 
 		program_input_circuit = sh_css_sp_stage.program_input_circuit;
@@ -359,7 +334,7 @@ sh_css_sp_start_isys_copy(struct ia_css_frame *out_frame,
 	pipe->copy.raw.max_input_width	= max_input_width;
 	pipe->num_stages		= 1;
 	pipe->pipe_id			= pipe_id;
-	pipe->pipe_config		= 0x0;	/* No parameters */
+	pipe->pipe_config		= 0x0;	 
 	pipe->pipe_qos_config		= QOS_INVALID;
 
 	initialize_stage_frames(&sh_css_sp_stage.frames);
@@ -389,7 +364,7 @@ sh_css_sp_get_binary_copy_size(void)
 	unsigned int HIVE_ADDR_sp_output = fw->info.sp.output;
 	unsigned int offset = (unsigned int)offsetof(struct sh_css_sp_output,
 			      bin_copy_bytes_copied) / sizeof(int);
-	(void)HIVE_ADDR_sp_output; /* To get rid of warning in CRUN */
+	(void)HIVE_ADDR_sp_output;  
 	return load_sp_array_uint(sp_output, offset);
 }
 
@@ -401,7 +376,7 @@ sh_css_sp_get_sw_interrupt_value(unsigned int irq)
 	unsigned int offset = (unsigned int)offsetof(struct sh_css_sp_output,
 			      sw_interrupt_value)
 			      / sizeof(int);
-	(void)HIVE_ADDR_sp_output; /* To get rid of warning in CRUN */
+	(void)HIVE_ADDR_sp_output;  
 	return load_sp_array_uint(sp_output, offset + irq);
 }
 
@@ -413,21 +388,10 @@ sh_css_copy_buffer_attr_to_spbuffer(struct ia_css_buffer_sp *dest_buf,
 {
 	assert(buf_type < IA_CSS_NUM_BUFFER_TYPE);
 	if (queue_id > SH_CSS_INVALID_QUEUE_ID) {
-		/*
-		 * value >=0 indicates that function init_frame_pointers()
-		 * should use the dynamic data address
-		 */
+		 
 		assert(queue_id < SH_CSS_MAX_NUM_QUEUES);
 
-		/* Klocwork assumes assert can be disabled;
-		   Since we can get there with any type, and it does not
-		   know that frame_in->dynamic_data_index can only be set
-		   for one of the types in the assert) it has to assume we
-		   can get here for any type. however this could lead to an
-		   out of bounds reference when indexing buf_type about 10
-		   lines below. In order to satisfy KW an additional if
-		   has been added. This one will always yield true.
-		 */
+		 
 		if ((queue_id < SH_CSS_MAX_NUM_QUEUES)) {
 			dest_buf->buf_src.queue_id = queue_id;
 		}
@@ -523,9 +487,7 @@ sh_css_copy_frame_to_spframe(struct ia_css_frame_sp *sp_frame_out,
 		    frame_in->planes.binary.data.offset;
 		break;
 	default:
-		/* This should not happen, but in case it does,
-		 * nullify the planes
-		 */
+		 
 		memset(&sp_frame_out->planes, 0, sizeof(sp_frame_out->planes));
 		break;
 	}
@@ -610,7 +572,7 @@ set_view_finder_buffer(const struct ia_css_frame *frame)
 		return -EINVAL;
 
 	switch (frame->frame_info.format) {
-	/* the dual output pin */
+	 
 	case IA_CSS_FRAME_FORMAT_NV12:
 	case IA_CSS_FRAME_FORMAT_NV12_16:
 	case IA_CSS_FRAME_FORMAT_NV21:
@@ -622,7 +584,7 @@ set_view_finder_buffer(const struct ia_css_frame *frame)
 	case IA_CSS_FRAME_FORMAT_YV12:
 	case IA_CSS_FRAME_FORMAT_NV12_TILEY:
 
-	/* for vf_veceven */
+	 
 	case IA_CSS_FRAME_FORMAT_YUV_LINE:
 		break;
 	default:
@@ -667,10 +629,7 @@ sh_css_sp_program_input_circuit(int fmt_type,
 	sh_css_sp_group.config.input_circuit.fmt_type     = fmt_type;
 	sh_css_sp_group.config.input_circuit.ch_id	      = ch_id;
 	sh_css_sp_group.config.input_circuit.input_mode   = input_mode;
-	/*
-	 * The SP group is only loaded at SP boot time and is read once
-	 * change flags as "input_circuit_cfg_changed" must be reset on the SP
-	 */
+	 
 	sh_css_sp_group.config.input_circuit_cfg_changed = true;
 	sh_css_sp_stage.program_input_circuit = true;
 }
@@ -745,8 +704,7 @@ sh_css_sp_write_frame_pointers(const struct sh_css_binary_args *args)
 			err = set_output_frame_buffer(args->out_frame[i], i);
 	}
 
-	/* we don't pass this error back to the upper layer, so we add a assert here
-	   because we actually hit the error here but it still works by accident... */
+	 
 	if (err) assert(false);
 	return err;
 }
@@ -764,7 +722,7 @@ sh_css_sp_init_group(bool two_ppc,
 #endif
 
 	sh_css_sp_group.config.no_isp_sync = (uint8_t)no_isp_sync;
-	/* decide whether the frame is processed online or offline */
+	 
 	if (if_config_index == SH_CSS_IF_CONFIG_NOT_NEEDED) return;
 #if !defined(ISP2401)
 	assert(if_config_index < SH_CSS_MAX_IF_CONFIGS);
@@ -852,16 +810,7 @@ static int configure_isp_from_args(const struct sh_css_sp_pipeline *pipeline,
 	if (ret)
 		return ret;
 
-	/*
-	 * FIXME: args->delay_frames can be NULL here
-	 *
-	 * Somehow, the driver at the Intel Atom Yocto tree doesn't seem to
-	 * suffer from the same issue.
-	 *
-	 * Anyway, the function below should now handle a NULL delay_frames
-	 * without crashing, but the pipeline should likely be built without
-	 * adding it at the first place (or there are a hidden bug somewhere)
-	 */
+	 
 	ret = ia_css_ref_configure(binary, args->delay_frames, pipeline->dvs_frame_delay);
 	if (ret)
 		return ret;
@@ -934,11 +883,7 @@ sh_css_sp_init_stage(struct ia_css_binary *binary,
 	xinfo = binary->info;
 	info  = &xinfo->sp;
 	{
-		/*
-		 * Clear sh_css_sp_stage for easy debugging.
-		 * program_input_circuit must be saved as it is set outside
-		 * this function.
-		 */
+		 
 		u8 program_input_circuit;
 
 		program_input_circuit = sh_css_sp_stage.program_input_circuit;
@@ -959,10 +904,7 @@ sh_css_sp_init_stage(struct ia_css_binary *binary,
 		sh_css_sp_stage.deinterleaved = ((stage == 0) && continuous);
 
 	initialize_stage_frames(&sh_css_sp_stage.frames);
-	/*
-	 * TODO: Make the Host dynamically determine
-	 * the stage type.
-	 */
+	 
 	sh_css_sp_stage.stage_type = SH_CSS_ISP_STAGE_TYPE;
 	sh_css_sp_stage.num		= (uint8_t)stage;
 	sh_css_sp_stage.isp_online	= (uint8_t)binary->online;
@@ -970,9 +912,7 @@ sh_css_sp_init_stage(struct ia_css_binary *binary,
 	sh_css_sp_stage.isp_copy_output = (uint8_t)args->copy_output;
 	sh_css_sp_stage.enable.vf_output = (args->out_vf_frame != NULL);
 
-	/* Copy the frame infos first, to be overwritten by the frames,
-	   if these are present.
-	*/
+	 
 	sh_css_sp_stage.frames.effective_in_res.width = binary->effective_in_frame_res.width;
 	sh_css_sp_stage.frames.effective_in_res.height = binary->effective_in_frame_res.height;
 
@@ -998,20 +938,15 @@ sh_css_sp_init_stage(struct ia_css_binary *binary,
 	sh_css_isp_stage.blob_info = *blob_info;
 	sh_css_stage_write_binary_info((struct ia_css_binary_info *)info);
 
-	/* Make sure binary name is smaller than allowed string size */
+	 
 	assert(strlen(binary_name) < SH_CSS_MAX_BINARY_NAME - 1);
 	strscpy(sh_css_isp_stage.binary_name, binary_name, SH_CSS_MAX_BINARY_NAME);
 	sh_css_isp_stage.mem_initializers = *isp_mem_if;
 
-	/*
-	 * Even when a stage does not need uds and does not params,
-	 * ia_css_uds_sp_scale_params() seems to be called (needs
-	 * further investigation). This function can not deal with
-	 * dx, dy = {0, 0}
-	 */
+	 
 
 	err = sh_css_sp_write_frame_pointers(args);
-	/* TODO: move it to a better place */
+	 
 	if (binary->info->sp.enable.s3a) {
 		ia_css_query_internal_queue_id(IA_CSS_BUFFER_TYPE_3A_STATISTICS, thread_id,
 					       &queue_id);
@@ -1041,7 +976,7 @@ sh_css_sp_init_stage(struct ia_css_binary *binary,
 	else
 		ia_css_get_crop_offsets(pipe, &binary->in_frame_info);
 #else
-	(void)pipe; /*avoid build warning*/
+	(void)pipe;  
 #endif
 
 	err = configure_isp_from_args(&sh_css_sp_group.pipe[thread_id],
@@ -1051,14 +986,10 @@ sh_css_sp_init_stage(struct ia_css_binary *binary,
 
 	initialize_isp_states(binary);
 
-	/* we do this only for preview pipe because in fill_binary_info function
-	 * we assign vf_out res to out res, but for ISP internal processing, we need
-	 * the original out res. for video pipe, it has two output pins --- out and
-	 * vf_out, so it can keep these two resolutions already. */
+	 
 	if (binary->info->sp.pipeline.mode == IA_CSS_BINARY_MODE_PREVIEW &&
 	    (binary->vf_downscale_log2 > 0)) {
-		/* TODO: Remove this after preview output decimation is fixed
-		 * by configuring out&vf info fiels properly */
+		 
 		sh_css_sp_stage.frames.out[0].info.padded_width
 		<<= binary->vf_downscale_log2;
 		sh_css_sp_stage.frames.out[0].info.res.width
@@ -1084,26 +1015,14 @@ sp_init_stage(struct ia_css_pipeline_stage *stage,
 	const struct ia_css_fw_info *firmware;
 	const struct sh_css_binary_args *args;
 	unsigned int stage_num;
-	/*
-	 * Initialiser required because of the "else" path below.
-	 * Is this a valid path ?
-	 */
+	 
 	const char *binary_name = "";
 	const struct ia_css_binary_xinfo *info = NULL;
-	/* note: the var below is made static as it is quite large;
-	   if it is not static it ends up on the stack which could
-	   cause issues for drivers
-	*/
+	 
 	static struct ia_css_binary tmp_binary;
 	const struct ia_css_blob_info *blob_info = NULL;
 	struct ia_css_isp_param_css_segments isp_mem_if;
-	/* LA: should be ia_css_data, should not contain host pointer.
-	   However, CSS/DDR pointer is not available yet.
-	   Hack is to store it in params->ddr_ptrs and then copy it late in the SP just before vmem init.
-	   TODO: Call this after CSS/DDR allocation and store that pointer.
-	   Best is to allocate it at stage creation time together with host pointer.
-	   Remove vmem from params.
-	*/
+	 
 	struct ia_css_isp_param_css_segments *mem_if = &isp_mem_if;
 
 	int err = 0;
@@ -1141,12 +1060,9 @@ sp_init_stage(struct ia_css_pipeline_stage *stage,
 		blob_info = &firmware->blob;
 		mem_if = (struct ia_css_isp_param_css_segments *)&firmware->mem_initializers;
 	} else {
-		/* SP stage */
+		 
 		assert(stage->sp_func != IA_CSS_PIPELINE_NO_FUNC);
-		/* binary and blob_info are now NULL.
-		   These will be passed to sh_css_sp_init_stage
-		   and dereferenced there, so passing a NULL
-		   pointer is no good. return an error */
+		 
 		return -EINVAL;
 	}
 
@@ -1181,7 +1097,7 @@ sp_init_sp_stage(struct ia_css_pipeline_stage *stage,
 					 copy_ovrd, if_config_index);
 		break;
 	case IA_CSS_PIPELINE_BIN_COPY:
-		assert(false); /* TBI */
+		assert(false);  
 		break;
 	case IA_CSS_PIPELINE_ISYS_COPY:
 		sh_css_sp_start_isys_copy(args->out_frame[0],
@@ -1208,7 +1124,7 @@ sh_css_sp_init_pipeline(struct ia_css_pipeline *me,
 			const struct ia_css_metadata_info *md_info,
 			const enum mipi_port_id port_id)
 {
-	/* Get first stage */
+	 
 	struct ia_css_pipeline_stage *stage        = NULL;
 	struct ia_css_binary	     *first_binary = NULL;
 	struct ia_css_pipe *pipe = NULL;
@@ -1220,7 +1136,7 @@ sh_css_sp_init_pipeline(struct ia_css_pipeline *me,
 	if (!me->stages) {
 		dev_err(atomisp_dev, "%s called on a pipeline without stages\n",
 			__func__);
-		return; /* FIXME should be able to return an error */
+		return;  
 	}
 
 	first_binary = me->stages->binary;
@@ -1228,8 +1144,8 @@ sh_css_sp_init_pipeline(struct ia_css_pipeline *me,
 	if (input_mode == IA_CSS_INPUT_MODE_SENSOR ||
 	    input_mode == IA_CSS_INPUT_MODE_BUFFERED_SENSOR) {
 		assert(port_id < N_MIPI_PORT_ID);
-		if (port_id >= N_MIPI_PORT_ID) /* should not happen but KW does not know */
-			return; /* we should be able to return an error */
+		if (port_id >= N_MIPI_PORT_ID)  
+			return;  
 		if_config_index  = (uint8_t)(port_id - MIPI_PORT0_ID);
 	} else if (input_mode == IA_CSS_INPUT_MODE_MEMORY) {
 		if_config_index = SH_CSS_IF_CONFIG_NOT_NEEDED;
@@ -1240,7 +1156,7 @@ sh_css_sp_init_pipeline(struct ia_css_pipeline *me,
 	ia_css_pipeline_get_sp_thread_id(pipe_num, &thread_id);
 	memset(&sh_css_sp_group.pipe[thread_id], 0, sizeof(struct sh_css_sp_pipeline));
 
-	/* Count stages */
+	 
 	for (stage = me->stages, num = 0; stage; stage = stage->next, num++) {
 		stage->stage_num = num;
 		ia_css_debug_pipe_graph_dump_stage(stage, id);
@@ -1248,17 +1164,17 @@ sh_css_sp_init_pipeline(struct ia_css_pipeline *me,
 	me->num_stages = num;
 
 	if (first_binary) {
-		/* Init pipeline data */
+		 
 		sh_css_sp_init_group(two_ppc, first_binary->input_format,
 				     offline, if_config_index);
-	} /* if (first_binary != NULL) */
+	}  
 
-	/* Signal the host immediately after start for SP_ISYS_COPY only */
+	 
 	if (me->num_stages == 1 &&
 	    me->stages->sp_func == IA_CSS_PIPELINE_ISYS_COPY)
 		sh_css_sp_group.config.no_isp_sync = true;
 
-	/* Init stage data */
+	 
 	sh_css_init_host2sp_frame_data();
 
 	sh_css_sp_group.pipe[thread_id].num_stages = 0;
@@ -1273,15 +1189,13 @@ sh_css_sp_init_pipeline(struct ia_css_pipeline *me,
 	sh_css_sp_group.pipe[thread_id].port_id = port_id;
 	sh_css_sp_group.pipe[thread_id].dvs_frame_delay = (uint32_t)me->dvs_frame_delay;
 
-	/* TODO: next indicates from which queues parameters need to be
-		 sampled, needs checking/improvement */
+	 
 	if (ia_css_pipeline_uses_params(me)) {
 		sh_css_sp_group.pipe[thread_id].pipe_config =
 		SH_CSS_PIPE_CONFIG_SAMPLE_PARAMS << thread_id;
 	}
 
-	/* For continuous use-cases, SP copy is responsible for sampling the
-	 * parameters */
+	 
 	if (continuous)
 		sh_css_sp_group.pipe[thread_id].pipe_config = 0;
 
@@ -1342,7 +1256,7 @@ sh_css_sp_uninit_pipeline(unsigned int pipe_num)
 	unsigned int thread_id;
 
 	ia_css_pipeline_get_sp_thread_id(pipe_num, &thread_id);
-	/*memset(&sh_css_sp_group.pipe[thread_id], 0, sizeof(struct sh_css_sp_pipeline));*/
+	 
 	sh_css_sp_group.pipe[thread_id].num_stages = 0;
 }
 
@@ -1353,9 +1267,9 @@ bool sh_css_write_host2sp_command(enum host2sp_commands host2sp_command)
 			      host2sp_command)
 			      / sizeof(int);
 	enum host2sp_commands last_cmd = host2sp_cmd_error;
-	(void)HIVE_ADDR_host_sp_com; /* Suppres warnings in CRUN */
+	(void)HIVE_ADDR_host_sp_com;  
 
-	/* Previous command must be handled by SP (by design) */
+	 
 	last_cmd = load_sp_array_uint(host_sp_com, offset);
 	if (last_cmd != host2sp_cmd_ready)
 		IA_CSS_ERROR("last host command not handled by SP(%d)", last_cmd);
@@ -1371,40 +1285,22 @@ sh_css_read_host2sp_command(void)
 	unsigned int HIVE_ADDR_host_sp_com = sh_css_sp_fw.info.sp.host_sp_com;
 	unsigned int offset = (unsigned int)offsetof(struct host_sp_communication, host2sp_command)
 	/ sizeof(int);
-	(void)HIVE_ADDR_host_sp_com; /* Suppres warnings in CRUN */
+	(void)HIVE_ADDR_host_sp_com;  
 	return (enum host2sp_commands)load_sp_array_uint(host_sp_com, offset);
 }
 
-/*
- * Frame data is no longer part of the sp_stage structure but part of a
- * separate structure. The aim is to make the sp_data struct static
- * (it defines a pipeline) and that the dynamic (per frame) data is stored
- * separetly.
- *
- * This function must be called first every where were you start constructing
- * a new pipeline by defining one or more stages with use of variable
- * sh_css_sp_stage. Even the special cases like accelerator and copy_frame
- * These have a pipeline of just 1 stage.
- */
+ 
 void
 sh_css_init_host2sp_frame_data(void)
 {
-	/* Clean table */
+	 
 	unsigned int HIVE_ADDR_host_sp_com = sh_css_sp_fw.info.sp.host_sp_com;
 
-	(void)HIVE_ADDR_host_sp_com; /* Suppres warnings in CRUN */
-	/*
-	 * rvanimme: don't clean it to save static frame info line ref_in
-	 * ref_out, and tnr_frames. Once this static data is in a
-	 * separate data struct, this may be enable (but still, there is
-	 * no need for it)
-	 */
+	(void)HIVE_ADDR_host_sp_com;  
+	 
 }
 
-/*
- * @brief Update the offline frame information in host_sp_communication.
- * Refer to "sh_css_sp.h" for more details.
- */
+ 
 void
 sh_css_update_host2sp_offline_frame(
     unsigned int frame_num,
@@ -1416,7 +1312,7 @@ sh_css_update_host2sp_offline_frame(
 
 	assert(frame_num < NUM_CONTINUOUS_FRAMES);
 
-	/* Write new frame data into SP DMEM */
+	 
 	HIVE_ADDR_host_sp_com = sh_css_sp_fw.info.sp.host_sp_com;
 	offset = (unsigned int)offsetof(struct host_sp_communication,
 					host2sp_offline_frames)
@@ -1424,7 +1320,7 @@ sh_css_update_host2sp_offline_frame(
 	offset += frame_num;
 	store_sp_array_uint(host_sp_com, offset, frame ? frame->data : 0);
 
-	/* Write metadata buffer into SP DMEM */
+	 
 	offset = (unsigned int)offsetof(struct host_sp_communication,
 					host2sp_offline_metadata)
 		 / sizeof(int);
@@ -1432,10 +1328,7 @@ sh_css_update_host2sp_offline_frame(
 	store_sp_array_uint(host_sp_com, offset, metadata ? metadata->address : 0);
 }
 
-/*
- * @brief Update the mipi frame information in host_sp_communication.
- * Refer to "sh_css_sp.h" for more details.
- */
+ 
 void
 sh_css_update_host2sp_mipi_frame(
     unsigned int frame_num,
@@ -1444,10 +1337,10 @@ sh_css_update_host2sp_mipi_frame(
 	unsigned int HIVE_ADDR_host_sp_com;
 	unsigned int offset;
 
-	/* MIPI buffers are dedicated to port, so now there are more of them. */
+	 
 	assert(frame_num < (N_CSI_PORTS * NUM_MIPI_FRAMES_PER_STREAM));
 
-	/* Write new frame data into SP DMEM */
+	 
 	HIVE_ADDR_host_sp_com = sh_css_sp_fw.info.sp.host_sp_com;
 	offset = (unsigned int)offsetof(struct host_sp_communication,
 					host2sp_mipi_frames)
@@ -1458,10 +1351,7 @@ sh_css_update_host2sp_mipi_frame(
 			    frame ? frame->data : 0);
 }
 
-/*
- * @brief Update the mipi metadata information in host_sp_communication.
- * Refer to "sh_css_sp.h" for more details.
- */
+ 
 void
 sh_css_update_host2sp_mipi_metadata(
     unsigned int frame_num,
@@ -1470,10 +1360,10 @@ sh_css_update_host2sp_mipi_metadata(
 	unsigned int HIVE_ADDR_host_sp_com;
 	unsigned int o;
 
-	/* MIPI buffers are dedicated to port, so now there are more of them. */
+	 
 	assert(frame_num < (N_CSI_PORTS * NUM_MIPI_FRAMES_PER_STREAM));
 
-	/* Write new frame data into SP DMEM */
+	 
 	HIVE_ADDR_host_sp_com = sh_css_sp_fw.info.sp.host_sp_com;
 	o = offsetof(struct host_sp_communication, host2sp_mipi_metadata)
 	    / sizeof(int);
@@ -1488,7 +1378,7 @@ sh_css_update_host2sp_num_mipi_frames(unsigned int num_frames)
 	unsigned int HIVE_ADDR_host_sp_com;
 	unsigned int offset;
 
-	/* Write new frame data into SP DMEM */
+	 
 	HIVE_ADDR_host_sp_com = sh_css_sp_fw.info.sp.host_sp_com;
 	offset = (unsigned int)offsetof(struct host_sp_communication,
 					host2sp_num_mipi_frames)
@@ -1506,7 +1396,7 @@ sh_css_update_host2sp_cont_num_raw_frames(unsigned int num_frames,
 	unsigned int extra_num_frames, avail_num_frames;
 	unsigned int offset, offset_extra;
 
-	/* Write new frame data into SP DMEM */
+	 
 	fw = &sh_css_sp_fw;
 	HIVE_ADDR_host_sp_com = fw->info.sp.host_sp_com;
 	if (set_avail) {
@@ -1537,7 +1427,7 @@ sh_css_event_init_irq_mask(void)
 
 	event_irq_mask_init.or_mask  = IA_CSS_EVENT_TYPE_ALL;
 	event_irq_mask_init.and_mask = IA_CSS_EVENT_TYPE_NONE;
-	(void)HIVE_ADDR_host_sp_com; /* Suppress warnings in CRUN */
+	(void)HIVE_ADDR_host_sp_com;  
 
 	assert(sizeof(event_irq_mask_init) % HRT_BUS_BYTES == 0);
 	for (i = 0; i < IA_CSS_PIPE_ID_NUM; i++) {
@@ -1563,15 +1453,9 @@ ia_css_pipe_set_irq_mask(struct ia_css_pipe *pipe,
 	assert(pipe);
 
 	assert(IA_CSS_PIPE_ID_NUM == NR_OF_PIPELINES);
-	/* Linux kernel does not have UINT16_MAX
-	 * Therefore decided to comment out these 2 asserts for Linux
-	 * Alternatives that were not chosen:
-	 * - add a conditional #define for UINT16_MAX
-	 * - compare with (uint16_t)~0 or 0xffff
-	 * - different assert for Linux and Windows
-	 */
+	 
 
-	(void)HIVE_ADDR_host_sp_com; /* Suppres warnings in CRUN */
+	(void)HIVE_ADDR_host_sp_com;  
 
 	IA_CSS_LOG("or_mask=%x, and_mask=%x", or_mask, and_mask);
 	event_irq_mask.or_mask  = (uint16_t)or_mask;
@@ -1600,7 +1484,7 @@ ia_css_event_get_irq_mask(const struct ia_css_pipe *pipe,
 	struct sh_css_event_irq_mask event_irq_mask;
 	unsigned int pipe_num;
 
-	(void)HIVE_ADDR_host_sp_com; /* Suppres warnings in CRUN */
+	(void)HIVE_ADDR_host_sp_com;  
 
 	IA_CSS_ENTER_LEAVE("");
 
@@ -1650,10 +1534,10 @@ sh_css_sp_start_isp(void)
 	if (sp_running)
 		return;
 
-	(void)HIVE_ADDR_sp_sw_state; /* Suppres warnings in CRUN */
+	(void)HIVE_ADDR_sp_sw_state;  
 
-	/* no longer here, sp started immediately */
-	/*ia_css_debug_pipe_graph_dump_epilogue();*/
+	 
+	 
 
 	store_sp_group_data();
 	store_sp_per_frame_data(fw);
@@ -1662,23 +1546,12 @@ sh_css_sp_start_isp(void)
 			     (unsigned int)sp_address_of(sp_sw_state),
 			     (uint32_t)(IA_CSS_SP_SW_TERMINATED));
 
-	/* Note 1: The sp_start_isp function contains a wait till
-	 * the input network is configured by the SP.
-	 * Note 2: Not all SP binaries supports host2sp_commands.
-	 * In case a binary does support it, the host2sp_command
-	 * will have status cmd_ready after return of the function
-	 * sh_css_hrt_sp_start_isp. There is no race-condition here
-	 * because only after the process_frame command has been
-	 * received, the SP starts configuring the input network.
-	 */
+	 
 
-	/* we need to set sp_running before we call ia_css_mmu_invalidate_cache
-	 * as ia_css_mmu_invalidate_cache checks on sp_running to
-	 * avoid that it accesses dmem while the SP is not powered
-	 */
+	 
 	sp_running = true;
 	ia_css_mmu_invalidate_cache();
-	/* Invalidate all MMU caches */
+	 
 	mmu_invalidate_cache_all();
 
 	ia_css_spctrl_start(SP0_ID);
@@ -1689,28 +1562,25 @@ ia_css_isp_has_started(void)
 {
 	const struct ia_css_fw_info *fw = &sh_css_sp_fw;
 	unsigned int HIVE_ADDR_ia_css_ispctrl_sp_isp_started = fw->info.sp.isp_started;
-	(void)HIVE_ADDR_ia_css_ispctrl_sp_isp_started; /* Suppres warnings in CRUN */
+	(void)HIVE_ADDR_ia_css_ispctrl_sp_isp_started;  
 
 	return (bool)load_sp_uint(ia_css_ispctrl_sp_isp_started);
 }
 
-/*
- * @brief Initialize the DMA software-mask in the debug mode.
- * Refer to "sh_css_sp.h" for more details.
- */
+ 
 bool
 sh_css_sp_init_dma_sw_reg(int dma_id)
 {
 	int i;
 
-	/* enable all the DMA channels */
+	 
 	for (i = 0; i < N_DMA_CHANNEL_ID; i++) {
-		/* enable the writing request */
+		 
 		sh_css_sp_set_dma_sw_reg(dma_id,
 					 i,
 					 0,
 					 true);
-		/* enable the reading request */
+		 
 		sh_css_sp_set_dma_sw_reg(dma_id,
 					 i,
 					 1,
@@ -1720,10 +1590,7 @@ sh_css_sp_init_dma_sw_reg(int dma_id)
 	return true;
 }
 
-/*
- * @brief Set the DMA software-mask in the debug mode.
- * Refer to "sh_css_sp.h" for more details.
- */
+ 
 bool
 sh_css_sp_set_dma_sw_reg(int dma_id,
 			 int channel_id,
@@ -1740,23 +1607,23 @@ sh_css_sp_set_dma_sw_reg(int dma_id,
 	assert(channel_id >= 0 && channel_id < N_DMA_CHANNEL_ID);
 	assert(request_type >= 0);
 
-	/* get the software-mask */
+	 
 	sw_reg =
 	    sh_css_sp_group.debug.dma_sw_reg;
 
-	/* get the offest of the target bit */
+	 
 	bit_offset = (8 * request_type) + channel_id;
 
-	/* clear the value of the target bit */
+	 
 	bit_mask = ~(1 << bit_offset);
 	sw_reg &= bit_mask;
 
-	/* set the value of the bit for the DMA channel */
+	 
 	bit_val = enable ? 1 : 0;
 	bit_val <<= bit_offset;
 	sw_reg |= bit_val;
 
-	/* update the software status of DMA channels */
+	 
 	sh_css_sp_group.debug.dma_sw_reg = sw_reg;
 
 	return true;

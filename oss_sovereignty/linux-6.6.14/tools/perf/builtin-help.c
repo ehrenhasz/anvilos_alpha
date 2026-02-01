@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * builtin-help.c
- *
- * Builtin help command
- */
+
+ 
 #include "util/cache.h"
 #include "util/config.h"
 #include "util/strbuf.h"
@@ -77,7 +73,7 @@ static int check_emacsclient_version(void)
 	int version;
 	int ret = -1;
 
-	/* emacsclient prints its version number on stderr */
+	 
 	memset(&ec_process, 0, sizeof(ec_process));
 	ec_process.argv = argv_ec;
 	ec_process.err = -1;
@@ -92,10 +88,7 @@ static int check_emacsclient_version(void)
 	}
 	close(ec_process.err);
 
-	/*
-	 * Don't bother checking return value, because "emacsclient --version"
-	 * seems to always exits with code 1.
-	 */
+	 
 	finish_command(&ec_process);
 
 	if (!strstarts(buffer.buf, "emacsclient")) {
@@ -125,7 +118,7 @@ static void exec_failed(const char *cmd)
 static void exec_woman_emacs(const char *path, const char *page)
 {
 	if (!check_emacsclient_version()) {
-		/* This works only with emacsclient version >= 22. */
+		 
 		char *man_page;
 
 		if (!path)
@@ -146,14 +139,14 @@ static void exec_man_konqueror(const char *path, const char *page)
 		char *man_page;
 		const char *filename = "kfmclient";
 
-		/* It's simpler to launch konqueror using kfmclient. */
+		 
 		if (path) {
 			const char *file = strrchr(path, '/');
 			if (file && !strcmp(file + 1, "konqueror")) {
 				char *new = strdup(path);
 				char *dest = strrchr(new, '/');
 
-				/* strlen("konqueror") == strlen("kfmclient") */
+				 
 				strcpy(dest + 1, "kfmclient");
 				path = new;
 			}
@@ -332,10 +325,7 @@ static void setup_man_path(void)
 	char *new_path;
 	const char *old_path = getenv("MANPATH");
 
-	/* We should always put ':' after our path. If there is no
-	 * old_path, the ':' at the end will let 'man' to try
-	 * system-wide paths after ours to find the manual page. If
-	 * there is old_path, we need ':' as delimiter. */
+	 
 	if (asprintf(&new_path, "%s:%s", system_path(PERF_MAN_PATH), old_path ?: "") > 0) {
 		setenv("MANPATH", new_path, 1);
 		free(new_path);
@@ -368,7 +358,7 @@ static int show_man_page(const char *perf_cmd)
 
 	setup_man_path();
 	for (viewer = man_viewer_list; viewer; viewer = viewer->next)
-		exec_viewer(viewer->name, page); /* will return when unable */
+		exec_viewer(viewer->name, page);  
 
 	if (fallback)
 		exec_viewer(fallback, page);
@@ -392,7 +382,7 @@ static int get_html_page_path(char **page_path, const char *page)
 	const char *html_path = system_path(PERF_HTML_PATH);
 	char path[PATH_MAX];
 
-	/* Check that we have a perf documentation directory. */
+	 
 	if (stat(mkpath(path, sizeof(path), "%s/perf.html", html_path), &st)
 	    || !S_ISREG(st.st_mode)) {
 		pr_err("'%s': not a documentation directory.", html_path);
@@ -402,11 +392,7 @@ static int get_html_page_path(char **page_path, const char *page)
 	return asprintf(page_path, "%s/%s.html", html_path, page);
 }
 
-/*
- * If open_html is not defined in a platform-specific way (see for
- * example compat/mingw.h), we use the script web--browse to display
- * HTML.
- */
+ 
 #ifndef open_html
 static void open_html(const char *path)
 {
@@ -417,7 +403,7 @@ static void open_html(const char *path)
 static int show_html_page(const char *perf_cmd)
 {
 	const char *page = cmd_to_page(perf_cmd);
-	char *page_path; /* it leaks but we exec bellow */
+	char *page_path;  
 
 	if (get_html_page_path(&page_path, page) < 0)
 		return -1;
@@ -491,7 +477,7 @@ int cmd_help(int argc, const char **argv)
 		rc = show_html_page(argv[0]);
 		break;
 	case HELP_FORMAT_NONE:
-		/* fall-through */
+		 
 	default:
 		rc = -1;
 		break;

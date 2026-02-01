@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_MMU_H__
 #define __NVKM_MMU_H__
 #include <core/subdev.h>
@@ -8,18 +8,18 @@ struct nvkm_vma {
 	struct rb_node tree;
 	u64 addr;
 	u64 size:50;
-	bool mapref:1; /* PTs (de)referenced on (un)map (vs pre-allocated). */
-	bool sparse:1; /* Unmapped PDEs/PTEs will not trigger MMU faults. */
+	bool mapref:1;  
+	bool sparse:1;  
 #define NVKM_VMA_PAGE_NONE 7
-	u8   page:3; /* Requested page type (index, or NONE for automatic). */
-	u8   refd:3; /* Current page type (index, or NONE for unreferenced). */
-	bool used:1; /* Region allocated. */
-	bool part:1; /* Region was split from an allocated region by map(). */
-	bool busy:1; /* Region busy (for temporarily preventing user access). */
-	bool mapped:1; /* Region contains valid pages. */
-	bool no_comp:1; /* Force no memory compression. */
-	struct nvkm_memory *memory; /* Memory currently mapped into VMA. */
-	struct nvkm_tags *tags; /* Compression tag reference. */
+	u8   page:3;  
+	u8   refd:3;  
+	bool used:1;  
+	bool part:1;  
+	bool busy:1;  
+	bool mapped:1;  
+	bool no_comp:1;  
+	struct nvkm_memory *memory;  
+	struct nvkm_tags *tags;  
 };
 
 struct nvkm_vmm {
@@ -134,7 +134,7 @@ struct nvkm_mmu {
 		struct list_head list;
 	} ptc, ptp;
 
-	struct mutex mutex; /* serialises mmu invalidations */
+	struct mutex mutex;  
 
 	struct nvkm_device_oclass user;
 };

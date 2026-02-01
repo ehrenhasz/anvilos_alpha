@@ -1,31 +1,6 @@
-/*
- * This is free and unencumbered software released into the public domain.
- *
- * Anyone is free to copy, modify, publish, use, compile, sell, or
- * distribute this software, either in source code form or as a compiled
- * binary, for any purpose, commercial or non-commercial, and by any
- * means.
- *
- * In jurisdictions that recognize copyright laws, the author or authors
- * of this software dedicate any and all copyright interest in the
- * software to the public domain. We make this dedication for the benefit
- * of the public at large and to the detriment of our heirs and
- * successors. We intend this dedication to be an overt act of
- * relinquishment in perpetuity of all present and future rights to this
- * software under copyright law.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * For more information, please refer to <http://unlicense.org/>
- */
+ 
 
-#define _BSD_SOURCE /* for endian.h */
+#define _BSD_SOURCE  
 
 #include <endian.h>
 #include <errno.h>
@@ -51,7 +26,7 @@
 #define BUFS_MAX	128
 #define AIO_MAX		(BUFS_MAX*2)
 
-/******************** Descriptors and Strings *******************************/
+ 
 
 static const struct {
 	struct usb_functionfs_descs_head_v2 header;
@@ -133,12 +108,12 @@ static const struct {
 		.lang_count = htole32(1),
 	},
 	.lang0 = {
-		htole16(0x0409), /* en-us */
+		htole16(0x0409),  
 		STR_INTERFACE,
 	},
 };
 
-/********************** Buffer structure *******************************/
+ 
 
 struct io_buffer {
 	struct iocb **iocb;
@@ -148,7 +123,7 @@ struct io_buffer {
 	unsigned requested;
 };
 
-/******************** Endpoints handling *******************************/
+ 
 
 static void display_event(struct usb_functionfs_event *event)
 {
@@ -253,13 +228,13 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	ep_path = malloc(strlen(argv[1]) + 4 /* "/ep#" */ + 1 /* '\0' */);
+	ep_path = malloc(strlen(argv[1]) + 4   + 1  );
 	if (!ep_path) {
 		perror("malloc");
 		return 1;
 	}
 
-	/* open endpoint files */
+	 
 	sprintf(ep_path, "%s/ep0", argv[1]);
 	ep0 = open(ep_path, O_RDWR);
 	if (ep0 < 0) {
@@ -284,7 +259,7 @@ int main(int argc, char *argv[])
 	free(ep_path);
 
 	memset(&ctx, 0, sizeof(ctx));
-	/* setup aio context to handle up to AIO_MAX requests */
+	 
 	if (io_setup(AIO_MAX, &ctx) < 0) {
 		perror("unable to setup aio");
 		return 1;
@@ -316,27 +291,24 @@ int main(int argc, char *argv[])
 		if (FD_ISSET(ep0, &rfds))
 			handle_ep0(ep0, &ready);
 
-		/* we are waiting for function ENABLE */
+		 
 		if (!ready)
 			continue;
 
-		/*
-		 * when we're preparing new data to submit,
-		 * second buffer being transmitted
-		 */
+		 
 		for (i = 0; i < sizeof(iobuf)/sizeof(*iobuf); ++i) {
 			if (iobuf[i].requested)
 				continue;
-			/* prepare requests */
+			 
 			for (j = 0; j < iobuf[i].cnt; ++j) {
 				io_prep_pwrite(iobuf[i].iocb[j], ep1,
 					       iobuf[i].buf[j],
 					       iobuf[i].len, 0);
-				/* enable eventfd notification */
+				 
 				iobuf[i].iocb[j]->u.c.flags |= IOCB_FLAG_RESFD;
 				iobuf[i].iocb[j]->u.c.resfd = evfd;
 			}
-			/* submit table of requests */
+			 
 			ret = io_submit(ctx, iobuf[i].cnt, iobuf[i].iocb);
 			if (ret >= 0) {
 				iobuf[i].requested = ret;
@@ -345,7 +317,7 @@ int main(int argc, char *argv[])
 				perror("unable to submit requests");
 		}
 
-		/* if event is ready to read */
+		 
 		if (!FD_ISSET(evfd, &rfds))
 			continue;
 
@@ -357,17 +329,17 @@ int main(int argc, char *argv[])
 		}
 
 		struct io_event e[BUFS_MAX];
-		/* we read aio events */
+		 
 		ret = io_getevents(ctx, 1, BUFS_MAX, e, NULL);
-		if (ret > 0) /* if we got events */
+		if (ret > 0)  
 			iobuf[actual].requested -= ret;
 
-		/* if all req's from iocb completed */
+		 
 		if (!iobuf[actual].requested)
 			actual = (actual + 1)%(sizeof(iobuf)/sizeof(*iobuf));
 	}
 
-	/* free resources */
+	 
 
 	for (i = 0; i < sizeof(iobuf)/sizeof(*iobuf); ++i)
 		delete_bufs(&iobuf[i]);

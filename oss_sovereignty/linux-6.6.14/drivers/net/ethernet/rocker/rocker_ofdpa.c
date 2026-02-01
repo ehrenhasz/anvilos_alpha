@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * drivers/net/ethernet/rocker/rocker_ofdpa.c - Rocker switch OF-DPA-like
- *					        implementation
- * Copyright (c) 2014 Scott Feldman <sfeldma@gmail.com>
- * Copyright (c) 2014-2016 Jiri Pirko <jiri@mellanox.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -95,14 +90,14 @@ struct ofdpa_flow_tbl_entry {
 	u64 cookie;
 	struct ofdpa_flow_tbl_key key;
 	size_t key_len;
-	u32 key_crc32; /* key */
+	u32 key_crc32;  
 	struct fib_info *fi;
 };
 
 struct ofdpa_group_tbl_entry {
 	struct hlist_node entry;
 	u32 cmd;
-	u32 group_id; /* key */
+	u32 group_id;  
 	u16 group_count;
 	u32 *group_ids;
 	union {
@@ -127,7 +122,7 @@ struct ofdpa_group_tbl_entry {
 
 struct ofdpa_fdb_tbl_entry {
 	struct hlist_node entry;
-	u32 key_crc32; /* key */
+	u32 key_crc32;  
 	bool learned;
 	unsigned long touched;
 	struct ofdpa_fdb_tbl_key {
@@ -139,14 +134,14 @@ struct ofdpa_fdb_tbl_entry {
 
 struct ofdpa_internal_vlan_tbl_entry {
 	struct hlist_node entry;
-	int ifindex; /* key */
+	int ifindex;  
 	u32 ref_count;
 	__be16 vlan_id;
 };
 
 struct ofdpa_neigh_tbl_entry {
 	struct hlist_node entry;
-	__be32 ip_addr; /* key */
+	__be32 ip_addr;  
 	struct net_device *dev;
 	u32 ref_count;
 	u32 index;
@@ -173,18 +168,18 @@ enum {
 struct ofdpa {
 	struct rocker *rocker;
 	DECLARE_HASHTABLE(flow_tbl, 16);
-	spinlock_t flow_tbl_lock;		/* for flow tbl accesses */
+	spinlock_t flow_tbl_lock;		 
 	u64 flow_tbl_next_cookie;
 	DECLARE_HASHTABLE(group_tbl, 16);
-	spinlock_t group_tbl_lock;		/* for group tbl accesses */
+	spinlock_t group_tbl_lock;		 
 	struct timer_list fdb_cleanup_timer;
 	DECLARE_HASHTABLE(fdb_tbl, 16);
-	spinlock_t fdb_tbl_lock;		/* for fdb tbl accesses */
+	spinlock_t fdb_tbl_lock;		 
 	unsigned long internal_vlan_bitmap[OFDPA_INTERNAL_VLAN_BITMAP_LEN];
 	DECLARE_HASHTABLE(internal_vlan_tbl, 8);
-	spinlock_t internal_vlan_tbl_lock;	/* for vlan tbl accesses */
+	spinlock_t internal_vlan_tbl_lock;	 
 	DECLARE_HASHTABLE(neigh_tbl, 16);
-	spinlock_t neigh_tbl_lock;		/* for neigh tbl accesses */
+	spinlock_t neigh_tbl_lock;		 
 	u32 neigh_tbl_next_index;
 	unsigned long ageing_time;
 	bool fib_aborted;
@@ -214,9 +209,7 @@ static const u8 ipv4_mask[ETH_ALEN]  = { 0xff, 0xff, 0xff, 0x80, 0x00, 0x00 };
 static const u8 ipv6_mcast[ETH_ALEN] = { 0x33, 0x33, 0x00, 0x00, 0x00, 0x00 };
 static const u8 ipv6_mask[ETH_ALEN]  = { 0xff, 0xff, 0x00, 0x00, 0x00, 0x00 };
 
-/* Rocker priority levels for flow table entries.  Higher
- * priority match takes precedence over lower priority match.
- */
+ 
 
 enum {
 	OFDPA_PRIORITY_UNKNOWN = 0,
@@ -297,9 +290,7 @@ static bool ofdpa_flags_nowait(int flags)
 	return flags & OFDPA_OP_FLAG_NOWAIT;
 }
 
-/*************************************************************
- * Flow, group, FDB, internal VLAN and neigh command prepares
- *************************************************************/
+ 
 
 static int
 ofdpa_cmd_flow_tbl_add_ig_port(struct rocker_desc_info *desc_info,
@@ -633,7 +624,7 @@ ofdpa_cmd_group_tbl_add_group_ids(struct rocker_desc_info *desc_info,
 		return -EMSGSIZE;
 
 	for (i = 0; i < entry->group_count; i++)
-		/* Note TLV array is 1-based */
+		 
 		if (rocker_tlv_put_u32(desc_info, i + 1, entry->group_ids[i]))
 			return -EMSGSIZE;
 
@@ -733,9 +724,7 @@ static int ofdpa_cmd_group_tbl_del(const struct rocker_port *rocker_port,
 	return 0;
 }
 
-/***************************************************
- * Flow, group, FDB, internal VLAN and neigh tables
- ***************************************************/
+ 
 
 static struct ofdpa_flow_tbl_entry *
 ofdpa_flow_tbl_find(const struct ofdpa *ofdpa,
@@ -1306,11 +1295,7 @@ static int ofdpa_port_ipv4_neigh(struct ofdpa_port *ofdpa_port,
 	if (err)
 		goto err_out;
 
-	/* For each active neighbor, we have an L3 unicast group and
-	 * a /32 route to the neighbor, which uses the L3 unicast
-	 * group.  The L3 unicast group can also be referred to by
-	 * other routes' nexthops.
-	 */
+	 
 
 	err = ofdpa_group_l3_unicast(ofdpa_port, flags,
 				     entry->index,
@@ -1358,10 +1343,7 @@ static int ofdpa_port_ipv4_resolve(struct ofdpa_port *ofdpa_port,
 			return PTR_ERR(n);
 	}
 
-	/* If the neigh is already resolved, then go ahead and
-	 * install the entry, otherwise start the ARP process to
-	 * resolve the neigh.
-	 */
+	 
 
 	if (n->nud_state & NUD_VALID)
 		err = ofdpa_port_ipv4_neigh(ofdpa_port, 0,
@@ -1423,7 +1405,7 @@ static int ofdpa_port_ipv4_nh(struct ofdpa_port *ofdpa_port,
 	if (err)
 		return err;
 
-	/* Resolved means neigh ip_addr is resolved to neigh mac. */
+	 
 
 	if (!resolved)
 		err = ofdpa_port_ipv4_resolve(ofdpa_port, ip_addr);
@@ -1456,10 +1438,7 @@ static int ofdpa_port_vlan_flood_group(struct ofdpa_port *ofdpa_port,
 	if (!group_ids)
 		return -ENOMEM;
 
-	/* Adjust the flood group for this VLAN.  The flood group
-	 * references an L2 interface group for each port in this
-	 * VLAN.
-	 */
+	 
 
 	for (i = 0; i < port_count; i++) {
 		p = ofdpa_port_get(ofdpa, i);
@@ -1473,7 +1452,7 @@ static int ofdpa_port_vlan_flood_group(struct ofdpa_port *ofdpa_port,
 		}
 	}
 
-	/* If there are no bridged ports in this VLAN, we're done */
+	 
 	if (group_count == 0)
 		goto no_ports_in_vlan;
 
@@ -1499,9 +1478,7 @@ static int ofdpa_port_vlan_l2_groups(struct ofdpa_port *ofdpa_port, int flags,
 	int err;
 	int i;
 
-	/* An L2 interface group for this port in this VLAN, but
-	 * only when port STP state is LEARNING|FORWARDING.
-	 */
+	 
 
 	if (ofdpa_port->stp_state == BR_STATE_LEARNING ||
 	    ofdpa_port->stp_state == BR_STATE_FORWARDING) {
@@ -1515,10 +1492,7 @@ static int ofdpa_port_vlan_l2_groups(struct ofdpa_port *ofdpa_port, int flags,
 		}
 	}
 
-	/* An L2 interface group for this VLAN to CPU port.
-	 * Add when first port joins this VLAN and destroy when
-	 * last port leaves this VLAN.
-	 */
+	 
 
 	for (i = 0; i < port_count; i++) {
 		p = ofdpa_port_get(ofdpa, i);
@@ -1550,20 +1524,20 @@ static struct ofdpa_ctrl {
 	bool copy_to_cpu;
 } ofdpa_ctrls[] = {
 	[OFDPA_CTRL_LINK_LOCAL_MCAST] = {
-		/* pass link local multicast pkts up to CPU for filtering */
+		 
 		.eth_dst = ll_mac,
 		.eth_dst_mask = ll_mask,
 		.acl = true,
 	},
 	[OFDPA_CTRL_LOCAL_ARP] = {
-		/* pass local ARP pkts up to CPU */
+		 
 		.eth_dst = zero_mac,
 		.eth_dst_mask = zero_mac,
 		.eth_type = htons(ETH_P_ARP),
 		.acl = true,
 	},
 	[OFDPA_CTRL_IPV4_MCAST] = {
-		/* pass IPv4 mcast pkts up to CPU, RFC 1112 */
+		 
 		.eth_dst = ipv4_mcast,
 		.eth_dst_mask = ipv4_mask,
 		.eth_type = htons(ETH_P_IP),
@@ -1571,7 +1545,7 @@ static struct ofdpa_ctrl {
 		.copy_to_cpu = true,
 	},
 	[OFDPA_CTRL_IPV6_MCAST] = {
-		/* pass IPv6 mcast pkts up to CPU, RFC 2464 */
+		 
 		.eth_dst = ipv6_mcast,
 		.eth_dst_mask = ipv6_mask,
 		.eth_type = htons(ETH_P_IPV6),
@@ -1579,12 +1553,12 @@ static struct ofdpa_ctrl {
 		.copy_to_cpu = true,
 	},
 	[OFDPA_CTRL_DFLT_BRIDGING] = {
-		/* flood any pkts on vlan */
+		 
 		.bridge = true,
 		.copy_to_cpu = true,
 	},
 	[OFDPA_CTRL_DFLT_OVS] = {
-		/* pass all pkts up to CPU */
+		 
 		.eth_dst = zero_mac,
 		.eth_dst_mask = zero_mac,
 		.acl = true,
@@ -1739,10 +1713,10 @@ static int ofdpa_port_vlan(struct ofdpa_port *ofdpa_port, int flags,
 
 	if (adding &&
 	    test_bit(ntohs(internal_vlan_id), ofdpa_port->vlan_bitmap))
-		return 0; /* already added */
+		return 0;  
 	else if (!adding &&
 		 !test_bit(ntohs(internal_vlan_id), ofdpa_port->vlan_bitmap))
-		return 0; /* already removed */
+		return 0;  
 
 	change_bit(ntohs(internal_vlan_id), ofdpa_port->vlan_bitmap);
 
@@ -1791,9 +1765,7 @@ static int ofdpa_port_ig_tbl(struct ofdpa_port *ofdpa_port, int flags)
 	u32 in_pport_mask;
 	int err;
 
-	/* Normal Ethernet Frames.  Matches pkts from any local physical
-	 * ports.  Goto VLAN tbl.
-	 */
+	 
 
 	in_pport = 0;
 	in_pport_mask = 0xffff0000;
@@ -1932,12 +1904,12 @@ static int ofdpa_port_fdb(struct ofdpa_port *ofdpa_port,
 
 	spin_unlock_irqrestore(&ofdpa->fdb_tbl_lock, lock_flags);
 
-	/* Check if adding and already exists, or removing and can't find */
+	 
 	if (!found != !removing) {
 		kfree(fdb);
 		if (!found && removing)
 			return 0;
-		/* Refreshing existing to update aging timers */
+		 
 		flags |= OFDPA_OP_FLAG_REFRESH;
 	}
 
@@ -2055,12 +2027,7 @@ static int ofdpa_port_fwding(struct ofdpa_port *ofdpa_port, int flags)
 	u16 vid;
 	int err;
 
-	/* Port will be forwarding-enabled if its STP state is LEARNING
-	 * or FORWARDING.  Traffic from CPU can still egress, regardless of
-	 * port STP state.  Use L2 interface group on port VLANs as a way
-	 * to toggle port forwarding: if forwarding is disabled, L2
-	 * interface group will not exist.
-	 */
+	 
 
 	if (ofdpa_port->stp_state != BR_STATE_LEARNING &&
 	    ofdpa_port->stp_state != BR_STATE_FORWARDING)
@@ -2103,7 +2070,7 @@ static int ofdpa_port_stp_update(struct ofdpa_port *ofdpa_port,
 
 	switch (state) {
 	case BR_STATE_DISABLED:
-		/* port is completely disabled */
+		 
 		break;
 	case BR_STATE_LISTENING:
 	case BR_STATE_BLOCKING:
@@ -2157,10 +2124,10 @@ err_port_fwding:
 static int ofdpa_port_fwd_enable(struct ofdpa_port *ofdpa_port, int flags)
 {
 	if (ofdpa_port_is_bridged(ofdpa_port))
-		/* bridge STP will enable port */
+		 
 		return 0;
 
-	/* port is not bridged, so simulate going to FORWARDING state */
+	 
 	return ofdpa_port_stp_update(ofdpa_port, flags,
 				     BR_STATE_FORWARDING);
 }
@@ -2168,10 +2135,10 @@ static int ofdpa_port_fwd_enable(struct ofdpa_port *ofdpa_port, int flags)
 static int ofdpa_port_fwd_disable(struct ofdpa_port *ofdpa_port, int flags)
 {
 	if (ofdpa_port_is_bridged(ofdpa_port))
-		/* bridge STP will disable port */
+		 
 		return 0;
 
-	/* port is not bridged, so simulate going to DISABLED state */
+	 
 	return ofdpa_port_stp_update(ofdpa_port, flags,
 				     BR_STATE_DISABLED);
 }
@@ -2181,7 +2148,7 @@ static int ofdpa_port_vlan_add(struct ofdpa_port *ofdpa_port,
 {
 	int err;
 
-	/* XXX deal with flags for PVID and untagged */
+	 
 
 	err = ofdpa_port_vlan(ofdpa_port, 0, vid);
 	if (err)
@@ -2282,7 +2249,7 @@ static int ofdpa_port_fib_ipv4(struct ofdpa_port *ofdpa_port,  __be32 dst,
 	u32 index;
 	int err;
 
-	/* XXX support ECMP */
+	 
 
 	nh = fib_info_nh(fi, 0);
 	nh_on_port = (nh->fib_nh_dev == ofdpa_port->dev);
@@ -2296,7 +2263,7 @@ static int ofdpa_port_fib_ipv4(struct ofdpa_port *ofdpa_port,  __be32 dst,
 
 		group_id = ROCKER_GROUP_L3_UNICAST(index);
 	} else {
-		/* Send to CPU for processing */
+		 
 		group_id = ROCKER_GROUP_L2_INTERFACE(internal_vlan_id, 0);
 	}
 
@@ -2340,9 +2307,7 @@ not_found:
 	spin_unlock_irqrestore(&ofdpa->internal_vlan_tbl_lock, lock_flags);
 }
 
-/**********************************
- * Rocker world ops implementation
- **********************************/
+ 
 
 static int ofdpa_init(struct rocker *rocker)
 {
@@ -2578,11 +2543,7 @@ static int ofdpa_port_bridge_join(struct ofdpa_port *ofdpa_port,
 	struct net_device *dev = ofdpa_port->dev;
 	int err;
 
-	/* Port is joining bridge, so the internal VLAN for the
-	 * port is going to change to the bridge internal VLAN.
-	 * Let's remove untagged VLAN (vid=0) from port and
-	 * re-add once internal VLAN has changed.
-	 */
+	 
 
 	err = ofdpa_port_vlan_del(ofdpa_port, OFDPA_UNTAGGED_VID, 0);
 	if (err)

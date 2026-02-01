@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/* Copyright (c) 2019-2020 Marvell International Ltd. */
+ 
+ 
 
 #ifndef _QED_FCOE_IF_H
 #define _QED_FCOE_IF_H
@@ -57,7 +57,7 @@ struct qed_fcoe_params_offload {
 
 #define MAX_TID_BLOCKS_FCOE (512)
 struct qed_fcoe_tid {
-	u32 size;		/* In bytes per task */
+	u32 size;		 
 	u32 num_tids_per_block;
 	u8 *blocks[MAX_TID_BLOCKS_FCOE];
 };
@@ -67,54 +67,7 @@ struct qed_fcoe_cb_ops {
 	 u32 (*get_login_failures)(void *cookie);
 };
 
-/**
- * struct qed_fcoe_ops - qed FCoE operations.
- * @common:		common operations pointer
- * @fill_dev_info:	fills FCoE specific information
- *			@param cdev
- *			@param info
- *			@return 0 on success, otherwise error value.
- * @register_ops:	register FCoE operations
- *			@param cdev
- *			@param ops - specified using qed_iscsi_cb_ops
- *			@param cookie - driver private
- * @ll2:		light L2 operations pointer
- * @start:		fcoe in FW
- *			@param cdev
- *			@param tasks - qed will fill information about tasks
- *			return 0 on success, otherwise error value.
- * @stop:		stops fcoe in FW
- *			@param cdev
- *			return 0 on success, otherwise error value.
- * @acquire_conn:	acquire a new fcoe connection
- *			@param cdev
- *			@param handle - qed will fill handle that should be
- *				used henceforth as identifier of the
- *				connection.
- *			@param p_doorbell - qed will fill the address of the
- *				doorbell.
- *			return 0 on success, otherwise error value.
- * @release_conn:	release a previously acquired fcoe connection
- *			@param cdev
- *			@param handle - the connection handle.
- *			return 0 on success, otherwise error value.
- * @offload_conn:	configures an offloaded connection
- *			@param cdev
- *			@param handle - the connection handle.
- *			@param conn_info - the configuration to use for the
- *				offload.
- *			return 0 on success, otherwise error value.
- * @destroy_conn:	stops an offloaded connection
- *			@param cdev
- *			@param handle - the connection handle.
- *			@param terminate_params
- *			return 0 on success, otherwise error value.
- * @get_stats:		gets FCoE related statistics
- *			@param cdev
- *			@param stats - pointer to struck that would be filled
- *				we stats
- *			return 0 on success, error otherwise.
- */
+ 
 struct qed_fcoe_ops {
 	const struct qed_common_ops *common;
 

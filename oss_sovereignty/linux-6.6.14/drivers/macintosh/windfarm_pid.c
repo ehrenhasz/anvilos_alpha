@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Windfarm PowerMac thermal control. Generic PID helpers
- *
- * (c) Copyright 2005 Benjamin Herrenschmidt, IBM Corp.
- *                    <benh@kernel.crashing.org>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/errno.h>
@@ -36,10 +31,10 @@ s32 wf_pid_run(struct wf_pid_state *st, s32 new_sample)
 	s32	target;
 	int	i, hlen = st->param.history_len;
 
-	/* Calculate error term */
+	 
 	error = new_sample - st->param.itarget;
 
-	/* Get samples into our history buffer */
+	 
 	if (st->first) {
 		for (i = 0; i < hlen; i++) {
 			st->samples[i] = new_sample;
@@ -53,17 +48,17 @@ s32 wf_pid_run(struct wf_pid_state *st, s32 new_sample)
 		st->errors[st->index] = error;
 	}
 
-	/* Calculate integral term */
+	 
 	for (i = 0, integ = 0; i < hlen; i++)
 		integ += st->errors[(st->index + hlen - i) % hlen];
 	integ *= st->param.interval;
 
-	/* Calculate derivative term */
+	 
 	deriv = st->errors[st->index] -
 		st->errors[(st->index + hlen - 1) % hlen];
 	deriv /= st->param.interval;
 
-	/* Calculate target */
+	 
 	target = (s32)((integ * (s64)st->param.gr + deriv * (s64)st->param.gd +
 		  error * (s64)st->param.gp) >> 36);
 	if (st->param.additive)
@@ -91,10 +86,10 @@ s32 wf_cpu_pid_run(struct wf_cpu_pid_state *st, s32 new_power, s32 new_temp)
 	s32	error, target, sval, adj;
 	int	i, hlen = st->param.history_len;
 
-	/* Calculate error term */
+	 
 	error = st->param.pmaxadj - new_power;
 
-	/* Get samples into our history buffer */
+	 
 	if (st->first) {
 		for (i = 0; i < hlen; i++) {
 			st->powers[i] = new_power;
@@ -111,7 +106,7 @@ s32 wf_cpu_pid_run(struct wf_cpu_pid_state *st, s32 new_power, s32 new_temp)
 		st->temps[st->tindex] = new_temp;
 	}
 
-	/* Calculate integral term */
+	 
 	for (i = 0, integ = 0; i < hlen; i++)
 		integ += st->errors[(st->index + hlen - i) % hlen];
 	integ *= st->param.interval;
@@ -121,19 +116,19 @@ s32 wf_cpu_pid_run(struct wf_cpu_pid_state *st, s32 new_power, s32 new_temp)
 
 	DBG("integ: %lx, sval: %lx, adj: %lx\n", integ, sval, adj);
 
-	/* Calculate derivative term */
+	 
 	deriv = st->temps[st->tindex] -
 		st->temps[(st->tindex + 2 - 1) % 2];
 	deriv /= st->param.interval;
 	deriv *= st->param.gd;
 
-	/* Calculate proportional term */
+	 
 	prop = st->last_delta = (new_temp - adj);
 	prop *= st->param.gp;
 
 	DBG("deriv: %lx, prop: %lx\n", deriv, prop);
 
-	/* Calculate target */
+	 
 	target = st->target + (s32)((deriv + prop) >> 36);
 	target = max(target, st->param.min);
 	target = min(target, st->param.max);

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * f_midi2.c -- USB MIDI 2.0 class function driver
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -26,43 +24,43 @@ struct f_midi2;
 struct f_midi2_ep;
 struct f_midi2_usb_ep;
 
-/* Context for each USB request */
+ 
 struct f_midi2_req_ctx {
-	struct f_midi2_usb_ep *usb_ep;	/* belonging USB EP */
-	unsigned int index;		/* array index: 0-31 */
-	struct usb_request *req;	/* assigned request */
+	struct f_midi2_usb_ep *usb_ep;	 
+	unsigned int index;		 
+	struct usb_request *req;	 
 };
 
-/* Resources for a USB Endpoint */
+ 
 struct f_midi2_usb_ep {
-	struct f_midi2 *card;		/* belonging card */
-	struct f_midi2_ep *ep;		/* belonging UMP EP (optional) */
-	struct usb_ep *usb_ep;		/* assigned USB EP */
+	struct f_midi2 *card;		 
+	struct f_midi2_ep *ep;		 
+	struct usb_ep *usb_ep;		 
 	void (*complete)(struct usb_ep *usb_ep, struct usb_request *req);
-	unsigned long free_reqs;	/* bitmap for unused requests */
-	unsigned int num_reqs;		/* number of allocated requests */
-	struct f_midi2_req_ctx *reqs;	/* request context array */
+	unsigned long free_reqs;	 
+	unsigned int num_reqs;		 
+	struct f_midi2_req_ctx *reqs;	 
 };
 
-/* Resources for UMP Function Block (and USB Group Terminal Block) */
+ 
 struct f_midi2_block {
-	struct f_midi2_block_info info;	/* FB info, copied from configfs */
-	struct snd_ump_block *fb;	/* assigned FB */
-	unsigned int gtb_id;		/* assigned GTB id */
-	unsigned int string_id;		/* assigned string id */
+	struct f_midi2_block_info info;	 
+	struct snd_ump_block *fb;	 
+	unsigned int gtb_id;		 
+	unsigned int string_id;		 
 };
 
-/* Temporary buffer for altset 0 MIDI 1.0 handling */
+ 
 struct f_midi2_midi1_port {
-	unsigned int pending; /* pending bytes on the input buffer */
-	u8 buf[32];	/* raw MIDI 1.0 byte input */
-	u8 state;	/* running status */
-	u8 data[2];	/* rendered USB MIDI 1.0 packet data */
+	unsigned int pending;  
+	u8 buf[32];	 
+	u8 state;	 
+	u8 data[2];	 
 };
 
-/* MIDI 1.0 message states */
+ 
 enum {
-	STATE_INITIAL = 0,	/* pseudo state */
+	STATE_INITIAL = 0,	 
 	STATE_1PARAM,
 	STATE_2PARAM_1,
 	STATE_2PARAM_2,
@@ -70,116 +68,114 @@ enum {
 	STATE_SYSEX_1,
 	STATE_SYSEX_2,
 	STATE_REAL_TIME,
-	STATE_FINISHED,		/* pseudo state */
+	STATE_FINISHED,		 
 };
 
-/* Resources for UMP Endpoint */
+ 
 struct f_midi2_ep {
-	struct snd_ump_endpoint *ump;	/* assigned UMP EP */
-	struct f_midi2 *card;		/* belonging MIDI 2.0 device */
+	struct snd_ump_endpoint *ump;	 
+	struct f_midi2 *card;		 
 
-	struct f_midi2_ep_info info;	/* UMP EP info, copied from configfs */
-	unsigned int num_blks;		/* number of FBs */
-	struct f_midi2_block blks[SNDRV_UMP_MAX_BLOCKS];	/* UMP FBs */
+	struct f_midi2_ep_info info;	 
+	unsigned int num_blks;		 
+	struct f_midi2_block blks[SNDRV_UMP_MAX_BLOCKS];	 
 
-	struct f_midi2_usb_ep ep_in;	/* USB MIDI EP-in */
-	struct f_midi2_usb_ep ep_out;	/* USB MIDI EP-out */
+	struct f_midi2_usb_ep ep_in;	 
+	struct f_midi2_usb_ep ep_out;	 
 
-	u8 in_group_to_cable[SNDRV_UMP_MAX_GROUPS]; /* map to cable; 1-based! */
+	u8 in_group_to_cable[SNDRV_UMP_MAX_GROUPS];  
 };
 
-/* indices for USB strings */
+ 
 enum {
 	STR_IFACE = 0,
 	STR_GTB1 = 1,
 };
 
-/* 1-based GTB id to string id */
+ 
 #define gtb_to_str_id(id)	(STR_GTB1 + (id) - 1)
 
-/* mapping from MIDI 1.0 cable to UMP group */
+ 
 struct midi1_cable_mapping {
 	struct f_midi2_ep *ep;
 	unsigned char block;
 	unsigned char group;
 };
 
-/* operation mode */
+ 
 enum {
-	MIDI_OP_MODE_UNSET,	/* no altset set yet */
-	MIDI_OP_MODE_MIDI1,	/* MIDI 1.0 (altset 0) is used */
-	MIDI_OP_MODE_MIDI2,	/* MIDI 2.0 (altset 1) is used */
+	MIDI_OP_MODE_UNSET,	 
+	MIDI_OP_MODE_MIDI1,	 
+	MIDI_OP_MODE_MIDI2,	 
 };
 
-/* Resources for MIDI 2.0 Device */
+ 
 struct f_midi2 {
 	struct usb_function func;
 	struct usb_gadget *gadget;
 	struct snd_card *card;
 
-	/* MIDI 1.0 in/out USB EPs */
+	 
 	struct f_midi2_usb_ep midi1_ep_in;
 	struct f_midi2_usb_ep midi1_ep_out;
 
-	/* number of MIDI 1.0 I/O cables */
+	 
 	unsigned int num_midi1_in;
 	unsigned int num_midi1_out;
 
-	/* conversion for MIDI 1.0 EP-in */
+	 
 	struct f_midi2_midi1_port midi1_port[MAX_CABLES];
-	/* conversion for MIDI 1.0 EP-out */
+	 
 	struct ump_cvt_to_ump midi1_ump_cvt;
-	/* mapping between cables and UMP groups */
+	 
 	struct midi1_cable_mapping in_cable_mapping[MAX_CABLES];
 	struct midi1_cable_mapping out_cable_mapping[MAX_CABLES];
 
-	int midi_if;			/* USB MIDI interface number */
-	int operation_mode;		/* current operation mode */
+	int midi_if;			 
+	int operation_mode;		 
 
 	spinlock_t queue_lock;
 
-	struct f_midi2_card_info info;	/* card info, copied from configfs */
+	struct f_midi2_card_info info;	 
 
 	unsigned int num_eps;
 	struct f_midi2_ep midi2_eps[MAX_UMP_EPS];
 
-	unsigned int total_blocks;	/* total number of blocks of all EPs */
+	unsigned int total_blocks;	 
 	struct usb_string *string_defs;
 	struct usb_string *strings;
 };
 
 #define func_to_midi2(f)	container_of(f, struct f_midi2, func)
 
-/* get EP name string */
+ 
 static const char *ump_ep_name(const struct f_midi2_ep *ep)
 {
 	return ep->info.ep_name ? ep->info.ep_name : "MIDI 2.0 Gadget";
 }
 
-/* get EP product ID string */
+ 
 static const char *ump_product_id(const struct f_midi2_ep *ep)
 {
 	return ep->info.product_id ? ep->info.product_id : "Unique Product ID";
 }
 
-/* get FB name string */
+ 
 static const char *ump_fb_name(const struct f_midi2_block_info *info)
 {
 	return info->name ? info->name : "MIDI 2.0 Gadget I/O";
 }
 
-/*
- * USB Descriptor Definitions
- */
-/* GTB header descriptor */
+ 
+ 
 static struct usb_ms20_gr_trm_block_header_descriptor gtb_header_desc = {
 	.bLength =		sizeof(gtb_header_desc),
 	.bDescriptorType =	USB_DT_CS_GR_TRM_BLOCK,
 	.bDescriptorSubtype =	USB_MS_GR_TRM_BLOCK_HEADER,
-	.wTotalLength =		__cpu_to_le16(0x12), // to be filled
+	.wTotalLength =		__cpu_to_le16(0x12), 
 };
 
-/* GTB descriptor template: most items are replaced dynamically */
+ 
 static struct usb_ms20_gr_trm_block_descriptor gtb_desc = {
 	.bLength =		sizeof(gtb_desc),
 	.bDescriptorType =	USB_DT_CS_GR_TRM_BLOCK,
@@ -201,11 +197,11 @@ DECLARE_USB_MS20_ENDPOINT_DESCRIPTOR(32);
 
 #define EP_MAX_PACKET_INT	8
 
-/* Audio Control Interface */
+ 
 static struct usb_interface_descriptor midi2_audio_if_desc = {
 	.bLength =		USB_DT_INTERFACE_SIZE,
 	.bDescriptorType =	USB_DT_INTERFACE,
-	.bInterfaceNumber =	0, // to be filled
+	.bInterfaceNumber =	0, 
 	.bNumEndpoints =	0,
 	.bInterfaceClass =	USB_CLASS_AUDIO,
 	.bInterfaceSubClass =	USB_SUBCLASS_AUDIOCONTROL,
@@ -220,20 +216,20 @@ static struct uac1_ac_header_descriptor_1 midi2_audio_class_desc = {
 	.bcdADC =		__cpu_to_le16(0x0100),
 	.wTotalLength =		__cpu_to_le16(0x0009),
 	.bInCollection =	0x01,
-	.baInterfaceNr =	{ 0x01 }, // to be filled
+	.baInterfaceNr =	{ 0x01 }, 
 };
 
-/* MIDI 1.0 Streaming Interface (altset 0) */
+ 
 static struct usb_interface_descriptor midi2_midi1_if_desc = {
 	.bLength =		USB_DT_INTERFACE_SIZE,
 	.bDescriptorType =	USB_DT_INTERFACE,
-	.bInterfaceNumber =	0, // to be filled
+	.bInterfaceNumber =	0, 
 	.bAlternateSetting =	0,
-	.bNumEndpoints =	2, // to be filled
+	.bNumEndpoints =	2, 
 	.bInterfaceClass =	USB_CLASS_AUDIO,
 	.bInterfaceSubClass =	USB_SUBCLASS_MIDISTREAMING,
 	.bInterfaceProtocol =	0,
-	.iInterface =		0, // to be filled
+	.iInterface =		0, 
 };
 
 static struct usb_ms_header_descriptor midi2_midi1_class_desc = {
@@ -241,14 +237,14 @@ static struct usb_ms_header_descriptor midi2_midi1_class_desc = {
 	.bDescriptorType =	USB_DT_CS_INTERFACE,
 	.bDescriptorSubtype =	USB_MS_HEADER,
 	.bcdMSC =		__cpu_to_le16(0x0100),
-	.wTotalLength =		__cpu_to_le16(0x41), // to be calculated
+	.wTotalLength =		__cpu_to_le16(0x41), 
 };
 
-/* MIDI 1.0 EP OUT */
+ 
 static struct usb_endpoint_descriptor midi2_midi1_ep_out_desc = {
 	.bLength =		USB_DT_ENDPOINT_AUDIO_SIZE,
 	.bDescriptorType =	USB_DT_ENDPOINT,
-	.bEndpointAddress =	USB_DIR_OUT | 0, // set up dynamically
+	.bEndpointAddress =	USB_DIR_OUT | 0, 
 	.bmAttributes =		USB_ENDPOINT_XFER_BULK,
 };
 
@@ -258,18 +254,18 @@ static struct usb_ss_ep_comp_descriptor midi2_midi1_ep_out_ss_comp_desc = {
 };
 
 static struct usb_ms_endpoint_descriptor_16 midi2_midi1_ep_out_class_desc = {
-	.bLength =		0x05, // to be filled
+	.bLength =		0x05, 
 	.bDescriptorType =	USB_DT_CS_ENDPOINT,
 	.bDescriptorSubtype =	USB_MS_GENERAL,
 	.bNumEmbMIDIJack =	1,
 	.baAssocJackID =	{ 0x01 },
 };
 
-/* MIDI 1.0 EP IN */
+ 
 static struct usb_endpoint_descriptor midi2_midi1_ep_in_desc = {
 	.bLength =		USB_DT_ENDPOINT_AUDIO_SIZE,
 	.bDescriptorType =	USB_DT_ENDPOINT,
-	.bEndpointAddress =	USB_DIR_IN | 0, // set up dynamically
+	.bEndpointAddress =	USB_DIR_IN | 0, 
 	.bmAttributes =		USB_ENDPOINT_XFER_BULK,
 };
 
@@ -279,24 +275,24 @@ static struct usb_ss_ep_comp_descriptor midi2_midi1_ep_in_ss_comp_desc = {
 };
 
 static struct usb_ms_endpoint_descriptor_16 midi2_midi1_ep_in_class_desc = {
-	.bLength =		0x05, // to be filled
+	.bLength =		0x05, 
 	.bDescriptorType =	USB_DT_CS_ENDPOINT,
 	.bDescriptorSubtype =	USB_MS_GENERAL,
 	.bNumEmbMIDIJack =	1,
 	.baAssocJackID =	{ 0x03 },
 };
 
-/* MIDI 2.0 Streaming Interface (altset 1) */
+ 
 static struct usb_interface_descriptor midi2_midi2_if_desc = {
 	.bLength =		USB_DT_INTERFACE_SIZE,
 	.bDescriptorType =	USB_DT_INTERFACE,
-	.bInterfaceNumber =	0, // to be filled
+	.bInterfaceNumber =	0, 
 	.bAlternateSetting =	1,
-	.bNumEndpoints =	2, // to be filled
+	.bNumEndpoints =	2, 
 	.bInterfaceClass =	USB_CLASS_AUDIO,
 	.bInterfaceSubClass =	USB_SUBCLASS_MIDISTREAMING,
 	.bInterfaceProtocol =	0,
-	.iInterface =		0, // to be filled
+	.iInterface =		0, 
 };
 
 static struct usb_ms_header_descriptor midi2_midi2_class_desc = {
@@ -307,7 +303,7 @@ static struct usb_ms_header_descriptor midi2_midi2_class_desc = {
 	.wTotalLength =		__cpu_to_le16(0x07),
 };
 
-/* MIDI 2.0 EP OUT */
+ 
 static struct usb_endpoint_descriptor midi2_midi2_ep_out_desc[MAX_UMP_EPS];
 
 static struct usb_ss_ep_comp_descriptor midi2_midi2_ep_out_ss_comp_desc = {
@@ -317,7 +313,7 @@ static struct usb_ss_ep_comp_descriptor midi2_midi2_ep_out_ss_comp_desc = {
 
 static struct usb_ms20_endpoint_descriptor_32 midi2_midi2_ep_out_class_desc[MAX_UMP_EPS];
 
-/* MIDI 2.0 EP IN */
+ 
 static struct usb_endpoint_descriptor midi2_midi2_ep_in_desc[MAX_UMP_EPS];
 
 static struct usb_ss_ep_comp_descriptor midi2_midi2_ep_in_ss_comp_desc = {
@@ -327,7 +323,7 @@ static struct usb_ss_ep_comp_descriptor midi2_midi2_ep_in_ss_comp_desc = {
 
 static struct usb_ms20_endpoint_descriptor_32 midi2_midi2_ep_in_class_desc[MAX_UMP_EPS];
 
-/* Arrays of descriptors to be created */
+ 
 static void *midi2_audio_descs[] = {
 	&midi2_audio_if_desc,
 	&midi2_audio_class_desc,
@@ -372,11 +368,9 @@ static void *midi2_midi2_descs[] = {
 	NULL
 };
 
-/*
- * USB request handling
- */
+ 
 
-/* get an empty request for the given EP */
+ 
 static struct usb_request *get_empty_request(struct f_midi2_usb_ep *usb_ep)
 {
 	struct usb_request *req = NULL;
@@ -399,7 +393,7 @@ static struct usb_request *get_empty_request(struct f_midi2_usb_ep *usb_ep)
 	return req;
 }
 
-/* put the empty request back */
+ 
 static void put_empty_request(struct usb_request *req)
 {
 	struct f_midi2_req_ctx *ctx = req->context;
@@ -410,11 +404,9 @@ static void put_empty_request(struct usb_request *req)
 	spin_unlock_irqrestore(&ctx->usb_ep->card->queue_lock, flags);
 }
 
-/*
- * UMP v1.1 Stream message handling
- */
+ 
 
-/* queue a request to UMP EP; request is either queued or freed after this */
+ 
 static int queue_request_ep_raw(struct usb_request *req)
 {
 	struct f_midi2_req_ctx *ctx = req->context;
@@ -429,15 +421,15 @@ static int queue_request_ep_raw(struct usb_request *req)
 	return 0;
 }
 
-/* queue a request with endianness conversion */
+ 
 static int queue_request_ep_in(struct usb_request *req)
 {
-	/* UMP packets have to be converted to little-endian */
+	 
 	cpu_to_le32_array((u32 *)req->buf, req->length >> 2);
 	return queue_request_ep_raw(req);
 }
 
-/* reply a UMP packet via EP-in */
+ 
 static int reply_ep_in(struct f_midi2_ep *ep, const void *buf, int len)
 {
 	struct f_midi2_usb_ep *usb_ep = &ep->ep_in;
@@ -452,7 +444,7 @@ static int reply_ep_in(struct f_midi2_ep *ep, const void *buf, int len)
 	return queue_request_ep_in(req);
 }
 
-/* reply a UMP stream EP info */
+ 
 static void reply_ump_stream_ep_info(struct f_midi2_ep *ep)
 {
 	struct snd_ump_stream_msg_ep_info rep = {
@@ -469,7 +461,7 @@ static void reply_ump_stream_ep_info(struct f_midi2_ep *ep)
 	reply_ep_in(ep, &rep, sizeof(rep));
 }
 
-/* reply a UMP EP device info */
+ 
 static void reply_ump_stream_ep_device(struct f_midi2_ep *ep)
 {
 	struct snd_ump_stream_msg_devince_info rep = {
@@ -486,11 +478,11 @@ static void reply_ump_stream_ep_device(struct f_midi2_ep *ep)
 	reply_ep_in(ep, &rep, sizeof(rep));
 }
 
-#define UMP_STREAM_PKT_BYTES	16	/* UMP stream packet size = 16 bytes*/
-#define UMP_STREAM_EP_STR_OFF	2	/* offset of name string for EP info */
-#define UMP_STREAM_FB_STR_OFF	3	/* offset of name string for FB info */
+#define UMP_STREAM_PKT_BYTES	16	 
+#define UMP_STREAM_EP_STR_OFF	2	 
+#define UMP_STREAM_FB_STR_OFF	3	 
 
-/* Helper to replay a string */
+ 
 static void reply_ump_stream_string(struct f_midi2_ep *ep, const u8 *name,
 				    unsigned int type, unsigned int extra,
 				    unsigned int start_ofs)
@@ -540,7 +532,7 @@ static void reply_ump_stream_string(struct f_midi2_ep *ep, const u8 *name,
 		put_empty_request(req);
 }
 
-/* Reply a UMP EP name string */
+ 
 static void reply_ump_stream_ep_name(struct f_midi2_ep *ep)
 {
 	reply_ump_stream_string(ep, ump_ep_name(ep),
@@ -548,7 +540,7 @@ static void reply_ump_stream_ep_name(struct f_midi2_ep *ep)
 				UMP_STREAM_EP_STR_OFF);
 }
 
-/* Reply a UMP EP product ID string */
+ 
 static void reply_ump_stream_ep_pid(struct f_midi2_ep *ep)
 {
 	reply_ump_stream_string(ep, ump_product_id(ep),
@@ -556,7 +548,7 @@ static void reply_ump_stream_ep_pid(struct f_midi2_ep *ep)
 				UMP_STREAM_EP_STR_OFF);
 }
 
-/* Reply a UMP EP stream config */
+ 
 static void reply_ump_stream_ep_config(struct f_midi2_ep *ep)
 {
 	struct snd_ump_stream_msg_stream_cfg rep = {
@@ -573,7 +565,7 @@ static void reply_ump_stream_ep_config(struct f_midi2_ep *ep)
 	reply_ep_in(ep, &rep, sizeof(rep));
 }
 
-/* Reply a UMP FB info */
+ 
 static void reply_ump_stream_fb_info(struct f_midi2_ep *ep, int blk)
 {
 	struct f_midi2_block_info *b = &ep->blks[blk].info;
@@ -594,7 +586,7 @@ static void reply_ump_stream_fb_info(struct f_midi2_ep *ep, int blk)
 	reply_ep_in(ep, &rep, sizeof(rep));
 }
 
-/* Reply a FB name string */
+ 
 static void reply_ump_stream_fb_name(struct f_midi2_ep *ep, unsigned int blk)
 {
 	reply_ump_stream_string(ep, ump_fb_name(&ep->blks[blk].info),
@@ -602,7 +594,7 @@ static void reply_ump_stream_fb_name(struct f_midi2_ep *ep, unsigned int blk)
 				UMP_STREAM_FB_STR_OFF);
 }
 
-/* Process a UMP Stream message */
+ 
 static void process_ump_stream_msg(struct f_midi2_ep *ep, const u32 *data)
 {
 	struct f_midi2 *midi2 = ep->card;
@@ -613,7 +605,7 @@ static void process_ump_stream_msg(struct f_midi2_ep *ep, const u32 *data)
 	switch (status) {
 	case UMP_STREAM_MSG_STATUS_EP_DISCOVERY:
 		if (format)
-			return; // invalid
+			return; 
 		if (data[1] & UMP_STREAM_MSG_REQUEST_EP_INFO)
 			reply_ump_stream_ep_info(ep);
 		if (data[1] & UMP_STREAM_MSG_REQUEST_DEVICE_INFO)
@@ -638,7 +630,7 @@ static void process_ump_stream_msg(struct f_midi2_ep *ep, const u32 *data)
 		return;
 	case UMP_STREAM_MSG_STATUS_FB_DISCOVERY:
 		if (format)
-			return; // invalid
+			return; 
 		blk = (*data >> 8) & 0xff;
 		if (blk >= ep->num_blks)
 			return;
@@ -650,7 +642,7 @@ static void process_ump_stream_msg(struct f_midi2_ep *ep, const u32 *data)
 	}
 }
 
-/* Process UMP messages included in a USB request */
+ 
 static void process_ump(struct f_midi2_ep *ep, const struct usb_request *req)
 {
 	const u32 *data = (u32 *)req->buf;
@@ -665,11 +657,9 @@ static void process_ump(struct f_midi2_ep *ep, const struct usb_request *req)
 	}
 }
 
-/*
- * MIDI 2.0 UMP USB request handling
- */
+ 
 
-/* complete handler for UMP EP-out requests */
+ 
 static void f_midi2_ep_out_complete(struct usb_ep *usb_ep,
 				    struct usb_request *req)
 {
@@ -684,7 +674,7 @@ static void f_midi2_ep_out_complete(struct usb_ep *usb_ep,
 		goto error;
 	}
 
-	/* convert to UMP packet in native endianness */
+	 
 	le32_to_cpu_array((u32 *)req->buf, req->actual >> 2);
 
 	if (midi2->info.process_ump)
@@ -703,7 +693,7 @@ static void f_midi2_ep_out_complete(struct usb_ep *usb_ep,
 	put_empty_request(req);
 }
 
-/* Transmit UMP packets received from user-space to the gadget */
+ 
 static void process_ump_transmit(struct f_midi2_ep *ep)
 {
 	struct f_midi2_usb_ep *usb_ep = &ep->ep_in;
@@ -731,7 +721,7 @@ static void process_ump_transmit(struct f_midi2_ep *ep)
 	}
 }
 
-/* Complete handler for UMP EP-in requests */
+ 
 static void f_midi2_ep_in_complete(struct usb_ep *usb_ep,
 				   struct usb_request *req)
 {
@@ -751,15 +741,9 @@ static void f_midi2_ep_in_complete(struct usb_ep *usb_ep,
 	process_ump_transmit(ep);
 }
 
-/*
- * MIDI1 (altset 0) USB request handling
- */
+ 
 
-/* process one MIDI byte -- copied from f_midi.c
- *
- * fill the packet or request if needed
- * returns true if the request became empty (queued)
- */
+ 
 static bool process_midi1_byte(struct f_midi2 *midi2, u8 cable, u8 b,
 			       struct usb_request **req_p)
 {
@@ -770,7 +754,7 @@ static bool process_midi1_byte(struct f_midi2 *midi2, u8 cable, u8 b,
 
 	switch (b) {
 	case 0xf8 ... 0xff:
-		/* System Real-Time Messages */
+		 
 		p[0] |= 0x0f;
 		p[1] = b;
 		next_state = port->state;
@@ -778,7 +762,7 @@ static bool process_midi1_byte(struct f_midi2 *midi2, u8 cable, u8 b,
 		break;
 
 	case 0xf7:
-		/* End of SysEx */
+		 
 		switch (port->state) {
 		case STATE_SYSEX_0:
 			p[0] |= 0x05;
@@ -799,14 +783,14 @@ static bool process_midi1_byte(struct f_midi2 *midi2, u8 cable, u8 b,
 			next_state = STATE_FINISHED;
 			break;
 		default:
-			/* Ignore byte */
+			 
 			next_state = port->state;
 			port->state = STATE_INITIAL;
 		}
 		break;
 
 	case 0xf0 ... 0xf6:
-		/* System Common Messages */
+		 
 		port->data[0] = port->data[1] = 0;
 		port->state = STATE_INITIAL;
 		switch (b) {
@@ -837,10 +821,7 @@ static bool process_midi1_byte(struct f_midi2 *midi2, u8 cable, u8 b,
 		break;
 
 	case 0x80 ... 0xef:
-		/*
-		 * Channel Voice Messages, Channel Mode Messages
-		 * and Control Change Messages.
-		 */
+		 
 		port->data[0] = b;
 		port->data[1] = 0;
 		port->state = STATE_INITIAL;
@@ -851,7 +832,7 @@ static bool process_midi1_byte(struct f_midi2 *midi2, u8 cable, u8 b,
 		break;
 
 	case 0x00 ... 0x7f:
-		/* Message parameters */
+		 
 		switch (port->state) {
 		case STATE_1PARAM:
 			if (port->data[0] < 0xf0)
@@ -861,7 +842,7 @@ static bool process_midi1_byte(struct f_midi2 *midi2, u8 cable, u8 b,
 
 			p[1] = port->data[0];
 			p[2] = b;
-			/* This is to allow Running State Messages */
+			 
 			next_state = STATE_1PARAM;
 			break;
 		case STATE_2PARAM_1:
@@ -877,7 +858,7 @@ static bool process_midi1_byte(struct f_midi2 *midi2, u8 cable, u8 b,
 			p[1] = port->data[0];
 			p[2] = port->data[1];
 			p[3] = b;
-			/* This is to allow Running State Messages */
+			 
 			next_state = STATE_2PARAM_1;
 			break;
 		case STATE_SYSEX_0:
@@ -899,7 +880,7 @@ static bool process_midi1_byte(struct f_midi2 *midi2, u8 cable, u8 b,
 		break;
 	}
 
-	/* States where we have to write into the USB request */
+	 
 	if (next_state == STATE_FINISHED ||
 	    port->state == STATE_SYSEX_2 ||
 	    port->state == STATE_1PARAM ||
@@ -924,10 +905,7 @@ static bool process_midi1_byte(struct f_midi2 *midi2, u8 cable, u8 b,
 	return false;
 }
 
-/* process all pending MIDI bytes in the internal buffer;
- * returns true if the request gets empty
- * returns false if all have been processed
- */
+ 
 static bool process_midi1_pending_buf(struct f_midi2 *midi2,
 				      struct usb_request **req_p)
 {
@@ -954,8 +932,7 @@ static bool process_midi1_pending_buf(struct f_midi2 *midi2,
 	return false;
 }
 
-/* fill the MIDI bytes onto the temporary buffer
- */
+ 
 static void fill_midi1_pending_buf(struct f_midi2 *midi2, u8 cable, u8 *buf,
 				   unsigned int size)
 {
@@ -967,13 +944,13 @@ static void fill_midi1_pending_buf(struct f_midi2 *midi2, u8 cable, u8 *buf,
 	port->pending += size;
 }
 
-/* try to process data given from the associated UMP stream */
+ 
 static void process_midi1_transmit(struct f_midi2 *midi2)
 {
 	struct f_midi2_usb_ep *usb_ep = &midi2->midi1_ep_in;
 	struct f_midi2_ep *ep = &midi2->midi2_eps[0];
 	struct usb_request *req = NULL;
-	/* 12 is the largest outcome (4 MIDI1 cmds) for a single UMP packet */
+	 
 	unsigned char outbuf[12];
 	unsigned char group, cable;
 	int len, size;
@@ -1004,7 +981,7 @@ static void process_midi1_transmit(struct f_midi2 *midi2)
 		cable = ep->in_group_to_cable[group];
 		if (!cable)
 			continue;
-		cable--; /* to 0-base */
+		cable--;  
 		fill_midi1_pending_buf(midi2, cable, outbuf, size);
 	}
 
@@ -1016,7 +993,7 @@ static void process_midi1_transmit(struct f_midi2 *midi2)
 	}
 }
 
-/* complete handler for MIDI1 EP-in requests */
+ 
 static void f_midi2_midi1_ep_in_complete(struct usb_ep *usb_ep,
 					 struct usb_request *req)
 {
@@ -1035,7 +1012,7 @@ static void f_midi2_midi1_ep_in_complete(struct usb_ep *usb_ep,
 	process_midi1_transmit(midi2);
 }
 
-/* complete handler for MIDI1 EP-out requests */
+ 
 static void f_midi2_midi1_ep_out_complete(struct usb_ep *usb_ep,
 					  struct usb_request *req)
 {
@@ -1086,11 +1063,9 @@ static void f_midi2_midi1_ep_out_complete(struct usb_ep *usb_ep,
 	put_empty_request(req);
 }
 
-/*
- * Common EP handling helpers
- */
+ 
 
-/* Start MIDI EP */
+ 
 static int f_midi2_start_ep(struct f_midi2_usb_ep *usb_ep,
 			    struct usb_function *fn)
 {
@@ -1106,7 +1081,7 @@ static int f_midi2_start_ep(struct f_midi2_usb_ep *usb_ep,
 	return usb_ep_enable(usb_ep->usb_ep);
 }
 
-/* Drop pending requests */
+ 
 static void f_midi2_drop_reqs(struct f_midi2_usb_ep *usb_ep)
 {
 	int i;
@@ -1122,7 +1097,7 @@ static void f_midi2_drop_reqs(struct f_midi2_usb_ep *usb_ep)
 	}
 }
 
-/* Allocate requests for the given EP */
+ 
 static int f_midi2_alloc_ep_reqs(struct f_midi2_usb_ep *usb_ep)
 {
 	struct f_midi2 *midi2 = usb_ep->card;
@@ -1145,7 +1120,7 @@ static int f_midi2_alloc_ep_reqs(struct f_midi2_usb_ep *usb_ep)
 	return 0;
 }
 
-/* Free allocated requests */
+ 
 static void f_midi2_free_ep_reqs(struct f_midi2_usb_ep *usb_ep)
 {
 	struct f_midi2 *midi2 = usb_ep->card;
@@ -1159,7 +1134,7 @@ static void f_midi2_free_ep_reqs(struct f_midi2_usb_ep *usb_ep)
 	}
 }
 
-/* Initialize EP */
+ 
 static int f_midi2_init_ep(struct f_midi2 *midi2, struct f_midi2_ep *ep,
 			   struct f_midi2_usb_ep *usb_ep,
 			   void *desc,
@@ -1189,7 +1164,7 @@ static int f_midi2_init_ep(struct f_midi2 *midi2, struct f_midi2_ep *ep,
 	return 0;
 }
 
-/* Free EP */
+ 
 static void f_midi2_free_ep(struct f_midi2_usb_ep *usb_ep)
 {
 	f_midi2_drop_reqs(usb_ep);
@@ -1202,7 +1177,7 @@ static void f_midi2_free_ep(struct f_midi2_usb_ep *usb_ep)
 	usb_ep->reqs = NULL;
 }
 
-/* Queue requests for EP-out at start */
+ 
 static void f_midi2_queue_out_reqs(struct f_midi2_usb_ep *usb_ep)
 {
 	int i, err;
@@ -1221,11 +1196,9 @@ static void f_midi2_queue_out_reqs(struct f_midi2_usb_ep *usb_ep)
 	}
 }
 
-/*
- * Gadget Function callbacks
- */
+ 
 
-/* stop both IN and OUT EPs */
+ 
 static void f_midi2_stop_eps(struct f_midi2_usb_ep *ep_in,
 			     struct f_midi2_usb_ep *ep_out)
 {
@@ -1235,7 +1208,7 @@ static void f_midi2_stop_eps(struct f_midi2_usb_ep *ep_in,
 	f_midi2_free_ep_reqs(ep_out);
 }
 
-/* start/queue both IN and OUT EPs */
+ 
 static int f_midi2_start_eps(struct f_midi2_usb_ep *ep_in,
 			     struct f_midi2_usb_ep *ep_out,
 			     struct usb_function *fn)
@@ -1260,7 +1233,7 @@ static int f_midi2_start_eps(struct f_midi2_usb_ep *ep_in,
 	return 0;
 }
 
-/* gadget function set_alt callback */
+ 
 static int f_midi2_set_alt(struct usb_function *fn, unsigned int intf,
 			   unsigned int alt)
 {
@@ -1310,7 +1283,7 @@ static int f_midi2_set_alt(struct usb_function *fn, unsigned int intf,
 	return 0;
 }
 
-/* gadget function get_alt callback */
+ 
 static int f_midi2_get_alt(struct usb_function *fn, unsigned int intf)
 {
 	struct f_midi2 *midi2 = func_to_midi2(fn);
@@ -1321,7 +1294,7 @@ static int f_midi2_get_alt(struct usb_function *fn, unsigned int intf)
 	return 0;
 }
 
-/* convert UMP direction to USB MIDI 2.0 direction */
+ 
 static unsigned int ump_to_usb_dir(unsigned int ump_dir)
 {
 	switch (ump_dir) {
@@ -1334,7 +1307,7 @@ static unsigned int ump_to_usb_dir(unsigned int ump_dir)
 	}
 }
 
-/* assign GTB descriptors (for the given request) */
+ 
 static void assign_block_descriptors(struct f_midi2 *midi2,
 				     struct usb_request *req,
 				     int max_len)
@@ -1393,7 +1366,7 @@ static void assign_block_descriptors(struct f_midi2 *midi2,
 	req->zero = len < max_len;
 }
 
-/* gadget function setup callback: handle GTB requests */
+ 
 static int f_midi2_setup(struct usb_function *fn,
 			 const struct usb_ctrlrequest *ctrl)
 {
@@ -1412,7 +1385,7 @@ static int f_midi2_setup(struct usb_function *fn,
 	if ((value >> 8) != USB_DT_CS_GR_TRM_BLOCK)
 		return -EOPNOTSUPP;
 
-	/* handle only altset 1 */
+	 
 	if ((value & 0xff) != 1)
 		return -EOPNOTSUPP;
 
@@ -1420,7 +1393,7 @@ static int f_midi2_setup(struct usb_function *fn,
 	return usb_ep_queue(cdev->gadget->ep0, req, GFP_ATOMIC);
 }
 
-/* gadget function disable callback */
+ 
 static void f_midi2_disable(struct usb_function *fn)
 {
 	struct f_midi2 *midi2 = func_to_midi2(fn);
@@ -1428,9 +1401,7 @@ static void f_midi2_disable(struct usb_function *fn)
 	midi2->operation_mode = MIDI_OP_MODE_UNSET;
 }
 
-/*
- * ALSA UMP ops: most of them are NOPs, only trigger for write is needed
- */
+ 
 static int f_midi2_ump_open(struct snd_ump_endpoint *ump, int dir)
 {
 	return 0;
@@ -1468,9 +1439,7 @@ static const struct snd_ump_ops f_midi2_ump_ops = {
 	.drain = f_midi2_ump_drain,
 };
 
-/*
- * "Operation Mode" control element
- */
+ 
 static int f_midi2_operation_mode_info(struct snd_kcontrol *kcontrol,
 				       struct snd_ctl_elem_info *uinfo)
 {
@@ -1498,9 +1467,7 @@ static const struct snd_kcontrol_new operation_mode_ctl = {
 	.get = f_midi2_operation_mode_get,
 };
 
-/*
- * ALSA UMP instance creation / deletion
- */
+ 
 static void f_midi2_free_card(struct f_midi2 *midi2)
 {
 	if (midi2->card) {
@@ -1509,7 +1476,7 @@ static void f_midi2_free_card(struct f_midi2 *midi2)
 	}
 }
 
-/* use a reverse direction for the gadget host */
+ 
 static int reverse_dir(int dir)
 {
 	if (!dir || dir == SNDRV_UMP_DIR_BIDIRECTION)
@@ -1610,15 +1577,13 @@ static int f_midi2_create_card(struct f_midi2 *midi2)
 	return err;
 }
 
-/*
- * Creation of USB descriptors
- */
+ 
 struct f_midi2_usb_config {
 	struct usb_descriptor_header **list;
 	unsigned int size;
 	unsigned int alloc;
 
-	/* MIDI 1.0 jacks */
+	 
 	unsigned char jack_in, jack_out, jack_id;
 	struct usb_midi_in_jack_descriptor jack_ins[MAX_CABLES];
 	struct usb_midi_out_jack_descriptor_1 jack_outs[MAX_CABLES];
@@ -1671,7 +1636,7 @@ static int append_midi1_in_jack(struct f_midi2 *midi2,
 	jack->bDescriptorSubtype = USB_MS_MIDI_IN_JACK;
 	jack->bJackType = type;
 	jack->bJackID = id;
-	/* use the corresponding block name as jack name */
+	 
 	if (map->ep)
 		jack->iJack = map->ep->blks[map->block].string_id;
 
@@ -1699,7 +1664,7 @@ static int append_midi1_out_jack(struct f_midi2 *midi2,
 	jack->bNrInputPins = 1;
 	jack->pins[0].baSourceID = source;
 	jack->pins[0].baSourcePin = 0x01;
-	/* use the corresponding block name as jack name */
+	 
 	if (map->ep)
 		jack->iJack = map->ep->blks[map->block].string_id;
 
@@ -1852,10 +1817,10 @@ static void f_midi2_free_usb_configs(struct f_midi2_usb_config *config)
 	memset(config, 0, sizeof(*config));
 }
 
-/* as we use the static descriptors for simplicity, serialize bind call */
+ 
 static DEFINE_MUTEX(f_midi2_desc_mutex);
 
-/* fill MIDI2 EP class-specific descriptor */
+ 
 static void fill_midi2_class_desc(struct f_midi2_ep *ep,
 				  struct usb_ms20_endpoint_descriptor_32 *cdesc)
 {
@@ -1869,7 +1834,7 @@ static void fill_midi2_class_desc(struct f_midi2_ep *ep,
 		cdesc->baAssoGrpTrmBlkID[blk] = ep->blks[blk].gtb_id;
 }
 
-/* initialize MIDI2 EP-in */
+ 
 static int f_midi2_init_midi2_ep_in(struct f_midi2 *midi2, int index)
 {
 	struct f_midi2_ep *ep = &midi2->midi2_eps[index];
@@ -1888,7 +1853,7 @@ static int f_midi2_init_midi2_ep_in(struct f_midi2 *midi2, int index)
 			       f_midi2_ep_in_complete);
 }
 
-/* initialize MIDI2 EP-out */
+ 
 static int f_midi2_init_midi2_ep_out(struct f_midi2 *midi2, int index)
 {
 	struct f_midi2_ep *ep = &midi2->midi2_eps[index];
@@ -1905,7 +1870,7 @@ static int f_midi2_init_midi2_ep_out(struct f_midi2 *midi2, int index)
 			       f_midi2_ep_out_complete);
 }
 
-/* gadget function bind callback */
+ 
 static int f_midi2_bind(struct usb_configuration *c, struct usb_function *f)
 {
 	struct usb_composite_dev *cdev = c->cdev;
@@ -1913,7 +1878,7 @@ static int f_midi2_bind(struct usb_configuration *c, struct usb_function *f)
 	struct f_midi2_ep *ep;
 	struct f_midi2_usb_config config = {};
 	struct usb_gadget_strings string_fn = {
-		.language = 0x0409,	/* en-us */
+		.language = 0x0409,	 
 		.strings = midi2->string_defs,
 	};
 	struct usb_gadget_strings *strings[] = {
@@ -1929,7 +1894,7 @@ static int f_midi2_bind(struct usb_configuration *c, struct usb_function *f)
 	if (status < 0)
 		goto fail_register;
 
-	/* maybe allocate device-global string ID */
+	 
 	midi2->strings = usb_gstrings_attach(c->cdev, strings,
 					     midi2->total_blocks + 1);
 	if (IS_ERR(midi2->strings)) {
@@ -1949,13 +1914,13 @@ static int f_midi2_bind(struct usb_configuration *c, struct usb_function *f)
 
 	midi2_midi2_if_desc.bNumEndpoints = midi2->num_eps * 2;
 
-	/* audio interface */
+	 
 	status = usb_interface_id(c, f);
 	if (status < 0)
 		goto fail;
 	midi2_audio_if_desc.bInterfaceNumber = status;
 
-	/* MIDI streaming */
+	 
 	status = usb_interface_id(c, f);
 	if (status < 0)
 		goto fail;
@@ -1964,7 +1929,7 @@ static int f_midi2_bind(struct usb_configuration *c, struct usb_function *f)
 	midi2_midi2_if_desc.bInterfaceNumber = status;
 	midi2_audio_class_desc.baInterfaceNr[0] = status;
 
-	/* allocate instance-specific endpoints */
+	 
 	if (midi2->midi2_eps[0].blks[0].info.direction != SNDRV_UMP_DIR_OUTPUT) {
 		status = f_midi2_init_ep(midi2, NULL, &midi2->midi1_ep_in,
 					 &midi2_midi1_ep_in_desc,
@@ -2034,7 +1999,7 @@ fail_register:
 	return status;
 }
 
-/* gadget function unbind callback */
+ 
 static void f_midi2_unbind(struct usb_configuration *c, struct usb_function *f)
 {
 	struct f_midi2 *midi2 = func_to_midi2(f);
@@ -2052,11 +2017,9 @@ static void f_midi2_unbind(struct usb_configuration *c, struct usb_function *f)
 	usb_free_all_descriptors(f);
 }
 
-/*
- * ConfigFS interface
- */
+ 
 
-/* type conversion helpers */
+ 
 static inline struct f_midi2_opts *to_f_midi2_opts(struct config_item *item)
 {
 	return container_of(to_config_group(item), struct f_midi2_opts,
@@ -2077,7 +2040,7 @@ to_f_midi2_block_opts(struct config_item *item)
 			    group);
 }
 
-/* trim the string to be usable for EP and FB name strings */
+ 
 static void make_name_string(char *s)
 {
 	char *p;
@@ -2091,7 +2054,7 @@ static void make_name_string(char *s)
 		*p = 0;
 }
 
-/* configfs helpers: generic show/store for unisnged int */
+ 
 static ssize_t f_midi2_opts_uint_show(struct f_midi2_opts *opts,
 				      u32 val, const char *format, char *page)
 {
@@ -2132,7 +2095,7 @@ end:
 	return ret;
 }
 
-/* generic store for bool */
+ 
 static ssize_t f_midi2_opts_bool_store(struct f_midi2_opts *opts,
 				       bool *valp, const char *page, size_t len)
 {
@@ -2156,7 +2119,7 @@ end:
 	return ret;
 }
 
-/* generic show/store for string */
+ 
 static ssize_t f_midi2_opts_str_show(struct f_midi2_opts *opts,
 				     const char *str, char *page)
 {
@@ -2198,11 +2161,9 @@ end:
 	return ret;
 }
 
-/*
- * Definitions for UMP Block config
- */
+ 
 
-/* define an uint option for block */
+ 
 #define F_MIDI2_BLOCK_OPT(name, format, minval, maxval)			\
 static ssize_t f_midi2_block_opts_##name##_show(struct config_item *item,\
 					  char *page)			\
@@ -2222,7 +2183,7 @@ static ssize_t f_midi2_block_opts_##name##_store(struct config_item *item,\
 									\
 CONFIGFS_ATTR(f_midi2_block_opts_, name)
 
-/* define a boolean option for block */
+ 
 #define F_MIDI2_BLOCK_BOOL_OPT(name)					\
 static ssize_t f_midi2_block_opts_##name##_show(struct config_item *item,\
 					  char *page)			\
@@ -2305,7 +2266,7 @@ static const struct config_item_type f_midi2_block_type = {
 	.ct_owner	= THIS_MODULE,
 };
 
-/* create a f_midi2_block_opts instance for the given block number */
+ 
 static int f_midi2_block_opts_create(struct f_midi2_ep_opts *ep_opts,
 				     unsigned int blk,
 				     struct f_midi2_block_opts **block_p)
@@ -2328,7 +2289,7 @@ static int f_midi2_block_opts_create(struct f_midi2_ep_opts *ep_opts,
 	block_opts->ep = ep_opts;
 	block_opts->id = blk;
 
-	/* set up the default values */
+	 
 	block_opts->info.direction = SNDRV_UMP_DIR_BIDIRECTION;
 	block_opts->info.first_group = 0;
 	block_opts->info.num_groups = 1;
@@ -2343,7 +2304,7 @@ static int f_midi2_block_opts_create(struct f_midi2_ep_opts *ep_opts,
 	return ret;
 }
 
-/* make_group callback for a block */
+ 
 static struct config_group *
 f_midi2_opts_block_make(struct config_group *group, const char *name)
 {
@@ -2373,7 +2334,7 @@ f_midi2_opts_block_make(struct config_group *group, const char *name)
 	return &block_opts->group;
 }
 
-/* drop_item callback for a block */
+ 
 static void
 f_midi2_opts_block_drop(struct config_group *group, struct config_item *item)
 {
@@ -2385,11 +2346,9 @@ f_midi2_opts_block_drop(struct config_group *group, struct config_item *item)
 	config_item_put(item);
 }
 
-/*
- * Definitions for UMP Endpoint config
- */
+ 
 
-/* define an uint option for EP */
+ 
 #define F_MIDI2_EP_OPT(name, format, minval, maxval)			\
 static ssize_t f_midi2_ep_opts_##name##_show(struct config_item *item,	\
 					     char *page)		\
@@ -2409,7 +2368,7 @@ static ssize_t f_midi2_ep_opts_##name##_store(struct config_item *item,	\
 									\
 CONFIGFS_ATTR(f_midi2_ep_opts_, name)
 
-/* define a string option for EP */
+ 
 #define F_MIDI2_EP_STR_OPT(name, maxlen)				\
 static ssize_t f_midi2_ep_opts_##name##_show(struct config_item *item,	\
 					     char *page)		\
@@ -2474,7 +2433,7 @@ static const struct config_item_type f_midi2_ep_type = {
 	.ct_owner	= THIS_MODULE,
 };
 
-/* create a f_midi2_ep_opts instance */
+ 
 static int f_midi2_ep_opts_create(struct f_midi2_opts *opts,
 				  unsigned int index,
 				  struct f_midi2_ep_opts **ep_p)
@@ -2488,7 +2447,7 @@ static int f_midi2_ep_opts_create(struct f_midi2_opts *opts,
 	ep_opts->opts = opts;
 	ep_opts->index = index;
 
-	/* set up the default values */
+	 
 	ep_opts->info.protocol = 2;
 	ep_opts->info.protocol_caps = 3;
 
@@ -2497,7 +2456,7 @@ static int f_midi2_ep_opts_create(struct f_midi2_opts *opts,
 	return 0;
 }
 
-/* make_group callback for an EP */
+ 
 static struct config_group *
 f_midi2_opts_ep_make(struct config_group *group, const char *name)
 {
@@ -2525,7 +2484,7 @@ f_midi2_opts_ep_make(struct config_group *group, const char *name)
 	return &ep_opts->group;
 }
 
-/* drop_item callback for an EP */
+ 
 static void
 f_midi2_opts_ep_drop(struct config_group *group, struct config_item *item)
 {
@@ -2537,11 +2496,9 @@ f_midi2_opts_ep_drop(struct config_group *group, struct config_item *item)
 	config_item_put(item);
 }
 
-/*
- * Definitions for card config
- */
+ 
 
-/* define a bool option for card */
+ 
 #define F_MIDI2_BOOL_OPT(name)						\
 static ssize_t f_midi2_opts_##name##_show(struct config_item *item,	\
 					  char *page)			\
@@ -2623,7 +2580,7 @@ static void f_midi2_free_inst(struct usb_function_instance *f)
 	kfree(opts);
 }
 
-/* gadget alloc_inst */
+ 
 static struct usb_function_instance *f_midi2_alloc_inst(void)
 {
 	struct f_midi2_opts *opts;
@@ -2642,14 +2599,14 @@ static struct usb_function_instance *f_midi2_alloc_inst(void)
 	opts->info.num_reqs = 32;
 	opts->info.req_buf_size = 512;
 
-	/* create the default ep */
+	 
 	ret = f_midi2_ep_opts_create(opts, 0, &ep_opts);
 	if (ret) {
 		kfree(opts);
 		return ERR_PTR(ret);
 	}
 
-	/* create the default block */
+	 
 	ret = f_midi2_block_opts_create(ep_opts, 0, &block_opts);
 	if (ret) {
 		kfree(ep_opts);
@@ -2657,7 +2614,7 @@ static struct usb_function_instance *f_midi2_alloc_inst(void)
 		return ERR_PTR(ret);
 	}
 
-	/* set up the default MIDI1 (that is mandatory) */
+	 
 	block_opts->info.midi1_num_groups = 1;
 
 	config_group_init_type_name(&opts->func_inst.group, "",
@@ -2689,9 +2646,7 @@ static void f_midi2_free(struct usb_function *f)
 			container_of(f->fi, struct f_midi2_opts, func_inst));
 }
 
-/* verify the parameters set up via configfs;
- * return the number of EPs or a negative error
- */
+ 
 static int verify_parameters(struct f_midi2_opts *opts)
 {
 	int i, j, num_eps, num_blks;
@@ -2743,7 +2698,7 @@ static int verify_parameters(struct f_midi2_opts *opts)
 	return num_eps;
 }
 
-/* fill mapping between MIDI 1.0 cable and UMP EP/group */
+ 
 static void fill_midi1_cable_mapping(struct f_midi2 *midi2,
 				     struct f_midi2_ep *ep,
 				     int blk)
@@ -2764,7 +2719,7 @@ static void fill_midi1_cable_mapping(struct f_midi2 *midi2,
 			map->block = blk;
 			map->group = group;
 			midi2->num_midi1_in++;
-			/* store 1-based cable number */
+			 
 			ep->in_group_to_cable[group] = midi2->num_midi1_in;
 		}
 	}
@@ -2783,7 +2738,7 @@ static void fill_midi1_cable_mapping(struct f_midi2 *midi2,
 	}
 }
 
-/* gadget alloc callback */
+ 
 static struct usb_function *f_midi2_alloc(struct usb_function_instance *fi)
 {
 	struct f_midi2 *midi2;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2018 NXP
- *	Dong Aisheng <aisheng.dong@nxp.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -18,18 +15,7 @@
 
 #include <dt-bindings/clock/imx8-clock.h>
 
-/*
- * struct imx8qxp_lpcg_data - Description of one LPCG clock
- * @id: clock ID
- * @name: clock name
- * @parent: parent clock name
- * @flags: common clock flags
- * @offset: offset of this LPCG clock
- * @bit_idx: bit index of this LPCG clock
- * @hw_gate: whether supports HW autogate
- *
- * This structure describes one LPCG clock
- */
+ 
 struct imx8qxp_lpcg_data {
 	int id;
 	char *name;
@@ -40,15 +26,7 @@ struct imx8qxp_lpcg_data {
 	bool hw_gate;
 };
 
-/*
- * struct imx8qxp_ss_lpcg - Description of one subsystem LPCG clocks
- * @lpcg: LPCG clocks array of one subsystem
- * @num_lpcg: the number of LPCG clocks
- * @num_max: the maximum number of LPCG clocks
- *
- * This structure describes each subsystem LPCG clocks information
- * which then will be used to create respective LPCGs clocks
- */
+ 
 struct imx8qxp_ss_lpcg {
 	const struct imx8qxp_lpcg_data *lpcg;
 	u8 num_lpcg;
@@ -200,13 +178,7 @@ static int imx_lpcg_parse_clks_from_dt(struct platform_device *pdev,
 		return -EINVAL;
 	}
 
-	/*
-	 * A trick here is that we set the num of clks to the MAX instead
-	 * of the count from clock-indices because one LPCG supports up to
-	 * 8 clock outputs which each of them is fixed to 4 bits. Then we can
-	 * easily get the clock by clk-indices (bit-offset) / 4.
-	 * And the cost is very limited few pointers.
-	 */
+	 
 
 	clk_data = devm_kzalloc(&pdev->dev, struct_size(clk_data, hws,
 				IMX_LPCG_MAX_CLKS), GFP_KERNEL);
@@ -297,7 +269,7 @@ static int imx8qxp_lpcg_clk_probe(struct platform_device *pdev)
 	int ret;
 	int i;
 
-	/* try new binding to parse clocks from device tree first */
+	 
 	ret = imx_lpcg_parse_clks_from_dt(pdev, np);
 	if (!ret)
 		return 0;
@@ -306,17 +278,7 @@ static int imx8qxp_lpcg_clk_probe(struct platform_device *pdev)
 	if (!ss_lpcg)
 		return -ENODEV;
 
-	/*
-	 * Please don't replace this with devm_platform_ioremap_resource.
-	 *
-	 * devm_platform_ioremap_resource calls devm_ioremap_resource which
-	 * differs from devm_ioremap by also calling devm_request_mem_region
-	 * and preventing other mappings in the same area.
-	 *
-	 * On imx8 the LPCG nodes map entire subsystems and overlap
-	 * peripherals, this means that using devm_platform_ioremap_resource
-	 * will cause many devices to fail to probe including serial ports.
-	 */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res)
 		return -EINVAL;
@@ -353,7 +315,7 @@ static const struct of_device_id imx8qxp_lpcg_match[] = {
 	{ .compatible = "fsl,imx8qxp-lpcg-conn", &imx8qxp_ss_conn, },
 	{ .compatible = "fsl,imx8qxp-lpcg-lsio", &imx8qxp_ss_lsio, },
 	{ .compatible = "fsl,imx8qxp-lpcg", NULL },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver imx8qxp_lpcg_clk_driver = {

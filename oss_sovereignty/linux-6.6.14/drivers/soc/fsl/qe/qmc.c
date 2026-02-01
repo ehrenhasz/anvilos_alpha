@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * QMC driver
- *
- * Copyright 2022 CS GROUP France
- *
- * Author: Herve Codina <herve.codina@bootlin.com>
- */
+
+ 
 
 #include <soc/fsl/qe/qmc.h>
 #include <linux/dma-mapping.h>
@@ -21,69 +15,69 @@
 #include <sysdev/fsl_soc.h>
 #include "tsa.h"
 
-/* SCC general mode register high (32 bits) */
+ 
 #define SCC_GSMRL	0x00
 #define SCC_GSMRL_ENR		(1 << 5)
 #define SCC_GSMRL_ENT		(1 << 4)
 #define SCC_GSMRL_MODE_QMC	(0x0A << 0)
 
-/* SCC general mode register low (32 bits) */
+ 
 #define SCC_GSMRH	0x04
 #define   SCC_GSMRH_CTSS	(1 << 7)
 #define   SCC_GSMRH_CDS		(1 << 8)
 #define   SCC_GSMRH_CTSP	(1 << 9)
 #define   SCC_GSMRH_CDP		(1 << 10)
 
-/* SCC event register (16 bits) */
+ 
 #define SCC_SCCE	0x10
 #define   SCC_SCCE_IQOV		(1 << 3)
 #define   SCC_SCCE_GINT		(1 << 2)
 #define   SCC_SCCE_GUN		(1 << 1)
 #define   SCC_SCCE_GOV		(1 << 0)
 
-/* SCC mask register (16 bits) */
+ 
 #define SCC_SCCM	0x14
-/* Multichannel base pointer (32 bits) */
+ 
 #define QMC_GBL_MCBASE		0x00
-/* Multichannel controller state (16 bits) */
+ 
 #define QMC_GBL_QMCSTATE	0x04
-/* Maximum receive buffer length (16 bits) */
+ 
 #define QMC_GBL_MRBLR		0x06
-/* Tx time-slot assignment table pointer (16 bits) */
+ 
 #define QMC_GBL_TX_S_PTR	0x08
-/* Rx pointer (16 bits) */
+ 
 #define QMC_GBL_RXPTR		0x0A
-/* Global receive frame threshold (16 bits) */
+ 
 #define QMC_GBL_GRFTHR		0x0C
-/* Global receive frame count (16 bits) */
+ 
 #define QMC_GBL_GRFCNT		0x0E
-/* Multichannel interrupt base address (32 bits) */
+ 
 #define QMC_GBL_INTBASE		0x10
-/* Multichannel interrupt pointer (32 bits) */
+ 
 #define QMC_GBL_INTPTR		0x14
-/* Rx time-slot assignment table pointer (16 bits) */
+ 
 #define QMC_GBL_RX_S_PTR	0x18
-/* Tx pointer (16 bits) */
+ 
 #define QMC_GBL_TXPTR		0x1A
-/* CRC constant (32 bits) */
+ 
 #define QMC_GBL_C_MASK32	0x1C
-/* Time slot assignment table Rx (32 x 16 bits) */
+ 
 #define QMC_GBL_TSATRX		0x20
-/* Time slot assignment table Tx (32 x 16 bits) */
+ 
 #define QMC_GBL_TSATTX		0x60
-/* CRC constant (16 bits) */
+ 
 #define QMC_GBL_C_MASK16	0xA0
 
-/* TSA entry (16bit entry in TSATRX and TSATTX) */
+ 
 #define QMC_TSA_VALID		(1 << 15)
 #define QMC_TSA_WRAP		(1 << 14)
 #define QMC_TSA_MASK		(0x303F)
 #define QMC_TSA_CHANNEL(x)	((x) << 6)
 
-/* Tx buffer descriptor base address (16 bits, offset from MCBASE) */
+ 
 #define QMC_SPE_TBASE	0x00
 
-/* Channel mode register (16 bits) */
+ 
 #define QMC_SPE_CHAMR	0x02
 #define   QMC_SPE_CHAMR_MODE_HDLC	(1 << 15)
 #define   QMC_SPE_CHAMR_MODE_TRANSP	((0 << 15) | (1 << 13))
@@ -95,35 +89,35 @@
 #define   QMC_SPE_CHAMR_TRANSP_RD	(1 << 14)
 #define   QMC_SPE_CHAMR_TRANSP_SYNC	(1 << 10)
 
-/* Tx internal state (32 bits) */
+ 
 #define QMC_SPE_TSTATE	0x04
-/* Tx buffer descriptor pointer (16 bits) */
+ 
 #define QMC_SPE_TBPTR	0x0C
-/* Zero-insertion state (32 bits) */
+ 
 #define QMC_SPE_ZISTATE	0x14
-/* Channel’s interrupt mask flags (16 bits) */
+ 
 #define QMC_SPE_INTMSK	0x1C
-/* Rx buffer descriptor base address (16 bits, offset from MCBASE) */
+ 
 #define QMC_SPE_RBASE	0x20
-/* HDLC: Maximum frame length register (16 bits) */
+ 
 #define QMC_SPE_MFLR	0x22
-/* TRANSPARENT: Transparent maximum receive length (16 bits) */
+ 
 #define QMC_SPE_TMRBLR	0x22
-/* Rx internal state (32 bits) */
+ 
 #define QMC_SPE_RSTATE	0x24
-/* Rx buffer descriptor pointer (16 bits) */
+ 
 #define QMC_SPE_RBPTR	0x2C
-/* Packs 4 bytes to 1 long word before writing to buffer (32 bits) */
+ 
 #define QMC_SPE_RPACK	0x30
-/* Zero deletion state (32 bits) */
+ 
 #define QMC_SPE_ZDSTATE	0x34
 
-/* Transparent synchronization (16 bits) */
+ 
 #define QMC_SPE_TRNSYNC 0x3C
 #define   QMC_SPE_TRNSYNC_RX(x)	((x) << 8)
 #define   QMC_SPE_TRNSYNC_TX(x)	((x) << 0)
 
-/* Interrupt related registers bits */
+ 
 #define QMC_INT_V		(1 << 15)
 #define QMC_INT_W		(1 << 14)
 #define QMC_INT_NID		(1 << 13)
@@ -136,7 +130,7 @@
 #define QMC_INT_TXB		(1 << 1)
 #define QMC_INT_RXB		(1 << 0)
 
-/* BD related registers bits */
+ 
 #define QMC_BD_RX_E	(1 << 15)
 #define QMC_BD_RX_W	(1 << 13)
 #define QMC_BD_RX_I	(1 << 12)
@@ -158,7 +152,7 @@
 #define QMC_BD_TX_UB	(1 << 7)
 #define QMC_BD_TX_PAD	(0x0f << 0)
 
-/* Numbers of BDs and interrupt items */
+ 
 #define QMC_NB_TXBDS	8
 #define QMC_NB_RXBDS	8
 #define QMC_NB_INTS	128
@@ -259,7 +253,7 @@ int qmc_chan_get_info(struct qmc_chan *chan, struct qmc_chan_info *info)
 	struct tsa_serial_info tsa_info;
 	int ret;
 
-	/* Retrieve info from the TSA related serial */
+	 
 	ret = tsa_serial_get_info(chan->qmc->tsa_serial, &tsa_info);
 	if (ret)
 		return ret;
@@ -322,20 +316,14 @@ int qmc_chan_write_submit(struct qmc_chan *chan, dma_addr_t addr, size_t length,
 	u16 ctrl;
 	int ret;
 
-	/*
-	 * R bit  UB bit
-	 *   0       0  : The BD is free
-	 *   1       1  : The BD is in used, waiting for transfer
-	 *   0       1  : The BD is in used, waiting for completion
-	 *   1       0  : Should not append
-	 */
+	 
 
 	spin_lock_irqsave(&chan->tx_lock, flags);
 	bd = chan->txbd_free;
 
 	ctrl = qmc_read16(&bd->cbd_sc);
 	if (ctrl & (QMC_BD_TX_R | QMC_BD_TX_UB)) {
-		/* We are full ... */
+		 
 		ret = -EBUSY;
 		goto end;
 	}
@@ -347,9 +335,9 @@ int qmc_chan_write_submit(struct qmc_chan *chan, dma_addr_t addr, size_t length,
 	xfer_desc->tx_complete = complete;
 	xfer_desc->context = context;
 
-	/* Activate the descriptor */
+	 
 	ctrl |= (QMC_BD_TX_R | QMC_BD_TX_UB);
-	wmb(); /* Be sure to flush the descriptor before control update */
+	wmb();  
 	qmc_write16(&bd->cbd_sc, ctrl);
 
 	if (!chan->is_tx_stopped)
@@ -377,13 +365,7 @@ static void qmc_chan_write_done(struct qmc_chan *chan)
 	cbd_t *__iomem bd;
 	u16 ctrl;
 
-	/*
-	 * R bit  UB bit
-	 *   0       0  : The BD is free
-	 *   1       1  : The BD is in used, waiting for transfer
-	 *   0       1  : The BD is in used, waiting for completion
-	 *   1       0  : Should not append
-	 */
+	 
 
 	spin_lock_irqsave(&chan->tx_lock, flags);
 	bd = chan->txbd_done;
@@ -429,39 +411,33 @@ int qmc_chan_read_submit(struct qmc_chan *chan, dma_addr_t addr, size_t length,
 	u16 ctrl;
 	int ret;
 
-	/*
-	 * E bit  UB bit
-	 *   0       0  : The BD is free
-	 *   1       1  : The BD is in used, waiting for transfer
-	 *   0       1  : The BD is in used, waiting for completion
-	 *   1       0  : Should not append
-	 */
+	 
 
 	spin_lock_irqsave(&chan->rx_lock, flags);
 	bd = chan->rxbd_free;
 
 	ctrl = qmc_read16(&bd->cbd_sc);
 	if (ctrl & (QMC_BD_RX_E | QMC_BD_RX_UB)) {
-		/* We are full ... */
+		 
 		ret = -EBUSY;
 		goto end;
 	}
 
-	qmc_write16(&bd->cbd_datlen, 0); /* data length is updated by the QMC */
+	qmc_write16(&bd->cbd_datlen, 0);  
 	qmc_write32(&bd->cbd_bufaddr, addr);
 
 	xfer_desc = &chan->rx_desc[bd - chan->rxbds];
 	xfer_desc->rx_complete = complete;
 	xfer_desc->context = context;
 
-	/* Activate the descriptor */
+	 
 	ctrl |= (QMC_BD_RX_E | QMC_BD_RX_UB);
-	wmb(); /* Be sure to flush data before descriptor activation */
+	wmb();  
 	qmc_write16(&bd->cbd_sc, ctrl);
 
-	/* Restart receiver if needed */
+	 
 	if (chan->is_rx_halted && !chan->is_rx_stopped) {
-		/* Restart receiver */
+		 
 		if (chan->mode == QMC_TRANSPARENT)
 			qmc_write32(chan->s_param + QMC_SPE_ZDSTATE, 0x18000080);
 		else
@@ -493,13 +469,7 @@ static void qmc_chan_read_done(struct qmc_chan *chan)
 	u16 datalen;
 	u16 ctrl;
 
-	/*
-	 * E bit  UB bit
-	 *   0       0  : The BD is free
-	 *   1       1  : The BD is in used, waiting for transfer
-	 *   0       1  : The BD is in used, waiting for completion
-	 *   1       0  : Should not append
-	 */
+	 
 
 	spin_lock_irqsave(&chan->rx_lock, flags);
 	bd = chan->rxbd_done;
@@ -551,7 +521,7 @@ static int qmc_chan_stop_rx(struct qmc_chan *chan)
 
 	spin_lock_irqsave(&chan->rx_lock, flags);
 
-	/* Send STOP RECEIVE command */
+	 
 	ret = qmc_chan_command(chan, 0x0);
 	if (ret) {
 		dev_err(chan->qmc->dev, "chan %u: Send STOP RECEIVE failed (%d)\n",
@@ -573,7 +543,7 @@ static int qmc_chan_stop_tx(struct qmc_chan *chan)
 
 	spin_lock_irqsave(&chan->tx_lock, flags);
 
-	/* Send STOP TRANSMIT command */
+	 
 	ret = qmc_chan_command(chan, 0x1);
 	if (ret) {
 		dev_err(chan->qmc->dev, "chan %u: Send STOP TRANSMIT failed (%d)\n",
@@ -614,7 +584,7 @@ static void qmc_chan_start_rx(struct qmc_chan *chan)
 
 	spin_lock_irqsave(&chan->rx_lock, flags);
 
-	/* Restart the receiver */
+	 
 	if (chan->mode == QMC_TRANSPARENT)
 		qmc_write32(chan->s_param + QMC_SPE_ZDSTATE, 0x18000080);
 	else
@@ -633,13 +603,10 @@ static void qmc_chan_start_tx(struct qmc_chan *chan)
 
 	spin_lock_irqsave(&chan->tx_lock, flags);
 
-	/*
-	 * Enable channel transmitter as it could be disabled if
-	 * qmc_chan_reset() was called.
-	 */
+	 
 	qmc_setbits16(chan->s_param + QMC_SPE_CHAMR, QMC_SPE_CHAMR_ENT);
 
-	/* Set the POL bit in the channel mode register */
+	 
 	qmc_setbits16(chan->s_param + QMC_SPE_CHAMR, QMC_SPE_CHAMR_POL);
 
 	chan->is_tx_stopped = false;
@@ -699,7 +666,7 @@ static void qmc_chan_reset_tx(struct qmc_chan *chan)
 
 	spin_lock_irqsave(&chan->tx_lock, flags);
 
-	/* Disable transmitter. It will be re-enable on qmc_chan_start() */
+	 
 	qmc_clrbits16(chan->s_param + QMC_SPE_CHAMR, QMC_SPE_CHAMR_ENT);
 
 	bd = chan->txbds;
@@ -719,7 +686,7 @@ static void qmc_chan_reset_tx(struct qmc_chan *chan)
 	qmc_write16(chan->s_param + QMC_SPE_TBPTR,
 		    qmc_read16(chan->s_param + QMC_SPE_TBASE));
 
-	/* Reset TSTATE and ZISTATE to their initial value */
+	 
 	qmc_write32(chan->s_param + QMC_SPE_TSTATE, 0x30000000);
 	qmc_write32(chan->s_param + QMC_SPE_ZISTATE, 0x00000100);
 
@@ -749,7 +716,7 @@ static int qmc_check_chans(struct qmc *qmc)
 	u64 rx_ts_assigned_mask;
 	int ret;
 
-	/* Retrieve info from the TSA related serial */
+	 
 	ret = tsa_serial_get_info(qmc->tsa_serial, &info);
 	if (ret)
 		return ret;
@@ -759,10 +726,7 @@ static int qmc_check_chans(struct qmc *qmc)
 		return -EINVAL;
 	}
 
-	/*
-	 * If more than 32 TS are assigned to this serial, one common table is
-	 * used for Tx and Rx and so masks must be equal for all channels.
-	 */
+	 
 	if ((info.nb_tx_ts > 32) || (info.nb_rx_ts > 32)) {
 		if (info.nb_tx_ts != info.nb_rx_ts) {
 			dev_err(qmc->dev, "Number of TSA Tx/Rx TS assigned are not equal\n");
@@ -901,17 +865,13 @@ static int qmc_setup_tsa_64rxtx(struct qmc *qmc, const struct tsa_serial_info *i
 	unsigned int i;
 	u16 val;
 
-	/*
-	 * Use a common Tx/Rx 64 entries table.
-	 * Everything was previously checked, Tx and Rx related stuffs are
-	 * identical -> Used Rx related stuff to build the table
-	 */
+	 
 
-	/* Invalidate all entries */
+	 
 	for (i = 0; i < 64; i++)
 		qmc_write16(qmc->scc_pram + QMC_GBL_TSATRX + (i * 2), 0x0000);
 
-	/* Set entries based on Rx stuff*/
+	 
 	list_for_each_entry(chan, &qmc->chan_head, list) {
 		for (i = 0; i < info->nb_rx_ts; i++) {
 			if (!(chan->rx_ts_mask & (((u64)1) << i)))
@@ -923,11 +883,11 @@ static int qmc_setup_tsa_64rxtx(struct qmc *qmc, const struct tsa_serial_info *i
 		}
 	}
 
-	/* Set Wrap bit on last entry */
+	 
 	qmc_setbits16(qmc->scc_pram + QMC_GBL_TSATRX + ((info->nb_rx_ts - 1) * 2),
 		      QMC_TSA_WRAP);
 
-	/* Init pointers to the table */
+	 
 	val = qmc->scc_pram_offset + QMC_GBL_TSATRX;
 	qmc_write16(qmc->scc_pram + QMC_GBL_RX_S_PTR, val);
 	qmc_write16(qmc->scc_pram + QMC_GBL_RXPTR, val);
@@ -943,20 +903,17 @@ static int qmc_setup_tsa_32rx_32tx(struct qmc *qmc, const struct tsa_serial_info
 	unsigned int i;
 	u16 val;
 
-	/*
-	 * Use a Tx 32 entries table and a Rx 32 entries table.
-	 * Everything was previously checked.
-	 */
+	 
 
-	/* Invalidate all entries */
+	 
 	for (i = 0; i < 32; i++) {
 		qmc_write16(qmc->scc_pram + QMC_GBL_TSATRX + (i * 2), 0x0000);
 		qmc_write16(qmc->scc_pram + QMC_GBL_TSATTX + (i * 2), 0x0000);
 	}
 
-	/* Set entries based on Rx and Tx stuff*/
+	 
 	list_for_each_entry(chan, &qmc->chan_head, list) {
-		/* Rx part */
+		 
 		for (i = 0; i < info->nb_rx_ts; i++) {
 			if (!(chan->rx_ts_mask & (((u64)1) << i)))
 				continue;
@@ -965,7 +922,7 @@ static int qmc_setup_tsa_32rx_32tx(struct qmc *qmc, const struct tsa_serial_info
 			      QMC_TSA_CHANNEL(chan->id);
 			qmc_write16(qmc->scc_pram + QMC_GBL_TSATRX + (i * 2), val);
 		}
-		/* Tx part */
+		 
 		for (i = 0; i < info->nb_tx_ts; i++) {
 			if (!(chan->tx_ts_mask & (((u64)1) << i)))
 				continue;
@@ -976,18 +933,18 @@ static int qmc_setup_tsa_32rx_32tx(struct qmc *qmc, const struct tsa_serial_info
 		}
 	}
 
-	/* Set Wrap bit on last entries */
+	 
 	qmc_setbits16(qmc->scc_pram + QMC_GBL_TSATRX + ((info->nb_rx_ts - 1) * 2),
 		      QMC_TSA_WRAP);
 	qmc_setbits16(qmc->scc_pram + QMC_GBL_TSATTX + ((info->nb_tx_ts - 1) * 2),
 		      QMC_TSA_WRAP);
 
-	/* Init Rx pointers ...*/
+	 
 	val = qmc->scc_pram_offset + QMC_GBL_TSATRX;
 	qmc_write16(qmc->scc_pram + QMC_GBL_RX_S_PTR, val);
 	qmc_write16(qmc->scc_pram + QMC_GBL_RXPTR, val);
 
-	/* ... and Tx pointers */
+	 
 	val = qmc->scc_pram_offset + QMC_GBL_TSATTX;
 	qmc_write16(qmc->scc_pram + QMC_GBL_TX_S_PTR, val);
 	qmc_write16(qmc->scc_pram + QMC_GBL_TXPTR, val);
@@ -1000,15 +957,12 @@ static int qmc_setup_tsa(struct qmc *qmc)
 	struct tsa_serial_info info;
 	int ret;
 
-	/* Retrieve info from the TSA related serial */
+	 
 	ret = tsa_serial_get_info(qmc->tsa_serial, &info);
 	if (ret)
 		return ret;
 
-	/*
-	 * Setup one common 64 entries table or two 32 entries (one for Tx and
-	 * one for Tx) according to assigned TS numbers.
-	 */
+	 
 	return ((info.nb_tx_ts > 32) || (info.nb_rx_ts > 32)) ?
 		qmc_setup_tsa_64rxtx(qmc, &info) :
 		qmc_setup_tsa_32rx_32tx(qmc, &info);
@@ -1021,15 +975,15 @@ static int qmc_setup_chan_trnsync(struct qmc *qmc, struct qmc_chan *chan)
 	u16 trnsync;
 	int ret;
 
-	/* Retrieve info from the TSA related serial */
+	 
 	ret = tsa_serial_get_info(chan->qmc->tsa_serial, &info);
 	if (ret)
 		return ret;
 
-	/* Find the first Rx TS allocated to the channel */
+	 
 	first_rx = chan->rx_ts_mask ? __ffs64(chan->rx_ts_mask) + 1 : 0;
 
-	/* Find the last Tx TS allocated to the channel */
+	 
 	last_tx = fls64(chan->tx_ts_mask);
 
 	trnsync = 0;
@@ -1057,9 +1011,9 @@ static int qmc_setup_chan(struct qmc *qmc, struct qmc_chan *chan)
 
 	chan->qmc = qmc;
 
-	/* Set channel specific parameter base address */
+	 
 	chan->s_param = qmc->dpram + (chan->id * 64);
-	/* 16 bd per channel (8 rx and 8 tx) */
+	 
 	chan->txbds = qmc->bd_table + (chan->id * (QMC_NB_TXBDS + QMC_NB_RXBDS));
 	chan->rxbds = qmc->bd_table + (chan->id * (QMC_NB_TXBDS + QMC_NB_RXBDS)) + QMC_NB_TXBDS;
 
@@ -1068,12 +1022,12 @@ static int qmc_setup_chan(struct qmc *qmc, struct qmc_chan *chan)
 	chan->rxbd_free = chan->rxbds;
 	chan->rxbd_done = chan->rxbds;
 
-	/* TBASE and TBPTR*/
+	 
 	val = chan->id * (QMC_NB_TXBDS + QMC_NB_RXBDS) * sizeof(cbd_t);
 	qmc_write16(chan->s_param + QMC_SPE_TBASE, val);
 	qmc_write16(chan->s_param + QMC_SPE_TBPTR, val);
 
-	/* RBASE and RBPTR*/
+	 
 	val = ((chan->id * (QMC_NB_TXBDS + QMC_NB_RXBDS)) + QMC_NB_TXBDS) * sizeof(cbd_t);
 	qmc_write16(chan->s_param + QMC_SPE_RBASE, val);
 	qmc_write16(chan->s_param + QMC_SPE_RBPTR, val);
@@ -1097,10 +1051,10 @@ static int qmc_setup_chan(struct qmc *qmc, struct qmc_chan *chan)
 			QMC_SPE_CHAMR_MODE_HDLC | QMC_SPE_CHAMR_HDLC_IDLM);
 	}
 
-	/* Do not enable interrupts now. They will be enabled later */
+	 
 	qmc_write16(chan->s_param + QMC_SPE_INTMSK, 0x0000);
 
-	/* Init Rx BDs and set Wrap bit on last descriptor */
+	 
 	BUILD_BUG_ON(QMC_NB_RXBDS == 0);
 	val = QMC_BD_RX_I;
 	for (i = 0; i < QMC_NB_RXBDS; i++) {
@@ -1110,7 +1064,7 @@ static int qmc_setup_chan(struct qmc *qmc, struct qmc_chan *chan)
 	bd = chan->rxbds + QMC_NB_RXBDS - 1;
 	qmc_write16(&bd->cbd_sc, val | QMC_BD_RX_W);
 
-	/* Init Tx BDs and set Wrap bit on last descriptor */
+	 
 	BUILD_BUG_ON(QMC_NB_TXBDS == 0);
 	val = QMC_BD_TX_I;
 	if (chan->mode == QMC_HDLC)
@@ -1145,7 +1099,7 @@ static int qmc_finalize_chans(struct qmc *qmc)
 	int ret;
 
 	list_for_each_entry(chan, &qmc->chan_head, list) {
-		/* Unmask channel interrupts */
+		 
 		if (chan->mode == QMC_HDLC) {
 			qmc_write16(chan->s_param + QMC_SPE_INTMSK,
 				    QMC_INT_NID | QMC_INT_IDL | QMC_INT_MRF |
@@ -1157,7 +1111,7 @@ static int qmc_finalize_chans(struct qmc *qmc)
 				    QMC_INT_TXB | QMC_INT_RXB);
 		}
 
-		/* Forced stop the channel */
+		 
 		ret = qmc_chan_stop(chan, QMC_CHAN_ALL);
 		if (ret)
 			return ret;
@@ -1171,11 +1125,11 @@ static int qmc_setup_ints(struct qmc *qmc)
 	unsigned int i;
 	u16 __iomem *last;
 
-	/* Raz all entries */
+	 
 	for (i = 0; i < (qmc->int_size / sizeof(u16)); i++)
 		qmc_write16(qmc->int_table + i, 0x0000);
 
-	/* Set Wrap bit on last entry */
+	 
 	if (qmc->int_size >= sizeof(u16)) {
 		last = qmc->int_table + (qmc->int_size / sizeof(u16)) - 1;
 		qmc_write16(last, QMC_INT_W);
@@ -1193,7 +1147,7 @@ static void qmc_irq_gint(struct qmc *qmc)
 
 	int_entry = qmc_read16(qmc->int_curr);
 	while (int_entry & QMC_INT_V) {
-		/* Clear all but the Wrap bit */
+		 
 		qmc_write16(qmc->int_curr, int_entry & QMC_INT_W);
 
 		chan_id = QMC_INT_GET_CHANNEL(int_entry);
@@ -1216,7 +1170,7 @@ static void qmc_irq_gint(struct qmc *qmc)
 			dev_info(qmc->dev, "intr chan %u, 0x%04x (BSY)\n", chan_id,
 				 int_entry);
 			chan->nb_rx_busy++;
-			/* Restart the receiver if needed */
+			 
 			spin_lock_irqsave(&chan->rx_lock, flags);
 			if (chan->rx_pending && !chan->is_rx_stopped) {
 				if (chan->mode == QMC_TRANSPARENT)
@@ -1260,7 +1214,7 @@ static irqreturn_t qmc_irq_handler(int irq, void *priv)
 	if (unlikely(scce & SCC_SCCE_GOV))
 		dev_err(qmc->dev, "Global receiver overrun\n");
 
-	/* normal interrupt */
+	 
 	if (likely(scce & SCC_SCCE_GINT))
 		qmc_irq_gint(qmc);
 
@@ -1306,31 +1260,28 @@ static int qmc_probe(struct platform_device *pdev)
 				     "Failed to get TSA serial\n");
 	}
 
-	/* Connect the serial (SCC) to TSA */
+	 
 	ret = tsa_serial_connect(qmc->tsa_serial);
 	if (ret) {
 		dev_err(qmc->dev, "Failed to connect TSA serial\n");
 		return ret;
 	}
 
-	/* Parse channels informationss */
+	 
 	ret = qmc_of_parse_chans(qmc, np);
 	if (ret)
 		goto err_tsa_serial_disconnect;
 
 	nb_chans = qmc_nb_chans(qmc);
 
-	/* Init GMSR_H and GMSR_L registers */
+	 
 	qmc_write32(qmc->scc_regs + SCC_GSMRH,
 		    SCC_GSMRH_CDS | SCC_GSMRH_CTSS | SCC_GSMRH_CDP | SCC_GSMRH_CTSP);
 
-	/* enable QMC mode */
+	 
 	qmc_write32(qmc->scc_regs + SCC_GSMRL, SCC_GSMRL_MODE_QMC);
 
-	/*
-	 * Allocate the buffer descriptor table
-	 * 8 rx and 8 tx descriptors per channel
-	 */
+	 
 	qmc->bd_size = (nb_chans * (QMC_NB_TXBDS + QMC_NB_RXBDS)) * sizeof(cbd_t);
 	qmc->bd_table = dmam_alloc_coherent(qmc->dev, qmc->bd_size,
 		&qmc->bd_dma_addr, GFP_KERNEL);
@@ -1343,7 +1294,7 @@ static int qmc_probe(struct platform_device *pdev)
 
 	qmc_write32(qmc->scc_pram + QMC_GBL_MCBASE, qmc->bd_dma_addr);
 
-	/* Allocate the interrupt table */
+	 
 	qmc->int_size = QMC_NB_INTS * sizeof(u16);
 	qmc->int_table = dmam_alloc_coherent(qmc->dev, qmc->int_size,
 		&qmc->int_dma_addr, GFP_KERNEL);
@@ -1358,7 +1309,7 @@ static int qmc_probe(struct platform_device *pdev)
 	qmc_write32(qmc->scc_pram + QMC_GBL_INTBASE, qmc->int_dma_addr);
 	qmc_write32(qmc->scc_pram + QMC_GBL_INTPTR, qmc->int_dma_addr);
 
-	/* Set MRBLR (valid for HDLC only) max MRU + max CRC */
+	 
 	qmc_write16(qmc->scc_pram + QMC_GBL_MRBLR, HDLC_MAX_MRU + 4);
 
 	qmc_write16(qmc->scc_pram + QMC_GBL_GRFTHR, 1);
@@ -1377,12 +1328,12 @@ static int qmc_probe(struct platform_device *pdev)
 	if (ret)
 		goto err_tsa_serial_disconnect;
 
-	/* Init interrupts table */
+	 
 	ret = qmc_setup_ints(qmc);
 	if (ret)
 		goto err_tsa_serial_disconnect;
 
-	/* Disable and clear interrupts,  set the irq handler */
+	 
 	qmc_write16(qmc->scc_regs + SCC_SCCM, 0x0000);
 	qmc_write16(qmc->scc_regs + SCC_SCCE, 0x000F);
 	irq = platform_get_irq(pdev, 0);
@@ -1392,7 +1343,7 @@ static int qmc_probe(struct platform_device *pdev)
 	if (ret < 0)
 		goto err_tsa_serial_disconnect;
 
-	/* Enable interrupts */
+	 
 	qmc_write16(qmc->scc_regs + SCC_SCCM,
 		SCC_SCCE_IQOV | SCC_SCCE_GINT | SCC_SCCE_GUN | SCC_SCCE_GOV);
 
@@ -1400,7 +1351,7 @@ static int qmc_probe(struct platform_device *pdev)
 	if (ret < 0)
 		goto err_disable_intr;
 
-	/* Enable transmiter and receiver */
+	 
 	qmc_setbits32(qmc->scc_regs + SCC_GSMRL, SCC_GSMRL_ENR | SCC_GSMRL_ENT);
 
 	platform_set_drvdata(pdev, qmc);
@@ -1419,13 +1370,13 @@ static int qmc_remove(struct platform_device *pdev)
 {
 	struct qmc *qmc = platform_get_drvdata(pdev);
 
-	/* Disable transmiter and receiver */
+	 
 	qmc_setbits32(qmc->scc_regs + SCC_GSMRL, 0);
 
-	/* Disable interrupts */
+	 
 	qmc_write16(qmc->scc_regs + SCC_SCCM, 0);
 
-	/* Disconnect the serial from TSA */
+	 
 	tsa_serial_disconnect(qmc->tsa_serial);
 
 	return 0;
@@ -1433,7 +1384,7 @@ static int qmc_remove(struct platform_device *pdev)
 
 static const struct of_device_id qmc_id_table[] = {
 	{ .compatible = "fsl,cpm1-scc-qmc" },
-	{} /* sentinel */
+	{}  
 };
 MODULE_DEVICE_TABLE(of, qmc_id_table);
 

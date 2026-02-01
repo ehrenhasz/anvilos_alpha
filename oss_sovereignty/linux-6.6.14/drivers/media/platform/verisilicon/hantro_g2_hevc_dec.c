@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Hantro VPU HEVC codec driver
- *
- * Copyright (C) 2020 Safran Passenger Innovations LLC
- */
+
+ 
 
 #include "hantro_hw.h"
 #include "hantro_g2_regs.h"
@@ -60,7 +56,7 @@ static void prepare_tile_info_buffer(struct hantro_ctx *ctx)
 		hantro_reg_write(vpu, &g2_num_tile_rows, num_tile_rows);
 		hantro_reg_write(vpu, &g2_num_tile_cols, num_tile_cols);
 
-		/* write width + height for each tile in pic */
+		 
 		if (!uniform_spacing) {
 			u32 tmp_w = 0, tmp_h = 0;
 
@@ -79,11 +75,11 @@ static void prepare_tile_info_buffer(struct hantro_ctx *ctx)
 					if (i == 0 && h == 1 && ctb_size == 16)
 						no_chroma = 1;
 				}
-				/* last column */
+				 
 				*p++ = pic_width_in_ctbs - tmp_w;
 				*p++ = h;
 			}
-		} else { /* uniform spacing */
+		} else {  
 			u32 tmp, prev_h, prev_w;
 
 			for (i = 0, prev_h = 0; i < num_tile_rows; i++) {
@@ -108,7 +104,7 @@ static void prepare_tile_info_buffer(struct hantro_ctx *ctx)
 		hantro_reg_write(vpu, &g2_num_tile_rows, 1);
 		hantro_reg_write(vpu, &g2_num_tile_cols, 1);
 
-		/* There's one tile, with dimensions equal to pic size. */
+		 
 		p[0] = pic_width_in_ctbs;
 		p[1] = pic_height_in_ctbs;
 	}
@@ -126,22 +122,22 @@ static int compute_header_skip_length(struct hantro_ctx *ctx)
 	int skip = 0;
 
 	if (pps->flags & V4L2_HEVC_PPS_FLAG_OUTPUT_FLAG_PRESENT)
-		/* size of pic_output_flag */
+		 
 		skip++;
 
 	if (sps->flags & V4L2_HEVC_SPS_FLAG_SEPARATE_COLOUR_PLANE)
-		/* size of pic_order_cnt_lsb */
+		 
 		skip += 2;
 
 	if (!(decode_params->flags & V4L2_HEVC_DECODE_PARAM_FLAG_IDR_PIC)) {
-		/* size of pic_order_cnt_lsb */
+		 
 		skip += sps->log2_max_pic_order_cnt_lsb_minus4 + 4;
 
-		/* size of short_term_ref_pic_set_sps_flag */
+		 
 		skip++;
 
 		if (decode_params->short_term_ref_pic_set_size)
-			/* size of st_ref_pic_set( num_short_term_ref_pic_sets ) */
+			 
 			skip += decode_params->short_term_ref_pic_set_size;
 		else if (sps->num_short_term_ref_pic_sets > 1)
 			skip += fls(sps->num_short_term_ref_pic_sets - 1);
@@ -342,7 +338,7 @@ static void set_ref_pic_list(struct hantro_ctx *ctx)
 	};
 	unsigned int i, j;
 
-	/* List 0 contains: short term before, short term after and long term */
+	 
 	j = 0;
 	for (i = 0; i < decode_params->num_poc_st_curr_before && j < ARRAY_SIZE(list0); i++)
 		list0[j++] = decode_params->poc_st_curr_before[i];
@@ -351,7 +347,7 @@ static void set_ref_pic_list(struct hantro_ctx *ctx)
 	for (i = 0; i < decode_params->num_poc_lt_curr && j < ARRAY_SIZE(list0); i++)
 		list0[j++] = decode_params->poc_lt_curr[i];
 
-	/* Fill the list, copying over and over */
+	 
 	i = 0;
 	while (j < ARRAY_SIZE(list0))
 		list0[j++] = list0[i++];
@@ -411,10 +407,7 @@ static int set_ref(struct hantro_ctx *ctx)
 	max_ref_frames = decode_params->num_poc_lt_curr +
 		decode_params->num_poc_st_curr_before +
 		decode_params->num_poc_st_curr_after;
-	/*
-	 * Set max_ref_frames to non-zero to avoid HW hang when decoding
-	 * badly marked I-frames.
-	 */
+	 
 	max_ref_frames = max_ref_frames ? max_ref_frames : 1;
 	hantro_reg_write(vpu, &g2_num_ref_frames, max_ref_frames);
 	hantro_reg_write(vpu, &g2_filter_over_slices,
@@ -422,9 +415,7 @@ static int set_ref(struct hantro_ctx *ctx)
 	hantro_reg_write(vpu, &g2_filter_over_tiles,
 			 !!(pps->flags & V4L2_HEVC_PPS_FLAG_LOOP_FILTER_ACROSS_TILES_ENABLED));
 
-	/*
-	 * Write POC count diff from current pic.
-	 */
+	 
 	for (i = 0; i < decode_params->num_active_dpb_entries && i < ARRAY_SIZE(cur_poc); i++) {
 		char poc_diff = decode_params->pic_order_cnt_val - dpb[i].pic_order_cnt_val;
 
@@ -432,24 +423,21 @@ static int set_ref(struct hantro_ctx *ctx)
 	}
 
 	if (i < ARRAY_SIZE(cur_poc)) {
-		/*
-		 * After the references, fill one entry pointing to itself,
-		 * i.e. difference is zero.
-		 */
+		 
 		hantro_reg_write(vpu, &cur_poc[i], 0);
 		i++;
 	}
 
-	/* Fill the rest with the current picture */
+	 
 	for (; i < ARRAY_SIZE(cur_poc); i++)
 		hantro_reg_write(vpu, &cur_poc[i], decode_params->pic_order_cnt_val);
 
 	set_ref_pic_list(ctx);
 
-	/* We will only keep the reference pictures that are still used */
+	 
 	hantro_hevc_ref_init(ctx);
 
-	/* Set up addresses of DPB buffers */
+	 
 	dpb_longterm_e = 0;
 	for (i = 0; i < decode_params->num_active_dpb_entries &&
 	     i < (V4L2_HEVC_DPB_ENTRIES_NUM_MAX - 1); i++) {
@@ -508,7 +496,7 @@ static void set_buffers(struct hantro_ctx *ctx)
 
 	src_buf = hantro_get_src_buf(ctx);
 
-	/* Source (stream) buffer. */
+	 
 	src_dma = vb2_dma_contig_plane_dma_addr(&src_buf->vb2_buf, 0);
 	src_len = vb2_get_plane_payload(&src_buf->vb2_buf, 0);
 	src_buf_len = vb2_plane_size(&src_buf->vb2_buf, 0);
@@ -547,10 +535,10 @@ static void prepare_scaling_list_buffer(struct hantro_ctx *ctx)
 	for (i = 0; i < ARRAY_SIZE(sc->scaling_list_dc_coef_32x32); i++)
 		*p++ = sc->scaling_list_dc_coef_32x32[i];
 
-	/* 128-bit boundary */
+	 
 	p += 8;
 
-	/* write scaling lists column by column */
+	 
 
 	for (i = 0; i < 6; i++)
 		for (j = 0; j < 4; j++)
@@ -582,15 +570,15 @@ int hantro_g2_hevc_dec_run(struct hantro_ctx *ctx)
 
 	hantro_g2_check_idle(vpu);
 
-	/* Prepare HEVC decoder context. */
+	 
 	ret = hantro_hevc_dec_prepare_run(ctx);
 	if (ret)
 		return ret;
 
-	/* Configure hardware registers. */
+	 
 	set_params(ctx);
 
-	/* set reference pictures */
+	 
 	ret = set_ref(ctx);
 	if (ret)
 		return ret;
@@ -605,22 +593,22 @@ int hantro_g2_hevc_dec_run(struct hantro_ctx *ctx)
 	hantro_reg_write(vpu, &g2_mode, HEVC_DEC_MODE);
 	hantro_reg_write(vpu, &g2_clk_gate_e, 1);
 
-	/* Don't disable output */
+	 
 	hantro_reg_write(vpu, &g2_out_dis, 0);
 
-	/* Don't compress buffers */
+	 
 	hantro_reg_write(vpu, &g2_ref_compress_bypass, 1);
 
-	/* Bus width and max burst */
+	 
 	hantro_reg_write(vpu, &g2_buswidth, BUS_WIDTH_128);
 	hantro_reg_write(vpu, &g2_max_burst, 16);
 
-	/* Swap */
+	 
 	hantro_reg_write(vpu, &g2_strm_swap, 0xf);
 	hantro_reg_write(vpu, &g2_dirmv_swap, 0xf);
 	hantro_reg_write(vpu, &g2_compress_swap, 0xf);
 
-	/* Start decoding! */
+	 
 	vdpu_write(vpu, G2_REG_INTERRUPT_DEC_E, G2_REG_INTERRUPT);
 
 	return 0;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -67,11 +64,7 @@ static void gfs2_init_gl_aspace_once(void *foo)
 	address_space_init_once(&gla->mapping);
 }
 
-/**
- * init_gfs2_fs - Register GFS2 as a filesystem
- *
- * Returns: 0 on success, error code on failure
- */
+ 
 
 static int __init init_gfs2_fs(void)
 {
@@ -222,10 +215,7 @@ fail_lru:
 	return error;
 }
 
-/**
- * exit_gfs2_fs - Unregister the file system
- *
- */
+ 
 
 static void __exit exit_gfs2_fs(void)
 {

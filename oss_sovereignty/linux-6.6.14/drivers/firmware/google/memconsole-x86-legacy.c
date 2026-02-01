@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * memconsole-x86-legacy.c
- *
- * EBDA specific parts of the memory based BIOS console.
- *
- * Copyright 2017 Google Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -32,7 +26,7 @@ struct biosmemcon_ebda {
 		} __packed v1;
 		struct {
 			u32 buffer_addr;
-			/* Misdocumented as number of pages! */
+			 
 			u16 num_bytes;
 			u16 start;
 			u16 end;
@@ -75,10 +69,7 @@ static void found_v2_header(struct biosmemcon_ebda *hdr)
 	memconsole_setup(memconsole_read);
 }
 
-/*
- * Search through the EBDA for the BIOS Memory Console, and
- * set the global variables to point to it.  Return true if found.
- */
+ 
 static bool memconsole_ebda_init(void)
 {
 	unsigned int address;
@@ -90,24 +81,21 @@ static bool memconsole_ebda_init(void)
 		return false;
 	}
 
-	/* EBDA length is byte 0 of EBDA (in KB) */
+	 
 	length = *(u8 *)phys_to_virt(address);
-	length <<= 10; /* convert to bytes */
+	length <<= 10;  
 
-	/*
-	 * Search through EBDA for BIOS memory console structure
-	 * note: signature is not necessarily dword-aligned
-	 */
+	 
 	for (cur = 0; cur < length; cur++) {
 		struct biosmemcon_ebda *hdr = phys_to_virt(address + cur);
 
-		/* memconsole v1 */
+		 
 		if (hdr->signature == BIOS_MEMCONSOLE_V1_MAGIC) {
 			found_v1_header(hdr);
 			return true;
 		}
 
-		/* memconsole v2 */
+		 
 		if (hdr->signature == BIOS_MEMCONSOLE_V2_MAGIC) {
 			found_v2_header(hdr);
 			return true;

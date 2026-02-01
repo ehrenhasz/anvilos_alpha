@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * xfrm algorithm interface
- *
- * Copyright (c) 2002 James Morris <jmorris@intercode.com.au>
- */
+
+ 
 
 #include <crypto/hash.h>
 #include <crypto/skcipher.h>
@@ -17,12 +13,7 @@
 #include <net/esp.h>
 #endif
 
-/*
- * Algorithms supported by IPsec.  These entries contain properties which
- * are used in key negotiation and xfrm processing, and are used to verify
- * that instantiated crypto transforms have correct parameters for IPsec
- * purposes.
- */
+ 
 static struct xfrm_algo_desc aead_list[] = {
 {
 	.name = "rfc4106(gcm(aes))",
@@ -329,7 +320,7 @@ static struct xfrm_algo_desc aalg_list[] = {
 	}
 },
 {
-	/* rfc4494 */
+	 
 	.name = "cmac(aes)",
 
 	.uinfo = {
@@ -559,7 +550,7 @@ static struct xfrm_algo_desc ealg_list[] = {
 		.encr = {
 			.geniv = "seqiv",
 			.blockbits = 128,
-			.defkeybits = 160, /* 128-bit key + 32-bit nonce */
+			.defkeybits = 160,  
 		}
 	},
 
@@ -809,11 +800,7 @@ struct xfrm_algo_desc *xfrm_ealg_get_byidx(unsigned int idx)
 }
 EXPORT_SYMBOL_GPL(xfrm_ealg_get_byidx);
 
-/*
- * Probe for the availability of crypto algorithms, and set the available
- * flag for any algorithms found on the system.  This is typically called by
- * pfkey during userspace SA add, update or register.
- */
+ 
 void xfrm_probe_algs(void)
 {
 	int i, status;

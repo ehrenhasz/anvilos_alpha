@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2019 Intel Corporation
- */
+ 
 
 #include <drm/drm_file.h>
 
@@ -20,7 +16,7 @@ unsigned long igt_mmap_offset(struct drm_i915_private *i915,
 	unsigned long addr;
 	int err;
 
-	/* no need to refcount, we own this object */
+	 
 	drm_vma_offset_lock_lookup(i915->drm.vma_offset_manager);
 	node = drm_vma_offset_exact_lookup_locked(i915->drm.vma_offset_manager,
 						  offset / PAGE_SIZE, size / PAGE_SIZE);
@@ -31,7 +27,7 @@ unsigned long igt_mmap_offset(struct drm_i915_private *i915,
 		return -ENOENT;
 	}
 
-	/* Pretend to open("/dev/dri/card0") */
+	 
 	file = mock_drm_getfile(i915->drm.primary, O_RDWR);
 	if (IS_ERR(file))
 		return PTR_ERR(file);

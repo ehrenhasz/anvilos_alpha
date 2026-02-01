@@ -1,24 +1,4 @@
-/*
- * Copyright 2008 Stuart Bennett
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
- * OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #ifndef __NOUVEAU_HW_H__
 #define __NOUVEAU_HW_H__
@@ -52,7 +32,7 @@ void nouveau_hw_load_state(struct drm_device *, int head,
 void nouveau_hw_load_state_palette(struct drm_device *, int head,
 				   struct nv04_mode_state *state);
 
-/* nouveau_calc.c */
+ 
 extern void nouveau_calc_arb(struct drm_device *, int vclk, int bpp,
 			     int *burst, int *lwm);
 
@@ -134,19 +114,7 @@ static inline uint8_t NVReadVgaCrtc(struct drm_device *dev,
 	return val;
 }
 
-/* CR57 and CR58 are a fun pair of regs. CR57 provides an index (0-0xf) for CR58
- * I suspect they in fact do nothing, but are merely a way to carry useful
- * per-head variables around
- *
- * Known uses:
- * CR57		CR58
- * 0x00		index to the appropriate dcb entry (or 7f for inactive)
- * 0x02		dcb entry's "or" value (or 00 for inactive)
- * 0x03		bit0 set for dual link (LVDS, possibly elsewhere too)
- * 0x08 or 0x09	pxclk in MHz
- * 0x0f		laptop panel info -	low nibble for PEXTDEV_BOOT_0 strap
- * 					high nibble for xlat strap value
- */
+ 
 
 static inline void
 NVWriteVgaCrtc5758(struct drm_device *dev, int head, uint8_t index, uint8_t value)
@@ -168,8 +136,7 @@ static inline uint8_t NVReadPRMVIO(struct drm_device *dev,
 	struct nouveau_drm *drm = nouveau_drm(dev);
 	uint8_t val;
 
-	/* Only NV4x have two pvio ranges; other twoHeads cards MUST call
-	 * NVSetOwner for the relevant head to be programmed */
+	 
 	if (head && drm->client.device.info.family == NV_DEVICE_INFO_V0_CURIE)
 		reg += NV_PRMVIO_SIZE;
 
@@ -183,8 +150,7 @@ static inline void NVWritePRMVIO(struct drm_device *dev,
 	struct nvif_object *device = &nouveau_drm(dev)->client.device.object;
 	struct nouveau_drm *drm = nouveau_drm(dev);
 
-	/* Only NV4x have two pvio ranges; other twoHeads cards MUST call
-	 * NVSetOwner for the relevant head to be programmed */
+	 
 	if (head && drm->client.device.info.family == NV_DEVICE_INFO_V0_CURIE)
 		reg += NV_PRMVIO_SIZE;
 
@@ -248,8 +214,8 @@ static inline void NVVgaProtect(struct drm_device *dev, int head, bool protect)
 		NVVgaSeqReset(dev, head, true);
 		NVWriteVgaSeq(dev, head, NV_VIO_SR_CLOCK_INDEX, seq1 | 0x20);
 	} else {
-		/* Reenable sequencer, then turn on screen */
-		NVWriteVgaSeq(dev, head, NV_VIO_SR_CLOCK_INDEX, seq1 & ~0x20);   /* reenable display */
+		 
+		NVWriteVgaSeq(dev, head, NV_VIO_SR_CLOCK_INDEX, seq1 & ~0x20);    
 		NVVgaSeqReset(dev, head, false);
 	}
 	NVSetEnablePalette(dev, head, protect);
@@ -267,7 +233,7 @@ nv_heads_tied(struct drm_device *dev)
 	return NVReadVgaCrtc(dev, 0, NV_CIO_CRE_44) & 0x4;
 }
 
-/* makes cr0-7 on the specified head read-only */
+ 
 static inline bool
 nv_lock_vga_crtc_base(struct drm_device *dev, int head, bool lock)
 {
@@ -286,28 +252,18 @@ nv_lock_vga_crtc_base(struct drm_device *dev, int head, bool lock)
 static inline void
 nv_lock_vga_crtc_shadow(struct drm_device *dev, int head, int lock)
 {
-	/* shadow lock: connects 0x60?3d? regs to "real" 0x3d? regs
-	 * bit7: unlocks HDT, HBS, HBE, HRS, HRE, HEB
-	 * bit6: seems to have some effect on CR09 (double scan, VBS_9)
-	 * bit5: unlocks HDE
-	 * bit4: unlocks VDE
-	 * bit3: unlocks VDT, OVL, VRS, ?VRE?, VBS, VBE, LSR, EBR
-	 * bit2: same as bit 1 of 0x60?804
-	 * bit0: same as bit 0 of 0x60?804
-	 */
+	 
 
 	uint8_t cr21 = lock;
 
 	if (lock < 0)
-		/* 0xfa is generic "unlock all" mask */
+		 
 		cr21 = NVReadVgaCrtc(dev, head, NV_CIO_CRE_21) | 0xfa;
 
 	NVWriteVgaCrtc(dev, head, NV_CIO_CRE_21, cr21);
 }
 
-/* renders the extended crtc regs (cr19+) on all crtcs impervious:
- * immutable and unreadable
- */
+ 
 static inline bool
 NVLockVgaCrtcs(struct drm_device *dev, bool lock)
 {
@@ -316,7 +272,7 @@ NVLockVgaCrtcs(struct drm_device *dev, bool lock)
 
 	NVWriteVgaCrtc(dev, 0, NV_CIO_SR_LOCK_INDEX,
 		       lock ? NV_CIO_SR_LOCK_VALUE : NV_CIO_SR_UNLOCK_RW_VALUE);
-	/* NV11 has independently lockable extended crtcs, except when tied */
+	 
 	if (drm->client.device.info.chipset == 0x11 && !nv_heads_tied(dev))
 		NVWriteVgaCrtc(dev, 1, NV_CIO_SR_LOCK_INDEX,
 			       lock ? NV_CIO_SR_LOCK_VALUE :
@@ -325,9 +281,9 @@ NVLockVgaCrtcs(struct drm_device *dev, bool lock)
 	return waslocked;
 }
 
-/* nv04 cursor max dimensions of 32x32 (A1R5G5B5) */
+ 
 #define NV04_CURSOR_SIZE 32
-/* limit nv10 cursors to 64x64 (ARGB8) (we could go to 64x255) */
+ 
 #define NV10_CURSOR_SIZE 64
 
 static inline int nv_cursor_width(struct drm_device *dev)
@@ -340,11 +296,7 @@ static inline int nv_cursor_width(struct drm_device *dev)
 static inline void
 nv_fix_nv40_hw_cursor(struct drm_device *dev, int head)
 {
-	/* on some nv40 (such as the "true" (in the NV_PFB_BOOT_0 sense) nv40,
-	 * the gf6800gt) a hardware bug requires a write to PRAMDAC_CURSOR_POS
-	 * for changes to the CRTC CURCTL regs to take effect, whether changing
-	 * the pixmap location, or just showing/hiding the cursor
-	 */
+	 
 	uint32_t curpos = NVReadRAMDAC(dev, head, NV_PRAMDAC_CU_START_POS);
 	NVWriteRAMDAC(dev, head, NV_PRAMDAC_CU_START_POS, curpos);
 }
@@ -357,10 +309,7 @@ nv_set_crtc_base(struct drm_device *dev, int head, uint32_t offset)
 	NVWriteCRTC(dev, head, NV_PCRTC_START, offset);
 
 	if (drm->client.device.info.family == NV_DEVICE_INFO_V0_TNT) {
-		/*
-		 * Hilarious, the 24th bit doesn't want to stick to
-		 * PCRTC_START...
-		 */
+		 
 		int cre_heb = NVReadVgaCrtc(dev, head, NV_CIO_CRE_HEB__INDEX);
 
 		NVWriteVgaCrtc(dev, head, NV_CIO_CRE_HEB__INDEX,
@@ -396,7 +345,7 @@ nv_pitch_align(struct drm_device *dev, uint32_t width, int bpp)
 	if (bpp == 24)
 		bpp = 8;
 
-	/* Alignment requirements taken from the Haiku driver */
+	 
 	if (drm->client.device.info.family == NV_DEVICE_INFO_V0_TNT)
 		mask = 128 / bpp - 1;
 	else
@@ -405,4 +354,4 @@ nv_pitch_align(struct drm_device *dev, uint32_t width, int bpp)
 	return (width + mask) & ~mask;
 }
 
-#endif	/* __NOUVEAU_HW_H__ */
+#endif	 

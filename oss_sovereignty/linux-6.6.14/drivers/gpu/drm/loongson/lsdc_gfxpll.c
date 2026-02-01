@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2023 Loongson Technology Corporation Limited
- */
+
+ 
 
 #include <linux/delay.h>
 
@@ -11,43 +9,26 @@
 
 #include "lsdc_drv.h"
 
-/*
- * GFX PLL is the PLL used by DC, GMC and GPU, the structure of the GFX PLL
- * may suffer from change across chip variants.
- *
- *
- *                                            +-------------+  sel_out_dc
- *                                       +----| / div_out_0 | _____/ _____ DC
- *                                       |    +-------------+
- * refclk   +---------+      +-------+   |    +-------------+  sel_out_gmc
- * ---+---> | div_ref | ---> | loopc | --+--> | / div_out_1 | _____/ _____ GMC
- *    |     +---------+      +-------+   |    +-------------+
- *    |          /               *       |    +-------------+  sel_out_gpu
- *    |                                  +----| / div_out_2 | _____/ _____ GPU
- *    |                                       +-------------+
- *    |                                                         ^
- *    |                                                         |
- *    +--------------------------- bypass ----------------------+
- */
+ 
 
 struct loongson_gfxpll_bitmap {
-	/* Byte 0 ~ Byte 3 */
-	unsigned div_out_dc    : 7;  /*  6 : 0    DC output clock divider  */
-	unsigned div_out_gmc   : 7;  /* 13 : 7    GMC output clock divider */
-	unsigned div_out_gpu   : 7;  /* 20 : 14   GPU output clock divider */
-	unsigned loopc         : 9;  /* 29 : 21   clock multiplier         */
-	unsigned _reserved_1_  : 2;  /* 31 : 30                            */
+	 
+	unsigned div_out_dc    : 7;   
+	unsigned div_out_gmc   : 7;   
+	unsigned div_out_gpu   : 7;   
+	unsigned loopc         : 9;   
+	unsigned _reserved_1_  : 2;   
 
-	/* Byte 4 ~ Byte 7 */
-	unsigned div_ref       : 7;   /* 38 : 32   Input clock divider    */
-	unsigned locked        : 1;   /* 39        PLL locked indicator   */
-	unsigned sel_out_dc    : 1;   /* 40        dc output clk enable   */
-	unsigned sel_out_gmc   : 1;   /* 41        gmc output clk enable  */
-	unsigned sel_out_gpu   : 1;   /* 42        gpu output clk enable  */
-	unsigned set_param     : 1;   /* 43        Trigger the update     */
-	unsigned bypass        : 1;   /* 44                               */
-	unsigned powerdown     : 1;   /* 45                               */
-	unsigned _reserved_2_  : 18;  /* 46 : 63   no use                 */
+	 
+	unsigned div_ref       : 7;    
+	unsigned locked        : 1;    
+	unsigned sel_out_dc    : 1;    
+	unsigned sel_out_gmc   : 1;    
+	unsigned sel_out_gpu   : 1;    
+	unsigned set_param     : 1;    
+	unsigned bypass        : 1;    
+	unsigned powerdown     : 1;    
+	unsigned _reserved_2_  : 18;   
 };
 
 union loongson_gfxpll_reg_bitmap {
@@ -67,12 +48,12 @@ static void __gfxpll_rreg(struct loongson_gfxpll *this,
 #endif
 }
 
-/* Update new parameters to the hardware */
+ 
 
 static int loongson_gfxpll_update(struct loongson_gfxpll * const this,
 				  struct loongson_gfxpll_parms const *pin)
 {
-	/* None, TODO */
+	 
 
 	return 0;
 }
@@ -136,7 +117,7 @@ static void loongson_gfxpll_print(struct loongson_gfxpll * const this,
 	drm_printf(p, "dc: %uMHz, gmc: %uMHz, gpu: %uMHz\n", dc, gmc, gpu);
 }
 
-/* GFX (DC, GPU, GMC) PLL initialization and destroy function */
+ 
 
 static void loongson_gfxpll_fini(struct drm_device *ddev, void *data)
 {

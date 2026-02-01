@@ -1,24 +1,7 @@
-/* $OpenBSD: utf8.c,v 1.11 2020/05/01 06:28:52 djm Exp $ */
-/*
- * Copyright (c) 2016 Ingo Schwarze <schwarze@openbsd.org>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
+ 
 
-/*
- * Utility functions for multibyte-character handling,
- * in particular to sanitize untrusted strings for terminal output.
- */
+ 
 
 #include "includes.h"
 
@@ -45,16 +28,7 @@ static int	 dangerous_locale(void);
 static int	 grow_dst(char **, size_t *, size_t, char **, size_t);
 
 
-/*
- * For US-ASCII and UTF-8 encodings, we can safely recover from
- * encoding errors and from non-printable characters.  For any
- * other encodings, err to the side of caution and abort parsing:
- * For state-dependent encodings, recovery is impossible.
- * For arbitrary encodings, replacement of non-printable
- * characters would be non-trivial and too fragile.
- * The comments indicate what nl_langinfo(CODESET)
- * returns for US-ASCII on various operating systems.
- */
+ 
 
 static int
 dangerous_locale(void) {
@@ -62,11 +36,11 @@ dangerous_locale(void) {
 
 	loc = nl_langinfo(CODESET);
 	return strcmp(loc, "UTF-8") != 0 &&
-	    strcmp(loc, "US-ASCII") != 0 &&		/* OpenBSD */
-	    strcmp(loc, "ANSI_X3.4-1968") != 0 &&	/* Linux */
-	    strcmp(loc, "ISO8859-1") != 0 &&		/* AIX */
-	    strcmp(loc, "646") != 0 &&			/* Solaris, NetBSD */
-	    strcmp(loc, "") != 0;			/* Solaris 6 */
+	    strcmp(loc, "US-ASCII") != 0 &&		 
+	    strcmp(loc, "ANSI_X3.4-1968") != 0 &&	 
+	    strcmp(loc, "ISO8859-1") != 0 &&		 
+	    strcmp(loc, "646") != 0 &&			 
+	    strcmp(loc, "") != 0;			 
 }
 
 static int
@@ -88,31 +62,21 @@ grow_dst(char **dst, size_t *sz, size_t maxsz, char **dp, size_t need)
 	return 0;
 }
 
-/*
- * The following two functions limit the number of bytes written,
- * including the terminating '\0', to sz.  Unless wp is NULL,
- * they limit the number of display columns occupied to *wp.
- * Whichever is reached first terminates the output string.
- * To stay close to the standard interfaces, they return the number of
- * non-NUL bytes that would have been written if both were unlimited.
- * If wp is NULL, newline, carriage return, and tab are allowed;
- * otherwise, the actual number of columns occupied by what was
- * written is returned in *wp.
- */
+ 
 
 int
 vasnmprintf(char **str, size_t maxsz, int *wp, const char *fmt, va_list ap)
 {
-	char	*src;	/* Source string returned from vasprintf. */
-	char	*sp;	/* Pointer into src. */
-	char	*dst;	/* Destination string to be returned. */
-	char	*dp;	/* Pointer into dst. */
-	char	*tp;	/* Temporary pointer for dst. */
-	size_t	 sz;	/* Number of bytes allocated for dst. */
-	wchar_t	 wc;	/* Wide character at sp. */
-	int	 len;	/* Number of bytes in the character at sp. */
-	int	 ret;	/* Number of bytes needed to format src. */
-	int	 width;	/* Display width of the character wc. */
+	char	*src;	 
+	char	*sp;	 
+	char	*dst;	 
+	char	*dp;	 
+	char	*tp;	 
+	size_t	 sz;	 
+	wchar_t	 wc;	 
+	int	 len;	 
+	int	 ret;	 
+	int	 width;	 
 	int	 total_width, max_width, print;
 
 	src = NULL;
@@ -146,11 +110,7 @@ vasnmprintf(char **str, size_t maxsz, int *wp, const char *fmt, va_list ap)
 			width = -1;
 		} else if (wp == NULL &&
 		    (wc == L'\n' || wc == L'\r' || wc == L'\t')) {
-			/*
-			 * Don't use width uninitialized; the actual
-			 * value doesn't matter because total_width
-			 * is only returned for wp != NULL.
-			 */
+			 
 			width = 0;
 		} else if ((width = wcwidth(wc)) == -1 &&
 		    dangerous_locale()) {
@@ -158,7 +118,7 @@ vasnmprintf(char **str, size_t maxsz, int *wp, const char *fmt, va_list ap)
 			break;
 		}
 
-		/* Valid, printable character. */
+		 
 
 		if (width >= 0) {
 			if (print && (dp - dst >= (int)maxsz - len ||
@@ -180,7 +140,7 @@ vasnmprintf(char **str, size_t maxsz, int *wp, const char *fmt, va_list ap)
 			continue;
 		}
 
-		/* Escaping required. */
+		 
 
 		while (len > 0) {
 			if (print && (dp - dst >= (int)maxsz - 4 ||
@@ -212,13 +172,7 @@ vasnmprintf(char **str, size_t maxsz, int *wp, const char *fmt, va_list ap)
 	if (wp != NULL)
 		*wp = total_width;
 
-	/*
-	 * If the string was truncated by the width limit but
-	 * would have fit into the size limit, the only sane way
-	 * to report the problem is using the return value, such
-	 * that the usual idiom "if (ret < 0 || ret >= sz) error"
-	 * works as expected.
-	 */
+	 
 
 	if (ret < (int)maxsz && !print)
 		ret = -1;
@@ -268,10 +222,7 @@ asmprintf(char **outp, size_t sz, int *wp, const char *fmt, ...)
 	return ret;
 }
 
-/*
- * To stay close to the standard interfaces, the following functions
- * return the number of non-NUL bytes written.
- */
+ 
 
 int
 vfmprintf(FILE *stream, const char *fmt, va_list ap)
@@ -313,15 +264,7 @@ mprintf(const char *fmt, ...)
 	return ret;
 }
 
-/*
- * Set up libc for multibyte output in the user's chosen locale.
- *
- * XXX: we are known to have problems with Turkish (i/I confusion) so we
- *      deliberately fall back to the C locale for now. Longer term we should
- *      always prefer to select C.[encoding] if possible, but there's no
- *      standardisation in locales between systems, so we'll need to survey
- *      what's out there first.
- */
+ 
 void
 msetlocale(void)
 {
@@ -329,19 +272,13 @@ msetlocale(void)
 	char *cp;
 	int i;
 
-	/*
-	 * We can't yet cope with dotless/dotted I in Turkish locales,
-	 * so fall back to the C locale for these.
-	 */
+	 
 	for (i = 0; vars[i] != NULL; i++) {
 		if ((cp = getenv(vars[i])) == NULL)
 			continue;
 		if (strncasecmp(cp, "TR", 2) != 0)
 			break;
-		/*
-		 * If we're in a UTF-8 locale then prefer to use
-		 * the C.UTF-8 locale (or equivalent) if it exists.
-		 */
+		 
 		if ((strcasestr(cp, "UTF-8") != NULL ||
 		    strcasestr(cp, "UTF8") != NULL) &&
 		    (setlocale(LC_CTYPE, "C.UTF-8") != NULL ||
@@ -350,6 +287,6 @@ msetlocale(void)
 		setlocale(LC_CTYPE, "C");
 		return;
 	}
-	/* We can handle this locale */
+	 
 	setlocale(LC_CTYPE, "");
 }

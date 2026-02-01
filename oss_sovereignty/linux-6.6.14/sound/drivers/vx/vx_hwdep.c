@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Digigram VX soundcards
- *
- * DSP firmware management
- *
- * Copyright (c) 2002 by Takashi Iwai <tiwai@suse.de>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/firmware.h>
@@ -76,8 +70,8 @@ int snd_vx_setup_firmware(struct vx_core *chip)
 #endif
 	}
 
-	/* ok, we reached to the last one */
-	/* create the devices if not built yet */
+	 
+	 
 	err = snd_vx_pcm_new(chip);
 	if (err < 0)
 		return err;
@@ -98,7 +92,7 @@ int snd_vx_setup_firmware(struct vx_core *chip)
 	return snd_card_register(chip->card);
 }
 
-/* exported */
+ 
 void snd_vx_free_firmware(struct vx_core *chip)
 {
 #ifdef CONFIG_PM

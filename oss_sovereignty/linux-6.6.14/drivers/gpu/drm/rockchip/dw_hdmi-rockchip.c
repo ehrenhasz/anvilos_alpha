@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2014, Fuzhou Rockchip Electronics Co., Ltd
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/mfd/syscon.h>
@@ -36,7 +34,7 @@
 #define RK3328_HDMI_SCLIN_MSK		BIT(10)
 #define RK3328_HDMI_HPD_IOE		BIT(2)
 #define RK3328_GRF_SOC_CON3		0x040c
-/* need to be unset if hdmi or i2c should control voltage */
+ 
 #define RK3328_HDMI_SDA5V_GRF		BIT(15)
 #define RK3328_HDMI_SCL5V_GRF		BIT(14)
 #define RK3328_HDMI_HPD5V_GRF		BIT(13)
@@ -57,12 +55,7 @@
 
 #define HIWORD_UPDATE(val, mask)	(val | (mask) << 16)
 
-/**
- * struct rockchip_hdmi_chip_data - splite the grf setting of kind of chips
- * @lcdsel_grf_reg: grf register offset of lcdc select
- * @lcdsel_big: reg value of selecting vop big for HDMI
- * @lcdsel_lit: reg value of selecting vop little for HDMI
- */
+ 
 struct rockchip_hdmi_chip_data {
 	int	lcdsel_grf_reg;
 	u32	lcdsel_big;
@@ -177,7 +170,7 @@ static const struct dw_hdmi_mpll_config rockchip_mpll_cfg[] = {
 };
 
 static const struct dw_hdmi_curr_ctrl rockchip_cur_ctr[] = {
-	/*      pixelclk    bpp8    bpp10   bpp12 */
+	 
 	{
 		40000000,  { 0x0018, 0x0018, 0x0018 },
 	}, {
@@ -200,7 +193,7 @@ static const struct dw_hdmi_curr_ctrl rockchip_cur_ctr[] = {
 };
 
 static const struct dw_hdmi_phy_config rockchip_phy_config[] = {
-	/*pixelclk   symbol   term   vlev*/
+	 
 	{ 74250000,  0x8009, 0x0004, 0x0272},
 	{ 148500000, 0x802b, 0x0004, 0x028d},
 	{ 297000000, 0x8039, 0x0005, 0x028d},
@@ -268,16 +261,10 @@ dw_hdmi_rockchip_mode_valid(struct dw_hdmi *dw_hdmi, void *data,
 	}
 
 	for (i = 0; mpll_cfg[i].mpixelclock != (~0UL); i++) {
-		/*
-		 * For vendor specific phys force an exact match of the pixelclock
-		 * to preserve the original behaviour of the driver.
-		 */
+		 
 		if (exact_match && pclk == mpll_cfg[i].mpixelclock)
 			return MODE_OK;
-		/*
-		 * The Synopsys phy can work with pixelclocks up to the value given
-		 * in the corresponding mpll_cfg entry.
-		 */
+		 
 		if (!exact_match && pclk <= mpll_cfg[i].mpixelclock)
 			return MODE_OK;
 	}
@@ -419,7 +406,7 @@ static void dw_hdmi_rk3328_setup_hpd(struct dw_hdmi *dw_hdmi, void *data)
 
 	dw_hdmi_phy_setup_hpd(dw_hdmi, data);
 
-	/* Enable and map pins to 3V grf-controlled io-voltage */
+	 
 	regmap_write(hdmi->regmap,
 		RK3328_GRF_SOC_CON4,
 		HIWORD_UPDATE(0, RK3328_HDMI_HPD_SARADC | RK3328_HDMI_CEC_5V |
@@ -581,12 +568,7 @@ static int dw_hdmi_rockchip_bind(struct device *dev, struct device *master,
 	rockchip_drm_encoder_set_crtc_endpoint_id(&hdmi->encoder,
 						  dev->of_node, 0, 0);
 
-	/*
-	 * If we failed to find the CRTC(s) which this encoder is
-	 * supposed to be connected to, it's because the CRTC has
-	 * not been registered yet.  Defer probing, and hope that
-	 * the required CRTC is added later.
-	 */
+	 
 	if (encoder->possible_crtcs == 0)
 		return -EPROBE_DEFER;
 
@@ -639,10 +621,7 @@ static int dw_hdmi_rockchip_bind(struct device *dev, struct device *master,
 
 	hdmi->hdmi = dw_hdmi_bind(pdev, encoder, plat_data);
 
-	/*
-	 * If dw_hdmi_bind() fails we'll never call dw_hdmi_unbind(),
-	 * which would have called the encoder cleanup.  Do it manually.
-	 */
+	 
 	if (IS_ERR(hdmi->hdmi)) {
 		ret = PTR_ERR(hdmi->hdmi);
 		goto err_bind;

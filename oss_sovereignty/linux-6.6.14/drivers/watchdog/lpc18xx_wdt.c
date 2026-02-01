@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NXP LPC18xx Watchdog Timer (WDT)
- *
- * Copyright (c) 2015 Ariel D'Alessandro <ariel@vanguardiasur.com>
- *
- * Notes
- * -----
- * The Watchdog consists of a fixed divide-by-4 clock pre-scaler and a 24-bit
- * counter which decrements on every clock cycle.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -17,7 +8,7 @@
 #include <linux/platform_device.h>
 #include <linux/watchdog.h>
 
-/* Registers */
+ 
 #define LPC18XX_WDT_MOD			0x00
 #define LPC18XX_WDT_MOD_WDEN		BIT(0)
 #define LPC18XX_WDT_MOD_WDRESET		BIT(1)
@@ -32,10 +23,10 @@
 
 #define LPC18XX_WDT_TV			0x0c
 
-/* Clock pre-scaler */
+ 
 #define LPC18XX_WDT_CLK_DIV		4
 
-/* Timeout values in seconds */
+ 
 #define LPC18XX_WDT_DEF_TIMEOUT		30U
 
 static int heartbeat;
@@ -63,10 +54,7 @@ static int lpc18xx_wdt_feed(struct watchdog_device *wdt_dev)
 	struct lpc18xx_wdt_dev *lpc18xx_wdt = watchdog_get_drvdata(wdt_dev);
 	unsigned long flags;
 
-	/*
-	 * An abort condition will occur if an interrupt happens during the feed
-	 * sequence.
-	 */
+	 
 	spin_lock_irqsave(&lpc18xx_wdt->lock, flags);
 	writel(LPC18XX_WDT_FEED_MAGIC1, lpc18xx_wdt->base + LPC18XX_WDT_FEED);
 	writel(LPC18XX_WDT_FEED_MAGIC2, lpc18xx_wdt->base + LPC18XX_WDT_FEED);
@@ -82,15 +70,12 @@ static void lpc18xx_wdt_timer_feed(struct timer_list *t)
 
 	lpc18xx_wdt_feed(wdt_dev);
 
-	/* Use safe value (1/2 of real timeout) */
+	 
 	mod_timer(&lpc18xx_wdt->timer, jiffies +
 		  msecs_to_jiffies((wdt_dev->timeout * MSEC_PER_SEC) / 2));
 }
 
-/*
- * Since LPC18xx Watchdog cannot be disabled in hardware, we must keep feeding
- * it with a timer until userspace watchdog software takes over.
- */
+ 
 static int lpc18xx_wdt_stop(struct watchdog_device *wdt_dev)
 {
 	struct lpc18xx_wdt_dev *lpc18xx_wdt = watchdog_get_drvdata(wdt_dev);
@@ -142,11 +127,7 @@ static int lpc18xx_wdt_start(struct watchdog_device *wdt_dev)
 	val |= LPC18XX_WDT_MOD_WDRESET;
 	writel(val, lpc18xx_wdt->base + LPC18XX_WDT_MOD);
 
-	/*
-	 * Setting the WDEN bit in the WDMOD register is not sufficient to
-	 * enable the Watchdog. A valid feed sequence must be completed after
-	 * setting WDEN before the Watchdog is capable of generating a reset.
-	 */
+	 
 	lpc18xx_wdt_feed(wdt_dev);
 
 	return 0;
@@ -159,9 +140,7 @@ static int lpc18xx_wdt_restart(struct watchdog_device *wdt_dev,
 	unsigned long flags;
 	int val;
 
-	/*
-	 * Incorrect feed sequence causes immediate watchdog reset if enabled.
-	 */
+	 
 	spin_lock_irqsave(&lpc18xx_wdt->lock, flags);
 
 	val = readl(lpc18xx_wdt->base + LPC18XX_WDT_MOD);
@@ -222,7 +201,7 @@ static int lpc18xx_wdt_probe(struct platform_device *pdev)
 		return PTR_ERR(lpc18xx_wdt->wdt_clk);
 	}
 
-	/* We use the clock rate to calculate timeouts */
+	 
 	lpc18xx_wdt->clk_rate = clk_get_rate(lpc18xx_wdt->wdt_clk);
 	if (lpc18xx_wdt->clk_rate == 0) {
 		dev_err(dev, "failed to get clock rate\n");

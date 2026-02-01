@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * dwmac-stm32.c - DWMAC Specific Glue layer for STM32 MCU
- *
- * Copyright (C) STMicroelectronics SA 2017
- * Author:  Alexandre Torgue <alexandre.torgue@st.com> for STMicroelectronics.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/kernel.h>
@@ -28,24 +23,12 @@
 #define SYSCFG_PMCR_ETH_CLK_SEL		BIT(16)
 #define SYSCFG_PMCR_ETH_REF_CLK_SEL	BIT(17)
 
-/* CLOCK feed to PHY*/
+ 
 #define ETH_CK_F_25M	25000000
 #define ETH_CK_F_50M	50000000
 #define ETH_CK_F_125M	125000000
 
-/*  Ethernet PHY interface selection in register SYSCFG Configuration
- *------------------------------------------
- * src	 |BIT(23)| BIT(22)| BIT(21)|BIT(20)|
- *------------------------------------------
- * MII   |   0	 |   0	  |   0    |   1   |
- *------------------------------------------
- * GMII  |   0	 |   0	  |   0    |   0   |
- *------------------------------------------
- * RGMII |   0	 |   0	  |   1	   |  n/a  |
- *------------------------------------------
- * RMII  |   1	 |   0	  |   0	   |  n/a  |
- *------------------------------------------
- */
+ 
 #define SYSCFG_PMCR_ETH_SEL_MII		BIT(20)
 #define SYSCFG_PMCR_ETH_SEL_RGMII	BIT(21)
 #define SYSCFG_PMCR_ETH_SEL_RMII	BIT(23)
@@ -53,30 +36,7 @@
 #define SYSCFG_MCU_ETH_SEL_MII		0
 #define SYSCFG_MCU_ETH_SEL_RMII		1
 
-/* STM32MP1 register definitions
- *
- * Below table summarizes the clock requirement and clock sources for
- * supported phy interface modes.
- * __________________________________________________________________________
- *|PHY_MODE | Normal | PHY wo crystal|   PHY wo crystal   |No 125Mhz from PHY|
- *|         |        |      25MHz    |        50MHz       |                  |
- * ---------------------------------------------------------------------------
- *|  MII    |	 -   |     eth-ck    |	      n/a	  |	  n/a        |
- *|         |        | st,ext-phyclk |                    |		     |
- * ---------------------------------------------------------------------------
- *|  GMII   |	 -   |     eth-ck    |	      n/a	  |	  n/a        |
- *|         |        | st,ext-phyclk |                    |		     |
- * ---------------------------------------------------------------------------
- *| RGMII   |	 -   |     eth-ck    |	      n/a	  |      eth-ck      |
- *|         |        | st,ext-phyclk |                    | st,eth-clk-sel or|
- *|         |        |               |                    | st,ext-phyclk    |
- * ---------------------------------------------------------------------------
- *| RMII    |	 -   |     eth-ck    |	    eth-ck        |	  n/a        |
- *|         |        | st,ext-phyclk | st,eth-ref-clk-sel |		     |
- *|         |        |               | or st,ext-phyclk   |		     |
- * ---------------------------------------------------------------------------
- *
- */
+ 
 
 struct stm32_dwmac {
 	struct clk *clk_tx;
@@ -89,7 +49,7 @@ struct stm32_dwmac {
 	int eth_clk_sel_reg;
 	int eth_ref_clk_sel_reg;
 	int irq_pwr_wakeup;
-	u32 mode_reg;		 /* MAC glue-logic mode register */
+	u32 mode_reg;		  
 	struct regmap *regmap;
 	u32 speed;
 	const struct stm32_ops *ops;
@@ -213,15 +173,15 @@ static int stm32mp1_set_mode(struct plat_stmmacenet_data *plat_dat)
 	default:
 		pr_debug("SYSCFG init :  Do not manage %d interface\n",
 			 plat_dat->mac_interface);
-		/* Do not manage others interfaces */
+		 
 		return -EINVAL;
 	}
 
-	/* Need to update PMCCLRR (clear register) */
+	 
 	regmap_write(dwmac->regmap, reg + SYSCFG_PMCCLRR_OFFSET,
 		     dwmac->ops->syscfg_eth_mask);
 
-	/* Update PMCSETR (set register) */
+	 
 	return regmap_update_bits(dwmac->regmap, reg,
 				 dwmac->ops->syscfg_eth_mask, val);
 }
@@ -244,7 +204,7 @@ static int stm32mcu_set_mode(struct plat_stmmacenet_data *plat_dat)
 	default:
 		pr_debug("SYSCFG init :  Do not manage %d interface\n",
 			 plat_dat->mac_interface);
-		/* Do not manage others interfaces */
+		 
 		return -EINVAL;
 	}
 
@@ -267,7 +227,7 @@ static int stm32_dwmac_parse_data(struct stm32_dwmac *dwmac,
 	struct device_node *np = dev->of_node;
 	int err;
 
-	/*  Get TX/RX clocks */
+	 
 	dwmac->clk_tx = devm_clk_get(dev, "mac-clk-tx");
 	if (IS_ERR(dwmac->clk_tx)) {
 		dev_err(dev, "No ETH Tx clock provided...\n");
@@ -286,7 +246,7 @@ static int stm32_dwmac_parse_data(struct stm32_dwmac *dwmac,
 			return err;
 	}
 
-	/* Get mode register */
+	 
 	dwmac->regmap = syscon_regmap_lookup_by_phandle(np, "st,syscon");
 	if (IS_ERR(dwmac->regmap))
 		return PTR_ERR(dwmac->regmap);
@@ -305,24 +265,24 @@ static int stm32mp1_parse_data(struct stm32_dwmac *dwmac,
 	struct device_node *np = dev->of_node;
 	int err = 0;
 
-	/* Ethernet PHY have no crystal */
+	 
 	dwmac->ext_phyclk = of_property_read_bool(np, "st,ext-phyclk");
 
-	/* Gigabit Ethernet 125MHz clock selection. */
+	 
 	dwmac->eth_clk_sel_reg = of_property_read_bool(np, "st,eth-clk-sel");
 
-	/* Ethernet 50Mhz RMII clock selection */
+	 
 	dwmac->eth_ref_clk_sel_reg =
 		of_property_read_bool(np, "st,eth-ref-clk-sel");
 
-	/*  Get ETH_CLK clocks */
+	 
 	dwmac->clk_eth_ck = devm_clk_get(dev, "eth-ck");
 	if (IS_ERR(dwmac->clk_eth_ck)) {
 		dev_info(dev, "No phy clock provided...\n");
 		dwmac->clk_eth_ck = NULL;
 	}
 
-	/*  Clock used for low power mode */
+	 
 	dwmac->clk_ethstp = devm_clk_get(dev, "ethstp");
 	if (IS_ERR(dwmac->clk_ethstp)) {
 		dev_err(dev,
@@ -330,14 +290,12 @@ static int stm32mp1_parse_data(struct stm32_dwmac *dwmac,
 		return PTR_ERR(dwmac->clk_ethstp);
 	}
 
-	/*  Optional Clock for sysconfig */
+	 
 	dwmac->syscfg_clk = devm_clk_get(dev, "syscfg-clk");
 	if (IS_ERR(dwmac->syscfg_clk))
 		dwmac->syscfg_clk = NULL;
 
-	/* Get IRQ information early to have an ability to ask for deferred
-	 * probe if needed before we went too far with resource allocation.
-	 */
+	 
 	dwmac->irq_pwr_wakeup = platform_get_irq_byname_optional(pdev,
 							"stm32_pwr_wakeup");
 	if (dwmac->irq_pwr_wakeup == -EPROBE_DEFER)
@@ -498,7 +456,7 @@ static int stm32_dwmac_resume(struct device *dev)
 
 	return ret;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static SIMPLE_DEV_PM_OPS(stm32_dwmac_pm_ops,
 	stm32_dwmac_suspend, stm32_dwmac_resume);

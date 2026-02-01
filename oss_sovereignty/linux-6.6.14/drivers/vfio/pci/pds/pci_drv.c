@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2023 Advanced Micro Devices, Inc. */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -23,20 +23,7 @@ static void pds_vfio_recovery(struct pds_vfio_pci_device *pds_vfio)
 {
 	bool deferred_reset_needed = false;
 
-	/*
-	 * Documentation states that the kernel migration driver must not
-	 * generate asynchronous device state transitions outside of
-	 * manipulation by the user or the VFIO_DEVICE_RESET ioctl.
-	 *
-	 * Since recovery is an asynchronous event received from the device,
-	 * initiate a deferred reset. Issue a deferred reset in the following
-	 * situations:
-	 *   1. Migration is in progress, which will cause the next step of
-	 *	the migration to fail.
-	 *   2. If the device is in a state that will be set to
-	 *	VFIO_DEVICE_STATE_RUNNING on the next action (i.e. VM is
-	 *	shutdown and device is in VFIO_DEVICE_STATE_STOP).
-	 */
+	 
 	mutex_lock(&pds_vfio->state_mutex);
 	if ((pds_vfio->state != VFIO_DEVICE_STATE_RUNNING &&
 	     pds_vfio->state != VFIO_DEVICE_STATE_ERROR) ||
@@ -45,15 +32,7 @@ static void pds_vfio_recovery(struct pds_vfio_pci_device *pds_vfio)
 		deferred_reset_needed = true;
 	mutex_unlock(&pds_vfio->state_mutex);
 
-	/*
-	 * On the next user initiated state transition, the device will
-	 * transition to the VFIO_DEVICE_STATE_ERROR. At this point it's the user's
-	 * responsibility to reset the device.
-	 *
-	 * If a VFIO_DEVICE_RESET is requested post recovery and before the next
-	 * state transition, then the deferred reset state will be set to
-	 * VFIO_DEVICE_STATE_RUNNING.
-	 */
+	 
 	if (deferred_reset_needed) {
 		mutex_lock(&pds_vfio->reset_mutex);
 		pds_vfio->deferred_reset = true;
@@ -72,21 +51,11 @@ static int pds_vfio_pci_notify_handler(struct notifier_block *nb,
 
 	dev_dbg(dev, "%s: event code %lu\n", __func__, ecode);
 
-	/*
-	 * We don't need to do anything for RESET state==0 as there is no notify
-	 * or feedback mechanism available, and it is possible that we won't
-	 * even see a state==0 event since the pds_core recovery is pending.
-	 *
-	 * Any requests from VFIO while state==0 will fail, which will return
-	 * error and may cause migration to fail.
-	 */
+	 
 	if (ecode == PDS_EVENT_RESET) {
 		dev_info(dev, "%s: PDS_EVENT_RESET event received, state==%d\n",
 			 __func__, event->reset.state);
-		/*
-		 * pds_core device finished recovery and sent us the
-		 * notification (state == 1) to allow us to recover
-		 */
+		 
 		if (event->reset.state == 1)
 			pds_vfio_recovery(pds_vfio);
 	}
@@ -176,7 +145,7 @@ static void pds_vfio_pci_remove(struct pci_dev *pdev)
 }
 
 static const struct pci_device_id pds_vfio_pci_table[] = {
-	{ PCI_DRIVER_OVERRIDE_DEVICE_VFIO(PCI_VENDOR_ID_PENSANDO, 0x1003) }, /* Ethernet VF */
+	{ PCI_DRIVER_OVERRIDE_DEVICE_VFIO(PCI_VENDOR_ID_PENSANDO, 0x1003) },  
 	{ 0, }
 };
 MODULE_DEVICE_TABLE(pci, pds_vfio_pci_table);

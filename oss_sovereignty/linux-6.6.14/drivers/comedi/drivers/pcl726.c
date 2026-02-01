@@ -1,52 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * pcl726.c
- * Comedi driver for 6/12-Channel D/A Output and DIO cards
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1998 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Driver: pcl726
- * Description: Advantech PCL-726 & compatibles
- * Author: David A. Schleef <ds@schleef.org>
- * Status: untested
- * Devices: [Advantech] PCL-726 (pcl726), PCL-727 (pcl727), PCL-728 (pcl728),
- *   [ADLink] ACL-6126 (acl6126), ACL-6128 (acl6128)
- *
- * Configuration Options:
- *   [0]  - IO Base
- *   [1]  - IRQ (ACL-6126 only)
- *   [2]  - D/A output range for channel 0
- *   [3]  - D/A output range for channel 1
- *
- * Boards with > 2 analog output channels:
- *   [4]  - D/A output range for channel 2
- *   [5]  - D/A output range for channel 3
- *   [6]  - D/A output range for channel 4
- *   [7]  - D/A output range for channel 5
- *
- * Boards with > 6 analog output channels:
- *   [8]  - D/A output range for channel 6
- *   [9]  - D/A output range for channel 7
- *   [10] - D/A output range for channel 8
- *   [11] - D/A output range for channel 9
- *   [12] - D/A output range for channel 10
- *   [13] - D/A output range for channel 11
- *
- * For PCL-726 the D/A output ranges are:
- *   0: 0-5V, 1: 0-10V, 2: +/-5V, 3: +/-10V, 4: 4-20mA, 5: unknown
- *
- * For PCL-727:
- *   0: 0-5V, 1: 0-10V, 2: +/-5V, 3: 4-20mA
- *
- * For PCL-728 and ACL-6128:
- *   0: 0-5V, 1: 0-10V, 2: +/-5V, 3: +/-10V, 4: 4-20mA, 5: 0-20mA
- *
- * For ACL-6126:
- *   0: 0-5V, 1: 0-10V, 2: +/-5V, 3: +/-10V, 4: 4-20mA
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -159,7 +114,7 @@ static int pcl726_intr_cmdtest(struct comedi_device *dev,
 {
 	int err = 0;
 
-	/* Step 1 : check if triggers are trivially valid */
+	 
 
 	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW);
 	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_EXT);
@@ -170,10 +125,10 @@ static int pcl726_intr_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 1;
 
-	/* Step 2a : make sure trigger sources are unique */
-	/* Step 2b : and mutually compatible */
+	 
+	 
 
-	/* Step 3: check if arguments are trivially valid */
+	 
 
 	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
 	err |= comedi_check_trigger_arg_is(&cmd->scan_begin_arg, 0);
@@ -185,9 +140,9 @@ static int pcl726_intr_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 3;
 
-	/* Step 4: fix up any arguments */
+	 
 
-	/* Step 5: check channel list if it exists */
+	 
 
 	return 0;
 }
@@ -244,11 +199,11 @@ static int pcl726_ao_insn_write(struct comedi_device *dev,
 
 		s->readback[chan] = val;
 
-		/* bipolar data to the DAC is two's complement */
+		 
 		if (comedi_chan_range_is_bipolar(s, chan, range))
 			val = comedi_offset_munge(s, val);
 
-		/* order is important, MSB then LSB */
+		 
 		outb((val >> 8) & 0xff, dev->iobase + PCL726_AO_MSB_REG(chan));
 		outb(val & 0xff, dev->iobase + PCL726_AO_LSB_REG(chan));
 	}
@@ -324,20 +279,17 @@ static int pcl726_attach(struct comedi_device *dev,
 	if (!devpriv)
 		return -ENOMEM;
 
-	/*
-	 * Hook up the external trigger source interrupt only if the
-	 * user config option is valid and the board supports interrupts.
-	 */
+	 
 	if (it->options[1] && (board->irq_mask & (1 << it->options[1]))) {
 		ret = request_irq(it->options[1], pcl726_interrupt, 0,
 				  dev->board_name, dev);
 		if (ret == 0) {
-			/* External trigger source is from Pin-17 of CN3 */
+			 
 			dev->irq = it->options[1];
 		}
 	}
 
-	/* setup the per-channel analog output range_table_list */
+	 
 	for (i = 0; i < 12; i++) {
 		unsigned int opt = it->options[2 + i];
 
@@ -356,7 +308,7 @@ static int pcl726_attach(struct comedi_device *dev,
 
 	subdev = 0;
 
-	/* Analog Output subdevice */
+	 
 	s = &dev->subdevices[subdev++];
 	s->type		= COMEDI_SUBD_AO;
 	s->subdev_flags	= SDF_WRITABLE | SDF_GROUND;
@@ -370,7 +322,7 @@ static int pcl726_attach(struct comedi_device *dev,
 		return ret;
 
 	if (board->have_dio) {
-		/* Digital Input subdevice */
+		 
 		s = &dev->subdevices[subdev++];
 		s->type		= COMEDI_SUBD_DI;
 		s->subdev_flags	= SDF_READABLE;
@@ -379,7 +331,7 @@ static int pcl726_attach(struct comedi_device *dev,
 		s->insn_bits	= pcl726_di_insn_bits;
 		s->range_table	= &range_digital;
 
-		/* Digital Output subdevice */
+		 
 		s = &dev->subdevices[subdev++];
 		s->type		= COMEDI_SUBD_DO;
 		s->subdev_flags	= SDF_WRITABLE;
@@ -390,7 +342,7 @@ static int pcl726_attach(struct comedi_device *dev,
 	}
 
 	if (dev->irq) {
-		/* Digital Input subdevice - Interrupt support */
+		 
 		s = &dev->subdevices[subdev++];
 		dev->read_subdev = s;
 		s->type		= COMEDI_SUBD_DI;

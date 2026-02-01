@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * motu-protocol-v2.c - a part of driver for MOTU FireWire series
- *
- * Copyright (c) 2015-2017 Takashi Sakamoto <o-takashi@sakamocchi.jp>
- */
+
+ 
 
 #include "motu.h"
 
@@ -12,11 +8,11 @@
 #define  V2_CLOCK_RATE_SHIFT			3
 #define  V2_CLOCK_SRC_MASK			0x00000007
 #define  V2_CLOCK_SRC_SHIFT			0
-#define   V2_CLOCK_SRC_AESEBU_ON_XLR		0x07	// In Traveler.
+#define   V2_CLOCK_SRC_AESEBU_ON_XLR		0x07	
 #define   V2_CLOCK_SRC_ADAT_ON_DSUB		0x05
 #define   V2_CLOCK_SRC_WORD_ON_BNC		0x04
 #define   V2_CLOCK_SRC_SPH			0x03
-#define   V2_CLOCK_SRC_SPDIF			0x02	// on either coaxial or optical. AES/EBU in 896HD.
+#define   V2_CLOCK_SRC_SPDIF			0x02	
 #define   V2_CLOCK_SRC_ADAT_ON_OPT		0x01
 #define   V2_CLOCK_SRC_INTERNAL			0x00
 #define  V2_CLOCK_FETCH_ENABLE			0x02000000
@@ -107,7 +103,7 @@ static int get_clock_source(struct snd_motu *motu, u32 data,
 		} else {
 			__be32 reg;
 
-			// To check the configuration of optical interface.
+			
 			int err = snd_motu_transaction_read(motu, V2_IN_OUT_CONF_OFFSET, &reg,
 							    sizeof(reg));
 			if (err < 0)
@@ -131,7 +127,7 @@ static int get_clock_source(struct snd_motu *motu, u32 data,
 		*src = SND_MOTU_CLOCK_SOURCE_ADAT_ON_DSUB;
 		break;
 	case V2_CLOCK_SRC_AESEBU_ON_XLR:
-		// For Traveler.
+		
 		*src = SND_MOTU_CLOCK_SOURCE_AESEBU_ON_XLR;
 		break;
 	default:
@@ -156,7 +152,7 @@ int snd_motu_protocol_v2_get_clock_source(struct snd_motu *motu,
 	return get_clock_source(motu, be32_to_cpu(reg), src);
 }
 
-// Expected for Traveler, which implements Altera Cyclone EP1C3.
+
 static int switch_fetching_mode_cyclone(struct snd_motu *motu, u32 *data,
 					bool enable)
 {
@@ -165,7 +161,7 @@ static int switch_fetching_mode_cyclone(struct snd_motu *motu, u32 *data,
 	return 0;
 }
 
-// For UltraLite and 8pre, which implements Xilinx Spartan XC3S200.
+
 static int switch_fetching_mode_spartan(struct snd_motu *motu, u32 *data,
 					bool enable)
 {
@@ -191,10 +187,10 @@ int snd_motu_protocol_v2_switch_fetching_mode(struct snd_motu *motu,
 					      bool enable)
 {
 	if (motu->spec == &snd_motu_spec_828mk2) {
-		// 828mkII implements Altera ACEX 1K EP1K30. Nothing to do.
+		
 		return 0;
 	} else if (motu->spec == &snd_motu_spec_896hd) {
-		// 896HD implements Altera Cyclone EP1C3 but nothing to do.
+		
 		return 0;
 	} else {
 		__be32 reg;
@@ -315,7 +311,7 @@ const struct snd_motu_spec snd_motu_spec_8pre = {
 	.flags = SND_MOTU_SPEC_RX_MIDI_2ND_Q |
 		 SND_MOTU_SPEC_TX_MIDI_2ND_Q |
 		 SND_MOTU_SPEC_REGISTER_DSP,
-	// Two dummy chunks always in the end of data block.
+	
 	.tx_fixed_pcm_chunks = {10, 10, 0},
 	.rx_fixed_pcm_chunks = {6, 6, 0},
 };

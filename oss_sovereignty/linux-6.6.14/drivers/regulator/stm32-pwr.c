@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) STMicroelectronics 2019
-// Authors: Gabriel Fernandez <gabriel.fernandez@st.com>
-//          Pascal Paillet <p.paillet@st.com>.
+
+
+
+
 
 #include <linux/io.h>
 #include <linux/iopoll.h>
@@ -11,9 +11,7 @@
 #include <linux/regulator/driver.h>
 #include <linux/regulator/of_regulator.h>
 
-/*
- * Registers description
- */
+ 
 #define REG_PWR_CR3 0x0C
 
 #define USB_3_3_EN BIT(24)
@@ -23,7 +21,7 @@
 #define REG_1_1_EN BIT(30)
 #define REG_1_1_RDY BIT(31)
 
-/* list of supported regulators */
+ 
 enum {
 	PWR_REG11,
 	PWR_REG18,
@@ -72,7 +70,7 @@ static int stm32_pwr_reg_enable(struct regulator_dev *rdev)
 	val |= rdev->desc->enable_mask;
 	writel_relaxed(val, priv->base + REG_PWR_CR3);
 
-	/* use an arbitrary timeout of 20ms */
+	 
 	ret = readx_poll_timeout(stm32_pwr_reg_is_ready, rdev, val, val,
 				 100, 20 * 1000);
 	if (ret)
@@ -91,7 +89,7 @@ static int stm32_pwr_reg_disable(struct regulator_dev *rdev)
 	val &= ~rdev->desc->enable_mask;
 	writel_relaxed(val, priv->base + REG_PWR_CR3);
 
-	/* use an arbitrary timeout of 20ms */
+	 
 	ret = readx_poll_timeout(stm32_pwr_reg_is_enabled, rdev, val, !val,
 				 100, 20 * 1000);
 	if (ret)

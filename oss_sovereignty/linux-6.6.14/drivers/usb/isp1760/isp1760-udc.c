@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for the NXP ISP1761 device controller
- *
- * Copyright 2021 Linaro, Rui Miguel Silva
- * Copyright 2014 Ideas on Board Oy
- *
- * Contacts:
- *	Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- *	Rui Miguel Silva <rui.silva@linaro.org>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/io.h>
@@ -103,9 +94,7 @@ static bool isp1760_udc_is_set(struct isp1760_udc *udc, u32 field)
 {
 	return !!isp1760_udc_read(udc, field);
 }
-/* -----------------------------------------------------------------------------
- * Endpoint Management
- */
+ 
 
 static struct isp1760_ep *isp1760_udc_find_ep(struct isp1760_udc *udc,
 					      u16 index)
@@ -134,34 +123,19 @@ static void __isp1760_udc_select_ep(struct isp1760_udc *udc,
 		isp1760_udc_clear(udc, DC_EPDIR);
 }
 
-/**
- * isp1760_udc_select_ep - Select an endpoint for register access
- * @ep: The endpoint
- * @udc: Reference to the device controller
- *
- * The ISP1761 endpoint registers are banked. This function selects the target
- * endpoint for banked register access. The selection remains valid until the
- * next call to this function, the next direct access to the EPINDEX register
- * or the next reset, whichever comes first.
- *
- * Called with the UDC spinlock held.
- */
+ 
 static void isp1760_udc_select_ep(struct isp1760_udc *udc,
 				  struct isp1760_ep *ep)
 {
 	__isp1760_udc_select_ep(udc, ep, ep->addr & USB_ENDPOINT_DIR_MASK);
 }
 
-/* Called with the UDC spinlock held. */
+ 
 static void isp1760_udc_ctrl_send_status(struct isp1760_ep *ep, int dir)
 {
 	struct isp1760_udc *udc = ep->udc;
 
-	/*
-	 * Proceed to the status stage. The status stage data packet flows in
-	 * the direction opposite to the data stage data packets, we thus need
-	 * to select the OUT/IN endpoint for IN/OUT transfers.
-	 */
+	 
 	if (dir == USB_DIR_IN)
 		isp1760_udc_clear(udc, DC_EPDIR);
 	else
@@ -170,14 +144,11 @@ static void isp1760_udc_ctrl_send_status(struct isp1760_ep *ep, int dir)
 	isp1760_udc_write(udc, DC_ENDPIDX, 1);
 	isp1760_udc_set(udc, DC_STATUS);
 
-	/*
-	 * The hardware will terminate the request automatically and go back to
-	 * the setup stage without notifying us.
-	 */
+	 
 	udc->ep0_state = ISP1760_CTRL_SETUP;
 }
 
-/* Called without the UDC spinlock held. */
+ 
 static void isp1760_udc_request_complete(struct isp1760_ep *ep,
 					 struct isp1760_request *req,
 					 int status)
@@ -194,11 +165,7 @@ static void isp1760_udc_request_complete(struct isp1760_ep *ep,
 
 	spin_lock_irqsave(&udc->lock, flags);
 
-	/*
-	 * When completing control OUT requests, move to the status stage after
-	 * calling the request complete callback. This gives the gadget an
-	 * opportunity to stall the control transfer if needed.
-	 */
+	 
 	if (status == 0 && ep->addr == 0 && udc->ep0_dir == USB_DIR_OUT)
 		isp1760_udc_ctrl_send_status(ep, USB_DIR_OUT);
 
@@ -214,23 +181,21 @@ static void isp1760_udc_ctrl_send_stall(struct isp1760_ep *ep)
 
 	spin_lock_irqsave(&udc->lock, flags);
 
-	/* Stall both the IN and OUT endpoints. */
+	 
 	__isp1760_udc_select_ep(udc, ep, USB_DIR_OUT);
 	isp1760_udc_set(udc, DC_STALL);
 	__isp1760_udc_select_ep(udc, ep, USB_DIR_IN);
 	isp1760_udc_set(udc, DC_STALL);
 
-	/* A protocol stall completes the control transaction. */
+	 
 	udc->ep0_state = ISP1760_CTRL_SETUP;
 
 	spin_unlock_irqrestore(&udc->lock, flags);
 }
 
-/* -----------------------------------------------------------------------------
- * Data Endpoints
- */
+ 
 
-/* Called with the UDC spinlock held. */
+ 
 static bool isp1760_udc_receive(struct isp1760_ep *ep,
 				struct isp1760_request *req)
 {
@@ -248,24 +213,14 @@ static bool isp1760_udc_receive(struct isp1760_ep *ep,
 	len = min(len, req->req.length - req->req.actual);
 
 	if (!len) {
-		/*
-		 * There's no data to be read from the FIFO, acknowledge the RX
-		 * interrupt by clearing the buffer.
-		 *
-		 * TODO: What if another packet arrives in the meantime ? The
-		 * datasheet doesn't clearly document how this should be
-		 * handled.
-		 */
+		 
 		isp1760_udc_set(udc, DC_CLBUF);
 		return false;
 	}
 
 	buf = req->req.buf + req->req.actual;
 
-	/*
-	 * Make sure not to read more than one extra byte, otherwise data from
-	 * the next packet might be removed from the FIFO.
-	 */
+	 
 	for (i = len; i > 2; i -= 4, ++buf)
 		*buf = isp1760_udc_read_raw(udc, ISP176x_DC_DATAPORT);
 	if (i > 0)
@@ -273,10 +228,7 @@ static bool isp1760_udc_receive(struct isp1760_ep *ep,
 
 	req->req.actual += len;
 
-	/*
-	 * TODO: The short_not_ok flag isn't supported yet, but isn't used by
-	 * any gadget driver either.
-	 */
+	 
 
 	dev_dbg(udc->isp->dev,
 		"%s: req %p actual/length %u/%u maxpacket %u packet size %u\n",
@@ -285,10 +237,7 @@ static bool isp1760_udc_receive(struct isp1760_ep *ep,
 
 	ep->rx_pending = false;
 
-	/*
-	 * Complete the request if all data has been received or if a short
-	 * packet has been received.
-	 */
+	 
 	if (req->req.actual == req->req.length || len < ep->maxpacket) {
 		list_del(&req->queue);
 		return true;
@@ -316,12 +265,7 @@ static void isp1760_udc_transmit(struct isp1760_ep *ep,
 	if (req->packet_size)
 		isp1760_udc_write(udc, DC_BUFLEN, req->packet_size);
 
-	/*
-	 * Make sure not to write more than one extra byte, otherwise extra data
-	 * will stay in the FIFO and will be transmitted during the next control
-	 * request. The endpoint control CLBUF bit is supposed to allow flushing
-	 * the FIFO for this kind of conditions, but doesn't seem to work.
-	 */
+	 
 	for (i = req->packet_size; i > 2; i -= 4, ++buf)
 		isp1760_udc_write_raw(udc, ISP176x_DC_DATAPORT, *buf);
 	if (i > 0)
@@ -390,11 +334,7 @@ static void isp1760_ep_tx_complete(struct isp1760_ep *ep)
 	}
 
 	if (list_empty(&ep->queue)) {
-		/*
-		 * This can happen for the control endpoint when the reply to
-		 * the GET_STATUS IN control request is sent directly by the
-		 * setup IRQ handler. Just proceed to the status stage.
-		 */
+		 
 		if (ep->addr == 0) {
 			isp1760_udc_ctrl_send_status(ep, USB_DIR_IN);
 			spin_unlock(&udc->lock);
@@ -420,10 +360,7 @@ static void isp1760_ep_tx_complete(struct isp1760_ep *ep)
 		 req, req->req.actual, req->req.length, ep->maxpacket,
 		 req->packet_size, req->req.zero, need_zlp);
 
-	/*
-	 * Complete the request if all data has been sent and we don't need to
-	 * transmit a zero length packet.
-	 */
+	 
 	if (req->req.actual == req->req.length && !need_zlp) {
 		complete = req;
 		list_del(&req->queue);
@@ -438,12 +375,7 @@ static void isp1760_ep_tx_complete(struct isp1760_ep *ep)
 			req = NULL;
 	}
 
-	/*
-	 * Transmit the next packet or start the next request, if any.
-	 *
-	 * TODO: If the endpoint is stalled the next request shouldn't be
-	 * started, but what about the next packet ?
-	 */
+	 
 	if (req)
 		isp1760_udc_transmit(ep, req);
 
@@ -474,24 +406,18 @@ static int __isp1760_udc_set_halt(struct isp1760_ep *ep, bool halt)
 		isp1760_udc_clear(udc, DC_STALL);
 
 	if (ep->addr == 0) {
-		/* When halting the control endpoint, stall both IN and OUT. */
+		 
 		__isp1760_udc_select_ep(udc, ep, USB_DIR_IN);
 		if (halt)
 			isp1760_udc_set(udc, DC_STALL);
 		else
 			isp1760_udc_clear(udc, DC_STALL);
 	} else if (!halt) {
-		/* Reset the data PID by cycling the endpoint enable bit. */
+		 
 		isp1760_udc_clear(udc, DC_EPENABLE);
 		isp1760_udc_set(udc, DC_EPENABLE);
 
-		/*
-		 * Disabling the endpoint emptied the transmit FIFO, fill it
-		 * again if a request is pending.
-		 *
-		 * TODO: Does the gadget framework require synchronizatino with
-		 * the TX IRQ handler ?
-		 */
+		 
 		if ((ep->addr & USB_DIR_IN) && !list_empty(&ep->queue)) {
 			struct isp1760_request *req;
 
@@ -506,9 +432,7 @@ static int __isp1760_udc_set_halt(struct isp1760_ep *ep, bool halt)
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * Control Endpoint
- */
+ 
 
 static int isp1760_udc_get_status(struct isp1760_udc *udc,
 				  const struct usb_ctrlrequest *req)
@@ -595,7 +519,7 @@ static bool isp1760_ep0_setup_standard(struct isp1760_udc *udc,
 	case USB_REQ_CLEAR_FEATURE:
 		switch (req->bRequestType) {
 		case USB_DIR_OUT | USB_RECIP_DEVICE: {
-			/* TODO: Handle remote wakeup feature. */
+			 
 			return true;
 		}
 
@@ -613,11 +537,7 @@ static bool isp1760_ep0_setup_standard(struct isp1760_udc *udc,
 
 			spin_lock(&udc->lock);
 
-			/*
-			 * If the endpoint is wedged only the gadget can clear
-			 * the halt feature. Pretend success in that case, but
-			 * keep the endpoint halted.
-			 */
+			 
 			if (!ep->wedged)
 				stall = __isp1760_udc_set_halt(ep, false);
 			else
@@ -639,7 +559,7 @@ static bool isp1760_ep0_setup_standard(struct isp1760_udc *udc,
 	case USB_REQ_SET_FEATURE:
 		switch (req->bRequestType) {
 		case USB_DIR_OUT | USB_RECIP_DEVICE: {
-			/* TODO: Handle remote wakeup and test mode features */
+			 
 			return true;
 		}
 
@@ -692,12 +612,7 @@ static bool isp1760_ep0_setup_standard(struct isp1760_udc *udc,
 		usb_gadget_set_state(&udc->gadget, req->wValue ?
 				     USB_STATE_CONFIGURED : USB_STATE_ADDRESS);
 
-		/*
-		 * SET_CONFIGURATION (and SET_INTERFACE) must reset the halt
-		 * feature on all endpoints. There is however no need to do so
-		 * explicitly here as the gadget driver will disable and
-		 * reenable endpoints, clearing the halt feature.
-		 */
+		 
 		return false;
 
 	default:
@@ -738,7 +653,7 @@ static void isp1760_ep0_setup(struct isp1760_udc *udc)
 		return;
 	}
 
-	/* Move to the data stage. */
+	 
 	if (!req.r.wLength)
 		udc->ep0_state = ISP1760_CTRL_STATUS;
 	else if (req.r.bRequestType & USB_DIR_IN)
@@ -766,9 +681,7 @@ static void isp1760_ep0_setup(struct isp1760_udc *udc)
 		isp1760_udc_ctrl_send_stall(&udc->ep[0]);
 }
 
-/* -----------------------------------------------------------------------------
- * Gadget Endpoint Operations
- */
+ 
 
 static int isp1760_ep_enable(struct usb_ep *ep,
 			     const struct usb_endpoint_descriptor *desc)
@@ -780,10 +693,7 @@ static int isp1760_ep_enable(struct usb_ep *ep,
 
 	dev_dbg(uep->udc->isp->dev, "%s\n", __func__);
 
-	/*
-	 * Validate the descriptor. The control endpoint can't be enabled
-	 * manually.
-	 */
+	 
 	if (desc->bDescriptorType != USB_DT_ENDPOINT ||
 	    desc->bEndpointAddress == 0 ||
 	    desc->bEndpointAddress != uep->addr ||
@@ -859,7 +769,7 @@ static int isp1760_ep_disable(struct usb_ep *ep)
 	isp1760_udc_clear(udc, DC_EPENABLE);
 	isp1760_udc_clear(udc, DC_ENDPTYP);
 
-	/* TODO Synchronize with the IRQ handler */
+	 
 
 	list_splice_init(&uep->queue, &req_list);
 
@@ -1006,12 +916,7 @@ static int __isp1760_ep_set_halt(struct isp1760_ep *uep, bool stall, bool wedge)
 	int ret;
 
 	if (!uep->addr) {
-		/*
-		 * Halting the control endpoint is only valid as a delayed error
-		 * response to a SETUP packet. Make sure EP0 is in the right
-		 * stage and that the gadget isn't trying to clear the halt
-		 * condition.
-		 */
+		 
 		if (WARN_ON(udc->ep0_state == ISP1760_CTRL_SETUP || !stall ||
 			     wedge)) {
 			return -EINVAL;
@@ -1025,7 +930,7 @@ static int __isp1760_ep_set_halt(struct isp1760_ep *uep, bool stall, bool wedge)
 	}
 
 	if (uep->addr & USB_DIR_IN) {
-		/* Refuse to halt IN endpoints with active transfers. */
+		 
 		if (!list_empty(&uep->queue)) {
 			dev_dbg(udc->isp->dev,
 				"%s: ep%02x has request pending\n", __func__,
@@ -1039,10 +944,7 @@ static int __isp1760_ep_set_halt(struct isp1760_ep *uep, bool stall, bool wedge)
 		return ret;
 
 	if (!uep->addr) {
-		/*
-		 * Stalling EP0 completes the control transaction, move back to
-		 * the SETUP state.
-		 */
+		 
 		udc->ep0_state = ISP1760_CTRL_SETUP;
 		return 0;
 	}
@@ -1097,10 +999,7 @@ static void isp1760_ep_fifo_flush(struct usb_ep *ep)
 
 	isp1760_udc_select_ep(udc, uep);
 
-	/*
-	 * Set the CLBUF bit twice to flush both buffers in case double
-	 * buffering is enabled.
-	 */
+	 
 	isp1760_udc_set(udc, DC_CLBUF);
 	isp1760_udc_set(udc, DC_CLBUF);
 
@@ -1119,18 +1018,16 @@ static const struct usb_ep_ops isp1760_ep_ops = {
 	.fifo_flush = isp1760_ep_fifo_flush,
 };
 
-/* -----------------------------------------------------------------------------
- * Device States
- */
+ 
 
-/* Called with the UDC spinlock held. */
+ 
 static void isp1760_udc_connect(struct isp1760_udc *udc)
 {
 	usb_gadget_set_state(&udc->gadget, USB_STATE_POWERED);
 	mod_timer(&udc->vbus_timer, jiffies + ISP1760_VBUS_POLL_INTERVAL);
 }
 
-/* Called with the UDC spinlock held. */
+ 
 static void isp1760_udc_disconnect(struct isp1760_udc *udc)
 {
 	if (udc->gadget.state < USB_STATE_POWERED)
@@ -1147,7 +1044,7 @@ static void isp1760_udc_disconnect(struct isp1760_udc *udc)
 
 	del_timer(&udc->vbus_timer);
 
-	/* TODO Reset all endpoints ? */
+	 
 }
 
 static void isp1760_udc_init_hw(struct isp1760_udc *udc)
@@ -1156,15 +1053,7 @@ static void isp1760_udc_init_hw(struct isp1760_udc *udc)
 	u32 intena = udc->is_isp1763 ? ISP1763_DC_INTENABLE :
 						ISP176x_DC_INTENABLE;
 
-	/*
-	 * The device controller currently shares its interrupt with the host
-	 * controller, the DC_IRQ polarity and signaling mode are ignored. Set
-	 * the to active-low level-triggered.
-	 *
-	 * Configure the control, in and out pipes to generate interrupts on
-	 * ACK tokens only (and NYET for the out pipe). The default
-	 * configuration also generates an interrupt on the first NACK token.
-	 */
+	 
 	isp1760_reg_write(udc->regs, intconf,
 			  ISP176x_DC_CDBGMOD_ACK | ISP176x_DC_DDBGMODIN_ACK |
 			  ISP176x_DC_DDBGMODOUT_ACK);
@@ -1189,10 +1078,7 @@ static void isp1760_udc_reset(struct isp1760_udc *udc)
 
 	spin_lock_irqsave(&udc->lock, flags);
 
-	/*
-	 * The bus reset has reset most registers to their default value,
-	 * reinitialize the UDC hardware.
-	 */
+	 
 	isp1760_udc_init_hw(udc);
 
 	udc->ep0_state = ISP1760_CTRL_SETUP;
@@ -1221,9 +1107,7 @@ static void isp1760_udc_resume(struct isp1760_udc *udc)
 		udc->driver->resume(&udc->gadget);
 }
 
-/* -----------------------------------------------------------------------------
- * Gadget Operations
- */
+ 
 
 static int isp1760_udc_get_frame(struct usb_gadget *gadget)
 {
@@ -1269,7 +1153,7 @@ static int isp1760_udc_start(struct usb_gadget *gadget,
 	struct isp1760_udc *udc = gadget_to_udc(gadget);
 	unsigned long flags;
 
-	/* The hardware doesn't support low speed. */
+	 
 	if (driver->max_speed < USB_SPEED_FULL) {
 		dev_err(udc->isp->dev, "Invalid gadget driver\n");
 		return -EINVAL;
@@ -1295,7 +1179,7 @@ static int isp1760_udc_start(struct usb_gadget *gadget,
 
 	usb_gadget_set_state(&udc->gadget, USB_STATE_ATTACHED);
 
-	/* DMA isn't supported yet, don't enable the DMA clock. */
+	 
 	isp1760_udc_set(udc, DC_GLINTENA);
 
 	isp1760_udc_init_hw(udc);
@@ -1334,9 +1218,7 @@ static const struct usb_gadget_ops isp1760_udc_ops = {
 	.udc_stop = isp1760_udc_stop,
 };
 
-/* -----------------------------------------------------------------------------
- * Interrupt Handling
- */
+ 
 
 static u32 isp1760_udc_irq_get_status(struct isp1760_udc *udc)
 {
@@ -1365,7 +1247,7 @@ static irqreturn_t isp1760_udc_irq(int irq, void *dev)
 
 	if (status & ISP176x_DC_IEVBUS) {
 		dev_dbg(udc->isp->dev, "%s(VBUS)\n", __func__);
-		/* The VBUS interrupt is only triggered when VBUS appears. */
+		 
 		spin_lock(&udc->lock);
 		isp1760_udc_connect(udc);
 		spin_unlock(&udc->lock);
@@ -1437,9 +1319,7 @@ static void isp1760_udc_vbus_poll(struct timer_list *t)
 	spin_unlock_irqrestore(&udc->lock, flags);
 }
 
-/* -----------------------------------------------------------------------------
- * Registration
- */
+ 
 
 static void isp1760_udc_init_eps(struct isp1760_udc *udc)
 {
@@ -1466,11 +1346,7 @@ static void isp1760_udc_init_eps(struct isp1760_udc *udc)
 		ep->ep.ops = &isp1760_ep_ops;
 		ep->ep.name = ep->name;
 
-		/*
-		 * Hardcode the maximum packet sizes for now, to 64 bytes for
-		 * the control endpoint and 512 bytes for all other endpoints.
-		 * This fits in the 8kB FIFO without double-buffering.
-		 */
+		 
 		if (ep_num == 0) {
 			usb_ep_set_maxpacket_limit(&ep->ep, 64);
 			ep->ep.caps.type_control = true;
@@ -1500,12 +1376,7 @@ static int isp1760_udc_init(struct isp1760_udc *udc)
 	u16 scratch;
 	u32 chipid;
 
-	/*
-	 * Check that the controller is present by writing to the scratch
-	 * register, modifying the bus pattern by reading from the chip ID
-	 * register, and reading the scratch register value back. The chip ID
-	 * and scratch register contents must match the expected values.
-	 */
+	 
 	isp1760_udc_write(udc, DC_SCRATCH, 0xbabe);
 	chipid = isp1760_udc_read(udc, DC_CHIP_ID_HIGH) << 16;
 	chipid |= isp1760_udc_read(udc, DC_CHIP_ID_LOW);
@@ -1524,7 +1395,7 @@ static int isp1760_udc_init(struct isp1760_udc *udc)
 		return -ENODEV;
 	}
 
-	/* Reset the device controller. */
+	 
 	isp1760_udc_set(udc, DC_SFRESET);
 	usleep_range(10000, 11000);
 	isp1760_reg_write(udc->regs, mode_reg, 0);
@@ -1560,11 +1431,7 @@ int isp1760_udc_register(struct isp1760_device *isp, int irq,
 
 	udc->irq = irq;
 
-	/*
-	 * Initialize the gadget static fields and register its device. Gadget
-	 * fields that vary during the life time of the gadget are initialized
-	 * by the UDC core.
-	 */
+	 
 	udc->gadget.ops = &isp1760_udc_ops;
 	udc->gadget.speed = USB_SPEED_UNKNOWN;
 	udc->gadget.max_speed = USB_SPEED_HIGH;

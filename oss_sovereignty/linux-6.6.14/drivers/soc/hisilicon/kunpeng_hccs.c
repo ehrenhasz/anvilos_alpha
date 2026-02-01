@@ -1,27 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * The Huawei Cache Coherence System (HCCS) is a multi-chip interconnection
- * bus protocol.
- *
- * Copyright (c) 2023 Hisilicon Limited.
- * Author: Huisong Li <lihuisong@huawei.com>
- *
- * HCCS driver for Kunpeng SoC provides the following features:
- * - Retrieve the following information about each port:
- *    - port type
- *    - lane mode
- *    - enable
- *    - current lane mode
- *    - link finite state machine
- *    - lane mask
- *    - CRC error count
- *
- * - Retrieve the following information about all the ports on the chip or
- *   the die:
- *    - if all enabled ports are in linked
- *    - if all linked ports are in full lane
- *    - CRC error count sum
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/iopoll.h>
 #include <linux/platform_device.h>
@@ -31,14 +9,11 @@
 
 #include "kunpeng_hccs.h"
 
-/* PCC defines */
+ 
 #define HCCS_PCC_SIGNATURE_MASK		0x50434300
 #define HCCS_PCC_STATUS_CMD_COMPLETE	BIT(0)
 
-/*
- * Arbitrary retries in case the remote processor is slow to respond
- * to PCC commands
- */
+ 
 #define HCCS_PCC_CMD_WAIT_RETRIES_NUM		500ULL
 #define HCCS_POLL_STATUS_TIME_INTERVAL_US	3
 
@@ -142,11 +117,7 @@ static int hccs_register_pcc_channel(struct hccs_dev *hdev)
 	cl_info->pcc_chan = pcc_chan;
 	cl_info->mbox_chan = pcc_chan->mchan;
 
-	/*
-	 * pcc_chan->latency is just a nominal value. In reality the remote
-	 * processor could be much slower to reply. So add an arbitrary amount
-	 * of wait on top of nominal.
-	 */
+	 
 	cl_info->deadline_us =
 			HCCS_PCC_CMD_WAIT_RETRIES_NUM * pcc_chan->latency;
 	if (cl_info->mbox_chan->mbox->txdone_irq) {
@@ -182,10 +153,7 @@ static int hccs_check_chan_cmd_complete(struct hccs_dev *hdev)
 	u16 status;
 	int ret;
 
-	/*
-	 * Poll PCC status register every 3us(delay_us) for maximum of
-	 * deadline_us(timeout_us) until PCC command complete bit is set(cond)
-	 */
+	 
 	ret = readw_poll_timeout(&comm_base->status, status,
 				 status & HCCS_PCC_STATUS_CMD_COMPLETE,
 				 HCCS_POLL_STATUS_TIME_INTERVAL_US,
@@ -207,21 +175,21 @@ static int hccs_pcc_cmd_send(struct hccs_dev *hdev, u8 cmd,
 	u16 comm_space_size;
 	int ret;
 
-	/* Write signature for this subspace */
+	 
 	tmp.signature = HCCS_PCC_SIGNATURE_MASK | hdev->chan_id;
-	/* Write to the shared command region */
+	 
 	tmp.command = cmd;
-	/* Clear cmd complete bit */
+	 
 	tmp.status = 0;
 	memcpy_toio(cl_info->pcc_comm_addr, (void *)&tmp,
 			sizeof(struct acpi_pcct_shared_memory));
 
-	/* Copy the message to the PCC comm space */
+	 
 	comm_space_size = HCCS_PCC_SHARE_MEM_BYTES -
 				sizeof(struct acpi_pcct_shared_memory);
 	memcpy_toio(comm_space, (void *)desc, comm_space_size);
 
-	/* Ring doorbell */
+	 
 	ret = mbox_send_message(cl_info->mbox_chan, &cmd);
 	if (ret < 0) {
 		dev_err(hdev->dev, "Send PCC mbox message failed, ret = %d.\n",
@@ -229,12 +197,12 @@ static int hccs_pcc_cmd_send(struct hccs_dev *hdev, u8 cmd,
 		goto end;
 	}
 
-	/* Wait for completion */
+	 
 	ret = hccs_check_chan_cmd_complete(hdev);
 	if (ret)
 		goto end;
 
-	/* Copy response data */
+	 
 	memcpy_fromio((void *)desc, comm_space, comm_space_size);
 	fw_inner_head = &desc->rsp.fw_inner_head;
 	if (fw_inner_head->retStatus) {

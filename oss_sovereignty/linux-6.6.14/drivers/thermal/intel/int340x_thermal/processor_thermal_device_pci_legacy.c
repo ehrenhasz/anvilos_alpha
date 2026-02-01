@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * B0D4 processor thermal device
- * Copyright (c) 2020, Intel Corporation.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/kernel.h>
@@ -51,13 +48,7 @@ static int proc_thermal_pci_probe(struct pci_dev *pdev,
 	pci_set_drvdata(pdev, proc_priv);
 
 	if (pdev->device == PCI_DEVICE_ID_INTEL_BSW_THERMAL) {
-		/*
-		 * Enumerate additional DTS sensors available via IOSF.
-		 * But we are not treating as a failure condition, if
-		 * there are no aux DTSs enabled or fails. This driver
-		 * already exposes sensors, which can be accessed via
-		 * ACPI/MSR. So we don't want to fail for auxiliary DTSs.
-		 */
+		 
 		proc_priv->soc_dts = intel_soc_dts_iosf_init(
 					INTEL_SOC_DTS_INTERRUPT_MSI, false, 0);
 

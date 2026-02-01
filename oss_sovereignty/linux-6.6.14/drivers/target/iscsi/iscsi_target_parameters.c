@@ -1,15 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- * This file contains main functions related to iSCSI Parameter negotiation.
- *
- * (c) Copyright 2007-2013 Datera, Inc.
- *
- * Author: Nicholas A. Bellinger <nab@linux-iscsi.org>
- *
- ******************************************************************************/
+
+ 
 
 #include <linux/slab.h>
-#include <linux/uio.h> /* struct kvec */
+#include <linux/uio.h>  
 #include <target/iscsi/iscsi_target_core.h>
 #include "iscsi_target_util.h"
 #include "iscsi_target_parameters.h"
@@ -190,7 +183,7 @@ out:
 	return NULL;
 }
 
-/* #warning Add extension keys */
+ 
 int iscsi_create_default_params(struct iscsi_param_list **param_list_ptr)
 {
 	struct iscsi_param *param = NULL;
@@ -205,17 +198,7 @@ int iscsi_create_default_params(struct iscsi_param_list **param_list_ptr)
 	INIT_LIST_HEAD(&pl->param_list);
 	INIT_LIST_HEAD(&pl->extra_response_list);
 
-	/*
-	 * The format for setting the initial parameter definitions are:
-	 *
-	 * Parameter name:
-	 * Initial value:
-	 * Allowable phase:
-	 * Scope:
-	 * Allowable senders:
-	 * Typerange:
-	 * Use:
-	 */
+	 
 	param = iscsi_set_default_param(pl, AUTHMETHOD, INITIAL_AUTHMETHOD,
 			PHASE_SECURITY, SCOPE_CONNECTION_ONLY, SENDER_BOTH,
 			TYPERANGE_AUTH, USE_INITIAL_ONLY);
@@ -400,9 +383,7 @@ int iscsi_create_default_params(struct iscsi_param_list **param_list_ptr)
 	if (!param)
 		goto out;
 
-	/*
-	 * Extra parameters for ISER from RFC-5046
-	 */
+	 
 	param = iscsi_set_default_param(pl, RDMAEXTENSIONS, INITIAL_RDMAEXTENSIONS,
 			PHASE_OPERATIONAL, SCOPE_SESSION_WIDE, SENDER_BOTH,
 			TYPERANGE_BOOL_AND, USE_LEADING_ONLY);
@@ -737,17 +718,13 @@ static int iscsi_add_notunderstood_response(
 
 static int iscsi_check_for_auth_key(char *key)
 {
-	/*
-	 * RFC 1994
-	 */
+	 
 	if (!strcmp(key, "CHAP_A") || !strcmp(key, "CHAP_I") ||
 	    !strcmp(key, "CHAP_C") || !strcmp(key, "CHAP_N") ||
 	    !strcmp(key, "CHAP_R"))
 		return 1;
 
-	/*
-	 * RFC 2945
-	 */
+	 
 	if (!strcmp(key, "SRP_U") || !strcmp(key, "SRP_N") ||
 	    !strcmp(key, "SRP_g") || !strcmp(key, "SRP_s") ||
 	    !strcmp(key, "SRP_A") || !strcmp(key, "SRP_B") ||
@@ -768,9 +745,7 @@ static void iscsi_check_proposer_for_optional_reply(struct iscsi_param *param,
 			SET_PSTATE_REPLY_OPTIONAL(param);
 
 		if (keys_workaround) {
-			/*
-			 * Required for gPXE iSCSI boot client
-			 */
+			 
 			if (!strcmp(param->name, IMMEDIATEDATA))
 				SET_PSTATE_REPLY_OPTIONAL(param);
 		}
@@ -779,15 +754,11 @@ static void iscsi_check_proposer_for_optional_reply(struct iscsi_param *param,
 			SET_PSTATE_REPLY_OPTIONAL(param);
 
 		if (keys_workaround) {
-			/*
-			 * Required for Mellanox Flexboot PXE boot ROM
-			 */
+			 
 			if (!strcmp(param->name, FIRSTBURSTLENGTH))
 				SET_PSTATE_REPLY_OPTIONAL(param);
 
-			/*
-			 * Required for gPXE iSCSI boot client
-			 */
+			 
 			if (!strcmp(param->name, MAXCONNECTIONS))
 				SET_PSTATE_REPLY_OPTIONAL(param);
 		}
@@ -1114,10 +1085,7 @@ static int iscsi_check_value(struct iscsi_param *param, char *value)
 	if (!strcmp(value, REJECT)) {
 		if (!strcmp(param->name, IFMARKINT) ||
 		    !strcmp(param->name, OFMARKINT)) {
-			/*
-			 * Reject is not fatal for [I,O]FMarkInt,  and causes
-			 * [I,O]FMarker to be reset to No. (See iSCSI v20 A.3.2)
-			 */
+			 
 			SET_PSTATE_REJECT(param);
 			return 0;
 		}
@@ -1136,7 +1104,7 @@ static int iscsi_check_value(struct iscsi_param *param, char *value)
 			return -1;
 		}
 
-/* #warning FIXME: Add check for X-ExtensionKey here */
+ 
 		pr_err("Standard iSCSI key \"%s\" cannot be answered"
 			" with \"%s\", protocol error.\n", param->name, value);
 		return -1;
@@ -1226,9 +1194,7 @@ static struct iscsi_param *iscsi_check_key(
 	struct iscsi_param_list *param_list)
 {
 	struct iscsi_param *param;
-	/*
-	 * Key name length must not exceed 63 bytes. (See iSCSI v20 5.1)
-	 */
+	 
 	if (strlen(key) > KEY_MAXLEN) {
 		pr_err("Length of key name \"%s\" exceeds %d.\n",
 			key, KEY_MAXLEN);
@@ -1544,11 +1510,7 @@ void iscsi_set_connection_parameters(
 	pr_debug("---------------------------------------------------"
 			"---------------\n");
 	list_for_each_entry(param, &param_list->param_list, p_list) {
-		/*
-		 * Special case to set MAXXMITDATASEGMENTLENGTH from the
-		 * target requested MaxRecvDataSegmentLength, even though
-		 * this key is not sent over the wire.
-		 */
+		 
 		if (!strcmp(param->name, MAXXMITDATASEGMENTLENGTH)) {
 			ops->MaxXmitDataSegmentLength =
 				simple_strtoul(param->value, &tmpptr, 0);
@@ -1570,11 +1532,7 @@ void iscsi_set_connection_parameters(
 			pr_debug("DataDigest:                   %s\n",
 				param->value);
 		} else if (!strcmp(param->name, MAXRECVDATASEGMENTLENGTH)) {
-			/*
-			 * At this point iscsi_check_acceptor_state() will have
-			 * set ops->MaxRecvDataSegmentLength from the original
-			 * initiator provided value.
-			 */
+			 
 			pr_debug("MaxRecvDataSegmentLength:     %u\n",
 				ops->MaxRecvDataSegmentLength);
 		} else if (!strcmp(param->name, INITIATORRECVDATASEGMENTLENGTH)) {

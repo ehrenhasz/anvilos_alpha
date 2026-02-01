@@ -1,36 +1,4 @@
-/*
- * Copyright(c) 2011-2016 Intel Corporation. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Authors:
- *    Zhiyuan Lv <zhiyuan.lv@intel.com>
- *    Zhi Wang <zhi.a.wang@intel.com>
- *
- * Contributors:
- *    Min He <min.he@intel.com>
- *    Bing Niu <bing.niu@intel.com>
- *    Ping Gao <ping.a.gao@intel.com>
- *    Tina Zhang <tina.zhang@intel.com>
- *
- */
+ 
 
 #include "i915_drv.h"
 #include "gvt.h"
@@ -155,7 +123,7 @@ static void emulate_csb_update(struct intel_vgpu_execlist *execlist,
 	ctx_status_ptr.write_ptr = write_pointer;
 	vgpu_vreg(vgpu, ctx_status_ptr_reg) = ctx_status_ptr.dw;
 
-	/* Update the CSB and CSB write pointer in HWSP */
+	 
 	hwsp_gpa = intel_vgpu_gma_to_gpa(vgpu->gtt.ggtt_mm,
 					 vgpu->hws_pga[execlist->engine->id]);
 	if (hwsp_gpa != INTEL_GVT_INVALID_ADDR) {
@@ -200,7 +168,7 @@ static int emulate_execlist_ctx_schedule_out(
 		return -EINVAL;
 	}
 
-	/* ctx1 is valid, ctx0/ctx is scheduled-out -> element switch */
+	 
 	if (valid_context(ctx1) && same_context(ctx0, ctx)) {
 		gvt_dbg_el("ctx 1 valid, ctx/ctx 0 is scheduled-out\n");
 
@@ -212,14 +180,7 @@ static int emulate_execlist_ctx_schedule_out(
 		status.context_id = ctx->context_id;
 
 		emulate_csb_update(execlist, &status, false);
-		/*
-		 * ctx1 is not valid, ctx == ctx0
-		 * ctx1 is valid, ctx1 == ctx
-		 *	--> last element is finished
-		 * emulate:
-		 *	active-to-idle if there is *no* pending execlist
-		 *	context-complete if there *is* pending execlist
-		 */
+		 
 	} else if ((!valid_context(ctx1) && same_context(ctx0, ctx))
 			|| (valid_context(ctx1) && same_context(ctx1, ctx))) {
 		gvt_dbg_el("need to switch virtual execlist slot\n");
@@ -298,10 +259,7 @@ static int emulate_execlist_schedule_in(struct intel_vgpu_execlist *execlist,
 			slot->index, ctx[0].context_id,
 			ctx[1].context_id);
 
-	/*
-	 * no running execlist, make this write bundle as running execlist
-	 * -> idle-to-active
-	 */
+	 
 	if (!running) {
 		gvt_dbg_el("no current running execlist\n");
 
@@ -328,19 +286,12 @@ static int emulate_execlist_schedule_in(struct intel_vgpu_execlist *execlist,
 	gvt_dbg_el("current running slot index %d ctx 0 %x ctx 1 %x\n",
 		running->index, ctx0->context_id, ctx1->context_id);
 
-	/*
-	 * already has an running execlist
-	 *	a. running ctx1 is valid,
-	 *	   ctx0 is finished, and running ctx1 == new execlist ctx[0]
-	 *	b. running ctx1 is not valid,
-	 *	   ctx0 == new execlist ctx[0]
-	 * ----> lite-restore + preempted
-	 */
+	 
 	if ((valid_context(ctx1) && same_context(ctx1, &slot->ctx[0]) &&
-		/* condition a */
+		 
 		(!same_context(ctx0, execlist->running_context))) ||
 			(!valid_context(ctx1) &&
-			 same_context(ctx0, &slot->ctx[0]))) { /* condition b */
+			 same_context(ctx0, &slot->ctx[0]))) {  
 		gvt_dbg_el("need to switch virtual execlist slot\n");
 
 		execlist->pending_slot = slot;
@@ -354,10 +305,7 @@ static int emulate_execlist_schedule_in(struct intel_vgpu_execlist *execlist,
 		emulate_csb_update(execlist, &status, false);
 	} else {
 		gvt_dbg_el("emulate as pending slot\n");
-		/*
-		 * otherwise
-		 * --> emulate pending execlist exist + but no preemption case
-		 */
+		 
 		execlist->pending_slot = slot;
 		emulate_execlist_status(execlist);
 	}
@@ -478,7 +426,7 @@ int intel_vgpu_submit_execlist(struct intel_vgpu *vgpu,
 		}
 	}
 
-	/* submit workload */
+	 
 	for (i = 0; i < ARRAY_SIZE(desc); i++) {
 		if (!desc[i]->valid)
 			continue;

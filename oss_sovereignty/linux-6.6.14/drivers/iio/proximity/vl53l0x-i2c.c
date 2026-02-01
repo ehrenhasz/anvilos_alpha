@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for ST VL53L0X FlightSense ToF Ranging Sensor on a i2c bus.
- *
- * Copyright (C) 2016 STMicroelectronics Imaging Division.
- * Copyright (C) 2018 Song Qiang <songqiang1304521@gmail.com>
- * Copyright (C) 2020 Ivan Drobyshevskyi <drobyshevskyi@gmail.com>
- *
- * Datasheet available at
- * <https://www.st.com/resource/en/datasheet/vl53l0x.pdf>
- *
- * Default 7-bit i2c slave address 0x29.
- *
- * TODO: FIFO buffer, continuous mode, range selection, sensor ID check.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -149,7 +136,7 @@ static int vl53l0x_read_proximity(struct vl53l0x_data *data,
 	else if (ret != 12)
 		return -EREMOTEIO;
 
-	/* Values should be between 30~1200 in millimeters. */
+	 
 	*val = (buffer[10] << 8) + buffer[11];
 
 	return 0;
@@ -263,7 +250,7 @@ static int vl53l0x_probe(struct i2c_client *client)
 	indio_dev->num_channels = ARRAY_SIZE(vl53l0x_channels);
 	indio_dev->modes = INDIO_DIRECT_MODE;
 
-	/* usage of interrupt is optional */
+	 
 	if (client->irq) {
 		int ret;
 

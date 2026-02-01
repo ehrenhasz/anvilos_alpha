@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2008, 2010 Davide Rizzo <elpa.rizzo@gmail.com>
- *
- * The LM95241 is a sensor chip made by National Semiconductors.
- * It reports up to three temperatures (its own plus up to two external ones).
- * Complete datasheet can be obtained from National's website at:
- *   http://www.national.com/ds.cgi/LM/LM95241.pdf
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/err.h>
@@ -23,7 +16,7 @@
 static const unsigned short normal_i2c[] = {
 	0x19, 0x2a, 0x2b, I2C_CLIENT_END };
 
-/* LM95241 registers */
+ 
 #define LM95241_REG_R_MAN_ID		0xFE
 #define LM95241_REG_R_CHIP_ID		0xFF
 #define LM95241_REG_R_STATUS		0x02
@@ -39,7 +32,7 @@ static const unsigned short normal_i2c[] = {
 #define LM95241_REG_R_REMOTE2_TEMPL	0x22
 #define LM95241_REG_RW_REMOTE_MODEL	0x30
 
-/* LM95241 specific bitfields */
+ 
 #define CFG_STOP	BIT(6)
 #define CFG_CR0076	0x00
 #define CFG_CR0182	BIT(4)
@@ -72,19 +65,19 @@ static const u8 lm95241_reg_address[] = {
 	LM95241_REG_R_REMOTE2_TEMPL
 };
 
-/* Client data (each client gets its own) */
+ 
 struct lm95241_data {
 	struct i2c_client *client;
 	struct mutex update_lock;
-	unsigned long last_updated;	/* in jiffies */
-	unsigned long interval;		/* in milli-seconds */
-	bool valid;		/* false until following fields are valid */
-	/* registers values */
+	unsigned long last_updated;	 
+	unsigned long interval;		 
+	bool valid;		 
+	 
 	u8 temp[ARRAY_SIZE(lm95241_reg_address)];
 	u8 status, config, model, trutherm;
 };
 
-/* Conversions */
+ 
 static int temp_from_reg_signed(u8 val_h, u8 val_l)
 {
 	s16 val_hl = (val_h << 8) | val_l;
@@ -361,7 +354,7 @@ static umode_t lm95241_is_visible(const void *data,
 	return 0;
 }
 
-/* Return 0 if detection is successful, -ENODEV otherwise */
+ 
 static int lm95241_detect(struct i2c_client *new_client,
 			  struct i2c_board_info *info)
 {
@@ -388,7 +381,7 @@ static int lm95241_detect(struct i2c_client *new_client,
 		return -ENODEV;
 	}
 
-	/* Fill the i2c board info */
+	 
 	strscpy(info->type, name, I2C_NAME_SIZE);
 	return 0;
 }
@@ -445,7 +438,7 @@ static int lm95241_probe(struct i2c_client *client)
 	data->client = client;
 	mutex_init(&data->update_lock);
 
-	/* Initialize the LM95241 chip */
+	 
 	lm95241_init_client(client, data);
 
 	hwmon_dev = devm_hwmon_device_register_with_info(dev, client->name,
@@ -455,7 +448,7 @@ static int lm95241_probe(struct i2c_client *client)
 	return PTR_ERR_OR_ZERO(hwmon_dev);
 }
 
-/* Driver data (common to all clients) */
+ 
 static const struct i2c_device_id lm95241_id[] = {
 	{ "lm95231", 0 },
 	{ "lm95241", 0 },

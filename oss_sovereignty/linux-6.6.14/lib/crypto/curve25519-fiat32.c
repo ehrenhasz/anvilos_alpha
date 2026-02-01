@@ -1,35 +1,19 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright (C) 2015-2016 The fiat-crypto Authors.
- * Copyright (C) 2018-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- *
- * This is a machine-generated formally verified implementation of Curve25519
- * ECDH from: <https://github.com/mit-plv/fiat-crypto>. Though originally
- * machine generated, it has been tweaked to be suitable for use in the kernel.
- * It is optimized for 32-bit machines and machines that cannot work efficiently
- * with 128-bit integer types.
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <crypto/curve25519.h>
 #include <linux/string.h>
 
-/* fe means field element. Here the field is \Z/(2^255-19). An element t,
- * entries t[0]...t[9], represents the integer t[0]+2^26 t[1]+2^51 t[2]+2^77
- * t[3]+2^102 t[4]+...+2^230 t[9].
- * fe limbs are bounded by 1.125*2^26,1.125*2^25,1.125*2^26,1.125*2^25,etc.
- * Multiplication and carrying produce fe from fe_loose.
- */
+ 
 typedef struct fe { u32 v[10]; } fe;
 
-/* fe_loose limbs are bounded by 3.375*2^26,3.375*2^25,3.375*2^26,3.375*2^25,etc
- * Addition and subtraction produce fe_loose from (fe, fe).
- */
+ 
 typedef struct fe_loose { u32 v[10]; } fe_loose;
 
 static __always_inline void fe_frombytes_impl(u32 h[10], const u8 *s)
 {
-	/* Ignores top bit of s. */
+	 
 	u32 a0 = get_unaligned_le32(s);
 	u32 a1 = get_unaligned_le32(s+4);
 	u32 a2 = get_unaligned_le32(s+8);
@@ -38,16 +22,16 @@ static __always_inline void fe_frombytes_impl(u32 h[10], const u8 *s)
 	u32 a5 = get_unaligned_le32(s+20);
 	u32 a6 = get_unaligned_le32(s+24);
 	u32 a7 = get_unaligned_le32(s+28);
-	h[0] = a0&((1<<26)-1);                    /* 26 used, 32-26 left.   26 */
-	h[1] = (a0>>26) | ((a1&((1<<19)-1))<< 6); /* (32-26) + 19 =  6+19 = 25 */
-	h[2] = (a1>>19) | ((a2&((1<<13)-1))<<13); /* (32-19) + 13 = 13+13 = 26 */
-	h[3] = (a2>>13) | ((a3&((1<< 6)-1))<<19); /* (32-13) +  6 = 19+ 6 = 25 */
-	h[4] = (a3>> 6);                          /* (32- 6)              = 26 */
-	h[5] = a4&((1<<25)-1);                    /*                        25 */
-	h[6] = (a4>>25) | ((a5&((1<<19)-1))<< 7); /* (32-25) + 19 =  7+19 = 26 */
-	h[7] = (a5>>19) | ((a6&((1<<12)-1))<<13); /* (32-19) + 12 = 13+12 = 25 */
-	h[8] = (a6>>12) | ((a7&((1<< 6)-1))<<20); /* (32-12) +  6 = 20+ 6 = 26 */
-	h[9] = (a7>> 6)&((1<<25)-1); /*                                     25 */
+	h[0] = a0&((1<<26)-1);                     
+	h[1] = (a0>>26) | ((a1&((1<<19)-1))<< 6);  
+	h[2] = (a1>>19) | ((a2&((1<<13)-1))<<13);  
+	h[3] = (a2>>13) | ((a3&((1<< 6)-1))<<19);  
+	h[4] = (a3>> 6);                           
+	h[5] = a4&((1<<25)-1);                     
+	h[6] = (a4>>25) | ((a5&((1<<19)-1))<< 7);  
+	h[7] = (a5>>19) | ((a6&((1<<12)-1))<<13);  
+	h[8] = (a6>>12) | ((a7&((1<< 6)-1))<<20);  
+	h[9] = (a7>> 6)&((1<<25)-1);  
 }
 
 static __always_inline void fe_frombytes(fe *h, const u8 *s)
@@ -55,45 +39,37 @@ static __always_inline void fe_frombytes(fe *h, const u8 *s)
 	fe_frombytes_impl(h->v, s);
 }
 
-static __always_inline u8 /*bool*/
-addcarryx_u25(u8 /*bool*/ c, u32 a, u32 b, u32 *low)
+static __always_inline u8  
+addcarryx_u25(u8   c, u32 a, u32 b, u32 *low)
 {
-	/* This function extracts 25 bits of result and 1 bit of carry
-	 * (26 total), so a 32-bit intermediate is sufficient.
-	 */
+	 
 	u32 x = a + b + c;
 	*low = x & ((1 << 25) - 1);
 	return (x >> 25) & 1;
 }
 
-static __always_inline u8 /*bool*/
-addcarryx_u26(u8 /*bool*/ c, u32 a, u32 b, u32 *low)
+static __always_inline u8  
+addcarryx_u26(u8   c, u32 a, u32 b, u32 *low)
 {
-	/* This function extracts 26 bits of result and 1 bit of carry
-	 * (27 total), so a 32-bit intermediate is sufficient.
-	 */
+	 
 	u32 x = a + b + c;
 	*low = x & ((1 << 26) - 1);
 	return (x >> 26) & 1;
 }
 
-static __always_inline u8 /*bool*/
-subborrow_u25(u8 /*bool*/ c, u32 a, u32 b, u32 *low)
+static __always_inline u8  
+subborrow_u25(u8   c, u32 a, u32 b, u32 *low)
 {
-	/* This function extracts 25 bits of result and 1 bit of borrow
-	 * (26 total), so a 32-bit intermediate is sufficient.
-	 */
+	 
 	u32 x = a - b - c;
 	*low = x & ((1 << 25) - 1);
 	return x >> 31;
 }
 
-static __always_inline u8 /*bool*/
-subborrow_u26(u8 /*bool*/ c, u32 a, u32 b, u32 *low)
+static __always_inline u8  
+subborrow_u26(u8   c, u32 a, u32 b, u32 *low)
 {
-	/* This function extracts 26 bits of result and 1 bit of borrow
-	 *(27 total), so a 32-bit intermediate is sufficient.
-	 */
+	 
 	u32 x = a - b - c;
 	*low = x & ((1 << 26) - 1);
 	return x >> 31;
@@ -101,7 +77,7 @@ subborrow_u26(u8 /*bool*/ c, u32 a, u32 b, u32 *low)
 
 static __always_inline u32 cmovznz32(u32 t, u32 z, u32 nz)
 {
-	t = -!!t; /* all set if nonzero, 0 if 0 */
+	t = -!!t;  
 	return (t&nz) | ((~t)&z);
 }
 
@@ -117,35 +93,35 @@ static __always_inline void fe_freeze(u32 out[10], const u32 in1[10])
 	{ const u32 x6 = in1[2];
 	{ const u32 x4 = in1[1];
 	{ const u32 x2 = in1[0];
-	{ u32 x20; u8/*bool*/ x21 = subborrow_u26(0x0, x2, 0x3ffffed, &x20);
-	{ u32 x23; u8/*bool*/ x24 = subborrow_u25(x21, x4, 0x1ffffff, &x23);
-	{ u32 x26; u8/*bool*/ x27 = subborrow_u26(x24, x6, 0x3ffffff, &x26);
-	{ u32 x29; u8/*bool*/ x30 = subborrow_u25(x27, x8, 0x1ffffff, &x29);
-	{ u32 x32; u8/*bool*/ x33 = subborrow_u26(x30, x10, 0x3ffffff, &x32);
-	{ u32 x35; u8/*bool*/ x36 = subborrow_u25(x33, x12, 0x1ffffff, &x35);
-	{ u32 x38; u8/*bool*/ x39 = subborrow_u26(x36, x14, 0x3ffffff, &x38);
-	{ u32 x41; u8/*bool*/ x42 = subborrow_u25(x39, x16, 0x1ffffff, &x41);
-	{ u32 x44; u8/*bool*/ x45 = subborrow_u26(x42, x18, 0x3ffffff, &x44);
-	{ u32 x47; u8/*bool*/ x48 = subborrow_u25(x45, x17, 0x1ffffff, &x47);
+	{ u32 x20; u8  x21 = subborrow_u26(0x0, x2, 0x3ffffed, &x20);
+	{ u32 x23; u8  x24 = subborrow_u25(x21, x4, 0x1ffffff, &x23);
+	{ u32 x26; u8  x27 = subborrow_u26(x24, x6, 0x3ffffff, &x26);
+	{ u32 x29; u8  x30 = subborrow_u25(x27, x8, 0x1ffffff, &x29);
+	{ u32 x32; u8  x33 = subborrow_u26(x30, x10, 0x3ffffff, &x32);
+	{ u32 x35; u8  x36 = subborrow_u25(x33, x12, 0x1ffffff, &x35);
+	{ u32 x38; u8  x39 = subborrow_u26(x36, x14, 0x3ffffff, &x38);
+	{ u32 x41; u8  x42 = subborrow_u25(x39, x16, 0x1ffffff, &x41);
+	{ u32 x44; u8  x45 = subborrow_u26(x42, x18, 0x3ffffff, &x44);
+	{ u32 x47; u8  x48 = subborrow_u25(x45, x17, 0x1ffffff, &x47);
 	{ u32 x49 = cmovznz32(x48, 0x0, 0xffffffff);
 	{ u32 x50 = (x49 & 0x3ffffed);
-	{ u32 x52; u8/*bool*/ x53 = addcarryx_u26(0x0, x20, x50, &x52);
+	{ u32 x52; u8  x53 = addcarryx_u26(0x0, x20, x50, &x52);
 	{ u32 x54 = (x49 & 0x1ffffff);
-	{ u32 x56; u8/*bool*/ x57 = addcarryx_u25(x53, x23, x54, &x56);
+	{ u32 x56; u8  x57 = addcarryx_u25(x53, x23, x54, &x56);
 	{ u32 x58 = (x49 & 0x3ffffff);
-	{ u32 x60; u8/*bool*/ x61 = addcarryx_u26(x57, x26, x58, &x60);
+	{ u32 x60; u8  x61 = addcarryx_u26(x57, x26, x58, &x60);
 	{ u32 x62 = (x49 & 0x1ffffff);
-	{ u32 x64; u8/*bool*/ x65 = addcarryx_u25(x61, x29, x62, &x64);
+	{ u32 x64; u8  x65 = addcarryx_u25(x61, x29, x62, &x64);
 	{ u32 x66 = (x49 & 0x3ffffff);
-	{ u32 x68; u8/*bool*/ x69 = addcarryx_u26(x65, x32, x66, &x68);
+	{ u32 x68; u8  x69 = addcarryx_u26(x65, x32, x66, &x68);
 	{ u32 x70 = (x49 & 0x1ffffff);
-	{ u32 x72; u8/*bool*/ x73 = addcarryx_u25(x69, x35, x70, &x72);
+	{ u32 x72; u8  x73 = addcarryx_u25(x69, x35, x70, &x72);
 	{ u32 x74 = (x49 & 0x3ffffff);
-	{ u32 x76; u8/*bool*/ x77 = addcarryx_u26(x73, x38, x74, &x76);
+	{ u32 x76; u8  x77 = addcarryx_u26(x73, x38, x74, &x76);
 	{ u32 x78 = (x49 & 0x1ffffff);
-	{ u32 x80; u8/*bool*/ x81 = addcarryx_u25(x77, x41, x78, &x80);
+	{ u32 x80; u8  x81 = addcarryx_u25(x77, x41, x78, &x80);
 	{ u32 x82 = (x49 & 0x3ffffff);
-	{ u32 x84; u8/*bool*/ x85 = addcarryx_u26(x81, x44, x82, &x84);
+	{ u32 x84; u8  x85 = addcarryx_u26(x81, x44, x82, &x84);
 	{ u32 x86 = (x49 & 0x1ffffff);
 	{ u32 x88; addcarryx_u25(x85, x47, x86, &x88);
 	out[0] = x52;
@@ -199,7 +175,7 @@ static __always_inline void fe_tobytes(u8 s[32], const fe *f)
 	s[31] = h[9] >> 18;
 }
 
-/* h = f */
+ 
 static __always_inline void fe_copy(fe *h, const fe *f)
 {
 	memmove(h, f, sizeof(u32) * 10);
@@ -210,13 +186,13 @@ static __always_inline void fe_copy_lt(fe_loose *h, const fe *f)
 	memmove(h, f, sizeof(u32) * 10);
 }
 
-/* h = 0 */
+ 
 static __always_inline void fe_0(fe *h)
 {
 	memset(h, 0, sizeof(u32) * 10);
 }
 
-/* h = 1 */
+ 
 static __always_inline void fe_1(fe *h)
 {
 	memset(h, 0, sizeof(u32) * 10);
@@ -258,9 +234,7 @@ static noinline void fe_add_impl(u32 out[10], const u32 in1[10], const u32 in2[1
 	}}}}}}}}}}}}}}}}}}}}
 }
 
-/* h = f + g
- * Can overlap h with f or g.
- */
+ 
 static __always_inline void fe_add(fe_loose *h, const fe *f, const fe *g)
 {
 	fe_add_impl(h->v, f->v, g->v);
@@ -301,9 +275,7 @@ static noinline void fe_sub_impl(u32 out[10], const u32 in1[10], const u32 in2[1
 	}}}}}}}}}}}}}}}}}}}}
 }
 
-/* h = f - g
- * Can overlap h with f or g.
- */
+ 
 static __always_inline void fe_sub(fe_loose *h, const fe *f, const fe *g)
 {
 	fe_sub_impl(h->v, f->v, g->v);
@@ -614,11 +586,7 @@ static __always_inline void fe_invert(fe *out, const fe *z)
 	fe_loose_invert(out, &l);
 }
 
-/* Replace (f,g) with (g,f) if b == 1;
- * replace (f,g) with (f,g) if b == 0.
- *
- * Preconditions: b in {0,1}
- */
+ 
 static noinline void fe_cswap(fe *f, fe *g, unsigned int b)
 {
 	unsigned i;
@@ -631,7 +599,7 @@ static noinline void fe_cswap(fe *f, fe *g, unsigned int b)
 	}
 }
 
-/* NOTE: based on fiat-crypto fe_mul, edited for in2=121666, 0, 0.*/
+ 
 static __always_inline void fe_mul_121666_impl(u32 out[10], const u32 in1[10])
 {
 	{ const u32 x20 = in1[9];
@@ -766,31 +734,7 @@ void curve25519_generic(u8 out[CURVE25519_KEY_SIZE],
 	memcpy(e, scalar, 32);
 	curve25519_clamp_secret(e);
 
-	/* The following implementation was transcribed to Coq and proven to
-	 * correspond to unary scalar multiplication in affine coordinates given
-	 * that x1 != 0 is the x coordinate of some point on the curve. It was
-	 * also checked in Coq that doing a ladderstep with x1 = x3 = 0 gives
-	 * z2' = z3' = 0, and z2 = z3 = 0 gives z2' = z3' = 0. The statement was
-	 * quantified over the underlying field, so it applies to Curve25519
-	 * itself and the quadratic twist of Curve25519. It was not proven in
-	 * Coq that prime-field arithmetic correctly simulates extension-field
-	 * arithmetic on prime-field values. The decoding of the byte array
-	 * representation of e was not considered.
-	 *
-	 * Specification of Montgomery curves in affine coordinates:
-	 * <https://github.com/mit-plv/fiat-crypto/blob/2456d821825521f7e03e65882cc3521795b0320f/src/Spec/MontgomeryCurve.v#L27>
-	 *
-	 * Proof that these form a group that is isomorphic to a Weierstrass
-	 * curve:
-	 * <https://github.com/mit-plv/fiat-crypto/blob/2456d821825521f7e03e65882cc3521795b0320f/src/Curves/Montgomery/AffineProofs.v#L35>
-	 *
-	 * Coq transcription and correctness proof of the loop
-	 * (where scalarbits=255):
-	 * <https://github.com/mit-plv/fiat-crypto/blob/2456d821825521f7e03e65882cc3521795b0320f/src/Curves/Montgomery/XZ.v#L118>
-	 * <https://github.com/mit-plv/fiat-crypto/blob/2456d821825521f7e03e65882cc3521795b0320f/src/Curves/Montgomery/XZProofs.v#L278>
-	 * preconditions: 0 <= e < 2^255 (not necessarily e < order),
-	 * fe_invert(0) = 0
-	 */
+	 
 	fe_frombytes(&x1, point);
 	fe_1(&x2);
 	fe_0(&z2);
@@ -800,29 +744,13 @@ void curve25519_generic(u8 out[CURVE25519_KEY_SIZE],
 	for (pos = 254; pos >= 0; --pos) {
 		fe tmp0, tmp1;
 		fe_loose tmp0l, tmp1l;
-		/* loop invariant as of right before the test, for the case
-		 * where x1 != 0:
-		 *   pos >= -1; if z2 = 0 then x2 is nonzero; if z3 = 0 then x3
-		 *   is nonzero
-		 *   let r := e >> (pos+1) in the following equalities of
-		 *   projective points:
-		 *   to_xz (r*P)     === if swap then (x3, z3) else (x2, z2)
-		 *   to_xz ((r+1)*P) === if swap then (x2, z2) else (x3, z3)
-		 *   x1 is the nonzero x coordinate of the nonzero
-		 *   point (r*P-(r+1)*P)
-		 */
+		 
 		unsigned b = 1 & (e[pos / 8] >> (pos & 7));
 		swap ^= b;
 		fe_cswap(&x2, &x3, swap);
 		fe_cswap(&z2, &z3, swap);
 		swap = b;
-		/* Coq transcription of ladderstep formula (called from
-		 * transcribed loop):
-		 * <https://github.com/mit-plv/fiat-crypto/blob/2456d821825521f7e03e65882cc3521795b0320f/src/Curves/Montgomery/XZ.v#L89>
-		 * <https://github.com/mit-plv/fiat-crypto/blob/2456d821825521f7e03e65882cc3521795b0320f/src/Curves/Montgomery/XZProofs.v#L131>
-		 * x1 != 0 <https://github.com/mit-plv/fiat-crypto/blob/2456d821825521f7e03e65882cc3521795b0320f/src/Curves/Montgomery/XZProofs.v#L217>
-		 * x1  = 0 <https://github.com/mit-plv/fiat-crypto/blob/2456d821825521f7e03e65882cc3521795b0320f/src/Curves/Montgomery/XZProofs.v#L147>
-		 */
+		 
 		fe_sub(&tmp0l, &x3, &z3);
 		fe_sub(&tmp1l, &x2, &z2);
 		fe_add(&x2l, &x2, &z2);
@@ -842,9 +770,7 @@ void curve25519_generic(u8 out[CURVE25519_KEY_SIZE],
 		fe_mul_ttt(&z3, &x1, &z2);
 		fe_mul_tll(&z2, &tmp1l, &tmp0l);
 	}
-	/* here pos=-1, so r=e, so to_xz (e*P) === if swap then (x3, z3)
-	 * else (x2, z2)
-	 */
+	 
 	fe_cswap(&x2, &x3, swap);
 	fe_cswap(&z2, &z3, swap);
 

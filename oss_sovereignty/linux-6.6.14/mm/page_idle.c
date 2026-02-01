@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/init.h>
 #include <linux/memblock.h>
 #include <linux/fs.h>
@@ -18,19 +18,7 @@
 #define BITMAP_CHUNK_SIZE	sizeof(u64)
 #define BITMAP_CHUNK_BITS	(BITMAP_CHUNK_SIZE * BITS_PER_BYTE)
 
-/*
- * Idle page tracking only considers user memory pages, for other types of
- * pages the idle flag is always unset and an attempt to set it is silently
- * ignored.
- *
- * We treat a page as a user memory page if it is on an LRU list, because it is
- * always safe to pass such a page to rmap_walk(), which is essential for idle
- * page tracking. With such an indicator of user pages we can skip isolated
- * pages, but since there are not usually many of them, it will hardly affect
- * the overall result.
- *
- * This function tries to get a user memory page by pfn as described above.
- */
+ 
 static struct folio *page_idle_get_folio(unsigned long pfn)
 {
 	struct page *page = pfn_to_online_page(pfn);
@@ -59,28 +47,21 @@ static bool page_idle_clear_pte_refs_one(struct folio *folio,
 	while (page_vma_mapped_walk(&pvmw)) {
 		addr = pvmw.address;
 		if (pvmw.pte) {
-			/*
-			 * For PTE-mapped THP, one sub page is referenced,
-			 * the whole THP is referenced.
-			 */
+			 
 			if (ptep_clear_young_notify(vma, addr, pvmw.pte))
 				referenced = true;
 		} else if (IS_ENABLED(CONFIG_TRANSPARENT_HUGEPAGE)) {
 			if (pmdp_clear_young_notify(vma, addr, pvmw.pmd))
 				referenced = true;
 		} else {
-			/* unexpected pmd-mapped page? */
+			 
 			WARN_ON_ONCE(1);
 		}
 	}
 
 	if (referenced) {
 		folio_clear_idle(folio);
-		/*
-		 * We cleared the referenced bit in a mapping to this page. To
-		 * avoid interference with page reclaim, mark it young so that
-		 * folio_referenced() will return > 0.
-		 */
+		 
 		folio_set_young(folio);
 	}
 	return true;
@@ -88,10 +69,7 @@ static bool page_idle_clear_pte_refs_one(struct folio *folio,
 
 static void page_idle_clear_pte_refs(struct folio *folio)
 {
-	/*
-	 * Since rwc.try_lock is unused, rwc is effectively immutable, so we
-	 * can make it static to save some cycles and stack.
-	 */
+	 
 	static struct rmap_walk_control rwc = {
 		.rmap_one = page_idle_clear_pte_refs_one,
 		.anon_lock = folio_lock_anon_vma_read,
@@ -138,11 +116,7 @@ static ssize_t page_idle_bitmap_read(struct file *file, struct kobject *kobj,
 		folio = page_idle_get_folio(pfn);
 		if (folio) {
 			if (folio_test_idle(folio)) {
-				/*
-				 * The page might have been referenced via a
-				 * pte, in which case it is not idle. Clear
-				 * refs and recheck.
-				 */
+				 
 				page_idle_clear_pte_refs(folio);
 				if (folio_test_idle(folio))
 					*out |= 1ULL << bit;

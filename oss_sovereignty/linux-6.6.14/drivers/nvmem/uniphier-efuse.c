@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * UniPhier eFuse driver
- *
- * Copyright (C) 2017 Socionext Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/io.h>
@@ -59,7 +55,7 @@ static int uniphier_efuse_probe(struct platform_device *pdev)
 
 static const struct of_device_id uniphier_efuse_of_match[] = {
 	{ .compatible = "socionext,uniphier-efuse",},
-	{/* sentinel */},
+	{ },
 };
 MODULE_DEVICE_TABLE(of, uniphier_efuse_of_match);
 

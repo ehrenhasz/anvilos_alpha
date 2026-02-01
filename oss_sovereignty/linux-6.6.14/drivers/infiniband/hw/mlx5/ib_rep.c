@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2018 Mellanox Technologies. All rights reserved.
- */
+
+ 
 
 #include <linux/mlx5/vport.h>
 #include "ib_rep.h"
@@ -41,7 +39,7 @@ static void mlx5_ib_num_ports_update(struct mlx5_core_dev *dev, u32 *num_ports)
 		if (mlx5_lag_is_mpesw(peer_dev))
 			*num_ports += peer_num_ports;
 		else
-			/* Only 1 ib port is the representor for all uplinks */
+			 
 			*num_ports += peer_num_ports - 1;
 	}
 }
@@ -76,7 +74,7 @@ mlx5_ib_vport_rep_load(struct mlx5_core_dev *dev, struct mlx5_eswitch_rep *rep)
 				if (mlx5_lag_is_master(peer_dev))
 					lag_master = peer_dev;
 				else if (!mlx5_lag_is_mpesw(dev))
-				/* Only 1 ib port is the representor for all uplinks */
+				 
 					peer_n_ports--;
 
 				if (mlx5_get_dev_index(peer_dev) < mlx5_get_dev_index(dev))

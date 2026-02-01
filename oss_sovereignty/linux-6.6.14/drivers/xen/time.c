@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Xen stolen ticks accounting.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/kernel_stat.h>
 #include <linux/math64.h>
@@ -19,12 +17,12 @@
 #include <xen/interface/vcpu.h>
 #include <xen/xen-ops.h>
 
-/* runstate info updated by Xen */
+ 
 static DEFINE_PER_CPU(struct vcpu_runstate_info, xen_runstate);
 
 static DEFINE_PER_CPU(u64[4], old_runstate_time);
 
-/* return an consistent snapshot of 64-bit time/counter value */
+ 
 static u64 get64(const u64 *p)
 {
 	u64 ret;
@@ -33,12 +31,7 @@ static u64 get64(const u64 *p)
 		u32 *p32 = (u32 *)p;
 		u32 h, l, h2;
 
-		/*
-		 * Read high then low, and then make sure high is
-		 * still the same; this will only loop if low wraps
-		 * and carries into high.
-		 * XXX some clean way to make this endian-proof?
-		 */
+		 
 		do {
 			h = READ_ONCE(p32[1]);
 			l = READ_ONCE(p32[0]);
@@ -64,9 +57,9 @@ static void xen_get_runstate_snapshot_cpu_delta(
 
 	do {
 		state_time = get64(&state->state_entry_time);
-		rmb();	/* Hypervisor might update data. */
+		rmb();	 
 		*res = __READ_ONCE(*state);
-		rmb();	/* Hypervisor might update data. */
+		rmb();	 
 	} while (get64(&state->state_entry_time) != state_time ||
 		 (state_time & XEN_RUNSTATE_UPDATE));
 }
@@ -89,7 +82,7 @@ void xen_manage_runstate_time(int action)
 	int cpu, i;
 
 	switch (action) {
-	case -1: /* backup runstate time before suspend */
+	case -1:  
 		if (unlikely(runstate_delta))
 			pr_warn_once("%s: memory leak as runstate_delta is not NULL\n",
 					__func__);
@@ -111,7 +104,7 @@ void xen_manage_runstate_time(int action)
 
 		break;
 
-	case 0: /* backup runstate time after resume */
+	case 0:  
 		if (unlikely(!runstate_delta)) {
 			pr_warn("%s: cannot accumulate runstate time as runstate_delta is NULL\n",
 					__func__);
@@ -126,7 +119,7 @@ void xen_manage_runstate_time(int action)
 
 		break;
 
-	default: /* do not accumulate runstate time for checkpointing */
+	default:  
 		break;
 	}
 
@@ -136,15 +129,13 @@ void xen_manage_runstate_time(int action)
 	}
 }
 
-/*
- * Runstate accounting
- */
+ 
 void xen_get_runstate_snapshot(struct vcpu_runstate_info *res)
 {
 	xen_get_runstate_snapshot_cpu(res, smp_processor_id());
 }
 
-/* return true when a vcpu could run but has no real cpu to run on */
+ 
 bool xen_vcpu_stolen(int vcpu)
 {
 	return per_cpu(xen_runstate, vcpu).state == RUNSTATE_runnable;

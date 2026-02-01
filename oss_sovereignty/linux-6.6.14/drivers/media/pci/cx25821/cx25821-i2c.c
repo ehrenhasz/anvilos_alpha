@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Driver for the Conexant CX25821 PCIe bridge
- *
- *  Copyright (C) 2009 Conexant Systems Inc.
- *  Authors  <shu.lin@conexant.com>, <hiep.huynh@conexant.com>
- *	Based on Steven Toth <stoth@linuxtv.org> cx23885 driver
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -77,7 +71,7 @@ static int i2c_sendbytes(struct i2c_adapter *i2c_adap,
 	else
 		dprintk(1, "%s(msg->len=%d)\n", __func__, msg->len);
 
-	/* Deal with i2c probe functions with zero payload */
+	 
 	if (msg->len == 0) {
 		cx_write(bus->reg_addr, msg->addr << 25);
 		cx_write(bus->reg_ctrl, bus->i2c_period | (1 << 2));
@@ -92,7 +86,7 @@ static int i2c_sendbytes(struct i2c_adapter *i2c_adap,
 		return 0;
 	}
 
-	/* dev, reg + first byte */
+	 
 	addr = (msg->addr << 25) | msg->buf[0];
 	wdata = msg->buf[0];
 
@@ -120,7 +114,7 @@ static int i2c_sendbytes(struct i2c_adapter *i2c_adap,
 	}
 
 	for (cnt = 1; cnt < msg->len; cnt++) {
-		/* following bytes */
+		 
 		wdata = msg->buf[cnt];
 		ctrl = bus->i2c_period | (1 << 12) | (1 << 2);
 
@@ -168,7 +162,7 @@ static int i2c_readbytes(struct i2c_adapter *i2c_adap,
 	if (i2c_debug && !joined)
 		dprintk(1, "6-%s(msg->len=%d)\n", __func__, msg->len);
 
-	/* Deal with i2c probe functions with zero payload */
+	 
 	if (msg->len == 0) {
 		cx_write(bus->reg_addr, msg->addr << 25);
 		cx_write(bus->reg_ctrl, bus->i2c_period | (1 << 2) | 1);
@@ -234,11 +228,11 @@ static int i2c_xfer(struct i2c_adapter *i2c_adap, struct i2c_msg *msgs, int num)
 			__func__, num, msgs[i].addr, msgs[i].len);
 
 		if (msgs[i].flags & I2C_M_RD) {
-			/* read */
+			 
 			retval = i2c_readbytes(i2c_adap, &msgs[i], 0);
 		} else if (i + 1 < num && (msgs[i + 1].flags & I2C_M_RD) &&
 			   msgs[i].addr == msgs[i + 1].addr) {
-			/* write then read from same address */
+			 
 			retval = i2c_sendbytes(i2c_adap, &msgs[i],
 					msgs[i + 1].len);
 
@@ -247,7 +241,7 @@ static int i2c_xfer(struct i2c_adapter *i2c_adap, struct i2c_msg *msgs, int num)
 			i++;
 			retval = i2c_readbytes(i2c_adap, &msgs[i], 1);
 		} else {
-			/* write */
+			 
 			retval = i2c_sendbytes(i2c_adap, &msgs[i], 0);
 		}
 
@@ -285,7 +279,7 @@ static const struct i2c_client cx25821_i2c_client_template = {
 	.name = "cx25821 internal",
 };
 
-/* init + register i2c adapter */
+ 
 int cx25821_i2c_register(struct cx25821_i2c *bus)
 {
 	struct cx25821_dev *dev = bus->dev;
@@ -304,7 +298,7 @@ int cx25821_i2c_register(struct cx25821_i2c *bus)
 
 	bus->i2c_client.adapter = &bus->i2c_adap;
 
-	/* set up the I2c */
+	 
 	bus->i2c_client.addr = (0x88 >> 1);
 
 	return bus->i2c_rc;
@@ -316,15 +310,15 @@ int cx25821_i2c_unregister(struct cx25821_i2c *bus)
 	return 0;
 }
 
-#if 0 /* Currently unused */
+#if 0  
 static void cx25821_av_clk(struct cx25821_dev *dev, int enable)
 {
-	/* write 0 to bus 2 addr 0x144 via i2x_xfer() */
+	 
 	char buffer[3];
 	struct i2c_msg msg;
 	dprintk(1, "%s(enabled = %d)\n", __func__, enable);
 
-	/* Register 0x144 */
+	 
 	buffer[0] = 0x01;
 	buffer[1] = 0x44;
 	if (enable == 1)

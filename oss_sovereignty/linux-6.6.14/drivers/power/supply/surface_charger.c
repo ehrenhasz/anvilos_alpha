@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * AC driver for 7th-generation Microsoft Surface devices via Surface System
- * Aggregator Module (SSAM).
- *
- * Copyright (C) 2019-2021 Maximilian Luz <luzmaximilian@gmail.com>
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/kernel.h>
@@ -16,7 +11,7 @@
 #include <linux/surface_aggregator/device.h>
 
 
-/* -- SAM interface. -------------------------------------------------------- */
+ 
 
 enum sam_event_cid_bat {
 	SAM_EVENT_CID_BAT_ADP   = 0x17,
@@ -27,20 +22,20 @@ enum sam_battery_sta {
 	SAM_BATTERY_STA_PRESENT	= 0x10,
 };
 
-/* Get battery status (_STA). */
+ 
 SSAM_DEFINE_SYNC_REQUEST_CL_R(ssam_bat_get_sta, __le32, {
 	.target_category = SSAM_SSH_TC_BAT,
 	.command_id      = 0x01,
 });
 
-/* Get platform power source for battery (_PSR / DPTF PSRC). */
+ 
 SSAM_DEFINE_SYNC_REQUEST_CL_R(ssam_bat_get_psrc, __le32, {
 	.target_category = SSAM_SSH_TC_BAT,
 	.command_id      = 0x0d,
 });
 
 
-/* -- Device structures. ---------------------------------------------------- */
+ 
 
 struct spwr_psy_properties {
 	const char *name;
@@ -56,13 +51,13 @@ struct spwr_ac_device {
 
 	struct ssam_event_notifier notif;
 
-	struct mutex lock;  /* Guards access to state below. */
+	struct mutex lock;   
 
 	__le32 state;
 };
 
 
-/* -- State management. ----------------------------------------------------- */
+ 
 
 static int spwr_ac_update_unlocked(struct spwr_ac_device *ac)
 {
@@ -110,14 +105,7 @@ static u32 spwr_notify_ac(struct ssam_event_notifier *nf, const struct ssam_even
 	dev_dbg(&ac->sdev->dev, "power event (cid = %#04x, iid = %#04x, tid = %#04x)\n",
 		event->command_id, event->instance_id, event->target_id);
 
-	/*
-	 * Allow events of all targets/instances here. Global adapter status
-	 * seems to be handled via target=1 and instance=1, but events are
-	 * reported on all targets/instances in use.
-	 *
-	 * While it should be enough to just listen on 1/1, listen everywhere to
-	 * make sure we don't miss anything.
-	 */
+	 
 
 	switch (event->command_id) {
 	case SAM_EVENT_CID_BAT_ADP:
@@ -130,7 +118,7 @@ static u32 spwr_notify_ac(struct ssam_event_notifier *nf, const struct ssam_even
 }
 
 
-/* -- Properties. ----------------------------------------------------------- */
+ 
 
 static const enum power_supply_property spwr_ac_props[] = {
 	POWER_SUPPLY_PROP_ONLINE,
@@ -164,7 +152,7 @@ out:
 }
 
 
-/* -- Device setup. --------------------------------------------------------- */
+ 
 
 static char *battery_supplied_to[] = {
 	"BAT1",
@@ -200,7 +188,7 @@ static int spwr_ac_register(struct spwr_ac_device *ac)
 	__le32 sta;
 	int status;
 
-	/* Make sure the device is there and functioning properly. */
+	 
 	status = ssam_retry(ssam_bat_get_sta, ac->sdev, &sta);
 	if (status)
 		return status;
@@ -220,7 +208,7 @@ static int spwr_ac_register(struct spwr_ac_device *ac)
 }
 
 
-/* -- Driver setup. --------------------------------------------------------- */
+ 
 
 static int __maybe_unused surface_ac_resume(struct device *dev)
 {

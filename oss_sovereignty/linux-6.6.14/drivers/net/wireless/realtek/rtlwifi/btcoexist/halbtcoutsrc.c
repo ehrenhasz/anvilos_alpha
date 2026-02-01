@@ -1,11 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2007-2013  Realtek Corporation.*/
+
+ 
 
 #include "halbt_precomp.h"
 
-/***************************************************
- *		Debug related function
- ***************************************************/
+ 
 
 static const char *const gl_btc_wifi_bw_string[] = {
 	"11bg",
@@ -40,9 +38,7 @@ static void halbtc_dbg_init(void)
 {
 }
 
-/***************************************************
- *		helper function
- ***************************************************/
+ 
 static bool is_any_client_connect_to_ap(struct btc_coexist *btcoexist)
 {
 	struct rtl_priv *rtlpriv = btcoexist->adapter;
@@ -178,14 +174,12 @@ bool halbtc_send_bt_mp_operation(struct btc_coexist *btcoexist, u8 op_code,
 	if (!halbtc_is_hw_mailbox_exist(btcoexist))
 		return false;
 
-	if (wait_ms)	/* before h2c to avoid race condition */
+	if (wait_ms)	 
 		reinit_completion(&btcoexist->bt_mp_comp);
 
 	rtlpriv = btcoexist->adapter;
 
-	/* fill req_num by op_code, and rtl_btc_btmpinfo_notify() use it
-	 * to know message type
-	 */
+	 
 	switch (op_code) {
 	case BT_OP_GET_BT_VERSION:
 		req_num = BT_SEQ_GET_BT_VERSION;
@@ -228,12 +222,12 @@ bool halbtc_send_bt_mp_operation(struct btc_coexist *btcoexist, u8 op_code,
 		break;
 	}
 
-	cmd[0] |= (oper_ver & 0x0f);		/* Set OperVer */
-	cmd[0] |= ((req_num << 4) & 0xf0);	/* Set ReqNum */
+	cmd[0] |= (oper_ver & 0x0f);		 
+	cmd[0] |= ((req_num << 4) & 0xf0);	 
 	cmd[1] = op_code;
 	rtlpriv->cfg->ops->fill_h2c_cmd(rtlpriv->mac80211.hw, 0x67, len, cmd);
 
-	/* wait? */
+	 
 	if (!wait_ms)
 		return true;
 
@@ -245,7 +239,7 @@ bool halbtc_send_bt_mp_operation(struct btc_coexist *btcoexist, u8 op_code,
 		rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_DMESG,
 			"btmpinfo wait (req_num=%d) timeout\n", req_num);
 
-		return false;	/* timeout */
+		return false;	 
 	}
 
 	return true;
@@ -269,7 +263,7 @@ static void halbtc_leave_lps(struct btc_coexist *btcoexist)
 
 	btcoexist->bt_info.bt_ctrl_lps = true;
 	btcoexist->bt_info.bt_lps_on = false;
-	/* FIXME: Context is unclear. Is it allowed to block? */
+	 
 	rtl_lps_leave(rtlpriv->mac80211.hw, false);
 }
 
@@ -291,7 +285,7 @@ static void halbtc_enter_lps(struct btc_coexist *btcoexist)
 
 	btcoexist->bt_info.bt_ctrl_lps = true;
 	btcoexist->bt_info.bt_lps_on = true;
-	/* FIXME: Context is unclear. Is it allowed to block? */
+	 
 	rtl_lps_enter(rtlpriv->mac80211.hw, false);
 }
 
@@ -303,7 +297,7 @@ static void halbtc_normal_lps(struct btc_coexist *btcoexist)
 
 	if (btcoexist->bt_info.bt_ctrl_lps) {
 		btcoexist->bt_info.bt_lps_on = false;
-		/* FIXME: Context is unclear. Is it allowed to block? */
+		 
 		rtl_lps_leave(rtlpriv->mac80211.hw, false);
 		btcoexist->bt_info.bt_ctrl_lps = false;
 	}
@@ -315,7 +309,7 @@ static void halbtc_pre_normal_lps(struct btc_coexist *btcoexist)
 
 	if (btcoexist->bt_info.bt_ctrl_lps) {
 		btcoexist->bt_info.bt_lps_on = false;
-		/* FIXME: Context is unclear. Is it allowed to block? */
+		 
 		rtl_lps_leave(rtlpriv->mac80211.hw, false);
 	}
 }
@@ -337,7 +331,7 @@ static void halbtc_normal_low_power(struct btc_coexist *btcoexist)
 static void halbtc_disable_low_power(struct btc_coexist *btcoexist,
 				     bool low_pwr_disable)
 {
-	/* TODO: original/leave 32k low power */
+	 
 	btcoexist->bt_info.bt_disable_low_pwr = low_pwr_disable;
 }
 
@@ -348,14 +342,11 @@ static void halbtc_aggregation_check(struct btc_coexist *btcoexist)
 	unsigned long cur_time = 0;
 	struct rtl_priv *rtlpriv = btcoexist->adapter;
 
-	/* To void continuous deleteBA=>addBA=>deleteBA=>addBA
-	 * This function is not allowed to continuous called
-	 * It can only be called after 8 seconds
-	 */
+	 
 
 	cur_time = jiffies;
 	if (jiffies_to_msecs(cur_time - pre_time) <= 8000) {
-		/* over 8 seconds you can execute this function again. */
+		 
 		return;
 	}
 	pre_time = cur_time;
@@ -399,7 +390,7 @@ static u32 halbtc_get_bt_patch_version(struct btc_coexist *btcoexist)
 	if (btcoexist->bt_info.bt_real_fw_ver)
 		goto label_done;
 
-	/* cmd_buffer[0] and [1] is filled by halbtc_send_bt_mp_operation() */
+	 
 	halbtc_send_bt_mp_operation(btcoexist, BT_OP_GET_BT_VERSION,
 				    cmd_buffer, 4, 200);
 
@@ -415,7 +406,7 @@ static u32 halbtc_get_bt_coex_supported_feature(void *btc_context)
 	if (btcoexist->bt_info.bt_supported_feature)
 		goto label_done;
 
-	/* cmd_buffer[0] and [1] is filled by halbtc_send_bt_mp_operation() */
+	 
 	halbtc_send_bt_mp_operation(btcoexist,
 				    BT_OP_GET_BT_COEX_SUPPORTED_FEATURE,
 				    cmd_buffer, 4, 200);
@@ -432,7 +423,7 @@ static u32 halbtc_get_bt_coex_supported_version(void *btc_context)
 	if (btcoexist->bt_info.bt_supported_version)
 		goto label_done;
 
-	/* cmd_buffer[0] and [1] is filled by halbtc_send_bt_mp_operation() */
+	 
 	halbtc_send_bt_mp_operation(btcoexist,
 				    BT_OP_GET_BT_COEX_SUPPORTED_VERSION,
 				    cmd_buffer, 4, 200);
@@ -446,7 +437,7 @@ static u32 halbtc_get_bt_device_info(void *btc_context)
 	struct btc_coexist *btcoexist = (struct btc_coexist *)btc_context;
 	u8 cmd_buffer[4] = {0};
 
-	/* cmd_buffer[0] and [1] is filled by halbtc_send_bt_mp_operation() */
+	 
 	halbtc_send_bt_mp_operation(btcoexist,
 				    BT_OP_GET_BT_DEVICE_INFO,
 				    cmd_buffer, 4, 200);
@@ -459,7 +450,7 @@ static u32 halbtc_get_bt_forbidden_slot_val(void *btc_context)
 	struct btc_coexist *btcoexist = (struct btc_coexist *)btc_context;
 	u8 cmd_buffer[4] = {0};
 
-	/* cmd_buffer[0] and [1] is filled by halbtc_send_bt_mp_operation() */
+	 
 	halbtc_send_bt_mp_operation(btcoexist,
 				    BT_OP_GET_BT_FORBIDDEN_SLOT_VAL,
 				    cmd_buffer, 4, 200);
@@ -469,10 +460,7 @@ static u32 halbtc_get_bt_forbidden_slot_val(void *btc_context)
 
 static u32 halbtc_get_wifi_link_status(struct btc_coexist *btcoexist)
 {
-	/* return value:
-	 * [31:16] => connected port number
-	 * [15:0]  => port connected bit define
-	 */
+	 
 	struct rtl_priv *rtlpriv = btcoexist->adapter;
 	struct rtl_mac *mac = rtl_mac(rtlpriv);
 	u32 ret_val = 0;
@@ -483,12 +471,12 @@ static u32 halbtc_get_wifi_link_status(struct btc_coexist *btcoexist)
 		port_connected_status |= WIFI_STA_CONNECTED;
 		num_of_connected_port++;
 	}
-	/* AP & ADHOC & MESH */
+	 
 	if (is_any_client_connect_to_ap(btcoexist)) {
 		port_connected_status |= WIFI_AP_CONNECTED;
 		num_of_connected_port++;
 	}
-	/* TODO: P2P Connected Status */
+	 
 
 	ret_val = (num_of_connected_port << 16) | port_connected_status;
 
@@ -675,7 +663,7 @@ static bool halbtc_get(void *void_btcoexist, u8 get_type, void *out_buf)
 		*u8_tmp = 0;
 		break;
 
-		/************* 1Ant **************/
+		 
 	case BTC_GET_U1_LPS_MODE:
 		*u8_tmp = btcoexist->pwr_mode_val[0];
 		break;
@@ -700,7 +688,7 @@ static bool halbtc_set(void *void_btcoexist, u8 set_type, void *in_buf)
 		return false;
 
 	switch (set_type) {
-	/* set some bool type variables. */
+	 
 	case BTC_SET_BL_BT_DISABLE:
 		btcoexist->bt_info.bt_disabled = *bool_tmp;
 		break;
@@ -728,7 +716,7 @@ static bool halbtc_set(void *void_btcoexist, u8 set_type, void *in_buf)
 	case BTC_SET_BL_MIRACAST_PLUS_BT:
 		btcoexist->bt_info.miracast_plus_bt = *bool_tmp;
 		break;
-		/* set some u1Byte type variables. */
+		 
 	case BTC_SET_U1_RSSI_ADJ_VAL_FOR_AGC_TABLE_ON:
 		btcoexist->bt_info.rssi_adjust_for_agc_table_on = *u8_tmp;
 		break;
@@ -736,7 +724,7 @@ static bool halbtc_set(void *void_btcoexist, u8 set_type, void *in_buf)
 		btcoexist->bt_info.agg_buf_size = *u8_tmp;
 		break;
 
-	/* the following are some action which will be triggered */
+	 
 	case BTC_SET_ACT_GET_BT_RSSI:
 		ret = false;
 		break;
@@ -744,7 +732,7 @@ static bool halbtc_set(void *void_btcoexist, u8 set_type, void *in_buf)
 		halbtc_aggregation_check(btcoexist);
 		break;
 
-	/* 1Ant */
+	 
 	case BTC_SET_U1_RSSI_ADJ_VAL_FOR_1ANT_COEX_TYPE:
 		btcoexist->bt_info.rssi_adjust_for_1ant_coex_type = *u8_tmp;
 		break;
@@ -756,7 +744,7 @@ static bool halbtc_set(void *void_btcoexist, u8 set_type, void *in_buf)
 	case BTC_SET_U1_RPWM_VAL:
 		btcoexist->bt_info.rpwm_val = *u8_tmp;
 		break;
-	/* the following are some action which will be triggered  */
+	 
 	case BTC_SET_ACT_LEAVE_LPS:
 		halbtc_leave_lps(btcoexist);
 		break;
@@ -780,7 +768,7 @@ static bool halbtc_set(void *void_btcoexist, u8 set_type, void *in_buf)
 		break;
 	case BTC_SET_ACT_SEND_MIMO_PS:
 		break;
-	case BTC_SET_ACT_CTRL_BT_INFO: /*wait for 8812/8821*/
+	case BTC_SET_ACT_CTRL_BT_INFO:  
 		break;
 	case BTC_SET_ACT_CTRL_BT_COEX:
 		break;
@@ -869,11 +857,11 @@ static void halbtc_display_wifi_status(struct btc_coexist *btcoexist,
 					     "downlink")),
 		   ap_num);
 
-	/* power status	 */
-	dc_mode = true;	/*TODO*/
+	 
+	dc_mode = true;	 
 	under_ips = rtlpriv->psc.inactive_pwrstate == ERFOFF ? 1 : 0;
 	under_lps = rtlpriv->psc.dot11_psmode == EACTIVE ? 0 : 1;
-	low_power = 0; /*TODO*/
+	low_power = 0;  
 	seq_printf(m, "\n %-35s = %s%s%s%s",
 		   "Power Status",
 		   (dc_mode ? "DC mode" : "AC mode"),
@@ -889,9 +877,7 @@ static void halbtc_display_wifi_status(struct btc_coexist *btcoexist,
 		   btcoexist->bt_info.rpwm_val);
 }
 
-/************************************************************
- *		IO related function
- ************************************************************/
+ 
 static u8 halbtc_read_1byte(void *bt_context, u32 reg_addr)
 {
 	struct btc_coexist *btcoexist = (struct btc_coexist *)bt_context;
@@ -932,7 +918,7 @@ static void halbtc_bitmask_write_1byte(void *bt_context, u32 reg_addr,
 	u8 original_value, bit_shift = 0;
 	u8 i;
 
-	if (bit_mask != MASKDWORD) {/*if not "double word" write*/
+	if (bit_mask != MASKDWORD) { 
 		original_value = rtl_read_byte(rtlpriv, reg_addr);
 		for (i = 0; i <= 7; i++) {
 			if ((bit_mask>>i) & 0x1)
@@ -1025,7 +1011,7 @@ void halbtc_send_wifi_port_id_cmd(void *bt_context)
 {
 	struct btc_coexist *btcoexist = (struct btc_coexist *)bt_context;
 	struct rtl_priv *rtlpriv = btcoexist->adapter;
-	u8 cmd_buf[1] = {0};	/* port id [2:0] = 0 */
+	u8 cmd_buf[1] = {0};	 
 
 	rtlpriv->cfg->ops->fill_h2c_cmd(rtlpriv->mac80211.hw, H2C_BT_PORT_ID,
 					1, cmd_buf);
@@ -1050,13 +1036,13 @@ void halbtc_set_bt_reg(void *btc_context, u8 reg_type, u32 offset, u32 set_val)
 	u8 cmd_buffer1[4] = {0};
 	u8 cmd_buffer2[4] = {0};
 
-	/* cmd_buffer[0] and [1] is filled by halbtc_send_bt_mp_operation() */
+	 
 	*((__le16 *)&cmd_buffer1[2]) = cpu_to_le16((u16)set_val);
 	if (!halbtc_send_bt_mp_operation(btcoexist, BT_OP_WRITE_REG_VALUE,
 					 cmd_buffer1, 4, 200))
 		return;
 
-	/* cmd_buffer[0] and [1] is filled by halbtc_send_bt_mp_operation() */
+	 
 	cmd_buffer2[2] = reg_type;
 	*((u8 *)&cmd_buffer2[3]) = (u8)offset;
 	halbtc_send_bt_mp_operation(btcoexist, BT_OP_WRITE_REG_ADDR,
@@ -1130,11 +1116,11 @@ static u8 halbtc_get_ant_det_val_from_bt(void *btc_context)
 	struct btc_coexist *btcoexist = (struct btc_coexist *)btc_context;
 	u8 cmd_buffer[4] = {0};
 
-	/* cmd_buffer[0] and [1] is filled by halbtc_send_bt_mp_operation() */
+	 
 	halbtc_send_bt_mp_operation(btcoexist, BT_OP_GET_BT_ANT_DET_VAL,
 				    cmd_buffer, 4, 200);
 
-	/* need wait completion to return correct value */
+	 
 
 	return btcoexist->bt_info.bt_ant_det_val;
 }
@@ -1144,11 +1130,11 @@ static u8 halbtc_get_ble_scan_type_from_bt(void *btc_context)
 	struct btc_coexist *btcoexist = (struct btc_coexist *)btc_context;
 	u8 cmd_buffer[4] = {0};
 
-	/* cmd_buffer[0] and [1] is filled by halbtc_send_bt_mp_operation() */
+	 
 	halbtc_send_bt_mp_operation(btcoexist, BT_OP_GET_BT_BLE_SCAN_TYPE,
 				    cmd_buffer, 4, 200);
 
-	/* need wait completion to return correct value */
+	 
 
 	return btcoexist->bt_info.bt_ble_scan_type;
 }
@@ -1158,11 +1144,11 @@ static u32 halbtc_get_ble_scan_para_from_bt(void *btc_context, u8 scan_type)
 	struct btc_coexist *btcoexist = (struct btc_coexist *)btc_context;
 	u8 cmd_buffer[4] = {0};
 
-	/* cmd_buffer[0] and [1] is filled by halbtc_send_bt_mp_operation() */
+	 
 	halbtc_send_bt_mp_operation(btcoexist, BT_OP_GET_BT_BLE_SCAN_PARA,
 				    cmd_buffer, 4, 200);
 
-	/* need wait completion to return correct value */
+	 
 
 	return btcoexist->bt_info.bt_ble_scan_para;
 }
@@ -1177,7 +1163,7 @@ static bool halbtc_get_bt_afh_map_from_bt(void *btc_context, u8 map_type,
 	u32 *afh_map_m = (u32 *)(afh_map + 4);
 	u16 *afh_map_h = (u16 *)(afh_map + 8);
 
-	/* cmd_buffer[0] and [1] is filled by halbtc_send_bt_mp_operation() */
+	 
 	ret = halbtc_send_bt_mp_operation(btcoexist, BT_OP_GET_AFH_MAP_L,
 					  cmd_buffer, 2, 200);
 	if (!ret)
@@ -1185,7 +1171,7 @@ static bool halbtc_get_bt_afh_map_from_bt(void *btc_context, u8 map_type,
 
 	*afh_map_l = btcoexist->bt_info.afh_map_l;
 
-	/* cmd_buffer[0] and [1] is filled by halbtc_send_bt_mp_operation() */
+	 
 	ret = halbtc_send_bt_mp_operation(btcoexist, BT_OP_GET_AFH_MAP_M,
 					  cmd_buffer, 2, 200);
 	if (!ret)
@@ -1193,7 +1179,7 @@ static bool halbtc_get_bt_afh_map_from_bt(void *btc_context, u8 map_type,
 
 	*afh_map_m = btcoexist->bt_info.afh_map_m;
 
-	/* cmd_buffer[0] and [1] is filled by halbtc_send_bt_mp_operation() */
+	 
 	ret = halbtc_send_bt_mp_operation(btcoexist, BT_OP_GET_AFH_MAP_H,
 					  cmd_buffer, 2, 200);
 	if (!ret)
@@ -1205,9 +1191,7 @@ exit:
 	return ret;
 }
 
-/*****************************************************************
- *         Extern functions called by other module
- *****************************************************************/
+ 
 bool exhalbtc_initlize_variables(struct rtl_priv *rtlpriv)
 {
 	struct btc_coexist *btcoexist = rtl_btc_coexist(rtlpriv);
@@ -1342,7 +1326,7 @@ bool exhalbtc_bind_bt_coex_withadapter(void *adapter)
 	ant_num = rtl_get_hwpg_ant_num(rtlpriv);
 	exhalbtc_set_ant_num(rtlpriv, BT_COEX_ANT_TYPE_PG, ant_num);
 
-	/* set default antenna position to main  port */
+	 
 	btcoexist->board_info.btdm_ant_pos = BTC_ANTENNA_AT_MAIN_PORT;
 
 	single_ant_path = rtl_get_hwpg_single_ant_path(rtlpriv);
@@ -1414,7 +1398,7 @@ void exhalbtc_init_hw_config(struct btc_coexist *btcoexist, bool wifi_only)
 		else if (btcoexist->board_info.btdm_ant_num == 1)
 			ex_btc8723b1ant_init_hwconfig(btcoexist, wifi_only);
 	} else if (IS_HARDWARE_TYPE_8723A(btcoexist->adapter)) {
-		/* 8723A has no this function */
+		 
 	} else if (IS_HARDWARE_TYPE_8192E(btcoexist->adapter)) {
 		if (btcoexist->board_info.btdm_ant_num == 2)
 			ex_btc8192e2ant_init_hwconfig(btcoexist);
@@ -1749,10 +1733,7 @@ void exhalbtc_pnp_notify(struct btc_coexist *btcoexist, u8 pnp_state)
 	if (!halbtc_is_bt_coexist_available(btcoexist))
 		return;
 
-	/* currently only 1ant we have to do the notification,
-	 * once pnp is notified to sleep state, we have to leave LPS that
-	 * we can sleep normally.
-	 */
+	 
 
 	if (IS_HARDWARE_TYPE_8723B(btcoexist->adapter)) {
 		if (btcoexist->board_info.btdm_ant_num == 1)
@@ -1920,7 +1901,7 @@ void exhalbtc_set_ant_num(struct rtl_priv *rtlpriv, u8 type, u8 ant_num)
 	}
 }
 
-/* Currently used by 8723b only, S0 or S1 */
+ 
 void exhalbtc_set_single_ant_path(struct btc_coexist *btcoexist,
 				  u8 single_ant_path)
 {

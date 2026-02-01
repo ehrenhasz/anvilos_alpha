@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020 NovaTech LLC
- * George McCollister <george.mccollister@gmail.com>
- */
+
+ 
 
 #include <net/dsa.h>
 #include <linux/etherdevice.h>
@@ -116,7 +113,7 @@ static void xrs700x_read_port_counters(struct xrs700x *priv, int port)
 
 	mutex_lock(&p->mib_mutex);
 
-	/* Capture counter values */
+	 
 	regmap_write(priv->regmap, XRS_CNT_CTRL(port), 1);
 
 	for (i = 0; i < ARRAY_SIZE(xrs700x_mibs); i++) {
@@ -134,9 +131,7 @@ static void xrs700x_read_port_counters(struct xrs700x *priv, int port)
 		}
 	}
 
-	/* multicast must be added to rx_packets (which already includes
-	 * unicast and broadcast)
-	 */
+	 
 	stats.rx_packets += stats.multicast;
 
 	flags = u64_stats_update_begin_irqsave(&p->syncp);
@@ -282,20 +277,14 @@ static void xrs700x_port_stp_state_set(struct dsa_switch *ds, int port,
 
 	regmap_fields_write(priv->ps_forward, port, val);
 
-	/* Enable/disable inbound policy added by xrs700x_port_add_bpdu_ipf()
-	 * which allows BPDU forwarding to the CPU port when the front facing
-	 * port is in disabled/learning state.
-	 */
+	 
 	regmap_update_bits(priv->regmap, XRS_ETH_ADDR_CFG(port, 0), 1, bpdus);
 
 	dev_dbg_ratelimited(priv->dev, "%s - port: %d, state: %u, val: 0x%x\n",
 			    __func__, port, state, val);
 }
 
-/* Add an inbound policy filter which matches the BPDU destination MAC
- * and forwards to the CPU port. Leave the policy disabled, it will be
- * enabled as needed.
- */
+ 
 static int xrs700x_port_add_bpdu_ipf(struct dsa_switch *ds, int port)
 {
 	struct xrs700x *priv = ds->priv;
@@ -303,12 +292,12 @@ static int xrs700x_port_add_bpdu_ipf(struct dsa_switch *ds, int port)
 	int i = 0;
 	int ret;
 
-	/* Compare all 48 bits of the destination MAC address. */
+	 
 	ret = regmap_write(priv->regmap, XRS_ETH_ADDR_CFG(port, 0), 48 << 2);
 	if (ret)
 		return ret;
 
-	/* match BPDU destination 01:80:c2:00:00:00 */
+	 
 	for (i = 0; i < sizeof(eth_stp_addr); i += 2) {
 		ret = regmap_write(priv->regmap, XRS_ETH_ADDR_0(port, 0) + i,
 				   eth_stp_addr[i] |
@@ -317,7 +306,7 @@ static int xrs700x_port_add_bpdu_ipf(struct dsa_switch *ds, int port)
 			return ret;
 	}
 
-	/* Mirror BPDU to CPU port */
+	 
 	for (i = 0; i < ds->num_ports; i++) {
 		if (dsa_is_cpu_port(ds, i))
 			val |= BIT(i);
@@ -334,11 +323,7 @@ static int xrs700x_port_add_bpdu_ipf(struct dsa_switch *ds, int port)
 	return 0;
 }
 
-/* Add an inbound policy filter which matches the HSR/PRP supervision MAC
- * range and forwards to the CPU port without discarding duplicates.
- * This is required to correctly populate the HSR/PRP node_table.
- * Leave the policy disabled, it will be enabled as needed.
- */
+ 
 static int xrs700x_port_add_hsrsup_ipf(struct dsa_switch *ds, int port,
 				       int fwdport)
 {
@@ -347,12 +332,12 @@ static int xrs700x_port_add_hsrsup_ipf(struct dsa_switch *ds, int port,
 	int i = 0;
 	int ret;
 
-	/* Compare 40 bits of the destination MAC address. */
+	 
 	ret = regmap_write(priv->regmap, XRS_ETH_ADDR_CFG(port, 1), 40 << 2);
 	if (ret)
 		return ret;
 
-	/* match HSR/PRP supervision destination 01:15:4e:00:01:XX */
+	 
 	for (i = 0; i < sizeof(eth_hsrsup_addr); i += 2) {
 		ret = regmap_write(priv->regmap, XRS_ETH_ADDR_0(port, 1) + i,
 				   eth_hsrsup_addr[i] |
@@ -361,7 +346,7 @@ static int xrs700x_port_add_hsrsup_ipf(struct dsa_switch *ds, int port,
 			return ret;
 	}
 
-	/* Mirror HSR/PRP supervision to CPU port */
+	 
 	for (i = 0; i < ds->num_ports; i++) {
 		if (dsa_is_cpu_port(ds, i))
 			val |= BIT(i);
@@ -374,7 +359,7 @@ static int xrs700x_port_add_hsrsup_ipf(struct dsa_switch *ds, int port,
 	if (fwdport >= 0)
 		val |= BIT(fwdport);
 
-	/* Allow must be set prevent duplicate discard */
+	 
 	ret = regmap_write(priv->regmap, XRS_ETH_ADDR_FWD_ALLOW(port, 1), val);
 	if (ret)
 		return ret;
@@ -391,13 +376,13 @@ static int xrs700x_port_setup(struct dsa_switch *ds, int port)
 
 	xrs700x_port_stp_state_set(ds, port, BR_STATE_DISABLED);
 
-	/* Disable forwarding to non-CPU ports */
+	 
 	for (i = 0; i < ds->num_ports; i++) {
 		if (!dsa_is_cpu_port(ds, i))
 			val |= BIT(i);
 	}
 
-	/* 1 = Disable forwarding to the port */
+	 
 	ret = regmap_write(priv->regmap, XRS_PORT_FWD_MASK(port), val);
 	if (ret)
 		return ret;
@@ -518,7 +503,7 @@ static int xrs700x_bridge_common(struct dsa_switch *ds, int port,
 		if (!dsa_port_offloads_bridge(dsa_to_port(ds, i), &bridge))
 			continue;
 
-		/* 1 = Disable forwarding to the port */
+		 
 		ret = regmap_write(priv->regmap, XRS_PORT_FWD_MASK(i), mask);
 		if (ret)
 			return ret;
@@ -562,7 +547,7 @@ static int xrs700x_hsr_join(struct dsa_switch *ds, int port,
 	if (ret)
 		return ret;
 
-	/* Only ports 1 and 2 can be HSR/PRP redundant ports. */
+	 
 	if (port != 1 && port != 2)
 		return -EOPNOTSUPP;
 
@@ -580,9 +565,7 @@ static int xrs700x_hsr_join(struct dsa_switch *ds, int port,
 		}
 	}
 
-	/* We can't enable redundancy on the switch until both
-	 * redundant ports have signed up.
-	 */
+	 
 	if (!partner)
 		return 0;
 
@@ -595,9 +578,7 @@ static int xrs700x_hsr_join(struct dsa_switch *ds, int port,
 	regmap_write(priv->regmap, XRS_HSR_CFG(port),
 		     val | XRS_HSR_CFG_LANID_B);
 
-	/* Clear bits for both redundant ports (HSR only) and the CPU port to
-	 * enable forwarding.
-	 */
+	 
 	val = GENMASK(ds->num_ports - 1, 0);
 	if (ver == HSR_V1) {
 		val &= ~BIT(partner->index);
@@ -612,11 +593,7 @@ static int xrs700x_hsr_join(struct dsa_switch *ds, int port,
 			    XRS_PORT_FORWARDING);
 	regmap_fields_write(priv->ps_forward, port, XRS_PORT_FORWARDING);
 
-	/* Enable inbound policy which allows HSR/PRP supervision forwarding
-	 * to the CPU port without discarding duplicates. Continue to
-	 * forward to redundant ports when in HSR mode while discarding
-	 * duplicates.
-	 */
+	 
 	ret = xrs700x_port_add_hsrsup_ipf(ds, partner->index, fwd ? port : -1);
 	if (ret)
 		return ret;
@@ -665,7 +642,7 @@ static int xrs700x_hsr_leave(struct dsa_switch *ds, int port,
 	regmap_write(priv->regmap, XRS_HSR_CFG(partner->index), 0);
 	regmap_write(priv->regmap, XRS_HSR_CFG(port), 0);
 
-	/* Clear bit for the CPU port to enable forwarding. */
+	 
 	val = GENMASK(ds->num_ports - 1, 0);
 	val &= ~BIT(dsa_upstream_port(ds, port));
 	regmap_write(priv->regmap, XRS_PORT_FWD_MASK(partner->index), val);
@@ -675,10 +652,7 @@ static int xrs700x_hsr_leave(struct dsa_switch *ds, int port,
 			    XRS_PORT_FORWARDING);
 	regmap_fields_write(priv->ps_forward, port, XRS_PORT_FORWARDING);
 
-	/* Disable inbound policy added by xrs700x_port_add_hsrsup_ipf()
-	 * which allows HSR/PRP supervision forwarding to the CPU port without
-	 * discarding duplicates.
-	 */
+	 
 	regmap_update_bits(priv->regmap,
 			   XRS_ETH_ADDR_CFG(partner->index, 1), 1, 0);
 	regmap_update_bits(priv->regmap, XRS_ETH_ADDR_CFG(port, 1), 1, 0);

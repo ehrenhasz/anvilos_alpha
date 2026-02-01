@@ -1,18 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* -*- linux-c -*- ------------------------------------------------------- *
- *
- *   Copyright (C) 1991, 1992 Linus Torvalds
- *   Copyright 2007 rPath, Inc. - All Rights Reserved
- *
- * ----------------------------------------------------------------------- */
+ 
+ 
 
-/*
- * Very simple bitops for the boot code.
- */
+ 
 
 #ifndef BOOT_BITOPS_H
 #define BOOT_BITOPS_H
-#define _LINUX_BITOPS_H		/* Inhibit inclusion of <linux/bitops.h> */
+#define _LINUX_BITOPS_H		 
 
 #include <linux/types.h>
 #include <asm/asm.h>
@@ -41,4 +34,4 @@ static inline void set_bit(int nr, void *addr)
 	asm("btsl %1,%0" : "+m" (*(u32 *)addr) : "Ir" (nr));
 }
 
-#endif /* BOOT_BITOPS_H */
+#endif  

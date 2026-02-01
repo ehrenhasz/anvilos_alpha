@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2018 John Crispin <john@phrozen.org>
- *
- * Based on code from
- * Allwinner Technology Co., Ltd. <www.allwinnertech.com>
- *
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>

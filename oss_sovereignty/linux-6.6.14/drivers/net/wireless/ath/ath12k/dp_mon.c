@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2019-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include "dp_mon.h"
 #include "debug.h"
@@ -228,7 +225,7 @@ static void ath12k_dp_mon_parse_he_sig_b2_ofdma(u8 *tlv_data,
 
 	ppdu_info->he_data1 |= HE_MCS_KNOWN | HE_DCM_KNOWN | HE_CODING_KNOWN;
 
-	/* HE-data2 */
+	 
 	ppdu_info->he_data2 |= HE_TXBF_KNOWN;
 
 	ppdu_info->mcs = u32_get_bits(info0, HAL_RX_HE_SIG_B2_OFDMA_INFO_INFO0_STA_MCS);
@@ -244,7 +241,7 @@ static void ath12k_dp_mon_parse_he_sig_b2_ofdma(u8 *tlv_data,
 	value = value << HE_CODING_SHIFT;
 	ppdu_info->he_data3 |= value;
 
-	/* HE-data4 */
+	 
 	value = u32_get_bits(info0, HAL_RX_HE_SIG_B2_OFDMA_INFO_INFO0_STA_ID);
 	value = value << HE_STA_ID_SHIFT;
 	ppdu_info->he_data4 |= value;
@@ -327,7 +324,7 @@ static void ath12k_dp_mon_parse_he_sig_mu(u8 *tlv_data,
 			HE_TXOP_KNOWN |
 			HE_MIDABLE_PERIODICITY_KNOWN;
 
-	/* data3 */
+	 
 	ppdu_info->he_data3 = u32_get_bits(info0, HAL_RX_HE_SIG_A_MU_DL_INFO0_BSS_COLOR);
 	value = u32_get_bits(info0, HAL_RX_HE_SIG_A_MU_DL_INFO0_UL_FLAG);
 	value = value << HE_DL_UL_SHIFT;
@@ -341,12 +338,12 @@ static void ath12k_dp_mon_parse_he_sig_mu(u8 *tlv_data,
 	value = value << HE_STBC_SHIFT;
 	ppdu_info->he_data3 |= value;
 
-	/* data4 */
+	 
 	ppdu_info->he_data4 = u32_get_bits(info0,
 					   HAL_RX_HE_SIG_A_MU_DL_INFO0_SPATIAL_REUSE);
 	ppdu_info->he_data4 = value;
 
-	/* data5 */
+	 
 	value = u32_get_bits(info0, HAL_RX_HE_SIG_A_MU_DL_INFO0_TRANSMIT_BW);
 	ppdu_info->he_data5 = value;
 	ppdu_info->bw = value;
@@ -390,7 +387,7 @@ static void ath12k_dp_mon_parse_he_sig_mu(u8 *tlv_data,
 	value = value << HE_PE_DISAMBIGUITY_SHIFT;
 	ppdu_info->he_data5 |= value;
 
-	/*data6*/
+	 
 	value = u32_get_bits(info0, HAL_RX_HE_SIG_A_MU_DL_INFO0_DOPPLER_INDICATION);
 	value = value << HE_DOPPLER_SHIFT;
 	ppdu_info->he_data6 |= value;
@@ -399,8 +396,8 @@ static void ath12k_dp_mon_parse_he_sig_mu(u8 *tlv_data,
 	value = value << HE_TXOP_SHIFT;
 	ppdu_info->he_data6 |= value;
 
-	/* HE-MU Flags */
-	/* HE-MU-flags1 */
+	 
+	 
 	ppdu_info->he_flags1 =
 		HE_SIG_B_MCS_KNOWN |
 		HE_SIG_B_DCM_KNOWN |
@@ -414,7 +411,7 @@ static void ath12k_dp_mon_parse_he_sig_mu(u8 *tlv_data,
 	value = value << HE_DCM_FLAG_1_SHIFT;
 	ppdu_info->he_flags1 |= value;
 
-	/* HE-MU-flags2 */
+	 
 	ppdu_info->he_flags2 = HE_BW_KNOWN;
 
 	value = u32_get_bits(info0, HAL_RX_HE_SIG_A_MU_DL_INFO0_TRANSMIT_BW);
@@ -503,11 +500,11 @@ static void ath12k_dp_mon_parse_he_sig_su(u8 *tlv_data,
 	value = value << HE_STBC_SHIFT;
 	ppdu_info->he_data3 |= value;
 
-	/* data4 */
+	 
 	ppdu_info->he_data4 = u32_get_bits(info0,
 					   HAL_RX_HE_SIG_A_SU_INFO_INFO0_SPATIAL_REUSE);
 
-	/* data5 */
+	 
 	value = u32_get_bits(info0,
 			     HAL_RX_HE_SIG_A_SU_INFO_INFO0_TRANSMIT_BW);
 	ppdu_info->he_data5 = value;
@@ -558,7 +555,7 @@ static void ath12k_dp_mon_parse_he_sig_su(u8 *tlv_data,
 	value = value << HE_PE_DISAMBIGUITY_SHIFT;
 	ppdu_info->he_data5 |= value;
 
-	/* data6 */
+	 
 	value = u32_get_bits(info0, HAL_RX_HE_SIG_A_SU_INFO_INFO0_NSTS);
 	value++;
 	ppdu_info->he_data6 = value;
@@ -733,10 +730,7 @@ ath12k_dp_mon_rx_parse_status_tlv(struct ath12k_base *ab,
 
 		info[0] = __le32_to_cpu(rssi->info0);
 
-		/* TODO: Please note that the combined rssi will not be accurate
-		 * in MU case. Rssi in MU needs to be retrieved from
-		 * PHYRX_OTHER_RECEIVE_INFO TLV.
-		 */
+		 
 		ppdu_info->rssi_comb =
 			u32_get_bits(info[0],
 				     HAL_RX_PHYRX_RSSI_LEGACY_INFO_INFO0_RSSI_COMB);
@@ -796,7 +790,7 @@ ath12k_dp_mon_rx_parse_status_tlv(struct ath12k_base *ab,
 		break;
 	}
 	case HAL_RX_MSDU_START:
-		/* TODO: add msdu start parsing logic */
+		 
 		break;
 	case HAL_MON_BUF_ADDR: {
 		struct dp_rxdma_ring *buf_ring = &ab->dp.rxdma_mon_buf_ring;
@@ -921,7 +915,7 @@ ath12k_dp_mon_rx_merg_msdus(struct ath12k *ar,
 		rx_desc = (struct hal_rx_desc *)head_msdu->data;
 		hdr_desc = ab->hw_params->hal_ops->rx_desc_get_msdu_payload(rx_desc);
 
-		/* Base size */
+		 
 		wh = (struct ieee80211_hdr_3addr *)hdr_desc;
 
 		if (ieee80211_is_data_qos(wh->frame_control))
@@ -960,7 +954,7 @@ err_merge_fail:
 	if (mpdu_buf && decap_format != DP_RX_DECAP_TYPE_RAW) {
 		ath12k_dbg(ab, ATH12K_DBG_DATA,
 			   "err_merge_fail mpdu_buf %pK", mpdu_buf);
-		/* Free the head buffer */
+		 
 		dev_kfree_skb_any(mpdu_buf);
 	}
 	return NULL;
@@ -1120,13 +1114,9 @@ static void ath12k_dp_mon_rx_deliver_msdu(struct ath12k *ar, struct napi_struct 
 	rx_status = IEEE80211_SKB_RXCB(msdu);
 	*rx_status = *status;
 
-	/* TODO: trace rx packet */
+	 
 
-	/* PN for multicast packets are not validate in HW,
-	 * so skip 802.3 rx path
-	 * Also, fast_rx expects the STA to be authorized, hence
-	 * eapol packets are sent in slow path.
-	 */
+	 
 	if (decap == DP_RX_DECAP_TYPE_ETHERNET2_DIX && !is_eapol_tkip &&
 	    !(is_mcbc && rx_status->flag & RX_FLAG_DECRYPTED))
 		rx_status->flag |= RX_FLAG_8023;
@@ -1207,11 +1197,7 @@ ath12k_dp_mon_parse_rx_dest(struct ath12k_base *ab, struct ath12k_mon_data *pmon
 		tlv_userid = le32_get_bits(tlv->tl, HAL_TLV_USR_ID);
 		ptr += sizeof(*tlv);
 
-		/* The actual length of PPDU_END is the combined length of many PHY
-		 * TLVs that follow. Skip the TLV header and
-		 * rx_rxpcu_classification_overview that follows the header to get to
-		 * next TLV.
-		 */
+		 
 
 		if (tlv_tag == HAL_RX_PPDU_END)
 			tlv_len = sizeof(struct hal_rx_rxpcu_classification_overview);
@@ -1356,7 +1342,7 @@ ath12k_dp_mon_tx_get_ppdu_info(struct ath12k_mon_data *pmon,
 		kfree(tx_ppdu_info);
 	}
 
-	/* allocate new tx_ppdu_info */
+	 
 	tx_ppdu_info = kzalloc(sizeof(*tx_ppdu_info), GFP_ATOMIC);
 	if (!tx_ppdu_info)
 		return NULL;
@@ -1556,7 +1542,7 @@ ath12k_dp_mon_tx_gen_ack_frame(struct dp_mon_tx_ppdu_info *tx_ppdu_info)
 		cpu_to_le16(IEEE80211_FTYPE_DATA | IEEE80211_STYPE_QOS_CFACK);
 	memcpy(fbmhdr->addr1, tx_ppdu_info->rx_status.addr1, ETH_ALEN);
 
-	/* set duration zero for ack frame */
+	 
 	fbmhdr->duration = 0;
 
 	skb_put(skb, sizeof(*fbmhdr));
@@ -1695,28 +1681,28 @@ ath12k_dp_mon_tx_parse_status_tlv(struct ath12k_base *ab,
 		info[5] = __le32_to_cpu(ppdu_setup->info5);
 		info[6] = __le32_to_cpu(ppdu_setup->info6);
 
-		/* protection frame address 1 */
+		 
 		addr_32 = u32_get_bits(info[1],
 				       HAL_TX_PPDU_SETUP_INFO1_PROT_FRAME_ADDR1_31_0);
 		addr_16 = u32_get_bits(info[2],
 				       HAL_TX_PPDU_SETUP_INFO2_PROT_FRAME_ADDR1_47_32);
 		ath12k_dp_get_mac_addr(addr_32, addr_16, tx_ppdu_info->rx_status.addr1);
 
-		/* protection frame address 2 */
+		 
 		addr_16 = u32_get_bits(info[2],
 				       HAL_TX_PPDU_SETUP_INFO2_PROT_FRAME_ADDR2_15_0);
 		addr_32 = u32_get_bits(info[3],
 				       HAL_TX_PPDU_SETUP_INFO3_PROT_FRAME_ADDR2_47_16);
 		ath12k_dp_get_mac_addr(addr_32, addr_16, tx_ppdu_info->rx_status.addr2);
 
-		/* protection frame address 3 */
+		 
 		addr_32 = u32_get_bits(info[4],
 				       HAL_TX_PPDU_SETUP_INFO4_PROT_FRAME_ADDR3_31_0);
 		addr_16 = u32_get_bits(info[5],
 				       HAL_TX_PPDU_SETUP_INFO5_PROT_FRAME_ADDR3_47_32);
 		ath12k_dp_get_mac_addr(addr_32, addr_16, tx_ppdu_info->rx_status.addr3);
 
-		/* protection frame address 4 */
+		 
 		addr_16 = u32_get_bits(info[5],
 				       HAL_TX_PPDU_SETUP_INFO5_PROT_FRAME_ADDR4_15_0);
 		addr_32 = u32_get_bits(info[6],
@@ -1970,7 +1956,7 @@ ath12k_dp_mon_tx_status_get_num_user(u16 tlv_tag,
 	}
 
 	case HAL_RX_RESPONSE_REQUIRED_INFO: {
-		/* TODO: need to update *num_users */
+		 
 		tlv_status = DP_MON_RX_RESPONSE_REQUIRED_INFO;
 		break;
 	}
@@ -2269,7 +2255,7 @@ static void ath12k_dp_mon_rx_update_peer_su_stats(struct ath12k *ar,
 	    ppdu_info->mcs <= HAL_RX_MAX_MCS_HT) {
 		rx_stats->pkt_stats.ht_mcs_count[ppdu_info->mcs] += num_msdu;
 		rx_stats->byte_stats.ht_mcs_count[ppdu_info->mcs] += ppdu_info->mpdu_len;
-		/* To fit into rate table for HT packets */
+		 
 		ppdu_info->mcs = ppdu_info->mcs % 8;
 	}
 

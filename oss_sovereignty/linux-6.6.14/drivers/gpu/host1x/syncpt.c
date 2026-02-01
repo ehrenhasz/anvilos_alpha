@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Tegra host1x Syncpoints
- *
- * Copyright (c) 2010-2015, NVIDIA Corporation.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/device.h>
@@ -43,18 +39,7 @@ static void host1x_syncpt_base_free(struct host1x_syncpt_base *base)
 		base->requested = false;
 }
 
-/**
- * host1x_syncpt_alloc() - allocate a syncpoint
- * @host: host1x device data
- * @flags: bitfield of HOST1X_SYNCPT_* flags
- * @name: name for the syncpoint for use in debug prints
- *
- * Allocates a hardware syncpoint for the caller's use. The caller then has
- * the sole authority to mutate the syncpoint's value until it is freed again.
- *
- * If no free syncpoints are available, or a NULL name was specified, returns
- * NULL.
- */
+ 
 struct host1x_syncpt *host1x_syncpt_alloc(struct host1x *host,
 					  unsigned long flags,
 					  const char *name)
@@ -105,45 +90,28 @@ unlock:
 }
 EXPORT_SYMBOL(host1x_syncpt_alloc);
 
-/**
- * host1x_syncpt_id() - retrieve syncpoint ID
- * @sp: host1x syncpoint
- *
- * Given a pointer to a struct host1x_syncpt, retrieves its ID. This ID is
- * often used as a value to program into registers that control how hardware
- * blocks interact with syncpoints.
- */
+ 
 u32 host1x_syncpt_id(struct host1x_syncpt *sp)
 {
 	return sp->id;
 }
 EXPORT_SYMBOL(host1x_syncpt_id);
 
-/**
- * host1x_syncpt_incr_max() - update the value sent to hardware
- * @sp: host1x syncpoint
- * @incrs: number of increments
- */
+ 
 u32 host1x_syncpt_incr_max(struct host1x_syncpt *sp, u32 incrs)
 {
 	return (u32)atomic_add_return(incrs, &sp->max_val);
 }
 EXPORT_SYMBOL(host1x_syncpt_incr_max);
 
- /*
- * Write cached syncpoint and waitbase values to hardware.
- */
+  
 void host1x_syncpt_restore(struct host1x *host)
 {
 	struct host1x_syncpt *sp_base = host->syncpt;
 	unsigned int i;
 
 	for (i = 0; i < host1x_syncpt_nb_pts(host); i++) {
-		/*
-		 * Unassign syncpt from channels for purposes of Tegra186
-		 * syncpoint protection. This prevents any channel from
-		 * accessing it until it is reassigned.
-		 */
+		 
 		host1x_hw_syncpt_assign_to_channel(host, sp_base + i, NULL);
 		host1x_hw_syncpt_restore(host, sp_base + i);
 	}
@@ -156,10 +124,7 @@ void host1x_syncpt_restore(struct host1x *host)
 	wmb();
 }
 
-/*
- * Update the cached syncpoint and waitbase values by reading them
- * from the registers.
-  */
+ 
 void host1x_syncpt_save(struct host1x *host)
 {
 	struct host1x_syncpt *sp_base = host->syncpt;
@@ -176,10 +141,7 @@ void host1x_syncpt_save(struct host1x *host)
 		host1x_hw_syncpt_load_wait_base(host, sp_base + i);
 }
 
-/*
- * Updates the cached syncpoint value by reading a new value from the hardware
- * register
- */
+ 
 u32 host1x_syncpt_load(struct host1x_syncpt *sp)
 {
 	u32 val;
@@ -190,9 +152,7 @@ u32 host1x_syncpt_load(struct host1x_syncpt *sp)
 	return val;
 }
 
-/*
- * Get the current syncpoint base
- */
+ 
 u32 host1x_syncpt_load_wait_base(struct host1x_syncpt *sp)
 {
 	host1x_hw_syncpt_load_wait_base(sp->host, sp);
@@ -200,23 +160,14 @@ u32 host1x_syncpt_load_wait_base(struct host1x_syncpt *sp)
 	return sp->base_val;
 }
 
-/**
- * host1x_syncpt_incr() - increment syncpoint value from CPU, updating cache
- * @sp: host1x syncpoint
- */
+ 
 int host1x_syncpt_incr(struct host1x_syncpt *sp)
 {
 	return host1x_hw_syncpt_cpu_incr(sp->host, sp);
 }
 EXPORT_SYMBOL(host1x_syncpt_incr);
 
-/**
- * host1x_syncpt_wait() - wait for a syncpoint to reach a given value
- * @sp: host1x syncpoint
- * @thresh: threshold
- * @timeout: maximum time to wait for the syncpoint to reach the given value
- * @value: return location for the syncpoint value
- */
+ 
 int host1x_syncpt_wait(struct host1x_syncpt *sp, u32 thresh, long timeout,
 		       u32 *value)
 {
@@ -248,11 +199,7 @@ int host1x_syncpt_wait(struct host1x_syncpt *sp, u32 thresh, long timeout,
 	if (value)
 		*value = host1x_syncpt_load(sp);
 
-	/*
-	 * Don't rely on dma_fence_wait_timeout return value,
-	 * since it returns zero both on timeout and if the
-	 * wait completed with 0 jiffies left.
-	 */
+	 
 	host1x_hw_syncpt_load(sp->host, sp);
 	if (wait_err == 0 && !host1x_syncpt_is_expired(sp, thresh))
 		return -EAGAIN;
@@ -263,9 +210,7 @@ int host1x_syncpt_wait(struct host1x_syncpt *sp, u32 thresh, long timeout,
 }
 EXPORT_SYMBOL(host1x_syncpt_wait);
 
-/*
- * Returns true if syncpoint is expired, false if we may need to wait
- */
+ 
 bool host1x_syncpt_is_expired(struct host1x_syncpt *sp, u32 thresh)
 {
 	u32 current_val;
@@ -305,7 +250,7 @@ int host1x_syncpt_init(struct host1x *host)
 	host->syncpt = syncpt;
 	host->bases = bases;
 
-	/* Allocate sync point to use for clearing waits for expired fences */
+	 
 	host->nop_sp = host1x_syncpt_alloc(host, 0, "reserved-nop");
 	if (!host->nop_sp)
 		return -ENOMEM;
@@ -318,16 +263,7 @@ int host1x_syncpt_init(struct host1x *host)
 	return 0;
 }
 
-/**
- * host1x_syncpt_request() - request a syncpoint
- * @client: client requesting the syncpoint
- * @flags: flags
- *
- * host1x client drivers can use this function to allocate a syncpoint for
- * subsequent use. A syncpoint returned by this function will be reserved for
- * use by the client exclusively. When no longer using a syncpoint, a host1x
- * client driver needs to release it using host1x_syncpt_put().
- */
+ 
 struct host1x_syncpt *host1x_syncpt_request(struct host1x_client *client,
 					    unsigned long flags)
 {
@@ -356,14 +292,7 @@ static void syncpt_release(struct kref *ref)
 	mutex_unlock(&sp->host->syncpt_mutex);
 }
 
-/**
- * host1x_syncpt_put() - free a requested syncpoint
- * @sp: host1x syncpoint
- *
- * Release a syncpoint previously allocated using host1x_syncpt_request(). A
- * host1x client driver should call this when the syncpoint is no longer in
- * use.
- */
+ 
 void host1x_syncpt_put(struct host1x_syncpt *sp)
 {
 	if (!sp)
@@ -382,13 +311,7 @@ void host1x_syncpt_deinit(struct host1x *host)
 		kfree(sp->name);
 }
 
-/**
- * host1x_syncpt_read_max() - read maximum syncpoint value
- * @sp: host1x syncpoint
- *
- * The maximum syncpoint value indicates how many operations there are in
- * queue, either in channel or in a software thread.
- */
+ 
 u32 host1x_syncpt_read_max(struct host1x_syncpt *sp)
 {
 	smp_rmb();
@@ -397,13 +320,7 @@ u32 host1x_syncpt_read_max(struct host1x_syncpt *sp)
 }
 EXPORT_SYMBOL(host1x_syncpt_read_max);
 
-/**
- * host1x_syncpt_read_min() - read minimum syncpoint value
- * @sp: host1x syncpoint
- *
- * The minimum syncpoint value is a shadow of the current sync point value in
- * hardware.
- */
+ 
 u32 host1x_syncpt_read_min(struct host1x_syncpt *sp)
 {
 	smp_rmb();
@@ -412,10 +329,7 @@ u32 host1x_syncpt_read_min(struct host1x_syncpt *sp)
 }
 EXPORT_SYMBOL(host1x_syncpt_read_min);
 
-/**
- * host1x_syncpt_read() - read the current syncpoint value
- * @sp: host1x syncpoint
- */
+ 
 u32 host1x_syncpt_read(struct host1x_syncpt *sp)
 {
 	return host1x_syncpt_load(sp);
@@ -437,11 +351,7 @@ unsigned int host1x_syncpt_nb_mlocks(struct host1x *host)
 	return host->info->nb_mlocks;
 }
 
-/**
- * host1x_syncpt_get_by_id() - obtain a syncpoint by ID
- * @host: host1x controller
- * @id: syncpoint ID
- */
+ 
 struct host1x_syncpt *host1x_syncpt_get_by_id(struct host1x *host,
 					      unsigned int id)
 {
@@ -455,12 +365,7 @@ struct host1x_syncpt *host1x_syncpt_get_by_id(struct host1x *host,
 }
 EXPORT_SYMBOL(host1x_syncpt_get_by_id);
 
-/**
- * host1x_syncpt_get_by_id_noref() - obtain a syncpoint by ID but don't
- * 	increase the refcount.
- * @host: host1x controller
- * @id: syncpoint ID
- */
+ 
 struct host1x_syncpt *host1x_syncpt_get_by_id_noref(struct host1x *host,
 						    unsigned int id)
 {
@@ -471,10 +376,7 @@ struct host1x_syncpt *host1x_syncpt_get_by_id_noref(struct host1x *host,
 }
 EXPORT_SYMBOL(host1x_syncpt_get_by_id_noref);
 
-/**
- * host1x_syncpt_get() - increment syncpoint refcount
- * @sp: syncpoint
- */
+ 
 struct host1x_syncpt *host1x_syncpt_get(struct host1x_syncpt *sp)
 {
 	kref_get(&sp->ref);
@@ -483,20 +385,14 @@ struct host1x_syncpt *host1x_syncpt_get(struct host1x_syncpt *sp)
 }
 EXPORT_SYMBOL(host1x_syncpt_get);
 
-/**
- * host1x_syncpt_get_base() - obtain the wait base associated with a syncpoint
- * @sp: host1x syncpoint
- */
+ 
 struct host1x_syncpt_base *host1x_syncpt_get_base(struct host1x_syncpt *sp)
 {
 	return sp ? sp->base : NULL;
 }
 EXPORT_SYMBOL(host1x_syncpt_get_base);
 
-/**
- * host1x_syncpt_base_id() - retrieve the ID of a syncpoint wait base
- * @base: host1x syncpoint wait base
- */
+ 
 u32 host1x_syncpt_base_id(struct host1x_syncpt_base *base)
 {
 	return base->id;
@@ -507,18 +403,7 @@ static void do_nothing(struct kref *ref)
 {
 }
 
-/**
- * host1x_syncpt_release_vblank_reservation() - Make VBLANK syncpoint
- *   available for allocation
- *
- * @client: host1x bus client
- * @syncpt_id: syncpoint ID to make available
- *
- * Makes VBLANK<i> syncpoint available for allocatation if it was
- * reserved at initialization time. This should be called by the display
- * driver after it has ensured that any VBLANK increment programming configured
- * by the boot chain has been disabled.
- */
+ 
 void host1x_syncpt_release_vblank_reservation(struct host1x_client *client,
 					      u32 syncpt_id)
 {

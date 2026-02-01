@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  Copyright (C) 2012 John Crispin <john@phrozen.org>
- */
+ 
+ 
 
 #ifndef _PINCTRL_MTMIPS_H__
 #define _PINCTRL_MTMIPS_H__

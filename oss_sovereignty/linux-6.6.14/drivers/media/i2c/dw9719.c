@@ -1,10 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2012 Intel Corporation
 
-/*
- * Based on linux/modules/camera/drivers/media/i2c/imx/dw9719.c in this repo:
- * https://github.com/ZenfoneArea/android_kernel_asus_zenfone5
- */
+
+
+ 
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -82,10 +79,10 @@ static int dw9719_power_up(struct dw9719_device *dw9719)
 	if (ret)
 		return ret;
 
-	/* Jiggle SCL pin to wake up device */
+	 
 	cci_write(dw9719->regmap, DW9719_CONTROL, 1, &ret);
 
-	/* Need 100us to transit from SHUTDOWN to STANDBY */
+	 
 	fsleep(100);
 
 	cci_write(dw9719->regmap, DW9719_CONTROL, DW9719_ENABLE_RINGING, &ret);
@@ -111,7 +108,7 @@ static int dw9719_set_ctrl(struct v4l2_ctrl *ctrl)
 						    ctrls.handler);
 	int ret;
 
-	/* Only apply changes to the controls if the device is powered up */
+	 
 	if (!pm_runtime_get_if_in_use(dw9719->dev))
 		return 0;
 
@@ -240,11 +237,11 @@ static int dw9719_probe(struct i2c_client *client)
 	dw9719->sac_mode = DW9719_MODE_SAC3;
 	dw9719->vcm_freq = DW9719_DEFAULT_VCM_FREQ;
 
-	/* Optional indication of SAC mode select */
+	 
 	device_property_read_u32(&client->dev, "dongwoon,sac-mode",
 				 &dw9719->sac_mode);
 
-	/* Optional indication of VCM frequency */
+	 
 	device_property_read_u32(&client->dev, "dongwoon,vcm-freq",
 				 &dw9719->vcm_freq);
 
@@ -267,12 +264,7 @@ static int dw9719_probe(struct i2c_client *client)
 
 	dw9719->sd.entity.function = MEDIA_ENT_F_LENS;
 
-	/*
-	 * We need the driver to work in the event that pm runtime is disable in
-	 * the kernel, so power up and verify the chip now. In the event that
-	 * runtime pm is disabled this will leave the chip on, so that the lens
-	 * will work.
-	 */
+	 
 
 	ret = dw9719_power_up(dw9719);
 	if (ret)

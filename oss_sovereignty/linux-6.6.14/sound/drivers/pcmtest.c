@@ -1,34 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Virtual ALSA driver for PCM testing/fuzzing
- *
- * Copyright 2023 Ivan Orlov <ivan.orlov0322@gmail.com>
- *
- * This is a simple virtual ALSA driver, which can be used for audio applications/PCM middle layer
- * testing or fuzzing.
- * It can:
- *	- Simulate 'playback' and 'capture' actions
- *	- Generate random or pattern-based capture data
- *	- Check playback buffer for containing looped template, and notify about the results
- *	through the debugfs entry
- *	- Inject delays into the playback and capturing processes. See 'inject_delay' parameter.
- *	- Inject errors during the PCM callbacks.
- *	- Register custom RESET ioctl and notify when it is called through the debugfs entry
- *	- Work in interleaved and non-interleaved modes
- *	- Support up to 8 substreams
- *	- Support up to 4 channels
- *	- Support framerates from 8 kHz to 48 kHz
- *
- * When driver works in the capture mode with multiple channels, it duplicates the looped
- * pattern to each separate channel. For example, if we have 2 channels, format = U8, interleaved
- * access mode and pattern 'abacaba', the DMA buffer will look like aabbccaabbaaaa..., so buffer for
- * each channel will contain abacabaabacaba... Same for the non-interleaved mode.
- *
- * However, it may break the capturing on the higher framerates with small period size, so it is
- * better to choose larger period sizes.
- *
- * You can find the corresponding selftest in the 'alsa' selftests folder.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -97,18 +68,18 @@ struct pcmtst {
 };
 
 struct pcmtst_buf_iter {
-	size_t buf_pos;				// position in the DMA buffer
-	size_t period_pos;			// period-relative position
-	size_t b_rw;				// Bytes to write on every timer tick
-	size_t s_rw_ch;				// Samples to write to one channel on every tick
-	unsigned int sample_bytes;		// sample_bits / 8
-	bool is_buf_corrupted;			// playback test result indicator
-	size_t period_bytes;			// bytes in a one period
-	bool interleaved;			// Interleaved/Non-interleaved mode
-	size_t total_bytes;			// Total bytes read/written
-	size_t chan_block;			// Bytes in one channel buffer when non-interleaved
+	size_t buf_pos;				
+	size_t period_pos;			
+	size_t b_rw;				
+	size_t s_rw_ch;				
+	unsigned int sample_bytes;		
+	bool is_buf_corrupted;			
+	size_t period_bytes;			
+	bool interleaved;			
+	size_t total_bytes;			
+	size_t chan_block;			
 	struct snd_pcm_substream *substream;
-	bool suspend;				// We need to pause timer without shutting it down
+	bool suspend;				
 	struct timer_list timer_instance;
 };
 
@@ -147,22 +118,14 @@ static inline void inc_buf_pos(struct pcmtst_buf_iter *v_iter, size_t by, size_t
 		v_iter->buf_pos %= bytes;
 }
 
-/*
- * Position in the DMA buffer when we are in the non-interleaved mode. We increment buf_pos
- * every time we write a byte to any channel, so the position in the current channel buffer is
- * (position in the DMA buffer) / count_of_channels + size_of_channel_buf * current_channel
- */
+ 
 static inline size_t buf_pos_n(struct pcmtst_buf_iter *v_iter, unsigned int channels,
 			       unsigned int chan_num)
 {
 	return v_iter->buf_pos / channels + v_iter->chan_block * chan_num;
 }
 
-/*
- * Get the count of bytes written for the current channel in the interleaved mode.
- * This is (count of samples written for the current channel) * bytes_in_sample +
- * (relative position in the current sample)
- */
+ 
 static inline size_t ch_pos_i(size_t b_total, unsigned int channels, unsigned int b_sample)
 {
 	return b_total / channels / b_sample * b_sample + (b_total % b_sample);
@@ -188,7 +151,7 @@ static void check_buf_block_i(struct pcmtst_buf_iter *v_iter, struct snd_pcm_run
 		}
 		inc_buf_pos(v_iter, 1, runtime->dma_bytes);
 	}
-	// If we broke during the loop, add remaining bytes to the buffer position.
+	
 	inc_buf_pos(v_iter, v_iter->b_rw - i, runtime->dma_bytes);
 }
 
@@ -214,11 +177,7 @@ static void check_buf_block_ni(struct pcmtst_buf_iter *v_iter, struct snd_pcm_ru
 	inc_buf_pos(v_iter, v_iter->b_rw - i, runtime->dma_bytes);
 }
 
-/*
- * Check one block of the buffer. Here we iterate the buffer until we find '0'. This condition is
- * necessary because we need to detect when the reading/writing ends, so we assume that the pattern
- * doesn't contain zeros.
- */
+ 
 static void check_buf_block(struct pcmtst_buf_iter *v_iter, struct snd_pcm_runtime *runtime)
 {
 	if (v_iter->interleaved)
@@ -227,14 +186,7 @@ static void check_buf_block(struct pcmtst_buf_iter *v_iter, struct snd_pcm_runti
 		check_buf_block_ni(v_iter, runtime);
 }
 
-/*
- * Fill buffer in the non-interleaved mode. The order of samples is C0, ..., C0, C1, ..., C1, C2...
- * The channel buffers lay in the DMA buffer continuously (see default copy
- * handlers in the pcm_lib.c file).
- *
- * Here we increment the DMA buffer position every time we write a byte to any channel 'buffer'.
- * We need this to simulate the correct hardware pointer moving.
- */
+ 
 static void fill_block_pattern_n(struct pcmtst_buf_iter *v_iter, struct snd_pcm_runtime *runtime)
 {
 	size_t i;
@@ -250,7 +202,7 @@ static void fill_block_pattern_n(struct pcmtst_buf_iter *v_iter, struct snd_pcm_
 	}
 }
 
-// Fill buffer in the interleaved mode. The order of samples is C0, C1, C2, C0, C1, C2, ...
+ 
 static void fill_block_pattern_i(struct pcmtst_buf_iter *v_iter, struct snd_pcm_runtime *runtime)
 {
 	size_t sample;
@@ -282,17 +234,17 @@ static void fill_block_pattern(struct pcmtst_buf_iter *v_iter, struct snd_pcm_ru
 static void fill_block_rand_n(struct pcmtst_buf_iter *v_iter, struct snd_pcm_runtime *runtime)
 {
 	unsigned int channels = runtime->channels;
-	// Remaining space in all channel buffers
+	 
 	size_t bytes_remain = runtime->dma_bytes - v_iter->buf_pos;
 	unsigned int i;
 
 	for (i = 0; i < channels; i++) {
 		if (v_iter->b_rw <= bytes_remain) {
-			//b_rw - count of bytes must be written for all channels at each timer tick
+			 
 			get_random_bytes(runtime->dma_area + buf_pos_n(v_iter, channels, i),
 					 v_iter->b_rw / channels);
 		} else {
-			// Write to the end of buffer and start from the beginning of it
+			 
 			get_random_bytes(runtime->dma_area + buf_pos_n(v_iter, channels, i),
 					 bytes_remain / channels);
 			get_random_bytes(runtime->dma_area + v_iter->chan_block * i,
@@ -335,11 +287,7 @@ static void fill_block(struct pcmtst_buf_iter *v_iter, struct snd_pcm_runtime *r
 	}
 }
 
-/*
- * Here we iterate through the buffer by (buffer_size / iterates_per_second) bytes.
- * The driver uses timer to simulate the hardware pointer moving, and notify the PCM middle layer
- * about period elapsed.
- */
+ 
 static void timer_timeout(struct timer_list *data)
 {
 	struct pcmtst_buf_iter *v_iter;
@@ -432,7 +380,7 @@ static int snd_pcmtst_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 		break;
 	case SNDRV_PCM_TRIGGER_STOP:
 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
-		// We can't call timer_shutdown_sync here, as it is forbidden to sleep here
+		 
 		v_iter->suspend = true;
 		timer_delete(&v_iter->timer_instance);
 		break;
@@ -456,7 +404,7 @@ static int snd_pcmtst_free(struct pcmtst *pcmtst)
 	return 0;
 }
 
-// These callbacks are required, but empty - all freeing occurs in pdev_remove
+
 static int snd_pcmtst_dev_free(struct snd_device *device)
 {
 	return 0;
@@ -482,7 +430,7 @@ static int snd_pcmtst_pcm_prepare(struct snd_pcm_substream *substream)
 		v_iter->chan_block = snd_pcm_lib_buffer_bytes(substream) / runtime->channels;
 		v_iter->interleaved = false;
 	}
-	// We want to record RATE * ch_cnt samples per sec, it is rate * sample_bytes * ch_cnt bytes
+	
 	v_iter->s_rw_ch = runtime->rate / TIMER_PER_SEC;
 	v_iter->b_rw = v_iter->s_rw_ch * v_iter->sample_bytes * runtime->channels;
 
@@ -654,7 +602,7 @@ static ssize_t pattern_write(struct file *file, const char __user *u_buff, size_
 	if (*off + to_write > MAX_PATTERN_LEN)
 		to_write = MAX_PATTERN_LEN - *off;
 
-	// Crop silently everything over the buffer
+	
 	if (to_write <= 0)
 		return len;
 

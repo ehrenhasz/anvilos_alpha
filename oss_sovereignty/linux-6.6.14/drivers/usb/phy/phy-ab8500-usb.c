@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * USB transceiver driver for AB8500 family chips
- *
- * Copyright (C) 2010-2013 ST-Ericsson AB
- * Mian Yousaf Kaukab <mian.yousaf.kaukab@stericsson.com>
- * Avinash Kumar <avinash.kumar@stericsson.com>
- * Thirupathi Chippakurthy <thirupathi.chippakurthy@stericsson.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -23,23 +16,23 @@
 #include <linux/regulator/consumer.h>
 #include <linux/pinctrl/consumer.h>
 
-/* Bank AB8500_SYS_CTRL2_BLOCK */
+ 
 #define AB8500_MAIN_WD_CTRL_REG 0x01
 
-/* Bank AB8500_USB */
+ 
 #define AB8500_USB_LINE_STAT_REG 0x80
 #define AB8505_USB_LINE_STAT_REG 0x94
 #define AB8500_USB_PHY_CTRL_REG 0x8A
 
-/* Bank AB8500_DEVELOPMENT */
+ 
 #define AB8500_BANK12_ACCESS 0x00
 
-/* Bank AB8500_DEBUG */
+ 
 #define AB8500_USB_PHY_TUNE1 0x05
 #define AB8500_USB_PHY_TUNE2 0x06
 #define AB8500_USB_PHY_TUNE3 0x07
 
-/* Bank AB8500_INTERRUPT */
+ 
 #define AB8500_IT_SOURCE2_REG 0x01
 
 #define AB8500_BIT_OTG_STAT_ID (1 << 0)
@@ -49,11 +42,11 @@
 #define AB8500_BIT_WD_CTRL_KICK (1 << 1)
 #define AB8500_BIT_SOURCE2_VBUSDET (1 << 7)
 
-#define AB8500_WD_KICK_DELAY_US 100 /* usec */
-#define AB8500_WD_V11_DISABLE_DELAY_US 100 /* usec */
-#define AB8500_V20_31952_DISABLE_DELAY_US 100 /* usec */
+#define AB8500_WD_KICK_DELAY_US 100  
+#define AB8500_WD_V11_DISABLE_DELAY_US 100  
+#define AB8500_V20_31952_DISABLE_DELAY_US 100  
 
-/* Usb line status register */
+ 
 enum ab8500_usb_link_status {
 	USB_LINK_NOT_CONFIGURED_8500 = 0,
 	USB_LINK_STD_HOST_NC_8500,
@@ -112,15 +105,15 @@ enum ab8500_usb_mode {
 	USB_UART
 };
 
-/* Register USB_LINK_STATUS interrupt */
+ 
 #define AB8500_USB_FLAG_USE_LINK_STATUS_IRQ	(1 << 0)
-/* Register ID_WAKEUP_F interrupt */
+ 
 #define AB8500_USB_FLAG_USE_ID_WAKEUP_IRQ	(1 << 1)
-/* Register VBUS_DET_F interrupt */
+ 
 #define AB8500_USB_FLAG_USE_VBUS_DET_IRQ	(1 << 2)
-/* Driver is using the ab-iddet driver*/
+ 
 #define AB8500_USB_FLAG_USE_AB_IDDET		(1 << 3)
-/* Enable setting regulators voltage */
+ 
 #define AB8500_USB_FLAG_REGULATOR_SET_VOLTAGE	(1 << 4)
 
 struct ab8500_usb {
@@ -218,7 +211,7 @@ static void ab8500_usb_regulator_disable(struct ab8500_usb *ab)
 
 	regulator_disable(ab->v_ulpi);
 
-	/* USB is not the only consumer of Vintcore, restore old settings */
+	 
 	if (ab->flags & AB8500_USB_FLAG_REGULATOR_SET_VOLTAGE) {
 		if (ab->saved_v_ulpi > 0) {
 			ret = regulator_set_voltage(ab->v_ulpi,
@@ -239,7 +232,7 @@ static void ab8500_usb_regulator_disable(struct ab8500_usb *ab)
 
 static void ab8500_usb_wd_linkstatus(struct ab8500_usb *ab, u8 bit)
 {
-	/* Workaround for v2.0 bug # 31952 */
+	 
 	if (is_ab8500_2p0(ab->ab8500)) {
 		abx500_mask_and_set_register_interruptible(ab->dev,
 				AB8500_USB, AB8500_USB_PHY_CTRL_REG,
@@ -254,7 +247,7 @@ static void ab8500_usb_phy_enable(struct ab8500_usb *ab, bool sel_host)
 	bit = sel_host ? AB8500_BIT_PHY_CTRL_HOST_EN :
 		AB8500_BIT_PHY_CTRL_DEVICE_EN;
 
-	/* mux and configure USB pins to DEFAULT state */
+	 
 	ab->pinctrl = pinctrl_get_select(ab->dev, PINCTRL_STATE_DEFAULT);
 	if (IS_ERR(ab->pinctrl))
 		dev_err(ab->dev, "could not get/set default pinstate\n");
@@ -281,7 +274,7 @@ static void ab8500_usb_phy_disable(struct ab8500_usb *ab, bool sel_host)
 			AB8500_USB, AB8500_USB_PHY_CTRL_REG,
 			bit, 0);
 
-	/* Needed to disable the phy.*/
+	 
 	ab8500_usb_wd_workaround(ab);
 
 	clk_disable_unprepare(ab->sysclk);
@@ -289,7 +282,7 @@ static void ab8500_usb_phy_disable(struct ab8500_usb *ab, bool sel_host)
 	ab8500_usb_regulator_disable(ab);
 
 	if (!IS_ERR(ab->pinctrl)) {
-		/* configure USB pins to SLEEP state */
+		 
 		ab->pins_sleep = pinctrl_lookup_state(ab->pinctrl,
 				PINCTRL_STATE_SLEEP);
 
@@ -298,10 +291,7 @@ static void ab8500_usb_phy_disable(struct ab8500_usb *ab, bool sel_host)
 		else if (pinctrl_select_state(ab->pinctrl, ab->pins_sleep))
 			dev_err(ab->dev, "could not set pins to sleep state\n");
 
-		/*
-		 * as USB pins are shared with iddet, release them to allow
-		 * iddet to request them
-		 */
+		 
 		pinctrl_put(ab->pinctrl);
 	}
 }
@@ -318,10 +308,7 @@ static int ab8505_usb_link_status_update(struct ab8500_usb *ab,
 
 	dev_dbg(ab->dev, "ab8505_usb_link_status_update %d\n", lsts);
 
-	/*
-	 * Spurious link_status interrupts are seen at the time of
-	 * disconnection of a device in RIDA state
-	 */
+	 
 	if (ab->previous_link_status_state == USB_LINK_ACA_RID_A_8505 &&
 			(lsts == USB_LINK_STD_HOST_NC_8505))
 		return 0;
@@ -342,10 +329,7 @@ static int ab8505_usb_link_status_update(struct ab8500_usb *ab,
 		ab->vbus_draw = 0;
 		if (event != UX500_MUSB_RIDB)
 			event = UX500_MUSB_NONE;
-		/*
-		 * Fallback to default B_IDLE as nothing
-		 * is connected
-		 */
+		 
 		ab->phy.otg->state = OTG_STATE_B_IDLE;
 		usb_phy_set_event(&ab->phy, USB_EVENT_NONE);
 		break;
@@ -394,15 +378,7 @@ static int ab8505_usb_link_status_update(struct ab8500_usb *ab,
 		usb_phy_set_event(&ab->phy, USB_EVENT_CHARGER);
 		break;
 
-	/*
-	 * FIXME: For now we rely on the boot firmware to set up the necessary
-	 * PHY/pin configuration for UART mode.
-	 *
-	 * AB8505 does not seem to report any status change for UART cables,
-	 * possibly because it cannot detect them autonomously.
-	 * We may need to measure the ID resistance manually to reliably
-	 * detect UART cables after bootup.
-	 */
+	 
 	case USB_LINK_SAMSUNG_UART_CBL_PHY_EN_8505:
 	case USB_LINK_SAMSUNG_UART_CBL_PHY_DISB_8505:
 		if (ab->mode == USB_IDLE) {
@@ -426,10 +402,7 @@ static int ab8500_usb_link_status_update(struct ab8500_usb *ab,
 
 	dev_dbg(ab->dev, "ab8500_usb_link_status_update %d\n", lsts);
 
-	/*
-	 * Spurious link_status interrupts are seen in case of a
-	 * disconnection of a device in IDGND and RIDA stage
-	 */
+	 
 	if (ab->previous_link_status_state == USB_LINK_HM_IDGND_8500 &&
 			(lsts == USB_LINK_STD_HOST_C_NS_8500 ||
 			 lsts == USB_LINK_STD_HOST_NC_8500))
@@ -452,7 +425,7 @@ static int ab8500_usb_link_status_update(struct ab8500_usb *ab,
 		ab->vbus_draw = 0;
 		if (event != UX500_MUSB_RIDB)
 			event = UX500_MUSB_NONE;
-		/* Fallback to default B_IDLE as nothing is connected */
+		 
 		ab->phy.otg->state = OTG_STATE_B_IDLE;
 		usb_phy_set_event(&ab->phy, USB_EVENT_NONE);
 		break;
@@ -511,17 +484,7 @@ static int ab8500_usb_link_status_update(struct ab8500_usb *ab,
 	return 0;
 }
 
-/*
- * Connection Sequence:
- *   1. Link Status Interrupt
- *   2. Enable AB clock
- *   3. Enable AB regulators
- *   4. Enable USB phy
- *   5. Reset the musb controller
- *   6. Switch the ULPI GPIO pins to function mode
- *   7. Enable the musb Peripheral5 clock
- *   8. Restore MUSB context
- */
+ 
 static int abx500_usb_link_status_update(struct ab8500_usb *ab)
 {
 	u8 reg;
@@ -550,21 +513,13 @@ static int abx500_usb_link_status_update(struct ab8500_usb *ab)
 	return ret;
 }
 
-/*
- * Disconnection Sequence:
- *   1. Disconnect Interrupt
- *   2. Disable regulators
- *   3. Disable AB clock
- *   4. Disable the Phy
- *   5. Link Status Interrupt
- *   6. Disable Musb Clock
- */
+ 
 static irqreturn_t ab8500_usb_disconnect_irq(int irq, void *data)
 {
 	struct ab8500_usb *ab = (struct ab8500_usb *) data;
 	enum usb_phy_events event = USB_EVENT_NONE;
 
-	/* Link status will not be updated till phy is disabled. */
+	 
 	if (ab->mode == USB_HOST) {
 		ab->phy.otg->default_a = false;
 		ab->vbus_draw = 0;
@@ -626,7 +581,7 @@ static void ab8500_usb_phy_disable_work(struct work_struct *work)
 
 static int ab8500_usb_set_suspend(struct usb_phy *x, int suspend)
 {
-	/* TODO */
+	 
 	return 0;
 }
 
@@ -642,10 +597,7 @@ static int ab8500_usb_set_peripheral(struct usb_otg *otg,
 
 	ab->phy.otg->gadget = gadget;
 
-	/* Some drivers call this function in atomic context.
-	 * Do not update ab8500 registers directly till this
-	 * is fixed.
-	 */
+	 
 
 	if ((ab->mode != USB_IDLE) && !gadget) {
 		ab->mode = USB_IDLE;
@@ -666,10 +618,7 @@ static int ab8500_usb_set_host(struct usb_otg *otg, struct usb_bus *host)
 
 	ab->phy.otg->host = host;
 
-	/* Some drivers call this function in atomic context.
-	 * Do not update ab8500 registers directly till this
-	 * is fixed.
-	 */
+	 
 
 	if ((ab->mode != USB_IDLE) && !host) {
 		ab->mode = USB_IDLE;
@@ -789,7 +738,7 @@ static void ab8500_usb_set_ab8500_tuning_values(struct ab8500_usb *ab)
 {
 	int err;
 
-	/* Enable the PBT/Bank 0x12 access */
+	 
 	err = abx500_set_register_interruptible(ab->dev,
 			AB8500_DEVELOPMENT, AB8500_BANK12_ACCESS, 0x01);
 	if (err < 0)
@@ -814,7 +763,7 @@ static void ab8500_usb_set_ab8500_tuning_values(struct ab8500_usb *ab)
 		dev_err(ab->dev, "Failed to set PHY_TUNE3 register err=%d\n",
 				err);
 
-	/* Switch to normal mode/disable Bank 0x12 access */
+	 
 	err = abx500_set_register_interruptible(ab->dev,
 			AB8500_DEVELOPMENT, AB8500_BANK12_ACCESS, 0x00);
 	if (err < 0)
@@ -826,7 +775,7 @@ static void ab8500_usb_set_ab8505_tuning_values(struct ab8500_usb *ab)
 {
 	int err;
 
-	/* Enable the PBT/Bank 0x12 access */
+	 
 	err = abx500_mask_and_set_register_interruptible(ab->dev,
 			AB8500_DEVELOPMENT, AB8500_BANK12_ACCESS,
 			0x01, 0x01);
@@ -856,7 +805,7 @@ static void ab8500_usb_set_ab8505_tuning_values(struct ab8500_usb *ab)
 		dev_err(ab->dev, "Failed to set PHY_TUNE3 register err=%d\n",
 				err);
 
-	/* Switch to normal mode/disable Bank 0x12 access */
+	 
 	err = abx500_mask_and_set_register_interruptible(ab->dev,
 			AB8500_DEVELOPMENT, AB8500_BANK12_ACCESS,
 			0x00, 0x00);
@@ -913,13 +862,13 @@ static int ab8500_usb_probe(struct platform_device *pdev)
 			AB8500_USB_FLAG_REGULATOR_SET_VOLTAGE;
 	}
 
-	/* Disable regulator voltage setting for AB8500 <= v2.0 */
+	 
 	if (is_ab8500_2p0_or_earlier(ab->ab8500))
 		ab->flags &= ~AB8500_USB_FLAG_REGULATOR_SET_VOLTAGE;
 
 	platform_set_drvdata(pdev, ab);
 
-	/* all: Disable phy when called from set_host and set_peripheral */
+	 
 	INIT_WORK(&ab->phy_dis_work, ab8500_usb_phy_disable_work);
 
 	err = ab8500_usb_regulator_get(ab);
@@ -943,19 +892,16 @@ static int ab8500_usb_probe(struct platform_device *pdev)
 	}
 
 	if (is_ab8500(ab->ab8500) && !is_ab8500_2p0_or_earlier(ab->ab8500))
-		/* Phy tuning values for AB8500 > v2.0 */
+		 
 		ab8500_usb_set_ab8500_tuning_values(ab);
 	else if (is_ab8505(ab->ab8500))
-		/* Phy tuning values for AB8505 */
+		 
 		ab8500_usb_set_ab8505_tuning_values(ab);
 
-	/* Needed to enable ID detection. */
+	 
 	ab8500_usb_wd_workaround(ab);
 
-	/*
-	 * This is required for usb-link-status to work properly when a
-	 * cable is connected at boot time.
-	 */
+	 
 	ab8500_usb_restart_phy(ab);
 
 	abx500_usb_link_status_update(ab);
@@ -981,7 +927,7 @@ static void ab8500_usb_remove(struct platform_device *pdev)
 
 static const struct platform_device_id ab8500_usb_devtype[] = {
 	{ .name = "ab8500-usb", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, ab8500_usb_devtype);
 

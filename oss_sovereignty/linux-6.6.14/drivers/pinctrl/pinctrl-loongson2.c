@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Author: zhanghongchen <zhanghongchen@loongson.cn>
- *         Yinbo Zhu <zhuyinbo@loongson.cn>
- * Copyright (C) 2022-2023 Loongson Technology Corporation Limited
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>

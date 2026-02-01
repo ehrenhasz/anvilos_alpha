@@ -1,24 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #define SWSMU_CODE_LAYER_L3
 
@@ -38,19 +18,15 @@
 #include "asic_reg/smuio/smuio_12_0_0_offset.h"
 #include "asic_reg/smuio/smuio_12_0_0_sh_mask.h"
 
-/*
- * DO NOT use these for err/warn/info/debug messages.
- * Use dev_err, dev_warn, dev_info and dev_dbg instead.
- * They are more MGPU friendly.
- */
+ 
 #undef pr_err
 #undef pr_warn
 #undef pr_info
 #undef pr_debug
 
-// because some SMU12 based ASICs use older ip offset tables
-// we should undefine this register from the smuio12 header
-// to prevent confusion down the road
+
+
+
 #undef mmPWR_MISC_CNTL_STATUS
 
 #define smnMP1_FIRMWARE_FLAGS                                0x3010024
@@ -88,14 +64,7 @@ int smu_v12_0_check_fw_version(struct smu_context *smu)
 	if (smu->is_apu)
 		adev->pm.fw_version = smu_version;
 
-	/*
-	 * 1. if_version mismatch is not critical as our fw is designed
-	 * to be backward compatible.
-	 * 2. New fw usually brings some optimizations. But that's visible
-	 * only on the paired driver.
-	 * Considering above, we just leave user a verbal message instead
-	 * of halt driver loading.
-	 */
+	 
 	if (if_version != smu->smc_driver_if_version) {
 		dev_info(smu->adev->dev, "smu driver if version = 0x%08x, smu fw if version = 0x%08x, "
 			"smu fw program = %d, smu fw version = 0x%08x (%d.%d.%d)\n",
@@ -120,7 +89,7 @@ int smu_v12_0_powergate_sdma(struct smu_context *smu, bool gate)
 
 int smu_v12_0_set_gfx_cgpg(struct smu_context *smu, bool enable)
 {
-	/* Until now the SMU12 only implemented for Renoir series so here neen't do APU check. */
+	 
 	if (!(smu->adev->pg_flags & AMD_PG_SUPPORT_GFX_PG) || smu->adev->in_s0ix)
 		return 0;
 
@@ -130,18 +99,7 @@ int smu_v12_0_set_gfx_cgpg(struct smu_context *smu, bool enable)
 		NULL);
 }
 
-/**
- * smu_v12_0_get_gfxoff_status - get gfxoff status
- *
- * @smu: amdgpu_device pointer
- *
- * This function will be used to get gfxoff status
- *
- * Returns 0=GFXOFF(default).
- * Returns 1=Transition out of GFX State.
- * Returns 2=Not in GFXOFF.
- * Returns 3=Transition into GFXOFF.
- */
+ 
 uint32_t smu_v12_0_get_gfxoff_status(struct smu_context *smu)
 {
 	uint32_t reg;
@@ -165,7 +123,7 @@ int smu_v12_0_gfx_off_control(struct smu_context *smu, bool enable)
 	} else {
 		ret = smu_cmn_send_smc_msg(smu, SMU_MSG_DisallowGfxOff, NULL);
 
-		/* confirm gfx is back to "on" state, timeout is 0.5 second */
+		 
 		while (!(smu_v12_0_get_gfxoff_status(smu) == 2)) {
 			msleep(1);
 			timeout--;

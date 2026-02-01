@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/* Copyright 2017-2019 NXP */
+
+ 
 
 #include "enetc.h"
 #include <linux/bpf_trace.h>
@@ -70,10 +70,7 @@ enetc_tx_swbd_get_xdp_frame(struct enetc_tx_swbd *tx_swbd)
 static void enetc_unmap_tx_buff(struct enetc_bdr *tx_ring,
 				struct enetc_tx_swbd *tx_swbd)
 {
-	/* For XDP_TX, pages come from RX, whereas for the other contexts where
-	 * we have is_dma_page_set, those come from skb_frag_dma_map. We need
-	 * to match the DMA mapping length, so we need to differentiate those.
-	 */
+	 
 	if (tx_swbd->is_dma_page)
 		dma_unmap_page(tx_ring->dev, tx_swbd->dma,
 			       tx_swbd->is_xdp_tx ? PAGE_SIZE : tx_swbd->len,
@@ -102,10 +99,10 @@ static void enetc_free_tx_frame(struct enetc_bdr *tx_ring,
 	}
 }
 
-/* Let H/W know BD ring has been updated */
+ 
 static void enetc_update_tx_ring_tail(struct enetc_bdr *tx_ring)
 {
-	/* includes wmb() */
+	 
 	enetc_wr_reg_hot(tx_ring->tpir, tx_ring->next_to_use);
 }
 
@@ -200,7 +197,7 @@ static int enetc_map_tx_buffs(struct enetc_bdr *tx_ring, struct sk_buff *skb)
 	if (tx_ring->tsd_enable)
 		flags |= ENETC_TXBD_FLAGS_TSE | ENETC_TXBD_FLAGS_TXSTART;
 
-	/* first BD needs frm_len and offload flags set */
+	 
 	temp_bd.frm_len = cpu_to_le16(skb->len);
 	temp_bd.flags = flags;
 
@@ -213,7 +210,7 @@ static int enetc_map_tx_buffs(struct enetc_bdr *tx_ring, struct sk_buff *skb)
 		*txbd = temp_bd;
 		enetc_clear_tx_bd(&temp_bd);
 
-		/* add extension BD for VLAN and/or timestamping */
+		 
 		flags = 0;
 		tx_swbd++;
 		txbd++;
@@ -227,7 +224,7 @@ static int enetc_map_tx_buffs(struct enetc_bdr *tx_ring, struct sk_buff *skb)
 
 		if (do_vlan) {
 			temp_bd.ext.vid = cpu_to_le16(skb_vlan_tag_get(skb));
-			temp_bd.ext.tpid = 0; /* < C-TAG */
+			temp_bd.ext.tpid = 0;  
 			e_flags |= ENETC_TXBD_E_FLAGS_VLAN_INS;
 		}
 
@@ -241,14 +238,11 @@ static int enetc_map_tx_buffs(struct enetc_bdr *tx_ring, struct sk_buff *skb)
 			sec = (u64)hi << 32 | lo;
 			nsec = do_div(sec, 1000000000);
 
-			/* Configure extension BD */
+			 
 			temp_bd.ext.tstamp = cpu_to_le32(lo & 0x3fffffff);
 			e_flags |= ENETC_TXBD_E_FLAGS_ONE_STEP_PTP;
 
-			/* Update originTimestamp field of Sync packet
-			 * - 48 bits seconds field
-			 * - 32 bits nanseconds field
-			 */
+			 
 			data = skb_mac_header(skb);
 			*(__be16 *)(data + offset2) =
 				htons((sec >> 32) & 0xffff);
@@ -256,7 +250,7 @@ static int enetc_map_tx_buffs(struct enetc_bdr *tx_ring, struct sk_buff *skb)
 				htonl(sec & 0xffffffff);
 			*(__be32 *)(data + offset2 + 6) = htonl(nsec);
 
-			/* Configure single-step register */
+			 
 			val = ENETC_PM0_SINGLE_STEP_EN;
 			val |= ENETC_SET_SINGLE_STEP_OFFSET(offset1);
 			if (udp)
@@ -305,7 +299,7 @@ static int enetc_map_tx_buffs(struct enetc_bdr *tx_ring, struct sk_buff *skb)
 		count++;
 	}
 
-	/* last BD needs 'F' bit set */
+	 
 	flags |= ENETC_TXBD_FLAGS_F;
 	temp_bd.flags = flags;
 	*txbd = temp_bd;
@@ -354,36 +348,33 @@ static void enetc_map_tx_tso_hdr(struct enetc_bdr *tx_ring, struct sk_buff *skb,
 	txbd_tmp.addr = cpu_to_le64(addr);
 	txbd_tmp.buf_len = cpu_to_le16(hdr_len);
 
-	/* first BD needs frm_len and offload flags set */
+	 
 	txbd_tmp.frm_len = cpu_to_le16(hdr_len + data_len);
 	txbd_tmp.flags = flags;
 
-	/* For the TSO header we do not set the dma address since we do not
-	 * want it unmapped when we do cleanup. We still set len so that we
-	 * count the bytes sent.
-	 */
+	 
 	tx_swbd->len = hdr_len;
 	tx_swbd->do_twostep_tstamp = false;
 	tx_swbd->check_wb = false;
 
-	/* Actually write the header in the BD */
+	 
 	*txbd = txbd_tmp;
 
-	/* Add extension BD for VLAN */
+	 
 	if (flags & ENETC_TXBD_FLAGS_EX) {
-		/* Get the next BD */
+		 
 		enetc_bdr_idx_inc(tx_ring, i);
 		txbd = ENETC_TXBD(*tx_ring, *i);
 		tx_swbd = &tx_ring->tx_swbd[*i];
 		prefetchw(txbd);
 
-		/* Setup the VLAN fields */
+		 
 		enetc_clear_tx_bd(&txbd_tmp);
 		txbd_tmp.ext.vid = cpu_to_le16(skb_vlan_tag_get(skb));
-		txbd_tmp.ext.tpid = 0; /* < C-TAG */
+		txbd_tmp.ext.tpid = 0;  
 		e_flags |= ENETC_TXBD_E_FLAGS_VLAN_INS;
 
-		/* Write the BD */
+		 
 		txbd_tmp.ext.e_flags = e_flags;
 		*txbd = txbd_tmp;
 	}
@@ -440,9 +431,7 @@ static __wsum enetc_tso_hdr_csum(struct tso_t *tso, struct sk_buff *skb,
 		udph->check = 0;
 	}
 
-	/* Compute the IP checksum. This is necessary since tso_build_hdr()
-	 * already incremented the IP ID field.
-	 */
+	 
 	if (!tso->ipv6) {
 		struct iphdr *iph = (void *)(hdr + mac_hdr_len);
 
@@ -450,7 +439,7 @@ static __wsum enetc_tso_hdr_csum(struct tso_t *tso, struct sk_buff *skb,
 		iph->check = ip_fast_csum((unsigned char *)iph, iph->ihl);
 	}
 
-	/* Compute the checksum over the L4 header. */
+	 
 	*l4_hdr_len = hdr_len - skb_transport_offset(skb);
 	return csum_partial(l4_hdr, *l4_hdr_len, 0);
 }
@@ -462,9 +451,7 @@ static void enetc_tso_complete_csum(struct enetc_bdr *tx_ring, struct tso_t *tso
 	char *l4_hdr = hdr + skb_transport_offset(skb);
 	__sum16 csum_final;
 
-	/* Complete the L4 checksum by appending the pseudo-header to the
-	 * already computed checksum.
-	 */
+	 
 	if (!tso->ipv6)
 		csum_final = csum_tcpudp_magic(ip_hdr(skb)->saddr,
 					       ip_hdr(skb)->daddr,
@@ -495,7 +482,7 @@ static int enetc_map_tx_tso_buffs(struct enetc_bdr *tx_ring, struct sk_buff *skb
 	int count = 0, pos;
 	int err, i, bd_data_num;
 
-	/* Initialize the TSO handler, and prepare the first payload */
+	 
 	hdr_len = tso_start(skb, &tso);
 	total_len = skb->len - hdr_len;
 	i = tx_ring->next_to_use;
@@ -503,20 +490,20 @@ static int enetc_map_tx_tso_buffs(struct enetc_bdr *tx_ring, struct sk_buff *skb
 	while (total_len > 0) {
 		char *hdr;
 
-		/* Get the BD */
+		 
 		txbd = ENETC_TXBD(*tx_ring, i);
 		tx_swbd = &tx_ring->tx_swbd[i];
 		prefetchw(txbd);
 
-		/* Determine the length of this packet */
+		 
 		data_len = min_t(int, skb_shinfo(skb)->gso_size, total_len);
 		total_len -= data_len;
 
-		/* prepare packet headers: MAC + IP + TCP */
+		 
 		hdr = tx_ring->tso_headers + i * TSO_HEADER_SIZE;
 		tso_build_hdr(skb, hdr, &tso, data_len, total_len == 0);
 
-		/* compute the csum over the L4 header */
+		 
 		csum = enetc_tso_hdr_csum(&tso, skb, hdr, hdr_len, &pos);
 		enetc_map_tx_tso_hdr(tx_ring, skb, tx_swbd, txbd, &i, hdr_len, data_len);
 		bd_data_num = 0;
@@ -527,16 +514,13 @@ static int enetc_map_tx_tso_buffs(struct enetc_bdr *tx_ring, struct sk_buff *skb
 
 			size = min_t(int, tso.size, data_len);
 
-			/* Advance the index in the BDR */
+			 
 			enetc_bdr_idx_inc(tx_ring, &i);
 			txbd = ENETC_TXBD(*tx_ring, i);
 			tx_swbd = &tx_ring->tx_swbd[i];
 			prefetchw(txbd);
 
-			/* Compute the checksum over this segment of data and
-			 * add it to the csum already computed (over the L4
-			 * header and possible other data segments).
-			 */
+			 
 			csum2 = csum_partial(tso.data, size, 0);
 			csum = csum_block_add(csum, csum2, pos);
 			pos += size;
@@ -561,7 +545,7 @@ static int enetc_map_tx_tso_buffs(struct enetc_bdr *tx_ring, struct sk_buff *skb
 		if (total_len == 0)
 			tx_swbd->skb = skb;
 
-		/* Go to the next BD */
+		 
 		enetc_bdr_idx_inc(tx_ring, &i);
 	}
 
@@ -592,7 +576,7 @@ static netdev_tx_t enetc_start_xmit(struct sk_buff *skb,
 	struct enetc_bdr *tx_ring;
 	int count, err;
 
-	/* Queue one-step Sync packet if already locked */
+	 
 	if (skb->cb[0] & ENETC_F_TX_ONESTEP_SYNC_TSTAMP) {
 		if (test_and_set_bit_lock(ENETC_TX_ONESTEP_TSTAMP_IN_PROGRESS,
 					  &priv->flags)) {
@@ -617,7 +601,7 @@ static netdev_tx_t enetc_start_xmit(struct sk_buff *skb,
 			if (unlikely(skb_linearize(skb)))
 				goto drop_packet_err;
 
-		count = skb_shinfo(skb)->nr_frags + 1; /* fragments + head */
+		count = skb_shinfo(skb)->nr_frags + 1;  
 		if (enetc_bd_unused(tx_ring) < ENETC_TXBDS_NEEDED(count)) {
 			netif_stop_subqueue(ndev, tx_ring->index);
 			return NETDEV_TX_BUSY;
@@ -652,7 +636,7 @@ netdev_tx_t enetc_xmit(struct sk_buff *skb, struct net_device *ndev)
 	u8 udp, msgtype, twostep;
 	u16 offset1, offset2;
 
-	/* Mark tx timestamp type on skb->cb[0] if requires */
+	 
 	if ((skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
 	    (priv->active_offloads & ENETC_F_TX_TSTAMP_MASK)) {
 		skb->cb[0] = priv->active_offloads & ENETC_F_TX_TSTAMP_MASK;
@@ -660,7 +644,7 @@ netdev_tx_t enetc_xmit(struct sk_buff *skb, struct net_device *ndev)
 		skb->cb[0] = 0;
 	}
 
-	/* Fall back to two-step timestamp if not one-step Sync packet */
+	 
 	if (skb->cb[0] & ENETC_F_TX_ONESTEP_SYNC_TSTAMP) {
 		if (enetc_ptp_parse(skb, &udp, &msgtype, &twostep,
 				    &offset1, &offset2) ||
@@ -679,7 +663,7 @@ static irqreturn_t enetc_msix(int irq, void *data)
 
 	enetc_lock_mdio();
 
-	/* disable interrupts */
+	 
 	enetc_wr_reg_hot(v->rbier, 0);
 	enetc_wr_reg_hot(v->ricr1, v->rx_ictt);
 
@@ -740,10 +724,10 @@ static void enetc_reuse_page(struct enetc_bdr *rx_ring,
 
 	new = &rx_ring->rx_swbd[rx_ring->next_to_alloc];
 
-	/* next buf that may reuse a page */
+	 
 	enetc_bdr_idx_inc(rx_ring, &rx_ring->next_to_alloc);
 
-	/* copy page reference */
+	 
 	*new = *old;
 }
 
@@ -790,7 +774,7 @@ static void enetc_recycle_xdp_tx_buff(struct enetc_bdr *tx_ring,
 	if (likely(enetc_swbd_unused(rx_ring))) {
 		enetc_reuse_page(rx_ring, &rx_swbd);
 
-		/* sync for use by the device */
+		 
 		dma_sync_single_range_for_device(rx_ring->dev, rx_swbd.dma,
 						 rx_swbd.page_offset,
 						 ENETC_RXB_DMA_SIZE_XDP,
@@ -798,9 +782,7 @@ static void enetc_recycle_xdp_tx_buff(struct enetc_bdr *tx_ring,
 
 		rx_ring->stats.recycles++;
 	} else {
-		/* RX ring is already full, we need to unmap and free the
-		 * page, since there's nothing useful we can do with it.
-		 */
+		 
 		rx_ring->stats.recycle_failures++;
 
 		dma_unmap_page(rx_ring->dev, rx_swbd.dma, PAGE_SIZE,
@@ -857,10 +839,7 @@ static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
 			xdp_return_frame(xdp_frame);
 		} else if (skb) {
 			if (unlikely(skb->cb[0] & ENETC_F_TX_ONESTEP_SYNC_TSTAMP)) {
-				/* Start work to release lock for next one-step
-				 * timestamping packet. And send one skb in
-				 * tx_skbs queue if has.
-				 */
+				 
 				schedule_work(&priv->tx_onestep_tstamp);
 			} else if (unlikely(do_twostep_tstamp)) {
 				enetc_tstamp_tx(skb, tstamp);
@@ -870,9 +849,7 @@ static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
 		}
 
 		tx_byte_cnt += tx_swbd->len;
-		/* Scrub the swbd here so we don't have to do that
-		 * when we reuse it during xmit
-		 */
+		 
 		memset(tx_swbd, 0, sizeof(*tx_swbd));
 
 		bds_to_clean--;
@@ -883,10 +860,10 @@ static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
 			tx_swbd = tx_ring->tx_swbd;
 		}
 
-		/* BD iteration loop end */
+		 
 		if (is_eof) {
 			tx_frm_cnt++;
-			/* re-arm interrupt source */
+			 
 			enetc_wr_reg_hot(tx_ring->idr, BIT(tx_ring->index) |
 					 BIT(16 + tx_ring->index));
 		}
@@ -920,7 +897,7 @@ static bool enetc_new_page(struct enetc_bdr *rx_ring,
 	if (unlikely(!page))
 		return false;
 
-	/* For XDP_TX, we forgo dma_unmap -> dma_map */
+	 
 	rx_swbd->dir = xdp ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
 
 	addr = dma_map_page(rx_ring->dev, page, 0, PAGE_SIZE, rx_swbd->dir);
@@ -948,7 +925,7 @@ static int enetc_refill_rx_ring(struct enetc_bdr *rx_ring, const int buff_cnt)
 	rxbd = enetc_rxbd(rx_ring, i);
 
 	for (j = 0; j < buff_cnt; j++) {
-		/* try reuse page */
+		 
 		if (unlikely(!rx_swbd->page)) {
 			if (unlikely(!enetc_new_page(rx_ring, rx_swbd))) {
 				rx_ring->stats.rx_alloc_errs++;
@@ -956,10 +933,10 @@ static int enetc_refill_rx_ring(struct enetc_bdr *rx_ring, const int buff_cnt)
 			}
 		}
 
-		/* update RxBD */
+		 
 		rxbd->w.addr = cpu_to_le64(rx_swbd->dma +
 					   rx_swbd->page_offset);
-		/* clear 'R" as well */
+		 
 		rxbd->r.lstatus = 0;
 
 		enetc_rxbd_next(rx_ring, &rxbd, &i);
@@ -967,10 +944,10 @@ static int enetc_refill_rx_ring(struct enetc_bdr *rx_ring, const int buff_cnt)
 	}
 
 	if (likely(j)) {
-		rx_ring->next_to_alloc = i; /* keep track from page reuse */
+		rx_ring->next_to_alloc = i;  
 		rx_ring->next_to_use = i;
 
-		/* update ENETC's consumer index */
+		 
 		enetc_wr_reg_hot(rx_ring->rcir, rx_ring->next_to_use);
 	}
 
@@ -1008,7 +985,7 @@ static void enetc_get_offloads(struct enetc_bdr *rx_ring,
 {
 	struct enetc_ndev_priv *priv = netdev_priv(rx_ring->ndev);
 
-	/* TODO: hashing */
+	 
 	if (rx_ring->ndev->features & NETIF_F_RXCSUM) {
 		u16 inet_csum = le16_to_cpu(rxbd->r.inet_csum);
 
@@ -1047,10 +1024,7 @@ static void enetc_get_offloads(struct enetc_bdr *rx_ring,
 #endif
 }
 
-/* This gets called during the non-XDP NAPI poll cycle as well as on XDP_PASS,
- * so it needs to work with both DMA_FROM_DEVICE as well as DMA_BIDIRECTIONAL
- * mapped buffers.
- */
+ 
 static struct enetc_rx_swbd *enetc_get_rx_buff(struct enetc_bdr *rx_ring,
 					       int i, u16 size)
 {
@@ -1062,7 +1036,7 @@ static struct enetc_rx_swbd *enetc_get_rx_buff(struct enetc_bdr *rx_ring,
 	return rx_swbd;
 }
 
-/* Reuse the current page without performing half-page buffer flipping */
+ 
 static void enetc_put_rx_buff(struct enetc_bdr *rx_ring,
 			      struct enetc_rx_swbd *rx_swbd)
 {
@@ -1077,7 +1051,7 @@ static void enetc_put_rx_buff(struct enetc_bdr *rx_ring,
 	rx_swbd->page = NULL;
 }
 
-/* Reuse the current page by performing half-page buffer flipping */
+ 
 static void enetc_flip_rx_buff(struct enetc_bdr *rx_ring,
 			       struct enetc_rx_swbd *rx_swbd)
 {
@@ -1168,7 +1142,7 @@ static struct sk_buff *enetc_build_skb(struct enetc_bdr *rx_ring,
 
 	enetc_rxbd_next(rx_ring, rxbd, i);
 
-	/* not last BD in frame? */
+	 
 	while (!(bd_status & ENETC_RXBD_LSTATUS_F)) {
 		bd_status = le32_to_cpu((*rxbd)->r.lstatus);
 		size = buffer_size;
@@ -1191,7 +1165,7 @@ static struct sk_buff *enetc_build_skb(struct enetc_bdr *rx_ring,
 	return skb;
 }
 
-#define ENETC_RXBD_BUNDLE 16 /* # of BDs to update at once */
+#define ENETC_RXBD_BUNDLE 16  
 
 static int enetc_clean_rx_ring(struct enetc_bdr *rx_ring,
 			       struct napi_struct *napi, int work_limit)
@@ -1200,7 +1174,7 @@ static int enetc_clean_rx_ring(struct enetc_bdr *rx_ring,
 	int cleaned_cnt, i;
 
 	cleaned_cnt = enetc_bd_unused(rx_ring);
-	/* next descriptor to process */
+	 
 	i = rx_ring->next_to_clean;
 
 	while (likely(rx_frm_cnt < work_limit)) {
@@ -1218,7 +1192,7 @@ static int enetc_clean_rx_ring(struct enetc_bdr *rx_ring,
 			break;
 
 		enetc_wr_reg_hot(rx_ring->idr, BIT(rx_ring->index));
-		dma_rmb(); /* for reading other rxbd fields */
+		dma_rmb();  
 
 		if (enetc_check_bd_errors_and_consume(rx_ring, bd_status,
 						      &rxbd, &i))
@@ -1229,10 +1203,7 @@ static int enetc_clean_rx_ring(struct enetc_bdr *rx_ring,
 		if (!skb)
 			break;
 
-		/* When set, the outer VLAN header is extracted and reported
-		 * in the receive buffer descriptor. So rx_byte_cnt should
-		 * add the length of the extracted VLAN header.
-		 */
+		 
 		if (bd_status & ENETC_RXBD_FLAG_VLAN)
 			rx_byte_cnt += VLAN_HLEN;
 		rx_byte_cnt += skb->len + ETH_HLEN;
@@ -1265,9 +1236,7 @@ static void enetc_xdp_map_tx_buff(struct enetc_bdr *tx_ring, int i,
 	memcpy(&tx_ring->tx_swbd[i], tx_swbd, sizeof(*tx_swbd));
 }
 
-/* Puts in the TX ring one XDP frame, mapped as an array of TX software buffer
- * descriptors.
- */
+ 
 static bool enetc_xdp_tx(struct enetc_bdr *tx_ring,
 			 struct enetc_tx_swbd *xdp_tx_arr, int num_tx_swbd)
 {
@@ -1289,7 +1258,7 @@ static bool enetc_xdp_tx(struct enetc_bdr *tx_ring,
 
 		enetc_xdp_map_tx_buff(tx_ring, i, xdp_tx_swbd, frm_len);
 
-		/* last BD needs 'F' bit set */
+		 
 		if (xdp_tx_swbd->is_eof) {
 			union enetc_tx_bd *txbd = ENETC_TXBD(*tx_ring, i);
 
@@ -1346,7 +1315,7 @@ static int enetc_xdp_frame_to_xdp_tx_swbd(struct enetc_bdr *tx_ring,
 
 		dma = dma_map_single(tx_ring->dev, data, len, DMA_TO_DEVICE);
 		if (unlikely(dma_mapping_error(tx_ring->dev, dma))) {
-			/* Undo the DMA mapping for all fragments */
+			 
 			while (--n >= 0)
 				enetc_unmap_tx_buff(tx_ring, &xdp_tx_arr[n]);
 
@@ -1422,7 +1391,7 @@ static void enetc_map_rx_buff_to_xdp(struct enetc_bdr *rx_ring, int i,
 	struct enetc_rx_swbd *rx_swbd = enetc_get_rx_buff(rx_ring, i, size);
 	void *hard_start = page_address(rx_swbd->page) + rx_swbd->page_offset;
 
-	/* To be used for XDP_TX */
+	 
 	rx_swbd->len = size;
 
 	xdp_prepare_buff(xdp_buff, hard_start - rx_ring->buffer_offset,
@@ -1436,7 +1405,7 @@ static void enetc_add_rx_buff_to_xdp(struct enetc_bdr *rx_ring, int i,
 	struct enetc_rx_swbd *rx_swbd = enetc_get_rx_buff(rx_ring, i, size);
 	skb_frag_t *frag;
 
-	/* To be used for XDP_TX */
+	 
 	rx_swbd->len = size;
 
 	if (!xdp_buff_has_frags(xdp_buff)) {
@@ -1469,7 +1438,7 @@ static void enetc_build_xdp_buff(struct enetc_bdr *rx_ring, u32 bd_status,
 	(*cleaned_cnt)++;
 	enetc_rxbd_next(rx_ring, rxbd, i);
 
-	/* not last BD in frame? */
+	 
 	while (!(bd_status & ENETC_RXBD_LSTATUS_F)) {
 		bd_status = le32_to_cpu((*rxbd)->r.lstatus);
 		size = ENETC_RXB_DMA_SIZE_XDP;
@@ -1485,9 +1454,7 @@ static void enetc_build_xdp_buff(struct enetc_bdr *rx_ring, u32 bd_status,
 	}
 }
 
-/* Convert RX buffer descriptors to TX buffer descriptors. These will be
- * recycled back into the RX ring in enetc_clean_tx_ring.
- */
+ 
 static int enetc_rx_swbd_to_xdp_tx_swbd(struct enetc_tx_swbd *xdp_tx_arr,
 					struct enetc_bdr *rx_ring,
 					int rx_ring_first, int rx_ring_last)
@@ -1499,7 +1466,7 @@ static int enetc_rx_swbd_to_xdp_tx_swbd(struct enetc_tx_swbd *xdp_tx_arr,
 		struct enetc_rx_swbd *rx_swbd = &rx_ring->rx_swbd[rx_ring_first];
 		struct enetc_tx_swbd *tx_swbd = &xdp_tx_arr[n];
 
-		/* No need to dma_map, we already have DMA_BIDIRECTIONAL */
+		 
 		tx_swbd->dma = rx_swbd->dma;
 		tx_swbd->dir = rx_swbd->dir;
 		tx_swbd->page = rx_swbd->page;
@@ -1510,7 +1477,7 @@ static int enetc_rx_swbd_to_xdp_tx_swbd(struct enetc_tx_swbd *xdp_tx_arr,
 		tx_swbd->is_eof = false;
 	}
 
-	/* We rely on caller providing an rx_ring_last > rx_ring_first */
+	 
 	xdp_tx_arr[n - 1].is_eof = true;
 
 	return n;
@@ -1540,7 +1507,7 @@ static int enetc_clean_rx_ring_xdp(struct enetc_bdr *rx_ring,
 	u32 xdp_act;
 
 	cleaned_cnt = enetc_bd_unused(rx_ring);
-	/* next descriptor to process */
+	 
 	i = rx_ring->next_to_clean;
 
 	while (likely(rx_frm_cnt < work_limit)) {
@@ -1557,7 +1524,7 @@ static int enetc_clean_rx_ring_xdp(struct enetc_bdr *rx_ring,
 			break;
 
 		enetc_wr_reg_hot(rx_ring->idr, BIT(rx_ring->index));
-		dma_rmb(); /* for reading other rxbd fields */
+		dma_rmb();  
 
 		if (enetc_check_bd_errors_and_consume(rx_ring, bd_status,
 						      &rxbd, &i))
@@ -1570,10 +1537,7 @@ static int enetc_clean_rx_ring_xdp(struct enetc_bdr *rx_ring,
 		enetc_build_xdp_buff(rx_ring, bd_status, &rxbd, &i,
 				     &cleaned_cnt, &xdp_buff);
 
-		/* When set, the outer VLAN header is extracted and reported
-		 * in the receive buffer descriptor. So rx_byte_cnt should
-		 * add the length of the extracted VLAN header.
-		 */
+		 
 		if (bd_status & ENETC_RXBD_FLAG_VLAN)
 			rx_byte_cnt += VLAN_HLEN;
 		rx_byte_cnt += xdp_get_buff_len(&xdp_buff);
@@ -1616,13 +1580,7 @@ static int enetc_clean_rx_ring_xdp(struct enetc_bdr *rx_ring,
 				tx_ring->stats.xdp_tx += xdp_tx_bd_cnt;
 				rx_ring->xdp.xdp_tx_in_flight += xdp_tx_bd_cnt;
 				xdp_tx_frm_cnt++;
-				/* The XDP_TX enqueue was successful, so we
-				 * need to scrub the RX software BDs because
-				 * the ownership of the buffers no longer
-				 * belongs to the RX ring, and we must prevent
-				 * enetc_refill_rx_ring() from reusing
-				 * rx_swbd->page.
-				 */
+				 
 				while (orig_i != i) {
 					rx_ring->rx_swbd[orig_i].page = NULL;
 					enetc_bdr_idx_inc(rx_ring, &orig_i);
@@ -1705,7 +1663,7 @@ static int enetc_poll(struct napi_struct *napi, int budget)
 
 	v->rx_napi_work = false;
 
-	/* enable interrupts */
+	 
 	enetc_wr_reg_hot(v->rbier, ENETC_RBIER_RXTIE);
 
 	for_each_set_bit(i, &v->tx_rings_map, ENETC_MAX_NUM_TXQS)
@@ -1717,14 +1675,14 @@ static int enetc_poll(struct napi_struct *napi, int budget)
 	return work_done;
 }
 
-/* Probing and Init */
+ 
 #define ENETC_MAX_RFS_SIZE 64
 void enetc_get_si_caps(struct enetc_si *si)
 {
 	struct enetc_hw *hw = &si->hw;
 	u32 val;
 
-	/* find out how many of various resources we have to work with */
+	 
 	val = enetc_rd(hw, ENETC_SICAPR0);
 	si->num_rx_rings = (val >> 16) & 0xff;
 	si->num_tx_rings = val & 0xff;
@@ -1762,7 +1720,7 @@ static int enetc_dma_alloc_bdr(struct enetc_bdr_resource *res)
 	if (!res->bd_base)
 		return -ENOMEM;
 
-	/* h/w requires 128B alignment */
+	 
 	if (!IS_ALIGNED(res->bd_dma_base, 128)) {
 		dma_free_coherent(res->dev, bd_base_size, res->bd_base,
 				  res->bd_dma_base);
@@ -2035,7 +1993,7 @@ static int enetc_setup_default_rss_table(struct enetc_si *si, int num_groups)
 	if (!rss_table)
 		return -ENOMEM;
 
-	/* Set up RSS table defaults */
+	 
 	for (i = 0; i < si->num_rss; i++)
 		rss_table[i] = i % num_groups;
 
@@ -2052,11 +2010,11 @@ int enetc_configure_si(struct enetc_ndev_priv *priv)
 	struct enetc_hw *hw = &si->hw;
 	int err;
 
-	/* set SI cache attributes */
+	 
 	enetc_wr(hw, ENETC_SICAR0,
 		 ENETC_SICAR_RD_COHERENT | ENETC_SICAR_WR_COHERENT);
 	enetc_wr(hw, ENETC_SICAR1, ENETC_SICAR_MSI);
-	/* enable SI */
+	 
 	enetc_wr(hw, ENETC_SIMR, ENETC_SIMR_EN);
 
 	if (si->num_rss) {
@@ -2077,10 +2035,7 @@ void enetc_init_si_rings_params(struct enetc_ndev_priv *priv)
 	priv->tx_bd_count = ENETC_TX_RING_DEFAULT_SIZE;
 	priv->rx_bd_count = ENETC_RX_RING_DEFAULT_SIZE;
 
-	/* Enable all available TX rings in order to configure as many
-	 * priorities as possible, when needed.
-	 * TODO: Make # of TX rings run-time configurable
-	 */
+	 
 	priv->num_rx_rings = min_t(int, cpus, si->num_rx_rings);
 	priv->num_tx_rings = si->num_tx_rings;
 	priv->bdr_int_num = cpus;
@@ -2119,22 +2074,22 @@ static void enetc_setup_txbdr(struct enetc_hw *hw, struct enetc_bdr *tx_ring)
 	enetc_txbdr_wr(hw, idx, ENETC_TBBAR1,
 		       upper_32_bits(tx_ring->bd_dma_base));
 
-	WARN_ON(!IS_ALIGNED(tx_ring->bd_count, 64)); /* multiple of 64 */
+	WARN_ON(!IS_ALIGNED(tx_ring->bd_count, 64));  
 	enetc_txbdr_wr(hw, idx, ENETC_TBLENR,
 		       ENETC_RTBLENR_LEN(tx_ring->bd_count));
 
-	/* clearing PI/CI registers for Tx not supported, adjust sw indexes */
+	 
 	tx_ring->next_to_use = enetc_txbdr_rd(hw, idx, ENETC_TBPIR);
 	tx_ring->next_to_clean = enetc_txbdr_rd(hw, idx, ENETC_TBCIR);
 
-	/* enable Tx ints by setting pkt thr to 1 */
+	 
 	enetc_txbdr_wr(hw, idx, ENETC_TBICR0, ENETC_TBICR0_ICEN | 0x1);
 
 	tbmr = ENETC_TBMR_SET_PRIO(tx_ring->prio);
 	if (tx_ring->ndev->features & NETIF_F_HW_VLAN_CTAG_TX)
 		tbmr |= ENETC_TBMR_VIH;
 
-	/* enable ring */
+	 
 	enetc_txbdr_wr(hw, idx, ENETC_TBMR, tbmr);
 
 	tx_ring->tpir = hw->reg + ENETC_BDR(TX, idx, ENETC_TBPIR);
@@ -2154,7 +2109,7 @@ static void enetc_setup_rxbdr(struct enetc_hw *hw, struct enetc_bdr *rx_ring,
 	enetc_rxbdr_wr(hw, idx, ENETC_RBBAR1,
 		       upper_32_bits(rx_ring->bd_dma_base));
 
-	WARN_ON(!IS_ALIGNED(rx_ring->bd_count, 64)); /* multiple of 64 */
+	WARN_ON(!IS_ALIGNED(rx_ring->bd_count, 64));  
 	enetc_rxbdr_wr(hw, idx, ENETC_RBLENR,
 		       ENETC_RTBLENR_LEN(rx_ring->bd_count));
 
@@ -2163,14 +2118,11 @@ static void enetc_setup_rxbdr(struct enetc_hw *hw, struct enetc_bdr *rx_ring,
 	else
 		enetc_rxbdr_wr(hw, idx, ENETC_RBBSR, ENETC_RXB_DMA_SIZE);
 
-	/* Also prepare the consumer index in case page allocation never
-	 * succeeds. In that case, hardware will never advance producer index
-	 * to match consumer index, and will drop all frames.
-	 */
+	 
 	enetc_rxbdr_wr(hw, idx, ENETC_RBPIR, 0);
 	enetc_rxbdr_wr(hw, idx, ENETC_RBCIR, 1);
 
-	/* enable Rx ints by setting pkt thr to 1 */
+	 
 	enetc_rxbdr_wr(hw, idx, ENETC_RBICR0, ENETC_RBICR0_ICEN | 0x1);
 
 	rx_ring->ext_en = extended;
@@ -2242,7 +2194,7 @@ static void enetc_disable_rxbdr(struct enetc_hw *hw, struct enetc_bdr *rx_ring)
 {
 	int idx = rx_ring->index;
 
-	/* disable EN bit on ring */
+	 
 	enetc_rxbdr_wr(hw, idx, ENETC_RBMR, 0);
 }
 
@@ -2250,7 +2202,7 @@ static void enetc_disable_txbdr(struct enetc_hw *hw, struct enetc_bdr *rx_ring)
 {
 	int idx = rx_ring->index;
 
-	/* disable EN bit on ring */
+	 
 	enetc_txbdr_wr(hw, idx, ENETC_TBMR, 0);
 }
 
@@ -2271,7 +2223,7 @@ static void enetc_wait_txbdr(struct enetc_hw *hw, struct enetc_bdr *tx_ring)
 	int delay = 8, timeout = 100;
 	int idx = tx_ring->index;
 
-	/* wait for busy to clear */
+	 
 	while (delay < timeout &&
 	       enetc_txbdr_rd(hw, idx, ENETC_TBSR) & ENETC_TBSR_BUSY) {
 		msleep(delay);
@@ -2358,14 +2310,14 @@ static void enetc_setup_interrupts(struct enetc_ndev_priv *priv)
 	u32 icpt, ictt;
 	int i;
 
-	/* enable Tx & Rx event indication */
+	 
 	if (priv->ic_mode &
 	    (ENETC_IC_RX_MANUAL | ENETC_IC_RX_ADAPTIVE)) {
 		icpt = ENETC_RBICR0_SET_ICPT(ENETC_RXIC_PKTTHR);
-		/* init to non-0 minimum, will be adjusted later */
+		 
 		ictt = 0x1;
 	} else {
-		icpt = 0x1; /* enable Rx ints by setting pkt thr to 1 */
+		icpt = 0x1;  
 		ictt = 0;
 	}
 
@@ -2378,7 +2330,7 @@ static void enetc_setup_interrupts(struct enetc_ndev_priv *priv)
 	if (priv->ic_mode & ENETC_IC_TX_MANUAL)
 		icpt = ENETC_TBICR0_SET_ICPT(ENETC_TXIC_PKTTHR);
 	else
-		icpt = 0x1; /* enable Tx ints by setting pkt thr to 1 */
+		icpt = 0x1;  
 
 	for (i = 0; i < priv->num_tx_rings; i++) {
 		enetc_txbdr_wr(hw, i, ENETC_TBICR1, priv->tx_ictt);
@@ -2406,7 +2358,7 @@ static int enetc_phylink_connect(struct net_device *ndev)
 	int err;
 
 	if (!priv->phylink) {
-		/* phy-less mode */
+		 
 		netif_carrier_on(ndev);
 		return 0;
 	}
@@ -2417,7 +2369,7 @@ static int enetc_phylink_connect(struct net_device *ndev)
 		return err;
 	}
 
-	/* disable EEE autoneg, until ENETC driver supports it */
+	 
 	memset(&edata, 0, sizeof(struct ethtool_eee));
 	phylink_ethtool_set_eee(priv->phylink, &edata);
 
@@ -2558,7 +2510,7 @@ int enetc_close(struct net_device *ndev)
 
 	enetc_free_rxtx_rings(priv);
 
-	/* Avoids dangling pointers and also frees old resources */
+	 
 	enetc_assign_rx_resources(priv, NULL);
 	enetc_assign_tx_resources(priv, NULL);
 
@@ -2577,9 +2529,7 @@ static int enetc_reconfigure(struct enetc_ndev_priv *priv, bool extended,
 
 	ASSERT_RTNL();
 
-	/* If the interface is down, run the callback right away,
-	 * without reconfiguration.
-	 */
+	 
 	if (!netif_running(priv->ndev)) {
 		if (cb) {
 			err = cb(priv, ctx);
@@ -2605,7 +2555,7 @@ static int enetc_reconfigure(struct enetc_ndev_priv *priv, bool extended,
 	enetc_stop(priv->ndev);
 	enetc_free_rxtx_rings(priv);
 
-	/* Interface is down, run optional callback now */
+	 
 	if (cb) {
 		err = cb(priv, ctx);
 		if (err)
@@ -2652,7 +2602,7 @@ void enetc_reset_tc_mqprio(struct net_device *ndev)
 	netif_set_real_num_tx_queues(ndev, num_stack_tx_queues);
 	priv->min_num_stack_tx_queues = num_possible_cpus();
 
-	/* Reset all ring priorities to 0 */
+	 
 	for (i = 0; i < priv->num_tx_rings; i++) {
 		tx_ring = priv->tx_ring[i];
 		tx_ring->prio = 0;
@@ -2697,13 +2647,7 @@ int enetc_setup_tc_mqprio(struct net_device *ndev, void *type_data)
 
 		for (q = offset; q < offset + count; q++) {
 			tx_ring = priv->tx_ring[q];
-			/* The prio_tc_map is skb_tx_hash()'s way of selecting
-			 * between TX queues based on skb->priority. As such,
-			 * there's nothing to offload based on it.
-			 * Make the mqprio "traffic class" be the priority of
-			 * this ring group, and leave the Tx IPV to traffic
-			 * class mapping as its default mapping value of 1:1.
-			 */
+			 
 			tx_ring->prio = tc;
 			enetc_set_bdr_prio(hw, tx_ring->index, tx_ring->prio);
 		}
@@ -2778,9 +2722,7 @@ static int enetc_setup_xdp_prog(struct net_device *ndev, struct bpf_prog *prog,
 
 	extended = !!(priv->active_offloads & ENETC_F_RX_TSTAMP);
 
-	/* The buffer layout is changing, so we need to drain the old
-	 * RX buffers and seed new ones.
-	 */
+	 
 	return enetc_reconfigure(priv, extended, enetc_reconfigure_xdp_cb, prog);
 }
 
@@ -2979,7 +2921,7 @@ int enetc_alloc_msix(struct enetc_ndev_priv *priv)
 	int v_tx_rings;
 
 	nvec = ENETC_BDR_INT_BASE_IDX + priv->bdr_int_num;
-	/* allocate MSIX for both messaging and Rx/Tx interrupts */
+	 
 	n = pci_alloc_irq_vectors(pdev, nvec, nvec, PCI_IRQ_MSIX);
 
 	if (n < 0)
@@ -2988,7 +2930,7 @@ int enetc_alloc_msix(struct enetc_ndev_priv *priv)
 	if (n != nvec)
 		return -EPERM;
 
-	/* # of tx rings per int vector */
+	 
 	v_tx_rings = priv->num_tx_rings / priv->bdr_int_num;
 
 	for (i = 0; i < priv->bdr_int_num; i++) {
@@ -3026,7 +2968,7 @@ int enetc_alloc_msix(struct enetc_ndev_priv *priv)
 			goto fail;
 		}
 
-		/* init defaults for adaptive IC */
+		 
 		if (priv->ic_mode & ENETC_IC_RX_ADAPTIVE) {
 			v->rx_ictt = 0x1;
 			v->rx_dim_en = true;
@@ -3038,7 +2980,7 @@ int enetc_alloc_msix(struct enetc_ndev_priv *priv)
 		for (j = 0; j < v_tx_rings; j++) {
 			int idx;
 
-			/* default tx ring mapping policy */
+			 
 			idx = priv->bdr_int_num * j + i;
 			__set_bit(idx, &v->tx_rings_map);
 			bdr = &v->tx_ring[j];
@@ -3109,7 +3051,7 @@ void enetc_free_msix(struct enetc_ndev_priv *priv)
 		priv->int_vector[i] = NULL;
 	}
 
-	/* disable all MSIX for this device */
+	 
 	pci_free_irq_vectors(priv->si->pdev);
 }
 EXPORT_SYMBOL_GPL(enetc_free_msix);
@@ -3139,7 +3081,7 @@ int enetc_pci_probe(struct pci_dev *pdev, const char *name, int sizeof_priv)
 	if (err)
 		return dev_err_probe(&pdev->dev, err, "device enable failed\n");
 
-	/* set up for high or low dma */
+	 
 	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
 	if (err) {
 		dev_err(&pdev->dev, "DMA configuration failed: 0x%x\n", err);
@@ -3156,11 +3098,11 @@ int enetc_pci_probe(struct pci_dev *pdev, const char *name, int sizeof_priv)
 
 	alloc_size = sizeof(struct enetc_si);
 	if (sizeof_priv) {
-		/* align priv to 32B */
+		 
 		alloc_size = ALIGN(alloc_size, ENETC_SI_ALIGN);
 		alloc_size += sizeof_priv;
 	}
-	/* force 32B alignment for enetc_si */
+	 
 	alloc_size += ENETC_SI_ALIGN - 1;
 
 	p = kzalloc(alloc_size, GFP_KERNEL);

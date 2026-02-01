@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2015 Karol Kosik <karo9@interia.eu>
- * Copyright (C) 2015-2016 Samsung Electronics
- *               Igor Kotrasinski <i.kotrasinsk@samsung.com>
- *               Krzysztof Opasiak <k.opasiak@samsung.com>
- */
+
+ 
 
 #ifndef __USBIP_VUDC_H
 #define __USBIP_VUDC_H
@@ -24,12 +19,12 @@
 
 struct vep {
 	struct usb_ep ep;
-	unsigned type:2; /* type, as USB_ENDPOINT_XFER_* */
-	char name[8];	/* space for ep name */
+	unsigned type:2;  
+	char name[8];	 
 
 	const struct usb_endpoint_descriptor *desc;
 	struct usb_gadget *gadget;
-	struct list_head req_queue; /* Request queue */
+	struct list_head req_queue;  
 	unsigned halted:1;
 	unsigned wedged:1;
 	unsigned already_seen:1;
@@ -39,15 +34,15 @@ struct vep {
 struct vrequest {
 	struct usb_request req;
 	struct vudc *udc;
-	struct list_head req_entry; /* Request queue */
+	struct list_head req_entry;  
 };
 
 struct urbp {
 	struct urb *urb;
 	struct vep *ep;
-	struct list_head urb_entry; /* urb queue */
+	struct list_head urb_entry;  
 	unsigned long seqnum;
-	unsigned type:2; /* for tx, since ep type can change after */
+	unsigned type:2;  
 	unsigned new:1;
 };
 
@@ -117,7 +112,7 @@ struct vudc_device {
 
 extern const struct attribute_group *vudc_groups[];
 
-/* visible everywhere */
+ 
 
 static inline struct vep *to_vep(struct usb_ep *_ep)
 {
@@ -141,28 +136,28 @@ static inline struct vudc *ep_to_vudc(struct vep *ep)
 	return container_of(ep->gadget, struct vudc, gadget);
 }
 
-/* vudc_sysfs.c */
+ 
 
 int get_gadget_descs(struct vudc *udc);
 
-/* vudc_tx.c */
+ 
 
 int v_tx_loop(void *data);
 void v_enqueue_ret_unlink(struct vudc *udc, __u32 seqnum, __u32 status);
 void v_enqueue_ret_submit(struct vudc *udc, struct urbp *urb_p);
 
-/* vudc_rx.c */
+ 
 
 int v_rx_loop(void *data);
 
-/* vudc_transfer.c */
+ 
 
 void v_init_timer(struct vudc *udc);
 void v_start_timer(struct vudc *udc);
 void v_kick_timer(struct vudc *udc, unsigned long time);
 void v_stop_timer(struct vudc *udc);
 
-/* vudc_dev.c */
+ 
 
 struct urbp *alloc_urbp(void);
 void free_urbp_and_urb(struct urbp *urb_p);
@@ -175,4 +170,4 @@ void put_vudc_device(struct vudc_device *udc_dev);
 int vudc_probe(struct platform_device *pdev);
 int vudc_remove(struct platform_device *pdev);
 
-#endif /* __USBIP_VUDC_H */
+#endif  

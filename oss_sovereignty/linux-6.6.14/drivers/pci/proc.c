@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Procfs interface for the PCI bus
- *
- * Copyright (c) 1997--1999 Martin Mares <mj@ucw.cz>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/pci.h>
@@ -17,7 +13,7 @@
 #include <asm/byteorder.h>
 #include "pci.h"
 
-static int proc_initialized;	/* = 0 */
+static int proc_initialized;	 
 
 static loff_t proc_bus_pci_lseek(struct file *file, loff_t off, int whence)
 {
@@ -32,11 +28,7 @@ static ssize_t proc_bus_pci_read(struct file *file, char __user *buf,
 	unsigned int pos = *ppos;
 	unsigned int cnt, size;
 
-	/*
-	 * Normal users can read only the standardized portion of the
-	 * configuration space as several chips lock up when trying to read
-	 * undefined locations (think of Intel PIIX4 as a typical example).
-	 */
+	 
 
 	if (capable(CAP_SYS_ADMIN))
 		size = dev->cfg_size;
@@ -189,7 +181,7 @@ struct pci_filp_private {
 	enum pci_mmap_state mmap_state;
 	int write_combine;
 };
-#endif /* HAVE_PCI_MMAP */
+#endif  
 
 static long proc_bus_pci_ioctl(struct file *file, unsigned int cmd,
 			       unsigned long arg)
@@ -197,7 +189,7 @@ static long proc_bus_pci_ioctl(struct file *file, unsigned int cmd,
 	struct pci_dev *dev = pde_data(file_inode(file));
 #ifdef HAVE_PCI_MMAP
 	struct pci_filp_private *fpriv = file->private_data;
-#endif /* HAVE_PCI_MMAP */
+#endif  
 	int ret = 0;
 
 	ret = security_locked_down(LOCKDOWN_PCI_ACCESS);
@@ -228,9 +220,9 @@ static long proc_bus_pci_ioctl(struct file *file, unsigned int cmd,
 				fpriv->write_combine = 0;
 			break;
 		}
-		/* If arch decided it can't, fall through... */
+		 
 		fallthrough;
-#endif /* HAVE_PCI_MMAP */
+#endif  
 	default:
 		ret = -EINVAL;
 		break;
@@ -257,7 +249,7 @@ static int proc_bus_pci_mmap(struct file *file, struct vm_area_struct *vma)
 		res_bit = IORESOURCE_IO;
 	}
 
-	/* Make sure the caller is mapping a real resource for this device */
+	 
 	for (i = 0; i < PCI_STD_NUM_BARS; i++) {
 		if (dev->resource[i].flags & res_bit &&
 		    pci_mmap_fits(dev, i, vma,  PCI_MMAP_PROCFS))
@@ -281,7 +273,7 @@ static int proc_bus_pci_mmap(struct file *file, struct vm_area_struct *vma)
 
 	pci_resource_to_user(dev, i, &dev->resource[i], &start, &end);
 
-	/* Adjust vm_pgoff to be the offset within the resource */
+	 
 	vma->vm_pgoff -= start >> PAGE_SHIFT;
 	ret = pci_mmap_resource_range(dev, i, vma,
 				  fpriv->mmap_state, write_combine);
@@ -314,7 +306,7 @@ static int proc_bus_pci_release(struct inode *inode, struct file *file)
 
 	return 0;
 }
-#endif /* HAVE_PCI_MMAP */
+#endif  
 
 static const struct proc_ops proc_bus_pci_ops = {
 	.proc_lseek	= proc_bus_pci_lseek,
@@ -330,11 +322,11 @@ static const struct proc_ops proc_bus_pci_ops = {
 	.proc_mmap	= proc_bus_pci_mmap,
 #ifdef HAVE_ARCH_PCI_GET_UNMAPPED_AREA
 	.proc_get_unmapped_area = get_pci_unmapped_area,
-#endif /* HAVE_ARCH_PCI_GET_UNMAPPED_AREA */
-#endif /* HAVE_PCI_MMAP */
+#endif  
+#endif  
 };
 
-/* iterator */
+ 
 static void *pci_seq_start(struct seq_file *m, loff_t *pos)
 {
 	struct pci_dev *dev = NULL;
@@ -381,7 +373,7 @@ static int show_device(struct seq_file *m, void *v)
 			dev->device,
 			dev->irq);
 
-	/* only print standard and ROM resources to preserve compatibility */
+	 
 	for (i = 0; i <= PCI_ROM_RESOURCE; i++) {
 		resource_size_t start, end;
 		pci_resource_to_user(dev, i, &dev->resource[i], &start, &end);

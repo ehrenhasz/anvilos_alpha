@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * VFIO API definition
- *
- * Copyright (C) 2012 Red Hat, Inc.  All rights reserved.
- *     Author: Alex Williamson <alex.williamson@redhat.com>
- */
+ 
+ 
 #ifndef VFIO_H
 #define VFIO_H
 
@@ -22,11 +17,7 @@ struct iommufd_ctx;
 struct iommufd_device;
 struct iommufd_access;
 
-/*
- * VFIO devices can be placed in a set, this allows all devices to share this
- * structure and the VFIO core will provide a lock that is held around
- * open_device()/close_device() for all devices in the set.
- */
+ 
 struct vfio_device_set {
 	void *set_id;
 	struct mutex lock;
@@ -37,10 +28,7 @@ struct vfio_device_set {
 struct vfio_device {
 	struct device *dev;
 	const struct vfio_device_ops *ops;
-	/*
-	 * mig_ops/log_ops is a static property of the vfio_device which must
-	 * be set prior to registering the vfio_device.
-	 */
+	 
 	const struct vfio_migration_ops *mig_ops;
 	const struct vfio_log_ops *log_ops;
 #if IS_ENABLED(CONFIG_VFIO_GROUP)
@@ -53,13 +41,13 @@ struct vfio_device {
 	unsigned int migration_flags;
 	struct kvm *kvm;
 
-	/* Members below here are private, not for driver use */
+	 
 	unsigned int index;
-	struct device device;	/* device.kref covers object life circle */
+	struct device device;	 
 #if IS_ENABLED(CONFIG_VFIO_DEVICE_CDEV)
 	struct cdev cdev;
 #endif
-	refcount_t refcount;	/* user count on registered device*/
+	refcount_t refcount;	 
 	unsigned int open_count;
 	struct completion comp;
 	struct iommufd_access *iommufd_access;
@@ -71,33 +59,7 @@ struct vfio_device {
 	u8 cdev_opened:1;
 };
 
-/**
- * struct vfio_device_ops - VFIO bus driver device callbacks
- *
- * @name: Name of the device driver.
- * @init: initialize private fields in device structure
- * @release: Reclaim private fields in device structure
- * @bind_iommufd: Called when binding the device to an iommufd
- * @unbind_iommufd: Opposite of bind_iommufd
- * @attach_ioas: Called when attaching device to an IOAS/HWPT managed by the
- *		 bound iommufd. Undo in unbind_iommufd if @detach_ioas is not
- *		 called.
- * @detach_ioas: Opposite of attach_ioas
- * @open_device: Called when the first file descriptor is opened for this device
- * @close_device: Opposite of open_device
- * @read: Perform read(2) on device file descriptor
- * @write: Perform write(2) on device file descriptor
- * @ioctl: Perform ioctl(2) on device file descriptor, supporting VFIO_DEVICE_*
- *         operations documented below
- * @mmap: Perform mmap(2) on a region of the device file descriptor
- * @request: Request for the bus driver to release the device
- * @match: Optional device name match callback (return: 0 for no-match, >0 for
- *         match, -errno for abort (ex. match with insufficient or incorrect
- *         additional args)
- * @dma_unmap: Called when userspace unmaps IOVA from the container
- *             this device is attached to.
- * @device_feature: Optional, fill in the VFIO_DEVICE_FEATURE ioctl
- */
+ 
 struct vfio_device_ops {
 	char	*name;
 	int	(*init)(struct vfio_device *vdev);
@@ -174,23 +136,7 @@ static inline bool vfio_device_cdev_opened(struct vfio_device *device)
 	return device->cdev_opened;
 }
 
-/**
- * struct vfio_migration_ops - VFIO bus device driver migration callbacks
- *
- * @migration_set_state: Optional callback to change the migration state for
- *         devices that support migration. It's mandatory for
- *         VFIO_DEVICE_FEATURE_MIGRATION migration support.
- *         The returned FD is used for data transfer according to the FSM
- *         definition. The driver is responsible to ensure that FD reaches end
- *         of stream or error whenever the migration FSM leaves a data transfer
- *         state or before close_device() returns.
- * @migration_get_state: Optional callback to get the migration state for
- *         devices that support migration. It's mandatory for
- *         VFIO_DEVICE_FEATURE_MIGRATION migration support.
- * @migration_get_data_size: Optional callback to get the estimated data
- *          length that will be required to complete stop copy. It's mandatory for
- *          VFIO_DEVICE_FEATURE_MIGRATION migration support.
- */
+ 
 struct vfio_migration_ops {
 	struct file *(*migration_set_state)(
 		struct vfio_device *device,
@@ -201,21 +147,7 @@ struct vfio_migration_ops {
 				       unsigned long *stop_copy_length);
 };
 
-/**
- * struct vfio_log_ops - VFIO bus device driver logging callbacks
- *
- * @log_start: Optional callback to ask the device start DMA logging.
- * @log_stop: Optional callback to ask the device stop DMA logging.
- * @log_read_and_clear: Optional callback to ask the device read
- *         and clear the dirty DMAs in some given range.
- *
- * The vfio core implementation of the DEVICE_FEATURE_DMA_LOGGING_ set
- * of features does not track logging state relative to the device,
- * therefore the device implementation of vfio_log_ops must handle
- * arbitrary user requests. This includes rejecting subsequent calls
- * to log_start without an intervening log_stop, as well as graceful
- * handling of log_stop and log_read_and_clear from invalid states.
- */
+ 
 struct vfio_log_ops {
 	int (*log_start)(struct vfio_device *device,
 		struct rb_root_cached *ranges, u32 nnodes, u64 *page_size);
@@ -225,19 +157,7 @@ struct vfio_log_ops {
 		struct iova_bitmap *dirty);
 };
 
-/**
- * vfio_check_feature - Validate user input for the VFIO_DEVICE_FEATURE ioctl
- * @flags: Arg from the device_feature op
- * @argsz: Arg from the device_feature op
- * @supported_ops: Combination of VFIO_DEVICE_FEATURE_GET and SET the driver
- *                 supports
- * @minsz: Minimum data size the driver accepts
- *
- * For use in a driver's device_feature op. Checks that the inputs to the
- * VFIO_DEVICE_FEATURE ioctl are correct for the driver's feature. Returns 1 if
- * the driver should execute the get or set, otherwise the relevant
- * value should be returned.
- */
+ 
 static inline int vfio_check_feature(u32 flags, size_t argsz, u32 supported_ops,
 				    size_t minsz)
 {
@@ -246,7 +166,7 @@ static inline int vfio_check_feature(u32 flags, size_t argsz, u32 supported_ops,
 		return -EINVAL;
 	if (flags & VFIO_DEVICE_FEATURE_PROBE)
 		return 0;
-	/* Without PROBE one of GET or SET must be requested */
+	 
 	if (!(flags & (VFIO_DEVICE_FEATURE_GET | VFIO_DEVICE_FEATURE_SET)))
 		return -EINVAL;
 	if (argsz < minsz)
@@ -286,9 +206,7 @@ int vfio_mig_get_next_state(struct vfio_device *device,
 void vfio_combine_iova_ranges(struct rb_root_cached *root, u32 cur_nodes,
 			      u32 req_nodes);
 
-/*
- * External user API
- */
+ 
 struct iommu_group *vfio_file_iommu_group(struct file *file);
 
 #if IS_ENABLED(CONFIG_VFIO_GROUP)
@@ -317,9 +235,7 @@ void vfio_unpin_pages(struct vfio_device *device, dma_addr_t iova, int npage);
 int vfio_dma_rw(struct vfio_device *device, dma_addr_t iova,
 		void *data, size_t len, bool write);
 
-/*
- * Sub-module helpers
- */
+ 
 struct vfio_info_cap {
 	struct vfio_info_cap_header *buf;
 	size_t size;
@@ -336,9 +252,7 @@ int vfio_set_irqs_validate_and_prepare(struct vfio_irq_set *hdr,
 				       int num_irqs, int max_irq_type,
 				       size_t *data_size);
 
-/*
- * IRQfd - generic
- */
+ 
 struct virqfd {
 	void			*opaque;
 	struct eventfd_ctx	*eventfd;
@@ -357,4 +271,4 @@ int vfio_virqfd_enable(void *opaque, int (*handler)(void *, void *),
 		       struct virqfd **pvirqfd, int fd);
 void vfio_virqfd_disable(struct virqfd **pvirqfd);
 
-#endif /* VFIO_H */
+#endif  

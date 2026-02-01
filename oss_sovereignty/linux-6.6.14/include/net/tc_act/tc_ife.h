@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __NET_TC_IFE_H
 #define __NET_TC_IFE_H
 
@@ -20,7 +20,7 @@ struct tcf_ife_params {
 struct tcf_ife_info {
 	struct tc_action common;
 	struct tcf_ife_params __rcu *params;
-	/* list of metaids allowed */
+	 
 	struct list_head metalist;
 };
 #define to_ife(a) ((struct tcf_ife_info *)a)
@@ -33,8 +33,8 @@ struct tcf_meta_info {
 };
 
 struct tcf_meta_ops {
-	u16 metaid; /*Maintainer provided ID */
-	u16 metatype; /*netlink attribute type (look at net/netlink.h) */
+	u16 metaid;  
+	u16 metatype;  
 	const char *name;
 	const char *synopsis;
 	struct list_head list;
@@ -64,4 +64,4 @@ void ife_release_meta_gen(struct tcf_meta_info *mi);
 int register_ife_op(struct tcf_meta_ops *mops);
 int unregister_ife_op(struct tcf_meta_ops *mops);
 
-#endif /* __NET_TC_IFE_H */
+#endif  

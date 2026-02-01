@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2021, Red Hat, Inc.
- *
- * Tests for Hyper-V features enablement
- */
+
+ 
 #include <asm/kvm_para.h>
 #include <linux/kvm_para.h>
 #include <stdint.h>
@@ -13,11 +9,7 @@
 #include "processor.h"
 #include "hyperv.h"
 
-/*
- * HYPERV_CPUID_ENLIGHTMENT_INFO.EBX is not a 'feature' CPUID leaf
- * but to activate the feature it is sufficient to set it to a non-zero
- * value. Use BIT(0) for that.
- */
+ 
 #define HV_PV_SPINLOCKS_TEST            \
 	KVM_X86_CPU_FEATURE(HYPERV_CPUID_ENLIGHTMENT_INFO, 0, EBX, 0)
 
@@ -69,7 +61,7 @@ static void guest_msr(struct msr_data *msr)
 			       "WRMSR(0x%x) to '0x%llx', RDMSR read '0x%llx'",
 			       msr->idx, msr->write_val, msr_val);
 
-	/* Invariant TSC bit appears when TSC invariant control MSR is written to */
+	 
 	if (msr->idx == HV_X64_MSR_TSC_INVARIANT_CONTROL) {
 		if (!this_cpu_has(HV_ACCESS_TSC_INVARIANT))
 			GUEST_ASSERT(this_cpu_has(X86_FEATURE_INVTSC));
@@ -116,10 +108,7 @@ static void guest_hcall(vm_vaddr_t pgs_gpa, struct hcall_data *hcall)
 
 static void vcpu_reset_hv_cpuid(struct kvm_vcpu *vcpu)
 {
-	/*
-	 * Enable all supported Hyper-V features, then clear the leafs holding
-	 * the features that will be tested one by one.
-	 */
+	 
 	vcpu_set_hv_cpuid(vcpu);
 
 	vcpu_clear_cpuid_entry(vcpu, HYPERV_CPUID_FEATURES);
@@ -159,15 +148,13 @@ static void guest_test_msrs_access(void)
 		vm_init_descriptor_tables(vm);
 		vcpu_init_descriptor_tables(vcpu);
 
-		/* TODO: Make this entire test easier to maintain. */
+		 
 		if (stage >= 21)
 			vcpu_enable_cap(vcpu, KVM_CAP_HYPERV_SYNIC2, 0);
 
 		switch (stage) {
 		case 0:
-			/*
-			 * Only available when Hyper-V identification is set
-			 */
+			 
 			msr->idx = HV_X64_MSR_GUEST_OS_ID;
 			msr->write = false;
 			msr->fault_expected = true;
@@ -179,10 +166,7 @@ static void guest_test_msrs_access(void)
 			break;
 		case 2:
 			vcpu_set_cpuid_feature(vcpu, HV_MSR_HYPERCALL_AVAILABLE);
-			/*
-			 * HV_X64_MSR_GUEST_OS_ID has to be written first to make
-			 * HV_X64_MSR_HYPERCALL available.
-			 */
+			 
 			msr->idx = HV_X64_MSR_GUEST_OS_ID;
 			msr->write = true;
 			msr->write_val = HYPERV_LINUX_OS_ID;
@@ -211,7 +195,7 @@ static void guest_test_msrs_access(void)
 			msr->fault_expected = false;
 			break;
 		case 7:
-			/* Read only */
+			 
 			msr->idx = HV_X64_MSR_VP_RUNTIME;
 			msr->write = true;
 			msr->write_val = 1;
@@ -230,7 +214,7 @@ static void guest_test_msrs_access(void)
 			msr->fault_expected = false;
 			break;
 		case 10:
-			/* Read only */
+			 
 			msr->idx = HV_X64_MSR_TIME_REF_COUNT;
 			msr->write = true;
 			msr->write_val = 1;
@@ -249,7 +233,7 @@ static void guest_test_msrs_access(void)
 			msr->fault_expected = false;
 			break;
 		case 13:
-			/* Read only */
+			 
 			msr->idx = HV_X64_MSR_VP_INDEX;
 			msr->write = true;
 			msr->write_val = 1;
@@ -270,12 +254,7 @@ static void guest_test_msrs_access(void)
 		case 16:
 			msr->idx = HV_X64_MSR_RESET;
 			msr->write = true;
-			/*
-			 * TODO: the test only writes '0' to HV_X64_MSR_RESET
-			 * at the moment, writing some other value there will
-			 * trigger real vCPU reset and the code is not prepared
-			 * to handle it yet.
-			 */
+			 
 			msr->write_val = 0;
 			msr->fault_expected = false;
 			break;
@@ -304,10 +283,7 @@ static void guest_test_msrs_access(void)
 			msr->fault_expected = true;
 			break;
 		case 21:
-			/*
-			 * Remains unavailable even with KVM_CAP_HYPERV_SYNIC2
-			 * capability enabled and guest visible CPUID bit unset.
-			 */
+			 
 			msr->idx = HV_X64_MSR_EOM;
 			msr->write = false;
 			msr->fault_expected = true;
@@ -343,7 +319,7 @@ static void guest_test_msrs_access(void)
 			msr->fault_expected = false;
 			break;
 		case 27:
-			/* Direct mode test */
+			 
 			msr->idx = HV_X64_MSR_STIMER0_CONFIG;
 			msr->write = true;
 			msr->write_val = 1 << 12;
@@ -382,7 +358,7 @@ static void guest_test_msrs_access(void)
 			msr->fault_expected = false;
 			break;
 		case 33:
-			/* Read only */
+			 
 			msr->idx = HV_X64_MSR_TSC_FREQUENCY;
 			msr->write = true;
 			msr->write_val = 1;
@@ -407,7 +383,7 @@ static void guest_test_msrs_access(void)
 			msr->fault_expected = false;
 			break;
 		case 37:
-			/* Can only write '0' */
+			 
 			msr->idx = HV_X64_MSR_TSC_EMULATION_STATUS;
 			msr->write = true;
 			msr->write_val = 1;
@@ -452,7 +428,7 @@ static void guest_test_msrs_access(void)
 			break;
 
 		case 44:
-			/* MSR is not available when CPUID feature bit is unset */
+			 
 			if (!has_invtsc)
 				continue;
 			msr->idx = HV_X64_MSR_TSC_INVARIANT_CONTROL;
@@ -460,7 +436,7 @@ static void guest_test_msrs_access(void)
 			msr->fault_expected = true;
 			break;
 		case 45:
-			/* MSR is vailable when CPUID feature bit is set */
+			 
 			if (!has_invtsc)
 				continue;
 			vcpu_set_cpuid_feature(vcpu, HV_ACCESS_TSC_INVARIANT);
@@ -469,7 +445,7 @@ static void guest_test_msrs_access(void)
 			msr->fault_expected = false;
 			break;
 		case 46:
-			/* Writing bits other than 0 is forbidden */
+			 
 			if (!has_invtsc)
 				continue;
 			msr->idx = HV_X64_MSR_TSC_INVARIANT_CONTROL;
@@ -478,7 +454,7 @@ static void guest_test_msrs_access(void)
 			msr->fault_expected = true;
 			break;
 		case 47:
-			/* Setting bit 0 enables the feature */
+			 
 			if (!has_invtsc)
 				continue;
 			msr->idx = HV_X64_MSR_TSC_INVARIANT_CONTROL;
@@ -534,7 +510,7 @@ static void guest_test_hcalls_access(void)
 		vm_init_descriptor_tables(vm);
 		vcpu_init_descriptor_tables(vcpu);
 
-		/* Hypercall input/output */
+		 
 		hcall_page = vm_vaddr_alloc_pages(vm, 2);
 		memset(addr_gva2hva(vm, hcall_page), 0x0, 2 * getpagesize());
 
@@ -624,7 +600,7 @@ static void guest_test_hcalls_access(void)
 			hcall->expect = HV_STATUS_INVALID_HYPERCALL_INPUT;
 			break;
 		case 14:
-			/* Nothing in 'sparse banks' -> success */
+			 
 			hcall->control = HVCALL_SEND_IPI_EX;
 			hcall->expect = HV_STATUS_SUCCESS;
 			break;
@@ -639,7 +615,7 @@ static void guest_test_hcalls_access(void)
 			hcall->expect = HV_STATUS_SUCCESS;
 			break;
 		case 17:
-			/* XMM fast hypercall */
+			 
 			hcall->control = HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE | HV_HYPERCALL_FAST_BIT;
 			hcall->ud_expected = true;
 			break;

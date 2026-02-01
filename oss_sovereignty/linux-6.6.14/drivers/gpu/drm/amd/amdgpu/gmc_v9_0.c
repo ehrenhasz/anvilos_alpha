@@ -1,25 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/firmware.h>
 #include <linux/pci.h>
@@ -66,7 +45,7 @@
 
 #include "amdgpu_reset.h"
 
-/* add these here since we already include dce12 headers and these are for DCN */
+ 
 #define mmHUBP0_DCSURF_PRI_VIEWPORT_DIMENSION                                                          0x055d
 #define mmHUBP0_DCSURF_PRI_VIEWPORT_DIMENSION_BASE_IDX                                                 2
 #define HUBP0_DCSURF_PRI_VIEWPORT_DIMENSION__PRI_VIEWPORT_WIDTH__SHIFT                                        0x0
@@ -419,9 +398,7 @@ static int gmc_v9_0_ecc_interrupt_state(struct amdgpu_device *adev,
 {
 	u32 bits, i, tmp, reg;
 
-	/* Devices newer then VEGA10/12 shall have these programming
-	 * sequences performed by PSP BL
-	 */
+	 
 	if (adev->asic_type >= CHIP_VEGA20)
 		return 0;
 
@@ -486,11 +463,7 @@ static int gmc_v9_0_vm_fault_interrupt_state(struct amdgpu_device *adev,
 			for (i = 0; i < 16; i++) {
 				reg = hub->vm_context0_cntl + i;
 
-				/* This works because this interrupt is only
-				 * enabled at init/resume and disabled in
-				 * fini/suspend, so the overall state doesn't
-				 * change over the course of suspend/resume.
-				 */
+				 
 				if (adev->in_s0ix && (j == AMDGPU_GFXHUB(0)))
 					continue;
 
@@ -514,11 +487,7 @@ static int gmc_v9_0_vm_fault_interrupt_state(struct amdgpu_device *adev,
 			for (i = 0; i < 16; i++) {
 				reg = hub->vm_context0_cntl + i;
 
-				/* This works because this interrupt is only
-				 * enabled at init/resume and disabled in
-				 * fini/suspend, so the overall state doesn't
-				 * change over the course of suspend/resume.
-				 */
+				 
 				if (adev->in_s0ix && (j == AMDGPU_GFXHUB(0)))
 					continue;
 
@@ -583,9 +552,7 @@ static int gmc_v9_0_process_interrupt(struct amdgpu_device *adev,
 
 	if (retry_fault) {
 		if (adev->irq.retry_cam_enabled) {
-			/* Delegate it to a different ring if the hardware hasn't
-			 * already done it.
-			 */
+			 
 			if (entry->ih == &adev->irq.ih) {
 				amdgpu_irq_delegate(adev, entry, 8);
 				return 1;
@@ -599,23 +566,19 @@ static int gmc_v9_0_process_interrupt(struct amdgpu_device *adev,
 			if (ret)
 				return 1;
 		} else {
-			/* Process it onyl if it's the first fault for this address */
+			 
 			if (entry->ih != &adev->irq.ih_soft &&
 			    amdgpu_gmc_filter_faults(adev, entry->ih, addr, entry->pasid,
 					     entry->timestamp))
 				return 1;
 
-			/* Delegate it to a different ring if the hardware hasn't
-			 * already done it.
-			 */
+			 
 			if (entry->ih == &adev->irq.ih) {
 				amdgpu_irq_delegate(adev, entry, 8);
 				return 1;
 			}
 
-			/* Try to handle the recoverable page faults by filling page
-			 * tables
-			 */
+			 
 			if (amdgpu_vm_handle_fault(adev, entry->pasid, entry->vmid, node_id,
 						   addr, write_fault))
 				return 1;
@@ -647,11 +610,7 @@ static int gmc_v9_0_process_interrupt(struct amdgpu_device *adev,
 	if (amdgpu_sriov_vf(adev))
 		return 0;
 
-	/*
-	 * Issue a dummy read to wait for the status register to
-	 * be updated to avoid reading an incorrect value due to
-	 * the new fast GRBM interface.
-	 */
+	 
 	if ((entry->vmid_src == AMDGPU_GFXHUB(0)) &&
 	    (adev->ip_versions[GC_HWIP][0] < IP_VERSION(9, 4, 2)))
 		RREG32(hub->vm_l2_pro_fault_status);
@@ -760,13 +719,7 @@ static uint32_t gmc_v9_0_get_invalidate_req(unsigned int vmid,
 	return req;
 }
 
-/**
- * gmc_v9_0_use_invalidate_semaphore - judge whether to use semaphore
- *
- * @adev: amdgpu_device pointer
- * @vmhub: vmhub type
- *
- */
+ 
 static bool gmc_v9_0_use_invalidate_semaphore(struct amdgpu_device *adev,
 				       uint32_t vmhub)
 {
@@ -793,23 +746,9 @@ static bool gmc_v9_0_get_atc_vmid_pasid_mapping_info(struct amdgpu_device *adev,
 	return !!(value & ATC_VMID0_PASID_MAPPING__VALID_MASK);
 }
 
-/*
- * GART
- * VMID 0 is the physical GPU addresses as used by the kernel.
- * VMIDs 1-15 are used for userspace clients and are handled
- * by the amdgpu vm/hsa code.
- */
+ 
 
-/**
- * gmc_v9_0_flush_gpu_tlb - tlb flush with certain type
- *
- * @adev: amdgpu_device pointer
- * @vmid: vm instance to flush
- * @vmhub: which hub to flush
- * @flush_type: the flush type
- *
- * Flush the TLB for the requested page table using certain type.
- */
+ 
 static void gmc_v9_0_flush_gpu_tlb(struct amdgpu_device *adev, uint32_t vmid,
 					uint32_t vmhub, uint32_t flush_type)
 {
@@ -823,12 +762,7 @@ static void gmc_v9_0_flush_gpu_tlb(struct amdgpu_device *adev, uint32_t vmid,
 	hub = &adev->vmhub[vmhub];
 	if (adev->gmc.xgmi.num_physical_nodes &&
 	    adev->ip_versions[GC_HWIP][0] == IP_VERSION(9, 4, 0)) {
-		/* Vega20+XGMI caches PTEs in TC and TLB. Add a
-		 * heavy-weight TLB flush (type 2), which flushes
-		 * both. Due to a race condition with concurrent
-		 * memory accesses using the same TLB cache line, we
-		 * still need a second TLB flush after this.
-		 */
+		 
 		inv_req = gmc_v9_0_get_invalidate_req(vmid, 2);
 		inv_req2 = gmc_v9_0_get_invalidate_req(vmid, flush_type);
 	} else if (flush_type == 2 &&
@@ -841,9 +775,7 @@ static void gmc_v9_0_flush_gpu_tlb(struct amdgpu_device *adev, uint32_t vmid,
 		inv_req2 = 0;
 	}
 
-	/* This is necessary for a HW workaround under SRIOV as well
-	 * as GFXOFF under bare metal
-	 */
+	 
 	if (adev->gfx.kiq[0].ring.sched.ready &&
 	    (amdgpu_sriov_runtime(adev) || !amdgpu_sriov_vf(adev)) &&
 	    down_read_trylock(&adev->reset_domain->sem)) {
@@ -858,17 +790,12 @@ static void gmc_v9_0_flush_gpu_tlb(struct amdgpu_device *adev, uint32_t vmid,
 
 	spin_lock(&adev->gmc.invalidate_lock);
 
-	/*
-	 * It may lose gpuvm invalidate acknowldege state across power-gating
-	 * off cycle, add semaphore acquire before invalidation and semaphore
-	 * release after invalidation to avoid entering power gated state
-	 * to WA the Issue
-	 */
+	 
 
-	/* TODO: It needs to continue working on debugging with semaphore for GFXHUB as well. */
+	 
 	if (use_semaphore) {
 		for (j = 0; j < adev->usec_timeout; j++) {
-			/* a read return value of 1 means semaphore acquire */
+			 
 			if (vmhub >= AMDGPU_MMHUB0(0))
 				tmp = RREG32_SOC15_IP_NO_KIQ(MMHUB, hub->vm_inv_eng0_sem + hub->eng_distance * eng);
 			else
@@ -888,11 +815,7 @@ static void gmc_v9_0_flush_gpu_tlb(struct amdgpu_device *adev, uint32_t vmid,
 		else
 			WREG32_SOC15_IP_NO_KIQ(GC, hub->vm_inv_eng0_req + hub->eng_distance * eng, inv_req);
 
-		/*
-		 * Issue a dummy read to wait for the ACK register to
-		 * be cleared to avoid a false ACK due to the new fast
-		 * GRBM interface.
-		 */
+		 
 		if ((vmhub == AMDGPU_GFXHUB(0)) &&
 		    (adev->ip_versions[GC_HWIP][0] < IP_VERSION(9, 4, 2)))
 			RREG32_NO_KIQ(hub->vm_inv_eng0_req +
@@ -912,12 +835,9 @@ static void gmc_v9_0_flush_gpu_tlb(struct amdgpu_device *adev, uint32_t vmid,
 		inv_req2 = 0;
 	} while (inv_req);
 
-	/* TODO: It needs to continue working on debugging with semaphore for GFXHUB as well. */
+	 
 	if (use_semaphore) {
-		/*
-		 * add semaphore release after invalidation,
-		 * write with 0 means semaphore release
-		 */
+		 
 		if (vmhub >= AMDGPU_MMHUB0(0))
 			WREG32_SOC15_IP_NO_KIQ(MMHUB, hub->vm_inv_eng0_sem + hub->eng_distance * eng, 0);
 		else
@@ -932,17 +852,7 @@ static void gmc_v9_0_flush_gpu_tlb(struct amdgpu_device *adev, uint32_t vmid,
 	DRM_ERROR("Timeout waiting for VM flush ACK!\n");
 }
 
-/**
- * gmc_v9_0_flush_gpu_tlb_pasid - tlb flush via pasid
- *
- * @adev: amdgpu_device pointer
- * @pasid: pasid to be flush
- * @flush_type: the flush type
- * @all_hub: flush all hubs
- * @inst: is used to select which instance of KIQ to use for the invalidation
- *
- * Flush the TLB for the requested pasid.
- */
+ 
 static int gmc_v9_0_flush_gpu_tlb_pasid(struct amdgpu_device *adev,
 					uint16_t pasid, uint32_t flush_type,
 					bool all_hub, uint32_t inst)
@@ -960,22 +870,17 @@ static int gmc_v9_0_flush_gpu_tlb_pasid(struct amdgpu_device *adev,
 		return -EIO;
 
 	if (ring->sched.ready && down_read_trylock(&adev->reset_domain->sem)) {
-		/* Vega20+XGMI caches PTEs in TC and TLB. Add a
-		 * heavy-weight TLB flush (type 2), which flushes
-		 * both. Due to a race condition with concurrent
-		 * memory accesses using the same TLB cache line, we
-		 * still need a second TLB flush after this.
-		 */
+		 
 		bool vega20_xgmi_wa = (adev->gmc.xgmi.num_physical_nodes &&
 				       adev->ip_versions[GC_HWIP][0] == IP_VERSION(9, 4, 0));
-		/* 2 dwords flush + 8 dwords fence */
+		 
 		unsigned int ndw = kiq->pmf->invalidate_tlbs_size + 8;
 
 		if (vega20_xgmi_wa)
 			ndw += kiq->pmf->invalidate_tlbs_size;
 
 		spin_lock(&adev->gfx.kiq[inst].ring_lock);
-		/* 2 dwords flush + 8 dwords fence */
+		 
 		amdgpu_ring_alloc(ring, ndw);
 		if (vega20_xgmi_wa)
 			kiq->pmf->kiq_invalidate_tlbs(ring,
@@ -1039,16 +944,11 @@ static uint64_t gmc_v9_0_emit_flush_gpu_tlb(struct amdgpu_ring *ring,
 	uint32_t req = gmc_v9_0_get_invalidate_req(vmid, 0);
 	unsigned int eng = ring->vm_inv_eng;
 
-	/*
-	 * It may lose gpuvm invalidate acknowldege state across power-gating
-	 * off cycle, add semaphore acquire before invalidation and semaphore
-	 * release after invalidation to avoid entering power gated state
-	 * to WA the Issue
-	 */
+	 
 
-	/* TODO: It needs to continue working on debugging with semaphore for GFXHUB as well. */
+	 
 	if (use_semaphore)
-		/* a read return value of 1 means semaphore acuqire */
+		 
 		amdgpu_ring_emit_reg_wait(ring,
 					  hub->vm_inv_eng0_sem +
 					  hub->eng_distance * eng, 0x1, 0x1);
@@ -1067,12 +967,9 @@ static uint64_t gmc_v9_0_emit_flush_gpu_tlb(struct amdgpu_ring *ring,
 					    hub->eng_distance * eng,
 					    req, 1 << vmid);
 
-	/* TODO: It needs to continue working on debugging with semaphore for GFXHUB as well. */
+	 
 	if (use_semaphore)
-		/*
-		 * add semaphore release after invalidation,
-		 * write with 0 means semaphore release
-		 */
+		 
 		amdgpu_ring_emit_wreg(ring, hub->vm_inv_eng0_sem +
 				      hub->eng_distance * eng, 0);
 
@@ -1085,7 +982,7 @@ static void gmc_v9_0_emit_pasid_mapping(struct amdgpu_ring *ring, unsigned int v
 	struct amdgpu_device *adev = ring->adev;
 	uint32_t reg;
 
-	/* Do nothing because there's no lut register for mmhub1. */
+	 
 	if (ring->vm_hub == AMDGPU_MMHUB1(0))
 		return;
 
@@ -1097,37 +994,7 @@ static void gmc_v9_0_emit_pasid_mapping(struct amdgpu_ring *ring, unsigned int v
 	amdgpu_ring_emit_wreg(ring, reg, pasid);
 }
 
-/*
- * PTE format on VEGA 10:
- * 63:59 reserved
- * 58:57 mtype
- * 56 F
- * 55 L
- * 54 P
- * 53 SW
- * 52 T
- * 50:48 reserved
- * 47:12 4k physical page base address
- * 11:7 fragment
- * 6 write
- * 5 read
- * 4 exe
- * 3 Z
- * 2 snooped
- * 1 system
- * 0 valid
- *
- * PDE format on VEGA 10:
- * 63:59 block fragment size
- * 58:55 reserved
- * 54 P
- * 53:48 reserved
- * 47:6 physical base address of PD or PTE
- * 5:3 reserved
- * 2 C
- * 1 system
- * 0 valid
- */
+ 
 
 static uint64_t gmc_v9_0_map_mtype(struct amdgpu_device *adev, uint32_t flags)
 
@@ -1161,7 +1028,7 @@ static void gmc_v9_0_get_vm_pde(struct amdgpu_device *adev, int level,
 		return;
 
 	if (level == AMDGPU_VM_PDB1) {
-		/* Set the block fragment size */
+		 
 		if (!(*flags & AMDGPU_PDE_PTE))
 			*flags |= AMDGPU_PDE_BFS(0x9);
 
@@ -1201,9 +1068,7 @@ static void gmc_v9_0_get_coherence_flags(struct amdgpu_device *adev,
 					mtype = MTYPE_CC;
 				else
 					mtype = MTYPE_RW;
-				/* FIXME: is this still needed? Or does
-				 * amdgpu_ttm_tt_pde_flags already handle this?
-				 */
+				 
 				if ((adev->ip_versions[GC_HWIP][0] == IP_VERSION(9, 4, 2) ||
 				     adev->ip_versions[GC_HWIP][0] == IP_VERSION(9, 4, 3)) &&
 				    adev->gmc.xgmi.connected_to_cpu)
@@ -1221,19 +1086,12 @@ static void gmc_v9_0_get_coherence_flags(struct amdgpu_device *adev,
 				mtype = MTYPE_UC;
 			else
 				mtype = MTYPE_NC;
-			/* FIXME: is this still needed? Or does
-			 * amdgpu_ttm_tt_pde_flags already handle this?
-			 */
+			 
 			snoop = true;
 		}
 		break;
 	case IP_VERSION(9, 4, 3):
-		/* Only local VRAM BOs or system memory on non-NUMA APUs
-		 * can be assumed to be local in their entirety. Choose
-		 * MTYPE_NC as safe fallback for all system memory BOs on
-		 * NUMA systems. Their MTYPE can be overridden per-page in
-		 * gmc_v9_0_override_vm_pte_flags.
-		 */
+		 
 		mtype_local = MTYPE_RW;
 		if (amdgpu_mtype_local == 1) {
 			DRM_INFO_ONCE("Using MTYPE_NC for local memory\n");
@@ -1254,7 +1112,7 @@ static void gmc_v9_0_get_coherence_flags(struct amdgpu_device *adev,
 		} else if (adev->flags & AMD_IS_APU) {
 			mtype = is_local ? mtype_local : MTYPE_NC;
 		} else {
-			/* dGPU */
+			 
 			if (is_local)
 				mtype = mtype_local;
 			else if (is_vram)
@@ -1270,9 +1128,7 @@ static void gmc_v9_0_get_coherence_flags(struct amdgpu_device *adev,
 		else
 			mtype = MTYPE_NC;
 
-		/* FIXME: is this still needed? Or does
-		 * amdgpu_ttm_tt_pde_flags already handle this?
-		 */
+		 
 		if (!is_vram)
 			snoop = true;
 	}
@@ -1311,33 +1167,24 @@ static void gmc_v9_0_override_vm_pte_flags(struct amdgpu_device *adev,
 {
 	int local_node, nid;
 
-	/* Only GFX 9.4.3 APUs associate GPUs with NUMA nodes. Local system
-	 * memory can use more efficient MTYPEs.
-	 */
+	 
 	if (adev->ip_versions[GC_HWIP][0] != IP_VERSION(9, 4, 3))
 		return;
 
-	/* Only direct-mapped memory allows us to determine the NUMA node from
-	 * the DMA address.
-	 */
+	 
 	if (!adev->ram_is_direct_mapped) {
 		dev_dbg(adev->dev, "RAM is not direct mapped\n");
 		return;
 	}
 
-	/* Only override mappings with MTYPE_NC, which is the safe default for
-	 * cacheable memory.
-	 */
+	 
 	if ((*flags & AMDGPU_PTE_MTYPE_VG10_MASK) !=
 	    AMDGPU_PTE_MTYPE_VG10(MTYPE_NC)) {
 		dev_dbg(adev->dev, "MTYPE is not NC\n");
 		return;
 	}
 
-	/* FIXME: Only supported on native mode for now. For carve-out, the
-	 * NUMA affinity of the GPU/VM needs to come from the PCI info because
-	 * memory partitions are not associated with different NUMA nodes.
-	 */
+	 
 	if (adev->gmc.is_app_apu && vm->mem_id >= 0) {
 		local_node = adev->gmc.mem_partitions[vm->mem_id].numa.node;
 	} else {
@@ -1345,9 +1192,7 @@ static void gmc_v9_0_override_vm_pte_flags(struct amdgpu_device *adev,
 		return;
 	}
 
-	/* Only handle real RAM. Mappings of PCIe resources don't have struct
-	 * page or NUMA nodes.
-	 */
+	 
 	if (!page_is_ram(addr >> PAGE_SHIFT)) {
 		dev_dbg(adev->dev, "Page is not RAM.\n");
 		return;
@@ -1376,7 +1221,7 @@ static unsigned int gmc_v9_0_get_vbios_fb_size(struct amdgpu_device *adev)
 	u32 d1vga_control = RREG32_SOC15(DCE, 0, mmD1VGA_CONTROL);
 	unsigned int size;
 
-	/* TODO move to DC so GMC doesn't need to hard-code DCN registers */
+	 
 
 	if (REG_GET_FIELD(d1vga_control, D1VGA_CONTROL, D1VGA_MODE_ENABLE)) {
 		size = AMDGPU_VBIOS_VGA_ALLOCATION;
@@ -1529,7 +1374,7 @@ static void gmc_v9_0_set_mmhub_ras_funcs(struct amdgpu_device *adev)
 		adev->mmhub.ras = &mmhub_v1_8_ras;
 		break;
 	default:
-		/* mmhub ras is not available */
+		 
 		break;
 	}
 }
@@ -1551,7 +1396,7 @@ static void gmc_v9_0_set_mca_ras_funcs(struct amdgpu_device *adev)
 {
 	struct amdgpu_mca *mca = &adev->mca;
 
-	/* is UMC the right IP to check for MCA?  Maybe DF? */
+	 
 	switch (adev->ip_versions[UMC_HWIP][0]) {
 	case IP_VERSION(6, 7, 0):
 		if (!adev->gmc.xgmi.connected_to_cpu) {
@@ -1575,10 +1420,7 @@ static int gmc_v9_0_early_init(void *handle)
 {
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
-	/*
-	 * 9.4.0, 9.4.1 and 9.4.3 don't have XGMI defined
-	 * in their IP discovery tables
-	 */
+	 
 	if (adev->ip_versions[GC_HWIP][0] == IP_VERSION(9, 4, 0) ||
 	    adev->ip_versions[GC_HWIP][0] == IP_VERSION(9, 4, 1) ||
 	    adev->ip_versions[GC_HWIP][0] == IP_VERSION(9, 4, 3))
@@ -1593,13 +1435,7 @@ static int gmc_v9_0_early_init(void *handle)
 	if (adev->ip_versions[GC_HWIP][0] == IP_VERSION(9, 4, 3)) {
 		enum amdgpu_pkg_type pkg_type =
 			adev->smuio.funcs->get_pkg_type(adev);
-		/* On GFXIP 9.4.3. APU, there is no physical VRAM domain present
-		 * and the APU, can be in used two possible modes:
-		 *  - carveout mode
-		 *  - native APU mode
-		 * "is_app_apu" can be used to identify the APU in the native
-		 * mode.
-		 */
+		 
 		adev->gmc.is_app_apu = (pkg_type == AMDGPU_PKG_TYPE_APU &&
 					!pci_resource_len(adev->pdev, 0));
 	}
@@ -1634,10 +1470,7 @@ static int gmc_v9_0_late_init(void *handle)
 	if (r)
 		return r;
 
-	/*
-	 * Workaround performance drop issue with VBIOS enables partial
-	 * writes, while disables HBM ECC for vega10.
-	 */
+	 
 	if (!amdgpu_sriov_vf(adev) &&
 	    (adev->ip_versions[UMC_HWIP][0] == IP_VERSION(6, 0, 0))) {
 		if (!(adev->ras_enabled & (1 << AMDGPU_RAS_BLOCK__UMC))) {
@@ -1669,7 +1502,7 @@ static void gmc_v9_0_vram_gtt_location(struct amdgpu_device *adev,
 {
 	u64 base = adev->mmhub.funcs->get_fb_location(adev);
 
-	/* add the xgmi offset of the physical node */
+	 
 	base += adev->gmc.xgmi.physical_node_id * adev->gmc.xgmi.node_segment_size;
 	if (adev->gmc.xgmi.connected_to_cpu) {
 		amdgpu_gmc_sysvm_location(adev, mc);
@@ -1678,28 +1511,20 @@ static void gmc_v9_0_vram_gtt_location(struct amdgpu_device *adev,
 		amdgpu_gmc_gart_location(adev, mc);
 		amdgpu_gmc_agp_location(adev, mc);
 	}
-	/* base offset of vram pages */
+	 
 	adev->vm_manager.vram_base_offset = adev->gfxhub.funcs->get_mc_fb_offset(adev);
 
-	/* XXX: add the xgmi offset of the physical node? */
+	 
 	adev->vm_manager.vram_base_offset +=
 		adev->gmc.xgmi.physical_node_id * adev->gmc.xgmi.node_segment_size;
 }
 
-/**
- * gmc_v9_0_mc_init - initialize the memory controller driver params
- *
- * @adev: amdgpu_device pointer
- *
- * Look up the amount of vram, vram width, and decide how to place
- * vram and gart within the GPU's physical address space.
- * Returns 0 for success.
- */
+ 
 static int gmc_v9_0_mc_init(struct amdgpu_device *adev)
 {
 	int r;
 
-	/* size in MB on si */
+	 
 	if (!adev->gmc.is_app_apu) {
 		adev->gmc.mc_vram_size =
 			adev->nbio.funcs->get_memsize(adev) * 1024ULL * 1024ULL;
@@ -1719,18 +1544,9 @@ static int gmc_v9_0_mc_init(struct amdgpu_device *adev)
 	adev->gmc.aper_size = pci_resource_len(adev->pdev, 0);
 
 #ifdef CONFIG_X86_64
-	/*
-	 * AMD Accelerated Processing Platform (APP) supporting GPU-HOST xgmi
-	 * interface can use VRAM through here as it appears system reserved
-	 * memory in host address space.
-	 *
-	 * For APUs, VRAM is just the stolen system memory and can be accessed
-	 * directly.
-	 *
-	 * Otherwise, use the legacy Host Data Path (HDP) through PCIe BAR.
-	 */
+	 
 
-	/* check whether both host-gpu and gpu-gpu xgmi links exist */
+	 
 	if ((!amdgpu_sriov_vf(adev) &&
 		(adev->flags & AMD_IS_APU) && !amdgpu_passthrough(adev)) ||
 	    (adev->gmc.xgmi.supported &&
@@ -1745,11 +1561,11 @@ static int gmc_v9_0_mc_init(struct amdgpu_device *adev)
 #endif
 	adev->gmc.visible_vram_size = adev->gmc.aper_size;
 
-	/* set the gart size */
+	 
 	if (amdgpu_gart_size == -1) {
 		switch (adev->ip_versions[GC_HWIP][0]) {
-		case IP_VERSION(9, 0, 1):  /* all engines support GPUVM */
-		case IP_VERSION(9, 2, 1):  /* all engines support GPUVM */
+		case IP_VERSION(9, 0, 1):   
+		case IP_VERSION(9, 2, 1):   
 		case IP_VERSION(9, 4, 0):
 		case IP_VERSION(9, 4, 1):
 		case IP_VERSION(9, 4, 2):
@@ -1757,8 +1573,8 @@ static int gmc_v9_0_mc_init(struct amdgpu_device *adev)
 		default:
 			adev->gmc.gart_size = 512ULL << 20;
 			break;
-		case IP_VERSION(9, 1, 0):   /* DCE SG support */
-		case IP_VERSION(9, 2, 2):   /* DCE SG support */
+		case IP_VERSION(9, 1, 0):    
+		case IP_VERSION(9, 2, 2):    
 		case IP_VERSION(9, 3, 0):
 			adev->gmc.gart_size = 1024ULL << 20;
 			break;
@@ -1791,7 +1607,7 @@ static int gmc_v9_0_gart_init(struct amdgpu_device *adev)
 		adev->gmc.vmid0_page_table_block_size = 0;
 	}
 
-	/* Initialize common gart structure */
+	 
 	r = amdgpu_gart_init(adev);
 	if (r)
 		return r;
@@ -1816,14 +1632,7 @@ static int gmc_v9_0_gart_init(struct amdgpu_device *adev)
 	return r;
 }
 
-/**
- * gmc_v9_0_save_registers - saves regs
- *
- * @adev: amdgpu_device pointer
- *
- * This saves potential register values that should be
- * restored upon resume
- */
+ 
 static void gmc_v9_0_save_registers(struct amdgpu_device *adev)
 {
 	if ((adev->ip_versions[DCE_HWIP][0] == IP_VERSION(1, 0, 0)) ||
@@ -1839,7 +1648,7 @@ static bool gmc_v9_0_validate_partition_info(struct amdgpu_device *adev)
 
 	mode = gmc_v9_0_get_memory_partition(adev, &supp_modes);
 
-	/* Mode detected by hardware not present in supported modes */
+	 
 	if ((mode != UNKNOWN_MEMORY_PARTITION_MODE) &&
 	    !(BIT(mode - 1) & supp_modes))
 		return false;
@@ -1867,7 +1676,7 @@ static bool gmc_v9_0_is_node_present(int *node_ids, int num_ids, int nid)
 {
 	int i;
 
-	/* Check if node with id 'nid' is present in 'node_ids' array */
+	 
 	for (i = 0; i < num_ids; ++i)
 		if (node_ids[i] == nid)
 			return true;
@@ -1913,7 +1722,7 @@ gmc_v9_0_init_acpi_mem_ranges(struct amdgpu_device *adev,
 
 	adev->gmc.num_mem_partitions = num_ranges;
 
-	/* If there is only partition, don't use entire size */
+	 
 	if (adev->gmc.num_mem_partitions == 1) {
 		mem_ranges[0].size = mem_ranges[0].size * (mem_groups - 1);
 		do_div(mem_ranges[0].size, mem_groups);
@@ -1959,7 +1768,7 @@ gmc_v9_0_init_sw_mem_ranges(struct amdgpu_device *adev,
 		start_addr += size;
 	}
 
-	/* Adjust the last one */
+	 
 	mem_ranges[adev->gmc.num_mem_partitions - 1].range.lpfn =
 		(adev->gmc.real_vram_size >> AMDGPU_GPU_PAGE_SHIFT) - 1;
 	mem_ranges[adev->gmc.num_mem_partitions - 1].size =
@@ -1979,7 +1788,7 @@ static int gmc_v9_0_init_mem_ranges(struct amdgpu_device *adev)
 	if (!adev->gmc.mem_partitions)
 		return -ENOMEM;
 
-	/* TODO : Get the range from PSP/Discovery for dGPU */
+	 
 	if (adev->gmc.is_app_apu)
 		gmc_v9_0_init_acpi_mem_ranges(adev, adev->gmc.mem_partitions);
 	else
@@ -1990,7 +1799,7 @@ static int gmc_v9_0_init_mem_ranges(struct amdgpu_device *adev)
 	else
 		valid = gmc_v9_0_validate_partition_info(adev);
 	if (!valid) {
-		/* TODO: handle invalid case */
+		 
 		dev_WARN(adev->dev,
 			 "Mem ranges not matching with hardware config");
 	}
@@ -2037,10 +1846,7 @@ static int gmc_v9_0_sw_init(void *handle)
 		r = amdgpu_atomfirmware_get_vram_info(adev,
 			&vram_width, &vram_type, &vram_vendor);
 		if (amdgpu_sriov_vf(adev))
-			/* For Vega10 SR-IOV, vram_width can't be read from ATOM as RAVEN,
-			 * and DF related registers is not readable, seems hardcord is the
-			 * only way to set the correct vram_width
-			 */
+			 
 			adev->gmc.vram_width = 2048;
 		else if (amdgpu_emu_mode != 1)
 			adev->gmc.vram_width = vram_width;
@@ -2048,7 +1854,7 @@ static int gmc_v9_0_sw_init(void *handle)
 		if (!adev->gmc.vram_width) {
 			int chansize, numchan;
 
-			/* hbm memory channel size */
+			 
 			if (adev->flags & AMD_IS_APU)
 				chansize = 64;
 			else
@@ -2072,7 +1878,7 @@ static int gmc_v9_0_sw_init(void *handle)
 		if (adev->rev_id == 0x0 || adev->rev_id == 0x1) {
 			amdgpu_vm_adjust_size(adev, 256 * 1024, 9, 3, 48);
 		} else {
-			/* vm_size is 128TB + 512GB for legacy 3-level page support */
+			 
 			amdgpu_vm_adjust_size(adev, 128 * 1024 + 512, 9, 2, 48);
 			adev->gmc.translate_further =
 				adev->vm_manager.num_level > 1;
@@ -2086,12 +1892,8 @@ static int gmc_v9_0_sw_init(void *handle)
 		set_bit(AMDGPU_GFXHUB(0), adev->vmhubs_mask);
 		set_bit(AMDGPU_MMHUB0(0), adev->vmhubs_mask);
 
-		/*
-		 * To fulfill 4-level page support,
-		 * vm size is 256TB (48bit), maximum size of Vega10,
-		 * block size 512 (9bit)
-		 */
-		/* sriov restrict max_pfn below AMDGPU_GMC_HOLE */
+		 
+		 
 		if (amdgpu_sriov_vf(adev))
 			amdgpu_vm_adjust_size(adev, 256 * 1024, 9, 3, 47);
 		else
@@ -2104,7 +1906,7 @@ static int gmc_v9_0_sw_init(void *handle)
 		set_bit(AMDGPU_MMHUB0(0), adev->vmhubs_mask);
 		set_bit(AMDGPU_MMHUB1(0), adev->vmhubs_mask);
 
-		/* Keep the vm size same with Vega20 */
+		 
 		amdgpu_vm_adjust_size(adev, 256 * 1024, 9, 3, 48);
 		adev->gmc.translate_further = adev->vm_manager.num_level > 1;
 		break;
@@ -2122,7 +1924,7 @@ static int gmc_v9_0_sw_init(void *handle)
 		break;
 	}
 
-	/* This interrupt is VMC page fault.*/
+	 
 	r = amdgpu_irq_add_id(adev, SOC15_IH_CLIENTID_VMC, VMC_1_0__SRCID__VM_FAULT,
 				&adev->gmc.vm_fault);
 	if (r)
@@ -2143,18 +1945,15 @@ static int gmc_v9_0_sw_init(void *handle)
 
 	if (!amdgpu_sriov_vf(adev) &&
 	    !adev->gmc.xgmi.connected_to_cpu) {
-		/* interrupt sent to DF. */
+		 
 		r = amdgpu_irq_add_id(adev, SOC15_IH_CLIENTID_DF, 0,
 				      &adev->gmc.ecc_irq);
 		if (r)
 			return r;
 	}
 
-	/* Set the internal MC address mask
-	 * This is the max address of the GPU's
-	 * internal address space.
-	 */
-	adev->gmc.mc_mask = 0xffffffffffffULL; /* 48 bit MC */
+	 
+	adev->gmc.mc_mask = 0xffffffffffffULL;  
 
 	dma_addr_bits = adev->ip_versions[GC_HWIP][0] >= IP_VERSION(9, 4, 2) ? 48:44;
 	r = dma_set_mask_and_coherent(adev->dev, DMA_BIT_MASK(dma_addr_bits));
@@ -2176,7 +1975,7 @@ static int gmc_v9_0_sw_init(void *handle)
 			return r;
 	}
 
-	/* Memory manager */
+	 
 	r = amdgpu_bo_init(adev);
 	if (r)
 		return r;
@@ -2185,16 +1984,7 @@ static int gmc_v9_0_sw_init(void *handle)
 	if (r)
 		return r;
 
-	/*
-	 * number of VMs
-	 * VMID 0 is reserved for System
-	 * amdgpu graphics/compute will use VMIDs 1..n-1
-	 * amdkfd will use VMIDs n..15
-	 *
-	 * The first KFD VMID is 8 for GPUs with graphics, 3 for
-	 * compute-only GPUs. On compute-only GPUs that leaves 2 VMIDs
-	 * for video processing.
-	 */
+	 
 	adev->vm_manager.first_kfd_vmid =
 		(adev->ip_versions[GC_HWIP][0] == IP_VERSION(9, 4, 1) ||
 		 adev->ip_versions[GC_HWIP][0] == IP_VERSION(9, 4, 2) ||
@@ -2257,7 +2047,7 @@ static void gmc_v9_0_init_golden_registers(struct amdgpu_device *adev)
 		break;
 	case IP_VERSION(9, 1, 0):
 	case IP_VERSION(9, 2, 0):
-		/* TODO for renoir */
+		 
 		soc15_program_register_sequence(adev,
 						golden_settings_athub_1_0_0,
 						ARRAY_SIZE(golden_settings_athub_1_0_0));
@@ -2267,13 +2057,7 @@ static void gmc_v9_0_init_golden_registers(struct amdgpu_device *adev)
 	}
 }
 
-/**
- * gmc_v9_0_restore_registers - restores regs
- *
- * @adev: amdgpu_device pointer
- *
- * This restores register values, saved at suspend.
- */
+ 
 void gmc_v9_0_restore_registers(struct amdgpu_device *adev)
 {
 	if ((adev->ip_versions[DCE_HWIP][0] == IP_VERSION(1, 0, 0)) ||
@@ -2284,11 +2068,7 @@ void gmc_v9_0_restore_registers(struct amdgpu_device *adev)
 	}
 }
 
-/**
- * gmc_v9_0_gart_enable - gart enable
- *
- * @adev: amdgpu_device pointer
- */
+ 
 static int gmc_v9_0_gart_enable(struct amdgpu_device *adev)
 {
 	int r;
@@ -2330,13 +2110,13 @@ static int gmc_v9_0_hw_init(void *handle)
 	bool value;
 	int i, r;
 
-	/* The sequence of these two function calls matters.*/
+	 
 	gmc_v9_0_init_golden_registers(adev);
 
 	if (adev->mode_info.num_crtc) {
-		/* Lockout access through VGA aperture*/
+		 
 		WREG32_FIELD15(DCE, 0, VGA_HDP_CONTROL, VGA_MEMORY_DISABLE, 1);
-		/* disable VGA render */
+		 
 		WREG32_FIELD15(DCE, 0, VGA_RENDER_CONTROL, VGA_VSTATUS_CNTL, 0);
 	}
 
@@ -2345,7 +2125,7 @@ static int gmc_v9_0_hw_init(void *handle)
 
 	adev->hdp.funcs->init_registers(adev);
 
-	/* After HDP is initialized, flush HDP.*/
+	 
 	adev->hdp.funcs->flush_hdp(adev, NULL);
 
 	if (amdgpu_vm_fault_stop == AMDGPU_VM_FAULT_STOP_ALWAYS)
@@ -2377,13 +2157,7 @@ static int gmc_v9_0_hw_init(void *handle)
 		return r;
 }
 
-/**
- * gmc_v9_0_gart_disable - gart disable
- *
- * @adev: amdgpu_device pointer
- *
- * This disables all VM page table.
- */
+ 
 static void gmc_v9_0_gart_disable(struct amdgpu_device *adev)
 {
 	if (!adev->in_s0ix)
@@ -2398,16 +2172,12 @@ static int gmc_v9_0_hw_fini(void *handle)
 	gmc_v9_0_gart_disable(adev);
 
 	if (amdgpu_sriov_vf(adev)) {
-		/* full access mode, so don't touch any GMC register */
+		 
 		DRM_DEBUG("For SRIOV client, shouldn't do anything.\n");
 		return 0;
 	}
 
-	/*
-	 * Pair the operations did in gmc_v9_0_hw_init and thus maintain
-	 * a correct cached state for GMC. Otherwise, the "gate" again
-	 * operation on S3 resuming will fail due to wrong cached state.
-	 */
+	 
 	if (adev->mmhub.funcs->update_power_gating)
 		adev->mmhub.funcs->update_power_gating(adev, false);
 
@@ -2439,19 +2209,19 @@ static int gmc_v9_0_resume(void *handle)
 
 static bool gmc_v9_0_is_idle(void *handle)
 {
-	/* MC is always ready in GMC v9.*/
+	 
 	return true;
 }
 
 static int gmc_v9_0_wait_for_idle(void *handle)
 {
-	/* There is no need to wait for MC idle in GMC v9.*/
+	 
 	return 0;
 }
 
 static int gmc_v9_0_soft_reset(void *handle)
 {
-	/* XXX for emulation.*/
+	 
 	return 0;
 }
 

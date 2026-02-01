@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// Copyright(c) 2021 Mediatek Corporation. All rights reserved.
-//
-// Author: YC Hung <yc.hung@mediatek.com>
-//
-// Hardware interface for mt8195 DSP clock
+
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -152,13 +152,13 @@ static int adsp_default_clk_init(struct snd_sof_dev *sdev, bool enable)
 
 int adsp_clock_on(struct snd_sof_dev *sdev)
 {
-	/* Open ADSP clock */
+	 
 	return adsp_default_clk_init(sdev, 1);
 }
 
 int adsp_clock_off(struct snd_sof_dev *sdev)
 {
-	/* Close ADSP clock */
+	 
 	return adsp_default_clk_init(sdev, 0);
 }
 

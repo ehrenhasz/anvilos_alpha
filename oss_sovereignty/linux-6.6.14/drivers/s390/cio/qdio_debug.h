@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  Copyright IBM Corp. 2008
- *
- *  Author: Jan Glauber (jang@linux.vnet.ibm.com)
- */
+ 
+ 
 #ifndef QDIO_DEBUG_H
 #define QDIO_DEBUG_H
 
@@ -11,15 +7,15 @@
 #include <asm/qdio.h>
 #include "qdio.h"
 
-/* that gives us 15 characters in the text event views */
+ 
 #define QDIO_DBF_LEN	32
 
 extern debug_info_t *qdio_dbf_setup;
 extern debug_info_t *qdio_dbf_error;
 
-#define DBF_ERR		3	/* error conditions	*/
-#define DBF_WARN	4	/* warning conditions	*/
-#define DBF_INFO	6	/* informational	*/
+#define DBF_ERR		3	 
+#define DBF_WARN	4	 
+#define DBF_INFO	6	 
 
 #undef DBF_EVENT
 #undef DBF_ERROR

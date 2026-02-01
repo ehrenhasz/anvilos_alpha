@@ -14,11 +14,7 @@
 #include "../kselftest_harness.h"
 #include "../pidfd/pidfd.h"
 
-/*
- * Regression test for:
- * 35f71bc0a09a ("fork: report pid reservation failure properly")
- * b26ebfe12f34 ("pid: Fix error return value in some cases")
- */
+ 
 TEST(regression_enomem)
 {
 	pid_t pid;

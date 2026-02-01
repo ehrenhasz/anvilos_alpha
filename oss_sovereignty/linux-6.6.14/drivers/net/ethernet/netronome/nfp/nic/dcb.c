@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2023 Corigine, Inc. */
+
+ 
 
 #include <linux/device.h>
 #include <linux/netdevice.h>
@@ -122,22 +122,22 @@ static int nfp_fill_maxrate(struct nfp_net *nn, u64 *max_rate_array)
 	dcb = get_dcb_priv(nn);
 
 	for (unsigned int i = 0; i < IEEE_8021QAZ_MAX_TCS; i++) {
-		/* Convert bandwidth from kbps to mbps. */
+		 
 		ratembps = max_rate_array[i] / 1024;
 
-		/* Reject input values >= NFP_DCB_TC_RATE_MAX */
+		 
 		if (ratembps >= NFP_DCB_TC_RATE_MAX) {
 			nfp_warn(app->cpp, "ratembps(%d) must less than %d.",
 				 ratembps, NFP_DCB_TC_RATE_MAX);
 			return -EINVAL;
 		}
-		/* Input value 0 mapped to NFP_DCB_TC_RATE_MAX for firmware. */
+		 
 		if (ratembps == 0)
 			ratembps = NFP_DCB_TC_RATE_MAX;
 
 		writew((u16)ratembps, dcb->dcbcfg_tbl +
 		       dcb->cfg_offset + NFP_DCB_DATA_OFF_RATE + dcb->tc2idx[i] * 2);
-		/* for rate value from user space, need to sync to dcb structure */
+		 
 		if (dcb->tc_maxrate != max_rate_array)
 			dcb->tc_maxrate[i] = max_rate_array[i];
 	}
@@ -159,7 +159,7 @@ static int update_dscp_maxrate(struct net_device *dev, u32 *update)
 
 	*update |= NFP_DCB_MSG_MSK_RATE;
 
-	/* We only refresh dscp in dscp trust mode. */
+	 
 	if (dcb->dscp_cnt > 0) {
 		for (unsigned int i = 0; i < NFP_NET_MAX_DSCP; i++) {
 			writeb(dcb->tc2idx[dcb->prio2tc[dcb->dscp2prio[i]]],
@@ -214,7 +214,7 @@ static int dcb_ets_check(struct net_device *dev, struct ieee_ets *ets)
 	int sum = 0;
 
 	for (unsigned int i = 0; i < IEEE_8021QAZ_MAX_TCS; i++) {
-		/* For ets mode, check bw percentage sum. */
+		 
 		if (ets->tc_tsa[i] == IEEE_8021QAZ_TSA_ETS) {
 			ets_exists = true;
 			sum += ets->tc_tx_bw[i];
@@ -441,29 +441,29 @@ static int nfp_nic_dcbnl_ieee_setapp(struct net_device *dev,
 
 	dcb = get_dcb_priv(nn);
 
-	/* Save the old entry info */
+	 
 	old_app.selector = IEEE_8021QAZ_APP_SEL_DSCP;
 	old_app.protocol = app->protocol;
 	old_app.priority = dcb->dscp2prio[app->protocol];
 
-	/* Check trust status */
+	 
 	if (!dcb->dscp_cnt) {
 		err = nfp_nic_set_trust_status(nn, NFP_DCB_TRUST_DSCP);
 		if (err)
 			return err;
 	}
 
-	/* Check if the new mapping is same as old or in init stage */
+	 
 	if (app->priority != old_app.priority || app->priority == 0) {
 		err = nfp_nic_set_dscp2prio(nn, app->protocol, app->priority);
 		if (err)
 			return err;
 	}
 
-	/* Delete the old entry if exists */
+	 
 	is_new = !!dcb_ieee_delapp(dev, &old_app);
 
-	/* Add new entry and update counter */
+	 
 	err = dcb_ieee_setapp(dev, app);
 	if (err)
 		return err;
@@ -486,24 +486,24 @@ static int nfp_nic_dcbnl_ieee_delapp(struct net_device *dev,
 
 	dcb = get_dcb_priv(nn);
 
-	/* Check if the dcb_app param match fw */
+	 
 	if (app->priority != dcb->dscp2prio[app->protocol])
 		return -ENOENT;
 
-	/* Set fw dscp mapping to 0 */
+	 
 	err = nfp_nic_set_dscp2prio(nn, app->protocol, 0);
 	if (err)
 		return err;
 
-	/* Delete app from dcb list */
+	 
 	err = dcb_ieee_delapp(dev, app);
 	if (err)
 		return err;
 
-	/* Decrease dscp counter */
+	 
 	dcb->dscp_cnt--;
 
-	/* If no dscp mapping is configured, trust pcp */
+	 
 	if (dcb->dscp_cnt == 0)
 		return nfp_nic_set_trust_status(nn, NFP_DCB_TRUST_PCP);
 
@@ -511,7 +511,7 @@ static int nfp_nic_dcbnl_ieee_delapp(struct net_device *dev,
 }
 
 static const struct dcbnl_rtnl_ops nfp_nic_dcbnl_ops = {
-	/* ieee 802.1Qaz std */
+	 
 	.ieee_getets	= nfp_nic_dcbnl_ieee_getets,
 	.ieee_setets	= nfp_nic_dcbnl_ieee_setets,
 	.ieee_getmaxrate = nfp_nic_dcbnl_ieee_getmaxrate,

@@ -1,11 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __PERF_SAMPLE_H
 #define __PERF_SAMPLE_H
 
 #include <linux/perf_event.h>
 #include <linux/types.h>
 
-/* number of register is bound by the number of bits in regs_dump::mask (64) */
+ 
 #define PERF_SAMPLE_REGS_CACHE_SIZE (8 * sizeof(u64))
 
 struct regs_dump {
@@ -13,7 +13,7 @@ struct regs_dump {
 	u64 mask;
 	u64 *regs;
 
-	/* Cached values/mask filled by first register access. */
+	 
 	u64 cache_regs[PERF_SAMPLE_REGS_CACHE_SIZE];
 	u64 cache_mask;
 };
@@ -26,8 +26,8 @@ struct stack_dump {
 
 struct sample_read_value {
 	u64 value;
-	u64 id;   /* only if PERF_FORMAT_ID */
-	u64 lost; /* only if PERF_FORMAT_LOST */
+	u64 id;    
+	u64 lost;  
 };
 
 struct sample_read {
@@ -44,7 +44,7 @@ struct sample_read {
 
 static inline size_t sample_read_value_size(u64 read_format)
 {
-	/* PERF_FORMAT_ID is forced for PERF_SAMPLE_READ */
+	 
 	if (read_format & PERF_FORMAT_LOST)
 		return sizeof(struct sample_read_value);
 	else
@@ -67,16 +67,16 @@ struct aux_sample {
 };
 
 struct simd_flags {
-	u64	arch:1,	/* architecture (isa) */
-		pred:2;	/* predication */
+	u64	arch:1,	 
+		pred:2;	 
 };
 
-/* simd architecture flags */
-#define SIMD_OP_FLAGS_ARCH_SVE		0x01	/* ARM SVE */
+ 
+#define SIMD_OP_FLAGS_ARCH_SVE		0x01	 
 
-/* simd predicate flags */
-#define SIMD_OP_FLAGS_PRED_PARTIAL	0x01	/* partial predicate */
-#define SIMD_OP_FLAGS_PRED_EMPTY	0x02	/* empty predicate */
+ 
+#define SIMD_OP_FLAGS_PRED_PARTIAL	0x01	 
+#define SIMD_OP_FLAGS_PRED_EMPTY	0x02	 
 
 struct perf_sample {
 	u64 ip;
@@ -108,7 +108,7 @@ struct perf_sample {
 		u16 p_stage_cyc;
 		u16 retire_lat;
 	};
-	bool no_hw_idx;		/* No hw_idx collected in branch_stack */
+	bool no_hw_idx;		 
 	char insn[MAX_INSN];
 	void *raw_data;
 	struct ip_callchain *callchain;
@@ -121,13 +121,10 @@ struct perf_sample {
 	struct simd_flags simd_flags;
 };
 
-/*
- * raw_data is always 4 bytes from an 8-byte boundary, so subtract 4 to get
- * 8-byte alignment.
- */
+ 
 static inline void *perf_sample__synth_ptr(struct perf_sample *sample)
 {
 	return sample->raw_data - 4;
 }
 
-#endif /* __PERF_SAMPLE_H */
+#endif  

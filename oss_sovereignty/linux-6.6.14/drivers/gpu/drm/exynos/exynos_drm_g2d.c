@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Samsung Electronics Co.Ltd
- * Authors: Joonyoung Shim <jy0922.shim@samsung.com>
- */
+
+ 
 
 #include <linux/refcount.h>
 #include <linux/clk.h>
@@ -30,11 +27,11 @@
 #define G2D_HW_MAJOR_VER		4
 #define G2D_HW_MINOR_VER		1
 
-/* vaild register range set from user: 0x0104 ~ 0x0880 */
+ 
 #define G2D_VALID_START			0x0104
 #define G2D_VALID_END			0x0880
 
-/* general registers */
+ 
 #define G2D_SOFT_RESET			0x0000
 #define G2D_INTEN			0x0004
 #define G2D_INTC_PEND			0x000C
@@ -43,10 +40,10 @@
 #define G2D_DMA_STATUS			0x008C
 #define G2D_DMA_HOLD_CMD		0x0090
 
-/* command registers */
+ 
 #define G2D_BITBLT_START		0x0100
 
-/* registers for base address */
+ 
 #define G2D_SRC_BASE_ADDR		0x0304
 #define G2D_SRC_STRIDE			0x0308
 #define G2D_SRC_COLOR_MODE		0x030C
@@ -62,44 +59,44 @@
 #define G2D_PAT_BASE_ADDR		0x0500
 #define G2D_MSK_BASE_ADDR		0x0520
 
-/* G2D_SOFT_RESET */
+ 
 #define G2D_SFRCLEAR			(1 << 1)
 #define G2D_R				(1 << 0)
 
-/* G2D_INTEN */
+ 
 #define G2D_INTEN_ACF			(1 << 3)
 #define G2D_INTEN_UCF			(1 << 2)
 #define G2D_INTEN_GCF			(1 << 1)
 #define G2D_INTEN_SCF			(1 << 0)
 
-/* G2D_INTC_PEND */
+ 
 #define G2D_INTP_ACMD_FIN		(1 << 3)
 #define G2D_INTP_UCMD_FIN		(1 << 2)
 #define G2D_INTP_GCMD_FIN		(1 << 1)
 #define G2D_INTP_SCMD_FIN		(1 << 0)
 
-/* G2D_DMA_COMMAND */
+ 
 #define G2D_DMA_HALT			(1 << 2)
 #define G2D_DMA_CONTINUE		(1 << 1)
 #define G2D_DMA_START			(1 << 0)
 
-/* G2D_DMA_STATUS */
+ 
 #define G2D_DMA_LIST_DONE_COUNT		(0xFF << 17)
 #define G2D_DMA_BITBLT_DONE_COUNT	(0xFFFF << 1)
 #define G2D_DMA_DONE			(1 << 0)
 #define G2D_DMA_LIST_DONE_COUNT_OFFSET	17
 
-/* G2D_DMA_HOLD_CMD */
+ 
 #define G2D_USER_HOLD			(1 << 2)
 #define G2D_LIST_HOLD			(1 << 1)
 #define G2D_BITBLT_HOLD			(1 << 0)
 
-/* G2D_BITBLT_START */
+ 
 #define G2D_START_CASESEL		(1 << 2)
 #define G2D_START_NHOLT			(1 << 1)
 #define G2D_START_BITBLT		(1 << 0)
 
-/* buffer color format */
+ 
 #define G2D_FMT_XRGB8888		0
 #define G2D_FMT_ARGB8888		1
 #define G2D_FMT_RGB565			2
@@ -111,7 +108,7 @@
 #define G2D_FMT_A8			11
 #define G2D_FMT_L8			12
 
-/* buffer valid length */
+ 
 #define G2D_LEN_MIN			1
 #define G2D_LEN_MAX			8000
 
@@ -120,7 +117,7 @@
 #define G2D_CMDLIST_POOL_SIZE		(G2D_CMDLIST_SIZE * G2D_CMDLIST_NUM)
 #define G2D_CMDLIST_DATA_NUM		(G2D_CMDLIST_SIZE / sizeof(u32) - 2)
 
-/* maximum buffer pool size of userptr is 64MB as default */
+ 
 #define MAX_POOL		(64 * 1024 * 1024)
 
 enum {
@@ -140,35 +137,20 @@ enum g2d_reg_type {
 };
 
 enum g2d_flag_bits {
-	/*
-	 * If set, suspends the runqueue worker after the currently
-	 * processed node is finished.
-	 */
+	 
 	G2D_BIT_SUSPEND_RUNQUEUE,
-	/*
-	 * If set, indicates that the engine is currently busy.
-	 */
+	 
 	G2D_BIT_ENGINE_BUSY,
 };
 
-/* cmdlist data structure */
+ 
 struct g2d_cmdlist {
 	u32		head;
 	unsigned long	data[G2D_CMDLIST_DATA_NUM];
-	u32		last;	/* last data offset */
+	u32		last;	 
 };
 
-/*
- * A structure of buffer description
- *
- * @format: color format
- * @stride: buffer stride/pitch in bytes
- * @left_x: the x coordinates of left top corner
- * @top_y: the y coordinates of left top corner
- * @right_x: the x coordinates of right bottom corner
- * @bottom_y: the y coordinates of right bottom corner
- *
- */
+ 
 struct g2d_buf_desc {
 	unsigned int	format;
 	unsigned int	stride;
@@ -178,16 +160,7 @@ struct g2d_buf_desc {
 	unsigned int	bottom_y;
 };
 
-/*
- * A structure of buffer information
- *
- * @map_nr: manages the number of mapped buffers
- * @reg_types: stores regitster type in the order of requested command
- * @handles: stores buffer handle in its reg_type position
- * @types: stores buffer type in its reg_type position
- * @descs: stores buffer description in its reg_type position
- *
- */
+ 
 struct g2d_buf_info {
 	unsigned int		map_nr;
 	enum g2d_reg_type	reg_types[MAX_REG_TYPE_NR];
@@ -243,7 +216,7 @@ struct g2d_data {
 	struct drm_device		*drm_dev;
 	unsigned long			flags;
 
-	/* cmdlist */
+	 
 	struct g2d_cmdlist_node		*cmdlist_node;
 	struct list_head		free_cmdlist;
 	struct mutex			cmdlist_mutex;
@@ -251,7 +224,7 @@ struct g2d_data {
 	void				*cmdlist_pool_virt;
 	unsigned long			cmdlist_dma_attrs;
 
-	/* runqueue*/
+	 
 	struct g2d_runqueue_node	*runqueue_node;
 	struct list_head		runqueue;
 	struct mutex			runqueue_mutex;
@@ -363,7 +336,7 @@ static void g2d_add_cmdlist_to_inuse(struct drm_exynos_file_private *file_priv,
 	if (list_empty(&file_priv->inuse_cmdlist))
 		goto add_to_list;
 
-	/* this links to base address of new cmdlist */
+	 
 	lnode = list_entry(file_priv->inuse_cmdlist.prev,
 				struct g2d_cmdlist_node, list);
 	lnode->cmdlist->data[lnode->cmdlist->last] = node->dma_addr;
@@ -429,13 +402,10 @@ static dma_addr_t *g2d_userptr_get_dma_addr(struct g2d_data *g2d,
 		return ERR_PTR(-EINVAL);
 	}
 
-	/* check if userptr already exists in userptr_list. */
+	 
 	list_for_each_entry(g2d_userptr, &file_priv->userptr_list, list) {
 		if (g2d_userptr->userptr == userptr) {
-			/*
-			 * also check size because there could be same address
-			 * and different size.
-			 */
+			 
 			if (g2d_userptr->size == size) {
 				refcount_inc(&g2d_userptr->refcount);
 				*obj = g2d_userptr;
@@ -443,13 +413,7 @@ static dma_addr_t *g2d_userptr_get_dma_addr(struct g2d_data *g2d,
 				return &g2d_userptr->dma_addr;
 			}
 
-			/*
-			 * at this moment, maybe g2d dma is accessing this
-			 * g2d_userptr memory region so just remove this
-			 * g2d_userptr object from userptr_list not to be
-			 * referred again and also except it the userptr
-			 * pool to be released after the dma access completion.
-			 */
+			 
 			g2d_userptr->out_of_list = true;
 			g2d_userptr->in_pool = false;
 			list_del_init(&g2d_userptr->list);
@@ -633,21 +597,18 @@ static bool g2d_check_buf_desc_is_valid(struct g2d_data *g2d,
 	int width, height;
 	unsigned long bpp, last_pos;
 
-	/*
-	 * check source and destination buffers only.
-	 * so the others are always valid.
-	 */
+	 
 	if (reg_type != REG_TYPE_SRC && reg_type != REG_TYPE_DST)
 		return true;
 
-	/* This check also makes sure that right_x > left_x. */
+	 
 	width = (int)buf_desc->right_x - (int)buf_desc->left_x;
 	if (width < G2D_LEN_MIN || width > G2D_LEN_MAX) {
 		DRM_DEV_ERROR(g2d->dev, "width[%d] is out of range!\n", width);
 		return false;
 	}
 
-	/* This check also makes sure that bottom_y > top_y. */
+	 
 	height = (int)buf_desc->bottom_y - (int)buf_desc->top_y;
 	if (height < G2D_LEN_MIN || height > G2D_LEN_MAX) {
 		DRM_DEV_ERROR(g2d->dev,
@@ -657,17 +618,12 @@ static bool g2d_check_buf_desc_is_valid(struct g2d_data *g2d,
 
 	bpp = g2d_get_buf_bpp(buf_desc->format);
 
-	/* Compute the position of the last byte that the engine accesses. */
+	 
 	last_pos = ((unsigned long)buf_desc->bottom_y - 1) *
 		(unsigned long)buf_desc->stride +
 		(unsigned long)buf_desc->right_x * bpp - 1;
 
-	/*
-	 * Since right_x > left_x and bottom_y > top_y we already know
-	 * that the first_pos < last_pos (first_pos being the position
-	 * of the first byte the engine accesses), it just remains to
-	 * check if last_pos is smaller then the buffer size.
-	 */
+	 
 
 	if (last_pos >= size) {
 		DRM_DEV_ERROR(g2d->dev, "last engine access position [%lu] "
@@ -827,10 +783,7 @@ static void g2d_free_runqueue_node(struct g2d_data *g2d,
 	struct g2d_cmdlist_node *node;
 
 	mutex_lock(&g2d->cmdlist_mutex);
-	/*
-	 * commands in run_cmdlist have been completed so unmap all gem
-	 * objects in each command node so that they are unreferenced.
-	 */
+	 
 	list_for_each_entry(node, &runqueue_node->run_cmdlist, list)
 		g2d_unmap_cmdlist_gem(g2d, node, runqueue_node->filp);
 	list_splice_tail_init(&runqueue_node->run_cmdlist, &g2d->free_cmdlist);
@@ -839,13 +792,7 @@ static void g2d_free_runqueue_node(struct g2d_data *g2d,
 	kmem_cache_free(g2d->runqueue_slab, runqueue_node);
 }
 
-/**
- * g2d_remove_runqueue_nodes - remove items from the list of runqueue nodes
- * @g2d: G2D state object
- * @file: if not zero, only remove items with this DRM file
- *
- * Has to be called under runqueue lock.
- */
+ 
 static void g2d_remove_runqueue_nodes(struct g2d_data *g2d, struct drm_file *file)
 {
 	struct g2d_runqueue_node *node, *n;
@@ -868,10 +815,7 @@ static void g2d_runqueue_worker(struct work_struct *work)
 					    runqueue_work);
 	struct g2d_runqueue_node *runqueue_node;
 
-	/*
-	 * The engine is busy and the completion of the current node is going
-	 * to poke the runqueue worker, so nothing to do here.
-	 */
+	 
 	if (test_bit(G2D_BIT_ENGINE_BUSY, &g2d->flags))
 		return;
 
@@ -962,15 +906,7 @@ static irqreturn_t g2d_irq_handler(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/**
- * g2d_wait_finish - wait for the G2D engine to finish the current runqueue node
- * @g2d: G2D state object
- * @file: if not zero, only wait if the current runqueue node belongs
- *        to the DRM file
- *
- * Should the engine not become idle after a 100ms timeout, a hardware
- * reset is issued.
- */
+ 
 static void g2d_wait_finish(struct g2d_data *g2d, struct drm_file *file)
 {
 	struct device *dev = g2d->dev;
@@ -980,19 +916,19 @@ static void g2d_wait_finish(struct g2d_data *g2d, struct drm_file *file)
 
 	mutex_lock(&g2d->runqueue_mutex);
 
-	/* If no node is currently processed, we have nothing to do. */
+	 
 	if (!g2d->runqueue_node)
 		goto out;
 
 	runqueue_node = g2d->runqueue_node;
 
-	/* Check if the currently processed item belongs to us. */
+	 
 	if (file && runqueue_node->filp != file)
 		goto out;
 
 	mutex_unlock(&g2d->runqueue_mutex);
 
-	/* Wait for the G2D engine to finish. */
+	 
 	while (tries-- && (g2d->runqueue_node == runqueue_node))
 		mdelay(10);
 
@@ -1004,11 +940,7 @@ static void g2d_wait_finish(struct g2d_data *g2d, struct drm_file *file)
 	dev_err(dev, "wait timed out, resetting engine...\n");
 	g2d_hw_reset(g2d);
 
-	/*
-	 * After the hardware reset of the engine we are going to loose
-	 * the IRQ which triggers the PM runtime put().
-	 * So do this manually here.
-	 */
+	 
 	pm_runtime_mark_last_busy(dev);
 	pm_runtime_put_autosuspend(dev);
 
@@ -1055,7 +987,7 @@ static int g2d_check_reg_offset(struct g2d_data *g2d,
 
 			reg_type = g2d_get_reg_type(g2d, reg_offset);
 
-			/* check userptr buffer type. */
+			 
 			if ((cmdlist->data[index] & ~0x7fffffff) >> 31) {
 				buf_info->types[reg_type] = BUF_TYPE_USERPTR;
 				cmdlist->data[index] &= ~G2D_BUF_USERPTR;
@@ -1124,7 +1056,7 @@ err:
 	return -EINVAL;
 }
 
-/* ioctl functions */
+ 
 int exynos_g2d_get_ver_ioctl(struct drm_device *drm_dev, void *data,
 			     struct drm_file *file)
 {
@@ -1154,11 +1086,7 @@ int exynos_g2d_set_cmdlist_ioctl(struct drm_device *drm_dev, void *data,
 	if (!node)
 		return -ENOMEM;
 
-	/*
-	 * To avoid an integer overflow for the later size computations, we
-	 * enforce a maximum number of submitted commands here. This limit is
-	 * sufficient for all conceivable usage cases of the G2D.
-	 */
+	 
 	if (req->cmd_nr > G2D_CMDLIST_DATA_NUM ||
 	    req->cmd_buf_nr > G2D_CMDLIST_DATA_NUM) {
 		dev_err(g2d->dev, "number of submitted G2D commands exceeds limit\n");
@@ -1191,27 +1119,13 @@ int exynos_g2d_set_cmdlist_ioctl(struct drm_device *drm_dev, void *data,
 
 	cmdlist->last = 0;
 
-	/*
-	 * If don't clear SFR registers, the cmdlist is affected by register
-	 * values of previous cmdlist. G2D hw executes SFR clear command and
-	 * a next command at the same time then the next command is ignored and
-	 * is executed rightly from next next command, so needs a dummy command
-	 * to next command of SFR clear command.
-	 */
+	 
 	cmdlist->data[cmdlist->last++] = G2D_SOFT_RESET;
 	cmdlist->data[cmdlist->last++] = G2D_SFRCLEAR;
 	cmdlist->data[cmdlist->last++] = G2D_SRC_BASE_ADDR;
 	cmdlist->data[cmdlist->last++] = 0;
 
-	/*
-	 * 'LIST_HOLD' command should be set to the DMA_HOLD_CMD_REG
-	 * and GCF bit should be set to INTEN register if user wants
-	 * G2D interrupt event once current command list execution is
-	 * finished.
-	 * Otherwise only ACF bit should be set to INTEN register so
-	 * that one interrupt is occurred after all command lists
-	 * have been completed.
-	 */
+	 
 	if (node->event) {
 		cmdlist->data[cmdlist->last++] = G2D_INTEN;
 		cmdlist->data[cmdlist->last++] = G2D_INTEN_ACF | G2D_INTEN_GCF;
@@ -1222,11 +1136,7 @@ int exynos_g2d_set_cmdlist_ioctl(struct drm_device *drm_dev, void *data,
 		cmdlist->data[cmdlist->last++] = G2D_INTEN_ACF;
 	}
 
-	/*
-	 * Check the size of cmdlist. The 2 that is added last comes from
-	 * the implicit G2D_BITBLT_START that is appended once we have
-	 * checked all the submitted commands.
-	 */
+	 
 	size = cmdlist->last + req->cmd_nr * 2 + req->cmd_buf_nr * 2 + 2;
 	if (size > G2D_CMDLIST_DATA_NUM) {
 		dev_err(g2d->dev, "cmdlist size is too big\n");
@@ -1275,10 +1185,10 @@ int exynos_g2d_set_cmdlist_ioctl(struct drm_device *drm_dev, void *data,
 	cmdlist->data[cmdlist->last++] = G2D_BITBLT_START;
 	cmdlist->data[cmdlist->last++] = G2D_START_BITBLT;
 
-	/* head */
+	 
 	cmdlist->head = cmdlist->last / 2;
 
-	/* tail */
+	 
 	cmdlist->data[cmdlist->last] = 0;
 
 	g2d_add_cmdlist_to_inuse(file_priv, node);
@@ -1332,7 +1242,7 @@ int exynos_g2d_exec_ioctl(struct drm_device *drm_dev, void *data,
 	list_add_tail(&runqueue_node->list, &g2d->runqueue);
 	mutex_unlock(&g2d->runqueue_mutex);
 
-	/* Let the runqueue know that there is work to do. */
+	 
 	queue_work(g2d->g2d_workq, &g2d->runqueue_work);
 
 	if (req->async)
@@ -1368,24 +1278,15 @@ void g2d_close(struct drm_device *drm_dev, struct drm_file *file)
 
 	g2d = dev_get_drvdata(priv->g2d_dev);
 
-	/* Remove the runqueue nodes that belong to us. */
+	 
 	mutex_lock(&g2d->runqueue_mutex);
 	g2d_remove_runqueue_nodes(g2d, file);
 	mutex_unlock(&g2d->runqueue_mutex);
 
-	/*
-	 * Wait for the runqueue worker to finish its current node.
-	 * After this the engine should no longer be accessing any
-	 * memory belonging to us.
-	 */
+	 
 	g2d_wait_finish(g2d, file);
 
-	/*
-	 * Even after the engine is idle, there might still be stale cmdlists
-	 * (i.e. cmdlisst which we submitted but never executed) around, with
-	 * their corresponding GEM/userptr buffers.
-	 * Properly unmap these buffers here.
-	 */
+	 
 	mutex_lock(&g2d->cmdlist_mutex);
 	list_for_each_entry_safe(node, n, &file_priv->inuse_cmdlist, list) {
 		g2d_unmap_cmdlist_gem(g2d, node, file);
@@ -1393,7 +1294,7 @@ void g2d_close(struct drm_device *drm_dev, struct drm_file *file)
 	}
 	mutex_unlock(&g2d->cmdlist_mutex);
 
-	/* release all g2d_userptr in pool. */
+	 
 	g2d_userptr_free_all(g2d, file);
 }
 
@@ -1406,7 +1307,7 @@ static int g2d_bind(struct device *dev, struct device *master, void *data)
 
 	g2d->drm_dev = drm_dev;
 
-	/* allocate dma-aware cmdlist buffer. */
+	 
 	ret = g2d_init_cmdlist(g2d);
 	if (ret < 0) {
 		dev_err(dev, "cmdlist init failed\n");
@@ -1432,7 +1333,7 @@ static void g2d_unbind(struct device *dev, struct device *master, void *data)
 	struct drm_device *drm_dev = data;
 	struct exynos_drm_private *priv = drm_dev->dev_private;
 
-	/* Suspend operation and wait for engine idle. */
+	 
 	set_bit(G2D_BIT_SUSPEND_RUNQUEUE, &g2d->flags);
 	g2d_wait_finish(g2d, NULL);
 	priv->g2d_dev = NULL;
@@ -1536,7 +1437,7 @@ static int g2d_remove(struct platform_device *pdev)
 
 	component_del(&pdev->dev, &g2d_component_ops);
 
-	/* There should be no locking needed here. */
+	 
 	g2d_remove_runqueue_nodes(g2d, NULL);
 
 	pm_runtime_dont_use_autosuspend(&pdev->dev);
@@ -1553,10 +1454,7 @@ static int g2d_suspend(struct device *dev)
 {
 	struct g2d_data *g2d = dev_get_drvdata(dev);
 
-	/*
-	 * Suspend the runqueue worker operation and wait until the G2D
-	 * engine is idle.
-	 */
+	 
 	set_bit(G2D_BIT_SUSPEND_RUNQUEUE, &g2d->flags);
 	g2d_wait_finish(g2d, NULL);
 	flush_work(&g2d->runqueue_work);

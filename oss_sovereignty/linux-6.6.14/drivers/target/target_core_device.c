@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- * Filename:  target_core_device.c (based on iscsi_target_device.c)
- *
- * This file contains the TCM Virtual Device and Disk Transport
- * agnostic related functions.
- *
- * (c) Copyright 2003-2013 Datera, Inc.
- *
- * Nicholas A. Bellinger <nab@kernel.org>
- *
- ******************************************************************************/
+
+ 
 
 #include <linux/net.h>
 #include <linux/string.h>
@@ -41,7 +31,7 @@ static LIST_HEAD(device_list);
 static DEFINE_IDR(devices_idr);
 
 static struct se_hba *lun0_hba;
-/* not static, needed by tpg.c */
+ 
 struct se_device *g_lun0_dev;
 
 sense_reason_t
@@ -91,11 +81,7 @@ out_unlock:
 	rcu_read_unlock();
 
 	if (!se_lun) {
-		/*
-		 * Use the se_portal_group->tpg_virt_lun0 to allow for
-		 * REPORT_LUNS, et al to be returned when no active
-		 * MappedLUN=0 exists for this Initiator Port.
-		 */
+		 
 		if (se_cmd->orig_fe_lun != 0) {
 			pr_err("TARGET_CORE[%s]: Detected NON_EXISTENT_LUN"
 				" Access for 0x%08llx from %s\n",
@@ -105,9 +91,7 @@ out_unlock:
 			return TCM_NON_EXISTENT_LUN;
 		}
 
-		/*
-		 * Force WRITE PROTECT for virtual LUN 0
-		 */
+		 
 		if ((se_cmd->data_direction != DMA_FROM_DEVICE) &&
 		    (se_cmd->data_direction != DMA_NONE))
 			return TCM_WRITE_PROTECTED;
@@ -120,12 +104,7 @@ out_unlock:
 		se_cmd->se_cmd_flags |= SCF_SE_LUN_CMD;
 		se_cmd->lun_ref_active = true;
 	}
-	/*
-	 * RCU reference protected by percpu se_lun->lun_ref taken above that
-	 * must drop to zero (including initial reference) before this se_lun
-	 * pointer can be kfree_rcu() by the final se_lun->lun_group put via
-	 * target_core_fabric_configfs.c:target_fabric_port_release
-	 */
+	 
 	se_cmd->se_dev = rcu_dereference_raw(se_lun->lun_se_dev);
 	atomic_long_inc(&se_cmd->se_dev->num_cmds);
 
@@ -201,11 +180,7 @@ bool target_lun_is_rdonly(struct se_cmd *cmd)
 }
 EXPORT_SYMBOL(target_lun_is_rdonly);
 
-/*
- * This function is called from core_scsi3_emulate_pro_register_and_move()
- * and core_scsi3_decode_spec_i_port(), and will increment &deve->pr_kref
- * when a matching rtpi is found.
- */
+ 
 struct se_dev_entry *core_get_se_deve_from_rtpi(
 	struct se_node_acl *nacl,
 	u16 rtpi)
@@ -262,9 +237,7 @@ void core_update_device_list_access(
 	mutex_unlock(&nacl->lun_entry_mutex);
 }
 
-/*
- * Called with rcu_read_lock or nacl->device_list_lock held.
- */
+ 
 struct se_dev_entry *target_nacl_find_deve(struct se_node_acl *nacl, u64 mapped_lun)
 {
 	struct se_dev_entry *deve;
@@ -284,9 +257,7 @@ void target_pr_kref_release(struct kref *kref)
 	complete(&deve->pr_comp);
 }
 
-/*
- * Establish UA condition on SCSI device - all LUNs
- */
+ 
 void target_dev_ua_allocate(struct se_device *dev, u8 asc, u8 ascq)
 {
 	struct se_dev_entry *se_deve;
@@ -408,33 +379,16 @@ void core_disable_device_list_for_node(
 	struct se_node_acl *nacl,
 	struct se_portal_group *tpg)
 {
-	/*
-	 * rcu_dereference_raw protected by se_lun->lun_group symlink
-	 * reference to se_device->dev_group.
-	 */
+	 
 	struct se_device *dev = rcu_dereference_raw(lun->lun_se_dev);
 
 	lockdep_assert_held(&nacl->lun_entry_mutex);
 
-	/*
-	 * If the MappedLUN entry is being disabled, the entry in
-	 * lun->lun_deve_list must be removed now before clearing the
-	 * struct se_dev_entry pointers below as logic in
-	 * core_alua_do_transition_tg_pt() depends on these being present.
-	 *
-	 * deve->se_lun_acl will be NULL for demo-mode created LUNs
-	 * that have not been explicitly converted to MappedLUNs ->
-	 * struct se_lun_acl, but we remove deve->lun_link from
-	 * lun->lun_deve_list. This also means that active UAs and
-	 * NodeACL context specific PR metadata for demo-mode
-	 * MappedLUN *deve will be released below..
-	 */
+	 
 	spin_lock(&lun->lun_deve_lock);
 	list_del(&orig->lun_link);
 	spin_unlock(&lun->lun_deve_lock);
-	/*
-	 * Disable struct se_dev_entry LUN ACL mapping
-	 */
+	 
 	core_scsi3_ua_release_all(orig);
 
 	hlist_del_rcu(&orig->link);
@@ -442,10 +396,7 @@ void core_disable_device_list_for_node(
 	orig->lun_access_ro = false;
 	orig->creation_time = 0;
 	orig->attach_count--;
-	/*
-	 * Before firing off RCU callback, wait for any in process SPEC_I_PT=1
-	 * or REGISTER_AND_MOVE PR operation to complete.
-	 */
+	 
 	kref_put(&orig->pr_kref, target_pr_kref_release);
 	wait_for_completion(&orig->pr_comp);
 
@@ -455,10 +406,7 @@ void core_disable_device_list_for_node(
 	target_luns_data_has_changed(nacl, NULL, false);
 }
 
-/*      core_clear_lun_from_tpg():
- *
- *
- */
+ 
 void core_clear_lun_from_tpg(struct se_lun *lun, struct se_portal_group *tpg)
 {
 	struct se_node_acl *nacl;
@@ -496,10 +444,7 @@ static u32 se_dev_align_max_sectors(u32 max_sectors, u32 block_size)
 {
 	u32 aligned_max_sectors;
 	u32 alignment;
-	/*
-	 * Limit max_sectors to a PAGE_SIZE aligned value for modern
-	 * transport_allocate_data_tasks() operation.
-	 */
+	 
 	alignment = max(1ul, PAGE_SIZE / block_size);
 	aligned_max_sectors = rounddown(max_sectors, alignment);
 
@@ -525,10 +470,7 @@ int core_dev_add_lun(
 		" CORE HBA: %u\n", tpg->se_tpg_tfo->fabric_name,
 		tpg->se_tpg_tfo->tpg_get_tag(tpg), lun->unpacked_lun,
 		tpg->se_tpg_tfo->fabric_name, dev->se_hba->hba_id);
-	/*
-	 * Update LUN maps for dynamically added initiators when
-	 * generate_node_acl is enabled.
-	 */
+	 
 	if (tpg->se_tpg_tfo->tpg_check_demo_mode(tpg)) {
 		struct se_node_acl *acl;
 
@@ -546,10 +488,7 @@ int core_dev_add_lun(
 	return 0;
 }
 
-/*      core_dev_del_lun():
- *
- *
- */
+ 
 void core_dev_del_lun(
 	struct se_portal_group *tpg,
 	struct se_lun *lun)
@@ -596,10 +535,7 @@ int core_dev_add_initiator_node_lun_acl(
 	bool lun_access_ro)
 {
 	struct se_node_acl *nacl = lacl->se_lun_nacl;
-	/*
-	 * rcu_dereference_raw protected by se_lun->lun_group symlink
-	 * reference to se_device->dev_group.
-	 */
+	 
 	struct se_device *dev = rcu_dereference_raw(lun->lun_se_dev);
 
 	if (!nacl)
@@ -619,10 +555,7 @@ int core_dev_add_initiator_node_lun_acl(
 		tpg->se_tpg_tfo->tpg_get_tag(tpg), lun->unpacked_lun, lacl->mapped_lun,
 		lun_access_ro ? "RO" : "RW",
 		nacl->initiatorname);
-	/*
-	 * Check to see if there are any existing persistent reservation APTPL
-	 * pre-registrations that need to be enabled for this LUN ACL..
-	 */
+	 
 	core_scsi3_check_aptpl_registration(dev, tpg, lun, nacl,
 					    lacl->mapped_lun);
 	return 0;
@@ -673,9 +606,7 @@ static void scsi_dump_inquiry(struct se_device *dev)
 	struct t10_wwn *wwn = &dev->t10_wwn;
 	int device_type = dev->transport->get_device_type(dev);
 
-	/*
-	 * Print Linux/SCSI style INQUIRY formatting to the kernel ring buffer
-	 */
+	 
 	pr_debug("  Vendor: %-" __stringify(INQUIRY_VENDOR_LEN) "s\n",
 		wwn->vendor);
 	pr_debug("  Model: %-" __stringify(INQUIRY_MODEL_LEN) "s\n",
@@ -744,9 +675,7 @@ struct se_device *target_alloc_device(struct se_hba *hba, const char *name)
 	mutex_init(&dev->lun_reset_mutex);
 
 	dev->t10_wwn.t10_dev = dev;
-	/*
-	 * Use OpenFabrics IEEE Company ID: 00 14 05
-	 */
+	 
 	dev->t10_wwn.company_id = 0x001405;
 
 	dev->t10_alua.t10_dev = dev;
@@ -788,7 +717,7 @@ struct se_device *target_alloc_device(struct se_hba *hba, const char *name)
 	mutex_init(&xcopy_lun->lun_tg_pt_md_mutex);
 	xcopy_lun->lun_tpg = &xcopy_pt_tpg;
 
-	/* Preload the default INQUIRY const values */
+	 
 	strscpy(dev->t10_wwn.vendor, "LIO-ORG", sizeof(dev->t10_wwn.vendor));
 	strscpy(dev->t10_wwn.model, dev->transport->inquiry_prod,
 		sizeof(dev->t10_wwn.model));
@@ -798,10 +727,7 @@ struct se_device *target_alloc_device(struct se_hba *hba, const char *name)
 	return dev;
 }
 
-/*
- * Check if the underlying struct block_device supports discard and if yes
- * configure the UNMAP parameters.
- */
+ 
 bool target_configure_unmap_from_queue(struct se_dev_attrib *attrib,
 				       struct block_device *bdev)
 {
@@ -812,9 +738,7 @@ bool target_configure_unmap_from_queue(struct se_dev_attrib *attrib,
 
 	attrib->max_unmap_lba_count =
 		bdev_max_discard_sectors(bdev) >> (ilog2(block_size) - 9);
-	/*
-	 * Currently hardcoded to 1 in Linux/SCSI code..
-	 */
+	 
 	attrib->max_unmap_block_desc_count = 1;
 	attrib->unmap_granularity = bdev_discard_granularity(bdev) / block_size;
 	attrib->unmap_granularity_alignment =
@@ -823,10 +747,7 @@ bool target_configure_unmap_from_queue(struct se_dev_attrib *attrib,
 }
 EXPORT_SYMBOL(target_configure_unmap_from_queue);
 
-/*
- * Convert from blocksize advertised to the initiator to the 512 byte
- * units unconditionally used by the Linux block layer.
- */
+ 
 sector_t target_to_linux_sector(struct se_device *dev, sector_t lb)
 {
 	switch (dev->dev_attrib.block_size) {
@@ -855,12 +776,7 @@ static int target_devices_idr_iter(int id, void *p, void *data)
 	struct config_item *item;
 	int ret;
 
-	/*
-	 * We add the device early to the idr, so it can be used
-	 * by backend modules during configuration. We do not want
-	 * to allow other callers to access partially setup devices,
-	 * so we skip them here.
-	 */
+	 
 	if (!target_dev_configured(dev))
 		return 0;
 
@@ -876,14 +792,7 @@ static int target_devices_idr_iter(int id, void *p, void *data)
 	return ret;
 }
 
-/**
- * target_for_each_device - iterate over configured devices
- * @fn: iterator function
- * @data: pointer to data that will be passed to fn
- *
- * fn must return 0 to continue looping over devices. non-zero will break
- * from the loop and return that value to the caller.
- */
+ 
 int target_for_each_device(int (*fn)(struct se_device *dev, void *data),
 			   void *data)
 {
@@ -907,15 +816,9 @@ int target_configure_device(struct se_device *dev)
 		return -EEXIST;
 	}
 
-	/*
-	 * Add early so modules like tcmu can use during its
-	 * configuration.
-	 */
+	 
 	mutex_lock(&device_mutex);
-	/*
-	 * Use cyclic to try and avoid collisions with devices
-	 * that were recently removed.
-	 */
+	 
 	id = idr_alloc_cyclic(&devices_idr, dev, 0, INT_MAX, GFP_KERNEL);
 	mutex_unlock(&device_mutex);
 	if (id < 0) {
@@ -933,15 +836,11 @@ int target_configure_device(struct se_device *dev)
 		pr_debug("Discard support available, but disabled by default.\n");
 	}
 
-	/*
-	 * XXX: there is not much point to have two different values here..
-	 */
+	 
 	dev->dev_attrib.block_size = dev->dev_attrib.hw_block_size;
 	dev->dev_attrib.queue_depth = dev->dev_attrib.hw_queue_depth;
 
-	/*
-	 * Align max_hw_sectors down to PAGE_SIZE I/O transfers
-	 */
+	 
 	dev->dev_attrib.hw_max_sectors =
 		se_dev_align_max_sectors(dev->dev_attrib.hw_max_sectors,
 					 dev->dev_attrib.hw_block_size);
@@ -953,9 +852,7 @@ int target_configure_device(struct se_device *dev)
 	if (ret)
 		goto out_destroy_device;
 
-	/*
-	 * Setup work_queue for QUEUE_FULL
-	 */
+	 
 	INIT_WORK(&dev->qf_work_queue, target_qf_do_work);
 
 	scsi_dump_inquiry(dev);
@@ -1056,9 +953,7 @@ void core_dev_release_virtual_lun0(void)
 	core_delete_hba(hba);
 }
 
-/*
- * Common CDB parsing for kernel and user passthrough.
- */
+ 
 sense_reason_t
 passthrough_parse_cdb(struct se_cmd *cmd,
 	sense_reason_t (*exec_cmd)(struct se_cmd *cmd))
@@ -1067,19 +962,13 @@ passthrough_parse_cdb(struct se_cmd *cmd,
 	struct se_device *dev = cmd->se_dev;
 	unsigned int size;
 
-	/*
-	 * For REPORT LUNS we always need to emulate the response, for everything
-	 * else, pass it up.
-	 */
+	 
 	if (cdb[0] == REPORT_LUNS) {
 		cmd->execute_cmd = spc_emulate_report_luns;
 		return TCM_NO_SENSE;
 	}
 
-	/*
-	 * With emulate_pr disabled, all reservation requests should fail,
-	 * regardless of whether or not TRANSPORT_FLAG_PASSTHROUGH_PGR is set.
-	 */
+	 
 	if (!dev->dev_attrib.emulate_pr &&
 	    ((cdb[0] == PERSISTENT_RESERVE_IN) ||
 	     (cdb[0] == PERSISTENT_RESERVE_OUT) ||
@@ -1088,11 +977,7 @@ passthrough_parse_cdb(struct se_cmd *cmd,
 		return TCM_UNSUPPORTED_SCSI_OPCODE;
 	}
 
-	/*
-	 * For PERSISTENT RESERVE IN/OUT, RELEASE, and RESERVE we need to
-	 * emulate the response, since tcmu does not have the information
-	 * required to process these commands.
-	 */
+	 
 	if (!(dev->transport_flags &
 	      TRANSPORT_FLAG_PASSTHROUGH_PGR)) {
 		if (cdb[0] == PERSISTENT_RESERVE_IN) {
@@ -1124,7 +1009,7 @@ passthrough_parse_cdb(struct se_cmd *cmd,
 		}
 	}
 
-	/* Set DATA_CDB flag for ops that should have it */
+	 
 	switch (cdb[0]) {
 	case READ_6:
 	case READ_10:

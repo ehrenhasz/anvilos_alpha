@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Serial multi-instantiate driver, pseudo driver to instantiate multiple
- * client devices from a single fwnode.
- *
- * Copyright 2018 Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bits.h>
@@ -90,14 +85,7 @@ static void smi_devs_unregister(struct smi *smi)
 		spi_unregister_device(smi->spi_devs[smi->spi_num]);
 }
 
-/**
- * smi_spi_probe - Instantiate multiple SPI devices from inst array
- * @pdev:	Platform device
- * @smi:	Internal struct for Serial multi instantiate driver
- * @inst_array:	Array of instances to probe
- *
- * Returns the number of SPI devices instantiate, Zero if none is found or a negative error code.
- */
+ 
 static int smi_spi_probe(struct platform_device *pdev, struct smi *smi,
 			 const struct smi_instance *inst_array)
 {
@@ -174,14 +162,7 @@ error:
 	return ret;
 }
 
-/**
- * smi_i2c_probe - Instantiate multiple I2C devices from inst array
- * @pdev:	Platform device
- * @smi:	Internal struct for Serial multi instantiate driver
- * @inst_array:	Array of instances to probe
- *
- * Returns the number of I2C devices instantiate, Zero if none is found or a negative error code.
- */
+ 
 static int smi_i2c_probe(struct platform_device *pdev, struct smi *smi,
 			 const struct smi_instance *inst_array)
 {
@@ -262,14 +243,7 @@ static int smi_probe(struct platform_device *pdev)
 	case SMI_SPI:
 		return smi_spi_probe(pdev, smi, node->instances);
 	case SMI_AUTO_DETECT:
-		/*
-		 * For backwards-compatibility with the existing nodes I2C
-		 * is checked first and if such entries are found ONLY I2C
-		 * devices are created. Since some existing nodes that were
-		 * already handled by this driver could also contain unrelated
-		 * SpiSerialBus nodes that were previously ignored, and this
-		 * preserves that behavior.
-		 */
+		 
 		ret = smi_i2c_probe(pdev, smi, node->instances);
 		if (ret != -ENOENT)
 			return ret;
@@ -300,7 +274,7 @@ static const struct smi_node bsg2150_data = {
 	.instances = {
 		{ "bmc150_accel", IRQ_RESOURCE_GPIO, 0 },
 		{ "bmc150_magn" },
-		/* The resources describe a 3th client, but it is not really there. */
+		 
 		{ "bsg2150_dummy_dev" },
 		{}
 	},
@@ -335,24 +309,21 @@ static const struct smi_node cs35l56_hda = {
 		{ "cs35l56-hda", IRQ_RESOURCE_AUTO, 0 },
 		{ "cs35l56-hda", IRQ_RESOURCE_AUTO, 0 },
 		{ "cs35l56-hda", IRQ_RESOURCE_AUTO, 0 },
-		/* a 5th entry is an alias address, not a real device */
+		 
 		{ "cs35l56-hda_dummy_dev" },
 		{}
 	},
 	.bus_type = SMI_AUTO_DETECT,
 };
 
-/*
- * Note new device-ids must also be added to ignore_serial_bus_ids in
- * drivers/acpi/scan.c: acpi_device_enumeration_by_parent().
- */
+ 
 static const struct acpi_device_id smi_acpi_ids[] = {
 	{ "BSG1160", (unsigned long)&bsg1160_data },
 	{ "BSG2150", (unsigned long)&bsg2150_data },
 	{ "CSC3551", (unsigned long)&cs35l41_hda },
 	{ "CSC3556", (unsigned long)&cs35l56_hda },
 	{ "INT3515", (unsigned long)&int3515_data },
-	/* Non-conforming _HID for Cirrus Logic already released */
+	 
 	{ "CLSA0100", (unsigned long)&cs35l41_hda },
 	{ "CLSA0101", (unsigned long)&cs35l41_hda },
 	{ }

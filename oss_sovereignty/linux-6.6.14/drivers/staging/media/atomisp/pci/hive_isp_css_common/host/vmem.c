@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2010 - 2016, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include "isp.h"
 #include "vmem.h"
@@ -25,16 +13,16 @@
 typedef unsigned long long hive_uedge;
 typedef hive_uedge *hive_wide;
 
-/* Copied from SDK: sim_semantics.c */
+ 
 
-/* subword bits move like this:         MSB[____xxxx____]LSB -> MSB[00000000xxxx]LSB */
+ 
 static inline hive_uedge
 subword(hive_uedge w, unsigned int start, unsigned int end)
 {
 	return (w & (((1ULL << (end - 1)) - 1) << 1 | 1)) >> start;
 }
 
-/* inverse subword bits move like this: MSB[xxxx____xxxx]LSB -> MSB[xxxx0000xxxx]LSB */
+ 
 static inline hive_uedge
 inv_subword(hive_uedge w, unsigned int start, unsigned int end)
 {
@@ -60,7 +48,7 @@ move_subword(
 
 	hive_uedge src_subword = subword(src, src_start, src_end);
 
-	if (subword_width + start_bit > uedge_bits) { /* overlap */
+	if (subword_width + start_bit > uedge_bits) {  
 		hive_uedge old_val1;
 		hive_uedge old_val0 = inv_subword(target[start_elem], start_bit, uedge_bits);
 
@@ -83,20 +71,20 @@ hive_sim_wide_unpack(
     hive_uint elem_bits,
     hive_uint index)
 {
-	/* pointers into wide_type: */
+	 
 	unsigned int start_elem = (elem_bits * index) / uedge_bits;
 	unsigned int start_bit  = (elem_bits * index) % uedge_bits;
 	unsigned int end_elem   = (elem_bits * (index + 1) - 1) / uedge_bits;
 	unsigned int end_bit    = ((elem_bits * (index + 1) - 1) % uedge_bits) + 1;
 
 	if (elem_bits == uedge_bits) {
-		/* easy case for speedup: */
+		 
 		elem[0] = vector[index];
 	} else if (start_elem == end_elem) {
-		/* only one (<=64 bits) element needs to be (partly) copied: */
+		 
 		move_subword(elem, 0, vector[start_elem], start_bit, end_bit);
 	} else {
-		/* general case: handles edge spanning cases (includes >64bit elements) */
+		 
 		unsigned int bits_written = 0;
 		unsigned int i;
 
@@ -117,10 +105,10 @@ hive_sim_wide_pack(
     hive_uint elem_bits,
     hive_uint index)
 {
-	/* pointers into wide_type: */
+	 
 	unsigned int start_elem = (elem_bits * index) / uedge_bits;
 
-	/* easy case for speedup: */
+	 
 	if (elem_bits == uedge_bits) {
 		vector[start_elem] = elem[0];
 	} else if (elem_bits > uedge_bits) {
@@ -134,7 +122,7 @@ hive_sim_wide_pack(
 		}
 		move_lower_bits(vector, start_bit, elem[i], bits_to_write);
 	} else {
-		/* only one element needs to be (partly) copied: */
+		 
 		move_lower_bits(vector, elem_bits * index, elem[0], elem_bits);
 	}
 }
@@ -148,7 +136,7 @@ static void load_vector(
 	hive_uedge *data;
 	unsigned int size = sizeof(short) * ISP_NWAY;
 
-	VMEM_ARRAY(v, 2 * ISP_NWAY); /* Need 2 vectors to work around vmem hss bug */
+	VMEM_ARRAY(v, 2 * ISP_NWAY);  
 	assert(ISP_BAMEM_BASE[ID] != (hrt_address) - 1);
 #if !defined(HRT_MEMORY_ACCESS)
 	ia_css_device_load(ISP_BAMEM_BASE[ID] + (unsigned long)from, &v[0][0], size);
@@ -162,7 +150,7 @@ static void load_vector(
 		hive_sim_wide_unpack(data, &elem, ISP_VEC_ELEMBITS, i);
 		to[i] = elem;
 	}
-	udelay(1); /* Spend at least 1 cycles per vector */
+	udelay(1);  
 }
 
 static void store_vector(
@@ -173,8 +161,8 @@ static void store_vector(
 	unsigned int i;
 	unsigned int size = sizeof(short) * ISP_NWAY;
 
-	VMEM_ARRAY(v, 2 * ISP_NWAY); /* Need 2 vectors to work around vmem hss bug */
-	//load_vector (&v[1][0], &to[ISP_NWAY]); /* Fetch the next vector, since it will be overwritten. */
+	VMEM_ARRAY(v, 2 * ISP_NWAY);  
+	
 	hive_uedge *data = (hive_uedge *)v;
 
 	for (i = 0; i < ISP_NWAY; i++) {
@@ -184,17 +172,17 @@ static void store_vector(
 #if !defined(HRT_MEMORY_ACCESS)
 	ia_css_device_store(ISP_BAMEM_BASE[ID] + (unsigned long)to, &v, size);
 #else
-	//hrt_mem_store (ISP, VMEM, (unsigned)to, &v, siz); /* This will overwrite the next vector as well */
+	
 	hrt_master_port_store(ISP_BAMEM_BASE[ID] + (unsigned long)to, &v, size);
 #endif
-	udelay(1); /* Spend at least 1 cycles per vector */
+	udelay(1);  
 }
 
 void isp_vmem_load(
     const isp_ID_t		ID,
     const t_vmem_elem	*from,
     t_vmem_elem		*to,
-    unsigned int elems) /* In t_vmem_elem */
+    unsigned int elems)  
 {
 	unsigned int c;
 	const t_vmem_elem *vp = from;
@@ -212,7 +200,7 @@ void isp_vmem_store(
     const isp_ID_t		ID,
     t_vmem_elem		*to,
     const t_vmem_elem	*from,
-    unsigned int elems) /* In t_vmem_elem */
+    unsigned int elems)  
 {
 	unsigned int c;
 	t_vmem_elem *vp = to;
@@ -232,9 +220,9 @@ void isp_vmem_2d_load(
     t_vmem_elem		*to,
     unsigned int height,
     unsigned int width,
-    unsigned int stride_to,  /* In t_vmem_elem */
+    unsigned int stride_to,   
 
-    unsigned stride_from /* In t_vmem_elem */)
+    unsigned stride_from  )
 {
 	unsigned int h;
 
@@ -261,9 +249,9 @@ void isp_vmem_2d_store(
     const t_vmem_elem	*from,
     unsigned int height,
     unsigned int width,
-    unsigned int stride_to,  /* In t_vmem_elem */
+    unsigned int stride_to,   
 
-    unsigned stride_from /* In t_vmem_elem */)
+    unsigned stride_from  )
 {
 	unsigned int h;
 

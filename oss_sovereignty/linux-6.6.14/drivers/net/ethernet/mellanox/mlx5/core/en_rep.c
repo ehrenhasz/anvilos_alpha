@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2016, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/debugfs.h>
 #include <linux/mlx5/fs.h>
@@ -202,7 +172,7 @@ static MLX5E_DECLARE_STATS_GRP_OP_UPDATE_STATS(vport_rep)
 
 	#define MLX5_GET_CTR(p, x) \
 		MLX5_GET64(query_vport_counter_out, p, x)
-	/* flip tx/rx as we are reporting the counters for the switch vport */
+	 
 	rep_stats->vport_rx_packets =
 		MLX5_GET_CTR(out, transmitted_ib_unicast.packets) +
 		MLX5_GET_CTR(out, transmitted_eth_unicast.packets) +
@@ -465,7 +435,7 @@ static int mlx5e_sqs2vport_start(struct mlx5_eswitch *esw,
 			goto out_err;
 		}
 
-		/* Add re-inject rule to the PF/representor sqs */
+		 
 		flow_rule = mlx5_eswitch_add_send_to_vport_rule(esw, esw, rep,
 								sqns_array[i]);
 		if (IS_ERR(flow_rule)) {
@@ -521,9 +491,7 @@ mlx5e_add_sqs_fwd_rules(struct mlx5e_priv *priv)
 	ptp_sq = !!(priv->channels.ptp &&
 		    MLX5E_GET_PFLAG(&priv->channels.params, MLX5E_PFLAG_TX_PORT_TS));
 	nch = priv->channels.num + ptp_sq;
-	/* +2 for xdpsqs, they don't exist on the ptp channel but will not be
-	 * counted for by num_sqs.
-	 */
+	 
 	if (is_uplink_rep)
 		sqs_per_channel += 2;
 
@@ -660,7 +628,7 @@ bool mlx5e_is_uplink_rep(struct mlx5e_priv *priv)
 	if (!MLX5_ESWITCH_MANAGER(priv->mdev))
 		return false;
 
-	if (!rpriv) /* non vport rep mlx5e instances don't use this field */
+	if (!rpriv)  
 		return false;
 
 	rep = rpriv->rep;
@@ -703,7 +671,7 @@ mlx5e_rep_get_stats(struct net_device *dev, struct rtnl_link_stats64 *stats)
 {
 	struct mlx5e_priv *priv = netdev_priv(dev);
 
-	/* update HW stats in background for next time */
+	 
 	mlx5e_queue_update_stats(priv);
 	mlx5e_stats_copy_rep_stats(stats, &priv->stats.rep_stats);
 }
@@ -759,7 +727,7 @@ bool mlx5e_eswitch_vf_rep(const struct net_device *netdev)
 	return netdev->netdev_ops == &mlx5e_netdev_ops_rep;
 }
 
-/* One indirect TIR set for outer. Inner not supported in reps. */
+ 
 #define REP_NUM_INDIR_TIRS MLX5E_NUM_INDIR_TIRS
 
 static int mlx5e_rep_max_nch_limit(struct mlx5_core_dev *mdev)
@@ -790,26 +758,24 @@ static void mlx5e_build_rep_params(struct net_device *netdev)
 	params->hard_mtu    = MLX5E_ETH_HARD_MTU;
 	params->sw_mtu      = netdev->mtu;
 
-	/* SQ */
+	 
 	if (rep->vport == MLX5_VPORT_UPLINK)
 		params->log_sq_size = MLX5E_PARAMS_DEFAULT_LOG_SQ_SIZE;
 	else
 		params->log_sq_size = MLX5E_REP_PARAMS_DEF_LOG_SQ_SIZE;
 
-	/* RQ */
+	 
 	mlx5e_build_rq_params(mdev, params);
 
-	/* If netdev is already registered (e.g. move from nic profile to uplink,
-	 * RTNL lock must be held before triggering netdev notifiers.
-	 */
+	 
 	if (take_rtnl)
 		rtnl_lock();
-	/* update XDP supported features */
+	 
 	mlx5e_set_xdp_feature(netdev);
 	if (take_rtnl)
 		rtnl_unlock();
 
-	/* CQ moderation params */
+	 
 	params->rx_dim_enabled = MLX5_CAP_GEN(mdev, cq_moderation);
 	mlx5e_set_rx_cq_mode_params(params, cq_period_mode);
 
@@ -906,11 +872,11 @@ static int mlx5e_create_rep_ttc_table(struct mlx5e_priv *priv)
 			mlx5_get_flow_namespace(priv->mdev,
 						MLX5_FLOW_NAMESPACE_KERNEL), false);
 
-	/* The inner_ttc in the ttc params is intentionally not set */
+	 
 	mlx5e_set_ttc_params(priv->fs, priv->rx_res, &ttc_params, false);
 
 	if (rep->vport != MLX5_VPORT_UPLINK)
-		/* To give uplik rep TTC a lower level for chaining from root ft */
+		 
 		ttc_params.ft_attr.level = MLX5E_TTC_FT_LEVEL + 1;
 
 	mlx5e_fs_set_ttc(priv->fs, mlx5_create_ttc_table(priv->mdev, &ttc_params), false);
@@ -932,21 +898,19 @@ static int mlx5e_create_rep_root_ft(struct mlx5e_priv *priv)
 	int err = 0;
 
 	if (rep->vport != MLX5_VPORT_UPLINK) {
-		/* non uplik reps will skip any bypass tables and go directly to
-		 * their own ttc
-		 */
+		 
 		rpriv->root_ft = mlx5_get_ttc_flow_table(mlx5e_fs_get_ttc(priv->fs, false));
 		return 0;
 	}
 
-	/* uplink root ft will be used to auto chain, to ethtool or ttc tables */
+	 
 	ns = mlx5_get_flow_namespace(priv->mdev, MLX5_FLOW_NAMESPACE_OFFLOADS);
 	if (!ns) {
 		netdev_err(priv->netdev, "Failed to get reps offloads namespace\n");
 		return -EOPNOTSUPP;
 	}
 
-	ft_attr.max_fte = 0; /* Empty table, miss rule will always point to next table */
+	ft_attr.max_fte = 0;  
 	ft_attr.prio = 1;
 	ft_attr.level = 1;
 
@@ -1320,7 +1284,7 @@ static void mlx5e_uplink_rep_disable(struct mlx5e_priv *priv)
 static MLX5E_DEFINE_STATS_GRP(sw_rep, 0);
 static MLX5E_DEFINE_STATS_GRP(vport_rep, MLX5E_NDO_UPDATE_STATS);
 
-/* The stats groups order is opposite to the update_stats() order calls */
+ 
 static mlx5e_stats_grp_t mlx5e_rep_stats_grps[] = {
 	&MLX5E_STATS_GRP(sw_rep),
 	&MLX5E_STATS_GRP(vport_rep),
@@ -1331,7 +1295,7 @@ static unsigned int mlx5e_rep_stats_grps_num(struct mlx5e_priv *priv)
 	return ARRAY_SIZE(mlx5e_rep_stats_grps);
 }
 
-/* The stats groups order is opposite to the update_stats() order calls */
+ 
 static mlx5e_stats_grp_t mlx5e_ul_rep_stats_grps[] = {
 	&MLX5E_STATS_GRP(sw),
 	&MLX5E_STATS_GRP(qcnt),
@@ -1439,7 +1403,7 @@ static const struct mlx5e_profile mlx5e_uplink_rep_profile = {
 	.stats_grps_num		= mlx5e_ul_rep_stats_grps_num,
 };
 
-/* e-Switch vport representors */
+ 
 static int
 mlx5e_vport_uplink_rep_load(struct mlx5_core_dev *dev, struct mlx5_eswitch_rep *rep)
 {
@@ -1539,7 +1503,7 @@ mlx5e_vport_rep_load(struct mlx5_core_dev *dev, struct mlx5_eswitch_rep *rep)
 	if (!rpriv)
 		return -ENOMEM;
 
-	/* rpriv->rep to be looked up when profile->init() is called */
+	 
 	rpriv->rep = rep;
 	rep->rep_data[REP_ETH].priv = rpriv;
 	INIT_LIST_HEAD(&rpriv->vport_sqs_list);
@@ -1574,7 +1538,7 @@ mlx5e_vport_rep_unload(struct mlx5_eswitch_rep *rep)
 	priv->profile->cleanup(priv);
 	mlx5e_destroy_netdev(priv);
 free_ppriv:
-	kvfree(ppriv); /* mlx5e_rep_priv */
+	kvfree(ppriv);  
 }
 
 static void *mlx5e_vport_rep_get_proto_dev(struct mlx5_eswitch_rep *rep)

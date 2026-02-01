@@ -1,64 +1,39 @@
-/* Set the error indicator of a stream.
-   Copyright (C) 2007-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-/* Specification.  */
+ 
 #include "fseterr.h"
 
 #include <errno.h>
 
 #include "stdio-impl.h"
 
-/* This file is not used on systems that have the __fseterr function,
-   namely musl libc.  */
+ 
 
 void
 fseterr (FILE *fp)
 {
-  /* Most systems provide FILE as a struct and the necessary bitmask in
-     <stdio.h>, because they need it for implementing getc() and putc() as
-     fast macros.  */
+   
 #if defined _IO_EOF_SEEN || defined _IO_ftrylockfile || __GNU_LIBRARY__ == 1
-  /* GNU libc, BeOS, Haiku, Linux libc5 */
+   
   fp->_flags |= _IO_ERR_SEEN;
 #elif defined __sferror || defined __DragonFly__ || defined __ANDROID__
-  /* FreeBSD, NetBSD, OpenBSD, DragonFly, Mac OS X, Cygwin, Minix 3, Android */
+   
   fp_->_flags |= __SERR;
-#elif defined __EMX__               /* emx+gcc */
+#elif defined __EMX__                
   fp->_flags |= _IOERR;
-#elif defined __minix               /* Minix */
+#elif defined __minix                
   fp->_flags |= _IOERR;
-#elif defined _IOERR                /* AIX, HP-UX, IRIX, OSF/1, Solaris, OpenServer, UnixWare, mingw, MSVC, NonStop Kernel, OpenVMS */
+#elif defined _IOERR                 
   fp_->_flag |= _IOERR;
-#elif defined __UCLIBC__            /* uClibc */
+#elif defined __UCLIBC__             
   fp->__modeflags |= __FLAG_ERROR;
-#elif defined __QNX__               /* QNX */
-  fp->_Mode |= 0x200 /* _MERR */;
-#elif defined __MINT__              /* Atari FreeMiNT */
+#elif defined __QNX__                
+  fp->_Mode |= 0x200  ;
+#elif defined __MINT__               
   fp->__error = 1;
-#elif defined EPLAN9                /* Plan9 */
-  if (fp->state != 0 /* CLOSED */)
-    fp->state = 5 /* ERR */;
-#elif 0                             /* unknown  */
-  /* Portable fallback, based on an idea by Rich Felker.
-     Wow! 6 system calls for something that is just a bit operation!
-     Not activated on any system, because there is no way to repair FP when
-     the sequence of system calls fails, and library code should not call
-     abort().  */
+#elif defined EPLAN9                 
+  if (fp->state != 0  )
+    fp->state = 5  ;
+#elif 0                              
+   
   int saved_errno;
   int fd;
   int fd2;
@@ -70,10 +45,10 @@ fseterr (FILE *fp)
   if (fd2 >= 0)
     {
       close (fd);
-      fputc ('\0', fp); /* This should set the error indicator.  */
-      fflush (fp);      /* Or this.  */
+      fputc ('\0', fp);  
+      fflush (fp);       
       if (dup2 (fd2, fd) < 0)
-        /* Whee... we botched the stream and now cannot restore it!  */
+         
         abort ();
       close (fd2);
     }

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * xhci-debugfs.h - xHCI debugfs interface
- *
- * Copyright (C) 2017 Intel Corporation
- *
- * Author: Lu Baolu <baolu.lu@linux.intel.com>
- */
+ 
+ 
 
 #ifndef __LINUX_XHCI_DEBUGFS_H
 #define __LINUX_XHCI_DEBUGFS_H
@@ -138,6 +132,6 @@ static inline void
 xhci_debugfs_create_stream_files(struct xhci_hcd *xhci,
 				 struct xhci_virt_device *virt_dev,
 				 int ep_index) { }
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 
-#endif /* __LINUX_XHCI_DEBUGFS_H */
+#endif  

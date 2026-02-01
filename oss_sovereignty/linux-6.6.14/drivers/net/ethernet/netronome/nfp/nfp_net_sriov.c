@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2017-2019 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/errno.h>
@@ -44,12 +44,12 @@ nfp_net_sriov_update(struct nfp_app *app, int vf, u16 update, const char *msg)
 	struct nfp_net *nn;
 	int ret;
 
-	/* Write update info to mailbox in VF config symbol */
+	 
 	writeb(vf, app->pf->vfcfg_tbl2 + NFP_NET_VF_CFG_MB_VF_NUM);
 	writew(update, app->pf->vfcfg_tbl2 + NFP_NET_VF_CFG_MB_UPD);
 
 	nn = list_first_entry(&app->pf->vnics, struct nfp_net, vnic_list);
-	/* Signal VF reconfiguration */
+	 
 	ret = nfp_net_reconfig(nn, NFP_NET_CFG_UPDATE_VF);
 	if (ret)
 		return ret;
@@ -78,7 +78,7 @@ int nfp_app_set_vf_mac(struct net_device *netdev, int vf, u8 *mac)
 		return -EINVAL;
 	}
 
-	/* Write MAC to VF entry in VF config symbol */
+	 
 	vf_offset = NFP_NET_VF_CFG_MB_SZ + vf * NFP_NET_VF_CFG_SZ;
 	writel(get_unaligned_be32(mac), app->pf->vfcfg_tbl2 + vf_offset);
 	writew(get_unaligned_be16(mac + 4),
@@ -116,7 +116,7 @@ int nfp_app_set_vf_vlan(struct net_device *netdev, int vf, u16 vlan, u8 qos,
 		return -EINVAL;
 	}
 
-	/* Check if fw supports or not */
+	 
 	err = nfp_net_sriov_check(app, vf, NFP_NET_VF_CFG_MB_CAP_VLAN_PROTO, "vlan_proto", true);
 	if (err)
 		is_proto_sup = false;
@@ -127,14 +127,11 @@ int nfp_app_set_vf_vlan(struct net_device *netdev, int vf, u16 vlan, u8 qos,
 		update |= NFP_NET_VF_CFG_MB_UPD_VLAN_PROTO;
 	}
 
-	/* Write VLAN tag to VF entry in VF config symbol */
+	 
 	vlan_tag = FIELD_PREP(NFP_NET_VF_CFG_VLAN_VID, vlan) |
 		FIELD_PREP(NFP_NET_VF_CFG_VLAN_QOS, qos);
 
-	/* vlan_tag of 0 means that the configuration should be cleared and in
-	 * such circumstances setting the TPID has no meaning when
-	 * configuring firmware.
-	 */
+	 
 	if (vlan_tag && is_proto_sup)
 		vlan_tag |= FIELD_PREP(NFP_NET_VF_CFG_VLAN_PROT, ntohs(vlan_proto));
 
@@ -187,7 +184,7 @@ int nfp_app_set_vf_spoofchk(struct net_device *netdev, int vf, bool enable)
 	if (err)
 		return err;
 
-	/* Write spoof check control bit to VF entry in VF config symbol */
+	 
 	vf_offset = NFP_NET_VF_CFG_MB_SZ + vf * NFP_NET_VF_CFG_SZ +
 		NFP_NET_VF_CFG_CTRL;
 	vf_ctrl = readb(app->pf->vfcfg_tbl2 + vf_offset);
@@ -211,7 +208,7 @@ int nfp_app_set_vf_trust(struct net_device *netdev, int vf, bool enable)
 	if (err)
 		return err;
 
-	/* Write trust control bit to VF entry in VF config symbol */
+	 
 	vf_offset = NFP_NET_VF_CFG_MB_SZ + vf * NFP_NET_VF_CFG_SZ +
 		NFP_NET_VF_CFG_CTRL;
 	vf_ctrl = readb(app->pf->vfcfg_tbl2 + vf_offset);
@@ -245,7 +242,7 @@ int nfp_app_set_vf_link_state(struct net_device *netdev, int vf,
 		return -EINVAL;
 	}
 
-	/* Write link state to VF entry in VF config symbol */
+	 
 	vf_offset = NFP_NET_VF_CFG_MB_SZ + vf * NFP_NET_VF_CFG_SZ +
 		NFP_NET_VF_CFG_CTRL;
 	vf_ctrl = readb(app->pf->vfcfg_tbl2 + vf_offset);

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *    Copyright IBM Corp. 2007
- *    Author(s): Utz Bacher <utz.bacher@de.ibm.com>,
- *		 Frank Pavlic <fpavlic@de.ibm.com>,
- *		 Thomas Spatzier <tspat@de.ibm.com>,
- *		 Frank Blaschka <frank.blaschka@de.ibm.com>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <asm/ebcdic.h>
@@ -236,11 +230,11 @@ static ssize_t qeth_l3_dev_hsuid_store(struct device *dev,
 	}
 
 	if (card->options.hsuid[0])
-		/* delete old ip address */
+		 
 		qeth_l3_modify_hsuid(card, false);
 
 	if (strlen(tmp) == 0) {
-		/* delete ip address only */
+		 
 		card->options.hsuid[0] = '\0';
 		memcpy(card->dev->perm_addr, card->options.hsuid, 9);
 		qeth_configure_cq(card, QETH_CQ_DISABLED);
@@ -398,12 +392,12 @@ static int qeth_l3_parse_ipatoe(const char *buf, enum qeth_prot_versions proto,
 	char *sep;
 	int rc;
 
-	/* Expected input pattern: %addr/%mask */
+	 
 	sep = strnchr(buf, INET6_ADDRSTRLEN, '/');
 	if (!sep)
 		return -EINVAL;
 
-	/* Terminate the %addr sub-string, and parse it: */
+	 
 	*sep = '\0';
 	rc = qeth_l3_string_to_ipaddr(buf, proto, addr);
 	if (rc)

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022 Rafał Miłecki <rafal@milecki.pl>
- */
+
+ 
 
 #include <linux/crc32.h>
 #include <linux/etherdevice.h>
@@ -27,7 +25,7 @@ struct u_boot_env {
 
 	struct mtd_info *mtd;
 
-	/* Cells */
+	 
 	struct nvmem_cell_info *cells;
 	int ncells;
 };

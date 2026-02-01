@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
- */
+ 
+ 
 
 #ifndef __MTK_MDP3_CORE_H__
 #define __MTK_MDP3_CORE_H__
@@ -41,7 +38,7 @@ struct mdp_platform_config {
 	bool	wrot_filter_constraint;
 };
 
-/* indicate which mutex is used by each pipepline */
+ 
 enum mdp_pipe_id {
 	MDP_PIPE_WPEI,
 	MDP_PIPE_WPEI2,
@@ -77,7 +74,7 @@ struct mdp_dev {
 	struct mdp_vpu_dev			vpu;
 	struct mtk_scp				*scp;
 	struct rproc				*rproc_handle;
-	/* synchronization protect for accessing vpu working buffer info */
+	 
 	struct mutex				vpu_lock;
 	s32					vpu_count;
 	u32					id_count;
@@ -88,7 +85,7 @@ struct mdp_dev {
 	struct v4l2_device			v4l2_dev;
 	struct video_device			*m2m_vdev;
 	struct v4l2_m2m_dev			*m2m_dev;
-	/* synchronization protect for m2m device operation */
+	 
 	struct mutex				m2m_lock;
 	atomic_t				suspended;
 	atomic_t				job_count;
@@ -105,4 +102,4 @@ int mdp_vpu_register(struct mdp_dev *mdp);
 void mdp_vpu_unregister(struct mdp_dev *mdp);
 void mdp_video_device_release(struct video_device *vdev);
 
-#endif  /* __MTK_MDP3_CORE_H__ */
+#endif   

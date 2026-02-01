@@ -1,40 +1,4 @@
-/*
- * Shared Atheros AR9170 Header
- *
- * Firmware command interface definitions
- *
- * Copyright 2008, Johannes Berg <johannes@sipsolutions.net>
- * Copyright 2009-2011 Christian Lamparter <chunkeey@googlemail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; see the file COPYING.  If not, see
- * http://www.gnu.org/licenses/.
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *    Copyright (c) 2007-2008 Atheros Communications, Inc.
- *
- *    Permission to use, copy, modify, and/or distribute this software for any
- *    purpose with or without fee is hereby granted, provided that the above
- *    copyright notice and this permission notice appear in all copies.
- *
- *    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- *    WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- *    MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- *    ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- *    WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- *    ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- *    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #ifndef __CARL9170_SHARED_FWCMD_H
 #define __CARL9170_SHARED_FWCMD_H
@@ -58,18 +22,18 @@ enum carl9170_cmd_oids {
 	CARL9170_CMD_TALLY		= 0x09,
 	CARL9170_CMD_WREGB		= 0x0a,
 
-	/* CAM */
+	 
 	CARL9170_CMD_EKEY		= 0x10,
 	CARL9170_CMD_DKEY		= 0x11,
 
-	/* RF / PHY */
+	 
 	CARL9170_CMD_FREQUENCY		= 0x20,
 	CARL9170_CMD_RF_INIT		= 0x21,
 	CARL9170_CMD_SYNTH		= 0x22,
 	CARL9170_CMD_FREQ_START		= 0x23,
 	CARL9170_CMD_PSM		= 0x24,
 
-	/* Asychronous command flag */
+	 
 	CARL9170_CMD_ASYNC_FLAG		= 0x40,
 	CARL9170_CMD_WREG_ASYNC		= (CARL9170_CMD_WREG |
 					   CARL9170_CMD_ASYNC_FLAG),
@@ -80,7 +44,7 @@ enum carl9170_cmd_oids {
 	CARL9170_CMD_PSM_ASYNC		= (CARL9170_CMD_PSM |
 					   CARL9170_CMD_ASYNC_FLAG),
 
-	/* responses and traps */
+	 
 	CARL9170_RSP_FLAG		= 0xc0,
 	CARL9170_RSP_PRETBTT		= 0xc0,
 	CARL9170_RSP_TXCOMP		= 0xc1,
@@ -148,13 +112,13 @@ struct carl9170_rf_init {
 #define CARL9170_RF_INIT_SIZE		28
 
 struct carl9170_rf_init_result {
-	__le32		ret;		/* AR9170_PHY_REG_AGC_CONTROL */
+	__le32		ret;		 
 } __packed;
 #define	CARL9170_RF_INIT_RESULT_SIZE	4
 
 #define	CARL9170_PSM_SLEEP		0x1000
 #define	CARL9170_PSM_SOFTWARE		0
-#define	CARL9170_PSM_WAKE		0 /* internally used. */
+#define	CARL9170_PSM_WAKE		0  
 #define	CARL9170_PSM_COUNTER		0xfff
 #define	CARL9170_PSM_COUNTER_S		0
 
@@ -163,14 +127,7 @@ struct carl9170_psm {
 } __packed;
 #define CARL9170_PSM_SIZE		4
 
-/*
- * Note: If a bit in rx_filter is set, then it
- * means that the particular frames which matches
- * the condition are FILTERED/REMOVED/DISCARDED!
- * (This is can be a bit confusing, especially
- * because someone people think it's the exact
- * opposite way, so watch out!)
- */
+ 
 struct carl9170_rx_filter_cmd {
 	__le32		rx_filter;
 } __packed;
@@ -252,15 +209,9 @@ struct carl9170_cmd {
 #define	CARL9170_TX_STATUS_SUCCESS	0x80
 
 #ifdef __CARL9170FW__
-/*
- * NOTE:
- * Both structs [carl9170_tx_status and _carl9170_tx_status]
- * need to be "bit for bit" in sync.
- */
+ 
 struct carl9170_tx_status {
-	/*
-	 * Beware of compiler bugs in all gcc pre 4.4!
-	 */
+	 
 
 	u8 cookie;
 	u8 queue:2;
@@ -268,12 +219,10 @@ struct carl9170_tx_status {
 	u8 tries:3;
 	u8 success:1;
 } __packed;
-#endif /* __CARL9170FW__ */
+#endif  
 
 struct _carl9170_tx_status {
-	/*
-	 * This version should be immune to all alignment bugs.
-	 */
+	 
 
 	u8 cookie;
 	u8 info;
@@ -321,7 +270,7 @@ struct carl9170_rsp {
 		struct carl9170_u32_list	echo;
 #ifdef __CARL9170FW__
 		DECLARE_FLEX_ARRAY(struct carl9170_tx_status, tx_status);
-#endif /* __CARL9170FW__ */
+#endif  
 		DECLARE_FLEX_ARRAY(struct _carl9170_tx_status, _tx_status);
 		struct carl9170_gpio		gpio;
 		struct carl9170_tsf_rsp		tsf;
@@ -331,4 +280,4 @@ struct carl9170_rsp {
 	} __packed;
 } __packed __aligned(4);
 
-#endif /* __CARL9170_SHARED_FWCMD_H */
+#endif  

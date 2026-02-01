@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2017-2018 NXP
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -164,7 +162,7 @@ enum imx8mm_pads {
 	MX8MM_IOMUXC_UART4_TXD = 148,
 };
 
-/* Pad names for the pinmux subsystem */
+ 
 static const struct pinctrl_pin_desc imx8mm_pinctrl_pads[] = {
 	IMX_PINCTRL_PIN(MX8MM_PAD_RESERVE0),
 	IMX_PINCTRL_PIN(MX8MM_PAD_RESERVE1),
@@ -325,7 +323,7 @@ static const struct imx_pinctrl_soc_info imx8mm_pinctrl_info = {
 
 static const struct of_device_id imx8mm_pinctrl_of_match[] = {
 	{ .compatible = "fsl,imx8mm-iomuxc", .data = &imx8mm_pinctrl_info, },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx8mm_pinctrl_of_match);
 

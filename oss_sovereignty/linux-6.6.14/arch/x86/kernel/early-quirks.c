@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Various workarounds for chipset bugs.
-   This code runs very early and can't use the regular PCI subsystem
-   The entries are keyed to PCI bridges which usually identify chipsets
-   uniquely.
-   This is only for whole classes of chipsets with specific problems which
-   need early invasive action (e.g. before the timers are initialized).
-   Most PCI device specific workarounds can be done later and should be
-   in standard PCI quirks
-   Mainboard specific bugs should be handled by DMI entries.
-   CPU specific bugs in setup.c */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/acpi.h>
@@ -32,12 +23,7 @@
 static void __init fix_hypertransport_config(int num, int slot, int func)
 {
 	u32 htcfg;
-	/*
-	 * we found a hypertransport bus
-	 * make sure that we are broadcasting
-	 * interrupts to all cpus on the ht bus
-	 * if we're using extended apic ids
-	 */
+	 
 	htcfg = read_pci_config(num, slot, func, 0x68);
 	if (htcfg & (1 << 18)) {
 		printk(KERN_INFO "Detected use of extended apic ids "
@@ -75,27 +61,18 @@ static int __init nvidia_hpet_check(struct acpi_table_header *header)
 {
 	return 0;
 }
-#endif /* CONFIG_X86_IO_APIC */
-#endif /* CONFIG_ACPI */
+#endif  
+#endif  
 
 static void __init nvidia_bugs(int num, int slot, int func)
 {
 #ifdef CONFIG_ACPI
 #ifdef CONFIG_X86_IO_APIC
-	/*
-	 * Only applies to Nvidia root ports (bus 0) and not to
-	 * Nvidia graphics cards with PCI ports on secondary buses.
-	 */
+	 
 	if (num)
 		return;
 
-	/*
-	 * All timer overrides on Nvidia are
-	 * wrong unless HPET is enabled.
-	 * Unfortunately that's not true on many Asus boards.
-	 * We don't know yet how to detect this automatically, but
-	 * at least allow a command line override.
-	 */
+	 
 	if (acpi_use_timer_override)
 		return;
 
@@ -109,7 +86,7 @@ static void __init nvidia_bugs(int num, int slot, int func)
 	}
 #endif
 #endif
-	/* RED-PEN skip them on mptables too? */
+	 
 
 }
 
@@ -144,7 +121,7 @@ static void __init ati_bugs(int num, int slot, int func)
 	if (d  < 0x82)
 		acpi_skip_timer_override = 1;
 	else {
-		/* check for IRQ0 interrupt swap */
+		 
 		outb(0x72, 0xcd6); b = inb(0xcd7);
 		if (!(b & 0x2))
 			acpi_skip_timer_override = 1;
@@ -176,18 +153,14 @@ static void __init ati_bugs_contd(int num, int slot, int func)
 	if (rev >= 0x40)
 		acpi_fix_pin2_polarity = 1;
 
-	/*
-	 * SB600: revisions 0x11, 0x12, 0x13, 0x14, ...
-	 * SB700: revisions 0x39, 0x3a, ...
-	 * SB800: revisions 0x40, 0x41, ...
-	 */
+	 
 	if (rev >= 0x39)
 		return;
 
 	if (acpi_use_timer_override)
 		return;
 
-	/* check for IRQ0 interrupt swap */
+	 
 	d = read_pci_config(num, slot, func, 0x64);
 	if (!(d & (1<<14)))
 		acpi_skip_timer_override = 1;
@@ -217,27 +190,14 @@ static void __init intel_remapping_check(int num, int slot, int func)
 	device = read_pci_config_16(num, slot, func, PCI_DEVICE_ID);
 	revision = read_pci_config_byte(num, slot, func, PCI_REVISION_ID);
 
-	/*
-	 * Revision <= 13 of all triggering devices id in this quirk
-	 * have a problem draining interrupts when irq remapping is
-	 * enabled, and should be flagged as broken. Additionally
-	 * revision 0x22 of device id 0x3405 has this problem.
-	 */
+	 
 	if (revision <= 0x13)
 		set_irq_remapping_broken();
 	else if (device == 0x3405 && revision == 0x22)
 		set_irq_remapping_broken();
 }
 
-/*
- * Systems with Intel graphics controllers set aside memory exclusively
- * for gfx driver use.  This memory is not marked in the E820 as reserved
- * or as RAM, and so is subject to overlap from E820 manipulation later
- * in the boot process.  On some systems, MMIO space is allocated on top,
- * despite the efforts of the "RAM buffer" approach, which simply rounds
- * memory boundaries up to 64M to try to catch space that may decode
- * as RAM and so is not suitable for MMIO.
- */
+ 
 
 #define KB(x)	((x) * 1024UL)
 #define MB(x)	(KB (KB (x)))
@@ -292,10 +252,7 @@ static resource_size_t __init i85x_mem_size(void)
 	return read_pci_config_byte(0, 0, 1, I85X_DRB3) * MB(32);
 }
 
-/*
- * On 830/845/85x the stolen memory base isn't available in any
- * register. We need to calculate it as TOM-TSEG_SIZE-stolen_size.
- */
+ 
 static resource_size_t __init i830_stolen_base(int num, int slot, int func,
 					       resource_size_t stolen_size)
 {
@@ -329,11 +286,7 @@ static resource_size_t __init gen3_stolen_base(int num, int slot, int func,
 {
 	u32 bsm;
 
-	/* Almost universally we can find the Graphics Base of Stolen Memory
-	 * at register BSM (0x5c) in the igfx configuration space. On a few
-	 * (desktop) machines this is also mirrored in the bridge device at
-	 * different locations, or in the MCHBAR.
-	 */
+	 
 	bsm = read_pci_config(num, slot, func, INTEL_BSM);
 
 	return bsm & INTEL_BSM_MASK;
@@ -363,7 +316,7 @@ static resource_size_t __init i830_stolen_size(int num, int slot, int func)
 	case I830_GMCH_GMS_STOLEN_512:	return KB(512);
 	case I830_GMCH_GMS_STOLEN_1024:	return MB(1);
 	case I830_GMCH_GMS_STOLEN_8192:	return MB(8);
-	/* local memory isn't part of the normal address space */
+	 
 	case I830_GMCH_GMS_LOCAL:	return 0;
 	default:
 		WARN(1, "Unknown GMCH_CTRL value: %x!\n", gmch_ctrl);
@@ -431,11 +384,7 @@ static resource_size_t __init chv_stolen_size(int num, int slot, int func)
 	gmch_ctrl = read_pci_config_16(num, slot, func, SNB_GMCH_CTRL);
 	gms = (gmch_ctrl >> SNB_GMCH_GMS_SHIFT) & SNB_GMCH_GMS_MASK;
 
-	/*
-	 * 0x0  to 0x10: 32MB increments starting at 0MB
-	 * 0x11 to 0x16: 4MB increments starting at 8MB
-	 * 0x17 to 0x1d: 4MB increments start at 36MB
-	 */
+	 
 	if (gms < 0x11)
 		return gms * MB(32);
 	else if (gms < 0x17)
@@ -452,8 +401,8 @@ static resource_size_t __init gen9_stolen_size(int num, int slot, int func)
 	gmch_ctrl = read_pci_config_16(num, slot, func, SNB_GMCH_CTRL);
 	gms = (gmch_ctrl >> BDW_GMCH_GMS_SHIFT) & BDW_GMCH_GMS_MASK;
 
-	/* 0x0  to 0xef: 32MB increments starting at 0MB */
-	/* 0xf0 to 0xfe: 4MB increments starting at 4MB */
+	 
+	 
 	if (gms < 0xf0)
 		return gms * MB(32);
 	else
@@ -516,7 +465,7 @@ static const struct intel_early_ops gen11_early_ops __initconst = {
 	.stolen_size = gen9_stolen_size,
 };
 
-/* Intel integrated GPUs for which we need to reserve "stolen memory" */
+ 
 static const struct pci_device_id intel_early_ids[] __initconst = {
 	INTEL_I830_IDS(&i830_early_ops),
 	INTEL_I845G_IDS(&i845_early_ops),
@@ -585,7 +534,7 @@ intel_graphics_stolen(int num, int slot, int func,
 	printk(KERN_INFO "Reserving Intel graphics memory at %pR\n",
 	       &intel_graphics_stolen_res);
 
-	/* Mark this space as reserved */
+	 
 	e820__range_add(base, size, E820_TYPE_RESERVED);
 	e820__update_table(e820_table);
 }
@@ -596,10 +545,7 @@ static void __init intel_graphics_quirks(int num, int slot, int func)
 	u16 device;
 	int i;
 
-	/*
-	 * Reserve "stolen memory" for an integrated GPU.  If we've already
-	 * found one, there's nothing to do for other (discrete) GPUs.
-	 */
+	 
 	if (resource_size(&intel_graphics_stolen_res))
 		return;
 
@@ -642,7 +588,7 @@ static void __init apple_airport_reset(int bus, int slot, int func)
 	if (!x86_apple_machine)
 		return;
 
-	/* Card may have been put into PCI_D3hot by grub quirk */
+	 
 	pmcsr = read_pci_config_16(bus, slot, func, BCM4331_PM_CAP + PCI_PM_CTRL);
 
 	if ((pmcsr & PCI_PM_CTRL_STATE_MASK) != PCI_D0) {
@@ -716,14 +662,7 @@ static struct chipset early_qrk[] __initdata = {
 	  PCI_BASE_CLASS_BRIDGE, 0, intel_remapping_check },
 	{ PCI_VENDOR_ID_INTEL, PCI_ANY_ID, PCI_CLASS_DISPLAY_VGA, PCI_ANY_ID,
 	  0, intel_graphics_quirks },
-	/*
-	 * HPET on the current version of the Baytrail platform has accuracy
-	 * problems: it will halt in deep idle state - so we disable it.
-	 *
-	 * More details can be found in section 18.10.1.3 of the datasheet:
-	 *
-	 *    http://www.intel.com/content/dam/www/public/us/en/documents/datasheets/atom-z8000-datasheet-vol-1.pdf
-	 */
+	 
 	{ PCI_VENDOR_ID_INTEL, 0x0f00,
 		PCI_CLASS_BRIDGE_HOST, PCI_ANY_ID, 0, force_disable_hpet},
 	{ PCI_VENDOR_ID_BROADCOM, 0x4331,
@@ -733,17 +672,7 @@ static struct chipset early_qrk[] __initdata = {
 
 static void __init early_pci_scan_bus(int bus);
 
-/**
- * check_dev_quirk - apply early quirks to a given PCI device
- * @num: bus number
- * @slot: slot number
- * @func: PCI function
- *
- * Check the vendor & device ID against the early quirks table.
- *
- * If the device is single function, let early_pci_scan_bus() know so we don't
- * poke at this device again.
- */
+ 
 static int __init check_dev_quirk(int num, int slot, int func)
 {
 	u16 class;
@@ -756,7 +685,7 @@ static int __init check_dev_quirk(int num, int slot, int func)
 	class = read_pci_config_16(num, slot, func, PCI_CLASS_DEVICE);
 
 	if (class == 0xffff)
-		return -1; /* no class, treat as single function */
+		return -1;  
 
 	vendor = read_pci_config_16(num, slot, func, PCI_VENDOR_ID);
 
@@ -795,10 +724,10 @@ static void __init early_pci_scan_bus(int bus)
 {
 	int slot, func;
 
-	/* Poor man's PCI discovery */
+	 
 	for (slot = 0; slot < 32; slot++)
 		for (func = 0; func < 8; func++) {
-			/* Only probe function 0 on single fn devices */
+			 
 			if (check_dev_quirk(bus, slot, func))
 				break;
 		}

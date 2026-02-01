@@ -1,19 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2009-2021 Christoph Hellwig
- *
- * NOTE: none of these tracepoints shall be considered a stable kernel ABI
- * as they can change at any time.
- *
- * Current conventions for printing numbers measuring specific units:
- *
- * offset: byte offset into a subcomponent of a file operation
- * pos: file offset, in bytes
- * length: length of a file operation, in bytes
- * ino: inode number
- *
- * Numbers describing space allocations should be formatted in hexadecimal.
- */
+ 
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM iomap
 
@@ -261,7 +247,7 @@ TRACE_EVENT(iomap_dio_complete,
 		  __entry->ret)
 );
 
-#endif /* _IOMAP_TRACE_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

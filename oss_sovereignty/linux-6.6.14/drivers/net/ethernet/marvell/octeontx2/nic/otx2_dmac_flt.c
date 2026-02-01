@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell RVU Ethernet driver
- *
- * Copyright (C) 2021 Marvell.
- *
- */
+
+ 
 
 #include "otx2_common.h"
 
@@ -75,9 +71,7 @@ int otx2_dmacflt_add(struct otx2_nic *pf, const u8 *mac, u32 bit_pos)
 {
 	u32 *dmacindex;
 
-	/* Store dmacindex returned by CGX/RPM driver which will
-	 * be used for macaddr update/remove
-	 */
+	 
 	dmacindex = &pf->flow_cfg->bmap_to_dmacindex[bit_pos];
 
 	if (ether_addr_equal(mac, pf->netdev->dev_addr))
@@ -137,10 +131,7 @@ int otx2_dmacflt_remove(struct otx2_nic *pf, const u8 *mac,
 		return otx2_dmacflt_do_remove(pf, mac, dmacindex);
 }
 
-/* CGX/RPM blocks support max unicast entries of 32.
- * on typical configuration MAC block associated
- * with 4 lmacs, each lmac will have 8 dmac entries
- */
+ 
 int otx2_dmacflt_get_max_cnt(struct otx2_nic *pf)
 {
 	struct cgx_max_dmac_entries_get_rsp *rsp;
@@ -192,7 +183,7 @@ int otx2_dmacflt_update(struct otx2_nic *pf, u8 *mac, u32 bit_pos)
 	ether_addr_copy(req->mac_addr, mac);
 	req->index = pf->flow_cfg->bmap_to_dmacindex[bit_pos];
 
-	/* check the response and change index */
+	 
 
 	rc = otx2_sync_mbox_msg(&pf->mbox);
 	if (rc)

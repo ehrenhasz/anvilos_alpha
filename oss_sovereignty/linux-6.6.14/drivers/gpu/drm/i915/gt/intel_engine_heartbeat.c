@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include "i915_drv.h"
 #include "i915_request.h"
@@ -13,12 +11,7 @@
 #include "intel_gt.h"
 #include "intel_reset.h"
 
-/*
- * While the engine is active, we send a periodic pulse along the engine
- * to check on its health and to flush any idle-barriers. If that request
- * is stuck, and we fail to preempt it, we declare the engine hung and
- * issue a reset -- in the hope that restores progress.
- */
+ 
 
 static bool next_heartbeat(struct intel_engine_cs *engine)
 {
@@ -29,24 +22,12 @@ static bool next_heartbeat(struct intel_engine_cs *engine)
 
 	rq = engine->heartbeat.systole;
 
-	/*
-	 * FIXME: The final period extension is disabled if the period has been
-	 * modified from the default. This is to prevent issues with certain
-	 * selftests which override the value and expect specific behaviour.
-	 * Once the selftests have been updated to either cope with variable
-	 * heartbeat periods (or to override the pre-emption timeout as well,
-	 * or just to add a selftest specific override of the extension), the
-	 * generic override can be removed.
-	 */
+	 
 	if (rq && rq->sched.attr.priority >= I915_PRIORITY_BARRIER &&
 	    delay == engine->defaults.heartbeat_interval_ms) {
 		long longer;
 
-		/*
-		 * The final try is at the highest priority possible. Up until now
-		 * a pre-emption might not even have been attempted. So make sure
-		 * this last attempt allows enough time for a pre-emption to occur.
-		 */
+		 
 		longer = READ_ONCE(engine->props.preempt_timeout_ms) * 2;
 		longer = intel_clamp_heartbeat_interval_ms(engine, longer);
 		if (longer > delay)
@@ -119,11 +100,7 @@ reset_engine(struct intel_engine_cs *engine, struct i915_request *rq)
 		show_heartbeat(rq, engine);
 
 	if (intel_engine_uses_guc(engine))
-		/*
-		 * GuC itself is toast or GuC's hang detection
-		 * is disabled. Either way, need to find the
-		 * hang culprit manually.
-		 */
+		 
 		intel_guc_find_hung_context(engine);
 
 	intel_gt_handle_error(engine->gt, engine->mask,
@@ -141,7 +118,7 @@ static void heartbeat(struct work_struct *wrk)
 	struct i915_request *rq;
 	unsigned long serial;
 
-	/* Just in case everything has gone horribly wrong, give it a kick */
+	 
 	intel_engine_flush_submission(engine);
 
 	rq = engine->heartbeat.systole;
@@ -164,30 +141,16 @@ static void heartbeat(struct work_struct *wrk)
 	if (engine->heartbeat.systole) {
 		long delay = READ_ONCE(engine->props.heartbeat_interval_ms);
 
-		/* Safeguard against too-fast worker invocations */
+		 
 		if (!time_after(jiffies,
 				rq->emitted_jiffies + msecs_to_jiffies(delay)))
 			goto out;
 
 		if (!i915_sw_fence_signaled(&rq->submit)) {
-			/*
-			 * Not yet submitted, system is stalled.
-			 *
-			 * This more often happens for ring submission,
-			 * where all contexts are funnelled into a common
-			 * ringbuffer. If one context is blocked on an
-			 * external fence, not only is it not submitted,
-			 * but all other contexts, including the kernel
-			 * context are stuck waiting for the signal.
-			 */
+			 
 		} else if (engine->sched_engine->schedule &&
 			   rq->sched.attr.priority < I915_PRIORITY_BARRIER) {
-			/*
-			 * Gradually raise the priority of the heartbeat to
-			 * give high priority work [which presumably desires
-			 * low latency and no jitter] the chance to naturally
-			 * complete before being preempted.
-			 */
+			 
 			attr.priority = 0;
 			if (rq->sched.attr.priority >= attr.priority)
 				attr.priority = I915_PRIORITY_HEARTBEAT;
@@ -210,7 +173,7 @@ static void heartbeat(struct work_struct *wrk)
 		goto out;
 
 	if (!mutex_trylock(&ce->timeline->mutex)) {
-		/* Unable to lock the kernel timeline, is the engine stuck? */
+		 
 		if (xchg(&engine->heartbeat.blocked, serial) == serial)
 			intel_gt_handle_error(engine->gt, engine->mask,
 					      I915_ERROR_CAPTURE,
@@ -316,7 +279,7 @@ int intel_engine_set_heartbeat(struct intel_engine_cs *engine,
 	if (!delay && !intel_engine_has_preempt_reset(engine))
 		return -ENODEV;
 
-	/* FIXME: Remove together with equally marked hack in next_heartbeat. */
+	 
 	if (delay != engine->defaults.heartbeat_interval_ms &&
 	    delay < 2 * engine->props.preempt_timeout_ms) {
 		if (intel_engine_uses_guc(engine))
@@ -336,7 +299,7 @@ int intel_engine_set_heartbeat(struct intel_engine_cs *engine,
 	if (delay != engine->props.heartbeat_interval_ms) {
 		unsigned long saved = set_heartbeat(engine, delay);
 
-		/* recheck current execution */
+		 
 		if (intel_engine_has_preemption(engine)) {
 			err = __intel_engine_pulse(engine);
 			if (err)

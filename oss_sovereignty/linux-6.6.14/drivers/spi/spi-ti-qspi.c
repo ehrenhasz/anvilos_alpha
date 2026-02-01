@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI QSPI driver
- *
- * Copyright (C) 2013 Texas Instruments Incorporated - https://www.ti.com
- * Author: Sourav Poddar <sourav.poddar@ti.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -37,7 +32,7 @@ struct ti_qspi_regs {
 struct ti_qspi {
 	struct completion	transfer_complete;
 
-	/* list synchronization */
+	 
 	struct mutex            list_lock;
 
 	struct spi_master	*master;
@@ -78,11 +73,11 @@ struct ti_qspi {
 
 #define QSPI_COMPLETION_TIMEOUT		msecs_to_jiffies(2000)
 
-/* Clock Control */
+ 
 #define QSPI_CLK_EN			(1 << 31)
 #define QSPI_CLK_DIV_MAX		0xffff
 
-/* Command */
+ 
 #define QSPI_EN_CS(n)			(n << 28)
 #define QSPI_WLEN(n)			((n - 1) << 19)
 #define QSPI_3_PIN			(1 << 18)
@@ -96,11 +91,11 @@ struct ti_qspi {
 #define QSPI_WLEN_MAX_BYTES		16
 #define QSPI_WLEN_MASK			QSPI_WLEN(QSPI_WLEN_MAX_BITS)
 
-/* STATUS REGISTER */
+ 
 #define BUSY				0x01
 #define WC				0x02
 
-/* Device Control */
+ 
 #define QSPI_DD(m, n)			(m << (3 + n * 8))
 #define QSPI_CKPHA(n)			(1 << (2 + n * 8))
 #define QSPI_CSPOL(n)			(1 << (1 + n * 8))
@@ -187,10 +182,10 @@ static void ti_qspi_setup_clk(struct ti_qspi *qspi, u32 speed_hz)
 
 		clk_ctrl_reg &= ~QSPI_CLK_EN;
 
-		/* disable SCLK */
+		 
 		ti_qspi_write(qspi, clk_ctrl_reg, QSPI_SPI_CLOCK_CNTRL_REG);
 
-		/* enable SCLK */
+		 
 		ti_qspi_write(qspi, clk_ctrl_new, QSPI_SPI_CLOCK_CNTRL_REG);
 		ctx_reg->clkctrl = clk_ctrl_new;
 	}
@@ -249,7 +244,7 @@ static int qspi_write_msg(struct ti_qspi *qspi, struct spi_transfer *t,
 
 	txbuf = t->tx_buf;
 	cmd = qspi->cmd | QSPI_WR_SNGL;
-	wlen = t->bits_per_word >> 3;	/* in bytes */
+	wlen = t->bits_per_word >> 3;	 
 	xfer_len = wlen;
 
 	while (count) {
@@ -330,7 +325,7 @@ static int qspi_read_msg(struct ti_qspi *qspi, struct spi_transfer *t,
 		cmd |= QSPI_RD_SNGL;
 		break;
 	}
-	wlen = t->bits_per_word >> 3;	/* in bytes */
+	wlen = t->bits_per_word >> 3;	 
 	rx_wlen = wlen;
 
 	while (count) {
@@ -340,10 +335,7 @@ static int qspi_read_msg(struct ti_qspi *qspi, struct spi_transfer *t,
 
 		switch (wlen) {
 		case 1:
-			/*
-			 * Optimize the 8-bit words transfers, as used by
-			 * the SPI flash devices.
-			 */
+			 
 			if (count >= QSPI_WLEN_MAX_BYTES) {
 				rxlen = QSPI_WLEN_MAX_BYTES;
 			} else {
@@ -366,10 +358,7 @@ static int qspi_read_msg(struct ti_qspi *qspi, struct spi_transfer *t,
 
 		switch (wlen) {
 		case 1:
-			/*
-			 * Optimize the 8-bit words transfers, as used by
-			 * the SPI flash devices.
-			 */
+			 
 			if (count >= QSPI_WLEN_MAX_BYTES) {
 				u32 *rxp = (u32 *) rxbuf;
 				rx = readl(qspi->base + QSPI_SPI_DATA_REG_3);
@@ -483,10 +472,7 @@ static int ti_qspi_dma_bounce_buffer(struct ti_qspi *qspi, loff_t offs,
 	dma_addr_t dma_src = qspi->mmap_phys_base + offs;
 	int ret = 0;
 
-	/*
-	 * Use bounce buffer as FS like jffs2, ubifs may pass
-	 * buffers that does not belong to kernel lowmem region.
-	 */
+	 
 	while (readsize != 0) {
 		size_t xfer_len = min_t(size_t, QSPI_DMA_BUFFER_SIZE,
 					readsize);
@@ -581,18 +567,14 @@ static int ti_qspi_adjust_op_size(struct spi_mem *mem, struct spi_mem_op *op)
 
 	if (op->data.dir == SPI_MEM_DATA_IN) {
 		if (op->addr.val < qspi->mmap_size) {
-			/* Limit MMIO to the mmaped region */
+			 
 			if (op->addr.val + op->data.nbytes > qspi->mmap_size) {
 				max_len = qspi->mmap_size - op->addr.val;
 				op->data.nbytes = min((size_t) op->data.nbytes,
 						      max_len);
 			}
 		} else {
-			/*
-			 * Use fallback mode (SW generated transfers) above the
-			 * mmaped region.
-			 * Adjust size to comply with the QSPI max frame length.
-			 */
+			 
 			max_len = QSPI_FRAME;
 			max_len -= 1 + op->addr.nbytes + op->dummy.nbytes;
 			op->data.nbytes = min((size_t) op->data.nbytes,
@@ -610,12 +592,12 @@ static int ti_qspi_exec_mem_op(struct spi_mem *mem,
 	u32 from = 0;
 	int ret = 0;
 
-	/* Only optimize read path. */
+	 
 	if (!op->data.nbytes || op->data.dir != SPI_MEM_DATA_IN ||
 	    !op->addr.nbytes || op->addr.nbytes > 4)
 		return -ENOTSUPP;
 
-	/* Address exceeds MMIO window size, fall back to regular mode. */
+	 
 	from = op->addr.val;
 	if (from + op->data.nbytes > qspi->mmap_size)
 		return -ENOTSUPP;
@@ -668,7 +650,7 @@ static int ti_qspi_start_transfer_one(struct spi_master *master,
 	unsigned int frame_len_words, transfer_len_words;
 	int wlen;
 
-	/* setup device control reg */
+	 
 	qspi->dc = 0;
 
 	if (spi->mode & SPI_CPHA)
@@ -683,7 +665,7 @@ static int ti_qspi_start_transfer_one(struct spi_master *master,
 		frame_len_words += t->len / (t->bits_per_word >> 3);
 	frame_len_words = min_t(unsigned int, frame_len_words, QSPI_FRAME);
 
-	/* setup command reg */
+	 
 	qspi->cmd = 0;
 	qspi->cmd |= QSPI_EN_CS(spi_get_chipselect(spi, 0));
 	qspi->cmd |= QSPI_FLEN(frame_len_words);

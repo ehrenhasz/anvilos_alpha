@@ -1,10 +1,4 @@
-/*
- * Copyright (C) ST-Ericsson AB 2012
- * Author: Sjur Brændeland <sjur.brandeland@stericsson.com>
- *
- * This header is BSD licensed so
- * anyone can use the definitions to implement compatible remote processors
- */
+ 
 
 #ifndef VIRTIO_CAIF_H
 #define VIRTIO_CAIF_H

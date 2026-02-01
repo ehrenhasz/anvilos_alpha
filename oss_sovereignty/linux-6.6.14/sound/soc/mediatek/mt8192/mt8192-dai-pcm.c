@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// MediaTek ALSA SoC Audio DAI I2S Control
-//
-// Copyright (c) 2020 MediaTek Inc.
-// Author: Shane Chien <shane.chien@mediatek.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/regmap.h>
 #include <sound/pcm_params.h>
@@ -28,9 +28,9 @@ enum AUD_EXT_MODEM {
 };
 
 enum AUD_PCM_SYNC_TYPE {
-	/* bck sync length = 1 */
+	 
 	AUD_PCM_ONE_BCK_CYCLE_SYNC = 0,
-	/* bck sync length = PCM_INTF_CON1[9:13] */
+	 
 	AUD_PCM_EXTENDED_BCK_CYCLE_SYNC = 1
 };
 
@@ -40,9 +40,9 @@ enum AUD_BT_MODE {
 };
 
 enum AUD_PCM_AFIFO_SRC {
-	/* slave mode & external modem uses different crystal */
+	 
 	AUD_PCM_AFIFO_ASRC = 0,
-	/* slave mode & external modem uses the same crystal */
+	 
 	AUD_PCM_AFIFO_AFIFO = 1
 };
 
@@ -80,7 +80,7 @@ enum AUD_PCM_EN {
 	AUD_PCM_EN_ENABLE = 1
 };
 
-/* dai component */
+ 
 static const struct snd_kcontrol_new mtk_pcm_1_playback_ch1_mix[] = {
 	SOC_DAPM_SINGLE_AUTODISABLE("ADDA_UL_CH1", AFE_CONN7,
 				    I_ADDA_UL_CH1, 1, 0),
@@ -184,7 +184,7 @@ static int mtk_pcm_en_event(struct snd_soc_dapm_widget *w,
 }
 
 static const struct snd_soc_dapm_widget mtk_dai_pcm_widgets[] = {
-	/* inter-connections */
+	 
 	SND_SOC_DAPM_MIXER("PCM_1_PB_CH1", SND_SOC_NOPM, 0, 0,
 			   mtk_pcm_1_playback_ch1_mix,
 			   ARRAY_SIZE(mtk_pcm_1_playback_ch1_mix)),
@@ -267,7 +267,7 @@ static const struct snd_soc_dapm_route mtk_dai_pcm_routes[] = {
 	{"PCM_2_PB_CH5", "I2S2_CH2", "I2S2"},
 };
 
-/* dai ops */
+ 
 static int mtk_dai_pcm_hw_params(struct snd_pcm_substream *substream,
 				 struct snd_pcm_hw_params *params,
 				 struct snd_soc_dai *dai)
@@ -333,7 +333,7 @@ static const struct snd_soc_dai_ops mtk_dai_pcm_ops = {
 	.hw_params = mtk_dai_pcm_hw_params,
 };
 
-/* dai driver */
+ 
 #define MTK_PCM_RATES (SNDRV_PCM_RATE_8000 |\
 		       SNDRV_PCM_RATE_16000 |\
 		       SNDRV_PCM_RATE_32000 |\

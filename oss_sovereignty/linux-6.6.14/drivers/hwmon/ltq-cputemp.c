@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Lantiq cpu temperature sensor driver
- *
- * Copyright (C) 2017 Florian Eckert <fe@dev.tdt.de>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -15,7 +12,7 @@
 
 #include <lantiq_soc.h>
 
-/* gphy1 configuration register contains cpu temperature */
+ 
 #define CGU_GPHY1_CR   0x0040
 #define CGU_TEMP_PD    BIT(19)
 
@@ -36,12 +33,12 @@ static int ltq_read(struct device *dev, enum hwmon_sensor_types type,
 
 	switch (attr) {
 	case hwmon_temp_input:
-		/* get the temperature including one decimal place */
+		 
 		value = (ltq_cgu_r32(CGU_GPHY1_CR) >> 9) & 0x01FF;
 		value = value * 5;
-		/* range -38 to +154 °C, register value zero is -38.0 °C */
+		 
 		value -= 380;
-		/* scale temp to millidegree */
+		 
 		value = value * 100;
 		break;
 	default:
@@ -89,7 +86,7 @@ static int ltq_cputemp_probe(struct platform_device *pdev)
 	struct device *hwmon_dev;
 	int err = 0;
 
-	/* available on vr9 v1.2 SoCs only */
+	 
 	if (ltq_soc_type() != SOC_TYPE_VR9_2)
 		return -ENODEV;
 

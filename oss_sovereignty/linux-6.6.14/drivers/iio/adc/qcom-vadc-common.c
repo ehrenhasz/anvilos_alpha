@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/bug.h>
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -10,18 +10,13 @@
 #include <linux/module.h>
 #include <linux/units.h>
 
-/**
- * struct vadc_map_pt - Map the graph representation for ADC channel
- * @x: Represent the ADC digitized code.
- * @y: Represent the physical data which can be temperature, voltage,
- *     resistance.
- */
+ 
 struct vadc_map_pt {
 	s32 x;
 	s32 y;
 };
 
-/* Voltage to temperature */
+ 
 static const struct vadc_map_pt adcmap_100k_104ef_104fb[] = {
 	{1758,	-40000 },
 	{1742,	-35000 },
@@ -59,10 +54,7 @@ static const struct vadc_map_pt adcmap_100k_104ef_104fb[] = {
 	{44,	125000 }
 };
 
-/*
- * Voltage to temperature table for 100k pull up for NTCG104EF104 with
- * 1.875V reference.
- */
+ 
 static const struct vadc_map_pt adcmap_100k_104ef_104fb_1875_vref[] = {
 	{ 1831,	-40000 },
 	{ 1814,	-35000 },
@@ -115,9 +107,7 @@ static const struct vadc_map_pt adcmap7_die_temp[] = {
 	{ 433700, -60000 },
 };
 
-/*
- * Resistance to temperature table for 100k pull up for NTCG104EF104.
- */
+ 
 static const struct vadc_map_pt adcmap7_100k[] = {
 	{ 4250657, -40960 },
 	{ 3962085, -39936 },
@@ -359,7 +349,7 @@ static int qcom_vadc_map_voltage_temp(const struct vadc_map_pt *pts,
 	} else if (i == tablesize) {
 		*output = pts[tablesize - 1].y;
 	} else {
-		/* interpolate linearly */
+		 
 		*output = fixp_linear_interpolate(pts[i - 1].x, pts[i - 1].y,
 						  pts[i].x, pts[i].y,
 						  input);
@@ -373,10 +363,7 @@ static s32 qcom_vadc_map_temp_voltage(const struct vadc_map_pt *pts,
 {
 	u32 i = 0;
 
-	/*
-	 * Table must be sorted, find the interval of 'y' which contains value
-	 * 'input' and map it to proper 'x' value
-	 */
+	 
 	while (i < tablesize && pts[i].y < input)
 		i++;
 
@@ -385,7 +372,7 @@ static s32 qcom_vadc_map_temp_voltage(const struct vadc_map_pt *pts,
 	if (i == tablesize)
 		return pts[tablesize - 1].x;
 
-	/* interpolate linearly */
+	 
 	return fixp_linear_interpolate(pts[i - 1].y, pts[i - 1].x,
 			pts[i].y, pts[i].x, input);
 }
@@ -449,7 +436,7 @@ static int qcom_vadc_scale_die_temp(const struct vadc_linear_graph *calib_graph,
 				    u16 adc_code, int *result_mdec)
 {
 	s64 voltage = 0;
-	u64 temp; /* Temporary variable for do_div */
+	u64 temp;  
 
 	qcom_vadc_scale_calib(calib_graph, adc_code, absolute, &voltage);
 
@@ -485,14 +472,14 @@ static int qcom_vadc_scale_chg_temp(const struct vadc_linear_graph *calib_graph,
 	return 0;
 }
 
-/* convert voltage to ADC code, using 1.875V reference */
+ 
 static u16 qcom_vadc_scale_voltage_code(s32 voltage,
 					const struct u32_fract *prescale,
 					const u32 full_scale_code_volt,
 					unsigned int factor)
 {
 	s64 volt = voltage;
-	s64 adc_vdd_ref_mv = 1875; /* reference voltage */
+	s64 adc_vdd_ref_mv = 1875;  
 
 	volt *= prescale->numerator * factor * full_scale_code_volt;
 	volt = div64_s64(volt, (s64)prescale->denominator * adc_vdd_ref_mv * 1000);
@@ -507,16 +494,11 @@ static int qcom_vadc_scale_code_voltage_factor(u16 adc_code,
 {
 	s64 voltage, temp, adc_vdd_ref_mv = 1875;
 
-	/*
-	 * The normal data range is between 0V to 1.875V. On cases where
-	 * we read low voltage values, the ADC code can go beyond the
-	 * range and the scale result is incorrect so we clamp the values
-	 * for the cases where the code represents a value below 0V
-	 */
+	 
 	if (adc_code > VADC5_MAX_CODE)
 		adc_code = 0;
 
-	/* (ADC code * vref_vadc (1.875V)) / full_scale_code */
+	 
 	voltage = (s64) adc_code * adc_vdd_ref_mv * 1000;
 	voltage = div64_s64(voltage, data->full_scale_code_volt);
 	if (voltage > 0) {
@@ -541,7 +523,7 @@ static int qcom_vadc7_scale_hw_calib_therm(
 	if (adc_code >= RATIO_MAX_ADC7)
 		return -EINVAL;
 
-	/* (ADC code * R_PULLUP (100Kohm)) / (full_scale_code - ADC code)*/
+	 
 	resistance *= R_PU_100K;
 	resistance = div64_s64(resistance, RATIO_MAX_ADC7 - adc_code);
 
@@ -577,7 +559,7 @@ static int qcom_vadc_scale_hw_calib_therm(
 	voltage = qcom_vadc_scale_code_voltage_factor(adc_code,
 				prescale, data, 1000);
 
-	/* Map voltage to temperature from look-up table */
+	 
 	return qcom_vadc_map_voltage_temp(adcmap_100k_104ef_104fb_1875_vref,
 				 ARRAY_SIZE(adcmap_100k_104ef_104fb_1875_vref),
 				 voltage, result_mdec);

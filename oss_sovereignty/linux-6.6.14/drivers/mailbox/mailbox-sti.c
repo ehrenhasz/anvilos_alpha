@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * STi Mailbox
- *
- * Copyright (C) 2015 ST Microelectronics
- *
- * Author: Lee Jones <lee.jones@linaro.org> for ST Microelectronics
- *
- * Based on the original driver written by;
- *   Alexandre Torgue, Olivier Lebreton and Loic Pallardy
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/interrupt.h>
@@ -23,33 +14,19 @@
 
 #include "mailbox.h"
 
-#define STI_MBOX_INST_MAX	4      /* RAM saving: Max supported instances */
-#define STI_MBOX_CHAN_MAX	20     /* RAM saving: Max supported channels  */
+#define STI_MBOX_INST_MAX	4       
+#define STI_MBOX_CHAN_MAX	20      
 
-#define STI_IRQ_VAL_OFFSET	0x04   /* Read interrupt status	              */
-#define STI_IRQ_SET_OFFSET	0x24   /* Generate a Tx channel interrupt     */
-#define STI_IRQ_CLR_OFFSET	0x44   /* Clear pending Rx interrupts	      */
-#define STI_ENA_VAL_OFFSET	0x64   /* Read enable status		      */
-#define STI_ENA_SET_OFFSET	0x84   /* Enable a channel		      */
-#define STI_ENA_CLR_OFFSET	0xa4   /* Disable a channel		      */
+#define STI_IRQ_VAL_OFFSET	0x04    
+#define STI_IRQ_SET_OFFSET	0x24    
+#define STI_IRQ_CLR_OFFSET	0x44    
+#define STI_ENA_VAL_OFFSET	0x64    
+#define STI_ENA_SET_OFFSET	0x84    
+#define STI_ENA_CLR_OFFSET	0xa4    
 
 #define MBOX_BASE(mdev, inst)   ((mdev)->base + ((inst) * 4))
 
-/**
- * struct sti_mbox_device - STi Mailbox device data
- *
- * @dev:	Device to which it is attached
- * @mbox:	Representation of a communication channel controller
- * @base:	Base address of the register mapping region
- * @name:	Name of the mailbox
- * @enabled:	Local copy of enabled channels
- * @lock:	Mutex protecting enabled status
- *
- * An IP Mailbox is currently composed of 4 instances
- * Each instance is currently composed of 32 channels
- * This means that we have 128 channels per Mailbox
- * A channel an be used for TX or RX
- */
+ 
 struct sti_mbox_device {
 	struct device		*dev;
 	struct mbox_controller	*mbox;
@@ -59,24 +36,13 @@ struct sti_mbox_device {
 	spinlock_t		lock;
 };
 
-/**
- * struct sti_mbox_pdata - STi Mailbox platform specific configuration
- *
- * @num_inst:	Maximum number of instances in one HW Mailbox
- * @num_chan:	Maximum number of channel per instance
- */
+ 
 struct sti_mbox_pdata {
 	unsigned int		num_inst;
 	unsigned int		num_chan;
 };
 
-/**
- * struct sti_channel - STi Mailbox allocated channel information
- *
- * @mdev:	Pointer to parent Mailbox device
- * @instance:	Instance number channel resides in
- * @channel:	Channel number pertaining to this container
- */
+ 
 struct sti_channel {
 	struct sti_mbox_device	*mdev;
 	unsigned int		instance;
@@ -168,10 +134,10 @@ static struct mbox_chan *sti_mbox_irq_to_channel(struct sti_mbox_device *mdev,
 
 	bits = readl_relaxed(base + STI_IRQ_VAL_OFFSET);
 	if (!bits)
-		/* No IRQs fired in specified instance */
+		 
 		return NULL;
 
-	/* An IRQ has fired, find the associated channel */
+	 
 	for (channel = 0; bits; channel++) {
 		if (!test_and_clear_bit(channel, &bits))
 			continue;
@@ -232,7 +198,7 @@ static irqreturn_t sti_mbox_irq_handler(int irq, void *data)
 				 mdev->name, chan_info->instance,
 				 chan_info->channel, mdev->enabled[instance]);
 
-			/* Only handle IRQ if no other valid IRQs were found */
+			 
 			if (ret == IRQ_NONE)
 				ret = IRQ_HANDLED;
 			continue;
@@ -279,7 +245,7 @@ static int sti_mbox_send_data(struct mbox_chan *chan, void *data)
 	unsigned int channel = chan_info->channel;
 	void __iomem *base = MBOX_BASE(mdev, instance);
 
-	/* Send event to co-processor */
+	 
 	writel_relaxed(BIT(channel), base + STI_IRQ_SET_OFFSET);
 
 	dev_dbg(mdev->dev,
@@ -312,7 +278,7 @@ static void sti_mbox_shutdown_chan(struct mbox_chan *chan)
 		return;
 	}
 
-	/* Reset channel */
+	 
 	sti_mbox_disable_channel(chan);
 	sti_mbox_clear_irq(chan);
 	chan->con_priv = NULL;
@@ -329,7 +295,7 @@ static struct mbox_chan *sti_mbox_xlate(struct mbox_controller *mbox,
 	unsigned int channel   = spec->args[1];
 	int i;
 
-	/* Bounds checking */
+	 
 	if (instance >= pdata->num_inst || channel  >= pdata->num_chan) {
 		dev_err(mbox->dev,
 			"Invalid channel requested instance: %d channel: %d\n",
@@ -340,7 +306,7 @@ static struct mbox_chan *sti_mbox_xlate(struct mbox_controller *mbox,
 	for (i = 0; i < mbox->num_chans; i++) {
 		chan_info = mbox->chans[i].con_priv;
 
-		/* Is requested channel free? */
+		 
 		if (chan_info &&
 		    mbox->dev == chan_info->mdev->dev &&
 		    instance == chan_info->instance &&
@@ -350,10 +316,7 @@ static struct mbox_chan *sti_mbox_xlate(struct mbox_controller *mbox,
 			return ERR_PTR(-EBUSY);
 		}
 
-		/*
-		 * Find the first free slot, then continue checking
-		 * to see if requested channel is in use
-		 */
+		 
 		if (!chan && !chan_info)
 			chan = &mbox->chans[i];
 	}
@@ -446,7 +409,7 @@ static int sti_mbox_probe(struct platform_device *pdev)
 
 	spin_lock_init(&mdev->lock);
 
-	/* STi Mailbox does not have a Tx-Done or Tx-Ready IRQ */
+	 
 	mbox->txdone_irq	= false;
 	mbox->txdone_poll	= true;
 	mbox->txpoll_period	= 100;
@@ -460,7 +423,7 @@ static int sti_mbox_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* It's okay for Tx Mailboxes to not supply IRQs */
+	 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0) {
 		dev_info(&pdev->dev,

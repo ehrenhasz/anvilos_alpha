@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/*
- * Helper functions for BLAKE2b implementations.
- * Keep this in sync with the corresponding BLAKE2s header.
- */
+ 
+ 
 
 #ifndef _CRYPTO_INTERNAL_BLAKE2B_H
 #define _CRYPTO_INTERNAL_BLAKE2B_H
@@ -39,7 +36,7 @@ static inline void __blake2b_update(struct blake2b_state *state,
 	}
 	if (inlen > BLAKE2B_BLOCK_SIZE) {
 		const size_t nblocks = DIV_ROUND_UP(inlen, BLAKE2B_BLOCK_SIZE);
-		/* Hash one less (full) block than strictly possible */
+		 
 		(*compress)(state, in, nblocks - 1, BLAKE2B_BLOCK_SIZE);
 		in += BLAKE2B_BLOCK_SIZE * (nblocks - 1);
 		inlen -= BLAKE2B_BLOCK_SIZE * (nblocks - 1);
@@ -55,14 +52,14 @@ static inline void __blake2b_final(struct blake2b_state *state, u8 *out,
 
 	blake2b_set_lastblock(state);
 	memset(state->buf + state->buflen, 0,
-	       BLAKE2B_BLOCK_SIZE - state->buflen); /* Padding */
+	       BLAKE2B_BLOCK_SIZE - state->buflen);  
 	(*compress)(state, state->buf, 1, state->buflen);
 	for (i = 0; i < ARRAY_SIZE(state->h); i++)
 		__cpu_to_le64s(&state->h[i]);
 	memcpy(out, state->h, state->outlen);
 }
 
-/* Helper functions for shash implementations of BLAKE2b */
+ 
 
 struct blake2b_tfm_ctx {
 	u8 key[BLAKE2B_KEY_SIZE];
@@ -112,4 +109,4 @@ static inline int crypto_blake2b_final(struct shash_desc *desc, u8 *out,
 	return 0;
 }
 
-#endif /* _CRYPTO_INTERNAL_BLAKE2B_H */
+#endif  

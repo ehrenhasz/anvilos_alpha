@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*  Copyright(c) 2016-20 Intel Corporation. */
+
+ 
 
 #define _GNU_SOURCE
 #include <assert.h>
@@ -17,10 +17,7 @@
 #include "defines.h"
 #include "main.h"
 
-/*
- * FIXME: OpenSSL 3.0 has deprecated some functions. For now just ignore
- * the warnings.
- */
+ 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 struct q1q2_ctx {
@@ -240,7 +237,7 @@ static bool mrenclave_ecreate(EVP_MD_CTX *ctx, uint64_t blob_size)
 struct mreadd {
 	uint64_t tag;
 	uint64_t offset;
-	uint64_t flags; /* SECINFO flags */
+	uint64_t flags;  
 	uint8_t reserved[40];
 } __attribute__((__packed__));
 
@@ -333,7 +330,7 @@ bool encl_measure(struct encl *encl)
 	sigstruct->body.attributes = SGX_ATTR_MODE64BIT;
 	sigstruct->body.xfrm = 3;
 
-	/* sanity check */
+	 
 	if (check_crypto_errors())
 		goto err;
 
@@ -375,7 +372,7 @@ bool encl_measure(struct encl *encl)
 		       sigstruct->q2))
 		goto err;
 
-	/* BE -> LE */
+	 
 	reverse_bytes(sigstruct->signature, SGX_MODULUS_SIZE);
 	reverse_bytes(sigstruct->modulus, SGX_MODULUS_SIZE);
 

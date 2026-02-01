@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 static int find_map(void **start, void **end, const char *name)
 {
 	FILE *maps;
@@ -14,7 +14,7 @@ static int find_map(void **start, void **end, const char *name)
 	while (!found && fgets(line, sizeof(line), maps)) {
 		int m = -1;
 
-		/* We care only about private r-x mappings. */
+		 
 		if (2 != sscanf(line, "%p-%p r-xp %*x %*x:%*x %*u %n",
 				start, end, &m))
 			continue;

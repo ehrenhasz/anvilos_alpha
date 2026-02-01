@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_X86_CMPXCHG_64_H
 #define _ASM_X86_CMPXCHG_64_H
 
@@ -87,4 +87,4 @@ static __always_inline bool arch_try_cmpxchg128_local(volatile u128 *ptr, u128 *
 
 #define system_has_cmpxchg128()		boot_cpu_has(X86_FEATURE_CX16)
 
-#endif /* _ASM_X86_CMPXCHG_64_H */
+#endif  

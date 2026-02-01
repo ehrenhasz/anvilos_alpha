@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * EDAC PCI component
- *
- * Author: Dave Jiang <djiang@mvista.com>
- *
- * 2007 (c) MontaVista Software, Inc.
- */
+
+ 
 #include <asm/page.h>
 #include <linux/uaccess.h>
 #include <linux/ctype.h>
@@ -62,12 +56,7 @@ void edac_pci_free_ctl_info(struct edac_pci_ctl_info *pci)
 }
 EXPORT_SYMBOL_GPL(edac_pci_free_ctl_info);
 
-/*
- * find_edac_pci_by_dev()
- * 	scans the edac_pci list for a specific 'struct device *'
- *
- *	return NULL if not found, or return control struct pointer
- */
+ 
 static struct edac_pci_ctl_info *find_edac_pci_by_dev(struct device *dev)
 {
 	struct edac_pci_ctl_info *pci;
@@ -85,14 +74,7 @@ static struct edac_pci_ctl_info *find_edac_pci_by_dev(struct device *dev)
 	return NULL;
 }
 
-/*
- * add_edac_pci_to_global_list
- * 	Before calling this function, caller must assign a unique value to
- * 	edac_dev->pci_idx.
- * 	Return:
- * 		0 on success
- * 		1 on failure
- */
+ 
 static int add_edac_pci_to_global_list(struct edac_pci_ctl_info *pci)
 {
 	struct list_head *item, *insert_before;
@@ -102,12 +84,12 @@ static int add_edac_pci_to_global_list(struct edac_pci_ctl_info *pci)
 
 	insert_before = &edac_pci_list;
 
-	/* Determine if already on the list */
+	 
 	rover = find_edac_pci_by_dev(pci->dev);
 	if (unlikely(rover != NULL))
 		goto fail0;
 
-	/* Insert in ascending order by 'pci_idx', so find position */
+	 
 	list_for_each(item, &edac_pci_list) {
 		rover = list_entry(item, struct edac_pci_ctl_info, link);
 
@@ -138,28 +120,17 @@ fail1:
 	return 1;
 }
 
-/*
- * del_edac_pci_from_global_list
- *
- *	remove the PCI control struct from the global list
- */
+ 
 static void del_edac_pci_from_global_list(struct edac_pci_ctl_info *pci)
 {
 	list_del_rcu(&pci->link);
 
-	/* these are for safe removal of devices from global list while
-	 * NMI handlers may be traversing list
-	 */
+	 
 	synchronize_rcu();
 	INIT_LIST_HEAD(&pci->link);
 }
 
-/*
- * edac_pci_workq_function()
- *
- * 	periodic function that performs the operation
- *	scheduled by a workq request, for a given PCI control struct
- */
+ 
 static void edac_pci_workq_function(struct work_struct *work_req)
 {
 	struct delayed_work *d_work = to_delayed_work(work_req);
@@ -179,7 +150,7 @@ static void edac_pci_workq_function(struct work_struct *work_req)
 	if (edac_pci_get_check_errors())
 		pci->edac_check(pci);
 
-	/* if we are on a one second period, then use round */
+	 
 	msec = edac_pci_get_poll_msec();
 	if (msec == 1000)
 		delay = round_jiffies_relative(msecs_to_jiffies(msec));
@@ -233,7 +204,7 @@ int edac_pci_add_device(struct edac_pci_ctl_info *pci, int edac_idx)
 	mutex_unlock(&edac_pci_ctls_mutex);
 	return 0;
 
-	/* error unwind stack */
+	 
 fail1:
 	del_edac_pci_from_global_list(pci);
 fail0:
@@ -250,9 +221,7 @@ struct edac_pci_ctl_info *edac_pci_del_device(struct device *dev)
 
 	mutex_lock(&edac_pci_ctls_mutex);
 
-	/* ensure the control struct is on the global list
-	 * if not, then leave
-	 */
+	 
 	pci = find_edac_pci_by_dev(dev);
 	if (pci  == NULL) {
 		mutex_unlock(&edac_pci_ctls_mutex);
@@ -276,18 +245,14 @@ struct edac_pci_ctl_info *edac_pci_del_device(struct device *dev)
 }
 EXPORT_SYMBOL_GPL(edac_pci_del_device);
 
-/*
- * edac_pci_generic_check
- *
- *	a Generic parity check API
- */
+ 
 static void edac_pci_generic_check(struct edac_pci_ctl_info *pci)
 {
 	edac_dbg(4, "\n");
 	edac_pci_do_parity_check();
 }
 
-/* free running instance index counter */
+ 
 static int edac_pci_idx;
 #define EDAC_PCI_GENCTL_NAME	"EDAC PCI controller"
 

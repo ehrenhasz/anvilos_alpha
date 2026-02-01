@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hardware monitoring driver for the STPDDC60 controller
- *
- * Copyright (c) 2021 Flextronics International Sweden AB.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -33,19 +29,14 @@ static struct pmbus_driver_info stpddc60_info = {
 		| PMBUS_HAVE_POUT,
 };
 
-/*
- * Calculate the closest absolute offset between commanded vout value
- * and limit value in steps of 50mv in the range 0 (50mv) to 7 (400mv).
- * Return 0 if the upper limit is lower than vout or if the lower limit
- * is higher than vout.
- */
+ 
 static u8 stpddc60_get_offset(int vout, u16 limit, bool over)
 {
 	int offset;
 	long v, l;
 
-	v = 250 + (vout - 1) * 5; /* Convert VID to mv */
-	l = (limit * 1000L) >> 8; /* Convert LINEAR to mv */
+	v = 250 + (vout - 1) * 5;  
+	l = (limit * 1000L) >> 8;  
 
 	if (over == (l < v))
 		return 0;
@@ -58,9 +49,7 @@ static u8 stpddc60_get_offset(int vout, u16 limit, bool over)
 	return clamp_val(offset, 0, 7);
 }
 
-/*
- * Adjust the linear format word to use the given fixed exponent.
- */
+ 
 static u16 stpddc60_adjust_linear(u16 word, s16 fixed)
 {
 	s16 e, m, d;
@@ -77,11 +66,7 @@ static u16 stpddc60_adjust_linear(u16 word, s16 fixed)
 	return clamp_val(m, 0, 0x3ff) | ((fixed << 11) & 0xf800);
 }
 
-/*
- * The VOUT_COMMAND register uses the VID format but the vout alarm limit
- * registers use the LINEAR format so we override VOUT_MODE here to force
- * LINEAR format for all registers.
- */
+ 
 static int stpddc60_read_byte_data(struct i2c_client *client, int page, int reg)
 {
 	int ret;
@@ -101,11 +86,7 @@ static int stpddc60_read_byte_data(struct i2c_client *client, int page, int reg)
 	return ret;
 }
 
-/*
- * The vout related registers return values in LINEAR11 format when LINEAR16
- * is expected. Clear the top 5 bits to set the exponent part to zero to
- * convert the value to LINEAR16 format.
- */
+ 
 static int stpddc60_read_word_data(struct i2c_client *client, int page,
 				   int phase, int reg)
 {
@@ -137,11 +118,7 @@ static int stpddc60_read_word_data(struct i2c_client *client, int page,
 	return ret;
 }
 
-/*
- * The vout under- and over-voltage limits are set as an offset relative to
- * the commanded vout voltage. The vin, iout, pout and temp limits must use
- * the same fixed exponent the chip uses to encode the data when read.
- */
+ 
 static int stpddc60_write_word_data(struct i2c_client *client, int page,
 				    int reg, u16 word)
 {

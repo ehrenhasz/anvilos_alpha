@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <sched.h>
@@ -12,7 +12,7 @@
 
 static int read_iter(char *file)
 {
-	/* 1024 should be enough to get contiguous 4 "iter" letters at some point */
+	 
 	char buf[1024];
 	int fd, len;
 
@@ -90,7 +90,7 @@ static int fn(void)
 		goto out;
 	close(map);
 
-	/* Check that RENAME_EXCHANGE works for directories. */
+	 
 	err = stat(TDIR "/fs1/a", &a);
 	if (!ASSERT_OK(err, "stat(" TDIR "/fs1/a)"))
 		goto out;
@@ -106,7 +106,7 @@ static int fn(void)
 	if (!ASSERT_OK(err, "access(" TDIR "/fs1/b/1)"))
 		goto out;
 
-	/* Check that RENAME_EXCHANGE works for mixed file types. */
+	 
 	err = stat(TDIR "/fs1/c", &c);
 	if (!ASSERT_OK(err, "stat(" TDIR "/fs1/map)"))
 		goto out;
@@ -122,7 +122,7 @@ static int fn(void)
 	if (!ASSERT_OK(err, "access(" TDIR "/fs1/c/1)"))
 		goto out;
 
-	/* Check that RENAME_NOREPLACE works. */
+	 
 	err = renameat2(0, TDIR "/fs1/b", 0, TDIR "/fs1/a", RENAME_NOREPLACE);
 	if (!ASSERT_ERR(err, "renameat2(RENAME_NOREPLACE)")) {
 		err = -EINVAL;

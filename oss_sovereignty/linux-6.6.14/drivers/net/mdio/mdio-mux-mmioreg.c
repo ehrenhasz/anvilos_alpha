@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Simple memory-mapped device MDIO MUX driver
- *
- * Author: Timur Tabi <timur@freescale.com>
- *
- * Copyright 2012 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/mdio-mux.h>
@@ -22,23 +16,7 @@ struct mdio_mux_mmioreg_state {
 	unsigned int mask;
 };
 
-/*
- * MDIO multiplexing switch function
- *
- * This function is called by the mdio-mux layer when it thinks the mdio bus
- * multiplexer needs to switch.
- *
- * 'current_child' is the current value of the mux register (masked via
- * s->mask).
- *
- * 'desired_child' is the value of the 'reg' property of the target child MDIO
- * node.
- *
- * The first time this function is called, current_child == -1.
- *
- * If current_child == desired_child, then the mux is already set to the
- * correct bus.
- */
+ 
 static int mdio_mux_mmioreg_switch_fn(int current_child, int desired_child,
 				      void *data)
 {
@@ -135,10 +113,7 @@ static int mdio_mux_mmioreg_probe(struct platform_device *pdev)
 	}
 	s->mask = be32_to_cpup(iprop);
 
-	/*
-	 * Verify that the 'reg' property of each child MDIO bus does not
-	 * set any bits outside of the 'mask'.
-	 */
+	 
 	for_each_available_child_of_node(np, np2) {
 		u64 reg;
 

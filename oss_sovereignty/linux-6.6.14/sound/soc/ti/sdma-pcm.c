@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2018 Texas Instruments Incorporated - https://www.ti.com
- *  Author: Peter Ujfalusi <peter.ujfalusi@ti.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -39,7 +36,7 @@ int sdma_pcm_platform_register(struct device *dev,
 	struct snd_dmaengine_pcm_config *config;
 	unsigned int flags = 0;
 
-	/* Standard names for the directions: 'tx' and 'rx' */
+	 
 	if (!txdmachan && !rxdmachan)
 		return devm_snd_dmaengine_pcm_register(dev,
 						&sdma_dmaengine_pcm_config, 0);
@@ -51,7 +48,7 @@ int sdma_pcm_platform_register(struct device *dev,
 	*config = sdma_dmaengine_pcm_config;
 
 	if (!txdmachan || !rxdmachan) {
-		/* One direction only PCM */
+		 
 		flags |= SND_DMAENGINE_PCM_FLAG_HALF_DUPLEX;
 		if (!txdmachan) {
 			txdmachan = rxdmachan;

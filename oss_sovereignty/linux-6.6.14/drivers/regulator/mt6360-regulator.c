@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright (C) 2020 MediaTek Inc.
-//
-// Author: Gene Chen <gene_chen@richtek.com>
+
+
+
+
+
 
 #include <linux/init.h>
 #include <linux/kernel.h>

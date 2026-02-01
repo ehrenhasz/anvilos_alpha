@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2014 Marvell Technology Group Ltd.
- *
- * Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
- * Alexandre Belloni <alexandre.belloni@free-electrons.com>
- */
+
+ 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
 #include <linux/kernel.h>
@@ -14,24 +9,13 @@
 
 #include "berlin2-avpll.h"
 
-/*
- * Berlin2 SoCs comprise up to two PLLs called AVPLL built upon a
- * VCO with 8 channels each, channel 8 is the odd-one-out and does
- * not provide mul/div.
- *
- * Unfortunately, its registers are not named but just numbered. To
- * get in at least some kind of structure, we split each AVPLL into
- * the VCOs and each channel into separate clock drivers.
- *
- * Also, here and there the VCO registers are a bit different with
- * respect to bit shifts. Make sure to add a comment for those.
- */
+ 
 #define NUM_CHANNELS	8
 
 #define AVPLL_CTRL(x)		((x) * 0x4)
 
 #define VCO_CTRL0		AVPLL_CTRL(0)
-/* BG2/BG2CDs VCO_B has an additional shift of 4 for its VCO_CTRL0 reg */
+ 
 #define  VCO_RESET		BIT(0)
 #define  VCO_POWERUP		BIT(1)
 #define  VCO_INTERPOL_SHIFT	2
@@ -81,7 +65,7 @@
 #define  VCO_FBDIV(x)		((x) << VCO_FBDIV_SHIFT)
 #define  VCO_FBDIV_MASK		VCO_FBDIV(0xff)
 #define  VCO_ICP_SHIFT		14
-/* PLL Charge Pump Current = 10uA * (x + 1) */
+ 
 #define  VCO_ICP(x)		((x) << VCO_ICP_SHIFT)
 #define  VCO_ICP_MASK		VCO_ICP(0xf)
 #define  VCO_LOAD_CAP		BIT(18)
@@ -159,7 +143,7 @@ berlin2_avpll_vco_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
 	u32 reg, refdiv, fbdiv;
 	u64 freq = parent_rate;
 
-	/* AVPLL VCO frequency: Fvco = (Fref / refdiv) * fbdiv */
+	 
 	reg = readl_relaxed(vco->base + VCO_CTRL1);
 	refdiv = (reg & VCO_REFDIV_MASK) >> VCO_REFDIV_SHIFT;
 	refdiv = vco_refdiv[refdiv];
@@ -259,13 +243,10 @@ berlin2_avpll_channel_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
 	if ((reg & (VCO_DPLL_CH1_ENABLE << ch->index)) == 0)
 		goto skip_div;
 
-	/*
-	 * Fch = (Fref * sync2) /
-	 *    (sync1 * div_hdmi * div_av1 * div_av2 * div_av3)
-	 */
+	 
 
 	reg = readl_relaxed(ch->base + VCO_SYNC1n(ch->index));
-	/* BG2/BG2CDs SYNC1 reg on AVPLL_B channel 1 is shifted by 4 */
+	 
 	if (ch->flags & BERLIN2_AVPLL_BIT_QUIRK && ch->index == 0)
 		reg >>= 4;
 	divider = reg & VCO_SYNC1_MASK;
@@ -273,23 +254,17 @@ berlin2_avpll_channel_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
 	reg = readl_relaxed(ch->base + VCO_SYNC2n(ch->index));
 	freq *= reg & VCO_SYNC2_MASK;
 
-	/* Channel 8 has no dividers */
+	 
 	if (ch->index == 7)
 		goto skip_div;
 
-	/*
-	 * HDMI divider start at VCO_CTRL11, bit 7; MSB is enable, lower 2 bit
-	 * determine divider.
-	 */
+	 
 	reg = readl_relaxed(ch->base + VCO_CTRL11) >> 7;
 	reg = (reg >> (ch->index * 3));
 	if (reg & BIT(2))
 		divider *= div_hdmi[reg & 0x3];
 
-	/*
-	 * AV1 divider start at VCO_CTRL11, bit 28; MSB is enable, lower 2 bit
-	 * determine divider.
-	 */
+	 
 	if (ch->index == 0) {
 		reg = readl_relaxed(ch->base + VCO_CTRL11);
 		reg >>= 28;
@@ -300,10 +275,7 @@ berlin2_avpll_channel_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
 	if (reg & BIT(2))
 		divider *= div_av1[reg & 0x3];
 
-	/*
-	 * AV2 divider start at VCO_CTRL12, bit 18; each 7 bits wide,
-	 * zero is not a valid value.
-	 */
+	 
 	if (ch->index < 2) {
 		reg = readl_relaxed(ch->base + VCO_CTRL12);
 		reg >>= 18 + (ch->index * 7);
@@ -317,11 +289,7 @@ berlin2_avpll_channel_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
 	if (div_av2)
 		divider *= div_av2;
 
-	/*
-	 * AV3 divider start at VCO_CTRL14, bit 7; each 4 bits wide.
-	 * AV2/AV3 form a fractional divider, where only specfic values for AV3
-	 * are allowed. AV3 != 0 divides by AV2/2, AV3=0 is bypass.
-	 */
+	 
 	if (ch->index < 6) {
 		reg = readl_relaxed(ch->base + VCO_CTRL14);
 		reg >>= 7 + (ch->index * 4);
@@ -344,13 +312,7 @@ static const struct clk_ops berlin2_avpll_channel_ops = {
 	.recalc_rate	= berlin2_avpll_channel_recalc_rate,
 };
 
-/*
- * Another nice quirk:
- * On some production SoCs, AVPLL channels are scrambled with respect
- * to the channel numbering in the registers but still referenced by
- * their original channel numbers. We deal with it by having a flag
- * and a translation table for the index.
- */
+ 
 static const u8 quirk_index[] __initconst = { 0, 6, 5, 4, 3, 2, 1, 7 };
 
 int __init berlin2_avpll_channel_register(void __iomem *base,

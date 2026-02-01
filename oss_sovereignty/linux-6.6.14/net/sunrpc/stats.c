@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/net/sunrpc/stats.c
- *
- * procfs-based user access to generic RPC statistics. The stats files
- * reside in /proc/net/rpc.
- *
- * The read routines assume that the buffer passed in is just big enough.
- * If you implement an RPC service that has its own stats routine which
- * appends the generic RPC stats, make sure you don't exceed the PAGE_SIZE
- * limit.
- *
- * Copyright (C) 1995, 1996, 1997 Olaf Kirch <okir@monad.swb.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -31,9 +19,7 @@
 
 #define RPCDBG_FACILITY	RPCDBG_MISC
 
-/*
- * Get RPC client stats
- */
+ 
 static int rpc_proc_show(struct seq_file *seq, void *v) {
 	const struct rpc_stat	*statp = seq->private;
 	const struct rpc_program *prog = statp->program;
@@ -76,9 +62,7 @@ static const struct proc_ops rpc_proc_ops = {
 	.proc_release	= single_release,
 };
 
-/*
- * Get RPC server stats
- */
+ 
 void svc_seq_show(struct seq_file *seq, const struct svc_stat *statp)
 {
 	const struct svc_program *prog = statp->program;
@@ -116,11 +100,7 @@ void svc_seq_show(struct seq_file *seq, const struct svc_stat *statp)
 }
 EXPORT_SYMBOL_GPL(svc_seq_show);
 
-/**
- * rpc_alloc_iostats - allocate an rpc_iostats structure
- * @clnt: RPC program, version, and xprt
- *
- */
+ 
 struct rpc_iostats *rpc_alloc_iostats(struct rpc_clnt *clnt)
 {
 	struct rpc_iostats *stats;
@@ -135,22 +115,14 @@ struct rpc_iostats *rpc_alloc_iostats(struct rpc_clnt *clnt)
 }
 EXPORT_SYMBOL_GPL(rpc_alloc_iostats);
 
-/**
- * rpc_free_iostats - release an rpc_iostats structure
- * @stats: doomed rpc_iostats structure
- *
- */
+ 
 void rpc_free_iostats(struct rpc_iostats *stats)
 {
 	kfree(stats);
 }
 EXPORT_SYMBOL_GPL(rpc_free_iostats);
 
-/**
- * rpc_count_iostats_metrics - tally up per-task stats
- * @task: completed rpc_task
- * @op_metrics: stat structure for OP that will accumulate stats from @task
- */
+ 
 void rpc_count_iostats_metrics(const struct rpc_task *task,
 			       struct rpc_iostats *op_metrics)
 {
@@ -164,7 +136,7 @@ void rpc_count_iostats_metrics(const struct rpc_task *task,
 	spin_lock(&op_metrics->om_lock);
 
 	op_metrics->om_ops++;
-	/* kernel API: om_ops must never become larger than om_ntrans */
+	 
 	op_metrics->om_ntrans += max(req->rq_ntrans, 1);
 	op_metrics->om_timeouts += task->tk_timeouts;
 
@@ -190,13 +162,7 @@ void rpc_count_iostats_metrics(const struct rpc_task *task,
 }
 EXPORT_SYMBOL_GPL(rpc_count_iostats_metrics);
 
-/**
- * rpc_count_iostats - tally up per-task stats
- * @task: completed rpc_task
- * @stats: array of stat structures
- *
- * Uses the statidx from @task
- */
+ 
 void rpc_count_iostats(const struct rpc_task *task, struct rpc_iostats *stats)
 {
 	rpc_count_iostats_metrics(task,
@@ -280,9 +246,7 @@ void rpc_clnt_show_stats(struct seq_file *seq, struct rpc_clnt *clnt)
 }
 EXPORT_SYMBOL_GPL(rpc_clnt_show_stats);
 
-/*
- * Register/unregister RPC proc files
- */
+ 
 static inline struct proc_dir_entry *
 do_register(struct net *net, const char *name, void *data,
 	    const struct proc_ops *proc_ops)

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * The ASB.1/BER parsing code is derived from ip_nat_snmp_basic.c which was in
- * turn derived from the gxsnmp package by Gregory McLean & Jochen Friedrich
- *
- * Copyright (c) 2000 RP Internet (www.rpi.net.au).
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -64,7 +59,7 @@ static void encode_asn_tag(char *buf, unsigned int *ofs, char tag, char seq,
 	char hdr_len = compute_asn_hdr_len_bytes(length);
 	int len = length + 2 + hdr_len;
 
-	/* insert tag */
+	 
 	buf[index++] = tag;
 
 	if (!hdr_len) {
@@ -75,7 +70,7 @@ static void encode_asn_tag(char *buf, unsigned int *ofs, char tag, char seq,
 			buf[index++] = (len >> (i * 8)) & 0xFF;
 	}
 
-	/* insert seq */
+	 
 	len = len - (index - *ofs);
 	buf[index++] = seq;
 
@@ -108,20 +103,20 @@ int build_spnego_ntlmssp_neg_blob(unsigned char **pbuffer, u16 *buflen,
 	if (!buf)
 		return -ENOMEM;
 
-	/* insert main gss header */
+	 
 	encode_asn_tag(buf, &ofs, 0xa1, 0x30, neg_result_len + oid_len +
 			ntlmssp_len);
 
-	/* insert neg result */
+	 
 	encode_asn_tag(buf, &ofs, 0xa0, 0x0a, 1);
 	buf[ofs++] = 1;
 
-	/* insert oid */
+	 
 	encode_asn_tag(buf, &ofs, 0xa1, 0x06, NTLMSSP_OID_LEN);
 	memcpy(buf + ofs, NTLMSSP_OID_STR, NTLMSSP_OID_LEN);
 	ofs += NTLMSSP_OID_LEN;
 
-	/* insert response token - ntlmssp blob */
+	 
 	encode_asn_tag(buf, &ofs, 0xa2, 0x04, ntlm_blob_len);
 	memcpy(buf + ofs, ntlm_blob, ntlm_blob_len);
 	ofs += ntlm_blob_len;
@@ -144,10 +139,10 @@ int build_spnego_ntlmssp_auth_blob(unsigned char **pbuffer, u16 *buflen,
 	if (!buf)
 		return -ENOMEM;
 
-	/* insert main gss header */
+	 
 	encode_asn_tag(buf, &ofs, 0xa1, 0x30, neg_result_len);
 
-	/* insert neg result */
+	 
 	encode_asn_tag(buf, &ofs, 0xa0, 0x0a, 1);
 	if (neg_result)
 		buf[ofs++] = 2;

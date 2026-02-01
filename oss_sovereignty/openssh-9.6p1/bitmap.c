@@ -1,19 +1,5 @@
-/* $OpenBSD: bitmap.c,v 1.9 2017/10/20 01:56:39 djm Exp $ */
-/*
- * Copyright (c) 2015 Damien Miller <djm@mindrot.org>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -30,8 +16,8 @@
 #define BITMAP_WMASK	((BITMAP_WTYPE)BITMAP_BITS - 1)
 struct bitmap {
 	BITMAP_WTYPE *d;
-	size_t len; /* number of words allocated */
-	size_t top; /* index of top word allocated */
+	size_t len;  
+	size_t top;  
 };
 
 struct bitmap *
@@ -72,7 +58,7 @@ int
 bitmap_test_bit(struct bitmap *b, u_int n)
 {
 	if (b->top >= b->len)
-		return 0; /* invalid */
+		return 0;  
 	if (b->len == 0 || (n / BITMAP_BITS) > b->top)
 		return 0;
 	return (b->d[n / BITMAP_BITS] >> (n & BITMAP_WMASK)) & 1;
@@ -85,7 +71,7 @@ reserve(struct bitmap *b, u_int n)
 	size_t nlen;
 
 	if (b->top >= b->len || n > BITMAP_MAX)
-		return -1; /* invalid */
+		return -1;  
 	nlen = (n / BITMAP_BITS) + 1;
 	if (b->len < nlen) {
 		if ((tmp = recallocarray(b->d, b->len,
@@ -112,7 +98,7 @@ bitmap_set_bit(struct bitmap *b, u_int n)
 	return 0;
 }
 
-/* Resets b->top to point to the most significant bit set in b->d */
+ 
 static void
 retop(struct bitmap *b)
 {
@@ -128,12 +114,12 @@ bitmap_clear_bit(struct bitmap *b, u_int n)
 	size_t offset;
 
 	if (b->top >= b->len || n > BITMAP_MAX)
-		return; /* invalid */
+		return;  
 	offset = n / BITMAP_BITS;
 	if (offset > b->top)
 		return;
 	b->d[offset] &= ~((BITMAP_WTYPE)1 << (n & BITMAP_WMASK));
-	/* The top may have changed as a result of the clear */
+	 
 	retop(b);
 }
 
@@ -145,10 +131,10 @@ bitmap_nbits(struct bitmap *b)
 
 	retop(b);
 	if (b->top >= b->len)
-		return 0; /* invalid */
+		return 0;  
 	if (b->len == 0 || (b->top == 0 && b->d[0] == 0))
 		return 0;
-	/* Find MSB set */
+	 
 	w = b->d[b->top];
 	bits = (b->top + 1) * BITMAP_BITS;
 	while (!(w & ((BITMAP_WTYPE)1 << (BITMAP_BITS - 1)))) {
@@ -174,7 +160,7 @@ bitmap_to_string(struct bitmap *b, void *p, size_t l)
 		return -1;
 	if (l > need)
 		l = need;
-	/* Put the bytes from LSB backwards */
+	 
 	for (i = k = 0; i < b->top + 1; i++) {
 		for (j = 0; j < BITMAP_BYTES; j++) {
 			if (k >= l)

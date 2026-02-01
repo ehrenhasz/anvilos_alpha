@@ -1,38 +1,4 @@
-/*
- * libcxgb_ppm.h: Chelsio common library for T3/T4/T5 iSCSI ddp operation
- *
- * Copyright (c) 2016 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Written by: Karen Xie (kxie@chelsio.com)
- */
+ 
 
 #ifndef	__LIBCXGB_PPM_H__
 #define	__LIBCXGB_PPM_H__
@@ -62,23 +28,10 @@ struct cxgbi_pagepod {
 	__be64 addr[PPOD_PAGES_MAX + 1];
 };
 
-/* ddp tag format
- * for a 32-bit tag:
- * bit #
- * 31 .....   .....  0
- *     X   Y...Y Z...Z, where
- *     ^   ^^^^^ ^^^^
- *     |   |      |____ when ddp bit = 0: color bits
- *     |   |
- *     |   |____ when ddp bit = 0: idx into the ddp memory region
- *     |
- *     |____ ddp bit: 0 - ddp tag, 1 - non-ddp tag
- *
- *  [page selector:2] [sw/free bits] [0] [idx] [color:6]
- */
+ 
 
 #define DDP_PGIDX_MAX		4
-#define DDP_PGSZ_BASE_SHIFT	12	/* base page 4K */
+#define DDP_PGSZ_BASE_SHIFT	12	 
 
 struct cxgbi_task_tag_info {
 	unsigned char flags;
@@ -117,17 +70,17 @@ struct cxgbi_ppod_data {
 	unsigned long caller_data;
 };
 
-/* per cpu ppm pool */
+ 
 struct cxgbi_ppm_pool {
-	unsigned int base;		/* base index */
-	unsigned int next;		/* next possible free index */
-	spinlock_t lock;		/* ppm pool lock */
+	unsigned int base;		 
+	unsigned int next;		 
+	spinlock_t lock;		 
 	unsigned long bmap[];
 } ____cacheline_aligned_in_smp;
 
 struct cxgbi_ppm {
 	struct kref refcnt;
-	struct net_device *ndev;	/* net_device, 1st port */
+	struct net_device *ndev;	 
 	struct pci_dev *pdev;
 	void *lldev;
 	void **ppm_pp;
@@ -139,8 +92,8 @@ struct cxgbi_ppm {
 	unsigned int pool_rsvd;
 	unsigned int pool_index_max;
 	struct cxgbi_ppm_pool __percpu *pool;
-	/* map lock */
-	spinlock_t map_lock;		/* ppm map lock */
+	 
+	spinlock_t map_lock;		 
 	unsigned int bmap_index_max;
 	unsigned int next;
 	unsigned int max_index_in_edram;
@@ -150,17 +103,17 @@ struct cxgbi_ppm {
 
 #define DDP_THRESHOLD		512
 
-#define PPOD_PAGES_SHIFT	2       /*  4 pages per pod */
+#define PPOD_PAGES_SHIFT	2        
 
-#define IPPOD_SIZE               sizeof(struct cxgbi_pagepod)  /*  64 */
+#define IPPOD_SIZE               sizeof(struct cxgbi_pagepod)   
 #define PPOD_SIZE_SHIFT         6
 
-/* page pods are allocated in groups of this size (must be power of 2) */
+ 
 #define PPOD_CLUSTER_SIZE	16U
 
-#define ULPMEM_DSGL_MAX_NPPODS	16	/*  1024/PPOD_SIZE */
-#define ULPMEM_IDATA_MAX_NPPODS	3	/* (PPOD_SIZE * 3 + ulptx hdr) < 256B */
-#define PCIE_MEMWIN_MAX_NPPODS	16	/*  1024/PPOD_SIZE */
+#define ULPMEM_DSGL_MAX_NPPODS	16	 
+#define ULPMEM_IDATA_MAX_NPPODS	3	 
+#define PCIE_MEMWIN_MAX_NPPODS	16	 
 
 #define PPOD_COLOR_SHIFT	0
 #define PPOD_COLOR(x)		((x) << PPOD_COLOR_SHIFT)
@@ -202,7 +155,7 @@ static inline int cxgbi_ppm_is_ddp_tag(struct cxgbi_ppm *ppm, u32 tag)
 static inline int cxgbi_ppm_sw_tag_is_usable(struct cxgbi_ppm *ppm,
 					     u32 tag)
 {
-	/* the sw tag must be using <= 31 bits */
+	 
 	return !(tag & 0x80000000U);
 }
 
@@ -264,7 +217,7 @@ cxgbi_ppm_get_tag_caller_data(struct cxgbi_ppm *ppm,
 	return ppm->ppod_data[idx].caller_data;
 }
 
-/* sw bits are the free bits */
+ 
 static inline int cxgbi_ppm_ddp_tag_update_sw_bits(struct cxgbi_ppm *ppm,
 						   u32 val, u32 orig_tag,
 						   u32 *final_tag)
@@ -295,7 +248,7 @@ static inline void cxgbi_tagmask_check(unsigned int tagmask,
 {
 	unsigned int bits = fls(tagmask);
 
-	/* reserve top most 2 bits for page selector */
+	 
 	tformat->free_bits = 32 - 2 - bits;
 	tformat->rsvd_bits = bits;
 	tformat->color_bits = PPOD_IDX_SHIFT;
@@ -332,4 +285,4 @@ int cxgbi_ppm_release(struct cxgbi_ppm *ppm);
 void cxgbi_tagmask_check(unsigned int tagmask, struct cxgbi_tag_format *);
 unsigned int cxgbi_tagmask_set(unsigned int ppmax);
 
-#endif	/*__LIBCXGB_PPM_H__*/
+#endif	 

@@ -1,16 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2018, Mellanox Technologies inc.  All rights reserved.
- */
+
+ 
 
 #include <linux/dim.h>
 
-/*
- * Net DIM profiles:
- *        There are different set of profiles for each CQ period mode.
- *        There are different set of profiles for RX/TX CQs.
- *        Each profile size must be of NET_DIM_PARAMS_NUM_PROFILES
- */
+ 
 #define NET_DIM_PARAMS_NUM_PROFILES 5
 #define NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE 256
 #define NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE 128

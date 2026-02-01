@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Digital Audio (PCM) abstract layer / OSS compatible
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- */
+
+ 
 
 #if 0
 #define PLUGIN_DEBUG
@@ -52,9 +49,7 @@ static int snd_pcm_oss_get_rate(struct snd_pcm_oss_file *pcm_oss_file);
 static int snd_pcm_oss_get_channels(struct snd_pcm_oss_file *pcm_oss_file);
 static int snd_pcm_oss_get_format(struct snd_pcm_oss_file *pcm_oss_file);
 
-/*
- * helper functions to process hw_params
- */
+ 
 static int snd_interval_refine_min(struct snd_interval *i, unsigned int min, int openmin)
 {
 	int changed = 0;
@@ -113,14 +108,7 @@ static int snd_interval_refine_set(struct snd_interval *i, unsigned int val)
 	return snd_interval_refine(i, &t);
 }
 
-/**
- * snd_pcm_hw_param_value_min
- * @params: the hw_params instance
- * @var: parameter to retrieve
- * @dir: pointer to the direction (-1,0,1) or NULL
- *
- * Return the minimum value for field PAR.
- */
+ 
 static unsigned int
 snd_pcm_hw_param_value_min(const struct snd_pcm_hw_params *params,
 			   snd_pcm_hw_param_t var, int *dir)
@@ -139,14 +127,7 @@ snd_pcm_hw_param_value_min(const struct snd_pcm_hw_params *params,
 	return -EINVAL;
 }
 
-/**
- * snd_pcm_hw_param_value_max
- * @params: the hw_params instance
- * @var: parameter to retrieve
- * @dir: pointer to the direction (-1,0,1) or NULL
- *
- * Return the maximum value for field PAR.
- */
+ 
 static int
 snd_pcm_hw_param_value_max(const struct snd_pcm_hw_params *params,
 			   snd_pcm_hw_param_t var, int *dir)
@@ -225,18 +206,7 @@ static int _snd_pcm_hw_param_min(struct snd_pcm_hw_params *params,
 	return changed;
 }
 
-/**
- * snd_pcm_hw_param_min
- * @pcm: PCM instance
- * @params: the hw_params instance
- * @var: parameter to retrieve
- * @val: minimal value
- * @dir: pointer to the direction (-1,0,1) or NULL
- *
- * Inside configuration space defined by PARAMS remove from PAR all 
- * values < VAL. Reduce configuration space accordingly.
- * Return new minimum or -EINVAL if the configuration space is empty
- */
+ 
 static int snd_pcm_hw_param_min(struct snd_pcm_substream *pcm,
 				struct snd_pcm_hw_params *params,
 				snd_pcm_hw_param_t var, unsigned int val,
@@ -286,18 +256,7 @@ static int _snd_pcm_hw_param_max(struct snd_pcm_hw_params *params,
 	return changed;
 }
 
-/**
- * snd_pcm_hw_param_max
- * @pcm: PCM instance
- * @params: the hw_params instance
- * @var: parameter to retrieve
- * @val: maximal value
- * @dir: pointer to the direction (-1,0,1) or NULL
- *
- * Inside configuration space defined by PARAMS remove from PAR all 
- *  values >= VAL + 1. Reduce configuration space accordingly.
- *  Return new maximum or -EINVAL if the configuration space is empty
- */
+ 
 static int snd_pcm_hw_param_max(struct snd_pcm_substream *pcm,
 				struct snd_pcm_hw_params *params,
 				snd_pcm_hw_param_t var, unsigned int val,
@@ -346,7 +305,7 @@ static int boundary_lt(unsigned int a, int adir,
 	return a < b || (a == b && adir < bdir);
 }
 
-/* Return 1 if min is nearer to best than max */
+ 
 static int boundary_nearer(int min, int mindir,
 			   int best, int bestdir,
 			   int max, int maxdir)
@@ -358,20 +317,7 @@ static int boundary_nearer(int min, int mindir,
 	return boundary_lt(dmin, dmindir, dmax, dmaxdir);
 }
 
-/**
- * snd_pcm_hw_param_near
- * @pcm: PCM instance
- * @params: the hw_params instance
- * @var: parameter to retrieve
- * @best: value to set
- * @dir: pointer to the direction (-1,0,1) or NULL
- *
- * Inside configuration space defined by PARAMS set PAR to the available value
- * nearest to VAL. Reduce configuration space accordingly.
- * This function cannot be called for SNDRV_PCM_HW_PARAM_ACCESS,
- * SNDRV_PCM_HW_PARAM_FORMAT, SNDRV_PCM_HW_PARAM_SUBFORMAT.
- * Return the value found.
-  */
+ 
 static int snd_pcm_hw_param_near(struct snd_pcm_substream *pcm,
 				 struct snd_pcm_hw_params *params,
 				 snd_pcm_hw_param_t var, unsigned int best,
@@ -384,7 +330,7 @@ static int snd_pcm_hw_param_near(struct snd_pcm_substream *pcm,
 	int min, max;
 	int mindir, maxdir;
 	int valdir = dir ? *dir : 0;
-	/* FIXME */
+	 
 	if (best > INT_MAX)
 		best = INT_MAX;
 	min = max = best;
@@ -491,18 +437,7 @@ static int _snd_pcm_hw_param_set(struct snd_pcm_hw_params *params,
 	return changed;
 }
 
-/**
- * snd_pcm_hw_param_set
- * @pcm: PCM instance
- * @params: the hw_params instance
- * @var: parameter to retrieve
- * @val: value to set
- * @dir: pointer to the direction (-1,0,1) or NULL
- *
- * Inside configuration space defined by PARAMS remove from PAR all 
- * values != VAL. Reduce configuration space accordingly.
- *  Return VAL or -EINVAL if the configuration space is empty
- */
+ 
 static int snd_pcm_hw_param_set(struct snd_pcm_substream *pcm,
 				struct snd_pcm_hw_params *params,
 				snd_pcm_hw_param_t var, unsigned int val,
@@ -531,9 +466,7 @@ static int _snd_pcm_hw_param_setinteger(struct snd_pcm_hw_params *params,
 	return changed;
 }
 	
-/*
- * plugin
- */
+ 
 
 #ifdef CONFIG_SND_PCM_OSS_PLUGINS
 static int snd_pcm_oss_plugin_clear(struct snd_pcm_substream *substream)
@@ -580,7 +513,7 @@ int snd_pcm_plugin_append(struct snd_pcm_plugin *plugin)
 	}
 	return 0;
 }
-#endif /* CONFIG_SND_PCM_OSS_PLUGINS */
+#endif  
 
 static long snd_pcm_oss_bytes(struct snd_pcm_substream *substream, long frames)
 {
@@ -614,19 +547,19 @@ snd_pcm_uframes_t get_hw_ptr_period(struct snd_pcm_runtime *runtime)
 	return runtime->hw_ptr_interrupt;
 }
 
-/* define extended formats in the recent OSS versions (if any) */
-/* linear formats */
+ 
+ 
 #define AFMT_S32_LE      0x00001000
 #define AFMT_S32_BE      0x00002000
 #define AFMT_S24_LE      0x00008000
 #define AFMT_S24_BE      0x00010000
 #define AFMT_S24_PACKED  0x00040000
 
-/* other supported formats */
+ 
 #define AFMT_FLOAT       0x00004000
 #define AFMT_SPDIF_RAW   0x00020000
 
-/* unsupported formats */
+ 
 #define AFMT_AC3         0x00000400
 #define AFMT_VORBIS      0x00000800
 
@@ -775,7 +708,7 @@ static int snd_pcm_oss_period_size(struct snd_pcm_substream *substream,
 	if (oss_period_size < 16)
 		return -EINVAL;
 
-	/* don't allocate too large period; 1MB period must be enough */
+	 
 	if (oss_period_size > 1024 * 1024)
 		return -ENOMEM;
 
@@ -798,7 +731,7 @@ static int choose_rate(struct snd_pcm_substream *substream,
 	*save = *params;
 	it = hw_param_interval_c(save, SNDRV_PCM_HW_PARAM_RATE);
 
-	/* try multiples of the best rate */
+	 
 	rate = best_rate;
 	for (;;) {
 		if (it->max < rate || (it->max == rate && it->openmax))
@@ -820,12 +753,12 @@ static int choose_rate(struct snd_pcm_substream *substream,
 			break;
 	}
 
-	/* not found, use the nearest rate */
+	 
 	kfree(save);
 	return snd_pcm_hw_param_near(substream, params, SNDRV_PCM_HW_PARAM_RATE, best_rate, NULL);
 }
 
-/* parameter locking: returns immediately if tried during streaming */
+ 
 static int lock_params(struct snd_pcm_runtime *runtime)
 {
 	if (mutex_lock_interruptible(&runtime->oss.params_lock))
@@ -853,7 +786,7 @@ static void snd_pcm_oss_release_buffers(struct snd_pcm_substream *substream)
 #endif
 }
 
-/* call with params_lock held */
+ 
 static int snd_pcm_oss_change_params_locked(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
@@ -982,7 +915,7 @@ static int snd_pcm_oss_change_params_locked(struct snd_pcm_substream *substream)
 #ifdef CONFIG_SND_PCM_OSS_PLUGINS
 	snd_pcm_oss_plugin_clear(substream);
 	if (!direct) {
-		/* add necessary plugins */
+		 
 		err = snd_pcm_plug_format_plugins(substream, params, sparams);
 		if (err < 0) {
 			pcm_dbg(substream->pcm,
@@ -1100,7 +1033,7 @@ failure:
 	return err;
 }
 
-/* this one takes the lock by itself */
+ 
 static int snd_pcm_oss_change_params(struct snd_pcm_substream *substream,
 				     bool trylock)
 {
@@ -1142,10 +1075,8 @@ static int snd_pcm_oss_get_active_substream(struct snd_pcm_oss_file *pcm_oss_fil
 	return 0;
 }
 
-/* call with params_lock held */
-/* NOTE: this always call PREPARE unconditionally no matter whether
- * runtime->oss.prepare is set or not
- */
+ 
+ 
 static int snd_pcm_oss_prepare(struct snd_pcm_substream *substream)
 {
 	int err;
@@ -1187,7 +1118,7 @@ static int snd_pcm_oss_make_ready(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-/* call with params_lock held */
+ 
 static int snd_pcm_oss_make_ready_locked(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime;
@@ -1220,8 +1151,8 @@ static int snd_pcm_oss_capture_position_fixup(struct snd_pcm_substream *substrea
 		runtime = substream->runtime;
 		if (*delay <= (snd_pcm_sframes_t)runtime->buffer_size)
 			break;
-		/* in case of overrun, skip whole periods like OSS/Linux driver does */
-		/* until avail(delay) <= buffer_size */
+		 
+		 
 		frames = (*delay - runtime->buffer_size) + runtime->period_size - 1;
 		frames /= runtime->period_size;
 		frames *= runtime->period_size;
@@ -1255,8 +1186,8 @@ snd_pcm_sframes_t snd_pcm_oss_write3(struct snd_pcm_substream *substream, const 
 		mutex_lock(&runtime->oss.params_lock);
 		if (ret != -EPIPE && ret != -ESTRPIPE)
 			break;
-		/* test, if we can't store new data, because the stream */
-		/* has not been started */
+		 
+		 
 		if (runtime->state == SNDRV_PCM_STATE_PREPARED)
 			return -EAGAIN;
 	}
@@ -1328,8 +1259,8 @@ snd_pcm_sframes_t snd_pcm_oss_writev3(struct snd_pcm_substream *substream, void 
 		if (ret != -EPIPE && ret != -ESTRPIPE)
 			break;
 
-		/* test, if we can't store new data, because the stream */
-		/* has not been started */
+		 
+		 
 		if (runtime->state == SNDRV_PCM_STATE_PREPARED)
 			return -EAGAIN;
 	}
@@ -1363,7 +1294,7 @@ snd_pcm_sframes_t snd_pcm_oss_readv3(struct snd_pcm_substream *substream, void *
 	}
 	return ret;
 }
-#endif /* CONFIG_SND_PCM_OSS_PLUGINS */
+#endif  
 
 static ssize_t snd_pcm_oss_write2(struct snd_pcm_substream *substream, const char *buf, size_t bytes, int in_kernel)
 {
@@ -1604,8 +1535,8 @@ static int snd_pcm_oss_post(struct snd_pcm_oss_file *pcm_oss_file)
 			return err;
 		snd_pcm_kernel_ioctl(substream, SNDRV_PCM_IOCTL_START, NULL);
 	}
-	/* note: all errors from the start action are ignored */
-	/* OSS apps do not know, how to handle them */
+	 
+	 
 	return 0;
 }
 
@@ -1705,10 +1636,7 @@ static int snd_pcm_oss_sync(struct snd_pcm_oss_file *pcm_oss_file)
 			if (err < 0)
 				goto unlock;
 		}
-		/*
-		 * The ALSA's period might be a bit large than OSS one.
-		 * Fill the remain portion of ALSA period with zeros.
-		 */
+		 
 		size = runtime->control->appl_ptr % runtime->period_size;
 		if (size > 0) {
 			size = runtime->period_size - size;
@@ -1722,9 +1650,7 @@ unlock:
 		atomic_dec(&runtime->oss.rw_ref);
 		if (err < 0)
 			return err;
-		/*
-		 * finish sync: drain the buffer
-		 */
+		 
 	      __direct:
 		saved_f_flags = substream->f_flags;
 		substream->f_flags &= ~O_NONBLOCK;
@@ -1981,11 +1907,11 @@ static int snd_pcm_oss_set_fragment1(struct snd_pcm_substream *substream, unsign
 	if (runtime->oss.subdivision || runtime->oss.fragshift)
 		return -EINVAL;
 	fragshift = val & 0xffff;
-	if (fragshift >= 25) /* should be large enough */
+	if (fragshift >= 25)  
 		return -EINVAL;
 	runtime->oss.fragshift = fragshift;
 	runtime->oss.maxfrags = (val >> 16) & 0xffff;
-	if (runtime->oss.fragshift < 4)		/* < 16 */
+	if (runtime->oss.fragshift < 4)		 
 		runtime->oss.fragshift = 4;
 	if (runtime->oss.maxfrags < 2)
 		runtime->oss.maxfrags = 2;
@@ -2035,8 +1961,8 @@ static int snd_pcm_oss_get_caps1(struct snd_pcm_substream *substream, int res)
 		if (substream->pstr->substream_count > 1)
 			res |= DSP_CAP_MULTI;
 #endif
-	/* DSP_CAP_REALTIME is set all times: */
-	/* all ALSA drivers can return actual pointer in ring buffer */
+	 
+	 
 #if defined(DSP_CAP_REALTIME) && 0
 	{
 		struct snd_pcm_runtime *runtime = substream->runtime;
@@ -2056,7 +1982,7 @@ static int snd_pcm_oss_get_caps(struct snd_pcm_oss_file *pcm_oss_file)
 		struct snd_pcm_substream *substream = pcm_oss_file->streams[idx];
 		result = snd_pcm_oss_get_caps1(substream, result);
 	}
-	result |= 0x0001;	/* revision - same as SB AWE 64 */
+	result |= 0x0001;	 
 	return result;
 }
 
@@ -2185,7 +2111,7 @@ static int snd_pcm_oss_get_odelay(struct snd_pcm_oss_file *pcm_oss_file)
 		return 0;
 	err = snd_pcm_kernel_ioctl(substream, SNDRV_PCM_IOCTL_DELAY, &delay);
 	if (err == -EPIPE)
-		delay = 0;	/* hack for broken OSS applications */
+		delay = 0;	 
 	else if (err < 0)
 		return err;
 	return snd_pcm_oss_bytes(substream, delay);
@@ -2326,8 +2252,8 @@ static int snd_pcm_oss_get_space(struct snd_pcm_oss_file *pcm_oss_file, int stre
 
 static int snd_pcm_oss_get_mapbuf(struct snd_pcm_oss_file *pcm_oss_file, int stream, struct buffmem_desc __user * _info)
 {
-	// it won't be probably implemented
-	// pr_debug("TODO: snd_pcm_oss_get_mapbuf\n");
+	
+	
 	return -EINVAL;
 }
 
@@ -2443,7 +2369,7 @@ static int snd_pcm_oss_open_file(struct file *file,
 		if (setup[idx].disable)
 			continue;
 		if (! pcm->streams[idx].substream_count)
-			continue; /* no matching substream */
+			continue;  
 		if (idx == SNDRV_PCM_STREAM_PLAYBACK) {
 			if (! (f_mode & FMODE_WRITE))
 				continue;
@@ -2609,7 +2535,7 @@ static long snd_pcm_oss_ioctl(struct file *file, unsigned int cmd, unsigned long
 	if (cmd == OSS_ALSAEMULVER)
 		return put_user(1, p);
 #if IS_REACHABLE(CONFIG_SND_MIXER_OSS)
-	if (((cmd >> 8) & 0xff) == 'M')	{	/* mixer ioctl - for OSS compatibility */
+	if (((cmd >> 8) & 0xff) == 'M')	{	 
 		struct snd_pcm_substream *substream;
 		int idx;
 		for (idx = 0; idx < 2; ++idx) {
@@ -2737,7 +2663,7 @@ static long snd_pcm_oss_ioctl(struct file *file, unsigned int cmd, unsigned long
 				SNDRV_PCM_STREAM_CAPTURE : SNDRV_PCM_STREAM_PLAYBACK,
 			(struct buffmem_desc __user *) arg);
 	case SNDCTL_DSP_SETSYNCRO:
-		/* stop DMA now.. */
+		 
 		return 0;
 	case SNDCTL_DSP_SETDUPLEX:
 		if (snd_pcm_oss_get_caps(pcm_oss_file) & DSP_CAP_DUPLEX)
@@ -2746,13 +2672,13 @@ static long snd_pcm_oss_ioctl(struct file *file, unsigned int cmd, unsigned long
 	case SNDCTL_DSP_GETODELAY:
 		res = snd_pcm_oss_get_odelay(pcm_oss_file);
 		if (res < 0) {
-			/* it's for sure, some broken apps don't check for error codes */
+			 
 			put_user(0, p);
 			return res;
 		}
 		return put_user(res, p);
 	case SNDCTL_DSP_PROFILE:
-		return 0;	/* silently ignore */
+		return 0;	 
 	default:
 		pr_debug("pcm_oss: unknown command = 0x%x\n", cmd);
 	}
@@ -2760,14 +2686,11 @@ static long snd_pcm_oss_ioctl(struct file *file, unsigned int cmd, unsigned long
 }
 
 #ifdef CONFIG_COMPAT
-/* all compatible */
+ 
 static long snd_pcm_oss_ioctl_compat(struct file *file, unsigned int cmd,
 				     unsigned long arg)
 {
-	/*
-	 * Everything is compatbile except SNDCTL_DSP_MAPINBUF/SNDCTL_DSP_MAPOUTBUF,
-	 * which are not implemented for the native case either
-	 */
+	 
 	return snd_pcm_oss_ioctl(file, cmd, (unsigned long)compat_ptr(arg));
 }
 #else
@@ -2908,8 +2831,7 @@ static int snd_pcm_oss_mmap(struct file *file, struct vm_area_struct *area)
 	default:
 		return -EINVAL;
 	}
-	/* set VM_READ access as well to fix memset() routines that do
-	   reads before writes (to improve performance) */
+	 
 	vm_flags_set(area, VM_READ);
 	if (substream == NULL)
 		return -ENXIO;
@@ -2922,10 +2844,7 @@ static int snd_pcm_oss_mmap(struct file *file, struct vm_area_struct *area)
 		return -EIO;
 	
 	if (runtime->oss.params) {
-		/* use mutex_trylock() for params_lock for avoiding a deadlock
-		 * between mmap_lock and params_lock taken by
-		 * copy_from/to_user() in snd_pcm_oss_write/read()
-		 */
+		 
 		err = snd_pcm_oss_change_params(substream, true);
 		if (err < 0)
 			return err;
@@ -2948,16 +2867,14 @@ static int snd_pcm_oss_mmap(struct file *file, struct vm_area_struct *area)
 	pr_debug("pcm_oss: mmap ok, bytes = 0x%x\n",
 	       runtime->oss.mmap_bytes);
 #endif
-	/* In mmap mode we never stop */
+	 
 	runtime->stop_threshold = runtime->boundary;
 
 	return 0;
 }
 
 #ifdef CONFIG_SND_VERBOSE_PROCFS
-/*
- *  /proc interface
- */
+ 
 
 static void snd_pcm_oss_proc_read(struct snd_info_entry *entry,
 				  struct snd_info_buffer *buffer)
@@ -3106,18 +3023,16 @@ static void snd_pcm_oss_proc_done(struct snd_pcm *pcm)
 		snd_pcm_oss_proc_free_setup_list(pstr);
 	}
 }
-#else /* !CONFIG_SND_VERBOSE_PROCFS */
+#else  
 static inline void snd_pcm_oss_proc_init(struct snd_pcm *pcm)
 {
 }
 static inline void snd_pcm_oss_proc_done(struct snd_pcm *pcm)
 {
 }
-#endif /* CONFIG_SND_VERBOSE_PROCFS */
+#endif  
 
-/*
- *  ENTRY functions
- */
+ 
 
 static const struct file_operations snd_pcm_oss_f_reg =
 {
@@ -3216,7 +3131,7 @@ static int __init alsa_pcm_oss_init(void)
 	int i;
 	int err;
 
-	/* check device map table */
+	 
 	for (i = 0; i < SNDRV_CARDS; i++) {
 		if (dsp_map[i] < 0 || dsp_map[i] >= SNDRV_PCM_DEVICES) {
 			pr_err("ALSA: pcm_oss: invalid dsp_map[%d] = %d\n",

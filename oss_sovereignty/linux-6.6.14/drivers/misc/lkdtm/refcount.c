@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This is for all the tests related to refcount bugs (e.g. overflow,
- * underflow, reaching zero untested, etc).
- */
+
+ 
 #include "lkdtm.h"
 #include <linux/refcount.h>
 
@@ -20,10 +17,7 @@ static void overflow_check(refcount_t *ref)
 	}
 }
 
-/*
- * A refcount_inc() above the maximum value of the refcount implementation,
- * should at least saturate, and at most also WARN.
- */
+ 
 static void lkdtm_REFCOUNT_INC_OVERFLOW(void)
 {
 	refcount_t over = REFCOUNT_INIT(REFCOUNT_MAX - 1);
@@ -39,7 +33,7 @@ static void lkdtm_REFCOUNT_INC_OVERFLOW(void)
 	overflow_check(&over);
 }
 
-/* refcount_add() should behave just like refcount_inc() above. */
+ 
 static void lkdtm_REFCOUNT_ADD_OVERFLOW(void)
 {
 	refcount_t over = REFCOUNT_INIT(REFCOUNT_MAX - 1);
@@ -57,7 +51,7 @@ static void lkdtm_REFCOUNT_ADD_OVERFLOW(void)
 	overflow_check(&over);
 }
 
-/* refcount_inc_not_zero() should behave just like refcount_inc() above. */
+ 
 static void lkdtm_REFCOUNT_INC_NOT_ZERO_OVERFLOW(void)
 {
 	refcount_t over = REFCOUNT_INIT(REFCOUNT_MAX);
@@ -69,7 +63,7 @@ static void lkdtm_REFCOUNT_INC_NOT_ZERO_OVERFLOW(void)
 	overflow_check(&over);
 }
 
-/* refcount_add_not_zero() should behave just like refcount_inc() above. */
+ 
 static void lkdtm_REFCOUNT_ADD_NOT_ZERO_OVERFLOW(void)
 {
 	refcount_t over = REFCOUNT_INIT(REFCOUNT_MAX);
@@ -98,11 +92,7 @@ static void check_zero(refcount_t *ref)
 	}
 }
 
-/*
- * A refcount_dec(), as opposed to a refcount_dec_and_test(), when it hits
- * zero it should either saturate (when inc-from-zero isn't protected)
- * or stay at zero (when inc-from-zero is protected) and should WARN for both.
- */
+ 
 static void lkdtm_REFCOUNT_DEC_ZERO(void)
 {
 	refcount_t zero = REFCOUNT_INIT(2);
@@ -118,11 +108,7 @@ static void lkdtm_REFCOUNT_DEC_ZERO(void)
 
 static void check_negative(refcount_t *ref, int start)
 {
-	/*
-	 * refcount_t refuses to move a refcount at all on an
-	 * over-sub, so we have to track our starting position instead of
-	 * looking only at zero-pinning.
-	 */
+	 
 	if (refcount_read(ref) == start) {
 		pr_warn("Still at %d: refcount_inc/add() must not inc-from-0\n",
 			start);
@@ -141,7 +127,7 @@ static void check_negative(refcount_t *ref, int start)
 	}
 }
 
-/* A refcount_dec() going negative should saturate and may WARN. */
+ 
 static void lkdtm_REFCOUNT_DEC_NEGATIVE(void)
 {
 	refcount_t neg = REFCOUNT_INIT(0);
@@ -152,10 +138,7 @@ static void lkdtm_REFCOUNT_DEC_NEGATIVE(void)
 	check_negative(&neg, 0);
 }
 
-/*
- * A refcount_dec_and_test() should act like refcount_dec() above when
- * going negative.
- */
+ 
 static void lkdtm_REFCOUNT_DEC_AND_TEST_NEGATIVE(void)
 {
 	refcount_t neg = REFCOUNT_INIT(0);
@@ -167,10 +150,7 @@ static void lkdtm_REFCOUNT_DEC_AND_TEST_NEGATIVE(void)
 	check_negative(&neg, 0);
 }
 
-/*
- * A refcount_sub_and_test() should act like refcount_dec_and_test()
- * above when going negative.
- */
+ 
 static void lkdtm_REFCOUNT_SUB_AND_TEST_NEGATIVE(void)
 {
 	refcount_t neg = REFCOUNT_INIT(3);
@@ -200,9 +180,7 @@ static void check_from_zero(refcount_t *ref)
 	}
 }
 
-/*
- * A refcount_inc() from zero should pin to zero or saturate and may WARN.
- */
+ 
 static void lkdtm_REFCOUNT_INC_ZERO(void)
 {
 	refcount_t zero = REFCOUNT_INIT(0);
@@ -224,10 +202,7 @@ static void lkdtm_REFCOUNT_INC_ZERO(void)
 	check_from_zero(&zero);
 }
 
-/*
- * A refcount_add() should act like refcount_inc() above when starting
- * at zero.
- */
+ 
 static void lkdtm_REFCOUNT_ADD_ZERO(void)
 {
 	refcount_t zero = REFCOUNT_INIT(0);
@@ -263,10 +238,7 @@ static void check_saturated(refcount_t *ref)
 	}
 }
 
-/*
- * A refcount_inc() from a saturated value should at most warn about
- * being saturated already.
- */
+ 
 static void lkdtm_REFCOUNT_INC_SATURATED(void)
 {
 	refcount_t sat = REFCOUNT_INIT(REFCOUNT_SATURATED);
@@ -277,7 +249,7 @@ static void lkdtm_REFCOUNT_INC_SATURATED(void)
 	check_saturated(&sat);
 }
 
-/* Should act like refcount_inc() above from saturated. */
+ 
 static void lkdtm_REFCOUNT_DEC_SATURATED(void)
 {
 	refcount_t sat = REFCOUNT_INIT(REFCOUNT_SATURATED);
@@ -288,7 +260,7 @@ static void lkdtm_REFCOUNT_DEC_SATURATED(void)
 	check_saturated(&sat);
 }
 
-/* Should act like refcount_inc() above from saturated. */
+ 
 static void lkdtm_REFCOUNT_ADD_SATURATED(void)
 {
 	refcount_t sat = REFCOUNT_INIT(REFCOUNT_SATURATED);
@@ -299,7 +271,7 @@ static void lkdtm_REFCOUNT_ADD_SATURATED(void)
 	check_saturated(&sat);
 }
 
-/* Should act like refcount_inc() above from saturated. */
+ 
 static void lkdtm_REFCOUNT_INC_NOT_ZERO_SATURATED(void)
 {
 	refcount_t sat = REFCOUNT_INIT(REFCOUNT_SATURATED);
@@ -311,7 +283,7 @@ static void lkdtm_REFCOUNT_INC_NOT_ZERO_SATURATED(void)
 	check_saturated(&sat);
 }
 
-/* Should act like refcount_inc() above from saturated. */
+ 
 static void lkdtm_REFCOUNT_ADD_NOT_ZERO_SATURATED(void)
 {
 	refcount_t sat = REFCOUNT_INIT(REFCOUNT_SATURATED);
@@ -323,7 +295,7 @@ static void lkdtm_REFCOUNT_ADD_NOT_ZERO_SATURATED(void)
 	check_saturated(&sat);
 }
 
-/* Should act like refcount_inc() above from saturated. */
+ 
 static void lkdtm_REFCOUNT_DEC_AND_TEST_SATURATED(void)
 {
 	refcount_t sat = REFCOUNT_INIT(REFCOUNT_SATURATED);
@@ -335,7 +307,7 @@ static void lkdtm_REFCOUNT_DEC_AND_TEST_SATURATED(void)
 	check_saturated(&sat);
 }
 
-/* Should act like refcount_inc() above from saturated. */
+ 
 static void lkdtm_REFCOUNT_SUB_AND_TEST_SATURATED(void)
 {
 	refcount_t sat = REFCOUNT_INIT(REFCOUNT_SATURATED);
@@ -347,7 +319,7 @@ static void lkdtm_REFCOUNT_SUB_AND_TEST_SATURATED(void)
 	check_saturated(&sat);
 }
 
-/* Used to time the existing atomic_t when used for reference counting */
+ 
 static void lkdtm_ATOMIC_TIMING(void)
 {
 	unsigned int i;
@@ -366,13 +338,7 @@ static void lkdtm_ATOMIC_TIMING(void)
 		pr_info("atomic timing: done\n");
 }
 
-/*
- * This can be compared to ATOMIC_TIMING when implementing fast refcount
- * protections. Looking at the number of CPU cycles tells the real story
- * about performance. For example:
- *    cd /sys/kernel/debug/provoke-crash
- *    perf stat -B -- cat <(echo REFCOUNT_TIMING) > DIRECT
- */
+ 
 static void lkdtm_REFCOUNT_TIMING(void)
 {
 	unsigned int i;

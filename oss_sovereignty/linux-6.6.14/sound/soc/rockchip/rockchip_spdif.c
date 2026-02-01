@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* sound/soc/rockchip/rk_spdif.c
- *
- * ALSA SoC Audio Layer - Rockchip I2S Controller driver
- *
- * Copyright (c) 2014 Rockchip Electronics Co. Ltd.
- * Author: Jianqun <jay.xu@rock-chips.com>
- * Copyright (c) 2015 Collabora Ltd.
- * Author: Sjoerd Simons <sjoerd.simons@collabora.co.uk>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -131,7 +123,7 @@ static int rk_spdif_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* Set clock and calculate divider */
+	 
 	ret = clk_set_rate(spdif->mclk, mclk);
 	if (ret != 0) {
 		dev_err(spdif->dev, "Failed to set module clock rate: %d\n",
@@ -301,9 +293,7 @@ static int rk_spdif_probe(struct platform_device *pdev)
 			return PTR_ERR(grf);
 		}
 
-		/* Select the 8 channel SPDIF solution on RK3288 as
-		 * the 2 channel one does not appear to work
-		 */
+		 
 		regmap_write(grf, RK3288_GRF_SOC_CON2, BIT(1) << 16);
 	}
 

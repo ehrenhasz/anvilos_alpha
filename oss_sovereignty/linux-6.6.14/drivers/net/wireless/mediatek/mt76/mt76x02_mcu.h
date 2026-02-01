@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- */
+ 
+ 
 
 #ifndef __MT76x02_MCU_H
 #define __MT76x02_MCU_H
@@ -97,4 +95,4 @@ int mt76x02_mcu_set_radio_state(struct mt76x02_dev *dev, bool on);
 void mt76x02_set_ethtool_fwver(struct mt76x02_dev *dev,
 			       const struct mt76x02_fw_header *h);
 
-#endif /* __MT76x02_MCU_H */
+#endif  

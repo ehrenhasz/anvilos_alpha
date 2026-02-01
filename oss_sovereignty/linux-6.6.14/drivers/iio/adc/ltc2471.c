@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for Linear Technology LTC2471 and LTC2473 voltage monitors
- * The LTC2473 is identical to the 2471, but reports a differential signal.
- *
- * Copyright (C) 2017 Topic Embedded Products
- * Author: Mike Looijmans <mike.looijmans@topic.nl>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -23,10 +17,10 @@ struct ltc2471_data {
 	struct i2c_client *client;
 };
 
-/* Reference voltage is 1.25V */
+ 
 #define LTC2471_VREF 1250
 
-/* Read two bytes from the I2C bus to obtain the ADC result */
+ 
 static int ltc2471_get_value(struct i2c_client *client)
 {
 	int ret;
@@ -38,7 +32,7 @@ static int ltc2471_get_value(struct i2c_client *client)
 	if (ret != sizeof(buf))
 		return -EIO;
 
-	/* MSB first */
+	 
 	return be16_to_cpu(buf);
 }
 
@@ -59,16 +53,16 @@ static int ltc2471_read_raw(struct iio_dev *indio_dev,
 
 	case IIO_CHAN_INFO_SCALE:
 		if (chan->differential)
-			/* Output ranges from -VREF to +VREF */
+			 
 			*val = 2 * LTC2471_VREF;
 		else
-			/* Output ranges from 0 to VREF */
+			 
 			*val = LTC2471_VREF;
-		*val2 = 16;	/* 16 data bits */
+		*val2 = 16;	 
 		return IIO_VAL_FRACTIONAL_LOG2;
 
 	case IIO_CHAN_INFO_OFFSET:
-		/* Only differential chip has this property */
+		 
 		*val = -LTC2471_VREF;
 		return IIO_VAL_INT;
 
@@ -125,7 +119,7 @@ static int ltc2471_i2c_probe(struct i2c_client *client)
 		indio_dev->channels = ltc2471_channel;
 	indio_dev->num_channels = 1;
 
-	/* Trigger once to start conversion and check if chip is there */
+	 
 	ret = ltc2471_get_value(client);
 	if (ret < 0) {
 		dev_err(&client->dev, "Cannot read from device.\n");

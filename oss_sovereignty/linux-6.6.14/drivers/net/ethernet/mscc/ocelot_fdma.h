@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/*
- * Microsemi SoCs FDMA driver
- *
- * Copyright (c) 2021 Microchip
- */
+ 
+ 
 #ifndef _MSCC_OCELOT_FDMA_H_
 #define _MSCC_OCELOT_FDMA_H_
 
@@ -48,7 +44,7 @@
 					 sizeof(struct ocelot_fdma_dcb))
 #define OCELOT_FDMA_TX_DCB_SIZE		(OCELOT_FDMA_TX_RING_SIZE * \
 					 sizeof(struct ocelot_fdma_dcb))
-/* +4 allows for word alignment after allocation */
+ 
 #define OCELOT_DCBS_HW_ALLOC_SIZE	(OCELOT_FDMA_RX_DCB_SIZE + \
 					 OCELOT_FDMA_TX_DCB_SIZE + \
 					 4)
@@ -68,59 +64,31 @@ struct ocelot_fdma_dcb {
 	u32 stat;
 } __packed;
 
-/**
- * struct ocelot_fdma_tx_buf - TX buffer structure
- * @skb: SKB currently used in the corresponding DCB.
- * @dma_addr: SKB DMA mapped address.
- */
+ 
 struct ocelot_fdma_tx_buf {
 	struct sk_buff *skb;
 	DEFINE_DMA_UNMAP_ADDR(dma_addr);
 };
 
-/**
- * struct ocelot_fdma_tx_ring - TX ring description of DCBs
- *
- * @dcbs: DCBs allocated for the ring
- * @dcbs_dma: DMA base address of the DCBs
- * @bufs: List of TX buffer associated to the DCBs
- * @xmit_lock: lock for concurrent xmit access
- * @next_to_clean: Next DCB to be cleaned in tx_cleanup
- * @next_to_use: Next available DCB to send SKB
- */
+ 
 struct ocelot_fdma_tx_ring {
 	struct ocelot_fdma_dcb *dcbs;
 	dma_addr_t dcbs_dma;
 	struct ocelot_fdma_tx_buf bufs[OCELOT_FDMA_TX_RING_SIZE];
-	/* Protect concurrent xmit calls */
+	 
 	spinlock_t xmit_lock;
 	u16 next_to_clean;
 	u16 next_to_use;
 };
 
-/**
- * struct ocelot_fdma_rx_buf - RX buffer structure
- * @page: Struct page used in this buffer
- * @page_offset: Current page offset (either 0 or PAGE_SIZE/2)
- * @dma_addr: DMA address of the page
- */
+ 
 struct ocelot_fdma_rx_buf {
 	struct page *page;
 	u32 page_offset;
 	dma_addr_t dma_addr;
 };
 
-/**
- * struct ocelot_fdma_rx_ring - TX ring description of DCBs
- *
- * @dcbs: DCBs allocated for the ring
- * @dcbs_dma: DMA base address of the DCBs
- * @bufs: List of RX buffer associated to the DCBs
- * @skb: SKB currently received by the netdev
- * @next_to_clean: Next DCB to be cleaned NAPI polling
- * @next_to_use: Next available DCB to send SKB
- * @next_to_alloc: Next buffer that needs to be allocated (page reuse or alloc)
- */
+ 
 struct ocelot_fdma_rx_ring {
 	struct ocelot_fdma_dcb *dcbs;
 	dma_addr_t dcbs_dma;
@@ -131,18 +99,7 @@ struct ocelot_fdma_rx_ring {
 	u16 next_to_alloc;
 };
 
-/**
- * struct ocelot_fdma - FDMA context
- *
- * @irq: FDMA interrupt
- * @ndev: Net device used to initialize NAPI
- * @dcbs_base: Memory coherent DCBs
- * @dcbs_dma_base: DMA base address of memory coherent DCBs
- * @tx_ring: Injection ring
- * @rx_ring: Extraction ring
- * @napi: NAPI context
- * @ocelot: Back-pointer to ocelot struct
- */
+ 
 struct ocelot_fdma {
 	int irq;
 	struct net_device *ndev;

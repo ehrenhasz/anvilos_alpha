@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define _GNU_SOURCE
 #include <errno.h>
@@ -155,7 +155,7 @@ FIXTURE_SETUP(current_nsset)
 		TH_LOG("%m - Failed to open pidfd for process %d", self->pid);
 	}
 
-	/* Create task that exits right away. */
+	 
 	self->child_pid_exited = create_child(&self->child_pidfd_exited,
 					      CLONE_NEWUSER | CLONE_NEWNET);
 	EXPECT_GT(self->child_pid_exited, 0);
@@ -173,7 +173,7 @@ FIXTURE_SETUP(current_nsset)
 	ret = socketpair(AF_LOCAL, SOCK_STREAM | SOCK_CLOEXEC, 0, ipc_sockets);
 	EXPECT_EQ(ret, 0);
 
-	/* Create tasks that will be stopped. */
+	 
 	self->child_pid1 = create_child(&self->child_pidfd1,
 					CLONE_NEWUSER | CLONE_NEWNS |
 					CLONE_NEWCGROUP | CLONE_NEWIPC |
@@ -330,16 +330,16 @@ static int in_same_namespace(int ns_fd1, pid_t pid2, const char *ns)
 	if (ret < 0)
 		return -1;
 
-	/* processes are in the same namespace */
+	 
 	if ((ns_st1.st_dev == ns_st2.st_dev) &&
 	    (ns_st1.st_ino == ns_st2.st_ino))
 		return 1;
 
-	/* processes are in different namespaces */
+	 
 	return 0;
 }
 
-/* Test that we can't pass garbage to the kernel. */
+ 
 TEST_F(current_nsset, invalid_flags)
 {
 	ASSERT_NE(setns(self->pidfd, 0), 0);
@@ -355,7 +355,7 @@ TEST_F(current_nsset, invalid_flags)
 	EXPECT_EQ(errno, EINVAL);
 }
 
-/* Test that we can't attach to a task that has already exited. */
+ 
 TEST_F(current_nsset, pidfd_exited_child)
 {
 	int i;
@@ -368,7 +368,7 @@ TEST_F(current_nsset, pidfd_exited_child)
 	pid = getpid();
 	for (i = 0; i < PIDFD_NS_MAX; i++) {
 		const struct ns_info *info = &ns_info[i];
-		/* Verify that we haven't changed any namespaces. */
+		 
 		if (self->nsfds[i] >= 0)
 			ASSERT_EQ(in_same_namespace(self->nsfds[i], pid, info->name), 1);
 	}
@@ -395,7 +395,7 @@ TEST_F(current_nsset, pidfd_incremental_setns)
 			}
 		}
 
-		/* Verify that we have changed to the correct namespaces. */
+		 
 		if (info->flag == CLONE_NEWPID)
 			nsfd = self->nsfds[i];
 		else
@@ -431,7 +431,7 @@ TEST_F(current_nsset, nsfd_incremental_setns)
 			}
 		}
 
-		/* Verify that we have changed to the correct namespaces. */
+		 
 		if (info->flag == CLONE_NEWPID)
 			nsfd = self->nsfds[i];
 		else
@@ -476,7 +476,7 @@ TEST_F(current_nsset, pidfd_one_shot_setns)
 		if (self->child_nsfds1[i] < 0)
 			continue;
 
-		/* Verify that we have changed to the correct namespaces. */
+		 
 		if (info->flag == CLONE_NEWPID)
 			nsfd = self->nsfds[i];
 		else
@@ -502,7 +502,7 @@ TEST_F(current_nsset, no_foul_play)
 			continue;
 
 		flags |= info->flag;
-		if (info->flag) /* No use logging pid_for_children. */
+		if (info->flag)  
 			TH_LOG("Adding %s namespace of %d to list of namespaces to attach to",
 			       info->name, self->child_pid1);
 	}
@@ -512,12 +512,7 @@ TEST_F(current_nsset, no_foul_play)
 		       self->child_pid1, self->child_pidfd1);
 	}
 
-	/*
-	 * Can't setns to a user namespace outside of our hierarchy since we
-	 * don't have caps in there and didn't create it. That means that under
-	 * no circumstances should we be able to setns to any of the other
-	 * ones since they aren't owned by our user namespace.
-	 */
+	 
 	for (i = 0; i < PIDFD_NS_MAX; i++) {
 		const struct ns_info *info = &ns_info[i];
 

@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * net busy poll support
- * Copyright(c) 2013 Intel Corporation.
- *
- * Author: Eliezer Tamir
- *
- * Contact Information:
- * e1000-devel Mailing List <e1000-devel@lists.sourceforge.net>
- */
+ 
+ 
 
 #ifndef _LINUX_NET_BUSY_POLL_H
 #define _LINUX_NET_BUSY_POLL_H
@@ -18,10 +10,7 @@
 #include <net/ip.h>
 #include <net/xdp.h>
 
-/*		0 - Reserved to indicate value not set
- *     1..NR_CPUS - Reserved for sender_cpu
- *  NR_CPUS+1..~0 - Region available for NAPI IDs
- */
+ 
 #define MIN_NAPI_ID ((unsigned int)(NR_CPUS + 1))
 
 #define BUSY_POLL_BUDGET 8
@@ -48,7 +37,7 @@ void napi_busy_loop(unsigned int napi_id,
 		    bool (*loop_end)(void *, unsigned long),
 		    void *loop_end_arg, bool prefer_busy_poll, u16 budget);
 
-#else /* CONFIG_NET_RX_BUSY_POLL */
+#else  
 static inline unsigned long net_busy_loop_on(void)
 {
 	return 0;
@@ -59,7 +48,7 @@ static inline bool sk_can_busy_loop(struct sock *sk)
 	return false;
 }
 
-#endif /* CONFIG_NET_RX_BUSY_POLL */
+#endif  
 
 static inline unsigned long busy_loop_current_time(void)
 {
@@ -70,7 +59,7 @@ static inline unsigned long busy_loop_current_time(void)
 #endif
 }
 
-/* in poll/select we use the global sysctl_net_ll_poll value */
+ 
 static inline bool busy_loop_timeout(unsigned long start_time)
 {
 #ifdef CONFIG_NET_RX_BUSY_POLL
@@ -114,20 +103,18 @@ static inline void sk_busy_loop(struct sock *sk, int nonblock)
 #endif
 }
 
-/* used in the NIC receive handler to mark the skb */
+ 
 static inline void skb_mark_napi_id(struct sk_buff *skb,
 				    struct napi_struct *napi)
 {
 #ifdef CONFIG_NET_RX_BUSY_POLL
-	/* If the skb was already marked with a valid NAPI ID, avoid overwriting
-	 * it.
-	 */
+	 
 	if (skb->napi_id < MIN_NAPI_ID)
 		skb->napi_id = napi->napi_id;
 #endif
 }
 
-/* used in the protocol hanlder to propagate the napi_id to the socket */
+ 
 static inline void sk_mark_napi_id(struct sock *sk, const struct sk_buff *skb)
 {
 #ifdef CONFIG_NET_RX_BUSY_POLL
@@ -137,10 +124,7 @@ static inline void sk_mark_napi_id(struct sock *sk, const struct sk_buff *skb)
 	sk_rx_queue_update(sk, skb);
 }
 
-/* Variant of sk_mark_napi_id() for passive flow setup,
- * as sk->sk_napi_id and sk->sk_rx_queue_mapping content
- * needs to be set.
- */
+ 
 static inline void sk_mark_napi_id_set(struct sock *sk,
 				       const struct sk_buff *skb)
 {
@@ -158,7 +142,7 @@ static inline void __sk_mark_napi_id_once(struct sock *sk, unsigned int napi_id)
 #endif
 }
 
-/* variant used for unconnected sockets */
+ 
 static inline void sk_mark_napi_id_once(struct sock *sk,
 					const struct sk_buff *skb)
 {
@@ -175,4 +159,4 @@ static inline void sk_mark_napi_id_once_xdp(struct sock *sk,
 #endif
 }
 
-#endif /* _LINUX_NET_BUSY_POLL_H */
+#endif  

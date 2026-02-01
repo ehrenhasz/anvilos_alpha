@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
 
-/* Authors: Cheng Xu <chengyou@linux.alibaba.com> */
-/*          Kai Shen <kaishen@linux.alibaba.com> */
-/* Copyright (c) 2020-2022, Alibaba Group. */
+
+ 
+ 
+ 
 
 #include "erdma_verbs.h"
 
@@ -125,7 +125,7 @@ static int erdma_poll_one_cqe(struct erdma_cq *cq, struct ib_wc *wc)
 
 	cq->kern_cq.ci++;
 
-	/* cqbuf should be ready when we poll */
+	 
 	dma_rmb();
 
 	qpn = be32_to_cpu(cqe->qpn);
@@ -189,9 +189,9 @@ int erdma_poll_cq(struct ib_cq *ibcq, int num_entries, struct ib_wc *wc)
 	for (npolled = 0; npolled < num_entries;) {
 		ret = erdma_poll_one_cqe(cq, wc + npolled);
 
-		if (ret == -EAGAIN) /* no received new CQEs. */
+		if (ret == -EAGAIN)  
 			break;
-		else if (ret) /* ignore invalid CQEs. */
+		else if (ret)  
 			continue;
 
 		npolled++;

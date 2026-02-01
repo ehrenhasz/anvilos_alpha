@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Hisilicon Hibmc SoC drm driver
- *
- * Based on the bochs drm driver.
- *
- * Copyright (c) 2016 Huawei Limited.
- *
- * Author:
- *	Rongrong Zou <zourongrong@huawei.com>
- *	Rongrong Zou <zourongrong@gmail.com>
- *	Jianhua Li <lijianhua@huawei.com>
- */
+ 
+ 
 
 #ifndef HIBMC_DRM_DRV_H
 #define HIBMC_DRM_DRV_H
@@ -29,10 +19,10 @@ struct hibmc_connector {
 };
 
 struct hibmc_drm_private {
-	/* hw */
+	 
 	void __iomem   *mmio;
 
-	/* drm */
+	 
 	struct drm_device dev;
 	struct drm_plane primary_plane;
 	struct drm_crtc crtc;

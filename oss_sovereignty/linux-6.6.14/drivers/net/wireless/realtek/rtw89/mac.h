@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright(c) 2019-2020  Realtek Corporation
- */
+ 
+ 
 
 #ifndef __RTW89_MAC_H__
 #define __RTW89_MAC_H__
@@ -171,7 +170,7 @@ enum rtw89_mac_ax_l0_to_l1_event {
 #define RTW89_PORT_OFFSET_TU_TO_32US(shift_tu) ((shift_tu) * 1024 / 32)
 
 enum rtw89_mac_dbg_port_sel {
-	/* CMAC 0 related */
+	 
 	RTW89_DBG_PORT_SEL_PTCL_C0 = 0,
 	RTW89_DBG_PORT_SEL_SCH_C0,
 	RTW89_DBG_PORT_SEL_TMAC_C0,
@@ -183,7 +182,7 @@ enum rtw89_mac_dbg_port_sel {
 	RTW89_DBG_PORT_SEL_TX_INFOH_C0,
 	RTW89_DBG_PORT_SEL_TXTF_INFOL_C0,
 	RTW89_DBG_PORT_SEL_TXTF_INFOH_C0,
-	/* CMAC 1 related */
+	 
 	RTW89_DBG_PORT_SEL_PTCL_C1,
 	RTW89_DBG_PORT_SEL_SCH_C1,
 	RTW89_DBG_PORT_SEL_TMAC_C1,
@@ -195,7 +194,7 @@ enum rtw89_mac_dbg_port_sel {
 	RTW89_DBG_PORT_SEL_TX_INFOH_C1,
 	RTW89_DBG_PORT_SEL_TXTF_INFOL_C1,
 	RTW89_DBG_PORT_SEL_TXTF_INFOH_C1,
-	/* DLE related */
+	 
 	RTW89_DBG_PORT_SEL_WDE_BUFMGN_FREEPG,
 	RTW89_DBG_PORT_SEL_WDE_BUFMGN_QUOTA,
 	RTW89_DBG_PORT_SEL_WDE_BUFMGN_PAGELLT,
@@ -213,7 +212,7 @@ enum rtw89_mac_dbg_port_sel {
 	RTW89_DBG_PORT_SEL_PLE_QUEMGN_QLNKTBL,
 	RTW89_DBG_PORT_SEL_PLE_QUEMGN_QEMPTY,
 	RTW89_DBG_PORT_SEL_PKTINFO,
-	/* DISPATCHER related */
+	 
 	RTW89_DBG_PORT_SEL_DSPT_HDT_TX0,
 	RTW89_DBG_PORT_SEL_DSPT_HDT_TX1,
 	RTW89_DBG_PORT_SEL_DSPT_HDT_TX2,
@@ -258,7 +257,7 @@ enum rtw89_mac_dbg_port_sel {
 	RTW89_DBG_PORT_SEL_DSPT_WDE_INTF,
 	RTW89_DBG_PORT_SEL_DSPT_PLE_INTF,
 	RTW89_DBG_PORT_SEL_DSPT_FLOW_CTRL,
-	/* PCIE related */
+	 
 	RTW89_DBG_PORT_SEL_PCIE_TXDMA,
 	RTW89_DBG_PORT_SEL_PCIE_RXDMA,
 	RTW89_DBG_PORT_SEL_PCIE_CVT,
@@ -267,13 +266,13 @@ enum rtw89_mac_dbg_port_sel {
 	RTW89_DBG_PORT_SEL_PCIE_MISC,
 	RTW89_DBG_PORT_SEL_PCIE_MISC2,
 
-	/* keep last */
+	 
 	RTW89_DBG_PORT_SEL_LAST,
 	RTW89_DBG_PORT_SEL_MAX = RTW89_DBG_PORT_SEL_LAST,
 	RTW89_DBG_PORT_SEL_INVALID = RTW89_DBG_PORT_SEL_LAST,
 };
 
-/* SRAM mem dump */
+ 
 #define R_AX_INDIR_ACCESS_ENTRY 0x40000
 #define R_BE_INDIR_ACCESS_ENTRY 0x80000
 
@@ -293,8 +292,8 @@ enum rtw89_mac_dbg_port_sel {
 #define	BCN_IE_CAM1_BASE_ADDR		0x188A0000
 #define	TXD_FIFO_0_BASE_ADDR		0x18856200
 #define	TXD_FIFO_1_BASE_ADDR		0x188A1080
-#define	TXD_FIFO_0_BASE_ADDR_V1		0x18856400 /* for 8852C */
-#define	TXD_FIFO_1_BASE_ADDR_V1		0x188A1080 /* for 8852C */
+#define	TXD_FIFO_0_BASE_ADDR_V1		0x18856400  
+#define	TXD_FIFO_1_BASE_ADDR_V1		0x188A1080  
 #define	TXDATA_FIFO_0_BASE_ADDR		0x18856000
 #define	TXDATA_FIFO_1_BASE_ADDR		0x188A1000
 #define	CPU_LOCAL_BASE_ADDR		0x18003000
@@ -350,7 +349,7 @@ enum rtw89_mac_mem_sel {
 	RTW89_MAC_MEM_TXD_FIFO_1_V1,
 	RTW89_MAC_MEM_WD_PAGE,
 
-	/* keep last */
+	 
 	RTW89_MAC_MEM_NUM,
 };
 
@@ -570,14 +569,14 @@ enum rtw89_mac_bf_rrsc_rate {
 #define	PWR_DELAY_US		0
 #define	PWR_DELAY_MS		1
 
-/* STA scheduler */
+ 
 #define SS_MACID_SH		8
 #define SS_TX_LEN_MSK		0x1FFFFF
 #define SS_CTRL1_R_TX_LEN	5
 #define SS_CTRL1_R_NEXT_LINK	20
 #define SS_LINK_SIZE		256
 
-/* MAC debug port */
+ 
 #define TMAC_DBG_SEL_C0 0xA5
 #define RMAC_DBG_SEL_C0 0xA6
 #define TRXPTCL_DBG_SEL_C0 0xA7
@@ -595,7 +594,7 @@ enum rtw89_mac_bf_rrsc_rate {
 #define MAC_DBG_SEL 1
 #define RMAC_CMAC_DBG_SEL 1
 
-/* TRXPTCL dbg port sel */
+ 
 #define TRXPTRL_DBG_SEL_TMAC 0
 #define TRXPTRL_DBG_SEL_RMAC 1
 
@@ -657,17 +656,17 @@ enum rtw89_mac_error_scenario {
 
 #define RTW89_ERROR_SCENARIO(__err) ((__err) >> 28)
 
-/* Define DBG and recovery enum */
+ 
 enum mac_ax_err_info {
-	/* Get error info */
+	 
 
-	/* L0 */
+	 
 	MAC_AX_ERR_L0_ERR_CMAC0 = 0x0001,
 	MAC_AX_ERR_L0_ERR_CMAC1 = 0x0002,
 	MAC_AX_ERR_L0_RESET_DONE = 0x0003,
 	MAC_AX_ERR_L0_PROMOTE_TO_L1 = 0x0010,
 
-	/* L1 */
+	 
 	MAC_AX_ERR_L1_PREERR_DMAC = 0x999,
 	MAC_AX_ERR_L1_ERR_DMAC = 0x1000,
 	MAC_AX_ERR_L1_RESET_DISABLE_DMAC_DONE = 0x1001,
@@ -675,8 +674,8 @@ enum mac_ax_err_info {
 	MAC_AX_ERR_L1_PROMOTE_TO_L2 = 0x1010,
 	MAC_AX_ERR_L1_RCVY_STOP_DONE = 0x1011,
 
-	/* L2 */
-	/* address hole (master) */
+	 
+	 
 	MAC_AX_ERR_L2_ERR_AH_DMA = 0x2000,
 	MAC_AX_ERR_L2_ERR_AH_HCI = 0x2010,
 	MAC_AX_ERR_L2_ERR_AH_RLX4081 = 0x2020,
@@ -686,7 +685,7 @@ enum mac_ax_err_info {
 	MAC_AX_ERR_L2_ERR_AH_RX4281 = 0x2060,
 	MAC_AX_ERR_L2_ERR_AH_OTHERS = 0x2070,
 
-	/* AHB bridge timeout (master) */
+	 
 	MAC_AX_ERR_L2_ERR_AHB_TO_DMA = 0x2100,
 	MAC_AX_ERR_L2_ERR_AHB_TO_HCI = 0x2110,
 	MAC_AX_ERR_L2_ERR_AHB_TO_RLX4081 = 0x2120,
@@ -696,7 +695,7 @@ enum mac_ax_err_info {
 	MAC_AX_ERR_L2_ERR_AHB_TO_RX4281 = 0x2160,
 	MAC_AX_ERR_L2_ERR_AHB_TO_OTHERS = 0x2170,
 
-	/* APB_SA bridge timeout (master + slave) */
+	 
 	MAC_AX_ERR_L2_ERR_APB_SA_TO_DMA_WVA = 0x2200,
 	MAC_AX_ERR_L2_ERR_APB_SA_TO_DMA_UART = 0x2201,
 	MAC_AX_ERR_L2_ERR_APB_SA_TO_DMA_CPULOCAL = 0x2202,
@@ -785,7 +784,7 @@ enum mac_ax_err_info {
 	MAC_AX_ERR_L2_ERR_APB_SA_TO_OTHERS_WCMAC = 0x2279,
 	MAC_AX_ERR_L2_ERR_APB_SA_TO_OTHERS_OTHERS = 0x227A,
 
-	/* APB_BBRF bridge timeout (master) */
+	 
 	MAC_AX_ERR_L2_ERR_APB_BBRF_TO_DMA = 0x2300,
 	MAC_AX_ERR_L2_ERR_APB_BBRF_TO_HCI = 0x2310,
 	MAC_AX_ERR_L2_ERR_APB_BBRF_TO_RLX4081 = 0x2320,
@@ -802,7 +801,7 @@ enum mac_ax_err_info {
 	MAC_AX_GET_ERR_MAX,
 	MAC_AX_DUMP_SHAREBUFF_INDICATOR = 0x80000000,
 
-	/* set error info */
+	 
 	MAC_AX_ERR_L1_DISABLE_EN = 0x0001,
 	MAC_AX_ERR_L1_RCVY_EN = 0x0002,
 	MAC_AX_ERR_L1_RCVY_STOP_REQ = 0x0003,

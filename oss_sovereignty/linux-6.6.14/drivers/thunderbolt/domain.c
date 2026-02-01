@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Thunderbolt bus support
- *
- * Copyright (C) 2017, Intel Corporation
- * Author: Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/idr.h>
@@ -166,11 +161,7 @@ static ssize_t boot_acl_store(struct device *dev, struct device_attribute *attr,
 	uuid_t *acl;
 	int i = 0;
 
-	/*
-	 * Make sure the value is not bigger than tb->nboot_acl * UUID
-	 * length + commas and optional "\n". Also the smallest allowable
-	 * string is tb->nboot_acl * ",".
-	 */
+	 
 	if (count > (UUID_STRING_LEN + 1) * tb->nboot_acl + 1)
 		return -EINVAL;
 	if (count < tb->nboot_acl - 1)
@@ -216,7 +207,7 @@ static ssize_t boot_acl_store(struct device *dev, struct device_attribute *attr,
 	}
 	ret = tb->cm_ops->set_boot_acl(tb, acl, tb->nboot_acl);
 	if (!ret) {
-		/* Notify userspace about the change */
+		 
 		kobject_uevent(&tb->dev.kobj, KOBJ_CHANGE);
 	}
 	mutex_unlock(&tb->lock);
@@ -240,7 +231,7 @@ static ssize_t deauthorization_show(struct device *dev,
 	const struct tb *tb = container_of(dev, struct tb, dev);
 	bool deauthorization = false;
 
-	/* Only meaningful if authorization is supported */
+	 
 	if (tb->security_level == TB_SECURITY_USER ||
 	    tb->security_level == TB_SECURITY_SECURE)
 		deauthorization = !!tb->cm_ops->disapprove_switch;
@@ -355,29 +346,12 @@ static bool tb_domain_event_cb(void *data, enum tb_cfg_pkg_type type,
 	return true;
 }
 
-/**
- * tb_domain_alloc() - Allocate a domain
- * @nhi: Pointer to the host controller
- * @timeout_msec: Control channel timeout for non-raw messages
- * @privsize: Size of the connection manager private data
- *
- * Allocates and initializes a new Thunderbolt domain. Connection
- * managers are expected to call this and then fill in @cm_ops
- * accordingly.
- *
- * Call tb_domain_put() to release the domain before it has been added
- * to the system.
- *
- * Return: allocated domain structure on %NULL in case of error
- */
+ 
 struct tb *tb_domain_alloc(struct tb_nhi *nhi, int timeout_msec, size_t privsize)
 {
 	struct tb *tb;
 
-	/*
-	 * Make sure the structure sizes map with that the hardware
-	 * expects because bit-fields are being used.
-	 */
+	 
 	BUILD_BUG_ON(sizeof(struct tb_regs_switch_header) != 5 * 4);
 	BUILD_BUG_ON(sizeof(struct tb_regs_port_header) != 8 * 4);
 	BUILD_BUG_ON(sizeof(struct tb_regs_hop) != 2 * 4);
@@ -420,17 +394,7 @@ err_free:
 	return NULL;
 }
 
-/**
- * tb_domain_add() - Add domain to the system
- * @tb: Domain to add
- *
- * Starts the domain and adds it to the system. Hotplugging devices will
- * work after this has been returned successfully. In order to remove
- * and release the domain after this function has been called, call
- * tb_domain_remove().
- *
- * Return: %0 in case of success and negative errno in case of error
- */
+ 
 int tb_domain_add(struct tb *tb)
 {
 	int ret;
@@ -439,10 +403,7 @@ int tb_domain_add(struct tb *tb)
 		return -EINVAL;
 
 	mutex_lock(&tb->lock);
-	/*
-	 * tb_schedule_hotplug_handler may be called as soon as the config
-	 * channel is started. Thats why we have to hold the lock here.
-	 */
+	 
 	tb_ctl_start(tb->ctl);
 
 	if (tb->cm_ops->driver_ready) {
@@ -458,14 +419,14 @@ int tb_domain_add(struct tb *tb)
 	if (ret)
 		goto err_ctl_stop;
 
-	/* Start the domain */
+	 
 	if (tb->cm_ops->start) {
 		ret = tb->cm_ops->start(tb);
 		if (ret)
 			goto err_domain_del;
 	}
 
-	/* This starts event processing */
+	 
 	mutex_unlock(&tb->lock);
 
 	device_init_wakeup(&tb->dev, true);
@@ -488,19 +449,13 @@ err_ctl_stop:
 	return ret;
 }
 
-/**
- * tb_domain_remove() - Removes and releases a domain
- * @tb: Domain to remove
- *
- * Stops the domain, removes it from the system and releases all
- * resources once the last reference has been released.
- */
+ 
 void tb_domain_remove(struct tb *tb)
 {
 	mutex_lock(&tb->lock);
 	if (tb->cm_ops->stop)
 		tb->cm_ops->stop(tb);
-	/* Stop the domain control traffic */
+	 
 	tb_ctl_stop(tb->ctl);
 	mutex_unlock(&tb->lock);
 
@@ -508,21 +463,12 @@ void tb_domain_remove(struct tb *tb)
 	device_unregister(&tb->dev);
 }
 
-/**
- * tb_domain_suspend_noirq() - Suspend a domain
- * @tb: Domain to suspend
- *
- * Suspends all devices in the domain and stops the control channel.
- */
+ 
 int tb_domain_suspend_noirq(struct tb *tb)
 {
 	int ret = 0;
 
-	/*
-	 * The control channel interrupt is left enabled during suspend
-	 * and taking the lock here prevents any events happening before
-	 * we actually have stopped the domain and the control channel.
-	 */
+	 
 	mutex_lock(&tb->lock);
 	if (tb->cm_ops->suspend_noirq)
 		ret = tb->cm_ops->suspend_noirq(tb);
@@ -533,13 +479,7 @@ int tb_domain_suspend_noirq(struct tb *tb)
 	return ret;
 }
 
-/**
- * tb_domain_resume_noirq() - Resume a domain
- * @tb: Domain to resume
- *
- * Re-starts the control channel, and resumes all devices connected to
- * the domain.
- */
+ 
 int tb_domain_resume_noirq(struct tb *tb)
 {
 	int ret = 0;
@@ -613,15 +553,7 @@ int tb_domain_runtime_resume(struct tb *tb)
 	return 0;
 }
 
-/**
- * tb_domain_disapprove_switch() - Disapprove switch
- * @tb: Domain the switch belongs to
- * @sw: Switch to disapprove
- *
- * This will disconnect PCIe tunnel from parent to this @sw.
- *
- * Return: %0 on success and negative errno in case of failure.
- */
+ 
 int tb_domain_disapprove_switch(struct tb *tb, struct tb_switch *sw)
 {
 	if (!tb->cm_ops->disapprove_switch)
@@ -630,15 +562,7 @@ int tb_domain_disapprove_switch(struct tb *tb, struct tb_switch *sw)
 	return tb->cm_ops->disapprove_switch(tb, sw);
 }
 
-/**
- * tb_domain_approve_switch() - Approve switch
- * @tb: Domain the switch belongs to
- * @sw: Switch to approve
- *
- * This will approve switch by connection manager specific means. In
- * case of success the connection manager will create PCIe tunnel from
- * parent to @sw.
- */
+ 
 int tb_domain_approve_switch(struct tb *tb, struct tb_switch *sw)
 {
 	struct tb_switch *parent_sw;
@@ -646,7 +570,7 @@ int tb_domain_approve_switch(struct tb *tb, struct tb_switch *sw)
 	if (!tb->cm_ops->approve_switch)
 		return -EPERM;
 
-	/* The parent switch must be authorized before this one */
+	 
 	parent_sw = tb_to_switch(sw->dev.parent);
 	if (!parent_sw || !parent_sw->authorized)
 		return -EINVAL;
@@ -654,17 +578,7 @@ int tb_domain_approve_switch(struct tb *tb, struct tb_switch *sw)
 	return tb->cm_ops->approve_switch(tb, sw);
 }
 
-/**
- * tb_domain_approve_switch_key() - Approve switch and add key
- * @tb: Domain the switch belongs to
- * @sw: Switch to approve
- *
- * For switches that support secure connect, this function first adds
- * key to the switch NVM using connection manager specific means. If
- * adding the key is successful, the switch is approved and connected.
- *
- * Return: %0 on success and negative errno in case of failure.
- */
+ 
 int tb_domain_approve_switch_key(struct tb *tb, struct tb_switch *sw)
 {
 	struct tb_switch *parent_sw;
@@ -673,7 +587,7 @@ int tb_domain_approve_switch_key(struct tb *tb, struct tb_switch *sw)
 	if (!tb->cm_ops->approve_switch || !tb->cm_ops->add_switch_key)
 		return -EPERM;
 
-	/* The parent switch must be authorized before this one */
+	 
 	parent_sw = tb_to_switch(sw->dev.parent);
 	if (!parent_sw || !parent_sw->authorized)
 		return -EINVAL;
@@ -685,18 +599,7 @@ int tb_domain_approve_switch_key(struct tb *tb, struct tb_switch *sw)
 	return tb->cm_ops->approve_switch(tb, sw);
 }
 
-/**
- * tb_domain_challenge_switch_key() - Challenge and approve switch
- * @tb: Domain the switch belongs to
- * @sw: Switch to approve
- *
- * For switches that support secure connect, this function generates
- * random challenge and sends it to the switch. The switch responds to
- * this and if the response matches our random challenge, the switch is
- * approved and connected.
- *
- * Return: %0 on success and negative errno in case of failure.
- */
+ 
 int tb_domain_challenge_switch_key(struct tb *tb, struct tb_switch *sw)
 {
 	u8 challenge[TB_SWITCH_KEY_SIZE];
@@ -710,7 +613,7 @@ int tb_domain_challenge_switch_key(struct tb *tb, struct tb_switch *sw)
 	if (!tb->cm_ops->approve_switch || !tb->cm_ops->challenge_switch_key)
 		return -EPERM;
 
-	/* The parent switch must be authorized before this one */
+	 
 	parent_sw = tb_to_switch(sw->dev.parent);
 	if (!parent_sw || !parent_sw->authorized)
 		return -EINVAL;
@@ -742,7 +645,7 @@ int tb_domain_challenge_switch_key(struct tb *tb, struct tb_switch *sw)
 	if (ret)
 		goto err_free_shash;
 
-	/* The returned HMAC must match the one we calculated */
+	 
 	if (memcmp(response, hmac, sizeof(hmac))) {
 		ret = -EKEYREJECTED;
 		goto err_free_shash;
@@ -761,15 +664,7 @@ err_free_tfm:
 	return ret;
 }
 
-/**
- * tb_domain_disconnect_pcie_paths() - Disconnect all PCIe paths
- * @tb: Domain whose PCIe paths to disconnect
- *
- * This needs to be called in preparation for NVM upgrade of the host
- * controller. Makes sure all PCIe paths are disconnected.
- *
- * Return %0 on success and negative errno in case of error.
- */
+ 
 int tb_domain_disconnect_pcie_paths(struct tb *tb)
 {
 	if (!tb->cm_ops->disconnect_pcie_paths)
@@ -778,22 +673,7 @@ int tb_domain_disconnect_pcie_paths(struct tb *tb)
 	return tb->cm_ops->disconnect_pcie_paths(tb);
 }
 
-/**
- * tb_domain_approve_xdomain_paths() - Enable DMA paths for XDomain
- * @tb: Domain enabling the DMA paths
- * @xd: XDomain DMA paths are created to
- * @transmit_path: HopID we are using to send out packets
- * @transmit_ring: DMA ring used to send out packets
- * @receive_path: HopID the other end is using to send packets to us
- * @receive_ring: DMA ring used to receive packets from @receive_path
- *
- * Calls connection manager specific method to enable DMA paths to the
- * XDomain in question.
- *
- * Return: 0% in case of success and negative errno otherwise. In
- * particular returns %-ENOTSUPP if the connection manager
- * implementation does not support XDomains.
- */
+ 
 int tb_domain_approve_xdomain_paths(struct tb *tb, struct tb_xdomain *xd,
 				    int transmit_path, int transmit_ring,
 				    int receive_path, int receive_ring)
@@ -805,22 +685,7 @@ int tb_domain_approve_xdomain_paths(struct tb *tb, struct tb_xdomain *xd,
 			transmit_ring, receive_path, receive_ring);
 }
 
-/**
- * tb_domain_disconnect_xdomain_paths() - Disable DMA paths for XDomain
- * @tb: Domain disabling the DMA paths
- * @xd: XDomain whose DMA paths are disconnected
- * @transmit_path: HopID we are using to send out packets
- * @transmit_ring: DMA ring used to send out packets
- * @receive_path: HopID the other end is using to send packets to us
- * @receive_ring: DMA ring used to receive packets from @receive_path
- *
- * Calls connection manager specific method to disconnect DMA paths to
- * the XDomain in question.
- *
- * Return: 0% in case of success and negative errno otherwise. In
- * particular returns %-ENOTSUPP if the connection manager
- * implementation does not support XDomains.
- */
+ 
 int tb_domain_disconnect_xdomain_paths(struct tb *tb, struct tb_xdomain *xd,
 				       int transmit_path, int transmit_ring,
 				       int receive_path, int receive_ring)
@@ -845,16 +710,7 @@ static int disconnect_xdomain(struct device *dev, void *data)
 	return ret;
 }
 
-/**
- * tb_domain_disconnect_all_paths() - Disconnect all paths for the domain
- * @tb: Domain whose paths are disconnected
- *
- * This function can be used to disconnect all paths (PCIe, XDomain) for
- * example in preparation for host NVM firmware upgrade. After this is
- * called the paths cannot be established without resetting the switch.
- *
- * Return: %0 in case of success and negative errno otherwise.
- */
+ 
 int tb_domain_disconnect_all_paths(struct tb *tb)
 {
 	int ret;

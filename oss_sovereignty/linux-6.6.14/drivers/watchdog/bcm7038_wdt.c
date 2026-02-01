@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2015 Broadcom Corporation
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/init.h>
@@ -22,8 +19,8 @@
 #define WDT_TIMEOUT_REG		0x0
 #define WDT_CMD_REG		0x4
 
-#define WDT_MIN_TIMEOUT		1 /* seconds */
-#define WDT_DEFAULT_TIMEOUT	30 /* seconds */
+#define WDT_MIN_TIMEOUT		1  
+#define WDT_DEFAULT_TIMEOUT	30  
 #define WDT_DEFAULT_RATE	27000000
 
 struct bcm7038_watchdog {
@@ -37,9 +34,7 @@ static bool nowayout = WATCHDOG_NOWAYOUT;
 
 static inline void bcm7038_wdt_write(u32 value, void __iomem *addr)
 {
-	/* MIPS chips strapped for BE will automagically configure the
-	 * peripheral registers for CPU-native byte order.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
 		__raw_writel(value, addr);
 	else
@@ -95,7 +90,7 @@ static int bcm7038_wdt_stop(struct watchdog_device *wdog)
 static int bcm7038_wdt_set_timeout(struct watchdog_device *wdog,
 				   unsigned int t)
 {
-	/* Can't modify timeout value if watchdog timer is running */
+	 
 	bcm7038_wdt_stop(wdog);
 	wdog->timeout = t;
 	bcm7038_wdt_start(wdog);
@@ -149,10 +144,10 @@ static int bcm7038_wdt_probe(struct platform_device *pdev)
 		clk_name = pdata->clk_name;
 
 	wdt->clk = devm_clk_get_enabled(dev, clk_name);
-	/* If unable to get clock, use default frequency */
+	 
 	if (!IS_ERR(wdt->clk)) {
 		wdt->rate = clk_get_rate(wdt->clk);
-		/* Prevent divide-by-zero exception */
+		 
 		if (!wdt->rate)
 			wdt->rate = WDT_DEFAULT_RATE;
 	} else {
@@ -211,7 +206,7 @@ MODULE_DEVICE_TABLE(of, bcm7038_wdt_match);
 
 static const struct platform_device_id bcm7038_wdt_devtype[] = {
 	{ .name = "bcm63xx-wdt" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(platform, bcm7038_wdt_devtype);
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Vortex Mixer support.
- *
- * There is much more than just the AC97 mixer...
- *
- */
+
+ 
 
 #include <linux/time.h>
 #include <linux/init.h>
@@ -34,7 +29,7 @@ static int snd_vortex_mixer(vortex_t *vortex)
 	if (err < 0)
 		return err;
 	memset(&ac97, 0, sizeof(ac97));
-	// Initialize AC97 codec stuff.
+	
 	ac97.private_data = vortex;
 	ac97.scaps = AC97_SCAP_NO_SPDIF;
 	err = snd_ac97_mixer(pbus, &ac97, &vortex->codec);

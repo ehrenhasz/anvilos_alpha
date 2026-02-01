@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _IMX_DRM_H_
 #define _IMX_DRM_H_
 
@@ -42,4 +42,4 @@ void imx_drm_connector_destroy(struct drm_connector *connector);
 int ipu_planes_assign_pre(struct drm_device *dev,
 			  struct drm_atomic_state *state);
 
-#endif /* _IMX_DRM_H_ */
+#endif  

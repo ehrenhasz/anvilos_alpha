@@ -1,23 +1,4 @@
-/* Substitute for and wrapper around <langinfo.h>.
-   Copyright (C) 2009-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/*
- * POSIX <langinfo.h> for platforms that lack it or have an incomplete one.
- * <https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/langinfo.h.html>
- */
+ 
 
 #ifndef _@GUARD_PREFIX@_LANGINFO_H
 
@@ -26,7 +7,7 @@
 #endif
 @PRAGMA_COLUMNS@
 
-/* The include_next requires a split double-inclusion guard.  */
+ 
 #if @HAVE_LANGINFO_H@
 # @INCLUDE_NEXT@ @NEXT_LANGINFO_H@
 #endif
@@ -34,7 +15,7 @@
 #ifndef _@GUARD_PREFIX@_LANGINFO_H
 #define _@GUARD_PREFIX@_LANGINFO_H
 
-/* This file uses GNULIB_POSIXCHECK, HAVE_RAW_DECL_*.  */
+ 
 #if !_GL_CONFIG_H_INCLUDED
  #error "Please include config.h first."
 #endif
@@ -42,23 +23,23 @@
 
 #if !@HAVE_LANGINFO_H@
 
-/* A platform that lacks <langinfo.h>.  */
+ 
 
-/* Assume that it also lacks <nl_types.h> and the nl_item type.  */
+ 
 # if !GNULIB_defined_nl_item
 typedef int nl_item;
 #  define GNULIB_defined_nl_item 1
 # endif
 
-/* nl_langinfo items of the LC_CTYPE category */
+ 
 # define CODESET     10000
-/* nl_langinfo items of the LC_NUMERIC category */
+ 
 # define RADIXCHAR   10001
 # define DECIMAL_POINT RADIXCHAR
 # define THOUSEP     10002
 # define THOUSANDS_SEP THOUSEP
 # define GROUPING    10114
-/* nl_langinfo items of the LC_TIME category */
+ 
 # define D_T_FMT     10003
 # define D_FMT       10004
 # define T_FMT       10005
@@ -120,7 +101,7 @@ typedef int nl_item;
 # define ERA_D_T_FMT 10049
 # define ERA_T_FMT   10050
 # define ALT_DIGITS  10051
-/* nl_langinfo items of the LC_MONETARY category */
+ 
 # define CRNCYSTR    10052
 # define CURRENCY_SYMBOL   CRNCYSTR
 # define INT_CURR_SYMBOL   10100
@@ -137,13 +118,13 @@ typedef int nl_item;
 # define N_SEP_BY_SPACE    10111
 # define P_SIGN_POSN       10112
 # define N_SIGN_POSN       10113
-/* nl_langinfo items of the LC_MESSAGES category */
+ 
 # define YESEXPR     10053
 # define NOEXPR      10054
 
 #else
 
-/* A platform that has <langinfo.h>.  */
+ 
 
 # if !@HAVE_LANGINFO_CODESET@
 #  define CODESET     10000
@@ -188,16 +169,14 @@ typedef int nl_item;
 
 #endif
 
-/* The definitions of _GL_FUNCDECL_RPL etc. are copied here.  */
+ 
 
-/* The definition of _GL_WARN_ON_USE is copied here.  */
+ 
 
-/* Declare overridden functions.  */
+ 
 
 
-/* Return a piece of locale dependent information.
-   Note: The difference between nl_langinfo (CODESET) and locale_charset ()
-   is that the latter normalizes the encoding names to GNU conventions.  */
+ 
 
 #if @GNULIB_NL_LANGINFO@
 # if @REPLACE_NL_LANGINFO@
@@ -225,5 +204,5 @@ _GL_WARN_ON_USE (nl_langinfo, "nl_langinfo is not portable - "
 #endif
 
 
-#endif /* _@GUARD_PREFIX@_LANGINFO_H */
-#endif /* _@GUARD_PREFIX@_LANGINFO_H */
+#endif  
+#endif  

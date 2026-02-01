@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Ingenic JZ47xx IPU driver
-//
-// Copyright (C) 2020, Paul Cercueil <paul@crapouillou.net>
-// Copyright (C) 2020, Daniel Silsby <dansilsby@gmail.com>
+
+
+
+
+
+
 
 #include "ingenic-drm.h"
 #include "ingenic-ipu.h"
@@ -68,7 +68,7 @@ struct ingenic_ipu {
 	struct drm_private_obj private_obj;
 };
 
-/* Signed 15.16 fixed-point math (for bicubic scaling coefficients) */
+ 
 #define I2F(i) ((s32)(i) * 65536)
 #define F2I(f) ((f) / 65536)
 #define FMUL(fa, fb) ((s32)(((s64)(fa) * (s64)(fb)) / 65536))
@@ -109,22 +109,7 @@ ingenic_ipu_get_new_priv_state(struct ingenic_ipu *priv, struct drm_atomic_state
 	return to_ingenic_ipu_priv_state(priv_state);
 }
 
-/*
- * Apply conventional cubic convolution kernel. Both parameters
- *  and return value are 15.16 signed fixed-point.
- *
- *  @f_a: Sharpness factor, typically in range [-4.0, -0.25].
- *        A larger magnitude increases perceived sharpness, but going past
- *        -2.0 might cause ringing artifacts to outweigh any improvement.
- *        Nice values on a 320x240 LCD are between -0.75 and -2.0.
- *
- *  @f_x: Absolute distance in pixels from 'pixel 0' sample position
- *        along horizontal (or vertical) source axis. Range is [0, +2.0].
- *
- *  returns: Weight of this pixel within 4-pixel sample group. Range is
- *           [-2.0, +2.0]. For moderate (i.e. > -3.0) sharpness factors,
- *           range is within [-1.0, +1.0].
- */
+ 
 static inline s32 cubic_conv(s32 f_a, s32 f_x)
 {
 	const s32 f_1 = I2F(1);
@@ -142,30 +127,18 @@ static inline s32 cubic_conv(s32 f_a, s32 f_x)
 		return 0;
 }
 
-/*
- * On entry, "weight" is a coefficient suitable for bilinear mode,
- *  which is converted to a set of four suitable for bicubic mode.
- *
- * "weight 512" means all of pixel 0;
- * "weight 256" means half of pixel 0 and half of pixel 1;
- * "weight 0" means all of pixel 1;
- *
- * "offset" is increment to next source pixel sample location.
- */
+ 
 static void jz4760_set_coefs(struct ingenic_ipu *ipu, unsigned int reg,
 			     unsigned int sharpness, bool downscale,
 			     unsigned int weight, unsigned int offset)
 {
 	u32 val;
-	s32 w0, w1, w2, w3; /* Pixel weights at X (or Y) offsets -1,0,1,2 */
+	s32 w0, w1, w2, w3;  
 
 	weight = clamp_val(weight, 0, 512);
 
 	if (sharpness < 2) {
-		/*
-		 *  When sharpness setting is 0, emulate nearest-neighbor.
-		 *  When sharpness setting is 1, emulate bilinear.
-		 */
+		 
 
 		if (sharpness == 0)
 			weight = weight >= 256 ? 512 : 0;
@@ -175,13 +148,9 @@ static void jz4760_set_coefs(struct ingenic_ipu *ipu, unsigned int reg,
 		w3 = 0;
 	} else {
 		const s32 f_a = SHARPNESS_INCR * sharpness;
-		const s32 f_h = I2F(1) / 2; /* Round up 0.5 */
+		const s32 f_h = I2F(1) / 2;  
 
-		/*
-		 * Note that always rounding towards +infinity here is intended.
-		 * The resulting coefficients match a round-to-nearest-int
-		 * double floating-point implementation.
-		 */
+		 
 
 		weight = 512 - weight;
 		w0 = F2I(f_h + 512 * cubic_conv(f_a, I2F(512  + weight) / 512));
@@ -250,10 +219,7 @@ static void ingenic_ipu_set_integer_upscale_coefs(struct ingenic_ipu *ipu,
 						  unsigned int reg,
 						  unsigned int num)
 {
-	/*
-	 * Force nearest-neighbor scaling and use simple math when upscaling
-	 * by an integer ratio. It looks better, and fixes a few problem cases.
-	 */
+	 
 	unsigned int i;
 
 	for (i = 0; i < num; i++)
@@ -283,7 +249,7 @@ static void ingenic_ipu_set_upscale_coefs(struct ingenic_ipu *ipu,
 static void ingenic_ipu_set_coefs(struct ingenic_ipu *ipu, unsigned int reg,
 				  unsigned int num, unsigned int denom)
 {
-	/* Begin programming the LUT */
+	 
 	regmap_write(ipu->map, reg, -1);
 
 	if (denom > num)
@@ -298,7 +264,7 @@ static int reduce_fraction(unsigned int *num, unsigned int *denom)
 {
 	unsigned long d = gcd(*num, *denom);
 
-	/* The scaling table has only 31 entries */
+	 
 	if (*num > 31 * d)
 		return -EINVAL;
 
@@ -351,12 +317,12 @@ static void ingenic_ipu_plane_atomic_update(struct drm_plane *plane,
 		ipu->clk_enabled = true;
 	}
 
-	/* Reset all the registers if needed */
+	 
 	needs_modeset = drm_atomic_crtc_needs_modeset(newstate->crtc->state);
 	if (needs_modeset) {
 		regmap_set_bits(ipu->map, JZ_REG_IPU_CTRL, JZ_IPU_CTRL_RST);
 
-		/* Enable the chip */
+		 
 		regmap_set_bits(ipu->map, JZ_REG_IPU_CTRL,
 				JZ_IPU_CTRL_CHIP_EN | JZ_IPU_CTRL_LCDC_SEL);
 	}
@@ -364,7 +330,7 @@ static void ingenic_ipu_plane_atomic_update(struct drm_plane *plane,
 	if (ingenic_drm_map_noncoherent(ipu->master))
 		drm_fb_dma_sync_non_coherent(ipu->drm, oldstate, newstate);
 
-	/* New addresses will be committed in vblank handler... */
+	 
 	ipu->addr_y = drm_fb_dma_get_gem_addr(newstate->fb, newstate, 0);
 	if (finfo->num_planes > 1)
 		ipu->addr_u = drm_fb_dma_get_gem_addr(newstate->fb, newstate,
@@ -376,7 +342,7 @@ static void ingenic_ipu_plane_atomic_update(struct drm_plane *plane,
 	if (!needs_modeset)
 		return;
 
-	/* Or right here if we're doing a full modeset. */
+	 
 	regmap_write(ipu->map, JZ_REG_IPU_Y_ADDR, ipu->addr_y);
 	regmap_write(ipu->map, JZ_REG_IPU_U_ADDR, ipu->addr_u);
 	regmap_write(ipu->map, JZ_REG_IPU_V_ADDR, ipu->addr_v);
@@ -386,7 +352,7 @@ static void ingenic_ipu_plane_atomic_update(struct drm_plane *plane,
 
 	ingenic_drm_plane_config(ipu->master, plane, DRM_FORMAT_XRGB8888);
 
-	/* Set the input height/width/strides */
+	 
 	if (finfo->num_planes > 2)
 		stride = ((newstate->src_w >> 16) * finfo->cpp[2] / finfo->hsub)
 			<< JZ_IPU_UV_STRIDE_V_LSB;
@@ -463,13 +429,13 @@ static void ingenic_ipu_plane_atomic_update(struct drm_plane *plane,
 		break;
 	}
 
-	/* Fix output to RGB888 */
+	 
 	format |= JZ_IPU_D_FMT_OUT_FMT_RGB888;
 
-	/* Set pixel format */
+	 
 	regmap_write(ipu->map, JZ_REG_IPU_D_FMT, format);
 
-	/* Set the output height/width/stride */
+	 
 	regmap_write(ipu->map, JZ_REG_IPU_OUT_GS,
 		     ((newstate->crtc_w * 4) << JZ_IPU_OUT_GS_W_LSB)
 		     | newstate->crtc_h << JZ_IPU_OUT_GS_H_LSB);
@@ -478,22 +444,12 @@ static void ingenic_ipu_plane_atomic_update(struct drm_plane *plane,
 	if (finfo->is_yuv) {
 		regmap_set_bits(ipu->map, JZ_REG_IPU_CTRL, JZ_IPU_CTRL_CSC_EN);
 
-		/*
-		 * Offsets for Chroma/Luma.
-		 * y = source Y - LUMA,
-		 * u = source Cb - CHROMA,
-		 * v = source Cr - CHROMA
-		 */
+		 
 		regmap_write(ipu->map, JZ_REG_IPU_CSC_OFFSET,
 			     128 << JZ_IPU_CSC_OFFSET_CHROMA_LSB |
 			     0 << JZ_IPU_CSC_OFFSET_LUMA_LSB);
 
-		/*
-		 * YUV422 to RGB conversion table.
-		 * R = C0 / 0x400 * y + C1 / 0x400 * v
-		 * G = C0 / 0x400 * y - C2 / 0x400 * u - C3 / 0x400 * v
-		 * B = C0 / 0x400 * y + C4 / 0x400 * u
-		 */
+		 
 		regmap_write(ipu->map, JZ_REG_IPU_CSC_C0_COEF, 0x4a8);
 		regmap_write(ipu->map, JZ_REG_IPU_CSC_C1_COEF, 0x662);
 		regmap_write(ipu->map, JZ_REG_IPU_CSC_C2_COEF, 0x191);
@@ -503,11 +459,7 @@ static void ingenic_ipu_plane_atomic_update(struct drm_plane *plane,
 
 	ctrl = 0;
 
-	/*
-	 * Must set ZOOM_SEL before programming bicubic LUTs.
-	 * If the IPU supports bicubic, we enable it unconditionally, since it
-	 * can do anything bilinear can and more.
-	 */
+	 
 	if (ipu->soc_info->has_bicubic)
 		ctrl |= JZ_IPU_CTRL_ZOOM_SEL;
 
@@ -539,7 +491,7 @@ static void ingenic_ipu_plane_atomic_update(struct drm_plane *plane,
 			   JZ_IPU_CTRL_HRSZ_EN | JZ_IPU_CTRL_VRSZ_EN |
 			   JZ_IPU_CTRL_HSCALE | JZ_IPU_CTRL_VSCALE, ctrl);
 
-	/* Set the LUT index register */
+	 
 	regmap_write(ipu->map, JZ_REG_IPU_RSZ_COEF_INDEX, coef_index);
 
 	if (ipu_state->num_w != 1 || ipu_state->denom_w != 1)
@@ -550,10 +502,10 @@ static void ingenic_ipu_plane_atomic_update(struct drm_plane *plane,
 		ingenic_ipu_set_coefs(ipu, JZ_REG_IPU_VRSZ_COEF_LUT,
 				      ipu_state->num_h, ipu_state->denom_h);
 
-	/* Clear STATUS register */
+	 
 	regmap_write(ipu->map, JZ_REG_IPU_STATUS, 0);
 
-	/* Start IPU */
+	 
 	regmap_set_bits(ipu->map, JZ_REG_IPU_CTRL,
 			JZ_IPU_CTRL_RUN | JZ_IPU_CTRL_FM_IRQ_EN);
 
@@ -588,7 +540,7 @@ static int ingenic_ipu_plane_atomic_check(struct drm_plane *plane,
 	if (IS_ERR(ipu_state))
 		return PTR_ERR(ipu_state);
 
-	/* Request a full modeset if we are enabling or disabling the IPU. */
+	 
 	if (!old_plane_state->crtc ^ !new_plane_state->crtc)
 		crtc_state->mode_changed = true;
 
@@ -596,17 +548,17 @@ static int ingenic_ipu_plane_atomic_check(struct drm_plane *plane,
 	    !crtc_state->mode.hdisplay || !crtc_state->mode.vdisplay)
 		goto out_check_damage;
 
-	/* Plane must be fully visible */
+	 
 	if (new_plane_state->crtc_x < 0 || new_plane_state->crtc_y < 0 ||
 	    new_plane_state->crtc_x + new_plane_state->crtc_w > crtc_state->mode.hdisplay ||
 	    new_plane_state->crtc_y + new_plane_state->crtc_h > crtc_state->mode.vdisplay)
 		return -EINVAL;
 
-	/* Minimum size is 4x4 */
+	 
 	if ((new_plane_state->src_w >> 16) < 4 || (new_plane_state->src_h >> 16) < 4)
 		return -EINVAL;
 
-	/* Input and output lines must have an even number of pixels. */
+	 
 	if (((new_plane_state->src_w >> 16) & 1) || (new_plane_state->crtc_w & 1))
 		return -EINVAL;
 
@@ -618,13 +570,7 @@ static int ingenic_ipu_plane_atomic_check(struct drm_plane *plane,
 	xres = new_plane_state->src_w >> 16;
 	yres = new_plane_state->src_h >> 16;
 
-	/*
-	 * Increase the scaled image's theorical width/height until we find a
-	 * configuration that has valid scaling coefficients, up to 102% of the
-	 * screen's resolution. This makes sure that we can scale from almost
-	 * every resolution possible at the cost of a very small distorsion.
-	 * The CRTC_W / CRTC_H are not modified.
-	 */
+	 
 	max_w = crtc_state->mode.hdisplay * 102 / 100;
 	max_h = crtc_state->mode.vdisplay * 102 / 100;
 
@@ -761,19 +707,19 @@ static irqreturn_t ingenic_ipu_irq_handler(int irq, void *arg)
 	struct drm_crtc *crtc = drm_crtc_from_index(ipu->drm, 0);
 	unsigned int dummy;
 
-	/* dummy read allows CPU to reconfigure IPU */
+	 
 	if (ipu->soc_info->manual_restart)
 		regmap_read(ipu->map, JZ_REG_IPU_STATUS, &dummy);
 
-	/* ACK interrupt */
+	 
 	regmap_write(ipu->map, JZ_REG_IPU_STATUS, 0);
 
-	/* Set previously cached addresses */
+	 
 	regmap_write(ipu->map, JZ_REG_IPU_Y_ADDR, ipu->addr_y);
 	regmap_write(ipu->map, JZ_REG_IPU_U_ADDR, ipu->addr_u);
 	regmap_write(ipu->map, JZ_REG_IPU_V_ADDR, ipu->addr_v);
 
-	/* Run IPU for the new frame */
+	 
 	if (ipu->soc_info->manual_restart)
 		regmap_set_bits(ipu->map, JZ_REG_IPU_CTRL, JZ_IPU_CTRL_RUN);
 
@@ -862,12 +808,7 @@ static int ingenic_ipu_bind(struct device *dev, struct device *master, void *d)
 	if (ingenic_drm_map_noncoherent(master))
 		drm_plane_enable_fb_damage_clips(plane);
 
-	/*
-	 * Sharpness settings range is [0,32]
-	 * 0       : nearest-neighbor
-	 * 1       : bilinear
-	 * 2 .. 32 : bicubic (translated to sharpness factor -0.25 .. -4.0)
-	 */
+	 
 	sharpness_max = soc_info->has_bicubic ? 32 : 1;
 	ipu->sharpness_prop = drm_property_create_range(drm, 0, "sharpness",
 							0, sharpness_max);
@@ -876,7 +817,7 @@ static int ingenic_ipu_bind(struct device *dev, struct device *master, void *d)
 		return -ENOMEM;
 	}
 
-	/* Default sharpness factor: -0.125 * 8 = -1.0 */
+	 
 	ipu->sharpness = soc_info->has_bicubic ? 8 : 1;
 	drm_object_attach_property(&plane->base, ipu->sharpness_prop,
 				   ipu->sharpness);
@@ -929,16 +870,7 @@ static int ingenic_ipu_remove(struct platform_device *pdev)
 }
 
 static const u32 jz4725b_ipu_formats[] = {
-	/*
-	 * While officially supported, packed YUV 4:2:2 formats can cause
-	 * random hardware crashes on JZ4725B under certain circumstances.
-	 * It seems to happen with some specific resize ratios.
-	 * Until a proper workaround or fix is found, disable these formats.
-	DRM_FORMAT_YUYV,
-	DRM_FORMAT_YVYU,
-	DRM_FORMAT_UYVY,
-	DRM_FORMAT_VYUY,
-	*/
+	 
 	DRM_FORMAT_YUV411,
 	DRM_FORMAT_YUV420,
 	DRM_FORMAT_YUV422,
@@ -982,7 +914,7 @@ static const struct soc_info jz4760_soc_info = {
 static const struct of_device_id ingenic_ipu_of_match[] = {
 	{ .compatible = "ingenic,jz4725b-ipu", .data = &jz4725b_soc_info },
 	{ .compatible = "ingenic,jz4760-ipu", .data = &jz4760_soc_info },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, ingenic_ipu_of_match);
 

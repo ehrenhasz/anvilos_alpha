@@ -1,37 +1,4 @@
-/*
- * Copyright(c) 2011-2016 Intel Corporation. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Authors:
- *    Ke Yu
- *    Kevin Tian <kevin.tian@intel.com>
- *    Dexuan Cui
- *
- * Contributors:
- *    Tina Zhang <tina.zhang@intel.com>
- *    Min He <min.he@intel.com>
- *    Niu Bing <bing.niu@intel.com>
- *    Zhi Wang <zhi.a.wang@intel.com>
- *
- */
+ 
 
 #include "i915_drv.h"
 #include "i915_reg.h"
@@ -40,14 +7,7 @@
 #include "display/intel_dpio_phy.h"
 #include "gt/intel_gt_regs.h"
 
-/**
- * intel_vgpu_gpa_to_mmio_offset - translate a GPA to MMIO offset
- * @vgpu: a vGPU
- * @gpa: guest physical address
- *
- * Returns:
- * Zero on success, negative error code if failed
- */
+ 
 int intel_vgpu_gpa_to_mmio_offset(struct intel_vgpu *vgpu, u64 gpa)
 {
 	u64 gttmmio_gpa = intel_vgpu_get_bar_gpa(vgpu, PCI_BASE_ADDRESS_0);
@@ -93,16 +53,7 @@ static void failsafe_emulate_mmio_rw(struct intel_vgpu *vgpu, u64 pa,
 	mutex_unlock(&vgpu->vgpu_lock);
 }
 
-/**
- * intel_vgpu_emulate_mmio_read - emulate MMIO read
- * @vgpu: a vGPU
- * @pa: guest physical address
- * @p_data: data return buffer
- * @bytes: access data length
- *
- * Returns:
- * Zero on success, negative error code if failed
- */
+ 
 int intel_vgpu_emulate_mmio_read(struct intel_vgpu *vgpu, u64 pa,
 		void *p_data, unsigned int bytes)
 {
@@ -168,16 +119,7 @@ out:
 	return ret;
 }
 
-/**
- * intel_vgpu_emulate_mmio_write - emulate MMIO write
- * @vgpu: a vGPU
- * @pa: guest physical address
- * @p_data: write data buffer
- * @bytes: access data length
- *
- * Returns:
- * Zero on success, negative error code if failed
- */
+ 
 int intel_vgpu_emulate_mmio_write(struct intel_vgpu *vgpu, u64 pa,
 		void *p_data, unsigned int bytes)
 {
@@ -236,11 +178,7 @@ out:
 }
 
 
-/**
- * intel_vgpu_reset_mmio - reset virtual MMIO space
- * @vgpu: a vGPU
- * @dmlr: whether this is device model level reset
- */
+ 
 void intel_vgpu_reset_mmio(struct intel_vgpu *vgpu, bool dmlr)
 {
 	struct intel_gvt *gvt = vgpu->gvt;
@@ -252,10 +190,10 @@ void intel_vgpu_reset_mmio(struct intel_vgpu *vgpu, bool dmlr)
 
 		vgpu_vreg_t(vgpu, GEN6_GT_THREAD_STATUS_REG) = 0;
 
-		/* set the bit 0:2(Core C-State ) to C0 */
+		 
 		vgpu_vreg_t(vgpu, GEN6_GT_CORE_STATUS) = 0;
 
-		/* uc reset hw expect GS_MIA_IN_RESET */
+		 
 		vgpu_vreg_t(vgpu, GUC_STATUS) |= GS_MIA_IN_RESET;
 
 		if (IS_BROXTON(vgpu->gvt->gt->i915)) {
@@ -292,22 +230,13 @@ void intel_vgpu_reset_mmio(struct intel_vgpu *vgpu, bool dmlr)
 		}
 	} else {
 #define GVT_GEN8_MMIO_RESET_OFFSET		(0x44200)
-		/* only reset the engine related, so starting with 0x44200
-		 * interrupt include DE,display mmio related will not be
-		 * touched
-		 */
+		 
 		memcpy(vgpu->mmio.vreg, mmio, GVT_GEN8_MMIO_RESET_OFFSET);
 	}
 
 }
 
-/**
- * intel_vgpu_init_mmio - init MMIO  space
- * @vgpu: a vGPU
- *
- * Returns:
- * Zero on success, negative error code if failed
- */
+ 
 int intel_vgpu_init_mmio(struct intel_vgpu *vgpu)
 {
 	const struct intel_gvt_device_info *info = &vgpu->gvt->device_info;
@@ -321,11 +250,7 @@ int intel_vgpu_init_mmio(struct intel_vgpu *vgpu)
 	return 0;
 }
 
-/**
- * intel_vgpu_clean_mmio - clean MMIO space
- * @vgpu: a vGPU
- *
- */
+ 
 void intel_vgpu_clean_mmio(struct intel_vgpu *vgpu)
 {
 	vfree(vgpu->mmio.vreg);

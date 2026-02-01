@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-// Copyright (c) 2019, 2020 Cloudflare
+
+
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -36,9 +36,7 @@
 
 char _license[] SEC("license") = "Dual BSD/GPL";
 
-/**
- * Destination port and IP used for UDP encapsulation.
- */
+ 
 volatile const __be16 ENCAPSULATION_PORT;
 volatile const __be32 ENCAPSULATION_IP;
 
@@ -99,14 +97,10 @@ _Static_assert(
 
 typedef int ret_t;
 
-/* This is a bit of a hack. We need a return value which allows us to
- * indicate that the regular flow of the program should continue,
- * while allowing functions to use XDP_PASS and XDP_DROP, etc.
- */
+ 
 static const ret_t CONTINUE_PROCESSING = -1;
 
-/* Convenience macro to call functions which return ret_t.
- */
+ 
 #define MAYBE_RETURN(x)                           \
 	do {                                      \
 		ret_t __ret = x;                  \
@@ -114,39 +108,19 @@ static const ret_t CONTINUE_PROCESSING = -1;
 			return __ret;             \
 	} while (0)
 
-/* Linux packet pointers are either aligned to NET_IP_ALIGN (aka 2 bytes),
- * or not aligned if the arch supports efficient unaligned access.
- *
- * Since the verifier ensures that eBPF packet accesses follow these rules,
- * we can tell LLVM to emit code as if we always had a larger alignment.
- * It will yell at us if we end up on a platform where this is not valid.
- */
+ 
 typedef uint8_t *net_ptr __attribute__((align_value(8)));
 
 typedef struct buf {
 	struct __sk_buff *skb;
 	net_ptr head;
-	/* NB: tail musn't have alignment other than 1, otherwise
-	* LLVM will go and eliminate code, e.g. when checking packet lengths.
-	*/
+	 
 	uint8_t *const tail;
 } buf_t;
 
 static __always_inline size_t buf_off(const buf_t *buf)
 {
-	/* Clang seems to optimize constructs like
-	 *    a - b + c
-	 * if c is known:
-	 *    r? = c
-	 *    r? -= b
-	 *    r? += a
-	 *
-	 * This is a problem if a and b are packet pointers,
-	 * since the verifier allows subtracting two pointers to
-	 * get a scalar, but not a scalar and a pointer.
-	 *
-	 * Use inline asm to break this optimization.
-	 */
+	 
 	size_t off = (size_t)buf->head;
 	asm("%0 -= %1" : "+r"(off) : "r"(buf->skb->data));
 	return off;
@@ -164,7 +138,7 @@ static __always_inline bool buf_copy(buf_t *buf, void *dst, size_t len)
 
 static __always_inline bool buf_skip(buf_t *buf, const size_t len)
 {
-	/* Check whether off + len is valid in the non-linear part. */
+	 
 	if (buf_off(buf) + len > buf->skb->len) {
 		return false;
 	}
@@ -173,13 +147,7 @@ static __always_inline bool buf_skip(buf_t *buf, const size_t len)
 	return true;
 }
 
-/* Returns a pointer to the start of buf, or NULL if len is
- * larger than the remaining data. Consumes len bytes on a successful
- * call.
- *
- * If scratch is not NULL, the function will attempt to load non-linear
- * data via bpf_skb_load_bytes. On success, scratch is returned.
- */
+ 
 static __always_inline void *buf_assign(buf_t *buf, const size_t len, void *scratch)
 {
 	if (buf->head + len > buf->tail) {
@@ -228,16 +196,14 @@ static __always_inline struct iphdr *pkt_parse_ipv4(buf_t *pkt, struct iphdr *sc
 	return ipv4;
 }
 
-/* Parse the L4 ports from a packet, assuming a layout like TCP or UDP. */
+ 
 static INLINING bool pkt_parse_icmp_l4_ports(buf_t *pkt, flow_ports_t *ports)
 {
 	if (!buf_copy(pkt, ports, sizeof(*ports))) {
 		return false;
 	}
 
-	/* Ports in the L4 headers are reversed, since we are parsing an ICMP
-	 * payload which is going towards the eyeball.
-	 */
+	 
 	uint16_t dst = ports->src;
 	ports->src = ports->dst;
 	ports->dst = dst;
@@ -246,9 +212,7 @@ static INLINING bool pkt_parse_icmp_l4_ports(buf_t *pkt, flow_ports_t *ports)
 
 static INLINING uint16_t pkt_checksum_fold(uint32_t csum)
 {
-	/* The highest reasonable value for an IPv4 header
-	 * checksum requires two folds, so we just do that always.
-	 */
+	 
 	csum = (csum & 0xffff) + (csum >> 16);
 	csum = (csum & 0xffff) + (csum >> 16);
 	return (uint16_t)~csum;
@@ -258,11 +222,7 @@ static INLINING void pkt_ipv4_checksum(struct iphdr *iph)
 {
 	iph->check = 0;
 
-	/* An IP header without options is 20 bytes. Two of those
-	 * are the checksum, which we always set to zero. Hence,
-	 * the maximum accumulated value is 18 / 2 * 0xffff = 0x8fff7,
-	 * which fits in 32 bit.
-	 */
+	 
 	_Static_assert(sizeof(struct iphdr) == 20, "iphdr must be 20 bytes");
 	uint32_t acc = 0;
 	uint16_t *ipw = (uint16_t *)iph;
@@ -281,11 +241,7 @@ bool pkt_skip_ipv6_extension_headers(buf_t *pkt,
 				     uint8_t *upper_proto,
 				     bool *is_fragment)
 {
-	/* We understand five extension headers.
-	 * https://tools.ietf.org/html/rfc8200#section-4.1 states that all
-	 * headers should occur once, except Destination Options, which may
-	 * occur twice. Hence we give up after 6 headers.
-	 */
+	 
 	struct {
 		uint8_t next;
 		uint8_t len;
@@ -299,8 +255,8 @@ bool pkt_skip_ipv6_extension_headers(buf_t *pkt,
 		switch (exthdr.next) {
 		case IPPROTO_FRAGMENT:
 			*is_fragment = true;
-			/* NB: We don't check that hdrlen == 0 as per spec. */
-			/* fallthrough; */
+			 
+			 
 
 		case IPPROTO_HOPOPTS:
 		case IPPROTO_ROUTING:
@@ -310,40 +266,27 @@ bool pkt_skip_ipv6_extension_headers(buf_t *pkt,
 				return false;
 			}
 
-			/* hdrlen is in 8-octet units, and excludes the first 8 octets. */
+			 
 			if (!buf_skip(pkt,
 				      (exthdr.len + 1) * 8 - sizeof(exthdr))) {
 				return false;
 			}
 
-			/* Decode next header */
+			 
 			break;
 
 		default:
-			/* The next header is not one of the known extension
-			 * headers, treat it as the upper layer header.
-			 *
-			 * This handles IPPROTO_NONE.
-			 *
-			 * Encapsulating Security Payload (50) and Authentication
-			 * Header (51) also end up here (and will trigger an
-			 * unknown proto error later). They have a custom header
-			 * format and seem too esoteric to care about.
-			 */
+			 
 			*upper_proto = exthdr.next;
 			return true;
 		}
 	}
 
-	/* We never found an upper layer header. */
+	 
 	return false;
 }
 
-/* This function has to be inlined, because the verifier otherwise rejects it
- * due to returning a pointer to the stack. This is technically correct, since
- * scratch is allocated on the stack. However, this usage should be safe since
- * it's the callers stack after all.
- */
+ 
 static __always_inline struct ipv6hdr *
 pkt_parse_ipv6(buf_t *pkt, struct ipv6hdr *scratch, uint8_t *proto,
 	       bool *is_fragment)
@@ -360,8 +303,7 @@ pkt_parse_ipv6(buf_t *pkt, struct ipv6hdr *scratch, uint8_t *proto,
 	return ipv6;
 }
 
-/* Global metrics, per CPU
- */
+ 
 struct {
 	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
 	__uint(max_entries, 1);
@@ -382,7 +324,7 @@ static INLINING ret_t accept_locally(struct __sk_buff *skb, encap_headers_t *enc
 		sizeof(struct in_addr) * encap->unigue.hop_count;
 	int32_t encap_overhead = payload_off - sizeof(struct ethhdr);
 
-	// Changing the ethertype if the encapsulated packet is ipv6
+	 
 	if (encap->gue.proto_ctype == IPPROTO_IPV6) {
 		encap->eth.h_proto = bpf_htons(ETH_P_IPV6);
 	}
@@ -410,12 +352,7 @@ static INLINING ret_t forward_with_gre(struct __sk_buff *skb, encap_headers_t *e
 	uint16_t proto = ETH_P_IP;
 	uint32_t mtu_len = 0;
 
-	/* Loop protection: the inner packet's TTL is decremented as a safeguard
-	 * against any forwarding loop. As the only interesting field is the TTL
-	 * hop limit for IPv6, it is easier to use bpf_skb_load_bytes/bpf_skb_store_bytes
-	 * as they handle the split packets if needed (no need for the data to be
-	 * in the linear section).
-	 */
+	 
 	if (encap->gue.proto_ctype == IPPROTO_IPV6) {
 		proto = ETH_P_IPV6;
 		uint8_t ttl;
@@ -459,10 +396,7 @@ static INLINING ret_t forward_with_gre(struct __sk_buff *skb, encap_headers_t *e
 			return TC_ACT_SHOT;
 		}
 
-		/* IPv4 also has a checksum to patch. While the TTL is only one byte,
-		 * this function only works for 2 and 4 bytes arguments (the result is
-		 * the same).
-		 */
+		 
 		rc = bpf_l3_csum_replace(
 			skb, payload_off + offsetof(struct iphdr, check), ttl,
 			ttl - 1, 2);
@@ -526,11 +460,8 @@ static INLINING ret_t forward_with_gre(struct __sk_buff *skb, encap_headers_t *e
 static INLINING ret_t forward_to_next_hop(struct __sk_buff *skb, encap_headers_t *encap,
 					  struct in_addr *next_hop, metrics_t *metrics)
 {
-	/* swap L2 addresses */
-	/* This assumes that packets are received from a router.
-	 * So just swapping the MAC addresses here will make the packet go back to
-	 * the router, which will send it to the appropriate machine.
-	 */
+	 
+	 
 	unsigned char temp[ETH_ALEN];
 	memcpy(temp, encap->eth.h_dest, sizeof(temp));
 	memcpy(encap->eth.h_dest, encap->eth.h_source,
@@ -550,7 +481,7 @@ static INLINING ret_t forward_to_next_hop(struct __sk_buff *skb, encap_headers_t
 		encap->unigue.next_hop++;
 	}
 
-	/* Remove ip->saddr, add next_hop->s_addr */
+	 
 	const uint64_t off = offsetof(typeof(*encap), ip.check);
 	int ret = bpf_l3_csum_replace(skb, off, old_saddr, next_hop->s_addr, 4);
 	if (ret < 0) {
@@ -574,12 +505,7 @@ static INLINING ret_t skip_next_hops(buf_t *pkt, int n)
 	}
 }
 
-/* Get the next hop from the GLB header.
- *
- * Sets next_hop->s_addr to 0 if there are no more hops left.
- * pkt is positioned just after the variable length GLB header
- * iff the call is successful.
- */
+ 
 static INLINING ret_t get_next_hop(buf_t *pkt, encap_headers_t *encap,
 				   struct in_addr *next_hop)
 {
@@ -587,11 +513,11 @@ static INLINING ret_t get_next_hop(buf_t *pkt, encap_headers_t *encap,
 		return TC_ACT_SHOT;
 	}
 
-	/* Skip "used" next hops. */
+	 
 	MAYBE_RETURN(skip_next_hops(pkt, encap->unigue.next_hop));
 
 	if (encap->unigue.next_hop == encap->unigue.hop_count) {
-		/* No more next hops, we are at the end of the GLB header. */
+		 
 		next_hop->s_addr = 0;
 		return CONTINUE_PROCESSING;
 	}
@@ -600,21 +526,12 @@ static INLINING ret_t get_next_hop(buf_t *pkt, encap_headers_t *encap,
 		return TC_ACT_SHOT;
 	}
 
-	/* Skip the remaining next hops (may be zero). */
+	 
 	return skip_next_hops(pkt, encap->unigue.hop_count -
 					   encap->unigue.next_hop - 1);
 }
 
-/* Fill a bpf_sock_tuple to be used with the socket lookup functions.
- * This is a kludge that let's us work around verifier limitations:
- *
- *    fill_tuple(&t, foo, sizeof(struct iphdr), 123, 321)
- *
- * clang will substitute a constant for sizeof, which allows the verifier
- * to track its value. Based on this, it can figure out the constant
- * return value, and calling code works while still being "generic" to
- * IPv4 and IPv6.
- */
+ 
 static INLINING uint64_t fill_tuple(struct bpf_sock_tuple *tuple, void *iph,
 				    uint64_t iphlen, uint16_t sport, uint16_t dport)
 {
@@ -660,7 +577,7 @@ static INLINING verdict_t classify_tcp(struct __sk_buff *skb,
 	}
 
 	if (iph != NULL && tcp != NULL) {
-		/* Kludge: we've run out of arguments, but need the length of the ip header. */
+		 
 		uint64_t iphlen = sizeof(struct iphdr);
 		if (tuplen == sizeof(tuple->ipv6)) {
 			iphlen = sizeof(struct ipv6hdr);
@@ -720,7 +637,7 @@ static INLINING verdict_t process_icmpv4(buf_t *pkt, metrics_t *metrics)
 		return INVALID;
 	}
 
-	/* We should never receive encapsulated echo replies. */
+	 
 	if (icmp.type == ICMP_ECHOREPLY) {
 		metrics->errors_total_icmp_echo_replies++;
 		return INVALID;
@@ -742,10 +659,7 @@ static INLINING verdict_t process_icmpv4(buf_t *pkt, metrics_t *metrics)
 		return INVALID;
 	}
 
-	/* The source address in the outer IP header is from the entity that
-	 * originated the ICMP message. Use the original IP header to restore
-	 * the correct flow tuple.
-	 */
+	 
 	struct bpf_sock_tuple tuple;
 	tuple.ipv4.saddr = ipv4->daddr;
 	tuple.ipv4.daddr = ipv4->saddr;
@@ -767,7 +681,7 @@ static INLINING verdict_t process_icmpv6(buf_t *pkt, metrics_t *metrics)
 		return INVALID;
 	}
 
-	/* We should never receive encapsulated echo replies. */
+	 
 	if (icmp6.icmp6_type == ICMPV6_ECHO_REPLY) {
 		metrics->errors_total_icmp_echo_replies++;
 		return INVALID;
@@ -797,7 +711,7 @@ static INLINING verdict_t process_icmpv6(buf_t *pkt, metrics_t *metrics)
 		return INVALID;
 	}
 
-	/* Swap source and dest addresses. */
+	 
 	struct bpf_sock_tuple tuple;
 	memcpy(&tuple.ipv6.saddr, &ipv6->daddr, sizeof(tuple.ipv6.saddr));
 	memcpy(&tuple.ipv6.daddr, &ipv6->saddr, sizeof(tuple.ipv6.daddr));
@@ -938,18 +852,14 @@ int cls_redirect(struct __sk_buff *skb)
 
 	metrics->processed_packets_total++;
 
-	/* Pass bogus packets as long as we're not sure they're
-	 * destined for us.
-	 */
+	 
 	if (skb->protocol != bpf_htons(ETH_P_IP)) {
 		return TC_ACT_OK;
 	}
 
 	encap_headers_t *encap;
 
-	/* Make sure that all encapsulation headers are available in
-	 * the linear portion of the skb. This makes it easy to manipulate them.
-	 */
+	 
 	if (bpf_skb_pull_data(skb, sizeof(*encap))) {
 		return TC_ACT_OK;
 	}
@@ -966,7 +876,7 @@ int cls_redirect(struct __sk_buff *skb)
 	}
 
 	if (encap->ip.ihl != 5) {
-		/* We never have any options. */
+		 
 		return TC_ACT_OK;
 	}
 
@@ -975,14 +885,12 @@ int cls_redirect(struct __sk_buff *skb)
 		return TC_ACT_OK;
 	}
 
-	/* TODO Check UDP length? */
+	 
 	if (encap->udp.dest != ENCAPSULATION_PORT) {
 		return TC_ACT_OK;
 	}
 
-	/* We now know that the packet is destined to us, we can
-	 * drop bogus ones.
-	 */
+	 
 	if (ipv4_is_fragment((void *)&encap->ip)) {
 		metrics->errors_total_fragmented_ip++;
 		return TC_ACT_SHOT;
@@ -1043,7 +951,7 @@ int cls_redirect(struct __sk_buff *skb)
 
 	switch (verdict) {
 	case INVALID:
-		/* metrics have already been bumped */
+		 
 		return TC_ACT_SHOT;
 
 	case UNKNOWN:

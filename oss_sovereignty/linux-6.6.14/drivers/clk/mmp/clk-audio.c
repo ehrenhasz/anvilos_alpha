@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * MMP Audio Clock Controller driver
- *
- * Copyright (C) 2020 Lubomir Rintel <lkundrak@v3.sk>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -14,12 +10,12 @@
 #include <linux/slab.h>
 #include <dt-bindings/clock/marvell,mmp2-audio.h>
 
-/* Audio Controller Registers */
+ 
 #define SSPA_AUD_CTRL				0x04
 #define SSPA_AUD_PLL_CTRL0			0x08
 #define SSPA_AUD_PLL_CTRL1			0x0c
 
-/* SSPA Audio Control Register */
+ 
 #define SSPA_AUD_CTRL_SYSCLK_SHIFT		0
 #define SSPA_AUD_CTRL_SYSCLK_DIV_SHIFT		1
 #define SSPA_AUD_CTRL_SSPA0_MUX_SHIFT		7
@@ -30,7 +26,7 @@
 #define SSPA_AUD_CTRL_SSPA1_MUX_SHIFT		23
 #define SSPA_AUD_CTRL_DIV_MASK			0x7e
 
-/* SSPA Audio PLL Control 0 Register */
+ 
 #define SSPA_AUD_PLL_CTRL0_DIV_OCLK_MODULO_MASK (0x7 << 28)
 #define SSPA_AUD_PLL_CTRL0_DIV_OCLK_MODULO(x)	((x) << 28)
 #define SSPA_AUD_PLL_CTRL0_FRACT_MASK		(0xfffff << 8)
@@ -47,7 +43,7 @@
 #define SSPA_AUD_PLL_CTRL0_PD_OVPROT_DIS	(1 << 1)
 #define SSPA_AUD_PLL_CTRL0_PU			(1 << 0)
 
-/* SSPA Audio PLL Control 1 Register */
+ 
 #define SSPA_AUD_PLL_CTRL1_SEL_FAST_CLK		(1 << 24)
 #define SSPA_AUD_PLL_CTRL1_CLK_SEL_MASK		(1 << 11)
 #define SSPA_AUD_PLL_CTRL1_CLK_SEL_AUDIO_PLL	(1 << 11)
@@ -76,7 +72,7 @@ struct mmp2_audio_clk {
 
 	spinlock_t lock;
 
-	/* Must be last */
+	 
 	struct clk_hw_onecell_data clk_data;
 };
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * wm_adsp.c  --  Wolfson ADSP support
- *
- * Copyright 2012 Wolfson Microelectronics plc
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/ctype.h>
 #include <linux/module.h>
@@ -117,30 +111,30 @@ struct wm_adsp_alg_xm_struct {
 } __packed;
 
 struct wm_adsp_host_buf_coeff_v1 {
-	__be32 host_buf_ptr;		/* Host buffer pointer */
-	__be32 versions;		/* Version numbers */
-	__be32 name[4];			/* The buffer name */
+	__be32 host_buf_ptr;		 
+	__be32 versions;		 
+	__be32 name[4];			 
 } __packed;
 
 struct wm_adsp_buffer {
-	__be32 buf1_base;		/* Base addr of first buffer area */
-	__be32 buf1_size;		/* Size of buf1 area in DSP words */
-	__be32 buf2_base;		/* Base addr of 2nd buffer area */
-	__be32 buf1_buf2_size;		/* Size of buf1+buf2 in DSP words */
-	__be32 buf3_base;		/* Base addr of buf3 area */
-	__be32 buf_total_size;		/* Size of buf1+buf2+buf3 in DSP words */
-	__be32 high_water_mark;		/* Point at which IRQ is asserted */
-	__be32 irq_count;		/* bits 1-31 count IRQ assertions */
-	__be32 irq_ack;			/* acked IRQ count, bit 0 enables IRQ */
-	__be32 next_write_index;	/* word index of next write */
-	__be32 next_read_index;		/* word index of next read */
-	__be32 error;			/* error if any */
-	__be32 oldest_block_index;	/* word index of oldest surviving */
-	__be32 requested_rewind;	/* how many blocks rewind was done */
-	__be32 reserved_space;		/* internal */
-	__be32 min_free;		/* min free space since stream start */
-	__be32 blocks_written[2];	/* total blocks written (64 bit) */
-	__be32 words_written[2];	/* total words written (64 bit) */
+	__be32 buf1_base;		 
+	__be32 buf1_size;		 
+	__be32 buf2_base;		 
+	__be32 buf1_buf2_size;		 
+	__be32 buf3_base;		 
+	__be32 buf_total_size;		 
+	__be32 high_water_mark;		 
+	__be32 irq_count;		 
+	__be32 irq_ack;			 
+	__be32 next_write_index;	 
+	__be32 next_read_index;		 
+	__be32 error;			 
+	__be32 oldest_block_index;	 
+	__be32 requested_rewind;	 
+	__be32 reserved_space;		 
+	__be32 min_free;		 
+	__be32 blocks_written[2];	 
+	__be32 words_written[2];	 
 } __packed;
 
 struct wm_adsp_compr;
@@ -449,7 +443,7 @@ static int wm_coeff_put_acked(struct snd_kcontrol *kctl,
 	int ret;
 
 	if (val == 0)
-		return 0;	/* 0 means no event */
+		return 0;	 
 
 	mutex_lock(&cs_ctl->dsp->pwr_lock);
 
@@ -507,13 +501,7 @@ static int wm_coeff_tlv_get(struct snd_kcontrol *kctl,
 static int wm_coeff_get_acked(struct snd_kcontrol *kcontrol,
 			      struct snd_ctl_elem_value *ucontrol)
 {
-	/*
-	 * Although it's not useful to read an acked control, we must satisfy
-	 * user-side assumptions that all controls are readable and that a
-	 * write of the same value should be filtered out (it's valid to send
-	 * the same event number again to the firmware). We therefore return 0,
-	 * meaning "no event" so valid event numbers will always be a change
-	 */
+	 
 	ucontrol->value.integer.value[0] = 0;
 
 	return 0;
@@ -638,7 +626,7 @@ static int wm_adsp_control_add(struct cs_dsp_coeff_ctl *cs_ctl)
 		if (dsp->component->name_prefix)
 			avail -= strlen(dsp->component->name_prefix) + 1;
 
-		/* Truncate the subname from the start if it is too long */
+		 
 		if (cs_ctl->subname_len > avail)
 			skip = cs_ctl->subname_len - avail;
 
@@ -757,11 +745,7 @@ static int wm_adsp_request_firmware_file(struct wm_adsp *dsp,
 	if (*filename == NULL)
 		return -ENOMEM;
 
-	/*
-	 * Make sure that filename is lower-case and any non alpha-numeric
-	 * characters except full stop and forward slash are replaced with
-	 * hyphens.
-	 */
+	 
 	s = *filename;
 	while (*s) {
 		c = *s;
@@ -1225,7 +1209,7 @@ static void wm_adsp_compr_detach(struct wm_adsp_compr *compr)
 	if (!compr)
 		return;
 
-	/* Wake the poll so it can see buffer is no longer attached */
+	 
 	if (compr->stream)
 		snd_compr_fragment_elapsed(compr->stream);
 
@@ -1594,10 +1578,7 @@ static int wm_adsp_buffer_parse_coeff(struct cs_dsp_coeff_ctl *cs_ctl)
 	if (ret < 0)
 		goto err;
 
-	/*
-	 * v0 host_buffer coefficients didn't have versioning, so if the
-	 * control is one word, assume version 0.
-	 */
+	 
 	if (cs_ctl->len == 4)
 		goto done;
 
@@ -1648,13 +1629,13 @@ static int wm_adsp_buffer_init(struct wm_adsp *dsp)
 			adsp_err(dsp, "Failed to parse coeff: %d\n", ret);
 			goto error;
 		} else if (ret == 0) {
-			/* Only one buffer supported for version 0 */
+			 
 			return 0;
 		}
 	}
 
 	if (list_empty(&dsp->buffer_list)) {
-		/* Fall back to legacy support */
+		 
 		ret = wm_adsp_buffer_parse_legacy(dsp);
 		if (ret == -ENODEV)
 			adsp_info(dsp, "Legacy support not available\n");
@@ -1728,7 +1709,7 @@ int wm_adsp_compr_trigger(struct snd_soc_component *component,
 		if (ret < 0)
 			break;
 
-		/* Trigger the IRQ at one fragment of data */
+		 
 		ret = wm_adsp_buffer_write(compr->buf,
 					   HOST_BUFFER_FIELD(high_water_mark),
 					   wm_adsp_compr_frag_words(compr));
@@ -1766,7 +1747,7 @@ static int wm_adsp_buffer_update_avail(struct wm_adsp_compr_buf *buf)
 	int write_index, read_index, avail;
 	int ret;
 
-	/* Only sync read index if we haven't already read a valid index */
+	 
 	if (buf->read_index < 0) {
 		ret = wm_adsp_buffer_read(buf,
 				HOST_BUFFER_FIELD(next_read_index),
@@ -1823,7 +1804,7 @@ int wm_adsp_compr_handle_irq(struct wm_adsp *dsp)
 
 		ret = wm_adsp_buffer_get_error(buf);
 		if (ret < 0)
-			goto out_notify; /* Wake poll to report error */
+			goto out_notify;  
 
 		ret = wm_adsp_buffer_read(buf, HOST_BUFFER_FIELD(irq_count),
 					  &buf->irq_count);
@@ -1894,10 +1875,7 @@ int wm_adsp_compr_pointer(struct snd_soc_component *component,
 			goto out;
 		}
 
-		/*
-		 * If we really have less than 1 fragment available tell the
-		 * DSP to inform us once a whole fragment is available.
-		 */
+		 
 		if (buf->avail < wm_adsp_compr_frag_words(compr)) {
 			ret = wm_adsp_buffer_get_error(buf);
 			if (ret < 0) {
@@ -1934,7 +1912,7 @@ static int wm_adsp_buffer_capture_block(struct wm_adsp_compr *compr, int target)
 	int mem_type, nwords, max_read;
 	int i, ret;
 
-	/* Calculate read parameters */
+	 
 	for (i = 0; i < wm_adsp_fw[buf->dsp->fw].caps->num_regions; ++i)
 		if (buf->read_index < buf->regions[i].cumulative_size)
 			break;
@@ -1958,7 +1936,7 @@ static int wm_adsp_buffer_capture_block(struct wm_adsp_compr *compr, int target)
 	if (!nwords)
 		return 0;
 
-	/* Read data from DSP */
+	 
 	ret = cs_dsp_read_raw_data_block(&buf->dsp->cs_dsp, mem_type, adsp_addr,
 					 nwords, (__be32 *)compr->raw_buf);
 	if (ret < 0)
@@ -1966,7 +1944,7 @@ static int wm_adsp_buffer_capture_block(struct wm_adsp_compr *compr, int target)
 
 	cs_dsp_remove_padding(compr->raw_buf, nwords);
 
-	/* update read index to account for words read */
+	 
 	buf->read_index += nwords;
 	if (buf->read_index == wm_adsp_buffer_size(buf))
 		buf->read_index = 0;
@@ -1976,7 +1954,7 @@ static int wm_adsp_buffer_capture_block(struct wm_adsp_compr *compr, int target)
 	if (ret < 0)
 		return ret;
 
-	/* update avail to account for words read */
+	 
 	buf->avail -= nwords;
 
 	return nwords;

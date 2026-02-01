@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Anycast support for IPv6
- *	Linux INET6 implementation
- *
- *	Authors:
- *	David L Stevens (dlstevens@us.ibm.com)
- *
- *	based heavily on net/ipv6/mcast.c
- */
+
+ 
 
 #include <linux/capability.h>
 #include <linux/module.h>
@@ -42,8 +34,7 @@
 
 #define IN6_ADDR_HSIZE_SHIFT	8
 #define IN6_ADDR_HSIZE		BIT(IN6_ADDR_HSIZE_SHIFT)
-/*	anycast address hash table
- */
+ 
 static struct hlist_head inet6_acaddr_lst[IN6_ADDR_HSIZE];
 static DEFINE_SPINLOCK(acaddr_hash_lock);
 
@@ -56,9 +47,7 @@ static u32 inet6_acaddr_hash(struct net *net, const struct in6_addr *addr)
 	return hash_32(val, IN6_ADDR_HSIZE_SHIFT);
 }
 
-/*
- *	socket join an anycast group
- */
+ 
 
 int ipv6_sock_ac_join(struct sock *sk, int ifindex, const struct in6_addr *addr)
 {
@@ -100,7 +89,7 @@ int ipv6_sock_ac_join(struct sock *sk, int ifindex, const struct in6_addr *addr)
 			err = -EADDRNOTAVAIL;
 			goto error;
 		} else {
-			/* router, no matching interface: just pick one */
+			 
 			dev = __dev_get_by_flags(net, IFF_UP,
 						 IFF_UP | IFF_LOOPBACK);
 		}
@@ -119,16 +108,12 @@ int ipv6_sock_ac_join(struct sock *sk, int ifindex, const struct in6_addr *addr)
 			err = -EADDRNOTAVAIL;
 		goto error;
 	}
-	/* reset ishost, now that we have a specific device */
+	 
 	ishost = !idev->cnf.forwarding;
 
 	pac->acl_ifindex = dev->ifindex;
 
-	/* XXX
-	 * For hosts, allow link-local or matching prefix anycasts.
-	 * This obviates the need for propagating anycast routes while
-	 * still allowing some non-router anycast participation.
-	 */
+	 
 	if (!ipv6_chk_prefix(addr, dev)) {
 		if (ishost)
 			err = -EADDRNOTAVAIL;
@@ -149,9 +134,7 @@ error:
 	return err;
 }
 
-/*
- *	socket leave an anycast group
- */
+ 
 int ipv6_sock_ac_drop(struct sock *sk, int ifindex, const struct in6_addr *addr)
 {
 	struct ipv6_pinfo *np = inet6_sk(sk);
@@ -271,16 +254,14 @@ static struct ifacaddr6 *aca_alloc(struct fib6_info *f6i,
 	aca->aca_rt = f6i;
 	INIT_HLIST_NODE(&aca->aca_addr_lst);
 	aca->aca_users = 1;
-	/* aca_tstamp should be updated upon changes */
+	 
 	aca->aca_cstamp = aca->aca_tstamp = jiffies;
 	refcount_set(&aca->aca_refcnt, 1);
 
 	return aca;
 }
 
-/*
- *	device anycast group inc (add if not found)
- */
+ 
 int __ipv6_dev_ac_inc(struct inet6_dev *idev, const struct in6_addr *addr)
 {
 	struct ifacaddr6 *aca;
@@ -320,9 +301,7 @@ int __ipv6_dev_ac_inc(struct inet6_dev *idev, const struct in6_addr *addr)
 	aca->aca_next = idev->ac_list;
 	idev->ac_list = aca;
 
-	/* Hold this for addrconf_join_solict() below before we unlock,
-	 * it is already exposed via idev->ac_list.
-	 */
+	 
 	aca_get(aca);
 	write_unlock_bh(&idev->lock);
 
@@ -339,9 +318,7 @@ out:
 	return err;
 }
 
-/*
- *	device anycast group decrement
- */
+ 
 int __ipv6_dev_ac_dec(struct inet6_dev *idev, const struct in6_addr *addr)
 {
 	struct ifacaddr6 *aca, *prev_aca;
@@ -377,7 +354,7 @@ int __ipv6_dev_ac_dec(struct inet6_dev *idev, const struct in6_addr *addr)
 	return 0;
 }
 
-/* called with rtnl_lock() */
+ 
 static int ipv6_dev_ac_dec(struct net_device *dev, const struct in6_addr *addr)
 {
 	struct inet6_dev *idev = __in6_dev_get(dev);
@@ -409,10 +386,7 @@ void ipv6_ac_destroy_dev(struct inet6_dev *idev)
 	write_unlock_bh(&idev->lock);
 }
 
-/*
- *	check if the interface has this anycast address
- *	called with rcu_read_lock()
- */
+ 
 static bool ipv6_chk_acast_dev(struct net_device *dev, const struct in6_addr *addr)
 {
 	struct inet6_dev *idev;
@@ -430,9 +404,7 @@ static bool ipv6_chk_acast_dev(struct net_device *dev, const struct in6_addr *ad
 	return false;
 }
 
-/*
- *	check if given interface (or any, if dev==0) has this anycast address
- */
+ 
 bool ipv6_chk_acast_addr(struct net *net, struct net_device *dev,
 			 const struct in6_addr *addr)
 {
@@ -461,9 +433,7 @@ bool ipv6_chk_acast_addr(struct net *net, struct net_device *dev,
 	return found;
 }
 
-/*	check if this anycast address is link-local on given interface or
- *	is global
- */
+ 
 bool ipv6_chk_acast_addr_src(struct net *net, struct net_device *dev,
 			     const struct in6_addr *addr)
 {
@@ -597,8 +567,7 @@ void ac6_proc_exit(struct net *net)
 }
 #endif
 
-/*	Init / cleanup code
- */
+ 
 int __init ipv6_anycast_init(void)
 {
 	int i;

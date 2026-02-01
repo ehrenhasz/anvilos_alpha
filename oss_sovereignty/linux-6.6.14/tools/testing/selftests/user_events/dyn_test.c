@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * User Events Dyn Events Test Program
- *
- * Copyright (c) 2021 Beau Belgrave <beaub@linux.microsoft.com>
- */
+
+ 
 
 #include <errno.h>
 #include <linux/user_events.h>
@@ -72,7 +68,7 @@ static int parse(int *check, const char *value)
 	if (fd == -1)
 		return -1;
 
-	/* Until we have persist flags via dynamic events, use the base name */
+	 
 	if (value[0] != 'u' || value[1] != ':') {
 		close(fd);
 		return -1;
@@ -103,7 +99,7 @@ static int check_match(int *check, const char *first, const char *second, bool *
 
 	if (reg_event(fd, check, 30, second) == -1) {
 		if (errno == EADDRINUSE) {
-			/* Name is in use, with different fields */
+			 
 			*match = false;
 			ret = 0;
 		}
@@ -158,7 +154,7 @@ FIXTURE_TEARDOWN(user) {
 }
 
 TEST_F(user, basic_types) {
-	/* All should work */
+	 
 	TEST_PARSE("u:__test_event u64 a");
 	TEST_PARSE("u:__test_event u32 a");
 	TEST_PARSE("u:__test_event u16 a");
@@ -173,16 +169,16 @@ TEST_F(user, basic_types) {
 	TEST_PARSE("u:__test_event unsigned char[20] a");
 	TEST_PARSE("u:__test_event char[0x14] a");
 	TEST_PARSE("u:__test_event unsigned char[0x14] a");
-	/* Bad size format should fail */
+	 
 	TEST_NPARSE("u:__test_event char[aa] a");
-	/* Large size should fail */
+	 
 	TEST_NPARSE("u:__test_event char[9999] a");
-	/* Long size string should fail */
+	 
 	TEST_NPARSE("u:__test_event char[0x0000000000001] a");
 }
 
 TEST_F(user, loc_types) {
-	/* All should work */
+	 
 	TEST_PARSE("u:__test_event __data_loc char[] a");
 	TEST_PARSE("u:__test_event __data_loc unsigned char[] a");
 	TEST_PARSE("u:__test_event __rel_loc char[] a");
@@ -190,48 +186,48 @@ TEST_F(user, loc_types) {
 }
 
 TEST_F(user, size_types) {
-	/* Should work */
+	 
 	TEST_PARSE("u:__test_event struct custom a 20");
-	/* Size not specified on struct should fail */
+	 
 	TEST_NPARSE("u:__test_event struct custom a");
-	/* Size specified on non-struct should fail */
+	 
 	TEST_NPARSE("u:__test_event char a 20");
 }
 
 TEST_F(user, matching) {
-	/* Single name matches */
+	 
 	TEST_MATCH("__test_event u32 a",
 		   "__test_event u32 a");
 
-	/* Multiple names match */
+	 
 	TEST_MATCH("__test_event u32 a; u32 b",
 		   "__test_event u32 a; u32 b");
 
-	/* Multiple names match with dangling ; */
+	 
 	TEST_MATCH("__test_event u32 a; u32 b",
 		   "__test_event u32 a; u32 b;");
 
-	/* Single name doesn't match */
+	 
 	TEST_NMATCH("__test_event u32 a",
 		    "__test_event u32 b");
 
-	/* Multiple names don't match */
+	 
 	TEST_NMATCH("__test_event u32 a; u32 b",
 		    "__test_event u32 b; u32 a");
 
-	/* Types don't match */
+	 
 	TEST_NMATCH("__test_event u64 a; u64 b",
 		    "__test_event u32 a; u32 b");
 
-	/* Struct name and size matches */
+	 
 	TEST_MATCH("__test_event struct my_struct a 20",
 		   "__test_event struct my_struct a 20");
 
-	/* Struct name don't match */
+	 
 	TEST_NMATCH("__test_event struct my_struct a 20",
 		    "__test_event struct my_struct b 20");
 
-	/* Struct size don't match */
+	 
 	TEST_NMATCH("__test_event struct my_struct a 20",
 		    "__test_event struct my_struct a 21");
 }

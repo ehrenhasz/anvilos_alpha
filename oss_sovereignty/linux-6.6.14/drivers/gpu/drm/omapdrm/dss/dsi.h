@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
+ 
+ 
 
 #ifndef __OMAP_DRM_DSS_DSI_H
 #define __OMAP_DRM_DSS_DSI_H
@@ -16,7 +13,7 @@ struct dsi_reg {
 
 #define DSI_REG(mod, idx)		((const struct dsi_reg) { mod, idx })
 
-/* DSI Protocol Engine */
+ 
 
 #define DSI_PROTO			0
 #define DSI_PROTO_SZ			0x200
@@ -56,7 +53,7 @@ struct dsi_reg {
 #define DSI_VC_IRQSTATUS(n)		DSI_REG(DSI_PROTO, 0x0118 + (n * 0x20))
 #define DSI_VC_IRQENABLE(n)		DSI_REG(DSI_PROTO, 0x011C + (n * 0x20))
 
-/* DSIPHY_SCP */
+ 
 
 #define DSI_PHY				1
 #define DSI_PHY_OFFSET			0x200
@@ -68,7 +65,7 @@ struct dsi_reg {
 #define DSI_DSIPHY_CFG5			DSI_REG(DSI_PHY, 0x0014)
 #define DSI_DSIPHY_CFG10		DSI_REG(DSI_PHY, 0x0028)
 
-/* DSI_PLL_CTRL_SCP */
+ 
 
 #define DSI_PLL				2
 #define DSI_PLL_OFFSET			0x300
@@ -80,7 +77,7 @@ struct dsi_reg {
 #define DSI_PLL_CONFIGURATION1		DSI_REG(DSI_PLL, 0x000C)
 #define DSI_PLL_CONFIGURATION2		DSI_REG(DSI_PLL, 0x0010)
 
-/* Global interrupts */
+ 
 #define DSI_IRQ_VC0		(1 << 0)
 #define DSI_IRQ_VC1		(1 << 1)
 #define DSI_IRQ_VC2		(1 << 2)
@@ -103,7 +100,7 @@ struct dsi_reg {
 	DSI_IRQ_TA_TIMEOUT)
 #define DSI_IRQ_CHANNEL_MASK	0xf
 
-/* Virtual channel interrupts */
+ 
 #define DSI_VC_IRQ_CS		(1 << 0)
 #define DSI_VC_IRQ_ECC_CORR	(1 << 1)
 #define DSI_VC_IRQ_PACKET_SENT	(1 << 2)
@@ -118,7 +115,7 @@ struct dsi_reg {
 	DSI_VC_IRQ_FIFO_RX_OVF | DSI_VC_IRQ_ECC_NO_CORR | \
 	DSI_VC_IRQ_FIFO_TX_UDF)
 
-/* ComplexIO interrupts */
+ 
 #define DSI_CIO_IRQ_ERRSYNCESC1		(1 << 0)
 #define DSI_CIO_IRQ_ERRSYNCESC2		(1 << 1)
 #define DSI_CIO_IRQ_ERRSYNCESC3		(1 << 2)
@@ -173,11 +170,11 @@ enum omap_dss_dsi_mode {
 };
 
 enum omap_dss_dsi_trans_mode {
-	/* Sync Pulses: both sync start and end packets sent */
+	 
 	OMAP_DSS_DSI_PULSE_MODE,
-	/* Sync Events: only sync start packets sent */
+	 
 	OMAP_DSS_DSI_EVENT_MODE,
-	/* Burst: only sync start packets sent, pixels are time compressed */
+	 
 	OMAP_DSS_DSI_BURST_MODE,
 };
 
@@ -187,24 +184,24 @@ struct omap_dss_dsi_videomode_timings {
 	unsigned int ndl;
 	unsigned int bitspp;
 
-	/* pixels */
+	 
 	u16 hact;
-	/* lines */
+	 
 	u16 vact;
 
-	/* DSI video mode blanking data */
-	/* Unit: byte clock cycles */
+	 
+	 
 	u16 hss;
 	u16 hsa;
 	u16 hse;
 	u16 hfp;
 	u16 hbp;
-	/* Unit: line clocks */
+	 
 	u16 vsa;
 	u16 vfp;
 	u16 vbp;
 
-	/* DSI blanking modes */
+	 
 	int blanking_mode;
 	int hsa_blanking_mode;
 	int hbp_blanking_mode;
@@ -226,7 +223,7 @@ struct omap_dss_dsi_config {
 	enum omap_dss_dsi_trans_mode trans_mode;
 };
 
-/* DSI PLL HSDIV indices */
+ 
 #define HSDIV_DISPC	0
 #define HSDIV_DSI	1
 
@@ -297,13 +294,13 @@ struct dsi_clk_calc_ctx {
 	struct dsi_data *dsi;
 	struct dss_pll *pll;
 
-	/* inputs */
+	 
 
 	const struct omap_dss_dsi_config *config;
 
 	unsigned long req_pck_min, req_pck_nom, req_pck_max;
 
-	/* outputs */
+	 
 
 	struct dss_pll_clock_info dsi_cinfo;
 	struct dispc_clock_info dispc_cinfo;
@@ -319,7 +316,7 @@ struct dsi_module_id_data {
 };
 
 enum dsi_quirks {
-	DSI_QUIRK_PLL_PWR_BUG = (1 << 0),	/* DSI-PLL power command 0x3 is not working */
+	DSI_QUIRK_PLL_PWR_BUG = (1 << 0),	 
 	DSI_QUIRK_DCS_CMD_CONFIG_VC = (1 << 1),
 	DSI_QUIRK_VC_OCP_WIDTH = (1 << 2),
 	DSI_QUIRK_REVERSE_TXCLKESC = (1 << 3),
@@ -379,7 +376,7 @@ struct dsi_data {
 
 	spinlock_t irq_lock;
 	struct dsi_isr_tables isr_tables;
-	/* space for a copy used by the interrupt handler */
+	 
 	struct dsi_isr_tables isr_tables_copy;
 
 	int update_vc;
@@ -387,7 +384,7 @@ struct dsi_data {
 	unsigned int update_bytes;
 #endif
 
-	/* external TE GPIO */
+	 
 	struct gpio_desc *te_gpio;
 	int te_irq;
 	struct delayed_work te_timeout_work;
@@ -453,4 +450,4 @@ struct dsi_packet_sent_handler_data {
 	struct completion *completion;
 };
 
-#endif /* __OMAP_DRM_DSS_DSI_H */
+#endif  

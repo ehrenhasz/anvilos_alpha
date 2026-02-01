@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright (c) 2021, Microsoft Corporation. */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -24,23 +24,9 @@
 #define SMC_MSG_DIRECTION_REQUEST 0
 #define SMC_MSG_DIRECTION_RESPONSE 1
 
-/* Structures labeled with "HW DATA" are exchanged with the hardware. All of
- * them are naturally aligned and hence don't need __packed.
- */
+ 
 
-/* Shared memory channel protocol header
- *
- * msg_type: set on request and response; response matches request.
- * msg_version: newer PF writes back older response (matching request)
- *  older PF acts on latest version known and sets that version in result
- *  (less than request).
- * direction: 0 for request, VF->PF; 1 for response, PF->VF.
- * status: 0 on request,
- *   operation result on response (success = 0, failure = 1 or greater).
- * reset_vf: If set on either establish or destroy request, indicates perform
- *  FLR before/after the operation.
- * owner_is_pf: 1 indicates PF owned, 0 indicates VF owned.
- */
+ 
 union smc_proto_hdr {
 	u32 as_uint32;
 
@@ -58,7 +44,7 @@ union smc_proto_hdr {
 		u8 reserved_3	: 6;
 		u8 owner_is_pf	: 1;
 	};
-}; /* HW DATA */
+};  
 
 #define SMC_APERTURE_BITS 256
 #define SMC_BASIC_UNIT (sizeof(u32))
@@ -71,18 +57,15 @@ static int mana_smc_poll_register(void __iomem *base, bool reset)
 	u32 last_dword;
 	int i;
 
-	/* Poll the hardware for the ownership bit. This should be pretty fast,
-	 * but let's do it in a loop just in case the hardware or the PF
-	 * driver are temporarily busy.
-	 */
+	 
 	for (i = 0; i < 20 * 1000; i++)  {
 		last_dword = readl(ptr);
 
-		/* shmem reads as 0xFFFFFFFF in the reset case */
+		 
 		if (reset && last_dword == SHMEM_VF_RESET_STATE)
 			return 0;
 
-		/* If bit_31 is set, the PF currently owns the SMC. */
+		 
 		if (!(last_dword & BIT(31)))
 			return 0;
 
@@ -99,7 +82,7 @@ static int mana_smc_read_response(struct shm_channel *sc, u32 msg_type,
 	union smc_proto_hdr hdr;
 	int err;
 
-	/* Wait for PF to respond. */
+	 
 	err = mana_smc_poll_register(base, reset_vf);
 	if (err)
 		return err;
@@ -109,7 +92,7 @@ static int mana_smc_read_response(struct shm_channel *sc, u32 msg_type,
 	if (reset_vf && hdr.as_uint32 == SHMEM_VF_RESET_STATE)
 		return 0;
 
-	/* Validate protocol fields from the PF driver */
+	 
 	if (hdr.msg_type != msg_type || hdr.msg_version > msg_version ||
 	    hdr.direction != SMC_MSG_DIRECTION_RESPONSE) {
 		dev_err(sc->dev, "Wrong SMC response 0x%x, type=%d, ver=%d\n",
@@ -117,7 +100,7 @@ static int mana_smc_read_response(struct shm_channel *sc, u32 msg_type,
 		return -EPROTO;
 	}
 
-	/* Validate the operation result */
+	 
 	if (hdr.status != 0) {
 		dev_err(sc->dev, "SMC operation failed: 0x%x\n", hdr.status);
 		return -EPROTO;
@@ -148,7 +131,7 @@ int mana_smc_setup_hwc(struct shm_channel *sc, bool reset_vf, u64 eq_addr,
 	int err;
 	int i;
 
-	/* Ensure VF already has possession of shared memory */
+	 
 	err = mana_smc_poll_register(sc->base, false);
 	if (err) {
 		dev_err(sc->dev, "Timeout when setting up HWC: %d\n", err);
@@ -162,26 +145,12 @@ int mana_smc_setup_hwc(struct shm_channel *sc, bool reset_vf, u64 eq_addr,
 	if ((eq_msix_index & VECTOR_MASK) != eq_msix_index)
 		return -EINVAL;
 
-	/* Scheme for packing four addresses and extra info into 256 bits.
-	 *
-	 * Addresses must be page frame aligned, so only frame address bits
-	 * are transferred.
-	 *
-	 * 52-bit frame addresses are split into the lower 48 bits and upper
-	 * 4 bits. Lower 48 bits of 4 address are written sequentially from
-	 * the start of the 256-bit shared memory region followed by 16 bits
-	 * containing the upper 4 bits of the 4 addresses in sequence.
-	 *
-	 * A 16 bit EQ vector number fills out the next-to-last 32-bit dword.
-	 *
-	 * The final 32-bit dword is used for protocol control information as
-	 * defined in smc_proto_hdr.
-	 */
+	 
 
 	memset(shm_buf, 0, sizeof(shm_buf));
 	ptr = shm_buf;
 
-	/* EQ addr: low 48 bits of frame address */
+	 
 	shmem = (u64 *)ptr;
 	frame_addr = PHYS_PFN(eq_addr);
 	*shmem = frame_addr & PAGE_FRAME_L48_MASK;
@@ -189,7 +158,7 @@ int mana_smc_setup_hwc(struct shm_channel *sc, bool reset_vf, u64 eq_addr,
 		(frame_addr_seq++ * PAGE_FRAME_H4_WIDTH_BITS);
 	ptr += PAGE_FRAME_L48_WIDTH_BYTES;
 
-	/* CQ addr: low 48 bits of frame address */
+	 
 	shmem = (u64 *)ptr;
 	frame_addr = PHYS_PFN(cq_addr);
 	*shmem = frame_addr & PAGE_FRAME_L48_MASK;
@@ -197,7 +166,7 @@ int mana_smc_setup_hwc(struct shm_channel *sc, bool reset_vf, u64 eq_addr,
 		(frame_addr_seq++ * PAGE_FRAME_H4_WIDTH_BITS);
 	ptr += PAGE_FRAME_L48_WIDTH_BYTES;
 
-	/* RQ addr: low 48 bits of frame address */
+	 
 	shmem = (u64 *)ptr;
 	frame_addr = PHYS_PFN(rq_addr);
 	*shmem = frame_addr & PAGE_FRAME_L48_MASK;
@@ -205,7 +174,7 @@ int mana_smc_setup_hwc(struct shm_channel *sc, bool reset_vf, u64 eq_addr,
 		(frame_addr_seq++ * PAGE_FRAME_H4_WIDTH_BITS);
 	ptr += PAGE_FRAME_L48_WIDTH_BYTES;
 
-	/* SQ addr: low 48 bits of frame address */
+	 
 	shmem = (u64 *)ptr;
 	frame_addr = PHYS_PFN(sq_addr);
 	*shmem = frame_addr & PAGE_FRAME_L48_MASK;
@@ -213,15 +182,15 @@ int mana_smc_setup_hwc(struct shm_channel *sc, bool reset_vf, u64 eq_addr,
 		(frame_addr_seq++ * PAGE_FRAME_H4_WIDTH_BITS);
 	ptr += PAGE_FRAME_L48_WIDTH_BYTES;
 
-	/* High 4 bits of the four frame addresses */
+	 
 	*((u16 *)ptr) = all_addr_h4bits;
 	ptr += sizeof(u16);
 
-	/* EQ MSIX vector number */
+	 
 	*((u16 *)ptr) = (u16)eq_msix_index;
 	ptr += sizeof(u16);
 
-	/* 32-bit protocol header in final dword */
+	 
 	*((u32 *)ptr) = 0;
 
 	hdr = (union smc_proto_hdr *)ptr;
@@ -230,17 +199,12 @@ int mana_smc_setup_hwc(struct shm_channel *sc, bool reset_vf, u64 eq_addr,
 	hdr->direction = SMC_MSG_DIRECTION_REQUEST;
 	hdr->reset_vf = reset_vf;
 
-	/* Write 256-message buffer to shared memory (final 32-bit write
-	 * triggers HW to set possession bit to PF).
-	 */
+	 
 	dword = (u32 *)shm_buf;
 	for (i = 0; i < SMC_APERTURE_DWORDS; i++)
 		writel(*dword++, sc->base + i * SMC_BASIC_UNIT);
 
-	/* Read shmem response (polling for VF possession) and validate.
-	 * For setup, waiting for response on shared memory is not strictly
-	 * necessary, since wait occurs later for results to appear in EQE's.
-	 */
+	 
 	err = mana_smc_read_response(sc, SMC_MSG_TYPE_ESTABLISH_HWC,
 				     SMC_MSG_TYPE_ESTABLISH_HWC_VERSION,
 				     reset_vf);
@@ -257,28 +221,23 @@ int mana_smc_teardown_hwc(struct shm_channel *sc, bool reset_vf)
 	union smc_proto_hdr hdr = {};
 	int err;
 
-	/* Ensure already has possession of shared memory */
+	 
 	err = mana_smc_poll_register(sc->base, false);
 	if (err) {
 		dev_err(sc->dev, "Timeout when tearing down HWC\n");
 		return err;
 	}
 
-	/* Set up protocol header for HWC destroy message */
+	 
 	hdr.msg_type = SMC_MSG_TYPE_DESTROY_HWC;
 	hdr.msg_version = SMC_MSG_TYPE_DESTROY_HWC_VERSION;
 	hdr.direction = SMC_MSG_DIRECTION_REQUEST;
 	hdr.reset_vf = reset_vf;
 
-	/* Write message in high 32 bits of 256-bit shared memory, causing HW
-	 * to set possession bit to PF.
-	 */
+	 
 	writel(hdr.as_uint32, sc->base + SMC_LAST_DWORD * SMC_BASIC_UNIT);
 
-	/* Read shmem response (polling for VF possession) and validate.
-	 * For teardown, waiting for response is required to ensure hardware
-	 * invalidates MST entries before software frees memory.
-	 */
+	 
 	err = mana_smc_read_response(sc, SMC_MSG_TYPE_DESTROY_HWC,
 				     SMC_MSG_TYPE_DESTROY_HWC_VERSION,
 				     reset_vf);

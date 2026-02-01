@@ -1,13 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _XT_TPROXY_H
 #define _XT_TPROXY_H
 
 #include <linux/types.h>
 #include <linux/netfilter.h>
 
-/* TPROXY target is capable of marking the packet to perform
- * redirection. We can get rid of that whenever we get support for
- * mutliple targets in the same rule. */
+ 
 struct xt_tproxy_target_info {
 	__u32 mark_mask;
 	__u32 mark_value;
@@ -22,4 +20,4 @@ struct xt_tproxy_target_info_v1 {
 	__be16 lport;
 };
 
-#endif /* _XT_TPROXY_H */
+#endif  

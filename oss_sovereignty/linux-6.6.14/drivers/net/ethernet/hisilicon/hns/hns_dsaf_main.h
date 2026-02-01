@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2014-2015 Hisilicon Limited.
- */
+ 
+ 
 
 #ifndef __HNS_DSAF_MAIN_H
 #define __HNS_DSAF_MAIN_H
@@ -18,9 +16,9 @@ struct hns_mac_cb;
 
 #define HNS_DSAF_DEBUG_NW_REG_OFFSET 0x100000
 
-#define DSAF_BASE_INNER_PORT_NUM 127/* mac tbl qid*/
+#define DSAF_BASE_INNER_PORT_NUM 127 
 
-#define DSAF_MAX_CHIP_NUM 2  /*max 2 chips */
+#define DSAF_MAX_CHIP_NUM 2   
 
 #define DSAF_DEFAUTL_QUEUE_NUM_PER_PPE 22
 
@@ -133,56 +131,56 @@ enum dsaf_sw_port_type {
 
 #define DSAF_SUB_BASE_SIZE                        (0x10000)
 
-/* dsaf mode define */
+ 
 enum dsaf_mode {
-	DSAF_MODE_INVALID = 0,	/**< Invalid dsaf mode */
-	DSAF_MODE_ENABLE_FIX,	/**< en DSAF-mode, fixed to queue*/
-	DSAF_MODE_ENABLE_0VM,	/**< en DSAF-mode, support 0 VM */
-	DSAF_MODE_ENABLE_8VM,	/**< en DSAF-mode, support 8 VM */
-	DSAF_MODE_ENABLE_16VM,	/**< en DSAF-mode, support 16 VM */
-	DSAF_MODE_ENABLE_32VM,	/**< en DSAF-mode, support 32 VM */
-	DSAF_MODE_ENABLE_128VM,	/**< en DSAF-mode, support 128 VM */
-	DSAF_MODE_ENABLE,		/**< before is enable DSAF mode*/
-	DSAF_MODE_DISABLE_SP,	/* <non-dsaf, single port mode */
-	DSAF_MODE_DISABLE_FIX,	/**< non-dasf, fixed to queue*/
-	DSAF_MODE_DISABLE_2PORT_8VM,	/**< non-dasf, 2port 8VM */
-	DSAF_MODE_DISABLE_2PORT_16VM,	/**< non-dasf, 2port 16VM */
-	DSAF_MODE_DISABLE_2PORT_64VM,	/**< non-dasf, 2port 64VM */
-	DSAF_MODE_DISABLE_6PORT_0VM,	/**< non-dasf, 6port 0VM */
-	DSAF_MODE_DISABLE_6PORT_2VM,	/**< non-dasf, 6port 2VM */
-	DSAF_MODE_DISABLE_6PORT_4VM,	/**< non-dasf, 6port 4VM */
-	DSAF_MODE_DISABLE_6PORT_16VM,	/**< non-dasf, 6port 16VM */
-	DSAF_MODE_MAX		/**< the last one, use as the num */
+	DSAF_MODE_INVALID = 0,	 
+	DSAF_MODE_ENABLE_FIX,	 
+	DSAF_MODE_ENABLE_0VM,	 
+	DSAF_MODE_ENABLE_8VM,	 
+	DSAF_MODE_ENABLE_16VM,	 
+	DSAF_MODE_ENABLE_32VM,	 
+	DSAF_MODE_ENABLE_128VM,	 
+	DSAF_MODE_ENABLE,		 
+	DSAF_MODE_DISABLE_SP,	 
+	DSAF_MODE_DISABLE_FIX,	 
+	DSAF_MODE_DISABLE_2PORT_8VM,	 
+	DSAF_MODE_DISABLE_2PORT_16VM,	 
+	DSAF_MODE_DISABLE_2PORT_64VM,	 
+	DSAF_MODE_DISABLE_6PORT_0VM,	 
+	DSAF_MODE_DISABLE_6PORT_2VM,	 
+	DSAF_MODE_DISABLE_6PORT_4VM,	 
+	DSAF_MODE_DISABLE_6PORT_16VM,	 
+	DSAF_MODE_MAX		 
 };
 
-#define DSAF_DEST_PORT_NUM 256	/* DSAF max port num */
-#define DSAF_WORD_BIT_CNT 32  /* the num bit of word */
+#define DSAF_DEST_PORT_NUM 256	 
+#define DSAF_WORD_BIT_CNT 32   
 
-/*mac entry, mc or uc entry*/
+ 
 struct dsaf_drv_mac_single_dest_entry {
-	/* mac addr, match the entry*/
+	 
 	u8 addr[ETH_ALEN];
-	u16 in_vlan_id; /* value of VlanId */
+	u16 in_vlan_id;  
 
-	/* the vld input port num, dsaf-mode fix 0, */
-	/*	non-dasf is the entry whitch port vld*/
+	 
+	 
 	u8 in_port_num;
 
-	u8 port_num; /*output port num*/
+	u8 port_num;  
 	u8 rsv[6];
 };
 
-/*only mc entry*/
+ 
 struct dsaf_drv_mac_multi_dest_entry {
-	/* mac addr, match the entry*/
+	 
 	u8 addr[ETH_ALEN];
 	u16 in_vlan_id;
-	/* this mac addr output port,*/
-	/*	bit0-bit5 means Port0-Port5(1bit is vld)**/
+	 
+	 
 	u32 port_mask[DSAF_DEST_PORT_NUM / DSAF_WORD_BIT_CNT];
 
-	/* the vld input port num, dsaf-mode fix 0,*/
-	/*	non-dasf is the entry whitch port vld*/
+	 
+	 
 	u8 in_port_num;
 	u8 rsv[7];
 };
@@ -210,7 +208,7 @@ struct hnae_vf_cb {
 	u8 port_index;
 	struct hns_mac_cb *mac_cb;
 	struct dsaf_device *dsaf_dev;
-	struct hnae_handle  ae_handle; /* must be the last member */
+	struct hnae_handle  ae_handle;  
 };
 
 struct dsaf_int_xge_src {
@@ -301,7 +299,7 @@ struct dsaf_misc_op {
 	void (*cpld_reset_led)(struct hns_mac_cb *mac_cb);
 	int (*cpld_set_led_id)(struct hns_mac_cb *mac_cb,
 			       enum hnae_led_state status);
-	/* reset series function, it will be reset if the dereset is 0 */
+	 
 	void (*dsaf_reset)(struct dsaf_device *dsaf_dev, bool dereset);
 	void (*xge_srst)(struct dsaf_device *dsaf_dev, u32 port, bool dereset);
 	void (*ge_srst)(struct dsaf_device *dsaf_dev, u32 port, bool dereset);
@@ -317,7 +315,7 @@ struct dsaf_misc_op {
 	int (*cfg_serdes_loopback)(struct hns_mac_cb *mac_cb, bool en);
 };
 
-/* Dsaf device struct define ,and mac ->  dsaf */
+ 
 struct dsaf_device {
 	struct device *dev;
 	struct hnae_ae_dev ae_dev;
@@ -329,15 +327,15 @@ struct dsaf_device {
 	struct regmap *sub_ctrl;
 	phys_addr_t ppe_paddr;
 
-	u32 desc_num; /*  desc num per queue*/
-	u32 buf_size; /*  ring buffer size */
-	u32 reset_offset; /* reset field offset in sub sysctrl */
-	int buf_size_type; /* ring buffer size-type */
-	enum dsaf_mode dsaf_mode;	 /* dsaf mode  */
+	u32 desc_num;  
+	u32 buf_size;  
+	u32 reset_offset;  
+	int buf_size_type;  
+	enum dsaf_mode dsaf_mode;	  
 	enum hal_dsaf_mode dsaf_en;
 	enum hal_dsaf_tc_mode dsaf_tc_mode;
 	u32 dsaf_ver;
-	u16 tcam_max_num;	/* max TCAM entry for user except promisc */
+	u16 tcam_max_num;	 
 
 	struct ppe_common_cb *ppe_common[DSAF_COMM_DEV_NUM];
 	struct rcb_common_cb *rcb_common[DSAF_COMM_DEV_NUM];
@@ -346,7 +344,7 @@ struct dsaf_device {
 
 	struct dsaf_hw_stats hw_stats[DSAF_NODE_NUM];
 	struct dsaf_int_stat int_stat;
-	/* make sure tcam table config spinlock */
+	 
 	spinlock_t tcam_lock;
 };
 
@@ -384,11 +382,11 @@ struct dsaf_drv_tbl_tcam_key {
 
 struct dsaf_drv_soft_mac_tbl {
 	struct dsaf_drv_tbl_tcam_key tcam_key;
-	u16 index; /*the entry's index in tcam tab*/
+	u16 index;  
 };
 
 struct dsaf_drv_priv {
-	/* soft tab Mac key, for hardware tab*/
+	 
 	struct dsaf_drv_soft_mac_tbl *soft_mac_tbl;
 };
 
@@ -465,4 +463,4 @@ int hns_dsaf_wait_pkt_clean(struct dsaf_device *dsaf_dev, int port);
 
 int hns_dsaf_roce_reset(struct fwnode_handle *dsaf_fwnode, bool dereset);
 
-#endif /* __HNS_DSAF_MAIN_H__ */
+#endif  

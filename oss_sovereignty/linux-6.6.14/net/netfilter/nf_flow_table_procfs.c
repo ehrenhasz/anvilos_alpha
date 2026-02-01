@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/kernel.h>
 #include <linux/proc_fs.h>
 #include <net/netfilter/nf_flow_table.h>

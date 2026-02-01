@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * GPIO driver for the ACCES 104-DIO-48E series
- * Copyright (C) 2016 William Breathitt Gray
- *
- * This driver supports the following ACCES devices: 104-DIO-48E and
- * 104-DIO-24E.
- */
+
+ 
 #include <linux/bits.h>
 #include <linux/device.h>
 #include <linux/err.h>
@@ -95,7 +89,7 @@ static const struct regmap_access_table pit_rd_table = {
 	.n_yes_ranges = ARRAY_SIZE(pit_rd_ranges),
 };
 
-/* only bit 3 on each respective Port C supports interrupts */
+ 
 #define DIO48E_REGMAP_IRQ(_ppi)						\
 	[19 + (_ppi) * 24] = {						\
 		.mask = BIT(_ppi),					\
@@ -106,14 +100,7 @@ static const struct regmap_irq dio48e_regmap_irqs[] = {
 	DIO48E_REGMAP_IRQ(0), DIO48E_REGMAP_IRQ(1),
 };
 
-/**
- * struct dio48e_gpio - GPIO device private data structure
- * @lock:	synchronization lock to prevent I/O race conditions
- * @map:	Regmap for the device
- * @regs:	virtual mapping for device registers
- * @flags:	IRQ flags saved during locking
- * @irq_mask:	Current IRQ mask state on the device
- */
+ 
 struct dio48e_gpio {
 	raw_spinlock_t lock;
 	struct regmap *map;
@@ -168,14 +155,14 @@ static int dio48e_handle_mask_sync(const int index,
 	int err;
 	unsigned int val;
 
-	/* exit early if no change since the previous mask */
+	 
 	if (mask_buf == prev_mask)
 		return 0;
 
-	/* remember the current mask for the next mask sync */
+	 
 	dio48egpio->irq_mask = mask_buf;
 
-	/* if all previously masked, enable interrupts when unmasking */
+	 
 	if (prev_mask == mask_buf_def) {
 		err = regmap_write(dio48egpio->map, DIO48E_CLEAR_INTERRUPT, 0x00);
 		if (err)
@@ -183,7 +170,7 @@ static int dio48e_handle_mask_sync(const int index,
 		return regmap_write(dio48egpio->map, DIO48E_ENABLE_INTERRUPT, 0x00);
 	}
 
-	/* if all are currently masked, disable interrupts */
+	 
 	if (mask_buf == mask_buf_def)
 		return regmap_read(dio48egpio->map, DIO48E_DISABLE_INTERRUPT, &val);
 
@@ -214,7 +201,7 @@ static int dio48e_irq_init_hw(struct regmap *const map)
 {
 	unsigned int val;
 
-	/* Disable IRQ by default */
+	 
 	return regmap_read(map, DIO48E_DISABLE_INTERRUPT, &val);
 }
 
@@ -304,7 +291,7 @@ static int dio48e_probe(struct device *dev, unsigned int id)
 	chip->handle_mask_sync = dio48e_handle_mask_sync;
 	chip->irq_drv_data = dio48egpio;
 
-	/* Initialize to prevent spurious interrupts before we're ready */
+	 
 	err = dio48e_irq_init_hw(map);
 	if (err)
 		return err;

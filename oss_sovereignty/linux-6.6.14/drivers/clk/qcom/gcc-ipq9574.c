@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/*
- * Copyright (c) 2023 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/kernel.h>
@@ -23,7 +21,7 @@
 #include "common.h"
 #include "reset.h"
 
-/* Need to match the order of clocks in DT binding */
+ 
 enum {
 	DT_XO,
 	DT_SLEEP_CLK,

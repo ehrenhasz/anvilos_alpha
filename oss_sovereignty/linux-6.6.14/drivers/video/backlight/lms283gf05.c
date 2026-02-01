@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * lms283gf05.c -- support for Samsung LMS283GF05 LCD
- *
- * Copyright (c) 2009 Marek Vasut <marek.vasut@gmail.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -27,9 +23,9 @@ struct lms283gf05_seq {
 	unsigned char		delay;
 };
 
-/* Magic sequences supplied by manufacturer, for details refer to datasheet */
+ 
 static const struct lms283gf05_seq disp_initseq[] = {
-	/* REG, VALUE, DELAY */
+	 
 	{ 0x07, 0x0000, 0 },
 	{ 0x13, 0x0000, 10 },
 
@@ -92,11 +88,11 @@ static const struct lms283gf05_seq disp_pdwnseq[] = {
 
 static void lms283gf05_reset(struct gpio_desc *gpiod)
 {
-	gpiod_set_value(gpiod, 0); /* De-asserted */
+	gpiod_set_value(gpiod, 0);  
 	mdelay(100);
-	gpiod_set_value(gpiod, 1); /* Asserted */
+	gpiod_set_value(gpiod, 1);  
 	mdelay(20);
-	gpiod_set_value(gpiod, 0); /* De-asserted */
+	gpiod_set_value(gpiod, 0);  
 	mdelay(20);
 }
 
@@ -133,7 +129,7 @@ static int lms283gf05_power_set(struct lcd_device *ld, int power)
 	} else {
 		lms283gf05_toggle(spi, disp_pdwnseq, ARRAY_SIZE(disp_pdwnseq));
 		if (st->reset)
-			gpiod_set_value(st->reset, 1); /* Asserted */
+			gpiod_set_value(st->reset, 1);  
 	}
 
 	return 0;
@@ -169,7 +165,7 @@ static int lms283gf05_probe(struct spi_device *spi)
 
 	spi_set_drvdata(spi, st);
 
-	/* kick in the LCD */
+	 
 	if (st->reset)
 		lms283gf05_reset(st->reset);
 	lms283gf05_toggle(spi, disp_initseq, ARRAY_SIZE(disp_initseq));

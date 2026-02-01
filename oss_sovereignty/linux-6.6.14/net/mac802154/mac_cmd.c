@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MAC commands interface
- *
- * Copyright 2007-2012 Siemens AG
- *
- * Written by:
- * Sergey Lapin <slapin@ossfans.org>
- * Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
- * Alexander Smirnov <alex.bluesman.smirnov@gmail.com>
- */
+
+ 
 
 #include <linux/skbuff.h>
 #include <linux/if_arp.h>
@@ -64,12 +55,12 @@ static int mac802154_set_mac_params(struct net_device *dev,
 
 	ASSERT_RTNL();
 
-	/* PHY */
+	 
 	wpan_dev->wpan_phy->transmit_power = params->transmit_power;
 	wpan_dev->wpan_phy->cca = params->cca;
 	wpan_dev->wpan_phy->cca_ed_level = params->cca_ed_level;
 
-	/* MAC */
+	 
 	wpan_dev->min_be = params->min_be;
 	wpan_dev->max_be = params->max_be;
 	wpan_dev->csma_retries = params->csma_retries;
@@ -105,12 +96,12 @@ static void mac802154_get_mac_params(struct net_device *dev,
 
 	ASSERT_RTNL();
 
-	/* PHY */
+	 
 	params->transmit_power = wpan_dev->wpan_phy->transmit_power;
 	params->cca = wpan_dev->wpan_phy->cca;
 	params->cca_ed_level = wpan_dev->wpan_phy->cca_ed_level;
 
-	/* MAC */
+	 
 	params->min_be = wpan_dev->min_be;
 	params->max_be = wpan_dev->max_be;
 	params->csma_retries = wpan_dev->csma_retries;

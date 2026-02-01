@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* iptables module to match on related connections */
-/*
- * (C) 2001 Martin Josefsson <gandalf@wlug.westbo.se>
- */
+
+ 
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/skbuff.h>
@@ -38,7 +36,7 @@ helper_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	if (!master_help)
 		return ret;
 
-	/* rcu_read_lock()ed by nf_hook_thresh */
+	 
 	helper = rcu_dereference(master_help->helper);
 	if (!helper)
 		return ret;

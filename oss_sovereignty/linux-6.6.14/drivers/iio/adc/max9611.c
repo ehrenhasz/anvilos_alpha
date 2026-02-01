@@ -1,21 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * iio/adc/max9611.c
- *
- * Maxim max9611/max9612 high side current sense amplifier with
- * 12-bit ADC interface.
- *
- * Copyright (C) 2017 Jacopo Mondi
- */
 
-/*
- * This driver supports input common-mode voltage, current-sense
- * amplifier with programmable gains and die temperature reading from
- * Maxim max9611/max9612.
- *
- * Op-amp, analog comparator, and watchdog functionalities are not
- * supported by this driver.
- */
+ 
+
+ 
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -27,14 +13,14 @@
 
 #define DRIVER_NAME			"max9611"
 
-/* max9611 register addresses */
+ 
 #define MAX9611_REG_CSA_DATA		0x00
 #define MAX9611_REG_RS_DATA		0x02
 #define MAX9611_REG_TEMP_DATA		0x08
 #define MAX9611_REG_CTRL1		0x0a
 #define MAX9611_REG_CTRL2		0x0b
 
-/* max9611 REG1 mux configuration options */
+ 
 #define MAX9611_MUX_MASK		GENMASK(3, 0)
 #define MAX9611_MUX_SENSE_1x		0x00
 #define MAX9611_MUX_SENSE_4x		0x01
@@ -42,22 +28,11 @@
 #define MAX9611_INPUT_VOLT		0x03
 #define MAX9611_MUX_TEMP		0x06
 
-/* max9611 voltage (both csa and input) helper macros */
+ 
 #define MAX9611_VOLTAGE_SHIFT		0x04
 #define MAX9611_VOLTAGE_RAW(_r)		((_r) >> MAX9611_VOLTAGE_SHIFT)
 
-/*
- * max9611 current sense amplifier voltage output:
- * LSB and offset values depends on selected gain (1x, 4x, 8x)
- *
- * GAIN		LSB (nV)	OFFSET (LSB steps)
- * 1x		107500		1
- * 4x		26880		1
- * 8x		13440		3
- *
- * The complete formula to calculate current sense voltage is:
- *     (((adc_read >> 4) - offset) / ((1 / LSB) * 10^-3)
- */
+ 
 #define MAX9611_CSA_1X_LSB_nV		107500
 #define MAX9611_CSA_4X_LSB_nV		26880
 #define MAX9611_CSA_8X_LSB_nV		13440
@@ -66,21 +41,11 @@
 #define MAX9611_CSA_4X_OFFS_RAW		1
 #define MAX9611_CSA_8X_OFFS_RAW		3
 
-/*
- * max9611 common input mode (CIM): LSB is 14mV, with 14mV offset at 25 C
- *
- * The complete formula to calculate input common voltage is:
- *     (((adc_read >> 4) * 1000) - offset) / (1 / 14 * 1000)
- */
+ 
 #define MAX9611_CIM_LSB_mV		14
 #define MAX9611_CIM_OFFSET_RAW		1
 
-/*
- * max9611 temperature reading: LSB is 480 milli degrees Celsius
- *
- * The complete formula to calculate temperature is:
- *     ((adc_read >> 7) * 1000) / (1 / 480 * 1000)
- */
+ 
 #define MAX9611_TEMP_MAX_POS		0x7f80
 #define MAX9611_TEMP_MAX_NEG		0xff80
 #define MAX9611_TEMP_MIN_NEG		0xd980
@@ -90,10 +55,7 @@
 #define MAX9611_TEMP_SCALE_NUM		1000000
 #define MAX9611_TEMP_SCALE_DIV		2083
 
-/*
- * Conversion time is 2 ms (typically) at Ta=25 degreeC
- * No maximum value is known, so play it safe.
- */
+ 
 #define MAX9611_CONV_TIME_US_RANGE	3000, 3300
 
 struct max9611_dev {
@@ -111,10 +73,7 @@ enum max9611_conf_ids {
 	CONF_TEMP,
 };
 
-/*
- * max9611_mux_conf - associate ADC mux configuration with register address
- *		      where data shall be read from
- */
+ 
 static const unsigned int max9611_mux_conf[][2] = {
 	[CONF_SENSE_1x]	= { MAX9611_MUX_SENSE_1x, MAX9611_REG_CSA_DATA },
 	[CONF_SENSE_4x]	= { MAX9611_MUX_SENSE_4x, MAX9611_REG_CSA_DATA },
@@ -134,15 +93,7 @@ enum max9611_csa_gain_params {
 	CSA_GAIN_OFFS_RAW,
 };
 
-/*
- * max9611_csa_gain_conf - associate gain multiplier with LSB and
- *			   offset values.
- *
- * Group together parameters associated with configurable gain
- * on current sense amplifier path to ADC interface.
- * Current sense read routine adjusts gain until it gets a meaningful
- * value; use this structure to retrieve the correct LSB and offset values.
- */
+ 
 static const unsigned int max9611_gain_conf[][2] = {
 	[CSA_GAIN_1x] = { MAX9611_CSA_1X_LSB_nV, MAX9611_CSA_1X_OFFS_RAW, },
 	[CSA_GAIN_4x] = { MAX9611_CSA_4X_LSB_nV, MAX9611_CSA_4X_OFFS_RAW, },
@@ -192,20 +143,7 @@ static const struct iio_chan_spec max9611_channels[] = {
 	},
 };
 
-/**
- * max9611_read_single() - read a single value from ADC interface
- *
- * Data registers are 16 bit long, spread between two 8 bit registers
- * with consecutive addresses.
- * Configure ADC mux first, then read register at address "reg_addr".
- * The smbus_read_word routine asks for 16 bits and the ADC is kind enough
- * to return values from "reg_addr" and "reg_addr + 1" consecutively.
- * Data are transmitted with big-endian ordering: MSB arrives first.
- *
- * @max9611: max9611 device
- * @selector: index for mux and register configuration
- * @raw_val: the value returned from ADC
- */
+ 
 static int max9611_read_single(struct max9611_dev *max9611,
 			       enum max9611_conf_ids selector,
 			       u16 *raw_val)
@@ -215,10 +153,7 @@ static int max9611_read_single(struct max9611_dev *max9611,
 	u8 mux_conf = max9611_mux_conf[selector][0] & MAX9611_MUX_MASK;
 	u8 reg_addr = max9611_mux_conf[selector][1];
 
-	/*
-	 * Keep mutex lock held during read-write to avoid mux register
-	 * (CTRL1) re-configuration.
-	 */
+	 
 	mutex_lock(&max9611->lock);
 	ret = i2c_smbus_write_byte_data(max9611->i2c_client,
 					MAX9611_REG_CTRL1, mux_conf);
@@ -229,7 +164,7 @@ static int max9611_read_single(struct max9611_dev *max9611,
 		return ret;
 	}
 
-	/* need a delay here to make register configuration stabilize. */
+	 
 
 	usleep_range(MAX9611_CONV_TIME_US_RANGE);
 
@@ -247,18 +182,7 @@ static int max9611_read_single(struct max9611_dev *max9611,
 	return 0;
 }
 
-/**
- * max9611_read_csa_voltage() - read current sense amplifier output voltage
- *
- * Current sense amplifier output voltage is read through a configurable
- * 1x, 4x or 8x gain.
- * Start with plain 1x gain, and adjust gain control properly until a
- * meaningful value is read from ADC output.
- *
- * @max9611: max9611 device
- * @adc_raw: raw value read from ADC output
- * @csa_gain: gain configuration option selector
- */
+ 
 static int max9611_read_csa_voltage(struct max9611_dev *max9611,
 				    u16 *adc_raw,
 				    enum max9611_csa_gain *csa_gain)
@@ -321,7 +245,7 @@ static int max9611_read_raw(struct iio_dev *indio_dev,
 		break;
 
 	case IIO_CHAN_INFO_OFFSET:
-		/* MAX9611_CHAN_VOLTAGE_INPUT */
+		 
 		*val = MAX9611_CIM_OFFSET_RAW;
 
 		return IIO_VAL_INT;
@@ -347,12 +271,7 @@ static int max9611_read_raw(struct iio_dev *indio_dev,
 
 		switch (chan->address) {
 		case MAX9611_CHAN_VOLTAGE_SENSE:
-			/*
-			 * processed (mV): (raw - offset) * LSB (nV) / 10^6
-			 *
-			 * Even if max9611 can output raw csa voltage readings,
-			 * use a produced value as scale depends on gain.
-			 */
+			 
 			ret = max9611_read_csa_voltage(dev, &adc_data,
 						       &gain_selector);
 			if (ret)
@@ -368,7 +287,7 @@ static int max9611_read_raw(struct iio_dev *indio_dev,
 			return IIO_VAL_FRACTIONAL;
 
 		case MAX9611_CHAN_CURRENT_LOAD:
-			/* processed (mA): Vcsa (nV) / Rshunt (uOhm)  */
+			 
 			ret = max9611_read_csa_voltage(dev, &adc_data,
 						       &gain_selector);
 			if (ret)
@@ -384,10 +303,7 @@ static int max9611_read_raw(struct iio_dev *indio_dev,
 			return IIO_VAL_FRACTIONAL;
 
 		case MAX9611_CHAN_POWER_LOAD:
-			/*
-			 * processed (mW): Vin (mV) * Vcsa (uV) /
-			 *		   Rshunt (uOhm)
-			 */
+			 
 			ret = max9611_read_single(dev, CONF_IN_VOLT,
 						  &adc_data);
 			if (ret)
@@ -404,7 +320,7 @@ static int max9611_read_raw(struct iio_dev *indio_dev,
 
 			csa_gain = max9611_gain_conf[gain_selector];
 
-			/* divide by 10^3 here to avoid 32bit overflow */
+			 
 			adc_data -= csa_gain[CSA_GAIN_OFFS_RAW];
 			*val *= MAX9611_VOLTAGE_RAW(adc_data) *
 				csa_gain[CSA_GAIN_LSB_nV] / 1000;
@@ -466,7 +382,7 @@ static int max9611_init(struct max9611_dev *max9611)
 		return -EINVAL;
 	}
 
-	/* Make sure die temperature is in range to test communications. */
+	 
 	ret = max9611_read_single(max9611, CONF_TEMP, &regval);
 	if (ret)
 		return ret;
@@ -482,7 +398,7 @@ static int max9611_init(struct max9611_dev *max9611)
 		return -EIO;
 	}
 
-	/* Mux shall be zeroed back before applying other configurations */
+	 
 	ret = i2c_smbus_write_byte_data(max9611->i2c_client,
 					MAX9611_REG_CTRL1, 0);
 	if (ret) {

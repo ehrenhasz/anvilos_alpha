@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2018 Spreadtrum Communications Inc.
+
+
 
 #include <linux/hwspinlock.h>
 #include <linux/module.h>
@@ -8,12 +8,12 @@
 #include <linux/regmap.h>
 #include <linux/nvmem-provider.h>
 
-/* PMIC global registers definition */
+ 
 #define SC27XX_MODULE_EN		0xc08
 #define SC2730_MODULE_EN		0x1808
 #define SC27XX_EFUSE_EN			BIT(6)
 
-/* Efuse controller registers definition */
+ 
 #define SC27XX_EFUSE_GLB_CTRL		0x0
 #define SC27XX_EFUSE_DATA_RD		0x4
 #define SC27XX_EFUSE_DATA_WR		0x8
@@ -24,36 +24,33 @@
 #define SC27XX_EFUSE_RD_TIMING_CTRL	0x24
 #define SC27XX_EFUSE_EFUSE_DEB_CTRL	0x28
 
-/* Mask definition for SC27XX_EFUSE_BLOCK_INDEX register */
+ 
 #define SC27XX_EFUSE_BLOCK_MASK		GENMASK(4, 0)
 
-/* Bits definitions for SC27XX_EFUSE_MODE_CTRL register */
+ 
 #define SC27XX_EFUSE_PG_START		BIT(0)
 #define SC27XX_EFUSE_RD_START		BIT(1)
 #define SC27XX_EFUSE_CLR_RDDONE		BIT(2)
 
-/* Bits definitions for SC27XX_EFUSE_STATUS register */
+ 
 #define SC27XX_EFUSE_PGM_BUSY		BIT(0)
 #define SC27XX_EFUSE_READ_BUSY		BIT(1)
 #define SC27XX_EFUSE_STANDBY		BIT(2)
 #define SC27XX_EFUSE_GLOBAL_PROT	BIT(3)
 #define SC27XX_EFUSE_RD_DONE		BIT(4)
 
-/* Block number and block width (bytes) definitions */
+ 
 #define SC27XX_EFUSE_BLOCK_MAX		32
 #define SC27XX_EFUSE_BLOCK_WIDTH	2
 
-/* Timeout (ms) for the trylock of hardware spinlocks */
+ 
 #define SC27XX_EFUSE_HWLOCK_TIMEOUT	5000
 
-/* Timeout (us) of polling the status */
+ 
 #define SC27XX_EFUSE_POLL_TIMEOUT	3000000
 #define SC27XX_EFUSE_POLL_DELAY_US	10000
 
-/*
- * Since different PMICs of SC27xx series can have different
- * address , we should save address in the device data structure.
- */
+ 
 struct sc27xx_efuse_variant_data {
 	u32 module_en;
 };
@@ -75,11 +72,7 @@ static const struct sc27xx_efuse_variant_data sc2730_edata = {
 	.module_en = SC2730_MODULE_EN,
 };
 
-/*
- * On Spreadtrum platform, we have multi-subsystems will access the unique
- * efuse controller, so we need one hardware spinlock to synchronize between
- * the multiple subsystems.
- */
+ 
 static int sc27xx_efuse_lock(struct sc27xx_efuse *efuse)
 {
 	int ret;
@@ -136,28 +129,25 @@ static int sc27xx_efuse_read(void *context, u32 offset, void *val, size_t bytes)
 	if (ret)
 		return ret;
 
-	/* Enable the efuse controller. */
+	 
 	ret = regmap_update_bits(efuse->regmap, efuse->var_data->module_en,
 				 SC27XX_EFUSE_EN, SC27XX_EFUSE_EN);
 	if (ret)
 		goto unlock_efuse;
 
-	/*
-	 * Before reading, we should ensure the efuse controller is in
-	 * standby state.
-	 */
+	 
 	ret = sc27xx_efuse_poll_status(efuse, SC27XX_EFUSE_STANDBY);
 	if (ret)
 		goto disable_efuse;
 
-	/* Set the block address to be read. */
+	 
 	ret = regmap_write(efuse->regmap,
 			   efuse->base + SC27XX_EFUSE_BLOCK_INDEX,
 			   blk_index & SC27XX_EFUSE_BLOCK_MASK);
 	if (ret)
 		goto disable_efuse;
 
-	/* Start reading process from efuse memory. */
+	 
 	ret = regmap_update_bits(efuse->regmap,
 				 efuse->base + SC27XX_EFUSE_MODE_CTRL,
 				 SC27XX_EFUSE_RD_START,
@@ -165,28 +155,25 @@ static int sc27xx_efuse_read(void *context, u32 offset, void *val, size_t bytes)
 	if (ret)
 		goto disable_efuse;
 
-	/*
-	 * Polling the read done status to make sure the reading process
-	 * is completed, that means the data can be read out now.
-	 */
+	 
 	ret = sc27xx_efuse_poll_status(efuse, SC27XX_EFUSE_RD_DONE);
 	if (ret)
 		goto disable_efuse;
 
-	/* Read data from efuse memory. */
+	 
 	ret = regmap_read(efuse->regmap, efuse->base + SC27XX_EFUSE_DATA_RD,
 			  &buf);
 	if (ret)
 		goto disable_efuse;
 
-	/* Clear the read done flag. */
+	 
 	ret = regmap_update_bits(efuse->regmap,
 				 efuse->base + SC27XX_EFUSE_MODE_CTRL,
 				 SC27XX_EFUSE_CLR_RDDONE,
 				 SC27XX_EFUSE_CLR_RDDONE);
 
 disable_efuse:
-	/* Disable the efuse controller after reading. */
+	 
 	regmap_update_bits(efuse->regmap, efuse->var_data->module_en, SC27XX_EFUSE_EN, 0);
 unlock_efuse:
 	sc27xx_efuse_unlock(efuse);

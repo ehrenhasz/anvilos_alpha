@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
-// Copyright (c) 2017-2022 Linaro Limited.
+
+
+
 
 #include <linux/clk.h>
 #include <linux/completion.h>
@@ -71,7 +71,7 @@
 #define NUM_MASTERS	2
 #define NUM_QUEUES	2
 
-/* Max number of resources + 1 for a NULL terminator */
+ 
 #define CCI_RES_MAX	6
 
 #define CCI_I2C_SET_PARAM	1
@@ -93,16 +93,16 @@ enum cci_i2c_queue_t {
 };
 
 struct hw_params {
-	u16 thigh; /* HIGH period of the SCL clock in clock ticks */
-	u16 tlow; /* LOW period of the SCL clock */
-	u16 tsu_sto; /* set-up time for STOP condition */
-	u16 tsu_sta; /* set-up time for a repeated START condition */
-	u16 thd_dat; /* data hold time */
-	u16 thd_sta; /* hold time (repeated) START condition */
-	u16 tbuf; /* bus free time between a STOP and START condition */
+	u16 thigh;  
+	u16 tlow;  
+	u16 tsu_sto;  
+	u16 tsu_sta;  
+	u16 thd_dat;  
+	u16 thd_sta;  
+	u16 tbuf;  
 	u8 scl_stretch_en;
 	u16 trdhld;
-	u16 tsp; /* pulse width of spikes suppressed by the input filter */
+	u16 tsp;  
 };
 
 struct cci;
@@ -231,10 +231,7 @@ static int cci_halt(struct cci *cci, u8 master_num)
 
 static int cci_reset(struct cci *cci)
 {
-	/*
-	 * we reset the whole controller, here and for implicity use
-	 * master[0].xxx for waiting on it.
-	 */
+	 
 	reinit_completion(&cci->master[0].irq_complete);
 	writel(CCI_RESET_CMD_MASK, cci->base + CCI_RESET_CMD);
 
@@ -340,10 +337,7 @@ static int cci_i2c_read(struct cci *cci, u16 master,
 	int i, index = 0, ret;
 	bool first = true;
 
-	/*
-	 * Call validate queue to make sure queue is empty before starting.
-	 * This is to avoid overflow / underflow of queue.
-	 */
+	 
 	ret = cci_validate_queue(cci, master, queue);
 	if (ret < 0)
 		return ret;
@@ -371,10 +365,7 @@ static int cci_i2c_read(struct cci *cci, u16 master,
 
 		for (i = 0; i < 4 && index < len; i++) {
 			if (first) {
-				/* The LS byte of this register represents the
-				 * first byte read from the slave during a read
-				 * access.
-				 */
+				 
 				first = false;
 				continue;
 			}
@@ -393,10 +384,7 @@ static int cci_i2c_write(struct cci *cci, u16 master,
 	int i = 0, j, ret;
 	u32 val;
 
-	/*
-	 * Call validate queue to make sure queue is empty before starting.
-	 * This is to avoid overflow / underflow of queue.
-	 */
+	 
 	ret = cci_validate_queue(cci, master, queue);
 	if (ret < 0)
 		return ret;
@@ -579,13 +567,13 @@ static int cci_probe(struct platform_device *pdev)
 		init_completion(&master->irq_complete);
 	}
 
-	/* Memory */
+	 
 
 	cci->base = devm_platform_get_and_ioremap_resource(pdev, 0, &r);
 	if (IS_ERR(cci->base))
 		return PTR_ERR(cci->base);
 
-	/* Clocks */
+	 
 
 	ret = devm_clk_bulk_get_all(dev, &cci->clocks);
 	if (ret < 0)
@@ -594,7 +582,7 @@ static int cci_probe(struct platform_device *pdev)
 		return dev_err_probe(dev, -EINVAL, "not enough clocks in DT\n");
 	cci->nclocks = ret;
 
-	/* Retrieve CCI clock rate */
+	 
 	for (i = 0; i < cci->nclocks; i++) {
 		if (!strcmp(cci->clocks[i].id, "cci")) {
 			cci_clk_rate = clk_get_rate(cci->clocks[i].clk);
@@ -603,9 +591,7 @@ static int cci_probe(struct platform_device *pdev)
 	}
 
 	if (cci_clk_rate != cci->data->cci_clk_rate) {
-		/* cci clock set by the bootloader or via assigned clock rate
-		 * in DT.
-		 */
+		 
 		dev_warn(dev, "Found %lu cci clk rate while %lu was expected\n",
 			 cci_clk_rate, cci->data->cci_clk_rate);
 	}
@@ -614,7 +600,7 @@ static int cci_probe(struct platform_device *pdev)
 	if (ret < 0)
 		return ret;
 
-	/* Interrupt */
+	 
 
 	ret = platform_get_irq(pdev, 0);
 	if (ret < 0)
@@ -812,10 +798,7 @@ static const struct of_device_id cci_dt_match[] = {
 	{ .compatible = "qcom,msm8996-cci", .data = &cci_v2_data},
 
 
-	/*
-	 * Legacy compatibles kept for backwards compatibility.
-	 * Do not add any new ones unless they introduce a new config
-	 */
+	 
 	{ .compatible = "qcom,msm8916-cci", .data = &cci_v1_data},
 	{ .compatible = "qcom,sdm845-cci", .data = &cci_v2_data},
 	{ .compatible = "qcom,sm8250-cci", .data = &cci_v2_data},

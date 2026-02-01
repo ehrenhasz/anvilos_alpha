@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * fs/kernfs/symlink.c - kernfs symlink implementation
- *
- * Copyright (c) 2001-3 Patrick Mochel
- * Copyright (c) 2007 SUSE Linux Products GmbH
- * Copyright (c) 2007, 2013 Tejun Heo <tj@kernel.org>
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/gfp.h>
@@ -13,15 +7,7 @@
 
 #include "kernfs-internal.h"
 
-/**
- * kernfs_create_link - create a symlink
- * @parent: directory to create the symlink in
- * @name: name of the symlink
- * @target: target node for the symlink to point to
- *
- * Return: the created node on success, ERR_PTR() value on error.
- * Ownership of the link matches ownership of the target.
- */
+ 
 struct kernfs_node *kernfs_create_link(struct kernfs_node *parent,
 				       const char *name,
 				       struct kernfs_node *target)
@@ -43,7 +29,7 @@ struct kernfs_node *kernfs_create_link(struct kernfs_node *parent,
 	if (kernfs_ns_enabled(parent))
 		kn->ns = target->ns;
 	kn->symlink.target_kn = target;
-	kernfs_get(target);	/* ref owned by symlink */
+	kernfs_get(target);	 
 
 	error = kernfs_add_one(kn);
 	if (!error)
@@ -60,7 +46,7 @@ static int kernfs_get_target_path(struct kernfs_node *parent,
 	char *s = path;
 	int len = 0;
 
-	/* go up to the root, stop at the base */
+	 
 	base = parent;
 	while (base->parent) {
 		kn = target->parent;
@@ -78,21 +64,21 @@ static int kernfs_get_target_path(struct kernfs_node *parent,
 		base = base->parent;
 	}
 
-	/* determine end of target string for reverse fillup */
+	 
 	kn = target;
 	while (kn->parent && kn != base) {
 		len += strlen(kn->name) + 1;
 		kn = kn->parent;
 	}
 
-	/* check limits */
+	 
 	if (len < 2)
 		return -EINVAL;
 	len--;
 	if ((s - path) + len >= PATH_MAX)
 		return -ENAMETOOLONG;
 
-	/* reverse fillup of target string from target to base */
+	 
 	kn = target;
 	while (kn->parent && kn != base) {
 		int slen = strlen(kn->name);

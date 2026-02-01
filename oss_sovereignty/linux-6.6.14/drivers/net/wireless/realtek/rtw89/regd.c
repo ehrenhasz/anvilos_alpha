@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2019-2020  Realtek Corporation
- */
+
+ 
 
 #include "acpi.h"
 #include "debug.h"
@@ -412,7 +411,7 @@ int rtw89_regd_init(struct rtw89_dev *rtwdev,
 	chip_regd = rtw89_regd_find_reg_by_name(rtwdev->efuse.country_code);
 	if (!rtw89_regd_is_ww(chip_regd)) {
 		rtwdev->regulatory.regd = chip_regd;
-		/* Ignore country ie if there is a country domain programmed in chip */
+		 
 		wiphy->regulatory_flags |= REGULATORY_COUNTRY_IE_IGNORE;
 		wiphy->regulatory_flags |= REGULATORY_STRICT_REG;
 
@@ -435,10 +434,7 @@ static void rtw89_regd_notifier_apply(struct rtw89_dev *rtwdev,
 				      struct regulatory_request *request)
 {
 	rtwdev->regulatory.regd = rtw89_regd_find_reg_by_name(request->alpha2);
-	/* This notification might be set from the system of distros,
-	 * and it does not expect the regulatory will be modified by
-	 * connecting to an AP (i.e. country ie).
-	 */
+	 
 	if (request->initiator == NL80211_REGDOM_SET_BY_USER &&
 	    !rtw89_regd_is_ww(rtwdev->regulatory.regd))
 		wiphy->regulatory_flags |= REGULATORY_COUNTRY_IE_IGNORE;

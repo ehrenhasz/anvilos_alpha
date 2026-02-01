@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// uda1334.c  --  UDA1334 ALSA SoC Audio driver
-//
-// Based on WM8523 ALSA SoC Audio driver written by Mark Brown
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -19,7 +19,7 @@
 
 #define UDA1334_NUM_RATES 6
 
-/* codec private data */
+ 
 struct uda1334_priv {
 	struct gpio_desc *mute;
 	struct gpio_desc *deemph;
@@ -93,10 +93,7 @@ static int uda1334_startup(struct snd_pcm_substream *substream,
 	struct snd_soc_component *component = dai->component;
 	struct uda1334_priv *uda1334 = snd_soc_component_get_drvdata(component);
 
-	/*
-	 * The set of sample rates that can be supported depends on the
-	 * MCLK supplied to the CODEC - enforce this.
-	 */
+	 
 	if (!uda1334->sysclk) {
 		dev_err(component->dev,
 			"No MCLK configured, call set_sysclk() on init\n");
@@ -134,11 +131,7 @@ static int uda1334_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 	uda1334->rate_constraint.count = 0;
 	for (i = 0; i < ARRAY_SIZE(lrclk_ratios); i++) {
 		val = freq / lrclk_ratios[i].ratio;
-		/*
-		 * Check that it's a standard rate since core can't
-		 * cope with others and having the odd rates confuses
-		 * constraint matching.
-		 */
+		 
 
 		switch (val) {
 		case 8000:
@@ -159,7 +152,7 @@ static int uda1334_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 		}
 	}
 
-	/* Need at least one supported rate... */
+	 
 	if (uda1334->rate_constraint.count == 0)
 		return -EINVAL;
 
@@ -240,7 +233,7 @@ static const struct snd_soc_component_driver soc_component_dev_uda1334 = {
 
 static const struct of_device_id uda1334_of_match[] = {
 	{ .compatible = "nxp,uda1334" },
-	{ /* sentinel*/ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, uda1334_of_match);
 

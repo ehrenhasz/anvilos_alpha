@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Freescale SPI controller driver.
- *
- * Maintainer: Kumar Gala
- *
- * Copyright (C) 2006 Polycom, Inc.
- * Copyright 2010 Freescale Semiconductor, Inc.
- *
- * CPM SPI and QE buffer descriptors mode support:
- * Copyright (c) 2009  MontaVista Software, Inc.
- * Author: Anton Vorontsov <avorontsov@ru.mvista.com>
- *
- * GRLIB support:
- * Copyright (c) 2012 Aeroflex Gaisler AB.
- * Author: Andreas Larsson <andreas@gaisler.com>
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
 #include <linux/fsl_devices.h>
@@ -38,7 +23,7 @@
 #include <sysdev/fsl_soc.h>
 #endif
 
-/* Specific to the MPC8306/MPC8309 */
+ 
 #define IMMR_SPI_CS_OFFSET 0x14c
 #define SPI_BOOT_SEL_BIT   0x80000000
 
@@ -97,13 +82,13 @@ static void fsl_spi_change_mode(struct spi_device *spi)
 	if (cs->hw_mode == mpc8xxx_spi_read_reg(mode))
 		return;
 
-	/* Turn off IRQs locally to minimize time that SPI is disabled. */
+	 
 	local_irq_save(flags);
 
-	/* Turn off SPI unit prior changing mode */
+	 
 	mpc8xxx_spi_write_reg(mode, cs->hw_mode & ~SPMODE_ENABLE);
 
-	/* When in CPM mode, we need to reinit tx and rx. */
+	 
 	if (mspi->flags & SPI_CPM_MODE) {
 		fsl_spi_cpm_reinit_txrx(mspi);
 	}
@@ -137,10 +122,10 @@ static void fsl_spi_grlib_set_shifts(u32 *rx_shift, u32 *tx_shift,
 	*tx_shift = 0;
 	if (bits_per_word <= 16) {
 		if (msb_first) {
-			*rx_shift = 16; /* LSB in bit 16 */
-			*tx_shift = 32 - bits_per_word; /* MSB in bit 31 */
+			*rx_shift = 16;  
+			*tx_shift = 32 - bits_per_word;  
 		} else {
-			*rx_shift = 16 - bits_per_word; /* MSB in bit 15 */
+			*rx_shift = 16 - bits_per_word;  
 		}
 	}
 }
@@ -190,7 +175,7 @@ static int fsl_spi_setup_transfer(struct spi_device *spi,
 		hz = t->speed_hz;
 	}
 
-	/* spi_transfer level calls that work per-word */
+	 
 	if (!bits_per_word)
 		bits_per_word = spi->bits_per_word;
 
@@ -205,7 +190,7 @@ static int fsl_spi_setup_transfer(struct spi_device *spi,
 	else
 		bits_per_word = bits_per_word - 1;
 
-	/* mask out bits we are going to set */
+	 
 	cs->hw_mode &= ~(SPMODE_LEN(0xF) | SPMODE_DIV16
 				  | SPMODE_PM(0xF));
 
@@ -239,10 +224,10 @@ static int fsl_spi_cpu_bufs(struct mpc8xxx_spi *mspi,
 
 	mspi->count = len;
 
-	/* enable rx ints */
+	 
 	mpc8xxx_spi_write_reg(&reg_base->mask, SPIM_NE);
 
-	/* transmit word */
+	 
 	word = mspi->get_tx(mspi);
 	mpc8xxx_spi_write_reg(&reg_base->transmit, word);
 
@@ -282,7 +267,7 @@ static int fsl_spi_bufs(struct spi_device *spi, struct spi_transfer *t,
 
 	wait_for_completion(&mpc8xxx_spi->done);
 
-	/* disable rx ints */
+	 
 	mpc8xxx_spi_write_reg(&reg_base->mask, 0);
 
 	if (mpc8xxx_spi->flags & SPI_CPM_MODE)
@@ -301,14 +286,7 @@ static int fsl_spi_prepare_message(struct spi_controller *ctlr,
 	first = list_first_entry(&m->transfers, struct spi_transfer,
 				 transfer_list);
 
-	/*
-	 * In CPU mode, optimize large byte transfers to use larger
-	 * bits_per_word values to reduce number of interrupts taken.
-	 *
-	 * Some glitches can appear on the SPI clock when the mode changes.
-	 * Check that there is no speed change during the transfer and set it up
-	 * now to change the mode without having a chip-select asserted.
-	 */
+	 
 	list_for_each_entry(t, &m->transfers, transfer_list) {
 		if (t->speed_hz != first->speed_hz) {
 			dev_err(&m->spi->dev,
@@ -323,18 +301,11 @@ static int fsl_spi_prepare_message(struct spi_controller *ctlr,
 			else if ((t->len & 1) == 0)
 				t->bits_per_word = 16;
 		} else {
-			/*
-			 * CPM/QE uses Little Endian for words > 8
-			 * so transform 16 and 32 bits words into 8 bits
-			 * Unfortnatly that doesn't work for LSB so
-			 * reject these for now
-			 * Note: 32 bits word, LSB works iff
-			 * tfcr/rfcr is set to CPMFCR_GBL
-			 */
+			 
 			if (m->spi->mode & SPI_LSB_FIRST && t->bits_per_word > 8)
 				return -EINVAL;
 			if (t->bits_per_word == 16 || t->bits_per_word == 32)
-				t->bits_per_word = 8; /* pretend its 8 bits */
+				t->bits_per_word = 8;  
 			if (t->bits_per_word == 8 && t->len >= 256 &&
 			    (mpc8xxx_spi->flags & SPI_CPM1))
 				t->bits_per_word = 16;
@@ -389,9 +360,9 @@ static int fsl_spi_setup(struct spi_device *spi)
 
 	reg_base = mpc8xxx_spi->reg_base;
 
-	hw_mode = cs->hw_mode; /* Save original settings */
+	hw_mode = cs->hw_mode;  
 	cs->hw_mode = mpc8xxx_spi_read_reg(&reg_base->mode);
-	/* mask out bits we are going to set */
+	 
 	cs->hw_mode &= ~(SPMODE_CP_BEGIN_EDGECLK | SPMODE_CI_INACTIVEHIGH
 			 | SPMODE_REV | SPMODE_LOOP);
 
@@ -406,7 +377,7 @@ static int fsl_spi_setup(struct spi_device *spi)
 
 	retval = fsl_spi_setup_transfer(spi, NULL);
 	if (retval < 0) {
-		cs->hw_mode = hw_mode; /* Restore settings */
+		cs->hw_mode = hw_mode;  
 		if (initial_setup)
 			kfree(cs);
 		return retval;
@@ -427,7 +398,7 @@ static void fsl_spi_cpu_irq(struct mpc8xxx_spi *mspi, u32 events)
 {
 	struct fsl_spi_reg __iomem *reg_base = mspi->reg_base;
 
-	/* We need handle RX first */
+	 
 	if (events & SPIE_NE) {
 		u32 rx_data = mpc8xxx_spi_read_reg(&reg_base->receive);
 
@@ -436,13 +407,13 @@ static void fsl_spi_cpu_irq(struct mpc8xxx_spi *mspi, u32 events)
 	}
 
 	if ((events & SPIE_NF) == 0)
-		/* spin until TX is done */
+		 
 		while (((events =
 			mpc8xxx_spi_read_reg(&reg_base->event)) &
 						SPIE_NF) == 0)
 			cpu_relax();
 
-	/* Clear the events */
+	 
 	mpc8xxx_spi_write_reg(&reg_base->event, events);
 
 	mspi->count -= 1;
@@ -462,7 +433,7 @@ static irqreturn_t fsl_spi_irq(s32 irq, void *context_data)
 	u32 events;
 	struct fsl_spi_reg __iomem *reg_base = mspi->reg_base;
 
-	/* Get interrupt events(tx/rx) */
+	 
 	events = mpc8xxx_spi_read_reg(&reg_base->event);
 	if (events)
 		ret = IRQ_HANDLED;
@@ -585,11 +556,11 @@ static struct spi_controller *fsl_spi_probe(struct device *dev,
 		mpc8xxx_spi->set_shifts = fsl_spi_qe_cpu_set_shifts;
 
 	if (mpc8xxx_spi->set_shifts)
-		/* 8 bits per word and MSB first */
+		 
 		mpc8xxx_spi->set_shifts(&mpc8xxx_spi->rx_shift,
 					&mpc8xxx_spi->tx_shift, 8, 1);
 
-	/* Register for SPI Interrupt */
+	 
 	ret = devm_request_irq(dev, mpc8xxx_spi->irq, fsl_spi_irq,
 			       0, "fsl_spi", mpc8xxx_spi);
 
@@ -598,13 +569,13 @@ static struct spi_controller *fsl_spi_probe(struct device *dev,
 
 	reg_base = mpc8xxx_spi->reg_base;
 
-	/* SPI controller initializations */
+	 
 	mpc8xxx_spi_write_reg(&reg_base->mode, 0);
 	mpc8xxx_spi_write_reg(&reg_base->mask, 0);
 	mpc8xxx_spi_write_reg(&reg_base->command, 0);
 	mpc8xxx_spi_write_reg(&reg_base->event, 0xffffffff);
 
-	/* Enable SPI interface */
+	 
 	regval = pdata->initial_spmode | SPMODE_INIT_VAL | SPMODE_ENABLE;
 	if (mpc8xxx_spi->max_bits_per_word < 8) {
 		regval &= ~SPMODE_LEN(0xF);
@@ -663,13 +634,7 @@ static int of_fsl_spi_probe(struct platform_device *ofdev)
 				return -ENOMEM;
 		}
 #endif
-		/*
-		 * Handle the case where we have one hardwired (always selected)
-		 * device on the first "chipselect". Else we let the core code
-		 * handle any GPIOs or native chip selects and assign the
-		 * appropriate callback for dealing with the CS lines. This isn't
-		 * supported on the GRLIB variant.
-		 */
+		 
 		ret = gpiod_count(dev, "cs");
 		if (ret < 0)
 			ret = 0;
@@ -719,13 +684,7 @@ static struct platform_driver of_fsl_spi_driver = {
 };
 
 #ifdef CONFIG_MPC832x_RDB
-/*
- * XXX XXX XXX
- * This is "legacy" platform driver, was used by the MPC8323E-RDB boards
- * only. The driver should go away soon, since newer MPC8323E-RDB's device
- * tree can work with OpenFirmware driver. But for now we support old trees
- * as well.
- */
+ 
 static int plat_mpc8xxx_spi_probe(struct platform_device *pdev)
 {
 	struct resource *mem;
@@ -780,7 +739,7 @@ static void __exit legacy_driver_unregister(void)
 #else
 static void __init legacy_driver_register(void) {}
 static void __exit legacy_driver_unregister(void) {}
-#endif /* CONFIG_MPC832x_RDB */
+#endif  
 
 static int __init fsl_spi_init(void)
 {

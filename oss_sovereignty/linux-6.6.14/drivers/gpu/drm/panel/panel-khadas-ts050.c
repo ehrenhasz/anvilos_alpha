@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -35,11 +32,11 @@ struct khadas_ts050_panel_cmd {
 	u8 data;
 };
 
-/* Only the CMD1 User Command set is documented */
+ 
 static const struct khadas_ts050_panel_cmd init_code[] = {
-	/* Select Unknown CMD Page (Undocumented) */
+	 
 	{0xff, 0xee},
-	/* Reload CMD1: Don't reload default value to register */
+	 
 	{0xfb, 0x01},
 	{0x1f, 0x45},
 	{0x24, 0x4f},
@@ -52,9 +49,9 @@ static const struct khadas_ts050_panel_cmd init_code[] = {
 	{0xff, 0x00},
 	{0xfb, 0x01},
 	{0x35, 0x01},
-	/* Select CMD2 Page0 (Undocumented) */
+	 
 	{0xff, 0x01},
-	/* Reload CMD1: Don't reload default value to register */
+	 
 	{0xfb, 0x01},
 	{0x00, 0x01},
 	{0x01, 0x55},
@@ -98,9 +95,9 @@ static const struct khadas_ts050_panel_cmd init_code[] = {
 	{0x5e, 0x02},
 	{0x5f, 0x02},
 	{0x72, 0x31},
-	/* Select CMD2 Page4 (Undocumented) */
+	 
 	{0xff, 0x05},
-	/* Reload CMD1: Don't reload default value to register */
+	 
 	{0xfb, 0x01},
 	{0x00, 0x01},
 	{0x01, 0x0b},
@@ -186,9 +183,9 @@ static const struct khadas_ts050_panel_cmd init_code[] = {
 	{0x9b, 0x0f},
 	{0xea, 0xff},
 	{0xec, 0x00},
-	/* Select CMD2 Page0 (Undocumented) */
+	 
 	{0xff, 0x01},
-	/* Reload CMD1: Don't reload default value to register */
+	 
 	{0xfb, 0x01},
 	{0x75, 0x00},
 	{0x76, 0xdf},
@@ -322,9 +319,9 @@ static const struct khadas_ts050_panel_cmd init_code[] = {
 	{0xf8, 0xe1},
 	{0xf9, 0x00},
 	{0xfa, 0xea},
-	/* Select CMD2 Page2 (Undocumented) */
+	 
 	{0xff, 0x02},
-	/* Reload CMD1: Don't reload default value to register */
+	 
 	{0xfb, 0x01},
 	{0x00, 0x00},
 	{0x01, 0xf4},
@@ -554,22 +551,22 @@ static const struct khadas_ts050_panel_cmd init_code[] = {
 	{0xe8, 0x94},
 	{0xe9, 0x03},
 	{0xea, 0xfa},
-	/* Select CMD2 Page0 (Undocumented) */
+	 
 	{0xff, 0x01},
-	/* Reload CMD1: Don't reload default value to register */
+	 
 	{0xfb, 0x01},
-	/* Select CMD2 Page1 (Undocumented) */
+	 
 	{0xff, 0x02},
-	/* Reload CMD1: Don't reload default value to register */
+	 
 	{0xfb, 0x01},
-	/* Select CMD2 Page3 (Undocumented) */
+	 
 	{0xff, 0x04},
-	/* Reload CMD1: Don't reload default value to register */
+	 
 	{0xfb, 0x01},
-	/* Select CMD1 */
+	 
 	{0xff, 0x00},
-	{0xd3, 0x22}, /* RGBMIPICTRL: VSYNC back porch = 34 */
-	{0xd4, 0x04}, /* RGBMIPICTRL: VSYNC front porch = 4 */
+	{0xd3, 0x22},  
+	{0xd4, 0x04},  
 };
 
 static inline
@@ -603,10 +600,10 @@ static int khadas_ts050_panel_prepare(struct drm_panel *panel)
 
 	gpiod_set_value_cansleep(khadas_ts050->reset_gpio, 0);
 
-	/* Select CMD2 page 4 (Undocumented) */
+	 
 	mipi_dsi_dcs_write(khadas_ts050->link, 0xff, (u8[]){ 0x05 }, 1);
 
-	/* Reload CMD1: Don't reload default value to register */
+	 
 	mipi_dsi_dcs_write(khadas_ts050->link, 0xfb, (u8[]){ 0x01 }, 1);
 
 	mipi_dsi_dcs_write(khadas_ts050->link, 0xc5, (u8[]){ 0x01 }, 1);
@@ -631,7 +628,7 @@ static int khadas_ts050_panel_prepare(struct drm_panel *panel)
 
 	msleep(120);
 
-	/* Select CMD1 */
+	 
 	mipi_dsi_dcs_write(khadas_ts050->link, 0xff, (u8[]){ 0x00 }, 1);
 
 	err = mipi_dsi_dcs_set_tear_on(khadas_ts050->link,
@@ -763,7 +760,7 @@ static const struct drm_panel_funcs khadas_ts050_panel_funcs = {
 
 static const struct of_device_id khadas_ts050_of_match[] = {
 	{ .compatible = "khadas,ts050", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, khadas_ts050_of_match);
 

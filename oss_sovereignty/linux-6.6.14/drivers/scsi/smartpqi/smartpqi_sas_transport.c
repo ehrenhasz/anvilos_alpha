@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *    driver for Microchip PQI-based storage controllers
- *    Copyright (c) 2019-2023 Microchip Technology Inc. and its subsidiaries
- *    Copyright (c) 2016-2018 Microsemi Corporation
- *    Copyright (c) 2016 PMC-Sierra, Inc.
- *
- *    Questions/Comments/Bugfixes to storagedev@microchip.com
- *
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/bsg-lib.h>

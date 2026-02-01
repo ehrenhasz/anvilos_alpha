@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * OCB mode implementation
- *
- * Copyright: (c) 2014 Czech Technical University in Prague
- *            (c) 2014 Volkswagen Group Research
- * Copyright (C) 2022 Intel Corporation
- * Author:    Rostislav Lisovy <rostislav.lisovy@fel.cvut.cz>
- * Funded by: Volkswagen Group Research
- */
+
+ 
 
 #include <linux/ieee80211.h>
 #include <net/cfg80211.h>

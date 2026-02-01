@@ -1,6 +1,4 @@
-/*
- * Serverworks AGPGART routines.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -21,7 +19,7 @@
 
 #define SVWRKS_SIZE_MASK	0xfe000000
 
-/* Memory mapped registers */
+ 
 #define SVWRKS_GART_CACHE	0x02
 #define SVWRKS_GATTBASE		0x04
 #define SVWRKS_TLBFLUSH		0x10
@@ -35,7 +33,7 @@ struct serverworks_page_map {
 };
 
 static struct _serverworks_private {
-	struct pci_dev *svrwrks_dev;	/* device one */
+	struct pci_dev *svrwrks_dev;	 
 	volatile u8 __iomem *registers;
 	struct serverworks_page_map **gatt_pages;
 	int num_tables;
@@ -59,7 +57,7 @@ static int serverworks_create_page_map(struct serverworks_page_map *page_map)
 
 	for (i = 0; i < PAGE_SIZE / sizeof(unsigned long); i++)
 		writel(agp_bridge->scratch_page, page_map->remapped+i);
-		/* Red Pen: Everyone else does pci posting flush here */
+		 
 
 	return 0;
 }
@@ -153,7 +151,7 @@ static int serverworks_create_gatt_table(struct agp_bridge_data *bridge)
 		serverworks_free_page_map(&page_dir);
 		return retval;
 	}
-	/* Create a fake scratch directory */
+	 
 	for (i = 0; i < 1024; i++) {
 		writel(agp_bridge->scratch_page, serverworks_private.scratch_dir.remapped+i);
 		writel(virt_to_phys(serverworks_private.scratch_dir.real) | 1, page_dir.remapped+i);
@@ -170,15 +168,12 @@ static int serverworks_create_gatt_table(struct agp_bridge_data *bridge)
 	agp_bridge->gatt_table = (u32 __iomem *)page_dir.remapped;
 	agp_bridge->gatt_bus_addr = virt_to_phys(page_dir.real);
 
-	/* Get the address for the gart region.
-	 * This is a bus address even on the alpha, b/c its
-	 * used to program the agp master not the cpu
-	 */
+	 
 
 	pci_read_config_dword(agp_bridge->dev,serverworks_private.gart_addr_ofs,&temp);
 	agp_bridge->gart_bus_addr = (temp & PCI_BASE_ADDRESS_MEM_MASK);
 
-	/* Calculate the agp offset */
+	 
 	for (i = 0; i < value->num_entries / 1024; i++)
 		writel(virt_to_phys(serverworks_private.gatt_pages[i]->real)|1, page_dir.remapped+i);
 
@@ -226,13 +221,7 @@ static int serverworks_fetch_size(void)
 	return 0;
 }
 
-/*
- * This routine could be implemented by taking the addresses
- * written to the GATT, and flushing them individually.  However
- * currently it just flushes the whole table.  Which is probably
- * more efficient, since agp_memory blocks can be a large number of
- * entries.
- */
+ 
 static void serverworks_tlbflush(struct agp_memory *temp)
 {
 	unsigned long timeout;
@@ -266,7 +255,7 @@ static int serverworks_configure(void)
 	u8 enable_reg;
 	u16 cap_reg;
 
-	/* Get the memory mapped registers */
+	 
 	pci_read_config_dword(agp_bridge->dev, serverworks_private.mm_addr_ofs, &temp);
 	temp = (temp & PCI_BASE_ADDRESS_MEM_MASK);
 	serverworks_private.registers = (volatile u8 __iomem *) ioremap(temp, 4096);
@@ -276,10 +265,10 @@ static int serverworks_configure(void)
 	}
 
 	writeb(0xA, serverworks_private.registers+SVWRKS_GART_CACHE);
-	readb(serverworks_private.registers+SVWRKS_GART_CACHE);	/* PCI Posting. */
+	readb(serverworks_private.registers+SVWRKS_GART_CACHE);	 
 
 	writel(agp_bridge->gatt_bus_addr, serverworks_private.registers+SVWRKS_GATTBASE);
-	readl(serverworks_private.registers+SVWRKS_GATTBASE);	/* PCI Posting. */
+	readl(serverworks_private.registers+SVWRKS_GATTBASE);	 
 
 	cap_reg = readw(serverworks_private.registers+SVWRKS_COMMAND);
 	cap_reg &= ~0x0007;
@@ -288,13 +277,13 @@ static int serverworks_configure(void)
 	readw(serverworks_private.registers+SVWRKS_COMMAND);
 
 	pci_read_config_byte(serverworks_private.svrwrks_dev,SVWRKS_AGP_ENABLE, &enable_reg);
-	enable_reg |= 0x1; /* Agp Enable bit */
+	enable_reg |= 0x1;  
 	pci_write_config_byte(serverworks_private.svrwrks_dev,SVWRKS_AGP_ENABLE, enable_reg);
 	serverworks_tlbflush(NULL);
 
 	agp_bridge->capndx = pci_find_capability(serverworks_private.svrwrks_dev, PCI_CAP_ID_AGP);
 
-	/* Fill in the mode register */
+	 
 	pci_read_config_dword(serverworks_private.svrwrks_dev,
 			      agp_bridge->capndx+PCI_AGP_STATUS, &agp_bridge->mode);
 
@@ -405,7 +394,7 @@ static void serverworks_agp_enable(struct agp_bridge_data *bridge, u32 mode)
 
 	command = agp_collect_device_status(bridge, mode, command);
 
-	command &= ~0x10;	/* disable FW */
+	command &= ~0x10;	 
 	command &= ~0x08;
 
 	command |= 0x100;
@@ -470,7 +459,7 @@ static int agp_serverworks_probe(struct pci_dev *pdev,
 		return -ENODEV;
 	}
 
-	/* Everything is on func 1 here so we are hardcoding function one */
+	 
 	bridge_dev = pci_get_domain_bus_and_slot(pci_domain_nr(pdev->bus),
 			(unsigned int)pdev->bus->number,
 			PCI_DEVFN(0, 1));

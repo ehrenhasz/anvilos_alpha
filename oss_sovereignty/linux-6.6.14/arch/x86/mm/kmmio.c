@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Support for MMIO probes.
- * Benefit many code from kprobes
- * (C) 2002 Louis Zhuang <louis.zhuang@intel.com>.
- *     2007 Alexander Eichner
- *     2008 Pekka Paalanen <pq@iki.fi>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -34,16 +29,11 @@
 struct kmmio_fault_page {
 	struct list_head list;
 	struct kmmio_fault_page *release_next;
-	unsigned long addr; /* the requested address */
-	pteval_t old_presence; /* page presence prior to arming */
+	unsigned long addr;  
+	pteval_t old_presence;  
 	bool armed;
 
-	/*
-	 * Number of times this page has been registered as a part
-	 * of a probe. If zero, page is disarmed and this may be freed.
-	 * Used only by writers (RCU) and post_kmmio_handler().
-	 * Protected by kmmio_lock, when linked into kmmio_page_table.
-	 */
+	 
 	int count;
 
 	bool scheduled_for_release;
@@ -62,18 +52,13 @@ struct kmmio_context {
 	int active;
 };
 
-/*
- * The kmmio_lock is taken in int3 context, which is treated as NMI context.
- * This causes lockdep to complain about it bein in both NMI and normal
- * context. Hide it from lockdep, as it should not have any other locks
- * taken under it, and this is only enabled for debugging mmio anyway.
- */
+ 
 static arch_spinlock_t kmmio_lock = __ARCH_SPIN_LOCK_UNLOCKED;
 
-/* Protected by kmmio_lock */
+ 
 unsigned int kmmio_count;
 
-/* Read-protected by RCU, write-protected by kmmio_lock. */
+ 
 static struct list_head kmmio_page_table[KMMIO_PAGE_TABLE_SIZE];
 static LIST_HEAD(kmmio_probes);
 
@@ -89,18 +74,11 @@ static struct list_head *kmmio_page_list(unsigned long addr)
 	return &kmmio_page_table[hash_long(addr, KMMIO_PAGE_HASH_BITS)];
 }
 
-/* Accessed per-cpu */
+ 
 static DEFINE_PER_CPU(struct kmmio_context, kmmio_ctx);
 
-/*
- * this is basically a dynamic stabbing problem:
- * Could use the existing prio tree code or
- * Possible better implementations:
- * The Interval Skip List: A Data Structure for Finding All Intervals That
- * Overlap a Point (might be simple)
- * Space Efficient Dynamic Stabbing with Fast Queries - Mikkel Thorup
- */
-/* Get the kmmio at this addr (if any). You must be holding RCU read lock. */
+ 
+ 
 static struct kmmio_probe *get_kmmio_probe(unsigned long addr)
 {
 	struct kmmio_probe *p;
@@ -111,7 +89,7 @@ static struct kmmio_probe *get_kmmio_probe(unsigned long addr)
 	return NULL;
 }
 
-/* You must be holding RCU read lock. */
+ 
 static struct kmmio_fault_page *get_kmmio_fault_page(unsigned long addr)
 {
 	struct list_head *head;
@@ -138,7 +116,7 @@ static void clear_pmd_presence(pmd_t *pmd, bool clear, pmdval_t *old)
 		*old = v;
 		new_pmd = pmd_mkinvalid(*pmd);
 	} else {
-		/* Presume this has been called with clear==true previously */
+		 
 		new_pmd = __pmd(*old);
 	}
 	set_pmd(pmd, new_pmd);
@@ -149,10 +127,10 @@ static void clear_pte_presence(pte_t *pte, bool clear, pteval_t *old)
 	pteval_t v = pte_val(*pte);
 	if (clear) {
 		*old = v;
-		/* Nothing should care about address */
+		 
 		pte_clear(&init_mm, 0, pte);
 	} else {
-		/* Presume this has been called with clear==true previously */
+		 
 		set_pte_atomic(pte, __pte(*old));
 	}
 }
@@ -183,17 +161,7 @@ static int clear_page_presence(struct kmmio_fault_page *f, bool clear)
 	return 0;
 }
 
-/*
- * Mark the given page as not present. Access to it will trigger a fault.
- *
- * Struct kmmio_fault_page is protected by RCU and kmmio_lock, but the
- * protection is ignored here. RCU read lock is assumed held, so the struct
- * will not disappear unexpectedly. Furthermore, the caller must guarantee,
- * that double arming the same virtual address (page) cannot occur.
- *
- * Double disarming on the other hand is allowed, and may occur when a fault
- * and mmiotrace shutdown happen simultaneously.
- */
+ 
 static int arm_kmmio_fault_page(struct kmmio_fault_page *f)
 {
 	int ret;
@@ -209,7 +177,7 @@ static int arm_kmmio_fault_page(struct kmmio_fault_page *f)
 	return ret;
 }
 
-/** Restore the given page to saved presence state. */
+ 
 static void disarm_kmmio_fault_page(struct kmmio_fault_page *f)
 {
 	int ret = clear_page_presence(f, false);
@@ -218,26 +186,13 @@ static void disarm_kmmio_fault_page(struct kmmio_fault_page *f)
 	f->armed = false;
 }
 
-/*
- * This is being called from do_page_fault().
- *
- * We may be in an interrupt or a critical section. Also prefecthing may
- * trigger a page fault. We may be in the middle of process switch.
- * We cannot take any locks, because we could be executing especially
- * within a kmmio critical section.
- *
- * Local interrupts are disabled, so preemption cannot happen.
- * Do not enable interrupts, do not sleep, and watch out for other CPUs.
- */
-/*
- * Interrupts are disabled on entry as trap3 is an interrupt gate
- * and they remain disabled throughout this function.
- */
+ 
+ 
 int kmmio_handler(struct pt_regs *regs, unsigned long addr)
 {
 	struct kmmio_context *ctx;
 	struct kmmio_fault_page *faultpage;
-	int ret = 0; /* default to fault not handled */
+	int ret = 0;  
 	unsigned long page_base = addr;
 	unsigned int l;
 	pte_t *pte = lookup_address(addr, &l);
@@ -245,34 +200,19 @@ int kmmio_handler(struct pt_regs *regs, unsigned long addr)
 		return -EINVAL;
 	page_base &= page_level_mask(l);
 
-	/*
-	 * Hold the RCU read lock over single stepping to avoid looking
-	 * up the probe and kmmio_fault_page again. The rcu_read_lock_sched()
-	 * also disables preemption and prevents process switch during
-	 * the single stepping. We can only handle one active kmmio trace
-	 * per cpu, so ensure that we finish it before something else
-	 * gets to run.
-	 */
+	 
 	rcu_read_lock_sched_notrace();
 
 	faultpage = get_kmmio_fault_page(page_base);
 	if (!faultpage) {
-		/*
-		 * Either this page fault is not caused by kmmio, or
-		 * another CPU just pulled the kmmio probe from under
-		 * our feet. The latter case should not be possible.
-		 */
+		 
 		goto no_kmmio;
 	}
 
 	ctx = this_cpu_ptr(&kmmio_ctx);
 	if (ctx->active) {
 		if (page_base == ctx->addr) {
-			/*
-			 * A second fault on the same page means some other
-			 * condition needs handling by do_page_fault(), the
-			 * page really not being present is the most common.
-			 */
+			 
 			pr_debug("secondary hit for 0x%08lx CPU %d.\n",
 				 addr, smp_processor_id());
 
@@ -280,11 +220,7 @@ int kmmio_handler(struct pt_regs *regs, unsigned long addr)
 				pr_info("unexpected secondary hit for address 0x%08lx on CPU %d.\n",
 					addr, smp_processor_id());
 		} else {
-			/*
-			 * Prevent overwriting already in-flight context.
-			 * This should not happen, let's hope disarming at
-			 * least prevents a panic.
-			 */
+			 
 			pr_emerg("recursive probe hit on CPU %d, for address 0x%08lx. Ignoring.\n",
 				 smp_processor_id(), addr);
 			pr_emerg("previous hit was at 0x%08lx.\n", ctx->addr);
@@ -302,46 +238,30 @@ int kmmio_handler(struct pt_regs *regs, unsigned long addr)
 	if (ctx->probe && ctx->probe->pre_handler)
 		ctx->probe->pre_handler(ctx->probe, regs, addr);
 
-	/*
-	 * Enable single-stepping and disable interrupts for the faulting
-	 * context. Local interrupts must not get enabled during stepping.
-	 */
+	 
 	regs->flags |= X86_EFLAGS_TF;
 	regs->flags &= ~X86_EFLAGS_IF;
 
-	/* Now we set present bit in PTE and single step. */
+	 
 	disarm_kmmio_fault_page(ctx->fpage);
 
-	/*
-	 * If another cpu accesses the same page while we are stepping,
-	 * the access will not be caught. It will simply succeed and the
-	 * only downside is we lose the event. If this becomes a problem,
-	 * the user should drop to single cpu before tracing.
-	 */
+	 
 
-	return 1; /* fault handled */
+	return 1;  
 
 no_kmmio:
 	rcu_read_unlock_sched_notrace();
 	return ret;
 }
 
-/*
- * Interrupts are disabled on entry as trap1 is an interrupt gate
- * and they remain disabled throughout this function.
- * This must always get called as the pair to kmmio_handler().
- */
+ 
 static int post_kmmio_handler(unsigned long condition, struct pt_regs *regs)
 {
 	int ret = 0;
 	struct kmmio_context *ctx = this_cpu_ptr(&kmmio_ctx);
 
 	if (!ctx->active) {
-		/*
-		 * debug traps without an active context are due to either
-		 * something external causing them (f.e. using a debugger while
-		 * mmio tracing enabled), or erroneous behaviour
-		 */
+		 
 		pr_warn("unexpected debug trap on CPU %d.\n", smp_processor_id());
 		goto out;
 	}
@@ -349,7 +269,7 @@ static int post_kmmio_handler(unsigned long condition, struct pt_regs *regs)
 	if (ctx->probe && ctx->probe->post_handler)
 		ctx->probe->post_handler(ctx->probe, condition, regs);
 
-	/* Prevent racing against release_kmmio_fault_page(). */
+	 
 	arch_spin_lock(&kmmio_lock);
 	if (ctx->fpage->count)
 		arm_kmmio_fault_page(ctx->fpage);
@@ -358,23 +278,19 @@ static int post_kmmio_handler(unsigned long condition, struct pt_regs *regs)
 	regs->flags &= ~X86_EFLAGS_TF;
 	regs->flags |= ctx->saved_flags;
 
-	/* These were acquired in kmmio_handler(). */
+	 
 	ctx->active--;
 	BUG_ON(ctx->active);
 	rcu_read_unlock_sched_notrace();
 
-	/*
-	 * if somebody else is singlestepping across a probe point, flags
-	 * will have TF set, in which case, continue the remaining processing
-	 * of do_debug, as if this is not a probe hit.
-	 */
+	 
 	if (!(regs->flags & X86_EFLAGS_TF))
 		ret = 1;
 out:
 	return ret;
 }
 
-/* You must be holding kmmio_lock. */
+ 
 static int add_kmmio_fault_page(unsigned long addr)
 {
 	struct kmmio_fault_page *f;
@@ -404,7 +320,7 @@ static int add_kmmio_fault_page(unsigned long addr)
 	return 0;
 }
 
-/* You must be holding kmmio_lock. */
+ 
 static void release_kmmio_fault_page(unsigned long addr,
 				struct kmmio_fault_page **release_list)
 {
@@ -426,13 +342,7 @@ static void release_kmmio_fault_page(unsigned long addr,
 	}
 }
 
-/*
- * With page-unaligned ioremaps, one or two armed pages may contain
- * addresses from outside the intended mapping. Events for these addresses
- * are currently silently dropped. The events may result only from programming
- * mistakes by accessing addresses before the beginning or past the end of a
- * mapping.
- */
+ 
 int register_kmmio_probe(struct kmmio_probe *p)
 {
 	unsigned long flags;
@@ -467,11 +377,7 @@ out:
 	arch_spin_unlock(&kmmio_lock);
 	local_irq_restore(flags);
 
-	/*
-	 * XXX: What should I do here?
-	 * Here was a call to global_flush_tlb(), but it does not exist
-	 * anymore. It seems it's not needed after all.
-	 */
+	 
 	return ret;
 }
 EXPORT_SYMBOL(register_kmmio_probe);
@@ -516,23 +422,11 @@ static void remove_kmmio_fault_pages(struct rcu_head *head)
 	arch_spin_unlock(&kmmio_lock);
 	local_irq_restore(flags);
 
-	/* This is the real RCU destroy call. */
+	 
 	call_rcu(&dr->rcu, rcu_free_kmmio_fault_pages);
 }
 
-/*
- * Remove a kmmio probe. You have to synchronize_rcu() before you can be
- * sure that the callbacks will not be called anymore. Only after that
- * you may actually release your struct kmmio_probe.
- *
- * Unregistering a kmmio fault page has three steps:
- * 1. release_kmmio_fault_page()
- *    Disarm the page, wait a grace period to let all faults finish.
- * 2. remove_kmmio_fault_pages()
- *    Remove the pages from kmmio_page_table.
- * 3. rcu_free_kmmio_fault_pages()
- *    Actually free the kmmio_fault_page structs as with RCU.
- */
+ 
 void unregister_kmmio_probe(struct kmmio_probe *p)
 {
 	unsigned long flags;
@@ -569,20 +463,7 @@ void unregister_kmmio_probe(struct kmmio_probe *p)
 	}
 	drelease->release_list = release_list;
 
-	/*
-	 * This is not really RCU here. We have just disarmed a set of
-	 * pages so that they cannot trigger page faults anymore. However,
-	 * we cannot remove the pages from kmmio_page_table,
-	 * because a probe hit might be in flight on another CPU. The
-	 * pages are collected into a list, and they will be removed from
-	 * kmmio_page_table when it is certain that no probe hit related to
-	 * these pages can be in flight. RCU grace period sounds like a
-	 * good choice.
-	 *
-	 * If we removed the pages too early, kmmio page fault handler might
-	 * not find the respective kmmio_fault_page and determine it's not
-	 * a kmmio fault, when it actually is. This would lead to madness.
-	 */
+	 
 	call_rcu(&drelease->rcu, remove_kmmio_fault_pages);
 }
 EXPORT_SYMBOL(unregister_kmmio_probe);
@@ -595,10 +476,7 @@ kmmio_die_notifier(struct notifier_block *nb, unsigned long val, void *args)
 
 	if (val == DIE_DEBUG && (*dr6_p & DR_STEP))
 		if (post_kmmio_handler(*dr6_p, arg->regs) == 1) {
-			/*
-			 * Reset the BS bit in dr6 (pointed by args->err) to
-			 * denote completion of processing
-			 */
+			 
 			*dr6_p &= ~DR_STEP;
 			return NOTIFY_STOP;
 		}

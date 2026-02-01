@@ -1,20 +1,4 @@
-/* system-dependent definitions for coreutils
-   Copyright (C) 1989-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Include this file _after_ system headers if possible.  */
+ 
 
 #include <attribute.h>
 
@@ -22,7 +6,7 @@
 
 #include <sys/stat.h>
 
-/* Commonly used file permission combination.  */
+ 
 #define MODE_RW_UGO (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH)
 
 #if HAVE_SYS_PARAM_H
@@ -43,7 +27,7 @@
 #include <sys/time.h>
 #include <time.h>
 
-/* Since major is a function on SVR4, we can't use 'ifndef major'.  */
+ 
 #if MAJOR_IN_MKDEV
 # include <sys/mkdev.h>
 # define HAVE_MAJOR
@@ -52,7 +36,7 @@
 # include <sys/sysmacros.h>
 # define HAVE_MAJOR
 #endif
-#ifdef major			/* Might be defined in sys/types.h.  */
+#ifdef major			 
 # define HAVE_MAJOR
 #endif
 
@@ -71,9 +55,7 @@
 #include <string.h>
 #include <errno.h>
 
-/* Some systems don't define this; POSIX mentions it but says it is
-   obsolete.  gnulib defines it, but only on native Windows systems,
-   and there only because MSVC 10 does.  */
+ 
 #ifndef ENODATA
 # define ENODATA (-1)
 #endif
@@ -81,18 +63,18 @@
 #include <stdlib.h>
 #include "version.h"
 
-/* Exit statuses for programs like 'env' that exec other programs.  */
+ 
 enum
 {
-  EXIT_TIMEDOUT = 124, /* Time expired before child completed.  */
-  EXIT_CANCELED = 125, /* Internal error prior to exec attempt.  */
-  EXIT_CANNOT_INVOKE = 126, /* Program located, but not usable.  */
-  EXIT_ENOENT = 127 /* Could not find program to exec.  */
+  EXIT_TIMEDOUT = 124,  
+  EXIT_CANCELED = 125,  
+  EXIT_CANNOT_INVOKE = 126,  
+  EXIT_ENOENT = 127  
 };
 
 #include "exitfail.h"
 
-/* Set exit_failure to STATUS if that's not the default already.  */
+ 
 static inline void
 initialize_exit_failure (int status)
 {
@@ -120,15 +102,14 @@ enum
 #ifdef D_INO_IN_DIRENT
 # define D_INO(dp) (dp)->d_ino
 #else
-/* Some systems don't have inodes, so fake them to avoid lots of ifdefs.  */
+ 
 # define D_INO(dp) NOT_AN_INODE_NUMBER
 #endif
 
-/* include here for SIZE_MAX.  */
+ 
 #include <inttypes.h>
 
-/* Redirection and wildcarding when done by the utility itself.
-   Generally a noop, but used in particular for OS/2.  */
+ 
 #ifndef initialize_main
 # ifndef __OS2__
 #  define initialize_main(ac, av)
@@ -144,21 +125,13 @@ enum
 
 #include <ctype.h>
 
-/* ISDIGIT differs from isdigit, as follows:
-   - Its arg may be any int or unsigned int; it need not be an unsigned char
-     or EOF.
-   - It's typically faster.
-   POSIX says that only '0' through '9' are digits.  Prefer ISDIGIT to
-   isdigit unless it's important to use the locale's definition
-   of 'digit' even when the host does not conform to POSIX.  */
+ 
 #define ISDIGIT(c) ((unsigned int) (c) - '0' <= 9)
 
-/* Convert a possibly-signed character to an unsigned character.  This is
-   a bit safer than casting to unsigned char, since it catches some type
-   errors that the cast doesn't.  */
+ 
 static inline unsigned char to_uchar (char ch) { return ch; }
 
-/* '\n' is considered a field separator with  --zero-terminated.  */
+ 
 static inline bool
 field_sep (unsigned char ch)
 {
@@ -167,36 +140,33 @@ field_sep (unsigned char ch)
 
 #include <locale.h>
 
-/* Take care of NLS matters.  */
+ 
 
 #include "gettext.h"
 #if ! ENABLE_NLS
 # undef textdomain
-# define textdomain(Domainname) /* empty */
+# define textdomain(Domainname)  
 # undef bindtextdomain
-# define bindtextdomain(Domainname, Dirname) /* empty */
+# define bindtextdomain(Domainname, Dirname)  
 #endif
 
 #define _(msgid) gettext (msgid)
 #define N_(msgid) msgid
 
-/* Return a value that pluralizes the same way that N does, in all
-   languages we know of.  */
+ 
 static inline unsigned long int
 select_plural (uintmax_t n)
 {
-  /* Reduce by a power of ten, but keep it away from zero.  The
-     gettext manual says 1000000 should be safe.  */
+   
   enum { PLURAL_REDUCER = 1000000 };
   return (n <= ULONG_MAX ? n : n % PLURAL_REDUCER + PLURAL_REDUCER);
 }
 
 #define STREQ(a, b) (strcmp (a, b) == 0)
-#define STREQ_LEN(a, b, n) (strncmp (a, b, n) == 0) /* n==-1 means unbounded */
+#define STREQ_LEN(a, b, n) (strncmp (a, b, n) == 0)  
 #define STRPREFIX(a, b) (strncmp (a, b, strlen (b)) == 0)
 
-/* Just like strncmp, but the second argument must be a literal string
-   and you don't specify the length;  that comes from the literal.  */
+ 
 #define STRNCMP_LIT(s, lit) strncmp (s, "" lit "", sizeof (lit) - 1)
 
 #if !HAVE_DECL_GETLOGIN
@@ -219,12 +189,8 @@ struct passwd *getpwuid (uid_t);
 struct group *getgrgid (gid_t);
 #endif
 
-/* Interix has replacements for getgr{gid,nam,ent}, that don't
-   query the domain controller for group members when not required.
-   This speeds up the calls tremendously (<1 ms vs. >3 s). */
-/* To protect any system that could provide _nomembers functions
-   other than interix, check for HAVE_SETGROUPS, as interix is
-   one of the very few (the only?) platform that lacks it */
+ 
+ 
 #if ! HAVE_SETGROUPS
 # if HAVE_GETGRGID_NOMEMBERS
 #  define getgrgid(gid) getgrgid_nomembers(gid)
@@ -245,17 +211,11 @@ uid_t getuid (void);
 #include "xalloc.h"
 #include "verify.h"
 
-/* This is simply a shorthand for the common case in which
-   the third argument to x2nrealloc would be 'sizeof *(P)'.
-   Ensure that sizeof *(P) is *not* 1.  In that case, it'd be
-   better to use X2REALLOC, although not strictly necessary.  */
+ 
 #define X2NREALLOC(P, PN) verify_expr (sizeof *(P) != 1, \
                                        x2nrealloc (P, PN, sizeof *(P)))
 
-/* Using x2realloc (when appropriate) usually makes your code more
-   readable than using x2nrealloc, but it also makes it so your
-   code will malfunction if sizeof *(P) ever becomes 2 or greater.
-   So use this macro instead of using x2realloc directly.  */
+ 
 #define X2REALLOC(P, PN) verify_expr (sizeof *(P) == 1, \
                                       x2realloc (P, PN))
 
@@ -277,7 +237,7 @@ dot_or_dotdot (char const *file_name)
     return false;
 }
 
-/* A wrapper for readdir so that callers don't see entries for '.' or '..'.  */
+ 
 static inline struct dirent const *
 readdir_ignoring_dot_and_dotdot (DIR *dirp)
 {
@@ -289,10 +249,7 @@ readdir_ignoring_dot_and_dotdot (DIR *dirp)
     }
 }
 
-/* Return -1 if DIR is an empty directory,
-   0 if DIR is a nonempty directory,
-   and a positive error number if there was trouble determining
-   whether DIR is an empty or nonempty directory.  */
+ 
 enum {
     DS_UNKNOWN = -2,
     DS_EMPTY = -1,
@@ -326,11 +283,9 @@ directory_status (int fd_cwd, char const *dir)
   return no_direntries && saved_errno == 0 ? DS_EMPTY : saved_errno;
 }
 
-/* Factor out some of the common --help and --version processing code.  */
+ 
 
-/* These enum values cannot possibly conflict with the option values
-   ordinarily used by commands, including CHAR_MAX + 1, etc.  Avoid
-   CHAR_MIN - 1, as it may equal -1, the getopt end-of-options value.  */
+ 
 enum
 {
   GETOPT_HELP_CHAR = (CHAR_MIN - 2),
@@ -349,8 +304,7 @@ enum
     usage (EXIT_SUCCESS);			\
     break;
 
-/* Program_name must be a literal string.
-   Usually it is just PROGRAM_NAME.  */
+ 
 #define USAGE_BUILTIN_WARNING \
   _("\n" \
 "NOTE: your shell may have its own version of %s, which usually supersedes\n" \
@@ -370,10 +324,7 @@ enum
 #undef emit_bug_reporting_address
 
 #include "propername.h"
-/* Define away proper_name, since it's not worth the cost of adding ~17KB to
-   the x86_64 text size of every single program.  This avoids a 40%
-   (almost ~2MB) increase in the file system space utilization for the set
-   of the 100 binaries. */
+ 
 #define proper_name(x) proper_name_lite (x, x)
 
 #include "progname.h"
@@ -412,19 +363,14 @@ enum
 # define PID_T_MAX TYPE_MAXIMUM (pid_t)
 #endif
 
-/* Use this to suppress gcc warnings.  */
+ 
 #ifdef lint
 # define IF_LINT(Code) Code
 #else
-# define IF_LINT(Code) /* empty */
+# define IF_LINT(Code)  
 #endif
 
-/* main_exit should be called only from the main function.  It is
-   equivalent to 'exit'.  When checking for lint it calls 'exit', to
-   pacify gcc -fsanitize=lint which would otherwise have false alarms
-   for pointers in the main function's activation record.  Otherwise
-   it simply returns from 'main'; this used to be what gcc's static
-   checking preferred and may yet be again.  */
+ 
 #ifdef lint
 # define main_exit(status) exit (status)
 #else
@@ -456,11 +402,10 @@ enum
 #endif
 
 #if ! HAVE_SYNC
-# define sync() /* empty */
+# define sync()  
 #endif
 
-/* Compute the greatest common divisor of U and V using Euclid's
-   algorithm.  U and V must be nonzero.  */
+ 
 
 ATTRIBUTE_CONST
 static inline size_t
@@ -477,9 +422,7 @@ gcd (size_t u, size_t v)
   return u;
 }
 
-/* Compute the least common multiple of U and V.  U and V must be
-   nonzero.  There is no overflow checking, so callers should not
-   specify outlandish sizes.  */
+ 
 
 ATTRIBUTE_CONST
 static inline size_t
@@ -488,10 +431,7 @@ lcm (size_t u, size_t v)
   return u * (v / gcd (u, v));
 }
 
-/* Return PTR, aligned upward to the next multiple of ALIGNMENT.
-   ALIGNMENT must be nonzero.  The caller must arrange for ((char *)
-   PTR) through ((char *) PTR + ALIGNMENT - 1) to be addressable
-   locations.  */
+ 
 
 static inline void *
 ptr_align (void const *ptr, size_t alignment)
@@ -501,20 +441,14 @@ ptr_align (void const *ptr, size_t alignment)
   return (void *) (p1 - (size_t) p1 % alignment);
 }
 
-/* Return whether the buffer consists entirely of NULs.
-   Based on memeqzero in CCAN by Rusty Russell under CC0 (Public domain).  */
+ 
 
 ATTRIBUTE_PURE
 static inline bool
 is_nul (void const *buf, size_t length)
 {
   const unsigned char *p = buf;
-/* Using possibly unaligned access for the first 16 bytes
-   saves about 30-40 cycles, though it is strictly undefined behavior
-   and so would need __attribute__ ((__no_sanitize_undefined__))
-   to avoid -fsanitize=undefined warnings.
-   Considering coreutils is mainly concerned with relatively
-   large buffers, we'll just use the defined behavior.  */
+ 
 #if 0 && (_STRING_ARCH_unaligned || _STRING_INLINE_unaligned)
   unsigned long word;
 #else
@@ -524,7 +458,7 @@ is_nul (void const *buf, size_t length)
   if (! length)
       return true;
 
-  /* Check len bytes not aligned on a word.  */
+   
   while (UNLIKELY (length & (sizeof word - 1)))
     {
       if (*p)
@@ -535,7 +469,7 @@ is_nul (void const *buf, size_t length)
         return true;
    }
 
-  /* Check up to 16 bytes a word at a time.  */
+   
   for (;;)
     {
       memcpy (&word, p, sizeof word);
@@ -549,25 +483,16 @@ is_nul (void const *buf, size_t length)
         break;
    }
 
-   /* Now we know first 16 bytes are NUL, memcmp with self.  */
+    
    return memcmp (buf, p, length) == 0;
 }
 
-/* If 10*Accum + Digit_val is larger than the maximum value for Type,
-   then don't update Accum and return false to indicate it would
-   overflow.  Otherwise, set Accum to that new value and return true.
-   Verify at compile-time that Type is Accum's type, and that Type is
-   unsigned.  Accum must be an object, so that we can take its
-   address.  Accum and Digit_val may be evaluated multiple times.
-
-   The "Added check" below is not strictly required, but it causes GCC
-   to return a nonzero exit status instead of merely a warning
-   diagnostic, and that is more useful.  */
+ 
 
 #define DECIMAL_DIGIT_ACCUMULATE(Accum, Digit_val, Type)		\
   (									\
-   (void) (&(Accum) == (Type *) nullptr),  /* The type matches.  */	\
-   verify_expr (! TYPE_SIGNED (Type), /* The type is unsigned.  */      \
+   (void) (&(Accum) == (Type *) nullptr),   	\
+   verify_expr (! TYPE_SIGNED (Type),        \
                 (((Type) -1 / 10 < (Accum)                              \
                   || (Type) ((Accum) * 10 + (Digit_val)) < (Accum))     \
                  ? false                                                \
@@ -688,11 +613,9 @@ emit_ancillary_info (char const *program)
          the URLs at https://translationproject.org/team/.  Otherwise, replace
          the entire URL with your translation team's email address.  */
       fputs (_("Report any translation bugs to "
-               "<https://translationproject.org/team/>\n"), stdout);
+               "<https:
     }
-  /* .htaccess on the coreutils web site maps programs to the appropriate page,
-     however we explicitly handle "[" -> "test" here as the "[" is not
-     recognized as part of a URL by default in terminals.  */
+   
   char const *url_program = STREQ (program, "[") ? "test" : program;
   printf (_("Full documentation <%s%s>\n"),
           PACKAGE_URL, url_program);
@@ -700,10 +623,7 @@ emit_ancillary_info (char const *program)
           node, node == program ? " invocation" : "");
 }
 
-/* Use a macro rather than an inline function, as this references
-   the global program_name, which causes dynamic linking issues
-   in libstdbuf.so on some systems where unused functions
-   are not removed by the linker.  */
+ 
 #define emit_try_help() \
   do \
     { \
@@ -728,7 +648,7 @@ bad_cast (char const *s)
   return (char *) s;
 }
 
-/* Return a boolean indicating whether SB->st_size is defined.  */
+ 
 static inline bool
 usable_st_size (struct stat const *sb)
 {
@@ -740,8 +660,7 @@ _Noreturn void usage (int status);
 
 #include "error.h"
 
-/* Like error(0, 0, ...), but without an implicit newline.
-   Also a noop unless the global DEV_DEBUG is set.  */
+ 
 #define devmsg(...)			\
   do					\
     {					\
@@ -762,23 +681,19 @@ The following directory is part of the cycle:\n  %s\n"), \
     }					\
   while (0)
 
-/* exit with a _single_ "write error" diagnostic.  */
+ 
 
 static inline void
 write_error (void)
 {
   int saved_errno = errno;
-  fflush (stdout);    /* Last attempt to write any buffered data.  */
-  fpurge (stdout);    /* Ensure nothing buffered that might induce an error. */
-  clearerr (stdout);  /* Avoid extraneous diagnostic from close_stdout.  */
+  fflush (stdout);     
+  fpurge (stdout);     
+  clearerr (stdout);   
   error (EXIT_FAILURE, saved_errno, _("write error"));
 }
 
-/* Like stpncpy, but do ensure that the result is NUL-terminated,
-   and do not NUL-pad out to LEN.  I.e., when strnlen (src, len) == len,
-   this function writes a NUL byte into dest[len].  Thus, the length
-   of the destination buffer must be at least LEN + 1.
-   The DEST and SRC buffers must not overlap.  */
+ 
 static inline char *
 stzncpy (char *restrict dest, char const *restrict src, size_t len)
 {
@@ -793,10 +708,7 @@ stzncpy (char *restrict dest, char const *restrict src, size_t len)
 # define ARRAY_CARDINALITY(Array) (sizeof (Array) / sizeof *(Array))
 #endif
 
-/* Return true if ERR is ENOTSUP or EOPNOTSUPP, otherwise false.
-   This wrapper function avoids the redundant 'or'd comparison on
-   systems like Linux for which they have the same value.  It also
-   avoids the gcc warning to that effect.  */
+ 
 static inline bool
 is_ENOTSUP (int err)
 {
@@ -804,19 +716,16 @@ is_ENOTSUP (int err)
 }
 
 
-/* How coreutils quotes filenames, to minimize use of outer quotes,
-   but also provide better support for copy and paste when used.  */
+ 
 #include "quotearg.h"
 
-/* Use these to shell quote only when necessary,
-   when the quoted item is already delimited with colons.  */
+ 
 #define quotef(arg) \
   quotearg_n_style_colon (0, shell_escape_quoting_style, arg)
 #define quotef_n(n, arg) \
   quotearg_n_style_colon (n, shell_escape_quoting_style, arg)
 
-/* Use these when there are spaces around the file name,
-   in the error message.  */
+ 
 #define quoteaf(arg) \
   quotearg_style (shell_escape_always_quoting_style, arg)
 #define quoteaf_n(n, arg) \

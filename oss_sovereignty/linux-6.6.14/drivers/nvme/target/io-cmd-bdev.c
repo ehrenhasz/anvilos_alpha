@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NVMe I/O command implementation.
- * Copyright (c) 2015-2016 HGST, a Western Digital Company.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/blkdev.h>
 #include <linux/blk-integrity.h>
@@ -12,39 +9,28 @@
 
 void nvmet_bdev_set_limits(struct block_device *bdev, struct nvme_id_ns *id)
 {
-	/* Logical blocks per physical block, 0's based. */
+	 
 	const __le16 lpp0b = to0based(bdev_physical_block_size(bdev) /
 				      bdev_logical_block_size(bdev));
 
-	/*
-	 * For NVMe 1.2 and later, bit 1 indicates that the fields NAWUN,
-	 * NAWUPF, and NACWU are defined for this namespace and should be
-	 * used by the host for this namespace instead of the AWUN, AWUPF,
-	 * and ACWU fields in the Identify Controller data structure. If
-	 * any of these fields are zero that means that the corresponding
-	 * field from the identify controller data structure should be used.
-	 */
+	 
 	id->nsfeat |= 1 << 1;
 	id->nawun = lpp0b;
 	id->nawupf = lpp0b;
 	id->nacwu = lpp0b;
 
-	/*
-	 * Bit 4 indicates that the fields NPWG, NPWA, NPDG, NPDA, and
-	 * NOWS are defined for this namespace and should be used by
-	 * the host for I/O optimization.
-	 */
+	 
 	id->nsfeat |= 1 << 4;
-	/* NPWG = Namespace Preferred Write Granularity. 0's based */
+	 
 	id->npwg = lpp0b;
-	/* NPWA = Namespace Preferred Write Alignment. 0's based */
+	 
 	id->npwa = id->npwg;
-	/* NPDG = Namespace Preferred Deallocate Granularity. 0's based */
+	 
 	id->npdg = to0based(bdev_discard_granularity(bdev) /
 			    bdev_logical_block_size(bdev));
-	/* NPDG = Namespace Preferred Deallocate Alignment */
+	 
 	id->npda = id->npdg;
-	/* NOWS = Namespace Optimal Write Size */
+	 
 	id->nows = to0based(bdev_io_opt(bdev) / bdev_logical_block_size(bdev));
 }
 
@@ -67,7 +53,7 @@ static void nvmet_bdev_ns_enable_integrity(struct nvmet_ns *ns)
 		else if (bi->profile == &t10_pi_type3_crc)
 			ns->pi_type = NVME_NS_DPS_PI_TYPE3;
 		else
-			/* Unsupported metadata type */
+			 
 			ns->metadata_size = 0;
 	}
 }
@@ -76,11 +62,7 @@ int nvmet_bdev_ns_enable(struct nvmet_ns *ns)
 {
 	int ret;
 
-	/*
-	 * When buffered_io namespace attribute is enabled that means user want
-	 * this block device to be used as a file, so block device can take
-	 * an advantage of cache.
-	 */
+	 
 	if (ns->buffered_io)
 		return -ENOTBLK;
 
@@ -125,12 +107,7 @@ u16 blk_to_nvme_status(struct nvmet_req *req, blk_status_t blk_sts)
 
 	if (likely(blk_sts == BLK_STS_OK))
 		return status;
-	/*
-	 * Right now there exists M : 1 mapping between block layer error
-	 * to the NVMe status code (see nvme_error_status()). For consistency,
-	 * when we reverse map we use most appropriate NVMe Status code from
-	 * the group of the NVMe staus codes used in the nvme_error_status().
-	 */
+	 
 	switch (blk_sts) {
 	case BLK_STS_NOSPC:
 		status = NVME_SC_CAP_EXCEEDED | NVME_SC_DNR;
@@ -206,7 +183,7 @@ static int nvmet_bdev_alloc_bip(struct nvmet_req *req, struct bio *bio,
 		return PTR_ERR(bip);
 	}
 
-	/* virtual start sector must be in integrity interval units */
+	 
 	bip_set_seed(bip, bio->bi_iter.bi_sector >>
 		     (bi->interval_exp - SECTOR_SHIFT));
 
@@ -235,7 +212,7 @@ static int nvmet_bdev_alloc_bip(struct nvmet_req *req, struct bio *bio,
 {
 	return -EINVAL;
 }
-#endif /* CONFIG_BLK_DEV_INTEGRITY */
+#endif  
 
 static void nvmet_bdev_execute_rw(struct nvmet_req *req)
 {
@@ -417,7 +394,7 @@ static void nvmet_bdev_execute_dsm(struct nvmet_req *req)
 	case NVME_DSMGMT_IDR:
 	case NVME_DSMGMT_IDW:
 	default:
-		/* Not supported yet */
+		 
 		nvmet_req_complete(req, 0);
 		return;
 	}

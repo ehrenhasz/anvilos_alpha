@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 #define _GNU_SOURCE
 #include <pthread.h>
 #include <sched.h>
@@ -13,7 +13,7 @@
 #include "kprobe_multi.skel.h"
 #include "uprobe_multi.skel.h"
 
-/* uprobe attach point */
+ 
 static noinline void trigger_func(void)
 {
 	asm volatile ("");
@@ -25,7 +25,7 @@ static void kprobe_subtest(struct test_bpf_cookie *skel)
 	struct bpf_link *link1 = NULL, *link2 = NULL;
 	struct bpf_link *retlink1 = NULL, *retlink2 = NULL;
 
-	/* attach two kprobes */
+	 
 	opts.bpf_cookie = 0x1;
 	opts.retprobe = false;
 	link1 = bpf_program__attach_kprobe_opts(skel->progs.handle_kprobe,
@@ -40,7 +40,7 @@ static void kprobe_subtest(struct test_bpf_cookie *skel)
 	if (!ASSERT_OK_PTR(link2, "link2"))
 		goto cleanup;
 
-	/* attach two kretprobes */
+	 
 	opts.bpf_cookie = 0x10;
 	opts.retprobe = true;
 	retlink1 = bpf_program__attach_kprobe_opts(skel->progs.handle_kretprobe,
@@ -55,7 +55,7 @@ static void kprobe_subtest(struct test_bpf_cookie *skel)
 	if (!ASSERT_OK_PTR(retlink2, "retlink2"))
 		goto cleanup;
 
-	/* trigger kprobe && kretprobe */
+	 
 	usleep(1);
 
 	ASSERT_EQ(skel->bss->kprobe_res, 0x1 | 0x2, "kprobe_res");
@@ -132,14 +132,14 @@ static void kprobe_multi_link_api_subtest(void)
 
 #undef GET_ADDR
 
-	cookies[0] = 1; /* bpf_fentry_test1 */
-	cookies[1] = 2; /* bpf_fentry_test3 */
-	cookies[2] = 3; /* bpf_fentry_test4 */
-	cookies[3] = 4; /* bpf_fentry_test5 */
-	cookies[4] = 5; /* bpf_fentry_test6 */
-	cookies[5] = 6; /* bpf_fentry_test7 */
-	cookies[6] = 7; /* bpf_fentry_test2 */
-	cookies[7] = 8; /* bpf_fentry_test8 */
+	cookies[0] = 1;  
+	cookies[1] = 2;  
+	cookies[2] = 3;  
+	cookies[3] = 4;  
+	cookies[4] = 5;  
+	cookies[5] = 6;  
+	cookies[6] = 7;  
+	cookies[7] = 8;  
 
 	opts.kprobe_multi.addrs = (const unsigned long *) &addrs;
 	opts.kprobe_multi.cnt = ARRAY_SIZE(addrs);
@@ -150,14 +150,14 @@ static void kprobe_multi_link_api_subtest(void)
 	if (!ASSERT_GE(link1_fd, 0, "link1_fd"))
 		goto cleanup;
 
-	cookies[0] = 8; /* bpf_fentry_test1 */
-	cookies[1] = 7; /* bpf_fentry_test3 */
-	cookies[2] = 6; /* bpf_fentry_test4 */
-	cookies[3] = 5; /* bpf_fentry_test5 */
-	cookies[4] = 4; /* bpf_fentry_test6 */
-	cookies[5] = 3; /* bpf_fentry_test7 */
-	cookies[6] = 2; /* bpf_fentry_test2 */
-	cookies[7] = 1; /* bpf_fentry_test8 */
+	cookies[0] = 8;  
+	cookies[1] = 7;  
+	cookies[2] = 6;  
+	cookies[3] = 5;  
+	cookies[4] = 4;  
+	cookies[5] = 3;  
+	cookies[6] = 2;  
+	cookies[7] = 1;  
 
 	opts.kprobe_multi.flags = BPF_F_KPROBE_MULTI_RETURN;
 	prog_fd = bpf_program__fd(skel->progs.test_kretprobe);
@@ -199,14 +199,14 @@ static void kprobe_multi_attach_api_subtest(void)
 	skel->bss->pid = getpid();
 	skel->bss->test_cookie = true;
 
-	cookies[0] = 1; /* bpf_fentry_test1 */
-	cookies[1] = 2; /* bpf_fentry_test3 */
-	cookies[2] = 3; /* bpf_fentry_test4 */
-	cookies[3] = 4; /* bpf_fentry_test5 */
-	cookies[4] = 5; /* bpf_fentry_test6 */
-	cookies[5] = 6; /* bpf_fentry_test7 */
-	cookies[6] = 7; /* bpf_fentry_test2 */
-	cookies[7] = 8; /* bpf_fentry_test8 */
+	cookies[0] = 1;  
+	cookies[1] = 2;  
+	cookies[2] = 3;  
+	cookies[3] = 4;  
+	cookies[4] = 5;  
+	cookies[5] = 6;  
+	cookies[6] = 7;  
+	cookies[7] = 8;  
 
 	opts.syms = syms;
 	opts.cnt = ARRAY_SIZE(syms);
@@ -217,14 +217,14 @@ static void kprobe_multi_attach_api_subtest(void)
 	if (!ASSERT_OK_PTR(link1, "bpf_program__attach_kprobe_multi_opts"))
 		goto cleanup;
 
-	cookies[0] = 8; /* bpf_fentry_test1 */
-	cookies[1] = 7; /* bpf_fentry_test3 */
-	cookies[2] = 6; /* bpf_fentry_test4 */
-	cookies[3] = 5; /* bpf_fentry_test5 */
-	cookies[4] = 4; /* bpf_fentry_test6 */
-	cookies[5] = 3; /* bpf_fentry_test7 */
-	cookies[6] = 2; /* bpf_fentry_test2 */
-	cookies[7] = 1; /* bpf_fentry_test8 */
+	cookies[0] = 8;  
+	cookies[1] = 7;  
+	cookies[2] = 6;  
+	cookies[3] = 5;  
+	cookies[4] = 4;  
+	cookies[5] = 3;  
+	cookies[6] = 2;  
+	cookies[7] = 1;  
 
 	opts.retprobe = true;
 
@@ -241,7 +241,7 @@ cleanup:
 	kprobe_multi__destroy(skel);
 }
 
-/* defined in prog_tests/uprobe_multi_test.c */
+ 
 void uprobe_multi_func_1(void);
 void uprobe_multi_func_2(void);
 void uprobe_multi_func_3(void);
@@ -280,9 +280,9 @@ static void uprobe_multi_attach_api_subtest(void)
 	};
 	__u64 cookies[3];
 
-	cookies[0] = 3; /* uprobe_multi_func_1 */
-	cookies[1] = 1; /* uprobe_multi_func_2 */
-	cookies[2] = 2; /* uprobe_multi_func_3 */
+	cookies[0] = 3;  
+	cookies[1] = 1;  
+	cookies[2] = 2;  
 
 	opts.syms = syms;
 	opts.cnt = ARRAY_SIZE(syms);
@@ -297,9 +297,9 @@ static void uprobe_multi_attach_api_subtest(void)
 	if (!ASSERT_OK_PTR(link1, "bpf_program__attach_uprobe_multi"))
 		goto cleanup;
 
-	cookies[0] = 2; /* uprobe_multi_func_1 */
-	cookies[1] = 3; /* uprobe_multi_func_2 */
-	cookies[2] = 1; /* uprobe_multi_func_3 */
+	cookies[0] = 2;  
+	cookies[1] = 3;  
+	cookies[2] = 1;  
 
 	opts.retprobe = true;
 	link2 = bpf_program__attach_uprobe_multi(skel->progs.uretprobe, -1,
@@ -326,37 +326,37 @@ static void uprobe_subtest(struct test_bpf_cookie *skel)
 	if (!ASSERT_GE(uprobe_offset, 0, "uprobe_offset"))
 		goto cleanup;
 
-	/* attach two uprobes */
+	 
 	opts.bpf_cookie = 0x100;
 	opts.retprobe = false;
-	link1 = bpf_program__attach_uprobe_opts(skel->progs.handle_uprobe, 0 /* self pid */,
+	link1 = bpf_program__attach_uprobe_opts(skel->progs.handle_uprobe, 0  ,
 						"/proc/self/exe", uprobe_offset, &opts);
 	if (!ASSERT_OK_PTR(link1, "link1"))
 		goto cleanup;
 
 	opts.bpf_cookie = 0x200;
 	opts.retprobe = false;
-	link2 = bpf_program__attach_uprobe_opts(skel->progs.handle_uprobe, -1 /* any pid */,
+	link2 = bpf_program__attach_uprobe_opts(skel->progs.handle_uprobe, -1  ,
 						"/proc/self/exe", uprobe_offset, &opts);
 	if (!ASSERT_OK_PTR(link2, "link2"))
 		goto cleanup;
 
-	/* attach two uretprobes */
+	 
 	opts.bpf_cookie = 0x1000;
 	opts.retprobe = true;
-	retlink1 = bpf_program__attach_uprobe_opts(skel->progs.handle_uretprobe, -1 /* any pid */,
+	retlink1 = bpf_program__attach_uprobe_opts(skel->progs.handle_uretprobe, -1  ,
 						   "/proc/self/exe", uprobe_offset, &opts);
 	if (!ASSERT_OK_PTR(retlink1, "retlink1"))
 		goto cleanup;
 
 	opts.bpf_cookie = 0x2000;
 	opts.retprobe = true;
-	retlink2 = bpf_program__attach_uprobe_opts(skel->progs.handle_uretprobe, 0 /* self pid */,
+	retlink2 = bpf_program__attach_uprobe_opts(skel->progs.handle_uretprobe, 0  ,
 						   "/proc/self/exe", uprobe_offset, &opts);
 	if (!ASSERT_OK_PTR(retlink2, "retlink2"))
 		goto cleanup;
 
-	/* trigger uprobe && uretprobe */
+	 
 	trigger_func();
 
 	ASSERT_EQ(skel->bss->uprobe_res, 0x100 | 0x200, "uprobe_res");
@@ -374,43 +374,39 @@ static void tp_subtest(struct test_bpf_cookie *skel)
 	DECLARE_LIBBPF_OPTS(bpf_tracepoint_opts, opts);
 	struct bpf_link *link1 = NULL, *link2 = NULL, *link3 = NULL;
 
-	/* attach first tp prog */
+	 
 	opts.bpf_cookie = 0x10000;
 	link1 = bpf_program__attach_tracepoint_opts(skel->progs.handle_tp1,
 						    "syscalls", "sys_enter_nanosleep", &opts);
 	if (!ASSERT_OK_PTR(link1, "link1"))
 		goto cleanup;
 
-	/* attach second tp prog */
+	 
 	opts.bpf_cookie = 0x20000;
 	link2 = bpf_program__attach_tracepoint_opts(skel->progs.handle_tp2,
 						    "syscalls", "sys_enter_nanosleep", &opts);
 	if (!ASSERT_OK_PTR(link2, "link2"))
 		goto cleanup;
 
-	/* trigger tracepoints */
+	 
 	usleep(1);
 
 	ASSERT_EQ(skel->bss->tp_res, 0x10000 | 0x20000, "tp_res1");
 
-	/* now we detach first prog and will attach third one, which causes
-	 * two internal calls to bpf_prog_array_copy(), shuffling
-	 * bpf_prog_array_items around. We test here that we don't lose track
-	 * of associated bpf_cookies.
-	 */
+	 
 	bpf_link__destroy(link1);
 	link1 = NULL;
 	kern_sync_rcu();
 	skel->bss->tp_res = 0;
 
-	/* attach third tp prog */
+	 
 	opts.bpf_cookie = 0x40000;
 	link3 = bpf_program__attach_tracepoint_opts(skel->progs.handle_tp3,
 						    "syscalls", "sys_enter_nanosleep", &opts);
 	if (!ASSERT_OK_PTR(link3, "link3"))
 		goto cleanup;
 
-	/* trigger tracepoints */
+	 
 	usleep(1);
 
 	ASSERT_EQ(skel->bss->tp_res, 0x20000 | 0x40000, "tp_res2");
@@ -427,13 +423,13 @@ static void burn_cpu(void)
 	cpu_set_t cpu_set;
 	int i, err;
 
-	/* generate some branches on cpu 0 */
+	 
 	CPU_ZERO(&cpu_set);
 	CPU_SET(0, &cpu_set);
 	err = pthread_setaffinity_np(pthread_self(), sizeof(cpu_set), &cpu_set);
 	ASSERT_OK(err, "set_thread_affinity");
 
-	/* spin the loop for a while (random high number) */
+	 
 	for (i = 0; i < 1000000; ++i)
 		++j;
 }
@@ -445,7 +441,7 @@ static void pe_subtest(struct test_bpf_cookie *skel)
 	struct perf_event_attr attr;
 	int pfd = -1;
 
-	/* create perf event */
+	 
 	memset(&attr, 0, sizeof(attr));
 	attr.size = sizeof(attr);
 	attr.type = PERF_TYPE_SOFTWARE;
@@ -461,15 +457,15 @@ static void pe_subtest(struct test_bpf_cookie *skel)
 	if (!ASSERT_OK_PTR(link, "link1"))
 		goto cleanup;
 
-	burn_cpu(); /* trigger BPF prog */
+	burn_cpu();  
 
 	ASSERT_EQ(skel->bss->pe_res, 0x100000, "pe_res1");
 
-	/* prevent bpf_link__destroy() closing pfd itself */
+	 
 	bpf_link__disconnect(link);
-	/* close BPF link's FD explicitly */
+	 
 	close(bpf_link__fd(link));
-	/* free up memory used by struct bpf_link */
+	 
 	bpf_link__destroy(link);
 	link = NULL;
 	kern_sync_rcu();
@@ -480,7 +476,7 @@ static void pe_subtest(struct test_bpf_cookie *skel)
 	if (!ASSERT_OK_PTR(link, "link2"))
 		goto cleanup;
 
-	burn_cpu(); /* trigger BPF prog */
+	burn_cpu();  
 
 	ASSERT_EQ(skel->bss->pe_res, 0x200000, "pe_res2");
 

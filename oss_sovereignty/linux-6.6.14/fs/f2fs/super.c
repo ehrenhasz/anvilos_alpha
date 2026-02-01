@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * fs/f2fs/super.c
- *
- * Copyright (c) 2012 Samsung Electronics Co., Ltd.
- *             http://www.samsung.com/
- */
+
+ 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/fs.h>
@@ -82,7 +77,7 @@ void f2fs_build_fault_attr(struct f2fs_sb_info *sbi, unsigned int rate,
 }
 #endif
 
-/* f2fs-wide shrinker description */
+ 
 static struct shrinker f2fs_shrinker_info = {
 	.scan_objects = f2fs_shrink_scan,
 	.count_objects = f2fs_shrink_count,
@@ -309,7 +304,7 @@ static inline void limit_reserve_root(struct f2fs_sb_info *sbi)
 	block_t limit = min((sbi->user_block_count >> 3),
 			sbi->user_block_count - sbi->reserved_blocks);
 
-	/* limit is 12.5% */
+	 
 	if (test_opt(sbi, RESERVE_ROOT) &&
 			F2FS_OPTION(sbi).root_reserved_blocks > limit) {
 		F2FS_OPTION(sbi).root_reserved_blocks = limit;
@@ -338,12 +333,10 @@ static inline int adjust_reserved_segment(struct f2fs_sb_info *sbi)
 	if (!F2FS_IO_ALIGNED(sbi))
 		return 0;
 
-	/* average valid block count in section in worst case */
+	 
 	avg_vblocks = sec_blks / F2FS_IO_SIZE(sbi);
 
-	/*
-	 * we need enough free space when migrating one section in worst case
-	 */
+	 
 	wanted_reserved_segments = (F2FS_IO_SIZE(sbi) / avg_vblocks) *
 						reserved_segments(sbi);
 	wanted_reserved_segments -= reserved_segments(sbi);
@@ -450,11 +443,7 @@ static int f2fs_clear_qf_name(struct super_block *sb, int qtype)
 
 static int f2fs_check_quota_options(struct f2fs_sb_info *sbi)
 {
-	/*
-	 * We do the test below only for project quotas. 'usrquota' and
-	 * 'grpquota' mount options are allowed even without quota feature
-	 * to support legacy quotas in quota files.
-	 */
+	 
 	if (test_opt(sbi, PRJQUOTA) && !f2fs_sb_has_project_quota(sbi)) {
 		f2fs_err(sbi, "Project quota feature not enabled. Cannot enable project quota enforcement.");
 		return -1;
@@ -518,12 +507,7 @@ static int f2fs_set_test_dummy_encryption(struct super_block *sb,
 		return -EINVAL;
 	}
 
-	/*
-	 * This mount option is just for testing, and it's not worthwhile to
-	 * implement the extra complexity (e.g. RCU protection) that would be
-	 * needed to allow it to be set or changed during remount.  We do allow
-	 * it to be specified during remount, but only if there is no change.
-	 */
+	 
 	if (is_remount && !fscrypt_is_dummy_policy_set(policy)) {
 		f2fs_warn(sbi, "Can't set test_dummy_encryption on remount");
 		return -EINVAL;
@@ -570,13 +554,7 @@ static bool is_compress_extension_exist(struct f2fs_sb_info *sbi,
 	return false;
 }
 
-/*
- * 1. The same extension name cannot not appear in both compress and non-compress extension
- * at the same time.
- * 2. If the compress extension specifies all files, the types specified by the non-compress
- * extension will be treated as special cases and will not be compressed.
- * 3. Don't allow the non-compress extension specifies all files.
- */
+ 
 static int f2fs_test_compress_extension(struct f2fs_sb_info *sbi)
 {
 	unsigned char (*ext)[F2FS_EXTENSION_LEN];
@@ -699,10 +677,7 @@ static int parse_options(struct super_block *sb, char *options, bool is_remount)
 
 		if (!*p)
 			continue;
-		/*
-		 * Initialize args struct so we know whether arg was
-		 * found; some options take optional arguments.
-		 */
+		 
 		args[0].to = args[0].from = NULL;
 		token = match_token(p, f2fs_tokens, args);
 
@@ -728,7 +703,7 @@ static int parse_options(struct super_block *sb, char *options, bool is_remount)
 			set_opt(sbi, DISABLE_ROLL_FORWARD);
 			break;
 		case Opt_norecovery:
-			/* this option mounts f2fs with ro */
+			 
 			set_opt(sbi, NORECOVERY);
 			if (!f2fs_readonly(sb))
 				return -EINVAL;
@@ -1346,11 +1321,7 @@ default_check:
 		return -EINVAL;
 	}
 #endif
-	/*
-	 * The BLKZONED feature indicates that the drive was formatted with
-	 * zone alignment optimization. This is optional for host-aware
-	 * devices, but mandatory for host-managed zoned block devices.
-	 */
+	 
 	if (f2fs_sb_has_blkzoned(sbi)) {
 #ifdef CONFIG_BLK_DEV_ZONED
 		if (F2FS_OPTION(sbi).discard_unit !=
@@ -1442,7 +1413,7 @@ static struct inode *f2fs_alloc_inode(struct super_block *sb)
 
 	init_once((void *) fi);
 
-	/* Initialize f2fs-specific inode info */
+	 
 	atomic_set(&fi->dirty_pages, 0);
 	atomic_set(&fi->i_compr_blocks, 0);
 	init_f2fs_rwsem(&fi->i_sem);
@@ -1453,7 +1424,7 @@ static struct inode *f2fs_alloc_inode(struct super_block *sb)
 	init_f2fs_rwsem(&fi->i_gc_rwsem[WRITE]);
 	init_f2fs_rwsem(&fi->i_xattr_sem);
 
-	/* Will be used by directory only */
+	 
 	fi->i_dir_level = F2FS_SB(sb)->dir_level;
 
 	return &fi->vfs_inode;
@@ -1464,10 +1435,7 @@ static int f2fs_drop_inode(struct inode *inode)
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
 	int ret;
 
-	/*
-	 * during filesystem shutdown, if checkpoint is disabled,
-	 * drop useless meta/node dirty pages.
-	 */
+	 
 	if (unlikely(is_sbi_flag_set(sbi, SBI_CP_DISABLED))) {
 		if (inode->i_ino == F2FS_NODE_INO(sbi) ||
 			inode->i_ino == F2FS_META_INO(sbi)) {
@@ -1476,20 +1444,14 @@ static int f2fs_drop_inode(struct inode *inode)
 		}
 	}
 
-	/*
-	 * This is to avoid a deadlock condition like below.
-	 * writeback_single_inode(inode)
-	 *  - f2fs_write_data_page
-	 *    - f2fs_gc -> iput -> evict
-	 *       - inode_wait_for_writeback(inode)
-	 */
+	 
 	if ((!inode_unhashed(inode) && inode->i_state & I_SYNC)) {
 		if (!inode->i_nlink && !is_bad_inode(inode)) {
-			/* to avoid evict_inode call simultaneously */
+			 
 			atomic_inc(&inode->i_count);
 			spin_unlock(&inode->i_lock);
 
-			/* should remain fi->extent_tree for writepage */
+			 
 			f2fs_destroy_extent_node(inode);
 
 			sb_start_intwrite(inode->i_sb);
@@ -1557,11 +1519,7 @@ void f2fs_inode_synced(struct inode *inode)
 	spin_unlock(&sbi->inode_lock[DIRTY_META]);
 }
 
-/*
- * f2fs_dirty_inode() is called from __mark_inode_dirty()
- *
- * We should call set_dirty_inode to write the dirty inode through write_inode.
- */
+ 
 static void f2fs_dirty_inode(struct inode *inode, int flags)
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
@@ -1610,25 +1568,18 @@ static void f2fs_put_super(struct super_block *sb)
 	int err = 0;
 	bool done;
 
-	/* unregister procfs/sysfs entries in advance to avoid race case */
+	 
 	f2fs_unregister_sysfs(sbi);
 
 	f2fs_quota_off_umount(sb);
 
-	/* prevent remaining shrinker jobs */
+	 
 	mutex_lock(&sbi->umount_mutex);
 
-	/*
-	 * flush all issued checkpoints and stop checkpoint issue thread.
-	 * after then, all checkpoints should be done by each process context.
-	 */
+	 
 	f2fs_stop_ckpt_thread(sbi);
 
-	/*
-	 * We don't need to do checkpoint when superblock is clean.
-	 * But, the previous checkpoint was not done by umount, it needs to do
-	 * clean checkpoint again.
-	 */
+	 
 	if ((is_sbi_flag_set(sbi, SBI_IS_DIRTY) ||
 			!is_set_ckpt_flags(sbi, CP_UMOUNT_FLAG))) {
 		struct cp_control cpc = {
@@ -1638,7 +1589,7 @@ static void f2fs_put_super(struct super_block *sb)
 		err = f2fs_write_checkpoint(sbi, &cpc);
 	}
 
-	/* be sure to wait for any on-going discard commands */
+	 
 	done = f2fs_issue_discard_timeout(sbi);
 	if (f2fs_realtime_discard_enable(sbi) && !sbi->discard_blks && done) {
 		struct cp_control cpc = {
@@ -1648,16 +1599,13 @@ static void f2fs_put_super(struct super_block *sb)
 		err = f2fs_write_checkpoint(sbi, &cpc);
 	}
 
-	/*
-	 * normally superblock is clean, so we need to release this.
-	 * In addition, EIO will skip do checkpoint, we need this as well.
-	 */
+	 
 	f2fs_release_ino_entry(sbi, true);
 
 	f2fs_leave_shrinker(sbi);
 	mutex_unlock(&sbi->umount_mutex);
 
-	/* our cp_error case, we can wait for any writeback page */
+	 
 	f2fs_flush_merged_writes(sbi);
 
 	f2fs_wait_on_all_pages(sbi, F2FS_WB_CP_DATA);
@@ -1685,17 +1633,14 @@ static void f2fs_put_super(struct super_block *sb)
 	iput(sbi->meta_inode);
 	sbi->meta_inode = NULL;
 
-	/*
-	 * iput() can update stat information, if f2fs_write_checkpoint()
-	 * above failed with error.
-	 */
+	 
 	f2fs_destroy_stats(sbi);
 
-	/* destroy f2fs internal modules */
+	 
 	f2fs_destroy_node_manager(sbi);
 	f2fs_destroy_segment_manager(sbi);
 
-	/* flush s_error_work before sbi destroy */
+	 
 	flush_work(&sbi->s_error_work);
 
 	f2fs_destroy_post_read_wq(sbi);
@@ -1754,18 +1699,18 @@ static int f2fs_freeze(struct super_block *sb)
 	if (f2fs_readonly(sb))
 		return 0;
 
-	/* IO error happened before */
+	 
 	if (unlikely(f2fs_cp_error(F2FS_SB(sb))))
 		return -EIO;
 
-	/* must be clean, since sync_filesystem() was already called */
+	 
 	if (is_sbi_flag_set(F2FS_SB(sb), SBI_IS_DIRTY))
 		return -EINVAL;
 
-	/* Let's flush checkpoints and stop the thread. */
+	 
 	f2fs_flush_ckpt_thread(F2FS_SB(sb));
 
-	/* to avoid deadlock on f2fs_evict_inode->SB_FREEZE_FS */
+	 
 	set_sbi_flag(F2FS_SB(sb), SBI_IS_FREEZING);
 	return 0;
 }
@@ -2142,7 +2087,7 @@ static int f2fs_show_options(struct seq_file *seq, struct dentry *root)
 
 static void default_options(struct f2fs_sb_info *sbi, bool remount)
 {
-	/* init some FS parameters */
+	 
 	if (!remount) {
 		set_opt(sbi, READ_EXTENT_CACHE);
 		clear_opt(sbi, DISABLE_CHECKPOINT);
@@ -2225,7 +2170,7 @@ static int f2fs_disable_checkpoint(struct f2fs_sb_info *sbi)
 	}
 	sbi->sb->s_flags |= SB_ACTIVE;
 
-	/* check if we need more GC first */
+	 
 	unusable = f2fs_get_unusable_blocks(sbi);
 	if (!f2fs_disable_cp_again(sbi, unusable))
 		goto skip_gc;
@@ -2282,7 +2227,7 @@ out_unlock:
 	f2fs_up_write(&sbi->gc_lock);
 restore_flag:
 	sbi->gc_mode = gc_mode;
-	sbi->sb->s_flags = s_flags;	/* Restore SB_RDONLY status */
+	sbi->sb->s_flags = s_flags;	 
 	return err;
 }
 
@@ -2290,7 +2235,7 @@ static void f2fs_enable_checkpoint(struct f2fs_sb_info *sbi)
 {
 	int retry = DEFAULT_RETRY_IO_COUNT;
 
-	/* we should flush all the data to keep data consistency */
+	 
 	do {
 		sync_inodes_sb(sbi->sb);
 		f2fs_io_schedule_timeout(DEFAULT_IO_TIMEOUT);
@@ -2308,7 +2253,7 @@ static void f2fs_enable_checkpoint(struct f2fs_sb_info *sbi)
 
 	f2fs_sync_fs(sbi->sb, 1);
 
-	/* Let's ensure there's no pending checkpoint anymore */
+	 
 	f2fs_flush_ckpt_thread(sbi);
 }
 
@@ -2334,10 +2279,7 @@ static int f2fs_remount(struct super_block *sb, int *flags, char *data)
 	int i, j;
 #endif
 
-	/*
-	 * Save the old mount options in case we
-	 * need to restore them.
-	 */
+	 
 	org_mount_opt = sbi->mount_opt;
 	old_sb_flags = sb->s_flags;
 
@@ -2359,7 +2301,7 @@ static int f2fs_remount(struct super_block *sb, int *flags, char *data)
 	}
 #endif
 
-	/* recover superblocks we couldn't write due to previous RO mount */
+	 
 	if (!(*flags & SB_RDONLY) && is_sbi_flag_set(sbi, SBI_NEED_SB_WRITE)) {
 		err = f2fs_commit_super(sbi, false);
 		f2fs_info(sbi, "Try to recover all the superblocks, ret: %d",
@@ -2370,18 +2312,15 @@ static int f2fs_remount(struct super_block *sb, int *flags, char *data)
 
 	default_options(sbi, true);
 
-	/* parse mount options */
+	 
 	err = parse_options(sb, data, true);
 	if (err)
 		goto restore_opts;
 
-	/* flush outstanding errors before changing fs state */
+	 
 	flush_work(&sbi->s_error_work);
 
-	/*
-	 * Previous and new state of filesystem is RO,
-	 * so skip checking GC and FLUSH_MERGE conditions.
-	 */
+	 
 	if (f2fs_readonly(sb) && (*flags & SB_RDONLY))
 		goto skip;
 
@@ -2396,7 +2335,7 @@ static int f2fs_remount(struct super_block *sb, int *flags, char *data)
 		if (err < 0)
 			goto restore_opts;
 	} else if (f2fs_readonly(sb) && !(*flags & SB_RDONLY)) {
-		/* dquot_resume needs RW */
+		 
 		sb->s_flags &= ~SB_RDONLY;
 		if (sb_any_quota_suspended(sb)) {
 			dquot_resume(sb, -1);
@@ -2413,20 +2352,20 @@ static int f2fs_remount(struct super_block *sb, int *flags, char *data)
 		goto restore_opts;
 	}
 
-	/* disallow enable atgc dynamically */
+	 
 	if (no_atgc == !!test_opt(sbi, ATGC)) {
 		err = -EINVAL;
 		f2fs_warn(sbi, "switch atgc option is not allowed");
 		goto restore_opts;
 	}
 
-	/* disallow enable/disable extent_cache dynamically */
+	 
 	if (no_read_extent_cache == !!test_opt(sbi, READ_EXTENT_CACHE)) {
 		err = -EINVAL;
 		f2fs_warn(sbi, "switch extent_cache option is not allowed");
 		goto restore_opts;
 	}
-	/* disallow enable/disable age extent_cache dynamically */
+	 
 	if (no_age_extent_cache == !!test_opt(sbi, AGE_EXTENT_CACHE)) {
 		err = -EINVAL;
 		f2fs_warn(sbi, "switch age_extent_cache option is not allowed");
@@ -2457,11 +2396,7 @@ static int f2fs_remount(struct super_block *sb, int *flags, char *data)
 		goto restore_opts;
 	}
 
-	/*
-	 * We stop the GC thread if FS is mounted as RO
-	 * or if background_gc = off is passed in mount
-	 * option. Also sync the filesystem.
-	 */
+	 
 	if ((*flags & SB_RDONLY) ||
 			(F2FS_OPTION(sbi).bggc_mode == BGGC_MODE_OFF &&
 			!test_opt(sbi, GC_MERGE))) {
@@ -2490,7 +2425,7 @@ static int f2fs_remount(struct super_block *sb, int *flags, char *data)
 		f2fs_stop_ckpt_thread(sbi);
 		need_restart_ckpt = true;
 	} else {
-		/* Flush if the prevous checkpoint, if exists. */
+		 
 		f2fs_flush_ckpt_thread(sbi);
 
 		err = f2fs_start_ckpt_thread(sbi);
@@ -2503,10 +2438,7 @@ static int f2fs_remount(struct super_block *sb, int *flags, char *data)
 		need_stop_ckpt = true;
 	}
 
-	/*
-	 * We stop issue flush thread if FS is mounted as RO
-	 * or if flush_merge is not passed in mount option.
-	 */
+	 
 	if ((*flags & SB_RDONLY) || !test_opt(sbi, FLUSH_MERGE)) {
 		clear_opt(sbi, FLUSH_MERGE);
 		f2fs_destroy_flush_cmd_control(sbi, false);
@@ -2543,11 +2475,11 @@ static int f2fs_remount(struct super_block *sb, int *flags, char *data)
 
 skip:
 #ifdef CONFIG_QUOTA
-	/* Release old quota file names */
+	 
 	for (i = 0; i < MAXQUOTAS; i++)
 		kfree(org_mount_opt.s_qf_names[i]);
 #endif
-	/* Update the POSIXACL Flag */
+	 
 	sb->s_flags = (sb->s_flags & ~SB_POSIXACL) |
 		(test_opt(sbi, POSIX_ACL) ? SB_POSIXACL : 0);
 
@@ -2600,10 +2532,10 @@ restore_opts:
 #ifdef CONFIG_QUOTA
 static bool f2fs_need_recovery(struct f2fs_sb_info *sbi)
 {
-	/* need to recovery orphan */
+	 
 	if (is_set_ckpt_flags(sbi, CP_ORPHAN_PRESENT_FLAG))
 		return true;
-	/* need to recovery data */
+	 
 	if (test_opt(sbi, DISABLE_ROLL_FORWARD))
 		return false;
 	if (test_opt(sbi, NORECOVERY))
@@ -2618,7 +2550,7 @@ static bool f2fs_recover_quota_begin(struct f2fs_sb_info *sbi)
 	if (!f2fs_need_recovery(sbi))
 		return false;
 
-	/* it doesn't need to check f2fs_sb_has_readonly() */
+	 
 	if (f2fs_hw_is_readonly(sbi))
 		return false;
 
@@ -2627,10 +2559,7 @@ static bool f2fs_recover_quota_begin(struct f2fs_sb_info *sbi)
 		set_sbi_flag(sbi, SBI_IS_WRITABLE);
 	}
 
-	/*
-	 * Turn on quotas which were not enabled for read-only mounts if
-	 * filesystem has quota feature, so that they are updated correctly.
-	 */
+	 
 	return f2fs_enable_quota_files(sbi, readonly);
 }
 
@@ -2646,7 +2575,7 @@ static void f2fs_recover_quota_end(struct f2fs_sb_info *sbi,
 	}
 }
 
-/* Read data from quotafile */
+ 
 static ssize_t f2fs_quota_read(struct super_block *sb, int type, char *data,
 			       size_t len, loff_t off)
 {
@@ -2701,7 +2630,7 @@ repeat:
 	return len;
 }
 
-/* Write to quotafile */
+ 
 static ssize_t f2fs_quota_write(struct super_block *sb, int type,
 				const char *data, size_t len, loff_t off)
 {
@@ -2825,7 +2754,7 @@ static int f2fs_quota_enable(struct super_block *sb, int type, int format_id,
 		return PTR_ERR(qf_inode);
 	}
 
-	/* Don't account quota for quota files to avoid recursion */
+	 
 	inode_lock(qf_inode);
 	qf_inode->i_flags |= S_NOQUOTA;
 
@@ -2892,7 +2821,7 @@ static int f2fs_quota_sync_file(struct f2fs_sb_info *sbi, int type)
 	if (ret)
 		goto out;
 
-	/* if we are using journalled quota */
+	 
 	if (is_journalled_quota(sbi))
 		goto out;
 
@@ -2912,10 +2841,7 @@ int f2fs_quota_sync(struct super_block *sb, int type)
 	int cnt;
 	int ret = 0;
 
-	/*
-	 * Now when everything is written we can discard the pagecache so
-	 * that userspace sees the changes.
-	 */
+	 
 	for (cnt = 0; cnt < MAXQUOTAS; cnt++) {
 
 		if (type != -1 && cnt != type)
@@ -2927,15 +2853,7 @@ int f2fs_quota_sync(struct super_block *sb, int type)
 		if (!f2fs_sb_has_quota_ino(sbi))
 			inode_lock(dqopt->files[cnt]);
 
-		/*
-		 * do_quotactl
-		 *  f2fs_quota_sync
-		 *  f2fs_down_read(quota_sem)
-		 *  dquot_writeback_dquots()
-		 *  f2fs_dquot_commit
-		 *			      block_operation
-		 *			      f2fs_down_read(quota_sem)
-		 */
+		 
 		f2fs_lock_op(sbi);
 		f2fs_down_read(&sbi->quota_sem);
 
@@ -2959,7 +2877,7 @@ static int f2fs_quota_on(struct super_block *sb, int type, int format_id,
 	struct inode *inode;
 	int err;
 
-	/* if quota sysfile exists, deny enabling quota with specific file */
+	 
 	if (f2fs_sb_has_quota_ino(F2FS_SB(sb))) {
 		f2fs_err(F2FS_SB(sb), "quota sysfile already exists");
 		return -EBUSY;
@@ -3028,11 +2946,7 @@ static int f2fs_quota_off(struct super_block *sb, int type)
 
 	err = __f2fs_quota_off(sb, type);
 
-	/*
-	 * quotactl can shutdown journalled quota, result in inconsistence
-	 * between quota record and fs data by following updates, tag the
-	 * flag to let fsck be aware of it.
-	 */
+	 
 	if (is_journalled_quota(sbi))
 		set_sbi_flag(sbi, SBI_QUOTA_NEED_REPAIR);
 	return err;
@@ -3053,11 +2967,7 @@ void f2fs_quota_off_umount(struct super_block *sb)
 			set_sbi_flag(F2FS_SB(sb), SBI_QUOTA_NEED_REPAIR);
 		}
 	}
-	/*
-	 * In case of checkpoint=disable, we must flush quota blocks.
-	 * This can cause NULL exception for node_inode in end_io, since
-	 * put_super already dropped it.
-	 */
+	 
 	sync_filesystem(sb);
 }
 
@@ -3115,7 +3025,7 @@ static int f2fs_dquot_mark_dquot_dirty(struct dquot *dquot)
 	struct f2fs_sb_info *sbi = F2FS_SB(sb);
 	int ret = dquot_mark_dquot_dirty(dquot);
 
-	/* if we are using journalled quota */
+	 
 	if (is_journalled_quota(sbi))
 		set_sbi_flag(sbi, SBI_QUOTA_NEED_FLUSH);
 
@@ -3211,12 +3121,7 @@ static int f2fs_set_context(struct inode *inode, const void *ctx, size_t len,
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
 
-	/*
-	 * Encrypting the root directory is not allowed because fsck
-	 * expects lost+found directory to exist and remain unencrypted
-	 * if LOST_FOUND feature is enabled.
-	 *
-	 */
+	 
 	if (f2fs_sb_has_lost_found(sbi) &&
 			inode->i_ino == F2FS_ROOT_INO(sbi))
 		return -EPERM;
@@ -3284,16 +3189,12 @@ static struct inode *f2fs_nfs_get_inode(struct super_block *sb,
 	if (f2fs_check_nid_range(sbi, ino))
 		return ERR_PTR(-ESTALE);
 
-	/*
-	 * f2fs_iget isn't quite right if the inode is currently unallocated!
-	 * However f2fs_iget currently does appropriate checks to handle stale
-	 * inodes so everything is OK.
-	 */
+	 
 	inode = f2fs_iget(sb, ino);
 	if (IS_ERR(inode))
 		return ERR_CAST(inode);
 	if (unlikely(generation && inode->i_generation != generation)) {
-		/* we didn't find the right inode.. */
+		 
 		iput(inode);
 		return ERR_PTR(-ESTALE);
 	}
@@ -3325,26 +3226,21 @@ loff_t max_file_blocks(struct inode *inode)
 	loff_t result = 0;
 	loff_t leaf_count;
 
-	/*
-	 * note: previously, result is equal to (DEF_ADDRS_PER_INODE -
-	 * DEFAULT_INLINE_XATTR_ADDRS), but now f2fs try to reserve more
-	 * space in inode.i_addr, it will be more safe to reassign
-	 * result as zero.
-	 */
+	 
 
 	if (inode && f2fs_compressed_file(inode))
 		leaf_count = ADDRS_PER_BLOCK(inode);
 	else
 		leaf_count = DEF_ADDRS_PER_BLOCK;
 
-	/* two direct node blocks */
+	 
 	result += (leaf_count * 2);
 
-	/* two indirect node blocks */
+	 
 	leaf_count *= NIDS_PER_BLOCK;
 	result += (leaf_count * 2);
 
-	/* one double indirect node block */
+	 
 	leaf_count *= NIDS_PER_BLOCK;
 	result += leaf_count;
 
@@ -3360,7 +3256,7 @@ static int __f2fs_commit_super(struct buffer_head *bh,
 	set_buffer_dirty(bh);
 	unlock_buffer(bh);
 
-	/* it's rare case, we can do fua all the time */
+	 
 	return __sync_dirty_buffer(bh, REQ_SYNC | REQ_PREFLUSH | REQ_FUA);
 }
 
@@ -3435,7 +3331,7 @@ static inline bool sanity_check_area_boundary(struct f2fs_sb_info *sbi,
 		int err = 0;
 		char *res;
 
-		/* fix in-memory information all the time */
+		 
 		raw_super->segment_count = cpu_to_le32((main_end_blkaddr -
 				segment0_blkaddr) >> log_blocks_per_seg);
 
@@ -3471,7 +3367,7 @@ static int sanity_check_raw_super(struct f2fs_sb_info *sbi,
 		return -EINVAL;
 	}
 
-	/* Check checksum_offset and crc in superblock */
+	 
 	if (__F2FS_HAS_FEATURE(raw_super, F2FS_FEATURE_SB_CHKSUM)) {
 		crc_offset = le32_to_cpu(raw_super->checksum_offset);
 		if (crc_offset !=
@@ -3487,7 +3383,7 @@ static int sanity_check_raw_super(struct f2fs_sb_info *sbi,
 		}
 	}
 
-	/* Currently, support only 4KB block size */
+	 
 	if (le32_to_cpu(raw_super->log_blocksize) != F2FS_BLKSIZE_BITS) {
 		f2fs_info(sbi, "Invalid log_blocksize (%u), supports only %u",
 			  le32_to_cpu(raw_super->log_blocksize),
@@ -3495,14 +3391,14 @@ static int sanity_check_raw_super(struct f2fs_sb_info *sbi,
 		return -EFSCORRUPTED;
 	}
 
-	/* check log blocks per segment */
+	 
 	if (le32_to_cpu(raw_super->log_blocks_per_seg) != 9) {
 		f2fs_info(sbi, "Invalid log blocks per segment (%u)",
 			  le32_to_cpu(raw_super->log_blocks_per_seg));
 		return -EFSCORRUPTED;
 	}
 
-	/* Currently, support 512/1024/2048/4096 bytes sector size */
+	 
 	if (le32_to_cpu(raw_super->log_sectorsize) >
 				F2FS_MAX_LOG_SECTOR_SIZE ||
 		le32_to_cpu(raw_super->log_sectorsize) <
@@ -3526,7 +3422,7 @@ static int sanity_check_raw_super(struct f2fs_sb_info *sbi,
 	secs_per_zone = le32_to_cpu(raw_super->secs_per_zone);
 	total_sections = le32_to_cpu(raw_super->section_count);
 
-	/* blocks_per_seg should be 512, given the above check */
+	 
 	blocks_per_seg = BIT(le32_to_cpu(raw_super->log_blocks_per_seg));
 
 	if (segment_count > F2FS_MAX_SEGMENT ||
@@ -3607,7 +3503,7 @@ static int sanity_check_raw_super(struct f2fs_sb_info *sbi,
 		return -EFSCORRUPTED;
 	}
 
-	/* check reserved ino info */
+	 
 	if (le32_to_cpu(raw_super->node_ino) != 1 ||
 		le32_to_cpu(raw_super->meta_ino) != 2 ||
 		le32_to_cpu(raw_super->root_ino) != 3) {
@@ -3618,7 +3514,7 @@ static int sanity_check_raw_super(struct f2fs_sb_info *sbi,
 		return -EFSCORRUPTED;
 	}
 
-	/* check CP/SIT/NAT/SSA/MAIN_AREA area boundary */
+	 
 	if (sanity_check_area_boundary(sbi, bh))
 		return -EFSCORRUPTED;
 
@@ -3946,12 +3842,7 @@ static int init_blkz_info(struct f2fs_sb_info *sbi, int devi)
 }
 #endif
 
-/*
- * Read f2fs raw super block.
- * Because we have two copies of super block, so read both of them
- * to get the first valid one. If any one of them is broken, we pass
- * them recovery flag back to the caller.
- */
+ 
 static int read_raw_super_block(struct f2fs_sb_info *sbi,
 			struct f2fs_super_block **raw_super,
 			int *valid_super_block, int *recovery)
@@ -3976,7 +3867,7 @@ static int read_raw_super_block(struct f2fs_sb_info *sbi,
 			continue;
 		}
 
-		/* sanity checking of raw super */
+		 
 		err = sanity_check_raw_super(sbi, bh);
 		if (err) {
 			f2fs_err(sbi, "Can't find valid F2FS filesystem in %dth superblock",
@@ -3995,7 +3886,7 @@ static int read_raw_super_block(struct f2fs_sb_info *sbi,
 		brelse(bh);
 	}
 
-	/* No valid superblock */
+	 
 	if (!*raw_super)
 		kfree(super);
 	else
@@ -4016,25 +3907,25 @@ int f2fs_commit_super(struct f2fs_sb_info *sbi, bool recover)
 		return -EROFS;
 	}
 
-	/* we should update superblock crc here */
+	 
 	if (!recover && f2fs_sb_has_sb_chksum(sbi)) {
 		crc = f2fs_crc32(sbi, F2FS_RAW_SUPER(sbi),
 				offsetof(struct f2fs_super_block, crc));
 		F2FS_RAW_SUPER(sbi)->crc = cpu_to_le32(crc);
 	}
 
-	/* write back-up superblock first */
+	 
 	bh = sb_bread(sbi->sb, sbi->valid_super_block ? 0 : 1);
 	if (!bh)
 		return -EIO;
 	err = __f2fs_commit_super(bh, F2FS_RAW_SUPER(sbi));
 	brelse(bh);
 
-	/* if we are in recovery path, skip writing valid superblock */
+	 
 	if (recover || err)
 		return err;
 
-	/* write current valid superblock */
+	 
 	bh = sb_bread(sbi->sb, sbi->valid_super_block);
 	if (!bh)
 		return -EIO;
@@ -4165,11 +4056,7 @@ void f2fs_handle_critical_error(struct f2fs_sb_info *sbi, unsigned char reason,
 			f2fs_record_stop_reason(sbi);
 	}
 
-	/*
-	 * We force ERRORS_RO behavior when system is rebooting. Otherwise we
-	 * could panic during 'reboot -f' as the underlying device got already
-	 * disabled.
-	 */
+	 
 	if (F2FS_OPTION(sbi).errors == MOUNT_ERRORS_PANIC &&
 				!shutdown && !system_going_down() &&
 				!is_sbi_flag_set(sbi, SBI_IS_SHUTDOWN))
@@ -4179,15 +4066,12 @@ void f2fs_handle_critical_error(struct f2fs_sb_info *sbi, unsigned char reason,
 	if (shutdown)
 		set_sbi_flag(sbi, SBI_IS_SHUTDOWN);
 
-	/* continue filesystem operators if errors=continue */
+	 
 	if (continue_fs || f2fs_readonly(sb))
 		return;
 
 	f2fs_warn(sbi, "Remounting filesystem read-only");
-	/*
-	 * Make sure updated value of ->s_mount_flags will be visible before
-	 * ->s_flags update
-	 */
+	 
 	smp_wmb();
 	sb->s_flags |= SB_RDONLY;
 }
@@ -4208,17 +4092,14 @@ static int f2fs_scan_devices(struct f2fs_sb_info *sbi)
 	blk_mode_t mode = sb_open_mode(sbi->sb->s_flags);
 	int i;
 
-	/* Initialize single device information */
+	 
 	if (!RDEV(0).path[0]) {
 		if (!bdev_is_zoned(sbi->sb->s_bdev))
 			return 0;
 		max_devices = 1;
 	}
 
-	/*
-	 * Initialize multiple devices information, or single
-	 * zoned block device information.
-	 */
+	 
 	sbi->devs = f2fs_kzalloc(sbi,
 				 array_size(max_devices,
 					    sizeof(struct f2fs_dev_info)),
@@ -4236,7 +4117,7 @@ static int f2fs_scan_devices(struct f2fs_sb_info *sbi)
 			break;
 
 		if (max_devices > 1) {
-			/* Multi-device mount */
+			 
 			memcpy(FDEV(i).path, RDEV(i).path, MAX_PATH_LEN);
 			FDEV(i).total_segments =
 				le32_to_cpu(RDEV(i).total_segments);
@@ -4258,7 +4139,7 @@ static int f2fs_scan_devices(struct f2fs_sb_info *sbi)
 		if (IS_ERR(FDEV(i).bdev))
 			return PTR_ERR(FDEV(i).bdev);
 
-		/* to release errored devices */
+		 
 		sbi->s_ndevs = i + 1;
 
 		if (logical_blksize != bdev_logical_block_size(FDEV(i).bdev))
@@ -4345,7 +4226,7 @@ static int f2fs_setup_casefold(struct f2fs_sb_info *sbi)
 
 static void f2fs_tuning_parameters(struct f2fs_sb_info *sbi)
 {
-	/* adjust parameters according to the volume size */
+	 
 	if (MAIN_SEGS(sbi) <= SMALL_VOLUME_SEGMENTS) {
 		if (f2fs_block_unit_discard(sbi))
 			SM_I(sbi)->dcc_info->discard_granularity =
@@ -4379,14 +4260,14 @@ try_onemore:
 	valid_super_block = -1;
 	recovery = 0;
 
-	/* allocate memory for f2fs-specific super block info */
+	 
 	sbi = kzalloc(sizeof(struct f2fs_sb_info), GFP_KERNEL);
 	if (!sbi)
 		return -ENOMEM;
 
 	sbi->sb = sb;
 
-	/* initialize locks within allocated memory */
+	 
 	init_f2fs_rwsem(&sbi->gc_lock);
 	mutex_init(&sbi->writepages);
 	init_f2fs_rwsem(&sbi->cp_global_sem);
@@ -4404,7 +4285,7 @@ try_onemore:
 	}
 	mutex_init(&sbi->flush_lock);
 
-	/* Load the checksum driver */
+	 
 	sbi->s_chksum_driver = crypto_alloc_shash("crc32", 0, 0);
 	if (IS_ERR(sbi->s_chksum_driver)) {
 		f2fs_err(sbi, "Cannot load crc32 driver.");
@@ -4413,7 +4294,7 @@ try_onemore:
 		goto free_sbi;
 	}
 
-	/* set a block size */
+	 
 	if (unlikely(!sb_set_blocksize(sb, F2FS_BLKSIZE))) {
 		f2fs_err(sbi, "unable to set blocksize");
 		goto free_sbi;
@@ -4431,13 +4312,13 @@ try_onemore:
 	memcpy(sbi->errors, raw_super->s_errors, MAX_F2FS_ERRORS);
 	memcpy(sbi->stop_reason, raw_super->s_stop_reason, MAX_STOP_REASON);
 
-	/* precompute checksum seed for metadata */
+	 
 	if (f2fs_sb_has_inode_chksum(sbi))
 		sbi->s_chksum_seed = f2fs_chksum(sbi, ~0, raw_super->uuid,
 						sizeof(raw_super->uuid));
 
 	default_options(sbi, false);
-	/* parse mount options */
+	 
 	options = kstrdup((const char *)data, GFP_KERNEL);
 	if (data && !options) {
 		err = -ENOMEM;
@@ -4485,10 +4366,10 @@ try_onemore:
 	memcpy(&sb->s_uuid, raw_super->uuid, sizeof(raw_super->uuid));
 	sb->s_iflags |= SB_I_CGROUPWB;
 
-	/* init f2fs-specific super block info */
+	 
 	sbi->valid_super_block = valid_super_block;
 
-	/* disallow all the data/node/meta page writes */
+	 
 	set_sbi_flag(sbi, SBI_POR_DOING);
 
 	err = f2fs_init_write_merge_io(sbi);
@@ -4514,7 +4395,7 @@ try_onemore:
 		}
 	}
 
-	/* init per sbi slab cache */
+	 
 	err = f2fs_init_xattr_caches(sbi);
 	if (err)
 		goto free_io_dummy;
@@ -4522,7 +4403,7 @@ try_onemore:
 	if (err)
 		goto free_xattr_cache;
 
-	/* get an inode for meta space */
+	 
 	sbi->meta_inode = f2fs_iget(sb, F2FS_META_INO(sbi));
 	if (IS_ERR(sbi->meta_inode)) {
 		f2fs_err(sbi, "Failed to read F2FS meta data inode");
@@ -4546,7 +4427,7 @@ try_onemore:
 	if (__is_set_ckpt_flags(F2FS_CKPT(sbi), CP_FSCK_FLAG))
 		set_sbi_flag(sbi, SBI_NEED_FSCK);
 
-	/* Initialize device list */
+	 
 	err = f2fs_scan_devices(sbi);
 	if (err) {
 		f2fs_err(sbi, "Failed to find devices");
@@ -4578,7 +4459,7 @@ try_onemore:
 
 	f2fs_init_fsync_node_info(sbi);
 
-	/* setup checkpoint request control and start checkpoint issue thread */
+	 
 	f2fs_init_ckpt_req_control(sbi);
 	if (!f2fs_readonly(sb) && !test_opt(sbi, DISABLE_CHECKPOINT) &&
 			test_opt(sbi, MERGE_CHECKPOINT)) {
@@ -4591,7 +4472,7 @@ try_onemore:
 		}
 	}
 
-	/* setup f2fs internal modules */
+	 
 	err = f2fs_build_segment_manager(sbi);
 	if (err) {
 		f2fs_err(sbi, "Failed to initialize F2FS segment manager (%d)",
@@ -4609,10 +4490,10 @@ try_onemore:
 	if (err)
 		goto free_nm;
 
-	/* For write statistics */
+	 
 	sbi->sectors_written_start = f2fs_get_sectors_written(sbi);
 
-	/* Read accumulated write IO statistics if exists */
+	 
 	seg_i = CURSEG_I(sbi, CURSEG_HOT_NODE);
 	if (__exist_node_summaries(sbi))
 		sbi->kbytes_written =
@@ -4624,7 +4505,7 @@ try_onemore:
 	if (err)
 		goto free_nm;
 
-	/* get an inode for node space */
+	 
 	sbi->node_inode = f2fs_iget(sb, F2FS_NODE_INO(sbi));
 	if (IS_ERR(sbi->node_inode)) {
 		f2fs_err(sbi, "Failed to read node inode");
@@ -4632,7 +4513,7 @@ try_onemore:
 		goto free_stats;
 	}
 
-	/* read root inode and dentry */
+	 
 	root = f2fs_iget(sb, F2FS_ROOT_INO(sbi));
 	if (IS_ERR(root)) {
 		f2fs_err(sbi, "Failed to read root inode");
@@ -4646,7 +4527,7 @@ try_onemore:
 		goto free_node_inode;
 	}
 
-	sb->s_root = d_make_root(root); /* allocate root dentry */
+	sb->s_root = d_make_root(root);  
 	if (!sb->s_root) {
 		err = -ENOMEM;
 		goto free_node_inode;
@@ -4661,7 +4542,7 @@ try_onemore:
 		goto free_compress_inode;
 
 #ifdef CONFIG_QUOTA
-	/* Enable quota usage during mount */
+	 
 	if (f2fs_sb_has_quota_ino(sbi) && !f2fs_readonly(sb)) {
 		err = f2fs_enable_quotas(sb);
 		if (err)
@@ -4670,7 +4551,7 @@ try_onemore:
 
 	quota_enabled = f2fs_recover_quota_begin(sbi);
 #endif
-	/* if there are any orphan inodes, free them */
+	 
 	err = f2fs_recover_orphan_inodes(sbi);
 	if (err)
 		goto free_meta;
@@ -4678,13 +4559,10 @@ try_onemore:
 	if (unlikely(is_set_ckpt_flags(sbi, CP_DISABLED_FLAG)))
 		goto reset_checkpoint;
 
-	/* recover fsynced data */
+	 
 	if (!test_opt(sbi, DISABLE_ROLL_FORWARD) &&
 			!test_opt(sbi, NORECOVERY)) {
-		/*
-		 * mount should be failed, when device has readonly mode, and
-		 * previous checkpoint was not done by clean system shutdown.
-		 */
+		 
 		if (f2fs_hw_is_readonly(sbi)) {
 			if (!is_set_ckpt_flags(sbi, CP_UMOUNT_FLAG)) {
 				err = f2fs_recover_fsync_data(sbi, true);
@@ -4730,10 +4608,7 @@ try_onemore:
 	f2fs_recover_quota_end(sbi, quota_enabled);
 #endif
 
-	/*
-	 * If the f2fs is not readonly and fsync data recovery succeeds,
-	 * check zoned block devices' write pointer consistency.
-	 */
+	 
 	if (!err && !f2fs_readonly(sb) && f2fs_sb_has_blkzoned(sbi)) {
 		err = f2fs_check_write_pointer(sbi);
 		if (err)
@@ -4743,7 +4618,7 @@ try_onemore:
 reset_checkpoint:
 	f2fs_init_inmem_curseg(sbi);
 
-	/* f2fs_recover_fsync_data() cleared this already */
+	 
 	clear_sbi_flag(sbi, SBI_POR_DOING);
 
 	if (test_opt(sbi, DISABLE_CHECKPOINT)) {
@@ -4754,20 +4629,17 @@ reset_checkpoint:
 		f2fs_enable_checkpoint(sbi);
 	}
 
-	/*
-	 * If filesystem is not mounted as read-only then
-	 * do start the gc_thread.
-	 */
+	 
 	if ((F2FS_OPTION(sbi).bggc_mode != BGGC_MODE_OFF ||
 		test_opt(sbi, GC_MERGE)) && !f2fs_readonly(sb)) {
-		/* After POR, we can run background GC thread.*/
+		 
 		err = f2fs_start_gc_thread(sbi);
 		if (err)
 			goto sync_free_meta;
 	}
 	kvfree(options);
 
-	/* recover broken superblock */
+	 
 	if (recovery) {
 		err = f2fs_commit_super(sbi, true);
 		f2fs_info(sbi, "Try to recover %dth superblock, ret: %d",
@@ -4786,7 +4658,7 @@ reset_checkpoint:
 	return 0;
 
 sync_free_meta:
-	/* safe to flush all the data */
+	 
 	sync_filesystem(sbi->sb);
 	retry_cnt = 0;
 
@@ -4796,14 +4668,9 @@ free_meta:
 	if (f2fs_sb_has_quota_ino(sbi) && !f2fs_readonly(sb))
 		f2fs_quota_off_umount(sbi->sb);
 #endif
-	/*
-	 * Some dirty meta pages can be produced by f2fs_recover_orphan_inodes()
-	 * failed by EIO. Then, iput(node_inode) can trigger balance_fs_bg()
-	 * followed by f2fs_write_checkpoint() through f2fs_write_node_pages(), which
-	 * falls into an infinite loop in f2fs_sync_meta_pages().
-	 */
+	 
 	truncate_inode_pages_final(META_MAPPING(sbi));
-	/* evict some inodes being cached by GC */
+	 
 	evict_inodes(sb);
 	f2fs_unregister_sysfs(sbi);
 free_compress_inode:
@@ -4819,14 +4686,14 @@ free_node_inode:
 free_stats:
 	f2fs_destroy_stats(sbi);
 free_nm:
-	/* stop discard thread before destroying node manager */
+	 
 	f2fs_stop_discard_thread(sbi);
 	f2fs_destroy_node_manager(sbi);
 free_sm:
 	f2fs_destroy_segment_manager(sbi);
 stop_ckpt_thread:
 	f2fs_stop_ckpt_thread(sbi);
-	/* flush s_error_work before sbi destroy */
+	 
 	flush_work(&sbi->s_error_work);
 	f2fs_destroy_post_read_wq(sbi);
 free_devices:
@@ -4868,7 +4735,7 @@ free_sbi:
 		crypto_free_shash(sbi->s_chksum_driver);
 	kfree(sbi);
 
-	/* give only one another chance */
+	 
 	if (retry_cnt > 0 && skip_recovery) {
 		retry_cnt--;
 		shrink_dcache_sb(sb);
@@ -4893,10 +4760,7 @@ static void kill_f2fs_super(struct super_block *sb)
 		f2fs_stop_discard_thread(sbi);
 
 #ifdef CONFIG_F2FS_FS_COMPRESSION
-		/*
-		 * latter evict_inode() can bypass checking and invalidating
-		 * compress inode cache.
-		 */
+		 
 		if (test_opt(sbi, COMPRESS_CACHE))
 			truncate_inode_pages_final(COMPRESS_MAPPING(sbi));
 #endif
@@ -4935,10 +4799,7 @@ static int __init init_inodecache(void)
 
 static void destroy_inodecache(void)
 {
-	/*
-	 * Make sure all delayed rcu free inodes are flushed before we
-	 * destroy cache.
-	 */
+	 
 	rcu_barrier();
 	kmem_cache_destroy(f2fs_inode_cachep);
 }

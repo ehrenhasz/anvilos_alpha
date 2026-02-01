@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * StarFive JH7110 USB 2.0 PHY driver
- *
- * Copyright (C) 2023 StarFive Technology Co., Ltd.
- * Author: Minda Chen <minda.chen@starfivetech.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -31,7 +26,7 @@ static void usb2_set_ls_keepalive(struct jh7110_usb2_phy *phy, bool set)
 {
 	unsigned int val;
 
-	/* Host mode enable the LS speed keep-alive signal */
+	 
 	val = readl(phy->regs + USB_LS_KEEPALIVE_OFF);
 	if (set)
 		val |= USB_LS_KEEPALIVE_ENABLE;
@@ -134,7 +129,7 @@ static int jh7110_usb_phy_probe(struct platform_device *pdev)
 
 static const struct of_device_id jh7110_usb_phy_of_match[] = {
 	{ .compatible = "starfive,jh7110-usb-phy" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, jh7110_usb_phy_of_match);
 

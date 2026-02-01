@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* Copyright (C) 2016-2022 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- *
- * Test cases for siphash.c
- *
- * SipHash: a fast short-input PRF
- * https://131002.net/siphash/
- *
- * This implementation is specifically for SipHash2-4 for a secure PRF
- * and HalfSipHash1-3/SipHash1-3 for an insecure PRF only suitable for
- * hashtables.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -20,9 +10,7 @@
 #include <linux/errno.h>
 #include <linux/module.h>
 
-/* Test vectors taken from reference source available at:
- *     https://github.com/veorq/SipHash
- */
+ 
 
 static const siphash_key_t test_key_siphash =
 	{{ 0x0706050403020100ULL, 0x0f0e0d0c0b0a0908ULL }};

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Atmel SMC (Static Memory Controller) register offsets and bit definitions.
- *
- * Copyright (C) 2014 Atmel
- * Copyright (C) 2014 Free Electrons
- *
- * Author: Boris Brezillon <boris.brezillon@free-electrons.com>
- */
+ 
+ 
 
 #ifndef _LINUX_MFD_SYSCON_ATMEL_SMC_H_
 #define _LINUX_MFD_SYSCON_ATMEL_SMC_H_
@@ -76,15 +69,7 @@ struct atmel_hsmc_reg_layout {
 	unsigned int timing_regs_offset;
 };
 
-/**
- * struct atmel_smc_cs_conf - SMC CS config as described in the datasheet.
- * @setup: NCS/NWE/NRD setup timings (not applicable to at91rm9200)
- * @pulse: NCS/NWE/NRD pulse timings (not applicable to at91rm9200)
- * @cycle: NWE/NRD cycle timings (not applicable to at91rm9200)
- * @timings: advanced NAND related timings (only applicable to HSMC)
- * @mode: all kind of config parameters (see the fields definition above).
- *	  The mode fields are different on at91rm9200
- */
+ 
 struct atmel_smc_cs_conf {
 	u32 setup;
 	u32 pulse;
@@ -116,4 +101,4 @@ void atmel_hsmc_cs_conf_get(struct regmap *regmap,
 const struct atmel_hsmc_reg_layout *
 atmel_hsmc_get_reg_layout(struct device_node *np);
 
-#endif /* _LINUX_MFD_SYSCON_ATMEL_SMC_H_ */
+#endif  

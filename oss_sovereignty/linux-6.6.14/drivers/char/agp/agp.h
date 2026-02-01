@@ -1,39 +1,13 @@
-/*
- * AGPGART
- * Copyright (C) 2004 Silicon Graphics, Inc.
- * Copyright (C) 2002-2004 Dave Jones
- * Copyright (C) 1999 Jeff Hartmann
- * Copyright (C) 1999 Precision Insight, Inc.
- * Copyright (C) 1999 Xi Graphics, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * JEFF HARTMANN, OR ANY OTHER CONTRIBUTORS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
- * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef _AGP_BACKEND_PRIV_H
 #define _AGP_BACKEND_PRIV_H 1
 
-#include <asm/agp.h>	/* for flush_agp_cache() */
+#include <asm/agp.h>	 
 
 #define PFX "agpgart: "
 
-//#define AGP_DEBUG 1
+
 #ifdef AGP_DEBUG
 #define DBG(x,y...) printk (KERN_DEBUG PFX "%s: " x "\n", __func__ , ## y)
 #else
@@ -53,9 +27,7 @@ enum aper_size_type {
 struct gatt_mask {
 	unsigned long mask;
 	u32 type;
-	/* totally device specific, for integrated chipsets that
-	 * might have different types of memory masks.  For other
-	 * devices this will probably be ignored */
+	 
 };
 
 #define AGP_PAGE_DESTROY_UNMAP 1
@@ -142,7 +114,7 @@ struct agp_bridge_data {
 	unsigned long *key_list;
 	atomic_t current_memory_agp;
 	atomic_t agp_in_use;
-	int max_memory_agp;	/* in number of pages */
+	int max_memory_agp;	 
 	int aperture_size_idx;
 	int capndx;
 	int flags;
@@ -150,7 +122,7 @@ struct agp_bridge_data {
 	char minor_version;
 	struct list_head list;
 	u32 apbase_config;
-	/* list of agp_memory mapped to the aperture */
+	 
 	struct list_head mapped_list;
 	spinlock_t mapped_lock;
 };
@@ -173,19 +145,19 @@ struct agp_bridge_data {
 
 
 struct agp_device_ids {
-	unsigned short device_id; /* first, to make table easier to read */
+	unsigned short device_id;  
 	enum chipset_type chipset;
 	const char *chipset_name;
-	int (*chipset_setup) (struct pci_dev *pdev);	/* used to override generic */
+	int (*chipset_setup) (struct pci_dev *pdev);	 
 };
 
-/* Driver registration */
+ 
 struct agp_bridge_data *agp_alloc_bridge(void);
 void agp_put_bridge(struct agp_bridge_data *bridge);
 int agp_add_bridge(struct agp_bridge_data *bridge);
 void agp_remove_bridge(struct agp_bridge_data *bridge);
 
-/* Frontend routines. */
+ 
 #if IS_ENABLED(CONFIG_DRM_LEGACY)
 int agp_frontend_initialize(void);
 void agp_frontend_cleanup(void);
@@ -194,7 +166,7 @@ static inline int agp_frontend_initialize(void) { return 0; }
 static inline void agp_frontend_cleanup(void) {}
 #endif
 
-/* Generic routines. */
+ 
 void agp_generic_enable(struct agp_bridge_data *bridge, u32 mode);
 int agp_generic_create_gatt_table(struct agp_bridge_data *bridge);
 int agp_generic_free_gatt_table(struct agp_bridge_data *bridge);
@@ -221,7 +193,7 @@ int agp_generic_type_to_mask_type(struct agp_bridge_data *bridge,
 				  int type);
 struct agp_bridge_data *agp_generic_find_bridge(struct pci_dev *pdev);
 
-/* generic functions for user-populated AGP memory types */
+ 
 struct agp_memory *agp_generic_alloc_user(size_t page_count, int type);
 void agp_alloc_page_array(size_t size, struct agp_memory *mem);
 static inline void agp_free_page_array(struct agp_memory *mem)
@@ -230,19 +202,19 @@ static inline void agp_free_page_array(struct agp_memory *mem)
 }
 
 
-/* generic routines for agp>=3 */
+ 
 int agp3_generic_fetch_size(void);
 void agp3_generic_tlbflush(struct agp_memory *mem);
 int agp3_generic_configure(void);
 void agp3_generic_cleanup(void);
 
-/* GATT allocation. Returns/accepts GATT kernel virtual address. */
+ 
 #define alloc_gatt_pages(order)		\
 	((char *)__get_free_pages(GFP_KERNEL, (order)))
 #define free_gatt_pages(table, order)	\
 	free_pages((unsigned long)(table), (order))
 
-/* aperture sizes have been standardised since v3 */
+ 
 #define AGP_GENERIC_SIZES_ENTRIES 11
 extern const struct aper_size_info_16 agp3_generic_sizes[];
 
@@ -251,7 +223,7 @@ extern int agp_try_unsupported_boot;
 
 long compat_agp_ioctl(struct file *file, unsigned int cmd, unsigned long arg);
 
-/* Chipset independent registers (from AGP Spec) */
+ 
 #define AGP_APBASE	0x10
 #define AGP_APERTURE_BAR	0
 
@@ -298,4 +270,4 @@ long compat_agp_ioctl(struct file *file, unsigned int cmd, unsigned long arg);
 #define AGP_ERRATA_SBA	 1<<1
 #define AGP_ERRATA_1X 1<<2
 
-#endif	/* _AGP_BACKEND_PRIV_H */
+#endif	 

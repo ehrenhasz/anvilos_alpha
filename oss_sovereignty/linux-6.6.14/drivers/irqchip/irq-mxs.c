@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2009-2010 Freescale Semiconductor, Inc. All Rights Reserved.
- * Copyright (C) 2014 Oleksij Rempel <linux@rempel-privat.de>
- *	Add Alphascale ASM9260 support.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -19,13 +15,7 @@
 
 #include "alphascale_asm9260-icoll.h"
 
-/*
- * this device provide 4 offsets for each register:
- * 0x0 - plain read write mode
- * 0x4 - set mode, OR logic.
- * 0x8 - clr mode, XOR logic.
- * 0xc - togle mode.
- */
+ 
 #define SET_REG 4
 #define CLR_REG 8
 
@@ -58,30 +48,23 @@ struct icoll_priv {
 static struct icoll_priv icoll_priv;
 static struct irq_domain *icoll_domain;
 
-/* calculate bit offset depending on number of interrupt per register */
+ 
 static u32 icoll_intr_bitshift(struct irq_data *d, u32 bit)
 {
-	/*
-	 * mask lower part of hwirq to convert it
-	 * in 0, 1, 2 or 3 and then multiply it by 8 (or shift by 3)
-	 */
+	 
 	return bit << ((d->hwirq & 3) << 3);
 }
 
-/* calculate mem offset depending on number of interrupt per register */
+ 
 static void __iomem *icoll_intr_reg(struct irq_data *d)
 {
-	/* offset = hwirq / intr_per_reg * 0x10 */
+	 
 	return icoll_priv.intr + ((d->hwirq >> 2) * 0x10);
 }
 
 static void icoll_ack_irq(struct irq_data *d)
 {
-	/*
-	 * The Interrupt Collector is able to prioritize irqs.
-	 * Currently only level 0 is used. So acking can use
-	 * BV_ICOLL_LEVELACK_IRQLEVELACK__LEVEL0 unconditionally.
-	 */
+	 
 	__raw_writel(BV_ICOLL_LEVELACK_IRQLEVELACK__LEVEL0,
 			icoll_priv.levelack);
 }
@@ -194,10 +177,7 @@ static int __init icoll_of_init(struct device_node *np,
 	icoll_priv.intr		= icoll_base + HW_ICOLL_INTERRUPT0;
 	icoll_priv.clear	= NULL;
 
-	/*
-	 * Interrupt Collector reset, which initializes the priority
-	 * for each irq to level 0.
-	 */
+	 
 	stmp_reset_block(icoll_priv.ctrl);
 
 	icoll_add_domain(np, ICOLL_NUM_IRQS);
@@ -225,10 +205,7 @@ static int __init asm9260_of_init(struct device_node *np,
 
 	writel_relaxed(ASM9260_BM_CTRL_IRQ_ENABLE,
 			icoll_priv.ctrl);
-	/*
-	 * ASM9260 don't provide reset bit. So, we need to set level 0
-	 * manually.
-	 */
+	 
 	for (i = 0; i < 16 * 0x10; i += 0x10)
 		writel(0, icoll_priv.intr + i);
 

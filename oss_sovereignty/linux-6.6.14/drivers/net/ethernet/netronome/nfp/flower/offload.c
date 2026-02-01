@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2017-2018 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/skbuff.h>
 #include <net/devlink.h>
@@ -106,9 +106,7 @@ nfp_flower_xmit_flow(struct nfp_app *app, struct nfp_fl_payload *nfp_flow,
 
 	tot_len = meta_len + key_len + mask_len + act_len;
 
-	/* Convert to long words as firmware expects
-	 * lengths in units of NFP_FL_LW_SIZ.
-	 */
+	 
 	nfp_flow->meta.key_len >>= NFP_FL_LW_SIZ;
 	nfp_flow->meta.mask_len >>= NFP_FL_LW_SIZ;
 	nfp_flow->meta.act_len >>= NFP_FL_LW_SIZ;
@@ -124,9 +122,7 @@ nfp_flower_xmit_flow(struct nfp_app *app, struct nfp_fl_payload *nfp_flow,
 	memcpy(&msg[meta_len + key_len + mask_len],
 	       nfp_flow->action_data, act_len);
 
-	/* Convert back to bytes as software expects
-	 * lengths in units of bytes.
-	 */
+	 
 	nfp_flow->meta.key_len <<= NFP_FL_LW_SIZ;
 	nfp_flow->meta.mask_len <<= NFP_FL_LW_SIZ;
 	nfp_flow->meta.act_len <<= NFP_FL_LW_SIZ;
@@ -255,7 +251,7 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
 		return -EOPNOTSUPP;
 	}
 
-	/* If any tun dissector is used then the required set must be used. */
+	 
 	if (dissector->used_keys & NFP_FLOWER_WHITELIST_TUN_DISSECTOR &&
 	    (dissector->used_keys & NFP_FLOWER_WHITELIST_TUN_DISSECTOR_V6_R)
 	    != NFP_FLOWER_WHITELIST_TUN_DISSECTOR_V6_R &&
@@ -359,7 +355,7 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
 			flow_rule_match_enc_opts(rule, &enc_op);
 
 		if (!flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_PORTS)) {
-			/* Check if GRE, which has no enc_ports */
+			 
 			if (!netif_is_gretap(netdev) && !netif_is_ip6gretap(netdev)) {
 				NL_SET_ERR_MSG_MOD(extack, "unsupported offload: an exact match on L4 destination port is required for non-GRE tunnels");
 				return -EOPNOTSUPP;
@@ -400,9 +396,7 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
 			if (err)
 				return err;
 
-			/* Ensure the ingress netdev matches the expected
-			 * tun type.
-			 */
+			 
 			if (!nfp_fl_netdev_is_tunnel_type(netdev, *tun_type)) {
 				NL_SET_ERR_MSG_MOD(extack, "unsupported offload: ingress netdev does not match the expected tunnel type");
 				return -EOPNOTSUPP;
@@ -414,7 +408,7 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
 		flow_rule_match_basic(rule, &basic);
 
 	if (basic.mask && basic.mask->n_proto) {
-		/* Ethernet type is present in the key. */
+		 
 		switch (basic.key->n_proto) {
 		case cpu_to_be16(ETH_P_IP):
 			key_layer |= NFP_FLOWER_LAYER_IPV4;
@@ -426,9 +420,7 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
 			key_size += sizeof(struct nfp_flower_ipv6);
 			break;
 
-		/* Currently we do not offload ARP
-		 * because we rely on it to get to the host.
-		 */
+		 
 		case cpu_to_be16(ETH_P_ARP):
 			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: ARP not supported");
 			return -EOPNOTSUPP;
@@ -441,7 +433,7 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
 			}
 			break;
 
-		/* Will be included in layer 2. */
+		 
 		case cpu_to_be16(ETH_P_8021Q):
 			break;
 
@@ -485,19 +477,14 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
 			return -EOPNOTSUPP;
 		}
 
-		/* We only support PSH and URG flags when either
-		 * FIN, SYN or RST is present as well.
-		 */
+		 
 		if ((tcp_flags & (TCPHDR_PSH | TCPHDR_URG)) &&
 		    !(tcp_flags & (TCPHDR_FIN | TCPHDR_SYN | TCPHDR_RST))) {
 			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: PSH and URG is only supported when used with FIN, SYN or RST");
 			return -EOPNOTSUPP;
 		}
 
-		/* We need to store TCP flags in the either the IPv4 or IPv6 key
-		 * space, thus we need to ensure we include a IPv4/IPv6 key
-		 * layer if we have not done so already.
-		 */
+		 
 		if (!basic.key) {
 			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: match on TCP flags requires a match on L3 protocol");
 			return -EOPNOTSUPP;
@@ -619,7 +606,7 @@ nfp_flower_update_merge_with_actions(struct nfp_fl_payload *flow,
 			merge->tci = cpu_to_be16(0);
 			break;
 		case NFP_FL_ACTION_OPCODE_SET_TUNNEL:
-			/* New tunnel header means l2 to l4 can be matched. */
+			 
 			eth_broadcast_addr(&merge->l2.mac_dst[0]);
 			eth_broadcast_addr(&merge->l2.mac_src[0]);
 			memset(&merge->l4, 0xff,
@@ -751,11 +738,7 @@ static int
 nfp_flower_can_merge(struct nfp_fl_payload *sub_flow1,
 		     struct nfp_fl_payload *sub_flow2)
 {
-	/* Two flows can be merged if sub_flow2 only matches on bits that are
-	 * either matched by sub_flow1 or set by a sub_flow1 action. This
-	 * ensures that every packet that hits sub_flow1 and recirculates is
-	 * guaranteed to hit sub_flow2.
-	 */
+	 
 	struct nfp_flower_merge_check sub_flow1_merge, sub_flow2_merge;
 	int err, act_out = 0;
 	u8 last_act_id = 0;
@@ -775,13 +758,11 @@ nfp_flower_can_merge(struct nfp_fl_payload *sub_flow1,
 	if (err)
 		return err;
 
-	/* Must only be 1 output action and it must be the last in sequence. */
+	 
 	if (act_out != 1 || last_act_id != NFP_FL_ACTION_OPCODE_OUTPUT)
 		return -EOPNOTSUPP;
 
-	/* Reject merge if sub_flow2 matches on something that is not matched
-	 * on or set in an action by sub_flow1.
-	 */
+	 
 	err = bitmap_andnot(sub_flow2_merge.vals, sub_flow2_merge.vals,
 			    sub_flow1_merge.vals,
 			    sizeof(struct nfp_flower_merge_check) * 8);
@@ -839,7 +820,7 @@ nfp_fl_verify_post_tun_acts(char *acts, int len, struct nfp_fl_push_vlan **vlan)
 		act_off += a->len_lw << NFP_FL_LW_SIZ;
 	}
 
-	/* Ensure any VLAN push also has an egress action. */
+	 
 	if (*vlan && act_off <= sizeof(struct nfp_fl_push_vlan))
 		return -EOPNOTSUPP;
 
@@ -867,7 +848,7 @@ nfp_fl_push_vlan_after_tun(char *acts, int len, struct nfp_fl_push_vlan *vlan)
 		act_off += a->len_lw << NFP_FL_LW_SIZ;
 	}
 
-	/* Return error if no tunnel action is found. */
+	 
 	return -EOPNOTSUPP;
 }
 
@@ -882,7 +863,7 @@ nfp_flower_merge_action(struct nfp_fl_payload *sub_flow1,
 	char *merge_act;
 	int err;
 
-	/* The last action of sub_flow1 must be output - do not merge this. */
+	 
 	sub1_act_len = sub_flow1->meta.act_len - sizeof(struct nfp_fl_output);
 	sub2_act_len = sub_flow2->meta.act_len;
 
@@ -892,7 +873,7 @@ nfp_flower_merge_action(struct nfp_fl_payload *sub_flow1,
 	if (sub1_act_len + sub2_act_len > NFP_FL_MAX_A_SIZ)
 		return -EINVAL;
 
-	/* A shortcut can only be applied if there is a single action. */
+	 
 	if (sub1_act_len)
 		merge_flow->meta.shortcut = cpu_to_be32(NFP_FL_SC_ACT_NULL);
 	else
@@ -901,7 +882,7 @@ nfp_flower_merge_action(struct nfp_fl_payload *sub_flow1,
 	merge_flow->meta.act_len = sub1_act_len + sub2_act_len;
 	merge_act = merge_flow->action_data;
 
-	/* Copy any pre-actions to the start of merge flow action list. */
+	 
 	pre_off1 = nfp_flower_copy_pre_actions(merge_act,
 					       sub_flow1->action_data,
 					       sub1_act_len, &tunnel_act);
@@ -913,10 +894,7 @@ nfp_flower_merge_action(struct nfp_fl_payload *sub_flow1,
 	merge_act += pre_off2;
 	sub2_act_len -= pre_off2;
 
-	/* FW does a tunnel push when egressing, therefore, if sub_flow 1 pushes
-	 * a tunnel, there are restrictions on what sub_flow 2 actions lead to a
-	 * valid merge.
-	 */
+	 
 	if (tunnel_act) {
 		char *post_tun_acts = &sub_flow2->action_data[pre_off2];
 
@@ -931,11 +909,11 @@ nfp_flower_merge_action(struct nfp_fl_payload *sub_flow1,
 		}
 	}
 
-	/* Copy remaining actions from sub_flows 1 and 2. */
+	 
 	memcpy(merge_act, sub_flow1->action_data + pre_off1, sub1_act_len);
 
 	if (post_tun_push_vlan) {
-		/* Update tunnel action in merge to include VLAN push. */
+		 
 		err = nfp_fl_push_vlan_after_tun(merge_act, sub1_act_len,
 						 post_tun_push_vlan);
 		if (err)
@@ -950,7 +928,7 @@ nfp_flower_merge_action(struct nfp_fl_payload *sub_flow1,
 	return 0;
 }
 
-/* Flow link code should only be accessed under RTNL. */
+ 
 static void nfp_flower_unlink_flow(struct nfp_fl_payload_link *link)
 {
 	list_del(&link->merge_flow.list);
@@ -987,17 +965,7 @@ static int nfp_flower_link_flows(struct nfp_fl_payload *merge_flow,
 	return 0;
 }
 
-/**
- * nfp_flower_merge_offloaded_flows() - Merge 2 existing flows to single flow.
- * @app:	Pointer to the APP handle
- * @sub_flow1:	Initial flow matched to produce merge hint
- * @sub_flow2:	Post recirculation flow matched in merge hint
- *
- * Combines 2 flows (if valid) to a single flow, removing the initial from hw
- * and offloading the new, merged flow.
- *
- * Return: negative value on error, 0 in success.
- */
+ 
 int nfp_flower_merge_offloaded_flows(struct nfp_app *app,
 				     struct nfp_fl_payload *sub_flow1,
 				     struct nfp_fl_payload *sub_flow2)
@@ -1014,7 +982,7 @@ int nfp_flower_merge_offloaded_flows(struct nfp_app *app,
 	    nfp_flower_is_merge_flow(sub_flow2))
 		return -EINVAL;
 
-	/* Check if the two flows are already merged */
+	 
 	parent_ctx = (u64)(be32_to_cpu(sub_flow1->meta.host_ctx_id)) << 32;
 	parent_ctx |= (u64)(be32_to_cpu(sub_flow2->meta.host_ctx_id));
 	if (rhashtable_lookup_fast(&priv->merge_table,
@@ -1108,17 +1076,7 @@ err_destroy_merge_flow:
 	return err;
 }
 
-/**
- * nfp_flower_validate_pre_tun_rule()
- * @app:	Pointer to the APP handle
- * @flow:	Pointer to NFP flow representation of rule
- * @key_ls:	Pointer to NFP key layers structure
- * @extack:	Netlink extended ACK report
- *
- * Verifies the flow as a pre-tunnel rule.
- *
- * Return: negative value on error, 0 if verified.
- */
+ 
 static int
 nfp_flower_validate_pre_tun_rule(struct nfp_app *app,
 				 struct nfp_fl_payload *flow,
@@ -1173,7 +1131,7 @@ nfp_flower_validate_pre_tun_rule(struct nfp_app *app,
 	else
 		flow->pre_tun_rule.is_ipv6 = false;
 
-	/* Skip fields known to exist. */
+	 
 	mask += sizeof(struct nfp_flower_meta_tci);
 	ext += sizeof(struct nfp_flower_meta_tci);
 	if (key_ls->key_layer_two) {
@@ -1183,17 +1141,14 @@ nfp_flower_validate_pre_tun_rule(struct nfp_app *app,
 	mask += sizeof(struct nfp_flower_in_port);
 	ext += sizeof(struct nfp_flower_in_port);
 
-	/* Ensure destination MAC address is fully matched. */
+	 
 	mac = (struct nfp_flower_mac_mpls *)mask;
 	if (!is_broadcast_ether_addr(&mac->mac_dst[0])) {
 		NL_SET_ERR_MSG_MOD(extack, "unsupported pre-tunnel rule: dest MAC field must not be masked");
 		return -EOPNOTSUPP;
 	}
 
-	/* Ensure source MAC address is fully matched. This is only needed
-	 * for firmware with the DECAP_V2 feature enabled. Don't do this
-	 * for firmware without this feature to keep old behaviour.
-	 */
+	 
 	if (priv->flower_ext_feats & NFP_FL_FEATS_DECAP_V2) {
 		mac = (struct nfp_flower_mac_mpls *)mask;
 		if (!is_broadcast_ether_addr(&mac->mac_src[0])) {
@@ -1208,7 +1163,7 @@ nfp_flower_validate_pre_tun_rule(struct nfp_app *app,
 		return -EOPNOTSUPP;
 	}
 
-	/* Ensure destination MAC address matches pre_tun_dev. */
+	 
 	mac = (struct nfp_flower_mac_mpls *)ext;
 	if (memcmp(&mac->mac_dst[0], flow->pre_tun_rule.dev->dev_addr, 6)) {
 		NL_SET_ERR_MSG_MOD(extack,
@@ -1216,7 +1171,7 @@ nfp_flower_validate_pre_tun_rule(struct nfp_app *app,
 		return -EOPNOTSUPP;
 	}
 
-	/* Save mac addresses in pre_tun_rule entry for later use */
+	 
 	memcpy(&flow->pre_tun_rule.loc_mac, &mac->mac_dst[0], ETH_ALEN);
 	memcpy(&flow->pre_tun_rule.rem_mac, &mac->mac_src[0], ETH_ALEN);
 
@@ -1224,7 +1179,7 @@ nfp_flower_validate_pre_tun_rule(struct nfp_app *app,
 	ext += sizeof(struct nfp_flower_mac_mpls);
 	if (key_layer & NFP_FLOWER_LAYER_IPV4 ||
 	    key_layer & NFP_FLOWER_LAYER_IPV6) {
-		/* Flags and proto fields have same offset in IPv4 and IPv6. */
+		 
 		int ip_flags = offsetof(struct nfp_flower_ipv4, ip_ext.flags);
 		int ip_proto = offsetof(struct nfp_flower_ipv4, ip_ext.proto);
 		int size;
@@ -1235,7 +1190,7 @@ nfp_flower_validate_pre_tun_rule(struct nfp_app *app,
 			sizeof(struct nfp_flower_ipv6);
 
 
-		/* Ensure proto and flags are the only IP layer fields. */
+		 
 		for (i = 0; i < size; i++)
 			if (mask[i] && i != ip_flags && i != ip_proto) {
 				NL_SET_ERR_MSG_MOD(extack, "unsupported pre-tunnel rule: only flags and proto can be matched in ip header");
@@ -1266,7 +1221,7 @@ nfp_flower_validate_pre_tun_rule(struct nfp_app *app,
 		}
 	}
 
-	/* Action must be a single egress or pop_vlan and egress. */
+	 
 	act_offset = 0;
 	act = (struct nfp_fl_act_head *)&flow->action_data[act_offset];
 	if (vlan) {
@@ -1286,7 +1241,7 @@ nfp_flower_validate_pre_tun_rule(struct nfp_app *app,
 
 	act_offset += act->len_lw << NFP_FL_LW_SIZ;
 
-	/* Ensure there are no more actions after egress. */
+	 
 	if (act_offset != flow->meta.act_len) {
 		NL_SET_ERR_MSG_MOD(extack, "unsupported pre-tunnel rule: egress is not the last action");
 		return -EOPNOTSUPP;
@@ -1303,7 +1258,7 @@ static bool offload_pre_check(struct flow_cls_offload *flow)
 
 	if (dissector->used_keys & BIT_ULL(FLOW_DISSECTOR_KEY_CT)) {
 		flow_rule_match_ct(rule, &ct);
-		/* Allow special case where CT match is all 0 */
+		 
 		if (memchr_inv(ct.key, 0, sizeof(*ct.key)))
 			return false;
 	}
@@ -1314,16 +1269,7 @@ static bool offload_pre_check(struct flow_cls_offload *flow)
 	return true;
 }
 
-/**
- * nfp_flower_add_offload() - Adds a new flow to hardware.
- * @app:	Pointer to the APP handle
- * @netdev:	netdev structure.
- * @flow:	TC flower classifier offload structure.
- *
- * Adds a new flow to the repeated hash structure and action payload.
- *
- * Return: negative value on error, 0 if configured successfully.
- */
+ 
 static int
 nfp_flower_add_offload(struct nfp_app *app, struct net_device *netdev,
 		       struct flow_cls_offload *flow)
@@ -1424,7 +1370,7 @@ nfp_flower_add_offload(struct nfp_app *app, struct net_device *netdev,
 
 	flow_pay->in_hw = true;
 
-	/* Deallocate flow payload when flower rule has been destroyed. */
+	 
 	kfree(key_layer);
 
 	return 0;
@@ -1464,7 +1410,7 @@ nfp_flower_remove_merge_flow(struct nfp_app *app,
 				struct nfp_fl_payload_link, merge_flow.list);
 	origin = link->sub_flow.flow;
 
-	/* Re-add rule the merge had overwritten if it has not been deleted. */
+	 
 	if (origin != del_sub_flow)
 		mod = true;
 
@@ -1491,7 +1437,7 @@ nfp_flower_remove_merge_flow(struct nfp_app *app,
 	}
 
 err_free_links:
-	/* Clean any links connected with the merged flow. */
+	 
 	list_for_each_entry_safe(link, temp, &merge_flow->linked_flows,
 				 merge_flow.list) {
 		u32 ctx_id = be32_to_cpu(link->sub_flow.flow->meta.host_ctx_id);
@@ -1525,24 +1471,14 @@ nfp_flower_del_linked_merge_flows(struct nfp_app *app,
 {
 	struct nfp_fl_payload_link *link, *temp;
 
-	/* Remove any merge flow formed from the deleted sub_flow. */
+	 
 	list_for_each_entry_safe(link, temp, &sub_flow->linked_flows,
 				 sub_flow.list)
 		nfp_flower_remove_merge_flow(app, sub_flow,
 					     link->merge_flow.flow);
 }
 
-/**
- * nfp_flower_del_offload() - Removes a flow from hardware.
- * @app:	Pointer to the APP handle
- * @netdev:	netdev structure.
- * @flow:	TC flower classifier offload structure
- *
- * Removes a flow from the repeated hash structure and clears the
- * action payload. Any flows merged from this are also deleted.
- *
- * Return: negative value on error, 0 if removed successfully.
- */
+ 
 static int
 nfp_flower_del_offload(struct nfp_app *app, struct net_device *netdev,
 		       struct flow_cls_offload *flow)
@@ -1558,7 +1494,7 @@ nfp_flower_del_offload(struct nfp_app *app, struct net_device *netdev,
 	if (nfp_netdev_is_nfp_repr(netdev))
 		port = nfp_port_from_netdev(netdev);
 
-	/* Check ct_map_table */
+	 
 	ct_map_ent = rhashtable_lookup_fast(&priv->ct_map_table, &flow->cookie,
 					    nfp_ct_map_params);
 	if (ct_map_ent) {
@@ -1606,7 +1542,7 @@ nfp_flower_del_offload(struct nfp_app *app, struct net_device *netdev,
 		err = nfp_flower_xmit_flow(app, nfp_flow,
 					   NFP_FLOWER_CMSG_TYPE_FLOW_DEL);
 	}
-	/* Fall through on error. */
+	 
 
 err_free_merge_flow:
 	nfp_flower_del_linked_merge_flows(app, nfp_flow);
@@ -1634,20 +1570,17 @@ __nfp_flower_update_merge_stats(struct nfp_app *app,
 
 	ctx_id = be32_to_cpu(merge_flow->meta.host_ctx_id);
 	pkts = priv->stats[ctx_id].pkts;
-	/* Do not cycle subflows if no stats to distribute. */
+	 
 	if (!pkts)
 		return;
 	bytes = priv->stats[ctx_id].bytes;
 	used = priv->stats[ctx_id].used;
 
-	/* Reset stats for the merge flow. */
+	 
 	priv->stats[ctx_id].pkts = 0;
 	priv->stats[ctx_id].bytes = 0;
 
-	/* The merge flow has received stats updates from firmware.
-	 * Distribute these stats to all subflows that form the merge.
-	 * The stats will collected from TC via the subflows.
-	 */
+	 
 	list_for_each_entry(link, &merge_flow->linked_flows, merge_flow.list) {
 		sub_flow = link->sub_flow.flow;
 		ctx_id = be32_to_cpu(sub_flow->meta.host_ctx_id);
@@ -1664,22 +1597,12 @@ nfp_flower_update_merge_stats(struct nfp_app *app,
 {
 	struct nfp_fl_payload_link *link;
 
-	/* Get merge flows that the subflow forms to distribute their stats. */
+	 
 	list_for_each_entry(link, &sub_flow->linked_flows, sub_flow.list)
 		__nfp_flower_update_merge_stats(app, link->merge_flow.flow);
 }
 
-/**
- * nfp_flower_get_stats() - Populates flow stats obtained from hardware.
- * @app:	Pointer to the APP handle
- * @netdev:	Netdev structure.
- * @flow:	TC flower classifier offload structure
- *
- * Populates a flow statistics structure which which corresponds to a
- * specific flow.
- *
- * Return: negative value on error, 0 if stats populated successfully.
- */
+ 
 static int
 nfp_flower_get_stats(struct nfp_app *app, struct net_device *netdev,
 		     struct flow_cls_offload *flow)
@@ -1690,7 +1613,7 @@ nfp_flower_get_stats(struct nfp_app *app, struct net_device *netdev,
 	struct nfp_fl_payload *nfp_flow;
 	u32 ctx_id;
 
-	/* Check ct_map table first */
+	 
 	ct_map_ent = rhashtable_lookup_fast(&priv->ct_map_table, &flow->cookie,
 					    nfp_ct_map_params);
 	if (ct_map_ent)
@@ -1706,7 +1629,7 @@ nfp_flower_get_stats(struct nfp_app *app, struct net_device *netdev,
 	ctx_id = be32_to_cpu(nfp_flow->meta.host_ctx_id);
 
 	spin_lock_bh(&priv->stats_lock);
-	/* If request is for a sub_flow, update stats from merged flows. */
+	 
 	if (!list_empty(&nfp_flow->linked_flows))
 		nfp_flower_update_merge_stats(app, nfp_flow);
 

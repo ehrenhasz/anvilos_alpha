@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * extcon-fsa9480.c - Fairchild Semiconductor FSA9480 extcon driver
- *
- * Copyright (c) 2019 Tomasz Figa <tomasz.figa@gmail.com>
- *
- * Loosely based on old fsa9480 misc-device driver.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -21,7 +15,7 @@
 #include <linux/irqdomain.h>
 #include <linux/regmap.h>
 
-/* FSA9480 I2C registers */
+ 
 #define FSA9480_REG_DEVID               0x01
 #define FSA9480_REG_CTRL                0x02
 #define FSA9480_REG_INT1                0x03
@@ -44,7 +38,7 @@
 #define FSA9480_REG_MANSW2              0x14
 #define FSA9480_REG_END                 0x15
 
-/* Control */
+ 
 #define CON_SWITCH_OPEN         (1 << 4)
 #define CON_RAW_DATA            (1 << 3)
 #define CON_MANUAL_SW           (1 << 2)
@@ -53,7 +47,7 @@
 #define CON_MASK                (CON_SWITCH_OPEN | CON_RAW_DATA | \
 				 CON_MANUAL_SW | CON_WAIT)
 
-/* Device Type 1 */
+ 
 #define DEV_USB_OTG             7
 #define DEV_DEDICATED_CHG       6
 #define DEV_USB_CHG             5
@@ -67,7 +61,7 @@
 #define DEV_T1_UART_MASK        (DEV_UART)
 #define DEV_T1_CHARGER_MASK     (DEV_DEDICATED_CHG | DEV_USB_CHG)
 
-/* Device Type 2 */
+ 
 #define DEV_AV                  14
 #define DEV_TTY                 13
 #define DEV_PPD                 12
@@ -81,26 +75,22 @@
 #define DEV_T2_JIG_MASK         (DEV_JIG_USB_OFF | DEV_JIG_USB_ON | \
 				 DEV_JIG_UART_OFF | DEV_JIG_UART_ON)
 
-/*
- * Manual Switch
- * D- [7:5] / D+ [4:2]
- * 000: Open all / 001: USB / 010: AUDIO / 011: UART / 100: V_AUDIO
- */
+ 
 #define SW_VAUDIO               ((4 << 5) | (4 << 2))
 #define SW_UART                 ((3 << 5) | (3 << 2))
 #define SW_AUDIO                ((2 << 5) | (2 << 2))
 #define SW_DHOST                ((1 << 5) | (1 << 2))
 #define SW_AUTO                 ((0 << 5) | (0 << 2))
 
-/* Interrupt 1 */
+ 
 #define INT1_MASK               (0xff << 0)
 #define INT_DETACH              (1 << 1)
 #define INT_ATTACH              (1 << 0)
 
-/* Interrupt 2 mask */
+ 
 #define INT2_MASK               (0x1f << 0)
 
-/* Timing Set 1 */
+ 
 #define TIMING1_ADC_500MS       (0x6 << 0)
 
 struct fsa9480_usbsw {
@@ -143,7 +133,7 @@ static const u64 cable_types[] = {
 	[DEV_JIG_USB_ON] = BIT_ULL(EXTCON_USB) | BIT_ULL(EXTCON_JIG),
 };
 
-/* Define regmap configuration of FSA9480 for I2C communication  */
+ 
 static bool fsa9480_volatile_reg(struct device *dev, unsigned int reg)
 {
 	switch (reg) {
@@ -232,10 +222,10 @@ static void fsa9480_detect_dev(struct fsa9480_usbsw *usbsw)
 
 	dev_info(usbsw->dev, "dev1: 0x%x, dev2: 0x%x\n", val1, val2);
 
-	/* handle detached cables first */
+	 
 	fsa9480_handle_change(usbsw, usbsw->cable & ~val, false);
 
-	/* then handle attached ones */
+	 
 	fsa9480_handle_change(usbsw, val & ~usbsw->cable, true);
 
 	usbsw->cable = val;
@@ -246,12 +236,12 @@ static irqreturn_t fsa9480_irq_handler(int irq, void *data)
 	struct fsa9480_usbsw *usbsw = data;
 	int intr = 0;
 
-	/* clear interrupt */
+	 
 	fsa9480_read_irq(usbsw, &intr);
 	if (!intr)
 		return IRQ_NONE;
 
-	/* device detection */
+	 
 	fsa9480_detect_dev(usbsw);
 
 	return IRQ_HANDLED;
@@ -274,7 +264,7 @@ static int fsa9480_probe(struct i2c_client *client)
 
 	i2c_set_clientdata(client, info);
 
-	/* External connector */
+	 
 	info->edev = devm_extcon_dev_allocate(info->dev,
 					      fsa9480_extcon_cable);
 	if (IS_ERR(info->edev)) {
@@ -297,13 +287,13 @@ static int fsa9480_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/* ADC Detect Time: 500ms */
+	 
 	fsa9480_write_reg(info, FSA9480_REG_TIMING1, TIMING1_ADC_500MS);
 
-	/* configure automatic switching */
+	 
 	fsa9480_write_reg(info, FSA9480_REG_CTRL, CON_MASK);
 
-	/* unmask interrupt (attach/detach only) */
+	 
 	fsa9480_write_reg(info, FSA9480_REG_INT1_MASK,
 			  INT1_MASK & ~(INT_ATTACH | INT_DETACH));
 	fsa9480_write_reg(info, FSA9480_REG_INT2_MASK, INT2_MASK);

@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Low-level parallel port routines for the Amiga built-in port
- *
- * Author: Joerg Dorchain <joerg@dorchain.net>
- *
- * This is a complete rewrite of the code, but based heaviy upon the old
- * lp_intern. code.
- *
- * The built-in Amiga parallel port provides one port at a fixed address
- * with 8 bidirectional data lines (D0 - D7) and 3 bidirectional status
- * lines (BUSY, POUT, SEL), 1 output control line /STROBE (raised automatically
- * in hardware when the data register is accessed), and 1 input control line
- * /ACK, able to cause an interrupt, but both not directly settable by
- * software.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -32,14 +19,14 @@
 static void amiga_write_data(struct parport *p, unsigned char data)
 {
 	pr_debug("write_data %c\n", data);
-	/* Triggers also /STROBE. This behavior cannot be changed */
+	 
 	ciaa.prb = data;
 	mb();
 }
 
 static unsigned char amiga_read_data(struct parport *p)
 {
-	/* Triggers also /STROBE. This behavior cannot be changed */
+	 
 	return ciaa.prb;
 }
 
@@ -47,14 +34,13 @@ static unsigned char control_amiga_to_pc(unsigned char control)
 {
 	return PARPORT_CONTROL_SELECT |
 	      PARPORT_CONTROL_AUTOFD | PARPORT_CONTROL_STROBE;
-	/* fake value: interrupt enable, select in, no reset,
-	no autolf, no strobe - seems to be closest the wiring diagram */
+	 
 }
 
 static void amiga_write_control(struct parport *p, unsigned char control)
 {
 	pr_debug("write_control %02x\n", control);
-	/* No implementation possible */
+	 
 }
 	
 static unsigned char amiga_read_control( struct parport *p)
@@ -77,13 +63,13 @@ static unsigned char status_amiga_to_pc(unsigned char status)
 {
 	unsigned char ret = PARPORT_STATUS_BUSY | PARPORT_STATUS_ACK | PARPORT_STATUS_ERROR;
 
-	if (status & 1) /* Busy */
+	if (status & 1)  
 		ret &= ~PARPORT_STATUS_BUSY;
-	if (status & 2) /* PaperOut */
+	if (status & 2)  
 		ret |= PARPORT_STATUS_PAPEROUT;
-	if (status & 4) /* Selected */
+	if (status & 4)  
 		ret |= PARPORT_STATUS_SELECT;
-	/* the rest is not connected or handled autonomously in hardware */
+	 
 
 	return ret;
 }
@@ -110,14 +96,14 @@ static void amiga_disable_irq(struct parport *p)
 static void amiga_data_forward(struct parport *p)
 {
 	pr_debug("forward\n");
-	ciaa.ddrb = 0xff; /* all pins output */
+	ciaa.ddrb = 0xff;  
 	mb();
 }
 
 static void amiga_data_reverse(struct parport *p)
 {
 	pr_debug("reverse\n");
-	ciaa.ddrb = 0; /* all pins input */
+	ciaa.ddrb = 0;  
 	mb();
 }
 
@@ -185,7 +171,7 @@ static struct parport_operations pp_amiga_ops = {
 	.owner		= THIS_MODULE,
 };
 
-/* ----------- Initialisation code --------------------------------- */
+ 
 
 static int __init amiga_parallel_probe(struct platform_device *pdev)
 {
@@ -207,7 +193,7 @@ static int __init amiga_parallel_probe(struct platform_device *pdev)
 		goto out_irq;
 
 	pr_info("%s: Amiga built-in port using irq\n", p->name);
-	/* XXX: set operating mode */
+	 
 	parport_announce_port(p);
 
 	platform_set_drvdata(pdev, p);

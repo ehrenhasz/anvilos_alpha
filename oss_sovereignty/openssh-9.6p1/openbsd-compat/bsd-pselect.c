@@ -1,27 +1,4 @@
-/*
- * Copyright (c) 2001 Markus Friedl.  All rights reserved.
- * Copyright (c) 2021 Darren Tucker (dtucker at dtucker net).
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include "includes.h"
 #ifndef HAVE_PSELECT
@@ -40,7 +17,7 @@
 #include <unistd.h>
 
 #include "log.h"
-#include "misc.h"      /* for set_nonblock */
+#include "misc.h"       
 
 #ifndef HAVE_SIGHANDLER_T
 typedef void (*sighandler_t)(int);
@@ -48,14 +25,7 @@ typedef void (*sighandler_t)(int);
 
 static sighandler_t saved_sighandler[_NSIG];
 
-/*
- * Set up the descriptors.  Because they are close-on-exec, in the case
- * where sshd's re-exec fails notify_pipe will still point to a descriptor
- * that was closed by the exec attempt but if that descriptor has been
- * reopened then we'll attempt to use that.  Ensure that notify_pipe is
- * outside of the range used by sshd re-exec but within NFDBITS (so we don't
- * need to expand the fd_sets).
- */
+ 
 #define REEXEC_MIN_FREE_FD (STDERR_FILENO + 4)
 static int
 pselect_notify_setup_fd(int *fd)
@@ -69,10 +39,7 @@ pselect_notify_setup_fd(int *fd)
 	return (*fd = r);
 }
 
-/*
- * we write to this pipe if a SIGCHLD is caught in order to avoid
- * the race between select() and child_terminated
- */
+ 
 static pid_t notify_pid;
 static int notify_pipe[2];
 static void
@@ -107,8 +74,8 @@ pselect_notify_setup(void)
 		initialized = 1;
 		return;
 	}
-	notify_pipe[0] = -1;    /* read end */
-	notify_pipe[1] = -1;    /* write end */
+	notify_pipe[0] = -1;     
+	notify_pipe[1] = -1;     
 }
 static void
 pselect_notify_parent(void)
@@ -134,7 +101,7 @@ pselect_notify_done(fd_set *readset)
 	}
 }
 
-/*ARGSUSED*/
+ 
 static void
 pselect_sig_handler(int sig)
 {
@@ -142,13 +109,11 @@ pselect_sig_handler(int sig)
 
 	pselect_notify_parent();
 	if (saved_sighandler[sig] != NULL)
-		(*saved_sighandler[sig])(sig);  /* call original handler */
+		(*saved_sighandler[sig])(sig);   
 	errno = save_errno;
 }
 
-/*
- * A minimal implementation of pselect(2), built on top of select(2).
- */
+ 
 
 int
 pselect(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
@@ -164,10 +129,10 @@ pselect(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
 		tv.tv_usec = timeout->tv_nsec / 1000;
 		tvp = &tv;
 	}
-	if (mask == NULL)  /* no signal mask, just call select */
+	if (mask == NULL)   
 		return select(nfds, readfds, writefds, exceptfds, tvp);
 
-	/* For each signal we're unmasking, install our handler if needed. */
+	 
 	for (sig = 0; sig < _NSIG; sig++) {
 		if (sig == SIGKILL || sig == SIGSTOP || sigismember(mask, sig))
 			continue;
@@ -191,7 +156,7 @@ pselect(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
 		nfds = MAX(nfds, notify_pipe[0] + 1);
 	}
 
-	/* Unmask signals, call select then restore signal mask. */
+	 
 	sigprocmask(SIG_SETMASK, mask, &osig);
 	ret = select(nfds, readfds, writefds, exceptfds, tvp);
 	saved_errno = errno;

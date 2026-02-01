@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2021        Intel Corporation
- */
+ 
+ 
 
 #if !defined(CONFIG_IWLWIFI_DEVICE_TRACING)
 
@@ -60,12 +58,9 @@ TRACE_EVENT(iwlmei_me_msg,
 		  __entry->type, __entry->seq_num)
 );
 
-/*
- * If you add something here, add a stub in case
- * !defined(CONFIG_IWLWIFI_DEVICE_TRACING)
- */
+ 
 
-#endif /* __IWLWIFI_DEVICE_TRACE_IWLWIFI_SAP_CMD */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
@@ -73,4 +68,4 @@ TRACE_EVENT(iwlmei_me_msg,
 #define TRACE_INCLUDE_FILE trace
 #include <trace/define_trace.h>
 
-#endif /* CONFIG_IWLWIFI_DEVICE_TRACING */
+#endif  

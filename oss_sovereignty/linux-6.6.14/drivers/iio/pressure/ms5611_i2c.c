@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MS5611 pressure and temperature sensor driver (I2C bus)
- *
- * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
- *
- * 7-bit I2C slave addresses:
- *
- * 0x77 (CSB pin low)
- * 0x76 (CSB pin high)
- *
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/i2c.h>

@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2018 Facebook
-// Copyright (c) 2019 Cloudflare
+
+
+
 
 #include <string.h>
 
@@ -30,7 +30,7 @@ static __always_inline __s64 gen_syncookie(void *data_end, struct bpf_sock *sk,
 	__u32 thlen = tcph->doff * 4;
 
 	if (tcph->syn && !tcph->ack) {
-		// packet should only have an MSS option
+		
 		if (thlen != 24)
 			return 0;
 

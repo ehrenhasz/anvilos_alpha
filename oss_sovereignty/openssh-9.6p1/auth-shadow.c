@@ -1,26 +1,4 @@
-/*
- * Copyright (c) 2004 Darren Tucker.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include "includes.h"
 
@@ -39,19 +17,13 @@
 #ifdef DAY
 # undef DAY
 #endif
-#define DAY	(24L * 60 * 60) /* 1 day in seconds */
+#define DAY	(24L * 60 * 60)  
 
 extern struct sshbuf *loginmsg;
 
-/*
- * For the account and password expiration functions, we assume the expiry
- * occurs the day after the day specified.
- */
+ 
 
-/*
- * Check if specified account is expired.  Returns 1 if account is expired,
- * 0 otherwise.
- */
+ 
 int
 auth_shadow_acctexpired(struct spwd *spw)
 {
@@ -80,10 +52,7 @@ auth_shadow_acctexpired(struct spwd *spw)
 	return 0;
 }
 
-/*
- * Checks password expiry for platforms that use shadow passwd files.
- * Returns: 1 = password expired, 0 = password not expired
- */
+ 
 int
 auth_shadow_pwexpired(Authctxt *ctxt)
 {
@@ -107,7 +76,7 @@ auth_shadow_pwexpired(Authctxt *ctxt)
 
 		pr = getprpwnam((char *)user);
 
-		/* Test for Trusted Mode expiry disabled */
+		 
 		if (pr != NULL && pr->ufld.fd_min == 0 &&
 		    pr->ufld.fd_lifetime == 0 && pr->ufld.fd_expire == 0 &&
 		    pr->ufld.fd_pw_expire_warning == 0 &&
@@ -116,7 +85,7 @@ auth_shadow_pwexpired(Authctxt *ctxt)
 	}
 #endif
 
-	/* TODO: check sp_inact */
+	 
 	daysleft = spw->sp_lstchg + spw->sp_max - today;
 	if (disabled) {
 		debug3("password expiration disabled");
@@ -138,4 +107,4 @@ auth_shadow_pwexpired(Authctxt *ctxt)
 
 	return 0;
 }
-#endif	/* USE_SHADOW && HAS_SHADOW_EXPIRE */
+#endif	 

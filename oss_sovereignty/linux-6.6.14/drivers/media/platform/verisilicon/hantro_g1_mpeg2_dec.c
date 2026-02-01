@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Hantro VPU codec driver
- *
- * Copyright (C) 2018 Rockchip Electronics Co., Ltd.
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/bitfield.h>
@@ -106,11 +102,11 @@ hantro_g1_mpeg2_dec_set_buffers(struct hantro_dev *vpu, struct hantro_ctx *ctx,
 		forward_addr = hantro_get_ref(ctx, pic->forward_ref_ts);
 	}
 
-	/* Source bitstream buffer */
+	 
 	addr = vb2_dma_contig_plane_dma_addr(src_buf, 0);
 	vdpu_write_relaxed(vpu, addr, G1_REG_RLC_VLC_BASE);
 
-	/* Destination frame buffer */
+	 
 	addr = hantro_get_dec_buf_addr(ctx, dst_buf);
 	current_addr = addr;
 
@@ -123,7 +119,7 @@ hantro_g1_mpeg2_dec_set_buffers(struct hantro_dev *vpu, struct hantro_ctx *ctx,
 	if (!backward_addr)
 		backward_addr = current_addr;
 
-	/* Set forward ref frame (top/bottom field) */
+	 
 	if (pic->picture_structure == V4L2_MPEG2_PIC_FRAME ||
 	    pic->picture_coding_type == V4L2_MPEG2_PIC_CODING_TYPE_B ||
 	    (pic->picture_structure == V4L2_MPEG2_PIC_TOP_FIELD &&
@@ -140,7 +136,7 @@ hantro_g1_mpeg2_dec_set_buffers(struct hantro_dev *vpu, struct hantro_ctx *ctx,
 		vdpu_write_relaxed(vpu, forward_addr, G1_REG_REFER1_BASE);
 	}
 
-	/* Set backward ref frame (top/bottom field) */
+	 
 	vdpu_write_relaxed(vpu, backward_addr, G1_REG_REFER2_BASE);
 	vdpu_write_relaxed(vpu, backward_addr, G1_REG_REFER3_BASE);
 }
@@ -156,7 +152,7 @@ int hantro_g1_mpeg2_dec_run(struct hantro_ctx *ctx)
 	src_buf = hantro_get_src_buf(ctx);
 	dst_buf = hantro_get_dst_buf(ctx);
 
-	/* Apply request controls if any */
+	 
 	hantro_start_prepare_run(ctx);
 
 	seq = hantro_get_ctrl(ctx,

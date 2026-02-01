@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2018 Joe Lawrence <joe.lawrence@redhat.com>
+
+
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -9,12 +9,7 @@
 #include <linux/livepatch.h>
 #include <linux/slab.h>
 
-/*
- * Keep a small list of pointers so that we can print address-agnostic
- * pointer values.  Use a rolling integer count to differentiate the values.
- * Ironically we could have used the shadow variable API to do this, but
- * let's not lean too heavily on the very code we're testing.
- */
+ 
 static LIST_HEAD(ptr_list);
 struct shadow_ptr {
 	void *ptr;
@@ -53,11 +48,7 @@ static int ptr_id(void *ptr)
 	return sp->id;
 }
 
-/*
- * Shadow variable wrapper functions that echo the function and arguments
- * to the kernel log for testing verification.  Don't display raw pointers,
- * but use the ptr_id() value instead.
- */
+ 
 static void *shadow_get(void *obj, unsigned long id)
 {
 	int **sv;
@@ -113,7 +104,7 @@ static void shadow_free_all(unsigned long id, klp_shadow_dtor_t dtor)
 }
 
 
-/* Shadow variable constructor - remember simple pointer data */
+ 
 static int shadow_ctor(void *obj, void *shadow_data, void *ctor_data)
 {
 	int **sv = shadow_data;
@@ -128,11 +119,7 @@ static int shadow_ctor(void *obj, void *shadow_data, void *ctor_data)
 	return 0;
 }
 
-/*
- * With more than one item to free in the list, order is not determined and
- * shadow_dtor will not be passed to shadow_free_all() which would make the
- * test fail. (see pass 6)
- */
+ 
 static void shadow_dtor(void *obj, void *shadow_data)
 {
 	int **sv = shadow_data;
@@ -141,26 +128,21 @@ static void shadow_dtor(void *obj, void *shadow_data)
 		__func__, ptr_id(obj), ptr_id(sv));
 }
 
-/* number of objects we simulate that need shadow vars */
+ 
 #define NUM_OBJS 3
 
-/* dynamically created obj fields have the following shadow var id values */
+ 
 #define SV_ID1 0x1234
 #define SV_ID2 0x1235
 
-/*
- * The main test case adds/removes new fields (shadow var) to each of these
- * test structure instances. The last group of fields in the struct represent
- * the idea that shadow variables may be added and removed to and from the
- * struct during execution.
- */
+ 
 struct test_object {
-	 /* add anything here below and avoid to define an empty struct */
+	  
 	struct shadow_ptr sp;
 
-	/* these represent shadow vars added and removed with SV_ID{1,2} */
-	/* char nfield1; */
-	/* int  nfield2; */
+	 
+	 
+	 
 };
 
 static int test_klp_shadow_vars_init(void)
@@ -175,15 +157,12 @@ static int test_klp_shadow_vars_init(void)
 
 	ptr_id(NULL);
 
-	/*
-	 * With an empty shadow variable hash table, expect not to find
-	 * any matches.
-	 */
+	 
 	sv = shadow_get(&objs[0], SV_ID1);
 	if (!sv)
 		pr_info("  got expected NULL result\n");
 
-	/* pass 1: init & alloc a char+int pair of svars for each objs */
+	 
 	for (i = 0; i < NUM_OBJS; i++) {
 		pnfields1[i] = &nfields1[i];
 		ptr_id(pnfields1[i]);
@@ -212,9 +191,9 @@ static int test_klp_shadow_vars_init(void)
 		}
 	}
 
-	/* pass 2: verify we find allocated svars and where they point to */
+	 
 	for (i = 0; i < NUM_OBJS; i++) {
-		/* check the "char" svar for all objects */
+		 
 		sv = shadow_get(&objs[i], SV_ID1);
 		if (!sv) {
 			ret = -EINVAL;
@@ -224,7 +203,7 @@ static int test_klp_shadow_vars_init(void)
 			pr_info("  got expected PTR%d -> PTR%d result\n",
 				ptr_id(sv1[i]), ptr_id(*sv1[i]));
 
-		/* check the "int" svar for all objects */
+		 
 		sv = shadow_get(&objs[i], SV_ID2);
 		if (!sv) {
 			ret = -EINVAL;
@@ -235,7 +214,7 @@ static int test_klp_shadow_vars_init(void)
 				ptr_id(sv2[i]), ptr_id(*sv2[i]));
 	}
 
-	/* pass 3: verify that 'get_or_alloc' returns already allocated svars */
+	 
 	for (i = 0; i < NUM_OBJS; i++) {
 		pndup[i] = &nfields1[i];
 		ptr_id(pndup[i]);
@@ -251,17 +230,17 @@ static int test_klp_shadow_vars_init(void)
 					ptr_id(sv1[i]), ptr_id(*sv1[i]));
 	}
 
-	/* pass 4: free <objs[*], SV_ID1> pairs of svars, verify removal */
+	 
 	for (i = 0; i < NUM_OBJS; i++) {
-		shadow_free(&objs[i], SV_ID1, shadow_dtor); /* 'char' pairs */
+		shadow_free(&objs[i], SV_ID1, shadow_dtor);  
 		sv = shadow_get(&objs[i], SV_ID1);
 		if (!sv)
 			pr_info("  got expected NULL result\n");
 	}
 
-	/* pass 5: check we still find <objs[*], SV_ID2> svar pairs */
+	 
 	for (i = 0; i < NUM_OBJS; i++) {
-		sv = shadow_get(&objs[i], SV_ID2);	/* 'int' pairs */
+		sv = shadow_get(&objs[i], SV_ID2);	 
 		if (!sv) {
 			ret = -EINVAL;
 			goto out;
@@ -271,8 +250,8 @@ static int test_klp_shadow_vars_init(void)
 					ptr_id(sv2[i]), ptr_id(*sv2[i]));
 	}
 
-	/* pass 6: free all the <objs[*], SV_ID2> svar pairs too. */
-	shadow_free_all(SV_ID2, NULL);		/* 'int' pairs */
+	 
+	shadow_free_all(SV_ID2, NULL);		 
 	for (i = 0; i < NUM_OBJS; i++) {
 		sv = shadow_get(&objs[i], SV_ID2);
 		if (!sv)
@@ -283,8 +262,8 @@ static int test_klp_shadow_vars_init(void)
 
 	return 0;
 out:
-	shadow_free_all(SV_ID1, NULL);		/* 'char' pairs */
-	shadow_free_all(SV_ID2, NULL);		/* 'int' pairs */
+	shadow_free_all(SV_ID1, NULL);		 
+	shadow_free_all(SV_ID2, NULL);		 
 	free_ptr_list();
 
 	return ret;

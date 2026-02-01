@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "hfa384x_usb.c"
 #include "prism2mgmt.c"
 #include "prism2mib.c"
@@ -52,7 +52,7 @@ static const struct usb_device_id usb_prism_tbl[] = {
 		  "Siemens SpeedStream 1022 11Mbps USB WLAN Adapter"),
 	PRISM_DEV(0x049f, 0x0033,
 		  "Compaq/Intel W100 PRO/Wireless 11Mbps multiport WLAN Adapter"),
-	{ } /* terminator */
+	{ }  
 };
 MODULE_DEVICE_TABLE(usb, usb_prism_tbl);
 
@@ -85,18 +85,16 @@ static int prism2sta_probe_usb(struct usb_interface *interface,
 		goto failed;
 	}
 
-	/* Initialize the hw data */
+	 
 	hw->endp_in = usb_rcvbulkpipe(dev, bulk_in->bEndpointAddress);
 	hw->endp_out = usb_sndbulkpipe(dev, bulk_out->bEndpointAddress);
 	hfa384x_create(hw, dev);
 	hw->wlandev = wlandev;
 
-	/* Register the wlandev, this gets us a name and registers the
-	 * linux netdevice.
-	 */
+	 
 	SET_NETDEV_DEV(wlandev->netdev, &interface->dev);
 
-	/* Do a chip-level reset on the MAC */
+	 
 	if (prism2_doreset) {
 		result = hfa384x_corereset(hw,
 					   prism2_reset_holdtime,
@@ -113,7 +111,7 @@ static int prism2sta_probe_usb(struct usb_interface *interface,
 
 	wlandev->msdstate = WLAN_MSD_HWPRESENT;
 
-	/* Try and load firmware, then enable card before we register */
+	 
 	prism2_fwtry(dev, wlandev);
 	prism2sta_ifstate(wlandev, P80211ENUM_ifstate_enable);
 
@@ -164,19 +162,14 @@ static void prism2sta_disconnect_usb(struct usb_interface *interface)
 
 		spin_unlock_irqrestore(&hw->ctlxq.lock, flags);
 
-		/* There's no hardware to shutdown, but the driver
-		 * might have some tasks that must be stopped before
-		 * we can tear everything down.
-		 */
+		 
 		prism2sta_ifstate(wlandev, P80211ENUM_ifstate_disable);
 
 		timer_shutdown_sync(&hw->throttle);
 		timer_shutdown_sync(&hw->reqtimer);
 		timer_shutdown_sync(&hw->resptimer);
 
-		/* Unlink all the URBs. This "removes the wheels"
-		 * from the entire CTLX handling mechanism.
-		 */
+		 
 		usb_kill_urb(&hw->rx_urb);
 		usb_kill_urb(&hw->tx_urb);
 		usb_kill_urb(&hw->ctlx_urb);
@@ -188,25 +181,18 @@ static void prism2sta_disconnect_usb(struct usb_interface *interface)
 		cancel_work_sync(&hw->commsqual_bh);
 		cancel_work_sync(&hw->usb_work);
 
-		/* Now we complete any outstanding commands
-		 * and tell everyone who is waiting for their
-		 * responses that we have shut down.
-		 */
+		 
 		list_for_each_entry(ctlx, &cleanlist, list)
 			complete(&ctlx->done);
 
-		/* Give any outstanding synchronous commands
-		 * a chance to complete. All they need to do
-		 * is "wake up", so that's easy.
-		 * (I'd like a better way to do this, really.)
-		 */
+		 
 		msleep(100);
 
-		/* Now delete the CTLXs, because no-one else can now. */
+		 
 		list_for_each_entry_safe(ctlx, temp, &cleanlist, list)
 			kfree(ctlx);
 
-		/* Unhook the wlandev */
+		 
 		unregister_wlandev(wlandev);
 		wlan_unsetup(wlandev);
 
@@ -260,7 +246,7 @@ static int prism2sta_resume(struct usb_interface *interface)
 	if (!hw)
 		return -ENODEV;
 
-	/* Do a chip-level reset on the MAC */
+	 
 	if (prism2_doreset) {
 		result = hfa384x_corereset(hw,
 					   prism2_reset_holdtime,
@@ -283,7 +269,7 @@ static int prism2sta_resume(struct usb_interface *interface)
 #else
 #define prism2sta_suspend NULL
 #define prism2sta_resume NULL
-#endif /* CONFIG_PM */
+#endif  
 
 static struct usb_driver prism2_usb_driver = {
 	.name = "prism2_usb",
@@ -293,7 +279,7 @@ static struct usb_driver prism2_usb_driver = {
 	.suspend = prism2sta_suspend,
 	.resume = prism2sta_resume,
 	.reset_resume = prism2sta_resume,
-	/* fops, minor? */
+	 
 };
 
 module_usb_driver(prism2_usb_driver);

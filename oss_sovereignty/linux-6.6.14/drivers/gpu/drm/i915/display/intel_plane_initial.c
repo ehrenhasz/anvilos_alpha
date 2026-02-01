@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2021 Intel Corporation
- */
+
+ 
 
 #include "gem/i915_gem_region.h"
 #include "i915_drv.h"
@@ -74,10 +72,7 @@ initial_plane_vma(struct drm_i915_private *i915,
 		phys_base = pte & I915_GTT_PAGE_MASK;
 		mem = i915->mm.regions[INTEL_REGION_LMEM_0];
 
-		/*
-		 * We don't currently expect this to ever be placed in the
-		 * stolen portion.
-		 */
+		 
 		if (phys_base >= resource_size(&mem->region)) {
 			drm_err(&i915->drm,
 				"Initial plane programming using invalid range, phys_base=%pa\n",
@@ -100,11 +95,7 @@ initial_plane_vma(struct drm_i915_private *i915,
 			mem->min_page_size);
 	size -= base;
 
-	/*
-	 * If the FB is too big, just don't use it since fbdev is not very
-	 * important and we should probably use that space with FBC or other
-	 * features.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_FRAMEBUFFER_CONSOLE) &&
 	    mem == i915->mm.stolen_region &&
 	    size * 2 > i915->dsm.usable_size)
@@ -116,11 +107,7 @@ initial_plane_vma(struct drm_i915_private *i915,
 	if (IS_ERR(obj))
 		return NULL;
 
-	/*
-	 * Mark it WT ahead of time to avoid changing the
-	 * cache_level during fbdev initialization. The
-	 * unbind there would get stuck waiting for rcu.
-	 */
+	 
 	i915_gem_object_set_cache_coherency(obj, HAS_WT(i915) ?
 					    I915_CACHE_WT : I915_CACHE_NONE);
 
@@ -220,11 +207,7 @@ intel_find_initial_plane_obj(struct intel_crtc *crtc,
 	struct drm_framebuffer *fb;
 	struct i915_vma *vma;
 
-	/*
-	 * TODO:
-	 *   Disable planes if get_initial_plane_config() failed.
-	 *   Make sure things work if the surface base is not page aligned.
-	 */
+	 
 	if (!plane_config->fb)
 		return;
 
@@ -234,20 +217,11 @@ intel_find_initial_plane_obj(struct intel_crtc *crtc,
 		goto valid_fb;
 	}
 
-	/*
-	 * Failed to alloc the obj, check to see if we should share
-	 * an fb with another CRTC instead
-	 */
+	 
 	if (intel_reuse_initial_plane_obj(dev_priv, plane_config, &fb, &vma))
 		goto valid_fb;
 
-	/*
-	 * We've failed to reconstruct the BIOS FB.  Current display state
-	 * indicates that the primary plane is visible, but has a NULL FB,
-	 * which will lead to problems later if we don't fix it up.  The
-	 * simplest solution is to just disable the primary plane now and
-	 * pretend the BIOS never had it enabled.
-	 */
+	 
 	intel_plane_disable_noatomic(crtc, plane);
 
 	return;
@@ -290,7 +264,7 @@ static void plane_config_fini(struct intel_initial_plane_config *plane_config)
 	if (plane_config->fb) {
 		struct drm_framebuffer *fb = &plane_config->fb->base;
 
-		/* We may only have the stub and not a full framebuffer */
+		 
 		if (drm_framebuffer_read_refcount(fb))
 			drm_framebuffer_put(fb);
 		else
@@ -306,19 +280,10 @@ void intel_crtc_initial_plane_config(struct intel_crtc *crtc)
 	struct drm_i915_private *dev_priv = to_i915(crtc->base.dev);
 	struct intel_initial_plane_config plane_config = {};
 
-	/*
-	 * Note that reserving the BIOS fb up front prevents us
-	 * from stuffing other stolen allocations like the ring
-	 * on top.  This prevents some ugliness at boot time, and
-	 * can even allow for smooth boot transitions if the BIOS
-	 * fb is large enough for the active pipe configuration.
-	 */
+	 
 	dev_priv->display.funcs.display->get_initial_plane_config(crtc, &plane_config);
 
-	/*
-	 * If the fb is shared between multiple heads, we'll
-	 * just get the first one.
-	 */
+	 
 	intel_find_initial_plane_obj(crtc, &plane_config);
 
 	plane_config_fini(&plane_config);

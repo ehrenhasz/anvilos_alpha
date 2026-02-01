@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * mpc8xxx_wdt.c - MPC8xx/MPC83xx/MPC86xx watchdog userspace interface
- *
- * Authors: Dave Updegraff <dave@cray.org>
- *	    Kumar Gala <galak@kernel.crashing.org>
- *		Attribution: from 83xx_wst: Florian Schirmer <jolt@tuxbox.org>
- *				..and from sc520_wdt
- * Copyright (c) 2008  MontaVista Software, Inc.
- *                     Anton Vorontsov <avorontsov@ru.mvista.com>
- *
- * Note: it appears that you can only actually ENABLE or DISABLE the thing
- * once after POR. Once enabled, you cannot disable, and vice versa.
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/init.h>
@@ -28,15 +16,15 @@
 
 struct mpc8xxx_wdt {
 	__be32 res0;
-	__be32 swcrr; /* System watchdog control register */
-#define SWCRR_SWTC 0xFFFF0000 /* Software Watchdog Time Count. */
-#define SWCRR_SWF  0x00000008 /* Software Watchdog Freeze (mpc8xx). */
-#define SWCRR_SWEN 0x00000004 /* Watchdog Enable bit. */
-#define SWCRR_SWRI 0x00000002 /* Software Watchdog Reset/Interrupt Select bit.*/
-#define SWCRR_SWPR 0x00000001 /* Software Watchdog Counter Prescale bit. */
-	__be32 swcnr; /* System watchdog count register */
+	__be32 swcrr;  
+#define SWCRR_SWTC 0xFFFF0000  
+#define SWCRR_SWF  0x00000008  
+#define SWCRR_SWEN 0x00000004  
+#define SWCRR_SWRI 0x00000002  
+#define SWCRR_SWPR 0x00000001  
+	__be32 swcnr;  
 	u8 res1[2];
-	__be16 swsrr; /* System watchdog service register */
+	__be16 swsrr;  
 	u8 res2[0xF0];
 };
 
@@ -71,7 +59,7 @@ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started "
 
 static void mpc8xxx_wdt_keepalive(struct mpc8xxx_wdt_ddata *ddata)
 {
-	/* Ping the WDT */
+	 
 	spin_lock(&ddata->lock);
 	out_be16(&ddata->base->swsrr, 0x556c);
 	out_be16(&ddata->base->swsrr, 0xaa39);
@@ -84,7 +72,7 @@ static int mpc8xxx_wdt_start(struct watchdog_device *w)
 		container_of(w, struct mpc8xxx_wdt_ddata, wdd);
 	u32 tmp = in_be32(&ddata->base->swcrr);
 
-	/* Good, fire up the show */
+	 
 	tmp &= ~(SWCRR_SWTC | SWCRR_SWF | SWCRR_SWEN | SWCRR_SWRI | SWCRR_SWPR);
 	tmp |= SWCRR_SWEN | SWCRR_SWPR | (ddata->swtc << 16);
 
@@ -165,7 +153,7 @@ static int mpc8xxx_wdt_probe(struct platform_device *ofdev)
 
 		status = in_be32(rsr) & wdt_type->rsr_mask;
 		ddata->wdd.bootstatus = status ? WDIOF_CARDRESET : 0;
-		 /* clear reset status bits related to watchdog timer */
+		  
 		out_be32(rsr, wdt_type->rsr_mask);
 		iounmap(rsr);
 
@@ -186,11 +174,7 @@ static int mpc8xxx_wdt_probe(struct platform_device *ofdev)
 	ddata->swtc = min(ddata->wdd.timeout * freq / wdt_type->prescaler,
 			  0xffffU);
 
-	/*
-	 * If the watchdog was previously enabled or we're running on
-	 * MPC8xxx, we should ping the wdt from the kernel until the
-	 * userspace handles it.
-	 */
+	 
 	if (enabled)
 		mpc8xxx_wdt_start(&ddata->wdd);
 
@@ -217,7 +201,7 @@ static const struct of_device_id mpc8xxx_wdt_match[] = {
 		.compatible = "mpc83xx_wdt",
 		.data = &(struct mpc8xxx_wdt_type) {
 			.prescaler = 0x10000,
-			.rsr_mask = BIT(3), /* RSR Bit SWRS */
+			.rsr_mask = BIT(3),  
 		},
 	},
 	{
@@ -225,7 +209,7 @@ static const struct of_device_id mpc8xxx_wdt_match[] = {
 		.data = &(struct mpc8xxx_wdt_type) {
 			.prescaler = 0x10000,
 			.hw_enabled = true,
-			.rsr_mask = BIT(20), /* RSTRSCR Bit WDT_RR */
+			.rsr_mask = BIT(20),  
 		},
 	},
 	{
@@ -233,7 +217,7 @@ static const struct of_device_id mpc8xxx_wdt_match[] = {
 		.data = &(struct mpc8xxx_wdt_type) {
 			.prescaler = 0x800,
 			.hw_enabled = true,
-			.rsr_mask = BIT(28), /* RSR Bit SWRS */
+			.rsr_mask = BIT(28),  
 		},
 	},
 	{},

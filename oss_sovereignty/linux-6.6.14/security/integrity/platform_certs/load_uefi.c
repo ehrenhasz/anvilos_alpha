@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/kernel.h>
 #include <linux/sched.h>
@@ -13,12 +13,7 @@
 #include "../integrity.h"
 #include "keyring_handler.h"
 
-/*
- * On T2 Macs reading the db and dbx efi variables to load UEFI Secure Boot
- * certificates causes occurrence of a page fault in Apple's firmware and
- * a crash disabling EFI runtime services. The following quirk skips reading
- * these variables.
- */
+ 
 static const struct dmi_system_id uefi_skip_cert[] = {
 	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,1") },
 	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,2") },
@@ -39,15 +34,7 @@ static const struct dmi_system_id uefi_skip_cert[] = {
 	{ }
 };
 
-/*
- * Look to see if a UEFI variable called MokIgnoreDB exists and return true if
- * it does.
- *
- * This UEFI variable is set by the shim if a user tells the shim to not use
- * the certs/hashes in the UEFI db variable for verification purposes.  If it
- * is set, we should ignore the db variable also and the true return indicates
- * this.
- */
+ 
 static __init bool uefi_check_ignore_db(void)
 {
 	efi_status_t status;
@@ -59,9 +46,7 @@ static __init bool uefi_check_ignore_db(void)
 	return status == EFI_SUCCESS;
 }
 
-/*
- * Get a certificate list blob from the named EFI variable.
- */
+ 
 static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
 				  unsigned long *size, efi_status_t *status)
 {
@@ -93,17 +78,7 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
 	return db;
 }
 
-/*
- * load_moklist_certs() - Load MokList certs
- *
- * Load the certs contained in the UEFI MokListRT database into the
- * platform trusted keyring.
- *
- * This routine checks the EFI MOK config table first. If and only if
- * that fails, this routine uses the MokListRT ordinary UEFI variable.
- *
- * Return:	Status
- */
+ 
 static int __init load_moklist_certs(void)
 {
 	struct efi_mokvar_table_entry *mokvar_entry;
@@ -113,17 +88,14 @@ static int __init load_moklist_certs(void)
 	efi_status_t status;
 	int rc;
 
-	/* First try to load certs from the EFI MOKvar config table.
-	 * It's not an error if the MOKvar config table doesn't exist
-	 * or the MokListRT entry is not found in it.
-	 */
+	 
 	mokvar_entry = efi_mokvar_entry_find("MokListRT");
 	if (mokvar_entry) {
 		rc = parse_efi_signature_list("UEFI:MokListRT (MOKvar table)",
 					      mokvar_entry->data,
 					      mokvar_entry->data_size,
 					      get_handler_for_mok);
-		/* All done if that worked. */
+		 
 		if (!rc)
 			return rc;
 
@@ -131,9 +103,7 @@ static int __init load_moklist_certs(void)
 		       rc);
 	}
 
-	/* Get MokListRT. It might not exist, so it isn't an error
-	 * if we can't get it.
-	 */
+	 
 	mok = get_cert_list(L"MokListRT", &mok_var, &moksize, &status);
 	if (mok) {
 		rc = parse_efi_signature_list("UEFI:MokListRT",
@@ -150,13 +120,7 @@ static int __init load_moklist_certs(void)
 	return 0;
 }
 
-/*
- * load_uefi_certs() - Load certs from UEFI sources
- *
- * Load the certs contained in the UEFI databases into the platform trusted
- * keyring and the UEFI blacklisted X.509 cert SHA256 hashes into the blacklist
- * keyring.
- */
+ 
 static int __init load_uefi_certs(void)
 {
 	efi_guid_t secure_var = EFI_IMAGE_SECURITY_DATABASE_GUID;
@@ -176,9 +140,7 @@ static int __init load_uefi_certs(void)
 	if (!efi_rt_services_supported(EFI_RT_SUPPORTED_GET_VARIABLE))
 		return false;
 
-	/* Get db and dbx.  They might not exist, so it isn't an error
-	 * if we can't get them.
-	 */
+	 
 	if (!uefi_check_ignore_db()) {
 		db = get_cert_list(L"db", &secure_var, &dbsize, &status);
 		if (!db) {
@@ -211,7 +173,7 @@ static int __init load_uefi_certs(void)
 		kfree(dbx);
 	}
 
-	/* the MOK/MOKx can not be trusted when secure boot is disabled */
+	 
 	if (!arch_ima_get_secureboot())
 		return 0;
 
@@ -230,7 +192,7 @@ static int __init load_uefi_certs(void)
 		kfree(mokx);
 	}
 
-	/* Load the MokListRT certs */
+	 
 	rc = load_moklist_certs();
 
 	return rc;

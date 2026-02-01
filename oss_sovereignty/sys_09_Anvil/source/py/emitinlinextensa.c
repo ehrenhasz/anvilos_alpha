@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013-2016 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdint.h>
 #include <stdio.h>
@@ -103,7 +79,7 @@ static mp_uint_t emit_inline_xtensa_count_params(emit_inline_asm_t *emit, mp_uin
 static bool emit_inline_xtensa_label(emit_inline_asm_t *emit, mp_uint_t label_num, qstr label_id) {
     assert(label_num < emit->max_num_labels);
     if (emit->pass == MP_PASS_CODE_SIZE) {
-        // check for duplicate label on first pass
+        
         for (uint i = 0; i < emit->max_num_labels; i++) {
             if (emit->label_lookup[i] == label_id) {
                 return false;
@@ -137,8 +113,8 @@ static const reg_name_t reg_name_table[] = {
     {15, "a15"},
 };
 
-// return empty string in case of error, so we can attempt to parse the string
-// without a special check if it was in fact a string
+
+
 static const char *get_arg_str(mp_parse_node_t pn) {
     if (MP_PARSE_NODE_IS_ID(pn)) {
         qstr qst = MP_PARSE_NODE_LEAF_ARG(pn);
@@ -190,7 +166,7 @@ static int get_arg_label(emit_inline_asm_t *emit, const char *op, mp_parse_node_
             return i;
         }
     }
-    // only need to have the labels on the last pass
+    
     if (emit->pass == MP_PASS_EMIT) {
         emit_inline_xtensa_error_exc(emit, mp_obj_new_exception_msg_varg(&mp_type_SyntaxError, MP_ERROR_TEXT("label '%q' not defined"), label_qstr));
     }
@@ -202,14 +178,14 @@ static int get_arg_label(emit_inline_asm_t *emit, const char *op, mp_parse_node_
 #define RRI8_B (2)
 
 typedef struct _opcode_table_3arg_t {
-    uint16_t name; // actually a qstr, which should fit in 16 bits
+    uint16_t name; 
     uint8_t type;
     uint8_t a0 : 4;
     uint8_t a1 : 4;
 } opcode_table_3arg_t;
 
 static const opcode_table_3arg_t opcode_table_3arg[] = {
-    // arithmetic opcodes: reg, reg, reg
+    
     {MP_QSTR_and_, RRR, 0, 1},
     {MP_QSTR_or_, RRR, 0, 2},
     {MP_QSTR_xor, RRR, 0, 3},
@@ -217,8 +193,8 @@ static const opcode_table_3arg_t opcode_table_3arg[] = {
     {MP_QSTR_sub, RRR, 0, 12},
     {MP_QSTR_mull, RRR, 2, 8},
 
-    // load/store/addi opcodes: reg, reg, imm
-    // upper nibble of type encodes the range of the immediate arg
+    
+    
     {MP_QSTR_l8ui, RRI8 | 0x10, 2, 0},
     {MP_QSTR_l16ui, RRI8 | 0x30, 2, 1},
     {MP_QSTR_l32i, RRI8 | 0x50, 2, 2},
@@ -228,7 +204,7 @@ static const opcode_table_3arg_t opcode_table_3arg[] = {
     {MP_QSTR_l16si, RRI8 | 0x30, 2, 9},
     {MP_QSTR_addi, RRI8 | 0x00, 2, 12},
 
-    // branch opcodes: reg, reg, label
+    
     {MP_QSTR_ball, RRI8_B, ASM_XTENSA_CC_ALL, 0},
     {MP_QSTR_bany, RRI8_B, ASM_XTENSA_CC_ANY, 0},
     {MP_QSTR_bbc, RRI8_B, ASM_XTENSA_CC_BC, 0},
@@ -276,11 +252,11 @@ static void emit_inline_xtensa_op(emit_inline_asm_t *emit, qstr op, mp_uint_t n_
             int label = get_arg_label(emit, op_str, pn_args[1]);
             asm_xtensa_bccz_reg_label(&emit->as, ASM_XTENSA_CCZ_NE, r0, label);
         } else if (op == MP_QSTR_mov || op == MP_QSTR_mov_n) {
-            // we emit mov.n for both "mov" and "mov_n" opcodes
+            
             uint r1 = get_arg_reg(emit, op_str, pn_args[1]);
             asm_xtensa_op_mov_n(&emit->as, r0, r1);
         } else if (op == MP_QSTR_movi) {
-            // for convenience we emit l32r if the integer doesn't fit in movi
+            
             uint32_t imm = get_arg_i(emit, op_str, pn_args[1], 0, 0);
             asm_xtensa_mov_reg_i32(&emit->as, r0, imm);
         } else {
@@ -288,7 +264,7 @@ static void emit_inline_xtensa_op(emit_inline_asm_t *emit, qstr op, mp_uint_t n_
         }
 
     } else if (n_args == 3) {
-        // search table for 3 arg instructions
+        
         for (uint i = 0; i < MP_ARRAY_SIZE(opcode_table_3arg); i++) {
             const opcode_table_3arg_t *o = &opcode_table_3arg[i];
             if (op == o->name) {
@@ -329,11 +305,7 @@ unknown_op:
     emit_inline_xtensa_error_exc(emit, mp_obj_new_exception_msg_varg(&mp_type_SyntaxError, MP_ERROR_TEXT("unsupported Xtensa instruction '%s' with %d arguments"), op_str, n_args));
     return;
 
-    /*
-branch_not_in_range:
-    emit_inline_xtensa_error_msg(emit, MP_ERROR_TEXT("branch not in range"));
-    return;
-    */
+     
 }
 
 const emit_inline_asm_method_table_t emit_inline_xtensa_method_table = {
@@ -349,4 +321,4 @@ const emit_inline_asm_method_table_t emit_inline_xtensa_method_table = {
     emit_inline_xtensa_op,
 };
 
-#endif // MICROPY_EMIT_INLINE_XTENSA
+#endif 

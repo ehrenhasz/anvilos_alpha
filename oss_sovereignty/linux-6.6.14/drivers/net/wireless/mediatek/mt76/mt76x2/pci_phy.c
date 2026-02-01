@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- */
+
+ 
 
 #include <linux/delay.h>
 #include "mt76x2.h"
@@ -76,23 +74,23 @@ void mt76x2_phy_set_antenna(struct mt76x02_dev *dev)
 	val &= ~(BIT(4) | BIT(1));
 	switch (dev->mphy.antenna_mask) {
 	case 1:
-		/* disable mac DAC control */
+		 
 		mt76_clear(dev, MT_BBP(IBI, 9), BIT(11));
 		mt76_clear(dev, MT_BBP(TXBE, 5), 3);
 		mt76_rmw_field(dev, MT_TX_PIN_CFG, MT_TX_PIN_CFG_TXANT, 0x3);
 		mt76_rmw_field(dev, MT_BBP(CORE, 32), GENMASK(21, 20), 2);
-		/* disable DAC 1 */
+		 
 		mt76_rmw_field(dev, MT_BBP(CORE, 33), GENMASK(12, 9), 4);
 
 		val &= ~(BIT(3) | BIT(0));
 		break;
 	case 2:
-		/* disable mac DAC control */
+		 
 		mt76_clear(dev, MT_BBP(IBI, 9), BIT(11));
 		mt76_rmw_field(dev, MT_BBP(TXBE, 5), 3, 1);
 		mt76_rmw_field(dev, MT_TX_PIN_CFG, MT_TX_PIN_CFG_TXANT, 0xc);
 		mt76_rmw_field(dev, MT_BBP(CORE, 32), GENMASK(21, 20), 1);
-		/* disable DAC 0 */
+		 
 		mt76_rmw_field(dev, MT_BBP(CORE, 33), GENMASK(12, 9), 1);
 
 		val &= ~BIT(3);
@@ -100,7 +98,7 @@ void mt76x2_phy_set_antenna(struct mt76x02_dev *dev)
 		break;
 	case 3:
 	default:
-		/* enable mac DAC control */
+		 
 		mt76_set(dev, MT_BBP(IBI, 9), BIT(11));
 		mt76_set(dev, MT_BBP(TXBE, 5), 3);
 		mt76_rmw_field(dev, MT_TX_PIN_CFG, MT_TX_PIN_CFG_TXANT, 0xf);
@@ -205,7 +203,7 @@ int mt76x2_phy_set_channel(struct mt76x02_dev *dev,
 
 	mt76x2_phy_set_antenna(dev);
 
-	/* Enable LDPC Rx */
+	 
 	if (mt76xx_rev(dev) >= MT76XX_REV_E3)
 		mt76_set(dev, MT_BBP(RXO, 13), BIT(10));
 
@@ -218,7 +216,7 @@ int mt76x2_phy_set_channel(struct mt76x02_dev *dev,
 
 	mt76x02_mcu_calibrate(dev, MCU_CAL_RXDCOC, channel);
 
-	/* Rx LPF calibration */
+	 
 	if (!dev->cal.init_cal_done)
 		mt76x02_mcu_calibrate(dev, MCU_CAL_RC, 0);
 
@@ -236,7 +234,7 @@ int mt76x2_phy_set_channel(struct mt76x02_dev *dev,
 	mt76x2_phy_channel_calibrate(dev, true);
 	mt76x02_init_agc_gain(dev);
 
-	/* init default values for temp compensation */
+	 
 	if (mt76x2_tssi_enabled(dev)) {
 		mt76_rmw_field(dev, MT_TX_ALC_CFG_1, MT_TX_ALC_CFG_1_TEMP_COMP,
 			       0x38);

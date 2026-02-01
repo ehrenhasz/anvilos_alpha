@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_FUTEX_H
 #define _LINUX_FUTEX_H
 
@@ -11,23 +11,10 @@ struct inode;
 struct mm_struct;
 struct task_struct;
 
-/*
- * Futexes are matched on equal values of this key.
- * The key type depends on whether it's a shared or private mapping.
- * Don't rearrange members without looking at hash_futex().
- *
- * offset is aligned to a multiple of sizeof(u32) (== 4) by definition.
- * We use the two low order bits of offset to tell what is the kind of key :
- *  00 : Private process futex (PTHREAD_PROCESS_PRIVATE)
- *       (no reference on an inode or mm)
- *  01 : Shared futex (PTHREAD_PROCESS_SHARED)
- *	mapped on a file (reference on the underlying inode)
- *  10 : Shared futex (PTHREAD_PROCESS_SHARED)
- *       (but private mapping on an mm, and reference taken on it)
-*/
+ 
 
-#define FUT_OFF_INODE    1 /* We set bit 0 if key has a reference on inode */
-#define FUT_OFF_MMSHARED 2 /* We set bit 1 if key has a reference on mm */
+#define FUT_OFF_INODE    1  
+#define FUT_OFF_MMSHARED 2  
 
 union futex_key {
 	struct {

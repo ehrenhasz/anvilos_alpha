@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2016 Linaro
- * Viresh Kumar <viresh.kumar@linaro.org>
- */
+ 
+ 
 
 #ifndef __CPUFREQ_DT_H__
 #define __CPUFREQ_DT_H__
@@ -22,4 +19,4 @@ struct cpufreq_dt_platform_data {
 	int (*resume)(struct cpufreq_policy *policy);
 };
 
-#endif /* __CPUFREQ_DT_H__ */
+#endif  

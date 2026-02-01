@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * V4L2 Capture IC Preprocess Subdev for Freescale i.MX5/6 SOC
- *
- * This subdevice handles capture of video frames from the CSI or VDIC,
- * which are routed directly to the Image Converter preprocess tasks,
- * for resizing, colorspace conversion, and rotation.
- *
- * Copyright (c) 2012-2017 Mentor Graphics Inc.
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/module.h>
@@ -24,55 +16,45 @@
 #include "imx-media.h"
 #include "imx-ic.h"
 
-/*
- * Min/Max supported width and heights.
- *
- * We allow planar output, so we have to align width at the source pad
- * by 16 pixels to meet IDMAC alignment requirements for possible planar
- * output.
- *
- * TODO: move this into pad format negotiation, if capture device
- * has not requested a planar format, we should allow 8 pixel
- * alignment at the source pad.
- */
+ 
 #define MIN_W_SINK   32
 #define MIN_H_SINK   32
 #define MAX_W_SINK 4096
 #define MAX_H_SINK 4096
-#define W_ALIGN_SINK  3 /* multiple of 8 pixels */
-#define H_ALIGN_SINK  1 /* multiple of 2 lines */
+#define W_ALIGN_SINK  3  
+#define H_ALIGN_SINK  1  
 
 #define MAX_W_SRC  1024
 #define MAX_H_SRC  1024
-#define W_ALIGN_SRC   1 /* multiple of 2 pixels */
-#define H_ALIGN_SRC   1 /* multiple of 2 lines */
+#define W_ALIGN_SRC   1  
+#define H_ALIGN_SRC   1  
 
-#define S_ALIGN       1 /* multiple of 2 */
+#define S_ALIGN       1  
 
 struct prp_priv {
 	struct imx_ic_priv *ic_priv;
 	struct media_pad pad[PRPENCVF_NUM_PADS];
-	/* the video device at output pad */
+	 
 	struct imx_media_video_dev *vdev;
 
-	/* lock to protect all members below */
+	 
 	struct mutex lock;
 
-	/* IPU units we require */
+	 
 	struct ipu_ic *ic;
 	struct ipuv3_channel *out_ch;
 	struct ipuv3_channel *rot_in_ch;
 	struct ipuv3_channel *rot_out_ch;
 
-	/* active vb2 buffers to send to video dev sink */
+	 
 	struct imx_media_buffer *active_vb2_buf[2];
 	struct imx_media_dma_buf underrun_buf;
 
-	int ipu_buf_num;  /* ipu double buffer index: 0-1 */
+	int ipu_buf_num;   
 
-	/* the sink for the captured frames */
+	 
 	struct media_entity *sink;
-	/* the source subdev */
+	 
 	struct v4l2_subdev *src_sd;
 
 	struct v4l2_mbus_framefmt format_mbus[PRPENCVF_NUM_PADS];
@@ -81,26 +63,26 @@ struct prp_priv {
 
 	struct imx_media_dma_buf rot_buf[2];
 
-	/* controls */
+	 
 	struct v4l2_ctrl_handler ctrl_hdlr;
-	int  rotation; /* degrees */
+	int  rotation;  
 	bool hflip;
 	bool vflip;
 
-	/* derived from rotation, hflip, vflip controls */
+	 
 	enum ipu_rotate_mode rot_mode;
 
-	spinlock_t irqlock; /* protect eof_irq handler */
+	spinlock_t irqlock;  
 
 	struct timer_list eof_timeout_timer;
 	int eof_irq;
 	int nfb4eof_irq;
 
 	int stream_count;
-	u32 frame_sequence; /* frame sequence counter */
-	bool last_eof;  /* waiting for last EOF at stream off */
-	bool nfb4eof;    /* NFB4EOF encountered during streaming */
-	bool interweave_swap; /* swap top/bottom lines when interweaving */
+	u32 frame_sequence;  
+	bool last_eof;   
+	bool nfb4eof;     
+	bool interweave_swap;  
 	struct completion last_eof_comp;
 };
 
@@ -215,7 +197,7 @@ static void prp_vb2_buf_done(struct prp_priv *priv, struct ipuv3_channel *ch)
 	priv->frame_sequence++;
 	priv->nfb4eof = false;
 
-	/* get next queued buffer */
+	 
 	next = imx_media_capture_device_next_buf(vdev);
 	if (next) {
 		phys = vb2_dma_contig_plane_dma_addr(&next->vbuf.vb2_buf, 0);
@@ -252,12 +234,12 @@ static irqreturn_t prp_eof_interrupt(int irq, void *dev_id)
 
 	prp_vb2_buf_done(priv, channel);
 
-	/* select new IPU buf */
+	 
 	ipu_idmac_select_buffer(channel, priv->ipu_buf_num);
-	/* toggle IPU double-buffer index */
+	 
 	priv->ipu_buf_num ^= 1;
 
-	/* bump the EOF timeout timer */
+	 
 	mod_timer(&priv->eof_timeout_timer,
 		  jiffies + msecs_to_jiffies(IMX_MEDIA_EOF_TIMEOUT));
 
@@ -273,10 +255,7 @@ static irqreturn_t prp_nfb4eof_interrupt(int irq, void *dev_id)
 
 	spin_lock(&priv->irqlock);
 
-	/*
-	 * this is not an unrecoverable error, just mark
-	 * the next captured frame with vb2 error flag.
-	 */
+	 
 	priv->nfb4eof = true;
 
 	v4l2_err(&ic_priv->sd, "NFB4EOF\n");
@@ -286,13 +265,8 @@ static irqreturn_t prp_nfb4eof_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * EOF timeout timer function.
- */
-/*
- * EOF timeout timer function. This is an unrecoverable condition
- * without a stream restart.
- */
+ 
+ 
 static void prp_eof_timeout(struct timer_list *t)
 {
 	struct prp_priv *priv = from_timer(priv, t, eof_timeout_timer);
@@ -301,7 +275,7 @@ static void prp_eof_timeout(struct timer_list *t)
 
 	v4l2_err(&ic_priv->sd, "EOF timeout\n");
 
-	/* signal a fatal error to capture device */
+	 
 	imx_media_capture_device_error(vdev);
 }
 
@@ -330,7 +304,7 @@ static void prp_unsetup_vb2_buf(struct prp_priv *priv,
 	struct imx_media_buffer *buf;
 	int i;
 
-	/* return any remaining active frames with return_status */
+	 
 	for (i = 0; i < 2; i++) {
 		buf = priv->active_vb2_buf[i];
 		if (buf) {
@@ -365,11 +339,7 @@ static int prp_setup_channel(struct prp_priv *priv,
 	image.pix = vdev->fmt;
 	image.rect = vdev->compose;
 
-	/*
-	 * If the field type at capture interface is interlaced, and
-	 * the output IDMAC pad is sequential, enable interweave at
-	 * the IDMAC output channel.
-	 */
+	 
 	interweave = V4L2_FIELD_IS_INTERLACED(image.pix.field) &&
 		V4L2_FIELD_IS_SEQUENTIAL(outfmt->field);
 	priv->interweave_swap = interweave &&
@@ -378,25 +348,21 @@ static int prp_setup_channel(struct prp_priv *priv,
 	if (rot_swap_width_height) {
 		swap(image.pix.width, image.pix.height);
 		swap(image.rect.width, image.rect.height);
-		/* recalc stride using swapped width */
+		 
 		image.pix.bytesperline = outcc->planar ?
 			image.pix.width :
 			(image.pix.width * outcc->bpp) >> 3;
 	}
 
 	if (priv->interweave_swap && channel == priv->out_ch) {
-		/* start interweave scan at 1st top line (2nd line) */
+		 
 		image.rect.top = 1;
 	}
 
 	image.phys0 = addr0;
 	image.phys1 = addr1;
 
-	/*
-	 * Skip writing U and V components to odd rows in the output
-	 * channels for planar 4:2:0 (but not when enabling IDMAC
-	 * interweaving, they are incompatible).
-	 */
+	 
 	if ((channel == priv->out_ch && !interweave) ||
 	    channel == priv->rot_out_ch) {
 		switch (image.pix.pixelformat) {
@@ -493,7 +459,7 @@ static int prp_setup_rotation(struct prp_priv *priv)
 		goto free_rot1;
 	}
 
-	/* init the IC-PRP-->MEM IDMAC channel */
+	 
 	ret = prp_setup_channel(priv, priv->out_ch, IPU_ROTATE_NONE,
 				priv->rot_buf[0].phys, priv->rot_buf[1].phys,
 				true);
@@ -503,7 +469,7 @@ static int prp_setup_rotation(struct prp_priv *priv)
 		goto free_rot1;
 	}
 
-	/* init the MEM-->IC-PRP ROT IDMAC channel */
+	 
 	ret = prp_setup_channel(priv, priv->rot_in_ch, priv->rot_mode,
 				priv->rot_buf[0].phys, priv->rot_buf[1].phys,
 				true);
@@ -515,7 +481,7 @@ static int prp_setup_rotation(struct prp_priv *priv)
 
 	prp_setup_vb2_buf(priv, phys);
 
-	/* init the destination IC-PRP ROT-->MEM IDMAC channel */
+	 
 	ret = prp_setup_channel(priv, priv->rot_out_ch, IPU_ROTATE_NONE,
 				phys[0], phys[1],
 				false);
@@ -525,24 +491,24 @@ static int prp_setup_rotation(struct prp_priv *priv)
 		goto unsetup_vb2;
 	}
 
-	/* now link IC-PRP-->MEM to MEM-->IC-PRP ROT */
+	 
 	ipu_idmac_link(priv->out_ch, priv->rot_in_ch);
 
-	/* enable the IC */
+	 
 	ipu_ic_enable(priv->ic);
 
-	/* set buffers ready */
+	 
 	ipu_idmac_select_buffer(priv->out_ch, 0);
 	ipu_idmac_select_buffer(priv->out_ch, 1);
 	ipu_idmac_select_buffer(priv->rot_out_ch, 0);
 	ipu_idmac_select_buffer(priv->rot_out_ch, 1);
 
-	/* enable the channels */
+	 
 	ipu_idmac_enable_channel(priv->out_ch);
 	ipu_idmac_enable_channel(priv->rot_in_ch);
 	ipu_idmac_enable_channel(priv->rot_out_ch);
 
-	/* and finally enable the IC PRP task */
+	 
 	ipu_ic_task_enable(priv->ic);
 
 	return 0;
@@ -611,7 +577,7 @@ static int prp_setup_norotation(struct prp_priv *priv)
 
 	prp_setup_vb2_buf(priv, phys);
 
-	/* init the IC PRP-->MEM IDMAC channel */
+	 
 	ret = prp_setup_channel(priv, priv->out_ch, priv->rot_mode,
 				phys[0], phys[1], false);
 	if (ret) {
@@ -626,14 +592,14 @@ static int prp_setup_norotation(struct prp_priv *priv)
 
 	ipu_ic_enable(priv->ic);
 
-	/* set buffers ready */
+	 
 	ipu_idmac_select_buffer(priv->out_ch, 0);
 	ipu_idmac_select_buffer(priv->out_ch, 1);
 
-	/* enable the channels */
+	 
 	ipu_idmac_enable_channel(priv->out_ch);
 
-	/* enable the IC task */
+	 
 	ipu_ic_task_enable(priv->ic);
 
 	return 0;
@@ -678,7 +644,7 @@ static int prp_start(struct prp_priv *priv)
 
 	priv->ipu_buf_num = 0;
 
-	/* init EOF completion waitq */
+	 
 	init_completion(&priv->last_eof_comp);
 	priv->frame_sequence = 0;
 	priv->last_eof = false;
@@ -719,7 +685,7 @@ static int prp_start(struct prp_priv *priv)
 		goto out_free_nfb4eof_irq;
 	}
 
-	/* start upstream */
+	 
 	ret = v4l2_subdev_call(priv->src_sd, video, s_stream, 1);
 	ret = (ret && ret != -ENOIOCTLCMD) ? ret : 0;
 	if (ret) {
@@ -728,7 +694,7 @@ static int prp_start(struct prp_priv *priv)
 		goto out_free_eof_irq;
 	}
 
-	/* start the EOF timeout timer */
+	 
 	mod_timer(&priv->eof_timeout_timer,
 		  jiffies + msecs_to_jiffies(IMX_MEDIA_EOF_TIMEOUT));
 
@@ -753,21 +719,19 @@ static void prp_stop(struct prp_priv *priv)
 	unsigned long flags;
 	int ret;
 
-	/* mark next EOF interrupt as the last before stream off */
+	 
 	spin_lock_irqsave(&priv->irqlock, flags);
 	priv->last_eof = true;
 	spin_unlock_irqrestore(&priv->irqlock, flags);
 
-	/*
-	 * and then wait for interrupt handler to mark completion.
-	 */
+	 
 	ret = wait_for_completion_timeout(
 		&priv->last_eof_comp,
 		msecs_to_jiffies(IMX_MEDIA_EOF_TIMEOUT));
 	if (ret == 0)
 		v4l2_warn(&ic_priv->sd, "wait last EOF timeout\n");
 
-	/* stop upstream */
+	 
 	ret = v4l2_subdev_call(priv->src_sd, video, s_stream, 0);
 	if (ret && ret != -ENOIOCTLCMD)
 		v4l2_warn(&ic_priv->sd,
@@ -780,7 +744,7 @@ static void prp_stop(struct prp_priv *priv)
 
 	imx_media_free_dma_buf(ic_priv->ipu_dev, &priv->underrun_buf);
 
-	/* cancel the EOF timeout timer */
+	 
 	del_timer_sync(&priv->eof_timeout_timer);
 
 	prp_put_ipu_resources(priv);
@@ -798,19 +762,7 @@ __prp_get_fmt(struct prp_priv *priv, struct v4l2_subdev_state *sd_state,
 		return &priv->format_mbus[pad];
 }
 
-/*
- * Applies IC resizer and IDMAC alignment restrictions to output
- * rectangle given the input rectangle, and depending on given
- * rotation mode.
- *
- * The IC resizer cannot downsize more than 4:1. Note also that
- * for 90 or 270 rotation, _both_ output width and height must
- * be aligned by W_ALIGN_SRC, because the intermediate rotation
- * buffer swaps output width/height, and the final output buffer
- * does not.
- *
- * Returns true if the output rectangle was modified.
- */
+ 
 static bool prp_bound_align_output(struct v4l2_mbus_framefmt *outfmt,
 				   struct v4l2_mbus_framefmt *infmt,
 				   enum ipu_rotate_mode rot_mode)
@@ -836,9 +788,7 @@ static bool prp_bound_align_output(struct v4l2_mbus_framefmt *outfmt,
 	return outfmt->width != orig_width || outfmt->height != orig_height;
 }
 
-/*
- * V4L2 subdev operations.
- */
+ 
 
 static int prp_enum_mbus_code(struct v4l2_subdev *sd,
 			      struct v4l2_subdev_state *sd_state,
@@ -903,7 +853,7 @@ static void prp_try_fmt(struct prp_priv *priv,
 		prp_bound_align_output(&sdformat->format, infmt,
 				       priv->rot_mode);
 
-		/* propagate colorimetry from sink */
+		 
 		sdformat->format.colorspace = infmt->colorspace;
 		sdformat->format.xfer_func = infmt->xfer_func;
 	} else {
@@ -944,7 +894,7 @@ static int prp_set_fmt(struct v4l2_subdev *sd,
 	fmt = __prp_get_fmt(priv, sd_state, sdformat->pad, sdformat->which);
 	*fmt = sdformat->format;
 
-	/* propagate a default format to source pad */
+	 
 	if (sdformat->pad == PRPENCVF_SINK_PAD) {
 		const struct imx_media_pixfmt *outcc;
 		struct v4l2_mbus_framefmt *outfmt;
@@ -1045,9 +995,9 @@ static int prp_link_setup(struct media_entity *entity,
 		goto out;
 	}
 
-	/* this is the source pad */
+	 
 
-	/* the remote must be the device node */
+	 
 	if (!is_media_entity_v4l2_video_device(remote->entity)) {
 		ret = -EINVAL;
 		goto out;
@@ -1107,7 +1057,7 @@ static int prp_s_ctrl(struct v4l2_ctrl *ctrl)
 	if (rot_mode != priv->rot_mode) {
 		struct v4l2_mbus_framefmt outfmt, infmt;
 
-		/* can't change rotation mid-streaming */
+		 
 		if (priv->stream_count > 0) {
 			ret = -EBUSY;
 			goto out;
@@ -1179,10 +1129,7 @@ static int prp_s_stream(struct v4l2_subdev *sd, int enable)
 		goto out;
 	}
 
-	/*
-	 * enable/disable streaming only if stream_count is
-	 * going from 0 to 1 / 1 to 0.
-	 */
+	 
 	if (priv->stream_count != !enable)
 		goto update_count;
 
@@ -1230,7 +1177,7 @@ static int prp_s_frame_interval(struct v4l2_subdev *sd,
 
 	mutex_lock(&priv->lock);
 
-	/* No limits on valid frame intervals */
+	 
 	if (fi->interval.numerator == 0 || fi->interval.denominator == 0)
 		fi->interval = priv->frame_interval;
 	else
@@ -1248,7 +1195,7 @@ static int prp_registered(struct v4l2_subdev *sd)
 	int i, ret;
 	u32 code;
 
-	/* set a default mbus format  */
+	 
 	imx_media_enum_ipu_formats(&code, 0, PIXFMT_SEL_YUV);
 
 	for (i = 0; i < PRPENCVF_NUM_PADS; i++) {
@@ -1260,7 +1207,7 @@ static int prp_registered(struct v4l2_subdev *sd)
 			return ret;
 	}
 
-	/* init default frame interval */
+	 
 	priv->frame_interval.numerator = 1;
 	priv->frame_interval.denominator = 30;
 

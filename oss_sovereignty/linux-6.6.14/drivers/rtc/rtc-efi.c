@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * rtc-efi: RTC Class Driver for EFI-based systems
- *
- * Copyright (C) 2009 Hewlett-Packard Development Company, L.P.
- *
- * Author: dann frazier <dannf@dannf.org>
- * Based on efirtc.c by Stephane Eranian
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -20,19 +13,15 @@
 
 #define EFI_ISDST (EFI_TIME_ADJUST_DAYLIGHT|EFI_TIME_IN_DAYLIGHT)
 
-/*
- * returns day of the year [0-365]
- */
+ 
 static inline int
 compute_yday(efi_time_t *eft)
 {
-	/* efi_time_t.month is in the [1-12] so, we need -1 */
+	 
 	return rtc_year_days(eft->day, eft->month - 1, eft->year);
 }
 
-/*
- * returns day of the week [0-6] 0=Sunday
- */
+ 
 static int
 compute_wday(efi_time_t *eft, int yday)
 {
@@ -42,10 +31,7 @@ compute_wday(efi_time_t *eft, int yday)
 		    + (eft->year - 1) / 400
 		    + yday;
 
-	/*
-	 * 1/1/0000 may or may not have been a Sunday (if it ever existed at
-	 * all) but assuming it was makes this calculation work correctly.
-	 */
+	 
 	return ndays % 7;
 }
 
@@ -92,10 +78,10 @@ convert_from_efi_time(efi_time_t *eft, struct rtc_time *wtime)
 		return false;
 	wtime->tm_year = eft->year - 1900;
 
-	/* day in the year [1-365]*/
+	 
 	wtime->tm_yday = compute_yday(eft);
 
-	/* day of the week [0-6], Sunday=0 */
+	 
 	wtime->tm_wday = compute_wday(eft, wtime->tm_yday);
 
 	switch (eft->daylight & EFI_ISDST) {
@@ -117,9 +103,7 @@ static int efi_read_alarm(struct device *dev, struct rtc_wkalrm *wkalrm)
 	efi_time_t eft;
 	efi_status_t status;
 
-	/*
-	 * As of EFI v1.10, this call always returns an unsupported status
-	 */
+	 
 	status = efi.get_wakeup_time((efi_bool_t *)&wkalrm->enabled,
 				     (efi_bool_t *)&wkalrm->pending, &eft);
 
@@ -139,14 +123,7 @@ static int efi_set_alarm(struct device *dev, struct rtc_wkalrm *wkalrm)
 
 	convert_to_efi_time(&wkalrm->time, &eft);
 
-	/*
-	 * XXX Fixme:
-	 * As of EFI 0.92 with the firmware I have on my
-	 * machine this call does not seem to work quite
-	 * right
-	 *
-	 * As of v1.10, this call always returns an unsupported status
-	 */
+	 
 	status = efi.set_wakeup_time((efi_bool_t)wkalrm->enabled, &eft);
 
 	dev_warn(dev, "write status is %d\n", (int)status);
@@ -163,7 +140,7 @@ static int efi_read_time(struct device *dev, struct rtc_time *tm)
 	status = efi.get_time(&eft, &cap);
 
 	if (status != EFI_SUCCESS) {
-		/* should never happen */
+		 
 		dev_err_once(dev, "can't read time\n");
 		return -EINVAL;
 	}
@@ -211,7 +188,7 @@ static int efi_procfs(struct device *dev, struct seq_file *seq)
 	if (eft.timezone == EFI_UNSPECIFIED_TIMEZONE)
 		seq_puts(seq, "Timezone\t: unspecified\n");
 	else
-		/* XXX fixme: convert to string? */
+		 
 		seq_printf(seq, "Timezone\t: %u\n", eft.timezone);
 
 	if (test_bit(RTC_FEATURE_ALARM, rtc->features)) {
@@ -230,13 +207,11 @@ static int efi_procfs(struct device *dev, struct seq_file *seq)
 		if (eft.timezone == EFI_UNSPECIFIED_TIMEZONE)
 			seq_puts(seq, "Timezone\t: unspecified\n");
 		else
-			/* XXX fixme: convert to string? */
+			 
 			seq_printf(seq, "Timezone\t: %u\n", alm.timezone);
 	}
 
-	/*
-	 * now prints the capabilities
-	 */
+	 
 	seq_printf(seq,
 		   "Resolution\t: %u\n"
 		   "Accuracy\t: %u\n"
@@ -260,7 +235,7 @@ static int __init efi_rtc_probe(struct platform_device *dev)
 	efi_time_t eft;
 	efi_time_cap_t cap;
 
-	/* First check if the RTC is usable */
+	 
 	if (efi.get_time(&eft, &cap) != EFI_SUCCESS)
 		return -ENODEV;
 

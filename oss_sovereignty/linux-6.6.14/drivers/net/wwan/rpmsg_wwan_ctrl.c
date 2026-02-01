@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2021, Stephan Gerhold <stephan@gerhold.net> */
+
+ 
 #include <linux/kernel.h>
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -8,7 +8,7 @@
 #include <linux/wwan.h>
 
 struct rpmsg_wwan_dev {
-	/* Lower level is a rpmsg dev, upper level is a wwan port */
+	 
 	struct rpmsg_device *rpdev;
 	struct wwan_port *wwan_port;
 	struct rpmsg_endpoint *ept;
@@ -98,11 +98,7 @@ static const struct wwan_port_ops rpmsg_wwan_pops = {
 
 static struct device *rpmsg_wwan_find_parent(struct device *dev)
 {
-	/* Select first platform device as parent for the WWAN ports.
-	 * On Qualcomm platforms this is usually the platform device that
-	 * represents the modem remote processor. This might need to be
-	 * adjusted when adding device IDs for other platforms.
-	 */
+	 
 	for (dev = dev->parent; dev; dev = dev->parent) {
 		if (dev_is_platform(dev))
 			return dev;
@@ -127,7 +123,7 @@ static int rpmsg_wwan_ctrl_probe(struct rpmsg_device *rpdev)
 	rpwwan->rpdev = rpdev;
 	dev_set_drvdata(&rpdev->dev, rpwwan);
 
-	/* Register as a wwan port, id.driver_data contains wwan port type */
+	 
 	port = wwan_create_port(parent, rpdev->id.driver_data,
 				&rpmsg_wwan_pops, NULL, rpwwan);
 	if (IS_ERR(port))
@@ -146,7 +142,7 @@ static void rpmsg_wwan_ctrl_remove(struct rpmsg_device *rpdev)
 }
 
 static const struct rpmsg_device_id rpmsg_wwan_ctrl_id_table[] = {
-	/* RPMSG channels for Qualcomm SoCs with integrated modem */
+	 
 	{ .name = "DATA5_CNTL", .driver_data = WWAN_PORT_QMI },
 	{ .name = "DATA4", .driver_data = WWAN_PORT_AT },
 	{ .name = "DATA1", .driver_data = WWAN_PORT_AT },

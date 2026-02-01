@@ -1,28 +1,4 @@
-/*
- * Copyright (C) 2009 Francisco Jerez.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial
- * portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE COPYRIGHT OWNER(S) AND/OR ITS SUPPLIERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include "nouveau_drv.h"
 #include "nouveau_reg.h"
@@ -91,7 +67,7 @@ static void nv04_tv_dpms(struct drm_encoder *encoder, int mode)
 		state->pllsel |= head ? PLLSEL_TV_CRTC2_MASK :
 					PLLSEL_TV_CRTC1_MASK;
 
-		/* Inhibit hsync */
+		 
 		crtc1A |= 0x80;
 
 		NVWriteVgaCrtc(dev, head, NV_CIO_CRE_RPC1_INDEX, crtc1A);
@@ -148,10 +124,7 @@ static void nv04_tv_mode_set(struct drm_encoder *encoder,
 	regp->tv_htotal = adjusted_mode->htotal;
 	regp->tv_vtotal = adjusted_mode->vtotal;
 
-	/* These delay the TV signals with respect to the VGA port,
-	 * they might be useful if we ever allow a CRTC to drive
-	 * multiple outputs.
-	 */
+	 
 	regp->tv_hskew = 1;
 	regp->tv_hsync_delay = 1;
 	regp->tv_hsync_delay2 = 64;
@@ -209,17 +182,17 @@ nv04_tv_create(struct drm_connector *connector, struct dcb_output *entry)
 	struct nvkm_i2c_bus *bus = nvkm_i2c_bus_find(i2c, entry->i2c_index);
 	int type, ret;
 
-	/* Ensure that we can talk to this encoder */
+	 
 	type = nv04_tv_identify(dev, entry->i2c_index);
 	if (type < 0)
 		return type;
 
-	/* Allocate the necessary memory */
+	 
 	nv_encoder = kzalloc(sizeof(*nv_encoder), GFP_KERNEL);
 	if (!nv_encoder)
 		return -ENOMEM;
 
-	/* Initialize the common members */
+	 
 	encoder = to_drm_encoder(nv_encoder);
 
 	drm_encoder_init(dev, encoder, &nv04_tv_funcs, DRM_MODE_ENCODER_TVDAC,
@@ -234,14 +207,14 @@ nv04_tv_create(struct drm_connector *connector, struct dcb_output *entry)
 	nv_encoder->dcb = entry;
 	nv_encoder->or = ffs(entry->or) - 1;
 
-	/* Run the slave-specific initialization */
+	 
 	ret = drm_i2c_encoder_init(dev, to_encoder_slave(encoder),
 				   &bus->i2c,
 				   &nv04_tv_encoder_info[type].dev);
 	if (ret < 0)
 		goto fail_cleanup;
 
-	/* Attach it to the specified connector. */
+	 
 	get_slave_funcs(encoder)->create_resources(encoder, connector);
 	drm_connector_attach_encoder(connector, encoder);
 

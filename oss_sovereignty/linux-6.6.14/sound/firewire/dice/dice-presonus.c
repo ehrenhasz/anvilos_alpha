@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// dice-presonus.c - a part of driver for DICE based devices
-//
-// Copyright (c) 2019 Takashi Sakamoto
+
+
+
+
 
 #include "dice.h"
 

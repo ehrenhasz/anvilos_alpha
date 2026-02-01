@@ -1,26 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: monk liu <monk.liu@amd.com>
- */
+ 
 
 #include <drm/drm_auth.h>
 #include <drm/drm_drv.h>
@@ -55,10 +33,7 @@ bool amdgpu_ctx_priority_is_valid(int32_t ctx_prio)
 		return true;
 	default:
 	case AMDGPU_CTX_PRIORITY_UNSET:
-		/* UNSET priority is not valid and we don't carry that
-		 * around, but set it to NORMAL in the only place this
-		 * function is called, amdgpu_ctx_ioctl().
-		 */
+		 
 		return false;
 	}
 }
@@ -86,9 +61,7 @@ amdgpu_ctx_to_drm_sched_prio(int32_t ctx_prio)
 	case AMDGPU_CTX_PRIORITY_VERY_HIGH:
 		return DRM_SCHED_PRIORITY_HIGH;
 
-	/* This should not happen as we sanitized userspace provided priority
-	 * already, WARN if this happens.
-	 */
+	 
 	default:
 		WARN(1, "Invalid context priority %d\n", ctx_prio);
 		return DRM_SCHED_PRIORITY_NORMAL;
@@ -99,7 +72,7 @@ amdgpu_ctx_to_drm_sched_prio(int32_t ctx_prio)
 static int amdgpu_ctx_priority_permit(struct drm_file *filp,
 				      int32_t priority)
 {
-	/* NORMAL and below are accessible by everyone */
+	 
 	if (priority <= AMDGPU_CTX_PRIORITY_NORMAL)
 		return 0;
 
@@ -165,7 +138,7 @@ static unsigned int amdgpu_ctx_get_hw_prio(struct amdgpu_ctx *ctx, u32 hw_ip)
 	return hw_prio;
 }
 
-/* Calculate the time spend on the hw */
+ 
 static ktime_t amdgpu_ctx_fence_time(struct dma_fence *fence)
 {
 	struct drm_sched_fence *s_fence;
@@ -173,12 +146,12 @@ static ktime_t amdgpu_ctx_fence_time(struct dma_fence *fence)
 	if (!fence)
 		return ns_to_ktime(0);
 
-	/* When the fence is not even scheduled it can't have spend time */
+	 
 	s_fence = to_drm_sched_fence(fence);
 	if (!test_bit(DMA_FENCE_FLAG_TIMESTAMP_BIT, &s_fence->scheduled.flags))
 		return ns_to_ktime(0);
 
-	/* When it is still running account how much already spend */
+	 
 	if (!test_bit(DMA_FENCE_FLAG_TIMESTAMP_BIT, &s_fence->finished.flags))
 		return ktime_sub(ktime_get(), s_fence->scheduled.timestamp);
 
@@ -238,7 +211,7 @@ static int amdgpu_ctx_init_entity(struct amdgpu_ctx *ctx, u32 hw_ip,
 			goto cleanup_entity;
 	}
 
-	/* disable load balance if the hw engine retains context among dependent jobs */
+	 
 	if (hw_ip == AMDGPU_HW_IP_VCN_ENC ||
 	    hw_ip == AMDGPU_HW_IP_VCN_DEC ||
 	    hw_ip == AMDGPU_HW_IP_UVD_ENC ||
@@ -253,7 +226,7 @@ static int amdgpu_ctx_init_entity(struct amdgpu_ctx *ctx, u32 hw_ip,
 	if (r)
 		goto error_free_entity;
 
-	/* It's not an error if we fail to install the new entity */
+	 
 	if (cmpxchg(&ctx->entities[hw_ip][ring], NULL, entity))
 		goto cleanup_entity;
 
@@ -441,7 +414,7 @@ int amdgpu_ctx_get_entity(struct amdgpu_ctx *ctx, u32 hw_ip, u32 instance,
 		return -EINVAL;
 	}
 
-	/* Right now all IPs have only one instance - multiple rings. */
+	 
 	if (instance != 0) {
 		DRM_DEBUG("invalid ip instance: %d\n", instance);
 		return -EINVAL;
@@ -552,13 +525,13 @@ static int amdgpu_ctx_query(struct amdgpu_device *adev,
 		return -EINVAL;
 	}
 
-	/* TODO: these two are always zero */
+	 
 	out->state.flags = 0x0;
 	out->state.hangs = 0x0;
 
-	/* determine if a GPU reset has occured since the last call */
+	 
 	reset_counter = atomic_read(&adev->gpu_reset_counter);
-	/* TODO: this should ideally return NO, GUILTY, or INNOCENT. */
+	 
 	if (ctx->reset_counter_query == reset_counter)
 		out->state.reset_status = AMDGPU_CTX_NO_RESET;
 	else
@@ -606,10 +579,7 @@ static int amdgpu_ctx_query2(struct amdgpu_device *adev,
 		out->state.flags |= AMDGPU_CTX_QUERY2_FLAGS_RESET_IN_PROGRESS;
 
 	if (adev->ras_enabled && con) {
-		/* Return the cached values in O(1),
-		 * and schedule delayed work to cache
-		 * new vaues.
-		 */
+		 
 		int ce_count, ue_count;
 
 		ce_count = atomic_read(&con->ras_ce_count);
@@ -675,10 +645,7 @@ int amdgpu_ctx_ioctl(struct drm_device *dev, void *data,
 	id = args->in.ctx_id;
 	priority = args->in.priority;
 
-	/* For backwards compatibility, we need to accept ioctls with garbage
-	 * in the priority field. Garbage values in the priority field, result
-	 * in the priority being set to NORMAL.
-	 */
+	 
 	if (!amdgpu_ctx_priority_is_valid(priority))
 		priority = AMDGPU_CTX_PRIORITY_NORMAL;
 
@@ -811,11 +778,11 @@ static void amdgpu_ctx_set_entity_priority(struct amdgpu_ctx *ctx,
 	struct drm_gpu_scheduler **scheds = NULL;
 	unsigned num_scheds;
 
-	/* set sw priority */
+	 
 	drm_sched_entity_set_priority(&aentity->entity,
 				      amdgpu_ctx_to_drm_sched_prio(priority));
 
-	/* set hw priority */
+	 
 	if (hw_ip == AMDGPU_HW_IP_COMPUTE || hw_ip == AMDGPU_HW_IP_GFX) {
 		hw_prio = amdgpu_ctx_get_hw_prio(ctx, hw_ip);
 		hw_prio = array_index_nospec(hw_prio, AMDGPU_RING_PRIO_MAX);
@@ -964,11 +931,7 @@ void amdgpu_ctx_mgr_usage(struct amdgpu_ctx_mgr *mgr,
 	unsigned int hw_ip, i;
 	uint32_t id;
 
-	/*
-	 * This is a little bit racy because it can be that a ctx or a fence are
-	 * destroyed just in the moment we try to account them. But that is ok
-	 * since exactly that case is explicitely allowed by the interface.
-	 */
+	 
 	mutex_lock(&mgr->lock);
 	for (hw_ip = 0; hw_ip < AMDGPU_HW_IP_NUM; ++hw_ip) {
 		uint64_t ns = atomic64_read(&mgr->time_spend[hw_ip]);

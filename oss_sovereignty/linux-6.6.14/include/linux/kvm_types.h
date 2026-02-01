@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 
 #ifndef __KVM_TYPES_H__
 #define __KVM_TYPES_H__
@@ -25,16 +25,7 @@ enum kvm_mr_change;
 
 #include <asm/kvm_types.h>
 
-/*
- * Address types:
- *
- *  gva - guest virtual address
- *  gpa - guest physical address
- *  gfn - guest frame number
- *  hva - host virtual address
- *  hpa - host physical address
- *  hfn - host frame number
- */
+ 
 
 typedef unsigned long  gva_t;
 typedef u64            gpa_t;
@@ -80,16 +71,7 @@ struct gfn_to_pfn_cache {
 };
 
 #ifdef KVM_ARCH_NR_OBJS_PER_MEMORY_CACHE
-/*
- * Memory caches are used to preallocate memory ahead of various MMU flows,
- * e.g. page fault handlers.  Gracefully handling allocation failures deep in
- * MMU flows is problematic, as is triggering reclaim, I/O, etc... while
- * holding MMU locks.  Note, these caches act more like prefetch buffers than
- * classical caches, i.e. objects are not returned to the cache on being freed.
- *
- * The @capacity field and @objects array are lazily initialized when the cache
- * is topped up (__kvm_mmu_topup_memory_cache()).
- */
+ 
 struct kvm_mmu_memory_cache {
 	gfp_t gfp_zero;
 	gfp_t gfp_custom;
@@ -123,4 +105,4 @@ struct kvm_vcpu_stat_generic {
 
 #define KVM_STATS_NAME_SIZE	48
 
-#endif /* __KVM_TYPES_H__ */
+#endif  

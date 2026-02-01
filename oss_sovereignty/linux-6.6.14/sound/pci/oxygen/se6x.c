@@ -1,22 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * C-Media CMI8787 driver for the Studio Evolution SE6X
- *
- * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
- */
 
-/*
- * CMI8787:
- *
- *   SPI    -> microcontroller (not actually used)
- *   GPIO 0 -> do.
- *   GPIO 2 -> do.
- *
- *   DAC0   -> both PCM1792A (L+R, each in mono mode)
- *   ADC1  <-  1st PCM1804
- *   ADC2  <-  2nd PCM1804
- *   ADC3  <-  3rd PCM1804
- */
+ 
+
+ 
 
 #include <linux/pci.h>
 #include <linux/module.h>
@@ -57,7 +42,7 @@ static void se6x_init(struct oxygen *chip)
 
 static int se6x_control_filter(struct snd_kcontrol_new *template)
 {
-	/* no DAC volume/mute */
+	 
 	if (!strncmp(template->name, "Master Playback ", 16))
 		return 1;
 	return 0;
@@ -70,7 +55,7 @@ static void se6x_cleanup(struct oxygen *chip)
 static void set_pcm1792a_params(struct oxygen *chip,
 				struct snd_pcm_hw_params *params)
 {
-	/* nothing to do (the microcontroller monitors DAC_LRCK) */
+	 
 }
 
 static void set_pcm1804_params(struct oxygen *chip,
@@ -81,7 +66,7 @@ static void set_pcm1804_params(struct oxygen *chip,
 static unsigned int se6x_adjust_dac_routing(struct oxygen *chip,
 					    unsigned int play_routing)
 {
-	/* route the same stereo pair to DAC0 and DAC1 */
+	 
 	return ( play_routing       & OXYGEN_PLAY_DAC0_SOURCE_MASK) |
 	       ((play_routing << 2) & OXYGEN_PLAY_DAC1_SOURCE_MASK);
 }

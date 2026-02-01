@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: MIT
 
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #ifndef __SELFTEST_H__
 #define __SELFTEST_H__
@@ -27,4 +25,4 @@ int __subtests(const char *caller,
 
 #define SUBTEST(x) { x, #x }
 
-#endif /* __SELFTEST_H__ */
+#endif  

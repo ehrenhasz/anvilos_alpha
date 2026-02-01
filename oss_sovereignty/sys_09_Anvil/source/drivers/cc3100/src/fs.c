@@ -1,61 +1,27 @@
-/*
- * fs.c - CC31xx/CC32xx Host Driver Implementation
- *
- * Copyright (C) 2014 Texas Instruments Incorporated - http://www.ti.com/ 
- * 
- * 
- *  Redistribution and use in source and binary forms, with or without 
- *  modification, are permitted provided that the following conditions 
- *  are met:
- *
- *    Redistributions of source code must retain the above copyright 
- *    notice, this list of conditions and the following disclaimer.
- *
- *    Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the 
- *    documentation and/or other materials provided with the   
- *    distribution.
- *
- *    Neither the name of Texas Instruments Incorporated nor the names of
- *    its contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
- *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
- *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
- *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
- *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
-*/
+ 
 
 
 
-/*****************************************************************************/
-/* Include files                                                             */
-/*****************************************************************************/
+ 
+ 
+ 
 #include "simplelink.h"
 #include "protocol.h"
 #include "driver.h"
 
-/*****************************************************************************/
-/* Macro declarations                                                        */
-/*****************************************************************************/
+ 
+ 
+ 
 #define sl_min(a,b) (((a) < (b)) ? (a) : (b))
 #define MAX_NVMEM_CHUNK_SIZE  1460
 
-/*****************************************************************************/
-/* Internal functions                                                        */
-/*****************************************************************************/
+ 
+ 
+ 
 
-/*****************************************************************************/
-/* _sl_Strlen                                                                */
-/*****************************************************************************/
+ 
+ 
+ 
 _u16 _sl_Strlen(const _u8 *buffer)
 {
     _u16 len = 0;
@@ -66,9 +32,9 @@ _u16 _sl_Strlen(const _u8 *buffer)
     return len;
 }
 
-/*****************************************************************************/
-/* _sl_GetCreateFsMode                                                       */
-/*****************************************************************************/
+ 
+ 
+ 
 _u32 _sl_GetCreateFsMode(_u32 maxSizeInBytes,_u32 accessFlags)
 {
    _u32 granIdx = 0;
@@ -86,13 +52,13 @@ _u32 _sl_GetCreateFsMode(_u32 maxSizeInBytes,_u32 accessFlags)
    return _FS_MODE(_FS_MODE_OPEN_WRITE_CREATE_IF_NOT_EXIST,  granIdx, granNum, accessFlags);
 }
 
-/*****************************************************************************/
-/* API functions                                                        */
-/*****************************************************************************/
+ 
+ 
+ 
 
-/*****************************************************************************/
-/*  sl_FsOpen */ 
-/*****************************************************************************/
+ 
+  
+ 
 typedef union
 {
 	_FsOpenCommand_t	    Cmd;
@@ -115,7 +81,7 @@ _i32 sl_FsOpen(const _u8 *pFileName,const _u32 AccessModeAndMaxSize, _u32 *pToke
     _SlFsOpenMsg_u        Msg;
     _SlCmdExt_t           CmdExt;
 
-    CmdExt.TxPayloadLen = (_sl_Strlen(pFileName)+4) & (~3); /* add 4: 1 for NULL and the 3 for align */
+    CmdExt.TxPayloadLen = (_sl_Strlen(pFileName)+4) & (~3);  
     CmdExt.RxPayloadLen = 0;
     CmdExt.pTxPayload = (_u8*)pFileName;
     CmdExt.pRxPayload = NULL;
@@ -138,7 +104,7 @@ _i32 sl_FsOpen(const _u8 *pFileName,const _u32 AccessModeAndMaxSize, _u32 *pToke
         *pToken =      Msg.Rsp.Token;
 	}
        
-	/* in case of an error, return the erros file handler as an error code */
+	 
 	if( *pFileHandle < 0 )
 	{
 	   return *pFileHandle;
@@ -147,9 +113,9 @@ _i32 sl_FsOpen(const _u8 *pFileName,const _u32 AccessModeAndMaxSize, _u32 *pToke
 }
 #endif
 
-/*****************************************************************************/
-/* sl_FsClose */ 
-/*****************************************************************************/
+ 
+  
+ 
 typedef union
 {
 	_FsCloseCommand_t	    Cmd;
@@ -174,14 +140,14 @@ _i16 sl_FsClose(const _i32 FileHdl, const _u8*  pCeritificateFileName,const _u8*
     Msg.Cmd.FileHandle             = FileHdl;
     if( pCeritificateFileName != NULL )
     {
-        Msg.Cmd.CertificFileNameLength = (_sl_Strlen(pCeritificateFileName)+4) & (~3); /* add 4: 1 for NULL and the 3 for align */
+        Msg.Cmd.CertificFileNameLength = (_sl_Strlen(pCeritificateFileName)+4) & (~3);  
     }
     Msg.Cmd.SignatureLen           = SignatureLen;
     
-    ExtCtrl.TxPayloadLen = ((SignatureLen+3) & (~3)); /* align */
+    ExtCtrl.TxPayloadLen = ((SignatureLen+3) & (~3));  
     ExtCtrl.pTxPayload   = (_u8*)pSignature;
     ExtCtrl.RxPayloadLen = (_i16)Msg.Cmd.CertificFileNameLength;
-    ExtCtrl.pRxPayload   = (_u8*)pCeritificateFileName; /* Add signature */
+    ExtCtrl.pRxPayload   = (_u8*)pCeritificateFileName;  
     
     if(ExtCtrl.pRxPayload != NULL &&  ExtCtrl.RxPayloadLen != 0)
     {
@@ -195,9 +161,9 @@ _i16 sl_FsClose(const _i32 FileHdl, const _u8*  pCeritificateFileName,const _u8*
 #endif
 
 
-/*****************************************************************************/
-/* sl_FsRead */ 
-/*****************************************************************************/
+ 
+  
+ 
 typedef union
 {
 	_FsReadCommand_t	    Cmd;
@@ -267,9 +233,9 @@ _i32 sl_FsRead(const _i32 FileHdl,_u32 Offset, _u8*  pData,_u32 Len)
 }
 #endif
 
-/*****************************************************************************/
-/* sl_FsWrite */ 
-/*****************************************************************************/
+ 
+  
+ 
 typedef union
 {
 	_FsWriteCommand_t	    Cmd;
@@ -342,9 +308,9 @@ _i32 sl_FsWrite(const _i32 FileHdl,_u32 Offset, _u8*  pData,_u32 Len)
 }
 #endif
 
-/*****************************************************************************/
-/* sl_FsGetInfo */ 
-/*****************************************************************************/
+ 
+  
+ 
 typedef union
 {
 	_FsGetInfoCommand_t	    Cmd;
@@ -367,7 +333,7 @@ _i16 sl_FsGetInfo(const _u8 *pFileName,const _u32 Token,SlFsFileInfo_t* pFsFileI
     _SlFsGetInfoMsg_u    Msg;
     _SlCmdExt_t          CmdExt;
 
-    CmdExt.TxPayloadLen = (_sl_Strlen(pFileName)+4) & (~3); /* add 4: 1 for NULL and the 3 for align  */
+    CmdExt.TxPayloadLen = (_sl_Strlen(pFileName)+4) & (~3);  
     CmdExt.RxPayloadLen = 0;
     CmdExt.pTxPayload   = (_u8*)pFileName;
     CmdExt.pRxPayload   = NULL;
@@ -386,9 +352,9 @@ _i16 sl_FsGetInfo(const _u8 *pFileName,const _u32 Token,SlFsFileInfo_t* pFsFileI
 }
 #endif
 
-/*****************************************************************************/
-/* sl_FsDel */ 
-/*****************************************************************************/
+ 
+  
+ 
 typedef union
 {
 	_FsDeleteCommand_t   	    Cmd;
@@ -410,7 +376,7 @@ _i16 sl_FsDel(const _u8 *pFileName,const _u32 Token)
     _SlFsDeleteMsg_u Msg;
     _SlCmdExt_t          CmdExt;
 
-    CmdExt.TxPayloadLen = (_sl_Strlen(pFileName)+4) & (~3); /* add 4: 1 for NULL and the 3 for align */
+    CmdExt.TxPayloadLen = (_sl_Strlen(pFileName)+4) & (~3);  
     CmdExt.RxPayloadLen = 0;
     CmdExt.pTxPayload   = (_u8*)pFileName;
     CmdExt.pRxPayload   = NULL;

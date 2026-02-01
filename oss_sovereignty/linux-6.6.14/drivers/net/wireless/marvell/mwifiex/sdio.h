@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * NXP Wireless LAN device driver: SDIO specific definitions
- *
- * Copyright 2011-2020 NXP
- */
+ 
+ 
 
 #ifndef	_MWIFIEX_SDIO_H
 #define	_MWIFIEX_SDIO_H
@@ -59,46 +55,46 @@
 
 #define MWIFIEX_MP_AGGR_BUF_SIZE_16K	(16384)
 #define MWIFIEX_MP_AGGR_BUF_SIZE_32K	(32768)
-/* we leave one block of 256 bytes for DMA alignment*/
+ 
 #define MWIFIEX_MP_AGGR_BUF_SIZE_MAX    (65280)
 
-/* Misc. Config Register : Auto Re-enable interrupts */
+ 
 #define AUTO_RE_ENABLE_INT              BIT(4)
 
-/* Host Control Registers : Configuration */
+ 
 #define CONFIGURATION_REG		0x00
-/* Host Control Registers : Host power up */
+ 
 #define HOST_POWER_UP			(0x1U << 1)
 
-/* Host Control Registers : Upload host interrupt mask */
+ 
 #define UP_LD_HOST_INT_MASK		(0x1U)
-/* Host Control Registers : Download host interrupt mask */
+ 
 #define DN_LD_HOST_INT_MASK		(0x2U)
 
-/* Host Control Registers : Upload host interrupt status */
+ 
 #define UP_LD_HOST_INT_STATUS		(0x1U)
-/* Host Control Registers : Download host interrupt status */
+ 
 #define DN_LD_HOST_INT_STATUS		(0x2U)
 
-/* Host Control Registers : Host interrupt status */
+ 
 #define CARD_INT_STATUS_REG		0x28
 
-/* Card Control Registers : Card I/O ready */
+ 
 #define CARD_IO_READY                   (0x1U << 3)
-/* Card Control Registers : Download card ready */
+ 
 #define DN_LD_CARD_RDY                  (0x1U << 0)
 
-/* Max retry number of CMD53 write */
+ 
 #define MAX_WRITE_IOMEM_RETRY		2
 
-/* SDIO Tx aggregation in progress ? */
+ 
 #define MP_TX_AGGR_IN_PROGRESS(a) (a->mpa_tx.pkt_cnt > 0)
 
-/* SDIO Tx aggregation buffer room for next packet ? */
+ 
 #define MP_TX_AGGR_BUF_HAS_ROOM(a, len) ((a->mpa_tx.buf_len+len)	\
 						<= a->mpa_tx.buf_size)
 
-/* Copy current packet (SDIO Tx aggregation buffer) to SDIO buffer */
+ 
 #define MP_TX_AGGR_BUF_PUT(a, payload, pkt_len, port) do {		\
 	memmove(&a->mpa_tx.buf[a->mpa_tx.buf_len],			\
 			payload, pkt_len);				\
@@ -114,11 +110,11 @@
 	a->mpa_tx.pkt_cnt++;						\
 } while (0)
 
-/* SDIO Tx aggregation limit ? */
+ 
 #define MP_TX_AGGR_PKT_LIMIT_REACHED(a)					\
 			(a->mpa_tx.pkt_cnt == a->mpa_tx.pkt_aggr_limit)
 
-/* Reset SDIO Tx aggregation buffer parameters */
+ 
 #define MP_TX_AGGR_BUF_RESET(a) do {					\
 	a->mpa_tx.pkt_cnt = 0;						\
 	a->mpa_tx.buf_len = 0;						\
@@ -126,18 +122,18 @@
 	a->mpa_tx.start_port = 0;					\
 } while (0)
 
-/* SDIO Rx aggregation limit ? */
+ 
 #define MP_RX_AGGR_PKT_LIMIT_REACHED(a)					\
 			(a->mpa_rx.pkt_cnt == a->mpa_rx.pkt_aggr_limit)
 
-/* SDIO Rx aggregation in progress ? */
+ 
 #define MP_RX_AGGR_IN_PROGRESS(a) (a->mpa_rx.pkt_cnt > 0)
 
-/* SDIO Rx aggregation buffer room for next packet ? */
+ 
 #define MP_RX_AGGR_BUF_HAS_ROOM(a, rx_len)				\
 			((a->mpa_rx.buf_len+rx_len) <= a->mpa_rx.buf_size)
 
-/* Reset SDIO Rx aggregation buffer parameters */
+ 
 #define MP_RX_AGGR_BUF_RESET(a) do {					\
 	a->mpa_rx.pkt_cnt = 0;						\
 	a->mpa_rx.buf_len = 0;						\
@@ -145,9 +141,9 @@
 	a->mpa_rx.start_port = 0;					\
 } while (0)
 
-/* data structure for SDIO MPA TX */
+ 
 struct mwifiex_sdio_mpa_tx {
-	/* multiport tx aggregation buffer pointer */
+	 
 	u8 *buf;
 	u32 buf_len;
 	u32 pkt_cnt;
@@ -285,9 +281,7 @@ struct mwifiex_sdio_device {
 	bool fw_ready_extra_delay;
 };
 
-/*
- * .cmdrsp_complete handler
- */
+ 
 static inline int mwifiex_sdio_cmdrsp_complete(struct mwifiex_adapter *adapter,
 					       struct sk_buff *skb)
 {
@@ -295,9 +289,7 @@ static inline int mwifiex_sdio_cmdrsp_complete(struct mwifiex_adapter *adapter,
 	return 0;
 }
 
-/*
- * .event_complete handler
- */
+ 
 static inline int mwifiex_sdio_event_complete(struct mwifiex_adapter *adapter,
 					      struct sk_buff *skb)
 {
@@ -357,7 +349,7 @@ mp_tx_aggr_port_limit_reached(struct sdio_mmc_card *card)
 	return false;
 }
 
-/* Prepare to copy current packet from card to SDIO Rx aggregation buffer */
+ 
 static inline void mp_rx_aggr_setup(struct sdio_mmc_card *card,
 				    u16 rx_len, u8 port)
 {
@@ -378,4 +370,4 @@ static inline void mp_rx_aggr_setup(struct sdio_mmc_card *card,
 	card->mpa_rx.len_arr[card->mpa_rx.pkt_cnt] = rx_len;
 	card->mpa_rx.pkt_cnt++;
 }
-#endif /* _MWIFIEX_SDIO_H */
+#endif  

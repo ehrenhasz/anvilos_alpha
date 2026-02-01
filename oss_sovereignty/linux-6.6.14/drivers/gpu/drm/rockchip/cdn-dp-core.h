@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2016 Chris Zhong <zyw@rock-chips.com>
- * Copyright (C) 2016 ROCKCHIP, Inc.
- */
+ 
+ 
 
 #ifndef _CDN_DP_CORE_H
 #define _CDN_DP_CORE_H
@@ -46,10 +43,10 @@ struct video_info {
 };
 
 struct cdn_firmware_header {
-	u32 size_bytes; /* size of the entire header+image(s) in bytes */
-	u32 header_size; /* size of just the header in bytes */
-	u32 iram_size; /* size of iram */
-	u32 dram_size; /* size of dram */
+	u32 size_bytes;  
+	u32 header_size;  
+	u32 iram_size;  
+	u32 dram_size;  
 };
 
 struct cdn_dp_port {
@@ -77,8 +74,8 @@ struct cdn_dp_device {
 	bool active;
 	bool suspended;
 
-	const struct firmware *fw;	/* cdn dp firmware */
-	unsigned int fw_version;	/* cdn fw version */
+	const struct firmware *fw;	 
+	unsigned int fw_version;	 
 	bool fw_loaded;
 
 	void __iomem *regs;
@@ -106,4 +103,4 @@ struct cdn_dp_device {
 	hdmi_codec_plugged_cb plugged_cb;
 	struct device *codec_dev;
 };
-#endif  /* _CDN_DP_CORE_H */
+#endif   

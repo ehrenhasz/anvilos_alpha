@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/fs.h>
 #include <linux/minix_fs.h>
@@ -24,7 +24,7 @@ static int __init prompt_ramdisk(char *str)
 }
 __setup("prompt_ramdisk=", prompt_ramdisk);
 
-int __initdata rd_image_start;		/* starting block # of image */
+int __initdata rd_image_start;		 
 
 static int __init ramdisk_start_setup(char *str)
 {
@@ -35,25 +35,7 @@ __setup("ramdisk_start=", ramdisk_start_setup);
 
 static int __init crd_load(decompress_fn deco);
 
-/*
- * This routine tries to find a RAM disk image to load, and returns the
- * number of blocks to read for a non-compressed image, 0 if the image
- * is a compressed image, and -1 if an image with the right magic
- * numbers could not be found.
- *
- * We currently check for the following magic numbers:
- *	minix
- *	ext2
- *	romfs
- *	cramfs
- *	squashfs
- *	gzip
- *	bzip2
- *	lzma
- *	xz
- *	lzo
- *	lz4
- */
+ 
 static int __init
 identify_ramdisk_image(struct file *file, loff_t pos,
 		decompress_fn *decompressor)
@@ -79,9 +61,7 @@ identify_ramdisk_image(struct file *file, loff_t pos,
 	squashfsb = (struct squashfs_super_block *) buf;
 	memset(buf, 0xe5, size);
 
-	/*
-	 * Read block 0 to test for compressed kernel
-	 */
+	 
 	pos = start_block * BLOCK_SIZE;
 	kernel_read(file, buf, size, &pos);
 
@@ -97,7 +77,7 @@ identify_ramdisk_image(struct file *file, loff_t pos,
 		goto done;
 	}
 
-	/* romfs is at block zero too */
+	 
 	if (romfsb->word0 == ROMSB_WORD0 &&
 	    romfsb->word1 == ROMSB_WORD1) {
 		printk(KERN_NOTICE
@@ -115,7 +95,7 @@ identify_ramdisk_image(struct file *file, loff_t pos,
 		goto done;
 	}
 
-	/* squashfs is at block zero too */
+	 
 	if (le32_to_cpu(squashfsb->s_magic) == SQUASHFS_MAGIC) {
 		printk(KERN_NOTICE
 		       "RAMDISK: squashfs filesystem found at block %d\n",
@@ -125,9 +105,7 @@ identify_ramdisk_image(struct file *file, loff_t pos,
 		goto done;
 	}
 
-	/*
-	 * Read 512 bytes further to check if cramfs is padded
-	 */
+	 
 	pos = start_block * BLOCK_SIZE + 0x200;
 	kernel_read(file, buf, size, &pos);
 
@@ -139,13 +117,11 @@ identify_ramdisk_image(struct file *file, loff_t pos,
 		goto done;
 	}
 
-	/*
-	 * Read block 1 to test for minix and ext2 superblock
-	 */
+	 
 	pos = (start_block + 1) * BLOCK_SIZE;
 	kernel_read(file, buf, size, &pos);
 
-	/* Try minix */
+	 
 	if (minixsb->s_magic == MINIX_SUPER_MAGIC ||
 	    minixsb->s_magic == MINIX_SUPER_MAGIC2) {
 		printk(KERN_NOTICE
@@ -155,7 +131,7 @@ identify_ramdisk_image(struct file *file, loff_t pos,
 		goto done;
 	}
 
-	/* Try ext2 */
+	 
 	n = ext2_image_size(buf);
 	if (n) {
 		printk(KERN_NOTICE
@@ -214,10 +190,7 @@ int __init rd_load_image(char *from)
 		goto done;
 	}
 
-	/*
-	 * NOTE NOTE: nblocks is not actually blocks but
-	 * the number of kibibytes of data to load into a ramdisk.
-	 */
+	 
 	rd_blocks = nr_blocks(out_file);
 	if (nblocks > rd_blocks) {
 		printk("RAMDISK: image too big! (%dKiB/%ldKiB)\n",
@@ -225,9 +198,7 @@ int __init rd_load_image(char *from)
 		goto done;
 	}
 
-	/*
-	 * OK, time to copy in the data
-	 */
+	 
 	if (strcmp(from, "/initrd.image") == 0)
 		devblocks = nblocks;
 	else

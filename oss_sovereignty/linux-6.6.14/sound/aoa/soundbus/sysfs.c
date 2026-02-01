@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/of.h>
 #include <linux/stat.h>
-/* FIX UP */
+ 
 #include "soundbus.h"
 
 static ssize_t modalias_show(struct device *dev, struct device_attribute *attr,

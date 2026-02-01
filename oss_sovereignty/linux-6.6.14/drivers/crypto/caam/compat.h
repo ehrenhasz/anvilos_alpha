@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright 2008-2011 Freescale Semiconductor, Inc.
- */
+ 
+ 
 
 #ifndef CAAM_COMPAT_H
 #define CAAM_COMPAT_H
@@ -49,4 +47,4 @@
 #include <crypto/internal/rsa.h>
 #include <crypto/internal/akcipher.h>
 
-#endif /* !defined(CAAM_COMPAT_H) */
+#endif  

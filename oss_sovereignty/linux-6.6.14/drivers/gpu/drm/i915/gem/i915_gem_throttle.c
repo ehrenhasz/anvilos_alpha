@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2014-2016 Intel Corporation
- */
+ 
 
 #include <linux/jiffies.h>
 
@@ -14,25 +10,10 @@
 #include "i915_gem_ioctls.h"
 #include "i915_gem_object.h"
 
-/*
- * 20ms is a fairly arbitrary limit (greater than the average frame time)
- * chosen to prevent the CPU getting more than a frame ahead of the GPU
- * (when using lax throttling for the frontbuffer). We also use it to
- * offer free GPU waitboosts for severely congested workloads.
- */
+ 
 #define DRM_I915_THROTTLE_JIFFIES msecs_to_jiffies(20)
 
-/*
- * Throttle our rendering by waiting until the ring has completed our requests
- * emitted over 20 msec ago.
- *
- * Note that if we were to use the current jiffies each time around the loop,
- * we wouldn't escape the function with any frames outstanding if the time to
- * render a frame was over 20ms.
- *
- * This should get us reasonable parallelism between CPU and GPU but also
- * relatively low latency when blocking on a particular request to finish.
- */
+ 
 int
 i915_gem_throttle_ioctl(struct drm_device *dev, void *data,
 			struct drm_file *file)
@@ -44,7 +25,7 @@ i915_gem_throttle_ioctl(struct drm_device *dev, void *data,
 	unsigned long idx;
 	long ret;
 
-	/* ABI: return -EIO if already wedged */
+	 
 	ret = intel_gt_terminally_wedged(to_gt(i915));
 	if (ret)
 		return ret;

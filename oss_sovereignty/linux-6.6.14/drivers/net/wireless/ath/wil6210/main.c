@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2012-2017 Qualcomm Atheros, Inc.
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/moduleparam.h>
 #include <linux/if_arp.h>
@@ -20,7 +17,7 @@
 #define WIL_DEFAULT_NUM_RX_STATUS_RINGS 1
 #define WIL_BOARD_FILE_MAX_NAMELEN 128
 
-bool debug_fw; /* = false; */
+bool debug_fw;  
 module_param(debug_fw, bool, 0444);
 MODULE_PARM_DESC(debug_fw, " do not perform card reset. For FW debug");
 
@@ -33,25 +30,19 @@ bool no_fw_recovery;
 module_param(no_fw_recovery, bool, 0644);
 MODULE_PARM_DESC(no_fw_recovery, " disable automatic FW error recovery");
 
-/* if not set via modparam, will be set to default value of 1/8 of
- * rx ring size during init flow
- */
+ 
 unsigned short rx_ring_overflow_thrsh = WIL6210_RX_HIGH_TRSH_INIT;
 module_param(rx_ring_overflow_thrsh, ushort, 0444);
 MODULE_PARM_DESC(rx_ring_overflow_thrsh,
 		 " RX ring overflow threshold in descriptors.");
 
-/* We allow allocation of more than 1 page buffers to support large packets.
- * It is suboptimal behavior performance wise in case MTU above page size.
- */
+ 
 unsigned int mtu_max = TXRX_BUF_LEN_DEFAULT - WIL_MAX_MPDU_OVERHEAD;
 static int mtu_max_set(const char *val, const struct kernel_param *kp)
 {
 	int ret;
 
-	/* sets mtu_max directly. no need to restore it in case of
-	 * illegal value since we assume this will fail insmod
-	 */
+	 
 	ret = param_set_uint(val, kp);
 	if (ret)
 		return ret;
@@ -117,27 +108,16 @@ enum {
 	WIL_SIG_STATUS_CORRUPTED_PRODUCTION = 0x3,
 };
 
-#define RST_DELAY (20) /* msec, for loop in @wil_wait_device_ready */
-#define RST_COUNT (1 + 1000/RST_DELAY) /* round up to be above 1 sec total */
+#define RST_DELAY (20)  
+#define RST_COUNT (1 + 1000/RST_DELAY)  
 
-#define PMU_READY_DELAY_MS (4) /* ms, for sleep in @wil_wait_device_ready */
+#define PMU_READY_DELAY_MS (4)  
 
-#define OTP_HW_DELAY (200) /* usec, loop in @wil_wait_device_ready_talyn_mb */
-/* round up to be above 2 ms total */
+#define OTP_HW_DELAY (200)  
+ 
 #define OTP_HW_COUNT (1 + 2000 / OTP_HW_DELAY)
 
-/*
- * Due to a hardware issue,
- * one has to read/write to/from NIC in 32-bit chunks;
- * regular memcpy_fromio and siblings will
- * not work on 64-bit platform - it uses 64-bit transactions
- *
- * Force 32-bit transactions to enable NIC on 64-bit platforms
- *
- * To avoid byte swap on big endian host, __raw_{read|write}l
- * should be used - {read|write}l would swap bytes to provide
- * little endian on PCI value in host endianness.
- */
+ 
 void wil_memcpy_fromio_32(void *dst, const volatile void __iomem *src,
 			  size_t count)
 {
@@ -148,7 +128,7 @@ void wil_memcpy_fromio_32(void *dst, const volatile void __iomem *src,
 		*d++ = __raw_readl(s++);
 
 	if (unlikely(count)) {
-		/* count can be 1..3 */
+		 
 		u32 tmp = __raw_readl(s);
 
 		memcpy(d, &tmp, count);
@@ -165,7 +145,7 @@ void wil_memcpy_toio_32(volatile void __iomem *dst, const void *src,
 		__raw_writel(*s++, d++);
 
 	if (unlikely(count)) {
-		/* count can be 1..3 */
+		 
 		u32 tmp = 0;
 
 		memcpy(&tmp, s, count);
@@ -173,9 +153,7 @@ void wil_memcpy_toio_32(volatile void __iomem *dst, const void *src,
 	}
 }
 
-/* Device memory access is prohibited while reset or suspend.
- * wil_mem_access_lock protects accessing device memory in these cases
- */
+ 
 int wil_mem_access_lock(struct wil6210_priv *wil)
 {
 	if (!down_read_trylock(&wil->mem_lock))
@@ -210,16 +188,11 @@ static void wil_ring_fini_tx(struct wil6210_priv *wil, int id)
 	spin_lock_bh(&txdata->lock);
 	txdata->dot1x_open = false;
 	txdata->mid = U8_MAX;
-	txdata->enabled = 0; /* no Tx can be in progress or start anew */
+	txdata->enabled = 0;  
 	spin_unlock_bh(&txdata->lock);
-	/* napi_synchronize waits for completion of the current NAPI but will
-	 * not prevent the next NAPI run.
-	 * Add a memory barrier to guarantee that txdata->enabled is zeroed
-	 * before napi_synchronize so that the next scheduled NAPI will not
-	 * handle this vring
-	 */
+	 
 	wmb();
-	/* make sure NAPI won't touch this vring */
+	 
 	if (test_bit(wil_status_napi_en, wil->status))
 		napi_synchronize(&wil->napi_tx);
 
@@ -254,7 +227,7 @@ __acquires(&sta->tid_rx_lock) __releases(&sta->tid_rx_lock)
 	wil_dbg_misc(wil,
 		     "disconnect_cid_complete: CID %d, MID %d, status %d\n",
 		     cid, sta->mid, sta->status);
-	/* inform upper layers */
+	 
 	if (sta->status != wil_sta_unused) {
 		if (vif->mid != sta->mid) {
 			wil_err(wil, "STA MID mismatch with VIF MID(%d)\n",
@@ -264,7 +237,7 @@ __acquires(&sta->tid_rx_lock) __releases(&sta->tid_rx_lock)
 		switch (wdev->iftype) {
 		case NL80211_IFTYPE_AP:
 		case NL80211_IFTYPE_P2P_GO:
-			/* AP-like interface */
+			 
 			cfg80211_del_sta(ndev, sta->addr, GFP_KERNEL);
 			break;
 		default:
@@ -273,7 +246,7 @@ __acquires(&sta->tid_rx_lock) __releases(&sta->tid_rx_lock)
 		sta->status = wil_sta_unused;
 		sta->mid = U8_MAX;
 	}
-	/* reorder buffers */
+	 
 	for (i = 0; i < WIL_STA_TID_NUM; i++) {
 		struct wil_tid_ampdu_rx *r;
 
@@ -285,15 +258,15 @@ __acquires(&sta->tid_rx_lock) __releases(&sta->tid_rx_lock)
 
 		spin_unlock_bh(&sta->tid_rx_lock);
 	}
-	/* crypto context */
+	 
 	memset(sta->tid_crypto_rx, 0, sizeof(sta->tid_crypto_rx));
 	memset(&sta->group_crypto_rx, 0, sizeof(sta->group_crypto_rx));
-	/* release vrings */
+	 
 	for (i = min_ring_id; i < ARRAY_SIZE(wil->ring_tx); i++) {
 		if (wil->ring2cid_tid[i][0] == cid)
 			wil_ring_fini_tx(wil, i);
 	}
-	/* statistics */
+	 
 	memset(&sta->stats, 0, sizeof(sta->stats));
 	sta->stats.tx_latency_min_us = U32_MAX;
 }
@@ -313,31 +286,22 @@ static void _wil6210_disconnect_complete(struct wil6210_vif *vif,
 	wil_info(wil, "disconnect_complete: bssid=%pM, reason=%d\n",
 		 bssid, reason_code);
 
-	/* Cases are:
-	 * - disconnect single STA, still connected
-	 * - disconnect single STA, already disconnected
-	 * - disconnect all
-	 *
-	 * For "disconnect all", there are 3 options:
-	 * - bssid == NULL
-	 * - bssid is broadcast address (ff:ff:ff:ff:ff:ff)
-	 * - bssid is our MAC address
-	 */
+	 
 	if (bssid && !is_broadcast_ether_addr(bssid) &&
 	    !ether_addr_equal_unaligned(ndev->dev_addr, bssid)) {
 		cid = wil_find_cid(wil, vif->mid, bssid);
 		wil_dbg_misc(wil,
 			     "Disconnect complete %pM, CID=%d, reason=%d\n",
 			     bssid, cid, reason_code);
-		if (wil_cid_valid(wil, cid)) /* disconnect 1 peer */
+		if (wil_cid_valid(wil, cid))  
 			wil_disconnect_cid_complete(vif, cid, reason_code);
-	} else { /* all */
+	} else {  
 		wil_dbg_misc(wil, "Disconnect complete all\n");
 		for (cid = 0; cid < wil->max_assoc_sta; cid++)
 			wil_disconnect_cid_complete(vif, cid, reason_code);
 	}
 
-	/* link state */
+	 
 	switch (wdev->iftype) {
 	case NL80211_IFTYPE_STATION:
 	case NL80211_IFTYPE_P2P_CLIENT:
@@ -401,13 +365,11 @@ static int wil_disconnect_cid(struct wil6210_vif *vif, int cid,
 		return -EINVAL;
 	}
 
-	/* inform lower layers */
+	 
 	if (wdev->iftype == NL80211_IFTYPE_AP && disable_ap_sme)
 		del_sta = true;
 
-	/* disconnect by sending command disconnect/del_sta and wait
-	 * synchronously for WMI_DISCONNECT_EVENTID event.
-	 */
+	 
 	return wmi_disconnect_sta(vif, sta->addr, reason_code, del_sta);
 }
 
@@ -427,33 +389,21 @@ static void _wil6210_disconnect(struct wil6210_vif *vif, const u8 *bssid,
 	might_sleep();
 	wil_info(wil, "disconnect bssid=%pM, reason=%d\n", bssid, reason_code);
 
-	/* Cases are:
-	 * - disconnect single STA, still connected
-	 * - disconnect single STA, already disconnected
-	 * - disconnect all
-	 *
-	 * For "disconnect all", there are 3 options:
-	 * - bssid == NULL
-	 * - bssid is broadcast address (ff:ff:ff:ff:ff:ff)
-	 * - bssid is our MAC address
-	 */
+	 
 	if (bssid && !is_broadcast_ether_addr(bssid) &&
 	    !ether_addr_equal_unaligned(ndev->dev_addr, bssid)) {
 		cid = wil_find_cid(wil, vif->mid, bssid);
 		wil_dbg_misc(wil, "Disconnect %pM, CID=%d, reason=%d\n",
 			     bssid, cid, reason_code);
-		if (wil_cid_valid(wil, cid)) /* disconnect 1 peer */
+		if (wil_cid_valid(wil, cid))  
 			wil_disconnect_cid(vif, cid, reason_code);
-	} else { /* all */
+	} else {  
 		wil_dbg_misc(wil, "Disconnect all\n");
 		for (cid = 0; cid < wil->max_assoc_sta; cid++)
 			wil_disconnect_cid(vif, cid, reason_code);
 	}
 
-	/* call event handler manually after processing wmi_call,
-	 * to avoid deadlock - disconnect event handler acquires
-	 * wil->mutex while it is already held here
-	 */
+	 
 	_wil6210_disconnect_complete(vif, bssid, reason_code);
 }
 
@@ -470,11 +420,11 @@ void wil_disconnect_worker(struct work_struct *work)
 	} __packed reply;
 
 	if (test_bit(wil_vif_fwconnected, vif->status))
-		/* connect succeeded after all */
+		 
 		return;
 
 	if (!test_bit(wil_vif_fwconnecting, vif->status))
-		/* already disconnected */
+		 
 		return;
 
 	memset(&reply, 0, sizeof(reply));
@@ -538,14 +488,12 @@ static void wil_fw_error_worker(struct work_struct *work)
 	}
 	wdev = ndev->ieee80211_ptr;
 
-	/* increment @recovery_count if less then WIL6210_FW_RECOVERY_TO
-	 * passed since last recovery attempt
-	 */
+	 
 	if (time_is_after_jiffies(wil->last_fw_recovery +
 				  WIL6210_FW_RECOVERY_TO))
 		wil->recovery_count++;
 	else
-		wil->recovery_count = 1; /* fw was alive for a long time */
+		wil->recovery_count = 1;  
 
 	if (wil->recovery_count > WIL6210_FW_RECOVERY_RETRIES) {
 		wil_err(wil, "too many recovery attempts (%d), giving up\n",
@@ -564,23 +512,20 @@ static void wil_fw_error_worker(struct work_struct *work)
 
 	rtnl_lock();
 	mutex_lock(&wil->mutex);
-	/* Needs adaptation for multiple VIFs
-	 * need to go over all VIFs and consider the appropriate
-	 * recovery because each one can have different iftype.
-	 */
+	 
 	switch (wdev->iftype) {
 	case NL80211_IFTYPE_STATION:
 	case NL80211_IFTYPE_P2P_CLIENT:
 	case NL80211_IFTYPE_MONITOR:
-		/* silent recovery, upper layers will see disconnect */
+		 
 		__wil_down(wil);
 		__wil_up(wil);
 		break;
 	case NL80211_IFTYPE_AP:
 	case NL80211_IFTYPE_P2P_GO:
-		if (no_fw_recovery) /* upper layers do recovery */
+		if (no_fw_recovery)  
 			break;
-		/* silent recovery, upper layers will see disconnect */
+		 
 		__wil_down(wil);
 		__wil_up(wil);
 		mutex_unlock(&wil->mutex);
@@ -747,19 +692,13 @@ int wil_priv_init(struct wil6210_priv *wil)
 	wil->max_vifs = 1;
 	wil->max_assoc_sta = max_assoc_sta;
 
-	/* edma configuration can be updated via debugfs before allocation */
+	 
 	wil->num_rx_status_rings = WIL_DEFAULT_NUM_RX_STATUS_RINGS;
 	wil->tx_status_ring_order = WIL_TX_SRING_SIZE_ORDER_DEFAULT;
 
-	/* Rx status ring size should be bigger than the number of RX buffers
-	 * in order to prevent backpressure on the status ring, which may
-	 * cause HW freeze.
-	 */
+	 
 	wil->rx_status_ring_order = WIL_RX_SRING_SIZE_ORDER_DEFAULT;
-	/* Number of RX buffer IDs should be bigger than the RX descriptor
-	 * ring size as in HW reorder flow, the HW can consume additional
-	 * buffers before releasing the previous ones.
-	 */
+	 
 	wil->rx_buff_id_count = WIL_RX_BUFF_ARR_SIZE_DEFAULT;
 
 	wil->amsdu_en = true;
@@ -780,17 +719,7 @@ void wil6210_bus_request(struct wil6210_priv *wil, u32 kbps)
 	}
 }
 
-/**
- * wil6210_disconnect - disconnect one connection
- * @vif: virtual interface context
- * @bssid: peer to disconnect, NULL to disconnect all
- * @reason_code: Reason code for the Disassociation frame
- *
- * Disconnect and release associated resources. Issue WMI
- * command(s) to trigger MAC disconnect. When command was issued
- * successfully, call the wil6210_disconnect_complete function
- * to handle the event synchronously
- */
+ 
 void wil6210_disconnect(struct wil6210_vif *vif, const u8 *bssid,
 			u16 reason_code)
 {
@@ -802,15 +731,7 @@ void wil6210_disconnect(struct wil6210_vif *vif, const u8 *bssid,
 	_wil6210_disconnect(vif, bssid, reason_code);
 }
 
-/**
- * wil6210_disconnect_complete - handle disconnect event
- * @vif: virtual interface context
- * @bssid: peer to disconnect, NULL to disconnect all
- * @reason_code: Reason code for the Disassociation frame
- *
- * Release associated resources and indicate upper layers the
- * connection is terminated.
- */
+ 
 void wil6210_disconnect_complete(struct wil6210_vif *vif, const u8 *bssid,
 				 u16 reason_code)
 {
@@ -855,15 +776,15 @@ static void wil_shutdown_bl(struct wil6210_priv *wil)
 	wil_err(wil, "BL did not report ready for halt\n");
 }
 
-/* this format is used by ARC embedded CPU for instruction memory */
+ 
 static inline u32 ARC_me_imm32(u32 d)
 {
 	return ((d & 0xffff0000) >> 16) | ((d & 0x0000ffff) << 16);
 }
 
-/* defines access to interrupt vectors for wil_freeze_bl */
+ 
 #define ARC_IRQ_VECTOR_OFFSET(N)	((N) * 8)
-/* ARC long jump instruction */
+ 
 #define ARC_JAL_INST			(0x20200f80)
 
 static void wil_freeze_bl(struct wil6210_priv *wil)
@@ -877,18 +798,16 @@ static void wil_freeze_bl(struct wil6210_priv *wil)
 		return;
 	}
 
-	/* prevent the target from entering deep sleep
-	 * and disabling memory access
-	 */
+	 
 	saved = wil_r(wil, RGF_USER_USAGE_8);
 	wil_w(wil, RGF_USER_USAGE_8, saved | BIT_USER_PREVENT_DEEP_SLEEP);
-	usleep_range(20, 25); /* let the BL process the bit */
+	usleep_range(20, 25);  
 
-	/* redirect to endless loop in the INT_L1 context and let it trap */
+	 
 	wil_w(wil, wil->iccm_base + ivt3 + 4, ARC_me_imm32(ivt3));
-	usleep_range(20, 25); /* let the BL get into the trap */
+	usleep_range(20, 25);  
 
-	/* verify the BL is frozen */
+	 
 	upc = wil_r(wil, RGF_USER_CPU_PC);
 	if (upc < ivt3 || (upc > (ivt3 + 8)))
 		wil_dbg_misc(wil, "BL freeze failed, PC=0x%08X\n", upc);
@@ -900,13 +819,7 @@ static void wil_bl_prepare_halt(struct wil6210_priv *wil)
 {
 	u32 tmp, ver;
 
-	/* before halting device CPU driver must make sure BL is not accessing
-	 * host memory. This is done differently depending on BL version:
-	 * 1. For very old BL versions the procedure is skipped
-	 * (not supported).
-	 * 2. For old BL version we use a special trick to freeze the BL
-	 * 3. For new BL versions we shutdown the BL using handshake procedure.
-	 */
+	 
 	tmp = wil_r(wil, RGF_USER_BL +
 		    offsetof(struct bl_dedicated_registers_v0,
 			     boot_loader_struct_version));
@@ -941,7 +854,7 @@ static inline void wil_halt_cpu(struct wil6210_priv *wil)
 
 static inline void wil_release_cpu(struct wil6210_priv *wil)
 {
-	/* Start CPU */
+	 
 	if (wil->hw_version >= HW_VER_TALYN_MB)
 		wil_w(wil, RGF_USER_USER_CPU_0_TALYN_MB, 1);
 	else
@@ -974,7 +887,7 @@ static int wil_wait_device_ready(struct wil6210_priv *wil, int no_flash)
 	int delay = 0;
 	u32 x, x1 = 0;
 
-	/* wait until device ready. */
+	 
 	if (no_flash) {
 		msleep(PMU_READY_DELAY_MS);
 
@@ -1013,17 +926,12 @@ static int wil_wait_device_ready_talyn_mb(struct wil6210_priv *wil)
 	u32 otp_qc_secured;
 	int delay = 0;
 
-	/* Wait for OTP signature test to complete */
+	 
 	usleep_range(2000, 2200);
 
 	wil->boot_config = WIL_BOOT_ERR;
 
-	/* Poll until OTP signature status is valid.
-	 * In vanilla and development modes, when signature test is complete
-	 * HW sets BIT_OTP_SIGNATURE_ERR_TALYN_MB.
-	 * In production mode BIT_OTP_SIGNATURE_ERR_TALYN_MB remains 0, poll
-	 * for signature status change to 2 or 3.
-	 */
+	 
 	do {
 		otp_hw = wil_r(wil, RGF_USER_OTP_HW_RD_MACHINE_1);
 		signature_status = WIL_GET_BITS(otp_hw, 8, 9);
@@ -1047,11 +955,7 @@ static int wil_wait_device_ready_talyn_mb(struct wil6210_priv *wil)
 		if  (!otp_signature_err &&
 		     signature_status ==
 		     WIL_SIG_STATUS_CORRUPTED_PRODUCTION) {
-			/* Unrecognized OTP signature found. Possibly a
-			 * corrupted production signature, access control
-			 * is applied as in production mode, therefore
-			 * do not fail
-			 */
+			 
 			wil->boot_config = WIL_BOOT_PRODUCTION;
 			break;
 		}
@@ -1073,7 +977,7 @@ static int wil_wait_device_ready_talyn_mb(struct wil6210_priv *wil)
 		     delay * OTP_HW_DELAY, otp_hw, wil->boot_config);
 
 	if (wil->boot_config == WIL_BOOT_VANILLA)
-		/* Assuming not SPI boot (currently not supported) */
+		 
 		goto out;
 
 	hw_section_done = otp_hw & BIT_OTP_HW_SECTION_DONE_TALYN_MB;
@@ -1112,7 +1016,7 @@ static int wil_target_reset(struct wil6210_priv *wil, int no_flash)
 	wil_dbg_misc(wil, "Resetting \"%s\"...\n", wil->hw_name);
 
 	if (wil->hw_version < HW_VER_TALYN) {
-		/* Clear MAC link up */
+		 
 		wil_s(wil, RGF_HP_CTRL, BIT(15));
 		wil_s(wil, RGF_USER_CLKS_CTL_SW_RST_MASK_0,
 		      BIT_HPAL_PERST_FROM_PAD);
@@ -1122,20 +1026,20 @@ static int wil_target_reset(struct wil6210_priv *wil, int no_flash)
 	wil_halt_cpu(wil);
 
 	if (!no_flash) {
-		/* clear all boot loader "ready" bits */
+		 
 		wil_w(wil, RGF_USER_BL +
 		      offsetof(struct bl_dedicated_registers_v0,
 			       boot_loader_ready), 0);
-		/* this should be safe to write even with old BLs */
+		 
 		wil_w(wil, RGF_USER_BL +
 		      offsetof(struct bl_dedicated_registers_v1,
 			       bl_shutdown_handshake), 0);
 	}
-	/* Clear Fw Download notification */
+	 
 	wil_c(wil, RGF_USER_USAGE_6, BIT(0));
 
 	wil_s(wil, RGF_CAF_OSC_CONTROL, BIT_CAF_OSC_XTAL_EN);
-	/* XTAL stabilization should take about 3ms */
+	 
 	usleep_range(5000, 7000);
 	x = wil_r(wil, RGF_CAF_PLL_LOCK_STATUS);
 	if (!(x & BIT_CAF_OSC_DIG_XTAL_STABLE)) {
@@ -1143,9 +1047,9 @@ static int wil_target_reset(struct wil6210_priv *wil, int no_flash)
 			"RGF_CAF_PLL_LOCK_STATUS = 0x%08x\n", x);
 		return -ETIME;
 	}
-	/* switch 10k to XTAL*/
+	 
 	wil_c(wil, RGF_USER_SPARROW_M_4, BIT_SPARROW_M_4_SEL_SLEEP_OR_REF);
-	/* 40 MHz */
+	 
 	wil_c(wil, RGF_USER_CLKS_CTL_0, BIT_USER_CLKS_CAR_AHB_SW_SEL);
 
 	wil_w(wil, RGF_USER_CLKS_CTL_EXT_SW_RST_VEC_0, 0x3ff81f);
@@ -1172,7 +1076,7 @@ static int wil_target_reset(struct wil6210_priv *wil, int no_flash)
 	wil_w(wil, RGF_USER_CLKS_CTL_SW_RST_VEC_0, 0);
 
 	wil_w(wil, RGF_USER_CLKS_CTL_SW_RST_VEC_3, 0x00000003);
-	/* reset A2 PCIE AHB */
+	 
 	wil_w(wil, RGF_USER_CLKS_CTL_SW_RST_VEC_2, 0x00008000);
 
 	wil_w(wil, RGF_USER_CLKS_CTL_SW_RST_VEC_0, 0);
@@ -1186,12 +1090,12 @@ static int wil_target_reset(struct wil6210_priv *wil, int no_flash)
 
 	wil_c(wil, RGF_USER_CLKS_CTL_0, BIT_USER_CLKS_RST_PWGD);
 
-	/* enable fix for HW bug related to the SA/DA swap in AP Rx */
+	 
 	wil_s(wil, RGF_DMA_OFUL_NID_0, BIT_DMA_OFUL_NID_0_RX_EXT_TR_EN |
 	      BIT_DMA_OFUL_NID_0_RX_EXT_A3_SRC);
 
 	if (wil->hw_version < HW_VER_TALYN_MB && no_flash) {
-		/* Reset OTP HW vectors to fit 40MHz */
+		 
 		wil_w(wil, RGF_USER_XPM_IFC_RD_TIME1, 0x60001);
 		wil_w(wil, RGF_USER_XPM_IFC_RD_TIME2, 0x20027);
 		wil_w(wil, RGF_USER_XPM_IFC_RD_TIME3, 0x1);
@@ -1286,7 +1190,7 @@ void wil_mbox_ring_le2cpus(struct wil6210_mbox_ring *r)
 	le32_to_cpus(&r->head);
 }
 
-/* construct actual board file name to use */
+ 
 void wil_get_board_file(struct wil6210_priv *wil, char *buf, size_t len)
 {
 	const char *board_file;
@@ -1296,9 +1200,7 @@ void wil_get_board_file(struct wil6210_priv *wil, char *buf, size_t len)
 	if (wil->board_file) {
 		board_file = wil->board_file;
 	} else {
-		/* If specific FW file is used for Talyn,
-		 * use specific board file
-		 */
+		 
 		if (strcmp(wil->wil_fw_name, wil_talyn_fw_name) == 0)
 			board_file = WIL_BRD_NAME_TALYN;
 		else
@@ -1328,7 +1230,7 @@ static int wil_get_bl_info(struct wil6210_priv *wil)
 	if (bl_ver == 0) {
 		le32_to_cpus(&bl.bl0.rf_type);
 		le32_to_cpus(&bl.bl0.baseband_type);
-		rf_status = 0; /* actually, unknown */
+		rf_status = 0;  
 		wil_info(wil,
 			 "Boot Loader struct v%d: MAC = %pM RF = 0x%08x bband = 0x%08x\n",
 			 bl_ver, mac,
@@ -1360,7 +1262,7 @@ static int wil_get_bl_info(struct wil6210_priv *wil)
 	if (!is_valid_ether_addr(ndev->dev_addr))
 		eth_hw_addr_set(ndev, mac);
 
-	if (rf_status) {/* bad RF cable? */
+	if (rf_status) { 
 		wil_err(wil, "RF communication error 0x%04x",
 			rf_status);
 		return -EAGAIN;
@@ -1407,7 +1309,7 @@ static int wil_get_otp_info(struct wil6210_priv *wil)
 	u8 mac[8];
 	int mac_addr;
 
-	/* OEM MAC has precedence */
+	 
 	mac_addr = RGF_OTP_OEM_MAC;
 	wil_memcpy_fromio_32(mac, wil->csr + HOSTADDR(mac_addr), sizeof(mac));
 
@@ -1515,23 +1417,18 @@ int wil_ps_update(struct wil6210_priv *wil, enum wmi_ps_profile_type ps_profile)
 static void wil_pre_fw_config(struct wil6210_priv *wil)
 {
 	wil_clear_fw_log_addr(wil);
-	/* Mark FW as loaded from host */
+	 
 	wil_s(wil, RGF_USER_USAGE_6, 1);
 
-	/* clear any interrupts which on-card-firmware
-	 * may have set
-	 */
+	 
 	wil6210_clear_irq(wil);
-	/* CAF_ICR - clear and mask */
-	/* it is W1C, clear by writing back same value */
+	 
+	 
 	if (wil->hw_version < HW_VER_TALYN_MB) {
 		wil_s(wil, RGF_CAF_ICR + offsetof(struct RGF_ICR, ICR), 0);
 		wil_w(wil, RGF_CAF_ICR + offsetof(struct RGF_ICR, IMV), ~0);
 	}
-	/* clear PAL_UNIT_ICR (potential D0->D3 leftover)
-	 * In Talyn-MB host cannot access this register due to
-	 * access control, hence PAL_UNIT_ICR is cleared by the FW
-	 */
+	 
 	if (wil->hw_version < HW_VER_TALYN_MB)
 		wil_s(wil, RGF_PAL_UNIT_ICR + offsetof(struct RGF_ICR, ICR),
 		      0);
@@ -1571,25 +1468,17 @@ static int wil_restore_vifs(struct wil6210_priv *wil)
 	return 0;
 }
 
-/*
- * Clear FW and ucode log start addr to indicate FW log is not ready. The host
- * driver clears the addresses before FW starts and FW initializes the address
- * when it is ready to send logs.
- */
+ 
 void wil_clear_fw_log_addr(struct wil6210_priv *wil)
 {
-	/* FW log addr */
+	 
 	wil_w(wil, RGF_USER_USAGE_1, 0);
-	/* ucode log addr */
+	 
 	wil_w(wil, RGF_USER_USAGE_2, 0);
 	wil_dbg_misc(wil, "Cleared FW and ucode log address");
 }
 
-/*
- * We reset all the structures, and we reset the UMAC.
- * After calling this routine, you're expected to reload
- * the firmware.
- */
+ 
 int wil_reset(struct wil6210_priv *wil, bool load_fw)
 {
 	int rc, i;
@@ -1651,12 +1540,12 @@ int wil_reset(struct wil6210_priv *wil, bool load_fw)
 	}
 	wil_bcast_fini_all(wil);
 
-	/* Disable device led before reset*/
+	 
 	wmi_led_cfg(wil, false);
 
 	down_write(&wil->mem_lock);
 
-	/* prevent NAPI from being scheduled and prevent wmi commands */
+	 
 	mutex_lock(&wil->wmi_mutex);
 	if (test_bit(wil_status_suspending, wil->status))
 		status_flags |= BIT(wil_status_suspending);
@@ -1692,7 +1581,7 @@ int wil_reset(struct wil6210_priv *wil, bool load_fw)
 	} else {
 		rc = wil_get_bl_info(wil);
 		if (rc == -EAGAIN && !load_fw)
-			/* ignore RF error if not going up */
+			 
 			rc = 0;
 	}
 	if (rc)
@@ -1718,7 +1607,7 @@ int wil_reset(struct wil6210_priv *wil, bool load_fw)
 
 		wil_halt_cpu(wil);
 		memset(wil->fw_version, 0, sizeof(wil->fw_version));
-		/* Loading f/w from the file */
+		 
 		rc = wil_request_firmware(wil, wil->wil_fw_name, true);
 		if (rc)
 			goto out;
@@ -1733,7 +1622,7 @@ int wil_reset(struct wil6210_priv *wil, bool load_fw)
 		wil_release_cpu(wil);
 	}
 
-	/* init after reset */
+	 
 	reinit_completion(&wil->wmi_ready);
 	reinit_completion(&wil->wmi_call);
 	reinit_completion(&wil->halp.comp);
@@ -1745,12 +1634,12 @@ int wil_reset(struct wil6210_priv *wil, bool load_fw)
 	if (load_fw) {
 		wil_unmask_irq(wil);
 
-		/* we just started MAC, wait for FW ready */
+		 
 		rc = wil_wait_for_fw_ready(wil);
 		if (rc)
 			return rc;
 
-		/* check FW is responsive */
+		 
 		rc = wmi_echo(wil);
 		if (rc) {
 			wil_err(wil, "wmi_echo failed, rc %d\n", rc);
@@ -1759,9 +1648,7 @@ int wil_reset(struct wil6210_priv *wil, bool load_fw)
 
 		wil->txrx_ops.configure_interrupt_moderation(wil);
 
-		/* Enable OFU rdy valid bug fix, to prevent hang in oful34_rx
-		 * while there is back-pressure from Host during RX
-		 */
+		 
 		if (wil->hw_version >= HW_VER_TALYN_MB)
 			wil_s(wil, RGF_DMA_MISC_CTL,
 			      BIT_OFUL34_RDY_VALID_BUG_FIX_EN);
@@ -1821,7 +1708,7 @@ int __wil_up(struct wil6210_priv *wil)
 	if (rc)
 		return rc;
 
-	/* Rx RING. After MAC and beacon */
+	 
 	if (rx_ring_order == 0)
 		rx_ring_order = wil->hw_version < HW_VER_TALYN_MB ?
 			WIL_RX_RING_SIZE_ORDER_DEFAULT :
@@ -1855,13 +1742,13 @@ int __wil_up(struct wil6210_priv *wil)
 	case NL80211_IFTYPE_MONITOR:
 		wil_dbg_misc(wil, "type: Monitor\n");
 		ndev->type = ARPHRD_IEEE80211_RADIOTAP;
-		/* ARPHRD_IEEE80211 or ARPHRD_IEEE80211_RADIOTAP ? */
+		 
 		break;
 	default:
 		return -EOPNOTSUPP;
 	}
 
-	/* MAC address - pre-requisite for other commands */
+	 
 	wmi_set_mac_address(wil, ndev->dev_addr);
 
 	wil_dbg_misc(wil, "NAPI enable\n");
@@ -1960,13 +1847,13 @@ void wil_halp_vote(struct wil6210_priv *wil)
 
 	if (++wil->halp.ref_cnt == 1) {
 		reinit_completion(&wil->halp.comp);
-		/* mark to IRQ context to handle HALP ICR */
+		 
 		wil->halp.handle_icr = true;
 		wil6210_set_halp(wil);
 		rc = wait_for_completion_timeout(&wil->halp.comp, to_jiffies);
 		if (!rc) {
 			wil_err(wil, "HALP vote timed out\n");
-			/* Mask HALP as done in case the interrupt is raised */
+			 
 			wil->halp.handle_icr = false;
 			wil6210_mask_halp(wil);
 		} else {

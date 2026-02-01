@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/compiler_types.h>
 #include <linux/errno.h>
@@ -39,7 +39,7 @@
 #define SECOND_INODE 2
 #define INODE_OFFSET 3
 #define BINDERFS_MAX_MINOR (1U << MINORBITS)
-/* Ensure that the initial ipc namespace always has devices available. */
+ 
 #define BINDERFS_MAX_MINOR_CAPPED (BINDERFS_MAX_MINOR - 4)
 
 static dev_t binderfs_dev;
@@ -90,24 +90,7 @@ bool is_binderfs_device(const struct inode *inode)
 	return false;
 }
 
-/**
- * binderfs_binder_device_create - allocate inode from super block of a
- *                                 binderfs mount
- * @ref_inode: inode from wich the super block will be taken
- * @userp:     buffer to copy information about new device for userspace to
- * @req:       struct binderfs_device as copied from userspace
- *
- * This function allocates a new binder_device and reserves a new minor
- * number for it.
- * Minor numbers are limited and tracked globally in binderfs_minors. The
- * function will stash a struct binder_device for the specific binder
- * device in i_private of the inode.
- * It will go on to allocate a new inode from the super block of the
- * filesystem mount, stash a struct binder_device in its i_private field
- * and attach a dentry to that inode.
- *
- * Return: 0 on success, negative errno on failure
- */
+ 
 static int binderfs_binder_device_create(struct inode *ref_inode,
 					 struct binderfs_device __user *userp,
 					 struct binderfs_device *req)
@@ -126,7 +109,7 @@ static int binderfs_binder_device_create(struct inode *ref_inode,
 	bool use_reserve = true;
 #endif
 
-	/* Reserve new minor number for the new device. */
+	 
 	mutex_lock(&binderfs_minors_mutex);
 	if (++info->device_count <= info->mount_opts.max)
 		minor = ida_alloc_max(&binderfs_minors,
@@ -159,9 +142,9 @@ static int binderfs_binder_device_create(struct inode *ref_inode,
 	inode->i_uid = info->root_uid;
 	inode->i_gid = info->root_gid;
 
-	req->name[BINDERFS_MAX_NAME] = '\0'; /* NUL-terminate */
+	req->name[BINDERFS_MAX_NAME] = '\0';  
 	name_len = strlen(req->name);
-	/* Make sure to include terminating NUL byte */
+	 
 	name = kmemdup(req->name, name_len + 1, GFP_KERNEL);
 	if (!name)
 		goto err;
@@ -185,7 +168,7 @@ static int binderfs_binder_device_create(struct inode *ref_inode,
 	root = sb->s_root;
 	inode_lock(d_inode(root));
 
-	/* look it up */
+	 
 	dentry = lookup_one_len(name, root, name_len);
 	if (IS_ERR(dentry)) {
 		inode_unlock(d_inode(root));
@@ -194,7 +177,7 @@ static int binderfs_binder_device_create(struct inode *ref_inode,
 	}
 
 	if (d_really_is_positive(dentry)) {
-		/* already exists */
+		 
 		dput(dentry);
 		inode_unlock(d_inode(root));
 		ret = -EEXIST;
@@ -220,16 +203,7 @@ err:
 	return ret;
 }
 
-/**
- * binder_ctl_ioctl - handle binder device node allocation requests
- *
- * The request handler for the binder-control device. All requests operate on
- * the binderfs mount the binder-control device resides in:
- * - BINDER_CTL_ADD
- *   Allocate a new binder device.
- *
- * Return: %0 on success, negative errno on failure.
- */
+ 
 static long binder_ctl_ioctl(struct file *file, unsigned int cmd,
 			     unsigned long arg)
 {
@@ -380,15 +354,7 @@ static const struct file_operations binder_ctl_fops = {
 	.llseek		= noop_llseek,
 };
 
-/**
- * binderfs_binder_ctl_create - create a new binder-control device
- * @sb: super block of the binderfs mount
- *
- * This function creates a new binder-control device node in the binderfs mount
- * referred to by @sb.
- *
- * Return: 0 on success, negative errno on failure
- */
+ 
 static int binderfs_binder_ctl_create(struct super_block *sb)
 {
 	int minor, ret;
@@ -407,7 +373,7 @@ static int binderfs_binder_ctl_create(struct super_block *sb)
 	if (!device)
 		return -ENOMEM;
 
-	/* If we have already created a binder-control node, return. */
+	 
 	if (info->control_dentry) {
 		ret = 0;
 		goto out;
@@ -418,7 +384,7 @@ static int binderfs_binder_ctl_create(struct super_block *sb)
 	if (!inode)
 		goto out;
 
-	/* Reserve a new minor number for the new device. */
+	 
 	mutex_lock(&binderfs_minors_mutex);
 	minor = ida_alloc_max(&binderfs_minors,
 			      use_reserve ? BINDERFS_MAX_MINOR :
@@ -487,7 +453,7 @@ static struct dentry *binderfs_create_dentry(struct dentry *parent,
 	if (IS_ERR(dentry))
 		return dentry;
 
-	/* Return error if the file/dir already exists. */
+	 
 	if (d_really_is_positive(dentry)) {
 		dput(dentry);
 		return ERR_PTR(-EEXIST);
@@ -662,17 +628,7 @@ static int binderfs_fill_super(struct super_block *sb, struct fs_context *fc)
 	sb->s_blocksize = PAGE_SIZE;
 	sb->s_blocksize_bits = PAGE_SHIFT;
 
-	/*
-	 * The binderfs filesystem can be mounted by userns root in a
-	 * non-initial userns. By default such mounts have the SB_I_NODEV flag
-	 * set in s_iflags to prevent security issues where userns root can
-	 * just create random device nodes via mknod() since it owns the
-	 * filesystem mount. But binderfs does not allow to create any files
-	 * including devices nodes. The only way to create binder devices nodes
-	 * is through the binder-control device which userns root is explicitly
-	 * allowed to do. So removing the SB_I_NODEV flag from s_iflags is both
-	 * necessary and safe.
-	 */
+	 
 	sb->s_iflags &= ~SB_I_NODEV;
 	sb->s_iflags |= SB_I_NOEXEC;
 	sb->s_magic = BINDERFS_SUPER_MAGIC;
@@ -775,10 +731,7 @@ static void binderfs_kill_super(struct super_block *sb)
 {
 	struct binderfs_info *info = sb->s_fs_info;
 
-	/*
-	 * During inode eviction struct binderfs_info is needed.
-	 * So first wipe the super_block then free struct binderfs_info.
-	 */
+	 
 	kill_litter_super(sb);
 
 	if (info && info->ipc_ns)
@@ -801,7 +754,7 @@ int __init init_binderfs(void)
 	const char *name;
 	size_t len;
 
-	/* Verify that the default binderfs device names are valid. */
+	 
 	name = binder_devices_param;
 	for (len = strcspn(name, ","); len > 0; len = strcspn(name, ",")) {
 		if (len > BINDERFS_MAX_NAME)
@@ -811,7 +764,7 @@ int __init init_binderfs(void)
 			name++;
 	}
 
-	/* Allocate new major number for binderfs. */
+	 
 	ret = alloc_chrdev_region(&binderfs_dev, 0, BINDERFS_MAX_MINOR,
 				  "binder");
 	if (ret)

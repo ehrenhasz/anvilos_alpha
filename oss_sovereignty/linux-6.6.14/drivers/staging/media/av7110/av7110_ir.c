@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for the remote control of SAA7146 based AV7110 cards
- *
- * Copyright (C) 1999-2003 Holger Waechtler <holger@convergence.de>
- * Copyright (C) 2003-2007 Oliver Endriss <o.endriss@gmx.de>
- * Copyright (C) 2019 Sean Young <sean@mess.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <media/rc-core.h>
@@ -15,9 +9,9 @@
 
 #define IR_RC5		0
 #define IR_RCMM		1
-#define IR_RC5_EXT	2 /* internal only */
+#define IR_RC5_EXT	2  
 
-/* interrupt handler */
+ 
 void av7110_ir_handler(struct av7110 *av7110, u32 ircom)
 {
 	struct rc_dev *rcdev = av7110->ir.rcdev;
@@ -29,7 +23,7 @@ void av7110_ir_handler(struct av7110 *av7110, u32 ircom)
 
 	if (rcdev) {
 		switch (av7110->ir.ir_config) {
-		case IR_RC5: /* RC5: 5 bits device address, 6 bits command */
+		case IR_RC5:  
 			command = ircom & 0x3f;
 			addr = (ircom >> 6) & 0x1f;
 			scancode = RC_SCANCODE_RC5(addr, command);
@@ -37,19 +31,14 @@ void av7110_ir_handler(struct av7110 *av7110, u32 ircom)
 			proto = RC_PROTO_RC5;
 			break;
 
-		case IR_RCMM: /* RCMM: 32 bits scancode */
+		case IR_RCMM:  
 			scancode = ircom & ~0x8000;
 			toggle = ircom & 0x8000;
 			proto = RC_PROTO_RCMM32;
 			break;
 
 		case IR_RC5_EXT:
-			/*
-			 * extended RC5: 5 bits device address, 7 bits command
-			 *
-			 * Extended RC5 uses only one start bit. The second
-			 * start bit is re-assigned bit 6 of the command bit.
-			 */
+			 
 			command = ircom & 0x3f;
 			addr = (ircom >> 6) & 0x1f;
 			if (!(ircom & 0x1000))
@@ -154,5 +143,5 @@ void av7110_ir_exit(struct av7110 *av7110)
 	rc_unregister_device(av7110->ir.rcdev);
 }
 
-//MODULE_AUTHOR("Holger Waechtler <holger@convergence.de>, Oliver Endriss <o.endriss@gmx.de>");
-//MODULE_LICENSE("GPL");
+
+

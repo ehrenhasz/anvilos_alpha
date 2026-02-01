@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file contains vfs directory ops for the 9P2000 protocol.
- *
- *  Copyright (C) 2004 by Eric Van Hensbergen <ericvh@gmail.com>
- *  Copyright (C) 2002 by Ron Minnich <rminnich@lanl.gov>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/errno.h>
@@ -23,15 +18,7 @@
 #include "v9fs_vfs.h"
 #include "fid.h"
 
-/**
- * struct p9_rdir - readdir accounting
- * @head: start offset of current dirread buffer
- * @tail: end offset of current dirread buffer
- * @buf: dirread buffer
- *
- * private structure for keeping track of readdir
- * allocated on demand
- */
+ 
 
 struct p9_rdir {
 	int head;
@@ -39,11 +26,7 @@ struct p9_rdir {
 	uint8_t buf[];
 };
 
-/**
- * dt_type - return file type
- * @mistat: mistat structure
- *
- */
+ 
 
 static inline int dt_type(struct p9_wstat *mistat)
 {
@@ -58,12 +41,7 @@ static inline int dt_type(struct p9_wstat *mistat)
 	return rettype;
 }
 
-/**
- * v9fs_alloc_rdir_buf - Allocate buffer used for read and readdir
- * @filp: opened file structure
- * @buflen: Length in bytes of buffer to allocate
- *
- */
+ 
 
 static struct p9_rdir *v9fs_alloc_rdir_buf(struct file *filp, int buflen)
 {
@@ -74,12 +52,7 @@ static struct p9_rdir *v9fs_alloc_rdir_buf(struct file *filp, int buflen)
 	return fid->rdir;
 }
 
-/**
- * v9fs_dir_readdir - iterate through a directory
- * @file: opened file structure
- * @ctx: actor we feed the entries to
- *
- */
+ 
 
 static int v9fs_dir_readdir(struct file *file, struct dir_context *ctx)
 {
@@ -138,12 +111,7 @@ static int v9fs_dir_readdir(struct file *file, struct dir_context *ctx)
 	}
 }
 
-/**
- * v9fs_dir_readdir_dotl - iterate through a directory
- * @file: opened file structure
- * @ctx: actor we feed the entries to
- *
- */
+ 
 static int v9fs_dir_readdir_dotl(struct file *file, struct dir_context *ctx)
 {
 	int err = 0;
@@ -195,12 +163,7 @@ static int v9fs_dir_readdir_dotl(struct file *file, struct dir_context *ctx)
 }
 
 
-/**
- * v9fs_dir_release - close a directory or a file
- * @inode: inode of the directory or file
- * @filp: file pointer to a directory or file
- *
- */
+ 
 
 int v9fs_dir_release(struct inode *inode, struct file *filp)
 {

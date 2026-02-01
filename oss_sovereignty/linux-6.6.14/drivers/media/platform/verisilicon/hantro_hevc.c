@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Hantro VPU HEVC codec driver
- *
- * Copyright (C) 2020 Safran Passenger Innovations LLC
- */
+
+ 
 
 #include <linux/types.h>
 #include <media/v4l2-mem2mem.h>
@@ -11,14 +7,11 @@
 #include "hantro.h"
 #include "hantro_hw.h"
 
-#define VERT_FILTER_RAM_SIZE 8 /* bytes per pixel row */
-/*
- * BSD control data of current picture at tile border
- * 128 bits per 4x4 tile = 128/(8*4) bytes per row
- */
-#define BSD_CTRL_RAM_SIZE 4 /* bytes per pixel row */
-/* tile border coefficients of filter */
-#define VERT_SAO_RAM_SIZE 48 /* bytes per pixel */
+#define VERT_FILTER_RAM_SIZE 8  
+ 
+#define BSD_CTRL_RAM_SIZE 4  
+ 
+#define VERT_SAO_RAM_SIZE 48  
 
 #define SCALING_LIST_SIZE (16 * 64)
 
@@ -38,7 +31,7 @@ dma_addr_t hantro_hevc_get_ref_buf(struct hantro_ctx *ctx,
 	struct hantro_hevc_dec_hw_ctx *hevc_dec = &ctx->hevc_dec;
 	int i;
 
-	/* Find the reference buffer in already known ones */
+	 
 	for (i = 0;  i < NUM_REF_PICTURES; i++) {
 		if (hevc_dec->ref_bufs_poc[i] == poc) {
 			hevc_dec->ref_bufs_used |= 1 << i;
@@ -54,7 +47,7 @@ int hantro_hevc_add_ref_buf(struct hantro_ctx *ctx, int poc, dma_addr_t addr)
 	struct hantro_hevc_dec_hw_ctx *hevc_dec = &ctx->hevc_dec;
 	int i;
 
-	/* Add a new reference buffer */
+	 
 	for (i = 0; i < NUM_REF_PICTURES; i++) {
 		if (!(hevc_dec->ref_bufs_used & 1 << i)) {
 			hevc_dec->ref_bufs_used |= 1 << i;
@@ -82,7 +75,7 @@ static int tile_buffer_reallocate(struct hantro_ctx *ctx)
 	    num_tile_cols <= hevc_dec->num_tile_cols_allocated)
 		return 0;
 
-	/* Need to reallocate due to tiles passed via PPS */
+	 
 	if (hevc_dec->tile_filter.cpu) {
 		dma_free_coherent(vpu->dev, hevc_dec->tile_filter.size,
 				  hevc_dec->tile_filter.cpu,
@@ -151,10 +144,7 @@ err_free_tile_buffers:
 
 static int hantro_hevc_validate_sps(struct hantro_ctx *ctx, const struct v4l2_ctrl_hevc_sps *sps)
 {
-	/*
-	 * for tile pixel format check if the width and height match
-	 * hardware constraints
-	 */
+	 
 	if (ctx->vpu_dst_fmt->fourcc == V4L2_PIX_FMT_NV12_4L4) {
 		if (ctx->dst_fmt.width !=
 		    ALIGN(sps->pic_width_in_luma_samples, ctx->vpu_dst_fmt->frmsize.step_width))
@@ -251,11 +241,7 @@ int hantro_hevc_dec_init(struct hantro_ctx *ctx)
 
 	memset(hevc_dec, 0, sizeof(*hevc_dec));
 
-	/*
-	 * Maximum number of tiles times width and height (2 bytes each),
-	 * rounding up to next 16 bytes boundary + one extra 16 byte
-	 * chunk (HW guys wanted to have this).
-	 */
+	 
 	size = round_up(MAX_TILE_COLS * MAX_TILE_ROWS * 4 * sizeof(u16) + 16, 16);
 	hevc_dec->tile_sizes.cpu = dma_alloc_coherent(vpu->dev, size,
 						      &hevc_dec->tile_sizes.dma,

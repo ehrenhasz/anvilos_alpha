@@ -1,22 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the Asahi Kasei EMD Corporation AK8974
- * and Aichi Steel AMI305 magnetometer chips.
- * Based on a patch from Samu Onkalo and the AK8975 IIO driver.
- *
- * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
- * Copyright (c) 2010 NVIDIA Corporation.
- * Copyright (C) 2016 Linaro Ltd.
- *
- * Author: Samu Onkalo <samu.p.onkalo@nokia.com>
- * Author: Linus Walleij <linus.walleij@linaro.org>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
 #include <linux/kernel.h>
 #include <linux/i2c.h>
 #include <linux/interrupt.h>
-#include <linux/irq.h> /* For irq_get_irq_data() */
+#include <linux/irq.h>  
 #include <linux/completion.h>
 #include <linux/err.h>
 #include <linux/mutex.h>
@@ -34,12 +23,9 @@
 #include <linux/iio/trigger_consumer.h>
 #include <linux/iio/triggered_buffer.h>
 
-/*
- * 16-bit registers are little-endian. LSB is at the address defined below
- * and MSB is at the next higher address.
- */
+ 
 
-/* These registers are common for AK8974 and AMI30x */
+ 
 #define AK8974_SELFTEST		0x0C
 #define AK8974_SELFTEST_IDLE	0x55
 #define AK8974_SELFTEST_OK	0xAA
@@ -62,38 +48,38 @@
 #define AK8974_CTRL2		0x1C
 #define AK8974_CTRL3		0x1D
 #define AK8974_INT_CTRL		0x1E
-#define AK8974_INT_THRES	0x26  /* Absolute any axis value threshold */
+#define AK8974_INT_THRES	0x26   
 #define AK8974_PRESET		0x30
 
-/* AK8974-specific offsets */
+ 
 #define AK8974_OFFSET_X		0x20
 #define AK8974_OFFSET_Y		0x22
 #define AK8974_OFFSET_Z		0x24
-/* AMI305-specific offsets */
+ 
 #define AMI305_OFFSET_X		0x6C
 #define AMI305_OFFSET_Y		0x72
 #define AMI305_OFFSET_Z		0x78
 
-/* Different temperature registers */
+ 
 #define AK8974_TEMP		0x31
 #define AMI305_TEMP		0x60
 
-/* AMI306-specific control register */
+ 
 #define AMI306_CTRL4		0x5C
 
-/* AMI306 factory calibration data */
+ 
 
-/* fine axis sensitivity */
+ 
 #define AMI306_FINEOUTPUT_X	0x90
 #define AMI306_FINEOUTPUT_Y	0x92
 #define AMI306_FINEOUTPUT_Z	0x94
 
-/* axis sensitivity */
+ 
 #define AMI306_SENS_X		0x96
 #define AMI306_SENS_Y		0x98
 #define AMI306_SENS_Z		0x9A
 
-/* axis cross-interference */
+ 
 #define AMI306_GAIN_PARA_XZ	0x9C
 #define AMI306_GAIN_PARA_XY	0x9D
 #define AMI306_GAIN_PARA_YZ	0x9E
@@ -101,54 +87,54 @@
 #define AMI306_GAIN_PARA_ZY	0xA0
 #define AMI306_GAIN_PARA_ZX	0xA1
 
-/* offset at ZERO magnetic field */
+ 
 #define AMI306_OFFZERO_X	0xF8
 #define AMI306_OFFZERO_Y	0xFA
 #define AMI306_OFFZERO_Z	0xFC
 
 
-#define AK8974_INT_X_HIGH	BIT(7) /* Axis over +threshold  */
+#define AK8974_INT_X_HIGH	BIT(7)  
 #define AK8974_INT_Y_HIGH	BIT(6)
 #define AK8974_INT_Z_HIGH	BIT(5)
-#define AK8974_INT_X_LOW	BIT(4) /* Axis below -threshold	*/
+#define AK8974_INT_X_LOW	BIT(4)  
 #define AK8974_INT_Y_LOW	BIT(3)
 #define AK8974_INT_Z_LOW	BIT(2)
-#define AK8974_INT_RANGE	BIT(1) /* Range overflow (any axis) */
+#define AK8974_INT_RANGE	BIT(1)  
 
-#define AK8974_STATUS_DRDY	BIT(6) /* Data ready */
-#define AK8974_STATUS_OVERRUN	BIT(5) /* Data overrun */
-#define AK8974_STATUS_INT	BIT(4) /* Interrupt occurred */
+#define AK8974_STATUS_DRDY	BIT(6)  
+#define AK8974_STATUS_OVERRUN	BIT(5)  
+#define AK8974_STATUS_INT	BIT(4)  
 
-#define AK8974_CTRL1_POWER	BIT(7) /* 0 = standby; 1 = active */
-#define AK8974_CTRL1_RATE	BIT(4) /* 0 = 10 Hz; 1 = 20 Hz	 */
-#define AK8974_CTRL1_FORCE_EN	BIT(1) /* 0 = normal; 1 = force	 */
-#define AK8974_CTRL1_MODE2	BIT(0) /* 0 */
+#define AK8974_CTRL1_POWER	BIT(7)  
+#define AK8974_CTRL1_RATE	BIT(4)  
+#define AK8974_CTRL1_FORCE_EN	BIT(1)  
+#define AK8974_CTRL1_MODE2	BIT(0)  
 
-#define AK8974_CTRL2_INT_EN	BIT(4)  /* 1 = enable interrupts	      */
-#define AK8974_CTRL2_DRDY_EN	BIT(3)  /* 1 = enable data ready signal */
-#define AK8974_CTRL2_DRDY_POL	BIT(2)  /* 1 = data ready active high   */
+#define AK8974_CTRL2_INT_EN	BIT(4)   
+#define AK8974_CTRL2_DRDY_EN	BIT(3)   
+#define AK8974_CTRL2_DRDY_POL	BIT(2)   
 #define AK8974_CTRL2_RESDEF	(AK8974_CTRL2_DRDY_POL)
 
-#define AK8974_CTRL3_RESET	BIT(7) /* Software reset		  */
-#define AK8974_CTRL3_FORCE	BIT(6) /* Start forced measurement */
-#define AK8974_CTRL3_SELFTEST	BIT(4) /* Set selftest register	  */
+#define AK8974_CTRL3_RESET	BIT(7)  
+#define AK8974_CTRL3_FORCE	BIT(6)  
+#define AK8974_CTRL3_SELFTEST	BIT(4)  
 #define AK8974_CTRL3_RESDEF	0x00
 
-#define AK8974_INT_CTRL_XEN	BIT(7) /* Enable interrupt for this axis */
+#define AK8974_INT_CTRL_XEN	BIT(7)  
 #define AK8974_INT_CTRL_YEN	BIT(6)
 #define AK8974_INT_CTRL_ZEN	BIT(5)
 #define AK8974_INT_CTRL_XYZEN	(BIT(7)|BIT(6)|BIT(5))
-#define AK8974_INT_CTRL_POL	BIT(3) /* 0 = active low; 1 = active high */
-#define AK8974_INT_CTRL_PULSE	BIT(1) /* 0 = latched; 1 = pulse (50 usec) */
+#define AK8974_INT_CTRL_POL	BIT(3)  
+#define AK8974_INT_CTRL_PULSE	BIT(1)  
 #define AK8974_INT_CTRL_RESDEF	(AK8974_INT_CTRL_XYZEN | AK8974_INT_CTRL_POL)
 
-/* HSCDTD008A-specific control register */
+ 
 #define HSCDTD008A_CTRL4	0x1E
-#define HSCDTD008A_CTRL4_MMD	BIT(7)	/* must be set to 1 */
-#define HSCDTD008A_CTRL4_RANGE	BIT(4)	/* 0 = 14-bit output; 1 = 15-bit output */
+#define HSCDTD008A_CTRL4_MMD	BIT(7)	 
+#define HSCDTD008A_CTRL4_RANGE	BIT(4)	 
 #define HSCDTD008A_CTRL4_RESDEF	(HSCDTD008A_CTRL4_MMD | HSCDTD008A_CTRL4_RANGE)
 
-/* The AMI305 has elaborate FW version and serial number registers */
+ 
 #define AMI305_VER		0xE8
 #define AMI305_SN		0xEA
 
@@ -157,11 +143,7 @@
 #define AK8974_POWERON_DELAY	50
 #define AK8974_ACTIVATE_DELAY	1
 #define AK8974_SELFTEST_DELAY	1
-/*
- * Set the autosuspend to two orders of magnitude larger than the poweron
- * delay to make sane reasonable power tradeoff savings (5 seconds in
- * this case).
- */
+ 
 #define AK8974_AUTOSUSPEND_DELAY 5000
 
 #define AK8974_MEASTIME		3
@@ -169,20 +151,7 @@
 #define AK8974_PWR_ON		1
 #define AK8974_PWR_OFF		0
 
-/**
- * struct ak8974 - state container for the AK8974 driver
- * @i2c: parent I2C client
- * @orientation: mounting matrix, flipped axis etc
- * @map: regmap to access the AK8974 registers over I2C
- * @regs: the avdd and dvdd power regulators
- * @name: the name of the part
- * @variant: the whoami ID value (for selecting code paths)
- * @lock: locks the magnetometer for exclusive use during a measurement
- * @drdy_irq: uses the DRDY IRQ line
- * @drdy_complete: completion for DRDY
- * @drdy_active_low: the DRDY IRQ is active low
- * @scan: timestamps
- */
+ 
 struct ak8974 {
 	struct i2c_client *i2c;
 	struct iio_mount_matrix orientation;
@@ -194,7 +163,7 @@ struct ak8974 {
 	bool drdy_irq;
 	struct completion drdy_complete;
 	bool drdy_active_low;
-	/* Ensure timestamp is naturally aligned */
+	 
 	struct {
 		__le16 channels[3];
 		s64 ts __aligned(8);
@@ -245,7 +214,7 @@ static int ak8974_reset(struct ak8974 *ak8974)
 {
 	int ret;
 
-	/* Power on to get register access. Sets CTRL1 reg to reset state */
+	 
 	ret = ak8974_set_power(ak8974, AK8974_PWR_ON);
 	if (ret)
 		return ret;
@@ -267,7 +236,7 @@ static int ak8974_reset(struct ak8974 *ak8974)
 			return ret;
 	}
 
-	/* After reset, power off is default state */
+	 
 	return ak8974_set_power(ak8974, AK8974_PWR_OFF);
 }
 
@@ -283,7 +252,7 @@ static int ak8974_configure(struct ak8974 *ak8974)
 	if (ret)
 		return ret;
 	if (ak8974->variant == AK8974_WHOAMI_VALUE_AMI306) {
-		/* magic from datasheet: set high-speed measurement mode */
+		 
 		ret = ak8974_set_u16_val(ak8974, AMI306_CTRL4, 0xA07E);
 		if (ret)
 			return ret;
@@ -304,12 +273,12 @@ static int ak8974_trigmeas(struct ak8974 *ak8974)
 	u8 val;
 	int ret;
 
-	/* Clear any previous measurement overflow status */
+	 
 	ret = regmap_read(ak8974->map, AK8974_INT_CLEAR, &clear);
 	if (ret)
 		return ret;
 
-	/* If we have a DRDY IRQ line, use it */
+	 
 	if (ak8974->drdy_irq) {
 		mask = AK8974_CTRL2_INT_EN |
 			AK8974_CTRL2_DRDY_EN |
@@ -326,7 +295,7 @@ static int ak8974_trigmeas(struct ak8974 *ak8974)
 			return ret;
 	}
 
-	/* Force a measurement */
+	 
 	return regmap_update_bits(ak8974->map,
 				  AK8974_CTRL3,
 				  AK8974_CTRL3_FORCE,
@@ -350,7 +319,7 @@ static int ak8974_await_drdy(struct ak8974 *ak8974)
 		return 0;
 	}
 
-	/* Default delay-based poll loop */
+	 
 	do {
 		msleep(AK8974_MEASTIME);
 		ret = regmap_read(ak8974->map, AK8974_STATUS, &val);
@@ -376,7 +345,7 @@ static int ak8974_getresult(struct ak8974 *ak8974, __le16 *result)
 	if (ret < 0)
 		return ret;
 
-	/* Out of range overflow! Strong magnet close? */
+	 
 	if (src & AK8974_INT_RANGE) {
 		dev_err(&ak8974->i2c->dev,
 			"range overflow in sensor\n");
@@ -397,7 +366,7 @@ static irqreturn_t ak8974_drdy_irq(int irq, void *d)
 	if (!ak8974->drdy_irq)
 		return IRQ_NONE;
 
-	/* TODO: timestamp here to get good measurement stamps */
+	 
 	return IRQ_WAKE_THREAD;
 }
 
@@ -407,19 +376,19 @@ static irqreturn_t ak8974_drdy_irq_thread(int irq, void *d)
 	unsigned int val;
 	int ret;
 
-	/* Check if this was a DRDY from us */
+	 
 	ret = regmap_read(ak8974->map, AK8974_STATUS, &val);
 	if (ret < 0) {
 		dev_err(&ak8974->i2c->dev, "error reading DRDY status\n");
 		return IRQ_HANDLED;
 	}
 	if (val & AK8974_STATUS_DRDY) {
-		/* Yes this was our IRQ */
+		 
 		complete(&ak8974->drdy_complete);
 		return IRQ_HANDLED;
 	}
 
-	/* We may be on a shared IRQ, let the next client check */
+	 
 	return IRQ_NONE;
 }
 
@@ -437,7 +406,7 @@ static int ak8974_selftest(struct ak8974 *ak8974)
 		return -EIO;
 	}
 
-	/* Trigger self-test */
+	 
 	ret = regmap_update_bits(ak8974->map,
 			AK8974_CTRL3,
 			AK8974_CTRL3_SELFTEST,
@@ -505,7 +474,7 @@ static int ak8974_detect(struct ak8974 *ak8974)
 		ret = regmap_read(ak8974->map, AMI305_VER, &fw);
 		if (ret)
 			return ret;
-		fw &= 0x7f; /* only bits 0 thru 6 valid */
+		fw &= 0x7f;  
 		ret = ak8974_get_u16_val(ak8974, AMI305_SN, &sn);
 		if (ret)
 			return ret;
@@ -570,22 +539,14 @@ static int ak8974_measure_channel(struct ak8974 *ak8974, unsigned long address,
 	pm_runtime_get_sync(&ak8974->i2c->dev);
 	mutex_lock(&ak8974->lock);
 
-	/*
-	 * We read all axes and discard all but one, for optimized
-	 * reading, use the triggered buffer.
-	 */
+	 
 	ret = ak8974_trigmeas(ak8974);
 	if (ret)
 		goto out_unlock;
 	ret = ak8974_getresult(ak8974, hw_values);
 	if (ret)
 		goto out_unlock;
-	/*
-	 * This explicit cast to (s16) is necessary as the measurement
-	 * is done in 2's complement with positive and negative values.
-	 * The follwing assignment to *val will then convert the signed
-	 * s16 value to a signed int value.
-	 */
+	 
 	*val = (s16)le16_to_cpu(hw_values[address]);
 out_unlock:
 	mutex_unlock(&ak8974->lock);
@@ -617,43 +578,27 @@ static int ak8974_read_raw(struct iio_dev *indio_dev,
 		switch (ak8974->variant) {
 		case AK8974_WHOAMI_VALUE_AMI306:
 		case AK8974_WHOAMI_VALUE_AMI305:
-			/*
-			 * The datasheet for AMI305 and AMI306, page 6
-			 * specifies the range of the sensor to be
-			 * +/- 12 Gauss.
-			 */
+			 
 			*val = 12;
-			/*
-			 * 12 bits are used, +/- 2^11
-			 * [ -2048 .. 2047 ] (manual page 20)
-			 * [ 0xf800 .. 0x07ff ]
-			 */
+			 
 			*val2 = 11;
 			return IIO_VAL_FRACTIONAL_LOG2;
 		case AK8974_WHOAMI_VALUE_HSCDTD008A:
-			/*
-			 * The datasheet for HSCDTF008A, page 3 specifies the
-			 * range of the sensor as +/- 2.4 mT per axis, which
-			 * corresponds to +/- 2400 uT = +/- 24 Gauss.
-			 */
+			 
 			*val = 24;
-			/*
-			 * 15 bits are used (set up in CTRL4), +/- 2^14
-			 * [ -16384 .. 16383 ] (manual page 24)
-			 * [ 0xc000 .. 0x3fff ]
-			 */
+			 
 			*val2 = 14;
 			return IIO_VAL_FRACTIONAL_LOG2;
 		default:
-			/* GUESSING +/- 12 Gauss */
+			 
 			*val = 12;
-			/* GUESSING 12 bits ADC +/- 2^11 */
+			 
 			*val2 = 11;
 			return IIO_VAL_FRACTIONAL_LOG2;
 		}
 		break;
 	default:
-		/* Unknown request */
+		 
 		break;
 	}
 
@@ -731,11 +676,7 @@ static const struct iio_chan_spec_ext_info ak8974_ext_info[] = {
 		},							\
 	}
 
-/*
- * We have no datasheet for the AK8974 but we guess that its
- * ADC is 12 bits. The AMI305 and AMI306 certainly has 12bit
- * ADC.
- */
+ 
 static const struct iio_chan_spec ak8974_12_bits_channels[] = {
 	AK8974_AXIS_CHANNEL(X, 0, 12),
 	AK8974_AXIS_CHANNEL(Y, 1, 12),
@@ -743,10 +684,7 @@ static const struct iio_chan_spec ak8974_12_bits_channels[] = {
 	IIO_CHAN_SOFT_TIMESTAMP(3),
 };
 
-/*
- * The HSCDTD008A has 15 bits resolution the way we set it up
- * in CTRL4.
- */
+ 
 static const struct iio_chan_spec ak8974_15_bits_channels[] = {
 	AK8974_AXIS_CHANNEL(X, 0, 15),
 	AK8974_AXIS_CHANNEL(Y, 1, 15),
@@ -822,7 +760,7 @@ static int ak8974_probe(struct i2c_client *i2c)
 	int irq = i2c->irq;
 	int ret;
 
-	/* Register with IIO */
+	 
 	indio_dev = devm_iio_device_alloc(&i2c->dev, sizeof(*ak8974));
 	if (indio_dev == NULL)
 		return -ENOMEM;
@@ -851,7 +789,7 @@ static int ak8974_probe(struct i2c_client *i2c)
 		return ret;
 	}
 
-	/* Take runtime PM online */
+	 
 	pm_runtime_get_noresume(&i2c->dev);
 	pm_runtime_set_active(&i2c->dev);
 	pm_runtime_enable(&i2c->dev);
@@ -914,7 +852,7 @@ static int ak8974_probe(struct i2c_client *i2c)
 		goto disable_pm;
 	}
 
-	/* If we have a valid DRDY IRQ, make use of it */
+	 
 	if (irq > 0) {
 		irq_trig = irqd_get_trigger_type(irq_get_irq_data(irq));
 		if (irq_trig == IRQF_TRIGGER_RISING) {

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ASoC machine driver for Intel Broadwell platforms with RT5650 codec
- *
- * Copyright 2019, The Chromium OS Authors.  All rights reserved.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -32,28 +28,23 @@ static const struct snd_soc_dapm_widget bdw_rt5650_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route bdw_rt5650_map[] = {
-	/* Speakers */
+	 
 	{"Speaker", NULL, "SPOL"},
 	{"Speaker", NULL, "SPOR"},
 
-	/* Headset jack connectors */
+	 
 	{"Headphone", NULL, "HPOL"},
 	{"Headphone", NULL, "HPOR"},
 	{"IN1P", NULL, "Headset Mic"},
 	{"IN1N", NULL, "Headset Mic"},
 
-	/* Digital MICs
-	 * DMIC Pair1 are the two DMICs connected on the DMICN1 connector.
-	 * DMIC Pair2 are the two DMICs connected on the DMICN2 connector.
-	 * Facing the camera, DMIC Pair1 are on the left side, DMIC Pair2
-	 * are on the right side.
-	 */
+	 
 	{"DMIC L1", NULL, "DMIC Pair1"},
 	{"DMIC R1", NULL, "DMIC Pair1"},
 	{"DMIC L2", NULL, "DMIC Pair2"},
 	{"DMIC R2", NULL, "DMIC Pair2"},
 
-	/* CODEC BE connections */
+	 
 	{"SSP0 CODEC IN", NULL, "AIF1 Capture"},
 	{"AIF1 Playback", NULL, "SSP0 CODEC OUT"},
 };
@@ -88,12 +79,12 @@ static int broadwell_ssp0_fixup(struct snd_soc_pcm_runtime *rtd,
 	struct snd_interval *chan = hw_param_interval(params,
 						      SNDRV_PCM_HW_PARAM_CHANNELS);
 
-	/* The ADSP will convert the FE rate to 48k, max 4-channels */
+	 
 	rate->min = rate->max = 48000;
 	chan->min = 2;
 	chan->max = 4;
 
-	/* set SSP0 to 24 bit */
+	 
 	snd_mask_set_format(hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT),
 			    SNDRV_PCM_FORMAT_S24_LE);
 
@@ -107,9 +98,7 @@ static int bdw_rt5650_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
 	int ret;
 
-	/* Workaround: set codec PLL to 19.2MHz that PLL source is
-	 * from MCLK(24MHz) to conform 2.4MHz DMIC clock.
-	 */
+	 
 	ret = snd_soc_dai_set_pll(codec_dai, 0, RT5645_PLL1_S_MCLK,
 		24000000, 19200000);
 	if (ret < 0) {
@@ -117,10 +106,7 @@ static int bdw_rt5650_hw_params(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
-	/* The actual MCLK freq is 24MHz. The codec is told that MCLK is
-	 * 24.576MHz to satisfy the requirement of rl6231_get_clk_info.
-	 * ASRC is enabled on AD and DA filters to ensure good audio quality.
-	 */
+	 
 	ret = snd_soc_dai_set_sysclk(codec_dai, RT5645_SCLK_S_PLL1, 24576000,
 		SND_SOC_CLOCK_IN);
 	if (ret < 0) {
@@ -149,7 +135,7 @@ static int bdw_rt5650_fe_startup(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 
-	/* Board supports stereo and quad configurations for capture */
+	 
 	if (substream->stream != SNDRV_PCM_STREAM_CAPTURE)
 		return 0;
 
@@ -171,9 +157,7 @@ static int bdw_rt5650_init(struct snd_soc_pcm_runtime *rtd)
 	struct snd_soc_component *component = codec_dai->component;
 	int ret;
 
-	/* Enable codec ASRC function for Stereo DAC/Stereo1 ADC/DMIC/I2S1.
-	 * The ASRC clock source is clk_i2s1_asrc.
-	 */
+	 
 	rt5645_sel_asrc_clk_src(component,
 				RT5645_DA_STEREO_FILTER |
 				RT5645_DA_MONO_L_FILTER |
@@ -183,7 +167,7 @@ static int bdw_rt5650_init(struct snd_soc_pcm_runtime *rtd)
 				RT5645_AD_MONO_R_FILTER,
 				RT5645_CLK_SEL_I2S1_ASRC);
 
-	/* TDM 4 slots 24 bit, set Rx & Tx bitmask to 4 active slots */
+	 
 	ret = snd_soc_dai_set_tdm_slot(codec_dai, 0xF, 0xF, 4, 24);
 
 	if (ret < 0) {
@@ -191,14 +175,14 @@ static int bdw_rt5650_init(struct snd_soc_pcm_runtime *rtd)
 		return ret;
 	}
 
-	/* Create and initialize headphone jack */
+	 
 	if (snd_soc_card_jack_new_pins(rtd->card, "Headphone Jack",
 			SND_JACK_HEADPHONE, &headphone_jack,
 			&headphone_jack_pin, 1)) {
 		dev_err(component->dev, "Can't create headphone jack\n");
 	}
 
-	/* Create and initialize mic jack */
+	 
 	if (snd_soc_card_jack_new_pins(rtd->card, "Mic Jack",
 			SND_JACK_MICROPHONE, &mic_jack, &mic_jack_pin, 1)) {
 		dev_err(component->dev, "Can't create mic jack\n");
@@ -211,7 +195,7 @@ static int bdw_rt5650_init(struct snd_soc_pcm_runtime *rtd)
 	return 0;
 }
 
-/* broadwell digital audio interface glue - connects codec <--> CPU */
+ 
 SND_SOC_DAILINK_DEF(dummy,
 	DAILINK_COMP_ARRAY(COMP_DUMMY()));
 
@@ -228,7 +212,7 @@ SND_SOC_DAILINK_DEF(ssp0_port,
 	    DAILINK_COMP_ARRAY(COMP_CPU("ssp0-port")));
 
 static struct snd_soc_dai_link bdw_rt5650_dais[] = {
-	/* Front End DAI links */
+	 
 	{
 		.name = "System PCM",
 		.stream_name = "System Playback",
@@ -244,9 +228,9 @@ static struct snd_soc_dai_link bdw_rt5650_dais[] = {
 		SND_SOC_DAILINK_REG(fe, dummy, platform),
 	},
 
-	/* Back End DAI links */
+	 
 	{
-		/* SSP0 - Codec */
+		 
 		.name = "Codec",
 		.id = 0,
 		.nonatomic = 1,
@@ -263,14 +247,14 @@ static struct snd_soc_dai_link bdw_rt5650_dais[] = {
 	},
 };
 
-/* use space before codec name to simplify card ID, and simplify driver name */
-#define SOF_CARD_NAME "bdw rt5650" /* card name will be 'sof-bdw rt5650' */
+ 
+#define SOF_CARD_NAME "bdw rt5650"  
 #define SOF_DRIVER_NAME "SOF"
 
 #define CARD_NAME "bdw-rt5650"
-#define DRIVER_NAME NULL /* card name will be used for driver name */
+#define DRIVER_NAME NULL  
 
-/* ASoC machine driver for Broadwell DSP + RT5650 */
+ 
 static struct snd_soc_card bdw_rt5650_card = {
 	.name = CARD_NAME,
 	.driver_name = DRIVER_NAME,
@@ -294,13 +278,13 @@ static int bdw_rt5650_probe(struct platform_device *pdev)
 
 	bdw_rt5650_card.dev = &pdev->dev;
 
-	/* Allocate driver private struct */
+	 
 	bdw_rt5650 = devm_kzalloc(&pdev->dev, sizeof(struct bdw_rt5650_priv),
 		GFP_KERNEL);
 	if (!bdw_rt5650)
 		return -ENOMEM;
 
-	/* override platform name, if required */
+	 
 	mach = pdev->dev.platform_data;
 	ret = snd_soc_fixup_dai_links_platform_name(&bdw_rt5650_card,
 						    mach->mach_params.platform);
@@ -308,7 +292,7 @@ static int bdw_rt5650_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* set card and driver name */
+	 
 	if (snd_soc_acpi_sof_parent(&pdev->dev)) {
 		bdw_rt5650_card.name = SOF_CARD_NAME;
 		bdw_rt5650_card.driver_name = SOF_DRIVER_NAME;
@@ -332,7 +316,7 @@ static struct platform_driver bdw_rt5650_audio = {
 
 module_platform_driver(bdw_rt5650_audio)
 
-/* Module information */
+ 
 MODULE_AUTHOR("Ben Zhang <benzh@chromium.org>");
 MODULE_DESCRIPTION("Intel Broadwell RT5650 machine driver");
 MODULE_LICENSE("GPL v2");

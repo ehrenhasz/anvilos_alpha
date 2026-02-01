@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// drivers/dma/imx-dma.c
-//
-// This file contains a driver for the Freescale i.MX DMA engine
-// found on i.MX1/21/27
-//
-// Copyright 2010 Sascha Hauer, Pengutronix <s.hauer@pengutronix.de>
-// Copyright 2012 Javier Martin, Vista Silicon <javier.martin@vista-silicon.com>
+
+
+
+
+
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -49,29 +49,29 @@
 #define IMX_DMA_ERR_BUFFER    (1 << 3)
 #define IMX_DMA_ERR_TIMEOUT   (1 << 4)
 
-#define DMA_DCR     0x00		/* Control Register */
-#define DMA_DISR    0x04		/* Interrupt status Register */
-#define DMA_DIMR    0x08		/* Interrupt mask Register */
-#define DMA_DBTOSR  0x0c		/* Burst timeout status Register */
-#define DMA_DRTOSR  0x10		/* Request timeout Register */
-#define DMA_DSESR   0x14		/* Transfer Error Status Register */
-#define DMA_DBOSR   0x18		/* Buffer overflow status Register */
-#define DMA_DBTOCR  0x1c		/* Burst timeout control Register */
-#define DMA_WSRA    0x40		/* W-Size Register A */
-#define DMA_XSRA    0x44		/* X-Size Register A */
-#define DMA_YSRA    0x48		/* Y-Size Register A */
-#define DMA_WSRB    0x4c		/* W-Size Register B */
-#define DMA_XSRB    0x50		/* X-Size Register B */
-#define DMA_YSRB    0x54		/* Y-Size Register B */
-#define DMA_SAR(x)  (0x80 + ((x) << 6))	/* Source Address Registers */
-#define DMA_DAR(x)  (0x84 + ((x) << 6))	/* Destination Address Registers */
-#define DMA_CNTR(x) (0x88 + ((x) << 6))	/* Count Registers */
-#define DMA_CCR(x)  (0x8c + ((x) << 6))	/* Control Registers */
-#define DMA_RSSR(x) (0x90 + ((x) << 6))	/* Request source select Registers */
-#define DMA_BLR(x)  (0x94 + ((x) << 6))	/* Burst length Registers */
-#define DMA_RTOR(x) (0x98 + ((x) << 6))	/* Request timeout Registers */
-#define DMA_BUCR(x) (0x98 + ((x) << 6))	/* Bus Utilization Registers */
-#define DMA_CCNR(x) (0x9C + ((x) << 6))	/* Channel counter Registers */
+#define DMA_DCR     0x00		 
+#define DMA_DISR    0x04		 
+#define DMA_DIMR    0x08		 
+#define DMA_DBTOSR  0x0c		 
+#define DMA_DRTOSR  0x10		 
+#define DMA_DSESR   0x14		 
+#define DMA_DBOSR   0x18		 
+#define DMA_DBTOCR  0x1c		 
+#define DMA_WSRA    0x40		 
+#define DMA_XSRA    0x44		 
+#define DMA_YSRA    0x48		 
+#define DMA_WSRB    0x4c		 
+#define DMA_XSRB    0x50		 
+#define DMA_YSRB    0x54		 
+#define DMA_SAR(x)  (0x80 + ((x) << 6))	 
+#define DMA_DAR(x)  (0x84 + ((x) << 6))	 
+#define DMA_CNTR(x) (0x88 + ((x) << 6))	 
+#define DMA_CCR(x)  (0x8c + ((x) << 6))	 
+#define DMA_RSSR(x) (0x90 + ((x) << 6))	 
+#define DMA_BLR(x)  (0x94 + ((x) << 6))	 
+#define DMA_RTOR(x) (0x98 + ((x) << 6))	 
+#define DMA_BUCR(x) (0x98 + ((x) << 6))	 
+#define DMA_CCNR(x) (0x9C + ((x) << 6))	 
 
 #define DCR_DRST           (1<<1)
 #define DCR_DEN            (1<<0)
@@ -126,14 +126,14 @@ struct imxdma_desc {
 	size_t				len;
 	enum dma_transfer_direction	direction;
 	enum imxdma_prep_type		type;
-	/* For memcpy and interleaved */
+	 
 	unsigned int			config_port;
 	unsigned int			config_mem;
-	/* For interleaved transfers */
+	 
 	unsigned int			x;
 	unsigned int			y;
 	unsigned int			w;
-	/* For slave sg and cyclic */
+	 
 	struct scatterlist		*sg;
 	unsigned int			sgcount;
 };
@@ -199,7 +199,7 @@ static const struct of_device_id imx_dma_of_dev_id[] = {
 	}, {
 		.compatible = "fsl,imx27-dma", .data = (const void *)IMX27_DMA,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, imx_dma_of_dev_id);
@@ -255,9 +255,7 @@ static int imxdma_hw_chain(struct imxdma_channel *imxdmac)
 		return 0;
 }
 
-/*
- * imxdma_sg_next - prepare next chunk for scatter-gather DMA emulation
- */
+ 
 static inline void imxdma_sg_next(struct imxdma_desc *d)
 {
 	struct imxdma_channel *imxdmac = to_imxdma_chan(d->desc.chan);
@@ -345,7 +343,7 @@ static void imxdma_watchdog(struct timer_list *t)
 
 	imx_dmav1_writel(imxdma, 0, DMA_CCR(channel));
 
-	/* Tasklet watchdog error handler */
+	 
 	tasklet_schedule(&imxdmac->dma_tasklet);
 	dev_dbg(imxdma->dev, "channel %d: watchdog timeout!\n",
 		imxdmac->channel);
@@ -391,7 +389,7 @@ static irqreturn_t imxdma_err_handler(int irq, void *dev_id)
 			imx_dmav1_writel(imxdma, 1 << i, DMA_DBOSR);
 			errcode |= IMX_DMA_ERR_BUFFER;
 		}
-		/* Tasklet error handler */
+		 
 		tasklet_schedule(&imxdma->channel[i].dma_tasklet);
 
 		dev_warn(imxdma->dev,
@@ -432,9 +430,7 @@ static void dma_irq_handle_channel(struct imxdma_channel *imxdmac)
 			tmp = imx_dmav1_readl(imxdma, DMA_CCR(chno));
 
 			if (imxdma_hw_chain(imxdmac)) {
-				/* FIXME: The timeout should probably be
-				 * configurable
-				 */
+				 
 				mod_timer(&imxdmac->watchdog,
 					jiffies + msecs_to_jiffies(500));
 
@@ -449,7 +445,7 @@ static void dma_irq_handle_channel(struct imxdma_channel *imxdmac)
 			imx_dmav1_writel(imxdma, tmp, DMA_CCR(chno));
 
 			if (imxdma_chan_is_doing_cyclic(imxdmac))
-				/* Tasklet progression */
+				 
 				tasklet_schedule(&imxdmac->dma_tasklet);
 
 			return;
@@ -463,7 +459,7 @@ static void dma_irq_handle_channel(struct imxdma_channel *imxdmac)
 
 out:
 	imx_dmav1_writel(imxdma, 0, DMA_CCR(chno));
-	/* Tasklet irq */
+	 
 	tasklet_schedule(&imxdmac->dma_tasklet);
 }
 
@@ -495,10 +491,10 @@ static int imxdma_xfer_desc(struct imxdma_desc *d)
 	int slot = -1;
 	int i;
 
-	/* Configure and enable */
+	 
 	switch (d->type) {
 	case IMXDMA_DESC_INTERLEAVED:
-		/* Try to get a free 2D slot */
+		 
 		for (i = 0; i < IMX_DMA_2D_SLOTS; i++) {
 			if ((imxdma->slots_2d[i].count > 0) &&
 			((imxdma->slots_2d[i].xsr != d->x) ||
@@ -532,10 +528,7 @@ static int imxdma_xfer_desc(struct imxdma_desc *d)
 			imx_dmav1_writel(imxdma, d->y, DMA_YSRB);
 			imx_dmav1_writel(imxdma, d->w, DMA_WSRB);
 		}
-		/*
-		 * We fall-through here intentionally, since a 2D transfer is
-		 * similar to MEMCPY just adding the 2D slot configuration.
-		 */
+		 
 		fallthrough;
 	case IMXDMA_DESC_MEMCPY:
 		imx_dmav1_writel(imxdma, d->src, DMA_SAR(imxdmac->channel));
@@ -552,7 +545,7 @@ static int imxdma_xfer_desc(struct imxdma_desc *d)
 			(unsigned long long)d->src, d->len);
 
 		break;
-	/* Cyclic transfer is the same as slave_sg with special sg configuration. */
+	 
 	case IMXDMA_DESC_CYCLIC:
 	case IMXDMA_DESC_SLAVE_SG:
 		if (d->direction == DMA_DEV_TO_MEM) {
@@ -603,22 +596,19 @@ static void imxdma_tasklet(struct tasklet_struct *t)
 	spin_lock_irqsave(&imxdma->lock, flags);
 
 	if (list_empty(&imxdmac->ld_active)) {
-		/* Someone might have called terminate all */
+		 
 		spin_unlock_irqrestore(&imxdma->lock, flags);
 		return;
 	}
 	desc = list_first_entry(&imxdmac->ld_active, struct imxdma_desc, node);
 
-	/* If we are dealing with a cyclic descriptor, keep it on ld_active
-	 * and dont mark the descriptor as complete.
-	 * Only in non-cyclic cases it would be marked as complete
-	 */
+	 
 	if (imxdma_chan_is_doing_cyclic(imxdmac))
 		goto out;
 	else
 		dma_cookie_complete(&desc->desc);
 
-	/* Free 2D slot if it was an interleaved transfer */
+	 
 	if (imxdmac->enabled_2d) {
 		imxdma->slots_2d[imxdmac->slot_2d].count--;
 		imxdmac->enabled_2d = false;
@@ -697,7 +687,7 @@ static int imxdma_config_write(struct dma_chan *chan,
 	imx_dmav1_writel(imxdma, imxdmac->dma_request,
 			 DMA_RSSR(imxdmac->channel));
 
-	/* Set burst length */
+	 
 	imx_dmav1_writel(imxdma, imxdmac->watermark_level *
 			 imxdmac->word_size, DMA_BLR(imxdmac->channel));
 
@@ -752,7 +742,7 @@ static int imxdma_alloc_chan_resources(struct dma_chan *chan)
 			break;
 		dma_async_tx_descriptor_init(&desc->desc, chan);
 		desc->desc.tx_submit = imxdma_tx_submit;
-		/* txd.flags will be overwritten in prep funcs */
+		 
 		desc->desc.flags = DMA_CTRL_ACK;
 		desc->status = DMA_COMPLETE;
 
@@ -881,7 +871,7 @@ static struct dma_async_tx_descriptor *imxdma_prep_dma_cyclic(
 		dma_addr += period_len;
 	}
 
-	/* close the loop */
+	 
 	sg_chain(imxdmac->sg_list, periods + 1, imxdmac->sg_list);
 
 	desc->type = IMXDMA_DESC_CYCLIC;
@@ -1070,7 +1060,7 @@ static int __init imxdma_probe(struct platform_device *pdev)
 	if (ret)
 		goto disable_dma_ipg_clk;
 
-	/* reset DMA module */
+	 
 	imx_dmav1_writel(imxdma, DCR_DRST, DMA_DCR);
 
 	if (is_imx1_dma(imxdma)) {
@@ -1097,13 +1087,13 @@ static int __init imxdma_probe(struct platform_device *pdev)
 		imxdma->irq_err = irq_err;
 	}
 
-	/* enable DMA module */
+	 
 	imx_dmav1_writel(imxdma, DCR_DEN, DMA_DCR);
 
-	/* clear all interrupts */
+	 
 	imx_dmav1_writel(imxdma, (1 << IMX_DMA_CHANNELS) - 1, DMA_DISR);
 
-	/* disable interrupts */
+	 
 	imx_dmav1_writel(imxdma, (1 << IMX_DMA_CHANNELS) - 1, DMA_DIMR);
 
 	INIT_LIST_HEAD(&imxdma->dma_device.channels);
@@ -1113,13 +1103,13 @@ static int __init imxdma_probe(struct platform_device *pdev)
 	dma_cap_set(DMA_MEMCPY, imxdma->dma_device.cap_mask);
 	dma_cap_set(DMA_INTERLEAVE, imxdma->dma_device.cap_mask);
 
-	/* Initialize 2D global parameters */
+	 
 	for (i = 0; i < IMX_DMA_2D_SLOTS; i++)
 		imxdma->slots_2d[i].count = 0;
 
 	spin_lock_init(&imxdma->lock);
 
-	/* Initialize channel parameters */
+	 
 	for (i = 0; i < IMX_DMA_CHANNELS; i++) {
 		struct imxdma_channel *imxdmac = &imxdma->channel[i];
 
@@ -1148,7 +1138,7 @@ static int __init imxdma_probe(struct platform_device *pdev)
 		dma_cookie_init(&imxdmac->chan);
 		imxdmac->channel = i;
 
-		/* Add the channel to the DMAC list */
+		 
 		list_add_tail(&imxdmac->chan.device_node,
 			      &imxdma->dma_device.channels);
 	}

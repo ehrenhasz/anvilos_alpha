@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2020 Mellanox Technologies Ltd. */
+
+ 
 
 #include <linux/iova.h>
 #include <linux/mlx5/driver.h>
@@ -58,7 +58,7 @@ static int create_uctx(struct mlx5_vdpa_dev *mvdev, u16 *uid)
 	if (MLX5_CAP_GEN(mvdev->mdev, umem_uid_0))
 		return 0;
 
-	/* 0 means not supported */
+	 
 	if (!MLX5_CAP_GEN(mvdev->mdev, log_max_uctx))
 		return -EOPNOTSUPP;
 

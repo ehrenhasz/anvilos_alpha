@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "map_symbol.h"
 #include "mem-events.h"
 
@@ -30,7 +30,7 @@ const char *perf_mem_events__name(int i, const char *pmu_name __maybe_unused)
 	if (i == PERF_MEM_EVENTS__LOAD || i == PERF_MEM_EVENTS__LOAD_STORE)
 		scnprintf(mem_ev_name, sizeof(mem_ev_name),
 			  e->name, perf_mem_events__loads_ldlat);
-	else /* PERF_MEM_EVENTS__STORE */
+	else  
 		scnprintf(mem_ev_name, sizeof(mem_ev_name), e->name);
 
 	return mem_ev_name;

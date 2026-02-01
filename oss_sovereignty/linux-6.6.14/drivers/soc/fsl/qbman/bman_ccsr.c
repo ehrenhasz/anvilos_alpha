@@ -1,39 +1,11 @@
-/* Copyright (c) 2009 - 2016 Freescale Semiconductor, Inc.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *	 notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *	 notice, this list of conditions and the following disclaimer in the
- *	 documentation and/or other materials provided with the distribution.
- *     * Neither the name of Freescale Semiconductor nor the
- *	 names of its contributors may be used to endorse or promote products
- *	 derived from this software without specific prior written permission.
- *
- * ALTERNATIVELY, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") as published by the Free Software
- * Foundation, either version 2 of that License or (at your option) any
- * later version.
- *
- * THIS SOFTWARE IS PROVIDED BY Freescale Semiconductor ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL Freescale Semiconductor BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include "bman_priv.h"
 
 u16 bman_ip_rev;
 EXPORT_SYMBOL(bman_ip_rev);
 
-/* Register offsets */
+ 
 #define REG_FBPR_FPC		0x0800
 #define REG_ECSR		0x0a00
 #define REG_ECIR		0x0a04
@@ -51,12 +23,12 @@ EXPORT_SYMBOL(bman_ip_rev);
 #define REG_ERR_IER		0x0e04
 #define REG_ERR_ISDR		0x0e08
 
-/* Used by all error interrupt registers except 'inhibit' */
-#define BM_EIRQ_IVCI	0x00000010	/* Invalid Command Verb */
-#define BM_EIRQ_FLWI	0x00000008	/* FBPR Low Watermark */
-#define BM_EIRQ_MBEI	0x00000004	/* Multi-bit ECC Error */
-#define BM_EIRQ_SBEI	0x00000002	/* Single-bit ECC Error */
-#define BM_EIRQ_BSCN	0x00000001	/* pool State Change Notification */
+ 
+#define BM_EIRQ_IVCI	0x00000010	 
+#define BM_EIRQ_FLWI	0x00000008	 
+#define BM_EIRQ_MBEI	0x00000004	 
+#define BM_EIRQ_SBEI	0x00000002	 
+#define BM_EIRQ_BSCN	0x00000001	 
 
 struct bman_hwerr_txt {
 	u32 mask;
@@ -71,10 +43,10 @@ static const struct bman_hwerr_txt bman_hwerr_txts[] = {
 	{ BM_EIRQ_BSCN, "Pool State Change Notification" },
 };
 
-/* Only trigger low water mark interrupt once only */
+ 
 #define BMAN_ERRS_TO_DISABLE BM_EIRQ_FLWI
 
-/* Pointer to the start of the BMan's CCSR space */
+ 
 static u32 __iomem *bm_ccsr_start;
 
 static inline u32 bm_ccsr_in(u32 offset)
@@ -94,10 +66,10 @@ static void bm_get_version(u16 *id, u8 *major, u8 *minor)
 	*minor = v & 0xff;
 }
 
-/* signal transactions for FBPRs with higher priority */
+ 
 #define FBPR_AR_RPRIO_HI BIT(30)
 
-/* Track if probe has occurred and if cleanup is required */
+ 
 static int __bman_probed;
 static int __bman_requires_cleanup;
 
@@ -106,16 +78,16 @@ static int bm_set_memory(u64 ba, u32 size)
 {
 	u32 bar, bare;
 	u32 exp = ilog2(size);
-	/* choke if size isn't within range */
+	 
 	DPAA_ASSERT(size >= 4096 && size <= 1024*1024*1024 &&
 		   is_power_of_2(size));
-	/* choke if '[e]ba' has lower-alignment than 'size' */
+	 
 	DPAA_ASSERT(!(ba & (size - 1)));
 
-	/* Check to see if BMan has already been initialized */
+	 
 	bar = bm_ccsr_in(REG_FBPR_BAR);
 	if (bar) {
-		/* Maker sure ba == what was programmed) */
+		 
 		bare = bm_ccsr_in(REG_FBPR_BARE);
 		if (bare != upper_32_bits(ba) || bar != lower_32_bits(ba)) {
 			pr_err("Attempted to reinitialize BMan with different BAR, got 0x%llx read BARE=0x%x BAR=0x%x\n",
@@ -133,14 +105,7 @@ static int bm_set_memory(u64 ba, u32 size)
 	return 0;
 }
 
-/*
- * Location and size of BMan private memory
- *
- * Ideally we would use the DMA API to turn rmem->base into a DMA address
- * (especially if iommu translations ever get involved).  Unfortunately, the
- * DMA API currently does not allow mapping anything that is not backed with
- * a struct page.
- */
+ 
 static dma_addr_t fbpr_a;
 static size_t fbpr_sz;
 
@@ -173,7 +138,7 @@ static irqreturn_t bman_isr(int irq, void *ptr)
 			dev_err_ratelimited(dev, "ErrInt: %s\n",
 					    bman_hwerr_txts[i].txt);
 			if (bman_hwerr_txts[i].mask & ecsr_val) {
-				/* Re-arm error capture registers */
+				 
 				bm_ccsr_out(REG_ECSR, ecsr_val);
 			}
 			if (bman_hwerr_txts[i].mask & BMAN_ERRS_TO_DISABLE) {
@@ -242,10 +207,7 @@ static int fsl_bman_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
-	/*
-	 * If FBPR memory wasn't defined using the qbman compatible string
-	 * try using the of_reserved_mem_device method
-	 */
+	 
 	if (!fbpr_a) {
 		ret = qbman_init_private_mem(dev, 0, &fbpr_a, &fbpr_sz);
 		if (ret) {
@@ -271,14 +233,11 @@ static int fsl_bman_probe(struct platform_device *pdev)
 			ret, node);
 		return ret;
 	}
-	/* Disable Buffer Pool State Change */
+	 
 	bm_ccsr_out(REG_ERR_ISDR, BM_EIRQ_BSCN);
-	/*
-	 * Write-to-clear any stale bits, (eg. starvation being asserted prior
-	 * to resource allocation during driver init).
-	 */
+	 
 	bm_ccsr_out(REG_ERR_ISR, 0xffffffff);
-	/* Enable Error Interrupts */
+	 
 	bm_ccsr_out(REG_ERR_IER, 0xffffffff);
 
 	bm_bpalloc = devm_gen_pool_create(dev, 0, -1, "bman-bpalloc");
@@ -288,7 +247,7 @@ static int fsl_bman_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* seed BMan resource pool */
+	 
 	ret = gen_pool_add(bm_bpalloc, DPAA_GENALLOC_OFF, bm_pool_cnt, -1);
 	if (ret) {
 		dev_err(dev, "Failed to seed BPID range [%d..%d] (%d)\n",

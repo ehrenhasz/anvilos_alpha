@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCI Endpoint *Function* (EPF) library
- *
- * Copyright (C) 2017 Texas Instruments
- * Author: Kishon Vijay Abraham I <kishon@ti.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/dma-mapping.h>
@@ -20,14 +15,7 @@ static DEFINE_MUTEX(pci_epf_mutex);
 static struct bus_type pci_epf_bus_type;
 static const struct device_type pci_epf_type;
 
-/**
- * pci_epf_unbind() - Notify the function driver that the binding between the
- *		      EPF device and EPC device has been lost
- * @epf: the EPF device which has lost the binding with the EPC device
- *
- * Invoke to notify the function driver that the binding between the EPF device
- * and EPC device has been lost.
- */
+ 
 void pci_epf_unbind(struct pci_epf *epf)
 {
 	struct pci_epf *epf_vf;
@@ -49,13 +37,7 @@ void pci_epf_unbind(struct pci_epf *epf)
 }
 EXPORT_SYMBOL_GPL(pci_epf_unbind);
 
-/**
- * pci_epf_bind() - Notify the function driver that the EPF device has been
- *		    bound to a EPC device
- * @epf: the EPF device which has been bound to the EPC device
- *
- * Invoke to notify the function driver that it has been bound to a EPC device
- */
+ 
 int pci_epf_bind(struct pci_epf *epf)
 {
 	struct device *dev = &epf->dev;
@@ -142,16 +124,7 @@ ret:
 }
 EXPORT_SYMBOL_GPL(pci_epf_bind);
 
-/**
- * pci_epf_add_vepf() - associate virtual EP function to physical EP function
- * @epf_pf: the physical EP function to which the virtual EP function should be
- *   associated
- * @epf_vf: the virtual EP function to be added
- *
- * A physical endpoint function can be associated with multiple virtual
- * endpoint functions. Invoke pci_epf_add_epf() to add a virtual PCI endpoint
- * function to a physical PCI endpoint function.
- */
+ 
 int pci_epf_add_vepf(struct pci_epf *epf_pf, struct pci_epf *epf_vf)
 {
 	u32 vfunc_no;
@@ -186,15 +159,7 @@ int pci_epf_add_vepf(struct pci_epf *epf_pf, struct pci_epf *epf_vf)
 }
 EXPORT_SYMBOL_GPL(pci_epf_add_vepf);
 
-/**
- * pci_epf_remove_vepf() - remove virtual EP function from physical EP function
- * @epf_pf: the physical EP function from which the virtual EP function should
- *   be removed
- * @epf_vf: the virtual EP function to be removed
- *
- * Invoke to remove a virtual endpoint function from the physical endpoint
- * function.
- */
+ 
 void pci_epf_remove_vepf(struct pci_epf *epf_pf, struct pci_epf *epf_vf)
 {
 	if (IS_ERR_OR_NULL(epf_pf) || IS_ERR_OR_NULL(epf_vf))
@@ -207,15 +172,7 @@ void pci_epf_remove_vepf(struct pci_epf *epf_pf, struct pci_epf *epf_vf)
 }
 EXPORT_SYMBOL_GPL(pci_epf_remove_vepf);
 
-/**
- * pci_epf_free_space() - free the allocated PCI EPF register space
- * @epf: the EPF device from whom to free the memory
- * @addr: the virtual address of the PCI EPF register space
- * @bar: the BAR number corresponding to the register space
- * @type: Identifies if the allocated space is for primary EPC or secondary EPC
- *
- * Invoke to free the allocated PCI EPF register space.
- */
+ 
 void pci_epf_free_space(struct pci_epf *epf, void *addr, enum pci_barno bar,
 			enum pci_epc_interface_type type)
 {
@@ -246,16 +203,7 @@ void pci_epf_free_space(struct pci_epf *epf, void *addr, enum pci_barno bar,
 }
 EXPORT_SYMBOL_GPL(pci_epf_free_space);
 
-/**
- * pci_epf_alloc_space() - allocate memory for the PCI EPF register space
- * @epf: the EPF device to whom allocate the memory
- * @size: the size of the memory that has to be allocated
- * @bar: the BAR number corresponding to the allocated register space
- * @align: alignment size for the allocation region
- * @type: Identifies if the allocation is for primary EPC or secondary EPC
- *
- * Invoke to allocate memory for the PCI EPF register space.
- */
+ 
 void *pci_epf_alloc_space(struct pci_epf *epf, size_t size, enum pci_barno bar,
 			  size_t align, enum pci_epc_interface_type type)
 {
@@ -314,12 +262,7 @@ static void pci_epf_remove_cfs(struct pci_epf_driver *driver)
 	mutex_unlock(&pci_epf_mutex);
 }
 
-/**
- * pci_epf_unregister_driver() - unregister the PCI EPF driver
- * @driver: the PCI EPF driver that has to be unregistered
- *
- * Invoke to unregister the PCI EPF driver.
- */
+ 
 void pci_epf_unregister_driver(struct pci_epf_driver *driver)
 {
 	pci_epf_remove_cfs(driver);
@@ -354,13 +297,7 @@ static int pci_epf_add_cfs(struct pci_epf_driver *driver)
 	return 0;
 }
 
-/**
- * __pci_epf_register_driver() - register a new PCI EPF driver
- * @driver: structure representing PCI EPF driver
- * @owner: the owner of the module that registers the PCI EPF driver
- *
- * Invoke to register a new PCI EPF driver.
- */
+ 
 int __pci_epf_register_driver(struct pci_epf_driver *driver,
 			      struct module *owner)
 {
@@ -385,26 +322,14 @@ int __pci_epf_register_driver(struct pci_epf_driver *driver,
 }
 EXPORT_SYMBOL_GPL(__pci_epf_register_driver);
 
-/**
- * pci_epf_destroy() - destroy the created PCI EPF device
- * @epf: the PCI EPF device that has to be destroyed.
- *
- * Invoke to destroy the PCI EPF device created by invoking pci_epf_create().
- */
+ 
 void pci_epf_destroy(struct pci_epf *epf)
 {
 	device_unregister(&epf->dev);
 }
 EXPORT_SYMBOL_GPL(pci_epf_destroy);
 
-/**
- * pci_epf_create() - create a new PCI EPF device
- * @name: the name of the PCI EPF device. This name will be used to bind the
- *	  EPF device to a EPF driver
- *
- * Invoke to create a new PCI EPF device by providing the name of the function
- * device.
- */
+ 
 struct pci_epf *pci_epf_create(const char *name)
 {
 	int ret;
@@ -423,7 +348,7 @@ struct pci_epf *pci_epf_create(const char *name)
 		return ERR_PTR(-ENOMEM);
 	}
 
-	/* VFs are numbered starting with 1. So set BIT(0) by default */
+	 
 	epf->vfunction_num_map = 1;
 	INIT_LIST_HEAD(&epf->pci_vepf);
 

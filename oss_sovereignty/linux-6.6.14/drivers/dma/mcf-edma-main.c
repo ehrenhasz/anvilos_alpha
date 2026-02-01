@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (c) 2013-2014 Freescale Semiconductor, Inc
-// Copyright (c) 2017 Sysam, Angelo Dureghello  <angelo@sysam.it>
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -177,7 +177,7 @@ static int mcf_edma_probe(struct platform_device *pdev)
 
 	mcf_edma->n_chans = chans;
 
-	/* Set up drvdata for ColdFire edma */
+	 
 	mcf_edma->drvdata = &mcf_data;
 	mcf_edma->big_endian = 1;
 
@@ -249,7 +249,7 @@ static int mcf_edma_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Enable round robin arbitration */
+	 
 	iowrite32(EDMA_CR_ERGA | EDMA_CR_ERCA, regs->cr);
 
 	return 0;

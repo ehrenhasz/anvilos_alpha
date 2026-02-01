@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * IMI RDACM21 GMSL Camera Driver
- *
- * Copyright (C) 2017-2020 Jacopo Mondi
- * Copyright (C) 2017-2019 Kieran Bingham
- * Copyright (C) 2017-2019 Laurent Pinchart
- * Copyright (C) 2017-2019 Niklas Söderlund
- * Copyright (C) 2016 Renesas Electronics Corporation
- * Copyright (C) 2015 Cogent Embedded, Inc.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/fwnode.h>
@@ -30,10 +21,7 @@
 #define OV490_PAGE_HIGH_REG		0xfffd
 #define OV490_PAGE_LOW_REG		0xfffe
 
-/*
- * The SCCB slave handling is undocumented; the registers naming scheme is
- * totally arbitrary.
- */
+ 
 #define OV490_SCCB_SLAVE_WRITE		0x00
 #define OV490_SCCB_SLAVE_READ		0x01
 #define OV490_SCCB_SLAVE0_DIR		0x80195000
@@ -101,46 +89,40 @@ static const struct ov490_reg {
 	{0x0075, 0x11},
 	{0xfffe, 0x29},
 	{0x6010, 0x01},
-	/*
-	 * OV490 EMB line disable in YUV and RAW data,
-	 * NOTE: EMB line is still used in ISP and sensor
-	 */
+	 
 	{0xe000, 0x14},
 	{0xfffe, 0x28},
 	{0x6000, 0x04},
 	{0x6004, 0x00},
-	/*
-	 * PCLK polarity - useless due to silicon bug.
-	 * Use 0x808000bb register instead.
-	 */
+	 
 	{0x6008, 0x00},
 	{0xfffe, 0x80},
 	{0x0091, 0x00},
-	/* bit[3]=0 - PCLK polarity workaround. */
+	 
 	{0x00bb, 0x1d},
-	/* Ov490 FSIN: app_fsin_from_fsync */
+	 
 	{0xfffe, 0x85},
 	{0x0008, 0x00},
 	{0x0009, 0x01},
-	/* FSIN0 source. */
+	 
 	{0x000A, 0x05},
 	{0x000B, 0x00},
-	/* FSIN0 delay. */
+	 
 	{0x0030, 0x02},
 	{0x0031, 0x00},
 	{0x0032, 0x00},
 	{0x0033, 0x00},
-	/* FSIN1 delay. */
+	 
 	{0x0038, 0x02},
 	{0x0039, 0x00},
 	{0x003A, 0x00},
 	{0x003B, 0x00},
-	/* FSIN0 length. */
+	 
 	{0x0070, 0x2C},
 	{0x0071, 0x01},
 	{0x0072, 0x00},
 	{0x0073, 0x00},
-	/* FSIN1 length. */
+	 
 	{0x0074, 0x64},
 	{0x0075, 0x00},
 	{0x0076, 0x00},
@@ -149,18 +131,15 @@ static const struct ov490_reg {
 	{0x0001, 0x00},
 	{0x0002, 0x00},
 	{0x0003, 0x00},
-	/*
-	 * Load fsin0,load fsin1,load other,
-	 * It will be cleared automatically.
-	 */
+	 
 	{0x0004, 0x32},
 	{0x0005, 0x00},
 	{0x0006, 0x00},
 	{0x0007, 0x00},
 	{0xfffe, 0x80},
-	/* Sensor FSIN. */
+	 
 	{0x0081, 0x00},
-	/* ov10640 FSIN enable */
+	 
 	{0xfffe, 0x19},
 	{0x5000, 0x00},
 	{0x5001, 0x30},
@@ -168,7 +147,7 @@ static const struct ov490_reg {
 	{0x5003, 0xb2},
 	{0xfffe, 0x80},
 	{0x00c0, 0xc1},
-	/* ov10640 HFLIP=1 by default */
+	 
 	{0xfffe, 0x19},
 	{0x5000, 0x01},
 	{0x5001, 0x00},
@@ -274,10 +253,7 @@ static int rdacm21_s_stream(struct v4l2_subdev *sd, int enable)
 {
 	struct rdacm21_device *dev = sd_to_rdacm21(sd);
 
-	/*
-	 * Enable serial link now that the ISP provides a valid pixel clock
-	 * to start serializing video data on the GMSL link.
-	 */
+	 
 	return max9271_set_serial_link(&dev->serializer, enable);
 }
 
@@ -332,13 +308,13 @@ static const struct v4l2_subdev_ops rdacm21_subdev_ops = {
 
 static void ov10640_power_up(struct rdacm21_device *dev)
 {
-	/* Enable GPIO0#0 (reset) and GPIO1#0 (pwdn) as output lines. */
+	 
 	ov490_write_reg(dev, OV490_GPIO_SEL0, OV490_GPIO0);
 	ov490_write_reg(dev, OV490_GPIO_SEL1, OV490_SPWDN0);
 	ov490_write_reg(dev, OV490_GPIO_DIRECTION0, OV490_GPIO0);
 	ov490_write_reg(dev, OV490_GPIO_DIRECTION1, OV490_SPWDN0);
 
-	/* Power up OV10640 and then reset it. */
+	 
 	ov490_write_reg(dev, OV490_GPIO_OUTPUT_VALUE1, OV490_SPWDN0);
 	usleep_range(1500, 3000);
 
@@ -353,7 +329,7 @@ static int ov10640_check_id(struct rdacm21_device *dev)
 	unsigned int i;
 	u8 val = 0;
 
-	/* Read OV10640 ID to test communications. */
+	 
 	for (i = 0; i < OV10640_PID_TIMEOUT; ++i) {
 		ov490_write_reg(dev, OV490_SCCB_SLAVE0_DIR,
 				OV490_SCCB_SLAVE_READ);
@@ -362,10 +338,7 @@ static int ov10640_check_id(struct rdacm21_device *dev)
 		ov490_write_reg(dev, OV490_SCCB_SLAVE0_ADDR_LOW,
 				OV10640_CHIP_ID & 0xff);
 
-		/*
-		 * Trigger SCCB slave transaction and give it some time
-		 * to complete.
-		 */
+		 
 		ov490_write_reg(dev, OV490_HOST_CMD, OV490_HOST_CMD_TRIGGER);
 		usleep_range(1000, 1500);
 
@@ -392,10 +365,7 @@ static int ov490_initialize(struct rdacm21_device *dev)
 
 	ov10640_power_up(dev);
 
-	/*
-	 * Read OV490 Id to test communications. Give it up to 40msec to
-	 * exit from reset.
-	 */
+	 
 	for (i = 0; i < OV490_PID_TIMEOUT; ++i) {
 		ret = ov490_read_reg(dev, OV490_PID, &pid);
 		if (ret == 0)
@@ -417,7 +387,7 @@ static int ov490_initialize(struct rdacm21_device *dev)
 		return -ENODEV;
 	}
 
-	/* Wait for firmware boot by reading streamon status. */
+	 
 	for (i = 0; i < OV490_OUTPUT_EN_TIMEOUT; ++i) {
 		ov490_read_reg(dev, OV490_ODS_CTRL, &val);
 		if (val == OV490_ODS_CTRL_FRAME_OUTPUT_EN)
@@ -433,7 +403,7 @@ static int ov490_initialize(struct rdacm21_device *dev)
 	if (ret)
 		return ret;
 
-	/* Program OV490 with register-value table. */
+	 
 	for (i = 0; i < ARRAY_SIZE(ov490_regs_wizard); ++i) {
 		ret = ov490_write(dev, ov490_regs_wizard[i].reg,
 				  ov490_regs_wizard[i].val);
@@ -448,10 +418,7 @@ static int ov490_initialize(struct rdacm21_device *dev)
 		usleep_range(100, 150);
 	}
 
-	/*
-	 * The ISP is programmed with the content of a serial flash memory.
-	 * Read the firmware configuration to reflect it through the V4L2 APIs.
-	 */
+	 
 	ov490_read_reg(dev, OV490_ISP_HSIZE_HIGH, &val);
 	dev->fmt.width = (val & 0xf) << 8;
 	ov490_read_reg(dev, OV490_ISP_HSIZE_LOW, &val);
@@ -462,7 +429,7 @@ static int ov490_initialize(struct rdacm21_device *dev)
 	ov490_read_reg(dev, OV490_ISP_VSIZE_LOW, &val);
 	dev->fmt.height |= val & 0xff;
 
-	/* Set bus width to 12 bits with [0:11] ordering. */
+	 
 	ov490_write_reg(dev, OV490_DVP_CTRL3, 0x10);
 
 	dev_info(dev->dev, "Identified RDACM21 camera module\n");
@@ -476,12 +443,12 @@ static int rdacm21_initialize(struct rdacm21_device *dev)
 
 	max9271_wake_up(&dev->serializer);
 
-	/* Enable reverse channel and disable the serial link. */
+	 
 	ret = max9271_set_serial_link(&dev->serializer, false);
 	if (ret)
 		return ret;
 
-	/* Configure I2C bus at 105Kbps speed and configure GMSL. */
+	 
 	ret = max9271_configure_i2c(&dev->serializer,
 				    MAX9271_I2CSLVSH_469NS_234NS |
 				    MAX9271_I2CSLVTO_1024US |
@@ -493,10 +460,7 @@ static int rdacm21_initialize(struct rdacm21_device *dev)
 	if (ret)
 		return ret;
 
-	/*
-	 * Enable GPIO1 and hold OV490 in reset during max9271 configuration.
-	 * The reset signal has to be asserted for at least 250 useconds.
-	 */
+	 
 	ret = max9271_enable_gpios(&dev->serializer, MAX9271_GPIO1OUT);
 	if (ret)
 		return ret;
@@ -521,7 +485,7 @@ static int rdacm21_initialize(struct rdacm21_device *dev)
 		return ret;
 	dev->isp->addr = dev->addrs[1];
 
-	/* Release OV490 from reset and initialize it. */
+	 
 	ret = max9271_set_gpios(&dev->serializer, MAX9271_GPIO1OUT);
 	if (ret)
 		return ret;
@@ -531,12 +495,7 @@ static int rdacm21_initialize(struct rdacm21_device *dev)
 	if (ret)
 		return ret;
 
-	/*
-	 * Set reverse channel high threshold to increase noise immunity.
-	 *
-	 * This should be compensated by increasing the reverse channel
-	 * amplitude on the remote deserializer side.
-	 */
+	 
 	return max9271_set_high_threshold(&dev->serializer, true);
 }
 
@@ -558,7 +517,7 @@ static int rdacm21_probe(struct i2c_client *client)
 		return -EINVAL;
 	}
 
-	/* Create the dummy I2C client for the sensor. */
+	 
 	dev->isp = i2c_new_dummy_device(client->adapter, OV490_I2C_ADDRESS);
 	if (IS_ERR(dev->isp))
 		return PTR_ERR(dev->isp);
@@ -567,7 +526,7 @@ static int rdacm21_probe(struct i2c_client *client)
 	if (ret < 0)
 		goto error;
 
-	/* Initialize and register the subdevice. */
+	 
 	v4l2_i2c_subdev_init(&dev->sd, client, &rdacm21_subdev_ops);
 	dev->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
 

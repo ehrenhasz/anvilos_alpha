@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2021 Intel Corporation
- */
+
+ 
 
 #include <linux/kmemleak.h>
 #include <linux/module.h>
@@ -82,18 +80,7 @@ static void mark_split(struct drm_buddy_block *block)
 	list_del(&block->link);
 }
 
-/**
- * drm_buddy_init - init memory manager
- *
- * @mm: DRM buddy manager to initialize
- * @size: size in bytes to manage
- * @chunk_size: minimum page size in bytes for our allocations
- *
- * Initializes the memory manager and its resources.
- *
- * Returns:
- * 0 on success, error code on failure.
- */
+ 
 int drm_buddy_init(struct drm_buddy *mm, u64 size, u64 chunk_size)
 {
 	unsigned int i;
@@ -137,10 +124,7 @@ int drm_buddy_init(struct drm_buddy *mm, u64 size, u64 chunk_size)
 	offset = 0;
 	i = 0;
 
-	/*
-	 * Split into power-of-two blocks, in case we are given a size that is
-	 * not itself a power-of-two.
-	 */
+	 
 	do {
 		struct drm_buddy_block *root;
 		unsigned int order;
@@ -177,13 +161,7 @@ out_free_list:
 }
 EXPORT_SYMBOL(drm_buddy_init);
 
-/**
- * drm_buddy_fini - tear down the memory manager
- *
- * @mm: DRM buddy manager to free
- *
- * Cleanup memory manager resources and the freelist
- */
+ 
 void drm_buddy_fini(struct drm_buddy *mm)
 {
 	int i;
@@ -243,16 +221,7 @@ __get_buddy(struct drm_buddy_block *block)
 	return parent->left;
 }
 
-/**
- * drm_get_buddy - get buddy address
- *
- * @block: DRM buddy block
- *
- * Returns the corresponding buddy block for @block, or NULL
- * if this is a root block and can't be merged further.
- * Requires some kind of locking to protect against
- * any concurrent allocate and free operations.
- */
+ 
 struct drm_buddy_block *
 drm_get_buddy(struct drm_buddy_block *block)
 {
@@ -284,12 +253,7 @@ static void __drm_buddy_free(struct drm_buddy *mm,
 	mark_free(mm, block);
 }
 
-/**
- * drm_buddy_free_block - free a block
- *
- * @mm: DRM buddy manager
- * @block: block to be freed
- */
+ 
 void drm_buddy_free_block(struct drm_buddy *mm,
 			  struct drm_buddy_block *block)
 {
@@ -299,12 +263,7 @@ void drm_buddy_free_block(struct drm_buddy *mm,
 }
 EXPORT_SYMBOL(drm_buddy_free_block);
 
-/**
- * drm_buddy_free_list - free blocks
- *
- * @mm: DRM buddy manager
- * @objects: input list head to free blocks
- */
+ 
 void drm_buddy_free_list(struct drm_buddy *mm, struct list_head *objects)
 {
 	struct drm_buddy_block *block, *on;
@@ -369,9 +328,7 @@ alloc_range_bias(struct drm_buddy *mm,
 
 		if (contains(start, end, block_start, block_end) &&
 		    order == drm_buddy_block_order(block)) {
-			/*
-			 * Find the free block within the range.
-			 */
+			 
 			if (drm_buddy_block_is_free(block))
 				return block;
 
@@ -391,11 +348,7 @@ alloc_range_bias(struct drm_buddy *mm,
 	return ERR_PTR(-ENOSPC);
 
 err_undo:
-	/*
-	 * We really don't want to leave around a bunch of split blocks, since
-	 * bigger is better, so make sure we merge everything back before we
-	 * free the allocated blocks.
-	 */
+	 
 	buddy = __get_buddy(block);
 	if (buddy &&
 	    (drm_buddy_block_is_free(block) &&
@@ -442,7 +395,7 @@ alloc_from_freelist(struct drm_buddy *mm,
 	if (flags & DRM_BUDDY_TOPDOWN_ALLOCATION) {
 		block = get_maxblock(mm, order);
 		if (block)
-			/* Store the obtained block order */
+			 
 			tmp = drm_buddy_block_order(block);
 	} else {
 		for (tmp = order; tmp <= mm->max_order; ++tmp) {
@@ -539,11 +492,7 @@ static int __alloc_range(struct drm_buddy *mm,
 	return 0;
 
 err_undo:
-	/*
-	 * We really don't want to leave around a bunch of split blocks, since
-	 * bigger is better, so make sure we merge everything back before we
-	 * free the allocated blocks.
-	 */
+	 
 	buddy = __get_buddy(block);
 	if (buddy &&
 	    (drm_buddy_block_is_free(block) &&
@@ -569,24 +518,7 @@ static int __drm_buddy_alloc_range(struct drm_buddy *mm,
 	return __alloc_range(mm, &dfs, start, size, blocks);
 }
 
-/**
- * drm_buddy_block_trim - free unused pages
- *
- * @mm: DRM buddy manager
- * @new_size: original size requested
- * @blocks: Input and output list of allocated blocks.
- * MUST contain single block as input to be trimmed.
- * On success will contain the newly allocated blocks
- * making up the @new_size. Blocks always appear in
- * ascending order
- *
- * For contiguous allocation, we round up the size to the nearest
- * power of two value, drivers consume *actual* size, so remaining
- * portions are unused and can be optionally freed with this function
- *
- * Returns:
- * 0 on success, error code on failure.
- */
+ 
 int drm_buddy_block_trim(struct drm_buddy *mm,
 			 u64 new_size,
 			 struct list_head *blocks)
@@ -620,7 +552,7 @@ int drm_buddy_block_trim(struct drm_buddy *mm,
 	mark_free(mm, block);
 	mm->avail += drm_buddy_block_size(mm, block);
 
-	/* Prevent recursively freeing this node */
+	 
 	parent = block->parent;
 	block->parent = NULL;
 
@@ -638,26 +570,7 @@ int drm_buddy_block_trim(struct drm_buddy *mm,
 }
 EXPORT_SYMBOL(drm_buddy_block_trim);
 
-/**
- * drm_buddy_alloc_blocks - allocate power-of-two blocks
- *
- * @mm: DRM buddy manager to allocate from
- * @start: start of the allowed range for this block
- * @end: end of the allowed range for this block
- * @size: size of the allocation
- * @min_page_size: alignment of the allocation
- * @blocks: output list head to add allocated blocks
- * @flags: DRM_BUDDY_*_ALLOCATION flags
- *
- * alloc_range_bias() called on range limitations, which traverses
- * the tree and returns the desired block.
- *
- * alloc_from_freelist() called when *no* range restrictions
- * are enforced, which picks the block from the freelist.
- *
- * Returns:
- * 0 on success, error code on failure.
- */
+ 
 int drm_buddy_alloc_blocks(struct drm_buddy *mm,
 			   u64 start, u64 end, u64 size,
 			   u64 min_page_size,
@@ -688,7 +601,7 @@ int drm_buddy_alloc_blocks(struct drm_buddy *mm,
 	if (range_overflows(start, size, mm->size))
 		return -EINVAL;
 
-	/* Actual range allocation */
+	 
 	if (start + size == end)
 		return __drm_buddy_alloc_range(mm, start, size, blocks);
 
@@ -706,10 +619,10 @@ int drm_buddy_alloc_blocks(struct drm_buddy *mm,
 
 		do {
 			if (flags & DRM_BUDDY_RANGE_ALLOCATION)
-				/* Allocate traversing within the range */
+				 
 				block = alloc_range_bias(mm, start, end, order);
 			else
-				/* Allocate from freelist */
+				 
 				block = alloc_from_freelist(mm, order, flags);
 
 			if (!IS_ERR(block))
@@ -741,13 +654,7 @@ err_free:
 }
 EXPORT_SYMBOL(drm_buddy_alloc_blocks);
 
-/**
- * drm_buddy_block_print - print block information
- *
- * @mm: DRM buddy manager
- * @block: DRM buddy block
- * @p: DRM printer to use
- */
+ 
 void drm_buddy_block_print(struct drm_buddy *mm,
 			   struct drm_buddy_block *block,
 			   struct drm_printer *p)
@@ -759,12 +666,7 @@ void drm_buddy_block_print(struct drm_buddy *mm,
 }
 EXPORT_SYMBOL(drm_buddy_block_print);
 
-/**
- * drm_buddy_print - print allocator state
- *
- * @mm: DRM buddy manager
- * @p: DRM printer to use
- */
+ 
 void drm_buddy_print(struct drm_buddy *mm, struct drm_printer *p)
 {
 	int order;

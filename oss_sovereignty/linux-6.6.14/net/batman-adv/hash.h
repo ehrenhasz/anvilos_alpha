@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) B.A.T.M.A.N. contributors:
- *
- * Simon Wunderlich, Marek Lindner
- */
+ 
+ 
 
 #ifndef _NET_BATMAN_ADV_HASH_H_
 #define _NET_BATMAN_ADV_HASH_H_
@@ -18,60 +15,40 @@
 #include <linux/stddef.h>
 #include <linux/types.h>
 
-/* callback to a compare function.  should compare 2 element data for their
- * keys
- *
- * Return: true if same and false if not same
- */
+ 
 typedef bool (*batadv_hashdata_compare_cb)(const struct hlist_node *,
 					   const void *);
 
-/* the hashfunction
- *
- * Return: an index based on the key in the data of the first argument and the
- * size the second
- */
+ 
 typedef u32 (*batadv_hashdata_choose_cb)(const void *, u32);
 typedef void (*batadv_hashdata_free_cb)(struct hlist_node *, void *);
 
-/**
- * struct batadv_hashtable - Wrapper of simple hlist based hashtable
- */
+ 
 struct batadv_hashtable {
-	/** @table: the hashtable itself with the buckets */
+	 
 	struct hlist_head *table;
 
-	/** @list_locks: spinlock for each hash list entry */
+	 
 	spinlock_t *list_locks;
 
-	/** @size: size of hashtable */
+	 
 	u32 size;
 
-	/** @generation: current (generation) sequence number */
+	 
 	atomic_t generation;
 };
 
-/* allocates and clears the hash */
+ 
 struct batadv_hashtable *batadv_hash_new(u32 size);
 
-/* set class key for all locks */
+ 
 void batadv_hash_set_lock_class(struct batadv_hashtable *hash,
 				struct lock_class_key *key);
 
-/* free only the hashtable and the hash itself. */
+ 
 void batadv_hash_destroy(struct batadv_hashtable *hash);
 
-/**
- *	batadv_hash_add() - adds data to the hashtable
- *	@hash: storage hash table
- *	@compare: callback to determine if 2 hash elements are identical
- *	@choose: callback calculating the hash index
- *	@data: data passed to the aforementioned callbacks as argument
- *	@data_node: to be added element
- *
- *	Return: 0 on success, 1 if the element already is in the hash
- *	and -1 on error.
- */
+ 
 static inline int batadv_hash_add(struct batadv_hashtable *hash,
 				  batadv_hashdata_compare_cb compare,
 				  batadv_hashdata_choose_cb choose,
@@ -82,7 +59,7 @@ static inline int batadv_hash_add(struct batadv_hashtable *hash,
 	int ret = -1;
 	struct hlist_head *head;
 	struct hlist_node *node;
-	spinlock_t *list_lock; /* spinlock to protect write access */
+	spinlock_t *list_lock;  
 
 	if (!hash)
 		goto out;
@@ -101,7 +78,7 @@ static inline int batadv_hash_add(struct batadv_hashtable *hash,
 		goto unlock;
 	}
 
-	/* no duplicate found in list, add new element */
+	 
 	hlist_add_head_rcu(data_node, head);
 	atomic_inc(&hash->generation);
 
@@ -113,19 +90,7 @@ out:
 	return ret;
 }
 
-/**
- * batadv_hash_remove() - Removes data from hash, if found
- * @hash: hash table
- * @compare: callback to determine if 2 hash elements are identical
- * @choose: callback calculating the hash index
- * @data: data passed to the aforementioned callbacks as argument
- *
- * ata could be the structure you use with  just the key filled, we just need
- * the key for comparing.
- *
- * Return: returns pointer do data on success, so you can remove the used
- * structure yourself, or NULL on error
- */
+ 
 static inline void *batadv_hash_remove(struct batadv_hashtable *hash,
 				       batadv_hashdata_compare_cb compare,
 				       batadv_hashdata_choose_cb choose,
@@ -154,4 +119,4 @@ static inline void *batadv_hash_remove(struct batadv_hashtable *hash,
 	return data_save;
 }
 
-#endif /* _NET_BATMAN_ADV_HASH_H_ */
+#endif  

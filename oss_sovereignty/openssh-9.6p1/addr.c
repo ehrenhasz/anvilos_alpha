@@ -1,20 +1,6 @@
-/* $OpenBSD: addr.c,v 1.7 2023/03/27 03:31:05 djm Exp $ */
+ 
 
-/*
- * Copyright (c) 2004-2008 Damien Miller <djm@mindrot.org>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include "includes.h"
 
@@ -102,10 +88,7 @@ addr_xaddr_to_sa(const struct xaddr *xa, struct sockaddr *sa, socklen_t *len,
 	return 0;
 }
 
-/*
- * Convert struct sockaddr to struct xaddr
- * Returns 0 on success, -1 on failure.
- */
+ 
 int
 addr_sa_to_xaddr(struct sockaddr *sa, socklen_t slen, struct xaddr *xa)
 {
@@ -158,11 +141,7 @@ addr_invert(struct xaddr *n)
 	}
 }
 
-/*
- * Calculate a netmask of length 'l' for address family 'af' and
- * store it in 'n'.
- * Returns 0 on success, -1 on failure.
- */
+ 
 int
 addr_netmask(int af, u_int l, struct xaddr *n)
 {
@@ -200,10 +179,7 @@ addr_hostmask(int af, u_int l, struct xaddr *n)
 	return 0;
 }
 
-/*
- * Perform logical AND of addresses 'a' and 'b', storing result in 'dst'.
- * Returns 0 on success, -1 on failure.
- */
+ 
 int
 addr_and(struct xaddr *dst, const struct xaddr *a, const struct xaddr *b)
 {
@@ -259,18 +235,12 @@ addr_cmp(const struct xaddr *a, const struct xaddr *b)
 
 	switch (a->af) {
 	case AF_INET:
-		/*
-		 * Can't just subtract here as 255.255.255.255 - 0.0.0.0 is
-		 * too big to fit into a signed int
-		 */
+		 
 		if (a->v4.s_addr == b->v4.s_addr)
 			return 0;
 		return (ntohl(a->v4.s_addr) > ntohl(b->v4.s_addr) ? 1 : -1);
 	case AF_INET6:
-		/*
-		 * Do this a byte at a time to avoid the above issue and
-		 * any endian problems
-		 */
+		 
 		for (i = 0; i < 16; i++)
 			if (a->addr8[i] - b->addr8[i] != 0)
 				return (a->addr8[i] - b->addr8[i]);
@@ -300,7 +270,7 @@ addr_is_all0s(const struct xaddr *a)
 	}
 }
 
-/* Increment the specified address. Note, does not do overflow checking */
+ 
 void
 addr_increment(struct xaddr *a)
 {
@@ -313,7 +283,7 @@ addr_increment(struct xaddr *a)
 		break;
 	case AF_INET6:
 		for (i = 0; i < 4; i++) {
-			/* Increment with carry */
+			 
 			n = ntohl(a->addr32[3 - i]) + 1;
 			a->addr32[3 - i] = htonl(n);
 			if (n != 0)
@@ -323,12 +293,7 @@ addr_increment(struct xaddr *a)
 	}
 }
 
-/*
- * Test whether host portion of address 'a', as determined by 'masklen'
- * is all zeros.
- * Returns 0 if host portion of address is all-zeros,
- * -1 if not all zeros or on failure.
- */
+ 
 int
 addr_host_is_all0s(const struct xaddr *a, u_int masklen)
 {
@@ -368,10 +333,7 @@ addr_host_to_all1s(struct xaddr *a, u_int masklen)
 	return (0);
 }
 
-/*
- * Parse string address 'p' into 'n'.
- * Returns 0 on success, -1 on failure.
- */
+ 
 int
 addr_pton(const char *p, struct xaddr *n)
 {
@@ -449,10 +411,7 @@ addr_ntop(const struct xaddr *n, char *p, size_t len)
 	return 0;
 }
 
-/*
- * Parse a CIDR address (x.x.x.x/y or xxxx:yyyy::/z).
- * Return -1 on parse error, -2 on inconsistency or 0 on success.
- */
+ 
 int
 addr_pton_cidr(const char *p, struct xaddr *n, u_int *l)
 {
@@ -460,7 +419,7 @@ addr_pton_cidr(const char *p, struct xaddr *n, u_int *l)
 	long unsigned int masklen = 999;
 	char addrbuf[64], *mp, *cp;
 
-	/* Don't modify argument */
+	 
 	if (p == NULL || strlcpy(addrbuf, p, sizeof(addrbuf)) >= sizeof(addrbuf))
 		return -1;
 

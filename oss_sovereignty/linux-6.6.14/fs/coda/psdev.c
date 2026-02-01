@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *      	An implementation of a loadable kernel mode driver providing
- *		multiple kernel/user space bidirectional communications links.
- *
- * 		Author: 	Alan Cox <alan@lxorguk.ukuu.org.uk>
- * 
- *              Adapted to become the Linux 2.0 Coda pseudo device
- *              Peter  Braam  <braam@maths.ox.ac.uk> 
- *              Michael Callahan <mjc@emmy.smith.edu>           
- *
- *              Changes for Linux 2.1
- *              Copyright (c) 1997 Carnegie-Mellon University
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/errno.h>
@@ -43,17 +31,15 @@
 
 #include "coda_int.h"
 
-/* statistics */
-int           coda_hard;         /* allows signals during upcalls */
-unsigned long coda_timeout = 30; /* .. secs, then signals will dequeue */
+ 
+int           coda_hard;          
+unsigned long coda_timeout = 30;  
 
 
 struct venus_comm coda_comms[MAX_CODADEVS];
 static struct class *coda_psdev_class;
 
-/*
- * Device operations
- */
+ 
 
 static __poll_t coda_psdev_poll(struct file *file, poll_table * wait)
 {
@@ -84,9 +70,7 @@ static long coda_psdev_ioctl(struct file * filp, unsigned int cmd, unsigned long
 	return 0;
 }
 
-/*
- *	Receive a message written by Venus to the psdev
- */
+ 
  
 static ssize_t coda_psdev_write(struct file *file, const char __user *buf, 
 				size_t nbytes, loff_t *off)
@@ -99,11 +83,11 @@ static ssize_t coda_psdev_write(struct file *file, const char __user *buf,
 	ssize_t retval = 0, count = 0;
 	int error;
 
-	/* make sure there is enough to copy out the (opcode, unique) values */
+	 
 	if (nbytes < (2 * sizeof(u_int32_t)))
 		return -EINVAL;
 
-        /* Peek at the opcode, uniquefier */
+         
 	if (copy_from_user(&hdr, buf, 2 * sizeof(u_int32_t)))
 	        return -EFAULT;
 
@@ -129,7 +113,7 @@ static ssize_t coda_psdev_write(struct file *file, const char __user *buf,
 			goto out;
 		}
 
-		/* what downcall errors does Venus handle ? */
+		 
 		error = coda_downcall(vcp, hdr.opcode, dcbuf, nbytes);
 
 		kvfree(dcbuf);
@@ -143,7 +127,7 @@ static ssize_t coda_psdev_write(struct file *file, const char __user *buf,
 		goto out;
 	}
         
-	/* Look for the message on the processing queue. */
+	 
 	mutex_lock(&vcp->vc_mutex);
 	list_for_each(lh, &vcp->vc_processing) {
 		tmp = list_entry(lh, struct upc_req , uc_chain);
@@ -162,12 +146,12 @@ static ssize_t coda_psdev_write(struct file *file, const char __user *buf,
 		goto out;
 	}
 
-        /* move data into response buffer. */
+         
 	if (req->uc_outSize < nbytes) {
 		pr_warn("%s: too much cnt: %d, cnt: %ld, opc: %d, uniq: %d.\n",
 			__func__, req->uc_outSize, (long)nbytes,
 			hdr.opcode, hdr.unique);
-		nbytes = req->uc_outSize; /* don't have more space! */
+		nbytes = req->uc_outSize;  
 	}
         if (copy_from_user(req->uc_data, buf, nbytes)) {
 		req->uc_flags |= CODA_REQ_ABORT;
@@ -176,12 +160,12 @@ static ssize_t coda_psdev_write(struct file *file, const char __user *buf,
 		goto out;
 	}
 
-	/* adjust outsize. is this useful ?? */
+	 
 	req->uc_outSize = nbytes;
 	req->uc_flags |= CODA_REQ_WRITE;
 	count = nbytes;
 
-	/* Convert filedescriptor into a file handle */
+	 
 	if (req->uc_opcode == CODA_OPEN_BY_FD) {
 		struct coda_open_by_fd_out *outp =
 			(struct coda_open_by_fd_out *)req->uc_data;
@@ -197,9 +181,7 @@ out:
         return(count ? count : retval);  
 }
 
-/*
- *	Read a message from the kernel to Venus
- */
+ 
 
 static ssize_t coda_psdev_read(struct file * file, char __user * buf, 
 			       size_t nbytes, loff_t *off)
@@ -240,7 +222,7 @@ static ssize_t coda_psdev_read(struct file * file, char __user * buf,
 	req = list_entry(vcp->vc_pending.next, struct upc_req,uc_chain);
 	list_del(&req->uc_chain);
 
-	/* Move the input args into userspace */
+	 
 	count = req->uc_inSize;
 	if (nbytes < req->uc_inSize) {
 		pr_warn("%s: Venus read %ld bytes of %d in message\n",
@@ -251,7 +233,7 @@ static ssize_t coda_psdev_read(struct file * file, char __user * buf,
 	if (copy_to_user(buf, req->uc_data, count))
 	        retval = -EFAULT;
         
-	/* If request was not a signal, enqueue and don't free */
+	 
 	if (!(req->uc_flags & CODA_REQ_ASYNC)) {
 		req->uc_flags |= CODA_REQ_READ;
 		list_add_tail(&(req->uc_chain), &vcp->vc_processing);
@@ -314,11 +296,11 @@ static int coda_psdev_release(struct inode * inode, struct file * file)
 
 	mutex_lock(&vcp->vc_mutex);
 
-	/* Wakeup clients so they can return. */
+	 
 	list_for_each_entry_safe(req, tmp, &vcp->vc_pending, uc_chain) {
 		list_del(&req->uc_chain);
 
-		/* Async requests need to be freed here */
+		 
 		if (req->uc_flags & CODA_REQ_ASYNC) {
 			kvfree(req->uc_data);
 			kfree(req);

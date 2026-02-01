@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include <linux/string_helpers.h>
 
@@ -81,16 +79,7 @@ static u16 compute_eu_total(const struct sseu_dev_info *sseu)
 	return total;
 }
 
-/**
- * intel_sseu_copy_eumask_to_user - Copy EU mask into a userspace buffer
- * @to: Pointer to userspace buffer to copy to
- * @sseu: SSEU structure containing EU mask to copy
- *
- * Copies the EU mask to a userspace buffer in the format expected by
- * the query ioctl's topology queries.
- *
- * Returns the result of the copy_to_user() operation.
- */
+ 
 int intel_sseu_copy_eumask_to_user(void __user *to,
 				   const struct sseu_dev_info *sseu)
 {
@@ -115,16 +104,7 @@ int intel_sseu_copy_eumask_to_user(void __user *to,
 	return copy_to_user(to, eu_mask, len);
 }
 
-/**
- * intel_sseu_copy_ssmask_to_user - Copy subslice mask into a userspace buffer
- * @to: Pointer to userspace buffer to copy to
- * @sseu: SSEU structure containing subslice mask to copy
- *
- * Copies the subslice mask to a userspace buffer in the format expected by
- * the query ioctl's topology queries.
- *
- * Returns the result of the copy_to_user() operation.
- */
+ 
 int intel_sseu_copy_ssmask_to_user(void __user *to,
 				   const struct sseu_dev_info *sseu)
 {
@@ -222,12 +202,7 @@ static void xehp_sseu_info_init(struct intel_gt *gt)
 		num_compute_regs = 1;
 	}
 
-	/*
-	 * The concept of slice has been removed in Xe_HP.  To be compatible
-	 * with prior generations, assume a single slice across the entire
-	 * device. Then calculate out the DSS for each workload type within
-	 * that software slice.
-	 */
+	 
 	intel_sseu_set_info(sseu, 1,
 			    32 * max(num_geometry_regs, num_compute_regs),
 			    HAS_ONE_EU_PER_FUSE_BIT(gt->i915) ? 8 : 16);
@@ -263,24 +238,17 @@ static void gen12_sseu_info_init(struct intel_gt *gt)
 	u8 s_en;
 	int eu;
 
-	/*
-	 * Gen12 has Dual-Subslices, which behave similarly to 2 gen11 SS.
-	 * Instead of splitting these, provide userspace with an array
-	 * of DSS to more closely represent the hardware resource.
-	 */
+	 
 	intel_sseu_set_info(sseu, 1, 6, 16);
 
-	/*
-	 * Although gen12 architecture supported multiple slices, TGL, RKL,
-	 * DG1, and ADL only had a single slice.
-	 */
+	 
 	s_en = intel_uncore_read(uncore, GEN11_GT_SLICE_ENABLE) &
 		GEN11_GT_S_ENA_MASK;
 	drm_WARN_ON(&gt->i915->drm, s_en != 0x1);
 
 	g_dss_en = intel_uncore_read(uncore, GEN12_GT_GEOMETRY_DSS_ENABLE);
 
-	/* one bit per pair of EUs */
+	 
 	eu_en_fuse = ~(intel_uncore_read(uncore, GEN11_EU_DISABLE) &
 		       GEN11_EU_DIS_MASK);
 
@@ -290,7 +258,7 @@ static void gen12_sseu_info_init(struct intel_gt *gt)
 
 	gen11_compute_sseu_info(sseu, g_dss_en, eu_en);
 
-	/* TGL only supports slice-level power gating */
+	 
 	sseu->has_slice_pg = 1;
 }
 
@@ -307,10 +275,7 @@ static void gen11_sseu_info_init(struct intel_gt *gt)
 	else
 		intel_sseu_set_info(sseu, 1, 8, 8);
 
-	/*
-	 * Although gen11 architecture supported multiple slices, ICL and
-	 * EHL/JSL only had a single slice in practice.
-	 */
+	 
 	s_en = intel_uncore_read(uncore, GEN11_GT_SLICE_ENABLE) &
 		GEN11_GT_S_ENA_MASK;
 	drm_WARN_ON(&gt->i915->drm, s_en != 0x1);
@@ -322,7 +287,7 @@ static void gen11_sseu_info_init(struct intel_gt *gt)
 
 	gen11_compute_sseu_info(sseu, ss_en, eu_en);
 
-	/* ICL has no power gating restrictions. */
+	 
 	sseu->has_slice_pg = 1;
 	sseu->has_subslice_pg = 1;
 	sseu->has_eu_pg = 1;
@@ -362,19 +327,12 @@ static void cherryview_sseu_info_init(struct intel_gt *gt)
 
 	sseu->eu_total = compute_eu_total(sseu);
 
-	/*
-	 * CHV expected to always have a uniform distribution of EU
-	 * across subslices.
-	 */
+	 
 	sseu->eu_per_subslice = intel_sseu_subslice_total(sseu) ?
 		sseu->eu_total /
 		intel_sseu_subslice_total(sseu) :
 		0;
-	/*
-	 * CHV supports subslice power gating on devices with more than
-	 * one subslice, and supports EU power gating on devices with
-	 * more than one EU pair per subslice.
-	 */
+	 
 	sseu->has_slice_pg = 0;
 	sseu->has_subslice_pg = intel_sseu_subslice_total(sseu) > 1;
 	sseu->has_eu_pg = (sseu->eu_per_subslice > 2);
@@ -392,25 +350,19 @@ static void gen9_sseu_info_init(struct intel_gt *gt)
 	fuse2 = intel_uncore_read(uncore, GEN8_FUSE2);
 	sseu->slice_mask = (fuse2 & GEN8_F2_S_ENA_MASK) >> GEN8_F2_S_ENA_SHIFT;
 
-	/* BXT has a single slice and at most 3 subslices. */
+	 
 	intel_sseu_set_info(sseu, IS_GEN9_LP(i915) ? 1 : 3,
 			    IS_GEN9_LP(i915) ? 3 : 4, 8);
 
-	/*
-	 * The subslice disable field is global, i.e. it applies
-	 * to each of the enabled slices.
-	 */
+	 
 	subslice_mask = (1 << sseu->max_subslices) - 1;
 	subslice_mask &= ~((fuse2 & GEN9_F2_SS_DIS_MASK) >>
 			   GEN9_F2_SS_DIS_SHIFT);
 
-	/*
-	 * Iterate through enabled slices and subslices to
-	 * count the total enabled EU.
-	 */
+	 
 	for (s = 0; s < sseu->max_slices; s++) {
 		if (!(sseu->slice_mask & BIT(s)))
-			/* skip disabled slice */
+			 
 			continue;
 
 		sseu->subslice_mask.hsw[s] = subslice_mask;
@@ -421,7 +373,7 @@ static void gen9_sseu_info_init(struct intel_gt *gt)
 			u8 eu_disabled_mask;
 
 			if (!intel_sseu_has_subslice(sseu, s, ss))
-				/* skip disabled subslice */
+				 
 				continue;
 
 			eu_disabled_mask = (eu_disable >> (ss * 8)) & eu_mask;
@@ -431,11 +383,7 @@ static void gen9_sseu_info_init(struct intel_gt *gt)
 			eu_per_ss = sseu->max_eus_per_subslice -
 				hweight8(eu_disabled_mask);
 
-			/*
-			 * Record which subslice(s) has(have) 7 EUs. we
-			 * can tune the hash used to spread work among
-			 * subslices if they are unbalanced.
-			 */
+			 
 			if (eu_per_ss == 7)
 				sseu->subslice_7eu[s] |= BIT(ss);
 		}
@@ -443,26 +391,13 @@ static void gen9_sseu_info_init(struct intel_gt *gt)
 
 	sseu->eu_total = compute_eu_total(sseu);
 
-	/*
-	 * SKL is expected to always have a uniform distribution
-	 * of EU across subslices with the exception that any one
-	 * EU in any one subslice may be fused off for die
-	 * recovery. BXT is expected to be perfectly uniform in EU
-	 * distribution.
-	 */
+	 
 	sseu->eu_per_subslice =
 		intel_sseu_subslice_total(sseu) ?
 		DIV_ROUND_UP(sseu->eu_total, intel_sseu_subslice_total(sseu)) :
 		0;
 
-	/*
-	 * SKL+ supports slice power gating on devices with more than
-	 * one slice, and supports EU power gating on devices with
-	 * more than one EU pair per subslice. BXT+ supports subslice
-	 * power gating on devices with more than one subslice, and
-	 * supports EU power gating on devices with more than one EU
-	 * pair per subslice.
-	 */
+	 
 	sseu->has_slice_pg =
 		!IS_GEN9_LP(i915) && hweight8(sseu->slice_mask) > 1;
 	sseu->has_subslice_pg =
@@ -491,17 +426,14 @@ static void bdw_sseu_info_init(struct intel_gt *gt)
 	struct sseu_dev_info *sseu = &gt->info.sseu;
 	struct intel_uncore *uncore = gt->uncore;
 	int s, ss;
-	u32 fuse2, subslice_mask, eu_disable[3]; /* s_max */
+	u32 fuse2, subslice_mask, eu_disable[3];  
 	u32 eu_disable0, eu_disable1, eu_disable2;
 
 	fuse2 = intel_uncore_read(uncore, GEN8_FUSE2);
 	sseu->slice_mask = (fuse2 & GEN8_F2_S_ENA_MASK) >> GEN8_F2_S_ENA_SHIFT;
 	intel_sseu_set_info(sseu, 3, 3, 8);
 
-	/*
-	 * The subslice disable field is global, i.e. it applies
-	 * to each of the enabled slices.
-	 */
+	 
 	subslice_mask = GENMASK(sseu->max_subslices - 1, 0);
 	subslice_mask &= ~((fuse2 & GEN8_F2_SS_DIS_MASK) >>
 			   GEN8_F2_SS_DIS_SHIFT);
@@ -516,13 +448,10 @@ static void bdw_sseu_info_init(struct intel_gt *gt)
 		((eu_disable2 & GEN8_EU_DIS2_S2_MASK) <<
 		 (32 - GEN8_EU_DIS1_S2_SHIFT));
 
-	/*
-	 * Iterate through enabled slices and subslices to
-	 * count the total enabled EU.
-	 */
+	 
 	for (s = 0; s < sseu->max_slices; s++) {
 		if (!(sseu->slice_mask & BIT(s)))
-			/* skip disabled slice */
+			 
 			continue;
 
 		sseu->subslice_mask.hsw[s] = subslice_mask;
@@ -532,7 +461,7 @@ static void bdw_sseu_info_init(struct intel_gt *gt)
 			u32 n_disabled;
 
 			if (!intel_sseu_has_subslice(sseu, s, ss))
-				/* skip disabled subslice */
+				 
 				continue;
 
 			eu_disabled_mask =
@@ -542,9 +471,7 @@ static void bdw_sseu_info_init(struct intel_gt *gt)
 
 			n_disabled = hweight8(eu_disabled_mask);
 
-			/*
-			 * Record which subslices have 7 EUs.
-			 */
+			 
 			if (sseu->max_eus_per_subslice - n_disabled == 7)
 				sseu->subslice_7eu[s] |= 1 << ss;
 		}
@@ -552,20 +479,13 @@ static void bdw_sseu_info_init(struct intel_gt *gt)
 
 	sseu->eu_total = compute_eu_total(sseu);
 
-	/*
-	 * BDW is expected to always have a uniform distribution of EU across
-	 * subslices with the exception that any one EU in any one subslice may
-	 * be fused off for die recovery.
-	 */
+	 
 	sseu->eu_per_subslice =
 		intel_sseu_subslice_total(sseu) ?
 		DIV_ROUND_UP(sseu->eu_total, intel_sseu_subslice_total(sseu)) :
 		0;
 
-	/*
-	 * BDW supports slice power gating on devices with more than
-	 * one slice.
-	 */
+	 
 	sseu->has_slice_pg = hweight8(sseu->slice_mask) > 1;
 	sseu->has_subslice_pg = 0;
 	sseu->has_eu_pg = 0;
@@ -579,10 +499,7 @@ static void hsw_sseu_info_init(struct intel_gt *gt)
 	u8 subslice_mask = 0;
 	int s, ss;
 
-	/*
-	 * There isn't a register to tell us how many slices/subslices. We
-	 * work off the PCI-ids here.
-	 */
+	 
 	switch (INTEL_INFO(i915)->gt) {
 	default:
 		MISSING_CASE(INTEL_INFO(i915)->gt);
@@ -632,7 +549,7 @@ static void hsw_sseu_info_init(struct intel_gt *gt)
 
 	sseu->eu_total = compute_eu_total(sseu);
 
-	/* No powergating for you. */
+	 
 	sseu->has_slice_pg = 0;
 	sseu->has_subslice_pg = 0;
 	sseu->has_eu_pg = 0;
@@ -667,48 +584,18 @@ u32 intel_sseu_make_rpcs(struct intel_gt *gt,
 	u8 slices, subslices;
 	u32 rpcs = 0;
 
-	/*
-	 * No explicit RPCS request is needed to ensure full
-	 * slice/subslice/EU enablement prior to Gen9.
-	 */
+	 
 	if (GRAPHICS_VER(i915) < 9)
 		return 0;
 
-	/*
-	 * If i915/perf is active, we want a stable powergating configuration
-	 * on the system. Use the configuration pinned by i915/perf.
-	 */
+	 
 	if (gt->perf.group && gt->perf.group[PERF_GROUP_OAG].exclusive_stream)
 		req_sseu = &gt->perf.sseu;
 
 	slices = hweight8(req_sseu->slice_mask);
 	subslices = hweight8(req_sseu->subslice_mask);
 
-	/*
-	 * Since the SScount bitfield in GEN8_R_PWR_CLK_STATE is only three bits
-	 * wide and Icelake has up to eight subslices, specfial programming is
-	 * needed in order to correctly enable all subslices.
-	 *
-	 * According to documentation software must consider the configuration
-	 * as 2x4x8 and hardware will translate this to 1x8x8.
-	 *
-	 * Furthemore, even though SScount is three bits, maximum documented
-	 * value for it is four. From this some rules/restrictions follow:
-	 *
-	 * 1.
-	 * If enabled subslice count is greater than four, two whole slices must
-	 * be enabled instead.
-	 *
-	 * 2.
-	 * When more than one slice is enabled, hardware ignores the subslice
-	 * count altogether.
-	 *
-	 * From these restrictions it follows that it is not possible to enable
-	 * a count of subslices between the SScount maximum of four restriction,
-	 * and the maximum available number on a particular SKU. Either all
-	 * subslices are enabled, or a count between one and four on the first
-	 * slice.
-	 */
+	 
 	if (GRAPHICS_VER(i915) == 11 &&
 	    slices == 1 &&
 	    subslices > min_t(u8, 4, hweight8(sseu->subslice_mask.hsw[0]) / 2)) {
@@ -718,12 +605,7 @@ u32 intel_sseu_make_rpcs(struct intel_gt *gt,
 		slices *= 2;
 	}
 
-	/*
-	 * Starting in Gen9, render power gating can leave
-	 * slice/subslice/EU in a partially enabled state. We
-	 * must make an explicit request through RPCS for full
-	 * enablement.
-	 */
+	 
 	if (sseu->has_slice_pg) {
 		u32 mask, val = slices;
 

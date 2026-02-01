@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * common LSM auditing functions
- *
- * Based on code written for SELinux by :
- *			Stephen Smalley, <sds@tycho.nsa.gov>
- * 			James Morris <jmorris@redhat.com>
- * Author : Etienne Basset, <etienne.basset@ensta.org>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/stddef.h>
@@ -29,14 +22,7 @@
 #include <linux/lsm_audit.h>
 #include <linux/security.h>
 
-/**
- * ipv4_skb_to_auditdata : fill auditdata from skb
- * @skb : the skb
- * @ad : the audit data to fill
- * @proto : the layer 4 protocol
- *
- * return  0 on success
- */
+ 
 int ipv4_skb_to_auditdata(struct sk_buff *skb,
 		struct common_audit_data *ad, u8 *proto)
 {
@@ -49,7 +35,7 @@ int ipv4_skb_to_auditdata(struct sk_buff *skb,
 
 	if (proto)
 		*proto = ih->protocol;
-	/* non initial fragment */
+	 
 	if (ntohs(ih->frag_off) & IP_OFFSET)
 		return 0;
 
@@ -88,14 +74,7 @@ int ipv4_skb_to_auditdata(struct sk_buff *skb,
 	return ret;
 }
 #if IS_ENABLED(CONFIG_IPV6)
-/**
- * ipv6_skb_to_auditdata : fill auditdata from skb
- * @skb : the skb
- * @ad : the audit data to fill
- * @proto : the layer 4 protocol
- *
- * return  0 on success
- */
+ 
 int ipv6_skb_to_auditdata(struct sk_buff *skb,
 		struct common_audit_data *ad, u8 *proto)
 {
@@ -107,8 +86,7 @@ int ipv6_skb_to_auditdata(struct sk_buff *skb,
 	ip6 = ipv6_hdr(skb);
 	ad->u.net->v6info.saddr = ip6->saddr;
 	ad->u.net->v6info.daddr = ip6->daddr;
-	/* IPv6 can have several extension header before the Transport header
-	 * skip them */
+	 
 	offset = skb_network_offset(skb);
 	offset += sizeof(*ip6);
 	nexthdr = ip6->nexthdr;
@@ -188,22 +166,13 @@ static inline void print_ipv4_addr(struct audit_buffer *ab, __be32 addr,
 		audit_log_format(ab, " %s=%d", name2, ntohs(port));
 }
 
-/**
- * dump_common_audit_data - helper to dump common audit data
- * @ab : the audit buffer
- * @a : common audit data
- *
- */
+ 
 static void dump_common_audit_data(struct audit_buffer *ab,
 				   struct common_audit_data *a)
 {
 	char comm[sizeof(current->comm)];
 
-	/*
-	 * To keep stack sizes in check force programmers to notice if they
-	 * start making this union too large!  See struct lsm_network_audit
-	 * as an example of how to deal with large data.
-	 */
+	 
 	BUILD_BUG_ON(sizeof(a->u) > sizeof(void *)*2);
 
 	audit_log_format(ab, " pid=%d comm=", task_tgid_nr(current));
@@ -381,7 +350,7 @@ static void dump_common_audit_data(struct audit_buffer *ab,
 		if (a->u.net->netif > 0) {
 			struct net_device *dev;
 
-			/* NOTE: we always use init's namespace */
+			 
 			dev = dev_get_by_index(&init_net, a->u.net->netif);
 			if (dev) {
 				audit_log_format(ab, " netif=%s", dev->name);
@@ -425,18 +394,10 @@ static void dump_common_audit_data(struct audit_buffer *ab,
 	case LSM_AUDIT_DATA_ANONINODE:
 		audit_log_format(ab, " anonclass=%s", a->u.anonclass);
 		break;
-	} /* switch (a->type) */
+	}  
 }
 
-/**
- * common_lsm_audit - generic LSM auditing function
- * @a:  auxiliary audit data
- * @pre_audit: lsm-specific pre-audit callback
- * @post_audit: lsm-specific post-audit callback
- *
- * setup the audit buffer for common security information
- * uses callback to print LSM specific information
- */
+ 
 void common_lsm_audit(struct common_audit_data *a,
 	void (*pre_audit)(struct audit_buffer *, void *),
 	void (*post_audit)(struct audit_buffer *, void *))
@@ -445,7 +406,7 @@ void common_lsm_audit(struct common_audit_data *a,
 
 	if (a == NULL)
 		return;
-	/* we use GFP_ATOMIC so we won't sleep */
+	 
 	ab = audit_log_start(audit_context(), GFP_ATOMIC | __GFP_NOWARN,
 			     AUDIT_AVC);
 

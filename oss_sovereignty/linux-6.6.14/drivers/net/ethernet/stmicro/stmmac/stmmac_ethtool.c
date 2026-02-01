@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*******************************************************************************
-  STMMAC Ethtool support
 
-  Copyright (C) 2007-2009  STMicroelectronics Ltd
-
-
-  Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-*******************************************************************************/
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
@@ -26,11 +19,7 @@
 #define GMAC_ETHTOOL_NAME	"st_gmac"
 #define XGMAC_ETHTOOL_NAME	"st_xgmac"
 
-/* Same as DMA_CHAN_BASE_ADDR defined in dwmac4_dma.h
- *
- * It is here because dwmac_dma.h and dwmac4_dam.h can not be included at the
- * same time due to the conflicting macro names.
- */
+ 
 #define GMAC4_DMA_CHAN_BASE_ADDR  0x00001100
 
 #define ETHTOOL_DMA_OFFSET	55
@@ -46,7 +35,7 @@ struct stmmac_stats {
 	offsetof(struct stmmac_priv, xstats.m)}
 
 static const struct stmmac_stats stmmac_gstrings_stats[] = {
-	/* Transmit errors */
+	 
 	STMMAC_STAT(tx_underflow),
 	STMMAC_STAT(tx_carrier),
 	STMMAC_STAT(tx_losscarrier),
@@ -57,7 +46,7 @@ static const struct stmmac_stats stmmac_gstrings_stats[] = {
 	STMMAC_STAT(tx_frame_flushed),
 	STMMAC_STAT(tx_payload_error),
 	STMMAC_STAT(tx_ip_header_error),
-	/* Receive errors */
+	 
 	STMMAC_STAT(rx_desc),
 	STMMAC_STAT(sa_filter_fail),
 	STMMAC_STAT(overflow_error),
@@ -76,7 +65,7 @@ static const struct stmmac_stats stmmac_gstrings_stats[] = {
 	STMMAC_STAT(rx_overflow_cntr),
 	STMMAC_STAT(rx_vlan),
 	STMMAC_STAT(rx_split_hdr_pkt_n),
-	/* Tx/Rx IRQ error info */
+	 
 	STMMAC_STAT(tx_undeflow_irq),
 	STMMAC_STAT(tx_process_stopped_irq),
 	STMMAC_STAT(tx_jabber_irq),
@@ -86,21 +75,21 @@ static const struct stmmac_stats stmmac_gstrings_stats[] = {
 	STMMAC_STAT(rx_watchdog_irq),
 	STMMAC_STAT(tx_early_irq),
 	STMMAC_STAT(fatal_bus_error_irq),
-	/* Tx/Rx IRQ Events */
+	 
 	STMMAC_STAT(rx_early_irq),
 	STMMAC_STAT(threshold),
 	STMMAC_STAT(irq_receive_pmt_irq_n),
-	/* MMC info */
+	 
 	STMMAC_STAT(mmc_tx_irq_n),
 	STMMAC_STAT(mmc_rx_irq_n),
 	STMMAC_STAT(mmc_rx_csum_offload_irq_n),
-	/* EEE */
+	 
 	STMMAC_STAT(irq_tx_path_in_lpi_mode_n),
 	STMMAC_STAT(irq_tx_path_exit_lpi_mode_n),
 	STMMAC_STAT(irq_rx_path_in_lpi_mode_n),
 	STMMAC_STAT(irq_rx_path_exit_lpi_mode_n),
 	STMMAC_STAT(phy_eee_wakeup_error_n),
-	/* Extended RDES status */
+	 
 	STMMAC_STAT(ip_hdr_err),
 	STMMAC_STAT(ip_payload_err),
 	STMMAC_STAT(ip_csum_bypassed),
@@ -126,11 +115,11 @@ static const struct stmmac_stats stmmac_gstrings_stats[] = {
 	STMMAC_STAT(l3_filter_match),
 	STMMAC_STAT(l4_filter_match),
 	STMMAC_STAT(l3_l4_filter_no_match),
-	/* PCS */
+	 
 	STMMAC_STAT(irq_pcs_ane_n),
 	STMMAC_STAT(irq_pcs_link_n),
 	STMMAC_STAT(irq_rgmii_n),
-	/* DEBUG */
+	 
 	STMMAC_STAT(mtl_tx_status_fifo_full),
 	STMMAC_STAT(mtl_tx_fifo_not_empty),
 	STMMAC_STAT(mmtl_fifo_ctrl),
@@ -155,7 +144,7 @@ static const struct stmmac_stats stmmac_gstrings_stats[] = {
 	STMMAC_STAT(mtl_rx_fifo_ctrl_active),
 	STMMAC_STAT(mac_rx_frame_ctrl_fifo),
 	STMMAC_STAT(mac_gmii_rx_proto_engine),
-	/* EST */
+	 
 	STMMAC_STAT(mtl_est_cgce),
 	STMMAC_STAT(mtl_est_hlbs),
 	STMMAC_STAT(mtl_est_hlbf),
@@ -164,9 +153,7 @@ static const struct stmmac_stats stmmac_gstrings_stats[] = {
 };
 #define STMMAC_STATS_LEN ARRAY_SIZE(stmmac_gstrings_stats)
 
-/* statistics collected in queue which will be summed up for all TX or RX
- * queues, or summed up for both TX and RX queues(napi_poll, normal_irq_n).
- */
+ 
 static const char stmmac_qstats_string[][ETH_GSTRING_LEN] = {
 	"rx_pkt_n",
 	"rx_normal_irq_n",
@@ -181,7 +168,7 @@ static const char stmmac_qstats_string[][ETH_GSTRING_LEN] = {
 };
 #define STMMAC_QSTATS ARRAY_SIZE(stmmac_qstats_string)
 
-/* HW MAC Management counters (if supported) */
+ 
 #define STMMAC_MMC_STAT(m)	\
 	{ #m, sizeof_field(struct stmmac_counters, m),	\
 	offsetof(struct stmmac_priv, mmc.m)}
@@ -326,11 +313,11 @@ static int stmmac_ethtool_get_link_ksettings(struct net_device *dev,
 
 		cmd->base.speed = priv->xstats.pcs_speed;
 
-		/* Get and convert ADV/LP_ADV from the HW AN registers */
+		 
 		if (stmmac_pcs_get_adv_lp(priv, priv->ioaddr, &adv))
-			return -EOPNOTSUPP;	/* should never happen indeed */
+			return -EOPNOTSUPP;	 
 
-		/* Encoding of PSE bits is defined in 802.3z, 37.2.1.4 */
+		 
 
 		ethtool_convert_link_mode_to_legacy_u32(
 			&supported, cmd->link_modes.supported);
@@ -348,7 +335,7 @@ static int stmmac_ethtool_get_link_ksettings(struct net_device *dev,
 		if (adv.lp_pause & STMMAC_PCS_ASYM_PAUSE)
 			lp_advertising |= ADVERTISED_Asym_Pause;
 
-		/* Reg49[3] always set because ANE is always supported */
+		 
 		cmd->base.autoneg = ADVERTISED_Autoneg;
 		supported |= SUPPORTED_Autoneg;
 		advertising |= ADVERTISED_Autoneg;
@@ -401,7 +388,7 @@ stmmac_ethtool_set_link_ksettings(struct net_device *dev,
 	if (!(priv->plat->flags & STMMAC_FLAG_HAS_INTEGRATED_PCS) &&
 	    (priv->hw->pcs & STMMAC_PCS_RGMII ||
 	     priv->hw->pcs & STMMAC_PCS_SGMII)) {
-		/* Only support ANE */
+		 
 		if (cmd->base.autoneg != AUTONEG_ENABLE)
 			return -EINVAL;
 
@@ -455,9 +442,9 @@ static void stmmac_ethtool_gregs(struct net_device *dev,
 	stmmac_dump_mac_regs(priv, priv->hw, reg_space);
 	stmmac_dump_dma_regs(priv, priv->ioaddr, reg_space);
 
-	/* Copy DMA registers to where ethtool expects them */
+	 
 	if (priv->plat->has_gmac4) {
-		/* GMAC4 dumps its DMA registers at its DMA_CHAN_BASE_ADDR */
+		 
 		memcpy(&reg_space[ETHTOOL_DMA_OFFSET],
 		       &reg_space[GMAC4_DMA_CHAN_BASE_ADDR / 4],
 		       NUM_DWMAC4_DMA_REGS * 4);
@@ -599,10 +586,10 @@ static void stmmac_get_ethtool_stats(struct net_device *dev,
 		}
 	}
 
-	/* Update the DMA HW counters for dwmac10/100 */
+	 
 	ret = stmmac_dma_diagnostic_fr(priv, &priv->xstats, priv->ioaddr);
 	if (ret) {
-		/* If supported, for new GMAC chips expose the MMC counters */
+		 
 		if (priv->dma_cap.rmon) {
 			stmmac_mmc_read(priv, priv->mmcaddr, &priv->mmc);
 
@@ -776,7 +763,7 @@ static void stmmac_get_strings(struct net_device *dev, u32 stringset, u8 *data)
 	}
 }
 
-/* Currently only support WOL through Magic packet. */
+ 
 static void stmmac_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 {
 	struct stmmac_priv *priv = netdev_priv(dev);
@@ -810,9 +797,7 @@ static int stmmac_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 		return ret;
 	}
 
-	/* By default almost all GMAC devices support the WoL via
-	 * magic frame but we can disable it if the HW capability
-	 * register shows no support for pmt_magic_frame. */
+	 
 	if ((priv->hw_cap_support) && (!priv->dma_cap.pmt_magic_frame))
 		wol->wolopts &= ~WAKE_MAGIC;
 
@@ -822,13 +807,13 @@ static int stmmac_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 	if (wol->wolopts) {
 		pr_info("stmmac: wakeup enable\n");
 		device_set_wakeup_enable(priv->device, 1);
-		/* Avoid unbalanced enable_irq_wake calls */
+		 
 		if (priv->wol_irq_disabled)
 			enable_irq_wake(priv->wol_irq);
 		priv->wol_irq_disabled = false;
 	} else {
 		device_set_wakeup_enable(priv->device, 0);
-		/* Avoid unbalanced disable_irq_wake calls */
+		 
 		if (!priv->wol_irq_disabled)
 			disable_irq_wake(priv->wol_irq);
 		priv->wol_irq_disabled = true;

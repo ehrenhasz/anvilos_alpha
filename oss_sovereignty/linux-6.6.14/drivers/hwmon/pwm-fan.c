@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * pwm-fan.c - Hwmon driver for fans connected to PWM lines.
- *
- * Copyright (c) 2014 Samsung Electronics Co., Ltd.
- *
- * Author: Kamil Debski <k.debski@samsung.com>
- */
+
+ 
 
 #include <linux/hwmon.h>
 #include <linux/interrupt.h>
@@ -61,7 +55,7 @@ struct pwm_fan_ctx {
 	struct hwmon_channel_info fan_channel;
 };
 
-/* This handler assumes self resetting edge triggered interrupt. */
+ 
 static irqreturn_t pulse_handler(int irq, void *dev_id)
 {
 	struct pwm_fan_tach *tach = dev_id;
@@ -100,18 +94,18 @@ static void pwm_fan_enable_mode_2_state(int enable_mode,
 {
 	switch (enable_mode) {
 	case pwm_disable_reg_enable:
-		/* disable pwm, keep regulator enabled */
+		 
 		state->enabled = false;
 		*enable_regulator = true;
 		break;
 	case pwm_enable_reg_enable:
-		/* keep pwm and regulator enabled */
+		 
 		state->enabled = true;
 		*enable_regulator = true;
 		break;
 	case pwm_off_reg_off:
 	case pwm_disable_reg_disable:
-		/* disable pwm and regulator */
+		 
 		state->enabled = false;
 		*enable_regulator = false;
 	}
@@ -202,7 +196,7 @@ static int  __set_pwm(struct pwm_fan_ctx *ctx, unsigned long pwm)
 
 	if (pwm > 0) {
 		if (ctx->enable_mode == pwm_off_reg_off)
-			/* pwm-fan hard disabled */
+			 
 			return 0;
 
 		period = state->period;
@@ -256,7 +250,7 @@ static int pwm_fan_update_enable(struct pwm_fan_ctx *ctx, long val)
 	ctx->enable_mode = val;
 
 	if (val == 0) {
-		/* Disable pwm-fan unconditionally */
+		 
 		if (ctx->enabled)
 			ret = __set_pwm(ctx, 0);
 		else
@@ -265,10 +259,7 @@ static int pwm_fan_update_enable(struct pwm_fan_ctx *ctx, long val)
 			ctx->enable_mode = old_val;
 		pwm_fan_update_state(ctx, 0);
 	} else {
-		/*
-		 * Change PWM and/or regulator state if currently disabled
-		 * Nothing to do if currently enabled
-		 */
+		 
 		if (!ctx->enabled) {
 			struct pwm_state *state = &ctx->pwm_state;
 			bool enable_regulator = false;
@@ -365,7 +356,7 @@ static const struct hwmon_ops pwm_fan_hwmon_ops = {
 	.write = pwm_fan_write,
 };
 
-/* thermal cooling device callbacks */
+ 
 static int pwm_fan_get_max_state(struct thermal_cooling_device *cdev,
 				 unsigned long *state)
 {
@@ -467,7 +458,7 @@ static void pwm_fan_cleanup(void *__ctx)
 	struct pwm_fan_ctx *ctx = __ctx;
 
 	del_timer_sync(&ctx->rpm_timer);
-	/* Switch off everything */
+	 
 	ctx->enable_mode = pwm_disable_reg_disable;
 	pwm_fan_power_off(ctx);
 }
@@ -481,7 +472,7 @@ static int pwm_fan_probe(struct platform_device *pdev)
 	int ret;
 	const struct hwmon_channel_info **channels;
 	u32 *fan_channel_config;
-	int channel_count = 1;	/* We always have a PWM channel. */
+	int channel_count = 1;	 
 	int i;
 
 	ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
@@ -507,19 +498,10 @@ static int pwm_fan_probe(struct platform_device *pdev)
 
 	pwm_init_state(ctx->pwm, &ctx->pwm_state);
 
-	/*
-	 * PWM fans are controlled solely by the duty cycle of the PWM signal,
-	 * they do not care about the exact timing. Thus set usage_power to true
-	 * to allow less flexible hardware to work as a PWM source for fan
-	 * control.
-	 */
+	 
 	ctx->pwm_state.usage_power = true;
 
-	/*
-	 * set_pwm assumes that MAX_PWM * (period - 1) fits into an unsigned
-	 * long. Check this here to prevent the fan running at a too low
-	 * frequency.
-	 */
+	 
 	if (ctx->pwm_state.period > ULONG_MAX / MAX_PWM + 1) {
 		dev_err(dev, "Configured period too big\n");
 		return -EINVAL;
@@ -527,10 +509,7 @@ static int pwm_fan_probe(struct platform_device *pdev)
 
 	ctx->enable_mode = pwm_disable_reg_enable;
 
-	/*
-	 * Set duty cycle to maximum allowed and enable PWM output as well as
-	 * the regulator. In case of error nothing is changed
-	 */
+	 
 	ret = set_pwm(ctx, MAX_PWM);
 	if (ret) {
 		dev_err(dev, "Failed to configure PWM: %d\n", ret);
@@ -548,7 +527,7 @@ static int pwm_fan_probe(struct platform_device *pdev)
 	dev_dbg(dev, "%d fan tachometer inputs\n", ctx->tach_count);
 
 	if (ctx->tach_count) {
-		channel_count++;	/* We also have a FAN channel. */
+		channel_count++;	 
 
 		ctx->tachs = devm_kcalloc(dev, ctx->tach_count,
 					  sizeof(struct pwm_fan_tach),

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018 Pengutronix, Oleksij Rempel <o.rempel@pengutronix.de>
- * Copyright 2022 NXP, Peng Fan <peng.fan@nxp.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/firmware/imx/ipc.h>
@@ -21,9 +18,9 @@
 #include <linux/slab.h>
 
 #define IMX_MU_CHANS		17
-/* TX0/RX0/RXDB[0-3] */
+ 
 #define IMX_MU_SCU_CHANS	6
-/* TX0/RX0 */
+ 
 #define IMX_MU_S4_CHANS		2
 #define IMX_MU_CHAN_NAME_SIZE	20
 
@@ -32,13 +29,13 @@
 #define IMX_MU_SECO_TX_TOUT (msecs_to_jiffies(3000))
 #define IMX_MU_SECO_RX_TOUT (msecs_to_jiffies(3000))
 
-/* Please not change TX & RX */
+ 
 enum imx_mu_chan_type {
-	IMX_MU_TYPE_TX		= 0, /* Tx */
-	IMX_MU_TYPE_RX		= 1, /* Rx */
-	IMX_MU_TYPE_TXDB	= 2, /* Tx doorbell */
-	IMX_MU_TYPE_RXDB	= 3, /* Rx doorbell */
-	IMX_MU_TYPE_RST		= 4, /* Reset */
+	IMX_MU_TYPE_TX		= 0,  
+	IMX_MU_TYPE_RX		= 1,  
+	IMX_MU_TYPE_TXDB	= 2,  
+	IMX_MU_TYPE_RXDB	= 3,  
+	IMX_MU_TYPE_RST		= 4,  
 };
 
 enum imx_mu_xcr {
@@ -80,7 +77,7 @@ struct imx_mu_priv {
 	struct device		*dev;
 	void __iomem		*base;
 	void			*msg;
-	spinlock_t		xcr_lock; /* control register lock */
+	spinlock_t		xcr_lock;  
 
 	struct mbox_controller	mbox;
 	struct mbox_chan	mbox_chans[IMX_MU_CHANS];
@@ -109,25 +106,25 @@ struct imx_mu_dcfg {
 	int (*rxdb)(struct imx_mu_priv *priv, struct imx_mu_con_priv *cp);
 	void (*init)(struct imx_mu_priv *priv);
 	enum imx_mu_type type;
-	u32	xTR;		/* Transmit Register0 */
-	u32	xRR;		/* Receive Register0 */
-	u32	xSR[IMX_MU_xSR_MAX];	/* Status Registers */
-	u32	xCR[IMX_MU_xCR_MAX];	/* Control Registers */
+	u32	xTR;		 
+	u32	xRR;		 
+	u32	xSR[IMX_MU_xSR_MAX];	 
+	u32	xCR[IMX_MU_xCR_MAX];	 
 };
 
 #define IMX_MU_xSR_GIPn(type, x) (type & IMX_MU_V2 ? BIT(x) : BIT(28 + (3 - (x))))
 #define IMX_MU_xSR_RFn(type, x) (type & IMX_MU_V2 ? BIT(x) : BIT(24 + (3 - (x))))
 #define IMX_MU_xSR_TEn(type, x) (type & IMX_MU_V2 ? BIT(x) : BIT(20 + (3 - (x))))
 
-/* General Purpose Interrupt Enable */
+ 
 #define IMX_MU_xCR_GIEn(type, x) (type & IMX_MU_V2 ? BIT(x) : BIT(28 + (3 - (x))))
-/* Receive Interrupt Enable */
+ 
 #define IMX_MU_xCR_RIEn(type, x) (type & IMX_MU_V2 ? BIT(x) : BIT(24 + (3 - (x))))
-/* Transmit Interrupt Enable */
+ 
 #define IMX_MU_xCR_TIEn(type, x) (type & IMX_MU_V2 ? BIT(x) : BIT(20 + (3 - (x))))
-/* General Purpose Interrupt Request */
+ 
 #define IMX_MU_xCR_GIRn(type, x) (type & IMX_MU_V2 ? BIT(x) : BIT(16 + (3 - (x))))
-/* MU reset */
+ 
 #define IMX_MU_xCR_RST(type)	(type & IMX_MU_V2 ? BIT(0) : BIT(5))
 #define IMX_MU_xSR_RST(type)	(type & IMX_MU_V2 ? BIT(0) : BIT(7))
 
@@ -274,16 +271,10 @@ static int imx_mu_specific_tx(struct imx_mu_priv *priv, struct imx_mu_con_priv *
 
 	switch (cp->type) {
 	case IMX_MU_TYPE_TX:
-		/*
-		 * msg->hdr.size specifies the number of u32 words while
-		 * sizeof yields bytes.
-		 */
+		 
 
 		if (size > max_size / 4) {
-			/*
-			 * The real message size can be different to
-			 * struct imx_sc_rpc_msg_max/imx_s4_rpc_msg_max size
-			 */
+			 
 			dev_err(priv->dev, "Maximal message size (%u bytes) exceeded on TX; got: %i bytes\n", max_size, size << 2);
 			return -EINVAL;
 		}
@@ -369,10 +360,7 @@ static int imx_mu_seco_tx(struct imx_mu_priv *priv, struct imx_mu_con_priv *cp,
 	case IMX_MU_TYPE_TXDB:
 		byte_size = msg->hdr.size * sizeof(u32);
 		if (byte_size > sizeof(*msg)) {
-			/*
-			 * The real message size can be different to
-			 * struct imx_sc_rpc_msg_max size
-			 */
+			 
 			dev_err(priv->dev,
 				"Exceed max msg size (%zu) on TX, got: %i\n",
 				sizeof(*msg), byte_size);
@@ -382,23 +370,23 @@ static int imx_mu_seco_tx(struct imx_mu_priv *priv, struct imx_mu_con_priv *cp,
 		print_hex_dump_debug("from client ", DUMP_PREFIX_OFFSET, 4, 4,
 				     data, byte_size, false);
 
-		/* Send first word */
+		 
 		dev_dbg(priv->dev, "Sending header\n");
 		imx_mu_write(priv, *arg++, priv->dcfg->xTR);
 
-		/* Send signaling */
+		 
 		dev_dbg(priv->dev, "Sending signaling\n");
 		imx_mu_xcr_rmw(priv, IMX_MU_GCR,
 			       IMX_MU_xCR_GIRn(priv->dcfg->type, cp->idx), 0);
 
-		/* Send words to fill the mailbox */
+		 
 		for (i = 1; i < 4 && i < msg->hdr.size; i++) {
 			dev_dbg(priv->dev, "Sending word %d\n", i);
 			imx_mu_write(priv, *arg++,
 				     priv->dcfg->xTR + (i % 4) * 4);
 		}
 
-		/* Send rest of message waiting for remote read */
+		 
 		for (; i < msg->hdr.size; i++) {
 			dev_dbg(priv->dev, "Sending word %d\n", i);
 			err = imx_mu_tx_waiting_write(priv, *arg++, i);
@@ -408,7 +396,7 @@ static int imx_mu_seco_tx(struct imx_mu_priv *priv, struct imx_mu_con_priv *cp,
 			}
 		}
 
-		/* Simulate hack for mbox framework */
+		 
 		tasklet_schedule(&cp->txdb_tasklet);
 
 		break;
@@ -432,7 +420,7 @@ static int imx_mu_seco_rxdb(struct imx_mu_priv *priv, struct imx_mu_con_priv *cp
 
 	dev_dbg(priv->dev, "Receiving message\n");
 
-	/* Read header */
+	 
 	dev_dbg(priv->dev, "Receiving header\n");
 	*data++ = imx_mu_read(priv, priv->dcfg->xRR);
 	byte_size = msg.hdr.size * sizeof(u32);
@@ -443,7 +431,7 @@ static int imx_mu_seco_rxdb(struct imx_mu_priv *priv, struct imx_mu_con_priv *cp
 		goto error;
 	}
 
-	/* Read message waiting they are written */
+	 
 	for (i = 1; i < msg.hdr.size; i++) {
 		dev_dbg(priv->dev, "Receiving word %d\n", i);
 		err = imx_mu_rx_waiting_read(priv, data++, i);
@@ -453,14 +441,14 @@ static int imx_mu_seco_rxdb(struct imx_mu_priv *priv, struct imx_mu_con_priv *cp
 		}
 	}
 
-	/* Clear GIP */
+	 
 	imx_mu_write(priv, IMX_MU_xSR_GIPn(priv->dcfg->type, cp->idx),
 		     priv->dcfg->xSR[IMX_MU_GSR]);
 
 	print_hex_dump_debug("to client ", DUMP_PREFIX_OFFSET, 4, 4,
 			     &msg, byte_size, false);
 
-	/* send data to client */
+	 
 	dev_dbg(priv->dev, "Sending message to client\n");
 	mbox_chan_received_data(cp->chan, (void *)&msg);
 
@@ -555,13 +543,13 @@ static int imx_mu_startup(struct mbox_chan *chan)
 
 	pm_runtime_get_sync(priv->dev);
 	if (cp->type == IMX_MU_TYPE_TXDB) {
-		/* Tx doorbell don't have ACK support */
+		 
 		tasklet_init(&cp->txdb_tasklet, imx_mu_txdb_tasklet,
 			     (unsigned long)cp);
 		return 0;
 	}
 
-	/* IPC MU should be with IRQF_NO_SUSPEND set */
+	 
 	if (!priv->dev->pm_domain)
 		irq_flag |= IRQF_NO_SUSPEND;
 
@@ -642,8 +630,8 @@ static struct mbox_chan *imx_mu_specific_xlate(struct mbox_controller *mbox,
 		return ERR_PTR(-EINVAL);
 	}
 
-	type = sp->args[0]; /* channel type */
-	idx = sp->args[1]; /* index */
+	type = sp->args[0];  
+	idx = sp->args[1];  
 
 	switch (type) {
 	case IMX_MU_TYPE_TX:
@@ -678,8 +666,8 @@ static struct mbox_chan * imx_mu_xlate(struct mbox_controller *mbox,
 		return ERR_PTR(-EINVAL);
 	}
 
-	type = sp->args[0]; /* channel type */
-	idx = sp->args[1]; /* index */
+	type = sp->args[0];  
+	idx = sp->args[1];  
 	chan = type * 4 + idx;
 
 	if (chan >= mbox->num_chans) {
@@ -700,9 +688,9 @@ static struct mbox_chan *imx_mu_seco_xlate(struct mbox_controller *mbox,
 		return ERR_PTR(-EINVAL);
 	}
 
-	type = sp->args[0]; /* channel type */
+	type = sp->args[0];  
 
-	/* Only supports TXDB and RXDB */
+	 
 	if (type == IMX_MU_TYPE_TX || type == IMX_MU_TYPE_RX) {
 		dev_err(mbox->dev, "Invalid type: %d\n", type);
 		return ERR_PTR(-EINVAL);
@@ -733,15 +721,15 @@ static void imx_mu_init_generic(struct imx_mu_priv *priv)
 	if (priv->side_b)
 		return;
 
-	/* Set default MU configuration */
+	 
 	for (i = 0; i < IMX_MU_xCR_MAX; i++)
 		imx_mu_write(priv, 0, priv->dcfg->xCR[i]);
 
-	/* Clear any pending GIP */
+	 
 	val = imx_mu_read(priv, priv->dcfg->xSR[IMX_MU_GSR]);
 	imx_mu_write(priv, val, priv->dcfg->xSR[IMX_MU_GSR]);
 
-	/* Clear any pending RSR */
+	 
 	for (i = 0; i < IMX_MU_NUM_RR; i++)
 		imx_mu_read(priv, priv->dcfg->xRR + (i % 4) * 4);
 }
@@ -765,7 +753,7 @@ static void imx_mu_init_specific(struct imx_mu_priv *priv)
 	priv->mbox.num_chans = num_chans;
 	priv->mbox.of_xlate = imx_mu_specific_xlate;
 
-	/* Set default MU configuration */
+	 
 	for (i = 0; i < IMX_MU_xCR_MAX; i++)
 		imx_mu_write(priv, 0, priv->dcfg->xCR[i]);
 }
@@ -996,14 +984,7 @@ static int __maybe_unused imx_mu_resume_noirq(struct device *dev)
 	struct imx_mu_priv *priv = dev_get_drvdata(dev);
 	int i;
 
-	/*
-	 * ONLY restore MU when context lost, the TIE could
-	 * be set during noirq resume as there is MU data
-	 * communication going on, and restore the saved
-	 * value will overwrite the TIE and cause MU data
-	 * send failed, may lead to system freeze. This issue
-	 * is observed by testing freeze mode suspend.
-	 */
+	 
 	if (!priv->clk && !imx_mu_read(priv, priv->dcfg->xCR[0])) {
 		for (i = 0; i < IMX_MU_xCR_MAX; i++)
 			imx_mu_write(priv, priv->xcr[i], priv->dcfg->xCR[i]);

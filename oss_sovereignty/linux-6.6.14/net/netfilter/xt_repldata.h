@@ -1,18 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Today's hack: quantum tunneling in structs
- *
- * 'entries' and 'term' are never anywhere referenced by word in code. In fact,
- * they serve as the hanging-off data accessed through repl.data[].
- */
+ 
+ 
 
-/* tbl has the following structure equivalent, but is C99 compliant:
- * struct {
- *	struct type##_replace repl;
- *	struct type##_standard entries[nhooks];
- *	struct type##_error term;
- * } *tbl;
- */
+ 
 
 #define xt_alloc_initial_table(type, typ2) ({ \
 	unsigned int hook_mask = info->valid_hooks; \

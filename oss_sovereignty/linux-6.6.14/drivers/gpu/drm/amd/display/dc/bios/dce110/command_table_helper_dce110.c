@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 
@@ -153,10 +130,7 @@ static uint8_t hpd_sel_to_atom(enum hpd_source_id id)
 
 static uint8_t dig_encoder_sel_to_atom(enum engine_id id)
 {
-	/* On any ASIC after DCE80, we manually program the DIG_FE
-	 * selection (see connect_dig_be_to_fe function of the link
-	 * encoder), so translation should always return 0 (no FE).
-	 */
+	 
 
 	return 0;
 }
@@ -185,17 +159,15 @@ static bool clock_source_id_to_atom(
 			*atom_pll_id = ATOM_EXT_PLL1;
 			break;
 		case CLOCK_SOURCE_ID_VCE:
-			/* for VCE encoding,
-			 * we need to pass in ATOM_PPLL_INVALID
-			 */
+			 
 			*atom_pll_id = ATOM_PPLL_INVALID;
 			break;
 		case CLOCK_SOURCE_ID_DP_DTO:
-			/* When programming DP DTO PLL ID should be invalid */
+			 
 			*atom_pll_id = ATOM_PPLL_INVALID;
 			break;
 		case CLOCK_SOURCE_ID_UNDEFINED:
-			/* Should not happen */
+			 
 			*atom_pll_id = ATOM_PPLL_INVALID;
 			result = false;
 			break;
@@ -270,7 +242,7 @@ static uint8_t encoder_action_to_atom(enum bp_encoder_control_action action)
 		atom_action = ATOM_ENCODER_INIT;
 		break;
 	default:
-		BREAK_TO_DEBUGGER(); /* Unhandle action in driver.!! */
+		BREAK_TO_DEBUGGER();  
 		break;
 	}
 
@@ -293,14 +265,14 @@ static uint8_t disp_power_gating_action_to_atom(
 		atom_pipe_action = ATOM_INIT;
 		break;
 	default:
-		ASSERT_CRITICAL(false); /* Unhandle action in driver! */
+		ASSERT_CRITICAL(false);  
 		break;
 	}
 
 	return atom_pipe_action;
 }
 
-/* function table */
+ 
 static const struct command_table_helper command_table_helper_funcs = {
 	.controller_id_to_atom = dal_cmd_table_helper_controller_id_to_atom,
 	.encoder_action_to_atom = encoder_action_to_atom,
@@ -320,16 +292,7 @@ static const struct command_table_helper command_table_helper_funcs = {
 	.encoder_mode_bp_to_atom = dal_cmd_table_helper_encoder_mode_bp_to_atom,
 };
 
-/*
- * dal_cmd_tbl_helper_dce110_get_table
- *
- * @brief
- * Initialize command table helper functions
- *
- * @param
- * const struct command_table_helper **h - [out] struct of functions
- *
- */
+ 
 const struct command_table_helper *dal_cmd_tbl_helper_dce110_get_table(void)
 {
 	return &command_table_helper_funcs;

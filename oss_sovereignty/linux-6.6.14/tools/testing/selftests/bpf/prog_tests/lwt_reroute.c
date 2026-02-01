@@ -1,53 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
 
-/*
- * Test suite of lwt BPF programs that reroutes packets
- *   The file tests focus not only if these programs work as expected normally,
- *   but also if they can handle abnormal situations gracefully. This test
- *   suite currently only covers lwt_xmit hook. lwt_in tests have not been
- *   implemented.
- *
- * WARNING
- * -------
- *  This test suite can crash the kernel, thus should be run in a VM.
- *
- * Setup:
- * ---------
- *  all tests are performed in a single netns. A lwt encap route is setup for
- *  each subtest:
- *
- *    ip route add 10.0.0.0/24 encap bpf xmit <obj> sec "<section_N>" dev link_err
- *
- *  Here <obj> is statically defined to test_lwt_reroute.bpf.o, and it contains
- *  a single test program entry. This program sets packet mark by last byte of
- *  the IPv4 daddr. For example, a packet going to 1.2.3.4 will receive a skb
- *  mark 4. A packet will only be marked once, and IP x.x.x.0 will be skipped
- *  to avoid route loop. We didn't use generated BPF skeleton since the
- *  attachment for lwt programs are not supported by libbpf yet.
- *
- *  The test program will bring up a tun device, and sets up the following
- *  routes:
- *
- *    ip rule add pref 100 from all fwmark <tun_index> lookup 100
- *    ip route add table 100 default dev tun0
- *
- *  For normal testing, a ping command is running in the test netns:
- *
- *    ping 10.0.0.<tun_index> -c 1 -w 1 -s 100
- *
- *  For abnormal testing, fq is used as the qdisc of the tun device. Then a UDP
- *  socket will try to overflow the fq queue and trigger qdisc drop error.
- *
- * Scenarios:
- * --------------------------------
- *  1. Reroute to a running tun device
- *  2. Reroute to a device where qdisc drop
- *
- *  For case 1, ping packets should be received by the tun device.
- *
- *  For case 2, force UDP packets to overflow fq limit. As long as kernel
- *  is not crashed, it is considered successful.
- */
+
+ 
 #include "lwt_helpers.h"
 #include "network_helpers.h"
 #include <linux/net_tstamp.h>
@@ -59,17 +12,15 @@
 #define XMIT_SECTION          "lwt_xmit"
 #define NSEC_PER_SEC          1000000000ULL
 
-/* send a ping to be rerouted to the target device */
+ 
 static void ping_once(const char *ip)
 {
-	/* We won't get a reply. Don't fail here */
+	 
 	SYS_NOFAIL("ping %s -c1 -W1 -s %d >/dev/null 2>&1",
 		   ip, ICMP_PAYLOAD_SIZE);
 }
 
-/* Send snd_target UDP packets to overflow the fq queue and trigger qdisc drop
- * error. This is done via TX tstamp to force buffering delayed packets.
- */
+ 
 static int overflow_fq(int snd_target, const char *target_ip)
 {
 	struct sockaddr_in addr = {
@@ -77,7 +28,7 @@ static int overflow_fq(int snd_target, const char *target_ip)
 		.sin_port = htons(1234),
 	};
 
-	char data_buf[8]; /* only #pkts matter, so use a random small buffer */
+	char data_buf[8];  
 	char control_buf[CMSG_SPACE(sizeof(uint64_t))];
 	struct iovec iov = {
 		.iov_base = data_buf,
@@ -130,14 +81,12 @@ static int overflow_fq(int snd_target, const char *target_ip)
 		*(uint64_t *)CMSG_DATA(cmsg) = (now.tv_nsec + 1) * NSEC_PER_SEC +
 					       now.tv_nsec;
 
-		/* we will intentionally send more than fq limit, so ignore
-		 * the error here.
-		 */
+		 
 		sendmsg(s, &msg, MSG_NOSIGNAL);
 		snd_target--;
 	}
 
-	/* no kernel crash so far is considered success */
+	 
 	err = 0;
 
 out:
@@ -202,7 +151,7 @@ static void test_lwt_reroute_normal_xmit(void)
 
 	snprintf(ip, 256, "10.0.0.%d", ifindex);
 
-	/* ping packets should be received by the tun device */
+	 
 	ping_once(ip);
 
 	if (!ASSERT_EQ(wait_for_packet(tun_fd, __expect_icmp_ipv4, &timeo), 1,
@@ -210,10 +159,7 @@ static void test_lwt_reroute_normal_xmit(void)
 		log_err("%s xmit", __func__);
 }
 
-/*
- * Test the failure case when the skb is dropped at the qdisc. This is a
- * regression prevention at the xmit hook only.
- */
+ 
 static void test_lwt_reroute_qdisc_dropped(void)
 {
 	const char *tun_dev = "tun0";
@@ -252,10 +198,7 @@ void test_lwt_reroute(void)
 	pthread_t test_thread;
 	int err;
 
-	/* Run the tests in their own thread to isolate the namespace changes
-	 * so they do not affect the environment of other tests.
-	 * (specifically needed because of unshare(CLONE_NEWNS) in open_netns())
-	 */
+	 
 	err = pthread_create(&test_thread, NULL, &test_lwt_reroute_run, NULL);
 	if (ASSERT_OK(err, "pthread_create"))
 		ASSERT_OK(pthread_join(test_thread, NULL), "pthread_join");

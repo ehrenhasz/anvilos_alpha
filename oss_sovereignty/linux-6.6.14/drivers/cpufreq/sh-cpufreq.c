@@ -1,17 +1,4 @@
-/*
- * cpufreq driver for the SuperH processors.
- *
- * Copyright (C) 2002 - 2012 Paul Mundt
- * Copyright (C) 2002 M. R. Brown
- *
- * Clock framework bits from arch/avr32/mach-at32ap/cpufreq.c
- *
- *   Copyright (C) 2004-2007 Atmel Corporation
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- */
+ 
 #define pr_fmt(fmt) "cpufreq: " fmt
 
 #include <linux/types.h>
@@ -54,7 +41,7 @@ static long __sh_cpufreq_target(void *arg)
 
 	dev = get_cpu_device(cpu);
 
-	/* Convert target_freq from kHz to Hz */
+	 
 	freq = clk_round_rate(cpuclk, target->freq * 1000);
 
 	if (freq < (policy->min * 1000) || freq > (policy->max * 1000))
@@ -74,9 +61,7 @@ static long __sh_cpufreq_target(void *arg)
 	return 0;
 }
 
-/*
- * Here we notify other drivers of the proposed change and the final change.
- */
+ 
 static int sh_cpufreq_target(struct cpufreq_policy *policy,
 			     unsigned int target_freq,
 			     unsigned int relation)

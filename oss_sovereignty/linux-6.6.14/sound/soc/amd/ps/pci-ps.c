@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * AMD Pink Sardine ACP PCI Driver
- *
- * Copyright 2022 Advanced Micro Devices, Inc.
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/bitops.h>
@@ -141,11 +137,7 @@ static irqreturn_t acp63_irq_handler(int irq, void *dev_id)
 	adata = dev_id;
 	if (!adata)
 		return IRQ_NONE;
-	/* ACP interrupts will be cleared by reading particular bit and writing
-	 * same value to the status register. writing zero's doesn't have any
-	 * effect.
-	 * Bit by bit checking of IRQ field is implemented.
-	 */
+	 
 	ext_intr_stat = readl(adata->acp63_base + ACP_EXTERNAL_INTR_STAT);
 	if (ext_intr_stat & ACP_SDW0_STAT) {
 		writel(ACP_SDW0_STAT, adata->acp63_base + ACP_EXTERNAL_INTR_STAT);
@@ -168,7 +160,7 @@ static irqreturn_t acp63_irq_handler(int irq, void *dev_id)
 
 	if (ext_intr_stat & ACP_ERROR_IRQ) {
 		writel(ACP_ERROR_IRQ, adata->acp63_base + ACP_EXTERNAL_INTR_STAT);
-		/* TODO: Report SoundWire Manager instance errors */
+		 
 		writel(0, adata->acp63_base + ACP_SW0_I2S_ERROR_REASON);
 		writel(0, adata->acp63_base + ACP_SW1_I2S_ERROR_REASON);
 		writel(0, adata->acp63_base + ACP_ERROR_STATUS);
@@ -249,10 +241,7 @@ static int sdw_amd_scan_controller(struct device *dev)
 	int ret;
 
 	acp_data = dev_get_drvdata(dev);
-	/*
-	 * Current implementation is based on MIPI DisCo 2.0 spec.
-	 * Found controller, find links supported.
-	 */
+	 
 	ret = fwnode_property_read_u32_array((acp_data->sdw_fw_node), "mipi-sdw-manager-list",
 					     &sdw_manager_bitmap, 1);
 
@@ -261,7 +250,7 @@ static int sdw_amd_scan_controller(struct device *dev)
 		return -EINVAL;
 	}
 	count = hweight32(sdw_manager_bitmap);
-	/* Check count is within bounds */
+	 
 	if (count > AMD_SDW_MAX_MANAGERS) {
 		dev_err(dev, "Manager count %d exceeds max %d\n", count, AMD_SDW_MAX_MANAGERS);
 		return -EINVAL;
@@ -284,12 +273,7 @@ static int sdw_amd_scan_controller(struct device *dev)
 		ret = fwnode_property_read_u32(link, "amd-sdw-power-mode", &acp_sdw_power_mode);
 		if (ret)
 			return ret;
-		/*
-		 * when SoundWire configuration is selected from acp pin config,
-		 * based on manager instances count, acp init/de-init sequence should be
-		 * executed as part of PM ops only when Bus reset is applied for the active
-		 * SoundWire manager instances.
-		 */
+		 
 		if (acp_sdw_power_mode != AMD_SDW_POWER_OFF_MODE) {
 			acp_data->acp_reset = false;
 			return 0;
@@ -309,7 +293,7 @@ static int get_acp63_device_config(u32 config, struct pci_dev *pci, struct acp63
 
 	dmic_dev = acpi_find_child_device(ACPI_COMPANION(&pci->dev), ACP63_DMIC_ADDR, 0);
 	if (dmic_dev) {
-		/* is_dmic_dev flag will be set when ACP PDM controller device exists */
+		 
 		if (!acpi_dev_get_property(dmic_dev, "acp-audio-device-type",
 					   ACPI_TYPE_INTEGER, &obj) &&
 					   obj->integer.value == ACP_DMIC_DEV)
@@ -320,7 +304,7 @@ static int get_acp63_device_config(u32 config, struct pci_dev *pci, struct acp63
 	if (sdw_dev) {
 		acp_data->sdw_fw_node = acpi_fwnode_handle(sdw_dev);
 		ret = sdw_amd_scan_controller(&pci->dev);
-		/* is_sdw_dev flag will be set when SoundWire Manager device exists */
+		 
 		if (!ret)
 			is_sdw_dev = true;
 	}
@@ -581,12 +565,12 @@ static int snd_acp63_probe(struct pci_dev *pci,
 
 	irqflags = IRQF_SHARED;
 
-	/* Return if acp config flag is defined */
+	 
 	flag = snd_amd_acp_find_config(pci);
 	if (flag)
 		return -ENODEV;
 
-	/* Pink Sardine device check */
+	 
 	switch (pci->revision) {
 	case 0x63:
 		break;
@@ -618,12 +602,7 @@ static int snd_acp63_probe(struct pci_dev *pci,
 		ret = -ENOMEM;
 		goto release_regions;
 	}
-	/*
-	 * By default acp_reset flag is set to true. i.e acp_deinit() and acp_init()
-	 * will be invoked for all ACP configurations during suspend/resume callbacks.
-	 * This flag should be set to false only when SoundWire manager power mode
-	 * set to ClockStopMode.
-	 */
+	 
 	adata->acp_reset = true;
 	pci_set_master(pci);
 	pci_set_drvdata(pci, adata);
@@ -639,7 +618,7 @@ static int snd_acp63_probe(struct pci_dev *pci,
 	}
 	val = readl(adata->acp63_base + ACP_PIN_CONFIG);
 	ret = get_acp63_device_config(val, pci, adata);
-	/* ACP PCI driver probe should be continued even PDM or SoundWire Devices are not found */
+	 
 	if (ret) {
 		dev_dbg(&pci->dev, "get acp device config failed:%d\n", ret);
 		goto skip_pdev_creation;

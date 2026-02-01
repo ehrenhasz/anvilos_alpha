@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * PHY driver for NXP LPC18xx/43xx internal USB OTG PHY
- *
- * Copyright (C) 2015 Joachim Eastwood <manabian@gmail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -14,7 +10,7 @@
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 
-/* USB OTG PHY register offset and bit in CREG */
+ 
 #define LPC18XX_CREG_CREG0		0x004
 #define LPC18XX_CREG_CREG0_USB0PHY	BIT(5)
 
@@ -29,7 +25,7 @@ static int lpc18xx_usb_otg_phy_init(struct phy *phy)
 	struct lpc18xx_usb_otg_phy *lpc = phy_get_drvdata(phy);
 	int ret;
 
-	/* The PHY must be clocked at 480 MHz */
+	 
 	ret = clk_set_rate(lpc->clk, 480000000);
 	if (ret)
 		return ret;
@@ -55,7 +51,7 @@ static int lpc18xx_usb_otg_phy_power_on(struct phy *phy)
 	if (ret)
 		return ret;
 
-	/* The bit in CREG is cleared to enable the PHY */
+	 
 	ret = regmap_update_bits(lpc->reg, LPC18XX_CREG_CREG0,
 				  LPC18XX_CREG_CREG0_USB0PHY, 0);
 	if (ret) {

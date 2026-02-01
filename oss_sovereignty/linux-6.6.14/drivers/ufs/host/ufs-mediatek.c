@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019 MediaTek Inc.
- * Authors:
- *	Stanley Chu <stanley.chu@mediatek.com>
- *	Peter Wang <peter.wang@mediatek.com>
- */
+
+ 
 
 #include <linux/arm-smccc.h>
 #include <linux/bitfield.h>
@@ -53,9 +48,7 @@ static const struct of_device_id ufs_mtk_of_match[] = {
 	{},
 };
 
-/*
- * Details of UIC Errors
- */
+ 
 static const char *const ufs_uic_err_str[] = {
 	"PHY Adapter Layer",
 	"Data Link Layer",
@@ -229,10 +222,7 @@ static int ufs_mtk_hce_enable_notify(struct ufs_hba *hba,
 			hba->ahit = 0;
 		}
 
-		/*
-		 * Turn on CLK_CG early to bypass abnormal ERR_CHK signal
-		 * to prevent host hang issue
-		 */
+		 
 		ufshcd_writel(hba,
 			      ufshcd_readl(hba, REG_UFS_XOUFS_CTRL) | 0x80,
 			      REG_UFS_XOUFS_CTRL);
@@ -251,10 +241,7 @@ static int ufs_mtk_bind_mphy(struct ufs_hba *hba)
 	host->mphy = devm_of_phy_get_by_index(dev, np, 0);
 
 	if (host->mphy == ERR_PTR(-EPROBE_DEFER)) {
-		/*
-		 * UFS driver might be probed before the phy driver does.
-		 * In that case we would like to return EPROBE_DEFER code.
-		 */
+		 
 		err = -EPROBE_DEFER;
 		dev_info(dev,
 			 "%s: required phy hasn't probed yet. err = %d\n",
@@ -269,10 +256,7 @@ static int ufs_mtk_bind_mphy(struct ufs_hba *hba)
 
 	if (err)
 		host->mphy = NULL;
-	/*
-	 * Allow unbound mphy because not every platform needs specific
-	 * mphy control.
-	 */
+	 
 	if (err == -ENODEV)
 		err = 0;
 
@@ -298,13 +282,13 @@ static int ufs_mtk_setup_ref_clk(struct ufs_hba *hba, bool on)
 		ufshcd_writel(hba, REFCLK_RELEASE, REG_UFS_REFCLK_CTRL);
 	}
 
-	/* Wait for ack */
+	 
 	timeout = ktime_add_us(ktime_get(), REFCLK_REQ_TIMEOUT_US);
 	do {
 		time_checked = ktime_get();
 		value = ufshcd_readl(hba, REG_UFS_REFCLK_CTRL);
 
-		/* Wait until ack bit equals to req bit */
+		 
 		if (((value & REFCLK_ACK) >> 1) == (value & REFCLK_REQUEST))
 			goto out;
 
@@ -364,10 +348,10 @@ static void ufs_mtk_wait_idle_state(struct ufs_hba *hba,
 	u32 val, sm;
 	bool wait_idle;
 
-	/* cannot use plain ktime_get() in suspend */
+	 
 	timeout = ktime_get_mono_fast_ns() + retry_ms * 1000000UL;
 
-	/* wait a specific time after check base */
+	 
 	udelay(10);
 	wait_idle = false;
 
@@ -378,10 +362,7 @@ static void ufs_mtk_wait_idle_state(struct ufs_hba *hba,
 
 		sm = val & 0x1f;
 
-		/*
-		 * if state is in H8 enter and H8 enter confirm
-		 * wait until return to idle state.
-		 */
+		 
 		if ((sm >= VS_HIB_ENTER) && (sm <= VS_HIB_EXIT)) {
 			wait_idle = true;
 			udelay(50);
@@ -413,7 +394,7 @@ static int ufs_mtk_wait_link_state(struct ufs_hba *hba, u32 state,
 		if (val == state)
 			return 0;
 
-		/* Sleep for max. 200us */
+		 
 		usleep_range(100, 200);
 	} while (ktime_before(time_checked, timeout));
 
@@ -435,7 +416,7 @@ static int ufs_mtk_mphy_power_on(struct ufs_hba *hba, bool on)
 			ret = regulator_enable(host->reg_va09);
 			if (ret < 0)
 				goto out;
-			/* wait 200 us to stablize VA09 */
+			 
 			usleep_range(200, 210);
 			ufs_mtk_va09_pwr_ctrl(res, 1);
 		}
@@ -660,14 +641,7 @@ static void ufs_mtk_pwr_ctrl(struct ufs_hba *hba, bool on)
 	}
 }
 
-/**
- * ufs_mtk_setup_clocks - enables/disable clocks
- * @hba: host controller instance
- * @on: If true, enable clocks else disable them.
- * @status: PRE_CHANGE or POST_CHANGE notify
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 static int ufs_mtk_setup_clocks(struct ufs_hba *hba, bool on,
 				enum ufs_notify_change_status status)
 {
@@ -675,11 +649,7 @@ static int ufs_mtk_setup_clocks(struct ufs_hba *hba, bool on,
 	bool clk_pwr_off = false;
 	int ret = 0;
 
-	/*
-	 * In case ufs_mtk_init() is not yet done, simply ignore.
-	 * This ufs_mtk_setup_clocks() shall be called from
-	 * ufs_mtk_init() after init is done.
-	 */
+	 
 	if (!host)
 		return 0;
 
@@ -689,11 +659,7 @@ static int ufs_mtk_setup_clocks(struct ufs_hba *hba, bool on,
 		} else if (ufshcd_is_link_hibern8(hba) ||
 			 (!ufshcd_can_hibern8_during_gating(hba) &&
 			 ufshcd_is_auto_hibern8_enabled(hba))) {
-			/*
-			 * Gate ref-clk and poweroff mphy if link state is in
-			 * OFF or Hibern8 by either Auto-Hibern8 or
-			 * ufshcd_link_state_transition().
-			 */
+			 
 			ret = ufs_mtk_wait_link_state(hba,
 						      VS_LINK_HIBERN8,
 						      15);
@@ -718,17 +684,14 @@ static void ufs_mtk_get_controller_version(struct ufs_hba *hba)
 	if (host->hw_ver.major)
 		return;
 
-	/* Set default (minimum) version anyway */
+	 
 	host->hw_ver.major = 2;
 
 	ret = ufshcd_dme_get(hba, UIC_ARG_MIB(PA_LOCALVERINFO), &ver);
 	if (!ret) {
 		if (ver >= UFS_UNIPRO_VER_1_8) {
 			host->hw_ver.major = 3;
-			/*
-			 * Fix HCI version for some platforms with
-			 * incorrect version
-			 */
+			 
 			if (hba->ufs_version < ufshci_version(3, 0))
 				hba->ufs_version = ufshci_version(3, 0);
 		}
@@ -740,11 +703,7 @@ static u32 ufs_mtk_get_ufs_hci_version(struct ufs_hba *hba)
 	return hba->ufs_version;
 }
 
-/**
- * ufs_mtk_init_clocks - Init mtk driver private clocks
- *
- * @hba: per adapter instance
- */
+ 
 static void ufs_mtk_init_clocks(struct ufs_hba *hba)
 {
 	struct ufs_mtk_host *host = ufshcd_get_variant(hba);
@@ -752,11 +711,7 @@ static void ufs_mtk_init_clocks(struct ufs_hba *hba)
 	struct ufs_mtk_clk *mclk = &host->mclk;
 	struct ufs_clk_info *clki, *clki_tmp;
 
-	/*
-	 * Find private clocks and store them in struct ufs_mtk_clk.
-	 * Remove "ufs_sel_min_src" and "ufs_sel_min_src" from list to avoid
-	 * being switched on/off in clock gating.
-	 */
+	 
 	list_for_each_entry_safe(clki, clki_tmp, head, list) {
 		if (!strcmp(clki->name, "ufs_sel")) {
 			host->mclk.ufs_sel_clki = clki;
@@ -858,7 +813,7 @@ static void ufs_mtk_init_mcq_irq(struct ufs_hba *hba)
 	pdev = container_of(hba->dev, struct platform_device, dev);
 
 	for (i = 0; i < host->mcq_nr_intr; i++) {
-		/* irq index 0 is legacy irq, sq/cq irq start from index 1 */
+		 
 		irq = platform_get_irq(pdev, i + 1);
 		if (irq < 0) {
 			host->mcq_intr_info[i].irq = MTK_MCQ_INVALID_IRQ;
@@ -871,23 +826,14 @@ static void ufs_mtk_init_mcq_irq(struct ufs_hba *hba)
 
 	return;
 failed:
-       /* invalidate irq info */
+        
 	for (i = 0; i < host->mcq_nr_intr; i++)
 		host->mcq_intr_info[i].irq = MTK_MCQ_INVALID_IRQ;
 
 	host->mcq_nr_intr = 0;
 }
 
-/**
- * ufs_mtk_init - find other essential mmio bases
- * @hba: host controller instance
- *
- * Binds PHY with controller and powers up PHY enabling clocks
- * and regulators.
- *
- * Return: -EPROBE_DEFER if binding fails, returns negative error
- * on phy power up failure and returns zero on success.
- */
+ 
 static int ufs_mtk_init(struct ufs_hba *hba)
 {
 	const struct of_device_id *id;
@@ -911,7 +857,7 @@ static int ufs_mtk_init(struct ufs_hba *hba)
 		goto out;
 	}
 
-	/* Initialize host capability */
+	 
 	ufs_mtk_init_host_caps(hba);
 
 	ufs_mtk_init_mcq_irq(hba);
@@ -922,19 +868,19 @@ static int ufs_mtk_init(struct ufs_hba *hba)
 
 	ufs_mtk_init_reset(hba);
 
-	/* Enable runtime autosuspend */
+	 
 	hba->caps |= UFSHCD_CAP_RPM_AUTOSUSPEND;
 
-	/* Enable clock-gating */
+	 
 	hba->caps |= UFSHCD_CAP_CLK_GATING;
 
-	/* Enable inline encryption */
+	 
 	hba->caps |= UFSHCD_CAP_CRYPTO;
 
-	/* Enable WriteBooster */
+	 
 	hba->caps |= UFSHCD_CAP_WB_EN;
 
-	/* Enable clk scaling*/
+	 
 	hba->caps |= UFSHCD_CAP_CLK_SCALING;
 
 	hba->quirks |= UFSHCI_QUIRK_SKIP_MANUAL_WB_FLUSH_CTRL;
@@ -947,19 +893,13 @@ static int ufs_mtk_init(struct ufs_hba *hba)
 
 	ufs_mtk_init_clocks(hba);
 
-	/*
-	 * ufshcd_vops_init() is invoked after
-	 * ufshcd_setup_clock(true) in ufshcd_hba_init() thus
-	 * phy clock setup is skipped.
-	 *
-	 * Enable phy clocks specifically here.
-	 */
+	 
 	ufs_mtk_mphy_power_on(hba, true);
 	ufs_mtk_setup_clocks(hba, true, POST_CHANGE);
 
 	host->ip_ver = ufshcd_readl(hba, REG_UFS_MTK_IP_VER);
 
-	/* Initialize pm-qos request */
+	 
 	cpu_latency_qos_add_request(&host->pm_qos_req, PM_QOS_DEFAULT_VALUE);
 	host->pm_qos_init = true;
 
@@ -1077,11 +1017,7 @@ static int ufs_mtk_unipro_set_lpm(struct ufs_hba *hba, bool lpm)
 			     UIC_ARG_MIB_SEL(VS_UNIPROPOWERDOWNCONTROL, 0),
 			     lpm ? 1 : 0);
 	if (!ret || !lpm) {
-		/*
-		 * Forcibly set as non-LPM mode if UIC commands is failed
-		 * to use default hba_enable_delay_us value for re-enabling
-		 * the host.
-		 */
+		 
 		host->unipro_lpm = lpm;
 	}
 
@@ -1099,16 +1035,12 @@ static int ufs_mtk_pre_link(struct ufs_hba *hba)
 	if (ret)
 		return ret;
 
-	/*
-	 * Setting PA_Local_TX_LCC_Enable to 0 before link startup
-	 * to make sure that both host and device TX LCC are disabled
-	 * once link startup is completed.
-	 */
+	 
 	ret = ufshcd_disable_host_tx_lcc(hba);
 	if (ret)
 		return ret;
 
-	/* disable deep stall */
+	 
 	ret = ufshcd_dme_get(hba, UIC_ARG_MIB(VS_SAVEPOWERCONTROL), &tmp);
 	if (ret)
 		return ret;
@@ -1136,10 +1068,10 @@ static void ufs_mtk_setup_clk_gating(struct ufs_hba *hba)
 
 static void ufs_mtk_post_link(struct ufs_hba *hba)
 {
-	/* enable unipro clock gating feature */
+	 
 	ufs_mtk_cfg_unipro_cg(hba, true);
 
-	/* will be configured during probe hba */
+	 
 	if (ufshcd_is_auto_hibern8_supported(hba))
 		hba->ahit = FIELD_PREP(UFSHCI_AHIBERN8_TIMER_MASK, 10) |
 			FIELD_PREP(UFSHCI_AHIBERN8_SCALE_MASK, 3);
@@ -1171,23 +1103,17 @@ static int ufs_mtk_device_reset(struct ufs_hba *hba)
 {
 	struct arm_smccc_res res;
 
-	/* disable hba before device reset */
+	 
 	ufshcd_hba_stop(hba);
 
 	ufs_mtk_device_reset_ctrl(0, res);
 
-	/*
-	 * The reset signal is active low. UFS devices shall detect
-	 * more than or equal to 1us of positive or negative RST_n
-	 * pulse width.
-	 *
-	 * To be on safe side, keep the reset low for at least 10us.
-	 */
+	 
 	usleep_range(10, 15);
 
 	ufs_mtk_device_reset_ctrl(1, res);
 
-	/* Some devices may need time to respond to rst_n */
+	 
 	usleep_range(10000, 15000);
 
 	dev_info(hba->dev, "device reset done\n");
@@ -1219,7 +1145,7 @@ static int ufs_mtk_link_set_hpm(struct ufs_hba *hba)
 		ufs_mtk_config_mcq(hba, false);
 		ufshcd_mcq_make_queues_operational(hba);
 		ufshcd_mcq_config_mac(hba, hba->nutrs);
-		/* Enable MCQ mode */
+		 
 		ufshcd_writel(hba, ufshcd_readl(hba, REG_UFS_MEM_CFG) | 0x1,
 			      REG_UFS_MEM_CFG);
 	}
@@ -1234,14 +1160,14 @@ static int ufs_mtk_link_set_lpm(struct ufs_hba *hba)
 {
 	int err;
 
-	/* Disable reset confirm feature by UniPro */
+	 
 	ufshcd_writel(hba,
 		      (ufshcd_readl(hba, REG_UFS_XOUFS_CTRL) & ~0x100),
 		      REG_UFS_XOUFS_CTRL);
 
 	err = ufs_mtk_unipro_set_lpm(hba, true);
 	if (err) {
-		/* Resume UniPro state for following error recovery */
+		 
 		ufs_mtk_unipro_set_lpm(hba, false);
 		return err;
 	}
@@ -1276,15 +1202,15 @@ static void ufs_mtk_dev_vreg_set_lpm(struct ufs_hba *hba, bool lpm)
 	if (!hba->vreg_info.vccq && !hba->vreg_info.vccq2)
 		return;
 
-	/* Skip if VCC is assumed always-on */
+	 
 	if (!hba->vreg_info.vcc)
 		return;
 
-	/* Bypass LPM when device is still active */
+	 
 	if (lpm && ufshcd_is_ufs_dev_active(hba))
 		return;
 
-	/* Bypass LPM if VCC is enabled */
+	 
 	if (lpm && hba->vreg_info.vcc->enabled)
 		return;
 
@@ -1301,10 +1227,10 @@ static void ufs_mtk_auto_hibern8_disable(struct ufs_hba *hba)
 {
 	int ret;
 
-	/* disable auto-hibern8 */
+	 
 	ufshcd_writel(hba, 0, REG_AUTO_HIBERNATE_IDLE_TIMER);
 
-	/* wait host return to idle state when auto-hibern8 off */
+	 
 	ufs_mtk_wait_idle_state(hba, 5);
 
 	ret = ufs_mtk_wait_link_state(hba, VS_LINK_UP, 100);
@@ -1331,11 +1257,7 @@ static int ufs_mtk_suspend(struct ufs_hba *hba, enum ufs_pm_op pm_op,
 	}
 
 	if (!ufshcd_is_link_active(hba)) {
-		/*
-		 * Make sure no error will be returned to prevent
-		 * ufshcd_suspend() re-enabling regulators while vreg is still
-		 * in low-power mode.
-		 */
+		 
 		err = ufs_mtk_mphy_power_on(hba, false);
 		if (err)
 			goto fail;
@@ -1348,11 +1270,7 @@ static int ufs_mtk_suspend(struct ufs_hba *hba, enum ufs_pm_op pm_op,
 
 	return 0;
 fail:
-	/*
-	 * Set link as off state enforcedly to trigger
-	 * ufshcd_host_reset_and_restore() in ufshcd_suspend()
-	 * for completed host reset.
-	 */
+	 
 	ufshcd_set_link_off(hba);
 	return -EAGAIN;
 }
@@ -1384,18 +1302,18 @@ fail:
 
 static void ufs_mtk_dbg_register_dump(struct ufs_hba *hba)
 {
-	/* Dump ufshci register 0x140 ~ 0x14C */
+	 
 	ufshcd_dump_regs(hba, REG_UFS_XOUFS_CTRL, 0x10,
 			 "XOUFS Ctrl (0x140): ");
 
 	ufshcd_dump_regs(hba, REG_UFS_EXTREG, 0x4, "Ext Reg ");
 
-	/* Dump ufshci register 0x2200 ~ 0x22AC */
+	 
 	ufshcd_dump_regs(hba, REG_UFS_MPHYCTRL,
 			 REG_UFS_REJECT_MON - REG_UFS_MPHYCTRL + 4,
 			 "MPHY Ctrl (0x2200): ");
 
-	/* Direct debugging information to REG_MTK_PROBE */
+	 
 	ufs_mtk_dbg_sel(hba);
 	ufshcd_dump_regs(hba, REG_UFS_PROBE, 0x4, "Debug Probe ");
 }
@@ -1410,11 +1328,7 @@ static int ufs_mtk_apply_dev_quirks(struct ufs_hba *hba)
 		ufshcd_dme_set(hba, UIC_ARG_MIB(PA_HIBERN8TIME), 10);
 	}
 
-	/*
-	 * Decide waiting time before gating reference clock and
-	 * after ungating reference clock according to vendors'
-	 * requirements.
-	 */
+	 
 	if (mid == UFS_VENDOR_SAMSUNG)
 		ufs_mtk_setup_ref_clk_wait_us(hba, 1);
 	else if (mid == UFS_VENDOR_SKHYNIX)
@@ -1434,10 +1348,7 @@ static void ufs_mtk_fixup_dev_quirks(struct ufs_hba *hba)
 	if (ufs_mtk_is_broken_vcc(hba) && hba->vreg_info.vcc &&
 	    (hba->dev_quirks & UFS_DEVICE_QUIRK_DELAY_AFTER_LPM)) {
 		hba->vreg_info.vcc->always_on = true;
-		/*
-		 * VCC will be kept always-on thus we don't
-		 * need any delay during regulator operations
-		 */
+		 
 		hba->dev_quirks &= ~(UFS_DEVICE_QUIRK_DELAY_BEFORE_LPM |
 			UFS_DEVICE_QUIRK_DELAY_AFTER_LPM);
 	}
@@ -1455,7 +1366,7 @@ static void ufs_mtk_event_notify(struct ufs_hba *hba,
 
 	trace_ufs_mtk_event(evt, val);
 
-	/* Print details of UIC Errors */
+	 
 	if (evt <= UFS_EVT_DME_ERR) {
 		dev_info(hba->dev,
 			 "Host UIC Error Code (%s): %08x\n",
@@ -1478,7 +1389,7 @@ static void ufs_mtk_config_scaling_param(struct ufs_hba *hba,
 				struct devfreq_dev_profile *profile,
 				struct devfreq_simple_ondemand_data *data)
 {
-	/* Customize min gear in clk scaling */
+	 
 	hba->clk_scaling.min_gear = UFS_HS_G4;
 
 	hba->vps->devfreq_profile.polling_ms = 200;
@@ -1486,18 +1397,7 @@ static void ufs_mtk_config_scaling_param(struct ufs_hba *hba,
 	hba->vps->ondemand_data.downdifferential = 20;
 }
 
-/**
- * ufs_mtk_clk_scale - Internal clk scaling operation
- *
- * MTK platform supports clk scaling by switching parent of ufs_sel(mux).
- * The ufs_sel downstream to ufs_ck which feeds directly to UFS hardware.
- * Max and min clocks rate of ufs_sel defined in dts should match rate of
- * "ufs_sel_max_src" and "ufs_sel_min_src" respectively.
- * This prevent changing rate of pll clock that is shared between modules.
- *
- * @hba: per adapter instance
- * @scale_up: True for scaling up and false for scaling down
- */
+ 
 static void ufs_mtk_clk_scale(struct ufs_hba *hba, bool scale_up)
 {
 	struct ufs_mtk_host *host = ufshcd_get_variant(hba);
@@ -1537,10 +1437,10 @@ static int ufs_mtk_clk_scale_notify(struct ufs_hba *hba, bool scale_up,
 		return 0;
 
 	if (status == PRE_CHANGE) {
-		/* Switch parent before clk_set_rate() */
+		 
 		ufs_mtk_clk_scale(hba, scale_up);
 	} else {
-		/* Request interrupt latency QoS accordingly */
+		 
 		ufs_mtk_scale_perf(hba, scale_up);
 	}
 
@@ -1575,7 +1475,7 @@ static int ufs_mtk_mcq_config_resource(struct ufs_hba *hba)
 {
 	struct ufs_mtk_host *host = ufshcd_get_variant(hba);
 
-	/* fail mcq initialization if interrupt is not filled properly */
+	 
 	if (!host->mcq_nr_intr) {
 		dev_info(hba->dev, "IRQs not ready. MCQ disabled.");
 		return -EINVAL;
@@ -1639,7 +1539,7 @@ static int ufs_mtk_config_mcq(struct ufs_hba *hba, bool irq)
 	int ret = 0;
 
 	if (!host->mcq_set_intr) {
-		/* Disable irq option register */
+		 
 		ufshcd_rmwl(hba, MCQ_INTR_EN_MSK, 0, REG_UFS_MMIO_OPT_CTRL_0);
 
 		if (irq) {
@@ -1662,12 +1562,7 @@ static int ufs_mtk_config_esi(struct ufs_hba *hba)
 	return ufs_mtk_config_mcq(hba, true);
 }
 
-/*
- * struct ufs_hba_mtk_vops - UFS MTK specific variant operations
- *
- * The variant operations configure the necessary controller and PHY
- * handshake during initialization.
- */
+ 
 static const struct ufs_hba_variant_ops ufs_hba_mtk_vops = {
 	.name                = "mediatek.ufshci",
 	.init                = ufs_mtk_init,
@@ -1685,19 +1580,14 @@ static const struct ufs_hba_variant_ops ufs_hba_mtk_vops = {
 	.event_notify        = ufs_mtk_event_notify,
 	.config_scaling_param = ufs_mtk_config_scaling_param,
 	.clk_scale_notify    = ufs_mtk_clk_scale_notify,
-	/* mcq vops */
+	 
 	.get_hba_mac         = ufs_mtk_get_hba_mac,
 	.op_runtime_config   = ufs_mtk_op_runtime_config,
 	.mcq_config_resource = ufs_mtk_mcq_config_resource,
 	.config_esi          = ufs_mtk_config_esi,
 };
 
-/**
- * ufs_mtk_probe - probe routine of the driver
- * @pdev: pointer to Platform device handle
- *
- * Return: zero for success and non-zero for failure.
- */
+ 
 static int ufs_mtk_probe(struct platform_device *pdev)
 {
 	int err;
@@ -1724,14 +1614,14 @@ static int ufs_mtk_probe(struct platform_device *pdev)
 		dev_notice(dev, "add reset device_link fail\n");
 		goto skip_reset;
 	}
-	/* supplier is not probed */
+	 
 	if (link->status == DL_STATE_DORMANT) {
 		err = -EPROBE_DEFER;
 		goto out;
 	}
 
 skip_reset:
-	/* perform generic probe */
+	 
 	err = ufshcd_pltfrm_init(pdev, &ufs_hba_mtk_vops);
 
 out:
@@ -1742,12 +1632,7 @@ out:
 	return err;
 }
 
-/**
- * ufs_mtk_remove - set driver_data of the device to NULL
- * @pdev: pointer to platform device handle
- *
- * Always return 0
- */
+ 
 static int ufs_mtk_remove(struct platform_device *pdev)
 {
 	struct ufs_hba *hba =  platform_get_drvdata(pdev);

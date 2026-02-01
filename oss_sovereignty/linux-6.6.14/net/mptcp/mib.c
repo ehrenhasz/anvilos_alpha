@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include <linux/seq_file.h>
 #include <net/ip.h>
@@ -69,11 +69,7 @@ static const struct snmp_mib mptcp_snmp_list[] = {
 	SNMP_MIB_SENTINEL
 };
 
-/* mptcp_mib_alloc - allocate percpu mib counters
- *
- * These are allocated when the first mptcp socket is created so
- * we do not waste percpu memory if mptcp isn't in use.
- */
+ 
 bool mptcp_mib_alloc(struct net *net)
 {
 	struct mptcp_mib __percpu *mib = alloc_percpu(struct mptcp_mib);

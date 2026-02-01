@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022 Oracle and/or its affiliates.
- *
- * Based on:
- *   svm_int_ctl_test
- *
- *   Copyright (C) 2021, Red Hat, Inc.
- *
- */
+
+ 
 #include <stdatomic.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -40,12 +32,7 @@ static void l2_guest_code_int(void)
 {
 	GUEST_ASSERT_EQ(int_fired, 1);
 
-	/*
-         * Same as the vmmcall() function, but with a ud2 sneaked after the
-         * vmmcall.  The caller injects an exception with the return address
-         * increased by 2, so the "pop rbp" must be after the ud2 and we cannot
-	 * use vmmcall() directly.
-         */
+	 
 	__asm__ __volatile__("push %%rbp; vmmcall; ud2; pop %%rbp"
                              : : "a"(0xdeadbeef), "c"(0xbeefdead)
                              : "rbx", "rdx", "rsi", "rdi", "r8", "r9",
@@ -85,7 +72,7 @@ static void l1_guest_code(struct svm_test_data *svm, uint64_t is_nmi, uint64_t i
 	if (is_nmi)
 		x2apic_enable();
 
-	/* Prepare for L2 execution. */
+	 
 	generic_svm_setup(svm,
 			  is_nmi ? l2_guest_code_nmi : l2_guest_code_int,
 			  &l2_guest_stack[L2_GUEST_STACK_SIZE]);
@@ -97,7 +84,7 @@ static void l1_guest_code(struct svm_test_data *svm, uint64_t is_nmi, uint64_t i
 		vmcb->control.event_inj = SVM_EVTINJ_VALID | SVM_EVTINJ_TYPE_NMI;
 	} else {
 		vmcb->control.event_inj = INT_NR | SVM_EVTINJ_VALID | SVM_EVTINJ_TYPE_SOFT;
-		/* The return address pushed on stack */
+		 
 		vmcb->control.next_rip = vmcb->save.rip;
 	}
 
@@ -115,20 +102,20 @@ static void l1_guest_code(struct svm_test_data *svm, uint64_t is_nmi, uint64_t i
 		nmi_stage_inc();
 
 		stgi();
-		/* self-NMI happens here */
+		 
 		while (true)
 			cpu_relax();
 	}
 
-	/* Skip over VMMCALL */
+	 
 	vmcb->save.rip += 3;
 
-	/* Switch to alternate IDT to cause intervening NPF again */
+	 
 	vmcb->save.idtr.base = idt_alt;
-	vmcb->control.clean = 0; /* &= ~BIT(VMCB_DT) would be enough */
+	vmcb->control.clean = 0;  
 
 	vmcb->control.event_inj = BP_VECTOR | SVM_EVTINJ_VALID | SVM_EVTINJ_TYPE_EXEPT;
-	/* The return address pushed on stack, skip over UD2 */
+	 
 	vmcb->control.next_rip = vmcb->save.rip + 2;
 
 	run_guest(vmcb, svm->vmcb_gpa);
@@ -187,7 +174,7 @@ static void run_test(bool is_nmi)
 	case UCALL_ABORT:
 		REPORT_GUEST_ASSERT(uc);
 		break;
-		/* NOT REACHED */
+		 
 	case UCALL_DONE:
 		goto done;
 	default:

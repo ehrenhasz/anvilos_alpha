@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2016 Freescale Semiconductor, Inc.
- * Copyright 2017-2018 NXP
- *	Dong Aisheng <aisheng.dong@nxp.com>
- */
+
+ 
 
 #include <dt-bindings/pinctrl/pads-imx8qxp.h>
 #include <linux/err.h>
@@ -206,7 +202,7 @@ static const struct imx_pinctrl_soc_info imx8qxp_pinctrl_info = {
 
 static const struct of_device_id imx8qxp_pinctrl_of_match[] = {
 	{ .compatible = "fsl,imx8qxp-iomuxc", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx8qxp_pinctrl_of_match);
 

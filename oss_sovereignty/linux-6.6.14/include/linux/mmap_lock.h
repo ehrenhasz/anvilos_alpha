@@ -42,7 +42,7 @@ static inline void __mmap_lock_trace_released(struct mm_struct *mm, bool write)
 		__mmap_lock_do_trace_released(mm, write);
 }
 
-#else /* !CONFIG_TRACING */
+#else  
 
 static inline void __mmap_lock_trace_start_locking(struct mm_struct *mm,
 						   bool write)
@@ -58,7 +58,7 @@ static inline void __mmap_lock_trace_released(struct mm_struct *mm, bool write)
 {
 }
 
-#endif /* CONFIG_TRACING */
+#endif  
 
 static inline void mmap_assert_locked(struct mm_struct *mm)
 {
@@ -73,24 +73,11 @@ static inline void mmap_assert_write_locked(struct mm_struct *mm)
 }
 
 #ifdef CONFIG_PER_VMA_LOCK
-/*
- * Drop all currently-held per-VMA locks.
- * This is called from the mmap_lock implementation directly before releasing
- * a write-locked mmap_lock (or downgrading it to read-locked).
- * This should normally NOT be called manually from other places.
- * If you want to call this manually anyway, keep in mind that this will release
- * *all* VMA write locks, including ones from further up the stack.
- */
+ 
 static inline void vma_end_write_all(struct mm_struct *mm)
 {
 	mmap_assert_write_locked(mm);
-	/*
-	 * Nobody can concurrently modify mm->mm_lock_seq due to exclusive
-	 * mmap_lock being held.
-	 * We need RELEASE semantics here to ensure that preceding stores into
-	 * the VMA take effect before we unlock it with this store.
-	 * Pairs with ACQUIRE semantics in vma_start_read().
-	 */
+	 
 	smp_store_release(&mm->mm_lock_seq, mm->mm_lock_seq + 1);
 }
 #else
@@ -184,4 +171,4 @@ static inline int mmap_lock_is_contended(struct mm_struct *mm)
 	return rwsem_is_contended(&mm->mmap_lock);
 }
 
-#endif /* _LINUX_MMAP_LOCK_H */
+#endif  

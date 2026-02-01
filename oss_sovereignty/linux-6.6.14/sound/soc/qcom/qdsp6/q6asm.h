@@ -1,10 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __Q6_ASM_H__
 #define __Q6_ASM_H__
 #include "q6dsp-common.h"
 #include <dt-bindings/sound/qcom,q6asm.h>
 
-/* ASM client callback events */
+ 
 #define CMD_PAUSE			0x0001
 #define ASM_CLIENT_EVENT_CMD_PAUSE_DONE		0x1001
 #define CMD_FLUSH				0x0002
@@ -149,4 +149,4 @@ int q6asm_map_memory_regions(unsigned int dir,
 			     phys_addr_t phys,
 			     size_t period_sz, unsigned int periods);
 int q6asm_unmap_memory_regions(unsigned int dir, struct audio_client *ac);
-#endif /* __Q6_ASM_H__ */
+#endif  

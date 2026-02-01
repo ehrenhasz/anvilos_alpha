@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCI driver for the Synopsys DesignWare DMA Controller
- *
- * Copyright (C) 2013 Intel Corporation
- * Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -94,36 +89,36 @@ static int dw_pci_resume_early(struct device *dev)
 	return do_dw_dma_enable(chip);
 };
 
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct dev_pm_ops dw_pci_dev_pm_ops = {
 	SET_LATE_SYSTEM_SLEEP_PM_OPS(dw_pci_suspend_late, dw_pci_resume_early)
 };
 
 static const struct pci_device_id dw_pci_id_table[] = {
-	/* Medfield (GPDMA) */
+	 
 	{ PCI_VDEVICE(INTEL, 0x0827), (kernel_ulong_t)&dw_dma_chip_pdata },
 
-	/* BayTrail */
+	 
 	{ PCI_VDEVICE(INTEL, 0x0f06), (kernel_ulong_t)&dw_dma_chip_pdata },
 	{ PCI_VDEVICE(INTEL, 0x0f40), (kernel_ulong_t)&dw_dma_chip_pdata },
 
-	/* Merrifield */
+	 
 	{ PCI_VDEVICE(INTEL, 0x11a2), (kernel_ulong_t)&idma32_chip_pdata },
 
-	/* Braswell */
+	 
 	{ PCI_VDEVICE(INTEL, 0x2286), (kernel_ulong_t)&dw_dma_chip_pdata },
 	{ PCI_VDEVICE(INTEL, 0x22c0), (kernel_ulong_t)&dw_dma_chip_pdata },
 
-	/* Elkhart Lake iDMA 32-bit (PSE DMA) */
+	 
 	{ PCI_VDEVICE(INTEL, 0x4bb4), (kernel_ulong_t)&xbar_chip_pdata },
 	{ PCI_VDEVICE(INTEL, 0x4bb5), (kernel_ulong_t)&xbar_chip_pdata },
 	{ PCI_VDEVICE(INTEL, 0x4bb6), (kernel_ulong_t)&xbar_chip_pdata },
 
-	/* Haswell */
+	 
 	{ PCI_VDEVICE(INTEL, 0x9c60), (kernel_ulong_t)&dw_dma_chip_pdata },
 
-	/* Broadwell */
+	 
 	{ PCI_VDEVICE(INTEL, 0x9ce0), (kernel_ulong_t)&dw_dma_chip_pdata },
 
 	{ }

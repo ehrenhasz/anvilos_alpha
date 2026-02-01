@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright (c) 2019-2020, Mellanox Technologies inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef _MLX5_IB_DEVX_H
 #define _MLX5_IB_DEVX_H
@@ -12,7 +10,7 @@
 struct devx_obj {
 	struct mlx5_ib_dev	*ib_dev;
 	u64			obj_id;
-	u32			dinlen; /* destroy inbox length */
+	u32			dinlen;  
 	u32			dinbox[MLX5_MAX_DESTROY_INBOX_SIZE_DW];
 	u32			flags;
 	union {
@@ -21,7 +19,7 @@ struct devx_obj {
 		struct mlx5_core_cq	core_cq;
 		u32			flow_counter_bulk_size;
 	};
-	struct list_head event_sub; /* holds devx_event_subscription entries */
+	struct list_head event_sub;  
 };
 #if IS_ENABLED(CONFIG_INFINIBAND_USER_ACCESS)
 int mlx5_ib_devx_create(struct mlx5_ib_dev *dev, bool is_user);
@@ -42,4 +40,4 @@ static inline void mlx5_ib_devx_cleanup(struct mlx5_ib_dev *dev)
 {
 }
 #endif
-#endif /* _MLX5_IB_DEVX_H */
+#endif  

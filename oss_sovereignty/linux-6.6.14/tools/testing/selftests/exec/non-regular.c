@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -11,7 +11,7 @@
 
 #include "../kselftest_harness.h"
 
-/* Remove a file, ignoring the result if it didn't exist. */
+ 
 void rm(struct __test_metadata *_metadata, const char *pathname,
 	int is_dir)
 {
@@ -46,7 +46,7 @@ FIXTURE_VARIANT(file)
 	void (*setup)(struct __test_metadata *_metadata,
 		      FIXTURE_DATA(file) *self,
 		      const FIXTURE_VARIANT(file) *variant);
-	int major, minor, mode; /* for mknod() */
+	int major, minor, mode;  
 };
 
 void setup_link(struct __test_metadata *_metadata,
@@ -113,7 +113,7 @@ FIXTURE_VARIANT_ADD(file, S_IFBLK)
 	.name = "S_IFBLK",
 	.expected = EACCES,
 	.setup = setup_node,
-	/* /dev/loop0 */
+	 
 	.major = 7,
 	.minor = 0,
 	.mode = S_IFBLK,
@@ -124,7 +124,7 @@ FIXTURE_VARIANT_ADD(file, S_IFCHR)
 	.name = "S_IFCHR",
 	.expected = EACCES,
 	.setup = setup_node,
-	/* /dev/zero */
+	 
 	.major = 1,
 	.minor = 5,
 	.mode = S_IFCHR,
@@ -166,7 +166,7 @@ TEST_F(file, exec_errno)
 	EXPECT_EQ(errno, variant->expected);
 }
 
-/* S_IFSOCK */
+ 
 FIXTURE(sock)
 {
 	int fd;

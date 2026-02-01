@@ -1,15 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Host1x init for Tegra114 SoCs
- *
- * Copyright (c) 2013 NVIDIA Corporation.
- */
 
-/* include hw specification */
+ 
+
+ 
 #include "host1x02.h"
 #include "host1x02_hardware.h"
 
-/* include code */
+ 
 #define HOST1X_HW 2
 
 #include "cdma_hw.c"

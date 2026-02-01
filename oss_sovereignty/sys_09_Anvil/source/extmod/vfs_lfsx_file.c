@@ -1,30 +1,6 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2019-2020 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
-// This file should be compiled when included from vfs_lfs.c.
+
 #if defined(LFS_BUILD_VERSION)
 
 #include <stdio.h>
@@ -182,7 +158,7 @@ static mp_uint_t MP_VFS_LFSx(file_ioctl)(mp_obj_t self_in, mp_uint_t request, ui
             return 0;
         }
         int res = LFSx_API(file_close)(&self->vfs->lfs, &self->file);
-        self->vfs = NULL; // indicate a closed file
+        self->vfs = NULL; 
         if (res < 0) {
             *errcode = -res;
             return MP_STREAM_ERROR;
@@ -241,4 +217,4 @@ MP_DEFINE_CONST_OBJ_TYPE(
     locals_dict, &MP_VFS_LFSx(file_locals_dict)
     );
 
-#endif // defined(LFS_BUILD_VERSION)
+#endif 

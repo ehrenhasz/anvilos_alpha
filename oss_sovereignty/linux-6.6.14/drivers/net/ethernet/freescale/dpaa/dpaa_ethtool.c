@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later
-/*
- * Copyright 2008 - 2016 Freescale Semiconductor Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -28,13 +26,13 @@ static const char dpaa_stats_percpu[][ETH_GSTRING_LEN] = {
 };
 
 static char dpaa_stats_global[][ETH_GSTRING_LEN] = {
-	/* dpa rx errors */
+	 
 	"rx dma error",
 	"rx frame physical error",
 	"rx frame size error",
 	"rx header error",
 
-	/* demultiplexing errors */
+	 
 	"qman cg_tdrop",
 	"qman wred",
 	"qman error cond",
@@ -44,7 +42,7 @@ static char dpaa_stats_global[][ETH_GSTRING_LEN] = {
 	"qman fq retired",
 	"qman orp disabled",
 
-	/* congestion related stats */
+	 
 	"congestion time (ms)",
 	"entered congestion",
 	"congested (0/1)"
@@ -139,7 +137,7 @@ static void copy_stats(struct dpaa_percpu_priv *percpu_priv, int num_cpus,
 	int num_values = num_cpus + 1;
 	int crr = 0;
 
-	/* update current CPU's stats and also add them to the total values */
+	 
 	data[crr * num_values + crr_cpu] = percpu_priv->in_interrupt;
 	data[crr++ * num_values + num_cpus] += percpu_priv->in_interrupt;
 
@@ -222,14 +220,14 @@ static void dpaa_get_ethtool_stats(struct net_device *net_dev,
 	offset += sizeof(struct dpaa_rx_errors) / sizeof(u64);
 	memcpy(data + offset, &ern_cnt, sizeof(struct dpaa_ern_cnt));
 
-	/* gather congestion related counters */
+	 
 	cg_num    = 0;
 	cg_status = false;
 	cg_time   = jiffies_to_msecs(priv->cgr_data.congested_jiffies);
 	if (qman_query_cgr_congested(&priv->cgr_data.cgr, &cg_status) == 0) {
 		cg_num    = priv->cgr_data.cgr_congested_count;
 
-		/* reset congestion stats (like QMan API does */
+		 
 		priv->cgr_data.congested_jiffies   = 0;
 		priv->cgr_data.cgr_congested_count = 0;
 	}
@@ -348,7 +346,7 @@ static int dpaa_set_hash_opts(struct net_device *dev,
 {
 	int ret = -EINVAL;
 
-	/* we support hashing on IPv4/v6 src/dest IP and L4 src/dest port */
+	 
 	if (nfc->data &
 	    ~(RXH_IP_SRC | RXH_IP_DST | RXH_L4_B_0_1 | RXH_L4_B_2_3))
 		return -EINVAL;
@@ -466,12 +464,12 @@ static int dpaa_set_coalesce(struct net_device *dev,
 	period = c->rx_coalesce_usecs;
 	thresh = c->rx_max_coalesced_frames;
 
-	/* save previous values */
+	 
 	portal = qman_get_affine_portal(smp_processor_id());
 	qman_portal_get_iperiod(portal, &prev_period);
 	qman_dqrr_get_ithresh(portal, &prev_thresh);
 
-	/* set new values */
+	 
 	for_each_cpu_and(cpu, cpus, cpu_online_mask) {
 		portal = qman_get_affine_portal(cpu);
 		res = qman_portal_set_iperiod(portal, period);
@@ -488,12 +486,12 @@ static int dpaa_set_coalesce(struct net_device *dev,
 	return 0;
 
 revert_values:
-	/* restore previous values */
+	 
 	for_each_cpu_and(cpu, cpus, cpu_online_mask) {
 		if (!needs_revert[cpu])
 			continue;
 		portal = qman_get_affine_portal(cpu);
-		/* previous values will not fail, ignore return value */
+		 
 		qman_portal_set_iperiod(portal, prev_period);
 		qman_dqrr_set_ithresh(portal, prev_thresh);
 	}

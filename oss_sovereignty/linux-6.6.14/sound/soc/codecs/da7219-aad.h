@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * da7219-aad.h - DA7322 ASoC AAD Driver
- *
- * Copyright (c) 2015 Dialog Semiconductor Ltd.
- *
- * Author: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
- */
+ 
+ 
 
 #ifndef __DA7219_AAD_H
 #define __DA7219_AAD_H
@@ -16,9 +10,7 @@
 #include <sound/jack.h>
 #include <sound/da7219-aad.h>
 
-/*
- * Registers
- */
+ 
 
 #define DA7219_ACCDET_STATUS_A		0xC0
 #define DA7219_ACCDET_STATUS_B		0xC1
@@ -36,11 +28,9 @@
 #define DA7219_ACCDET_CONFIG_8		0xCD
 
 
-/*
- * Bit Fields
- */
+ 
 
-/* DA7219_ACCDET_STATUS_A = 0xC0 */
+ 
 #define DA7219_JACK_INSERTION_STS_SHIFT	0
 #define DA7219_JACK_INSERTION_STS_MASK	(0x1 << 0)
 #define DA7219_JACK_TYPE_STS_SHIFT	1
@@ -50,11 +40,11 @@
 #define DA7219_MICBIAS_UP_STS_SHIFT	3
 #define DA7219_MICBIAS_UP_STS_MASK	(0x1 << 3)
 
-/* DA7219_ACCDET_STATUS_B = 0xC1 */
+ 
 #define DA7219_BUTTON_TYPE_STS_SHIFT	0
 #define DA7219_BUTTON_TYPE_STS_MASK	(0xFF << 0)
 
-/* DA7219_ACCDET_IRQ_EVENT_A = 0xC2 */
+ 
 #define DA7219_E_JACK_INSERTED_SHIFT		0
 #define DA7219_E_JACK_INSERTED_MASK		(0x1 << 0)
 #define DA7219_E_JACK_REMOVED_SHIFT		1
@@ -62,7 +52,7 @@
 #define DA7219_E_JACK_DETECT_COMPLETE_SHIFT	2
 #define DA7219_E_JACK_DETECT_COMPLETE_MASK	(0x1 << 2)
 
-/* DA7219_ACCDET_IRQ_EVENT_B = 0xC3 */
+ 
 #define DA7219_E_BUTTON_A_PRESSED_SHIFT		0
 #define DA7219_E_BUTTON_A_PRESSED_MASK		(0x1 << 0)
 #define DA7219_E_BUTTON_B_PRESSED_SHIFT		1
@@ -80,7 +70,7 @@
 #define DA7219_E_BUTTON_A_RELEASED_SHIFT	7
 #define DA7219_E_BUTTON_A_RELEASED_MASK		(0x1 << 7)
 
-/* DA7219_ACCDET_IRQ_MASK_A = 0xC4 */
+ 
 #define DA7219_M_JACK_INSERTED_SHIFT		0
 #define DA7219_M_JACK_INSERTED_MASK		(0x1 << 0)
 #define DA7219_M_JACK_REMOVED_SHIFT		1
@@ -88,7 +78,7 @@
 #define DA7219_M_JACK_DETECT_COMPLETE_SHIFT	2
 #define DA7219_M_JACK_DETECT_COMPLETE_MASK	(0x1 << 2)
 
-/* DA7219_ACCDET_IRQ_MASK_B = 0xC5 */
+ 
 #define DA7219_M_BUTTON_A_PRESSED_SHIFT		0
 #define DA7219_M_BUTTON_A_PRESSED_MASK		(0x1 << 0)
 #define DA7219_M_BUTTON_B_PRESSED_SHIFT		1
@@ -106,7 +96,7 @@
 #define DA7219_M_BUTTON_A_RELEASED_SHIFT	7
 #define DA7219_M_BUTTON_A_RELEASED_MASK		(0x1 << 7)
 
-/* DA7219_ACCDET_CONFIG_1 = 0xC6 */
+ 
 #define DA7219_ACCDET_EN_SHIFT		0
 #define DA7219_ACCDET_EN_MASK		(0x1 << 0)
 #define DA7219_BUTTON_CONFIG_SHIFT	1
@@ -118,7 +108,7 @@
 #define DA7219_PIN_ORDER_DET_EN_SHIFT	7
 #define DA7219_PIN_ORDER_DET_EN_MASK	(0x1 << 7)
 
-/* DA7219_ACCDET_CONFIG_2 = 0xC7 */
+ 
 #define DA7219_ACCDET_PAUSE_SHIFT	0
 #define DA7219_ACCDET_PAUSE_MASK	(0x1 << 0)
 #define DA7219_JACKDET_DEBOUNCE_SHIFT	1
@@ -128,23 +118,23 @@
 #define DA7219_JACKDET_REM_DEB_SHIFT	6
 #define DA7219_JACKDET_REM_DEB_MASK	(0x3 << 6)
 
-/* DA7219_ACCDET_CONFIG_3 = 0xC8 */
+ 
 #define DA7219_A_D_BUTTON_THRESH_SHIFT	0
 #define DA7219_A_D_BUTTON_THRESH_MASK	(0xFF << 0)
 
-/* DA7219_ACCDET_CONFIG_4 = 0xC9 */
+ 
 #define DA7219_D_B_BUTTON_THRESH_SHIFT	0
 #define DA7219_D_B_BUTTON_THRESH_MASK	(0xFF << 0)
 
-/* DA7219_ACCDET_CONFIG_5 = 0xCA */
+ 
 #define DA7219_B_C_BUTTON_THRESH_SHIFT	0
 #define DA7219_B_C_BUTTON_THRESH_MASK	(0xFF << 0)
 
-/* DA7219_ACCDET_CONFIG_6 = 0xCB */
+ 
 #define DA7219_C_MIC_BUTTON_THRESH_SHIFT	0
 #define DA7219_C_MIC_BUTTON_THRESH_MASK		(0xFF << 0)
 
-/* DA7219_ACCDET_CONFIG_7 = 0xCC */
+ 
 #define DA7219_BUTTON_AVERAGE_SHIFT	0
 #define DA7219_BUTTON_AVERAGE_MASK	(0x3 << 0)
 #define DA7219_ADC_1_BIT_REPEAT_SHIFT	2
@@ -154,7 +144,7 @@
 #define DA7219_JACK_TYPE_FORCE_SHIFT	5
 #define DA7219_JACK_TYPE_FORCE_MASK	(0x1 << 5)
 
-/* DA7219_ACCDET_CONFIG_8 = 0xCD */
+ 
 #define DA7219_HPTEST_EN_SHIFT		0
 #define DA7219_HPTEST_EN_MASK		(0x1 << 0)
 #define DA7219_HPTEST_RES_SEL_SHIFT	1
@@ -184,7 +174,7 @@ enum da7219_aad_event_regs {
 	DA7219_AAD_IRQ_REG_MAX,
 };
 
-/* Private data */
+ 
 struct da7219_aad_priv {
 	struct snd_soc_component *component;
 	int irq;
@@ -205,18 +195,18 @@ struct da7219_aad_priv {
 	bool jack_inserted;
 };
 
-/* AAD control */
+ 
 void da7219_aad_jack_det(struct snd_soc_component *component, struct snd_soc_jack *jack);
 
-/* Suspend/Resume */
+ 
 void da7219_aad_suspend(struct snd_soc_component *component);
 void da7219_aad_resume(struct snd_soc_component *component);
 
-/* Init/Exit */
+ 
 int da7219_aad_init(struct snd_soc_component *component);
 void da7219_aad_exit(struct snd_soc_component *component);
 
-/* I2C Probe */
+ 
 int da7219_aad_probe(struct i2c_client *i2c);
 
-#endif /* __DA7219_AAD_H */
+#endif  

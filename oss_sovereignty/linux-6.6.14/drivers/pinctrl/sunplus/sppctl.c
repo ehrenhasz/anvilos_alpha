@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SP7021 Pin Controller Driver.
- * Copyright (C) Sunplus Tech / Tibbo Tech.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/device.h>
@@ -28,11 +25,11 @@
 #include "sppctl.h"
 
 struct sppctl_gpio_chip {
-	void __iomem *gpioxt_base;	/* MASTER, OE, OUT, IN, I_INV, O_INV, OD */
-	void __iomem *first_base;	/* GPIO_FIRST                            */
+	void __iomem *gpioxt_base;	 
+	void __iomem *first_base;	 
 
 	struct gpio_chip chip;
-	spinlock_t lock;		/* lock for accessing OE register        */
+	spinlock_t lock;		 
 };
 
 static inline u32 sppctl_first_readl(struct sppctl_gpio_chip *spp_gchip, u32 off)
@@ -112,7 +109,7 @@ static inline u32 sppctl_get_reg_and_bit_offset(unsigned int offset, u32 *reg_of
 {
 	u32 bit_off;
 
-	/* Each register has 32 bits. */
+	 
 	*reg_off = (offset / 32) * 4;
 	bit_off = offset % 32;
 
@@ -123,12 +120,7 @@ static inline u32 sppctl_get_moon_reg_and_bit_offset(unsigned int offset, u32 *r
 {
 	u32 bit_off;
 
-	/*
-	 * Each MOON register has 32 bits. Upper 16-bit word are mask-fields.
-	 * The lower 16-bit word are the control-fields. The corresponding
-	 * bits in mask-field should be set then you can write something to
-	 * control-field.
-	 */
+	 
 	*reg_off = (offset / 16) * 4;
 	bit_off = offset % 16;
 
@@ -146,117 +138,42 @@ static inline u32 sppctl_prep_moon_reg_and_offset(unsigned int offset, u32 *reg_
 		return SPPCTL_CLR_MOON_REG_BIT(bit_off);
 }
 
-/**
- * sppctl_func_set() - Set pin of fully-pinmux function.
- *
- * Mask-fields and control-fields of fully-pinmux function of SP7021 are
- * arranged as shown below:
- *
- *  func# | register |  mask-field  | control-field
- * -------+----------+--------------+---------------
- *    0   | base[0]  |  (22 : 16)   |   ( 6 : 0)
- *    1   | base[0]  |  (30 : 24)   |   (14 : 8)
- *    2   | base[1]  |  (22 : 16)   |   ( 6 : 0)
- *    3   | baeg[1]  |  (30 : 24)   |   (14 : 8)
- *    :   |    :     |      :       |       :
- *
- * where mask-fields are used to protect control-fields from write-in
- * accidentally. Set the corresponding bits in the mask-field before
- * you write a value into a control-field.
- *
- * Control-fields are used to set where the function pin is going to
- * be routed to.
- *
- * Note that mask-fields and control-fields of even number of 'func'
- * are located at bits (22:16) and (6:0), while odd number of 'func's
- * are located at bits (30:24) and (14:8).
- */
+ 
 static void sppctl_func_set(struct sppctl_pdata *pctl, u8 func, u8 val)
 {
 	u32 reg, offset;
 
-	/*
-	 * Note that upper 16-bit word are mask-fields and lower 16-bit
-	 * word are the control-fields. Set corresponding bits in mask-
-	 * field before write to a control-field.
-	 */
+	 
 	reg = SPPCTL_FULLY_PINMUX_MASK_MASK | val;
 
-	/*
-	 * MUXF_L2SW_CLK_OUT is the first fully-pinmux pin
-	 * and its register offset is 0.
-	 */
+	 
 	func -= MUXF_L2SW_CLK_OUT;
 
-	/*
-	 * Check if 'func' is an odd number or not. Mask and control-
-	 * fields of odd number 'func' is located at upper portion of
-	 * a register. Extra shift is needed.
-	 */
+	 
 	if (func & BIT(0))
 		reg <<= SPPCTL_FULLY_PINMUX_UPPER_SHIFT;
 
-	/* Convert func# to register offset w.r.t. base register. */
+	 
 	offset = func * 2;
 	offset &= GENMASK(31, 2);
 
 	writel(reg, pctl->moon2_base + offset);
 }
 
-/**
- * sppctl_gmx_set() - Set pin of group-pinmux.
- *
- * Mask-fields and control-fields of group-pinmux function of SP7021 are
- * arranged as shown below:
- *
- *  register |  mask-fields | control-fields
- * ----------+--------------+----------------
- *  base[0]  |  (31 : 16)   |   (15 : 0)
- *  base[1]  |  (31 : 24)   |   (15 : 0)
- *  base[2]  |  (31 : 24)   |   (15 : 0)
- *     :     |      :       |       :
- *
- * where mask-fields are used to protect control-fields from write-in
- * accidentally. Set the corresponding bits in the mask-field before
- * you write a value into a control-field.
- *
- * Control-fields are used to set where the function pin is going to
- * be routed to. A control-field consists of one or more bits.
- */
+ 
 static void sppctl_gmx_set(struct sppctl_pdata *pctl, u8 reg_off, u8 bit_off, u8 bit_sz,
 			   u8 val)
 {
 	u32 mask, reg;
 
-	/*
-	 * Note that upper 16-bit word are mask-fields and lower 16-bit
-	 * word are the control-fields. Set corresponding bits in mask-
-	 * field before write to a control-field.
-	 */
+	 
 	mask = GENMASK(bit_sz - 1, 0) << SPPCTL_MOON_REG_MASK_SHIFT;
 	reg = (mask | val) << bit_off;
 
 	writel(reg, pctl->moon1_base + reg_off * 4);
 }
 
-/**
- * sppctl_first_get() - get bit of FIRST register.
- *
- * There are 4 FIRST registers. Each has 32 control-bits.
- * Totally, there are 4 * 32 = 128 control-bits.
- * Control-bits are arranged as shown below:
- *
- *  registers | control-bits
- * -----------+--------------
- *  first[0]  |  (31 :  0)
- *  first[1]  |  (63 : 32)
- *  first[2]  |  (95 : 64)
- *  first[3]  | (127 : 96)
- *
- * Each control-bit sets type of a GPIO pin.
- *   0: a fully-pinmux pin
- *   1: a GPIO or IOP pin
- */
+ 
 static int sppctl_first_get(struct gpio_chip *chip, unsigned int offset)
 {
 	struct sppctl_gpio_chip *spp_gchip = gpiochip_get_data(chip);
@@ -268,30 +185,7 @@ static int sppctl_first_get(struct gpio_chip *chip, unsigned int offset)
 	return (reg & BIT(bit_off)) ? 1 : 0;
 }
 
-/**
- * sppctl_master_get() - get bit of MASTER register.
- *
- * There are 8 MASTER registers. Each has 16 mask-bits and 16 control-bits.
- * Upper 16-bit of MASTER registers are mask-bits while lower 16-bit are
- * control-bits. Totally, there are 128 mask-bits and 128 control-bits.
- * They are arranged as shown below:
- *
- *  register  |  mask-bits  | control-bits
- * -----------+-------------+--------------
- *  master[0] |  (15 :   0) |  (15 :   0)
- *  master[1] |  (31 :  16) |  (31 :  16)
- *  master[2] |  (47 :  32) |  (47 :  32)
- *     :      |      :      |      :
- *  master[7] | (127 : 112) | (127 : 112)
- *
- * where mask-bits are used to protect control-bits from write-in
- * accidentally. Set the corresponding mask-bit before you write
- * a value into a control-bit.
- *
- * Each control-bit sets type of a GPIO pin when FIRST bit is 1.
- *   0: a IOP pin
- *   1: a GPIO pin
- */
+ 
 static int sppctl_master_get(struct gpio_chip *chip, unsigned int offset)
 {
 	struct sppctl_gpio_chip *spp_gchip = gpiochip_get_data(chip);
@@ -309,7 +203,7 @@ static void sppctl_first_master_set(struct gpio_chip *chip, unsigned int offset,
 	u32 reg_off, bit_off, reg;
 	enum mux_first_reg val;
 
-	/* FIRST register */
+	 
 	if (first != mux_f_keep) {
 		bit_off = sppctl_get_reg_and_bit_offset(offset, &reg_off);
 		reg = sppctl_first_readl(spp_gchip, reg_off);
@@ -332,7 +226,7 @@ static void sppctl_first_master_set(struct gpio_chip *chip, unsigned int offset,
 			}
 	}
 
-	/* MASTER register */
+	 
 	if (master != mux_m_keep) {
 		reg = sppctl_prep_moon_reg_and_offset(offset, &reg_off, (master == mux_m_gpio));
 		sppctl_gpio_master_writel(spp_gchip, reg, reg_off);
@@ -602,7 +496,7 @@ static int sppctl_pin_config_set(struct pinctrl_dev *pctldev, unsigned int pin,
 	struct sppctl_pdata *pctl = pinctrl_dev_get_drvdata(pctldev);
 	int i;
 
-	/* Special handling for IOP pins */
+	 
 	if (configs[0] == SPPCTL_IOP_CONFIGS) {
 		sppctl_first_master_set(&pctl->spp_gchip->chip, pin, mux_f_gpio, mux_m_iop);
 		return 0;
@@ -675,21 +569,7 @@ static int sppctl_get_function_groups(struct pinctrl_dev *pctldev, unsigned int 
 	return 0;
 }
 
-/**
- * sppctl_fully_pinmux_conv - Convert GPIO# to fully-pinmux control-field setting
- *
- * Each fully-pinmux function can be mapped to any of GPIO 8 ~ 71 by
- * settings its control-field. Refer to following table:
- *
- * control-field |  GPIO
- * --------------+--------
- *        0      |  No map
- *        1      |    8
- *        2      |    9
- *        3      |   10
- *        :      |    :
- *       65      |   71
- */
+ 
 static inline int sppctl_fully_pinmux_conv(unsigned int offset)
 {
 	return (offset < 8) ? 0 : offset - 7;
@@ -775,14 +655,14 @@ static int sppctl_get_group_pins(struct pinctrl_dev *pctldev, unsigned int selec
 	f = &sppctl_list_funcs[g2fpm.f_idx];
 	*num_pins = 0;
 
-	/* Except group-pinmux, each group has 1 pin. */
+	 
 	if (f->type != pinmux_type_grp) {
 		*num_pins = 1;
 		*pins = &sppctl_pins_gpio[selector];
 		return 0;
 	}
 
-	/* Group-pinmux may have more than one pin. */
+	 
 	if (!f->grps)
 		return 0;
 
@@ -835,20 +715,7 @@ static int sppctl_dt_node_to_map(struct pinctrl_dev *pctldev, struct device_node
 	list = of_get_property(np_config, "sunplus,pins", &size);
 	*num_maps = size / sizeof(*list);
 
-	/*
-	 * Process property:
-	 *     sunplus,pins = < u32 u32 u32 ... >;
-	 *
-	 * Each 32-bit integer defines a individual pin in which:
-	 *
-	 *   Bit 32~24: defines GPIO pin number. Its range is 0 ~ 98.
-	 *   Bit 23~16: defines types: (1) fully-pinmux pins
-	 *                             (2) IO processor pins
-	 *                             (3) digital GPIO pins
-	 *   Bit 15~8:  defines pins of peripherals (which are defined in
-	 *              'include/dt-binging/pinctrl/sppctl.h').
-	 *   Bit 7~0:   defines types or initial-state of digital GPIO pins.
-	 */
+	 
 	for (i = 0; i < (*num_maps); i++) {
 		dt_pin = be32_to_cpu(list[i]);
 		pin_num = FIELD_GET(GENMASK(31, 24), dt_pin);
@@ -876,7 +743,7 @@ static int sppctl_dt_node_to_map(struct pinctrl_dev *pctldev, struct device_node
 		(*map)[i].name = parent->name;
 
 		if (pin_type == SPPCTL_PCTL_G_GPIO) {
-			/* A digital GPIO pin */
+			 
 			(*map)[i].type = PIN_MAP_TYPE_CONFIGS_PIN;
 			(*map)[i].data.configs.num_configs = 1;
 			(*map)[i].data.configs.group_or_pin = pin_get_name(pctldev, pin_num);
@@ -891,7 +758,7 @@ static int sppctl_dt_node_to_map(struct pinctrl_dev *pctldev, struct device_node
 				(*configs & (SPPCTL_PCTL_L_OUT | SPPCTL_PCTL_L_OU1)) ?
 				"OUT" : "IN");
 		} else if (pin_type == SPPCTL_PCTL_G_IOPP) {
-			/* A IO Processor (IOP) pin */
+			 
 			(*map)[i].type = PIN_MAP_TYPE_CONFIGS_PIN;
 			(*map)[i].data.configs.num_configs = 1;
 			(*map)[i].data.configs.group_or_pin = pin_get_name(pctldev, pin_num);
@@ -904,7 +771,7 @@ static int sppctl_dt_node_to_map(struct pinctrl_dev *pctldev, struct device_node
 			dev_dbg(pctldev->dev, "%s: IOP\n",
 				(*map)[i].data.configs.group_or_pin);
 		} else {
-			/* A fully-pinmux pin */
+			 
 			(*map)[i].type = PIN_MAP_TYPE_MUX_GROUP;
 			(*map)[i].data.mux.function = sppctl_list_funcs[pin_func].name;
 			(*map)[i].data.mux.group = pin_get_name(pctldev, pin_num);
@@ -914,11 +781,7 @@ static int sppctl_dt_node_to_map(struct pinctrl_dev *pctldev, struct device_node
 		}
 	}
 
-	/*
-	 * Process properties:
-	 *     function = "xxx";
-	 *     groups = "yyy";
-	 */
+	 
 	if (nmG > 0 && of_property_read_string(np_config, "function", &s_f) == 0) {
 		of_property_for_each_string(np_config, "groups", prop, s_g) {
 			(*map)[*num_maps].type = PIN_MAP_TYPE_MUX_GROUP;
@@ -930,10 +793,7 @@ static int sppctl_dt_node_to_map(struct pinctrl_dev *pctldev, struct device_node
 		}
 	}
 
-	/*
-	 * Process property:
-	 *     sunplus,zerofunc = < u32 u32 u32 ...>
-	 */
+	 
 	list = of_get_property(np_config, "sunplus,zerofunc", &size);
 	if (list) {
 		for (i = 0; i < (size / sizeof(*list)); i++) {
@@ -993,7 +853,7 @@ static int sppctl_group_groups(struct platform_device *pdev)
 	struct sppctl_pdata *sppctl = platform_get_drvdata(pdev);
 	int i, k, j;
 
-	/* Calculate number of total group (GPIO + group-pinmux group). */
+	 
 	sppctl->unq_grps_sz = sppctl_gpio_list_sz;
 	for (i = 0; i < sppctl_list_funcs_sz; i++)
 		if (sppctl_list_funcs[i].type == pinmux_type_grp)
@@ -1009,14 +869,14 @@ static int sppctl_group_groups(struct platform_device *pdev)
 	if (!sppctl->g2fp_maps)
 		return -ENOMEM;
 
-	/* Add GPIO pins. */
+	 
 	for (i = 0; i < sppctl_gpio_list_sz; i++) {
 		sppctl->unq_grps[i] = sppctl_gpio_list_s[i];
 		sppctl->g2fp_maps[i].f_idx = 0;
 		sppctl->g2fp_maps[i].g_idx = i;
 	}
 
-	/* Add group-pinmux to end of GPIO pins. */
+	 
 	j = sppctl_gpio_list_sz;
 	for (i = 0; i < sppctl_list_funcs_sz; i++) {
 		if (sppctl_list_funcs[i].type != pinmux_type_grp)
@@ -1109,7 +969,7 @@ static int sppctl_probe(struct platform_device *pdev)
 
 static const struct of_device_id sppctl_match_table[] = {
 	{ .compatible = "sunplus,sp7021-pctl" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver sppctl_pinctrl_driver = {

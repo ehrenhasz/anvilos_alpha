@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2009 Nokia Corporation
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
+
+ 
 
 #define DSS_SUBSYS_NAME "SDI"
 
@@ -77,12 +74,7 @@ static int sdi_calc_clock_div(struct sdi_device *sdi, unsigned long pclk,
 	int i;
 	struct sdi_clk_calc_ctx ctx;
 
-	/*
-	 * DSS fclk gives us very few possibilities, so finding a good pixel
-	 * clock may not be possible. We try multiple times to find the clock,
-	 * each time widening the pixel clock range we look for, up to
-	 * +/- 1MHz.
-	 */
+	 
 
 	for (i = 0; i < 10; ++i) {
 		bool ok;
@@ -122,9 +114,7 @@ static void sdi_config_lcd_manager(struct sdi_device *sdi)
 	dss_mgr_set_lcd_config(&sdi->output, &sdi->mgr_config);
 }
 
-/* -----------------------------------------------------------------------------
- * DRM Bridge Operations
- */
+ 
 
 static int sdi_bridge_attach(struct drm_bridge *bridge,
 			     enum drm_bridge_attach_flags flags)
@@ -222,17 +212,7 @@ static void sdi_bridge_enable(struct drm_bridge *bridge)
 
 	sdi_config_lcd_manager(sdi);
 
-	/*
-	 * LCLK and PCLK divisors are located in shadow registers, and we
-	 * normally write them to DISPC registers when enabling the output.
-	 * However, SDI uses pck-free as source clock for its PLL, and pck-free
-	 * is affected by the divisors. And as we need the PLL before enabling
-	 * the output, we need to write the divisors early.
-	 *
-	 * It seems just writing to the DISPC register is enough, and we don't
-	 * need to care about the shadow register mechanism for pck-free. The
-	 * exact reason for this is unknown.
-	 */
+	 
 	dispc_mgr_set_clock_div(sdi->dss->dispc, sdi->output.dispc_channel,
 				&sdi->mgr_config.clock_info);
 
@@ -294,9 +274,7 @@ static void sdi_bridge_cleanup(struct sdi_device *sdi)
 	drm_bridge_remove(&sdi->bridge);
 }
 
-/* -----------------------------------------------------------------------------
- * Initialisation and Cleanup
- */
+ 
 
 static int sdi_init_output(struct sdi_device *sdi)
 {
@@ -310,9 +288,9 @@ static int sdi_init_output(struct sdi_device *sdi)
 	out->type = OMAP_DISPLAY_TYPE_SDI;
 	out->name = "sdi.0";
 	out->dispc_channel = OMAP_DSS_CHANNEL_LCD;
-	/* We have SDI only on OMAP3, where it's on port 1 */
+	 
 	out->of_port = 1;
-	out->bus_flags = DRM_BUS_FLAG_PIXDATA_DRIVE_POSEDGE	/* 15.5.9.1.2 */
+	out->bus_flags = DRM_BUS_FLAG_PIXDATA_DRIVE_POSEDGE	 
 		       | DRM_BUS_FLAG_SYNC_DRIVE_POSEDGE;
 
 	r = omapdss_device_init_output(out, &sdi->bridge);

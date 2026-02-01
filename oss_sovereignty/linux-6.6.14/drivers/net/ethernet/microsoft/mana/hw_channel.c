@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright (c) 2021, Microsoft Corporation. */
+
+ 
 
 #include <net/mana/gdma.h>
 #include <net/mana/hw_channel.h>
@@ -193,7 +193,7 @@ static void mana_hwc_init_event_handler(void *ctx, struct gdma_queue *q_self,
 
 	default:
 		dev_warn(hwc->dev, "Received unknown gdma event %u\n", event->type);
-		/* Ignore unknown events, which should never happen. */
+		 
 		break;
 	}
 }
@@ -221,7 +221,7 @@ static void mana_hwc_rx_event_handler(void *ctx, u32 gdma_rxq_id,
 
 	sge = (struct gdma_sge *)(wqe + 8 + dma_oob->inline_oob_size_div4 * 4);
 
-	/* Select the RX work request for virtual address and for reposting. */
+	 
 	rq_base_addr = hwc_rxq->msg_buf->mem_info.dma_handle;
 	rx_req_idx = (sge->address - rq_base_addr) / hwc->max_req_msg_size;
 
@@ -236,9 +236,7 @@ static void mana_hwc_rx_event_handler(void *ctx, u32 gdma_rxq_id,
 
 	mana_hwc_handle_resp(hwc, rx_oob->tx_oob_data_size, resp);
 
-	/* Do no longer use 'resp', because the buffer is posted to the HW
-	 * in the below mana_hwc_post_rx_wqe().
-	 */
+	 
 	resp = NULL;
 
 	mana_hwc_post_rx_wqe(hwc_rxq, rx_req);
@@ -592,7 +590,7 @@ static int mana_hwc_test_channel(struct hw_channel_context *hwc, u16 q_depth,
 	int err;
 	int i;
 
-	/* Post all WQEs on the RQ */
+	 
 	for (i = 0; i < q_depth; i++) {
 		req = &hwc_rxq->msg_buf->reqs[i];
 		err = mana_hwc_post_rx_wqe(hwc_rxq, req);
@@ -641,7 +639,7 @@ static int mana_hwc_establish_channel(struct gdma_context *gc, u16 *q_depth,
 	*max_req_msg_size = hwc->hwc_init_max_req_msg_size;
 	*max_resp_msg_size = hwc->hwc_init_max_resp_msg_size;
 
-	/* Both were set in mana_hwc_init_event_handler(). */
+	 
 	if (WARN_ON(cq->id >= gc->max_num_cqs))
 		return -EPROTO;
 
@@ -663,9 +661,7 @@ static int mana_hwc_init_queues(struct hw_channel_context *hwc, u16 q_depth,
 	if (err)
 		return err;
 
-	/* CQ is shared by SQ and RQ, so CQ's queue depth is the sum of SQ
-	 * queue depth and RQ queue depth.
-	 */
+	 
 	err = mana_hwc_create_cq(hwc, q_depth * 2,
 				 mana_hwc_init_event_handler, hwc,
 				 mana_hwc_rx_event_handler, hwc,
@@ -694,7 +690,7 @@ static int mana_hwc_init_queues(struct hw_channel_context *hwc, u16 q_depth,
 
 	return 0;
 out:
-	/* mana_hwc_create_channel() will do the cleanup.*/
+	 
 	return err;
 }
 
@@ -716,16 +712,14 @@ int mana_hwc_create_channel(struct gdma_context *gc)
 	hwc->dev = gc->dev;
 	hwc->hwc_timeout = HW_CHANNEL_WAIT_RESOURCE_TIMEOUT_MS;
 
-	/* HWC's instance number is always 0. */
+	 
 	gd->dev_id.as_uint32 = 0;
 	gd->dev_id.type = GDMA_DEVICE_HWC;
 
 	gd->pdid = INVALID_PDID;
 	gd->doorbell = INVALID_DOORBELL;
 
-	/* mana_hwc_init_queues() only creates the required data structures,
-	 * and doesn't touch the HWC device.
-	 */
+	 
 	err = mana_hwc_init_queues(hwc, HW_CHANNEL_VF_BOOTSTRAP_QUEUE_DEPTH,
 				   HW_CHANNEL_MAX_REQUEST_SIZE,
 				   HW_CHANNEL_MAX_RESPONSE_SIZE);
@@ -762,9 +756,7 @@ void mana_hwc_destroy_channel(struct gdma_context *gc)
 	if (!hwc)
 		return;
 
-	/* gc->max_num_cqs is set in mana_hwc_init_event_handler(). If it's
-	 * non-zero, the HWC worked and we should tear down the HWC here.
-	 */
+	 
 	if (gc->max_num_cqs > 0) {
 		mana_smc_teardown_hwc(&gc->shm_channel, false);
 		gc->max_num_cqs = 0;

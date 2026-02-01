@@ -1,24 +1,4 @@
-/*
- * Copyright 2018 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "core.h"
 #include "head.h"
 
@@ -34,7 +14,7 @@ int
 corec37d_wndw_owner(struct nv50_core *core)
 {
 	struct nvif_push *push = core->chan.push;
-	const u32 windows = 8; /*XXX*/
+	const u32 windows = 8;  
 	int ret, i;
 
 	if ((ret = PUSH_WAIT(push, windows * 2)))
@@ -128,7 +108,7 @@ static int
 corec37d_init(struct nv50_core *core)
 {
 	struct nvif_push *push = core->chan.push;
-	const u32 windows = 8; /*XXX*/
+	const u32 windows = 8;  
 	int ret, i;
 
 	if ((ret = PUSH_WAIT(push, 2 + windows * 5)))

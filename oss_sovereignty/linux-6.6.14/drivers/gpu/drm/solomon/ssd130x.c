@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * DRM driver for Solomon SSD130x OLED displays
- *
- * Copyright 2022 Red Hat Inc.
- * Author: Javier Martinez Canillas <javierm@redhat.com>
- *
- * Based on drivers/video/fbdev/ssd1307fb.c
- * Copyright 2012 Free Electrons
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/bitfield.h>
@@ -143,9 +135,9 @@ EXPORT_SYMBOL_NS_GPL(ssd130x_variants, DRM_SSD130X);
 
 struct ssd130x_plane_state {
 	struct drm_shadow_plane_state base;
-	/* Intermediate buffer to convert pixels from XRGB8888 to HW format */
+	 
 	u8 *buffer;
-	/* Buffer to store pixels in HW format and written to the panel */
+	 
 	u8 *data_array;
 };
 
@@ -159,24 +151,15 @@ static inline struct ssd130x_device *drm_to_ssd130x(struct drm_device *drm)
 	return container_of(drm, struct ssd130x_device, drm);
 }
 
-/*
- * Helper to write data (SSD130X_DATA) to the device.
- */
+ 
 static int ssd130x_write_data(struct ssd130x_device *ssd130x, u8 *values, int count)
 {
 	return regmap_bulk_write(ssd130x->regmap, SSD130X_DATA, values, count);
 }
 
-/*
- * Helper to write command (SSD130X_COMMAND). The fist variadic argument
- * is the command to write and the following are the command options.
- *
- * Note that the ssd130x protocol requires each command and option to be
- * written as a SSD130X_COMMAND device register value. That is why a call
- * to regmap_write(..., SSD130X_COMMAND, ...) is done for each argument.
- */
+ 
 static int ssd130x_write_cmd(struct ssd130x_device *ssd130x, int count,
-			     /* u8 cmd, u8 option, ... */...)
+			      ...)
 {
 	va_list ap;
 	u8 value;
@@ -197,7 +180,7 @@ out_end:
 	return ret;
 }
 
-/* Set address range for horizontal/vertical addressing modes */
+ 
 static int ssd130x_set_col_range(struct ssd130x_device *ssd130x,
 				 u8 col_start, u8 cols)
 {
@@ -234,7 +217,7 @@ static int ssd130x_set_page_range(struct ssd130x_device *ssd130x,
 	return 0;
 }
 
-/* Set page and column start address for page addressing mode */
+ 
 static int ssd130x_set_page_pos(struct ssd130x_device *ssd130x,
 				u8 page_start, u8 col_start)
 {
@@ -269,7 +252,7 @@ static int ssd130x_pwm_enable(struct ssd130x_device *ssd130x)
 	pwm_set_relative_duty_cycle(&pwmstate, 50, 100);
 	pwm_apply_state(ssd130x->pwm, &pwmstate);
 
-	/* Enable the PWM */
+	 
 	pwm_enable(ssd130x->pwm);
 
 	dev_dbg(dev, "Using PWM%d with a %lluns period.\n",
@@ -283,7 +266,7 @@ static void ssd130x_reset(struct ssd130x_device *ssd130x)
 	if (!ssd130x->reset)
 		return;
 
-	/* Reset the screen */
+	 
 	gpiod_set_value_cansleep(ssd130x->reset, 1);
 	udelay(4);
 	gpiod_set_value_cansleep(ssd130x->reset, 0);
@@ -329,43 +312,43 @@ static int ssd130x_init(struct ssd130x_device *ssd130x)
 	bool scan_mode;
 	int ret;
 
-	/* Set initial contrast */
+	 
 	ret = ssd130x_write_cmd(ssd130x, 2, SSD130X_CONTRAST, ssd130x->contrast);
 	if (ret < 0)
 		return ret;
 
-	/* Set segment re-map */
+	 
 	seg_remap = (SSD130X_SET_SEG_REMAP |
 		     SSD130X_SET_SEG_REMAP_SET(ssd130x->seg_remap));
 	ret = ssd130x_write_cmd(ssd130x, 1, seg_remap);
 	if (ret < 0)
 		return ret;
 
-	/* Set COM direction */
+	 
 	com_invdir = (SSD130X_SET_COM_SCAN_DIR |
 		      SSD130X_SET_COM_SCAN_DIR_SET(ssd130x->com_invdir));
 	ret = ssd130x_write_cmd(ssd130x,  1, com_invdir);
 	if (ret < 0)
 		return ret;
 
-	/* Set multiplex ratio value */
+	 
 	ret = ssd130x_write_cmd(ssd130x, 2, SSD130X_SET_MULTIPLEX_RATIO, ssd130x->height - 1);
 	if (ret < 0)
 		return ret;
 
-	/* set display offset value */
+	 
 	ret = ssd130x_write_cmd(ssd130x, 2, SSD130X_SET_DISPLAY_OFFSET, ssd130x->com_offset);
 	if (ret < 0)
 		return ret;
 
-	/* Set clock frequency */
+	 
 	dclk = (SSD130X_SET_CLOCK_DIV_SET(ssd130x->dclk_div - 1) |
 		SSD130X_SET_CLOCK_FREQ_SET(ssd130x->dclk_frq));
 	ret = ssd130x_write_cmd(ssd130x, 2, SSD130X_SET_CLOCK_FREQ, dclk);
 	if (ret < 0)
 		return ret;
 
-	/* Set Area Color Mode ON/OFF & Low Power Display Mode */
+	 
 	if (ssd130x->area_color_enable || ssd130x->low_power) {
 		u32 mode = 0;
 
@@ -380,20 +363,16 @@ static int ssd130x_init(struct ssd130x_device *ssd130x)
 			return ret;
 	}
 
-	/* Set precharge period in number of ticks from the internal clock */
+	 
 	precharge = (SSD130X_SET_PRECHARGE_PERIOD1_SET(ssd130x->prechargep1) |
 		     SSD130X_SET_PRECHARGE_PERIOD2_SET(ssd130x->prechargep2));
 	ret = ssd130x_write_cmd(ssd130x, 2, SSD130X_SET_PRECHARGE_PERIOD, precharge);
 	if (ret < 0)
 		return ret;
 
-	/* Set COM pins configuration */
+	 
 	compins = BIT(1);
-	/*
-	 * The COM scan mode field values are the inverse of the boolean DT
-	 * property "solomon,com-seq". The value 0b means scan from COM0 to
-	 * COM[N - 1] while 1b means scan from COM[N - 1] to COM0.
-	 */
+	 
 	scan_mode = !ssd130x->com_seq;
 	compins |= (SSD130X_SET_COM_PINS_CONFIG1_SET(scan_mode) |
 		    SSD130X_SET_COM_PINS_CONFIG2_SET(ssd130x->com_lrremap));
@@ -401,12 +380,12 @@ static int ssd130x_init(struct ssd130x_device *ssd130x)
 	if (ret < 0)
 		return ret;
 
-	/* Set VCOMH */
+	 
 	ret = ssd130x_write_cmd(ssd130x, 2, SSD130X_SET_VCOMH, ssd130x->vcomh);
 	if (ret < 0)
 		return ret;
 
-	/* Turn on the DC-DC Charge Pump */
+	 
 	chargepump = BIT(4);
 
 	if (ssd130x->device_info->need_chargepump)
@@ -416,7 +395,7 @@ static int ssd130x_init(struct ssd130x_device *ssd130x)
 	if (ret < 0)
 		return ret;
 
-	/* Set lookup table */
+	 
 	if (ssd130x->lookup_table_set) {
 		int i;
 
@@ -437,12 +416,12 @@ static int ssd130x_init(struct ssd130x_device *ssd130x)
 		}
 	}
 
-	/* Switch to page addressing mode */
+	 
 	if (ssd130x->page_address_mode)
 		return ssd130x_write_cmd(ssd130x, 2, SSD130X_SET_ADDRESS_MODE,
 					 SSD130X_SET_ADDRESS_MODE_PAGE);
 
-	/* Switch to horizontal addressing mode */
+	 
 	return ssd130x_write_cmd(ssd130x, 2, SSD130X_SET_ADDRESS_MODE,
 				 SSD130X_SET_ADDRESS_MODE_HORIZONTAL);
 }
@@ -466,37 +445,10 @@ static int ssd130x_update_rect(struct ssd130x_device *ssd130x,
 
 	drm_WARN_ONCE(drm, y % 8 != 0, "y must be aligned to screen page\n");
 
-	/*
-	 * The screen is divided in pages, each having a height of 8
-	 * pixels, and the width of the screen. When sending a byte of
-	 * data to the controller, it gives the 8 bits for the current
-	 * column. I.e, the first byte are the 8 bits of the first
-	 * column, then the 8 bits for the second column, etc.
-	 *
-	 *
-	 * Representation of the screen, assuming it is 5 bits
-	 * wide. Each letter-number combination is a bit that controls
-	 * one pixel.
-	 *
-	 * A0 A1 A2 A3 A4
-	 * B0 B1 B2 B3 B4
-	 * C0 C1 C2 C3 C4
-	 * D0 D1 D2 D3 D4
-	 * E0 E1 E2 E3 E4
-	 * F0 F1 F2 F3 F4
-	 * G0 G1 G2 G3 G4
-	 * H0 H1 H2 H3 H4
-	 *
-	 * If you want to update this screen, you need to send 5 bytes:
-	 *  (1) A0 B0 C0 D0 E0 F0 G0 H0
-	 *  (2) A1 B1 C1 D1 E1 F1 G1 H1
-	 *  (3) A2 B2 C2 D2 E2 F2 G2 H2
-	 *  (4) A3 B3 C3 D3 E3 F3 G3 H3
-	 *  (5) A4 B4 C4 D4 E4 F4 G4 H4
-	 */
+	 
 
 	if (!ssd130x->page_address_mode) {
-		/* Set address range for horizontal addressing mode */
+		 
 		ret = ssd130x_set_col_range(ssd130x, ssd130x->col_offset + x, width);
 		if (ret < 0)
 			return ret;
@@ -509,7 +461,7 @@ static int ssd130x_update_rect(struct ssd130x_device *ssd130x,
 	for (i = 0; i < pages; i++) {
 		int m = 8;
 
-		/* Last page may be partial */
+		 
 		if (8 * (y / 8 + i + 1) > ssd130x->height)
 			m = ssd130x->height % 8;
 		for (j = 0; j < width; j++) {
@@ -524,10 +476,7 @@ static int ssd130x_update_rect(struct ssd130x_device *ssd130x,
 			data_array[array_idx++] = data;
 		}
 
-		/*
-		 * In page addressing mode, the start address needs to be reset,
-		 * and each page then needs to be written out separately.
-		 */
+		 
 		if (ssd130x->page_address_mode) {
 			ret = ssd130x_set_page_pos(ssd130x,
 						   ssd130x->page_offset + i,
@@ -543,7 +492,7 @@ static int ssd130x_update_rect(struct ssd130x_device *ssd130x,
 		}
 	}
 
-	/* Write out update in one go if we aren't using page addressing mode */
+	 
 	if (!ssd130x->page_address_mode)
 		ret = ssd130x_write_data(ssd130x, data_array, width * pages);
 
@@ -562,7 +511,7 @@ static void ssd130x_clear_screen(struct ssd130x_device *ssd130x,
 	if (!ssd130x->page_address_mode) {
 		memset(data_array, 0, width * pages);
 
-		/* Set address range for horizontal addressing mode */
+		 
 		ret = ssd130x_set_col_range(ssd130x, ssd130x->col_offset, width);
 		if (ret < 0)
 			return;
@@ -571,13 +520,10 @@ static void ssd130x_clear_screen(struct ssd130x_device *ssd130x,
 		if (ret < 0)
 			return;
 
-		/* Write out update in one go if we aren't using page addressing mode */
+		 
 		ssd130x_write_data(ssd130x, data_array, width * pages);
 	} else {
-		/*
-		 * In page addressing mode, the start address needs to be reset,
-		 * and each page then needs to be written out separately.
-		 */
+		 
 		memset(data_array, 0, width);
 
 		for (i = 0; i < pages; i++) {
@@ -607,7 +553,7 @@ static int ssd130x_fb_blit_rect(struct drm_plane_state *state,
 	unsigned int dst_pitch;
 	int ret = 0;
 
-	/* Align y to display page boundaries */
+	 
 	rect->y1 = round_down(rect->y1, page_height);
 	rect->y2 = min_t(unsigned int, round_up(rect->y2, page_height), ssd130x->height);
 
@@ -657,7 +603,7 @@ static int ssd130x_primary_plane_helper_atomic_check(struct drm_plane *plane,
 	ssd130x_state->data_array = kcalloc(ssd130x->width, pages, GFP_KERNEL);
 	if (!ssd130x_state->data_array) {
 		kfree(ssd130x_state->buffer);
-		/* Set to prevent a double free in .atomic_destroy_state() */
+		 
 		ssd130x_state->buffer = NULL;
 		return -ENOMEM;
 	}
@@ -709,7 +655,7 @@ static void ssd130x_primary_plane_helper_atomic_disable(struct drm_plane *plane,
 	drm_dev_exit(idx);
 }
 
-/* Called during init to allocate the plane's atomic state. */
+ 
 static void ssd130x_primary_plane_reset(struct drm_plane *plane)
 {
 	struct ssd130x_plane_state *ssd130x_state;
@@ -737,7 +683,7 @@ static struct drm_plane_state *ssd130x_primary_plane_duplicate_state(struct drm_
 	if (!ssd130x_state)
 		return NULL;
 
-	/* The buffers are not duplicated and are allocated in .atomic_check */
+	 
 	ssd130x_state->buffer = NULL;
 	ssd130x_state->data_array = NULL;
 
@@ -793,11 +739,7 @@ static enum drm_mode_status ssd130x_crtc_helper_mode_valid(struct drm_crtc *crtc
 	return MODE_OK;
 }
 
-/*
- * The CRTC is always enabled. Screen updates are performed by
- * the primary plane's atomic_update function. Disabling clears
- * the screen in the primary plane's atomic_disable function.
- */
+ 
 static const struct drm_crtc_helper_funcs ssd130x_crtc_helper_funcs = {
 	.mode_valid = ssd130x_crtc_helper_mode_valid,
 	.atomic_check = drm_crtc_helper_atomic_check,
@@ -875,7 +817,7 @@ static int ssd130x_connector_helper_get_modes(struct drm_connector *connector)
 	drm_mode_probed_add(connector, mode);
 	drm_set_preferred_mode(connector, mode->hdisplay, mode->vdisplay);
 
-	/* There is only a single mode */
+	 
 	return 1;
 }
 
@@ -978,7 +920,7 @@ static void ssd130x_parse_properties(struct ssd130x_device *ssd130x)
 	ssd130x->contrast = 127;
 	ssd130x->vcomh = ssd130x->device_info->default_vcomh;
 
-	/* Setup display timing */
+	 
 	if (device_property_read_u32(dev, "solomon,dclk-div", &ssd130x->dclk_div))
 		ssd130x->dclk_div = ssd130x->device_info->default_dclk_div;
 	if (device_property_read_u32(dev, "solomon,dclk-frq", &ssd130x->dclk_frq))
@@ -997,9 +939,7 @@ static int ssd130x_init_modeset(struct ssd130x_device *ssd130x)
 	struct drm_connector *connector;
 	int ret;
 
-	/*
-	 * Modesetting
-	 */
+	 
 
 	ret = drmm_mode_config_init(drm);
 	if (ret) {
@@ -1026,7 +966,7 @@ static int ssd130x_init_modeset(struct ssd130x_device *ssd130x)
 	drm->mode_config.preferred_depth = 24;
 	drm->mode_config.funcs = &ssd130x_mode_config_funcs;
 
-	/* Primary plane */
+	 
 
 	primary_plane = &ssd130x->primary_plane;
 	ret = drm_universal_plane_init(drm, primary_plane, 0, &ssd130x_primary_plane_funcs,
@@ -1041,7 +981,7 @@ static int ssd130x_init_modeset(struct ssd130x_device *ssd130x)
 
 	drm_plane_enable_fb_damage_clips(primary_plane);
 
-	/* CRTC */
+	 
 
 	crtc = &ssd130x->crtc;
 	ret = drm_crtc_init_with_planes(drm, crtc, primary_plane, NULL,
@@ -1053,7 +993,7 @@ static int ssd130x_init_modeset(struct ssd130x_device *ssd130x)
 
 	drm_crtc_helper_add(crtc, &ssd130x_crtc_helper_funcs);
 
-	/* Encoder */
+	 
 
 	encoder = &ssd130x->encoder;
 	ret = drm_encoder_init(drm, encoder, &ssd130x_encoder_funcs,
@@ -1067,7 +1007,7 @@ static int ssd130x_init_modeset(struct ssd130x_device *ssd130x)
 
 	encoder->possible_crtcs = drm_crtc_mask(crtc);
 
-	/* Connector */
+	 
 
 	connector = &ssd130x->connector;
 	ret = drm_connector_init(drm, connector, &ssd130x_connector_funcs,

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/err.h>
 #include <linux/igmp.h>
 #include <linux/kernel.h>
@@ -39,18 +39,18 @@ br_ip6_rports_get_timer(struct net_bridge_mcast_port *pmctx,
 
 static size_t __br_rports_one_size(void)
 {
-	return nla_total_size(sizeof(u32)) + /* MDBA_ROUTER_PORT */
-	       nla_total_size(sizeof(u32)) + /* MDBA_ROUTER_PATTR_TIMER */
-	       nla_total_size(sizeof(u8)) +  /* MDBA_ROUTER_PATTR_TYPE */
-	       nla_total_size(sizeof(u32)) + /* MDBA_ROUTER_PATTR_INET_TIMER */
-	       nla_total_size(sizeof(u32)) + /* MDBA_ROUTER_PATTR_INET6_TIMER */
-	       nla_total_size(sizeof(u32));  /* MDBA_ROUTER_PATTR_VID */
+	return nla_total_size(sizeof(u32)) +  
+	       nla_total_size(sizeof(u32)) +  
+	       nla_total_size(sizeof(u8)) +   
+	       nla_total_size(sizeof(u32)) +  
+	       nla_total_size(sizeof(u32)) +  
+	       nla_total_size(sizeof(u32));   
 }
 
 size_t br_rports_size(const struct net_bridge_mcast *brmctx)
 {
 	struct net_bridge_mcast_port *pmctx;
-	size_t size = nla_total_size(0); /* MDBA_ROUTER */
+	size_t size = nla_total_size(0);  
 
 	rcu_read_lock();
 	hlist_for_each_entry_rcu(pmctx, &brmctx->ip4_mc_router_list,
@@ -464,12 +464,12 @@ static size_t rtnl_mdb_nlmsg_size(struct net_bridge_port_group *pg)
 	if (!pg)
 		goto out;
 
-	/* MDBA_MDB_EATTR_RTPROT */
+	 
 	nlmsg_size += nla_total_size(sizeof(u8));
 
 	switch (pg->key.addr.proto) {
 	case htons(ETH_P_IP):
-		/* MDBA_MDB_EATTR_SOURCE */
+		 
 		if (pg->key.addr.src.ip4)
 			nlmsg_size += nla_total_size(sizeof(__be32));
 		if (pg->key.port->br->multicast_ctx.multicast_igmp_version == 2)
@@ -478,7 +478,7 @@ static size_t rtnl_mdb_nlmsg_size(struct net_bridge_port_group *pg)
 		break;
 #if IS_ENABLED(CONFIG_IPV6)
 	case htons(ETH_P_IPV6):
-		/* MDBA_MDB_EATTR_SOURCE */
+		 
 		if (!ipv6_addr_any(&pg->key.addr.src.ip6))
 			nlmsg_size += nla_total_size(sizeof(struct in6_addr));
 		if (pg->key.port->br->multicast_ctx.multicast_mld_version == 1)
@@ -488,17 +488,15 @@ static size_t rtnl_mdb_nlmsg_size(struct net_bridge_port_group *pg)
 #endif
 	}
 
-	/* MDBA_MDB_EATTR_GROUP_MODE */
+	 
 	nlmsg_size += nla_total_size(sizeof(u8));
 
-	/* MDBA_MDB_EATTR_SRC_LIST nested attr */
+	 
 	if (!hlist_empty(&pg->src_list))
 		nlmsg_size += nla_total_size(0);
 
 	hlist_for_each_entry(ent, &pg->src_list, node) {
-		/* MDBA_MDB_SRCLIST_ENTRY nested attr +
-		 * MDBA_MDB_SRCATTR_ADDRESS + MDBA_MDB_SRCATTR_TIMER
-		 */
+		 
 		nlmsg_size += nla_total_size(0) +
 			      nla_total_size(addr_size) +
 			      nla_total_size(sizeof(u32));
@@ -765,9 +763,7 @@ static int br_mdb_add_group_sg(const struct br_mdb_config *cfg,
 			  now + brmctx->multicast_membership_interval);
 	br_mdb_notify(cfg->br->dev, mp, p, RTM_NEWMDB);
 
-	/* All of (*, G) EXCLUDE ports need to be added to the new (S, G) for
-	 * proper replication.
-	 */
+	 
 	if (br_multicast_should_handle_mode(brmctx, cfg->group.proto)) {
 		struct net_bridge_mdb_entry *star_mp;
 		struct br_ip star_group;
@@ -845,7 +841,7 @@ static int br_mdb_add_group_src(const struct br_mdb_config *cfg,
 	else
 		del_timer(&ent->timer);
 
-	/* Install a (S, G) forwarding entry for the source. */
+	 
 	err = br_mdb_add_group_src_fwd(cfg, &src->addr, brmctx, extack);
 	if (err)
 		goto err_del_sg;
@@ -995,9 +991,7 @@ static int br_mdb_add_group_star_g(const struct br_mdb_config *cfg,
 		mod_timer(&p->timer,
 			  now + brmctx->multicast_membership_interval);
 	br_mdb_notify(cfg->br->dev, mp, p, RTM_NEWMDB);
-	/* If we are adding a new EXCLUDE port group (*, G), it needs to be
-	 * also added to all (S, G) entries for proper replication.
-	 */
+	 
 	if (br_multicast_should_handle_mode(brmctx, cfg->group.proto) &&
 	    cfg->filter_mode == MCAST_EXCLUDE)
 		br_multicast_star_g_handle_mode(p, MCAST_EXCLUDE);
@@ -1028,7 +1022,7 @@ static int br_mdb_add_group(const struct br_mdb_config *cfg,
 	if (IS_ERR(mp))
 		return PTR_ERR(mp);
 
-	/* host join */
+	 
 	if (!port) {
 		if (mp->host_joined) {
 			NL_SET_ERR_MSG_MOD(extack, "Group is already joined by host");
@@ -1279,9 +1273,9 @@ int br_mdb_add(struct net_device *dev, struct nlattr *tb[], u16 nlmsg_flags,
 		return err;
 
 	err = -EINVAL;
-	/* host join errors which can happen before creating the group */
+	 
 	if (!cfg.p && !br_group_is_l2(&cfg.group)) {
-		/* don't allow any flags for host-joined IP groups */
+		 
 		if (cfg.entry->state) {
 			NL_SET_ERR_MSG_MOD(extack, "Flags are not allowed for host groups");
 			goto out;
@@ -1307,9 +1301,7 @@ int br_mdb_add(struct net_device *dev, struct nlattr *tb[], u16 nlmsg_flags,
 		vg = br_vlan_group(cfg.br);
 	}
 
-	/* If vlan filtering is enabled and VLAN is not specified
-	 * install mdb entry on all vlans configured on the port.
-	 */
+	 
 	if (br_vlan_enabled(cfg.br->dev) && vg && cfg.entry->vid == 0) {
 		list_for_each_entry(v, &vg->vlan_list, vlist) {
 			cfg.entry->vid = v->vid;
@@ -1342,7 +1334,7 @@ static int __br_mdb_del(const struct br_mdb_config *cfg)
 	if (!mp)
 		goto unlock;
 
-	/* host leave */
+	 
 	if (entry->ifindex == mp->br->dev->ifindex && mp->host_joined) {
 		br_multicast_host_leave(mp, false);
 		err = 0;
@@ -1385,9 +1377,7 @@ int br_mdb_del(struct net_device *dev, struct nlattr *tb[],
 	else
 		vg = br_vlan_group(cfg.br);
 
-	/* If vlan filtering is enabled and VLAN is not specified
-	 * delete mdb entry on all vlans configured on the port.
-	 */
+	 
 	if (br_vlan_enabled(cfg.br->dev) && vg && cfg.entry->vid == 0) {
 		list_for_each_entry(v, &vg->vlan_list, vlist) {
 			cfg.entry->vid = v->vid;

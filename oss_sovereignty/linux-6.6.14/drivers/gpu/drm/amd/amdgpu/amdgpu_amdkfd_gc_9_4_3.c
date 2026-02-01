@@ -1,24 +1,4 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "amdgpu.h"
 #include "amdgpu_amdkfd.h"
 #include "amdgpu_amdkfd_gfx_v9.h"
@@ -226,16 +206,10 @@ static int kgd_gfx_v9_4_3_set_pasid_vmid_mapping(struct amdgpu_device *adev,
 	unsigned long timeout;
 	unsigned int reg;
 	unsigned int phy_inst = GET_INST(GC, xcc_inst);
-	/* Every two XCCs share one AID */
+	 
 	unsigned int aid = phy_inst / 2;
 
-	/*
-	 * We have to assume that there is no outstanding mapping.
-	 * The ATC_VMID_PASID_MAPPING_UPDATE_STATUS bit could be 0 because
-	 * a mapping is in progress or because a mapping finished
-	 * and the SW cleared it.
-	 * So the protocol is to always wait & clear.
-	 */
+	 
 	uint32_t pasid_mapping = (pasid == 0) ? 0 : (uint32_t)pasid |
 			ATC_VMID0_PASID_MAPPING__VALID_MASK;
 
@@ -258,11 +232,7 @@ static int kgd_gfx_v9_4_3_set_pasid_vmid_mapping(struct amdgpu_device *adev,
 		1U << vmid);
 
 	reg = RREG32(SOC15_REG_OFFSET(OSSSYS, 0, regIH_VMID_LUT_INDEX));
-	/* Every 4 numbers is a cycle. 1st is AID, 2nd and 3rd are XCDs,
-	 * and the 4th is reserved. Therefore "aid * 4 + (xcc_inst % 2) + 1"
-	 * programs _LUT for XCC and "aid * 4" for AID where the XCC connects
-	 * to.
-	 */
+	 
 	WREG32(SOC15_REG_OFFSET(OSSSYS, 0, regIH_VMID_LUT_INDEX),
 		aid * 4 + (phy_inst % 2) + 1);
 	WREG32(SOC15_REG_OFFSET(OSSSYS, 0, regIH_VMID_0_LUT) + vmid,
@@ -294,7 +264,7 @@ static int kgd_gfx_v9_4_3_hqd_load(struct amdgpu_device *adev, void *mqd,
 
 	kgd_gfx_v9_acquire_queue(adev, pipe_id, queue_id, inst);
 
-	/* HQD registers extend to CP_HQD_AQL_DISPATCH_ID_HI */
+	 
 	mqd_hqd = &m->cp_mqd_base_addr_lo;
 	hqd_base = SOC15_REG_OFFSET(GC, GET_INST(GC, inst), regCP_MQD_BASE_ADDR);
 	hqd_end = SOC15_REG_OFFSET(GC, GET_INST(GC, inst), regCP_HQD_AQL_DISPATCH_ID_HI);
@@ -303,29 +273,14 @@ static int kgd_gfx_v9_4_3_hqd_load(struct amdgpu_device *adev, void *mqd,
 		WREG32_RLC(reg, mqd_hqd[reg - hqd_base]);
 
 
-	/* Activate doorbell logic before triggering WPTR poll. */
+	 
 	data = REG_SET_FIELD(m->cp_hqd_pq_doorbell_control,
 			     CP_HQD_PQ_DOORBELL_CONTROL, DOORBELL_EN, 1);
 	WREG32_RLC(SOC15_REG_OFFSET(GC, GET_INST(GC, inst), regCP_HQD_PQ_DOORBELL_CONTROL),
 				data);
 
 	if (wptr) {
-		/* Don't read wptr with get_user because the user
-		 * context may not be accessible (if this function
-		 * runs in a work queue). Instead trigger a one-shot
-		 * polling read from memory in the CP. This assumes
-		 * that wptr is GPU-accessible in the queue's VMID via
-		 * ATC or SVM. WPTR==RPTR before starting the poll so
-		 * the CP starts fetching new commands from the right
-		 * place.
-		 *
-		 * Guessing a 64-bit WPTR from a 32-bit RPTR is a bit
-		 * tricky. Assume that the queue didn't overflow. The
-		 * number of valid bits in the 32-bit RPTR depends on
-		 * the queue size. The remaining bits are taken from
-		 * the saved 64-bit WPTR. If the WPTR wrapped, add the
-		 * queue size.
-		 */
+		 
 		uint32_t queue_size =
 			2 << REG_GET_FIELD(m->cp_hqd_pq_control,
 					   CP_HQD_PQ_CONTROL, QUEUE_SIZE);
@@ -350,7 +305,7 @@ static int kgd_gfx_v9_4_3_hqd_load(struct amdgpu_device *adev, void *mqd,
 			       queue_id));
 	}
 
-	/* Start the EOP fetcher */
+	 
 	WREG32_RLC(SOC15_REG_OFFSET(GC, GET_INST(GC, inst), regCP_HQD_EOP_RPTR),
 	       REG_SET_FIELD(m->cp_hqd_eop_rptr,
 			     CP_HQD_EOP_RPTR, INIT_FETCHER, 1));
@@ -363,7 +318,7 @@ static int kgd_gfx_v9_4_3_hqd_load(struct amdgpu_device *adev, void *mqd,
 	return 0;
 }
 
-/* returns TRAP_EN, EXCP_EN and EXCP_REPLACE. */
+ 
 static uint32_t kgd_gfx_v9_4_3_disable_debug_trap(struct amdgpu_device *adev,
 						bool keep_trap_enabled,
 						uint32_t vmid)
@@ -436,7 +391,7 @@ static uint32_t trap_mask_map_hw_to_sw(uint32_t mask)
 	return ret;
 }
 
-/* returns TRAP_EN, EXCP_EN and EXCP_REPLACE. */
+ 
 static uint32_t kgd_gfx_v9_4_3_set_wave_launch_trap_override(
 				struct amdgpu_device *adev,
 				uint32_t vmid,

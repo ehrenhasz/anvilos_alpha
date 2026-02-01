@@ -1,18 +1,4 @@
-/*
- * userio kernel serio device emulation module
- * Copyright (C) 2015 Red Hat
- * Copyright (C) 2015 Stephen Chandler Paul <thatslyude@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
- * your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
- * General Public License for more details.
- */
+ 
 
 #include <linux/circ_buf.h>
 #include <linux/mutex.h>
@@ -47,11 +33,7 @@ struct userio_device {
 	wait_queue_head_t waitq;
 };
 
-/**
- * userio_device_write - Write data from serio to a userio device in userspace
- * @id: The serio port for the userio device
- * @val: The data to write to the device
- */
+ 
 static int userio_device_write(struct serio *id, unsigned char val)
 {
 	struct userio_device *userio = id->port_data;
@@ -104,10 +86,7 @@ static int userio_char_release(struct inode *inode, struct file *file)
 	struct userio_device *userio = file->private_data;
 
 	if (userio->running) {
-		/*
-		 * Don't free the serio port here, serio_unregister_port()
-		 * does it for us.
-		 */
+		 
 		serio_unregister_port(userio->serio);
 	} else {
 		kfree(userio->serio);
@@ -127,13 +106,7 @@ static ssize_t userio_char_read(struct file *file, char __user *user_buffer,
 	unsigned char buf[USERIO_BUFSIZE];
 	unsigned long flags;
 
-	/*
-	 * By the time we get here, the data that was waiting might have
-	 * been taken by another thread. Grab the buffer lock and check if
-	 * there's still any data waiting, otherwise repeat this process
-	 * until we have data (unless the file descriptor is non-blocking
-	 * of course).
-	 */
+	 
 	for (;;) {
 		spin_lock_irqsave(&userio->buf_lock, flags);
 
@@ -152,14 +125,11 @@ static ssize_t userio_char_read(struct file *file, char __user *user_buffer,
 		if (nonwrap_len)
 			break;
 
-		/* buffer was/is empty */
+		 
 		if (file->f_flags & O_NONBLOCK)
 			return -EAGAIN;
 
-		/*
-		 * count == 0 is special - no IO is done but we check
-		 * for error conditions (see above).
-		 */
+		 
 		if (count == 0)
 			return 0;
 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Helper functions for Thinkpad LED control;
- * to be included from codec driver
- */
+
+ 
 
 #if IS_ENABLED(CONFIG_THINKPAD_ACPI)
 
@@ -26,11 +24,11 @@ static void hda_fixup_thinkpad_acpi(struct hda_codec *codec,
 	}
 }
 
-#else /* CONFIG_THINKPAD_ACPI */
+#else  
 
 static void hda_fixup_thinkpad_acpi(struct hda_codec *codec,
 				    const struct hda_fixup *fix, int action)
 {
 }
 
-#endif /* CONFIG_THINKPAD_ACPI */
+#endif  

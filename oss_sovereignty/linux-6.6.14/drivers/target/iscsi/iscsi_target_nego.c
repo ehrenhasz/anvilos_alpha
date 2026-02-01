@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- * This file contains main functions related to iSCSI Parameter negotiation.
- *
- * (c) Copyright 2007-2013 Datera, Inc.
- *
- * Author: Nicholas A. Bellinger <nab@linux-iscsi.org>
- *
- ******************************************************************************/
+
+ 
 
 #include <linux/ctype.h>
 #include <linux/kthread.h>
@@ -75,10 +68,10 @@ int extract_param(
 
 	ptr += 1;
 	if (*ptr == '0' && (*(ptr+1) == 'x' || *(ptr+1) == 'X')) {
-		ptr += 2; /* skip 0x */
+		ptr += 2;  
 		*type = HEX;
 	} else if (*ptr == '0' && (*(ptr+1) == 'b' || *(ptr+1) == 'B')) {
-		ptr += 2; /* skip 0b */
+		ptr += 2;  
 		*type = BASE64;
 	} else
 		*type = DECIMAL;
@@ -147,7 +140,7 @@ static u32 iscsi_handle_authentication(
 	else if (strstr("CHAP", authtype))
 		return chap_main_loop(conn, auth, in_buf, out_buf,
 				&in_length, out_length);
-	/* SRP, SPKM1, SPKM2 and KRB5 are unsupported */
+	 
 	return 2;
 }
 
@@ -281,11 +274,7 @@ static int iscsi_target_check_first_request(
 				return -1;
 			}
 
-			/*
-			 * For non-leading connections, double check that the
-			 * received InitiatorName matches the existing session's
-			 * struct iscsi_node_acl.
-			 */
+			 
 			if (!login->leading_connection) {
 				se_nacl = conn->sess->se_sess->se_node_acl;
 				if (!se_nacl) {
@@ -338,12 +327,7 @@ static int iscsi_target_do_tx_login_io(struct iscsit_conn *conn, struct iscsi_lo
 		ntohl(login_rsp->statsn), login->rsp_length);
 
 	padding = ((-login->rsp_length) & 3);
-	/*
-	 * Before sending the last login response containing the transition
-	 * bit for full-feature-phase, go ahead and start up TX/RX threads
-	 * now to avoid potential resource allocation failures after the
-	 * final login response has been sent.
-	 */
+	 
 	if (login->login_complete) {
 		int rc = iscsit_start_kthreads(conn);
 		if (rc) {
@@ -552,16 +536,7 @@ static void iscsi_target_do_login_rx(struct work_struct *work)
 	spin_lock(&conn->login_worker_lock);
 	set_bit(LOGIN_FLAGS_WORKER_RUNNING, &conn->login_flags);
 	spin_unlock(&conn->login_worker_lock);
-	/*
-	 * If iscsi_target_do_login_rx() has been invoked by ->sk_data_ready()
-	 * before initial PDU processing in iscsi_target_start_negotiation()
-	 * has completed, go ahead and retry until it's cleared.
-	 *
-	 * Otherwise if the TCP connection drops while this is occuring,
-	 * iscsi_target_start_negotiation() will detect the failure, call
-	 * cancel_delayed_work_sync(&conn->login_work), and cleanup the
-	 * remaining iscsi connection resources from iscsi_np process context.
-	 */
+	 
 	if (iscsi_target_sk_check_flag(conn, LOGIN_FLAGS_INITIAL_PDU)) {
 		schedule_delayed_work(&conn->login_work, msecs_to_jiffies(10));
 		return;
@@ -584,7 +559,7 @@ static void iscsi_target_do_login_rx(struct work_struct *work)
 	allow_signal(SIGINT);
 	rc = iscsit_set_login_timer_kworker(conn, current);
 	if (rc < 0) {
-		/* The login timer has already expired */
+		 
 		pr_debug("iscsi_target_do_login_rx, login failed\n");
 		goto err;
 	}
@@ -598,17 +573,7 @@ static void iscsi_target_do_login_rx(struct work_struct *work)
 	pr_debug("iscsi_target_do_login_rx after rx_login_io, %p, %s:%d\n",
 			conn, current->comm, current->pid);
 
-	/*
-	 * LOGIN_FLAGS_READ_ACTIVE is cleared so that sk_data_ready
-	 * could be triggered again after this.
-	 *
-	 * LOGIN_FLAGS_WRITE_ACTIVE is cleared after we successfully
-	 * process a login PDU, so that sk_state_chage can do login
-	 * cleanup as needed if the socket is closed. If a delayed work is
-	 * ongoing (LOGIN_FLAGS_WRITE_ACTIVE or LOGIN_FLAGS_READ_ACTIVE),
-	 * sk_state_change will leave the cleanup to the delayed work or
-	 * it will schedule a delayed work to do cleanup.
-	 */
+	 
 	if (conn->sock) {
 		struct sock *sk = conn->sock->sk;
 
@@ -628,11 +593,7 @@ static void iscsi_target_do_login_rx(struct work_struct *work)
 						    LOGIN_FLAGS_WRITE_ACTIVE))
 			goto err;
 
-		/*
-		 * Set the login timer thread pointer to NULL to prevent the
-		 * login process from getting stuck if the initiator
-		 * stops sending data.
-		 */
+		 
 		rc = iscsit_set_login_timer_kworker(conn, NULL);
 		if (rc < 0)
 			goto err;
@@ -696,21 +657,7 @@ static void iscsi_target_sk_state_change(struct sock *sk)
 		orig_state_change(sk);
 		return;
 	}
-	/*
-	 * If the TCP connection has dropped, go ahead and set LOGIN_FLAGS_CLOSED,
-	 * but only queue conn->login_work -> iscsi_target_do_login_rx()
-	 * processing if LOGIN_FLAGS_INITIAL_PDU has already been cleared.
-	 *
-	 * When iscsi_target_do_login_rx() runs, iscsi_target_sk_check_close()
-	 * will detect the dropped TCP connection from delayed workqueue context.
-	 *
-	 * If LOGIN_FLAGS_INITIAL_PDU is still set, which means the initial
-	 * iscsi_target_start_negotiation() is running, iscsi_target_do_login()
-	 * via iscsi_target_sk_check_close() or iscsi_target_start_negotiation()
-	 * via iscsi_target_sk_check_and_clear() is responsible for detecting the
-	 * dropped TCP connection in iscsi_np process context, and cleaning up
-	 * the remaining iscsi connection resources.
-	 */
+	 
 	if (state) {
 		pr_debug("iscsi_target_sk_state_change got failed state\n");
 		set_bit(LOGIN_FLAGS_CLOSED, &conn->login_flags);
@@ -728,11 +675,7 @@ static void iscsi_target_sk_state_change(struct sock *sk)
 	orig_state_change(sk);
 }
 
-/*
- *	NOTE: We check for existing sessions or connections AFTER the initiator
- *	has been successfully authenticated in order to protect against faked
- *	ISID/TSIH combinations.
- */
+ 
 static int iscsi_target_check_for_existing_instances(
 	struct iscsit_conn *conn,
 	struct iscsi_login *login)
@@ -814,14 +757,10 @@ bool iscsi_conn_auth_required(struct iscsit_conn *conn)
 	struct se_node_acl *se_nacl;
 
 	if (conn->sess->sess_ops->SessionType) {
-		/*
-		 * For SessionType=Discovery
-		 */
+		 
 		return conn->tpg->tpg_attrib.authentication;
 	}
-	/*
-	 * For SessionType=Normal
-	 */
+	 
 	se_nacl = conn->sess->se_sess->se_node_acl;
 	if (!se_nacl) {
 		pr_debug("Unknown ACL is trying to connect\n");
@@ -1012,13 +951,7 @@ static int iscsi_target_handle_csg_one(struct iscsit_conn *conn, struct iscsi_lo
 	return 0;
 }
 
-/*
- * RETURN VALUE:
- *
- *  1 = Login successful
- * -1 = Login failed
- *  0 = More PDU exchanges required
- */
+ 
 static int iscsi_target_do_login(struct iscsit_conn *conn, struct iscsi_login *login)
 {
 	int pdu_count = 0;
@@ -1047,12 +980,7 @@ static int iscsi_target_do_login(struct iscsit_conn *conn, struct iscsi_login *l
 			if (iscsi_target_handle_csg_one(conn, login) < 0)
 				return -1;
 			if (login_rsp->flags & ISCSI_FLAG_LOGIN_TRANSIT) {
-				/*
-				 * Check to make sure the TCP connection has not
-				 * dropped asynchronously while session reinstatement
-				 * was occuring in this kthread context, before
-				 * transitioning to full feature phase operation.
-				 */
+				 
 				if (iscsi_target_sk_check_close(conn))
 					return -1;
 
@@ -1100,9 +1028,7 @@ static void iscsi_initiatorname_tolower(
 	}
 }
 
-/*
- * Processes the first Login Request..
- */
+ 
 int iscsi_target_locate_portal(
 	struct iscsi_np *np,
 	struct iscsit_conn *conn,
@@ -1136,10 +1062,7 @@ int iscsi_target_locate_portal(
 	start = tmpbuf;
 	end = (start + payload_length);
 
-	/*
-	 * Locate the initial keys expected from the Initiator node in
-	 * the first login request in order to progress with the login phase.
-	 */
+	 
 	while (start < end) {
 		if (iscsi_extract_key_value(start, &key, &value) < 0) {
 			ret = -1;
@@ -1155,9 +1078,7 @@ int iscsi_target_locate_portal(
 
 		start += strlen(key) + strlen(value) + 2;
 	}
-	/*
-	 * See 5.3.  Login Phase.
-	 */
+	 
 	if (!i_buf) {
 		pr_err("InitiatorName key not received"
 			" in first login request.\n");
@@ -1166,11 +1087,7 @@ int iscsi_target_locate_portal(
 		ret = -1;
 		goto out;
 	}
-	/*
-	 * Convert the incoming InitiatorName to lowercase following
-	 * RFC-3720 3.2.6.1. section c) that says that iSCSI IQNs
-	 * are NOT case sensitive.
-	 */
+	 
 	iscsi_initiatorname_tolower(i_buf);
 
 	if (!s_buf) {
@@ -1185,27 +1102,20 @@ int iscsi_target_locate_portal(
 		goto out;
 	}
 
-	/*
-	 * Use default portal group for discovery sessions.
-	 */
+	 
 	sessiontype = strncmp(s_buf, DISCOVERY, 9);
 	if (!sessiontype) {
 		if (!login->leading_connection)
 			goto get_target;
 
 		sess->sess_ops->SessionType = 1;
-		/*
-		 * Setup crc32c modules from libcrypto
-		 */
+		 
 		if (iscsi_login_setup_crypto(conn) < 0) {
 			pr_err("iscsi_login_setup_crypto() failed\n");
 			ret = -1;
 			goto out;
 		}
-		/*
-		 * Serialize access across the discovery struct iscsi_portal_group to
-		 * process login attempt.
-		 */
+		 
 		conn->tpg = iscsit_global->discovery_tpg;
 		if (iscsit_access_np(np, conn->tpg) < 0) {
 			iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
@@ -1229,9 +1139,7 @@ get_target:
 		goto out;
 	}
 
-	/*
-	 * Locate Target IQN from Storage Node.
-	 */
+	 
 	tiqn = iscsit_get_tiqn_for_login(t_buf);
 	if (!tiqn) {
 		pr_err("Unable to locate Target IQN: %s in"
@@ -1243,9 +1151,7 @@ get_target:
 	}
 	pr_debug("Located Storage Object: %s\n", tiqn->tiqn);
 
-	/*
-	 * Locate Target Portal Group from Storage Node.
-	 */
+	 
 	conn->tpg = iscsit_get_tpg_from_np(tiqn, np, &tpg_np);
 	if (!conn->tpg) {
 		pr_err("Unable to locate Target Portal Group"
@@ -1258,9 +1164,7 @@ get_target:
 	}
 	conn->tpg_np = tpg_np;
 	pr_debug("Located Portal Group Object: %hu\n", conn->tpg->tpgt);
-	/*
-	 * Setup crc32c modules from libcrypto
-	 */
+	 
 	if (iscsi_login_setup_crypto(conn) < 0) {
 		pr_err("iscsi_login_setup_crypto() failed\n");
 		kref_put(&tpg_np->tpg_np_kref, iscsit_login_kref_put);
@@ -1269,10 +1173,7 @@ get_target:
 		ret = -1;
 		goto out;
 	}
-	/*
-	 * Serialize access across the struct iscsi_portal_group to
-	 * process login attempt.
-	 */
+	 
 	if (iscsit_access_np(np, conn->tpg) < 0) {
 		kref_put(&tpg_np->tpg_np_kref, iscsit_login_kref_put);
 		iscsit_put_tiqn_for_login(tiqn);
@@ -1283,24 +1184,16 @@ get_target:
 		goto out;
 	}
 
-	/*
-	 * conn->sess->node_acl will be set when the referenced
-	 * struct iscsit_session is located from received ISID+TSIH in
-	 * iscsi_login_non_zero_tsih_s2().
-	 */
+	 
 	if (!login->leading_connection) {
 		ret = 0;
 		goto out;
 	}
 
-	/*
-	 * This value is required in iscsi_login_zero_tsih_s2()
-	 */
+	 
 	sess->sess_ops->SessionType = 0;
 
-	/*
-	 * Locate incoming Initiator IQN reference from Storage Node.
-	 */
+	 
 	sess->se_sess->se_node_acl = core_tpg_check_initiator_node_acl(
 			&conn->tpg->tpg_se_tpg, i_buf);
 	if (!sess->se_sess->se_node_acl) {
@@ -1314,14 +1207,7 @@ get_target:
 	}
 	se_nacl = sess->se_sess->se_node_acl;
 	queue_depth = se_nacl->queue_depth;
-	/*
-	 * Setup pre-allocated tags based upon allowed per NodeACL CmdSN
-	 * depth for non immediate commands, plus extra tags for immediate
-	 * commands.
-	 *
-	 * Also enforce a ISCSIT_MIN_TAGS to prevent unnecessary contention
-	 * in per-cpu-ida tag allocation logic + small queue_depth.
-	 */
+	 
 alloc_tags:
 	tag_num = max_t(u32, ISCSIT_MIN_TAGS, queue_depth);
 	tag_num = (tag_num * 2) + ISCSIT_EXTRA_TAGS;
@@ -1352,15 +1238,7 @@ int iscsi_target_start_negotiation(
 		set_bit(LOGIN_FLAGS_INITIAL_PDU, &conn->login_flags);
 		write_unlock_bh(&sk->sk_callback_lock);
 	}
-	/*
-	 * If iscsi_target_do_login returns zero to signal more PDU
-	 * exchanges are required to complete the login, go ahead and
-	 * clear LOGIN_FLAGS_INITIAL_PDU but only if the TCP connection
-	 * is still active.
-	 *
-	 * Otherwise if TCP connection dropped asynchronously, go ahead
-	 * and perform connection cleanup now.
-	 */
+	 
 	ret = iscsi_target_do_login(conn, login);
 	if (!ret) {
 		spin_lock(&conn->login_worker_lock);
@@ -1369,10 +1247,7 @@ int iscsi_target_start_negotiation(
 			ret = -1;
 		else if (!test_bit(LOGIN_FLAGS_WORKER_RUNNING, &conn->login_flags)) {
 			if (iscsit_set_login_timer_kworker(conn, NULL) < 0) {
-				/*
-				 * The timeout has expired already.
-				 * Schedule login_work to perform the cleanup.
-				 */
+				 
 				schedule_delayed_work(&conn->login_work, 0);
 			}
 		}

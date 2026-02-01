@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 
 #ifndef __SOC_MEDIATEK_MT8167_PM_DOMAINS_H
 #define __SOC_MEDIATEK_MT8167_PM_DOMAINS_H
@@ -9,9 +9,7 @@
 #define MT8167_PWR_STATUS_MFG_2D	BIT(24)
 #define MT8167_PWR_STATUS_MFG_ASYNC	BIT(25)
 
-/*
- * MT8167 power domain support
- */
+ 
 
 static const struct scpsys_domain_data scpsys_domain_data_mt8167[] = {
 	[MT8167_POWER_DOMAIN_MM] = {
@@ -101,5 +99,5 @@ static const struct scpsys_soc_data mt8167_scpsys_data = {
 	.num_domains = ARRAY_SIZE(scpsys_domain_data_mt8167),
 };
 
-#endif /* __SOC_MEDIATEK_MT8167_PM_DOMAINS_H */
+#endif  
 

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2018 Facebook
+
+
 
 #include <stdio.h>
 #include <unistd.h>
@@ -24,18 +24,18 @@ static bool verbose = false;
 
 struct sock_test {
 	const char *descr;
-	/* BPF prog properties */
+	 
 	struct bpf_insn	insns[MAX_INSNS];
 	enum bpf_attach_type expected_attach_type;
 	enum bpf_attach_type attach_type;
-	/* Socket properties */
+	 
 	int domain;
 	int type;
-	/* Endpoint to bind() to */
+	 
 	const char *ip;
 	unsigned short port;
 	unsigned short port_retry;
-	/* Expected test result */
+	 
 	enum {
 		LOAD_REJECT,
 		ATTACH_REJECT,
@@ -198,7 +198,7 @@ static struct sock_test tests[] = {
 		.insns = {
 			BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
 
-			/* if (ip == expected && port == expected) */
+			 
 			BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
 				    offsetof(struct bpf_sock, src_ip6[3])),
 			BPF_JMP_IMM(BPF_JNE, BPF_REG_7,
@@ -207,11 +207,11 @@ static struct sock_test tests[] = {
 				    offsetof(struct bpf_sock, src_port)),
 			BPF_JMP_IMM(BPF_JNE, BPF_REG_7, 0x2001, 2),
 
-			/* return DENY; */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 0),
 			BPF_JMP_A(1),
 
-			/* else return ALLOW; */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_EXIT_INSN(),
 		},
@@ -228,7 +228,7 @@ static struct sock_test tests[] = {
 		.insns = {
 			BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
 
-			/* if (ip == expected && port == expected) */
+			 
 			BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
 				    offsetof(struct bpf_sock, src_ip4)),
 			BPF_JMP_IMM(BPF_JNE, BPF_REG_7,
@@ -237,11 +237,11 @@ static struct sock_test tests[] = {
 				    offsetof(struct bpf_sock, src_port)),
 			BPF_JMP_IMM(BPF_JNE, BPF_REG_7, 0x1002, 2),
 
-			/* return ALLOW; */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_JMP_A(1),
 
-			/* else return DENY; */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 0),
 			BPF_EXIT_INSN(),
 		},
@@ -258,7 +258,7 @@ static struct sock_test tests[] = {
 		.insns = {
 			BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
 
-			/* if (ip == expected && port == expected) */
+			 
 			BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
 				    offsetof(struct bpf_sock, src_ip4)),
 			BPF_JMP_IMM(BPF_JNE, BPF_REG_7,
@@ -267,11 +267,11 @@ static struct sock_test tests[] = {
 				    offsetof(struct bpf_sock, src_port)),
 			BPF_JMP_IMM(BPF_JNE, BPF_REG_7, 0x1002, 2),
 
-			/* return DENY; */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 0),
 			BPF_JMP_A(1),
 
-			/* else return ALLOW; */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_EXIT_INSN(),
 		},
@@ -289,7 +289,7 @@ static struct sock_test tests[] = {
 		.insns = {
 			BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
 
-			/* if (ip == expected && port == expected) */
+			 
 			BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
 				    offsetof(struct bpf_sock, src_ip4)),
 			BPF_JMP_IMM(BPF_JNE, BPF_REG_7,
@@ -298,11 +298,11 @@ static struct sock_test tests[] = {
 				    offsetof(struct bpf_sock, src_port)),
 			BPF_JMP_IMM(BPF_JNE, BPF_REG_7, 0x1002, 2),
 
-			/* return DENY; */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 0),
 			BPF_JMP_A(1),
 
-			/* else return ALLOW; */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_EXIT_INSN(),
 		},
@@ -320,7 +320,7 @@ static struct sock_test tests[] = {
 		.insns = {
 			BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
 
-			/* if (ip == expected && port == expected) */
+			 
 			BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
 				    offsetof(struct bpf_sock, src_ip6[3])),
 			BPF_JMP_IMM(BPF_JNE, BPF_REG_7,
@@ -329,11 +329,11 @@ static struct sock_test tests[] = {
 				    offsetof(struct bpf_sock, src_port)),
 			BPF_JMP_IMM(BPF_JNE, BPF_REG_7, 0x2001, 2),
 
-			/* return DENY; */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 0),
 			BPF_JMP_A(1),
 
-			/* else return ALLOW; */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_EXIT_INSN(),
 		},
@@ -445,9 +445,7 @@ static int bind_sock(int domain, int type, const char *ip,
 	}
 
 	if (bind(sockfd, (const struct sockaddr *)&addr, len) == -1) {
-		/* sys_bind() may fail for different reasons, errno has to be
-		 * checked to confirm that BPF program rejected it.
-		 */
+		 
 		if (errno != EPERM)
 			goto err;
 		if (port_retry)
@@ -507,7 +505,7 @@ static int run_test_case(int cgfd, const struct sock_test *test)
 err:
 	err = -1;
 out:
-	/* Detaching w/o checking return code: best effort attempt. */
+	 
 	if (progfd != -1)
 		bpf_prog_detach(cgfd, test->attach_type);
 	close(progfd);
@@ -540,7 +538,7 @@ int main(int argc, char **argv)
 	if (cgfd < 0)
 		goto err;
 
-	/* Use libbpf 1.0 API mode */
+	 
 	libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
 
 	if (run_tests(cgfd))

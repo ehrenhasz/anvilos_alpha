@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
@@ -205,19 +205,14 @@ kmem_cache_create(const char *name, unsigned int size, unsigned int align,
 	return ret;
 }
 
-/*
- * Test the test infrastructure for kem_cache_alloc/free and bulk counterparts.
- */
+ 
 void test_kmem_cache_bulk(void)
 {
 	int i;
 	void *list[12];
 	static struct kmem_cache *test_cache, *test_cache2;
 
-	/*
-	 * Testing the bulk allocators without aligned kmem_cache to force the
-	 * bulk alloc/free to reuse
-	 */
+	 
 	test_cache = kmem_cache_create("test_cache", 256, 0, SLAB_PANIC, NULL);
 
 	for (i = 0; i < 5; i++)
@@ -236,10 +231,10 @@ void test_kmem_cache_bulk(void)
 	for (i = 0; i < 12; i++)
 		kmem_cache_free(test_cache, list[i]);
 
-	/* The last free will not be kept around */
+	 
 	assert(test_cache->nr_objs == 11);
 
-	/* Aligned caches will immediately free */
+	 
 	test_cache2 = kmem_cache_create("test_cache2", 128, 128, SLAB_PANIC, NULL);
 
 	kmem_cache_alloc_bulk(test_cache2, __GFP_DIRECT_RECLAIM, 10, list);

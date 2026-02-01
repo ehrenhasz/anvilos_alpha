@@ -1,22 +1,4 @@
-/* savedir.c -- save the list of files in a directory in a string
-
-   Copyright (C) 1990, 1997-2001, 2003-2006, 2009-2023 Free Software
-   Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by David MacKenzie <djm@gnu.ai.mit.edu>. */
+ 
 
 #include <config.h>
 
@@ -45,7 +27,7 @@ typedef struct
 #endif
 } direntry_t;
 
-/* Compare the names of two directory entries */
+ 
 
 static int
 direntry_cmp_name (void const *a, void const *b)
@@ -57,7 +39,7 @@ direntry_cmp_name (void const *a, void const *b)
 }
 
 #if D_INO_IN_DIRENT
-/* Compare the inode numbers of two directory entries */
+ 
 
 static int
 direntry_cmp_inode (void const *a, void const *b)
@@ -80,12 +62,7 @@ static comparison_function const comparison_function_table[] =
 #endif
   };
 
-/* Return a freshly allocated string containing the file names
-   in directory DIRP, separated by '\0' characters;
-   the end is marked by two '\0' characters in a row.
-   Returned values are sorted according to OPTION.
-   Return NULL (setting errno) if DIRP cannot be read.
-   If DIRP is NULL, return NULL without affecting errno.  */
+ 
 
 char *
 streamsavedir (DIR *dirp, enum savedir_option option)
@@ -111,8 +88,7 @@ streamsavedir (DIR *dirp, enum savedir_option option)
       if (! dp)
         break;
 
-      /* Skip "", ".", and "..".  "" is returned by at least one buggy
-         implementation: Solaris 2.4 readdir on NFS file systems.  */
+       
       entry = dp->d_name;
       if (entry[entry[0] != '.' ? 0 : entry[1] != '.' ? 1 : 2] != '\0')
         {
@@ -168,10 +144,7 @@ streamsavedir (DIR *dirp, enum savedir_option option)
   return name_space;
 }
 
-/* Return a freshly allocated string containing the file names
-   in directory DIR, separated by '\0' characters;
-   the end is marked by two '\0' characters in a row.
-   Return NULL (setting errno) if DIR cannot be opened, read, or closed.  */
+ 
 
 char *
 savedir (char const *dir, enum savedir_option option)

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intersil ISL7998x analog to MIPI CSI-2 or BT.656 decoder driver.
- *
- * Copyright (C) 2018-2019 Marek Vasut <marex@denx.de>
- * Copyright (C) 2021 Michael Tretter <kernel@pengutronix.de>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -25,23 +20,13 @@
 #include <media/v4l2-fwnode.h>
 #include <media/v4l2-ioctl.h>
 
-/*
- * This control allows to activate and deactivate the test pattern on
- * selected output channels.
- * This value is ISL7998x specific.
- */
+ 
 #define V4L2_CID_TEST_PATTERN_CHANNELS	(V4L2_CID_USER_ISL7998X_BASE + 0)
 
-/*
- * This control allows to specify the color of the test pattern.
- * This value is ISL7998x specific.
- */
+ 
 #define V4L2_CID_TEST_PATTERN_COLOR	(V4L2_CID_USER_ISL7998X_BASE + 1)
 
-/*
- * This control allows to specify the bar pattern in the test pattern.
- * This value is ISL7998x specific.
- */
+ 
 #define V4L2_CID_TEST_PATTERN_BARS	(V4L2_CID_USER_ISL7998X_BASE + 2)
 
 #define ISL7998X_INPUTS			4
@@ -353,7 +338,7 @@ static const struct reg_sequence isl7998x_init_seq_1[] = {
 	{ ISL7998X_REG_P5_PLL_ANA_MISC_CTL, 0x18 },
 	{ ISL7998X_REG_P5_PLL_ANA, 0x00 },
 	{ ISL7998X_REG_P0_SW_RESET_CTL, 0x10, 10 },
-	/* Page 0xf means write to all of pages 1,2,3,4 */
+	 
 	{ ISL7998X_REG_PX_DEC_VDELAY_LO(0xf), 0x14 },
 	{ ISL7998X_REG_PX_DEC_MISC3(0xf), 0xe6 },
 	{ ISL7998X_REG_PX_DEC_CLMD(0xf), 0x85 },
@@ -406,10 +391,7 @@ static const struct reg_sequence isl7998x_init_seq_2[] = {
 	{ ISL7998X_REG_P5_HIST_LINE_CNT_2, 0xf1 },
 	{ ISL7998X_REG_P5_LI_ENGINE_FIFO_CTL, 0x00 },
 	{ ISL7998X_REG_P5_MIPI_ANA, 0x00 },
-	/*
-	 * Wait a bit after reset so that the chip can capture a frame
-	 * and update internal line counters.
-	 */
+	 
 	{ ISL7998X_REG_P0_SW_RESET_CTL, 0x00, 50 },
 };
 
@@ -431,17 +413,17 @@ static const struct isl7998x_datafmt isl7998x_colour_fmts[] = {
 	{ MEDIA_BUS_FMT_UYVY8_2X8, V4L2_COLORSPACE_SRGB },
 };
 
-/* Menu items for LINK_FREQ V4L2 control */
+ 
 static const s64 link_freq_menu_items[] = {
-	/* 1 channel, 1 lane or 2 channels, 2 lanes */
+	 
 	108000000,
-	/* 2 channels, 1 lane or 4 channels, 2 lanes */
+	 
 	216000000,
-	/* 4 channels, 1 lane */
+	 
 	432000000,
 };
 
-/* Menu items for TEST_PATTERN V4L2 control */
+ 
 static const char * const isl7998x_test_pattern_menu[] = {
 	"Disabled",
 	"Enabled",
@@ -522,14 +504,14 @@ struct isl7998x {
 
 	int				enabled;
 
-	/* protect fmt, norm, enabled */
+	 
 	struct mutex			lock;
 
 	struct v4l2_ctrl_handler	ctrl_handler;
-	/* protect ctrl_handler */
+	 
 	struct mutex			ctrl_mutex;
 
-	/* V4L2 Controls */
+	 
 	struct v4l2_ctrl		*link_freq;
 	u8				test_pattern;
 	u8				test_pattern_bars;
@@ -567,7 +549,7 @@ static const struct isl7998x_mode *isl7998x_norm_to_mode(v4l2_std_id norm)
 	for (i = 0; i < ARRAY_SIZE(isl7998x_std_res); i++)
 		if (isl7998x_std_res[i].norm & norm)
 			break;
-	/* Use NTSC default resolution during standard detection */
+	 
 	if (i == ARRAY_SIZE(isl7998x_std_res))
 		return &supported_modes[1];
 
@@ -583,11 +565,7 @@ static int isl7998x_get_nr_inputs(struct device_node *of_node)
 	if (of_graph_get_endpoint_count(of_node) > ISL7998X_NUM_PADS)
 		return -EINVAL;
 
-	/*
-	 * The driver does not provide means to remap the input ports. It
-	 * always configures input ports to start from VID1. Ensure that the
-	 * device tree is correct.
-	 */
+	 
 	for (i = ISL7998X_PAD_VIN1; i <= ISL7998X_PAD_VIN4; i++) {
 		port = of_graph_get_port_by_id(of_node, i);
 		if (!port)
@@ -850,10 +828,7 @@ static int isl7998x_querystd(struct v4l2_subdev *sd, v4l2_std_id *std)
 		std_id[i] = FIELD_GET(ISL7998X_REG_PX_DEC_SDT_NOW, reg);
 	}
 
-	/*
-	 * According to Renesas FAE, all input cameras must have the
-	 * same standard on this chip.
-	 */
+	 
 	for (i = 0; i < isl7998x->nr_inputs; i++) {
 		dev_dbg(dev, "input %d: detected %s\n",
 			i, v4l2_norm_to_name(isl7998x_std_res[std_id[i]].norm));
@@ -1157,7 +1132,7 @@ static const struct v4l2_ctrl_config isl7998x_ctrls[] = {
 };
 
 #define ISL7998X_REG_DECODER_ACA_READABLE_RANGE(page)			\
-	/* Decoder range */						\
+	 						\
 	regmap_reg_range(ISL7998X_REG_PX_DEC_INPUT_FMT(page),		\
 			 ISL7998X_REG_PX_DEC_HS_DELAY_CTL(page)),	\
 	regmap_reg_range(ISL7998X_REG_PX_DEC_ANCTL(page),		\
@@ -1174,7 +1149,7 @@ static const struct v4l2_ctrl_config isl7998x_ctrls[] = {
 			 ISL7998X_REG_PX_DEC_INTERNAL_TEST(page)),	\
 	regmap_reg_range(ISL7998X_REG_PX_DEC_H_DELAY_CTL(page),		\
 			 ISL7998X_REG_PX_DEC_H_DELAY_II_LOW(page)),	\
-	/* ACA range */							\
+	 							\
 	regmap_reg_range(ISL7998X_REG_PX_ACA_CTL_1(page),		\
 			 ISL7998X_REG_PX_ACA_HIST_WIN_V_SZ2(page)),	\
 	regmap_reg_range(ISL7998X_REG_PX_ACA_Y_AVG(page),		\
@@ -1185,7 +1160,7 @@ static const struct v4l2_ctrl_config isl7998x_ctrls[] = {
 			 ISL7998X_REG_PX_DEC_PAGE(page))
 
 #define ISL7998X_REG_DECODER_ACA_WRITEABLE_RANGE(page)			\
-	/* Decoder range */						\
+	 						\
 	regmap_reg_range(ISL7998X_REG_PX_DEC_INPUT_FMT(page),		\
 			 ISL7998X_REG_PX_DEC_INPUT_FMT(page)),		\
 	regmap_reg_range(ISL7998X_REG_PX_DEC_HS_DELAY_CTL(page),	\
@@ -1206,7 +1181,7 @@ static const struct v4l2_ctrl_config isl7998x_ctrls[] = {
 			 ISL7998X_REG_PX_DEC_INTERNAL_TEST(page)),	\
 	regmap_reg_range(ISL7998X_REG_PX_DEC_H_DELAY_CTL(page),		\
 			 ISL7998X_REG_PX_DEC_H_DELAY_II_LOW(page)),	\
-	/* ACA range */							\
+	 							\
 	regmap_reg_range(ISL7998X_REG_PX_ACA_CTL_1(page),		\
 			 ISL7998X_REG_PX_ACA_HIST_WIN_V_SZ2(page)),	\
 	regmap_reg_range(ISL7998X_REG_PX_ACA_CTL_2(page),		\
@@ -1219,14 +1194,14 @@ static const struct v4l2_ctrl_config isl7998x_ctrls[] = {
 			 ISL7998X_REG_PX_DEC_PAGE(page))
 
 #define ISL7998X_REG_DECODER_ACA_VOLATILE_RANGE(page)			\
-	/* Decoder range */						\
+	 						\
 	regmap_reg_range(ISL7998X_REG_PX_DEC_STATUS_1(page),		\
 			 ISL7998X_REG_PX_DEC_STATUS_1(page)),		\
 	regmap_reg_range(ISL7998X_REG_PX_DEC_SDT(page),			\
 			 ISL7998X_REG_PX_DEC_SDT(page)),		\
 	regmap_reg_range(ISL7998X_REG_PX_DEC_MVSN(page),		\
 			 ISL7998X_REG_PX_DEC_HFREF(page)),		\
-	/* ACA range */							\
+	 							\
 	regmap_reg_range(ISL7998X_REG_PX_ACA_Y_AVG(page),		\
 			 ISL7998X_REG_PX_ACA_Y_HIGH(page)),		\
 	regmap_reg_range(ISL7998X_REG_PX_ACA_HIST_DATA_LO(page),	\
@@ -1283,7 +1258,7 @@ static const struct regmap_range isl7998x_writeable_ranges[] = {
 };
 
 static const struct regmap_range isl7998x_volatile_ranges[] = {
-	/* Product id code register is used to check availability */
+	 
 	regmap_reg_range(ISL7998X_REG_P0_PRODUCT_ID_CODE,
 			 ISL7998X_REG_P0_PRODUCT_ID_CODE),
 	regmap_reg_range(ISL7998X_REG_P0_MPP1_SYNC_CTL,
@@ -1556,13 +1531,13 @@ static void isl7998x_remove(struct i2c_client *client)
 
 static const struct of_device_id isl7998x_of_match[] = {
 	{ .compatible = "isil,isl79987", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, isl7998x_of_match);
 
 static const struct i2c_device_id isl7998x_id[] = {
 	{ "isl79987", 0 },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(i2c, isl7998x_id);
 

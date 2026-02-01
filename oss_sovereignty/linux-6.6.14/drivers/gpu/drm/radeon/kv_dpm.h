@@ -1,32 +1,11 @@
-/*
- * Copyright 2013 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #ifndef __KV_DPM_H__
 #define __KV_DPM_H__
 
 #define SMU__NUM_SCLK_DPM_STATE  8
 #define SMU__NUM_MCLK_DPM_LEVELS 4
 #define SMU__NUM_LCLK_DPM_LEVELS 8
-#define SMU__NUM_PCIE_DPM_LEVELS 0 /* ??? */
+#define SMU__NUM_PCIE_DPM_LEVELS 0  
 #include "smu7_fusion.h"
 #include "trinity_dpm.h"
 #include "ppsmc.h"
@@ -117,11 +96,11 @@ struct kv_power_info {
 	u16 high_voltage_t;
 	bool cac_enabled;
 	bool bapm_enable;
-	/* smc offsets */
+	 
 	u32 sram_end;
 	u32 dpm_table_start;
 	u32 soft_regs_start;
-	/* dpm SMU tables */
+	 
 	u8 graphics_dpm_level_count;
 	u8 uvd_level_count;
 	u8 vce_level_count;
@@ -155,12 +134,12 @@ struct kv_power_info {
 	bool acp_power_gated;
 	bool samu_power_gated;
 	bool nb_dpm_enabled;
-	/* flags */
+	 
 	bool enable_didt;
 	bool enable_dpm;
 	bool enable_auto_thermal_throttling;
 	bool enable_nb_dpm;
-	/* caps */
+	 
 	bool caps_cac;
 	bool caps_power_containment;
 	bool caps_sq_ramping;
@@ -184,7 +163,7 @@ struct kv_power_info {
 };
 
 
-/* kv_smc.c */
+ 
 int kv_notify_message_to_smu(struct radeon_device *rdev, u32 id);
 int kv_dpm_get_enable_mask(struct radeon_device *rdev, u32 *enable_mask);
 int kv_send_msg_to_smc_with_parameter(struct radeon_device *rdev,

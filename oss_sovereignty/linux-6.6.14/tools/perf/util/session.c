@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <errno.h>
 #include <signal.h>
 #include <inttypes.h>
@@ -96,7 +96,7 @@ static int perf_session__process_compressed_event(struct perf_session *session,
 
 	return 0;
 }
-#else /* !HAVE_ZSTD_SUPPORT */
+#else  
 #define perf_session__process_compressed_event perf_session__process_compressed_event_stub
 #endif
 
@@ -222,10 +222,7 @@ struct perf_session *__perf_session__new(struct perf_data *data,
 			if (ret < 0)
 				goto out_delete;
 
-			/*
-			 * set session attributes that are present in perf.data
-			 * but not in pipe-mode.
-			 */
+			 
 			if (!data->is_pipe) {
 				perf_session__set_id_hdr_size(session);
 				perf_session__set_comm_exec(session);
@@ -233,7 +230,7 @@ struct perf_session *__perf_session__new(struct perf_data *data,
 
 			evlist__init_trace_event_sample_raw(session->evlist);
 
-			/* Open the directory data. */
+			 
 			if (data->is_dir) {
 				ret = perf_data__open_dir(data);
 				if (ret)
@@ -252,18 +249,12 @@ struct perf_session *__perf_session__new(struct perf_data *data,
 		perf_env__single_address_space(session->machines.host.env);
 
 	if (!data || perf_data__is_write(data)) {
-		/*
-		 * In O_RDONLY mode this will be performed when reading the
-		 * kernel MMAP event, in perf_event__process_mmap().
-		 */
+		 
 		if (perf_session__create_kernel_maps(session) < 0)
 			pr_warning("Cannot read kernel map\n");
 	}
 
-	/*
-	 * In pipe-mode, evlist is empty until PERF_RECORD_HEADER_ATTR is
-	 * processed, so evlist__sample_id_all is not meaningful here.
-	 */
+	 
 	if ((!data || !data->is_pipe) && tool && tool->ordering_requires_timestamps &&
 	    tool->ordered_events && !evlist__sample_id_all(session->evlist)) {
 		dump_printf("WARNING: No sample_id_all support, falling back to unordered processing\n");
@@ -755,20 +746,7 @@ static u8 revbyte(u8 b)
 	return (u8) rev;
 }
 
-/*
- * XXX this is hack in attempt to carry flags bitfield
- * through endian village. ABI says:
- *
- * Bit-fields are allocated from right to left (least to most significant)
- * on little-endian implementations and from left to right (most to least
- * significant) on big-endian implementations.
- *
- * The above seems to be byte specific, so we need to reverse each
- * byte of the bitfield. 'Internet' also says this might be implementation
- * specific and we probably need proper fix and carry perf_event_attr
- * bitfield flags in separate data file FEAT_ section. Thought this seems
- * to work for now.
- */
+ 
 static void swap_bitfield(u8 *p, unsigned len)
 {
 	unsigned i;
@@ -779,7 +757,7 @@ static void swap_bitfield(u8 *p, unsigned len)
 	}
 }
 
-/* exported for swapping attributes in file header */
+ 
 void perf_event__attr_swap(struct perf_event_attr *attr)
 {
 	attr->type		= bswap_32(attr->type);
@@ -812,10 +790,7 @@ do { 						\
 	bswap_field_16(sample_max_stack);
 	bswap_field_32(aux_sample_size);
 
-	/*
-	 * After read_format are bitfields. Check read_format because
-	 * we are unable to use offsetof on bitfield.
-	 */
+	 
 	if (bswap_safe(read_format, 1))
 		swap_bitfield((u8 *) (&attr->read_format + 1),
 			      sizeof(u64));
@@ -956,7 +931,7 @@ static void perf_event__stat_config_swap(union perf_event *event,
 	u64 size;
 
 	size  = bswap_64(event->stat_config.nr) * sizeof(event->stat_config.data[0]);
-	size += 1; /* nr item itself */
+	size += 1;  
 	mem_bswap_64(&event->stat_config.nr, size);
 }
 
@@ -1032,45 +1007,7 @@ static perf_event__swap_op perf_event__swap_ops[] = {
 	[PERF_RECORD_HEADER_MAX]	  = NULL,
 };
 
-/*
- * When perf record finishes a pass on every buffers, it records this pseudo
- * event.
- * We record the max timestamp t found in the pass n.
- * Assuming these timestamps are monotonic across cpus, we know that if
- * a buffer still has events with timestamps below t, they will be all
- * available and then read in the pass n + 1.
- * Hence when we start to read the pass n + 2, we can safely flush every
- * events with timestamps below t.
- *
- *    ============ PASS n =================
- *       CPU 0         |   CPU 1
- *                     |
- *    cnt1 timestamps  |   cnt2 timestamps
- *          1          |         2
- *          2          |         3
- *          -          |         4  <--- max recorded
- *
- *    ============ PASS n + 1 ==============
- *       CPU 0         |   CPU 1
- *                     |
- *    cnt1 timestamps  |   cnt2 timestamps
- *          3          |         5
- *          4          |         6
- *          5          |         7 <---- max recorded
- *
- *      Flush every events below timestamp 4
- *
- *    ============ PASS n + 2 ==============
- *       CPU 0         |   CPU 1
- *                     |
- *    cnt1 timestamps  |   cnt2 timestamps
- *          6          |         8
- *          7          |         9
- *          -          |         10
- *
- *      Flush every events below timestamp 7
- *      etc...
- */
+ 
 int perf_event__process_finished_round(struct perf_tool *tool __maybe_unused,
 				       union perf_event *event __maybe_unused,
 				       struct ordered_events *oe)
@@ -1101,22 +1038,7 @@ static void callchain__lbr_callstack_printf(struct perf_sample *sample)
 
 	if ((i != kernel_callchain_nr) && lbr_stack->nr) {
 		u64 total_nr;
-		/*
-		 * LBR callstack can only get user call chain,
-		 * i is kernel call chain number,
-		 * 1 is PERF_CONTEXT_USER.
-		 *
-		 * The user call chain is stored in LBR registers.
-		 * LBR are pair registers. The caller is stored
-		 * in "from" register, while the callee is stored
-		 * in "to" register.
-		 * For example, there is a call stack
-		 * "A"->"B"->"C"->"D".
-		 * The LBR registers will be recorded like
-		 * "C"->"D", "B"->"C", "A"->"B".
-		 * So only the first "to" register and all "from"
-		 * registers are needed to construct the whole stack.
-		 */
+		 
 		total_nr = i + 1 + lbr_stack->nr + 1;
 		kernel_callchain_nr = i + 1;
 
@@ -1158,15 +1080,7 @@ static void branch_stack__printf(struct perf_sample *sample, bool callstack)
 	if (!callstack) {
 		printf("%s: nr:%" PRIu64 "\n", "... branch stack", sample->branch_stack->nr);
 	} else {
-		/* the reason of adding 1 to nr is because after expanding
-		 * branch stack it generates nr + 1 callstack records. e.g.,
-		 *         B()->C()
-		 *         A()->B()
-		 * the final callstack should be:
-		 *         C()
-		 *         B()
-		 *         A()
-		 */
+		 
 		printf("%s: nr:%" PRIu64 "\n", "... branch callstack", sample->branch_stack->nr+1);
 	}
 
@@ -1440,10 +1354,7 @@ static struct machine *machines__find_for_cpumode(struct machines *machines,
 		else
 			pid = sample->pid;
 
-		/*
-		 * Guest code machine is created as needed and does not use
-		 * DEFAULT_GUEST_KERNEL_ID.
-		 */
+		 
 		if (symbol_conf.guest_code)
 			return machines__findnew(machines, pid);
 
@@ -1474,10 +1385,7 @@ static int deliver_sample_value(struct evlist *evlist,
 		return 0;
 	}
 
-	/*
-	 * There's no reason to deliver sample
-	 * for zero period, bail out.
-	 */
+	 
 	if (!sample->period)
 		return 0;
 
@@ -1509,15 +1417,15 @@ static int evlist__deliver_sample(struct evlist *evlist, struct perf_tool *tool,
 				  union  perf_event *event, struct perf_sample *sample,
 				  struct evsel *evsel, struct machine *machine)
 {
-	/* We know evsel != NULL. */
+	 
 	u64 sample_type = evsel->core.attr.sample_type;
 	u64 read_format = evsel->core.attr.read_format;
 
-	/* Standard sample delivery. */
+	 
 	if (!(sample_type & PERF_SAMPLE_READ))
 		return tool->sample(tool, event, sample, evsel, machine);
 
-	/* For PERF_SAMPLE_READ we have either single or group mode. */
+	 
 	if (read_format & PERF_FORMAT_GROUP)
 		return deliver_sample_group(evlist, tool, event, sample,
 					    machine, read_format);
@@ -1660,7 +1568,7 @@ static s64 perf_session__process_user_event(struct perf_session *session,
 	    tool->compressed == perf_session__process_compressed_event_stub)
 		dump_event(session->evlist, event, file_offset, &sample, file_path);
 
-	/* These events are processed right away */
+	 
 	switch (event->header.type) {
 	case PERF_RECORD_HEADER_ATTR:
 		err = tool->attr(tool, event, &session->evlist);
@@ -1672,17 +1580,10 @@ static s64 perf_session__process_user_event(struct perf_session *session,
 	case PERF_RECORD_EVENT_UPDATE:
 		return tool->event_update(tool, event, &session->evlist);
 	case PERF_RECORD_HEADER_EVENT_TYPE:
-		/*
-		 * Deprecated, but we need to handle it for sake
-		 * of old data files create in pipe mode.
-		 */
+		 
 		return 0;
 	case PERF_RECORD_HEADER_TRACING_DATA:
-		/*
-		 * Setup for reading amidst mmap, but only when we
-		 * are in 'file' mode. The 'pipe' fd is in proper
-		 * place already.
-		 */
+		 
 		if (!perf_data__is_pipe(session->data))
 			lseek(fd, file_offset, SEEK_SET);
 		return tool->tracing_data(session, event);
@@ -1695,11 +1596,7 @@ static s64 perf_session__process_user_event(struct perf_session *session,
 	case PERF_RECORD_AUXTRACE_INFO:
 		return tool->auxtrace_info(session, event);
 	case PERF_RECORD_AUXTRACE:
-		/*
-		 * Setup for reading amidst mmap, but only when we
-		 * are in 'file' mode.  The 'pipe' fd is in proper
-		 * place already.
-		 */
+		 
 		if (!perf_data__is_pipe(session->data))
 			lseek(fd, file_offset + event->header.size, SEEK_SET);
 		return tool->auxtrace(session, event);
@@ -1891,7 +1788,7 @@ int perf_session__register_idle_thread(struct perf_session *session)
 {
 	struct thread *thread = machine__idle_thread(&session->machines.host);
 
-	/* machine__idle_thread() got the thread, so put it */
+	 
 	thread__put(thread);
 	return thread ? 0 : -1;
 }
@@ -2118,7 +2015,7 @@ more:
 	if (!session_done())
 		goto more;
 done:
-	/* do the final flush for ordered samples */
+	 
 	err = ordered_events__flush(oe, OE_FLUSH__FINAL);
 	if (err)
 		goto out_err;
@@ -2142,10 +2039,7 @@ prefetch_event(char *buf, u64 head, size_t mmap_size,
 	union perf_event *event;
 	u16 event_size;
 
-	/*
-	 * Ensure we have enough space remaining to read
-	 * the size of the event in the headers.
-	 */
+	 
 	if (head + sizeof(event->header) > mmap_size)
 		return NULL;
 
@@ -2157,17 +2051,17 @@ prefetch_event(char *buf, u64 head, size_t mmap_size,
 	if (head + event_size <= mmap_size)
 		return event;
 
-	/* We're not fetching the event so swap back again */
+	 
 	if (needs_swap)
 		perf_event_header__bswap(&event->header);
 
-	/* Check if the event fits into the next mmapped buf. */
+	 
 	if (event_size <= mmap_size - head % page_size) {
-		/* Remap buf and fetch again. */
+		 
 		return NULL;
 	}
 
-	/* Invalid input. Event size should never exceed mmap_size. */
+	 
 	pr_debug("%s: head=%#" PRIx64 " event->header.size=%#x, mmap_size=%#zx:"
 		 " fuzzed or compressed perf.data?\n", __func__, head, event_size, mmap_size);
 
@@ -2221,10 +2115,7 @@ static int __perf_session__process_decomp_events(struct perf_session *session)
 	return 0;
 }
 
-/*
- * On 64bit we can mmap the data file in one go. No need for tiny mmap
- * slices. On 32bit we use 32MB.
- */
+ 
 #if BITS_PER_LONG == 64
 #define MMAP_SIZE ULLONG_MAX
 #define NUM_MMAPS 1
@@ -2461,7 +2352,7 @@ static int __perf_session__process_events(struct perf_session *session)
 	err = reader__process_events(&rd, session, &prog);
 	if (err)
 		goto out_err;
-	/* do the final flush for ordered samples */
+	 
 	err = ordered_events__flush(oe, OE_FLUSH__FINAL);
 	if (err)
 		goto out_err;
@@ -2473,10 +2364,7 @@ out_err:
 	ui_progress__finish();
 	if (!tool->no_warn)
 		perf_session__warn_about_errors(session);
-	/*
-	 * We may switching perf.data output, make ordered_events
-	 * reusable.
-	 */
+	 
 	ordered_events__reinit(&session->ordered_events);
 	auxtrace__free_events(session);
 	reader__release_decomp(&rd);
@@ -2484,18 +2372,10 @@ out_err:
 	return err;
 }
 
-/*
- * Processing 2 MB of data from each reader in sequence,
- * because that's the way the ordered events sorting works
- * most efficiently.
- */
+ 
 #define READER_MAX_SIZE (2 * 1024 * 1024)
 
-/*
- * This function reads, merge and process directory data.
- * It assumens the version 1 of directory data, where each
- * data file holds per-cpu data, already sorted by kernel.
- */
+ 
 static int __perf_session__process_dir_events(struct perf_session *session)
 {
 	struct perf_data *data = session->data;
@@ -2597,10 +2477,7 @@ out_err:
 	if (!tool->no_warn)
 		perf_session__warn_about_errors(session);
 
-	/*
-	 * We may switching perf.data output, make ordered_events
-	 * reusable.
-	 */
+	 
 	ordered_events__reinit(&session->ordered_events);
 
 	session->one_mmap = false;
@@ -2697,10 +2574,7 @@ size_t perf_session__fprintf_nr_events(struct perf_session *session, FILE *fp,
 
 size_t perf_session__fprintf(struct perf_session *session, FILE *fp)
 {
-	/*
-	 * FIXME: Here we have to actually print all the machines in this
-	 * session, not just the host...
-	 */
+	 
 	return machine__fprintf(&session->machines.host, fp);
 }
 

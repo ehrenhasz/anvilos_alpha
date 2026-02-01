@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * lm80.c - From lm_sensors, Linux kernel modules for hardware
- *	    monitoring
- * Copyright (C) 1998, 1999  Frodo Looijaard <frodol@dds.nl>
- *			     and Philip Edelbrock <phil@netroedge.com>
- *
- * Ported to Linux 2.6 by Tiago Sousa <mirage@kaotik.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -18,13 +11,13 @@
 #include <linux/err.h>
 #include <linux/mutex.h>
 
-/* Addresses to scan */
+ 
 static const unsigned short normal_i2c[] = { 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d,
 						0x2e, 0x2f, I2C_CLIENT_END };
 
-/* Many LM80 constants specified below */
+ 
 
-/* The LM80 registers */
+ 
 #define LM80_REG_IN_MAX(nr)		(0x2a + (nr) * 2)
 #define LM80_REG_IN_MIN(nr)		(0x2b + (nr) * 2)
 #define LM80_REG_IN(nr)			(0x20 + (nr))
@@ -52,12 +45,7 @@ static const unsigned short normal_i2c[] = { 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d,
 #define LM96080_REG_DEV_ID		0x3f
 
 
-/*
- * Conversions. Rounding and limit checking is only done on the TO_REG
- * variants. Note that you should be a bit careful with which arguments
- * these macros are called: arguments may be evaluated more than once.
- * Fixing this is just not worth it.
- */
+ 
 
 #define IN_TO_REG(val)		(clamp_val(((val) + 5) / 10, 0, 255))
 #define IN_FROM_REG(val)	((val) * 10)
@@ -109,22 +97,20 @@ enum fan_index {
 	f_num_fan
 };
 
-/*
- * Client data (each client gets its own)
- */
+ 
 
 struct lm80_data {
 	struct i2c_client *client;
 	struct mutex update_lock;
-	char error;		/* !=0 if error occurred during last update */
-	bool valid;		/* true if following fields are valid */
-	unsigned long last_updated;	/* In jiffies */
+	char error;		 
+	bool valid;		 
+	unsigned long last_updated;	 
 
-	u8 in[i_num_in][7];	/* Register value, 1st index is enum in_index */
-	u8 fan[f_num_fan][2];	/* Register value, 1st index enum fan_index */
-	u8 fan_div[2];		/* Register encoding, shifted right */
-	s16 temp[t_num_temp];	/* Register values, normalized to 16 bit */
-	u16 alarms;		/* Register encoding, combined */
+	u8 in[i_num_in][7];	 
+	u8 fan[f_num_fan][2];	 
+	u8 fan_div[2];		 
+	s16 temp[t_num_temp];	 
+	u16 alarms;		 
 };
 
 static int lm80_read_value(struct i2c_client *client, u8 reg)
@@ -137,19 +123,15 @@ static int lm80_write_value(struct i2c_client *client, u8 reg, u8 value)
 	return i2c_smbus_write_byte_data(client, reg, value);
 }
 
-/* Called when we have found a new LM80 and after read errors */
+ 
 static void lm80_init_client(struct i2c_client *client)
 {
-	/*
-	 * Reset all except Watchdog values and last conversion values
-	 * This sets fan-divs to 2, among others. This makes most other
-	 * initializations unnecessary
-	 */
+	 
 	lm80_write_value(client, LM80_REG_CONFIG, 0x80);
-	/* Set 11-bit temperature resolution */
+	 
 	lm80_write_value(client, LM80_REG_RES, 0x08);
 
-	/* Start monitoring */
+	 
 	lm80_write_value(client, LM80_REG_CONFIG, 0x01);
 }
 
@@ -252,9 +234,7 @@ done:
 	return ret;
 }
 
-/*
- * Sysfs stuff
- */
+ 
 
 static ssize_t in_show(struct device *dev, struct device_attribute *attr,
 		       char *buf)
@@ -333,12 +313,7 @@ static ssize_t fan_store(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
-/*
- * Note: we save and restore the fan minimum here, because its value is
- * determined in part by the fan divisor.  This follows the principle of
- * least surprise; the user doesn't expect the fan minimum to change just
- * because the divisor changed.
- */
+ 
 static ssize_t fan_div_store(struct device *dev,
 			     struct device_attribute *attr, const char *buf,
 			     size_t count)
@@ -354,7 +329,7 @@ static ssize_t fan_div_store(struct device *dev,
 	if (rv < 0)
 		return rv;
 
-	/* Save fan_min */
+	 
 	mutex_lock(&data->update_lock);
 	min = FAN_FROM_REG(data->fan[f_min][nr],
 			   DIV_FROM_REG(data->fan_div[nr]));
@@ -389,7 +364,7 @@ static ssize_t fan_div_store(struct device *dev,
 	    | (data->fan_div[nr] << (2 * (nr + 1)));
 	lm80_write_value(client, LM80_REG_FANDIV, reg);
 
-	/* Restore fan_min */
+	 
 	data->fan[f_min][nr] = FAN_TO_REG(min, DIV_FROM_REG(data->fan_div[nr]));
 	lm80_write_value(client, LM80_REG_FAN_MIN(nr + 1),
 			 data->fan[f_min][nr]);
@@ -492,9 +467,7 @@ static SENSOR_DEVICE_ATTR_RO(fan2_alarm, alarm, 11);
 static SENSOR_DEVICE_ATTR_RO(temp1_max_alarm, alarm, 8);
 static SENSOR_DEVICE_ATTR_RO(temp1_crit_alarm, alarm, 13);
 
-/*
- * Real code
- */
+ 
 
 static struct attribute *lm80_attrs[] = {
 	&sensor_dev_attr_in0_min.dev_attr.attr,
@@ -545,7 +518,7 @@ static struct attribute *lm80_attrs[] = {
 };
 ATTRIBUTE_GROUPS(lm80);
 
-/* Return 0 if detection is successful, -ENODEV otherwise */
+ 
 static int lm80_detect(struct i2c_client *client, struct i2c_board_info *info)
 {
 	struct i2c_adapter *adapter = client->adapter;
@@ -555,26 +528,22 @@ static int lm80_detect(struct i2c_client *client, struct i2c_board_info *info)
 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -ENODEV;
 
-	/* First check for unused bits, common to both chip types */
+	 
 	if ((lm80_read_value(client, LM80_REG_ALARM2) & 0xc0)
 	 || (lm80_read_value(client, LM80_REG_CONFIG) & 0x80))
 		return -ENODEV;
 
-	/*
-	 * The LM96080 has manufacturer and stepping/die rev registers so we
-	 * can just check that. The LM80 does not have such registers so we
-	 * have to use a more expensive trick.
-	 */
+	 
 	man_id = lm80_read_value(client, LM96080_REG_MAN_ID);
 	dev_id = lm80_read_value(client, LM96080_REG_DEV_ID);
 	if (man_id == 0x01 && dev_id == 0x08) {
-		/* Check more unused bits for confirmation */
+		 
 		if (lm80_read_value(client, LM96080_REG_CONV_RATE) & 0xfe)
 			return -ENODEV;
 
 		name = "lm96080";
 	} else {
-		/* Check 6-bit addressing */
+		 
 		for (i = 0x2a; i <= 0x3d; i++) {
 			cur = i2c_smbus_read_byte_data(client, i);
 			if ((i2c_smbus_read_byte_data(client, i + 0x40) != cur)
@@ -604,10 +573,10 @@ static int lm80_probe(struct i2c_client *client)
 	data->client = client;
 	mutex_init(&data->update_lock);
 
-	/* Initialize the LM80 chip */
+	 
 	lm80_init_client(client);
 
-	/* A few vars need to be filled upon startup */
+	 
 	data->fan[f_min][0] = lm80_read_value(client, LM80_REG_FAN_MIN(1));
 	data->fan[f_min][1] = lm80_read_value(client, LM80_REG_FAN_MIN(2));
 
@@ -617,9 +586,7 @@ static int lm80_probe(struct i2c_client *client)
 	return PTR_ERR_OR_ZERO(hwmon_dev);
 }
 
-/*
- * Driver data (common to all clients)
- */
+ 
 
 static const struct i2c_device_id lm80_id[] = {
 	{ "lm80", 0 },

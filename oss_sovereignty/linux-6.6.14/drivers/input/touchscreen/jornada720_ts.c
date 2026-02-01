@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/input/touchscreen/jornada720_ts.c
- *
- * Copyright (C) 2007 Kristoffer Ericson <Kristoffer.Ericson@gmail.com>
- *
- *  Copyright (C) 2006 Filip Zyzniewski <filip.zyzniewski@tefnet.pl>
- *  based on HP Jornada 56x touchscreen driver by Alex Lange <chicken@handhelds.org>
- *
- * HP Jornada 710/720/729 Touchscreen Driver
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/platform_device.h>
@@ -27,26 +18,26 @@ MODULE_LICENSE("GPL v2");
 struct jornada_ts {
 	struct input_dev *dev;
 	struct gpio_desc *gpio;
-	int x_data[4];		/* X sample values */
-	int y_data[4];		/* Y sample values */
+	int x_data[4];		 
+	int y_data[4];		 
 };
 
 static void jornada720_ts_collect_data(struct jornada_ts *jornada_ts)
 {
-	/* 3 low word X samples */
+	 
 	jornada_ts->x_data[0] = jornada_ssp_byte(TXDUMMY);
 	jornada_ts->x_data[1] = jornada_ssp_byte(TXDUMMY);
 	jornada_ts->x_data[2] = jornada_ssp_byte(TXDUMMY);
 
-	/* 3 low word Y samples */
+	 
 	jornada_ts->y_data[0] = jornada_ssp_byte(TXDUMMY);
 	jornada_ts->y_data[1] = jornada_ssp_byte(TXDUMMY);
 	jornada_ts->y_data[2] = jornada_ssp_byte(TXDUMMY);
 
-	/* combined x samples bits */
+	 
 	jornada_ts->x_data[3] = jornada_ssp_byte(TXDUMMY);
 
-	/* combined y samples bits */
+	 
 	jornada_ts->y_data[3] = jornada_ssp_byte(TXDUMMY);
 }
 
@@ -68,14 +59,14 @@ static irqreturn_t jornada720_ts_interrupt(int irq, void *dev_id)
 	struct input_dev *input = jornada_ts->dev;
 	int x, y;
 
-	/* If gpio is high then report pen up */
+	 
 	if (gpiod_get_value(jornada_ts->gpio)) {
 		input_report_key(input, BTN_TOUCH, 0);
 		input_sync(input);
 	} else {
 		jornada_ssp_start();
 
-		/* proper reply to request is always TXDUMMY */
+		 
 		if (jornada_ssp_inout(GETTOUCHSAMPLES) == TXDUMMY) {
 			jornada720_ts_collect_data(jornada_ts);
 
@@ -145,7 +136,7 @@ static int jornada720_ts_probe(struct platform_device *pdev)
 	return 0;
 }
 
-/* work with hotplug and coldplug */
+ 
 MODULE_ALIAS("platform:jornada_ts");
 
 static struct platform_driver jornada720_ts_driver = {

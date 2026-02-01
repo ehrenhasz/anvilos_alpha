@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Pinctrl data for the NVIDIA Tegra124 pinmux
- *
- * Author: Ashwini Ghuge <aghuge@nvidia.com>
- *
- * Copyright (c) 2013-2014, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/of.h>
@@ -15,10 +9,7 @@
 
 #include "pinctrl-tegra.h"
 
-/*
- * Most pins affected by the pinmux can also be GPIOs. Define these first.
- * These must match how the GPIO driver names/numbers its pins.
- */
+ 
 #define _GPIO(offset)				(offset)
 
 #define TEGRA_PIN_CLK_32K_OUT_PA0		_GPIO(0)
@@ -205,11 +196,11 @@
 #define TEGRA_PIN_USB_VBUS_EN2_PFF1		_GPIO(249)
 #define TEGRA_PIN_PFF2				_GPIO(250)
 
-/* All non-GPIO pins follow */
+ 
 #define NUM_GPIOS				(TEGRA_PIN_PFF2 + 1)
 #define _PIN(offset)				(NUM_GPIOS + (offset))
 
-/* Non-GPIO pins */
+ 
 #define TEGRA_PIN_CORE_PWR_REQ			_PIN(0)
 #define TEGRA_PIN_CPU_PWR_REQ			_PIN(1)
 #define TEGRA_PIN_PWR_INT_N			_PIN(2)
@@ -1702,9 +1693,9 @@ static const char * const tegra124_functions[] = {
 	FUNCTION(vimclk2_alt),
 };
 
-#define DRV_PINGROUP_REG_A		0x868	/* bank 0 */
-#define PINGROUP_REG_A			0x3000	/* bank 1 */
-#define MIPI_PAD_CTRL_PINGROUP_REG_A	0x820	/* bank 2 */
+#define DRV_PINGROUP_REG_A		0x868	 
+#define PINGROUP_REG_A			0x3000	 
+#define MIPI_PAD_CTRL_PINGROUP_REG_A	0x820	 
 
 #define DRV_PINGROUP_REG(r)		((r) - DRV_PINGROUP_REG_A)
 #define PINGROUP_REG(r)			((r) - PINGROUP_REG_A)
@@ -1799,7 +1790,7 @@ static const char * const tegra124_functions[] = {
 	}
 
 static const struct tegra_pingroup tegra124_groups[] = {
-	/*       pg_name,                f0,         f1,         f2,           f3,          r,      od, ior, rcv_sel */
+	 
 	PINGROUP(ulpi_data0_po1,         SPI3,       HSI,        UARTA,        ULPI,        0x3000, N,   N,  N),
 	PINGROUP(ulpi_data1_po2,         SPI3,       HSI,        UARTA,        ULPI,        0x3004, N,   N,  N),
 	PINGROUP(ulpi_data2_po3,         SPI3,       HSI,        UARTA,        ULPI,        0x3008, N,   N,  N),
@@ -1992,7 +1983,7 @@ static const struct tegra_pingroup tegra124_groups[] = {
 	PINGROUP(pff2,                   SATA,       RSVD2,      RSVD3,        RSVD4,       0x3418, Y,   N,  N),
 	PINGROUP(dp_hpd_pff0,            DP,         RSVD2,      RSVD3,        RSVD4,       0x3430, N,   N,  N),
 
-	/* pg_name, r, hsm_b, schmitt_b, lpmd_b, drvdn_b, drvdn_w, drvup_b, drvup_w, slwr_b, slwr_w, slwf_b, slwf_w, drvtype */
+	 
 	DRV_PINGROUP(ao1,         0x868,  2,  3,  4,  12,  5,  20,  5,  28,  2,  30,  2,  N),
 	DRV_PINGROUP(ao2,         0x86c,  2,  3,  4,  12,  5,  20,  5,  28,  2,  30,  2,  N),
 	DRV_PINGROUP(at1,         0x870,  2,  3,  4,  12,  7,  20,  7,  28,  2,  30,  2,  Y),
@@ -2034,7 +2025,7 @@ static const struct tegra_pingroup tegra124_groups[] = {
 	DRV_PINGROUP(sdio4,       0x9c4,  2,  3,  4,  12,  5,  20,  5,  28,  2,  30,  2,  N),
 	DRV_PINGROUP(ao4,         0x9c8,  2,  3,  4,  12,  7,  20,  7,  28,  2,  30,  2,  Y),
 
-	/*                     pg_name, r,     b, f0,  f1 */
+	 
 	MIPI_PAD_CTRL_PINGROUP(dsi_b,   0x820, 1, CSI, DSI_B),
 };
 

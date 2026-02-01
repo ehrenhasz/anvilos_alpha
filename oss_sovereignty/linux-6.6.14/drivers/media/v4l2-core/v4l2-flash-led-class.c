@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * V4L2 flash LED sub-device registration helpers.
- *
- *	Copyright (C) 2015 Samsung Electronics Co., Ltd
- *	Author: Jacek Anaszewski <j.anaszewski@samsung.com>
- */
+
+ 
 
 #include <linux/led-class-flash.h>
 #include <linux/module.h>
@@ -29,10 +24,7 @@ enum ctrl_init_data_id {
 	INDICATOR_INTENSITY,
 	FLASH_TIMEOUT,
 	STROBE_SOURCE,
-	/*
-	 * Only above values are applicable to
-	 * the 'ctrls' array in the struct v4l2_flash.
-	 */
+	 
 	FLASH_STROBE,
 	STROBE_STOP,
 	STROBE_STATUS,
@@ -46,12 +38,7 @@ static enum led_brightness __intensity_to_led_brightness(
 	intensity -= ctrl->minimum;
 	intensity /= (u32) ctrl->step;
 
-	/*
-	 * Indicator LEDs, unlike torch LEDs, are turned on/off basing on
-	 * the state of V4L2_CID_FLASH_INDICATOR_INTENSITY control only.
-	 * Therefore it must be possible to set it to 0 level which in
-	 * the LED subsystem reflects LED_OFF state.
-	 */
+	 
 	if (ctrl->minimum)
 		++intensity;
 
@@ -61,15 +48,7 @@ static enum led_brightness __intensity_to_led_brightness(
 static s32 __led_brightness_to_intensity(struct v4l2_ctrl *ctrl,
 					 enum led_brightness brightness)
 {
-	/*
-	 * Indicator LEDs, unlike torch LEDs, are turned on/off basing on
-	 * the state of V4L2_CID_FLASH_INDICATOR_INTENSITY control only.
-	 * Do not decrement brightness read from the LED subsystem for
-	 * indicator LED as it may equal 0. For torch LEDs this function
-	 * is called only when V4L2_FLASH_LED_MODE_TORCH is set and the
-	 * brightness read is guaranteed to be greater than 0. In the mode
-	 * V4L2_FLASH_LED_MODE_NONE the cached torch intensity value is used.
-	 */
+	 
 	if (ctrl->id != V4L2_CID_FLASH_INDICATOR_INTENSITY)
 		--brightness;
 
@@ -89,13 +68,7 @@ static int v4l2_flash_set_led_brightness(struct v4l2_flash *v4l2_flash,
 					ctrl->val);
 	else
 		brightness = __intensity_to_led_brightness(ctrl, ctrl->val);
-	/*
-	 * In case a LED Flash class driver provides ops for custom
-	 * brightness <-> intensity conversion, it also must have defined
-	 * related v4l2 control step == 1. In such a case a backward conversion
-	 * from led brightness to v4l2 intensity is required to find out the
-	 * aligned intensity value.
-	 */
+	 
 	if (has_flash_op(v4l2_flash, led_brightness_to_intensity))
 		ctrl->val = call_flash_op(v4l2_flash,
 					led_brightness_to_intensity,
@@ -127,12 +100,7 @@ static int v4l2_flash_update_led_brightness(struct v4l2_flash *v4l2_flash,
 	int ret;
 
 	if (ctrl == ctrls[TORCH_INTENSITY]) {
-		/*
-		 * Update torch brightness only if in TORCH_MODE. In other modes
-		 * torch led is turned off, which would spuriously inform the
-		 * user space that V4L2_CID_FLASH_TORCH_INTENSITY control value
-		 * has changed to 0.
-		 */
+		 
 		if (ctrls[LED_MODE]->val != V4L2_FLASH_LED_MODE_TORCH)
 			return 0;
 
@@ -183,10 +151,7 @@ static int v4l2_flash_g_volatile_ctrl(struct v4l2_ctrl *c)
 		ret = led_update_flash_brightness(fled_cdev);
 		if (ret < 0)
 			return ret;
-		/*
-		 * No conversion is needed as LED Flash class also uses
-		 * microamperes for flash intensity units.
-		 */
+		 
 		c->val = fled_cdev->brightness.val;
 		return 0;
 	case V4L2_CID_FLASH_STROBE_STATUS:
@@ -196,7 +161,7 @@ static int v4l2_flash_g_volatile_ctrl(struct v4l2_ctrl *c)
 		c->val = is_strobing;
 		return 0;
 	case V4L2_CID_FLASH_FAULT:
-		/* LED faults map directly to V4L2 flash faults */
+		 
 		return led_get_flash_fault(fled_cdev, &c->val);
 	default:
 		return -EINVAL;
@@ -237,7 +202,7 @@ static int v4l2_flash_s_ctrl(struct v4l2_ctrl *c)
 			led_set_brightness_sync(led_cdev, LED_OFF);
 			return led_set_flash_strobe(fled_cdev, false);
 		case V4L2_FLASH_LED_MODE_FLASH:
-			/* Turn the torch LED off */
+			 
 			led_set_brightness_sync(led_cdev, LED_OFF);
 			if (ctrls[STROBE_SOURCE]) {
 				external_strobe = (ctrls[STROBE_SOURCE]->val ==
@@ -256,7 +221,7 @@ static int v4l2_flash_s_ctrl(struct v4l2_ctrl *c)
 				if (ret < 0)
 					return ret;
 			}
-			/* Stop flash strobing */
+			 
 			ret = led_set_flash_strobe(fled_cdev, false);
 			if (ret < 0)
 				return ret;
@@ -267,12 +232,7 @@ static int v4l2_flash_s_ctrl(struct v4l2_ctrl *c)
 		break;
 	case V4L2_CID_FLASH_STROBE_SOURCE:
 		external_strobe = (c->val == V4L2_FLASH_STROBE_SOURCE_EXTERNAL);
-		/*
-		 * For some hardware arrangements setting strobe source may
-		 * affect torch mode. Therefore, if not in the flash mode,
-		 * cache only this setting. It will be applied upon switching
-		 * to flash mode.
-		 */
+		 
 		if (ctrls[LED_MODE]->val != V4L2_FLASH_LED_MODE_FLASH)
 			return 0;
 
@@ -287,16 +247,10 @@ static int v4l2_flash_s_ctrl(struct v4l2_ctrl *c)
 			return -EBUSY;
 		return led_set_flash_strobe(fled_cdev, false);
 	case V4L2_CID_FLASH_TIMEOUT:
-		/*
-		 * No conversion is needed as LED Flash class also uses
-		 * microseconds for flash timeout units.
-		 */
+		 
 		return led_set_flash_timeout(fled_cdev, c->val);
 	case V4L2_CID_FLASH_INTENSITY:
-		/*
-		 * No conversion is needed as LED Flash class also uses
-		 * microamperes for flash intensity units.
-		 */
+		 
 		return led_set_flash_brightness(fled_cdev, c->val);
 	}
 
@@ -326,7 +280,7 @@ static void __fill_ctrl_init_data(struct v4l2_flash *v4l2_flash,
 	struct v4l2_ctrl_config *ctrl_cfg;
 	u32 mask;
 
-	/* Init INDICATOR_INTENSITY ctrl data */
+	 
 	if (v4l2_flash->iled_cdev) {
 		ctrl_init_data[INDICATOR_INTENSITY].cid =
 					V4L2_CID_FLASH_INDICATOR_INTENSITY;
@@ -342,7 +296,7 @@ static void __fill_ctrl_init_data(struct v4l2_flash *v4l2_flash,
 	if (!led_cdev || WARN_ON(!(led_cdev->flags & LED_DEV_CAP_FLASH)))
 		return;
 
-	/* Init FLASH_FAULT ctrl data */
+	 
 	if (flash_cfg->flash_faults) {
 		ctrl_init_data[FLASH_FAULT].cid = V4L2_CID_FLASH_FAULT;
 		ctrl_cfg = &ctrl_init_data[FLASH_FAULT].config;
@@ -352,7 +306,7 @@ static void __fill_ctrl_init_data(struct v4l2_flash *v4l2_flash,
 				  V4L2_CTRL_FLAG_READ_ONLY;
 	}
 
-	/* Init FLASH_LED_MODE ctrl data */
+	 
 	mask = 1 << V4L2_FLASH_LED_MODE_NONE |
 	       1 << V4L2_FLASH_LED_MODE_TORCH;
 	if (led_cdev->flags & LED_DEV_CAP_FLASH)
@@ -366,7 +320,7 @@ static void __fill_ctrl_init_data(struct v4l2_flash *v4l2_flash,
 	ctrl_cfg->def = V4L2_FLASH_LED_MODE_NONE;
 	ctrl_cfg->flags = 0;
 
-	/* Init TORCH_INTENSITY ctrl data */
+	 
 	ctrl_init_data[TORCH_INTENSITY].cid = V4L2_CID_FLASH_TORCH_INTENSITY;
 	ctrl_cfg = &ctrl_init_data[TORCH_INTENSITY].config;
 	__lfs_to_v4l2_ctrl_config(&flash_cfg->intensity, ctrl_cfg);
@@ -374,17 +328,17 @@ static void __fill_ctrl_init_data(struct v4l2_flash *v4l2_flash,
 	ctrl_cfg->flags = V4L2_CTRL_FLAG_VOLATILE |
 			  V4L2_CTRL_FLAG_EXECUTE_ON_WRITE;
 
-	/* Init FLASH_STROBE ctrl data */
+	 
 	ctrl_init_data[FLASH_STROBE].cid = V4L2_CID_FLASH_STROBE;
 	ctrl_cfg = &ctrl_init_data[FLASH_STROBE].config;
 	ctrl_cfg->id = V4L2_CID_FLASH_STROBE;
 
-	/* Init STROBE_STOP ctrl data */
+	 
 	ctrl_init_data[STROBE_STOP].cid = V4L2_CID_FLASH_STROBE_STOP;
 	ctrl_cfg = &ctrl_init_data[STROBE_STOP].config;
 	ctrl_cfg->id = V4L2_CID_FLASH_STROBE_STOP;
 
-	/* Init FLASH_STROBE_SOURCE ctrl data */
+	 
 	if (flash_cfg->has_external_strobe) {
 		mask = (1 << V4L2_FLASH_STROBE_SOURCE_SOFTWARE) |
 		       (1 << V4L2_FLASH_STROBE_SOURCE_EXTERNAL);
@@ -397,7 +351,7 @@ static void __fill_ctrl_init_data(struct v4l2_flash *v4l2_flash,
 		ctrl_cfg->def = V4L2_FLASH_STROBE_SOURCE_SOFTWARE;
 	}
 
-	/* Init STROBE_STATUS ctrl data */
+	 
 	if (has_flash_op(fled_cdev, strobe_get)) {
 		ctrl_init_data[STROBE_STATUS].cid =
 					V4L2_CID_FLASH_STROBE_STATUS;
@@ -407,7 +361,7 @@ static void __fill_ctrl_init_data(struct v4l2_flash *v4l2_flash,
 				  V4L2_CTRL_FLAG_READ_ONLY;
 	}
 
-	/* Init FLASH_TIMEOUT ctrl data */
+	 
 	if (has_flash_op(fled_cdev, timeout_set)) {
 		ctrl_init_data[FLASH_TIMEOUT].cid = V4L2_CID_FLASH_TIMEOUT;
 		ctrl_cfg = &ctrl_init_data[FLASH_TIMEOUT].config;
@@ -415,7 +369,7 @@ static void __fill_ctrl_init_data(struct v4l2_flash *v4l2_flash,
 		ctrl_cfg->id = V4L2_CID_FLASH_TIMEOUT;
 	}
 
-	/* Init FLASH_INTENSITY ctrl data */
+	 
 	if (has_flash_op(fled_cdev, flash_brightness_set)) {
 		ctrl_init_data[FLASH_INTENSITY].cid = V4L2_CID_FLASH_INTENSITY;
 		ctrl_cfg = &ctrl_init_data[FLASH_INTENSITY].config;
@@ -442,7 +396,7 @@ static int v4l2_flash_init_controls(struct v4l2_flash *v4l2_flash,
 	if (!v4l2_flash->ctrls)
 		return -ENOMEM;
 
-	/* allocate memory dynamically so as not to exceed stack frame size */
+	 
 	ctrl_init_data = kcalloc(NUM_FLASH_CTRLS, sizeof(*ctrl_init_data),
 					GFP_KERNEL);
 	if (!ctrl_init_data)
@@ -543,12 +497,7 @@ static int __sync_device_with_v4l2_controls(struct v4l2_flash *v4l2_flash)
 			return ret;
 	}
 
-	/*
-	 * For some hardware arrangements setting strobe source may affect
-	 * torch mode. Synchronize strobe source setting only if not in torch
-	 * mode. For torch mode case it will get synchronized upon switching
-	 * to flash mode.
-	 */
+	 
 	if (ctrls[STROBE_SOURCE] &&
 	    ctrls[LED_MODE]->val != V4L2_FLASH_LED_MODE_TORCH)
 		ret = call_flash_op(v4l2_flash, external_strobe_set,
@@ -557,9 +506,7 @@ static int __sync_device_with_v4l2_controls(struct v4l2_flash *v4l2_flash)
 	return ret;
 }
 
-/*
- * V4L2 subdev internal operations
- */
+ 
 
 static int v4l2_flash_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {

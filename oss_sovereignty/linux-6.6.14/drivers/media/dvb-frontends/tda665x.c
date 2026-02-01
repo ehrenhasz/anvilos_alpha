@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-	TDA665x tuner driver
-	Copyright (C) Manu Abraham (abraham.manu@gmail.com)
 
-*/
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -114,23 +110,23 @@ static int tda665x_set_frequency(struct dvb_frontend *fe,
 	buf[2] = 0x80 | 0x40 | 0x02;
 	buf[3] = 0x00;
 
-	/* restore frequency */
+	 
 	frequency = new_frequency;
 
 	if (frequency < 153000000) {
-		/* VHF-L */
-		buf[3] |= 0x01; /* fc, Low Band, 47 - 153 MHz */
+		 
+		buf[3] |= 0x01;  
 		if (frequency < 68000000)
-			buf[3] |= 0x40; /* 83uA */
+			buf[3] |= 0x40;  
 		if (frequency < 1040000000)
-			buf[3] |= 0x60; /* 122uA */
+			buf[3] |= 0x60;  
 		if (frequency < 1250000000)
-			buf[3] |= 0x80; /* 163uA */
+			buf[3] |= 0x80;  
 		else
-			buf[3] |= 0xa0; /* 254uA */
+			buf[3] |= 0xa0;  
 	} else if (frequency < 438000000) {
-		/* VHF-H */
-		buf[3] |= 0x02; /* fc, Mid Band, 153 - 438 MHz */
+		 
+		buf[3] |= 0x02;  
 		if (frequency < 230000000)
 			buf[3] |= 0x40;
 		if (frequency < 300000000)
@@ -138,8 +134,8 @@ static int tda665x_set_frequency(struct dvb_frontend *fe,
 		else
 			buf[3] |= 0x80;
 	} else {
-		/* UHF */
-		buf[3] |= 0x04; /* fc, High Band, 438 - 862 MHz */
+		 
+		buf[3] |= 0x04;  
 		if (frequency < 470000000)
 			buf[3] |= 0x60;
 		if (frequency < 526000000)
@@ -148,15 +144,15 @@ static int tda665x_set_frequency(struct dvb_frontend *fe,
 			buf[3] |= 0xa0;
 	}
 
-	/* Set params */
+	 
 	err = tda665x_write(state, buf, 5);
 	if (err < 0)
 		goto exit;
 
-	/* sleep for some time */
+	 
 	printk(KERN_DEBUG "%s: Waiting to Phase LOCK\n", __func__);
 	msleep(20);
-	/* check status */
+	 
 	err = tda665x_get_status(fe, &status);
 	if (err < 0)
 		goto exit;
@@ -164,7 +160,7 @@ static int tda665x_set_frequency(struct dvb_frontend *fe,
 	if (status == 1) {
 		printk(KERN_DEBUG "%s: Tuner Phase locked: status=%d\n",
 		       __func__, status);
-		state->frequency = frequency; /* cache successful state */
+		state->frequency = frequency;  
 	} else {
 		printk(KERN_ERR "%s: No Phase lock: status=%d\n",
 		       __func__, status);

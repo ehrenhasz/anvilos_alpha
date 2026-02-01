@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2016 IBM Corporation
- *
- * Joel Stanley <joel@jms.id.au>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/delay.h>
@@ -80,30 +76,7 @@ MODULE_DEVICE_TABLE(of, aspeed_wdt_of_table);
 #define WDT_CLEAR_TIMEOUT_STATUS	0x14
 #define   WDT_CLEAR_TIMEOUT_AND_BOOT_CODE_SELECTION	BIT(0)
 
-/*
- * WDT_RESET_WIDTH controls the characteristics of the external pulse (if
- * enabled), specifically:
- *
- * * Pulse duration
- * * Drive mode: push-pull vs open-drain
- * * Polarity: Active high or active low
- *
- * Pulse duration configuration is available on both the AST2400 and AST2500,
- * though the field changes between SoCs:
- *
- * AST2400: Bits 7:0
- * AST2500: Bits 19:0
- *
- * This difference is captured in struct aspeed_wdt_config.
- *
- * The AST2500 exposes the drive mode and polarity options, but not in a
- * regular fashion. For read purposes, bit 31 represents active high or low,
- * and bit 30 represents push-pull or open-drain. With respect to write, magic
- * values need to be written to the top byte to change the state of the drive
- * mode and polarity bits. Any other value written to the top byte has no
- * effect on the state of the drive mode or polarity bits. However, the pulse
- * width value must be preserved (as desired) if written.
- */
+ 
 #define WDT_RESET_WIDTH		0x18
 #define   WDT_RESET_WIDTH_ACTIVE_HIGH	BIT(31)
 #define     WDT_ACTIVE_HIGH_MAGIC	(0xA5 << 24)
@@ -114,7 +87,7 @@ MODULE_DEVICE_TABLE(of, aspeed_wdt_of_table);
 
 #define WDT_RESTART_MAGIC	0x4755
 
-/* 32 bits at 1MHz, in milliseconds */
+ 
 #define WDT_MAX_TIMEOUT_MS	4294967
 #define WDT_DEFAULT_TIMEOUT	30
 #define WDT_RATE_1MHZ		1000000
@@ -211,7 +184,7 @@ static int aspeed_wdt_restart(struct watchdog_device *wdd,
 	return 0;
 }
 
-/* access_cs0 shows if cs0 is accessible, hence the reverted bit */
+ 
 static ssize_t access_cs0_show(struct device *dev,
 			       struct device_attribute *attr, char *buf)
 {
@@ -239,24 +212,7 @@ static ssize_t access_cs0_store(struct device *dev,
 	return size;
 }
 
-/*
- * This attribute exists only if the system has booted from the alternate
- * flash with 'alt-boot' option.
- *
- * At alternate flash the 'access_cs0' sysfs node provides:
- *   ast2400: a way to get access to the primary SPI flash chip at CS0
- *            after booting from the alternate chip at CS1.
- *   ast2500: a way to restore the normal address mapping from
- *            (CS0->CS1, CS1->CS0) to (CS0->CS0, CS1->CS1).
- *
- * Clearing the boot code selection and timeout counter also resets to the
- * initial state the chip select line mapping. When the SoC is in normal
- * mapping state (i.e. booted from CS0), clearing those bits does nothing for
- * both versions of the SoC. For alternate boot mode (booted from CS1 due to
- * wdt2 expiration) the behavior differs as described above.
- *
- * This option can be used with wdt2 (watchdog1) only.
- */
+ 
 static DEVICE_ATTR_RW(access_cs0);
 
 static struct attribute *bswitch_attrs[] = {
@@ -353,21 +309,11 @@ static int aspeed_wdt_probe(struct platform_device *pdev)
 
 	watchdog_set_nowayout(&wdt->wdd, nowayout);
 
-	/*
-	 * On clock rates:
-	 *  - ast2400 wdt can run at PCLK, or 1MHz
-	 *  - ast2500 only runs at 1MHz, hard coding bit 4 to 1
-	 *  - ast2600 always runs at 1MHz
-	 *
-	 * Set the ast2400 to run at 1MHz as it simplifies the driver.
-	 */
+	 
 	if (of_device_is_compatible(np, "aspeed,ast2400-wdt"))
 		wdt->ctrl = WDT_CTRL_1MHZ_CLK;
 
-	/*
-	 * Control reset on a per-device basis to ensure the
-	 * host is not affected by a BMC reboot
-	 */
+	 
 	ret = of_property_read_string(np, "aspeed,reset-type", &reset_type);
 	if (ret) {
 		wdt->ctrl |= WDT_CTRL_RESET_MODE_SOC | WDT_CTRL_RESET_SYSTEM;
@@ -390,12 +336,7 @@ static int aspeed_wdt_probe(struct platform_device *pdev)
 		wdt->ctrl |= WDT_CTRL_BOOT_SECONDARY;
 
 	if (readl(wdt->base + WDT_CTRL) & WDT_CTRL_ENABLE)  {
-		/*
-		 * The watchdog is running, but invoke aspeed_wdt_start() to
-		 * write wdt->ctrl to WDT_CTRL to ensure the watchdog's
-		 * configuration conforms to the driver's expectations.
-		 * Primarily, ensure we're using the 1MHz clock source.
-		 */
+		 
 		aspeed_wdt_start(&wdt->wdd);
 		set_bit(WDOG_HW_RUNNING, &wdt->wdd.status);
 	}
@@ -432,18 +373,7 @@ static int aspeed_wdt_probe(struct platform_device *pdev)
 				 duration);
 		}
 
-		/*
-		 * The watchdog is always configured with a 1MHz source, so
-		 * there is no need to scale the microsecond value. However we
-		 * need to offset it - from the datasheet:
-		 *
-		 * "This register decides the asserting duration of wdt_ext and
-		 * wdt_rstarm signal. The default value is 0xFF. It means the
-		 * default asserting duration of wdt_ext and wdt_rstarm is
-		 * 256us."
-		 *
-		 * This implies a value of 0 gives a 1us pulse.
-		 */
+		 
 		writel(duration - 1, wdt->base + WDT_RESET_WIDTH);
 	}
 

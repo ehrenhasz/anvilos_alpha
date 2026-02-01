@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014, Sony Mobile Communications AB.
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- * Author: Bjorn Andersson <bjorn.andersson@sonymobile.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -545,16 +541,13 @@ static int qcom_rpm_probe(struct platform_device *pdev)
 	mutex_init(&rpm->lock);
 	init_completion(&rpm->ack);
 
-	/* Enable message RAM clock */
+	 
 	rpm->ramclk = devm_clk_get_enabled(&pdev->dev, "ram");
 	if (IS_ERR(rpm->ramclk)) {
 		ret = PTR_ERR(rpm->ramclk);
 		if (ret == -EPROBE_DEFER)
 			return ret;
-		/*
-		 * Fall through in all other cases, as the clock is
-		 * optional. (Does not exist on all platforms.)
-		 */
+		 
 		rpm->ramclk = NULL;
 	}
 

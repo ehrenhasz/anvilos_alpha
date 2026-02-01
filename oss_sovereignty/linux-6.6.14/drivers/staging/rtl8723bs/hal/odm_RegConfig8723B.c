@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+
+ 
 
 #include "odm_precomp.h"
 
@@ -19,10 +15,10 @@ void odm_ConfigRFReg_8723B(
 		msleep(50);
 	else {
 		PHY_SetRFReg(pDM_Odm->Adapter, RF_PATH, RegAddr, bRFRegOffsetMask, Data);
-		/*  Add 1us delay between BB/RF register setting. */
+		 
 		udelay(1);
 
-		/* For disable/enable test in high temperature, the B6 value will fail to fill. Suggestion by BB Stanley, 2013.06.25. */
+		 
 		if (Addr == 0xb6) {
 			u32 getvalue = 0;
 			u8 count = 0;
@@ -63,7 +59,7 @@ void odm_ConfigRFReg_8723B(
 					Data
 				);
 				udelay(1);
-				/* Do LCK againg */
+				 
 				PHY_SetRFReg(
 					pDM_Odm->Adapter,
 					RF_PATH,
@@ -86,7 +82,7 @@ void odm_ConfigRFReg_8723B(
 
 void odm_ConfigRF_RadioA_8723B(struct dm_odm_t *pDM_Odm, u32 Addr, u32 Data)
 {
-	u32  content = 0x1000; /*  RF_Content: radioa_txt */
+	u32  content = 0x1000;  
 	u32 maskforPhySet = (u32)(content&0xE000);
 
 	odm_ConfigRFReg_8723B(
@@ -111,7 +107,7 @@ void odm_ConfigBB_AGC_8723B(
 )
 {
 	PHY_SetBBReg(pDM_Odm->Adapter, Addr, Bitmask, Data);
-	/*  Add 1us delay between BB/RF register setting. */
+	 
 	udelay(1);
 }
 
@@ -153,7 +149,7 @@ void odm_ConfigBB_PHY_8723B(
 		PHY_SetBBReg(pDM_Odm->Adapter, Addr, Bitmask, Data);
 	}
 
-	/*  Add 1us delay between BB/RF register setting. */
+	 
 	udelay(1);
 }
 

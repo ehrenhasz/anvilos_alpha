@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_GENERIC_IOCTL_H
 #define _ASM_GENERIC_IOCTL_H
 
@@ -7,7 +7,7 @@
 #ifdef __CHECKER__
 #define _IOC_TYPECHECK(t) (sizeof(t))
 #else
-/* provoke compile error for invalid uses of size argument */
+ 
 extern unsigned int __invalid_size_argument_for_IOC;
 #define _IOC_TYPECHECK(t) \
 	((sizeof(t) == sizeof(t[1]) && \
@@ -15,4 +15,4 @@ extern unsigned int __invalid_size_argument_for_IOC;
 	  sizeof(t) : __invalid_size_argument_for_IOC)
 #endif
 
-#endif /* _ASM_GENERIC_IOCTL_H */
+#endif  

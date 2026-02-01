@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _UAPI_LINUX_TIME_H
 #define _UAPI_LINUX_TIME_H
 
@@ -9,43 +9,38 @@
 #ifndef _STRUCT_TIMESPEC
 #define _STRUCT_TIMESPEC
 struct timespec {
-	__kernel_old_time_t	tv_sec;		/* seconds */
-	long			tv_nsec;	/* nanoseconds */
+	__kernel_old_time_t	tv_sec;		 
+	long			tv_nsec;	 
 };
 #endif
 
 struct timeval {
-	__kernel_old_time_t	tv_sec;		/* seconds */
-	__kernel_suseconds_t	tv_usec;	/* microseconds */
+	__kernel_old_time_t	tv_sec;		 
+	__kernel_suseconds_t	tv_usec;	 
 };
 
 struct itimerspec {
-	struct timespec it_interval;/* timer period */
-	struct timespec it_value;	/* timer expiration */
+	struct timespec it_interval; 
+	struct timespec it_value;	 
 };
 
 struct itimerval {
-	struct timeval it_interval;/* timer interval */
-	struct timeval it_value;	/* current value */
+	struct timeval it_interval; 
+	struct timeval it_value;	 
 };
 #endif
 
 struct timezone {
-	int	tz_minuteswest;	/* minutes west of Greenwich */
-	int	tz_dsttime;	/* type of dst correction */
+	int	tz_minuteswest;	 
+	int	tz_dsttime;	 
 };
 
-/*
- * Names of the interval timers, and structure
- * defining a timer setting:
- */
+ 
 #define	ITIMER_REAL		0
 #define	ITIMER_VIRTUAL		1
 #define	ITIMER_PROF		2
 
-/*
- * The IDs of the various system clocks (for POSIX.1b interval timers):
- */
+ 
 #define CLOCK_REALTIME			0
 #define CLOCK_MONOTONIC			1
 #define CLOCK_PROCESS_CPUTIME_ID	2
@@ -56,10 +51,7 @@ struct timezone {
 #define CLOCK_BOOTTIME			7
 #define CLOCK_REALTIME_ALARM		8
 #define CLOCK_BOOTTIME_ALARM		9
-/*
- * The driver implementing this got removed. The clock ID is kept as a
- * place holder. Do not reuse!
- */
+ 
 #define CLOCK_SGI_CYCLE			10
 #define CLOCK_TAI			11
 
@@ -67,9 +59,7 @@ struct timezone {
 #define CLOCKS_MASK			(CLOCK_REALTIME | CLOCK_MONOTONIC)
 #define CLOCKS_MONO			CLOCK_MONOTONIC
 
-/*
- * The various flags for setting POSIX.1b interval timers:
- */
+ 
 #define TIMER_ABSTIME			0x01
 
-#endif /* _UAPI_LINUX_TIME_H */
+#endif  

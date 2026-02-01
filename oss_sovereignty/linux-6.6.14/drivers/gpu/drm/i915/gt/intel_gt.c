@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include <drm/drm_managed.h>
 #include <drm/intel-gtt.h>
@@ -59,7 +57,7 @@ void intel_gt_common_init_early(struct intel_gt *gt)
 	intel_rps_init_early(&gt->rps);
 }
 
-/* Preliminary initialization of Tile 0 */
+ 
 int intel_root_gt_init_early(struct drm_i915_private *i915)
 {
 	struct intel_gt *gt = to_gt(i915);
@@ -108,7 +106,7 @@ static int intel_gt_probe_lmem(struct intel_gt *gt)
 
 int intel_gt_assign_ggtt(struct intel_gt *gt)
 {
-	/* Media GT shares primary GT's GGTT */
+	 
 	if (gt->type == GT_MEDIA) {
 		gt->ggtt = to_gt(gt->i915)->ggtt;
 	} else {
@@ -170,7 +168,7 @@ int intel_gt_init_hw(struct intel_gt *gt)
 
 	gt->last_init_time = ktime_get();
 
-	/* Double layer security blanket, see i915_gem_init() */
+	 
 	intel_uncore_forcewake_get(uncore, FORCEWAKE_ALL);
 
 	if (HAS_EDRAM(i915) && GRAPHICS_VER(i915) < 9)
@@ -182,19 +180,14 @@ int intel_gt_init_hw(struct intel_gt *gt)
 				   IS_HASWELL_GT3(i915) ?
 				   LOWER_SLICE_ENABLED : LOWER_SLICE_DISABLED);
 
-	/* Apply the GT workarounds... */
+	 
 	intel_gt_apply_workarounds(gt);
-	/* ...and determine whether they are sticking. */
+	 
 	intel_gt_verify_workarounds(gt, "init");
 
 	intel_gt_init_swizzling(gt);
 
-	/*
-	 * At least 830 can leave some of the unused rings
-	 * "active" (ie. head != tail) after resume which
-	 * will prevent c3 entry. Makes sure all unused rings
-	 * are totally idle.
-	 */
+	 
 	init_unused_rings(gt);
 
 	ret = i915_ppgtt_init_hw(gt);
@@ -203,7 +196,7 @@ int intel_gt_init_hw(struct intel_gt *gt)
 		goto out;
 	}
 
-	/* We can't enable contexts until all firmware is loaded */
+	 
 	ret = intel_uc_init_hw(&gt->uc);
 	if (ret) {
 		gt_probe_error(gt, "Enabling uc failed (%d)\n", ret);
@@ -225,7 +218,7 @@ static void gen6_clear_engine_error_register(struct intel_engine_cs *engine)
 
 i915_reg_t intel_gt_perf_limit_reasons_reg(struct intel_gt *gt)
 {
-	/* GT0_PERF_LIMIT_REASONS is available only for Gen11+ */
+	 
 	if (GRAPHICS_VER(gt->i915) < 11)
 		return INVALID_MMIO_REG;
 
@@ -252,10 +245,7 @@ intel_gt_clear_error_registers(struct intel_gt *gt,
 	intel_uncore_write(uncore, EIR, 0);
 	eir = intel_uncore_read(uncore, EIR);
 	if (eir) {
-		/*
-		 * some errors might have become stuck,
-		 * mask them.
-		 */
+		 
 		gt_dbg(gt, "EIR stuck: 0x%08x, masking\n", eir);
 		intel_uncore_rmw(uncore, EMR, 0, eir);
 		intel_uncore_write(uncore, GEN2_IIR,
@@ -308,13 +298,7 @@ static void xehp_check_faults(struct intel_gt *gt)
 {
 	u32 fault;
 
-	/*
-	 * Although the fault register now lives in an MCR register range,
-	 * the GAM registers are special and we only truly need to read
-	 * the "primary" GAM instance rather than handling each instance
-	 * individually.  intel_gt_mcr_read_any() will automatically steer
-	 * toward the primary instance.
-	 */
+	 
 	fault = intel_gt_mcr_read_any(gt, XEHP_RING_FAULT_REG);
 	if (fault & RING_FAULT_VALID) {
 		u32 fault_data0, fault_data1;
@@ -385,7 +369,7 @@ void intel_gt_check_and_clear_faults(struct intel_gt *gt)
 {
 	struct drm_i915_private *i915 = gt->i915;
 
-	/* From GEN8 onwards we only have one 'All Engine Fault Register' */
+	 
 	if (GRAPHICS_VER_FULL(i915) >= IP_VER(12, 50))
 		xehp_check_faults(gt);
 	else if (GRAPHICS_VER(i915) >= 8)
@@ -403,24 +387,7 @@ void intel_gt_flush_ggtt_writes(struct intel_gt *gt)
 	struct intel_uncore *uncore = gt->uncore;
 	intel_wakeref_t wakeref;
 
-	/*
-	 * No actual flushing is required for the GTT write domain for reads
-	 * from the GTT domain. Writes to it "immediately" go to main memory
-	 * as far as we know, so there's no chipset flush. It also doesn't
-	 * land in the GPU render cache.
-	 *
-	 * However, we do have to enforce the order so that all writes through
-	 * the GTT land before any writes to the device, such as updates to
-	 * the GATT itself.
-	 *
-	 * We also have to wait a bit for the writes to land from the GTT.
-	 * An uncached read (i.e. mmio) seems to be ideal for the round-trip
-	 * timing. This issue has only been observed when switching quickly
-	 * between GTT writes and CPU reads from inside the kernel on recent hw,
-	 * and it appears to only affect discrete GTT blocks (i.e. on LLC
-	 * system agents we cannot reproduce this behaviour, until Cannonlake
-	 * that was!).
-	 */
+	 
 
 	wmb();
 
@@ -466,7 +433,7 @@ static int intel_gt_init_scratch(struct intel_gt *gt, unsigned int size)
 	obj = i915_gem_object_create_lmem(i915, size,
 					  I915_BO_ALLOC_VOLATILE |
 					  I915_BO_ALLOC_GPU_ONLY);
-	if (IS_ERR(obj) && !IS_METEORLAKE(i915)) /* Wa_22018444074 */
+	if (IS_ERR(obj) && !IS_METEORLAKE(i915))  
 		obj = i915_gem_object_create_stolen(i915, size);
 	if (IS_ERR(obj))
 		obj = i915_gem_object_create_internal(i915, size);
@@ -514,21 +481,14 @@ static int __engines_record_defaults(struct intel_gt *gt)
 	enum intel_engine_id id;
 	int err = 0;
 
-	/*
-	 * As we reset the gpu during very early sanitisation, the current
-	 * register state on the GPU should reflect its defaults values.
-	 * We load a context onto the hw (with restore-inhibit), then switch
-	 * over to a second context to save that default register state. We
-	 * can then prime every new context with that state so they all start
-	 * from the same default HW values.
-	 */
+	 
 
 	for_each_engine(engine, gt, id) {
 		struct intel_renderstate so;
 		struct intel_context *ce;
 		struct i915_request *rq;
 
-		/* We must be able to switch to something! */
+		 
 		GEM_BUG_ON(!engine->kernel_context);
 
 		ce = intel_context_create(engine);
@@ -567,7 +527,7 @@ err:
 		}
 	}
 
-	/* Flush the default context image to memory, and enable powersaving. */
+	 
 	if (intel_gt_wait_for_idle(gt, I915_GEM_IDLE_TIMEOUT) == -ETIME) {
 		err = -EIO;
 		goto out;
@@ -590,7 +550,7 @@ err:
 		if (!rq->context->state)
 			continue;
 
-		/* Keep a copy of the state's backing pages; free the obj */
+		 
 		state = shmem_create_from_object(rq->context->state->obj);
 		if (IS_ERR(state)) {
 			err = PTR_ERR(state);
@@ -600,11 +560,7 @@ err:
 	}
 
 out:
-	/*
-	 * If we have to abandon now, we expect the engines to be idle
-	 * and ready to be torn-down. The quickest way we can accomplish
-	 * this is by declaring ourselves wedged.
-	 */
+	 
 	if (err)
 		intel_gt_set_wedged(gt);
 
@@ -637,7 +593,7 @@ static int __engines_verify_workarounds(struct intel_gt *gt)
 			err = -EIO;
 	}
 
-	/* Flush and restore the kernel context for safety */
+	 
 	if (intel_gt_wait_for_idle(gt, I915_GEM_IDLE_TIMEOUT) == -ETIME)
 		err = -EIO;
 
@@ -658,7 +614,7 @@ int intel_gt_wait_for_idle(struct intel_gt *gt, long timeout)
 {
 	long remaining_timeout;
 
-	/* If the device is asleep, we have no requests outstanding */
+	 
 	if (!intel_gt_pm_is_awake(gt))
 		return 0;
 
@@ -688,13 +644,7 @@ int intel_gt_init(struct intel_gt *gt)
 
 	intel_gt_init_workarounds(gt);
 
-	/*
-	 * This is just a security blanket to placate dragons.
-	 * On some systems, we very sporadically observe that the first TLBs
-	 * used by the CS may be stale, despite us poking the TLB reset. If
-	 * we hold the forcewake during initialisation these problems
-	 * just magically go away.
-	 */
+	 
 	intel_uncore_forcewake_get(gt->uncore, FORCEWAKE_ALL);
 
 	err = intel_gt_init_scratch(gt,
@@ -783,37 +733,13 @@ void intel_gt_driver_unregister(struct intel_gt *gt)
 	intel_rps_driver_unregister(&gt->rps);
 	intel_gsc_fini(&gt->gsc);
 
-	/*
-	 * If we unload the driver and wedge before the GSC worker is complete,
-	 * the worker will hit an error on its submission to the GSC engine and
-	 * then exit. This is hard to hit for a user, but it is reproducible
-	 * with skipping selftests. The error is handled gracefully by the
-	 * worker, so there are no functional issues, but we still end up with
-	 * an error message in dmesg, which is something we want to avoid as
-	 * this is a supported scenario. We could modify the worker to better
-	 * handle a wedging occurring during its execution, but that gets
-	 * complicated for a couple of reasons:
-	 * - We do want the error on runtime wedging, because there are
-	 *   implications for subsystems outside of GT (i.e., PXP, HDCP), it's
-	 *   only the error on driver unload that we want to silence.
-	 * - The worker is responsible for multiple submissions (GSC FW load,
-	 *   HuC auth, SW proxy), so all of those will have to be adapted to
-	 *   handle the wedged_on_fini scenario.
-	 * Therefore, it's much simpler to just wait for the worker to be done
-	 * before wedging on driver removal, also considering that the worker
-	 * will likely already be idle in the great majority of non-selftest
-	 * scenarios.
-	 */
+	 
 	intel_gsc_uc_flush_work(&gt->uc.gsc);
 
-	/*
-	 * Upon unregistering the device to prevent any new users, cancel
-	 * all in-flight requests so that we can quickly unbind the active
-	 * resources.
-	 */
+	 
 	intel_gt_set_wedged_on_fini(gt);
 
-	/* Scrub all HW state upon release */
+	 
 	with_intel_runtime_pm(gt->uncore->rpm, wakeref)
 		__intel_gt_reset(gt, ALL_ENGINES);
 }
@@ -823,7 +749,7 @@ void intel_gt_driver_release(struct intel_gt *gt)
 	struct i915_address_space *vm;
 
 	vm = fetch_and_zero(&gt->vm);
-	if (vm) /* FIXME being called twice on error paths :( */
+	if (vm)  
 		i915_vm_put(vm);
 
 	intel_wa_list_free(&gt->wa_list);
@@ -838,7 +764,7 @@ void intel_gt_driver_late_release_all(struct drm_i915_private *i915)
 	struct intel_gt *gt;
 	unsigned int id;
 
-	/* We need to wait for inflight RCU frees to release their grip */
+	 
 	rcu_barrier();
 
 	for_each_gt(gt, i915, id) {
@@ -897,11 +823,7 @@ int intel_gt_probe_all(struct drm_i915_private *i915)
 	mmio_bar = intel_mmio_bar(GRAPHICS_VER(i915));
 	phys_addr = pci_resource_start(pdev, mmio_bar);
 
-	/*
-	 * We always have at least one primary GT on any device
-	 * and it has been already initialized early during probe
-	 * in i915_driver_probe()
-	 */
+	 
 	gt->i915 = i915;
 	gt->name = "Primary GT";
 	gt->info.engine_mask = INTEL_INFO(i915)->platform_engine_mask;
@@ -951,7 +873,7 @@ int intel_gt_probe_all(struct drm_i915_private *i915)
 			break;
 
 		case GT_PRIMARY:
-			/* Primary GT should not appear in extra GT list */
+			 
 		default:
 			MISSING_CASE(gtdef->type);
 			ret = -ENODEV;
@@ -997,10 +919,7 @@ enum i915_map_type intel_gt_coherent_map_type(struct intel_gt *gt,
 					      struct drm_i915_gem_object *obj,
 					      bool always_coherent)
 {
-	/*
-	 * Wa_22016122933: always return I915_MAP_WC for Media
-	 * version 13.0 when the object is on the Media GT
-	 */
+	 
 	if (i915_gem_object_is_lmem(obj) || intel_gt_needs_wa_22016122933(gt))
 		return I915_MAP_WC;
 	if (HAS_LLC(gt->i915) || always_coherent)

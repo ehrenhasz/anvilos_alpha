@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* (C) 1999-2001 Paul `Rusty' Russell
- * (C) 2002-2006 Netfilter Core Team <coreteam@netfilter.org>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/export.h>
@@ -44,11 +42,11 @@ __udp_manip_pkt(struct sk_buff *skb,
 	__be16 *portptr, newport;
 
 	if (maniptype == NF_NAT_MANIP_SRC) {
-		/* Get rid of src port */
+		 
 		newport = tuple->src.u.udp.port;
 		portptr = &hdr->source;
 	} else {
-		/* Get rid of dst port */
+		 
 		newport = tuple->dst.u.udp.port;
 		portptr = &hdr->dest;
 	}
@@ -105,10 +103,7 @@ sctp_manip_pkt(struct sk_buff *skb,
 	struct sctphdr *hdr;
 	int hdrsize = 8;
 
-	/* This could be an inner header returned in imcp packet; in such
-	 * cases we cannot update the checksum field since it is outside
-	 * of the 8 bytes of transport layer headers we are guaranteed.
-	 */
+	 
 	if (skb->len >= hdroff + sizeof(*hdr))
 		hdrsize = sizeof(*hdr);
 
@@ -118,10 +113,10 @@ sctp_manip_pkt(struct sk_buff *skb,
 	hdr = (struct sctphdr *)(skb->data + hdroff);
 
 	if (maniptype == NF_NAT_MANIP_SRC) {
-		/* Get rid of src port */
+		 
 		hdr->source = tuple->src.u.sctp.port;
 	} else {
-		/* Get rid of dst port */
+		 
 		hdr->dest = tuple->dst.u.sctp.port;
 	}
 
@@ -145,11 +140,9 @@ tcp_manip_pkt(struct sk_buff *skb,
 {
 	struct tcphdr *hdr;
 	__be16 *portptr, newport, oldport;
-	int hdrsize = 8; /* TCP connection tracking guarantees this much */
+	int hdrsize = 8;  
 
-	/* this could be a inner header returned in icmp packet; in such
-	   cases we cannot update the checksum field since it is outside of
-	   the 8 bytes of transport layer headers we are guaranteed */
+	 
 	if (skb->len >= hdroff + sizeof(struct tcphdr))
 		hdrsize = sizeof(struct tcphdr);
 
@@ -159,11 +152,11 @@ tcp_manip_pkt(struct sk_buff *skb,
 	hdr = (struct tcphdr *)(skb->data + hdroff);
 
 	if (maniptype == NF_NAT_MANIP_SRC) {
-		/* Get rid of src port */
+		 
 		newport = tuple->src.u.tcp.port;
 		portptr = &hdr->source;
 	} else {
-		/* Get rid of dst port */
+		 
 		newport = tuple->dst.u.tcp.port;
 		portptr = &hdr->dest;
 	}
@@ -188,7 +181,7 @@ dccp_manip_pkt(struct sk_buff *skb,
 #ifdef CONFIG_NF_CT_PROTO_DCCP
 	struct dccp_hdr *hdr;
 	__be16 *portptr, oldport, newport;
-	int hdrsize = 8; /* DCCP connection tracking guarantees this much */
+	int hdrsize = 8;  
 
 	if (skb->len >= hdroff + sizeof(struct dccp_hdr))
 		hdrsize = sizeof(struct dccp_hdr);
@@ -273,7 +266,7 @@ icmpv6_manip_pkt(struct sk_buff *skb,
 	return true;
 }
 
-/* manipulate a GRE packet according to maniptype */
+ 
 static bool
 gre_manip_pkt(struct sk_buff *skb,
 	      unsigned int iphdroff, unsigned int hdroff,
@@ -284,23 +277,20 @@ gre_manip_pkt(struct sk_buff *skb,
 	const struct gre_base_hdr *greh;
 	struct pptp_gre_header *pgreh;
 
-	/* pgreh includes two optional 32bit fields which are not required
-	 * to be there.  That's where the magic '8' comes from */
+	 
 	if (skb_ensure_writable(skb, hdroff + sizeof(*pgreh) - 8))
 		return false;
 
 	greh = (void *)skb->data + hdroff;
 	pgreh = (struct pptp_gre_header *)greh;
 
-	/* we only have destination manip of a packet, since 'source key'
-	 * is not present in the packet itself */
+	 
 	if (maniptype != NF_NAT_MANIP_DST)
 		return true;
 
 	switch (greh->flags & GRE_VERSION) {
 	case GRE_VERSION_0:
-		/* We do not currently NAT any GREv0 packets.
-		 * Try to behave like "nf_nat_proto_unknown" */
+		 
 		break;
 	case GRE_VERSION_1:
 		pr_debug("call_id -> 0x%04x\n", ntohs(tuple->dst.u.gre.key));
@@ -346,7 +336,7 @@ static bool l4proto_manip_pkt(struct sk_buff *skb,
 				     tuple, maniptype);
 	}
 
-	/* If we don't know protocol -- no error, pass it unmodified. */
+	 
 	return true;
 }
 
@@ -403,7 +393,7 @@ static bool nf_nat_ipv6_manip_pkt(struct sk_buff *skb,
 	    !l4proto_manip_pkt(skb, iphdroff, hdroff, target, maniptype))
 		return false;
 
-	/* must reload, offset might have changed */
+	 
 	ipv6h = (void *)skb->data + iphdroff;
 
 manip_addr:
@@ -422,7 +412,7 @@ unsigned int nf_nat_manip_pkt(struct sk_buff *skb, struct nf_conn *ct,
 {
 	struct nf_conntrack_tuple target;
 
-	/* We are aiming to look like inverse of other direction. */
+	 
 	nf_ct_invert_tuple(&target, &ct->tuplehash[!dir].tuple);
 
 	switch (target.src.l3num) {
@@ -591,7 +581,7 @@ int nf_nat_icmp_reply_translation(struct sk_buff *skb,
 	else
 		statusbit = IPS_DST_NAT;
 
-	/* Invert if this is reply direction */
+	 
 	if (dir == IP_CT_DIR_REPLY)
 		statusbit ^= IPS_NAT_MASK;
 
@@ -603,7 +593,7 @@ int nf_nat_icmp_reply_translation(struct sk_buff *skb,
 		return 0;
 
 	if (skb->ip_summed != CHECKSUM_PARTIAL) {
-		/* Reloading "inside" here since manip_pkt may reallocate */
+		 
 		inside = (void *)skb->data + hdrlen;
 		inside->icmp.checksum = 0;
 		inside->icmp.checksum =
@@ -611,7 +601,7 @@ int nf_nat_icmp_reply_translation(struct sk_buff *skb,
 					       skb->len - hdrlen, 0));
 	}
 
-	/* Change outer to look like the reply to an incoming packet */
+	 
 	nf_ct_invert_tuple(&target, &ct->tuplehash[!dir].tuple);
 	target.dst.protonum = IPPROTO_ICMP;
 	if (!nf_nat_ipv4_manip_pkt(skb, 0, &target, manip))
@@ -688,7 +678,7 @@ static int nf_xfrm_me_harder(struct net *net, struct sk_buff *skb, unsigned int 
 	skb_dst_drop(skb);
 	skb_dst_set(skb, dst);
 
-	/* Change in oif may mean change in hh_len. */
+	 
 	hh_len = skb_dst(skb)->dev->hard_header_len;
 	if (skb_headroom(skb) < hh_len &&
 	    pskb_expand_head(skb, hh_len - skb_headroom(skb), 0, GFP_ATOMIC))
@@ -709,7 +699,7 @@ nf_nat_ipv4_local_in(void *priv, struct sk_buff *skb,
 
 	if (ret == NF_ACCEPT && sk && saddr != ip_hdr(skb)->saddr &&
 	    !inet_sk_transparent(sk))
-		skb_orphan(skb); /* TCP edemux obtained wrong socket */
+		skb_orphan(skb);  
 
 	return ret;
 }
@@ -789,28 +779,28 @@ nf_nat_ipv4_local_fn(void *priv, struct sk_buff *skb,
 }
 
 static const struct nf_hook_ops nf_nat_ipv4_ops[] = {
-	/* Before packet filtering, change destination */
+	 
 	{
 		.hook		= nf_nat_ipv4_pre_routing,
 		.pf		= NFPROTO_IPV4,
 		.hooknum	= NF_INET_PRE_ROUTING,
 		.priority	= NF_IP_PRI_NAT_DST,
 	},
-	/* After packet filtering, change source */
+	 
 	{
 		.hook		= nf_nat_ipv4_out,
 		.pf		= NFPROTO_IPV4,
 		.hooknum	= NF_INET_POST_ROUTING,
 		.priority	= NF_IP_PRI_NAT_SRC,
 	},
-	/* Before packet filtering, change destination */
+	 
 	{
 		.hook		= nf_nat_ipv4_local_fn,
 		.pf		= NFPROTO_IPV4,
 		.hooknum	= NF_INET_LOCAL_OUT,
 		.priority	= NF_IP_PRI_NAT_DST,
 	},
-	/* After packet filtering, change source */
+	 
 	{
 		.hook		= nf_nat_ipv4_local_in,
 		.pf		= NFPROTO_IPV4,
@@ -868,7 +858,7 @@ int nf_nat_icmpv6_reply_translation(struct sk_buff *skb,
 	else
 		statusbit = IPS_DST_NAT;
 
-	/* Invert if this is reply direction */
+	 
 	if (dir == IP_CT_DIR_REPLY)
 		statusbit ^= IPS_NAT_MASK;
 
@@ -911,11 +901,7 @@ nf_nat_ipv6_fn(void *priv, struct sk_buff *skb,
 	u8 nexthdr;
 
 	ct = nf_ct_get(skb, &ctinfo);
-	/* Can't track?  It's not due to stress, or conntrack would
-	 * have dropped it.  Hence it's the user's responsibilty to
-	 * packet filter it out, or implement conntrack/NAT for that
-	 * protocol. 8) --RR
-	 */
+	 
 	if (!ct)
 		return NF_ACCEPT;
 
@@ -1028,28 +1014,28 @@ nf_nat_ipv6_local_fn(void *priv, struct sk_buff *skb,
 }
 
 static const struct nf_hook_ops nf_nat_ipv6_ops[] = {
-	/* Before packet filtering, change destination */
+	 
 	{
 		.hook		= nf_nat_ipv6_in,
 		.pf		= NFPROTO_IPV6,
 		.hooknum	= NF_INET_PRE_ROUTING,
 		.priority	= NF_IP6_PRI_NAT_DST,
 	},
-	/* After packet filtering, change source */
+	 
 	{
 		.hook		= nf_nat_ipv6_out,
 		.pf		= NFPROTO_IPV6,
 		.hooknum	= NF_INET_POST_ROUTING,
 		.priority	= NF_IP6_PRI_NAT_SRC,
 	},
-	/* Before packet filtering, change destination */
+	 
 	{
 		.hook		= nf_nat_ipv6_local_fn,
 		.pf		= NFPROTO_IPV6,
 		.hooknum	= NF_INET_LOCAL_OUT,
 		.priority	= NF_IP6_PRI_NAT_DST,
 	},
-	/* After packet filtering, change source */
+	 
 	{
 		.hook		= nf_nat_ipv6_fn,
 		.pf		= NFPROTO_IPV6,
@@ -1070,7 +1056,7 @@ void nf_nat_ipv6_unregister_fn(struct net *net, const struct nf_hook_ops *ops)
 	nf_nat_unregister_fn(net, ops->pf, ops, ARRAY_SIZE(nf_nat_ipv6_ops));
 }
 EXPORT_SYMBOL_GPL(nf_nat_ipv6_unregister_fn);
-#endif /* CONFIG_IPV6 */
+#endif  
 
 #if defined(CONFIG_NF_TABLES_INET) && IS_ENABLED(CONFIG_NFT_NAT)
 int nf_nat_inet_register_fn(struct net *net, const struct nf_hook_ops *ops)
@@ -1100,4 +1086,4 @@ void nf_nat_inet_unregister_fn(struct net *net, const struct nf_hook_ops *ops)
 	nf_nat_unregister_fn(net, NFPROTO_IPV6, ops, ARRAY_SIZE(nf_nat_ipv6_ops));
 }
 EXPORT_SYMBOL_GPL(nf_nat_inet_unregister_fn);
-#endif /* NFT INET NAT */
+#endif  

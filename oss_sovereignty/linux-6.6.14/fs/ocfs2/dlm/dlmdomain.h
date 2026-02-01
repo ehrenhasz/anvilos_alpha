@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * dlmdomain.h
- *
- * Copyright (C) 2004 Oracle.  All rights reserved.
- */
+ 
+ 
 
 #ifndef DLMDOMAIN_H
 #define DLMDOMAIN_H

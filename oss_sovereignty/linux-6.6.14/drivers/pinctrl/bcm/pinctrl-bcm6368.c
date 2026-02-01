@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for BCM6368 GPIO unit (pinctrl + GPIO)
- *
- * Copyright (C) 2021 Álvaro Fernández Rojas <noltari@gmail.com>
- * Copyright (C) 2016 Jonas Gorski <jonas.gorski@gmail.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/gpio/driver.h>
@@ -434,7 +429,7 @@ static int bcm6368_gpio_request_enable(struct pinctrl_dev *pctldev,
 	if (offset >= BCM63XX_BANK_GPIOS && !bcm6368_pins[offset].drv_data)
 		return 0;
 
-	/* disable all functions using this pin */
+	 
 	if (offset < BCM63XX_BANK_GPIOS)
 		regmap_update_bits(pc->regs, BCM6368_MODE_REG, BIT(offset), 0);
 
@@ -496,7 +491,7 @@ static int bcm6368_pinctrl_probe(struct platform_device *pdev)
 
 static const struct of_device_id bcm6368_pinctrl_match[] = {
 	{ .compatible = "brcm,bcm6368-pinctrl", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver bcm6368_pinctrl_driver = {

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2007 Oracle.  All rights reserved.
- */
+ 
+ 
 
 #ifndef BTRFS_TRANSACTION_H
 #define BTRFS_TRANSACTION_H
@@ -12,7 +10,7 @@
 #include "ctree.h"
 #include "misc.h"
 
-/* Radix-tree tag for roots that are part of the trasaction. */
+ 
 #define BTRFS_ROOT_TRANS_TAG			0
 
 enum btrfs_trans_state {
@@ -32,22 +30,15 @@ enum btrfs_trans_state {
 
 struct btrfs_transaction {
 	u64 transid;
-	/*
-	 * total external writers(USERSPACE/START/ATTACH) in this
-	 * transaction, it must be zero before the transaction is
-	 * being committed
-	 */
+	 
 	atomic_t num_extwriters;
-	/*
-	 * total writers in this transaction, it must be zero before the
-	 * transaction can end
-	 */
+	 
 	atomic_t num_writers;
 	refcount_t use_count;
 
 	unsigned long flags;
 
-	/* Be protected by fs_info->trans_lock when we want to change it. */
+	 
 	enum btrfs_trans_state state;
 	int aborted;
 	struct list_head list;
@@ -60,42 +51,21 @@ struct btrfs_transaction {
 	struct list_head switch_commits;
 	struct list_head dirty_bgs;
 
-	/*
-	 * There is no explicit lock which protects io_bgs, rather its
-	 * consistency is implied by the fact that all the sites which modify
-	 * it do so under some form of transaction critical section, namely:
-	 *
-	 * - btrfs_start_dirty_block_groups - This function can only ever be
-	 *   run by one of the transaction committers. Refer to
-	 *   BTRFS_TRANS_DIRTY_BG_RUN usage in btrfs_commit_transaction
-	 *
-	 * - btrfs_write_dirty_blockgroups - this is called by
-	 *   commit_cowonly_roots from transaction critical section
-	 *   (TRANS_STATE_COMMIT_DOING)
-	 *
-	 * - btrfs_cleanup_dirty_bgs - called on transaction abort
-	 */
+	 
 	struct list_head io_bgs;
 	struct list_head dropped_roots;
 	struct extent_io_tree pinned_extents;
 
-	/*
-	 * we need to make sure block group deletion doesn't race with
-	 * free space cache writeout.  This mutex keeps them from stomping
-	 * on each other
-	 */
+	 
 	struct mutex cache_write_mutex;
 	spinlock_t dirty_bgs_lock;
-	/* Protected by spin lock fs_info->unused_bgs_lock. */
+	 
 	struct list_head deleted_bgs;
 	spinlock_t dropped_roots_lock;
 	struct btrfs_delayed_ref_root delayed_refs;
 	struct btrfs_fs_info *fs_info;
 
-	/*
-	 * Number of ordered extents the transaction must wait for before
-	 * committing. These are ordered extents started by a fast fsync.
-	 */
+	 
 	atomic_t pending_ordered;
 	wait_queue_head_t pending_wait;
 };
@@ -126,14 +96,11 @@ struct btrfs_trans_handle {
 	struct btrfs_transaction *transaction;
 	struct btrfs_block_rsv *block_rsv;
 	struct btrfs_block_rsv *orig_rsv;
-	/* Set by a task that wants to create a snapshot. */
+	 
 	struct btrfs_pending_snapshot *pending_snapshot;
 	refcount_t use_count;
 	unsigned int type;
-	/*
-	 * Error code of transaction abort, set outside of locks and must use
-	 * the READ_ONCE/WRITE_ONCE access
-	 */
+	 
 	short aborted;
 	bool adding_csums;
 	bool allocating_chunk;
@@ -144,12 +111,7 @@ struct btrfs_trans_handle {
 	struct list_head new_bgs;
 };
 
-/*
- * The abort status can be changed between calls and is not protected by locks.
- * This accepts btrfs_transaction and btrfs_trans_handle as types. Once it's
- * set to a non-zero value it does not change, so the macro should be in checks
- * but is not necessary for further reads of the value.
- */
+ 
 #define TRANS_ABORTED(trans)		(unlikely(READ_ONCE((trans)->aborted)))
 
 struct btrfs_pending_snapshot {
@@ -160,11 +122,11 @@ struct btrfs_pending_snapshot {
 	struct btrfs_root *snap;
 	struct btrfs_qgroup_inherit *inherit;
 	struct btrfs_path *path;
-	/* block reservation for the operation */
+	 
 	struct btrfs_block_rsv block_rsv;
-	/* extra metadata reservation for relocation */
+	 
 	int error;
-	/* Preallocated anonymous block device number */
+	 
 	dev_t anon_dev;
 	bool readonly;
 	struct list_head list;
@@ -180,10 +142,7 @@ static inline void btrfs_set_inode_last_trans(struct btrfs_trans_handle *trans,
 	spin_unlock(&inode->lock);
 }
 
-/*
- * Make qgroup codes to skip given qgroupid, means the old/new_roots for
- * qgroup won't contain the qgroupid in it.
- */
+ 
 static inline void btrfs_set_skip_qgroup(struct btrfs_trans_handle *trans,
 					 u64 qgroupid)
 {
@@ -205,14 +164,11 @@ static inline void btrfs_clear_skip_qgroup(struct btrfs_trans_handle *trans)
 
 bool __cold abort_should_print_stack(int errno);
 
-/*
- * Call btrfs_abort_transaction as early as possible when an error condition is
- * detected, that way the exact stack trace is reported for some errors.
- */
+ 
 #define btrfs_abort_transaction(trans, errno)		\
 do {								\
 	bool first = false;					\
-	/* Report first abort since mount */			\
+	 			\
 	if (!test_and_set_bit(BTRFS_FS_STATE_TRANS_ABORTED,	\
 			&((trans)->fs_info->fs_state))) {	\
 		first = true;					\
@@ -220,7 +176,7 @@ do {								\
 			KERN_ERR				\
 			"BTRFS: Transaction aborted (error %d)\n",	\
 			(errno))) {					\
-			/* Stack trace printed. */			\
+			 			\
 		} else {						\
 			btrfs_err((trans)->fs_info,			\
 				  "Transaction aborted (error %d)",	\

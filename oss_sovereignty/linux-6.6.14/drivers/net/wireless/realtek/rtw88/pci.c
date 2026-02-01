@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -97,7 +96,7 @@ static void rtw_pci_free_tx_ring_skbs(struct rtw_dev *rtwdev,
 	struct sk_buff *skb, *tmp;
 	dma_addr_t dma;
 
-	/* free every skb remained in tx list */
+	 
 	skb_queue_walk_safe(&tx_ring->queue, skb, tmp) {
 		__skb_unlink(skb, &tx_ring->queue);
 		tx_data = rtw_pci_get_tx_data(skb);
@@ -118,7 +117,7 @@ static void rtw_pci_free_tx_ring(struct rtw_dev *rtwdev,
 
 	rtw_pci_free_tx_ring_skbs(rtwdev, tx_ring);
 
-	/* free the ring itself */
+	 
 	dma_free_coherent(&pdev->dev, ring_sz, head, tx_ring->r.dma);
 	tx_ring->r.head = NULL;
 }
@@ -462,10 +461,10 @@ static void rtw_pci_reset_buf_desc(struct rtw_dev *rtwdev)
 	rtw_write16(rtwdev, RTK_PCI_RXBD_NUM_MPDUQ, len & TRX_BD_IDX_MASK);
 	rtw_write32(rtwdev, RTK_PCI_RXBD_DESA_MPDUQ, dma);
 
-	/* reset read/write point */
+	 
 	rtw_write32(rtwdev, RTK_PCI_TXBD_RWPTR_CLR, 0xffffffff);
 
-	/* reset H2C Queue index in a single write */
+	 
 	if (rtw_chip_wcpu_11ac(rtwdev))
 		rtw_write32_set(rtwdev, RTK_PCI_TXBD_H2CQ_CSR,
 				BIT_CLR_H2CQ_HOST_IDX | BIT_CLR_H2CQ_HW_IDX);
@@ -517,7 +516,7 @@ out:
 
 static void rtw_pci_dma_reset(struct rtw_dev *rtwdev, struct rtw_pci *rtwpci)
 {
-	/* reset dma and rx tag */
+	 
 	rtw_write32_set(rtwdev, RTK_PCI_CTRL,
 			BIT_RST_TRXDMA_INTF | BIT_RX_TAG_EN);
 	rtwpci->rx_tag = 0;
@@ -610,18 +609,16 @@ static void rtw_pci_deep_ps_enter(struct rtw_dev *rtwdev)
 
 	lockdep_assert_held(&rtwpci->irq_lock);
 
-	/* Deep PS state is not allowed to TX-DMA */
+	 
 	for (queue = 0; queue < RTK_MAX_TX_QUEUE_NUM; queue++) {
-		/* BCN queue is rsvd page, does not have DMA interrupt
-		 * H2C queue is managed by firmware
-		 */
+		 
 		if (queue == RTW_TX_QUEUE_BCN ||
 		    queue == RTW_TX_QUEUE_H2C)
 			continue;
 
 		tx_ring = &rtwpci->tx_rings[queue];
 
-		/* check if there is any skb DMAing */
+		 
 		if (skb_queue_len(&tx_ring->queue)) {
 			tx_empty = false;
 			break;
@@ -693,7 +690,7 @@ static void rtw_pci_dma_check(struct rtw_dev *rtwdev,
 						     idx * desc_sz);
 	total_pkt_size = le16_to_cpu(buf_desc->total_pkt_size);
 
-	/* rx tag mismatch, throw a warning */
+	 
 	if (total_pkt_size != rtwpci->rx_tag)
 		rtw_warn(rtwdev, "pci bus timeout, check dma status\n");
 
@@ -715,11 +712,7 @@ static void __pci_flush_queue(struct rtw_dev *rtwdev, u8 pci_q, bool drop)
 	u32 cur_rp;
 	u8 i;
 
-	/* Because the time taked by the I/O in __pci_get_hw_tx_ring_rp is a
-	 * bit dynamic, it's hard to define a reasonable fixed total timeout to
-	 * use read_poll_timeout* helper. Instead, we can ensure a reasonable
-	 * polling times, so we just use for loop with udelay here.
-	 */
+	 
 	for (i = 0; i < 30; i++) {
 		cur_rp = __pci_get_hw_tx_ring_rp(rtwdev, pci_q);
 		if (cur_rp == ring->r.wp)
@@ -738,7 +731,7 @@ static void __rtw_pci_flush_queues(struct rtw_dev *rtwdev, u32 pci_queues,
 	u8 q;
 
 	for (q = 0; q < RTK_MAX_TX_QUEUE_NUM; q++) {
-		/* Unnecessary to flush BCN, H2C and HI tx queues. */
+		 
 		if (q == RTW_TX_QUEUE_BCN || q == RTW_TX_QUEUE_H2C ||
 		    q == RTW_TX_QUEUE_HI0)
 			continue;
@@ -753,9 +746,7 @@ static void rtw_pci_flush_queues(struct rtw_dev *rtwdev, u32 queues, bool drop)
 	u32 pci_queues = 0;
 	u8 i;
 
-	/* If all of the hardware queues are requested to flush,
-	 * flush all of the pci queues.
-	 */
+	 
 	if (queues == BIT(rtwdev->hw->queues) - 1) {
 		pci_queues = BIT(RTK_MAX_TX_QUEUE_NUM) - 1;
 	} else {
@@ -829,7 +820,7 @@ static int rtw_pci_tx_write_data(struct rtw_dev *rtwdev,
 	if (dma_mapping_error(&rtwpci->pdev->dev, dma))
 		return -EBUSY;
 
-	/* after this we got dma mapped, there is no way back */
+	 
 	buf_desc = get_tx_buffer_desc(ring, tx_buf_desc_sz);
 	memset(buf_desc, 0, tx_buf_desc_sz);
 	psb_len = (skb->len - 1) / 128 + 1;
@@ -853,7 +844,7 @@ static int rtw_pci_tx_write_data(struct rtw_dev *rtwdev,
 	if (queue == RTW_TX_QUEUE_BCN)
 		goto out_unlock;
 
-	/* update write-index, and kick it off later */
+	 
 	set_bit(queue, rtwpci->tx_queued);
 	if (++ring->r.wp >= ring->r.len)
 		ring->r.wp = 0;
@@ -882,7 +873,7 @@ static int rtw_pci_write_data_rsvd_page(struct rtw_dev *rtwdev, u8 *buf,
 		return ret;
 	}
 
-	/* reserved pages go through beacon queue */
+	 
 	reg_bcn_work = rtw_read8(rtwdev, RTK_PCI_TXBD_BCN_WORK);
 	reg_bcn_work |= BIT_PCI_BCNQ_FLAG;
 	rtw_write8(rtwdev, RTK_PCI_TXBD_BCN_WORK, reg_bcn_work);
@@ -971,7 +962,7 @@ static void rtw_pci_tx_isr(struct rtw_dev *rtwdev, struct rtw_pci *rtwpci,
 		dma_unmap_single(&rtwpci->pdev->dev, tx_data->dma, skb->len,
 				 DMA_TO_DEVICE);
 
-		/* just free command packets from host to card */
+		 
 		if (hw_queue == RTW_TX_QUEUE_H2C) {
 			dev_kfree_skb_irq(skb);
 			continue;
@@ -991,13 +982,13 @@ static void rtw_pci_tx_isr(struct rtw_dev *rtwdev, struct rtw_pci *rtwpci,
 
 		info = IEEE80211_SKB_CB(skb);
 
-		/* enqueue to wait for tx report */
+		 
 		if (info->flags & IEEE80211_TX_CTL_REQ_TX_STATUS) {
 			rtw_tx_report_enqueue(rtwdev, skb, tx_data->sn);
 			continue;
 		}
 
-		/* always ACK for others, then they won't be marked as drop */
+		 
 		if (info->flags & IEEE80211_TX_CTL_NO_ACK)
 			info->flags |= IEEE80211_TX_STAT_NOACK_TRANSMITTED;
 		else
@@ -1066,25 +1057,23 @@ static u32 rtw_pci_rx_napi(struct rtw_dev *rtwdev, struct rtw_pci *rtwpci,
 		rx_desc = skb->data;
 		chip->ops->query_rx_desc(rtwdev, rx_desc, &pkt_stat, &rx_status);
 
-		/* offset from rx_desc to payload */
+		 
 		pkt_offset = pkt_desc_sz + pkt_stat.drv_info_sz +
 			     pkt_stat.shift;
 
-		/* allocate a new skb for this frame,
-		 * discard the frame if none available
-		 */
+		 
 		new_len = pkt_stat.pkt_len + pkt_offset;
 		new = dev_alloc_skb(new_len);
 		if (WARN_ONCE(!new, "rx routine starvation\n"))
 			goto next_rp;
 
-		/* put the DMA data including rx_desc from phy to new skb */
+		 
 		skb_put_data(new, skb->data, new_len);
 
 		if (pkt_stat.is_c2h) {
 			rtw_fw_c2h_cmd_rx_irqsafe(rtwdev, pkt_offset, new);
 		} else {
-			/* remove rx_desc */
+			 
 			skb_pull(new, pkt_offset);
 
 			rtw_rx_stats(rtwdev, pkt_stat.vif, new);
@@ -1094,19 +1083,17 @@ static u32 rtw_pci_rx_napi(struct rtw_dev *rtwdev, struct rtw_pci *rtwpci,
 		}
 
 next_rp:
-		/* new skb delivered to mac80211, re-enable original skb DMA */
+		 
 		rtw_pci_sync_rx_desc_device(rtwdev, dma, ring, cur_rp,
 					    buf_desc_sz);
 
-		/* host read next element in ring */
+		 
 		if (++cur_rp >= ring->r.len)
 			cur_rp = 0;
 	}
 
 	ring->r.rp = cur_rp;
-	/* 'rp', the last position we have read, is seen as previous posistion
-	 * of 'wp' that is used to calculate 'count' next time.
-	 */
+	 
 	ring->r.wp = cur_rp;
 	rtw_write16(rtwdev, RTK_PCI_RXBD_IDX_MPDUQ, ring->r.rp);
 
@@ -1142,14 +1129,7 @@ static irqreturn_t rtw_pci_interrupt_handler(int irq, void *dev)
 	struct rtw_dev *rtwdev = dev;
 	struct rtw_pci *rtwpci = (struct rtw_pci *)rtwdev->priv;
 
-	/* disable RTW PCI interrupt to avoid more interrupts before the end of
-	 * thread function
-	 *
-	 * disable HIMR here to also avoid new HISR flag being raised before
-	 * the HISRs have been Write-1-cleared for MSI. If not all of the HISRs
-	 * are cleared, the edge-triggered interrupt will not be generated when
-	 * a new HISR flag is set.
-	 */
+	 
 	rtw_pci_disable_interrupt(rtwdev, rtwpci);
 
 	return IRQ_WAKE_THREAD;
@@ -1186,7 +1166,7 @@ static irqreturn_t rtw_pci_interrupt_threadfn(int irq, void *dev)
 	if (unlikely(irq_status[0] & IMR_C2HCMD))
 		rtw_fw_c2h_cmd_isr(rtwdev);
 
-	/* all of the jobs for this interrupt have been done */
+	 
 	if (rtwpci->running)
 		rtw_pci_enable_interrupt(rtwdev, rtwpci, rx);
 	spin_unlock_bh(&rtwpci->irq_lock);
@@ -1371,16 +1351,7 @@ static void rtw_pci_link_ps(struct rtw_dev *rtwdev, bool enter)
 {
 	struct rtw_pci *rtwpci = (struct rtw_pci *)rtwdev->priv;
 
-	/* Like CLKREQ, ASPM is also implemented by two HW modules, and can
-	 * only be enabled when host supports it.
-	 *
-	 * And ASPM mechanism should be enabled when driver/firmware enters
-	 * power save mode, without having heavy traffic. Because we've
-	 * experienced some inter-operability issues that the link tends
-	 * to enter L1 state on the fly even when driver is having high
-	 * throughput. This is probably because the ASPM behavior slightly
-	 * varies from different SOC.
-	 */
+	 
 	if (!(rtwpci->link_ctrl & PCI_EXP_LNKCTL_ASPM_L1))
 		return;
 
@@ -1397,28 +1368,11 @@ static void rtw_pci_link_cfg(struct rtw_dev *rtwdev)
 	u16 link_ctrl;
 	int ret;
 
-	/* RTL8822CE has enabled REFCLK auto calibration, it does not need
-	 * to add clock delay to cover the REFCLK timing gap.
-	 */
+	 
 	if (chip->id == RTW_CHIP_TYPE_8822C)
 		rtw_dbi_write8(rtwdev, RTK_PCIE_CLKDLY_CTRL, 0);
 
-	/* Though there is standard PCIE configuration space to set the
-	 * link control register, but by Realtek's design, driver should
-	 * check if host supports CLKREQ/ASPM to enable the HW module.
-	 *
-	 * These functions are implemented by two HW modules associated,
-	 * one is responsible to access PCIE configuration space to
-	 * follow the host settings, and another is in charge of doing
-	 * CLKREQ/ASPM mechanisms, it is default disabled. Because sometimes
-	 * the host does not support it, and due to some reasons or wrong
-	 * settings (ex. CLKREQ# not Bi-Direction), it could lead to device
-	 * loss if HW misbehaves on the link.
-	 *
-	 * Hence it's designed that driver should first check the PCIE
-	 * configuration space is sync'ed and enabled, then driver can turn
-	 * on the other module that is actually working on the mechanism.
-	 */
+	 
 	ret = pcie_capability_read_word(pdev, PCI_EXP_LNKCTL, &link_ctrl);
 	if (ret) {
 		rtw_err(rtwdev, "failed to read PCI cap, ret=%d\n", ret);
@@ -1490,7 +1444,7 @@ static void rtw_pci_phy_cfg(struct rtw_dev *rtwdev)
 
 	rtw_pci_link_cfg(rtwdev);
 
-	/* Disable 8821ce completion timeout by default */
+	 
 	if (chip->id == RTW_CHIP_TYPE_8821C) {
 		ret = pcie_capability_set_word(pdev, PCI_EXP_DEVCTL2,
 					       PCI_EXP_DEVCTL2_COMP_TMOUT_DIS);
@@ -1557,7 +1511,7 @@ static int rtw_pci_setup_resource(struct rtw_dev *rtwdev, struct pci_dev *pdev)
 	rtwpci = (struct rtw_pci *)rtwdev->priv;
 	rtwpci->pdev = pdev;
 
-	/* after this driver can access to hw registers */
+	 
 	ret = rtw_pci_io_mapping(rtwdev, pdev);
 	if (ret) {
 		rtw_err(rtwdev, "failed to request pci io region\n");
@@ -1663,11 +1617,7 @@ static int rtw_pci_napi_poll(struct napi_struct *napi, int budget)
 		if (rtwpci->running)
 			rtw_pci_enable_interrupt(rtwdev, rtwpci, false);
 		spin_unlock_bh(&rtwpci->irq_lock);
-		/* When ISR happens during polling and before napi_complete
-		 * while no further data is received. Data on the dma_ring will
-		 * not be processed immediately. Check whether dma ring is
-		 * empty and perform napi_schedule accordingly.
-		 */
+		 
 		if (rtw_pci_get_hw_rx_ring_nr(rtwdev, rtwpci))
 			napi_schedule(napi);
 	}
@@ -1748,7 +1698,7 @@ int rtw_pci_probe(struct pci_dev *pdev,
 		goto err_destroy_pci;
 	}
 
-	/* Disable PCIe ASPM L1 while doing NAPI poll for 8821CE */
+	 
 	if (rtwdev->chip->id == RTW_CHIP_TYPE_8821C && bridge->vendor == PCI_VENDOR_ID_INTEL)
 		rtwpci->rx_no_aspm = true;
 

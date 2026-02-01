@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2014 Intel Corporation. All rights reserved.
- * Copyright (C) 2019 Intel Corporation
- *
- * Portions of this file are derived from the ipw3945 project, as well
- * as portions of the ieee80211 subsystem header files.
- *****************************************************************************/
+
+ 
 
 
 #include <linux/kernel.h>
@@ -26,22 +19,13 @@ static bool force_cam = true;
 module_param(force_cam, bool, 0644);
 MODULE_PARM_DESC(force_cam, "force continuously aware mode (no power saving at all)");
 
-/*
- * Setting power level allows the card to go to sleep when not busy.
- *
- * We calculate a sleep command based on the required latency, which
- * we get from mac80211. In order to handle thermal throttling, we can
- * also use pre-defined power levels.
- */
+ 
 
-/*
- * This defines the old power levels. They are still used by default
- * (level 1) and for thermal throttle (levels 3 through 5)
- */
+ 
 
 struct iwl_power_vec_entry {
 	struct iwl_powertable_cmd cmd;
-	u8 no_dtim;	/* number of skip dtim */
+	u8 no_dtim;	 
 };
 
 #define IWL_DTIM_RANGE_0_MAX	2
@@ -60,9 +44,9 @@ struct iwl_power_vec_entry {
 				     cpu_to_le32(X2), \
 				     cpu_to_le32(X3), \
 				     cpu_to_le32(X4)}
-/* default power management (not Tx power) table values */
-/* for DTIM period 0 through IWL_DTIM_RANGE_0_MAX */
-/* DTIM 0 - 2 */
+ 
+ 
+ 
 static const struct iwl_power_vec_entry range_0[IWL_POWER_NUM] = {
 	{{SLP, SLP_TOUT(200), SLP_TOUT(500), SLP_VEC(1, 1, 2, 2, 0xFF)}, 0},
 	{{SLP, SLP_TOUT(200), SLP_TOUT(300), SLP_VEC(1, 2, 2, 2, 0xFF)}, 0},
@@ -72,8 +56,8 @@ static const struct iwl_power_vec_entry range_0[IWL_POWER_NUM] = {
 };
 
 
-/* for DTIM period IWL_DTIM_RANGE_0_MAX + 1 through IWL_DTIM_RANGE_1_MAX */
-/* DTIM 3 - 10 */
+ 
+ 
 static const struct iwl_power_vec_entry range_1[IWL_POWER_NUM] = {
 	{{SLP, SLP_TOUT(200), SLP_TOUT(500), SLP_VEC(1, 2, 3, 4, 4)}, 0},
 	{{SLP, SLP_TOUT(200), SLP_TOUT(300), SLP_VEC(1, 2, 3, 4, 7)}, 0},
@@ -82,8 +66,8 @@ static const struct iwl_power_vec_entry range_1[IWL_POWER_NUM] = {
 	{{SLP, SLP_TOUT(25), SLP_TOUT(25), SLP_VEC(2, 4, 6, 10, 10)}, 2}
 };
 
-/* for DTIM period > IWL_DTIM_RANGE_1_MAX */
-/* DTIM 11 - */
+ 
+ 
 static const struct iwl_power_vec_entry range_2[IWL_POWER_NUM] = {
 	{{SLP, SLP_TOUT(200), SLP_TOUT(500), SLP_VEC(1, 2, 3, 4, 0xFF)}, 0},
 	{{SLP, SLP_TOUT(200), SLP_TOUT(300), SLP_VEC(2, 4, 6, 7, 0xFF)}, 0},
@@ -92,8 +76,8 @@ static const struct iwl_power_vec_entry range_2[IWL_POWER_NUM] = {
 	{{SLP, SLP_TOUT(25), SLP_TOUT(25), SLP_VEC(4, 7, 10, 10, 0xFF)}, 0}
 };
 
-/* advance power management */
-/* DTIM 0 - 2 */
+ 
+ 
 static const struct iwl_power_vec_entry apm_range_0[IWL_POWER_NUM] = {
 	{{ASLP, 0, 0, ASLP_TOUT(50), ASLP_TOUT(50),
 		SLP_VEC(1, 2, 4, 6, 0xFF), 0}, 0},
@@ -108,8 +92,8 @@ static const struct iwl_power_vec_entry apm_range_0[IWL_POWER_NUM] = {
 };
 
 
-/* for DTIM period IWL_DTIM_RANGE_0_MAX + 1 through IWL_DTIM_RANGE_1_MAX */
-/* DTIM 3 - 10 */
+ 
+ 
 static const struct iwl_power_vec_entry apm_range_1[IWL_POWER_NUM] = {
 	{{ASLP, 0, 0, ASLP_TOUT(50), ASLP_TOUT(50),
 		SLP_VEC(1, 2, 4, 6, 0xFF), 0}, 0},
@@ -123,8 +107,8 @@ static const struct iwl_power_vec_entry apm_range_1[IWL_POWER_NUM] = {
 		SLP_VEC(1, 2, 6, 8, 0xFF), 0}, 2}
 };
 
-/* for DTIM period > IWL_DTIM_RANGE_1_MAX */
-/* DTIM 11 - */
+ 
+ 
 static const struct iwl_power_vec_entry apm_range_2[IWL_POWER_NUM] = {
 	{{ASLP, 0, 0, ASLP_TOUT(50), ASLP_TOUT(50),
 		SLP_VEC(1, 2, 4, 6, 0xFF), 0}, 0},
@@ -181,7 +165,7 @@ static void iwl_static_sleep_cmd(struct iwl_priv *priv,
 	}
 
 	slp_itrvl = le32_to_cpu(cmd->sleep_interval[IWL_POWER_VEC_SIZE - 1]);
-	/* figure out the listen interval based on dtim period and skip */
+	 
 	if (slp_itrvl == 0xFF)
 		cmd->sleep_interval[IWL_POWER_VEC_SIZE - 1] =
 			cpu_to_le32(period * (skip + 1));
@@ -214,7 +198,7 @@ static void iwl_static_sleep_cmd(struct iwl_priv *priv,
 		cmd->sleep_interval[IWL_POWER_VEC_SIZE - 1] =
 			cpu_to_le32(IWL_CONN_MAX_LISTEN_INTERVAL);
 
-	/* enforce max sleep interval */
+	 
 	for (i = IWL_POWER_VEC_SIZE - 1; i >= 0 ; i--) {
 		if (le32_to_cpu(cmd->sleep_interval[i]) >
 		    (max_sleep[i] * period))
@@ -235,8 +219,7 @@ static void iwl_static_sleep_cmd(struct iwl_priv *priv,
 
 	IWL_DEBUG_POWER(priv, "numSkipDtim = %u, dtimPeriod = %d\n",
 			skip, period);
-	/* The power level here is 0-4 (used as array index), but user expects
-	to see 1-5 (according to spec). */
+	 
 	IWL_DEBUG_POWER(priv, "Sleep command for index %d\n", lvl + 1);
 }
 
@@ -287,7 +270,7 @@ static void iwl_power_build_cmd(struct iwl_priv *priv,
 		 priv->hw->conf.flags & IEEE80211_CONF_IDLE)
 		iwl_static_sleep_cmd(priv, cmd, IWL_POWER_INDEX_5, 20);
 	else if (iwl_tt_is_low_power_state(priv)) {
-		/* in thermal throttling low power state */
+		 
 		iwl_static_sleep_cmd(priv, cmd,
 		    iwl_tt_current_power_mode(priv), dtimper);
 	} else if (!enabled)
@@ -297,8 +280,7 @@ static void iwl_power_build_cmd(struct iwl_priv *priv,
 				     priv->power_data.debug_sleep_level_override,
 				     dtimper);
 	else {
-		/* Note that the user parameter is 1-5 (according to spec),
-		but we pass 0-4 because it acts as an array index. */
+		 
 		if (iwlwifi_mod_params.power_level > IWL_POWER_INDEX_1 &&
 		    iwlwifi_mod_params.power_level <= IWL_POWER_NUM)
 			iwl_static_sleep_cmd(priv, cmd,
@@ -317,7 +299,7 @@ int iwl_power_set_mode(struct iwl_priv *priv, struct iwl_powertable_cmd *cmd,
 
 	lockdep_assert_held(&priv->mutex);
 
-	/* Don't update the RX chain when chain noise calibration is running */
+	 
 	update_chains = priv->chain_noise_data.state == IWL_CHAIN_NOISE_DONE ||
 			priv->chain_noise_data.state == IWL_CHAIN_NOISE_ALIVE;
 
@@ -327,7 +309,7 @@ int iwl_power_set_mode(struct iwl_priv *priv, struct iwl_powertable_cmd *cmd,
 	if (!iwl_is_ready_rf(priv))
 		return -EIO;
 
-	/* scan complete use sleep_power_next, need to be updated */
+	 
 	memcpy(&priv->power_data.sleep_cmd_next, cmd, sizeof(*cmd));
 	if (test_bit(STATUS_SCANNING, &priv->status) && !force) {
 		IWL_DEBUG_INFO(priv, "Defer power set mode while scanning\n");
@@ -365,7 +347,7 @@ int iwl_power_update_mode(struct iwl_priv *priv, bool force)
 	return iwl_power_set_mode(priv, &cmd, force);
 }
 
-/* initialize to default */
+ 
 void iwl_power_initialize(struct iwl_priv *priv)
 {
 	priv->power_data.bus_pm = priv->trans->pm_support;

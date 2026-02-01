@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Mellanox Technologies.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -24,7 +22,7 @@ static void dw_mci_bluefield_set_ios(struct dw_mci *host, struct mmc_ios *ios)
 {
 	u32 reg;
 
-	/* Update the Drive and Sample fields in register UHS_REG_EXT. */
+	 
 	reg = mci_readl(host, UHS_REG_EXT);
 	reg &= ~UHS_REG_EXT_SAMPLE_MASK;
 	reg |= FIELD_PREP(UHS_REG_EXT_SAMPLE_MASK,

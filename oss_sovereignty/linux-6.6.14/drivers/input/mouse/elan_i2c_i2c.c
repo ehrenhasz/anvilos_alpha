@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Elan I2C/SMBus Touchpad driver - I2C interface
- *
- * Copyright (c) 2013 ELAN Microelectronics Corp.
- *
- * Author: 林政維 (Duson Lin) <dusonlin@emc.com.tw>
- *
- * Based on cyapa driver:
- * copyright (c) 2011-2012 Cypress Semiconductor, Inc.
- * copyright (c) 2011-2012 Google, Inc.
- *
- * Trademarks are the property of their respective owners.
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/delay.h>
@@ -25,7 +13,7 @@
 
 #include "elan_i2c.h"
 
-/* Elan i2c commands */
+ 
 #define ETP_I2C_RESET			0x0100
 #define ETP_I2C_WAKE_UP			0x0800
 #define ETP_I2C_SLEEP			0x0801
@@ -148,10 +136,10 @@ static int elan_i2c_initialize(struct i2c_client *client)
 		return error;
 	}
 
-	/* Wait for the device to reset */
+	 
 	msleep(100);
 
-	/* get reset acknowledgement 0000 */
+	 
 	error = i2c_master_recv(client, val, ETP_I2C_INF_LENGTH);
 	if (error < 0) {
 		dev_err(dev, "failed to read reset response: %d\n", error);
@@ -257,11 +245,7 @@ static int elan_i2c_get_pattern(struct i2c_client *client, u8 *pattern)
 		return error;
 	}
 
-	/*
-	 * Not all versions of firmware implement "get pattern" command.
-	 * When this command is not implemented the device will respond
-	 * with 0xFF 0xFF, which we will treat as "old" pattern 0.
-	 */
+	 
 	*pattern = val[0] == 0xFF && val[1] == 0xFF ? 0 : val[1];
 
 	return 0;
@@ -561,13 +545,13 @@ static int elan_i2c_prepare_fw_update(struct i2c_client *client, u16 ic_type,
 	u8 val[3];
 	u16 password;
 
-	/* Get FW in which mode	(IAP_MODE/MAIN_MODE)  */
+	 
 	error = elan_i2c_iap_get_mode(client, &mode);
 	if (error)
 		return error;
 
 	if (mode == IAP_MODE) {
-		/* Reset IC */
+		 
 		error = elan_i2c_iap_reset(client);
 		if (error)
 			return error;
@@ -575,15 +559,15 @@ static int elan_i2c_prepare_fw_update(struct i2c_client *client, u16 ic_type,
 		msleep(30);
 	}
 
-	/* Set flash key*/
+	 
 	error = elan_i2c_set_flash_key(client);
 	if (error)
 		return error;
 
-	/* Wait for F/W IAP initialization */
+	 
 	msleep(mode == MAIN_MODE ? 100 : 30);
 
-	/* Check if we are in IAP mode or not */
+	 
 	error = elan_i2c_iap_get_mode(client, &mode);
 	if (error)
 		return error;
@@ -599,15 +583,15 @@ static int elan_i2c_prepare_fw_update(struct i2c_client *client, u16 ic_type,
 			return error;
 	}
 
-	/* Set flash key again */
+	 
 	error = elan_i2c_set_flash_key(client);
 	if (error)
 		return error;
 
-	/* Wait for F/W IAP initialization */
+	 
 	msleep(30);
 
-	/* read back to check we actually enabled successfully. */
+	 
 	error = elan_i2c_read_cmd(client, ETP_I2C_IAP_CMD, val);
 	if (error) {
 		dev_err(dev, "cannot read iap password: %d\n",
@@ -640,7 +624,7 @@ static int elan_i2c_write_fw_block(struct i2c_client *client, u16 fw_page_size,
 	page_store[0] = ETP_I2C_IAP_REG_L;
 	page_store[1] = ETP_I2C_IAP_REG_H;
 	memcpy(&page_store[2], page, fw_page_size);
-	/* recode checksum at last two bytes */
+	 
 	put_unaligned_le16(checksum, &page_store[fw_page_size + 2]);
 
 	ret = i2c_master_send(client, page_store, fw_page_size + 4);
@@ -650,7 +634,7 @@ static int elan_i2c_write_fw_block(struct i2c_client *client, u16 fw_page_size,
 		goto exit;
 	}
 
-	/* Wait for F/W to update one page ROM data. */
+	 
 	msleep(fw_page_size == ETP_FW_PAGE_SIZE_512 ? 50 : 35);
 
 	error = elan_i2c_read_cmd(client, ETP_I2C_IAP_CTRL_CMD, val);

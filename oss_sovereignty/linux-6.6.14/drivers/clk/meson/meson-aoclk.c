@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Amlogic Meson-AXG Clock Controller Driver
- *
- * Copyright (c) 2016 BayLibre, SAS.
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- *
- * Copyright (c) 2018 Amlogic, inc.
- * Author: Qiufang Dai <qiufang.dai@amlogic.com>
- * Author: Yixun Lan <yixun.lan@amlogic.com>
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/reset-controller.h>
@@ -58,7 +49,7 @@ int meson_aoclkc_probe(struct platform_device *pdev)
 		return PTR_ERR(regmap);
 	}
 
-	/* Reset Controller */
+	 
 	rstc->data = data;
 	rstc->regmap = regmap;
 	rstc->reset.ops = &meson_aoclk_reset_ops;
@@ -70,11 +61,11 @@ int meson_aoclkc_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Populate regmap */
+	 
 	for (clkid = 0; clkid < data->num_clks; clkid++)
 		data->clks[clkid]->map = regmap;
 
-	/* Register all clks */
+	 
 	for (clkid = 0; clkid < data->hw_clks.num; clkid++) {
 		if (!data->hw_clks.hws[clkid])
 			continue;

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 Facebook */
+
+ 
 
 #include <test_progs.h>
 #include "test_ksyms.skel.h"
@@ -41,7 +41,7 @@ void test_ksyms(void)
 	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
 		goto cleanup;
 
-	/* trigger tracepoint */
+	 
 	usleep(1);
 
 	data = skel->data;

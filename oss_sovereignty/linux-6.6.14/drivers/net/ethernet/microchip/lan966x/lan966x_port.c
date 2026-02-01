@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/netdevice.h>
 #include <linux/phy/phy.h>
 
 #include "lan966x_main.h"
 
-/* Watermark encode */
+ 
 #define MULTIPLIER_BIT BIT(8)
 static u32 lan966x_wm_enc(u32 value)
 {
@@ -27,14 +27,14 @@ static void lan966x_port_link_down(struct lan966x_port *port)
 	struct lan966x *lan966x = port->lan966x;
 	u32 val, delay = 0;
 
-	/* 0.5: Disable any AFI */
+	 
 	lan_rmw(AFI_PORT_CFG_FC_SKIP_TTI_INJ_SET(1) |
 		AFI_PORT_CFG_FRM_OUT_MAX_SET(0),
 		AFI_PORT_CFG_FC_SKIP_TTI_INJ |
 		AFI_PORT_CFG_FRM_OUT_MAX,
 		lan966x, AFI_PORT_CFG(port->chip_port));
 
-	/* wait for reg afi_port_frm_out to become 0 for the port */
+	 
 	while (true) {
 		val = lan_rd(lan966x, AFI_PORT_FRM_OUT(port->chip_port));
 		if (!AFI_PORT_FRM_OUT_FRM_OUT_CNT_GET(val))
@@ -50,55 +50,55 @@ static void lan966x_port_link_down(struct lan966x_port *port)
 
 	delay = 0;
 
-	/* 1: Reset the PCS Rx clock domain  */
+	 
 	lan_rmw(DEV_CLOCK_CFG_PCS_RX_RST_SET(1),
 		DEV_CLOCK_CFG_PCS_RX_RST,
 		lan966x, DEV_CLOCK_CFG(port->chip_port));
 
-	/* 2: Disable MAC frame reception */
+	 
 	lan_rmw(DEV_MAC_ENA_CFG_RX_ENA_SET(0),
 		DEV_MAC_ENA_CFG_RX_ENA,
 		lan966x, DEV_MAC_ENA_CFG(port->chip_port));
 
-	/* 3: Disable traffic being sent to or from switch port */
+	 
 	lan_rmw(QSYS_SW_PORT_MODE_PORT_ENA_SET(0),
 		QSYS_SW_PORT_MODE_PORT_ENA,
 		lan966x, QSYS_SW_PORT_MODE(port->chip_port));
 
-	/* 4: Disable dequeuing from the egress queues  */
+	 
 	lan_rmw(QSYS_PORT_MODE_DEQUEUE_DIS_SET(1),
 		QSYS_PORT_MODE_DEQUEUE_DIS,
 		lan966x, QSYS_PORT_MODE(port->chip_port));
 
-	/* 5: Disable Flowcontrol */
+	 
 	lan_rmw(SYS_PAUSE_CFG_PAUSE_ENA_SET(0),
 		SYS_PAUSE_CFG_PAUSE_ENA,
 		lan966x, SYS_PAUSE_CFG(port->chip_port));
 
-	/* 5.1: Disable PFC */
+	 
 	lan_rmw(QSYS_SW_PORT_MODE_TX_PFC_ENA_SET(0),
 		QSYS_SW_PORT_MODE_TX_PFC_ENA,
 		lan966x, QSYS_SW_PORT_MODE(port->chip_port));
 
-	/* 6: Wait a worst case time 8ms (jumbo/10Mbit) */
+	 
 	usleep_range(8 * USEC_PER_MSEC, 9 * USEC_PER_MSEC);
 
-	/* 7: Disable HDX backpressure */
+	 
 	lan_rmw(SYS_FRONT_PORT_MODE_HDX_MODE_SET(0),
 		SYS_FRONT_PORT_MODE_HDX_MODE,
 		lan966x, SYS_FRONT_PORT_MODE(port->chip_port));
 
-	/* 8: Flush the queues accociated with the port */
+	 
 	lan_rmw(QSYS_SW_PORT_MODE_AGING_MODE_SET(3),
 		QSYS_SW_PORT_MODE_AGING_MODE,
 		lan966x, QSYS_SW_PORT_MODE(port->chip_port));
 
-	/* 9: Enable dequeuing from the egress queues */
+	 
 	lan_rmw(QSYS_PORT_MODE_DEQUEUE_DIS_SET(0),
 		QSYS_PORT_MODE_DEQUEUE_DIS,
 		lan966x, QSYS_PORT_MODE(port->chip_port));
 
-	/* 10: Wait until flushing is complete */
+	 
 	while (true) {
 		val = lan_rd(lan966x, QSYS_SW_STATUS(port->chip_port));
 		if (!QSYS_SW_STATUS_EQ_AVAIL_GET(val))
@@ -112,7 +112,7 @@ static void lan966x_port_link_down(struct lan966x_port *port)
 		}
 	}
 
-	/* 11: Reset the Port and MAC clock domains */
+	 
 	lan_rmw(DEV_MAC_ENA_CFG_TX_ENA_SET(0),
 		DEV_MAC_ENA_CFG_TX_ENA,
 		lan966x, DEV_MAC_ENA_CFG(port->chip_port));
@@ -131,14 +131,12 @@ static void lan966x_port_link_down(struct lan966x_port *port)
 		DEV_CLOCK_CFG_PORT_RST,
 		lan966x, DEV_CLOCK_CFG(port->chip_port));
 
-	/* 12: Clear flushing */
+	 
 	lan_rmw(QSYS_SW_PORT_MODE_AGING_MODE_SET(2),
 		QSYS_SW_PORT_MODE_AGING_MODE,
 		lan966x, QSYS_SW_PORT_MODE(port->chip_port));
 
-	/* The port is disabled and flushed, now set up the port in the
-	 * new operating mode
-	 */
+	 
 }
 
 static void lan966x_port_link_up(struct lan966x_port *port)
@@ -167,9 +165,7 @@ static void lan966x_port_link_up(struct lan966x_port *port)
 
 	lan966x_taprio_speed_set(port, config->speed);
 
-	/* Also the GIGA_MODE_ENA(1) needs to be set regardless of the
-	 * port speed for QSGMII ports.
-	 */
+	 
 	if (phy_interface_num_ports(config->portmode) == 4)
 		mode = DEV_MAC_MODE_CFG_GIGA_MODE_ENA_SET(1);
 
@@ -203,7 +199,7 @@ static void lan966x_port_link_up(struct lan966x_port *port)
 				CHIP_TOP_CUPHY_PORT_CFG(port->chip_port));
 	}
 
-	/* No PFC */
+	 
 	lan_wr(ANA_PFC_CFG_FC_LINK_SPEED_SET(speed),
 	       lan966x, ANA_PFC_CFG(port->chip_port));
 
@@ -215,17 +211,17 @@ static void lan966x_port_link_up(struct lan966x_port *port)
 		DEV_PCS1G_SD_CFG_SD_ENA,
 		lan966x, DEV_PCS1G_SD_CFG(port->chip_port));
 
-	/* Set Pause WM hysteresis, start/stop are in 1518 byte units */
+	 
 	lan_wr(SYS_PAUSE_CFG_PAUSE_ENA_SET(1) |
 	       SYS_PAUSE_CFG_PAUSE_STOP_SET(lan966x_wm_enc(4 * 1518)) |
 	       SYS_PAUSE_CFG_PAUSE_START_SET(lan966x_wm_enc(6 * 1518)),
 	       lan966x, SYS_PAUSE_CFG(port->chip_port));
 
-	/* Set SMAC of Pause frame (00:00:00:00:00:00) */
+	 
 	lan_wr(0, lan966x, DEV_FC_MAC_LOW_CFG(port->chip_port));
 	lan_wr(0, lan966x, DEV_FC_MAC_HIGH_CFG(port->chip_port));
 
-	/* Flow control */
+	 
 	lan_rmw(SYS_MAC_FC_CFG_FC_LINK_SPEED_SET(speed) |
 		SYS_MAC_FC_CFG_FC_LATENCY_CFG_SET(7) |
 		SYS_MAC_FC_CFG_ZERO_PAUSE_ENA_SET(1) |
@@ -240,27 +236,25 @@ static void lan966x_port_link_up(struct lan966x_port *port)
 		SYS_MAC_FC_CFG_TX_FC_ENA,
 		lan966x, SYS_MAC_FC_CFG(port->chip_port));
 
-	/* Tail dropping watermark */
+	 
 	atop_wm = lan966x->shared_queue_sz;
 
-	/* The total memory size is diveded by number of front ports plus CPU
-	 * port
-	 */
+	 
 	lan_wr(lan966x_wm_enc(atop_wm / lan966x->num_phys_ports + 1), lan966x,
 	       SYS_ATOP(port->chip_port));
 	lan_wr(lan966x_wm_enc(atop_wm), lan966x, SYS_ATOP_TOT_CFG);
 
-	/* This needs to be at the end */
-	/* Enable MAC module */
+	 
+	 
 	lan_wr(DEV_MAC_ENA_CFG_RX_ENA_SET(1) |
 	       DEV_MAC_ENA_CFG_TX_ENA_SET(1),
 	       lan966x, DEV_MAC_ENA_CFG(port->chip_port));
 
-	/* Take out the clock from reset */
+	 
 	lan_wr(DEV_CLOCK_CFG_LINK_SPEED_SET(speed),
 	       lan966x, DEV_CLOCK_CFG(port->chip_port));
 
-	/* Core: Enable port for frame transfer */
+	 
 	lan_wr(QSYS_SW_PORT_MODE_PORT_ENA_SET(1) |
 	       QSYS_SW_PORT_MODE_SCH_NEXT_CFG_SET(1) |
 	       QSYS_SW_PORT_MODE_INGRESS_DROP_MODE_SET(1),
@@ -297,15 +291,15 @@ void lan966x_port_status_get(struct lan966x_port *port,
 	if (link_down)
 		lan_wr(val, lan966x, DEV_PCS1G_STICKY(port->chip_port));
 
-	/* Get both current Link and Sync status */
+	 
 	val = lan_rd(lan966x, DEV_PCS1G_LINK_STATUS(port->chip_port));
 	state->link = DEV_PCS1G_LINK_STATUS_LINK_STATUS_GET(val) &&
 		      DEV_PCS1G_LINK_STATUS_SYNC_STATUS_GET(val);
 	state->link &= !link_down;
 
-	/* Get PCS ANEG status register */
+	 
 	val = lan_rd(lan966x, DEV_PCS1G_ANEG_STATUS(port->chip_port));
-	/* Aneg complete provides more information  */
+	 
 	if (DEV_PCS1G_ANEG_STATUS_ANEG_COMPLETE_GET(val)) {
 		state->an_complete = true;
 
@@ -341,28 +335,24 @@ int lan966x_port_pcs_set(struct lan966x_port *port,
 	if (config->inband) {
 		if (config->portmode == PHY_INTERFACE_MODE_SGMII ||
 		    phy_interface_num_ports(config->portmode) == 4)
-			inband_aneg = true; /* Cisco-SGMII in-band-aneg */
+			inband_aneg = true;  
 		else if (config->portmode == PHY_INTERFACE_MODE_1000BASEX &&
 			 config->autoneg)
-			inband_aneg = true; /* Clause-37 in-band-aneg */
+			inband_aneg = true;  
 
 		outband = false;
 	} else {
 		outband = true;
 	}
 
-	/* Disable or enable inband.
-	 * For QUSGMII, we rely on the preamble to transmit data such as
-	 * timestamps, therefore force full preamble transmission, and prevent
-	 * premable shortening
-	 */
+	 
 	lan_rmw(DEV_PCS1G_MODE_CFG_SGMII_MODE_ENA_SET(outband) |
 		DEV_PCS1G_MODE_CFG_SAVE_PREAMBLE_ENA_SET(full_preamble),
 		DEV_PCS1G_MODE_CFG_SGMII_MODE_ENA |
 		DEV_PCS1G_MODE_CFG_SAVE_PREAMBLE_ENA,
 		lan966x, DEV_PCS1G_MODE_CFG(port->chip_port));
 
-	/* Enable PCS */
+	 
 	lan_wr(DEV_PCS1G_CFG_PCS_ENA_SET(1),
 	       lan966x, DEV_PCS1G_CFG(port->chip_port));
 
@@ -370,7 +360,7 @@ int lan966x_port_pcs_set(struct lan966x_port *port,
 		int adv = phylink_mii_c22_pcs_encode_advertisement(config->portmode,
 								   config->advertising);
 		if (adv >= 0)
-			/* Enable in-band aneg */
+			 
 			lan_wr(DEV_PCS1G_ANEG_CFG_ADV_ABILITY_SET(adv) |
 			       DEV_PCS1G_ANEG_CFG_SW_RESOLVE_ENA_SET(1) |
 			       DEV_PCS1G_ANEG_CFG_ENA_SET(1) |
@@ -380,7 +370,7 @@ int lan966x_port_pcs_set(struct lan966x_port *port,
 		lan_wr(0, lan966x, DEV_PCS1G_ANEG_CFG(port->chip_port));
 	}
 
-	/* Take PCS out of reset */
+	 
 	lan_rmw(DEV_CLOCK_CFG_LINK_SPEED_SET(LAN966X_SPEED_1000) |
 		DEV_CLOCK_CFG_PCS_RX_RST_SET(0) |
 		DEV_CLOCK_CFG_PCS_TX_RST_SET(0),
@@ -404,7 +394,7 @@ static void lan966x_port_qos_pcp_set(struct lan966x_port *port,
 		ANA_QOS_CFG_QOS_PCP_ENA,
 		port->lan966x, ANA_QOS_CFG(port->chip_port));
 
-	/* Map PCP and DEI to priority */
+	 
 	for (int i = 0; i < ARRAY_SIZE(qos->map); i++) {
 		pcp = *(pcp_itr + i);
 		dp = (i < LAN966X_PORT_QOS_PCP_COUNT) ? 0 : 1;
@@ -423,12 +413,12 @@ static void lan966x_port_qos_dscp_set(struct lan966x_port *port,
 {
 	struct lan966x *lan966x = port->lan966x;
 
-	/* Enable/disable dscp for qos classification. */
+	 
 	lan_rmw(ANA_QOS_CFG_QOS_DSCP_ENA_SET(qos->enable),
 		ANA_QOS_CFG_QOS_DSCP_ENA,
 		lan966x, ANA_QOS_CFG(port->chip_port));
 
-	/* Map each dscp value to priority and dp */
+	 
 	for (int i = 0; i < ARRAY_SIZE(qos->map); i++)
 		lan_rmw(ANA_DSCP_CFG_DP_DSCP_VAL_SET(0) |
 			ANA_DSCP_CFG_QOS_DSCP_VAL_SET(*(qos->map + i)),
@@ -436,7 +426,7 @@ static void lan966x_port_qos_dscp_set(struct lan966x_port *port,
 			ANA_DSCP_CFG_QOS_DSCP_VAL,
 			lan966x, ANA_DSCP_CFG(i));
 
-	/* Set per-dscp trust */
+	 
 	for (int i = 0; i <  ARRAY_SIZE(qos->map); i++)
 		lan_rmw(ANA_DSCP_CFG_DSCP_TRUST_ENA_SET(qos->enable),
 			ANA_DSCP_CFG_DSCP_TRUST_ENA,
@@ -446,14 +436,14 @@ static void lan966x_port_qos_dscp_set(struct lan966x_port *port,
 static int lan966x_port_qos_default_set(struct lan966x_port *port,
 					struct lan966x_port_qos *qos)
 {
-	/* Set default prio and dp level */
+	 
 	lan_rmw(ANA_QOS_CFG_DP_DEFAULT_VAL_SET(0) |
 		ANA_QOS_CFG_QOS_DEFAULT_VAL_SET(qos->default_prio),
 		ANA_QOS_CFG_DP_DEFAULT_VAL |
 		ANA_QOS_CFG_QOS_DEFAULT_VAL,
 		port->lan966x, ANA_QOS_CFG(port->chip_port));
 
-	/* Set default pcp and dei for untagged frames */
+	 
 	lan_rmw(ANA_VLAN_CFG_VLAN_DEI_SET(0) |
 		ANA_VLAN_CFG_VLAN_PCP_SET(0),
 		ANA_VLAN_CFG_VLAN_DEI |
@@ -472,16 +462,14 @@ static void lan966x_port_qos_pcp_rewr_set(struct lan966x_port *port,
 	if (qos->enable)
 		mode = LAN966X_PORT_REW_TAG_CTRL_MAPPED;
 
-	/* Map the values only if it is enabled otherwise will be the classified
-	 * value
-	 */
+	 
 	lan_rmw(REW_TAG_CFG_TAG_PCP_CFG_SET(mode) |
 		REW_TAG_CFG_TAG_DEI_CFG_SET(mode),
 		REW_TAG_CFG_TAG_PCP_CFG |
 		REW_TAG_CFG_TAG_DEI_CFG,
 		port->lan966x, REW_TAG_CFG(port->chip_port));
 
-	/* Map each value to pcp and dei */
+	 
 	for (int i = 0; i < ARRAY_SIZE(qos->map); i++) {
 		pcp = qos->map[i];
 		if (pcp > LAN966X_PORT_QOS_PCP_COUNT)
@@ -510,12 +498,12 @@ static void lan966x_port_qos_dscp_rewr_set(struct lan966x_port *port,
 	else
 		mode = LAN966X_PORT_REW_DSCP_FRAME;
 
-	/* Enable the rewrite otherwise will use the values from the frame */
+	 
 	lan_rmw(REW_DSCP_CFG_DSCP_REWR_CFG_SET(mode),
 		REW_DSCP_CFG_DSCP_REWR_CFG,
 		port->lan966x, REW_DSCP_CFG(port->chip_port));
 
-	/* Map each classified Qos class and DP to classified DSCP value */
+	 
 	for (int i = 0; i < ARRAY_SIZE(qos->map); i++) {
 		dscp = qos->map[i];
 

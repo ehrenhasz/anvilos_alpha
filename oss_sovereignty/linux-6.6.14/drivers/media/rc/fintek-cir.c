@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Feature Integration Technology Inc. (aka Fintek) LPC CIR
- *
- * Copyright (C) 2011 Jarod Wilson <jarod@redhat.com>
- *
- * Special thanks to Fintek for providing hardware and spec sheets.
- * This driver is based upon the nuvoton, ite and ene drivers for
- * similar hardware.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -22,7 +14,7 @@
 
 #include "fintek-cir.h"
 
-/* write val to config reg */
+ 
 static inline void fintek_cr_write(struct fintek_dev *fintek, u8 val, u8 reg)
 {
 	fit_dbg("%s: reg 0x%02x, val 0x%02x  (ip/dp: %02x/%02x)",
@@ -31,7 +23,7 @@ static inline void fintek_cr_write(struct fintek_dev *fintek, u8 val, u8 reg)
 	outb(val, fintek->cr_dp);
 }
 
-/* read val from config reg */
+ 
 static inline u8 fintek_cr_read(struct fintek_dev *fintek, u8 reg)
 {
 	u8 val;
@@ -44,49 +36,46 @@ static inline u8 fintek_cr_read(struct fintek_dev *fintek, u8 reg)
 	return val;
 }
 
-/* update config register bit without changing other bits */
+ 
 static inline void fintek_set_reg_bit(struct fintek_dev *fintek, u8 val, u8 reg)
 {
 	u8 tmp = fintek_cr_read(fintek, reg) | val;
 	fintek_cr_write(fintek, tmp, reg);
 }
 
-/* enter config mode */
+ 
 static inline void fintek_config_mode_enable(struct fintek_dev *fintek)
 {
-	/* Enabling Config Mode explicitly requires writing 2x */
+	 
 	outb(CONFIG_REG_ENABLE, fintek->cr_ip);
 	outb(CONFIG_REG_ENABLE, fintek->cr_ip);
 }
 
-/* exit config mode */
+ 
 static inline void fintek_config_mode_disable(struct fintek_dev *fintek)
 {
 	outb(CONFIG_REG_DISABLE, fintek->cr_ip);
 }
 
-/*
- * When you want to address a specific logical device, write its logical
- * device number to GCR_LOGICAL_DEV_NO
- */
+ 
 static inline void fintek_select_logical_dev(struct fintek_dev *fintek, u8 ldev)
 {
 	fintek_cr_write(fintek, ldev, GCR_LOGICAL_DEV_NO);
 }
 
-/* write val to cir config register */
+ 
 static inline void fintek_cir_reg_write(struct fintek_dev *fintek, u8 val, u8 offset)
 {
 	outb(val, fintek->cir_addr + offset);
 }
 
-/* read val from cir config register */
+ 
 static u8 fintek_cir_reg_read(struct fintek_dev *fintek, u8 offset)
 {
 	return inb(fintek->cir_addr + offset);
 }
 
-/* dump current cir register contents */
+ 
 static void cir_dump_regs(struct fintek_dev *fintek)
 {
 	fintek_config_mode_enable(fintek);
@@ -114,7 +103,7 @@ static void cir_dump_regs(struct fintek_dev *fintek)
 		fintek_cir_reg_read(fintek, CIR_TX_DATA));
 }
 
-/* detect hardware features */
+ 
 static int fintek_hw_detect(struct fintek_dev *fintek)
 {
 	unsigned long flags;
@@ -125,7 +114,7 @@ static int fintek_hw_detect(struct fintek_dev *fintek)
 
 	fintek_config_mode_enable(fintek);
 
-	/* Check if we're using config port 0x4e or 0x2e */
+	 
 	portsel = fintek_cr_read(fintek, GCR_CONFIG_PORT_SEL);
 	if (portsel == 0xff) {
 		fit_pr(KERN_INFO, "first portsel read was bunk, trying alt");
@@ -171,9 +160,7 @@ static int fintek_hw_detect(struct fintek_dev *fintek)
 	fintek->chip_minor  = chip_minor;
 	fintek->chip_vendor = vendor;
 
-	/*
-	 * Newer reviews of this chipset uses port 8 instead of 5
-	 */
+	 
 	if ((chip != 0x0408) && (chip != 0x0804))
 		fintek->logical_dev_cir = LOGICAL_DEV_CIR_REV2;
 	else
@@ -186,11 +173,11 @@ static int fintek_hw_detect(struct fintek_dev *fintek)
 
 static void fintek_cir_ldev_init(struct fintek_dev *fintek)
 {
-	/* Select CIR logical device and enable */
+	 
 	fintek_select_logical_dev(fintek, fintek->logical_dev_cir);
 	fintek_cr_write(fintek, LOGICAL_DEV_ENABLE, CIR_CR_DEV_EN);
 
-	/* Write allocated CIR address and IRQ information to hardware */
+	 
 	fintek_cr_write(fintek, fintek->cir_addr >> 8, CIR_CR_BASE_ADDR_HI);
 	fintek_cr_write(fintek, fintek->cir_addr & 0xff, CIR_CR_BASE_ADDR_LO);
 
@@ -200,7 +187,7 @@ static void fintek_cir_ldev_init(struct fintek_dev *fintek)
 		fintek->cir_addr, fintek->cir_irq, fintek->cir_port_len);
 }
 
-/* enable CIR interrupts */
+ 
 static void fintek_enable_cir_irq(struct fintek_dev *fintek)
 {
 	fintek_cir_reg_write(fintek, CIR_STATUS_IRQ_EN, CIR_STATUS);
@@ -208,10 +195,10 @@ static void fintek_enable_cir_irq(struct fintek_dev *fintek)
 
 static void fintek_cir_regs_init(struct fintek_dev *fintek)
 {
-	/* clear any and all stray interrupts */
+	 
 	fintek_cir_reg_write(fintek, CIR_STATUS_IRQ_MASK, CIR_STATUS);
 
-	/* and finally, enable interrupts */
+	 
 	fintek_enable_cir_irq(fintek);
 }
 
@@ -220,13 +207,13 @@ static void fintek_enable_wake(struct fintek_dev *fintek)
 	fintek_config_mode_enable(fintek);
 	fintek_select_logical_dev(fintek, LOGICAL_DEV_ACPI);
 
-	/* Allow CIR PME's to wake system */
+	 
 	fintek_set_reg_bit(fintek, ACPI_WAKE_EN_CIR_BIT, LDEV_ACPI_WAKE_EN_REG);
-	/* Enable CIR PME's */
+	 
 	fintek_set_reg_bit(fintek, ACPI_PME_CIR_BIT, LDEV_ACPI_PME_EN_REG);
-	/* Clear CIR PME status register */
+	 
 	fintek_set_reg_bit(fintek, ACPI_PME_CIR_BIT, LDEV_ACPI_PME_CLR_REG);
-	/* Save state */
+	 
 	fintek_set_reg_bit(fintek, ACPI_STATE_CIR_BIT, LDEV_ACPI_STATE_REG);
 
 	fintek_config_mode_disable(fintek);
@@ -263,7 +250,7 @@ static int fintek_cmdsize(u8 cmd, u8 subcmd)
 	return datasize;
 }
 
-/* process ir data stored in driver buffer */
+ 
 static void fintek_process_rx_ir_data(struct fintek_dev *fintek)
 {
 	struct ir_raw_event rawir = {};
@@ -323,7 +310,7 @@ static void fintek_process_rx_ir_data(struct fintek_dev *fintek)
 	}
 }
 
-/* copy data from hardware rx register into driver buffer */
+ 
 static void fintek_get_rx_ir_data(struct fintek_dev *fintek, u8 rx_irqs)
 {
 	unsigned long flags;
@@ -331,11 +318,7 @@ static void fintek_get_rx_ir_data(struct fintek_dev *fintek, u8 rx_irqs)
 
 	spin_lock_irqsave(&fintek->fintek_lock, flags);
 
-	/*
-	 * We must read data from CIR_RX_DATA until the hardware IR buffer
-	 * is empty and clears the RX_TIMEOUT and/or RX_RECEIVE flags in
-	 * the CIR_STATUS register
-	 */
+	 
 	do {
 		sample = fintek_cir_reg_read(fintek, CIR_RX_DATA);
 		fit_dbg("%s: sample: 0x%02x", __func__, sample);
@@ -363,7 +346,7 @@ static void fintek_cir_log_irqs(u8 status)
 		status & CIR_STATUS_RX_RECEIVE	? " RXOK"	: "");
 }
 
-/* interrupt service routine for incoming and outgoing CIR data */
+ 
 static irqreturn_t fintek_cir_isr(int irq, void *data)
 {
 	struct fintek_dev *fintek = data;
@@ -375,15 +358,7 @@ static irqreturn_t fintek_cir_isr(int irq, void *data)
 	fintek_select_logical_dev(fintek, fintek->logical_dev_cir);
 	fintek_config_mode_disable(fintek);
 
-	/*
-	 * Get IR Status register contents. Write 1 to ack/clear
-	 *
-	 * bit: reg name    - description
-	 *   3: TX_FINISH   - TX is finished
-	 *   2: TX_UNDERRUN - TX underrun
-	 *   1: RX_TIMEOUT  - RX data timeout
-	 *   0: RX_RECEIVE  - RX data received
-	 */
+	 
 	status = fintek_cir_reg_read(fintek, CIR_STATUS);
 	if (!(status & CIR_STATUS_IRQ_MASK) || status == 0xff) {
 		fit_dbg_verbose("%s exiting, IRSTS 0x%02x", __func__, status);
@@ -398,7 +373,7 @@ static irqreturn_t fintek_cir_isr(int irq, void *data)
 	if (rx_irqs)
 		fintek_get_rx_ir_data(fintek, rx_irqs);
 
-	/* ack/clear all irq flags we've got */
+	 
 	fintek_cir_reg_write(fintek, status, CIR_STATUS);
 
 	fit_dbg_verbose("%s done", __func__);
@@ -407,21 +382,21 @@ static irqreturn_t fintek_cir_isr(int irq, void *data)
 
 static void fintek_enable_cir(struct fintek_dev *fintek)
 {
-	/* set IRQ enabled */
+	 
 	fintek_cir_reg_write(fintek, CIR_STATUS_IRQ_EN, CIR_STATUS);
 
 	fintek_config_mode_enable(fintek);
 
-	/* enable the CIR logical device */
+	 
 	fintek_select_logical_dev(fintek, fintek->logical_dev_cir);
 	fintek_cr_write(fintek, LOGICAL_DEV_ENABLE, CIR_CR_DEV_EN);
 
 	fintek_config_mode_disable(fintek);
 
-	/* clear all pending interrupts */
+	 
 	fintek_cir_reg_write(fintek, CIR_STATUS_IRQ_MASK, CIR_STATUS);
 
-	/* enable interrupts */
+	 
 	fintek_enable_cir_irq(fintek);
 }
 
@@ -429,7 +404,7 @@ static void fintek_disable_cir(struct fintek_dev *fintek)
 {
 	fintek_config_mode_enable(fintek);
 
-	/* disable the CIR logical device */
+	 
 	fintek_select_logical_dev(fintek, fintek->logical_dev_cir);
 	fintek_cr_write(fintek, LOGICAL_DEV_DISABLE, CIR_CR_DEV_EN);
 
@@ -458,7 +433,7 @@ static void fintek_close(struct rc_dev *dev)
 	spin_unlock_irqrestore(&fintek->fintek_lock, flags);
 }
 
-/* Allocate memory, probe hardware, and initialize everything */
+ 
 static int fintek_probe(struct pnp_dev *pdev, const struct pnp_device_id *dev_id)
 {
 	struct fintek_dev *fintek;
@@ -469,13 +444,13 @@ static int fintek_probe(struct pnp_dev *pdev, const struct pnp_device_id *dev_id
 	if (!fintek)
 		return ret;
 
-	/* input device for IR remote (and tx) */
+	 
 	rdev = rc_allocate_device(RC_DRIVER_IR_RAW);
 	if (!rdev)
 		goto exit_free_dev_rdev;
 
 	ret = -ENODEV;
-	/* validate pnp resources */
+	 
 	if (!pnp_port_valid(pdev, 0)) {
 		dev_err(&pdev->dev, "IR PNP Port not valid!\n");
 		goto exit_free_dev_rdev;
@@ -502,15 +477,15 @@ static int fintek_probe(struct pnp_dev *pdev, const struct pnp_device_id *dev_id
 	if (ret)
 		goto exit_free_dev_rdev;
 
-	/* Initialize CIR & CIR Wake Logical Devices */
+	 
 	fintek_config_mode_enable(fintek);
 	fintek_cir_ldev_init(fintek);
 	fintek_config_mode_disable(fintek);
 
-	/* Initialize CIR & CIR Wake Config Registers */
+	 
 	fintek_cir_regs_init(fintek);
 
-	/* Set up the rc device */
+	 
 	rdev->priv = fintek;
 	rdev->allowed_protocols = RC_PROTO_BIT_ALL_IR_DECODER;
 	rdev->open = fintek_open;
@@ -525,13 +500,13 @@ static int fintek_probe(struct pnp_dev *pdev, const struct pnp_device_id *dev_id
 	rdev->driver_name = FINTEK_DRIVER_NAME;
 	rdev->map_name = RC_MAP_RC6_MCE;
 	rdev->timeout = 1000;
-	/* rx resolution is hardwired to 50us atm, 1, 25, 100 also possible */
+	 
 	rdev->rx_resolution = CIR_SAMPLE_PERIOD;
 
 	fintek->rdev = rdev;
 
 	ret = -EBUSY;
-	/* now claim resources */
+	 
 	if (!request_region(fintek->cir_addr,
 			    fintek->cir_port_len, FINTEK_DRIVER_NAME))
 		goto exit_free_dev_rdev;
@@ -569,14 +544,14 @@ static void fintek_remove(struct pnp_dev *pdev)
 	unsigned long flags;
 
 	spin_lock_irqsave(&fintek->fintek_lock, flags);
-	/* disable CIR */
+	 
 	fintek_disable_cir(fintek);
 	fintek_cir_reg_write(fintek, CIR_STATUS_IRQ_MASK, CIR_STATUS);
-	/* enable CIR Wake (for IR power-on) */
+	 
 	fintek_enable_wake(fintek);
 	spin_unlock_irqrestore(&fintek->fintek_lock, flags);
 
-	/* free resources */
+	 
 	free_irq(fintek->cir_irq, fintek);
 	release_region(fintek->cir_addr, fintek->cir_port_len);
 
@@ -594,20 +569,20 @@ static int fintek_suspend(struct pnp_dev *pdev, pm_message_t state)
 
 	spin_lock_irqsave(&fintek->fintek_lock, flags);
 
-	/* disable all CIR interrupts */
+	 
 	fintek_cir_reg_write(fintek, CIR_STATUS_IRQ_MASK, CIR_STATUS);
 
 	spin_unlock_irqrestore(&fintek->fintek_lock, flags);
 
 	fintek_config_mode_enable(fintek);
 
-	/* disable cir logical dev */
+	 
 	fintek_select_logical_dev(fintek, fintek->logical_dev_cir);
 	fintek_cr_write(fintek, LOGICAL_DEV_DISABLE, CIR_CR_DEV_EN);
 
 	fintek_config_mode_disable(fintek);
 
-	/* make sure wake is enabled */
+	 
 	fintek_enable_wake(fintek);
 
 	return 0;
@@ -619,10 +594,10 @@ static int fintek_resume(struct pnp_dev *pdev)
 
 	fit_dbg("%s called", __func__);
 
-	/* open interrupt */
+	 
 	fintek_enable_cir_irq(fintek);
 
-	/* Enable CIR logical device */
+	 
 	fintek_config_mode_enable(fintek);
 	fintek_select_logical_dev(fintek, fintek->logical_dev_cir);
 	fintek_cr_write(fintek, LOGICAL_DEV_ENABLE, CIR_CR_DEV_EN);
@@ -641,7 +616,7 @@ static void fintek_shutdown(struct pnp_dev *pdev)
 }
 
 static const struct pnp_device_id fintek_ids[] = {
-	{ "FIT0002", 0 },   /* CIR */
+	{ "FIT0002", 0 },    
 	{ "", 0 },
 };
 

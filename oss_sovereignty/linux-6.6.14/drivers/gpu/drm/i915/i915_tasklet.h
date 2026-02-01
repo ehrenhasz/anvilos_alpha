@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef __I915_TASKLET_H__
 #define __I915_TASKLET_H__
@@ -40,4 +38,4 @@ static inline bool __tasklet_is_scheduled(struct tasklet_struct *t)
 	return test_bit(TASKLET_STATE_SCHED, &t->state);
 }
 
-#endif /* __I915_TASKLET_H__ */
+#endif  

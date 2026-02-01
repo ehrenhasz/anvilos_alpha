@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
 
-  Broadcom B43 wireless driver
-  LED control
-
-  Copyright (c) 2005 Martin Langer <martin-langer@gmx.de>,
-  Copyright (c) 2005 Stefano Brivio <stefano.brivio@polimi.it>
-  Copyright (c) 2005-2007 Michael Buesch <m@bues.ch>
-  Copyright (c) 2005 Danny van Dyk <kugelfang@gentoo.org>
-  Copyright (c) 2005 Andreas Jaggi <andreas.jaggi@waterwave.ch>
-
-
-*/
+ 
 
 #include "b43.h"
 #include "leds.h"
@@ -55,9 +43,7 @@ static void b43_led_update(struct b43_wldev *dev,
 
 	radio_enabled = (dev->phy.radio_on && dev->radio_hw_enable);
 
-	/* The led->state read is racy, but we don't care. In case we raced
-	 * with the brightness_set handler, we will be called again soon
-	 * to fixup our state. */
+	 
 	if (radio_enabled)
 		turn_on = atomic_read(&led->state) != LED_OFF;
 	else
@@ -92,7 +78,7 @@ out_unlock:
 	mutex_unlock(&wl->mutex);
 }
 
-/* Callback from the LED subsystem. */
+ 
 static void b43_led_brightness_set(struct led_classdev *led_dev,
 				   enum led_brightness brightness)
 {
@@ -151,8 +137,7 @@ static void b43_map_led(struct b43_wldev *dev,
 	struct ieee80211_hw *hw = dev->wl->hw;
 	char name[B43_LED_MAX_NAME_LEN + 1];
 
-	/* Map the b43 specific LED behaviour value to the
-	 * generic LED triggers. */
+	 
 	switch (behaviour) {
 	case B43_LED_INACTIVE:
 	case B43_LED_OFF:
@@ -210,8 +195,7 @@ static void b43_led_get_sprominfo(struct b43_wldev *dev,
 	sprom[3] = dev->dev->bus_sprom->gpio3;
 
 	if ((sprom[0] & sprom[1] & sprom[2] & sprom[3]) == 0xff) {
-		/* There is no LED information in the SPROM
-		 * for this LED. Hardcode it here. */
+		 
 		*activelow = false;
 		switch (led_index) {
 		case 0:
@@ -237,7 +221,7 @@ static void b43_led_get_sprominfo(struct b43_wldev *dev,
 			return;
 		}
 	} else {
-		/* keep LED disabled if no mapping is defined */
+		 
 		if (sprom[led_index] == 0xff)
 			*behaviour = B43_LED_OFF;
 		else
@@ -253,7 +237,7 @@ void b43_leds_init(struct b43_wldev *dev)
 	enum b43_led_behaviour behaviour;
 	bool activelow;
 
-	/* Sync the RF-kill LED state (if we have one) with radio and switch states. */
+	 
 	led = &dev->wl->leds.led_radio;
 	if (led->wl) {
 		if (dev->phy.radio_on && b43_is_hw_radio_enabled(dev)) {
@@ -267,7 +251,7 @@ void b43_leds_init(struct b43_wldev *dev)
 		}
 	}
 
-	/* Initialize TX/RX/ASSOC leds */
+	 
 	led = &dev->wl->leds.led_tx;
 	if (led->wl) {
 		b43_led_turn_off(dev, led->index, led->activelow);
@@ -287,7 +271,7 @@ void b43_leds_init(struct b43_wldev *dev)
 		atomic_set(&led->state, 0);
 	}
 
-	/* Initialize other LED states. */
+	 
 	for (i = 0; i < B43_MAX_NR_LEDS; i++) {
 		b43_led_get_sprominfo(dev, i, &behaviour, &activelow);
 		switch (behaviour) {
@@ -298,7 +282,7 @@ void b43_leds_init(struct b43_wldev *dev)
 			b43_led_turn_on(dev, i, activelow);
 			break;
 		default:
-			/* Leave others as-is. */
+			 
 			break;
 		}
 	}
@@ -332,7 +316,7 @@ void b43_leds_register(struct b43_wldev *dev)
 
 	INIT_WORK(&dev->wl->leds.work, b43_leds_work);
 
-	/* Register the LEDs to the LED subsystem. */
+	 
 	for (i = 0; i < B43_MAX_NR_LEDS; i++) {
 		b43_led_get_sprominfo(dev, i, &behaviour, &activelow);
 		b43_map_led(dev, i, behaviour, activelow);

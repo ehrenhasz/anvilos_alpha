@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only OR MIT
-/*
- * Apple SART device driver
- * Copyright (C) The Asahi Linux Contributors
- *
- * Apple SART is a simple address filter for some DMA transactions.
- * Regions of physical memory must be added to the SART's allow
- * list before any DMA can target these. Unlike a proper
- * IOMMU no remapping can be done and special support in the
- * consumer driver is required since not all DMA transactions of
- * a single device are subject to SART filtering.
- */
+
+ 
 
 #include <linux/soc/apple/sart.h>
 #include <linux/atomic.h>
@@ -25,10 +15,10 @@
 
 #define APPLE_SART_MAX_ENTRIES 16
 
-/* This is probably a bitfield but the exact meaning of each bit is unknown. */
+ 
 #define APPLE_SART_FLAGS_ALLOW 0xff
 
-/* SARTv2 registers */
+ 
 #define APPLE_SART2_CONFIG(idx)	      (0x00 + 4 * (idx))
 #define APPLE_SART2_CONFIG_FLAGS      GENMASK(31, 24)
 #define APPLE_SART2_CONFIG_SIZE	      GENMASK(23, 0)
@@ -38,7 +28,7 @@
 #define APPLE_SART2_PADDR(idx)	(0x40 + 4 * (idx))
 #define APPLE_SART2_PADDR_SHIFT 12
 
-/* SARTv3 registers */
+ 
 #define APPLE_SART3_CONFIG(idx) (0x00 + 4 * (idx))
 
 #define APPLE_SART3_PADDR(idx)	(0x40 + 4 * (idx))

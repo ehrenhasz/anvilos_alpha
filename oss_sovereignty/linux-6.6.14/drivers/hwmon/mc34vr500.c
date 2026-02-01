@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * An hwmon driver for the NXP MC34VR500 PMIC
- *
- * Author: Mario Kicherer <dev@kicherer.org>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/dev_printk.h>
@@ -21,7 +17,7 @@
 #define MC34VR500_I2C_ADDR		0x08
 #define MC34VR500_DEVICEID_VALUE	0x14
 
-/* INTSENSE0 */
+ 
 #define ENS_BIT		BIT(0)
 #define LOWVINS_BIT	BIT(1)
 #define THERM110S_BIT	BIT(2)
@@ -69,7 +65,7 @@ static irqreturn_t mc34vr500_process_interrupt(int irq, void *userdata)
 			hwmon_notify_event(data->hwmon_dev, hwmon_temp,
 					   hwmon_temp_emergency_alarm, 0);
 
-		/* write 1 to clear */
+		 
 		regmap_write(data->regmap, MC34VR500_INTSTAT0, LOWVINS_BIT |
 			     THERM110S_BIT | THERM120S_BIT | THERM130S_BIT);
 	}
@@ -216,14 +212,14 @@ static int mc34vr500_probe(struct i2c_client *client)
 		if (ret)
 			return ret;
 
-		/* write 1 to clear interrupts */
+		 
 		ret = regmap_write(regmap, MC34VR500_INTSTAT0, LOWVINS_BIT |
 				   THERM110S_BIT | THERM120S_BIT |
 				   THERM130S_BIT);
 		if (ret)
 			return ret;
 
-		/* unmask interrupts */
+		 
 		ret = regmap_write(regmap, MC34VR500_INTMASK0,
 				   (unsigned int) ~(LOWVINS_BIT | THERM110S_BIT |
 						    THERM120S_BIT | THERM130S_BIT));

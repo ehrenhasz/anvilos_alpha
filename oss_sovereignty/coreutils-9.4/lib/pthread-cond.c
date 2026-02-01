@@ -1,24 +1,8 @@
-/* POSIX condition variables.
-   Copyright (C) 2010-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Paul Eggert, 2010, and Bruno Haible <bruno@clisp.org>, 2019.  */
+ 
 
 #include <config.h>
 
-/* Specification.  */
+ 
 #include <pthread.h>
 
 #if (defined _WIN32 && ! defined __CYGWIN__) && USE_WINDOWS_THREADS
@@ -48,7 +32,7 @@ pthread_condattr_destroy (_GL_UNUSED pthread_condattr_t *attr)
 #endif
 
 #if (defined _WIN32 && ! defined __CYGWIN__) && USE_WINDOWS_THREADS
-/* Use Windows threads.  */
+ 
 
 int
 pthread_cond_init (pthread_cond_t *cond,
@@ -94,16 +78,16 @@ pthread_cond_destroy (pthread_cond_t *cond)
 }
 
 #elif HAVE_PTHREAD_H
-/* Provide workarounds for POSIX threads.  */
+ 
 
 #else
-/* Provide a dummy implementation for single-threaded applications.  */
+ 
 
 int
 pthread_cond_init (_GL_UNUSED pthread_cond_t *cond,
                    _GL_UNUSED const pthread_condattr_t *attr)
 {
-  /* COND is never seriously used.  */
+   
   return 0;
 }
 
@@ -111,8 +95,7 @@ int
 pthread_cond_wait (_GL_UNUSED pthread_cond_t *cond,
                    _GL_UNUSED pthread_mutex_t *mutex)
 {
-  /* No other thread can signal this condition variable.
-     Wait endlessly.  */
+   
   for (;;)
     {
       struct timespec duration =
@@ -129,8 +112,7 @@ pthread_cond_timedwait (_GL_UNUSED pthread_cond_t *cond,
                         _GL_UNUSED pthread_mutex_t *mutex,
                         const struct timespec *abstime)
 {
-  /* No other thread can signal this condition variable.
-     Wait until ABSTIME is reached.  */
+   
   for (;;)
     {
       struct timeval currtime;
@@ -144,7 +126,7 @@ pthread_cond_timedwait (_GL_UNUSED pthread_cond_t *cond,
         {
           unsigned long seconds = abstime->tv_sec - currtime.tv_sec;
           remaining = seconds * 1000000000;
-          if (remaining / 1000000000 != seconds) /* overflow? */
+          if (remaining / 1000000000 != seconds)  
             remaining = ULONG_MAX;
           else
             {
@@ -153,7 +135,7 @@ pthread_cond_timedwait (_GL_UNUSED pthread_cond_t *cond,
               if (nanoseconds >= 0)
                 {
                   remaining += nanoseconds;
-                  if (remaining < nanoseconds) /* overflow? */
+                  if (remaining < nanoseconds)  
                     remaining = ULONG_MAX;
                 }
               else
@@ -168,7 +150,7 @@ pthread_cond_timedwait (_GL_UNUSED pthread_cond_t *cond,
       if (remaining == 0)
         return ETIMEDOUT;
 
-      /* Sleep up to REMAINING ns.  */
+       
       struct timespec duration = { .tv_sec  = remaining / 1000000000,
                                    .tv_nsec = remaining % 1000000000 };
       nanosleep (&duration, NULL);
@@ -178,21 +160,21 @@ pthread_cond_timedwait (_GL_UNUSED pthread_cond_t *cond,
 int
 pthread_cond_signal (_GL_UNUSED pthread_cond_t *cond)
 {
-  /* No threads can currently be blocked on COND.  */
+   
   return 0;
 }
 
 int
 pthread_cond_broadcast (_GL_UNUSED pthread_cond_t *cond)
 {
-  /* No threads can currently be blocked on COND.  */
+   
   return 0;
 }
 
 int
 pthread_cond_destroy (_GL_UNUSED pthread_cond_t *cond)
 {
-  /* COND is never seriously used.  */
+   
   return 0;
 }
 

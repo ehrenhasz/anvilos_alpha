@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2013 Emilio López
- *
- * Emilio López <emilio@elopez.com.ar>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/of.h>

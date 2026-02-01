@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2018 Joe Lawrence <joe.lawrence@redhat.com>
+
+
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -27,26 +27,26 @@ static void callback_info(const char *callback, struct klp_object *obj)
 		pr_info("%s: vmlinux\n", callback);
 }
 
-/* Executed on object patching (ie, patch enablement) */
+ 
 static int pre_patch_callback(struct klp_object *obj)
 {
 	callback_info(__func__, obj);
 	return 0;
 }
 
-/* Executed on object unpatching (ie, patch disablement) */
+ 
 static void post_patch_callback(struct klp_object *obj)
 {
 	callback_info(__func__, obj);
 }
 
-/* Executed on object unpatching (ie, patch disablement) */
+ 
 static void pre_unpatch_callback(struct klp_object *obj)
 {
 	callback_info(__func__, obj);
 }
 
-/* Executed on object unpatching (ie, patch disablement) */
+ 
 static void post_unpatch_callback(struct klp_object *obj)
 {
 	callback_info(__func__, obj);
@@ -58,7 +58,7 @@ static struct klp_func no_funcs[] = {
 
 static struct klp_object objs[] = {
 	{
-		.name = NULL,	/* vmlinux */
+		.name = NULL,	 
 		.funcs = no_funcs,
 		.callbacks = {
 			.pre_patch = pre_patch_callback,
@@ -72,7 +72,7 @@ static struct klp_object objs[] = {
 static struct klp_patch patch = {
 	.mod = THIS_MODULE,
 	.objs = objs,
-	/* set .replace in the init function below for demo purposes */
+	 
 };
 
 static int test_klp_callbacks_demo2_init(void)

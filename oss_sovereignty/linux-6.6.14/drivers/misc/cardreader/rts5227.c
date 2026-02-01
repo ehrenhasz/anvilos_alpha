@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Driver for Realtek PCI-Express card reader
- *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Wei WANG <wei_wang@realsil.com.cn>
- *   Roger Tseng <rogerable@realtek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -107,24 +100,24 @@ static int rts5227_extra_init_hw(struct rtsx_pcr *pcr)
 	rts5227_init_from_cfg(pcr);
 	rtsx_pci_init_cmd(pcr);
 
-	/* Configure GPIO as output */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, GPIO_CTL, 0x02, 0x02);
-	/* Reset ASPM state to default value */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, ASPM_FORCE_CTL, 0x3F, 0);
-	/* Switch LDO3318 source from DV33 to card_3v3 */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, LDO_PWR_SEL, 0x03, 0x00);
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, LDO_PWR_SEL, 0x03, 0x01);
-	/* LED shine disabled, set initial shine cycle period */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, OLT_LED_CTL, 0x0F, 0x02);
-	/* Configure LTR */
+	 
 	pcie_capability_read_word(pcr->pci, PCI_EXP_DEVCTL2, &cap);
 	if (cap & PCI_EXP_DEVCTL2_LTR_EN)
 		rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, LTR_CTL, 0xFF, 0xA3);
-	/* Configure OBFF */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, OBFF_CFG, 0x03, 0x03);
-	/* Configure driving */
+	 
 	rts5227_fill_driving(pcr, OUTPUT_3V3);
-	/* Configure force_clock_req */
+	 
 	if (pcr->flags & PCR_REVERSE_SOCKET)
 		rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, PETXCFG, 0x30, 0x30);
 	else
@@ -172,7 +165,7 @@ static int rts5227_optimize_phy(struct rtsx_pcr *pcr)
 	if (err < 0)
 		return err;
 
-	/* Optimize RX sensitivity */
+	 
 	return rtsx_pci_write_phy_register(pcr, 0x00, 0xBA42);
 }
 
@@ -214,7 +207,7 @@ static int rts5227_card_power_on(struct rtsx_pcr *pcr, int card)
 	if (err < 0)
 		return err;
 
-	/* To avoid too large in-rush current */
+	 
 	msleep(20);
 	rtsx_pci_init_cmd(pcr);
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, CARD_PWR_CTL,
@@ -261,7 +254,7 @@ static int rts5227_switch_output_voltage(struct rtsx_pcr *pcr, u8 voltage)
 		return -EINVAL;
 	}
 
-	/* set pad drive */
+	 
 	rtsx_pci_init_cmd(pcr);
 	rts5227_fill_driving(pcr, voltage);
 	return rtsx_pci_send_cmd(pcr, 100);
@@ -282,46 +275,28 @@ static const struct pcr_ops rts5227_pcr_ops = {
 	.conv_clk_and_div_n = NULL,
 };
 
-/* SD Pull Control Enable:
- *     SD_DAT[3:0] ==> pull up
- *     SD_CD       ==> pull up
- *     SD_WP       ==> pull up
- *     SD_CMD      ==> pull up
- *     SD_CLK      ==> pull down
- */
+ 
 static const u32 rts5227_sd_pull_ctl_enable_tbl[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL2, 0xAA),
 	RTSX_REG_PAIR(CARD_PULL_CTL3, 0xE9),
 	0,
 };
 
-/* SD Pull Control Disable:
- *     SD_DAT[3:0] ==> pull down
- *     SD_CD       ==> pull up
- *     SD_WP       ==> pull down
- *     SD_CMD      ==> pull down
- *     SD_CLK      ==> pull down
- */
+ 
 static const u32 rts5227_sd_pull_ctl_disable_tbl[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL2, 0x55),
 	RTSX_REG_PAIR(CARD_PULL_CTL3, 0xD5),
 	0,
 };
 
-/* MS Pull Control Enable:
- *     MS CD       ==> pull up
- *     others      ==> pull down
- */
+ 
 static const u32 rts5227_ms_pull_ctl_enable_tbl[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL5, 0x55),
 	RTSX_REG_PAIR(CARD_PULL_CTL6, 0x15),
 	0,
 };
 
-/* MS Pull Control Disable:
- *     MS CD       ==> pull up
- *     others      ==> pull down
- */
+ 
 static const u32 rts5227_ms_pull_ctl_disable_tbl[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL5, 0x55),
 	RTSX_REG_PAIR(CARD_PULL_CTL6, 0x15),
@@ -380,7 +355,7 @@ static int rts522a_extra_init_hw(struct rtsx_pcr *pcr)
 {
 	rts5227_extra_init_hw(pcr);
 
-	/* Power down OCP for power consumption */
+	 
 	if (!pcr->card_exist)
 		rtsx_pci_write_register(pcr, FPDCTL, OC_POWER_DOWN,
 				OC_POWER_DOWN);
@@ -413,7 +388,7 @@ static int rts522a_switch_output_voltage(struct rtsx_pcr *pcr, u8 voltage)
 		return -EINVAL;
 	}
 
-	/* set pad drive */
+	 
 	rtsx_pci_init_cmd(pcr);
 	rts5227_fill_driving(pcr, voltage);
 	return rtsx_pci_send_cmd(pcr, 100);
@@ -421,7 +396,7 @@ static int rts522a_switch_output_voltage(struct rtsx_pcr *pcr, u8 voltage)
 
 static void rts522a_force_power_down(struct rtsx_pcr *pcr, u8 pm_state, bool runtime)
 {
-	/* Set relink_time to 0 */
+	 
 	rtsx_pci_write_register(pcr, AUTOLOAD_CFG_BASE + 1, MASK_8_BIT_DEF, 0);
 	rtsx_pci_write_register(pcr, AUTOLOAD_CFG_BASE + 2, MASK_8_BIT_DEF, 0);
 	rtsx_pci_write_register(pcr, AUTOLOAD_CFG_BASE + 3,
@@ -451,11 +426,11 @@ static void rts522a_set_l1off_cfg_sub_d0(struct rtsx_pcr *pcr, int active)
 	aspm_L1_2 = rtsx_check_dev_flag(pcr, ASPM_L1_2_EN);
 
 	if (active) {
-		/* run, latency: 60us */
+		 
 		if (aspm_L1_1)
 			val = option->ltr_l1off_snooze_sspwrgate;
 	} else {
-		/* l1off, latency: 300us */
+		 
 		if (aspm_L1_2)
 			val = option->ltr_l1off_sspwrgate;
 	}
@@ -463,8 +438,7 @@ static void rts522a_set_l1off_cfg_sub_d0(struct rtsx_pcr *pcr, int active)
 	rtsx_set_l1off_sub(pcr, val);
 }
 
-/* rts522a operations mainly derived from rts5227, except phy/hw init setting.
- */
+ 
 static const struct pcr_ops rts522a_pcr_ops = {
 	.fetch_vendor_settings = rts5227_fetch_vendor_settings,
 	.extra_init_hw = rts522a_extra_init_hw,
@@ -495,7 +469,7 @@ void rts522a_init_params(struct rtsx_pcr *pcr)
 	option->dev_flags = LTR_L1SS_PWR_GATE_EN;
 	option->ltr_en = true;
 
-	/* init latency of active, idle, L1OFF to 60us, 300us, 3ms */
+	 
 	option->ltr_active_latency = LTR_ACTIVE_LATENCY_DEF;
 	option->ltr_idle_latency = LTR_IDLE_LATENCY_DEF;
 	option->ltr_l1off_latency = LTR_L1OFF_LATENCY_DEF;

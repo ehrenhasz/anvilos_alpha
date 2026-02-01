@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (C) 2011-2013 Freescale Semiconductor, Inc. All Rights Reserved.
+
+
+
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -125,7 +125,7 @@ static int pfuze100_set_ramp_delay(struct regulator_dev *rdev, int ramp_delay)
 
 	switch (pfuze100->chip_id) {
 	case PFUZE3001:
-		/* no dynamic voltage scaling for PF3001 */
+		 
 		reg_has_ramp_delay = false;
 		break;
 	case PFUZE3000:
@@ -326,7 +326,7 @@ static const struct regulator_ops pfuze3000_sw_regulator_ops = {
 	.stby_mask = 0x20,	\
 }
 
-/* No linar case for the some switches of PFUZE3000 */
+ 
 #define PFUZE3000_SW_REG(_chip, _name, base, mask, voltages)	\
 	[_chip ## _ ##  _name] = {	\
 		.desc = {	\
@@ -366,7 +366,7 @@ static const struct regulator_ops pfuze3000_sw_regulator_ops = {
 	.stby_mask = 0xf,	\
 }
 
-/* PFUZE100 */
+ 
 static struct pfuze_regulator pfuze100_regulators[] = {
 	PFUZE100_SW_REG(PFUZE100, SW1AB, PFUZE100_SW1ABVOL, 300000, 1875000, 25000),
 	PFUZE100_SW_REG(PFUZE100, SW1C, PFUZE100_SW1CVOL, 300000, 1875000, 25000),
@@ -432,7 +432,7 @@ static struct pfuze_regulator pfuze3001_regulators[] = {
 	PFUZE100_VGEN_REG(PFUZE3001, VLDO4, PFUZE100_VGEN6VOL, 1800000, 3300000, 100000),
 };
 
-/* PFUZE100 */
+ 
 static struct of_regulator_match pfuze100_matches[] = {
 	{ .name = "sw1ab",	},
 	{ .name = "sw1c",	},
@@ -452,7 +452,7 @@ static struct of_regulator_match pfuze100_matches[] = {
 	{ .name = "coin",	},
 };
 
-/* PFUZE200 */
+ 
 static struct of_regulator_match pfuze200_matches[] = {
 
 	{ .name = "sw1ab",	},
@@ -471,7 +471,7 @@ static struct of_regulator_match pfuze200_matches[] = {
 	{ .name = "coin",	},
 };
 
-/* PFUZE3000 */
+ 
 static struct of_regulator_match pfuze3000_matches[] = {
 
 	{ .name = "sw1a",	},
@@ -489,7 +489,7 @@ static struct of_regulator_match pfuze3000_matches[] = {
 	{ .name = "vldo4",	},
 };
 
-/* PFUZE3001 */
+ 
 static struct of_regulator_match pfuze3001_matches[] = {
 
 	{ .name = "sw1",	},
@@ -578,7 +578,7 @@ static int pfuze_power_off_prepare(struct sys_off_data *data)
 
 	dev_info(syspm_pfuze_chip->dev, "Configure standby mode for power off");
 
-	/* Switch from default mode: APS/APS to APS/Off */
+	 
 	regmap_update_bits(syspm_pfuze_chip->regmap, PFUZE100_SW1ABMODE,
 			   PFUZE100_SWxMODE_MASK, PFUZE100_SWxMODE_APS_OFF);
 	regmap_update_bits(syspm_pfuze_chip->regmap, PFUZE100_SW1CMODE,
@@ -647,15 +647,12 @@ static int pfuze_identify(struct pfuze_chip *pfuze_chip)
 		return ret;
 
 	if (((value & 0x0f) == 0x8) && (pfuze_chip->chip_id == PFUZE100)) {
-		/*
-		 * Freescale misprogrammed 1-3% of parts prior to week 8 of 2013
-		 * as ID=8 in PFUZE100
-		 */
+		 
 		dev_info(pfuze_chip->dev, "Assuming misprogrammed ID=0x8");
 	} else if ((value & 0x0f) != pfuze_chip->chip_id &&
 		   (value & 0xf0) >> 4 != pfuze_chip->chip_id &&
 		   (value != pfuze_chip->chip_id)) {
-		/* device id NOT match with your setting */
+		 
 		dev_warn(pfuze_chip->dev, "Illegal ID: %x\n", value);
 		return -ENODEV;
 	}
@@ -729,7 +726,7 @@ static int pfuze100_regulator_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/* use the right regulators after identify the right device */
+	 
 	switch (pfuze_chip->chip_id) {
 	case PFUZE3001:
 		pfuze_chip->pfuze_regulators = pfuze3001_regulators;
@@ -780,7 +777,7 @@ static int pfuze100_regulator_probe(struct i2c_client *client)
 
 		init_data = match_init_data(i);
 
-		/* SW2~SW4 high bit check and modify the voltage value table */
+		 
 		if (i >= sw_check_start && i <= sw_check_end) {
 			ret = regmap_read(pfuze_chip->regmap,
 						desc->vsel_reg, &val);
@@ -802,12 +799,7 @@ static int pfuze100_regulator_probe(struct i2c_client *client)
 			}
 		}
 
-		/*
-		 * Allow SW regulators to turn off. Checking it trough a flag is
-		 * a workaround to keep the backward compatibility with existing
-		 * old dtb's which may relay on the fact that we didn't disable
-		 * the switched regulator till yet.
-		 */
+		 
 		if (pfuze_chip->flags & PFUZE_FLAG_DISABLE_SW) {
 			if (pfuze_chip->chip_id == PFUZE100 ||
 				pfuze_chip->chip_id == PFUZE200) {

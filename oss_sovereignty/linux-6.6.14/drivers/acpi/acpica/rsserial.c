@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/*******************************************************************************
- *
- * Module Name: rsserial - GPIO/serial_bus resource descriptors
- *
- ******************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 #include "accommon.h"
@@ -12,11 +8,7 @@
 #define _COMPONENT          ACPI_RESOURCES
 ACPI_MODULE_NAME("rsserial")
 
-/*******************************************************************************
- *
- * acpi_rs_convert_gpio
- *
- ******************************************************************************/
+ 
 struct acpi_rsconvert_info acpi_rs_convert_gpio[18] = {
 	{ACPI_RSC_INITGET, ACPI_RESOURCE_TYPE_GPIO,
 	 ACPI_RS_SIZE(struct acpi_resource_gpio),
@@ -26,11 +18,7 @@ struct acpi_rsconvert_info acpi_rs_convert_gpio[18] = {
 	 sizeof(struct aml_resource_gpio),
 	 0},
 
-	/*
-	 * These fields are contiguous in both the source and destination:
-	 * revision_id
-	 * connection_type
-	 */
+	 
 	{ACPI_RSC_MOVE8, ACPI_RS_OFFSET(data.gpio.revision_id),
 	 AML_OFFSET(gpio.revision_id),
 	 2},
@@ -63,16 +51,12 @@ struct acpi_rsconvert_info acpi_rs_convert_gpio[18] = {
 	 AML_OFFSET(gpio.pin_config),
 	 1},
 
-	/*
-	 * These fields are contiguous in both the source and destination:
-	 * drive_strength
-	 * debounce_timeout
-	 */
+	 
 	{ACPI_RSC_MOVE16, ACPI_RS_OFFSET(data.gpio.drive_strength),
 	 AML_OFFSET(gpio.drive_strength),
 	 2},
 
-	/* Pin Table */
+	 
 
 	{ACPI_RSC_COUNT_GPIO_PIN, ACPI_RS_OFFSET(data.gpio.pin_table_length),
 	 AML_OFFSET(gpio.pin_table_offset),
@@ -82,7 +66,7 @@ struct acpi_rsconvert_info acpi_rs_convert_gpio[18] = {
 	 AML_OFFSET(gpio.pin_table_offset),
 	 0},
 
-	/* Resource Source */
+	 
 
 	{ACPI_RSC_MOVE8, ACPI_RS_OFFSET(data.gpio.resource_source.index),
 	 AML_OFFSET(gpio.res_source_index),
@@ -98,7 +82,7 @@ struct acpi_rsconvert_info acpi_rs_convert_gpio[18] = {
 	 AML_OFFSET(gpio.res_source_offset),
 	 0},
 
-	/* Vendor Data */
+	 
 
 	{ACPI_RSC_COUNT_GPIO_VEN, ACPI_RS_OFFSET(data.gpio.vendor_length),
 	 AML_OFFSET(gpio.vendor_length),
@@ -109,11 +93,7 @@ struct acpi_rsconvert_info acpi_rs_convert_gpio[18] = {
 	 0},
 };
 
-/*******************************************************************************
- *
- * acpi_rs_convert_clock_input
- *
- ******************************************************************************/
+ 
 
 struct acpi_rsconvert_info acpi_rs_convert_clock_input[8] = {
 	{ACPI_RSC_INITGET, ACPI_RESOURCE_TYPE_CLOCK_INPUT,
@@ -150,7 +130,7 @@ struct acpi_rsconvert_info acpi_rs_convert_clock_input[8] = {
 	 4}
 	,
 
-	/* Resource Source */
+	 
 	{ACPI_RSC_SOURCE, ACPI_RS_OFFSET(data.clock_input.resource_source),
 	 0,
 	 sizeof(struct aml_resource_clock_input)}
@@ -158,11 +138,7 @@ struct acpi_rsconvert_info acpi_rs_convert_clock_input[8] = {
 
 };
 
-/*******************************************************************************
- *
- * acpi_rs_convert_pinfunction
- *
- ******************************************************************************/
+ 
 
 struct acpi_rsconvert_info acpi_rs_convert_pin_function[13] = {
 	{ACPI_RSC_INITGET, ACPI_RESOURCE_TYPE_PIN_FUNCTION,
@@ -189,12 +165,9 @@ struct acpi_rsconvert_info acpi_rs_convert_pin_function[13] = {
 	 AML_OFFSET(pin_function.function_number),
 	 2},
 
-	/* Pin Table */
+	 
 
-	/*
-	 * It is OK to use GPIO operations here because none of them refer GPIO
-	 * structures directly but instead use offsets given here.
-	 */
+	 
 
 	{ACPI_RSC_COUNT_GPIO_PIN,
 	 ACPI_RS_OFFSET(data.pin_function.pin_table_length),
@@ -205,7 +178,7 @@ struct acpi_rsconvert_info acpi_rs_convert_pin_function[13] = {
 	 AML_OFFSET(pin_function.pin_table_offset),
 	 0},
 
-	/* Resource Source */
+	 
 
 	{ACPI_RSC_MOVE8,
 	 ACPI_RS_OFFSET(data.pin_function.resource_source.index),
@@ -222,7 +195,7 @@ struct acpi_rsconvert_info acpi_rs_convert_pin_function[13] = {
 	 AML_OFFSET(pin_function.res_source_offset),
 	 0},
 
-	/* Vendor Data */
+	 
 
 	{ACPI_RSC_COUNT_GPIO_VEN,
 	 ACPI_RS_OFFSET(data.pin_function.vendor_length),
@@ -234,11 +207,7 @@ struct acpi_rsconvert_info acpi_rs_convert_pin_function[13] = {
 	 0},
 };
 
-/*******************************************************************************
- *
- * acpi_rs_convert_csi2_serial_bus
- *
- ******************************************************************************/
+ 
 
 struct acpi_rsconvert_info acpi_rs_convert_csi2_serial_bus[14] = {
 	{ ACPI_RSC_INITGET, ACPI_RESOURCE_TYPE_SERIAL_BUS,
@@ -279,7 +248,7 @@ struct acpi_rsconvert_info acpi_rs_convert_csi2_serial_bus[14] = {
 	 AML_OFFSET(csi2_serial_bus.type_revision_id),
 	 1 },
 
-	/* Vendor data */
+	 
 
 	{ ACPI_RSC_COUNT_SERIAL_VEN,
 	 ACPI_RS_OFFSET(data.csi2_serial_bus.vendor_length),
@@ -291,7 +260,7 @@ struct acpi_rsconvert_info acpi_rs_convert_csi2_serial_bus[14] = {
 	 0,
 	 sizeof(struct aml_resource_csi2_serialbus) },
 
-	/* Resource Source */
+	 
 
 	{ ACPI_RSC_MOVE8,
 	 ACPI_RS_OFFSET(data.csi2_serial_bus.resource_source.index),
@@ -309,11 +278,7 @@ struct acpi_rsconvert_info acpi_rs_convert_csi2_serial_bus[14] = {
 	 sizeof(struct aml_resource_csi2_serialbus) },
 };
 
-/*******************************************************************************
- *
- * acpi_rs_convert_i2c_serial_bus
- *
- ******************************************************************************/
+ 
 
 struct acpi_rsconvert_info acpi_rs_convert_i2c_serial_bus[17] = {
 	{ACPI_RSC_INITGET, ACPI_RESOURCE_TYPE_SERIAL_BUS,
@@ -356,7 +321,7 @@ struct acpi_rsconvert_info acpi_rs_convert_i2c_serial_bus[17] = {
 	 AML_OFFSET(common_serial_bus.type_data_length),
 	 1},
 
-	/* Vendor data */
+	 
 
 	{ACPI_RSC_COUNT_SERIAL_VEN,
 	 ACPI_RS_OFFSET(data.common_serial_bus.vendor_length),
@@ -368,7 +333,7 @@ struct acpi_rsconvert_info acpi_rs_convert_i2c_serial_bus[17] = {
 	 0,
 	 sizeof(struct aml_resource_i2c_serialbus)},
 
-	/* Resource Source */
+	 
 
 	{ACPI_RSC_MOVE8,
 	 ACPI_RS_OFFSET(data.common_serial_bus.resource_source.index),
@@ -385,7 +350,7 @@ struct acpi_rsconvert_info acpi_rs_convert_i2c_serial_bus[17] = {
 	 AML_OFFSET(common_serial_bus.type_data_length),
 	 sizeof(struct aml_resource_common_serialbus)},
 
-	/* I2C bus type specific */
+	 
 
 	{ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET(data.i2c_serial_bus.access_mode),
 	 AML_OFFSET(i2c_serial_bus.type_specific_flags),
@@ -400,11 +365,7 @@ struct acpi_rsconvert_info acpi_rs_convert_i2c_serial_bus[17] = {
 	 1},
 };
 
-/*******************************************************************************
- *
- * acpi_rs_convert_spi_serial_bus
- *
- ******************************************************************************/
+ 
 
 struct acpi_rsconvert_info acpi_rs_convert_spi_serial_bus[21] = {
 	{ACPI_RSC_INITGET, ACPI_RESOURCE_TYPE_SERIAL_BUS,
@@ -447,7 +408,7 @@ struct acpi_rsconvert_info acpi_rs_convert_spi_serial_bus[21] = {
 	 AML_OFFSET(common_serial_bus.type_data_length),
 	 1},
 
-	/* Vendor data */
+	 
 
 	{ACPI_RSC_COUNT_SERIAL_VEN,
 	 ACPI_RS_OFFSET(data.common_serial_bus.vendor_length),
@@ -459,7 +420,7 @@ struct acpi_rsconvert_info acpi_rs_convert_spi_serial_bus[21] = {
 	 0,
 	 sizeof(struct aml_resource_spi_serialbus)},
 
-	/* Resource Source */
+	 
 
 	{ACPI_RSC_MOVE8,
 	 ACPI_RS_OFFSET(data.common_serial_bus.resource_source.index),
@@ -476,7 +437,7 @@ struct acpi_rsconvert_info acpi_rs_convert_spi_serial_bus[21] = {
 	 AML_OFFSET(common_serial_bus.type_data_length),
 	 sizeof(struct aml_resource_common_serialbus)},
 
-	/* Spi bus type specific  */
+	 
 
 	{ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET(data.spi_serial_bus.wire_mode),
 	 AML_OFFSET(spi_serial_bus.type_specific_flags),
@@ -507,11 +468,7 @@ struct acpi_rsconvert_info acpi_rs_convert_spi_serial_bus[21] = {
 	 1},
 };
 
-/*******************************************************************************
- *
- * acpi_rs_convert_uart_serial_bus
- *
- ******************************************************************************/
+ 
 
 struct acpi_rsconvert_info acpi_rs_convert_uart_serial_bus[23] = {
 	{ACPI_RSC_INITGET, ACPI_RESOURCE_TYPE_SERIAL_BUS,
@@ -554,7 +511,7 @@ struct acpi_rsconvert_info acpi_rs_convert_uart_serial_bus[23] = {
 	 AML_OFFSET(common_serial_bus.type_data_length),
 	 1},
 
-	/* Vendor data */
+	 
 
 	{ACPI_RSC_COUNT_SERIAL_VEN,
 	 ACPI_RS_OFFSET(data.common_serial_bus.vendor_length),
@@ -566,7 +523,7 @@ struct acpi_rsconvert_info acpi_rs_convert_uart_serial_bus[23] = {
 	 0,
 	 sizeof(struct aml_resource_uart_serialbus)},
 
-	/* Resource Source */
+	 
 
 	{ACPI_RSC_MOVE8,
 	 ACPI_RS_OFFSET(data.common_serial_bus.resource_source.index),
@@ -583,7 +540,7 @@ struct acpi_rsconvert_info acpi_rs_convert_uart_serial_bus[23] = {
 	 AML_OFFSET(common_serial_bus.type_data_length),
 	 sizeof(struct aml_resource_common_serialbus)},
 
-	/* Uart bus type specific  */
+	 
 
 	{ACPI_RSC_2BITFLAG, ACPI_RS_OFFSET(data.uart_serial_bus.flow_control),
 	 AML_OFFSET(uart_serial_bus.type_specific_flags),
@@ -623,11 +580,7 @@ struct acpi_rsconvert_info acpi_rs_convert_uart_serial_bus[23] = {
 	 1},
 };
 
-/*******************************************************************************
- *
- * acpi_rs_convert_pin_config
- *
- ******************************************************************************/
+ 
 
 struct acpi_rsconvert_info acpi_rs_convert_pin_config[14] = {
 	{ACPI_RSC_INITGET, ACPI_RESOURCE_TYPE_PIN_CONFIG,
@@ -658,12 +611,9 @@ struct acpi_rsconvert_info acpi_rs_convert_pin_config[14] = {
 	 AML_OFFSET(pin_config.pin_config_value),
 	 1},
 
-	/* Pin Table */
+	 
 
-	/*
-	 * It is OK to use GPIO operations here because none of them refer GPIO
-	 * structures directly but instead use offsets given here.
-	 */
+	 
 
 	{ACPI_RSC_COUNT_GPIO_PIN,
 	 ACPI_RS_OFFSET(data.pin_config.pin_table_length),
@@ -674,7 +624,7 @@ struct acpi_rsconvert_info acpi_rs_convert_pin_config[14] = {
 	 AML_OFFSET(pin_config.pin_table_offset),
 	 0},
 
-	/* Resource Source */
+	 
 
 	{ACPI_RSC_MOVE8, ACPI_RS_OFFSET(data.pin_config.resource_source.index),
 	 AML_OFFSET(pin_config.res_source_index),
@@ -690,7 +640,7 @@ struct acpi_rsconvert_info acpi_rs_convert_pin_config[14] = {
 	 AML_OFFSET(pin_config.res_source_offset),
 	 0},
 
-	/* Vendor Data */
+	 
 
 	{ACPI_RSC_COUNT_GPIO_VEN, ACPI_RS_OFFSET(data.pin_config.vendor_length),
 	 AML_OFFSET(pin_config.vendor_length),
@@ -701,11 +651,7 @@ struct acpi_rsconvert_info acpi_rs_convert_pin_config[14] = {
 	 0},
 };
 
-/*******************************************************************************
- *
- * acpi_rs_convert_pin_group
- *
- ******************************************************************************/
+ 
 
 struct acpi_rsconvert_info acpi_rs_convert_pin_group[10] = {
 	{ACPI_RSC_INITGET, ACPI_RESOURCE_TYPE_PIN_GROUP,
@@ -724,12 +670,9 @@ struct acpi_rsconvert_info acpi_rs_convert_pin_group[10] = {
 	 AML_OFFSET(pin_group.flags),
 	 0},
 
-	/* Pin Table */
+	 
 
-	/*
-	 * It is OK to use GPIO operations here because none of them refer GPIO
-	 * structures directly but instead use offsets given here.
-	 */
+	 
 
 	{ACPI_RSC_COUNT_GPIO_PIN,
 	 ACPI_RS_OFFSET(data.pin_group.pin_table_length),
@@ -740,7 +683,7 @@ struct acpi_rsconvert_info acpi_rs_convert_pin_group[10] = {
 	 AML_OFFSET(pin_group.pin_table_offset),
 	 0},
 
-	/* Resource Label */
+	 
 
 	{ACPI_RSC_COUNT_GPIO_RES,
 	 ACPI_RS_OFFSET(data.pin_group.resource_label.string_length),
@@ -752,7 +695,7 @@ struct acpi_rsconvert_info acpi_rs_convert_pin_group[10] = {
 	 AML_OFFSET(pin_group.label_offset),
 	 0},
 
-	/* Vendor Data */
+	 
 
 	{ACPI_RSC_COUNT_GPIO_VEN, ACPI_RS_OFFSET(data.pin_group.vendor_length),
 	 AML_OFFSET(pin_group.vendor_length),
@@ -763,11 +706,7 @@ struct acpi_rsconvert_info acpi_rs_convert_pin_group[10] = {
 	 0},
 };
 
-/*******************************************************************************
- *
- * acpi_rs_convert_pin_group_function
- *
- ******************************************************************************/
+ 
 
 struct acpi_rsconvert_info acpi_rs_convert_pin_group_function[13] = {
 	{ACPI_RSC_INITGET, ACPI_RESOURCE_TYPE_PIN_GROUP_FUNCTION,
@@ -796,7 +735,7 @@ struct acpi_rsconvert_info acpi_rs_convert_pin_group_function[13] = {
 	 AML_OFFSET(pin_group_function.function_number),
 	 1},
 
-	/* Resource Source */
+	 
 
 	{ACPI_RSC_MOVE8,
 	 ACPI_RS_OFFSET(data.pin_group_function.resource_source.index),
@@ -813,7 +752,7 @@ struct acpi_rsconvert_info acpi_rs_convert_pin_group_function[13] = {
 	 AML_OFFSET(pin_group_function.res_source_offset),
 	 0},
 
-	/* Resource Source Label */
+	 
 
 	{ACPI_RSC_COUNT_GPIO_RES,
 	 ACPI_RS_OFFSET(data.pin_group_function.resource_source_label.
@@ -827,7 +766,7 @@ struct acpi_rsconvert_info acpi_rs_convert_pin_group_function[13] = {
 	 AML_OFFSET(pin_group_function.res_source_label_offset),
 	 0},
 
-	/* Vendor Data */
+	 
 
 	{ACPI_RSC_COUNT_GPIO_VEN,
 	 ACPI_RS_OFFSET(data.pin_group_function.vendor_length),
@@ -840,11 +779,7 @@ struct acpi_rsconvert_info acpi_rs_convert_pin_group_function[13] = {
 	 0},
 };
 
-/*******************************************************************************
- *
- * acpi_rs_convert_pin_group_config
- *
- ******************************************************************************/
+ 
 
 struct acpi_rsconvert_info acpi_rs_convert_pin_group_config[14] = {
 	{ACPI_RSC_INITGET, ACPI_RESOURCE_TYPE_PIN_GROUP_CONFIG,
@@ -877,7 +812,7 @@ struct acpi_rsconvert_info acpi_rs_convert_pin_group_config[14] = {
 	 AML_OFFSET(pin_group_config.pin_config_value),
 	 1},
 
-	/* Resource Source */
+	 
 
 	{ACPI_RSC_MOVE8,
 	 ACPI_RS_OFFSET(data.pin_group_config.resource_source.index),
@@ -894,7 +829,7 @@ struct acpi_rsconvert_info acpi_rs_convert_pin_group_config[14] = {
 	 AML_OFFSET(pin_group_config.res_source_offset),
 	 0},
 
-	/* Resource Source Label */
+	 
 
 	{ACPI_RSC_COUNT_GPIO_RES,
 	 ACPI_RS_OFFSET(data.pin_group_config.resource_source_label.
@@ -907,7 +842,7 @@ struct acpi_rsconvert_info acpi_rs_convert_pin_group_config[14] = {
 	 AML_OFFSET(pin_group_config.res_source_label_offset),
 	 0},
 
-	/* Vendor Data */
+	 
 
 	{ACPI_RSC_COUNT_GPIO_VEN,
 	 ACPI_RS_OFFSET(data.pin_group_config.vendor_length),

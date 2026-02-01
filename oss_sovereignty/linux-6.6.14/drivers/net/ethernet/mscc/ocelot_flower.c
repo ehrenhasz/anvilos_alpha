@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/* Microsemi Ocelot Switch driver
- * Copyright (c) 2019 Microsemi Corporation
- */
+
+ 
 
 #include <net/pkt_cls.h>
 #include <net/tc_act/tc_gact.h>
@@ -9,9 +7,7 @@
 #include "ocelot_police.h"
 #include "ocelot_vcap.h"
 
-/* Arbitrarily chosen constants for encoding the VCAP block and lookup number
- * into the chain number. This is UAPI.
- */
+ 
 #define VCAP_BLOCK			10000
 #define VCAP_LOOKUP			1000
 #define VCAP_IS1_NUM_LOOKUPS		3
@@ -21,7 +17,7 @@
 	(1 * VCAP_BLOCK + (lookup) * VCAP_LOOKUP)
 #define VCAP_IS2_CHAIN(lookup, pag)	\
 	(2 * VCAP_BLOCK + (lookup) * VCAP_LOOKUP + (pag))
-/* PSFP chain and block ID */
+ 
 #define PSFP_BLOCK_ID			OCELOT_NUM_VCAP_BLOCKS
 #define OCELOT_PSFP_CHAIN		(3 * VCAP_BLOCK)
 
@@ -35,9 +31,7 @@ static int ocelot_chain_to_block(int chain, bool ingress)
 		return -EOPNOTSUPP;
 	}
 
-	/* Backwards compatibility with older, single-chain tc-flower
-	 * offload support in Ocelot
-	 */
+	 
 	if (chain == 0)
 		return VCAP_IS2;
 
@@ -56,36 +50,28 @@ static int ocelot_chain_to_block(int chain, bool ingress)
 	return -EOPNOTSUPP;
 }
 
-/* Caller must ensure this is a valid IS1 or IS2 chain first,
- * by calling ocelot_chain_to_block.
- */
+ 
 static int ocelot_chain_to_lookup(int chain)
 {
-	/* Backwards compatibility with older, single-chain tc-flower
-	 * offload support in Ocelot
-	 */
+	 
 	if (chain == 0)
 		return 0;
 
 	return (chain / VCAP_LOOKUP) % 10;
 }
 
-/* Caller must ensure this is a valid IS2 chain first,
- * by calling ocelot_chain_to_block.
- */
+ 
 static int ocelot_chain_to_pag(int chain)
 {
 	int lookup;
 
-	/* Backwards compatibility with older, single-chain tc-flower
-	 * offload support in Ocelot
-	 */
+	 
 	if (chain == 0)
 		return 0;
 
 	lookup = ocelot_chain_to_lookup(chain);
 
-	/* calculate PAG value as chain index relative to the first PAG */
+	 
 	return chain - VCAP_IS2_CHAIN(lookup, 0);
 }
 
@@ -94,13 +80,13 @@ static bool ocelot_is_goto_target_valid(int goto_target, int chain,
 {
 	int pag;
 
-	/* Can't offload GOTO in VCAP ES0 */
+	 
 	if (!ingress)
 		return (goto_target < 0);
 
-	/* Non-optional GOTOs */
+	 
 	if (chain == 0)
-		/* VCAP IS1 can be skipped, either partially or completely */
+		 
 		return (goto_target == VCAP_IS1_CHAIN(0) ||
 			goto_target == VCAP_IS1_CHAIN(1) ||
 			goto_target == VCAP_IS1_CHAIN(2) ||
@@ -114,10 +100,7 @@ static bool ocelot_is_goto_target_valid(int goto_target, int chain,
 	if (chain == VCAP_IS1_CHAIN(1))
 		return (goto_target == VCAP_IS1_CHAIN(2));
 
-	/* Lookup 2 of VCAP IS1 can really support non-optional GOTOs,
-	 * using a Policy Association Group (PAG) value, which is an 8-bit
-	 * value encoding a VCAP IS2 target chain.
-	 */
+	 
 	if (chain == VCAP_IS1_CHAIN(2)) {
 		for (pag = 0; pag < VCAP_IS2_NUM_PAG; pag++)
 			if (goto_target == VCAP_IS2_CHAIN(0, pag))
@@ -126,14 +109,12 @@ static bool ocelot_is_goto_target_valid(int goto_target, int chain,
 		return false;
 	}
 
-	/* Non-optional GOTO from VCAP IS2 lookup 0 to lookup 1.
-	 * We cannot change the PAG at this point.
-	 */
+	 
 	for (pag = 0; pag < VCAP_IS2_NUM_PAG; pag++)
 		if (chain == VCAP_IS2_CHAIN(0, pag))
 			return (goto_target == VCAP_IS2_CHAIN(1, pag));
 
-	/* VCAP IS2 lookup 1 can goto to PSFP block if hardware support */
+	 
 	for (pag = 0; pag < VCAP_IS2_NUM_PAG; pag++)
 		if (chain == VCAP_IS2_CHAIN(1, pag))
 			return (goto_target == OCELOT_PSFP_CHAIN);
@@ -602,7 +583,7 @@ ocelot_flower_parse_key(struct ocelot *ocelot, int port, bool ingress,
 		}
 	}
 
-	/* For VCAP ES0 (egress rewriter) we can match on the ingress port */
+	 
 	if (!ingress) {
 		ret = ocelot_flower_parse_indev(ocelot, port, f, filter);
 		if (ret)
@@ -636,10 +617,7 @@ ocelot_flower_parse_key(struct ocelot *ocelot, int port, bool ingress,
 			return -EOPNOTSUPP;
 		}
 
-		/* The hw support mac matches only for MAC_ETYPE key,
-		 * therefore if other matches(port, tcp flags, etc) are added
-		 * then just bail out
-		 */
+		 
 		if ((dissector->used_keys &
 		    (BIT_ULL(FLOW_DISSECTOR_KEY_ETH_ADDRS) |
 		     BIT_ULL(FLOW_DISSECTOR_KEY_BASIC) |
@@ -767,14 +745,14 @@ finished_key_parsing:
 			return -EOPNOTSUPP;
 		}
 
-		/* TODO: support SNAP, LLC etc */
+		 
 		if (proto < ETH_P_802_3_MIN)
 			return -EOPNOTSUPP;
 		filter->key_type = OCELOT_VCAP_KEY_ETYPE;
 		*(__be16 *)filter->key.etype.etype.value = htons(proto);
 		*(__be16 *)filter->key.etype.etype.mask = htons(0xffff);
 	}
-	/* else, a filter of type OCELOT_VCAP_KEY_ANY is implicitly added */
+	 
 
 	return 0;
 }
@@ -793,7 +771,7 @@ static int ocelot_flower_parse(struct ocelot *ocelot, int port, bool ingress,
 	if (ret)
 		return ret;
 
-	/* PSFP filter need to parse key by stream identification function. */
+	 
 	if (filter->type == OCELOT_PSFP_FILTER_OFFLOAD)
 		return 0;
 
@@ -840,11 +818,7 @@ static int ocelot_vcap_dummy_filter_del(struct ocelot *ocelot,
 	return 0;
 }
 
-/* If we have an egress VLAN modification rule, we need to actually write the
- * delta between the input VLAN (from the key) and the output VLAN (from the
- * action), but the action was parsed first. So we need to patch the delta into
- * the action here.
- */
+ 
 static int
 ocelot_flower_patch_es0_vlan_modify(struct ocelot_vcap_filter *filter,
 				    struct netlink_ext_ack *extack)
@@ -887,7 +861,7 @@ int ocelot_cls_flower_replace(struct ocelot *ocelot, int port,
 	filter = ocelot_vcap_block_find_filter_by_id(&ocelot->block[block_id],
 						     f->cookie, true);
 	if (filter) {
-		/* Filter already exists on other ports */
+		 
 		if (!ingress) {
 			NL_SET_ERR_MSG_MOD(extack, "VCAP ES0 does not support shared filters");
 			return -EOPNOTSUPP;
@@ -898,7 +872,7 @@ int ocelot_cls_flower_replace(struct ocelot *ocelot, int port,
 		return ocelot_vcap_filter_replace(ocelot, filter);
 	}
 
-	/* Filter didn't exist, create it now */
+	 
 	filter = ocelot_vcap_filter_create(ocelot, port, ingress, f);
 	if (!filter)
 		return -ENOMEM;
@@ -915,9 +889,7 @@ int ocelot_cls_flower_replace(struct ocelot *ocelot, int port,
 		return ret;
 	}
 
-	/* The non-optional GOTOs for the TCAM skeleton don't need
-	 * to be actually offloaded.
-	 */
+	 
 	if (filter->type == OCELOT_VCAP_FILTER_DUMMY)
 		return ocelot_vcap_dummy_filter_add(ocelot, filter);
 

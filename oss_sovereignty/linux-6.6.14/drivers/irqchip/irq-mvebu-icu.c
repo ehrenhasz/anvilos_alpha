@@ -1,13 +1,4 @@
-/*
- * Copyright (C) 2017 Marvell
- *
- * Hanna Hawa <hannah@marvell.com>
- * Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/interrupt.h>
 #include <linux/irq.h>
@@ -22,7 +13,7 @@
 
 #include <dt-bindings/interrupt-controller/mvebu-icu.h>
 
-/* ICU registers */
+ 
 #define ICU_SETSPI_NSR_AL	0x10
 #define ICU_SETSPI_NSR_AH	0x14
 #define ICU_CLRSPI_NSR_AL	0x18
@@ -36,7 +27,7 @@
 #define   ICU_IS_EDGE		BIT(28)
 #define   ICU_GROUP_SHIFT	29
 
-/* ICU definitions */
+ 
 #define ICU_MAX_IRQS		207
 #define ICU_SATA0_ICU_ID	109
 #define ICU_SATA1_ICU_ID	107
@@ -77,14 +68,14 @@ static void mvebu_icu_init(struct mvebu_icu *icu,
 	if (atomic_cmpxchg(&msi_data->initialized, false, true))
 		return;
 
-	/* Set 'SET' ICU SPI message address in AP */
+	 
 	writel_relaxed(msg[0].address_hi, icu->base + subset->offset_set_ah);
 	writel_relaxed(msg[0].address_lo, icu->base + subset->offset_set_al);
 
 	if (subset->icu_group != ICU_GRP_NSR)
 		return;
 
-	/* Set 'CLEAR' ICU SPI message address in AP (level-MSI only) */
+	 
 	writel_relaxed(msg[1].address_hi, icu->base + subset->offset_clr_ah);
 	writel_relaxed(msg[1].address_lo, icu->base + subset->offset_clr_al);
 }
@@ -98,29 +89,21 @@ static void mvebu_icu_write_msg(struct msi_desc *desc, struct msi_msg *msg)
 	unsigned int icu_int;
 
 	if (msg->address_lo || msg->address_hi) {
-		/* One off initialization per domain */
+		 
 		mvebu_icu_init(icu, msi_data, msg);
-		/* Configure the ICU with irq number & type */
+		 
 		icu_int = msg->data | ICU_INT_ENABLE;
 		if (icu_irqd->type & IRQ_TYPE_EDGE_RISING)
 			icu_int |= ICU_IS_EDGE;
 		icu_int |= icu_irqd->icu_group << ICU_GROUP_SHIFT;
 	} else {
-		/* De-configure the ICU */
+		 
 		icu_int = 0;
 	}
 
 	writel_relaxed(icu_int, icu->base + ICU_INT_CFG(d->hwirq));
 
-	/*
-	 * The SATA unit has 2 ports, and a dedicated ICU entry per
-	 * port. The ahci sata driver supports only one irq interrupt
-	 * per SATA unit. To solve this conflict, we configure the 2
-	 * SATA wired interrupts in the south bridge into 1 GIC
-	 * interrupt in the north bridge. Even if only a single port
-	 * is enabled, if sata node is enabled, both interrupts are
-	 * configured (regardless of which port is actually in use).
-	 */
+	 
 	if (d->hwirq == ICU_SATA0_ICU_ID || d->hwirq == ICU_SATA1_ICU_ID) {
 		writel_relaxed(icu_int,
 			       icu->base + ICU_INT_CFG(ICU_SATA0_ICU_ID));
@@ -155,7 +138,7 @@ mvebu_icu_irq_domain_translate(struct irq_domain *d, struct irq_fwspec *fwspec,
 	struct mvebu_icu_msi_data *msi_data = platform_msi_get_host_data(d);
 	struct mvebu_icu *icu = msi_data->icu;
 
-	/* Check the count of the parameters in dt */
+	 
 	if (WARN_ON(fwspec->param_count != param_count)) {
 		dev_err(icu->dev, "wrong ICU parameter count %d\n",
 			fwspec->param_count);
@@ -174,12 +157,7 @@ mvebu_icu_irq_domain_translate(struct irq_domain *d, struct irq_fwspec *fwspec,
 		*hwirq = fwspec->param[0];
 		*type = fwspec->param[1] & IRQ_TYPE_SENSE_MASK;
 
-		/*
-		 * The ICU receives level interrupts. While the NSR are also
-		 * level interrupts, SEI are edge interrupts. Force the type
-		 * here in this case. Please note that this makes the interrupt
-		 * handling unreliable.
-		 */
+		 
 		if (msi_data->subset_data->icu_group == ICU_GRP_SEI)
 			*type = IRQ_TYPE_EDGE_RISING;
 	}
@@ -227,7 +205,7 @@ mvebu_icu_irq_domain_alloc(struct irq_domain *domain, unsigned int virq,
 		goto free_irqd;
 	}
 
-	/* Make sure there is no interrupt left pending by the firmware */
+	 
 	err = irq_set_irqchip_state(virq, IRQCHIP_STATE_PENDING, false);
 	if (err)
 		goto free_msi;
@@ -360,20 +338,11 @@ static int mvebu_icu_probe(struct platform_device *pdev)
 	if (IS_ERR(icu->base))
 		return PTR_ERR(icu->base);
 
-	/*
-	 * Legacy bindings: ICU is one node with one MSI parent: force manually
-	 *                  the probe of the NSR interrupts side.
-	 * New bindings: ICU node has children, one per interrupt controller
-	 *               having its own MSI parent: call platform_populate().
-	 * All ICU instances should use the same bindings.
-	 */
+	 
 	if (!of_get_child_count(pdev->dev.of_node))
 		static_branch_enable(&legacy_bindings);
 
-	/*
-	 * Clean all ICU interrupts of type NSR and SEI, required to
-	 * avoid unpredictable SPI assignments done by firmware.
-	 */
+	 
 	for (i = 0 ; i < ICU_MAX_IRQS ; i++) {
 		u32 icu_int, icu_grp;
 

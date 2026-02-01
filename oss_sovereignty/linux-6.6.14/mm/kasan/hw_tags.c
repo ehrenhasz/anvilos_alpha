@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file contains core hardware tag-based KASAN code.
- *
- * Copyright (c) 2020 Google, Inc.
- * Author: Andrey Konovalov <andreyknvl@google.com>
- */
+
+ 
 
 #define pr_fmt(fmt) "kasan: " fmt
 
@@ -42,42 +37,29 @@ static enum kasan_arg kasan_arg __ro_after_init;
 static enum kasan_arg_mode kasan_arg_mode __ro_after_init;
 static enum kasan_arg_vmalloc kasan_arg_vmalloc __initdata;
 
-/*
- * Whether KASAN is enabled at all.
- * The value remains false until KASAN is initialized by kasan_init_hw_tags().
- */
+ 
 DEFINE_STATIC_KEY_FALSE(kasan_flag_enabled);
 EXPORT_SYMBOL(kasan_flag_enabled);
 
-/*
- * Whether the selected mode is synchronous, asynchronous, or asymmetric.
- * Defaults to KASAN_MODE_SYNC.
- */
+ 
 enum kasan_mode kasan_mode __ro_after_init;
 EXPORT_SYMBOL_GPL(kasan_mode);
 
-/* Whether to enable vmalloc tagging. */
+ 
 DEFINE_STATIC_KEY_TRUE(kasan_flag_vmalloc);
 
 #define PAGE_ALLOC_SAMPLE_DEFAULT	1
 #define PAGE_ALLOC_SAMPLE_ORDER_DEFAULT	3
 
-/*
- * Sampling interval of page_alloc allocation (un)poisoning.
- * Defaults to no sampling.
- */
+ 
 unsigned long kasan_page_alloc_sample = PAGE_ALLOC_SAMPLE_DEFAULT;
 
-/*
- * Minimum order of page_alloc allocations to be affected by sampling.
- * The default value is chosen to match both
- * PAGE_ALLOC_COSTLY_ORDER and SKB_FRAG_PAGE_ORDER.
- */
+ 
 unsigned int kasan_page_alloc_sample_order = PAGE_ALLOC_SAMPLE_ORDER_DEFAULT;
 
 DEFINE_PER_CPU(long, kasan_page_alloc_skip);
 
-/* kasan=off/on */
+ 
 static int __init early_kasan_flag(char *arg)
 {
 	if (!arg)
@@ -94,7 +76,7 @@ static int __init early_kasan_flag(char *arg)
 }
 early_param("kasan", early_kasan_flag);
 
-/* kasan.mode=sync/async/asymm */
+ 
 static int __init early_kasan_mode(char *arg)
 {
 	if (!arg)
@@ -113,7 +95,7 @@ static int __init early_kasan_mode(char *arg)
 }
 early_param("kasan.mode", early_kasan_mode);
 
-/* kasan.vmalloc=off/on */
+ 
 static int __init early_kasan_flag_vmalloc(char *arg)
 {
 	if (!arg)
@@ -140,7 +122,7 @@ static inline const char *kasan_mode_info(void)
 		return "sync";
 }
 
-/* kasan.page_alloc.sample=<sampling interval> */
+ 
 static int __init early_kasan_flag_page_alloc_sample(char *arg)
 {
 	int rv;
@@ -161,7 +143,7 @@ static int __init early_kasan_flag_page_alloc_sample(char *arg)
 }
 early_param("kasan.page_alloc.sample", early_kasan_flag_page_alloc_sample);
 
-/* kasan.page_alloc.sample.order=<minimum page order> */
+ 
 static int __init early_kasan_flag_page_alloc_sample_order(char *arg)
 {
 	int rv;
@@ -182,46 +164,33 @@ static int __init early_kasan_flag_page_alloc_sample_order(char *arg)
 }
 early_param("kasan.page_alloc.sample.order", early_kasan_flag_page_alloc_sample_order);
 
-/*
- * kasan_init_hw_tags_cpu() is called for each CPU.
- * Not marked as __init as a CPU can be hot-plugged after boot.
- */
+ 
 void kasan_init_hw_tags_cpu(void)
 {
-	/*
-	 * There's no need to check that the hardware is MTE-capable here,
-	 * as this function is only called for MTE-capable hardware.
-	 */
+	 
 
-	/*
-	 * If KASAN is disabled via command line, don't initialize it.
-	 * When this function is called, kasan_flag_enabled is not yet
-	 * set by kasan_init_hw_tags(). Thus, check kasan_arg instead.
-	 */
+	 
 	if (kasan_arg == KASAN_ARG_OFF)
 		return;
 
-	/*
-	 * Enable async or asymm modes only when explicitly requested
-	 * through the command line.
-	 */
+	 
 	kasan_enable_hw_tags();
 }
 
-/* kasan_init_hw_tags() is called once on boot CPU. */
+ 
 void __init kasan_init_hw_tags(void)
 {
-	/* If hardware doesn't support MTE, don't initialize KASAN. */
+	 
 	if (!system_supports_mte())
 		return;
 
-	/* If KASAN is disabled via command line, don't initialize it. */
+	 
 	if (kasan_arg == KASAN_ARG_OFF)
 		return;
 
 	switch (kasan_arg_mode) {
 	case KASAN_ARG_MODE_DEFAULT:
-		/* Default is specified by kasan_mode definition. */
+		 
 		break;
 	case KASAN_ARG_MODE_SYNC:
 		kasan_mode = KASAN_MODE_SYNC;
@@ -236,7 +205,7 @@ void __init kasan_init_hw_tags(void)
 
 	switch (kasan_arg_vmalloc) {
 	case KASAN_ARG_VMALLOC_DEFAULT:
-		/* Default is specified by kasan_flag_vmalloc definition. */
+		 
 		break;
 	case KASAN_ARG_VMALLOC_OFF:
 		static_branch_disable(&kasan_flag_vmalloc);
@@ -248,7 +217,7 @@ void __init kasan_init_hw_tags(void)
 
 	kasan_init_tags();
 
-	/* KASAN is now initialized, enable it. */
+	 
 	static_branch_enable(&kasan_flag_enabled);
 
 	pr_info("KernelAddressSanitizer initialized (hw-tags, mode=%s, vmalloc=%s, stacktrace=%s)\n",
@@ -264,11 +233,7 @@ static void unpoison_vmalloc_pages(const void *addr, u8 tag)
 	struct vm_struct *area;
 	int i;
 
-	/*
-	 * As hardware tag-based KASAN only tags VM_ALLOC vmalloc allocations
-	 * (see the comment in __kasan_unpoison_vmalloc), all of the pages
-	 * should belong to a single area.
-	 */
+	 
 	area = find_vm_area((void *)addr);
 	if (WARN_ON(!area))
 		return;
@@ -303,34 +268,13 @@ void *__kasan_unpoison_vmalloc(const void *start, unsigned long size,
 		return (void *)start;
 	}
 
-	/*
-	 * Don't tag non-VM_ALLOC mappings, as:
-	 *
-	 * 1. Unlike the software KASAN modes, hardware tag-based KASAN only
-	 *    supports tagging physical memory. Therefore, it can only tag a
-	 *    single mapping of normal physical pages.
-	 * 2. Hardware tag-based KASAN can only tag memory mapped with special
-	 *    mapping protection bits, see arch_vmap_pgprot_tagged().
-	 *    As non-VM_ALLOC mappings can be mapped outside of vmalloc code,
-	 *    providing these bits would require tracking all non-VM_ALLOC
-	 *    mappers.
-	 *
-	 * Thus, for VM_ALLOC mappings, hardware tag-based KASAN only tags
-	 * the first virtual mapping, which is created by vmalloc().
-	 * Tagging the page_alloc memory backing that vmalloc() allocation is
-	 * skipped, see ___GFP_SKIP_KASAN.
-	 *
-	 * For non-VM_ALLOC allocations, page_alloc memory is tagged as usual.
-	 */
+	 
 	if (!(flags & KASAN_VMALLOC_VM_ALLOC)) {
 		WARN_ON(flags & KASAN_VMALLOC_INIT);
 		return (void *)start;
 	}
 
-	/*
-	 * Don't tag executable memory.
-	 * The kernel doesn't tolerate having the PC register tagged.
-	 */
+	 
 	if (!(flags & KASAN_VMALLOC_PROT_NORMAL)) {
 		WARN_ON(flags & KASAN_VMALLOC_INIT);
 		return (void *)start;
@@ -339,24 +283,17 @@ void *__kasan_unpoison_vmalloc(const void *start, unsigned long size,
 	tag = kasan_random_tag();
 	start = set_tag(start, tag);
 
-	/* Unpoison and initialize memory up to size. */
+	 
 	kasan_unpoison(start, size, flags & KASAN_VMALLOC_INIT);
 
-	/*
-	 * Explicitly poison and initialize the in-page vmalloc() redzone.
-	 * Unlike software KASAN modes, hardware tag-based KASAN doesn't
-	 * unpoison memory when populating shadow for vmalloc() space.
-	 */
+	 
 	redzone_start = round_up((unsigned long)start + size,
 				 KASAN_GRANULE_SIZE);
 	redzone_size = round_up(redzone_start, PAGE_SIZE) - redzone_start;
 	kasan_poison((void *)redzone_start, redzone_size, KASAN_TAG_INVALID,
 		     flags & KASAN_VMALLOC_INIT);
 
-	/*
-	 * Set per-page tag flags to allow accessing physical memory for the
-	 * vmalloc() mapping through page_address(vmalloc_to_page()).
-	 */
+	 
 	unpoison_vmalloc_pages(start, tag);
 
 	return (void *)start;
@@ -364,11 +301,7 @@ void *__kasan_unpoison_vmalloc(const void *start, unsigned long size,
 
 void __kasan_poison_vmalloc(const void *start, unsigned long size)
 {
-	/*
-	 * No tagging here.
-	 * The physical pages backing the vmalloc() allocation are poisoned
-	 * through the usual page_alloc paths.
-	 */
+	 
 }
 
 #endif

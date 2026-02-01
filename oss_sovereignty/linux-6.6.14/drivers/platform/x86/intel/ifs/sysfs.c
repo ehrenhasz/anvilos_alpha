@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2022 Intel Corporation. */
+
+ 
 
 #include <linux/cpu.h>
 #include <linux/delay.h>
@@ -9,16 +9,10 @@
 
 #include "ifs.h"
 
-/*
- * Protects against simultaneous tests on multiple cores, or
- * reloading can file while a test is in progress
- */
+ 
 static DEFINE_SEMAPHORE(ifs_sem, 1);
 
-/*
- * The sysfs interface to check additional details of last test
- * cat /sys/devices/system/platform/ifs/details
- */
+ 
 static ssize_t details_show(struct device *dev,
 			    struct device_attribute *attr,
 			    char *buf)
@@ -36,11 +30,7 @@ static const char * const status_msg[] = {
 	[SCAN_TEST_FAIL] = "fail"
 };
 
-/*
- * The sysfs interface to check the test status:
- * To check the status of last test
- * cat /sys/devices/platform/ifs/status
- */
+ 
 static ssize_t status_show(struct device *dev,
 			   struct device_attribute *attr,
 			   char *buf)
@@ -52,14 +42,7 @@ static ssize_t status_show(struct device *dev,
 
 static DEVICE_ATTR_RO(status);
 
-/*
- * The sysfs interface for single core testing
- * To start test, for example, cpu5
- * echo 5 > /sys/devices/platform/ifs/run_test
- * To check the result:
- * cat /sys/devices/platform/ifs/result
- * The sibling core gets tested at the same time.
- */
+ 
 static ssize_t run_test_store(struct device *dev,
 			      struct device_attribute *attr,
 			      const char *buf, size_t count)
@@ -120,9 +103,7 @@ static ssize_t current_batch_show(struct device *dev,
 
 static DEVICE_ATTR_RW(current_batch);
 
-/*
- * Display currently loaded IFS image version.
- */
+ 
 static ssize_t image_version_show(struct device *dev,
 				  struct device_attribute *attr, char *buf)
 {
@@ -136,7 +117,7 @@ static ssize_t image_version_show(struct device *dev,
 
 static DEVICE_ATTR_RO(image_version);
 
-/* global scan sysfs attributes */
+ 
 struct attribute *plat_ifs_attrs[] = {
 	&dev_attr_details.attr,
 	&dev_attr_status.attr,
@@ -146,7 +127,7 @@ struct attribute *plat_ifs_attrs[] = {
 	NULL
 };
 
-/* global array sysfs attributes */
+ 
 struct attribute *plat_ifs_array_attrs[] = {
 	&dev_attr_details.attr,
 	&dev_attr_status.attr,

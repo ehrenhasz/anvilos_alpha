@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  LZO1X Compressor from LZO
- *
- *  Copyright (C) 1996-2012 Markus F.X.J. Oberhumer <markus@oberhumer.com>
- *
- *  The full LZO package can be found at:
- *  http://www.oberhumer.com/opensource/lzo/
- *
- *  Changed for Linux kernel use by:
- *  Nitin Gupta <nitingupta910@gmail.com>
- *  Richard Purdie <rpurdie@openedhand.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -270,12 +259,12 @@ m_len_done:
 						&& (m_len >= 261)
 						&& (m_len <= 264))
 						&& likely(bitstream_version)) {
-					// Under lzo-rle, block copies
-					// for 261 <= length <= 264 and
-					// (distance & 0x80f3) == 0x80f3
-					// can result in ambiguous
-					// output. Adjust length
-					// to 260 to prevent ambiguity.
+					
+					
+					
+					
+					
+					
 					ip -= m_len - 260;
 					m_len = 260;
 				}
@@ -311,8 +300,8 @@ static int lzogeneric1x_1_compress(const unsigned char *in, size_t in_len,
 	signed char state_offset = -2;
 	unsigned int m4_max_offset;
 
-	// LZO v0 will never write 17 as first byte (except for zero-length
-	// input), so this is used to version the bitstream
+	
+	
 	if (bitstream_version > 0) {
 		*op++ = 17;
 		*op++ = bitstream_version;

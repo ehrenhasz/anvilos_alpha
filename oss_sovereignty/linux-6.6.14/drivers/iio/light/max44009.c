@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * max44009.c - Support for MAX44009 Ambient Light Sensor
- *
- * Copyright (c) 2019 Robert Eshleman <bobbyeshleman@gmail.com>
- *
- * Datasheet: https://datasheets.maximintegrated.com/en/ds/MAX44009.pdf
- *
- * TODO: Support continuous mode and configuring from manual mode to
- *	 automatic mode.
- *
- * Default I2C address: 0x4a
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -25,7 +14,7 @@
 
 #define MAX44009_DRV_NAME "max44009"
 
-/* Registers in datasheet order */
+ 
 #define MAX44009_REG_INT_STATUS 0x0
 #define MAX44009_REG_INT_EN 0x1
 #define MAX44009_REG_CFG 0x2
@@ -38,7 +27,7 @@
 #define MAX44009_CFG_TIM_MASK GENMASK(2, 0)
 #define MAX44009_CFG_MAN_MODE_MASK BIT(6)
 
-/* The maximum rising threshold for the max44009 */
+ 
 #define MAX44009_MAXIMUM_THRESHOLD 7520256
 
 #define MAX44009_THRESH_EXP_MASK (0xf << 4)
@@ -48,11 +37,11 @@
 
 #define MAX44009_UPPER_THR_MINIMUM 15
 
-/* The max44009 always scales raw readings by 0.045 and is non-configurable */
+ 
 #define MAX44009_SCALE_NUMERATOR 45
 #define MAX44009_SCALE_DENOMINATOR 1000
 
-/* The fixed-point fractional multiplier for de-scaling threshold values */
+ 
 #define MAX44009_FRACT_MULT 1000000
 
 static const u32 max44009_int_time_ns_array[] = {
@@ -60,10 +49,10 @@ static const u32 max44009_int_time_ns_array[] = {
 	400000000,
 	200000000,
 	100000000,
-	50000000, /* Manual mode only */
-	25000000, /* Manual mode only */
-	12500000, /* Manual mode only */
-	6250000,  /* Manual mode only */
+	50000000,  
+	25000000,  
+	12500000,  
+	6250000,   
 };
 
 static const char max44009_int_time_str[] =
@@ -137,10 +126,7 @@ static int max44009_write_int_time(struct max44009_data *data,
 	config = ret;
 	config &= int_time;
 
-	/*
-	 * To set the integration time, the device must also be in manual
-	 * mode.
-	 */
+	 
 	config |= MAX44009_CFG_MAN_MODE_MASK;
 
 	return i2c_smbus_write_byte_data(client, MAX44009_REG_CFG, config);
@@ -174,18 +160,13 @@ static int max44009_lux_raw(u8 hi, u8 lo)
 	int mantissa;
 	int exponent;
 
-	/*
-	 * The mantissa consists of the low nibble of the Lux High Byte
-	 * and the low nibble of the Lux Low Byte.
-	 */
+	 
 	mantissa = ((hi & 0xf) << 4) | (lo & 0xf);
 
-	/* The exponent byte is just the upper nibble of the Lux High Byte */
+	 
 	exponent = (hi >> 4) & 0xf;
 
-	/*
-	 * The exponent value is base 2 to the power of the raw exponent byte.
-	 */
+	 
 	exponent = 1 << exponent;
 
 	return exponent * mantissa;
@@ -228,12 +209,7 @@ static int max44009_read_lux_raw(struct max44009_data *data)
 		}
 	};
 
-	/*
-	 * Use i2c_transfer instead of smbus read because i2c_transfer
-	 * does NOT use a stop bit between address write and data read.
-	 * Using a stop bit causes disjoint upper/lower byte reads and
-	 * reduces accuracy.
-	 */
+	 
 	ret = i2c_transfer(data->client->adapter,
 			   msgs, MAX44009_READ_LUX_XFER_LEN);
 
@@ -305,11 +281,11 @@ static int max44009_threshold_byte_from_fraction(int integral, int fractional)
 	     (integral == MAX44009_MAXIMUM_THRESHOLD && fractional != 0))
 		return -EINVAL;
 
-	/* Reverse scaling of fixed-point integral */
+	 
 	mantissa = integral * MAX44009_SCALE_DENOMINATOR;
 	mantissa /= MAX44009_SCALE_NUMERATOR;
 
-	/* Reverse scaling of fixed-point fractional */
+	 
 	mantissa += fractional / MAX44009_FRACT_MULT *
 		    (MAX44009_SCALE_DENOMINATOR / MAX44009_SCALE_NUMERATOR);
 
@@ -377,17 +353,11 @@ static int max44009_read_threshold(struct iio_dev *indio_dev,
 	mantissa = byte & MAX44009_THRESH_MANT_MASK;
 	mantissa <<= MAX44009_THRESH_MANT_LSHIFT;
 
-	/*
-	 * To get the upper threshold, always adds the minimum upper threshold
-	 * value to the shifted byte value (see datasheet).
-	 */
+	 
 	if (dir == IIO_EV_DIR_RISING)
 		mantissa += MAX44009_UPPER_THR_MINIMUM;
 
-	/*
-	 * Exponent is base 2 to the power of the threshold exponent byte
-	 * value
-	 */
+	 
 	exponent = byte & MAX44009_THRESH_EXP_MASK;
 	exponent >>= MAX44009_THRESH_EXP_RSHIFT;
 
@@ -435,10 +405,7 @@ static int max44009_write_event_config(struct iio_dev *indio_dev,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Set device to trigger interrupt immediately upon exceeding
-	 * the threshold limit.
-	 */
+	 
 	return i2c_smbus_write_byte_data(data->client,
 					 MAX44009_REG_THR_TIMER, 0);
 }
@@ -507,7 +474,7 @@ static int max44009_probe(struct i2c_client *client)
 	indio_dev->num_channels = ARRAY_SIZE(max44009_channels);
 	mutex_init(&data->lock);
 
-	/* Clear any stale interrupt bit */
+	 
 	ret = i2c_smbus_read_byte_data(client, MAX44009_REG_CFG);
 	if (ret < 0)
 		return ret;

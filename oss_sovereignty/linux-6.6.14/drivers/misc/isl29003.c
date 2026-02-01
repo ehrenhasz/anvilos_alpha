@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  isl29003.c - Linux kernel module for
- * 	Intersil ISL29003 ambient light sensor
- *
- *  See file:Documentation/misc-devices/isl29003.rst
- *
- *  Copyright (c) 2009 Daniel Mack <daniel@caiaq.de>
- *
- *  Based on code written by
- *  	Rodolfo Giometti <giometti@linux.it>
- *  	Eurotech S.p.A. <info@eurotech.it>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -57,9 +46,7 @@ static int gain_range[] = {
 	1000, 4000, 16000, 64000
 };
 
-/*
- * register access helpers
- */
+ 
 
 static int __isl29003_read_reg(struct i2c_client *client,
 			       u32 reg, u8 mask, u8 shift)
@@ -93,11 +80,9 @@ static int __isl29003_write_reg(struct i2c_client *client,
 	return ret;
 }
 
-/*
- * internally used functions
- */
+ 
 
-/* range */
+ 
 static int isl29003_get_range(struct i2c_client *client)
 {
 	return __isl29003_read_reg(client, ISL29003_REG_CONTROL,
@@ -110,7 +95,7 @@ static int isl29003_set_range(struct i2c_client *client, int range)
 		ISL29003_RANGE_MASK, ISL29003_RANGE_SHIFT, range);
 }
 
-/* resolution */
+ 
 static int isl29003_get_resolution(struct i2c_client *client)
 {
 	return __isl29003_read_reg(client, ISL29003_REG_COMMAND,
@@ -123,7 +108,7 @@ static int isl29003_set_resolution(struct i2c_client *client, int res)
 		ISL29003_RES_MASK, ISL29003_RES_SHIFT, res);
 }
 
-/* mode */
+ 
 static int isl29003_get_mode(struct i2c_client *client)
 {
 	return __isl29003_read_reg(client, ISL29003_REG_COMMAND,
@@ -136,7 +121,7 @@ static int isl29003_set_mode(struct i2c_client *client, int mode)
 		ISL29003_MODE_MASK, ISL29003_MODE_SHIFT, mode);
 }
 
-/* power_state */
+ 
 static int isl29003_set_power_state(struct i2c_client *client, int state)
 {
 	return __isl29003_write_reg(client, ISL29003_REG_COMMAND,
@@ -176,11 +161,9 @@ static int isl29003_get_adc_value(struct i2c_client *client)
 	return (((msb << 8) | lsb) * gain_range[range]) >> bitdepth;
 }
 
-/*
- * sysfs layer
- */
+ 
 
-/* range */
+ 
 static ssize_t isl29003_show_range(struct device *dev,
 				   struct device_attribute *attr, char *buf)
 {
@@ -215,7 +198,7 @@ static DEVICE_ATTR(range, S_IWUSR | S_IRUGO,
 		   isl29003_show_range, isl29003_store_range);
 
 
-/* resolution */
+ 
 static ssize_t isl29003_show_resolution(struct device *dev,
 					struct device_attribute *attr,
 					char *buf)
@@ -250,7 +233,7 @@ static ssize_t isl29003_store_resolution(struct device *dev,
 static DEVICE_ATTR(resolution, S_IWUSR | S_IRUGO,
 		   isl29003_show_resolution, isl29003_store_resolution);
 
-/* mode */
+ 
 static ssize_t isl29003_show_mode(struct device *dev,
 				  struct device_attribute *attr, char *buf)
 {
@@ -284,7 +267,7 @@ static DEVICE_ATTR(mode, S_IWUSR | S_IRUGO,
 		   isl29003_show_mode, isl29003_store_mode);
 
 
-/* power state */
+ 
 static ssize_t isl29003_show_power_state(struct device *dev,
 					 struct device_attribute *attr,
 					 char *buf)
@@ -317,13 +300,13 @@ static DEVICE_ATTR(power_state, S_IWUSR | S_IRUGO,
 		   isl29003_show_power_state, isl29003_store_power_state);
 
 
-/* lux */
+ 
 static ssize_t isl29003_show_lux(struct device *dev,
 				 struct device_attribute *attr, char *buf)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 
-	/* No LUX data if not operational */
+	 
 	if (!isl29003_get_power_state(client))
 		return -EBUSY;
 
@@ -350,8 +333,7 @@ static int isl29003_init_client(struct i2c_client *client)
 	struct isl29003_data *data = i2c_get_clientdata(client);
 	int i;
 
-	/* read all the registers once to fill the cache.
-	 * if one of the reads fails, we consider the init failed */
+	 
 	for (i = 0; i < ARRAY_SIZE(data->reg_cache); i++) {
 		int v = i2c_smbus_read_byte_data(client, i);
 
@@ -361,7 +343,7 @@ static int isl29003_init_client(struct i2c_client *client)
 		data->reg_cache[i] = v;
 	}
 
-	/* set defaults */
+	 
 	isl29003_set_range(client, 0);
 	isl29003_set_resolution(client, 0);
 	isl29003_set_mode(client, 0);
@@ -370,9 +352,7 @@ static int isl29003_init_client(struct i2c_client *client)
 	return 0;
 }
 
-/*
- * I2C layer
- */
+ 
 
 static int isl29003_probe(struct i2c_client *client)
 {
@@ -391,12 +371,12 @@ static int isl29003_probe(struct i2c_client *client)
 	i2c_set_clientdata(client, data);
 	mutex_init(&data->lock);
 
-	/* initialize the ISL29003 chip */
+	 
 	err = isl29003_init_client(client);
 	if (err)
 		goto exit_kfree;
 
-	/* register sysfs hooks */
+	 
 	err = sysfs_create_group(&client->dev.kobj, &isl29003_attr_group);
 	if (err)
 		goto exit_kfree;
@@ -432,7 +412,7 @@ static int isl29003_resume(struct device *dev)
 	struct i2c_client *client = to_i2c_client(dev);
 	struct isl29003_data *data = i2c_get_clientdata(client);
 
-	/* restore registers from cache */
+	 
 	for (i = 0; i < ARRAY_SIZE(data->reg_cache); i++)
 		if (i2c_smbus_write_byte_data(client, i, data->reg_cache[i]))
 			return -EIO;
@@ -446,7 +426,7 @@ static SIMPLE_DEV_PM_OPS(isl29003_pm_ops, isl29003_suspend, isl29003_resume);
 
 #else
 #define ISL29003_PM_OPS NULL
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct i2c_device_id isl29003_id[] = {
 	{ "isl29003", 0 },

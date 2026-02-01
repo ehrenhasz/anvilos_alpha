@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_DEBUGOBJECTS_H
 #define _LINUX_DEBUGOBJECTS_H
 
@@ -17,14 +17,7 @@ enum debug_obj_state {
 
 struct debug_obj_descr;
 
-/**
- * struct debug_obj - representation of an tracked object
- * @node:	hlist node to link the object into the tracker list
- * @state:	tracked object state
- * @astate:	current active state
- * @object:	pointer to the real object
- * @descr:	pointer to an object type specific debug description structure
- */
+ 
 struct debug_obj {
 	struct hlist_node	node;
 	enum debug_obj_state	state;
@@ -33,25 +26,7 @@ struct debug_obj {
 	const struct debug_obj_descr *descr;
 };
 
-/**
- * struct debug_obj_descr - object type specific debug description structure
- *
- * @name:		name of the object typee
- * @debug_hint:		function returning address, which have associated
- *			kernel symbol, to allow identify the object
- * @is_static_object:	return true if the obj is static, otherwise return false
- * @fixup_init:		fixup function, which is called when the init check
- *			fails. All fixup functions must return true if fixup
- *			was successful, otherwise return false
- * @fixup_activate:	fixup function, which is called when the activate check
- *			fails
- * @fixup_destroy:	fixup function, which is called when the destroy check
- *			fails
- * @fixup_free:		fixup function, which is called when the free check
- *			fails
- * @fixup_assert_init:  fixup function, which is called when the assert_init
- *			check fails
- */
+ 
 struct debug_obj_descr {
 	const char		*name;
 	void *(*debug_hint)(void *addr);
@@ -73,11 +48,7 @@ extern void debug_object_destroy   (void *addr, const struct debug_obj_descr *de
 extern void debug_object_free      (void *addr, const struct debug_obj_descr *descr);
 extern void debug_object_assert_init(void *addr, const struct debug_obj_descr *descr);
 
-/*
- * Active state:
- * - Set at 0 upon initialization.
- * - Must return to 0 before deactivation.
- */
+ 
 extern void
 debug_object_active_state(void *addr, const struct debug_obj_descr *descr,
 			  unsigned int expect, unsigned int next);

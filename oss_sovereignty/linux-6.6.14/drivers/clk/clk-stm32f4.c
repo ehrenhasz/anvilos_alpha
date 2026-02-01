@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Author: Daniel Thompson <daniel.thompson@linaro.org>
- *
- * Inspired by clk-asm9260.c .
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -17,11 +13,7 @@
 #include <linux/regmap.h>
 #include <linux/mfd/syscon.h>
 
-/*
- * Include list of clocks wich are not derived from system clock (SYSCLOCK)
- * The index of these clocks is the secondary index of DT bindings
- *
- */
+ 
 #include <dt-bindings/clock/stm32fx-clock.h>
 
 #define STM32F4_RCC_CR			0x00
@@ -364,10 +356,7 @@ static const struct stm32f4_gate_data stm32f769_gates[] __initconst = {
 	{ STM32F4_RCC_APB2ENR, 30,	"mdio",		"apb2_div" },
 };
 
-/*
- * This bitmask tells us which bit offsets (0..192) on STM32F4[23]xxx
- * have gate bits associated with them. Its combined hweight is 71.
- */
+ 
 #define MAX_GATE_MAP 3
 
 static const u64 stm32f42xx_gate_map[MAX_GATE_MAP] = { 0x000000f17ef417ffull,
@@ -397,14 +386,7 @@ static struct regmap *pdrm;
 
 static int stm32fx_end_primary_clk;
 
-/*
- * "Multiplier" device for APBx clocks.
- *
- * The APBx dividers are power-of-two dividers and, if *not* running in 1:1
- * mode, they also tap out the one of the low order state bits to run the
- * timers. ST datasheets represent this feature as a (conditional) clock
- * multiplier.
- */
+ 
 struct clk_apb_mul {
 	struct clk_hw hw;
 	u8 bit_idx;
@@ -444,11 +426,7 @@ static long clk_apb_mul_round_rate(struct clk_hw *hw, unsigned long rate,
 static int clk_apb_mul_set_rate(struct clk_hw *hw, unsigned long rate,
 				unsigned long parent_rate)
 {
-	/*
-	 * We must report success but we can do so unconditionally because
-	 * clk_apb_mul_round_rate returns values that ensure this call is a
-	 * nop.
-	 */
+	 
 
 	return 0;
 }
@@ -749,7 +727,7 @@ static struct clk_hw *clk_register_pll_div(const char *name,
 	struct clk_init_data init;
 	int ret;
 
-	/* allocate the divider */
+	 
 	pll_div = kzalloc(sizeof(*pll_div), GFP_KERNEL);
 	if (!pll_div)
 		return ERR_PTR(-ENOMEM);
@@ -760,7 +738,7 @@ static struct clk_hw *clk_register_pll_div(const char *name,
 	init.parent_names = (parent_name ? &parent_name : NULL);
 	init.num_parents = (parent_name ? 1 : 0);
 
-	/* struct clk_divider assignments */
+	 
 	pll_div->div.reg = reg;
 	pll_div->div.shift = shift;
 	pll_div->div.width = width;
@@ -771,7 +749,7 @@ static struct clk_hw *clk_register_pll_div(const char *name,
 
 	pll_div->hw_pll = pll_hw;
 
-	/* register the clock */
+	 
 	hw = &pll_div->div.hw;
 	ret = clk_hw_register(NULL, hw);
 	if (ret) {
@@ -840,10 +818,7 @@ static struct clk_hw *stm32f4_rcc_register_pll(const char *pllsrc,
 	return pll_hw;
 }
 
-/*
- * Converts the primary and secondary indices (as they appear in DT) to an
- * offset into our struct clock array.
- */
+ 
 static int stm32f4_rcc_lookup_clk_idx(u8 primary, u8 secondary)
 {
 	u64 table[MAX_GATE_MAP];
@@ -856,13 +831,13 @@ static int stm32f4_rcc_lookup_clk_idx(u8 primary, u8 secondary)
 
 	memcpy(table, stm32f4_gate_map, sizeof(table));
 
-	/* only bits set in table can be used as indices */
+	 
 	if (WARN_ON(secondary >= BITS_PER_BYTE * sizeof(table) ||
 		    0 == (table[BIT_ULL_WORD(secondary)] &
 			  BIT_ULL_MASK(secondary))))
 		return -EINVAL;
 
-	/* mask out bits above our current index */
+	 
 	table[BIT_ULL_WORD(secondary)] &=
 	    GENMASK_ULL(secondary % BITS_PER_LONG_LONG, 0);
 

@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// HiSilicon SPI Controller Driver for Kunpeng SoCs
-//
-// Copyright (c) 2021 HiSilicon Technologies Co., Ltd.
-// Author: Jay Fang <f.fangjian@huawei.com>
-//
-// This code is based on spi-dw-core.c.
+
+
+
+
+
+
+
+
 
 #include <linux/acpi.h>
 #include <linux/bitfield.h>
@@ -19,21 +19,21 @@
 #include <linux/slab.h>
 #include <linux/spi/spi.h>
 
-/* Register offsets */
-#define HISI_SPI_CSCR		0x00	/* cs control register */
-#define HISI_SPI_CR		0x04	/* spi common control register */
-#define HISI_SPI_ENR		0x08	/* spi enable register */
-#define HISI_SPI_FIFOC		0x0c	/* fifo level control register */
-#define HISI_SPI_IMR		0x10	/* interrupt mask register */
-#define HISI_SPI_DIN		0x14	/* data in register */
-#define HISI_SPI_DOUT		0x18	/* data out register */
-#define HISI_SPI_SR		0x1c	/* status register */
-#define HISI_SPI_RISR		0x20	/* raw interrupt status register */
-#define HISI_SPI_ISR		0x24	/* interrupt status register */
-#define HISI_SPI_ICR		0x28	/* interrupt clear register */
-#define HISI_SPI_VERSION	0xe0	/* version register */
+ 
+#define HISI_SPI_CSCR		0x00	 
+#define HISI_SPI_CR		0x04	 
+#define HISI_SPI_ENR		0x08	 
+#define HISI_SPI_FIFOC		0x0c	 
+#define HISI_SPI_IMR		0x10	 
+#define HISI_SPI_DIN		0x14	 
+#define HISI_SPI_DOUT		0x18	 
+#define HISI_SPI_SR		0x1c	 
+#define HISI_SPI_RISR		0x20	 
+#define HISI_SPI_ISR		0x24	 
+#define HISI_SPI_ICR		0x28	 
+#define HISI_SPI_VERSION	0xe0	 
 
-/* Bit fields in HISI_SPI_CR */
+ 
 #define CR_LOOP_MASK		GENMASK(1, 1)
 #define CR_CPOL_MASK		GENMASK(2, 2)
 #define CR_CPHA_MASK		GENMASK(3, 3)
@@ -42,34 +42,34 @@
 #define CR_BPW_MASK		GENMASK(24, 20)
 #define CR_SPD_MODE_MASK	GENMASK(25, 25)
 
-/* Bit fields in HISI_SPI_FIFOC */
+ 
 #define FIFOC_TX_MASK		GENMASK(5, 3)
 #define FIFOC_RX_MASK		GENMASK(11, 9)
 
-/* Bit fields in HISI_SPI_IMR, 4 bits */
-#define IMR_RXOF		BIT(0)		/* Receive Overflow */
-#define IMR_RXTO		BIT(1)		/* Receive Timeout */
-#define IMR_RX			BIT(2)		/* Receive */
-#define IMR_TX			BIT(3)		/* Transmit */
+ 
+#define IMR_RXOF		BIT(0)		 
+#define IMR_RXTO		BIT(1)		 
+#define IMR_RX			BIT(2)		 
+#define IMR_TX			BIT(3)		 
 #define IMR_MASK		(IMR_RXOF | IMR_RXTO | IMR_RX | IMR_TX)
 
-/* Bit fields in HISI_SPI_SR, 5 bits */
-#define SR_TXE			BIT(0)		/* Transmit FIFO empty */
-#define SR_TXNF			BIT(1)		/* Transmit FIFO not full */
-#define SR_RXNE			BIT(2)		/* Receive FIFO not empty */
-#define SR_RXF			BIT(3)		/* Receive FIFO full */
-#define SR_BUSY			BIT(4)		/* Busy Flag */
+ 
+#define SR_TXE			BIT(0)		 
+#define SR_TXNF			BIT(1)		 
+#define SR_RXNE			BIT(2)		 
+#define SR_RXF			BIT(3)		 
+#define SR_BUSY			BIT(4)		 
 
-/* Bit fields in HISI_SPI_ISR, 4 bits */
-#define ISR_RXOF		BIT(0)		/* Receive Overflow */
-#define ISR_RXTO		BIT(1)		/* Receive Timeout */
-#define ISR_RX			BIT(2)		/* Receive */
-#define ISR_TX			BIT(3)		/* Transmit */
+ 
+#define ISR_RXOF		BIT(0)		 
+#define ISR_RXTO		BIT(1)		 
+#define ISR_RX			BIT(2)		 
+#define ISR_TX			BIT(3)		 
 #define ISR_MASK		(ISR_RXOF | ISR_RXTO | ISR_RX | ISR_TX)
 
-/* Bit fields in HISI_SPI_ICR, 2 bits */
-#define ICR_RXOF		BIT(0)		/* Receive Overflow */
-#define ICR_RXTO		BIT(1)		/* Receive Timeout */
+ 
+#define ICR_RXOF		BIT(0)		 
+#define ICR_RXTO		BIT(1)		 
 #define ICR_MASK		(ICR_RXOF | ICR_RXTO)
 
 #define DIV_POST_MAX		0xFF
@@ -110,15 +110,15 @@ enum hisi_spi_frame_n_bytes {
 	HISI_SPI_N_BYTES_U32 = 4
 };
 
-/* Slave spi_dev related */
+ 
 struct hisi_chip_data {
 	u32 cr;
-	u32 speed_hz;	/* baud rate */
-	u16 clk_div;	/* baud rate divider */
+	u32 speed_hz;	 
+	u16 clk_div;	 
 
-	/* clk_div = (1 + div_post) * div_pre */
-	u8 div_post;	/* value from 0 to 255 */
-	u8 div_pre;	/* value from 2 to 254 (even only!) */
+	 
+	u8 div_post;	 
+	u8 div_pre;	 
 };
 
 struct hisi_spi {
@@ -126,14 +126,14 @@ struct hisi_spi {
 
 	void __iomem		*regs;
 	int			irq;
-	u32			fifo_len; /* depth of the FIFO buffer */
+	u32			fifo_len;  
 
-	/* Current message transfer state info */
+	 
 	const void		*tx;
 	unsigned int		tx_len;
 	void			*rx;
 	unsigned int		rx_len;
-	u8			n_bytes; /* current is a 1/2/4 bytes op */
+	u8			n_bytes;  
 
 	struct dentry *debugfs;
 	struct debugfs_regset32 regset;
@@ -205,7 +205,7 @@ static void hisi_spi_flush_fifo(struct hisi_spi *hs)
 	} while (hisi_spi_busy(hs) && limit--);
 }
 
-/* Disable the controller and all interrupts */
+ 
 static void hisi_spi_disable(struct hisi_spi *hs)
 {
 	writel(0, hs->regs + HISI_SPI_ENR);
@@ -230,7 +230,7 @@ static void hisi_spi_reader(struct hisi_spi *hs)
 
 	while (hisi_spi_rx_not_empty(hs) && max--) {
 		rxw = readl(hs->regs + HISI_SPI_DOUT);
-		/* Check the transfer's original "rx" is not null */
+		 
 		if (hs->rx) {
 			switch (hs->n_bytes) {
 			case HISI_SPI_N_BYTES_U8:
@@ -255,7 +255,7 @@ static void hisi_spi_writer(struct hisi_spi *hs)
 	u32 txw = 0;
 
 	while (hisi_spi_tx_not_full(hs) && max--) {
-		/* Check the transfer's original "tx" is not null */
+		 
 		if (hs->tx) {
 			switch (hs->n_bytes) {
 			case HISI_SPI_N_BYTES_U8:
@@ -296,7 +296,7 @@ static u32 hisi_calc_effective_speed(struct spi_controller *host,
 {
 	u32 effective_speed;
 
-	/* Note clock divider doesn't support odd numbers */
+	 
 	chip->clk_div = DIV_ROUND_UP(host->max_speed_hz, speed_hz) + 1;
 	chip->clk_div &= 0xfffe;
 	if (chip->clk_div > CLK_DIV_MAX)
@@ -326,7 +326,7 @@ static void hisi_spi_hw_init(struct hisi_spi *hs)
 {
 	hisi_spi_disable(hs);
 
-	/* FIFO default config */
+	 
 	writel(FIELD_PREP(FIFOC_TX_MASK, HISI_SPI_TX_64_OR_LESS) |
 		FIELD_PREP(FIFOC_RX_MASK, HISI_SPI_RX_16),
 		hs->regs + HISI_SPI_FIFOC);
@@ -346,22 +346,19 @@ static irqreturn_t hisi_spi_irq(int irq, void *dev_id)
 	if (!host->cur_msg)
 		return IRQ_HANDLED;
 
-	/* Error handling */
+	 
 	if (irq_status & ISR_RXOF) {
 		dev_err(hs->dev, "interrupt_transfer: fifo overflow\n");
 		host->cur_msg->status = -EIO;
 		goto finalize_transfer;
 	}
 
-	/*
-	 * Read data from the Rx FIFO every time. If there is
-	 * nothing left to receive, finalize the transfer.
-	 */
+	 
 	hisi_spi_reader(hs);
 	if (!hs->rx_len)
 		goto finalize_transfer;
 
-	/* Send data out when Tx FIFO IRQ triggered */
+	 
 	if (irq_status & ISR_TX)
 		hisi_spi_writer(hs);
 
@@ -380,7 +377,7 @@ static int hisi_spi_transfer_one(struct spi_controller *host,
 	struct hisi_chip_data *chip = spi_get_ctldata(spi);
 	u32 cr = chip->cr;
 
-	/* Update per transfer options for speed and bpw */
+	 
 	transfer->effective_speed_hz =
 		hisi_calc_effective_speed(host, chip, transfer->speed_hz);
 	cr |= FIELD_PREP(CR_DIV_PRE_MASK, chip->div_pre);
@@ -396,13 +393,10 @@ static int hisi_spi_transfer_one(struct spi_controller *host,
 	hs->rx = transfer->rx_buf;
 	hs->rx_len = hs->tx_len;
 
-	/*
-	 * Ensure that the transfer data above has been updated
-	 * before the interrupt to start.
-	 */
+	 
 	smp_mb();
 
-	/* Enable all interrupts and the controller */
+	 
 	writel(~(u32)IMR_MASK, hs->regs + HISI_SPI_IMR);
 	writel(1, hs->regs + HISI_SPI_ENR);
 
@@ -416,10 +410,7 @@ static void hisi_spi_handle_err(struct spi_controller *host,
 
 	hisi_spi_disable(hs);
 
-	/*
-	 * Wait for interrupt handler that is
-	 * already in timeout to complete.
-	 */
+	 
 	msleep(HISI_SPI_WAIT_TIMEOUT_MS);
 }
 
@@ -427,7 +418,7 @@ static int hisi_spi_setup(struct spi_device *spi)
 {
 	struct hisi_chip_data *chip;
 
-	/* Only alloc on first setup */
+	 
 	chip = spi_get_ctldata(spi);
 	if (!chip) {
 		chip = kzalloc(sizeof(*chip), GFP_KERNEL);
@@ -474,7 +465,7 @@ static int hisi_spi_probe(struct platform_device *pdev)
 	if (IS_ERR(hs->regs))
 		return PTR_ERR(hs->regs);
 
-	/* Specify maximum SPI clocking speed (host only) by firmware */
+	 
 	ret = device_property_read_u32(dev, "spi-max-frequency",
 					&host->max_speed_hz);
 	if (ret) {

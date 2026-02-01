@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define _GNU_SOURCE
 #include <errno.h>
@@ -20,10 +20,7 @@
 #include "pidfd.h"
 #include "../kselftest_harness.h"
 
-/*
- * UNKNOWN_FD is an fd number that should never exist in the child, as it is
- * used to check the negative case.
- */
+ 
 #define UNKNOWN_FD 111
 #define UID_NOBODY 65535
 
@@ -38,10 +35,7 @@ static int __child(int sk, int memfd)
 	int ret;
 	char buf;
 
-	/*
-	 * Ensure we don't leave around a bunch of orphaned children if our
-	 * tests fail.
-	 */
+	 
 	ret = prctl(PR_SET_PDEATHSIG, SIGKILL);
 	if (ret) {
 		fprintf(stderr, "%s: Child could not set DEATHSIG\n",
@@ -56,15 +50,7 @@ static int __child(int sk, int memfd)
 		return -1;
 	}
 
-	/*
-	 * The fixture setup is completed at this point. The tests will run.
-	 *
-	 * This blocking recv enables the parent to message the child.
-	 * Either we will read 'P' off of the sk, indicating that we need
-	 * to disable ptrace, or we will read a 0, indicating that the other
-	 * side has closed the sk. This occurs during fixture teardown time,
-	 * indicating that the child should exit.
-	 */
+	 
 	while ((ret = recv(sk, &buf, sizeof(buf), 0)) > 0) {
 		if (buf == 'P') {
 			ret = prctl(PR_SET_DUMPABLE, 0);
@@ -115,19 +101,13 @@ static int child(int sk)
 
 FIXTURE(child)
 {
-	/*
-	 * remote_fd is the number of the FD which we are trying to retrieve
-	 * from the child.
-	 */
+	 
 	int remote_fd;
-	/* pid points to the child which we are fetching FDs from */
+	 
 	pid_t pid;
-	/* pidfd is the pidfd of the child */
+	 
 	int pidfd;
-	/*
-	 * sk is our side of the socketpair used to communicate with the child.
-	 * When it is closed, the child will exit.
-	 */
+	 
 	int sk;
 };
 
@@ -155,10 +135,7 @@ FIXTURE_SETUP(child)
 	self->pidfd = sys_pidfd_open(self->pid, 0);
 	ASSERT_GE(self->pidfd, 0);
 
-	/*
-	 * Wait for the child to complete setup. It'll send the remote memfd's
-	 * number when ready.
-	 */
+	 
 	ret = recv(sk_pair[0], &self->remote_fd, sizeof(self->remote_fd), 0);
 	ASSERT_EQ(sizeof(self->remote_fd), ret);
 }
@@ -176,12 +153,7 @@ TEST_F(child, disable_ptrace)
 	int uid, fd;
 	char c;
 
-	/*
-	 * Turn into nobody if we're root, to avoid CAP_SYS_PTRACE
-	 *
-	 * The tests should run in their own process, so even this test fails,
-	 * it shouldn't result in subsequent tests failing.
-	 */
+	 
 	uid = getuid();
 	if (uid == 0)
 		ASSERT_EQ(0, seteuid(UID_NOBODY));

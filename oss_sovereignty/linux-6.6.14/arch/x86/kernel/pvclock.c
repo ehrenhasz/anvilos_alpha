@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*  paravirtual clock -- common code used by kvm/xen
 
-*/
+ 
 
 #include <linux/clocksource.h>
 #include <linux/kernel.h>
@@ -87,20 +85,7 @@ u64 __pvclock_clocksource_read(struct pvclock_vcpu_time_info *src, bool dowd)
 		(flags & PVCLOCK_TSC_STABLE_BIT))
 		return ret;
 
-	/*
-	 * Assumption here is that last_value, a global accumulator, always goes
-	 * forward. If we are less than that, we should not be much smaller.
-	 * We assume there is an error margin we're inside, and then the correction
-	 * does not sacrifice accuracy.
-	 *
-	 * For reads: global may have changed between test and return,
-	 * but this means someone else updated poked the clock at a later time.
-	 * We just need to make sure we are not seeing a backwards event.
-	 *
-	 * For updates: last_value = ret is not enough, since two vcpus could be
-	 * updating at the same time, and one of them could be slightly behind,
-	 * making the assumption that last_value always go forward fail to hold.
-	 */
+	 
 	last = raw_atomic64_read(&last_value);
 	do {
 		if (ret <= last)
@@ -128,23 +113,17 @@ void pvclock_read_wallclock(struct pvclock_wall_clock *wall_clock,
 	u64 delta;
 	struct timespec64 now;
 
-	/* get wallclock at system boot */
+	 
 	do {
 		version = wall_clock->version;
-		rmb();		/* fetch version before time */
-		/*
-		 * Note: wall_clock->sec is a u32 value, so it can
-		 * only store dates between 1970 and 2106. To allow
-		 * times beyond that, we need to create a new hypercall
-		 * interface with an extended pvclock_wall_clock structure
-		 * like ARM has.
-		 */
+		rmb();		 
+		 
 		now.tv_sec  = wall_clock->sec;
 		now.tv_nsec = wall_clock->nsec;
-		rmb();		/* fetch time before checking version */
+		rmb();		 
 	} while ((wall_clock->version & 1) || (version != wall_clock->version));
 
-	delta = pvclock_clocksource_read(vcpu_time);	/* time since system boot */
+	delta = pvclock_clocksource_read(vcpu_time);	 
 	delta += now.tv_sec * NSEC_PER_SEC + now.tv_nsec;
 
 	now.tv_nsec = do_div(delta, NSEC_PER_SEC);

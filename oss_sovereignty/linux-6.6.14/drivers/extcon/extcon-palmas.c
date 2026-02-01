@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Palmas USB transceiver driver
- *
- * Copyright (C) 2013 Texas Instruments Incorporated - https://www.ti.com
- * Author: Graeme Gregory <gg@slimlogic.co.uk>
- * Author: Kishon Vijay Abraham I <kishon@ti.com>
- * Based on twl6030_usb.c
- * Author: Hema HK <hemahk@ti.com>
- */
+
+ 
 
 #include <linux/devm-helpers.h>
 #include <linux/module.h>
@@ -21,7 +13,7 @@
 #include <linux/gpio/consumer.h>
 #include <linux/workqueue.h>
 
-#define USB_GPIO_DEBOUNCE_MS	20	/* ms */
+#define USB_GPIO_DEBOUNCE_MS	20	 
 
 static const unsigned int palmas_extcon_cable[] = {
 	EXTCON_USB,
@@ -164,7 +156,7 @@ static void palmas_enable_irq(struct palmas_usb *palmas_usb)
 	if (palmas_usb->enable_vbus_detection)
 		palmas_vbus_irq_handler(palmas_usb->vbus_irq, palmas_usb);
 
-	/* cold plug for host mode needs this delay */
+	 
 	if (palmas_usb->enable_id_detection) {
 		msleep(30);
 		palmas_id_irq_handler(palmas_usb->id_irq, palmas_usb);
@@ -320,7 +312,7 @@ static int palmas_usb_probe(struct platform_device *pdev)
 			return status;
 		}
 	} else if (palmas_usb->enable_gpio_vbus_detection) {
-		/* remux GPIO_1 as VBUSDET */
+		 
 		status = palmas_update_bits(palmas,
 			PALMAS_PU_PD_OD_BASE,
 			PALMAS_PRIMARY_SECONDARY_PAD1,
@@ -355,7 +347,7 @@ static int palmas_usb_probe(struct platform_device *pdev)
 	}
 
 	palmas_enable_irq(palmas_usb);
-	/* perform initial detection */
+	 
 	if (palmas_usb->enable_gpio_vbus_detection)
 		palmas_vbus_irq_handler(palmas_usb->gpio_vbus_irq, palmas_usb);
 	palmas_gpio_id_detect(&palmas_usb->wq_detectid.work);
@@ -396,7 +388,7 @@ static int palmas_usb_resume(struct device *dev)
 			disable_irq_wake(palmas_usb->gpio_id_irq);
 	}
 
-	/* check if GPIO states changed while suspend/resume */
+	 
 	if (palmas_usb->enable_gpio_vbus_detection)
 		palmas_vbus_irq_handler(palmas_usb->gpio_vbus_irq, palmas_usb);
 	palmas_gpio_id_detect(&palmas_usb->wq_detectid.work);
@@ -412,7 +404,7 @@ static const struct of_device_id of_palmas_match_tbl[] = {
 	{ .compatible = "ti,palmas-usb-vid", },
 	{ .compatible = "ti,twl6035-usb", },
 	{ .compatible = "ti,twl6035-usb-vid", },
-	{ /* end */ }
+	{   }
 };
 
 static struct platform_driver palmas_usb_driver = {

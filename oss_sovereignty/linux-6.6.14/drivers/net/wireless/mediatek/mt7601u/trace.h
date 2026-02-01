@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014 Felix Fietkau <nbd@openwrt.org>
- * Copyright (C) 2015 Jakub Kicinski <kubakici@wp.pl>
- */
+ 
+ 
 
 #if !defined(__MT7601U_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __MT7601U_TRACE_H

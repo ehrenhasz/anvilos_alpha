@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
- /*
-    tea6415c - i2c-driver for the tea6415c by SGS Thomson
 
-    Copyright (C) 1998-2003 Michael Hunold <michael@mihu.de>
-    Copyright (C) 2008 Hans Verkuil <hverkuil@xs4all.nl>
-
-    The tea6415c is a bus controlled video-matrix-switch
-    with 8 inputs and 6 outputs.
-    It is cascadable, i.e. it can be found at the addresses
-    0x86 and 0x06 on the i2c-bus.
-
-    For detailed information download the specifications directly
-    from SGS Thomson at http://www.st.com
-
-  */
+  
 
 
 #include <linux/module.h>
@@ -33,7 +19,7 @@ module_param(debug, int, 0644);
 MODULE_PARM_DESC(debug, "Debug level (0-1)");
 
 
-/* makes a connection between the input-pin 'i' and the output-pin 'o' */
+ 
 static int tea6415c_s_routing(struct v4l2_subdev *sd,
 			      u32 i, u32 o, u32 config)
 {
@@ -43,12 +29,12 @@ static int tea6415c_s_routing(struct v4l2_subdev *sd,
 
 	v4l2_dbg(1, debug, sd, "i=%d, o=%d\n", i, o);
 
-	/* check if the pins are valid */
+	 
 	if (0 == ((1 == i ||  3 == i ||  5 == i ||  6 == i ||  8 == i || 10 == i || 20 == i || 11 == i)
 	      && (18 == o || 17 == o || 16 == o || 15 == o || 14 == o || 13 == o)))
 		return -EINVAL;
 
-	/* to understand this, have a look at the tea6415c-specs (p.5) */
+	 
 	switch (o) {
 	case 18:
 		byte = 0x00;
@@ -106,7 +92,7 @@ static int tea6415c_s_routing(struct v4l2_subdev *sd,
 	return ret;
 }
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static const struct v4l2_subdev_video_ops tea6415c_video_ops = {
 	.s_routing = tea6415c_s_routing,
@@ -120,7 +106,7 @@ static int tea6415c_probe(struct i2c_client *client)
 {
 	struct v4l2_subdev *sd;
 
-	/* let's see whether this adapter can support what we need */
+	 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WRITE_BYTE))
 		return -EIO;
 

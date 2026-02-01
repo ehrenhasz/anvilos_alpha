@@ -1,15 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tascam-midi.c - a part of driver for TASCAM FireWire series
- *
- * Copyright (c) 2015 Takashi Sakamoto
- */
+
+ 
 
 #include "tascam.h"
 
 static int midi_capture_open(struct snd_rawmidi_substream *substream)
 {
-	/* Do nothing. */
+	 
 	return 0;
 }
 
@@ -24,7 +20,7 @@ static int midi_playback_open(struct snd_rawmidi_substream *substream)
 
 static int midi_capture_close(struct snd_rawmidi_substream *substream)
 {
-	/* Do nothing. */
+	 
 	return 0;
 }
 
@@ -103,11 +99,11 @@ int snd_tscm_create_midi_devices(struct snd_tscm *tscm)
 			    &capture_ops);
 	stream = &rmidi->streams[SNDRV_RAWMIDI_STREAM_INPUT];
 
-	/* Set port names for MIDI input. */
+	 
 	list_for_each_entry(subs, &stream->substreams, list) {
-		/* TODO: support virtual MIDI ports. */
+		 
 		if (subs->number < tscm->spec->midi_capture_ports) {
-			/* Hardware MIDI ports. */
+			 
 			scnprintf(subs->name, sizeof(subs->name),
 				  "%s MIDI %d",
 				  tscm->card->shortname, subs->number + 1);
@@ -119,10 +115,10 @@ int snd_tscm_create_midi_devices(struct snd_tscm *tscm)
 			    &playback_ops);
 	stream = &rmidi->streams[SNDRV_RAWMIDI_STREAM_OUTPUT];
 
-	/* Set port names for MIDI ourput. */
+	 
 	list_for_each_entry(subs, &stream->substreams, list) {
 		if (subs->number < tscm->spec->midi_playback_ports) {
-			/* Hardware MIDI ports only. */
+			 
 			scnprintf(subs->name, sizeof(subs->name),
 				  "%s MIDI %d",
 				  tscm->card->shortname, subs->number + 1);

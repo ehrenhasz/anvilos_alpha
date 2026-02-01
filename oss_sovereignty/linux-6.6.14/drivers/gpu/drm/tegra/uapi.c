@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2020 NVIDIA Corporation */
+
+ 
 
 #include <linux/host1x.h>
 #include <linux/iommu.h>
@@ -106,7 +106,7 @@ int tegra_drm_ioctl_channel_open(struct drm_device *drm, void *data, struct drm_
 		}
 	}
 
-	/* Only allocate context if the engine supports context isolation. */
+	 
 	if (device_iommu_mapped(client->base.dev) && client->ops->can_use_memory_ctx) {
 		bool supported;
 
@@ -123,10 +123,7 @@ int tegra_drm_ioctl_channel_open(struct drm_device *drm, void *data, struct drm_
 				err = PTR_ERR(context->memory_context);
 				goto put_channel;
 			} else {
-				/*
-				 * OK, HW does not support contexts or contexts
-				 * are disabled.
-				 */
+				 
 				context->memory_context = NULL;
 			}
 		}

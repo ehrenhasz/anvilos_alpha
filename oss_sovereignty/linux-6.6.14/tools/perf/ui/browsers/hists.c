@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <dirent.h>
 #include <errno.h>
 #include <inttypes.h>
@@ -115,10 +115,7 @@ static void hist_browser__update_rows(struct hist_browser *hb)
 
 	browser->extra_title_lines = hpp_list->nr_header_lines;
 	browser->rows -= browser->extra_title_lines;
-	/*
-	 * Verify if we were at the last line and that line isn't
-	 * visible because we now show the header line(s).
-	 */
+	 
 	index_row = browser->index - browser->top_idx;
 	if (index_row >= browser->rows)
 		browser->index -= index_row - browser->rows + 1;
@@ -128,23 +125,15 @@ static void hist_browser__refresh_dimensions(struct ui_browser *browser)
 {
 	struct hist_browser *hb = container_of(browser, struct hist_browser, b);
 
-	/* 3 == +/- toggle symbol before actual hist_entry rendering */
+	 
 	browser->width = 3 + (hists__sort_list_width(hb->hists) + sizeof("[k]"));
-	/*
- 	 * FIXME: Just keeping existing behaviour, but this really should be
- 	 *	  before updating browser->width, as it will invalidate the
- 	 *	  calculation above. Fix this and the fallout in another
- 	 *	  changeset.
- 	 */
+	 
 	ui_browser__refresh_dimensions(browser);
 }
 
 static void hist_browser__reset(struct hist_browser *browser)
 {
-	/*
-	 * The hists__remove_entry_filter() already folds non-filtered
-	 * entries so we can assume it has 0 callchain rows.
-	 */
+	 
 	browser->nr_callchain_rows = 0;
 
 	hist_browser__update_nr_entries(browser);
@@ -181,18 +170,18 @@ static int callchain_node__count_rows_rb_tree(struct callchain_node *node)
 	for (nd = rb_first(&node->rb_root); nd; nd = rb_next(nd)) {
 		struct callchain_node *child = rb_entry(nd, struct callchain_node, rb_node);
 		struct callchain_list *chain;
-		char folded_sign = ' '; /* No children */
+		char folded_sign = ' ';  
 
 		list_for_each_entry(chain, &child->val, list) {
 			++n;
 
-			/* We need this because we may not have children */
+			 
 			folded_sign = callchain_list__folded(chain);
 			if (folded_sign == '+')
 				break;
 		}
 
-		if (folded_sign == '-') /* Have children and they're unfolded */
+		if (folded_sign == '-')  
 			n += callchain_node__count_rows_rb_tree(child);
 	}
 
@@ -207,7 +196,7 @@ static int callchain_node__count_flat_rows(struct callchain_node *node)
 
 	list_for_each_entry(chain, &node->parent_val, list) {
 		if (!folded_sign) {
-			/* only check first chain list entry */
+			 
 			folded_sign = callchain_list__folded(chain);
 			if (folded_sign == '+')
 				return 1;
@@ -217,7 +206,7 @@ static int callchain_node__count_flat_rows(struct callchain_node *node)
 
 	list_for_each_entry(chain, &node->val, list) {
 		if (!folded_sign) {
-			/* node->parent_val list might be empty */
+			 
 			folded_sign = callchain_list__folded(chain);
 			if (folded_sign == '+')
 				return 1;
@@ -432,7 +421,7 @@ static char *hist_browser__selection_sym_name(struct hist_browser *browser, char
 
 	if (ms == &he->ms) {
 	       hist_entry__sym_snprintf(he, bf, size, 0);
-	       return bf + 4; // skip the level, e.g. '[k] '
+	       return bf + 4; 
 	}
 
 	callchain_entry = container_of(ms, struct callchain_list, ms);
@@ -475,7 +464,7 @@ static bool hist_browser__toggle_fold(struct hist_browser *browser)
 			else
 				he->nr_rows = hierarchy_count_rows(browser, he, false);
 
-			/* account grand children */
+			 
 			if (symbol_conf.report_hierarchy)
 				browser->b.nr_entries += child_rows - he->nr_rows;
 
@@ -503,7 +492,7 @@ static bool hist_browser__toggle_fold(struct hist_browser *browser)
 		return true;
 	}
 
-	/* If it doesn't have children, no toggling performed */
+	 
 	return false;
 }
 
@@ -609,7 +598,7 @@ __hist_browser__set_folding(struct hist_browser *browser, bool unfold)
 	while (nd) {
 		he = rb_entry(nd, struct hist_entry, rb_node);
 
-		/* set folding state even if it's currently folded */
+		 
 		nd = __rb_hierarchy_next(nd, HMD_FORCE_CHILD);
 
 		hist_entry__set_folding(he, browser, unfold);
@@ -638,7 +627,7 @@ static void hist_browser__set_folding(struct hist_browser *browser, bool unfold)
 	__hist_browser__set_folding(browser, unfold);
 
 	browser->b.nr_entries = hist_browser__nr_entries(browser);
-	/* Go to the start, we may be way after valid entries after a collapse */
+	 
 	ui_browser__reset_index(&browser->b);
 }
 
@@ -698,7 +687,7 @@ static int hist_browser__handle_hotkey(struct hist_browser *browser, bool warn_l
 		ui_browser__show_title(&browser->b, title);
 		break;
 	}
-	case 'D': { /* Debug */
+	case 'D': {  
 		struct hist_entry *h = rb_entry(browser->b.top, struct hist_entry, rb_node);
 		static int seq;
 
@@ -710,19 +699,19 @@ static int hist_browser__handle_hotkey(struct hist_browser *browser, bool warn_l
 	}
 		break;
 	case 'C':
-		/* Collapse the whole world. */
+		 
 		hist_browser__set_folding(browser, false);
 		break;
 	case 'c':
-		/* Collapse the selected entry. */
+		 
 		hist_browser__set_folding_selected(browser, false);
 		break;
 	case 'E':
-		/* Expand the whole world. */
+		 
 		hist_browser__set_folding(browser, true);
 		break;
 	case 'e':
-		/* Toggle expand/collapse the selected entry. */
+		 
 		hist_browser__toggle_fold(browser);
 		break;
 	case 'H':
@@ -732,7 +721,7 @@ static int hist_browser__handle_hotkey(struct hist_browser *browser, bool warn_l
 	case '+':
 		if (hist_browser__toggle_fold(browser))
 			break;
-		/* fall thru */
+		 
 	default:
 		return -1;
 	}
@@ -770,11 +759,11 @@ out:
 }
 
 struct callchain_print_arg {
-	/* for hists browser */
+	 
 	off_t	row_offset;
 	bool	is_current_entry;
 
-	/* for file dump */
+	 
 	FILE	*fp;
 	int	printed;
 };
@@ -1359,10 +1348,7 @@ static int hist_browser__show_entry(struct hist_browser *browser,
 			if (fmt->color) {
 				int ret = fmt->color(fmt, &hpp, entry);
 				hist_entry__snprintf_alignment(entry, &hpp, fmt, ret);
-				/*
-				 * fmt->color() already used ui_browser to
-				 * print the non alignment bits, skip it (+ret):
-				 */
+				 
 				ui_browser__printf(&browser->b, "%s", s + ret);
 			} else {
 				hist_entry__snprintf_alignment(entry, &hpp, fmt, fmt->entry(fmt, &hpp, entry));
@@ -1371,7 +1357,7 @@ static int hist_browser__show_entry(struct hist_browser *browser,
 			width -= hpp.buf - s;
 		}
 
-		/* The scroll bar isn't being used */
+		 
 		if (!browser->b.navkeypressed)
 			width += 1;
 
@@ -1442,7 +1428,7 @@ static int hist_browser__show_hierarchy_entry(struct hist_browser *browser,
 	ui_browser__write_nstring(&browser->b, "", level * HIERARCHY_INDENT);
 	width -= level * HIERARCHY_INDENT;
 
-	/* the first hpp_list_node is for overhead columns */
+	 
 	fmt_node = list_first_entry(&entry->hists->hpp_formats,
 				    struct perf_hpp_list_node, list);
 	perf_hpp_list__for_each_format(&fmt_node->hpp, fmt) {
@@ -1477,10 +1463,7 @@ static int hist_browser__show_hierarchy_entry(struct hist_browser *browser,
 		if (fmt->color) {
 			int ret = fmt->color(fmt, &hpp, entry);
 			hist_entry__snprintf_alignment(entry, &hpp, fmt, ret);
-			/*
-			 * fmt->color() already used ui_browser to
-			 * print the non alignment bits, skip it (+ret):
-			 */
+			 
 			ui_browser__printf(&browser->b, "%s", s + ret);
 		} else {
 			int ret = fmt->entry(fmt, &hpp, entry);
@@ -1521,11 +1504,7 @@ static int hist_browser__show_hierarchy_entry(struct hist_browser *browser,
 
 			width -= 2;
 
-			/*
-			 * No need to call hist_entry__snprintf_alignment()
-			 * since this fmt is always the last column in the
-			 * hierarchy mode.
-			 */
+			 
 			if (fmt->color) {
 				width -= fmt->color(fmt, &hpp, entry);
 			} else {
@@ -1540,7 +1519,7 @@ static int hist_browser__show_hierarchy_entry(struct hist_browser *browser,
 		}
 	}
 
-	/* The scroll bar isn't being used */
+	 
 	if (!browser->b.navkeypressed)
 		width += 1;
 
@@ -1591,7 +1570,7 @@ static int hist_browser__show_no_entry(struct hist_browser *browser,
 	ui_browser__write_nstring(&browser->b, "", level * HIERARCHY_INDENT);
 	width -= level * HIERARCHY_INDENT;
 
-	/* the first hpp_list_node is for overhead columns */
+	 
 	fmt_node = list_first_entry(&browser->hists->hpp_formats,
 				    struct perf_hpp_list_node, list);
 	perf_hpp_list__for_each_format(&fmt_node->hpp, fmt) {
@@ -1602,11 +1581,11 @@ static int hist_browser__show_no_entry(struct hist_browser *browser,
 		ret = fmt->width(fmt, NULL, browser->hists);
 
 		if (first) {
-			/* for folded sign */
+			 
 			first = false;
 			ret++;
 		} else {
-			/* space between columns */
+			 
 			ret += 2;
 		}
 
@@ -1625,7 +1604,7 @@ static int hist_browser__show_no_entry(struct hist_browser *browser,
 		width -= ret + 2;
 	}
 
-	/* The scroll bar isn't being used */
+	 
 	if (!browser->b.navkeypressed)
 		width += 1;
 
@@ -1697,7 +1676,7 @@ static int hists_browser__scnprintf_hierarchy_headers(struct hist_browser *brows
 		return ret;
 
 	first_node = true;
-	/* the first hpp_list_node is for overhead columns */
+	 
 	fmt_node = list_first_entry(&hists->hpp_formats,
 				    struct perf_hpp_list_node, list);
 	perf_hpp_list__for_each_format(&fmt_node->hpp, fmt) {
@@ -1829,7 +1808,7 @@ static unsigned int hist_browser__refresh(struct ui_browser *browser)
 		float percent;
 
 		if (h->filtered) {
-			/* let it move to sibling */
+			 
 			h->unfolded = false;
 			continue;
 		}
@@ -1873,10 +1852,7 @@ static struct rb_node *hists__filter_entries(struct rb_node *nd,
 		if (!h->filtered && percent >= min_pcnt)
 			return nd;
 
-		/*
-		 * If it's filtered, its all children also were filtered.
-		 * So move to sibling node.
-		 */
+		 
 		if (rb_next(nd))
 			nd = rb_next(nd);
 		else
@@ -1934,26 +1910,11 @@ static void ui_browser__hists_seek(struct ui_browser *browser,
 		return;
 	}
 
-	/*
-	 * Moves not relative to the first visible entry invalidates its
-	 * row_offset:
-	 */
+	 
 	h = rb_entry(browser->top, struct hist_entry, rb_node);
 	h->row_offset = 0;
 
-	/*
-	 * Here we have to check if nd is expanded (+), if it is we can't go
-	 * the next top level hist_entry, instead we must compute an offset of
-	 * what _not_ to show and not change the first visible entry.
-	 *
-	 * This offset increments when we are going from top to bottom and
-	 * decreases when we're going from bottom to top.
-	 *
-	 * As we don't have backpointers to the top level in the callchains
-	 * structure, we need to always print the whole hist_entry callchain,
-	 * skipping the first ones that are before the first visible entry
-	 * and stop when we printed enough lines to fill the screen.
-	 */
+	 
 do_offset:
 	if (!nd)
 		return;
@@ -2014,11 +1975,7 @@ do_offset:
 			++offset;
 			browser->top = nd;
 			if (offset == 0) {
-				/*
-				 * Last unfiltered hist_entry, check if it is
-				 * unfolded, if it is then we should have
-				 * row_offset at its last entry.
-				 */
+				 
 				h = rb_entry(nd, struct hist_entry, rb_node);
 				if (h->unfolded && h->leaf)
 					h->row_offset = h->nr_rows;
@@ -2111,7 +2068,7 @@ static int hist_browser__fprintf_hierarchy_entry(struct hist_browser *browser,
 	folded_sign = hist_entry__folded(he);
 	printed += fprintf(fp, "%c", folded_sign);
 
-	/* the first hpp_list_node is for overhead columns */
+	 
 	fmt_node = list_first_entry(&he->hists->hpp_formats,
 				    struct perf_hpp_list_node, list);
 	perf_hpp_list__for_each_format(&fmt_node->hpp, fmt) {
@@ -2180,9 +2137,7 @@ static int hist_browser__dump(struct hist_browser *browser)
 		scnprintf(filename, sizeof(filename), "perf.hist.%d", browser->print_seq);
 		if (access(filename, F_OK))
 			break;
-		/*
- 		 * XXX: Just an arbitrary lazy upper limit
- 		 */
+		 
 		if (++browser->print_seq == 8192) {
 			ui_helpline__fpush("Too many perf.hist.N files, nothing written!");
 			return -1;
@@ -2221,13 +2176,13 @@ void hist_browser__init(struct hist_browser *browser,
 	if (symbol_conf.report_hierarchy) {
 		struct perf_hpp_list_node *fmt_node;
 
-		/* count overhead columns (in the first node) */
+		 
 		fmt_node = list_first_entry(&hists->hpp_formats,
 					    struct perf_hpp_list_node, list);
 		perf_hpp_list__for_each_format(&fmt_node->hpp, fmt)
 			++browser->b.columns;
 
-		/* add a single column for whole hierarchy sort keys*/
+		 
 		++browser->b.columns;
 	} else {
 		hists__for_each_format(hists, fmt)
@@ -2284,7 +2239,7 @@ static struct res_sample *hist_browser__selected_res_sample(struct hist_browser 
 	return browser->he_selection ? browser->he_selection->res_samples : NULL;
 }
 
-/* Check whether the browser is for 'top' or 'report' */
+ 
 static inline bool is_report_browser(void *timer)
 {
 	return timer == NULL;
@@ -2324,11 +2279,7 @@ static inline void free_popup_options(char **options, int n)
 		zfree(&options[i]);
 }
 
-/*
- * Only runtime switching of perf data file will make "input_name" point
- * to a malloced buffer. So add "is_input_name_malloced" flag to decide
- * whether we need to call free() for current "input_name" during the switch.
- */
+ 
 static bool is_input_name_malloced = false;
 
 static int switch_data_file(void)
@@ -2448,10 +2399,7 @@ do_annotate(struct hist_browser *browser, struct popup_action *act)
 	err = map_symbol__tui_annotate(&act->ms, evsel, browser->hbt,
 				       browser->annotation_opts);
 	he = hist_browser__selected_entry(browser);
-	/*
-	 * offer option to annotate the other branch source or target
-	 * (if they exists) when returning from annotate
-	 */
+	 
 	if ((err == 'q' || err == CTRL('c')) && he->branch_info)
 		return 1;
 
@@ -2694,7 +2642,7 @@ do_run_script(struct hist_browser *browser __maybe_unused,
 		unsigned long starttime = act->time;
 		unsigned long endtime = act->time + symbol_conf.time_quantum;
 
-		if (starttime == endtime) { /* Display 1ms as fallback */
+		if (starttime == endtime) {  
 			starttime -= 1*NSEC_PER_MSEC;
 			endtime += 1*NSEC_PER_MSEC;
 		}
@@ -2935,7 +2883,7 @@ static void hist_browser__update_percent_limit(struct hist_browser *hb,
 next:
 		nd = __rb_hierarchy_next(nd, HMD_FORCE_CHILD);
 
-		/* force to re-evaluate folding state of callchains */
+		 
 		he->init_have_children = false;
 		hist_entry__set_folding(he, hb, false);
 	}
@@ -2980,7 +2928,7 @@ static int evsel__hists_browse(struct evsel *evsel, int nr_events, const char *h
 	"m             Display context menu\n"				\
 	"S             Zoom into current Processor Socket\n"		\
 
-	/* help messages are sorted by lexical order of the hotkey */
+	 
 	static const char report_help[] = HIST_BROWSER_HELP_COMMON
 	"i             Show header information\n"
 	"P             Print histograms to perf.hist.N\n"
@@ -3001,7 +2949,7 @@ static int evsel__hists_browse(struct evsel *evsel, int nr_events, const char *h
 	if (browser == NULL)
 		return -1;
 
-	/* reset abort key so that it can get Ctrl-C as a key */
+	 
 	SLang_reset_tty();
 	SLang_init_tty(0, 0, 0);
 
@@ -3030,8 +2978,8 @@ static int evsel__hists_browse(struct evsel *evsel, int nr_events, const char *h
 		int choice;
 		int socked_id = -1;
 
-		key = 0; // reset key
-do_hotkey:		 // key came straight from options ui__popup_menu()
+		key = 0; 
+do_hotkey:		 
 		choice = nr_options = 0;
 		key = hist_browser__run(browser, helpline, warn_lost_event, key);
 
@@ -3045,10 +2993,7 @@ do_hotkey:		 // key came straight from options ui__popup_menu()
 		case K_UNTAB:
 			if (nr_events == 1)
 				continue;
-			/*
-			 * Exit the browser, let hists__browser_tree
-			 * go to the next or previous
-			 */
+			 
 			goto out_free_stack;
 		case '0' ... '9':
 			if (!symbol_conf.event_group ||
@@ -3176,7 +3121,7 @@ do_hotkey:		 // key came straight from options ui__popup_menu()
 			}
 			continue;
 		case 'i':
-			/* env->arch is NULL for live-mode (i.e. perf top) */
+			 
 			if (env->arch)
 				tui__header_window(env);
 			continue;
@@ -3217,16 +3162,14 @@ do_hotkey:		 // key came straight from options ui__popup_menu()
 		case K_ENTER:
 		case K_RIGHT:
 		case 'm':
-			/* menu */
+			 
 			break;
 		case K_ESC:
 		case K_LEFT: {
 			const void *top;
 
 			if (pstack__empty(browser->pstack)) {
-				/*
-				 * Go back to the perf_evsel_menu__run or other user
-				 */
+				 
 				if (left_exits)
 					goto out_free_stack;
 
@@ -3240,11 +3183,7 @@ do_hotkey:		 // key came straight from options ui__popup_menu()
 			actions->ms.map = map;
 			top = pstack__peek(browser->pstack);
 			if (top == &browser->hists->dso_filter) {
-				/*
-				 * No need to set actions->dso here since
-				 * it's just to remove the current filter.
-				 * Ditto for thread below.
-				 */
+				 
 				do_zoom_dso(browser, actions);
 			} else if (top == &browser->hists->thread_filter) {
 				do_zoom_thread(browser, actions);
@@ -3261,10 +3200,7 @@ do_hotkey:		 // key came straight from options ui__popup_menu()
 				struct perf_top *top = hbt->arg;
 
 				evlist__toggle_enable(top->evlist);
-				/*
-				 * No need to refresh, resort/decay histogram
-				 * entries if we are not collecting samples:
-				 */
+				 
 				if (top->evlist->enabled) {
 					helpline = "Press 'f' to disable the events or 'h' to see other hotkeys";
 					hbt->refresh = delay_secs;
@@ -3274,7 +3210,7 @@ do_hotkey:		 // key came straight from options ui__popup_menu()
 				}
 				continue;
 			}
-			/* Fall thru */
+			 
 		default:
 			helpline = "Press '?' for help on key bindings";
 			continue;
@@ -3322,7 +3258,7 @@ skip_annotation:
 		nr_options += add_socket_opt(browser, &actions[nr_options],
 					     &options[nr_options],
 					     socked_id);
-		/* perf script support */
+		 
 		if (!is_report_browser(hbt))
 			goto skip_scripting;
 
@@ -3333,15 +3269,7 @@ skip_annotation:
 							     &options[nr_options],
 							     thread, NULL, evsel);
 			}
-			/*
-			 * Note that browser->selection != NULL
-			 * when browser->he_selection is not NULL,
-			 * so we don't need to check browser->selection
-			 * before fetching browser->selection->sym like what
-			 * we do before fetching browser->selection->map.
-			 *
-			 * See hist_browser__show_entry.
-			 */
+			 
 			if (hists__has(hists, sym) && browser->selection->sym) {
 				nr_options += add_script_opt(browser,
 							     &actions[nr_options],
@@ -3491,10 +3419,7 @@ static int perf_evsel_menu__run(struct evsel_menu *menu,
 			pos = menu->selection;
 browse_hists:
 			evlist__set_selected(evlist, pos);
-			/*
-			 * Give the calling tool a chance to populate the non
-			 * default evsel resorted hists tree.
-			 */
+			 
 			if (hbt)
 				hbt->timer(hbt->arg);
 			key = evsel__hists_browse(pos, nr_events, help, true, hbt,
@@ -3530,7 +3455,7 @@ browse_hists:
 			if (!ui_browser__dialog_yesno(&menu->b,
 					       "Do you really want to exit?"))
 				continue;
-			/* Fall thru */
+			 
 		case 'q':
 		case CTRL('c'):
 			goto out;
@@ -3674,7 +3599,7 @@ int block_hists_tui_browse(struct block_hist *bh, struct evsel *evsel,
 	browser->env = env;
 	browser->annotation_opts = annotation_opts;
 
-	/* reset abort key so that it can get Ctrl-C as a key */
+	 
 	SLang_reset_tty();
 	SLang_init_tty(0, 0, 0);
 

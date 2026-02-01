@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2021 Intel Corporation
- * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
- */
+ 
+ 
 #ifndef __LINUX_IOMMUFD_H
 #define __LINUX_IOMMUFD_H
 
@@ -37,10 +34,10 @@ struct iommufd_access_ops {
 enum {
 	IOMMUFD_ACCESS_RW_READ = 0,
 	IOMMUFD_ACCESS_RW_WRITE = 1 << 0,
-	/* Set if the caller is in a kthread then rw will use kthread_use_mm() */
+	 
 	IOMMUFD_ACCESS_RW_KTHREAD = 1 << 1,
 
-	/* Only for use by selftest */
+	 
 	__IOMMUFD_ACCESS_RW_SLOW_PATH = 1 << 2,
 };
 
@@ -70,7 +67,7 @@ int iommufd_access_rw(struct iommufd_access *access, unsigned long iova,
 int iommufd_vfio_compat_ioas_get_id(struct iommufd_ctx *ictx, u32 *out_ioas_id);
 int iommufd_vfio_compat_ioas_create(struct iommufd_ctx *ictx);
 int iommufd_vfio_compat_set_no_iommu(struct iommufd_ctx *ictx);
-#else /* !CONFIG_IOMMUFD */
+#else  
 static inline struct iommufd_ctx *iommufd_ctx_from_file(struct file *file)
 {
 	return ERR_PTR(-EOPNOTSUPP);
@@ -110,5 +107,5 @@ static inline int iommufd_vfio_compat_set_no_iommu(struct iommufd_ctx *ictx)
 {
 	return -EOPNOTSUPP;
 }
-#endif /* CONFIG_IOMMUFD */
+#endif  
 #endif

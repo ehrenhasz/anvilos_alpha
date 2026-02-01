@@ -1,19 +1,19 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// pin-controller/pin-mux/pin-config/gpio-driver for Samsung's SoC's.
-//
-// Copyright (c) 2012 Samsung Electronics Co., Ltd.
-//		http://www.samsung.com
-// Copyright (c) 2012 Linaro Ltd
-//		http://www.linaro.org
-//
-// Author: Thomas Abraham <thomas.ab@samsung.com>
-//
-// This driver implements the Samsung pinctrl driver. It supports setting up of
-// pinmux and pinconf configurations. The gpiolib interface is also included.
-// External interrupt (gpio and wakeup) support are not included in this driver
-// but provides extensions to which platform specific implementation of the gpio
-// and wakeup interrupts can be hooked to.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/gpio/driver.h>
@@ -30,10 +30,10 @@
 #include "../core.h"
 #include "pinctrl-samsung.h"
 
-/* maximum number of the memory resources */
+ 
 #define	SAMSUNG_PINCTRL_NUM_RESOURCES	2
 
-/* list of all possible config options supported */
+ 
 static struct pin_config {
 	const char *property;
 	enum pincfg_type param;
@@ -198,7 +198,7 @@ static int samsung_dt_subnode_to_map(struct samsung_pinctrl_drv_data *drvdata,
 			ret = add_config(dev, &configs, &num_configs, config);
 			if (ret < 0)
 				goto exit;
-		/* EINVAL=missing, which is fine since it's optional */
+		 
 		} else if (ret != -EINVAL) {
 			dev_err(dev, "could not parse property %s\n",
 				cfg_params[i].property);
@@ -281,7 +281,7 @@ static int samsung_dt_node_to_map(struct pinctrl_dev *pctldev,
 }
 
 #ifdef CONFIG_DEBUG_FS
-/* Forward declaration which can be used by samsung_pin_dbg_show */
+ 
 static int samsung_pinconf_get(struct pinctrl_dev *pctldev, unsigned int pin,
 					unsigned long *config);
 static const char * const reg_names[] = {"CON", "DAT", "PUD", "DRV", "CON_PDN",
@@ -306,7 +306,7 @@ static void samsung_pin_dbg_show(struct pinctrl_dev *pctldev,
 }
 #endif
 
-/* list of pinctrl callbacks for the pinctrl core */
+ 
 static const struct pinctrl_ops samsung_pctrl_ops = {
 	.get_groups_count	= samsung_get_group_count,
 	.get_group_name		= samsung_get_group_name,
@@ -318,7 +318,7 @@ static const struct pinctrl_ops samsung_pctrl_ops = {
 #endif
 };
 
-/* check if the selector is a valid pin function selector */
+ 
 static int samsung_get_functions_count(struct pinctrl_dev *pctldev)
 {
 	struct samsung_pinctrl_drv_data *drvdata;
@@ -327,7 +327,7 @@ static int samsung_get_functions_count(struct pinctrl_dev *pctldev)
 	return drvdata->nr_functions;
 }
 
-/* return the name of the pin function specified */
+ 
 static const char *samsung_pinmux_get_fname(struct pinctrl_dev *pctldev,
 						unsigned selector)
 {
@@ -337,7 +337,7 @@ static const char *samsung_pinmux_get_fname(struct pinctrl_dev *pctldev,
 	return drvdata->pmx_functions[selector].name;
 }
 
-/* return the groups associated for the specified function selector */
+ 
 static int samsung_pinmux_get_groups(struct pinctrl_dev *pctldev,
 		unsigned selector, const char * const **groups,
 		unsigned * const num_groups)
@@ -350,10 +350,7 @@ static int samsung_pinmux_get_groups(struct pinctrl_dev *pctldev,
 	return 0;
 }
 
-/*
- * given a pin number that is local to a pin controller, find out the pin bank
- * and the register base of the pin bank.
- */
+ 
 static void pin_to_reg_bank(struct samsung_pinctrl_drv_data *drvdata,
 			unsigned pin, void __iomem **reg, u32 *offset,
 			struct samsung_pin_bank **bank)
@@ -372,7 +369,7 @@ static void pin_to_reg_bank(struct samsung_pinctrl_drv_data *drvdata,
 		*bank = b;
 }
 
-/* enable or disable a pinmux function */
+ 
 static void samsung_pinmux_setup(struct pinctrl_dev *pctldev, unsigned selector,
 					unsigned group)
 {
@@ -395,7 +392,7 @@ static void samsung_pinmux_setup(struct pinctrl_dev *pctldev, unsigned selector,
 	mask = (1 << type->fld_width[PINCFG_TYPE_FUNC]) - 1;
 	shift = pin_offset * type->fld_width[PINCFG_TYPE_FUNC];
 	if (shift >= 32) {
-		/* Some banks have two config registers */
+		 
 		shift -= 32;
 		reg += 4;
 	}
@@ -410,7 +407,7 @@ static void samsung_pinmux_setup(struct pinctrl_dev *pctldev, unsigned selector,
 	raw_spin_unlock_irqrestore(&bank->slock, flags);
 }
 
-/* enable a specified pinmux by writing to registers */
+ 
 static int samsung_pinmux_set_mux(struct pinctrl_dev *pctldev,
 				  unsigned selector,
 				  unsigned group)
@@ -419,7 +416,7 @@ static int samsung_pinmux_set_mux(struct pinctrl_dev *pctldev,
 	return 0;
 }
 
-/* list of pinmux callbacks for the pinmux vertical in pinctrl core */
+ 
 static const struct pinmux_ops samsung_pinmux_ops = {
 	.get_functions_count	= samsung_get_functions_count,
 	.get_function_name	= samsung_pinmux_get_fname,
@@ -427,7 +424,7 @@ static const struct pinmux_ops samsung_pinmux_ops = {
 	.set_mux		= samsung_pinmux_set_mux,
 };
 
-/* set or get the pin config settings for a specified pin */
+ 
 static int samsung_pinconf_rw(struct pinctrl_dev *pctldev, unsigned int pin,
 				unsigned long *config, bool set)
 {
@@ -473,7 +470,7 @@ static int samsung_pinconf_rw(struct pinctrl_dev *pctldev, unsigned int pin,
 	return 0;
 }
 
-/* set the pin config settings for a specified pin */
+ 
 static int samsung_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
 				unsigned long *configs, unsigned num_configs)
 {
@@ -483,19 +480,19 @@ static int samsung_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
 		ret = samsung_pinconf_rw(pctldev, pin, &configs[i], true);
 		if (ret < 0)
 			return ret;
-	} /* for each config */
+	}  
 
 	return 0;
 }
 
-/* get the pin config settings for a specified pin */
+ 
 static int samsung_pinconf_get(struct pinctrl_dev *pctldev, unsigned int pin,
 					unsigned long *config)
 {
 	return samsung_pinconf_rw(pctldev, pin, config, false);
 }
 
-/* set the pin config settings for a specified pin group */
+ 
 static int samsung_pinconf_group_set(struct pinctrl_dev *pctldev,
 			unsigned group, unsigned long *configs,
 			unsigned num_configs)
@@ -513,7 +510,7 @@ static int samsung_pinconf_group_set(struct pinctrl_dev *pctldev,
 	return 0;
 }
 
-/* get the pin config settings for a specified pin group */
+ 
 static int samsung_pinconf_group_get(struct pinctrl_dev *pctldev,
 				unsigned int group, unsigned long *config)
 {
@@ -526,7 +523,7 @@ static int samsung_pinconf_group_get(struct pinctrl_dev *pctldev,
 	return 0;
 }
 
-/* list of pinconfig callbacks for pinconfig vertical in the pinctrl code */
+ 
 static const struct pinconf_ops samsung_pinconf_ops = {
 	.pin_config_get		= samsung_pinconf_get,
 	.pin_config_set		= samsung_pinconf_set,
@@ -534,10 +531,7 @@ static const struct pinconf_ops samsung_pinconf_ops = {
 	.pin_config_group_set	= samsung_pinconf_group_set,
 };
 
-/*
- * The samsung_gpio_set_vlaue() should be called with "bank->slock" held
- * to avoid race condition.
- */
+ 
 static void samsung_gpio_set_value(struct gpio_chip *gc,
 					  unsigned offset, int value)
 {
@@ -555,7 +549,7 @@ static void samsung_gpio_set_value(struct gpio_chip *gc,
 	writel(data, reg + type->reg_offset[PINCFG_TYPE_DAT]);
 }
 
-/* gpiolib gpio_set callback function */
+ 
 static void samsung_gpio_set(struct gpio_chip *gc, unsigned offset, int value)
 {
 	struct samsung_pin_bank *bank = gpiochip_get_data(gc);
@@ -566,7 +560,7 @@ static void samsung_gpio_set(struct gpio_chip *gc, unsigned offset, int value)
 	raw_spin_unlock_irqrestore(&bank->slock, flags);
 }
 
-/* gpiolib gpio_get callback function */
+ 
 static int samsung_gpio_get(struct gpio_chip *gc, unsigned offset)
 {
 	void __iomem *reg;
@@ -582,12 +576,7 @@ static int samsung_gpio_get(struct gpio_chip *gc, unsigned offset)
 	return data;
 }
 
-/*
- * The samsung_gpio_set_direction() should be called with "bank->slock" held
- * to avoid race condition.
- * The calls to gpio_direction_output() and gpio_direction_input()
- * leads to this function call.
- */
+ 
 static int samsung_gpio_set_direction(struct gpio_chip *gc,
 					     unsigned offset, bool input)
 {
@@ -605,7 +594,7 @@ static int samsung_gpio_set_direction(struct gpio_chip *gc,
 	mask = (1 << type->fld_width[PINCFG_TYPE_FUNC]) - 1;
 	shift = offset * type->fld_width[PINCFG_TYPE_FUNC];
 	if (shift >= 32) {
-		/* Some banks have two config registers */
+		 
 		shift -= 32;
 		reg += 4;
 	}
@@ -619,7 +608,7 @@ static int samsung_gpio_set_direction(struct gpio_chip *gc,
 	return 0;
 }
 
-/* gpiolib gpio_direction_input callback function. */
+ 
 static int samsung_gpio_direction_input(struct gpio_chip *gc, unsigned offset)
 {
 	struct samsung_pin_bank *bank = gpiochip_get_data(gc);
@@ -632,7 +621,7 @@ static int samsung_gpio_direction_input(struct gpio_chip *gc, unsigned offset)
 	return ret;
 }
 
-/* gpiolib gpio_direction_output callback function. */
+ 
 static int samsung_gpio_direction_output(struct gpio_chip *gc, unsigned offset,
 							int value)
 {
@@ -648,10 +637,7 @@ static int samsung_gpio_direction_output(struct gpio_chip *gc, unsigned offset,
 	return ret;
 }
 
-/*
- * gpiod_to_irq() callback function. Creates a mapping between a GPIO pin
- * and a virtual IRQ, if not already present.
- */
+ 
 static int samsung_gpio_to_irq(struct gpio_chip *gc, unsigned offset)
 {
 	struct samsung_pin_bank *bank = gpiochip_get_data(gc);
@@ -746,10 +732,7 @@ static struct samsung_pmx_func *samsung_pinctrl_create_functions(
 	unsigned int func_cnt = 0;
 	int ret;
 
-	/*
-	 * Iterate over all the child nodes of the pin controller node
-	 * and create pin groups and pin function lists.
-	 */
+	 
 	for_each_child_of_node(dev_np, cfg_np) {
 		struct device_node *func_np;
 
@@ -775,10 +758,7 @@ static struct samsung_pmx_func *samsung_pinctrl_create_functions(
 		return ERR_PTR(-ENOMEM);
 	func = functions;
 
-	/*
-	 * Iterate over all the child nodes of the pin controller node
-	 * and create pin groups and pin function lists.
-	 */
+	 
 	func_cnt = 0;
 	for_each_child_of_node(dev_np, cfg_np) {
 		struct device_node *func_np;
@@ -816,11 +796,7 @@ static struct samsung_pmx_func *samsung_pinctrl_create_functions(
 	return functions;
 }
 
-/*
- * Parse the information about all the available pin groups and pin functions
- * from device node of the pin-controller. A pin group is formed with all
- * the pins listed in the "samsung,pins" property.
- */
+ 
 
 static int samsung_pinctrl_parse_dt(struct platform_device *pdev,
 				    struct samsung_pinctrl_drv_data *drvdata)
@@ -850,7 +826,7 @@ static int samsung_pinctrl_parse_dt(struct platform_device *pdev,
 	return 0;
 }
 
-/* register the pinctrl interface with the pinctrl subsystem */
+ 
 static int samsung_pinctrl_register(struct platform_device *pdev,
 				    struct samsung_pinctrl_drv_data *drvdata)
 {
@@ -874,14 +850,11 @@ static int samsung_pinctrl_register(struct platform_device *pdev,
 	ctrldesc->pins = pindesc;
 	ctrldesc->npins = drvdata->nr_pins;
 
-	/* dynamically populate the pin number and pin name for pindesc */
+	 
 	for (pin = 0, pdesc = pindesc; pin < ctrldesc->npins; pin++, pdesc++)
 		pdesc->number = pin + drvdata->pin_base;
 
-	/*
-	 * allocate space for storing the dynamically generated names for all
-	 * the pins which belong to this pin-controller.
-	 */
+	 
 	pin_names = devm_kzalloc(&pdev->dev,
 				 array3_size(sizeof(char), PIN_NAME_LENGTH,
 					     drvdata->nr_pins),
@@ -889,7 +862,7 @@ static int samsung_pinctrl_register(struct platform_device *pdev,
 	if (!pin_names)
 		return -ENOMEM;
 
-	/* for each pin, the name of the pin is pin-bank name + pin number */
+	 
 	for (bank = 0; bank < drvdata->nr_banks; bank++) {
 		pin_bank = &drvdata->pin_banks[bank];
 		for (pin = 0; pin < pin_bank->nr_pins; pin++) {
@@ -926,7 +899,7 @@ static int samsung_pinctrl_register(struct platform_device *pdev,
 	return 0;
 }
 
-/* unregister the pinctrl interface with the pinctrl subsystem */
+ 
 static int samsung_pinctrl_unregister(struct platform_device *pdev,
 				      struct samsung_pinctrl_drv_data *drvdata)
 {
@@ -950,7 +923,7 @@ static const struct gpio_chip samsung_gpiolib_chip = {
 	.owner = THIS_MODULE,
 };
 
-/* register the gpiolib interface with the gpiolib subsystem */
+ 
 static int samsung_gpiolib_register(struct platform_device *pdev,
 				    struct samsung_pinctrl_drv_data *drvdata)
 {
@@ -1012,16 +985,13 @@ static void samsung_banks_node_put(struct samsung_pinctrl_drv_data *d)
 		fwnode_handle_put(bank->fwnode);
 }
 
-/*
- * Iterate over all driver pin banks to find one matching the name of node,
- * skipping optional "-gpio" node suffix. When found, assign node to the bank.
- */
+ 
 static void samsung_banks_node_get(struct device *dev, struct samsung_pinctrl_drv_data *d)
 {
 	const char *suffix = "-gpio-bank";
 	struct samsung_pin_bank *bank;
 	struct fwnode_handle *child;
-	/* Pin bank names are up to 4 characters */
+	 
 	char node_name[20];
 	unsigned int i;
 	size_t len;
@@ -1050,11 +1020,11 @@ static void samsung_banks_node_get(struct device *dev, struct samsung_pinctrl_dr
 		else
 			dev_warn(dev, "Missing node for bank %s - invalid DTB\n",
 				 bank->name);
-		/* child reference dropped in samsung_drop_banks_of_node() */
+		 
 	}
 }
 
-/* retrieve the soc specific data */
+ 
 static const struct samsung_pin_ctrl *
 samsung_pinctrl_get_soc_data(struct samsung_pinctrl_drv_data *d,
 			     struct platform_device *pdev)
@@ -1115,11 +1085,7 @@ samsung_pinctrl_get_soc_data(struct samsung_pinctrl_drv_data *d,
 		bank->eint_base = virt_base[0];
 		bank->pctl_base = virt_base[bdata->pctl_res_idx];
 	}
-	/*
-	 * Legacy platforms should provide only one resource with IO memory.
-	 * Store it as virt_base because legacy driver needs to access it
-	 * through samsung_pinctrl_drv_data.
-	 */
+	 
 	d->virt_base = virt_base[0];
 
 	samsung_banks_node_get(&pdev->dev, d);
@@ -1187,11 +1153,7 @@ err_put_banks:
 	return ret;
 }
 
-/*
- * samsung_pinctrl_suspend - save pinctrl state for suspend
- *
- * Save data for all banks handled by this device.
- */
+ 
 static int __maybe_unused samsung_pinctrl_suspend(struct device *dev)
 {
 	struct samsung_pinctrl_drv_data *drvdata = dev_get_drvdata(dev);
@@ -1204,7 +1166,7 @@ static int __maybe_unused samsung_pinctrl_suspend(struct device *dev)
 		const u8 *widths = bank->type->fld_width;
 		enum pincfg_type type;
 
-		/* Registers without a powerdown config aren't lost */
+		 
 		if (!widths[PINCFG_TYPE_CON_PDN])
 			continue;
 
@@ -1213,7 +1175,7 @@ static int __maybe_unused samsung_pinctrl_suspend(struct device *dev)
 				bank->pm_save[type] = readl(reg + offs[type]);
 
 		if (widths[PINCFG_TYPE_FUNC] * bank->nr_pins > 32) {
-			/* Some banks have two config registers */
+			 
 			bank->pm_save[PINCFG_TYPE_NUM] =
 				readl(reg + offs[PINCFG_TYPE_FUNC] + 4);
 			pr_debug("Save %s @ %p (con %#010x %08x)\n",
@@ -1234,14 +1196,7 @@ static int __maybe_unused samsung_pinctrl_suspend(struct device *dev)
 	return 0;
 }
 
-/*
- * samsung_pinctrl_resume - restore pinctrl state from suspend
- *
- * Restore one of the banks that was saved during suspend.
- *
- * We don't bother doing anything complicated to avoid glitching lines since
- * we're called before pad retention is turned off.
- */
+ 
 static int __maybe_unused samsung_pinctrl_resume(struct device *dev)
 {
 	struct samsung_pinctrl_drv_data *drvdata = dev_get_drvdata(dev);
@@ -1257,12 +1212,12 @@ static int __maybe_unused samsung_pinctrl_resume(struct device *dev)
 		const u8 *widths = bank->type->fld_width;
 		enum pincfg_type type;
 
-		/* Registers without a powerdown config aren't lost */
+		 
 		if (!widths[PINCFG_TYPE_CON_PDN])
 			continue;
 
 		if (widths[PINCFG_TYPE_FUNC] * bank->nr_pins > 32) {
-			/* Some banks have two config registers */
+			 
 			pr_debug("%s @ %p (con %#010x %08x => %#010x %08x)\n",
 				 bank->name, reg,
 				 readl(reg + offs[PINCFG_TYPE_FUNC]),

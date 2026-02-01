@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2017-2018 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/io-64-nonatomic-hi-lo.h>
@@ -74,9 +74,7 @@ static void
 nfp_repr_vnic_get_stats64(struct nfp_port *port,
 			  struct rtnl_link_stats64 *stats)
 {
-	/* TX and RX stats are flipped as we are returning the stats as seen
-	 * at the switch port corresponding to the VF.
-	 */
+	 
 	stats->tx_packets = readq(port->vnic + NFP_NET_CFG_STATS_RX_FRAMES);
 	stats->tx_bytes = readq(port->vnic + NFP_NET_CFG_STATS_RX_OCTETS);
 	stats->tx_dropped = readq(port->vnic + NFP_NET_CFG_STATS_RX_DISCARDS);
@@ -335,7 +333,7 @@ int nfp_repr_init(struct nfp_app *app, struct net_device *netdev,
 
 	netdev->max_mtu = pf_netdev->max_mtu;
 
-	/* Set features the lower device can support with representors */
+	 
 	if (repr_cap & NFP_NET_CFG_CTRL_LIVE_ADDR)
 		netdev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
 
@@ -379,9 +377,7 @@ int nfp_repr_init(struct nfp_app *app, struct net_device *netdev,
 
 	netdev->features = netdev->hw_features;
 
-	/* C-Tag strip and S-Tag strip can't be supported simultaneously,
-	 * so enable C-Tag strip and disable S-Tag strip by default.
-	 */
+	 
 	netdev->features &= ~NETIF_F_HW_VLAN_STAG_RX;
 	netif_set_tso_max_segs(netdev, NFP_NET_LSO_MAX_SEGS);
 
@@ -482,9 +478,7 @@ nfp_reprs_clean_and_free_by_type(struct nfp_app *app, enum nfp_repr_type type)
 	if (!reprs)
 		return;
 
-	/* Preclean must happen before we remove the reprs reference from the
-	 * app below.
-	 */
+	 
 	for (i = 0; i < reprs->num_reprs; i++) {
 		netdev = nfp_repr_get_locked(app, reprs, i);
 		if (netdev)

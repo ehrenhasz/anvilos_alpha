@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright(c) 2015-17 Intel Corporation.
+
+
 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -10,14 +10,7 @@
 #include "irq.h"
 #include "sysfs_local.h"
 
-/**
- * sdw_get_device_id - find the matching SoundWire device id
- * @slave: SoundWire Slave Device
- * @drv: SoundWire Slave Driver
- *
- * The match is done by comparing the mfg_id and part_id from the
- * struct sdw_device_id.
- */
+ 
 static const struct sdw_device_id *
 sdw_get_device_id(struct sdw_slave *slave, struct sdw_driver *drv)
 {
@@ -52,7 +45,7 @@ static int sdw_bus_match(struct device *dev, struct device_driver *ddrv)
 
 int sdw_slave_modalias(const struct sdw_slave *slave, char *buf, size_t size)
 {
-	/* modalias is sdw:m<mfg_id>p<part_id>v<version>c<class_id> */
+	 
 
 	return snprintf(buf, size, "sdw:m%04Xp%04Xv%02Xc%02X\n",
 			slave->id.mfg_id, slave->id.part_id,
@@ -86,9 +79,7 @@ static int sdw_drv_probe(struct device *dev)
 	const char *name;
 	int ret;
 
-	/*
-	 * fw description is mandatory to bind
-	 */
+	 
 	if (!dev->fwnode)
 		return -ENODEV;
 
@@ -99,9 +90,7 @@ static int sdw_drv_probe(struct device *dev)
 	if (!id)
 		return -ENODEV;
 
-	/*
-	 * attach to power domain but don't turn on (last arg)
-	 */
+	 
 	ret = dev_pm_domain_attach(dev, false);
 	if (ret)
 		return ret;
@@ -119,24 +108,19 @@ static int sdw_drv_probe(struct device *dev)
 
 	mutex_lock(&slave->sdw_dev_lock);
 
-	/* device is probed so let's read the properties now */
+	 
 	if (drv->ops && drv->ops->read_prop)
 		drv->ops->read_prop(slave);
 
 	if (slave->prop.use_domain_irq)
 		sdw_irq_create_mapping(slave);
 
-	/* init the sysfs as we have properties now */
+	 
 	ret = sdw_slave_sysfs_init(slave);
 	if (ret < 0)
 		dev_warn(dev, "Slave sysfs init failed:%d\n", ret);
 
-	/*
-	 * Check for valid clk_stop_timeout, use DisCo worst case value of
-	 * 300ms
-	 *
-	 * TODO: check the timeouts and driver removal case
-	 */
+	 
 	if (slave->prop.clk_stop_timeout == 0)
 		slave->prop.clk_stop_timeout = 300;
 
@@ -145,11 +129,7 @@ static int sdw_drv_probe(struct device *dev)
 
 	slave->probed = true;
 
-	/*
-	 * if the probe happened after the bus was started, notify the codec driver
-	 * of the current hardware status to e.g. start the initialization.
-	 * Errors are only logged as warnings to avoid failing the probe.
-	 */
+	 
 	if (drv->ops && drv->ops->update_status) {
 		ret = drv->ops->update_status(slave, slave->status);
 		if (ret < 0)
@@ -195,13 +175,7 @@ static void sdw_drv_shutdown(struct device *dev)
 		drv->shutdown(slave);
 }
 
-/**
- * __sdw_register_driver() - register a SoundWire Slave driver
- * @drv: driver to register
- * @owner: owning module/driver
- *
- * Return: zero on success, else a negative error code.
- */
+ 
 int __sdw_register_driver(struct sdw_driver *drv, struct module *owner)
 {
 	const char *name;
@@ -226,10 +200,7 @@ int __sdw_register_driver(struct sdw_driver *drv, struct module *owner)
 }
 EXPORT_SYMBOL_GPL(__sdw_register_driver);
 
-/**
- * sdw_unregister_driver() - unregisters the SoundWire Slave driver
- * @drv: driver to unregister
- */
+ 
 void sdw_unregister_driver(struct sdw_driver *drv)
 {
 	driver_unregister(&drv->driver);

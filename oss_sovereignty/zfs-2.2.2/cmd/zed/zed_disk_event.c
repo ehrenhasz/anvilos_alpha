@@ -1,18 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License Version 1.0 (CDDL-1.0).
- * You can obtain a copy of the license from the top-level file
- * "OPENSOLARIS.LICENSE" or at <http://opensource.org/licenses/CDDL-1.0>.
- * You may not use this file except in compliance with the license.
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2016, 2017, Intel Corporation.
- */
+ 
 
 #ifdef HAVE_LIBUDEV
 
@@ -33,13 +21,7 @@
 #include "zed_disk_event.h"
 #include "agents/zfs_agents.h"
 
-/*
- * Portions of ZED need to see disk events for disks belonging to ZFS pools.
- * A libudev monitor is established to monitor block device actions and pass
- * them on to internal ZED logic modules.  Initially, zfs_mod.c is the only
- * consumer and is the Linux equivalent for the illumos syseventd ZFS SLM
- * module responsible for handling disk events for ZFS.
- */
+ 
 
 pthread_t g_mon_tid;
 struct udev *g_udev;
@@ -48,15 +30,11 @@ struct udev_monitor *g_mon;
 
 #define	DEV_BYID_PATH	"/dev/disk/by-id/"
 
-/* 64MB is minimum usable disk for ZFS */
+ 
 #define	MINIMUM_SECTORS		131072ULL
 
 
-/*
- * Post disk event to SLM module
- *
- * occurs in the context of monitor thread
- */
+ 
 static void
 zed_udev_event(const char *class, const char *subclass, nvlist_t *nvl)
 {
@@ -88,20 +66,7 @@ zed_udev_event(const char *class, const char *subclass, nvlist_t *nvl)
 	(void) zfs_agent_post_event(class, subclass, nvl);
 }
 
-/*
- * dev_event_nvlist: place event schema into an nv pair list
- *
- * NAME			VALUE (example)
- * --------------	--------------------------------------------------------
- * DEV_NAME		/dev/sdl
- * DEV_PATH		/devices/pci0000:00/0000:00:03.0/0000:04:00.0/host0/...
- * DEV_IDENTIFIER	ata-Hitachi_HTS725050A9A362_100601PCG420VLJ37DMC
- * DEV_PHYS_PATH	pci-0000:04:00.0-sas-0x4433221101000000-lun-0
- * DEV_IS_PART		---
- * DEV_SIZE		500107862016
- * ZFS_EV_POOL_GUID	17523635698032189180
- * ZFS_EV_VDEV_GUID	14663607734290803088
- */
+ 
 static nvlist_t *
 dev_event_nvlist(struct udev_device *dev)
 {
@@ -133,11 +98,7 @@ dev_event_nvlist(struct udev_device *dev)
 		numval *= strtoull(value, NULL, 10);
 		(void) nvlist_add_uint64(nvl, DEV_SIZE, numval);
 
-		/*
-		 * If the device has a parent, then get the parent block
-		 * device's size as well.  For example, /dev/sda1's parent
-		 * is /dev/sda.
-		 */
+		 
 		struct udev_device *parent_dev = udev_device_get_parent(dev);
 		if ((value = udev_device_get_sysattr_value(parent_dev, "size"))
 		    != NULL) {
@@ -148,9 +109,7 @@ dev_event_nvlist(struct udev_device *dev)
 		}
 	}
 
-	/*
-	 * Grab the pool and vdev guids from blkid cache
-	 */
+	 
 	value = udev_device_get_property_value(dev, "ID_FS_UUID");
 	if (value != NULL && (guid = strtoull(value, NULL, 10)) != 0)
 		(void) nvlist_add_uint64(nvl, ZFS_EV_POOL_GUID, guid);
@@ -159,9 +118,7 @@ dev_event_nvlist(struct udev_device *dev)
 	if (value != NULL && (guid = strtoull(value, NULL, 10)) != 0)
 		(void) nvlist_add_uint64(nvl, ZFS_EV_VDEV_GUID, guid);
 
-	/*
-	 * Either a vdev guid or a devid must be present for matching
-	 */
+	 
 	if (!nvlist_exists(nvl, DEV_IDENTIFIER) &&
 	    !nvlist_exists(nvl, ZFS_EV_VDEV_GUID)) {
 		nvlist_free(nvl);
@@ -171,9 +128,7 @@ dev_event_nvlist(struct udev_device *dev)
 	return (nvl);
 }
 
-/*
- *  Listen for block device uevents
- */
+ 
 static void *
 zed_udev_monitor(void *arg)
 {
@@ -191,28 +146,26 @@ zed_udev_monitor(void *arg)
 		nvlist_t *nvl;
 		boolean_t is_zfs = B_FALSE;
 
-		/* allow a cancellation while blocked (recvmsg) */
+		 
 		pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
 
-		/* blocks at recvmsg until an event occurs */
+		 
 		if ((dev = udev_monitor_receive_device(mon)) == NULL) {
 			zed_log_msg(LOG_WARNING, "zed_udev_monitor: receive "
 			    "device error %d", errno);
 			continue;
 		}
 
-		/* allow all steps to complete before a cancellation */
+		 
 		pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
 
-		/*
-		 * Strongly typed device is the preferred filter
-		 */
+		 
 		type = udev_device_get_property_value(dev, "ID_FS_TYPE");
 		if (type != NULL && type[0] != '\0') {
 			if (strcmp(type, "zfs_member") == 0) {
 				is_zfs = B_TRUE;
 			} else {
-				/* not ours, so skip */
+				 
 				zed_log_msg(LOG_INFO, "zed_udev_monitor: skip "
 				    "%s (in use by %s)",
 				    udev_device_get_devnode(dev), type);
@@ -221,17 +174,7 @@ zed_udev_monitor(void *arg)
 			}
 		}
 
-		/*
-		 * if this is a disk and it is partitioned, then the
-		 * zfs label will reside in a DEVTYPE=partition and
-		 * we can skip passing this event
-		 *
-		 * Special case: Blank disks are sometimes reported with
-		 * an erroneous 'atari' partition, and should not be
-		 * excluded from being used as an autoreplace disk:
-		 *
-		 * https://github.com/openzfs/zfs/issues/13497
-		 */
+		 
 		type = udev_device_get_property_value(dev, "DEVTYPE");
 		part = udev_device_get_property_value(dev,
 		    "ID_PART_TABLE_TYPE");
@@ -251,15 +194,13 @@ zed_udev_monitor(void *arg)
 				zed_log_msg(LOG_INFO,
 				    "%s: skip %s since it has a %s partition "
 				    "already", __func__, devname, part);
-				/* skip and wait for partition event */
+				 
 				udev_device_unref(dev);
 				continue;
 			}
 		}
 
-		/*
-		 * ignore small partitions
-		 */
+		 
 		sectors = udev_device_get_property_value(dev,
 		    "ID_PART_ENTRY_SIZE");
 		if (sectors == NULL)
@@ -275,19 +216,7 @@ zed_udev_monitor(void *arg)
 			continue;
 		}
 
-		/*
-		 * If the blkid probe didn't find ZFS, then a persistent
-		 * device id string is required in the message schema
-		 * for matching with vdevs. Preflight here for expected
-		 * udev information.
-		 *
-		 * Special case:
-		 * NVMe devices don't have ID_BUS set (at least on RHEL 7-8),
-		 * but they are valid for autoreplace.  Add a special case for
-		 * them by searching for "/nvme/" in the udev DEVPATH:
-		 *
-		 * DEVPATH=/devices/pci0000:00/0000:00:1e.0/nvme/nvme2/nvme2n1
-		 */
+		 
 		bus = udev_device_get_property_value(dev, "ID_BUS");
 		uuid = udev_device_get_property_value(dev, "DM_UUID");
 		devpath = udev_device_get_devpath(dev);
@@ -316,47 +245,20 @@ zed_udev_monitor(void *arg)
 			continue;
 		}
 
-		/*
-		 * Special case an EC_DEV_ADD for multipath devices
-		 *
-		 * When a multipath device is created, udev reports the
-		 * following:
-		 *
-		 * 1.	"add" event of the dm device for the multipath device
-		 *	(like /dev/dm-3).
-		 * 2.	"change" event to create the actual multipath device
-		 *	symlink (like /dev/mapper/mpatha).  The event also
-		 *	passes back the relevant DM vars we care about, like
-		 *	DM_UUID.
-		 * 3.	Another "change" event identical to #2 (that we ignore).
-		 *
-		 * To get the behavior we want, we treat the "change" event
-		 * in #2 as a "add" event; as if "/dev/mapper/mpatha" was
-		 * a new disk being added.
-		 */
+		 
 		if (strcmp(class, EC_DEV_STATUS) == 0 &&
 		    udev_device_get_property_value(dev, "DM_UUID") &&
 		    udev_device_get_property_value(dev, "MPATH_SBIN_PATH")) {
 			tmp = udev_device_get_devnode(dev);
 			tmp2 = zfs_get_underlying_path(tmp);
 			if (tmp && tmp2 && (strcmp(tmp, tmp2) != 0)) {
-				/*
-				 * We have a real underlying device, which
-				 * means that this multipath "change" event is
-				 * an "add" event.
-				 *
-				 * If the multipath device and the underlying
-				 * dev are the same name (i.e. /dev/dm-5), then
-				 * there is no real underlying disk for this
-				 * multipath device, and so this "change" event
-				 * really is a multipath removal.
-				 */
+				 
 				class = EC_DEV_ADD;
 				subclass = ESC_DISK;
 			} else {
 				tmp = udev_device_get_property_value(dev,
 				    "DM_NR_VALID_PATHS");
-				/* treat as a multipath remove */
+				 
 				if (tmp != NULL && strcmp(tmp, "0") == 0) {
 					class = EC_DEV_REMOVE;
 					subclass = ESC_DISK;
@@ -365,18 +267,7 @@ zed_udev_monitor(void *arg)
 			free(tmp2);
 		}
 
-		/*
-		 * Special case an EC_DEV_ADD for scsi_debug devices
-		 *
-		 * These devices require a udevadm trigger command after
-		 * creation in order to register the vdev_id scsidebug alias
-		 * rule (adds a persistent path (phys_path) used for fault
-		 * management automated tests in the ZFS test suite.
-		 *
-		 * After udevadm trigger command, event registers as a "change"
-		 * event but needs to instead be handled as another "add" event
-		 * to allow for disk labeling and partitioning to occur.
-		 */
+		 
 		if (strcmp(class, EC_DEV_STATUS) == 0 &&
 		    udev_device_get_property_value(dev, "ID_VDEV") &&
 		    udev_device_get_property_value(dev, "ID_MODEL")) {
@@ -411,19 +302,19 @@ zed_disk_event_init(void)
 		return (-1);
 	}
 
-	/* Set up a udev monitor for block devices */
+	 
 	g_mon = udev_monitor_new_from_netlink(g_udev, "udev");
 	udev_monitor_filter_add_match_subsystem_devtype(g_mon, "block", "disk");
 	udev_monitor_filter_add_match_subsystem_devtype(g_mon, "block",
 	    "partition");
 	udev_monitor_enable_receiving(g_mon);
 
-	/* Make sure monitoring socket is blocking */
+	 
 	fd = udev_monitor_get_fd(g_mon);
 	if ((fflags = fcntl(fd, F_GETFL)) & O_NONBLOCK)
 		(void) fcntl(fd, F_SETFL, fflags & ~O_NONBLOCK);
 
-	/* spawn a thread to monitor events */
+	 
 	if (pthread_create(&g_mon_tid, NULL, zed_udev_monitor, g_mon) != 0) {
 		udev_monitor_unref(g_mon);
 		udev_unref(g_udev);
@@ -440,11 +331,11 @@ zed_disk_event_init(void)
 void
 zed_disk_event_fini(void)
 {
-	/* cancel monitor thread at recvmsg() */
+	 
 	(void) pthread_cancel(g_mon_tid);
 	(void) pthread_join(g_mon_tid, NULL);
 
-	/* cleanup udev resources */
+	 
 	udev_monitor_unref(g_mon);
 	udev_unref(g_udev);
 
@@ -466,4 +357,4 @@ zed_disk_event_fini(void)
 {
 }
 
-#endif /* HAVE_LIBUDEV */
+#endif  

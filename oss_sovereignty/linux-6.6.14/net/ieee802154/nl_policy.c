@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * nl802154.h
- *
- * Copyright (C) 2007, 2008 Siemens AG
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <net/netlink.h>

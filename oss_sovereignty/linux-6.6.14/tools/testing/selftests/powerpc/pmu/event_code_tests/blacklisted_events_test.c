@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2022, Athira Rajeev, IBM Corp.
- */
+
+ 
 
 #include <stdio.h>
 #include <sys/prctl.h>
@@ -73,10 +71,7 @@ int blacklist_events_dd22[] = {
 
 int pvr_min;
 
-/*
- * check for power9 support for 2.1 and
- * 2.2 model where blacklist is applicable.
- */
+ 
 int check_for_power9_version(void)
 {
 	pvr_min = PVR_MIN(mfspr(SPRN_PVR));
@@ -89,26 +84,20 @@ int check_for_power9_version(void)
 	return 0;
 }
 
-/*
- * Testcase to ensure that using blacklisted bits in
- * event code should cause event_open to fail in power9
- */
+ 
 
 static int blacklisted_events(void)
 {
 	struct event event;
 	int i = 0;
 
-	/* Check for platform support for the test */
+	 
 	SKIP_IF(platform_check_for_tests());
 
-	/*
-	 * check for power9 support for 2.1 and
-	 * 2.2 model where blacklist is applicable.
-	 */
+	 
 	SKIP_IF(check_for_power9_version());
 
-	/* Skip for Generic compat mode */
+	 
 	SKIP_IF(check_for_generic_compat_pmu());
 
 	if (pvr_min == 1) {

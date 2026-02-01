@@ -1,24 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
 
-  Broadcom B43 wireless driver
-  IEEE 802.11n 2056 radio device data tables
-
-  Copyright (c) 2010 Rafał Miłecki <zajec5@gmail.com>
-
-
-*/
+ 
 
 #include "b43.h"
 #include "radio_2056.h"
 #include "phy_common.h"
 
 struct b2056_inittab_entry {
-	/* Value to write if we use the 5GHz band. */
+	 
 	u16 ghz5;
-	/* Value to write if we use the 2.4GHz band. */
+	 
 	u16 ghz2;
-	/* Flags */
+	 
 	u8 flags;
 };
 #define B2056_INITTAB_ENTRY_OK	0x01
@@ -3072,7 +3064,7 @@ INITTABSPTS(b2056_inittab_radio_rev11);
 	.phy_regs.phy_bw5	= r4,	\
 	.phy_regs.phy_bw6	= r5
 
-/* https://bcm-v4.sipsolutions.net/802.11/Radio/2056/ChannelTable */
+/* https:
 static const struct b43_nphy_channeltab_entry_rev3 b43_nphy_channeltab_phy_rev3[] = {
   {	.freq			= 4920,
 	RADIOREGS3(0xff, 0x01, 0x01, 0x01, 0xec, 0x05, 0x05, 0x04,

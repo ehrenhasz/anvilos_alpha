@@ -1,24 +1,6 @@
-/* <uchar.h> substitute - 16-bit and 32-bit wide character types.
-   Copyright (C) 2019-2023 Free Software Foundation, Inc.
+ 
 
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2019.  */
-
-/*
- * ISO C 23 <uchar.h> for platforms that lack it.
- */
+ 
 
 #ifndef _@GUARD_PREFIX@_UCHAR_H
 
@@ -27,16 +9,10 @@
 #endif
 @PRAGMA_COLUMNS@
 
-/* The include_next requires a split double-inclusion guard.  */
+ 
 #if @HAVE_UCHAR_H@
 # if defined __HAIKU__
-/* Work around <https://dev.haiku-os.org/ticket/17040>.  */
-#  include <stdint.h>
-# endif
-/* On AIX 7.2 with xlclang++, /usr/include/uchar.h produces compilation errors
-   because it contains typedef definitions of char16_t and char32_t, however
-   char16_t and char32_t are keywords in this situation.  To work around it,
-   define char16_t and char32_t as macros.  */
+ 
 # if defined __cplusplus && defined _AIX && defined __ibmxl__ && defined __clang__
 #  define char16_t gl_char16_t
 #  define char32_t gl_char32_t
@@ -47,37 +23,35 @@
 #ifndef _@GUARD_PREFIX@_UCHAR_H
 #define _@GUARD_PREFIX@_UCHAR_H
 
-/* This file uses _GL_INLINE_HEADER_BEGIN, _GL_INLINE, _GL_BEGIN_C_LINKAGE,
-   _GL_ATTRIBUTE_PURE, GNULIB_POSIXCHECK, HAVE_RAW_DECL_*.  */
+ 
 #if !_GL_CONFIG_H_INCLUDED
  #error "Please include config.h first."
 #endif
 
-/* Get uint_least16_t, uint_least32_t.  */
+ 
 #include <stdint.h>
 
-/* Get mbstate_t, size_t.  */
+ 
 #include <wchar.h>
 
-/* For the inline functions.  */
+ 
 #include <string.h>
 #include <wctype.h>
 
-/* The __attribute__ feature is available in gcc versions 2.5 and later.
-   The attribute __pure__ was added in gcc 2.96.  */
+ 
 #ifndef _GL_ATTRIBUTE_PURE
 # if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 96) || defined __clang__
 #  define _GL_ATTRIBUTE_PURE __attribute__ ((__pure__))
 # else
-#  define _GL_ATTRIBUTE_PURE /* empty */
+#  define _GL_ATTRIBUTE_PURE  
 # endif
 #endif
 
-/* The definitions of _GL_FUNCDECL_RPL etc. are copied here.  */
+ 
 
-/* The definition of _GL_ARG_NONNULL is copied here.  */
+ 
 
-/* The definition of _GL_WARN_ON_USE is copied here.  */
+ 
 
 
 _GL_INLINE_HEADER_BEGIN
@@ -85,9 +59,7 @@ _GL_INLINE_HEADER_BEGIN
 
 #if !(@HAVE_UCHAR_H@ || (defined __cplusplus && @CXX_HAS_CHAR8_TYPE@))
 
-/* An 8-bit variant of wchar_t.
-   Note: This type is only mandated by ISO C 23 or newer, and it does
-   denote UTF-8 units.  */
+ 
 typedef unsigned char char8_t;
 
 #elif @GNULIBHEADERS_OVERRIDE_CHAR8_T@
@@ -99,10 +71,7 @@ typedef unsigned char gl_char8_t;
 
 #if !(@HAVE_UCHAR_H@ || (defined __cplusplus && @CXX_HAS_UCHAR_TYPES@))
 
-/* A 16-bit variant of wchar_t.
-   Note: This type is only mandated by ISO C 11 or newer.  In ISO C 23
-   and newer, it denotes UTF-16 units; in older versions of ISO C it did
-   so only on platforms on which __STDC_UTF_16__ was defined.  */
+ 
 typedef uint_least16_t char16_t;
 
 #elif @GNULIBHEADERS_OVERRIDE_CHAR16_T@
@@ -114,12 +83,7 @@ typedef uint_least16_t gl_char16_t;
 
 #if !(@HAVE_UCHAR_H@ || (defined __cplusplus && @CXX_HAS_UCHAR_TYPES@))
 
-/* A 32-bit variant of wchar_t.
-   Note: This type is only mandated by ISO C 11 or newer.  In ISO C 23
-   and newer, it denotes UTF-32 code points; in older versions of ISO C
-   it did so only on platforms on which __STDC_UTF_32__ was defined.
-   In gnulib, we guarantee that it denotes UTF-32 code points if and
-   only if the module 'uchar-c23' is in use.  */
+ 
 typedef uint_least32_t char32_t;
 
 #elif @GNULIBHEADERS_OVERRIDE_CHAR32_T@
@@ -129,25 +93,14 @@ typedef uint_least32_t gl_char32_t;
 
 #endif
 
-/* Define if a 'char32_t' can hold more characters than a 'wchar_t'.  */
-#if @SMALL_WCHAR_T@                    /* 32-bit AIX, Cygwin, native Windows */
+ 
+#if @SMALL_WCHAR_T@                     
 # define _GL_SMALL_WCHAR_T 1
 #endif
 
-/* Define if 'wchar_t', like 'char32_t',
-     - is a 32-bit type, and
-     - represents Unicode code points.
-   For this test, we can use __STDC_ISO_10646__ (defined by glibc, musl libc,
-   Cygwin) but need to consider _GL_SMALL_WCHAR_T, so as to exclude Cygwin.
-   We cannot use __STDC_UTF_16__ or __STDC_UTF_32__
-     - because these macros provide info about char16_t and char32_t (not
-       wchar_t!), and
-     - because GCC >= 4.9 defines these macros on all platforms, even on
-       FreeBSD and Solaris.
-   We should better not use __STD_UTF_16__, __STD_UTF_32__ either, because
-   these macros are misspellings, only defined by Android's <uchar.h>.  */
+ 
 #if defined __STDC_ISO_10646__ && !_GL_SMALL_WCHAR_T
-/* glibc, musl libc */
+ 
 # define _GL_WCHAR_T_IS_UCS4 1
 #endif
 #if _GL_WCHAR_T_IS_UCS4
@@ -155,7 +108,7 @@ static_assert (sizeof (char32_t) == sizeof (wchar_t));
 #endif
 
 
-/* Convert a single-byte character to a 32-bit wide character.  */
+ 
 #if @GNULIB_BTOC32@
 # if _GL_WCHAR_T_IS_UCS4 && !defined IN_BTOC32
 _GL_BEGIN_C_LINKAGE
@@ -173,7 +126,7 @@ _GL_CXXALIASWARN (btoc32);
 #endif
 
 
-/* Test a specific property of a 32-bit wide character.  */
+ 
 #if @GNULIB_C32ISALNUM@
 # if (_GL_WCHAR_T_IS_UCS4 && !GNULIB_defined_mbstate_t) && !defined IN_C32ISALNUM
 _GL_BEGIN_C_LINKAGE
@@ -356,7 +309,7 @@ _GL_CXXALIASWARN (c32isxdigit);
 #endif
 
 
-/* Case mapping of a 32-bit wide character.  */
+ 
 #if @GNULIB_C32TOLOWER@
 # if (_GL_WCHAR_T_IS_UCS4 && !GNULIB_defined_mbstate_t) && !defined IN_C32TOLOWER
 _GL_BEGIN_C_LINKAGE
@@ -389,7 +342,7 @@ _GL_CXXALIASWARN (c32toupper);
 #endif
 
 
-/* Number of screen columns needed for a 32-bit wide character.  */
+ 
 #if @GNULIB_C32WIDTH@
 # if (_GL_WCHAR_T_IS_UCS4 && !GNULIB_defined_mbstate_t) && !defined IN_C32WIDTH
 _GL_BEGIN_C_LINKAGE
@@ -407,7 +360,7 @@ _GL_CXXALIASWARN (c32width);
 #endif
 
 
-/* Converts a 32-bit wide character to a multibyte character.  */
+ 
 #if @GNULIB_C32RTOMB@
 # if @REPLACE_C32RTOMB@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -434,7 +387,7 @@ _GL_WARN_ON_USE (c32rtomb, "c32rtomb is not portable - "
 #endif
 
 
-/* Convert a 32-bit wide string to a string.  */
+ 
 #if @GNULIB_C32SNRTOMBS@
 # if _GL_WCHAR_T_IS_UCS4 && !defined IN_C32SNRTOMBS
 _GL_BEGIN_C_LINKAGE
@@ -458,7 +411,7 @@ _GL_CXXALIASWARN (c32snrtombs);
 #endif
 
 
-/* Convert a 32-bit wide string to a string.  */
+ 
 #if @GNULIB_C32SRTOMBS@
 # if _GL_WCHAR_T_IS_UCS4 && !defined IN_C32SRTOMBS
 _GL_BEGIN_C_LINKAGE
@@ -480,7 +433,7 @@ _GL_CXXALIASWARN (c32srtombs);
 #endif
 
 
-/* Convert a 32-bit wide string to a string.  */
+ 
 #if @GNULIB_C32STOMBS@
 # if _GL_WCHAR_T_IS_UCS4 && !defined IN_C32STOMBS
 _GL_BEGIN_C_LINKAGE
@@ -504,7 +457,7 @@ _GL_CXXALIASWARN (c32stombs);
 #endif
 
 
-/* Number of screen columns needed for a size-bounded 32-bit wide string.  */
+ 
 #if @GNULIB_C32SWIDTH@
 # if (_GL_WCHAR_T_IS_UCS4 && !GNULIB_defined_mbstate_t) && !defined IN_C32SWIDTH
 _GL_BEGIN_C_LINKAGE
@@ -523,9 +476,7 @@ _GL_CXXALIASWARN (c32swidth);
 #endif
 
 
-/* Converts a 32-bit wide character to unibyte character.
-   Returns the single-byte representation of WC if it exists,
-   or EOF otherwise.  */
+ 
 #if @GNULIB_C32TOB@
 # if _GL_WCHAR_T_IS_UCS4 && !defined IN_C32TOB
 _GL_BEGIN_C_LINKAGE
@@ -543,7 +494,7 @@ _GL_CXXALIASWARN (c32tob);
 #endif
 
 
-/* Converts a multibyte character to a 32-bit wide character.  */
+ 
 #if @GNULIB_MBRTOC32@
 # if @REPLACE_MBRTOC32@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -574,8 +525,7 @@ _GL_WARN_ON_USE (mbrtoc32, "mbrtoc32 is not portable - "
 #endif
 
 
-/* Converts a multibyte character and returns the next 16-bit wide
-   character.  */
+ 
 #if @GNULIB_MBRTOC16@
 # if @REPLACE_MBRTOC16@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -606,7 +556,7 @@ _GL_WARN_ON_USE (mbrtoc16, "mbrtoc16 is not portable - "
 #endif
 
 
-/* Convert a string to a 32-bit wide string.  */
+ 
 #if @GNULIB_MBSNRTOC32S@
 # if _GL_WCHAR_T_IS_UCS4 && !defined IN_MBSNRTOC32S
 _GL_BEGIN_C_LINKAGE
@@ -630,7 +580,7 @@ _GL_CXXALIASWARN (mbsnrtoc32s);
 #endif
 
 
-/* Convert a string to a 32-bit wide string.  */
+ 
 #if @GNULIB_MBSRTOC32S@
 # if _GL_WCHAR_T_IS_UCS4 && !defined IN_MBSRTOC32S
 _GL_BEGIN_C_LINKAGE
@@ -652,7 +602,7 @@ _GL_CXXALIASWARN (mbsrtoc32s);
 #endif
 
 
-/* Convert a string to a 32-bit wide string.  */
+ 
 #if @GNULIB_MBSTOC32S@
 # if _GL_WCHAR_T_IS_UCS4 && !defined IN_MBSTOC32S
 _GL_BEGIN_C_LINKAGE
@@ -677,23 +627,15 @@ _GL_CXXALIASWARN (mbstoc32s);
 
 
 #if @GNULIB_C32_GET_TYPE_TEST@ || @GNULIB_C32_APPLY_TYPE_TEST@
-/* A scalar type.  Instances of this type, other than (c32_type_test_t) 0,
-   represent a character property, sometimes also viewed as a "character class".
-   It can be applied to 32-bit wide characters.  It is the counterpart of
-   type 'wctype_t' for wide characters.
-   To test whether a given character has a certain property, use the function
-   'c32_apply_type_test'.  */
+ 
 # if _GL_WCHAR_T_IS_UCS4
 typedef wctype_t c32_type_test_t;
 # else
-typedef /*bool*/int (*c32_type_test_t) (wint_t wc);
+typedef  int (*c32_type_test_t) (wint_t wc);
 # endif
 #endif
 
-/* Return a character property with the given name, or (c32_type_test_t) 0
-   if the designated property does not exist.
-   This function is the counterpart of function 'wctype' for wide characters.
- */
+ 
 #if @GNULIB_C32_GET_TYPE_TEST@
 # if _GL_WCHAR_T_IS_UCS4 && !defined IN_C32_GET_TYPE_TEST
 _GL_BEGIN_C_LINKAGE
@@ -711,11 +653,7 @@ _GL_CXXALIAS_SYS (c32_get_type_test, c32_type_test_t, (const char *name));
 _GL_CXXALIASWARN (c32_get_type_test);
 #endif
 
-/* Test whether a given 32-bit wide character has the specified character
-   property.
-   Return non-zero if true, zero if false or if the argument is WEOF.
-   This function is the counterpart of function 'iswctype' for wide characters.
- */
+ 
 #if @GNULIB_C32_APPLY_TYPE_TEST@
 # if _GL_WCHAR_T_IS_UCS4
 #  if !defined IN_C32_APPLY_TYPE_TEST
@@ -742,11 +680,7 @@ _GL_CXXALIASWARN (c32_apply_type_test);
 
 
 #if @GNULIB_C32_GET_MAPPING@ || @GNULIB_C32_APPLY_MAPPING@
-/* A scalar type.  Instances of this type, other than (c32_mapping_t) 0,
-   represent a character mapping.  It can be applied to 32-bit wide characters.
-   It is the counterpart of type 'wctrans_t' for wide characters.
-   To apply a certain mapping to a given character, use the function
-   'c32_apply_mapping'.  */
+ 
 # if _GL_WCHAR_T_IS_UCS4
 typedef wctrans_t c32_mapping_t;
 # else
@@ -754,10 +688,7 @@ typedef wint_t (*c32_mapping_t) (wint_t wc);
 # endif
 #endif
 
-/* Return a character mapping with the given name, or (c32_mapping_t) 0
-   if the designated mapping does not exist.
-   This function is the counterpart of function 'wctrans' for wide characters.
- */
+ 
 #if @GNULIB_C32_GET_MAPPING@
 # if _GL_WCHAR_T_IS_UCS4 && !defined IN_C32_GET_MAPPING
 _GL_BEGIN_C_LINKAGE
@@ -775,11 +706,7 @@ _GL_CXXALIAS_SYS (c32_get_mapping, c32_mapping_t, (const char *name));
 _GL_CXXALIASWARN (c32_get_mapping);
 #endif
 
-/* Apply the specified character mapping to a given 32-bit wide character.
-   Return the result of this mapping.  Return the WC argument unchanged if it is
-   WEOF.
-   This function is the counterpart of function 'towctrans' for wide characters.
- */
+ 
 #if @GNULIB_C32_APPLY_MAPPING@
 # if _GL_WCHAR_T_IS_UCS4 && !defined IN_C32_APPLY_MAPPING
 _GL_BEGIN_C_LINKAGE
@@ -802,5 +729,5 @@ _GL_CXXALIASWARN (c32_apply_mapping);
 
 _GL_INLINE_HEADER_END
 
-#endif /* _@GUARD_PREFIX@_UCHAR_H */
-#endif /* _@GUARD_PREFIX@_UCHAR_H */
+#endif  
+#endif  

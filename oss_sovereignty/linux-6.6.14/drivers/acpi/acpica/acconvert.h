@@ -1,16 +1,10 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/******************************************************************************
- *
- * Module Name: acapps - common include for ACPI applications/tools
- *
- * Copyright (C) 2000 - 2023, Intel Corp.
- *
- *****************************************************************************/
+ 
+ 
 
 #ifndef _ACCONVERT
 #define _ACCONVERT
 
-/* Definitions for comment state */
+ 
 
 #define ASL_COMMENT_STANDARD    1
 #define ASLCOMMENT_INLINE       2
@@ -18,7 +12,7 @@
 #define ASL_COMMENT_CLOSE_PAREN 4
 #define ASL_COMMENT_CLOSE_BRACE 5
 
-/* Definitions for comment print function*/
+ 
 
 #define AML_COMMENT_STANDARD    1
 #define AMLCOMMENT_INLINE       2
@@ -29,9 +23,7 @@
 #define AML_COMMENT_INCLUDE     7
 
 #ifdef ACPI_ASL_COMPILER
-/*
- * cvcompiler
- */
+ 
 void
 cv_process_comment(struct asl_comment_state current_state,
 		   char *string_buffer, int c1);
@@ -62,9 +54,7 @@ cg_write_one_aml_comment(union acpi_parse_object *op,
 
 void cg_write_aml_comment(union acpi_parse_object *op);
 
-/*
- * cvparser
- */
+ 
 void cv_init_file_tree(struct acpi_table_header *table, FILE * root_file);
 
 void cv_clear_op_comments(union acpi_parse_object *op);
@@ -85,9 +75,7 @@ void cv_capture_comments(struct acpi_walk_state *walk_state);
 
 void cv_transfer_comments(union acpi_parse_object *op);
 
-/*
- * cvdisasm
- */
+ 
 void cv_switch_files(u32 level, union acpi_parse_object *op);
 
 u8 cv_file_has_switched(union acpi_parse_object *op);
@@ -105,4 +93,4 @@ cv_print_one_comment_type(union acpi_parse_object *op,
 
 #endif
 
-#endif				/* _ACCONVERT */
+#endif				 

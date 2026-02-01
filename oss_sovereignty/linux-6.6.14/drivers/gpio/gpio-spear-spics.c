@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SPEAr platform SPI chipselect abstraction over gpiolib
- *
- * Copyright (C) 2012 ST Microelectronics
- * Shiraz Hashim <shiraz.linux.kernel@gmail.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/gpio/driver.h>
@@ -14,31 +9,12 @@
 #include <linux/platform_device.h>
 #include <linux/types.h>
 
-/* maximum chipselects */
+ 
 #define NUM_OF_GPIO	4
 
-/*
- * Provision is available on some SPEAr SoCs to control ARM PL022 spi cs
- * through system registers. This register lies outside spi (pl022)
- * address space into system registers.
- *
- * It provides control for spi chip select lines so that any chipselect
- * (out of 4 possible chipselects in pl022) can be made low to select
- * the particular slave.
- */
+ 
 
-/**
- * struct spear_spics - represents spi chip select control
- * @base: base address
- * @perip_cfg: configuration register
- * @sw_enable_bit: bit to enable s/w control over chipselects
- * @cs_value_bit: bit to program high or low chipselect
- * @cs_enable_mask: mask to select bits required to select chipselect
- * @cs_enable_shift: bit pos of cs_enable_mask
- * @use_count: use count of a spi controller cs lines
- * @last_off: stores last offset caller of set_value()
- * @chip: gpio_chip abstraction
- */
+ 
 struct spear_spics {
 	void __iomem		*base;
 	u32			perip_cfg;
@@ -51,7 +27,7 @@ struct spear_spics {
 	struct gpio_chip	chip;
 };
 
-/* gpio framework specific routines */
+ 
 static int spics_get_value(struct gpio_chip *chip, unsigned offset)
 {
 	return -ENXIO;
@@ -62,7 +38,7 @@ static void spics_set_value(struct gpio_chip *chip, unsigned offset, int value)
 	struct spear_spics *spics = gpiochip_get_data(chip);
 	u32 tmp;
 
-	/* select chip select from register */
+	 
 	tmp = readl_relaxed(spics->base + spics->perip_cfg);
 	if (spics->last_off != offset) {
 		spics->last_off = offset;
@@ -70,7 +46,7 @@ static void spics_set_value(struct gpio_chip *chip, unsigned offset, int value)
 		tmp |= offset << spics->cs_enable_shift;
 	}
 
-	/* toggle chip select line */
+	 
 	tmp &= ~(0x1 << spics->cs_value_bit);
 	tmp |= value << spics->cs_value_bit;
 	writel_relaxed(tmp, spics->base + spics->perip_cfg);

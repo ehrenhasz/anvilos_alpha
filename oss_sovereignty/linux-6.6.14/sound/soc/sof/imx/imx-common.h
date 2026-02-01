@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
+ 
 
 #ifndef __IMX_COMMON_H__
 #define __IMX_COMMON_H__

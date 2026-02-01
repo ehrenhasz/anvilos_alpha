@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for Linear Technology LTC2990 power monitor
- *
- * Copyright (C) 2014 Topic Embedded Products
- * Author: Mike Looijmans <mike.looijmans@topic.nl>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/err.h>
@@ -43,7 +38,7 @@
 #define LTC2990_MODE1_SHIFT	3
 #define LTC2990_MODE1_MASK	GENMASK(1, 0)
 
-/* Enabled measurements for mode bits 2..0 */
+ 
 static const int ltc2990_attrs_ena_0[] = {
 	LTC2990_IN1 | LTC2990_IN2 | LTC2990_TEMP3,
 	LTC2990_CURR1 | LTC2990_TEMP3,
@@ -55,7 +50,7 @@ static const int ltc2990_attrs_ena_0[] = {
 	LTC2990_IN1 | LTC2990_IN2 | LTC2990_IN3 | LTC2990_IN4
 };
 
-/* Enabled measurements for mode bits 4..3 */
+ 
 static const int ltc2990_attrs_ena_1[] = {
 	LTC2990_NONE,
 	LTC2990_TEMP2 | LTC2990_IN1 | LTC2990_CURR1,
@@ -68,7 +63,7 @@ struct ltc2990_data {
 	u32 mode[2];
 };
 
-/* Return the converted value from the given register in uV or mC */
+ 
 static int ltc2990_get_value(struct i2c_client *i2c, int index, int *result)
 {
 	int val;
@@ -109,27 +104,27 @@ static int ltc2990_get_value(struct i2c_client *i2c, int index, int *result)
 	case LTC2990_TEMP1:
 	case LTC2990_TEMP2:
 	case LTC2990_TEMP3:
-		/* temp, 0.0625 degrees/LSB */
+		 
 		*result = sign_extend32(val, 12) * 1000 / 16;
 		break;
 	case LTC2990_CURR1:
 	case LTC2990_CURR2:
-		 /* Vx-Vy, 19.42uV/LSB */
+		  
 		*result = sign_extend32(val, 14) * 1942 / 100;
 		break;
 	case LTC2990_IN0:
-		/* Vcc, 305.18uV/LSB, 2.5V offset */
+		 
 		*result = sign_extend32(val, 14) * 30518 / (100 * 1000) + 2500;
 		break;
 	case LTC2990_IN1:
 	case LTC2990_IN2:
 	case LTC2990_IN3:
 	case LTC2990_IN4:
-		/* Vx, 305.18uV/LSB */
+		 
 		*result = sign_extend32(val, 14) * 30518 / (100 * 1000);
 		break;
 	default:
-		return -EINVAL; /* won't happen, keep compiler happy */
+		return -EINVAL;  
 	}
 
 	return 0;
@@ -235,7 +230,7 @@ static int ltc2990_i2c_probe(struct i2c_client *i2c)
 		data->mode[1] = ret >> LTC2990_MODE1_SHIFT & LTC2990_MODE1_MASK;
 	}
 
-	/* Setup continuous mode */
+	 
 	ret = i2c_smbus_write_byte_data(i2c, LTC2990_CONTROL,
 					data->mode[0] << LTC2990_MODE0_SHIFT |
 					data->mode[1] << LTC2990_MODE1_SHIFT);
@@ -243,7 +238,7 @@ static int ltc2990_i2c_probe(struct i2c_client *i2c)
 		dev_err(&i2c->dev, "Error: Failed to set control mode.\n");
 		return ret;
 	}
-	/* Trigger once to start continuous conversion */
+	 
 	ret = i2c_smbus_write_byte_data(i2c, LTC2990_TRIGGER, 1);
 	if (ret < 0) {
 		dev_err(&i2c->dev, "Error: Failed to start acquisition.\n");

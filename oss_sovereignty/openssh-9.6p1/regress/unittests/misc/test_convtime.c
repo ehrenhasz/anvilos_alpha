@@ -1,9 +1,5 @@
-/* 	$OpenBSD: test_convtime.c,v 1.3 2022/08/11 01:57:50 djm Exp $ */
-/*
- * Regress test for misc time conversion functions.
- *
- * Placed in the public domain.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -43,12 +39,12 @@ test_convtime(void)
 	ASSERT_INT_EQ(convtime("1w"), 7 * 24 * 60 * 60);
 	ASSERT_INT_EQ(convtime("1w2d3h4m5"), 788645);
 	ASSERT_INT_EQ(convtime("1w2d3h4m5s"), 788645);
-	/* any negative number or error returns -1 */
+	 
 	ASSERT_INT_EQ(convtime("-1"),  -1);
 	ASSERT_INT_EQ(convtime(""),  -1);
 	ASSERT_INT_EQ(convtime("trout"),  -1);
 	ASSERT_INT_EQ(convtime("-77"),  -1);
-	/* boundary conditions */
+	 
 	snprintf(buf, sizeof buf, "%llu", (long long unsigned)INT_MAX);
 	ASSERT_INT_EQ(convtime(buf), INT_MAX);
 	snprintf(buf, sizeof buf, "%llu", (long long unsigned)INT_MAX + 1);
@@ -59,14 +55,14 @@ test_convtime(void)
 #endif
 	TEST_DONE();
 
-	/* XXX timezones/DST make verification of this tricky */
-	/* XXX maybe setenv TZ and tzset() to make it unambiguous? */
+	 
+	 
 	TEST_START("misc_parse_absolute_time");
 	ASSERT_INT_EQ(parse_absolute_time("20000101", &t), 0);
 	ASSERT_INT_EQ(parse_absolute_time("200001011223", &t), 0);
 	ASSERT_INT_EQ(parse_absolute_time("20000101122345", &t), 0);
 
-	/* forced UTC TZ */
+	 
 	ASSERT_INT_EQ(parse_absolute_time("20000101Z", &t), 0);
 	ASSERT_U64_EQ(t, 946684800);
 	ASSERT_INT_EQ(parse_absolute_time("200001011223Z", &t), 0);
@@ -80,12 +76,12 @@ test_convtime(void)
 	ASSERT_INT_EQ(parse_absolute_time("20000101122345UTC", &t), 0);
 	ASSERT_U64_EQ(t, 946729425);
 
-	/* Bad month */
+	 
 	ASSERT_INT_EQ(parse_absolute_time("20001301", &t),
 	    SSH_ERR_INVALID_FORMAT);
 	ASSERT_INT_EQ(parse_absolute_time("20000001", &t),
 	    SSH_ERR_INVALID_FORMAT);
-	/* Incomplete */
+	 
 	ASSERT_INT_EQ(parse_absolute_time("2", &t),
 	    SSH_ERR_INVALID_FORMAT);
 	ASSERT_INT_EQ(parse_absolute_time("2000", &t),
@@ -98,7 +94,7 @@ test_convtime(void)
 	    SSH_ERR_INVALID_FORMAT);
 	ASSERT_INT_EQ(parse_absolute_time("200001010", &t),
 	    SSH_ERR_INVALID_FORMAT);
-	/* Bad day, hour, minute, second */
+	 
 	ASSERT_INT_EQ(parse_absolute_time("20000199", &t),
 	    SSH_ERR_INVALID_FORMAT);
 	ASSERT_INT_EQ(parse_absolute_time("200001019900", &t),
@@ -107,7 +103,7 @@ test_convtime(void)
 	    SSH_ERR_INVALID_FORMAT);
 	ASSERT_INT_EQ(parse_absolute_time("20000101000099", &t),
 	    SSH_ERR_INVALID_FORMAT);
-	/* Invalid TZ specifier */
+	 
 	ASSERT_INT_EQ(parse_absolute_time("20000101ZZ", &t),
 	    SSH_ERR_INVALID_FORMAT);
 	ASSERT_INT_EQ(parse_absolute_time("20000101PDT", &t),

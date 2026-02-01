@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright 2017 IBM Corp.
+
+
 #include <linux/pci.h>
 #include <asm/pnv-ocxl.h>
 #include <misc/ocxl-config.h>
@@ -60,12 +60,7 @@ static int find_dvsec_afu_ctrl(struct pci_dev *dev, u8 afu_idx)
 	return 0;
 }
 
-/**
- * get_function_0() - Find a related PCI device (function 0)
- * @dev: PCI device to match
- *
- * Returns a pointer to the related device, or null if not found
- */
+ 
 static struct pci_dev *get_function_0(struct pci_dev *dev)
 {
 	unsigned int devfn = PCI_DEVFN(PCI_SLOT(dev->devfn), 0);
@@ -81,10 +76,7 @@ static void read_pasid(struct pci_dev *dev, struct ocxl_fn_config *fn)
 
 	pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_PASID);
 	if (!pos) {
-		/*
-		 * PASID capability is not mandatory, but there
-		 * shouldn't be any AFU
-		 */
+		 
 		dev_dbg(&dev->dev, "Function doesn't require any PASID\n");
 		fn->max_pasid_log = -1;
 		goto out;
@@ -164,14 +156,7 @@ static int read_dvsec_vendor(struct pci_dev *dev)
 	int pos;
 	u32 cfg, tlx, dlx, reset_reload;
 
-	/*
-	 * vendor specific DVSEC, for IBM images only. Some older
-	 * images may not have it
-	 *
-	 * It's only used on function 0 to specify the version of some
-	 * logic blocks and to give access to special registers to
-	 * enable host-based flashing.
-	 */
+	 
 	if (PCI_FUNC(dev->devfn) != 0)
 		return 0;
 
@@ -193,18 +178,7 @@ static int read_dvsec_vendor(struct pci_dev *dev)
 	return 0;
 }
 
-/**
- * get_dvsec_vendor0() - Find a related PCI device (function 0)
- * @dev: PCI device to match
- * @dev0: The PCI device (function 0) found
- * @out_pos: The position of PCI device (function 0)
- *
- * Returns 0 on success, negative on failure.
- *
- * NOTE: If it's successful, the reference of dev0 is increased,
- * so after using it, the callers must call pci_dev_put() to give
- * up the reference.
- */
+ 
 static int get_dvsec_vendor0(struct pci_dev *dev, struct pci_dev **dev0,
 			     int *out_pos)
 {
@@ -328,7 +302,7 @@ static int read_afu_info(struct pci_dev *dev, struct ocxl_fn_config *fn,
 	unsigned long timeout = jiffies + (HZ * OCXL_CFG_TIMEOUT);
 	int pos = fn->dvsec_afu_info_pos;
 
-	/* Protect 'data valid' bit */
+	 
 	if (EXTRACT_BIT(offset, 31)) {
 		dev_err(&dev->dev, "Invalid offset in AFU info DVSEC\n");
 		return -EINVAL;
@@ -350,15 +324,7 @@ static int read_afu_info(struct pci_dev *dev, struct ocxl_fn_config *fn,
 	return 0;
 }
 
-/**
- * read_template_version() - Read the template version from the AFU
- * @dev: the device for the AFU
- * @fn: the AFU offsets
- * @len: outputs the template length
- * @version: outputs the major<<8,minor version
- *
- * Returns 0 on success, negative on failure
- */
+ 
 static int read_template_version(struct pci_dev *dev, struct ocxl_fn_config *fn,
 				 u16 *len, u16 *version)
 {
@@ -392,7 +358,7 @@ int ocxl_config_check_afu_index(struct pci_dev *dev,
 	if (rc)
 		return rc;
 
-	/* AFU index map can have holes, in which case we read all 0's */
+	 
 	if (!templ_version && !len)
 		return 0;
 
@@ -400,7 +366,7 @@ int ocxl_config_check_afu_index(struct pci_dev *dev,
 		templ_version >> 8, templ_version & 0xFF);
 
 	switch (templ_version) {
-	case 0x0005: // v0.5 was used prior to the spec approval
+	case 0x0005:  
 	case 0x0100:
 		expected_len = OCXL_TEMPL_LEN_1_0;
 		break;
@@ -433,7 +399,7 @@ static int read_afu_name(struct pci_dev *dev, struct ocxl_fn_config *fn,
 		ptr = (u32 *) &afu->name[i];
 		*ptr = le32_to_cpu((__force __le32) val);
 	}
-	afu->name[OCXL_AFU_NAME_SZ - 1] = '\0'; /* play safe */
+	afu->name[OCXL_AFU_NAME_SZ - 1] = '\0';  
 	return 0;
 }
 
@@ -443,9 +409,7 @@ static int read_afu_mmio(struct pci_dev *dev, struct ocxl_fn_config *fn,
 	int rc;
 	u32 val;
 
-	/*
-	 * Global MMIO
-	 */
+	 
 	rc = read_afu_info(dev, fn, OCXL_DVSEC_TEMPL_MMIO_GLOBAL, &val);
 	if (rc)
 		return rc;
@@ -462,9 +426,7 @@ static int read_afu_mmio(struct pci_dev *dev, struct ocxl_fn_config *fn,
 		return rc;
 	afu->global_mmio_size = val;
 
-	/*
-	 * Per-process MMIO
-	 */
+	 
 	rc = read_afu_info(dev, fn, OCXL_DVSEC_TEMPL_MMIO_PP, &val);
 	if (rc)
 		return rc;
@@ -508,16 +470,14 @@ static int read_afu_control(struct pci_dev *dev, struct ocxl_afu_config *afu)
 
 static bool char_allowed(int c)
 {
-	/*
-	 * Permitted Characters : Alphanumeric, hyphen, underscore, comma
-	 */
-	if ((c >= 0x30 && c <= 0x39) /* digits */ ||
-		(c >= 0x41 && c <= 0x5A) /* upper case */ ||
-		(c >= 0x61 && c <= 0x7A) /* lower case */ ||
-		c == 0 /* NULL */ ||
-		c == 0x2D /* - */ ||
-		c == 0x5F /* _ */ ||
-		c == 0x2C /* , */)
+	 
+	if ((c >= 0x30 && c <= 0x39)   ||
+		(c >= 0x41 && c <= 0x5A)   ||
+		(c >= 0x61 && c <= 0x7A)   ||
+		c == 0   ||
+		c == 0x2D   ||
+		c == 0x5F   ||
+		c == 0x2C  )
 		return true;
 	return false;
 }
@@ -553,14 +513,7 @@ static int validate_afu(struct pci_dev *dev, struct ocxl_afu_config *afu)
 	return 0;
 }
 
-/**
- * read_afu_lpc_memory_info() - Populate AFU metadata regarding LPC memory
- * @dev: the device for the AFU
- * @fn: the AFU offsets
- * @afu: the AFU struct to populate the LPC metadata into
- *
- * Returns 0 on success, negative on failure
- */
+ 
 static int read_afu_lpc_memory_info(struct pci_dev *dev,
 				    struct ocxl_fn_config *fn,
 				    struct ocxl_afu_config *afu)
@@ -576,35 +529,16 @@ static int read_afu_lpc_memory_info(struct pci_dev *dev,
 	afu->lpc_mem_size = 0;
 	afu->special_purpose_mem_offset = 0;
 	afu->special_purpose_mem_size = 0;
-	/*
-	 * For AFUs following template v1.0, the LPC memory covers the
-	 * total memory. Its size is a power of 2.
-	 *
-	 * For AFUs with template >= v1.01, the total memory size is
-	 * still a power of 2, but it is split in 2 parts:
-	 * - the LPC memory, whose size can now be anything
-	 * - the remainder memory is a special purpose memory, whose
-	 *   definition is AFU-dependent. It is not accessible through
-	 *   the usual commands for LPC memory
-	 */
+	 
 	rc = read_afu_info(dev, fn, OCXL_DVSEC_TEMPL_ALL_MEM_SZ, &val32);
 	if (rc)
 		return rc;
 
 	val32 = EXTRACT_BITS(val32, 0, 7);
 	if (!val32)
-		return 0; /* No LPC memory */
+		return 0;  
 
-	/*
-	 * The configuration space spec allows for a memory size of up
-	 * to 2^255 bytes.
-	 *
-	 * Current generation hardware uses 56-bit physical addresses,
-	 * but we won't be able to get near close to that, as we won't
-	 * have a hole big enough in the memory map.  Let it pass in
-	 * the driver for now. We'll get an error from the firmware
-	 * when trying to configure something too big.
-	 */
+	 
 	total_mem_size = 1ull << val32;
 
 	rc = read_afu_info(dev, fn, OCXL_DVSEC_TEMPL_LPC_MEM_START, &val32);
@@ -655,10 +589,7 @@ int ocxl_config_read_afu(struct pci_dev *dev, struct ocxl_fn_config *fn,
 	int rc;
 	u32 val32;
 
-	/*
-	 * First, we need to write the AFU idx for the AFU we want to
-	 * access.
-	 */
+	 
 	WARN_ON((afu_idx & OCXL_DVSEC_AFU_IDX_MASK) != afu_idx);
 	afu->idx = afu_idx;
 	pci_write_config_byte(dev,
@@ -722,11 +653,7 @@ int ocxl_config_get_actag_info(struct pci_dev *dev, u16 *base, u16 *enabled,
 {
 	int rc;
 
-	/*
-	 * This is really a simple wrapper for the kernel API, to
-	 * avoid an external driver using ocxl as a library to call
-	 * platform-dependent code
-	 */
+	 
 	rc = pnv_ocxl_get_actag(dev, base, enabled, supported);
 	if (rc) {
 		dev_err(&dev->dev, "Can't get actag for device: %d\n", rc);
@@ -794,33 +721,16 @@ int ocxl_config_set_TL(struct pci_dev *dev, int tl_dvsec)
 	long recv_cap;
 	char *recv_rate;
 
-	/*
-	 * Skip on function != 0, as the TL can only be defined on 0
-	 */
+	 
 	if (PCI_FUNC(dev->devfn) != 0)
 		return 0;
 
 	recv_rate = kzalloc(PNV_OCXL_TL_RATE_BUF_SIZE, GFP_KERNEL);
 	if (!recv_rate)
 		return -ENOMEM;
-	/*
-	 * The spec defines 64 templates for messages in the
-	 * Transaction Layer (TL).
-	 *
-	 * The host and device each support a subset, so we need to
-	 * configure the transmitters on each side to send only
-	 * templates the receiver understands, at a rate the receiver
-	 * can process.  Per the spec, template 0 must be supported by
-	 * everybody. That's the template which has been used by the
-	 * host and device so far.
-	 *
-	 * The sending rate limit must be set before the template is
-	 * enabled.
-	 */
+	 
 
-	/*
-	 * Device -> host
-	 */
+	 
 	rc = pnv_ocxl_get_tl_cap(dev, &recv_cap, recv_rate,
 				PNV_OCXL_TL_RATE_BUF_SIZE);
 	if (rc)
@@ -837,9 +747,7 @@ int ocxl_config_set_TL(struct pci_dev *dev, int tl_dvsec)
 	val = recv_cap & GENMASK(31, 0);
 	pci_write_config_dword(dev, tl_dvsec + OCXL_DVSEC_TL_SEND_CAP + 4, val);
 
-	/*
-	 * Host -> device
-	 */
+	 
 	for (i = 0; i < PNV_OCXL_TL_RATE_BUF_SIZE; i += 4) {
 		pci_read_config_dword(dev,
 				tl_dvsec + OCXL_DVSEC_TL_RECV_RATE + i,
@@ -857,23 +765,8 @@ int ocxl_config_set_TL(struct pci_dev *dev, int tl_dvsec)
 	if (rc)
 		goto out;
 
-	/*
-	 * Opencapi commands needing to be retried are classified per
-	 * the TL in 2 groups: short and long commands.
-	 *
-	 * The short back off timer it not used for now. It will be
-	 * for opencapi 4.0.
-	 *
-	 * The long back off timer is typically used when an AFU hits
-	 * a page fault but the NPU is already processing one. So the
-	 * AFU needs to wait before it can resubmit. Having a value
-	 * too low doesn't break anything, but can generate extra
-	 * traffic on the link.
-	 * We set it to 1.6 us for now. It's shorter than, but in the
-	 * same order of magnitude as the time spent to process a page
-	 * fault.
-	 */
-	timers = 0x2 << 4; /* long timer = 1.6 us */
+	 
+	timers = 0x2 << 4;  
 	pci_write_config_byte(dev, tl_dvsec + OCXL_DVSEC_TL_BACKOFF_TIMERS,
 			timers);
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cooling device driver that activates the processor throttling by
- * programming the TCC Offset register.
- * Copyright (c) 2021, Intel Corporation.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/device.h>

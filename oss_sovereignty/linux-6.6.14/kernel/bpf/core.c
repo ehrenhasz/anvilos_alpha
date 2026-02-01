@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Linux Socket Filter - Kernel level socket filtering
- *
- * Based on the design of the Berkeley Packet Filter. The new
- * internal format has been designed by PLUMgrid:
- *
- *	Copyright (c) 2011 - 2014 PLUMgrid, http://plumgrid.com
- *
- * Authors:
- *
- *	Jay Schulist <jschlst@samba.org>
- *	Alexei Starovoitov <ast@plumgrid.com>
- *	Daniel Borkmann <dborkman@redhat.com>
- *
- * Andi Kleen - Fix a few bad bugs and races.
- * Kris Katterjohn - Added many additional checks in bpf_check_classic()
- */
+
+ 
 
 #include <uapi/linux/btf.h>
 #include <linux/filter.h>
@@ -41,7 +25,7 @@
 #include <asm/barrier.h>
 #include <asm/unaligned.h>
 
-/* Registers */
+ 
 #define BPF_R0	regs[BPF_REG_0]
 #define BPF_R1	regs[BPF_REG_1]
 #define BPF_R2	regs[BPF_REG_2]
@@ -54,7 +38,7 @@
 #define BPF_R9	regs[BPF_REG_9]
 #define BPF_R10	regs[BPF_REG_10]
 
-/* Named registers */
+ 
 #define DST	regs[insn->dst_reg]
 #define SRC	regs[insn->src_reg]
 #define FP	regs[BPF_REG_FP]
@@ -67,10 +51,7 @@
 struct bpf_mem_alloc bpf_global_ma;
 bool bpf_global_ma_set;
 
-/* No hurry in this branch
- *
- * Exported for the bpf jit load helper.
- */
+ 
 void *bpf_internal_load_pointer_neg_helper(const struct sk_buff *skb, int k, unsigned int size)
 {
 	u8 *ptr = NULL;
@@ -181,30 +162,7 @@ void bpf_prog_jit_attempt_done(struct bpf_prog *prog)
 	prog->aux->kfunc_tab = NULL;
 }
 
-/* The jit engine is responsible to provide an array
- * for insn_off to the jited_off mapping (insn_to_jit_off).
- *
- * The idx to this array is the insn_off.  Hence, the insn_off
- * here is relative to the prog itself instead of the main prog.
- * This array has one entry for each xlated bpf insn.
- *
- * jited_off is the byte off to the end of the jited insn.
- *
- * Hence, with
- * insn_start:
- *      The first bpf insn off of the prog.  The insn off
- *      here is relative to the main prog.
- *      e.g. if prog is a subprog, insn_start > 0
- * linfo_idx:
- *      The prog's idx to prog->aux->linfo and jited_linfo
- *
- * jited_linfo[linfo_idx] = prog->bpf_func
- *
- * For i > linfo_idx,
- *
- * jited_linfo[i] = prog->bpf_func +
- *	insn_to_jit_off[linfo[i].insn_off - insn_start - 1]
- */
+ 
 void bpf_prog_fill_jited_linfo(struct bpf_prog *prog,
 			       const u32 *insn_to_jit_off)
 {
@@ -213,7 +171,7 @@ void bpf_prog_fill_jited_linfo(struct bpf_prog *prog,
 	void **jited_linfo;
 
 	if (!prog->aux->jited_linfo)
-		/* Userspace did not provide linfo */
+		 
 		return;
 
 	linfo_idx = prog->aux->linfo_idx;
@@ -227,9 +185,7 @@ void bpf_prog_fill_jited_linfo(struct bpf_prog *prog,
 	nr_linfo = prog->aux->nr_linfo - linfo_idx;
 
 	for (i = 1; i < nr_linfo && linfo[i].insn_off < insn_end; i++)
-		/* The verifier ensures that linfo[i].insn_off is
-		 * strictly increasing
-		 */
+		 
 		jited_linfo[i] = prog->bpf_func +
 			insn_to_jit_off[linfo[i].insn_off - insn_start - 1];
 }
@@ -252,9 +208,7 @@ struct bpf_prog *bpf_prog_realloc(struct bpf_prog *fp_old, unsigned int size,
 		fp->pages = pages;
 		fp->aux->prog = fp;
 
-		/* We keep fp->aux from fp_old around in the new
-		 * reallocated structure.
-		 */
+		 
 		fp_old->aux = NULL;
 		fp_old->stats = NULL;
 		fp_old->active = NULL;
@@ -297,9 +251,7 @@ int bpf_prog_calc_tag(struct bpf_prog *fp)
 	sha1_init(digest);
 	memset(ws, 0, sizeof(ws));
 
-	/* We need to take out the map fd for the digest calculation
-	 * since they are unstable from user space side.
-	 */
+	 
 	dst = (void *)raw;
 	for (i = 0, was_ld_map = false; i < fp->len; i++) {
 		dst[i] = fp->insnsi[i];
@@ -409,10 +361,7 @@ static int bpf_adj_branches(struct bpf_prog *prog, u32 pos, s32 end_old,
 	for (i = 0; i < insn_cnt; i++, insn++) {
 		u8 code;
 
-		/* In the probing pass we still operate on the original,
-		 * unpatched image in order to check overflows before we
-		 * do any other adjustments. Therefore skip the patchlet.
-		 */
+		 
 		if (probe_pass && i == pos) {
 			i = end_new;
 			insn = prog->insnsi + end_old;
@@ -429,7 +378,7 @@ static int bpf_adj_branches(struct bpf_prog *prog, u32 pos, s32 end_old,
 		     BPF_CLASS(code) != BPF_JMP32) ||
 		    BPF_OP(code) == BPF_EXIT)
 			continue;
-		/* Adjust offset of jmps if we cross patch boundaries. */
+		 
 		if (BPF_OP(code) == BPF_CALL) {
 			if (insn->src_reg != BPF_PSEUDO_CALL)
 				continue;
@@ -461,7 +410,7 @@ static void bpf_adj_linfo(struct bpf_prog *prog, u32 off, u32 delta)
 		if (off < linfo[i].insn_off)
 			break;
 
-	/* Push all off < linfo[i].insn_off by delta */
+	 
 	for (; i < nr_linfo; i++)
 		linfo[i].insn_off += delta;
 }
@@ -474,7 +423,7 @@ struct bpf_prog *bpf_patch_insn_single(struct bpf_prog *prog, u32 off,
 	struct bpf_prog *prog_adj;
 	int err;
 
-	/* Since our patchlet doesn't expand the image, we're done. */
+	 
 	if (insn_delta == 0) {
 		memcpy(prog->insnsi + off, patch, sizeof(*patch));
 		return prog;
@@ -482,19 +431,12 @@ struct bpf_prog *bpf_patch_insn_single(struct bpf_prog *prog, u32 off,
 
 	insn_adj_cnt = prog->len + insn_delta;
 
-	/* Reject anything that would potentially let the insn->off
-	 * target overflow when we have excessive program expansions.
-	 * We need to probe here before we do any reallocation where
-	 * we afterwards may not fail anymore.
-	 */
+	 
 	if (insn_adj_cnt > cnt_max &&
 	    (err = bpf_adj_branches(prog, off, off + 1, off + len, true)))
 		return ERR_PTR(err);
 
-	/* Several new instructions need to be inserted. Make room
-	 * for them. Likely, there's no need for a new allocation as
-	 * last page could have large enough tailroom.
-	 */
+	 
 	prog_adj = bpf_prog_realloc(prog, bpf_prog_size(insn_adj_cnt),
 				    GFP_USER);
 	if (!prog_adj)
@@ -502,24 +444,14 @@ struct bpf_prog *bpf_patch_insn_single(struct bpf_prog *prog, u32 off,
 
 	prog_adj->len = insn_adj_cnt;
 
-	/* Patching happens in 3 steps:
-	 *
-	 * 1) Move over tail of insnsi from next instruction onwards,
-	 *    so we can patch the single target insn with one or more
-	 *    new ones (patching is always from 1 to n insns, n > 0).
-	 * 2) Inject new instructions at the target location.
-	 * 3) Adjust branch offsets if necessary.
-	 */
+	 
 	insn_rest = insn_adj_cnt - off - len;
 
 	memmove(prog_adj->insnsi + off + len, prog_adj->insnsi + off + 1,
 		sizeof(*patch) * insn_rest);
 	memcpy(prog_adj->insnsi + off, patch, sizeof(*patch) * len);
 
-	/* We are guaranteed to not fail at this point, otherwise
-	 * the ship has sailed to reverse to the original state. An
-	 * overflow cannot happen at this point.
-	 */
+	 
 	BUG_ON(bpf_adj_branches(prog_adj, off, off + 1, off + len, false));
 
 	bpf_adj_linfo(prog_adj, off, insn_delta);
@@ -529,9 +461,7 @@ struct bpf_prog *bpf_patch_insn_single(struct bpf_prog *prog, u32 off,
 
 int bpf_remove_insns(struct bpf_prog *prog, u32 off, u32 cnt)
 {
-	/* Branch offsets can't overflow when program is shrinking, no need
-	 * to call bpf_adj_branches(..., true) here
-	 */
+	 
 	memmove(prog->insnsi + off, prog->insnsi + off + cnt,
 		sizeof(struct bpf_insn) * (prog->len - off - cnt));
 	prog->len -= cnt;
@@ -554,7 +484,7 @@ void bpf_prog_kallsyms_del_all(struct bpf_prog *fp)
 }
 
 #ifdef CONFIG_BPF_JIT
-/* All BPF JIT sysctl knobs here. */
+ 
 int bpf_jit_enable   __read_mostly = IS_BUILTIN(CONFIG_BPF_JIT_DEFAULT_ON);
 int bpf_jit_kallsyms __read_mostly = IS_BUILTIN(CONFIG_BPF_JIT_DEFAULT_ON);
 int bpf_jit_harden   __read_mostly;
@@ -580,19 +510,13 @@ bpf_prog_ksym_set_name(struct bpf_prog *prog)
 
 	BUILD_BUG_ON(sizeof("bpf_prog_") +
 		     sizeof(prog->tag) * 2 +
-		     /* name has been null terminated.
-		      * We should need +1 for the '_' preceding
-		      * the name.  However, the null character
-		      * is double counted between the name and the
-		      * sizeof("bpf_prog_") above, so we omit
-		      * the +1 here.
-		      */
+		      
 		     sizeof(prog->aux->name) > KSYM_NAME_LEN);
 
 	sym += snprintf(sym, KSYM_NAME_LEN, "bpf_prog_");
 	sym  = bin2hex(sym, prog->tag, sizeof(prog->tag));
 
-	/* prog->aux->name will be ignored if full btf name is available */
+	 
 	if (prog->aux->func_info_cnt) {
 		type = btf_type_by_id(prog->aux->btf,
 				      prog->aux->func_info[prog->aux->func_idx].type_id);
@@ -627,10 +551,7 @@ static __always_inline int bpf_tree_comp(void *key, struct latch_tree_node *n)
 
 	if (val < ksym->start)
 		return -1;
-	/* Ensure that we detect return addresses as part of the program, when
-	 * the final instruction is a call for a program part of the stack
-	 * trace. Therefore, do val > ksym->end instead of val >= ksym->end.
-	 */
+	 
 	if (val > ksym->end)
 		return  1;
 
@@ -830,15 +751,7 @@ int bpf_jit_add_poke_descriptor(struct bpf_prog *prog,
 	return slot;
 }
 
-/*
- * BPF program pack allocator.
- *
- * Most BPF programs are pretty small. Allocating a hole page for each
- * program is sometime a waste. Many small bpf program also adds pressure
- * to instruction TLB. To solve this issue, we introduce a BPF program pack
- * allocator. The prog_pack allocator uses HPAGE_PMD_SIZE page (2MB on x86)
- * to host BPF programs.
- */
+ 
 #define BPF_PROG_CHUNK_SHIFT	6
 #define BPF_PROG_CHUNK_SIZE	(1 << BPF_PROG_CHUNK_SHIFT)
 #define BPF_PROG_CHUNK_MASK	(~(BPF_PROG_CHUNK_SIZE - 1))
@@ -859,9 +772,7 @@ void bpf_jit_fill_hole_with_zero(void *area, unsigned int size)
 static DEFINE_MUTEX(pack_mutex);
 static LIST_HEAD(pack_list);
 
-/* PMD_SIZE is not available in some special config, e.g. ARCH=arm with
- * CONFIG_MMU=n. Use PAGE_SIZE in these cases.
- */
+ 
 #ifdef PMD_SIZE
 #define BPF_PROG_PACK_SIZE (PMD_SIZE * num_possible_nodes())
 #else
@@ -973,10 +884,7 @@ out:
 
 static atomic_long_t bpf_jit_current;
 
-/* Can be overridden by an arch's JIT compiler if it has a custom,
- * dedicated BPF backend memory area, or if neither of the two
- * below apply.
- */
+ 
 u64 __weak bpf_jit_alloc_exec_limit(void)
 {
 #if defined(MODULES_VADDR)
@@ -988,7 +896,7 @@ u64 __weak bpf_jit_alloc_exec_limit(void)
 
 static int __init bpf_jit_charge_init(void)
 {
-	/* Only used as heuristic here to derive limit. */
+	 
 	bpf_jit_limit_max = bpf_jit_alloc_exec_limit();
 	bpf_jit_limit = min_t(u64, round_up(bpf_jit_limit_max >> 1,
 					    PAGE_SIZE), LONG_MAX);
@@ -1034,10 +942,7 @@ bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
 	WARN_ON_ONCE(!is_power_of_2(alignment) ||
 		     alignment > BPF_IMAGE_ALIGNMENT);
 
-	/* Most of BPF filters are really small, but if some of them
-	 * fill a page, allow at least 128 extra bytes to insert a
-	 * random section of illegal instructions.
-	 */
+	 
 	size = round_up(proglen + sizeof(*hdr) + 128, PAGE_SIZE);
 
 	if (bpf_jit_charge_modmem(size))
@@ -1048,7 +953,7 @@ bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
 		return NULL;
 	}
 
-	/* Fill space with illegal/arch-dep instructions. */
+	 
 	bpf_fill_ill_insns(hdr, size);
 
 	hdr->size = size;
@@ -1056,7 +961,7 @@ bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
 		     PAGE_SIZE - sizeof(*hdr));
 	start = get_random_u32_below(hole) & ~(alignment - 1);
 
-	/* Leave a random number of instructions before BPF code. */
+	 
 	*image_ptr = &hdr->image[start];
 
 	return hdr;
@@ -1070,14 +975,7 @@ void bpf_jit_binary_free(struct bpf_binary_header *hdr)
 	bpf_jit_uncharge_modmem(size);
 }
 
-/* Allocate jit binary from bpf_prog_pack allocator.
- * Since the allocated memory is RO+X, the JIT engine cannot write directly
- * to the memory. To solve this problem, a RW buffer is also allocated at
- * as the same time. The JIT engine should calculate offsets based on the
- * RO memory address, but write JITed program to the RW buffer. Once the
- * JIT engine finishes, it calls bpf_jit_binary_pack_finalize, which copies
- * the JITed program to the RO memory.
- */
+ 
 struct bpf_binary_header *
 bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
 			  unsigned int alignment,
@@ -1091,7 +989,7 @@ bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
 	WARN_ON_ONCE(!is_power_of_2(alignment) ||
 		     alignment > BPF_IMAGE_ALIGNMENT);
 
-	/* add 16 bytes for a random section of illegal instructions */
+	 
 	size = round_up(proglen + sizeof(*ro_header) + 16, BPF_PROG_CHUNK_SIZE);
 
 	if (bpf_jit_charge_modmem(size))
@@ -1110,7 +1008,7 @@ bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
 		return NULL;
 	}
 
-	/* Fill space with illegal/arch-dep instructions. */
+	 
 	bpf_fill_ill_insns(*rw_header, size);
 	(*rw_header)->size = size;
 
@@ -1124,7 +1022,7 @@ bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
 	return ro_header;
 }
 
-/* Copy JITed text from rw_header to its final location, the ro_header. */
+ 
 int bpf_jit_binary_pack_finalize(struct bpf_prog *prog,
 				 struct bpf_binary_header *ro_header,
 				 struct bpf_binary_header *rw_header)
@@ -1142,16 +1040,7 @@ int bpf_jit_binary_pack_finalize(struct bpf_prog *prog,
 	return 0;
 }
 
-/* bpf_jit_binary_pack_free is called in two different scenarios:
- *   1) when the program is freed after;
- *   2) when the JIT engine fails (before bpf_jit_binary_pack_finalize).
- * For case 2), we need to free both the RO memory and the RW buffer.
- *
- * bpf_jit_binary_pack_free requires proper ro_header->size. However,
- * bpf_jit_binary_pack_alloc does not set it. Therefore, ro_header->size
- * must be set with either bpf_jit_binary_pack_finalize (normal path) or
- * bpf_arch_text_copy (when jit fails).
- */
+ 
 void bpf_jit_binary_pack_free(struct bpf_binary_header *ro_header,
 			      struct bpf_binary_header *rw_header)
 {
@@ -1182,10 +1071,7 @@ bpf_jit_binary_hdr(const struct bpf_prog *fp)
 	return (void *)addr;
 }
 
-/* This symbol is only overridden by archs that have different
- * requirements than the usual eBPF JITs, f.e. when they only
- * implement cBPF JIT, do not set images read-only, etc.
- */
+ 
 void __weak bpf_jit_free(struct bpf_prog *fp)
 {
 	if (fp->jited) {
@@ -1209,10 +1095,7 @@ int bpf_jit_get_func_addr(const struct bpf_prog *prog,
 
 	*func_addr_fixed = insn->src_reg != BPF_PSEUDO_CALL;
 	if (!*func_addr_fixed) {
-		/* Place-holder address till the last pass has collected
-		 * all addresses for JITed subprograms in which case we
-		 * can pick them up from prog->aux.
-		 */
+		 
 		if (!extra_pass)
 			addr = NULL;
 		else if (prog->aux->func &&
@@ -1226,11 +1109,7 @@ int bpf_jit_get_func_addr(const struct bpf_prog *prog,
 		if (err)
 			return err;
 	} else {
-		/* Address of a BPF helper call. Since part of the core
-		 * kernel, it's always at a fixed location. __bpf_call_base
-		 * and the helper with imm relative to it are both in core
-		 * kernel.
-		 */
+		 
 		addr = (u8 *)__bpf_call_base + imm;
 	}
 
@@ -1250,23 +1129,7 @@ static int bpf_jit_blind_insn(const struct bpf_insn *from,
 	BUILD_BUG_ON(BPF_REG_AX  + 1 != MAX_BPF_JIT_REG);
 	BUILD_BUG_ON(MAX_BPF_REG + 1 != MAX_BPF_JIT_REG);
 
-	/* Constraints on AX register:
-	 *
-	 * AX register is inaccessible from user space. It is mapped in
-	 * all JITs, and used here for constant blinding rewrites. It is
-	 * typically "stateless" meaning its contents are only valid within
-	 * the executed instruction, but not across several instructions.
-	 * There are a few exceptions however which are further detailed
-	 * below.
-	 *
-	 * Constant blinding is only used by JITs, not in the interpreter.
-	 * The interpreter uses AX in some occasions as a local temporary
-	 * register e.g. in DIV or MOD instructions.
-	 *
-	 * In restricted circumstances, the verifier can also use the AX
-	 * register for rewrites as long as they do not interfere with
-	 * the above cases!
-	 */
+	 
 	if (from->dst_reg == BPF_REG_AX || from->src_reg == BPF_REG_AX)
 		goto out;
 
@@ -1317,7 +1180,7 @@ static int bpf_jit_blind_insn(const struct bpf_insn *from,
 	case BPF_JMP | BPF_JSGE | BPF_K:
 	case BPF_JMP | BPF_JSLE | BPF_K:
 	case BPF_JMP | BPF_JSET | BPF_K:
-		/* Accommodate for extra offset in case of a backjump. */
+		 
 		off = from->off;
 		if (off < 0)
 			off -= 2;
@@ -1337,7 +1200,7 @@ static int bpf_jit_blind_insn(const struct bpf_insn *from,
 	case BPF_JMP32 | BPF_JSGE | BPF_K:
 	case BPF_JMP32 | BPF_JSLE | BPF_K:
 	case BPF_JMP32 | BPF_JSET | BPF_K:
-		/* Accommodate for extra offset in case of a backjump. */
+		 
 		off = from->off;
 		if (off < 0)
 			off -= 2;
@@ -1353,7 +1216,7 @@ static int bpf_jit_blind_insn(const struct bpf_insn *from,
 		*to++ = BPF_ALU64_IMM(BPF_LSH, BPF_REG_AX, 32);
 		*to++ = BPF_ALU64_REG(BPF_MOV, aux[0].dst_reg, BPF_REG_AX);
 		break;
-	case 0: /* Part 2 of BPF_LD | BPF_IMM | BPF_DW. */
+	case 0:  
 		*to++ = BPF_ALU32_IMM(BPF_MOV, BPF_REG_AX, imm_rnd ^ aux[0].imm);
 		*to++ = BPF_ALU32_IMM(BPF_XOR, BPF_REG_AX, imm_rnd);
 		if (emit_zext)
@@ -1382,10 +1245,7 @@ static struct bpf_prog *bpf_prog_clone_create(struct bpf_prog *fp_other,
 
 	fp = __vmalloc(fp_other->pages * PAGE_SIZE, gfp_flags);
 	if (fp != NULL) {
-		/* aux->prog still points to the fp_other one, so
-		 * when promoting the clone to the real program,
-		 * this still needs to be adapted.
-		 */
+		 
 		memcpy(fp, fp_other, fp_other->pages * PAGE_SIZE);
 	}
 
@@ -1394,13 +1254,7 @@ static struct bpf_prog *bpf_prog_clone_create(struct bpf_prog *fp_other,
 
 static void bpf_prog_clone_free(struct bpf_prog *fp)
 {
-	/* aux was stolen by the other clone, so we cannot free
-	 * it from this path! It will be freed eventually by the
-	 * other program on release.
-	 *
-	 * At this point, we don't need a deferred release since
-	 * clone is guaranteed to not be locked.
-	 */
+	 
 	fp->aux = NULL;
 	fp->stats = NULL;
 	fp->active = NULL;
@@ -1409,9 +1263,7 @@ static void bpf_prog_clone_free(struct bpf_prog *fp)
 
 void bpf_jit_prog_release_other(struct bpf_prog *fp, struct bpf_prog *fp_other)
 {
-	/* We have to repoint aux->prog to self, as we don't
-	 * know whether fp here is the clone or the original.
-	 */
+	 
 	fp->aux->prog = fp;
 	bpf_prog_clone_free(fp_other);
 }
@@ -1436,19 +1288,13 @@ struct bpf_prog *bpf_jit_blind_constants(struct bpf_prog *prog)
 
 	for (i = 0; i < insn_cnt; i++, insn++) {
 		if (bpf_pseudo_func(insn)) {
-			/* ld_imm64 with an address of bpf subprog is not
-			 * a user controlled constant. Don't randomize it,
-			 * since it will conflict with jit_subprogs() logic.
-			 */
+			 
 			insn++;
 			i++;
 			continue;
 		}
 
-		/* We temporarily need to hold the original ld64 insn
-		 * so that we can still access the first part in the
-		 * second blinding run.
-		 */
+		 
 		if (insn[0].code == (BPF_LD | BPF_IMM | BPF_DW) &&
 		    insn[1].code == 0)
 			memcpy(aux, insn, sizeof(aux));
@@ -1460,10 +1306,7 @@ struct bpf_prog *bpf_jit_blind_constants(struct bpf_prog *prog)
 
 		tmp = bpf_patch_insn_single(clone, i, insn_buff, rewritten);
 		if (IS_ERR(tmp)) {
-			/* Patching may have repointed aux->prog during
-			 * realloc from the original one, so we need to
-			 * fix it up here on error.
-			 */
+			 
 			bpf_jit_prog_release_other(prog, clone);
 			return tmp;
 		}
@@ -1471,7 +1314,7 @@ struct bpf_prog *bpf_jit_blind_constants(struct bpf_prog *prog)
 		clone = tmp;
 		insn_delta = rewritten - 1;
 
-		/* Walk new program and skip insns we just inserted. */
+		 
 		insn = clone->insnsi + i + insn_delta;
 		insn_cnt += insn_delta;
 		i        += insn_delta;
@@ -1480,24 +1323,19 @@ struct bpf_prog *bpf_jit_blind_constants(struct bpf_prog *prog)
 	clone->blinded = 1;
 	return clone;
 }
-#endif /* CONFIG_BPF_JIT */
+#endif  
 
-/* Base function for offset calculation. Needs to go into .text section,
- * therefore keeping it non-static as well; will also be used by JITs
- * anyway later on, so do not let the compiler omit it. This also needs
- * to go into kallsyms for correlation from e.g. bpftool, so naming
- * must not change.
- */
+ 
 noinline u64 __bpf_call_base(u64 r1, u64 r2, u64 r3, u64 r4, u64 r5)
 {
 	return 0;
 }
 EXPORT_SYMBOL_GPL(__bpf_call_base);
 
-/* All UAPI available opcodes. */
+ 
 #define BPF_INSN_MAP(INSN_2, INSN_3)		\
-	/* 32 bit ALU operations. */		\
-	/*   Register based. */			\
+	 		\
+	 			\
 	INSN_3(ALU, ADD,  X),			\
 	INSN_3(ALU, SUB,  X),			\
 	INSN_3(ALU, AND,  X),			\
@@ -1513,7 +1351,7 @@ EXPORT_SYMBOL_GPL(__bpf_call_base);
 	INSN_2(ALU, NEG),			\
 	INSN_3(ALU, END, TO_BE),		\
 	INSN_3(ALU, END, TO_LE),		\
-	/*   Immediate based. */		\
+	 		\
 	INSN_3(ALU, ADD,  K),			\
 	INSN_3(ALU, SUB,  K),			\
 	INSN_3(ALU, AND,  K),			\
@@ -1526,8 +1364,8 @@ EXPORT_SYMBOL_GPL(__bpf_call_base);
 	INSN_3(ALU, ARSH, K),			\
 	INSN_3(ALU, DIV,  K),			\
 	INSN_3(ALU, MOD,  K),			\
-	/* 64 bit ALU operations. */		\
-	/*   Register based. */			\
+	 		\
+	 			\
 	INSN_3(ALU64, ADD,  X),			\
 	INSN_3(ALU64, SUB,  X),			\
 	INSN_3(ALU64, AND,  X),			\
@@ -1542,7 +1380,7 @@ EXPORT_SYMBOL_GPL(__bpf_call_base);
 	INSN_3(ALU64, MOD,  X),			\
 	INSN_2(ALU64, NEG),			\
 	INSN_3(ALU64, END, TO_LE),		\
-	/*   Immediate based. */		\
+	 		\
 	INSN_3(ALU64, ADD,  K),			\
 	INSN_3(ALU64, SUB,  K),			\
 	INSN_3(ALU64, AND,  K),			\
@@ -1555,12 +1393,12 @@ EXPORT_SYMBOL_GPL(__bpf_call_base);
 	INSN_3(ALU64, ARSH, K),			\
 	INSN_3(ALU64, DIV,  K),			\
 	INSN_3(ALU64, MOD,  K),			\
-	/* Call instruction. */			\
+	 			\
 	INSN_2(JMP, CALL),			\
-	/* Exit instruction. */			\
+	 			\
 	INSN_2(JMP, EXIT),			\
-	/* 32-bit Jump instructions. */		\
-	/*   Register based. */			\
+	 		\
+	 			\
 	INSN_3(JMP32, JEQ,  X),			\
 	INSN_3(JMP32, JNE,  X),			\
 	INSN_3(JMP32, JGT,  X),			\
@@ -1572,7 +1410,7 @@ EXPORT_SYMBOL_GPL(__bpf_call_base);
 	INSN_3(JMP32, JSGE, X),			\
 	INSN_3(JMP32, JSLE, X),			\
 	INSN_3(JMP32, JSET, X),			\
-	/*   Immediate based. */		\
+	 		\
 	INSN_3(JMP32, JEQ,  K),			\
 	INSN_3(JMP32, JNE,  K),			\
 	INSN_3(JMP32, JGT,  K),			\
@@ -1584,8 +1422,8 @@ EXPORT_SYMBOL_GPL(__bpf_call_base);
 	INSN_3(JMP32, JSGE, K),			\
 	INSN_3(JMP32, JSLE, K),			\
 	INSN_3(JMP32, JSET, K),			\
-	/* Jump instructions. */		\
-	/*   Register based. */			\
+	 		\
+	 			\
 	INSN_3(JMP, JEQ,  X),			\
 	INSN_3(JMP, JNE,  X),			\
 	INSN_3(JMP, JGT,  X),			\
@@ -1597,7 +1435,7 @@ EXPORT_SYMBOL_GPL(__bpf_call_base);
 	INSN_3(JMP, JSGE, X),			\
 	INSN_3(JMP, JSLE, X),			\
 	INSN_3(JMP, JSET, X),			\
-	/*   Immediate based. */		\
+	 		\
 	INSN_3(JMP, JEQ,  K),			\
 	INSN_3(JMP, JNE,  K),			\
 	INSN_3(JMP, JGT,  K),			\
@@ -1611,21 +1449,21 @@ EXPORT_SYMBOL_GPL(__bpf_call_base);
 	INSN_3(JMP, JSET, K),			\
 	INSN_2(JMP, JA),			\
 	INSN_2(JMP32, JA),			\
-	/* Store instructions. */		\
-	/*   Register based. */			\
+	 		\
+	 			\
 	INSN_3(STX, MEM,  B),			\
 	INSN_3(STX, MEM,  H),			\
 	INSN_3(STX, MEM,  W),			\
 	INSN_3(STX, MEM,  DW),			\
 	INSN_3(STX, ATOMIC, W),			\
 	INSN_3(STX, ATOMIC, DW),		\
-	/*   Immediate based. */		\
+	 		\
 	INSN_3(ST, MEM, B),			\
 	INSN_3(ST, MEM, H),			\
 	INSN_3(ST, MEM, W),			\
 	INSN_3(ST, MEM, DW),			\
-	/* Load instructions. */		\
-	/*   Register based. */			\
+	 		\
+	 			\
 	INSN_3(LDX, MEM, B),			\
 	INSN_3(LDX, MEM, H),			\
 	INSN_3(LDX, MEM, W),			\
@@ -1633,7 +1471,7 @@ EXPORT_SYMBOL_GPL(__bpf_call_base);
 	INSN_3(LDX, MEMSX, B),			\
 	INSN_3(LDX, MEMSX, H),			\
 	INSN_3(LDX, MEMSX, W),			\
-	/*   Immediate based. */		\
+	 		\
 	INSN_3(LD, IMM, DW)
 
 bool bpf_opcode_in_insntable(u8 code)
@@ -1642,9 +1480,9 @@ bool bpf_opcode_in_insntable(u8 code)
 #define BPF_INSN_3_TBL(x, y, z) [BPF_##x | BPF_##y | BPF_##z] = true
 	static const bool public_insntable[256] = {
 		[0 ... 255] = false,
-		/* Now overwrite non-defaults ... */
+		 
 		BPF_INSN_MAP(BPF_INSN_2_TBL, BPF_INSN_3_TBL),
-		/* UAPI exposed, but rewritten opcodes. cBPF carry-over. */
+		 
 		[BPF_LD | BPF_ABS | BPF_B] = true,
 		[BPF_LD | BPF_ABS | BPF_H] = true,
 		[BPF_LD | BPF_ABS | BPF_W] = true,
@@ -1658,24 +1496,16 @@ bool bpf_opcode_in_insntable(u8 code)
 }
 
 #ifndef CONFIG_BPF_JIT_ALWAYS_ON
-/**
- *	___bpf_prog_run - run eBPF program on a given context
- *	@regs: is the array of MAX_BPF_EXT_REG eBPF pseudo-registers
- *	@insn: is the array of eBPF instructions
- *
- * Decode and execute eBPF instructions.
- *
- * Return: whatever value is in %BPF_R0 at program exit
- */
+ 
 static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
 {
 #define BPF_INSN_2_LBL(x, y)    [BPF_##x | BPF_##y] = &&x##_##y
 #define BPF_INSN_3_LBL(x, y, z) [BPF_##x | BPF_##y | BPF_##z] = &&x##_##y##_##z
 	static const void * const jumptable[256] __annotate_jump_table = {
 		[0 ... 255] = &&default_label,
-		/* Now overwrite non-defaults ... */
+		 
 		BPF_INSN_MAP(BPF_INSN_2_LBL, BPF_INSN_3_LBL),
-		/* Non-UAPI available opcodes. */
+		 
 		[BPF_JMP | BPF_CALL_ARGS] = &&JMP_CALL_ARGS,
 		[BPF_JMP | BPF_TAIL_CALL] = &&JMP_TAIL_CALL,
 		[BPF_ST  | BPF_NOSPEC] = &&ST_NOSPEC,
@@ -1697,18 +1527,8 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
 select_insn:
 	goto *jumptable[insn->code];
 
-	/* Explicitly mask the register-based shift amounts with 63 or 31
-	 * to avoid undefined behavior. Normally this won't affect the
-	 * generated code, for example, in case of native 64 bit archs such
-	 * as x86-64 or arm64, the compiler is optimizing the AND away for
-	 * the interpreter. In case of JITs, each of the JIT backends compiles
-	 * the BPF shift operations to machine instructions which produce
-	 * implementation-defined results in such a case; the resulting
-	 * contents of the register may be arbitrary, but program behaviour
-	 * as a whole remains defined. In other words, in case of JIT backends,
-	 * the AND must /not/ be added to the emitted LSH/RSH/ARSH translation.
-	 */
-	/* ALU (shifts) */
+	 
+	 
 #define SHT(OPCODE, OP)					\
 	ALU64_##OPCODE##_X:				\
 		DST = DST OP (SRC & 63);		\
@@ -1722,7 +1542,7 @@ select_insn:
 	ALU_##OPCODE##_K:				\
 		DST = (u32) DST OP (u32) IMM;		\
 		CONT;
-	/* ALU (rest) */
+	 
 #define ALU(OPCODE, OP)					\
 	ALU64_##OPCODE##_X:				\
 		DST = DST OP SRC;			\
@@ -1953,12 +1773,9 @@ select_insn:
 		}
 		CONT;
 
-	/* CALL */
+	 
 	JMP_CALL:
-		/* Function call scratches BPF_R1-BPF_R5 registers,
-		 * preserves BPF_R6-BPF_R9, and stores return value
-		 * into BPF_R0.
-		 */
+		 
 		BPF_R0 = (__bpf_call_base + insn->imm)(BPF_R1, BPF_R2, BPF_R3,
 						       BPF_R4, BPF_R5);
 		CONT;
@@ -1988,11 +1805,7 @@ select_insn:
 		if (!prog)
 			goto out;
 
-		/* ARG1 at this point is guaranteed to point to CTX from
-		 * the verifier side due to the fact that the tail call is
-		 * handled like a helper, that is, bpf_tail_call_proto,
-		 * where arg1_type is ARG_PTR_TO_CTX.
-		 */
+		 
 		insn = prog->insnsi;
 		goto select_insn;
 out:
@@ -2006,7 +1819,7 @@ out:
 		CONT;
 	JMP_EXIT:
 		return BPF_R0;
-	/* JMP */
+	 
 #define COND_JMP(SIGN, OPCODE, CMP_OP)				\
 	JMP_##OPCODE##_X:					\
 		if ((SIGN##64) DST CMP_OP (SIGN##64) SRC) {	\
@@ -2044,17 +1857,9 @@ out:
 	COND_JMP(s, JSGE, >=)
 	COND_JMP(s, JSLE, <=)
 #undef COND_JMP
-	/* ST, STX and LDX*/
+	 
 	ST_NOSPEC:
-		/* Speculation barrier for mitigating Speculative Store Bypass.
-		 * In case of arm64, we rely on the firmware mitigation as
-		 * controlled via the ssbd kernel parameter. Whenever the
-		 * mitigation is enabled, it works for all of the kernel code
-		 * with no need to provide any additional instructions here.
-		 * In case of x86, we use 'lfence' insn for mitigation. We
-		 * reuse preexisting logic from Spectre v1 mitigation that
-		 * happens to produce the required code on x86 for v4 as well.
-		 */
+		 
 		barrier_nospec();
 		CONT;
 #define LDST(SIZEOP, SIZE)						\
@@ -2150,12 +1955,7 @@ out:
 		CONT;
 
 	default_label:
-		/* If we ever reach this, we have a bug somewhere. Die hard here
-		 * instead of just returning 0; we could be somewhere in a subprog,
-		 * so execution could continue otherwise which we do /not/ want.
-		 *
-		 * Note, verifier whitelists all opcodes in bpf_opcode_in_insntable().
-		 */
+		 
 		pr_warn("BPF interpreter: unknown opcode %02x (imm: 0x%x)\n",
 			insn->code, insn->imm);
 		BUG_ON(1);
@@ -2239,9 +2039,7 @@ void bpf_patch_call_args(struct bpf_insn *insn, u32 stack_depth)
 static unsigned int __bpf_prog_ret0_warn(const void *ctx,
 					 const struct bpf_insn *insn)
 {
-	/* If this handler ever gets executed, then BPF_JIT_ALWAYS_ON
-	 * is not working properly, so warn about it!
-	 */
+	 
 	WARN_ON_ONCE(1);
 	return 0;
 }
@@ -2256,19 +2054,13 @@ bool bpf_prog_map_compatible(struct bpf_map *map,
 	if (fp->kprobe_override)
 		return false;
 
-	/* XDP programs inserted into maps are not guaranteed to run on
-	 * a particular netdev (and can run outside driver context entirely
-	 * in the case of devmap and cpumap). Until device checks
-	 * are implemented, prohibit adding dev-bound programs to program maps.
-	 */
+	 
 	if (bpf_prog_is_dev_bound(fp->aux))
 		return false;
 
 	spin_lock(&map->owner.lock);
 	if (!map->owner.type) {
-		/* There's no owner yet where we could check for
-		 * compatibility.
-		 */
+		 
 		map->owner.type  = prog_type;
 		map->owner.jited = fp->jited;
 		map->owner.xdp_has_frags = fp->aux->xdp_has_frags;
@@ -2317,22 +2109,10 @@ static void bpf_prog_select_func(struct bpf_prog *fp)
 #endif
 }
 
-/**
- *	bpf_prog_select_runtime - select exec runtime for BPF program
- *	@fp: bpf_prog populated with BPF program
- *	@err: pointer to error variable
- *
- * Try to JIT eBPF program, if JIT is not available, use interpreter.
- * The BPF program will be executed via bpf_prog_run() function.
- *
- * Return: the &fp argument along with &err set to 0 for success or
- * a negative errno code on failure
- */
+ 
 struct bpf_prog *bpf_prog_select_runtime(struct bpf_prog *fp, int *err)
 {
-	/* In case of BPF to BPF calls, verifier did all the prep
-	 * work with regards to JITing, etc.
-	 */
+	 
 	bool jit_needed = false;
 
 	if (fp->bpf_func)
@@ -2344,12 +2124,7 @@ struct bpf_prog *bpf_prog_select_runtime(struct bpf_prog *fp, int *err)
 
 	bpf_prog_select_func(fp);
 
-	/* eBPF JITs can rewrite the program in case constant
-	 * blinding is active. However, in case of error during
-	 * blinding, bpf_int_jit_compile() must always return a
-	 * valid program, which in this case would simply not
-	 * be JITed, but falls back to the interpreter.
-	 */
+	 
 	if (!bpf_prog_is_offloaded(fp->aux)) {
 		*err = bpf_prog_alloc_jited_linfo(fp);
 		if (*err)
@@ -2370,11 +2145,7 @@ struct bpf_prog *bpf_prog_select_runtime(struct bpf_prog *fp, int *err)
 finalize:
 	bpf_prog_lock_ro(fp);
 
-	/* The tail call compatibility check can only be done at
-	 * this late stage as we need to determine, if we deal
-	 * with JITed or non JITed program concatenations and not
-	 * all eBPF JITs might immediately support all features.
-	 */
+	 
 	*err = bpf_check_tail_call(fp);
 
 	return fp;
@@ -2422,9 +2193,7 @@ static void __bpf_prog_array_free_sleepable_cb(struct rcu_head *rcu)
 {
 	struct bpf_prog_array *progs;
 
-	/* If RCU Tasks Trace grace period implies RCU grace period, there is
-	 * no need to call kfree_rcu(), just call kfree() directly.
-	 */
+	 
 	progs = container_of(rcu, struct bpf_prog_array, rcu);
 	if (rcu_trace_implies_rcu_gp())
 		kfree(progs);
@@ -2487,12 +2256,7 @@ int bpf_prog_array_copy_to_user(struct bpf_prog_array *array,
 	bool nospc;
 	u32 *ids;
 
-	/* users of this function are doing:
-	 * cnt = bpf_prog_array_length();
-	 * if (cnt > 0)
-	 *     bpf_prog_array_copy_to_user(..., cnt);
-	 * so below kcalloc doesn't need extra cnt > 0 check.
-	 */
+	 
 	ids = kcalloc(cnt, sizeof(u32), GFP_USER | __GFP_NOWARN);
 	if (!ids)
 		return -ENOMEM;
@@ -2518,41 +2282,13 @@ void bpf_prog_array_delete_safe(struct bpf_prog_array *array,
 		}
 }
 
-/**
- * bpf_prog_array_delete_safe_at() - Replaces the program at the given
- *                                   index into the program array with
- *                                   a dummy no-op program.
- * @array: a bpf_prog_array
- * @index: the index of the program to replace
- *
- * Skips over dummy programs, by not counting them, when calculating
- * the position of the program to replace.
- *
- * Return:
- * * 0		- Success
- * * -EINVAL	- Invalid index value. Must be a non-negative integer.
- * * -ENOENT	- Index out of range
- */
+ 
 int bpf_prog_array_delete_safe_at(struct bpf_prog_array *array, int index)
 {
 	return bpf_prog_array_update_at(array, index, &dummy_bpf_prog.prog);
 }
 
-/**
- * bpf_prog_array_update_at() - Updates the program at the given index
- *                              into the program array.
- * @array: a bpf_prog_array
- * @index: the index of the program to update
- * @prog: the program to insert into the array
- *
- * Skips over dummy programs, by not counting them, when calculating
- * the position of the program to update.
- *
- * Return:
- * * 0		- Success
- * * -EINVAL	- Invalid index value. Must be a non-negative integer.
- * * -ENOENT	- Index out of range
- */
+ 
 int bpf_prog_array_update_at(struct bpf_prog_array *array, int index,
 			     struct bpf_prog *prog)
 {
@@ -2584,9 +2320,7 @@ int bpf_prog_array_copy(struct bpf_prog_array *old_array,
 	struct bpf_prog_array *array;
 	bool found_exclude = false;
 
-	/* Figure out how many existing progs we need to carry over to
-	 * the new array.
-	 */
+	 
 	if (old_array) {
 		existing = old_array->items;
 		for (; existing->prog; existing++) {
@@ -2604,24 +2338,24 @@ int bpf_prog_array_copy(struct bpf_prog_array *old_array,
 	if (exclude_prog && !found_exclude)
 		return -ENOENT;
 
-	/* How many progs (not NULL) will be in the new array? */
+	 
 	new_prog_cnt = carry_prog_cnt;
 	if (include_prog)
 		new_prog_cnt += 1;
 
-	/* Do we have any prog (not NULL) in the new array? */
+	 
 	if (!new_prog_cnt) {
 		*new_array = NULL;
 		return 0;
 	}
 
-	/* +1 as the end of prog_array is marked with NULL */
+	 
 	array = bpf_prog_array_alloc(new_prog_cnt + 1, GFP_KERNEL);
 	if (!array)
 		return -ENOMEM;
 	new = array->items;
 
-	/* Fill in the new prog array */
+	 
 	if (carry_prog_cnt) {
 		existing = old_array->items;
 		for (; existing->prog; existing++) {
@@ -2655,11 +2389,11 @@ int bpf_prog_array_copy_info(struct bpf_prog_array *array,
 
 	*prog_cnt = cnt;
 
-	/* return early if user requested only program count or nothing to copy */
+	 
 	if (!request_cnt || !cnt)
 		return 0;
 
-	/* this function is called under trace/bpf_trace.c: bpf_event_mutex */
+	 
 	return bpf_prog_array_copy_core(array, prog_ids, request_cnt) ? -ENOSPC
 								     : 0;
 }
@@ -2730,10 +2464,7 @@ static void bpf_prog_free_deferred(struct work_struct *work)
 	if (aux->dst_trampoline)
 		bpf_trampoline_put(aux->dst_trampoline);
 	for (i = 0; i < aux->func_cnt; i++) {
-		/* We can just unlink the subprog poke descriptor table as
-		 * it was originally linked to the main program and is also
-		 * released along with it.
-		 */
+		 
 		aux->func[i]->aux->poke_tab = NULL;
 		bpf_jit_free(aux->func[i]);
 	}
@@ -2756,7 +2487,7 @@ void bpf_prog_free(struct bpf_prog *fp)
 }
 EXPORT_SYMBOL_GPL(bpf_prog_free);
 
-/* RNG for unpriviledged user space with separated state from prandom_u32(). */
+ 
 static DEFINE_PER_CPU(struct rnd_state, bpf_user_rnd_state);
 
 void bpf_user_rnd_init_once(void)
@@ -2766,12 +2497,7 @@ void bpf_user_rnd_init_once(void)
 
 BPF_CALL_0(bpf_user_rnd_u32)
 {
-	/* Should someone ever have the rather unwise idea to use some
-	 * of the registers passed into this function, then note that
-	 * this function is called from native eBPF and classic-to-eBPF
-	 * transformations. Register assignments from both sides are
-	 * different, f.e. classic always sets fn(ctx, A, X) here.
-	 */
+	 
 	struct rnd_state *state;
 	u32 res;
 
@@ -2787,7 +2513,7 @@ BPF_CALL_0(bpf_get_raw_cpu_id)
 	return raw_smp_processor_id();
 }
 
-/* Weak definitions of helper functions in case we don't have bpf syscall. */
+ 
 const struct bpf_func_proto bpf_map_lookup_elem_proto __weak;
 const struct bpf_func_proto bpf_map_update_elem_proto __weak;
 const struct bpf_func_proto bpf_map_delete_elem_proto __weak;
@@ -2837,7 +2563,7 @@ bpf_event_output(struct bpf_map *map, u64 flags, void *meta, u64 meta_size,
 }
 EXPORT_SYMBOL_GPL(bpf_event_output);
 
-/* Always built-in helper functions. */
+ 
 const struct bpf_func_proto bpf_tail_call_proto = {
 	.func		= NULL,
 	.gpl_only	= false,
@@ -2847,18 +2573,13 @@ const struct bpf_func_proto bpf_tail_call_proto = {
 	.arg3_type	= ARG_ANYTHING,
 };
 
-/* Stub for JITs that only support cBPF. eBPF programs are interpreted.
- * It is encouraged to implement bpf_int_jit_compile() instead, so that
- * eBPF and implicitly also cBPF can get JITed!
- */
+ 
 struct bpf_prog * __weak bpf_int_jit_compile(struct bpf_prog *prog)
 {
 	return prog;
 }
 
-/* Stub for JITs that support eBPF. All cBPF code gets transformed into
- * eBPF by the kernel and is later compiled by bpf_int_jit_compile().
- */
+ 
 void __weak bpf_jit_compile(struct bpf_prog *prog)
 {
 }
@@ -2868,20 +2589,13 @@ bool __weak bpf_helper_changes_pkt_data(void *func)
 	return false;
 }
 
-/* Return TRUE if the JIT backend wants verifier to enable sub-register usage
- * analysis code and wants explicit zero extension inserted by verifier.
- * Otherwise, return FALSE.
- *
- * The verifier inserts an explicit zero extension after BPF_CMPXCHGs even if
- * you don't override this. JITs that don't want these extra insns can detect
- * them using insn_is_zext.
- */
+ 
 bool __weak bpf_jit_needs_zext(void)
 {
 	return false;
 }
 
-/* Return TRUE if the JIT backend supports mixing bpf2bpf and tailcalls. */
+ 
 bool __weak bpf_jit_supports_subprog_tailcalls(void)
 {
 	return false;
@@ -2897,9 +2611,7 @@ bool __weak bpf_jit_supports_far_kfunc_call(void)
 	return false;
 }
 
-/* To execute LD_ABS/LD_IND instructions __bpf_prog_run() may call
- * skb_copy_bits(), so provide a weak definition of it for NET-less config.
- */
+ 
 int __weak skb_copy_bits(const struct sk_buff *skb, int offset, void *to,
 			 int len)
 {
@@ -2937,7 +2649,7 @@ late_initcall(bpf_global_ma_init);
 DEFINE_STATIC_KEY_FALSE(bpf_stats_enabled_key);
 EXPORT_SYMBOL(bpf_stats_enabled_key);
 
-/* All definitions of tracepoints related to BPF. */
+ 
 #define CREATE_TRACE_POINTS
 #include <linux/bpf_trace.h>
 

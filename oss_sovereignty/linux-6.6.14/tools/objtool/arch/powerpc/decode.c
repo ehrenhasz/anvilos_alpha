@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -54,8 +54,8 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
 	imm = 0;
 
 	switch (opcode) {
-	case 18: /* b[l][a] */
-		if ((ins & 3) == 1) /* bl */
+	case 18:  
+		if ((ins & 3) == 1)  
 			typ = INSN_CALL;
 
 		imm = ins & 0x3fffffc;
@@ -82,10 +82,7 @@ unsigned long arch_jump_destination(struct instruction *insn)
 
 bool arch_pc_relative_reloc(struct reloc *reloc)
 {
-	/*
-	 * The powerpc build only allows certain relocation types, see
-	 * relocs_check.sh, and none of those accepted are PC relative.
-	 */
+	 
 	return false;
 }
 
@@ -98,11 +95,11 @@ void arch_initial_func_cfi_state(struct cfi_init_state *state)
 		state->regs[i].offset = 0;
 	}
 
-	/* initial CFA (call frame address) */
+	 
 	state->cfa.base = CFI_SP;
 	state->cfa.offset = 0;
 
-	/* initial LR (return address) */
+	 
 	state->regs[CFI_RA].base = CFI_CFA;
 	state->regs[CFI_RA].offset = 0;
 }

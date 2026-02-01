@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Murata SCA3300 3-axis industrial accelerometer
- *
- * Copyright (c) 2021 Vaisala Oyj. All rights reserved.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/crc8.h>
@@ -24,23 +20,23 @@
 
 #define SCA3300_CRC8_POLYNOMIAL 0x1d
 
-/* Device mode register */
+ 
 #define SCA3300_REG_MODE	0xd
 #define SCA3300_MODE_SW_RESET	0x20
 
-/* Last register in map */
+ 
 #define SCA3300_REG_SELBANK	0x1f
 
-/* Device status and mask */
+ 
 #define SCA3300_REG_STATUS	0x6
 #define SCA3300_STATUS_MASK	GENMASK(8, 0)
 
-/* Device ID */
+ 
 #define SCA3300_REG_WHOAMI	0x10
 #define SCA3300_WHOAMI_ID	0x51
 #define SCL3300_WHOAMI_ID	0xC1
 
-/* Device return status and mask */
+ 
 #define SCA3300_VALUE_RS_ERROR	0x3
 #define SCA3300_MASK_RS_STATUS	GENMASK(1, 0)
 
@@ -58,13 +54,7 @@ enum sca3300_scan_indexes {
 	SCA3300_SCAN_MAX
 };
 
-/*
- * Buffer size max case:
- * Three accel channels, two bytes per channel.
- * Temperature channel, two bytes.
- * Three incli channels, two bytes per channel.
- * Timestamp channel, eight bytes.
- */
+ 
 #define SCA3300_MAX_BUFFER_SIZE (ALIGN(sizeof(s16) * SCA3300_SCAN_MAX, sizeof(s64)) + sizeof(s64))
 
 #define SCA3300_ACCEL_CHANNEL(index, reg, axis) {			\
@@ -188,17 +178,7 @@ struct sca3300_chip_info {
 	bool angle_supported;
 };
 
-/**
- * struct sca3300_data - device data
- * @spi: SPI device structure
- * @lock: Data buffer lock
- * @chip: Sensor chip specific information
- * @buffer: Triggered buffer:
- *          -SCA3300: 4 channel 16-bit data + 64-bit timestamp
- *          -SCL3300: 7 channel 16-bit data + 64-bit timestamp
- * @txbuf: Transmit buffer
- * @rxbuf: Receive buffer
- */
+ 
 struct sca3300_data {
 	struct spi_device *spi;
 	struct mutex lock;
@@ -250,7 +230,7 @@ DECLARE_CRC8_TABLE(sca3300_crc_table);
 
 static int sca3300_transfer(struct sca3300_data *sca_data, int *val)
 {
-	/* Consecutive requests min. 10 us delay (Datasheet section 5.1.2) */
+	 
 	struct spi_delay delay = { .value = 10, .unit = SPI_DELAY_UNIT_USECS };
 	int32_t ret;
 	int rs;
@@ -269,7 +249,7 @@ static int sca3300_transfer(struct sca3300_data *sca_data, int *val)
 		}
 	};
 
-	/* inverted crc value as described in device data sheet */
+	 
 	crc = ~crc8(sca3300_crc_table, &sca_data->txbuf[0], 3, CRC8_INIT_VALUE);
 	sca_data->txbuf[3] = crc;
 
@@ -286,7 +266,7 @@ static int sca3300_transfer(struct sca3300_data *sca_data, int *val)
 		return -EIO;
 	}
 
-	/* get return status */
+	 
 	rs = sca_data->rxbuf[0] & SCA3300_MASK_RS_STATUS;
 	if (rs == SCA3300_VALUE_RS_ERROR)
 		ret = -EINVAL;
@@ -305,10 +285,7 @@ static int sca3300_error_handler(struct sca3300_data *sca_data)
 	sca_data->txbuf[0] = SCA3300_REG_STATUS << 2;
 	ret = sca3300_transfer(sca_data, &val);
 	mutex_unlock(&sca_data->lock);
-	/*
-	 * Return status error is cleared after reading status register once,
-	 * expect EINVAL here.
-	 */
+	 
 	if (ret != -EINVAL) {
 		dev_err(&sca_data->spi->dev,
 			"error reading device status: %d\n", ret);
@@ -341,7 +318,7 @@ static int sca3300_write_reg(struct sca3300_data *sca_data, u8 reg, int val)
 	int ret;
 
 	mutex_lock(&sca_data->lock);
-	/* BIT(7) for write operation */
+	 
 	sca_data->txbuf[0] = BIT(7) | (reg << 2);
 	put_unaligned_be16(val, &sca_data->txbuf[1]);
 	ret = sca3300_transfer(sca_data, &reg_val);
@@ -393,10 +370,7 @@ static int sca3300_set_frequency(struct sca3300_data *data, int val)
 	if (sca3300_get_op_mode(data, &index))
 		return -EINVAL;
 
-	/*
-	 * Find a mode in which the requested sampling frequency is available
-	 * and the scaling currently set is retained.
-	 */
+	 
 	opmode_scale = (int *)chip->accel_scale[chip->accel_scale_map[index]];
 	for (i = 0; i < chip->num_avail_modes; i++) {
 		new_scale = (int *)chip->accel_scale[chip->accel_scale_map[i]];
@@ -423,11 +397,7 @@ static int sca3300_write_raw(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_SCALE:
 		if (chan->type != IIO_ACCEL)
 			return -EINVAL;
-		/*
-		 * Letting scale take priority over sampling frequency.
-		 * That makes sense given we can only ever end up increasing
-		 * the sampling frequency which is unlikely to be a problem.
-		 */
+		 
 		for (i = 0; i < data->chip->num_avail_modes; i++) {
 			index = data->chip->accel_scale_map[i];
 			if ((val  == data->chip->accel_scale[index][0]) &&
@@ -500,7 +470,7 @@ static irqreturn_t sca3300_trigger_handler(int irq, void *p)
 		if (ret) {
 			dev_err_ratelimited(&data->spi->dev,
 				"failed to read register, error: %d\n", ret);
-			/* handled, but bailing out due to errors */
+			 
 			goto out;
 		}
 		channels[i++] = val;
@@ -514,10 +484,7 @@ out:
 	return IRQ_HANDLED;
 }
 
-/*
- * sca3300_init - Device init sequence. See datasheet rev 2 section
- * 4.2 Start-Up Sequence for details.
- */
+ 
 static int sca3300_init(struct sca3300_data *sca_data,
 			struct iio_dev *indio_dev)
 {
@@ -530,11 +497,7 @@ static int sca3300_init(struct sca3300_data *sca_data,
 	if (ret)
 		return ret;
 
-	/*
-	 * Wait 1ms after SW-reset command.
-	 * Wait for the settling of signal paths,
-	 * 15ms for SCA3300 and 25ms for SCL3300,
-	 */
+	 
 	usleep_range(26e3, 50e3);
 
 	ret = sca3300_read_reg(sca_data, SCA3300_REG_WHOAMI, &value);

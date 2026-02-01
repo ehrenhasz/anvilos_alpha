@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * mount.c - operations for initializing and mounting configfs.
- *
- * Based on sysfs:
- * 	sysfs is Copyright (C) 2001, 2002, 2003 Patrick Mochel
- *
- * configfs Copyright (C) 2005 Oracle.  All rights reserved.
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/module.h>
@@ -19,7 +12,7 @@
 #include <linux/configfs.h>
 #include "configfs_internal.h"
 
-/* Random magic number */
+ 
 #define CONFIGFS_MAGIC 0x62656570
 
 static struct vfsmount *configfs_mount = NULL;
@@ -76,7 +69,7 @@ static int configfs_fill_super(struct super_block *sb, struct fs_context *fc)
 	if (inode) {
 		inode->i_op = &configfs_root_inode_operations;
 		inode->i_fop = &configfs_dir_operations;
-		/* directory inodes start off with i_nlink == 2 (for "." entry) */
+		 
 		inc_nlink(inode);
 	} else {
 		pr_debug("could not get root inode\n");
@@ -92,7 +85,7 @@ static int configfs_fill_super(struct super_block *sb, struct fs_context *fc)
 	configfs_root_group.cg_item.ci_dentry = root;
 	root->d_fsdata = &configfs_root;
 	sb->s_root = root;
-	sb->s_d_op = &configfs_dentry_ops; /* the rest get that */
+	sb->s_d_op = &configfs_dentry_ops;  
 	return 0;
 }
 

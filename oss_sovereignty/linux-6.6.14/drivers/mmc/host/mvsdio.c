@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Marvell MMC/SD/SDIO driver
- *
- * Authors: Maen Suleiman, Nicolas Pitre
- * Copyright (C) 2008-2009 Marvell Ltd.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -59,15 +54,7 @@ static int mvsd_setup_data(struct mvsd_host *host, struct mmc_data *data)
 	unsigned int tmout;
 	int tmout_index;
 
-	/*
-	 * Hardware weirdness.  The FIFO_EMPTY bit of the HW_STATE
-	 * register is sometimes not set before a while when some
-	 * "unusual" data block sizes are used (such as with the SWITCH
-	 * command), even despite the fact that the XFER_DONE interrupt
-	 * was raised.  And if another data transfer starts before
-	 * this bit comes to good sense (which eventually happens by
-	 * itself) then the new transfer simply fails with a timeout.
-	 */
+	 
 	if (!(mvsd_read(MVSD_HW_STATE) & (1 << 13))) {
 		unsigned long t = jiffies + HZ;
 		unsigned int hw_state,  count = 0;
@@ -84,7 +71,7 @@ static int mvsd_setup_data(struct mvsd_host *host, struct mmc_data *data)
 				   hw_state, count, jiffies - (t - HZ));
 	}
 
-	/* If timeout=0 then maximum timeout index is used. */
+	 
 	tmout = DIV_ROUND_UP(data->timeout_ns, host->ns_per_clk);
 	tmout += data->timeout_clks;
 	tmout_index = fls(tmout - 1) - 12;
@@ -106,14 +93,7 @@ static int mvsd_setup_data(struct mvsd_host *host, struct mmc_data *data)
 
 	if (nodma || (data->blksz | data->sg->offset) & 3 ||
 	    ((!(data->flags & MMC_DATA_READ) && data->sg->offset & 0x3f))) {
-		/*
-		 * We cannot do DMA on a buffer which offset or size
-		 * is not aligned on a 4-byte boundary.
-		 *
-		 * It also appears the host to card DMA can corrupt
-		 * data when the buffer is not aligned on a 64 byte
-		 * boundary.
-		 */
+		 
 		host->pio_size = data->blocks * data->blksz;
 		host->pio_ptr = sg_virt(data->sg);
 		if (!nodma)
@@ -182,7 +162,7 @@ static void mvsd_request(struct mmc_host *mmc, struct mmc_request *mrq)
 		pio = mvsd_setup_data(host, data);
 		if (pio) {
 			xfer |= MVSD_XFER_MODE_PIO;
-			/* PIO section of mvsd_irq has comments on those bits */
+			 
 			if (data->flags & MMC_DATA_WRITE)
 				intr |= MVSD_NOR_TX_AVAIL;
 			else if (host->pio_size > 32)
@@ -309,11 +289,11 @@ static u32 mvsd_finish_data(struct mvsd_host *host, struct mmc_data *data,
 		mvsd_read(MVSD_CURR_BLK_LEFT), mvsd_read(MVSD_CURR_BYTE_LEFT));
 	data->bytes_xfered =
 		(data->blocks - mvsd_read(MVSD_CURR_BLK_LEFT)) * data->blksz;
-	/* We can't be sure about the last block when errors are detected */
+	 
 	if (data->bytes_xfered && data->error)
 		data->bytes_xfered -= data->blksz;
 
-	/* Handle Auto cmd 12 response */
+	 
 	if (data->stop) {
 		unsigned int response[3], i;
 		for (i = 0; i < 3; i++)
@@ -353,11 +333,7 @@ static irqreturn_t mvsd_irq(int irq, void *dev)
 		intr_status, mvsd_read(MVSD_NOR_INTR_EN),
 		mvsd_read(MVSD_HW_STATE));
 
-	/*
-	 * It looks like, SDIO IP can issue one late, spurious irq
-	 * although all irqs should be disabled. To work around this,
-	 * bail out early, if we didn't expect any irqs to occur.
-	 */
+	 
 	if (!mvsd_read(MVSD_NOR_INTR_EN) && !mvsd_read(MVSD_ERR_INTR_EN)) {
 		dev_dbg(host->dev, "spurious irq detected intr 0x%04x intr_en 0x%04x erri 0x%04x erri_en 0x%04x\n",
 			mvsd_read(MVSD_NOR_INTR_STATUS),
@@ -369,7 +345,7 @@ static irqreturn_t mvsd_irq(int irq, void *dev)
 
 	spin_lock(&host->lock);
 
-	/* PIO handling, if needed. Messy business... */
+	 
 	if (host->pio_size &&
 	    (intr_status & host->intr_en &
 	     (MVSD_NOR_RX_READY | MVSD_NOR_RX_FIFO_8W))) {
@@ -381,11 +357,7 @@ static irqreturn_t mvsd_irq(int irq, void *dev)
 			s -= 32;
 			intr_status = mvsd_read(MVSD_NOR_INTR_STATUS);
 		}
-		/*
-		 * Normally we'd use < 32 here, but the RX_FIFO_8W bit
-		 * doesn't appear to assert when there is exactly 32 bytes
-		 * (8 words) left to fetch in a transfer.
-		 */
+		 
 		if (s <= 32) {
 			while (s >= 4 && (intr_status & MVSD_NOR_RX_READY)) {
 				put_unaligned(mvsd_read(MVSD_FIFO), p++);
@@ -421,12 +393,7 @@ static irqreturn_t mvsd_irq(int irq, void *dev)
 		    (MVSD_NOR_TX_AVAIL | MVSD_NOR_TX_FIFO_8W))) {
 		u16 *p = host->pio_ptr;
 		int s = host->pio_size;
-		/*
-		 * The TX_FIFO_8W bit is unreliable. When set, bursting
-		 * 16 halfwords all at once in the FIFO drops data. Actually
-		 * TX_AVAIL does go off after only one word is pushed even if
-		 * TX_FIFO_8W remains set.
-		 */
+		 
 		while (s >= 4 && (intr_status & MVSD_NOR_TX_AVAIL)) {
 			mvsd_write(MVSD_FIFO, get_unaligned(p++));
 			mvsd_write(MVSD_FIFO, get_unaligned(p++));
@@ -620,11 +587,11 @@ static void mvsd_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 			ios->clock, host->base_clock / (m+1), m);
 	}
 
-	/* default transfer mode */
+	 
 	ctrl_reg |= MVSD_HOST_CTRL_BIG_ENDIAN;
 	ctrl_reg &= ~MVSD_HOST_CTRL_LSB_FIRST;
 
-	/* default to maximum timeout */
+	 
 	ctrl_reg |= MVSD_HOST_CTRL_TMOUT_MASK;
 	ctrl_reg |= MVSD_HOST_CTRL_TMOUT_EN;
 
@@ -634,13 +601,7 @@ static void mvsd_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	if (ios->bus_width == MMC_BUS_WIDTH_4)
 		ctrl_reg |= MVSD_HOST_CTRL_DATA_WIDTH_4_BITS;
 
-	/*
-	 * The HI_SPEED_EN bit is causing trouble with many (but not all)
-	 * high speed SD, SDHC and SDIO cards.  Not enabling that bit
-	 * makes all cards work.  So let's just ignore that bit for now
-	 * and revisit this issue if problems for not enabling this bit
-	 * are ever reported.
-	 */
+	 
 #if 0
 	if (ios->timing == MMC_TIMING_MMC_HS ||
 	    ios->timing == MMC_TIMING_SD_HS)
@@ -716,13 +677,7 @@ static int mvsd_probe(struct platform_device *pdev)
 	host->mmc = mmc;
 	host->dev = &pdev->dev;
 
-	/*
-	 * Some non-DT platforms do not pass a clock, and the clock
-	 * frequency is passed through platform_data. On DT platforms,
-	 * a clock must always be passed, even if there is no gatable
-	 * clock associated to the SDIO interface (it can simply be a
-	 * fixed rate clock).
-	 */
+	 
 	host->clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(host->clk)) {
 		dev_err(&pdev->dev, "no clock associated\n");
@@ -760,7 +715,7 @@ static int mvsd_probe(struct platform_device *pdev)
 		goto out;
 	}
 
-	/* (Re-)program MBUS remapping windows if we are asked to. */
+	 
 	dram = mv_mbus_dram_info();
 	if (dram)
 		mv_conf_mbus_windows(host, dram);
@@ -813,7 +768,7 @@ static void mvsd_remove(struct platform_device *pdev)
 
 static const struct of_device_id mvsdio_dt_ids[] = {
 	{ .compatible = "marvell,orion-sdio" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mvsdio_dt_ids);
 
@@ -829,10 +784,10 @@ static struct platform_driver mvsd_driver = {
 
 module_platform_driver(mvsd_driver);
 
-/* maximum card clock frequency (default 50MHz) */
+ 
 module_param(maxfreq, int, 0);
 
-/* force PIO transfers all the time */
+ 
 module_param(nodma, int, 0);
 
 MODULE_AUTHOR("Maen Suleiman, Nicolas Pitre");

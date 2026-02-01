@@ -1,25 +1,4 @@
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include <linux/slab.h>
 #include <drm/drm_print.h>
 
@@ -47,7 +26,7 @@ static inline struct amdgpu_mux_entry *amdgpu_ring_mux_sw_entry(struct amdgpu_ri
 			&mux->ring_entry[ring->entry_index] : NULL;
 }
 
-/* copy packages on sw ring range[begin, end) */
+ 
 static void amdgpu_ring_mux_copy_pkt_from_sw_ring(struct amdgpu_ring_mux *mux,
 						  struct amdgpu_ring *ring,
 						  u64 s_start, u64 s_end)
@@ -80,7 +59,7 @@ static void amdgpu_mux_resubmit_chunks(struct amdgpu_ring_mux *mux)
 	uint32_t seq, last_seq;
 	int i;
 
-	/*find low priority entries:*/
+	 
 	if (!mux->s_resubmit)
 		return;
 
@@ -99,7 +78,7 @@ static void amdgpu_mux_resubmit_chunks(struct amdgpu_ring_mux *mux)
 	last_seq = atomic_read(&e->ring->fence_drv.last_seq);
 	seq = mux->seqno_to_resubmit;
 	if (last_seq < seq) {
-		/*resubmit all the fences between (last_seq, seq]*/
+		 
 		list_for_each_entry(chunk, &e->list, entry) {
 			if (chunk->sync_seq > last_seq && chunk->sync_seq <= seq) {
 				amdgpu_fence_update_start_timestamp(e->ring,
@@ -227,20 +206,20 @@ void amdgpu_ring_mux_set_wptr(struct amdgpu_ring_mux *mux, struct amdgpu_ring *r
 		return;
 	}
 
-	/* We could skip this set wptr as preemption in process. */
+	 
 	if (ring->hw_prio <= AMDGPU_RING_PRIO_DEFAULT && mux->pending_trailing_fence_signaled) {
 		spin_unlock(&mux->lock);
 		return;
 	}
 
 	e->sw_cptr = e->sw_wptr;
-	/* Update cptr if the package already copied in resubmit functions */
+	 
 	if (ring->hw_prio <= AMDGPU_RING_PRIO_DEFAULT && e->sw_cptr < mux->wptr_resubmit)
 		e->sw_cptr = mux->wptr_resubmit;
 	e->sw_wptr = wptr;
 	e->start_ptr_in_hw_ring = mux->real_ring->wptr;
 
-	/* Skip copying for the packages already resubmitted.*/
+	 
 	if (ring->hw_prio > AMDGPU_RING_PRIO_DEFAULT || mux->wptr_resubmit < wptr) {
 		amdgpu_ring_mux_copy_pkt_from_sw_ring(mux, ring, e->sw_cptr, wptr);
 		e->end_ptr_in_hw_ring = mux->real_ring->wptr;
@@ -264,22 +243,7 @@ u64 amdgpu_ring_mux_get_wptr(struct amdgpu_ring_mux *mux, struct amdgpu_ring *ri
 	return e->sw_wptr;
 }
 
-/**
- * amdgpu_ring_mux_get_rptr - get the readptr of the software ring
- * @mux: the multiplexer the software rings attach to
- * @ring: the software ring of which we calculate the readptr
- *
- * The return value of the readptr is not precise while the other rings could
- * write data onto the real ring buffer.After overwriting on the real ring, we
- * can not decide if our packages have been excuted or not read yet. However,
- * this function is only called by the tools such as umr to collect the latest
- * packages for the hang analysis. We assume the hang happens near our latest
- * submit. Thus we could use the following logic to give the clue:
- * If the readptr is between start and end, then we return the copy pointer
- * plus the distance from start to readptr. If the readptr is before start, we
- * return the copy pointer. Lastly, if the readptr is past end, we return the
- * write pointer.
- */
+ 
 u64 amdgpu_ring_mux_get_rptr(struct amdgpu_ring_mux *mux, struct amdgpu_ring *ring)
 {
 	struct amdgpu_mux_entry *e;
@@ -307,7 +271,7 @@ u64 amdgpu_ring_mux_get_rptr(struct amdgpu_ring_mux *mux, struct amdgpu_ring *ri
 	} else if (readp < start) {
 		e->sw_rptr = e->sw_cptr;
 	} else {
-		/* end < readptr */
+		 
 		e->sw_rptr = e->sw_wptr;
 	}
 
@@ -341,7 +305,7 @@ void amdgpu_sw_ring_set_wptr_gfx(struct amdgpu_ring *ring)
 	amdgpu_ring_mux_set_wptr(mux, ring, ring->wptr);
 }
 
-/* Override insert_nop to prevent emitting nops to the software rings */
+ 
 void amdgpu_sw_ring_insert_nop(struct amdgpu_ring *ring, uint32_t count)
 {
 	WARN_ON(!ring->is_sw_ring);
@@ -359,7 +323,7 @@ unsigned int amdgpu_sw_ring_priority(int idx)
 		sw_ring_info[idx].hw_pio : AMDGPU_RING_PRIO_DEFAULT;
 }
 
-/*Scan on low prio rings to have unsignaled fence and high ring has no fence.*/
+ 
 static int amdgpu_mcbp_scan(struct amdgpu_ring_mux *mux)
 {
 	struct amdgpu_ring *ring;
@@ -379,7 +343,7 @@ static int amdgpu_mcbp_scan(struct amdgpu_ring_mux *mux)
 	return need_preempt && !mux->s_resubmit;
 }
 
-/* Trigger Mid-Command Buffer Preemption (MCBP) and find if we need to resubmit. */
+ 
 static int amdgpu_mcbp_trigger_preempt(struct amdgpu_ring_mux *mux)
 {
 	int r;
@@ -453,7 +417,7 @@ void amdgpu_ring_mux_start_ib(struct amdgpu_ring_mux *mux, struct amdgpu_ring *r
 	}
 
 	chunk->start = ring->wptr;
-	/* the initialized value used to check if they are set by the ib submission*/
+	 
 	chunk->cntl_offset = ring->buf_mask + 1;
 	chunk->de_offset = ring->buf_mask + 1;
 	chunk->ce_offset = ring->buf_mask + 1;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Renesas R-Car GyroADC driver
- *
- * Copyright 2016 Marek Vasut <marek.vasut@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -25,7 +21,7 @@
 
 #define DRIVER_NAME				"rcar-gyroadc"
 
-/* GyroADC registers. */
+ 
 #define RCAR_GYROADC_MODE_SELECT		0x00
 #define RCAR_GYROADC_MODE_SELECT_1_MB88101A	0x0
 #define RCAR_GYROADC_MODE_SELECT_2_ADCS7476	0x1
@@ -52,7 +48,7 @@
 #define RCAR_GYROADC_INTENR			0x78
 #define RCAR_GYROADC_INTENR_INTEN		BIT(0)
 
-#define RCAR_GYROADC_SAMPLE_RATE		800	/* Hz */
+#define RCAR_GYROADC_SAMPLE_RATE		800	 
 
 #define RCAR_GYROADC_RUNTIME_PM_DELAY_MS	2000
 
@@ -79,22 +75,18 @@ static void rcar_gyroadc_hw_init(struct rcar_gyroadc *priv)
 		(priv->mode == RCAR_GYROADC_MODE_SELECT_1_MB88101A) ? 10 : 5;
 	unsigned long clk_len = clk_mhz * clk_mul;
 
-	/*
-	 * According to the R-Car Gen2 datasheet Rev. 1.01, Sept 08 2014,
-	 * page 77-7, clock length must be even number. If it's odd number,
-	 * add one.
-	 */
+	 
 	if (clk_len & 1)
 		clk_len++;
 
-	/* Stop the GyroADC. */
+	 
 	writel(0, priv->regs + RCAR_GYROADC_START_STOP);
 
-	/* Disable IRQ on V2H. */
+	 
 	if (priv->model == RCAR_GYROADC_MODEL_R8A7792)
 		writel(0, priv->regs + RCAR_GYROADC_INTENR);
 
-	/* Set mode and timing. */
+	 
 	writel(priv->mode, priv->regs + RCAR_GYROADC_MODE_SELECT);
 	writel(clk_len, priv->regs + RCAR_GYROADC_CLOCK_LENGTH);
 	writel(clk_mhz * 1250, priv->regs + RCAR_GYROADC_1_25MS_LENGTH);
@@ -102,22 +94,17 @@ static void rcar_gyroadc_hw_init(struct rcar_gyroadc *priv)
 
 static void rcar_gyroadc_hw_start(struct rcar_gyroadc *priv)
 {
-	/* Start sampling. */
+	 
 	writel(RCAR_GYROADC_START_STOP_START,
 	       priv->regs + RCAR_GYROADC_START_STOP);
 
-	/*
-	 * Wait for the first conversion to complete. This is longer than
-	 * the 1.25 mS in the datasheet because 1.25 mS is not enough for
-	 * the hardware to deliver the first sample and the hardware does
-	 * then return zeroes instead of valid data.
-	 */
+	 
 	mdelay(3);
 }
 
 static void rcar_gyroadc_hw_stop(struct rcar_gyroadc *priv)
 {
-	/* Stop the GyroADC. */
+	 
 	writel(0, priv->regs + RCAR_GYROADC_START_STOP);
 }
 
@@ -181,10 +168,7 @@ static int rcar_gyroadc_read_raw(struct iio_dev *indio_dev,
 	unsigned int vref;
 	int ret;
 
-	/*
-	 * MB88101 is special in that it has only single regulator for
-	 * all four channels.
-	 */
+	 
 	if (priv->mode == RCAR_GYROADC_MODE_SELECT_1_MB88101A)
 		consumer = priv->vref[0];
 	else
@@ -195,7 +179,7 @@ static int rcar_gyroadc_read_raw(struct iio_dev *indio_dev,
 		if (chan->type != IIO_VOLTAGE)
 			return -EINVAL;
 
-		/* Channel not connected. */
+		 
 		if (!consumer)
 			return -EINVAL;
 
@@ -219,7 +203,7 @@ static int rcar_gyroadc_read_raw(struct iio_dev *indio_dev,
 
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SCALE:
-		/* Channel not connected. */
+		 
 		if (!consumer)
 			return -EINVAL;
 
@@ -250,7 +234,7 @@ static int rcar_gyroadc_reg_access(struct iio_dev *indio_dev,
 	if (reg % 4)
 		return -EINVAL;
 
-	/* Handle the V2H case with extra interrupt block. */
+	 
 	if (priv->model == RCAR_GYROADC_MODEL_R8A7792)
 		maxreg = RCAR_GYROADC_INTENR;
 
@@ -269,27 +253,27 @@ static const struct iio_info rcar_gyroadc_iio_info = {
 
 static const struct of_device_id rcar_gyroadc_match[] = {
 	{
-		/* R-Car compatible GyroADC */
+		 
 		.compatible	= "renesas,rcar-gyroadc",
 		.data		= (void *)RCAR_GYROADC_MODEL_DEFAULT,
 	}, {
-		/* R-Car V2H specialty with interrupt registers. */
+		 
 		.compatible	= "renesas,r8a7792-gyroadc",
 		.data		= (void *)RCAR_GYROADC_MODEL_R8A7792,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 
 MODULE_DEVICE_TABLE(of, rcar_gyroadc_match);
 
 static const struct of_device_id rcar_gyroadc_child_match[] __maybe_unused = {
-	/* Mode 1 ADCs */
+	 
 	{
 		.compatible	= "fujitsu,mb88101a",
 		.data		= (void *)RCAR_GYROADC_MODE_SELECT_1_MB88101A,
 	},
-	/* Mode 2 ADCs */
+	 
 	{
 		.compatible	= "ti,adcs7476",
 		.data		= (void *)RCAR_GYROADC_MODE_SELECT_2_ADCS7476,
@@ -300,7 +284,7 @@ static const struct of_device_id rcar_gyroadc_child_match[] __maybe_unused = {
 		.compatible	= "adi,ad7476",
 		.data		= (void *)RCAR_GYROADC_MODE_SELECT_2_ADCS7476,
 	},
-	/* Mode 3 ADCs */
+	 
 	{
 		.compatible	= "maxim,max1162",
 		.data		= (void *)RCAR_GYROADC_MODE_SELECT_3_MAX1162,
@@ -308,7 +292,7 @@ static const struct of_device_id rcar_gyroadc_child_match[] __maybe_unused = {
 		.compatible	= "maxim,max11100",
 		.data		= (void *)RCAR_GYROADC_MODE_SELECT_3_MAX1162,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
@@ -355,12 +339,7 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
 			goto err_e_inval;
 		}
 
-		/*
-		 * MB88101 is special in that it's only a single chip taking
-		 * up all the CHS lines. Thus, the DT binding is also special
-		 * and has no reg property. If we run into such ADC, handle
-		 * it here.
-		 */
+		 
 		if (childmode == RCAR_GYROADC_MODE_SELECT_1_MB88101A) {
 			reg = 0;
 		} else {
@@ -372,7 +351,7 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
 				goto err_of_node_put;
 			}
 
-			/* Channel number is too high. */
+			 
 			if (reg >= num_channels) {
 				dev_err(dev,
 					"Only %i channels supported with %pOFn, but reg = <%i>.\n",
@@ -381,7 +360,7 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
 			}
 		}
 
-		/* Child node selected different mode than the rest. */
+		 
 		if (!first && (adcmode != childmode)) {
 			dev_err(dev,
 				"Channel %i uses different ADC mode than the rest.\n",
@@ -389,7 +368,7 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
 			goto err_e_inval;
 		}
 
-		/* Channel is valid, grab the regulator. */
+		 
 		dev->of_node = child;
 		vref = devm_regulator_get(dev, "vref");
 		dev->of_node = np;
@@ -405,7 +384,7 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
 		if (!first)
 			continue;
 
-		/* First child node which passed sanity tests. */
+		 
 		adcmode = childmode;
 		first = 0;
 
@@ -416,11 +395,7 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
 		indio_dev->channels = channels;
 		indio_dev->num_channels = num_channels;
 
-		/*
-		 * MB88101 is special and we only have one such device
-		 * attached to the GyroADC at a time, so if we found it,
-		 * we can stop parsing here.
-		 */
+		 
 		if (childmode == RCAR_GYROADC_MODE_SELECT_1_MB88101A) {
 			of_node_put(child);
 			break;

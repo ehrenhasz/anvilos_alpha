@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Handling of the chip-to-host events (aka indications) of the hardware API.
- *
- * Copyright (c) 2017-2020, Silicon Laboratories, Inc.
- * Copyright (c) 2010, ST-Ericsson
- */
+
+ 
 #include <linux/skbuff.h>
 #include <linux/etherdevice.h>
 
@@ -19,10 +14,10 @@
 static int wfx_hif_generic_confirm(struct wfx_dev *wdev,
 				   const struct wfx_hif_msg *hif, const void *buf)
 {
-	/* All confirm messages start with status */
+	 
 	int status = le32_to_cpup((__le32 *)buf);
 	int cmd = hif->id;
-	int len = le16_to_cpu(hif->len) - 4; /* drop header */
+	int len = le16_to_cpu(hif->len) - 4;  
 
 	WARN(!mutex_is_locked(&wdev->hif_cmd.lock), "data locking error");
 
@@ -230,7 +225,7 @@ static int wfx_hif_generic_indication(struct wfx_dev *wdev,
 		return 0;
 	case HIF_GENERIC_INDICATION_TYPE_RX_STATS:
 		mutex_lock(&wdev->rx_stats_lock);
-		/* Older firmware send a generic indication beside RxStats */
+		 
 		if (!wfx_api_older_than(wdev, 1, 4))
 			dev_info(wdev->dev, "Rx test ongoing. Temperature: %d degrees C\n",
 				 body->data.rx_stats.current_temp);
@@ -280,7 +275,7 @@ static const struct {
 		"bus clock is too slow (<1kHz)" },
 	{ HIF_ERROR_HIF_RX_DATA_TOO_LARGE,
 		"HIF message too large" },
-	/* Following errors only exists in old firmware versions: */
+	 
 	{ HIF_ERROR_HIF_TX_QUEUE_FULL,
 		"HIF messages queue is full" },
 	{ HIF_ERROR_HIF_BUS,
@@ -340,10 +335,10 @@ static const struct {
 	int msg_id;
 	int (*handler)(struct wfx_dev *wdev, const struct wfx_hif_msg *hif, const void *buf);
 } hif_handlers[] = {
-	/* Confirmations */
+	 
 	{ HIF_CNF_ID_TX,                wfx_hif_tx_confirm },
 	{ HIF_CNF_ID_MULTI_TRANSMIT,    wfx_hif_multi_tx_confirm },
-	/* Indications */
+	 
 	{ HIF_IND_ID_STARTUP,           wfx_hif_startup_indication },
 	{ HIF_IND_ID_WAKEUP,            wfx_hif_wakeup_indication },
 	{ HIF_IND_ID_JOIN_COMPLETE,     wfx_hif_join_complete_indication },
@@ -354,8 +349,8 @@ static const struct {
 	{ HIF_IND_ID_GENERIC,           wfx_hif_generic_indication },
 	{ HIF_IND_ID_ERROR,             wfx_hif_error_indication },
 	{ HIF_IND_ID_EXCEPTION,         wfx_hif_exception_indication },
-	/* FIXME: allocate skb_p from wfx_hif_receive_indication and make it generic */
-	//{ HIF_IND_ID_RX,              wfx_hif_receive_indication },
+	 
+	
 };
 
 void wfx_handle_rx(struct wfx_dev *wdev, struct sk_buff *skb)
@@ -365,11 +360,11 @@ void wfx_handle_rx(struct wfx_dev *wdev, struct sk_buff *skb)
 	int hif_id = hif->id;
 
 	if (hif_id == HIF_IND_ID_RX) {
-		/* wfx_hif_receive_indication take care of skb lifetime */
+		 
 		wfx_hif_receive_indication(wdev, hif, hif->body, skb);
 		return;
 	}
-	/* Note: mutex_is_lock cause an implicit memory barrier that protect buf_send */
+	 
 	if (mutex_is_locked(&wdev->hif_cmd.lock) &&
 	    wdev->hif_cmd.buf_send && wdev->hif_cmd.buf_send->id == hif_id) {
 		wfx_hif_generic_confirm(wdev, hif, hif->body);

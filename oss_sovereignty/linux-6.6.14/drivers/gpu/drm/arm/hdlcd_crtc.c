@@ -1,13 +1,4 @@
-/*
- * Copyright (C) 2013-2015 ARM Limited
- * Author: Liviu Dudau <Liviu.Dudau@arm.com>
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file COPYING in the main directory of this archive
- * for more details.
- *
- *  Implementation of a CRTC class for the HDLCD driver.
- */
+ 
 
 #include <linux/clk.h>
 #include <linux/of_graph.h>
@@ -28,18 +19,13 @@
 #include "hdlcd_drv.h"
 #include "hdlcd_regs.h"
 
-/*
- * The HDLCD controller is a dumb RGB streamer that gets connected to
- * a single HDMI transmitter or in the case of the ARM Models it gets
- * emulated by the software that does the actual rendering.
- *
- */
+ 
 
 static void hdlcd_crtc_cleanup(struct drm_crtc *crtc)
 {
 	struct hdlcd_drm_private *hdlcd = crtc_to_hdlcd_priv(crtc);
 
-	/* stop the controller on cleanup */
+	 
 	hdlcd_write(hdlcd, HDLCD_REG_COMMAND, 0);
 	drm_crtc_cleanup(crtc);
 }
@@ -75,9 +61,7 @@ static const struct drm_crtc_funcs hdlcd_crtc_funcs = {
 
 static struct simplefb_format supported_formats[] = SIMPLEFB_FORMATS;
 
-/*
- * Setup the HDLCD registers for decoding the pixels out of the framebuffer
- */
+ 
 static int hdlcd_set_pxl_fmt(struct drm_crtc *crtc)
 {
 	unsigned int btpp;
@@ -97,23 +81,14 @@ static int hdlcd_set_pxl_fmt(struct drm_crtc *crtc)
 	if (WARN_ON(!format))
 		return 0;
 
-	/* HDLCD uses 'bytes per pixel', zero means 1 byte */
+	 
 	btpp = (format->bits_per_pixel + 7) / 8;
 	hdlcd_write(hdlcd, HDLCD_REG_PIXEL_FORMAT, (btpp - 1) << 3);
 
-	/*
-	 * The format of the HDLCD_REG_<color>_SELECT register is:
-	 *   - bits[23:16] - default value for that color component
-	 *   - bits[11:8]  - number of bits to extract for each color component
-	 *   - bits[4:0]   - index of the lowest bit to extract
-	 *
-	 * The default color value is used when bits[11:8] are zero, when the
-	 * pixel is outside the visible frame area or when there is a
-	 * buffer underrun.
-	 */
+	 
 	hdlcd_write(hdlcd, HDLCD_REG_RED_SELECT, format->red.offset |
 #ifdef CONFIG_DRM_HDLCD_SHOW_UNDERRUN
-		    0x00ff0000 |	/* show underruns in red */
+		    0x00ff0000 |	 
 #endif
 		    ((format->red.length & 0xf) << 8));
 	hdlcd_write(hdlcd, HDLCD_REG_GREEN_SELECT, format->green.offset |
@@ -145,7 +120,7 @@ static void hdlcd_crtc_mode_set_nofb(struct drm_crtc *crtc)
 	if (m->flags & DRM_MODE_FLAG_PVSYNC)
 		polarities |= HDLCD_POLARITY_VSYNC;
 
-	/* Allow max number of outstanding requests and largest burst size */
+	 
 	hdlcd_write(hdlcd, HDLCD_REG_BUS_OPTIONS,
 		    HDLCD_BUS_MAX_OUTSTAND | HDLCD_BUS_BURST_16);
 
@@ -194,9 +169,9 @@ static enum drm_mode_status hdlcd_crtc_mode_valid(struct drm_crtc *crtc,
 	long rate, clk_rate = mode->clock * 1000;
 
 	rate = clk_round_rate(hdlcd->clk, clk_rate);
-	/* 0.1% seems a close enough tolerance for the TDA19988 on Juno */
+	 
 	if (abs(rate - clk_rate) * 1000 > clk_rate) {
-		/* clock required by mode not supported by hardware */
+		 
 		return MODE_NOCLOCK;
 	}
 
@@ -237,7 +212,7 @@ static int hdlcd_plane_atomic_check(struct drm_plane *plane,
 	struct drm_crtc_state *crtc_state;
 	u32 src_h = new_plane_state->src_h >> 16;
 
-	/* only the HDLCD_REG_FB_LINE_COUNT register has a limit */
+	 
 	if (src_h >= HDLCD_MAX_YRES) {
 		DRM_DEBUG_KMS("Invalid source width: %d\n", src_h);
 		return -EINVAL;
@@ -245,7 +220,7 @@ static int hdlcd_plane_atomic_check(struct drm_plane *plane,
 
 	for_each_new_crtc_in_state(state, crtc, crtc_state,
 				   i) {
-		/* we cannot disable the plane while the CRTC is active */
+		 
 		if (!new_plane_state->fb && crtc_state->active)
 			return -EINVAL;
 		return drm_atomic_helper_check_plane_state(new_plane_state,

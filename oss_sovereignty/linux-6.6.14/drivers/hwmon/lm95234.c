@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Texas Instruments / National Semiconductor LM95234
- *
- * Copyright (c) 2013, 2014 Guenter Roeck <linux@roeck-us.net>
- *
- * Derived from lm95241.c
- * Copyright (C) 2008, 2010 Davide Rizzo <elpa.rizzo@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -26,7 +19,7 @@ enum chips { lm95233, lm95234 };
 static const unsigned short normal_i2c[] = {
 	0x18, 0x2a, 0x2b, 0x4d, 0x4e, I2C_CLIENT_END };
 
-/* LM95234 registers */
+ 
 #define LM95234_REG_MAN_ID		0xFE
 #define LM95234_REG_CHIP_ID		0xFF
 #define LM95234_REG_STATUS		0x02
@@ -37,35 +30,35 @@ static const unsigned short normal_i2c[] = {
 #define LM95234_REG_STS_TCRIT2		0x09
 #define LM95234_REG_TEMPH(x)		((x) + 0x10)
 #define LM95234_REG_TEMPL(x)		((x) + 0x20)
-#define LM95234_REG_UTEMPH(x)		((x) + 0x19)	/* Remote only */
+#define LM95234_REG_UTEMPH(x)		((x) + 0x19)	 
 #define LM95234_REG_UTEMPL(x)		((x) + 0x29)
 #define LM95234_REG_REM_MODEL		0x30
 #define LM95234_REG_REM_MODEL_STS	0x38
-#define LM95234_REG_OFFSET(x)		((x) + 0x31)	/* Remote only */
+#define LM95234_REG_OFFSET(x)		((x) + 0x31)	 
 #define LM95234_REG_TCRIT1(x)		((x) + 0x40)
-#define LM95234_REG_TCRIT2(x)		((x) + 0x49)	/* Remote channel 1,2 */
+#define LM95234_REG_TCRIT2(x)		((x) + 0x49)	 
 #define LM95234_REG_TCRIT_HYST		0x5a
 
 #define NATSEMI_MAN_ID			0x01
 #define LM95233_CHIP_ID			0x89
 #define LM95234_CHIP_ID			0x79
 
-/* Client data (each client gets its own) */
+ 
 struct lm95234_data {
 	struct i2c_client *client;
 	const struct attribute_group *groups[3];
 	struct mutex update_lock;
-	unsigned long last_updated, interval;	/* in jiffies */
-	bool valid;		/* false until following fields are valid */
-	/* registers values */
-	int temp[5];		/* temperature (signed) */
-	u32 status;		/* fault/alarm status */
-	u8 tcrit1[5];		/* critical temperature limit */
-	u8 tcrit2[2];		/* high temperature limit */
-	s8 toffset[4];		/* remote temperature offset */
-	u8 thyst;		/* common hysteresis */
+	unsigned long last_updated, interval;	 
+	bool valid;		 
+	 
+	int temp[5];		 
+	u32 status;		 
+	u8 tcrit1[5];		 
+	u8 tcrit2[2];		 
+	s8 toffset[4];		 
+	u8 thyst;		 
 
-	u8 sensor_type;		/* temperature sensor type */
+	u8 sensor_type;		 
 };
 
 static int lm95234_read_temp(struct i2c_client *client, int index, int *t)
@@ -86,10 +79,7 @@ static int lm95234_read_temp(struct i2c_client *client, int index, int *t)
 		temp |= val;
 		*t = temp;
 	}
-	/*
-	 * Read signed temperature if unsigned temperature is 0,
-	 * or if this is the local sensor.
-	 */
+	 
 	if (!temp) {
 		val = i2c_smbus_read_byte_data(client,
 					       LM95234_REG_TEMPH(index));
@@ -108,7 +98,7 @@ static int lm95234_read_temp(struct i2c_client *client, int index, int *t)
 
 static u16 update_intervals[] = { 143, 364, 1000, 2500 };
 
-/* Fill value cache. Must be called with update lock held. */
+ 
 
 static int lm95234_fill_cache(struct lm95234_data *data,
 			      struct i2c_client *client)
@@ -321,7 +311,7 @@ static ssize_t tcrit2_hyst_show(struct device *dev,
 	if (ret)
 		return ret;
 
-	/* Result can be negative, so be careful with unsigned operands */
+	 
 	return sprintf(buf, "%d",
 		       ((int)data->tcrit2[index] - (int)data->thyst) * 1000);
 }
@@ -370,7 +360,7 @@ static ssize_t tcrit1_hyst_show(struct device *dev,
 	if (ret)
 		return ret;
 
-	/* Result can be negative, so be careful with unsigned operands */
+	 
 	return sprintf(buf, "%d",
 		       ((int)data->tcrit1[index] - (int)data->thyst) * 1000);
 }
@@ -430,7 +420,7 @@ static ssize_t offset_store(struct device *dev, struct device_attribute *attr,
 	if (ret < 0)
 		return ret;
 
-	/* Accuracy is 1/2 degrees C */
+	 
 	val = clamp_val(DIV_ROUND_CLOSEST(val, 500), -128, 127);
 
 	mutex_lock(&data->update_lock);
@@ -652,7 +642,7 @@ static int lm95234_init_client(struct i2c_client *client)
 {
 	int val, model;
 
-	/* start conversion if necessary */
+	 
 	val = i2c_smbus_read_byte_data(client, LM95234_REG_CONFIG);
 	if (val < 0)
 		return val;
@@ -660,7 +650,7 @@ static int lm95234_init_client(struct i2c_client *client)
 		i2c_smbus_write_byte_data(client, LM95234_REG_CONFIG,
 					  val & ~0x40);
 
-	/* If diode type status reports an error, try to fix it */
+	 
 	val = i2c_smbus_read_byte_data(client, LM95234_REG_REM_MODEL_STS);
 	if (val < 0)
 		return val;
@@ -693,7 +683,7 @@ static int lm95234_probe(struct i2c_client *client)
 	data->client = client;
 	mutex_init(&data->update_lock);
 
-	/* Initialize the LM95234 chip */
+	 
 	err = lm95234_init_client(client);
 	if (err < 0)
 		return err;
@@ -707,7 +697,7 @@ static int lm95234_probe(struct i2c_client *client)
 	return PTR_ERR_OR_ZERO(hwmon_dev);
 }
 
-/* Driver data (common to all clients) */
+ 
 static const struct i2c_device_id lm95234_id[] = {
 	{ "lm95233", lm95233 },
 	{ "lm95234", lm95234 },

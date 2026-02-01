@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Author(s)......: Holger Smolinski <Holger.Smolinski@de.ibm.com>
- *		    Horst Hummel <Horst.Hummel@de.ibm.com>
- *		    Carsten Otte <Cotte@de.ibm.com>
- *		    Martin Schwidefsky <schwidefsky@de.ibm.com>
- * Bugreports.to..: <Linux390@de.ibm.com>
- * Copyright IBM Corp. 1999, 2001
- *
- * i/o controls for the dasd driver.
- */
+
+ 
 
 #define KMSG_COMPONENT "dasd"
 
@@ -24,7 +15,7 @@
 #include <linux/uaccess.h>
 #include <linux/dasd_mod.h>
 
-/* This is ugly... */
+ 
 #define PRINTK_HEADER "dasd_ioctl:"
 
 #include "dasd_int.h"
@@ -37,10 +28,7 @@ dasd_ioctl_api_version(void __user *argp)
 	return put_user(ver, (int __user *)argp);
 }
 
-/*
- * Enable device.
- * used by dasdfmt after BIODASDDISABLE to retrigger blocksize detection
- */
+ 
 static int
 dasd_ioctl_enable(struct block_device *bdev)
 {
@@ -58,10 +46,7 @@ dasd_ioctl_enable(struct block_device *bdev)
 	return 0;
 }
 
-/*
- * Disable device.
- * Used by dasdfmt. Disable I/O operations but allow ioctls.
- */
+ 
 static int
 dasd_ioctl_disable(struct block_device *bdev)
 {
@@ -73,27 +58,15 @@ dasd_ioctl_disable(struct block_device *bdev)
 	base = dasd_device_from_gendisk(bdev->bd_disk);
 	if (!base)
 		return -ENODEV;
-	/*
-	 * Man this is sick. We don't do a real disable but only downgrade
-	 * the device to DASD_STATE_BASIC. The reason is that dasdfmt uses
-	 * BIODASDDISABLE to disable accesses to the device via the block
-	 * device layer but it still wants to do i/o on the device by
-	 * using the BIODASDFMT ioctl. Therefore the correct state for the
-	 * device is DASD_STATE_BASIC that allows to do basic i/o.
-	 */
+	 
 	dasd_set_target_state(base, DASD_STATE_BASIC);
-	/*
-	 * Set i_size to zero, since read, write, etc. check against this
-	 * value.
-	 */
+	 
 	set_capacity(bdev->bd_disk, 0);
 	dasd_put_device(base);
 	return 0;
 }
 
-/*
- * Quiesce device.
- */
+ 
 static int dasd_ioctl_quiesce(struct dasd_block *block)
 {
 	unsigned long flags;
@@ -112,9 +85,7 @@ static int dasd_ioctl_quiesce(struct dasd_block *block)
 }
 
 
-/*
- * Resume device.
- */
+ 
 static int dasd_ioctl_resume(struct dasd_block *block)
 {
 	unsigned long flags;
@@ -135,9 +106,7 @@ static int dasd_ioctl_resume(struct dasd_block *block)
 	return 0;
 }
 
-/*
- * Abort all failfast I/O on a device.
- */
+ 
 static int dasd_ioctl_abortio(struct dasd_block *block)
 {
 	unsigned long flags;
@@ -171,9 +140,7 @@ static int dasd_ioctl_abortio(struct dasd_block *block)
 	return 0;
 }
 
-/*
- * Allow I/O on a device
- */
+ 
 static int dasd_ioctl_allowio(struct dasd_block *block)
 {
 	struct dasd_device *base;
@@ -188,12 +155,7 @@ static int dasd_ioctl_allowio(struct dasd_block *block)
 	return 0;
 }
 
-/*
- * performs formatting of _device_ according to _fdata_
- * Note: The discipline's format_function is assumed to deliver formatting
- * commands to format multiple units of the device. In terms of the ECKD
- * devices this means CCWs are generated to format multiple tracks.
- */
+ 
 static int
 dasd_format(struct dasd_block *block, struct format_data_t *fdata)
 {
@@ -215,11 +177,7 @@ dasd_format(struct dasd_block *block, struct format_data_t *fdata)
 		      fdata->start_unit,
 		      fdata->stop_unit, fdata->blksize, fdata->intensity);
 
-	/* Since dasdfmt keeps the device open after it was disabled,
-	 * there still exists an inode for this device.
-	 * We must update i_blkbits, otherwise we might get errors when
-	 * enabling the device later.
-	 */
+	 
 	if (fdata->start_unit == 0) {
 		block->gdp->part0->bd_inode->i_blkbits =
 			blksize_bits(fdata->blksize);
@@ -249,9 +207,7 @@ static int dasd_check_format(struct dasd_block *block,
 	return rc;
 }
 
-/*
- * Format device.
- */
+ 
 static int
 dasd_ioctl_format(struct block_device *bdev, void __user *argp)
 {
@@ -287,9 +243,7 @@ dasd_ioctl_format(struct block_device *bdev, void __user *argp)
 	return rc;
 }
 
-/*
- * Check device format
- */
+ 
 static int dasd_ioctl_check_format(struct block_device *bdev, void __user *argp)
 {
 	struct format_check_t cdata;
@@ -338,9 +292,7 @@ static int dasd_release_space(struct dasd_device *device,
 	return device->discipline->release_space(device, rdata);
 }
 
-/*
- * Release allocated space
- */
+ 
 static int dasd_ioctl_release_space(struct block_device *bdev, void __user *argp)
 {
 	struct format_data_t rdata;
@@ -380,9 +332,7 @@ out_err:
 	return rc;
 }
 
-/*
- * Swap driver iternal copy relation.
- */
+ 
 static int
 dasd_ioctl_copy_pair_swap(struct block_device *bdev, void __user *argp)
 {
@@ -431,18 +381,14 @@ dasd_ioctl_copy_pair_swap(struct block_device *bdev, void __user *argp)
 }
 
 #ifdef CONFIG_DASD_PROFILE
-/*
- * Reset device profile information
- */
+ 
 static int dasd_ioctl_reset_profile(struct dasd_block *block)
 {
 	dasd_profile_reset(&block->profile);
 	return 0;
 }
 
-/*
- * Return device profile information
- */
+ 
 static int dasd_ioctl_read_profile(struct dasd_block *block, void __user *argp)
 {
 	struct dasd_profile_info_t *data;
@@ -498,9 +444,7 @@ static int dasd_ioctl_read_profile(struct dasd_block *block, void __user *argp)
 }
 #endif
 
-/*
- * Return dasd information. Used for BIODASDINFO and BIODASDINFO2.
- */
+ 
 static int __dasd_ioctl_information(struct dasd_block *block,
 		struct dasd_information2_t *dasd_info)
 {
@@ -531,19 +475,12 @@ static int __dasd_ioctl_information(struct dasd_block *block,
 	dasd_info->dev_type = cdev->id.dev_type;
 	dasd_info->dev_model = cdev->id.dev_model;
 	dasd_info->status = base->state;
-	/*
-	 * The open_count is increased for every opener, that includes
-	 * the blkdev_get in dasd_scan_partitions.
-	 * This must be hidden from user-space.
-	 */
+	 
 	dasd_info->open_count = atomic_read(&block->open_count);
 	if (!block->bdev)
 		dasd_info->open_count++;
 
-	/*
-	 * check if device is really formatted
-	 * LDL / CDL was returned by 'fill_info'
-	 */
+	 
 	if ((base->state < DASD_STATE_READY) ||
 	    (dasd_check_blocksize(block->bp_block)))
 		dasd_info->format = DASD_FORMAT_NONE;
@@ -577,15 +514,13 @@ static int dasd_ioctl_information(struct dasd_block *block, void __user *argp,
 	return error;
 }
 
-/*
- * Set read only
- */
+ 
 int dasd_set_read_only(struct block_device *bdev, bool ro)
 {
 	struct dasd_device *base;
 	int rc;
 
-	/* do not manipulate hardware state for partitions */
+	 
 	if (bdev_is_partition(bdev))
 		return 0;
 
@@ -692,7 +627,7 @@ int dasd_ioctl(struct block_device *bdev, blk_mode_t mode,
 		rc = dasd_ioctl_copy_pair_swap(bdev, argp);
 		break;
 	default:
-		/* if the discipline has an ioctl method try it. */
+		 
 		rc = -ENOTTY;
 		if (base->discipline->ioctl)
 			rc = base->discipline->ioctl(block, cmd, argp);
@@ -702,20 +637,7 @@ int dasd_ioctl(struct block_device *bdev, blk_mode_t mode,
 }
 
 
-/**
- * dasd_biodasdinfo() - fill out the dasd information structure
- * @disk: [in] pointer to gendisk structure that references a DASD
- * @info: [out] pointer to the dasd_information2_t structure
- *
- * Provide access to DASD specific information.
- * The gendisk structure is checked if it belongs to the DASD driver by
- * comparing the gendisk->fops pointer.
- * If it does not belong to the DASD driver -EINVAL is returned.
- * Otherwise the provided dasd_information2_t structure is filled out.
- *
- * Returns:
- *   %0 on success and a negative error value on failure.
- */
+ 
 int dasd_biodasdinfo(struct gendisk *disk, struct dasd_information2_t *info)
 {
 	struct dasd_device *base;
@@ -731,5 +653,5 @@ int dasd_biodasdinfo(struct gendisk *disk, struct dasd_information2_t *info)
 	dasd_put_device(base);
 	return error;
 }
-/* export that symbol_get in partition detection is possible */
+ 
 EXPORT_SYMBOL_GPL(dasd_biodasdinfo);

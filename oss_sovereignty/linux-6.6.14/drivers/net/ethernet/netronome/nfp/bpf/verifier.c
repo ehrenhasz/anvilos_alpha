@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2016-2018 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/bpf.h>
 #include <linux/bpf_verifier.h>
@@ -52,14 +52,11 @@ nfp_record_adjust_head(struct nfp_app_bpf *bpf, struct nfp_prog *nfp_prog,
 	unsigned int location =	UINT_MAX;
 	int imm;
 
-	/* Datapath usually can give us guarantees on how much adjust head
-	 * can be done without the need for any checks.  Optimize the simple
-	 * case where there is only one adjust head by a constant.
-	 */
+	 
 	if (reg2->type != SCALAR_VALUE || !tnum_is_const(reg2->var_off))
 		goto exit_set_location;
 	imm = reg2->var_off.value;
-	/* Translator will skip all checks, we need to guarantee min pkt len */
+	 
 	if (imm > ETH_ZLEN - ETH_HLEN)
 		goto exit_set_location;
 	if (imm > (int)bpf->adjust_head.guaranteed_add ||
@@ -67,7 +64,7 @@ nfp_record_adjust_head(struct nfp_app_bpf *bpf, struct nfp_prog *nfp_prog,
 		goto exit_set_location;
 
 	if (nfp_prog->adjust_head_location) {
-		/* Only one call per program allowed */
+		 
 		if (nfp_prog->adjust_head_location != meta->n)
 			goto exit_set_location;
 
@@ -91,10 +88,7 @@ static bool nfp_bpf_map_update_value_ok(struct bpf_verifier_env *env)
 
 	state = env->cur_state->frame[reg3->frameno];
 
-	/* We need to record each time update happens with non-zero words,
-	 * in case such word is used in atomic operations.
-	 * Implicitly depend on nfp_bpf_stack_arg_ok(reg3) being run before.
-	 */
+	 
 
 	offmap = map_to_offmap(reg1->map_ptr);
 	nfp_map = offmap->dev_priv;
@@ -143,7 +137,7 @@ nfp_bpf_stack_arg_ok(const char *fname, struct bpf_verifier_env *env,
 		return false;
 	}
 
-	/* Rest of the checks is only if we re-parse the same insn */
+	 
 	if (!old_arg)
 		return true;
 
@@ -241,9 +235,7 @@ nfp_bpf_check_helper_call(struct nfp_prog *nfp_prog,
 			return -EOPNOTSUPP;
 		}
 
-		/* Force current CPU to make sure we can report the event
-		 * wherever we get the control message from FW.
-		 */
+		 
 		if (reg3->var_off.mask & BPF_F_INDEX_MASK ||
 		    (reg3->var_off.value & BPF_F_INDEX_MASK) !=
 		    BPF_F_CURRENT_CPU) {
@@ -255,12 +247,10 @@ nfp_bpf_check_helper_call(struct nfp_prog *nfp_prog,
 			return -EOPNOTSUPP;
 		}
 
-		/* Save space in meta, we don't care about arguments other
-		 * than 4th meta, shove it into arg1.
-		 */
+		 
 		reg1 = cur_regs(env) + BPF_REG_4;
 
-		if (reg1->type != SCALAR_VALUE /* NULL ptr */ &&
+		if (reg1->type != SCALAR_VALUE   &&
 		    reg1->type != PTR_TO_STACK &&
 		    reg1->type != PTR_TO_MAP_VALUE &&
 		    reg1->type != PTR_TO_PACKET) {
@@ -273,14 +263,7 @@ nfp_bpf_check_helper_call(struct nfp_prog *nfp_prog,
 		    !nfp_bpf_stack_arg_ok("event_output", env, reg1, NULL))
 			return -EOPNOTSUPP;
 
-		/* Warn user that on offload NFP may return success even if map
-		 * is not going to accept the event, since the event output is
-		 * fully async and device won't know the state of the map.
-		 * There is also FW limitation on the event length.
-		 *
-		 * Lost events will not show up on the perf ring, driver
-		 * won't see them at all.  Events may also get reordered.
-		 */
+		 
 		dev_warn_once(&nfp_prog->bpf->app->pf->pdev->dev,
 			      "bpf: note: return codes and behavior of bpf_event_output() helper differs for offloaded programs!\n");
 		pr_vlog(env, "warning: return codes and behavior of event_output helper differ for offload!\n");
@@ -506,7 +489,7 @@ nfp_bpf_check_store(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta,
 
 	if (reg->type == PTR_TO_CTX) {
 		if (nfp_prog->type == BPF_PROG_TYPE_XDP) {
-			/* XDP ctx accesses must be 4B in size */
+			 
 			switch (meta->insn.off) {
 			case offsetof(struct xdp_md, rx_queue_index):
 				if (nfp_prog->bpf->queue_select)
@@ -566,18 +549,7 @@ nfp_bpf_check_alu(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta,
 	meta->umin_dst = min(meta->umin_dst, dreg->umin_value);
 	meta->umax_dst = max(meta->umax_dst, dreg->umax_value);
 
-	/* NFP supports u16 and u32 multiplication.
-	 *
-	 * For ALU64, if either operand is beyond u32's value range, we reject
-	 * it. One thing to note, if the source operand is BPF_K, then we need
-	 * to check "imm" field directly, and we'd reject it if it is negative.
-	 * Because for ALU64, "imm" (with s32 type) is expected to be sign
-	 * extended to s64 which NFP mul doesn't support.
-	 *
-	 * For ALU32, it is fine for "imm" be negative though, because the
-	 * result is 32-bits and there is no difference on the low halve of
-	 * the result for signed/unsigned mul, so we will get correct result.
-	 */
+	 
 	if (is_mbpf_mul(meta)) {
 		if (meta->umax_dst > U32_MAX) {
 			pr_vlog(env, "multiplier is not within u32 value range\n");
@@ -594,16 +566,7 @@ nfp_bpf_check_alu(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta,
 		}
 	}
 
-	/* NFP doesn't have divide instructions, we support divide by constant
-	 * through reciprocal multiplication. Given NFP support multiplication
-	 * no bigger than u32, we'd require divisor and dividend no bigger than
-	 * that as well.
-	 *
-	 * Also eBPF doesn't support signed divide and has enforced this on C
-	 * language level by failing compilation. However LLVM assembler hasn't
-	 * enforced this, so it is possible for negative constant to leak in as
-	 * a BPF_K operand through assembly code, we reject such cases as well.
-	 */
+	 
 	if (is_mbpf_div(meta)) {
 		if (meta->umax_dst > U32_MAX) {
 			pr_vlog(env, "dividend is not within u32 value range\n");
@@ -704,12 +667,7 @@ static unsigned int nfp_bpf_get_stack_usage(struct nfp_prog *nfp_prog)
 	unsigned short ret_prog[MAX_CALL_FRAMES];
 	unsigned short idx = meta->subprog_idx;
 
-	/* Inspired from check_max_stack_depth() from kernel verifier.
-	 * Starting from main subprogram, walk all instructions and recursively
-	 * walk all callees that given subprogram can call. Since recursion is
-	 * prevented by the kernel verifier, this algorithm only needs a local
-	 * stack of MAX_CALL_FRAMES to remember callsites.
-	 */
+	 
 process_subprog:
 	frame_depths[frame] = nfp_prog->subprog[idx].stack_depth;
 	frame_depths[frame] = round_up(frame_depths[frame], STACK_FRAME_ALIGN);
@@ -722,23 +680,18 @@ continue_subprog:
 		if (!is_mbpf_pseudo_call(meta))
 			continue;
 
-		/* We found a call to a subprogram. Remember instruction to
-		 * return to and subprog id.
-		 */
+		 
 		ret_insn[frame] = nfp_meta_next(meta);
 		ret_prog[frame] = idx;
 
-		/* Find the callee and start processing it. */
+		 
 		meta = nfp_bpf_goto_meta(nfp_prog, meta,
 					 meta->n + 1 + meta->insn.imm);
 		idx = meta->subprog_idx;
 		frame++;
 		goto process_subprog;
 	}
-	/* End of for() loop means the last instruction of the subprog was
-	 * reached. If we popped all stack frames, return; otherwise, go on
-	 * processing remaining instructions from the caller.
-	 */
+	 
 	if (frame == 0)
 		return max_depth;
 
@@ -784,9 +737,9 @@ int nfp_bpf_finalize(struct bpf_verifier_env *env)
 		if (i == 0)
 			continue;
 
-		/* Account for size of return address. */
+		 
 		nfp_prog->subprog[i].stack_depth += REG_WIDTH;
-		/* Account for size of saved registers, if necessary. */
+		 
 		if (nfp_prog->subprog[i].needs_reg_push)
 			nfp_prog->subprog[i].stack_depth += BPF_REG_SIZE * 4;
 	}
@@ -814,7 +767,7 @@ int nfp_bpf_opt_replace_insn(struct bpf_verifier_env *env, u32 off,
 	meta = nfp_bpf_goto_meta(nfp_prog, meta, aux_data[off].orig_idx);
 	nfp_prog->verifier_meta = meta;
 
-	/* conditional jump to jump conversion */
+	 
 	if (is_mbpf_cond_jump(meta) &&
 	    insn->code == (BPF_JMP | BPF_JA | BPF_K)) {
 		unsigned int tgt_off;
@@ -851,7 +804,7 @@ int nfp_bpf_opt_remove_insns(struct bpf_verifier_env *env, u32 off, u32 cnt)
 		if (WARN_ON_ONCE(&meta->l == &nfp_prog->insns))
 			return -EINVAL;
 
-		/* doesn't count if it already has the flag */
+		 
 		if (meta->flags & FLAG_INSN_SKIP_VERIFIER_OPT)
 			i--;
 

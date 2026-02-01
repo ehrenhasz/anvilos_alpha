@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates.*/
+
+ 
 
 #define _GNU_SOURCE
 #include <unistd.h>
@@ -29,19 +29,19 @@ static void test_tp_btf(int cgroup_fd)
 	if (!ASSERT_OK_PTR(skel, "skel_open_and_load"))
 		return;
 
-	/* populate a value in map_b */
+	 
 	err = bpf_map_update_elem(bpf_map__fd(skel->maps.map_b), &cgroup_fd, &val1, BPF_ANY);
 	if (!ASSERT_OK(err, "map_update_elem"))
 		goto out;
 
-	/* check value */
+	 
 	err = bpf_map_lookup_elem(bpf_map__fd(skel->maps.map_b), &cgroup_fd, &val2);
 	if (!ASSERT_OK(err, "map_lookup_elem"))
 		goto out;
 	if (!ASSERT_EQ(val2, 1, "map_lookup_elem, invalid val"))
 		goto out;
 
-	/* delete value */
+	 
 	err = bpf_map_delete_elem(bpf_map__fd(skel->maps.map_b), &cgroup_fd);
 	if (!ASSERT_OK(err, "map_delete_elem"))
 		goto out;
@@ -57,7 +57,7 @@ static void test_tp_btf(int cgroup_fd)
 
 	skel->bss->target_pid = 0;
 
-	/* 3x syscalls: 1x attach and 2x gettid */
+	 
 	ASSERT_EQ(skel->bss->enter_cnt, 3, "enter_cnt");
 	ASSERT_EQ(skel->bss->exit_cnt, 3, "exit_cnt");
 	ASSERT_EQ(skel->bss->mismatch_cnt, 0, "mismatch_cnt");
@@ -134,7 +134,7 @@ static void test_recursion(int cgroup_fd)
 	if (!ASSERT_OK(err, "skel_attach"))
 		goto out;
 
-	/* trigger sys_enter, make sure it does not cause deadlock */
+	 
 	syscall(SYS_gettid);
 
 out:
@@ -183,7 +183,7 @@ static void test_cgroup_iter_sleepable(int cgroup_fd, __u64 cgroup_id)
 	if (!ASSERT_GE(iter_fd, 0, "iter_create"))
 		goto out;
 
-	/* trigger the program run */
+	 
 	(void)read(iter_fd, buf, sizeof(buf));
 
 	ASSERT_EQ(skel->bss->cgroup_id, cgroup_id, "cgroup_id");

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017 NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/iommu.h>
@@ -113,7 +111,7 @@ static bool tegra_plane_format_mod_supported(struct drm_plane *plane,
 	if (modifier == DRM_FORMAT_MOD_LINEAR)
 		return true;
 
-	/* check for the sector layout bit */
+	 
 	if (fourcc_mod_is_vendor(modifier, NVIDIA)) {
 		if (modifier & DRM_FORMAT_MOD_NVIDIA_SECTOR_LAYOUT) {
 			if (!tegra_plane_supports_sector_layout(plane))
@@ -153,12 +151,7 @@ static int tegra_dc_pin(struct tegra_dc *dc, struct tegra_plane_state *state)
 		}
 
 		if (!dc->client.group) {
-			/*
-			 * The display controller needs contiguous memory, so
-			 * fail if the buffer is discontiguous and we fail to
-			 * map its SG table to a single contiguous chunk of
-			 * I/O virtual memory.
-			 */
+			 
 			if (map->chunks > 1) {
 				err = -EINVAL;
 				goto unpin;
@@ -246,48 +239,34 @@ static int tegra_plane_calculate_memory_bandwidth(struct drm_plane_state *state)
 	fmt = state->fb->format;
 	soc = to_tegra_dc(state->crtc)->soc;
 
-	/*
-	 * Note that real memory bandwidth vary depending on format and
-	 * memory layout, we are not taking that into account because small
-	 * estimation error isn't important since bandwidth is rounded up
-	 * anyway.
-	 */
+	 
 	for (i = 0, bpp = 0; i < fmt->num_planes; i++) {
 		unsigned int bpp_plane = fmt->cpp[i] * 8;
 
-		/*
-		 * Sub-sampling is relevant for chroma planes only and vertical
-		 * readouts are not cached, hence only horizontal sub-sampling
-		 * matters.
-		 */
+		 
 		if (i > 0)
 			bpp_plane /= fmt->hsub;
 
 		bpp += bpp_plane;
 	}
 
-	/* average bandwidth in kbytes/sec */
+	 
 	avg_bandwidth  = min(src_w, dst_w) * min(src_h, dst_h);
 	avg_bandwidth *= drm_mode_vrefresh(&crtc_state->adjusted_mode);
 	avg_bandwidth  = DIV_ROUND_UP(avg_bandwidth * bpp, 8) + 999;
 	do_div(avg_bandwidth, 1000);
 
-	/* mode.clock in kHz, peak bandwidth in kbytes/sec */
+	 
 	peak_bandwidth = DIV_ROUND_UP(crtc_state->adjusted_mode.clock * bpp, 8);
 
-	/*
-	 * Tegra30/114 Memory Controller can't interleave DC memory requests
-	 * for the tiled windows because DC uses 16-bytes atom, while DDR3
-	 * uses 32-bytes atom.  Hence there is x2 memory overfetch for tiled
-	 * framebuffer and DDR3 on these SoCs.
-	 */
+	 
 	if (soc->plane_tiled_memory_bandwidth_x2 &&
 	    tegra_state->tiling.mode == TEGRA_BO_TILING_MODE_TILED)
 		mul = 2;
 	else
 		mul = 1;
 
-	/* ICC bandwidth in kbytes/sec */
+	 
 	tegra_state->peak_memory_bandwidth = kBps_to_icc(peak_bandwidth) * mul;
 	tegra_state->avg_memory_bandwidth  = kBps_to_icc(avg_bandwidth)  * mul;
 
@@ -301,12 +280,12 @@ int tegra_plane_state_add(struct tegra_plane *plane,
 	struct tegra_dc_state *tegra;
 	int err;
 
-	/* Propagate errors from allocation or locking failures. */
+	 
 	crtc_state = drm_atomic_get_crtc_state(state->state, state->crtc);
 	if (IS_ERR(crtc_state))
 		return PTR_ERR(crtc_state);
 
-	/* Check plane state for visibility and calculate clipping bounds */
+	 
 	err = drm_atomic_helper_check_plane_state(state, crtc_state,
 						  0, INT_MAX, true, true);
 	if (err < 0)
@@ -325,7 +304,7 @@ int tegra_plane_state_add(struct tegra_plane *plane,
 
 int tegra_plane_format(u32 fourcc, u32 *format, u32 *swap)
 {
-	/* assume no swapping of fetched data */
+	 
 	if (swap)
 		*swap = BYTE_SWAP_NOSWAP;
 
@@ -583,10 +562,7 @@ static int tegra_plane_format_get_alpha(unsigned int opaque,
 	return -EINVAL;
 }
 
-/*
- * This is applicable to Tegra20 and Tegra30 only where the opaque formats can
- * be emulated using the alpha formats and alpha blending disabled.
- */
+ 
 static int tegra_plane_setup_opacity(struct tegra_plane *tegra,
 				     struct tegra_plane_state *state)
 {
@@ -622,16 +598,16 @@ static int tegra_plane_check_transparency(struct tegra_plane *tegra,
 
 	old = drm_atomic_get_old_plane_state(state->base.state, &tegra->base);
 
-	/* check if zpos / transparency changed */
+	 
 	if (old->normalized_zpos == state->base.normalized_zpos &&
 	    to_tegra_plane_state(old)->opaque == state->opaque)
 		return 0;
 
-	/* include all sibling planes into this commit */
+	 
 	drm_for_each_plane(plane, tegra->base.dev) {
 		struct tegra_plane *p = to_tegra_plane(plane);
 
-		/* skip this plane and planes on different CRTCs */
+		 
 		if (p == tegra || p->dc != tegra->dc)
 			continue;
 
@@ -675,7 +651,7 @@ static void tegra_plane_update_transparency(struct tegra_plane *tegra,
 		struct tegra_plane *p = to_tegra_plane(plane);
 		unsigned index;
 
-		/* skip this plane and planes on different CRTCs */
+		 
 		if (p == tegra || p->dc != tegra->dc)
 			continue;
 
@@ -691,12 +667,7 @@ static void tegra_plane_update_transparency(struct tegra_plane *tegra,
 		else
 			state->blending[index].top = false;
 
-		/*
-		 * Missing framebuffer means that plane is disabled, in this
-		 * case mark B / C window as top to be able to differentiate
-		 * windows indices order in regards to zPos for the middle
-		 * window X / Y registers programming.
-		 */
+		 
 		if (!new->fb)
 			state->blending[index].top = (index == 1);
 	}
@@ -710,33 +681,23 @@ static int tegra_plane_setup_transparency(struct tegra_plane *tegra,
 	struct drm_plane *plane;
 	int err;
 
-	/*
-	 * If planes zpos / transparency changed, sibling planes blending
-	 * state may require adjustment and in this case they will be included
-	 * into this atom commit, otherwise blending state is unchanged.
-	 */
+	 
 	err = tegra_plane_check_transparency(tegra, state);
 	if (err <= 0)
 		return err;
 
-	/*
-	 * All planes are now in the atomic state, walk them up and update
-	 * transparency state for each plane.
-	 */
+	 
 	drm_for_each_plane(plane, tegra->base.dev) {
 		struct tegra_plane *p = to_tegra_plane(plane);
 
-		/* skip planes on different CRTCs */
+		 
 		if (p->dc != tegra->dc)
 			continue;
 
 		new = drm_atomic_get_new_plane_state(state->base.state, plane);
 		tegra_state = to_tegra_plane_state(new);
 
-		/*
-		 * There is no need to update blending state for the disabled
-		 * plane.
-		 */
+		 
 		if (new->fb)
 			tegra_plane_update_transparency(p, tegra_state);
 	}
@@ -781,7 +742,7 @@ int tegra_plane_interconnect_init(struct tegra_plane *plane)
 		return dev_err_probe(dev, err, "failed to get %s interconnect\n",
 				     icc_name);
 
-	/* plane B on T20/30 has a dedicated memory client for a 6-tap vertical filter */
+	 
 	if (plane->index == 1 && dc->soc->has_win_b_vfilter_mem_client) {
 		plane->icc_mem_vfilter = devm_of_icc_get(dev, "winb-vfilter");
 		err = PTR_ERR_OR_ZERO(plane->icc_mem_vfilter);

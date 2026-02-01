@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/delay.h>
 #include <linux/pci.h>
@@ -35,9 +35,7 @@ void mgag200_g200eh_init_registers(struct mga_device *mdev)
 	mgag200_init_registers(mdev);
 }
 
-/*
- * PIXPLLC
- */
+ 
 
 static int mgag200_g200eh_pixpllc_atomic_check(struct drm_crtc *crtc,
 					       struct drm_atomic_state *new_state)
@@ -162,9 +160,7 @@ void mgag200_g200eh_pixpllc_atomic_update(struct drm_crtc *crtc,
 	}
 }
 
-/*
- * Mode-setting pipeline
- */
+ 
 
 static const struct drm_plane_helper_funcs mgag200_g200eh_primary_plane_helper_funcs = {
 	MGAG200_PRIMARY_PLANE_HELPER_FUNCS,
@@ -225,7 +221,7 @@ static int mgag200_g200eh_pipeline_init(struct mga_device *mdev)
 	}
 	drm_crtc_helper_add(crtc, &mgag200_g200eh_crtc_helper_funcs);
 
-	/* FIXME: legacy gamma tables, but atomic gamma doesn't work without */
+	 
 	drm_mode_crtc_set_gamma_size(crtc, MGAG200_LUT_SIZE);
 	drm_crtc_enable_color_mgmt(crtc, 0, false, MGAG200_LUT_SIZE);
 
@@ -262,9 +258,7 @@ static int mgag200_g200eh_pipeline_init(struct mga_device *mdev)
 	return 0;
 }
 
-/*
- * DRM device
- */
+ 
 
 static const struct mgag200_device_info mgag200_g200eh_device_info =
 	MGAG200_DEVICE_INFO_INIT(2048, 2048, 37500, false, 1, 0, false);

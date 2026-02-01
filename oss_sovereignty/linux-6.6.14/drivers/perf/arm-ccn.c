@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Copyright (C) 2014 ARM Limited
- */
+
+ 
 
 #include <linux/ctype.h>
 #include <linux/hrtimer.h>
@@ -109,16 +106,16 @@
 #define CCN_TYPE_RNI_1P	0x14
 #define CCN_TYPE_RNI_2P	0x15
 #define CCN_TYPE_RNI_3P	0x16
-#define CCN_TYPE_RND_1P	0x18 /* RN-D = RN-I + DVM */
+#define CCN_TYPE_RND_1P	0x18  
 #define CCN_TYPE_RND_2P	0x19
 #define CCN_TYPE_RND_3P	0x1a
-#define CCN_TYPE_CYCLES	0xff /* Pseudotype */
+#define CCN_TYPE_CYCLES	0xff  
 
-#define CCN_EVENT_WATCHPOINT 0xfe /* Pseudoevent */
+#define CCN_EVENT_WATCHPOINT 0xfe  
 
 #define CCN_NUM_PMU_EVENTS		4
-#define CCN_NUM_XP_WATCHPOINTS		2 /* See DT.dbg_id.num_watchpoints */
-#define CCN_NUM_PMU_EVENT_COUNTERS	8 /* See DT.dbg_id.num_pmucntr */
+#define CCN_NUM_XP_WATCHPOINTS		2  
+#define CCN_NUM_PMU_EVENT_COUNTERS	8  
 #define CCN_IDX_PMU_CYCLE_COUNTER	CCN_NUM_PMU_EVENT_COUNTERS
 
 #define CCN_NUM_PREDEFINED_MASKS	4
@@ -195,10 +192,7 @@ static int arm_ccn_node_to_xp_port(int node)
 }
 
 
-/*
- * Bit shifts and masks in these defines must be kept in sync with
- * arm_ccn_pmu_config_set() and CCN_FORMAT_ATTRs below!
- */
+ 
 #define CCN_CONFIG_NODE(_config)	(((_config) >> 0) & 0xff)
 #define CCN_CONFIG_XP(_config)		(((_config) >> 0) & 0xff)
 #define CCN_CONFIG_TYPE(_config)	(((_config) >> 8) & 0xff)
@@ -275,13 +269,7 @@ struct arm_ccn_pmu_event {
 #define CCN_EVENT_ATTR(_name) \
 	__ATTR(_name, S_IRUGO, arm_ccn_pmu_event_show, NULL)
 
-/*
- * Events defined in TRM for MN, HN-I and SBSX are actually watchpoints set on
- * their ports in XP they are connected to. For the sake of usability they are
- * explicitly defined here (and translated into a relevant watchpoint in
- * arm_ccn_pmu_event_init()) so the user can easily request them without deep
- * knowledge of the flit format.
- */
+ 
 
 #define CCN_EVENT_MN(_name, _def, _mask) { .attr = CCN_EVENT_ATTR(mn_##_name), \
 		.type = CCN_TYPE_MN, .event = CCN_EVENT_WATCHPOINT, \
@@ -305,11 +293,7 @@ struct arm_ccn_pmu_event {
 		.type = CCN_TYPE_XP, .event = _event, \
 		.num_ports = CCN_NUM_XP_PORTS, .num_vcs = CCN_NUM_VCS, }
 
-/*
- * RN-I & RN-D (RN-D = RN-I + DVM) nodes have different type ID depending
- * on configuration. One of them is picked to represent the whole group,
- * as they all share the same event types.
- */
+ 
 #define CCN_EVENT_RNI(_name, _event) { .attr = CCN_EVENT_ATTR(rni_##_name), \
 		.type = CCN_TYPE_RNI_3P, .event = _event, }
 
@@ -336,7 +320,7 @@ static ssize_t arm_ccn_pmu_event_show(struct device *dev,
 	if (event->mask)
 		res += sysfs_emit_at(buf, res, ",mask=0x%x", event->mask);
 
-	/* Arguments required by an event */
+	 
 	switch (event->type) {
 	case CCN_TYPE_CYCLES:
 		break;
@@ -436,7 +420,7 @@ static struct arm_ccn_pmu_event arm_ccn_pmu_events[] = {
 	CCN_EVENT_CYCLES(cycles),
 };
 
-/* Populated in arm_ccn_init() */
+ 
 static struct attribute
 		*arm_ccn_pmu_events_attrs[ARRAY_SIZE(arm_ccn_pmu_events) + 1];
 
@@ -562,12 +546,7 @@ static const struct attribute_group arm_ccn_pmu_cpumask_attr_group = {
 	.attrs = arm_ccn_pmu_cpumask_attrs,
 };
 
-/*
- * Default poll period is 10ms, which is way over the top anyway,
- * as in the worst case scenario (an event every cycle), with 1GHz
- * clocked bus, the smallest, 32 bit counter will overflow in
- * more than 4s.
- */
+ 
 static unsigned int arm_ccn_pmu_poll_period_us = 10000;
 module_param_named(pmu_poll_period_us, arm_ccn_pmu_poll_period_us, uint,
 		S_IRUGO | S_IWUSR);
@@ -600,7 +579,7 @@ static int arm_ccn_pmu_alloc_bit(unsigned long *bitmap, unsigned long size)
 	return bit;
 }
 
-/* All RN-I and RN-D nodes have identical PMUs */
+ 
 static int arm_ccn_pmu_type_eq(u32 a, u32 b)
 {
 	if (a == b)
@@ -640,7 +619,7 @@ static int arm_ccn_pmu_event_alloc(struct perf_event *event)
 	type = CCN_CONFIG_TYPE(event->attr.config);
 	event_id = CCN_CONFIG_EVENT(event->attr.config);
 
-	/* Allocate the cycle counter */
+	 
 	if (type == CCN_TYPE_CYCLES) {
 		if (test_and_set_bit(CCN_IDX_PMU_CYCLE_COUNTER,
 				ccn->dt.pmu_counters_mask))
@@ -652,7 +631,7 @@ static int arm_ccn_pmu_event_alloc(struct perf_event *event)
 		return 0;
 	}
 
-	/* Allocate an event counter */
+	 
 	hw->idx = arm_ccn_pmu_alloc_bit(ccn->dt.pmu_counters_mask,
 			CCN_NUM_PMU_EVENT_COUNTERS);
 	if (hw->idx < 0) {
@@ -666,7 +645,7 @@ static int arm_ccn_pmu_event_alloc(struct perf_event *event)
 		source = &ccn->node[node_xp];
 	ccn->dt.pmu_counters[hw->idx].source = source;
 
-	/* Allocate an event source or a watchpoint */
+	 
 	if (type == CCN_TYPE_XP && event_id == CCN_EVENT_WATCHPOINT)
 		bit = arm_ccn_pmu_alloc_bit(source->xp.dt_cmp_mask,
 				CCN_NUM_XP_WATCHPOINTS);
@@ -738,22 +717,14 @@ static int arm_ccn_pmu_event_init(struct perf_event *event)
 		dev_dbg(ccn->dev, "Can't provide per-task data!\n");
 		return -EOPNOTSUPP;
 	}
-	/*
-	 * Many perf core operations (eg. events rotation) operate on a
-	 * single CPU context. This is obvious for CPU PMUs, where one
-	 * expects the same sets of events being observed on all CPUs,
-	 * but can lead to issues for off-core PMUs, like CCN, where each
-	 * event could be theoretically assigned to a different CPU. To
-	 * mitigate this, we enforce CPU assignment to one, selected
-	 * processor (the one described in the "cpumask" attribute).
-	 */
+	 
 	event->cpu = ccn->dt.cpu;
 
 	node_xp = CCN_CONFIG_NODE(event->attr.config);
 	type = CCN_CONFIG_TYPE(event->attr.config);
 	event_id = CCN_CONFIG_EVENT(event->attr.config);
 
-	/* Validate node/xp vs topology */
+	 
 	switch (type) {
 	case CCN_TYPE_MN:
 		if (node_xp != ccn->mn_id) {
@@ -782,7 +753,7 @@ static int arm_ccn_pmu_event_init(struct perf_event *event)
 		break;
 	}
 
-	/* Validate event ID vs available for the type */
+	 
 	for (i = 0, valid = 0; i < ARRAY_SIZE(arm_ccn_pmu_events) && !valid;
 			i++) {
 		struct arm_ccn_pmu_event *e = &arm_ccn_pmu_events[i];
@@ -811,7 +782,7 @@ static int arm_ccn_pmu_event_init(struct perf_event *event)
 		return -EINVAL;
 	}
 
-	/* Watchpoint-based event for a node is actually set on XP */
+	 
 	if (event_id == CCN_EVENT_WATCHPOINT && type != CCN_TYPE_XP) {
 		u32 port;
 
@@ -823,11 +794,7 @@ static int arm_ccn_pmu_event_init(struct perf_event *event)
 				node_xp, type, port);
 	}
 
-	/*
-	 * We must NOT create groups containing mixed PMUs, although software
-	 * events are acceptable (for example to create a CCN group
-	 * periodically read when a hrtimer aka cpu-clock leader triggers).
-	 */
+	 
 	if (event->group_leader->pmu != event->pmu &&
 			!is_software_event(event->group_leader))
 		return -EINVAL;
@@ -849,7 +816,7 @@ static u64 arm_ccn_pmu_read_counter(struct arm_ccn *ccn, int idx)
 #ifdef readq
 		res = readq(ccn->dt.base + CCN_DT_PMCCNTR);
 #else
-		/* 40 bit counter, can do snapshot and read in two parts */
+		 
 		writel(0x1, ccn->dt.base + CCN_DT_PMSR_REQ);
 		while (!(readl(ccn->dt.base + CCN_DT_PMSR) & 0x1))
 			;
@@ -888,7 +855,7 @@ static void arm_ccn_pmu_xp_dt_config(struct perf_event *event, int enable)
 	struct arm_ccn_component *xp;
 	u32 val, dt_cfg;
 
-	/* Nothing to do for cycle counter */
+	 
 	if (hw->idx == CCN_IDX_PMU_CYCLE_COUNTER)
 		return;
 
@@ -923,7 +890,7 @@ static void arm_ccn_pmu_event_start(struct perf_event *event, int flags)
 			arm_ccn_pmu_read_counter(ccn, hw->idx));
 	hw->state = 0;
 
-	/* Set the DT bus input, engaging the counter */
+	 
 	arm_ccn_pmu_xp_dt_config(event, 1);
 }
 
@@ -931,7 +898,7 @@ static void arm_ccn_pmu_event_stop(struct perf_event *event, int flags)
 {
 	struct hw_perf_event *hw = &event->hw;
 
-	/* Disable counting, setting the DT bus to pass-through mode */
+	 
 	arm_ccn_pmu_xp_dt_config(event, 0);
 
 	if (flags & PERF_EF_UPDATE)
@@ -955,7 +922,7 @@ static void arm_ccn_pmu_xp_watchpoint_config(struct perf_event *event)
 
 	hw->event_base = CCN_XP_DT_CONFIG__DT_CFG__WATCHPOINT(wp);
 
-	/* Direction (RX/TX), device (port) & virtual channel */
+	 
 	val = readl(source->base + CCN_XP_DT_INTERFACE_SEL);
 	val &= ~(CCN_XP_DT_INTERFACE_SEL__DT_IO_SEL__MASK <<
 			CCN_XP_DT_INTERFACE_SEL__DT_IO_SEL__SHIFT(wp));
@@ -971,7 +938,7 @@ static void arm_ccn_pmu_xp_watchpoint_config(struct perf_event *event)
 			CCN_XP_DT_INTERFACE_SEL__DT_VC_SEL__SHIFT(wp);
 	writel(val, source->base + CCN_XP_DT_INTERFACE_SEL);
 
-	/* Comparison values */
+	 
 	writel(cmp_l & 0xffffffff, source->base + CCN_XP_DT_CMP_VAL_L(wp));
 	writel((cmp_l >> 32) & 0x7fffffff,
 			source->base + CCN_XP_DT_CMP_VAL_L(wp) + 4);
@@ -979,7 +946,7 @@ static void arm_ccn_pmu_xp_watchpoint_config(struct perf_event *event)
 	writel((cmp_h >> 32) & 0x0fffffff,
 			source->base + CCN_XP_DT_CMP_VAL_H(wp) + 4);
 
-	/* Mask */
+	 
 	writel(mask_l & 0xffffffff, source->base + CCN_XP_DT_CMP_MASK_L(wp));
 	writel((mask_l >> 32) & 0x7fffffff,
 			source->base + CCN_XP_DT_CMP_MASK_L(wp) + 4);
@@ -1022,7 +989,7 @@ static void arm_ccn_pmu_node_event_config(struct perf_event *event)
 	hw->event_base = CCN_XP_DT_CONFIG__DT_CFG__DEVICE_PMU_EVENT(port,
 			hw->config_base);
 
-	/* These *_event_sel regs should be identical, but let's make sure... */
+	 
 	BUILD_BUG_ON(CCN_HNF_PMU_EVENT_SEL != CCN_SBAS_PMU_EVENT_SEL);
 	BUILD_BUG_ON(CCN_SBAS_PMU_EVENT_SEL != CCN_RNI_PMU_EVENT_SEL);
 	BUILD_BUG_ON(CCN_HNF_PMU_EVENT_SEL__ID__SHIFT(1) !=
@@ -1037,7 +1004,7 @@ static void arm_ccn_pmu_node_event_config(struct perf_event *event)
 			!arm_ccn_pmu_type_eq(type, CCN_TYPE_RNI_3P)))
 		return;
 
-	/* Set the event id for the pre-allocated counter */
+	 
 	val = readl(source->base + CCN_HNF_PMU_EVENT_SEL);
 	val &= ~(CCN_HNF_PMU_EVENT_SEL__ID__MASK <<
 		CCN_HNF_PMU_EVENT_SEL__ID__SHIFT(hw->config_base));
@@ -1052,7 +1019,7 @@ static void arm_ccn_pmu_event_config(struct perf_event *event)
 	struct hw_perf_event *hw = &event->hw;
 	u32 xp, offset, val;
 
-	/* Cycle counter requires no setup */
+	 
 	if (hw->idx == CCN_IDX_PMU_CYCLE_COUNTER)
 		return;
 
@@ -1063,7 +1030,7 @@ static void arm_ccn_pmu_event_config(struct perf_event *event)
 
 	spin_lock(&ccn->dt.config_lock);
 
-	/* Set the DT bus "distance" register */
+	 
 	offset = (hw->idx / 4) * 4;
 	val = readl(ccn->dt.base + CCN_DT_ACTIVE_DSM + offset);
 	val &= ~(CCN_DT_ACTIVE_DSM__DSM_ID__MASK <<
@@ -1100,11 +1067,7 @@ static int arm_ccn_pmu_event_add(struct perf_event *event, int flags)
 	if (err)
 		return err;
 
-	/*
-	 * Pin the timer, so that the overflows are handled by the chosen
-	 * event->cpu (this is the same one as presented in "cpumask"
-	 * attribute).
-	 */
+	 
 	if (!ccn->irq && arm_ccn_pmu_active_counters(ccn) == 1)
 		hrtimer_start(&ccn->dt.hrtimer, arm_ccn_pmu_timer_period(),
 			      HRTIMER_MODE_REL_PINNED);
@@ -1223,7 +1186,7 @@ static int arm_ccn_pmu_init(struct arm_ccn *ccn)
 	char *name;
 	int err;
 
-	/* Initialize DT subsystem */
+	 
 	ccn->dt.base = ccn->base + CCN_REGION_SIZE;
 	spin_lock_init(&ccn->dt.config_lock);
 	writel(CCN_DT_PMOVSR_CLR__MASK, ccn->dt.base + CCN_DT_PMOVSR_CLR);
@@ -1249,7 +1212,7 @@ static int arm_ccn_pmu_init(struct arm_ccn *ccn)
 	ccn->dt.cmp_mask[CCN_IDX_MASK_OPCODE].l = ~0;
 	ccn->dt.cmp_mask[CCN_IDX_MASK_OPCODE].h = ~(0x1f << 9);
 
-	/* Get a convenient /sys/event_source/devices/ name */
+	 
 	ccn->dt.id = ida_alloc(&arm_ccn_pmu_ida, GFP_KERNEL);
 	if (ccn->dt.id == 0) {
 		name = "ccn";
@@ -1262,7 +1225,7 @@ static int arm_ccn_pmu_init(struct arm_ccn *ccn)
 		}
 	}
 
-	/* Perf driver registration */
+	 
 	ccn->dt.pmu = (struct pmu) {
 		.module = THIS_MODULE,
 		.attr_groups = arm_ccn_pmu_attr_groups,
@@ -1278,7 +1241,7 @@ static int arm_ccn_pmu_init(struct arm_ccn *ccn)
 		.capabilities = PERF_PMU_CAP_NO_EXCLUDE,
 	};
 
-	/* No overflow interrupt? Have to use a timer instead. */
+	 
 	if (!ccn->irq) {
 		dev_info(ccn->dev, "No access to interrupts, using timer.\n");
 		hrtimer_init(&ccn->dt.hrtimer, CLOCK_MONOTONIC,
@@ -1286,10 +1249,10 @@ static int arm_ccn_pmu_init(struct arm_ccn *ccn)
 		ccn->dt.hrtimer.function = arm_ccn_pmu_timer_handler;
 	}
 
-	/* Pick one CPU which we will use to collect data from CCN... */
+	 
 	ccn->dt.cpu = raw_smp_processor_id();
 
-	/* Also make sure that the overflow interrupt is handled by this CPU */
+	 
 	if (ccn->irq) {
 		err = irq_set_affinity(ccn->irq, cpumask_of(ccn->dt.cpu));
 		if (err) {
@@ -1413,7 +1376,7 @@ static int arm_ccn_init_nodes(struct arm_ccn *ccn, int region,
 static irqreturn_t arm_ccn_error_handler(struct arm_ccn *ccn,
 		const u32 *err_sig_val)
 {
-	/* This should be really handled by firmware... */
+	 
 	dev_err(ccn->dev, "Error reported in %08x%08x%08x%08x%08x%08x.\n",
 			err_sig_val[5], err_sig_val[4], err_sig_val[3],
 			err_sig_val[2], err_sig_val[1], err_sig_val[0]);
@@ -1433,14 +1396,14 @@ static irqreturn_t arm_ccn_irq_handler(int irq, void *dev_id)
 	u32 err_or;
 	int i;
 
-	/* PMU overflow is a special case */
+	 
 	err_or = err_sig_val[0] = readl(ccn->base + CCN_MN_ERR_SIG_VAL_63_0);
 	if (err_or & CCN_MN_ERR_SIG_VAL_63_0__DT) {
 		err_or &= ~CCN_MN_ERR_SIG_VAL_63_0__DT;
 		res = arm_ccn_pmu_overflow_handler(&ccn->dt);
 	}
 
-	/* Have to read all err_sig_vals to clear them */
+	 
 	for (i = 1; i < ARRAY_SIZE(err_sig_val); i++) {
 		err_sig_val[i] = readl(ccn->base +
 				CCN_MN_ERR_SIG_VAL_63_0 + i * 4);
@@ -1477,12 +1440,12 @@ static int arm_ccn_probe(struct platform_device *pdev)
 	if (irq < 0)
 		return irq;
 
-	/* Check if we can use the interrupt */
+	 
 	writel(CCN_MN_ERRINT_STATUS__PMU_EVENTS__DISABLE,
 			ccn->base + CCN_MN_ERRINT_STATUS);
 	if (readl(ccn->base + CCN_MN_ERRINT_STATUS) &
 			CCN_MN_ERRINT_STATUS__PMU_EVENTS__DISABLED) {
-		/* Can set 'disable' bits, so can acknowledge interrupts */
+		 
 		writel(CCN_MN_ERRINT_STATUS__PMU_EVENTS__ENABLE,
 				ccn->base + CCN_MN_ERRINT_STATUS);
 		err = devm_request_irq(ccn->dev, irq, arm_ccn_irq_handler,
@@ -1495,7 +1458,7 @@ static int arm_ccn_probe(struct platform_device *pdev)
 	}
 
 
-	/* Build topology */
+	 
 
 	err = arm_ccn_for_each_valid_region(ccn, arm_ccn_get_nodes_num);
 	if (err)

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2017-2018 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/lockdep.h>
 #include <linux/netdevice.h>
@@ -140,18 +140,7 @@ nfp_port_get_phys_port_name(struct net_device *netdev, char *name, size_t len)
 	return 0;
 }
 
-/**
- * nfp_port_configure() - helper to set the interface configured bit
- * @netdev:	net_device instance
- * @configed:	Desired state
- *
- * Helper to set the ifup/ifdown state on the PHY only if there is a physical
- * interface associated with the netdev.
- *
- * Return:
- * 0 - configuration successful (or no change);
- * -ERRNO - configuration failed.
- */
+ 
 int nfp_port_configure(struct net_device *netdev, bool configed)
 {
 	struct nfp_eth_table_port *eth_port;
@@ -172,7 +161,7 @@ int nfp_port_configure(struct net_device *netdev, bool configed)
 int nfp_port_init_phy_port(struct nfp_pf *pf, struct nfp_app *app,
 			   struct nfp_port *port, unsigned int id)
 {
-	/* Check if vNIC has external port associated and cfg is OK */
+	 
 	if (!pf->eth_tbl || id >= pf->eth_tbl->count) {
 		nfp_err(app->cpp,
 			"NSP port entries don't match vNICs (no entry %d)\n",

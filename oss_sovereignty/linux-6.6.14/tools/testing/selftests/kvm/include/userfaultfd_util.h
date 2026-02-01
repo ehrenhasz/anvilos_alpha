@@ -1,12 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * KVM userfaultfd util
- *
- * Copyright (C) 2018, Red Hat, Inc.
- * Copyright (C) 2019-2022 Google LLC
- */
+ 
+ 
 
-#define _GNU_SOURCE /* for pipe2 */
+#define _GNU_SOURCE  
 
 #include <inttypes.h>
 #include <time.h>

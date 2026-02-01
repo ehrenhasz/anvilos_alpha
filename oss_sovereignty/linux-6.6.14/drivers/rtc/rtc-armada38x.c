@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * RTC driver for the Armada 38x Marvell SoCs
- *
- * Copyright (C) 2015 Marvell
- *
- * Gregory Clement <gregory.clement@free-electrons.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -31,14 +25,14 @@
 #define RTC_ALARM1	    0x10
 #define RTC_ALARM2	    0x14
 
-/* Armada38x SoC registers  */
+ 
 #define RTC_38X_BRIDGE_TIMING_CTL   0x0
 #define RTC_38X_PERIOD_OFFS		0
 #define RTC_38X_PERIOD_MASK		(0x3FF << RTC_38X_PERIOD_OFFS)
 #define RTC_38X_READ_DELAY_OFFS		26
 #define RTC_38X_READ_DELAY_MASK		(0x1F << RTC_38X_READ_DELAY_OFFS)
 
-/* Armada 7K/8K registers  */
+ 
 #define RTC_8K_BRIDGE_TIMING_CTL0    0x0
 #define RTC_8K_WRCLK_PERIOD_OFFS	0
 #define RTC_8K_WRCLK_PERIOD_MASK	(0xFFFF << RTC_8K_WRCLK_PERIOD_OFFS)
@@ -82,7 +76,7 @@ struct armada38x_rtc {
 #define ALARM_REG(base, alarm)	 ((base) + (alarm) * sizeof(u32))
 
 struct armada38x_rtc_data {
-	/* Initialize the RTC-MBUS bridge timing */
+	 
 	void (*update_mbus_timing)(struct armada38x_rtc *rtc);
 	u32 (*read_rtc_reg)(struct armada38x_rtc *rtc, u8 rtc_reg);
 	void (*clear_isr)(struct armada38x_rtc *rtc);
@@ -90,15 +84,7 @@ struct armada38x_rtc_data {
 	u32 alarm;
 };
 
-/*
- * According to the datasheet, the OS should wait 5us after every
- * register write to the RTC hard macro so that the required update
- * can occur without holding off the system bus
- * According to errata RES-3124064, Write to any RTC register
- * may fail. As a workaround, before writing to RTC
- * register, issue a dummy write of 0x0 twice to RTC Status
- * register.
- */
+ 
 
 static void rtc_delayed_write(u32 val, struct armada38x_rtc *rtc, int offset)
 {
@@ -108,16 +94,16 @@ static void rtc_delayed_write(u32 val, struct armada38x_rtc *rtc, int offset)
 	udelay(5);
 }
 
-/* Update RTC-MBUS bridge timing parameters */
+ 
 static void rtc_update_38x_mbus_timing_params(struct armada38x_rtc *rtc)
 {
 	u32 reg;
 
 	reg = readl(rtc->regs_soc + RTC_38X_BRIDGE_TIMING_CTL);
 	reg &= ~RTC_38X_PERIOD_MASK;
-	reg |= 0x3FF << RTC_38X_PERIOD_OFFS; /* Maximum value */
+	reg |= 0x3FF << RTC_38X_PERIOD_OFFS;  
 	reg &= ~RTC_38X_READ_DELAY_MASK;
-	reg |= 0x1F << RTC_38X_READ_DELAY_OFFS; /* Maximum value */
+	reg |= 0x1F << RTC_38X_READ_DELAY_OFFS;  
 	writel(reg, rtc->regs_soc + RTC_38X_BRIDGE_TIMING_CTL);
 }
 
@@ -174,10 +160,7 @@ static u32 read_rtc_register_38x_wa(struct armada38x_rtc *rtc, u8 rtc_reg)
 			max = rtc->val_to_freq[j].freq;
 		}
 
-		/*
-		 * If a value already has half of the sample this is the most
-		 * frequent one and we can stop the research right now
-		 */
+		 
 		if (max > SAMPLE_NR / 2)
 			break;
 	}
@@ -228,10 +211,10 @@ static void armada38x_rtc_reset(struct armada38x_rtc *rtc)
 	u32 reg;
 
 	reg = rtc->data->read_rtc_reg(rtc, RTC_CONF_TEST);
-	/* If bits [7:0] are non-zero, assume RTC was uninitialized */
+	 
 	if (reg & 0xff) {
 		rtc_delayed_write(0, rtc, RTC_CONF_TEST);
-		msleep(500); /* Oscillator startup time */
+		msleep(500);  
 		rtc_delayed_write(0, rtc, RTC_TIME);
 		rtc_delayed_write(SOC_RTC_ALARM1 | SOC_RTC_ALARM2, rtc,
 				  RTC_STATUS);
@@ -333,9 +316,9 @@ static irqreturn_t armada38x_rtc_alarm_irq(int irq, void *data)
 
 	rtc->data->clear_isr(rtc);
 	val = rtc->data->read_rtc_reg(rtc, reg_irq);
-	/* disable all the interrupts for alarm*/
+	 
 	rtc_delayed_write(0, rtc, reg_irq);
-	/* Ack the event */
+	 
 	rtc_delayed_write(1 << rtc->data->alarm, rtc, RTC_STATUS);
 
 	spin_unlock(&rtc->lock);
@@ -352,41 +335,7 @@ static irqreturn_t armada38x_rtc_alarm_irq(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/*
- * The information given in the Armada 388 functional spec is complex.
- * They give two different formulas for calculating the offset value,
- * but when considering "Offset" as an 8-bit signed integer, they both
- * reduce down to (we shall rename "Offset" as "val" here):
- *
- *   val = (f_ideal / f_measured - 1) / resolution   where f_ideal = 32768
- *
- * Converting to time, f = 1/t:
- *   val = (t_measured / t_ideal - 1) / resolution   where t_ideal = 1/32768
- *
- *   =>  t_measured / t_ideal = val * resolution + 1
- *
- * "offset" in the RTC interface is defined as:
- *   t = t0 * (1 + offset * 1e-9)
- * where t is the desired period, t0 is the measured period with a zero
- * offset, which is t_measured above. With t0 = t_measured and t = t_ideal,
- *   offset = (t_ideal / t_measured - 1) / 1e-9
- *
- *   => t_ideal / t_measured = offset * 1e-9 + 1
- *
- * so:
- *
- *   offset * 1e-9 + 1 = 1 / (val * resolution + 1)
- *
- * We want "resolution" to be an integer, so resolution = R * 1e-9, giving
- *   offset = 1e18 / (val * R + 1e9) - 1e9
- *   val = (1e18 / (offset + 1e9) - 1e9) / R
- * with a common transformation:
- *   f(x) = 1e18 / (x + 1e9) - 1e9
- *   offset = f(val * R)
- *   val = f(offset) / R
- *
- * Armada 38x supports two modes, fine mode (954ppb) and coarse mode (3815ppb).
- */
+ 
 static long armada38x_ppb_convert(long ppb)
 {
 	long div = ppb + 1000000000L;
@@ -405,7 +354,7 @@ static int armada38x_rtc_read_offset(struct device *dev, long *offset)
 	spin_unlock_irqrestore(&rtc->lock, flags);
 
 	ppb_cor = (ccr & RTC_CCR_MODE ? 3815 : 954) * (s8)ccr;
-	/* ppb_cor + 1000000000L can never be zero */
+	 
 	*offset = armada38x_ppb_convert(ppb_cor);
 
 	return 0;
@@ -417,30 +366,19 @@ static int armada38x_rtc_set_offset(struct device *dev, long offset)
 	unsigned long ccr = 0;
 	long ppb_cor, off;
 
-	/*
-	 * The maximum ppb_cor is -128 * 3815 .. 127 * 3815, but we
-	 * need to clamp the input.  This equates to -484270 .. 488558.
-	 * Not only is this to stop out of range "off" but also to
-	 * avoid the division by zero in armada38x_ppb_convert().
-	 */
+	 
 	offset = clamp(offset, -484270L, 488558L);
 
 	ppb_cor = armada38x_ppb_convert(offset);
 
-	/*
-	 * Use low update mode where possible, which gives a better
-	 * resolution of correction.
-	 */
+	 
 	off = DIV_ROUND_CLOSEST(ppb_cor, 954);
 	if (off > 127 || off < -128) {
 		ccr = RTC_CCR_MODE;
 		off = DIV_ROUND_CLOSEST(ppb_cor, 3815);
 	}
 
-	/*
-	 * Armada 388 requires a bit pattern in bits 14..8 depending on
-	 * the sign bit: { 0, ~S, S, S, S, S, S }
-	 */
+	 
 	ccr |= (off & 0x3fff) ^ 0x2000;
 	rtc_delayed_write(ccr, rtc, RTC_CCR);
 
@@ -531,7 +469,7 @@ static __init int armada38x_rtc_probe(struct platform_device *pdev)
 	else
 		clear_bit(RTC_FEATURE_ALARM, rtc->rtc_dev->features);
 
-	/* Update RTC-MBUS bridge timing parameters */
+	 
 	rtc->data->update_mbus_timing(rtc);
 
 	rtc->rtc_dev->ops = &armada38x_rtc_ops;
@@ -557,7 +495,7 @@ static int armada38x_rtc_resume(struct device *dev)
 	if (device_may_wakeup(dev)) {
 		struct armada38x_rtc *rtc = dev_get_drvdata(dev);
 
-		/* Update RTC-MBUS bridge timing parameters */
+		 
 		rtc->data->update_mbus_timing(rtc);
 
 		return disable_irq_wake(rtc->irq);

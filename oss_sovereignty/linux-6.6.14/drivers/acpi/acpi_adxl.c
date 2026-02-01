@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Address translation interface via ACPI DSM.
- * Copyright (C) 2018 Intel Corporation
- *
- * Specification for this interface is available at:
- *
- *	https://cdrdv2.intel.com/v1/dl/getContent/603354
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/adxl.h>
@@ -16,12 +9,7 @@
 #define ADXL_IDX_FORWARD_TRANSLATE	0x2
 #define ACPI_ADXL_PATH			"\\_SB.ADXL"
 
-/*
- * The specification doesn't provide a limit on how many
- * components are in a memory address. But since we allocate
- * memory based on the number the BIOS tells us, we should
- * defend against insane values.
- */
+ 
 #define ADXL_MAX_COMPONENTS		500
 
 #undef pr_fmt
@@ -74,32 +62,14 @@ err:
 	return NULL;
 }
 
-/**
- * adxl_get_component_names - get list of memory component names
- * Returns NULL terminated list of string names
- *
- * Give the caller a pointer to the list of memory component names
- * e.g. { "SystemAddress", "ProcessorSocketId", "ChannelId", ... NULL }
- * Caller should count how many strings in order to allocate a buffer
- * for the return from adxl_decode().
- */
+ 
 const char * const *adxl_get_component_names(void)
 {
 	return (const char * const *)adxl_component_names;
 }
 EXPORT_SYMBOL_GPL(adxl_get_component_names);
 
-/**
- * adxl_decode - ask BIOS to decode a system address to memory address
- * @addr: the address to decode
- * @component_values: pointer to array of values for each component
- * Returns 0 on success, negative error code otherwise
- *
- * The index of each value returned in the array matches the index of
- * each component name returned by adxl_get_component_names().
- * Components that are not defined for this address translation (e.g.
- * mirror channel number for a non-mirrored address) are set to ~0ull.
- */
+ 
 int adxl_decode(u64 addr, u64 component_values[])
 {
 	union acpi_object argv4[2], *results, *r;
@@ -175,9 +145,7 @@ static int __init adxl_init(void)
 	}
 	p = p->package.elements;
 
-	/*
-	 * Allocate one extra for NULL termination.
-	 */
+	 
 	adxl_component_names = kcalloc(adxl_count + 1, sizeof(char *), GFP_KERNEL);
 	if (!adxl_component_names) {
 		ACPI_FREE(params);

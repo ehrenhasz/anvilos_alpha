@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/extcon/extcon-usb-gpio.c - USB GPIO extcon driver
- *
- * Copyright (C) 2015 Texas Instruments Incorporated - https://www.ti.com
- * Author: Roger Quadros <rogerq@ti.com>
- */
+
+ 
 
 #include <linux/extcon-provider.h>
 #include <linux/gpio/consumer.h>
@@ -19,7 +14,7 @@
 #include <linux/pinctrl/consumer.h>
 #include <linux/mod_devicetable.h>
 
-#define USB_GPIO_DEBOUNCE_MS	20	/* ms */
+#define USB_GPIO_DEBOUNCE_MS	20	 
 
 struct usb_extcon_info {
 	struct device *dev;
@@ -40,23 +35,7 @@ static const unsigned int usb_extcon_cable[] = {
 	EXTCON_NONE,
 };
 
-/*
- * "USB" = VBUS and "USB-HOST" = !ID, so we have:
- * Both "USB" and "USB-HOST" can't be set as active at the
- * same time so if "USB-HOST" is active (i.e. ID is 0)  we keep "USB" inactive
- * even if VBUS is on.
- *
- *  State              |    ID   |   VBUS
- * ----------------------------------------
- *  [1] USB            |    H    |    H
- *  [2] none           |    H    |    L
- *  [3] USB-HOST       |    L    |    H
- *  [4] USB-HOST       |    L    |    L
- *
- * In case we have only one of these signals:
- * - VBUS only - we want to distinguish between [1] and [2], so ID is always 1.
- * - ID only - we want to distinguish between [1] and [4], so VBUS = ID.
-*/
+ 
 static void usb_extcon_detect_cable(struct work_struct *work)
 {
 	int id, vbus;
@@ -64,13 +43,13 @@ static void usb_extcon_detect_cable(struct work_struct *work)
 						    struct usb_extcon_info,
 						    wq_detcable);
 
-	/* check ID and VBUS and update cable state */
+	 
 	id = info->id_gpiod ?
 		gpiod_get_value_cansleep(info->id_gpiod) : 1;
 	vbus = info->vbus_gpiod ?
 		gpiod_get_value_cansleep(info->vbus_gpiod) : id;
 
-	/* at first we clean states which are no longer active */
+	 
 	if (id)
 		extcon_set_state_sync(info->edev, EXTCON_USB_HOST, false);
 	if (!vbus)
@@ -187,7 +166,7 @@ static int usb_extcon_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, info);
 	device_set_wakeup_capable(&pdev->dev, true);
 
-	/* Perform initial detection */
+	 
 	usb_extcon_detect_cable(&info->wq_detcable.work);
 
 	return 0;
@@ -269,13 +248,13 @@ static SIMPLE_DEV_PM_OPS(usb_extcon_pm_ops,
 
 static const struct of_device_id usb_extcon_dt_match[] = {
 	{ .compatible = "linux,extcon-usb-gpio", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, usb_extcon_dt_match);
 
 static const struct platform_device_id usb_extcon_platform_ids[] = {
 	{ .name = "extcon-usb-gpio", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, usb_extcon_platform_ids);
 

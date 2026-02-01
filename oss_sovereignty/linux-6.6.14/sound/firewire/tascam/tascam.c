@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tascam.c - a part of driver for TASCAM FireWire series
- *
- * Copyright (c) 2015 Takashi Sakamoto
- */
+
+ 
 
 #include "tascam.h"
 
@@ -55,7 +51,7 @@ static int identify_model(struct snd_tscm *tscm)
 		return -ENODEV;
 	}
 
-	/* Pick up model name from certain addresses. */
+	 
 	for (i = 0; i < 8; i++) {
 		c = config_rom[28 + i / 4] >> (24 - 8 * (i % 4));
 		if (c == '\0')
@@ -167,12 +163,12 @@ static void snd_tscm_remove(struct fw_unit *unit)
 {
 	struct snd_tscm *tscm = dev_get_drvdata(&unit->device);
 
-	// Block till all of ALSA character devices are released.
+	
 	snd_card_free(tscm->card);
 }
 
 static const struct ieee1394_device_id snd_tscm_id_table[] = {
-	// Tascam, FW-1884.
+	
 	{
 		.match_flags = IEEE1394_MATCH_VENDOR_ID |
 			       IEEE1394_MATCH_SPECIFIER_ID |
@@ -181,14 +177,14 @@ static const struct ieee1394_device_id snd_tscm_id_table[] = {
 		.specifier_id = 0x00022e,
 		.version = 0x800000,
 	},
-	// Tascam, FE-8 (.version = 0x800001)
-	// This kernel module doesn't support FE-8 because the most of features
-	// can be implemented in userspace without any specific support of this
-	// module.
-	//
-	// .version = 0x800002 is unknown.
-	//
-	// Tascam, FW-1082.
+	
+	
+	
+	
+	
+	
+	
+	
 	{
 		.match_flags = IEEE1394_MATCH_VENDOR_ID |
 			       IEEE1394_MATCH_SPECIFIER_ID |
@@ -197,7 +193,7 @@ static const struct ieee1394_device_id snd_tscm_id_table[] = {
 		.specifier_id = 0x00022e,
 		.version = 0x800003,
 	},
-	// Tascam, FW-1804.
+	
 	{
 		.match_flags = IEEE1394_MATCH_VENDOR_ID |
 			       IEEE1394_MATCH_SPECIFIER_ID |

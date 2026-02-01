@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2020 Intel Corporation
- */
+ 
+ 
 
 #ifndef SELFTEST_ENGINE_HEARTBEAT_H
 #define SELFTEST_ENGINE_HEARTBEAT_H
@@ -13,4 +11,4 @@ void st_engine_heartbeat_disable_no_pm(struct intel_engine_cs *engine);
 void st_engine_heartbeat_enable(struct intel_engine_cs *engine);
 void st_engine_heartbeat_enable_no_pm(struct intel_engine_cs *engine);
 
-#endif /* SELFTEST_ENGINE_HEARTBEAT_H */
+#endif  

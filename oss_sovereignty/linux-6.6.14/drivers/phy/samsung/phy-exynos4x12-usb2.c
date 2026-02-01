@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung SoC USB 1.1/2.0 PHY driver - Exynos 4x12 support
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- * Author: Kamil Debski <k.debski@samsung.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -12,9 +7,9 @@
 #include <linux/regmap.h>
 #include "phy-samsung-usb2.h"
 
-/* Exynos USB PHY registers */
+ 
 
-/* PHY power control */
+ 
 #define EXYNOS_4x12_UPHYPWR			0x0
 
 #define EXYNOS_4x12_UPHYPWR_PHY0_SUSPEND	BIT(0)
@@ -51,7 +46,7 @@
 	EXYNOS_4x12_UPHYPWR_HSIC1_PWR | \
 	EXYNOS_4x12_UPHYPWR_HSIC1_SLEEP)
 
-/* PHY clock control */
+ 
 #define EXYNOS_4x12_UPHYCLK			0x4
 
 #define EXYNOS_4x12_UPHYCLK_PHYFSEL_MASK	(0x7 << 0)
@@ -78,23 +73,14 @@
 #define EXYNOS_4x12_UPHYCLK_HSIC_REFCLK_19MHZ2	(0x15 << 10)
 #define EXYNOS_4x12_UPHYCLK_HSIC_REFCLK_20MHZ	(0x14 << 10)
 
-/* PHY reset control */
+ 
 #define EXYNOS_4x12_UPHYRST			0x8
 
 #define EXYNOS_4x12_URSTCON_PHY0		BIT(0)
 #define EXYNOS_4x12_URSTCON_OTG_HLINK		BIT(1)
 #define EXYNOS_4x12_URSTCON_OTG_PHYLINK		BIT(2)
 #define EXYNOS_4x12_URSTCON_HOST_PHY		BIT(3)
-/* The following bit defines are presented in the
- * order taken from the Exynos4412 reference manual.
- *
- * During experiments with the hardware and debugging
- * it was determined that the hardware behaves contrary
- * to the manual.
- *
- * The following bit values were chaned accordingly to the
- * results of real hardware experiments.
- */
+ 
 #define EXYNOS_4x12_URSTCON_PHY1		BIT(4)
 #define EXYNOS_4x12_URSTCON_HSIC0		BIT(6)
 #define EXYNOS_4x12_URSTCON_HSIC1		BIT(5)
@@ -103,7 +89,7 @@
 #define EXYNOS_4x12_URSTCON_HOST_LINK_P1	BIT(9)
 #define EXYNOS_4x12_URSTCON_HOST_LINK_P2	BIT(8)
 
-/* Isolation, configured in the power management unit */
+ 
 #define EXYNOS_4x12_USB_ISOL_OFFSET		0x704
 #define EXYNOS_4x12_USB_ISOL_OTG		BIT(0)
 #define EXYNOS_4x12_USB_ISOL_HSIC0_OFFSET	0x708
@@ -111,7 +97,7 @@
 #define EXYNOS_4x12_USB_ISOL_HSIC1_OFFSET	0x70c
 #define EXYNOS_4x12_USB_ISOL_HSIC1		BIT(0)
 
-/* Mode switching SUB Device <-> Host */
+ 
 #define EXYNOS_4x12_MODE_SWITCH_OFFSET		0x21c
 #define EXYNOS_4x12_MODE_SWITCH_MASK		1
 #define EXYNOS_4x12_MODE_SWITCH_DEVICE		0
@@ -125,13 +111,10 @@ enum exynos4x12_phy_id {
 	EXYNOS4x12_NUM_PHYS,
 };
 
-/*
- * exynos4x12_rate_to_clk() converts the supplied clock rate to the value that
- * can be written to the phy register.
- */
+ 
 static int exynos4x12_rate_to_clk(unsigned long rate, u32 *reg)
 {
-	/* EXYNOS_4x12_UPHYCLK_PHYFSEL_MASK */
+	 
 
 	switch (rate) {
 	case 9600 * KHZ:
@@ -247,8 +230,7 @@ static void exynos4x12_phy_pwr(struct samsung_usb2_phy_instance *inst, bool on)
 		udelay(10);
 		rst &= ~rstbits;
 		writel(rst, drv->reg_phy + EXYNOS_4x12_UPHYRST);
-		/* The following delay is necessary for the reset sequence to be
-		 * completed */
+		 
 		udelay(80);
 	} else {
 		pwr = readl(drv->reg_phy + EXYNOS_4x12_UPHYPWR);

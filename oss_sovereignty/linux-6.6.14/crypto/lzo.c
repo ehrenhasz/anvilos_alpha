@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Cryptographic API.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -52,7 +50,7 @@ static void lzo_exit(struct crypto_tfm *tfm)
 static int __lzo_compress(const u8 *src, unsigned int slen,
 			  u8 *dst, unsigned int *dlen, void *ctx)
 {
-	size_t tmp_len = *dlen; /* size_t(ulong) <-> uint on 64 bit */
+	size_t tmp_len = *dlen;  
 	int err;
 
 	err = lzo1x_1_compress(src, slen, dst, &tmp_len, ctx);
@@ -83,7 +81,7 @@ static int __lzo_decompress(const u8 *src, unsigned int slen,
 			    u8 *dst, unsigned int *dlen)
 {
 	int err;
-	size_t tmp_len = *dlen; /* size_t(ulong) <-> uint on 64 bit */
+	size_t tmp_len = *dlen;  
 
 	err = lzo1x_decompress_safe(src, slen, dst, &tmp_len);
 

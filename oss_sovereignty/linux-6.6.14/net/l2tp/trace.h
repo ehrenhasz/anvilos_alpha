@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM l2tp
 
@@ -201,9 +201,9 @@ DEFINE_EVENT(session_pkt_discard_evt, session_pkt_oos,
 	TP_ARGS(session, pkt_ns)
 );
 
-#endif /* _TRACE_L2TP_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE

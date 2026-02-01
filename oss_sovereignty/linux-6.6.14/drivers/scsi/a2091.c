@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/types.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -65,9 +65,9 @@ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
 	}
 	scsi_pointer->dma_handle = addr;
 
-	/* don't allow DMA if the physical address is bad */
+	 
 	if (addr & A2091_XFER_MASK) {
-		/* drop useless mapping */
+		 
 		dma_unmap_single(hdata->dev, scsi_pointer->dma_handle,
 				 scsi_pointer->this_residual,
 				 DMA_DIR(dir_in));
@@ -77,31 +77,31 @@ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
 		wh->dma_bounce_buffer = kmalloc(wh->dma_bounce_len,
 						GFP_KERNEL);
 
-		/* can't allocate memory; use PIO */
+		 
 		if (!wh->dma_bounce_buffer) {
 			wh->dma_bounce_len = 0;
 			return 1;
 		}
 
 		if (!dir_in) {
-			/* copy to bounce buffer for a write */
+			 
 			memcpy(wh->dma_bounce_buffer, scsi_pointer->ptr,
 			       scsi_pointer->this_residual);
 		}
 
-		/* will flush/invalidate cache for us */
+		 
 		addr = dma_map_single(hdata->dev, wh->dma_bounce_buffer,
 				      wh->dma_bounce_len, DMA_DIR(dir_in));
-		/* can't map buffer; use PIO */
+		 
 		if (dma_mapping_error(hdata->dev, addr)) {
 			dev_warn(hdata->dev, "cannot map bounce buffer %p\n",
 				 wh->dma_bounce_buffer);
 			return 1;
 		}
 
-		/* the bounce buffer may not be in the first 16M of physmem */
+		 
 		if (addr & A2091_XFER_MASK) {
-			/* we could use chipmem... maybe later */
+			 
 			kfree(wh->dma_bounce_buffer);
 			wh->dma_bounce_buffer = NULL;
 			wh->dma_bounce_len = 0;
@@ -111,24 +111,24 @@ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
 		scsi_pointer->dma_handle = addr;
 	}
 
-	/* setup dma direction */
+	 
 	if (!dir_in)
 		cntr |= CNTR_DDIR;
 
-	/* remember direction */
+	 
 	wh->dma_dir = dir_in;
 
 	regs->CNTR = cntr;
 
-	/* setup DMA *physical* address */
+	 
 	regs->ACR = addr;
 
-	/* no more cache flush here - dma_map_single() takes care */
+	 
 
-	/* start DMA */
+	 
 	regs->ST_DMA = 1;
 
-	/* return success */
+	 
 	return 0;
 }
 
@@ -140,36 +140,36 @@ static void dma_stop(struct Scsi_Host *instance, struct scsi_cmnd *SCpnt,
 	struct WD33C93_hostdata *wh = &hdata->wh;
 	struct a2091_scsiregs *regs = hdata->regs;
 
-	/* disable SCSI interrupts */
+	 
 	unsigned short cntr = CNTR_PDMD;
 
 	if (!wh->dma_dir)
 		cntr |= CNTR_DDIR;
 
-	/* disable SCSI interrupts */
+	 
 	regs->CNTR = cntr;
 
-	/* flush if we were reading */
+	 
 	if (wh->dma_dir) {
 		regs->FLUSH = 1;
 		while (!(regs->ISTR & ISTR_FE_FLG))
 			;
 	}
 
-	/* clear a possible interrupt */
+	 
 	regs->CINT = 1;
 
-	/* stop DMA */
+	 
 	regs->SP_DMA = 1;
 
-	/* restore the CONTROL bits (minus the direction flag) */
+	 
 	regs->CNTR = CNTR_PDMD | CNTR_INTEN;
 
 	dma_unmap_single(hdata->dev, scsi_pointer->dma_handle,
 			 scsi_pointer->this_residual,
 			 DMA_DIR(wh->dma_dir));
 
-	/* copy from a bounce buffer, if necessary */
+	 
 	if (status && wh->dma_bounce_buffer) {
 		if (wh->dma_dir)
 			memcpy(scsi_pointer->ptr, wh->dma_bounce_buffer,

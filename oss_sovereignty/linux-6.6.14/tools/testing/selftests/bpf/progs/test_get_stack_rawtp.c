@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
 
-/* Permit pretty deep stack traces */
+ 
 #define MAX_STACK_RAWTP 100
 struct stack_trace_t {
 	int pid;
@@ -29,24 +29,7 @@ struct {
 	__type(value, struct stack_trace_t);
 } stackdata_map SEC(".maps");
 
-/* Allocate per-cpu space twice the needed. For the code below
- *   usize = bpf_get_stack(ctx, raw_data, max_len, BPF_F_USER_STACK);
- *   if (usize < 0)
- *     return 0;
- *   ksize = bpf_get_stack(ctx, raw_data + usize, max_len - usize, 0);
- *
- * If we have value_size = MAX_STACK_RAWTP * sizeof(__u64),
- * verifier will complain that access "raw_data + usize"
- * with size "max_len - usize" may be out of bound.
- * The maximum "raw_data + usize" is "raw_data + max_len"
- * and the maximum "max_len - usize" is "max_len", verifier
- * concludes that the maximum buffer access range is
- * "raw_data[0...max_len * 2 - 1]" and hence reject the program.
- *
- * Doubling the to-be-used max buffer size can fix this verifier
- * issue and avoid complicated C programming massaging.
- * This is an acceptable workaround since there is one entry here.
- */
+ 
 struct {
 	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
 	__uint(max_entries, 1);
@@ -79,7 +62,7 @@ int bpf_prog1(void *ctx)
 		BPF_F_USER_STACK | BPF_F_USER_BUILD_ID);
 	bpf_perf_event_output(ctx, &perfmap, 0, data, sizeof(*data));
 
-	/* write both kernel and user stacks to the same buffer */
+	 
 	raw_data = bpf_map_lookup_elem(&rawdata_map, &key);
 	if (!raw_data)
 		return 0;

@@ -1,20 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * XGE PCSR module initialisation
- *
- * Copyright (C) 2014 Texas Instruments Incorporated
- * Authors:	Sandeep Nair <sandeep_n@ti.com>
- *		WingMan Kwok <w-kwok2@ti.com>
- *
- */
+
+ 
 #include "netcp.h"
 
-/* XGBE registers */
+ 
 #define XGBE_CTRL_OFFSET		0x0c
 #define XGBE_SGMII_1_OFFSET		0x0114
 #define XGBE_SGMII_2_OFFSET		0x0214
 
-/* PCS-R registers */
+ 
 #define PCSR_CPU_CTRL_OFFSET		0x1fd0
 #define POR_EN				BIT(29)
 
@@ -22,10 +15,10 @@
 	writel(((readl(addr) & (~(mask))) | \
 			(value & (mask))), (addr))
 
-/* bit mask of width w at offset s */
+ 
 #define MASK_WID_SH(w, s)		(((1 << w) - 1) << s)
 
-/* shift value v to offset s */
+ 
 #define VAL_SH(v, s)			(v << s)
 
 #define PHY_A(serdes)			0
@@ -128,14 +121,14 @@ static void netcp_xgbe_serdes_cmu_init(void __iomem *serdes_regs)
 {
 	int i;
 
-	/* cmu0 setup */
+	 
 	for (i = 0; i < ARRAY_SIZE(cfg_phyb_1p25g_156p25mhz_cmu0); i++) {
 		reg_rmw(serdes_regs + cfg_phyb_1p25g_156p25mhz_cmu0[i].ofs,
 			cfg_phyb_1p25g_156p25mhz_cmu0[i].val,
 			cfg_phyb_1p25g_156p25mhz_cmu0[i].mask);
 	}
 
-	/* cmu1 setup */
+	 
 	for (i = 0; i < ARRAY_SIZE(cfg_phyb_10p3125g_156p25mhz_cmu1); i++) {
 		reg_rmw(serdes_regs + cfg_phyb_10p3125g_156p25mhz_cmu1[i].ofs,
 			cfg_phyb_10p3125g_156p25mhz_cmu1[i].val,
@@ -143,13 +136,13 @@ static void netcp_xgbe_serdes_cmu_init(void __iomem *serdes_regs)
 	}
 }
 
-/* lane is 0 based */
+ 
 static void netcp_xgbe_serdes_lane_config(
 			void __iomem *serdes_regs, int lane)
 {
 	int i;
 
-	/* lane setup */
+	 
 	for (i = 0; i < ARRAY_SIZE(cfg_phyb_10p3125g_16bit_lane); i++) {
 		reg_rmw(serdes_regs +
 				cfg_phyb_10p3125g_16bit_lane[i].ofs +
@@ -158,11 +151,11 @@ static void netcp_xgbe_serdes_lane_config(
 			cfg_phyb_10p3125g_16bit_lane[i].mask);
 	}
 
-	/* disable auto negotiation*/
+	 
 	reg_rmw(serdes_regs + (0x200 * lane) + 0x0380,
 		0x00000000, 0x00000010);
 
-	/* disable link training */
+	 
 	reg_rmw(serdes_regs + (0x200 * lane) + 0x03c0,
 		0x00000000, 0x00000200);
 }
@@ -181,7 +174,7 @@ static void netcp_xgbe_serdes_com_enable(void __iomem *serdes_regs)
 static void netcp_xgbe_serdes_lane_enable(
 			void __iomem *serdes_regs, int lane)
 {
-	/* Set Lane Control Rate */
+	 
 	writel(0xe0e9e038, serdes_regs + 0x1fe0 + (4 * lane));
 }
 
@@ -255,7 +248,7 @@ static void netcp_xgbe_serdes_write_tbus_addr(void __iomem *serdes_regs,
 		return;
 	}
 
-	/* For 2 lane Phy-B, lane0 is actually lane1 */
+	 
 	switch (select) {
 	case 1:
 		select = 2;
@@ -273,9 +266,9 @@ static void netcp_xgbe_serdes_write_tbus_addr(void __iomem *serdes_regs,
 static u32 netcp_xgbe_serdes_read_select_tbus(void __iomem *serdes_regs,
 					      int select, int ofs)
 {
-	/* Set tbus address */
+	 
 	netcp_xgbe_serdes_write_tbus_addr(serdes_regs, select, ofs);
-	/* Get TBUS Value */
+	 
 	return netcp_xgbe_serdes_read_tbus_val(serdes_regs);
 }
 
@@ -284,7 +277,7 @@ static void netcp_xgbe_serdes_reset_cdr(void __iomem *serdes_regs,
 {
 	u32 tmp, dlpf, tbus;
 
-	/*Get the DLPF values */
+	 
 	tmp = netcp_xgbe_serdes_read_select_tbus(
 			serdes_regs, lane + 1, 5);
 
@@ -303,7 +296,7 @@ static void netcp_xgbe_serdes_reset_cdr(void __iomem *serdes_regs,
 	}
 }
 
-/* Call every 100 ms */
+ 
 static int netcp_xgbe_check_link_status(void __iomem *serdes_regs,
 					void __iomem *sw_regs, u32 lanes,
 					u32 *current_state, u32 *lane_down)
@@ -314,31 +307,31 @@ static int netcp_xgbe_check_link_status(void __iomem *serdes_regs,
 	int loss, i, status = 1;
 
 	for (i = 0; i < lanes; i++) {
-		/* Get the Loss bit */
+		 
 		loss = readl(serdes_regs + 0x1fc0 + 0x20 + (i * 0x04)) & 0x1;
 
-		/* Get Block Errors and Block Lock bits */
+		 
 		pcsr_rx_stat = readl(pcsr_base + 0x0c + (i * 0x80));
 		blk_lock = (pcsr_rx_stat >> 30) & 0x1;
 		blk_errs = (pcsr_rx_stat >> 16) & 0x0ff;
 
-		/* Get Signal Detect Overlay Address */
+		 
 		sig_detect_reg = serdes_regs + (i * 0x200) + 0x200 + 0x04;
 
-		/* If Block errors maxed out, attempt recovery! */
+		 
 		if (blk_errs == 0x0ff)
 			blk_lock = 0;
 
 		switch (current_state[i]) {
 		case 0:
-			/* if good link lock the signal detect ON! */
+			 
 			if (!loss && blk_lock) {
 				pr_debug("XGBE PCSR Linked Lane: %d\n", i);
 				reg_rmw(sig_detect_reg, VAL_SH(3, 1),
 					MASK_WID_SH(2, 1));
 				current_state[i] = 1;
 			} else if (!blk_lock) {
-				/* if no lock, then reset CDR */
+				 
 				pr_debug("XGBE PCSR Recover Lane: %d\n", i);
 				netcp_xgbe_serdes_reset_cdr(serdes_regs,
 							    sig_detect_reg, i);
@@ -347,7 +340,7 @@ static int netcp_xgbe_check_link_status(void __iomem *serdes_regs,
 
 		case 1:
 			if (!blk_lock) {
-				/* Link Lost? */
+				 
 				lane_down[i] = 1;
 				current_state[i] = 2;
 			}
@@ -355,12 +348,10 @@ static int netcp_xgbe_check_link_status(void __iomem *serdes_regs,
 
 		case 2:
 			if (blk_lock)
-				/* Nope just noise */
+				 
 				current_state[i] = 1;
 			else {
-				/* Lost the block lock, reset CDR if it is
-				 * not centered and go back to sync state
-				 */
+				 
 				netcp_xgbe_serdes_reset_cdr(serdes_regs,
 							    sig_detect_reg, i);
 				current_state[i] = 0;
@@ -374,7 +365,7 @@ static int netcp_xgbe_check_link_status(void __iomem *serdes_regs,
 		}
 
 		if (blk_errs > 0) {
-			/* Reset the Error counts! */
+			 
 			reg_rmw(pcsr_base + 0x08 + (i * 0x80), VAL_SH(0x19, 0),
 				MASK_WID_SH(8, 0));
 
@@ -403,9 +394,7 @@ static int netcp_xgbe_serdes_check_lane(void __iomem *serdes_regs,
 						       current_state,
 						       lane_down);
 
-		/* if we did not get link up then wait 100ms before calling
-		 * it again
-		 */
+		 
 		if (link_up)
 			break;
 
@@ -440,12 +429,12 @@ static void netcp_xgbe_serdes_setup_cm_c1_c2(void __iomem *serdes_regs,
 
 static void netcp_xgbe_reset_serdes(void __iomem *serdes_regs)
 {
-	/* Toggle the POR_EN bit in CONFIG.CPU_CTRL */
-	/* enable POR_EN bit */
+	 
+	 
 	reg_rmw(serdes_regs + PCSR_CPU_CTRL_OFFSET, POR_EN, POR_EN);
 	usleep_range(10, 100);
 
-	/* disable POR_EN bit */
+	 
 	reg_rmw(serdes_regs + PCSR_CPU_CTRL_OFFSET, 0, POR_EN);
 	usleep_range(10, 100);
 }
@@ -462,7 +451,7 @@ static int netcp_xgbe_serdes_config(void __iomem *serdes_regs,
 		netcp_xgbe_serdes_lane_config(serdes_regs, i);
 
 	netcp_xgbe_serdes_com_enable(serdes_regs);
-	/* This is EVM + RTM-BOC specific */
+	 
 	for (i = 0; i < 2; i++)
 		netcp_xgbe_serdes_setup_cm_c1_c2(serdes_regs, i, 0, 0, 5);
 
@@ -470,7 +459,7 @@ static int netcp_xgbe_serdes_config(void __iomem *serdes_regs,
 	for (i = 0; i < 2; i++)
 		netcp_xgbe_serdes_lane_enable(serdes_regs, i);
 
-	/* SB PLL Status Poll */
+	 
 	ret = netcp_xgbe_wait_pll_locked(sw_regs);
 	if (ret)
 		return ret;
@@ -484,7 +473,7 @@ int netcp_xgbe_serdes_init(void __iomem *serdes_regs, void __iomem *xgbe_regs)
 {
 	u32 val;
 
-	/* read COMLANE bits 4:0 */
+	 
 	val = readl(serdes_regs + 0xa00);
 	if (val & 0x1f) {
 		pr_debug("XGBE: serdes already in operation - reset\n");

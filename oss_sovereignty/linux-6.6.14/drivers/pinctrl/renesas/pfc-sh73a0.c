@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sh73a0 processor support - PFC hardware block
- *
- * Copyright (C) 2010 Renesas Solutions Corp.
- * Copyright (C) 2010 NISHIMOTO Hiroki
- */
+
+ 
 #include <linux/io.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -49,28 +44,28 @@ enum {
 	PINMUX_RESERVED = 0,
 
 	PINMUX_DATA_BEGIN,
-	PORT_ALL(DATA),			/* PORT0_DATA -> PORT309_DATA */
+	PORT_ALL(DATA),			 
 	PINMUX_DATA_END,
 
 	PINMUX_INPUT_BEGIN,
-	PORT_ALL(IN),			/* PORT0_IN -> PORT309_IN */
+	PORT_ALL(IN),			 
 	PINMUX_INPUT_END,
 
 	PINMUX_OUTPUT_BEGIN,
-	PORT_ALL(OUT),			/* PORT0_OUT -> PORT309_OUT */
+	PORT_ALL(OUT),			 
 	PINMUX_OUTPUT_END,
 
 	PINMUX_FUNCTION_BEGIN,
-	PORT_ALL(FN_IN),		/* PORT0_FN_IN -> PORT309_FN_IN */
-	PORT_ALL(FN_OUT),		/* PORT0_FN_OUT -> PORT309_FN_OUT */
-	PORT_ALL(FN0),			/* PORT0_FN0 -> PORT309_FN0 */
-	PORT_ALL(FN1),			/* PORT0_FN1 -> PORT309_FN1 */
-	PORT_ALL(FN2),			/* PORT0_FN2 -> PORT309_FN2 */
-	PORT_ALL(FN3),			/* PORT0_FN3 -> PORT309_FN3 */
-	PORT_ALL(FN4),			/* PORT0_FN4 -> PORT309_FN4 */
-	PORT_ALL(FN5),			/* PORT0_FN5 -> PORT309_FN5 */
-	PORT_ALL(FN6),			/* PORT0_FN6 -> PORT309_FN6 */
-	PORT_ALL(FN7),			/* PORT0_FN7 -> PORT309_FN7 */
+	PORT_ALL(FN_IN),		 
+	PORT_ALL(FN_OUT),		 
+	PORT_ALL(FN0),			 
+	PORT_ALL(FN1),			 
+	PORT_ALL(FN2),			 
+	PORT_ALL(FN3),			 
+	PORT_ALL(FN4),			 
+	PORT_ALL(FN5),			 
+	PORT_ALL(FN6),			 
+	PORT_ALL(FN7),			 
 
 	MSEL2CR_MSEL19_0, MSEL2CR_MSEL19_1,
 	MSEL2CR_MSEL18_0, MSEL2CR_MSEL18_1,
@@ -117,7 +112,7 @@ enum {
 	PINMUX_FUNCTION_END,
 
 	PINMUX_MARK_BEGIN,
-	/* Hardware manual Table 25-1 (Function 0-7) */
+	 
 	VBUS_0_MARK,
 	GPI0_MARK,
 	GPI1_MARK,
@@ -404,7 +399,7 @@ enum {
 	MCP_NBRSTOUT__MARK,
 	MCP_WE0__MCP_FWE_MARK, MCP_RDWR_MCP_FWE_MARK,
 
-	/* MSEL2 special cases */
+	 
 	TSIF2_TS_XX1_MARK,
 	TSIF2_TS_XX2_MARK,
 	TSIF2_TS_XX3_MARK,
@@ -431,7 +426,7 @@ enum {
 	MST0_TS_XX4_MARK,
 	MST0_TS_XX5_MARK,
 
-	/* MSEL3 special cases */
+	 
 	SDHI0_VCCQ_MC0_ON_MARK,
 	SDHI0_VCCQ_MC0_OFF_MARK,
 	DEBUG_MON_VIO_MARK,
@@ -439,7 +434,7 @@ enum {
 	LCDC_LCDC0_MARK,
 	LCDC_LCDC1_MARK,
 
-	/* MSEL4 special cases */
+	 
 	IRQ9_MEM_INT_MARK,
 	IRQ9_MCP_INT_MARK,
 	A11_MARK,
@@ -454,10 +449,10 @@ enum {
 };
 
 static const u16 pinmux_data[] = {
-	/* specify valid pin states for each pin in GPIO mode */
+	 
 	PINMUX_DATA_ALL(),
 
-	/* Table 25-1 (Function 0-7) */
+	 
 	PINMUX_DATA(VBUS_0_MARK, PORT0_FN1),
 	PINMUX_DATA(GPI0_MARK, PORT1_FN1),
 	PINMUX_DATA(GPI1_MARK, PORT2_FN1),
@@ -1072,7 +1067,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(MCP_WE0__MCP_FWE_MARK, PORT309_FN1), \
 	PINMUX_DATA(MCP_RDWR_MCP_FWE_MARK, PORT309_FN2),
 
-	/* MSEL2 special cases */
+	 
 	PINMUX_DATA(TSIF2_TS_XX1_MARK, MSEL2CR_MSEL14_0, MSEL2CR_MSEL13_0,
 		MSEL2CR_MSEL12_0),
 	PINMUX_DATA(TSIF2_TS_XX2_MARK, MSEL2CR_MSEL14_0, MSEL2CR_MSEL13_0,
@@ -1124,7 +1119,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(MST0_TS_XX5_MARK, MSEL2CR_MSEL2_1, MSEL2CR_MSEL1_0,
 		MSEL2CR_MSEL0_0),
 
-	/* MSEL3 special cases */
+	 
 	PINMUX_DATA(SDHI0_VCCQ_MC0_ON_MARK, MSEL3CR_MSEL28_1),
 	PINMUX_DATA(SDHI0_VCCQ_MC0_OFF_MARK, MSEL3CR_MSEL28_0),
 	PINMUX_DATA(DEBUG_MON_VIO_MARK, MSEL3CR_MSEL15_0),
@@ -1132,7 +1127,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(LCDC_LCDC0_MARK, MSEL3CR_MSEL6_0),
 	PINMUX_DATA(LCDC_LCDC1_MARK, MSEL3CR_MSEL6_1),
 
-	/* MSEL4 special cases */
+	 
 	PINMUX_DATA(IRQ9_MEM_INT_MARK, MSEL4CR_MSEL29_0),
 	PINMUX_DATA(IRQ9_MCP_INT_MARK, MSEL4CR_MSEL29_1),
 	PINMUX_DATA(A11_MARK, MSEL4CR_MSEL13_0, MSEL4CR_MSEL12_0),
@@ -1160,16 +1155,14 @@ static const u16 pinmux_data[] = {
 #define SH73A0_PIN_IO_PU_PD(pin)	SH_PFC_PIN_CFG(pin, __IO | __PUD)
 #define SH73A0_PIN_O(pin)		SH_PFC_PIN_CFG(pin, __O)
 
-/*
- * Pins not associated with a GPIO port.
- */
+ 
 enum {
 	PORT_ASSIGN_LAST(),
 	NOGP_ALL(),
 };
 
 static const struct sh_pfc_pin pinmux_pins[] = {
-	/* Table 25-1 (I/O and Pull U/D) */
+	 
 	SH73A0_PIN_I_PD(0),
 	SH73A0_PIN_I_PU(1),
 	SH73A0_PIN_I_PU(2),
@@ -1440,13 +1433,13 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	SH73A0_PIN_I_PU(308),
 	SH73A0_PIN_O(309),
 
-	/* Pins not associated with a GPIO port */
+	 
 	PINMUX_NOGP_ALL(),
 };
 
-/* - BSC -------------------------------------------------------------------- */
+ 
 static const unsigned int bsc_data_0_7_pins[] = {
-	/* D[0:7] */
+	 
 	74, 75, 76, 77, 78, 79, 80, 81,
 };
 static const unsigned int bsc_data_0_7_mux[] = {
@@ -1454,7 +1447,7 @@ static const unsigned int bsc_data_0_7_mux[] = {
 	D4_NAF4_MARK, D5_NAF5_MARK, D6_NAF6_MARK, D7_NAF7_MARK,
 };
 static const unsigned int bsc_data_8_15_pins[] = {
-	/* D[8:15] */
+	 
 	82, 83, 84, 85, 86, 87, 88, 89,
 };
 static const unsigned int bsc_data_8_15_mux[] = {
@@ -1462,323 +1455,323 @@ static const unsigned int bsc_data_8_15_mux[] = {
 	D12_NAF12_MARK, D13_NAF13_MARK, D14_NAF14_MARK, D15_NAF15_MARK,
 };
 static const unsigned int bsc_cs4_pins[] = {
-	/* CS */
+	 
 	90,
 };
 static const unsigned int bsc_cs4_mux[] = {
 	CS4__MARK,
 };
 static const unsigned int bsc_cs5_a_pins[] = {
-	/* CS */
+	 
 	91,
 };
 static const unsigned int bsc_cs5_a_mux[] = {
 	CS5A__MARK,
 };
 static const unsigned int bsc_cs5_b_pins[] = {
-	/* CS */
+	 
 	92,
 };
 static const unsigned int bsc_cs5_b_mux[] = {
 	CS5B__MARK,
 };
 static const unsigned int bsc_cs6_a_pins[] = {
-	/* CS */
+	 
 	94,
 };
 static const unsigned int bsc_cs6_a_mux[] = {
 	CS6A__MARK,
 };
 static const unsigned int bsc_cs6_b_pins[] = {
-	/* CS */
+	 
 	93,
 };
 static const unsigned int bsc_cs6_b_mux[] = {
 	CS6B__MARK,
 };
 static const unsigned int bsc_rd_pins[] = {
-	/* RD */
+	 
 	96,
 };
 static const unsigned int bsc_rd_mux[] = {
 	RD__FSC_MARK,
 };
 static const unsigned int bsc_rdwr_0_pins[] = {
-	/* RDWR */
+	 
 	91,
 };
 static const unsigned int bsc_rdwr_0_mux[] = {
 	PORT91_RDWR_MARK,
 };
 static const unsigned int bsc_rdwr_1_pins[] = {
-	/* RDWR */
+	 
 	97,
 };
 static const unsigned int bsc_rdwr_1_mux[] = {
 	RDWR_FWE_MARK,
 };
 static const unsigned int bsc_rdwr_2_pins[] = {
-	/* RDWR */
+	 
 	149,
 };
 static const unsigned int bsc_rdwr_2_mux[] = {
 	PORT149_RDWR_MARK,
 };
 static const unsigned int bsc_we0_pins[] = {
-	/* WE0 */
+	 
 	97,
 };
 static const unsigned int bsc_we0_mux[] = {
 	WE0__FWE_MARK,
 };
 static const unsigned int bsc_we1_pins[] = {
-	/* WE1 */
+	 
 	98,
 };
 static const unsigned int bsc_we1_mux[] = {
 	WE1__MARK,
 };
-/* - FSIA ------------------------------------------------------------------- */
+ 
 static const unsigned int fsia_mclk_in_pins[] = {
-	/* CK */
+	 
 	49,
 };
 static const unsigned int fsia_mclk_in_mux[] = {
 	FSIACK_MARK,
 };
 static const unsigned int fsia_mclk_out_pins[] = {
-	/* OMC */
+	 
 	49,
 };
 static const unsigned int fsia_mclk_out_mux[] = {
 	FSIAOMC_MARK,
 };
 static const unsigned int fsia_sclk_in_pins[] = {
-	/* ILR, IBT */
+	 
 	50, 51,
 };
 static const unsigned int fsia_sclk_in_mux[] = {
 	FSIAILR_MARK, FSIAIBT_MARK,
 };
 static const unsigned int fsia_sclk_out_pins[] = {
-	/* OLR, OBT */
+	 
 	50, 51,
 };
 static const unsigned int fsia_sclk_out_mux[] = {
 	FSIAOLR_MARK, FSIAOBT_MARK,
 };
 static const unsigned int fsia_data_in_pins[] = {
-	/* ISLD */
+	 
 	55,
 };
 static const unsigned int fsia_data_in_mux[] = {
 	FSIAISLD_MARK,
 };
 static const unsigned int fsia_data_out_pins[] = {
-	/* OSLD */
+	 
 	52,
 };
 static const unsigned int fsia_data_out_mux[] = {
 	FSIAOSLD_MARK,
 };
 static const unsigned int fsia_spdif_pins[] = {
-	/* SPDIF */
+	 
 	53,
 };
 static const unsigned int fsia_spdif_mux[] = {
 	FSIASPDIF_MARK,
 };
-/* - FSIB ------------------------------------------------------------------- */
+ 
 static const unsigned int fsib_mclk_in_pins[] = {
-	/* CK */
+	 
 	54,
 };
 static const unsigned int fsib_mclk_in_mux[] = {
 	FSIBCK_MARK,
 };
 static const unsigned int fsib_mclk_out_pins[] = {
-	/* OMC */
+	 
 	54,
 };
 static const unsigned int fsib_mclk_out_mux[] = {
 	FSIBOMC_MARK,
 };
 static const unsigned int fsib_sclk_in_pins[] = {
-	/* ILR, IBT */
+	 
 	37, 36,
 };
 static const unsigned int fsib_sclk_in_mux[] = {
 	FSIBILR_MARK, FSIBIBT_MARK,
 };
 static const unsigned int fsib_sclk_out_pins[] = {
-	/* OLR, OBT */
+	 
 	37, 36,
 };
 static const unsigned int fsib_sclk_out_mux[] = {
 	FSIBOLR_MARK, FSIBOBT_MARK,
 };
 static const unsigned int fsib_data_in_pins[] = {
-	/* ISLD */
+	 
 	39,
 };
 static const unsigned int fsib_data_in_mux[] = {
 	FSIBISLD_MARK,
 };
 static const unsigned int fsib_data_out_pins[] = {
-	/* OSLD */
+	 
 	38,
 };
 static const unsigned int fsib_data_out_mux[] = {
 	FSIBOSLD_MARK,
 };
 static const unsigned int fsib_spdif_pins[] = {
-	/* SPDIF */
+	 
 	53,
 };
 static const unsigned int fsib_spdif_mux[] = {
 	FSIBSPDIF_MARK,
 };
-/* - FSIC ------------------------------------------------------------------- */
+ 
 static const unsigned int fsic_mclk_in_pins[] = {
-	/* CK */
+	 
 	54,
 };
 static const unsigned int fsic_mclk_in_mux[] = {
 	FSICCK_MARK,
 };
 static const unsigned int fsic_mclk_out_pins[] = {
-	/* OMC */
+	 
 	54,
 };
 static const unsigned int fsic_mclk_out_mux[] = {
 	FSICOMC_MARK,
 };
 static const unsigned int fsic_sclk_in_pins[] = {
-	/* ILR, IBT */
+	 
 	46, 45,
 };
 static const unsigned int fsic_sclk_in_mux[] = {
 	FSICILR_MARK, FSICIBT_MARK,
 };
 static const unsigned int fsic_sclk_out_pins[] = {
-	/* OLR, OBT */
+	 
 	46, 45,
 };
 static const unsigned int fsic_sclk_out_mux[] = {
 	FSICOLR_MARK, FSICOBT_MARK,
 };
 static const unsigned int fsic_data_in_pins[] = {
-	/* ISLD */
+	 
 	48,
 };
 static const unsigned int fsic_data_in_mux[] = {
 	FSICISLD_MARK,
 };
 static const unsigned int fsic_data_out_pins[] = {
-	/* OSLD, OSLDT1, OSLDT2, OSLDT3 */
+	 
 	47, 44, 42, 16,
 };
 static const unsigned int fsic_data_out_mux[] = {
 	FSICOSLD_MARK, FSICOSLDT1_MARK, FSICOSLDT2_MARK, FSICOSLDT3_MARK,
 };
 static const unsigned int fsic_spdif_0_pins[] = {
-	/* SPDIF */
+	 
 	53,
 };
 static const unsigned int fsic_spdif_0_mux[] = {
 	PORT53_FSICSPDIF_MARK,
 };
 static const unsigned int fsic_spdif_1_pins[] = {
-	/* SPDIF */
+	 
 	47,
 };
 static const unsigned int fsic_spdif_1_mux[] = {
 	PORT47_FSICSPDIF_MARK,
 };
-/* - FSID ------------------------------------------------------------------- */
+ 
 static const unsigned int fsid_sclk_in_pins[] = {
-	/* ILR, IBT */
+	 
 	46, 45,
 };
 static const unsigned int fsid_sclk_in_mux[] = {
 	FSIDILR_MARK, FSIDIBT_MARK,
 };
 static const unsigned int fsid_sclk_out_pins[] = {
-	/* OLR, OBT */
+	 
 	46, 45,
 };
 static const unsigned int fsid_sclk_out_mux[] = {
 	FSIDOLR_MARK, FSIDOBT_MARK,
 };
 static const unsigned int fsid_data_in_pins[] = {
-	/* ISLD */
+	 
 	48,
 };
 static const unsigned int fsid_data_in_mux[] = {
 	FSIDISLD_MARK,
 };
-/* - I2C2 ------------------------------------------------------------------- */
+ 
 static const unsigned int i2c2_0_pins[] = {
-	/* SCL, SDA */
+	 
 	237, 236,
 };
 static const unsigned int i2c2_0_mux[] = {
 	PORT237_I2C_SCL2_MARK, PORT236_I2C_SDA2_MARK,
 };
 static const unsigned int i2c2_1_pins[] = {
-	/* SCL, SDA */
+	 
 	27, 28,
 };
 static const unsigned int i2c2_1_mux[] = {
 	PORT27_I2C_SCL2_MARK, PORT28_I2C_SDA2_MARK,
 };
 static const unsigned int i2c2_2_pins[] = {
-	/* SCL, SDA */
+	 
 	115, 116,
 };
 static const unsigned int i2c2_2_mux[] = {
 	PORT115_I2C_SCL2_MARK, PORT116_I2C_SDA2_MARK,
 };
-/* - I2C3 ------------------------------------------------------------------- */
+ 
 static const unsigned int i2c3_0_pins[] = {
-	/* SCL, SDA */
+	 
 	248, 249,
 };
 static const unsigned int i2c3_0_mux[] = {
 	PORT248_I2C_SCL3_MARK, PORT249_I2C_SDA3_MARK,
 };
 static const unsigned int i2c3_1_pins[] = {
-	/* SCL, SDA */
+	 
 	27, 28,
 };
 static const unsigned int i2c3_1_mux[] = {
 	PORT27_I2C_SCL3_MARK, PORT28_I2C_SDA3_MARK,
 };
 static const unsigned int i2c3_2_pins[] = {
-	/* SCL, SDA */
+	 
 	115, 116,
 };
 static const unsigned int i2c3_2_mux[] = {
 	PORT115_I2C_SCL3_MARK, PORT116_I2C_SDA3_MARK,
 };
-/* - IrDA ------------------------------------------------------------------- */
+ 
 static const unsigned int irda_0_pins[] = {
-	/* OUT, IN, FIRSEL */
+	 
 	241, 242, 243,
 };
 static const unsigned int irda_0_mux[] = {
 	PORT241_IRDA_OUT_MARK, PORT242_IRDA_IN_MARK, PORT243_IRDA_FIRSEL_MARK,
 };
 static const unsigned int irda_1_pins[] = {
-	/* OUT, IN, FIRSEL */
+	 
 	49, 53, 54,
 };
 static const unsigned int irda_1_mux[] = {
 	PORT49_IRDA_OUT_MARK, PORT53_IRDA_IN_MARK, PORT54_IRDA_FIRSEL_MARK,
 };
-/* - KEYSC ------------------------------------------------------------------ */
+ 
 static const unsigned int keysc_in_pins[] = {
-	/* KEYIN[0:7] */
+	 
 	66, 67, 68, 69, 70, 71, 72, 73,
 };
 static const unsigned int keysc_in_mux[] = {
@@ -1786,134 +1779,134 @@ static const unsigned int keysc_in_mux[] = {
 	KEYIN4_MARK, KEYIN5_MARK, KEYIN6_MARK, KEYIN7_MARK,
 };
 static const unsigned int keysc_out04_pins[] = {
-	/* KEYOUT[0:4] */
+	 
 	65, 64, 63, 62, 61,
 };
 static const unsigned int keysc_out04_mux[] = {
 	KEYOUT0_MARK, KEYOUT1_MARK, KEYOUT2_MARK, KEYOUT3_MARK, KEYOUT4_MARK,
 };
 static const unsigned int keysc_out5_pins[] = {
-	/* KEYOUT5 */
+	 
 	60,
 };
 static const unsigned int keysc_out5_mux[] = {
 	KEYOUT5_MARK,
 };
 static const unsigned int keysc_out6_0_pins[] = {
-	/* KEYOUT6 */
+	 
 	59,
 };
 static const unsigned int keysc_out6_0_mux[] = {
 	PORT59_KEYOUT6_MARK,
 };
 static const unsigned int keysc_out6_1_pins[] = {
-	/* KEYOUT6 */
+	 
 	131,
 };
 static const unsigned int keysc_out6_1_mux[] = {
 	PORT131_KEYOUT6_MARK,
 };
 static const unsigned int keysc_out6_2_pins[] = {
-	/* KEYOUT6 */
+	 
 	143,
 };
 static const unsigned int keysc_out6_2_mux[] = {
 	PORT143_KEYOUT6_MARK,
 };
 static const unsigned int keysc_out7_0_pins[] = {
-	/* KEYOUT7 */
+	 
 	58,
 };
 static const unsigned int keysc_out7_0_mux[] = {
 	PORT58_KEYOUT7_MARK,
 };
 static const unsigned int keysc_out7_1_pins[] = {
-	/* KEYOUT7 */
+	 
 	132,
 };
 static const unsigned int keysc_out7_1_mux[] = {
 	PORT132_KEYOUT7_MARK,
 };
 static const unsigned int keysc_out7_2_pins[] = {
-	/* KEYOUT7 */
+	 
 	144,
 };
 static const unsigned int keysc_out7_2_mux[] = {
 	PORT144_KEYOUT7_MARK,
 };
 static const unsigned int keysc_out8_0_pins[] = {
-	/* KEYOUT8 */
+	 
 	PIN_A11,
 };
 static const unsigned int keysc_out8_0_mux[] = {
 	KEYOUT8_MARK,
 };
 static const unsigned int keysc_out8_1_pins[] = {
-	/* KEYOUT8 */
+	 
 	136,
 };
 static const unsigned int keysc_out8_1_mux[] = {
 	PORT136_KEYOUT8_MARK,
 };
 static const unsigned int keysc_out8_2_pins[] = {
-	/* KEYOUT8 */
+	 
 	138,
 };
 static const unsigned int keysc_out8_2_mux[] = {
 	PORT138_KEYOUT8_MARK,
 };
 static const unsigned int keysc_out9_0_pins[] = {
-	/* KEYOUT9 */
+	 
 	137,
 };
 static const unsigned int keysc_out9_0_mux[] = {
 	PORT137_KEYOUT9_MARK,
 };
 static const unsigned int keysc_out9_1_pins[] = {
-	/* KEYOUT9 */
+	 
 	139,
 };
 static const unsigned int keysc_out9_1_mux[] = {
 	PORT139_KEYOUT9_MARK,
 };
 static const unsigned int keysc_out9_2_pins[] = {
-	/* KEYOUT9 */
+	 
 	149,
 };
 static const unsigned int keysc_out9_2_mux[] = {
 	PORT149_KEYOUT9_MARK,
 };
 static const unsigned int keysc_out10_0_pins[] = {
-	/* KEYOUT10 */
+	 
 	132,
 };
 static const unsigned int keysc_out10_0_mux[] = {
 	PORT132_KEYOUT10_MARK,
 };
 static const unsigned int keysc_out10_1_pins[] = {
-	/* KEYOUT10 */
+	 
 	142,
 };
 static const unsigned int keysc_out10_1_mux[] = {
 	PORT142_KEYOUT10_MARK,
 };
 static const unsigned int keysc_out11_0_pins[] = {
-	/* KEYOUT11 */
+	 
 	131,
 };
 static const unsigned int keysc_out11_0_mux[] = {
 	PORT131_KEYOUT11_MARK,
 };
 static const unsigned int keysc_out11_1_pins[] = {
-	/* KEYOUT11 */
+	 
 	143,
 };
 static const unsigned int keysc_out11_1_mux[] = {
 	PORT143_KEYOUT11_MARK,
 };
-/* - LCD -------------------------------------------------------------------- */
+ 
 static const unsigned int lcd_data_pins[] = {
-	/* D[0:23] */
+	 
 	192, 193, 194, 195, 196, 197, 198, 199,
 	200, 201, 202, 203, 204, 205, 206, 207,
 	208, 209, 210, 211, 212, 213, 214, 215
@@ -1927,36 +1920,36 @@ static const unsigned int lcd_data_mux[] = {
 	LCDD20_MARK, LCDD21_MARK, LCDD22_MARK, LCDD23_MARK,
 };
 static const unsigned int lcd_display_pins[] = {
-	/* DON */
+	 
 	222,
 };
 static const unsigned int lcd_display_mux[] = {
 	LCDDON_MARK,
 };
 static const unsigned int lcd_lclk_pins[] = {
-	/* LCLK */
+	 
 	221,
 };
 static const unsigned int lcd_lclk_mux[] = {
 	LCDLCLK_MARK,
 };
 static const unsigned int lcd_sync_pins[] = {
-	/* VSYN, HSYN, DCK, DISP */
+	 
 	220, 218, 216, 219,
 };
 static const unsigned int lcd_sync_mux[] = {
 	LCDVSYN_MARK, LCDHSYN_MARK, LCDDCK_MARK, LCDDISP_MARK,
 };
 static const unsigned int lcd_sys_pins[] = {
-	/* CS, WR, RD, RS */
+	 
 	218, 216, 217, 219,
 };
 static const unsigned int lcd_sys_mux[] = {
 	LCDCS__MARK, LCDWR__MARK, LCDRD__MARK, LCDRS_MARK,
 };
-/* - LCD2 ------------------------------------------------------------------- */
+ 
 static const unsigned int lcd2_data_pins[] = {
-	/* D[0:23] */
+	 
 	128, 129, 142, 143, 144, 145, 138, 139,
 	140, 141, 130, 131, 132, 133, 134, 135,
 	136, 137, 146, 147, 234, 235, 238, 239
@@ -1970,7 +1963,7 @@ static const unsigned int lcd2_data_mux[] = {
 	LCD2D20_MARK, LCD2D21_MARK, LCD2D22_MARK, LCD2D23_MARK,
 };
 static const unsigned int lcd2_sync_0_pins[] = {
-	/* VSYN, HSYN, DCK, DISP */
+	 
 	128, 129, 146, 145,
 };
 static const unsigned int lcd2_sync_0_mux[] = {
@@ -1978,7 +1971,7 @@ static const unsigned int lcd2_sync_0_mux[] = {
 	LCD2DCK_MARK, PORT145_LCD2DISP_MARK,
 };
 static const unsigned int lcd2_sync_1_pins[] = {
-	/* VSYN, HSYN, DCK, DISP */
+	 
 	222, 221, 219, 217,
 };
 static const unsigned int lcd2_sync_1_mux[] = {
@@ -1986,7 +1979,7 @@ static const unsigned int lcd2_sync_1_mux[] = {
 	LCD2DCK_2_MARK, PORT217_LCD2DISP_MARK,
 };
 static const unsigned int lcd2_sys_0_pins[] = {
-	/* CS, WR, RD, RS */
+	 
 	129, 146, 147, 145,
 };
 static const unsigned int lcd2_sys_0_mux[] = {
@@ -1994,16 +1987,16 @@ static const unsigned int lcd2_sys_0_mux[] = {
 	LCD2RD__MARK, PORT145_LCD2RS_MARK,
 };
 static const unsigned int lcd2_sys_1_pins[] = {
-	/* CS, WR, RD, RS */
+	 
 	221, 219, 147, 217,
 };
 static const unsigned int lcd2_sys_1_mux[] = {
 	PORT221_LCD2CS__MARK, PORT219_LCD2WR__MARK,
 	LCD2RD__MARK, PORT217_LCD2RS_MARK,
 };
-/* - MMCIF ------------------------------------------------------------------ */
+ 
 static const unsigned int mmc0_data_0_pins[] = {
-	/* D[0:7] */
+	 
 	271, 272, 273, 274, 275, 276, 277, 278,
 };
 static const unsigned int mmc0_data_0_mux[] = {
@@ -2011,7 +2004,7 @@ static const unsigned int mmc0_data_0_mux[] = {
 	MMCD0_4_MARK, MMCD0_5_MARK, MMCD0_6_MARK, MMCD0_7_MARK,
 };
 static const unsigned int mmc0_ctrl_0_pins[] = {
-	/* CMD, CLK */
+	 
 	279, 270,
 };
 static const unsigned int mmc0_ctrl_0_mux[] = {
@@ -2019,7 +2012,7 @@ static const unsigned int mmc0_ctrl_0_mux[] = {
 };
 
 static const unsigned int mmc0_data_1_pins[] = {
-	/* D[0:7] */
+	 
 	305, 304, 303, 302, 301, 300, 299, 298,
 };
 static const unsigned int mmc0_data_1_mux[] = {
@@ -2027,71 +2020,71 @@ static const unsigned int mmc0_data_1_mux[] = {
 	MMCD1_4_MARK, MMCD1_5_MARK, MMCD1_6_MARK, MMCD1_7_MARK,
 };
 static const unsigned int mmc0_ctrl_1_pins[] = {
-	/* CMD, CLK */
+	 
 	297, 289,
 };
 static const unsigned int mmc0_ctrl_1_mux[] = {
 	MMCCMD1_MARK, MMCCLK1_MARK,
 };
-/* - MSIOF0 ----------------------------------------------------------------- */
+ 
 static const unsigned int msiof0_rsck_pins[] = {
-	/* RSCK */
+	 
 	66,
 };
 static const unsigned int msiof0_rsck_mux[] = {
 	MSIOF0_RSCK_MARK,
 };
 static const unsigned int msiof0_tsck_pins[] = {
-	/* TSCK */
+	 
 	64,
 };
 static const unsigned int msiof0_tsck_mux[] = {
 	MSIOF0_TSCK_MARK,
 };
 static const unsigned int msiof0_rsync_pins[] = {
-	/* RSYNC */
+	 
 	67,
 };
 static const unsigned int msiof0_rsync_mux[] = {
 	MSIOF0_RSYNC_MARK,
 };
 static const unsigned int msiof0_tsync_pins[] = {
-	/* TSYNC */
+	 
 	63,
 };
 static const unsigned int msiof0_tsync_mux[] = {
 	MSIOF0_TSYNC_MARK,
 };
 static const unsigned int msiof0_ss1_pins[] = {
-	/* SS1 */
+	 
 	62,
 };
 static const unsigned int msiof0_ss1_mux[] = {
 	MSIOF0_SS1_MARK,
 };
 static const unsigned int msiof0_ss2_pins[] = {
-	/* SS2 */
+	 
 	71,
 };
 static const unsigned int msiof0_ss2_mux[] = {
 	MSIOF0_SS2_MARK,
 };
 static const unsigned int msiof0_rxd_pins[] = {
-	/* RXD */
+	 
 	70,
 };
 static const unsigned int msiof0_rxd_mux[] = {
 	MSIOF0_RXD_MARK,
 };
 static const unsigned int msiof0_txd_pins[] = {
-	/* TXD */
+	 
 	65,
 };
 static const unsigned int msiof0_txd_mux[] = {
 	MSIOF0_TXD_MARK,
 };
 static const unsigned int msiof0_mck0_pins[] = {
-	/* MSCK0 */
+	 
 	68,
 };
 static const unsigned int msiof0_mck0_mux[] = {
@@ -2099,7 +2092,7 @@ static const unsigned int msiof0_mck0_mux[] = {
 };
 
 static const unsigned int msiof0_mck1_pins[] = {
-	/* MSCK1 */
+	 
 	69,
 };
 static const unsigned int msiof0_mck1_mux[] = {
@@ -2107,247 +2100,247 @@ static const unsigned int msiof0_mck1_mux[] = {
 };
 
 static const unsigned int msiof0l_rsck_pins[] = {
-	/* RSCK */
+	 
 	214,
 };
 static const unsigned int msiof0l_rsck_mux[] = {
 	MSIOF0L_RSCK_MARK,
 };
 static const unsigned int msiof0l_tsck_pins[] = {
-	/* TSCK */
+	 
 	219,
 };
 static const unsigned int msiof0l_tsck_mux[] = {
 	MSIOF0L_TSCK_MARK,
 };
 static const unsigned int msiof0l_rsync_pins[] = {
-	/* RSYNC */
+	 
 	215,
 };
 static const unsigned int msiof0l_rsync_mux[] = {
 	MSIOF0L_RSYNC_MARK,
 };
 static const unsigned int msiof0l_tsync_pins[] = {
-	/* TSYNC */
+	 
 	217,
 };
 static const unsigned int msiof0l_tsync_mux[] = {
 	MSIOF0L_TSYNC_MARK,
 };
 static const unsigned int msiof0l_ss1_a_pins[] = {
-	/* SS1 */
+	 
 	207,
 };
 static const unsigned int msiof0l_ss1_a_mux[] = {
 	PORT207_MSIOF0L_SS1_MARK,
 };
 static const unsigned int msiof0l_ss1_b_pins[] = {
-	/* SS1 */
+	 
 	210,
 };
 static const unsigned int msiof0l_ss1_b_mux[] = {
 	PORT210_MSIOF0L_SS1_MARK,
 };
 static const unsigned int msiof0l_ss2_a_pins[] = {
-	/* SS2 */
+	 
 	208,
 };
 static const unsigned int msiof0l_ss2_a_mux[] = {
 	PORT208_MSIOF0L_SS2_MARK,
 };
 static const unsigned int msiof0l_ss2_b_pins[] = {
-	/* SS2 */
+	 
 	211,
 };
 static const unsigned int msiof0l_ss2_b_mux[] = {
 	PORT211_MSIOF0L_SS2_MARK,
 };
 static const unsigned int msiof0l_rxd_pins[] = {
-	/* RXD */
+	 
 	221,
 };
 static const unsigned int msiof0l_rxd_mux[] = {
 	MSIOF0L_RXD_MARK,
 };
 static const unsigned int msiof0l_txd_pins[] = {
-	/* TXD */
+	 
 	222,
 };
 static const unsigned int msiof0l_txd_mux[] = {
 	MSIOF0L_TXD_MARK,
 };
 static const unsigned int msiof0l_mck0_pins[] = {
-	/* MSCK0 */
+	 
 	212,
 };
 static const unsigned int msiof0l_mck0_mux[] = {
 	MSIOF0L_MCK0_MARK,
 };
 static const unsigned int msiof0l_mck1_pins[] = {
-	/* MSCK1 */
+	 
 	213,
 };
 static const unsigned int msiof0l_mck1_mux[] = {
 	MSIOF0L_MCK1_MARK,
 };
-/* - MSIOF1 ----------------------------------------------------------------- */
+ 
 static const unsigned int msiof1_rsck_pins[] = {
-	/* RSCK */
+	 
 	234,
 };
 static const unsigned int msiof1_rsck_mux[] = {
 	MSIOF1_RSCK_MARK,
 };
 static const unsigned int msiof1_tsck_pins[] = {
-	/* TSCK */
+	 
 	232,
 };
 static const unsigned int msiof1_tsck_mux[] = {
 	MSIOF1_TSCK_MARK,
 };
 static const unsigned int msiof1_rsync_pins[] = {
-	/* RSYNC */
+	 
 	235,
 };
 static const unsigned int msiof1_rsync_mux[] = {
 	MSIOF1_RSYNC_MARK,
 };
 static const unsigned int msiof1_tsync_pins[] = {
-	/* TSYNC */
+	 
 	231,
 };
 static const unsigned int msiof1_tsync_mux[] = {
 	MSIOF1_TSYNC_MARK,
 };
 static const unsigned int msiof1_ss1_pins[] = {
-	/* SS1 */
+	 
 	238,
 };
 static const unsigned int msiof1_ss1_mux[] = {
 	MSIOF1_SS1_MARK,
 };
 static const unsigned int msiof1_ss2_pins[] = {
-	/* SS2 */
+	 
 	239,
 };
 static const unsigned int msiof1_ss2_mux[] = {
 	MSIOF1_SS2_MARK,
 };
 static const unsigned int msiof1_rxd_pins[] = {
-	/* RXD */
+	 
 	233,
 };
 static const unsigned int msiof1_rxd_mux[] = {
 	MSIOF1_RXD_MARK,
 };
 static const unsigned int msiof1_txd_pins[] = {
-	/* TXD */
+	 
 	230,
 };
 static const unsigned int msiof1_txd_mux[] = {
 	MSIOF1_TXD_MARK,
 };
 static const unsigned int msiof1_mck0_pins[] = {
-	/* MSCK0 */
+	 
 	236,
 };
 static const unsigned int msiof1_mck0_mux[] = {
 	MSIOF1_MCK0_MARK,
 };
 static const unsigned int msiof1_mck1_pins[] = {
-	/* MSCK1 */
+	 
 	237,
 };
 static const unsigned int msiof1_mck1_mux[] = {
 	MSIOF1_MCK1_MARK,
 };
-/* - MSIOF2 ----------------------------------------------------------------- */
+ 
 static const unsigned int msiof2_rsck_pins[] = {
-	/* RSCK */
+	 
 	151,
 };
 static const unsigned int msiof2_rsck_mux[] = {
 	MSIOF2_RSCK_MARK,
 };
 static const unsigned int msiof2_tsck_pins[] = {
-	/* TSCK */
+	 
 	135,
 };
 static const unsigned int msiof2_tsck_mux[] = {
 	MSIOF2_TSCK_MARK,
 };
 static const unsigned int msiof2_rsync_pins[] = {
-	/* RSYNC */
+	 
 	152,
 };
 static const unsigned int msiof2_rsync_mux[] = {
 	MSIOF2_RSYNC_MARK,
 };
 static const unsigned int msiof2_tsync_pins[] = {
-	/* TSYNC */
+	 
 	133,
 };
 static const unsigned int msiof2_tsync_mux[] = {
 	MSIOF2_TSYNC_MARK,
 };
 static const unsigned int msiof2_ss1_a_pins[] = {
-	/* SS1 */
+	 
 	131,
 };
 static const unsigned int msiof2_ss1_a_mux[] = {
 	PORT131_MSIOF2_SS1_MARK,
 };
 static const unsigned int msiof2_ss1_b_pins[] = {
-	/* SS1 */
+	 
 	153,
 };
 static const unsigned int msiof2_ss1_b_mux[] = {
 	PORT153_MSIOF2_SS1_MARK,
 };
 static const unsigned int msiof2_ss2_a_pins[] = {
-	/* SS2 */
+	 
 	132,
 };
 static const unsigned int msiof2_ss2_a_mux[] = {
 	PORT132_MSIOF2_SS2_MARK,
 };
 static const unsigned int msiof2_ss2_b_pins[] = {
-	/* SS2 */
+	 
 	156,
 };
 static const unsigned int msiof2_ss2_b_mux[] = {
 	PORT156_MSIOF2_SS2_MARK,
 };
 static const unsigned int msiof2_rxd_a_pins[] = {
-	/* RXD */
+	 
 	130,
 };
 static const unsigned int msiof2_rxd_a_mux[] = {
 	PORT130_MSIOF2_RXD_MARK,
 };
 static const unsigned int msiof2_rxd_b_pins[] = {
-	/* RXD */
+	 
 	157,
 };
 static const unsigned int msiof2_rxd_b_mux[] = {
 	PORT157_MSIOF2_RXD_MARK,
 };
 static const unsigned int msiof2_txd_pins[] = {
-	/* TXD */
+	 
 	134,
 };
 static const unsigned int msiof2_txd_mux[] = {
 	MSIOF2_TXD_MARK,
 };
 static const unsigned int msiof2_mck0_pins[] = {
-	/* MSCK0 */
+	 
 	154,
 };
 static const unsigned int msiof2_mck0_mux[] = {
 	MSIOF2_MCK0_MARK,
 };
 static const unsigned int msiof2_mck1_pins[] = {
-	/* MSCK1 */
+	 
 	155,
 };
 static const unsigned int msiof2_mck1_mux[] = {
@@ -2355,559 +2348,559 @@ static const unsigned int msiof2_mck1_mux[] = {
 };
 
 static const unsigned int msiof2r_tsck_pins[] = {
-	/* TSCK */
+	 
 	248,
 };
 static const unsigned int msiof2r_tsck_mux[] = {
 	MSIOF2R_TSCK_MARK,
 };
 static const unsigned int msiof2r_tsync_pins[] = {
-	/* TSYNC */
+	 
 	249,
 };
 static const unsigned int msiof2r_tsync_mux[] = {
 	MSIOF2R_TSYNC_MARK,
 };
 static const unsigned int msiof2r_rxd_pins[] = {
-	/* RXD */
+	 
 	244,
 };
 static const unsigned int msiof2r_rxd_mux[] = {
 	MSIOF2R_RXD_MARK,
 };
 static const unsigned int msiof2r_txd_pins[] = {
-	/* TXD */
+	 
 	245,
 };
 static const unsigned int msiof2r_txd_mux[] = {
 	MSIOF2R_TXD_MARK,
 };
-/* - MSIOF3 (Pin function name of MSIOF3 is named BBIF1) -------------------- */
+ 
 static const unsigned int msiof3_rsck_pins[] = {
-	/* RSCK */
+	 
 	115,
 };
 static const unsigned int msiof3_rsck_mux[] = {
 	BBIF1_RSCK_MARK,
 };
 static const unsigned int msiof3_tsck_pins[] = {
-	/* TSCK */
+	 
 	112,
 };
 static const unsigned int msiof3_tsck_mux[] = {
 	BBIF1_TSCK_MARK,
 };
 static const unsigned int msiof3_rsync_pins[] = {
-	/* RSYNC */
+	 
 	116,
 };
 static const unsigned int msiof3_rsync_mux[] = {
 	BBIF1_RSYNC_MARK,
 };
 static const unsigned int msiof3_tsync_pins[] = {
-	/* TSYNC */
+	 
 	113,
 };
 static const unsigned int msiof3_tsync_mux[] = {
 	BBIF1_TSYNC_MARK,
 };
 static const unsigned int msiof3_ss1_pins[] = {
-	/* SS1 */
+	 
 	117,
 };
 static const unsigned int msiof3_ss1_mux[] = {
 	BBIF1_SS1_MARK,
 };
 static const unsigned int msiof3_ss2_pins[] = {
-	/* SS2 */
+	 
 	109,
 };
 static const unsigned int msiof3_ss2_mux[] = {
 	BBIF1_SS2_MARK,
 };
 static const unsigned int msiof3_rxd_pins[] = {
-	/* RXD */
+	 
 	111,
 };
 static const unsigned int msiof3_rxd_mux[] = {
 	BBIF1_RXD_MARK,
 };
 static const unsigned int msiof3_txd_pins[] = {
-	/* TXD */
+	 
 	114,
 };
 static const unsigned int msiof3_txd_mux[] = {
 	BBIF1_TXD_MARK,
 };
 static const unsigned int msiof3_flow_pins[] = {
-	/* FLOW */
+	 
 	117,
 };
 static const unsigned int msiof3_flow_mux[] = {
 	BBIF1_FLOW_MARK,
 };
 
-/* - SCIFA0 ----------------------------------------------------------------- */
+ 
 static const unsigned int scifa0_data_pins[] = {
-	/* RXD, TXD */
+	 
 	43, 17,
 };
 static const unsigned int scifa0_data_mux[] = {
 	SCIFA0_RXD_MARK, SCIFA0_TXD_MARK,
 };
 static const unsigned int scifa0_clk_pins[] = {
-	/* SCK */
+	 
 	16,
 };
 static const unsigned int scifa0_clk_mux[] = {
 	SCIFA0_SCK_MARK,
 };
 static const unsigned int scifa0_ctrl_pins[] = {
-	/* RTS, CTS */
+	 
 	42, 44,
 };
 static const unsigned int scifa0_ctrl_mux[] = {
 	SCIFA0_RTS__MARK, SCIFA0_CTS__MARK,
 };
-/* - SCIFA1 ----------------------------------------------------------------- */
+ 
 static const unsigned int scifa1_data_pins[] = {
-	/* RXD, TXD */
+	 
 	228, 225,
 };
 static const unsigned int scifa1_data_mux[] = {
 	SCIFA1_RXD_MARK, SCIFA1_TXD_MARK,
 };
 static const unsigned int scifa1_clk_pins[] = {
-	/* SCK */
+	 
 	226,
 };
 static const unsigned int scifa1_clk_mux[] = {
 	SCIFA1_SCK_MARK,
 };
 static const unsigned int scifa1_ctrl_pins[] = {
-	/* RTS, CTS */
+	 
 	227, 229,
 };
 static const unsigned int scifa1_ctrl_mux[] = {
 	SCIFA1_RTS__MARK, SCIFA1_CTS__MARK,
 };
-/* - SCIFA2 ----------------------------------------------------------------- */
+ 
 static const unsigned int scifa2_data_0_pins[] = {
-	/* RXD, TXD */
+	 
 	155, 154,
 };
 static const unsigned int scifa2_data_0_mux[] = {
 	SCIFA2_RXD1_MARK, SCIFA2_TXD1_MARK,
 };
 static const unsigned int scifa2_clk_0_pins[] = {
-	/* SCK */
+	 
 	158,
 };
 static const unsigned int scifa2_clk_0_mux[] = {
 	SCIFA2_SCK1_MARK,
 };
 static const unsigned int scifa2_ctrl_0_pins[] = {
-	/* RTS, CTS */
+	 
 	156, 157,
 };
 static const unsigned int scifa2_ctrl_0_mux[] = {
 	SCIFA2_RTS1__MARK, SCIFA2_CTS1__MARK,
 };
 static const unsigned int scifa2_data_1_pins[] = {
-	/* RXD, TXD */
+	 
 	233, 230,
 };
 static const unsigned int scifa2_data_1_mux[] = {
 	SCIFA2_RXD2_MARK, SCIFA2_TXD2_MARK,
 };
 static const unsigned int scifa2_clk_1_pins[] = {
-	/* SCK */
+	 
 	232,
 };
 static const unsigned int scifa2_clk_1_mux[] = {
 	SCIFA2_SCK2_MARK,
 };
 static const unsigned int scifa2_ctrl_1_pins[] = {
-	/* RTS, CTS */
+	 
 	234, 231,
 };
 static const unsigned int scifa2_ctrl_1_mux[] = {
 	SCIFA2_RTS2__MARK, SCIFA2_CTS2__MARK,
 };
-/* - SCIFA3 ----------------------------------------------------------------- */
+ 
 static const unsigned int scifa3_data_pins[] = {
-	/* RXD, TXD */
+	 
 	108, 110,
 };
 static const unsigned int scifa3_data_mux[] = {
 	SCIFA3_RXD_MARK, SCIFA3_TXD_MARK,
 };
 static const unsigned int scifa3_ctrl_pins[] = {
-	/* RTS, CTS */
+	 
 	109, 107,
 };
 static const unsigned int scifa3_ctrl_mux[] = {
 	SCIFA3_RTS__MARK, SCIFA3_CTS__MARK,
 };
-/* - SCIFA4 ----------------------------------------------------------------- */
+ 
 static const unsigned int scifa4_data_pins[] = {
-	/* RXD, TXD */
+	 
 	33, 32,
 };
 static const unsigned int scifa4_data_mux[] = {
 	SCIFA4_RXD_MARK, SCIFA4_TXD_MARK,
 };
 static const unsigned int scifa4_ctrl_pins[] = {
-	/* RTS, CTS */
+	 
 	34, 35,
 };
 static const unsigned int scifa4_ctrl_mux[] = {
 	SCIFA4_RTS__MARK, SCIFA4_CTS__MARK,
 };
-/* - SCIFA5 ----------------------------------------------------------------- */
+ 
 static const unsigned int scifa5_data_0_pins[] = {
-	/* RXD, TXD */
+	 
 	246, 247,
 };
 static const unsigned int scifa5_data_0_mux[] = {
 	PORT246_SCIFA5_RXD_MARK, PORT247_SCIFA5_TXD_MARK,
 };
 static const unsigned int scifa5_clk_0_pins[] = {
-	/* SCK */
+	 
 	248,
 };
 static const unsigned int scifa5_clk_0_mux[] = {
 	PORT248_SCIFA5_SCK_MARK,
 };
 static const unsigned int scifa5_ctrl_0_pins[] = {
-	/* RTS, CTS */
+	 
 	245, 244,
 };
 static const unsigned int scifa5_ctrl_0_mux[] = {
 	PORT245_SCIFA5_RTS__MARK, PORT244_SCIFA5_CTS__MARK,
 };
 static const unsigned int scifa5_data_1_pins[] = {
-	/* RXD, TXD */
+	 
 	195, 196,
 };
 static const unsigned int scifa5_data_1_mux[] = {
 	PORT195_SCIFA5_RXD_MARK, PORT196_SCIFA5_TXD_MARK,
 };
 static const unsigned int scifa5_clk_1_pins[] = {
-	/* SCK */
+	 
 	197,
 };
 static const unsigned int scifa5_clk_1_mux[] = {
 	PORT197_SCIFA5_SCK_MARK,
 };
 static const unsigned int scifa5_ctrl_1_pins[] = {
-	/* RTS, CTS */
+	 
 	194, 193,
 };
 static const unsigned int scifa5_ctrl_1_mux[] = {
 	PORT194_SCIFA5_RTS__MARK, PORT193_SCIFA5_CTS__MARK,
 };
 static const unsigned int scifa5_data_2_pins[] = {
-	/* RXD, TXD */
+	 
 	162, 160,
 };
 static const unsigned int scifa5_data_2_mux[] = {
 	PORT162_SCIFA5_RXD_MARK, PORT160_SCIFA5_TXD_MARK,
 };
 static const unsigned int scifa5_clk_2_pins[] = {
-	/* SCK */
+	 
 	159,
 };
 static const unsigned int scifa5_clk_2_mux[] = {
 	PORT159_SCIFA5_SCK_MARK,
 };
 static const unsigned int scifa5_ctrl_2_pins[] = {
-	/* RTS, CTS */
+	 
 	163, 161,
 };
 static const unsigned int scifa5_ctrl_2_mux[] = {
 	PORT163_SCIFA5_RTS__MARK, PORT161_SCIFA5_CTS__MARK,
 };
-/* - SCIFA6 ----------------------------------------------------------------- */
+ 
 static const unsigned int scifa6_pins[] = {
-	/* TXD */
+	 
 	240,
 };
 static const unsigned int scifa6_mux[] = {
 	SCIFA6_TXD_MARK,
 };
-/* - SCIFA7 ----------------------------------------------------------------- */
+ 
 static const unsigned int scifa7_data_pins[] = {
-	/* RXD, TXD */
+	 
 	12, 18,
 };
 static const unsigned int scifa7_data_mux[] = {
 	SCIFA7_RXD_MARK, SCIFA7_TXD_MARK,
 };
 static const unsigned int scifa7_ctrl_pins[] = {
-	/* RTS, CTS */
+	 
 	19, 13,
 };
 static const unsigned int scifa7_ctrl_mux[] = {
 	SCIFA7_RTS__MARK, SCIFA7_CTS__MARK,
 };
-/* - SCIFB ------------------------------------------------------------------ */
+ 
 static const unsigned int scifb_data_0_pins[] = {
-	/* RXD, TXD */
+	 
 	162, 160,
 };
 static const unsigned int scifb_data_0_mux[] = {
 	PORT162_SCIFB_RXD_MARK, PORT160_SCIFB_TXD_MARK,
 };
 static const unsigned int scifb_clk_0_pins[] = {
-	/* SCK */
+	 
 	159,
 };
 static const unsigned int scifb_clk_0_mux[] = {
 	PORT159_SCIFB_SCK_MARK,
 };
 static const unsigned int scifb_ctrl_0_pins[] = {
-	/* RTS, CTS */
+	 
 	163, 161,
 };
 static const unsigned int scifb_ctrl_0_mux[] = {
 	PORT163_SCIFB_RTS__MARK, PORT161_SCIFB_CTS__MARK,
 };
 static const unsigned int scifb_data_1_pins[] = {
-	/* RXD, TXD */
+	 
 	246, 247,
 };
 static const unsigned int scifb_data_1_mux[] = {
 	PORT246_SCIFB_RXD_MARK, PORT247_SCIFB_TXD_MARK,
 };
 static const unsigned int scifb_clk_1_pins[] = {
-	/* SCK */
+	 
 	248,
 };
 static const unsigned int scifb_clk_1_mux[] = {
 	PORT248_SCIFB_SCK_MARK,
 };
 static const unsigned int scifb_ctrl_1_pins[] = {
-	/* RTS, CTS */
+	 
 	245, 244,
 };
 static const unsigned int scifb_ctrl_1_mux[] = {
 	PORT245_SCIFB_RTS__MARK, PORT244_SCIFB_CTS__MARK,
 };
-/* - SDHI0 ------------------------------------------------------------------ */
+ 
 static const unsigned int sdhi0_data_pins[] = {
-	/* D[0:3] */
+	 
 	252, 253, 254, 255,
 };
 static const unsigned int sdhi0_data_mux[] = {
 	SDHID0_0_MARK, SDHID0_1_MARK, SDHID0_2_MARK, SDHID0_3_MARK,
 };
 static const unsigned int sdhi0_ctrl_pins[] = {
-	/* CMD, CLK */
+	 
 	256, 250,
 };
 static const unsigned int sdhi0_ctrl_mux[] = {
 	SDHICMD0_MARK, SDHICLK0_MARK,
 };
 static const unsigned int sdhi0_cd_pins[] = {
-	/* CD */
+	 
 	251,
 };
 static const unsigned int sdhi0_cd_mux[] = {
 	SDHICD0_MARK,
 };
 static const unsigned int sdhi0_wp_pins[] = {
-	/* WP */
+	 
 	257,
 };
 static const unsigned int sdhi0_wp_mux[] = {
 	SDHIWP0_MARK,
 };
-/* - SDHI1 ------------------------------------------------------------------ */
+ 
 static const unsigned int sdhi1_data_pins[] = {
-	/* D[0:3] */
+	 
 	259, 260, 261, 262,
 };
 static const unsigned int sdhi1_data_mux[] = {
 	SDHID1_0_MARK, SDHID1_1_MARK, SDHID1_2_MARK, SDHID1_3_MARK,
 };
 static const unsigned int sdhi1_ctrl_pins[] = {
-	/* CMD, CLK */
+	 
 	263, 258,
 };
 static const unsigned int sdhi1_ctrl_mux[] = {
 	SDHICMD1_MARK, SDHICLK1_MARK,
 };
-/* - SDHI2 ------------------------------------------------------------------ */
+ 
 static const unsigned int sdhi2_data_pins[] = {
-	/* D[0:3] */
+	 
 	265, 266, 267, 268,
 };
 static const unsigned int sdhi2_data_mux[] = {
 	SDHID2_0_MARK, SDHID2_1_MARK, SDHID2_2_MARK, SDHID2_3_MARK,
 };
 static const unsigned int sdhi2_ctrl_pins[] = {
-	/* CMD, CLK */
+	 
 	269, 264,
 };
 static const unsigned int sdhi2_ctrl_mux[] = {
 	SDHICMD2_MARK, SDHICLK2_MARK,
 };
-/* - TPU0 ------------------------------------------------------------------- */
+ 
 static const unsigned int tpu0_to0_pins[] = {
-	/* TO */
+	 
 	55,
 };
 static const unsigned int tpu0_to0_mux[] = {
 	TPU0TO0_MARK,
 };
 static const unsigned int tpu0_to1_pins[] = {
-	/* TO */
+	 
 	59,
 };
 static const unsigned int tpu0_to1_mux[] = {
 	TPU0TO1_MARK,
 };
 static const unsigned int tpu0_to2_pins[] = {
-	/* TO */
+	 
 	140,
 };
 static const unsigned int tpu0_to2_mux[] = {
 	TPU0TO2_MARK,
 };
 static const unsigned int tpu0_to3_pins[] = {
-	/* TO */
+	 
 	141,
 };
 static const unsigned int tpu0_to3_mux[] = {
 	TPU0TO3_MARK,
 };
-/* - TPU1 ------------------------------------------------------------------- */
+ 
 static const unsigned int tpu1_to0_pins[] = {
-	/* TO */
+	 
 	246,
 };
 static const unsigned int tpu1_to0_mux[] = {
 	TPU1TO0_MARK,
 };
 static const unsigned int tpu1_to1_0_pins[] = {
-	/* TO */
+	 
 	28,
 };
 static const unsigned int tpu1_to1_0_mux[] = {
 	PORT28_TPU1TO1_MARK,
 };
 static const unsigned int tpu1_to1_1_pins[] = {
-	/* TO */
+	 
 	29,
 };
 static const unsigned int tpu1_to1_1_mux[] = {
 	PORT29_TPU1TO1_MARK,
 };
 static const unsigned int tpu1_to2_pins[] = {
-	/* TO */
+	 
 	153,
 };
 static const unsigned int tpu1_to2_mux[] = {
 	TPU1TO2_MARK,
 };
 static const unsigned int tpu1_to3_pins[] = {
-	/* TO */
+	 
 	145,
 };
 static const unsigned int tpu1_to3_mux[] = {
 	TPU1TO3_MARK,
 };
-/* - TPU2 ------------------------------------------------------------------- */
+ 
 static const unsigned int tpu2_to0_pins[] = {
-	/* TO */
+	 
 	248,
 };
 static const unsigned int tpu2_to0_mux[] = {
 	TPU2TO0_MARK,
 };
 static const unsigned int tpu2_to1_pins[] = {
-	/* TO */
+	 
 	197,
 };
 static const unsigned int tpu2_to1_mux[] = {
 	TPU2TO1_MARK,
 };
 static const unsigned int tpu2_to2_pins[] = {
-	/* TO */
+	 
 	50,
 };
 static const unsigned int tpu2_to2_mux[] = {
 	TPU2TO2_MARK,
 };
 static const unsigned int tpu2_to3_pins[] = {
-	/* TO */
+	 
 	51,
 };
 static const unsigned int tpu2_to3_mux[] = {
 	TPU2TO3_MARK,
 };
-/* - TPU3 ------------------------------------------------------------------- */
+ 
 static const unsigned int tpu3_to0_pins[] = {
-	/* TO */
+	 
 	163,
 };
 static const unsigned int tpu3_to0_mux[] = {
 	TPU3TO0_MARK,
 };
 static const unsigned int tpu3_to1_pins[] = {
-	/* TO */
+	 
 	247,
 };
 static const unsigned int tpu3_to1_mux[] = {
 	TPU3TO1_MARK,
 };
 static const unsigned int tpu3_to2_pins[] = {
-	/* TO */
+	 
 	54,
 };
 static const unsigned int tpu3_to2_mux[] = {
 	TPU3TO2_MARK,
 };
 static const unsigned int tpu3_to3_pins[] = {
-	/* TO */
+	 
 	53,
 };
 static const unsigned int tpu3_to3_mux[] = {
 	TPU3TO3_MARK,
 };
-/* - TPU4 ------------------------------------------------------------------- */
+ 
 static const unsigned int tpu4_to0_pins[] = {
-	/* TO */
+	 
 	241,
 };
 static const unsigned int tpu4_to0_mux[] = {
 	TPU4TO0_MARK,
 };
 static const unsigned int tpu4_to1_pins[] = {
-	/* TO */
+	 
 	199,
 };
 static const unsigned int tpu4_to1_mux[] = {
 	TPU4TO1_MARK,
 };
 static const unsigned int tpu4_to2_pins[] = {
-	/* TO */
+	 
 	58,
 };
 static const unsigned int tpu4_to2_mux[] = {
 	TPU4TO2_MARK,
 };
 static const unsigned int tpu4_to3_pins[] = {
-	/* TO */
+	 
 	PIN_A11,
 };
 static const unsigned int tpu4_to3_mux[] = {
 	TPU4TO3_MARK,
 };
-/* - USB -------------------------------------------------------------------- */
+ 
 static const unsigned int usb_vbus_pins[] = {
-	/* VBUS */
+	 
 	0,
 };
 static const unsigned int usb_vbus_mux[] = {
@@ -3499,315 +3492,315 @@ static const struct sh_pfc_function pinmux_functions[] = {
 };
 
 static const struct pinmux_cfg_reg pinmux_config_regs[] = {
-	PORTCR(0, 0xe6050000), /* PORT0CR */
-	PORTCR(1, 0xe6050001), /* PORT1CR */
-	PORTCR(2, 0xe6050002), /* PORT2CR */
-	PORTCR(3, 0xe6050003), /* PORT3CR */
-	PORTCR(4, 0xe6050004), /* PORT4CR */
-	PORTCR(5, 0xe6050005), /* PORT5CR */
-	PORTCR(6, 0xe6050006), /* PORT6CR */
-	PORTCR(7, 0xe6050007), /* PORT7CR */
-	PORTCR(8, 0xe6050008), /* PORT8CR */
-	PORTCR(9, 0xe6050009), /* PORT9CR */
+	PORTCR(0, 0xe6050000),  
+	PORTCR(1, 0xe6050001),  
+	PORTCR(2, 0xe6050002),  
+	PORTCR(3, 0xe6050003),  
+	PORTCR(4, 0xe6050004),  
+	PORTCR(5, 0xe6050005),  
+	PORTCR(6, 0xe6050006),  
+	PORTCR(7, 0xe6050007),  
+	PORTCR(8, 0xe6050008),  
+	PORTCR(9, 0xe6050009),  
 
-	PORTCR(10, 0xe605000a), /* PORT10CR */
-	PORTCR(11, 0xe605000b), /* PORT11CR */
-	PORTCR(12, 0xe605000c), /* PORT12CR */
-	PORTCR(13, 0xe605000d), /* PORT13CR */
-	PORTCR(14, 0xe605000e), /* PORT14CR */
-	PORTCR(15, 0xe605000f), /* PORT15CR */
-	PORTCR(16, 0xe6050010), /* PORT16CR */
-	PORTCR(17, 0xe6050011), /* PORT17CR */
-	PORTCR(18, 0xe6050012), /* PORT18CR */
-	PORTCR(19, 0xe6050013), /* PORT19CR */
+	PORTCR(10, 0xe605000a),  
+	PORTCR(11, 0xe605000b),  
+	PORTCR(12, 0xe605000c),  
+	PORTCR(13, 0xe605000d),  
+	PORTCR(14, 0xe605000e),  
+	PORTCR(15, 0xe605000f),  
+	PORTCR(16, 0xe6050010),  
+	PORTCR(17, 0xe6050011),  
+	PORTCR(18, 0xe6050012),  
+	PORTCR(19, 0xe6050013),  
 
-	PORTCR(20, 0xe6050014), /* PORT20CR */
-	PORTCR(21, 0xe6050015), /* PORT21CR */
-	PORTCR(22, 0xe6050016), /* PORT22CR */
-	PORTCR(23, 0xe6050017), /* PORT23CR */
-	PORTCR(24, 0xe6050018), /* PORT24CR */
-	PORTCR(25, 0xe6050019), /* PORT25CR */
-	PORTCR(26, 0xe605001a), /* PORT26CR */
-	PORTCR(27, 0xe605001b), /* PORT27CR */
-	PORTCR(28, 0xe605001c), /* PORT28CR */
-	PORTCR(29, 0xe605001d), /* PORT29CR */
+	PORTCR(20, 0xe6050014),  
+	PORTCR(21, 0xe6050015),  
+	PORTCR(22, 0xe6050016),  
+	PORTCR(23, 0xe6050017),  
+	PORTCR(24, 0xe6050018),  
+	PORTCR(25, 0xe6050019),  
+	PORTCR(26, 0xe605001a),  
+	PORTCR(27, 0xe605001b),  
+	PORTCR(28, 0xe605001c),  
+	PORTCR(29, 0xe605001d),  
 
-	PORTCR(30, 0xe605001e), /* PORT30CR */
-	PORTCR(31, 0xe605001f), /* PORT31CR */
-	PORTCR(32, 0xe6051020), /* PORT32CR */
-	PORTCR(33, 0xe6051021), /* PORT33CR */
-	PORTCR(34, 0xe6051022), /* PORT34CR */
-	PORTCR(35, 0xe6051023), /* PORT35CR */
-	PORTCR(36, 0xe6051024), /* PORT36CR */
-	PORTCR(37, 0xe6051025), /* PORT37CR */
-	PORTCR(38, 0xe6051026), /* PORT38CR */
-	PORTCR(39, 0xe6051027), /* PORT39CR */
+	PORTCR(30, 0xe605001e),  
+	PORTCR(31, 0xe605001f),  
+	PORTCR(32, 0xe6051020),  
+	PORTCR(33, 0xe6051021),  
+	PORTCR(34, 0xe6051022),  
+	PORTCR(35, 0xe6051023),  
+	PORTCR(36, 0xe6051024),  
+	PORTCR(37, 0xe6051025),  
+	PORTCR(38, 0xe6051026),  
+	PORTCR(39, 0xe6051027),  
 
-	PORTCR(40, 0xe6051028), /* PORT40CR */
-	PORTCR(41, 0xe6051029), /* PORT41CR */
-	PORTCR(42, 0xe605102a), /* PORT42CR */
-	PORTCR(43, 0xe605102b), /* PORT43CR */
-	PORTCR(44, 0xe605102c), /* PORT44CR */
-	PORTCR(45, 0xe605102d), /* PORT45CR */
-	PORTCR(46, 0xe605102e), /* PORT46CR */
-	PORTCR(47, 0xe605102f), /* PORT47CR */
-	PORTCR(48, 0xe6051030), /* PORT48CR */
-	PORTCR(49, 0xe6051031), /* PORT49CR */
+	PORTCR(40, 0xe6051028),  
+	PORTCR(41, 0xe6051029),  
+	PORTCR(42, 0xe605102a),  
+	PORTCR(43, 0xe605102b),  
+	PORTCR(44, 0xe605102c),  
+	PORTCR(45, 0xe605102d),  
+	PORTCR(46, 0xe605102e),  
+	PORTCR(47, 0xe605102f),  
+	PORTCR(48, 0xe6051030),  
+	PORTCR(49, 0xe6051031),  
 
-	PORTCR(50, 0xe6051032), /* PORT50CR */
-	PORTCR(51, 0xe6051033), /* PORT51CR */
-	PORTCR(52, 0xe6051034), /* PORT52CR */
-	PORTCR(53, 0xe6051035), /* PORT53CR */
-	PORTCR(54, 0xe6051036), /* PORT54CR */
-	PORTCR(55, 0xe6051037), /* PORT55CR */
-	PORTCR(56, 0xe6051038), /* PORT56CR */
-	PORTCR(57, 0xe6051039), /* PORT57CR */
-	PORTCR(58, 0xe605103a), /* PORT58CR */
-	PORTCR(59, 0xe605103b), /* PORT59CR */
+	PORTCR(50, 0xe6051032),  
+	PORTCR(51, 0xe6051033),  
+	PORTCR(52, 0xe6051034),  
+	PORTCR(53, 0xe6051035),  
+	PORTCR(54, 0xe6051036),  
+	PORTCR(55, 0xe6051037),  
+	PORTCR(56, 0xe6051038),  
+	PORTCR(57, 0xe6051039),  
+	PORTCR(58, 0xe605103a),  
+	PORTCR(59, 0xe605103b),  
 
-	PORTCR(60, 0xe605103c), /* PORT60CR */
-	PORTCR(61, 0xe605103d), /* PORT61CR */
-	PORTCR(62, 0xe605103e), /* PORT62CR */
-	PORTCR(63, 0xe605103f), /* PORT63CR */
-	PORTCR(64, 0xe6051040), /* PORT64CR */
-	PORTCR(65, 0xe6051041), /* PORT65CR */
-	PORTCR(66, 0xe6051042), /* PORT66CR */
-	PORTCR(67, 0xe6051043), /* PORT67CR */
-	PORTCR(68, 0xe6051044), /* PORT68CR */
-	PORTCR(69, 0xe6051045), /* PORT69CR */
+	PORTCR(60, 0xe605103c),  
+	PORTCR(61, 0xe605103d),  
+	PORTCR(62, 0xe605103e),  
+	PORTCR(63, 0xe605103f),  
+	PORTCR(64, 0xe6051040),  
+	PORTCR(65, 0xe6051041),  
+	PORTCR(66, 0xe6051042),  
+	PORTCR(67, 0xe6051043),  
+	PORTCR(68, 0xe6051044),  
+	PORTCR(69, 0xe6051045),  
 
-	PORTCR(70, 0xe6051046), /* PORT70CR */
-	PORTCR(71, 0xe6051047), /* PORT71CR */
-	PORTCR(72, 0xe6051048), /* PORT72CR */
-	PORTCR(73, 0xe6051049), /* PORT73CR */
-	PORTCR(74, 0xe605104a), /* PORT74CR */
-	PORTCR(75, 0xe605104b), /* PORT75CR */
-	PORTCR(76, 0xe605104c), /* PORT76CR */
-	PORTCR(77, 0xe605104d), /* PORT77CR */
-	PORTCR(78, 0xe605104e), /* PORT78CR */
-	PORTCR(79, 0xe605104f), /* PORT79CR */
+	PORTCR(70, 0xe6051046),  
+	PORTCR(71, 0xe6051047),  
+	PORTCR(72, 0xe6051048),  
+	PORTCR(73, 0xe6051049),  
+	PORTCR(74, 0xe605104a),  
+	PORTCR(75, 0xe605104b),  
+	PORTCR(76, 0xe605104c),  
+	PORTCR(77, 0xe605104d),  
+	PORTCR(78, 0xe605104e),  
+	PORTCR(79, 0xe605104f),  
 
-	PORTCR(80, 0xe6051050), /* PORT80CR */
-	PORTCR(81, 0xe6051051), /* PORT81CR */
-	PORTCR(82, 0xe6051052), /* PORT82CR */
-	PORTCR(83, 0xe6051053), /* PORT83CR */
-	PORTCR(84, 0xe6051054), /* PORT84CR */
-	PORTCR(85, 0xe6051055), /* PORT85CR */
-	PORTCR(86, 0xe6051056), /* PORT86CR */
-	PORTCR(87, 0xe6051057), /* PORT87CR */
-	PORTCR(88, 0xe6051058), /* PORT88CR */
-	PORTCR(89, 0xe6051059), /* PORT89CR */
+	PORTCR(80, 0xe6051050),  
+	PORTCR(81, 0xe6051051),  
+	PORTCR(82, 0xe6051052),  
+	PORTCR(83, 0xe6051053),  
+	PORTCR(84, 0xe6051054),  
+	PORTCR(85, 0xe6051055),  
+	PORTCR(86, 0xe6051056),  
+	PORTCR(87, 0xe6051057),  
+	PORTCR(88, 0xe6051058),  
+	PORTCR(89, 0xe6051059),  
 
-	PORTCR(90, 0xe605105a), /* PORT90CR */
-	PORTCR(91, 0xe605105b), /* PORT91CR */
-	PORTCR(92, 0xe605105c), /* PORT92CR */
-	PORTCR(93, 0xe605105d), /* PORT93CR */
-	PORTCR(94, 0xe605105e), /* PORT94CR */
-	PORTCR(95, 0xe605105f), /* PORT95CR */
-	PORTCR(96, 0xe6052060), /* PORT96CR */
-	PORTCR(97, 0xe6052061), /* PORT97CR */
-	PORTCR(98, 0xe6052062), /* PORT98CR */
-	PORTCR(99, 0xe6052063), /* PORT99CR */
+	PORTCR(90, 0xe605105a),  
+	PORTCR(91, 0xe605105b),  
+	PORTCR(92, 0xe605105c),  
+	PORTCR(93, 0xe605105d),  
+	PORTCR(94, 0xe605105e),  
+	PORTCR(95, 0xe605105f),  
+	PORTCR(96, 0xe6052060),  
+	PORTCR(97, 0xe6052061),  
+	PORTCR(98, 0xe6052062),  
+	PORTCR(99, 0xe6052063),  
 
-	PORTCR(100, 0xe6052064), /* PORT100CR */
-	PORTCR(101, 0xe6052065), /* PORT101CR */
-	PORTCR(102, 0xe6052066), /* PORT102CR */
-	PORTCR(103, 0xe6052067), /* PORT103CR */
-	PORTCR(104, 0xe6052068), /* PORT104CR */
-	PORTCR(105, 0xe6052069), /* PORT105CR */
-	PORTCR(106, 0xe605206a), /* PORT106CR */
-	PORTCR(107, 0xe605206b), /* PORT107CR */
-	PORTCR(108, 0xe605206c), /* PORT108CR */
-	PORTCR(109, 0xe605206d), /* PORT109CR */
+	PORTCR(100, 0xe6052064),  
+	PORTCR(101, 0xe6052065),  
+	PORTCR(102, 0xe6052066),  
+	PORTCR(103, 0xe6052067),  
+	PORTCR(104, 0xe6052068),  
+	PORTCR(105, 0xe6052069),  
+	PORTCR(106, 0xe605206a),  
+	PORTCR(107, 0xe605206b),  
+	PORTCR(108, 0xe605206c),  
+	PORTCR(109, 0xe605206d),  
 
-	PORTCR(110, 0xe605206e), /* PORT110CR */
-	PORTCR(111, 0xe605206f), /* PORT111CR */
-	PORTCR(112, 0xe6052070), /* PORT112CR */
-	PORTCR(113, 0xe6052071), /* PORT113CR */
-	PORTCR(114, 0xe6052072), /* PORT114CR */
-	PORTCR(115, 0xe6052073), /* PORT115CR */
-	PORTCR(116, 0xe6052074), /* PORT116CR */
-	PORTCR(117, 0xe6052075), /* PORT117CR */
-	PORTCR(118, 0xe6052076), /* PORT118CR */
+	PORTCR(110, 0xe605206e),  
+	PORTCR(111, 0xe605206f),  
+	PORTCR(112, 0xe6052070),  
+	PORTCR(113, 0xe6052071),  
+	PORTCR(114, 0xe6052072),  
+	PORTCR(115, 0xe6052073),  
+	PORTCR(116, 0xe6052074),  
+	PORTCR(117, 0xe6052075),  
+	PORTCR(118, 0xe6052076),  
 
-	PORTCR(128, 0xe6052080), /* PORT128CR */
-	PORTCR(129, 0xe6052081), /* PORT129CR */
+	PORTCR(128, 0xe6052080),  
+	PORTCR(129, 0xe6052081),  
 
-	PORTCR(130, 0xe6052082), /* PORT130CR */
-	PORTCR(131, 0xe6052083), /* PORT131CR */
-	PORTCR(132, 0xe6052084), /* PORT132CR */
-	PORTCR(133, 0xe6052085), /* PORT133CR */
-	PORTCR(134, 0xe6052086), /* PORT134CR */
-	PORTCR(135, 0xe6052087), /* PORT135CR */
-	PORTCR(136, 0xe6052088), /* PORT136CR */
-	PORTCR(137, 0xe6052089), /* PORT137CR */
-	PORTCR(138, 0xe605208a), /* PORT138CR */
-	PORTCR(139, 0xe605208b), /* PORT139CR */
+	PORTCR(130, 0xe6052082),  
+	PORTCR(131, 0xe6052083),  
+	PORTCR(132, 0xe6052084),  
+	PORTCR(133, 0xe6052085),  
+	PORTCR(134, 0xe6052086),  
+	PORTCR(135, 0xe6052087),  
+	PORTCR(136, 0xe6052088),  
+	PORTCR(137, 0xe6052089),  
+	PORTCR(138, 0xe605208a),  
+	PORTCR(139, 0xe605208b),  
 
-	PORTCR(140, 0xe605208c), /* PORT140CR */
-	PORTCR(141, 0xe605208d), /* PORT141CR */
-	PORTCR(142, 0xe605208e), /* PORT142CR */
-	PORTCR(143, 0xe605208f), /* PORT143CR */
-	PORTCR(144, 0xe6052090), /* PORT144CR */
-	PORTCR(145, 0xe6052091), /* PORT145CR */
-	PORTCR(146, 0xe6052092), /* PORT146CR */
-	PORTCR(147, 0xe6052093), /* PORT147CR */
-	PORTCR(148, 0xe6052094), /* PORT148CR */
-	PORTCR(149, 0xe6052095), /* PORT149CR */
+	PORTCR(140, 0xe605208c),  
+	PORTCR(141, 0xe605208d),  
+	PORTCR(142, 0xe605208e),  
+	PORTCR(143, 0xe605208f),  
+	PORTCR(144, 0xe6052090),  
+	PORTCR(145, 0xe6052091),  
+	PORTCR(146, 0xe6052092),  
+	PORTCR(147, 0xe6052093),  
+	PORTCR(148, 0xe6052094),  
+	PORTCR(149, 0xe6052095),  
 
-	PORTCR(150, 0xe6052096), /* PORT150CR */
-	PORTCR(151, 0xe6052097), /* PORT151CR */
-	PORTCR(152, 0xe6052098), /* PORT152CR */
-	PORTCR(153, 0xe6052099), /* PORT153CR */
-	PORTCR(154, 0xe605209a), /* PORT154CR */
-	PORTCR(155, 0xe605209b), /* PORT155CR */
-	PORTCR(156, 0xe605209c), /* PORT156CR */
-	PORTCR(157, 0xe605209d), /* PORT157CR */
-	PORTCR(158, 0xe605209e), /* PORT158CR */
-	PORTCR(159, 0xe605209f), /* PORT159CR */
+	PORTCR(150, 0xe6052096),  
+	PORTCR(151, 0xe6052097),  
+	PORTCR(152, 0xe6052098),  
+	PORTCR(153, 0xe6052099),  
+	PORTCR(154, 0xe605209a),  
+	PORTCR(155, 0xe605209b),  
+	PORTCR(156, 0xe605209c),  
+	PORTCR(157, 0xe605209d),  
+	PORTCR(158, 0xe605209e),  
+	PORTCR(159, 0xe605209f),  
 
-	PORTCR(160, 0xe60520a0), /* PORT160CR */
-	PORTCR(161, 0xe60520a1), /* PORT161CR */
-	PORTCR(162, 0xe60520a2), /* PORT162CR */
-	PORTCR(163, 0xe60520a3), /* PORT163CR */
-	PORTCR(164, 0xe60520a4), /* PORT164CR */
+	PORTCR(160, 0xe60520a0),  
+	PORTCR(161, 0xe60520a1),  
+	PORTCR(162, 0xe60520a2),  
+	PORTCR(163, 0xe60520a3),  
+	PORTCR(164, 0xe60520a4),  
 
-	PORTCR(192, 0xe60520c0), /* PORT192CR */
-	PORTCR(193, 0xe60520c1), /* PORT193CR */
-	PORTCR(194, 0xe60520c2), /* PORT194CR */
-	PORTCR(195, 0xe60520c3), /* PORT195CR */
-	PORTCR(196, 0xe60520c4), /* PORT196CR */
-	PORTCR(197, 0xe60520c5), /* PORT197CR */
-	PORTCR(198, 0xe60520c6), /* PORT198CR */
-	PORTCR(199, 0xe60520c7), /* PORT199CR */
+	PORTCR(192, 0xe60520c0),  
+	PORTCR(193, 0xe60520c1),  
+	PORTCR(194, 0xe60520c2),  
+	PORTCR(195, 0xe60520c3),  
+	PORTCR(196, 0xe60520c4),  
+	PORTCR(197, 0xe60520c5),  
+	PORTCR(198, 0xe60520c6),  
+	PORTCR(199, 0xe60520c7),  
 
-	PORTCR(200, 0xe60520c8), /* PORT200CR */
-	PORTCR(201, 0xe60520c9), /* PORT201CR */
-	PORTCR(202, 0xe60520ca), /* PORT202CR */
-	PORTCR(203, 0xe60520cb), /* PORT203CR */
-	PORTCR(204, 0xe60520cc), /* PORT204CR */
-	PORTCR(205, 0xe60520cd), /* PORT205CR */
-	PORTCR(206, 0xe60520ce), /* PORT206CR */
-	PORTCR(207, 0xe60520cf), /* PORT207CR */
-	PORTCR(208, 0xe60520d0), /* PORT208CR */
-	PORTCR(209, 0xe60520d1), /* PORT209CR */
+	PORTCR(200, 0xe60520c8),  
+	PORTCR(201, 0xe60520c9),  
+	PORTCR(202, 0xe60520ca),  
+	PORTCR(203, 0xe60520cb),  
+	PORTCR(204, 0xe60520cc),  
+	PORTCR(205, 0xe60520cd),  
+	PORTCR(206, 0xe60520ce),  
+	PORTCR(207, 0xe60520cf),  
+	PORTCR(208, 0xe60520d0),  
+	PORTCR(209, 0xe60520d1),  
 
-	PORTCR(210, 0xe60520d2), /* PORT210CR */
-	PORTCR(211, 0xe60520d3), /* PORT211CR */
-	PORTCR(212, 0xe60520d4), /* PORT212CR */
-	PORTCR(213, 0xe60520d5), /* PORT213CR */
-	PORTCR(214, 0xe60520d6), /* PORT214CR */
-	PORTCR(215, 0xe60520d7), /* PORT215CR */
-	PORTCR(216, 0xe60520d8), /* PORT216CR */
-	PORTCR(217, 0xe60520d9), /* PORT217CR */
-	PORTCR(218, 0xe60520da), /* PORT218CR */
-	PORTCR(219, 0xe60520db), /* PORT219CR */
+	PORTCR(210, 0xe60520d2),  
+	PORTCR(211, 0xe60520d3),  
+	PORTCR(212, 0xe60520d4),  
+	PORTCR(213, 0xe60520d5),  
+	PORTCR(214, 0xe60520d6),  
+	PORTCR(215, 0xe60520d7),  
+	PORTCR(216, 0xe60520d8),  
+	PORTCR(217, 0xe60520d9),  
+	PORTCR(218, 0xe60520da),  
+	PORTCR(219, 0xe60520db),  
 
-	PORTCR(220, 0xe60520dc), /* PORT220CR */
-	PORTCR(221, 0xe60520dd), /* PORT221CR */
-	PORTCR(222, 0xe60520de), /* PORT222CR */
-	PORTCR(223, 0xe60520df), /* PORT223CR */
-	PORTCR(224, 0xe60530e0), /* PORT224CR */
-	PORTCR(225, 0xe60530e1), /* PORT225CR */
-	PORTCR(226, 0xe60530e2), /* PORT226CR */
-	PORTCR(227, 0xe60530e3), /* PORT227CR */
-	PORTCR(228, 0xe60530e4), /* PORT228CR */
-	PORTCR(229, 0xe60530e5), /* PORT229CR */
+	PORTCR(220, 0xe60520dc),  
+	PORTCR(221, 0xe60520dd),  
+	PORTCR(222, 0xe60520de),  
+	PORTCR(223, 0xe60520df),  
+	PORTCR(224, 0xe60530e0),  
+	PORTCR(225, 0xe60530e1),  
+	PORTCR(226, 0xe60530e2),  
+	PORTCR(227, 0xe60530e3),  
+	PORTCR(228, 0xe60530e4),  
+	PORTCR(229, 0xe60530e5),  
 
-	PORTCR(230, 0xe60530e6), /* PORT230CR */
-	PORTCR(231, 0xe60530e7), /* PORT231CR */
-	PORTCR(232, 0xe60530e8), /* PORT232CR */
-	PORTCR(233, 0xe60530e9), /* PORT233CR */
-	PORTCR(234, 0xe60530ea), /* PORT234CR */
-	PORTCR(235, 0xe60530eb), /* PORT235CR */
-	PORTCR(236, 0xe60530ec), /* PORT236CR */
-	PORTCR(237, 0xe60530ed), /* PORT237CR */
-	PORTCR(238, 0xe60530ee), /* PORT238CR */
-	PORTCR(239, 0xe60530ef), /* PORT239CR */
+	PORTCR(230, 0xe60530e6),  
+	PORTCR(231, 0xe60530e7),  
+	PORTCR(232, 0xe60530e8),  
+	PORTCR(233, 0xe60530e9),  
+	PORTCR(234, 0xe60530ea),  
+	PORTCR(235, 0xe60530eb),  
+	PORTCR(236, 0xe60530ec),  
+	PORTCR(237, 0xe60530ed),  
+	PORTCR(238, 0xe60530ee),  
+	PORTCR(239, 0xe60530ef),  
 
-	PORTCR(240, 0xe60530f0), /* PORT240CR */
-	PORTCR(241, 0xe60530f1), /* PORT241CR */
-	PORTCR(242, 0xe60530f2), /* PORT242CR */
-	PORTCR(243, 0xe60530f3), /* PORT243CR */
-	PORTCR(244, 0xe60530f4), /* PORT244CR */
-	PORTCR(245, 0xe60530f5), /* PORT245CR */
-	PORTCR(246, 0xe60530f6), /* PORT246CR */
-	PORTCR(247, 0xe60530f7), /* PORT247CR */
-	PORTCR(248, 0xe60530f8), /* PORT248CR */
-	PORTCR(249, 0xe60530f9), /* PORT249CR */
+	PORTCR(240, 0xe60530f0),  
+	PORTCR(241, 0xe60530f1),  
+	PORTCR(242, 0xe60530f2),  
+	PORTCR(243, 0xe60530f3),  
+	PORTCR(244, 0xe60530f4),  
+	PORTCR(245, 0xe60530f5),  
+	PORTCR(246, 0xe60530f6),  
+	PORTCR(247, 0xe60530f7),  
+	PORTCR(248, 0xe60530f8),  
+	PORTCR(249, 0xe60530f9),  
 
-	PORTCR(250, 0xe60530fa), /* PORT250CR */
-	PORTCR(251, 0xe60530fb), /* PORT251CR */
-	PORTCR(252, 0xe60530fc), /* PORT252CR */
-	PORTCR(253, 0xe60530fd), /* PORT253CR */
-	PORTCR(254, 0xe60530fe), /* PORT254CR */
-	PORTCR(255, 0xe60530ff), /* PORT255CR */
-	PORTCR(256, 0xe6053100), /* PORT256CR */
-	PORTCR(257, 0xe6053101), /* PORT257CR */
-	PORTCR(258, 0xe6053102), /* PORT258CR */
-	PORTCR(259, 0xe6053103), /* PORT259CR */
+	PORTCR(250, 0xe60530fa),  
+	PORTCR(251, 0xe60530fb),  
+	PORTCR(252, 0xe60530fc),  
+	PORTCR(253, 0xe60530fd),  
+	PORTCR(254, 0xe60530fe),  
+	PORTCR(255, 0xe60530ff),  
+	PORTCR(256, 0xe6053100),  
+	PORTCR(257, 0xe6053101),  
+	PORTCR(258, 0xe6053102),  
+	PORTCR(259, 0xe6053103),  
 
-	PORTCR(260, 0xe6053104), /* PORT260CR */
-	PORTCR(261, 0xe6053105), /* PORT261CR */
-	PORTCR(262, 0xe6053106), /* PORT262CR */
-	PORTCR(263, 0xe6053107), /* PORT263CR */
-	PORTCR(264, 0xe6053108), /* PORT264CR */
-	PORTCR(265, 0xe6053109), /* PORT265CR */
-	PORTCR(266, 0xe605310a), /* PORT266CR */
-	PORTCR(267, 0xe605310b), /* PORT267CR */
-	PORTCR(268, 0xe605310c), /* PORT268CR */
-	PORTCR(269, 0xe605310d), /* PORT269CR */
+	PORTCR(260, 0xe6053104),  
+	PORTCR(261, 0xe6053105),  
+	PORTCR(262, 0xe6053106),  
+	PORTCR(263, 0xe6053107),  
+	PORTCR(264, 0xe6053108),  
+	PORTCR(265, 0xe6053109),  
+	PORTCR(266, 0xe605310a),  
+	PORTCR(267, 0xe605310b),  
+	PORTCR(268, 0xe605310c),  
+	PORTCR(269, 0xe605310d),  
 
-	PORTCR(270, 0xe605310e), /* PORT270CR */
-	PORTCR(271, 0xe605310f), /* PORT271CR */
-	PORTCR(272, 0xe6053110), /* PORT272CR */
-	PORTCR(273, 0xe6053111), /* PORT273CR */
-	PORTCR(274, 0xe6053112), /* PORT274CR */
-	PORTCR(275, 0xe6053113), /* PORT275CR */
-	PORTCR(276, 0xe6053114), /* PORT276CR */
-	PORTCR(277, 0xe6053115), /* PORT277CR */
-	PORTCR(278, 0xe6053116), /* PORT278CR */
-	PORTCR(279, 0xe6053117), /* PORT279CR */
+	PORTCR(270, 0xe605310e),  
+	PORTCR(271, 0xe605310f),  
+	PORTCR(272, 0xe6053110),  
+	PORTCR(273, 0xe6053111),  
+	PORTCR(274, 0xe6053112),  
+	PORTCR(275, 0xe6053113),  
+	PORTCR(276, 0xe6053114),  
+	PORTCR(277, 0xe6053115),  
+	PORTCR(278, 0xe6053116),  
+	PORTCR(279, 0xe6053117),  
 
-	PORTCR(280, 0xe6053118), /* PORT280CR */
-	PORTCR(281, 0xe6053119), /* PORT281CR */
-	PORTCR(282, 0xe605311a), /* PORT282CR */
+	PORTCR(280, 0xe6053118),  
+	PORTCR(281, 0xe6053119),  
+	PORTCR(282, 0xe605311a),  
 
-	PORTCR(288, 0xe6052120), /* PORT288CR */
-	PORTCR(289, 0xe6052121), /* PORT289CR */
+	PORTCR(288, 0xe6052120),  
+	PORTCR(289, 0xe6052121),  
 
-	PORTCR(290, 0xe6052122), /* PORT290CR */
-	PORTCR(291, 0xe6052123), /* PORT291CR */
-	PORTCR(292, 0xe6052124), /* PORT292CR */
-	PORTCR(293, 0xe6052125), /* PORT293CR */
-	PORTCR(294, 0xe6052126), /* PORT294CR */
-	PORTCR(295, 0xe6052127), /* PORT295CR */
-	PORTCR(296, 0xe6052128), /* PORT296CR */
-	PORTCR(297, 0xe6052129), /* PORT297CR */
-	PORTCR(298, 0xe605212a), /* PORT298CR */
-	PORTCR(299, 0xe605212b), /* PORT299CR */
+	PORTCR(290, 0xe6052122),  
+	PORTCR(291, 0xe6052123),  
+	PORTCR(292, 0xe6052124),  
+	PORTCR(293, 0xe6052125),  
+	PORTCR(294, 0xe6052126),  
+	PORTCR(295, 0xe6052127),  
+	PORTCR(296, 0xe6052128),  
+	PORTCR(297, 0xe6052129),  
+	PORTCR(298, 0xe605212a),  
+	PORTCR(299, 0xe605212b),  
 
-	PORTCR(300, 0xe605212c), /* PORT300CR */
-	PORTCR(301, 0xe605212d), /* PORT301CR */
-	PORTCR(302, 0xe605212e), /* PORT302CR */
-	PORTCR(303, 0xe605212f), /* PORT303CR */
-	PORTCR(304, 0xe6052130), /* PORT304CR */
-	PORTCR(305, 0xe6052131), /* PORT305CR */
-	PORTCR(306, 0xe6052132), /* PORT306CR */
-	PORTCR(307, 0xe6052133), /* PORT307CR */
-	PORTCR(308, 0xe6052134), /* PORT308CR */
-	PORTCR(309, 0xe6052135), /* PORT309CR */
+	PORTCR(300, 0xe605212c),  
+	PORTCR(301, 0xe605212d),  
+	PORTCR(302, 0xe605212e),  
+	PORTCR(303, 0xe605212f),  
+	PORTCR(304, 0xe6052130),  
+	PORTCR(305, 0xe6052131),  
+	PORTCR(306, 0xe6052132),  
+	PORTCR(307, 0xe6052133),  
+	PORTCR(308, 0xe6052134),  
+	PORTCR(309, 0xe6052135),  
 
 	{ PINMUX_CFG_REG_VAR("MSEL2CR", 0xe605801c, 32,
 			     GROUP(-12, 1, 1, 1, 1, -1, 1, 1, 1, 1, 1, 1,
 				   1, 1, 1, 1, 1, 1, 1, 1, 1),
 			     GROUP(
-			/* RESERVED [12] */
+			 
 			MSEL2CR_MSEL19_0, MSEL2CR_MSEL19_1,
 			MSEL2CR_MSEL18_0, MSEL2CR_MSEL18_1,
 			MSEL2CR_MSEL17_0, MSEL2CR_MSEL17_1,
 			MSEL2CR_MSEL16_0, MSEL2CR_MSEL16_1,
-			/* RESERVED [1] */
+			 
 			MSEL2CR_MSEL14_0, MSEL2CR_MSEL14_1,
 			MSEL2CR_MSEL13_0, MSEL2CR_MSEL13_1,
 			MSEL2CR_MSEL12_0, MSEL2CR_MSEL12_1,
@@ -3829,19 +3822,19 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 			     GROUP(-3, 1, -12, 1, -3, 1, -1, 1, -2, 1, -3, 1,
 				   -2),
 			     GROUP(
-			/* RESERVED [3] */
+			 
 			MSEL3CR_MSEL28_0, MSEL3CR_MSEL28_1,
-			/* RESERVED [12] */
+			 
 			MSEL3CR_MSEL15_0, MSEL3CR_MSEL15_1,
-			/* RESERVED [3] */
+			 
 			MSEL3CR_MSEL11_0, MSEL3CR_MSEL11_1,
-			/* RESERVED [1] */
+			 
 			MSEL3CR_MSEL9_0, MSEL3CR_MSEL9_1,
-			/* RESERVED [2] */
+			 
 			MSEL3CR_MSEL6_0, MSEL3CR_MSEL6_1,
-			/* RESERVED [3] */
+			 
 			MSEL3CR_MSEL2_0, MSEL3CR_MSEL2_1,
-			/* RESERVED [2] */
+			 
 		))
 	},
 	{ PINMUX_CFG_REG_VAR("MSEL4CR", 0xe6058024, 32,
@@ -3849,19 +3842,19 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 				   -1, 1, 1, 1, 1, 1, 1, 1, -2, 1, -2, 1,
 				   -1),
 			     GROUP(
-			/* RESERVED [2] */
+			 
 			MSEL4CR_MSEL29_0, MSEL4CR_MSEL29_1,
-			/* RESERVED [1] */
+			 
 			MSEL4CR_MSEL27_0, MSEL4CR_MSEL27_1,
 			MSEL4CR_MSEL26_0, MSEL4CR_MSEL26_1,
-			/* RESERVED [3] */
+			 
 			MSEL4CR_MSEL22_0, MSEL4CR_MSEL22_1,
 			MSEL4CR_MSEL21_0, MSEL4CR_MSEL21_1,
 			MSEL4CR_MSEL20_0, MSEL4CR_MSEL20_1,
 			MSEL4CR_MSEL19_0, MSEL4CR_MSEL19_1,
-			/* RESERVED [3] */
+			 
 			MSEL4CR_MSEL15_0, MSEL4CR_MSEL15_1,
-			/* RESERVED [1] */
+			 
 			MSEL4CR_MSEL13_0, MSEL4CR_MSEL13_1,
 			MSEL4CR_MSEL12_0, MSEL4CR_MSEL12_1,
 			MSEL4CR_MSEL11_0, MSEL4CR_MSEL11_1,
@@ -3869,14 +3862,14 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 			MSEL4CR_MSEL9_0, MSEL4CR_MSEL9_1,
 			MSEL4CR_MSEL8_0, MSEL4CR_MSEL8_1,
 			MSEL4CR_MSEL7_0, MSEL4CR_MSEL7_1,
-			/* RESERVED [2] */
+			 
 			MSEL4CR_MSEL4_0, MSEL4CR_MSEL4_1,
-			/* RESERVED [2] */
+			 
 			MSEL4CR_MSEL1_0, MSEL4CR_MSEL1_1,
-			/* RESERVED [1] */
+			 
 		))
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct pinmux_data_reg pinmux_data_regs[] = {
@@ -3980,47 +3973,45 @@ static const struct pinmux_data_reg pinmux_data_regs[] = {
 			PORT295_DATA, PORT294_DATA, PORT293_DATA, PORT292_DATA,
 			PORT291_DATA, PORT290_DATA, PORT289_DATA, PORT288_DATA ))
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct pinmux_irq pinmux_irqs[] = {
-	PINMUX_IRQ(11),		/* IRQ0 */
-	PINMUX_IRQ(10),		/* IRQ1 */
-	PINMUX_IRQ(149),	/* IRQ2 */
-	PINMUX_IRQ(224),	/* IRQ3 */
-	PINMUX_IRQ(159),	/* IRQ4 */
-	PINMUX_IRQ(227),	/* IRQ5 */
-	PINMUX_IRQ(147),	/* IRQ6 */
-	PINMUX_IRQ(150),	/* IRQ7 */
-	PINMUX_IRQ(223),	/* IRQ8 */
-	PINMUX_IRQ(56, 308),	/* IRQ9 */
-	PINMUX_IRQ(54),		/* IRQ10 */
-	PINMUX_IRQ(238),	/* IRQ11 */
-	PINMUX_IRQ(156),	/* IRQ12 */
-	PINMUX_IRQ(239),	/* IRQ13 */
-	PINMUX_IRQ(251),	/* IRQ14 */
-	PINMUX_IRQ(0),		/* IRQ15 */
-	PINMUX_IRQ(249),	/* IRQ16 */
-	PINMUX_IRQ(234),	/* IRQ17 */
-	PINMUX_IRQ(13),		/* IRQ18 */
-	PINMUX_IRQ(9),		/* IRQ19 */
-	PINMUX_IRQ(14),		/* IRQ20 */
-	PINMUX_IRQ(15),		/* IRQ21 */
-	PINMUX_IRQ(40),		/* IRQ22 */
-	PINMUX_IRQ(53),		/* IRQ23 */
-	PINMUX_IRQ(118),	/* IRQ24 */
-	PINMUX_IRQ(164),	/* IRQ25 */
-	PINMUX_IRQ(115),	/* IRQ26 */
-	PINMUX_IRQ(116),	/* IRQ27 */
-	PINMUX_IRQ(117),	/* IRQ28 */
-	PINMUX_IRQ(28),		/* IRQ29 */
-	PINMUX_IRQ(27),		/* IRQ30 */
-	PINMUX_IRQ(26),		/* IRQ31 */
+	PINMUX_IRQ(11),		 
+	PINMUX_IRQ(10),		 
+	PINMUX_IRQ(149),	 
+	PINMUX_IRQ(224),	 
+	PINMUX_IRQ(159),	 
+	PINMUX_IRQ(227),	 
+	PINMUX_IRQ(147),	 
+	PINMUX_IRQ(150),	 
+	PINMUX_IRQ(223),	 
+	PINMUX_IRQ(56, 308),	 
+	PINMUX_IRQ(54),		 
+	PINMUX_IRQ(238),	 
+	PINMUX_IRQ(156),	 
+	PINMUX_IRQ(239),	 
+	PINMUX_IRQ(251),	 
+	PINMUX_IRQ(0),		 
+	PINMUX_IRQ(249),	 
+	PINMUX_IRQ(234),	 
+	PINMUX_IRQ(13),		 
+	PINMUX_IRQ(9),		 
+	PINMUX_IRQ(14),		 
+	PINMUX_IRQ(15),		 
+	PINMUX_IRQ(40),		 
+	PINMUX_IRQ(53),		 
+	PINMUX_IRQ(118),	 
+	PINMUX_IRQ(164),	 
+	PINMUX_IRQ(115),	 
+	PINMUX_IRQ(116),	 
+	PINMUX_IRQ(117),	 
+	PINMUX_IRQ(28),		 
+	PINMUX_IRQ(27),		 
+	PINMUX_IRQ(26),		 
 };
 
-/* -----------------------------------------------------------------------------
- * VCCQ MC0 regulator
- */
+ 
 
 static void sh73a0_vccq_mc0_endisable(struct regulator_dev *reg, bool enable)
 {
@@ -4101,9 +4092,7 @@ static const struct regulator_init_data sh73a0_vccq_mc0_init_data = {
 	.consumer_supplies = sh73a0_vccq_mc0_consumers,
 };
 
-/* -----------------------------------------------------------------------------
- * Pin bias
- */
+ 
 
 static const unsigned int sh73a0_portcr_offsets[] = {
 	0x00000000, 0x00001000, 0x00001000, 0x00002000, 0x00002000,
@@ -4115,9 +4104,7 @@ static int sh73a0_pin_to_portcr(unsigned int pin)
 	return sh73a0_portcr_offsets[pin >> 5] + pin;
 }
 
-/* -----------------------------------------------------------------------------
- * SoC information
- */
+ 
 
 static int sh73a0_pinmux_soc_init(struct sh_pfc *pfc)
 {

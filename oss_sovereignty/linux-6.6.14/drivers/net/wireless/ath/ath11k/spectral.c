@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2019-2020 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/relay.h>
 #include "core.h"
@@ -17,7 +15,7 @@
 
 #define ATH11K_SPECTRAL_SCAN_COUNT_MAX		4095
 
-/* Max channel computed by sum of 2g and 5g band channels */
+ 
 #define ATH11K_SPECTRAL_TOTAL_CHANNEL		41
 #define ATH11K_SPECTRAL_SAMPLES_PER_CHANNEL	70
 #define ATH11K_SPECTRAL_PER_SAMPLE_SIZE(x)	(sizeof(struct fft_sample_ath11k) + \
@@ -161,12 +159,12 @@ static struct ath11k_vif *ath11k_spectral_get_vdev(struct ath11k *ar)
 	if (list_empty(&ar->arvifs))
 		return NULL;
 
-	/* if there already is a vif doing spectral, return that. */
+	 
 	list_for_each_entry(arvif, &ar->arvifs, list)
 		if (arvif->spectral_enabled)
 			return arvif;
 
-	/* otherwise, return the first vif. */
+	 
 	return list_first_entry(&ar->arvifs, typeof(*arvif), list);
 }
 
@@ -314,9 +312,7 @@ static ssize_t ath11k_write_file_spec_scan_ctl(struct file *file,
 	if (strncmp("trigger", buf, 7) == 0) {
 		if (ar->spectral.mode == ATH11K_SPECTRAL_MANUAL ||
 		    ar->spectral.mode == ATH11K_SPECTRAL_BACKGROUND) {
-			/* reset the configuration to adopt possibly changed
-			 * debugfs parameters
-			 */
+			 
 			ret = ath11k_spectral_scan_config(ar, ar->spectral.mode);
 			if (ret) {
 				ath11k_warn(ar->ab, "failed to reconfigure spectral scan: %d\n",
@@ -543,7 +539,7 @@ static u8 ath11k_spectral_get_max_exp(s8 max_index, u8 max_magnitude,
 
 	dc_pos = bin_len / 2;
 
-	/* peak index outside of bins */
+	 
 	if (dc_pos <= max_index || -dc_pos >= max_index)
 		return 0;
 
@@ -552,7 +548,7 @@ static u8 ath11k_spectral_get_max_exp(s8 max_index, u8 max_magnitude,
 			break;
 	}
 
-	/* max_exp not found */
+	 
 	if (bins[dc_pos + max_index] != (max_magnitude >> max_exp))
 		return 0;
 
@@ -600,7 +596,7 @@ int ath11k_spectral_process_fft(struct ath11k *ar,
 
 	tlv = (struct spectral_tlv *)data;
 	tlv_len = FIELD_GET(SPECTRAL_TLV_HDR_LEN, __le32_to_cpu(tlv->header));
-	/* convert Dword into bytes */
+	 
 	tlv_len *= ATH11K_SPECTRAL_DWORD_SIZE;
 	bin_len = tlv_len - ab->hw_params.spectral.fft_hdr_len;
 
@@ -612,7 +608,7 @@ int ath11k_spectral_process_fft(struct ath11k *ar,
 
 	bin_sz = ab->hw_params.spectral.fft_sz + ab->hw_params.spectral.fft_pad_sz;
 	num_bins = bin_len / bin_sz;
-	/* Only In-band bins are useful to user for visualize */
+	 
 	num_bins >>= 1;
 
 	if (num_bins < ATH11K_SPECTRAL_MIN_IB_BINS ||
@@ -674,14 +670,12 @@ int ath11k_spectral_process_fft(struct ath11k *ar,
 	freq = summary->meta.freq2;
 	fft_sample->freq2 = __cpu_to_be16(freq);
 
-	/* If freq2 is available then the spectral scan results are fragmented
-	 * as primary and secondary
-	 */
+	 
 	if (fragment_sample && freq) {
 		if (!ar->spectral.is_primary)
 			fft_sample->freq1 = cpu_to_be16(freq);
 
-		/* We have to toggle the is_primary to handle the next report */
+		 
 		ar->spectral.is_primary = !ar->spectral.is_primary;
 	}
 
@@ -752,7 +746,7 @@ static int ath11k_spectral_process_data(struct ath11k *ar,
 
 		tlv_len = FIELD_GET(SPECTRAL_TLV_HDR_LEN,
 				    __le32_to_cpu(tlv->header));
-		/* convert Dword into bytes */
+		 
 		tlv_len *= ATH11K_SPECTRAL_DWORD_SIZE;
 		if ((i + sizeof(*tlv) + tlv_len) > data_len) {
 			ath11k_warn(ab, "failed to parse spectral tlv payload at bytes %d tlv_len:%d data_len:%d\n",
@@ -765,11 +759,7 @@ static int ath11k_spectral_process_data(struct ath11k *ar,
 				__le32_to_cpu(tlv->header));
 		switch (tag) {
 		case ATH11K_SPECTRAL_TAG_SCAN_SUMMARY:
-			/* HW bug in tlv length of summary report,
-			 * HW report 3 DWORD size but the data payload
-			 * is 4 DWORD size (16 bytes).
-			 * Need to remove this workaround once HW bug fixed
-			 */
+			 
 			tlv_len = sizeof(*summary) - sizeof(*tlv) +
 				  ab->hw_params.spectral.summary_pad_sz;
 

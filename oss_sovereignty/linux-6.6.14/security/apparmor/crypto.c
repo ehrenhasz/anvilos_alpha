@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AppArmor security module
- *
- * This file contains AppArmor policy loading interface function definitions.
- *
- * Copyright 2013 Canonical Ltd.
- *
- * Fns to provide a checksum of policy that has been loaded this can be
- * compared to userspace policy compiles to check loaded policy is what
- * it should be.
- */
+
+ 
 
 #include <crypto/hash.h>
 

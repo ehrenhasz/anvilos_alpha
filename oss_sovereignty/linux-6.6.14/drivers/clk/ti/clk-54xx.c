@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * OMAP5 Clock init
- *
- * Copyright (C) 2013 Texas Instruments, Inc.
- *
- * Tero Kristo (t-kristo@ti.com)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/list.h>
@@ -19,10 +13,7 @@
 
 #define OMAP5_DPLL_ABE_DEFFREQ				98304000
 
-/*
- * OMAP543x TRM, section "3.6.3.9.5 DPLL_USB Preferred Settings"
- * states it must be at 960MHz
- */
+ 
 #define OMAP5_DPLL_USB_DEFFREQ				960000000
 
 static const struct omap_clkctrl_reg_data omap5_mpu_clkctrl_regs[] __initconst = {
@@ -623,11 +614,7 @@ int __init omap5xxx_dt_clk_init(void)
 	sys_32k_ck = clk_get_sys(NULL, "sys_32k_ck");
 	rc = clk_set_parent(abe_dpll_ref, sys_32k_ck);
 
-	/*
-	 * This must also be set to sys_32k_ck to match or
-	 * the ABE DPLL will not lock on a warm reboot when
-	 * ABE timers are used.
-	 */
+	 
 	abe_dpll_byp = clk_get_sys(NULL, "abe_dpll_bypass_clk_mux");
 	if (!rc)
 		rc = clk_set_parent(abe_dpll_byp, sys_32k_ck);

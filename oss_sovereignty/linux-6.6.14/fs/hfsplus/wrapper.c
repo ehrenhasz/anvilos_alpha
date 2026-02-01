@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/hfsplus/wrapper.c
- *
- * Copyright (C) 2001
- * Brad Boyer (flar@allandria.com)
- * (C) 2003 Ardis Technologies <roman@ardistech.com>
- *
- * Handling of HFS wrappers around HFS+ volumes
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/blkdev.h>
@@ -24,26 +16,7 @@ struct hfsplus_wd {
 	u16 embed_count;
 };
 
-/**
- * hfsplus_submit_bio - Perform block I/O
- * @sb: super block of volume for I/O
- * @sector: block to read or write, for blocks of HFSPLUS_SECTOR_SIZE bytes
- * @buf: buffer for I/O
- * @data: output pointer for location of requested data
- * @op: direction of I/O
- * @op_flags: request op flags
- *
- * The unit of I/O is hfsplus_min_io_size(sb), which may be bigger than
- * HFSPLUS_SECTOR_SIZE, and @buf must be sized accordingly. On reads
- * @data will return a pointer to the start of the requested sector,
- * which may not be the same location as @buf.
- *
- * If @sector is not aligned to the bdev logical block size it will
- * be rounded down. For writes this means that @buf should contain data
- * that starts at the rounded-down address. As long as the data was
- * read using hfsplus_submit_bio() and the same buffer is used things
- * will work correctly.
- */
+ 
 int hfsplus_submit_bio(struct super_block *sb, sector_t sector,
 		       void *buf, void **data, blk_opf_t opf)
 {
@@ -54,11 +27,7 @@ int hfsplus_submit_bio(struct super_block *sb, sector_t sector,
 	loff_t start;
 	int offset;
 
-	/*
-	 * Align sector to hardware sector size and find offset. We
-	 * assume that io_size is a power of two, which _should_
-	 * be true.
-	 */
+	 
 	io_size = hfsplus_min_io_size(sb);
 	start = (loff_t)sector << HFSPLUS_SECTOR_SHIFT;
 	offset = start & (io_size - 1);
@@ -127,7 +96,7 @@ static int hfsplus_get_last_session(struct super_block *sb,
 {
 	struct cdrom_device_info *cdi = disk_to_cdi(sb->s_bdev->bd_disk);
 
-	/* default values */
+	 
 	*start = 0;
 	*size = bdev_nr_sectors(sb->s_bdev);
 
@@ -156,8 +125,8 @@ static int hfsplus_get_last_session(struct super_block *sb,
 	return 0;
 }
 
-/* Find the volume header and fill in some minimum bits in superblock */
-/* Takes in super block, returns true if good data read */
+ 
+ 
 int hfsplus_read_wrapper(struct super_block *sb)
 {
 	struct hfsplus_sb_info *sbi = HFSPLUS_SB(sb);
@@ -205,11 +174,7 @@ reread:
 		part_size = (sector_t)wd.embed_count * wd.ablk_size;
 		goto reread;
 	default:
-		/*
-		 * Check for a partition block.
-		 *
-		 * (should do this only for cdrom/loop though)
-		 */
+		 
 		if (hfs_part_find(sb, &part_start, &part_size))
 			goto out_free_backup_vhdr;
 		goto reread;
@@ -229,18 +194,14 @@ reread:
 
 	blocksize = be32_to_cpu(sbi->s_vhdr->blocksize);
 
-	/*
-	 * Block size must be at least as large as a sector and a multiple of 2.
-	 */
+	 
 	if (blocksize < HFSPLUS_SECTOR_SIZE || ((blocksize - 1) & blocksize))
 		goto out_free_backup_vhdr;
 	sbi->alloc_blksz = blocksize;
 	sbi->alloc_blksz_shift = ilog2(blocksize);
 	blocksize = min_t(u32, sbi->alloc_blksz, PAGE_SIZE);
 
-	/*
-	 * Align block size to block offset.
-	 */
+	 
 	while (part_start & ((blocksize >> HFSPLUS_SECTOR_SHIFT) - 1))
 		blocksize >>= 1;
 

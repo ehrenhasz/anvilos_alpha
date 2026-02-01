@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* GSPCA subdrivers for Genesys Logic webcams with the GL860 chip
- * Subdriver declarations
- *
- * 2009/10/14 Olivier LORIN <o.lorin@laposte.net>
- */
+ 
+ 
 #ifndef GL860_DEV_H
 #define GL860_DEV_H
 
@@ -44,9 +40,9 @@ struct sd_gl860 {
 	u8  AC50Hz;
 };
 
-/* Specific webcam descriptor */
+ 
 struct sd {
-	struct gspca_dev gspca_dev;	/* !! must be the first item */
+	struct gspca_dev gspca_dev;	 
 
 	struct sd_gl860 vcur;
 	struct sd_gl860 vold;

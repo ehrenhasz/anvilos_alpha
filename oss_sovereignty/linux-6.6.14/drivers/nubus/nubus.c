@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *	Macintosh Nubus Interface Code
- *
- *      Originally by Alan Cox
- *
- *      Mostly rewritten by David Huggins-Daines, C. Scott Ananian,
- *      and others.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -21,48 +14,23 @@
 #include <asm/page.h>
 #include <asm/hwtest.h>
 
-/* Constants */
+ 
 
-/* This is, of course, the size in bytelanes, rather than the size in
-   actual bytes */
+ 
 #define FORMAT_BLOCK_SIZE 20
 #define ROM_DIR_OFFSET 0x24
 
 #define NUBUS_TEST_PATTERN 0x5A932BC7
 
-/* Globals */
+ 
 
-/* The "nubus.populate_procfs" parameter makes slot resources available in
- * procfs. It's deprecated and disabled by default because procfs is no longer
- * thought to be suitable for that and some board ROMs make it too expensive.
- */
+ 
 bool nubus_populate_procfs;
 module_param_named(populate_procfs, nubus_populate_procfs, bool, 0);
 
 LIST_HEAD(nubus_func_rsrcs);
 
-/* Meaning of "bytelanes":
-
-   The card ROM may appear on any or all bytes of each long word in
-   NuBus memory.  The low 4 bits of the "map" value found in the
-   format block (at the top of the slot address space, as well as at
-   the top of the MacOS ROM) tells us which bytelanes, i.e. which byte
-   offsets within each longword, are valid.  Thus:
-
-   A map of 0x0f, as found in the MacOS ROM, means that all bytelanes
-   are valid.
-
-   A map of 0xf0 means that no bytelanes are valid (We pray that we
-   will never encounter this, but stranger things have happened)
-
-   A map of 0xe1 means that only the MSB of each long word is actually
-   part of the card ROM.  (We hope to never encounter NuBus on a
-   little-endian machine.  Again, stranger things have happened)
-
-   A map of 0x78 means that only the LSB of each long word is valid.
-
-   Etcetera, etcetera.  Hopefully this clears up some confusion over
-   what the following code actually does.  */
+ 
 
 static inline int not_useful(void *p, int map)
 {
@@ -76,7 +44,7 @@ static inline int not_useful(void *p, int map)
 
 static unsigned long nubus_get_rom(unsigned char **ptr, int len, int map)
 {
-	/* This will hold the result */
+	 
 	unsigned long v = 0;
 	unsigned char *p = *ptr;
 
@@ -130,26 +98,20 @@ static void nubus_move(unsigned char **ptr, int len, int map)
 		pr_err("%s: moved out of slot address space!\n", __func__);
 }
 
-/* Now, functions to read the sResource tree */
+ 
 
-/* Each sResource entry consists of a 1-byte ID and a 3-byte data
-   field.  If that data field contains an offset, then obviously we
-   have to expand it from a 24-bit signed number to a 32-bit signed
-   number. */
+ 
 
 static inline long nubus_expand32(long foo)
 {
-	if (foo & 0x00800000)	/* 24bit negative */
+	if (foo & 0x00800000)	 
 		foo |= 0xFF000000;
 	return foo;
 }
 
 static inline void *nubus_rom_addr(int slot)
 {
-	/*
-	 *	Returns the first byte after the card. We then walk
-	 *	backwards to get the lane register and the config
-	 */
+	 
 	return (void *)(0xF1000000 + (slot << 24));
 }
 
@@ -157,15 +119,13 @@ unsigned char *nubus_dirptr(const struct nubus_dirent *nd)
 {
 	unsigned char *p = nd->base;
 
-	/* Essentially, just step over the bytelanes using whatever
-	   offset we might have found */
+	 
 	nubus_move(&p, nubus_expand32(nd->data), nd->mask);
-	/* And return the value */
+	 
 	return p;
 }
 
-/* These two are for pulling resource data blocks (i.e. stuff that's
-   pointed to with offsets) out of the card ROM. */
+ 
 
 void nubus_get_rsrc_mem(void *dest, const struct nubus_dirent *dirent,
 			unsigned int len)
@@ -208,7 +168,7 @@ void nubus_seq_write_rsrc_mem(struct seq_file *m,
 	unsigned int buf_size = sizeof(buf);
 	unsigned char *p = nubus_dirptr(dirent);
 
-	/* If possible, write out full buffers */
+	 
 	while (len >= buf_size) {
 		unsigned int i;
 
@@ -218,7 +178,7 @@ void nubus_seq_write_rsrc_mem(struct seq_file *m,
 		seq_write(m, buf, buf_size);
 		len -= buf_size;
 	}
-	/* If not, write out individual bytes */
+	 
 	while (len--)
 		seq_putc(m, nubus_get_rom(&p, 1, dirent->mask));
 }
@@ -233,7 +193,7 @@ int nubus_get_root_dir(const struct nubus_board *board,
 }
 EXPORT_SYMBOL(nubus_get_root_dir);
 
-/* This is a slyly renamed version of the above */
+ 
 int nubus_get_func_dir(const struct nubus_rsrc *fres, struct nubus_dir *dir)
 {
 	dir->ptr = dir->base = fres->directory;
@@ -252,8 +212,7 @@ int nubus_get_board_dir(const struct nubus_board *board,
 	dir->done = 0;
 	dir->mask = board->lanes;
 
-	/* Now dereference it (the first directory is always the board
-	   directory) */
+	 
 	if (nubus_readdir(dir, &ent) == -1)
 		return -1;
 	if (nubus_get_subdir(&ent, dir) == -1)
@@ -279,22 +238,22 @@ int nubus_readdir(struct nubus_dir *nd, struct nubus_dirent *ent)
 	if (nd->done)
 		return -1;
 
-	/* Do this first, otherwise nubus_rewind & co are off by 4 */
+	 
 	ent->base = nd->ptr;
 
-	/* This moves nd->ptr forward */
+	 
 	resid = nubus_get_rom(&nd->ptr, 4, nd->mask);
 
-	/* EOL marker, as per the Apple docs */
+	 
 	if ((resid & 0xff000000) == 0xff000000) {
-		/* Mark it as done */
+		 
 		nd->done = 1;
 		return -1;
 	}
 
-	/* First byte is the resource ID */
+	 
 	ent->type = resid >> 24;
-	/* Low 3 bytes might contain data (or might not) */
+	 
 	ent->data = resid & 0xffffff;
 	ent->mask = nd->mask;
 	return 0;
@@ -309,7 +268,7 @@ int nubus_rewinddir(struct nubus_dir *dir)
 }
 EXPORT_SYMBOL(nubus_rewinddir);
 
-/* Driver interface functions, more or less like in pci.c */
+ 
 
 struct nubus_rsrc *nubus_first_rsrc_or_null(void)
 {
@@ -338,9 +297,7 @@ nubus_find_rsrc(struct nubus_dir *dir, unsigned char rsrc_type,
 }
 EXPORT_SYMBOL(nubus_find_rsrc);
 
-/* Initialization functions - decide which slots contain stuff worth
-   looking at, and print out lots and lots of information from the
-   resource blocks. */
+ 
 
 static int __init nubus_get_block_rsrc_dir(struct nubus_board *board,
 					   struct proc_dir_entry *procdir,
@@ -374,8 +331,8 @@ static int __init nubus_get_display_vidmode(struct nubus_board *board,
 
 	while (nubus_readdir(&dir, &ent) != -1) {
 		switch (ent.type) {
-		case 1: /* mVidParams */
-		case 2: /* mTable */
+		case 1:  
+		case 2:  
 		{
 			u32 size;
 
@@ -505,7 +462,7 @@ nubus_get_functional_resource(struct nubus_board *board, int slot,
 	nubus_get_subdir(parent, &dir);
 	dir.procdir = nubus_proc_add_rsrc_dir(board->procdir, parent, board);
 
-	/* Actually we should probably panic if this fails */
+	 
 	fres = kzalloc(sizeof(*fres), GFP_ATOMIC);
 	if (!fres)
 		return NULL;
@@ -541,8 +498,7 @@ nubus_get_functional_resource(struct nubus_board *board, int slot,
 		}
 		case NUBUS_RESID_DRVRDIR:
 		{
-			/* MacOS driver.  If we were NetBSD we might
-			   use this :-) */
+			 
 			pr_debug("    driver directory offset: 0x%06x\n",
 				ent.data);
 			nubus_get_block_rsrc_dir(board, dir.procdir, &ent);
@@ -550,9 +506,7 @@ nubus_get_functional_resource(struct nubus_board *board, int slot,
 		}
 		case NUBUS_RESID_MINOR_BASEOS:
 		{
-			/* We will need this in order to support
-			   multiple framebuffers.  It might be handy
-			   for Ethernet as well */
+			 
 			u32 base_offset;
 
 			nubus_get_rsrc_mem(&base_offset, &ent, 4);
@@ -562,7 +516,7 @@ nubus_get_functional_resource(struct nubus_board *board, int slot,
 		}
 		case NUBUS_RESID_MINOR_LENGTH:
 		{
-			/* Ditto */
+			 
 			u32 length;
 
 			nubus_get_rsrc_mem(&length, &ent, 4);
@@ -588,12 +542,12 @@ nubus_get_functional_resource(struct nubus_board *board, int slot,
 	return fres;
 }
 
-/* This is *really* cool. */
+ 
 static int __init nubus_get_icon(struct nubus_board *board,
 				 struct proc_dir_entry *procdir,
 				 const struct nubus_dirent *ent)
 {
-	/* Should be 32x32 if my memory serves me correctly */
+	 
 	u32 icon[32];
 	int i;
 
@@ -625,7 +579,7 @@ static int __init nubus_get_vendorinfo(struct nubus_board *board,
 		char name[64];
 		unsigned int len;
 
-		/* These are all strings, we think */
+		 
 		len = nubus_get_rsrc_str(name, &ent, sizeof(name));
 		if (ent.type < 1 || ent.type > 5)
 			ent.type = 5;
@@ -650,9 +604,7 @@ static int __init nubus_get_board_resource(struct nubus_board *board, int slot,
 		case NUBUS_RESID_TYPE:
 		{
 			unsigned short nbtdata[4];
-			/* This type is always the same, and is not
-			   useful except insofar as it tells us that
-			   we really are looking at a board resource. */
+			 
 			nubus_get_rsrc_mem(nbtdata, &ent, 8);
 			pr_debug("    type: [cat 0x%x type 0x%x sw 0x%x hw 0x%x]\n",
 				nbtdata[0], nbtdata[1], nbtdata[2], nbtdata[3]);
@@ -700,13 +652,13 @@ static int __init nubus_get_board_resource(struct nubus_board *board, int slot,
 				 ent.data);
 			nubus_proc_add_rsrc(dir.procdir, &ent);
 			break;
-			/* WTF isn't this in the functional resources? */
+			 
 		case NUBUS_RESID_VIDNAMES:
 			pr_debug("    vidnames directory offset: 0x%06x\n",
 				ent.data);
 			nubus_get_block_rsrc_dir(board, dir.procdir, &ent);
 			break;
-			/* Same goes for this */
+			 
 		case NUBUS_RESID_VIDMODES:
 			pr_debug("    video mode parameter directory offset: 0x%06x\n",
 				ent.data);
@@ -730,16 +682,16 @@ static void __init nubus_add_board(int slot, int bytelanes)
 	struct nubus_dirent ent;
 	int prev_resid = -1;
 
-	/* Move to the start of the format block */
+	 
 	rp = nubus_rom_addr(slot);
 	nubus_rewind(&rp, FORMAT_BLOCK_SIZE, bytelanes);
 
-	/* Actually we should probably panic if this fails */
+	 
 	if ((board = kzalloc(sizeof(*board), GFP_ATOMIC)) == NULL)
 		return;
 	board->fblock = rp;
 
-	/* Dump the format block for debugging purposes */
+	 
 	pr_debug("Slot %X, format block at 0x%p:\n", slot, rp);
 	pr_debug("%08lx\n", nubus_get_rom(&rp, 4, bytelanes));
 	pr_debug("%08lx\n", nubus_get_rom(&rp, 4, bytelanes));
@@ -754,50 +706,35 @@ static void __init nubus_add_board(int slot, int bytelanes)
 	board->slot = slot;
 	board->slot_addr = (unsigned long)nubus_slot_addr(slot);
 	board->doffset = nubus_get_rom(&rp, 4, bytelanes);
-	/* rom_length is *supposed* to be the total length of the
-	 * ROM.  In practice it is the "amount of ROM used to compute
-	 * the CRC."  So some jokers decide to set it to zero and
-	 * set the crc to zero so they don't have to do any math.
-	 * See the Performa 460 ROM, for example.  Those Apple "engineers".
-	 */
+	 
 	board->rom_length = nubus_get_rom(&rp, 4, bytelanes);
 	board->crc = nubus_get_rom(&rp, 4, bytelanes);
 	board->rev = nubus_get_rom(&rp, 1, bytelanes);
 	board->format = nubus_get_rom(&rp, 1, bytelanes);
 	board->lanes = bytelanes;
 
-	/* Directory offset should be small and negative... */
+	 
 	if (!(board->doffset & 0x00FF0000))
 		pr_warn("Slot %X: Dodgy doffset!\n", slot);
 	dpat = nubus_get_rom(&rp, 4, bytelanes);
 	if (dpat != NUBUS_TEST_PATTERN)
 		pr_warn("Slot %X: Wrong test pattern %08lx!\n", slot, dpat);
 
-	/*
-	 *	I wonder how the CRC is meant to work -
-	 *		any takers ?
-	 * CSA: According to MAC docs, not all cards pass the CRC anyway,
-	 * since the initial Macintosh ROM releases skipped the check.
-	 */
+	 
 
-	/* Set up the directory pointer */
+	 
 	board->directory = board->fblock;
 	nubus_move(&board->directory, nubus_expand32(board->doffset),
 	           board->lanes);
 
 	nubus_get_root_dir(board, &dir);
 
-	/* We're ready to rock */
+	 
 	pr_debug("Slot %X resources:\n", slot);
 
-	/* Each slot should have one board resource and any number of
-	 * functional resources.  So we'll fill in some fields in the
-	 * struct nubus_board from the board resource, then walk down
-	 * the list of functional resources, spinning out a nubus_rsrc
-	 * for each of them.
-	 */
+	 
 	if (nubus_readdir(&dir, &ent) == -1) {
-		/* We can't have this! */
+		 
 		pr_err("Slot %X: Board resource not found!\n", slot);
 		kfree(board);
 		return;
@@ -817,9 +754,7 @@ static void __init nubus_add_board(int slot, int bytelanes)
 		if (fres == NULL)
 			continue;
 
-		/* Resources should appear in ascending ID order. This sanity
-		 * check prevents duplicate resource IDs.
-		 */
+		 
 		if (fres->resid <= prev_resid) {
 			kfree(fres);
 			continue;
@@ -847,17 +782,14 @@ static void __init nubus_probe_slot(int slot)
 
 		dp = *rp;
 
-		/* The last byte of the format block consists of two
-		   nybbles which are "mirror images" of each other.
-		   These show us the valid bytelanes */
+		 
 		if ((((dp >> 4) ^ dp) & 0x0F) != 0x0F)
 			continue;
-		/* Check that this value is actually *on* one of the
-		   bytelanes it claims are valid! */
+		 
 		if (not_useful(rp, dp))
 			continue;
 
-		/* Looks promising.  Let's put it on the list. */
+		 
 		nubus_add_board(slot, dp);
 
 		return;

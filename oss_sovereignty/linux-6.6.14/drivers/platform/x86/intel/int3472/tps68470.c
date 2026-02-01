@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Author: Dan Scally <djrscally@gmail.com> */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/i2c.h>
@@ -35,7 +35,7 @@ static int tps68470_chip_init(struct device *dev, struct regmap *regmap)
 	unsigned int version;
 	int ret;
 
-	/* Force software reset */
+	 
 	ret = regmap_write(regmap, TPS68470_REG_RESET, TPS68470_REG_RESET_MASK);
 	if (ret)
 		return ret;
@@ -51,38 +51,13 @@ static int tps68470_chip_init(struct device *dev, struct regmap *regmap)
 	return 0;
 }
 
-/** skl_int3472_tps68470_calc_type: Check what platform a device is designed for
- * @adev: A pointer to a &struct acpi_device
- *
- * Check CLDB buffer against the PMIC's adev. If present, then we check
- * the value of control_logic_type field and follow one of the
- * following scenarios:
- *
- *	1. No CLDB - likely ACPI tables designed for ChromeOS. We
- *	create platform devices for the GPIOs and OpRegion drivers.
- *
- *	2. CLDB, with control_logic_type = 2 - probably ACPI tables
- *	made for Windows 2-in-1 platforms. Register pdevs for GPIO,
- *	Clock and Regulator drivers to bind to.
- *
- *	3. Any other value in control_logic_type, we should never have
- *	gotten to this point; fail probe and return.
- *
- * Return:
- * * 1		Device intended for ChromeOS
- * * 2		Device intended for Windows
- * * -EINVAL	Where @adev has an object named CLDB but it does not conform to
- *		our expectations
- */
+ 
 static int skl_int3472_tps68470_calc_type(struct acpi_device *adev)
 {
 	struct int3472_cldb cldb = { 0 };
 	int ret;
 
-	/*
-	 * A CLDB buffer that exists, but which does not match our expectations
-	 * should trigger an error so we don't blindly continue.
-	 */
+	 
 	ret = skl_int3472_fill_cldb(adev, &cldb);
 	if (ret && ret != -ENODEV)
 		return ret;
@@ -96,10 +71,7 @@ static int skl_int3472_tps68470_calc_type(struct acpi_device *adev)
 	return DESIGNED_FOR_WINDOWS;
 }
 
-/*
- * Return the size of the flexible array member, because we'll need that later
- * on to pass .pdata_size to cells.
- */
+ 
 static int
 skl_int3472_fill_clk_pdata(struct device *dev, struct tps68470_clk_platform_data **clk_pdata)
 {
@@ -181,12 +153,7 @@ static int skl_int3472_tps68470_probe(struct i2c_client *client)
 		if (!cells)
 			return -ENOMEM;
 
-		/*
-		 * The order of the cells matters here! The clk must be first
-		 * because the regulator depends on it. The gpios must be last,
-		 * acpi_gpiochip_add() calls acpi_dev_clear_dependencies() and
-		 * the clk + regulators must be ready when this happens.
-		 */
+		 
 		cells[0].name = "tps68470-clk";
 		cells[0].platform_data = clk_pdata;
 		cells[0].pdata_size = struct_size(clk_pdata, consumers, n_consumers);
@@ -219,10 +186,7 @@ static int skl_int3472_tps68470_probe(struct i2c_client *client)
 		return device_type;
 	}
 
-	/*
-	 * No acpi_dev_clear_dependencies() here, since the acpi_gpiochip_add()
-	 * for the GPIO cell already does this.
-	 */
+	 
 
 	return ret;
 }

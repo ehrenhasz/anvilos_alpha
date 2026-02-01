@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Driver for Microchip Pulse Density Microphone Controller (PDMC) interfaces
-//
-// Copyright (C) 2019-2022 Microchip Technology Inc. and its subsidiaries
-//
-// Author: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+
+
+
+
+
+
+
 
 #include <dt-bindings/sound/microchip,pdmc.h>
 
@@ -20,27 +20,21 @@
 #include <sound/pcm_params.h>
 #include <sound/tlv.h>
 
-/*
- * ---- PDMC Register map ----
- */
-#define MCHP_PDMC_CR			0x00	/* Control Register */
-#define MCHP_PDMC_MR			0x04	/* Mode Register */
-#define MCHP_PDMC_CFGR			0x08	/* Configuration Register */
-#define MCHP_PDMC_RHR			0x0C	/* Receive Holding Register */
-#define MCHP_PDMC_IER			0x14	/* Interrupt Enable Register */
-#define MCHP_PDMC_IDR			0x18	/* Interrupt Disable Register */
-#define MCHP_PDMC_IMR			0x1C	/* Interrupt Mask Register */
-#define MCHP_PDMC_ISR			0x20	/* Interrupt Status Register */
-#define MCHP_PDMC_VER			0x50	/* Version Register */
+ 
+#define MCHP_PDMC_CR			0x00	 
+#define MCHP_PDMC_MR			0x04	 
+#define MCHP_PDMC_CFGR			0x08	 
+#define MCHP_PDMC_RHR			0x0C	 
+#define MCHP_PDMC_IER			0x14	 
+#define MCHP_PDMC_IDR			0x18	 
+#define MCHP_PDMC_IMR			0x1C	 
+#define MCHP_PDMC_ISR			0x20	 
+#define MCHP_PDMC_VER			0x50	 
 
-/*
- * ---- Control Register (Write-only) ----
- */
-#define MCHP_PDMC_CR_SWRST		BIT(0)	/* Software Reset */
+ 
+#define MCHP_PDMC_CR_SWRST		BIT(0)	 
 
-/*
- * ---- Mode Register (Read/Write) ----
- */
+ 
 #define MCHP_PDMC_MR_PDMCEN_MASK	GENMASK(3, 0)
 #define MCHP_PDMC_MR_PDMCEN(ch)		(BIT(ch) & MCHP_PDMC_MR_PDMCEN_MASK)
 
@@ -62,18 +56,14 @@
 
 #define MCHP_PDMC_MR_CHUNK_MASK		GENMASK(31, 28)
 
-/*
- * ---- Configuration Register (Read/Write) ----
- */
+ 
 #define MCHP_PDMC_CFGR_BSSEL_MASK	(BIT(0) | BIT(2) | BIT(4) | BIT(6))
 #define MCHP_PDMC_CFGR_BSSEL(ch)	BIT((ch) * 2)
 
 #define MCHP_PDMC_CFGR_PDMSEL_MASK	(BIT(16) | BIT(18) | BIT(20) | BIT(22))
 #define MCHP_PDMC_CFGR_PDMSEL(ch)	BIT((ch) * 2 + 16)
 
-/*
- * ---- Interrupt Enable/Disable/Mask/Status Registers ----
- */
+ 
 #define MCHP_PDMC_IR_RXRDY		BIT(0)
 #define MCHP_PDMC_IR_RXEMPTY		BIT(1)
 #define MCHP_PDMC_IR_RXFULL		BIT(2)
@@ -81,9 +71,7 @@
 #define MCHP_PDMC_IR_RXUDR		BIT(4)
 #define MCHP_PDMC_IR_RXOVR		BIT(5)
 
-/*
- * ---- Version Register (Read-only) ----
- */
+ 
 #define MCHP_PDMC_VER_VERSION		GENMASK(11, 0)
 
 #define MCHP_PDMC_MAX_CHANNELS		4
@@ -199,7 +187,7 @@ static int mchp_pdmc_chmap_ctl_info(struct snd_kcontrol *kcontrol, struct snd_ct
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_INTEGER;
 	uinfo->count = info->dd->mic_no;
 	uinfo->value.integer.min = 0;
-	uinfo->value.integer.max = SNDRV_CHMAP_RR; /* maxmimum 4 channels */
+	uinfo->value.integer.max = SNDRV_CHMAP_RR;  
 	return 0;
 }
 
@@ -244,7 +232,7 @@ static int mchp_pdmc_chmap_ctl_get(struct snd_kcontrol *kcontrol,
 		return -ENODEV;
 	memset(ucontrol->value.integer.value, 0, sizeof(long) * info->dd->mic_no);
 	if (!substream->runtime)
-		return 0; /* no channels set */
+		return 0;  
 
 	map = mchp_pdmc_chmap_get(substream, info);
 	if (!map)
@@ -254,7 +242,7 @@ static int mchp_pdmc_chmap_ctl_get(struct snd_kcontrol *kcontrol,
 		int map_idx = map->channels == 1 ? map->map[i] - SNDRV_CHMAP_MONO :
 						   map->map[i] - SNDRV_CHMAP_FL;
 
-		/* make sure the reported channel map is the real one, so write the map */
+		 
 		if (dd->channel_mic_map[map_idx].ds_pos)
 			cfgr_val |= MCHP_PDMC_CFGR_PDMSEL(i);
 		if (dd->channel_mic_map[map_idx].clk_edge)
@@ -296,7 +284,7 @@ static int mchp_pdmc_chmap_ctl_put(struct snd_kcontrol *kcontrol,
 		map_idx = map->channels == 1 ? map->map[i] - SNDRV_CHMAP_MONO :
 					       map->map[i] - SNDRV_CHMAP_FL;
 
-		/* configure IP for the desired channel map */
+		 
 		if (dd->channel_mic_map[map_idx].ds_pos)
 			cfgr_val |= MCHP_PDMC_CFGR_PDMSEL(i);
 		if (dd->channel_mic_map[map_idx].clk_edge)
@@ -382,7 +370,7 @@ static int mchp_pdmc_open(struct snd_soc_component *component,
 {
 	int i;
 
-	/* remove controls that can't be changed at runtime */
+	 
 	for (i = 0; i < ARRAY_SIZE(mchp_pdmc_snd_controls); i++) {
 		const struct snd_kcontrol_new *control = &mchp_pdmc_snd_controls[i];
 		struct snd_ctl_elem_id id;
@@ -469,12 +457,12 @@ static int mchp_pdmc_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	unsigned int fmt_master = fmt & SND_SOC_DAIFMT_MASTER_MASK;
 	unsigned int fmt_format = fmt & SND_SOC_DAIFMT_FORMAT_MASK;
 
-	/* IP needs to be bitclock master */
+	 
 	if (fmt_master != SND_SOC_DAIFMT_BP_FP &&
 	    fmt_master != SND_SOC_DAIFMT_BP_FC)
 		return -EINVAL;
 
-	/* IP supports only PDM interface */
+	 
 	if (fmt_format != SND_SOC_DAIFMT_PDM)
 		return -EINVAL;
 
@@ -592,10 +580,10 @@ static int mchp_pdmc_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* CLK is enabled by runtime PM. */
+	 
 	clk_disable_unprepare(dd->gclk);
 
-	/* set the rate */
+	 
 	ret = clk_set_rate(dd->gclk, gclk_rate);
 	clk_prepare_enable(dd->gclk);
 	if (ret) {
@@ -627,22 +615,13 @@ static void mchp_pdmc_noise_filter_workaround(struct mchp_pdmc *dd)
 {
 	u32 tmp, steps = 16;
 
-	/*
-	 * PDMC doesn't wait for microphones' startup time thus the acquisition
-	 * may start before the microphones are ready leading to poc noises at
-	 * the beginning of capture. To avoid this, we need to wait 50ms (in
-	 * normal startup procedure) or 150 ms (worst case after resume from sleep
-	 * states) after microphones are enabled and then clear the FIFOs (by
-	 * reading the RHR 16 times) and possible interrupts before continuing.
-	 * Also, for this to work the DMA needs to be started after interrupts
-	 * are enabled.
-	 */
+	 
 	usleep_range(dd->startup_delay_us, dd->startup_delay_us + 5);
 
 	while (steps--)
 		regmap_read(dd->regmap, MCHP_PDMC_RHR, &tmp);
 
-	/* Clear interrupts. */
+	 
 	regmap_read(dd->regmap, MCHP_PDMC_ISR, &tmp);
 }
 
@@ -665,7 +644,7 @@ static int mchp_pdmc_trigger(struct snd_pcm_substream *substream,
 
 		mchp_pdmc_noise_filter_workaround(dd);
 
-		/* Enable interrupts. */
+		 
 		regmap_write(dd->regmap, MCHP_PDMC_IER, dd->suspend_irq |
 			     MCHP_PDMC_IR_RXOVR | MCHP_PDMC_IR_RXUDR);
 		dd->suspend_irq = 0;
@@ -674,7 +653,7 @@ static int mchp_pdmc_trigger(struct snd_pcm_substream *substream,
 		regmap_read(dd->regmap, MCHP_PDMC_IMR, &dd->suspend_irq);
 		fallthrough;
 	case SNDRV_PCM_TRIGGER_STOP:
-		/* Disable overrun and underrun error interrupts */
+		 
 		regmap_write(dd->regmap, MCHP_PDMC_IDR, dd->suspend_irq |
 			     MCHP_PDMC_IR_RXOVR | MCHP_PDMC_IR_RXUDR);
 		fallthrough;
@@ -772,7 +751,7 @@ static struct snd_soc_dai_driver mchp_pdmc_dai = {
 	.ops = &mchp_pdmc_dai_ops,
 };
 
-/* PDMC interrupt handler */
+ 
 static irqreturn_t mchp_pdmc_interrupt(int irq, void *dev_id)
 {
 	struct mchp_pdmc *dd = dev_id;
@@ -802,7 +781,7 @@ static irqreturn_t mchp_pdmc_interrupt(int irq, void *dev_id)
 	return ret;
 }
 
-/* regmap configuration */
+ 
 static bool mchp_pdmc_readable_reg(struct device *dev, unsigned int reg)
 {
 	switch (reg) {
@@ -895,11 +874,7 @@ static int mchp_pdmc_dt_init(struct mchp_pdmc *dd)
 
 	dev_info(dd->dev, "%d PDM microphones declared\n", dd->mic_no);
 
-	/*
-	 * by default, we consider the order of microphones in
-	 * microchip,mic-pos to be the same with the channel mapping;
-	 * 1st microphone channel 0, 2nd microphone channel 1, etc.
-	 */
+	 
 	for (i = 0; i < dd->mic_no; i++) {
 		int ds;
 		int edge;
@@ -951,7 +926,7 @@ static int mchp_pdmc_dt_init(struct mchp_pdmc *dd)
 	return 0;
 }
 
-/* used to clean the channel index found on RHR's MSB */
+ 
 static int mchp_pdmc_process(struct snd_pcm_substream *substream,
 			     int channel, unsigned long hwoff,
 			     unsigned long bytes)
@@ -1076,9 +1051,7 @@ static int mchp_pdmc_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* by default audio filter is enabled and the SINC Filter order
-	 * will be set to the recommended value, 3
-	 */
+	 
 	dd->audio_filter_en = true;
 	dd->sinc_order = 3;
 
@@ -1092,7 +1065,7 @@ static int mchp_pdmc_probe(struct platform_device *pdev)
 			return ret;
 	}
 
-	/* register platform */
+	 
 	ret = devm_snd_dmaengine_pcm_register(dev, &mchp_pdmc_config, 0);
 	if (ret) {
 		dev_err(dev, "could not register platform: %d\n", ret);
@@ -1106,7 +1079,7 @@ static int mchp_pdmc_probe(struct platform_device *pdev)
 		goto pm_runtime_suspend;
 	}
 
-	/* print IP version */
+	 
 	regmap_read(dd->regmap, MCHP_PDMC_VER, &version);
 	dev_info(dd->dev, "hw version: %#lx\n",
 		 version & MCHP_PDMC_VER_VERSION);
@@ -1135,7 +1108,7 @@ static const struct of_device_id mchp_pdmc_of_match[] = {
 	{
 		.compatible = "microchip,sama7g5-pdmc",
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, mchp_pdmc_of_match);

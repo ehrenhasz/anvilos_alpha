@@ -1,7 +1,4 @@
-/*
- * SPDX-License-Identifier: GPL-2.0
- * Copyright (c) 2018, The Linux Foundation
- */
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -11,35 +8,12 @@
 #include "dsi.xml.h"
 #include "dsi_phy_10nm.xml.h"
 
-/*
- * DSI PLL 10nm - clock diagram (eg: DSI0):
- *
- *           dsi0_pll_out_div_clk  dsi0_pll_bit_clk
- *                              |                |
- *                              |                |
- *                 +---------+  |  +----------+  |  +----+
- *  dsi0vco_clk ---| out_div |--o--| divl_3_0 |--o--| /8 |-- dsi0_phy_pll_out_byteclk
- *                 +---------+  |  +----------+  |  +----+
- *                              |                |
- *                              |                |         dsi0_pll_by_2_bit_clk
- *                              |                |          |
- *                              |                |  +----+  |  |\  dsi0_pclk_mux
- *                              |                |--| /2 |--o--| \   |
- *                              |                |  +----+     |  \  |  +---------+
- *                              |                --------------|  |--o--| div_7_4 |-- dsi0_phy_pll_out_dsiclk
- *                              |------------------------------|  /     +---------+
- *                              |          +-----+             | /
- *                              -----------| /4? |--o----------|/
- *                                         +-----+  |           |
- *                                                  |           |dsiclk_sel
- *                                                  |
- *                                                  dsi0_pll_post_out_div_clk
- */
+ 
 
 #define VCO_REF_CLK_RATE		19200000
 #define FRAC_BITS 18
 
-/* v3.0.0 10nm implementation that requires the old timings settings */
+ 
 #define DSI_PHY_10NM_QUIRK_OLD_TIMINGS	BIT(0)
 
 struct dsi_pll_config {
@@ -49,7 +23,7 @@ struct dsi_pll_config {
 	u32 ssc_offset;
 	u32 ssc_adj_per;
 
-	/* out */
+	 
 	u32 pll_prop_gain_rate;
 	u32 decimal_div_start;
 	u32 frac_div_start;
@@ -73,7 +47,7 @@ struct dsi_pll_10nm {
 
 	u64 vco_current_rate;
 
-	/* protects REG_DSI_10nm_PHY_CMN_CLK_CFG0 register */
+	 
 	spinlock_t postdiv_lock;
 
 	struct pll_10nm_cached_state cached_state;
@@ -83,22 +57,14 @@ struct dsi_pll_10nm {
 
 #define to_pll_10nm(x)	container_of(x, struct dsi_pll_10nm, clk_hw)
 
-/**
- * struct dsi_phy_10nm_tuning_cfg - Holds 10nm PHY tuning config parameters.
- * @rescode_offset_top: Offset for pull-up legs rescode.
- * @rescode_offset_bot: Offset for pull-down legs rescode.
- * @vreg_ctrl: vreg ctrl to drive LDO level
- */
+ 
 struct dsi_phy_10nm_tuning_cfg {
 	u8 rescode_offset_top[DSI_LANE_MAX];
 	u8 rescode_offset_bot[DSI_LANE_MAX];
 	u8 vreg_ctrl;
 };
 
-/*
- * Global list of private DSI PLL struct pointers. We need this for bonded DSI
- * mode, where the master PLL's clk_ops needs access the slave's private data
- */
+ 
 static struct dsi_pll_10nm *pll_10nm_list[DSI_MAX];
 
 static void dsi_pll_setup_config(struct dsi_pll_config *config)
@@ -276,7 +242,7 @@ static int dsi_pll_10nm_vco_set_rate(struct clk_hw *hw, unsigned long rate,
 
 	dsi_pll_ssc_commit(pll_10nm, &config);
 
-	/* flush, ensure all register writes are done*/
+	 
 	wmb();
 
 	return 0;
@@ -357,17 +323,14 @@ static int dsi_pll_10nm_vco_prepare(struct clk_hw *hw)
 		return rc;
 	}
 
-	/* Start PLL */
+	 
 	dsi_phy_write(pll_10nm->phy->base + REG_DSI_10nm_PHY_CMN_PLL_CNTRL,
 		      0x01);
 
-	/*
-	 * ensure all PLL configurations are written prior to checking
-	 * for PLL lock.
-	 */
+	 
 	wmb();
 
-	/* Check for PLL lock */
+	 
 	rc = dsi_pll_10nm_lock_status(pll_10nm);
 	if (rc) {
 		DRM_DEV_ERROR(dev, "PLL(%d) lock failed\n", pll_10nm->phy->id);
@@ -400,11 +363,7 @@ static void dsi_pll_10nm_vco_unprepare(struct clk_hw *hw)
 {
 	struct dsi_pll_10nm *pll_10nm = to_pll_10nm(hw);
 
-	/*
-	 * To avoid any stray glitches while abruptly powering down the PLL
-	 * make sure to gate the clock using the clock enable bit before
-	 * powering down the PLL
-	 */
+	 
 	dsi_pll_disable_global_clk(pll_10nm);
 	dsi_phy_write(pll_10nm->phy->base + REG_DSI_10nm_PHY_CMN_PLL_CNTRL, 0);
 	dsi_pll_disable_sub(pll_10nm);
@@ -412,7 +371,7 @@ static void dsi_pll_10nm_vco_unprepare(struct clk_hw *hw)
 		dsi_pll_disable_global_clk(pll_10nm->slave);
 		dsi_pll_disable_sub(pll_10nm->slave);
 	}
-	/* flush, ensure all register writes are done */
+	 
 	wmb();
 	pll_10nm->phy->pll_on = false;
 }
@@ -438,10 +397,7 @@ static unsigned long dsi_pll_10nm_vco_recalc_rate(struct clk_hw *hw,
 	frac |= ((dsi_phy_read(base + REG_DSI_10nm_PHY_PLL_FRAC_DIV_START_HIGH_1) &
 		  0x3) << 16);
 
-	/*
-	 * TODO:
-	 *	1. Assumes prescaler is disabled
-	 */
+	 
 	multiplier = 1 << FRAC_BITS;
 	pll_freq = dec * (ref_clk * 2);
 	tmp64 = (ref_clk * 2 * frac);
@@ -477,9 +433,7 @@ static const struct clk_ops clk_ops_dsi_pll_10nm_vco = {
 	.unprepare = dsi_pll_10nm_vco_unprepare,
 };
 
-/*
- * PLL Callbacks
- */
+ 
 
 static void dsi_10nm_pll_save_state(struct msm_dsi_phy *phy)
 {
@@ -543,7 +497,7 @@ static int dsi_10nm_set_usecase(struct msm_dsi_phy *phy)
 {
 	struct dsi_pll_10nm *pll_10nm = to_pll_10nm(phy->vco_hw);
 	void __iomem *base = phy->base;
-	u32 data = 0x0;	/* internal PLL */
+	u32 data = 0x0;	 
 
 	DBG("DSI PLL%d", pll_10nm->phy->id);
 
@@ -554,24 +508,19 @@ static int dsi_10nm_set_usecase(struct msm_dsi_phy *phy)
 		pll_10nm->slave = pll_10nm_list[(pll_10nm->phy->id + 1) % DSI_MAX];
 		break;
 	case MSM_DSI_PHY_SLAVE:
-		data = 0x1; /* external PLL */
+		data = 0x1;  
 		break;
 	default:
 		return -EINVAL;
 	}
 
-	/* set PLL src */
+	 
 	dsi_phy_write(base + REG_DSI_10nm_PHY_CMN_CLK_CFG1, (data << 2));
 
 	return 0;
 }
 
-/*
- * The post dividers and mux clocks are created using the standard divider and
- * mux API. Unlike the 14nm PHY, the slave PLL doesn't need its dividers/mux
- * state to follow the master PLL's divider/mux state. Therefore, we don't
- * require special clock ops that also configure the slave PLL registers
- */
+ 
 static int pll_10nm_register(struct dsi_pll_10nm *pll_10nm, struct clk_hw **provided_clocks)
 {
 	char clk_name[32];
@@ -612,7 +561,7 @@ static int pll_10nm_register(struct dsi_pll_10nm *pll_10nm, struct clk_hw **prov
 
 	snprintf(clk_name, sizeof(clk_name), "dsi%d_pll_bit_clk", pll_10nm->phy->id);
 
-	/* BIT CLK: DIV_CTRL_3_0 */
+	 
 	pll_bit = devm_clk_hw_register_divider_parent_hw(dev, clk_name,
 			pll_out_div, CLK_SET_RATE_PARENT,
 			pll_10nm->phy->base + REG_DSI_10nm_PHY_CMN_CLK_CFG0,
@@ -624,7 +573,7 @@ static int pll_10nm_register(struct dsi_pll_10nm *pll_10nm, struct clk_hw **prov
 
 	snprintf(clk_name, sizeof(clk_name), "dsi%d_phy_pll_out_byteclk", pll_10nm->phy->id);
 
-	/* DSI Byte clock = VCO_CLK / OUT_DIV / BIT_DIV / 8 */
+	 
 	hw = devm_clk_hw_register_fixed_factor_parent_hw(dev, clk_name,
 			pll_bit, CLK_SET_RATE_PARENT, 1, 8);
 	if (IS_ERR(hw)) {
@@ -669,7 +618,7 @@ static int pll_10nm_register(struct dsi_pll_10nm *pll_10nm, struct clk_hw **prov
 
 	snprintf(clk_name, sizeof(clk_name), "dsi%d_phy_pll_out_dsiclk", pll_10nm->phy->id);
 
-	/* PIX CLK DIV : DIV_CTRL_7_4*/
+	 
 	hw = devm_clk_hw_register_divider_parent_hw(dev, clk_name, pclk_mux,
 			0, pll_10nm->phy->base + REG_DSI_10nm_PHY_CMN_CLK_CFG0,
 			4, 4, CLK_DIVIDER_ONE_BASED, &pll_10nm->postdiv_lock);
@@ -713,7 +662,7 @@ static int dsi_pll_10nm_init(struct msm_dsi_phy *phy)
 
 	phy->vco_hw = &pll_10nm->clk_hw;
 
-	/* TODO: Remove this when we have proper display handover support */
+	 
 	msm_dsi_phy_pll_save_state(phy);
 
 	return 0;
@@ -725,7 +674,7 @@ static int dsi_phy_hw_v3_0_is_pll_on(struct msm_dsi_phy *phy)
 	u32 data = 0;
 
 	data = dsi_phy_read(base + REG_DSI_10nm_PHY_CMN_PLL_CNTRL);
-	mb(); /* make sure read happened */
+	mb();  
 
 	return (data & BIT(0));
 }
@@ -733,12 +682,9 @@ static int dsi_phy_hw_v3_0_is_pll_on(struct msm_dsi_phy *phy)
 static void dsi_phy_hw_v3_0_config_lpcdrx(struct msm_dsi_phy *phy, bool enable)
 {
 	void __iomem *lane_base = phy->lane_base;
-	int phy_lane_0 = 0;	/* TODO: Support all lane swap configs */
+	int phy_lane_0 = 0;	 
 
-	/*
-	 * LPRX and CDRX need to enabled only for physical data lane
-	 * corresponding to the logical data lane 0
-	 */
+	 
 	if (enable)
 		dsi_phy_write(lane_base +
 			      REG_DSI_10nm_PHY_LN_LPRX_CTRL(phy_lane_0), 0x3);
@@ -757,15 +703,11 @@ static void dsi_phy_hw_v3_0_lane_settings(struct msm_dsi_phy *phy)
 	if (phy->cfg->quirks & DSI_PHY_10NM_QUIRK_OLD_TIMINGS)
 		tx_dctrl[3] = 0x02;
 
-	/* Strength ctrl settings */
+	 
 	for (i = 0; i < 5; i++) {
 		dsi_phy_write(lane_base + REG_DSI_10nm_PHY_LN_LPTX_STR_CTRL(i),
 			      0x55);
-		/*
-		 * Disable LPRX and CDRX for all lanes. And later on, it will
-		 * be only enabled for the physical data lane corresponding
-		 * to the logical data lane 0
-		 */
+		 
 		dsi_phy_write(lane_base + REG_DSI_10nm_PHY_LN_LPRX_CTRL(i), 0);
 		dsi_phy_write(lane_base + REG_DSI_10nm_PHY_LN_PIN_SWAP(i), 0x0);
 		dsi_phy_write(lane_base + REG_DSI_10nm_PHY_LN_HSTX_STR_CTRL(i),
@@ -774,7 +716,7 @@ static void dsi_phy_hw_v3_0_lane_settings(struct msm_dsi_phy *phy)
 
 	dsi_phy_hw_v3_0_config_lpcdrx(phy, true);
 
-	/* other settings */
+	 
 	for (i = 0; i < 5; i++) {
 		dsi_phy_write(lane_base + REG_DSI_10nm_PHY_LN_CFG0(i), 0x0);
 		dsi_phy_write(lane_base + REG_DSI_10nm_PHY_LN_CFG1(i), 0x0);
@@ -782,7 +724,7 @@ static void dsi_phy_hw_v3_0_lane_settings(struct msm_dsi_phy *phy)
 		dsi_phy_write(lane_base + REG_DSI_10nm_PHY_LN_CFG3(i),
 			      i == 4 ? 0x80 : 0x0);
 
-		/* platform specific dsi phy drive strength adjustment */
+		 
 		dsi_phy_write(lane_base + REG_DSI_10nm_PHY_LN_OFFSET_TOP_CTRL(i),
 				tuning_cfg->rescode_offset_top[i]);
 		dsi_phy_write(lane_base + REG_DSI_10nm_PHY_LN_OFFSET_BOT_CTRL(i),
@@ -793,7 +735,7 @@ static void dsi_phy_hw_v3_0_lane_settings(struct msm_dsi_phy *phy)
 	}
 
 	if (!(phy->cfg->quirks & DSI_PHY_10NM_QUIRK_OLD_TIMINGS)) {
-		/* Toggle BIT 0 to release freeze I/0 */
+		 
 		dsi_phy_write(lane_base + REG_DSI_10nm_PHY_LN_TX_DCTRL(3), 0x05);
 		dsi_phy_write(lane_base + REG_DSI_10nm_PHY_LN_TX_DCTRL(3), 0x04);
 	}
@@ -822,7 +764,7 @@ static int dsi_10nm_phy_enable(struct msm_dsi_phy *phy,
 	if (dsi_phy_hw_v3_0_is_pll_on(phy))
 		pr_warn("PLL turned on before configuring PHY\n");
 
-	/* wait for REFGEN READY */
+	 
 	ret = readl_poll_timeout_atomic(base + REG_DSI_10nm_PHY_CMN_PHY_STATUS,
 					status, (status & BIT(0)),
 					delay_us, timeout_us);
@@ -831,28 +773,28 @@ static int dsi_10nm_phy_enable(struct msm_dsi_phy *phy,
 		return -EINVAL;
 	}
 
-	/* de-assert digital and pll power down */
+	 
 	data = BIT(6) | BIT(5);
 	dsi_phy_write(base + REG_DSI_10nm_PHY_CMN_CTRL_0, data);
 
-	/* Assert PLL core reset */
+	 
 	dsi_phy_write(base + REG_DSI_10nm_PHY_CMN_PLL_CNTRL, 0x00);
 
-	/* turn off resync FIFO */
+	 
 	dsi_phy_write(base + REG_DSI_10nm_PHY_CMN_RBUF_CTRL, 0x00);
 
-	/* Select MS1 byte-clk */
+	 
 	dsi_phy_write(base + REG_DSI_10nm_PHY_CMN_GLBL_CTRL, 0x10);
 
-	/* Enable LDO with platform specific drive level/amplitude adjustment */
+	 
 	dsi_phy_write(base + REG_DSI_10nm_PHY_CMN_VREG_CTRL,
 		      tuning_cfg->vreg_ctrl);
 
-	/* Configure PHY lane swap (TODO: we need to calculate this) */
+	 
 	dsi_phy_write(base + REG_DSI_10nm_PHY_CMN_LANE_CFG0, 0x21);
 	dsi_phy_write(base + REG_DSI_10nm_PHY_CMN_LANE_CFG1, 0x84);
 
-	/* DSI PHY timings */
+	 
 	dsi_phy_write(base + REG_DSI_10nm_PHY_CMN_TIMING_CTRL_0,
 		      timing->hs_halfbyte_en);
 	dsi_phy_write(base + REG_DSI_10nm_PHY_CMN_TIMING_CTRL_1,
@@ -878,18 +820,18 @@ static int dsi_10nm_phy_enable(struct msm_dsi_phy *phy,
 	dsi_phy_write(base + REG_DSI_10nm_PHY_CMN_TIMING_CTRL_11,
 		      0x00);
 
-	/* Remove power down from all blocks */
+	 
 	dsi_phy_write(base + REG_DSI_10nm_PHY_CMN_CTRL_0, 0x7f);
 
-	/* power up lanes */
+	 
 	data = dsi_phy_read(base + REG_DSI_10nm_PHY_CMN_CTRL_0);
 
-	/* TODO: only power up lanes that are used */
+	 
 	data |= 0x1F;
 	dsi_phy_write(base + REG_DSI_10nm_PHY_CMN_CTRL_0, data);
 	dsi_phy_write(base + REG_DSI_10nm_PHY_CMN_LANE_CTRL0, 0x1F);
 
-	/* Select full-rate mode */
+	 
 	dsi_phy_write(base + REG_DSI_10nm_PHY_CMN_CTRL_2, 0x40);
 
 	ret = dsi_10nm_set_usecase(phy);
@@ -899,7 +841,7 @@ static int dsi_10nm_phy_enable(struct msm_dsi_phy *phy,
 		return ret;
 	}
 
-	/* DSI lane settings */
+	 
 	dsi_phy_hw_v3_0_lane_settings(phy);
 
 	DBG("DSI%d PHY enabled", phy->id);
@@ -920,14 +862,14 @@ static void dsi_10nm_phy_disable(struct msm_dsi_phy *phy)
 	dsi_phy_hw_v3_0_config_lpcdrx(phy, false);
 	data = dsi_phy_read(base + REG_DSI_10nm_PHY_CMN_CTRL_0);
 
-	/* disable all lanes */
+	 
 	data &= ~0x1F;
 	dsi_phy_write(base + REG_DSI_10nm_PHY_CMN_CTRL_0, data);
 	dsi_phy_write(base + REG_DSI_10nm_PHY_CMN_LANE_CTRL0, 0);
 
-	/* Turn off all PHY blocks */
+	 
 	dsi_phy_write(base + REG_DSI_10nm_PHY_CMN_CTRL_0, 0x00);
-	/* make sure phy is turned off */
+	 
 	wmb();
 
 	DBG("DSI%d PHY disabled", phy->id);
@@ -937,9 +879,9 @@ static int dsi_10nm_phy_parse_dt(struct msm_dsi_phy *phy)
 {
 	struct device *dev = &phy->pdev->dev;
 	struct dsi_phy_10nm_tuning_cfg *tuning_cfg;
-	s8 offset_top[DSI_LANE_MAX] = { 0 }; /* No offset */
-	s8 offset_bot[DSI_LANE_MAX] = { 0 }; /* No offset */
-	u32 ldo_level = 400; /* 400mV */
+	s8 offset_top[DSI_LANE_MAX] = { 0 };  
+	s8 offset_bot[DSI_LANE_MAX] = { 0 };  
+	u32 ldo_level = 400;  
 	u8 level;
 	int ret, i;
 
@@ -947,7 +889,7 @@ static int dsi_10nm_phy_parse_dt(struct msm_dsi_phy *phy)
 	if (!tuning_cfg)
 		return -ENOMEM;
 
-	/* Drive strength adjustment parameters */
+	 
 	ret = of_property_read_u8_array(dev->of_node, "qcom,phy-rescode-offset-top",
 					offset_top, DSI_LANE_MAX);
 	if (ret && ret != -EINVAL) {
@@ -982,7 +924,7 @@ static int dsi_10nm_phy_parse_dt(struct msm_dsi_phy *phy)
 		tuning_cfg->rescode_offset_bot[i] = 0x3f & offset_bot[i];
 	}
 
-	/* Drive level/amplitude adjustment parameters */
+	 
 	ret = of_property_read_u32(dev->of_node, "qcom,phy-drive-ldo-level", &ldo_level);
 	if (ret && ret != -EINVAL) {
 		DRM_DEV_ERROR(dev, "failed to parse qcom,phy-drive-ldo-level, %d\n", ret);

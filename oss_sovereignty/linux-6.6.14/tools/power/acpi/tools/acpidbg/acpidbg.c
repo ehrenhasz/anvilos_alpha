@@ -1,14 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ACPI AML interfacing userspace utility
- *
- * Copyright (C) 2015, Intel Corporation
- * Authors: Lv Zheng <lv.zheng@intel.com>
- */
+
+ 
 
 #include <acpi/acpi.h>
 
-/* Headers not included by include/acpi/platform/aclinux.h */
+ 
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,9 +20,9 @@
 #define ACPI_AML_USEC_PEEK	200
 #define ACPI_AML_BUF_SIZE	4096
 
-#define ACPI_AML_BATCH_WRITE_CMD	0x00 /* Write command to kernel */
-#define ACPI_AML_BATCH_READ_LOG		0x01 /* Read log from kernel */
-#define ACPI_AML_BATCH_WRITE_LOG	0x02 /* Write log to console */
+#define ACPI_AML_BATCH_WRITE_CMD	0x00  
+#define ACPI_AML_BATCH_READ_LOG		0x01  
+#define ACPI_AML_BATCH_WRITE_LOG	0x02  
 
 #define ACPI_AML_LOG_START		0x00
 #define ACPI_AML_PROMPT_START		0x01
@@ -204,7 +199,7 @@ static int acpi_aml_read_batch_log(int fd, struct circ_buf *crc)
 				acpi_aml_log_state = ACPI_AML_LOG_STOP;
 				acpi_aml_exit = true;
 			} else {
-				/* Roll back */
+				 
 				acpi_aml_log_state = ACPI_AML_PROMPT_ROLL;
 				acpi_aml_batch_roll = *p;
 				*p = acpi_aml_batch_prompt;
@@ -352,11 +347,7 @@ static bool acpi_aml_readable(int fd)
 	return false;
 }
 
-/*
- * This is a userspace IO flush implementation, replying on the prompt
- * characters and can be turned into a flush() call after kernel implements
- * .flush() filesystem operation.
- */
+ 
 static void acpi_aml_flush(int fd)
 {
 	while (acpi_aml_readable(fd)) {

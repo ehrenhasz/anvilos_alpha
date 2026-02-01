@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef B43legacy_ILT_H_
 #define B43legacy_ILT_H_
 
@@ -32,4 +32,4 @@ void b43legacy_ilt_write32(struct b43legacy_wldev *dev, u16 offset,
 			   u32 val);
 u16 b43legacy_ilt_read(struct b43legacy_wldev *dev, u16 offset);
 
-#endif /* B43legacy_ILT_H_ */
+#endif  

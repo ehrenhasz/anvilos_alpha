@@ -1,29 +1,4 @@
-/*
- * Copyright (c) 2010 Pawel Jakub Dawidek <pjd@FreeBSD.org>
- * Copyright (c) 2020 iXsystems, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- */
+ 
 
 #include <sys/cdefs.h>
 __FBSDID("$FreeBSD$");
@@ -198,7 +173,7 @@ log_sysevent(nvlist_t *event)
 			break;
 		}
 		case DATA_TYPE_NVLIST:
-			/* XXX - requires recursing in log_sysevent */
+			 
 			break;
 		default:
 			printf("%s: type %d is not implemented\n", __func__,
@@ -251,13 +226,7 @@ sysevent_worker(void *arg __unused)
 		}
 	}
 
-	/*
-	 * We avoid zfs_zevent_destroy() here because we're otherwise racing
-	 * against fm_fini() destroying the zevent_lock.  zfs_zevent_destroy()
-	 * will currently only clear `ze->ze_zevent` from an event list then
-	 * free `ze`, so just inline the free() here -- events have already
-	 * been drained.
-	 */
+	 
 	VERIFY3P(ze->ze_zevent, ==, NULL);
 	kmem_free(ze, sizeof (zfs_zevent_t));
 

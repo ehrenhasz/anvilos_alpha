@@ -1,32 +1,4 @@
-/*
- * Copyright (c) 2007 Pawel Jakub Dawidek <pjd@FreeBSD.org>
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- * Links to Illumos.org for more information on kstat function:
- * [1] https://illumos.org/man/1M/kstat
- * [2] https://illumos.org/man/9f/kstat_create
- */
+ 
 
 #include <sys/cdefs.h>
 __FBSDID("$FreeBSD$");
@@ -107,9 +79,9 @@ kstat_sysctl(SYSCTL_HANDLER_ARGS)
 	uint64_t val;
 
 	ksent = ksp->ks_data;
-	/* Select the correct element */
+	 
 	ksent += arg2;
-	/* Update the aggsums before reading */
+	 
 	(void) ksp->ks_update(ksp, KSTAT_READ);
 	val = ksent->value.ui64;
 
@@ -124,9 +96,9 @@ kstat_sysctl_string(SYSCTL_HANDLER_ARGS)
 	char *val;
 	uint32_t len = 0;
 
-	/* Select the correct element */
+	 
 	ksent += arg2;
-	/* Update the aggsums before reading */
+	 
 	(void) ksp->ks_update(ksp, KSTAT_READ);
 	val = KSTAT_NAMED_STR_PTR(ksent);
 	len = KSTAT_NAMED_STR_BUFLEN(ksent);
@@ -154,9 +126,9 @@ kstat_sysctl_dataset(SYSCTL_HANDLER_ARGS)
 		return (EPERM);
 	}
 
-	/* Select the correct element */
+	 
 	ksent += arg2;
-	/* Update the aggsums before reading */
+	 
 	(void) ksp->ks_update(ksp, KSTAT_READ);
 	val = ksent->value.ui64;
 
@@ -171,7 +143,7 @@ kstat_sysctl_dataset_string(SYSCTL_HANDLER_ARGS)
 	char *val;
 	uint32_t len = 0;
 
-	/* Select the correct element */
+	 
 	ksent += arg2;
 	val = KSTAT_NAMED_STR_PTR(ksent);
 	len = KSTAT_NAMED_STR_BUFLEN(ksent);
@@ -195,10 +167,10 @@ kstat_sysctl_io(SYSCTL_HANDLER_ARGS)
 	sb = sbuf_new_auto();
 	if (sb == NULL)
 		return (ENOMEM);
-	/* Update the aggsums before reading */
+	 
 	(void) ksp->ks_update(ksp, KSTAT_READ);
 
-	/* though wlentime & friends are signed, they will never be negative */
+	 
 	sbuf_printf(sb,
 	    "%-8llu %-8llu %-8u %-8u %-8llu %-8llu "
 	    "%-8llu %-8llu %-8llu %-8llu %-8u %-8u\n",
@@ -234,7 +206,7 @@ kstat_sysctl_raw(SYSCTL_HANDLER_ARGS)
 
 	mutex_enter(ksp->ks_lock);
 
-	/* Update the aggsums before reading */
+	 
 	(void) ksp->ks_update(ksp, KSTAT_READ);
 
 	ksp->ks_raw_bufsize = PAGE_SIZE;
@@ -305,11 +277,7 @@ __kstat_create(const char *module, int instance, const char *name,
 	if (class == NULL)
 		class = "misc";
 
-	/*
-	 * Allocate the main structure. We don't need to keep a copy of
-	 * module in here, because it is only used for sysctl node creation
-	 * done in this function.
-	 */
+	 
 	ksp = malloc(sizeof (*ksp), M_KSTAT, M_WAITOK|M_ZERO);
 
 	ksp->ks_crtime = gethrtime();
@@ -354,22 +322,14 @@ __kstat_create(const char *module, int instance, const char *name,
 	else
 		ksp->ks_data = kmem_zalloc(ksp->ks_data_size, KM_SLEEP);
 
-	/*
-	 * Some kstats use a module name like "zfs/poolname" to distinguish a
-	 * set of kstats belonging to a specific pool.  Split on '/' to add an
-	 * extra node for the pool name if needed.
-	 */
+	 
 	(void) strlcpy(buf, module, KSTAT_STRLEN);
 	module = buf;
 	pool = strchr(module, '/');
 	if (pool != NULL)
 		*pool++ = '\0';
 
-	/*
-	 * Create sysctl tree for those statistics:
-	 *
-	 *	kstat.<module>[.<pool>].<class>.<name>
-	 */
+	 
 	sysctl_ctx_init(&ksp->ks_sysctl_ctx);
 	root = SYSCTL_ADD_NODE(&ksp->ks_sysctl_ctx,
 	    SYSCTL_STATIC_CHILDREN(_kstat), OID_AUTO, module, CTLFLAG_RW, 0,
@@ -448,7 +408,7 @@ kstat_install_named(kstat_t *ksp)
 		}
 		switch (typelast) {
 		case KSTAT_DATA_CHAR:
-			/* Not Implemented */
+			 
 			break;
 		case KSTAT_DATA_INT32:
 			SYSCTL_ADD_PROC(&ksp->ks_sysctl_ctx,

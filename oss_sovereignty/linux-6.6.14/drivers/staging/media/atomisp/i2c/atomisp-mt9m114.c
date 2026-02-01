@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for mt9m114 Camera Sensor.
- *
- * Copyright (c) 2010 Intel Corporation. All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -37,10 +22,7 @@
 
 #define to_mt9m114_sensor(sd) container_of(sd, struct mt9m114_device, sd)
 
-/*
- * TODO: use debug parameter to actually define when debug messages should
- * be printed.
- */
+ 
 static int debug;
 static int aaalock;
 module_param(debug, int, 0644);
@@ -73,7 +55,7 @@ mt9m114_read_reg(struct i2c_client *client, u16 data_length, u32 reg, u32 *val)
 	msg[0].len = MSG_LEN_OFFSET;
 	msg[0].buf = data;
 
-	/* high byte goes out first */
+	 
 	data[0] = (u16)(reg >> 8);
 	data[1] = (u16)(reg & 0xff);
 
@@ -86,7 +68,7 @@ mt9m114_read_reg(struct i2c_client *client, u16 data_length, u32 reg, u32 *val)
 
 	if (err >= 0) {
 		*val = 0;
-		/* high byte comes first */
+		 
 		if (data_length == MISENSOR_8BIT)
 			*val = data[0];
 		else if (data_length == MISENSOR_16BIT)
@@ -130,7 +112,7 @@ again:
 	msg.len = 2 + data_length;
 	msg.buf = data;
 
-	/* high byte goes out first */
+	 
 	wreg = (void *)data;
 	*wreg = cpu_to_be16(reg);
 
@@ -141,7 +123,7 @@ again:
 
 		*wdata = be16_to_cpu(*(__be16 *)&data[2]);
 	} else {
-		/* MISENSOR_32BIT */
+		 
 		u32 *wdata = (void *)&data[2];
 
 		*wdata = be32_to_cpu(*(__be32 *)&data[2]);
@@ -149,10 +131,7 @@ again:
 
 	num_msg = i2c_transfer(client->adapter, &msg, 1);
 
-	/*
-	 * HACK: Need some delay here for Rev 2 sensors otherwise some
-	 * registers do not seem to load correctly.
-	 */
+	 
 	mdelay(1);
 
 	if (num_msg >= 0)
@@ -170,18 +149,7 @@ again:
 	return num_msg;
 }
 
-/**
- * misensor_rmw_reg - Read/Modify/Write a value to a register in the sensor
- * device
- * @client: i2c driver client structure
- * @data_length: 8/16/32-bits length
- * @reg: register address
- * @mask: masked out bits
- * @set: bits set
- *
- * Read/modify/write a value to a register in the  sensor device.
- * Returns zero if successful, or non-zero otherwise.
- */
+ 
 static int
 misensor_rmw_reg(struct i2c_client *client, u16 data_length, u16 reg,
 		 u32 mask, u32 set)
@@ -189,11 +157,11 @@ misensor_rmw_reg(struct i2c_client *client, u16 data_length, u16 reg,
 	int err;
 	u32 val;
 
-	/* Exit when no mask */
+	 
 	if (mask == 0)
 		return 0;
 
-	/* @mask must not exceed data length */
+	 
 	switch (data_length) {
 	case MISENSOR_8BIT:
 		if (mask & ~0xff)
@@ -206,7 +174,7 @@ misensor_rmw_reg(struct i2c_client *client, u16 data_length, u16 reg,
 	case MISENSOR_32BIT:
 		break;
 	default:
-		/* Wrong @data_length */
+		 
 		return -EINVAL;
 	}
 
@@ -218,16 +186,7 @@ misensor_rmw_reg(struct i2c_client *client, u16 data_length, u16 reg,
 
 	val &= ~mask;
 
-	/*
-	 * Perform the OR function if the @set exists.
-	 * Shift @set value to target bit location. @set should set only
-	 * bits included in @mask.
-	 *
-	 * REVISIT: This function expects @set to be non-shifted. Its shift
-	 * value is then defined to be equal to mask's LSB position.
-	 * How about to inform values in their right offset position and avoid
-	 * this unneeded shift operation?
-	 */
+	 
 	set <<= ffs(mask) - 1;
 	val |= set & mask;
 
@@ -272,11 +231,7 @@ again:
 
 	ctrl->index = 0;
 
-	/*
-	 * REVISIT: Previously we had a delay after writing data to sensor.
-	 * But it was removed as our tests have shown it is not necessary
-	 * anymore.
-	 */
+	 
 
 	return 0;
 }
@@ -289,7 +244,7 @@ static int __mt9m114_buf_reg_array(struct i2c_client *client,
 	__be32 *data32;
 	int err;
 
-	/* Insufficient buffer? Let's flush and get more free space. */
+	 
 	if (ctrl->index + next->length >= MT9M114_MAX_WRITE_BUF_SIZE) {
 		err = __mt9m114_flush_reg_array(client, ctrl);
 		if (err)
@@ -312,7 +267,7 @@ static int __mt9m114_buf_reg_array(struct i2c_client *client,
 		return -EINVAL;
 	}
 
-	/* When first item is added, we need to store its starting address */
+	 
 	if (ctrl->index == 0)
 		ctrl->buffer.addr = next->reg;
 
@@ -332,20 +287,7 @@ __mt9m114_write_reg_is_consecutive(struct i2c_client *client,
 	return ctrl->buffer.addr + ctrl->index == next->reg;
 }
 
-/*
- * mt9m114_write_reg_array - Initializes a list of mt9m114 registers
- * @client: i2c driver client structure
- * @reglist: list of registers to be written
- * @poll: completion polling requirement
- * This function initializes a list of registers. When consecutive addresses
- * are found in a row on the list, this function creates a buffer and sends
- * consecutive data in a single i2c_transfer().
- *
- * __mt9m114_flush_reg_array, __mt9m114_buf_reg_array() and
- * __mt9m114_write_reg_is_consecutive() are internal functions to
- * mt9m114_write_reg_array() and should be not used anywhere else.
- *
- */
+ 
 static int mt9m114_write_reg_array(struct i2c_client *client,
 				   const struct misensor_reg *reglist,
 				   int poll)
@@ -383,10 +325,7 @@ static int mt9m114_write_reg_array(struct i2c_client *client,
 			}
 			break;
 		default:
-			/*
-			 * If next address is not consecutive, data needs to be
-			 * flushed before proceed.
-			 */
+			 
 			if (!__mt9m114_write_reg_is_consecutive(client, &ctrl,
 								next)) {
 				err = __mt9m114_flush_reg_array(client, &ctrl);
@@ -475,12 +414,7 @@ static int gpio_ctrl(struct v4l2_subdev *sd, bool flag)
 	if (!dev || !dev->platform_data)
 		return -ENODEV;
 
-	/*
-	 * Note: current modules wire only one GPIO signal (RESET#),
-	 * but the schematic wires up two to the connector.  BIOS
-	 * versions have been unfortunately inconsistent with which
-	 * ACPI index RESET# is on, so hit both
-	 */
+	 
 
 	if (flag) {
 		ret = dev->platform_data->gpio0_ctrl(sd, 0);
@@ -506,24 +440,21 @@ static int power_up(struct v4l2_subdev *sd)
 		return -ENODEV;
 	}
 
-	/* power control */
+	 
 	ret = power_ctrl(sd, 1);
 	if (ret)
 		goto fail_power;
 
-	/* flis clock control */
+	 
 	ret = dev->platform_data->flisclk_ctrl(sd, 1);
 	if (ret)
 		goto fail_clk;
 
-	/* gpio ctrl */
+	 
 	ret = gpio_ctrl(sd, 1);
 	if (ret)
 		dev_err(&client->dev, "gpio failed 1\n");
-	/*
-	 * according to DS, 44ms is needed between power up and first i2c
-	 * commend
-	 */
+	 
 	msleep(50);
 
 	return 0;
@@ -552,17 +483,17 @@ static int power_down(struct v4l2_subdev *sd)
 	if (ret)
 		dev_err(&client->dev, "flisclk failed\n");
 
-	/* gpio ctrl */
+	 
 	ret = gpio_ctrl(sd, 0);
 	if (ret)
 		dev_err(&client->dev, "gpio failed 1\n");
 
-	/* power control */
+	 
 	ret = power_ctrl(sd, 0);
 	if (ret)
 		dev_err(&client->dev, "vprog failed.\n");
 
-	/* according to DS, 20ms is needed after power down */
+	 
 	msleep(20);
 
 	return ret;
@@ -683,7 +614,7 @@ static int mt9m114_set_fmt(struct v4l2_subdev *sd,
 		break;
 	case MT9M114_RES_960P:
 		ret = mt9m114_write_reg_array(c, mt9m114_976P_init, NO_POLLING);
-		/* set sensor read_mode to Normal */
+		 
 		ret += misensor_rmw_reg(c, MISENSOR_16BIT, MISENSOR_READ_MODE,
 					MISENSOR_R_MODE_MASK, MISENSOR_NORMAL_SET);
 		break;
@@ -705,25 +636,15 @@ static int mt9m114_set_fmt(struct v4l2_subdev *sd,
 	if (dev->res != res->res) {
 		int index;
 
-		/* Switch to different size */
+		 
 		if (width <= 640) {
-			dev->nctx = 0x00; /* Set for context A */
+			dev->nctx = 0x00;  
 		} else {
-			/*
-			 * Context B is used for resolutions larger than 640x480
-			 * Using YUV for Context B.
-			 */
-			dev->nctx = 0x01; /* set for context B */
+			 
+			dev->nctx = 0x01;  
 		}
 
-		/*
-		 * Marked current sensor res as being "used"
-		 *
-		 * REVISIT: We don't need to use an "used" field on each mode
-		 * list entry to know which mode is selected. If this
-		 * information is really necessary, how about to use a single
-		 * variable on sensor dev struct?
-		 */
+		 
 		for (index = 0; index < N_RES; index++) {
 			if ((width == mt9m114_res[index].width) &&
 			    (height == mt9m114_res[index].height)) {
@@ -733,10 +654,7 @@ static int mt9m114_set_fmt(struct v4l2_subdev *sd,
 			mt9m114_res[index].used = false;
 		}
 	}
-	/*
-	 * mt9m114 - we don't poll for context switch
-	 * because it does not happen with streaming disabled.
-	 */
+	 
 	dev->res = res->res;
 
 	fmt->width = width;
@@ -745,7 +663,7 @@ static int mt9m114_set_fmt(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/* Horizontal flip the image. */
+ 
 static int mt9m114_g_hflip(struct v4l2_subdev *sd, s32 *val)
 {
 	struct i2c_client *c = v4l2_get_subdevdata(sd);
@@ -784,7 +702,7 @@ static long mt9m114_s_exposure(struct v4l2_subdev *sd,
 	int ret = 0;
 	unsigned int coarse_integration = 0;
 	unsigned int f_lines = 0;
-	unsigned int frame_len_lines = 0; /* ExposureTime.FrameLengthLines; */
+	unsigned int frame_len_lines = 0;  
 	unsigned int analog_gain, digital_gain;
 	u32 analog_gain_to_write = 0;
 
@@ -793,23 +711,20 @@ static long mt9m114_s_exposure(struct v4l2_subdev *sd,
 		exposure->gain[1]);
 
 	coarse_integration = exposure->integration_time[0];
-	/*
-	 * fine_integration = ExposureTime.FineIntegrationTime;
-	 * frame_len_lines = ExposureTime.FrameLengthLines;
-	 */
+	 
 	f_lines = mt9m114_res[dev->res].lines_per_frame;
 	analog_gain = exposure->gain[0];
 	digital_gain = exposure->gain[1];
 	if (!dev->streamon) {
-		/*Save the first exposure values while stream is off*/
+		 
 		dev->first_exp = coarse_integration;
 		dev->first_gain = analog_gain;
 		dev->first_diggain = digital_gain;
 	}
-	/* digital_gain = 0x400 * (((u16) digital_gain) >> 8) +		*/
-	/* ((unsigned int)(0x400 * (((u16) digital_gain) & 0xFF)) >>8); */
+	 
+	 
 
-	/* set frame length */
+	 
 	if (f_lines < coarse_integration + 6)
 		f_lines = coarse_integration + 6;
 	if (f_lines < frame_len_lines)
@@ -820,11 +735,8 @@ static long mt9m114_s_exposure(struct v4l2_subdev *sd,
 		return -EINVAL;
 	}
 
-	/* set coarse integration */
-	/*
-	 * 3A provide real exposure time.
-	 * should not translate to any value here.
-	 */
+	 
+	 
 	ret = mt9m114_write_reg(client, MISENSOR_16BIT,
 				REG_EXPO_COARSE, (u16)(coarse_integration));
 	if (ret) {
@@ -832,36 +744,10 @@ static long mt9m114_s_exposure(struct v4l2_subdev *sd,
 		return -EINVAL;
 	}
 
-	/*
-	 * set analog/digital gain
-	switch(analog_gain)
-	{
-	case 0:
-	  analog_gain_to_write = 0x0;
-	  break;
-	case 1:
-	  analog_gain_to_write = 0x20;
-	  break;
-	case 2:
-	  analog_gain_to_write = 0x60;
-	  break;
-	case 4:
-	  analog_gain_to_write = 0xA0;
-	  break;
-	case 8:
-	  analog_gain_to_write = 0xE0;
-	  break;
-	default:
-	  analog_gain_to_write = 0x20;
-	  break;
-	}
-	*/
+	 
 	if (digital_gain >= 16 || digital_gain <= 1)
 		digital_gain = 1;
-	/*
-	 * analog_gain_to_write = (u16)((digital_gain << 12)
-	 *				| analog_gain_to_write);
-	 */
+	 
 	analog_gain_to_write = (u16)((digital_gain << 12) | (u16)analog_gain);
 	ret = mt9m114_write_reg(client, MISENSOR_16BIT,
 				REG_GAIN, analog_gain_to_write);
@@ -886,17 +772,14 @@ static long mt9m114_ioctl(struct v4l2_subdev *sd, unsigned int cmd, void *arg)
 	return 0;
 }
 
-/*
- * This returns the exposure time being used. This should only be used
- * for filling in EXIF data, not for actual image processing.
- */
+ 
 static int mt9m114_g_exposure(struct v4l2_subdev *sd, s32 *value)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 	u32 coarse;
 	int ret;
 
-	/* the fine integration time is currently not calculated */
+	 
 	ret = mt9m114_read_reg(client, MISENSOR_16BIT,
 			       REG_EXPO_COARSE, &coarse);
 	if (ret)
@@ -906,10 +789,7 @@ static int mt9m114_g_exposure(struct v4l2_subdev *sd, s32 *value)
 	return 0;
 }
 
-/*
- * This function will return the sensor supported max exposure zone number.
- * the sensor which supports max exposure zone number is 1.
- */
+ 
 static int mt9m114_g_exposure_zone_num(struct v4l2_subdev *sd, s32 *val)
 {
 	*val = 1;
@@ -917,9 +797,7 @@ static int mt9m114_g_exposure_zone_num(struct v4l2_subdev *sd, s32 *val)
 	return 0;
 }
 
-/*
- * set exposure metering, average/center_weighted/spot/matrix.
- */
+ 
 static int mt9m114_s_exposure_metering(struct v4l2_subdev *sd, s32 val)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
@@ -947,9 +825,7 @@ static int mt9m114_s_exposure_metering(struct v4l2_subdev *sd, s32 val)
 	return 0;
 }
 
-/*
- * This function is for touch exposure feature.
- */
+ 
 static int mt9m114_s_exposure_selection(struct v4l2_subdev *sd,
 					struct v4l2_subdev_state *sd_state,
 					struct v4l2_subdev_selection *sel)
@@ -1022,10 +898,7 @@ static int mt9m114_s_ev(struct v4l2_subdev *sd, s32 val)
 	s32 luma = 0x37;
 	int err;
 
-	/*
-	 * EV value only support -2 to 2
-	 * 0: 0x37, 1:0x47, 2:0x57, -1:0x27, -2:0x17
-	 */
+	 
 	if (val < -2 || val > 2)
 		return -EINVAL;
 	luma += 0x10 * val;
@@ -1071,10 +944,7 @@ static int mt9m114_g_ev(struct v4l2_subdev *sd, s32 *val)
 	return 0;
 }
 
-/*
- * Fake interface
- * mt9m114 now can not support 3a_lock
- */
+ 
 static int mt9m114_s_3a_lock(struct v4l2_subdev *sd, s32 val)
 {
 	aaalock = val;
@@ -1280,7 +1150,7 @@ mt9m114_s_config(struct v4l2_subdev *sd, int irq, void *platform_data)
 		return ret;
 	}
 
-	/* config & detect sensor */
+	 
 	ret = mt9m114_detect(dev, client);
 	if (ret) {
 		v4l2_err(client, "mt9m114_detect err s_config.\n");
@@ -1313,19 +1183,19 @@ fail_detect:
 	return ret;
 }
 
-/* Horizontal flip the image. */
+ 
 static int mt9m114_t_hflip(struct v4l2_subdev *sd, int value)
 {
 	struct i2c_client *c = v4l2_get_subdevdata(sd);
 	struct mt9m114_device *dev = to_mt9m114_sensor(sd);
 	int err;
-	/* set for direct mode */
+	 
 	err = mt9m114_write_reg(c, MISENSOR_16BIT, 0x098E, 0xC850);
 	if (value) {
-		/* enable H flip ctx A */
+		 
 		err += misensor_rmw_reg(c, MISENSOR_8BIT, 0xC850, 0x01, 0x01);
 		err += misensor_rmw_reg(c, MISENSOR_8BIT, 0xC851, 0x01, 0x01);
-		/* ctx B */
+		 
 		err += misensor_rmw_reg(c, MISENSOR_8BIT, 0xC888, 0x01, 0x01);
 		err += misensor_rmw_reg(c, MISENSOR_8BIT, 0xC889, 0x01, 0x01);
 
@@ -1334,10 +1204,10 @@ static int mt9m114_t_hflip(struct v4l2_subdev *sd, int value)
 
 		dev->bpat = MT9M114_BPAT_GRGRBGBG;
 	} else {
-		/* disable H flip ctx A */
+		 
 		err += misensor_rmw_reg(c, MISENSOR_8BIT, 0xC850, 0x01, 0x00);
 		err += misensor_rmw_reg(c, MISENSOR_8BIT, 0xC851, 0x01, 0x00);
-		/* ctx B */
+		 
 		err += misensor_rmw_reg(c, MISENSOR_8BIT, 0xC888, 0x01, 0x00);
 		err += misensor_rmw_reg(c, MISENSOR_8BIT, 0xC889, 0x01, 0x00);
 
@@ -1353,28 +1223,28 @@ static int mt9m114_t_hflip(struct v4l2_subdev *sd, int value)
 	return !!err;
 }
 
-/* Vertically flip the image */
+ 
 static int mt9m114_t_vflip(struct v4l2_subdev *sd, int value)
 {
 	struct i2c_client *c = v4l2_get_subdevdata(sd);
 	int err;
-	/* set for direct mode */
+	 
 	err = mt9m114_write_reg(c, MISENSOR_16BIT, 0x098E, 0xC850);
 	if (value >= 1) {
-		/* enable H flip - ctx A */
+		 
 		err += misensor_rmw_reg(c, MISENSOR_8BIT, 0xC850, 0x02, 0x01);
 		err += misensor_rmw_reg(c, MISENSOR_8BIT, 0xC851, 0x02, 0x01);
-		/* ctx B */
+		 
 		err += misensor_rmw_reg(c, MISENSOR_8BIT, 0xC888, 0x02, 0x01);
 		err += misensor_rmw_reg(c, MISENSOR_8BIT, 0xC889, 0x02, 0x01);
 
 		err += misensor_rmw_reg(c, MISENSOR_16BIT, MISENSOR_READ_MODE,
 					MISENSOR_VFLIP_MASK, MISENSOR_FLIP_EN);
 	} else {
-		/* disable H flip - ctx A */
+		 
 		err += misensor_rmw_reg(c, MISENSOR_8BIT, 0xC850, 0x02, 0x00);
 		err += misensor_rmw_reg(c, MISENSOR_8BIT, 0xC851, 0x02, 0x00);
-		/* ctx B */
+		 
 		err += misensor_rmw_reg(c, MISENSOR_8BIT, 0xC888, 0x02, 0x00);
 		err += misensor_rmw_reg(c, MISENSOR_8BIT, 0xC889, 0x02, 0x00);
 
@@ -1491,7 +1361,7 @@ static const struct v4l2_subdev_core_ops mt9m114_core_ops = {
 	.ioctl = mt9m114_ioctl,
 };
 
-/* REVISIT: Do we need pad operations? */
+ 
 static const struct v4l2_subdev_pad_ops mt9m114_pad_ops = {
 	.enum_mbus_code = mt9m114_enum_mbus_code,
 	.enum_frame_size = mt9m114_enum_frame_size,
@@ -1527,7 +1397,7 @@ static int mt9m114_probe(struct i2c_client *client)
 	unsigned int i;
 	void *pdata;
 
-	/* Setup sensor configuration structure */
+	 
 	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
 	if (!dev)
 		return -ENOMEM;
@@ -1548,11 +1418,11 @@ static int mt9m114_probe(struct i2c_client *client)
 	if (ret) {
 		v4l2_device_unregister_subdev(&dev->sd);
 		kfree(dev);
-		/* Coverity CID 298095 - return on error */
+		 
 		return ret;
 	}
 
-	/* TODO add format code here */
+	 
 	dev->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
 	dev->pad.flags = MEDIA_PAD_FL_SOURCE;
 	dev->format.code = MEDIA_BUS_FMT_SGRBG10_1X10;
@@ -1575,11 +1445,11 @@ static int mt9m114_probe(struct i2c_client *client)
 		return dev->ctrl_handler.error;
 	}
 
-	/* Use same lock for controls as for everything else. */
+	 
 	dev->ctrl_handler.lock = &dev->input_lock;
 	dev->sd.ctrl_handler = &dev->ctrl_handler;
 
-	/* REVISIT: Do we need media controller? */
+	 
 	ret = media_entity_pads_init(&dev->sd.entity, 1, &dev->pad);
 	if (ret) {
 		mt9m114_remove(client);

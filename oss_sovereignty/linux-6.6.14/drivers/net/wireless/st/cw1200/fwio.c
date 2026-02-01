@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Firmware I/O code for mac80211 ST-Ericsson CW1200 drivers
- *
- * Copyright (c) 2010, ST-Ericsson
- * Author: Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>
- *
- * Based on:
- * ST-Ericsson UMAC CW1200 driver which is
- * Copyright (c) 2010, ST-Ericsson
- * Author: Ajitpal Singh <ajitpal.singh@stericsson.com>
- */
+
+ 
 
 #include <linux/vmalloc.h>
 #include <linux/sched.h>
@@ -33,8 +23,8 @@ static int cw1200_get_hw_type(u32 config_reg_val, int *major_revision)
 		hw_type = HIF_9000_SILICON_VERSATILE;
 		break;
 	case 0x01:
-	case 0x02: /* CW1x00 */
-	case 0x04: /* CW1x60 */
+	case 0x02:  
+	case 0x04:  
 		*major_revision = silicon_type;
 		if (silicon_vers)
 			hw_type = HIF_8601_VERSATILE;
@@ -58,7 +48,7 @@ static int cw1200_load_firmware_cw1200(struct cw1200_common *priv)
 	const char *fw_path;
 	const struct firmware *firmware = NULL;
 
-	/* Macroses are local. */
+	 
 #define APB_WRITE(reg, val) \
 	do { \
 		ret = cw1200_apb_write_32(priv, CW1200_APB(reg), (val)); \
@@ -121,27 +111,27 @@ static int cw1200_load_firmware_cw1200(struct cw1200_common *priv)
 		return -EINVAL;
 	}
 
-	/* Initialize common registers */
+	 
 	APB_WRITE(DOWNLOAD_IMAGE_SIZE_REG, DOWNLOAD_ARE_YOU_HERE);
 	APB_WRITE(DOWNLOAD_PUT_REG, 0);
 	APB_WRITE(DOWNLOAD_GET_REG, 0);
 	APB_WRITE(DOWNLOAD_STATUS_REG, DOWNLOAD_PENDING);
 	APB_WRITE(DOWNLOAD_FLAGS_REG, 0);
 
-	/* Write the NOP Instruction */
+	 
 	REG_WRITE(ST90TDS_SRAM_BASE_ADDR_REG_ID, 0xFFF20000);
 	REG_WRITE(ST90TDS_AHB_DPORT_REG_ID, 0xEAFFFFFE);
 
-	/* Release CPU from RESET */
+	 
 	REG_READ(ST90TDS_CONFIG_REG_ID, val32);
 	val32 &= ~ST90TDS_CONFIG_CPU_RESET_BIT;
 	REG_WRITE(ST90TDS_CONFIG_REG_ID, val32);
 
-	/* Enable Clock */
+	 
 	val32 &= ~ST90TDS_CONFIG_CPU_CLK_DIS_BIT;
 	REG_WRITE(ST90TDS_CONFIG_REG_ID, val32);
 
-	/* Load a firmware file */
+	 
 	ret = request_firmware(&firmware, fw_path, priv->pdev);
 	if (ret) {
 		pr_err("Can't load firmware file %s.\n", fw_path);
@@ -155,13 +145,13 @@ static int cw1200_load_firmware_cw1200(struct cw1200_common *priv)
 		goto firmware_release;
 	}
 
-	/* Check if the bootloader is ready */
+	 
 	for (i = 0; i < 100; i += 1 + i / 2) {
 		APB_READ(DOWNLOAD_IMAGE_SIZE_REG, val32);
 		if (val32 == DOWNLOAD_I_AM_HERE)
 			break;
 		mdelay(i);
-	} /* End of for loop */
+	}  
 
 	if (val32 != DOWNLOAD_I_AM_HERE) {
 		pr_err("Bootloader is not ready.\n");
@@ -169,19 +159,19 @@ static int cw1200_load_firmware_cw1200(struct cw1200_common *priv)
 		goto free_buffer;
 	}
 
-	/* Calculcate number of download blocks */
+	 
 	num_blocks = (firmware->size - 1) / DOWNLOAD_BLOCK_SIZE + 1;
 
-	/* Updating the length in Download Ctrl Area */
-	val32 = firmware->size; /* Explicit cast from size_t to u32 */
+	 
+	val32 = firmware->size;  
 	APB_WRITE2(DOWNLOAD_IMAGE_SIZE_REG, val32);
 
-	/* Firmware downloading loop */
+	 
 	for (block = 0; block < num_blocks; block++) {
 		size_t tx_size;
 		size_t block_size;
 
-		/* check the download status */
+		 
 		APB_READ(DOWNLOAD_STATUS_REG, val32);
 		if (val32 != DOWNLOAD_PENDING) {
 			pr_err("Bootloader reported error %d.\n", val32);
@@ -189,7 +179,7 @@ static int cw1200_load_firmware_cw1200(struct cw1200_common *priv)
 			goto free_buffer;
 		}
 
-		/* loop until put - get <= 24K */
+		 
 		for (i = 0; i < 100; i++) {
 			APB_READ(DOWNLOAD_GET_REG, get);
 			if ((put - get) <=
@@ -204,7 +194,7 @@ static int cw1200_load_firmware_cw1200(struct cw1200_common *priv)
 			goto free_buffer;
 		}
 
-		/* calculate the block size */
+		 
 		tx_size = block_size = min_t(size_t, firmware->size - put,
 					DOWNLOAD_BLOCK_SIZE);
 
@@ -215,7 +205,7 @@ static int cw1200_load_firmware_cw1200(struct cw1200_common *priv)
 			tx_size = DOWNLOAD_BLOCK_SIZE;
 		}
 
-		/* send the block to sram */
+		 
 		ret = cw1200_apb_write(priv,
 			CW1200_APB(DOWNLOAD_FIFO_OFFSET +
 				   (put & (DOWNLOAD_FIFO_SIZE - 1))),
@@ -226,12 +216,12 @@ static int cw1200_load_firmware_cw1200(struct cw1200_common *priv)
 			goto free_buffer;
 		}
 
-		/* update the put register */
+		 
 		put += block_size;
 		APB_WRITE2(DOWNLOAD_PUT_REG, put);
-	} /* End of firmware download loop */
+	}  
 
-	/* Wait for the download completion */
+	 
 	for (i = 0; i < 300; i += 1 + i / 2) {
 		APB_READ(DOWNLOAD_STATUS_REG, val32);
 		if (val32 != DOWNLOAD_PENDING)
@@ -307,7 +297,7 @@ int cw1200_load_firmware(struct cw1200_common *priv)
 	u16 val16;
 	int major_revision = -1;
 
-	/* Read CONFIG Register */
+	 
 	ret = cw1200_reg_read_32(priv, ST90TDS_CONFIG_REG_ID, &val32);
 	if (ret < 0) {
 		pr_err("Can't read config register.\n");
@@ -327,7 +317,7 @@ int cw1200_load_firmware(struct cw1200_common *priv)
 	}
 	priv->hw_type = ret;
 
-	/* Set DPLL Reg value, and read back to confirm writes work */
+	 
 	ret = cw1200_reg_write_32(priv, ST90TDS_TSET_GEN_R_W_REG_ID,
 				  cw1200_dpll_from_clk(priv->hw_refclk));
 	if (ret < 0) {
@@ -351,7 +341,7 @@ int cw1200_load_firmware(struct cw1200_common *priv)
 		goto out;
 	}
 
-	/* Set wakeup bit in device */
+	 
 	ret = cw1200_reg_read_16(priv, ST90TDS_CONTROL_REG_ID, &val16);
 	if (ret < 0) {
 		pr_err("set_wakeup: can't read control register.\n");
@@ -365,7 +355,7 @@ int cw1200_load_firmware(struct cw1200_common *priv)
 		goto out;
 	}
 
-	/* Wait for wakeup */
+	 
 	for (i = 0; i < 300; i += (1 + i / 2)) {
 		ret = cw1200_reg_read_16(priv,
 			ST90TDS_CONTROL_REG_ID, &val16);
@@ -388,7 +378,7 @@ int cw1200_load_firmware(struct cw1200_common *priv)
 
 	switch (major_revision) {
 	case 1:
-		/* CW1200 Hardware detection logic : Check for CUT1.1 */
+		 
 		ret = cw1200_ahb_read_32(priv, CW1200_CUT_ID_ADDR, &val32);
 		if (ret) {
 			pr_err("HW detection: can't read CUT ID.\n");
@@ -406,9 +396,7 @@ int cw1200_load_firmware(struct cw1200_common *priv)
 			break;
 		}
 
-		/* According to ST-E, CUT<2.0 has busted BA TID0-3.
-		   Just disable it entirely...
-		*/
+		 
 		priv->ba_rx_tid_mask = 0;
 		priv->ba_tx_tid_mask = 0;
 		break;
@@ -453,7 +441,7 @@ int cw1200_load_firmware(struct cw1200_common *priv)
 		goto out;
 	}
 
-	/* Checking for access mode */
+	 
 	ret = config_reg_read(priv, &val32);
 	if (ret < 0) {
 		pr_err("Can't read config register.\n");
@@ -486,14 +474,14 @@ int cw1200_load_firmware(struct cw1200_common *priv)
 		goto out;
 	}
 
-	/* Enable interrupt signalling */
+	 
 	priv->hwbus_ops->lock(priv->hwbus_priv);
 	ret = __cw1200_irq_enable(priv, 1);
 	priv->hwbus_ops->unlock(priv->hwbus_priv);
 	if (ret < 0)
 		goto unsubscribe;
 
-	/* Configure device for MESSSAGE MODE */
+	 
 	ret = config_reg_read(priv, &val32);
 	if (ret < 0) {
 		pr_err("Can't read config register.\n");
@@ -505,9 +493,7 @@ int cw1200_load_firmware(struct cw1200_common *priv)
 		goto unsubscribe;
 	}
 
-	/* Unless we read the CONFIG Register we are
-	 * not able to get an interrupt
-	 */
+	 
 	mdelay(10);
 	config_reg_read(priv, &val32);
 
@@ -515,7 +501,7 @@ out:
 	return ret;
 
 unsubscribe:
-	/* Disable interrupt signalling */
+	 
 	priv->hwbus_ops->lock(priv->hwbus_priv);
 	ret = __cw1200_irq_enable(priv, 0);
 	priv->hwbus_ops->unlock(priv->hwbus_priv);

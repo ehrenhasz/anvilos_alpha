@@ -1,8 +1,4 @@
-/* Self-testing for signature checking.
- *
- * Copyright (C) 2022 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+ 
 
 #include <crypto/pkcs7.h>
 #include <linux/cred.h>
@@ -18,10 +14,7 @@ struct certs_test {
 	size_t		pkcs7_len;
 };
 
-/*
- * Set of X.509 certificates to provide public keys for the tests.  These will
- * be loaded into a temporary keyring for the duration of the testing.
- */
+ 
 static const __initconst u8 certs_selftest_keys[] = {
 	"\x30\x82\x05\x55\x30\x82\x03\x3d\xa0\x03\x02\x01\x02\x02\x14\x73"
 	"\x98\xea\x98\x2d\xd0\x2e\xa8\xb1\xcf\x57\xc7\xf2\x97\xb3\xe6\x1a"
@@ -111,9 +104,7 @@ static const __initconst u8 certs_selftest_keys[] = {
 	"\x02\xfc\x9e\x5f\x56\x42\x39\x05\xb3"
 };
 
-/*
- * Signed data and detached signature blobs that form the verification tests.
- */
+ 
 static const __initconst u8 certs_selftest_1_data[] = {
 	"\x54\x68\x69\x73\x20\x69\x73\x20\x73\x6f\x6d\x65\x20\x74\x65\x73"
 	"\x74\x20\x64\x61\x74\x61\x20\x75\x73\x65\x64\x20\x66\x6f\x72\x20"
@@ -168,9 +159,7 @@ static const __initconst u8 certs_selftest_1_pkcs7[] = {
 	"\x77\x55\x3c\x6f\x0c\x32\xd3\x8c\x44\x39\x71\x25\xfe\x96\xd2"
 };
 
-/*
- * List of tests to be run.
- */
+ 
 #define TEST(data, pkcs7) { data, sizeof(data) - 1, pkcs7, sizeof(pkcs7) - 1 }
 static const struct certs_test certs_tests[] __initconst = {
 	TEST(certs_selftest_1_data, certs_selftest_1_pkcs7),

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM power
 
@@ -146,7 +146,7 @@ TRACE_EVENT(pstate_sample,
 
 );
 
-/* This file can get included multiple times, TRACE_HEADER_MULTI_READ at top */
+ 
 #ifndef _PWR_EVENT_AVOID_DOUBLE_DEFINING
 #define _PWR_EVENT_AVOID_DOUBLE_DEFINING
 
@@ -301,10 +301,7 @@ DEFINE_EVENT(wakeup_source, wakeup_source_deactivate,
 	TP_ARGS(name, state)
 );
 
-/*
- * The clock events are used for clock enable/disable and for
- *  clock rate change
- */
+ 
 DECLARE_EVENT_CLASS(clock,
 
 	TP_PROTO(const char *name, unsigned int state, unsigned int cpu_id),
@@ -348,9 +345,7 @@ DEFINE_EVENT(clock, clock_set_rate,
 	TP_ARGS(name, state, cpu_id)
 );
 
-/*
- * The power domain events are used for power domains transitions
- */
+ 
 DECLARE_EVENT_CLASS(power_domain,
 
 	TP_PROTO(const char *name, unsigned int state, unsigned int cpu_id),
@@ -380,9 +375,7 @@ DEFINE_EVENT(power_domain, power_domain_target,
 	TP_ARGS(name, state, cpu_id)
 );
 
-/*
- * CPU latency QoS events used for global CPU latency QoS list updates
- */
+ 
 DECLARE_EVENT_CLASS(cpu_latency_qos_request,
 
 	TP_PROTO(s32 value),
@@ -422,9 +415,7 @@ DEFINE_EVENT(cpu_latency_qos_request, pm_qos_remove_request,
 	TP_ARGS(value)
 );
 
-/*
- * General PM QoS events used for updates of PM QoS request lists
- */
+ 
 DECLARE_EVENT_CLASS(pm_qos_update,
 
 	TP_PROTO(enum pm_qos_req_action action, int prev_value, int curr_value),
@@ -551,7 +542,7 @@ TRACE_EVENT(guest_halt_poll_ns,
 	trace_guest_halt_poll_ns(true, new, old)
 #define trace_guest_halt_poll_ns_shrink(new, old) \
 	trace_guest_halt_poll_ns(false, new, old)
-#endif /* _TRACE_POWER_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

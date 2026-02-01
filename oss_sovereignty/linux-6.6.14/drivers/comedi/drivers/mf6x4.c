@@ -1,33 +1,19 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  comedi/drivers/mf6x4.c
- *  Driver for Humusoft MF634 and MF624 Data acquisition cards
- *
- *  COMEDI - Linux Control and Measurement Device Interface
- *  Copyright (C) 2000 David A. Schleef <ds@schleef.org>
- */
-/*
- * Driver: mf6x4
- * Description: Humusoft MF634 and MF624 Data acquisition card driver
- * Devices: [Humusoft] MF634 (mf634), MF624 (mf624)
- * Author: Rostislav Lisovy <lisovy@gmail.com>
- * Status: works
- * Updated:
- * Configuration Options: none
- */
+
+ 
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
 #include <linux/comedi/comedi_pci.h>
 
-/* Registers present in BAR0 memory region */
+ 
 #define MF624_GPIOC_REG		0x54
 
-#define MF6X4_GPIOC_EOLC	BIT(17)	/* End Of Last Conversion */
-#define MF6X4_GPIOC_LDAC	BIT(23)	/* Load DACs */
+#define MF6X4_GPIOC_EOLC	BIT(17)	 
+#define MF6X4_GPIOC_LDAC	BIT(23)	 
 #define MF6X4_GPIOC_DACEN	BIT(26)
 
-/* BAR1 registers */
+ 
 #define MF6X4_ADDATA_REG	0x00
 #define MF6X4_ADCTRL_REG	0x00
 #define MF6X4_ADCTRL_CHAN(x)	BIT(chan)
@@ -37,7 +23,7 @@
 #define MF6X4_ADSTART_REG	0x20
 #define MF6X4_DAC_REG(x)	(0x20 + ((x) * 2))
 
-/* BAR2 registers */
+ 
 #define MF634_GPIOC_REG		0x68
 
 enum mf6x4_boardid {
@@ -47,7 +33,7 @@ enum mf6x4_boardid {
 
 struct mf6x4_board {
 	const char *name;
-	/* We need to keep track of the order of BARs used by the cards */
+	 
 	unsigned int bar_nums[3];
 };
 
@@ -63,20 +49,11 @@ static const struct mf6x4_board mf6x4_boards[] = {
 };
 
 struct mf6x4_private {
-	/*
-	 * Documentation for both MF634 and MF624 describes registers
-	 * present in BAR0, 1 and 2 regions.
-	 * The real (i.e. in HW) BAR numbers are different for MF624
-	 * and MF634 yet we will call them 0, 1, 2
-	 */
+	 
 	void __iomem *bar0_mem;
 	void __iomem *bar2_mem;
 
-	/*
-	 * This configuration register has the same function and fields
-	 * for both cards however it lies in different BARs on different
-	 * offsets -- this variable makes the access easier
-	 */
+	 
 	void __iomem *gpioc_reg;
 };
 
@@ -111,7 +88,7 @@ static int mf6x4_ai_eoc(struct comedi_device *dev,
 	struct mf6x4_private *devpriv = dev->private;
 	unsigned int status;
 
-	/* EOLC goes low at end of conversion. */
+	 
 	status = ioread32(devpriv->gpioc_reg);
 	if ((status & MF6X4_GPIOC_EOLC) == 0)
 		return 0;
@@ -128,21 +105,21 @@ static int mf6x4_ai_insn_read(struct comedi_device *dev,
 	int ret;
 	int i;
 
-	/* Set the ADC channel number in the scan list */
+	 
 	iowrite16(MF6X4_ADCTRL_CHAN(chan), dev->mmio + MF6X4_ADCTRL_REG);
 
 	for (i = 0; i < insn->n; i++) {
-		/* Trigger ADC conversion by reading ADSTART */
+		 
 		ioread16(dev->mmio + MF6X4_ADSTART_REG);
 
 		ret = comedi_timeout(dev, s, insn, mf6x4_ai_eoc, 0);
 		if (ret)
 			return ret;
 
-		/* Read the actual value */
+		 
 		d = ioread16(dev->mmio + MF6X4_ADDATA_REG);
 		d &= s->maxdata;
-		/* munge the 2's complement data to offset binary */
+		 
 		data[i] = comedi_offset_munge(s, d);
 	}
 
@@ -162,7 +139,7 @@ static int mf6x4_ao_insn_write(struct comedi_device *dev,
 	unsigned int gpioc;
 	int i;
 
-	/* Enable instantaneous update of converters outputs + Enable DACs */
+	 
 	gpioc = ioread32(devpriv->gpioc_reg);
 	iowrite32((gpioc & ~MF6X4_GPIOC_LDAC) | MF6X4_GPIOC_DACEN,
 		  devpriv->gpioc_reg);
@@ -221,7 +198,7 @@ static int mf6x4_auto_attach(struct comedi_device *dev, unsigned long context)
 	if (ret)
 		return ret;
 
-	/* Analog Input subdevice */
+	 
 	s = &dev->subdevices[0];
 	s->type		= COMEDI_SUBD_AI;
 	s->subdev_flags	= SDF_READABLE | SDF_GROUND;
@@ -230,7 +207,7 @@ static int mf6x4_auto_attach(struct comedi_device *dev, unsigned long context)
 	s->range_table	= &range_bipolar10;
 	s->insn_read	= mf6x4_ai_insn_read;
 
-	/* Analog Output subdevice */
+	 
 	s = &dev->subdevices[1];
 	s->type		= COMEDI_SUBD_AO;
 	s->subdev_flags	= SDF_WRITABLE;
@@ -243,7 +220,7 @@ static int mf6x4_auto_attach(struct comedi_device *dev, unsigned long context)
 	if (ret)
 		return ret;
 
-	/* Digital Input subdevice */
+	 
 	s = &dev->subdevices[2];
 	s->type		= COMEDI_SUBD_DI;
 	s->subdev_flags	= SDF_READABLE;
@@ -252,7 +229,7 @@ static int mf6x4_auto_attach(struct comedi_device *dev, unsigned long context)
 	s->range_table	= &range_digital;
 	s->insn_bits	= mf6x4_di_insn_bits;
 
-	/* Digital Output subdevice */
+	 
 	s = &dev->subdevices[3];
 	s->type		= COMEDI_SUBD_DO;
 	s->subdev_flags	= SDF_WRITABLE;

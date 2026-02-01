@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * w1_ds2413.c - w1 family 3a (DS2413) driver
- * based on w1_ds2408.c by Jean-Francois Dagenais <dagenaisj@sonatest.com>
- *
- * Copyright (c) 2013 Mariusz Bialonczyk <manio@skyboo.net>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -54,19 +49,19 @@ next:
 
 		state = w1_read_8(sl->master);
 		if ((state & 0x0F) == ((~state >> 4) & 0x0F)) {
-			/* complement is correct */
+			 
 			*buf = state;
 			bytes_read = 1;
 			goto out;
 		} else if (state == W1_F3A_INVALID_PIO_STATE) {
-			/* slave didn't respond, try to select it again */
+			 
 			dev_warn(&sl->dev, "slave device did not respond to PIO_ACCESS_READ, " \
 					    "reselecting, retries left: %d\n", retries);
 			goto next;
 		}
 
 		if (w1_reset_resume_command(sl->master))
-			goto out; /* unrecoverable error */
+			goto out;  
 
 		dev_warn(&sl->dev, "PIO_ACCESS_READ error, retries left: %d\n", retries);
 	}
@@ -99,10 +94,7 @@ static ssize_t output_write(struct file *filp, struct kobject *kobj,
 	if (w1_reset_select_slave(sl))
 		goto out;
 
-	/*
-	 * according to the DS2413 datasheet the most significant 6 bits
-	 * should be set to "1"s, so do it now
-	 */
+	 
 	*buf = *buf | 0xFC;
 
 	while (retries--) {
@@ -116,7 +108,7 @@ static ssize_t output_write(struct file *filp, struct kobject *kobj,
 			goto out;
 		}
 		if (w1_reset_resume_command(sl->master))
-			goto out; /* unrecoverable error */
+			goto out;  
 
 		dev_warn(&sl->dev, "PIO_ACCESS_WRITE error, retries left: %d\n", retries);
 	}

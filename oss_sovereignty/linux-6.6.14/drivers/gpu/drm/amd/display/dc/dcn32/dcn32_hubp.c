@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-20 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 #include "dce_calcs.h"
@@ -60,7 +37,7 @@ void hubp32_update_mall_sel(struct hubp *hubp, uint32_t mall_sel, bool c_cursor)
 {
 	struct dcn20_hubp *hubp2 = TO_DCN20_HUBP(hubp);
 
-	// Also cache cursor in MALL if using MALL for SS
+	
 	REG_UPDATE_2(DCHUBP_MALL_CONFIG, USE_MALL_SEL, mall_sel,
 			USE_MALL_FOR_CURSOR, c_cursor);
 }
@@ -70,16 +47,7 @@ void hubp32_prepare_subvp_buffering(struct hubp *hubp, bool enable)
 	struct dcn20_hubp *hubp2 = TO_DCN20_HUBP(hubp);
 	REG_UPDATE(DCHUBP_VMPG_CONFIG, FORCE_ONE_ROW_FOR_FRAME, enable);
 
-	/* Programming guide suggests CURSOR_REQ_MODE = 1 for SubVP:
-	 * For Pstate change using the MALL with sub-viewport buffering,
-	 * the cursor does not use the MALL (USE_MALL_FOR_CURSOR is ignored)
-	 * and sub-viewport positioning by Display FW has to avoid the cursor
-	 * requests to DRAM (set CURSOR_REQ_MODE = 1 to minimize this exclusion).
-	 *
-	 * CURSOR_REQ_MODE = 1 begins fetching cursor data at the beginning of display prefetch.
-	 * Setting this should allow the sub-viewport position to always avoid the cursor because
-	 * we do not allow the sub-viewport region to overlap with display prefetch (i.e. during blank).
-	 */
+	 
 	REG_UPDATE(CURSOR_CONTROL, CURSOR_REQ_MODE, enable);
 }
 
@@ -88,17 +56,12 @@ void hubp32_phantom_hubp_post_enable(struct hubp *hubp)
 	uint32_t reg_val;
 	struct dcn20_hubp *hubp2 = TO_DCN20_HUBP(hubp);
 
-	/* For phantom pipe enable, disable GSL */
+	 
 	REG_UPDATE(DCSURF_FLIP_CONTROL2, SURFACE_GSL_ENABLE, 0);
 	REG_UPDATE(DCHUBP_CNTL, HUBP_BLANK_EN, 1);
 	reg_val = REG_READ(DCHUBP_CNTL);
 	if (reg_val) {
-		/* init sequence workaround: in case HUBP is
-		 * power gated, this wait would timeout.
-		 *
-		 * we just wrote reg_val to non-0, if it stay 0
-		 * it means HUBP is gated
-		 */
+		 
 		REG_WAIT(DCHUBP_CNTL,
 				HUBP_NO_OUTSTANDING_REQ, 1,
 				1, 200);
@@ -114,7 +77,7 @@ void hubp32_cursor_set_attributes(
 	enum cursor_lines_per_chunk lpc = hubp2_get_lines_per_chunk(
 			attr->width, attr->color_format);
 
-	//Round cursor width up to next multiple of 64
+	
 	uint32_t cursor_width = ((attr->width + 63) / 64) * 64;
 	uint32_t cursor_height = attr->height;
 	uint32_t cursor_size = cursor_width * cursor_height;
@@ -137,9 +100,9 @@ void hubp32_cursor_set_attributes(
 			CURSOR_LINES_PER_CHUNK, lpc);
 
 	REG_SET_2(CURSOR_SETTINGS, 0,
-			/* no shift of the cursor HDL schedule */
+			 
 			CURSOR0_DST_Y_OFFSET, 0,
-			 /* used to shift the cursor chunk request deadline */
+			  
 			CURSOR0_CHUNK_HDL_ADJUST, 3);
 
 	switch (attr->color_format) {

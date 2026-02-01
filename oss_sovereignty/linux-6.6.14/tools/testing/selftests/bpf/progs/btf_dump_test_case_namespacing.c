@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
 
-/*
- * BTF-to-C dumper test validating no name versioning happens between
- * independent C namespaces (struct/union/enum vs typedef/enum values).
- *
- * Copyright (c) 2019 Facebook
- */
-/* ----- START-EXPECTED-OUTPUT ----- */
+
+ 
+ 
 struct S {
 	int S;
 	int U;
@@ -49,7 +44,7 @@ typedef int Y;
 
 typedef int Z;
 
-/*------ END-EXPECTED-OUTPUT ------ */
+ 
 
 int f(struct {
 	struct S _1;

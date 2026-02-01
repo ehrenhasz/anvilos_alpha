@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2011, 2012 Cavium, Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/gpio/consumer.h>
@@ -74,7 +72,7 @@ static const struct of_device_id mdio_mux_gpio_match[] = {
 		.compatible = "mdio-mux-gpio",
 	},
 	{
-		/* Legacy compatible property. */
+		 
 		.compatible = "cavium,mdio-mux-sn74cbtlv3253",
 	},
 	{},

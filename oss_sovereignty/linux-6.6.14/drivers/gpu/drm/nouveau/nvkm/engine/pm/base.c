@@ -1,26 +1,4 @@
-/*
- * Copyright 2013 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "priv.h"
 
 #include <core/client.h>
@@ -105,7 +83,7 @@ nvkm_perfsrc_find(struct nvkm_pm *pm, struct nvkm_perfsig *sig, int si)
 {
 	struct nvkm_perfsrc *src;
 	bool found = false;
-	int tmp = 1; /* Sources ID start from 1 */
+	int tmp = 1;  
 	u8 i;
 
 	for (i = 0; i < ARRAY_SIZE(sig->source) && sig->source[i]; i++) {
@@ -147,14 +125,14 @@ nvkm_perfsrc_enable(struct nvkm_pm *pm, struct nvkm_perfctr *ctr)
 			if (!src)
 				return -EINVAL;
 
-			/* set enable bit if needed */
+			 
 			mask = value = 0x00000000;
 			if (src->enable)
 				mask = value = 0x80000000;
 			mask  |= (src->mask << src->shift);
 			value |= ((ctr->source[i][j] >> 32) << src->shift);
 
-			/* enable the source */
+			 
 			nvkm_mask(device, src->addr, mask, value);
 			nvkm_debug(subdev,
 				   "enabled source %08x %08x %08x\n",
@@ -186,13 +164,13 @@ nvkm_perfsrc_disable(struct nvkm_pm *pm, struct nvkm_perfctr *ctr)
 			if (!src)
 				return -EINVAL;
 
-			/* unset enable bit if needed */
+			 
 			mask = 0x00000000;
 			if (src->enable)
 				mask = 0x80000000;
 			mask |= (src->mask << src->shift);
 
-			/* disable the source */
+			 
 			nvkm_mask(device, src->addr, mask, 0);
 			nvkm_debug(subdev, "disabled source %08x %08x\n",
 				   src->addr, mask);
@@ -201,9 +179,7 @@ nvkm_perfsrc_disable(struct nvkm_pm *pm, struct nvkm_perfctr *ctr)
 	return 0;
 }
 
-/*******************************************************************************
- * Perfdom object classes
- ******************************************************************************/
+ 
 static int
 nvkm_perfdom_init(struct nvkm_perfdom *dom, void *data, u32 size)
 {
@@ -224,12 +200,12 @@ nvkm_perfdom_init(struct nvkm_perfdom *dom, void *data, u32 size)
 		if (dom->ctr[i]) {
 			dom->func->init(pm, dom, dom->ctr[i]);
 
-			/* enable sources */
+			 
 			nvkm_perfsrc_enable(pm, dom->ctr[i]);
 		}
 	}
 
-	/* start next batch of counters for sampling */
+	 
 	dom->func->next(pm, dom);
 	return 0;
 }
@@ -251,7 +227,7 @@ nvkm_perfdom_sample(struct nvkm_perfdom *dom, void *data, u32 size)
 		return ret;
 	pm->sequence++;
 
-	/* sample previous batch of counters */
+	 
 	list_for_each_entry(dom, &pm->domains, head)
 		dom->func->next(pm, dom);
 
@@ -427,9 +403,7 @@ nvkm_perfdom_new_(struct nvkm_perfmon *perfmon,
 	return 0;
 }
 
-/*******************************************************************************
- * Perfmon object classes
- ******************************************************************************/
+ 
 static int
 nvkm_perfmon_mthd_query_domain(struct nvkm_perfmon *perfmon,
 			       void *data, u32 size)
@@ -464,8 +438,7 @@ nvkm_perfmon_mthd_query_domain(struct nvkm_perfmon *perfmon,
 		args->v0.signal_nr  = nvkm_perfdom_count_perfsig(dom);
 		strncpy(args->v0.name, dom->name, sizeof(args->v0.name) - 1);
 
-		/* Currently only global counters (PCOUNTER) are implemented
-		 * but this will be different for local counters (MP). */
+		 
 		args->v0.counter_nr = 4;
 	}
 
@@ -656,9 +629,7 @@ nvkm_perfmon_new(struct nvkm_pm *pm, const struct nvkm_oclass *oclass,
 	return 0;
 }
 
-/*******************************************************************************
- * PPM engine/subdev functions
- ******************************************************************************/
+ 
 
 static int
 nvkm_pm_oclass_new(struct nvkm_device *device, const struct nvkm_oclass *oclass,
@@ -709,7 +680,7 @@ nvkm_perfsrc_new(struct nvkm_pm *pm, struct nvkm_perfsig *sig,
 	u8 source_nr = 0;
 
 	if (!spec) {
-		/* No sources are defined for this signal. */
+		 
 		return 0;
 	}
 

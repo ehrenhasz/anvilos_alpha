@@ -1,28 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Based on public domain code in cppcrypto 0.10.
- * Copyright (c) 2022 Tino Reichardt <milky-zfs@mcmilk.de>
- */
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/zfs_impl.h>
@@ -30,15 +8,12 @@
 
 #include <sha2/sha2_impl.h>
 
-/*
- * On i386, gcc brings this for sha512_generic():
- * error: the frame size of 1040 bytes is larger than 1024
- */
+ 
 #if defined(__GNUC__) && defined(_ILP32)
 #pragma GCC diagnostic ignored "-Wframe-larger-than="
 #endif
 
-/* SHA256 */
+ 
 static const uint32_t SHA256_K[64] = {
 	0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
 	0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
@@ -141,7 +116,7 @@ static void sha256_generic(uint32_t state[8], const void *data, size_t num_blks)
 #define	sigma0(x)	(rotr64((x),  1) ^ rotr64((x),  8) ^ ((x) >> 7))
 #define	sigma1(x)	(rotr64((x), 19) ^ rotr64((x), 61) ^ ((x) >> 6))
 
-/* SHA512 */
+ 
 static const uint64_t SHA512_K[80] = {
 	0x428a2f98d728ae22, 0x7137449123ef65cd, 0xb5c0fbcfec4d3b2f,
 	0xe9b5dba58189dbbc, 0x3956c25bf348b538, 0x59f111f1b605d019,
@@ -309,7 +284,7 @@ static void sha256_final(sha256_ctx *ctx, uint8_t *result, int bits)
 	ops->transform(ctx->state, m, 1);
 
 	switch (bits) {
-	case 224: /* 28 - unused currently /TR */
+	case 224:  
 		R[0] = BE_32(ctx->state[0]);
 		R[1] = BE_32(ctx->state[1]);
 		R[2] = BE_32(ctx->state[2]);
@@ -318,7 +293,7 @@ static void sha256_final(sha256_ctx *ctx, uint8_t *result, int bits)
 		R[5] = BE_32(ctx->state[5]);
 		R[6] = BE_32(ctx->state[6]);
 		break;
-	case 256: /* 32 */
+	case 256:  
 		R[0] = BE_32(ctx->state[0]);
 		R[1] = BE_32(ctx->state[1]);
 		R[2] = BE_32(ctx->state[2]);
@@ -353,24 +328,24 @@ static void sha512_final(sha512_ctx *ctx, uint8_t *result, int bits)
 	ops->transform(ctx->state, m, 1);
 
 	switch (bits) {
-	case 224: /* 28 => 3,5 x 8 */
+	case 224:  
 		r = result + 24;
 		R[0] = BE_64(ctx->state[0]);
 		R[1] = BE_64(ctx->state[1]);
 		R[2] = BE_64(ctx->state[2]);
-		/* last 4 bytes are special here */
+		 
 		*r++ = (uint8_t)(ctx->state[3] >> 56);
 		*r++ = (uint8_t)(ctx->state[3] >> 48);
 		*r++ = (uint8_t)(ctx->state[3] >> 40);
 		*r++ = (uint8_t)(ctx->state[3] >> 32);
 		break;
-	case 256: /* 32 */
+	case 256:  
 		R[0] = BE_64(ctx->state[0]);
 		R[1] = BE_64(ctx->state[1]);
 		R[2] = BE_64(ctx->state[2]);
 		R[3] = BE_64(ctx->state[3]);
 		break;
-	case 384: /* 48 */
+	case 384:  
 		R[0] = BE_64(ctx->state[0]);
 		R[1] = BE_64(ctx->state[1]);
 		R[2] = BE_64(ctx->state[2]);
@@ -378,7 +353,7 @@ static void sha512_final(sha512_ctx *ctx, uint8_t *result, int bits)
 		R[4] = BE_64(ctx->state[4]);
 		R[5] = BE_64(ctx->state[5]);
 		break;
-	case 512: /* 64 */
+	case 512:  
 		R[0] = BE_64(ctx->state[0]);
 		R[1] = BE_64(ctx->state[1]);
 		R[2] = BE_64(ctx->state[2]);
@@ -393,7 +368,7 @@ static void sha512_final(sha512_ctx *ctx, uint8_t *result, int bits)
 	memset(ctx, 0, sizeof (*ctx));
 }
 
-/* SHA2 Init function */
+ 
 void
 SHA2Init(int algotype, SHA2_CTX *ctx)
 {
@@ -479,11 +454,11 @@ SHA2Init(int algotype, SHA2_CTX *ctx)
 	}
 }
 
-/* SHA2 Update function */
+ 
 void
 SHA2Update(SHA2_CTX *ctx, const void *data, size_t len)
 {
-	/* check for zero input length */
+	 
 	if (len == 0)
 		return;
 
@@ -514,7 +489,7 @@ SHA2Update(SHA2_CTX *ctx, const void *data, size_t len)
 	}
 }
 
-/* SHA2Final function */
+ 
 void
 SHA2Final(void *digest, SHA2_CTX *ctx)
 {
@@ -543,7 +518,7 @@ SHA2Final(void *digest, SHA2_CTX *ctx)
 	}
 }
 
-/* the generic implementation is always okay */
+ 
 static boolean_t sha2_is_supported(void)
 {
 	return (B_TRUE);

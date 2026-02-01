@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2019-2021, Intel Corporation. */
+
+ 
 
 #include "ice.h"
 #include "ice_eswitch.h"
@@ -8,21 +8,13 @@
 #include "ice_tc_lib.h"
 #include "ice_dcb_lib.h"
 
-/**
- * ice_repr_get_sw_port_id - get port ID associated with representor
- * @repr: pointer to port representor
- */
+ 
 static int ice_repr_get_sw_port_id(struct ice_repr *repr)
 {
 	return repr->vf->pf->hw.port_info->lport;
 }
 
-/**
- * ice_repr_get_phys_port_name - get phys port name
- * @netdev: pointer to port representor netdev
- * @buf: write here port name
- * @len: max length of buf
- */
+ 
 static int
 ice_repr_get_phys_port_name(struct net_device *netdev, char *buf, size_t len)
 {
@@ -30,7 +22,7 @@ ice_repr_get_phys_port_name(struct net_device *netdev, char *buf, size_t len)
 	struct ice_repr *repr = np->repr;
 	int res;
 
-	/* Devlink port is registered and devlink core is taking care of name formatting. */
+	 
 	if (repr->vf->devlink_port.devlink)
 		return -EOPNOTSUPP;
 
@@ -41,11 +33,7 @@ ice_repr_get_phys_port_name(struct net_device *netdev, char *buf, size_t len)
 	return 0;
 }
 
-/**
- * ice_repr_get_stats64 - get VF stats for VFPR use
- * @netdev: pointer to port representor netdev
- * @stats: pointer to struct where stats can be stored
- */
+ 
 static void
 ice_repr_get_stats64(struct net_device *netdev, struct rtnl_link_stats64 *stats)
 {
@@ -72,10 +60,7 @@ ice_repr_get_stats64(struct net_device *netdev, struct rtnl_link_stats64 *stats)
 	stats->rx_dropped = eth_stats->rx_discards;
 }
 
-/**
- * ice_netdev_to_repr - Get port representor for given netdevice
- * @netdev: pointer to port representor netdev
- */
+ 
 struct ice_repr *ice_netdev_to_repr(struct net_device *netdev)
 {
 	struct ice_netdev_priv *np = netdev_priv(netdev);
@@ -83,16 +68,7 @@ struct ice_repr *ice_netdev_to_repr(struct net_device *netdev)
 	return np->repr;
 }
 
-/**
- * ice_repr_open - Enable port representor's network interface
- * @netdev: network interface device structure
- *
- * The open entry point is called when a port representor's network
- * interface is made active by the system (IFF_UP). Corresponding
- * VF is notified about link status change.
- *
- * Returns 0 on success
- */
+ 
 static int ice_repr_open(struct net_device *netdev)
 {
 	struct ice_repr *repr = ice_netdev_to_repr(netdev);
@@ -109,16 +85,7 @@ static int ice_repr_open(struct net_device *netdev)
 	return 0;
 }
 
-/**
- * ice_repr_stop - Disable port representor's network interface
- * @netdev: network interface device structure
- *
- * The stop entry point is called when a port representor's network
- * interface is de-activated by the system. Corresponding
- * VF is notified about link status change.
- *
- * Returns 0 on success
- */
+ 
 static int ice_repr_stop(struct net_device *netdev)
 {
 	struct ice_repr *repr = ice_netdev_to_repr(netdev);
@@ -135,16 +102,7 @@ static int ice_repr_stop(struct net_device *netdev)
 	return 0;
 }
 
-/**
- * ice_repr_sp_stats64 - get slow path stats for port representor
- * @dev: network interface device structure
- * @stats: netlink stats structure
- *
- * RX/TX stats are being swapped here to be consistent with VF stats. In slow
- * path, port representor receives data when the corresponding VF is sending it
- * (and vice versa), TX and RX bytes/packets are effectively swapped on port
- * representor.
- */
+ 
 static int
 ice_repr_sp_stats64(const struct net_device *dev,
 		    struct rtnl_link_stats64 *stats)
@@ -250,19 +208,13 @@ static const struct net_device_ops ice_repr_netdev_ops = {
 	.ndo_get_offload_stats = ice_repr_ndo_get_offload_stats,
 };
 
-/**
- * ice_is_port_repr_netdev - Check if a given netdevice is a port representor netdev
- * @netdev: pointer to netdev
- */
+ 
 bool ice_is_port_repr_netdev(const struct net_device *netdev)
 {
 	return netdev && (netdev->netdev_ops == &ice_repr_netdev_ops);
 }
 
-/**
- * ice_repr_reg_netdev - register port representor netdev
- * @netdev: pointer to port representor netdev
- */
+ 
 static int
 ice_repr_reg_netdev(struct net_device *netdev)
 {
@@ -278,10 +230,7 @@ ice_repr_reg_netdev(struct net_device *netdev)
 	return register_netdev(netdev);
 }
 
-/**
- * ice_repr_add - add representor for VF
- * @vf: pointer to VF structure
- */
+ 
 static int ice_repr_add(struct ice_vf *vf)
 {
 	struct ice_q_vector *q_vector;
@@ -348,10 +297,7 @@ err_alloc:
 	return err;
 }
 
-/**
- * ice_repr_rem - remove representor from VF
- * @vf: pointer to VF structure
- */
+ 
 static void ice_repr_rem(struct ice_vf *vf)
 {
 	if (!vf->repr)
@@ -369,10 +315,7 @@ static void ice_repr_rem(struct ice_vf *vf)
 	ice_virtchnl_set_dflt_ops(vf);
 }
 
-/**
- * ice_repr_rem_from_all_vfs - remove port representor for all VFs
- * @pf: pointer to PF structure
- */
+ 
 void ice_repr_rem_from_all_vfs(struct ice_pf *pf)
 {
 	struct devlink *devlink;
@@ -384,19 +327,14 @@ void ice_repr_rem_from_all_vfs(struct ice_pf *pf)
 	ice_for_each_vf(pf, bkt, vf)
 		ice_repr_rem(vf);
 
-	/* since all port representors are destroyed, there is
-	 * no point in keeping the nodes
-	 */
+	 
 	devlink = priv_to_devlink(pf);
 	devl_lock(devlink);
 	devl_rate_nodes_destroy(devlink);
 	devl_unlock(devlink);
 }
 
-/**
- * ice_repr_add_for_all_vfs - add port representor for all VFs
- * @pf: pointer to PF structure
- */
+ 
 int ice_repr_add_for_all_vfs(struct ice_pf *pf)
 {
 	struct devlink *devlink;
@@ -412,7 +350,7 @@ int ice_repr_add_for_all_vfs(struct ice_pf *pf)
 			goto err;
 	}
 
-	/* only export if ADQ and DCB disabled */
+	 
 	if (ice_is_adq_active(pf) || ice_is_dcb_active(pf))
 		return 0;
 
@@ -427,31 +365,21 @@ err:
 	return err;
 }
 
-/**
- * ice_repr_start_tx_queues - start Tx queues of port representor
- * @repr: pointer to repr structure
- */
+ 
 void ice_repr_start_tx_queues(struct ice_repr *repr)
 {
 	netif_carrier_on(repr->netdev);
 	netif_tx_start_all_queues(repr->netdev);
 }
 
-/**
- * ice_repr_stop_tx_queues - stop Tx queues of port representor
- * @repr: pointer to repr structure
- */
+ 
 void ice_repr_stop_tx_queues(struct ice_repr *repr)
 {
 	netif_carrier_off(repr->netdev);
 	netif_tx_stop_all_queues(repr->netdev);
 }
 
-/**
- * ice_repr_set_traffic_vsi - set traffic VSI for port representor
- * @repr: repr on with VSI will be set
- * @vsi: pointer to VSI that will be used by port representor to pass traffic
- */
+ 
 void ice_repr_set_traffic_vsi(struct ice_repr *repr, struct ice_vsi *vsi)
 {
 	struct ice_netdev_priv *np = netdev_priv(repr->netdev);

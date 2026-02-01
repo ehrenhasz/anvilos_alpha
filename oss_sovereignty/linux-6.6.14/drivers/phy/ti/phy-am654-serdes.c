@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe SERDES driver for AM654x SoC
- *
- * Copyright (C) 2018 - 2019 Texas Instruments Incorporated - http://www.ti.com/
- * Author: Kishon Vijay Abraham I <kishon@ti.com>
- */
+
+ 
 
 #include <dt-bindings/phy/phy.h>
 #include <linux/clk.h>
@@ -70,8 +65,8 @@
 #define PLL_SNOOZE_STATE	0x6
 #define PLL_ENABLE_STATE	0x7
 
-#define PLL_LOCK_TIME		100000	/* in microseconds */
-#define SLEEP_TIME		100	/* in microseconds */
+#define PLL_LOCK_TIME		100000	 
+#define SLEEP_TIME		100	 
 
 #define LANE_USB3		0x0
 #define LANE_PCIE0_LANE0	0x1
@@ -104,93 +99,93 @@ static const struct regmap_config serdes_am654_regmap_config = {
 };
 
 enum serdes_am654_fields {
-	/* CMU PLL Control */
+	 
 	CMU_PLL_CTRL,
 
 	LANE_PLL_CTRL_RXEQ_RXIDLE,
 
-	/* CMU VCO bias current and VREG setting */
+	 
 	AHB_PMA_CM_VCO_VBIAS_VREG,
 	AHB_PMA_CM_VCO_BIAS_VREG,
 
 	AHB_PMA_CM_SR,
 	AHB_SSC_GEN_Z_O_20_13,
 
-	/* AHB PMA Lane Configuration */
+	 
 	AHB_PMA_LN_AGC_THSEL_VREGH,
 
-	/* AGC and Signal detect threshold for Gen3 */
+	 
 	AHB_PMA_LN_GEN3_AGC_SD_THSEL,
 
 	AHB_PMA_LN_RX_SELR_GEN3,
 	AHB_PMA_LN_TX_DRV,
 
-	/* CMU Master Reset */
+	 
 	CMU_MASTER_CDN,
 
-	/* P2S ring buffer initial startup pointer difference */
+	 
 	P2S_RBUF_PTR_DIFF,
 
 	CONFIG_VERSION,
 
-	/* Lane 1 Master Reset */
+	 
 	L1_MASTER_CDN,
 
-	/* CMU OK Status */
+	 
 	CMU_OK_I_0,
 
-	/* Mid-speed initial calibration control */
+	 
 	COMRXEQ_MS_INIT_CTRL_7_0,
 
-	/* High-speed initial calibration control */
+	 
 	COMRXEQ_HS_INIT_CAL_7_0,
 
-	/* Mid-speed recalibration control */
+	 
 	COMRXEQ_MS_RECAL_CTRL_7_0,
 
-	/* High-speed recalibration control */
+	 
 	COMRXEQ_HS_RECAL_CTRL_7_0,
 
-	/* ATT configuration */
+	 
 	COMRXEQ_CSR_ATT_CONFIG,
 
-	/* Edge based boost adaptation window length */
+	 
 	COMRXEQ_CSR_EBSTADAPT_WIN_LEN,
 
-	/* COMRXEQ control 3 & 4 */
+	 
 	COMRXEQ_CTRL_3_4,
 
-	/* COMRXEQ control 14, 15 and 16*/
+	 
 	COMRXEQ_CTRL_14_15_16,
 
-	/* Threshold for errors in pattern data  */
+	 
 	COMRXEQ_CSR_DLEV_ERR_THRESH,
 
-	/* COMRXEQ control 25 */
+	 
 	COMRXEQ_CTRL_25,
 
-	/* Mid-speed rate change calibration control */
+	 
 	CSR_RXEQ_RATE_CHANGE_CAL_RUN_RATE2_O,
 
-	/* High-speed rate change calibration control */
+	 
 	COMRXEQ_HS_RCHANGE_CTRL_7_0,
 
-	/* Serdes reset */
+	 
 	POR_EN,
 
-	/* Tx Enable Value */
+	 
 	TX0_ENABLE,
 
-	/* Rx Enable Value */
+	 
 	RX0_ENABLE,
 
-	/* PLL Enable Value */
+	 
 	PLL_ENABLE,
 
-	/* PLL ready for use */
+	 
 	PLL_OK,
 
-	/* sentinel */
+	 
 	MAX_FIELDS
 
 };
@@ -270,10 +265,10 @@ static int serdes_am654_enable_txrx(struct serdes_am654 *phy)
 {
 	int ret = 0;
 
-	/* Enable TX */
+	 
 	ret |= regmap_field_write(phy->fields[TX0_ENABLE], TX0_ENABLE_STATE);
 
-	/* Enable RX */
+	 
 	ret |= regmap_field_write(phy->fields[RX0_ENABLE], RX0_ENABLE_STATE);
 
 	if (ret)
@@ -286,10 +281,10 @@ static int serdes_am654_disable_txrx(struct serdes_am654 *phy)
 {
 	int ret = 0;
 
-	/* Disable TX */
+	 
 	ret |= regmap_field_write(phy->fields[TX0_ENABLE], TX0_DISABLE_STATE);
 
-	/* Disable RX */
+	 
 	ret |= regmap_field_write(phy->fields[RX0_ENABLE], RX0_DISABLE_STATE);
 
 	if (ret)
@@ -538,30 +533,24 @@ static const struct phy_ops ops = {
 
 static const int
 serdes_am654_mux_table[SERDES_NUM_MUX_COMBINATIONS][SERDES_NUM_CLOCKS] = {
-	/*
-	 * Each combination maps to one of
-	 * "Figure 12-1986. SerDes Reference Clock Distribution"
-	 * in TRM.
-	 */
-	 /* Parent of CMU refclk, Left output, Right output
-	  * either of EXT_REFCLK, LICLK, RICLK
-	  */
-	{ EXT_REFCLK, EXT_REFCLK, EXT_REFCLK },	/* 0000 */
-	{ RICLK, EXT_REFCLK, EXT_REFCLK },	/* 0001 */
-	{ EXT_REFCLK, RICLK, LICLK },		/* 0010 */
-	{ RICLK, RICLK, EXT_REFCLK },		/* 0011 */
-	{ LICLK, EXT_REFCLK, EXT_REFCLK },	/* 0100 */
-	{ EXT_REFCLK, EXT_REFCLK, EXT_REFCLK },	/* 0101 */
-	{ LICLK, RICLK, LICLK },		/* 0110 */
-	{ EXT_REFCLK, RICLK, LICLK },		/* 0111 */
-	{ EXT_REFCLK, EXT_REFCLK, LICLK },	/* 1000 */
-	{ RICLK, EXT_REFCLK, LICLK },		/* 1001 */
-	{ EXT_REFCLK, RICLK, EXT_REFCLK },	/* 1010 */
-	{ RICLK, RICLK, EXT_REFCLK },		/* 1011 */
-	{ LICLK, EXT_REFCLK, LICLK },		/* 1100 */
-	{ EXT_REFCLK, EXT_REFCLK, LICLK },	/* 1101 */
-	{ LICLK, RICLK, EXT_REFCLK },		/* 1110 */
-	{ EXT_REFCLK, RICLK, EXT_REFCLK },	/* 1111 */
+	 
+	  
+	{ EXT_REFCLK, EXT_REFCLK, EXT_REFCLK },	 
+	{ RICLK, EXT_REFCLK, EXT_REFCLK },	 
+	{ EXT_REFCLK, RICLK, LICLK },		 
+	{ RICLK, RICLK, EXT_REFCLK },		 
+	{ LICLK, EXT_REFCLK, EXT_REFCLK },	 
+	{ EXT_REFCLK, EXT_REFCLK, EXT_REFCLK },	 
+	{ LICLK, RICLK, LICLK },		 
+	{ EXT_REFCLK, RICLK, LICLK },		 
+	{ EXT_REFCLK, EXT_REFCLK, LICLK },	 
+	{ RICLK, EXT_REFCLK, LICLK },		 
+	{ EXT_REFCLK, RICLK, EXT_REFCLK },	 
+	{ RICLK, RICLK, EXT_REFCLK },		 
+	{ LICLK, EXT_REFCLK, LICLK },		 
+	{ EXT_REFCLK, EXT_REFCLK, LICLK },	 
+	{ LICLK, RICLK, EXT_REFCLK },		 
+	{ EXT_REFCLK, RICLK, EXT_REFCLK },	 
 };
 
 static u8 serdes_am654_clk_mux_get_parent(struct clk_hw *hw)
@@ -591,7 +580,7 @@ static int serdes_am654_clk_mux_set_parent(struct clk_hw *hw, u8 index)
 	int found, i;
 	int ret;
 
-	/* get existing setting */
+	 
 	regmap_read(regmap, reg, &val);
 	val &= AM654_SERDES_CTRL_CLKSEL_MASK;
 	val >>= AM654_SERDES_CTRL_CLKSEL_SHIFT;
@@ -599,10 +588,10 @@ static int serdes_am654_clk_mux_set_parent(struct clk_hw *hw, u8 index)
 	for (i = 0; i < SERDES_NUM_CLOCKS; i++)
 		parents[i] = serdes_am654_mux_table[val][i];
 
-	/* change parent of this clock. others left intact */
+	 
 	parents[clk_id] = index;
 
-	/* Find the match */
+	 
 	for (val = 0; val < SERDES_NUM_MUX_COMBINATIONS; val++) {
 		p = serdes_am654_mux_table[val];
 		found = 1;
@@ -618,10 +607,7 @@ static int serdes_am654_clk_mux_set_parent(struct clk_hw *hw, u8 index)
 	}
 
 	if (!found) {
-		/*
-		 * This can never happen, unless we missed
-		 * a valid combination in serdes_am654_mux_table.
-		 */
+		 
 		WARN(1, "Failed to find the parent of %s clock\n", name);
 		return -EINVAL;
 	}

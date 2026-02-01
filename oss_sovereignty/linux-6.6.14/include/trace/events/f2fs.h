@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM f2fs
 
@@ -2059,7 +2059,7 @@ struct f2fs_iostat_latency {
 	unsigned int avg_lat;
 	unsigned int cnt;
 };
-#endif /* __F2FS_IOSTAT_LATENCY_TYPE */
+#endif  
 
 TRACE_EVENT(f2fs_iostat_latency,
 
@@ -2229,11 +2229,7 @@ DECLARE_EVENT_CLASS(f2fs__rw_start,
 	),
 
 	TP_fast_assign(
-		/*
-		 * Replace the spaces in filenames and cmdlines
-		 * because this screws up the tooling that parses
-		 * the traces.
-		 */
+		 
 		__assign_str(pathbuf, pathname);
 		(void)strreplace(__get_str(pathbuf), ' ', '_');
 		__entry->offset = offset;
@@ -2305,7 +2301,7 @@ DEFINE_EVENT(f2fs__rw_end, f2fs_datawrite_end,
 	TP_ARGS(inode, offset, bytes)
 );
 
-#endif /* _TRACE_F2FS_H */
+#endif  
 
- /* This part must be outside protection */
+  
 #include <trace/define_trace.h>

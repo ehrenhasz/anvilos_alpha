@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * EEPROM parser code for mac80211 Prism54 drivers
- *
- * Copyright (c) 2006, Michael Wu <flamingice@sourmilk.net>
- * Copyright (c) 2007-2009, Christian Lamparter <chunkeey@web.de>
- * Copyright 2008, Johannes Berg <johannes@sipsolutions.net>
- *
- * Based on:
- * - the islsm (softmac prism54) driver, which is:
- *   Copyright 2004-2006 Jean-Baptiste Note <jbnote@gmail.com>, et al.
- * - stlc45xx driver
- *   Copyright (C) 2008 Nokia Corporation and/or its subsidiary(-ies).
- */
+
+ 
 
 #include <linux/firmware.h>
 #include <linux/etherdevice.h>
@@ -53,12 +41,7 @@ static struct ieee80211_rate p54_arates[] = {
 };
 
 static struct p54_rssi_db_entry p54_rssi_default = {
-	/*
-	 * The defaults are taken from usb-logs of the
-	 * vendor driver. So, they should be safe to
-	 * use in case we can't get a match from the
-	 * rssi <-> dBm conversion database.
-	 */
+	 
 	.mul = 130,
 	.add = -398,
 };
@@ -85,7 +68,7 @@ struct p54_channel_list {
 
 static int p54_get_band_from_freq(u16 freq)
 {
-	/* FIXME: sync these values with the 802.11 spec */
+	 
 
 	if ((freq >= 2412) && (freq <= 2484))
 		return NL80211_BAND_2GHZ;
@@ -123,7 +106,7 @@ static int p54_fill_band_bitrates(struct ieee80211_hw *dev,
 				  struct ieee80211_supported_band *band_entry,
 				  enum nl80211_band band)
 {
-	/* TODO: generate rate array dynamically */
+	 
 
 	switch (band) {
 	case NL80211_BAND_2GHZ:
@@ -235,11 +218,7 @@ static struct p54_channel_entry *p54_update_channel_param(struct p54_channel_lis
 	int i;
 	struct p54_channel_entry *entry = NULL;
 
-	/*
-	 * usually all lists in the eeprom are mostly sorted.
-	 * so it's very likely that the entry we are looking for
-	 * is right at the end of the list
-	 */
+	 
 	for (i = list->entries; i >= 0; i--) {
 		if (freq == list->channels[i].freq) {
 			entry = &list->channels[i];
@@ -248,13 +227,10 @@ static struct p54_channel_entry *p54_update_channel_param(struct p54_channel_lis
 	}
 
 	if ((i < 0) && (list->entries < list->max_entries)) {
-		/* entry does not exist yet. Initialize a new one. */
+		 
 		int band = p54_get_band_from_freq(freq);
 
-		/*
-		 * filter out frequencies which don't belong into
-		 * any supported band.
-		 */
+		 
 		if (band >= 0) {
 			i = list->entries++;
 			list->band_channel_num[band]++;
@@ -294,7 +270,7 @@ static int p54_get_maxpower(struct p54_common *priv, void *data)
 			rawpower = max_t(u16,
 				rawpower, le16_to_cpu(point->val_64qam));
 		}
-		/* longbow seems to use 1/16 dBm units */
+		 
 		return rawpower / 16;
 		}
 
@@ -308,7 +284,7 @@ static int p54_get_maxpower(struct p54_common *priv, void *data)
 		rawpower = max(rawpower, pda->val_bpsk);
 		rawpower = max(rawpower, pda->val_16qam);
 		rawpower = max(rawpower, pda->val_64qam);
-		/* raw values are in 1/4 dBm units */
+		 
 		return rawpower / 4;
 		}
 
@@ -390,7 +366,7 @@ static int p54_generate_channel_lists(struct ieee80211_hw *dev)
 		}
 	}
 
-	/* sort the channel list by frequency */
+	 
 	sort(list->channels, list->entries, sizeof(struct p54_channel_entry),
 	     p54_compare_channels, NULL);
 
@@ -400,7 +376,7 @@ static int p54_generate_channel_lists(struct ieee80211_hw *dev)
 			j++;
 	}
 	if (j == 0) {
-		/* no useable band available. */
+		 
 		ret = -EINVAL;
 	}
 
@@ -454,7 +430,7 @@ static int p54_convert_rev0(struct ieee80211_hw *dev,
 			dst->rf_power = src->rf_power;
 			dst->pa_detector = src->pa_detector;
 			dst->data_64qam = src->pcv;
-			/* "invent" the points for the other modulations */
+			 
 #define SUB(x, y) (u8)(((x) - (y)) > (x) ? 0 : (x) - (y))
 			dst->data_16qam = SUB(src->pcv, 12);
 			dst->data_qpsk = SUB(dst->data_16qam, 12);
@@ -529,10 +505,7 @@ static int p54_parse_rssical(struct ieee80211_hw *dev,
 			goto err_data;
 		}
 	} else {
-		/*
-		 * Some devices (Dell 1450 USB, Xbow 5GHz card, etc...)
-		 * have an empty two byte header.
-		 */
+		 
 		if (*((__le16 *)&data[offset]) == cpu_to_le16(0))
 			offset += 2;
 
@@ -586,7 +559,7 @@ static int p54_parse_rssical(struct ieee80211_hw *dev,
 		}
 	}
 
-	/* sort the list by channel frequency */
+	 
 	sort(entry, entries, sizeof(*entry), p54_compare_rssichan, NULL);
 	return 0;
 
@@ -619,7 +592,7 @@ struct p54_rssi_db_entry *p54_rssi_find(struct p54_common *priv, const u16 freq)
 			continue;
 		}
 
-		/* nearest match */
+		 
 		if (abs(freq - entry[i].freq) <
 		    abs(freq - entry[found].freq)) {
 			found = i;
@@ -653,11 +626,7 @@ static void p54_parse_default_country(struct ieee80211_hw *dev,
 	if (country->flags == PDR_COUNTRY_CERT_CODE_PSEUDO)
 		regulatory_hint(dev->wiphy, country->alpha2);
 	else {
-		/* TODO:
-		 * write a shared/common function that converts
-		 * "Regulatory domain codes" (802.11-2007 14.8.2.2)
-		 * into ISO/IEC 3166-1 alpha2 for regulatory_hint.
-		 */
+		 
 	}
 }
 
@@ -741,12 +710,12 @@ int p54_parse_eeprom(struct ieee80211_hw *dev, void *eeprom, int len)
 	wrap = (struct eeprom_pda_wrap *) eeprom;
 	entry = (void *)wrap->data + le16_to_cpu(wrap->len);
 
-	/* verify that at least the entry length/code fits */
+	 
 	while ((u8 *)entry <= end - sizeof(*entry)) {
 		entry_len = le16_to_cpu(entry->len);
 		data_len = ((entry_len - 1) << 1);
 
-		/* abort if entry exceeds whole structure */
+		 
 		if ((u8 *)entry + sizeof(*entry) + data_len > end)
 			break;
 

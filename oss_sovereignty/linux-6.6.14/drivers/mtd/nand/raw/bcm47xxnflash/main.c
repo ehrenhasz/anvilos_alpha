@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * BCM47XX NAND flash driver
- *
- * Copyright (C) 2012 Rafał Miłecki <zajec5@gmail.com>
- */
+
+ 
 
 #include "bcm47xxnflash.h"
 

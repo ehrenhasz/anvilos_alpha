@@ -1,7 +1,4 @@
-/* Encapsulate basic setting changes on Hermes hardware
- *
- * See copyright notice in main.c
- */
+ 
 #ifndef _ORINOCO_HW_H_
 #define _ORINOCO_HW_H_
 
@@ -9,18 +6,18 @@
 #include <linux/wireless.h>
 #include <net/cfg80211.h>
 
-/* Hardware BAPs */
+ 
 #define USER_BAP 0
 #define IRQ_BAP  1
 
-/* WEP key sizes */
+ 
 #define SMALL_KEY_SIZE 5
 #define LARGE_KEY_SIZE 13
 
-/* Number of supported channels */
+ 
 #define NUM_CHANNELS 14
 
-/* Forward declarations */
+ 
 struct orinoco_private;
 
 int determine_fw_capabilities(struct orinoco_private *priv, char *fw_name,
@@ -57,4 +54,4 @@ int orinoco_hw_disassociate(struct orinoco_private *priv,
 int orinoco_hw_get_current_bssid(struct orinoco_private *priv,
 				 u8 *addr);
 
-#endif /* _ORINOCO_HW_H_ */
+#endif  

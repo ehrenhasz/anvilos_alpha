@@ -1,26 +1,4 @@
-/*
- * Copyright 2014 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs <bskeggs@redhat.com>
- */
+ 
 
 #include "nouveau_drv.h"
 #include "nouveau_usif.h"
@@ -122,19 +100,17 @@ usif_ioctl(struct drm_file *filp, void __user *user, u32 argc)
 		goto done;
 
 	if (!(ret = nvif_unpack(-ENOSYS, &data, &size, argv->v0, 0, 0, true))) {
-		/* block access to objects not created via this interface */
+		 
 		owner = argv->v0.owner;
 		if (argv->v0.object == 0ULL &&
 		    argv->v0.type != NVIF_IOCTL_V0_DEL)
-			argv->v0.owner = NVDRM_OBJECT_ANY; /* except client */
+			argv->v0.owner = NVDRM_OBJECT_ANY;  
 		else
 			argv->v0.owner = NVDRM_OBJECT_USIF;
 	} else
 		goto done;
 
-	/* USIF slightly abuses some return-only ioctl members in order
-	 * to provide interoperability with the older ABI16 objects
-	 */
+	 
 	mutex_lock(&cli->mutex);
 	if (argv->v0.route) {
 		if (ret = -EINVAL, argv->v0.route == 0xff)

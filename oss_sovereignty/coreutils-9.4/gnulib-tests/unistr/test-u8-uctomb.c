@@ -1,20 +1,4 @@
-/* Test of u8_uctomb() function.
-   Copyright (C) 2010-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2010.  */
+ 
 
 #include <config.h>
 
@@ -27,7 +11,7 @@
 int
 main ()
 {
-  /* Test ISO 646 character, in particular the NUL character.  */
+   
   {
     ucs4_t uc;
 
@@ -47,7 +31,7 @@ main ()
       }
   }
 
-  /* Test 2-byte character.  */
+   
   {
     ucs4_t uc = 0x00D7;
     uint8_t buf[5] = { MAGIC, MAGIC, MAGIC, MAGIC, MAGIC };
@@ -68,7 +52,7 @@ main ()
     ASSERT (buf[2] == MAGIC);
   }
 
-  /* Test 3-byte character.  */
+   
   {
     ucs4_t uc = 0x20AC;
     uint8_t buf[5] = { MAGIC, MAGIC, MAGIC, MAGIC, MAGIC };
@@ -95,7 +79,7 @@ main ()
     ASSERT (buf[3] == MAGIC);
   }
 
-  /* Test 4-byte character.  */
+   
   {
     ucs4_t uc = 0x10FFFD;
     uint8_t buf[5] = { MAGIC, MAGIC, MAGIC, MAGIC, MAGIC };
@@ -129,7 +113,7 @@ main ()
     ASSERT (buf[4] == MAGIC);
   }
 
-  /* Test invalid characters.  */
+   
   {
     ucs4_t invalid[] = { 0x110000, 0xD800, 0xDBFF, 0xDC00, 0xDFFF };
     uint8_t buf[5] = { MAGIC, MAGIC, MAGIC, MAGIC, MAGIC };

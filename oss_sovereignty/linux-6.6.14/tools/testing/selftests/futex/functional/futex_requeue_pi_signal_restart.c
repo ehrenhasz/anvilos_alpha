@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/******************************************************************************
- *
- *   Copyright © International Business Machines  Corp., 2006-2008
- *
- * DESCRIPTION
- *      This test exercises the futex_wait_requeue_pi() signal handling both
- *      before and after the requeue. The first should be restarted by the
- *      kernel. The latter should return EWOULDBLOCK to the waiter.
- *
- * AUTHORS
- *      Darren Hart <dvhart@linux.intel.com>
- *
- * HISTORY
- *      2008-May-5: Initial version by Darren Hart <dvhart@linux.intel.com>
- *
- *****************************************************************************/
+
+ 
 
 #include <errno.h>
 #include <getopt.h>
@@ -168,11 +153,7 @@ int main(int argc, char *argv[])
 	info("m3:f2: %x\n", f2);
 
 	while (1) {
-		/*
-		 * signal the waiter before requeue, waiter should automatically
-		 * restart futex_wait_requeue_pi() in the kernel. Wait for the
-		 * waiter to block on f1 again.
-		 */
+		 
 		info("Issuing SIGUSR1 to waiter\n");
 		pthread_kill(waiter, SIGUSR1);
 		usleep(DELAY_US);
@@ -181,12 +162,7 @@ int main(int argc, char *argv[])
 		old_val = f1;
 		res = futex_cmp_requeue_pi(&f1, old_val, &(f2), 1, 0,
 					   FUTEX_PRIVATE_FLAG);
-		/*
-		 * If res is non-zero, we either requeued the waiter or hit an
-		 * error, break out and handle it. If it is zero, then the
-		 * signal may have hit before the waiter was blocked on f1.
-		 * Try again.
-		 */
+		 
 		if (res > 0) {
 			atomic_set(&requeued, 1);
 			break;
@@ -198,12 +174,7 @@ int main(int argc, char *argv[])
 	}
 	info("m4:f2: %x\n", f2);
 
-	/*
-	 * Signal the waiter after requeue, waiter should return from
-	 * futex_wait_requeue_pi() with EWOULDBLOCK. Join the thread here so the
-	 * futex_unlock_pi() can't happen before the signal wakeup is detected
-	 * in the kernel.
-	 */
+	 
 	info("Issuing SIGUSR1 to waiter\n");
 	pthread_kill(waiter, SIGUSR1);
 	info("Waiting for waiter to return\n");

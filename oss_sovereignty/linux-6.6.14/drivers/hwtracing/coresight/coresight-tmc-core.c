@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2012, The Linux Foundation. All rights reserved.
- *
- * Description: CoreSight Trace Memory Controller driver
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -36,7 +33,7 @@ int tmc_wait_for_tmcready(struct tmc_drvdata *drvdata)
 	struct coresight_device *csdev = drvdata->csdev;
 	struct csdev_access *csa = &csdev->access;
 
-	/* Ensure formatter, unformatter and hardware fifo are empty */
+	 
 	if (coresight_timeout(csa, TMC_STS, TMC_STS_TMCREADY_BIT, 1)) {
 		dev_err(&csdev->dev,
 			"timeout while waiting for TMC to be Ready\n");
@@ -56,7 +53,7 @@ void tmc_flush_and_stop(struct tmc_drvdata *drvdata)
 	writel_relaxed(ffcr, drvdata->base + TMC_FFCR);
 	ffcr |= BIT(TMC_FFCR_FLUSHMAN_BIT);
 	writel_relaxed(ffcr, drvdata->base + TMC_FFCR);
-	/* Ensure flush completes */
+	 
 	if (coresight_timeout(csa, TMC_FFCR, TMC_FFCR_FLUSHMAN_BIT, 0)) {
 		dev_err(&csdev->dev,
 		"timeout while waiting for completion of Manual Flush\n");
@@ -79,14 +76,7 @@ u32 tmc_get_memwidth_mask(struct tmc_drvdata *drvdata)
 {
 	u32 mask = 0;
 
-	/*
-	 * When moving RRP or an offset address forward, the new values must
-	 * be byte-address aligned to the width of the trace memory databus
-	 * _and_ to a frame boundary (16 byte), whichever is the biggest. For
-	 * example, for 32-bit, 64-bit and 128-bit wide trace memory, the four
-	 * LSBs must be 0s. For 256-bit wide trace memory, the five LSBs must
-	 * be 0s.
-	 */
+	 
 	switch (drvdata->memwidth) {
 	case TMC_MEM_INTF_WIDTH_32BITS:
 	case TMC_MEM_INTF_WIDTH_64BITS:
@@ -224,15 +214,7 @@ static enum tmc_mem_intf_width tmc_get_memwidth(u32 devid)
 {
 	enum tmc_mem_intf_width memwidth;
 
-	/*
-	 * Excerpt from the TRM:
-	 *
-	 * DEVID::MEMWIDTH[10:8]
-	 * 0x2 Memory interface databus is 32 bits wide.
-	 * 0x3 Memory interface databus is 64 bits wide.
-	 * 0x4 Memory interface databus is 128 bits wide.
-	 * 0x5 Memory interface databus is 256 bits wide.
-	 */
+	 
 	switch (BMVAL(devid, 8, 10)) {
 	case 0x2:
 		memwidth = TMC_MEM_INTF_WIDTH_32BITS;
@@ -313,14 +295,14 @@ static ssize_t buffer_size_store(struct device *dev,
 	unsigned long val;
 	struct tmc_drvdata *drvdata = dev_get_drvdata(dev->parent);
 
-	/* Only permitted for TMC-ETRs */
+	 
 	if (drvdata->config_type != TMC_CONFIG_TYPE_ETR)
 		return -EPERM;
 
 	ret = kstrtoul(buf, 0, &val);
 	if (ret)
 		return ret;
-	/* The buffer size should be page aligned */
+	 
 	if (val & (PAGE_SIZE - 1))
 		return -EINVAL;
 	drvdata->size = val;
@@ -362,7 +344,7 @@ static inline bool tmc_etr_has_non_secure_access(struct tmc_drvdata *drvdata)
 	return (auth & TMC_AUTH_NSID_MASK) == 0x3;
 }
 
-/* Detect and initialise the capabilities of a TMC ETR */
+ 
 static int tmc_etr_setup_caps(struct device *parent, u32 devid, void *dev_caps)
 {
 	int rc;
@@ -372,21 +354,18 @@ static int tmc_etr_setup_caps(struct device *parent, u32 devid, void *dev_caps)
 	if (!tmc_etr_has_non_secure_access(drvdata))
 		return -EACCES;
 
-	/* Set the unadvertised capabilities */
+	 
 	tmc_etr_init_caps(drvdata, (u32)(unsigned long)dev_caps);
 
 	if (!(devid & TMC_DEVID_NOSCAT) && tmc_etr_can_use_sg(parent))
 		tmc_etr_set_cap(drvdata, TMC_ETR_SG);
 
-	/* Check if the AXI address width is available */
+	 
 	if (devid & TMC_DEVID_AXIAW_VALID)
 		dma_mask = ((devid >> TMC_DEVID_AXIAW_SHIFT) &
 				TMC_DEVID_AXIAW_MASK);
 
-	/*
-	 * Unless specified in the device configuration, ETR uses a 40-bit
-	 * AXI master in place of the embedded SRAM of ETB/ETF.
-	 */
+	 
 	switch (dma_mask) {
 	case 32:
 	case 40:
@@ -422,7 +401,7 @@ static u32 tmc_etr_get_max_burst_size(struct device *dev)
 				     &burst_size))
 		return TMC_AXICTL_WR_BURST_16;
 
-	/* Only permissible values are 0 to 15 */
+	 
 	if (burst_size > 0xF)
 		burst_size = TMC_AXICTL_WR_BURST_16;
 
@@ -448,7 +427,7 @@ static int tmc_probe(struct amba_device *adev, const struct amba_id *id)
 
 	dev_set_drvdata(dev, drvdata);
 
-	/* Validity for the resource is already checked by the AMBA core */
+	 
 	base = devm_ioremap_resource(dev, res);
 	if (IS_ERR(base)) {
 		ret = PTR_ERR(base);
@@ -463,7 +442,7 @@ static int tmc_probe(struct amba_device *adev, const struct amba_id *id)
 	devid = readl_relaxed(drvdata->base + CORESIGHT_DEVID);
 	drvdata->config_type = BMVAL(devid, 6, 7);
 	drvdata->memwidth = tmc_get_memwidth(devid);
-	/* This device is not associated with a session */
+	 
 	drvdata->pid = -1;
 
 	if (drvdata->config_type == TMC_CONFIG_TYPE_ETR) {
@@ -553,11 +532,7 @@ static void tmc_shutdown(struct amba_device *adev)
 	if (drvdata->config_type == TMC_CONFIG_TYPE_ETR)
 		tmc_etr_disable_hw(drvdata);
 
-	/*
-	 * We do not care about coresight unregister here unlike remove
-	 * callback which is required for making coresight modular since
-	 * the system is going down after this.
-	 */
+	 
 out:
 	spin_unlock_irqrestore(&drvdata->spinlock, flags);
 }
@@ -566,22 +541,18 @@ static void tmc_remove(struct amba_device *adev)
 {
 	struct tmc_drvdata *drvdata = dev_get_drvdata(&adev->dev);
 
-	/*
-	 * Since misc_open() holds a refcount on the f_ops, which is
-	 * etb fops in this case, device is there until last file
-	 * handler to this device is closed.
-	 */
+	 
 	misc_deregister(&drvdata->miscdev);
 	coresight_unregister(drvdata->csdev);
 }
 
 static const struct amba_id tmc_ids[] = {
 	CS_AMBA_ID(0x000bb961),
-	/* Coresight SoC 600 TMC-ETR/ETS */
+	 
 	CS_AMBA_ID_DATA(0x000bb9e8, (unsigned long)CORESIGHT_SOC_600_ETR_CAPS),
-	/* Coresight SoC 600 TMC-ETB */
+	 
 	CS_AMBA_ID(0x000bb9e9),
-	/* Coresight SoC 600 TMC-ETF */
+	 
 	CS_AMBA_ID(0x000bb9ea),
 	{ 0, 0},
 };

@@ -1,35 +1,12 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2022 Intel Corporation
- */
+
+ 
 
 #include "gt/intel_gt.h"
 #include "gt/intel_hwconfig.h"
 #include "i915_drv.h"
 #include "i915_memcpy.h"
 
-/*
- * GuC has a blob containing hardware configuration information (HWConfig).
- * This is formatted as a simple and flexible KLV (Key/Length/Value) table.
- *
- * For example, a minimal version could be:
- *   enum device_attr {
- *     ATTR_SOME_VALUE = 0,
- *     ATTR_SOME_MASK  = 1,
- *   };
- *
- *   static const u32 hwconfig[] = {
- *     ATTR_SOME_VALUE,
- *     1,		// Value Length in DWords
- *     8,		// Value
- *
- *     ATTR_SOME_MASK,
- *     3,
- *     0x00FFFFFFFF, 0xFFFFFFFF, 0xFF000000,
- *   };
- *
- * The attribute ids are defined in a hardware spec.
- */
+ 
 
 static int __guc_action_get_hwconfig(struct intel_guc *guc,
 				     u32 ggtt_offset, u32 ggtt_size)
@@ -53,10 +30,7 @@ static int guc_hwconfig_discover_size(struct intel_guc *guc, struct intel_hwconf
 {
 	int ret;
 
-	/*
-	 * Sending a query with zero offset and size will return the
-	 * size of the blob.
-	 */
+	 
 	ret = __guc_action_get_hwconfig(guc, 0, 0);
 	if (ret < 0)
 		return ret;
@@ -102,12 +76,7 @@ static bool has_table(struct drm_i915_private *i915)
 	return false;
 }
 
-/*
- * intel_guc_hwconfig_init - Initialize the HWConfig
- *
- * Retrieve the HWConfig table from the GuC and save it locally.
- * It can then be queried on demand by other users later on.
- */
+ 
 static int guc_hwconfig_init(struct intel_gt *gt)
 {
 	struct intel_hwconfig *hwconfig = &gt->info.hwconfig;
@@ -136,11 +105,7 @@ static int guc_hwconfig_init(struct intel_gt *gt)
 	return 0;
 }
 
-/*
- * intel_gt_init_hwconfig - Initialize the HWConfig if available
- *
- * Retrieve the HWConfig table if available on the current platform.
- */
+ 
 int intel_gt_init_hwconfig(struct intel_gt *gt)
 {
 	if (!intel_uc_uses_guc(&gt->uc))
@@ -149,11 +114,7 @@ int intel_gt_init_hwconfig(struct intel_gt *gt)
 	return guc_hwconfig_init(gt);
 }
 
-/*
- * intel_gt_fini_hwconfig - Finalize the HWConfig
- *
- * Free up the memory allocation holding the table.
- */
+ 
 void intel_gt_fini_hwconfig(struct intel_gt *gt)
 {
 	struct intel_hwconfig *hwconfig = &gt->info.hwconfig;

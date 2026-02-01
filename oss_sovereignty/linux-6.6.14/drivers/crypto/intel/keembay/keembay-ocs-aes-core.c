@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel Keem Bay OCS AES Crypto Driver.
- *
- * Copyright (C) 2018-2020 Intel Corporation
- */
+
+ 
 
 #include <crypto/aes.h>
 #include <crypto/engine.h>
@@ -35,15 +31,7 @@
 #define OCS_AES_KEYSIZE_256	32
 #define OCS_SM4_KEY_SIZE	16
 
-/**
- * struct ocs_aes_tctx - OCS AES Transform context
- * @aes_dev:		The OCS AES device.
- * @key:		AES/SM4 key.
- * @key_len:		The length (in bytes) of @key.
- * @cipher:		OCS cipher to use (either AES or SM4).
- * @sw_cipher:		The cipher to use as fallback.
- * @use_fallback:	Whether or not fallback cipher should be used.
- */
+ 
 struct ocs_aes_tctx {
 	struct ocs_aes_dev *aes_dev;
 	u8 key[OCS_AES_KEYSIZE_256];
@@ -56,30 +44,9 @@ struct ocs_aes_tctx {
 	bool use_fallback;
 };
 
-/**
- * struct ocs_aes_rctx - OCS AES Request context.
- * @instruction:	Instruction to be executed (encrypt / decrypt).
- * @mode:		Mode to use (ECB, CBC, CTR, CCm, GCM, CTS)
- * @src_nents:		Number of source SG entries.
- * @dst_nents:		Number of destination SG entries.
- * @src_dma_count:	The number of DMA-mapped entries of the source SG.
- * @dst_dma_count:	The number of DMA-mapped entries of the destination SG.
- * @in_place:		Whether or not this is an in place request, i.e.,
- *			src_sg == dst_sg.
- * @src_dll:		OCS DMA linked list for input data.
- * @dst_dll:		OCS DMA linked list for output data.
- * @last_ct_blk:	Buffer to hold last cipher text block (only used in CBC
- *			mode).
- * @cts_swap:		Whether or not CTS swap must be performed.
- * @aad_src_dll:	OCS DMA linked list for input AAD data.
- * @aad_dst_dll:	OCS DMA linked list for output AAD data.
- * @in_tag:		Buffer to hold input encrypted tag (only used for
- *			CCM/GCM decrypt).
- * @out_tag:		Buffer to hold output encrypted / decrypted tag (only
- *			used for GCM encrypt / decrypt).
- */
+ 
 struct ocs_aes_rctx {
-	/* Fields common across all modes. */
+	 
 	enum ocs_instruction	instruction;
 	enum ocs_mode		mode;
 	int			src_nents;
@@ -90,25 +57,25 @@ struct ocs_aes_rctx {
 	struct ocs_dll_desc	src_dll;
 	struct ocs_dll_desc	dst_dll;
 
-	/* CBC specific */
+	 
 	u8			last_ct_blk[AES_BLOCK_SIZE];
 
-	/* CTS specific */
+	 
 	int			cts_swap;
 
-	/* CCM/GCM specific */
+	 
 	struct ocs_dll_desc	aad_src_dll;
 	struct ocs_dll_desc	aad_dst_dll;
 	u8			in_tag[AES_BLOCK_SIZE];
 
-	/* GCM specific */
+	 
 	u8			out_tag[AES_BLOCK_SIZE];
 };
 
-/* Driver data. */
+ 
 struct ocs_aes_drv {
 	struct list_head dev_list;
-	spinlock_t lock;	/* Protects dev_list. */
+	spinlock_t lock;	 
 };
 
 static struct ocs_aes_drv ocs_aes = {
@@ -127,7 +94,7 @@ static struct ocs_aes_dev *kmb_ocs_aes_find_dev(struct ocs_aes_tctx *tctx)
 		goto exit;
 	}
 
-	/* Only a single OCS device available */
+	 
 	aes_dev = list_first_entry(&ocs_aes.dev_list, struct ocs_aes_dev, list);
 	tctx->aes_dev = aes_dev;
 
@@ -137,31 +104,26 @@ exit:
 	return aes_dev;
 }
 
-/*
- * Ensure key is 128-bit or 256-bit for AES or 128-bit for SM4 and an actual
- * key is being passed in.
- *
- * Return: 0 if key is valid, -EINVAL otherwise.
- */
+ 
 static int check_key(const u8 *in_key, size_t key_len, enum ocs_cipher cipher)
 {
 	if (!in_key)
 		return -EINVAL;
 
-	/* For AES, only 128-byte or 256-byte keys are supported. */
+	 
 	if (cipher == OCS_AES && (key_len == OCS_AES_KEYSIZE_128 ||
 				  key_len == OCS_AES_KEYSIZE_256))
 		return 0;
 
-	/* For SM4, only 128-byte keys are supported. */
+	 
 	if (cipher == OCS_SM4 && key_len == OCS_AES_KEYSIZE_128)
 		return 0;
 
-	/* Everything else is unsupported. */
+	 
 	return -EINVAL;
 }
 
-/* Save key into transformation context. */
+ 
 static int save_key(struct ocs_aes_tctx *tctx, const u8 *in_key, size_t key_len,
 		    enum ocs_cipher cipher)
 {
@@ -178,13 +140,13 @@ static int save_key(struct ocs_aes_tctx *tctx, const u8 *in_key, size_t key_len,
 	return 0;
 }
 
-/* Set key for symmetric cypher. */
+ 
 static int kmb_ocs_sk_set_key(struct crypto_skcipher *tfm, const u8 *in_key,
 			      size_t key_len, enum ocs_cipher cipher)
 {
 	struct ocs_aes_tctx *tctx = crypto_skcipher_ctx(tfm);
 
-	/* Fallback is used for AES with 192-bit key. */
+	 
 	tctx->use_fallback = (cipher == OCS_AES &&
 			      key_len == OCS_AES_KEYSIZE_192);
 
@@ -200,13 +162,13 @@ static int kmb_ocs_sk_set_key(struct crypto_skcipher *tfm, const u8 *in_key,
 	return crypto_sync_skcipher_setkey(tctx->sw_cipher.sk, in_key, key_len);
 }
 
-/* Set key for AEAD cipher. */
+ 
 static int kmb_ocs_aead_set_key(struct crypto_aead *tfm, const u8 *in_key,
 				size_t key_len, enum ocs_cipher cipher)
 {
 	struct ocs_aes_tctx *tctx = crypto_aead_ctx(tfm);
 
-	/* Fallback is used for AES with 192-bit key. */
+	 
 	tctx->use_fallback = (cipher == OCS_AES &&
 			      key_len == OCS_AES_KEYSIZE_192);
 
@@ -220,29 +182,26 @@ static int kmb_ocs_aead_set_key(struct crypto_aead *tfm, const u8 *in_key,
 	return crypto_aead_setkey(tctx->sw_cipher.aead, in_key, key_len);
 }
 
-/* Swap two AES blocks in SG lists. */
+ 
 static void sg_swap_blocks(struct scatterlist *sgl, unsigned int nents,
 			   off_t blk1_offset, off_t blk2_offset)
 {
 	u8 tmp_buf1[AES_BLOCK_SIZE], tmp_buf2[AES_BLOCK_SIZE];
 
-	/*
-	 * No easy way to copy within sg list, so copy both blocks to temporary
-	 * buffers first.
-	 */
+	 
 	sg_pcopy_to_buffer(sgl, nents, tmp_buf1, AES_BLOCK_SIZE, blk1_offset);
 	sg_pcopy_to_buffer(sgl, nents, tmp_buf2, AES_BLOCK_SIZE, blk2_offset);
 	sg_pcopy_from_buffer(sgl, nents, tmp_buf1, AES_BLOCK_SIZE, blk2_offset);
 	sg_pcopy_from_buffer(sgl, nents, tmp_buf2, AES_BLOCK_SIZE, blk1_offset);
 }
 
-/* Initialize request context to default values. */
+ 
 static void ocs_aes_init_rctx(struct ocs_aes_rctx *rctx)
 {
-	/* Zero everything. */
+	 
 	memset(rctx, 0, sizeof(*rctx));
 
-	/* Set initial value for DMA addresses. */
+	 
 	rctx->src_dll.dma_addr = DMA_MAPPING_ERROR;
 	rctx->dst_dll.dma_addr = DMA_MAPPING_ERROR;
 	rctx->aad_src_dll.dma_addr = DMA_MAPPING_ERROR;
@@ -257,39 +216,35 @@ static int kmb_ocs_sk_validate_input(struct skcipher_request *req,
 
 	switch (mode) {
 	case OCS_MODE_ECB:
-		/* Ensure input length is multiple of block size */
+		 
 		if (req->cryptlen % AES_BLOCK_SIZE != 0)
 			return -EINVAL;
 
 		return 0;
 
 	case OCS_MODE_CBC:
-		/* Ensure input length is multiple of block size */
+		 
 		if (req->cryptlen % AES_BLOCK_SIZE != 0)
 			return -EINVAL;
 
-		/* Ensure IV is present and block size in length */
+		 
 		if (!req->iv || iv_size != AES_BLOCK_SIZE)
 			return -EINVAL;
-		/*
-		 * NOTE: Since req->cryptlen == 0 case was already handled in
-		 * kmb_ocs_sk_common(), the above two conditions also guarantee
-		 * that: cryptlen >= iv_size
-		 */
+		 
 		return 0;
 
 	case OCS_MODE_CTR:
-		/* Ensure IV is present and block size in length */
+		 
 		if (!req->iv || iv_size != AES_BLOCK_SIZE)
 			return -EINVAL;
 		return 0;
 
 	case OCS_MODE_CTS:
-		/* Ensure input length >= block size */
+		 
 		if (req->cryptlen < AES_BLOCK_SIZE)
 			return -EINVAL;
 
-		/* Ensure IV is present and block size in length */
+		 
 		if (!req->iv || iv_size != AES_BLOCK_SIZE)
 			return -EINVAL;
 
@@ -299,12 +254,7 @@ static int kmb_ocs_sk_validate_input(struct skcipher_request *req,
 	}
 }
 
-/*
- * Called by encrypt() / decrypt() skcipher functions.
- *
- * Use fallback if needed, otherwise initialize context and enqueue request
- * into engine.
- */
+ 
 static int kmb_ocs_sk_common(struct skcipher_request *req,
 			     enum ocs_cipher cipher,
 			     enum ocs_instruction instruction,
@@ -335,11 +285,7 @@ static int kmb_ocs_sk_common(struct skcipher_request *req,
 		return rc;
 	}
 
-	/*
-	 * If cryptlen == 0, no processing needed for ECB, CBC and CTR.
-	 *
-	 * For CTS continue: kmb_ocs_sk_validate_input() will return -EINVAL.
-	 */
+	 
 	if (!req->cryptlen && mode != OCS_MODE_CTS)
 		return 0;
 
@@ -390,7 +336,7 @@ static void kmb_ocs_sk_dma_cleanup(struct skcipher_request *req)
 		rctx->dst_dma_count = 0;
 	}
 
-	/* Clean up OCS DMA linked lists */
+	 
 	cleanup_ocs_dma_linked_list(dev, &rctx->src_dll);
 	cleanup_ocs_dma_linked_list(dev, &rctx->dst_dll);
 }
@@ -403,24 +349,18 @@ static int kmb_ocs_sk_prepare_inplace(struct skcipher_request *req)
 	int iv_size = crypto_skcipher_ivsize(tfm);
 	int rc;
 
-	/*
-	 * For CBC decrypt, save last block (iv) to last_ct_blk buffer.
-	 *
-	 * Note: if we are here, we already checked that cryptlen >= iv_size
-	 * and iv_size == AES_BLOCK_SIZE (i.e., the size of last_ct_blk); see
-	 * kmb_ocs_sk_validate_input().
-	 */
+	 
 	if (rctx->mode == OCS_MODE_CBC && rctx->instruction == OCS_DECRYPT)
 		scatterwalk_map_and_copy(rctx->last_ct_blk, req->src,
 					 req->cryptlen - iv_size, iv_size, 0);
 
-	/* For CTS decrypt, swap last two blocks, if needed. */
+	 
 	if (rctx->cts_swap && rctx->instruction == OCS_DECRYPT)
 		sg_swap_blocks(req->dst, rctx->dst_nents,
 			       req->cryptlen - AES_BLOCK_SIZE,
 			       req->cryptlen - (2 * AES_BLOCK_SIZE));
 
-	/* src and dst buffers are the same, use bidirectional DMA mapping. */
+	 
 	rctx->dst_dma_count = dma_map_sg(tctx->aes_dev->dev, req->dst,
 					 rctx->dst_nents, DMA_BIDIRECTIONAL);
 	if (rctx->dst_dma_count == 0) {
@@ -428,17 +368,13 @@ static int kmb_ocs_sk_prepare_inplace(struct skcipher_request *req)
 		return -ENOMEM;
 	}
 
-	/* Create DST linked list */
+	 
 	rc = ocs_create_linked_list_from_sg(tctx->aes_dev, req->dst,
 					    rctx->dst_dma_count, &rctx->dst_dll,
 					    req->cryptlen, 0);
 	if (rc)
 		return rc;
-	/*
-	 * If descriptor creation was successful, set the src_dll.dma_addr to
-	 * the value of dst_dll.dma_addr, as we do in-place AES operation on
-	 * the src.
-	 */
+	 
 	rctx->src_dll.dma_addr = rctx->dst_dll.dma_addr;
 
 	return 0;
@@ -455,7 +391,7 @@ static int kmb_ocs_sk_prepare_notinplace(struct skcipher_request *req)
 	if (rctx->src_nents < 0)
 		return -EBADMSG;
 
-	/* Map SRC SG. */
+	 
 	rctx->src_dma_count = dma_map_sg(tctx->aes_dev->dev, req->src,
 					 rctx->src_nents, DMA_TO_DEVICE);
 	if (rctx->src_dma_count == 0) {
@@ -463,14 +399,14 @@ static int kmb_ocs_sk_prepare_notinplace(struct skcipher_request *req)
 		return -ENOMEM;
 	}
 
-	/* Create SRC linked list */
+	 
 	rc = ocs_create_linked_list_from_sg(tctx->aes_dev, req->src,
 					    rctx->src_dma_count, &rctx->src_dll,
 					    req->cryptlen, 0);
 	if (rc)
 		return rc;
 
-	/* Map DST SG. */
+	 
 	rctx->dst_dma_count = dma_map_sg(tctx->aes_dev->dev, req->dst,
 					 rctx->dst_nents, DMA_FROM_DEVICE);
 	if (rctx->dst_dma_count == 0) {
@@ -478,33 +414,24 @@ static int kmb_ocs_sk_prepare_notinplace(struct skcipher_request *req)
 		return -ENOMEM;
 	}
 
-	/* Create DST linked list */
+	 
 	rc = ocs_create_linked_list_from_sg(tctx->aes_dev, req->dst,
 					    rctx->dst_dma_count, &rctx->dst_dll,
 					    req->cryptlen, 0);
 	if (rc)
 		return rc;
 
-	/* If this is not a CTS decrypt operation with swapping, we are done. */
+	 
 	if (!(rctx->cts_swap && rctx->instruction == OCS_DECRYPT))
 		return 0;
 
-	/*
-	 * Otherwise, we have to copy src to dst (as we cannot modify src).
-	 * Use OCS AES bypass mode to copy src to dst via DMA.
-	 *
-	 * NOTE: for anything other than small data sizes this is rather
-	 * inefficient.
-	 */
+	 
 	rc = ocs_aes_bypass_op(tctx->aes_dev, rctx->dst_dll.dma_addr,
 			       rctx->src_dll.dma_addr, req->cryptlen);
 	if (rc)
 		return rc;
 
-	/*
-	 * Now dst == src, so clean up what we did so far and use in_place
-	 * logic.
-	 */
+	 
 	kmb_ocs_sk_dma_cleanup(req);
 	rctx->in_place = true;
 
@@ -524,14 +451,7 @@ static int kmb_ocs_sk_run(struct skcipher_request *req)
 	if (rctx->dst_nents < 0)
 		return -EBADMSG;
 
-	/*
-	 * If 2 blocks or greater, and multiple of block size swap last two
-	 * blocks to be compatible with other crypto API CTS implementations:
-	 * OCS mode uses CBC-CS2, whereas other crypto API implementations use
-	 * CBC-CS3.
-	 * CBC-CS2 and CBC-CS3 defined by:
-	 * https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38a-add.pdf
-	 */
+	 
 	rctx->cts_swap = (rctx->mode == OCS_MODE_CTS &&
 			  req->cryptlen > AES_BLOCK_SIZE &&
 			  req->cryptlen % AES_BLOCK_SIZE == 0);
@@ -552,10 +472,10 @@ static int kmb_ocs_sk_run(struct skcipher_request *req)
 	if (rc)
 		goto error;
 
-	/* Clean-up DMA before further processing output. */
+	 
 	kmb_ocs_sk_dma_cleanup(req);
 
-	/* For CTS Encrypt, swap last 2 blocks, if needed. */
+	 
 	if (rctx->cts_swap && rctx->instruction == OCS_ENCRYPT) {
 		sg_swap_blocks(req->dst, rctx->dst_nents,
 			       req->cryptlen - AES_BLOCK_SIZE,
@@ -563,16 +483,16 @@ static int kmb_ocs_sk_run(struct skcipher_request *req)
 		return 0;
 	}
 
-	/* For CBC copy IV to req->IV. */
+	 
 	if (rctx->mode == OCS_MODE_CBC) {
-		/* CBC encrypt case. */
+		 
 		if (rctx->instruction == OCS_ENCRYPT) {
 			scatterwalk_map_and_copy(req->iv, req->dst,
 						 req->cryptlen - iv_size,
 						 iv_size, 0);
 			return 0;
 		}
-		/* CBC decrypt case. */
+		 
 		if (rctx->in_place)
 			memcpy(req->iv, rctx->last_ct_blk, iv_size);
 		else
@@ -581,7 +501,7 @@ static int kmb_ocs_sk_run(struct skcipher_request *req)
 						 iv_size, 0);
 		return 0;
 	}
-	/* For all other modes there's nothing to do. */
+	 
 
 	return 0;
 
@@ -599,11 +519,11 @@ static int kmb_ocs_aead_validate_input(struct aead_request *req,
 	int tag_size = crypto_aead_authsize(tfm);
 	int iv_size = crypto_aead_ivsize(tfm);
 
-	/* For decrypt crytplen == len(PT) + len(tag). */
+	 
 	if (instruction == OCS_DECRYPT && req->cryptlen < tag_size)
 		return -EINVAL;
 
-	/* IV is mandatory. */
+	 
 	if (!req->iv)
 		return -EINVAL;
 
@@ -615,7 +535,7 @@ static int kmb_ocs_aead_validate_input(struct aead_request *req,
 		return 0;
 
 	case OCS_MODE_CCM:
-		/* Ensure IV is present and block size in length */
+		 
 		if (iv_size != AES_BLOCK_SIZE)
 			return -EINVAL;
 
@@ -626,12 +546,7 @@ static int kmb_ocs_aead_validate_input(struct aead_request *req,
 	}
 }
 
-/*
- * Called by encrypt() / decrypt() aead functions.
- *
- * Use fallback if needed, otherwise initialize context and enqueue request
- * into engine.
- */
+ 
 static int kmb_ocs_aead_common(struct aead_request *req,
 			       enum ocs_cipher cipher,
 			       enum ocs_instruction instruction,
@@ -696,97 +611,67 @@ static void kmb_ocs_aead_dma_cleanup(struct aead_request *req)
 							     DMA_FROM_DEVICE);
 		rctx->dst_dma_count = 0;
 	}
-	/* Clean up OCS DMA linked lists */
+	 
 	cleanup_ocs_dma_linked_list(dev, &rctx->src_dll);
 	cleanup_ocs_dma_linked_list(dev, &rctx->dst_dll);
 	cleanup_ocs_dma_linked_list(dev, &rctx->aad_src_dll);
 	cleanup_ocs_dma_linked_list(dev, &rctx->aad_dst_dll);
 }
 
-/**
- * kmb_ocs_aead_dma_prepare() - Do DMA mapping for AEAD processing.
- * @req:		The AEAD request being processed.
- * @src_dll_size:	Where to store the length of the data mapped into the
- *			src_dll OCS DMA list.
- *
- * Do the following:
- * - DMA map req->src and req->dst
- * - Initialize the following OCS DMA linked lists: rctx->src_dll,
- *   rctx->dst_dll, rctx->aad_src_dll and rxtc->aad_dst_dll.
- *
- * Return: 0 on success, negative error code otherwise.
- */
+ 
 static int kmb_ocs_aead_dma_prepare(struct aead_request *req, u32 *src_dll_size)
 {
 	struct ocs_aes_tctx *tctx = crypto_aead_ctx(crypto_aead_reqtfm(req));
 	const int tag_size = crypto_aead_authsize(crypto_aead_reqtfm(req));
 	struct ocs_aes_rctx *rctx = aead_request_ctx(req);
-	u32 in_size;	/* The length of the data to be mapped by src_dll. */
-	u32 out_size;	/* The length of the data to be mapped by dst_dll. */
-	u32 dst_size;	/* The length of the data in dst_sg. */
+	u32 in_size;	 
+	u32 out_size;	 
+	u32 dst_size;	 
 	int rc;
 
-	/* Get number of entries in input data SG list. */
+	 
 	rctx->src_nents = sg_nents_for_len(req->src,
 					   req->assoclen + req->cryptlen);
 	if (rctx->src_nents < 0)
 		return -EBADMSG;
 
 	if (rctx->instruction == OCS_DECRYPT) {
-		/*
-		 * For decrypt:
-		 * - src sg list is:		AAD|CT|tag
-		 * - dst sg list expects:	AAD|PT
-		 *
-		 * in_size == len(CT); out_size == len(PT)
-		 */
+		 
 
-		/* req->cryptlen includes both CT and tag. */
+		 
 		in_size = req->cryptlen - tag_size;
 
-		/* out_size = PT size == CT size */
+		 
 		out_size = in_size;
 
-		/* len(dst_sg) == len(AAD) + len(PT) */
+		 
 		dst_size = req->assoclen + out_size;
 
-		/*
-		 * Copy tag from source SG list to 'in_tag' buffer.
-		 *
-		 * Note: this needs to be done here, before DMA mapping src_sg.
-		 */
+		 
 		sg_pcopy_to_buffer(req->src, rctx->src_nents, rctx->in_tag,
 				   tag_size, req->assoclen + in_size);
 
-	} else { /* OCS_ENCRYPT */
-		/*
-		 * For encrypt:
-		 *	src sg list is:		AAD|PT
-		 *	dst sg list expects:	AAD|CT|tag
-		 */
-		/* in_size == len(PT) */
+	} else {  
+		 
+		 
 		in_size = req->cryptlen;
 
-		/*
-		 * In CCM mode the OCS engine appends the tag to the ciphertext,
-		 * but in GCM mode the tag must be read from the tag registers
-		 * and appended manually below
-		 */
+		 
 		out_size = (rctx->mode == OCS_MODE_CCM) ? in_size + tag_size :
 							  in_size;
-		/* len(dst_sg) == len(AAD) + len(CT) + len(tag) */
+		 
 		dst_size = req->assoclen + in_size + tag_size;
 	}
 	*src_dll_size = in_size;
 
-	/* Get number of entries in output data SG list. */
+	 
 	rctx->dst_nents = sg_nents_for_len(req->dst, dst_size);
 	if (rctx->dst_nents < 0)
 		return -EBADMSG;
 
 	rctx->in_place = (req->src == req->dst) ? 1 : 0;
 
-	/* Map destination; use bidirectional mapping for in-place case. */
+	 
 	rctx->dst_dma_count = dma_map_sg(tctx->aes_dev->dev, req->dst,
 					 rctx->dst_nents,
 					 rctx->in_place ? DMA_BIDIRECTIONAL :
@@ -796,7 +681,7 @@ static int kmb_ocs_aead_dma_prepare(struct aead_request *req, u32 *src_dll_size)
 		return -ENOMEM;
 	}
 
-	/* Create AAD DST list: maps dst[0:AAD_SIZE-1]. */
+	 
 	rc = ocs_create_linked_list_from_sg(tctx->aes_dev, req->dst,
 					    rctx->dst_dma_count,
 					    &rctx->aad_dst_dll, req->assoclen,
@@ -804,7 +689,7 @@ static int kmb_ocs_aead_dma_prepare(struct aead_request *req, u32 *src_dll_size)
 	if (rc)
 		return rc;
 
-	/* Create DST list: maps dst[AAD_SIZE:out_size] */
+	 
 	rc = ocs_create_linked_list_from_sg(tctx->aes_dev, req->dst,
 					    rctx->dst_dma_count, &rctx->dst_dll,
 					    out_size, req->assoclen);
@@ -812,24 +697,16 @@ static int kmb_ocs_aead_dma_prepare(struct aead_request *req, u32 *src_dll_size)
 		return rc;
 
 	if (rctx->in_place) {
-		/* If this is not CCM encrypt, we are done. */
+		 
 		if (!(rctx->mode == OCS_MODE_CCM &&
 		      rctx->instruction == OCS_ENCRYPT)) {
-			/*
-			 * SRC and DST are the same, so re-use the same DMA
-			 * addresses (to avoid allocating new DMA lists
-			 * identical to the dst ones).
-			 */
+			 
 			rctx->src_dll.dma_addr = rctx->dst_dll.dma_addr;
 			rctx->aad_src_dll.dma_addr = rctx->aad_dst_dll.dma_addr;
 
 			return 0;
 		}
-		/*
-		 * For CCM encrypt the input and output linked lists contain
-		 * different amounts of data, so, we need to create different
-		 * SRC and AAD SRC lists, even for the in-place case.
-		 */
+		 
 		rc = ocs_create_linked_list_from_sg(tctx->aes_dev, req->dst,
 						    rctx->dst_dma_count,
 						    &rctx->aad_src_dll,
@@ -845,9 +722,9 @@ static int kmb_ocs_aead_dma_prepare(struct aead_request *req, u32 *src_dll_size)
 
 		return 0;
 	}
-	/* Not in-place case. */
+	 
 
-	/* Map source SG. */
+	 
 	rctx->src_dma_count = dma_map_sg(tctx->aes_dev->dev, req->src,
 					 rctx->src_nents, DMA_TO_DEVICE);
 	if (rctx->src_dma_count == 0 && rctx->src_nents != 0) {
@@ -855,7 +732,7 @@ static int kmb_ocs_aead_dma_prepare(struct aead_request *req, u32 *src_dll_size)
 		return -ENOMEM;
 	}
 
-	/* Create AAD SRC list. */
+	 
 	rc = ocs_create_linked_list_from_sg(tctx->aes_dev, req->src,
 					    rctx->src_dma_count,
 					    &rctx->aad_src_dll,
@@ -863,7 +740,7 @@ static int kmb_ocs_aead_dma_prepare(struct aead_request *req, u32 *src_dll_size)
 	if (rc)
 		return rc;
 
-	/* Create SRC list. */
+	 
 	rc = ocs_create_linked_list_from_sg(tctx->aes_dev, req->src,
 					    rctx->src_dma_count,
 					    &rctx->src_dll, in_size,
@@ -874,7 +751,7 @@ static int kmb_ocs_aead_dma_prepare(struct aead_request *req, u32 *src_dll_size)
 	if (req->assoclen == 0)
 		return 0;
 
-	/* Copy AAD from src sg to dst sg using OCS DMA. */
+	 
 	rc = ocs_aes_bypass_op(tctx->aes_dev, rctx->aad_dst_dll.dma_addr,
 			       rctx->aad_src_dll.dma_addr, req->cryptlen);
 	if (rc)
@@ -889,14 +766,14 @@ static int kmb_ocs_aead_run(struct aead_request *req)
 	struct ocs_aes_tctx *tctx = crypto_aead_ctx(crypto_aead_reqtfm(req));
 	const int tag_size = crypto_aead_authsize(crypto_aead_reqtfm(req));
 	struct ocs_aes_rctx *rctx = aead_request_ctx(req);
-	u32 in_size;	/* The length of the data mapped by src_dll. */
+	u32 in_size;	 
 	int rc;
 
 	rc = kmb_ocs_aead_dma_prepare(req, &in_size);
 	if (rc)
 		goto exit;
 
-	/* For CCM, we just call the OCS processing and we are done. */
+	 
 	if (rctx->mode == OCS_MODE_CCM) {
 		rc = ocs_aes_ccm_op(tctx->aes_dev, tctx->cipher,
 				    rctx->instruction, rctx->dst_dll.dma_addr,
@@ -906,7 +783,7 @@ static int kmb_ocs_aead_run(struct aead_request *req)
 				    rctx->in_tag, tag_size);
 		goto exit;
 	}
-	/* GCM case; invoke OCS processing. */
+	 
 	rc = ocs_aes_gcm_op(tctx->aes_dev, tctx->cipher,
 			    rctx->instruction,
 			    rctx->dst_dll.dma_addr,
@@ -917,23 +794,23 @@ static int kmb_ocs_aead_run(struct aead_request *req)
 	if (rc)
 		goto exit;
 
-	/* For GCM decrypt, we have to compare in_tag with out_tag. */
+	 
 	if (rctx->instruction == OCS_DECRYPT) {
 		rc = memcmp(rctx->in_tag, rctx->out_tag, tag_size) ?
 		     -EBADMSG : 0;
 		goto exit;
 	}
 
-	/* For GCM encrypt, we must manually copy out_tag to DST sg. */
+	 
 
-	/* Clean-up must be called before the sg_pcopy_from_buffer() below. */
+	 
 	kmb_ocs_aead_dma_cleanup(req);
 
-	/* Copy tag to destination sg after AAD and CT. */
+	 
 	sg_pcopy_from_buffer(req->dst, rctx->dst_nents, rctx->out_tag,
 			     tag_size, req->assoclen + req->cryptlen);
 
-	/* Return directly as DMA cleanup already done. */
+	 
 	return 0;
 
 exit:
@@ -1015,7 +892,7 @@ static int kmb_ocs_aes_ecb_decrypt(struct skcipher_request *req)
 {
 	return kmb_ocs_sk_common(req, OCS_AES, OCS_DECRYPT, OCS_MODE_ECB);
 }
-#endif /* CONFIG_CRYPTO_DEV_KEEMBAY_OCS_AES_SM4_ECB */
+#endif  
 
 static int kmb_ocs_aes_cbc_encrypt(struct skcipher_request *req)
 {
@@ -1047,7 +924,7 @@ static int kmb_ocs_aes_cts_decrypt(struct skcipher_request *req)
 {
 	return kmb_ocs_sk_common(req, OCS_AES, OCS_DECRYPT, OCS_MODE_CTS);
 }
-#endif /* CONFIG_CRYPTO_DEV_KEEMBAY_OCS_AES_SM4_CTS */
+#endif  
 
 static int kmb_ocs_aes_gcm_encrypt(struct aead_request *req)
 {
@@ -1091,7 +968,7 @@ static int kmb_ocs_sm4_ecb_decrypt(struct skcipher_request *req)
 {
 	return kmb_ocs_sk_common(req, OCS_SM4, OCS_DECRYPT, OCS_MODE_ECB);
 }
-#endif /* CONFIG_CRYPTO_DEV_KEEMBAY_OCS_AES_SM4_ECB */
+#endif  
 
 static int kmb_ocs_sm4_cbc_encrypt(struct skcipher_request *req)
 {
@@ -1123,7 +1000,7 @@ static int kmb_ocs_sm4_cts_decrypt(struct skcipher_request *req)
 {
 	return kmb_ocs_sk_common(req, OCS_SM4, OCS_DECRYPT, OCS_MODE_CTS);
 }
-#endif /* CONFIG_CRYPTO_DEV_KEEMBAY_OCS_AES_SM4_CTS */
+#endif  
 
 static int kmb_ocs_sm4_gcm_encrypt(struct aead_request *req)
 {
@@ -1151,7 +1028,7 @@ static int ocs_aes_init_tfm(struct crypto_skcipher *tfm)
 	struct ocs_aes_tctx *tctx = crypto_skcipher_ctx(tfm);
 	struct crypto_sync_skcipher *blk;
 
-	/* set fallback cipher in case it will be needed */
+	 
 	blk = crypto_alloc_sync_skcipher(alg_name, 0, CRYPTO_ALG_NEED_FALLBACK);
 	if (IS_ERR(blk))
 		return PTR_ERR(blk);
@@ -1174,7 +1051,7 @@ static inline void clear_key(struct ocs_aes_tctx *tctx)
 {
 	memzero_explicit(tctx->key, OCS_AES_KEYSIZE_256);
 
-	/* Zero key registers if set */
+	 
 	if (tctx->aes_dev)
 		ocs_aes_set_key(tctx->aes_dev, OCS_AES_KEYSIZE_256,
 				tctx->key, OCS_AES);
@@ -1198,7 +1075,7 @@ static int ocs_aes_aead_cra_init(struct crypto_aead *tfm)
 	struct ocs_aes_tctx *tctx = crypto_aead_ctx(tfm);
 	struct crypto_aead *blk;
 
-	/* Set fallback cipher in case it will be needed */
+	 
 	blk = crypto_alloc_aead(alg_name, 0, CRYPTO_ALG_NEED_FALLBACK);
 	if (IS_ERR(blk))
 		return PTR_ERR(blk);
@@ -1278,7 +1155,7 @@ static struct skcipher_engine_alg algs[] = {
 		.base.exit = ocs_exit_tfm,
 		.op.do_one_request = kmb_ocs_aes_sk_do_one_request,
 	},
-#endif /* CONFIG_CRYPTO_DEV_KEEMBAY_OCS_AES_SM4_ECB */
+#endif  
 	{
 		.base.base.cra_name = "cbc(aes)",
 		.base.base.cra_driver_name = "cbc-aes-keembay-ocs",
@@ -1346,7 +1223,7 @@ static struct skcipher_engine_alg algs[] = {
 		.base.exit = ocs_exit_tfm,
 		.op.do_one_request = kmb_ocs_aes_sk_do_one_request,
 	},
-#endif /* CONFIG_CRYPTO_DEV_KEEMBAY_OCS_AES_SM4_CTS */
+#endif  
 #ifdef CONFIG_CRYPTO_DEV_KEEMBAY_OCS_AES_SM4_ECB
 	{
 		.base.base.cra_name = "ecb(sm4)",
@@ -1368,7 +1245,7 @@ static struct skcipher_engine_alg algs[] = {
 		.base.exit = ocs_exit_tfm,
 		.op.do_one_request = kmb_ocs_aes_sk_do_one_request,
 	},
-#endif /* CONFIG_CRYPTO_DEV_KEEMBAY_OCS_AES_SM4_ECB */
+#endif  
 	{
 		.base.base.cra_name = "cbc(sm4)",
 		.base.base.cra_driver_name = "cbc-sm4-keembay-ocs",
@@ -1433,7 +1310,7 @@ static struct skcipher_engine_alg algs[] = {
 		.base.exit = ocs_exit_tfm,
 		.op.do_one_request = kmb_ocs_aes_sk_do_one_request,
 	}
-#endif /* CONFIG_CRYPTO_DEV_KEEMBAY_OCS_AES_SM4_CTS */
+#endif  
 };
 
 static struct aead_engine_alg algs_aead[] = {
@@ -1539,10 +1416,7 @@ static int register_aes_algs(struct ocs_aes_dev *aes_dev)
 {
 	int ret;
 
-	/*
-	 * If any algorithm fails to register, all preceding algorithms that
-	 * were successfully registered will be automatically unregistered.
-	 */
+	 
 	ret = crypto_engine_register_aeads(algs_aead, ARRAY_SIZE(algs_aead));
 	if (ret)
 		return ret;
@@ -1554,7 +1428,7 @@ static int register_aes_algs(struct ocs_aes_dev *aes_dev)
 	return ret;
 }
 
-/* Device tree driver match. */
+ 
 static const struct of_device_id kmb_ocs_aes_of_match[] = {
 	{
 		.compatible = "intel,keembay-ocs-aes",
@@ -1599,12 +1473,12 @@ static int kmb_ocs_aes_probe(struct platform_device *pdev)
 		return rc;
 	}
 
-	/* Get base register address. */
+	 
 	aes_dev->base_reg = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(aes_dev->base_reg))
 		return PTR_ERR(aes_dev->base_reg);
 
-	/* Get and request IRQ */
+	 
 	aes_dev->irq = platform_get_irq(pdev, 0);
 	if (aes_dev->irq < 0)
 		return aes_dev->irq;
@@ -1623,7 +1497,7 @@ static int kmb_ocs_aes_probe(struct platform_device *pdev)
 
 	init_completion(&aes_dev->irq_completion);
 
-	/* Initialize crypto engine */
+	 
 	aes_dev->engine = crypto_engine_alloc_init(dev, true);
 	if (!aes_dev->engine) {
 		rc = -ENOMEM;
@@ -1655,7 +1529,7 @@ list_del:
 	return rc;
 }
 
-/* The OCS driver is a platform device. */
+ 
 static struct platform_driver kmb_ocs_aes_driver = {
 	.probe = kmb_ocs_aes_probe,
 	.remove = kmb_ocs_aes_remove,
@@ -1683,9 +1557,9 @@ MODULE_ALIAS_CRYPTO("ccm-sm4-keembay-ocs");
 #ifdef CONFIG_CRYPTO_DEV_KEEMBAY_OCS_AES_SM4_ECB
 MODULE_ALIAS_CRYPTO("ecb-aes-keembay-ocs");
 MODULE_ALIAS_CRYPTO("ecb-sm4-keembay-ocs");
-#endif /* CONFIG_CRYPTO_DEV_KEEMBAY_OCS_AES_SM4_ECB */
+#endif  
 
 #ifdef CONFIG_CRYPTO_DEV_KEEMBAY_OCS_AES_SM4_CTS
 MODULE_ALIAS_CRYPTO("cts-aes-keembay-ocs");
 MODULE_ALIAS_CRYPTO("cts-sm4-keembay-ocs");
-#endif /* CONFIG_CRYPTO_DEV_KEEMBAY_OCS_AES_SM4_CTS */
+#endif  

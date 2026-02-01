@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 Cloudflare
+
+
 #include <error.h>
 #include <netinet/tcp.h>
 #include <sys/epoll.h>
@@ -16,10 +16,10 @@
 
 #include "sockmap_helpers.h"
 
-#define TCP_REPAIR		19	/* TCP sock is under repair right now */
+#define TCP_REPAIR		19	 
 
 #define TCP_REPAIR_ON		1
-#define TCP_REPAIR_OFF_NO_WP	-1	/* Turn off without window probes */
+#define TCP_REPAIR_OFF_NO_WP	-1	 
 
 static int connected_socket_v4(void)
 {
@@ -85,7 +85,7 @@ static void compare_cookies(struct bpf_map *src, struct bpf_map *dst)
 	}
 }
 
-/* Create a map, populate it with one socket, and free the map. */
+ 
 static void test_sockmap_create_update_free(enum bpf_map_type map_type)
 {
 	const int zero = 0;
@@ -243,13 +243,13 @@ static void test_sockmap_copy(enum bpf_map_type map_type)
 	if (!ASSERT_GE(iter_fd, 0, "create_iter"))
 		goto free_link;
 
-	/* do some tests */
+	 
 	while ((len = read(iter_fd, buf, sizeof(buf))) > 0)
 		;
 	if (!ASSERT_GE(len, 0, "read"))
 		goto close_iter;
 
-	/* test results */
+	 
 	if (!ASSERT_EQ(skel->bss->elems, num_elems, "elems"))
 		goto close_iter;
 
@@ -331,7 +331,7 @@ static void test_sockmap_progs_query(enum bpf_attach_type attach_type)
 	else
 		verdict_fd = bpf_program__fd(skel->progs.prog_skb_verdict);
 
-	err = bpf_prog_query(map_fd, attach_type, 0 /* query flags */,
+	err = bpf_prog_query(map_fd, attach_type, 0  ,
 			     &attach_flags, prog_ids, &prog_cnt);
 	ASSERT_OK(err, "bpf_prog_query failed");
 	ASSERT_EQ(attach_flags,  0, "wrong attach_flags on query");
@@ -342,7 +342,7 @@ static void test_sockmap_progs_query(enum bpf_attach_type attach_type)
 		goto out;
 
 	prog_cnt = 1;
-	err = bpf_prog_query(map_fd, attach_type, 0 /* query flags */,
+	err = bpf_prog_query(map_fd, attach_type, 0  ,
 			     &attach_flags, prog_ids, &prog_cnt);
 	ASSERT_OK(err, "bpf_prog_query failed");
 	ASSERT_EQ(attach_flags, 0, "wrong attach_flags on query");
@@ -432,7 +432,7 @@ static void test_sockmap_skb_verdict_fionread(bool pass_prog)
 			return;
 		verdict = bpf_program__fd(drop->progs.prog_skb_verdict);
 		map = bpf_map__fd(drop->maps.sock_map_rx);
-		/* On drop data is consumed immediately and copied_seq inc'd */
+		 
 		expected = 0;
 	}
 
@@ -457,7 +457,7 @@ static void test_sockmap_skb_verdict_fionread(bool pass_prog)
 	err = ioctl(c1, FIONREAD, &avail);
 	ASSERT_OK(err, "ioctl(FIONREAD) error");
 	ASSERT_EQ(avail, expected, "ioctl(FIONREAD)");
-	/* On DROP test there will be no data to read */
+	 
 	if (pass_prog) {
 		recvd = recv_timeout(c1, &buf, sizeof(buf), SOCK_NONBLOCK, IO_TIMEOUT_SEC);
 		ASSERT_EQ(recvd, sizeof(buf), "recv_timeout(c0)");

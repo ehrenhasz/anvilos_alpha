@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell RVU Ethernet driver
- *
- * Copyright (C) 2021 Marvell.
- *
- */
+
+ 
 
 #include "otx2_common.h"
 
@@ -34,13 +30,11 @@ int otx2_pfc_txschq_config(struct otx2_nic *pfvf)
 	for (prio = 0; prio < NIX_PF_PFC_PRIO_MAX; prio++) {
 		pfc_bit_set = pfc_en & (1 << prio);
 
-		/* Either PFC bit is not set
-		 * or tx scheduler is not allocated for the priority
-		 */
+		 
 		if (!pfc_bit_set || !pfvf->pfc_alloc_status[prio])
 			continue;
 
-		/* configure the scheduler for the tls*/
+		 
 		for (lvl = 0; lvl < NIX_TXSCH_LVL_CNT; lvl++) {
 			err = otx2_txschq_config(pfvf, lvl, prio, true);
 			if (err) {
@@ -61,15 +55,12 @@ static int otx2_pfc_txschq_alloc_one(struct otx2_nic *pfvf, u8 prio)
 	struct nix_txsch_alloc_rsp *rsp;
 	int lvl, rc;
 
-	/* Get memory to put this msg */
+	 
 	req = otx2_mbox_alloc_msg_nix_txsch_alloc(&pfvf->mbox);
 	if (!req)
 		return -ENOMEM;
 
-	/* Request one schq per level upto max level as configured
-	 * link config level. These rest of the scheduler can be
-	 * same as hw.txschq_list.
-	 */
+	 
 	for (lvl = 0; lvl <= pfvf->hw.txschq_link_cfg_lvl; lvl++)
 		req->schq[lvl] = 1;
 
@@ -82,7 +73,7 @@ static int otx2_pfc_txschq_alloc_one(struct otx2_nic *pfvf, u8 prio)
 	if (IS_ERR(rsp))
 		return PTR_ERR(rsp);
 
-	/* Setup transmit scheduler list */
+	 
 	for (lvl = 0; lvl <= pfvf->hw.txschq_link_cfg_lvl; lvl++) {
 		if (!rsp->schq[lvl])
 			return -ENOSPC;
@@ -90,9 +81,7 @@ static int otx2_pfc_txschq_alloc_one(struct otx2_nic *pfvf, u8 prio)
 		pfvf->pfc_schq_list[lvl][prio] = rsp->schq_list[lvl][0];
 	}
 
-	/* Set the Tx schedulers for rest of the levels same as
-	 * hw.txschq_list as those will be common for all.
-	 */
+	 
 	for (; lvl < NIX_TXSCH_LVL_CNT; lvl++)
 		pfvf->pfc_schq_list[lvl][prio] = pfvf->hw.txschq_list[lvl][0];
 
@@ -112,7 +101,7 @@ int otx2_pfc_txschq_alloc(struct otx2_nic *pfvf)
 		if (!pfc_bit_set || pfvf->pfc_alloc_status[prio])
 			continue;
 
-		/* Add new scheduler to the priority */
+		 
 		err = otx2_pfc_txschq_alloc_one(pfvf, prio);
 		if (err) {
 			dev_err(pfvf->dev, "%s failed to allocate PFC TX schedulers\n", __func__);
@@ -127,7 +116,7 @@ static int otx2_pfc_txschq_stop_one(struct otx2_nic *pfvf, u8 prio)
 {
 	int lvl;
 
-	/* free PFC TLx nodes */
+	 
 	for (lvl = 0; lvl <= pfvf->hw.txschq_link_cfg_lvl; lvl++)
 		otx2_txschq_free_one(pfvf, lvl,
 				     pfvf->pfc_schq_list[lvl][prio]);
@@ -155,12 +144,12 @@ static int otx2_pfc_update_sq_smq_mapping(struct otx2_nic *pfvf, int prio)
 		if (!cn10k_sq_aq)
 			return -ENOMEM;
 
-		/* Fill AQ info */
+		 
 		cn10k_sq_aq->qidx = prio;
 		cn10k_sq_aq->ctype = NIX_AQ_CTYPE_SQ;
 		cn10k_sq_aq->op = NIX_AQ_INSTOP_WRITE;
 
-		/* Fill fields to update */
+		 
 		cn10k_sq_aq->sq.ena = 1;
 		cn10k_sq_aq->sq_mask.ena = 1;
 		cn10k_sq_aq->sq_mask.smq = GENMASK(9, 0);
@@ -170,12 +159,12 @@ static int otx2_pfc_update_sq_smq_mapping(struct otx2_nic *pfvf, int prio)
 		if (!sq_aq)
 			return -ENOMEM;
 
-		/* Fill AQ info */
+		 
 		sq_aq->qidx = prio;
 		sq_aq->ctype = NIX_AQ_CTYPE_SQ;
 		sq_aq->op = NIX_AQ_INSTOP_WRITE;
 
-		/* Fill fields to update */
+		 
 		sq_aq->sq.ena = 1;
 		sq_aq->sq_mask.ena = 1;
 		sq_aq->sq_mask.smq = GENMASK(8, 0);
@@ -205,7 +194,7 @@ int otx2_pfc_txschq_update(struct otx2_nic *pfvf)
 	for (prio = 0; prio < NIX_PF_PFC_PRIO_MAX; prio++) {
 		pfc_bit_set = pfc_en & (1 << prio);
 
-		/* tx scheduler was created but user wants to disable now */
+		 
 		if (!pfc_bit_set && pfvf->pfc_alloc_status[prio]) {
 			mutex_unlock(&mbox->lock);
 			if (if_up)
@@ -215,7 +204,7 @@ int otx2_pfc_txschq_update(struct otx2_nic *pfvf)
 			if (if_up)
 				netif_tx_start_all_queues(pfvf->netdev);
 
-			/* delete the schq */
+			 
 			err = otx2_pfc_txschq_stop_one(pfvf, prio);
 			if (err) {
 				dev_err(pfvf->dev,
@@ -228,13 +217,11 @@ int otx2_pfc_txschq_update(struct otx2_nic *pfvf)
 			goto update_sq_smq_map;
 		}
 
-		/* Either PFC bit is not set
-		 * or Tx scheduler is already mapped for the priority
-		 */
+		 
 		if (!pfc_bit_set || pfvf->pfc_alloc_status[prio])
 			continue;
 
-		/* Add new scheduler to the priority */
+		 
 		err = otx2_pfc_txschq_alloc_one(pfvf, prio);
 		if (err) {
 			mutex_unlock(&mbox->lock);
@@ -272,7 +259,7 @@ int otx2_pfc_txschq_stop(struct otx2_nic *pfvf)
 		if (!pfc_bit_set || !pfvf->pfc_alloc_status[prio])
 			continue;
 
-		/* Delete the existing scheduler */
+		 
 		err = otx2_pfc_txschq_stop_one(pfvf, prio);
 		if (err) {
 			dev_err(pfvf->dev, "%s failed to stop PFC TX schedulers\n", __func__);
@@ -353,7 +340,7 @@ void otx2_update_bpid_in_rqctx(struct otx2_nic *pfvf, int vlan_prio, int qidx,
 	aq->cq.bpid = pfvf->bpid[vlan_prio];
 	aq->cq_mask.bpid = GENMASK(8, 0);
 
-	/* Fill AQ info */
+	 
 	aq->qidx = qidx;
 	aq->ctype = NIX_AQ_CTYPE_CQ;
 	aq->op = NIX_AQ_INSTOP_WRITE;
@@ -368,7 +355,7 @@ void otx2_update_bpid_in_rqctx(struct otx2_nic *pfvf, int vlan_prio, int qidx,
 	npa_aq->aura.nix0_bpid = pfvf->bpid[vlan_prio];
 	npa_aq->aura_mask.nix0_bpid = GENMASK(8, 0);
 
-	/* Fill NPA AQ info */
+	 
 	npa_aq->aura_id = qidx;
 	npa_aq->ctype = NPA_AQ_CTYPE_AURA;
 	npa_aq->op = NPA_AQ_INSTOP_WRITE;
@@ -408,9 +395,7 @@ static int otx2_dcbnl_ieee_setpfc(struct net_device *dev, struct ieee_pfc *pfc)
 	if (pfvf->hw.tx_queues >= NIX_PF_PFC_PRIO_MAX)
 		goto process_pfc;
 
-	/* Check if the PFC configuration can be
-	 * supported by the tx queue configuration
-	 */
+	 
 	err = otx2_check_pfc_config(pfvf);
 	if (err) {
 		pfvf->pfc_en = old_pfc_en;
@@ -424,7 +409,7 @@ process_pfc:
 		return err;
 	}
 
-	/* Request Per channel Bpids */
+	 
 	if (pfc->pfc_en)
 		otx2_nix_config_bp(pfvf, true);
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2015-2016 Free Electrons
- * Copyright (C) 2015-2016 NextThing Co
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/module.h>
@@ -63,11 +58,7 @@ static int simple_bridge_get_modes(struct drm_connector *connector)
 	}
 
 	if (!edid) {
-		/*
-		 * In case we cannot retrieve the EDIDs (missing or broken DDC
-		 * bus from the next bridge), fallback on the XGA standards and
-		 * prefer a mode pretty much anyone can handle.
-		 */
+		 
 		ret = drm_add_modes_noedid(connector, 1920, 1200);
 		drm_set_preferred_mode(connector, 1024, 768);
 		return ret;
@@ -178,7 +169,7 @@ static int simple_bridge_probe(struct platform_device *pdev)
 
 	sbridge->info = of_device_get_match_data(&pdev->dev);
 
-	/* Get the next bridge in the pipeline. */
+	 
 	remote = of_graph_get_remote_node(pdev->dev.of_node, 1, -1);
 	if (!remote)
 		return -EINVAL;
@@ -191,7 +182,7 @@ static int simple_bridge_probe(struct platform_device *pdev)
 		return -EPROBE_DEFER;
 	}
 
-	/* Get the regulator and GPIO resources. */
+	 
 	sbridge->vdd = devm_regulator_get_optional(&pdev->dev, "vdd");
 	if (IS_ERR(sbridge->vdd)) {
 		int ret = PTR_ERR(sbridge->vdd);
@@ -207,7 +198,7 @@ static int simple_bridge_probe(struct platform_device *pdev)
 		return dev_err_probe(&pdev->dev, PTR_ERR(sbridge->enable),
 				     "Unable to retrieve enable GPIO\n");
 
-	/* Register the bridge. */
+	 
 	sbridge->bridge.funcs = &simple_bridge_bridge_funcs;
 	sbridge->bridge.of_node = pdev->dev.of_node;
 	sbridge->bridge.timings = sbridge->info->timings;
@@ -224,40 +215,29 @@ static void simple_bridge_remove(struct platform_device *pdev)
 	drm_bridge_remove(&sbridge->bridge);
 }
 
-/*
- * We assume the ADV7123 DAC is the "default" for historical reasons
- * Information taken from the ADV7123 datasheet, revision D.
- * NOTE: the ADV7123EP seems to have other timings and need a new timings
- * set if used.
- */
+ 
 static const struct drm_bridge_timings default_bridge_timings = {
-	/* Timing specifications, datasheet page 7 */
+	 
 	.input_bus_flags = DRM_BUS_FLAG_PIXDATA_SAMPLE_POSEDGE,
 	.setup_time_ps = 500,
 	.hold_time_ps = 1500,
 };
 
-/*
- * Information taken from the THS8134, THS8134A, THS8134B datasheet named
- * "SLVS205D", dated May 1990, revised March 2000.
- */
+ 
 static const struct drm_bridge_timings ti_ths8134_bridge_timings = {
-	/* From timing diagram, datasheet page 9 */
+	 
 	.input_bus_flags = DRM_BUS_FLAG_PIXDATA_SAMPLE_POSEDGE,
-	/* From datasheet, page 12 */
+	 
 	.setup_time_ps = 3000,
-	/* I guess this means latched input */
+	 
 	.hold_time_ps = 0,
 };
 
-/*
- * Information taken from the THS8135 datasheet named "SLAS343B", dated
- * May 2001, revised April 2013.
- */
+ 
 static const struct drm_bridge_timings ti_ths8135_bridge_timings = {
-	/* From timing diagram, datasheet page 14 */
+	 
 	.input_bus_flags = DRM_BUS_FLAG_PIXDATA_SAMPLE_POSEDGE,
-	/* From datasheet, page 16 */
+	 
 	.setup_time_ps = 2000,
 	.hold_time_ps = 500,
 };

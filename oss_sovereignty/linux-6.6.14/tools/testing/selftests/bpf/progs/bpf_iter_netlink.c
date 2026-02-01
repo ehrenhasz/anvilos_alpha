@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include "bpf_iter.h"
 #include "bpf_tracing_net.h"
 #include <bpf/bpf_helpers.h>
@@ -35,9 +35,7 @@ int dump_netlink(struct bpf_iter__netlink *ctx)
 	if (!nlk->groups)  {
 		group = 0;
 	} else {
-		/* FIXME: temporary use bpf_probe_read_kernel here, needs
-		 * verifier support to do direct access.
-		 */
+		 
 		bpf_probe_read_kernel(&group, sizeof(group), &nlk->groups[0]);
 	}
 	BPF_SEQ_PRINTF(seq, "%-10u %08x %-8d %-8d %-5d %-8d ",
@@ -50,10 +48,7 @@ int dump_netlink(struct bpf_iter__netlink *ctx)
 	if (!sk) {
 		ino = 0;
 	} else {
-		/* FIXME: container_of inside SOCK_INODE has a forced
-		 * type conversion, and direct access cannot be used
-		 * with current verifier.
-		 */
+		 
 		inode = SOCK_INODE(sk);
 		bpf_probe_read_kernel(&ino, sizeof(ino), &inode->i_ino);
 	}

@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Accounting handling for netfilter. */
 
-/*
- * (C) 2008 Krzysztof Piotr Oledzki <ole@ans.pl>
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 

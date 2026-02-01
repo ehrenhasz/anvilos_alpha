@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * PCIe host controller driver for NWL PCIe Bridge
- * Based on pcie-xilinx.c, pci-tegra.c
- *
- * (C) Copyright 2014 - 2015, Xilinx, Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -24,13 +19,13 @@
 
 #include "../pci.h"
 
-/* Bridge core config registers */
+ 
 #define BRCFG_PCIE_RX0			0x00000000
 #define BRCFG_PCIE_RX1			0x00000004
 #define BRCFG_INTERRUPT			0x00000010
 #define BRCFG_PCIE_RX_MSG_FILTER	0x00000020
 
-/* Egress - Bridge translation registers */
+ 
 #define E_BREG_CAPABILITIES		0x00000200
 #define E_BREG_CONTROL			0x00000208
 #define E_BREG_BASE_LO			0x00000210
@@ -40,7 +35,7 @@
 #define E_ECAM_BASE_LO			0x00000230
 #define E_ECAM_BASE_HI			0x00000234
 
-/* Ingress - address translations */
+ 
 #define I_MSII_CAPABILITIES		0x00000300
 #define I_MSII_CONTROL			0x00000308
 #define I_MSII_BASE_LO			0x00000310
@@ -48,7 +43,7 @@
 
 #define I_ISUB_CONTROL			0x000003E8
 #define SET_ISUB_CONTROL		BIT(0)
-/* Rxed msg fifo  - Interrupt status registers */
+ 
 #define MSGF_MISC_STATUS		0x00000400
 #define MSGF_MISC_MASK			0x00000404
 #define MSGF_LEG_STATUS			0x00000420
@@ -58,7 +53,7 @@
 #define MSGF_MSI_MASK_LO		0x00000448
 #define MSGF_MSI_MASK_HI		0x0000044C
 
-/* Msg filter mask bits */
+ 
 #define CFG_ENABLE_PM_MSG_FWD		BIT(1)
 #define CFG_ENABLE_INT_MSG_FWD		BIT(2)
 #define CFG_ENABLE_ERR_MSG_FWD		BIT(3)
@@ -66,7 +61,7 @@
 					CFG_ENABLE_INT_MSG_FWD | \
 					CFG_ENABLE_ERR_MSG_FWD)
 
-/* Misc interrupt status mask bits */
+ 
 #define MSGF_MISC_SR_RXMSG_AVAIL	BIT(0)
 #define MSGF_MISC_SR_RXMSG_OVER		BIT(1)
 #define MSGF_MISC_SR_SLAVE_ERR		BIT(4)
@@ -99,7 +94,7 @@
 					MSGF_MSIC_SR_LINK_AUTO_BWIDTH | \
 					MSGF_MSIC_SR_LINK_BWIDTH)
 
-/* Legacy interrupt status mask bits */
+ 
 #define MSGF_LEG_SR_INTA		BIT(0)
 #define MSGF_LEG_SR_INTB		BIT(1)
 #define MSGF_LEG_SR_INTC		BIT(2)
@@ -107,7 +102,7 @@
 #define MSGF_LEG_SR_MASKALL		(MSGF_LEG_SR_INTA | MSGF_LEG_SR_INTB | \
 					MSGF_LEG_SR_INTC | MSGF_LEG_SR_INTD)
 
-/* MSI interrupt status mask bits */
+ 
 #define MSGF_MSI_SR_LO_MASK		GENMASK(31, 0)
 #define MSGF_MSI_SR_HI_MASK		GENMASK(31, 0)
 
@@ -115,13 +110,13 @@
 #define MSII_ENABLE			BIT(0)
 #define MSII_STATUS_ENABLE		BIT(15)
 
-/* Bridge config interrupt mask */
+ 
 #define BRCFG_INTERRUPT_MASK		BIT(0)
 #define BREG_PRESENT			BIT(0)
 #define BREG_ENABLE			BIT(0)
 #define BREG_ENABLE_FORCE		BIT(1)
 
-/* E_ECAM status mask bits */
+ 
 #define E_ECAM_PRESENT			BIT(0)
 #define E_ECAM_CR_ENABLE		BIT(0)
 #define E_ECAM_SIZE_LOC			GENMASK(20, 16)
@@ -133,21 +128,21 @@
 
 #define INT_PCI_MSI_NR			(2 * 32)
 
-/* Readin the PS_LINKUP */
+ 
 #define PS_LINKUP_OFFSET		0x00000238
 #define PCIE_PHY_LINKUP_BIT		BIT(0)
 #define PHY_RDY_LINKUP_BIT		BIT(1)
 
-/* Parameters for the waiting for link up routine */
+ 
 #define LINK_WAIT_MAX_RETRIES          10
 #define LINK_WAIT_USLEEP_MIN           90000
 #define LINK_WAIT_USLEEP_MAX           100000
 
-struct nwl_msi {			/* MSI information */
+struct nwl_msi {			 
 	struct irq_domain *msi_domain;
 	DECLARE_BITMAP(bitmap, INT_PCI_MSI_NR);
 	struct irq_domain *dev_domain;
-	struct mutex lock;		/* protect bitmap variable */
+	struct mutex lock;		 
 	int irq_msi0;
 	int irq_msi1;
 };
@@ -157,9 +152,9 @@ struct nwl_pcie {
 	void __iomem *breg_base;
 	void __iomem *pcireg_base;
 	void __iomem *ecam_base;
-	phys_addr_t phys_breg_base;	/* Physical Bridge Register Base */
-	phys_addr_t phys_pcie_reg_base;	/* Physical PCIe Controller Base */
-	phys_addr_t phys_ecam_base;	/* Physical Configuration Base */
+	phys_addr_t phys_breg_base;	 
+	phys_addr_t phys_pcie_reg_base;	 
+	phys_addr_t phys_ecam_base;	 
 	u32 breg_size;
 	u32 pcie_reg_size;
 	u32 ecam_size;
@@ -202,7 +197,7 @@ static int nwl_wait_for_link(struct nwl_pcie *pcie)
 	struct device *dev = pcie->dev;
 	int retries;
 
-	/* check if the link is up or not */
+	 
 	for (retries = 0; retries < LINK_WAIT_MAX_RETRIES; retries++) {
 		if (nwl_phy_link_up(pcie))
 			return 0;
@@ -217,27 +212,18 @@ static bool nwl_pcie_valid_device(struct pci_bus *bus, unsigned int devfn)
 {
 	struct nwl_pcie *pcie = bus->sysdata;
 
-	/* Check link before accessing downstream ports */
+	 
 	if (!pci_is_root_bus(bus)) {
 		if (!nwl_pcie_link_up(pcie))
 			return false;
 	} else if (devfn > 0)
-		/* Only one device down on each root port */
+		 
 		return false;
 
 	return true;
 }
 
-/**
- * nwl_pcie_map_bus - Get configuration base
- *
- * @bus: Bus structure of current bus
- * @devfn: Device/function
- * @where: Offset from base
- *
- * Return: Base address of the configuration space needed to be
- *	   accessed.
- */
+ 
 static void __iomem *nwl_pcie_map_bus(struct pci_bus *bus, unsigned int devfn,
 				      int where)
 {
@@ -249,7 +235,7 @@ static void __iomem *nwl_pcie_map_bus(struct pci_bus *bus, unsigned int devfn,
 	return pcie->ecam_base + PCIE_ECAM_OFFSET(bus->number, devfn, where);
 }
 
-/* PCIe operations */
+ 
 static struct pci_ops nwl_pcie_ops = {
 	.map_bus = nwl_pcie_map_bus,
 	.read  = pci_generic_config_read,
@@ -262,7 +248,7 @@ static irqreturn_t nwl_pcie_misc_handler(int irq, void *data)
 	struct device *dev = pcie->dev;
 	u32 misc_stat;
 
-	/* Checking for misc interrupts */
+	 
 	misc_stat = nwl_bridge_readl(pcie, MSGF_MISC_STATUS) &
 				     MSGF_MISC_SR_MASKALL;
 	if (!misc_stat)
@@ -307,7 +293,7 @@ static irqreturn_t nwl_pcie_misc_handler(int irq, void *data)
 	if (misc_stat & MSGF_MSIC_SR_LINK_BWIDTH)
 		dev_info(dev, "Link Bandwidth Management Status bit set\n");
 
-	/* Clear misc interrupt status */
+	 
 	nwl_bridge_writel(pcie, misc_stat, MSGF_MISC_STATUS);
 
 	return IRQ_HANDLED;
@@ -560,7 +546,7 @@ static int nwl_pcie_enable_msi(struct nwl_pcie *pcie)
 
 	mutex_init(&msi->lock);
 
-	/* Get msi_1 IRQ number */
+	 
 	msi->irq_msi1 = platform_get_irq_byname(pdev, "msi1");
 	if (msi->irq_msi1 < 0)
 		return -EINVAL;
@@ -568,7 +554,7 @@ static int nwl_pcie_enable_msi(struct nwl_pcie *pcie)
 	irq_set_chained_handler_and_data(msi->irq_msi1,
 					 nwl_pcie_msi_handler_high, pcie);
 
-	/* Get msi_0 IRQ number */
+	 
 	msi->irq_msi0 = platform_get_irq_byname(pdev, "msi0");
 	if (msi->irq_msi0 < 0)
 		return -EINVAL;
@@ -576,30 +562,27 @@ static int nwl_pcie_enable_msi(struct nwl_pcie *pcie)
 	irq_set_chained_handler_and_data(msi->irq_msi0,
 					 nwl_pcie_msi_handler_low, pcie);
 
-	/* Check for msii_present bit */
+	 
 	ret = nwl_bridge_readl(pcie, I_MSII_CAPABILITIES) & MSII_PRESENT;
 	if (!ret) {
 		dev_err(dev, "MSI not present\n");
 		return -EIO;
 	}
 
-	/* Enable MSII */
+	 
 	nwl_bridge_writel(pcie, nwl_bridge_readl(pcie, I_MSII_CONTROL) |
 			  MSII_ENABLE, I_MSII_CONTROL);
 
-	/* Enable MSII status */
+	 
 	nwl_bridge_writel(pcie, nwl_bridge_readl(pcie, I_MSII_CONTROL) |
 			  MSII_STATUS_ENABLE, I_MSII_CONTROL);
 
-	/* setup AFI/FPCI range */
+	 
 	base = pcie->phys_pcie_reg_base;
 	nwl_bridge_writel(pcie, lower_32_bits(base), I_MSII_BASE_LO);
 	nwl_bridge_writel(pcie, upper_32_bits(base), I_MSII_BASE_HI);
 
-	/*
-	 * For high range MSI interrupts: disable, clear any pending,
-	 * and enable
-	 */
+	 
 	nwl_bridge_writel(pcie, 0, MSGF_MSI_MASK_HI);
 
 	nwl_bridge_writel(pcie, nwl_bridge_readl(pcie,  MSGF_MSI_STATUS_HI) &
@@ -607,10 +590,7 @@ static int nwl_pcie_enable_msi(struct nwl_pcie *pcie)
 
 	nwl_bridge_writel(pcie, MSGF_MSI_SR_HI_MASK, MSGF_MSI_MASK_HI);
 
-	/*
-	 * For low range MSI interrupts: disable, clear any pending,
-	 * and enable
-	 */
+	 
 	nwl_bridge_writel(pcie, 0, MSGF_MSI_MASK_LO);
 
 	nwl_bridge_writel(pcie, nwl_bridge_readl(pcie, MSGF_MSI_STATUS_LO) &
@@ -634,28 +614,28 @@ static int nwl_pcie_bridge_init(struct nwl_pcie *pcie)
 		return breg_val;
 	}
 
-	/* Write bridge_off to breg base */
+	 
 	nwl_bridge_writel(pcie, lower_32_bits(pcie->phys_breg_base),
 			  E_BREG_BASE_LO);
 	nwl_bridge_writel(pcie, upper_32_bits(pcie->phys_breg_base),
 			  E_BREG_BASE_HI);
 
-	/* Enable BREG */
+	 
 	nwl_bridge_writel(pcie, ~BREG_ENABLE_FORCE & BREG_ENABLE,
 			  E_BREG_CONTROL);
 
-	/* Disable DMA channel registers */
+	 
 	nwl_bridge_writel(pcie, nwl_bridge_readl(pcie, BRCFG_PCIE_RX0) |
 			  CFG_DMA_REG_BAR, BRCFG_PCIE_RX0);
 
-	/* Enable Ingress subtractive decode translation */
+	 
 	nwl_bridge_writel(pcie, SET_ISUB_CONTROL, I_ISUB_CONTROL);
 
-	/* Enable msg filtering details */
+	 
 	nwl_bridge_writel(pcie, CFG_ENABLE_MSG_FILTER_MASK,
 			  BRCFG_PCIE_RX_MSG_FILTER);
 
-	/* This routes the PCIe DMA traffic to go through CCI path */
+	 
 	if (of_dma_is_coherent(dev->of_node))
 		nwl_bridge_writel(pcie, nwl_bridge_readl(pcie, BRCFG_PCIE_RX1) |
 				  CFG_PCIE_CACHE, BRCFG_PCIE_RX1);
@@ -670,7 +650,7 @@ static int nwl_pcie_bridge_init(struct nwl_pcie *pcie)
 		return ecam_val;
 	}
 
-	/* Enable ECAM */
+	 
 	nwl_bridge_writel(pcie, nwl_bridge_readl(pcie, E_ECAM_CONTROL) |
 			  E_ECAM_CR_ENABLE, E_ECAM_CONTROL);
 
@@ -683,10 +663,10 @@ static int nwl_pcie_bridge_init(struct nwl_pcie *pcie)
 	nwl_bridge_writel(pcie, upper_32_bits(pcie->phys_ecam_base),
 			  E_ECAM_BASE_HI);
 
-	/* Get bus range */
+	 
 	ecam_val = nwl_bridge_readl(pcie, E_ECAM_CONTROL);
 	pcie->last_busno = (ecam_val & E_ECAM_SIZE_LOC) >> E_ECAM_SIZE_SHIFT;
-	/* Write primary, secondary and subordinate bus numbers */
+	 
 	ecam_val = first_busno;
 	ecam_val |= (first_busno + 1) << 8;
 	ecam_val |= (pcie->last_busno << E_ECAM_SIZE_SHIFT);
@@ -697,7 +677,7 @@ static int nwl_pcie_bridge_init(struct nwl_pcie *pcie)
 	else
 		dev_info(dev, "Link is DOWN\n");
 
-	/* Get misc IRQ number */
+	 
 	pcie->irq_misc = platform_get_irq_byname(pdev, "misc");
 	if (pcie->irq_misc < 0)
 		return -EINVAL;
@@ -711,27 +691,27 @@ static int nwl_pcie_bridge_init(struct nwl_pcie *pcie)
 		return err;
 	}
 
-	/* Disable all misc interrupts */
+	 
 	nwl_bridge_writel(pcie, (u32)~MSGF_MISC_SR_MASKALL, MSGF_MISC_MASK);
 
-	/* Clear pending misc interrupts */
+	 
 	nwl_bridge_writel(pcie, nwl_bridge_readl(pcie, MSGF_MISC_STATUS) &
 			  MSGF_MISC_SR_MASKALL, MSGF_MISC_STATUS);
 
-	/* Enable all misc interrupts */
+	 
 	nwl_bridge_writel(pcie, MSGF_MISC_SR_MASKALL, MSGF_MISC_MASK);
 
-	/* Disable all legacy interrupts */
+	 
 	nwl_bridge_writel(pcie, (u32)~MSGF_LEG_SR_MASKALL, MSGF_LEG_MASK);
 
-	/* Clear pending legacy interrupts */
+	 
 	nwl_bridge_writel(pcie, nwl_bridge_readl(pcie, MSGF_LEG_STATUS) &
 			  MSGF_LEG_SR_MASKALL, MSGF_LEG_STATUS);
 
-	/* Enable all legacy interrupts */
+	 
 	nwl_bridge_writel(pcie, MSGF_LEG_SR_MASKALL, MSGF_LEG_MASK);
 
-	/* Enable the bridge config interrupt */
+	 
 	nwl_bridge_writel(pcie, nwl_bridge_readl(pcie, BRCFG_INTERRUPT) |
 			  BRCFG_INTERRUPT_MASK, BRCFG_INTERRUPT);
 
@@ -762,7 +742,7 @@ static int nwl_pcie_parse_dt(struct nwl_pcie *pcie,
 		return PTR_ERR(pcie->ecam_base);
 	pcie->phys_ecam_base = res->start;
 
-	/* Get intx IRQ number */
+	 
 	pcie->irq_intx = platform_get_irq_byname(pdev, "intx");
 	if (pcie->irq_intx < 0)
 		return pcie->irq_intx;

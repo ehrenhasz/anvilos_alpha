@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/nfs_fs.h>
 #include <linux/nfs_mount.h>
 #include <linux/sunrpc/addr.h>
@@ -21,9 +21,7 @@ const struct rpc_program nfsacl_program = {
 	.stats			= &nfsacl_rpcstat,
 };
 
-/*
- * Initialise an NFSv3 ACL client connection
- */
+ 
 static void nfs_init_server_aclclient(struct nfs_server *server)
 {
 	if (server->flags & NFS_MOUNT_NOACL)
@@ -35,7 +33,7 @@ static void nfs_init_server_aclclient(struct nfs_server *server)
 
 	nfs_sysfs_link_rpc_client(server, server->client_acl, NULL);
 
-	/* No errors! Assume that Sun nfsacls are supported */
+	 
 	server->caps |= NFS_CAP_ACLS;
 	return;
 
@@ -54,7 +52,7 @@ struct nfs_server *nfs3_create_server(struct fs_context *fc)
 {
 	struct nfs_server *server = nfs_create_server(fc);
 
-	/* Create a client RPC handle for the NFS v3 ACL management interface */
+	 
 	if (!IS_ERR(server))
 		nfs_init_server_aclclient(server);
 	return server;
@@ -71,16 +69,7 @@ struct nfs_server *nfs3_clone_server(struct nfs_server *source,
 	return server;
 }
 
-/*
- * Set up a pNFS Data Server client over NFSv3.
- *
- * Return any existing nfs_client that matches server address,port,version
- * and minorversion.
- *
- * For a new nfs_client, use a soft mount (default), a low retrans and a
- * low timeout interval so that if a connection is lost, we retry through
- * the MDS.
- */
+ 
 struct nfs_client *nfs3_set_ds_client(struct nfs_server *mds_srv,
 		const struct sockaddr_storage *ds_addr, int ds_addrlen,
 		int ds_proto, unsigned int ds_timeo, unsigned int ds_retrans)
@@ -105,7 +94,7 @@ struct nfs_client *nfs3_set_ds_client(struct nfs_server *mds_srv,
 	struct nfs_client *clp;
 	char buf[INET6_ADDRSTRLEN + 1];
 
-	/* fake a hostname because lockd wants it */
+	 
 	if (rpc_ntop((struct sockaddr *)ds_addr, buf, sizeof(buf)) <= 0)
 		return ERR_PTR(-EINVAL);
 	cl_init.hostname = buf;
@@ -122,7 +111,7 @@ struct nfs_client *nfs3_set_ds_client(struct nfs_server *mds_srv,
 
 	__set_bit(NFS_CS_DS, &cl_init.init_flags);
 
-	/* Use the MDS nfs_client cl_ipaddr. */
+	 
 	nfs_init_timeout_values(&ds_timeout, ds_proto, ds_timeo, ds_retrans);
 	clp = nfs_get_client(&cl_init);
 

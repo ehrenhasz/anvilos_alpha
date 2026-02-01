@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2018 Intel Corporation
- */
+
+ 
 
 #include "i915_reg.h"
 #include "intel_combo_phy.h"
@@ -130,14 +128,7 @@ static bool icl_verify_procmon_ref_values(struct drm_i915_private *dev_priv,
 
 static bool has_phy_misc(struct drm_i915_private *i915, enum phy phy)
 {
-	/*
-	 * Some platforms only expect PHY_MISC to be programmed for PHY-A and
-	 * PHY-B and may not even have instances of the register for the
-	 * other combo PHY's.
-	 *
-	 * ADL-S technically has three instances of PHY_MISC, but only requires
-	 * that we program it for PHY A.
-	 */
+	 
 
 	if (IS_ALDERLAKE_S(i915))
 		return phy == PHY_A;
@@ -152,7 +143,7 @@ static bool has_phy_misc(struct drm_i915_private *i915, enum phy phy)
 static bool icl_combo_phy_enabled(struct drm_i915_private *dev_priv,
 				  enum phy phy)
 {
-	/* The PHY C added by EHL has no PHY_MISC register */
+	 
 	if (!has_phy_misc(dev_priv, phy))
 		return intel_de_read(dev_priv, ICL_PORT_COMP_DW0(phy)) & COMP_INIT;
 	else
@@ -167,20 +158,11 @@ static bool ehl_vbt_ddi_d_present(struct drm_i915_private *i915)
 	bool ddi_d_present = intel_bios_is_port_present(i915, PORT_D);
 	bool dsi_present = intel_bios_is_dsi_present(i915, NULL);
 
-	/*
-	 * VBT's 'dvo port' field for child devices references the DDI, not
-	 * the PHY.  So if combo PHY A is wired up to drive an external
-	 * display, we should see a child device present on PORT_D and
-	 * nothing on PORT_A and no DSI.
-	 */
+	 
 	if (ddi_d_present && !ddi_a_present && !dsi_present)
 		return true;
 
-	/*
-	 * If we encounter a VBT that claims to have an external display on
-	 * DDI-D _and_ an internal display on DDI-A/DSI leave an error message
-	 * in the log and let the internal display win.
-	 */
+	 
 	if (ddi_d_present)
 		drm_err(&i915->drm,
 			"VBT claims to have both internal and external displays on PHY A.  Configuring for internal.\n");
@@ -190,22 +172,7 @@ static bool ehl_vbt_ddi_d_present(struct drm_i915_private *i915)
 
 static bool phy_is_master(struct drm_i915_private *dev_priv, enum phy phy)
 {
-	/*
-	 * Certain PHYs are connected to compensation resistors and act
-	 * as masters to other PHYs.
-	 *
-	 * ICL,TGL:
-	 *   A(master) -> B(slave), C(slave)
-	 * RKL,DG1:
-	 *   A(master) -> B(slave)
-	 *   C(master) -> D(slave)
-	 * ADL-S:
-	 *   A(master) -> B(slave), C(slave)
-	 *   D(master) -> E(slave)
-	 *
-	 * We must set the IREFGEN bit for any PHY acting as a master
-	 * to another PHY.
-	 */
+	 
 	if (phy == PHY_A)
 		return true;
 	else if (IS_ALDERLAKE_S(dev_priv))
@@ -324,14 +291,7 @@ static void icl_combo_phys_init(struct drm_i915_private *dev_priv)
 		if (!has_phy_misc(dev_priv, phy))
 			goto skip_phy_misc;
 
-		/*
-		 * EHL's combo PHY A can be hooked up to either an external
-		 * display (via DDI-D) or an internal display (via DDI-A or
-		 * the DSI DPHY).  This is a motherboard design decision that
-		 * can't be changed on the fly, so initialize the PHY's mux
-		 * based on whether our VBT indicates the presence of any
-		 * "internal" child devices.
-		 */
+		 
 		val = intel_de_read(dev_priv, ICL_PHY_MISC(phy));
 		if ((IS_JASPERLAKE(dev_priv) || IS_ELKHARTLAKE(dev_priv)) &&
 		    phy == PHY_A) {
@@ -378,11 +338,7 @@ static void icl_combo_phys_uninit(struct drm_i915_private *dev_priv)
 		if (phy == PHY_A &&
 		    !icl_combo_phy_verify_state(dev_priv, phy)) {
 			if (IS_TIGERLAKE(dev_priv) || IS_DG1(dev_priv)) {
-				/*
-				 * A known problem with old ifwi:
-				 * https://gitlab.freedesktop.org/drm/intel/-/issues/2411
-				 * Suppress the warning for CI. Remove ASAP!
-				 */
+				 
 				drm_dbg_kms(&dev_priv->drm,
 					    "Combo PHY %c HW state changed unexpectedly\n",
 					    phy_name(phy));

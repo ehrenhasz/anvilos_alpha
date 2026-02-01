@@ -1,34 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * aio_aio12_8.c
- * Driver for Access I/O Products PC-104 AIO12-8 Analog I/O Board
- * Copyright (C) 2006 C&C Technologies, Inc.
- */
 
-/*
- * Driver: aio_aio12_8
- * Description: Access I/O Products PC-104 AIO12-8 Analog I/O Board
- * Author: Pablo Mejia <pablo.mejia@cctechnol.com>
- * Devices: [Access I/O] PC-104 AIO12-8 (aio_aio12_8),
- *   [Access I/O] PC-104 AI12-8 (aio_ai12_8),
- *   [Access I/O] PC-104 AO12-4 (aio_ao12_4)
- * Status: experimental
- *
- * Configuration Options:
- *   [0] - I/O port base address
- *
- * Notes:
- * Only synchronous operations are supported.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/comedi/comedidev.h>
 #include <linux/comedi/comedi_8255.h>
 #include <linux/comedi/comedi_8254.h>
 
-/*
- * Register map
- */
+ 
 #define AIO12_8_STATUS_REG		0x00
 #define AIO12_8_STATUS_ADC_EOC		BIT(7)
 #define AIO12_8_STATUS_PORT_C_COS	BIT(6)
@@ -120,28 +100,25 @@ static int aio_aio12_8_ai_read(struct comedi_device *dev,
 	int ret;
 	int i;
 
-	/*
-	 * Setup the control byte for internal 2MHz clock, 3uS conversion,
-	 * at the desired range of the requested channel.
-	 */
+	 
 	control = AIO12_8_ADC_MODE_NORMAL | AIO12_8_ADC_ACQ_3USEC |
 		  AIO12_8_ADC_RANGE(range) | AIO12_8_ADC_CHAN(chan);
 
-	/* Read status to clear EOC latch */
+	 
 	inb(dev->iobase + AIO12_8_STATUS_REG);
 
 	for (i = 0; i < insn->n; i++) {
-		/*  Setup and start conversion */
+		 
 		outb(control, dev->iobase + AIO12_8_ADC_REG);
 
-		/*  Wait for conversion to complete */
+		 
 		ret = comedi_timeout(dev, s, insn, aio_aio12_8_ai_eoc, 0);
 		if (ret)
 			return ret;
 
 		val = inw(dev->iobase + AIO12_8_ADC_REG) & s->maxdata;
 
-		/* munge bipolar 2's complement data to offset binary */
+		 
 		if (comedi_range_is_bipolar(s, range))
 			val = comedi_offset_munge(s, val);
 
@@ -160,7 +137,7 @@ static int aio_aio12_8_ao_insn_write(struct comedi_device *dev,
 	unsigned int val = s->readback[chan];
 	int i;
 
-	/* enable DACs */
+	 
 	outb(AIO12_8_DAC_ENABLE_REF_ENA, dev->iobase + AIO12_8_DAC_ENABLE_REG);
 
 	for (i = 0; i < insn->n; i++) {
@@ -181,10 +158,7 @@ static int aio_aio12_8_counter_insn_config(struct comedi_device *dev,
 
 	switch (data[0]) {
 	case INSN_CONFIG_GET_CLOCK_SRC:
-		/*
-		 * Channels 0 and 2 have external clock sources.
-		 * Channel 1 has a fixed 1 MHz clock source.
-		 */
+		 
 		data[0] = 0;
 		data[1] = (chan == 1) ? I8254_OSC_BASE_1MHZ : 0;
 		break;
@@ -215,7 +189,7 @@ static int aio_aio12_8_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* Analog Input subdevice */
+	 
 	s = &dev->subdevices[0];
 	if (board->has_ai) {
 		s->type		= COMEDI_SUBD_AI;
@@ -228,7 +202,7 @@ static int aio_aio12_8_attach(struct comedi_device *dev,
 		s->type = COMEDI_SUBD_UNUSED;
 	}
 
-	/* Analog Output subdevice */
+	 
 	s = &dev->subdevices[1];
 	if (board->has_ao) {
 		s->type		= COMEDI_SUBD_AO;
@@ -245,13 +219,13 @@ static int aio_aio12_8_attach(struct comedi_device *dev,
 		s->type = COMEDI_SUBD_UNUSED;
 	}
 
-	/* Digital I/O subdevice (8255) */
+	 
 	s = &dev->subdevices[2];
 	ret = subdev_8255_init(dev, s, NULL, AIO12_8_8255_BASE_REG);
 	if (ret)
 		return ret;
 
-	/* Counter subdevice (8254) */
+	 
 	s = &dev->subdevices[3];
 	comedi_8254_subdevice_init(s, dev->pacer);
 

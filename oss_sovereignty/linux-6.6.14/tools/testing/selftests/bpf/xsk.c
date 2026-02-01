@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
 
-/*
- * AF_XDP user-space access library.
- *
- * Copyright(c) 2018 - 2019 Intel Corporation.
- *
- * Author(s): Magnus Karlsson <magnus.karlsson@intel.com>
- */
+
+ 
 
 #include <errno.h>
 #include <stdlib.h>
@@ -294,7 +288,7 @@ bool xsk_is_in_mode(u32 ifindex, int mode)
 	return false;
 }
 
-/* Lifted from netlink.c in tools/lib/bpf */
+ 
 static int netlink_recvmsg(int sock, struct msghdr *mhdr, int flags)
 {
 	int len;
@@ -308,7 +302,7 @@ static int netlink_recvmsg(int sock, struct msghdr *mhdr, int flags)
 	return len;
 }
 
-/* Lifted from netlink.c in tools/lib/bpf */
+ 
 static int alloc_iov(struct iovec *iov, int len)
 {
 	void *nbuf;
@@ -322,7 +316,7 @@ static int alloc_iov(struct iovec *iov, int len)
 	return 0;
 }
 
-/* Original version lifted from netlink.c in tools/lib/bpf */
+ 
 static int netlink_recv(int sock)
 {
 	struct iovec iov = {};
@@ -517,7 +511,7 @@ static struct xsk_ctx *xsk_create_ctx(struct xsk_socket *xsk,
 			return NULL;
 		}
 	} else if (umem->fill_save != fill || umem->comp_save != comp) {
-		/* Copy over rings to new structs. */
+		 
 		memcpy(fill, umem->fill_save, sizeof(*fill));
 		memcpy(comp, umem->comp_save, sizeof(*comp));
 	}
@@ -657,9 +651,7 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
 		tx->flags = tx_map + off.tx.flags;
 		tx->ring = tx_map + off.tx.desc;
 		tx->cached_prod = *tx->producer;
-		/* cached_cons is r->size bigger than the real consumer pointer
-		 * See xsk_prod_nb_free
-		 */
+		 
 		tx->cached_cons = *tx->consumer + xsk->config.tx_size;
 	}
 	xsk->tx = tx;
@@ -770,9 +762,7 @@ void xsk_socket__delete(struct xsk_socket *xsk)
 	}
 
 	umem->refcount--;
-	/* Do not close an fd that also has an associated umem connected
-	 * to it.
-	 */
+	 
 	if (xsk->fd != umem->fd)
 		close(xsk->fd);
 	free(xsk);

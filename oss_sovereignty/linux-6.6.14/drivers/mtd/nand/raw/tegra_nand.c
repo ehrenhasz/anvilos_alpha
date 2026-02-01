@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Stefan Agner <stefan@agner.ch>
- * Copyright (C) 2014-2015 Lucas Stach <dev@lynxeye.de>
- * Copyright (C) 2012 Avionic Design GmbH
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/completion.h>
@@ -260,11 +256,7 @@ static irqreturn_t tegra_nand_irq(int irq, void *data)
 	if (!isr && !(dma & DMA_MST_CTRL_IS_DONE))
 		return IRQ_NONE;
 
-	/*
-	 * The bit name is somewhat missleading: This is also set when
-	 * HW ECC was successful. The data sheet states:
-	 * Correctable OR Un-correctable errors occurred in the DMA transfer...
-	 */
+	 
 	if (isr & ISR_CORRFAIL_ERR)
 		ctrl->last_read_error = true;
 
@@ -277,13 +269,13 @@ static irqreturn_t tegra_nand_irq(int irq, void *data)
 	if (isr & ISR_OVR)
 		dev_err(ctrl->dev, "FIFO overrun\n");
 
-	/* handle DMA interrupts */
+	 
 	if (dma & DMA_MST_CTRL_IS_DONE) {
 		writel_relaxed(dma, ctrl->regs + DMA_MST_CTRL);
 		complete(&ctrl->dma_complete);
 	}
 
-	/* clear interrupts */
+	 
 	writel_relaxed(isr, ctrl->regs + ISR);
 
 	return IRQ_HANDLED;
@@ -331,11 +323,11 @@ static void tegra_nand_controller_abort(struct tegra_nand_controller *ctrl)
 
 	disable_irq(ctrl->irq);
 
-	/* Abort current command/DMA operation */
+	 
 	writel_relaxed(0, ctrl->regs + DMA_MST_CTRL);
 	writel_relaxed(0, ctrl->regs + COMMAND);
 
-	/* clear interrupts */
+	 
 	isr = readl_relaxed(ctrl->regs + ISR);
 	writel_relaxed(isr, ctrl->regs + ISR);
 	dma = readl_relaxed(ctrl->regs + DMA_MST_CTRL);
@@ -514,7 +506,7 @@ static int tegra_nand_page_xfer(struct mtd_info *mtd, struct nand_chip *chip,
 	}
 	cmd = COMMAND_CLE | COMMAND_SEC_CMD;
 
-	/* Lower 16-bits are column, by default 0 */
+	 
 	addr1 = page << 16;
 
 	if (!buf)
@@ -669,19 +661,11 @@ static int tegra_nand_read_page_hwecc(struct nand_chip *chip, u8 *buf,
 	if (ret)
 		return ret;
 
-	/* No correctable or un-correctable errors, page must have 0 bitflips */
+	 
 	if (!ctrl->last_read_error)
 		return 0;
 
-	/*
-	 * Correctable or un-correctable errors occurred. Use DEC_STAT_BUF
-	 * which contains information for all ECC selections.
-	 *
-	 * Note that since we do not use Command Queues DEC_RESULT does not
-	 * state the number of pages we can read from the DEC_STAT_BUF. But
-	 * since CORRFAIL_ERR did occur during page read we do have a valid
-	 * result in DEC_STAT_BUF.
-	 */
+	 
 	ctrl->last_read_error = false;
 	dec_stat = readl_relaxed(ctrl->regs + DEC_STAT_BUF);
 
@@ -694,31 +678,13 @@ static int tegra_nand_read_page_hwecc(struct nand_chip *chip, u8 *buf,
 	if (fail_sec_flag) {
 		int bit, max_bitflips = 0;
 
-		/*
-		 * Since we do not support subpage writes, a complete page
-		 * is either written or not. We can take a shortcut here by
-		 * checking wheather any of the sector has been successful
-		 * read. If at least one sectors has been read successfully,
-		 * the page must have been a written previously. It cannot
-		 * be an erased page.
-		 *
-		 * E.g. controller might return fail_sec_flag with 0x4, which
-		 * would mean only the third sector failed to correct. The
-		 * page must have been written and the third sector is really
-		 * not correctable anymore.
-		 */
+		 
 		if (fail_sec_flag ^ GENMASK(chip->ecc.steps - 1, 0)) {
 			mtd->ecc_stats.failed += hweight8(fail_sec_flag);
 			return max_corr_cnt;
 		}
 
-		/*
-		 * All sectors failed to correct, but the ECC isn't smart
-		 * enough to figure out if a page is really just erased.
-		 * Read OOB data and check whether data/OOB is completely
-		 * erased or if error correction just failed for all sub-
-		 * pages.
-		 */
+		 
 		ret = tegra_nand_read_oob(chip, page);
 		if (ret < 0)
 			return ret;
@@ -747,15 +713,7 @@ static int tegra_nand_read_page_hwecc(struct nand_chip *chip, u8 *buf,
 		corr_sec_flag = (dec_stat & DEC_STAT_BUF_CORR_SEC_FLAG_MASK) >>
 				DEC_STAT_BUF_CORR_SEC_FLAG_SHIFT;
 
-		/*
-		 * The value returned in the register is the maximum of
-		 * bitflips encountered in any of the ECC regions. As there is
-		 * no way to get the number of bitflips in a specific regions
-		 * we are not able to deliver correct stats but instead
-		 * overestimate the number of corrected bitflips by assuming
-		 * that all regions where errors have been corrected
-		 * encountered the maximum number of bitflips.
-		 */
+		 
 		mtd->ecc_stats.corrected += max_corr_cnt * hweight8(corr_sec_flag);
 
 		return max_corr_cnt;
@@ -781,10 +739,7 @@ static int tegra_nand_write_page_hwecc(struct nand_chip *chip, const u8 *buf,
 static void tegra_nand_setup_timing(struct tegra_nand_controller *ctrl,
 				    const struct nand_sdr_timings *timings)
 {
-	/*
-	 * The period (and all other timings in this function) is in ps,
-	 * so need to take care here to avoid integer overflows.
-	 */
+	 
 	unsigned int rate = clk_get_rate(ctrl->clk) / 1000000;
 	unsigned int period = DIV_ROUND_UP(1000000, rate);
 	u32 val, reg = 0;
@@ -849,10 +804,7 @@ static int tegra_nand_get_strength(struct nand_chip *chip, const int *strength,
 	bool maximize = base->ecc.user_conf.flags & NAND_ECC_MAXIMIZE_STRENGTH;
 	int i;
 
-	/*
-	 * Loop through available strengths. Backwards in case we try to
-	 * maximize the BCH strength.
-	 */
+	 
 	for (i = 0; i < strength_len; i++) {
 		int strength_sel, bytes_per_step, bytes_per_page;
 
@@ -869,7 +821,7 @@ static int tegra_nand_get_strength(struct nand_chip *chip, const int *strength,
 					      BITS_PER_BYTE);
 		bytes_per_page = round_up(bytes_per_step * chip->ecc.steps, 4);
 
-		/* Check whether strength fits OOB */
+		 
 		if (bytes_per_page < (oobsize - SKIP_SPARE_BYTES))
 			return strength_sel;
 	}
@@ -1048,10 +1000,10 @@ static int tegra_nand_attach_chip(struct nand_chip *chip)
 		return -ENODEV;
 	}
 
-	/* Store complete configuration for HW ECC in config_ecc */
+	 
 	nand->config_ecc |= nand->config;
 
-	/* Non-HW ECC read/writes complete OOB */
+	 
 	nand->config |= CONFIG_TAG_BYTE_SIZE(mtd->oobsize - 1);
 	writel_relaxed(nand->config, ctrl->regs + CONFIG);
 
@@ -1089,7 +1041,7 @@ static int tegra_nand_chips_init(struct device *dev,
 		return -EINVAL;
 	}
 
-	/* Retrieve CS id, currently only single die NAND supported */
+	 
 	ret = of_property_read_u32(np_nand, "reg", &cs);
 	if (ret) {
 		dev_err(dev, "could not retrieve reg property: %d\n", ret);
@@ -1174,10 +1126,7 @@ static int tegra_nand_probe(struct platform_device *pdev)
 	if (err)
 		return err;
 
-	/*
-	 * This driver doesn't support active power management yet,
-	 * so we will simply keep device resumed.
-	 */
+	 
 	pm_runtime_enable(&pdev->dev);
 	err = pm_runtime_resume_and_get(&pdev->dev);
 	if (err)
@@ -1268,7 +1217,7 @@ static const struct dev_pm_ops tegra_nand_pm = {
 
 static const struct of_device_id tegra_nand_of_match[] = {
 	{ .compatible = "nvidia,tegra20-nand" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, tegra_nand_of_match);
 

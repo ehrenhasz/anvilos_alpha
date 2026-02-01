@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Huawei HiNIC PCI Express Linux driver
- * Copyright(c) 2017 Huawei Technologies Co., Ltd
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/netdevice.h>
@@ -22,15 +19,7 @@ enum mac_op {
 	MAC_SET,
 };
 
-/**
- * change_mac - change(add or delete) mac address
- * @nic_dev: nic device
- * @addr: mac address
- * @vlan_id: vlan number to set with the mac
- * @op: add or delete the mac
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int change_mac(struct hinic_dev *nic_dev, const u8 *addr,
 		      u16 vlan_id, enum mac_op op)
 {
@@ -76,41 +65,21 @@ static int change_mac(struct hinic_dev *nic_dev, const u8 *addr,
 	return 0;
 }
 
-/**
- * hinic_port_add_mac - add mac address
- * @nic_dev: nic device
- * @addr: mac address
- * @vlan_id: vlan number to set with the mac
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_port_add_mac(struct hinic_dev *nic_dev,
 		       const u8 *addr, u16 vlan_id)
 {
 	return change_mac(nic_dev, addr, vlan_id, MAC_SET);
 }
 
-/**
- * hinic_port_del_mac - remove mac address
- * @nic_dev: nic device
- * @addr: mac address
- * @vlan_id: vlan number that is connected to the mac
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_port_del_mac(struct hinic_dev *nic_dev, const u8 *addr,
 		       u16 vlan_id)
 {
 	return change_mac(nic_dev, addr, vlan_id, MAC_DEL);
 }
 
-/**
- * hinic_port_get_mac - get the mac address of the nic device
- * @nic_dev: nic device
- * @addr: returned mac address
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_port_get_mac(struct hinic_dev *nic_dev, u8 *addr)
 {
 	struct hinic_hwdev *hwdev = nic_dev->hwdev;
@@ -135,13 +104,7 @@ int hinic_port_get_mac(struct hinic_dev *nic_dev, u8 *addr)
 	return 0;
 }
 
-/**
- * hinic_port_set_mtu - set mtu
- * @nic_dev: nic device
- * @new_mtu: new mtu
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_port_set_mtu(struct hinic_dev *nic_dev, int new_mtu)
 {
 	struct hinic_hwdev *hwdev = nic_dev->hwdev;
@@ -166,13 +129,7 @@ int hinic_port_set_mtu(struct hinic_dev *nic_dev, int new_mtu)
 	return 0;
 }
 
-/**
- * hinic_port_add_vlan - add vlan to the nic device
- * @nic_dev: nic device
- * @vlan_id: the vlan number to add
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_port_add_vlan(struct hinic_dev *nic_dev, u16 vlan_id)
 {
 	struct hinic_hwdev *hwdev = nic_dev->hwdev;
@@ -186,13 +143,7 @@ int hinic_port_add_vlan(struct hinic_dev *nic_dev, u16 vlan_id)
 				  NULL, NULL);
 }
 
-/**
- * hinic_port_del_vlan - delete vlan from the nic device
- * @nic_dev: nic device
- * @vlan_id: the vlan number to delete
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_port_del_vlan(struct hinic_dev *nic_dev, u16 vlan_id)
 {
 	struct hinic_hwdev *hwdev = nic_dev->hwdev;
@@ -206,13 +157,7 @@ int hinic_port_del_vlan(struct hinic_dev *nic_dev, u16 vlan_id)
 				 NULL, NULL);
 }
 
-/**
- * hinic_port_set_rx_mode - set rx mode in the nic device
- * @nic_dev: nic device
- * @rx_mode: the rx mode to set
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_port_set_rx_mode(struct hinic_dev *nic_dev, u32 rx_mode)
 {
 	struct hinic_hwdev *hwdev = nic_dev->hwdev;
@@ -226,13 +171,7 @@ int hinic_port_set_rx_mode(struct hinic_dev *nic_dev, u32 rx_mode)
 				  NULL, NULL);
 }
 
-/**
- * hinic_port_link_state - get the link state
- * @nic_dev: nic device
- * @link_state: the returned link state
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_port_link_state(struct hinic_dev *nic_dev,
 			  enum hinic_port_link_state *link_state)
 {
@@ -258,13 +197,7 @@ int hinic_port_link_state(struct hinic_dev *nic_dev,
 	return 0;
 }
 
-/**
- * hinic_port_set_state - set port state
- * @nic_dev: nic device
- * @state: the state to set
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_port_set_state(struct hinic_dev *nic_dev, enum hinic_port_state state)
 {
 	struct hinic_hwdev *hwdev = nic_dev->hwdev;
@@ -291,13 +224,7 @@ int hinic_port_set_state(struct hinic_dev *nic_dev, enum hinic_port_state state)
 	return 0;
 }
 
-/**
- * hinic_port_set_func_state- set func device state
- * @nic_dev: nic device
- * @state: the state to set
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_port_set_func_state(struct hinic_dev *nic_dev,
 			      enum hinic_func_port_state state)
 {
@@ -323,13 +250,7 @@ int hinic_port_set_func_state(struct hinic_dev *nic_dev,
 	return 0;
 }
 
-/**
- * hinic_port_get_cap - get port capabilities
- * @nic_dev: nic device
- * @port_cap: returned port capabilities
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_port_get_cap(struct hinic_dev *nic_dev,
 		       struct hinic_port_cap *port_cap)
 {
@@ -354,13 +275,7 @@ int hinic_port_get_cap(struct hinic_dev *nic_dev,
 	return 0;
 }
 
-/**
- * hinic_port_set_tso - set port tso configuration
- * @nic_dev: nic device
- * @state: the tso state to set
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_port_set_tso(struct hinic_dev *nic_dev, enum hinic_tso_state state)
 {
 	struct hinic_hwdev *hwdev = nic_dev->hwdev;
@@ -549,7 +464,7 @@ static int hinic_set_rx_lro_timer(struct hinic_dev *nic_dev, u32 timer_value)
 				 &lro_timer, sizeof(lro_timer),
 				 &lro_timer, &out_size);
 	if (lro_timer.status == 0xFF) {
-		/* For this case, we think status (0xFF) is OK */
+		 
 		lro_timer.status = 0;
 		dev_dbg(&pdev->dev,
 			"Set lro timer not supported by the current FW version, it will be 1ms default\n");
@@ -633,7 +548,7 @@ int hinic_rss_set_indir_tbl(struct hinic_dev *nic_dev, u32 tmpl_idx,
 		}
 	}
 
-	/* cfg the rss indirect table by command queue */
+	 
 	indir_size = HINIC_RSS_INDIR_SIZE / 2;
 	indir_tbl->offset = 0;
 	indir_tbl->size = cpu_to_be32(indir_size);
@@ -739,7 +654,7 @@ int hinic_set_rss_type(struct hinic_dev *nic_dev, u32 tmpl_idx,
 	ctx_tbl->rsvd = 0;
 	ctx_tbl->ctx = cpu_to_be32(ctx);
 
-	/* cfg the rss context table by command queue */
+	 
 	err = hinic_cmdq_direct_resp(&func_to_io->cmdqs, HINIC_MOD_L2NIC,
 				     HINIC_UCODE_CMD_SET_RSS_CONTEXT_TABLE,
 				     &cmd_buf, &out_param);
@@ -1248,7 +1163,7 @@ int hinic_dcb_set_pfc(struct hinic_hwdev *hwdev, u8 pfc_en, u8 pfc_bitmap)
 		return -EIO;
 	}
 
-	/* pause settings is opposite from pfc */
+	 
 	nic_cfg->rx_pause = pfc_en ? 0 : 1;
 	nic_cfg->tx_pause = pfc_en ? 0 : 1;
 

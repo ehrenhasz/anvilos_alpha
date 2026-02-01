@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) IBM Corporation 2023 */
+
+ 
 
 #include <linux/cdev.h>
 #include <linux/device.h>

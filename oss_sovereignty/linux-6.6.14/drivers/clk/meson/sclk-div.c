@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Copyright (c) 2018 BayLibre, SAS.
- * Author: Jerome Brunet <jbrunet@baylibre.com>
- *
- * Sample clock generator divider:
- * This HW divider gates with value 0 but is otherwise a zero based divider:
- *
- * val >= 1
- * divider = val + 1
- *
- * The duty cycle may also be set for the LR clock variant. The duty cycle
- * ratio is:
- *
- * hi = [0 - val]
- * duty_cycle = (1 + hi) / (1 + val)
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -63,18 +48,11 @@ static int sclk_div_bestdiv(struct clk_hw *hw, unsigned long rate,
 	if (!(clk_hw_get_flags(hw) & CLK_SET_RATE_PARENT))
 		return sclk_div_getdiv(hw, rate, *prate, maxdiv);
 
-	/*
-	 * The maximum divider we can use without overflowing
-	 * unsigned long in rate * i below
-	 */
+	 
 	maxdiv = min(ULONG_MAX / rate, maxdiv);
 
 	for (i = 2; i <= maxdiv; i++) {
-		/*
-		 * It's the most ideal case if the requested rate can be
-		 * divided from parent clock without needing to change
-		 * parent rate, so return the divider immediately.
-		 */
+		 
 		if (rate * i == *prate)
 			return i;
 
@@ -225,7 +203,7 @@ static int sclk_div_init(struct clk_hw *hw)
 
 	val = meson_parm_read(clk->map, &sclk->div);
 
-	/* if the divider is initially disabled, assume max */
+	 
 	if (!val)
 		sclk->cached_div = sclk_div_maxdiv(sclk);
 	else

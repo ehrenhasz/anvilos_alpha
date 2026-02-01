@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * net/sched/act_sample.c - Packet sampling tc action
- * Copyright (c) 2017 Yotam Gigi <yotamg@mellanox.com>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -138,7 +135,7 @@ static void tcf_sample_cleanup(struct tc_action *a)
 	struct tcf_sample *s = to_sample(a);
 	struct psample_group *psample_group;
 
-	/* last reference to action, no need to lock */
+	 
 	psample_group = rcu_dereference_protected(s->psample_group, 1);
 	RCU_INIT_POINTER(s->psample_group, NULL);
 	if (psample_group)
@@ -176,7 +173,7 @@ TC_INDIRECT_SCOPE int tcf_sample_act(struct sk_buff *skb,
 
 	psample_group = rcu_dereference_bh(s->psample_group);
 
-	/* randomly sample packets according to rate */
+	 
 	if (psample_group && (get_random_u32_below(s->rate) == 0)) {
 		if (!skb_at_tc_ingress(skb)) {
 			md.in_ifindex = skb->skb_iif;
@@ -185,7 +182,7 @@ TC_INDIRECT_SCOPE int tcf_sample_act(struct sk_buff *skb,
 			md.in_ifindex = skb->dev->ifindex;
 		}
 
-		/* on ingress, the mac header gets popped, so push it back */
+		 
 		if (skb_at_tc_ingress(skb) && tcf_sample_dev_ok_push(skb->dev))
 			skb_push(skb, skb->mac_len);
 

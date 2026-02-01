@@ -1,11 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/* PIPAPO: PIle PAcket POlicies: AVX2 packet lookup routines
- *
- * Copyright (c) 2019-2020 Red Hat GmbH
- *
- * Author: Stefano Brivio <sbrivio@redhat.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -26,22 +21,11 @@
 
 #define NFT_PIPAPO_LONGS_PER_M256	(XSAVE_YMM_SIZE / BITS_PER_LONG)
 
-/* Load from memory into YMM register with non-temporal hint ("stream load"),
- * that is, don't fetch lines from memory into the cache. This avoids pushing
- * precious packet data out of the cache hierarchy, and is appropriate when:
- *
- * - loading buckets from lookup tables, as they are not going to be used
- *   again before packets are entirely classified
- *
- * - loading the result bitmap from the previous field, as it's never used
- *   again
- */
+ 
 #define NFT_PIPAPO_AVX2_LOAD(reg, loc)					\
 	asm volatile("vmovntdqa %0, %%ymm" #reg : : "m" (loc))
 
-/* Stream a single lookup table bucket into YMM register given lookup table,
- * group index, value of packet bits, bucket size.
- */
+ 
 #define NFT_PIPAPO_AVX2_BUCKET_LOAD4(reg, lt, group, v, bsize)		\
 	NFT_PIPAPO_AVX2_LOAD(reg,					\
 			     lt[((group) * NFT_PIPAPO_BUCKETS(4) +	\
@@ -51,54 +35,33 @@
 			     lt[((group) * NFT_PIPAPO_BUCKETS(8) +	\
 				 (v)) * (bsize)])
 
-/* Bitwise AND: the staple operation of this algorithm */
+ 
 #define NFT_PIPAPO_AVX2_AND(dst, a, b)					\
 	asm volatile("vpand %ymm" #a ", %ymm" #b ", %ymm" #dst)
 
-/* Jump to label if @reg is zero */
+ 
 #define NFT_PIPAPO_AVX2_NOMATCH_GOTO(reg, label)			\
 	asm_volatile_goto("vptest %%ymm" #reg ", %%ymm" #reg ";"	\
 			  "je %l[" #label "]" : : : : label)
 
-/* Store 256 bits from YMM register into memory. Contrary to bucket load
- * operation, we don't bypass the cache here, as stored matching results
- * are always used shortly after.
- */
+ 
 #define NFT_PIPAPO_AVX2_STORE(loc, reg)					\
 	asm volatile("vmovdqa %%ymm" #reg ", %0" : "=m" (loc))
 
-/* Zero out a complete YMM register, @reg */
+ 
 #define NFT_PIPAPO_AVX2_ZERO(reg)					\
 	asm volatile("vpxor %ymm" #reg ", %ymm" #reg ", %ymm" #reg)
 
-/* Current working bitmap index, toggled between field matches */
+ 
 static DEFINE_PER_CPU(bool, nft_pipapo_avx2_scratch_index);
 
-/**
- * nft_pipapo_avx2_prepare() - Prepare before main algorithm body
- *
- * This zeroes out ymm15, which is later used whenever we need to clear a
- * memory location, by storing its content into memory.
- */
+ 
 static void nft_pipapo_avx2_prepare(void)
 {
 	NFT_PIPAPO_AVX2_ZERO(15);
 }
 
-/**
- * nft_pipapo_avx2_fill() - Fill a bitmap region with ones
- * @data:	Base memory area
- * @start:	First bit to set
- * @len:	Count of bits to fill
- *
- * This is nothing else than a version of bitmap_set(), as used e.g. by
- * pipapo_refill(), tailored for the microarchitectures using it and better
- * suited for the specific usage: it's very likely that we'll set a small number
- * of bits, not crossing a word boundary, and correct branch prediction is
- * critical here.
- *
- * This function doesn't actually use any AVX2 instruction.
- */
+ 
 static void nft_pipapo_avx2_fill(unsigned long *data, int start, int len)
 {
 	int offset = start % BITS_PER_LONG;
@@ -136,22 +99,7 @@ static void nft_pipapo_avx2_fill(unsigned long *data, int start, int len)
 		*data |= ~0UL >> (BITS_PER_LONG - len);
 }
 
-/**
- * nft_pipapo_avx2_refill() - Scan bitmap, select mapping table item, set bits
- * @offset:	Start from given bitmap (equivalent to bucket) offset, in longs
- * @map:	Bitmap to be scanned for set bits
- * @dst:	Destination bitmap
- * @mt:		Mapping table containing bit set specifiers
- * @last:	Return index of first set bit, if this is the last field
- *
- * This is an alternative implementation of pipapo_refill() suitable for usage
- * with AVX2 lookup routines: we know there are four words to be scanned, at
- * a given offset inside the map, for each matching iteration.
- *
- * This function doesn't actually use any AVX2 instruction.
- *
- * Return: first set bit index if @last, index of first filled word otherwise.
- */
+ 
 static int nft_pipapo_avx2_refill(int offset, unsigned long *map,
 				  unsigned long *dst,
 				  union nft_pipapo_map_bucket *mt, bool last)
@@ -185,35 +133,7 @@ static int nft_pipapo_avx2_refill(int offset, unsigned long *map,
 	return ret;
 }
 
-/**
- * nft_pipapo_avx2_lookup_4b_2() - AVX2-based lookup for 2 four-bit groups
- * @map:	Previous match result, used as initial bitmap
- * @fill:	Destination bitmap to be filled with current match result
- * @f:		Field, containing lookup and mapping tables
- * @offset:	Ignore buckets before the given index, no bits are filled there
- * @pkt:	Packet data, pointer to input nftables register
- * @first:	If this is the first field, don't source previous result
- * @last:	Last field: stop at the first match and return bit index
- *
- * Load buckets from lookup table corresponding to the values of each 4-bit
- * group of packet bytes, and perform a bitwise intersection between them. If
- * this is the first field in the set, simply AND the buckets together
- * (equivalent to using an all-ones starting bitmap), use the provided starting
- * bitmap otherwise. Then call nft_pipapo_avx2_refill() to generate the next
- * working bitmap, @fill.
- *
- * This is used for 8-bit fields (i.e. protocol numbers).
- *
- * Out-of-order (and superscalar) execution is vital here, so it's critical to
- * avoid false data dependencies. CPU and compiler could (mostly) take care of
- * this on their own, but the operation ordering is explicitly given here with
- * a likely execution order in mind, to highlight possible stalls. That's why
- * a number of logically distinct operations (i.e. loading buckets, intersecting
- * buckets) are interleaved.
- *
- * Return: -1 on no match, rule index of match if @last, otherwise first long
- * word index to be checked next (i.e. first filled word).
- */
+ 
 static int nft_pipapo_avx2_lookup_4b_2(unsigned long *map, unsigned long *fill,
 				       struct nft_pipapo_field *f, int offset,
 				       const u8 *pkt, bool first, bool last)
@@ -259,23 +179,7 @@ nothing:
 	return ret;
 }
 
-/**
- * nft_pipapo_avx2_lookup_4b_4() - AVX2-based lookup for 4 four-bit groups
- * @map:	Previous match result, used as initial bitmap
- * @fill:	Destination bitmap to be filled with current match result
- * @f:		Field, containing lookup and mapping tables
- * @offset:	Ignore buckets before the given index, no bits are filled there
- * @pkt:	Packet data, pointer to input nftables register
- * @first:	If this is the first field, don't source previous result
- * @last:	Last field: stop at the first match and return bit index
- *
- * See nft_pipapo_avx2_lookup_4b_2().
- *
- * This is used for 16-bit fields (i.e. ports).
- *
- * Return: -1 on no match, rule index of match if @last, otherwise first long
- * word index to be checked next (i.e. first filled word).
- */
+ 
 static int nft_pipapo_avx2_lookup_4b_4(unsigned long *map, unsigned long *fill,
 				       struct nft_pipapo_field *f, int offset,
 				       const u8 *pkt, bool first, bool last)
@@ -310,11 +214,11 @@ static int nft_pipapo_avx2_lookup_4b_4(unsigned long *map, unsigned long *fill,
 
 			NFT_PIPAPO_AVX2_AND(6, 2, 3);
 			NFT_PIPAPO_AVX2_AND(7, 4, 5);
-			/* Stall */
+			 
 			NFT_PIPAPO_AVX2_AND(7, 6, 7);
 		}
 
-		/* Stall */
+		 
 		NFT_PIPAPO_AVX2_NOMATCH_GOTO(7, nomatch);
 		NFT_PIPAPO_AVX2_STORE(map[i_ul], 7);
 
@@ -335,23 +239,7 @@ nothing:
 	return ret;
 }
 
-/**
- * nft_pipapo_avx2_lookup_4b_8() - AVX2-based lookup for 8 four-bit groups
- * @map:	Previous match result, used as initial bitmap
- * @fill:	Destination bitmap to be filled with current match result
- * @f:		Field, containing lookup and mapping tables
- * @offset:	Ignore buckets before the given index, no bits are filled there
- * @pkt:	Packet data, pointer to input nftables register
- * @first:	If this is the first field, don't source previous result
- * @last:	Last field: stop at the first match and return bit index
- *
- * See nft_pipapo_avx2_lookup_4b_2().
- *
- * This is used for 32-bit fields (i.e. IPv4 addresses).
- *
- * Return: -1 on no match, rule index of match if @last, otherwise first long
- * word index to be checked next (i.e. first filled word).
- */
+ 
 static int nft_pipapo_avx2_lookup_4b_8(unsigned long *map, unsigned long *fill,
 				       struct nft_pipapo_field *f, int offset,
 				       const u8 *pkt, bool first, bool last)
@@ -382,7 +270,7 @@ static int nft_pipapo_avx2_lookup_4b_8(unsigned long *map, unsigned long *fill,
 			NFT_PIPAPO_AVX2_AND(12,  8,  9);
 			NFT_PIPAPO_AVX2_AND(13, 10, 11);
 
-			/* Stall */
+			 
 			NFT_PIPAPO_AVX2_AND(1,  12, 13);
 		} else {
 			NFT_PIPAPO_AVX2_BUCKET_LOAD4(0,  lt, 0, pg[0], bsize);
@@ -404,7 +292,7 @@ static int nft_pipapo_avx2_lookup_4b_8(unsigned long *map, unsigned long *fill,
 			NFT_PIPAPO_AVX2_AND(13,  8,  9);
 			NFT_PIPAPO_AVX2_AND(14, 10, 11);
 
-			/* Stall */
+			 
 			NFT_PIPAPO_AVX2_AND(1,  12, 13);
 			NFT_PIPAPO_AVX2_AND(1,   1, 14);
 		}
@@ -430,23 +318,7 @@ nothing:
 	return ret;
 }
 
-/**
- * nft_pipapo_avx2_lookup_4b_12() - AVX2-based lookup for 12 four-bit groups
- * @map:	Previous match result, used as initial bitmap
- * @fill:	Destination bitmap to be filled with current match result
- * @f:		Field, containing lookup and mapping tables
- * @offset:	Ignore buckets before the given index, no bits are filled there
- * @pkt:	Packet data, pointer to input nftables register
- * @first:	If this is the first field, don't source previous result
- * @last:	Last field: stop at the first match and return bit index
- *
- * See nft_pipapo_avx2_lookup_4b_2().
- *
- * This is used for 48-bit fields (i.e. MAC addresses/EUI-48).
- *
- * Return: -1 on no match, rule index of match if @last, otherwise first long
- * word index to be checked next (i.e. first filled word).
- */
+ 
 static int nft_pipapo_avx2_lookup_4b_12(unsigned long *map, unsigned long *fill,
 				        struct nft_pipapo_field *f, int offset,
 				        const u8 *pkt, bool first, bool last)
@@ -495,7 +367,7 @@ static int nft_pipapo_avx2_lookup_4b_12(unsigned long *map, unsigned long *fill,
 
 		NFT_PIPAPO_AVX2_AND(6,   2,  3);
 
-		/* Stalls */
+		 
 		NFT_PIPAPO_AVX2_AND(7,   4,  5);
 		NFT_PIPAPO_AVX2_AND(8,   6,  7);
 
@@ -519,23 +391,7 @@ nothing:
 	return ret;
 }
 
-/**
- * nft_pipapo_avx2_lookup_4b_32() - AVX2-based lookup for 32 four-bit groups
- * @map:	Previous match result, used as initial bitmap
- * @fill:	Destination bitmap to be filled with current match result
- * @f:		Field, containing lookup and mapping tables
- * @offset:	Ignore buckets before the given index, no bits are filled there
- * @pkt:	Packet data, pointer to input nftables register
- * @first:	If this is the first field, don't source previous result
- * @last:	Last field: stop at the first match and return bit index
- *
- * See nft_pipapo_avx2_lookup_4b_2().
- *
- * This is used for 128-bit fields (i.e. IPv6 addresses).
- *
- * Return: -1 on no match, rule index of match if @last, otherwise first long
- * word index to be checked next (i.e. first filled word).
- */
+ 
 static int nft_pipapo_avx2_lookup_4b_32(unsigned long *map, unsigned long *fill,
 					struct nft_pipapo_field *f, int offset,
 					const u8 *pkt, bool first, bool last)
@@ -630,7 +486,7 @@ static int nft_pipapo_avx2_lookup_4b_32(unsigned long *map, unsigned long *fill,
 		NFT_PIPAPO_AVX2_AND(2,  10, 11);
 		NFT_PIPAPO_AVX2_AND(3,  12,  0);
 
-		/* Stalls */
+		 
 		NFT_PIPAPO_AVX2_AND(4,   1,  2);
 		NFT_PIPAPO_AVX2_AND(5,   3,  4);
 
@@ -654,23 +510,7 @@ nothing:
 	return ret;
 }
 
-/**
- * nft_pipapo_avx2_lookup_8b_1() - AVX2-based lookup for one eight-bit group
- * @map:	Previous match result, used as initial bitmap
- * @fill:	Destination bitmap to be filled with current match result
- * @f:		Field, containing lookup and mapping tables
- * @offset:	Ignore buckets before the given index, no bits are filled there
- * @pkt:	Packet data, pointer to input nftables register
- * @first:	If this is the first field, don't source previous result
- * @last:	Last field: stop at the first match and return bit index
- *
- * See nft_pipapo_avx2_lookup_4b_2().
- *
- * This is used for 8-bit fields (i.e. protocol numbers).
- *
- * Return: -1 on no match, rule index of match if @last, otherwise first long
- * word index to be checked next (i.e. first filled word).
- */
+ 
 static int nft_pipapo_avx2_lookup_8b_1(unsigned long *map, unsigned long *fill,
 				       struct nft_pipapo_field *f, int offset,
 				       const u8 *pkt, bool first, bool last)
@@ -711,23 +551,7 @@ nothing:
 	return ret;
 }
 
-/**
- * nft_pipapo_avx2_lookup_8b_2() - AVX2-based lookup for 2 eight-bit groups
- * @map:	Previous match result, used as initial bitmap
- * @fill:	Destination bitmap to be filled with current match result
- * @f:		Field, containing lookup and mapping tables
- * @offset:	Ignore buckets before the given index, no bits are filled there
- * @pkt:	Packet data, pointer to input nftables register
- * @first:	If this is the first field, don't source previous result
- * @last:	Last field: stop at the first match and return bit index
- *
- * See nft_pipapo_avx2_lookup_4b_2().
- *
- * This is used for 16-bit fields (i.e. ports).
- *
- * Return: -1 on no match, rule index of match if @last, otherwise first long
- * word index to be checked next (i.e. first filled word).
- */
+ 
 static int nft_pipapo_avx2_lookup_8b_2(unsigned long *map, unsigned long *fill,
 				       struct nft_pipapo_field *f, int offset,
 				       const u8 *pkt, bool first, bool last)
@@ -748,13 +572,13 @@ static int nft_pipapo_avx2_lookup_8b_2(unsigned long *map, unsigned long *fill,
 			NFT_PIPAPO_AVX2_BUCKET_LOAD8(1, lt, 0, pkt[0], bsize);
 			NFT_PIPAPO_AVX2_BUCKET_LOAD8(2, lt, 1, pkt[1], bsize);
 
-			/* Stall */
+			 
 			NFT_PIPAPO_AVX2_AND(3, 0, 1);
 			NFT_PIPAPO_AVX2_NOMATCH_GOTO(0, nothing);
 			NFT_PIPAPO_AVX2_AND(4, 3, 2);
 		}
 
-		/* Stall */
+		 
 		NFT_PIPAPO_AVX2_NOMATCH_GOTO(4, nomatch);
 		NFT_PIPAPO_AVX2_STORE(map[i_ul], 4);
 
@@ -775,23 +599,7 @@ nothing:
 	return ret;
 }
 
-/**
- * nft_pipapo_avx2_lookup_8b_4() - AVX2-based lookup for 4 eight-bit groups
- * @map:	Previous match result, used as initial bitmap
- * @fill:	Destination bitmap to be filled with current match result
- * @f:		Field, containing lookup and mapping tables
- * @offset:	Ignore buckets before the given index, no bits are filled there
- * @pkt:	Packet data, pointer to input nftables register
- * @first:	If this is the first field, don't source previous result
- * @last:	Last field: stop at the first match and return bit index
- *
- * See nft_pipapo_avx2_lookup_4b_2().
- *
- * This is used for 32-bit fields (i.e. IPv4 addresses).
- *
- * Return: -1 on no match, rule index of match if @last, otherwise first long
- * word index to be checked next (i.e. first filled word).
- */
+ 
 static int nft_pipapo_avx2_lookup_8b_4(unsigned long *map, unsigned long *fill,
 				       struct nft_pipapo_field *f, int offset,
 				       const u8 *pkt, bool first, bool last)
@@ -809,7 +617,7 @@ static int nft_pipapo_avx2_lookup_8b_4(unsigned long *map, unsigned long *fill,
 			NFT_PIPAPO_AVX2_BUCKET_LOAD8(2,  lt, 2, pkt[2], bsize);
 			NFT_PIPAPO_AVX2_BUCKET_LOAD8(3,  lt, 3, pkt[3], bsize);
 
-			/* Stall */
+			 
 			NFT_PIPAPO_AVX2_AND(4, 0, 1);
 			NFT_PIPAPO_AVX2_AND(5, 2, 3);
 			NFT_PIPAPO_AVX2_AND(0, 4, 5);
@@ -824,7 +632,7 @@ static int nft_pipapo_avx2_lookup_8b_4(unsigned long *map, unsigned long *fill,
 			NFT_PIPAPO_AVX2_NOMATCH_GOTO(1, nothing);
 			NFT_PIPAPO_AVX2_AND(6, 2, 3);
 
-			/* Stall */
+			 
 			NFT_PIPAPO_AVX2_AND(7, 4, 5);
 			NFT_PIPAPO_AVX2_AND(0, 6, 7);
 		}
@@ -850,23 +658,7 @@ nothing:
 	return ret;
 }
 
-/**
- * nft_pipapo_avx2_lookup_8b_6() - AVX2-based lookup for 6 eight-bit groups
- * @map:	Previous match result, used as initial bitmap
- * @fill:	Destination bitmap to be filled with current match result
- * @f:		Field, containing lookup and mapping tables
- * @offset:	Ignore buckets before the given index, no bits are filled there
- * @pkt:	Packet data, pointer to input nftables register
- * @first:	If this is the first field, don't source previous result
- * @last:	Last field: stop at the first match and return bit index
- *
- * See nft_pipapo_avx2_lookup_4b_2().
- *
- * This is used for 48-bit fields (i.e. MAC addresses/EUI-48).
- *
- * Return: -1 on no match, rule index of match if @last, otherwise first long
- * word index to be checked next (i.e. first filled word).
- */
+ 
 static int nft_pipapo_avx2_lookup_8b_6(unsigned long *map, unsigned long *fill,
 				       struct nft_pipapo_field *f, int offset,
 				       const u8 *pkt, bool first, bool last)
@@ -889,7 +681,7 @@ static int nft_pipapo_avx2_lookup_8b_6(unsigned long *map, unsigned long *fill,
 			NFT_PIPAPO_AVX2_BUCKET_LOAD8(6,  lt, 5, pkt[5], bsize);
 			NFT_PIPAPO_AVX2_AND(7, 2, 3);
 
-			/* Stall */
+			 
 			NFT_PIPAPO_AVX2_AND(0, 4, 5);
 			NFT_PIPAPO_AVX2_AND(1, 6, 7);
 			NFT_PIPAPO_AVX2_AND(4, 0, 1);
@@ -909,7 +701,7 @@ static int nft_pipapo_avx2_lookup_8b_6(unsigned long *map, unsigned long *fill,
 			NFT_PIPAPO_AVX2_BUCKET_LOAD8(1,  lt, 5, pkt[5], bsize);
 			NFT_PIPAPO_AVX2_AND(2, 6, 7);
 
-			/* Stall */
+			 
 			NFT_PIPAPO_AVX2_AND(3, 0, 1);
 			NFT_PIPAPO_AVX2_AND(4, 2, 3);
 		}
@@ -935,23 +727,7 @@ nothing:
 	return ret;
 }
 
-/**
- * nft_pipapo_avx2_lookup_8b_16() - AVX2-based lookup for 16 eight-bit groups
- * @map:	Previous match result, used as initial bitmap
- * @fill:	Destination bitmap to be filled with current match result
- * @f:		Field, containing lookup and mapping tables
- * @offset:	Ignore buckets before the given index, no bits are filled there
- * @pkt:	Packet data, pointer to input nftables register
- * @first:	If this is the first field, don't source previous result
- * @last:	Last field: stop at the first match and return bit index
- *
- * See nft_pipapo_avx2_lookup_4b_2().
- *
- * This is used for 128-bit fields (i.e. IPv6 addresses).
- *
- * Return: -1 on no match, rule index of match if @last, otherwise first long
- * word index to be checked next (i.e. first filled word).
- */
+ 
 static int nft_pipapo_avx2_lookup_8b_16(unsigned long *map, unsigned long *fill,
 					struct nft_pipapo_field *f, int offset,
 					const u8 *pkt, bool first, bool last)
@@ -1002,7 +778,7 @@ static int nft_pipapo_avx2_lookup_8b_16(unsigned long *map, unsigned long *fill,
 		NFT_PIPAPO_AVX2_BUCKET_LOAD8(3, lt, 15, pkt[15], bsize);
 		NFT_PIPAPO_AVX2_AND(4, 0, 1);
 
-		/* Stall */
+		 
 		NFT_PIPAPO_AVX2_AND(5, 2, 3);
 		NFT_PIPAPO_AVX2_AND(6, 4, 5);
 
@@ -1027,23 +803,7 @@ nothing:
 	return ret;
 }
 
-/**
- * nft_pipapo_avx2_lookup_slow() - Fallback function for uncommon field sizes
- * @map:	Previous match result, used as initial bitmap
- * @fill:	Destination bitmap to be filled with current match result
- * @f:		Field, containing lookup and mapping tables
- * @offset:	Ignore buckets before the given index, no bits are filled there
- * @pkt:	Packet data, pointer to input nftables register
- * @first:	If this is the first field, don't source previous result
- * @last:	Last field: stop at the first match and return bit index
- *
- * This function should never be called, but is provided for the case the field
- * size doesn't match any of the known data types. Matching rate is
- * substantially lower than AVX2 routines.
- *
- * Return: -1 on no match, rule index of match if @last, otherwise first long
- * word index to be checked next (i.e. first filled word).
- */
+ 
 static int nft_pipapo_avx2_lookup_slow(unsigned long *map, unsigned long *fill,
 					struct nft_pipapo_field *f, int offset,
 					const u8 *pkt, bool first, bool last)
@@ -1073,14 +833,7 @@ static int nft_pipapo_avx2_lookup_slow(unsigned long *map, unsigned long *fill,
 	return ret;
 }
 
-/**
- * nft_pipapo_avx2_estimate() - Set size, space and lookup complexity
- * @desc:	Set description, element count and field description used
- * @features:	Flags: NFT_SET_INTERVAL needs to be there
- * @est:	Storage for estimation data
- *
- * Return: true if set is compatible and AVX2 available, false otherwise.
- */
+ 
 bool nft_pipapo_avx2_estimate(const struct nft_set_desc *desc, u32 features,
 			      struct nft_set_estimate *est)
 {
@@ -1102,20 +855,7 @@ bool nft_pipapo_avx2_estimate(const struct nft_set_desc *desc, u32 features,
 	return true;
 }
 
-/**
- * nft_pipapo_avx2_lookup() - Lookup function for AVX2 implementation
- * @net:	Network namespace
- * @set:	nftables API set representation
- * @key:	nftables API element representation containing key data
- * @ext:	nftables API extension pointer, filled with matching reference
- *
- * For more details, see DOC: Theory of Operation in nft_set_pipapo.c.
- *
- * This implementation exploits the repetitive characteristic of the algorithm
- * to provide a fast, vectorised version using the AVX2 SIMD instruction set.
- *
- * Return: true on match, false otherwise.
- */
+ 
 bool nft_pipapo_avx2_lookup(const struct net *net, const struct nft_set *set,
 			    const u32 *key, const struct nft_set_ext **ext)
 {
@@ -1133,12 +873,7 @@ bool nft_pipapo_avx2_lookup(const struct net *net, const struct nft_set *set,
 
 	m = rcu_dereference(priv->match);
 
-	/* This also protects access to all data related to scratch maps.
-	 *
-	 * Note that we don't need a valid MXCSR state for any of the
-	 * operations we use here, so pass 0 as mask and spare a LDMXCSR
-	 * instruction.
-	 */
+	 
 	kernel_fpu_begin_mask(0);
 
 	scratch = *raw_cpu_ptr(m->scratch_aligned);
@@ -1151,7 +886,7 @@ bool nft_pipapo_avx2_lookup(const struct net *net, const struct nft_set *set,
 	res  = scratch + (map_index ? m->bsize_max : 0);
 	fill = scratch + (map_index ? 0 : m->bsize_max);
 
-	/* Starting map doesn't need to be set for this implementation */
+	 
 
 	nft_pipapo_avx2_prepare();
 

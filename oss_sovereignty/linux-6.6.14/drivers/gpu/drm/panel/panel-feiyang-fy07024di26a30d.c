@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2018 Amarula Solutions
- * Author: Jagan Teki <jagan@amarulasolutions.com>
- */
+
+ 
 
 #include <drm/drm_mipi_dsi.h>
 #include <drm/drm_modes.h>
@@ -55,27 +52,24 @@ static int feiyang_prepare(struct drm_panel *panel)
 	if (ret)
 		return ret;
 
-	/* T1 (dvdd start + dvdd rise) 0 < T1 <= 10ms */
+	 
 	msleep(10);
 
 	ret = regulator_enable(ctx->avdd);
 	if (ret)
 		return ret;
 
-	/* T3 (dvdd rise + avdd start + avdd rise) T3 >= 20ms */
+	 
 	msleep(20);
 
 	gpiod_set_value(ctx->reset, 0);
 
-	/*
-	 * T5 + T6 (avdd rise + video & logic signal rise)
-	 * T5 >= 10ms, 0 < T6 <= 10ms
-	 */
+	 
 	msleep(20);
 
 	gpiod_set_value(ctx->reset, 1);
 
-	/* T12 (video & logic signal rise + backlight rise) T12 >= 200ms */
+	 
 	msleep(200);
 
 	for (i = 0; i < ARRAY_SIZE(feiyang_init_cmds); i++) {
@@ -95,7 +89,7 @@ static int feiyang_enable(struct drm_panel *panel)
 {
 	struct feiyang *ctx = panel_to_feiyang(panel);
 
-	/* T12 (video & logic signal rise + backlight rise) T12 >= 200ms */
+	 
 	msleep(200);
 
 	mipi_dsi_dcs_set_display_on(ctx->dsi);
@@ -123,14 +117,14 @@ static int feiyang_unprepare(struct drm_panel *panel)
 	if (ret < 0)
 		dev_err(panel->dev, "failed to enter sleep mode: %d\n", ret);
 
-	/* T13 (backlight fall + video & logic signal fall) T13 >= 200ms */
+	 
 	msleep(200);
 
 	gpiod_set_value(ctx->reset, 0);
 
 	regulator_disable(ctx->avdd);
 
-	/* T11 (dvdd rise to fall) 0 < T11 <= 10ms  */
+	 
 	msleep(10);
 
 	regulator_disable(ctx->dvdd);
@@ -243,7 +237,7 @@ static void feiyang_dsi_remove(struct mipi_dsi_device *dsi)
 
 static const struct of_device_id feiyang_of_match[] = {
 	{ .compatible = "feiyang,fy07024di26a30d", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, feiyang_of_match);
 

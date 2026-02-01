@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include "hmm.h"
 
@@ -53,7 +41,7 @@ void ia_css_sdis_horicoef_vmem_encode(
 	short   *private       = (short *)to;
 	unsigned int type;
 
-	/* Copy the table, add padding */
+	 
 	assert(padding >= 0);
 	assert(total_bytes <= size);
 	assert(size % (IA_CSS_DVS_NUM_COEF_TYPES * ISP_VEC_NELEMS * sizeof(
@@ -80,7 +68,7 @@ void ia_css_sdis_vertcoef_vmem_encode(
 	short   *private        = (short *)to;
 	unsigned int type;
 
-	/* Copy the table, add padding */
+	 
 	assert(padding >= 0);
 	assert(total_bytes <= size);
 	assert(size % (IA_CSS_DVS_NUM_COEF_TYPES * ISP_VEC_NELEMS * sizeof(
@@ -129,7 +117,7 @@ void ia_css_get_isp_dis_coefficients(
 
 	params = stream->isp_params_configs;
 
-	/* Only video pipe supports DVS */
+	 
 	dvs_binary = ia_css_stream_get_dvs_binary(stream);
 	if (!dvs_binary)
 		return;
@@ -356,8 +344,7 @@ ia_css_isp_dvs_statistics_map_allocate(
     void *data_ptr)
 {
 	struct ia_css_isp_dvs_statistics_map *me;
-	/* Windows compiler does not like adding sizes to a void *
-	 * so we use a local char * instead. */
+	 
 	char *base_ptr;
 
 	me = kvmalloc(sizeof(*me), GFP_KERNEL);
@@ -379,8 +366,7 @@ ia_css_isp_dvs_statistics_map_allocate(
 	base_ptr = me->data_ptr;
 
 	me->size = isp_stats->size;
-	/* GCC complains when we assign a char * to a void *, so these
-	 * casts are necessary unfortunately. */
+	 
 	me->hor_proj = (void *)base_ptr;
 	me->ver_proj = (void *)(base_ptr + isp_stats->hor_size);
 

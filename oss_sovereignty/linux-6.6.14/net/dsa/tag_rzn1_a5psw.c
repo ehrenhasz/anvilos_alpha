@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022 Schneider Electric
- *
- * Clément Léger <clement.leger@bootlin.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/etherdevice.h>
@@ -12,22 +8,14 @@
 
 #include "tag.h"
 
-/* To define the outgoing port and to discover the incoming port a TAG is
- * inserted after Src MAC :
- *
- *       Dest MAC       Src MAC           TAG         Type
- * ...| 1 2 3 4 5 6 | 1 2 3 4 5 6 | 1 2 3 4 5 6 7 8 | 1 2 |...
- *                                |<--------------->|
- *
- * See struct a5psw_tag for layout
- */
+ 
 
 #define A5PSW_NAME			"a5psw"
 
 #define ETH_P_DSA_A5PSW			0xE001
 #define A5PSW_TAG_LEN			8
 #define A5PSW_CTRL_DATA_FORCE_FORWARD	BIT(0)
-/* This is both used for xmit tag and rcv tagging */
+ 
 #define A5PSW_CTRL_DATA_PORT		GENMASK(3, 0)
 
 struct a5psw_tag {
@@ -45,17 +33,14 @@ static struct sk_buff *a5psw_tag_xmit(struct sk_buff *skb, struct net_device *de
 
 	BUILD_BUG_ON(sizeof(*ptag) != A5PSW_TAG_LEN);
 
-	/* The Ethernet switch we are interfaced with needs packets to be at
-	 * least 60 bytes otherwise they will be discarded when they enter the
-	 * switch port logic.
-	 */
+	 
 	if (__skb_put_padto(skb, ETH_ZLEN, false))
 		return NULL;
 
-	/* provide 'A5PSW_TAG_LEN' bytes additional space */
+	 
 	skb_push(skb, A5PSW_TAG_LEN);
 
-	/* make room between MACs and Ether-Type to insert tag */
+	 
 	dsa_alloc_etype_header(skb, A5PSW_TAG_LEN);
 
 	ptag = dsa_etype_header_pos_tx(skb);

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Qualcomm Wireless Connectivity Subsystem Peripheral Image Loader
- *
- * Copyright (C) 2016 Linaro Ltd
- * Copyright (C) 2014 Sony Mobile Communications AB
- * Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -41,10 +35,10 @@
 #define WCNSS_PMU_IRIS_XO_CFG		BIT(3)
 #define WCNSS_PMU_IRIS_XO_EN		BIT(4)
 #define WCNSS_PMU_GC_BUS_MUX_SEL_TOP	BIT(5)
-#define WCNSS_PMU_IRIS_XO_CFG_STS	BIT(6) /* 1: in progress, 0: done */
+#define WCNSS_PMU_IRIS_XO_CFG_STS	BIT(6)  
 
 #define WCNSS_PMU_IRIS_RESET		BIT(7)
-#define WCNSS_PMU_IRIS_RESET_STS	BIT(8) /* 1: in progress, 0: done */
+#define WCNSS_PMU_IRIS_RESET_STS	BIT(8)  
 #define WCNSS_PMU_IRIS_XO_READ		BIT(9)
 #define WCNSS_PMU_IRIS_XO_READ_STS	BIT(10)
 
@@ -172,7 +166,7 @@ static void wcnss_indicate_nv_download(struct qcom_wcnss *wcnss)
 {
 	u32 val;
 
-	/* Indicate NV download capability */
+	 
 	val = readl(wcnss->spare_out);
 	val |= WCNSS_SPARE_NVBIN_DLND;
 	writel(val, wcnss->spare_out);
@@ -182,13 +176,13 @@ static void wcnss_configure_iris(struct qcom_wcnss *wcnss)
 {
 	u32 val;
 
-	/* Clear PMU cfg register */
+	 
 	writel(0, wcnss->pmu_cfg);
 
 	val = WCNSS_PMU_GC_BUS_MUX_SEL_TOP | WCNSS_PMU_IRIS_XO_EN;
 	writel(val, wcnss->pmu_cfg);
 
-	/* Clear XO_MODE */
+	 
 	val &= ~WCNSS_PMU_XO_MODE_MASK;
 	if (wcnss->use_48mhz_xo)
 		val |= WCNSS_PMU_XO_MODE_48 << 1;
@@ -196,32 +190,32 @@ static void wcnss_configure_iris(struct qcom_wcnss *wcnss)
 		val |= WCNSS_PMU_XO_MODE_19p2 << 1;
 	writel(val, wcnss->pmu_cfg);
 
-	/* Reset IRIS */
+	 
 	val |= WCNSS_PMU_IRIS_RESET;
 	writel(val, wcnss->pmu_cfg);
 
-	/* Wait for PMU.iris_reg_reset_sts */
+	 
 	while (readl(wcnss->pmu_cfg) & WCNSS_PMU_IRIS_RESET_STS)
 		cpu_relax();
 
-	/* Clear IRIS reset */
+	 
 	val &= ~WCNSS_PMU_IRIS_RESET;
 	writel(val, wcnss->pmu_cfg);
 
-	/* Start IRIS XO configuration */
+	 
 	val |= WCNSS_PMU_IRIS_XO_CFG;
 	writel(val, wcnss->pmu_cfg);
 
-	/* Wait for XO configuration to finish */
+	 
 	while (readl(wcnss->pmu_cfg) & WCNSS_PMU_IRIS_XO_CFG_STS)
 		cpu_relax();
 
-	/* Stop IRIS XO configuration */
+	 
 	val &= ~WCNSS_PMU_GC_BUS_MUX_SEL_TOP;
 	val &= ~WCNSS_PMU_IRIS_XO_CFG;
 	writel(val, wcnss->pmu_cfg);
 
-	/* Add some delay for XO to settle */
+	 
 	msleep(20);
 }
 
@@ -267,7 +261,7 @@ static int wcnss_start(struct rproc *rproc)
 	ret = wait_for_completion_timeout(&wcnss->start_done,
 					  msecs_to_jiffies(5000));
 	if (wcnss->ready_irq > 0 && ret == 0) {
-		/* We have a ready_irq, but it didn't fire in time. */
+		 
 		dev_err(wcnss->dev, "start timed out\n");
 		qcom_scm_pas_shutdown(WCNSS_PAS_ID);
 		ret = -ETIMEDOUT;
@@ -373,14 +367,7 @@ static irqreturn_t wcnss_ready_interrupt(int irq, void *dev)
 
 static irqreturn_t wcnss_handover_interrupt(int irq, void *dev)
 {
-	/*
-	 * XXX: At this point we're supposed to release the resources that we
-	 * have been holding on behalf of the WCNSS. Unfortunately this
-	 * interrupt comes way before the other side seems to be done.
-	 *
-	 * So we're currently relying on the ready interrupt firing later then
-	 * this and we just disable the resources at the end of wcnss_start().
-	 */
+	 
 
 	return IRQ_HANDLED;
 }
@@ -432,11 +419,7 @@ static int wcnss_init_regulators(struct qcom_wcnss *wcnss,
 	int ret;
 	int i;
 
-	/*
-	 * If attaching the power domains suceeded we can skip requesting
-	 * the regulators for the power domains. For old device trees we need to
-	 * reserve extra space to manage them through the regulator interface.
-	 */
+	 
 	if (wcnss->num_pds)
 		info += num_pd_vregs;
 	else
@@ -500,7 +483,7 @@ static int wcnss_request_irq(struct qcom_wcnss *wcnss,
 		return ret;
 	}
 
-	/* Return the IRQ number if the IRQ was successfully acquired */
+	 
 	return irq_number;
 }
 
@@ -586,10 +569,7 @@ static int wcnss_probe(struct platform_device *pdev)
 	wcnss->pmu_cfg = mmio + data->pmu_offset;
 	wcnss->spare_out = mmio + data->spare_offset;
 
-	/*
-	 * We might need to fallback to regulators instead of power domains
-	 * for old device trees. Don't report an error in that case.
-	 */
+	 
 	ret = wcnss_init_pds(wcnss, data->pd_names);
 	if (ret && (ret != -ENODATA || !data->num_pd_vregs))
 		goto free_rproc;

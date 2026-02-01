@@ -1,37 +1,8 @@
-/****************************************************************************
- * Copyright 2020 Thomas E. Dickey                                          *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *   Author:  Juergen Pfeifer, 1995,1997                                    *
- ****************************************************************************/
+ 
 
-/* $Id: menu.h,v 1.26 2020/12/12 00:38:02 tom Exp $ */
+ 
 
 #ifndef ETI_MENU
 #define ETI_MENU
@@ -62,7 +33,7 @@ extern "C"
   typedef int Menu_Options;
   typedef int Item_Options;
 
-/* Menu options: */
+ 
 #define O_ONEVALUE      (0x01)
 #define O_SHOWDESC      (0x02)
 #define O_ROWMAJOR      (0x04)
@@ -71,7 +42,7 @@ extern "C"
 #define O_NONCYCLIC     (0x20)
 #define O_MOUSE_MENU    (0x40)
 
-/* Item options: */
+ 
 #define O_SELECTABLE    (0x01)
 
 #if !NCURSES_OPAQUE_MENU
@@ -81,81 +52,81 @@ extern "C"
       unsigned short length;
     }
   TEXT;
-#endif				/* !NCURSES_OPAQUE_MENU */
+#endif				 
 
   struct tagMENU;
 
   typedef struct tagITEM
 #if !NCURSES_OPAQUE_MENU
     {
-      TEXT name;		/* name of menu item                         */
-      TEXT description;		/* description of item, optional in display  */
-      struct tagMENU *imenu;	/* Pointer to parent menu                    */
-      void *userptr;		/* Pointer to user defined per item data     */
-      Item_Options opt;		/* Item options                              */
-      short index;		/* Item number if connected to a menu        */
-      short y;			/* y and x location of item in menu          */
+      TEXT name;		 
+      TEXT description;		 
+      struct tagMENU *imenu;	 
+      void *userptr;		 
+      Item_Options opt;		 
+      short index;		 
+      short y;			 
       short x;
-      bool value;		/* Selection value                           */
+      bool value;		 
 
-      struct tagITEM *left;	/* neighbor items                            */
+      struct tagITEM *left;	 
       struct tagITEM *right;
       struct tagITEM *up;
       struct tagITEM *down;
 
     }
-#endif				/* !NCURSES_OPAQUE_MENU */
+#endif				 
   ITEM;
 
   typedef void (*Menu_Hook) (struct tagMENU *);
 
   typedef struct tagMENU
-#if 1				/* not yet: !NCURSES_OPAQUE_MENU   */
+#if 1				 
     {
-      short height;		/* Nr. of chars high               */
-      short width;		/* Nr. of chars wide               */
-      short rows;		/* Nr. of items high               */
-      short cols;		/* Nr. of items wide               */
-      short frows;		/* Nr. of formatted items high     */
-      short fcols;		/* Nr. of formatted items wide     */
-      short arows;		/* Nr. of items high (actual)      */
-      short namelen;		/* Max. name length                */
-      short desclen;		/* Max. description length         */
-      short marklen;		/* Length of mark, if any          */
-      short itemlen;		/* Length of one item              */
-      short spc_desc;		/* Spacing for descriptor          */
-      short spc_cols;		/* Spacing for columns             */
-      short spc_rows;		/* Spacing for rows                */
-      char *pattern;		/* Buffer to store match chars     */
-      short pindex;		/* Index into pattern buffer       */
-      WINDOW *win;		/* Window containing menu          */
-      WINDOW *sub;		/* Subwindow for menu display      */
-      WINDOW *userwin;		/* User's window                   */
-      WINDOW *usersub;		/* User's subwindow                */
-      ITEM **items;		/* array of items                  */
-      short nitems;		/* Nr. of items in menu            */
-      ITEM *curitem;		/* Current item                    */
-      short toprow;		/* Top row of menu                 */
-      chtype fore;		/* Selection attribute             */
-      chtype back;		/* Nonselection attribute          */
-      chtype grey;		/* Inactive attribute              */
-      unsigned char pad;	/* Pad character                   */
+      short height;		 
+      short width;		 
+      short rows;		 
+      short cols;		 
+      short frows;		 
+      short fcols;		 
+      short arows;		 
+      short namelen;		 
+      short desclen;		 
+      short marklen;		 
+      short itemlen;		 
+      short spc_desc;		 
+      short spc_cols;		 
+      short spc_rows;		 
+      char *pattern;		 
+      short pindex;		 
+      WINDOW *win;		 
+      WINDOW *sub;		 
+      WINDOW *userwin;		 
+      WINDOW *usersub;		 
+      ITEM **items;		 
+      short nitems;		 
+      ITEM *curitem;		 
+      short toprow;		 
+      chtype fore;		 
+      chtype back;		 
+      chtype grey;		 
+      unsigned char pad;	 
 
-      Menu_Hook menuinit;	/* User hooks                      */
+      Menu_Hook menuinit;	 
       Menu_Hook menuterm;
       Menu_Hook iteminit;
       Menu_Hook itemterm;
 
-      void *userptr;		/* Pointer to menus user data      */
-      char *mark;		/* Pointer to marker string        */
+      void *userptr;		 
+      char *mark;		 
 
-      Menu_Options opt;		/* Menu options                    */
-      unsigned short status;	/* Internal state of menu          */
+      Menu_Options opt;		 
+      unsigned short status;	 
     }
-#endif				/* !NCURSES_OPAQUE_MENU */
+#endif				 
   MENU;
 
-/* Define keys */
+ 
 
 #define REQ_LEFT_ITEM           (KEY_MAX + 1)
 #define REQ_RIGHT_ITEM          (KEY_MAX + 2)
@@ -178,10 +149,7 @@ extern "C"
 #define MIN_MENU_COMMAND        (KEY_MAX + 1)
 #define MAX_MENU_COMMAND        (KEY_MAX + 17)
 
-/*
- * Some AT&T code expects MAX_COMMAND to be out-of-band not
- * just for menu commands but for forms ones as well.
- */
+ 
 #if defined(MAX_COMMAND)
 #  if (MAX_MENU_COMMAND > MAX_COMMAND)
 #    error Something is wrong -- MAX_MENU_COMMAND is greater than MAX_COMMAND
@@ -192,7 +160,7 @@ extern "C"
 #  define MAX_COMMAND (KEY_MAX + 128)
 #endif
 
-/* --------- prototypes for libmenu functions ----------------------------- */
+ 
 
   extern MENU_EXPORT(ITEM **) menu_items(const MENU *);
   extern MENU_EXPORT(ITEM *) current_item(const MENU *);
@@ -278,4 +246,4 @@ extern "C"
 }
 #endif
 
-#endif				/* ETI_MENU */
+#endif				 

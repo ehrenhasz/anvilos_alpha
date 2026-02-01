@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2009 Red Hat, Inc.
- * Author: Michael S. Tsirkin <mst@redhat.com>
- *
- * test virtio server in host kernel.
- */
+
+ 
 
 #include <linux/compat.h>
 #include <linux/eventfd.h>
@@ -18,14 +14,10 @@
 #include "test.h"
 #include "vhost.h"
 
-/* Max number of bytes transferred before requeueing the job.
- * Using this limit prevents one virtqueue from starving others. */
+ 
 #define VHOST_TEST_WEIGHT 0x80000
 
-/* Max number of packets transferred before requeueing the job.
- * Using this limit prevents one virtqueue from starving others with
- * pkts.
- */
+ 
 #define VHOST_TEST_PKT_WEIGHT 256
 
 enum {
@@ -38,8 +30,7 @@ struct vhost_test {
 	struct vhost_virtqueue vqs[VHOST_TEST_VQ_MAX];
 };
 
-/* Expects to be always run from workqueue - which acts as
- * read-size critical section for our kind of RCU. */
+ 
 static void handle_vq(struct vhost_test *n)
 {
 	struct vhost_virtqueue *vq = &n->vqs[VHOST_TEST_VQ];
@@ -62,10 +53,10 @@ static void handle_vq(struct vhost_test *n)
 					 ARRAY_SIZE(vq->iov),
 					 &out, &in,
 					 NULL, NULL);
-		/* On error, stop handling until the next kick. */
+		 
 		if (unlikely(head < 0))
 			break;
-		/* Nothing new?  Wait for eventfd to tell us they refilled. */
+		 
 		if (head == vq->num) {
 			if (unlikely(vhost_enable_notify(&n->dev, vq))) {
 				vhost_disable_notify(&n->dev, vq);
@@ -79,7 +70,7 @@ static void handle_vq(struct vhost_test *n)
 			break;
 		}
 		len = iov_length(vq->iov, out);
-		/* Sanity check */
+		 
 		if (!len) {
 			vq_err(vq, "Unexpected 0 len for TX\n");
 			break;
@@ -178,7 +169,7 @@ static long vhost_test_run(struct vhost_test *n, int test)
 		goto err;
 
 	for (index = 0; index < n->dev.nvqs; ++index) {
-		/* Verify that ring has been setup correctly. */
+		 
 		if (!vhost_vq_access_ok(&n->vqs[index])) {
 			r = -EFAULT;
 			goto err;
@@ -190,7 +181,7 @@ static long vhost_test_run(struct vhost_test *n, int test)
 		mutex_lock(&vq->mutex);
 		priv = test ? n : NULL;
 
-		/* start polling new socket */
+		 
 		oldpriv = vhost_vq_get_backend(vq);
 		vhost_vq_set_backend(vq, priv);
 
@@ -276,7 +267,7 @@ static long vhost_test_set_backend(struct vhost_test *n, unsigned index, int fd)
 	vq = &n->vqs[index];
 	mutex_lock(&vq->mutex);
 
-	/* Verify that ring has been setup correctly. */
+	 
 	if (!vhost_vq_access_ok(vq)) {
 		r = -EFAULT;
 		goto err_vq;

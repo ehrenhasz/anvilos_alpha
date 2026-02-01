@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/mhi.h>
 #include <linux/mod_devicetable.h>
@@ -17,7 +15,7 @@ struct qrtr_mhi_dev {
 	struct device *dev;
 };
 
-/* From MHI to QRTR */
+ 
 static void qcom_mhi_qrtr_dl_callback(struct mhi_device *mhi_dev,
 				      struct mhi_result *mhi_res)
 {
@@ -33,7 +31,7 @@ static void qcom_mhi_qrtr_dl_callback(struct mhi_device *mhi_dev,
 		dev_err(qdev->dev, "invalid ipcrouter packet\n");
 }
 
-/* From QRTR to MHI */
+ 
 static void qcom_mhi_qrtr_ul_callback(struct mhi_device *mhi_dev,
 				      struct mhi_result *mhi_res)
 {
@@ -44,7 +42,7 @@ static void qcom_mhi_qrtr_ul_callback(struct mhi_device *mhi_dev,
 	consume_skb(skb);
 }
 
-/* Send data over MHI */
+ 
 static int qcom_mhi_qrtr_send(struct qrtr_endpoint *ep, struct sk_buff *skb)
 {
 	struct qrtr_mhi_dev *qdev = container_of(ep, struct qrtr_mhi_dev, ep);
@@ -91,7 +89,7 @@ static int qcom_mhi_qrtr_probe(struct mhi_device *mhi_dev,
 	if (rc)
 		return rc;
 
-	/* start channels */
+	 
 	rc = mhi_prepare_for_transfer_autoqueue(mhi_dev);
 	if (rc) {
 		qrtr_endpoint_unregister(&qdev->ep);

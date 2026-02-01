@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vdso_restorer.c - tests vDSO-based signal restore
- * Copyright (c) 2015 Andrew Lutomirski
- *
- * This makes sure that sa_restorer == NULL keeps working on 32-bit
- * configurations.  Modern glibc doesn't use it under any circumstances,
- * so it's easy to overlook breakage.
- *
- * 64-bit userspace has never supported sa_restorer == NULL, so this is
- * 32-bit only.
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -22,7 +12,7 @@
 #include <syscall.h>
 #include <sys/syscall.h>
 
-/* Open-code this -- the headers are too messy to easily use them. */
+ 
 struct real_sigaction {
 	void *handler;
 	unsigned long flags;
@@ -60,7 +50,7 @@ int main()
 	memset(&sa, 0, sizeof(sa));
 	sa.handler = handler_with_siginfo;
 	sa.flags = SA_SIGINFO;
-	sa.restorer = NULL;	/* request kernel-provided restorer */
+	sa.restorer = NULL;	 
 
 	printf("[RUN]\tRaise a signal, SA_SIGINFO, sa.restorer == NULL\n");
 

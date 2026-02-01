@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * dmic.c  --  SoC audio for Generic Digital MICs
- *
- * Author: Liam Girdwood <lrg@slimlogic.co.uk>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio.h>
@@ -26,7 +22,7 @@ module_param(wakeup_delay, uint, 0644);
 struct dmic {
 	struct gpio_desc *gpio_en;
 	int wakeup_delay;
-	/* Delay after DMIC mode switch */
+	 
 	int modeswitch_delay;
 };
 

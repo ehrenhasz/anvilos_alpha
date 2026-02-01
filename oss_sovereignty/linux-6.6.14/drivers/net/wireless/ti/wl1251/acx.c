@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "acx.h"
 
 #include <linux/module.h>
@@ -149,14 +149,10 @@ int wl1251_acx_fw_version(struct wl1251 *wl, char *buf, size_t len)
 		goto out;
 	}
 
-	/* be careful with the buffer sizes */
+	 
 	strncpy(buf, rev->fw_version, min(len, sizeof(rev->fw_version)));
 
-	/*
-	 * if the firmware version string is exactly
-	 * sizeof(rev->fw_version) long or fw_len is less than
-	 * sizeof(rev->fw_version) it won't be null terminated
-	 */
+	 
 	buf[min(len, sizeof(rev->fw_version)) - 1] = '\0';
 
 out:
@@ -202,7 +198,7 @@ int wl1251_acx_feature_cfg(struct wl1251 *wl, u32 data_flow_options)
 	if (!feature)
 		return -ENOMEM;
 
-	/* DF_ENCRYPTION_DISABLE and DF_SNIFF_MODE_ENABLE can be set */
+	 
 	feature->data_flow_options = data_flow_options;
 	feature->options = 0;
 
@@ -261,7 +257,7 @@ int wl1251_acx_data_path_params(struct wl1251 *wl,
 	if (ret < 0)
 		goto out;
 
-	/* FIXME: shouldn't this be ACX_DATA_PATH_RESP_PARAMS? */
+	 
 	ret = wl1251_cmd_interrogate(wl, ACX_DATA_PATH_PARAMS,
 				     resp, sizeof(*resp));
 
@@ -340,7 +336,7 @@ int wl1251_acx_pd_threshold(struct wl1251 *wl)
 	if (!pd)
 		return -ENOMEM;
 
-	/* FIXME: threshold value not set */
+	 
 
 	ret = wl1251_cmd_configure(wl, ACX_PD_THRESHOLD, pd, sizeof(*pd));
 	if (ret < 0) {
@@ -390,7 +386,7 @@ int wl1251_acx_group_address_tbl(struct wl1251 *wl, bool enable,
 	if (!acx)
 		return -ENOMEM;
 
-	/* MAC filtering */
+	 
 	acx->enabled = enable;
 	acx->num_groups = mc_list_len;
 	memcpy(acx->mac_table, mc_list, mc_list_len * ETH_ALEN);
@@ -496,7 +492,7 @@ int wl1251_acx_beacon_filter_table(struct wl1251 *wl)
 	if (!ie_table)
 		return -ENOMEM;
 
-	/* configure default beacon pass-through rules */
+	 
 	ie_table->num_ie = 1;
 	ie_table->table[idx++] = BEACON_FILTER_IE_ID_CHANNEL_SWITCH_ANN;
 	ie_table->table[idx++] = BEACON_RULE_PASS_ON_APPEARANCE;
@@ -575,7 +571,7 @@ int wl1251_acx_sg_cfg(struct wl1251 *wl)
 	if (!param)
 		return -ENOMEM;
 
-	/* BT-WLAN coext parameters */
+	 
 	param->min_rate = RATE_INDEX_24MBPS;
 	param->bt_hp_max_time = PTA_BT_HP_MAXTIME_DEF;
 	param->wlan_hp_max_time = PTA_WLAN_HP_MAX_TIME_DEF;
@@ -701,7 +697,7 @@ int wl1251_acx_event_mbox_mask(struct wl1251 *wl, u32 event_mask)
 	if (!mask)
 		return -ENOMEM;
 
-	/* high event mask is unused */
+	 
 	mask->high_event_mask = 0xffffffff;
 
 	mask->event_mask = event_mask;
@@ -843,14 +839,14 @@ int wl1251_acx_rate_policies(struct wl1251 *wl)
 	if (!acx)
 		return -ENOMEM;
 
-	/* configure one default (one-size-fits-all) rate class */
+	 
 	acx->rate_class_cnt = 2;
 	acx->rate_class[0].enabled_rates = ACX_RATE_MASK_UNSPECIFIED;
 	acx->rate_class[0].short_retry_limit = ACX_RATE_RETRY_LIMIT;
 	acx->rate_class[0].long_retry_limit = ACX_RATE_RETRY_LIMIT;
 	acx->rate_class[0].aflags = 0;
 
-	/* no-retry rate class */
+	 
 	acx->rate_class[1].enabled_rates = ACX_RATE_MASK_UNSPECIFIED;
 	acx->rate_class[1].short_retry_limit = 0;
 	acx->rate_class[1].long_retry_limit = 0;
@@ -878,7 +874,7 @@ int wl1251_acx_mem_cfg(struct wl1251 *wl)
 	if (!mem_conf)
 		return -ENOMEM;
 
-	/* memory config */
+	 
 	mem_conf->mem_config.num_stations = cpu_to_le16(DEFAULT_NUM_STATIONS);
 	mem_conf->mem_config.rx_mem_block_num = 35;
 	mem_conf->mem_config.tx_min_mem_block_num = 64;
@@ -888,13 +884,13 @@ int wl1251_acx_mem_cfg(struct wl1251 *wl)
 	mem_conf->mem_config.debug_buffer_size =
 		cpu_to_le16(TRACE_BUFFER_MAX_SIZE);
 
-	/* RX queue config */
+	 
 	mem_conf->rx_queue_config.dma_address = 0;
 	mem_conf->rx_queue_config.num_descs = ACX_RX_DESC_DEF;
 	mem_conf->rx_queue_config.priority = DEFAULT_RXQ_PRIORITY;
 	mem_conf->rx_queue_config.type = DEFAULT_RXQ_TYPE;
 
-	/* TX queue config */
+	 
 	for (i = 0; i < MAX_TX_QUEUES; i++) {
 		mem_conf->tx_queue_config[i].num_descs = ACX_TX_DESC_DEF;
 		mem_conf->tx_queue_config[i].attributes = i;

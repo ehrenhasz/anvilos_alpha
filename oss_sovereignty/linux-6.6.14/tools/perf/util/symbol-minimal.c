@@ -83,9 +83,7 @@ int filename__read_debuglink(const char *filename __maybe_unused,
 	return -1;
 }
 
-/*
- * Just try PT_NOTE header otherwise fails
- */
+ 
 int filename__read_build_id(const char *filename, struct build_id *bid)
 {
 	FILE *fp;
@@ -109,7 +107,7 @@ int filename__read_build_id(const char *filename, struct build_id *bid)
 
 	need_swap = check_need_swap(e_ident[EI_DATA]);
 
-	/* for simplicity */
+	 
 	fseek(fp, 0, SEEK_SET);
 
 	if (e_ident[EI_CLASS] == ELFCLASS32) {
@@ -277,7 +275,7 @@ out_errno:
 
 bool symsrc__possibly_runtime(struct symsrc *ss __maybe_unused)
 {
-	/* Assume all sym sources could be a runtime image. */
+	 
 	return true;
 }
 

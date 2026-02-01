@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for
- *  Maxim MAX16065/MAX16066 12-Channel/8-Channel, Flash-Configurable
- *  System Managers with Nonvolatile Fault Registers
- *  Maxim MAX16067/MAX16068 6-Channel, Flash-Configurable System Managers
- *  with Nonvolatile Fault Registers
- *  Maxim MAX16070/MAX16071 12-Channel/8-Channel, Flash-Configurable System
- *  Monitors with Nonvolatile Fault Registers
- *
- * Copyright (C) 2011 Ericsson AB.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -23,9 +13,7 @@
 
 enum chips { max16065, max16066, max16067, max16068, max16070, max16071 };
 
-/*
- * Registers
- */
+ 
 #define MAX16065_ADC(x)		((x) * 2)
 
 #define MAX16065_CURR_SENSE	0x18
@@ -33,23 +21,16 @@ enum chips { max16065, max16066, max16067, max16068, max16070, max16071 };
 #define MAX16065_FAULT(x)	(0x1b + (x))
 #define MAX16065_SCALE(x)	(0x43 + (x))
 #define MAX16065_CURR_CONTROL	0x47
-#define MAX16065_LIMIT(l, x)	(0x48 + (l) + (x) * 3)	/*
-							 * l: limit
-							 *  0: min/max
-							 *  1: crit
-							 *  2: lcrit
-							 * x: ADC index
-							 */
+#define MAX16065_LIMIT(l, x)	(0x48 + (l) + (x) * 3)	 
 
 #define MAX16065_SW_ENABLE	0x73
 
-#define MAX16065_WARNING_OV	(1 << 3) /* Set if secondary threshold is OV
-					    warning */
+#define MAX16065_WARNING_OV	(1 << 3)  
 
 #define MAX16065_CURR_ENABLE	(1 << 0)
 
 #define MAX16065_NUM_LIMIT	3
-#define MAX16065_NUM_ADC	12	/* maximum number of ADC channels */
+#define MAX16065_NUM_ADC	12	 
 
 static const int max16065_num_adc[] = {
 	[max16065] = 12,
@@ -84,14 +65,14 @@ struct max16065_data {
 	const struct attribute_group *groups[4];
 	struct mutex update_lock;
 	bool valid;
-	unsigned long last_updated; /* in jiffies */
+	unsigned long last_updated;  
 	int num_adc;
 	bool have_current;
 	int curr_gain;
-	/* limits are in mV */
+	 
 	int limit[MAX16065_NUM_LIMIT][MAX16065_NUM_ADC];
-	int range[MAX16065_NUM_ADC + 1];/* voltage range */
-	int adc[MAX16065_NUM_ADC + 1];	/* adc values (raw) including csp_adc */
+	int range[MAX16065_NUM_ADC + 1]; 
+	int adc[MAX16065_NUM_ADC + 1];	 
 	int curr_sense;
 	int fault[2];
 };
@@ -99,16 +80,13 @@ struct max16065_data {
 static const int max16065_adc_range[] = { 5560, 2780, 1390, 0 };
 static const int max16065_csp_adc_range[] = { 7000, 14000 };
 
-/* ADC registers have 10 bit resolution. */
+ 
 static inline int ADC_TO_MV(int adc, int range)
 {
 	return (adc * range) / 1024;
 }
 
-/*
- * Limit registers have 8 bit resolution and match upper 8 bits of ADC
- * registers.
- */
+ 
 static inline int LIMIT_TO_MV(int limit, int range)
 {
 	return limit * range / 256;
@@ -124,12 +102,7 @@ static inline int ADC_TO_CURR(int adc, int gain)
 	return adc * 1400000 / (gain * 255);
 }
 
-/*
- * max16065_read_adc()
- *
- * Read 16 bit value from <reg>, <reg+1>.
- * Upper 8 bits are in <reg>, lower 2 bits are in bits 7:6 of <reg+1>.
- */
+ 
 static int max16065_read_adc(struct i2c_client *client, int reg)
 {
 	int rv;
@@ -253,9 +226,9 @@ static ssize_t max16065_limit_show(struct device *dev,
 			  data->limit[attr2->nr][attr2->index]);
 }
 
-/* Construct a sensor_device_attribute structure for each register */
+ 
 
-/* Input voltages */
+ 
 static SENSOR_DEVICE_ATTR_RO(in0_input, max16065_input, 0);
 static SENSOR_DEVICE_ATTR_RO(in1_input, max16065_input, 1);
 static SENSOR_DEVICE_ATTR_RO(in2_input, max16065_input, 2);
@@ -270,7 +243,7 @@ static SENSOR_DEVICE_ATTR_RO(in10_input, max16065_input, 10);
 static SENSOR_DEVICE_ATTR_RO(in11_input, max16065_input, 11);
 static SENSOR_DEVICE_ATTR_RO(in12_input, max16065_input, 12);
 
-/* Input voltages lcrit */
+ 
 static SENSOR_DEVICE_ATTR_2_RW(in0_lcrit, max16065_limit, 2, 0);
 static SENSOR_DEVICE_ATTR_2_RW(in1_lcrit, max16065_limit, 2, 1);
 static SENSOR_DEVICE_ATTR_2_RW(in2_lcrit, max16065_limit, 2, 2);
@@ -284,7 +257,7 @@ static SENSOR_DEVICE_ATTR_2_RW(in9_lcrit, max16065_limit, 2, 9);
 static SENSOR_DEVICE_ATTR_2_RW(in10_lcrit, max16065_limit, 2, 10);
 static SENSOR_DEVICE_ATTR_2_RW(in11_lcrit, max16065_limit, 2, 11);
 
-/* Input voltages crit */
+ 
 static SENSOR_DEVICE_ATTR_2_RW(in0_crit, max16065_limit, 1, 0);
 static SENSOR_DEVICE_ATTR_2_RW(in1_crit, max16065_limit, 1, 1);
 static SENSOR_DEVICE_ATTR_2_RW(in2_crit, max16065_limit, 1, 2);
@@ -298,7 +271,7 @@ static SENSOR_DEVICE_ATTR_2_RW(in9_crit, max16065_limit, 1, 9);
 static SENSOR_DEVICE_ATTR_2_RW(in10_crit, max16065_limit, 1, 10);
 static SENSOR_DEVICE_ATTR_2_RW(in11_crit, max16065_limit, 1, 11);
 
-/* Input voltages min */
+ 
 static SENSOR_DEVICE_ATTR_2_RW(in0_min, max16065_limit, 0, 0);
 static SENSOR_DEVICE_ATTR_2_RW(in1_min, max16065_limit, 0, 1);
 static SENSOR_DEVICE_ATTR_2_RW(in2_min, max16065_limit, 0, 2);
@@ -312,7 +285,7 @@ static SENSOR_DEVICE_ATTR_2_RW(in9_min, max16065_limit, 0, 9);
 static SENSOR_DEVICE_ATTR_2_RW(in10_min, max16065_limit, 0, 10);
 static SENSOR_DEVICE_ATTR_2_RW(in11_min, max16065_limit, 0, 11);
 
-/* Input voltages max */
+ 
 static SENSOR_DEVICE_ATTR_2_RW(in0_max, max16065_limit, 0, 0);
 static SENSOR_DEVICE_ATTR_2_RW(in1_max, max16065_limit, 0, 1);
 static SENSOR_DEVICE_ATTR_2_RW(in2_max, max16065_limit, 0, 2);
@@ -326,7 +299,7 @@ static SENSOR_DEVICE_ATTR_2_RW(in9_max, max16065_limit, 0, 9);
 static SENSOR_DEVICE_ATTR_2_RW(in10_max, max16065_limit, 0, 10);
 static SENSOR_DEVICE_ATTR_2_RW(in11_max, max16065_limit, 0, 11);
 
-/* alarms */
+ 
 static SENSOR_DEVICE_ATTR_2_RO(in0_alarm, max16065_alarm, 0, 0);
 static SENSOR_DEVICE_ATTR_2_RO(in1_alarm, max16065_alarm, 0, 1);
 static SENSOR_DEVICE_ATTR_2_RO(in2_alarm, max16065_alarm, 0, 2);
@@ -340,14 +313,11 @@ static SENSOR_DEVICE_ATTR_2_RO(in9_alarm, max16065_alarm, 1, 1);
 static SENSOR_DEVICE_ATTR_2_RO(in10_alarm, max16065_alarm, 1, 2);
 static SENSOR_DEVICE_ATTR_2_RO(in11_alarm, max16065_alarm, 1, 3);
 
-/* Current and alarm */
+ 
 static SENSOR_DEVICE_ATTR_RO(curr1_input, max16065_current, 0);
 static SENSOR_DEVICE_ATTR_2_RO(curr1_alarm, max16065_alarm, 1, 4);
 
-/*
- * Finally, construct an array of pointers to members of the above objects,
- * as required for sysfs_create_group()
- */
+ 
 static struct attribute *max16065_basic_attributes[] = {
 	&sensor_dev_attr_in0_input.dev_attr.attr,
 	&sensor_dev_attr_in0_lcrit.dev_attr.attr,
@@ -502,8 +472,8 @@ static int max16065_probe(struct i2c_client *client)
 	struct device *dev = &client->dev;
 	struct device *hwmon_dev;
 	int i, j, val;
-	bool have_secondary;		/* true if chip has secondary limits */
-	bool secondary_is_max = false;	/* secondary limits reflect max */
+	bool have_secondary;		 
+	bool secondary_is_max = false;	 
 	int groups = 0;
 	const struct i2c_device_id *id = i2c_match_id(max16065_id, client);
 
@@ -529,7 +499,7 @@ static int max16065_probe(struct i2c_client *client)
 		secondary_is_max = val & MAX16065_WARNING_OV;
 	}
 
-	/* Read scale registers, convert to range */
+	 
 	for (i = 0; i < DIV_ROUND_UP(data->num_adc, 4); i++) {
 		val = i2c_smbus_read_byte_data(client, MAX16065_SCALE(i));
 		if (unlikely(val < 0))
@@ -540,7 +510,7 @@ static int max16065_probe(struct i2c_client *client)
 		}
 	}
 
-	/* Read limits */
+	 
 	for (i = 0; i < MAX16065_NUM_LIMIT; i++) {
 		if (i == 0 && !have_secondary)
 			continue;
@@ -554,7 +524,7 @@ static int max16065_probe(struct i2c_client *client)
 		}
 	}
 
-	/* sysfs hooks */
+	 
 	data->groups[groups++] = &max16065_basic_group;
 	if (have_secondary)
 		data->groups[groups++] = secondary_is_max ?
@@ -565,10 +535,7 @@ static int max16065_probe(struct i2c_client *client)
 		if (unlikely(val < 0))
 			return val;
 		if (val & MAX16065_CURR_ENABLE) {
-			/*
-			 * Current gain is 6, 12, 24, 48 based on values in
-			 * bit 2,3.
-			 */
+			 
 			data->curr_gain = 6 << ((val >> 2) & 0x03);
 			data->range[MAX16065_NUM_ADC]
 			  = max16065_csp_adc_range[(val >> 1) & 0x01];
@@ -595,7 +562,7 @@ static const struct i2c_device_id max16065_id[] = {
 
 MODULE_DEVICE_TABLE(i2c, max16065_id);
 
-/* This is the driver that will be inserted */
+ 
 static struct i2c_driver max16065_driver = {
 	.driver = {
 		.name = "max16065",

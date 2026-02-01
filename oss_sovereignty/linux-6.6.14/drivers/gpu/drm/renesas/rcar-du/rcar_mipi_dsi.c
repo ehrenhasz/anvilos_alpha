@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * R-Car MIPI DSI Encoder
- *
- * Copyright (C) 2020 Renesas Electronics Corporation
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -120,7 +116,7 @@ static const u32 hsfreqrange_table[][2] = {
 	{ MHZ(2100), 0x41 }, { MHZ(2150), 0x42 }, { MHZ(2200), 0x43 },
 	{ MHZ(2250), 0x44 }, { MHZ(2300), 0x45 }, { MHZ(2350), 0x46 },
 	{ MHZ(2400), 0x47 }, { MHZ(2450), 0x48 }, { MHZ(2500), 0x49 },
-	{ /* sentinel */ },
+	{   },
 };
 
 struct dsi_clk_config {
@@ -145,7 +141,7 @@ static const struct dsi_clk_config dsi_clk_cfg_v3u[] = {
 	{  MHZ(630),  MHZ(1149), 0x03, 0x10, 0x01, 0x00, 0x0b },
 	{ MHZ(1100),  MHZ(1152), 0x01, 0x10, 0x01, 0x00, 0x0b },
 	{ MHZ(1150),  MHZ(1250), 0x01, 0x10, 0x01, 0x00, 0x0c },
-	{ /* sentinel */ },
+	{   },
 };
 
 static const struct dsi_clk_config dsi_clk_cfg_v4h[] = {
@@ -170,7 +166,7 @@ static const struct dsi_clk_config dsi_clk_cfg_v4h[] = {
 	{  MHZ(875),   MHZ(1000),    0x08, 0x00, 0x00, 0x08, 0x0a },
 	{ MHZ(1000),   MHZ(1200),    0x07, 0x00, 0x00, 0x08, 0x0a },
 	{ MHZ(1200),   MHZ(1250),    0x03, 0x00, 0x00, 0x08, 0x0a },
-	{ /* sentinel */ },
+	{   },
 };
 
 static void rcar_mipi_dsi_write(struct rcar_mipi_dsi *dsi, u32 reg, u32 data)
@@ -329,9 +325,7 @@ rcar_mipi_dsi_post_init_phtw_v4h(struct rcar_mipi_dsi *dsi,
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * Hardware Setup
- */
+ 
 
 static void rcar_mipi_dsi_pll_calc(struct rcar_mipi_dsi *dsi,
 				   unsigned long fin_rate,
@@ -390,16 +384,13 @@ static void rcar_mipi_dsi_parameters_calc(struct rcar_mipi_dsi *dsi,
 	unsigned int i;
 	unsigned int err;
 
-	/*
-	 * Calculate Fout = dot clock * ColorDepth / (2 * Lane Count)
-	 * The range out Fout is [40 - 1250] Mhz
-	 */
+	 
 	fout_target = target * mipi_dsi_pixel_format_to_bpp(dsi->format)
 		    / (2 * dsi->lanes);
 	if (fout_target < MHZ(40) || fout_target > MHZ(1250))
 		return;
 
-	/* Find PLL settings */
+	 
 	for (clk_cfg = dsi->info->clk_cfg; clk_cfg->min_freq != 0; clk_cfg++) {
 		if (fout_target > clk_cfg->min_freq &&
 		    fout_target <= clk_cfg->max_freq) {
@@ -423,7 +414,7 @@ static void rcar_mipi_dsi_parameters_calc(struct rcar_mipi_dsi *dsi,
 
 	rcar_mipi_dsi_pll_calc(dsi, fin_rate, fout_target, setup_info);
 
-	/* Find hsfreqrange */
+	 
 	setup_info->hsfreq = setup_info->fout * 2;
 	for (i = 0; i < ARRAY_SIZE(hsfreqrange_table); i++) {
 		if (hsfreqrange_table[i][0] >= setup_info->hsfreq) {
@@ -456,7 +447,7 @@ static void rcar_mipi_dsi_set_display_timing(struct rcar_mipi_dsi *dsi,
 	u32 vprmset3r;
 	u32 vprmset4r;
 
-	/* Configuration for Pixel Stream and Packet Header */
+	 
 	if (mipi_dsi_pixel_format_to_bpp(dsi->format) == 24)
 		rcar_mipi_dsi_write(dsi, TXVMPSPHSETR, TXVMPSPHSETR_DT_RGB24);
 	else if (mipi_dsi_pixel_format_to_bpp(dsi->format) == 18)
@@ -468,13 +459,13 @@ static void rcar_mipi_dsi_set_display_timing(struct rcar_mipi_dsi *dsi,
 		return;
 	}
 
-	/* Configuration for Blanking sequence and Input Pixel */
+	 
 	setr = TXVMSETR_HSABPEN_EN | TXVMSETR_HBPBPEN_EN
 	     | TXVMSETR_HFPBPEN_EN | TXVMSETR_SYNSEQ_PULSES
 	     | TXVMSETR_PIXWDTH | TXVMSETR_VSTPM;
 	rcar_mipi_dsi_write(dsi, TXVMSETR, setr);
 
-	/* Configuration for Video Parameters */
+	 
 	vprmset0r = (mode->flags & DRM_MODE_FLAG_PVSYNC ?
 		     TXVMVPRMSET0R_VSPOL_HIG : TXVMVPRMSET0R_VSPOL_LOW)
 		  | (mode->flags & DRM_MODE_FLAG_PHSYNC ?
@@ -512,21 +503,21 @@ static int rcar_mipi_dsi_startup(struct rcar_mipi_dsi *dsi,
 	u32 ppisetr;
 	u32 vclkset;
 
-	/* Checking valid format */
+	 
 	dsi_format = mipi_dsi_pixel_format_to_bpp(dsi->format);
 	if (dsi_format < 0) {
 		dev_warn(dsi->dev, "invalid format");
 		return -EINVAL;
 	}
 
-	/* Parameters Calculation */
+	 
 	rcar_mipi_dsi_parameters_calc(dsi, dsi->clocks.pll,
 				      mode->clock * 1000, &setup_info);
 
-	/* LPCLK enable */
+	 
 	rcar_mipi_dsi_set(dsi, LPCLKSET, LPCLKSET_CKEN);
 
-	/* CFGCLK enabled */
+	 
 	rcar_mipi_dsi_set(dsi, CFGCLKSET, CFGCLKSET_CKEN);
 
 	rcar_mipi_dsi_clr(dsi, PHYSETUP, PHYSETUP_RSTZ);
@@ -535,7 +526,7 @@ static int rcar_mipi_dsi_startup(struct rcar_mipi_dsi *dsi,
 	rcar_mipi_dsi_set(dsi, PHTC, PHTC_TESTCLR);
 	rcar_mipi_dsi_clr(dsi, PHTC, PHTC_TESTCLR);
 
-	/* PHY setting */
+	 
 	phy_setup = rcar_mipi_dsi_read(dsi, PHYSETUP);
 	phy_setup &= ~PHYSETUP_HSFREQRANGE_MASK;
 	phy_setup |= PHYSETUP_HSFREQRANGE(setup_info.hsfreqrange);
@@ -556,7 +547,7 @@ static int rcar_mipi_dsi_startup(struct rcar_mipi_dsi *dsi,
 		break;
 	}
 
-	/* PLL Clock Setting */
+	 
 	rcar_mipi_dsi_clr(dsi, CLOCKSET1, CLOCKSET1_SHADOW_CLEAR);
 	rcar_mipi_dsi_set(dsi, CLOCKSET1, CLOCKSET1_SHADOW_CLEAR);
 	rcar_mipi_dsi_clr(dsi, CLOCKSET1, CLOCKSET1_SHADOW_CLEAR);
@@ -583,7 +574,7 @@ static int rcar_mipi_dsi_startup(struct rcar_mipi_dsi *dsi,
 	rcar_mipi_dsi_set(dsi, PHYSETUP, PHYSETUP_RSTZ);
 	usleep_range(400, 500);
 
-	/* Checking PPI clock status register */
+	 
 	for (timeout = 10; timeout > 0; --timeout) {
 		if ((rcar_mipi_dsi_read(dsi, PPICLSR) & PPICLSR_STPST) &&
 		    (rcar_mipi_dsi_read(dsi, PPIDLSR) & PPIDLSR_STPST) &&
@@ -613,7 +604,7 @@ static int rcar_mipi_dsi_startup(struct rcar_mipi_dsi *dsi,
 		break;
 	}
 
-	/* Enable DOT clock */
+	 
 	vclkset = VCLKSET_CKEN;
 	rcar_mipi_dsi_write(dsi, VCLKSET, vclkset);
 
@@ -643,7 +634,7 @@ static int rcar_mipi_dsi_startup(struct rcar_mipi_dsi *dsi,
 
 	rcar_mipi_dsi_write(dsi, VCLKSET, vclkset);
 
-	/* After setting VCLKSET register, enable VCLKEN */
+	 
 	rcar_mipi_dsi_set(dsi, VCLKEN, VCLKEN_CKEN);
 
 	dev_dbg(dsi->dev, "DSI device is started\n");
@@ -653,19 +644,19 @@ static int rcar_mipi_dsi_startup(struct rcar_mipi_dsi *dsi,
 
 static void rcar_mipi_dsi_shutdown(struct rcar_mipi_dsi *dsi)
 {
-	/* Disable VCLKEN */
+	 
 	rcar_mipi_dsi_write(dsi, VCLKSET, 0);
 
-	/* Disable DOT clock */
+	 
 	rcar_mipi_dsi_write(dsi, VCLKSET, 0);
 
 	rcar_mipi_dsi_clr(dsi, PHYSETUP, PHYSETUP_RSTZ);
 	rcar_mipi_dsi_clr(dsi, PHYSETUP, PHYSETUP_SHUTDOWNZ);
 
-	/* CFGCLK disable */
+	 
 	rcar_mipi_dsi_clr(dsi, CFGCLKSET, CFGCLKSET_CKEN);
 
-	/* LPCLK disable */
+	 
 	rcar_mipi_dsi_clr(dsi, LPCLKSET, LPCLKSET_CKEN);
 
 	dev_dbg(dsi->dev, "DSI device is shutdown\n");
@@ -704,14 +695,11 @@ static void rcar_mipi_dsi_clk_disable(struct rcar_mipi_dsi *dsi)
 
 static int rcar_mipi_dsi_start_hs_clock(struct rcar_mipi_dsi *dsi)
 {
-	/*
-	 * In HW manual, we need to check TxDDRClkHS-Q Stable? but it dont
-	 * write how to check. So we skip this check in this patch
-	 */
+	 
 	u32 status;
 	int ret;
 
-	/* Start HS clock. */
+	 
 	rcar_mipi_dsi_set(dsi, PPICLCR, PPICLCR_TXREQHS);
 
 	ret = read_poll_timeout(rcar_mipi_dsi_read, status,
@@ -732,7 +720,7 @@ static int rcar_mipi_dsi_start_video(struct rcar_mipi_dsi *dsi)
 	u32 status;
 	int ret;
 
-	/* Wait for the link to be ready. */
+	 
 	ret = read_poll_timeout(rcar_mipi_dsi_read, status,
 				!(status & (LINKSR_LPBUSY | LINKSR_HSBUSY)),
 				2000, 10000, false, dsi, LINKSR);
@@ -741,7 +729,7 @@ static int rcar_mipi_dsi_start_video(struct rcar_mipi_dsi *dsi)
 		return ret;
 	}
 
-	/* De-assert video FIFO clear. */
+	 
 	rcar_mipi_dsi_clr(dsi, TXVMCR, TXVMCR_VFCLR);
 
 	ret = read_poll_timeout(rcar_mipi_dsi_read, status,
@@ -752,7 +740,7 @@ static int rcar_mipi_dsi_start_video(struct rcar_mipi_dsi *dsi)
 		return ret;
 	}
 
-	/* Enable transmission in video mode. */
+	 
 	rcar_mipi_dsi_set(dsi, TXVMCR, TXVMCR_EN_VIDEO);
 
 	ret = read_poll_timeout(rcar_mipi_dsi_read, status,
@@ -771,7 +759,7 @@ static void rcar_mipi_dsi_stop_video(struct rcar_mipi_dsi *dsi)
 	u32 status;
 	int ret;
 
-	/* Disable transmission in video mode. */
+	 
 	rcar_mipi_dsi_clr(dsi, TXVMCR, TXVMCR_EN_VIDEO);
 
 	ret = read_poll_timeout(rcar_mipi_dsi_read, status,
@@ -782,7 +770,7 @@ static void rcar_mipi_dsi_stop_video(struct rcar_mipi_dsi *dsi)
 		return;
 	}
 
-	/* Assert video FIFO clear. */
+	 
 	rcar_mipi_dsi_set(dsi, TXVMCR, TXVMCR_VFCLR);
 
 	ret = read_poll_timeout(rcar_mipi_dsi_read, status,
@@ -794,9 +782,7 @@ static void rcar_mipi_dsi_stop_video(struct rcar_mipi_dsi *dsi)
 	}
 }
 
-/* -----------------------------------------------------------------------------
- * Bridge
- */
+ 
 
 static int rcar_mipi_dsi_attach(struct drm_bridge *bridge,
 				enum drm_bridge_attach_flags flags)
@@ -892,9 +878,7 @@ static const struct drm_bridge_funcs rcar_mipi_dsi_bridge_ops = {
 	.mode_valid = rcar_mipi_dsi_bridge_mode_valid,
 };
 
-/* -----------------------------------------------------------------------------
- * Host setting
- */
+ 
 
 static int rcar_mipi_dsi_host_attach(struct mipi_dsi_host *host,
 				     struct mipi_dsi_device *device)
@@ -916,7 +900,7 @@ static int rcar_mipi_dsi_host_attach(struct mipi_dsi_host *host,
 		return ret;
 	}
 
-	/* Initialize the DRM bridge. */
+	 
 	dsi->bridge.funcs = &rcar_mipi_dsi_bridge_ops;
 	dsi->bridge.of_node = dsi->dev->of_node;
 	drm_bridge_add(&dsi->bridge);
@@ -939,9 +923,7 @@ static const struct mipi_dsi_host_ops rcar_mipi_dsi_host_ops = {
 	.detach = rcar_mipi_dsi_host_detach,
 };
 
-/* -----------------------------------------------------------------------------
- * Probe & Remove
- */
+ 
 
 static int rcar_mipi_dsi_parse_dt(struct rcar_mipi_dsi *dsi)
 {
@@ -1016,7 +998,7 @@ static int rcar_mipi_dsi_probe(struct platform_device *pdev)
 	if (ret < 0)
 		return ret;
 
-	/* Acquire resources. */
+	 
 	dsi->mmio = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(dsi->mmio))
 		return PTR_ERR(dsi->mmio);
@@ -1031,7 +1013,7 @@ static int rcar_mipi_dsi_probe(struct platform_device *pdev)
 		return PTR_ERR(dsi->rstc);
 	}
 
-	/* Initialize the DSI host. */
+	 
 	dsi->host.dev = dsi->dev;
 	dsi->host.ops = &rcar_mipi_dsi_host_ops;
 	ret = mipi_dsi_host_register(&dsi->host);

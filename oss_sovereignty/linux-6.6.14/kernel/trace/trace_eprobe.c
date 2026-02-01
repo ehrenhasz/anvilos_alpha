@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * event probes
- *
- * Part of this code was copied from kernel/trace/trace_kprobe.c written by
- * Masami Hiramatsu <mhiramat@kernel.org>
- *
- * Copyright (C) 2021, VMware Inc, Steven Rostedt <rostedt@goodmis.org>
- * Copyright (C) 2021, VMware Inc, Tzvetomir Stoyanov tz.stoyanov@gmail.com>
- *
- */
+
+ 
 #include <linux/module.h>
 #include <linux/mutex.h>
 #include <linux/ftrace.h>
@@ -21,13 +12,13 @@
 #define EPROBE_EVENT_SYSTEM "eprobes"
 
 struct trace_eprobe {
-	/* tracepoint system */
+	 
 	const char *event_system;
 
-	/* tracepoint event */
+	 
 	const char *event_name;
 
-	/* filter string for the tracepoint */
+	 
 	char *filter_str;
 
 	struct trace_event_call *event;
@@ -88,15 +79,15 @@ static int eprobe_dyn_event_show(struct seq_file *m, struct dyn_event *ev)
 
 static int unregister_trace_eprobe(struct trace_eprobe *ep)
 {
-	/* If other probes are on the event, just unregister eprobe */
+	 
 	if (trace_probe_has_sibling(&ep->tp))
 		goto unreg;
 
-	/* Enabled event can not be unregistered */
+	 
 	if (trace_probe_is_enabled(&ep->tp))
 		return -EBUSY;
 
-	/* Will fail if probe is being used by ftrace or perf */
+	 
 	if (trace_probe_unregister_event_call(&ep->tp))
 		return -EBUSY;
 
@@ -130,37 +121,21 @@ static bool eprobe_dyn_event_match(const char *system, const char *event,
 	struct trace_eprobe *ep = to_trace_eprobe(ev);
 	const char *slash;
 
-	/*
-	 * We match the following:
-	 *  event only			- match all eprobes with event name
-	 *  system and event only	- match all system/event probes
-	 *  system only			- match all system probes
-	 *
-	 * The below has the above satisfied with more arguments:
-	 *
-	 *  attached system/event	- If the arg has the system and event
-	 *				  the probe is attached to, match
-	 *				  probes with the attachment.
-	 *
-	 *  If any more args are given, then it requires a full match.
-	 */
+	 
 
-	/*
-	 * If system exists, but this probe is not part of that system
-	 * do not match.
-	 */
+	 
 	if (system && strcmp(trace_probe_group_name(&ep->tp), system) != 0)
 		return false;
 
-	/* Must match the event name */
+	 
 	if (event[0] != '\0' && strcmp(trace_probe_name(&ep->tp), event) != 0)
 		return false;
 
-	/* No arguments match all */
+	 
 	if (argc < 1)
 		return true;
 
-	/* First argument is the system/event the probe is attached to */
+	 
 
 	slash = strchr(argv[0], '/');
 	if (!slash)
@@ -176,7 +151,7 @@ static bool eprobe_dyn_event_match(const char *system, const char *event,
 	argc--;
 	argv++;
 
-	/* If there are no other args, then match */
+	 
 	if (argc < 1)
 		return true;
 
@@ -249,7 +224,7 @@ static struct trace_event_fields eprobe_fields_array[] = {
 	{}
 };
 
-/* Event entry printers */
+ 
 static enum print_line_t
 print_eprobe_event(struct trace_iterator *iter, int flags,
 		   struct trace_event *event)
@@ -369,7 +344,7 @@ static int get_eprobe_size(struct trace_probe *tp, void *rec)
 			case FETCH_OP_TP_ARG:
 				val = get_event_field(code, rec);
 				break;
-			case FETCH_NOP_SYMBOL:	/* Ignore a place holder */
+			case FETCH_NOP_SYMBOL:	 
 				code++;
 				goto retry;
 			default:
@@ -386,9 +361,9 @@ static int get_eprobe_size(struct trace_probe *tp, void *rec)
 	return ret;
 }
 
-/* Kprobe specific fetch functions */
+ 
 
-/* Note that we don't verify it, since the code does not come from user space */
+ 
 static int
 process_fetch_insn(struct fetch_insn *code, void *rec, void *dest,
 		   void *base)
@@ -401,7 +376,7 @@ process_fetch_insn(struct fetch_insn *code, void *rec, void *dest,
 	case FETCH_OP_TP_ARG:
 		val = get_event_field(code, rec);
 		break;
-	case FETCH_NOP_SYMBOL:	/* Ignore a place holder */
+	case FETCH_NOP_SYMBOL:	 
 		code++;
 		goto retry;
 	default:
@@ -414,7 +389,7 @@ process_fetch_insn(struct fetch_insn *code, void *rec, void *dest,
 }
 NOKPROBE_SYMBOL(process_fetch_insn)
 
-/* eprobe handler */
+ 
 static inline void
 __eprobe_trace_func(struct eprobe_data *edata, void *rec)
 {
@@ -443,12 +418,7 @@ __eprobe_trace_func(struct eprobe_data *edata, void *rec)
 	trace_event_buffer_commit(&fbuffer);
 }
 
-/*
- * The event probe implementation uses event triggers to get access to
- * the event it is attached to, but is not an actual trigger. The below
- * functions are just stubs to fulfill what is needed to use the trigger
- * infrastructure.
- */
+ 
 static int eprobe_trigger_init(struct event_trigger_data *data)
 {
 	return 0;
@@ -462,7 +432,7 @@ static void eprobe_trigger_free(struct event_trigger_data *data)
 static int eprobe_trigger_print(struct seq_file *m,
 				struct event_trigger_data *data)
 {
-	/* Do not print eprobe event triggers */
+	 
 	return 0;
 }
 
@@ -544,11 +514,7 @@ new_eprobe_trigger(struct trace_eprobe *ep, struct trace_event_file *file)
 	trigger->count = -1;
 	trigger->ops = &eprobe_trigger_ops;
 
-	/*
-	 * EVENT PROBE triggers are not registered as commands with
-	 * register_event_command(), as they are not controlled by the user
-	 * from the trigger file
-	 */
+	 
 	trigger->cmd_ops = &event_trigger_cmd;
 
 	INIT_LIST_HEAD(&trigger->list);
@@ -628,7 +594,7 @@ static int disable_eprobe(struct trace_eprobe *ep,
 	trace_event_trigger_enable_disable(file, 0);
 	update_cond_flag(file);
 
-	/* Make sure nothing is using the edata or trigger */
+	 
 	tracepoint_synchronize_unregister();
 
 	filter = rcu_access_pointer(trigger->filter);
@@ -655,7 +621,7 @@ static int enable_trace_eprobe(struct trace_event_call *call,
 		return -ENODEV;
 	enabled = trace_probe_is_enabled(tp);
 
-	/* This also changes "enabled" state */
+	 
 	if (file) {
 		ret = trace_probe_add_file(tp, file);
 		if (ret)
@@ -675,12 +641,9 @@ static int enable_trace_eprobe(struct trace_event_call *call,
 	}
 
 	if (ret) {
-		/* Failed to enable one of them. Roll back all */
+		 
 		if (enabled) {
-			/*
-			 * It's a bug if one failed for something other than memory
-			 * not being available but another eprobe succeeded.
-			 */
+			 
 			WARN_ON_ONCE(ret != -ENOMEM);
 
 			for_each_trace_eprobe_tp(ep, tp) {
@@ -724,12 +687,7 @@ static int disable_trace_eprobe(struct trace_event_call *call,
 
  out:
 	if (file)
-		/*
-		 * Synchronization is done in below function. For perf event,
-		 * file == NULL and perf_trace_event_unreg() calls
-		 * tracepoint_synchronize_unregister() to ensure synchronize
-		 * event. We don't need to care about it.
-		 */
+		 
 		trace_probe_remove_file(tp, file);
 
 	return 0;
@@ -775,7 +733,7 @@ find_and_get_event(const char *system, const char *event_name)
 	const char *name;
 
 	list_for_each_entry(tp_event, &ftrace_events, list) {
-		/* Skip other probes and ftrace events */
+		 
 		if (tp_event->flags &
 		    (TRACE_EVENT_FL_IGNORE_ENABLE |
 		     TRACE_EVENT_FL_KPROBE |
@@ -807,7 +765,7 @@ static int trace_eprobe_tp_update_arg(struct trace_eprobe *ep, const char *argv[
 	int ret;
 
 	ret = traceprobe_parse_probe_arg(&ep->tp, i, argv[i], &ctx);
-	/* Handle symbols "@" */
+	 
 	if (!ret)
 		ret = traceprobe_update_arg(&ep->tp.args[i]);
 
@@ -826,7 +784,7 @@ static int trace_eprobe_parse_filter(struct trace_eprobe *ep, int argc, const ch
 		return -EINVAL;
 	}
 
-	/* Recover the filter string */
+	 
 	for (i = 0; i < argc; i++)
 		len += strlen(argv[i]) + 1;
 
@@ -844,10 +802,7 @@ static int trace_eprobe_parse_filter(struct trace_eprobe *ep, int argc, const ch
 		len -= ret;
 	}
 
-	/*
-	 * Ensure the filter string can be parsed correctly. Note, this
-	 * filter string is for the original event, not for the eprobe.
-	 */
+	 
 	ret = create_event_filter(top_trace_array(), ep->event, ep->filter_str,
 				  true, &dummy);
 	free_event_filter(dummy);
@@ -863,12 +818,7 @@ error:
 
 static int __trace_eprobe_create(int argc, const char *argv[])
 {
-	/*
-	 * Argument syntax:
-	 *      e[:[GRP/][ENAME]] SYSTEM.EVENT [FETCHARGS] [if FILTER]
-	 * Fetch args (no space):
-	 *  <name>=$<field>[:TYPE]
-	 */
+	 
 	const char *event = NULL, *group = EPROBE_EVENT_SYSTEM;
 	const char *sys_event = NULL, *sys_name = NULL;
 	struct trace_event_call *event_call;
@@ -924,7 +874,7 @@ static int __trace_eprobe_create(int argc, const char *argv[])
 		ret = PTR_ERR(ep);
 		if (ret == -ENODEV)
 			trace_probe_log_err(0, BAD_ATTACH_EVENT);
-		/* This must return -ENOMEM or missing event, else there is a bug */
+		 
 		WARN_ON_ONCE(ret != -ENOMEM && ret != -ENODEV);
 		ep = NULL;
 		goto error;
@@ -939,7 +889,7 @@ static int __trace_eprobe_create(int argc, const char *argv[])
 		ep->filter_str = NULL;
 
 	argc -= 2; argv += 2;
-	/* parse arguments */
+	 
 	for (i = 0; i < argc && i < MAX_TRACE_ARGS; i++) {
 		trace_probe_log_set_index(i + 2);
 		ret = trace_eprobe_tp_update_arg(ep, argv, i);
@@ -970,10 +920,7 @@ error:
 	return ret;
 }
 
-/*
- * Register dynevent at core_initcall. This allows kernel to setup eprobe
- * events in postcore_initcall without tracefs.
- */
+ 
 static __init int trace_events_eprobe_init_early(void)
 {
 	int err = 0;

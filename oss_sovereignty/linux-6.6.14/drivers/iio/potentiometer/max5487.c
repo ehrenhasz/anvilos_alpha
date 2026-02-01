@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * max5487.c - Support for MAX5487, MAX5488, MAX5489 digital potentiometers
- *
- * Copyright (C) 2016 Cristina-Gabriela Moraru <cristina.moraru09@gmail.com>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/spi/spi.h>
 #include <linux/acpi.h>
@@ -14,9 +10,9 @@
 #define MAX5487_WRITE_WIPER_A	(0x01 << 8)
 #define MAX5487_WRITE_WIPER_B	(0x02 << 8)
 
-/* copy both wiper regs to NV regs */
+ 
 #define MAX5487_COPY_AB_TO_NV	(0x23 << 8)
-/* copy both NV regs to wiper regs */
+ 
 #define MAX5487_COPY_NV_TO_AB	(0x33 << 8)
 
 #define MAX5487_MAX_POS		255
@@ -104,7 +100,7 @@ static int max5487_spi_probe(struct spi_device *spi)
 	indio_dev->channels = max5487_channels;
 	indio_dev->num_channels = ARRAY_SIZE(max5487_channels);
 
-	/* restore both wiper regs from NV regs */
+	 
 	ret = max5487_write_cmd(data->spi, MAX5487_COPY_NV_TO_AB);
 	if (ret < 0)
 		return ret;
@@ -119,7 +115,7 @@ static void max5487_spi_remove(struct spi_device *spi)
 
 	iio_device_unregister(indio_dev);
 
-	/* save both wiper regs to NV regs */
+	 
 	ret = max5487_write_cmd(spi, MAX5487_COPY_AB_TO_NV);
 	if (ret)
 		dev_warn(&spi->dev, "Failed to save wiper regs to NV regs\n");

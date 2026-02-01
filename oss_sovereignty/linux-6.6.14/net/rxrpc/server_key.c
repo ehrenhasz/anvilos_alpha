@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* RxRPC key management
- *
- * Copyright (C) 2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- *
- * RxRPC keys should have a description of describing their purpose:
- *	"afs@CAMBRIDGE.REDHAT.COM>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -29,10 +22,7 @@ static void rxrpc_free_preparse_s(struct key_preparsed_payload *);
 static void rxrpc_destroy_s(struct key *);
 static void rxrpc_describe_s(const struct key *, struct seq_file *);
 
-/*
- * rxrpc server keys take "<serviceId>:<securityIndex>[:<sec-specific>]" as the
- * description and the key material as the payload.
- */
+ 
 struct key_type key_type_rxrpc_s = {
 	.name		= "rxrpc_s",
 	.flags		= KEY_TYPE_NET_DOMAIN,
@@ -44,9 +34,7 @@ struct key_type key_type_rxrpc_s = {
 	.describe	= rxrpc_describe_s,
 };
 
-/*
- * Vet the description for an RxRPC server key.
- */
+ 
 static int rxrpc_vet_description_s(const char *desc)
 {
 	unsigned long service, sec_class;
@@ -61,9 +49,7 @@ static int rxrpc_vet_description_s(const char *desc)
 	return 0;
 }
 
-/*
- * Preparse a server secret key.
- */
+ 
 static int rxrpc_preparse_s(struct key_preparsed_payload *prep)
 {
 	const struct rxrpc_security *sec;
@@ -115,9 +101,7 @@ static void rxrpc_describe_s(const struct key *key, struct seq_file *m)
 		sec->describe_server_key(key, m);
 }
 
-/*
- * grab the security keyring for a server socket
- */
+ 
 int rxrpc_server_keyring(struct rxrpc_sock *rx, sockptr_t optval, int optlen)
 {
 	struct key *key;
@@ -145,14 +129,7 @@ int rxrpc_server_keyring(struct rxrpc_sock *rx, sockptr_t optval, int optlen)
 	return 0;
 }
 
-/**
- * rxrpc_sock_set_security_keyring - Set the security keyring for a kernel service
- * @sk: The socket to set the keyring on
- * @keyring: The keyring to set
- *
- * Set the server security keyring on an rxrpc socket.  This is used to provide
- * the encryption keys for a kernel service.
- */
+ 
 int rxrpc_sock_set_security_keyring(struct sock *sk, struct key *keyring)
 {
 	struct rxrpc_sock *rx = rxrpc_sk(sk);

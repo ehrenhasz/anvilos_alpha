@@ -1,42 +1,12 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 #include "dcn_calc_auto.h"
 #include "dcn_calc_math.h"
 
-/*
- * NOTE:
- *   This file is gcc-parseable HW gospel, coming straight from HW engineers.
- *
- * It doesn't adhere to Linux kernel style and sometimes will do things in odd
- * ways. Unless there is something clearly wrong with it the code should
- * remain as-is as it provides us with a guarantee from HW that it is correct.
- */
+ 
 
-/*REVISION#250*/
+ 
 void scaler_settings_calculation(struct dcn_bw_internal_vars *v)
 {
 	int k;
@@ -68,7 +38,7 @@ void scaler_settings_calculation(struct dcn_bw_internal_vars *v)
 			v->v_ratio[k] = v->v_ratio[k] * v->under_scan_factor;
 		}
 	}
-	/*scaler taps calculation*/
+	 
 
 	for (k = 0; k <= v->number_of_active_planes - 1; k++) {
 		if (v->h_ratio[k] > 1.0) {
@@ -123,9 +93,9 @@ void mode_support_and_system_configuration(struct dcn_bw_internal_vars *v)
 	int i;
 	int j;
 	int k;
-	/*mode support, voltage state and soc configuration*/
+	 
 
-	/*scale ratio support check*/
+	 
 
 	v->scale_ratio_support = dcn_bw_yes;
 	for (k = 0; k <= v->number_of_active_planes - 1; k++) {
@@ -133,7 +103,7 @@ void mode_support_and_system_configuration(struct dcn_bw_internal_vars *v)
 			v->scale_ratio_support = dcn_bw_no;
 		}
 	}
-	/*source format, pixel format and scan support check*/
+	 
 
 	v->source_format_pixel_and_scan_support = dcn_bw_yes;
 	for (k = 0; k <= v->number_of_active_planes - 1; k++) {
@@ -141,7 +111,7 @@ void mode_support_and_system_configuration(struct dcn_bw_internal_vars *v)
 			v->source_format_pixel_and_scan_support = dcn_bw_no;
 		}
 	}
-	/*bandwidth support check*/
+	 
 
 	for (k = 0; k <= v->number_of_active_planes - 1; k++) {
 		if (v->source_scan[k] == dcn_bw_hor) {
@@ -235,7 +205,7 @@ void mode_support_and_system_configuration(struct dcn_bw_internal_vars *v)
 			v->bandwidth_support[i] = dcn_bw_no;
 		}
 	}
-	/*writeback latency support check*/
+	 
 
 	v->writeback_latency_support = dcn_bw_yes;
 	for (k = 0; k <= v->number_of_active_planes - 1; k++) {
@@ -246,7 +216,7 @@ void mode_support_and_system_configuration(struct dcn_bw_internal_vars *v)
 			v->writeback_latency_support = dcn_bw_no;
 		}
 	}
-	/*re-ordering buffer support check*/
+	 
 
 	for (i = 0; i <= number_of_states_plus_one; i++) {
 		v->urgent_round_trip_and_out_of_order_latency_per_state[i] = (v->round_trip_ping_latency_cycles + 32.0) / v->dcfclk_per_state[i] + v->urgent_out_of_order_return_per_channel * v->number_of_channels / v->return_bw_per_state[i];
@@ -257,7 +227,7 @@ void mode_support_and_system_configuration(struct dcn_bw_internal_vars *v)
 			v->rob_support[i] = dcn_bw_no;
 		}
 	}
-	/*display io support check*/
+	 
 
 	for (k = 0; k <= v->number_of_active_planes - 1; k++) {
 		if (v->output[k] == dcn_bw_dp && v->dsc_capability == dcn_bw_yes) {
@@ -303,7 +273,7 @@ void mode_support_and_system_configuration(struct dcn_bw_internal_vars *v)
 			}
 		}
 	}
-	/*total available writeback support check*/
+	 
 
 	v->total_number_of_active_writeback = 0.0;
 	for (k = 0; k <= v->number_of_active_planes - 1; k++) {
@@ -317,7 +287,7 @@ void mode_support_and_system_configuration(struct dcn_bw_internal_vars *v)
 	else {
 		v->total_available_writeback_support = dcn_bw_no;
 	}
-	/*maximum dispclk/dppclk support check*/
+	 
 
 	for (k = 0; k <= v->number_of_active_planes - 1; k++) {
 		if (v->h_ratio[k] > 1.0) {
@@ -493,7 +463,7 @@ void mode_support_and_system_configuration(struct dcn_bw_internal_vars *v)
 			}
 		}
 	}
-	/*viewport size check*/
+	 
 
 	v->viewport_size_support = dcn_bw_yes;
 	for (k = 0; k <= v->number_of_active_planes - 1; k++) {
@@ -501,7 +471,7 @@ void mode_support_and_system_configuration(struct dcn_bw_internal_vars *v)
 			v->viewport_size_support = dcn_bw_no;
 		}
 	}
-	/*total available pipes support check*/
+	 
 
 	for (i = 0; i <= number_of_states_plus_one; i++) {
 		for (j = 0; j <= 1; j++) {
@@ -513,7 +483,7 @@ void mode_support_and_system_configuration(struct dcn_bw_internal_vars *v)
 			}
 		}
 	}
-	/*urgent latency support check*/
+	 
 
 	for (k = 0; k <= v->number_of_active_planes - 1; k++) {
 		for (i = 0; i <= number_of_states_plus_one; i++) {
@@ -574,7 +544,7 @@ void mode_support_and_system_configuration(struct dcn_bw_internal_vars *v)
 			}
 		}
 	}
-	/*prefetch check*/
+	 
 
 	for (i = 0; i <= number_of_states_plus_one; i++) {
 		for (j = 0; j <= 1; j++) {
@@ -961,7 +931,7 @@ void mode_support_and_system_configuration(struct dcn_bw_internal_vars *v)
 			}
 		}
 	}
-	/*mode support, voltage state and soc configuration*/
+	 
 
 	for (i = number_of_states_plus_one; i >= 0; i--) {
 		for (j = 0; j <= 1; j++) {
@@ -1018,7 +988,7 @@ void display_pipe_configuration(struct dcn_bw_internal_vars *v)
 {
 	int j;
 	int k;
-	/*display pipe configuration*/
+	 
 
 	for (j = 0; j <= 1; j++) {
 		v->total_number_of_active_dpp_per_ratio[j] = 0.0;
@@ -1176,7 +1146,7 @@ void display_pipe_configuration(struct dcn_bw_internal_vars *v)
 void dispclkdppclkdcfclk_deep_sleep_prefetch_parameters_watermarks_and_performance_calculation(struct dcn_bw_internal_vars *v)
 {
 	int k;
-	/*dispclk and dppclk calculation*/
+	 
 
 	v->dispclk_with_ramping = 0.0;
 	v->dispclk_without_ramping = 0.0;
@@ -1221,7 +1191,7 @@ void dispclkdppclkdcfclk_deep_sleep_prefetch_parameters_watermarks_and_performan
 		v->dispclk = v->dispclk_with_ramping;
 	}
 	v->dppclk = v->dispclk / v->dispclk_dppclk_ratio;
-	/*urgent watermark*/
+	 
 
 	v->return_bandwidth_to_dcn =dcn_bw_min2(v->return_bus_width * v->dcfclk, v->fabric_and_dram_bandwidth * 1000.0 * v->percent_of_ideal_drambw_received_after_urg_latency / 100.0);
 	v->dcc_enabled_any_plane = dcn_bw_no;
@@ -1321,7 +1291,7 @@ void dispclkdppclkdcfclk_deep_sleep_prefetch_parameters_watermarks_and_performan
 	}
 	v->urgent_watermark = v->urgent_latency + v->last_pixel_of_line_extra_watermark + v->urgent_extra_latency;
 	v->ptemeta_urgent_watermark = v->urgent_watermark + 2.0 * v->urgent_latency;
-	/*nb p-state/dram clock change watermark*/
+	 
 
 	v->dram_clock_change_watermark = v->dram_clock_change_latency + v->urgent_watermark;
 	v->total_active_writeback = 0.0;
@@ -1336,7 +1306,7 @@ void dispclkdppclkdcfclk_deep_sleep_prefetch_parameters_watermarks_and_performan
 	else {
 		v->writeback_dram_clock_change_watermark = v->dram_clock_change_latency + v->write_back_latency + v->writeback_chunk_size * 1024.0 / 32.0 / v->socclk;
 	}
-	/*stutter efficiency*/
+	 
 
 	for (k = 0; k <= v->number_of_active_planes - 1; k++) {
 		v->lines_in_dety[k] = v->det_buffer_size_y[k] / v->byte_per_pixel_dety[k] / v->swath_width_y[k];
@@ -1398,7 +1368,7 @@ void dispclkdppclkdcfclk_deep_sleep_prefetch_parameters_watermarks_and_performan
 		v->smallest_vblank =dcn_bw_min2(v->smallest_vblank, v->v_blank_time);
 	}
 	v->stutter_efficiency = (v->stutter_efficiency_not_including_vblank / 100.0 * (v->frame_time_for_min_full_det_buffering_time - v->smallest_vblank) + v->smallest_vblank) / v->frame_time_for_min_full_det_buffering_time * 100.0;
-	/*dcfclk deep sleep*/
+	 
 
 	for (k = 0; k <= v->number_of_active_planes - 1; k++) {
 		if (v->byte_per_pixel_detc[k] > 0.0) {
@@ -1413,11 +1383,11 @@ void dispclkdppclkdcfclk_deep_sleep_prefetch_parameters_watermarks_and_performan
 	for (k = 0; k <= v->number_of_active_planes - 1; k++) {
 		v->dcf_clk_deep_sleep =dcn_bw_max2(v->dcf_clk_deep_sleep, v->dcfclk_deep_sleep_per_plane[k]);
 	}
-	/*stutter watermark*/
+	 
 
 	v->stutter_exit_watermark = v->sr_exit_time + v->last_pixel_of_line_extra_watermark + v->urgent_extra_latency + 10.0 / v->dcf_clk_deep_sleep;
 	v->stutter_enter_plus_exit_watermark = v->sr_enter_plus_exit_time + v->last_pixel_of_line_extra_watermark + v->urgent_extra_latency;
-	/*urgent latency supported*/
+	 
 
 	for (k = 0; k <= v->number_of_active_planes - 1; k++) {
 		v->effective_det_plus_lb_lines_luma =dcn_bw_floor2(v->lines_in_dety[k] +dcn_bw_min2(v->lines_in_dety[k] * v->dppclk * v->byte_per_pixel_dety[k] * v->pscl_throughput[k] / (v->return_bw / v->dpp_per_plane[k]), v->effective_lb_latency_hiding_source_lines_luma), v->swath_height_y[k]);
@@ -1435,10 +1405,10 @@ void dispclkdppclkdcfclk_deep_sleep_prefetch_parameters_watermarks_and_performan
 	for (k = 0; k <= v->number_of_active_planes - 1; k++) {
 		v->min_urgent_latency_support_us =dcn_bw_min2(v->min_urgent_latency_support_us, v->urgent_latency_support_us[k]);
 	}
-	/*non-urgent latency tolerance*/
+	 
 
 	v->non_urgent_latency_tolerance = v->min_urgent_latency_support_us - v->urgent_watermark;
-	/*prefetch*/
+	 
 
 	for (k = 0; k <= v->number_of_active_planes - 1; k++) {
 		if ((v->source_pixel_format[k] == dcn_bw_rgb_sub_64 || v->source_pixel_format[k] == dcn_bw_rgb_sub_32 || v->source_pixel_format[k] == dcn_bw_rgb_sub_16)) {
@@ -1797,7 +1767,7 @@ void dispclkdppclkdcfclk_deep_sleep_prefetch_parameters_watermarks_and_performan
 			}
 		}
 	}
-	/*min ttuv_blank*/
+	 
 
 	for (k = 0; k <= v->number_of_active_planes - 1; k++) {
 		if (v->prefetch_mode == 0.0) {
@@ -1816,7 +1786,7 @@ void dispclkdppclkdcfclk_deep_sleep_prefetch_parameters_watermarks_and_performan
 			v->min_ttuv_blank[k] = v->t_calc + v->urgent_watermark;
 		}
 	}
-	/*nb p-state/dram clock change support*/
+	 
 
 	v->active_dp_ps = 0.0;
 	for (k = 0; k <= v->number_of_active_planes - 1; k++) {
@@ -1918,7 +1888,7 @@ void dispclkdppclkdcfclk_deep_sleep_prefetch_parameters_watermarks_and_performan
 	else {
 		v->dram_clock_change_support = dcn_bw_not_supported;
 	}
-	/*maximum bandwidth used*/
+	 
 
 	v->wr_bandwidth = 0.0;
 	for (k = 0; k <= v->number_of_active_planes - 1; k++) {

@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Socionext UniPhier AIO DMA driver.
-//
-// Copyright (c) 2016-2018 Socionext Inc.
+
+
+
+
+
 
 #include <linux/dma-mapping.h>
 #include <linux/errno.h>
@@ -77,7 +77,7 @@ static irqreturn_t aiodma_irq(int irq, void *p)
 		for (j = 0; j < ARRAY_SIZE(aio->sub); j++) {
 			struct uniphier_aio_sub *sub = &aio->sub[j];
 
-			/* Skip channel that does not trigger */
+			 
 			if (!sub->running || !aiodma_rb_is_irq(sub))
 				continue;
 
@@ -238,16 +238,7 @@ static const struct regmap_config aiodma_regmap_config = {
 	.cache_type    = REGCACHE_NONE,
 };
 
-/**
- * uniphier_aiodma_soc_register_platform - register the AIO DMA
- * @pdev: the platform device
- *
- * Register and setup the DMA of AIO to transfer the sound data to device.
- * This function need to call once at driver startup and need NOT to call
- * unregister function.
- *
- * Return: Zero if successful, otherwise a negative value on error.
- */
+ 
 int uniphier_aiodma_soc_register_platform(struct platform_device *pdev)
 {
 	struct uniphier_aio_chip *chip = platform_get_drvdata(pdev);

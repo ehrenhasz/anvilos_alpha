@@ -1,20 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * NCI based driver for Samsung S3FWRN5 NFC chip
- *
- * Copyright (C) 2015 Samsung Electrnoics
- * Robert Baldyga <r.baldyga@samsung.com>
- */
+ 
+ 
 
 #ifndef __LOCAL_S3FWRN5_FIRMWARE_H_
 #define __LOCAL_S3FWRN5_FIRMWARE_H_
 
-/* FW Message Types */
+ 
 #define S3FWRN5_FW_MSG_CMD			0x00
 #define S3FWRN5_FW_MSG_RSP			0x01
 #define S3FWRN5_FW_MSG_DATA			0x02
 
-/* FW Return Codes */
+ 
 #define S3FWRN5_FW_RET_SUCCESS			0x00
 #define S3FWRN5_FW_RET_MESSAGE_TYPE_INVALID	0x01
 #define S3FWRN5_FW_RET_COMMAND_INVALID		0x02
@@ -25,7 +20,7 @@
 #define S3FWRN5_FW_RET_ADDRESS_OUT_OF_RANGE	0x07
 #define S3FWRN5_FW_RET_PARAMETER_INVALID	0x08
 
-/* ---- FW Packet structures ---- */
+ 
 #define S3FWRN5_FW_HDR_SIZE 4
 
 struct s3fwrn5_fw_header {
@@ -98,4 +93,4 @@ void s3fwrn5_fw_cleanup(struct s3fwrn5_fw_info *fw_info);
 
 int s3fwrn5_fw_recv_frame(struct nci_dev *ndev, struct sk_buff *skb);
 
-#endif /* __LOCAL_S3FWRN5_FIRMWARE_H_ */
+#endif  

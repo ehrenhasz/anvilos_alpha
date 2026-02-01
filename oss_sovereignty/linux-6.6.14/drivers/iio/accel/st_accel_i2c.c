@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * STMicroelectronics accelerometers driver
- *
- * Copyright 2012-2013 STMicroelectronics Inc.
- *
- * Denis Ciocca <denis.ciocca@st.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -19,7 +13,7 @@
 
 static const struct of_device_id st_accel_of_match[] = {
 	{
-		/* An older compatible */
+		 
 		.compatible = "st,lis3lv02d",
 		.data = LIS3LV02DL_ACCEL_DEV_NAME,
 	},

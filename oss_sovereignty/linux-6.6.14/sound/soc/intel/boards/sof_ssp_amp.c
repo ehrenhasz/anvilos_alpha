@@ -1,11 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2022 Intel Corporation. All rights reserved.
 
-/*
- * sof_ssp_amp.c - ASoc Machine driver for Intel platforms
- * with RT1308/CS35L41 codec.
- */
+
+
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -24,11 +21,11 @@
 
 #define NAME_SIZE 32
 
-/* SSP port ID for speaker amplifier */
+ 
 #define SOF_AMPLIFIER_SSP(quirk)		((quirk) & GENMASK(3, 0))
 #define SOF_AMPLIFIER_SSP_MASK			(GENMASK(3, 0))
 
-/* HDMI capture*/
+ 
 #define SOF_SSP_HDMI_CAPTURE_PRESENT		BIT(4)
 #define SOF_NO_OF_HDMI_CAPTURE_SSP_SHIFT		5
 #define SOF_NO_OF_HDMI_CAPTURE_SSP_MASK		(GENMASK(6, 5))
@@ -45,25 +42,25 @@
 #define SOF_HDMI_CAPTURE_2_SSP(quirk)	\
 	(((quirk) << SOF_HDMI_CAPTURE_2_SSP_SHIFT) & SOF_HDMI_CAPTURE_2_SSP_MASK)
 
-/* HDMI playback */
+ 
 #define SOF_HDMI_PLAYBACK_PRESENT		BIT(13)
 #define SOF_NO_OF_HDMI_PLAYBACK_SHIFT		14
 #define SOF_NO_OF_HDMI_PLAYBACK_MASK		(GENMASK(16, 14))
 #define SOF_NO_OF_HDMI_PLAYBACK(quirk)	\
 	(((quirk) << SOF_NO_OF_HDMI_PLAYBACK_SHIFT) & SOF_NO_OF_HDMI_PLAYBACK_MASK)
 
-/* BT audio offload */
+ 
 #define SOF_SSP_BT_OFFLOAD_PRESENT		BIT(17)
 #define SOF_BT_OFFLOAD_SSP_SHIFT		18
 #define SOF_BT_OFFLOAD_SSP_MASK			(GENMASK(20, 18))
 #define SOF_BT_OFFLOAD_SSP(quirk)	\
 	(((quirk) << SOF_BT_OFFLOAD_SSP_SHIFT) & SOF_BT_OFFLOAD_SSP_MASK)
 
-/* Speaker amplifiers */
+ 
 #define SOF_RT1308_SPEAKER_AMP_PRESENT		BIT(21)
 #define SOF_CS35L41_SPEAKER_AMP_PRESENT		BIT(22)
 
-/* Default: SSP2  */
+ 
 static unsigned long sof_ssp_amp_quirk = SOF_AMPLIFIER_SSP(2);
 
 struct sof_hdmi_pcm {
@@ -94,7 +91,7 @@ static const struct snd_soc_dapm_widget sof_ssp_amp_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route sof_ssp_amp_dapm_routes[] = {
-	/* digital mics */
+	 
 	{"DMic", NULL, "SoC DMIC"},
 };
 
@@ -109,7 +106,7 @@ static int sof_card_late_probe(struct snd_soc_card *card)
 	if (!(sof_ssp_amp_quirk & SOF_HDMI_PLAYBACK_PRESENT))
 		return 0;
 
-	/* HDMI is not supported by SOF on Baytrail/CherryTrail */
+	 
 	if (!ctx->idisp_codec)
 		return 0;
 
@@ -155,7 +152,7 @@ static struct snd_soc_card sof_ssp_amp_card = {
 
 static struct snd_soc_dai_link_component platform_component[] = {
 	{
-		/* name might be overridden during probe */
+		 
 		.name = "0000:00:1f.3"
 	}
 };
@@ -177,7 +174,7 @@ static int sof_hdmi_init(struct snd_soc_pcm_runtime *rtd)
 	if (!pcm)
 		return -ENOMEM;
 
-	/* dai_link id is 1:1 mapped to the PCM device */
+	 
 	pcm->device = rtd->dai_link->id;
 	pcm->codec_dai = dai;
 
@@ -206,7 +203,7 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
 	if (!links || !cpus)
 		return NULL;
 
-	/* HDMI-In SSP */
+	 
 	if (sof_ssp_amp_quirk & SOF_SSP_HDMI_CAPTURE_PRESENT) {
 		int num_of_hdmi_ssp = (sof_ssp_amp_quirk & SOF_NO_OF_HDMI_CAPTURE_SSP_MASK) >>
 				SOF_NO_OF_HDMI_CAPTURE_SSP_SHIFT;
@@ -237,7 +234,7 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
 		}
 	}
 
-	/* codec SSP */
+	 
 	links[id].name = devm_kasprintf(dev, GFP_KERNEL, "SSP%d-Codec", ssp_codec);
 	if (!links[id].name)
 		return NULL;
@@ -251,7 +248,7 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
 	links[id].platforms = platform_component;
 	links[id].num_platforms = ARRAY_SIZE(platform_component);
 	links[id].dpcm_playback = 1;
-	/* feedback from amplifier or firmware-generated echo reference */
+	 
 	links[id].dpcm_capture = 1;
 	links[id].no_pcm = 1;
 	links[id].cpus = &cpus[id];
@@ -262,14 +259,14 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
 
 	id++;
 
-	/* dmic */
+	 
 	if (dmic_be_num > 0) {
-		/* at least we have dmic01 */
+		 
 		links[id].name = "dmic01";
 		links[id].cpus = &cpus[id];
 		links[id].cpus->dai_name = "DMIC01 Pin";
 		if (dmic_be_num > 1) {
-			/* set up 2 BE links at most */
+			 
 			links[id + 1].name = "dmic16k";
 			links[id + 1].cpus = &cpus[id + 1];
 			links[id + 1].cpus->dai_name = "DMIC16k Pin";
@@ -290,9 +287,9 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
 		id++;
 	}
 
-	/* HDMI playback */
+	 
 	if (sof_ssp_amp_quirk & SOF_HDMI_PLAYBACK_PRESENT) {
-		/* HDMI */
+		 
 		if (hdmi_num > 0) {
 			idisp_components = devm_kcalloc(dev,
 					   hdmi_num,
@@ -338,7 +335,7 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
 		}
 	}
 
-	/* BT audio offload */
+	 
 	if (sof_ssp_amp_quirk & SOF_SSP_BT_OFFLOAD_PRESENT) {
 		int port = (sof_ssp_amp_quirk & SOF_BT_OFFLOAD_SSP_MASK) >>
 				SOF_BT_OFFLOAD_SSP_SHIFT;
@@ -390,7 +387,7 @@ static int sof_ssp_amp_probe(struct platform_device *pdev)
 
 	ssp_codec = sof_ssp_amp_quirk & SOF_AMPLIFIER_SSP_MASK;
 
-	/* set number of dai links */
+	 
 	sof_ssp_amp_card.num_links = 1 + dmic_be_num;
 
 	if (sof_ssp_amp_quirk & SOF_SSP_HDMI_CAPTURE_PRESENT)
@@ -400,7 +397,7 @@ static int sof_ssp_amp_probe(struct platform_device *pdev)
 	if (sof_ssp_amp_quirk & SOF_HDMI_PLAYBACK_PRESENT) {
 		hdmi_num = (sof_ssp_amp_quirk & SOF_NO_OF_HDMI_PLAYBACK_MASK) >>
 				SOF_NO_OF_HDMI_PLAYBACK_SHIFT;
-		/* default number of HDMI DAI's */
+		 
 		if (!hdmi_num)
 			hdmi_num = 3;
 
@@ -419,7 +416,7 @@ static int sof_ssp_amp_probe(struct platform_device *pdev)
 
 	sof_ssp_amp_card.dai_link = dai_links;
 
-	/* update codec_conf */
+	 
 	if (sof_ssp_amp_quirk & SOF_CS35L41_SPEAKER_AMP_PRESENT) {
 		cs35l41_set_codec_conf(&sof_ssp_amp_card);
 	}
@@ -428,7 +425,7 @@ static int sof_ssp_amp_probe(struct platform_device *pdev)
 
 	sof_ssp_amp_card.dev = &pdev->dev;
 
-	/* set platform name for each dailink */
+	 
 	ret = snd_soc_fixup_dai_links_platform_name(&sof_ssp_amp_card,
 						    mach->mach_params.platform);
 	if (ret)

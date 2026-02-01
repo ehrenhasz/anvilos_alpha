@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/******************************************************************************
- *
- * Copyright FUJITSU LIMITED 2010
- * Copyright KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
- *
- * DESCRIPTION
- *      Internally, Futex has two handling mode, anon and file. The private file
- *      mapping is special. At first it behave as file, but after write anything
- *      it behave as anon. This test is intent to test such case.
- *
- * AUTHOR
- *      KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
- *
- * HISTORY
- *      2010-Jan-6: Initial version by KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
- *
- *****************************************************************************/
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>

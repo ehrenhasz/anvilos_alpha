@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ntc_thermistor.c - NTC Thermistors
- *
- *  Copyright (C) 2010 Samsung Electronics
- *  MyungJoo Ham <myungjoo.ham@samsung.com>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -31,10 +26,7 @@ struct ntc_compensation {
 	unsigned int	ohm;
 };
 
-/*
- * Used as index in a zero-terminated array, holes not allowed so
- * that NTC_LAST is the first empty array entry.
- */
+ 
 enum {
 	NTC_B57330V2103,
 	NTC_B57891S0103,
@@ -63,12 +55,7 @@ static const struct platform_device_id ntc_thermistor_id[] = {
 	[NTC_LAST]            = { },
 };
 
-/*
- * A compensation table should be sorted by the values of .ohm
- * in descending order.
- * The following compensation tables are from the specification of Murata NTC
- * Thermistors Datasheet
- */
+ 
 static const struct ntc_compensation ncpXXwb473[] = {
 	{ .temp_c	= -40, .ohm	= 1747920 },
 	{ .temp_c	= -35, .ohm	= 1245428 },
@@ -216,10 +203,7 @@ static const struct ntc_compensation ncpXXxh103[] = {
 	{ .temp_c	= 125, .ohm	= 556 },
 };
 
-/*
- * The following compensation tables are from the specifications in EPCOS NTC
- * Thermistors Datasheets
- */
+ 
 static const struct ntc_compensation b57330v2103[] = {
 	{ .temp_c	= -40, .ohm	= 190030 },
 	{ .temp_c	= -35, .ohm	= 145360 },
@@ -320,17 +304,7 @@ static const struct ntc_type ntc_type[] = {
 	NTC_TYPE(TYPE_NCPXXXH103,  ncpXXxh103),
 };
 
-/*
- * pullup_uV, pullup_ohm, pulldown_ohm, and connect are required.
- *
- * How to setup pullup_ohm, pulldown_ohm, and connect is
- * described at Documentation/hwmon/ntc_thermistor.rst
- *
- * pullup/down_ohm: 0 for infinite / not-connected
- *
- * chan: iio_channel pointer to communicate with the ADC which the
- * thermistor is using for conversion of the analog values.
- */
+ 
 struct ntc_data {
 	const struct ntc_compensation *comp;
 	int n_comp;
@@ -350,11 +324,7 @@ static int ntc_adc_iio_read(struct ntc_data *data)
 	if (ret < 0) {
 		int raw;
 
-		/*
-		 * This fallback uses a raw read and then
-		 * assumes the ADC is 12 bits, scaling with
-		 * a factor 1000 to get to microvolts.
-		 */
+		 
 		ret = iio_read_channel_raw(channel, &raw);
 		if (ret < 0) {
 			pr_err("read channel() error: %d\n", ret);
@@ -362,7 +332,7 @@ static int ntc_adc_iio_read(struct ntc_data *data)
 		}
 		ret = iio_convert_raw_to_processed(channel, raw, &uv, 1000);
 		if (ret < 0) {
-			/* Assume 12 bit ADC with vref at pullup_uv */
+			 
 			uv = (data->pullup_uv * (s64)raw) >> 12;
 		}
 	}
@@ -413,13 +383,7 @@ static void lookup_comp(struct ntc_data *data, unsigned int ohm,
 {
 	int start, end, mid;
 
-	/*
-	 * Handle special cases: Resistance is higher than or equal to
-	 * resistance in first table entry, or resistance is lower or equal
-	 * to resistance in last table entry.
-	 * In these cases, return i_low == i_high, either pointing to the
-	 * beginning or to the end of the table depending on the condition.
-	 */
+	 
 	if (ohm >= data->comp[0].ohm) {
 		*i_low = 0;
 		*i_high = 0;
@@ -431,42 +395,23 @@ static void lookup_comp(struct ntc_data *data, unsigned int ohm,
 		return;
 	}
 
-	/* Do a binary search on compensation table */
+	 
 	start = 0;
 	end = data->n_comp;
 	while (start < end) {
 		mid = start + (end - start) / 2;
-		/*
-		 * start <= mid < end
-		 * data->comp[start].ohm > ohm >= data->comp[end].ohm
-		 *
-		 * We could check for "ohm == data->comp[mid].ohm" here, but
-		 * that is a quite unlikely condition, and we would have to
-		 * check again after updating start. Check it at the end instead
-		 * for simplicity.
-		 */
+		 
 		if (ohm >= data->comp[mid].ohm) {
 			end = mid;
 		} else {
 			start = mid + 1;
-			/*
-			 * ohm >= data->comp[start].ohm might be true here,
-			 * since we set start to mid + 1. In that case, we are
-			 * done. We could keep going, but the condition is quite
-			 * likely to occur, so it is worth checking for it.
-			 */
+			 
 			if (ohm >= data->comp[start].ohm)
 				end = start;
 		}
-		/*
-		 * start <= end
-		 * data->comp[start].ohm >= ohm >= data->comp[end].ohm
-		 */
+		 
 	}
-	/*
-	 * start == end
-	 * ohm >= data->comp[end].ohm
-	 */
+	 
 	*i_low = end;
 	if (ohm == data->comp[end].ohm)
 		*i_high = end;
@@ -480,11 +425,7 @@ static int get_temp_mc(struct ntc_data *data, unsigned int ohm)
 	int temp;
 
 	lookup_comp(data, ohm, &low, &high);
-	/*
-	 * First multiplying the table temperatures with 1000 to get to
-	 * millicentigrades (which is what we want) and then interpolating
-	 * will give the best precision.
-	 */
+	 
 	temp = fixp_linear_interpolate(data->comp[low].ohm,
 				       data->comp[low].temp_c * 1000,
 				       data->comp[high].ohm,
@@ -594,7 +535,7 @@ static int ntc_thermistor_parse_props(struct device *dev,
 
 	if (device_property_read_bool(dev, "connected-positive"))
 		data->connect = NTC_CONNECTED_POSITIVE;
-	else /* status change should be possible if not always on. */
+	else  
 		data->connect = NTC_CONNECTED_GROUND;
 
 	data->chan = chan;
@@ -676,7 +617,7 @@ static const struct of_device_id ntc_match[] = {
 	{ .compatible = "samsung,1404-001221",
 		.data = &ntc_thermistor_id[NTC_SSG1404001221] },
 
-	/* Usage of vendor name "ntc" is deprecated */
+	 
 	{ .compatible = "ntc,ncp03wb473",
 		.data = &ntc_thermistor_id[NTC_NCP03WB473] },
 	{ .compatible = "ntc,ncp15wb473",

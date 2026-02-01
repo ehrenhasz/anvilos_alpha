@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2022 Intel Corporation */
+
+ 
 #include "adf_accel_devices.h"
 #include "adf_cfg.h"
 #include "adf_cfg_strings.h"
@@ -167,15 +167,7 @@ err:
 	return ret;
 }
 
-/**
- * adf_gen2_dev_config() - create dev config required to create instances
- *
- * @accel_dev: Pointer to acceleration device.
- *
- * Function creates device configuration required to create instances
- *
- * Return: 0 on success, error code otherwise.
- */
+ 
 int adf_gen2_dev_config(struct adf_accel_dev *accel_dev)
 {
 	int ret;

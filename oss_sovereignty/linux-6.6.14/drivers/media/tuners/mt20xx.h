@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-*/
+ 
+ 
 
 #ifndef __MT20XX_H__
 #define __MT20XX_H__
@@ -22,4 +21,4 @@ static inline struct dvb_frontend *microtune_attach(struct dvb_frontend *fe,
 }
 #endif
 
-#endif /* __MT20XX_H__ */
+#endif  

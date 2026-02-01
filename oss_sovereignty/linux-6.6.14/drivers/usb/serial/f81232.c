@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Fintek F81232 USB to serial adaptor driver
- * Fintek F81532A/534A/535/536 USB to 2/4/8/12 serial adaptor driver
- *
- * Copyright (C) 2012 Greg Kroah-Hartman (gregkh@linuxfoundation.org)
- * Copyright (C) 2012 Linux Foundation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -23,50 +17,50 @@
 #include <linux/serial_reg.h>
 
 #define F81232_ID		\
-	{ USB_DEVICE(0x1934, 0x0706) }	/* 1 port UART device */
+	{ USB_DEVICE(0x1934, 0x0706) }	 
 
 #define F81534A_SERIES_ID	\
-	{ USB_DEVICE(0x2c42, 0x1602) },	/* In-Box 2 port UART device */	\
-	{ USB_DEVICE(0x2c42, 0x1604) },	/* In-Box 4 port UART device */	\
-	{ USB_DEVICE(0x2c42, 0x1605) },	/* In-Box 8 port UART device */	\
-	{ USB_DEVICE(0x2c42, 0x1606) },	/* In-Box 12 port UART device */ \
-	{ USB_DEVICE(0x2c42, 0x1608) },	/* Non-Flash type */ \
-	{ USB_DEVICE(0x2c42, 0x1632) },	/* 2 port UART device */ \
-	{ USB_DEVICE(0x2c42, 0x1634) },	/* 4 port UART device */ \
-	{ USB_DEVICE(0x2c42, 0x1635) },	/* 8 port UART device */ \
-	{ USB_DEVICE(0x2c42, 0x1636) }	/* 12 port UART device */
+	{ USB_DEVICE(0x2c42, 0x1602) },	 	\
+	{ USB_DEVICE(0x2c42, 0x1604) },	 	\
+	{ USB_DEVICE(0x2c42, 0x1605) },	 	\
+	{ USB_DEVICE(0x2c42, 0x1606) },	  \
+	{ USB_DEVICE(0x2c42, 0x1608) },	  \
+	{ USB_DEVICE(0x2c42, 0x1632) },	  \
+	{ USB_DEVICE(0x2c42, 0x1634) },	  \
+	{ USB_DEVICE(0x2c42, 0x1635) },	  \
+	{ USB_DEVICE(0x2c42, 0x1636) }	 
 
 #define F81534A_CTRL_ID		\
-	{ USB_DEVICE(0x2c42, 0x16f8) }	/* Global control device */
+	{ USB_DEVICE(0x2c42, 0x16f8) }	 
 
 static const struct usb_device_id f81232_id_table[] = {
 	F81232_ID,
-	{ }					/* Terminating entry */
+	{ }					 
 };
 
 static const struct usb_device_id f81534a_id_table[] = {
 	F81534A_SERIES_ID,
-	{ }					/* Terminating entry */
+	{ }					 
 };
 
 static const struct usb_device_id f81534a_ctrl_id_table[] = {
 	F81534A_CTRL_ID,
-	{ }					/* Terminating entry */
+	{ }					 
 };
 
 static const struct usb_device_id combined_id_table[] = {
 	F81232_ID,
 	F81534A_SERIES_ID,
 	F81534A_CTRL_ID,
-	{ }					/* Terminating entry */
+	{ }					 
 };
 MODULE_DEVICE_TABLE(usb, combined_id_table);
 
-/* Maximum baudrate for F81232 */
+ 
 #define F81232_MAX_BAUDRATE		1500000
 #define F81232_DEF_BAUDRATE		9600
 
-/* USB Control EP parameter */
+ 
 #define F81232_REGISTER_REQUEST		0xa0
 #define F81232_GET_REGISTER		0xc0
 #define F81232_SET_REGISTER		0x40
@@ -81,15 +75,7 @@ MODULE_DEVICE_TABLE(usb, combined_id_table);
 #define LINE_STATUS_REGISTER		(0x05 + SERIAL_BASE_ADDRESS)
 #define MODEM_STATUS_REGISTER		(0x06 + SERIAL_BASE_ADDRESS)
 
-/*
- * F81232 Clock registers (106h)
- *
- * Bit1-0:	Clock source selector
- *			00: 1.846MHz.
- *			01: 18.46MHz.
- *			10: 24MHz.
- *			11: 14.77MHz.
- */
+ 
 #define F81232_CLK_REGISTER		0x106
 #define F81232_CLK_1_846_MHZ		0
 #define F81232_CLK_18_46_MHZ		BIT(0)
@@ -102,9 +88,9 @@ MODULE_DEVICE_TABLE(usb, combined_id_table);
 #define F81534A_TRIGGER_MULTIPLE_4X	BIT(3)
 #define F81534A_FIFO_128BYTE		(BIT(1) | BIT(0))
 
-/* Serial port self GPIO control, 2bytes [control&output data][input data] */
+ 
 #define F81534A_GPIO_REG		0x10e
-#define F81534A_GPIO_MODE2_DIR		BIT(6) /* 1: input, 0: output */
+#define F81534A_GPIO_MODE2_DIR		BIT(6)  
 #define F81534A_GPIO_MODE1_DIR		BIT(5)
 #define F81534A_GPIO_MODE0_DIR		BIT(4)
 #define F81534A_GPIO_MODE2_OUTPUT	BIT(2)
@@ -246,12 +232,12 @@ static int f81232_set_mctrl(struct usb_serial_port *port,
 	struct f81232_private *priv = usb_get_serial_port_data(port);
 
 	if (((set | clear) & (TIOCM_DTR | TIOCM_RTS)) == 0)
-		return 0;	/* no change */
+		return 0;	 
 
-	/* 'set' takes precedence over 'clear' */
+	 
 	clear &= ~set;
 
-	/* force enable interrupt with OUT2 */
+	 
 	mutex_lock(&priv->lock);
 	val = UART_MCR_OUT2 | priv->modem_control;
 
@@ -293,16 +279,16 @@ static void f81232_update_line_status(struct usb_serial_port *port,
 		return;
 
 	switch (data[0] & 0x07) {
-	case 0x00: /* msr change */
+	case 0x00:  
 		dev_dbg(&port->dev, "IIR: MSR Change: %02x\n", data[0]);
 		schedule_work(&priv->interrupt_work);
 		break;
-	case 0x02: /* tx-empty */
+	case 0x02:  
 		break;
-	case 0x04: /* rx data available */
+	case 0x04:  
 		break;
-	case 0x06: /* lsr change */
-		/* we can forget it. the LSR will read from bulk-in */
+	case 0x06:  
+		 
 		dev_dbg(&port->dev, "IIR: LSR Change: %02x\n", data[0]);
 		break;
 	}
@@ -318,12 +304,12 @@ static void f81232_read_int_callback(struct urb *urb)
 
 	switch (status) {
 	case 0:
-		/* success */
+		 
 		break;
 	case -ECONNRESET:
 	case -ENOENT:
 	case -ESHUTDOWN:
-		/* this urb is terminated, clean up */
+		 
 		dev_dbg(&port->dev, "%s - urb shutting down with status: %d\n",
 			__func__, status);
 		return;
@@ -383,14 +369,11 @@ static void f81232_process_read_urb(struct urb *urb)
 	unsigned int i;
 	u8 lsr;
 
-	/*
-	 * When opening the port we get a 1-byte packet with the current LSR,
-	 * which we discard.
-	 */
+	 
 	if ((urb->actual_length < 2) || (urb->actual_length % 2))
 		return;
 
-	/* bulk-in data: [LSR(1Byte)+DATA(1Byte)][LSR(1Byte)+DATA(1Byte)]... */
+	 
 
 	for (i = 0; i < urb->actual_length; i += 2) {
 		lsr = data[i];
@@ -429,7 +412,7 @@ static void f81534a_process_read_urb(struct urb *urb)
 		return;
 	}
 
-	/* bulk-in data: [LEN][Data.....][LSR] */
+	 
 	lsr = data[len - 1];
 	tty_flag = f81232_handle_lsr(port, lsr);
 
@@ -525,7 +508,7 @@ static void f81232_set_baudrate(struct tty_struct *tty,
 	}
 
 	status = f81232_get_register(port, LINE_CONTROL_REGISTER,
-			 &lcr); /* get LCR */
+			 &lcr);  
 	if (status) {
 		dev_err(&port->dev, "%s failed to get LCR: %d\n",
 			__func__, status);
@@ -533,7 +516,7 @@ static void f81232_set_baudrate(struct tty_struct *tty,
 	}
 
 	status = f81232_set_register(port, LINE_CONTROL_REGISTER,
-			 lcr | UART_LCR_DLAB); /* Enable DLAB */
+			 lcr | UART_LCR_DLAB);  
 	if (status) {
 		dev_err(&port->dev, "%s failed to set DLAB: %d\n",
 			__func__, status);
@@ -541,7 +524,7 @@ static void f81232_set_baudrate(struct tty_struct *tty,
 	}
 
 	status = f81232_set_register(port, RECEIVE_BUFFER_REGISTER,
-			 divisor & 0x00ff); /* low */
+			 divisor & 0x00ff);  
 	if (status) {
 		dev_err(&port->dev, "%s failed to set baudrate MSB: %d\n",
 			__func__, status);
@@ -549,7 +532,7 @@ static void f81232_set_baudrate(struct tty_struct *tty,
 	}
 
 	status = f81232_set_register(port, INTERRUPT_ENABLE_REGISTER,
-			 (divisor & 0xff00) >> 8); /* high */
+			 (divisor & 0xff00) >> 8);  
 	if (status) {
 		dev_err(&port->dev, "%s failed to set baudrate LSB: %d\n",
 			__func__, status);
@@ -569,7 +552,7 @@ static int f81232_port_enable(struct usb_serial_port *port)
 	u8 val;
 	int status;
 
-	/* fifo on, trigger8, clear TX/RX*/
+	 
 	val = UART_FCR_TRIGGER_8 | UART_FCR_ENABLE_FIFO | UART_FCR_CLEAR_RCVR |
 			UART_FCR_CLEAR_XMIT;
 
@@ -580,7 +563,7 @@ static int f81232_port_enable(struct usb_serial_port *port)
 		return status;
 	}
 
-	/* MSR Interrupt only, LSR will read from Bulk-in odd byte */
+	 
 	status = f81232_set_register(port, INTERRUPT_ENABLE_REGISTER,
 			UART_IER_MSI);
 	if (status) {
@@ -616,7 +599,7 @@ static void f81232_set_termios(struct tty_struct *tty,
 	speed_t baudrate;
 	speed_t old_baud;
 
-	/* Don't change anything if nothing has changed */
+	 
 	if (old_termios && !tty_termios_hw_change(&tty->termios, old_termios))
 		return;
 
@@ -671,7 +654,7 @@ static int f81232_tiocmget(struct tty_struct *tty)
 	struct f81232_private *port_priv = usb_get_serial_port_data(port);
 	u8 mcr, msr;
 
-	/* force get current MSR changed state */
+	 
 	f81232_read_msr(port);
 
 	mutex_lock(&port_priv->lock);
@@ -705,7 +688,7 @@ static int f81232_open(struct tty_struct *tty, struct usb_serial_port *port)
 	if (result)
 		return result;
 
-	/* Setup termios */
+	 
 	if (tty)
 		f81232_set_termios(tty, port, NULL);
 
@@ -861,13 +844,7 @@ static int f81534a_ctrl_enable_all_ports(struct usb_interface *intf, bool en)
 	unsigned char enable[2] = {0};
 	int status;
 
-	/*
-	 * Enable all available serial ports, define as following:
-	 * bit 15	: Reset behavior (when HUB got soft reset)
-	 *			0: maintain all serial port enabled state.
-	 *			1: disable all serial port.
-	 * bit 0~11	: Serial port enable bit.
-	 */
+	 
 	if (en) {
 		enable[0] = 0xff;
 		enable[1] = 0x8f;
@@ -920,7 +897,7 @@ static int f81534a_port_probe(struct usb_serial_port *port)
 {
 	int status;
 
-	/* tri-state with pull-high, default RS232 Mode */
+	 
 	status = f81232_set_register(port, F81534A_GPIO_REG,
 					F81534A_GPIO_MODE2_DIR);
 	if (status)

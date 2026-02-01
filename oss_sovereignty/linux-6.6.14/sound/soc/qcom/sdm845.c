@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -80,7 +78,7 @@ static int sdm845_slim_snd_hw_params(struct snd_pcm_substream *substream,
 			pr_err("failed to get codec chan map, err:%d\n", ret);
 			return ret;
 		} else if (ret == -ENOTSUPP) {
-			/* Ignore unsupported */
+			 
 			continue;
 		}
 
@@ -191,10 +189,7 @@ static int sdm845_snd_hw_params(struct snd_pcm_substream *substream,
 	switch (cpu_dai->id) {
 	case PRIMARY_MI2S_RX:
 	case PRIMARY_MI2S_TX:
-		/*
-		 * Use ASRC for internal clocks, as PLL rate isn't multiple
-		 * of BCLK.
-		 */
+		 
 		rt5663_sel_asrc_clk_src(
 			codec_dai->component,
 			RT5663_DA_STEREO_FILTER | RT5663_AD_STEREO_FILTER,
@@ -238,12 +233,7 @@ static int sdm845_dai_init(struct snd_soc_pcm_runtime *rtd)
 	struct sdm845_snd_data *pdata = snd_soc_card_get_drvdata(card);
 	struct snd_soc_dai_link *link = rtd->dai_link;
 	struct snd_jack *jack;
-	/*
-	 * Codec SLIMBUS configuration
-	 * RX1, RX2, RX3, RX4, RX5, RX6, RX7, RX8, RX9, RX10, RX11, RX12, RX13
-	 * TX1, TX2, TX3, TX4, TX5, TX6, TX7, TX8, TX9, TX10, TX11, TX12, TX13
-	 * TX14, TX15, TX16
-	 */
+	 
 	unsigned int rx_ch[SLIM_MAX_RX_PORTS] = {144, 145, 146, 147, 148, 149,
 					150, 151, 152, 153, 154, 155, 156};
 	unsigned int tx_ch[SLIM_MAX_TX_PORTS] = {128, 129, 130, 131, 132, 133,
@@ -291,7 +281,7 @@ static int sdm845_dai_init(struct snd_soc_pcm_runtime *rtd)
 		}
 		break;
 	case SLIMBUS_0_RX...SLIMBUS_6_TX:
-		/* setting up wcd multiple times for slim port is redundant */
+		 
 		if (pdata->slim_port_setup || !link->no_pcm)
 			return 0;
 
@@ -486,13 +476,7 @@ static int sdm845_snd_prepare(struct snd_pcm_substream *substream)
 	if (ret)
 		return ret;
 
-	/**
-	 * NOTE: there is a strict hw requirement about the ordering of port
-	 * enables and actual WSA881x PA enable. PA enable should only happen
-	 * after soundwire ports are enabled if not DC on the line is
-	 * accumulated resulting in Click/Pop Noise
-	 * PA enable/mute are handled as part of codec DAPM and digital mute.
-	 */
+	 
 
 	ret = sdw_enable_stream(sruntime);
 	if (ret) {
@@ -582,7 +566,7 @@ static int sdm845_snd_platform_probe(struct platform_device *pdev)
 	if (!card)
 		return -ENOMEM;
 
-	/* Allocate the private data */
+	 
 	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;
@@ -608,7 +592,7 @@ static int sdm845_snd_platform_probe(struct platform_device *pdev)
 
 static const struct of_device_id sdm845_snd_device_id[]  = {
 	{ .compatible = "qcom,sdm845-sndcard" },
-	/* Do not grow the list for compatible devices */
+	 
 	{ .compatible = "qcom,db845c-sndcard" },
 	{ .compatible = "lenovo,yoga-c630-sndcard" },
 	{},

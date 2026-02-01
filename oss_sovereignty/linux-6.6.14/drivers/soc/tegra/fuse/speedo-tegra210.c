@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013-2015, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -59,15 +57,15 @@ static void __init rev_sku_to_speedo_ids(struct tegra_sku_info *sku_info,
 {
 	int sku = sku_info->sku_id;
 
-	/* Assign to default */
+	 
 	sku_info->cpu_speedo_id = 0;
 	sku_info->soc_speedo_id = 0;
 	sku_info->gpu_speedo_id = 0;
 	*threshold = THRESHOLD_INDEX_0;
 
 	switch (sku) {
-	case 0x00: /* Engineering SKU */
-	case 0x01: /* Engineering SKU */
+	case 0x00:  
+	case 0x01:  
 	case 0x07:
 	case 0x17:
 	case 0x27:
@@ -84,7 +82,7 @@ static void __init rev_sku_to_speedo_ids(struct tegra_sku_info *sku_info,
 
 	default:
 		pr_err("Tegra210: unknown SKU %#04x\n", sku);
-		/* Using the default for the error case */
+		 
 		break;
 	}
 }
@@ -113,7 +111,7 @@ void __init tegra210_init_speedo_data(struct tegra_sku_info *sku_info)
 	BUILD_BUG_ON(ARRAY_SIZE(soc_process_speedos) !=
 			THRESHOLD_INDEX_COUNT);
 
-	/* Read speedo/IDDQ fuses */
+	 
 	cpu_speedo[0] = tegra_fuse_read_early(FUSE_CPU_SPEEDO_0);
 	cpu_speedo[1] = tegra_fuse_read_early(FUSE_CPU_SPEEDO_1);
 	cpu_speedo[2] = tegra_fuse_read_early(FUSE_CPU_SPEEDO_2);
@@ -122,10 +120,7 @@ void __init tegra210_init_speedo_data(struct tegra_sku_info *sku_info)
 	soc_speedo[1] = tegra_fuse_read_early(FUSE_SOC_SPEEDO_1);
 	soc_speedo[2] = tegra_fuse_read_early(FUSE_SOC_SPEEDO_2);
 
-	/*
-	 * Determine CPU, GPU and SoC speedo values depending on speedo fusing
-	 * revision. Note that GPU speedo value is fused in CPU_SPEEDO_2.
-	 */
+	 
 	speedo_revision = get_speedo_revision();
 	pr_info("Speedo Revision %u\n", speedo_revision);
 

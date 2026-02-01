@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #define pr_fmt(fmt) "ref_tracker: " fmt
 
@@ -13,7 +13,7 @@
 #define STACK_BUF_SIZE 1024
 
 struct ref_tracker {
-	struct list_head	head;   /* anchor into dir->list or dir->quarantine */
+	struct list_head	head;    
 	bool			dead;
 	depot_stack_handle_t	alloc_stack_handle;
 	depot_stack_handle_t	free_stack_handle;

@@ -1,26 +1,9 @@
-/*
- * ths8200 - Texas Instruments THS8200 video encoder driver
- *
- * Copyright 2013 Cisco Systems, Inc. and/or its affiliates.
- *
- * This program is free software; you may redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation version 2.
- *
- * This program is distributed .as is. WITHOUT ANY WARRANTY of any
- * kind, whether express or implied; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+ 
 
 #ifndef THS8200_REGS_H
 #define THS8200_REGS_H
 
-/* Register offset macros */
+ 
 #define THS8200_VERSION				0x02
 #define THS8200_CHIP_CTL			0x03
 #define THS8200_CSC_R11				0x04
@@ -158,4 +141,4 @@
 #define THS8200_MISC_LPF_MSB			0x88
 #define THS8200_MISC_LPF_LSB			0x89
 
-#endif /* THS8200_REGS_H */
+#endif  

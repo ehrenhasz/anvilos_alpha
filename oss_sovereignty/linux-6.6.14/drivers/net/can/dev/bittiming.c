@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2005 Marc Kleine-Budde, Pengutronix
- * Copyright (C) 2006 Andrey Volkov, Varma Electronics
- * Copyright (C) 2008-2009 Wolfgang Grandegger <wg@grandegger.com>
- */
+
+ 
 
 #include <linux/can/dev.h>
 
@@ -11,7 +8,7 @@ void can_sjw_set_default(struct can_bittiming *bt)
 	if (bt->sjw)
 		return;
 
-	/* If user space provides no sjw, use sane default of phase_seg2 / 2 */
+	 
 	bt->sjw = max(1U, min(bt->phase_seg1, bt->phase_seg2 / 2));
 }
 
@@ -41,11 +38,7 @@ int can_sjw_check(const struct net_device *dev, const struct can_bittiming *bt,
 	return 0;
 }
 
-/* Checks the validity of the specified bit-timing parameters prop_seg,
- * phase_seg1, phase_seg2 and sjw and tries to determine the bitrate
- * prescaler value brp. You can find more information in the header
- * file linux/can/netlink.h.
- */
+ 
 static int can_fixup_bittiming(const struct net_device *dev, struct can_bittiming *bt,
 			       const struct can_bittiming_const *btc,
 			       struct netlink_ext_ack *extack)
@@ -86,7 +79,7 @@ static int can_fixup_bittiming(const struct net_device *dev, struct can_bittimin
 	if (btc->brp_inc > 1)
 		do_div(brp64, btc->brp_inc);
 	brp64 += 500000000UL - 1;
-	do_div(brp64, 1000000000UL); /* the practicable BRP */
+	do_div(brp64, 1000000000UL);  
 	if (btc->brp_inc > 1)
 		brp64 *= btc->brp_inc;
 	bt->brp = (u32)brp64;
@@ -110,7 +103,7 @@ static int can_fixup_bittiming(const struct net_device *dev, struct can_bittimin
 	return 0;
 }
 
-/* Checks the validity of predefined bitrate settings */
+ 
 static int
 can_validate_bitrate(const struct net_device *dev, const struct can_bittiming *bt,
 		     const u32 *bitrate_const,
@@ -136,11 +129,7 @@ int can_get_bittiming(const struct net_device *dev, struct can_bittiming *bt,
 		      const unsigned int bitrate_const_cnt,
 		      struct netlink_ext_ack *extack)
 {
-	/* Depending on the given can_bittiming parameter structure the CAN
-	 * timing parameters are calculated based on the provided bitrate OR
-	 * alternatively the CAN timing parameters (tq, prop_seg, etc.) are
-	 * provided directly which are then checked and fixed up.
-	 */
+	 
 	if (!bt->tq && bt->bitrate && btc)
 		return can_calc_bittiming(dev, bt, btc, extack);
 	if (bt->tq && !bt->bitrate && btc)

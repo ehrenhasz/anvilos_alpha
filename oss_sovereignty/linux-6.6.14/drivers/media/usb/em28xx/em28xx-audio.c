@@ -1,15 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Empiatech em28x1 audio extension
-//
-// Copyright (C) 2006 Markus Rechberger <mrechberger@gmail.com>
-//
-// Copyright (C) 2007-2016 Mauro Carvalho Chehab
-//	- Port to work with the in-kernel driver
-//	- Cleanups, fixes, alsa-controls, etc.
-//
-// This driver is based on my previous au600 usb pstn audio driver
-// and inherits all the copyrights
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include "em28xx.h"
 
@@ -83,14 +83,14 @@ static void em28xx_audio_isocirq(struct urb *urb)
 	}
 
 	switch (urb->status) {
-	case 0:             /* success */
-	case -ETIMEDOUT:    /* NAK */
+	case 0:              
+	case -ETIMEDOUT:     
 		break;
-	case -ECONNRESET:   /* kill */
+	case -ECONNRESET:    
 	case -ENOENT:
 	case -ESHUTDOWN:
 		return;
-	default:            /* error */
+	default:             
 		dprintk("urb completion error %d.\n", urb->status);
 		break;
 	}
@@ -162,7 +162,7 @@ static int em28xx_init_audio_isoc(struct em28xx *dev)
 
 	dprintk("Starting isoc transfers\n");
 
-	/* Start streaming */
+	 
 	for (i = 0; i < dev->adev.num_urb; i++) {
 		memset(dev->adev.transfer_buffer[i], 0x80,
 		       dev->adev.urb[i]->transfer_buffer_length);
@@ -196,21 +196,14 @@ static const struct snd_pcm_hardware snd_em28xx_hw_capture = {
 	.rate_max = 48000,
 	.channels_min = 2,
 	.channels_max = 2,
-	.buffer_bytes_max = 62720 * 8,	/* just about the value in usbaudio.c */
+	.buffer_bytes_max = 62720 * 8,	 
 
-	/*
-	 * The period is 12.288 bytes. Allow a 10% of variation along its
-	 * value, in order to avoid overruns/underruns due to some clock
-	 * drift.
-	 *
-	 * FIXME: This period assumes 64 packets, and a 48000 PCM rate.
-	 * Calculate it dynamically.
-	 */
+	 
 	.period_bytes_min = 11059,
 	.period_bytes_max = 13516,
 
 	.periods_min = 2,
-	.periods_max = 98,		/* 12544, */
+	.periods_max = 98,		 
 };
 
 static int snd_em28xx_capture_open(struct snd_pcm_substream *substream)
@@ -246,26 +239,18 @@ static int snd_em28xx_capture_open(struct snd_pcm_substream *substream)
 			udev = interface_to_usbdev(dev->intf);
 
 			if (dev->is_audio_only)
-				/* audio is on a separate interface */
+				 
 				dev->alt = 1;
 			else
-				/* audio is on the same interface as video */
+				 
 				dev->alt = 7;
-				/*
-				 * FIXME: The intention seems to be to select
-				 * the alt setting with the largest
-				 * wMaxPacketSize for the video endpoint.
-				 * At least dev->alt should be used instead, but
-				 * we should probably not touch it at all if it
-				 * is already >0, because wMaxPacketSize of the
-				 * audio endpoints seems to be the same for all.
-				 */
+				 
 			dprintk("changing alternate number on interface %d to %d\n",
 				dev->ifnum, dev->alt);
 			usb_set_interface(udev, dev->ifnum, dev->alt);
 		}
 
-		/* Sets volume, mute, etc */
+		 
 		dev->mute = 0;
 		ret = em28xx_audio_analog_set(dev);
 		if (ret < 0)
@@ -276,7 +261,7 @@ static int snd_em28xx_capture_open(struct snd_pcm_substream *substream)
 	dev->adev.users++;
 	mutex_unlock(&dev->lock);
 
-	/* Dynamically adjust the period size */
+	 
 	snd_pcm_hw_constraint_integer(runtime, SNDRV_PCM_HW_PARAM_PERIODS);
 	snd_pcm_hw_constraint_minmax(runtime, SNDRV_PCM_HW_PARAM_PERIOD_BYTES,
 				     dev->adev.period * 95 / 100,
@@ -387,9 +372,7 @@ static snd_pcm_uframes_t snd_em28xx_capture_pointer(struct snd_pcm_substream
 	return hwptr_done;
 }
 
-/*
- * AC97 volume control support
- */
+ 
 static int em28xx_vol_info(struct snd_kcontrol *kcontrol,
 			   struct snd_ctl_elem_info *info)
 {
@@ -431,7 +414,7 @@ static int em28xx_vol_put(struct snd_kcontrol *kcontrol,
 	if (rc < 0)
 		goto err;
 
-	val |= rc & 0x8000;	/* Preserve the mute flag */
+	val |= rc & 0x8000;	 
 
 	rc = em28xx_write_ac97(dev, kcontrol->private_value, val);
 	if (rc < 0)
@@ -577,7 +560,7 @@ static int em28xx_cvol_new(struct snd_card *card, struct em28xx *dev,
 	tmp.private_value = id;
 	tmp.name  = ctl_name;
 
-	/* Add Mute Control */
+	 
 	sprintf(ctl_name, "%s Switch", name);
 	tmp.get  = em28xx_vol_get_mute;
 	tmp.put  = em28xx_vol_put_mute;
@@ -594,7 +577,7 @@ static int em28xx_cvol_new(struct snd_card *card, struct em28xx *dev,
 	tmp.private_value = id;
 	tmp.name  = ctl_name;
 
-	/* Add Volume Control */
+	 
 	sprintf(ctl_name, "%s Volume", name);
 	tmp.get   = em28xx_vol_get;
 	tmp.put   = em28xx_vol_put;
@@ -610,9 +593,7 @@ static int em28xx_cvol_new(struct snd_card *card, struct em28xx *dev,
 	return 0;
 }
 
-/*
- * register/unregister code and data
- */
+ 
 static const struct snd_pcm_ops snd_em28xx_pcm_capture = {
 	.open      = snd_em28xx_capture_open,
 	.close     = snd_em28xx_pcm_close,
@@ -643,7 +624,7 @@ static void em28xx_audio_free_urb(struct em28xx *dev)
 	dev->adev.num_urb = 0;
 }
 
-/* high bandwidth multiplier, as encoded in highspeed endpoint descriptors */
+ 
 static int em28xx_audio_ep_packet_size(struct usb_device *udev,
 				       struct usb_endpoint_descriptor *e)
 {
@@ -700,37 +681,20 @@ static int em28xx_audio_urb_init(struct em28xx *dev)
 		 EM28XX_EP_AUDIO, usb_speed_string(udev->speed),
 		 dev->ifnum, alt, interval, ep_size);
 
-	/* Calculate the number and size of URBs to better fit the audio samples */
+	 
 
-	/*
-	 * Estimate the number of bytes per DMA transfer.
-	 *
-	 * This is given by the bit rate (for now, only 48000 Hz) multiplied
-	 * by 2 channels and 2 bytes/sample divided by the number of microframe
-	 * intervals and by the microframe rate (125 us)
-	 */
+	 
 	bytes_per_transfer = DIV_ROUND_UP(48000 * 2 * 2, 125 * interval);
 
-	/*
-	 * Estimate the number of transfer URBs. Don't let it go past the
-	 * maximum number of URBs that is known to be supported by the device.
-	 */
+	 
 	num_urb = DIV_ROUND_UP(bytes_per_transfer, ep_size);
 	if (num_urb > EM28XX_MAX_AUDIO_BUFS)
 		num_urb = EM28XX_MAX_AUDIO_BUFS;
 
-	/*
-	 * Now that we know the number of bytes per transfer and the number of
-	 * URBs, estimate the typical size of an URB, in order to adjust the
-	 * minimal number of packets.
-	 */
+	 
 	urb_size = bytes_per_transfer / num_urb;
 
-	/*
-	 * Now, calculate the amount of audio packets to be filled on each
-	 * URB. In order to preserve the old behaviour, use a minimal
-	 * threshold for this value.
-	 */
+	 
 	npackets = EM28XX_MIN_AUDIO_PACKETS;
 	if (urb_size > ep_size * npackets)
 		npackets = DIV_ROUND_UP(urb_size, ep_size);
@@ -739,10 +703,10 @@ static int em28xx_audio_urb_init(struct em28xx *dev)
 		 "Number of URBs: %d, with %d packets and %d size\n",
 		 num_urb, npackets, urb_size);
 
-	/* Estimate the bytes per period */
+	 
 	dev->adev.period = urb_size * npackets;
 
-	/* Allocate space to store the number of URBs to be used */
+	 
 
 	dev->adev.transfer_buffer = kcalloc(num_urb,
 					    sizeof(*dev->adev.transfer_buffer),
@@ -756,7 +720,7 @@ static int em28xx_audio_urb_init(struct em28xx *dev)
 		return -ENOMEM;
 	}
 
-	/* Alloc memory for each URB and for each transfer buffer */
+	 
 	dev->adev.num_urb = num_urb;
 	for (i = 0; i < num_urb; i++) {
 		struct urb *urb;
@@ -809,11 +773,7 @@ static int em28xx_audio_init(struct em28xx *dev)
 	int		    err;
 
 	if (dev->usb_audio_type != EM28XX_USB_AUDIO_VENDOR) {
-		/*
-		 * This device does not support the extension (in this case
-		 * the device is expecting the snd-usb-audio module or
-		 * doesn't have analog audio support at all)
-		 */
+		 
 		return 0;
 	}
 
@@ -894,11 +854,7 @@ static int em28xx_audio_fini(struct em28xx *dev)
 		return 0;
 
 	if (dev->usb_audio_type != EM28XX_USB_AUDIO_VENDOR) {
-		/*
-		 * This device does not support the extension (in this case
-		 * the device is expecting the snd-usb-audio module or
-		 * doesn't have analog audio support at all)
-		 */
+		 
 		return 0;
 	}
 
@@ -941,7 +897,7 @@ static int em28xx_audio_resume(struct em28xx *dev)
 		return 0;
 
 	dev_info(&dev->intf->dev, "Resuming audio extension\n");
-	/* Nothing to do other than schedule_work() ?? */
+	 
 	schedule_work(&dev->adev.wq_trigger);
 	return 0;
 }

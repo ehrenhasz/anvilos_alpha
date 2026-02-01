@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Qualcomm APCS clock controller driver
- *
- * Copyright (c) 2017, Linaro Limited
- * Author: Georgi Djakov <georgi.djakov@linaro.org>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -24,10 +19,7 @@ static const struct clk_parent_data pdata[] = {
 	{ .fw_name = "pll", .name = "a53pll", },
 };
 
-/*
- * We use the notifier function for switching to a temporary safe configuration
- * (mux and divider), while the A53 PLL is reconfigured.
- */
+ 
 static int a53cc_notifier_cb(struct notifier_block *nb, unsigned long event,
 			     void *data)
 {
@@ -36,7 +28,7 @@ static int a53cc_notifier_cb(struct notifier_block *nb, unsigned long event,
 						     struct clk_regmap_mux_div,
 						     clk_nb);
 	if (event == PRE_RATE_CHANGE)
-		/* set the mux and divider to safe frequency (400mhz) */
+		 
 		ret = mux_div_set_src_div(md, 4, 3);
 
 	return notifier_from_errno(ret);
@@ -62,7 +54,7 @@ static int qcom_apcs_msm8916_clk_probe(struct platform_device *pdev)
 	if (!a53cc)
 		return -ENOMEM;
 
-	/* Use an unique name by appending parent's @unit-address */
+	 
 	init.name = devm_kasprintf(dev, GFP_KERNEL, "a53mux%s",
 				   strchrnul(np->full_name, '@'));
 	if (!init.name)

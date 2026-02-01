@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* MHI Network driver - Network over MHI bus
- *
- * Copyright (C) 2020 Linaro Ltd <loic.poulain@linaro.org>
- */
+
+ 
 
 #include <linux/if_arp.h>
 #include <linux/mhi.h>
@@ -48,10 +45,10 @@ static int mhi_ndo_open(struct net_device *ndev)
 {
 	struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
 
-	/* Feed the rx buffer pool */
+	 
 	schedule_delayed_work(&mhi_netdev->rx_refill, 0);
 
-	/* Carrier is established via out-of-band channel (e.g. qmi) */
+	 
 	netif_carrier_on(ndev);
 
 	netif_start_queue(ndev);
@@ -128,7 +125,7 @@ static const struct net_device_ops mhi_netdev_ops = {
 
 static void mhi_net_setup(struct net_device *ndev)
 {
-	ndev->header_ops = NULL;  /* No header */
+	ndev->header_ops = NULL;   
 	ndev->type = ARPHRD_RAWIP;
 	ndev->hard_header_len = 0;
 	ndev->addr_len = 0;
@@ -146,7 +143,7 @@ static struct sk_buff *mhi_net_skb_agg(struct mhi_net_dev *mhi_netdev,
 	struct sk_buff *head = mhi_netdev->skbagg_head;
 	struct sk_buff *tail = mhi_netdev->skbagg_tail;
 
-	/* This is non-paged skb chaining using frag_list */
+	 
 	if (!head) {
 		mhi_netdev->skbagg_head = skb;
 		return skb;
@@ -178,23 +175,18 @@ static void mhi_net_dl_callback(struct mhi_device *mhi_dev,
 	if (unlikely(mhi_res->transaction_status)) {
 		switch (mhi_res->transaction_status) {
 		case -EOVERFLOW:
-			/* Packet can not fit in one MHI buffer and has been
-			 * split over multiple MHI transfers, do re-aggregation.
-			 * That usually means the device side MTU is larger than
-			 * the host side MTU/MRU. Since this is not optimal,
-			 * print a warning (once).
-			 */
+			 
 			netdev_warn_once(mhi_netdev->ndev,
 					 "Fragmented packets received, fix MTU?\n");
 			skb_put(skb, mhi_res->bytes_xferd);
 			mhi_net_skb_agg(mhi_netdev, skb);
 			break;
 		case -ENOTCONN:
-			/* MHI layer stopping/resetting the DL channel */
+			 
 			dev_kfree_skb_any(skb);
 			return;
 		default:
-			/* Unknown error, simply drop */
+			 
 			dev_kfree_skb_any(skb);
 			u64_stats_update_begin(&mhi_netdev->stats.rx_syncp);
 			u64_stats_inc(&mhi_netdev->stats.rx_errors);
@@ -204,7 +196,7 @@ static void mhi_net_dl_callback(struct mhi_device *mhi_dev,
 		skb_put(skb, mhi_res->bytes_xferd);
 
 		if (mhi_netdev->skbagg_head) {
-			/* Aggregate the final fragment */
+			 
 			skb = mhi_net_skb_agg(mhi_netdev, skb);
 			mhi_netdev->skbagg_head = NULL;
 		}
@@ -228,7 +220,7 @@ static void mhi_net_dl_callback(struct mhi_device *mhi_dev,
 		__netif_rx(skb);
 	}
 
-	/* Refill if RX buffers queue becomes low */
+	 
 	if (free_desc_count >= mhi_netdev->rx_queue_sz / 2)
 		schedule_delayed_work(&mhi_netdev->rx_refill, 0);
 }
@@ -241,14 +233,12 @@ static void mhi_net_ul_callback(struct mhi_device *mhi_dev,
 	struct mhi_device *mdev = mhi_netdev->mdev;
 	struct sk_buff *skb = mhi_res->buf_addr;
 
-	/* Hardware has consumed the buffer, so free the skb (which is not
-	 * freed by the MHI stack) and perform accounting.
-	 */
+	 
 	dev_consume_skb_any(skb);
 
 	u64_stats_update_begin(&mhi_netdev->stats.tx_syncp);
 	if (unlikely(mhi_res->transaction_status)) {
-		/* MHI layer stopping/resetting the UL channel */
+		 
 		if (mhi_res->transaction_status == -ENOTCONN) {
 			u64_stats_update_end(&mhi_netdev->stats.tx_syncp);
 			return;
@@ -290,13 +280,11 @@ static void mhi_net_rx_refill_work(struct work_struct *work)
 			break;
 		}
 
-		/* Do not hog the CPU if rx buffers are consumed faster than
-		 * queued (unlikely).
-		 */
+		 
 		cond_resched();
 	}
 
-	/* If we're still starved of rx buffers, reschedule later */
+	 
 	if (mhi_get_free_desc_count(mdev, DMA_FROM_DEVICE) == mhi_netdev->rx_queue_sz)
 		schedule_delayed_work(&mhi_netdev->rx_refill, HZ / 2);
 }
@@ -318,12 +306,12 @@ static int mhi_net_newlink(struct mhi_device *mhi_dev, struct net_device *ndev)
 	u64_stats_init(&mhi_netdev->stats.rx_syncp);
 	u64_stats_init(&mhi_netdev->stats.tx_syncp);
 
-	/* Start MHI channels */
+	 
 	err = mhi_prepare_for_transfer(mhi_dev);
 	if (err)
 		return err;
 
-	/* Number of transfer descriptors determines size of the queue */
+	 
 	mhi_netdev->rx_queue_sz = mhi_get_free_desc_count(mhi_dev, DMA_FROM_DEVICE);
 
 	err = register_netdev(ndev);
@@ -387,9 +375,9 @@ static const struct mhi_device_info mhi_swip0 = {
 };
 
 static const struct mhi_device_id mhi_net_id_table[] = {
-	/* Hardware accelerated data PATH (to modem IPA), protocol agnostic */
+	 
 	{ .chan = "IP_HW0", .driver_data = (kernel_ulong_t)&mhi_hwip0 },
-	/* Software data PATH (to modem CPU) */
+	 
 	{ .chan = "IP_SW0", .driver_data = (kernel_ulong_t)&mhi_swip0 },
 	{}
 };

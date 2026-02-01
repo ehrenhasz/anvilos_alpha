@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl1251
- *
- * Copyright (C) 2008-2009 Nokia Corporation
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -149,23 +145,22 @@ static int wl1251_chip_wakeup(struct wl1251 *wl)
 	msleep(WL1251_POWER_ON_SLEEP);
 	wl->if_ops->reset(wl);
 
-	/* We don't need a real memory partition here, because we only want
-	 * to use the registers at this point. */
+	 
 	wl1251_set_partition(wl,
 			     0x00000000,
 			     0x00000000,
 			     REGISTERS_BASE,
 			     REGISTERS_DOWN_SIZE);
 
-	/* ELP module wake up */
+	 
 	wl1251_fw_wakeup(wl);
 
-	/* whal_FwCtrl_BootSm() */
+	 
 
-	/* 0. read chip id from CHIP_ID */
+	 
 	wl->chip_id = wl1251_reg_read32(wl, CHIP_ID_B);
 
-	/* 1. check if chip id is valid */
+	 
 
 	switch (wl->chip_id) {
 	case CHIP_ID_1251_PG12:
@@ -222,7 +217,7 @@ static void wl1251_irq_work(struct work_struct *work)
 			wl->rx_counter = wl1251_mem_read32(
 				wl, wl->data_path->rx_control_addr);
 
-			/* We handle a frmware bug here */
+			 
 			switch ((wl->rx_counter - wl->rx_handled) & 0xf) {
 			case 0:
 				wl1251_debug(DEBUG_IRQ,
@@ -315,10 +310,7 @@ static int wl1251_join(struct wl1251 *wl, u8 bss_type, u8 channel,
 	if (ret < 0)
 		goto out;
 
-	/*
-	 * Join command applies filters, and if we are not associated,
-	 * BSSID filter must be disabled for association to work.
-	 */
+	 
 	if (is_zero_ether_addr(wl->bssid))
 		wl->rx_config &= ~CFG_BSSID_FILTER_EN;
 
@@ -344,17 +336,11 @@ static void wl1251_op_tx(struct ieee80211_hw *hw,
 
 	skb_queue_tail(&wl->tx_queue, skb);
 
-	/*
-	 * The chip specific setup must run before the first TX packet -
-	 * before that, the tx_work will not be initialized!
-	 */
+	 
 
 	ieee80211_queue_work(wl->hw, &wl->tx_work);
 
-	/*
-	 * The workqueue is slow to process the tx_queue and we need stop
-	 * the queue here, otherwise the queue will get too long.
-	 */
+	 
 	if (skb_queue_len(&wl->tx_queue) >= WL1251_TX_QUEUE_HIGH_WATERMARK) {
 		wl1251_debug(DEBUG_TX, "op_tx: tx_queue full, stop queues");
 
@@ -402,7 +388,7 @@ static int wl1251_op_start(struct ieee80211_hw *hw)
 
 	wl1251_info("firmware booted (%s)", wl->fw_ver);
 
-	/* update hw/fw version info in wiphy struct */
+	 
 	wiphy->hw_version = wl->chip_id;
 	strncpy(wiphy->fw_version, wl->fw_ver, sizeof(wiphy->fw_version));
 
@@ -448,7 +434,7 @@ static void wl1251_op_stop(struct ieee80211_hw *hw)
 
 	mutex_lock(&wl->mutex);
 
-	/* let's notify MAC80211 about the remaining pending TX frames */
+	 
 	wl1251_tx_flush(wl);
 	wl1251_power_off(wl);
 
@@ -577,7 +563,7 @@ static int wl1251_build_qos_null_data(struct wl1251 *wl)
 					     IEEE80211_STYPE_QOS_NULLFUNC |
 					     IEEE80211_FCTL_TODS);
 
-	/* FIXME: not sure what priority to use here */
+	 
 	template.qos_ctrl = cpu_to_le16(0);
 
 	return wl1251_cmd_template_set(wl, CMD_QOS_NULL_DATA, &template,
@@ -630,13 +616,7 @@ static int wl1251_op_config(struct ieee80211_hw *hw, u32 changed)
 	if (channel != wl->channel) {
 		wl->channel = channel;
 
-		/*
-		 * Use ENABLE_RX command for channel switching when no
-		 * interface is present (monitor mode only).
-		 * This leaves the tx path disabled in firmware, whereas
-		 * the usual JOIN command seems to transmit some frames
-		 * at firmware level.
-		 */
+		 
 		if (wl->vif == NULL) {
 			wl->joined = false;
 			ret = wl1251_cmd_data_path_rx(wl, wl->channel, 1);
@@ -658,9 +638,7 @@ static int wl1251_op_config(struct ieee80211_hw *hw, u32 changed)
 		ret = wl1251_acx_wr_tbtt_and_dtim(wl, wl->beacon_int,
 						  wl->dtim_period);
 
-		/*
-		 * mac80211 enables PSM only if we're already associated.
-		 */
+		 
 		ret = wl1251_ps_set_mode(wl, STATION_POWER_SAVE_MODE);
 		if (ret < 0)
 			goto out_sleep;
@@ -731,7 +709,7 @@ static u64 wl1251_op_prepare_multicast(struct ieee80211_hw *hw,
 		return 0;
 	}
 
-	/* update multicast filtering parameters */
+	 
 	fp->mc_list_length = 0;
 	if (netdev_hw_addr_list_count(mc_list) > ACX_MC_ADDRESS_GROUP_MAX) {
 		fp->enabled = false;
@@ -768,7 +746,7 @@ static void wl1251_op_configure_filter(struct ieee80211_hw *hw,
 	changed &= WL1251_SUPPORTED_FILTERS;
 
 	if (changed == 0) {
-		/* no filters which we support changed */
+		 
 		kfree(fp);
 		return;
 	}
@@ -779,10 +757,7 @@ static void wl1251_op_configure_filter(struct ieee80211_hw *hw,
 	wl->rx_filter = WL1251_DEFAULT_RX_FILTER;
 
 	if (*total & FIF_ALLMULTI)
-		/*
-		 * CFG_MC_FILTER_EN in rx_config needs to be 0 to receive
-		 * all multicast frames
-		 */
+		 
 		wl->rx_config &= ~CFG_MC_FILTER_EN;
 	if (*total & FIF_FCSFAIL)
 		wl->rx_filter |= CFG_RX_FCS_ERROR;
@@ -813,7 +788,7 @@ static void wl1251_op_configure_filter(struct ieee80211_hw *hw,
 	if (ret < 0)
 		goto out;
 
-	/* send filters to firmware */
+	 
 	wl1251_acx_rx_config(wl, wl->rx_config, wl->rx_filter);
 
 	wl1251_ps_elp_sleep(wl);
@@ -823,7 +798,7 @@ out:
 	kfree(fp);
 }
 
-/* HW encryption */
+ 
 static int wl1251_set_key_type(struct wl1251 *wl,
 			       struct wl1251_cmd_set_keys *key,
 			       enum set_key_cmd cmd,
@@ -893,7 +868,7 @@ static int wl1251_op_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 	wl1251_dump(DEBUG_CRYPT, "KEY: ", key->key, key->keylen);
 
 	if (is_zero_ether_addr(addr)) {
-		/* We dont support TX only encryption */
+		 
 		ret = -EOPNOTSUPP;
 		goto out;
 	}
@@ -931,12 +906,7 @@ static int wl1251_op_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 
 	if ((wl_cmd->key_type == KEY_TKIP_MIC_GROUP) ||
 	    (wl_cmd->key_type == KEY_TKIP_MIC_PAIRWISE)) {
-		/*
-		 * We get the key in the following form:
-		 * TKIP (16 bytes) - TX MIC (8 bytes) - RX MIC (8 bytes)
-		 * but the target is expecting:
-		 * TKIP - RX MIC - TX MIC
-		 */
+		 
 		memcpy(wl_cmd->key, key->key, 16);
 		memcpy(wl_cmd->key + 16, key->key + 24, 8);
 		memcpy(wl_cmd->key + 24, key->key + 16, 8);
@@ -1141,7 +1111,7 @@ static void wl1251_op_bss_info_changed(struct ieee80211_hw *hw,
 			if (ret < 0)
 				goto out_sleep;
 		} else {
-			/* use defaults when not associated */
+			 
 			wl->beacon_int = WL1251_DEFAULT_BEACON_INT;
 			wl->dtim_period = WL1251_DEFAULT_DTIM_PERIOD;
 		}
@@ -1221,7 +1191,7 @@ out:
 }
 
 
-/* can't be const, mac80211 writes to this */
+ 
 static struct ieee80211_rate wl1251_rates[] = {
 	{ .bitrate = 10,
 	  .hw_value = 0x1,
@@ -1264,7 +1234,7 @@ static struct ieee80211_rate wl1251_rates[] = {
 	  .hw_value_short = 0x1000, },
 };
 
-/* can't be const, mac80211 writes to this */
+ 
 static struct ieee80211_channel wl1251_channels[] = {
 	{ .hw_value = 1, .center_freq = 2412},
 	{ .hw_value = 2, .center_freq = 2417},
@@ -1298,7 +1268,7 @@ static int wl1251_op_conf_tx(struct ieee80211_hw *hw,
 	if (ret < 0)
 		goto out;
 
-	/* mac80211 uses units of 32 usec */
+	 
 	ret = wl1251_acx_ac_cfg(wl, wl1251_tx_get_queue(queue),
 				params->cw_min, params->cw_max,
 				params->aifs, params->txop * 32);
@@ -1342,7 +1312,7 @@ static int wl1251_op_get_survey(struct ieee80211_hw *hw, int idx,
 	return 0;
 }
 
-/* can't be const, mac80211 writes to this */
+ 
 static struct ieee80211_supported_band wl1251_band_2ghz = {
 	.channels = wl1251_channels,
 	.n_channels = ARRAY_SIZE(wl1251_channels),
@@ -1375,7 +1345,7 @@ static int wl1251_read_eeprom_byte(struct wl1251 *wl, off_t offset, u8 *data)
 	wl1251_reg_write32(wl, EE_ADDR, offset);
 	wl1251_reg_write32(wl, EE_CTL, EE_CTL_READ);
 
-	/* EE_CTL_READ clears when data is ready */
+	 
 	timeout = jiffies + msecs_to_jiffies(100);
 	while (1) {
 		if (!(wl1251_reg_read32(wl, EE_CTL) & EE_CTL_READ))
@@ -1421,7 +1391,7 @@ static int wl1251_read_eeprom_mac(struct wl1251 *wl)
 		return ret;
 	}
 
-	/* MAC is stored in reverse order */
+	 
 	for (i = 0; i < ETH_ALEN; i++)
 		wl->mac_addr[i] = mac[ETH_ALEN - i - 1];
 
@@ -1438,7 +1408,7 @@ static int wl1251_check_nvs_mac(struct wl1251 *wl)
 	if (wl->nvs_len < 0x24)
 		return -ENODATA;
 
-	/* length is 2 and data address is 0x546c (ANDed with 0xfffe) */
+	 
 	if (wl->nvs[NVS_OFF_MAC_LEN] != 2 ||
 	    wl->nvs[NVS_OFF_MAC_ADDR_LO] != 0x6d ||
 	    wl->nvs[NVS_OFF_MAC_ADDR_HI] != 0x54)
@@ -1456,11 +1426,11 @@ static int wl1251_read_nvs_mac(struct wl1251 *wl)
 	if (ret)
 		return ret;
 
-	/* MAC is stored in reverse order */
+	 
 	for (i = 0; i < ETH_ALEN; i++)
 		mac[i] = wl->nvs[NVS_OFF_MAC_DATA + ETH_ALEN - i - 1];
 
-	/* 00:00:20:07:03:09 is in example file wl1251-nvs.bin, so invalid */
+	 
 	if (ether_addr_equal_unaligned(mac, "\x00\x00\x20\x07\x03\x09"))
 		return -EINVAL;
 
@@ -1476,7 +1446,7 @@ static int wl1251_write_nvs_mac(struct wl1251 *wl)
 	if (ret)
 		return ret;
 
-	/* MAC is stored in reverse order */
+	 
 	for (i = 0; i < ETH_ALEN; i++)
 		wl->nvs[NVS_OFF_MAC_DATA + i] = wl->mac_addr[ETH_ALEN - i - 1];
 
@@ -1509,12 +1479,12 @@ int wl1251_init_ieee80211(struct wl1251 *wl)
 {
 	int ret;
 
-	/* The tx descriptor buffer and the TKIP space */
+	 
 	wl->hw->extra_tx_headroom = sizeof(struct tx_double_buffer_desc)
 		+ WL1251_TKIP_IV_SPACE;
 
-	/* unit us */
-	/* FIXME: find a proper value */
+	 
+	 
 
 	ieee80211_hw_set(wl->hw, SIGNAL_DBM);
 	ieee80211_hw_set(wl->hw, SUPPORTS_PS);
@@ -1523,9 +1493,7 @@ int wl1251_init_ieee80211(struct wl1251 *wl)
 					 BIT(NL80211_IFTYPE_ADHOC);
 	wl->hw->wiphy->max_scan_ssids = 1;
 
-	/* We set max_scan_ie_len to a random value to make wpa_supplicant scans not
-	 * fail, as the driver will the ignore the extra passed IEs anyway
-	 */
+	 
 	wl->hw->wiphy->max_scan_ie_len = 512;
 
 	wl->hw->wiphy->bands[NL80211_BAND_2GHZ] = &wl1251_band_2ghz;
@@ -1547,10 +1515,7 @@ int wl1251_init_ieee80211(struct wl1251 *wl)
 		ret = -EINVAL;
 
 	if (ret < 0) {
-		/*
-		 * In case our MAC address is not correctly set,
-		 * we use a random but Nokia MAC.
-		 */
+		 
 		static const u8 nokia_oui[3] = {0x00, 0x1f, 0xdf};
 		memcpy(wl->mac_addr, nokia_oui, 3);
 		get_random_bytes(wl->mac_addr + 3, 3);

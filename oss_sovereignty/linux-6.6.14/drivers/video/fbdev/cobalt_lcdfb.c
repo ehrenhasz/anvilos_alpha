@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Cobalt/SEAD3 LCD frame buffer driver.
- *
- *  Copyright (C) 2008  Yoichi Yuasa <yuasa@linux-mips.org>
- *  Copyright (C) 2012  MIPS Technologies, Inc.
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/fb.h>
 #include <linux/init.h>
@@ -15,15 +10,7 @@
 #include <linux/module.h>
 #include <linux/sched/signal.h>
 
-/*
- * Cursor position address
- * \X  0    1    2  ...  14   15
- * Y+----+----+----+---+----+----+
- * 0|0x00|0x01|0x02|...|0x0e|0x0f|
- *  +----+----+----+---+----+----+
- * 1|0x40|0x41|0x42|...|0x4e|0x4f|
- *  +----+----+----+---+----+----+
- */
+ 
 #define LCD_DATA_REG_OFFSET	0x10
 #define LCD_XRES_MAX		16
 #define LCD_YRES_MAX		2
@@ -41,7 +28,7 @@
 #define LCD_CURSOR_MOVE_RIGHT	0x14
 #define LCD_DISPLAY_LEFT	0x18
 #define LCD_DISPLAY_RIGHT	0x1c
-#define LCD_PRERESET		0x3f	/* execute 4 times continuously */
+#define LCD_PRERESET		0x3f	 
 #define LCD_BUSY		0x80
 
 #define LCD_GRAPHIC_MODE	0x40

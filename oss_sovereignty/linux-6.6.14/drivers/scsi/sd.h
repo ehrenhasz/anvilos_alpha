@@ -1,47 +1,31 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _SCSI_DISK_H
 #define _SCSI_DISK_H
 
-/*
- * More than enough for everybody ;)  The huge number of majors
- * is a leftover from 16bit dev_t days, we don't really need that
- * much numberspace.
- */
+ 
 #define SD_MAJORS	16
 
-/*
- * Time out in seconds for disks and Magneto-opticals (which are slower).
- */
+ 
 #define SD_TIMEOUT		(30 * HZ)
 #define SD_MOD_TIMEOUT		(75 * HZ)
-/*
- * Flush timeout is a multiplier over the standard device timeout which is
- * user modifiable via sysfs but initially set to SD_TIMEOUT
- */
+ 
 #define SD_FLUSH_TIMEOUT_MULTIPLIER	2
 #define SD_WRITE_SAME_TIMEOUT	(120 * HZ)
 
-/*
- * Number of allowed retries
- */
+ 
 #define SD_MAX_RETRIES		5
 #define SD_PASSTHROUGH_RETRIES	1
 #define SD_MAX_MEDIUM_TIMEOUTS	2
 
-/*
- * Size of the initial data buffer for mode and read capacity data
- */
+ 
 #define SD_BUF_SIZE		512
 
-/*
- * Number of sectors at the end of the device to avoid multi-sector
- * accesses to in the case of last_sector_bug
- */
+ 
 #define SD_LAST_BUGGY_SECTORS	8
 
 enum {
-	SD_EXT_CDB_SIZE = 32,	/* Extended CDB size */
-	SD_MEMPOOL_SIZE = 2,	/* CDB pool size */
+	SD_EXT_CDB_SIZE = 32,	 
+	SD_MEMPOOL_SIZE = 2,	 
 };
 
 enum {
@@ -52,30 +36,22 @@ enum {
 };
 
 enum {
-	SD_LBP_FULL = 0,	/* Full logical block provisioning */
-	SD_LBP_UNMAP,		/* Use UNMAP command */
-	SD_LBP_WS16,		/* Use WRITE SAME(16) with UNMAP bit */
-	SD_LBP_WS10,		/* Use WRITE SAME(10) with UNMAP bit */
-	SD_LBP_ZERO,		/* Use WRITE SAME(10) with zero payload */
-	SD_LBP_DISABLE,		/* Discard disabled due to failed cmd */
+	SD_LBP_FULL = 0,	 
+	SD_LBP_UNMAP,		 
+	SD_LBP_WS16,		 
+	SD_LBP_WS10,		 
+	SD_LBP_ZERO,		 
+	SD_LBP_DISABLE,		 
 };
 
 enum {
-	SD_ZERO_WRITE = 0,	/* Use WRITE(10/16) command */
-	SD_ZERO_WS,		/* Use WRITE SAME(10/16) command */
-	SD_ZERO_WS16_UNMAP,	/* Use WRITE SAME(16) with UNMAP */
-	SD_ZERO_WS10_UNMAP,	/* Use WRITE SAME(10) with UNMAP */
+	SD_ZERO_WRITE = 0,	 
+	SD_ZERO_WS,		 
+	SD_ZERO_WS16_UNMAP,	 
+	SD_ZERO_WS10_UNMAP,	 
 };
 
-/**
- * struct zoned_disk_info - Specific properties of a ZBC SCSI device.
- * @nr_zones: number of zones.
- * @zone_blocks: number of logical blocks per zone.
- *
- * This data structure holds the ZBC SCSI device properties that are retrieved
- * twice: a first time before the gendisk capacity is known and a second time
- * after the gendisk capacity is known.
- */
+ 
 struct zoned_disk_info {
 	u32		nr_zones;
 	u32		zone_blocks;
@@ -84,25 +60,19 @@ struct zoned_disk_info {
 struct scsi_disk {
 	struct scsi_device *device;
 
-	/*
-	 * disk_dev is used to show attributes in /sys/class/scsi_disk/,
-	 * but otherwise not really needed.  Do not use for refcounting.
-	 */
+	 
 	struct device	disk_dev;
 	struct gendisk	*disk;
 	struct opal_dev *opal_dev;
 #ifdef CONFIG_BLK_DEV_ZONED
-	/* Updated during revalidation before the gendisk capacity is known. */
+	 
 	struct zoned_disk_info	early_zone_info;
-	/* Updated during revalidation after the gendisk capacity is known. */
+	 
 	struct zoned_disk_info	zone_info;
 	u32		zones_optimal_open;
 	u32		zones_optimal_nonseq;
 	u32		zones_max_open;
-	/*
-	 * Either zero or a power of two. If not zero it means that the offset
-	 * between zone starting LBAs is constant.
-	 */
+	 
 	u32		zone_starting_lba_gran;
 	u32		*zones_wp_offset;
 	spinlock_t	zones_wp_offset_lock;
@@ -112,7 +82,7 @@ struct scsi_disk {
 	char		*zone_wp_update_buf;
 #endif
 	atomic_t	openers;
-	sector_t	capacity;	/* size in logical blocks */
+	sector_t	capacity;	 
 	int		max_retries;
 	u32		min_xfer_blocks;
 	u32		max_xfer_blocks;
@@ -127,16 +97,16 @@ struct scsi_disk {
 	unsigned int	medium_access_timed_out;
 	u8		media_present;
 	u8		write_prot;
-	u8		protection_type;/* Data Integrity Field */
+	u8		protection_type; 
 	u8		provisioning_mode;
 	u8		zeroing_mode;
-	u8		nr_actuators;		/* Number of actuators */
-	bool		suspended;	/* Disk is suspended (stopped) */
-	unsigned	ATO : 1;	/* state of disk ATO bit */
-	unsigned	cache_override : 1; /* temp override of WCE,RCD */
-	unsigned	WCE : 1;	/* state of disk WCE bit */
-	unsigned	RCD : 1;	/* state of disk RCD bit, unused */
-	unsigned	DPOFUA : 1;	/* state of disk DPOFUA bit */
+	u8		nr_actuators;		 
+	bool		suspended;	 
+	unsigned	ATO : 1;	 
+	unsigned	cache_override : 1;  
+	unsigned	WCE : 1;	 
+	unsigned	RCD : 1;	 
+	unsigned	DPOFUA : 1;	 
 	unsigned	first_scan : 1;
 	unsigned	lbpme : 1;
 	unsigned	lbprz : 1;
@@ -227,13 +197,13 @@ static inline sector_t sectors_to_logical(struct scsi_device *sdev, sector_t sec
 
 extern void sd_dif_config_host(struct scsi_disk *);
 
-#else /* CONFIG_BLK_DEV_INTEGRITY */
+#else  
 
 static inline void sd_dif_config_host(struct scsi_disk *disk)
 {
 }
 
-#endif /* CONFIG_BLK_DEV_INTEGRITY */
+#endif  
 
 static inline int sd_is_zoned(struct scsi_disk *sdkp)
 {
@@ -255,7 +225,7 @@ int sd_zbc_report_zones(struct gendisk *disk, sector_t sector,
 blk_status_t sd_zbc_prepare_zone_append(struct scsi_cmnd *cmd, sector_t *lba,
 				        unsigned int nr_blocks);
 
-#else /* CONFIG_BLK_DEV_ZONED */
+#else  
 
 static inline void sd_zbc_free_zone_info(struct scsi_disk *sdkp) {}
 
@@ -291,9 +261,9 @@ static inline blk_status_t sd_zbc_prepare_zone_append(struct scsi_cmnd *cmd,
 
 #define sd_zbc_report_zones NULL
 
-#endif /* CONFIG_BLK_DEV_ZONED */
+#endif  
 
 void sd_print_sense_hdr(struct scsi_disk *sdkp, struct scsi_sense_hdr *sshdr);
 void sd_print_result(const struct scsi_disk *sdkp, const char *msg, int result);
 
-#endif /* _SCSI_DISK_H */
+#endif  

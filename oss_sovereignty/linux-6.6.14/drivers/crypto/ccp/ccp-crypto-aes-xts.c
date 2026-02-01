@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AMD Cryptographic Coprocessor (CCP) AES XTS crypto API support
- *
- * Copyright (C) 2013,2017 Advanced Micro Devices, Inc.
- *
- * Author: Gary R Hook <gary.hook@amd.com>
- * Author: Tom Lendacky <thomas.lendacky@amd.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/sched.h>
@@ -83,9 +76,7 @@ static int ccp_aes_xts_setkey(struct crypto_skcipher *tfm, const u8 *key,
 	if (ret)
 		return ret;
 
-	/* Version 3 devices support 128-bit keys; version 5 devices can
-	 * accommodate 128- and 256-bit keys.
-	 */
+	 
 	switch (key_len) {
 	case AES_KEYSIZE_128 * 2:
 		memcpy(ctx->u.aes.key, key, key_len);
@@ -119,12 +110,7 @@ static int ccp_aes_xts_crypt(struct skcipher_request *req,
 	if (!req->iv)
 		return -EINVAL;
 
-	/* Check conditions under which the CCP can fulfill a request. The
-	 * device can handle input plaintext of a length that is a multiple
-	 * of the unit_size, bug the crypto implementation only supports
-	 * the unit_size being equal to the input length. This limits the
-	 * number of scenarios we can handle.
-	 */
+	 
 	unit_size = CCP_XTS_AES_UNIT_SIZE__LAST;
 	for (unit = 0; unit < ARRAY_SIZE(xts_unit_sizes); unit++) {
 		if (req->cryptlen == xts_unit_sizes[unit].size) {
@@ -132,10 +118,7 @@ static int ccp_aes_xts_crypt(struct skcipher_request *req,
 			break;
 		}
 	}
-	/* The CCP has restrictions on block sizes. Also, a version 3 device
-	 * only supports AES-128 operations; version 5 CCPs support both
-	 * AES-128 and -256 operations.
-	 */
+	 
 	if (unit_size == CCP_XTS_AES_UNIT_SIZE__LAST)
 		fallback = 1;
 	if ((ccpversion < CCP_VERSION(5, 0)) &&
@@ -145,9 +128,7 @@ static int ccp_aes_xts_crypt(struct skcipher_request *req,
 	    (ctx->u.aes.key_len != AES_KEYSIZE_256))
 		fallback = 1;
 	if (fallback) {
-		/* Use the fallback to process the request for any
-		 * unsupported unit sizes or key sizes
-		 */
+		 
 		skcipher_request_set_tfm(&rctx->fallback_req,
 					 ctx->u.aes.tfm_skcipher);
 		skcipher_request_set_callback(&rctx->fallback_req,

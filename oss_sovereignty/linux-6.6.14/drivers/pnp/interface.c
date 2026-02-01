@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * interface.c - contains everything related to the user interface
- *
- * Some code, especially possible resource dumping is based on isapnp_proc.c (c) Jaroslav Kysela <perex@perex.cz>
- * Copyright 2002 Adam Belay <ambx1@neo.rr.com>
- * Copyright (C) 2008 Hewlett-Packard Development Company, L.P.
- *	Bjorn Helgaas <bjorn.helgaas@hp.com>
- */
+
+ 
 
 #include <linux/pnp.h>
 #include <linux/string.h>
@@ -23,12 +16,12 @@
 #include "base.h"
 
 struct pnp_info_buffer {
-	char *buffer;		/* pointer to begin of buffer */
-	char *curr;		/* current position in buffer */
-	unsigned long size;	/* current size */
-	unsigned long len;	/* total length of buffer */
-	int stop;		/* stop flag */
-	int error;		/* error code */
+	char *buffer;		 
+	char *curr;		 
+	unsigned long size;	 
+	unsigned long len;	 
+	int stop;		 
+	int error;		 
 };
 
 typedef struct pnp_info_buffer pnp_info_buffer_t;
@@ -313,7 +306,7 @@ static char *pnp_get_resource_value(char *buf,
 	if (flags)
 		*flags = 0;
 
-	/* TBD: allow for disabled resources */
+	 
 
 	buf = skip_spaces(buf);
 	if (start) {
@@ -328,7 +321,7 @@ static char *pnp_get_resource_value(char *buf,
 		}
 	}
 
-	/* TBD: allow for additional flags, e.g., IORESOURCE_WINDOW */
+	 
 
 	return buf;
 }

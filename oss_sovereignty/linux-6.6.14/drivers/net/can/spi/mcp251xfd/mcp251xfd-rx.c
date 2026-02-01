@@ -1,16 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// mcp251xfd - Microchip MCP251xFD Family CAN controller driver
-//
-// Copyright (c) 2019, 2020, 2021 Pengutronix,
-//               Marc Kleine-Budde <kernel@pengutronix.de>
-//
-// Based on:
-//
-// CAN bus driver for Microchip 25XXFD CAN Controller with SPI Interface
-//
-// Copyright (c) 2019 Martin Sperl <kernel@martin.sperl.org>
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/bitfield.h>
 
@@ -93,9 +93,7 @@ mcp251xfd_rx_ring_update(const struct mcp251xfd_priv *priv,
 	if (err || fifo_empty)
 		return err;
 
-	/* chip_rx_head, is the next RX-Object filled by the HW.
-	 * The new RX head must be >= the old head.
-	 */
+	 
 	new_head = round_down(ring->head, ring->obj_num) + chip_rx_head;
 	if (new_head <= ring->head)
 		new_head += ring->obj_num;
@@ -129,7 +127,7 @@ mcp251xfd_hw_rx_obj_to_skb(const struct mcp251xfd_priv *priv,
 
 	dlc = FIELD_GET(MCP251XFD_OBJ_FLAGS_DLC_MASK, hw_rx_obj->flags);
 
-	/* CANFD */
+	 
 	if (hw_rx_obj->flags & MCP251XFD_OBJ_FLAGS_FDF) {
 		if (hw_rx_obj->flags & MCP251XFD_OBJ_FLAGS_ESI)
 			cfd->flags |= CANFD_ESI;
@@ -227,15 +225,7 @@ mcp251xfd_handle_rxif_ring(struct mcp251xfd_priv *priv,
 				return err;
 		}
 
-		/* Increment the RX FIFO tail pointer 'len' times in a
-		 * single SPI message.
-		 *
-		 * Note:
-		 * Calculate offset, so that the SPI transfer ends on
-		 * the last message of the uinc_xfer array, which has
-		 * "cs_change == 0", to properly deactivate the chip
-		 * select.
-		 */
+		 
 		offset = ARRAY_SIZE(ring->uinc_xfer) - len;
 		err = spi_sync_transfer(priv->spi,
 					ring->uinc_xfer + offset, len);
@@ -254,9 +244,7 @@ int mcp251xfd_handle_rxif(struct mcp251xfd_priv *priv)
 	int err, n;
 
 	mcp251xfd_for_each_rx_ring(priv, ring, n) {
-		/* - if RX IRQ coalescing is active always handle ring 0
-		 * - only handle rings if RX IRQ is active
-		 */
+		 
 		if ((ring->nr > 0 || !priv->rx_obj_num_coalesce_irq) &&
 		    !(priv->regs_status.rxif & BIT(ring->fifo_nr)))
 			continue;

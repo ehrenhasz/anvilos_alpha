@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * axp288_fuel_gauge.c - Xpower AXP288 PMIC Fuel Gauge Driver
- *
- * Copyright (C) 2020-2021 Andrejus Basovas <xxx@yyy.tld>
- * Copyright (C) 2016-2021 Hans de Goede <hdegoede@redhat.com>
- * Copyright (C) 2014 Intel Corporation
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/dmi.h>
@@ -36,17 +28,17 @@
 #define CHRG_STAT_CHARGING			(1 << 6)
 #define CHRG_STAT_PMIC_OTP			(1 << 7)
 
-#define CHRG_CCCV_CC_MASK			0xf     /* 4 bits */
+#define CHRG_CCCV_CC_MASK			0xf      
 #define CHRG_CCCV_CC_BIT_POS			0
-#define CHRG_CCCV_CC_OFFSET			200     /* 200mA */
-#define CHRG_CCCV_CC_LSB_RES			200     /* 200mA */
-#define CHRG_CCCV_ITERM_20P			(1 << 4)    /* 20% of CC */
-#define CHRG_CCCV_CV_MASK			0x60        /* 2 bits */
+#define CHRG_CCCV_CC_OFFSET			200      
+#define CHRG_CCCV_CC_LSB_RES			200      
+#define CHRG_CCCV_ITERM_20P			(1 << 4)     
+#define CHRG_CCCV_CV_MASK			0x60         
 #define CHRG_CCCV_CV_BIT_POS			5
-#define CHRG_CCCV_CV_4100MV			0x0     /* 4.10V */
-#define CHRG_CCCV_CV_4150MV			0x1     /* 4.15V */
-#define CHRG_CCCV_CV_4200MV			0x2     /* 4.20V */
-#define CHRG_CCCV_CV_4350MV			0x3     /* 4.35V */
+#define CHRG_CCCV_CV_4100MV			0x0      
+#define CHRG_CCCV_CV_4150MV			0x1      
+#define CHRG_CCCV_CV_4200MV			0x2      
+#define CHRG_CCCV_CV_4350MV			0x3      
 #define CHRG_CCCV_CHG_EN			(1 << 7)
 
 #define FG_CNTL_OCV_ADJ_STAT			(1 << 2)
@@ -63,27 +55,27 @@
 #define FG_REP_CAP_VAL_MASK			0x7F
 
 #define FG_DES_CAP1_VALID			(1 << 7)
-#define FG_DES_CAP_RES_LSB			1456    /* 1.456mAhr */
+#define FG_DES_CAP_RES_LSB			1456     
 
-#define FG_DES_CC_RES_LSB			1456    /* 1.456mAhr */
+#define FG_DES_CC_RES_LSB			1456     
 
 #define FG_OCV_CAP_VALID			(1 << 7)
 #define FG_OCV_CAP_VAL_MASK			0x7F
 #define FG_CC_CAP_VALID				(1 << 7)
 #define FG_CC_CAP_VAL_MASK			0x7F
 
-#define FG_LOW_CAP_THR1_MASK			0xf0    /* 5% tp 20% */
-#define FG_LOW_CAP_THR1_VAL			0xa0    /* 15 perc */
-#define FG_LOW_CAP_THR2_MASK			0x0f    /* 0% to 15% */
-#define FG_LOW_CAP_WARN_THR			14  /* 14 perc */
-#define FG_LOW_CAP_CRIT_THR			4   /* 4 perc */
-#define FG_LOW_CAP_SHDN_THR			0   /* 0 perc */
+#define FG_LOW_CAP_THR1_MASK			0xf0     
+#define FG_LOW_CAP_THR1_VAL			0xa0     
+#define FG_LOW_CAP_THR2_MASK			0x0f     
+#define FG_LOW_CAP_WARN_THR			14   
+#define FG_LOW_CAP_CRIT_THR			4    
+#define FG_LOW_CAP_SHDN_THR			0    
 
 #define DEV_NAME				"axp288_fuel_gauge"
 
-/* 1.1mV per LSB expressed in uV */
+ 
 #define VOLTAGE_FROM_ADC(a)			((a * 11) / 10)
-/* properties converted to uV, uA */
+ 
 #define PROP_VOLT(a)				((a) * 1000)
 #define PROP_CURR(a)				((a) * 1000)
 
@@ -125,8 +117,8 @@ struct axp288_fg_info {
 	int low_cap;
 	struct dentry *debug_file;
 
-	char valid;                 /* zero until following fields are valid */
-	unsigned long last_updated; /* in jiffies */
+	char valid;                  
+	unsigned long last_updated;  
 
 	int pwr_stat;
 	int fg_res;
@@ -148,7 +140,7 @@ static enum power_supply_property fuel_gauge_props[] = {
 	POWER_SUPPLY_PROP_CAPACITY,
 	POWER_SUPPLY_PROP_CAPACITY_ALERT_MIN,
 	POWER_SUPPLY_PROP_TECHNOLOGY,
-	/* The 3 props below are not used when no_current_sense_res is set */
+	 
 	POWER_SUPPLY_PROP_CHARGE_FULL,
 	POWER_SUPPLY_PROP_CHARGE_NOW,
 	POWER_SUPPLY_PROP_CURRENT_NOW,
@@ -211,7 +203,7 @@ static int fuel_gauge_read_12bit_word(struct axp288_fg_info *info, int reg)
 		return ret;
 	}
 
-	/* 12-bit data values have upper 8 bits in buf[0], lower 4 in buf[1] */
+	 
 	return (buf[0] << 4) | ((buf[1] >> 4) & 0x0f);
 }
 
@@ -290,7 +282,7 @@ static void fuel_gauge_get_status(struct axp288_fg_info *info)
 	int fg_res = info->fg_res;
 	int curr = info->d_curr;
 
-	/* Report full if Vbus is valid and the reported capacity is 100% */
+	 
 	if (!(pwr_stat & PS_STAT_VBUS_VALID))
 		goto not_full;
 
@@ -303,11 +295,7 @@ static void fuel_gauge_get_status(struct axp288_fg_info *info)
 		return;
 	}
 
-	/*
-	 * Sometimes the charger turns itself off before fg-res reaches 100%.
-	 * When this happens the AXP288 reports a not-charging status and
-	 * 0 mA discharge current.
-	 */
+	 
 	if (fg_res < 90 || (pwr_stat & PS_STAT_BAT_CHRG_DIR) || no_current_sense_res)
 		goto not_full;
 
@@ -493,7 +481,7 @@ static irqreturn_t fuel_gauge_thread_handler(int irq, void *dev)
 	}
 
 	mutex_lock(&info->lock);
-	info->valid = 0; /* Force updating of the cached registers */
+	info->valid = 0;  
 	mutex_unlock(&info->lock);
 
 	power_supply_changed(info->bat);
@@ -505,7 +493,7 @@ static void fuel_gauge_external_power_changed(struct power_supply *psy)
 	struct axp288_fg_info *info = power_supply_get_drvdata(psy);
 
 	mutex_lock(&info->lock);
-	info->valid = 0; /* Force updating of the cached registers */
+	info->valid = 0;  
 	mutex_unlock(&info->lock);
 	power_supply_changed(psy);
 }
@@ -521,36 +509,32 @@ static struct power_supply_desc fuel_gauge_desc = {
 	.external_power_changed	= fuel_gauge_external_power_changed,
 };
 
-/*
- * Some devices have no battery (HDMI sticks) and the axp288 battery's
- * detection reports one despite it not being there.
- * Please keep this listed sorted alphabetically.
- */
+ 
 static const struct dmi_system_id axp288_quirks[] = {
 	{
-		/* ACEPC T8 Cherry Trail Z8350 mini PC */
+		 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "To be filled by O.E.M."),
 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "Cherry Trail CR"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "T8"),
-			/* also match on somewhat unique bios-version */
+			 
 			DMI_EXACT_MATCH(DMI_BIOS_VERSION, "1.000"),
 		},
 		.driver_data = (void *)AXP288_QUIRK_NO_BATTERY,
 	},
 	{
-		/* ACEPC T11 Cherry Trail Z8350 mini PC */
+		 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "To be filled by O.E.M."),
 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "Cherry Trail CR"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "T11"),
-			/* also match on somewhat unique bios-version */
+			 
 			DMI_EXACT_MATCH(DMI_BIOS_VERSION, "1.000"),
 		},
 		.driver_data = (void *)AXP288_QUIRK_NO_BATTERY,
 	},
 	{
-		/* Intel Cherry Trail Compute Stick, Windows version */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Intel"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "STK1AW32SC"),
@@ -558,7 +542,7 @@ static const struct dmi_system_id axp288_quirks[] = {
 		.driver_data = (void *)AXP288_QUIRK_NO_BATTERY,
 	},
 	{
-		/* Intel Cherry Trail Compute Stick, version without an OS */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Intel"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "STK1A32SC"),
@@ -566,13 +550,13 @@ static const struct dmi_system_id axp288_quirks[] = {
 		.driver_data = (void *)AXP288_QUIRK_NO_BATTERY,
 	},
 	{
-		/* Meegopad T02 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "MEEGOPAD T02"),
 		},
 		.driver_data = (void *)AXP288_QUIRK_NO_BATTERY,
 	},
-	{	/* Mele PCG03 Mini PC */
+	{	 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "Mini PC"),
 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "Mini PC"),
@@ -580,7 +564,7 @@ static const struct dmi_system_id axp288_quirks[] = {
 		.driver_data = (void *)AXP288_QUIRK_NO_BATTERY,
 	},
 	{
-		/* Minix Neo Z83-4 mini PC */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "MINIX"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Z83-4"),
@@ -588,11 +572,7 @@ static const struct dmi_system_id axp288_quirks[] = {
 		.driver_data = (void *)AXP288_QUIRK_NO_BATTERY,
 	},
 	{
-		/*
-		 * One Mix 1, this uses the "T3 MRD" boardname used by
-		 * generic mini PCs, but it is a mini laptop so it does
-		 * actually have a battery!
-		 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_BOARD_NAME, "T3 MRD"),
 			DMI_MATCH(DMI_BIOS_DATE, "06/14/2018"),
@@ -600,11 +580,7 @@ static const struct dmi_system_id axp288_quirks[] = {
 		.driver_data = NULL,
 	},
 	{
-		/*
-		 * Various Ace PC/Meegopad/MinisForum/Wintel Mini-PCs/HDMI-sticks
-		 * This entry must be last because it is generic, this allows
-		 * adding more specifuc quirks overriding this generic entry.
-		 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_BOARD_NAME, "T3 MRD"),
 			DMI_MATCH(DMI_CHASSIS_TYPE, "3"),
@@ -620,10 +596,7 @@ static int axp288_fuel_gauge_read_initial_regs(struct axp288_fg_info *info)
 	unsigned int val;
 	int ret;
 
-	/*
-	 * On some devices the fuelgauge and charger parts of the axp288 are
-	 * not used, check that the fuelgauge is enabled (CC_CTRL != 0).
-	 */
+	 
 	ret = regmap_read(info->regmap, AXP20X_CC_CTRL, &val);
 	if (ret < 0)
 		return ret;
@@ -695,10 +668,7 @@ static int axp288_fuel_gauge_probe(struct platform_device *pdev)
 	unsigned long quirks = 0;
 	int i, pirq, ret;
 
-	/*
-	 * Normally the native AXP288 fg/charger drivers are preferred but
-	 * on some devices the ACPI drivers should be used instead.
-	 */
+	 
 	if (!acpi_quirk_skip_acpi_ac_and_battery())
 		return -ENODEV;
 
@@ -734,17 +704,13 @@ static int axp288_fuel_gauge_probe(struct platform_device *pdev)
 	}
 
 	for (i = 0; i < IIO_CHANNEL_NUM; i++) {
-		/*
-		 * Note cannot use devm_iio_channel_get because x86 systems
-		 * lack the device<->channel maps which iio_channel_get will
-		 * try to use when passed a non NULL device pointer.
-		 */
+		 
 		info->iio_channel[i] =
 			iio_channel_get(NULL, iio_chan_name[i]);
 		if (IS_ERR(info->iio_channel[i])) {
 			ret = PTR_ERR(info->iio_channel[i]);
 			dev_dbg(dev, "error getting iiochan %s: %d\n", iio_chan_name[i], ret);
-			/* Wait for axp288_adc to load */
+			 
 			if (ret == -ENODEV)
 				ret = -EPROBE_DEFER;
 

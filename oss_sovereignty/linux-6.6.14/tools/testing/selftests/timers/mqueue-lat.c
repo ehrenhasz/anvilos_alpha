@@ -1,24 +1,4 @@
-/* Measure mqueue timeout latency
- *              by: john stultz (john.stultz@linaro.org)
- *		(C) Copyright Linaro 2013
- *
- *		Inspired with permission from example test by:
- *			Romain Francoise <romain@orebokech.com>
- *              Licensed under the GPLv2
- *
- *  To build:
- *	$ gcc mqueue-lat.c -o mqueue-lat -lrt
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- */
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,8 +13,8 @@
 
 #define NSEC_PER_SEC 1000000000ULL
 
-#define TARGET_TIMEOUT		100000000	/* 100ms in nanoseconds */
-#define UNRESONABLE_LATENCY	40000000	/* 40ms in nanosecs */
+#define TARGET_TIMEOUT		100000000	 
+#define UNRESONABLE_LATENCY	40000000	 
 
 
 long long timespec_sub(struct timespec a, struct timespec b)
@@ -79,7 +59,7 @@ int mqueue_lat_test(void)
 
 		clock_gettime(CLOCK_REALTIME, &now);
 		target = now;
-		target = timespec_add(now, TARGET_TIMEOUT); /* 100ms */
+		target = timespec_add(now, TARGET_TIMEOUT);  
 
 		ret = mq_timedreceive(q, buf, sizeof(buf), NULL, &target);
 		if (ret < 0 && errno != ETIMEDOUT) {

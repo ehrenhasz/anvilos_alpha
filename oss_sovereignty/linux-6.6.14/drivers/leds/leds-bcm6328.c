@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for BCM6328 memory-mapped LEDs, based on leds-syscon.c
- *
- * Copyright 2015 Álvaro Fernández Rojas <noltari@gmail.com>
- * Copyright 2015 Jonas Gorski <jogo@openwrt.org>
- */
+
+ 
 #include <linux/io.h>
 #include <linux/leds.h>
 #include <linux/module.h>
@@ -55,16 +50,7 @@
 #define BCM6328_LED_MODE_OFF		3
 #define BCM6328_LED_SHIFT(X)		((X) << 1)
 
-/**
- * struct bcm6328_led - state container for bcm6328 based LEDs
- * @cdev: LED class device for this LED
- * @mem: memory resource
- * @lock: memory lock
- * @pin: LED pin number
- * @blink_leds: blinking LEDs
- * @blink_delay: blinking delay
- * @active_low: LED is active low
- */
+ 
 struct bcm6328_led {
 	struct led_classdev cdev;
 	void __iomem *mem;
@@ -93,18 +79,13 @@ static unsigned long bcm6328_led_read(void __iomem *reg)
 #endif
 }
 
-/*
- * LEDMode 64 bits / 24 LEDs
- * bits [31:0] -> LEDs 8-23
- * bits [47:32] -> LEDs 0-7
- * bits [63:48] -> unused
- */
+ 
 static unsigned long bcm6328_pin2shift(unsigned long pin)
 {
 	if (pin < 8)
-		return pin + 16; /* LEDs 0-7 (bits 47:32) */
+		return pin + 16;  
 	else
-		return pin - 8; /* LEDs 8-23 (bits 31:0) */
+		return pin - 8;  
 }
 
 static void bcm6328_led_mode(struct bcm6328_led *led, unsigned long value)
@@ -133,11 +114,11 @@ static void bcm6328_led_set(struct led_classdev *led_cdev,
 
 	spin_lock_irqsave(led->lock, flags);
 
-	/* Remove LED from cached HW blinking intervals */
+	 
 	led->blink_leds[0] &= ~BIT(led->pin);
 	led->blink_leds[1] &= ~BIT(led->pin);
 
-	/* Set LED on/off */
+	 
 	if ((led->active_low && value == LED_OFF) ||
 	    (!led->active_low && value != LED_OFF))
 		bcm6328_led_mode(led, BCM6328_LED_MODE_ON);
@@ -187,34 +168,28 @@ static int bcm6328_blink_set(struct led_classdev *led_cdev,
 	}
 
 	spin_lock_irqsave(led->lock, flags);
-	/*
-	 * Check if any of the two configurable HW blinking intervals is
-	 * available:
-	 *   1. No LEDs assigned to the HW blinking interval.
-	 *   2. Only this LED is assigned to the HW blinking interval.
-	 *   3. LEDs with the same delay assigned.
-	 */
+	 
 	if (led->blink_leds[0] == 0 ||
 	    led->blink_leds[0] == BIT(led->pin) ||
 	    led->blink_delay[0] == delay) {
 		unsigned long val;
 
-		/* Add LED to the first HW blinking interval cache */
+		 
 		led->blink_leds[0] |= BIT(led->pin);
 
-		/* Remove LED from the second HW blinking interval cache */
+		 
 		led->blink_leds[1] &= ~BIT(led->pin);
 
-		/* Cache first HW blinking interval delay */
+		 
 		led->blink_delay[0] = delay;
 
-		/* Update the delay for the first HW blinking interval */
+		 
 		val = bcm6328_led_read(led->mem + BCM6328_REG_INIT);
 		val &= ~BCM6328_LED_BLINK1_MASK;
 		val |= (delay << BCM6328_LED_BLINK1_SHIFT);
 		bcm6328_led_write(led->mem + BCM6328_REG_INIT, val);
 
-		/* Set the LED to first HW blinking interval */
+		 
 		bcm6328_led_mode(led, BCM6328_LED_MODE_BLINK1);
 
 		rc = 0;
@@ -223,22 +198,22 @@ static int bcm6328_blink_set(struct led_classdev *led_cdev,
 		   led->blink_delay[1] == delay) {
 		unsigned long val;
 
-		/* Remove LED from the first HW blinking interval */
+		 
 		led->blink_leds[0] &= ~BIT(led->pin);
 
-		/* Add LED to the second HW blinking interval */
+		 
 		led->blink_leds[1] |= BIT(led->pin);
 
-		/* Cache second HW blinking interval delay */
+		 
 		led->blink_delay[1] = delay;
 
-		/* Update the delay for the second HW blinking interval */
+		 
 		val = bcm6328_led_read(led->mem + BCM6328_REG_INIT);
 		val &= ~BCM6328_LED_BLINK2_MASK;
 		val |= (delay << BCM6328_LED_BLINK2_SHIFT);
 		bcm6328_led_write(led->mem + BCM6328_REG_INIT, val);
 
-		/* Set the LED to second HW blinking interval */
+		 
 		bcm6328_led_mode(led, BCM6328_LED_MODE_BLINK2);
 
 		rc = 0;
@@ -264,7 +239,7 @@ static int bcm6328_hwled(struct device *dev, struct device_node *nc, u32 reg,
 	bcm6328_led_write(mem + BCM6328_REG_HWDIS, val);
 	spin_unlock_irqrestore(lock, flags);
 
-	/* Only LEDs 0-7 can be activity/link controlled */
+	 
 	if (reg >= 8)
 		return 0;
 
@@ -394,7 +369,7 @@ static int bcm6328_leds_probe(struct platform_device *pdev)
 	struct device_node *np = dev_of_node(&pdev->dev);
 	struct device_node *child;
 	void __iomem *mem;
-	spinlock_t *lock; /* memory lock */
+	spinlock_t *lock;  
 	unsigned long val, *blink_leds, *blink_delay;
 
 	mem = devm_platform_ioremap_resource(pdev, 0);

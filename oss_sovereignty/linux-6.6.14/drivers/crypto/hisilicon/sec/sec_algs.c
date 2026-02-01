@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2016-2017 HiSilicon Limited. */
+
+ 
 #include <linux/crypto.h>
 #include <linux/dma-mapping.h>
 #include <linux/dmapool.h>
@@ -116,10 +116,7 @@ static const struct sec_c_alg_cfg sec_c_alg_cfgs[] =  {
 	},
 };
 
-/*
- * Mutex used to ensure safe operation of reference count of
- * alg providers
- */
+ 
 static DEFINE_MUTEX(algs_lock);
 static unsigned int active_devs;
 
@@ -197,10 +194,10 @@ static int sec_alloc_and_fill_hw_sgl(struct sec_hw_sgl **sec_sgl,
 				goto err_free_hw_sgls;
 			}
 
-			if (!sgl_current) { /* First one */
+			if (!sgl_current) {  
 				*psec_sgl = sgl_next_dma;
 				*sec_sgl = sgl_next;
-			} else { /* Chained */
+			} else {  
 				sgl_current->entry_sum_in_sgl = SEC_MAX_SGE_NUM;
 				sgl_current->next_sgl = sgl_next_dma;
 				sgl_current->next = sgl_next;
@@ -233,10 +230,10 @@ static int sec_alg_skcipher_setkey(struct crypto_skcipher *tfm,
 
 	mutex_lock(&ctx->lock);
 	if (ctx->key) {
-		/* rekeying */
+		 
 		memset(ctx->key, 0, SEC_MAX_CIPHER_KEY);
 	} else {
-		/* new key */
+		 
 		ctx->key = dma_alloc_coherent(dev, SEC_MAX_CIPHER_KEY,
 					      &ctx->pkey, GFP_KERNEL);
 		if (!ctx->key) {
@@ -380,7 +377,7 @@ static void sec_alg_free_el(struct sec_request_el *el,
 	kfree(el);
 }
 
-/* queuelock must be held */
+ 
 static int sec_send_request(struct sec_request *sec_req, struct sec_queue *queue)
 {
 	struct sec_request_el *el, *temp;
@@ -388,23 +385,14 @@ static int sec_send_request(struct sec_request *sec_req, struct sec_queue *queue
 
 	mutex_lock(&sec_req->lock);
 	list_for_each_entry_safe(el, temp, &sec_req->elements, head) {
-		/*
-		 * Add to hardware queue only under following circumstances
-		 * 1) Software and hardware queue empty so no chain dependencies
-		 * 2) No dependencies as new IV - (check software queue empty
-		 *    to maintain order)
-		 * 3) No dependencies because the mode does no chaining.
-		 *
-		 * In other cases first insert onto the software queue which
-		 * is then emptied as requests complete
-		 */
+		 
 		if (!queue->havesoftqueue ||
 		    (kfifo_is_empty(&queue->softqueue) &&
 		     sec_queue_empty(queue))) {
 			ret = sec_queue_send(queue, &el->req, sec_req);
 			if (ret == -EAGAIN) {
-				/* Wait unti we can send then try again */
-				/* DEAD if here - should not happen */
+				 
+				 
 				ret = -EBUSY;
 				goto err_unlock;
 			}
@@ -442,15 +430,11 @@ static void sec_skcipher_alg_callback(struct sec_bd_info *sec_resp,
 			sec_resp->w1 & SEC_BD_W1_BD_INVALID,
 			icv_or_skey_en);
 		sec_req->err = -EINVAL;
-		/*
-		 * We need to muddle on to avoid getting stuck with elements
-		 * on the queue. Error will be reported so requester so
-		 * it should be able to handle appropriately.
-		 */
+		 
 	}
 
 	spin_lock_bh(&ctx->queue->queuelock);
-	/* Put the IV in place for chained cases */
+	 
 	switch (ctx->cipher_alg) {
 	case SEC_C_AES_CBC_128:
 	case SEC_C_AES_CBC_192:
@@ -469,7 +453,7 @@ static void sec_skcipher_alg_callback(struct sec_bd_info *sec_resp,
 					   crypto_skcipher_ivsize(atfm),
 					   sec_req_el->el_length -
 					   crypto_skcipher_ivsize(atfm));
-		/* No need to sync to the device as coherent DMA */
+		 
 		break;
 	case SEC_C_AES_CTR_128:
 	case SEC_C_AES_CTR_192:
@@ -477,7 +461,7 @@ static void sec_skcipher_alg_callback(struct sec_bd_info *sec_resp,
 		crypto_inc(skreq->iv, 16);
 		break;
 	default:
-		/* Do not update */
+		 
 		break;
 	}
 
@@ -490,11 +474,11 @@ static void sec_skcipher_alg_callback(struct sec_bd_info *sec_resp,
 				"Error getting next element from kfifo %d\n",
 				ret);
 		else
-			/* We know there is space so this cannot fail */
+			 
 			sec_queue_send(ctx->queue, &nextrequest->req,
 				       nextrequest->sec_req);
 	} else if (!list_empty(&ctx->backlog)) {
-		/* Need to verify there is room first */
+		 
 		backlog_req = list_first_entry(&ctx->backlog,
 					       typeof(*backlog_req),
 					       backlog_head);
@@ -516,10 +500,7 @@ static void sec_skcipher_alg_callback(struct sec_bd_info *sec_resp,
 	mutex_unlock(&sec_req->lock);
 	sec_alg_free_el(sec_req_el, ctx->queue->dev_info);
 
-	/*
-	 * Request is done.
-	 * The dance is needed as the lock is freed in the completion
-	 */
+	 
 	mutex_lock(&sec_req->lock);
 	done = list_empty(&sec_req->elements);
 	mutex_unlock(&sec_req->lock);
@@ -551,7 +532,7 @@ static int sec_alg_alloc_and_calc_split_sizes(int length, size_t **split_sizes,
 	size_t *sizes;
 	int i;
 
-	/* Split into suitable sized blocks */
+	 
 	*steps = roundup(length, SEC_REQ_LIMIT) / SEC_REQ_LIMIT;
 	sizes = kcalloc(*steps, sizeof(*sizes), gfp);
 	if (!sizes)
@@ -588,7 +569,7 @@ static int sec_map_and_split_sg(struct scatterlist *sgl, size_t *split_sizes,
 		goto err_free_splits;
 	}
 
-	/* output the scatter list before and after this */
+	 
 	ret = sg_split(sgl, count, 0, steps, split_sizes,
 		       *splits, *splits_nents, gfp);
 	if (ret) {
@@ -608,10 +589,7 @@ err_unmap_sg:
 	return ret;
 }
 
-/*
- * Reverses the sec_map_and_split_sg call for messages not yet added to
- * the queues.
- */
+ 
 static void sec_unmap_sg_on_err(struct scatterlist *sgl, int steps,
 				struct scatterlist **splits, int *splits_nents,
 				int sgl_len_in, struct device *dev)
@@ -658,7 +636,7 @@ static struct sec_request_el
 	req->w0 |= ((el_size >> 20) << SEC_BD_W0_C_GRAN_SIZE_21_20_S) &
 		SEC_BD_W0_C_GRAN_SIZE_21_20_M;
 
-	/* Writing whole u32 so no need to take care of masking */
+	 
 	req->w2 = ((1 << SEC_BD_W2_GRAN_NUM_S) & SEC_BD_W2_GRAN_NUM_M) |
 		((el_size << SEC_BD_W2_C_GRAN_SIZE_15_0_S) &
 		 SEC_BD_W2_C_GRAN_SIZE_15_0_M);
@@ -726,7 +704,7 @@ static int sec_alg_skcipher_crypto(struct skcipher_request *skreq,
 	mutex_init(&sec_req->lock);
 	sec_req->req_base = &skreq->base;
 	sec_req->err = 0;
-	/* SGL mapping out here to allow us to break it up as necessary */
+	 
 	sec_req->len_in = sg_nents(skreq->src);
 
 	ret = sec_alg_alloc_and_calc_split_sizes(skreq->cryptlen, &split_sizes,
@@ -748,16 +726,12 @@ static int sec_alg_skcipher_crypto(struct skcipher_request *skreq,
 		if (ret)
 			goto err_unmap_in_sg;
 	}
-	/* Shared info stored in seq_req - applies to all BDs */
+	 
 	sec_req->tfm_ctx = ctx;
 	sec_req->cb = sec_skcipher_alg_callback;
 	INIT_LIST_HEAD(&sec_req->elements);
 
-	/*
-	 * Future optimization.
-	 * In the chaining case we can't use a dma pool bounce buffer
-	 * but in the case where we know there is no chaining we can
-	 */
+	 
 	if (crypto_skcipher_ivsize(atfm)) {
 		sec_req->dma_iv = dma_map_single(info->dev, skreq->iv,
 						 crypto_skcipher_ivsize(atfm),
@@ -768,7 +742,7 @@ static int sec_alg_skcipher_crypto(struct skcipher_request *skreq,
 		}
 	}
 
-	/* Set them all up then queue - cleaner error handling. */
+	 
 	for (i = 0; i < steps; i++) {
 		el = sec_alg_alloc_and_fill_el(&ctx->req_template,
 					       encrypt ? 1 : 0,
@@ -788,25 +762,12 @@ static int sec_alg_skcipher_crypto(struct skcipher_request *skreq,
 		list_add_tail(&el->head, &sec_req->elements);
 	}
 
-	/*
-	 * Only attempt to queue if the whole lot can fit in the queue -
-	 * we can't successfully cleanup after a partial queing so this
-	 * must succeed or fail atomically.
-	 *
-	 * Big hammer test of both software and hardware queues - could be
-	 * more refined but this is unlikely to happen so no need.
-	 */
+	 
 
-	/* Grab a big lock for a long time to avoid concurrency issues */
+	 
 	spin_lock_bh(&queue->queuelock);
 
-	/*
-	 * Can go on to queue if we have space in either:
-	 * 1) The hardware queue and no software queue
-	 * 2) The software queue
-	 * AND there is nothing in the backlog.  If there is backlog we
-	 * have to only queue to the backlog queue and return busy.
-	 */
+	 
 	if ((!sec_queue_can_enqueue(queue, steps) &&
 	     (!queue->havesoftqueue ||
 	      kfifo_avail(&queue->softqueue) > steps)) ||
@@ -828,7 +789,7 @@ static int sec_alg_skcipher_crypto(struct skcipher_request *skreq,
 
 	ret = -EINPROGRESS;
 out:
-	/* Cleanup - all elements in pointer arrays have been copied */
+	 
 	kfree(splits_in_nents);
 	kfree(splits_in);
 	kfree(splits_out_nents);
@@ -1010,7 +971,7 @@ static struct skcipher_alg sec_algs[] = {
 		.max_keysize = 2 * AES_MAX_KEY_SIZE,
 		.ivsize = AES_BLOCK_SIZE,
 	}, {
-	/* Unable to find any test vectors so untested */
+	 
 		.base = {
 			.cra_name = "ecb(des)",
 			.cra_driver_name = "hisi_sec_des_ecb",

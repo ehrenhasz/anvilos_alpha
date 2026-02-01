@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/module.h>
@@ -192,9 +192,7 @@ static int qlge_update_ring_coalescing(struct qlge_adapter *qdev)
 	if (!netif_running(qdev->ndev))
 		return status;
 
-	/* Skip the default queue, and update the outbound handler
-	 * queues if they changed.
-	 */
+	 
 	cqicb = (struct cqicb *)&qdev->rx_ring[qdev->rss_ring_count];
 	if (le16_to_cpu(cqicb->irq_delay) != qdev->tx_coalesce_usecs ||
 	    le16_to_cpu(cqicb->pkt_delay) != qdev->tx_max_coalesced_frames) {
@@ -215,7 +213,7 @@ static int qlge_update_ring_coalescing(struct qlge_adapter *qdev)
 		}
 	}
 
-	/* Update the inbound (RSS) handler queues if they changed. */
+	 
 	cqicb = (struct cqicb *)&qdev->rx_ring[0];
 	if (le16_to_cpu(cqicb->irq_delay) != qdev->rx_coalesce_usecs ||
 	    le16_to_cpu(cqicb->pkt_delay) != qdev->rx_max_coalesced_frames) {
@@ -251,9 +249,7 @@ static void qlge_update_stats(struct qlge_adapter *qdev)
 			  "Couldn't get xgmac sem.\n");
 		goto quit;
 	}
-	/*
-	 * Get TX statistics.
-	 */
+	 
 	for (i = 0x200; i < 0x280; i += 8) {
 		if (qlge_read_xgmac_reg64(qdev, i, &data)) {
 			netif_err(qdev, drv, qdev->ndev,
@@ -266,9 +262,7 @@ static void qlge_update_stats(struct qlge_adapter *qdev)
 		iter++;
 	}
 
-	/*
-	 * Get RX statistics.
-	 */
+	 
 	for (i = 0x300; i < 0x3d0; i += 8) {
 		if (qlge_read_xgmac_reg64(qdev, i, &data)) {
 			netif_err(qdev, drv, qdev->ndev,
@@ -281,12 +275,10 @@ static void qlge_update_stats(struct qlge_adapter *qdev)
 		iter++;
 	}
 
-	/* Update receive mac error statistics */
+	 
 	iter += QLGE_RCV_MAC_ERR_STATS;
 
-	/*
-	 * Get Per-priority TX pause frame counter statistics.
-	 */
+	 
 	for (i = 0x500; i < 0x540; i += 8) {
 		if (qlge_read_xgmac_reg64(qdev, i, &data)) {
 			netif_err(qdev, drv, qdev->ndev,
@@ -299,9 +291,7 @@ static void qlge_update_stats(struct qlge_adapter *qdev)
 		iter++;
 	}
 
-	/*
-	 * Get Per-priority RX pause frame counter statistics.
-	 */
+	 
 	for (i = 0x568; i < 0x5a8; i += 8) {
 		if (qlge_read_xgmac_reg64(qdev, i, &data)) {
 			netif_err(qdev, drv, qdev->ndev,
@@ -314,9 +304,7 @@ static void qlge_update_stats(struct qlge_adapter *qdev)
 		iter++;
 	}
 
-	/*
-	 * Get RX NIC FIFO DROP statistics.
-	 */
+	 
 	if (qlge_read_xgmac_reg64(qdev, 0x5b8, &data)) {
 		netif_err(qdev, drv, qdev->ndev,
 			  "Error reading status register 0x%.04x.\n", i);
@@ -432,7 +420,7 @@ static void qlge_get_wol(struct net_device *ndev, struct ethtool_wolinfo *wol)
 	struct qlge_adapter *qdev = netdev_to_qdev(ndev);
 	unsigned short ssys_dev = qdev->pdev->subsystem_device;
 
-	/* WOL is only supported for mezz card. */
+	 
 	if (ssys_dev == QLGE_MEZZ_SSYS_ID_068 ||
 	    ssys_dev == QLGE_MEZZ_SSYS_ID_180) {
 		wol->supported = WAKE_MAGIC;
@@ -445,7 +433,7 @@ static int qlge_set_wol(struct net_device *ndev, struct ethtool_wolinfo *wol)
 	struct qlge_adapter *qdev = netdev_to_qdev(ndev);
 	unsigned short ssys_dev = qdev->pdev->subsystem_device;
 
-	/* WOL is only supported for mezz card. */
+	 
 	if (ssys_dev != QLGE_MEZZ_SSYS_ID_068 &&
 	    ssys_dev != QLGE_MEZZ_SSYS_ID_180) {
 		netif_info(qdev, drv, qdev->ndev,
@@ -468,16 +456,16 @@ static int qlge_set_phys_id(struct net_device *ndev,
 
 	switch (state) {
 	case ETHTOOL_ID_ACTIVE:
-		/* Save the current LED settings */
+		 
 		if (qlge_mb_get_led_cfg(qdev))
 			return -EIO;
 
-		/* Start blinking */
+		 
 		qlge_mb_set_led_cfg(qdev, QL_LED_BLINK);
 		return 0;
 
 	case ETHTOOL_ID_INACTIVE:
-		/* Restore LED settings */
+		 
 		if (qlge_mb_set_led_cfg(qdev, qdev->led_config))
 			return -EIO;
 		return 0;
@@ -552,7 +540,7 @@ static int qlge_run_loopback_test(struct qlge_adapter *qdev)
 			return -EPIPE;
 		atomic_inc(&qdev->lb_count);
 	}
-	/* Give queue time to settle before testing results. */
+	 
 	usleep_range(2000, 2100);
 	qlge_clean_lb_rx_ring(&qdev->rx_ring[0], 128);
 	return atomic_read(&qdev->lb_count) ? -EIO : 0;
@@ -579,18 +567,16 @@ static void qlge_self_test(struct net_device *ndev,
 	if (netif_running(ndev)) {
 		set_bit(QL_SELFTEST, &qdev->flags);
 		if (eth_test->flags == ETH_TEST_FL_OFFLINE) {
-			/* Offline tests */
+			 
 			if (qlge_loopback_test(qdev, &data[0]))
 				eth_test->flags |= ETH_TEST_FL_FAILED;
 
 		} else {
-			/* Online tests */
+			 
 			data[0] = 0;
 		}
 		clear_bit(QL_SELFTEST, &qdev->flags);
-		/* Give link time to come up after
-		 * port configuration changes.
-		 */
+		 
 		msleep_interruptible(4 * 1000);
 	} else {
 		netif_err(qdev, drv, qdev->ndev,
@@ -631,16 +617,7 @@ static int qlge_get_coalesce(struct net_device *ndev,
 	c->rx_coalesce_usecs = qdev->rx_coalesce_usecs;
 	c->tx_coalesce_usecs = qdev->tx_coalesce_usecs;
 
-	/* This chip coalesces as follows:
-	 * If a packet arrives, hold off interrupts until
-	 * cqicb->int_delay expires, but if no other packets arrive don't
-	 * wait longer than cqicb->pkt_int_delay. But ethtool doesn't use a
-	 * timer to coalesce on a frame basis.  So, we have to take ethtool's
-	 * max_coalesced_frames value and convert it to a delay in microseconds.
-	 * We do this by using a basic thoughput of 1,000,000 frames per
-	 * second @ (1024 bytes).  This means one frame per usec. So it's a
-	 * simple one to one ratio.
-	 */
+	 
 	c->rx_max_coalesced_frames = qdev->rx_max_coalesced_frames;
 	c->tx_max_coalesced_frames = qdev->tx_max_coalesced_frames;
 
@@ -654,10 +631,10 @@ static int qlge_set_coalesce(struct net_device *ndev,
 {
 	struct qlge_adapter *qdev = netdev_to_qdev(ndev);
 
-	/* Validate user parameters. */
+	 
 	if (c->rx_coalesce_usecs > qdev->rx_ring_size / 2)
 		return -EINVAL;
-	/* Don't wait more than 10 usec. */
+	 
 	if (c->rx_max_coalesced_frames > MAX_INTER_FRAME_WAIT)
 		return -EINVAL;
 	if (c->tx_coalesce_usecs > qdev->tx_ring_size / 2)
@@ -665,7 +642,7 @@ static int qlge_set_coalesce(struct net_device *ndev,
 	if (c->tx_max_coalesced_frames > MAX_INTER_FRAME_WAIT)
 		return -EINVAL;
 
-	/* Verify a change took place before updating the hardware. */
+	 
 	if (qdev->rx_coalesce_usecs == c->rx_coalesce_usecs &&
 	    qdev->tx_coalesce_usecs == c->tx_coalesce_usecs &&
 	    qdev->rx_max_coalesced_frames == c->rx_max_coalesced_frames &&

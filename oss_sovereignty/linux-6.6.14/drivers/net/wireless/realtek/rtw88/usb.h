@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+ 
+ 
 
 #ifndef __RTW_USB_H_
 #define __RTW_USB_H_
@@ -64,7 +63,7 @@ struct rtw_usb {
 	struct rtw_dev *rtwdev;
 	struct usb_device *udev;
 
-	/* protects usb_data_index */
+	 
 	spinlock_t usb_lock;
 	__le32 *usb_data;
 	unsigned int usb_data_index;

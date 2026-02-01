@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Cirrus Logic Madera class codecs common support
- *
- * Copyright (C) 2015-2018 Cirrus Logic, Inc. and
- *                         Cirrus Logic International Semiconductor Ltd.
- */
+ 
+ 
 
 #ifndef ASOC_MADERA_H
 #define ASOC_MADERA_H
@@ -108,7 +103,7 @@ struct madera;
 struct wm_adsp;
 
 struct madera_voice_trigger_info {
-	/** Which core triggered, 1-based (1 = DSP1, ...) */
+	 
 	int core_num;
 };
 
@@ -435,7 +430,7 @@ int madera_init_dai(struct madera_priv *priv, int id);
 int madera_set_output_mode(struct snd_soc_component *component, int output,
 			   bool differential);
 
-/* Following functions are for use by machine drivers */
+ 
 static inline int madera_register_notifier(struct snd_soc_component *component,
 					   struct notifier_block *nb)
 {

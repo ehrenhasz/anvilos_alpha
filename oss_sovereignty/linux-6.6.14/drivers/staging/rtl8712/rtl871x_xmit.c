@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- * rtl871x_xmit.c
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- * Linux device driver for RTL8192SU
- *
- * Modifications for inclusion into the Linux staging tree are
- * Copyright(c) 2010 Larry Finger. All rights reserved.
- *
- * Contact information:
- * WLAN FAE <wlanfae@realtek.com>
- * Larry Finger <Larry.Finger@lwfinger.net>
- *
- ******************************************************************************/
+
+ 
 
 #define _RTL871X_XMIT_C_
 
@@ -60,9 +47,7 @@ int _r8712_init_xmit_priv(struct xmit_priv *pxmitpriv,
 
 	memset((unsigned char *)pxmitpriv, 0, sizeof(struct xmit_priv));
 	spin_lock_init(&pxmitpriv->lock);
-	/*
-	 *Please insert all the queue initialization using _init_queue below
-	 */
+	 
 	pxmitpriv->adapter = padapter;
 	_init_queue(&pxmitpriv->be_pending);
 	_init_queue(&pxmitpriv->bk_pending);
@@ -72,11 +57,7 @@ int _r8712_init_xmit_priv(struct xmit_priv *pxmitpriv,
 	_init_queue(&pxmitpriv->legacy_dz_queue);
 	_init_queue(&pxmitpriv->apsd_queue);
 	_init_queue(&pxmitpriv->free_xmit_queue);
-	/*
-	 * Please allocate memory with sz = (struct xmit_frame) * NR_XMITFRAME,
-	 * and initialize free_xmit_frame below.
-	 * Please also apply  free_txobj to link_up all the xmit_frames...
-	 */
+	 
 	pxmitpriv->pallocated_frame_buf =
 		kmalloc(NR_XMITFRAME * sizeof(struct xmit_frame) + 4,
 			GFP_ATOMIC);
@@ -99,9 +80,7 @@ int _r8712_init_xmit_priv(struct xmit_priv *pxmitpriv,
 		pxframe++;
 	}
 	pxmitpriv->free_xmitframe_cnt = NR_XMITFRAME;
-	/*
-	 * init xmit hw_txqueue
-	 */
+	 
 	_r8712_init_hw_txqueue(&pxmitpriv->be_txqueue, BE_QUEUE_INX);
 	_r8712_init_hw_txqueue(&pxmitpriv->bk_txqueue, BK_QUEUE_INX);
 	_r8712_init_hw_txqueue(&pxmitpriv->vi_txqueue, VI_QUEUE_INX);
@@ -109,12 +88,12 @@ int _r8712_init_xmit_priv(struct xmit_priv *pxmitpriv,
 	_r8712_init_hw_txqueue(&pxmitpriv->bmc_txqueue, BMC_QUEUE_INX);
 	pxmitpriv->frag_len = MAX_FRAG_THRESHOLD;
 	pxmitpriv->txirp_cnt = 1;
-	/*per AC pending irp*/
+	 
 	pxmitpriv->beq_cnt = 0;
 	pxmitpriv->bkq_cnt = 0;
 	pxmitpriv->viq_cnt = 0;
 	pxmitpriv->voq_cnt = 0;
-	/*init xmit_buf*/
+	 
 	_init_queue(&pxmitpriv->free_xmitbuf_queue);
 	_init_queue(&pxmitpriv->pending_xmitbuf_queue);
 	pxmitpriv->pallocated_xmitbuf =
@@ -152,17 +131,15 @@ int _r8712_init_xmit_priv(struct xmit_priv *pxmitpriv,
 
 clean_up_alloc_buf:
 	if (j) {
-		/* failure happened in r8712_xmit_resource_alloc()
-		 * delete extra pxmitbuf->pallocated_buf
-		 */
+		 
 		kfree(pxmitbuf->pallocated_buf);
 	}
 	for (j = 0; j < i; j++) {
 		int k;
 
-		pxmitbuf--;			/* reset pointer */
+		pxmitbuf--;			 
 		kfree(pxmitbuf->pallocated_buf);
-		for (k = 0; k < 8; k++)		/* delete xmit urb's */
+		for (k = 0; k < 8; k++)		 
 			usb_free_urb(pxmitbuf->pxmit_urb[k]);
 	}
 	kfree(pxmitpriv->pallocated_xmitbuf);
@@ -218,10 +195,7 @@ int r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
 
 	pattrib->ether_type = ntohs(etherhdr.h_proto);
 
-	/*
-	 * If driver xmit ARP packet, driver can set ps mode to initial
-	 * setting. It stands for getting DHCP or fix IP.
-	 */
+	 
 	if (pattrib->ether_type == 0x0806) {
 		if (padapter->pwrctrlpriv.pwr_mode !=
 		    padapter->registrypriv.power_mgnt) {
@@ -246,44 +220,36 @@ int r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
 		memcpy(pattrib->ra, pattrib->dst, ETH_ALEN);
 		memcpy(pattrib->ta, get_bssid(pmlmepriv), ETH_ALEN);
 	} else if (check_fwstate(pmlmepriv, WIFI_MP_STATE)) {
-		/*firstly, filter packet not belongs to mp*/
+		 
 		if (pattrib->ether_type != 0x8712)
 			return -EINVAL;
-		/* for mp storing the txcmd per packet,
-		 * according to the info of txcmd to update pattrib
-		 */
-		/*get MP_TXDESC_SIZE bytes txcmd per packet*/
+		 
+		 
 		_r8712_pktfile_read(&pktfile, (u8 *)&txdesc, TXDESC_SIZE);
 		memcpy(pattrib->ra, pattrib->dst, ETH_ALEN);
 		memcpy(pattrib->ta, pattrib->src, ETH_ALEN);
 		pattrib->pctrl = 1;
 	}
-	/* r8712_xmitframe_coalesce() overwrite this!*/
+	 
 	pattrib->pktlen = pktfile.pkt_len;
 	if (pattrib->ether_type == ETH_P_IP) {
-		/* The following is for DHCP and ARP packet, we use cck1M to
-		 * tx these packets and let LPS awake some time
-		 * to prevent DHCP protocol fail
-		 */
+		 
 		u8 tmp[24];
 
 		_r8712_pktfile_read(&pktfile, &tmp[0], 24);
 		pattrib->dhcp_pkt = 0;
-		if (pktfile.pkt_len > 282) {/*MINIMUM_DHCP_PACKET_SIZE)*/
-			if (pattrib->ether_type == ETH_P_IP) {/* IP header*/
+		if (pktfile.pkt_len > 282) { 
+			if (pattrib->ether_type == ETH_P_IP) { 
 				if (((tmp[21] == 68) && (tmp[23] == 67)) ||
 					((tmp[21] == 67) && (tmp[23] == 68))) {
-					/* 68 : UDP BOOTP client
-					 * 67 : UDP BOOTP server
-					 * Use low rate to send DHCP packet.
-					 */
+					 
 					pattrib->dhcp_pkt = 1;
 				}
 			}
 		}
 	}
 	bmcast = is_multicast_ether_addr(pattrib->ra);
-	/* get sta_info*/
+	 
 	if (bmcast) {
 		psta = r8712_get_bcmc_stainfo(padapter);
 		pattrib->mac_id = 4;
@@ -294,7 +260,7 @@ int r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
 			pattrib->mac_id = 5;
 		} else {
 			psta = r8712_get_stainfo(pstapriv, pattrib->ra);
-			if (!psta)  /* drop the pkt */
+			if (!psta)   
 				return -ENOMEM;
 			if (check_fwstate(pmlmepriv, WIFI_STATION_STATE))
 				pattrib->mac_id = 5;
@@ -306,12 +272,12 @@ int r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
 	if (psta) {
 		pattrib->psta = psta;
 	} else {
-		/* if we cannot get psta => drrp the pkt */
+		 
 		return -ENOMEM;
 	}
 
 	pattrib->ack_policy = 0;
-	/* get ether_hdr_len */
+	 
 	pattrib->pkt_hdrlen = ETH_HLEN;
 
 	if (pqospriv->qos_option) {
@@ -357,9 +323,7 @@ int r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
 		pattrib->bswenc = true;
 	else
 		pattrib->bswenc = false;
-	/* if in MP_STATE, update pkt_attrib from mp_txcmd, and overwrite
-	 * some settings above.
-	 */
+	 
 	if (check_fwstate(pmlmepriv, WIFI_MP_STATE))
 		pattrib->priority =
 		    (le32_to_cpu(txdesc.txdw1) >> QSEL_SHT) & 0x1f;
@@ -386,7 +350,7 @@ static int xmitframe_addmic(struct _adapter *padapter,
 		stainfo = r8712_get_stainfo(&padapter->stapriv,
 					    &pattrib->ra[0]);
 	if (pattrib->encrypt == _TKIP_) {
-		/*encode mic code*/
+		 
 		if (stainfo) {
 			u8 null_key[16] = {};
 
@@ -396,7 +360,7 @@ static int xmitframe_addmic(struct _adapter *padapter,
 				   [psecpriv->XGrpKeyid].skey,
 				   null_key, 16))
 					return -ENOMEM;
-				/*start to calculate the mic code*/
+				 
 				r8712_secmicsetkey(&micdata,
 					psecpriv->XGrptxmickey
 					[psecpriv->XGrpKeyid].skey);
@@ -404,23 +368,23 @@ static int xmitframe_addmic(struct _adapter *padapter,
 				if (!memcmp(&stainfo->tkiptxmickey.skey[0],
 					    null_key, 16))
 					return -ENOMEM;
-				/* start to calculate the mic code */
+				 
 				r8712_secmicsetkey(&micdata,
 					     &stainfo->tkiptxmickey.skey[0]);
 			}
-			if (pframe[1] & 1) {   /* ToDS==1 */
+			if (pframe[1] & 1) {    
 				r8712_secmicappend(&micdata,
-						   &pframe[16], 6); /*DA*/
-				if (pframe[1] & 2)  /* From Ds==1 */
+						   &pframe[16], 6);  
+				if (pframe[1] & 2)   
 					r8712_secmicappend(&micdata,
 							   &pframe[24], 6);
 				else
 					r8712_secmicappend(&micdata,
 							   &pframe[10], 6);
-			} else {	/* ToDS==0 */
+			} else {	 
 				r8712_secmicappend(&micdata,
-						   &pframe[4], 6); /* DA */
-				if (pframe[1] & 2)  /* From Ds==1 */
+						   &pframe[4], 6);  
+				if (pframe[1] & 2)   
 					r8712_secmicappend(&micdata,
 							   &pframe[16], 6);
 				else
@@ -456,9 +420,7 @@ static int xmitframe_addmic(struct _adapter *padapter,
 				}
 			}
 			r8712_secgetmic(&micdata, &(mic[0]));
-			/* add mic code  and add the mic code length in
-			 * last_txcmdsz
-			 */
+			 
 			memcpy(payload, &(mic[0]), 8);
 			pattrib->last_txcmdsz += 8;
 			payload = payload - pattrib->last_txcmdsz + 8;
@@ -510,13 +472,13 @@ static int make_wlanhdr(struct _adapter *padapter, u8 *hdr,
 	bssid = get_bssid(pmlmepriv);
 
 	if (check_fwstate(pmlmepriv,  WIFI_STATION_STATE)) {
-		/* to_ds = 1, fr_ds = 0; */
+		 
 		SetToDs(fctrl);
 		ether_addr_copy(pwlanhdr->addr1, bssid);
 		ether_addr_copy(pwlanhdr->addr2, pattrib->src);
 		ether_addr_copy(pwlanhdr->addr3, pattrib->dst);
 	} else if (check_fwstate(pmlmepriv, WIFI_AP_STATE)) {
-		/* to_ds = 0, fr_ds = 1; */
+		 
 		SetFrDs(fctrl);
 		ether_addr_copy(pwlanhdr->addr1, pattrib->dst);
 		ether_addr_copy(pwlanhdr->addr2, bssid);
@@ -542,8 +504,8 @@ static int make_wlanhdr(struct _adapter *padapter, u8 *hdr,
 			SetPriority(qc, pattrib->priority);
 		SetAckpolicy(qc, pattrib->ack_policy);
 	}
-	/* TODO: fill HT Control Field */
-	/* Update Seq Num will be handled by f/w */
+	 
+	 
 	{
 		struct sta_info *psta;
 		bool bmcst = is_multicast_ether_addr(pattrib->ra);
@@ -589,15 +551,7 @@ static sint r8712_put_snap(u8 *data, u16 h_proto)
 	return SNAP_SIZE + sizeof(u16);
 }
 
-/*
- * This sub-routine will perform all the following:
- * 1. remove 802.3 header.
- * 2. create wlan_header, based on the info in pxmitframe
- * 3. append sta's iv/ext-iv
- * 4. append LLC
- * 5. move frag chunk from pframe to pxmitframe->mem
- * 6. apply sw-encrypt, if necessary.
- */
+ 
 sint r8712_xmitframe_coalesce(struct _adapter *padapter, _pkt *pkt,
 			struct xmit_frame *pxmitframe)
 {
@@ -629,9 +583,9 @@ sint r8712_xmitframe_coalesce(struct _adapter *padapter, _pkt *pkt,
 	_r8712_open_pktfile(pkt, &pktfile);
 	_r8712_pktfile_read(&pktfile, NULL, (uint) pattrib->pkt_hdrlen);
 	if (check_fwstate(pmlmepriv, WIFI_MP_STATE)) {
-		/* truncate TXDESC_SIZE bytes txcmd if at mp mode for 871x */
+		 
 		if (pattrib->ether_type == 0x8712) {
-			/* take care -  update_txdesc overwrite this */
+			 
 			_r8712_pktfile_read(&pktfile, ptxdesc, TXDESC_SIZE);
 		}
 	}
@@ -645,7 +599,7 @@ sint r8712_xmitframe_coalesce(struct _adapter *padapter, _pkt *pkt,
 		SetMFrag(mem_start);
 		pframe += pattrib->hdrlen;
 		mpdu_len -= pattrib->hdrlen;
-		/* adding icv, if necessary...*/
+		 
 		if (pattrib->iv_len) {
 			if (psta) {
 				switch (pattrib->encrypt) {
@@ -783,24 +737,10 @@ void r8712_free_xmitbuf(struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf)
 	spin_unlock_irqrestore(&pfree_xmitbuf_queue->lock, irqL);
 }
 
-/*
- * Calling context:
- * 1. OS_TXENTRY
- * 2. RXENTRY (rx_thread or RX_ISR/RX_CallBack)
- *
- * If we turn on USE_RXTHREAD, then, no need for critical section.
- * Otherwise, we must use _enter/_exit critical to protect free_xmit_queue...
- *
- * Must be very very cautious...
- *
- */
+ 
 struct xmit_frame *r8712_alloc_xmitframe(struct xmit_priv *pxmitpriv)
 {
-	/*
-	 * Please remember to use all the osdep_service api,
-	 * and lock/unlock or _enter/_exit critical to protect
-	 * pfree_xmit_queue
-	 */
+	 
 	unsigned long irqL;
 	struct xmit_frame *pxframe;
 	struct  __queue *pfree_xmit_queue = &pxmitpriv->free_xmit_queue;
@@ -904,10 +844,7 @@ static inline struct tx_servq *get_sta_pending(struct _adapter *padapter,
 	return ptxservq;
 }
 
-/*
- * Will enqueue pxmitframe to the proper queue, and indicate it
- * to xx_pending list.....
- */
+ 
 int r8712_xmit_classifier(struct _adapter *padapter,
 			  struct xmit_frame *pxmitframe)
 {
@@ -1011,22 +948,17 @@ static void init_hwxmits(struct hw_xmit *phwxmit, sint entry)
 void xmitframe_xmitbuf_attach(struct xmit_frame *pxmitframe,
 			struct xmit_buf *pxmitbuf)
 {
-	/* pxmitbuf attach to pxmitframe */
+	 
 	pxmitframe->pxmitbuf = pxmitbuf;
-	/* urb and irp connection */
+	 
 	pxmitframe->pxmit_urb[0] = pxmitbuf->pxmit_urb[0];
-	/* buffer addr assoc */
+	 
 	pxmitframe->buf_addr = pxmitbuf->pbuf;
-	/* pxmitframe attach to pxmitbuf */
+	 
 	pxmitbuf->priv_data = pxmitframe;
 }
 
-/*
- * tx_action == 0 == no frames to transmit
- * tx_action > 0 ==> we have frames to transmit
- * tx_action < 0 ==> we have frames to transmit, but TXFF is not even enough
- *						 to transmit 1 frame.
- */
+ 
 
 int r8712_pre_xmit(struct _adapter *padapter, struct xmit_frame *pxmitframe)
 {
@@ -1045,11 +977,11 @@ int r8712_pre_xmit(struct _adapter *padapter, struct xmit_frame *pxmitframe)
 		return ret;
 	}
 	pxmitbuf = r8712_alloc_xmitbuf(pxmitpriv);
-	if (!pxmitbuf) { /*enqueue packet*/
+	if (!pxmitbuf) {  
 		ret = false;
 		r8712_xmit_enqueue(padapter, pxmitframe);
 		spin_unlock_irqrestore(&pxmitpriv->lock, irqL);
-	} else { /*dump packet directly*/
+	} else {  
 		spin_unlock_irqrestore(&pxmitpriv->lock, irqL);
 		ret = true;
 		xmitframe_xmitbuf_attach(pxmitframe, pxmitbuf);

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Spanning tree protocol; interface code
- *	Linux ethernet bridge
- *
- *	Authors:
- *	Lennert Buytenhek		<buytenh@gnu.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/kmod.h>
@@ -17,10 +11,7 @@
 #include "br_private_stp.h"
 
 
-/* Port id is composed of priority and port number.
- * NB: some bits of priority are dropped to
- *     make room for more ports.
- */
+ 
 static inline port_id br_make_port_id(__u8 priority, __u16 port_no)
 {
 	return ((u16)priority << BR_PORT_BITS)
@@ -29,7 +20,7 @@ static inline port_id br_make_port_id(__u8 priority, __u16 port_no)
 
 #define BR_MAX_PORT_PRIORITY ((u16)~0 >> BR_PORT_BITS)
 
-/* called under bridge lock */
+ 
 void br_init_port(struct net_bridge_port *p)
 {
 	int err;
@@ -45,7 +36,7 @@ void br_init_port(struct net_bridge_port *p)
 		netdev_err(p->dev, "failed to offload ageing time\n");
 }
 
-/* NO locks held */
+ 
 void br_stp_enable_bridge(struct net_bridge *br)
 {
 	struct net_bridge_port *p;
@@ -65,7 +56,7 @@ void br_stp_enable_bridge(struct net_bridge *br)
 	spin_unlock_bh(&br->lock);
 }
 
-/* NO locks held */
+ 
 void br_stp_disable_bridge(struct net_bridge *br)
 {
 	struct net_bridge_port *p;
@@ -87,7 +78,7 @@ void br_stp_disable_bridge(struct net_bridge *br)
 	cancel_delayed_work_sync(&br->gc_work);
 }
 
-/* called under bridge lock */
+ 
 void br_stp_enable_port(struct net_bridge_port *p)
 {
 	br_init_port(p);
@@ -95,7 +86,7 @@ void br_stp_enable_port(struct net_bridge_port *p)
 	br_ifinfo_notify(RTM_NEWLINK, NULL, p);
 }
 
-/* called under bridge lock */
+ 
 void br_stp_disable_port(struct net_bridge_port *p)
 {
 	struct net_bridge *br = p->br;
@@ -131,7 +122,7 @@ static int br_stp_call_user(struct net_bridge *br, char *arg)
 	char *envp[] = { NULL };
 	int rc;
 
-	/* call userspace STP and report program errors */
+	 
 	rc = call_usermodehelper(BR_STP_PROG, argv, envp, UMH_WAIT_PROC);
 	if (rc > 0) {
 		if (rc & 0xff)
@@ -169,7 +160,7 @@ static void br_stp_start(struct net_bridge *br)
 		br->stp_enabled = BR_KERNEL_STP;
 		br_debug(br, "using kernel STP\n");
 
-		/* To start timers on any ports left in blocking */
+		 
 		if (br->dev->flags & IFF_UP)
 			mod_timer(&br->hello_timer, jiffies + br->hello_time);
 		br_port_state_selection(br);
@@ -187,7 +178,7 @@ static void br_stp_stop(struct net_bridge *br)
 		if (err)
 			br_err(br, "failed to stop userspace STP (%d)\n", err);
 
-		/* To start timers on any ports left in blocking */
+		 
 		spin_lock_bh(&br->lock);
 		br_port_state_selection(br);
 		spin_unlock_bh(&br->lock);
@@ -218,10 +209,10 @@ int br_stp_set_enabled(struct net_bridge *br, unsigned long val,
 	return 0;
 }
 
-/* called under bridge lock */
+ 
 void br_stp_change_bridge_id(struct net_bridge *br, const unsigned char *addr)
 {
-	/* should be aligned on 2 bytes for ether_addr_equal() */
+	 
 	unsigned short oldaddr_aligned[ETH_ALEN >> 1];
 	unsigned char *oldaddr = (unsigned char *)oldaddr_aligned;
 	struct net_bridge_port *p;
@@ -249,10 +240,10 @@ void br_stp_change_bridge_id(struct net_bridge *br, const unsigned char *addr)
 		br_become_root_bridge(br);
 }
 
-/* should be aligned on 2 bytes for ether_addr_equal() */
+ 
 static const unsigned short br_mac_zero_aligned[ETH_ALEN >> 1];
 
-/* called under bridge lock */
+ 
 bool br_stp_recalculate_bridge_id(struct net_bridge *br)
 {
 	const unsigned char *br_mac_zero =
@@ -260,7 +251,7 @@ bool br_stp_recalculate_bridge_id(struct net_bridge *br)
 	const unsigned char *addr = br_mac_zero;
 	struct net_bridge_port *p;
 
-	/* user has chosen a value so keep it */
+	 
 	if (br->dev->addr_assign_type == NET_ADDR_SET)
 		return false;
 
@@ -272,13 +263,13 @@ bool br_stp_recalculate_bridge_id(struct net_bridge *br)
 	}
 
 	if (ether_addr_equal(br->bridge_id.addr, addr))
-		return false;	/* no change */
+		return false;	 
 
 	br_stp_change_bridge_id(br, addr);
 	return true;
 }
 
-/* Acquires and releases bridge lock */
+ 
 void br_stp_set_bridge_priority(struct net_bridge *br, u16 newprio)
 {
 	struct net_bridge_port *p;
@@ -305,7 +296,7 @@ void br_stp_set_bridge_priority(struct net_bridge *br, u16 newprio)
 	spin_unlock_bh(&br->lock);
 }
 
-/* called under bridge lock */
+ 
 int br_stp_set_port_priority(struct net_bridge_port *p, unsigned long newprio)
 {
 	port_id new_port_id;
@@ -328,7 +319,7 @@ int br_stp_set_port_priority(struct net_bridge_port *p, unsigned long newprio)
 	return 0;
 }
 
-/* called under bridge lock */
+ 
 int br_stp_set_path_cost(struct net_bridge_port *p, unsigned long path_cost)
 {
 	if (path_cost < BR_MIN_PATH_COST ||

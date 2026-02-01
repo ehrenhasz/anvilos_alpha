@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * NVIDIA Tegra Video decoder driver
- *
- * Copyright (C) 2016-2022 Dmitry Osipenko <digetx@gmail.com>
- *
- */
+
+ 
 
 #include <linux/iopoll.h>
 #include <linux/pm_runtime.h>
@@ -315,10 +310,7 @@ static int tegra_vde_setup_hw_context(struct tegra_vde *vde,
 				    ctx->dpb_frames_nb - 1,
 				    ctx->dpb_ref_frames_with_earlier_poc_nb);
 
-	/*
-	 * The IRAM mapping is write-combine, ensure that CPU buffers have
-	 * been flushed at this point.
-	 */
+	 
 	wmb();
 
 	tegra_vde_writel(vde, 0x00000000, vde->bsev, 0x8C);
@@ -552,10 +544,7 @@ static int tegra_vde_decode_begin(struct tegra_vde *vde,
 	if (err < 0)
 		goto unlock;
 
-	/*
-	 * We rely on the VDE registers reset value, otherwise VDE
-	 * causes bus lockup.
-	 */
+	 
 	err = reset_control_assert(vde->rst_mc);
 	if (err) {
 		dev_err(dev, "DEC start: Failed to assert MC reset: %d\n",
@@ -604,11 +593,7 @@ static void tegra_vde_decode_abort(struct tegra_vde *vde)
 	struct device *dev = vde->dev;
 	int err;
 
-	/*
-	 * At first reset memory client to avoid resetting VDE HW in the
-	 * middle of DMA which could result into memory corruption or hang
-	 * the whole system.
-	 */
+	 
 	err = reset_control_assert(vde->rst_mc);
 	if (err)
 		dev_err(dev, "DEC end: Failed to assert MC reset: %d\n", err);
@@ -664,10 +649,7 @@ static struct vb2_buffer *get_ref_buf(struct tegra_ctx *ctx,
 	if (dpb[dpb_idx].flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE)
 		vb = vb2_find_buffer(cap_q, dpb[dpb_idx].reference_ts);
 
-	/*
-	 * If a DPB entry is unused or invalid, address of current destination
-	 * buffer is returned.
-	 */
+	 
 	if (!vb)
 		return &dst->vb2_buf;
 
@@ -770,19 +752,7 @@ static int tegra_vde_h264_setup_frames(struct tegra_ctx *ctx,
 	unsigned int i;
 	int err;
 
-	/*
-	 * Tegra hardware requires information about frame's type, assuming
-	 * that frame consists of the same type slices. Userspace must tag
-	 * frame's type appropriately.
-	 *
-	 * Decoding of a non-uniform frames isn't supported by hardware and
-	 * require software preprocessing that we don't implement. Decoding
-	 * is expected to fail in this case. Such video streams are rare in
-	 * practice, so not a big deal.
-	 *
-	 * If userspace doesn't tell us frame's type, then we will try decode
-	 * as-is.
-	 */
+	 
 	v4l2_m2m_buf_copy_metadata(src, dst, true);
 
 	if (h->decode_params->flags & V4L2_H264_DECODE_PARAM_FLAG_BFRAME)
@@ -877,7 +847,7 @@ static int tegra_vde_h264_setup_context(struct tegra_ctx *ctx,
 	tegra_vde_prepare_control_data(ctx, V4L2_CID_STATELESS_H264_SPS);
 	tegra_vde_prepare_control_data(ctx, V4L2_CID_STATELESS_H264_PPS);
 
-	/* CABAC unsupported by hardware, requires software preprocessing */
+	 
 	if (h->pps->flags & V4L2_H264_PPS_FLAG_ENTROPY_CODING_MODE)
 		return -EOPNOTSUPP;
 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header provides constants for binding nvidia,tegra234-bpmp-thermal.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_THERMAL_TEGRA234_BPMP_THERMAL_H
 #define _DT_BINDINGS_THERMAL_TEGRA234_BPMP_THERMAL_H

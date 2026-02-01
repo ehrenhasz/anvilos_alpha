@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This file is part of AD5686 DAC driver
- *
- * Copyright 2018 Analog Devices Inc.
- */
+ 
+ 
 
 #ifndef __DRIVERS_IIO_DAC_AD5686_H__
 #define __DRIVERS_IIO_DAC_AD5686_H__
@@ -48,9 +44,7 @@
 #define AD5683_REF_BIT_MSK			BIT(12)
 #define AD5693_REF_BIT_MSK			BIT(12)
 
-/**
- * ad5686_supported_device_ids:
- */
+ 
 enum ad5686_supported_device_ids {
 	ID_AD5310R,
 	ID_AD5311R,
@@ -99,13 +93,7 @@ typedef int (*ad5686_write_func)(struct ad5686_state *st,
 
 typedef int (*ad5686_read_func)(struct ad5686_state *st, u8 addr);
 
-/**
- * struct ad5686_chip_info - chip specific information
- * @int_vref_mv:	AD5620/40/60: the internal reference voltage
- * @num_channels:	number of channels
- * @channel:		channel specification
- * @regmap_type:	register map layout variant
- */
+ 
 
 struct ad5686_chip_info {
 	u16				int_vref_mv;
@@ -114,18 +102,7 @@ struct ad5686_chip_info {
 	enum ad5686_regmap_type		regmap_type;
 };
 
-/**
- * struct ad5446_state - driver instance specific data
- * @spi:		spi_device
- * @chip_info:		chip model specific constants, available modes etc
- * @reg:		supply regulator
- * @vref_mv:		actual reference voltage used
- * @pwr_down_mask:	power down mask
- * @pwr_down_mode:	current power down mode
- * @use_internal_vref:	set to true if the internal reference voltage is used
- * @lock		lock to protect the data buffer during regmap ops
- * @data:		spi transfer buffers
- */
+ 
 
 struct ad5686_state {
 	struct device			*dev;
@@ -139,10 +116,7 @@ struct ad5686_state {
 	bool				use_internal_vref;
 	struct mutex			lock;
 
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 
 	union {
 		__be32 d32;
@@ -160,4 +134,4 @@ int ad5686_probe(struct device *dev,
 void ad5686_remove(struct device *dev);
 
 
-#endif /* __DRIVERS_IIO_DAC_AD5686_H__ */
+#endif  

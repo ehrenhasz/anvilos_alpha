@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * test/set flag bits stored in conntrack extension area.
- *
- * (C) 2013 Astaro GmbH & Co KG
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/types.h>
@@ -49,7 +45,7 @@ int nf_connlabels_replace(struct nf_conn *ct,
 		changed |= replace_u32(&dst[i], mask ? ~mask[i] : 0, data[i]);
 
 	size /= sizeof(u32);
-	for (i = words32; i < size; i++) /* pad */
+	for (i = words32; i < size; i++)  
 		replace_u32(&dst[i], 0, 0);
 
 	if (changed)

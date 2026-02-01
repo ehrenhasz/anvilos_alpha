@@ -1,30 +1,4 @@
-/*
- * Copyright (C) 2015 Red Hat, Inc.
- * All Rights Reserved.
- *
- * Authors:
- *    Dave Airlie <airlied@redhat.com>
- *    Gerd Hoffmann <kraxel@redhat.com>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * VA LINUX SYSTEMS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -77,12 +51,7 @@ static int virtio_gpu_probe(struct virtio_device *vdev)
 	if (virtio_gpu_modeset == 0)
 		return -EINVAL;
 
-	/*
-	 * The virtio-gpu device is a virtual device that doesn't have DMA
-	 * ops assigned to it, nor DMA mask set and etc. Its parent device
-	 * is actual GPU device we want to use it for the DRM's device in
-	 * order to benefit from using generic DRM APIs.
-	 */
+	 
 	dev = drm_dev_alloc(&driver, vdev->dev.parent);
 	if (IS_ERR(dev))
 		return PTR_ERR(dev);
@@ -137,11 +106,7 @@ static struct virtio_device_id id_table[] = {
 
 static unsigned int features[] = {
 #ifdef __LITTLE_ENDIAN
-	/*
-	 * Gallium command stream send by virgl is native endian.
-	 * Because of that we only support little endian guests on
-	 * little endian hosts.
-	 */
+	 
 	VIRTIO_GPU_F_VIRGL,
 #endif
 	VIRTIO_GPU_F_EDID,
@@ -172,10 +137,7 @@ MODULE_AUTHOR("Alon Levy");
 DEFINE_DRM_GEM_FOPS(virtio_gpu_driver_fops);
 
 static const struct drm_driver driver = {
-	/*
-	 * If KMS is disabled DRIVER_MODESET and DRIVER_ATOMIC are masked
-	 * out via drm_device::driver_features:
-	 */
+	 
 	.driver_features = DRIVER_MODESET | DRIVER_GEM | DRIVER_RENDER | DRIVER_ATOMIC |
 			   DRIVER_SYNCOBJ | DRIVER_SYNCOBJ_TIMELINE,
 	.open = virtio_gpu_driver_open,

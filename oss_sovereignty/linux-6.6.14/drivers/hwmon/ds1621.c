@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ds1621.c - Part of lm_sensors, Linux kernel modules for hardware
- *	      monitoring
- * Christian W. Zuckschwerdt  <zany@triq.net>  2000-11-23
- * based on lm75.c by Frodo Looijaard <frodol@dds.nl>
- * Ported to Linux 2.6 by Aurelien Jarno <aurelien@aurel32.net> with
- * the help of Jean Delvare <jdelvare@suse.de>
- *
- * The DS1621 device is a digital temperature/thermometer with 9-bit
- * resolution, a thermal alarm output (Tout), and user-defined minimum
- * and maximum temperature thresholds (TH and TL).
- *
- * The DS1625, DS1631, DS1721, and DS1731 are pin compatible with the DS1621
- * and similar in operation, with slight variations as noted in the device
- * datasheets (please refer to www.maximintegrated.com for specific
- * device information).
- *
- * Since the DS1621 was the first chipset supported by this driver,
- * most comments will refer to this chipset, but are actually general
- * and concern all supported chipsets, unless mentioned otherwise.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -33,37 +13,15 @@
 #include <linux/sysfs.h>
 #include <linux/kernel.h>
 
-/* Supported devices */
+ 
 enum chips { ds1621, ds1625, ds1631, ds1721, ds1731 };
 
-/* Insmod parameters */
+ 
 static int polarity = -1;
 module_param(polarity, int, 0);
 MODULE_PARM_DESC(polarity, "Output's polarity: 0 = active high, 1 = active low");
 
-/*
- * The Configuration/Status register
- *
- * - DS1621:
- *   7    6    5    4    3    2    1    0
- * |Done|THF |TLF |NVB | X  | X  |POL |1SHOT|
- *
- * - DS1625:
- *   7    6    5    4    3    2    1    0
- * |Done|THF |TLF |NVB | 1  | 0  |POL |1SHOT|
- *
- * - DS1631, DS1731:
- *   7    6    5    4    3    2    1    0
- * |Done|THF |TLF |NVB | R1 | R0 |POL |1SHOT|
- *
- * - DS1721:
- *   7    6    5    4    3    2    1    0
- * |Done| X  | X  | U  | R1 | R0 |POL |1SHOT|
- *
- * Where:
- * - 'X' is Reserved
- * - 'U' is Undefined
- */
+ 
 #define DS1621_REG_CONFIG_NVB		0x10
 #define DS1621_REG_CONFIG_RESOL		0x0C
 #define DS1621_REG_CONFIG_POLARITY	0x02
@@ -72,12 +30,12 @@ MODULE_PARM_DESC(polarity, "Output's polarity: 0 = active high, 1 = active low")
 
 #define DS1621_REG_CONFIG_RESOL_SHIFT	2
 
-/* ds1721 conversion rates: {C/LSB, time(ms), resolution bit setting} */
+ 
 static const unsigned short ds1721_convrates[] = {
-	94,	/*  9-bits (0.5,  93.75, RES[0..1] = 0 */
-	188,	/* 10-bits (0.25, 187.5, RES[0..1] = 1 */
-	375,	/* 11-bits (0.125,  375, RES[0..1] = 2 */
-	750,	/* 12-bits (0.0625, 750, RES[0..1] = 3 */
+	94,	 
+	188,	 
+	375,	 
+	750,	 
 };
 
 #define DS1621_CONVERSION_MAX	750
@@ -86,38 +44,37 @@ static const unsigned short ds1721_convrates[] = {
 #define DS1621_TEMP_MAX	125000
 #define DS1621_TEMP_MIN	(-55000)
 
-/* The DS1621 temperature registers */
+ 
 static const u8 DS1621_REG_TEMP[3] = {
-	0xAA,		/* input, word, RO */
-	0xA2,		/* min, word, RW */
-	0xA1,		/* max, word, RW */
+	0xAA,		 
+	0xA2,		 
+	0xA1,		 
 };
-#define DS1621_REG_CONF			0xAC /* byte, RW */
-#define DS1621_COM_START		0xEE /* no data */
-#define DS1721_COM_START		0x51 /* no data */
-#define DS1621_COM_STOP			0x22 /* no data */
+#define DS1621_REG_CONF			0xAC  
+#define DS1621_COM_START		0xEE  
+#define DS1721_COM_START		0x51  
+#define DS1621_COM_STOP			0x22  
 
-/* The DS1621 configuration register */
+ 
 #define DS1621_ALARM_TEMP_HIGH		0x40
 #define DS1621_ALARM_TEMP_LOW		0x20
 
-/* Conversions */
+ 
 #define ALARMS_FROM_REG(val) ((val) & \
 			(DS1621_ALARM_TEMP_HIGH | DS1621_ALARM_TEMP_LOW))
 
-/* Each client has this additional data */
+ 
 struct ds1621_data {
 	struct i2c_client *client;
 	struct mutex update_lock;
-	bool valid;			/* true if following fields are valid */
-	unsigned long last_updated;	/* In jiffies */
-	enum chips kind;		/* device type */
+	bool valid;			 
+	unsigned long last_updated;	 
+	enum chips kind;		 
 
-	u16 temp[3];			/* Register values, word */
-	u8 conf;			/* Register encoding, combined */
-	u8 zbits;			/* Resolution encoded as number of
-					 * zero bits */
-	u16 update_interval;		/* Conversion rate in milliseconds */
+	u16 temp[3];			 
+	u8 conf;			 
+	u8 zbits;			 
+	u16 update_interval;		 
 };
 
 static inline int DS1621_TEMP_FROM_REG(u16 reg)
@@ -125,12 +82,7 @@ static inline int DS1621_TEMP_FROM_REG(u16 reg)
 	return DIV_ROUND_CLOSEST(((s16)reg / 16) * 625, 10);
 }
 
-/*
- * TEMP: 0.001C/bit (-55C to +125C)
- * REG:
- *  - 1621, 1625: 0.5C/bit, 7 zero-bits
- *  - 1631, 1721, 1731: 0.0625C/bit, 4 zero-bits
- */
+ 
 static inline u16 DS1621_TEMP_TO_REG(long temp, u8 zbits)
 {
 	temp = clamp_val(temp, DS1621_TEMP_MIN, DS1621_TEMP_MAX);
@@ -144,10 +96,10 @@ static void ds1621_init_client(struct ds1621_data *data,
 	u8 conf, new_conf, sreg, resol;
 
 	new_conf = conf = i2c_smbus_read_byte_data(client, DS1621_REG_CONF);
-	/* switch to continuous conversion mode */
+	 
 	new_conf &= ~DS1621_REG_CONFIG_1SHOT;
 
-	/* setup output polarity */
+	 
 	if (polarity == 0)
 		new_conf &= ~DS1621_REG_CONFIG_POLARITY;
 	else if (polarity == 1)
@@ -178,7 +130,7 @@ static void ds1621_init_client(struct ds1621_data *data,
 		break;
 	}
 
-	/* start conversion */
+	 
 	i2c_smbus_write_byte(client, sreg);
 }
 
@@ -202,11 +154,11 @@ static struct ds1621_data *ds1621_update_client(struct device *dev)
 			data->temp[i] = i2c_smbus_read_word_swapped(client,
 							 DS1621_REG_TEMP[i]);
 
-		/* reset alarms if necessary */
+		 
 		new_conf = data->conf;
-		if (data->temp[0] > data->temp[1])	/* input > min */
+		if (data->temp[0] > data->temp[1])	 
 			new_conf &= ~DS1621_ALARM_TEMP_LOW;
-		if (data->temp[0] < data->temp[2])	/* input < max */
+		if (data->temp[0] < data->temp[2])	 
 			new_conf &= ~DS1621_ALARM_TEMP_HIGH;
 		if (data->conf != new_conf)
 			i2c_smbus_write_byte_data(client, DS1621_REG_CONF,
@@ -286,7 +238,7 @@ static ssize_t update_interval_store(struct device *dev,
 	if (err)
 		return err;
 
-	/* Convert rate into resolution bits */
+	 
 	while (resol < (ARRAY_SIZE(ds1721_convrates) - 1) &&
 	       convrate > ds1721_convrates[resol])
 		resol++;
@@ -331,7 +283,7 @@ static umode_t ds1621_attribute_visible(struct kobject *kobj,
 
 	if (attr == &dev_attr_update_interval.attr)
 		if (data->kind == ds1621 || data->kind == ds1625)
-			/* shhh, we're hiding update_interval */
+			 
 			return 0;
 	return attr->mode;
 }
@@ -359,7 +311,7 @@ static int ds1621_probe(struct i2c_client *client)
 	data->kind = i2c_match_id(ds1621_id, client)->driver_data;
 	data->client = client;
 
-	/* Initialize the DS1621 chip */
+	 
 	ds1621_init_client(data, client);
 
 	hwmon_dev = devm_hwmon_device_register_with_groups(&client->dev,
@@ -378,7 +330,7 @@ static const struct i2c_device_id ds1621_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, ds1621_id);
 
-/* This is the driver that will be inserted */
+ 
 static struct i2c_driver ds1621_driver = {
 	.class		= I2C_CLASS_HWMON,
 	.driver = {

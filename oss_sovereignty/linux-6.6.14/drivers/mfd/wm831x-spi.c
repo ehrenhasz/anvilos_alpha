@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * wm831x-spi.c  --  SPI access for Wolfson WM831x PMICs
- *
- * Copyright 2009,2010 Wolfson Microelectronics PLC.
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>

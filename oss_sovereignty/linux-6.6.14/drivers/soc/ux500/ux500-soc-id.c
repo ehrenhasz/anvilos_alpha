@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) ST-Ericsson SA 2010
- *
- * Author: Rabin Vincent <rabin.vincent@stericsson.com> for ST-Ericsson
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -20,12 +16,7 @@
 #include <asm/cacheflush.h>
 #include <asm/mach/map.h>
 
-/**
- * struct dbx500_asic_id - fields of the ASIC ID
- * @process: the manufacturing process, 0x40 is 40 nm 0x00 is "standard"
- * @partnumber: hithereto 0x8500 for DB8500
- * @revision: version code in the series
- */
+ 
 struct dbx500_asic_id {
 	u16	partnumber;
 	u8	revision;
@@ -69,16 +60,7 @@ static unsigned int partnumber(unsigned int asicid)
 	return (asicid >> 8) & 0xffff;
 }
 
-/*
- * SOC		MIDR		ASICID ADDRESS		ASICID VALUE
- * DB8500ed	0x410fc090	0x9001FFF4		0x00850001
- * DB8500v1	0x411fc091	0x9001FFF4		0x008500A0
- * DB8500v1.1	0x411fc091	0x9001FFF4		0x008500A1
- * DB8500v2	0x412fc091	0x9001DBF4		0x008500B0
- * DB8520v2.2	0x412fc091	0x9001DBF4		0x008500B2
- * DB5500v1	0x412fc091	0x9001FFF4		0x005500A0
- * DB9540	0x413fc090	0xFFFFDBF4		0x009540xx
- */
+ 
 
 static void __init ux500_setup_id(void)
 {
@@ -87,23 +69,23 @@ static void __init ux500_setup_id(void)
 	phys_addr_t addr = 0;
 
 	switch (cpuid) {
-	case 0x410fc090: /* DB8500ed */
-	case 0x411fc091: /* DB8500v1 */
+	case 0x410fc090:  
+	case 0x411fc091:  
 		addr = 0x9001FFF4;
 		break;
 
-	case 0x412fc091: /* DB8520 / DB8500v2 / DB5500v1 */
+	case 0x412fc091:  
 		asicid = ux500_read_asicid(0x9001DBF4);
 		if (partnumber(asicid) == 0x8500 ||
 		    partnumber(asicid) == 0x8520)
-			/* DB8500v2 */
+			 
 			break;
 
-		/* DB5500v1 */
+		 
 		addr = 0x9001FFF4;
 		break;
 
-	case 0x413fc090: /* DB9540 */
+	case 0x413fc090:  
 		addr = 0xFFFFDBF4;
 		break;
 	}
@@ -175,7 +157,7 @@ static const char *db8500_read_soc_id(struct device_node *backupram)
 		return NULL;
 	memcpy_fromio(uid, base + 0x1fc0, sizeof(uid));
 
-	/* Throw these device-specific numbers into the entropy pool */
+	 
 	add_device_randomness(uid, sizeof(uid));
 	retstr = kasprintf(GFP_KERNEL, "%08x%08x%08x%08x%08x",
 			   uid[0], uid[1], uid[2], uid[3], uid[4]);

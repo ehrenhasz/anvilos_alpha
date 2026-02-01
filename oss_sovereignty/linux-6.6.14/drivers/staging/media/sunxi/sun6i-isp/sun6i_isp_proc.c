@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2021-2022 Bootlin
- * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- */
+
+ 
 
 #include <linux/pm_runtime.h>
 #include <linux/regmap.h>
@@ -15,7 +12,7 @@
 #include "sun6i_isp_proc.h"
 #include "sun6i_isp_reg.h"
 
-/* Helpers */
+ 
 
 void sun6i_isp_proc_dimensions(struct sun6i_isp_device *isp_dev,
 			       unsigned int *width, unsigned int *height)
@@ -26,7 +23,7 @@ void sun6i_isp_proc_dimensions(struct sun6i_isp_device *isp_dev,
 		*height = isp_dev->proc.mbus_format.height;
 }
 
-/* Format */
+ 
 
 static const struct sun6i_isp_proc_format sun6i_isp_proc_formats[] = {
 	{
@@ -75,7 +72,7 @@ const struct sun6i_isp_proc_format *sun6i_isp_proc_format_find(u32 mbus_code)
 	return NULL;
 }
 
-/* Processor */
+ 
 
 static void sun6i_isp_proc_irq_enable(struct sun6i_isp_device *isp_dev)
 {
@@ -113,7 +110,7 @@ static void sun6i_isp_proc_enable(struct sun6i_isp_device *isp_dev,
 	struct regmap *regmap = isp_dev->regmap;
 	u8 mode;
 
-	/* Frontend */
+	 
 
 	if (source == &proc->source_csi0)
 		mode = SUN6I_ISP_SRC_MODE_CSI(0);
@@ -131,7 +128,7 @@ static void sun6i_isp_proc_disable(struct sun6i_isp_device *isp_dev)
 {
 	struct regmap *regmap = isp_dev->regmap;
 
-	/* Frontend */
+	 
 
 	regmap_write(regmap, SUN6I_ISP_FE_CTRL_REG, 0);
 	regmap_write(regmap, SUN6I_ISP_FE_CFG_REG, 0);
@@ -143,13 +140,13 @@ static void sun6i_isp_proc_configure(struct sun6i_isp_device *isp_dev)
 	const struct sun6i_isp_proc_format *format;
 	u32 value;
 
-	/* Module */
+	 
 
 	value = sun6i_isp_load_read(isp_dev, SUN6I_ISP_MODULE_EN_REG);
 	value |= SUN6I_ISP_MODULE_EN_SRC0;
 	sun6i_isp_load_write(isp_dev, SUN6I_ISP_MODULE_EN_REG, value);
 
-	/* Input */
+	 
 
 	format = sun6i_isp_proc_format_find(mbus_format->code);
 	if (WARN_ON(!format))
@@ -162,7 +159,7 @@ static void sun6i_isp_proc_configure(struct sun6i_isp_device *isp_dev)
 			     SUN6I_ISP_MODE_HIST(2));
 }
 
-/* V4L2 Subdev */
+ 
 
 static int sun6i_isp_proc_s_stream(struct v4l2_subdev *subdev, int on)
 {
@@ -175,7 +172,7 @@ static int sun6i_isp_proc_s_stream(struct v4l2_subdev *subdev, int on)
 	struct media_pad *remote_pad;
 	int ret;
 
-	/* Source */
+	 
 
 	remote_pad = media_pad_remote_pad_unique(local_pad);
 	if (IS_ERR(remote_pad)) {
@@ -198,28 +195,28 @@ static int sun6i_isp_proc_s_stream(struct v4l2_subdev *subdev, int on)
 		goto disable;
 	}
 
-	/* PM */
+	 
 
 	ret = pm_runtime_resume_and_get(dev);
 	if (ret < 0)
 		return ret;
 
-	/* Clear */
+	 
 
 	sun6i_isp_proc_irq_clear(isp_dev);
 
-	/* Configure */
+	 
 
 	sun6i_isp_tables_configure(isp_dev);
 	sun6i_isp_params_configure(isp_dev);
 	sun6i_isp_proc_configure(isp_dev);
 	sun6i_isp_capture_configure(isp_dev);
 
-	/* State Update */
+	 
 
 	sun6i_isp_state_update(isp_dev, true);
 
-	/* Enable */
+	 
 
 	sun6i_isp_proc_irq_enable(isp_dev);
 	sun6i_isp_proc_enable(isp_dev, source);
@@ -347,13 +344,13 @@ static const struct v4l2_subdev_ops sun6i_isp_proc_subdev_ops = {
 	.pad	= &sun6i_isp_proc_pad_ops,
 };
 
-/* Media Entity */
+ 
 
 static const struct media_entity_operations sun6i_isp_proc_entity_ops = {
 	.link_validate	= v4l2_subdev_link_validate,
 };
 
-/* V4L2 Async */
+ 
 
 static int sun6i_isp_proc_link(struct sun6i_isp_device *isp_dev,
 			       int sink_pad_index,
@@ -366,7 +363,7 @@ static int sun6i_isp_proc_link(struct sun6i_isp_device *isp_dev,
 	int source_pad_index;
 	int ret;
 
-	/* Get the first remote source pad. */
+	 
 	ret = media_entity_get_fwnode_pad(source_entity, remote_subdev->fwnode,
 					  MEDIA_PAD_FL_SOURCE);
 	if (ret < 0) {
@@ -446,7 +443,7 @@ sun6i_isp_proc_notifier_ops = {
 	.complete	= sun6i_isp_proc_notifier_complete,
 };
 
-/* Processor */
+ 
 
 static int sun6i_isp_proc_source_setup(struct sun6i_isp_device *isp_dev,
 				       struct sun6i_isp_proc_source *source,
@@ -498,7 +495,7 @@ int sun6i_isp_proc_setup(struct sun6i_isp_device *isp_dev)
 
 	mutex_init(&proc->lock);
 
-	/* V4L2 Subdev */
+	 
 
 	v4l2_subdev_init(subdev, &sun6i_isp_proc_subdev_ops);
 	strscpy(subdev->name, SUN6I_ISP_PROC_NAME, sizeof(subdev->name));
@@ -508,12 +505,12 @@ int sun6i_isp_proc_setup(struct sun6i_isp_device *isp_dev)
 
 	v4l2_set_subdevdata(subdev, isp_dev);
 
-	/* Media Entity */
+	 
 
 	subdev->entity.function = MEDIA_ENT_F_PROC_VIDEO_ISP;
 	subdev->entity.ops = &sun6i_isp_proc_entity_ops;
 
-	/* Media Pads */
+	 
 
 	pads[SUN6I_ISP_PROC_PAD_SINK_CSI].flags = MEDIA_PAD_FL_SINK |
 						  MEDIA_PAD_FL_MUST_CONNECT;
@@ -526,7 +523,7 @@ int sun6i_isp_proc_setup(struct sun6i_isp_device *isp_dev)
 	if (ret)
 		return ret;
 
-	/* V4L2 Subdev */
+	 
 
 	ret = v4l2_device_register_subdev(v4l2_dev, subdev);
 	if (ret < 0) {
@@ -534,7 +531,7 @@ int sun6i_isp_proc_setup(struct sun6i_isp_device *isp_dev)
 		goto error_media_entity;
 	}
 
-	/* V4L2 Async */
+	 
 
 	v4l2_async_nf_init(notifier, v4l2_dev);
 	notifier->ops = &sun6i_isp_proc_notifier_ops;

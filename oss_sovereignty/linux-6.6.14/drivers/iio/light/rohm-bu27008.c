@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ROHM Colour Sensor driver for
- * - BU27008 RGBC sensor
- * - BU27010 RGBC + Flickering sensor
- *
- * Copyright (c) 2023, ROHM Semiconductor.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -24,25 +18,7 @@
 #include <linux/iio/trigger_consumer.h>
 #include <linux/iio/triggered_buffer.h>
 
-/*
- * A word about register address and mask definitions.
- *
- * At a quick glance to the data-sheet register tables, the BU27010 has all the
- * registers that the BU27008 has. On top of that the BU27010 adds couple of new
- * ones.
- *
- * So, all definitions BU27008_REG_* are there also for BU27010 but none of the
- * BU27010_REG_* are present on BU27008. This makes sense as BU27010 just adds
- * some features (Flicker FIFO, more power control) on top of the BU27008.
- *
- * Unfortunately, some of the wheel has been re-invented. Even though the names
- * of the registers have stayed the same, pretty much all of the functionality
- * provided by the registers has changed place. Contents of all MODE_CONTROL
- * registers on BU27008 and BU27010 are different.
- *
- * Chip-specific mapping from register addresses/bits to functionality is done
- * in bu27_chip_data structures.
- */
+ 
 #define BU27008_REG_SYSTEM_CONTROL	0x40
 #define BU27008_MASK_SW_RESET		BIT(7)
 #define BU27008_MASK_PART_ID		GENMASK(5, 0)
@@ -73,7 +49,7 @@
 #define BU27008_REG_MANUFACTURER_ID	0x92
 #define BU27008_REG_MAX BU27008_REG_MANUFACTURER_ID
 
-/* BU27010 specific definitions */
+ 
 
 #define BU27010_MASK_SW_RESET		BIT(7)
 #define BU27010_ID			0x1b
@@ -99,7 +75,7 @@
 #define BU27010_MASK_FLC_GAIN		GENMASK(4, 0)
 
 #define BU27010_REG_MODE_CONTROL4	0x44
-/* If flicker is ever to be supported the IRQ must be handled as a field */
+ 
 #define BU27010_IRQ_DIS_ALL		GENMASK(1, 0)
 #define BU27010_DRDY_EN			BIT(0)
 #define BU27010_MASK_INT_SEL		GENMASK(1, 0)
@@ -123,15 +99,7 @@
 #define BU27010_REG_MANUFACTURER_ID	0x92
 #define BU27010_REG_MAX BU27010_REG_MANUFACTURER_ID
 
-/**
- * enum bu27008_chan_type - BU27008 channel types
- * @BU27008_RED:	Red channel. Always via data0.
- * @BU27008_GREEN:	Green channel. Always via data1.
- * @BU27008_BLUE:	Blue channel. Via data2 (when used).
- * @BU27008_CLEAR:	Clear channel. Via data2 or data3 (when used).
- * @BU27008_IR:		IR channel. Via data3 (when used).
- * @BU27008_NUM_CHANS:	Number of channel types.
- */
+ 
 enum bu27008_chan_type {
 	BU27008_RED,
 	BU27008_GREEN,
@@ -141,14 +109,7 @@ enum bu27008_chan_type {
 	BU27008_NUM_CHANS
 };
 
-/**
- * enum bu27008_chan - BU27008 physical data channel
- * @BU27008_DATA0:		Always red.
- * @BU27008_DATA1:		Always green.
- * @BU27008_DATA2:		Blue or clear.
- * @BU27008_DATA3:		IR or clear.
- * @BU27008_NUM_HW_CHANS:	Number of physical channels
- */
+ 
 enum bu27008_chan {
 	BU27008_DATA0,
 	BU27008_DATA1,
@@ -157,49 +118,31 @@ enum bu27008_chan {
 	BU27008_NUM_HW_CHANS
 };
 
-/* We can always measure red and green at same time */
+ 
 #define ALWAYS_SCANNABLE (BIT(BU27008_RED) | BIT(BU27008_GREEN))
 
-/* We use these data channel configs. Ensure scan_masks below follow them too */
-#define BU27008_BLUE2_CLEAR3		0x0 /* buffer is R, G, B, C */
-#define BU27008_CLEAR2_IR3		0x1 /* buffer is R, G, C, IR */
-#define BU27008_BLUE2_IR3		0x2 /* buffer is R, G, B, IR */
+ 
+#define BU27008_BLUE2_CLEAR3		0x0  
+#define BU27008_CLEAR2_IR3		0x1  
+#define BU27008_BLUE2_IR3		0x2  
 
 static const unsigned long bu27008_scan_masks[] = {
-	/* buffer is R, G, B, C */
+	 
 	ALWAYS_SCANNABLE | BIT(BU27008_BLUE) | BIT(BU27008_CLEAR),
-	/* buffer is R, G, C, IR */
+	 
 	ALWAYS_SCANNABLE | BIT(BU27008_CLEAR) | BIT(BU27008_IR),
-	/* buffer is R, G, B, IR */
+	 
 	ALWAYS_SCANNABLE | BIT(BU27008_BLUE) | BIT(BU27008_IR),
 	0
 };
 
-/*
- * Available scales with gain 1x - 1024x, timings 55, 100, 200, 400 mS
- * Time impacts to gain: 1x, 2x, 4x, 8x.
- *
- * => Max total gain is HWGAIN * gain by integration time (8 * 1024) = 8192
- *
- * Max amplification is (HWGAIN * MAX integration-time multiplier) 1024 * 8
- * = 8192. With NANO scale we get rid of accuracy loss when we start with the
- * scale 16.0 for HWGAIN1, INT-TIME 55 mS. This way the nano scale for MAX
- * total gain 8192 will be 1953125
- */
+ 
 #define BU27008_SCALE_1X 16
 
-/*
- * On BU27010 available scales with gain 1x - 4096x,
- * timings 55, 100, 200, 400 mS. Time impacts to gain: 1x, 2x, 4x, 8x.
- *
- * => Max total gain is HWGAIN * gain by integration time (8 * 4096)
- *
- * Using NANO precision for scale we must use scale 64x corresponding gain 1x
- * to avoid precision loss.
- */
+ 
 #define BU27010_SCALE_1X 64
 
-/* See the data sheet for the "Gain Setting" table */
+ 
 #define BU27008_GSEL_1X		0x00
 #define BU27008_GSEL_4X		0x08
 #define BU27008_GSEL_8X		0x09
@@ -234,13 +177,13 @@ static const struct iio_gain_sel_pair bu27008_gains_ir[] = {
 	GAIN_SCALE_GAIN(1024, BU27008_GSEL_1024X),
 };
 
-#define BU27010_GSEL_1X		0x00	/* 000000 */
-#define BU27010_GSEL_4X		0x08	/* 001000 */
-#define BU27010_GSEL_16X	0x09	/* 001001 */
-#define BU27010_GSEL_64X	0x0e	/* 001110 */
-#define BU27010_GSEL_256X	0x1e	/* 011110 */
-#define BU27010_GSEL_1024X	0x2e	/* 101110 */
-#define BU27010_GSEL_4096X	0x3f	/* 111111 */
+#define BU27010_GSEL_1X		0x00	 
+#define BU27010_GSEL_4X		0x08	 
+#define BU27010_GSEL_16X	0x09	 
+#define BU27010_GSEL_64X	0x0e	 
+#define BU27010_GSEL_256X	0x1e	 
+#define BU27010_GSEL_1024X	0x2e	 
+#define BU27010_GSEL_4096X	0x3f	 
 
 static const struct iio_gain_sel_pair bu27010_gains[] = {
 	GAIN_SCALE_GAIN(1, BU27010_GSEL_1X),
@@ -288,18 +231,7 @@ static const struct iio_itime_sel_mul bu27010_itimes[] = {
 	GAIN_SCALE_ITIME_US(55000, BU27010_MEAS_MODE_55MS, 1),
 };
 
-/*
- * All the RGBC channels share the same gain.
- * IR gain can be fine-tuned from the gain set for the RGBC by 2 bit, but this
- * would yield quite complex gain setting. Especially since not all bit
- * compinations are supported. And in any case setting GAIN for RGBC will
- * always also change the IR-gain.
- *
- * On top of this, the selector '0' which corresponds to hw-gain 1X on RGBC,
- * corresponds to gain 2X on IR. Rest of the selctors correspond to same gains
- * though. This, however, makes it not possible to use shared gain for all
- * RGBC and IR settings even though they are all changed at the one go.
- */
+ 
 #define BU27008_CHAN(color, data, separate_avail)				\
 {										\
 	.type = IIO_INTENSITY,							\
@@ -320,16 +252,13 @@ static const struct iio_itime_sel_mul bu27010_itimes[] = {
 	},									\
 }
 
-/* For raw reads we always configure DATA3 for CLEAR */
+ 
 static const struct iio_chan_spec bu27008_channels[] = {
 	BU27008_CHAN(RED, DATA0, BIT(IIO_CHAN_INFO_SCALE)),
 	BU27008_CHAN(GREEN, DATA1, BIT(IIO_CHAN_INFO_SCALE)),
 	BU27008_CHAN(BLUE, DATA2, BIT(IIO_CHAN_INFO_SCALE)),
 	BU27008_CHAN(CLEAR, DATA2, BIT(IIO_CHAN_INFO_SCALE)),
-	/*
-	 * We don't allow setting scale for IR (because of shared gain bits).
-	 * Hence we don't advertise available ones either.
-	 */
+	 
 	BU27008_CHAN(IR, DATA3, 0),
 	IIO_CHAN_SOFT_TIMESTAMP(BU27008_NUM_CHANS),
 };
@@ -370,33 +299,29 @@ struct bu27008_data {
 	struct iio_gts gts_ir;
 	int irq;
 
-	/*
-	 * Prevent changing gain/time config when scale is read/written.
-	 * Similarly, protect the integration_time read/change sequence.
-	 * Prevent changing gain/time when data is read.
-	 */
+	 
 	struct mutex mutex;
 };
 
 static const struct regmap_range bu27008_volatile_ranges[] = {
 	{
-		.range_min = BU27008_REG_SYSTEM_CONTROL,	/* SWRESET */
+		.range_min = BU27008_REG_SYSTEM_CONTROL,	 
 		.range_max = BU27008_REG_SYSTEM_CONTROL,
 	}, {
-		.range_min = BU27008_REG_MODE_CONTROL3,		/* VALID */
+		.range_min = BU27008_REG_MODE_CONTROL3,		 
 		.range_max = BU27008_REG_MODE_CONTROL3,
 	}, {
-		.range_min = BU27008_REG_DATA0_LO,		/* DATA */
+		.range_min = BU27008_REG_DATA0_LO,		 
 		.range_max = BU27008_REG_DATA3_HI,
 	},
 };
 
 static const struct regmap_range bu27010_volatile_ranges[] = {
 	{
-		.range_min = BU27010_REG_RESET,			/* RSTB */
-		.range_max = BU27008_REG_SYSTEM_CONTROL,	/* RESET */
+		.range_min = BU27010_REG_RESET,			 
+		.range_max = BU27008_REG_SYSTEM_CONTROL,	 
 	}, {
-		.range_min = BU27010_REG_MODE_CONTROL5,		/* VALID bits */
+		.range_min = BU27010_REG_MODE_CONTROL5,		 
 		.range_max = BU27010_REG_MODE_CONTROL5,
 	}, {
 		.range_min = BU27008_REG_DATA0_LO,
@@ -451,18 +376,7 @@ static const struct regmap_config bu27008_regmap = {
 	.cache_type = REGCACHE_RBTREE,
 	.volatile_table = &bu27008_volatile_regs,
 	.wr_table = &bu27008_ro_regs,
-	/*
-	 * All register writes are serialized by the mutex which protects the
-	 * scale setting/getting. This is needed because scale is combined by
-	 * gain and integration time settings and we need to ensure those are
-	 * not read / written when scale is being computed.
-	 *
-	 * As a result of this serializing, we don't need regmap locking. Note,
-	 * this is not true if we add any configurations which are not
-	 * serialized by the mutex and which may need for example a protected
-	 * read-modify-write cycle (eg. regmap_update_bits()). Please, revise
-	 * this when adding features to the driver.
-	 */
+	 
 	.disable_locking = true,
 };
 
@@ -483,35 +397,7 @@ static int bu27008_write_gain_sel(struct bu27008_data *data, int sel)
 
 	regval = FIELD_PREP(BU27008_MASK_RGBC_GAIN, sel);
 
-	/*
-	 * We do always set also the LOW bits of IR-gain because othervice we
-	 * would risk resulting an invalid GAIN register value.
-	 *
-	 * We could allow setting separate gains for RGBC and IR when the
-	 * values were such that HW could support both gain settings.
-	 * Eg, when the shared bits were same for both gain values.
-	 *
-	 * This, however, has a negligible benefit compared to the increased
-	 * software complexity when we would need to go through the gains
-	 * for both channels separately when the integration time changes.
-	 * This would end up with nasty logic for computing gain values for
-	 * both channels - and rejecting them if shared bits changed.
-	 *
-	 * We should then build the logic by guessing what a user prefers.
-	 * RGBC or IR gains correctly set while other jumps to odd value?
-	 * Maybe look-up a value where both gains are somehow optimized
-	 * <what this somehow is, is ATM unknown to us>. Or maybe user would
-	 * expect us to reject changes when optimal gains can't be set to both
-	 * channels w/given integration time. At best that would result
-	 * solution that works well for a very specific subset of
-	 * configurations but causes unexpected corner-cases.
-	 *
-	 * So, we keep it simple. Always set same selector to IR and RGBC.
-	 * We disallow setting IR (as I expect that most of the users are
-	 * interested in RGBC). This way we can show the user that the scales
-	 * for RGBC and IR channels are different (1X Vs 2X with sel 0) while
-	 * still keeping the operation deterministic.
-	 */
+	 
 	regval |= FIELD_PREP(BU27008_MASK_IR_GAIN_LO, sel);
 
 	return regmap_update_bits(data->regmap, BU27008_REG_MODE_CONTROL2,
@@ -523,14 +409,7 @@ static int bu27010_write_gain_sel(struct bu27008_data *data, int sel)
 	unsigned int regval;
 	int ret, chan_selector;
 
-	/*
-	 * Gain 'selector' is composed of two registers. Selector is 6bit value,
-	 * 4 high bits being the RGBC gain fieild in MODE_CONTROL1 register and
-	 * two low bits being the channel specific gain in MODE_CONTROL2.
-	 *
-	 * Let's take the 4 high bits of whole 6 bit selector, and prepare
-	 * the MODE_CONTROL1 value (RGBC gain part).
-	 */
+	 
 	regval = FIELD_PREP(BU27010_MASK_RGBC_GAIN, (sel >> 2));
 
 	ret = regmap_update_bits(data->regmap, BU27008_REG_MODE_CONTROL1,
@@ -538,11 +417,7 @@ static int bu27010_write_gain_sel(struct bu27008_data *data, int sel)
 	if (ret)
 		return ret;
 
-	/*
-	 * Two low two bits of the selector must be written for all 4
-	 * channels in the MODE_CONTROL2 register. Copy these two bits for
-	 * all channels.
-	 */
+	 
 	chan_selector = sel & GENMASK(1, 0);
 
 	regval = FIELD_PREP(BU27010_MASK_DATA0_GAIN, chan_selector);
@@ -557,18 +432,7 @@ static int bu27008_get_gain_sel(struct bu27008_data *data, int *sel)
 {
 	int ret;
 
-	/*
-	 * If we always "lock" the gain selectors for all channels to prevent
-	 * unsupported configs, then it does not matter which channel is used
-	 * we can just return selector from any of them.
-	 *
-	 * This, however is not true if we decide to support only 4X and 16X
-	 * and then individual gains for channels. Currently this is not the
-	 * case.
-	 *
-	 * If we some day decide to support individual gains, then we need to
-	 * have channel information here.
-	 */
+	 
 
 	ret = regmap_read(data->regmap, BU27008_REG_MODE_CONTROL2, sel);
 	if (ret)
@@ -583,31 +447,19 @@ static int bu27010_get_gain_sel(struct bu27008_data *data, int *sel)
 {
 	int ret, tmp;
 
-	/*
-	 * We always "lock" the gain selectors for all channels to prevent
-	 * unsupported configs. It does not matter which channel is used
-	 * we can just return selector from any of them.
-	 *
-	 * Read the channel0 gain.
-	 */
+	 
 	ret = regmap_read(data->regmap, BU27008_REG_MODE_CONTROL2, sel);
 	if (ret)
 		return ret;
 
 	*sel = FIELD_GET(BU27010_MASK_DATA0_GAIN, *sel);
 
-	/* Read the shared gain */
+	 
 	ret = regmap_read(data->regmap, BU27008_REG_MODE_CONTROL1, &tmp);
 	if (ret)
 		return ret;
 
-	/*
-	 * The gain selector is made as a combination of common RGBC gain and
-	 * the channel specific gain. The channel specific gain forms the low
-	 * bits of selector and RGBC gain is appended right after it.
-	 *
-	 * Compose the selector from channel0 gain and shared RGBC gain.
-	 */
+	 
 	*sel |= FIELD_GET(BU27010_MASK_RGBC_GAIN, tmp) << fls(BU27010_MASK_DATA0_GAIN);
 
 	return ret;
@@ -622,12 +474,7 @@ static int bu27008_chip_init(struct bu27008_data *data)
 	if (ret)
 		return dev_err_probe(data->dev, ret, "Sensor reset failed\n");
 
-	/*
-	 * The data-sheet does not tell how long performing the IC reset takes.
-	 * However, the data-sheet says the minimum time it takes the IC to be
-	 * able to take inputs after power is applied, is 100 uS. I'd assume
-	 * > 1 mS is enough.
-	 */
+	 
 	msleep(1);
 
 	ret = regmap_reinit_cache(data->regmap, data->cd->regmap_cfg);
@@ -648,7 +495,7 @@ static int bu27010_chip_init(struct bu27008_data *data)
 
 	msleep(1);
 
-	/* Power ON*/
+	 
 	ret = regmap_write_bits(data->regmap, BU27010_REG_POWER,
 				BU27010_MASK_POWER, BU27010_MASK_POWER);
 	if (ret)
@@ -656,7 +503,7 @@ static int bu27010_chip_init(struct bu27008_data *data)
 
 	msleep(1);
 
-	/* Release blocks from reset */
+	 
 	ret = regmap_write_bits(data->regmap, BU27010_REG_RESET,
 				BU27010_MASK_RESET, BU27010_RESET_RELEASE);
 	if (ret)
@@ -664,23 +511,7 @@ static int bu27010_chip_init(struct bu27008_data *data)
 
 	msleep(1);
 
-	/*
-	 * The IRQ enabling on BU27010 is done in a peculiar way. The IRQ
-	 * enabling is not a bit mask where individual IRQs could be enabled but
-	 * a field which values are:
-	 * 00 => IRQs disabled
-	 * 01 => Data-ready (RGBC/IR)
-	 * 10 => Data-ready (flicker)
-	 * 11 => Flicker FIFO
-	 *
-	 * So, only one IRQ can be enabled at a time and enabling for example
-	 * flicker FIFO would automagically disable data-ready IRQ.
-	 *
-	 * Currently the driver does not support the flicker. Hence, we can
-	 * just treat the RGBC data-ready as single bit which can be enabled /
-	 * disabled. This works for as long as the second bit in the field
-	 * stays zero. Here we ensure it gets zeroed.
-	 */
+	 
 	return regmap_clear_bits(data->regmap, BU27010_REG_MODE_CONTROL4,
 				 BU27010_IRQ_DIS_ALL);
 }
@@ -867,7 +698,7 @@ static int bu27008_set_int_time(struct bu27008_data *data, int time)
 	return bu27008_set_int_time_sel(data, ret);
 }
 
-/* Try to change the time so that the scale is maintained */
+ 
 static int bu27008_try_set_int_time(struct bu27008_data *data, int int_time_new)
 {
 	int ret, old_time_sel, new_time_sel,  old_gain, new_gain;
@@ -886,7 +717,7 @@ static int bu27008_try_set_int_time(struct bu27008_data *data, int int_time_new)
 		goto unlock_out;
 	}
 
-	/* If we already use requested time, then we're done */
+	 
 	new_time_sel = iio_gts_find_sel_by_int_time(&data->gts, int_time_new);
 	if (new_time_sel == old_time_sel)
 		goto unlock_out;
@@ -909,12 +740,7 @@ static int bu27008_try_set_int_time(struct bu27008_data *data, int int_time_new)
 		if (new_gain < 0)
 			goto unlock_out;
 
-		/*
-		 * If caller requests for integration time change and we
-		 * can't support the scale - then the caller should be
-		 * prepared to 'pick up the pieces and deal with the
-		 * fact that the scale changed'.
-		 */
+		 
 		ret = iio_find_closest_gain_low(&data->gts, new_gain, &ok);
 		if (!ok)
 			dev_dbg(data->dev, "optimal gain out of range\n");
@@ -961,12 +787,7 @@ static int bu27008_chan_cfg(struct bu27008_data *data,
 	else
 		chan_sel = BU27008_CLEAR2_IR3;
 
-	/*
-	 * prepare bitfield for channel sel. The FIELD_PREP works only when
-	 * mask is constant. In our case the mask is assigned based on the
-	 * chip type. Hence the open-coded FIELD_PREP here. We don't bother
-	 * zeroing the irrelevant bits though - update_bits takes care of that.
-	 */
+	 
 	chan_sel <<= ffs(data->cd->chan_sel_mask) - 1;
 
 	return regmap_update_bits(data->regmap, data->cd->chan_sel_reg,
@@ -1048,7 +869,7 @@ static int bu27008_read_raw(struct iio_dev *idev,
 	}
 }
 
-/* Called if the new scale could not be supported with existing int-time */
+ 
 static int bu27008_try_find_new_time_gain(struct bu27008_data *data, int val,
 					  int val2, int *gain_sel)
 {
@@ -1123,10 +944,7 @@ static int bu27008_write_raw(struct iio_dev *idev,
 	struct bu27008_data *data = iio_priv(idev);
 	int ret;
 
-	/*
-	 * Do not allow changing scale when measurement is ongoing as doing so
-	 * could make values in the buffer inconsistent.
-	 */
+	 
 	ret = iio_device_claim_direct_mode(idev);
 	if (ret)
 		return ret;
@@ -1176,7 +994,7 @@ static int bu27008_update_scan_mode(struct iio_dev *idev,
 	struct bu27008_data *data = iio_priv(idev);
 	int chan_sel;
 
-	/* Configure channel selection */
+	 
 	if (test_bit(BU27008_BLUE, idev->active_scan_mask)) {
 		if (test_bit(BU27008_CLEAR, idev->active_scan_mask))
 			chan_sel = BU27008_BLUE2_CLEAR3;
@@ -1244,10 +1062,7 @@ static irqreturn_t bu27008_trigger_handler(int irq, void *p)
 
 	memset(&raw, 0, sizeof(raw));
 
-	/*
-	 * After some measurements, it seems reading the
-	 * BU27008_REG_MODE_CONTROL3 debounces the IRQ line
-	 */
+	 
 	ret = regmap_read(data->regmap, data->cd->valid_reg, &dummy);
 	if (ret < 0)
 		goto err_read;
@@ -1285,10 +1100,7 @@ static const struct iio_buffer_setup_ops bu27008_buffer_ops = {
 
 static irqreturn_t bu27008_data_rdy_poll(int irq, void *private)
 {
-	/*
-	 * The BU27008 keeps IRQ asserted until we read the VALID bit from
-	 * a register. We need to keep the IRQ disabled until then.
-	 */
+	 
 	disable_irq_nosync(irq);
 	iio_trigger_poll(private);
 
@@ -1333,7 +1145,7 @@ static int bu27008_setup_trigger(struct bu27008_data *data, struct iio_dev *idev
 		return dev_err_probe(data->dev, ret,
 				     "Trigger registration failed\n");
 
-	/* set default trigger */
+	 
 	idev->trig = iio_trigger_get(itrig);
 
 	return 0;

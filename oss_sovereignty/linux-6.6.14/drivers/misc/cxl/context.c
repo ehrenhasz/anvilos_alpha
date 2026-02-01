@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2014 IBM Corp.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -21,24 +19,20 @@
 
 #include "cxl.h"
 
-/*
- * Allocates space for a CXL context.
- */
+ 
 struct cxl_context *cxl_context_alloc(void)
 {
 	return kzalloc(sizeof(struct cxl_context), GFP_KERNEL);
 }
 
-/*
- * Initialises a CXL context.
- */
+ 
 int cxl_context_init(struct cxl_context *ctx, struct cxl_afu *afu, bool master)
 {
 	int i;
 
 	ctx->afu = afu;
 	ctx->master = master;
-	ctx->pid = NULL; /* Set in start work ioctl */
+	ctx->pid = NULL;  
 	mutex_init(&ctx->mapping_lock);
 	ctx->mapping = NULL;
 	ctx->tidr = 0;
@@ -47,13 +41,7 @@ int cxl_context_init(struct cxl_context *ctx, struct cxl_afu *afu, bool master)
 	if (cxl_is_power8()) {
 		spin_lock_init(&ctx->sste_lock);
 
-		/*
-		 * Allocate the segment table before we put it in the IDR so that we
-		 * can always access it when dereferenced from IDR. For the same
-		 * reason, the segment table is only destroyed after the context is
-		 * removed from the IDR.  Access to this in the IOCTL is protected by
-		 * Linux filesystem semantics (can't IOCTL until open is complete).
-		 */
+		 
 		i = cxl_alloc_sst(ctx);
 		if (i)
 			return i;
@@ -71,13 +59,7 @@ int cxl_context_init(struct cxl_context *ctx, struct cxl_afu *afu, bool master)
 
 	INIT_LIST_HEAD(&ctx->irq_names);
 
-	/*
-	 * When we have to destroy all contexts in cxl_context_detach_all() we
-	 * end up with afu_release_irqs() called from inside a
-	 * idr_for_each_entry(). Hence we need to make sure that anything
-	 * dereferenced from this IDR is ok before we allocate the IDR here.
-	 * This clears out the IRQ ranges to ensure this.
-	 */
+	 
 	for (i = 0; i < CXL_IRQ_RANGES; i++)
 		ctx->irqs.range[i] = 0;
 
@@ -85,10 +67,7 @@ int cxl_context_init(struct cxl_context *ctx, struct cxl_afu *afu, bool master)
 
 	ctx->status = OPENED;
 
-	/*
-	 * Allocating IDR! We better make sure everything's setup that
-	 * dereferences from it.
-	 */
+	 
 	mutex_lock(&afu->contexts_lock);
 	idr_preload(GFP_KERNEL);
 	i = idr_alloc(&ctx->afu->contexts_idr, ctx, 0,
@@ -103,14 +82,11 @@ int cxl_context_init(struct cxl_context *ctx, struct cxl_afu *afu, bool master)
 		ctx->elem = &ctx->afu->native->spa[i];
 		ctx->external_pe = ctx->pe;
 	} else {
-		ctx->external_pe = -1; /* assigned when attaching */
+		ctx->external_pe = -1;  
 	}
 	ctx->pe_inserted = false;
 
-	/*
-	 * take a ref on the afu so that it stays alive at-least till
-	 * this context is reclaimed inside reclaim_ctx.
-	 */
+	 
 	cxl_afu_get(afu);
 	return 0;
 }
@@ -176,9 +152,7 @@ static const struct vm_operations_struct cxl_mmap_vmops = {
 	.fault = cxl_mmap_fault,
 };
 
-/*
- * Map a per-context mmio space into the given vma.
- */
+ 
 int cxl_context_iomap(struct cxl_context *ctx, struct vm_area_struct *vma)
 {
 	u64 start = vma->vm_pgoff << PAGE_SHIFT;
@@ -189,16 +163,13 @@ int cxl_context_iomap(struct cxl_context *ctx, struct vm_area_struct *vma)
 			return -EINVAL;
 
 		if (cxl_is_power9()) {
-			/*
-			 * Make sure there is a valid problem state
-			 * area space for this AFU.
-			 */
+			 
 			if (ctx->master && !ctx->afu->psa) {
 				pr_devel("AFU doesn't support mmio space\n");
 				return -EINVAL;
 			}
 
-			/* Can't mmap until the AFU is enabled */
+			 
 			if (!ctx->afu->enabled)
 				return -EBUSY;
 		}
@@ -206,13 +177,13 @@ int cxl_context_iomap(struct cxl_context *ctx, struct vm_area_struct *vma)
 		if (start + len > ctx->psn_size)
 			return -EINVAL;
 
-		/* Make sure there is a valid per process space for this AFU */
+		 
 		if ((ctx->master && !ctx->afu->psa) || (!ctx->afu->pp_psa)) {
 			pr_devel("AFU doesn't support mmio space\n");
 			return -EINVAL;
 		}
 
-		/* Can't mmap until the AFU is enabled */
+		 
 		if (!ctx->afu->enabled)
 			return -EBUSY;
 	}
@@ -226,11 +197,7 @@ int cxl_context_iomap(struct cxl_context *ctx, struct vm_area_struct *vma)
 	return 0;
 }
 
-/*
- * Detach a context from the hardware. This disables interrupts and doesn't
- * return until all outstanding interrupts for this context have completed. The
- * hardware should no longer access *ctx after this has returned.
- */
+ 
 int __detach_context(struct cxl_context *ctx)
 {
 	enum cxl_context_status status;
@@ -242,29 +209,24 @@ int __detach_context(struct cxl_context *ctx)
 	if (status != STARTED)
 		return -EBUSY;
 
-	/* Only warn if we detached while the link was OK.
-	 * If detach fails when hw is down, we don't care.
-	 */
+	 
 	WARN_ON(cxl_ops->detach_process(ctx) &&
 		cxl_ops->link_ok(ctx->afu->adapter, ctx->afu));
-	flush_work(&ctx->fault_work); /* Only needed for dedicated process */
+	flush_work(&ctx->fault_work);  
 
-	/*
-	 * Wait until no further interrupts are presented by the PSL
-	 * for this context.
-	 */
+	 
 	if (cxl_ops->irq_wait)
 		cxl_ops->irq_wait(ctx);
 
-	/* release the reference to the group leader and mm handling pid */
+	 
 	put_pid(ctx->pid);
 
 	cxl_ctx_put();
 
-	/* Decrease the attached context count on the adapter */
+	 
 	cxl_adapter_context_put(ctx->afu->adapter);
 
-	/* Decrease the mm count on the context */
+	 
 	cxl_context_mm_count_put(ctx);
 	if (ctx->mm)
 		mm_context_remove_copro(ctx->mm);
@@ -273,12 +235,7 @@ int __detach_context(struct cxl_context *ctx)
 	return 0;
 }
 
-/*
- * Detach the given context from the AFU. This doesn't actually
- * free the context but it should stop the context running in hardware
- * (ie. prevent this context from generating any further interrupts
- * so that it can be freed).
- */
+ 
 void cxl_context_detach(struct cxl_context *ctx)
 {
 	int rc;
@@ -291,9 +248,7 @@ void cxl_context_detach(struct cxl_context *ctx)
 	wake_up_all(&ctx->wq);
 }
 
-/*
- * Detach all contexts on the given AFU.
- */
+ 
 void cxl_context_detach_all(struct cxl_afu *afu)
 {
 	struct cxl_context *ctx;
@@ -301,18 +256,10 @@ void cxl_context_detach_all(struct cxl_afu *afu)
 
 	mutex_lock(&afu->contexts_lock);
 	idr_for_each_entry(&afu->contexts_idr, ctx, tmp) {
-		/*
-		 * Anything done in here needs to be setup before the IDR is
-		 * created and torn down after the IDR removed
-		 */
+		 
 		cxl_context_detach(ctx);
 
-		/*
-		 * We are force detaching - remove any active PSA mappings so
-		 * userspace cannot interfere with the card if it comes back.
-		 * Easiest way to exercise this is to unbind and rebind the
-		 * driver via sysfs while it is in use.
-		 */
+		 
 		mutex_lock(&ctx->mapping_lock);
 		if (ctx->mapping)
 			unmap_mapping_range(ctx->mapping, 0, 0, 1);
@@ -333,7 +280,7 @@ static void reclaim_ctx(struct rcu_head *rcu)
 
 	bitmap_free(ctx->irq_bitmap);
 
-	/* Drop ref to the afu device taken during cxl_context_init */
+	 
 	cxl_afu_put(ctx->afu);
 
 	kfree(ctx);

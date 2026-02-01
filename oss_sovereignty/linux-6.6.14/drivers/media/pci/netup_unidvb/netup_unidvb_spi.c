@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * netup_unidvb_spi.c
- *
- * Internal SPI driver for NetUP Universal Dual DVB-CI
- *
- * Copyright (C) 2014 NetUP Inc.
- * Copyright (C) 2014 Sergey Kozlov <serjk@netup.ru>
- * Copyright (C) 2014 Abylay Ospan <aospan@netup.ru>
- */
+
+ 
 
 #include "netup_unidvb.h"
 #include <linux/spi/spi.h>
@@ -47,7 +39,7 @@ static char netup_spi_name[64] = "fpga";
 
 static struct mtd_partition netup_spi_flash_partitions = {
 	.name = netup_spi_name,
-	.size = 0x1000000, /* 16MB */
+	.size = 0x1000000,  
 	.offset = 0,
 	.mask_flags = MTD_CAP_ROM
 };
@@ -101,7 +93,7 @@ static int netup_spi_transfer(struct spi_master *master,
 	int result = 0;
 	u32 tr_size;
 
-	/* reset CS */
+	 
 	writew(NETUP_SPI_CTRL_LAST_CS, &spi->regs->control_stat);
 	writew(0, &spi->regs->control_stat);
 	list_for_each_entry(t, &msg->transfers, transfer_list) {

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Test program for SIOC{G,S}HWTSTAMP
- * Copyright 2013 Solarflare Communications
- * Author: Ben Hutchings
- */
+
+ 
 
 #include <errno.h>
 #include <stdio.h>

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * The AEGIS-128 Authenticated-Encryption Algorithm
- *
- * Copyright (c) 2017-2018 Ondrej Mosnacek <omosnacek@gmail.com>
- * Copyright (C) 2017-2018 Red Hat, Inc. All rights reserved.
- */
+
+ 
 
 #include <crypto/algapi.h>
 #include <crypto/internal/aead.h>
@@ -429,14 +424,7 @@ static int crypto_aegis128_decrypt_generic(struct aead_request *req)
 	crypto_aegis128_final(&state, &tag, req->assoclen, cryptlen);
 
 	if (unlikely(crypto_memneq(tag.bytes, zeros, authsize))) {
-		/*
-		 * From Chapter 4. 'Security Analysis' of the AEGIS spec [0]
-		 *
-		 * "3. If verification fails, the decrypted plaintext and the
-		 *     wrong authentication tag should not be given as output."
-		 *
-		 * [0] https://competitions.cr.yp.to/round3/aegisv11.pdf
-		 */
+		 
 		skcipher_walk_aead_decrypt(&walk, req, false);
 		crypto_aegis128_process_crypt(NULL, &walk,
 					      crypto_aegis128_wipe_chunk);

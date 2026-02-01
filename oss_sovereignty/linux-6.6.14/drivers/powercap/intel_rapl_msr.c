@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel Running Average Power Limit (RAPL) Driver via MSR interface
- * Copyright (c) 2019, Intel Corporation.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/kernel.h>
@@ -25,11 +22,11 @@
 #include <asm/cpu_device_id.h>
 #include <asm/intel-family.h>
 
-/* Local defines */
+ 
 #define MSR_PLATFORM_POWER_LIMIT	0x0000065C
 #define MSR_VR_CURRENT_CONFIG		0x00000601
 
-/* private data for RAPL MSR Interface */
+ 
 static struct rapl_if_priv *rapl_msr_priv;
 
 static struct rapl_if_priv rapl_msr_priv_intel = {
@@ -62,13 +59,7 @@ static struct rapl_if_priv rapl_msr_priv_amd = {
 	.regs[RAPL_DOMAIN_PP0][RAPL_DOMAIN_REG_STATUS].msr	= MSR_AMD_CORE_ENERGY_STATUS,
 };
 
-/* Handles CPU hotplug on multi-socket systems.
- * If a CPU goes online as the first CPU of the physical package
- * we add the RAPL package to the system. Similarly, when the last
- * CPU of the package is removed, we remove the RAPL package and its
- * associated domains. Cooling devices are handled accordingly at
- * per-domain level.
- */
+ 
 static int rapl_cpu_online(unsigned int cpu)
 {
 	struct rapl_package *rp;
@@ -137,7 +128,7 @@ static int rapl_msr_write_raw(int cpu, struct reg_action *ra)
 	return ra->err;
 }
 
-/* List of verified CPUs. */
+ 
 static const struct x86_cpu_id pl4_support_ids[] = {
 	X86_MATCH_INTEL_FAM6_MODEL(TIGERLAKE_L, NULL),
 	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE, NULL),

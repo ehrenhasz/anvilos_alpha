@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/*******************************************************************************
- *
- * Module Name: dbmethod - Debug commands for control methods
- *
- ******************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 #include "accommon.h"
@@ -16,27 +12,14 @@
 #define _COMPONENT          ACPI_CA_DEBUGGER
 ACPI_MODULE_NAME("dbmethod")
 
-/* Local prototypes */
+ 
 static acpi_status
 acpi_db_walk_for_execute(acpi_handle obj_handle,
 			 u32 nesting_level, void *context, void **return_value);
 
 static acpi_status acpi_db_evaluate_object(struct acpi_namespace_node *node);
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_set_method_breakpoint
- *
- * PARAMETERS:  location            - AML offset of breakpoint
- *              walk_state          - Current walk info
- *              op                  - Current Op (from parse walk)
- *
- * RETURN:      None
- *
- * DESCRIPTION: Set a breakpoint in a control method at the specified
- *              AML offset
- *
- ******************************************************************************/
+ 
 
 void
 acpi_db_set_method_breakpoint(char *location,
@@ -51,7 +34,7 @@ acpi_db_set_method_breakpoint(char *location,
 		return;
 	}
 
-	/* Get and verify the breakpoint address */
+	 
 
 	address = strtoul(location, NULL, 16);
 	aml_offset = (u32)ACPI_PTR_DIFF(op->common.aml,
@@ -61,24 +44,13 @@ acpi_db_set_method_breakpoint(char *location,
 			       address, aml_offset);
 	}
 
-	/* Save breakpoint in current walk */
+	 
 
 	walk_state->user_breakpoint = address;
 	acpi_os_printf("Breakpoint set at AML offset %X\n", address);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_set_method_call_breakpoint
- *
- * PARAMETERS:  op                  - Current Op (from parse walk)
- *
- * RETURN:      None
- *
- * DESCRIPTION: Set a breakpoint in a control method at the specified
- *              AML offset
- *
- ******************************************************************************/
+ 
 
 void acpi_db_set_method_call_breakpoint(union acpi_parse_object *op)
 {
@@ -91,20 +63,7 @@ void acpi_db_set_method_call_breakpoint(union acpi_parse_object *op)
 	acpi_gbl_step_to_next_call = TRUE;
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_set_method_data
- *
- * PARAMETERS:  type_arg        - L for local, A for argument
- *              index_arg       - which one
- *              value_arg       - Value to set.
- *
- * RETURN:      None
- *
- * DESCRIPTION: Set a local or argument for the running control method.
- *              NOTE: only object supported is Number.
- *
- ******************************************************************************/
+ 
 
 void acpi_db_set_method_data(char *type_arg, char *index_arg, char *value_arg)
 {
@@ -116,7 +75,7 @@ void acpi_db_set_method_data(char *type_arg, char *index_arg, char *value_arg)
 	acpi_status status;
 	struct acpi_namespace_node *node;
 
-	/* Validate type_arg */
+	 
 
 	acpi_ut_strupr(type_arg);
 	type = type_arg[0];
@@ -142,7 +101,7 @@ void acpi_db_set_method_data(char *type_arg, char *index_arg, char *value_arg)
 		return;
 	}
 
-	/* Get the index and value */
+	 
 
 	index = strtoul(index_arg, NULL, 16);
 
@@ -152,7 +111,7 @@ void acpi_db_set_method_data(char *type_arg, char *index_arg, char *value_arg)
 		return;
 	}
 
-	/* Create and initialize the new object */
+	 
 
 	obj_desc = acpi_ut_create_integer_object((u64)value);
 	if (!obj_desc) {
@@ -160,12 +119,12 @@ void acpi_db_set_method_data(char *type_arg, char *index_arg, char *value_arg)
 		return;
 	}
 
-	/* Store the new object into the target */
+	 
 
 	switch (type) {
 	case 'A':
 
-		/* Set a method argument */
+		 
 
 		if (index > ACPI_METHOD_MAX_ARG) {
 			acpi_os_printf("Arg%u - Invalid argument name\n",
@@ -188,7 +147,7 @@ void acpi_db_set_method_data(char *type_arg, char *index_arg, char *value_arg)
 
 	case 'L':
 
-		/* Set a method local */
+		 
 
 		if (index > ACPI_METHOD_MAX_LOCAL) {
 			acpi_os_printf
@@ -219,19 +178,7 @@ cleanup:
 }
 
 #ifdef ACPI_DISASSEMBLER
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_disassemble_aml
- *
- * PARAMETERS:  statements          - Number of statements to disassemble
- *              op                  - Current Op (from parse walk)
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display disassembled AML (ASL) starting from Op for the number
- *              of statements specified.
- *
- ******************************************************************************/
+ 
 
 void acpi_db_disassemble_aml(char *statements, union acpi_parse_object *op)
 {
@@ -249,18 +196,7 @@ void acpi_db_disassemble_aml(char *statements, union acpi_parse_object *op)
 	acpi_dm_disassemble(NULL, op, num_statements);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_disassemble_method
- *
- * PARAMETERS:  name            - Name of control method
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display disassembled AML (ASL) starting from Op for the number
- *              of statements specified.
- *
- ******************************************************************************/
+ 
 
 acpi_status acpi_db_disassemble_method(char *name)
 {
@@ -288,7 +224,7 @@ acpi_status acpi_db_disassemble_method(char *name)
 		return (AE_NO_MEMORY);
 	}
 
-	/* Create and initialize a new walk state */
+	 
 
 	walk_state = acpi_ds_create_walk_state(0, op, NULL, NULL);
 	if (!walk_state) {
@@ -310,14 +246,14 @@ acpi_status acpi_db_disassemble_method(char *name)
 
 	walk_state->owner_id = obj_desc->method.owner_id;
 
-	/* Push start scope on scope stack and make it current */
+	 
 
 	status = acpi_ds_scope_stack_push(method, method->type, walk_state);
 	if (ACPI_FAILURE(status)) {
 		return (status);
 	}
 
-	/* Parse the entire method AML including deferred operators */
+	 
 
 	walk_state->parse_flags &= ~ACPI_PARSE_DELETE_TREE;
 	walk_state->parse_flags |= ACPI_PARSE_DISASSEMBLE;
@@ -329,7 +265,7 @@ acpi_status acpi_db_disassemble_method(char *name)
 
 	(void)acpi_dm_parse_deferred_ops(op);
 
-	/* Now we can disassemble the method */
+	 
 
 	acpi_gbl_dm_opt_verbose = FALSE;
 	acpi_dm_disassemble(NULL, op, 0);
@@ -337,7 +273,7 @@ acpi_status acpi_db_disassemble_method(char *name)
 
 	acpi_ps_delete_parse_tree(op);
 
-	/* Method cleanup */
+	 
 
 	acpi_ns_delete_namespace_subtree(method);
 	acpi_ns_delete_namespace_by_owner(obj_desc->method.owner_id);
@@ -346,18 +282,7 @@ acpi_status acpi_db_disassemble_method(char *name)
 }
 #endif
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_evaluate_object
- *
- * PARAMETERS:  node                - Namespace node for the object
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Main execution function for the Evaluate/Execute/All debugger
- *              commands.
- *
- ******************************************************************************/
+ 
 
 static acpi_status acpi_db_evaluate_object(struct acpi_namespace_node *node)
 {
@@ -374,7 +299,7 @@ static acpi_status acpi_db_evaluate_object(struct acpi_namespace_node *node)
 		return (AE_OK);
 	}
 
-	/* Get the object info for number of method parameters */
+	 
 
 	status = acpi_get_object_info(node, &obj_info);
 	if (ACPI_FAILURE(status)) {
@@ -387,7 +312,7 @@ static acpi_status acpi_db_evaluate_object(struct acpi_namespace_node *node)
 
 	if (obj_info->type == ACPI_TYPE_METHOD) {
 
-		/* Setup default parameters */
+		 
 
 		for (i = 0; i < obj_info->param_count; i++) {
 			params[i].type = ACPI_TYPE_INTEGER;
@@ -402,7 +327,7 @@ static acpi_status acpi_db_evaluate_object(struct acpi_namespace_node *node)
 	return_obj.pointer = NULL;
 	return_obj.length = ACPI_ALLOCATE_BUFFER;
 
-	/* Do the actual method execution */
+	 
 
 	acpi_gbl_method_executing = TRUE;
 
@@ -423,26 +348,15 @@ static acpi_status acpi_db_evaluate_object(struct acpi_namespace_node *node)
 
 	ACPI_FREE(pathname);
 
-	/* Ignore status from method execution */
+	 
 
 	return (AE_OK);
 
-	/* Update count, check if we have executed enough methods */
+	 
 
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_walk_for_execute
- *
- * PARAMETERS:  Callback from walk_namespace
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Batch execution function. Evaluates all "predefined" objects --
- *              the nameseg begins with an underscore.
- *
- ******************************************************************************/
+ 
 
 static acpi_status
 acpi_db_walk_for_execute(acpi_handle obj_handle,
@@ -466,11 +380,11 @@ acpi_db_walk_for_execute(acpi_handle obj_handle,
 
 	acpi_db_evaluate_object(node);
 
-	/* Ignore status from object evaluation */
+	 
 
 	status = AE_OK;
 
-	/* Update count, check if we have executed enough methods */
+	 
 
 	info->count++;
 	if (info->count >= info->max_count) {
@@ -480,18 +394,7 @@ acpi_db_walk_for_execute(acpi_handle obj_handle,
 	return (status);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_walk_for_execute_all
- *
- * PARAMETERS:  Callback from walk_namespace
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Batch execution function. Evaluates all objects whose path ends
- *              with the nameseg "Info->NameSeg". Used for the "ALL" command.
- *
- ******************************************************************************/
+ 
 
 static acpi_status
 acpi_db_walk_for_execute_all(acpi_handle obj_handle,
@@ -512,32 +415,21 @@ acpi_db_walk_for_execute_all(acpi_handle obj_handle,
 		return (AE_OK);
 	}
 
-	/* Now evaluate the input object (node) */
+	 
 
 	acpi_db_evaluate_object(node);
 
-	/* Ignore status from method execution */
+	 
 
 	status = AE_OK;
 
-	/* Update count of executed methods/objects */
+	 
 
 	info->count++;
 	return (status);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_evaluate_predefined_names
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Namespace batch execution. Execute predefined names in the
- *              namespace, up to the max count, if specified.
- *
- ******************************************************************************/
+ 
 
 void acpi_db_evaluate_predefined_names(void)
 {
@@ -546,7 +438,7 @@ void acpi_db_evaluate_predefined_names(void)
 	info.count = 0;
 	info.max_count = ACPI_UINT32_MAX;
 
-	/* Search all nodes in namespace */
+	 
 
 	(void)acpi_walk_namespace(ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
 				  ACPI_UINT32_MAX, acpi_db_walk_for_execute,
@@ -556,19 +448,7 @@ void acpi_db_evaluate_predefined_names(void)
 		       info.count);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_evaluate_all
- *
- * PARAMETERS:  none_acpi_gbl_db_method_info
- *
- * RETURN:      None
- *
- * DESCRIPTION: Namespace batch execution. Implements the "ALL" command.
- *              Execute all namepaths whose final nameseg matches the
- *              input nameseg.
- *
- ******************************************************************************/
+ 
 
 void acpi_db_evaluate_all(char *name_seg)
 {
@@ -579,7 +459,7 @@ void acpi_db_evaluate_all(char *name_seg)
 	ACPI_COPY_NAMESEG(info.name_seg, name_seg);
 	info.name_seg[ACPI_NAMESEG_SIZE] = 0;
 
-	/* Search all nodes in namespace */
+	 
 
 	(void)acpi_walk_namespace(ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
 				  ACPI_UINT32_MAX, acpi_db_walk_for_execute_all,

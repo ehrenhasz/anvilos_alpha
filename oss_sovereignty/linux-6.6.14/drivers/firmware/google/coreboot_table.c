@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * coreboot_table.c
- *
- * Module providing coreboot table access.
- *
- * Copyright 2017 Google Inc.
- * Copyright 2017 Samuel Holland <samuel@sholland.org>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/device.h>
@@ -146,7 +139,7 @@ static int coreboot_table_probe(struct platform_device *pdev)
 	if (!res->start || !len)
 		return -EINVAL;
 
-	/* Check just the header first to make sure things are sane */
+	 
 	header = memremap(res->start, sizeof(*header), MEMREMAP_WB);
 	if (!header)
 		return -ENOMEM;

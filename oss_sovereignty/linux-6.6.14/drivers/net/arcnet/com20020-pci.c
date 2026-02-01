@@ -1,31 +1,4 @@
-/*
- * Linux ARCnet driver - COM20020 PCI support
- * Contemporary Controls PCI20 and SOHARD SH-ARC PCI
- *
- * Written 1994-1999 by Avery Pennarun,
- *    based on an ISA version by David Woodhouse.
- * Written 1999-2000 by Martin Mares <mj@ucw.cz>.
- * Derived from skeleton.c by Donald Becker.
- *
- * Special thanks to Contemporary Controls, Inc. (www.ccontrols.com)
- *  for sponsoring the further development of this driver.
- *
- * **********************
- *
- * The original copyright of skeleton.c was as follows:
- *
- * skeleton.c Written 1993 by Donald Becker.
- * Copyright 1993 United States Government as represented by the
- * Director, National Security Agency.  This software may only be used
- * and distributed according to the terms of the GNU General Public License as
- * modified by SRC, incorporated herein by reference.
- *
- * **********************
- *
- * For more details, see drivers/net/arcnet.c
- *
- * **********************
- */
+ 
 
 #define pr_fmt(fmt) "arcnet:" KBUILD_MODNAME ": " fmt
 
@@ -46,10 +19,10 @@
 #include "arcdevice.h"
 #include "com20020.h"
 
-/* Module parameters */
+ 
 
 static int node;
-static char device[9];		/* use eg. device="arc1" to change name */
+static char device[9];		 
 static int timeout = 3;
 static int backplane;
 static int clockp;
@@ -188,10 +161,7 @@ static int com20020pci_probe(struct pci_dev *pdev,
 			goto err_free_arcdev;
 		}
 
-		/* Dummy access after Reset
-		 * ARCNET controller needs
-		 * this access to detect bustype
-		 */
+		 
 		arcnet_outb(0x00, ioaddr, COM20020_REG_W_COMMAND);
 		arcnet_inb(ioaddr, COM20020_REG_R_DIAGSTAT);
 
@@ -214,7 +184,7 @@ static int com20020pci_probe(struct pci_dev *pdev,
 			lp->backplane = 1;
 
 		if (ci->flags & ARC_HAS_ROTARY) {
-			/* Get the dev_id from the PLX rotary coder */
+			 
 			if (!strncmp(ci->name, "EAE PLX-PCI MA1", 15))
 				dev_id_mask = 0x3;
 			dev->dev_id = (inb(priv->misc + ci->rotary) >> 4) & dev_id_mask;
@@ -334,7 +304,7 @@ static struct com20020_pci_card_info card_info_5mbit = {
 static struct com20020_pci_card_info card_info_sohard = {
 	.name = "SOHARD SH ARC-PCI",
 	.devcount = 1,
-	/* SOHARD needs PCI base addr 4 */
+	 
 	.chan_map_tbl = {
 		{
 			.bar = 4,

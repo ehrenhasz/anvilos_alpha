@@ -1,20 +1,4 @@
-/* Test of parse_datetime() function.
-   Copyright (C) 2008-2023 Free Software Foundation, Inc.
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3, or (at your option)
-   any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Simon Josefsson <simon@josefsson.org>, 2008.  */
+ 
 
 #include <config.h>
 
@@ -50,16 +34,7 @@ static const char *const day_table[] =
 
 
 #if ! HAVE_TM_GMTOFF
-/* Shift A right by B bits portably, by dividing A by 2**B and
-   truncating towards minus infinity.  A and B should be free of side
-   effects, and B should be in the range 0 <= B <= INT_BITS - 2, where
-   INT_BITS is the number of useful bits in an int.  GNU code can
-   assume that INT_BITS is at least 32.
-
-   ISO C99 says that A >> B is implementation-defined if A < 0.  Some
-   implementations (e.g., UNICOS 9.0 on a Cray Y-MP EL) don't shift
-   right in the usual way when A < 0, so SHR falls back on division if
-   ordinary A >> B doesn't seem to be the usual signed shift.  */
+ 
 #define SHR(a, b)       \
   (-1 >> 1 == -1        \
    ? (a) >> (b)         \
@@ -67,15 +42,11 @@ static const char *const day_table[] =
 
 #define TM_YEAR_BASE 1900
 
-/* Yield the difference between *A and *B,
-   measured in seconds, ignoring leap seconds.
-   The body of this function is taken directly from the GNU C Library;
-   see src/strftime.c.  */
+ 
 static long int
 tm_diff (struct tm const *a, struct tm const *b)
 {
-  /* Compute intervening leap days correctly even if year is negative.
-     Take care to avoid int overflow in leap day calculations.  */
+   
   int a4 = SHR (a->tm_year, 2) + SHR (TM_YEAR_BASE, 2) - ! (a->tm_year & 3);
   int b4 = SHR (b->tm_year, 2) + SHR (TM_YEAR_BASE, 2) - ! (b->tm_year & 3);
   int a100 = a4 / 25 - (a4 % 25 < 0);
@@ -91,7 +62,7 @@ tm_diff (struct tm const *a, struct tm const *b)
                 + (a->tm_min - b->tm_min))
           + (a->tm_sec - b->tm_sec));
 }
-#endif /* ! HAVE_TM_GMTOFF */
+#endif  
 
 static long
 gmt_offset (time_t s)
@@ -122,17 +93,7 @@ main (_GL_UNUSED int argc, char **argv)
   long gmtoff;
   time_t ref_time = 1304250918;
 
-  /* Set the time zone to US Eastern time with the 2012 rules.  This
-     should disable any leap second support.  Otherwise, there will be
-     a problem with glibc on sites that default to leap seconds; see
-     <https://bugs.gnu.org/12206>.  */
-  ASSERT (setenv ("TZ", "EST5EDT,M3.2.0,M11.1.0", 1) == 0);
-
-  gmtoff = gmt_offset (ref_time);
-
-
-  /* ISO 8601 extended date and time of day representation,
-     'T' separator, local time zone */
+   
   p = "2011-05-01T11:55:18";
   expected.tv_sec = ref_time - gmtoff;
   expected.tv_nsec = 0;
@@ -141,8 +102,7 @@ main (_GL_UNUSED int argc, char **argv)
   ASSERT (expected.tv_sec == result.tv_sec
           && expected.tv_nsec == result.tv_nsec);
 
-  /* ISO 8601 extended date and time of day representation,
-     ' ' separator, local time zone */
+   
   p = "2011-05-01 11:55:18";
   expected.tv_sec = ref_time - gmtoff;
   expected.tv_nsec = 0;
@@ -151,8 +111,7 @@ main (_GL_UNUSED int argc, char **argv)
   ASSERT (expected.tv_sec == result.tv_sec
           && expected.tv_nsec == result.tv_nsec);
 
-  /* ISO 8601 extended date and time of day representation,
-     ' ' separator, 'J' (local) time zone */
+   
   p = "2011-05-01 11:55:18J";
   expected.tv_sec = ref_time - gmtoff;
   expected.tv_nsec = 0;
@@ -162,8 +121,7 @@ main (_GL_UNUSED int argc, char **argv)
           && expected.tv_nsec == result.tv_nsec);
 
 
-  /* ISO 8601, extended date and time of day representation,
-     'T' separator, UTC */
+   
   p = "2011-05-01T11:55:18Z";
   expected.tv_sec = ref_time;
   expected.tv_nsec = 0;
@@ -172,8 +130,7 @@ main (_GL_UNUSED int argc, char **argv)
   ASSERT (expected.tv_sec == result.tv_sec
           && expected.tv_nsec == result.tv_nsec);
 
-  /* ISO 8601, extended date and time of day representation,
-     ' ' separator, UTC */
+   
   p = "2011-05-01 11:55:18Z";
   expected.tv_sec = ref_time;
   expected.tv_nsec = 0;
@@ -183,8 +140,7 @@ main (_GL_UNUSED int argc, char **argv)
           && expected.tv_nsec == result.tv_nsec);
 
 
-  /* ISO 8601 extended date and time of day representation,
-     'T' separator, w/UTC offset */
+   
   p = "2011-05-01T11:55:18-07:00";
   expected.tv_sec = 1304276118;
   expected.tv_nsec = 0;
@@ -193,8 +149,7 @@ main (_GL_UNUSED int argc, char **argv)
   ASSERT (expected.tv_sec == result.tv_sec
           && expected.tv_nsec == result.tv_nsec);
 
-  /* ISO 8601 extended date and time of day representation,
-     ' ' separator, w/UTC offset */
+   
   p = "2011-05-01 11:55:18-07:00";
   expected.tv_sec = 1304276118;
   expected.tv_nsec = 0;
@@ -204,8 +159,7 @@ main (_GL_UNUSED int argc, char **argv)
           && expected.tv_nsec == result.tv_nsec);
 
 
-  /* ISO 8601 extended date and time of day representation,
-     'T' separator, w/hour only UTC offset */
+   
   p = "2011-05-01T11:55:18-07";
   expected.tv_sec = 1304276118;
   expected.tv_nsec = 0;
@@ -214,8 +168,7 @@ main (_GL_UNUSED int argc, char **argv)
   ASSERT (expected.tv_sec == result.tv_sec
           && expected.tv_nsec == result.tv_nsec);
 
-  /* ISO 8601 extended date and time of day representation,
-     ' ' separator, w/hour only UTC offset */
+   
   p = "2011-05-01 11:55:18-07";
   expected.tv_sec = 1304276118;
   expected.tv_nsec = 0;
@@ -256,7 +209,7 @@ main (_GL_UNUSED int argc, char **argv)
   ASSERT (now.tv_sec + 4 * 60 * 60 == result.tv_sec
           && now.tv_nsec == result.tv_nsec);
 
-  /* test if timezone is not being ignored for day offset */
+   
   now.tv_sec = 4711;
   now.tv_nsec = 1267;
   p = "UTC+400 +24 hours";
@@ -268,7 +221,7 @@ main (_GL_UNUSED int argc, char **argv)
   ASSERT (result.tv_sec == result2.tv_sec
           && result.tv_nsec == result2.tv_nsec);
 
-  /* test if several time zones formats are handled same way */
+   
   now.tv_sec = 4711;
   now.tv_nsec = 1267;
   p = "UTC+14:00";
@@ -324,13 +277,13 @@ main (_GL_UNUSED int argc, char **argv)
           && result.tv_nsec == result2.tv_nsec);
 
 
-  /* TZ out of range should cause parse_datetime failure */
+   
   now.tv_sec = 4711;
   now.tv_nsec = 1267;
   p = "UTC+25:00";
   ASSERT (!parse_datetime (&result, p, &now));
 
-        /* Check for several invalid countable dayshifts */
+         
   now.tv_sec = 4711;
   now.tv_nsec = 1267;
   p = "UTC+4:00 +40 yesterday";
@@ -348,7 +301,7 @@ main (_GL_UNUSED int argc, char **argv)
   p = "UTC+4:00 -4 today";
   ASSERT (!parse_datetime (&result, p, &now));
 
-  /* And check correct usage of dayshifts */
+   
   now.tv_sec = 4711;
   now.tv_nsec = 1267;
   p = "UTC+400 tomorrow";
@@ -379,13 +332,13 @@ main (_GL_UNUSED int argc, char **argv)
   p = "UTC+400 now";
   ASSERT (parse_datetime (&result, p, &now));
   LOG (p, now, result);
-  p = "UTC+400 +0 minutes"; /* silly, but simple "UTC+400" is different*/
+  p = "UTC+400 +0 minutes";  
   ASSERT (parse_datetime (&result2, p, &now));
   LOG (p, now, result2);
   ASSERT (result.tv_sec == result2.tv_sec
           && result.tv_nsec == result2.tv_nsec);
 
-  /* If this platform has TZDB, check for GNU Bug#48085.  */
+   
   ASSERT (setenv ("TZ", "America/Indiana/Indianapolis", 1) == 0);
   now.tv_sec = 1619641490;
   now.tv_nsec = 0;
@@ -402,11 +355,11 @@ main (_GL_UNUSED int argc, char **argv)
               == 515107490 - 60 * 60 + (has_leap_seconds ? 13 : 0));
     }
 
-  /* Check that some "next Monday", "last Wednesday", etc. are correct.  */
+   
   ASSERT (setenv ("TZ", "UTC0", 1) == 0);
   for (i = 0; day_table[i]; i++)
     {
-      unsigned int thur2 = 7 * 24 * 3600; /* 2nd thursday */
+      unsigned int thur2 = 7 * 24 * 3600;  
       char tmp[32];
       sprintf (tmp, "NEXT %s", day_table[i]);
       now.tv_sec = thur2 + 4711;
@@ -425,7 +378,7 @@ main (_GL_UNUSED int argc, char **argv)
       ASSERT (result.tv_sec == thur2 + ((i + 3) % 7 - 7) * 24 * 3600);
     }
 
-  p = "1970-12-31T23:59:59+00:00 - 1 year";  /* Bug#50115 */
+  p = "1970-12-31T23:59:59+00:00 - 1 year";   
   now.tv_sec = -1;
   now.tv_nsec = 0;
   ASSERT (parse_datetime (&result, p, &now));
@@ -433,7 +386,7 @@ main (_GL_UNUSED int argc, char **argv)
   ASSERT (result.tv_sec == now.tv_sec
           && result.tv_nsec == now.tv_nsec);
 
-  p = "THURSDAY UTC+00";  /* The epoch was on Thursday.  */
+  p = "THURSDAY UTC+00";   
   now.tv_sec = 0;
   now.tv_nsec = 0;
   ASSERT (parse_datetime (&result, p, &now));
@@ -449,31 +402,29 @@ main (_GL_UNUSED int argc, char **argv)
   ASSERT (result.tv_sec == 24 * 3600
           && result.tv_nsec == now.tv_nsec);
 
-  /* Exercise a sign-extension bug.  Before July 2012, an input
-     starting with a high-bit-set byte would be treated like "0".  */
+   
   ASSERT ( ! parse_datetime (&result, "\xb0", &now));
 
-  /* Exercise TZ="" parsing code.  */
-  /* These two would infloop or segfault before Feb 2014.  */
+   
+   
   ASSERT ( ! parse_datetime (&result, "TZ=\"\"\"", &now));
   ASSERT ( ! parse_datetime (&result, "TZ=\"\" \"", &now));
-  /* Exercise invalid patterns.  */
+   
   ASSERT ( ! parse_datetime (&result, "TZ=\"", &now));
   ASSERT ( ! parse_datetime (&result, "TZ=\"\\\"", &now));
   ASSERT ( ! parse_datetime (&result, "TZ=\"\\n", &now));
   ASSERT ( ! parse_datetime (&result, "TZ=\"\\n\"", &now));
-  /* Exercise valid patterns.  */
+   
   ASSERT (   parse_datetime (&result, "TZ=\"\"", &now));
   ASSERT (   parse_datetime (&result, "TZ=\"\" ", &now));
   ASSERT (   parse_datetime (&result, " TZ=\"\"", &now));
-  /* Exercise patterns which may be valid or invalid, depending on the
-     platform.  */
+   
 #if !defined __NetBSD__
   ASSERT (   parse_datetime (&result, "TZ=\"\\\\\"", &now));
   ASSERT (   parse_datetime (&result, "TZ=\"\\\"\"", &now));
 #endif
 
-  /* Outlandishly-long time zone abbreviations should not cause problems.  */
+   
   {
     static char const bufprefix[] = "TZ=\"";
     long int tzname_max = -1;

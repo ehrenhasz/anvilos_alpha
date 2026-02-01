@@ -1,23 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Multi-level security (MLS) policy operations.
- *
- * Author : Stephen Smalley, <stephen.smalley.work@gmail.com>
- */
-/*
- * Updated: Trusted Computer Solutions, Inc. <dgoeddel@trustedcs.com>
- *
- *	Support for enhanced MLS infrastructure.
- *
- * Copyright (C) 2004-2006 Trusted Computer Solutions, Inc.
- */
-/*
- * Updated: Hewlett-Packard <paul@paul-moore.com>
- *
- *	Added support to import/export the MLS label from NetLabel
- *
- * (c) Copyright Hewlett-Packard Development Company, L.P., 2006
- */
+ 
+ 
+ 
+ 
 
 #ifndef _SS_MLS_H_
 #define _SS_MLS_H_
@@ -112,5 +96,5 @@ static inline u32 mls_range_hash(const struct mls_range *r, u32 hash)
 	return hash;
 }
 
-#endif	/* _SS_MLS_H */
+#endif	 
 

@@ -1,65 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Primary bucket allocation code
- *
- * Copyright 2012 Google, Inc.
- *
- * Allocation in bcache is done in terms of buckets:
- *
- * Each bucket has associated an 8 bit gen; this gen corresponds to the gen in
- * btree pointers - they must match for the pointer to be considered valid.
- *
- * Thus (assuming a bucket has no dirty data or metadata in it) we can reuse a
- * bucket simply by incrementing its gen.
- *
- * The gens (along with the priorities; it's really the gens are important but
- * the code is named as if it's the priorities) are written in an arbitrary list
- * of buckets on disk, with a pointer to them in the journal header.
- *
- * When we invalidate a bucket, we have to write its new gen to disk and wait
- * for that write to complete before we use it - otherwise after a crash we
- * could have pointers that appeared to be good but pointed to data that had
- * been overwritten.
- *
- * Since the gens and priorities are all stored contiguously on disk, we can
- * batch this up: We fill up the free_inc list with freshly invalidated buckets,
- * call prio_write(), and when prio_write() finishes we pull buckets off the
- * free_inc list and optionally discard them.
- *
- * free_inc isn't the only freelist - if it was, we'd often to sleep while
- * priorities and gens were being written before we could allocate. c->free is a
- * smaller freelist, and buckets on that list are always ready to be used.
- *
- * If we've got discards enabled, that happens when a bucket moves from the
- * free_inc list to the free list.
- *
- * There is another freelist, because sometimes we have buckets that we know
- * have nothing pointing into them - these we can reuse without waiting for
- * priorities to be rewritten. These come from freed btree nodes and buckets
- * that garbage collection discovered no longer had valid keys pointing into
- * them (because they were overwritten). That's the unused list - buckets on the
- * unused list move to the free list, optionally being discarded in the process.
- *
- * It's also important to ensure that gens don't wrap around - with respect to
- * either the oldest gen in the btree or the gen on disk. This is quite
- * difficult to do in practice, but we explicitly guard against it anyways - if
- * a bucket is in danger of wrapping around we simply skip invalidating it that
- * time around, and we garbage collect or rewrite the priorities sooner than we
- * would have otherwise.
- *
- * bch_bucket_alloc() allocates a single bucket from a specific cache.
- *
- * bch_bucket_alloc_set() allocates one  bucket from different caches
- * out of a cache set.
- *
- * free_some_buckets() drives all the processes described above. It's called
- * from bch_bucket_alloc() and a few other places that need to make sure free
- * buckets are ready.
- *
- * invalidate_buckets_(lru|fifo)() find buckets that are available to be
- * invalidated, and then invalidate them and stick them on the free_inc list -
- * in either lru or fifo order.
- */
+
+ 
 
 #include "bcache.h"
 #include "btree.h"
@@ -71,7 +11,7 @@
 
 #define MAX_OPEN_BUCKETS 128
 
-/* Bucket heap / gen */
+ 
 
 uint8_t bch_inc_gen(struct cache *ca, struct bucket *b)
 {
@@ -115,12 +55,7 @@ void bch_rescale_priorities(struct cache_set *c, int sectors)
 	mutex_unlock(&c->bucket_lock);
 }
 
-/*
- * Background allocation thread: scans for buckets to be invalidated,
- * invalidates them, rewrites prios/gens (marking them as invalidated on disk),
- * then optionally issues discard commands to the newly free buckets, then puts
- * them on the various freelists.
- */
+ 
 
 static inline bool can_inc_bucket_gen(struct bucket *b)
 {
@@ -157,14 +92,7 @@ static void bch_invalidate_one_bucket(struct cache *ca, struct bucket *b)
 	fifo_push(&ca->free_inc, b - ca->buckets);
 }
 
-/*
- * Determines what order we're going to reuse buckets, smallest bucket_prio()
- * first: we also take into account the number of sectors of live data in that
- * bucket, and in order for that multiply to make sense we have to scale bucket
- *
- * Thus, we scale the bucket priorities so that the bucket with the smallest
- * prio is worth 1/8th of what INITIAL_PRIO is worth.
- */
+ 
 
 #define bucket_prio(b)							\
 ({									\
@@ -200,10 +128,7 @@ static void invalidate_buckets_lru(struct cache *ca)
 
 	while (!fifo_full(&ca->free_inc)) {
 		if (!heap_pop(&ca->heap, b, bucket_min_cmp)) {
-			/*
-			 * We don't want to be calling invalidate_buckets()
-			 * multiple times when it can't do anything
-			 */
+			 
 			ca->invalidate_needs_gc = 1;
 			wake_up_gc(ca->set);
 			return;
@@ -303,7 +228,7 @@ static int bch_allocator_push(struct cache *ca, long bucket)
 {
 	unsigned int i;
 
-	/* Prios/gens are actually the most important reserve */
+	 
 	if (fifo_push(&ca->free[RESERVE_PRIO], bucket))
 		return true;
 
@@ -321,11 +246,7 @@ static int bch_allocator_thread(void *arg)
 	mutex_lock(&ca->set->bucket_lock);
 
 	while (1) {
-		/*
-		 * First, we pull buckets off of the unused and free_inc lists,
-		 * possibly issue discards to them, then we add the bucket to
-		 * the free list:
-		 */
+		 
 		while (1) {
 			long bucket;
 
@@ -345,34 +266,17 @@ static int bch_allocator_thread(void *arg)
 			wake_up(&ca->set->bucket_wait);
 		}
 
-		/*
-		 * We've run out of free buckets, we need to find some buckets
-		 * we can invalidate. First, invalidate them in memory and add
-		 * them to the free_inc list:
-		 */
+		 
 
 retry_invalidate:
 		allocator_wait(ca, ca->set->gc_mark_valid &&
 			       !ca->invalidate_needs_gc);
 		invalidate_buckets(ca);
 
-		/*
-		 * Now, we write their new gens to disk so we can start writing
-		 * new stuff to them:
-		 */
+		 
 		allocator_wait(ca, !atomic_read(&ca->set->prio_blocked));
 		if (CACHE_SYNC(&ca->sb)) {
-			/*
-			 * This could deadlock if an allocation with a btree
-			 * node locked ever blocked - having the btree node
-			 * locked would block garbage collection, but here we're
-			 * waiting on garbage collection before we invalidate
-			 * and free anything.
-			 *
-			 * But this should be safe since the btree code always
-			 * uses btree_check_reserve() before allocating now, and
-			 * if it fails it blocks without btree nodes locked.
-			 */
+			 
 			if (!fifo_full(&ca->free_inc))
 				goto retry_invalidate;
 
@@ -387,7 +291,7 @@ out:
 	return 0;
 }
 
-/* Allocation */
+ 
 
 long bch_bucket_alloc(struct cache *ca, unsigned int reserve, bool wait)
 {
@@ -396,11 +300,11 @@ long bch_bucket_alloc(struct cache *ca, unsigned int reserve, bool wait)
 	long r;
 
 
-	/* No allocation if CACHE_SET_IO_DISABLE bit is set */
+	 
 	if (unlikely(test_bit(CACHE_SET_IO_DISABLE, &ca->set->flags)))
 		return -1;
 
-	/* fastpath */
+	 
 	if (fifo_pop(&ca->free[RESERVE_NONE], r) ||
 	    fifo_pop(&ca->free[reserve], r))
 		goto out;
@@ -491,7 +395,7 @@ int __bch_bucket_alloc_set(struct cache_set *c, unsigned int reserve,
 	struct cache *ca;
 	long b;
 
-	/* No allocation if CACHE_SET_IO_DISABLE bit is set */
+	 
 	if (unlikely(test_bit(CACHE_SET_IO_DISABLE, &c->flags)))
 		return -1;
 
@@ -528,7 +432,7 @@ int bch_bucket_alloc_set(struct cache_set *c, unsigned int reserve,
 	return ret;
 }
 
-/* Sector allocator */
+ 
 
 struct open_bucket {
 	struct list_head	list;
@@ -537,31 +441,7 @@ struct open_bucket {
 	BKEY_PADDED(key);
 };
 
-/*
- * We keep multiple buckets open for writes, and try to segregate different
- * write streams for better cache utilization: first we try to segregate flash
- * only volume write streams from cached devices, secondly we look for a bucket
- * where the last write to it was sequential with the current write, and
- * failing that we look for a bucket that was last used by the same task.
- *
- * The ideas is if you've got multiple tasks pulling data into the cache at the
- * same time, you'll get better cache utilization if you try to segregate their
- * data and preserve locality.
- *
- * For example, dirty sectors of flash only volume is not reclaimable, if their
- * dirty sectors mixed with dirty sectors of cached device, such buckets will
- * be marked as dirty and won't be reclaimed, though the dirty data of cached
- * device have been written back to backend device.
- *
- * And say you've starting Firefox at the same time you're copying a
- * bunch of files. Firefox will likely end up being fairly hot and stay in the
- * cache awhile, but the data you copied might not be; if you wrote all that
- * data to the same buckets it'd get invalidated at the same time.
- *
- * Both of those tasks will be doing fairly random IO so we can't rely on
- * detecting sequential IO to segregate their data, but going off of the task
- * should be a sane heuristic.
- */
+ 
 static struct open_bucket *pick_data_bucket(struct cache_set *c,
 					    const struct bkey *search,
 					    unsigned int write_point,
@@ -593,16 +473,7 @@ found:
 	return ret;
 }
 
-/*
- * Allocates some space in the cache to write to, and k to point to the newly
- * allocated space, and updates KEY_SIZE(k) and KEY_OFFSET(k) (to point to the
- * end of the newly allocated space).
- *
- * May allocate fewer sectors than @sectors, KEY_SIZE(k) indicates how many
- * sectors were actually allocated.
- *
- * If s->writeback is true, will not fail.
- */
+ 
 bool bch_alloc_sectors(struct cache_set *c,
 		       struct bkey *k,
 		       unsigned int sectors,
@@ -614,12 +485,7 @@ bool bch_alloc_sectors(struct cache_set *c,
 	BKEY_PADDED(key) alloc;
 	unsigned int i;
 
-	/*
-	 * We might have to allocate a new bucket, which we can't do with a
-	 * spinlock held. So if we have to allocate, we drop the lock, allocate
-	 * and then retry. KEY_PTRS() indicates whether alloc points to
-	 * allocated bucket(s).
-	 */
+	 
 
 	bkey_init(&alloc.key);
 	spin_lock(&c->data_bucket_lock);
@@ -637,18 +503,14 @@ bool bch_alloc_sectors(struct cache_set *c,
 		spin_lock(&c->data_bucket_lock);
 	}
 
-	/*
-	 * If we had to allocate, we might race and not need to allocate the
-	 * second time we call pick_data_bucket(). If we allocated a bucket but
-	 * didn't use it, drop the refcount bch_bucket_alloc_set() took:
-	 */
+	 
 	if (KEY_PTRS(&alloc.key))
 		bkey_put(c, &alloc.key);
 
 	for (i = 0; i < KEY_PTRS(&b->key); i++)
 		EBUG_ON(ptr_stale(c, &b->key, i));
 
-	/* Set up the pointer to the space we're allocating: */
+	 
 
 	for (i = 0; i < KEY_PTRS(&b->key); i++)
 		k->ptr[i] = b->key.ptr[i];
@@ -659,10 +521,7 @@ bool bch_alloc_sectors(struct cache_set *c,
 	SET_KEY_SIZE(k, sectors);
 	SET_KEY_PTRS(k, KEY_PTRS(&b->key));
 
-	/*
-	 * Move b to the end of the lru, and keep track of what this bucket was
-	 * last used for:
-	 */
+	 
 	list_move_tail(&b->list, &c->data_buckets);
 	bkey_copy_key(&b->key, k);
 	b->last_write_point = write_point;
@@ -679,11 +538,7 @@ bool bch_alloc_sectors(struct cache_set *c,
 	if (b->sectors_free < c->cache->sb.block_size)
 		b->sectors_free = 0;
 
-	/*
-	 * k takes refcounts on the buckets it points to until it's inserted
-	 * into the btree, but if we're done with this bucket we just transfer
-	 * get_data_bucket()'s refcount.
-	 */
+	 
 	if (b->sectors_free)
 		for (i = 0; i < KEY_PTRS(&b->key); i++)
 			atomic_inc(&PTR_BUCKET(c, &b->key, i)->pin);
@@ -692,7 +547,7 @@ bool bch_alloc_sectors(struct cache_set *c,
 	return true;
 }
 
-/* Init */
+ 
 
 void bch_open_buckets_free(struct cache_set *c)
 {

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2010 Broadcom Corporation
- */
+
+ 
 
 #define NPHY_TBL_ID_GAIN1		0
 #define NPHY_TBL_ID_GAIN2		1

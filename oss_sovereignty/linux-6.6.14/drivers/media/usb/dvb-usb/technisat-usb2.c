@@ -1,30 +1,4 @@
-/*
- * Linux driver for Technisat DVB-S/S2 USB 2.0 device
- *
- * Copyright (C) 2010 Patrick Boettcher,
- *                    Kernel Labs Inc. PO Box 745, St James, NY 11780
- *
- * Development was sponsored by Technisat Digital UK Limited, whose
- * registered office is Witan Gate House 500 - 600 Witan Gate West,
- * Milton Keynes, MK9 1SH
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- *
- * THIS PROGRAM IS PROVIDED "AS IS" AND BOTH THE COPYRIGHT HOLDER AND
- * TECHNISAT DIGITAL UK LTD DISCLAIM ALL WARRANTIES WITH REGARD TO
- * THIS PROGRAM INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY OR
- * FITNESS FOR A PARTICULAR PURPOSE.  NEITHER THE COPYRIGHT HOLDER
- * NOR TECHNISAT DIGITAL UK LIMITED SHALL BE LIABLE FOR ANY SPECIAL,
- * DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER
- * RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
- * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS PROGRAM. See the
- * GNU General Public License for more details.
- */
+ 
 
 #define DVB_USB_LOG_PREFIX "technisat-usb2"
 #include "dvb-usb.h"
@@ -32,7 +6,7 @@
 #include "stv6110x.h"
 #include "stv090x.h"
 
-/* module parameters */
+ 
 DVB_DEFINE_MOD_OPT_ADAPTER_NR(adapter_nr);
 
 static int debug;
@@ -41,14 +15,13 @@ MODULE_PARM_DESC(debug,
 		"set debugging level (bit-mask: 1=info,2=eeprom,4=i2c,8=rc)." \
 		DVB_USB_DEBUG_STATUS);
 
-/* disables all LED control command and
- * also does not start the signal polling thread */
+ 
 static int disable_led_control;
 module_param(disable_led_control, int, 0444);
 MODULE_PARM_DESC(disable_led_control,
 		"disable LED control of the device (default: 0 - LED control is active).");
 
-/* device private data */
+ 
 struct technisat_usb2_state {
 	struct dvb_usb_device *dev;
 	struct delayed_work green_led_work;
@@ -59,13 +32,13 @@ struct technisat_usb2_state {
 	u8 buf[64];
 };
 
-/* debug print helpers */
+ 
 #define deb_info(args...)    dprintk(debug, 0x01, args)
 #define deb_eeprom(args...)  dprintk(debug, 0x02, args)
 #define deb_i2c(args...)     dprintk(debug, 0x04, args)
 #define deb_rc(args...)      dprintk(debug, 0x08, args)
 
-/* vendor requests */
+ 
 #define SET_IFCLK_TO_EXTERNAL_TSCLK_VENDOR_REQUEST 0xB3
 #define SET_FRONT_END_RESET_VENDOR_REQUEST         0xB4
 #define GET_VERSION_INFO_VENDOR_REQUEST            0xB5
@@ -75,7 +48,7 @@ struct technisat_usb2_state {
 #define SET_LED_TIMER_DIVIDER_VENDOR_REQUEST       0xB9
 #define SET_USB_REENUMERATION                      0xBA
 
-/* i2c-access methods */
+ 
 #define I2C_SPEED_100KHZ_BIT 0x40
 
 #define I2C_STATUS_NAK 7
@@ -135,10 +108,10 @@ static int technisat_usb2_i2c_access(struct usb_device *udev,
 
 	if (b[0] != I2C_STATUS_OK) {
 		err("i2c-error: %02x = %d", device_addr, b[0]);
-		/* handle tuner-i2c-nak */
+		 
 		if (!(b[0] == I2C_STATUS_NAK &&
 				device_addr == 0x60
-				/* && device_is_technisat_usb2 */))
+				 ))
 			goto err;
 	}
 
@@ -164,8 +137,7 @@ static int technisat_usb2_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msg
 	int ret = 0, i;
 	struct dvb_usb_device *d = i2c_get_adapdata(adap);
 
-	/* Ensure nobody else hits the i2c bus while we're sending our
-	   sequence of messages, (such as the remote control thread) */
+	 
 	if (mutex_lock_interruptible(&d->i2c_mutex) < 0)
 		return -EAGAIN;
 
@@ -215,7 +187,7 @@ static void technisat_usb2_frontend_reset(struct usb_device *udev)
 }
 #endif
 
-/* LED control */
+ 
 enum technisat_usb2_led_state {
 	TECH_LED_OFF,
 	TECH_LED_BLINK,
@@ -328,7 +300,7 @@ schedule:
 			msecs_to_jiffies(500));
 }
 
-/* method to find out whether the firmware has to be downloaded or not */
+ 
 static int technisat_usb2_identify_state(struct usb_device *udev,
 		const struct dvb_usb_device_properties *props,
 		const struct dvb_usb_device_description **desc, int *cold)
@@ -340,13 +312,13 @@ static int technisat_usb2_identify_state(struct usb_device *udev,
 	if (!version)
 		return -ENOMEM;
 
-	/* first select the interface */
+	 
 	if (usb_set_interface(udev, 0, 1) != 0)
 		err("could not set alternate setting to 0");
 	else
 		info("set alternate setting");
 
-	*cold = 0; /* by default do not download a firmware - just in case something is wrong */
+	*cold = 0;  
 
 	ret = usb_control_msg(udev, usb_rcvctrlpipe(udev, 0),
 		GET_VERSION_INFO_VENDOR_REQUEST,
@@ -366,7 +338,7 @@ static int technisat_usb2_identify_state(struct usb_device *udev,
 	return 0;
 }
 
-/* power control */
+ 
 static int technisat_usb2_power_ctrl(struct dvb_usb_device *d, int level)
 {
 	struct technisat_usb2_state *state = d->priv;
@@ -376,14 +348,14 @@ static int technisat_usb2_power_ctrl(struct dvb_usb_device *d, int level)
 	if (disable_led_control)
 		return 0;
 
-	/* green led is turned off in any case - will be turned on when tuning */
+	 
 	technisat_usb2_set_led(d, 0, TECH_LED_OFF);
-	/* red led is turned on all the time */
+	 
 	technisat_usb2_set_led(d, 1, TECH_LED_ON);
 	return 0;
 }
 
-/* mac address reading - from the eeprom */
+ 
 #if 0
 static void technisat_usb2_eeprom_dump(struct dvb_usb_device *d)
 {
@@ -391,7 +363,7 @@ static void technisat_usb2_eeprom_dump(struct dvb_usb_device *d)
 	u8 b[16];
 	int i, j;
 
-	/* full EEPROM dump */
+	 
 	for (j = 0; j < 256 * 4; j += 16) {
 		reg = j;
 		if (technisat_usb2_i2c_access(d->udev, 0x50 + j / 256, &reg, 1, b, 16) != 0)
@@ -463,14 +435,14 @@ static int technisat_usb2_read_mac_address(struct dvb_usb_device *d,
 
 static struct stv090x_config technisat_usb2_stv090x_config;
 
-/* frontend attach */
+ 
 static int technisat_usb2_set_voltage(struct dvb_frontend *fe,
 				      enum fe_sec_voltage voltage)
 {
 	int i;
-	u8 gpio[3] = { 0 }; /* 0 = 2, 1 = 3, 2 = 4 */
+	u8 gpio[3] = { 0 };  
 
-	gpio[2] = 1; /* high - voltage ? */
+	gpio[2] = 1;  
 
 	switch (voltage) {
 	case SEC_VOLTAGE_13:
@@ -544,9 +516,7 @@ static int technisat_usb2_frontend_attach(struct dvb_usb_adapter *a)
 			technisat_usb2_stv090x_config.tuner_set_refclk    = ctl->tuner_set_refclk;
 			technisat_usb2_stv090x_config.tuner_get_status    = ctl->tuner_get_status;
 
-			/* call the init function once to initialize
-			   tuner's clock output divider and demod's
-			   master clock */
+			 
 			if (a->fe_adap[0].fe->ops.init)
 				a->fe_adap[0].fe->ops.init(a->fe_adap[0].fe);
 
@@ -565,7 +535,7 @@ static int technisat_usb2_frontend_attach(struct dvb_usb_adapter *a)
 
 			a->fe_adap[0].fe->ops.set_voltage = technisat_usb2_set_voltage;
 
-			/* if everything was successful assign a nice name to the frontend */
+			 
 			strscpy(a->fe_adap[0].fe->ops.info.name,
 				a->dev->desc->name,
 				sizeof(a->fe_adap[0].fe->ops.info.name));
@@ -580,11 +550,9 @@ static int technisat_usb2_frontend_attach(struct dvb_usb_adapter *a)
 	return a->fe_adap[0].fe == NULL ? -ENODEV : 0;
 }
 
-/* Remote control */
+ 
 
-/* the device is giving providing raw IR-signals to the host mapping
- * it only to one remote control is just the default implementation
- */
+ 
 #define NOMINAL_IR_BIT_TRANSITION_TIME_US 889
 #define NOMINAL_IR_BIT_TIME_US (2 * NOMINAL_IR_BIT_TRANSITION_TIME_US)
 
@@ -643,9 +611,9 @@ unlock:
 		return ret;
 
 	if (ret == 1)
-		return 0; /* no key pressed */
+		return 0;  
 
-	/* decoding */
+	 
 
 #if 0
 	deb_rc("RC: %d ", ret);
@@ -688,7 +656,7 @@ static int technisat_usb2_rc_query(struct dvb_usb_device *d)
 	return 0;
 }
 
-/* DVB-USB and USB stuff follows */
+ 
 enum {
 	TECHNISAT_USB2_DVB_S2,
 };
@@ -700,7 +668,7 @@ static struct usb_device_id technisat_usb2_id_table[] = {
 
 MODULE_DEVICE_TABLE(usb, technisat_usb2_id_table);
 
-/* device description */
+ 
 static struct dvb_usb_device_properties technisat_usb2_devices = {
 	.caps              = DVB_USB_IS_AN_I2C_ADAPTER,
 
@@ -786,7 +754,7 @@ static void technisat_usb2_disconnect(struct usb_interface *intf)
 {
 	struct dvb_usb_device *dev = usb_get_intfdata(intf);
 
-	/* work and stuff was only created when the device is hot-state */
+	 
 	if (dev != NULL) {
 		struct technisat_usb2_state *state = dev->priv;
 		if (state != NULL)

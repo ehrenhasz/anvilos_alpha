@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 
 #include <linux/limits.h>
@@ -18,12 +18,7 @@
 #include "cgroup_util.h"
 
 
-/*
- * Memory cgroup charging is performed using percpu batches 64 pages
- * big (look at MEMCG_CHARGE_BATCH), whereas memory.stat is exact. So
- * the maximum discrepancy between charge and vmstat entries is number
- * of cpus multiplied by 64 pages.
- */
+ 
 #define MAX_VMSTAT_ERROR (4096 * 64 * get_nprocs())
 
 
@@ -43,12 +38,7 @@ static int alloc_dcache(const char *cgroup, void *arg)
 	return 0;
 }
 
-/*
- * This test allocates 100000 of negative dentries with long names.
- * Then it checks that "slab" in memory.stat is larger than 1M.
- * Then it sets memory.high to 1M and checks that at least 1/2
- * of slab memory has been reclaimed.
- */
+ 
 static int test_kmem_basic(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -71,7 +61,7 @@ static int test_kmem_basic(const char *root)
 
 	cg_write(cg, "memory.high", "1M");
 
-	/* wait for RCU freeing */
+	 
 	sleep(1);
 
 	slab1 = cg_read_key_long(cg, "memory.stat", "slab ");
@@ -157,13 +147,7 @@ static int cg_run_in_subcgroups(const char *parent,
 	return 0;
 }
 
-/*
- * The test creates and destroys a large number of cgroups. In each cgroup it
- * allocates some slab memory (mostly negative dentries) using 2 * NR_CPUS
- * threads. Then it checks the sanity of numbers on the parent level:
- * the total size of the cgroups should be roughly equal to
- * anon + file + kernel + sock.
- */
+ 
 static int test_kmem_memcg_deletion(const char *root)
 {
 	long current, anon, file, kernel, sock, sum;
@@ -210,10 +194,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * The test reads the entire /proc/kpagecgroup. If the operation went
- * successfully (and the kernel didn't panic), the test is treated as passed.
- */
+ 
 static int test_kmem_proc_kpagecgroup(const char *root)
 {
 	unsigned long buf[128];
@@ -270,10 +251,7 @@ static int spawn_1000_threads(const char *cgroup, void *arg)
 	return ret;
 }
 
-/*
- * The test spawns a process, which spawns 1000 threads. Then it checks
- * that memory.stat's kernel_stack is at least 1000 pages large.
- */
+ 
 static int test_kmem_kernel_stacks(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -297,11 +275,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * This test sequentionally creates 30 child cgroups, allocates some
- * kernel memory in each of them, and deletes them. Then it checks
- * that the number of dying cgroups on the parent level is 0.
- */
+ 
 static int test_kmem_dead_cgroups(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -329,10 +303,7 @@ static int test_kmem_dead_cgroups(const char *root)
 			ret = KSFT_PASS;
 			break;
 		}
-		/*
-		 * Reclaiming cgroups might take some time,
-		 * let's wait a bit and repeat.
-		 */
+		 
 		sleep(1);
 	}
 
@@ -343,12 +314,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * This test creates a sub-tree with 1000 memory cgroups.
- * Then it checks that the memory.current on the parent level
- * is greater than 0 and approximates matches the percpu value
- * from memory.stat.
- */
+ 
 static int test_percpu_basic(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -423,10 +389,7 @@ int main(int argc, char **argv)
 	if (cg_find_unified_root(root, sizeof(root)))
 		ksft_exit_skip("cgroup v2 isn't mounted\n");
 
-	/*
-	 * Check that memory controller is available:
-	 * memory is listed in cgroup.controllers
-	 */
+	 
 	if (cg_read_strstr(root, "cgroup.controllers", "memory"))
 		ksft_exit_skip("memory controller isn't available\n");
 

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (c) 2014 Raspberry Pi (Trading) Ltd. All rights reserved.
- * Copyright (c) 2010-2012 Broadcom. All rights reserved.
- */
+
+ 
 
 #include <linux/cdev.h>
 #include <linux/fs.h>
@@ -52,10 +49,10 @@ static void close_delivered(struct user_service *user_service)
 		       __func__, user_service->service->handle);
 
 	if (user_service->close_pending) {
-		/* Allow the underlying service to be culled */
+		 
 		vchiq_service_put(user_service->service);
 
-		/* Wake the user-thread blocked in close_ or remove_service */
+		 
 		complete(&user_service->close_event);
 
 		user_service->close_pending = 0;
@@ -263,7 +260,7 @@ static int vchiq_ioc_dequeue_message(struct vchiq_instance *instance,
 	if (!header) {
 		ret = -ENOTCONN;
 	} else if (header->size <= args->bufsize) {
-		/* Copy to user space if msgbuf is not NULL */
+		 
 		if (!args->buf || (copy_to_user(args->buf, header->data, header->size) == 0)) {
 			ret = header->size;
 			vchiq_release_message(instance, service->handle, header);
@@ -341,7 +338,7 @@ static int vchiq_irq_queue_bulk_tx_rx(struct vchiq_instance *instance,
 	if ((status != -EAGAIN) || fatal_signal_pending(current) ||
 	    !waiter->bulk_waiter.bulk) {
 		if (waiter->bulk_waiter.bulk) {
-			/* Cancel the signal when the transfer completes. */
+			 
 			spin_lock(&bulk_waiter_spinlock);
 			waiter->bulk_waiter.bulk->userdata = NULL;
 			spin_unlock(&bulk_waiter_spinlock);
@@ -371,7 +368,7 @@ out:
 	return 0;
 }
 
-/* read a user pointer value from an array pointers in user space */
+ 
 static inline int vchiq_get_user_ptr(void __user **buf, void __user *ubuf, int index)
 {
 	int ret;
@@ -478,10 +475,7 @@ static int vchiq_ioc_await_completion(struct vchiq_instance *instance,
 
 		completion = &instance->completions[remove & (MAX_COMPLETIONS - 1)];
 
-		/*
-		 * A read memory barrier is needed to stop
-		 * prefetch of a stale completion record
-		 */
+		 
 		rmb();
 
 		service = completion->service_userdata;
@@ -499,7 +493,7 @@ static int vchiq_ioc_await_completion(struct vchiq_instance *instance,
 			int msglen;
 
 			msglen = header->size + sizeof(struct vchiq_header);
-			/* This must be a VCHIQ-style service */
+			 
 			if (args->msgbufsize < msglen) {
 				vchiq_log_error(vchiq_arm_log_level,
 						"header %pK: msgbufsize %x < msglen %x",
@@ -510,9 +504,9 @@ static int vchiq_ioc_await_completion(struct vchiq_instance *instance,
 				break;
 			}
 			if (msgbufcount <= 0)
-				/* Stall here for lack of a buffer for the message. */
+				 
 				break;
-			/* Get the pointer from user space */
+			 
 			msgbufcount--;
 			if (vchiq_get_user_ptr(&msgbuf, args->msgbufs,
 					       msgbufcount)) {
@@ -521,17 +515,17 @@ static int vchiq_ioc_await_completion(struct vchiq_instance *instance,
 				break;
 			}
 
-			/* Copy the message to user space */
+			 
 			if (copy_to_user(msgbuf, header, msglen)) {
 				if (ret == 0)
 					ret = -EFAULT;
 				break;
 			}
 
-			/* Now it has been copied, the message can be released. */
+			 
 			vchiq_release_message(instance, service->handle, header);
 
-			/* The completion must point to the msgbuf. */
+			 
 			user_completion.header = msgbuf;
 		}
 
@@ -539,10 +533,7 @@ static int vchiq_ioc_await_completion(struct vchiq_instance *instance,
 		    !instance->use_close_delivered)
 			vchiq_service_put(service);
 
-		/*
-		 * FIXME: address space mismatch, does bulk_userdata
-		 * actually point to user or kernel memory?
-		 */
+		 
 		user_completion.bulk_userdata = completion->bulk_userdata;
 
 		if (vchiq_put_completion(args->buf, &user_completion, ret)) {
@@ -551,10 +542,7 @@ static int vchiq_ioc_await_completion(struct vchiq_instance *instance,
 			break;
 		}
 
-		/*
-		 * Ensure that the above copy has completed
-		 * before advancing the remove pointer.
-		 */
+		 
 		mb();
 		remove++;
 		instance->completion_remove = remove;
@@ -592,7 +580,7 @@ vchiq_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		if (!instance->connected)
 			break;
 
-		/* Remove all services */
+		 
 		i = 0;
 		while ((service = next_service_by_instance(instance->state,
 							   instance, &i))) {
@@ -604,7 +592,7 @@ vchiq_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		service = NULL;
 
 		if (!status) {
-			/* Wake the completion thread and ask it to exit */
+			 
 			instance->closing = 1;
 			complete(&instance->insert_event);
 		}
@@ -667,10 +655,7 @@ vchiq_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 		user_service = service->base.userdata;
 
-		/*
-		 * close_pending is false on first entry, and when the
-		 * wait in vchiq_close_service has been interrupted.
-		 */
+		 
 		if (!user_service->close_pending) {
 			status = (cmd == VCHIQ_IOC_CLOSE_SERVICE) ?
 				 vchiq_close_service(instance, service->handle) :
@@ -679,11 +664,7 @@ vchiq_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 				break;
 		}
 
-		/*
-		 * close_pending is true once the underlying service
-		 * has been closed until the client library calls the
-		 * CLOSE_DELIVERED ioctl, signalling close_event.
-		 */
+		 
 		if (user_service->close_pending &&
 		    wait_for_completion_interruptible(&user_service->close_event))
 			status = -EAGAIN;
@@ -726,7 +707,7 @@ vchiq_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		service = find_service_for_instance(instance, args.handle);
 
 		if (service && (args.count <= MAX_ELEMENTS)) {
-			/* Copy elements into kernel space */
+			 
 			struct vchiq_element elements[MAX_ELEMENTS];
 
 			if (copy_from_user(elements, args.elements,
@@ -888,15 +869,15 @@ struct vchiq_service_params32 {
 	int fourcc;
 	compat_uptr_t callback;
 	compat_uptr_t userdata;
-	short version; /* Increment for non-trivial changes */
-	short version_min; /* Update for incompatible changes */
+	short version;  
+	short version_min;  
 };
 
 struct vchiq_create_service32 {
 	struct vchiq_service_params32 params;
 	int is_open;
 	int is_vchi;
-	unsigned int handle; /* OUT */
+	unsigned int handle;  
 };
 
 #define VCHIQ_IOC_CREATE_SERVICE32 \
@@ -1048,7 +1029,7 @@ struct vchiq_await_completion32 {
 	unsigned int count;
 	compat_uptr_t buf;
 	unsigned int msgbufsize;
-	unsigned int msgbufcount; /* IN/OUT */
+	unsigned int msgbufcount;  
 	compat_uptr_t msgbufs;
 };
 
@@ -1214,33 +1195,33 @@ static int vchiq_release(struct inode *inode, struct file *file)
 		goto out;
 	}
 
-	/* Ensure videocore is awake to allow termination. */
+	 
 	vchiq_use_internal(instance->state, NULL, USE_TYPE_VCHIQ);
 
 	mutex_lock(&instance->completion_mutex);
 
-	/* Wake the completion thread and ask it to exit */
+	 
 	instance->closing = 1;
 	complete(&instance->insert_event);
 
 	mutex_unlock(&instance->completion_mutex);
 
-	/* Wake the slot handler if the completion queue is full. */
+	 
 	complete(&instance->remove_event);
 
-	/* Mark all services for termination... */
+	 
 	i = 0;
 	while ((service = next_service_by_instance(state, instance, &i))) {
 		struct user_service *user_service = service->base.userdata;
 
-		/* Wake the slot handler if the msg queue is full. */
+		 
 		complete(&user_service->remove_event);
 
 		vchiq_terminate_service_internal(service);
 		vchiq_service_put(service);
 	}
 
-	/* ...and wait for them to die */
+	 
 	i = 0;
 	while ((service = next_service_by_instance(state, instance, &i))) {
 		struct user_service *user_service = service->base.userdata;
@@ -1272,7 +1253,7 @@ static int vchiq_release(struct inode *inode, struct file *file)
 		vchiq_service_put(service);
 	}
 
-	/* Release any closed services */
+	 
 	while (instance->completion_remove != instance->completion_insert) {
 		struct vchiq_completion_data_kernel *completion;
 		struct vchiq_service *service;
@@ -1284,7 +1265,7 @@ static int vchiq_release(struct inode *inode, struct file *file)
 			struct user_service *user_service =
 							service->base.userdata;
 
-			/* Wake any blocked user-thread */
+			 
 			if (instance->use_close_delivered)
 				complete(&user_service->close_event);
 			vchiq_service_put(service);
@@ -1292,7 +1273,7 @@ static int vchiq_release(struct inode *inode, struct file *file)
 		instance->completion_remove++;
 	}
 
-	/* Release the PEER service count. */
+	 
 	vchiq_release_internal(instance->state, NULL);
 
 	free_bulk_waiter(instance);
@@ -1345,14 +1326,7 @@ static struct miscdevice vchiq_miscdev = {
 
 };
 
-/**
- *	vchiq_register_chrdev - Register the char driver for vchiq
- *				and create the necessary class and
- *				device files in userspace.
- *	@parent		The parent of the char device.
- *
- *	Returns 0 on success else returns the error code.
- */
+ 
 int vchiq_register_chrdev(struct device *parent)
 {
 	vchiq_miscdev.parent = parent;
@@ -1360,10 +1334,7 @@ int vchiq_register_chrdev(struct device *parent)
 	return misc_register(&vchiq_miscdev);
 }
 
-/**
- *	vchiq_deregister_chrdev	- Deregister and cleanup the vchiq char
- *				  driver and device files
- */
+ 
 void vchiq_deregister_chrdev(void)
 {
 	misc_deregister(&vchiq_miscdev);

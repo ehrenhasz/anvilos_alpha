@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Handler for Realtek 4 byte DSA switch tags
- * Currently only supports protocol "A" found in RTL8366RB
- * Copyright (c) 2020 Linus Walleij <linus.walleij@linaro.org>
- *
- * This "proprietary tag" header looks like so:
- *
- * -------------------------------------------------
- * | MAC DA | MAC SA | 0x8899 | 2 bytes tag | Type |
- * -------------------------------------------------
- *
- * The 2 bytes tag form a 16 bit big endian word. The exact
- * meaning has been guessed from packet dumps from ingress
- * frames.
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/bits.h>
@@ -25,12 +11,7 @@
 #define RTL4_A_HDR_LEN		4
 #define RTL4_A_ETHERTYPE	0x8899
 #define RTL4_A_PROTOCOL_SHIFT	12
-/*
- * 0x1 = Realtek Remote Control protocol (RRCP)
- * 0x2/0x3 seems to be used for loopback testing
- * 0x9 = RTL8306 DSA protocol
- * 0xa = RTL8366RB DSA protocol
- */
+ 
 #define RTL4_A_PROTOCOL_RTL8366RB	0xa
 
 static struct sk_buff *rtl4a_tag_xmit(struct sk_buff *skb,
@@ -41,7 +22,7 @@ static struct sk_buff *rtl4a_tag_xmit(struct sk_buff *skb,
 	u8 *tag;
 	u16 out;
 
-	/* Pad out to at least 60 bytes */
+	 
 	if (unlikely(__skb_put_padto(skb, ETH_ZLEN, false)))
 		return NULL;
 
@@ -52,12 +33,12 @@ static struct sk_buff *rtl4a_tag_xmit(struct sk_buff *skb,
 	dsa_alloc_etype_header(skb, RTL4_A_HDR_LEN);
 	tag = dsa_etype_header_pos_tx(skb);
 
-	/* Set Ethertype */
+	 
 	p = (__be16 *)tag;
 	*p = htons(RTL4_A_ETHERTYPE);
 
 	out = (RTL4_A_PROTOCOL_RTL8366RB << RTL4_A_PROTOCOL_SHIFT);
-	/* The lower bits indicate the port number */
+	 
 	out |= BIT(dp->index);
 
 	p = (__be16 *)(tag + 2);
@@ -83,13 +64,13 @@ static struct sk_buff *rtl4a_tag_rcv(struct sk_buff *skb,
 	p = (__be16 *)tag;
 	etype = ntohs(*p);
 	if (etype != RTL4_A_ETHERTYPE) {
-		/* Not custom, just pass through */
+		 
 		netdev_dbg(dev, "non-realtek ethertype 0x%04x\n", etype);
 		return skb;
 	}
 	p = (__be16 *)(tag + 2);
 	protport = ntohs(*p);
-	/* The 4 upper bits are the protocol */
+	 
 	prot = (protport >> RTL4_A_PROTOCOL_SHIFT) & 0x0f;
 	if (prot != RTL4_A_PROTOCOL_RTL8366RB) {
 		netdev_err(dev, "unknown realtek protocol 0x%01x\n", prot);
@@ -103,7 +84,7 @@ static struct sk_buff *rtl4a_tag_rcv(struct sk_buff *skb,
 		return NULL;
 	}
 
-	/* Remove RTL4 tag and recalculate checksum */
+	 
 	skb_pull_rcsum(skb, RTL4_A_HDR_LEN);
 
 	dsa_strip_etype_header(skb, RTL4_A_HDR_LEN);

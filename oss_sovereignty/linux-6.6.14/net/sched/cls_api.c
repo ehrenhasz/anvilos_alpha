@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/cls_api.c	Packet classifier API.
- *
- * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
- *
- * Changes:
- *
- * Eduardo J. Blanco <ejbs@netlabs.com.uy> :990222: kmod support
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -43,10 +35,10 @@
 #include <net/flow_offload.h>
 #include <net/tc_wrapper.h>
 
-/* The list of all installed classifier types */
+ 
 static LIST_HEAD(tcf_proto_base);
 
-/* Protects list of registered TC modules. It is pure SMP lock. */
+ 
 static DEFINE_RWLOCK(cls_mod_lock);
 
 static struct xarray tcf_exts_miss_cookies_xa;
@@ -61,9 +53,7 @@ struct tcf_exts_miss_cookie_node {
 	struct rcu_head rcu;
 };
 
-/* Each tc action entry cookie will be comprised of 32bit miss_cookie_base +
- * action index in the exts tc actions array.
- */
+ 
 union tcf_exts_miss_cookie {
 	struct {
 		u32 miss_cookie_base;
@@ -128,7 +118,7 @@ tcf_exts_miss_cookie_lookup(u64 miss_cookie, int *act_index)
 	*act_index = mc.act_index;
 	return xa_load(&tcf_exts_miss_cookies_xa, mc.miss_cookie_base);
 }
-#else /* IS_ENABLED(CONFIG_NET_TC_SKB_EXT) */
+#else  
 static int
 tcf_exts_miss_cookie_base_alloc(struct tcf_exts *exts, struct tcf_proto *tp,
 				u32 handle)
@@ -139,7 +129,7 @@ tcf_exts_miss_cookie_base_alloc(struct tcf_exts *exts, struct tcf_proto *tp,
 static void tcf_exts_miss_cookie_base_destroy(struct tcf_exts *exts)
 {
 }
-#endif /* IS_ENABLED(CONFIG_NET_TC_SKB_EXT) */
+#endif  
 
 static u64 tcf_exts_miss_cookie_get(u32 miss_cookie_base, int act_index)
 {
@@ -225,7 +215,7 @@ tcf_proto_signal_destroyed(struct tcf_chain *chain, struct tcf_proto *tp)
 	mutex_unlock(&block->proto_destroy_lock);
 }
 
-/* Find classifier type by string name */
+ 
 
 static const struct tcf_proto_ops *__tcf_proto_lookup_ops(const char *kind)
 {
@@ -261,11 +251,7 @@ tcf_proto_lookup_ops(const char *kind, bool rtnl_held,
 	if (rtnl_held)
 		rtnl_lock();
 	ops = __tcf_proto_lookup_ops(kind);
-	/* We dropped the RTNL semaphore in order to perform
-	 * the module load. So, even if we succeeded in loading
-	 * the module we have to replay the request. We indicate
-	 * this using -EAGAIN.
-	 */
+	 
 	if (ops) {
 		module_put(ops->owner);
 		return ERR_PTR(-EAGAIN);
@@ -275,7 +261,7 @@ tcf_proto_lookup_ops(const char *kind, bool rtnl_held,
 	return ERR_PTR(-ENOENT);
 }
 
-/* Register(unregister) new classifier type */
+ 
 
 int register_tcf_proto_ops(struct tcf_proto_ops *ops)
 {
@@ -302,9 +288,7 @@ void unregister_tcf_proto_ops(struct tcf_proto_ops *ops)
 	struct tcf_proto_ops *t;
 	int rc = -ENOENT;
 
-	/* Wait for outstanding call_rcu()s, if any, from a
-	 * tcf_proto_ops's destroy() handler.
-	 */
+	 
 	rcu_barrier();
 	flush_workqueue(tc_filter_wq);
 
@@ -329,7 +313,7 @@ bool tcf_queue_work(struct rcu_work *rwork, work_func_t func)
 }
 EXPORT_SYMBOL(tcf_queue_work);
 
-/* Select new prio value from the range, managed by kernel. */
+ 
 
 static inline u32 tcf_auto_prio(struct tcf_proto *tp)
 {
@@ -358,9 +342,7 @@ static bool tcf_proto_is_unlocked(const char *kind)
 		return false;
 
 	ops = tcf_proto_lookup_ops(kind, false, NULL);
-	/* On error return false to take rtnl lock. Proto lookup/create
-	 * functions will perform lookup again and properly handle errors.
-	 */
+	 
 	if (IS_ERR(ops))
 		return false;
 
@@ -508,7 +490,7 @@ static void tcf_chain0_head_change(struct tcf_chain *chain,
 	mutex_unlock(&block->lock);
 }
 
-/* Returns true if block can be safely freed. */
+ 
 
 static bool tcf_chain_detach(struct tcf_chain *chain)
 {
@@ -555,9 +537,7 @@ static bool tcf_chain_held_by_acts_only(struct tcf_chain *chain)
 {
 	ASSERT_BLOCK_LOCKED(chain->block);
 
-	/* In case all the references are action references, this
-	 * chain should not be shown to the user.
-	 */
+	 
 	return chain->refcnt == chain->action_refcnt;
 }
 
@@ -617,11 +597,7 @@ static struct tcf_chain *__tcf_chain_get(struct tcf_block *block,
 	is_first_reference = chain->refcnt - chain->action_refcnt == 1;
 	mutex_unlock(&block->lock);
 
-	/* Send notification only in case we got the first
-	 * non-action reference. Until then, the chain acts only as
-	 * a placeholder for actions pointing to it and user ought
-	 * not know about them.
-	 */
+	 
 	if (is_first_reference && !by_act)
 		tc_chain_notify(chain, NULL, 0, NLM_F_CREATE | NLM_F_EXCL,
 				RTM_NEWCHAIN, false, NULL);
@@ -673,10 +649,7 @@ static void __tcf_chain_put(struct tcf_chain *chain, bool by_act,
 	if (by_act)
 		chain->action_refcnt--;
 
-	/* tc_chain_notify_delete can't be called while holding block lock.
-	 * However, when block is unlocked chain can be changed concurrently, so
-	 * save these to temporary variables.
-	 */
+	 
 	refcnt = --chain->refcnt;
 	non_act_refcnt = refcnt - chain->action_refcnt;
 	tmplt_ops = chain->tmplt_ops;
@@ -687,7 +660,7 @@ static void __tcf_chain_put(struct tcf_chain *chain, bool by_act,
 			tc_chain_notify_delete(tmplt_ops, tmplt_priv,
 					       chain->index, block, NULL, 0, 0,
 					       false);
-		/* Last reference to chain, no need to lock. */
+		 
 		chain->flushing = false;
 	}
 
@@ -832,9 +805,7 @@ static int tcf_block_offload_bind(struct tcf_block *block, struct Qdisc *q,
 
 	down_write(&block->cb_lock);
 
-	/* If tc offload feature is disabled and the block we try to bind
-	 * to already has some offloaded filters, forbid to bind.
-	 */
+	 
 	if (dev->netdev_ops->ndo_setup_tc &&
 	    !tc_can_offload(dev) &&
 	    tcf_block_offload_in_use(block)) {
@@ -950,7 +921,7 @@ tcf_chain0_head_change_cb_del(struct tcf_block *block,
 }
 
 struct tcf_net {
-	spinlock_t idr_lock; /* Protects idr */
+	spinlock_t idr_lock;  
 	struct idr idr;
 };
 
@@ -1004,7 +975,7 @@ static struct tcf_block *tcf_block_create(struct net *net, struct Qdisc *q,
 	block->net = net;
 	block->index = block_index;
 
-	/* Don't store q pointer for blocks which are shared */
+	 
 	if (!tcf_block_shared(block))
 		block->q = q;
 	return block;
@@ -1041,7 +1012,7 @@ __tcf_get_next_chain(struct tcf_block *block, struct tcf_chain *chain)
 		chain = list_first_entry_or_null(&block->chain_list,
 						 struct tcf_chain, list);
 
-	/* skip all action-only chains */
+	 
 	while (chain && tcf_chain_held_by_acts_only(chain))
 		chain = list_is_last(&chain->list, &block->chain_list) ?
 			NULL : list_next_entry(chain, list);
@@ -1053,14 +1024,7 @@ __tcf_get_next_chain(struct tcf_block *block, struct tcf_chain *chain)
 	return chain;
 }
 
-/* Function to be used by all clients that want to iterate over all chains on
- * block. It properly obtains block->lock and takes reference to chain before
- * returning it. Users of this function must be tolerant to concurrent chain
- * insertion/deletion or ensure that no concurrent chain modification is
- * possible. Note that all netlink dump callbacks cannot guarantee to provide
- * consistent dump because rtnl lock is released each time skb is filled with
- * data and sent to user-space.
- */
+ 
 
 struct tcf_chain *
 tcf_get_next_chain(struct tcf_block *block, struct tcf_chain *chain)
@@ -1085,10 +1049,7 @@ __tcf_get_next_proto(struct tcf_chain *chain, struct tcf_proto *tp)
 	if (!tp) {
 		tp = tcf_chain_dereference(chain->filter_chain, chain);
 	} else if (tcf_proto_is_deleting(tp)) {
-		/* 'deleting' flag is set and chain->filter_chain_lock was
-		 * unlocked, which means next pointer could be invalid. Restart
-		 * search.
-		 */
+		 
 		prio = tp->prio + 1;
 		tp = tcf_chain_dereference(chain->filter_chain, chain);
 
@@ -1107,13 +1068,7 @@ __tcf_get_next_proto(struct tcf_chain *chain, struct tcf_proto *tp)
 	return tp;
 }
 
-/* Function to be used by all clients that want to iterate over all tp's on
- * chain. Users of this function must be tolerant to concurrent tp
- * insertion/deletion or ensure that no concurrent chain modification is
- * possible. Note that all netlink dump callbacks cannot guarantee to provide
- * consistent dump because rtnl lock is released each time skb is filled with
- * data and sent to user-space.
- */
+ 
 
 struct tcf_proto *
 tcf_get_next_proto(struct tcf_chain *chain, struct tcf_proto *tp)
@@ -1131,9 +1086,7 @@ static void tcf_block_flush_all_chains(struct tcf_block *block, bool rtnl_held)
 {
 	struct tcf_chain *chain;
 
-	/* Last reference to block. At this point chains cannot be added or
-	 * removed concurrently.
-	 */
+	 
 	for (chain = tcf_get_next_chain(block, NULL);
 	     chain;
 	     chain = tcf_get_next_chain(block, chain)) {
@@ -1142,9 +1095,7 @@ static void tcf_block_flush_all_chains(struct tcf_block *block, bool rtnl_held)
 	}
 }
 
-/* Lookup Qdisc and increments its reference counter.
- * Set parent, if necessary.
- */
+ 
 
 static int __tcf_qdisc_find(struct net *net, struct Qdisc **q,
 			    u32 *parent, int ifindex, bool rtnl_held,
@@ -1159,14 +1110,14 @@ static int __tcf_qdisc_find(struct net *net, struct Qdisc **q,
 
 	rcu_read_lock();
 
-	/* Find link */
+	 
 	dev = dev_get_by_index_rcu(net, ifindex);
 	if (!dev) {
 		rcu_read_unlock();
 		return -ENODEV;
 	}
 
-	/* Find qdisc */
+	 
 	if (!*parent) {
 		*q = rcu_dereference(dev->qdisc);
 		*parent = (*q)->handle;
@@ -1186,7 +1137,7 @@ static int __tcf_qdisc_find(struct net *net, struct Qdisc **q,
 		goto errout_rcu;
 	}
 
-	/* Is it classful? */
+	 
 	cops = (*q)->ops->cl_ops;
 	if (!cops) {
 		NL_SET_ERR_MSG(extack, "Qdisc not classful");
@@ -1201,11 +1152,7 @@ static int __tcf_qdisc_find(struct net *net, struct Qdisc **q,
 	}
 
 errout_rcu:
-	/* At this point we know that qdisc is not noop_qdisc,
-	 * which means that qdisc holds a reference to net_device
-	 * and we hold a reference to qdisc, so it is safe to release
-	 * rcu read lock.
-	 */
+	 
 	rcu_read_unlock();
 	return err;
 
@@ -1227,7 +1174,7 @@ static int __tcf_qdisc_cl_find(struct Qdisc *q, u32 parent, unsigned long *cl,
 	if (ifindex == TCM_IFINDEX_MAGIC_BLOCK)
 		return 0;
 
-	/* Do we search for filter, attached to class? */
+	 
 	if (TC_H_MIN(parent)) {
 		const struct Qdisc_class_ops *cops = q->ops->cl_ops;
 
@@ -1266,12 +1213,7 @@ static struct tcf_block *__tcf_block_find(struct net *net, struct Qdisc *q,
 			return ERR_PTR(-EOPNOTSUPP);
 		}
 
-		/* Always take reference to block in order to support execution
-		 * of rules update path of cls API without rtnl lock. Caller
-		 * must release block when it is finished using it. 'if' block
-		 * of this conditional obtain reference to block by calling
-		 * tcf_block_refcnt_get().
-		 */
+		 
 		refcount_inc(&block->refcnt);
 	}
 
@@ -1282,12 +1224,7 @@ static void __tcf_block_put(struct tcf_block *block, struct Qdisc *q,
 			    struct tcf_block_ext_info *ei, bool rtnl_held)
 {
 	if (refcount_dec_and_mutex_lock(&block->refcnt, &block->lock)) {
-		/* Flushing/putting all chains will cause the block to be
-		 * deallocated when last chain is freed. However, if chain_list
-		 * is empty, block has to be manually deallocated. After block
-		 * reference counter reached 0, it is no longer possible to
-		 * increment it or add new chains to block.
-		 */
+		 
 		bool free_block = list_empty(&block->chain_list);
 
 		mutex_unlock(&block->lock);
@@ -1311,9 +1248,7 @@ static void tcf_block_refcnt_put(struct tcf_block *block, bool rtnl_held)
 	__tcf_block_put(block, NULL, NULL, rtnl_held);
 }
 
-/* Find tcf block.
- * Set q, parent, cl when appropriate.
- */
+ 
 
 static struct tcf_block *tcf_block_find(struct net *net, struct Qdisc **q,
 					u32 *parent, unsigned long *cl,
@@ -1431,7 +1366,7 @@ int tcf_block_get_ext(struct tcf_block **p_block, struct Qdisc *q,
 	int err;
 
 	if (ei->block_index)
-		/* block_index not 0 means the shared block is requested */
+		 
 		block = tcf_block_refcnt_get(net, ei->block_index);
 
 	if (!block) {
@@ -1494,9 +1429,7 @@ int tcf_block_get(struct tcf_block **p_block,
 }
 EXPORT_SYMBOL(tcf_block_get);
 
-/* XXX: Standalone actions are not allowed to jump to any chain, and bound
- * actions should be all removed after flushing.
- */
+ 
 void tcf_block_put_ext(struct tcf_block *block, struct Qdisc *q,
 		       struct tcf_block_ext_info *ei)
 {
@@ -1645,10 +1578,7 @@ static int tcf_block_setup(struct tcf_block *block,
 	return err;
 }
 
-/* Main classifier routine: scans classifier chain attached
- * to this qdisc, (optionally) tests for protocol and asks
- * specific classifiers.
- */
+ 
 static inline int __tcf_classify(struct sk_buff *skb,
 				 const struct tcf_proto *tp,
 				 const struct tcf_proto *orig_tp,
@@ -1675,11 +1605,7 @@ reclassify:
 			if (n->tp_prio != tp->prio)
 				continue;
 
-			/* We re-lookup the tp and chain based on index instead
-			 * of having hard refs and locks to them, so do a sanity
-			 * check if any of tp,chain,exts was replaced by the
-			 * time we got here with a cookie from hardware.
-			 */
+			 
 			if (unlikely(n->tp != tp || n->tp->chain != n->chain ||
 				     !tp->ops->get_exts))
 				return TC_ACT_SHOT;
@@ -1715,7 +1641,7 @@ reclassify:
 	if (unlikely(n))
 		return TC_ACT_SHOT;
 
-	return TC_ACT_UNSPEC; /* signal: continue lookup */
+	return TC_ACT_UNSPEC;  
 #ifdef CONFIG_NET_CLS_ACT
 reset:
 	if (unlikely(limit++ >= max_reclassify_loop)) {
@@ -1771,7 +1697,7 @@ int tcf_classify(struct sk_buff *skb,
 			if (!fchain)
 				return TC_ACT_SHOT;
 
-			/* Consume, so cloned/redirect skbs won't inherit ext */
+			 
 			skb_ext_del(skb, TC_SKB_EXT);
 
 			tp = rcu_dereference_bh(fchain->filter_chain);
@@ -1783,7 +1709,7 @@ int tcf_classify(struct sk_buff *skb,
 			     &last_executed_chain);
 
 	if (tc_skb_ext_tc_enabled()) {
-		/* If we missed on some chain */
+		 
 		if (ret == TC_ACT_UNSPEC && last_executed_chain) {
 			struct tc_skb_cb *cb = tc_skb_cb(skb);
 
@@ -1848,10 +1774,7 @@ static struct tcf_proto *tcf_chain_tp_find(struct tcf_chain *chain,
 					   u32 protocol, u32 prio,
 					   bool prio_allocate);
 
-/* Try to insert new proto.
- * If proto with specified priority already exists, free new proto
- * and return existing one.
- */
+ 
 
 static struct tcf_proto *tcf_chain_tp_insert_unique(struct tcf_chain *chain,
 						    struct tcf_proto *tp_new,
@@ -1898,7 +1821,7 @@ static void tcf_chain_tp_delete_empty(struct tcf_chain *chain,
 
 	mutex_lock(&chain->filter_chain_lock);
 
-	/* Atomically find and remove tp from chain. */
+	 
 	for (pprev = &chain->filter_chain;
 	     (tp_iter = tcf_chain_dereference(*pprev, chain));
 	     pprev = &tp_iter->next) {
@@ -1909,10 +1832,7 @@ static void tcf_chain_tp_delete_empty(struct tcf_chain *chain,
 			break;
 		}
 	}
-	/* Verify that tp still exists and no new filters were inserted
-	 * concurrently.
-	 * Mark tp for deletion if it is empty.
-	 */
+	 
 	if (!tp_iter || !tcf_proto_check_delete(tp)) {
 		mutex_unlock(&chain->filter_chain_lock);
 		return;
@@ -1936,7 +1856,7 @@ static struct tcf_proto *tcf_chain_tp_find(struct tcf_chain *chain,
 	struct tcf_proto **pprev;
 	struct tcf_proto *tp;
 
-	/* Check the chain for existence of proto-tcf with this priority */
+	 
 	for (pprev = &chain->filter_chain;
 	     (tp = tcf_chain_dereference(*pprev, chain));
 	     pprev = &tp->next) {
@@ -2160,9 +2080,7 @@ replay:
 	flags = 0;
 
 	if (prio == 0) {
-		/* If no priority is provided by the user,
-		 * we allocate one.
-		 */
+		 
 		if (n->nlmsg_flags & NLM_F_CREATE) {
 			prio = TC_H_MAKE(0x80000000U, 0U);
 			prio_allocate = true;
@@ -2172,7 +2090,7 @@ replay:
 		}
 	}
 
-	/* Find head of filter chain. */
+	 
 
 	err = __tcf_qdisc_find(net, &q, &parent, t->tcm_ifindex, false, extack);
 	if (err)
@@ -2184,10 +2102,7 @@ replay:
 		goto errout;
 	}
 
-	/* Take rtnl mutex if rtnl_held was set to true on previous iteration,
-	 * block is shared (no qdisc found), qdisc is not unlocked, classifier
-	 * type is not specified, classifier is not unlocked.
-	 */
+	 
 	if (rtnl_held ||
 	    (q && !(q->ops->cl_ops->flags & QDISC_CLASS_OPS_DOIT_UNLOCKED)) ||
 	    !tcf_proto_is_unlocked(name)) {
@@ -2237,7 +2152,7 @@ replay:
 			goto errout_locked;
 		}
 
-		/* Proto-tcf does not exist, create new one */
+		 
 
 		if (tca[TCA_KIND] == NULL || !protocol) {
 			NL_SET_ERR_MSG(extack, "Filter kind and protocol must be specified");
@@ -2314,7 +2229,7 @@ replay:
 		tfilter_notify(net, skb, n, tp, block, q, parent, fh,
 			       RTM_NEWTFILTER, false, rtnl_held, extack);
 		tfilter_put(tp, fh);
-		/* q pointer is NULL for shared blocks */
+		 
 		if (q)
 			q->flags &= ~TCQ_F_CAN_BYPASS;
 	}
@@ -2335,11 +2250,9 @@ errout_tp:
 		rtnl_unlock();
 
 	if (err == -EAGAIN) {
-		/* Take rtnl lock in case EAGAIN is caused by concurrent flush
-		 * of target chain.
-		 */
+		 
 		rtnl_held = true;
-		/* Replay the request. */
+		 
 		goto replay;
 	}
 	return err;
@@ -2385,7 +2298,7 @@ static int tc_del_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
 		return -ENOENT;
 	}
 
-	/* Find head of filter chain. */
+	 
 
 	err = __tcf_qdisc_find(net, &q, &parent, t->tcm_ifindex, false, extack);
 	if (err)
@@ -2396,10 +2309,7 @@ static int tc_del_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
 		err = -EINVAL;
 		goto errout;
 	}
-	/* Take rtnl mutex if flushing whole chain, block is shared (no qdisc
-	 * found), qdisc is not unlocked, classifier type is not specified,
-	 * classifier is not unlocked.
-	 */
+	 
 	if (!prio ||
 	    (q && !(q->ops->cl_ops->flags & QDISC_CLASS_OPS_DOIT_UNLOCKED)) ||
 	    !tcf_proto_is_unlocked(name)) {
@@ -2426,9 +2336,7 @@ static int tc_del_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
 	}
 	chain = tcf_chain_get(block, chain_index, false);
 	if (!chain) {
-		/* User requested flush on non-existent chain. Nothing to do,
-		 * so just return success.
-		 */
+		 
 		if (prio == 0) {
 			err = 0;
 			goto errout;
@@ -2542,7 +2450,7 @@ static int tc_get_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
 		return -ENOENT;
 	}
 
-	/* Find head of filter chain. */
+	 
 
 	err = __tcf_qdisc_find(net, &q, &parent, t->tcm_ifindex, false, extack);
 	if (err)
@@ -2553,10 +2461,7 @@ static int tc_get_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
 		err = -EINVAL;
 		goto errout;
 	}
-	/* Take rtnl mutex if block is shared (no qdisc found), qdisc is not
-	 * unlocked, classifier type is not specified, classifier is not
-	 * unlocked.
-	 */
+	 
 	if ((q && !(q->ops->cl_ops->flags & QDISC_CLASS_OPS_DOIT_UNLOCKED)) ||
 	    !tcf_proto_is_unlocked(name)) {
 		rtnl_held = true;
@@ -2714,7 +2619,7 @@ static const struct nla_policy tcf_tfilter_dump_policy[TCA_MAX + 1] = {
 	[TCA_DUMP_FLAGS] = NLA_POLICY_BITFIELD32(TCA_DUMP_FLAGS_TERSE),
 };
 
-/* called with RTNL */
+ 
 static int tc_dump_tfilter(struct sk_buff *skb, struct netlink_callback *cb)
 {
 	struct tcf_chain *chain, *chain_prev;
@@ -2748,12 +2653,7 @@ static int tc_dump_tfilter(struct sk_buff *skb, struct netlink_callback *cb)
 		block = tcf_block_refcnt_get(net, tcm->tcm_block_index);
 		if (!block)
 			goto out;
-		/* If we work with block index, q is NULL and parent value
-		 * will never be used in the following code. The check
-		 * in tcf_fill_node prevents it. However, compiler does not
-		 * see that far, so set parent to zero to silence the warning
-		 * about parent being uninitialized.
-		 */
+		 
 		parent = 0;
 	} else {
 		const struct Qdisc_class_ops *cops;
@@ -2813,7 +2713,7 @@ static int tc_dump_tfilter(struct sk_buff *skb, struct netlink_callback *cb)
 	cb->args[0] = index;
 
 out:
-	/* If we did no progress, the error (EMSGSIZE) is real */
+	 
 	if (skb->len == 0 && err)
 		return err;
 	return skb->len;
@@ -2938,7 +2838,7 @@ static int tc_chain_tmplt_add(struct tcf_chain *chain, struct net *net,
 	char name[IFNAMSIZ];
 	void *tmplt_priv;
 
-	/* If kind is not set, user did not specify template. */
+	 
 	if (!tca[TCA_KIND])
 		return 0;
 
@@ -2969,7 +2869,7 @@ static int tc_chain_tmplt_add(struct tcf_chain *chain, struct net *net,
 static void tc_chain_tmplt_del(const struct tcf_proto_ops *tmplt_ops,
 			       void *tmplt_priv)
 {
-	/* If template ops are set, no work to do for us. */
+	 
 	if (!tmplt_ops)
 		return;
 
@@ -2977,7 +2877,7 @@ static void tc_chain_tmplt_del(const struct tcf_proto_ops *tmplt_ops,
 	module_put(tmplt_ops->owner);
 }
 
-/* Add/delete/get a chain */
+ 
 
 static int tc_ctl_chain(struct sk_buff *skb, struct nlmsghdr *n,
 			struct netlink_ext_ack *extack)
@@ -3021,9 +2921,7 @@ replay:
 	if (n->nlmsg_type == RTM_NEWCHAIN) {
 		if (chain) {
 			if (tcf_chain_held_by_acts_only(chain)) {
-				/* The chain exists only because there is
-				 * some action referencing it.
-				 */
+				 
 				tcf_chain_hold(chain);
 			} else {
 				NL_SET_ERR_MSG(extack, "Filter chain already exists");
@@ -3053,11 +2951,7 @@ replay:
 	}
 
 	if (n->nlmsg_type == RTM_NEWCHAIN) {
-		/* Modifying chain requires holding parent block lock. In case
-		 * the chain was successfully added, take a reference to the
-		 * chain. This ensures that an empty chain does not disappear at
-		 * the end of this function.
-		 */
+		 
 		tcf_chain_hold(chain);
 		chain->explicitly_created = true;
 	}
@@ -3077,11 +2971,9 @@ replay:
 	case RTM_DELCHAIN:
 		tfilter_notify_chain(net, skb, block, q, parent, n,
 				     chain, RTM_DELTFILTER, extack);
-		/* Flush the chain first as the user requested chain removal. */
+		 
 		tcf_chain_flush(chain, true);
-		/* In case the chain was successfully deleted, put a reference
-		 * to the chain previously taken during addition.
-		 */
+		 
 		tcf_chain_put_explicitly_created(chain);
 		break;
 	case RTM_GETCHAIN:
@@ -3101,7 +2993,7 @@ errout:
 errout_block:
 	tcf_block_release(q, block, true);
 	if (err == -EAGAIN)
-		/* Replay the request. */
+		 
 		goto replay;
 	return err;
 
@@ -3110,7 +3002,7 @@ errout_block_locked:
 	goto errout_block;
 }
 
-/* called with RTNL */
+ 
 static int tc_dump_chain(struct sk_buff *skb, struct netlink_callback *cb)
 {
 	struct net *net = sock_net(skb->sk);
@@ -3198,7 +3090,7 @@ static int tc_dump_chain(struct sk_buff *skb, struct netlink_callback *cb)
 	cb->args[0] = index;
 
 out:
-	/* If we did no progress, the error (EMSGSIZE) is real */
+	 
 	if (skb->len == 0 && err)
 		return err;
 	return skb->len;
@@ -3214,9 +3106,7 @@ int tcf_exts_init_ex(struct tcf_exts *exts, struct net *net, int action,
 	exts->type = 0;
 	exts->nr_actions = 0;
 	exts->miss_cookie_node = NULL;
-	/* Note: we do not own yet a reference on net.
-	 * This reference might be taken later from tcf_exts_get_net().
-	 */
+	 
 	exts->net = net;
 	exts->actions = kcalloc(TCA_ACT_MAX_PRIO, sizeof(struct tc_action *),
 				GFP_KERNEL);
@@ -3350,11 +3240,7 @@ int tcf_exts_dump(struct sk_buff *skb, struct tcf_exts *exts)
 	struct nlattr *nest;
 
 	if (exts->action && tcf_exts_has_actions(exts)) {
-		/*
-		 * again for backward compatible mode - we want
-		 * to work with both old and new modes of entering
-		 * tc data even if iproute2  was newer - jhs
-		 */
+		 
 		if (exts->type != TCA_OLD_COMPAT) {
 			nest = nla_nest_start_noflag(skb, exts->action);
 			if (nest == NULL)
@@ -3499,10 +3385,7 @@ retry:
 	if (take_rtnl)
 		rtnl_lock();
 	down_read(&block->cb_lock);
-	/* Need to obtain rtnl lock if block is bound to devs that require it.
-	 * In block bind code cb_lock is obtained while holding rtnl, so we must
-	 * obtain the locks in same order here.
-	 */
+	 
 	if (!rtnl_held && !take_rtnl && block->lockeddevcnt) {
 		up_read(&block->cb_lock);
 		take_rtnl = true;
@@ -3518,11 +3401,7 @@ retry:
 }
 EXPORT_SYMBOL(tc_setup_cb_call);
 
-/* Non-destructive filter add. If filter that wasn't already in hardware is
- * successfully offloaded, increment block offloads counter. On failure,
- * previously offloaded filter is considered to be intact and offloads counter
- * is not decremented.
- */
+ 
 
 int tc_setup_cb_add(struct tcf_block *block, struct tcf_proto *tp,
 		    enum tc_setup_type type, void *type_data, bool err_stop,
@@ -3535,17 +3414,14 @@ retry:
 	if (take_rtnl)
 		rtnl_lock();
 	down_read(&block->cb_lock);
-	/* Need to obtain rtnl lock if block is bound to devs that require it.
-	 * In block bind code cb_lock is obtained while holding rtnl, so we must
-	 * obtain the locks in same order here.
-	 */
+	 
 	if (!rtnl_held && !take_rtnl && block->lockeddevcnt) {
 		up_read(&block->cb_lock);
 		take_rtnl = true;
 		goto retry;
 	}
 
-	/* Make sure all netdevs sharing this block are offload-capable. */
+	 
 	if (block->nooffloaddevcnt && err_stop) {
 		ok_count = -EOPNOTSUPP;
 		goto err_unlock;
@@ -3568,11 +3444,7 @@ err_unlock:
 }
 EXPORT_SYMBOL(tc_setup_cb_add);
 
-/* Destructive filter replace. If filter that wasn't already in hardware is
- * successfully offloaded, increment block offload counter. On failure,
- * previously offloaded filter is considered to be destroyed and offload counter
- * is decremented.
- */
+ 
 
 int tc_setup_cb_replace(struct tcf_block *block, struct tcf_proto *tp,
 			enum tc_setup_type type, void *type_data, bool err_stop,
@@ -3587,17 +3459,14 @@ retry:
 	if (take_rtnl)
 		rtnl_lock();
 	down_read(&block->cb_lock);
-	/* Need to obtain rtnl lock if block is bound to devs that require it.
-	 * In block bind code cb_lock is obtained while holding rtnl, so we must
-	 * obtain the locks in same order here.
-	 */
+	 
 	if (!rtnl_held && !take_rtnl && block->lockeddevcnt) {
 		up_read(&block->cb_lock);
 		take_rtnl = true;
 		goto retry;
 	}
 
-	/* Make sure all netdevs sharing this block are offload-capable. */
+	 
 	if (block->nooffloaddevcnt && err_stop) {
 		ok_count = -EOPNOTSUPP;
 		goto err_unlock;
@@ -3624,9 +3493,7 @@ err_unlock:
 }
 EXPORT_SYMBOL(tc_setup_cb_replace);
 
-/* Destroy filter and decrement block offload counter, if filter was previously
- * offloaded.
- */
+ 
 
 int tc_setup_cb_destroy(struct tcf_block *block, struct tcf_proto *tp,
 			enum tc_setup_type type, void *type_data, bool err_stop,
@@ -3639,10 +3506,7 @@ retry:
 	if (take_rtnl)
 		rtnl_lock();
 	down_read(&block->cb_lock);
-	/* Need to obtain rtnl lock if block is bound to devs that require it.
-	 * In block bind code cb_lock is obtained while holding rtnl, so we must
-	 * obtain the locks in same order here.
-	 */
+	 
 	if (!rtnl_held && !take_rtnl && block->lockeddevcnt) {
 		up_read(&block->cb_lock);
 		take_rtnl = true;
@@ -3883,7 +3747,7 @@ int tcf_qevent_validate_change(struct tcf_qevent *qe, struct nlattr *block_index
 	if (err)
 		return err;
 
-	/* Bounce newly-configured block or change in block. */
+	 
 	if (block_index != qe->info.block_index) {
 		NL_SET_ERR_MSG(extack, "Change of blocks is not supported");
 		return -EINVAL;

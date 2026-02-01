@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Mac80211 power management API for ST-Ericsson CW1200 drivers
- *
- * Copyright (c) 2011, ST-Ericsson
- * Author: Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/if_ether.h>
@@ -18,13 +13,13 @@
 
 struct cw1200_udp_port_filter {
 	struct wsm_udp_port_filter_hdr hdr;
-	/* Up to 4 filters are allowed. */
+	 
 	struct wsm_udp_port_filter filters[WSM_MAX_FILTER_ELEMENTS];
 } __packed;
 
 struct cw1200_ether_type_filter {
 	struct wsm_ether_type_filter_hdr hdr;
-	/* Up to 4 filters are allowed. */
+	 
 	struct wsm_ether_type_filter filters[WSM_MAX_FILTER_ELEMENTS];
 } __packed;
 
@@ -34,12 +29,12 @@ static struct cw1200_udp_port_filter cw1200_udp_port_filter_on = {
 		[0] = {
 			.action = WSM_FILTER_ACTION_FILTER_OUT,
 			.type = WSM_FILTER_PORT_TYPE_DST,
-			.port = __cpu_to_le16(67), /* DHCP Bootps */
+			.port = __cpu_to_le16(67),  
 		},
 		[1] = {
 			.action = WSM_FILTER_ACTION_FILTER_OUT,
 			.type = WSM_FILTER_PORT_TYPE_DST,
-			.port = __cpu_to_le16(68), /* DHCP Bootpc */
+			.port = __cpu_to_le16(68),  
 		},
 	}
 };
@@ -78,7 +73,7 @@ static struct wsm_ether_type_filter_hdr cw1200_ether_type_filter_off = {
 	.num = 0,
 };
 
-/* private */
+ 
 struct cw1200_suspend_state {
 	unsigned long bss_loss_tmo;
 	unsigned long join_tmo;
@@ -90,7 +85,7 @@ struct cw1200_suspend_state {
 
 static void cw1200_pm_stay_awake_tmo(struct timer_list *unused)
 {
-	/* XXX what's the point of this ? */
+	 
 }
 
 int cw1200_pm_init(struct cw1200_pm_state *pm,
@@ -124,7 +119,7 @@ static long cw1200_suspend_work(struct delayed_work *work)
 	int ret = cancel_delayed_work(work);
 	long tmo;
 	if (ret > 0) {
-		/* Timer is pending */
+		 
 		tmo = work->timer.expires - jiffies;
 		if (tmo < 0)
 			tmo = 0;
@@ -167,51 +162,46 @@ int cw1200_wow_suspend(struct ieee80211_hw *hw, struct cfg80211_wowlan *wowlan)
 	if (ret)
 		return -EAGAIN;
 
-	/* Do not suspend when datapath is not idle */
+	 
 	if (priv->tx_queue_stats.num_queued)
 		return -EBUSY;
 
-	/* Make sure there is no configuration requests in progress. */
+	 
 	if (!mutex_trylock(&priv->conf_mutex))
 		return -EBUSY;
 
-	/* Ensure pending operations are done.
-	 * Note also that wow_suspend must return in ~2.5sec, before
-	 * watchdog is triggered.
-	 */
+	 
 	if (priv->channel_switch_in_progress)
 		goto revert1;
 
-	/* Do not suspend when join is pending */
+	 
 	if (priv->join_pending)
 		goto revert1;
 
-	/* Do not suspend when scanning */
+	 
 	if (down_trylock(&priv->scan.lock))
 		goto revert1;
 
-	/* Lock TX. */
+	 
 	wsm_lock_tx_async(priv);
 
-	/* Wait to avoid possible race with bh code.
-	 * But do not wait too long...
-	 */
+	 
 	if (wait_event_timeout(priv->bh_evt_wq,
 			       !priv->hw_bufs_used, HZ / 10) <= 0)
 		goto revert2;
 
-	/* Set UDP filter */
+	 
 	wsm_set_udp_port_filter(priv, &cw1200_udp_port_filter_on.hdr);
 
-	/* Set ethernet frame type filter */
+	 
 	wsm_set_ether_type_filter(priv, &cw1200_ether_type_filter_on.hdr);
 
-	/* Allocate state */
+	 
 	state = kzalloc(sizeof(struct cw1200_suspend_state), GFP_KERNEL);
 	if (!state)
 		goto revert3;
 
-	/* Change to legacy PS while going to suspend */
+	 
 	if (!priv->vif->p2p &&
 	    priv->join_status == CW1200_JOIN_STATUS_STA &&
 	    priv->powersave_mode.mode != WSM_PSM_PS) {
@@ -224,7 +214,7 @@ int cw1200_wow_suspend(struct ieee80211_hw *hw, struct cfg80211_wowlan *wowlan)
 		}
 	}
 
-	/* Store delayed work states. */
+	 
 	state->bss_loss_tmo =
 		cw1200_suspend_work(&priv->bss_loss_work);
 	state->join_tmo =
@@ -237,7 +227,7 @@ int cw1200_wow_suspend(struct ieee80211_hw *hw, struct cfg80211_wowlan *wowlan)
 	cancel_delayed_work_sync(&priv->clear_recent_scan_work);
 	atomic_set(&priv->recent_scan, 0);
 
-	/* Enable beacon skipping */
+	 
 	if (priv->join_status == CW1200_JOIN_STATUS_STA &&
 	    priv->join_dtim_period &&
 	    !priv->has_multicast_subscription) {
@@ -247,7 +237,7 @@ int cw1200_wow_suspend(struct ieee80211_hw *hw, struct cfg80211_wowlan *wowlan)
 					     CW1200_BEACON_SKIPPING_MULTIPLIER * priv->join_dtim_period);
 	}
 
-	/* Stop serving thread */
+	 
 	if (cw1200_bh_suspend(priv))
 		goto revert5;
 
@@ -255,10 +245,10 @@ int cw1200_wow_suspend(struct ieee80211_hw *hw, struct cfg80211_wowlan *wowlan)
 	if (ret)
 		goto revert6;
 
-	/* Store suspend state */
+	 
 	pm_state->suspend_state = state;
 
-	/* Enable IRQ wake */
+	 
 	ret = priv->hwbus_ops->power_mgmt(priv->hwbus_priv, true);
 	if (ret) {
 		wiphy_err(priv->hw->wiphy,
@@ -267,7 +257,7 @@ int cw1200_wow_suspend(struct ieee80211_hw *hw, struct cfg80211_wowlan *wowlan)
 		return -EBUSY;
 	}
 
-	/* Force resume if event is coming from the device. */
+	 
 	if (atomic_read(&priv->bh_rx)) {
 		cw1200_wow_resume(hw);
 		return -EAGAIN;
@@ -308,19 +298,16 @@ int cw1200_wow_resume(struct ieee80211_hw *hw)
 	state = pm_state->suspend_state;
 	pm_state->suspend_state = NULL;
 
-	/* Disable IRQ wake */
+	 
 	priv->hwbus_ops->power_mgmt(priv->hwbus_priv, false);
 
-	/* Scan.lock must be released before BH is resumed other way
-	 * in case when BSS_LOST command arrived the processing of the
-	 * command will be delayed.
-	 */
+	 
 	up(&priv->scan.lock);
 
-	/* Resume BH thread */
+	 
 	WARN_ON(cw1200_bh_resume(priv));
 
-	/* Restores previous PS mode */
+	 
 	if (!priv->vif->p2p && priv->join_status == CW1200_JOIN_STATUS_STA) {
 		priv->powersave_mode.mode = state->prev_ps_mode;
 		cw1200_set_pm(priv, &priv->powersave_mode);
@@ -334,7 +321,7 @@ int cw1200_wow_resume(struct ieee80211_hw *hw)
 		state->beacon_skipping = false;
 	}
 
-	/* Resume delayed work */
+	 
 	cw1200_resume_work(priv, &priv->bss_loss_work,
 			   state->bss_loss_tmo);
 	cw1200_resume_work(priv, &priv->join_timeout,
@@ -344,19 +331,19 @@ int cw1200_wow_resume(struct ieee80211_hw *hw)
 	cw1200_resume_work(priv, &priv->link_id_gc_work,
 			   state->link_id_gc);
 
-	/* Remove UDP port filter */
+	 
 	wsm_set_udp_port_filter(priv, &cw1200_udp_port_filter_off);
 
-	/* Remove ethernet frame type filter */
+	 
 	wsm_set_ether_type_filter(priv, &cw1200_ether_type_filter_off);
 
-	/* Unlock datapath */
+	 
 	wsm_unlock_tx(priv);
 
-	/* Unlock configuration mutex */
+	 
 	mutex_unlock(&priv->conf_mutex);
 
-	/* Free memory */
+	 
 	kfree(state);
 
 	return 0;

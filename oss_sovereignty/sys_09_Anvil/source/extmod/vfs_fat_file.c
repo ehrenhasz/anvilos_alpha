@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include "py/mpconfig.h"
 #if MICROPY_VFS && MICROPY_VFS_FAT
@@ -35,7 +11,7 @@
 #include "lib/oofatfs/ff.h"
 #include "extmod/vfs_fat.h"
 
-// this table converts from FRESULT to POSIX errno
+
 const byte fresult_to_errno_table[20] = {
     [FR_OK] = 0,
     [FR_DISK_ERR] = MP_EIO,
@@ -89,7 +65,7 @@ static mp_uint_t file_obj_write(mp_obj_t self_in, const void *buf, mp_uint_t siz
         return MP_STREAM_ERROR;
     }
     if (sz_out != size) {
-        // The FatFS documentation says that this means disk full.
+        
         *errcode = MP_ENOSPC;
         return MP_STREAM_ERROR;
     }
@@ -103,15 +79,15 @@ static mp_uint_t file_obj_ioctl(mp_obj_t o_in, mp_uint_t request, uintptr_t arg,
         struct mp_stream_seek_t *s = (struct mp_stream_seek_t *)(uintptr_t)arg;
 
         switch (s->whence) {
-            case 0: // SEEK_SET
+            case 0: 
                 f_lseek(&self->fp, s->offset);
                 break;
 
-            case 1: // SEEK_CUR
+            case 1: 
                 f_lseek(&self->fp, f_tell(&self->fp) + s->offset);
                 break;
 
-            case 2: // SEEK_END
+            case 2: 
                 f_lseek(&self->fp, f_size(&self->fp) + s->offset);
                 break;
         }
@@ -128,7 +104,7 @@ static mp_uint_t file_obj_ioctl(mp_obj_t o_in, mp_uint_t request, uintptr_t arg,
         return 0;
 
     } else if (request == MP_STREAM_CLOSE) {
-        // if fs==NULL then the file is closed and in that case this method is a no-op
+        
         if (self->fp.obj.fs != NULL) {
             FRESULT res = f_close(&self->fp);
             if (res != FR_OK) {
@@ -144,7 +120,7 @@ static mp_uint_t file_obj_ioctl(mp_obj_t o_in, mp_uint_t request, uintptr_t arg,
     }
 }
 
-// TODO gc hook to close the file if not already closed
+
 
 static const mp_rom_map_elem_t vfs_fat_rawfile_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_read), MP_ROM_PTR(&mp_stream_read_obj) },
@@ -194,14 +170,14 @@ MP_DEFINE_CONST_OBJ_TYPE(
     locals_dict, &vfs_fat_rawfile_locals_dict
     );
 
-// Factory function for I/O stream classes
+
 static mp_obj_t fat_vfs_open(mp_obj_t self_in, mp_obj_t path_in, mp_obj_t mode_in) {
     fs_user_mount_t *self = MP_OBJ_TO_PTR(self_in);
 
     const mp_obj_type_t *type = &mp_type_vfs_fat_textio;
     int mode = 0;
     const char *mode_s = mp_obj_str_get_str(mode_in);
-    // TODO make sure only one of r, w, x, a, and b, t are specified
+    
     while (*mode_s) {
         switch (*mode_s++) {
             case 'r':
@@ -237,7 +213,7 @@ static mp_obj_t fat_vfs_open(mp_obj_t self_in, mp_obj_t path_in, mp_obj_t mode_i
         mp_raise_OSError(fresult_to_errno_table[res]);
     }
 
-    // for 'a' mode, we must begin at the end of the file
+    
     if ((mode & FA_OPEN_ALWAYS) != 0) {
         f_lseek(&o->fp, f_size(&o->fp));
     }
@@ -246,4 +222,4 @@ static mp_obj_t fat_vfs_open(mp_obj_t self_in, mp_obj_t path_in, mp_obj_t mode_i
 }
 MP_DEFINE_CONST_FUN_OBJ_3(fat_vfs_open_obj, fat_vfs_open);
 
-#endif // MICROPY_VFS && MICROPY_VFS_FAT
+#endif 

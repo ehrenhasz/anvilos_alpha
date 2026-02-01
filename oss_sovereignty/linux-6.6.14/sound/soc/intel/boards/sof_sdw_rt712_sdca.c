@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2023 Intel Corporation
 
-/*
- *  sof_sdw_rt712_sdca - Helpers to handle RT712-SDCA from generic machine driver
- */
+
+
+ 
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -19,12 +17,7 @@ static const struct snd_soc_dapm_widget rt712_spk_widgets[] = {
 	SND_SOC_DAPM_SPK("Speaker", NULL),
 };
 
-/*
- * dapm routes for rt712 spk will be registered dynamically according
- * to the number of rt712 spk used. The first two entries will be registered
- * for one codec case, and the last two entries are also registered
- * if two rt712s are used.
- */
+ 
 static const struct snd_soc_dapm_route rt712_spk_map[] = {
 	{ "Speaker", NULL, "rt712 SPOL" },
 	{ "Speaker", NULL, "rt712 SPOR" },

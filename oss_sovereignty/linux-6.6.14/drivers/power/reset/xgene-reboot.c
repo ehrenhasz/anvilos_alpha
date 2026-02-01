@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AppliedMicro X-Gene SoC Reboot Driver
- *
- * Copyright (c) 2013, Applied Micro Circuits Corporation
- * Author: Feng Kan <fkan@apm.com>
- * Author: Loc Ho <lho@apm.com>
- *
- * This driver provides system reboot functionality for APM X-Gene SoC.
- * For system shutdown, this is board specify. If a board designer
- * implements GPIO shutdown, use the gpio-poweroff.c driver.
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/io.h>
 #include <linux/notifier.h>
@@ -34,7 +24,7 @@ static int xgene_restart_handler(struct notifier_block *this,
 		container_of(this, struct xgene_reboot_context,
 			     restart_handler);
 
-	/* Issue the reboot */
+	 
 	writel(ctx->mask, ctx->csr);
 
 	mdelay(1000);

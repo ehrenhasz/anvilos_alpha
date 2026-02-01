@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2009, Oracle.  All rights reserved.
- *
- * Convert socket addresses to presentation addresses and universal
- * addresses, and vice versa.
- *
- * Universal addresses are introduced by RFC 1833 and further refined by
- * recent RFCs describing NFSv4.  The universal address format is part
- * of the external (network) interface provided by rpcbind version 3
- * and 4, and by NFSv4.  Such an address is a string containing a
- * presentation format IP address followed by a port number in
- * "hibyte.lobyte" format.
- *
- * IPv6 addresses can also include a scope ID, typically denoted by
- * a '%' followed by a device name or a non-negative integer.  Refer to
- * RFC 4291, Section 2.2 for details on IPv6 presentation formats.
- */
+
+ 
 
 #include <net/ipv6.h>
 #include <linux/sunrpc/addr.h>
@@ -31,35 +15,20 @@ static size_t rpc_ntop6_noscopeid(const struct sockaddr *sap,
 	const struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)sap;
 	const struct in6_addr *addr = &sin6->sin6_addr;
 
-	/*
-	 * RFC 4291, Section 2.2.2
-	 *
-	 * Shorthanded ANY address
-	 */
+	 
 	if (ipv6_addr_any(addr))
 		return snprintf(buf, buflen, "::");
 
-	/*
-	 * RFC 4291, Section 2.2.2
-	 *
-	 * Shorthanded loopback address
-	 */
+	 
 	if (ipv6_addr_loopback(addr))
 		return snprintf(buf, buflen, "::1");
 
-	/*
-	 * RFC 4291, Section 2.2.3
-	 *
-	 * Special presentation address format for mapped v4
-	 * addresses.
-	 */
+	 
 	if (ipv6_addr_v4mapped(addr))
 		return snprintf(buf, buflen, "::ffff:%pI4",
 					&addr->s6_addr32[3]);
 
-	/*
-	 * RFC 4291, Section 2.2.1
-	 */
+	 
 	return snprintf(buf, buflen, "%pI6c", addr);
 }
 
@@ -93,7 +62,7 @@ static size_t rpc_ntop6(const struct sockaddr *sap,
 	return len;
 }
 
-#else	/* !IS_ENABLED(CONFIG_IPV6) */
+#else	 
 
 static size_t rpc_ntop6_noscopeid(const struct sockaddr *sap,
 				  char *buf, const int buflen)
@@ -107,7 +76,7 @@ static size_t rpc_ntop6(const struct sockaddr *sap,
 	return 0;
 }
 
-#endif	/* !IS_ENABLED(CONFIG_IPV6) */
+#endif	 
 
 static int rpc_ntop4(const struct sockaddr *sap,
 		     char *buf, const size_t buflen)
@@ -117,15 +86,7 @@ static int rpc_ntop4(const struct sockaddr *sap,
 	return snprintf(buf, buflen, "%pI4", &sin->sin_addr);
 }
 
-/**
- * rpc_ntop - construct a presentation address in @buf
- * @sap: socket address
- * @buf: construction area
- * @buflen: size of @buf, in bytes
- *
- * Plants a %NUL-terminated string in @buf and returns the length
- * of the string, excluding the %NUL.  Otherwise zero is returned.
- */
+ 
 size_t rpc_ntop(const struct sockaddr *sap, char *buf, const size_t buflen)
 {
 	switch (sap->sa_family) {
@@ -226,21 +187,7 @@ static size_t rpc_pton6(struct net *net, const char *buf, const size_t buflen,
 }
 #endif
 
-/**
- * rpc_pton - Construct a sockaddr in @sap
- * @net: applicable network namespace
- * @buf: C string containing presentation format IP address
- * @buflen: length of presentation address in bytes
- * @sap: buffer into which to plant socket address
- * @salen: size of buffer in bytes
- *
- * Returns the size of the socket address if successful; otherwise
- * zero is returned.
- *
- * Plants a socket address in @sap and returns the size of the
- * socket address, if successful.  Returns zero if an error
- * occurred.
- */
+ 
 size_t rpc_pton(struct net *net, const char *buf, const size_t buflen,
 		struct sockaddr *sap, const size_t salen)
 {
@@ -253,15 +200,7 @@ size_t rpc_pton(struct net *net, const char *buf, const size_t buflen,
 }
 EXPORT_SYMBOL_GPL(rpc_pton);
 
-/**
- * rpc_sockaddr2uaddr - Construct a universal address string from @sap.
- * @sap: socket address
- * @gfp_flags: allocation mode
- *
- * Returns a %NUL-terminated string in dynamically allocated memory;
- * otherwise NULL is returned if an error occurred.  Caller must
- * free the returned string.
- */
+ 
 char *rpc_sockaddr2uaddr(const struct sockaddr *sap, gfp_t gfp_flags)
 {
 	char portbuf[RPCBIND_MAXUADDRPLEN];
@@ -293,20 +232,7 @@ char *rpc_sockaddr2uaddr(const struct sockaddr *sap, gfp_t gfp_flags)
 	return kstrdup(addrbuf, gfp_flags);
 }
 
-/**
- * rpc_uaddr2sockaddr - convert a universal address to a socket address.
- * @net: applicable network namespace
- * @uaddr: C string containing universal address to convert
- * @uaddr_len: length of universal address string
- * @sap: buffer into which to plant socket address
- * @salen: size of buffer
- *
- * @uaddr does not have to be '\0'-terminated, but kstrtou8() and
- * rpc_pton() require proper string termination to be successful.
- *
- * Returns the size of the socket address if successful; otherwise
- * zero is returned.
- */
+ 
 size_t rpc_uaddr2sockaddr(struct net *net, const char *uaddr,
 			  const size_t uaddr_len, struct sockaddr *sap,
 			  const size_t salen)

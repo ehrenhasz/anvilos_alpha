@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2018 Red Hat. All rights reserved.
- *
- * This file is released under the GPL.
- */
+
+ 
 
 #include <linux/device-mapper.h>
 #include <linux/module.h>
@@ -530,7 +526,7 @@ static void ssd_commit_flushed(struct dm_writecache *wc, bool wait_for_ios)
 		req.notify.fn = writecache_notify_io;
 		req.notify.context = &endio;
 
-		/* writing via async dm-io (implied by notify.fn above) won't return an error */
+		 
 		(void) dm_io(&req, 1, &region, NULL);
 		i = j;
 	}
@@ -769,9 +765,7 @@ static void writecache_wait_on_freelist(struct dm_writecache *wc)
 
 static void writecache_poison_lists(struct dm_writecache *wc)
 {
-	/*
-	 * Catch incorrect access to these values while the device is suspended.
-	 */
+	 
 	memset(&wc->tree, -1, sizeof(wc->tree));
 	wc->lru.next = LIST_POISON1;
 	wc->lru.prev = LIST_POISON2;
@@ -834,7 +828,7 @@ static void writecache_flush(struct dm_writecache *wc)
 
 	need_flush_after_free = false;
 	while (1) {
-		/* Free another committed entry with lower seq-count */
+		 
 		struct rb_node *rb_node = rb_prev(&e->rb_node);
 
 		if (rb_node) {
@@ -1210,23 +1204,7 @@ static int writecache_message(struct dm_target *ti, unsigned int argc, char **ar
 
 static void memcpy_flushcache_optimized(void *dest, void *source, size_t size)
 {
-	/*
-	 * clflushopt performs better with block size 1024, 2048, 4096
-	 * non-temporal stores perform better with block size 512
-	 *
-	 * block size   512             1024            2048            4096
-	 * movnti       496 MB/s        642 MB/s        725 MB/s        744 MB/s
-	 * clflushopt   373 MB/s        688 MB/s        1.1 GB/s        1.2 GB/s
-	 *
-	 * We see that movnti performs better for 512-byte blocks, and
-	 * clflushopt performs better for 1024-byte and larger blocks. So, we
-	 * prefer clflushopt for sizes >= 768.
-	 *
-	 * NOTE: this happens to be the case now (with dm-writecache's single
-	 * threaded model) but re-evaluate this once memcpy_flushcache() is
-	 * enabled to use movdir64b which might invalidate this performance
-	 * advantage seen with cache-allocating-writes plus flushing.
-	 */
+	 
 #ifdef CONFIG_X86
 	if (static_cpu_has(X86_FEATURE_CLFLUSHOPT) &&
 	    likely(boot_cpu_data.x86_clflush_size == 64) &&
@@ -1514,7 +1492,7 @@ static enum wc_map_op writecache_map_flush(struct dm_writecache *wc, struct bio 
 			return WC_MAP_REMAP_ORIGIN;
 		return WC_MAP_SUBMIT;
 	}
-	/* SSD: */
+	 
 	if (dm_bio_get_target_bio_nr(bio))
 		return WC_MAP_REMAP_ORIGIN;
 	wc->stats.flushes++;
@@ -1533,7 +1511,7 @@ static enum wc_map_op writecache_map_discard(struct dm_writecache *wc, struct bi
 		writecache_discard(wc, bio->bi_iter.bi_sector, bio_end_sector(bio));
 		return WC_MAP_REMAP_ORIGIN;
 	}
-	/* SSD: */
+	 
 	writecache_offload_bio(wc, bio);
 	return WC_MAP_RETURN;
 }
@@ -1586,7 +1564,7 @@ done:
 		return DM_MAPIO_REMAPPED;
 
 	case WC_MAP_REMAP:
-		/* make sure that writecache_end_io decrements bio_in_progress: */
+		 
 		bio->bi_private = (void *)1;
 		atomic_inc(&wc->bio_in_progress[bio_data_dir(bio)]);
 		wc_unlock(wc);
@@ -1951,7 +1929,7 @@ static void writecache_writeback(struct work_struct *work)
 	unsigned long n_walked;
 
 	if (!WC_MODE_PMEM(wc)) {
-		/* Wait for any active kcopyd work on behalf of ssd writeback */
+		 
 		dm_kcopyd_client_flush(wc->dm_kcopyd);
 	}
 
@@ -2060,8 +2038,8 @@ restart:
 			}
 
 			n_walked++;
-			//if (unlikely(n_walked > WRITEBACK_LATENCY) && likely(!wc->writeback_all))
-			//	break;
+			
+			
 
 			wc->writeback_size++;
 			list_move(&g->lru, &wbl.list);
@@ -2084,10 +2062,7 @@ restart:
 
 	if (!list_empty(&skipped)) {
 		list_splice_tail(&skipped, &wc->lru);
-		/*
-		 * If we didn't do any progress, we must wait until some
-		 * writeback finishes to avoid burning CPU in a loop
-		 */
+		 
 		if (unlikely(!wbl.size))
 			writecache_wait_for_writeback(wc);
 	}
@@ -2123,7 +2098,7 @@ static int calculate_memory_size(uint64_t device_size, unsigned int block_size,
 	while (1) {
 		if (!n_blocks)
 			return -ENOSPC;
-		/* Verify the following entries[n_blocks] won't overflow */
+		 
 		if (n_blocks >= ((size_t)-sizeof(struct wc_memory_superblock) /
 				 sizeof(struct wc_memory_entry)))
 			return -EFBIG;
@@ -2134,7 +2109,7 @@ static int calculate_memory_size(uint64_t device_size, unsigned int block_size,
 		n_blocks--;
 	}
 
-	/* check if the bit field overflows */
+	 
 	e.index = n_blocks;
 	if (e.index != n_blocks)
 		return -EFBIG;
@@ -2297,9 +2272,7 @@ static int writecache_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		goto bad;
 	}
 
-	/*
-	 * Parse the mode (pmem or ssd)
-	 */
+	 
 	string = dm_shift_arg(&as);
 	if (!string)
 		goto bad_arguments;
@@ -2311,11 +2284,7 @@ static int writecache_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		wc->pmem_mode = true;
 		wc->writeback_fua = true;
 #else
-		/*
-		 * If the architecture doesn't support persistent memory or
-		 * the kernel doesn't support any DAX drivers, this driver can
-		 * only be used in SSD-only mode.
-		 */
+		 
 		r = -EOPNOTSUPP;
 		ti->error = "Persistent memory or DAX not supported on this system";
 		goto bad;
@@ -2341,9 +2310,7 @@ static int writecache_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		}
 	}
 
-	/*
-	 * Parse the origin data device
-	 */
+	 
 	string = dm_shift_arg(&as);
 	if (!string)
 		goto bad_arguments;
@@ -2353,9 +2320,7 @@ static int writecache_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		goto bad;
 	}
 
-	/*
-	 * Parse cache data device (be it pmem or ssd)
-	 */
+	 
 	string = dm_shift_arg(&as);
 	if (!string)
 		goto bad_arguments;
@@ -2367,9 +2332,7 @@ static int writecache_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	}
 	wc->memory_map_size = bdev_nr_bytes(wc->ssd_dev->bdev);
 
-	/*
-	 * Parse the cache block size
-	 */
+	 
 	string = dm_shift_arg(&as);
 	if (!string)
 		goto bad_arguments;
@@ -2392,9 +2355,7 @@ static int writecache_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	wc->autocommit_blocks = !WC_MODE_PMEM(wc) ? AUTOCOMMIT_BLOCKS_SSD : AUTOCOMMIT_BLOCKS_PMEM;
 	wc->autocommit_jiffies = msecs_to_jiffies(AUTOCOMMIT_MSEC);
 
-	/*
-	 * Parse optional arguments
-	 */
+	 
 	r = dm_read_arg_group(_args, &as, &opt_params, &ti->error);
 	if (r)
 		goto bad;
@@ -2540,7 +2501,7 @@ invalid_optional:
 
 		n_bitmap_bits = (((uint64_t)n_metadata_blocks << wc->block_size_bits) +
 				 BITMAP_GRANULARITY - 1) / BITMAP_GRANULARITY;
-		/* this is limitation of test_bit functions */
+		 
 		if (n_bitmap_bits > 1U << 31) {
 			r = -EFBIG;
 			ti->error = "Invalid device size";

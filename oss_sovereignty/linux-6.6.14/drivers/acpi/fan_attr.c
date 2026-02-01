@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  fan_attr.c - Create extra attributes for ACPI Fan driver
- *
- *  Copyright (C) 2001, 2002 Andy Grover <andrew.grover@intel.com>
- *  Copyright (C) 2001, 2002 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
- *  Copyright (C) 2022 Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -84,7 +78,7 @@ int acpi_fan_create_attributes(struct acpi_device *device)
 	if (status)
 		return status;
 
-	/* _FST is present if we are here */
+	 
 	sysfs_attr_init(&fan->fst_speed.attr);
 	fan->fst_speed.show = show_fan_speed;
 	fan->fst_speed.store = NULL;

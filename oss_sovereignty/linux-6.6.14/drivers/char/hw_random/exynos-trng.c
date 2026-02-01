@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * RNG driver for Exynos TRNGs
- *
- * Author: Łukasz Stelmach <l.stelmach@samsung.com>
- *
- * Copyright 2017 (c) Samsung Electronics Software, Inc.
- *
- * Based on the Exynos PRNG driver drivers/crypto/exynos-rng by
- * Krzysztof Kozłowski <krzk@kernel.org>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/crypto.h>
@@ -81,10 +72,7 @@ static int exynos_trng_init(struct hwrng *rng)
 
 	sss_rate = clk_get_rate(trng->clk);
 
-	/*
-	 * For most TRNG circuits the clock frequency of under 500 kHz
-	 * is safe.
-	 */
+	 
 	val = sss_rate / (EXYNOS_TRNG_CLOCK_RATE * 2);
 	if (val > 0x7fff) {
 		dev_err(trng->dev, "clock divider too large: %d", val);
@@ -93,14 +81,11 @@ static int exynos_trng_init(struct hwrng *rng)
 	val = val << 1;
 	writel_relaxed(val, trng->mem + EXYNOS_TRNG_CLKDIV);
 
-	/* Enable the generator. */
+	 
 	val = EXYNOS_TRNG_CTRL_RNGEN;
 	writel_relaxed(val, trng->mem + EXYNOS_TRNG_CTRL);
 
-	/*
-	 * Disable post-processing. /dev/hwrng is supposed to deliver
-	 * unprocessed data.
-	 */
+	 
 	writel_relaxed(0, trng->mem + EXYNOS_TRNG_POST_CTRL);
 
 	return 0;

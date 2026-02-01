@@ -1,30 +1,22 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* speakup.c
- * review functions for the speakup screen review package.
- * originally written by: Kirk Reiser and Andy Berdan.
- *
- * extensively modified by David Borowski.
- *
- ** Copyright (C) 1998  Kirk Reiser.
- *  Copyright (C) 2003  David Borowski.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/vt.h>
 #include <linux/tty.h>
-#include <linux/mm.h>		/* __get_free_page() and friends */
+#include <linux/mm.h>		 
 #include <linux/vt_kern.h>
 #include <linux/ctype.h>
 #include <linux/selection.h>
 #include <linux/unistd.h>
 #include <linux/jiffies.h>
 #include <linux/kthread.h>
-#include <linux/keyboard.h>	/* for KT_SHIFT */
-#include <linux/kbd_kern.h>	/* for vc_kbd_* and friends */
+#include <linux/keyboard.h>	 
+#include <linux/kbd_kern.h>	 
 #include <linux/input.h>
 #include <linux/kmod.h>
 
-/* speakup_*_selection */
+ 
 #include <linux/module.h>
 #include <linux/sched.h>
 #include <linux/slab.h>
@@ -34,7 +26,7 @@
 #include <linux/spinlock.h>
 #include <linux/notifier.h>
 
-#include <linux/uaccess.h>	/* copy_from|to|user() and others */
+#include <linux/uaccess.h>	 
 
 #include "spk_priv.h"
 #include "speakup.h"
@@ -91,7 +83,7 @@ const u_char spk_key_defaults[] = {
 #include "speakupmap.h"
 };
 
-/* cursor track modes, must be ordered same as cursor_msgs in enum msg_index_t */
+ 
 enum cursor_track {
 	CT_Off = 0,
 	CT_On,
@@ -101,7 +93,7 @@ enum cursor_track {
 	read_all_mode = CT_Max,
 };
 
-/* Speakup Cursor Track Variables */
+ 
 static enum cursor_track cursor_track = 1, prev_cursor_track = 1;
 
 static struct tty_struct *tty;
@@ -116,117 +108,111 @@ static char *phonetic[] = {
 	"x ray", "yankee", "zulu"
 };
 
-/* array of 256 char pointers (one for each character description)
- * initialized to default_chars and user selectable via
- * /proc/speakup/characters
- */
+ 
 char *spk_characters[256];
 
 char *spk_default_chars[256] = {
-/*000*/ "null", "^a", "^b", "^c", "^d", "^e", "^f", "^g",
-/*008*/ "^h", "^i", "^j", "^k", "^l", "^m", "^n", "^o",
-/*016*/ "^p", "^q", "^r", "^s", "^t", "^u", "^v", "^w",
-/*024*/ "^x", "^y", "^z", "control", "control", "control", "control",
+  "null", "^a", "^b", "^c", "^d", "^e", "^f", "^g",
+  "^h", "^i", "^j", "^k", "^l", "^m", "^n", "^o",
+  "^p", "^q", "^r", "^s", "^t", "^u", "^v", "^w",
+  "^x", "^y", "^z", "control", "control", "control", "control",
 	    "control",
-/*032*/ "space", "bang!", "quote", "number", "dollar", "percent", "and",
+  "space", "bang!", "quote", "number", "dollar", "percent", "and",
 	    "tick",
-/*040*/ "left paren", "right paren", "star", "plus", "comma", "dash",
+  "left paren", "right paren", "star", "plus", "comma", "dash",
 	    "dot",
 	"slash",
-/*048*/ "zero", "one", "two", "three", "four", "five", "six", "seven",
+  "zero", "one", "two", "three", "four", "five", "six", "seven",
 	"eight", "nine",
-/*058*/ "colon", "semmy", "less", "equals", "greater", "question", "at",
-/*065*/ "EIGH", "B", "C", "D", "E", "F", "G",
-/*072*/ "H", "I", "J", "K", "L", "M", "N", "O",
-/*080*/ "P", "Q", "R", "S", "T", "U", "V", "W", "X",
-/*089*/ "Y", "ZED", "left bracket", "backslash", "right bracket",
+  "colon", "semmy", "less", "equals", "greater", "question", "at",
+  "EIGH", "B", "C", "D", "E", "F", "G",
+  "H", "I", "J", "K", "L", "M", "N", "O",
+  "P", "Q", "R", "S", "T", "U", "V", "W", "X",
+  "Y", "ZED", "left bracket", "backslash", "right bracket",
 	    "caret",
 	"line",
-/*096*/ "accent", "a", "b", "c", "d", "e", "f", "g",
-/*104*/ "h", "i", "j", "k", "l", "m", "n", "o",
-/*112*/ "p", "q", "r", "s", "t", "u", "v", "w",
-/*120*/ "x", "y", "zed", "left brace", "bar", "right brace", "tihlduh",
-/*127*/ "del", "control", "control", "control", "control", "control",
+  "accent", "a", "b", "c", "d", "e", "f", "g",
+  "h", "i", "j", "k", "l", "m", "n", "o",
+  "p", "q", "r", "s", "t", "u", "v", "w",
+  "x", "y", "zed", "left brace", "bar", "right brace", "tihlduh",
+  "del", "control", "control", "control", "control", "control",
 	    "control", "control", "control", "control", "control",
-/*138*/ "control", "control", "control", "control", "control",
+  "control", "control", "control", "control", "control",
 	    "control", "control", "control", "control", "control",
 	    "control", "control",
-/*150*/ "control", "control", "control", "control", "control",
+  "control", "control", "control", "control", "control",
 	    "control", "control", "control", "control", "control",
-/*160*/ "nbsp", "inverted bang",
-/*162*/ "cents", "pounds", "currency", "yen", "broken bar", "section",
-/*168*/ "diaeresis", "copyright", "female ordinal", "double left angle",
-/*172*/ "not", "soft hyphen", "registered", "macron",
-/*176*/ "degrees", "plus or minus", "super two", "super three",
-/*180*/ "acute accent", "micro", "pilcrow", "middle dot",
-/*184*/ "cedilla", "super one", "male ordinal", "double right angle",
-/*188*/ "one quarter", "one half", "three quarters",
+  "nbsp", "inverted bang",
+  "cents", "pounds", "currency", "yen", "broken bar", "section",
+  "diaeresis", "copyright", "female ordinal", "double left angle",
+  "not", "soft hyphen", "registered", "macron",
+  "degrees", "plus or minus", "super two", "super three",
+  "acute accent", "micro", "pilcrow", "middle dot",
+  "cedilla", "super one", "male ordinal", "double right angle",
+  "one quarter", "one half", "three quarters",
 	    "inverted question",
-/*192*/ "A GRAVE", "A ACUTE", "A CIRCUMFLEX", "A TILDE", "A OOMLAUT",
+  "A GRAVE", "A ACUTE", "A CIRCUMFLEX", "A TILDE", "A OOMLAUT",
 	    "A RING",
-/*198*/ "AE", "C CIDELLA", "E GRAVE", "E ACUTE", "E CIRCUMFLEX",
+  "AE", "C CIDELLA", "E GRAVE", "E ACUTE", "E CIRCUMFLEX",
 	    "E OOMLAUT",
-/*204*/ "I GRAVE", "I ACUTE", "I CIRCUMFLEX", "I OOMLAUT", "ETH",
+  "I GRAVE", "I ACUTE", "I CIRCUMFLEX", "I OOMLAUT", "ETH",
 	    "N TILDE",
-/*210*/ "O GRAVE", "O ACUTE", "O CIRCUMFLEX", "O TILDE", "O OOMLAUT",
-/*215*/ "multiplied by", "O STROKE", "U GRAVE", "U ACUTE",
+  "O GRAVE", "O ACUTE", "O CIRCUMFLEX", "O TILDE", "O OOMLAUT",
+  "multiplied by", "O STROKE", "U GRAVE", "U ACUTE",
 	    "U CIRCUMFLEX",
-/*220*/ "U OOMLAUT", "Y ACUTE", "THORN", "sharp s", "a grave",
-/*225*/ "a acute", "a circumflex", "a tilde", "a oomlaut", "a ring",
-/*230*/ "ae", "c cidella", "e grave", "e acute",
-/*234*/ "e circumflex", "e oomlaut", "i grave", "i acute",
+  "U OOMLAUT", "Y ACUTE", "THORN", "sharp s", "a grave",
+  "a acute", "a circumflex", "a tilde", "a oomlaut", "a ring",
+  "ae", "c cidella", "e grave", "e acute",
+  "e circumflex", "e oomlaut", "i grave", "i acute",
 	    "i circumflex",
-/*239*/ "i oomlaut", "eth", "n tilde", "o grave", "o acute",
+  "i oomlaut", "eth", "n tilde", "o grave", "o acute",
 	    "o circumflex",
-/*245*/ "o tilde", "o oomlaut", "divided by", "o stroke", "u grave",
+  "o tilde", "o oomlaut", "divided by", "o stroke", "u grave",
 	    "u acute",
-/* 251 */ "u circumflex", "u oomlaut", "y acute", "thorn", "y oomlaut"
+  "u circumflex", "u oomlaut", "y acute", "thorn", "y oomlaut"
 };
 
-/* array of 256 u_short (one for each character)
- * initialized to default_chartab and user selectable via
- * /sys/module/speakup/parameters/chartab
- */
+ 
 u_short spk_chartab[256];
 
 static u_short default_chartab[256] = {
-	B_CTL, B_CTL, B_CTL, B_CTL, B_CTL, B_CTL, B_CTL, B_CTL,	/* 0-7 */
-	B_CTL, B_CTL, A_CTL, B_CTL, B_CTL, B_CTL, B_CTL, B_CTL,	/* 8-15 */
-	B_CTL, B_CTL, B_CTL, B_CTL, B_CTL, B_CTL, B_CTL, B_CTL,	/*16-23 */
-	B_CTL, B_CTL, B_CTL, B_CTL, B_CTL, B_CTL, B_CTL, B_CTL,	/* 24-31 */
-	WDLM, A_PUNC, PUNC, PUNC, PUNC, PUNC, PUNC, A_PUNC,	/*  !"#$%&' */
-	PUNC, PUNC, PUNC, PUNC, A_PUNC, A_PUNC, A_PUNC, PUNC,	/* ()*+, -./ */
-	NUM, NUM, NUM, NUM, NUM, NUM, NUM, NUM,	/* 01234567 */
-	NUM, NUM, A_PUNC, PUNC, PUNC, PUNC, PUNC, A_PUNC,	/* 89:;<=>? */
-	PUNC, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP,	/* @ABCDEFG */
-	A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP,	/* HIJKLMNO */
-	A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP,	/* PQRSTUVW */
-	A_CAP, A_CAP, A_CAP, PUNC, PUNC, PUNC, PUNC, PUNC,	/* XYZ[\]^_ */
-	PUNC, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA,	/* `abcdefg */
-	ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA,	/* hijklmno */
-	ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA,	/* pqrstuvw */
-	ALPHA, ALPHA, ALPHA, PUNC, PUNC, PUNC, PUNC, 0,	/* xyz{|}~ */
-	B_CAPSYM, B_CAPSYM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, /* 128-134 */
-	B_SYM,	/* 135 */
-	B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, /* 136-142 */
-	B_CAPSYM,	/* 143 */
-	B_CAPSYM, B_CAPSYM, B_SYM, B_CAPSYM, B_SYM, B_SYM, B_SYM, /* 144-150 */
-	B_SYM,	/* 151 */
-	B_SYM, B_SYM, B_CAPSYM, B_CAPSYM, B_SYM, B_SYM, B_SYM, /*152-158 */
-	B_SYM,	/* 159 */
-	WDLM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, B_CAPSYM, /* 160-166 */
-	B_SYM,	/* 167 */
-	B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM,	/* 168-175 */
-	B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM,	/* 176-183 */
-	B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM,	/* 184-191 */
-	A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP,	/* 192-199 */
-	A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP,	/* 200-207 */
-	A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, B_SYM,	/* 208-215 */
-	A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, ALPHA,	/* 216-223 */
-	ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA,	/* 224-231 */
-	ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA,	/* 232-239 */
-	ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, B_SYM,	/* 240-247 */
-	ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA	/* 248-255 */
+	B_CTL, B_CTL, B_CTL, B_CTL, B_CTL, B_CTL, B_CTL, B_CTL,	 
+	B_CTL, B_CTL, A_CTL, B_CTL, B_CTL, B_CTL, B_CTL, B_CTL,	 
+	B_CTL, B_CTL, B_CTL, B_CTL, B_CTL, B_CTL, B_CTL, B_CTL,	 
+	B_CTL, B_CTL, B_CTL, B_CTL, B_CTL, B_CTL, B_CTL, B_CTL,	 
+	WDLM, A_PUNC, PUNC, PUNC, PUNC, PUNC, PUNC, A_PUNC,	 
+	PUNC, PUNC, PUNC, PUNC, A_PUNC, A_PUNC, A_PUNC, PUNC,	 
+	NUM, NUM, NUM, NUM, NUM, NUM, NUM, NUM,	 
+	NUM, NUM, A_PUNC, PUNC, PUNC, PUNC, PUNC, A_PUNC,	 
+	PUNC, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP,	 
+	A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP,	 
+	A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP,	 
+	A_CAP, A_CAP, A_CAP, PUNC, PUNC, PUNC, PUNC, PUNC,	 
+	PUNC, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA,	 
+	ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA,	 
+	ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA,	 
+	ALPHA, ALPHA, ALPHA, PUNC, PUNC, PUNC, PUNC, 0,	 
+	B_CAPSYM, B_CAPSYM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM,  
+	B_SYM,	 
+	B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM,  
+	B_CAPSYM,	 
+	B_CAPSYM, B_CAPSYM, B_SYM, B_CAPSYM, B_SYM, B_SYM, B_SYM,  
+	B_SYM,	 
+	B_SYM, B_SYM, B_CAPSYM, B_CAPSYM, B_SYM, B_SYM, B_SYM,  
+	B_SYM,	 
+	WDLM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, B_CAPSYM,  
+	B_SYM,	 
+	B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM,	 
+	B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM,	 
+	B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM, B_SYM,	 
+	A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP,	 
+	A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP,	 
+	A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, B_SYM,	 
+	A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, A_CAP, ALPHA,	 
+	ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA,	 
+	ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA,	 
+	ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, B_SYM,	 
+	ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA	 
 };
 
 struct task_struct *speakup_task;
@@ -284,7 +270,7 @@ static void bleep(u_short val)
 	spk_unprocessed_sound.freq = freq;
 	spk_unprocessed_sound.jiffies = msecs_to_jiffies(time);
 	spk_unprocessed_sound.active = 1;
-	/* We can only have 1 active sound at a time. */
+	 
 }
 
 static void speakup_shut_up(struct vc_data *vc)
@@ -305,9 +291,9 @@ static void speech_kill(struct vc_data *vc)
 	if (val == 0)
 		return;
 
-	/* re-enables synth, if disabled */
+	 
 	if (val == 2 || spk_killed) {
-		/* dead */
+		 
 		spk_shut_up &= ~0x40;
 		synth_printf("%s\n", spk_msg_get(MSG_IAM_ALIVE));
 	} else {
@@ -361,7 +347,7 @@ static void speakup_cut(struct vc_data *vc)
 
 	switch (ret) {
 	case 0:
-		break;		/* no error */
+		break;		 
 	case -EFAULT:
 		pr_warn("%sEFAULT\n", err_buf);
 		break;
@@ -400,7 +386,7 @@ static void say_attributes(struct vc_data *vc)
 	synth_printf("%s\n", spk_msg_get(MSG_COLORS_START + bg));
 }
 
-/* must be ordered same as edge_msgs in enum msg_index_t */
+ 
 enum edge {
 	edge_none = 0,
 	edge_top,
@@ -532,14 +518,7 @@ static void say_next_char(struct vc_data *vc)
 	say_char(vc);
 }
 
-/* get_word - will first check to see if the character under the
- * reading cursor is a space and if spk_say_word_ctl is true it will
- * return the word space.  If spk_say_word_ctl is not set it will check to
- * see if there is a word starting on the next position to the right
- * and return that word if it exists.  If it does not exist it will
- * move left to the beginning of any previous word on the line or the
- * beginning off the line whichever comes first..
- */
+ 
 
 static u_long get_word(struct vc_data *vc)
 {
@@ -551,7 +530,7 @@ static u_long get_word(struct vc_data *vc)
 	spk_old_attr = spk_attr;
 	ch = get_char(vc, (u_short *)tmp_pos, &temp);
 
-/* decided to take out the sayword if on a space (mis-information */
+ 
 	if (spk_say_word_ctl && ch == SPACE) {
 		*buf = '\0';
 		synth_printf("%s\n", spk_msg_get(MSG_SPACE));
@@ -713,12 +692,12 @@ static void spell_word(struct vc_data *vc)
 	while ((ch = *cp)) {
 		if (cp != buf)
 			synth_printf(" %s ", delay_str[spk_spell_delay]);
-		/* FIXME: Non-latin1 considered as lower case */
+		 
 		if (ch < 0x100 && IS_CHAR(ch, B_CAP)) {
 			str_cap = spk_str_caps_start;
 			if (*spk_str_caps_stop)
 				spk_pitch_shift++;
-			else	/* synth has no pitch */
+			else	 
 				last_cap = spk_str_caps_stop;
 		} else {
 			str_cap = spk_str_caps_stop;
@@ -854,7 +833,7 @@ static void say_line_from_to(struct vc_data *vc, u_long from, u_long to,
 			synth_printf("%s\n", spk_msg_get(MSG_BLANK));
 }
 
-/* Sentence Reading Commands */
+ 
 
 static int currsentence;
 static int numsentences[2];
@@ -903,7 +882,7 @@ static int get_sentence_buf(struct vc_data *vc, int read_punc)
 			if (sentbuf[bn][i] == SPACE &&
 			    sentbuf[bn][i - 1] == '.' &&
 			    numsentences[bn] < 9) {
-				/* Sentence Marker */
+				 
 				numsentences[bn]++;
 				sentmarks[bn][numsentences[bn]] =
 				    &sentbuf[bn][i];
@@ -1043,7 +1022,7 @@ static void say_position(struct vc_data *vc)
 	synth_printf("\n");
 }
 
-/* Added by brianb */
+ 
 static void say_char_num(struct vc_data *vc)
 {
 	u_char tmp;
@@ -1052,7 +1031,7 @@ static void say_char_num(struct vc_data *vc)
 	synth_printf(spk_msg_get(MSG_CHAR_INFO), ch, ch);
 }
 
-/* these are stub functions to keep keyboard.c happy. */
+ 
 
 static void say_from_top(struct vc_data *vc)
 {
@@ -1074,7 +1053,7 @@ static void say_to_right(struct vc_data *vc)
 	say_line_from_to(vc, spk_x, vc->vc_cols, 1);
 }
 
-/* end of stub functions. */
+ 
 
 static void spkup_write(const u16 *in_buf, int count)
 {
@@ -1086,7 +1065,7 @@ static void spkup_write(const u16 *in_buf, int count)
 	spk_keydown = 0;
 	while (count--) {
 		if (cursor_track == read_all_mode) {
-			/* Insert Sentence Index */
+			 
 			if ((in_buf == sentmarks[bn][currsentence]) &&
 			    (currsentence <= numsentences[bn]))
 				synth_insert_next_index(currsentence++);
@@ -1121,21 +1100,15 @@ static void spkup_write(const u16 *in_buf, int count)
 			synth_putwc_s(ch);
 		} else if (char_type & spk_punc_mask) {
 			speak_char(ch);
-			char_type &= ~PUNC;	/* for dec nospell processing */
+			char_type &= ~PUNC;	 
 		} else if (char_type & SYNTH_OK) {
-			/* these are usually puncts like . and , which synth
-			 * needs for expression.
-			 * suppress multiple to get rid of long pauses and
-			 * clear repeat count
-			 * so if someone has
-			 * repeats on you don't get nothing repeated count
-			 */
+			 
 			if (ch != old_ch)
 				synth_putwc_s(ch);
 			else
 				rep_count = 0;
 		} else {
-/* send space and record position, if next is num overwrite space */
+ 
 			if (old_ch != ch)
 				synth_buffer_add(SPACE);
 			else
@@ -1245,8 +1218,8 @@ int spk_set_key_info(const u_char *key_info, u_char *k_buffer)
 	spk_our_keys[0] = spk_shift_table;
 	cp1 += SHIFT_TBL_SIZE;
 	memcpy(cp1, cp, key_data_len + 3);
-	/* get num_keys, states and data */
-	cp1 += 2;		/* now pointing at shift states */
+	 
+	cp1 += 2;		 
 	for (i = 1; i <= states; i++) {
 		ch = *cp1++;
 		if (ch >= SHIFT_TBL_SIZE) {
@@ -1278,7 +1251,7 @@ enum spk_vars_id {
 };
 
 static struct var_t spk_vars[NB_ID] = {
-	/* bell must be first to set high limit */
+	 
 	[BELL_POS_ID] = { BELL_POS, .u.n = {NULL, 0, 0, 0, 0, 0, NULL} },
 	[SPELL_DELAY_ID] = { SPELL_DELAY, .u.n = {NULL, 0, 0, 4, 0, 0, NULL} },
 	[ATTRIB_BLEEP_ID] = { ATTRIB_BLEEP, .u.n = {NULL, 1, 0, 3, 0, 0, NULL} },
@@ -1308,7 +1281,7 @@ void spk_reset_default_chars(void)
 {
 	int i;
 
-	/* First, free any non-default */
+	 
 	for (i = 0; i < 256; i++) {
 		if (spk_characters[i] &&
 		    (spk_characters[i] != spk_default_chars[i]))
@@ -1346,7 +1319,7 @@ static int edit_bits(struct vc_data *vc, u_char type, u_char ch, u_short key)
 	return 1;
 }
 
-/* Allocation concurrency is protected by the console semaphore */
+ 
 static int speakup_allocate(struct vc_data *vc, gfp_t gfp_flags)
 {
 	int vc_num;
@@ -1451,9 +1424,9 @@ static void handle_cursor_read_all(struct vc_data *vc, enum read_all_command com
 
 	switch (command) {
 	case RA_NEXT_SENT:
-		/* Get Current Sentence */
+		 
 		spk_get_index_count(&indcount, &sentcount);
-		/*printk("%d %d  ", indcount, sentcount); */
+		 
 		spk_reset_index_count(sentcount + 1);
 		if (indcount == 1) {
 			if (!say_sentence_num(sentcount + 1, 0)) {
@@ -1553,9 +1526,7 @@ static void do_handle_cursor(struct vc_data *vc, u_char value, char up_flag)
 	spk_shut_up &= 0xfe;
 	if (spk_no_intr)
 		spk_do_flush();
-/* the key press flushes if !no_inter but we want to flush on cursor
- * moves regardless of no_inter state
- */
+ 
 	is_cursor = value + 1;
 	old_cursor_pos = vc->vc_pos;
 	old_cursor_x = vc->state.x;
@@ -1734,7 +1705,7 @@ out:
 	spin_unlock_irqrestore(&speakup_info.spinlock, flags);
 }
 
-/* called by: vt_notifier_call() */
+ 
 static void speakup_bs(struct vc_data *vc)
 {
 	unsigned long flags;
@@ -1742,7 +1713,7 @@ static void speakup_bs(struct vc_data *vc)
 	if (!speakup_console[vc->vc_num])
 		return;
 	if (!spin_trylock_irqsave(&speakup_info.spinlock, flags))
-		/* Speakup output, discard */
+		 
 		return;
 	if (!spk_parked)
 		speakup_date(vc);
@@ -1758,7 +1729,7 @@ static void speakup_bs(struct vc_data *vc)
 	spin_unlock_irqrestore(&speakup_info.spinlock, flags);
 }
 
-/* called by: vt_notifier_call() */
+ 
 static void speakup_con_write(struct vc_data *vc, u16 *str, int len)
 {
 	unsigned long flags;
@@ -1766,7 +1737,7 @@ static void speakup_con_write(struct vc_data *vc, u16 *str, int len)
 	if ((vc->vc_num != fg_console) || spk_shut_up || !synth)
 		return;
 	if (!spin_trylock_irqsave(&speakup_info.spinlock, flags))
-		/* Speakup output, discard */
+		 
 		return;
 	if (spk_bell_pos && spk_keydown && (vc->state.x == spk_bell_pos - 1))
 		bleep(3);
@@ -1795,7 +1766,7 @@ static void speakup_con_update(struct vc_data *vc)
 	if (!speakup_console[vc->vc_num] || spk_parked || !synth)
 		return;
 	if (!spin_trylock_irqsave(&speakup_info.spinlock, flags))
-		/* Speakup output, discard */
+		 
 		return;
 	speakup_date(vc);
 	if (vc->vc_mode == KD_GRAPHICS && !spk_paused && spk_str_pause[0]) {
@@ -1993,7 +1964,7 @@ oops:
 		return 1;
 	}
 
-	/* Do not replace with kstrtoul: here we need cp to be updated */
+	 
 	goto_pos = simple_strtoul(goto_buf, &cp, 10);
 
 	if (*cp == 'x') {
@@ -2049,7 +2020,7 @@ static void speakup_help(struct vc_data *vc)
 
 static void do_nothing(struct vc_data *vc)
 {
-	return;			/* flush done in do_spkup */
+	return;			 
 }
 
 static u_char key_speakup, spk_key_locked;
@@ -2067,7 +2038,7 @@ static void speakup_lock(struct vc_data *vc)
 
 typedef void (*spkup_hand) (struct vc_data *);
 static spkup_hand spkup_handler[] = {
-	/* must be ordered same as defines in speakup.h */
+	 
 	do_nothing, speakup_goto, speech_kill, speakup_shut_up,
 	speakup_cut, speakup_paste, say_first_char, say_last_char,
 	say_char, say_prev_char, say_next_char,
@@ -2076,7 +2047,7 @@ static spkup_hand spkup_handler[] = {
 	top_edge, bottom_edge, left_edge, right_edge,
 	spell_word, spell_word, say_screen,
 	say_position, say_attributes,
-	speakup_off, speakup_parked, say_line,	/* this is for indent */
+	speakup_off, speakup_parked, say_line,	 
 	say_from_top, say_to_bottom,
 	say_from_left, say_to_right,
 	say_char_num, speakup_bits, speakup_bits, say_phonetic_char,
@@ -2139,7 +2110,7 @@ speakup_key(struct vc_data *vc, int shift_state, int keycode, u_short keysym,
 	key_info = spk_our_keys[keycode];
 	if (!key_info)
 		goto no_map;
-	/* Check valid read all mode keys */
+	 
 	if ((cursor_track == read_all_mode) && (!up_flag)) {
 		switch (value) {
 		case KVAL(K_DOWN):
@@ -2175,7 +2146,7 @@ speakup_key(struct vc_data *vc, int shift_state, int keycode, u_short keysym,
 			    time_after(last_spk_jiffy + MAX_DELAY, jiffies)) {
 				spk_close_press = 1;
 				offset = spk_shift_table[shift_info + 32];
-				/* double press? */
+				 
 				if (offset && key_info[offset])
 					new_key = key_info[offset];
 			}
@@ -2209,7 +2180,7 @@ no_map:
 		} else if (type == KT_LETTER) {
 			type = KT_LATIN;
 		} else if (value == 0x7f) {
-			value = 8;	/* make del = backspace */
+			value = 8;	 
 		}
 		ret = (*spk_special_handler) (vc, type, value, keycode);
 		spk_close_press = 0;
@@ -2230,35 +2201,28 @@ static int keyboard_notifier_call(struct notifier_block *nb,
 	struct vc_data *vc = param->vc;
 	int up = !param->down;
 	int ret = NOTIFY_OK;
-	static int keycode;	/* to hold the current keycode */
+	static int keycode;	 
 
 	in_keyboard_notifier = 1;
 
 	if (vc->vc_mode == KD_GRAPHICS)
 		goto out;
 
-	/*
-	 * First, determine whether we are handling a fake keypress on
-	 * the current processor.  If we are, then return NOTIFY_OK,
-	 * to pass the keystroke up the chain.  This prevents us from
-	 * trying to take the Speakup lock while it is held by the
-	 * processor on which the simulated keystroke was generated.
-	 * Also, the simulated keystrokes should be ignored by Speakup.
-	 */
+	 
 
 	if (speakup_fake_key_pressed())
 		goto out;
 
 	switch (code) {
 	case KBD_KEYCODE:
-		/* speakup requires keycode and keysym currently */
+		 
 		keycode = param->value;
 		break;
 	case KBD_UNBOUND_KEYCODE:
-		/* not used yet */
+		 
 		break;
 	case KBD_UNICODE:
-		/* not used yet */
+		 
 		break;
 	case KBD_KEYSYM:
 		if (speakup_key(vc, param->shift, keycode, param->value, up))
@@ -2323,7 +2287,7 @@ static int vt_notifier_call(struct notifier_block *nb,
 	return NOTIFY_OK;
 }
 
-/* called by: module_exit() */
+ 
 static void __exit speakup_exit(void)
 {
 	int i;
@@ -2359,7 +2323,7 @@ static void __exit speakup_exit(void)
 	spk_free_user_msgs();
 }
 
-/* call by: module_init() */
+ 
 static int __init speakup_init(void)
 {
 	int i;
@@ -2367,8 +2331,8 @@ static int __init speakup_init(void)
 	struct vc_data *vc = vc_cons[fg_console].d;
 	struct var_t *var;
 
-	/* These first few initializations cannot fail. */
-	spk_initialize_msgs();	/* Initialize arrays for i18n. */
+	 
+	spk_initialize_msgs();	 
 	spk_reset_default_chars();
 	spk_reset_default_chartab();
 	spk_strlwr(synth_name);
@@ -2383,7 +2347,7 @@ static int __init speakup_init(void)
 
 	spk_set_key_info(spk_key_defaults, spk_key_buf);
 
-	/* From here on out, initializations can fail. */
+	 
 	err = speakup_add_virtual_keyboard();
 	if (err)
 		goto error_virtkeyboard;
@@ -2405,11 +2369,7 @@ static int __init speakup_init(void)
 	spk_ttyio_register_ldisc();
 	synth_init(synth_name);
 	speakup_register_devsynth();
-	/*
-	 * register_devsynth might fail, but this error is not fatal.
-	 * /dev/synth is an extra feature; the rest of Speakup
-	 * will work fine without it.
-	 */
+	 
 
 	err = register_keyboard_notifier(&keyboard_notifier_block);
 	if (err)

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Procfs support for lockd
- *
- * Copyright (c) 2014 Jeff Layton <jlayton@primarydata.com>
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/proc_fs.h>
@@ -14,9 +10,7 @@
 #include "netns.h"
 #include "procfs.h"
 
-/*
- * We only allow strings that start with 'Y', 'y', or '1'.
- */
+ 
 static ssize_t
 nlm_end_grace_write(struct file *file, const char __user *buf, size_t size,
 		    loff_t *pos)

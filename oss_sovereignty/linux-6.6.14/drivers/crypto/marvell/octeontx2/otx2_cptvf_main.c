@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2020 Marvell. */
+
+ 
 
 #include "otx2_cpt_common.h"
 #include "otx2_cptvf.h"
@@ -12,22 +12,22 @@
 
 static void cptvf_enable_pfvf_mbox_intrs(struct otx2_cptvf_dev *cptvf)
 {
-	/* Clear interrupt if any */
+	 
 	otx2_cpt_write64(cptvf->reg_base, BLKADDR_RVUM, 0, OTX2_RVU_VF_INT,
 			 0x1ULL);
 
-	/* Enable PF-VF interrupt */
+	 
 	otx2_cpt_write64(cptvf->reg_base, BLKADDR_RVUM, 0,
 			 OTX2_RVU_VF_INT_ENA_W1S, 0x1ULL);
 }
 
 static void cptvf_disable_pfvf_mbox_intrs(struct otx2_cptvf_dev *cptvf)
 {
-	/* Disable PF-VF interrupt */
+	 
 	otx2_cpt_write64(cptvf->reg_base, BLKADDR_RVUM, 0,
 			 OTX2_RVU_VF_INT_ENA_W1C, 0x1ULL);
 
-	/* Clear interrupt if any */
+	 
 	otx2_cpt_write64(cptvf->reg_base, BLKADDR_RVUM, 0, OTX2_RVU_VF_INT,
 			 0x1ULL);
 }
@@ -41,7 +41,7 @@ static int cptvf_register_interrupts(struct otx2_cptvf_dev *cptvf)
 	if (num_vec <= 0)
 		return -EINVAL;
 
-	/* Enable MSI-X */
+	 
 	ret = pci_alloc_irq_vectors(cptvf->pdev, num_vec, num_vec,
 				    PCI_IRQ_MSIX);
 	if (ret < 0) {
@@ -50,13 +50,13 @@ static int cptvf_register_interrupts(struct otx2_cptvf_dev *cptvf)
 		return ret;
 	}
 	irq = pci_irq_vector(cptvf->pdev, OTX2_CPT_VF_INT_VEC_E_MBOX);
-	/* Register VF<=>PF mailbox interrupt handler */
+	 
 	ret = devm_request_irq(&cptvf->pdev->dev, irq,
 			       otx2_cptvf_pfvf_mbox_intr, 0,
 			       "CPTPFVF Mbox", cptvf);
 	if (ret)
 		return ret;
-	/* Enable PF-VF mailbox interrupts */
+	 
 	cptvf_enable_pfvf_mbox_intrs(cptvf);
 
 	ret = otx2_cpt_send_ready_msg(&cptvf->pfvf_mbox, cptvf->pdev);
@@ -82,15 +82,13 @@ static int cptvf_pfvf_mbox_init(struct otx2_cptvf_dev *cptvf)
 		return -ENOMEM;
 
 	if (test_bit(CN10K_MBOX, &cptvf->cap_flag)) {
-		/* For cn10k platform, VF mailbox region is in its BAR2
-		 * register space
-		 */
+		 
 		cptvf->pfvf_mbox_base = cptvf->reg_base +
 					CN10K_CPT_VF_MBOX_REGION;
 	} else {
 		offset = pci_resource_start(pdev, PCI_MBOX_BAR_NUM);
 		size = pci_resource_len(pdev, PCI_MBOX_BAR_NUM);
-		/* Map PF-VF mailbox memory */
+		 
 		cptvf->pfvf_mbox_base = devm_ioremap_wc(&pdev->dev, offset,
 							size);
 		if (!cptvf->pfvf_mbox_base) {
@@ -196,7 +194,7 @@ static int alloc_pending_queues(struct otx2_cptlfs_info *lfs)
 			goto error;
 		}
 
-		/* Initialize spin lock */
+		 
 		spin_lock_init(&lfs->lf[i].pqueue.lock);
 	}
 	return 0;
@@ -239,17 +237,17 @@ static void cptvf_lf_shutdown(struct otx2_cptlfs_info *lfs)
 {
 	atomic_set(&lfs->state, OTX2_CPTLF_IN_RESET);
 
-	/* Remove interrupts affinity */
+	 
 	otx2_cptlf_free_irqs_affinity(lfs);
-	/* Disable instruction queue */
+	 
 	otx2_cptlf_disable_iqueues(lfs);
-	/* Unregister crypto algorithms */
+	 
 	otx2_cpt_crypto_exit(lfs->pdev, THIS_MODULE);
-	/* Unregister LFs interrupts */
+	 
 	otx2_cptlf_unregister_interrupts(lfs);
-	/* Cleanup LFs software side */
+	 
 	lf_sw_cleanup(lfs);
-	/* Send request to detach LFs */
+	 
 	otx2_cpt_detach_rsrcs_msg(lfs);
 }
 
@@ -260,7 +258,7 @@ static int cptvf_lf_init(struct otx2_cptvf_dev *cptvf)
 	int ret, lfs_num;
 	u8 eng_grp_msk;
 
-	/* Get engine group number for symmetric crypto */
+	 
 	cptvf->lfs.kcrypto_eng_grp_num = OTX2_CPT_INVALID_CRYPTO_ENG_GRP;
 	ret = otx2_cptvf_send_eng_grp_num_msg(cptvf, OTX2_CPT_SE_TYPES);
 	if (ret)
@@ -287,28 +285,28 @@ static int cptvf_lf_init(struct otx2_cptvf_dev *cptvf)
 	if (ret)
 		return ret;
 
-	/* Get msix offsets for attached LFs */
+	 
 	ret = otx2_cpt_msix_offset_msg(lfs);
 	if (ret)
 		goto cleanup_lf;
 
-	/* Initialize LFs software side */
+	 
 	ret = lf_sw_init(lfs);
 	if (ret)
 		goto cleanup_lf;
 
-	/* Register LFs interrupts */
+	 
 	ret = otx2_cptlf_register_interrupts(lfs);
 	if (ret)
 		goto cleanup_lf_sw;
 
-	/* Set interrupts affinity */
+	 
 	ret = otx2_cptlf_set_irqs_affinity(lfs);
 	if (ret)
 		goto unregister_intr;
 
 	atomic_set(&lfs->state, OTX2_CPTLF_STARTED);
-	/* Register crypto algorithms */
+	 
 	ret = otx2_cpt_crypto_init(lfs->pdev, THIS_MODULE, lfs_num, 1);
 	if (ret) {
 		dev_err(&lfs->pdev->dev, "algorithms registration failed\n");
@@ -350,7 +348,7 @@ static int otx2_cptvf_probe(struct pci_dev *pdev,
 		dev_err(dev, "Unable to get usable DMA configuration\n");
 		goto clear_drvdata;
 	}
-	/* Map VF's configuration registers */
+	 
 	ret = pcim_iomap_regions_request_all(pdev, 1 << PCI_PF_REG_BAR_NUM,
 					     OTX2_CPTVF_DRV_NAME);
 	if (ret) {
@@ -369,18 +367,18 @@ static int otx2_cptvf_probe(struct pci_dev *pdev,
 	if (ret)
 		goto clear_drvdata;
 
-	/* Initialize PF<=>VF mailbox */
+	 
 	ret = cptvf_pfvf_mbox_init(cptvf);
 	if (ret)
 		goto clear_drvdata;
 
-	/* Register interrupts */
+	 
 	ret = cptvf_register_interrupts(cptvf);
 	if (ret)
 		goto destroy_pfvf_mbox;
 
 	cptvf->blkaddr = BLKADDR_CPT0;
-	/* Initialize CPT LFs */
+	 
 	ret = cptvf_lf_init(cptvf);
 	if (ret)
 		goto unregister_interrupts;
@@ -406,18 +404,18 @@ static void otx2_cptvf_remove(struct pci_dev *pdev)
 		return;
 	}
 	cptvf_lf_shutdown(&cptvf->lfs);
-	/* Disable PF-VF mailbox interrupt */
+	 
 	cptvf_disable_pfvf_mbox_intrs(cptvf);
-	/* Destroy PF-VF mbox */
+	 
 	cptvf_pfvf_mbox_destroy(cptvf);
 	pci_set_drvdata(pdev, NULL);
 }
 
-/* Supported devices */
+ 
 static const struct pci_device_id otx2_cptvf_id_table[] = {
 	{PCI_VDEVICE(CAVIUM, OTX2_CPT_PCI_VF_DEVICE_ID), 0},
 	{PCI_VDEVICE(CAVIUM, CN10K_CPT_PCI_VF_DEVICE_ID), 0},
-	{ 0, }  /* end of table */
+	{ 0, }   
 };
 
 static struct pci_driver otx2_cptvf_pci_driver = {

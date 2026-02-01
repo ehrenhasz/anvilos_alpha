@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Red Hat, Inc.
- * Copyright (C) 2012 Jeremy Kerr <jeremy.kerr@canonical.com>
- */
+
+ 
 
 #include <linux/efi.h>
 #include <linux/fs.h>
@@ -42,31 +39,20 @@ struct inode *efivarfs_get_inode(struct super_block *sb,
 	return inode;
 }
 
-/*
- * Return true if 'str' is a valid efivarfs filename of the form,
- *
- *	VariableName-12345678-1234-1234-1234-1234567891bc
- */
+ 
 bool efivarfs_valid_name(const char *str, int len)
 {
 	const char *s = str + len - EFI_VARIABLE_GUID_LEN;
 
-	/*
-	 * We need a GUID, plus at least one letter for the variable name,
-	 * plus the '-' separator
-	 */
+	 
 	if (len < EFI_VARIABLE_GUID_LEN + 2)
 		return false;
 
-	/* GUID must be preceded by a '-' */
+	 
 	if (*(s - 1) != '-')
 		return false;
 
-	/*
-	 * Validate that 's' is of the correct format, e.g.
-	 *
-	 *	12345678-1234-1234-1234-123456789abc
-	 */
+	 
 	return uuid_is_valid(s);
 }
 
@@ -85,7 +71,7 @@ static int efivarfs_create(struct mnt_idmap *idmap, struct inode *dir,
 	if (!var)
 		return -ENOMEM;
 
-	/* length of the variable name itself: remove GUID and separator */
+	 
 	namelen = dentry->d_name.len - EFI_VARIABLE_GUID_LEN - 1;
 
 	err = guid_parse(dentry->d_name.name + namelen + 1, &var->var.VendorGuid);

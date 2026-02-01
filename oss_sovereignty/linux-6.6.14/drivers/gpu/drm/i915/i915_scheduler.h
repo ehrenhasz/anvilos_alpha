@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2018 Intel Corporation
- */
+ 
 
 #ifndef _I915_SCHEDULER_H_
 #define _I915_SCHEDULER_H_
@@ -81,7 +77,7 @@ i915_sched_engine_reset_on_empty(struct i915_sched_engine *sched_engine)
 static inline void
 i915_sched_engine_active_lock_bh(struct i915_sched_engine *sched_engine)
 {
-	local_bh_disable(); /* prevent local softirq and lock recursion */
+	local_bh_disable();  
 	tasklet_lock(&sched_engine->tasklet);
 }
 
@@ -89,7 +85,7 @@ static inline void
 i915_sched_engine_active_unlock_bh(struct i915_sched_engine *sched_engine)
 {
 	tasklet_unlock(&sched_engine->tasklet);
-	local_bh_enable(); /* restore softirq, and kick ksoftirqd! */
+	local_bh_enable();  
 }
 
 void i915_request_show_with_schedule(struct drm_printer *m,
@@ -106,4 +102,4 @@ i915_sched_engine_disabled(struct i915_sched_engine *sched_engine)
 void i915_scheduler_module_exit(void);
 int i915_scheduler_module_init(void);
 
-#endif /* _I915_SCHEDULER_H_ */
+#endif  

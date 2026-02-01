@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) STMicroelectronics 2018
-// Author: Pascal Paillet <p.paillet@st.com>
+
+
+
 
 #include <linux/i2c.h>
 #include <linux/interrupt.h>
@@ -160,7 +160,7 @@ static int stpmic1_probe(struct i2c_client *i2c)
 	}
 	dev_info(dev, "PMIC Chip Version: 0x%x\n", reg);
 
-	/* Initialize PMIC IRQ Chip & associated IRQ domains */
+	 
 	ret = devm_regmap_add_irq_chip(dev, ddata->regmap, ddata->irq,
 				       IRQF_ONESHOT | IRQF_SHARED,
 				       0, &stpmic1_regmap_irq_chip,

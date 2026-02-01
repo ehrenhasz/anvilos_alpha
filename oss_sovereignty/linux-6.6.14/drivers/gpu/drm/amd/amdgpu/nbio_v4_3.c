@@ -1,25 +1,4 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "amdgpu.h"
 #include "amdgpu_atombios.h"
 #include "nbio_v4_3.h"
@@ -218,18 +197,15 @@ static void nbio_v4_3_ih_control(struct amdgpu_device *adev)
 {
 	u32 interrupt_cntl;
 
-	/* setup interrupt control */
+	 
 	WREG32_SOC15(NBIO, 0, regBIF_BX0_INTERRUPT_CNTL2, adev->dummy_page_addr >> 8);
 
 	interrupt_cntl = RREG32_SOC15(NBIO, 0, regBIF_BX0_INTERRUPT_CNTL);
-	/*
-	 * BIF_BX0_INTERRUPT_CNTL__IH_DUMMY_RD_OVERRIDE_MASK=0 - dummy read disabled with msi, enabled without msi
-	 * BIF_BX0_INTERRUPT_CNTL__IH_DUMMY_RD_OVERRIDE_MASK=1 - dummy read controlled by IH_DUMMY_RD_EN
-	 */
+	 
 	interrupt_cntl = REG_SET_FIELD(interrupt_cntl, BIF_BX0_INTERRUPT_CNTL,
 				       IH_DUMMY_RD_OVERRIDE, 0);
 
-	/* BIF_BX0_INTERRUPT_CNTL__IH_REQ_NONSNOOP_EN_MASK=1 if ring is in non-cacheable memory, e.g., vram */
+	 
 	interrupt_cntl = REG_SET_FIELD(interrupt_cntl, BIF_BX0_INTERRUPT_CNTL,
 				       IH_REQ_NONSNOOP_EN, 0);
 
@@ -273,7 +249,7 @@ static void nbio_v4_3_update_medium_grain_light_sleep(struct amdgpu_device *adev
 	if (enable && !(adev->cg_flags & AMD_CG_SUPPORT_BIF_LS))
 		return;
 
-	/* TODO: need update in future */
+	 
 	def = data = RREG32_SOC15(NBIO, 0, regPCIE_CNTL2);
 	if (enable) {
 		data |= PCIE_CNTL2__SLV_MEM_LS_EN_MASK;
@@ -290,12 +266,12 @@ static void nbio_v4_3_get_clockgating_state(struct amdgpu_device *adev,
 {
 	int data;
 
-	/* AMD_CG_SUPPORT_BIF_MGCG */
+	 
 	data = RREG32_SOC15(NBIO, 0, regCPM_CONTROL);
 	if (data & CPM_CONTROL__LCLK_DYN_GATE_ENABLE_MASK)
 		*flags |= AMD_CG_SUPPORT_BIF_MGCG;
 
-	/* AMD_CG_SUPPORT_BIF_LS */
+	 
 	data = RREG32_SOC15(NBIO, 0, regPCIE_CNTL2);
 	if (data & PCIE_CNTL2__SLV_MEM_LS_EN_MASK)
 		*flags |= AMD_CG_SUPPORT_BIF_LS;
@@ -548,10 +524,7 @@ static int nbio_v4_3_set_ras_err_event_athub_irq_state(struct amdgpu_device *ade
 						       unsigned type,
 						       enum amdgpu_interrupt_state state)
 {
-	/* The ras_controller_irq enablement should be done in psp bl when it
-	 * tries to enable ras feature. Driver only need to set the correct interrupt
-	 * vector for bare-metal and sriov use case respectively
-	 */
+	 
 	uint32_t bif_doorbell_int_cntl;
 
 	bif_doorbell_int_cntl = RREG32_SOC15(NBIO, 0, regBIF_BX0_BIF_DOORBELL_INT_CNTL);
@@ -568,10 +541,7 @@ static int nbio_v4_3_process_err_event_athub_irq(struct amdgpu_device *adev,
 						 struct amdgpu_irq_src *source,
 						 struct amdgpu_iv_entry *entry)
 {
-	/* By design, the ih cookie for err_event_athub_irq should be written
-	 * to bif ring. since bif ring is not enabled, just leave process callback
-	 * as a dummy one.
-	 */
+	 
 	return 0;
 }
 
@@ -588,7 +558,7 @@ static void nbio_v4_3_handle_ras_err_event_athub_intr_no_bifring(struct amdgpu_d
 	if (REG_GET_FIELD(bif_doorbell_int_cntl,
 			  BIF_DOORBELL_INT_CNTL,
 			  RAS_ATHUB_ERR_EVENT_INTERRUPT_STATUS)) {
-		/* driver has to clear the interrupt status when bif ring is disabled */
+		 
 		bif_doorbell_int_cntl = REG_SET_FIELD(bif_doorbell_int_cntl,
 						BIF_DOORBELL_INT_CNTL,
 						RAS_ATHUB_ERR_EVENT_INTERRUPT_CLEAR, 1);
@@ -602,13 +572,12 @@ static int nbio_v4_3_init_ras_err_event_athub_interrupt(struct amdgpu_device *ad
 
 	int r;
 
-	/* init the irq funcs */
+	 
 	adev->nbio.ras_err_event_athub_irq.funcs =
 		&nbio_v4_3_ras_err_event_athub_irq_funcs;
 	adev->nbio.ras_err_event_athub_irq.num_types = 1;
 
-	/* register ras err event athub interrupt
-	 * nbio v4_3 uses the same irq source as nbio v7_4 */
+	 
 	r = amdgpu_irq_add_id(adev, SOC21_IH_CLIENTID_BIF,
 			      NBIF_7_4__SRCID__ERREVENT_ATHUB_INTERRUPT,
 			      &adev->nbio.ras_err_event_athub_irq);

@@ -1,25 +1,4 @@
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "amdgpu.h"
 #include "amdgpu_xcp.h"
 #include "gfxhub_v1_2.h"
@@ -84,9 +63,7 @@ static void gfxhub_v1_2_xcc_init_gart_aperture_regs(struct amdgpu_device *adev,
 
 	gfxhub_v1_2_xcc_setup_vm_pt_regs(adev, 0, pt_base, xcc_mask);
 
-	/* If use GART for FB translation, vmid0 page table covers both
-	 * vram and system memory (gart)
-	 */
+	 
 	for_each_inst(i, xcc_mask) {
 		if (adev->gmc.pdb0_bo) {
 			WREG32_SOC15(GC, GET_INST(GC, i),
@@ -129,24 +106,18 @@ gfxhub_v1_2_xcc_init_system_aperture_regs(struct amdgpu_device *adev,
 	int i;
 
 	for_each_inst(i, xcc_mask) {
-		/* Program the AGP BAR */
+		 
 		WREG32_SOC15_RLC(GC, GET_INST(GC, i), regMC_VM_AGP_BASE, 0);
 		WREG32_SOC15_RLC(GC, GET_INST(GC, i), regMC_VM_AGP_BOT, adev->gmc.agp_start >> 24);
 		WREG32_SOC15_RLC(GC, GET_INST(GC, i), regMC_VM_AGP_TOP, adev->gmc.agp_end >> 24);
 
 		if (!amdgpu_sriov_vf(adev) || adev->asic_type <= CHIP_VEGA10) {
-			/* Program the system aperture low logical page number. */
+			 
 			WREG32_SOC15_RLC(GC, GET_INST(GC, i), regMC_VM_SYSTEM_APERTURE_LOW_ADDR,
 				min(adev->gmc.fb_start, adev->gmc.agp_start) >> 18);
 
 			if (adev->apu_flags & AMD_APU_IS_RAVEN2)
-			       /*
-				* Raven2 has a HW issue that it is unable to use the
-				* vram which is out of MC_VM_SYSTEM_APERTURE_HIGH_ADDR.
-				* So here is the workaround that increase system
-				* aperture high address (add 1) to get rid of the VM
-				* fault and hardware hang.
-				*/
+			        
 				WREG32_SOC15_RLC(GC, GET_INST(GC, i),
 						 regMC_VM_SYSTEM_APERTURE_HIGH_ADDR,
 						 max((adev->gmc.fb_end >> 18) + 0x1,
@@ -156,14 +127,14 @@ gfxhub_v1_2_xcc_init_system_aperture_regs(struct amdgpu_device *adev,
 					regMC_VM_SYSTEM_APERTURE_HIGH_ADDR,
 					max(adev->gmc.fb_end, adev->gmc.agp_end) >> 18);
 
-			/* Set default page address. */
+			 
 			value = amdgpu_gmc_vram_mc2pa(adev, adev->mem_scratch.gpu_addr);
 			WREG32_SOC15(GC, GET_INST(GC, i), regMC_VM_SYSTEM_APERTURE_DEFAULT_ADDR_LSB,
 				     (u32)(value >> 12));
 			WREG32_SOC15(GC, GET_INST(GC, i), regMC_VM_SYSTEM_APERTURE_DEFAULT_ADDR_MSB,
 				     (u32)(value >> 44));
 
-			/* Program "protection fault". */
+			 
 			WREG32_SOC15(GC, GET_INST(GC, i), regVM_L2_PROTECTION_FAULT_DEFAULT_ADDR_LO32,
 				     (u32)(adev->dummy_page_addr >> 12));
 			WREG32_SOC15(GC, GET_INST(GC, i), regVM_L2_PROTECTION_FAULT_DEFAULT_ADDR_HI32,
@@ -175,9 +146,7 @@ gfxhub_v1_2_xcc_init_system_aperture_regs(struct amdgpu_device *adev,
 			WREG32_SOC15(GC, GET_INST(GC, i), regVM_L2_PROTECTION_FAULT_CNTL2, tmp);
 		}
 
-		/* In the case squeezing vram into GART aperture, we don't use
-		 * FB aperture and AGP aperture. Disable them.
-		 */
+		 
 		if (adev->gmc.pdb0_bo) {
 			WREG32_SOC15(GC, GET_INST(GC, i), regMC_VM_FB_LOCATION_TOP, 0);
 			WREG32_SOC15(GC, GET_INST(GC, i), regMC_VM_FB_LOCATION_BASE, 0x00FFFFFF);
@@ -196,7 +165,7 @@ static void gfxhub_v1_2_xcc_init_tlb_regs(struct amdgpu_device *adev,
 	int i;
 
 	for_each_inst(i, xcc_mask) {
-		/* Setup TLB control */
+		 
 		tmp = RREG32_SOC15(GC, GET_INST(GC, i), regMC_VM_MX_L1_TLB_CNTL);
 
 		tmp = REG_SET_FIELD(tmp, MC_VM_MX_L1_TLB_CNTL,
@@ -208,7 +177,7 @@ static void gfxhub_v1_2_xcc_init_tlb_regs(struct amdgpu_device *adev,
 		tmp = REG_SET_FIELD(tmp, MC_VM_MX_L1_TLB_CNTL,
 				    SYSTEM_APERTURE_UNMAPPED_ACCESS, 0);
 		tmp = REG_SET_FIELD(tmp, MC_VM_MX_L1_TLB_CNTL,
-				    MTYPE, MTYPE_UC);/* XXX for emulation. */
+				    MTYPE, MTYPE_UC); 
 		tmp = REG_SET_FIELD(tmp, MC_VM_MX_L1_TLB_CNTL, ATC_EN, 1);
 
 		WREG32_SOC15_RLC(GC, GET_INST(GC, i), regMC_VM_MX_L1_TLB_CNTL, tmp);
@@ -222,11 +191,11 @@ static void gfxhub_v1_2_xcc_init_cache_regs(struct amdgpu_device *adev,
 	int i;
 
 	for_each_inst(i, xcc_mask) {
-		/* Setup L2 cache */
+		 
 		tmp = RREG32_SOC15(GC, GET_INST(GC, i), regVM_L2_CNTL);
 		tmp = REG_SET_FIELD(tmp, VM_L2_CNTL, ENABLE_L2_CACHE, 1);
 		tmp = REG_SET_FIELD(tmp, VM_L2_CNTL, ENABLE_L2_FRAGMENT_PROCESSING, 1);
-		/* XXX for emulation, Refer to closed source code.*/
+		 
 		tmp = REG_SET_FIELD(tmp, VM_L2_CNTL, L2_PDE0_CACHE_TAG_GENERATION_MODE,
 				    0);
 		tmp = REG_SET_FIELD(tmp, VM_L2_CNTL, PDE_FAULT_CLASSIFICATION, 0);
@@ -252,7 +221,7 @@ static void gfxhub_v1_2_xcc_init_cache_regs(struct amdgpu_device *adev,
 		WREG32_SOC15_RLC(GC, GET_INST(GC, i), regVM_L2_CNTL3, tmp);
 
 		tmp = regVM_L2_CNTL4_DEFAULT;
-		/* For AMD APP APUs setup WC memory */
+		 
 		if (adev->gmc.xgmi.connected_to_cpu || adev->gmc.is_app_apu) {
 			tmp = REG_SET_FIELD(tmp, VM_L2_CNTL4, VMC_TAP_PDE_REQUEST_PHYSICAL, 1);
 			tmp = REG_SET_FIELD(tmp, VM_L2_CNTL4, VMC_TAP_PTE_REQUEST_PHYSICAL, 1);
@@ -351,11 +320,7 @@ static void gfxhub_v1_2_xcc_setup_vmid_config(struct amdgpu_device *adev,
 			tmp = REG_SET_FIELD(tmp, VM_CONTEXT1_CNTL,
 					    PAGE_TABLE_BLOCK_SIZE,
 					    block_size);
-			/* Send no-retry XNACK on fault to suppress VM fault storm.
-			 * On 9.4.2 and 9.4.3, XNACK can be enabled in
-			 * the SQ per-process.
-			 * Retry faults need to be enabled for that to work.
-			 */
+			 
 			tmp = REG_SET_FIELD(tmp, VM_CONTEXT1_CNTL,
 					    RETRY_PERMISSION_OR_INVALID_PAGE_FAULT,
 					    !adev->gmc.noretry ||
@@ -402,7 +367,7 @@ static void gfxhub_v1_2_xcc_program_invalidation(struct amdgpu_device *adev,
 static int gfxhub_v1_2_xcc_gart_enable(struct amdgpu_device *adev,
 				       uint32_t xcc_mask)
 {
-	/* GART Enable. */
+	 
 	gfxhub_v1_2_xcc_init_gart_aperture_regs(adev, xcc_mask);
 	gfxhub_v1_2_xcc_init_system_aperture_regs(adev, xcc_mask);
 	gfxhub_v1_2_xcc_init_tlb_regs(adev, xcc_mask);
@@ -435,12 +400,12 @@ static void gfxhub_v1_2_xcc_gart_disable(struct amdgpu_device *adev,
 
 	for_each_inst(j, xcc_mask) {
 		hub = &adev->vmhub[AMDGPU_GFXHUB(j)];
-		/* Disable all tables */
+		 
 		for (i = 0; i < 16; i++)
 			WREG32_SOC15_OFFSET(GC, GET_INST(GC, j), regVM_CONTEXT0_CNTL,
 					    i * hub->ctx_distance, 0);
 
-		/* Setup TLB control */
+		 
 		tmp = RREG32_SOC15(GC, GET_INST(GC, j), regMC_VM_MX_L1_TLB_CNTL);
 		tmp = REG_SET_FIELD(tmp, MC_VM_MX_L1_TLB_CNTL, ENABLE_L1_TLB, 0);
 		tmp = REG_SET_FIELD(tmp,
@@ -449,7 +414,7 @@ static void gfxhub_v1_2_xcc_gart_disable(struct amdgpu_device *adev,
 					0);
 		WREG32_SOC15_RLC(GC, GET_INST(GC, j), regMC_VM_MX_L1_TLB_CNTL, tmp);
 
-		/* Setup L2 cache */
+		 
 		tmp = RREG32_SOC15(GC, GET_INST(GC, j), regVM_L2_CNTL);
 		tmp = REG_SET_FIELD(tmp, VM_L2_CNTL, ENABLE_L2_CACHE, 0);
 		WREG32_SOC15(GC, GET_INST(GC, j), regVM_L2_CNTL, tmp);
@@ -508,12 +473,7 @@ static void gfxhub_v1_2_xcc_set_fault_enable_default(struct amdgpu_device *adev,
 	}
 }
 
-/**
- * gfxhub_v1_2_set_fault_enable_default - update GART/VM fault handling
- *
- * @adev: amdgpu_device pointer
- * @value: true redirects VM faults to the default page
- */
+ 
 static void gfxhub_v1_2_set_fault_enable_default(struct amdgpu_device *adev,
 						 bool value)
 {
@@ -592,7 +552,7 @@ static int gfxhub_v1_2_get_xgmi_info(struct amdgpu_device *adev)
 	max_num_physical_nodes   = 8;
 	max_physical_node_id     = 7;
 
-	/* PF_MAX_REGION=0 means xgmi is disabled */
+	 
 	if (max_region || adev->gmc.xgmi.connected_to_cpu) {
 		adev->gmc.xgmi.num_physical_nodes = max_region + 1;
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Linaro Ltd.
- *
- * Author: Linus Walleij <linus.walleij@linaro.org>
- */
+
+ 
 #include <linux/init.h>
 #include <linux/mfd/syscon.h>
 #include <linux/reboot.h>
@@ -17,12 +13,10 @@
 #define VERSATILE_SYS_LOCK_OFFSET	0x20
 #define VERSATILE_SYS_RESETCTL_OFFSET	0x40
 
-/* Magic unlocking token used on all Versatile boards */
+ 
 #define VERSATILE_LOCK_VAL		0xA05F
 
-/*
- * We detect the different syscon types from the compatible strings.
- */
+ 
 enum versatile_reboot {
 	INTEGRATOR_REBOOT_CM,
 	VERSATILE_REBOOT_CM,
@@ -33,7 +27,7 @@ enum versatile_reboot {
 	REALVIEW_REBOOT_PBX,
 };
 
-/* Pointer to the system controller */
+ 
 static struct regmap *syscon_regmap;
 static enum versatile_reboot versatile_reboot_type;
 
@@ -72,8 +66,8 @@ static const struct of_device_id versatile_reboot_of_match[] = {
 static int versatile_reboot(struct notifier_block *this, unsigned long mode,
 			    void *cmd)
 {
-	/* Unlock the reset register */
-	/* Then hit reset on the different machines */
+	 
+	 
 	switch (versatile_reboot_type) {
 	case INTEGRATOR_REBOOT_CM:
 		regmap_write(syscon_regmap, INTEGRATOR_HDR_LOCK_OFFSET,

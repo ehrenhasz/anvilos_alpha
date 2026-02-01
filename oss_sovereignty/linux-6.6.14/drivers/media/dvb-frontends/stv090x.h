@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-	STV0900/0903 Multistandard Broadcast Frontend driver
-	Copyright (C) Manu Abraham <abraham.manu@gmail.com>
-
-	Copyright (C) ST Microelectronics
-
-*/
+ 
+ 
 
 #ifndef __STV090x_H
 #define __STV090x_H
@@ -33,8 +27,8 @@ enum stv090x_tsmode {
 };
 
 enum stv090x_clkmode {
-	STV090x_CLK_INT = 0, /* Clk i/p = CLKI */
-	STV090x_CLK_EXT = 2 /* Clk i/p = XTALI */
+	STV090x_CLK_INT = 0,  
+	STV090x_CLK_EXT = 2  
 };
 
 enum stv090x_i2crpt {
@@ -59,8 +53,8 @@ struct stv090x_config {
 	enum stv090x_clkmode	clk_mode;
 	enum stv090x_demodulator demod;
 
-	u32 xtal; /* default: 8000000 */
-	u8 address; /* default: 0x68 */
+	u32 xtal;  
+	u8 address;  
 
 	u8 ts1_mode;
 	u8 ts2_mode;
@@ -72,9 +66,9 @@ struct stv090x_config {
 
 	enum stv090x_i2crpt	repeater_level;
 
-	u8			tuner_bbgain; /* default: 10db */
-	enum stv090x_adc_range	adc1_range; /* default: 2Vpp */
-	enum stv090x_adc_range	adc2_range; /* default: 2Vpp */
+	u8			tuner_bbgain;  
+	enum stv090x_adc_range	adc1_range;  
+	enum stv090x_adc_range	adc2_range;  
 
 	bool diseqc_envelope_mode;
 
@@ -91,7 +85,7 @@ struct stv090x_config {
 	int (*tuner_get_status)(struct dvb_frontend *fe, u32 *status);
 	void (*tuner_i2c_lock)(struct dvb_frontend *fe, int lock);
 
-	/* dir = 0 -> output, dir = 1 -> input/open-drain */
+	 
 	int (*set_gpio)(struct dvb_frontend *fe, u8 gpio, u8 dir, u8 value,
 			u8 xor_value);
 
@@ -114,6 +108,6 @@ static inline struct dvb_frontend *stv090x_attach(const struct stv090x_config *c
 	return NULL;
 }
 
-#endif /* CONFIG_DVB_STV090x */
+#endif  
 
-#endif /* __STV090x_H */
+#endif  

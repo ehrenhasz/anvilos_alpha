@@ -1,14 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2014-2017 Broadcom
 
-/*
- * This file contains the Broadcom Northstar Plus (NSP) GPIO driver that
- * supports the chipCommonA GPIO controller. Basic PINCONF such as bias,
- * pull up/down, slew and drive strength are also supported in this driver.
- *
- * Pins from the chipCommonA  GPIO can be individually muxed to GPIO function,
- * through the interaction with the NSP IOMUX controller.
- */
+
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/interrupt.h>
@@ -36,7 +29,7 @@
 #define NSP_GPIO_EVENT_INT_POLARITY	0x64
 #define NSP_CHIP_A_GPIO_INT_BIT		0x01
 
-/* I/O parameters offset for chipcommon A GPIO */
+ 
 #define NSP_GPIO_DRV_CTRL		0x00
 #define NSP_GPIO_HYSTERESIS_EN		0x10
 #define NSP_GPIO_SLEW_RATE_EN		0x14
@@ -44,17 +37,7 @@
 #define NSP_PULL_DOWN_EN		0x1c
 #define GPIO_DRV_STRENGTH_BITS		0x03
 
-/*
- * nsp GPIO core
- *
- * @dev: pointer to device
- * @base: I/O register base for nsp GPIO controller
- * @io_ctrl: I/O register base for PINCONF support outside the GPIO block
- * @gc: GPIO chip
- * @pctl: pointer to pinctrl_dev
- * @pctldesc: pinctrl descriptor
- * @lock: lock to protect access to I/O registers
- */
+ 
 struct nsp_gpio {
 	struct device *dev;
 	void __iomem *base;
@@ -70,24 +53,13 @@ enum base_type {
 	IO_CTRL
 };
 
-/*
- * Mapping from PINCONF pins to GPIO pins is 1-to-1
- */
+ 
 static inline unsigned nsp_pin_to_gpio(unsigned pin)
 {
 	return pin;
 }
 
-/*
- *  nsp_set_bit - set or clear one bit (corresponding to the GPIO pin) in a
- *  nsp GPIO register
- *
- *  @nsp_gpio: nsp GPIO device
- *  @base_type: reg base to modify
- *  @reg: register offset
- *  @gpio: GPIO pin
- *  @set: set or clear
- */
+ 
 static inline void nsp_set_bit(struct nsp_gpio *chip, enum base_type address,
 			       unsigned int reg, unsigned gpio, bool set)
 {
@@ -108,10 +80,7 @@ static inline void nsp_set_bit(struct nsp_gpio *chip, enum base_type address,
 	writel(val, base_address + reg);
 }
 
-/*
- *  nsp_get_bit - get one bit (corresponding to the GPIO pin) in a
- *  nsp GPIO register
- */
+ 
 static inline bool nsp_get_bit(struct nsp_gpio *chip, enum base_type address,
 			       unsigned int reg, unsigned gpio)
 {
@@ -129,12 +98,12 @@ static irqreturn_t nsp_gpio_irq_handler(int irq, void *data)
 	unsigned long int_bits = 0;
 	u32 int_status;
 
-	/* go through the entire GPIOs and handle all interrupts */
+	 
 	int_status = readl(chip->base + NSP_CHIP_A_INT_STATUS);
 	if (int_status & NSP_CHIP_A_GPIO_INT_BIT) {
 		unsigned int event, level;
 
-		/* Get level and edge interrupts */
+		 
 		event = readl(chip->base + NSP_GPIO_EVENT_INT_MASK) &
 			      readl(chip->base + NSP_GPIO_EVENT);
 		level = readl(chip->base + NSP_GPIO_DATA_IN) ^
@@ -162,12 +131,7 @@ static void nsp_gpio_irq_ack(struct irq_data *d)
 		writel(val, chip->base + NSP_GPIO_EVENT);
 }
 
-/*
- *  nsp_gpio_irq_set_mask - mask/unmask a GPIO interrupt
- *
- *  @d: IRQ chip data
- *  @unmask: mask/unmask GPIO interrupt
- */
+ 
 static void nsp_gpio_irq_set_mask(struct irq_data *d, bool unmask)
 {
 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
@@ -333,10 +297,7 @@ static int nsp_get_groups_count(struct pinctrl_dev *pctldev)
 	return 1;
 }
 
-/*
- * Only one group: "gpio_grp", since this local pinctrl device only performs
- * GPIO specific PINCONF configurations
- */
+ 
 static const char *nsp_get_group_name(struct pinctrl_dev *pctldev,
 				      unsigned selector)
 {
@@ -393,7 +354,7 @@ static int nsp_gpio_set_strength(struct nsp_gpio *chip, unsigned gpio,
 	u32 val;
 	unsigned long flags;
 
-	/* make sure drive strength is supported */
+	 
 	if (strength < 2 || strength > 16 || (strength % 2))
 		return -ENOTSUPP;
 
@@ -435,7 +396,7 @@ static int nsp_gpio_get_strength(struct nsp_gpio *chip, unsigned gpio,
 		offset += 4;
 	}
 
-	/* convert to mA */
+	 
 	*strength = (*strength + 1) * 2;
 	raw_spin_unlock_irqrestore(&chip->lock, flags);
 
@@ -564,14 +525,7 @@ static const struct pinconf_ops nsp_pconf_ops = {
 	.pin_config_group_set = nsp_pin_config_group_set,
 };
 
-/*
- * NSP GPIO controller supports some PINCONF related configurations such as
- * pull up, pull down, slew and drive strength, when the pin is configured
- * to GPIO.
- *
- * Here a local pinctrl device is created with simple 1-to-1 pin mapping to the
- * local GPIO pins
- */
+ 
 static int nsp_gpio_register_pinconf(struct nsp_gpio *chip)
 {
 	struct pinctrl_desc *pctldesc = &chip->pctldesc;
@@ -656,7 +610,7 @@ static int nsp_gpio_probe(struct platform_device *pdev)
 	gc->set = nsp_gpio_set;
 	gc->get = nsp_gpio_get;
 
-	/* optional GPIO interrupt support */
+	 
 	irq = platform_get_irq(pdev, 0);
 	if (irq > 0) {
 		struct gpio_irq_chip *girq;
@@ -665,7 +619,7 @@ static int nsp_gpio_probe(struct platform_device *pdev)
 		val = val | NSP_CHIP_A_GPIO_INT_BIT;
 		writel(val, (chip->base + NSP_CHIP_A_INT_MASK));
 
-		/* Install ISR for this GPIO controller. */
+		 
 		ret = devm_request_irq(dev, irq, nsp_gpio_irq_handler,
 				       IRQF_SHARED, "gpio-a", &chip->gc);
 		if (ret) {
@@ -676,7 +630,7 @@ static int nsp_gpio_probe(struct platform_device *pdev)
 
 		girq = &chip->gc.irq;
 		gpio_irq_chip_set_chip(girq, &nsp_gpio_irq_chip);
-		/* This will let us handle the parent IRQ in the driver */
+		 
 		girq->parent_handler = NULL;
 		girq->num_parents = 0;
 		girq->parents = NULL;

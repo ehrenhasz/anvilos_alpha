@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Microchip ENC28J60 ethernet driver (MAC + PHY)
- *
- * Copyright (C) 2007 Eurek srl
- * Author: Claudio Lanconelli <lanconelli.claudio@eptar.com>
- * based on enc28j60.c written by David Anders for 2.4 kernel version
- *
- * $Id: enc28j60.c,v 1.22 2007/12/20 10:47:01 claudio Exp $
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -35,14 +27,12 @@
 #define ENC28J60_MSG_DEFAULT	\
 	(NETIF_MSG_PROBE | NETIF_MSG_IFUP | NETIF_MSG_IFDOWN | NETIF_MSG_LINK)
 
-/* Buffer size required for the largest SPI transfer (i.e., reading a
- * frame).
- */
+ 
 #define SPI_TRANSFER_BUF_LEN	(4 + MAX_FRAMELEN)
 
 #define TX_TIMEOUT		(4 * HZ)
 
-/* Max TX retries in case of collision as suggested by errata datasheet */
+ 
 #define MAX_TX_RETRYCOUNT	16
 
 enum {
@@ -51,7 +41,7 @@ enum {
 	RXFILTER_PROMISC
 };
 
-/* Driver local data */
+ 
 struct enc28j60_net {
 	struct net_device *netdev;
 	struct spi_device *spi;
@@ -60,9 +50,9 @@ struct enc28j60_net {
 	struct work_struct tx_work;
 	struct work_struct setrx_work;
 	struct work_struct restart_work;
-	u8 bank;		/* current register bank selected */
-	u16 next_pk_ptr;	/* next packet pointer within FIFO */
-	u16 max_pk_counter;	/* statistics: max packet counter */
+	u8 bank;		 
+	u16 next_pk_ptr;	 
+	u16 max_pk_counter;	 
 	u16 tx_retry_count;
 	bool hw_enable;
 	bool full_duplex;
@@ -71,15 +61,12 @@ struct enc28j60_net {
 	u8 spi_transfer_buf[SPI_TRANSFER_BUF_LEN];
 };
 
-/* use ethtool to change the level for any given device */
+ 
 static struct {
 	u32 msg_enable;
 } debug = { -1 };
 
-/*
- * SPI read buffer
- * Wait for the SPI transfer and copy received data to destination.
- */
+ 
 static int
 spi_read_buf(struct enc28j60_net *priv, int len, u8 *data)
 {
@@ -115,9 +102,7 @@ spi_read_buf(struct enc28j60_net *priv, int len, u8 *data)
 	return ret;
 }
 
-/*
- * SPI write buffer
- */
+ 
 static int spi_write_buf(struct enc28j60_net *priv, int len, const u8 *data)
 {
 	struct device *dev = &priv->spi->dev;
@@ -136,9 +121,7 @@ static int spi_write_buf(struct enc28j60_net *priv, int len, const u8 *data)
 	return ret;
 }
 
-/*
- * basic SPI read operation
- */
+ 
 static u8 spi_read_op(struct enc28j60_net *priv, u8 op, u8 addr)
 {
 	struct device *dev = &priv->spi->dev;
@@ -148,7 +131,7 @@ static u8 spi_read_op(struct enc28j60_net *priv, u8 op, u8 addr)
 	int ret;
 	int slen = SPI_OPLEN;
 
-	/* do dummy read if needed */
+	 
 	if (addr & SPRD_MASK)
 		slen++;
 
@@ -163,9 +146,7 @@ static u8 spi_read_op(struct enc28j60_net *priv, u8 op, u8 addr)
 	return val;
 }
 
-/*
- * basic SPI write operation
- */
+ 
 static int spi_write_op(struct enc28j60_net *priv, u8 op, u8 addr, u8 val)
 {
 	struct device *dev = &priv->spi->dev;
@@ -183,25 +164,20 @@ static int spi_write_op(struct enc28j60_net *priv, u8 op, u8 addr, u8 val)
 static void enc28j60_soft_reset(struct enc28j60_net *priv)
 {
 	spi_write_op(priv, ENC28J60_SOFT_RESET, 0, ENC28J60_SOFT_RESET);
-	/* Errata workaround #1, CLKRDY check is unreliable,
-	 * delay at least 1 ms instead */
+	 
 	udelay(2000);
 }
 
-/*
- * select the current register bank if necessary
- */
+ 
 static void enc28j60_set_bank(struct enc28j60_net *priv, u8 addr)
 {
 	u8 b = (addr & BANK_MASK) >> 5;
 
-	/* These registers (EIE, EIR, ESTAT, ECON2, ECON1)
-	 * are present in all banks, no need to switch bank.
-	 */
+	 
 	if (addr >= EIE && addr <= ECON1)
 		return;
 
-	/* Clear or set each bank selection bit as needed */
+	 
 	if ((b & ECON1_BSEL0) != (priv->bank & ECON1_BSEL0)) {
 		if (b & ECON1_BSEL0)
 			spi_write_op(priv, ENC28J60_BIT_FIELD_SET, ECON1,
@@ -221,20 +197,9 @@ static void enc28j60_set_bank(struct enc28j60_net *priv, u8 addr)
 	priv->bank = b;
 }
 
-/*
- * Register access routines through the SPI bus.
- * Every register access comes in two flavours:
- * - nolock_xxx: caller needs to invoke mutex_lock, usually to access
- *   atomically more than one register
- * - locked_xxx: caller doesn't need to invoke mutex_lock, single access
- *
- * Some registers can be accessed through the bit field clear and
- * bit field set to avoid a read modify write cycle.
- */
+ 
 
-/*
- * Register bit field Set
- */
+ 
 static void nolock_reg_bfset(struct enc28j60_net *priv, u8 addr, u8 mask)
 {
 	enc28j60_set_bank(priv, addr);
@@ -248,9 +213,7 @@ static void locked_reg_bfset(struct enc28j60_net *priv, u8 addr, u8 mask)
 	mutex_unlock(&priv->lock);
 }
 
-/*
- * Register bit field Clear
- */
+ 
 static void nolock_reg_bfclr(struct enc28j60_net *priv, u8 addr, u8 mask)
 {
 	enc28j60_set_bank(priv, addr);
@@ -264,9 +227,7 @@ static void locked_reg_bfclr(struct enc28j60_net *priv, u8 addr, u8 mask)
 	mutex_unlock(&priv->lock);
 }
 
-/*
- * Register byte read
- */
+ 
 static int nolock_regb_read(struct enc28j60_net *priv, u8 address)
 {
 	enc28j60_set_bank(priv, address);
@@ -284,9 +245,7 @@ static int locked_regb_read(struct enc28j60_net *priv, u8 address)
 	return ret;
 }
 
-/*
- * Register word read
- */
+ 
 static int nolock_regw_read(struct enc28j60_net *priv, u8 address)
 {
 	int rl, rh;
@@ -309,9 +268,7 @@ static int locked_regw_read(struct enc28j60_net *priv, u8 address)
 	return ret;
 }
 
-/*
- * Register byte write
- */
+ 
 static void nolock_regb_write(struct enc28j60_net *priv, u8 address, u8 data)
 {
 	enc28j60_set_bank(priv, address);
@@ -325,9 +282,7 @@ static void locked_regb_write(struct enc28j60_net *priv, u8 address, u8 data)
 	mutex_unlock(&priv->lock);
 }
 
-/*
- * Register word write
- */
+ 
 static void nolock_regw_write(struct enc28j60_net *priv, u8 address, u16 data)
 {
 	enc28j60_set_bank(priv, address);
@@ -343,10 +298,7 @@ static void locked_regw_write(struct enc28j60_net *priv, u8 address, u16 data)
 	mutex_unlock(&priv->lock);
 }
 
-/*
- * Buffer memory read
- * Select the starting address and execute a SPI buffer read.
- */
+ 
 static void enc28j60_mem_read(struct enc28j60_net *priv, u16 addr, int len,
 			      u8 *data)
 {
@@ -368,16 +320,14 @@ static void enc28j60_mem_read(struct enc28j60_net *priv, u16 addr, int len,
 	mutex_unlock(&priv->lock);
 }
 
-/*
- * Write packet to enc28j60 TX buffer memory
- */
+ 
 static void
 enc28j60_packet_write(struct enc28j60_net *priv, int len, const u8 *data)
 {
 	struct device *dev = &priv->spi->dev;
 
 	mutex_lock(&priv->lock);
-	/* Set the write pointer to start of transmit buffer area */
+	 
 	nolock_regw_write(priv, EWRPTL, TXSTART_INIT);
 #ifdef CONFIG_ENC28J60_WRITEVERIFY
 	if (netif_msg_drv(priv)) {
@@ -389,15 +339,15 @@ enc28j60_packet_write(struct enc28j60_net *priv, int len, const u8 *data)
 				   __func__, reg, TXSTART_INIT);
 	}
 #endif
-	/* Set the TXND pointer to correspond to the packet size given */
+	 
 	nolock_regw_write(priv, ETXNDL, TXSTART_INIT + len);
-	/* write per-packet control byte */
+	 
 	spi_write_op(priv, ENC28J60_WRITE_BUF_MEM, 0, 0x00);
 	if (netif_msg_hw(priv))
 		dev_printk(KERN_DEBUG, dev,
 			   "%s() after control byte ERWPT:0x%04x\n",
 			   __func__, nolock_regw_read(priv, EWRPTL));
-	/* copy the packet into the transmit buffer */
+	 
 	spi_write_buf(priv, len, data);
 	if (netif_msg_hw(priv))
 		dev_printk(KERN_DEBUG, dev,
@@ -411,7 +361,7 @@ static int poll_ready(struct enc28j60_net *priv, u8 reg, u8 mask, u8 val)
 	struct device *dev = &priv->spi->dev;
 	unsigned long timeout = jiffies + msecs_to_jiffies(20);
 
-	/* 20 msec timeout read */
+	 
 	while ((nolock_regb_read(priv, reg) & mask) != val) {
 		if (time_after(jiffies, timeout)) {
 			if (netif_msg_drv(priv))
@@ -423,32 +373,27 @@ static int poll_ready(struct enc28j60_net *priv, u8 reg, u8 mask, u8 val)
 	return 0;
 }
 
-/*
- * Wait until the PHY operation is complete.
- */
+ 
 static int wait_phy_ready(struct enc28j60_net *priv)
 {
 	return poll_ready(priv, MISTAT, MISTAT_BUSY, 0) ? 0 : 1;
 }
 
-/*
- * PHY register read
- * PHY registers are not accessed directly, but through the MII.
- */
+ 
 static u16 enc28j60_phy_read(struct enc28j60_net *priv, u8 address)
 {
 	u16 ret;
 
 	mutex_lock(&priv->lock);
-	/* set the PHY register address */
+	 
 	nolock_regb_write(priv, MIREGADR, address);
-	/* start the register read operation */
+	 
 	nolock_regb_write(priv, MICMD, MICMD_MIIRD);
-	/* wait until the PHY read completes */
+	 
 	wait_phy_ready(priv);
-	/* quit reading */
+	 
 	nolock_regb_write(priv, MICMD, 0x00);
-	/* return the data */
+	 
 	ret = nolock_regw_read(priv, MIRDL);
 	mutex_unlock(&priv->lock);
 
@@ -460,20 +405,18 @@ static int enc28j60_phy_write(struct enc28j60_net *priv, u8 address, u16 data)
 	int ret;
 
 	mutex_lock(&priv->lock);
-	/* set the PHY register address */
+	 
 	nolock_regb_write(priv, MIREGADR, address);
-	/* write the PHY data */
+	 
 	nolock_regw_write(priv, MIWRL, data);
-	/* wait until the PHY write completes and return */
+	 
 	ret = wait_phy_ready(priv);
 	mutex_unlock(&priv->lock);
 
 	return ret;
 }
 
-/*
- * Program the hardware MAC address from dev->dev_addr.
- */
+ 
 static int enc28j60_set_hw_macaddr(struct net_device *ndev)
 {
 	int ret;
@@ -485,7 +428,7 @@ static int enc28j60_set_hw_macaddr(struct net_device *ndev)
 		if (netif_msg_drv(priv))
 			dev_info(dev, "%s: Setting MAC address to %pM\n",
 				 ndev->name, ndev->dev_addr);
-		/* NOTE: MAC address in ENC28J60 is byte-backward */
+		 
 		nolock_regb_write(priv, MAADR5, ndev->dev_addr[0]);
 		nolock_regb_write(priv, MAADR4, ndev->dev_addr[1]);
 		nolock_regb_write(priv, MAADR3, ndev->dev_addr[2]);
@@ -504,9 +447,7 @@ static int enc28j60_set_hw_macaddr(struct net_device *ndev)
 	return ret;
 }
 
-/*
- * Store the new hardware address in dev->dev_addr, and update the MAC.
- */
+ 
 static int enc28j60_set_mac_address(struct net_device *dev, void *addr)
 {
 	struct sockaddr *address = addr;
@@ -520,9 +461,7 @@ static int enc28j60_set_mac_address(struct net_device *dev, void *addr)
 	return enc28j60_set_hw_macaddr(dev);
 }
 
-/*
- * Debug routine to dump useful register contents
- */
+ 
 static void enc28j60_dump_regs(struct enc28j60_net *priv, const char *msg)
 {
 	struct device *dev = &priv->spi->dev;
@@ -558,9 +497,7 @@ static void enc28j60_dump_regs(struct enc28j60_net *priv, const char *msg)
 	mutex_unlock(&priv->lock);
 }
 
-/*
- * ERXRDPT need to be set always at odd addresses, refer to errata datasheet
- */
+ 
 static u16 erxrdpt_workaround(u16 next_packet_ptr, u16 start, u16 end)
 {
 	u16 erxrdpt;
@@ -573,9 +510,7 @@ static u16 erxrdpt_workaround(u16 next_packet_ptr, u16 start, u16 end)
 	return erxrdpt;
 }
 
-/*
- * Calculate wrap around when reading beyond the end of the RX buffer
- */
+ 
 static u16 rx_packet_start(u16 ptr)
 {
 	if (ptr + RSV_SIZE > RXEND_INIT)
@@ -595,7 +530,7 @@ static void nolock_rxfifo_init(struct enc28j60_net *priv, u16 start, u16 end)
 				__func__, start, end);
 		return;
 	}
-	/* set receive buffer start + end */
+	 
 	priv->next_pk_ptr = start;
 	nolock_regw_write(priv, ERXSTL, start);
 	erxrdpt = erxrdpt_workaround(priv->next_pk_ptr, start, end);
@@ -613,16 +548,12 @@ static void nolock_txfifo_init(struct enc28j60_net *priv, u16 start, u16 end)
 				__func__, start, end);
 		return;
 	}
-	/* set transmit buffer start + end */
+	 
 	nolock_regw_write(priv, ETXSTL, start);
 	nolock_regw_write(priv, ETXNDL, end);
 }
 
-/*
- * Low power mode shrinks power consumption about 100x, so we'd like
- * the chip to be in that mode whenever it's inactive. (However, we
- * can't stay in low power mode during suspend with WOL active.)
- */
+ 
 static void enc28j60_lowpower(struct enc28j60_net *priv, bool is_low)
 {
 	struct device *dev = &priv->spi->dev;
@@ -635,12 +566,12 @@ static void enc28j60_lowpower(struct enc28j60_net *priv, bool is_low)
 		nolock_reg_bfclr(priv, ECON1, ECON1_RXEN);
 		poll_ready(priv, ESTAT, ESTAT_RXBUSY, 0);
 		poll_ready(priv, ECON1, ECON1_TXRTS, 0);
-		/* ECON2_VRPS was set during initialization */
+		 
 		nolock_reg_bfset(priv, ECON2, ECON2_PWRSV);
 	} else {
 		nolock_reg_bfclr(priv, ECON2, ECON2_PWRSV);
 		poll_ready(priv, ESTAT, ESTAT_CLKRDY, ESTAT_CLKRDY);
-		/* caller sets ECON1_RXEN */
+		 
 	}
 	mutex_unlock(&priv->lock);
 }
@@ -655,27 +586,23 @@ static int enc28j60_hw_init(struct enc28j60_net *priv)
 			   priv->full_duplex ? "FullDuplex" : "HalfDuplex");
 
 	mutex_lock(&priv->lock);
-	/* first reset the chip */
+	 
 	enc28j60_soft_reset(priv);
-	/* Clear ECON1 */
+	 
 	spi_write_op(priv, ENC28J60_WRITE_CTRL_REG, ECON1, 0x00);
 	priv->bank = 0;
 	priv->hw_enable = false;
 	priv->tx_retry_count = 0;
 	priv->max_pk_counter = 0;
 	priv->rxfilter = RXFILTER_NORMAL;
-	/* enable address auto increment and voltage regulator powersave */
+	 
 	nolock_regb_write(priv, ECON2, ECON2_AUTOINC | ECON2_VRPS);
 
 	nolock_rxfifo_init(priv, RXSTART_INIT, RXEND_INIT);
 	nolock_txfifo_init(priv, TXSTART_INIT, TXEND_INIT);
 	mutex_unlock(&priv->lock);
 
-	/*
-	 * Check the RevID.
-	 * If it's 0x00 or 0xFF probably the enc28j60 is not mounted or
-	 * damaged.
-	 */
+	 
 	reg = locked_regb_read(priv, EREVID);
 	if (netif_msg_drv(priv))
 		dev_info(dev, "chip RevID: 0x%02x\n", reg);
@@ -686,40 +613,36 @@ static int enc28j60_hw_init(struct enc28j60_net *priv)
 		return 0;
 	}
 
-	/* default filter mode: (unicast OR broadcast) AND crc valid */
+	 
 	locked_regb_write(priv, ERXFCON,
 			    ERXFCON_UCEN | ERXFCON_CRCEN | ERXFCON_BCEN);
 
-	/* enable MAC receive */
+	 
 	locked_regb_write(priv, MACON1,
 			    MACON1_MARXEN | MACON1_TXPAUS | MACON1_RXPAUS);
-	/* enable automatic padding and CRC operations */
+	 
 	if (priv->full_duplex) {
 		locked_regb_write(priv, MACON3,
 				    MACON3_PADCFG0 | MACON3_TXCRCEN |
 				    MACON3_FRMLNEN | MACON3_FULDPX);
-		/* set inter-frame gap (non-back-to-back) */
+		 
 		locked_regb_write(priv, MAIPGL, 0x12);
-		/* set inter-frame gap (back-to-back) */
+		 
 		locked_regb_write(priv, MABBIPG, 0x15);
 	} else {
 		locked_regb_write(priv, MACON3,
 				    MACON3_PADCFG0 | MACON3_TXCRCEN |
 				    MACON3_FRMLNEN);
-		locked_regb_write(priv, MACON4, 1 << 6);	/* DEFER bit */
-		/* set inter-frame gap (non-back-to-back) */
+		locked_regb_write(priv, MACON4, 1 << 6);	 
+		 
 		locked_regw_write(priv, MAIPGL, 0x0C12);
-		/* set inter-frame gap (back-to-back) */
+		 
 		locked_regb_write(priv, MABBIPG, 0x12);
 	}
-	/*
-	 * MACLCON1 (default)
-	 * MACLCON2 (default)
-	 * Set the maximum packet size which the controller will accept.
-	 */
+	 
 	locked_regw_write(priv, MAMXFLL, MAX_FRAMELEN);
 
-	/* Configure LEDs */
+	 
 	if (!enc28j60_phy_write(priv, PHLCON, ENC28J60_LAMPS_MODE))
 		return 0;
 
@@ -744,7 +667,7 @@ static void enc28j60_hw_enable(struct enc28j60_net *priv)
 {
 	struct device *dev = &priv->spi->dev;
 
-	/* enable interrupts */
+	 
 	if (netif_msg_hw(priv))
 		dev_printk(KERN_DEBUG, dev, "%s() enabling interrupts.\n",
 			   __func__);
@@ -757,7 +680,7 @@ static void enc28j60_hw_enable(struct enc28j60_net *priv)
 	nolock_regb_write(priv, EIE, EIE_INTIE | EIE_PKTIE | EIE_LINKIE |
 			  EIE_TXIE | EIE_TXERIE | EIE_RXERIE);
 
-	/* enable receive logic */
+	 
 	nolock_reg_bfset(priv, ECON1, ECON1_RXEN);
 	priv->hw_enable = true;
 	mutex_unlock(&priv->lock);
@@ -766,7 +689,7 @@ static void enc28j60_hw_enable(struct enc28j60_net *priv)
 static void enc28j60_hw_disable(struct enc28j60_net *priv)
 {
 	mutex_lock(&priv->lock);
-	/* disable interrupts and packet reception */
+	 
 	nolock_regb_write(priv, EIE, 0x00);
 	nolock_reg_bfclr(priv, ECON1, ECON1_RXEN);
 	priv->hw_enable = false;
@@ -780,9 +703,7 @@ enc28j60_setlink(struct net_device *ndev, u8 autoneg, u16 speed, u8 duplex)
 	int ret = 0;
 
 	if (!priv->hw_enable) {
-		/* link is in low power mode now; duplex setting
-		 * will take effect on next enc28j60_hw_init().
-		 */
+		 
 		if (autoneg == AUTONEG_DISABLE && speed == SPEED_10)
 			priv->full_duplex = (duplex == DUPLEX_FULL);
 		else {
@@ -798,9 +719,7 @@ enc28j60_setlink(struct net_device *ndev, u8 autoneg, u16 speed, u8 duplex)
 	return ret;
 }
 
-/*
- * Read the Transmit Status Vector
- */
+ 
 static void enc28j60_read_tsv(struct enc28j60_net *priv, u8 tsv[TSV_SIZE])
 {
 	struct device *dev = &priv->spi->dev;
@@ -856,9 +775,7 @@ static void enc28j60_dump_tsv(struct enc28j60_net *priv, const char *msg,
 		   TSV_GETBIT(tsv, TSV_TXVLANTAGFRAME));
 }
 
-/*
- * Receive Status vector
- */
+ 
 static void enc28j60_dump_rsv(struct enc28j60_net *priv, const char *msg,
 			      u16 pk_ptr, int len, u16 sts)
 {
@@ -894,11 +811,7 @@ static void dump_packet(const char *msg, int len, const char *data)
 			data, len, true);
 }
 
-/*
- * Hardware receive function.
- * Read the buffer memory, update the FIFO pointer to free the buffer,
- * check the status vector and decrement the packet counter.
- */
+ 
 static void enc28j60_hw_rx(struct net_device *ndev)
 {
 	struct enc28j60_net *priv = netdev_priv(ndev);
@@ -916,7 +829,7 @@ static void enc28j60_hw_rx(struct net_device *ndev)
 		if (netif_msg_rx_err(priv))
 			netdev_err(ndev, "%s() Invalid packet address!! 0x%04x\n",
 				   __func__, priv->next_pk_ptr);
-		/* packet address corrupted: reset RX logic */
+		 
 		mutex_lock(&priv->lock);
 		nolock_reg_bfclr(priv, ECON1, ECON1_RXEN);
 		nolock_reg_bfset(priv, ECON1, ECON1_RXRST);
@@ -928,7 +841,7 @@ static void enc28j60_hw_rx(struct net_device *ndev)
 		ndev->stats.rx_errors++;
 		return;
 	}
-	/* Read next packet pointer and rx status vector */
+	 
 	enc28j60_mem_read(priv, priv->next_pk_ptr, sizeof(rsv), rsv);
 
 	next_packet = rsv[1];
@@ -964,24 +877,20 @@ static void enc28j60_hw_rx(struct net_device *ndev)
 			ndev->stats.rx_dropped++;
 		} else {
 			skb_reserve(skb, NET_IP_ALIGN);
-			/* copy the packet from the receive buffer */
+			 
 			enc28j60_mem_read(priv,
 				rx_packet_start(priv->next_pk_ptr),
 				len, skb_put(skb, len));
 			if (netif_msg_pktdata(priv))
 				dump_packet(__func__, skb->len, skb->data);
 			skb->protocol = eth_type_trans(skb, ndev);
-			/* update statistics */
+			 
 			ndev->stats.rx_packets++;
 			ndev->stats.rx_bytes += len;
 			netif_rx(skb);
 		}
 	}
-	/*
-	 * Move the RX read pointer to the start of the next
-	 * received packet.
-	 * This frees the memory we just read out.
-	 */
+	 
 	erxrdpt = erxrdpt_workaround(next_packet, RXSTART_INIT, RXEND_INIT);
 	if (netif_msg_hw(priv))
 		dev_printk(KERN_DEBUG, dev, "%s() ERXRDPT:0x%04x\n",
@@ -1000,14 +909,12 @@ static void enc28j60_hw_rx(struct net_device *ndev)
 	}
 #endif
 	priv->next_pk_ptr = next_packet;
-	/* we are done with this packet, decrement the packet counter */
+	 
 	nolock_reg_bfset(priv, ECON2, ECON2_PKTDEC);
 	mutex_unlock(&priv->lock);
 }
 
-/*
- * Calculate free space in RxFIFO
- */
+ 
 static int enc28j60_get_free_rxfifo(struct enc28j60_net *priv)
 {
 	struct net_device *ndev = priv->netdev;
@@ -1038,9 +945,7 @@ static int enc28j60_get_free_rxfifo(struct enc28j60_net *priv)
 	return free_space;
 }
 
-/*
- * Access the PHY to determine link status
- */
+ 
 static void enc28j60_check_link_status(struct net_device *ndev)
 {
 	struct enc28j60_net *priv = netdev_priv(ndev);
@@ -1086,14 +991,7 @@ static void enc28j60_tx_clear(struct net_device *ndev, bool err)
 	netif_wake_queue(ndev);
 }
 
-/*
- * RX handler
- * Ignore PKTIF because is unreliable! (Look at the errata datasheet)
- * Check EPKTCNT is the suggested workaround.
- * We don't need to clear interrupt flag, automatically done when
- * enc28j60_hw_rx() decrements the packet counter.
- * Returns how many packet processed.
- */
+ 
 static int enc28j60_rx_interrupt(struct net_device *ndev)
 {
 	struct enc28j60_net *priv = netdev_priv(ndev);
@@ -1104,7 +1002,7 @@ static int enc28j60_rx_interrupt(struct net_device *ndev)
 		netdev_printk(KERN_DEBUG, ndev, "intRX, pk_cnt: %d\n",
 			      pk_counter);
 	if (pk_counter > priv->max_pk_counter) {
-		/* update statistics */
+		 
 		priv->max_pk_counter = pk_counter;
 		if (netif_msg_rx_status(priv) && priv->max_pk_counter > 1)
 			netdev_printk(KERN_DEBUG, ndev, "RX max_pk_cnt: %d\n",
@@ -1123,13 +1021,13 @@ static irqreturn_t enc28j60_irq(int irq, void *dev_id)
 	struct net_device *ndev = priv->netdev;
 	int intflags, loop;
 
-	/* disable further interrupts */
+	 
 	locked_reg_bfclr(priv, EIE, EIE_INTIE);
 
 	do {
 		loop = 0;
 		intflags = locked_regb_read(priv, EIR);
-		/* DMA interrupt handler (not currently used) */
+		 
 		if ((intflags & EIR_DMAIF) != 0) {
 			loop++;
 			if (netif_msg_intr(priv))
@@ -1137,17 +1035,17 @@ static irqreturn_t enc28j60_irq(int irq, void *dev_id)
 					      loop);
 			locked_reg_bfclr(priv, EIR, EIR_DMAIF);
 		}
-		/* LINK changed handler */
+		 
 		if ((intflags & EIR_LINKIF) != 0) {
 			loop++;
 			if (netif_msg_intr(priv))
 				netdev_printk(KERN_DEBUG, ndev, "intLINK(%d)\n",
 					      loop);
 			enc28j60_check_link_status(ndev);
-			/* read PHIR to clear the flag */
+			 
 			enc28j60_phy_read(priv, PHIR);
 		}
-		/* TX complete handler */
+		 
 		if (((intflags & EIR_TXIF) != 0) &&
 		    ((intflags & EIR_TXERIF) == 0)) {
 			bool err = false;
@@ -1169,7 +1067,7 @@ static irqreturn_t enc28j60_irq(int irq, void *dev_id)
 			enc28j60_tx_clear(ndev, err);
 			locked_reg_bfclr(priv, EIR, EIR_TXIF);
 		}
-		/* TX Error handler */
+		 
 		if ((intflags & EIR_TXERIF) != 0) {
 			u8 tsv[TSV_SIZE];
 
@@ -1181,13 +1079,13 @@ static irqreturn_t enc28j60_irq(int irq, void *dev_id)
 			enc28j60_read_tsv(priv, tsv);
 			if (netif_msg_tx_err(priv))
 				enc28j60_dump_tsv(priv, "Tx Error", tsv);
-			/* Reset TX logic */
+			 
 			mutex_lock(&priv->lock);
 			nolock_reg_bfset(priv, ECON1, ECON1_TXRST);
 			nolock_reg_bfclr(priv, ECON1, ECON1_TXRST);
 			nolock_txfifo_init(priv, TXSTART_INIT, TXEND_INIT);
 			mutex_unlock(&priv->lock);
-			/* Transmit Late collision check for retransmit */
+			 
 			if (TSV_GETBIT(tsv, TSV_TXLATECOLLISION)) {
 				if (netif_msg_tx_err(priv))
 					netdev_printk(KERN_DEBUG, ndev,
@@ -1202,13 +1100,13 @@ static irqreturn_t enc28j60_irq(int irq, void *dev_id)
 				enc28j60_tx_clear(ndev, true);
 			locked_reg_bfclr(priv, EIR, EIR_TXERIF | EIR_TXIF);
 		}
-		/* RX Error handler */
+		 
 		if ((intflags & EIR_RXERIF) != 0) {
 			loop++;
 			if (netif_msg_intr(priv))
 				netdev_printk(KERN_DEBUG, ndev, "intRXErr(%d)\n",
 					      loop);
-			/* Check free FIFO space to flag RX overrun */
+			 
 			if (enc28j60_get_free_rxfifo(priv) <= 0) {
 				if (netif_msg_rx_err(priv))
 					netdev_printk(KERN_DEBUG, ndev, "RX Overrun\n");
@@ -1216,22 +1114,18 @@ static irqreturn_t enc28j60_irq(int irq, void *dev_id)
 			}
 			locked_reg_bfclr(priv, EIR, EIR_RXERIF);
 		}
-		/* RX handler */
+		 
 		if (enc28j60_rx_interrupt(ndev))
 			loop++;
 	} while (loop);
 
-	/* re-enable interrupts */
+	 
 	locked_reg_bfset(priv, EIE, EIE_INTIE);
 
 	return IRQ_HANDLED;
 }
 
-/*
- * Hardware transmit function.
- * Fill the buffer memory and send the contents of the transmit buffer
- * onto the network
- */
+ 
 static void enc28j60_hw_tx(struct enc28j60_net *priv)
 {
 	struct net_device *ndev = priv->netdev;
@@ -1248,18 +1142,18 @@ static void enc28j60_hw_tx(struct enc28j60_net *priv)
 	enc28j60_packet_write(priv, priv->tx_skb->len, priv->tx_skb->data);
 
 #ifdef CONFIG_ENC28J60_WRITEVERIFY
-	/* readback and verify written data */
+	 
 	if (netif_msg_drv(priv)) {
 		struct device *dev = &priv->spi->dev;
 		int test_len, k;
-		u8 test_buf[64]; /* limit the test to the first 64 bytes */
+		u8 test_buf[64];  
 		int okflag;
 
 		test_len = priv->tx_skb->len;
 		if (test_len > sizeof(test_buf))
 			test_len = sizeof(test_buf);
 
-		/* + 1 to skip control byte */
+		 
 		enc28j60_mem_read(priv, TXSTART_INIT + 1, test_len, test_buf);
 		okflag = 1;
 		for (k = 0; k < test_len; k++) {
@@ -1274,7 +1168,7 @@ static void enc28j60_hw_tx(struct enc28j60_net *priv)
 			dev_printk(KERN_DEBUG, dev, "Tx write buffer, verify ERROR!\n");
 	}
 #endif
-	/* set TX request flag */
+	 
 	locked_reg_bfset(priv, ECON1, ECON1_TXRTS);
 }
 
@@ -1283,17 +1177,10 @@ static netdev_tx_t enc28j60_send_packet(struct sk_buff *skb,
 {
 	struct enc28j60_net *priv = netdev_priv(dev);
 
-	/* If some error occurs while trying to transmit this
-	 * packet, you should return '1' from this function.
-	 * In such a case you _may not_ do anything to the
-	 * SKB, it is still owned by the network queueing
-	 * layer when an error is returned. This means you
-	 * may not modify any SKB fields, you may not free
-	 * the SKB, etc.
-	 */
+	 
 	netif_stop_queue(dev);
 
-	/* Remember the skb for deferred processing */
+	 
 	priv->tx_skb = skb;
 	schedule_work(&priv->tx_work);
 
@@ -1305,7 +1192,7 @@ static void enc28j60_tx_work_handler(struct work_struct *work)
 	struct enc28j60_net *priv =
 		container_of(work, struct enc28j60_net, tx_work);
 
-	/* actual delivery of data */
+	 
 	enc28j60_hw_tx(priv);
 }
 
@@ -1317,18 +1204,11 @@ static void enc28j60_tx_timeout(struct net_device *ndev, unsigned int txqueue)
 		netdev_err(ndev, "tx timeout\n");
 
 	ndev->stats.tx_errors++;
-	/* can't restart safely under softirq */
+	 
 	schedule_work(&priv->restart_work);
 }
 
-/*
- * Open/initialize the board. This is called (in the current kernel)
- * sometime after booting when the 'ifconfig' program is run.
- *
- * This routine should set everything up anew at each open, even
- * registers that "should" only need to be set once at boot, so that
- * there is non-reboot way to recover if something goes wrong.
- */
+ 
 static int enc28j60_net_open(struct net_device *dev)
 {
 	struct enc28j60_net *priv = netdev_priv(dev);
@@ -1338,7 +1218,7 @@ static int enc28j60_net_open(struct net_device *dev)
 			netdev_err(dev, "invalid MAC address %pM\n", dev->dev_addr);
 		return -EADDRNOTAVAIL;
 	}
-	/* Reset the hardware here (and take it out of low power mode) */
+	 
 	enc28j60_lowpower(priv, false);
 	enc28j60_hw_disable(priv);
 	if (!enc28j60_hw_init(priv)) {
@@ -1346,21 +1226,19 @@ static int enc28j60_net_open(struct net_device *dev)
 			netdev_err(dev, "hw_reset() failed\n");
 		return -EINVAL;
 	}
-	/* Update the MAC address (in case user has changed it) */
+	 
 	enc28j60_set_hw_macaddr(dev);
-	/* Enable interrupts */
+	 
 	enc28j60_hw_enable(priv);
-	/* check link status */
+	 
 	enc28j60_check_link_status(dev);
-	/* We are now ready to accept transmit requests from
-	 * the queueing layer of the networking.
-	 */
+	 
 	netif_start_queue(dev);
 
 	return 0;
 }
 
-/* The inverse routine to net_open(). */
+ 
 static int enc28j60_net_close(struct net_device *dev)
 {
 	struct enc28j60_net *priv = netdev_priv(dev);
@@ -1372,12 +1250,7 @@ static int enc28j60_net_close(struct net_device *dev)
 	return 0;
 }
 
-/*
- * Set or clear the multicast filter for this adapter
- * num_addrs == -1	Promiscuous mode, receive all packets
- * num_addrs == 0	Normal mode, filter out multicast packets
- * num_addrs > 0	Multicast mode, receive normal and MC packets
- */
+ 
 static void enc28j60_set_multicast_list(struct net_device *dev)
 {
 	struct enc28j60_net *priv = netdev_priv(dev);
@@ -1446,7 +1319,7 @@ static void enc28j60_restart_work_handler(struct work_struct *work)
 	rtnl_unlock();
 }
 
-/* ......................... ETHTOOL SUPPORT ........................... */
+ 
 
 static void
 enc28j60_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
@@ -1537,14 +1410,14 @@ static int enc28j60_probe(struct spi_device *spi)
 	}
 	priv = netdev_priv(dev);
 
-	priv->netdev = dev;	/* priv to netdev reference */
-	priv->spi = spi;	/* priv to spi reference */
+	priv->netdev = dev;	 
+	priv->spi = spi;	 
 	priv->msg_enable = netif_msg_init(debug.msg_enable, ENC28J60_MSG_DEFAULT);
 	mutex_init(&priv->lock);
 	INIT_WORK(&priv->tx_work, enc28j60_tx_work_handler);
 	INIT_WORK(&priv->setrx_work, enc28j60_setrx_work_handler);
 	INIT_WORK(&priv->restart_work, enc28j60_restart_work_handler);
-	spi_set_drvdata(spi, priv);	/* spi to priv reference */
+	spi_set_drvdata(spi, priv);	 
 	SET_NETDEV_DEV(dev, &spi->dev);
 
 	if (!enc28j60_chipset_init(dev)) {
@@ -1558,9 +1431,7 @@ static int enc28j60_probe(struct spi_device *spi)
 		eth_hw_addr_random(dev);
 	enc28j60_set_hw_macaddr(dev);
 
-	/* Board setup must set the relevant edge trigger type;
-	 * level triggers won't currently work.
-	 */
+	 
 	ret = request_threaded_irq(spi->irq, NULL, enc28j60_irq, IRQF_ONESHOT,
 				   DRV_NAME, priv);
 	if (ret < 0) {
@@ -1607,7 +1478,7 @@ static void enc28j60_remove(struct spi_device *spi)
 
 static const struct of_device_id enc28j60_dt_ids[] = {
 	{ .compatible = "microchip,enc28j60" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, enc28j60_dt_ids);
 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2021 Intel Corporation
- */
+ 
+ 
 
 #ifndef __I915_PCI_H__
 #define __I915_PCI_H__
@@ -15,4 +13,4 @@ void i915_pci_unregister_driver(void);
 
 bool i915_pci_resource_valid(struct pci_dev *pdev, int bar);
 
-#endif /* __I915_PCI_H__ */
+#endif  

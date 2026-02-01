@@ -1,14 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2006, Johannes Berg <johannes@sipsolutions.net>
- */
+ 
+ 
 
 #include <linux/list.h>
 #include <linux/spinlock.h>
 #include <linux/leds.h>
 #include "ieee80211_i.h"
 
-#define MAC80211_BLINK_DELAY 50 /* ms */
+#define MAC80211_BLINK_DELAY 50  
 
 static inline void ieee80211_led_rx(struct ieee80211_local *local)
 {

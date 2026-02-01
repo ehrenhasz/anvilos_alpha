@@ -1,10 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * mt8186-afe-common.h  --  Mediatek 8186 audio driver definitions
- *
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
- */
+ 
 
 #ifndef _MT_8186_AFE_COMMON_H_
 #define _MT_8186_AFE_COMMON_H_
@@ -116,7 +110,7 @@ enum {
 enum {
 	MTK_AFE_ADDA_DL_GAIN_MUTE = 0,
 	MTK_AFE_ADDA_DL_GAIN_NORMAL = 0xf74f,
-	/* SA suggest apply -0.3db to audio/speech path */
+	 
 };
 
 #define MTK_SPK_I2S_0_STR "MTK_SPK_I2S_0"
@@ -124,7 +118,7 @@ enum {
 #define MTK_SPK_I2S_2_STR "MTK_SPK_I2S_2"
 #define MTK_SPK_I2S_3_STR "MTK_SPK_I2S_3"
 
-/* MCLK */
+ 
 enum {
 	MT8186_I2S0_MCK = 0,
 	MT8186_I2S1_MCK,
@@ -151,14 +145,14 @@ struct mt8186_afe_private {
 	int sgen_rate;
 	int sgen_amplitude;
 
-	/* xrun assert */
+	 
 	int xrun_assert[MT8186_MEMIF_NUM];
 
-	/* dai */
+	 
 	bool dai_on[MT8186_DAI_NUM];
 	void *dai_priv[MT8186_DAI_NUM];
 
-	/* adda */
+	 
 	bool mtkaif_calibration_ok;
 	int mtkaif_protocol;
 	int mtkaif_chosen_phase[4];
@@ -168,7 +162,7 @@ struct mt8186_afe_private {
 	int mtkaif_looback0;
 	int mtkaif_looback1;
 
-	/* mck */
+	 
 	int mck_rate[MT8186_MCK_NUM];
 };
 

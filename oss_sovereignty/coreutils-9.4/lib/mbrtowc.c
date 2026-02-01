@@ -1,28 +1,8 @@
-/* Convert multibyte character to wide character.
-   Copyright (C) 1999-2002, 2005-2023 Free Software Foundation, Inc.
-   Written by Bruno Haible <bruno@clisp.org>, 2008.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-/* Specification.  */
+ 
 #include <wchar.h>
 
 #if GNULIB_defined_mbstate_t
-/* Implement mbrtowc() on top of mbtowc() for the non-UTF-8 locales
-   and directly for the UTF-8 locales.  */
+ 
 
 # include <errno.h>
 # include <stdint.h>
@@ -30,7 +10,7 @@
 
 # if defined _WIN32 && !defined __CYGWIN__
 
-#  define WIN32_LEAN_AND_MEAN  /* avoid including junk */
+#  define WIN32_LEAN_AND_MEAN   
 #  include <windows.h>
 
 # elif HAVE_PTHREAD_API
@@ -65,7 +45,7 @@ mbrtowc (wchar_t *pwc, const char *s, size_t n, mbstate_t *ps)
 }
 
 #else
-/* Override the system's mbrtowc() function.  */
+ 
 
 # if MBRTOWC_IN_C_LOCALE_MAYBE_EILSEQ
 #  include "hard-locale.h"
@@ -101,14 +81,13 @@ rpl_mbrtowc (wchar_t *pwc, const char *s, size_t n, mbstate_t *ps)
   {
     static mbstate_t internal_state;
 
-    /* Override mbrtowc's internal state.  We cannot call mbsinit() on the
-       hidden internal state, but we can call it on our variable.  */
+     
     if (ps == NULL)
       ps = &internal_state;
 
     if (!mbsinit (ps))
       {
-        /* Parse the rest of the multibyte character byte for byte.  */
+         
         size_t count = 0;
         for (; n > 0; s++, n--)
           {
@@ -119,7 +98,7 @@ rpl_mbrtowc (wchar_t *pwc, const char *s, size_t n, mbstate_t *ps)
             count++;
             if (ret != (size_t)(-2))
               {
-                /* The multibyte character has been completed.  */
+                 
                 *pwc = wc;
                 return (wc == 0 ? 0 : count);
               }

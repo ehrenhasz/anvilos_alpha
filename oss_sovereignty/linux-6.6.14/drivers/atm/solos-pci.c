@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the Solos PCI ADSL2+ card, designed to support Linux by
- *  Traverse Technologies -- https://www.traverse.com.au/
- *  Xrio Limited          -- http://www.xrio.com/
- *
- * Copyright © 2008 Traverse Technologies
- * Copyright © 2008 Intel Corporation
- *
- * Authors: Nathan Williams <nathan@traverse.com.au>
- *          David Woodhouse <dwmw2@infradead.org>
- *          Treker Chen <treker@xrio.com>
- */
+
+ 
 
 #define DEBUG
 #define VERBOSE_DEBUG
@@ -55,13 +44,13 @@
 
 #define DATA_RAM_SIZE	32768
 #define BUF_SIZE	2048
-#define OLD_BUF_SIZE	4096 /* For FPGA versions <= 2*/
-/* Old boards use ATMEL AD45DB161D flash */
-#define ATMEL_FPGA_PAGE	528 /* FPGA flash page size*/
-#define ATMEL_SOLOS_PAGE	512 /* Solos flash page size*/
-#define ATMEL_FPGA_BLOCK	(ATMEL_FPGA_PAGE * 8) /* FPGA block size*/
-#define ATMEL_SOLOS_BLOCK	(ATMEL_SOLOS_PAGE * 8) /* Solos block size*/
-/* Current boards use M25P/M25PE SPI flash */
+#define OLD_BUF_SIZE	4096  
+ 
+#define ATMEL_FPGA_PAGE	528  
+#define ATMEL_SOLOS_PAGE	512  
+#define ATMEL_FPGA_BLOCK	(ATMEL_FPGA_PAGE * 8)  
+#define ATMEL_SOLOS_BLOCK	(ATMEL_SOLOS_PAGE * 8)  
+ 
 #define SPI_FLASH_BLOCK	(256 * 64)
 
 #define RX_BUF(card, nr) ((card->buffers) + (nr)*(card->buffer_size)*2)
@@ -286,7 +275,7 @@ static ssize_t solos_param_store(struct device *dev, struct device_attribute *at
 
 	buflen = skb->len;
 
-	/* Sometimes it has a newline, sometimes it doesn't. */
+	 
 	if (skb->data[buflen - 1] == '\n')
 		buflen--;
 
@@ -295,8 +284,7 @@ static ssize_t solos_param_store(struct device *dev, struct device_attribute *at
 	else if (buflen == 5 && !strncmp(skb->data, "ERROR", 5))
 		ret = -EIO;
 	else {
-		/* We know we have enough space allocated for this; we allocated 
-		   it ourselves */
+		 
 		skb->data[buflen] = 0;
 	
 		dev_warn(&card->dev->dev, "Unexpected parameter response: '%s'\n",
@@ -325,17 +313,7 @@ static char *next_string(struct sk_buff *skb)
 	return NULL;
 }
 
-/*
- * Status packet has fields separated by \n, starting with a version number
- * for the information therein. Fields are....
- *
- *     packet version
- *     RxBitRate	(version >= 1)
- *     TxBitRate	(version >= 1)
- *     State		(version >= 1)
- *     LocalSNRMargin	(version >= 1)
- *     LocalLineAttn	(version >= 1)
- */       
+        
 static int process_status(struct solos_card *card, int port, struct sk_buff *skb)
 {
 	char *str, *state_str, *snr, *attn;
@@ -383,7 +361,7 @@ static int process_status(struct solos_card *card, int port, struct sk_buff *skb
 	if (!state_str)
 		return -EIO;
 
-	/* Anything but 'Showtime' is down */
+	 
 	if (strcmp(state_str, "Showtime")) {
 		atm_dev_signal_change(card->atmdev[port], ATM_PHY_SIG_LOST);
 		dev_info(&card->dev->dev, "Port %d: %s\n", port, state_str);
@@ -561,11 +539,11 @@ static ssize_t hardware_show(struct device *dev, struct device_attribute *attr,
 	data32 = ioread32(card->config_regs + GPIO_STATUS);
 	switch (gattr->offset) {
 	case 0:
-		/* HardwareVersion */
+		 
 		data32 = data32 & 0x1F;
 		break;
 	case 1:
-		/* HardwareVariant */
+		 
 		data32 = (data32 >> 5) & 0x0F;
 		break;
 	}
@@ -679,7 +657,7 @@ static int flash_upgrade(struct solos_card *card, int chip)
 
 	dev_info(&card->dev->dev, "Flash upgrade starting\n");
 
-	/* New FPGAs require driver version before permitting flash upgrades */
+	 
 	iowrite32(DRIVER_VERSION, card->config_regs + DRIVER_VER);
 
 	numblocks = fw->size / blocksize;
@@ -690,7 +668,7 @@ static int flash_upgrade(struct solos_card *card, int chip)
 	iowrite32(1, card->config_regs + FPGA_MODE);
 	(void) ioread32(card->config_regs + FPGA_MODE); 
 
-	/* Set mode to Chip Erase */
+	 
 	if(chip == 0 || chip == 2)
 		dev_info(&card->dev->dev, "Set FPGA Flash mode to FPGA Chip Erase\n");
 	if(chip == 1 || chip == 3)
@@ -704,14 +682,14 @@ static int flash_upgrade(struct solos_card *card, int chip)
 	for (offset = 0; offset < fw->size; offset += blocksize) {
 		int i;
 
-		/* Clear write flag */
+		 
 		iowrite32(0, card->config_regs + WRITE_FLASH);
 
-		/* Set mode to Block Write */
-		/* dev_info(&card->dev->dev, "Set FPGA Flash mode to Block Write\n"); */
+		 
+		 
 		iowrite32(((chip * 2) + 1), card->config_regs + FLASH_MODE);
 
-		/* Copy block to buffer, swapping each 16 bits for Atmel flash */
+		 
 		for(i = 0; i < blocksize; i += 4) {
 			uint32_t word;
 			if (card->atmel_flash)
@@ -724,7 +702,7 @@ static int flash_upgrade(struct solos_card *card, int chip)
 				iowrite32(word, RX_BUF(card, 3) + i);
 		}
 
-		/* Specify block number and then trigger flash write */
+		 
 		iowrite32(offset / blocksize, card->config_regs + FLASH_BLOCK);
 		iowrite32(1, card->config_regs + WRITE_FLASH);
 		wait_event(card->fw_wq, !ioread32(card->config_regs + FLASH_BUSY));
@@ -745,7 +723,7 @@ static irqreturn_t solos_irq(int irq, void *dev_id)
 
 	iowrite32(0, card->config_regs + IRQ_CLEAR);
 
-	/* If we're up and running, just kick the tasklet to process TX/RX */
+	 
 	if (card->atmdev[0])
 		tasklet_schedule(&card->tlet);
 	else
@@ -761,11 +739,7 @@ static void solos_bh(unsigned long card_arg)
 	uint32_t rx_done = 0;
 	int port;
 
-	/*
-	 * Since fpga_tx() is going to need to read the flags under its lock,
-	 * it can return them to us so that we don't have to hit PCI MMIO
-	 * again for the same information
-	 */
+	 
 	card_flags = fpga_tx(card);
 
 	for (port = 0; port < card->nr_ports; port++) {
@@ -799,11 +773,7 @@ static void solos_bh(unsigned long card_arg)
 					continue;
 				}
 
-				/* Use netdev_alloc_skb() because it adds NET_SKB_PAD of
-				 * headroom, and ensures we can route packets back out an
-				 * Ethernet interface (for example) without having to
-				 * reallocate. Adding NET_IP_ALIGN also ensures that both
-				 * PPPoATM and PPPoEoBR2684 packets end up aligned. */
+				 
 				skb = netdev_alloc_skb_ip_align(NULL, size + 1);
 				if (!skb) {
 					if (net_ratelimit())
@@ -850,7 +820,7 @@ static void solos_bh(unsigned long card_arg)
 				break;
 
 			case PKT_COMMAND:
-			default: /* FIXME: Not really, surely? */
+			default:  
 				if (process_command(card, port, skb))
 					break;
 				spin_lock(&card->cli_queue_lock);
@@ -865,12 +835,10 @@ static void solos_bh(unsigned long card_arg)
 				break;
 			}
 		}
-		/* Allocate RX skbs for any ports which need them */
+		 
 		if (card->using_dma && card->atmdev[port] &&
 		    !card->rx_skb[port]) {
-			/* Unlike the MMIO case (qv) we can't add NET_IP_ALIGN
-			 * here; the FPGA can only DMA to addresses which are
-			 * aligned to 4 bytes. */
+			 
 			struct sk_buff *skb = dev_alloc_skb(RX_DMA_SIZE);
 			if (skb) {
 				SKB_CB(skb)->dma_addr =
@@ -883,7 +851,7 @@ static void solos_bh(unsigned long card_arg)
 				if (net_ratelimit())
 					dev_warn(&card->dev->dev, "Failed to allocate RX skb");
 
-				/* We'll have to try again later */
+				 
 				tasklet_schedule(&card->tlet);
 			}
 		}
@@ -955,7 +923,7 @@ static void pclose(struct atm_vcc *vcc)
 	struct sk_buff *skb, *tmpskb;
 	struct pkt_hdr *header;
 
-	/* Remove any yet-to-be-transmitted packets from the pending queue */
+	 
 	spin_lock_bh(&card->tx_queue_lock);
 	skb_queue_walk_safe(&card->tx_queue[port], skb, tmpskb) {
 		if (SKB_CB(skb)->vcc == vcc) {
@@ -986,9 +954,7 @@ static void pclose(struct atm_vcc *vcc)
 
 	dev_kfree_skb(skb);
 
-	/* Hold up vcc_destroy_socket() (our caller) until solos_bh() in the
-	   tasklet has finished processing any incoming packets (and, more to
-	   the point, using the vcc pointer). */
+	 
 	tasklet_unlock_wait(&card->tlet);
 
 	clear_bit(ATM_VF_ADDR, &vcc->flags);
@@ -1040,8 +1006,7 @@ static void fpga_queue(struct solos_card *card, int port, struct sk_buff *skb,
 		card->tx_mask |= (1 << port);
 	spin_unlock_irqrestore(&card->tx_queue_lock, flags);
 
-	/* Theoretically we could just schedule the tasklet here, but
-	   that introduces latency we don't want -- it's noticeable */
+	 
 	if (!old_len)
 		fpga_tx(card);
 }
@@ -1058,13 +1023,7 @@ static uint32_t fpga_tx(struct solos_card *card)
 	spin_lock_irqsave(&card->tx_lock, flags);
 	
 	card_flags = ioread32(card->config_regs + FLAGS_ADDR);
-	/*
-	 * The queue lock is required for _writing_ to tx_mask, but we're
-	 * OK to read it here without locking. The only potential update
-	 * that we could race with is in fpga_queue() where it sets a bit
-	 * for a new port... but it's going to call this function again if
-	 * it's doing that, anyway.
-	 */
+	 
 	tx_pending = card->tx_mask & ~card_flags;
 
 	for (port = 0; tx_pending; tx_pending >>= 1, port++) {
@@ -1084,7 +1043,7 @@ static uint32_t fpga_tx(struct solos_card *card)
 			if (skb && !card->using_dma) {
 				memcpy_toio(TX_BUF(card, port), skb->data, skb->len);
 				tx_started |= 1 << port;
-				oldskb = skb; /* We're done with this skb already */
+				oldskb = skb;  
 			} else if (skb && card->using_dma) {
 				unsigned char *data = skb->data;
 				if ((unsigned long)data & card->dma_alignment) {
@@ -1101,7 +1060,7 @@ static uint32_t fpga_tx(struct solos_card *card)
 			if (!oldskb)
 				continue;
 
-			/* Clean up and free oldskb now it's gone */
+			 
 			if (atmdebug) {
 				struct pkt_hdr *header = (void *)oldskb->data;
 				int size = le16_to_cpu(header->size);
@@ -1126,7 +1085,7 @@ static uint32_t fpga_tx(struct solos_card *card)
 			}
 		}
 	}
-	/* For non-DMA TX, write the 'TX start' bit for all four ports simultaneously */
+	 
 	if (tx_started)
 		iowrite32(tx_started, card->config_regs + FLAGS_ADDR);
 
@@ -1164,7 +1123,7 @@ static int psend(struct atm_vcc *vcc, struct sk_buff *skb)
 
 	header = skb_push(skb, sizeof(*header));
 
-	/* This does _not_ include the size of the header */
+	 
 	header->size = cpu_to_le16(pktlen);
 	header->vpi = cpu_to_le16(vcc->vpi);
 	header->vci = cpu_to_le16(vcc->vci);
@@ -1263,7 +1222,7 @@ static int fpga_probe(struct pci_dev *dev, const struct pci_device_id *id)
 		db_fpga_upgrade = db_firmware_upgrade = 0;
 	}
 
-	/* Stopped using Atmel flash after 0.03-38 */
+	 
 	if (fpga_ver < 39)
 		card->atmel_flash = 1;
 	else
@@ -1275,20 +1234,20 @@ static int fpga_probe(struct pci_dev *dev, const struct pci_device_id *id)
 	if (card->fpga_version >= DMA_SUPPORTED) {
 		pci_set_master(dev);
 		card->using_dma = 1;
-		if (1) { /* All known FPGA versions so far */
+		if (1) {  
 			card->dma_alignment = 3;
 			card->dma_bounce = kmalloc_array(card->nr_ports,
 							 BUF_SIZE, GFP_KERNEL);
 			if (!card->dma_bounce) {
 				dev_warn(&card->dev->dev, "Failed to allocate DMA bounce buffers\n");
 				err = -ENOMEM;
-				/* Fallback to MMIO doesn't work */
+				 
 				goto out_unmap_both;
 			}
 		}
 	} else {
 		card->using_dma = 0;
-		/* Set RX empty flag for all ports */
+		 
 		iowrite32(0xF0, card->config_regs + FLAGS_ADDR);
 	}
 
@@ -1433,10 +1392,10 @@ static void fpga_remove(struct pci_dev *dev)
 {
 	struct solos_card *card = pci_get_drvdata(dev);
 	
-	/* Disable IRQs */
+	 
 	iowrite32(0, card->config_regs + IRQ_EN_ADDR);
 
-	/* Reset FPGA */
+	 
 	iowrite32(1, card->config_regs + FPGA_MODE);
 	(void)ioread32(card->config_regs + FPGA_MODE); 
 
@@ -1450,7 +1409,7 @@ static void fpga_remove(struct pci_dev *dev)
 
 	kfree(card->dma_bounce);
 
-	/* Release device from reset */
+	 
 	iowrite32(0, card->config_regs + FPGA_MODE);
 	(void)ioread32(card->config_regs + FPGA_MODE); 
 

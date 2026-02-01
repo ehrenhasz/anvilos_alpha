@@ -1,14 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Combined GPIO and pin controller support for Renesas RZ/A2 (R7S9210) SoC
- *
- * Copyright (C) 2018 Chris Brandt
- */
 
-/*
- * This pin controller/gpio combined driver supports Renesas devices of RZ/A2
- * family.
- */
+ 
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/gpio/driver.h>
@@ -28,10 +21,7 @@
 #define RZA2_PIN_ID_TO_PORT(id)	((id) / RZA2_PINS_PER_PORT)
 #define RZA2_PIN_ID_TO_PIN(id)	((id) % RZA2_PINS_PER_PORT)
 
-/*
- * Use 16 lower bits [15:0] for pin identifier
- * Use 16 higher bits [31:16] for pin mux function
- */
+ 
 #define MUX_PIN_ID_MASK		GENMASK(15, 0)
 #define MUX_FUNC_MASK		GENMASK(31, 16)
 #define MUX_FUNC_OFFS		16
@@ -48,29 +38,29 @@ struct rza2_pinctrl_priv {
 	struct pinctrl_dev *pctl;
 	struct pinctrl_gpio_range gpio_range;
 	int npins;
-	struct mutex mutex; /* serialize adding groups and functions */
+	struct mutex mutex;  
 };
 
-#define RZA2_PDR(port)		(0x0000 + (port) * 2)	/* Direction 16-bit */
-#define RZA2_PODR(port)		(0x0040 + (port))	/* Output Data 8-bit */
-#define RZA2_PIDR(port)		(0x0060 + (port))	/* Input Data 8-bit */
-#define RZA2_PMR(port)		(0x0080 + (port))	/* Mode 8-bit */
-#define RZA2_DSCR(port)		(0x0140 + (port) * 2)	/* Drive 16-bit */
-#define RZA2_PFS(port, pin)	(0x0200 + ((port) * 8) + (pin))	/* Fnct 8-bit */
+#define RZA2_PDR(port)		(0x0000 + (port) * 2)	 
+#define RZA2_PODR(port)		(0x0040 + (port))	 
+#define RZA2_PIDR(port)		(0x0060 + (port))	 
+#define RZA2_PMR(port)		(0x0080 + (port))	 
+#define RZA2_DSCR(port)		(0x0140 + (port) * 2)	 
+#define RZA2_PFS(port, pin)	(0x0200 + ((port) * 8) + (pin))	 
 
-#define RZA2_PWPR		0x02ff	/* Write Protect 8-bit */
-#define RZA2_PFENET		0x0820	/* Ethernet Pins 8-bit */
-#define RZA2_PPOC		0x0900	/* Dedicated Pins 32-bit */
-#define RZA2_PHMOMO		0x0980	/* Peripheral Pins 32-bit */
-#define RZA2_PCKIO		0x09d0	/* CKIO Drive 8-bit */
+#define RZA2_PWPR		0x02ff	 
+#define RZA2_PFENET		0x0820	 
+#define RZA2_PPOC		0x0900	 
+#define RZA2_PHMOMO		0x0980	 
+#define RZA2_PCKIO		0x09d0	 
 
 #define RZA2_PDR_INPUT		0x02
 #define RZA2_PDR_OUTPUT		0x03
 #define RZA2_PDR_MASK		0x03
 
-#define PWPR_B0WI		BIT(7)	/* Bit Write Disable */
-#define PWPR_PFSWE		BIT(6)	/* PFS Register Write Enable */
-#define PFS_ISEL		BIT(6)	/* Interrupt Select */
+#define PWPR_B0WI		BIT(7)	 
+#define PWPR_PFSWE		BIT(6)	 
+#define PFS_ISEL		BIT(6)	 
 
 static void rza2_set_pin_function(void __iomem *pfc_base, u8 port, u8 pin,
 				  u8 func)
@@ -79,29 +69,29 @@ static void rza2_set_pin_function(void __iomem *pfc_base, u8 port, u8 pin,
 	u16 reg16;
 	u8 reg8;
 
-	/* Set pin to 'Non-use (Hi-z input protection)'  */
+	 
 	reg16 = readw(pfc_base + RZA2_PDR(port));
 	mask16 = RZA2_PDR_MASK << (pin * 2);
 	reg16 &= ~mask16;
 	writew(reg16, pfc_base + RZA2_PDR(port));
 
-	/* Temporarily switch to GPIO */
+	 
 	reg8 = readb(pfc_base + RZA2_PMR(port));
 	reg8 &= ~BIT(pin);
 	writeb(reg8, pfc_base + RZA2_PMR(port));
 
-	/* PFS Register Write Protect : OFF */
-	writeb(0x00, pfc_base + RZA2_PWPR);		/* B0WI=0, PFSWE=0 */
-	writeb(PWPR_PFSWE, pfc_base + RZA2_PWPR);	/* B0WI=0, PFSWE=1 */
+	 
+	writeb(0x00, pfc_base + RZA2_PWPR);		 
+	writeb(PWPR_PFSWE, pfc_base + RZA2_PWPR);	 
 
-	/* Set Pin function (interrupt disabled, ISEL=0) */
+	 
 	writeb(func, pfc_base + RZA2_PFS(port, pin));
 
-	/* PFS Register Write Protect : ON */
-	writeb(0x00, pfc_base + RZA2_PWPR);	/* B0WI=0, PFSWE=0 */
-	writeb(0x80, pfc_base + RZA2_PWPR);	/* B0WI=1, PFSWE=0 */
+	 
+	writeb(0x00, pfc_base + RZA2_PWPR);	 
+	writeb(0x80, pfc_base + RZA2_PWPR);	 
 
-	/* Port Mode  : Peripheral module pin functions */
+	 
 	reg8 = readb(pfc_base + RZA2_PMR(port));
 	reg8 |= BIT(pin);
 	writeb(reg8, pfc_base + RZA2_PMR(port));
@@ -120,9 +110,9 @@ static void rza2_pin_to_gpio(void __iomem *pfc_base, unsigned int offset,
 	reg16 &= ~mask16;
 
 	if (dir)
-		reg16 |= RZA2_PDR_INPUT << (pin * 2);	/* pin as input */
+		reg16 |= RZA2_PDR_INPUT << (pin * 2);	 
 	else
-		reg16 |= RZA2_PDR_OUTPUT << (pin * 2);	/* pin as output */
+		reg16 |= RZA2_PDR_OUTPUT << (pin * 2);	 
 
 	writew(reg16, pfc_base + RZA2_PDR(port));
 }
@@ -143,10 +133,7 @@ static int rza2_chip_get_direction(struct gpio_chip *chip, unsigned int offset)
 	if (reg16 == RZA2_PDR_INPUT)
 		return GPIO_LINE_DIRECTION_IN;
 
-	/*
-	 * This GPIO controller has a default Hi-Z state that is not input or
-	 * output, so force the pin to input now.
-	 */
+	 
 	rza2_pin_to_gpio(priv->base, offset, 1);
 
 	return GPIO_LINE_DIRECTION_IN;
@@ -219,7 +206,7 @@ static const char * const rza2_gpio_names[] = {
 	"PF_0", "PF_1", "PF_2", "PF_3", "PF_4", "PF_5", "PF_6", "PF_7",
 	"PG_0", "PG_1", "PG_2", "PG_3", "PG_4", "PG_5", "PG_6", "PG_7",
 	"PH_0", "PH_1", "PH_2", "PH_3", "PH_4", "PH_5", "PH_6", "PH_7",
-	/* port I does not exist */
+	 
 	"PJ_0", "PJ_1", "PJ_2", "PJ_3", "PJ_4", "PJ_5", "PJ_6", "PJ_7",
 	"PK_0", "PK_1", "PK_2", "PK_3", "PK_4", "PK_5", "PK_6", "PK_7",
 	"PL_0", "PL_1", "PL_2", "PL_3", "PL_4", "PL_5", "PL_6", "PL_7",
@@ -265,12 +252,12 @@ static int rza2_gpio_register(struct rza2_pinctrl_priv *priv)
 	priv->gpio_range.name = chip.label;
 	priv->gpio_range.gc = &chip;
 
-	/* Register our gpio chip with gpiolib */
+	 
 	ret = devm_gpiochip_add_data(priv->dev, &chip, priv);
 	if (ret)
 		return ret;
 
-	/* Register pin range with pinctrl core */
+	 
 	pinctrl_add_gpio_range(priv->pctl, &priv->gpio_range);
 
 	dev_dbg(priv->dev, "Registered gpio controller\n");
@@ -319,11 +306,7 @@ static int rza2_pinctrl_register(struct rza2_pinctrl_priv *priv)
 	return 0;
 }
 
-/*
- * For each DT node, create a single pin mapping. That pin mapping will only
- * contain a single group of pins, and that group of pins will only have a
- * single function that can be selected.
- */
+ 
 static int rza2_dt_node_to_map(struct pinctrl_dev *pctldev,
 			       struct device_node *np,
 			       struct pinctrl_map **map,
@@ -335,7 +318,7 @@ static int rza2_dt_node_to_map(struct pinctrl_dev *pctldev,
 	struct property *of_pins;
 	const char **pin_fn;
 
-	/* Find out how many pins to map */
+	 
 	of_pins = of_find_property(np, "pinmux", NULL);
 	if (!of_pins) {
 		dev_info(priv->dev, "Missing pinmux property\n");
@@ -350,7 +333,7 @@ static int rza2_dt_node_to_map(struct pinctrl_dev *pctldev,
 	if (!pins || !psel_val || !pin_fn)
 		return -ENOMEM;
 
-	/* Collect pin locations and mux settings from DT properties */
+	 
 	for (i = 0; i < npins; ++i) {
 		u32 value;
 
@@ -363,17 +346,14 @@ static int rza2_dt_node_to_map(struct pinctrl_dev *pctldev,
 
 	mutex_lock(&priv->mutex);
 
-	/* Register a single pin group listing all the pins we read from DT */
+	 
 	gsel = pinctrl_generic_add_group(pctldev, np->name, pins, npins, NULL);
 	if (gsel < 0) {
 		ret = gsel;
 		goto unlock;
 	}
 
-	/*
-	 * Register a single group function where the 'data' is an array PSEL
-	 * register values read from DT.
-	 */
+	 
 	pin_fn[0] = np->name;
 	fsel = pinmux_generic_add_function(pctldev, np->name, pin_fn, 1,
 					   psel_val);
@@ -384,7 +364,7 @@ static int rza2_dt_node_to_map(struct pinctrl_dev *pctldev,
 
 	dev_dbg(priv->dev, "Parsed %pOF with %d pins\n", np, npins);
 
-	/* Create map where to retrieve function and mux settings from */
+	 
 	*num_maps = 0;
 	*map = kzalloc(sizeof(**map), GFP_KERNEL);
 	if (!*map) {
@@ -509,7 +489,7 @@ static int rza2_pinctrl_probe(struct platform_device *pdev)
 
 static const struct of_device_id rza2_pinctrl_of_match[] = {
 	{ .compatible = "renesas,r7s9210-pinctrl", .data = (void *)22, },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver rza2_pinctrl_driver = {

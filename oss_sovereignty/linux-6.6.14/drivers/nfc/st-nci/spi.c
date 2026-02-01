@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SPI Link Layer for ST NCI based Driver
- * Copyright (C) 2014-2015 STMicroelectronics SAS. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -20,12 +17,12 @@
 
 #define DRIVER_DESC "NCI NFC driver for ST_NCI"
 
-/* ndlc header */
+ 
 #define ST_NCI_FRAME_HEADROOM	1
 #define ST_NCI_FRAME_TAILROOM	0
 
-#define ST_NCI_SPI_MIN_SIZE 4   /* PCB(1) + NCI Packet header(3) */
-#define ST_NCI_SPI_MAX_SIZE 250 /* req 4.2.1 */
+#define ST_NCI_SPI_MIN_SIZE 4    
+#define ST_NCI_SPI_MAX_SIZE 250  
 
 #define ST_NCI_DRIVER_NAME "st_nci"
 #define ST_NCI_SPI_DRIVER_NAME "st_nci_spi"
@@ -66,11 +63,7 @@ static void st_nci_spi_disable(void *phy_id)
 	phy->irq_active = false;
 }
 
-/*
- * Writing a frame must not return the number of written bytes.
- * It must return either zero for success, or <0 for error.
- * In addition, it must not alter the skb
- */
+ 
 static int st_nci_spi_write(void *phy_id, struct sk_buff *skb)
 {
 	int r;
@@ -89,10 +82,7 @@ static int st_nci_spi_write(void *phy_id, struct sk_buff *skb)
 		return phy->ndlc->hard_fault;
 
 	r = spi_sync_transfer(dev, &spi_xfer, 1);
-	/*
-	 * We may have received some valuable data on miso line.
-	 * Send them back in the ndlc state machine.
-	 */
+	 
 	if (!r) {
 		skb_rx = alloc_skb(skb->len, GFP_KERNEL);
 		if (!skb_rx)
@@ -106,14 +96,7 @@ static int st_nci_spi_write(void *phy_id, struct sk_buff *skb)
 	return r;
 }
 
-/*
- * Reads an ndlc frame and returns it in a newly allocated sk_buff.
- * returns:
- * 0 : if received frame is complete
- * -EREMOTEIO : i2c read error (fatal)
- * -EBADMSG : frame was incorrect and discarded
- * -ENOMEM : cannot allocate skb, frame dropped
- */
+ 
 static int st_nci_spi_read(struct st_nci_spi_phy *phy,
 			struct sk_buff **skb)
 {
@@ -161,11 +144,7 @@ static int st_nci_spi_read(struct st_nci_spi_phy *phy,
 	return 0;
 }
 
-/*
- * Reads an ndlc frame from the chip.
- *
- * On ST21NFCB, IRQ goes in idle state when read starts.
- */
+ 
 static irqreturn_t st_nci_irq_thread_fn(int irq, void *phy_id)
 {
 	struct st_nci_spi_phy *phy = phy_id;
@@ -212,7 +191,7 @@ static int st_nci_spi_probe(struct spi_device *dev)
 	struct st_nci_spi_phy *phy;
 	int r;
 
-	/* Check SPI platform functionnalities */
+	 
 	if (!dev) {
 		pr_debug("%s: dev is NULL. Device is not accessible.\n",
 			__func__);
@@ -232,7 +211,7 @@ static int st_nci_spi_probe(struct spi_device *dev)
 	if (r)
 		dev_dbg(&dev->dev, "Unable to add GPIO mapping table\n");
 
-	/* Get RESET GPIO */
+	 
 	phy->gpiod_reset = devm_gpiod_get(&dev->dev, "reset", GPIOD_OUT_HIGH);
 	if (IS_ERR(phy->gpiod_reset)) {
 		nfc_err(&dev->dev, "Unable to get RESET GPIO\n");

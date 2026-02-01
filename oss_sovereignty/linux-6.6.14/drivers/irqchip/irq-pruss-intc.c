@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * PRU-ICSS INTC IRQChip driver for various TI SoCs
- *
- * Copyright (C) 2016-2020 Texas Instruments Incorporated - http://www.ti.com/
- *
- * Author(s):
- *	Andrew F. Davis <afd@ti.com>
- *	Suman Anna <s-anna@ti.com>
- *	Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org> for Texas Instruments
- *
- * Copyright (C) 2019 David Lechner <david@lechnology.com>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/irq.h>
@@ -20,17 +9,13 @@
 #include <linux/of.h>
 #include <linux/platform_device.h>
 
-/*
- * Number of host interrupts reaching the main MPU sub-system. Note that this
- * is not the same as the total number of host interrupts supported by the PRUSS
- * INTC instance
- */
+ 
 #define MAX_NUM_HOST_IRQS	8
 
-/* minimum starting host interrupt number for MPU */
+ 
 #define FIRST_PRU_HOST_INT	2
 
-/* PRU_ICSS_INTC registers */
+ 
 #define PRU_INTC_REVID		0x0000
 #define PRU_INTC_CR		0x0004
 #define PRU_INTC_GER		0x0010
@@ -54,54 +39,35 @@
 #define PRU_INTC_HINLR(x)	(0x1100 + (x) * 4)
 #define PRU_INTC_HIER		0x1500
 
-/* CMR register bit-field macros */
+ 
 #define CMR_EVT_MAP_MASK	0xf
 #define CMR_EVT_MAP_BITS	8
 #define CMR_EVT_PER_REG		4
 
-/* HMR register bit-field macros */
+ 
 #define HMR_CH_MAP_MASK		0xf
 #define HMR_CH_MAP_BITS		8
 #define HMR_CH_PER_REG		4
 
-/* HIPIR register bit-fields */
+ 
 #define INTC_HIPIR_NONE_HINT	0x80000000
 
 #define MAX_PRU_SYS_EVENTS 160
 #define MAX_PRU_CHANNELS 20
 
-/**
- * struct pruss_intc_map_record - keeps track of actual mapping state
- * @value: The currently mapped value (channel or host)
- * @ref_count: Keeps track of number of current users of this resource
- */
+ 
 struct pruss_intc_map_record {
 	u8 value;
 	u8 ref_count;
 };
 
-/**
- * struct pruss_intc_match_data - match data to handle SoC variations
- * @num_system_events: number of input system events handled by the PRUSS INTC
- * @num_host_events: number of host events (which is equal to number of
- *		     channels) supported by the PRUSS INTC
- */
+ 
 struct pruss_intc_match_data {
 	u8 num_system_events;
 	u8 num_host_events;
 };
 
-/**
- * struct pruss_intc - PRUSS interrupt controller structure
- * @event_channel: current state of system event to channel mappings
- * @channel_host: current state of channel to host mappings
- * @irqs: kernel irq numbers corresponding to PRUSS host interrupts
- * @base: base virtual address of INTC register space
- * @domain: irq domain for this interrupt controller
- * @soc_config: cached PRUSS INTC IP configuration data
- * @dev: PRUSS INTC device pointer
- * @lock: mutex to serialize interrupts mapping
- */
+ 
 struct pruss_intc {
 	struct pruss_intc_map_record event_channel[MAX_PRU_SYS_EVENTS];
 	struct pruss_intc_map_record channel_host[MAX_PRU_CHANNELS];
@@ -110,14 +76,10 @@ struct pruss_intc {
 	struct irq_domain *domain;
 	const struct pruss_intc_match_data *soc_config;
 	struct device *dev;
-	struct mutex lock; /* PRUSS INTC lock */
+	struct mutex lock;  
 };
 
-/**
- * struct pruss_host_irq_data - PRUSS host irq data structure
- * @intc: PRUSS interrupt controller pointer
- * @host_irq: host irq number
- */
+ 
 struct pruss_host_irq_data {
 	struct pruss_intc *intc;
 	u8 host_irq;
@@ -167,14 +129,7 @@ static void pruss_intc_update_hmr(struct pruss_intc *intc, u8 ch, u8 host)
 		pruss_intc_read_reg(intc, PRU_INTC_HMR(idx)));
 }
 
-/**
- * pruss_intc_map() - configure the PRUSS INTC
- * @intc: PRUSS interrupt controller pointer
- * @hwirq: the system event number
- *
- * Configures the PRUSS INTC with the provided configuration from the one parsed
- * in the xlate function.
- */
+ 
 static void pruss_intc_map(struct pruss_intc *intc, unsigned long hwirq)
 {
 	struct device *dev = intc->dev;
@@ -193,14 +148,14 @@ static void pruss_intc_map(struct pruss_intc *intc, unsigned long hwirq)
 	reg_idx = hwirq / 32;
 	val = BIT(hwirq  % 32);
 
-	/* clear and enable system event */
+	 
 	pruss_intc_write_reg(intc, PRU_INTC_ESR(reg_idx), val);
 	pruss_intc_write_reg(intc, PRU_INTC_SECR(reg_idx), val);
 
 	if (++intc->channel_host[ch].ref_count == 1) {
 		pruss_intc_update_hmr(intc, ch, host);
 
-		/* enable host interrupts */
+		 
 		pruss_intc_write_reg(intc, PRU_INTC_HIEISR, host);
 	}
 
@@ -210,15 +165,7 @@ static void pruss_intc_map(struct pruss_intc *intc, unsigned long hwirq)
 	mutex_unlock(&intc->lock);
 }
 
-/**
- * pruss_intc_unmap() - unconfigure the PRUSS INTC
- * @intc: PRUSS interrupt controller pointer
- * @hwirq: the system event number
- *
- * Undo whatever was done in pruss_intc_map() for a PRU core.
- * Mappings are reference counted, so resources are only disabled when there
- * are no longer any users.
- */
+ 
 static void pruss_intc_unmap(struct pruss_intc *intc, unsigned long hwirq)
 {
 	u8 ch, host, reg_idx;
@@ -230,10 +177,10 @@ static void pruss_intc_unmap(struct pruss_intc *intc, unsigned long hwirq)
 	host = intc->channel_host[ch].value;
 
 	if (--intc->channel_host[ch].ref_count == 0) {
-		/* disable host interrupts */
+		 
 		pruss_intc_write_reg(intc, PRU_INTC_HIDISR, host);
 
-		/* clear the map using reset value 0 */
+		 
 		pruss_intc_update_hmr(intc, ch, 0);
 	}
 
@@ -241,12 +188,12 @@ static void pruss_intc_unmap(struct pruss_intc *intc, unsigned long hwirq)
 	reg_idx = hwirq / 32;
 	val = BIT(hwirq  % 32);
 
-	/* disable system events */
+	 
 	pruss_intc_write_reg(intc, PRU_INTC_ECR(reg_idx), val);
-	/* clear any pending status */
+	 
 	pruss_intc_write_reg(intc, PRU_INTC_SECR(reg_idx), val);
 
-	/* clear the map using reset value 0 */
+	 
 	pruss_intc_update_cmr(intc, hwirq, 0);
 
 	dev_dbg(intc->dev, "unmapped system_event = %lu channel = %d host = %d\n",
@@ -266,24 +213,21 @@ static void pruss_intc_init(struct pruss_intc *intc)
 					  HMR_CH_PER_REG);
 	num_event_type_regs = DIV_ROUND_UP(soc_config->num_system_events, 32);
 
-	/*
-	 * configure polarity (SIPR register) to active high and
-	 * type (SITR register) to level interrupt for all system events
-	 */
+	 
 	for (i = 0; i < num_event_type_regs; i++) {
 		pruss_intc_write_reg(intc, PRU_INTC_SIPR(i), 0xffffffff);
 		pruss_intc_write_reg(intc, PRU_INTC_SITR(i), 0);
 	}
 
-	/* clear all interrupt channel map registers, 4 events per register */
+	 
 	for (i = 0; i < num_chnl_map_regs; i++)
 		pruss_intc_write_reg(intc, PRU_INTC_CMR(i), 0);
 
-	/* clear all host interrupt map registers, 4 channels per register */
+	 
 	for (i = 0; i < num_host_intr_regs; i++)
 		pruss_intc_write_reg(intc, PRU_INTC_HMR(i), 0);
 
-	/* global interrupt enable */
+	 
 	pruss_intc_write_reg(intc, PRU_INTC_GER, 1);
 }
 
@@ -380,7 +324,7 @@ static int pruss_intc_validate_mapping(struct pruss_intc *intc, int event,
 
 	mutex_lock(&intc->lock);
 
-	/* check if sysevent already assigned */
+	 
 	if (intc->event_channel[event].ref_count > 0 &&
 	    intc->event_channel[event].value != channel) {
 		dev_err(dev, "event %d (req. ch %d) already assigned to channel %d\n",
@@ -389,7 +333,7 @@ static int pruss_intc_validate_mapping(struct pruss_intc *intc, int event,
 		goto unlock;
 	}
 
-	/* check if channel already assigned */
+	 
 	if (intc->channel_host[channel].ref_count > 0 &&
 	    intc->channel_host[channel].value != host) {
 		dev_err(dev, "channel %d (req. host %d) already assigned to host %d\n",
@@ -436,7 +380,7 @@ pruss_intc_irq_domain_xlate(struct irq_domain *d, struct device_node *node,
 		return -EINVAL;
 	}
 
-	/* check if requested sys_event was already mapped, if so validate it */
+	 
 	ret = pruss_intc_validate_mapping(intc, sys_event, channel, host);
 	if (ret)
 		return ret;
@@ -490,7 +434,7 @@ static void pruss_intc_irq_handler(struct irq_desc *desc)
 		u32 hipir;
 		int hwirq, err;
 
-		/* get highest priority pending PRUSS system event */
+		 
 		hipir = pruss_intc_read_reg(intc, PRU_INTC_HIPIR(host_irq));
 		if (hipir & INTC_HIPIR_NONE_HINT)
 			break;
@@ -498,10 +442,7 @@ static void pruss_intc_irq_handler(struct irq_desc *desc)
 		hwirq = hipir & GENMASK(9, 0);
 		err = generic_handle_domain_irq(intc->domain, hwirq);
 
-		/*
-		 * NOTE: manually ACK any system events that do not have a
-		 * handler mapped yet
-		 */
+		 
 		if (WARN_ON_ONCE(err))
 			pruss_intc_write_reg(intc, PRU_INTC_SICR, hwirq);
 	}
@@ -544,10 +485,7 @@ static int pruss_intc_probe(struct platform_device *pdev)
 	ret = of_property_read_u8(dev->of_node, "ti,irqs-reserved",
 				  &irqs_reserved);
 
-	/*
-	 * The irqs-reserved is used only for some SoC's therefore not having
-	 * this property is still valid
-	 */
+	 
 	if (ret < 0 && ret != -EINVAL)
 		return ret;
 
@@ -639,7 +577,7 @@ static const struct of_device_id pruss_intc_of_match[] = {
 		.compatible = "ti,icssg-intc",
 		.data = &icssg_intc_data,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, pruss_intc_of_match);
 

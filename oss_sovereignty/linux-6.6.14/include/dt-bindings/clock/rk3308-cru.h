@@ -1,20 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2019 Rockchip Electronics Co. Ltd.
- * Author: Finley Xiao <finley.xiao@rock-chips.com>
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_ROCKCHIP_RK3308_H
 #define _DT_BINDINGS_CLK_ROCKCHIP_RK3308_H
 
-/* core clocks */
+ 
 #define PLL_APLL		1
 #define PLL_DPLL		2
 #define PLL_VPLL0		3
 #define PLL_VPLL1		4
 #define ARMCLK			5
 
-/* sclk (special clocks) */
+ 
 #define USB480M			14
 #define SCLK_RTC32K		15
 #define SCLK_PVTM_CORE		16
@@ -125,10 +122,10 @@
 #define SCLK_PWM2		121
 #define SCLK_OWIRE		122
 
-/* dclk */
+ 
 #define DCLK_VOP		125
 
-/* aclk */
+ 
 #define ACLK_BUS_SRC		130
 #define ACLK_BUS		131
 #define ACLK_PERI_SRC		132
@@ -140,7 +137,7 @@
 #define ACLK_DMAC0		138
 #define ACLK_DMAC1		139
 
-/* hclk */
+ 
 #define HCLK_BUS		150
 #define HCLK_PERI		151
 #define HCLK_AUDIO		152
@@ -165,7 +162,7 @@
 #define HCLK_CRYPTO		171
 #define HCLK_VOP		172
 
-/* pclk */
+ 
 #define PCLK_BUS		190
 #define PCLK_DDR		191
 #define PCLK_PERI		192
@@ -214,9 +211,9 @@
 
 #define CLK_NR_CLKS		(PCLK_OWIRE + 1)
 
-/* soft-reset indices */
+ 
 
-/* cru_softrst_con0 */
+ 
 #define SRST_CORE0_PO		0
 #define SRST_CORE1_PO		1
 #define SRST_CORE2_PO		2
@@ -234,7 +231,7 @@
 #define SRST_STRC_A		14
 #define SRST_L2C		15
 
-/* cru_softrst_con1 */
+ 
 #define SRST_DAP		16
 #define SRST_CORE_PVTM		17
 #define SRST_CORE_PRF		18
@@ -249,7 +246,7 @@
 #define SRST_DDRPHY_DIV		29
 #define SRST_DDRPHY_P		30
 
-/* cru_softrst_con2 */
+ 
 #define SRST_BUS_NIU_H		32
 #define SRST_USB_NIU_P		33
 #define SRST_CRYPTO_A		34
@@ -267,7 +264,7 @@
 #define SRST_UART1_P		46
 #define SRST_UART1		47
 
-/* cru_softrst_con3 */
+ 
 #define SRST_UART2_P		48
 #define SRST_UART2		49
 #define SRST_UART3_P		50
@@ -285,7 +282,7 @@
 #define SRST_PWM0_P		62
 #define SRST_PWM0		63
 
-/* cru_softrst_con4 */
+ 
 #define SRST_SPI0_P		64
 #define SRST_SPI0		65
 #define SRST_SPI1_P		66
@@ -303,7 +300,7 @@
 #define SRST_TIMER4		78
 #define SRST_TIMER5		79
 
-/* cru_softrst_con5 */
+ 
 #define SRST_OTP_NS_P		80
 #define SRST_OTP_NS_SBPI	81
 #define SRST_OTP_NS_USR		82
@@ -320,7 +317,7 @@
 #define SRST_PMU_PVTM		94
 #define SRST_USB_GRF_P		95
 
-/* cru_softrst_con6 */
+ 
 #define SRST_CPU_BOOST		96
 #define SRST_CPU_BOOST_P	97
 #define SRST_PWM1_P		98
@@ -336,7 +333,7 @@
 #define SRST_USB2HOST_H		110
 #define SRST_USB2HOST_ARB_H	111
 
-/* cru_softrst_con7 */
+ 
 #define SRST_USB2HOST_AUX_H	112
 #define SRST_USB2HOST_EHCI	113
 #define SRST_USB2HOST		114
@@ -354,7 +351,7 @@
 #define SRST_CAN_P		126
 #define SRST_OWIRE_P		127
 
-/* cru_softrst_con8 */
+ 
 #define SRST_AUDIO_NIU_H	128
 #define SRST_AUDIO_NIU_P	129
 #define SRST_PDM_H		130
@@ -372,7 +369,7 @@
 #define SRST_I2S2_8CH_H		142
 #define SRST_I2S2_8CH_TX_M	143
 
-/* cru_softrst_con9 */
+ 
 #define SRST_I2S2_8CH_RX_M	144
 #define SRST_I2S3_8CH_H		145
 #define SRST_I2S3_8CH_TX_M	146

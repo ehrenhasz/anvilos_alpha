@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// aw88395_device.c --  AW88395 function for ALSA Audio Driver
-//
-// Copyright (c) 2022-2023 AWINIC Technology CO., LTD
-//
-// Author: Bruce zhao <zhaolei@awinic.com>
-// Author: Ben Yi <yijiangtao@awinic.com>
-//
+
+
+
+
+
+
+
+
+
 
 #include <linux/crc32.h>
 #include <linux/i2c.h>
@@ -89,7 +89,7 @@ static int aw_dev_dsp_write(struct aw_device *aw_dev,
 		break;
 	}
 
-	/* clear dsp chip select state*/
+	 
 	if (regmap_read(aw_dev->regmap, AW88395_ID_REG, &reg_value))
 		dev_err(aw_dev->dev, "%s fail to clear chip state. Err=%d\n", __func__, ret);
 	mutex_unlock(&aw_dev->dsp_lock);
@@ -174,7 +174,7 @@ static int aw_dev_dsp_read(struct aw_device *aw_dev,
 		break;
 	}
 
-	/* clear dsp chip select state*/
+	 
 	if (regmap_read(aw_dev->regmap, AW88395_ID_REG, &reg_value))
 		dev_err(aw_dev->dev, "%s fail to clear chip state. Err=%d\n", __func__, ret);
 	mutex_unlock(&aw_dev->dsp_lock);
@@ -226,7 +226,7 @@ static int aw_dev_dsp_fw_check(struct aw_device *aw_dev)
 	if (ret)
 		return ret;
 
-	/* update reg */
+	 
 	dsp_fw_desc = &set_prof_desc->sec_desc[AW88395_DATA_TYPE_DSP_FW];
 
 	for (i = 0; i < AW88395_FW_CHECK_PART; i++) {
@@ -264,17 +264,17 @@ static int aw_dev_set_volume(struct aw_device *aw_dev, unsigned int value)
 	volume = min((value + vol_desc->init_volume), (unsigned int)AW88395_MUTE_VOL);
 	real_value = db_to_reg_val(volume);
 
-	/* cal real value */
+	 
 	ret = regmap_read(aw_dev->regmap, AW88395_SYSCTRL2_REG, &reg_value);
 	if (ret)
 		return ret;
 
 	dev_dbg(aw_dev->dev, "value 0x%x , reg:0x%x", value, real_value);
 
-	/* [15 : 6] volume */
+	 
 	real_value = (real_value << AW88395_VOL_START_BIT) | (reg_value & AW88395_VOL_MASK);
 
-	/* write value */
+	 
 	ret = regmap_write(aw_dev->regmap, AW88395_SYSCTRL2_REG, real_value);
 
 	return ret;
@@ -380,7 +380,7 @@ static int aw_dev_dsp_set_cali_re(struct aw_device *aw_dev)
 	cali_re = AW88395_SHOW_RE_TO_DSP_RE((aw_dev->cali_desc.cali_re +
 		aw_dev->cali_desc.ra), AW88395_DSP_RE_SHIFT);
 
-	/* set cali re to device */
+	 
 	ret = aw_dev_dsp_write(aw_dev,
 			AW88395_DSP_REG_CFG_ADPZ_RE, cali_re, AW88395_DSP_32_DATA);
 	if (ret) {
@@ -417,7 +417,7 @@ static int aw_dev_dsp_set_crc32(struct aw_device *aw_dev)
 	struct aw_sec_data_desc *crc_dsp_cfg = &aw_dev->crc_dsp_cfg;
 	u32 crc_value, crc_data_len;
 
-	/* get crc data len */
+	 
 	crc_data_len = (AW88395_DSP_REG_CRC_ADDR - AW88395_DSP_CFG_ADDR) * 2;
 	if (crc_data_len > crc_dsp_cfg->len) {
 		dev_err(aw_dev->dev, "crc data len :%d > cfg_data len:%d",
@@ -511,7 +511,7 @@ static int aw_dev_dsp_check_crc32(struct aw_device *aw_dev)
 
 	aw_dev_dsp_check_crc_enable(aw_dev, true);
 
-	/* dsp enable */
+	 
 	aw_dev_dsp_enable(aw_dev, true);
 	usleep_range(AW88395_5000_US, AW88395_5000_US + 100);
 
@@ -775,9 +775,9 @@ static void aw_dev_clear_int_status(struct aw_device *aw_dev)
 {
 	u16 int_status;
 
-	/* read int status and clear */
+	 
 	aw_dev_get_int_status(aw_dev, &int_status);
-	/* make sure int status is clear */
+	 
 	aw_dev_get_int_status(aw_dev, &int_status);
 	if (int_status)
 		dev_info(aw_dev->dev, "int status(%d) is not cleaned.\n", int_status);
@@ -831,7 +831,7 @@ static int aw_dev_check_mode2_pll(struct aw_device *aw_dev)
 		return -EPERM;
 	}
 
-	/* change mode2 */
+	 
 	ret = regmap_update_bits(aw_dev->regmap, AW88395_PLLCTRL1_REG,
 			~AW88395_CCO_MUX_MASK, AW88395_CCO_MUX_DIVIDED_VALUE);
 	if (ret)
@@ -847,7 +847,7 @@ static int aw_dev_check_mode2_pll(struct aw_device *aw_dev)
 		}
 	}
 
-	/* change mode1 */
+	 
 	ret = regmap_update_bits(aw_dev->regmap, AW88395_PLLCTRL1_REG,
 			~AW88395_CCO_MUX_MASK, AW88395_CCO_MUX_BYPASS_VALUE);
 	if (ret == 0) {
@@ -1035,7 +1035,7 @@ static int aw_dev_update_reg_container(struct aw_device *aw_dev,
 			reg_val &= AW88395_AGC_DSP_CTL_MASK;
 
 		if (reg_addr == AW88395_I2SCFG1_REG) {
-			/* close tx */
+			 
 			reg_val &= AW88395_I2STXEN_MASK;
 			reg_val |= AW88395_I2STXEN_DISABLE_VALUE;
 		}
@@ -1055,14 +1055,14 @@ static int aw_dev_update_reg_container(struct aw_device *aw_dev,
 	aw_dev_get_cur_mode_st(aw_dev);
 
 	if (aw_dev->prof_cur != aw_dev->prof_index) {
-		/* clear control volume when PA change profile */
+		 
 		vol_desc->ctl_volume = 0;
 	} else {
-		/* keep control volume when PA start with sync mode */
+		 
 		aw_dev_set_volume(aw_dev, vol_desc->ctl_volume);
 	}
 
-	/* keep min volume */
+	 
 	if (aw_dev->fade_en)
 		aw_dev_set_volume(aw_dev, AW88395_MUTE_VOL);
 
@@ -1139,7 +1139,7 @@ static int aw_dev_dsp_update_container(struct aw_device *aw_dev,
 	__be16 reg_val;
 
 	mutex_lock(&aw_dev->dsp_lock);
-	/* i2c write */
+	 
 	ret = regmap_write(aw_dev->regmap, AW88395_DSPMADD_REG, base);
 	if (ret)
 		goto error_operation;
@@ -1244,7 +1244,7 @@ static int aw_dev_check_sram(struct aw_device *aw_dev)
 	unsigned int reg_val;
 
 	mutex_lock(&aw_dev->dsp_lock);
-	/* check the odd bits of reg 0x40 */
+	 
 	regmap_write(aw_dev->regmap, AW88395_DSPMADD_REG, AW88395_DSP_ODD_NUM_BIT_TEST);
 	regmap_read(aw_dev->regmap, AW88395_DSPMADD_REG, &reg_val);
 	if (reg_val != AW88395_DSP_ODD_NUM_BIT_TEST) {
@@ -1253,7 +1253,7 @@ static int aw_dev_check_sram(struct aw_device *aw_dev)
 		goto error;
 	}
 
-	/* check the even bits of reg 0x40 */
+	 
 	regmap_write(aw_dev->regmap, AW88395_DSPMADD_REG, AW88395_DSP_EVEN_NUM_BIT_TEST);
 	regmap_read(aw_dev->regmap, AW88395_DSPMADD_REG, &reg_val);
 	if (reg_val != AW88395_DSP_EVEN_NUM_BIT_TEST) {
@@ -1262,7 +1262,7 @@ static int aw_dev_check_sram(struct aw_device *aw_dev)
 		goto error;
 	}
 
-	/* check dsp_fw_base_addr */
+	 
 	aw_dev_dsp_write_16bit(aw_dev, AW88395_DSP_FW_ADDR,	AW88395_DSP_EVEN_NUM_BIT_TEST);
 	aw_dev_dsp_read_16bit(aw_dev, AW88395_DSP_FW_ADDR, &reg_val);
 	if (reg_val != AW88395_DSP_EVEN_NUM_BIT_TEST) {
@@ -1271,7 +1271,7 @@ static int aw_dev_check_sram(struct aw_device *aw_dev)
 		goto error;
 	}
 
-	/* check dsp_cfg_base_addr */
+	 
 	aw_dev_dsp_write_16bit(aw_dev, AW88395_DSP_CFG_ADDR, AW88395_DSP_ODD_NUM_BIT_TEST);
 	aw_dev_dsp_read_16bit(aw_dev, AW88395_DSP_CFG_ADDR, &reg_val);
 	if (reg_val != AW88395_DSP_ODD_NUM_BIT_TEST) {
@@ -1314,7 +1314,7 @@ int aw88395_dev_fw_update(struct aw_device *aw_dev, bool up_dsp_fw_en, bool forc
 	if (ret)
 		return ret;
 
-	/* update reg */
+	 
 	sec_desc = prof_index_desc->sec_desc;
 	ret = aw_dev_reg_update(aw_dev, sec_desc[AW88395_DATA_TYPE_REG].data,
 					sec_desc[AW88395_DATA_TYPE_REG].len);
@@ -1337,7 +1337,7 @@ int aw88395_dev_fw_update(struct aw_device *aw_dev, bool up_dsp_fw_en, bool forc
 			goto error;
 		}
 
-		/* update dsp firmware */
+		 
 		dev_dbg(aw_dev->dev, "fw_ver: [%x]", prof_index_desc->fw_ver);
 		ret = aw_dev_dsp_update_fw(aw_dev, sec_desc[AW88395_DATA_TYPE_DSP_FW].data,
 					sec_desc[AW88395_DATA_TYPE_DSP_FW].len);
@@ -1347,7 +1347,7 @@ int aw88395_dev_fw_update(struct aw_device *aw_dev, bool up_dsp_fw_en, bool forc
 		}
 	}
 
-	/* update dsp config */
+	 
 	ret = aw_dev_dsp_update_cfg(aw_dev, sec_desc[AW88395_DATA_TYPE_DSP_CFG].data,
 					sec_desc[AW88395_DATA_TYPE_DSP_CFG].len);
 	if (ret) {
@@ -1420,7 +1420,7 @@ int aw88395_dev_start(struct aw_device *aw_dev)
 		dev_info(aw_dev->dev, "already power on");
 		return 0;
 	}
-	/* power on */
+	 
 	aw_dev_pwd(aw_dev, false);
 	usleep_range(AW88395_2000_US, AW88395_2000_US + 10);
 
@@ -1430,11 +1430,11 @@ int aw88395_dev_start(struct aw_device *aw_dev)
 		goto pll_check_fail;
 	}
 
-	/* amppd on */
+	 
 	aw_dev_amppd(aw_dev, false);
 	usleep_range(AW88395_1000_US, AW88395_1000_US + 50);
 
-	/* check i2s status */
+	 
 	ret = aw_dev_check_sysst(aw_dev);
 	if (ret) {
 		dev_err(aw_dev->dev, "sysst check failed");
@@ -1442,7 +1442,7 @@ int aw88395_dev_start(struct aw_device *aw_dev)
 	}
 
 	if (aw_dev->dsp_cfg == AW88395_DEV_DSP_WORK) {
-		/* dsp bypass */
+		 
 		aw_dev_dsp_enable(aw_dev, false);
 		ret = aw_dev_dsp_fw_check(aw_dev);
 		if (ret)
@@ -1467,12 +1467,12 @@ int aw88395_dev_start(struct aw_device *aw_dev)
 		dev_dbg(aw_dev->dev, "start pa with dsp bypass");
 	}
 
-	/* enable tx feedback */
+	 
 	aw_dev_i2s_tx_enable(aw_dev, true);
 
-	/* close mute */
+	 
 	aw88395_dev_mute(aw_dev, false);
-	/* clear inturrupt */
+	 
 	aw_dev_clear_int_status(aw_dev);
 	aw_dev->status = AW88395_DEV_PW_ON;
 
@@ -1509,25 +1509,25 @@ int aw88395_dev_stop(struct aw_device *aw_dev)
 
 	aw_dev->status = AW88395_DEV_PW_OFF;
 
-	/* set mute */
+	 
 	aw88395_dev_mute(aw_dev, true);
 	usleep_range(AW88395_4000_US, AW88395_4000_US + 100);
 
-	/* close tx feedback */
+	 
 	aw_dev_i2s_tx_enable(aw_dev, false);
 	usleep_range(AW88395_1000_US, AW88395_1000_US + 100);
 
-	/* check sysint state */
+	 
 	int_st = aw_dev_check_sysint(aw_dev);
 
-	/* close dsp */
+	 
 	aw_dev_dsp_enable(aw_dev, false);
 
-	/* enable amppd */
+	 
 	aw_dev_amppd(aw_dev, true);
 
 	if (int_st < 0) {
-		/* system status anomaly */
+		 
 		aw_dev_select_memclk(aw_dev, AW88395_DEV_MEMCLK_OSC);
 		ret = aw_dev_dsp_update_fw(aw_dev, dsp_fw->data, dsp_fw->len);
 		if (ret)
@@ -1538,7 +1538,7 @@ int aw88395_dev_stop(struct aw_device *aw_dev)
 		aw_dev_select_memclk(aw_dev, AW88395_DEV_MEMCLK_PLL);
 	}
 
-	/* set power down */
+	 
 	aw_dev_pwd(aw_dev, true);
 
 	return 0;
@@ -1569,19 +1569,19 @@ int aw88395_dev_init(struct aw_device *aw_dev, struct aw_container *aw_cfg)
 		return ret;
 	}
 
-	/* set mute */
+	 
 	aw88395_dev_mute(aw_dev, true);
 	usleep_range(AW88395_4000_US, AW88395_4000_US + 100);
 
-	/* close tx feedback */
+	 
 	aw_dev_i2s_tx_enable(aw_dev, false);
 	usleep_range(AW88395_1000_US, AW88395_1000_US + 100);
 
-	/* close dsp */
+	 
 	aw_dev_dsp_enable(aw_dev, false);
-	/* enable amppd */
+	 
 	aw_dev_amppd(aw_dev, true);
-	/* set power down */
+	 
 	aw_dev_pwd(aw_dev, true);
 
 	return 0;
@@ -1628,7 +1628,7 @@ static void aw88395_parse_fade_enable_dt(struct aw_device *aw_dev)
 static int aw_dev_init(struct aw_device *aw_dev)
 {
 	aw_dev->chip_id = AW88395_CHIP_ID;
-	/* call aw device init func */
+	 
 	aw_dev->acf = NULL;
 	aw_dev->prof_info.prof_desc = NULL;
 	aw_dev->prof_info.count = 0;
@@ -1658,10 +1658,10 @@ EXPORT_SYMBOL_GPL(aw88395_dev_get_profile_index);
 
 int aw88395_dev_set_profile_index(struct aw_device *aw_dev, int index)
 {
-	/* check the index whether is valid */
+	 
 	if ((index >= aw_dev->prof_info.count) || (index < 0))
 		return -EINVAL;
-	/* check the index whether change */
+	 
 	if (aw_dev->prof_index == index)
 		return -EINVAL;
 
@@ -1723,7 +1723,7 @@ int aw88395_init(struct aw_device **aw_dev, struct i2c_client *i2c, struct regma
 	(*aw_dev)->regmap = regmap;
 	mutex_init(&(*aw_dev)->dsp_lock);
 
-	/* read chip id */
+	 
 	ret = aw_dev_read_chipid((*aw_dev), &chip_id);
 	if (ret) {
 		dev_err(&i2c->dev, "dev_read_chipid failed ret=%d", ret);

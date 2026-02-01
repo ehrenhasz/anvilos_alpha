@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #define _GNU_SOURCE
 #include <argp.h>
 #include <linux/compiler.h>
@@ -295,7 +295,7 @@ static const struct argp_child bench_parsers[] = {
 	{},
 };
 
-/* Make pos_args global, so that we can run argp_parse twice, if necessary */
+ 
 static int pos_args;
 
 static error_t parse_arg(int key, char *arg, struct argp_state *state)
@@ -393,7 +393,7 @@ static void parse_cmdline_args_final(int argc, char **argv)
 		.children = bench_parsers,
 	};
 
-	/* Parse arguments the second time with the correct set of parsers */
+	 
 	if (bench->argp) {
 		bench_parsers[0].argp = bench->argp;
 		bench_parsers[0].header = bench->name;
@@ -416,7 +416,7 @@ static void sigalarm_handler(int signo)
 	last_time_ns = new_time_ns;
 }
 
-/* set up periodic 1-second timer */
+ 
 static void setup_timer()
 {
 	static struct sigaction sigalarm_action = {
@@ -460,7 +460,7 @@ static int next_cpu(struct cpu_set *cpu_set)
 	if (cpu_set->cpus) {
 		int i;
 
-		/* find next available CPU */
+		 
 		for (i = cpu_set->next_cpu; i < cpu_set->cpus_len; i++) {
 			if (cpu_set->cpus[i]) {
 				cpu_set->next_cpu = i + 1;
@@ -619,9 +619,7 @@ static void setup_benchmark(void)
 					    next_cpu(&env.cons_cpus));
 	}
 
-	/* unless explicit producer CPU list is specified, continue after
-	 * last consumer CPU
-	 */
+	 
 	if (!env.prod_cpus.cpus)
 		env.prod_cpus.next_cpu = env.cons_cpus.next_cpu;
 
@@ -688,7 +686,7 @@ int main(int argc, char **argv)
 	pthread_mutex_unlock(&bench_done_mtx);
 
 	if (bench->report_final)
-		/* skip first sample */
+		 
 		bench->report_final(state.results + env.warmup_sec,
 				    state.res_cnt - env.warmup_sec);
 

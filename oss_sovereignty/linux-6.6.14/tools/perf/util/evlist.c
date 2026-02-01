@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011, Red Hat Inc, Arnaldo Carvalho de Melo <acme@redhat.com>
- *
- * Parts came from builtin-{top,stat,record}.c, see those files for further
- * copyright notes.
- */
+
+ 
 #include <api/fs/fs.h>
 #include <errno.h>
 #include <inttypes.h>
@@ -19,7 +14,7 @@
 #include "debug.h"
 #include "units.h"
 #include "bpf_counter.h"
-#include <internal/lib.h> // page_size
+#include <internal/lib.h> 
 #include "affinity.h"
 #include "../perf.h"
 #include "asm/bug.h"
@@ -121,13 +116,7 @@ struct evlist *evlist__new_dummy(void)
 	return evlist;
 }
 
-/**
- * evlist__set_id_pos - set the positions of event ids.
- * @evlist: selected event list
- *
- * Events with compatible sample types all have the same id_pos
- * and is_pos.  For convenience, put a copy on evlist.
- */
+ 
 void evlist__set_id_pos(struct evlist *evlist)
 {
 	struct evsel *first = evlist__first(evlist);
@@ -224,7 +213,7 @@ int __evlist__set_tracepoints_handlers(struct evlist *evlist,
 	int err;
 
 	for (i = 0; i < nr_assocs; i++) {
-		// Adding a handler for an event not in this evlist, just ignore it.
+		
 		struct evsel *evsel = evlist__find_tracepoint_by_name(evlist, assocs[i].name);
 		if (evsel == NULL)
 			continue;
@@ -250,8 +239,8 @@ static struct evsel *evlist__dummy_event(struct evlist *evlist)
 	struct perf_event_attr attr = {
 		.type	= PERF_TYPE_SOFTWARE,
 		.config = PERF_COUNT_SW_DUMMY,
-		.size	= sizeof(attr), /* to capture ABI version */
-		/* Avoid frequency mode for dummy events to avoid associated timers. */
+		.size	= sizeof(attr),  
+		 
 		.freq = 0,
 		.sample_period = 1,
 	};
@@ -403,7 +392,7 @@ struct evlist_cpu_iterator evlist__cpu_begin(struct evlist *evlist, struct affin
 	};
 
 	if (evlist__empty(evlist)) {
-		/* Ensure the empty list doesn't iterate. */
+		 
 		itr.evlist_cpu_map_idx = itr.evlist_cpu_map_nr;
 	} else {
 		itr.evsel = evlist__first(evlist);
@@ -411,10 +400,7 @@ struct evlist_cpu_iterator evlist__cpu_begin(struct evlist *evlist, struct affin
 			itr.cpu = perf_cpu_map__cpu(evlist->core.all_cpus, 0);
 			affinity__set(itr.affinity, itr.cpu.cpu);
 			itr.cpu_map_idx = perf_cpu_map__idx(itr.evsel->core.cpus, itr.cpu);
-			/*
-			 * If this CPU isn't in the evsel's cpu map then advance
-			 * through the list.
-			 */
+			 
 			if (itr.cpu_map_idx == -1)
 				evlist_cpu_iterator__next(&itr);
 		}
@@ -443,10 +429,7 @@ void evlist_cpu_iterator__next(struct evlist_cpu_iterator *evlist_cpu_itr)
 		evlist_cpu_itr->cpu_map_idx =
 			perf_cpu_map__idx(evlist_cpu_itr->evsel->core.cpus,
 					  evlist_cpu_itr->cpu);
-		/*
-		 * If this CPU isn't in the evsel's cpu map then advance through
-		 * the list.
-		 */
+		 
 		if (evlist_cpu_itr->cpu_map_idx == -1)
 			evlist_cpu_iterator__next(evlist_cpu_itr);
 	}
@@ -473,7 +456,7 @@ static int evlist__is_enabled(struct evlist *evlist)
 	evlist__for_each_entry(evlist, pos) {
 		if (!evsel__is_group_leader(pos) || !pos->core.fd)
 			continue;
-		/* If at least one event is enabled, evlist is enabled. */
+		 
 		if (!pos->disabled)
 			return true;
 	}
@@ -487,14 +470,14 @@ static void __evlist__disable(struct evlist *evlist, char *evsel_name, bool excl
 	struct affinity saved_affinity, *affinity = NULL;
 	bool has_imm = false;
 
-	// See explanation in evlist__close()
+	 
 	if (!cpu_map__is_dummy(evlist->core.user_requested_cpus)) {
 		if (affinity__setup(&saved_affinity) < 0)
 			return;
 		affinity = &saved_affinity;
 	}
 
-	/* Disable 'immediate' events last */
+	 
 	for (int imm = 0; imm <= 1; imm++) {
 		evlist__for_each_cpu(evlist_cpu_itr, evlist, affinity) {
 			pos = evlist_cpu_itr.evsel;
@@ -525,10 +508,7 @@ static void __evlist__disable(struct evlist *evlist, char *evsel_name, bool excl
 		pos->disabled = true;
 	}
 
-	/*
-	 * If we disabled only single event, we need to check
-	 * the enabled state of the evlist manually.
-	 */
+	 
 	if (evsel_name)
 		evlist->enabled = evlist__is_enabled(evlist);
 	else
@@ -556,7 +536,7 @@ static void __evlist__enable(struct evlist *evlist, char *evsel_name, bool excl_
 	struct evlist_cpu_iterator evlist_cpu_itr;
 	struct affinity saved_affinity, *affinity = NULL;
 
-	// See explanation in evlist__close()
+	 
 	if (!cpu_map__is_dummy(evlist->core.user_requested_cpus)) {
 		if (affinity__setup(&saved_affinity) < 0)
 			return;
@@ -584,11 +564,7 @@ static void __evlist__enable(struct evlist *evlist, char *evsel_name, bool excl_
 		pos->disabled = false;
 	}
 
-	/*
-	 * Even single event sets the 'enabled' for evlist,
-	 * so the toggle can work properly and toggle to
-	 * 'disabled' state.
-	 */
+	 
 	evlist->enabled = true;
 }
 
@@ -721,7 +697,7 @@ struct evsel *evlist__event2evsel(struct evlist *evlist, union perf_event *event
 	if (evlist__event2id(evlist, event, &id))
 		return NULL;
 
-	/* Synthesized events have an id of zero */
+	 
 	if (!id)
 		return first;
 
@@ -805,15 +781,7 @@ static struct mmap *evlist__alloc_mmap(struct evlist *evlist,
 	for (i = 0; i < evlist->core.nr_mmaps; i++) {
 		struct perf_mmap *prev = i ? &map[i - 1].core : NULL;
 
-		/*
-		 * When the perf_mmap() call is made we grab one refcount, plus
-		 * one extra to let perf_mmap__consume() get the last
-		 * events after all real references (perf_mmap__get()) are
-		 * dropped.
-		 *
-		 * Each PERF_EVENT_IOC_SET_OUTPUT points to this mmap and
-		 * thus does perf_mmap__get() on it.
-		 */
+		 
 		perf_mmap__init(&map[i].core, prev, overwrite, perf_mmap__unmap_cb);
 	}
 
@@ -874,11 +842,7 @@ unsigned long perf_event_mlock_kb_in_pages(void)
 	int max;
 
 	if (sysctl__read_int("kernel/perf_event_mlock_kb", &max) < 0) {
-		/*
-		 * Pick a once upon a time good value, i.e. things look
-		 * strange since we can't read a sysctl value, but lets not
-		 * die yet...
-		 */
+		 
 		max = 512;
 	} else {
 		max -= (page_size / 1024);
@@ -918,10 +882,10 @@ static long parse_pages_arg(const char *str, unsigned long min,
 
 	val = parse_tag_value(str, tags);
 	if (val != (unsigned long) -1) {
-		/* we got file size value */
+		 
 		pages = PERF_ALIGN(val, page_size) / page_size;
 	} else {
-		/* we got pages count value */
+		 
 		char *eptr;
 		pages = strtoul(str, &eptr, 10);
 		if (*eptr != '\0')
@@ -929,11 +893,11 @@ static long parse_pages_arg(const char *str, unsigned long min,
 	}
 
 	if (pages == 0 && min == 0) {
-		/* leave number of pages at 0 */
+		 
 	} else if (!is_power_of_2(pages)) {
 		char buf[100];
 
-		/* round pages up to next power of 2 */
+		 
 		pages = roundup_pow_of_two(pages);
 		if (!pages)
 			return -EINVAL;
@@ -972,33 +936,13 @@ int evlist__parse_mmap_pages(const struct option *opt, const char *str, int unse
 	return __evlist__parse_mmap_pages(opt->value, str);
 }
 
-/**
- * evlist__mmap_ex - Create mmaps to receive events.
- * @evlist: list of events
- * @pages: map length in pages
- * @overwrite: overwrite older events?
- * @auxtrace_pages - auxtrace map length in pages
- * @auxtrace_overwrite - overwrite older auxtrace data?
- *
- * If @overwrite is %false the user needs to signal event consumption using
- * perf_mmap__write_tail().  Using evlist__mmap_read() does this
- * automatically.
- *
- * Similarly, if @auxtrace_overwrite is %false the user needs to signal data
- * consumption using auxtrace_mmap__write_tail().
- *
- * Return: %0 on success, negative error code otherwise.
- */
+ 
 int evlist__mmap_ex(struct evlist *evlist, unsigned int pages,
 			 unsigned int auxtrace_pages,
 			 bool auxtrace_overwrite, int nr_cblocks, int affinity, int flush,
 			 int comp_level)
 {
-	/*
-	 * Delay setting mp.prot: set it before calling perf_mmap__mmap.
-	 * Its value is decided by evsel's write_backward.
-	 * So &mp should not be passed through const pointer.
-	 */
+	 
 	struct mmap_params mp = {
 		.nr_cblocks	= nr_cblocks,
 		.affinity	= affinity,
@@ -1031,24 +975,7 @@ int evlist__create_maps(struct evlist *evlist, struct target *target)
 	struct perf_cpu_map *cpus;
 	struct perf_thread_map *threads;
 
-	/*
-	 * If specify '-a' and '--per-thread' to perf record, perf record
-	 * will override '--per-thread'. target->per_thread = false and
-	 * target->system_wide = true.
-	 *
-	 * If specify '--per-thread' only to perf record,
-	 * target->per_thread = true and target->system_wide = false.
-	 *
-	 * So target->per_thread && target->system_wide is false.
-	 * For perf record, thread_map__new_str doesn't call
-	 * thread_map__new_all_cpus. That will keep perf record's
-	 * current behavior.
-	 *
-	 * For perf stat, it allows the case that target->per_thread and
-	 * target->system_wide are all true. It means to collect system-wide
-	 * per-thread data. thread_map__new_str will call
-	 * thread_map__new_all_cpus to enumerate all threads.
-	 */
+	 
 	threads = thread_map__new_str(target->pid, target->tid, target->uid,
 				      all_threads);
 
@@ -1067,7 +994,7 @@ int evlist__create_maps(struct evlist *evlist, struct target *target)
 
 	perf_evlist__set_maps(&evlist->core, cpus, threads);
 
-	/* as evlist now has references, put count here */
+	 
 	perf_cpu_map__put(cpus);
 	perf_thread_map__put(threads);
 
@@ -1084,10 +1011,7 @@ int evlist__apply_filters(struct evlist *evlist, struct evsel **err_evsel)
 	int err = 0;
 
 	evlist__for_each_entry(evlist, evsel) {
-		/*
-		 * filters only work for tracepoint event, which doesn't have cpu limit.
-		 * So evlist and evsel should always be same.
-		 */
+		 
 		if (evsel->filter) {
 			err = perf_evsel__apply_filter(&evsel->core, evsel->filter);
 			if (err) {
@@ -1096,9 +1020,7 @@ int evlist__apply_filters(struct evlist *evlist, struct evsel **err_evsel)
 			}
 		}
 
-		/*
-		 * non-tracepoint events can have BPF filters.
-		 */
+		 
 		if (!list_empty(&evsel->bpf_filters)) {
 			err = perf_bpf_filter__prepare(evsel);
 			if (err) {
@@ -1266,7 +1188,7 @@ bool evlist__valid_read_format(struct evlist *evlist)
 		}
 	}
 
-	/* PERF_SAMPLE_READ implies PERF_FORMAT_ID. */
+	 
 	if ((sample_type & PERF_SAMPLE_READ) &&
 	    !(read_format & PERF_FORMAT_ID)) {
 		return false;
@@ -1311,10 +1233,7 @@ void evlist__close(struct evlist *evlist)
 	struct evlist_cpu_iterator evlist_cpu_itr;
 	struct affinity affinity;
 
-	/*
-	 * With perf record core.user_requested_cpus is usually NULL.
-	 * Use the old method to handle this for now.
-	 */
+	 
 	if (!evlist->core.user_requested_cpus ||
 	    cpu_map__is_dummy(evlist->core.user_requested_cpus)) {
 		evlist__for_each_entry_reverse(evlist, evsel)
@@ -1343,15 +1262,7 @@ static int evlist__create_syswide_maps(struct evlist *evlist)
 	struct perf_cpu_map *cpus;
 	struct perf_thread_map *threads;
 
-	/*
-	 * Try reading /sys/devices/system/cpu/online to get
-	 * an all cpus map.
-	 *
-	 * FIXME: -ENOMEM is the best we can do here, the cpu_map
-	 * code needs an overhaul to properly forward the
-	 * error, and we may not want to do that fallback to a
-	 * default cpu identity map :-\
-	 */
+	 
 	cpus = perf_cpu_map__new(NULL);
 	if (!cpus)
 		goto out;
@@ -1374,10 +1285,7 @@ int evlist__open(struct evlist *evlist)
 	struct evsel *evsel;
 	int err;
 
-	/*
-	 * Default: one fd per CPU, all threads, aka systemwide
-	 * as sys_perf_event_open(cpu = -1, thread = -1) is EINVAL
-	 */
+	 
 	if (evlist->core.threads == NULL && evlist->core.user_requested_cpus == NULL) {
 		err = evlist__create_syswide_maps(evlist);
 		if (err < 0)
@@ -1433,32 +1341,15 @@ int evlist__prepare_workload(struct evlist *evlist, struct target *target, const
 		close(go_pipe[1]);
 		fcntl(go_pipe[0], F_SETFD, FD_CLOEXEC);
 
-		/*
-		 * Change the name of this process not to confuse --exclude-perf users
-		 * that sees 'perf' in the window up to the execvp() and thinks that
-		 * perf samples are not being excluded.
-		 */
+		 
 		prctl(PR_SET_NAME, "perf-exec");
 
-		/*
-		 * Tell the parent we're ready to go
-		 */
+		 
 		close(child_ready_pipe[1]);
 
-		/*
-		 * Wait until the parent tells us to go.
-		 */
+		 
 		ret = read(go_pipe[0], &bf, 1);
-		/*
-		 * The parent will ask for the execvp() to be performed by
-		 * writing exactly one byte, in workload.cork_fd, usually via
-		 * evlist__start_workload().
-		 *
-		 * For cancelling the workload without actually running it,
-		 * the parent will just close workload.cork_fd, without writing
-		 * anything, i.e. read will return zero and we just exit()
-		 * here.
-		 */
+		 
 		if (ret != 1) {
 			if (ret == -1)
 				perror("unable to read pipe");
@@ -1497,9 +1388,7 @@ int evlist__prepare_workload(struct evlist *evlist, struct target *target, const
 
 	close(child_ready_pipe[1]);
 	close(go_pipe[0]);
-	/*
-	 * wait for child to settle
-	 */
+	 
 	if (read(child_ready_pipe[0], &bf, 1) == -1) {
 		perror("unable to read pipe");
 		goto out_close_pipes;
@@ -1524,9 +1413,7 @@ int evlist__start_workload(struct evlist *evlist)
 	if (evlist->workload.cork_fd > 0) {
 		char bf = 0;
 		int ret;
-		/*
-		 * Remove the cork, let it rip!
-		 */
+		 
 		ret = write(evlist->workload.cork_fd, &bf, 1);
 		if (ret < 0)
 			perror("unable to write to pipe");
@@ -1778,11 +1665,7 @@ bool evlist__exclude_kernel(struct evlist *evlist)
 	return true;
 }
 
-/*
- * Events in data file are not collect in groups, but we still want
- * the group display. Set the artificial group and set the leader's
- * forced_leader flag to notify the display code.
- */
+ 
 void evlist__force_leader(struct evlist *evlist)
 {
 	if (evlist__nr_groups(evlist) == 0) {
@@ -1803,31 +1686,21 @@ struct evsel *evlist__reset_weak_group(struct evlist *evsel_list, struct evsel *
 	pr_debug("Weak group for %s/%d failed\n",
 			leader->name, leader->core.nr_members);
 
-	/*
-	 * for_each_group_member doesn't work here because it doesn't
-	 * include the first entry.
-	 */
+	 
 	evlist__for_each_entry(evsel_list, c2) {
 		if (c2 == evsel)
 			is_open = false;
 		if (evsel__has_leader(c2, leader)) {
 			if (is_open && close)
 				perf_evsel__close(&c2->core);
-			/*
-			 * We want to close all members of the group and reopen
-			 * them. Some events, like Intel topdown, require being
-			 * in a group and so keep these in the group.
-			 */
+			 
 			evsel__remove_from_group(c2, leader);
 
-			/*
-			 * Set this for all former members of the group
-			 * to indicate they get reopened.
-			 */
+			 
 			c2->reset_group = true;
 		}
 	}
-	/* Reset the leader count if all entries were removed. */
+	 
 	if (leader->core.nr_members == 1)
 		leader->core.nr_members = 0;
 	return leader;
@@ -1853,10 +1726,7 @@ static int evlist__parse_control_fifo(const char *str, int *ctl_fd, int *ctl_fd_
 	if (p)
 		*p = '\0';
 
-	/*
-	 * O_RDWR avoids POLLHUPs which is necessary to allow the other
-	 * end of a FIFO to be repeatedly opened and closed.
-	 */
+	 
 	fd = open(s, O_RDWR | O_NONBLOCK | O_CLOEXEC);
 	if (fd < 0) {
 		pr_err("Failed to open '%s'\n", s);
@@ -1867,7 +1737,7 @@ static int evlist__parse_control_fifo(const char *str, int *ctl_fd, int *ctl_fd_
 	*ctl_fd_close = true;
 
 	if (p && *++p) {
-		/* O_RDWR | O_NONBLOCK means the other end need not be open */
+		 
 		fd = open(p, O_RDWR | O_NONBLOCK | O_CLOEXEC);
 		if (fd < 0) {
 			pr_err("Failed to open '%s'\n", p);
@@ -2042,17 +1912,17 @@ static int get_cmd_arg(char *cmd_data, size_t cmd_size, char **arg)
 {
 	char *data = cmd_data + cmd_size;
 
-	/* no argument */
+	 
 	if (!*data)
 		return 0;
 
-	/* there's argument */
+	 
 	if (*data == ' ') {
 		*arg = data + 1;
 		return 1;
 	}
 
-	/* malformed */
+	 
 	return -1;
 }
 
@@ -2177,13 +2047,7 @@ int evlist__ctlfd_process(struct evlist *evlist, enum evlist_ctl_cmd *cmd)
 	return err;
 }
 
-/**
- * struct event_enable_time - perf record -D/--delay single time range.
- * @start: start of time range to enable events in milliseconds
- * @end: end of time range to enable events in milliseconds
- *
- * N.B. this structure is also accessed as an array of int.
- */
+ 
 struct event_enable_time {
 	int	start;
 	int	end;
@@ -2214,7 +2078,7 @@ static ssize_t parse_event_enable_times(const char *str, struct event_enable_tim
 		ret = parse_event_enable_time(str, range, first);
 		if (ret < 0)
 			return ret;
-		/* Check no overlap */
+		 
 		if (!first && range && range->start <= range[-1].end)
 			return -EINVAL;
 		str += ret;
@@ -2224,20 +2088,7 @@ static ssize_t parse_event_enable_times(const char *str, struct event_enable_tim
 	return cnt;
 }
 
-/**
- * struct event_enable_timer - control structure for perf record -D/--delay.
- * @evlist: event list
- * @times: time ranges that events are enabled (N.B. this is also accessed as an
- *         array of int)
- * @times_cnt: number of time ranges
- * @timerfd: timer file descriptor
- * @pollfd_pos: position in @evlist array of file descriptors to poll (fdarray)
- * @times_step: current position in (int *)@times)[],
- *              refer event_enable_timer__process()
- *
- * Note, this structure is only used when there are time ranges, not when there
- * is only an initial delay.
- */
+ 
 struct event_enable_timer {
 	struct evlist *evlist;
 	struct event_enable_time *times;
@@ -2375,9 +2226,9 @@ int event_enable_timer__process(struct event_enable_timer *eet)
 			evlist__disable_non_dummy(eet->evlist);
 			pr_info(EVLIST_DISABLED_MSG);
 			if (pos >= eet->times_cnt - 1) {
-				/* Disarm timer */
+				 
 				event_enable_timer__set_timer(eet, 0);
-				return 1; /* Stop */
+				return 1;  
 			}
 		} else {
 			evlist__enable_non_dummy(eet->evlist);
@@ -2388,7 +2239,7 @@ int event_enable_timer__process(struct event_enable_timer *eet)
 		pos = step / 2;
 
 		if (pos < eet->times_cnt) {
-			int *times = (int *)eet->times; /* Accessing 'times' as array of int */
+			int *times = (int *)eet->times;  
 			int ms = times[step] - times[step - 1];
 
 			eet->times_step = step;
@@ -2441,13 +2292,7 @@ void evlist__check_mem_load_aux(struct evlist *evlist)
 {
 	struct evsel *leader, *evsel, *pos;
 
-	/*
-	 * For some platforms, the 'mem-loads' event is required to use
-	 * together with 'mem-loads-aux' within a group and 'mem-loads-aux'
-	 * must be the group leader. Now we disable this group before reporting
-	 * because 'mem-loads-aux' is just an auxiliary event. It doesn't carry
-	 * any valid memory load information.
-	 */
+	 
 	evlist__for_each_entry(evlist, evsel) {
 		leader = evsel__leader(evsel);
 		if (leader == evsel)
@@ -2462,15 +2307,7 @@ void evlist__check_mem_load_aux(struct evlist *evlist)
 	}
 }
 
-/**
- * evlist__warn_user_requested_cpus() - Check each evsel against requested CPUs
- *     and warn if the user CPU list is inapplicable for the event's PMU's
- *     CPUs. Not core PMUs list a CPU in sysfs, but this may be overwritten by a
- *     user requested CPU and so any online CPU is applicable. Core PMUs handle
- *     events on the CPUs in their list and otherwise the event isn't supported.
- * @evlist: The list of events being checked.
- * @cpu_list: The user provided list of CPUs.
- */
+ 
 void evlist__warn_user_requested_cpus(struct evlist *evlist, const char *cpu_list)
 {
 	struct perf_cpu_map *user_requested_cpus;

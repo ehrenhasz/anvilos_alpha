@@ -1,19 +1,4 @@
-/*
- * Copyright (c) 2014 Redpine Signals Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- *
- */
+ 
 
 #include <linux/module.h>
 #include "rsi_sdio.h"
@@ -21,21 +6,12 @@
 #include "rsi_coex.h"
 #include "rsi_hal.h"
 
-/* Default operating mode is wlan STA + BT */
+ 
 static u16 dev_oper_mode = DEV_OPMODE_STA_BT_DUAL;
 module_param(dev_oper_mode, ushort, 0444);
 MODULE_PARM_DESC(dev_oper_mode, DEV_OPMODE_PARAM_DESC);
 
-/**
- * rsi_sdio_set_cmd52_arg() - This function prepares cmd 52 read/write arg.
- * @rw: Read/write
- * @func: function number
- * @raw: indicates whether to perform read after write
- * @address: address to which to read/write
- * @writedata: data to write
- *
- * Return: argument
- */
+ 
 static u32 rsi_sdio_set_cmd52_arg(bool rw,
 				  u8 func,
 				  u8 raw,
@@ -48,14 +24,7 @@ static u32 rsi_sdio_set_cmd52_arg(bool rw,
 		(writedata & 0xFF);
 }
 
-/**
- * rsi_cmd52writebyte() - This function issues cmd52 byte write onto the card.
- * @card: Pointer to the mmc_card.
- * @address: Address to write.
- * @byte: Data to write.
- *
- * Return: Write status.
- */
+ 
 static int rsi_cmd52writebyte(struct mmc_card *card,
 			      u32 address,
 			      u8 byte)
@@ -72,14 +41,7 @@ static int rsi_cmd52writebyte(struct mmc_card *card,
 	return mmc_wait_for_cmd(card->host, &io_cmd, 0);
 }
 
-/**
- * rsi_cmd52readbyte() - This function issues cmd52 byte read onto the card.
- * @card: Pointer to the mmc_card.
- * @address: Address to read from.
- * @byte: Variable to store read value.
- *
- * Return: Read status.
- */
+ 
 static int rsi_cmd52readbyte(struct mmc_card *card,
 			     u32 address,
 			     u8 *byte)
@@ -100,16 +62,7 @@ static int rsi_cmd52readbyte(struct mmc_card *card,
 	return err;
 }
 
-/**
- * rsi_issue_sdiocommand() - This function issues sdio commands.
- * @func: Pointer to the sdio_func structure.
- * @opcode: Opcode value.
- * @arg: Arguments to pass.
- * @flags: Flags which are set.
- * @resp: Pointer to store response.
- *
- * Return: err: command status as 0 or -1.
- */
+ 
 static int rsi_issue_sdiocommand(struct sdio_func *func,
 				 u32 opcode,
 				 u32 arg,
@@ -134,13 +87,7 @@ static int rsi_issue_sdiocommand(struct sdio_func *func,
 	return err;
 }
 
-/**
- * rsi_handle_interrupt() - This function is called upon the occurrence
- *			    of an interrupt.
- * @function: Pointer to the sdio_func structure.
- *
- * Return: None.
- */
+ 
 static void rsi_handle_interrupt(struct sdio_func *function)
 {
 	struct rsi_hw *adapter = sdio_get_drvdata(function);
@@ -152,12 +99,7 @@ static void rsi_handle_interrupt(struct sdio_func *function)
 	rsi_set_event(&dev->rx_thread.event);
 }
 
-/**
- * rsi_reset_card() - This function resets and re-initializes the card.
- * @pfunction: Pointer to the sdio_func structure.
- *
- * Return: None.
- */
+ 
 static void rsi_reset_card(struct sdio_func *pfunction)
 {
 	int ret = 0;
@@ -168,21 +110,19 @@ static void rsi_reset_card(struct sdio_func *pfunction)
 	u32 clock, resp, i;
 	u16 rca;
 
-	/* Reset 9110 chip */
+	 
 	ret = rsi_cmd52writebyte(pfunction->card,
 				 SDIO_CCCR_ABORT,
 				 (1 << 3));
 
-	/* Card will not send any response as it is getting reset immediately
-	 * Hence expect a timeout status from host controller
-	 */
+	 
 	if (ret != -ETIMEDOUT)
 		rsi_dbg(ERR_ZONE, "%s: Reset failed : %d\n", __func__, ret);
 
-	/* Wait for few milli seconds to get rid of residue charges if any */
+	 
 	msleep(20);
 
-	/* Initialize the SDIO card */
+	 
 	host->ios.chip_select = MMC_CS_DONTCARE;
 	host->ios.bus_mode = MMC_BUSMODE_OPENDRAIN;
 	host->ios.power_mode = MMC_POWER_UP;
@@ -190,23 +130,17 @@ static void rsi_reset_card(struct sdio_func *pfunction)
 	host->ios.timing = MMC_TIMING_LEGACY;
 	host->ops->set_ios(host, &host->ios);
 
-	/*
-	 * This delay should be sufficient to allow the power supply
-	 * to reach the minimum voltage.
-	 */
+	 
 	msleep(20);
 
 	host->ios.clock = host->f_min;
 	host->ios.power_mode = MMC_POWER_ON;
 	host->ops->set_ios(host, &host->ios);
 
-	/*
-	 * This delay must be at least 74 clock sizes, or 1 ms, or the
-	 * time required to reach a stable voltage.
-	 */
+	 
 	msleep(20);
 
-	/* Issue CMD0. Goto idle state */
+	 
 	host->ios.chip_select = MMC_CS_HIGH;
 	host->ops->set_ios(host, &host->ios);
 	msleep(20);
@@ -223,14 +157,14 @@ static void rsi_reset_card(struct sdio_func *pfunction)
 	if (err)
 		rsi_dbg(ERR_ZONE, "%s: CMD0 failed : %d\n", __func__, err);
 
-	/* Issue CMD5, arg = 0 */
+	 
 	err = rsi_issue_sdiocommand(pfunction,	SD_IO_SEND_OP_COND, 0,
 				    (MMC_RSP_R4 | MMC_CMD_BCR), &resp);
 	if (err)
 		rsi_dbg(ERR_ZONE, "%s: CMD5 failed : %d\n",
 			__func__, err);
 	card->ocr = resp;
-	/* Issue CMD5, arg = ocr. Wait till card is ready  */
+	 
 	for (i = 0; i < 100; i++) {
 		err = rsi_issue_sdiocommand(pfunction, SD_IO_SEND_OP_COND,
 					    card->ocr,
@@ -252,7 +186,7 @@ static void rsi_reset_card(struct sdio_func *pfunction)
 		return;
 	}
 
-	/* Issue CMD3, get RCA */
+	 
 	err = rsi_issue_sdiocommand(pfunction,
 				    SD_SEND_RELATIVE_ADDR,
 				    0,
@@ -266,7 +200,7 @@ static void rsi_reset_card(struct sdio_func *pfunction)
 	host->ios.bus_mode = MMC_BUSMODE_PUSHPULL;
 	host->ops->set_ios(host, &host->ios);
 
-	/* Issue CMD7, select card  */
+	 
 	err = rsi_issue_sdiocommand(pfunction,
 				    MMC_SELECT_CARD,
 				    (rca << 16),
@@ -277,7 +211,7 @@ static void rsi_reset_card(struct sdio_func *pfunction)
 		return;
 	}
 
-	/* Enable high speed */
+	 
 	if (card->host->caps & MMC_CAP_SD_HIGHSPEED) {
 		rsi_dbg(ERR_ZONE, "%s: Set high speed mode\n", __func__);
 		err = rsi_cmd52readbyte(card, SDIO_CCCR_SPEED, &cmd52_resp);
@@ -299,7 +233,7 @@ static void rsi_reset_card(struct sdio_func *pfunction)
 		}
 	}
 
-	/* Set clock */
+	 
 	if (mmc_card_hs(card))
 		clock = 50000000;
 	else
@@ -312,7 +246,7 @@ static void rsi_reset_card(struct sdio_func *pfunction)
 	host->ops->set_ios(host, &host->ios);
 
 	if (card->host->caps & MMC_CAP_4_BIT_DATA) {
-		/* CMD52: Set bus width & disable card detect resistor */
+		 
 		err = rsi_cmd52writebyte(card,
 					 SDIO_CCCR_IF,
 					 (SDIO_BUS_CD_DISABLE |
@@ -327,13 +261,7 @@ static void rsi_reset_card(struct sdio_func *pfunction)
 	}
 }
 
-/**
- * rsi_setclock() - This function sets the clock frequency.
- * @adapter: Pointer to the adapter structure.
- * @freq: Clock frequency.
- *
- * Return: None.
- */
+ 
 static void rsi_setclock(struct rsi_hw *adapter, u32 freq)
 {
 	struct rsi_91x_sdiodev *dev = adapter->rsi_dev;
@@ -347,13 +275,7 @@ static void rsi_setclock(struct rsi_hw *adapter, u32 freq)
 	host->ops->set_ios(host, &host->ios);
 }
 
-/**
- * rsi_setblocklength() - This function sets the host block length.
- * @adapter: Pointer to the adapter structure.
- * @length: Block length to be set.
- *
- * Return: status: 0 on success, -1 on failure.
- */
+ 
 static int rsi_setblocklength(struct rsi_hw *adapter, u32 length)
 {
 	struct rsi_91x_sdiodev *dev = adapter->rsi_dev;
@@ -369,12 +291,7 @@ static int rsi_setblocklength(struct rsi_hw *adapter, u32 length)
 	return status;
 }
 
-/**
- * rsi_setupcard() - This function queries and sets the card's features.
- * @adapter: Pointer to the adapter structure.
- *
- * Return: status: 0 on success, -1 on failure.
- */
+ 
 static int rsi_setupcard(struct rsi_hw *adapter)
 {
 	struct rsi_91x_sdiodev *dev = adapter->rsi_dev;
@@ -390,15 +307,7 @@ static int rsi_setupcard(struct rsi_hw *adapter)
 	return status;
 }
 
-/**
- * rsi_sdio_read_register() - This function reads one byte of information
- *			      from a register.
- * @adapter: Pointer to the adapter structure.
- * @addr: Address of the register.
- * @data: Pointer to the data that stores the data read.
- *
- * Return: 0 on success, -1 on failure.
- */
+ 
 int rsi_sdio_read_register(struct rsi_hw *adapter,
 			   u32 addr,
 			   u8 *data)
@@ -421,16 +330,7 @@ int rsi_sdio_read_register(struct rsi_hw *adapter,
 	return status;
 }
 
-/**
- * rsi_sdio_write_register() - This function writes one byte of information
- *			       into a register.
- * @adapter: Pointer to the adapter structure.
- * @function: Function Number.
- * @addr: Address of the register.
- * @data: Pointer to the data tha has to be written.
- *
- * Return: 0 on success, -1 on failure.
- */
+ 
 int rsi_sdio_write_register(struct rsi_hw *adapter,
 			    u8 function,
 			    u32 addr,
@@ -453,13 +353,7 @@ int rsi_sdio_write_register(struct rsi_hw *adapter,
 	return status;
 }
 
-/**
- * rsi_sdio_ack_intr() - This function acks the interrupt received.
- * @adapter: Pointer to the adapter structure.
- * @int_bit: Interrupt bit to write into register.
- *
- * Return: None.
- */
+ 
 void rsi_sdio_ack_intr(struct rsi_hw *adapter, u8 int_bit)
 {
 	int status;
@@ -474,16 +368,7 @@ void rsi_sdio_ack_intr(struct rsi_hw *adapter, u8 int_bit)
 
 
 
-/**
- * rsi_sdio_read_register_multiple() - This function read multiple bytes of
- *				       information from the SD card.
- * @adapter: Pointer to the adapter structure.
- * @addr: Address of the register.
- * @count: Number of multiple bytes to be read.
- * @data: Pointer to the read data.
- *
- * Return: 0 on success, -1 on failure.
- */
+ 
 static int rsi_sdio_read_register_multiple(struct rsi_hw *adapter,
 					   u32 addr,
 					   u8 *data,
@@ -505,16 +390,7 @@ static int rsi_sdio_read_register_multiple(struct rsi_hw *adapter,
 	return status;
 }
 
-/**
- * rsi_sdio_write_register_multiple() - This function writes multiple bytes of
- *					information to the SD card.
- * @adapter: Pointer to the adapter structure.
- * @addr: Address of the register.
- * @data: Pointer to the data that has to be written.
- * @count: Number of multiple bytes to be written.
- *
- * Return: 0 on success, -1 on failure.
- */
+ 
 int rsi_sdio_write_register_multiple(struct rsi_hw *adapter,
 				     u32 addr,
 				     u8 *data,
@@ -527,10 +403,7 @@ int rsi_sdio_write_register_multiple(struct rsi_hw *adapter,
 		rsi_dbg(ERR_ZONE, "%s: Stopping card writes\n", __func__);
 		return 0;
 	} else if (dev->write_fail == 1) {
-		/**
-		 * Assuming it is a CRC failure, we want to allow another
-		 *  card write
-		 */
+		 
 		rsi_dbg(ERR_ZONE, "%s: Continue card writes\n", __func__);
 		dev->write_fail++;
 	}
@@ -574,7 +447,7 @@ static int rsi_sdio_load_data_master_write(struct rsi_hw *adapter,
 	if (!temp_buf)
 		return -ENOMEM;
 
-	/* Loading DM ms word in the sdio slave */
+	 
 	status = rsi_sdio_master_access_msword(adapter, msb_address);
 	if (status < 0) {
 		rsi_dbg(ERR_ZONE, "%s: Unable to set ms word reg\n", __func__);
@@ -598,7 +471,7 @@ static int rsi_sdio_load_data_master_write(struct rsi_hw *adapter,
 		if ((base_address >> 16) != msb_address) {
 			msb_address += 1;
 
-			/* Loading DM ms word in the sdio slave */
+			 
 			status = rsi_sdio_master_access_msword(adapter,
 							       msb_address);
 			if (status < 0) {
@@ -662,7 +535,7 @@ static int rsi_sdio_master_reg_read(struct rsi_hw *adapter, u32 addr,
 	else
 		addr_on_bus = addr;
 
-	/* Bring TA out of reset */
+	 
 	status = rsi_sdio_read_register_multiple
 					(adapter,
 					 (addr_on_bus | RSI_SD_REQUEST_MASTER),
@@ -729,7 +602,7 @@ static int rsi_sdio_master_reg_write(struct rsi_hw *adapter,
 	}
 	addr = addr & 0xFFFF;
 
-	/* Bring TA out of reset */
+	 
 	status = rsi_sdio_write_register_multiple
 					(adapter,
 					 (addr | RSI_SD_REQUEST_MASTER),
@@ -742,14 +615,7 @@ static int rsi_sdio_master_reg_write(struct rsi_hw *adapter,
 	return status;
 }
 
-/**
- * rsi_sdio_host_intf_write_pkt() - This function writes the packet to device.
- * @adapter: Pointer to the adapter structure.
- * @pkt: Pointer to the data to be written on to the device.
- * @len: length of the data to be written on to the device.
- *
- * Return: 0 on success, -1 on failure.
- */
+ 
 static int rsi_sdio_host_intf_write_pkt(struct rsi_hw *adapter,
 					u8 *pkt,
 					u32 len)
@@ -783,15 +649,7 @@ static int rsi_sdio_host_intf_write_pkt(struct rsi_hw *adapter,
 	return status;
 }
 
-/**
- * rsi_sdio_host_intf_read_pkt() - This function reads the packet
- *				   from the device.
- * @adapter: Pointer to the adapter data structure.
- * @pkt: Pointer to the packet data to be read from the device.
- * @length: Length of the data to be read from the device.
- *
- * Return: 0 on success, -1 on failure.
- */
+ 
 int rsi_sdio_host_intf_read_pkt(struct rsi_hw *adapter,
 				u8 *pkt,
 				u32 length)
@@ -806,7 +664,7 @@ int rsi_sdio_host_intf_read_pkt(struct rsi_hw *adapter,
 	status = rsi_sdio_read_register_multiple(adapter,
 						 length,
 						 (u8 *)pkt,
-						 length); /*num of bytes*/
+						 length);  
 
 	if (status)
 		rsi_dbg(ERR_ZONE, "%s: Failed to read frame: %d\n", __func__,
@@ -814,14 +672,7 @@ int rsi_sdio_host_intf_read_pkt(struct rsi_hw *adapter,
 	return status;
 }
 
-/**
- * rsi_init_sdio_interface() - This function does init specific to SDIO.
- *
- * @adapter: Pointer to the adapter data structure.
- * @pfunction: Pointer to the sdio_func structure.
- *
- * Return: 0 on success, -1 on failure.
- */
+ 
 static int rsi_init_sdio_interface(struct rsi_hw *adapter,
 				   struct sdio_func *pfunction)
 {
@@ -888,7 +739,7 @@ static int rsi_sdio_reinit_device(struct rsi_hw *adapter)
 	for (ii = 0; ii < NUM_SOFT_QUEUES; ii++)
 		skb_queue_purge(&adapter->priv->tx_queue[ii]);
 
-	/* Initialize device again */
+	 
 	sdio_claim_host(pfunction);
 
 	sdio_release_irq(pfunction);
@@ -989,15 +840,7 @@ static struct rsi_host_intf_ops sdio_host_intf_ops = {
 	.ta_reset		= rsi_sdio_ta_reset,
 };
 
-/**
- * rsi_probe() - This function is called by kernel when the driver provided
- *		 Vendor and device IDs are matched. All the initialization
- *		 work is done here.
- * @pfunction: Pointer to the sdio_func structure.
- * @id: Pointer to sdio_device_id structure.
- *
- * Return: 0 on success, 1 on failure.
- */
+ 
 static int rsi_probe(struct sdio_func *pfunction,
 		     const struct sdio_device_id *id)
 {
@@ -1102,7 +945,7 @@ static void ulp_read_write(struct rsi_hw *adapter, u16 addr, u32 data,
 	msleep(20);
 }
 
-/*This function resets and re-initializes the chip.*/
+ 
 static void rsi_reset_chip(struct rsi_hw *adapter)
 {
 	u8 *data;
@@ -1132,7 +975,7 @@ static void rsi_reset_chip(struct rsi_hw *adapter)
 	rsi_dbg(INFO_ZONE, "%s: Intr Status Register value = %d\n",
 		__func__, sdio_interrupt_status);
 
-	/* Put Thread-Arch processor on hold */
+	 
 	if (rsi_sdio_master_access_msword(adapter, TA_BASE_ADDR)) {
 		rsi_dbg(ERR_ZONE,
 			"%s: Unable to set ms word to common reg\n",
@@ -1150,9 +993,7 @@ static void rsi_reset_chip(struct rsi_hw *adapter)
 		goto err;
 	}
 
-	/* This msleep will ensure Thread-Arch processor to go to hold
-	 * and any pending dma transfers to rf spi in device to finish.
-	 */
+	 
 	msleep(100);
 	if (adapter->device_model != RSI_DEV_9116) {
 		ulp_read_write(adapter, RSI_ULP_RESET_REG, RSI_ULP_WRITE_0, 32);
@@ -1189,21 +1030,14 @@ static void rsi_reset_chip(struct rsi_hw *adapter)
 		}
 		rsi_dbg(ERR_ZONE, "***** Watch Dog Reset Successful *****\n");
 	}
-	/* This msleep will be sufficient for the ulp
-	 * read write operations to complete for chip reset.
-	 */
+	 
 	msleep(500);
 err:
 	kfree(data);
 	return;
 }
 
-/**
- * rsi_disconnect() - This function performs the reverse of the probe function.
- * @pfunction: Pointer to the sdio_func structure.
- *
- * Return: void.
- */
+ 
 static void rsi_disconnect(struct sdio_func *pfunction)
 {
 	struct rsi_hw *adapter = sdio_get_drvdata(pfunction);
@@ -1229,10 +1063,10 @@ static void rsi_disconnect(struct sdio_func *pfunction)
 		adapter->priv->bt_adapter = NULL;
 	}
 
-	/* Reset Chip */
+	 
 	rsi_reset_chip(adapter);
 
-	/* Resetting to take care of the case, where-in driver is re-loaded */
+	 
 	sdio_claim_host(pfunction);
 	rsi_reset_card(pfunction);
 	sdio_disable_func(pfunction);
@@ -1504,7 +1338,7 @@ static const struct dev_pm_ops rsi_pm_ops = {
 static const struct sdio_device_id rsi_dev_table[] =  {
 	{ SDIO_DEVICE(SDIO_VENDOR_ID_RSI, SDIO_DEVICE_ID_RSI_9113) },
 	{ SDIO_DEVICE(SDIO_VENDOR_ID_RSI, SDIO_DEVICE_ID_RSI_9116) },
-	{ /* Blank */},
+	{  },
 };
 
 static struct sdio_driver rsi_driver = {
@@ -1520,12 +1354,7 @@ static struct sdio_driver rsi_driver = {
 #endif
 };
 
-/**
- * rsi_module_init() - This function registers the sdio module.
- * @void: Void.
- *
- * Return: 0 on success.
- */
+ 
 static int rsi_module_init(void)
 {
 	int ret;
@@ -1535,12 +1364,7 @@ static int rsi_module_init(void)
 	return ret;
 }
 
-/**
- * rsi_module_exit() - This function unregisters the sdio module.
- * @void: Void.
- *
- * Return: None.
- */
+ 
 static void rsi_module_exit(void)
 {
 	sdio_unregister_driver(&rsi_driver);

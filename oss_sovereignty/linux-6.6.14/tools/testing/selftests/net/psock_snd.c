@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define _GNU_SOURCE
 
@@ -46,7 +46,7 @@ static int	cfg_payload_len = DATA_LEN;
 static int	cfg_truncate_len = INT_MAX;
 static uint16_t	cfg_port = 8000;
 
-/* test sending up to max mtu + 1 */
+ 
 #define TEST_SZ	(sizeof(struct virtio_net_hdr) + ETH_HLEN + ETH_MAX_MTU + 1)
 
 static char tbuf[TEST_SZ], rbuf[TEST_SZ];
@@ -84,7 +84,7 @@ static int build_vnet_header(void *header)
 		vh->csum_start = ETH_HLEN + sizeof(struct iphdr);
 		vh->csum_offset = __builtin_offsetof(struct udphdr, check);
 
-		/* position check field exactly one byte beyond end of packet */
+		 
 		if (cfg_use_csum_off_bad)
 			vh->csum_start += sizeof(struct udphdr) + cfg_payload_len -
 					  vh->csum_offset - 1;
@@ -368,7 +368,7 @@ static void run_test(void)
 
 	total_len = do_tx();
 
-	/* BPF filter accepts only this length, vlan changes MAC */
+	 
 	if (cfg_payload_len == DATA_LEN && !cfg_use_vlan)
 		do_rx(fds, total_len - sizeof(struct virtio_net_hdr),
 		      tbuf + sizeof(struct virtio_net_hdr));

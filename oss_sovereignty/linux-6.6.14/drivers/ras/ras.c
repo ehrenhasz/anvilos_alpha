@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2014 Intel Corporation
- *
- * Authors:
- *	Chen, Gong <gong.chen@linux.intel.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/ras.h>

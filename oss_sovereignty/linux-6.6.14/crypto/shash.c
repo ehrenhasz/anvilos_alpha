@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Synchronous Cryptographic Hash operations.
- *
- * Copyright (c) 2008 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+ 
 
 #include <crypto/scatterwalk.h>
 #include <linux/cryptouser.h>
@@ -95,10 +91,7 @@ static int shash_update_unaligned(struct shash_desc *desc, const u8 *data,
 	unsigned long alignmask = crypto_shash_alignmask(tfm);
 	unsigned int unaligned_len = alignmask + 1 -
 				     ((unsigned long)data & alignmask);
-	/*
-	 * We cannot count on __aligned() working for large values:
-	 * https://patchwork.kernel.org/patch/9507697/
-	 */
+	 
 	u8 ubuf[MAX_SHASH_ALIGNMASK * 2];
 	u8 *buf = PTR_ALIGN(&ubuf[0], alignmask + 1);
 	int err;
@@ -143,10 +136,7 @@ static int shash_final_unaligned(struct shash_desc *desc, u8 *out)
 	unsigned long alignmask = crypto_shash_alignmask(tfm);
 	struct shash_alg *shash = crypto_shash_alg(tfm);
 	unsigned int ds = crypto_shash_digestsize(tfm);
-	/*
-	 * We cannot count on __aligned() working for large values:
-	 * https://patchwork.kernel.org/patch/9507697/
-	 */
+	 
 	u8 ubuf[MAX_SHASH_ALIGNMASK + HASH_MAX_DIGESTSIZE];
 	u8 *buf = PTR_ALIGN(&ubuf[0], alignmask + 1);
 	int err;
@@ -491,7 +481,7 @@ static int crypto_shash_init_tfm(struct crypto_tfm *tfm)
 	if (err)
 		return err;
 
-	/* ->init_tfm() may have increased the descsize. */
+	 
 	if (WARN_ON_ONCE(hash->descsize > HASH_MAX_DESCSIZE)) {
 		if (alg->exit_tfm)
 			alg->exit_tfm(hash);

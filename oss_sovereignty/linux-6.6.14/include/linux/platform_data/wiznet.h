@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Ethernet driver for the WIZnet W5x00 chip.
- */
+ 
+ 
 
 #ifndef PLATFORM_DATA_WIZNET_H
 #define PLATFORM_DATA_WIZNET_H
@@ -20,4 +18,4 @@ struct wiznet_platform_data {
 #define W5100_BUS_DIRECT_SIZE	(0x8000 << CONFIG_WIZNET_BUS_SHIFT)
 #define W5300_BUS_DIRECT_SIZE	(0x0400 << CONFIG_WIZNET_BUS_SHIFT)
 
-#endif /* PLATFORM_DATA_WIZNET_H */
+#endif  

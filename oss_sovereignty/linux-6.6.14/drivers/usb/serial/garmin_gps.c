@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Garmin GPS driver
- *
- * Copyright (C) 2006-2011 Hermann Kneissel herkne@gmx.de
- *
- * The latest version of the driver can be found at
- * http://sourceforge.net/projects/garmin-gps/
- *
- * This driver has been derived from v2.1 of the visor driver.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -24,14 +15,12 @@
 #include <linux/usb.h>
 #include <linux/usb/serial.h>
 
-/* the mode to be set when the port ist opened */
+ 
 static int initial_mode = 1;
 
 #define GARMIN_VENDOR_ID             0x091E
 
-/*
- * Version Information
- */
+ 
 
 #define VERSION_MAJOR	0
 #define VERSION_MINOR	36
@@ -42,41 +31,34 @@ static int initial_mode = 1;
 #define DRIVER_AUTHOR "hermann kneissel"
 #define DRIVER_DESC "garmin gps driver"
 
-/* error codes returned by the driver */
-#define EINVPKT	1000	/* invalid packet structure */
+ 
+#define EINVPKT	1000	 
 
 
-/* size of the header of a packet using the usb protocol */
+ 
 #define GARMIN_PKTHDR_LENGTH	12
 
-/* max. possible size of a packet using the serial protocol */
+ 
 #define MAX_SERIAL_PKT_SIZ (3 + 255 + 3)
 
-/*  max. possible size of a packet with worst case stuffing */
+ 
 #define MAX_SERIAL_PKT_SIZ_STUFFED (MAX_SERIAL_PKT_SIZ + 256)
 
-/* size of a buffer able to hold a complete (no stuffing) packet
- * (the document protocol does not contain packets with a larger
- *  size, but in theory a packet may be 64k+12 bytes - if in
- *  later protocol versions larger packet sizes occur, this value
- *  should be increased accordingly, so the input buffer is always
- *  large enough the store a complete packet inclusive header) */
+ 
 #define GPS_IN_BUFSIZ  (GARMIN_PKTHDR_LENGTH+MAX_SERIAL_PKT_SIZ)
 
-/* size of a buffer able to hold a complete (incl. stuffing) packet */
+ 
 #define GPS_OUT_BUFSIZ (GARMIN_PKTHDR_LENGTH+MAX_SERIAL_PKT_SIZ_STUFFED)
 
-/* where to place the packet id of a serial packet, so we can
- * prepend the usb-packet header without the need to move the
- * packets data */
+ 
 #define GSP_INITIAL_OFFSET (GARMIN_PKTHDR_LENGTH-2)
 
-/* max. size of incoming private packets (header+1 param) */
+ 
 #define PRIVPKTSIZ (GARMIN_PKTHDR_LENGTH+4)
 
 #define GARMIN_LAYERID_TRANSPORT  0
 #define GARMIN_LAYERID_APPL      20
-/* our own layer-id to use for some control mechanisms */
+ 
 #define GARMIN_LAYERID_PRIVATE	0x01106E4B
 
 #define GARMIN_PKTID_PVT_DATA	51
@@ -84,7 +66,7 @@ static int initial_mode = 1;
 
 #define CMND_ABORT_TRANSFER 0
 
-/* packet ids used in private layer */
+ 
 #define PRIV_PKTID_SET_DEBUG	1
 #define PRIV_PKTID_SET_MODE	2
 #define PRIV_PKTID_INFO_REQ	3
@@ -98,16 +80,16 @@ static int initial_mode = 1;
 #define ACK	0x06
 #define NAK	0x15
 
-/* structure used to queue incoming packets */
+ 
 struct garmin_packet {
 	struct list_head  list;
 	int               seq;
-	/* the real size of the data array, always > 0 */
+	 
 	int               size;
 	__u8              data[];
 };
 
-/* structure used to keep the current state of the driver */
+ 
 struct garmin_data {
 	__u8   state;
 	__u16  flags;
@@ -120,8 +102,8 @@ struct garmin_data {
 	int    seq_counter;
 	int    insize;
 	int    outsize;
-	__u8   inbuffer [GPS_IN_BUFSIZ];  /* tty -> usb */
-	__u8   outbuffer[GPS_OUT_BUFSIZ]; /* usb -> tty */
+	__u8   inbuffer [GPS_IN_BUFSIZ];   
+	__u8   outbuffer[GPS_OUT_BUFSIZ];  
 	__u8   privpkt[4*6];
 	spinlock_t lock;
 	struct list_head pktlist;
@@ -144,7 +126,7 @@ struct garmin_data {
 #define MODE_NATIVE          0
 #define MODE_GARMIN_SERIAL   1
 
-/* Flags used in garmin_data.flags: */
+ 
 #define FLAGS_SESSION_REPLY_MASK  0x00C0
 #define FLAGS_SESSION_REPLY1_SEEN 0x0080
 #define FLAGS_SESSION_REPLY2_SEEN 0x0040
@@ -166,13 +148,13 @@ struct garmin_data {
 
 
 
-/* function prototypes */
+ 
 static int gsp_next_packet(struct garmin_data *garmin_data_p);
 static int garmin_write_bulk(struct usb_serial_port *port,
 			     const unsigned char *buf, int count,
 			     int dismiss_ack);
 
-/* some special packets to be send or received */
+ 
 static unsigned char const GARMIN_START_SESSION_REQ[]
 	= { 0, 0, 0, 0,  5, 0, 0, 0, 0, 0, 0, 0 };
 static unsigned char const GARMIN_START_SESSION_REPLY[]
@@ -184,7 +166,7 @@ static unsigned char const GARMIN_STOP_TRANSFER_REQ[]
 static unsigned char const GARMIN_STOP_TRANSFER_REQ_V2[]
 	= { 20, 0, 0, 0,  10, 0, 0, 0, 1, 0, 0, 0, 0 };
 
-/* packets currently unused, left as documentation */
+ 
 #if 0
 static unsigned char const GARMIN_APP_LAYER_REPLY[]
 	= { 0x14, 0, 0, 0 };
@@ -198,10 +180,9 @@ static unsigned char const PRIVATE_REQ[]
 
 
 static const struct usb_device_id id_table[] = {
-	/* the same device id seems to be used by all
-	   usb enabled GPS devices */
+	 
 	{ USB_DEVICE(GARMIN_VENDOR_ID, 3) },
-	{ }					/* Terminating entry */
+	{ }					 
 };
 MODULE_DEVICE_TABLE(usb, id_table);
 
@@ -222,10 +203,7 @@ static inline int getDataLength(const __u8 *usbPacket)
 }
 
 
-/*
- * check if the usb-packet in buf contains an abort-transfer command.
- * (if yes, all queued data will be dropped)
- */
+ 
 static inline int isAbortTrfCmnd(const unsigned char *buf)
 {
 	if (memcmp(buf, GARMIN_STOP_TRANSFER_REQ,
@@ -250,13 +228,9 @@ static void send_to_tty(struct usb_serial_port *port,
 }
 
 
-/******************************************************************************
- * packet queue handling
- ******************************************************************************/
+ 
 
-/*
- * queue a received (usb-)packet for later processing
- */
+ 
 static int pkt_add(struct garmin_data *garmin_data_p,
 		   unsigned char *data, unsigned int data_length)
 {
@@ -265,7 +239,7 @@ static int pkt_add(struct garmin_data *garmin_data_p,
 	unsigned long flags;
 	struct garmin_packet *pkt;
 
-	/* process only packets containing data ... */
+	 
 	if (data_length) {
 		pkt = kmalloc(sizeof(struct garmin_packet)+data_length,
 								GFP_ATOMIC);
@@ -287,8 +261,7 @@ static int pkt_add(struct garmin_data *garmin_data_p,
 			"%s - added: pkt: %d - %d bytes\n", __func__,
 			pkt->seq, data_length);
 
-		/* in serial mode, if someone is waiting for data from
-		   the device, convert and send the next packet to tty. */
+		 
 		if (result && (state == STATE_GSP_WAIT_DATA))
 			gsp_next_packet(garmin_data_p);
 	}
@@ -296,7 +269,7 @@ static int pkt_add(struct garmin_data *garmin_data_p,
 }
 
 
-/* get the next pending packet */
+ 
 static struct garmin_packet *pkt_pop(struct garmin_data *garmin_data_p)
 {
 	unsigned long flags;
@@ -312,7 +285,7 @@ static struct garmin_packet *pkt_pop(struct garmin_data *garmin_data_p)
 }
 
 
-/* free up all queued data */
+ 
 static void pkt_clear(struct garmin_data *garmin_data_p)
 {
 	unsigned long flags;
@@ -328,11 +301,9 @@ static void pkt_clear(struct garmin_data *garmin_data_p)
 }
 
 
-/******************************************************************************
- * garmin serial protocol handling handling
- ******************************************************************************/
+ 
 
-/* send an ack packet back to the tty */
+ 
 static int gsp_send_ack(struct garmin_data *garmin_data_p, __u8 pkt_id)
 {
 	__u8 pkt[10];
@@ -369,16 +340,7 @@ static int gsp_send_ack(struct garmin_data *garmin_data_p, __u8 pkt_id)
 
 
 
-/*
- * called for a complete packet received from tty layer
- *
- * the complete packet (pktid ... cksum) is in garmin_data_p->inbuf starting
- * at GSP_INITIAL_OFFSET.
- *
- * count - number of bytes in the input buffer including space reserved for
- *         the usb header: GSP_INITIAL_OFFSET + number of bytes in packet
- *         (including pkt-id, data-length a. cksum)
- */
+ 
 static int gsp_rec_packet(struct garmin_data *garmin_data_p, int count)
 {
 	struct device *dev = &garmin_data_p->port->dev;
@@ -402,7 +364,7 @@ static int gsp_rec_packet(struct garmin_data *garmin_data_p, int count)
 	cksum += *recpkt++;
 	cksum += *recpkt++;
 
-	/* sanity check, remove after test ... */
+	 
 	if ((__u8 *)&(usbdata[3]) != recpkt) {
 		dev_dbg(dev, "%s - ptr mismatch %p - %p\n", __func__,
 			&(usbdata[4]), recpkt);
@@ -427,8 +389,7 @@ static int gsp_rec_packet(struct garmin_data *garmin_data_p, int count)
 	garmin_write_bulk(garmin_data_p->port, garmin_data_p->inbuffer,
 			   GARMIN_PKTHDR_LENGTH+size, 0);
 
-	/* if this was an abort-transfer command, flush all
-	   queued data. */
+	 
 	if (isAbortTrfCmnd(garmin_data_p->inbuffer)) {
 		spin_lock_irqsave(&garmin_data_p->lock, flags);
 		garmin_data_p->flags |= FLAGS_DROP_DATA;
@@ -441,23 +402,7 @@ static int gsp_rec_packet(struct garmin_data *garmin_data_p, int count)
 
 
 
-/*
- * Called for data received from tty
- *
- * buf contains the data read, it may span more than one packet or even
- * incomplete packets
- *
- * input record should be a serial-record, but it may not be complete.
- * Copy it into our local buffer, until an etx is seen (or an error
- * occurs).
- * Once the record is complete, convert into a usb packet and send it
- * to the bulk pipe, send an ack back to the tty.
- *
- * If the input is an ack, just send the last queued packet to the
- * tty layer.
- *
- * if the input is an abort command, drop all queued data.
- */
+ 
 
 static int gsp_receive(struct garmin_data *garmin_data_p,
 		       const unsigned char *buf, int count)
@@ -468,11 +413,9 @@ static int gsp_receive(struct garmin_data *garmin_data_p,
 	int ack_or_nak_seen = 0;
 	__u8 *dest;
 	int size;
-	/* dleSeen: set if last byte read was a DLE */
+	 
 	int dleSeen;
-	/* skip: if set, skip incoming data until possible start of
-	 *       new packet
-	 */
+	 
 	int skip;
 	__u8 data;
 
@@ -483,8 +426,7 @@ static int gsp_receive(struct garmin_data *garmin_data_p,
 	skip = garmin_data_p->flags & FLAGS_GSP_SKIP;
 	spin_unlock_irqrestore(&garmin_data_p->lock, flags);
 
-	/* dev_dbg(dev, "%s - dle=%d skip=%d size=%d count=%d\n",
-		__func__, dleSeen, skip, size, count); */
+	 
 
 	if (size == 0)
 		size = GSP_INITIAL_OFFSET;
@@ -495,7 +437,7 @@ static int gsp_receive(struct garmin_data *garmin_data_p,
 		offs++;
 
 		if (data == DLE) {
-			if (skip) { /* start of a new pkt */
+			if (skip) {  
 				skip = 0;
 				size = GSP_INITIAL_OFFSET;
 				dleSeen = 1;
@@ -507,7 +449,7 @@ static int gsp_receive(struct garmin_data *garmin_data_p,
 			}
 		} else if (data == ETX) {
 			if (dleSeen) {
-				/* packet complete */
+				 
 
 				data = dest[GSP_INITIAL_OFFSET];
 
@@ -551,7 +493,7 @@ static int gsp_receive(struct garmin_data *garmin_data_p,
 
 	garmin_data_p->insize = size;
 
-	/* copy flags back to structure */
+	 
 	if (skip)
 		garmin_data_p->flags |= FLAGS_GSP_SKIP;
 	else
@@ -575,13 +517,7 @@ static int gsp_receive(struct garmin_data *garmin_data_p,
 
 
 
-/*
- * Sends a usb packet to the tty
- *
- * Assumes, that all packages and at an usb-packet boundary.
- *
- * return <0 on error, 0 if packet is incomplete or > 0 if packet was sent
- */
+ 
 static int gsp_send(struct garmin_data *garmin_data_p,
 		    const unsigned char *buf, int count)
 {
@@ -620,7 +556,7 @@ static int gsp_send(struct garmin_data *garmin_data_p,
 
 	dev_dbg(dev, "%s - %d bytes in buffer, %d bytes in pkt.\n", __func__, k, i);
 
-	/* garmin_data_p->outbuffer now contains a complete packet */
+	 
 
 	usb_serial_debug_data(&garmin_data_p->port->dev, __func__, k,
 			      garmin_data_p->outbuffer);
@@ -643,7 +579,7 @@ static int gsp_send(struct garmin_data *garmin_data_p,
 		return -3;
 	}
 
-	/* the serial protocol should be able to handle this packet */
+	 
 
 	k = 0;
 	src = garmin_data_p->outbuffer+GARMIN_PKTHDR_LENGTH;
@@ -654,8 +590,7 @@ static int gsp_send(struct garmin_data *garmin_data_p,
 
 	src = garmin_data_p->outbuffer+GARMIN_PKTHDR_LENGTH;
 	if (k > (GARMIN_PKTHDR_LENGTH-2)) {
-		/* can't add stuffing DLEs in place, move data to end
-		   of buffer ... */
+		 
 		dst = garmin_data_p->outbuffer+GPS_OUT_BUFSIZ-datalen;
 		memcpy(dst, src, datalen);
 		src = dst;
@@ -697,9 +632,7 @@ static int gsp_send(struct garmin_data *garmin_data_p,
 }
 
 
-/*
- * Process the next pending data packet - if there is one
- */
+ 
 static int gsp_next_packet(struct garmin_data *garmin_data_p)
 {
 	int result = 0;
@@ -719,19 +652,10 @@ static int gsp_next_packet(struct garmin_data *garmin_data_p)
 
 
 
-/******************************************************************************
- * garmin native mode
- ******************************************************************************/
+ 
 
 
-/*
- * Called for data received from tty
- *
- * The input data is expected to be in garmin usb-packet format.
- *
- * buf contains the data read, it may span more than one packet
- * or even incomplete packets
- */
+ 
 static int nat_receive(struct garmin_data *garmin_data_p,
 		       const unsigned char *buf, int count)
 {
@@ -742,7 +666,7 @@ static int nat_receive(struct garmin_data *garmin_data_p,
 	int len;
 
 	while (offs < count) {
-		/* if buffer contains header, copy rest of data */
+		 
 		if (garmin_data_p->insize >= GARMIN_PKTHDR_LENGTH)
 			len = GARMIN_PKTHDR_LENGTH
 			      +getDataLength(garmin_data_p->inbuffer);
@@ -750,8 +674,7 @@ static int nat_receive(struct garmin_data *garmin_data_p,
 			len = GARMIN_PKTHDR_LENGTH;
 
 		if (len >= GPS_IN_BUFSIZ) {
-			/* seems to be an invalid packet, ignore rest
-			   of input */
+			 
 			dev_dbg(&garmin_data_p->port->dev,
 				"%s - packet size too large: %d\n",
 				__func__, len);
@@ -771,7 +694,7 @@ static int nat_receive(struct garmin_data *garmin_data_p,
 			}
 		}
 
-		/* do we have a complete packet ? */
+		 
 		if (garmin_data_p->insize >= GARMIN_PKTHDR_LENGTH) {
 			len = GARMIN_PKTHDR_LENGTH+
 			   getDataLength(garmin_data_p->inbuffer);
@@ -781,8 +704,7 @@ static int nat_receive(struct garmin_data *garmin_data_p,
 						   len, 0);
 				garmin_data_p->insize = 0;
 
-				/* if this was an abort-transfer command,
-				   flush all queued data. */
+				 
 				if (isAbortTrfCmnd(garmin_data_p->inbuffer)) {
 					spin_lock_irqsave(&garmin_data_p->lock,
 									flags);
@@ -798,9 +720,7 @@ static int nat_receive(struct garmin_data *garmin_data_p,
 }
 
 
-/******************************************************************************
- * private packets
- ******************************************************************************/
+ 
 
 static void priv_status_resp(struct usb_serial_port *port)
 {
@@ -818,9 +738,7 @@ static void priv_status_resp(struct usb_serial_port *port)
 }
 
 
-/******************************************************************************
- * Garmin specific driver functions
- ******************************************************************************/
+ 
 
 static int process_resetdev_request(struct usb_serial_port *port)
 {
@@ -845,14 +763,12 @@ static int process_resetdev_request(struct usb_serial_port *port)
 
 
 
-/*
- * clear all cached data
- */
+ 
 static int garmin_clear(struct garmin_data *garmin_data_p)
 {
 	unsigned long flags;
 
-	/* flush all queued data */
+	 
 	pkt_clear(garmin_data_p);
 
 	spin_lock_irqsave(&garmin_data_p->lock, flags);
@@ -879,10 +795,7 @@ static int garmin_init_session(struct usb_serial_port *port)
 		return status;
 	}
 
-	/*
-	 * using the initialization method from gpsbabel. See comments in
-	 * gpsbabel/jeeps/gpslibusb.c gusb_reset_toggles()
-	 */
+	 
 	dev_dbg(&port->dev, "%s - starting session ...\n", __func__);
 	garmin_data_p->state = STATE_ACTIVE;
 
@@ -916,7 +829,7 @@ static int garmin_open(struct tty_struct *tty, struct usb_serial_port *port)
 	garmin_data_p->flags &= FLAGS_SESSION_REPLY1_SEEN;
 	spin_unlock_irqrestore(&garmin_data_p->lock, flags);
 
-	/* shutdown any bulk reads that might be going on */
+	 
 	usb_kill_urb(port->read_urb);
 
 	if (garmin_data_p->state == STATE_RESET)
@@ -937,11 +850,11 @@ static void garmin_close(struct usb_serial_port *port)
 
 	garmin_clear(garmin_data_p);
 
-	/* shutdown our urbs */
+	 
 	usb_kill_urb(port->read_urb);
 	usb_kill_anchored_urbs(&garmin_data_p->write_urbs);
 
-	/* keep reset state so we know that we must start a new session */
+	 
 	if (garmin_data_p->state != STATE_RESET)
 		garmin_data_p->state = STATE_DISCONNECTED;
 }
@@ -965,10 +878,9 @@ static void garmin_write_bulk_callback(struct urb *urb)
 		usb_serial_port_softint(port);
 	}
 
-	/* Ignore errors that resulted from garmin_write_bulk with
-	   dismiss_ack = 1 */
+	 
 
-	/* free up the transfer buffer, as usb_free_urb() does not do this */
+	 
 	kfree(urb->transfer_buffer);
 }
 
@@ -1020,7 +932,7 @@ static int garmin_write_bulk(struct usb_serial_port *port,
 		}
 	}
 
-	/* send it down the pipe */
+	 
 	usb_anchor_urb(urb, &garmin_data_p->write_urbs);
 	status = usb_submit_urb(urb, GFP_ATOMIC);
 	if (status) {
@@ -1032,8 +944,7 @@ static int garmin_write_bulk(struct usb_serial_port *port,
 		kfree(buffer);
 	}
 
-	/* we are done with this urb, so let the host driver
-	 * really free it when it is finished with it */
+	 
 	usb_free_urb(urb);
 
 	return count;
@@ -1052,7 +963,7 @@ static int garmin_write(struct tty_struct *tty, struct usb_serial_port *port,
 	if (garmin_data_p->state == STATE_RESET)
 		return -EIO;
 
-	/* check for our private packets */
+	 
 	if (count >= GARMIN_PKTHDR_LENGTH) {
 		len = PRIVPKTSIZ;
 		if (count < len)
@@ -1070,7 +981,7 @@ static int garmin_write(struct tty_struct *tty, struct usb_serial_port *port,
 			dev_dbg(dev, "%s - processing private request %d\n",
 				__func__, pktid);
 
-			/* drop all unfinished transfers */
+			 
 			garmin_clear(garmin_data_p);
 
 			switch (pktid) {
@@ -1105,7 +1016,7 @@ static int garmin_write(struct tty_struct *tty, struct usb_serial_port *port,
 
 	if (garmin_data_p->mode == MODE_GARMIN_SERIAL) {
 		return gsp_receive(garmin_data_p, buf, count);
-	} else {	/* MODE_NATIVE */
+	} else {	 
 		return nat_receive(garmin_data_p, buf, count);
 	}
 }
@@ -1114,9 +1025,7 @@ static int garmin_write(struct tty_struct *tty, struct usb_serial_port *port,
 static unsigned int garmin_write_room(struct tty_struct *tty)
 {
 	struct usb_serial_port *port = tty->driver_data;
-	/*
-	 * Report back the bytes currently available in the output buffer.
-	 */
+	 
 	struct garmin_data *garmin_data_p = usb_get_serial_port_data(port);
 	return GPS_OUT_BUFSIZ-garmin_data_p->outsize;
 }
@@ -1129,14 +1038,12 @@ static void garmin_read_process(struct garmin_data *garmin_data_p,
 	unsigned long flags;
 
 	if (garmin_data_p->flags & FLAGS_DROP_DATA) {
-		/* abort-transfer cmd is active */
+		 
 		dev_dbg(&garmin_data_p->port->dev, "%s - pkt dropped\n", __func__);
 	} else if (garmin_data_p->state != STATE_DISCONNECTED &&
 		garmin_data_p->state != STATE_RESET) {
 
-		/* if throttling is active or postprecessing is required
-		   put the received data in the input queue, otherwise
-		   send it directly to the tty port */
+		 
 		if (garmin_data_p->flags & FLAGS_QUEUING) {
 			pkt_add(garmin_data_p, data, data_length);
 		} else if (bulk_data || (data_length >= sizeof(u32) &&
@@ -1153,7 +1060,7 @@ static void garmin_read_process(struct garmin_data *garmin_data_p,
 						data_length);
 			}
 		}
-		/* ignore system layer packets ... */
+		 
 	}
 }
 
@@ -1188,7 +1095,7 @@ static void garmin_read_bulk_callback(struct urb *urb)
 				"%s - failed resubmitting read urb, error %d\n",
 				__func__, retval);
 	} else if (urb->actual_length > 0) {
-		/* Continue trying to read until nothing more is received  */
+		 
 		if ((garmin_data_p->flags & FLAGS_THROTTLED) == 0) {
 			retval = usb_submit_urb(port->read_urb, GFP_ATOMIC);
 			if (retval)
@@ -1216,12 +1123,12 @@ static void garmin_read_int_callback(struct urb *urb)
 
 	switch (status) {
 	case 0:
-		/* success */
+		 
 		break;
 	case -ECONNRESET:
 	case -ENOENT:
 	case -ESHUTDOWN:
-		/* this urb is terminated, clean up */
+		 
 		dev_dbg(&urb->dev->dev, "%s - urb shutting down with status: %d\n",
 			__func__, status);
 		return;
@@ -1242,7 +1149,7 @@ static void garmin_read_int_callback(struct urb *urb)
 
 		if ((garmin_data_p->flags & FLAGS_BULK_IN_ACTIVE) == 0) {
 
-			/* bulk data available */
+			 
 			retval = usb_submit_urb(port->read_urb, GFP_ATOMIC);
 			if (retval) {
 				dev_err(&port->dev,
@@ -1255,7 +1162,7 @@ static void garmin_read_int_callback(struct urb *urb)
 									flags);
 			}
 		} else {
-			/* bulk-in transfer still active */
+			 
 			spin_lock_irqsave(&garmin_data_p->lock, flags);
 			garmin_data_p->flags |= FLAGS_BULK_IN_RESTART;
 			spin_unlock_irqrestore(&garmin_data_p->lock, flags);
@@ -1269,7 +1176,7 @@ static void garmin_read_int_callback(struct urb *urb)
 		garmin_data_p->flags |= FLAGS_SESSION_REPLY1_SEEN;
 		spin_unlock_irqrestore(&garmin_data_p->lock, flags);
 
-		/* save the serial number */
+		 
 		garmin_data_p->serial_num = __le32_to_cpup(
 					(__le32 *)(data+GARMIN_PKTHDR_LENGTH));
 
@@ -1287,11 +1194,7 @@ static void garmin_read_int_callback(struct urb *urb)
 }
 
 
-/*
- * Sends the next queued packt to the tty port (garmin native mode only)
- * and then sets a timer to call itself again until all queued data
- * is sent.
- */
+ 
 static int garmin_flush_queue(struct garmin_data *garmin_data_p)
 {
 	unsigned long flags;
@@ -1319,8 +1222,7 @@ static void garmin_throttle(struct tty_struct *tty)
 	struct usb_serial_port *port = tty->driver_data;
 	struct garmin_data *garmin_data_p = usb_get_serial_port_data(port);
 
-	/* set flag, data received will be put into a queue
-	   for later processing */
+	 
 	spin_lock_irq(&garmin_data_p->lock);
 	garmin_data_p->flags |= FLAGS_QUEUING|FLAGS_THROTTLED;
 	spin_unlock_irq(&garmin_data_p->lock);
@@ -1337,8 +1239,7 @@ static void garmin_unthrottle(struct tty_struct *tty)
 	garmin_data_p->flags &= ~FLAGS_THROTTLED;
 	spin_unlock_irq(&garmin_data_p->lock);
 
-	/* in native mode send queued data to tty, in
-	   serial mode nothing needs to be done here */
+	 
 	if (garmin_data_p->mode == MODE_NATIVE)
 		garmin_flush_queue(garmin_data_p);
 
@@ -1351,16 +1252,12 @@ static void garmin_unthrottle(struct tty_struct *tty)
 	}
 }
 
-/*
- * The timer is currently only used to send queued packets to
- * the tty in cases where the protocol provides no own handshaking
- * to initiate the transfer.
- */
+ 
 static void timeout_handler(struct timer_list *t)
 {
 	struct garmin_data *garmin_data_p = from_timer(garmin_data_p, t, timer);
 
-	/* send the next queued packet to the tty port */
+	 
 	if (garmin_data_p->mode == MODE_NATIVE)
 		if (garmin_data_p->flags & FLAGS_QUEUING)
 			garmin_flush_queue(garmin_data_p);
@@ -1410,7 +1307,7 @@ static void garmin_port_remove(struct usb_serial_port *port)
 }
 
 
-/* All of the device info needed */
+ 
 static struct usb_serial_driver garmin_device = {
 	.driver = {
 		.owner       = THIS_MODULE,

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015-2017 Broadcom
- */
+
+ 
 
 #include "bcm-phy-lib.h"
 #include <linux/bitfield.h>
@@ -52,7 +50,7 @@ int __bcm_phy_read_exp(struct phy_device *phydev, u16 reg)
 
 	val = __phy_read(phydev, MII_BCM54XX_EXP_DATA);
 
-	/* Restore default value.  It's O.K. if this write fails. */
+	 
 	__phy_write(phydev, MII_BCM54XX_EXP_SEL, 0);
 
 	return val;
@@ -105,9 +103,7 @@ EXPORT_SYMBOL_GPL(bcm_phy_modify_exp);
 
 int bcm54xx_auxctl_read(struct phy_device *phydev, u16 regnum)
 {
-	/* The register must be written to both the Shadow Register Select and
-	 * the Shadow Read Register Selector
-	 */
+	 
 	phy_write(phydev, MII_BCM54XX_AUX_CTL, MII_BCM54XX_AUXCTL_SHDWSEL_MASK |
 		  regnum << MII_BCM54XX_AUXCTL_SHDWSEL_READ_SHIFT);
 	return phy_read(phydev, MII_BCM54XX_AUX_CTL);
@@ -172,7 +168,7 @@ int bcm_phy_ack_intr(struct phy_device *phydev)
 {
 	int reg;
 
-	/* Clear pending interrupts.  */
+	 
 	reg = phy_read(phydev, MII_BCM54XX_ISR);
 	if (reg < 0)
 		return reg;
@@ -218,11 +214,7 @@ irqreturn_t bcm_phy_handle_interrupt(struct phy_device *phydev)
 		return IRQ_NONE;
 	}
 
-	/* If a bit from the Interrupt Mask register is set, the corresponding
-	 * bit from the Interrupt Status register is masked. So read the IMR
-	 * and then flip the bits to get the list of possible interrupt
-	 * sources.
-	 */
+	 
 	irq_mask = phy_read(phydev, MII_BCM54XX_IMR);
 	if (irq_mask < 0) {
 		phy_error(phydev);
@@ -353,7 +345,7 @@ int bcm_phy_enable_apd(struct phy_device *phydev, bool dll_pwr_down)
 	if (val < 0)
 		return val;
 
-	/* Clear APD bits */
+	 
 	val &= BCM_APD_CLR_MASK;
 
 	if (phydev->autoneg == AUTONEG_ENABLE)
@@ -361,10 +353,10 @@ int bcm_phy_enable_apd(struct phy_device *phydev, bool dll_pwr_down)
 	else
 		val |= BCM_NO_ANEG_APD_EN;
 
-	/* Enable energy detect single link pulse for easy wakeup */
+	 
 	val |= BCM_APD_SINGLELP_EN;
 
-	/* Enable Auto Power-Down (APD) for the PHY */
+	 
 	return bcm_phy_write_shadow(phydev, BCM54XX_SHD_APD, val);
 }
 EXPORT_SYMBOL_GPL(bcm_phy_enable_apd);
@@ -373,7 +365,7 @@ int bcm_phy_set_eee(struct phy_device *phydev, bool enable)
 {
 	int val, mask = 0;
 
-	/* Enable EEE at PHY level */
+	 
 	val = phy_read_mmd(phydev, MDIO_MMD_AN, BRCM_CL45VEN_EEE_CONTROL);
 	if (val < 0)
 		return val;
@@ -385,7 +377,7 @@ int bcm_phy_set_eee(struct phy_device *phydev, bool enable)
 
 	phy_write_mmd(phydev, MDIO_MMD_AN, BRCM_CL45VEN_EEE_CONTROL, (u32)val);
 
-	/* Advertise EEE */
+	 
 	val = phy_read_mmd(phydev, MDIO_MMD_AN, BCM_CL45VEN_EEE_ADV);
 	if (val < 0)
 		return val;
@@ -416,7 +408,7 @@ int bcm_phy_downshift_get(struct phy_device *phydev, u8 *count)
 	if (val < 0)
 		return val;
 
-	/* Check if wirespeed is enabled or not */
+	 
 	if (!(val & MII_BCM54XX_AUXCTL_SHDWSEL_MISC_WIRESPEED_EN)) {
 		*count = DOWNSHIFT_DEV_DISABLE;
 		return 0;
@@ -426,11 +418,11 @@ int bcm_phy_downshift_get(struct phy_device *phydev, u8 *count)
 	if (val < 0)
 		return val;
 
-	/* Downgrade after one link attempt */
+	 
 	if (val & BCM54XX_SHD_SCR2_WSPD_RTRY_DIS) {
 		*count = 1;
 	} else {
-		/* Downgrade after configured retry count */
+		 
 		val >>= BCM54XX_SHD_SCR2_WSPD_RTRY_LMT_SHIFT;
 		val &= BCM54XX_SHD_SCR2_WSPD_RTRY_LMT_MASK;
 		*count = val + BCM54XX_SHD_SCR2_WSPD_RTRY_LMT_OFFSET;
@@ -444,7 +436,7 @@ int bcm_phy_downshift_set(struct phy_device *phydev, u8 count)
 {
 	int val = 0, ret = 0;
 
-	/* Range check the number given */
+	 
 	if (count - BCM54XX_SHD_SCR2_WSPD_RTRY_LMT_OFFSET >
 	    BCM54XX_SHD_SCR2_WSPD_RTRY_LMT_MASK &&
 	    count != DOWNSHIFT_DEV_DEFAULT_COUNT) {
@@ -455,7 +447,7 @@ int bcm_phy_downshift_set(struct phy_device *phydev, u8 count)
 	if (val < 0)
 		return val;
 
-	/* Se the write enable bit */
+	 
 	val |= MII_BCM54XX_AUXCTL_MISC_WREN;
 
 	if (count == DOWNSHIFT_DEV_DISABLE) {
@@ -502,7 +494,7 @@ struct bcm_phy_hw_stat {
 	u8 bits;
 };
 
-/* Counters freeze at either 0xffff or 0xff, better than nothing */
+ 
 static const struct bcm_phy_hw_stat bcm_phy_hw_stats[] = {
 	{ "phy_receive_errors", -1, MII_BRCM_CORE_BASE12, 0, 16 },
 	{ "phy_serdes_ber_errors", -1, MII_BRCM_CORE_BASE13, 8, 8 },
@@ -528,9 +520,7 @@ void bcm_phy_get_strings(struct phy_device *phydev, u8 *data)
 }
 EXPORT_SYMBOL_GPL(bcm_phy_get_strings);
 
-/* Caller is supposed to provide appropriate storage for the library code to
- * access the shadow copy
- */
+ 
 static u64 bcm_phy_get_stat(struct phy_device *phydev, u64 *shadow,
 			    unsigned int i)
 {
@@ -566,50 +556,46 @@ EXPORT_SYMBOL_GPL(bcm_phy_get_stats);
 
 void bcm_phy_r_rc_cal_reset(struct phy_device *phydev)
 {
-	/* Reset R_CAL/RC_CAL Engine */
+	 
 	bcm_phy_write_exp_sel(phydev, 0x00b0, 0x0010);
 
-	/* Disable Reset R_AL/RC_CAL Engine */
+	 
 	bcm_phy_write_exp_sel(phydev, 0x00b0, 0x0000);
 }
 EXPORT_SYMBOL_GPL(bcm_phy_r_rc_cal_reset);
 
 int bcm_phy_28nm_a0b0_afe_config_init(struct phy_device *phydev)
 {
-	/* Increase VCO range to prevent unlocking problem of PLL at low
-	 * temp
-	 */
+	 
 	bcm_phy_write_misc(phydev, PLL_PLLCTRL_1, 0x0048);
 
-	/* Change Ki to 011 */
+	 
 	bcm_phy_write_misc(phydev, PLL_PLLCTRL_2, 0x021b);
 
-	/* Disable loading of TVCO buffer to bandgap, set bandgap trim
-	 * to 111
-	 */
+	 
 	bcm_phy_write_misc(phydev, PLL_PLLCTRL_4, 0x0e20);
 
-	/* Adjust bias current trim by -3 */
+	 
 	bcm_phy_write_misc(phydev, DSP_TAP10, 0x690b);
 
-	/* Switch to CORE_BASE1E */
+	 
 	phy_write(phydev, MII_BRCM_CORE_BASE1E, 0xd);
 
 	bcm_phy_r_rc_cal_reset(phydev);
 
-	/* write AFE_RXCONFIG_0 */
+	 
 	bcm_phy_write_misc(phydev, AFE_RXCONFIG_0, 0xeb19);
 
-	/* write AFE_RXCONFIG_1 */
+	 
 	bcm_phy_write_misc(phydev, AFE_RXCONFIG_1, 0x9a3f);
 
-	/* write AFE_RX_LP_COUNTER */
+	 
 	bcm_phy_write_misc(phydev, AFE_RX_LP_COUNTER, 0x7fc0);
 
-	/* write AFE_HPF_TRIM_OTHERS */
+	 
 	bcm_phy_write_misc(phydev, AFE_HPF_TRIM_OTHERS, 0x000b);
 
-	/* write AFTE_TX_CONFIG */
+	 
 	bcm_phy_write_misc(phydev, AFE_TX_CONFIG, 0x0800);
 
 	return 0;
@@ -624,16 +610,13 @@ int bcm_phy_enable_jumbo(struct phy_device *phydev)
 	if (ret < 0)
 		return ret;
 
-	/* Enable extended length packet reception */
+	 
 	ret = bcm54xx_auxctl_write(phydev, MII_BCM54XX_AUXCTL_SHDWSEL_AUXCTL,
 				   ret | MII_BCM54XX_AUXCTL_ACTL_EXT_PKT_LEN);
 	if (ret < 0)
 		return ret;
 
-	/* Enable the elastic FIFO for raising the transmission limit from
-	 * 4.5KB to 10KB, at the expense of an additional 16 ns in propagation
-	 * latency.
-	 */
+	 
 	return phy_set_bits(phydev, MII_BCM54XX_ECR, MII_BCM54XX_ECR_FIFOE);
 }
 EXPORT_SYMBOL_GPL(bcm_phy_enable_jumbo);
@@ -654,9 +637,7 @@ static int _bcm_phy_cable_test_start(struct phy_device *phydev, bool is_rdb)
 	u16 mask, set;
 	int ret;
 
-	/* Auto-negotiation must be enabled for cable diagnostics to work, but
-	 * don't advertise any capabilities.
-	 */
+	 
 	phy_write(phydev, MII_BMCR, BMCR_ANENABLE);
 	phy_write(phydev, MII_ADVERTISE, ADVERTISE_CSMA);
 	phy_write(phydev, MII_CTRL1000, 0);
@@ -676,7 +657,7 @@ static int _bcm_phy_cable_test_start(struct phy_device *phydev, bool is_rdb)
 	ret = __bcm_phy_modify_exp(phydev, BCM54XX_EXP_ECD_CTRL, mask, set);
 
 out:
-	/* re-enable the RDB access even if there was an error */
+	 
 	if (is_rdb)
 		ret = __bcm_phy_enable_rdb_access(phydev) ? : ret;
 
@@ -785,7 +766,7 @@ static int _bcm_phy_cable_test_get_status(struct phy_device *phydev,
 	ret = 0;
 	*finished = true;
 out:
-	/* re-enable the RDB access even if there was an error */
+	 
 	if (is_rdb)
 		ret = __bcm_phy_enable_rdb_access(phydev) ? : ret;
 
@@ -806,10 +787,7 @@ int bcm_phy_cable_test_get_status(struct phy_device *phydev, bool *finished)
 }
 EXPORT_SYMBOL_GPL(bcm_phy_cable_test_get_status);
 
-/* We assume that all PHYs which support RDB access can be switched to legacy
- * mode. If, in the future, this is not true anymore, we have to re-implement
- * this with RDB access.
- */
+ 
 int bcm_phy_cable_test_start_rdb(struct phy_device *phydev)
 {
 	return _bcm_phy_cable_test_start(phydev, true);
@@ -837,18 +815,14 @@ int bcm_phy_set_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol)
 	u16 ctl;
 	int ret;
 
-	/* Allow a MAC driver to play through its own Wake-on-LAN
-	 * implementation
-	 */
+	 
 	if (wol->wolopts & ~BCM54XX_WOL_SUPPORTED_MASK)
 		return -EOPNOTSUPP;
 
-	/* The PHY supports passwords of 4, 6 and 8 bytes in size, but Linux's
-	 * ethtool only supports 6, for now.
-	 */
+	 
 	BUILD_BUG_ON(sizeof(wol->sopass) != ETH_ALEN);
 
-	/* Clear previous interrupts */
+	 
 	ret = bcm_phy_read_exp(phydev, BCM54XX_WOL_INT_STATUS);
 	if (ret < 0)
 		return ret;
@@ -863,37 +837,25 @@ int bcm_phy_set_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol)
 		if (phy_interrupt_is_valid(phydev))
 			disable_irq_wake(phydev->irq);
 
-		/* Leave all interrupts disabled */
+		 
 		ret = bcm_phy_write_exp(phydev, BCM54XX_WOL_INT_MASK,
 					BCM54XX_WOL_ALL_INTRS);
 		if (ret < 0)
 			return ret;
 
-		/* Disable the global Wake-on-LAN enable bit */
+		 
 		ctl &= ~BCM54XX_WOL_EN;
 
 		return bcm_phy_write_exp(phydev, BCM54XX_WOL_MAIN_CTL, ctl);
 	}
 
-	/* Clear the previously configured mode and mask mode for Wake-on-LAN */
+	 
 	ctl &= ~(BCM54XX_WOL_MODE_MASK << BCM54XX_WOL_MODE_SHIFT);
 	ctl &= ~(BCM54XX_WOL_MASK_MODE_MASK << BCM54XX_WOL_MASK_MODE_SHIFT);
 	ctl &= ~BCM54XX_WOL_DIR_PKT_EN;
 	ctl &= ~(BCM54XX_WOL_SECKEY_OPT_MASK << BCM54XX_WOL_SECKEY_OPT_SHIFT);
 
-	/* When using WAKE_MAGIC, we program the magic pattern filter to match
-	 * the device's MAC address and we accept any MAC DA in the Ethernet
-	 * frame.
-	 *
-	 * When using WAKE_UCAST, WAKE_BCAST or WAKE_MCAST, we program the
-	 * following:
-	 * - WAKE_UCAST -> MAC DA is the device's MAC with a perfect match
-	 * - WAKE_MCAST -> MAC DA is X1:XX:XX:XX:XX:XX where XX is don't care
-	 * - WAKE_BCAST -> MAC DA is FF:FF:FF:FF:FF:FF with a perfect match
-	 *
-	 * Note that the Broadcast MAC DA is inherently going to match the
-	 * multicast pattern being matched.
-	 */
+	 
 	memset(mask, 0, sizeof(mask));
 
 	if (wol->wolopts & WAKE_MCAST) {
@@ -950,14 +912,14 @@ int bcm_phy_set_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol)
 		       BCM54XX_WOL_MASK_MODE_SHIFT;
 	}
 
-	/* Globally enable Wake-on-LAN */
+	 
 	ctl |= BCM54XX_WOL_EN | BCM54XX_WOL_CRC_CHK;
 
 	ret = bcm_phy_write_exp(phydev, BCM54XX_WOL_MAIN_CTL, ctl);
 	if (ret < 0)
 		return ret;
 
-	/* Enable WOL interrupt on LED4 */
+	 
 	ret = bcm_phy_read_exp(phydev, BCM54XX_TOP_MISC_LED_CTL);
 	if (ret < 0)
 		return ret;
@@ -967,7 +929,7 @@ int bcm_phy_set_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol)
 	if (ret < 0)
 		return ret;
 
-	/* Enable all Wake-on-LAN interrupt sources */
+	 
 	ret = bcm_phy_write_exp(phydev, BCM54XX_WOL_INT_MASK, 0);
 	if (ret < 0)
 		return ret;
@@ -1049,7 +1011,7 @@ int bcm_phy_led_brightness_set(struct phy_device *phydev,
 	if (index >= 4)
 		return -EINVAL;
 
-	/* Two LEDS per register */
+	 
 	led_num = index % 2;
 	reg = index >= 2 ? BCM54XX_SHD_LEDS2 : BCM54XX_SHD_LEDS1;
 

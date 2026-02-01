@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Microchip KSZ8863 series register access through SMI
- *
- * Copyright (C) 2019 Pengutronix, Michael Grzeschik <kernel@pengutronix.de>
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/property.h>
@@ -11,14 +7,7 @@
 #include "ksz8.h"
 #include "ksz_common.h"
 
-/* Serial Management Interface (SMI) uses the following frame format:
- *
- *       preamble|start|Read/Write|  PHY   |  REG  |TA|   Data bits      | Idle
- *               |frame| OP code  |address |address|  |                  |
- * read | 32x1´s | 01  |    00    | 1xRRR  | RRRRR |Z0| 00000000DDDDDDDD |  Z
- * write| 32x1´s | 01  |    00    | 0xRRR  | RRRRR |10| xxxxxxxxDDDDDDDD |  Z
- *
- */
+ 
 
 #define SMI_KSZ88XX_READ_PHY	BIT(4)
 
@@ -169,7 +158,7 @@ static int ksz8863_smi_probe(struct mdio_device *mdiodev)
 
 	ret = ksz_switch_register(dev);
 
-	/* Main DSA driver may not be started yet. */
+	 
 	if (ret)
 		return ret;
 

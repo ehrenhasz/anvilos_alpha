@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- */
+
+ 
 #include <linux/bits.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -257,7 +255,7 @@
 #define REG_AUD_INFOFRAM_DB4 0xFA
 #define REG_AUD_INFOFRAM_SUM 0xFB
 
-/* the following six registers are in bank1 */
+ 
 #define REG_DRV_0_DB_800_MV 0x17E
 #define REG_PRE_0_DB_800_MV 0x17F
 #define REG_PRE_3P5_DB_800_MV 0x181
@@ -290,7 +288,7 @@
 #define DEBUGFS_DIR_NAME "it6505-debugfs"
 #define READ_BUFFER_SIZE 400
 
-/* Vendor option */
+ 
 #define HDCP_DESIRED 1
 #define MAX_LANE_COUNT 4
 #define MAX_LINK_RATE HBR
@@ -407,13 +405,10 @@ struct it6505 {
 	struct device *dev;
 	struct it6505_drm_dp_link link;
 	struct it6505_platform_data pdata;
-	/*
-	 * Mutex protects extcon and interrupt functions from interfering
-	 * each other.
-	 */
+	 
 	struct mutex extcon_lock;
-	struct mutex mode_lock; /* used to bridge_detect */
-	struct mutex aux_lock; /* used to aux data transfers */
+	struct mutex mode_lock;  
+	struct mutex aux_lock;  
 	struct regmap *regmap;
 	struct drm_display_mode source_output_mode;
 	struct drm_display_mode video_info;
@@ -455,7 +450,7 @@ struct it6505 {
 	struct it6505_audio_data audio;
 	struct dentry *debugfs;
 
-	/* it6505 driver hold option */
+	 
 	bool enable_drv_hold;
 
 	struct edid *cached_edid;
@@ -466,11 +461,7 @@ struct it6505_step_train_para {
 	u8 pre_emphasis[MAX_LANE_COUNT];
 };
 
-/*
- * Vendor option afe settings for different platforms
- * 0: without FPC cable
- * 1: with FPC cable
- */
+ 
 
 static const u8 afe_setting_table[][3] = {
 	{0x82, 0x00, 0x45},
@@ -751,7 +742,7 @@ static int it6505_drm_dp_link_set_power(struct drm_dp_aux *aux,
 	u8 value;
 	int err;
 
-	/* DP_SET_POWER register is only available on DPCD v1.1 and later */
+	 
 	if (link->revision < DPCD_V_1_1)
 		return 0;
 
@@ -767,11 +758,7 @@ static int it6505_drm_dp_link_set_power(struct drm_dp_aux *aux,
 		return err;
 
 	if (mode == DP_SET_POWER_D0) {
-		/*
-		 * According to the DP 1.1 specification, a "Sink Device must
-		 * exit the power saving state within 1 ms" (Section 2.5.3.1,
-		 * Table 5-52, "Sink Control Field" (register 0x600).
-		 */
+		 
 		usleep_range(1000, 2000);
 	}
 
@@ -958,14 +945,14 @@ static ssize_t it6505_aux_operation(struct it6505 *it6505,
 	if (!it6505_get_sink_hpd_status(it6505))
 		return -EIO;
 
-	/* set AUX user mode */
+	 
 	it6505_set_bits(it6505, REG_AUX_CTRL, AUX_USER_MODE, AUX_USER_MODE);
 
 aux_op_start:
 	if (cmd == CMD_AUX_I2C_EDID_READ) {
-		/* AUX EDID FIFO has max length of AUX_FIFO_MAX_SIZE bytes. */
+		 
 		size = min_t(size_t, size, AUX_FIFO_MAX_SIZE);
-		/* Enable AUX FIFO read back and clear FIFO */
+		 
 		it6505_set_bits(it6505, REG_AUX_CTRL,
 				AUX_EN_FIFO_READ | CLR_EDID_FIFO,
 				AUX_EN_FIFO_READ | CLR_EDID_FIFO);
@@ -974,17 +961,17 @@ aux_op_start:
 				AUX_EN_FIFO_READ | CLR_EDID_FIFO,
 				AUX_EN_FIFO_READ);
 	} else {
-		/* The DP AUX transmit buffer has 4 bytes. */
+		 
 		size = min_t(size_t, size, 4);
 		it6505_set_bits(it6505, REG_AUX_CTRL, AUX_NO_SEGMENT_WR,
 				AUX_NO_SEGMENT_WR);
 	}
 
-	/* Start Address[7:0] */
+	 
 	it6505_write(it6505, REG_AUX_ADR_0_7, (address >> 0) & 0xFF);
-	/* Start Address[15:8] */
+	 
 	it6505_write(it6505, REG_AUX_ADR_8_15, (address >> 8) & 0xFF);
-	/* WriteNum[3:0]+StartAdr[19:16] */
+	 
 	it6505_write(it6505, REG_AUX_ADR_16_19,
 		     ((address >> 16) & 0x0F) | ((size - 1) << 4));
 
@@ -992,7 +979,7 @@ aux_op_start:
 		regmap_bulk_write(it6505->regmap, REG_AUX_OUT_DATA0, buffer,
 				  size);
 
-	/* Aux Fire */
+	 
 	it6505_write(it6505, REG_AUX_CMD_REQ, cmd);
 
 	ret = it6505_aux_wait(it6505);
@@ -1020,7 +1007,7 @@ aux_op_start:
 		goto aux_op_err;
 	}
 
-	/* Read back Native Write data */
+	 
 	if (cmd == CMD_AUX_NATIVE_WRITE) {
 		aux_write_check = true;
 		cmd = CMD_AUX_NATIVE_READ;
@@ -1053,7 +1040,7 @@ aux_op_start:
 
 aux_op_err:
 	if (cmd == CMD_AUX_I2C_EDID_READ) {
-		/* clear AUX FIFO */
+		 
 		it6505_set_bits(it6505, REG_AUX_CTRL,
 				AUX_EN_FIFO_READ | CLR_EDID_FIFO,
 				AUX_EN_FIFO_READ | CLR_EDID_FIFO);
@@ -1061,7 +1048,7 @@ aux_op_err:
 				AUX_EN_FIFO_READ | CLR_EDID_FIFO, 0x00);
 	}
 
-	/* Leave AUX user mode */
+	 
 	it6505_set_bits(it6505, REG_AUX_CTRL, AUX_USER_MODE, 0);
 
 	return ret;
@@ -1102,7 +1089,7 @@ static ssize_t it6505_aux_transfer(struct drm_dp_aux *aux,
 	int ret;
 	enum aux_cmd_reply reply;
 
-	/* IT6505 doesn't support arbitrary I2C read / write. */
+	 
 	if (is_i2c)
 		return -EINVAL;
 
@@ -1273,7 +1260,7 @@ static void it6505_init(struct it6505 *it6505)
 	it6505_write(it6505, REG_VID_BUS_CTRL1, 0x01);
 	it6505_write(it6505, REG_AUDIO_CTRL0, AUDIO_16B_BOUND);
 
-	/* chip internal setting, don't modify */
+	 
 	it6505_write(it6505, REG_HPD_IRQ_TIME, 0xF5);
 	it6505_write(it6505, REG_AUX_DEBUG_MODE, 0x4D);
 	it6505_write(it6505, REG_AUX_OPT2, 0x17);
@@ -1337,7 +1324,7 @@ static void it6505_setup_audio_channel_status(struct it6505 *it6505)
 	enum it6505_audio_sample_rate sample_rate = it6505->audio.sample_rate;
 	u8 audio_word_length_map[] = { 0x02, 0x04, 0x03, 0x0B };
 
-	/* Channel Status */
+	 
 	it6505_write(it6505, REG_IEC958_STS0, it6505->audio.type << 1);
 	it6505_write(it6505, REG_IEC958_STS1, 0x00);
 	it6505_write(it6505, REG_IEC958_STS2, 0x00);
@@ -1348,7 +1335,7 @@ static void it6505_setup_audio_channel_status(struct it6505 *it6505)
 
 static void it6505_setup_audio_format(struct it6505 *it6505)
 {
-	/* I2S MODE */
+	 
 	it6505_write(it6505, REG_AUDIO_FMT,
 		     (it6505->audio.word_length << 5) |
 		     (it6505->audio.i2s_data_sequence << 4) |
@@ -1358,7 +1345,7 @@ static void it6505_setup_audio_format(struct it6505 *it6505)
 		     it6505->audio.i2s_input_format);
 	if (it6505->audio.select == SPDIF) {
 		it6505_write(it6505, REG_AUDIO_FIFO_SEL, 0x00);
-		/* 0x30 = 128*FS */
+		 
 		it6505_set_bits(it6505, REG_AUX_OPT, 0xF0, 0x30);
 	} else {
 		it6505_write(it6505, REG_AUDIO_FIFO_SEL, 0xE4);
@@ -1396,7 +1383,7 @@ static void it6505_enable_audio_infoframe(struct it6505 *it6505)
 	it6505_write(it6505, REG_AUD_INFOFRAM_DB4, 0x00);
 	it6505_write(it6505, REG_AUD_INFOFRAM_SUM, 0x00);
 
-	/* Enable Audio InfoFrame */
+	 
 	it6505_set_bits(it6505, REG_INFOFRAME_CTRL, EN_AUD_CTRL_PKT,
 			EN_AUD_CTRL_PKT);
 }
@@ -1526,7 +1513,7 @@ static void it6505_setup_ssc(struct it6505 *it6505)
 		it6505_write(it6505, REG_SP_CTRL0, 0x07);
 		it6505_write(it6505, REG_IP_CTRL1, 0x29);
 		it6505_write(it6505, REG_IP_CTRL2, 0x03);
-		/* Stamp Interrupt Step */
+		 
 		it6505_set_bits(it6505, REG_TIME_STMP_CTRL, M_STAMP_STEP,
 				0x10);
 		it6505_dpcd_write(it6505, DP_DOWNSPREAD_CTRL,
@@ -1847,7 +1834,7 @@ static bool it6505_get_video_status(struct it6505 *it6505)
 static void it6505_reset_hdcp(struct it6505 *it6505)
 {
 	it6505->hdcp_status = HDCP_AUTH_IDLE;
-	/* Disable CP_Desired */
+	 
 	it6505_set_bits(it6505, REG_HDCP_CTRL1, HDCP_CP_ENABLE, 0x00);
 	it6505_set_bits(it6505, REG_RESET_CTRL, HDCP_RESET, HDCP_RESET);
 }
@@ -1872,7 +1859,7 @@ static bool it6505_hdcp_is_ksv_valid(u8 *ksv)
 {
 	int i, ones = 0;
 
-	/* KSV has 20 1's and 20 0's */
+	 
 	for (i = 0; i < DRM_HDCP_KSV_LEN; i++)
 		ones += hweight8(ksv[i]);
 	if (ones != 20)
@@ -1886,7 +1873,7 @@ static void it6505_hdcp_part1_auth(struct it6505 *it6505)
 	u8 hdcp_bcaps;
 
 	it6505_set_bits(it6505, REG_RESET_CTRL, HDCP_RESET, 0x00);
-	/* Disable CP_Desired */
+	 
 	it6505_set_bits(it6505, REG_HDCP_CTRL1, HDCP_CP_ENABLE, 0x00);
 
 	usleep_range(1000, 1500);
@@ -1897,16 +1884,16 @@ static void it6505_hdcp_part1_auth(struct it6505 *it6505)
 	if (!hdcp_bcaps)
 		return;
 
-	/* clear the repeater List Chk Done and fail bit */
+	 
 	it6505_set_bits(it6505, REG_HDCP_TRIGGER,
 			HDCP_TRIGGER_KSV_DONE | HDCP_TRIGGER_KSV_FAIL,
 			0x00);
 
-	/* Enable An Generator */
+	 
 	it6505_set_bits(it6505, REG_HDCP_CTRL2, HDCP_AN_GEN, HDCP_AN_GEN);
-	/* delay1ms(10);*/
+	 
 	usleep_range(10000, 15000);
-	/* Stop An Generator */
+	 
 	it6505_set_bits(it6505, REG_HDCP_CTRL2, HDCP_AN_GEN, 0x00);
 
 	it6505_set_bits(it6505, REG_HDCP_CTRL1, HDCP_CP_ENABLE, HDCP_CP_ENABLE);
@@ -2165,7 +2152,7 @@ static void it6505_link_train_ok(struct it6505 *it6505)
 	struct device *dev = it6505->dev;
 
 	it6505->link_state = LINK_OK;
-	/* disalbe mute enable avi info frame */
+	 
 	it6505_set_bits(it6505, REG_DATA_MUTE_CTRL, EN_VID_MUTE, 0x00);
 	it6505_set_bits(it6505, REG_INFOFRAME_CTRL,
 			EN_VID_CTRL_PKT, EN_VID_CTRL_PKT);
@@ -2199,7 +2186,7 @@ static void it6505_link_step_train_process(struct it6505 *it6505)
 		return;
 	}
 
-	/* step training start here */
+	 
 	for (i = 0; i < step_retry; i++) {
 		it6505_link_reset_step_train(it6505);
 		ret = it6505_link_start_step_train(it6505);
@@ -2361,12 +2348,7 @@ static void it6505_irq_hpd(struct it6505 *it6505)
 		it6505_lane_termination_on(it6505);
 		it6505_lane_power_on(it6505);
 
-		/*
-		 * for some dongle which issue HPD_irq
-		 * when sink count change from  0->1
-		 * it6505 not able to receive HPD_IRQ
-		 * if HW never go into trainig done
-		 */
+		 
 
 		if (it6505->branch_device && it6505->sink_count == 0)
 			schedule_work(&it6505->link_works);
@@ -2573,7 +2555,7 @@ static int it6505_poweron(struct it6505 *it6505)
 	}
 
 	if (pdata->ovdd) {
-		/* time interval between IVDD and OVDD at least be 1ms */
+		 
 		usleep_range(1000, 2000);
 		err = regulator_enable(pdata->ovdd);
 		if (err) {
@@ -2581,7 +2563,7 @@ static int it6505_poweron(struct it6505 *it6505)
 			return err;
 		}
 	}
-	/* time interval between OVDD and SYSRSTN at least be 10ms */
+	 
 	if (pdata->gpiod_reset) {
 		usleep_range(10000, 20000);
 		gpiod_set_value_cansleep(pdata->gpiod_reset, 0);
@@ -2715,11 +2697,7 @@ static void it6505_extcon_work(struct work_struct *work)
 		msleep(100);
 		ret = pm_runtime_get_sync(dev);
 
-		/*
-		 * On system resume, extcon_work can be triggered before
-		 * pm_runtime_force_resume re-enables runtime power management.
-		 * Handling the error here to make sure the bridge is powered on.
-		 */
+		 
 		if (ret < 0)
 			it6505_poweron(it6505);
 
@@ -2884,7 +2862,7 @@ static int it6505_bridge_attach(struct drm_bridge *bridge,
 		return -ENODEV;
 	}
 
-	/* Register aux channel */
+	 
 	it6505->aux.drm_dev = bridge->dev;
 
 	ret = drm_dp_aux_register(&it6505->aux);
@@ -3090,7 +3068,7 @@ static int it6505_init_pdata(struct it6505 *it6505)
 	struct it6505_platform_data *pdata = &it6505->pdata;
 	struct device *dev = it6505->dev;
 
-	/* 1.0V digital core power regulator  */
+	 
 	pdata->pwr18 = devm_regulator_get(dev, "pwr18");
 	if (IS_ERR(pdata->pwr18)) {
 		dev_err(dev, "pwr18 regulator not found");
@@ -3380,7 +3358,7 @@ static int it6505_i2c_probe(struct i2c_client *client)
 	it6505->dev = &client->dev;
 	i2c_set_clientdata(client, it6505);
 
-	/* get extcon device from DTS */
+	 
 	extcon = extcon_get_edev_by_phandle(dev, 0);
 	if (PTR_ERR(extcon) == -EPROBE_DEFER)
 		return -EPROBE_DEFER;

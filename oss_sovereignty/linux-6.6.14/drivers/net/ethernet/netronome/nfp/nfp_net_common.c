@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2015-2019 Netronome Systems, Inc. */
 
-/*
- * nfp_net_common.c
- * Netronome network device driver: Common functions between PF and VF
- * Authors: Jakub Kicinski <jakub.kicinski@netronome.com>
- *          Jason McMullan <jason.mcmullan@netronome.com>
- *          Rolf Neugebauer <rolf.neugebauer@netronome.com>
- *          Brad Petrus <brad.petrus@netronome.com>
- *          Chris Telfer <chris.telfer@netronome.com>
- */
+ 
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bpf.h>
@@ -55,11 +47,7 @@
 
 static int nfp_net_mc_unsync(struct net_device *netdev, const unsigned char *addr);
 
-/**
- * nfp_net_get_fw_version() - Read and parse the FW version
- * @fw_ver:	Output fw_version structure to read to
- * @ctrl_bar:	Mapped address of the control BAR
- */
+ 
 void nfp_net_get_fw_version(struct nfp_net_fw_version *fw_ver,
 			    void __iomem *ctrl_bar)
 {
@@ -75,22 +63,17 @@ u32 nfp_qcp_queue_offset(const struct nfp_dev_info *dev_info, u16 queue)
 	return dev_info->qc_addr_offset + NFP_QCP_QUEUE_ADDR_SZ * queue;
 }
 
-/* Firmware reconfig
- *
- * Firmware reconfig may take a while so we have two versions of it -
- * synchronous and asynchronous (posted).  All synchronous callers are holding
- * RTNL so we don't have to worry about serializing them.
- */
+ 
 static void nfp_net_reconfig_start(struct nfp_net *nn, u32 update)
 {
 	nn_writel(nn, NFP_NET_CFG_UPDATE, update);
-	/* ensure update is written before pinging HW */
+	 
 	nn_pci_flush(nn);
 	nfp_qcp_wr_ptr_add(nn->qcp_cfg, 1);
 	nn->reconfig_in_progress_update = update;
 }
 
-/* Pass 0 as update to run posted reconfigs. */
+ 
 static void nfp_net_reconfig_start_async(struct nfp_net *nn, u32 update)
 {
 	update |= nn->reconfig_posted;
@@ -129,9 +112,7 @@ static bool __nfp_net_reconfig_wait(struct nfp_net *nn, unsigned long deadline)
 	bool timed_out = false;
 	int i;
 
-	/* Poll update field, waiting for NFP to ack the config.
-	 * Do an opportunistic wait-busy loop, afterward sleep.
-	 */
+	 
 	for (i = 0; i < 50; i++) {
 		if (nfp_net_reconfig_check_done(nn, false))
 			return false;
@@ -165,11 +146,11 @@ static void nfp_net_reconfig_timer(struct timer_list *t)
 
 	nn->reconfig_timer_active = false;
 
-	/* If sync caller is present it will take over from us */
+	 
 	if (nn->reconfig_sync_present)
 		goto done;
 
-	/* Read reconfig status and report errors */
+	 
 	nfp_net_reconfig_check_done(nn, true);
 
 	if (nn->reconfig_posted)
@@ -178,26 +159,18 @@ done:
 	spin_unlock_bh(&nn->reconfig_lock);
 }
 
-/**
- * nfp_net_reconfig_post() - Post async reconfig request
- * @nn:      NFP Net device to reconfigure
- * @update:  The value for the update field in the BAR config
- *
- * Record FW reconfiguration request.  Reconfiguration will be kicked off
- * whenever reconfiguration machinery is idle.  Multiple requests can be
- * merged together!
- */
+ 
 static void nfp_net_reconfig_post(struct nfp_net *nn, u32 update)
 {
 	spin_lock_bh(&nn->reconfig_lock);
 
-	/* Sync caller will kick off async reconf when it's done, just post */
+	 
 	if (nn->reconfig_sync_present) {
 		nn->reconfig_posted |= update;
 		goto done;
 	}
 
-	/* Opportunistically check if the previous command is done */
+	 
 	if (!nn->reconfig_timer_active ||
 	    nfp_net_reconfig_check_done(nn, false))
 		nfp_net_reconfig_start_async(nn, update);
@@ -231,7 +204,7 @@ static void nfp_net_reconfig_sync_enter(struct nfp_net *nn)
 		nfp_net_reconfig_wait(nn, nn->reconfig_timer.expires);
 	}
 
-	/* Run the posted reconfigs which were issued before we started */
+	 
 	if (pre_posted_requests) {
 		nfp_net_reconfig_start(nn, pre_posted_requests);
 		nfp_net_reconfig_wait(nn, jiffies + HZ * NFP_NET_POLL_TIMEOUT);
@@ -247,17 +220,7 @@ static void nfp_net_reconfig_wait_posted(struct nfp_net *nn)
 	spin_unlock_bh(&nn->reconfig_lock);
 }
 
-/**
- * __nfp_net_reconfig() - Reconfigure the firmware
- * @nn:      NFP Net device to reconfigure
- * @update:  The value for the update field in the BAR config
- *
- * Write the update word to the BAR and ping the reconfig queue.  The
- * poll until the firmware has acknowledged the update by zeroing the
- * update word.
- *
- * Return: Negative errno on error, 0 on success
- */
+ 
 int __nfp_net_reconfig(struct nfp_net *nn, u32 update)
 {
 	int ret;
@@ -302,15 +265,7 @@ int nfp_net_mbox_lock(struct nfp_net *nn, unsigned int data_size)
 	return 0;
 }
 
-/**
- * nfp_net_mbox_reconfig() - Reconfigure the firmware via the mailbox
- * @nn:        NFP Net device to reconfigure
- * @mbox_cmd:  The value for the mailbox command
- *
- * Helper function for mailbox updates
- *
- * Return: Negative errno on error, 0 on success
- */
+ 
 int nfp_net_mbox_reconfig(struct nfp_net *nn, u32 mbox_cmd)
 {
 	u32 mbox = nn->tlv_caps.mbox_off;
@@ -354,18 +309,9 @@ int nfp_net_mbox_reconfig_and_unlock(struct nfp_net *nn, u32 mbox_cmd)
 	return ret;
 }
 
-/* Interrupt configuration and handling
- */
+ 
 
-/**
- * nfp_net_irqs_alloc() - allocates MSI-X irqs
- * @pdev:        PCI device structure
- * @irq_entries: Array to be initialized and used to hold the irq entries
- * @min_irqs:    Minimal acceptable number of interrupts
- * @wanted_irqs: Target number of interrupts to allocate
- *
- * Return: Number of irqs obtained or 0 on error.
- */
+ 
 unsigned int
 nfp_net_irqs_alloc(struct pci_dev *pdev, struct msix_entry *irq_entries,
 		   unsigned int min_irqs, unsigned int wanted_irqs)
@@ -391,15 +337,7 @@ nfp_net_irqs_alloc(struct pci_dev *pdev, struct msix_entry *irq_entries,
 	return got_irqs;
 }
 
-/**
- * nfp_net_irqs_assign() - Assign interrupts allocated externally to netdev
- * @nn:		 NFP Network structure
- * @irq_entries: Table of allocated interrupts
- * @n:		 Size of @irq_entries (number of entries to grab)
- *
- * After interrupts are allocated with nfp_net_irqs_alloc() this function
- * should be called to assign them to a specific netdev (port).
- */
+ 
 void
 nfp_net_irqs_assign(struct nfp_net *nn, struct msix_entry *irq_entries,
 		    unsigned int n)
@@ -422,40 +360,23 @@ nfp_net_irqs_assign(struct nfp_net *nn, struct msix_entry *irq_entries,
 	dp->num_stack_tx_rings = dp->num_tx_rings;
 }
 
-/**
- * nfp_net_irqs_disable() - Disable interrupts
- * @pdev:        PCI device structure
- *
- * Undoes what @nfp_net_irqs_alloc() does.
- */
+ 
 void nfp_net_irqs_disable(struct pci_dev *pdev)
 {
 	pci_disable_msix(pdev);
 }
 
-/**
- * nfp_net_irq_rxtx() - Interrupt service routine for RX/TX rings.
- * @irq:      Interrupt
- * @data:     Opaque data structure
- *
- * Return: Indicate if the interrupt has been handled.
- */
+ 
 static irqreturn_t nfp_net_irq_rxtx(int irq, void *data)
 {
 	struct nfp_net_r_vector *r_vec = data;
 
-	/* Currently we cannot tell if it's a rx or tx interrupt,
-	 * since dim does not need accurate event_ctr to calculate,
-	 * we just use this counter for both rx and tx dim.
-	 */
+	 
 	r_vec->event_ctr++;
 
 	napi_schedule_irqoff(&r_vec->napi);
 
-	/* The FW auto-masks any interrupt, either via the MASK bit in
-	 * the MSI-X table or via the per entry ICR field.  So there
-	 * is no need to disable interrupts here.
-	 */
+	 
 	return IRQ_HANDLED;
 }
 
@@ -468,10 +389,7 @@ static irqreturn_t nfp_ctrl_irq_rxtx(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/**
- * nfp_net_read_link_status() - Reread link status from control BAR
- * @nn:       NFP Network structure
- */
+ 
 static void nfp_net_read_link_status(struct nfp_net *nn)
 {
 	unsigned long flags;
@@ -504,13 +422,7 @@ out:
 	spin_unlock_irqrestore(&nn->link_status_lock, flags);
 }
 
-/**
- * nfp_net_irq_lsc() - Interrupt service routine for link state changes
- * @irq:      Interrupt
- * @data:     Opaque data structure
- *
- * Return: Indicate if the interrupt has been handled.
- */
+ 
 static irqreturn_t nfp_net_irq_lsc(int irq, void *data)
 {
 	struct nfp_net *nn = data;
@@ -525,32 +437,17 @@ static irqreturn_t nfp_net_irq_lsc(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/**
- * nfp_net_irq_exn() - Interrupt service routine for exceptions
- * @irq:      Interrupt
- * @data:     Opaque data structure
- *
- * Return: Indicate if the interrupt has been handled.
- */
+ 
 static irqreturn_t nfp_net_irq_exn(int irq, void *data)
 {
 	struct nfp_net *nn = data;
 
 	nn_err(nn, "%s: UNIMPLEMENTED.\n", __func__);
-	/* XXX TO BE IMPLEMENTED */
+	 
 	return IRQ_HANDLED;
 }
 
-/**
- * nfp_net_aux_irq_request() - Request an auxiliary interrupt (LSC or EXN)
- * @nn:		NFP Network structure
- * @ctrl_offset: Control BAR offset where IRQ configuration should be written
- * @format:	printf-style format to construct the interrupt name
- * @name:	Pointer to allocated space for interrupt name
- * @name_sz:	Size of space for interrupt name
- * @vector_idx:	Index of MSI-X vector used for this interrupt
- * @handler:	IRQ handler to register for this interrupt
- */
+ 
 static int
 nfp_net_aux_irq_request(struct nfp_net *nn, u32 ctrl_offset,
 			const char *format, char *name, size_t name_sz,
@@ -574,12 +471,7 @@ nfp_net_aux_irq_request(struct nfp_net *nn, u32 ctrl_offset,
 	return 0;
 }
 
-/**
- * nfp_net_aux_irq_free() - Free an auxiliary interrupt (LSC or EXN)
- * @nn:		NFP Network structure
- * @ctrl_offset: Control BAR offset where IRQ configuration should be written
- * @vector_idx:	Index of MSI-X vector used for this interrupt
- */
+ 
 static void nfp_net_aux_irq_free(struct nfp_net *nn, u32 ctrl_offset,
 				 unsigned int vector_idx)
 {
@@ -608,7 +500,7 @@ nfp_net_tls_tx(struct nfp_net_dp *dp, struct nfp_net_r_vector *r_vec,
 	ntls = tls_driver_ctx(skb->sk, TLS_OFFLOAD_CTX_DIR_TX);
 	resync_pending = tls_offload_tx_resync_pending(skb->sk);
 	if (unlikely(resync_pending || ntls->next_seq != seq)) {
-		/* Pure ACK out of order already */
+		 
 		if (!datalen)
 			return skb;
 
@@ -623,10 +515,10 @@ nfp_net_tls_tx(struct nfp_net_dp *dp, struct nfp_net_r_vector *r_vec,
 			u64_stats_update_end(&r_vec->tx_sync);
 			return NULL;
 		}
-		/* encryption wasn't necessary */
+		 
 		if (nskb == skb)
 			return skb;
-		/* we don't re-check ring space */
+		 
 		if (unlikely(skb_is_nonlinear(nskb))) {
 			nn_dp_warn(dp, "tls_encrypt_skb() produced fragmented frame\n");
 			u64_stats_update_begin(&r_vec->tx_sync);
@@ -636,7 +528,7 @@ nfp_net_tls_tx(struct nfp_net_dp *dp, struct nfp_net_r_vector *r_vec,
 			return NULL;
 		}
 
-		/* jump forward, a TX may have gotten lost, need to sync TX */
+		 
 		if (!resync_pending && seq - ntls->next_seq < U32_MAX / 4)
 			tls_offload_tx_resync_request(nskb->sk, seq,
 						      ntls->next_seq);
@@ -689,7 +581,7 @@ static void nfp_net_tx_timeout(struct net_device *netdev, unsigned int txqueue)
 	nn_warn(nn, "TX watchdog timeout on ring: %u\n", txqueue);
 }
 
-/* Receive processing */
+ 
 static unsigned int
 nfp_net_calc_fl_bufsz_data(struct nfp_net_dp *dp)
 {
@@ -728,13 +620,9 @@ static unsigned int nfp_net_calc_fl_bufsz_xsk(struct nfp_net_dp *dp)
 	return fl_bufsz;
 }
 
-/* Setup and Configuration
- */
+ 
 
-/**
- * nfp_net_vecs_init() - Assign IRQs and setup rvecs.
- * @nn:		NFP Network structure
- */
+ 
 static void nfp_net_vecs_init(struct nfp_net *nn)
 {
 	int numa_node = dev_to_node(&nn->pdev->dev);
@@ -846,10 +734,7 @@ nfp_net_cleanup_vector(struct nfp_net *nn, struct nfp_net_r_vector *r_vec)
 	free_irq(r_vec->irq_vector, r_vec);
 }
 
-/**
- * nfp_net_rss_write_itbl() - Write RSS indirection table to device
- * @nn:      NFP Net device to reconfigure
- */
+ 
 void nfp_net_rss_write_itbl(struct nfp_net *nn)
 {
 	int i;
@@ -859,10 +744,7 @@ void nfp_net_rss_write_itbl(struct nfp_net *nn)
 			  get_unaligned_le32(nn->rss_itbl + i));
 }
 
-/**
- * nfp_net_rss_write_key() - Write RSS hash key to device
- * @nn:      NFP Net device to reconfigure
- */
+ 
 void nfp_net_rss_write_key(struct nfp_net *nn)
 {
 	int i;
@@ -872,56 +754,37 @@ void nfp_net_rss_write_key(struct nfp_net *nn)
 			  get_unaligned_le32(nn->rss_key + i));
 }
 
-/**
- * nfp_net_coalesce_write_cfg() - Write irq coalescence configuration to HW
- * @nn:      NFP Net device to reconfigure
- */
+ 
 void nfp_net_coalesce_write_cfg(struct nfp_net *nn)
 {
 	u8 i;
 	u32 factor;
 	u32 value;
 
-	/* Compute factor used to convert coalesce '_usecs' parameters to
-	 * ME timestamp ticks.  There are 16 ME clock cycles for each timestamp
-	 * count.
-	 */
+	 
 	factor = nn->tlv_caps.me_freq_mhz / 16;
 
-	/* copy RX interrupt coalesce parameters */
+	 
 	value = (nn->rx_coalesce_max_frames << 16) |
 		(factor * nn->rx_coalesce_usecs);
 	for (i = 0; i < nn->dp.num_rx_rings; i++)
 		nn_writel(nn, NFP_NET_CFG_RXR_IRQ_MOD(i), value);
 
-	/* copy TX interrupt coalesce parameters */
+	 
 	value = (nn->tx_coalesce_max_frames << 16) |
 		(factor * nn->tx_coalesce_usecs);
 	for (i = 0; i < nn->dp.num_tx_rings; i++)
 		nn_writel(nn, NFP_NET_CFG_TXR_IRQ_MOD(i), value);
 }
 
-/**
- * nfp_net_write_mac_addr() - Write mac address to the device control BAR
- * @nn:      NFP Net device to reconfigure
- * @addr:    MAC address to write
- *
- * Writes the MAC address from the netdev to the device control BAR.  Does not
- * perform the required reconfig.  We do a bit of byte swapping dance because
- * firmware is LE.
- */
+ 
 static void nfp_net_write_mac_addr(struct nfp_net *nn, const u8 *addr)
 {
 	nn_writel(nn, NFP_NET_CFG_MACADDR + 0, get_unaligned_be32(addr));
 	nn_writew(nn, NFP_NET_CFG_MACADDR + 6, get_unaligned_be16(addr + 4));
 }
 
-/**
- * nfp_net_clear_config_and_disable() - Clear control BAR and disable NFP
- * @nn:      NFP Net device to reconfigure
- *
- * Warning: must be fully idempotent.
- */
+ 
 static void nfp_net_clear_config_and_disable(struct nfp_net *nn)
 {
 	u32 new_ctrl, new_ctrl_w1, update;
@@ -973,10 +836,7 @@ static void nfp_net_clear_config_and_disable(struct nfp_net *nn)
 	nn->dp.ctrl = new_ctrl;
 }
 
-/**
- * nfp_net_set_config_and_enable() - Write control BAR and enable NFP
- * @nn:      NFP Net device to reconfigure
- */
+ 
 static int nfp_net_set_config_and_enable(struct nfp_net *nn)
 {
 	u32 bufsz, new_ctrl, new_ctrl_w1, update = 0;
@@ -1017,10 +877,7 @@ static int nfp_net_set_config_and_enable(struct nfp_net *nn)
 	bufsz = nn->dp.fl_bufsz - nn->dp.rx_dma_off - NFP_NET_RX_BUF_NON_DATA;
 	nn_writel(nn, NFP_NET_CFG_FLBUFSZ, bufsz);
 
-	/* Enable device
-	 * Step 1: Replace the CTRL_ENABLE by NFP_NET_CFG_CTRL_FREELIST_EN if
-	 * FREELIST_EN exits.
-	 */
+	 
 	if (nn->cap_w1 & NFP_NET_CFG_CTRL_FREELIST_EN)
 		new_ctrl_w1 |= NFP_NET_CFG_CTRL_FREELIST_EN;
 	else
@@ -1031,9 +888,7 @@ static int nfp_net_set_config_and_enable(struct nfp_net *nn)
 	if (nn->cap & NFP_NET_CFG_CTRL_RINGCFG)
 		new_ctrl |= NFP_NET_CFG_CTRL_RINGCFG;
 
-	/* Step 2: Send the configuration and write the freelist.
-	 * - The freelist only need to be written once.
-	 */
+	 
 	nn_writel(nn, NFP_NET_CFG_CTRL, new_ctrl);
 	nn_writel(nn, NFP_NET_CFG_CTRL_WORD1, new_ctrl_w1);
 	err = nfp_net_reconfig(nn, update);
@@ -1048,8 +903,7 @@ static int nfp_net_set_config_and_enable(struct nfp_net *nn)
 	for (r = 0; r < nn->dp.num_rx_rings; r++)
 		nfp_net_rx_ring_fill_freelist(&nn->dp, &nn->dp.rx_rings[r]);
 
-	/* Step 3: Do the NFP_NET_CFG_CTRL_ENABLE. Send the configuration.
-	 */
+	 
 	if (nn->cap_w1 & NFP_NET_CFG_CTRL_FREELIST_EN) {
 		new_ctrl |= NFP_NET_CFG_CTRL_ENABLE;
 		nn_writel(nn, NFP_NET_CFG_CTRL, new_ctrl);
@@ -1065,10 +919,7 @@ static int nfp_net_set_config_and_enable(struct nfp_net *nn)
 	return 0;
 }
 
-/**
- * nfp_net_close_stack() - Quiesce the stack (part of close)
- * @nn:	     NFP Net device to reconfigure
- */
+ 
 static void nfp_net_close_stack(struct nfp_net *nn)
 {
 	struct nfp_net_r_vector *r_vec;
@@ -1094,10 +945,7 @@ static void nfp_net_close_stack(struct nfp_net *nn)
 	netif_tx_disable(nn->dp.netdev);
 }
 
-/**
- * nfp_net_close_free_all() - Free all runtime resources
- * @nn:      NFP Net device to reconfigure
- */
+ 
 static void nfp_net_close_free_all(struct nfp_net *nn)
 {
 	unsigned int r;
@@ -1112,28 +960,22 @@ static void nfp_net_close_free_all(struct nfp_net *nn)
 	nfp_net_aux_irq_free(nn, NFP_NET_CFG_EXN, NFP_NET_IRQ_EXN_IDX);
 }
 
-/**
- * nfp_net_netdev_close() - Called when the device is downed
- * @netdev:      netdev structure
- */
+ 
 static int nfp_net_netdev_close(struct net_device *netdev)
 {
 	struct nfp_net *nn = netdev_priv(netdev);
 
-	/* Step 1: Disable RX and TX rings from the Linux kernel perspective
-	 */
+	 
 	nfp_net_close_stack(nn);
 
-	/* Step 2: Tell NFP
-	 */
+	 
 	if (nn->cap_w1 & NFP_NET_CFG_CTRL_MCAST_FILTER)
 		__dev_mc_unsync(netdev, nfp_net_mc_unsync);
 
 	nfp_net_clear_config_and_disable(nn);
 	nfp_port_configure(netdev, false);
 
-	/* Step 3: Free resources
-	 */
+	 
 	nfp_net_close_free_all(nn);
 
 	nn_dbg(nn, "%s down", netdev->name);
@@ -1171,15 +1013,12 @@ static void nfp_net_rx_dim_work(struct work_struct *work)
 	r_vec = container_of(dim, struct nfp_net_r_vector, rx_dim);
 	nn = r_vec->nfp_net;
 
-	/* Compute factor used to convert coalesce '_usecs' parameters to
-	 * ME timestamp ticks.  There are 16 ME clock cycles for each timestamp
-	 * count.
-	 */
+	 
 	factor = nn->tlv_caps.me_freq_mhz / 16;
 	if (nfp_net_coalesce_para_check(factor * moder.usec, moder.pkts))
 		return;
 
-	/* copy RX interrupt coalesce parameters */
+	 
 	value = (moder.pkts << 16) | (factor * moder.usec);
 	nn_writel(nn, NFP_NET_CFG_RXR_IRQ_MOD(r_vec->rx_ring->idx), value);
 	(void)nfp_net_reconfig(nn, NFP_NET_CFG_UPDATE_IRQMOD);
@@ -1200,15 +1039,12 @@ static void nfp_net_tx_dim_work(struct work_struct *work)
 	r_vec = container_of(dim, struct nfp_net_r_vector, tx_dim);
 	nn = r_vec->nfp_net;
 
-	/* Compute factor used to convert coalesce '_usecs' parameters to
-	 * ME timestamp ticks.  There are 16 ME clock cycles for each timestamp
-	 * count.
-	 */
+	 
 	factor = nn->tlv_caps.me_freq_mhz / 16;
 	if (nfp_net_coalesce_para_check(factor * moder.usec, moder.pkts))
 		return;
 
-	/* copy TX interrupt coalesce parameters */
+	 
 	value = (moder.pkts << 16) | (factor * moder.usec);
 	nn_writel(nn, NFP_NET_CFG_TXR_IRQ_MOD(r_vec->tx_ring->idx), value);
 	(void)nfp_net_reconfig(nn, NFP_NET_CFG_UPDATE_IRQMOD);
@@ -1216,10 +1052,7 @@ static void nfp_net_tx_dim_work(struct work_struct *work)
 	dim->state = DIM_START_MEASURE;
 }
 
-/**
- * nfp_net_open_stack() - Start the device from stack's perspective
- * @nn:      NFP Net device to reconfigure
- */
+ 
 static void nfp_net_open_stack(struct nfp_net *nn)
 {
 	struct nfp_net_r_vector *r_vec;
@@ -1301,11 +1134,7 @@ static int nfp_net_netdev_open(struct net_device *netdev)
 	struct nfp_net *nn = netdev_priv(netdev);
 	int err;
 
-	/* Step 1: Allocate resources for rings and the like
-	 * - Request interrupts
-	 * - Allocate RX and TX ring resources
-	 * - Setup initial RSS table
-	 */
+	 
 	err = nfp_net_open_alloc_all(nn);
 	if (err)
 		return err;
@@ -1318,14 +1147,7 @@ static int nfp_net_netdev_open(struct net_device *netdev)
 	if (err)
 		goto err_free_all;
 
-	/* Step 2: Configure the NFP
-	 * - Ifup the physical interface if it exists
-	 * - Enable rings from 0 to tx_rings/rx_rings - 1.
-	 * - Write MAC address (in case it changed)
-	 * - Set the MTU
-	 * - Set the Freelist buffer size
-	 * - Enable the FW
-	 */
+	 
 	err = nfp_port_configure(netdev, true);
 	if (err)
 		goto err_free_all;
@@ -1334,12 +1156,7 @@ static int nfp_net_netdev_open(struct net_device *netdev)
 	if (err)
 		goto err_port_disable;
 
-	/* Step 3: Enable for kernel
-	 * - put some freelist descriptors on each RX ring
-	 * - enable NAPI on each ring
-	 * - enable all TX queues
-	 * - set link state
-	 */
+	 
 	nfp_net_open_stack(nn);
 
 	return 0;
@@ -1355,7 +1172,7 @@ int nfp_ctrl_open(struct nfp_net *nn)
 {
 	int err, r;
 
-	/* ring dumping depends on vNICs being opened/closed under rtnl */
+	 
 	rtnl_lock();
 
 	err = nfp_net_open_alloc_all(nn);
@@ -1568,7 +1385,7 @@ struct nfp_net_dp *nfp_net_clone_dp(struct nfp_net *nn)
 		return NULL;
 	}
 
-	/* Clear things which need to be recomputed */
+	 
 	new->fl_bufsz = 0;
 	new->tx_rings = NULL;
 	new->rx_rings = NULL;
@@ -1592,7 +1409,7 @@ nfp_net_check_config(struct nfp_net *nn, struct nfp_net_dp *dp,
 {
 	unsigned int r, xsk_min_fl_bufsz;
 
-	/* XDP-enabled tests */
+	 
 	if (!dp->xdp_prog)
 		return 0;
 	if (dp->fl_bufsz > PAGE_SIZE) {
@@ -1642,7 +1459,7 @@ int nfp_net_ring_reconfig(struct nfp_net *nn, struct nfp_net_dp *dp,
 		goto exit_free_dp;
 	}
 
-	/* Prepare new rings */
+	 
 	for (r = nn->dp.num_r_vecs; r < dp->num_r_vecs; r++) {
 		err = nfp_net_prepare_vector(nn, &nn->r_vecs[r], r);
 		if (err) {
@@ -1659,7 +1476,7 @@ int nfp_net_ring_reconfig(struct nfp_net *nn, struct nfp_net_dp *dp,
 	if (err)
 		goto err_free_rx;
 
-	/* Stop device, swap in new rings, try to start the firmware */
+	 
 	nfp_net_close_stack(nn);
 	nfp_net_clear_config_and_disable(nn);
 
@@ -1669,7 +1486,7 @@ int nfp_net_ring_reconfig(struct nfp_net *nn, struct nfp_net_dp *dp,
 
 		nfp_net_clear_config_and_disable(nn);
 
-		/* Try with old configuration and old rings */
+		 
 		err2 = nfp_net_dp_swap_enable(nn, dp);
 		if (err2)
 			nn_err(nn, "Can't restore ring config - FW communication failed (%d,%d)\n",
@@ -1722,9 +1539,7 @@ nfp_net_vlan_rx_add_vid(struct net_device *netdev, __be16 proto, u16 vid)
 	struct nfp_net *nn = netdev_priv(netdev);
 	int err;
 
-	/* Priority tagged packets with vlan id 0 are processed by the
-	 * NFP as untagged packets
-	 */
+	 
 	if (!vid)
 		return 0;
 
@@ -1746,9 +1561,7 @@ nfp_net_vlan_rx_kill_vid(struct net_device *netdev, __be16 proto, u16 vid)
 	struct nfp_net *nn = netdev_priv(netdev);
 	int err;
 
-	/* Priority tagged packets with vlan id 0 are processed by the
-	 * NFP as untagged packets
-	 */
+	 
 	if (!vid)
 		return 0;
 
@@ -1769,7 +1582,7 @@ static void nfp_net_stat64(struct net_device *netdev,
 	struct nfp_net *nn = netdev_priv(netdev);
 	int r;
 
-	/* Collect software stats */
+	 
 	for (r = 0; r < nn->max_r_vecs; r++) {
 		struct nfp_net_r_vector *r_vec = &nn->r_vecs[r];
 		u64 data[3];
@@ -1796,7 +1609,7 @@ static void nfp_net_stat64(struct net_device *netdev,
 		stats->tx_errors += data[2];
 	}
 
-	/* Add in device stats */
+	 
 	stats->multicast += nn_readq(nn, NFP_NET_CFG_STATS_RX_MC_FRAMES);
 	stats->rx_dropped += nn_readq(nn, NFP_NET_CFG_STATS_RX_DISCARDS);
 	stats->rx_errors += nn_readq(nn, NFP_NET_CFG_STATS_RX_ERRORS);
@@ -1813,7 +1626,7 @@ static int nfp_net_set_features(struct net_device *netdev,
 	u32 new_ctrl;
 	int err;
 
-	/* Assume this is not called with features we have not advertised */
+	 
 
 	new_ctrl = nn->dp.ctrl;
 
@@ -1924,21 +1737,19 @@ nfp_net_features_check(struct sk_buff *skb, struct net_device *dev,
 {
 	u8 l4_hdr;
 
-	/* We can't do TSO over double tagged packets (802.1AD) */
+	 
 	features &= vlan_features_check(skb, features);
 
 	if (!skb->encapsulation)
 		return features;
 
-	/* Ensure that inner L4 header offset fits into TX descriptor field */
+	 
 	if (skb_is_gso(skb)) {
 		u32 hdrlen;
 
 		hdrlen = skb_inner_tcp_all_headers(skb);
 
-		/* Assume worst case scenario of having longest possible
-		 * metadata prepend - 8B
-		 */
+		 
 		if (unlikely(hdrlen > NFP_NET_LSO_MAX_HDR_SZ - 8))
 			features &= ~NETIF_F_GSO_MASK;
 	}
@@ -1946,7 +1757,7 @@ nfp_net_features_check(struct sk_buff *skb, struct net_device *dev,
 	if (xfrm_offload(skb))
 		return features;
 
-	/* VXLAN/GRE check */
+	 
 	switch (vlan_get_protocol(skb)) {
 	case htons(ETH_P_IP):
 		l4_hdr = ip_hdr(skb)->protocol;
@@ -1975,9 +1786,7 @@ nfp_net_get_phys_port_name(struct net_device *netdev, char *name, size_t len)
 	struct nfp_net *nn = netdev_priv(netdev);
 	int n;
 
-	/* If port is defined, devlink_port is registered and devlink core
-	 * is taking care of name formatting.
-	 */
+	 
 	if (nn->port)
 		return -EOPNOTSUPP;
 
@@ -2012,7 +1821,7 @@ static int nfp_net_xdp_setup_drv(struct nfp_net *nn, struct netdev_bpf *bpf)
 	dp->rx_dma_dir = prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
 	dp->rx_dma_off = prog ? XDP_PACKET_HEADROOM - nn->dp.rx_offset : 0;
 
-	/* We need RX reconfig to remap the buffers (BIDIR vs FROM_DEV) */
+	 
 	err = nfp_net_ring_reconfig(nn, dp, bpf->extack);
 	if (err)
 		return err;
@@ -2223,10 +2032,7 @@ static const struct udp_tunnel_nic_info nfp_udp_tunnels = {
 	},
 };
 
-/**
- * nfp_net_info() - Print general info about the NIC
- * @nn:      NFP Net device to reconfigure
- */
+ 
 void nfp_net_info(struct nfp_net *nn)
 {
 	nn_info(nn, "NFP-6xxx %sNetdev: TxQs=%d/%d RxQs=%d/%d\n",
@@ -2269,21 +2075,7 @@ void nfp_net_info(struct nfp_net *nn)
 		nfp_app_extra_cap(nn->app, nn));
 }
 
-/**
- * nfp_net_alloc() - Allocate netdev and related structure
- * @pdev:         PCI device
- * @dev_info:     NFP ASIC params
- * @ctrl_bar:     PCI IOMEM with vNIC config memory
- * @needs_netdev: Whether to allocate a netdev for this vNIC
- * @max_tx_rings: Maximum number of TX rings supported by device
- * @max_rx_rings: Maximum number of RX rings supported by device
- *
- * This function allocates a netdev device and fills in the initial
- * part of the @struct nfp_net structure.  In case of control device
- * nfp_net structure is allocated without the netdev.
- *
- * Return: NFP Net device structure, or ERR_PTR on error.
- */
+ 
 struct nfp_net *
 nfp_net_alloc(struct pci_dev *pdev, const struct nfp_dev_info *dev_info,
 	      void __iomem *ctrl_bar, bool needs_netdev,
@@ -2392,10 +2184,7 @@ err_free_nn:
 	return ERR_PTR(err);
 }
 
-/**
- * nfp_net_free() - Undo what @nfp_net_alloc() did
- * @nn:      NFP Net device to reconfigure
- */
+ 
 void nfp_net_free(struct nfp_net *nn)
 {
 	WARN_ON(timer_pending(&nn->reconfig_timer) || nn->reconfig_posted);
@@ -2408,12 +2197,7 @@ void nfp_net_free(struct nfp_net *nn)
 		vfree(nn);
 }
 
-/**
- * nfp_net_rss_key_sz() - Get current size of the RSS key
- * @nn:		NFP Net device instance
- *
- * Return: size of the RSS key for currently selected hash function.
- */
+ 
 unsigned int nfp_net_rss_key_sz(struct nfp_net *nn)
 {
 	switch (nn->rss_hfunc) {
@@ -2429,16 +2213,13 @@ unsigned int nfp_net_rss_key_sz(struct nfp_net *nn)
 	return 0;
 }
 
-/**
- * nfp_net_rss_init() - Set the initial RSS parameters
- * @nn:	     NFP Net device to reconfigure
- */
+ 
 static void nfp_net_rss_init(struct nfp_net *nn)
 {
 	unsigned long func_bit, rss_cap_hfunc;
 	u32 reg;
 
-	/* Read the RSS function capability and select first supported func */
+	 
 	reg = nn_readl(nn, NFP_NET_CFG_RSS_CAP);
 	rss_cap_hfunc =	FIELD_GET(NFP_NET_CFG_RSS_CAP_HFUNC, reg);
 	if (!rss_cap_hfunc)
@@ -2457,7 +2238,7 @@ static void nfp_net_rss_init(struct nfp_net *nn)
 
 	nfp_net_rss_init_itbl(nn);
 
-	/* Enable IPv4/IPv6 TCP by default */
+	 
 	nn->rss_cfg = NFP_NET_CFG_RSS_IPV4_TCP |
 		      NFP_NET_CFG_RSS_IPV6_TCP |
 		      NFP_NET_CFG_RSS_IPV4_UDP |
@@ -2466,10 +2247,7 @@ static void nfp_net_rss_init(struct nfp_net *nn)
 		      NFP_NET_CFG_RSS_MASK;
 }
 
-/**
- * nfp_net_irqmod_init() - Set the initial IRQ moderation parameters
- * @nn:	     NFP Net device to reconfigure
- */
+ 
 static void nfp_net_irqmod_init(struct nfp_net *nn)
 {
 	nn->rx_coalesce_usecs      = 50;
@@ -2489,12 +2267,7 @@ static void nfp_net_netdev_init(struct nfp_net *nn)
 
 	netdev->mtu = nn->dp.mtu;
 
-	/* Advertise/enable offloads based on capabilities
-	 *
-	 * Note: netdev->features show the currently enabled features
-	 * and netdev->hw_features advertises which features are
-	 * supported.  By default we enable most features.
-	 */
+	 
 	if (nn->cap & NFP_NET_CFG_CTRL_LIVE_ADDR)
 		netdev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
 
@@ -2573,9 +2346,7 @@ static void nfp_net_netdev_init(struct nfp_net *nn)
 	if (nfp_app_has_tc(nn->app) && nn->port)
 		netdev->hw_features |= NETIF_F_HW_TC;
 
-	/* C-Tag strip and S-Tag strip can't be supported simultaneously,
-	 * so enable C-Tag strip and disable S-Tag strip by default.
-	 */
+	 
 	netdev->features &= ~NETIF_F_HW_VLAN_STAG_RX;
 	nn->dp.ctrl &= ~NFP_NET_CFG_CTRL_RXQINQ;
 
@@ -2583,7 +2354,7 @@ static void nfp_net_netdev_init(struct nfp_net *nn)
 	if (nn->app && nn->app->type->id == NFP_APP_BPF_NIC)
 		netdev->xdp_features |= NETDEV_XDP_ACT_HW_OFFLOAD;
 
-	/* Finalise the netdev setup */
+	 
 	switch (nn->dp.ops->version) {
 	case NFP_NFD_VER_NFD3:
 		netdev->netdev_ops = &nfp_nfd3_netdev_ops;
@@ -2596,7 +2367,7 @@ static void nfp_net_netdev_init(struct nfp_net *nn)
 
 	netdev->watchdog_timeo = msecs_to_jiffies(5 * 1000);
 
-	/* MTU range: 68 - hw-specific max */
+	 
 	netdev->min_mtu = ETH_MIN_MTU;
 	netdev->max_mtu = nn->max_mtu;
 
@@ -2609,26 +2380,21 @@ static void nfp_net_netdev_init(struct nfp_net *nn)
 
 static int nfp_net_read_caps(struct nfp_net *nn)
 {
-	/* Get some of the read-only fields from the BAR */
+	 
 	nn->cap = nn_readl(nn, NFP_NET_CFG_CAP);
 	nn->cap_w1 = nn_readl(nn, NFP_NET_CFG_CAP_WORD1);
 	nn->max_mtu = nn_readl(nn, NFP_NET_CFG_MAX_MTU);
 
-	/* ABI 4.x and ctrl vNIC always use chained metadata, in other cases
-	 * we allow use of non-chained metadata if RSS(v1) is the only
-	 * advertised capability requiring metadata.
-	 */
+	 
 	nn->dp.chained_metadata_format = nn->fw_ver.major == 4 ||
 					 !nn->dp.netdev ||
 					 !(nn->cap & NFP_NET_CFG_CTRL_RSS) ||
 					 nn->cap & NFP_NET_CFG_CTRL_CHAIN_META;
-	/* RSS(v1) uses non-chained metadata format, except in ABI 4.x where
-	 * it has the same meaning as RSSv2.
-	 */
+	 
 	if (nn->dp.chained_metadata_format && nn->fw_ver.major != 4)
 		nn->cap &= ~NFP_NET_CFG_CTRL_RSS;
 
-	/* Determine RX packet/metadata boundary offset */
+	 
 	if (nn->fw_ver.major >= 2) {
 		u32 reg;
 
@@ -2642,22 +2408,17 @@ static int nfp_net_read_caps(struct nfp_net *nn)
 		nn->dp.rx_offset = NFP_NET_RX_OFFSET;
 	}
 
-	/* Mask out NFD-version-specific features */
+	 
 	nn->cap &= nn->dp.ops->cap_mask;
 
-	/* For control vNICs mask out the capabilities app doesn't want. */
+	 
 	if (!nn->dp.netdev)
 		nn->cap &= nn->app->type->ctrl_cap_mask;
 
 	return 0;
 }
 
-/**
- * nfp_net_init() - Initialise/finalise the nfp_net structure
- * @nn:		NFP Net device structure
- *
- * Return: 0 on success or negative errno on error.
- */
+ 
 int nfp_net_init(struct nfp_net *nn)
 {
 	int err;
@@ -2668,7 +2429,7 @@ int nfp_net_init(struct nfp_net *nn)
 	if (err)
 		return err;
 
-	/* Set default MTU and Freelist buffer size */
+	 
 	if (!nfp_net_is_data_vnic(nn) && nn->app->ctrl_mtu) {
 		nn->dp.mtu = min(nn->app->ctrl_mtu, nn->max_mtu);
 	} else if (nn->max_mtu < NFP_NET_DEFAULT_MTU) {
@@ -2687,27 +2448,27 @@ int nfp_net_init(struct nfp_net *nn)
 					 NFP_NET_CFG_CTRL_RSS;
 	}
 
-	/* Allow L2 Broadcast and Multicast through by default, if supported */
+	 
 	if (nn->cap & NFP_NET_CFG_CTRL_L2BC)
 		nn->dp.ctrl |= NFP_NET_CFG_CTRL_L2BC;
 
-	/* Allow IRQ moderation, if supported */
+	 
 	if (nn->cap & NFP_NET_CFG_CTRL_IRQMOD) {
 		nfp_net_irqmod_init(nn);
 		nn->dp.ctrl |= NFP_NET_CFG_CTRL_IRQMOD;
 	}
 
-	/* Enable TX pointer writeback, if supported */
+	 
 	if (nn->cap & NFP_NET_CFG_CTRL_TXRWB)
 		nn->dp.ctrl |= NFP_NET_CFG_CTRL_TXRWB;
 
 	if (nn->cap_w1 & NFP_NET_CFG_CTRL_MCAST_FILTER)
 		nn->dp.ctrl_w1 |= NFP_NET_CFG_CTRL_MCAST_FILTER;
 
-	/* Stash the re-configuration queue away.  First odd queue in TX Bar */
+	 
 	nn->qcp_cfg = nn->tx_bar + NFP_QCP_QUEUE_ADDR_SZ;
 
-	/* Make sure the FW knows the netdev is supposed to be disabled here */
+	 
 	nn_writel(nn, NFP_NET_CFG_CTRL, 0);
 	nn_writeq(nn, NFP_NET_CFG_TXRS_ENABLE, 0);
 	nn_writeq(nn, NFP_NET_CFG_RXRS_ENABLE, 0);
@@ -2747,10 +2508,7 @@ err_clean_mbox:
 	return err;
 }
 
-/**
- * nfp_net_clean() - Undo what nfp_net_init() did.
- * @nn:		NFP Net device structure
- */
+ 
 void nfp_net_clean(struct nfp_net *nn)
 {
 	if (!nn->dp.netdev)

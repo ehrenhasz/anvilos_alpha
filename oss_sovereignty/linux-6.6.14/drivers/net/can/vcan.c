@@ -1,42 +1,4 @@
-/* vcan.c - Virtual CAN interface
- *
- * Copyright (c) 2002-2017 Volkswagen Group Electronic Research
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of Volkswagen nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * Alternatively, provided that this notice is retained in full, this
- * software may be distributed under the terms of the GNU General
- * Public License ("GPL") version 2, in which case the provisions of the
- * GPL apply INSTEAD OF those given above.
- *
- * The provided data structures and external interfaces from this code
- * are not restricted to be used by modules with a GPL compatible license.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
- * DAMAGE.
- *
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -60,12 +22,9 @@ MODULE_LICENSE("Dual BSD/GPL");
 MODULE_AUTHOR("Urs Thuermann <urs.thuermann@volkswagen.de>");
 MODULE_ALIAS_RTNL_LINK(DRV_NAME);
 
-/* CAN test feature:
- * Enable the echo on driver level for testing the CAN core echo modes.
- * See Documentation/networking/can.rst for details.
- */
+ 
 
-static bool echo; /* echo testing. Default: 0 (Off) */
+static bool echo;  
 module_param(echo, bool, 0444);
 MODULE_PARM_DESC(echo, "Echo sent frames (for testing). Default: 0 (Off)");
 
@@ -96,17 +55,15 @@ static netdev_tx_t vcan_tx(struct sk_buff *skb, struct net_device *dev)
 	stats->tx_packets++;
 	stats->tx_bytes += len;
 
-	/* set flag whether this packet has to be looped back */
+	 
 	loop = skb->pkt_type == PACKET_LOOPBACK;
 
 	skb_tx_timestamp(skb);
 
 	if (!echo) {
-		/* no echo handling available inside this driver */
+		 
 		if (loop) {
-			/* only count the packets here, because the
-			 * CAN core already did the echo for us
-			 */
+			 
 			stats->rx_packets++;
 			stats->rx_bytes += len;
 		}
@@ -114,17 +71,17 @@ static netdev_tx_t vcan_tx(struct sk_buff *skb, struct net_device *dev)
 		return NETDEV_TX_OK;
 	}
 
-	/* perform standard echo handling for CAN network interfaces */
+	 
 
 	if (loop) {
 		skb = can_create_echo_skb(skb);
 		if (!skb)
 			return NETDEV_TX_OK;
 
-		/* receive with packet counting */
+		 
 		vcan_rx(skb, dev);
 	} else {
-		/* no looped packets => no counting */
+		 
 		consume_skb(skb);
 	}
 	return NETDEV_TX_OK;
@@ -132,7 +89,7 @@ static netdev_tx_t vcan_tx(struct sk_buff *skb, struct net_device *dev)
 
 static int vcan_change_mtu(struct net_device *dev, int new_mtu)
 {
-	/* Do not allow changing the MTU while running */
+	 
 	if (dev->flags & IFF_UP)
 		return -EBUSY;
 
@@ -163,7 +120,7 @@ static void vcan_setup(struct net_device *dev)
 	dev->flags		= IFF_NOARP;
 	can_set_ml_priv(dev, netdev_priv(dev));
 
-	/* set flags according to driver capabilities */
+	 
 	if (echo)
 		dev->flags |= IFF_ECHO;
 

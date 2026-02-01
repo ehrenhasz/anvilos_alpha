@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include "ubifs.h"
 
-/* Normal UBIFS messages */
+ 
 void ubifs_msg(const struct ubifs_info *c, const char *fmt, ...)
 {
 	struct va_format vaf;
@@ -19,7 +19,7 @@ void ubifs_msg(const struct ubifs_info *c, const char *fmt, ...)
 	va_end(args);
 }								    \
 
-/* UBIFS error messages */
+ 
 void ubifs_err(const struct ubifs_info *c, const char *fmt, ...)
 {
 	struct va_format vaf;
@@ -38,7 +38,7 @@ void ubifs_err(const struct ubifs_info *c, const char *fmt, ...)
 	va_end(args);
 }								    \
 
-/* UBIFS warning messages */
+ 
 void ubifs_warn(const struct ubifs_info *c, const char *fmt, ...)
 {
 	struct va_format vaf;

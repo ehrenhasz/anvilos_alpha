@@ -1,55 +1,12 @@
-/*
- * net/tipc/trace.c: TIPC tracepoints code
- *
- * Copyright (c) 2018, Ericsson AB
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the names of the copyright holders nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "ASIS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #define CREATE_TRACE_POINTS
 #include "trace.h"
 
-/*
- * socket tuples for filtering in socket traces:
- * (portid, sock type, name type, name lower, name upper)
- */
+ 
 unsigned long sysctl_tipc_sk_filter[5] __read_mostly = {0, };
 
-/**
- * tipc_skb_dump - dump TIPC skb data
- * @skb: skb to be dumped
- * @more: dump more?
- *        - false: dump only tipc msg data
- *        - true: dump kernel-related skb data and tipc cb[] array as well
- * @buf: returned buffer of dump data in format
- */
+ 
 int tipc_skb_dump(struct sk_buff *skb, bool more, char *buf)
 {
 	int i = 0;
@@ -65,7 +22,7 @@ int tipc_skb_dump(struct sk_buff *skb, bool more, char *buf)
 	hdr = buf_msg(skb);
 	skbcb = TIPC_SKB_CB(skb);
 
-	/* tipc msg data section */
+	 
 	i += scnprintf(buf, sz, "msg: %u", msg_user(hdr));
 	i += scnprintf(buf + i, sz - i, " %u", msg_type(hdr));
 	i += scnprintf(buf + i, sz - i, " %u", msg_hdr_sz(hdr));
@@ -120,7 +77,7 @@ int tipc_skb_dump(struct sk_buff *skb, bool more, char *buf)
 		i += scnprintf(buf + i, sz - i, " %u", msg_reroute_cnt(hdr));
 		break;
 	default:
-		/* need more? */
+		 
 		break;
 	}
 
@@ -128,7 +85,7 @@ int tipc_skb_dump(struct sk_buff *skb, bool more, char *buf)
 	if (!more)
 		return i;
 
-	/* kernel-related skb data section */
+	 
 	i += scnprintf(buf + i, sz - i, "skb: %s",
 		       (skb->dev) ? skb->dev->name : "n/a");
 	i += scnprintf(buf + i, sz - i, " %u", skb->len);
@@ -143,7 +100,7 @@ int tipc_skb_dump(struct sk_buff *skb, bool more, char *buf)
 	i += scnprintf(buf + i, sz - i, " %llx\n",
 		       ktime_to_ms(skb_hwtstamps(skb)->hwtstamp));
 
-	/* tipc skb cb[] data section */
+	 
 	i += scnprintf(buf + i, sz - i, "cb[]: %u", skbcb->bytes_read);
 	i += scnprintf(buf + i, sz - i, " %u", skbcb->orig_member);
 	i += scnprintf(buf + i, sz - i, " %u",
@@ -155,14 +112,7 @@ int tipc_skb_dump(struct sk_buff *skb, bool more, char *buf)
 	return i;
 }
 
-/**
- * tipc_list_dump - dump TIPC skb list/queue
- * @list: list of skbs to be dumped
- * @more: dump more?
- *        - false: dump only the head & tail skbs
- *        - true: dump the first & last 5 skbs
- * @buf: returned buffer of dump data in format
- */
+ 
 int tipc_list_dump(struct sk_buff_head *list, bool more, char *buf)
 {
 	int i = 0;

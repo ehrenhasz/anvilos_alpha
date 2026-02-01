@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* include/video/ili9320.c
- *
- * ILI9320 LCD controller configuration control.
- *
- * Copyright 2007 Simtec Electronics
- *	Ben Dooks <ben@simtec.co.uk>
- *
- * http://armlinux.simtec.co.uk/
-*/
+ 
+ 
 
 #define ILI9320_REG(x)	(x)
 
@@ -69,7 +61,7 @@
 #define ILI9320_INTERFACE5		ILI9320_REG(0x97)
 #define ILI9320_INTERFACE6		ILI9320_REG(0x98)
 
-/* Register contents definitions. */
+ 
 
 #define ILI9320_OSCILATION_OSC		(1 << 0)
 
@@ -158,7 +150,7 @@
 #define ILI9320_INTERFACE4_RTNE(x)	(x)
 #define ILI9320_INTERFACE4_DIVE(x)	((x) << 8)
 
-/* SPI interface definitions */
+ 
 
 #define ILI9320_SPI_IDCODE		(0x70)
 #define ILI9320_SPI_ID(x)		((x) << 2)
@@ -167,7 +159,7 @@
 #define ILI9320_SPI_DATA		(0x02)
 #define ILI9320_SPI_INDEX		(0x00)
 
-/* platform data to pass configuration from lcd */
+ 
 
 enum ili9320_suspend {
 	ILI9320_SUSPEND_OFF,
@@ -180,7 +172,7 @@ struct ili9320_platdata {
 
 	enum ili9320_suspend suspend;
 
-	/* set the reset line, 0 = reset asserted, 1 = normal */
+	 
 	void		(*reset)(unsigned int val);
 
 	unsigned short	entry_mode;

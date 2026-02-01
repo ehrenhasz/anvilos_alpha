@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2017 Spreadtrum Communications Inc.
- *
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -42,7 +39,7 @@
 #define SPRD_RTC_HOUR_AUXALM_UPD	0x68
 #define SPRD_RTC_DAY_AUXALM_UPD		0x6c
 
-/* BIT & MASK definition for SPRD_RTC_INT_* registers */
+ 
 #define SPRD_RTC_SEC_EN			BIT(0)
 #define SPRD_RTC_MIN_EN			BIT(1)
 #define SPRD_RTC_HOUR_EN		BIT(2)
@@ -74,29 +71,29 @@
 	 SPRD_RTC_HOUR_EN | SPRD_RTC_DAY_EN |	\
 	 SPRD_RTC_ALARM_EN | SPRD_RTC_AUXALM_EN)
 
-/* second/minute/hour/day values mask definition */
+ 
 #define SPRD_RTC_SEC_MASK		GENMASK(5, 0)
 #define SPRD_RTC_MIN_MASK		GENMASK(5, 0)
 #define SPRD_RTC_HOUR_MASK		GENMASK(4, 0)
 #define SPRD_RTC_DAY_MASK		GENMASK(15, 0)
 
-/* alarm lock definition for SPRD_RTC_SPG_UPD register */
+ 
 #define SPRD_RTC_ALMLOCK_MASK		GENMASK(7, 0)
 #define SPRD_RTC_ALM_UNLOCK		0xa5
 #define SPRD_RTC_ALM_LOCK		(~SPRD_RTC_ALM_UNLOCK &	\
 					 SPRD_RTC_ALMLOCK_MASK)
 
-/* SPG values definition for SPRD_RTC_SPG_UPD register */
+ 
 #define SPRD_RTC_POWEROFF_ALM_FLAG	BIT(8)
 
-/* power control/status definition */
+ 
 #define SPRD_RTC_POWER_RESET_VALUE	0x96
 #define SPRD_RTC_POWER_STS_CLEAR	GENMASK(7, 0)
 #define SPRD_RTC_POWER_STS_SHIFT	8
 #define SPRD_RTC_POWER_STS_VALID	\
 	(~SPRD_RTC_POWER_RESET_VALUE << SPRD_RTC_POWER_STS_SHIFT)
 
-/* timeout of synchronizing time and alarm registers (us) */
+ 
 #define SPRD_RTC_POLL_TIMEOUT		200000
 #define SPRD_RTC_POLL_DELAY_US		20000
 
@@ -109,14 +106,7 @@ struct sprd_rtc {
 	bool			valid;
 };
 
-/*
- * The Spreadtrum RTC controller has 3 groups registers, including time, normal
- * alarm and auxiliary alarm. The time group registers are used to set RTC time,
- * the normal alarm registers are used to set normal alarm, and the auxiliary
- * alarm registers are used to set auxiliary alarm. Both alarm event and
- * auxiliary alarm event can wake up system from deep sleep, but only alarm
- * event can power up system from power down status.
- */
+ 
 enum sprd_rtc_reg_types {
 	SPRD_RTC_TIME,
 	SPRD_RTC_ALARM,
@@ -148,7 +138,7 @@ static int sprd_rtc_lock_alarm(struct sprd_rtc *rtc, bool lock)
 	if (ret)
 		return ret;
 
-	/* wait until the SPG value is updated successfully */
+	 
 	ret = regmap_read_poll_timeout(rtc->regmap,
 				       rtc->base + SPRD_RTC_INT_RAW_STS, val,
 				       (val & SPRD_RTC_SPG_UPD_EN),
@@ -227,7 +217,7 @@ static int sprd_rtc_set_secs(struct sprd_rtc *rtc, enum sprd_rtc_reg_types type,
 	u32 sec, min, hour, day, val;
 	int ret, rem;
 
-	/* convert seconds to RTC time format */
+	 
 	day = div_s64_rem(secs, 86400, &rem);
 	hour = rem / 3600;
 	rem -= hour * 3600;
@@ -279,12 +269,7 @@ static int sprd_rtc_set_secs(struct sprd_rtc *rtc, enum sprd_rtc_reg_types type,
 	if (type == SPRD_RTC_AUX_ALARM)
 		return 0;
 
-	/*
-	 * Since the time and normal alarm registers are put in always-power-on
-	 * region supplied by VDDRTC, then these registers changing time will
-	 * be very long, about 125ms. Thus here we should wait until all
-	 * values are updated successfully.
-	 */
+	 
 	ret = regmap_read_poll_timeout(rtc->regmap,
 				       rtc->base + SPRD_RTC_INT_RAW_STS, val,
 				       ((val & sts_mask) == sts_mask),
@@ -305,7 +290,7 @@ static int sprd_rtc_set_aux_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	time64_t secs = rtc_tm_to_time64(&alrm->time);
 	int ret;
 
-	/* clear the auxiliary alarm interrupt status */
+	 
 	ret = regmap_write(rtc->regmap, rtc->base + SPRD_RTC_INT_CLR,
 			   SPRD_RTC_AUXALM_EN);
 	if (ret)
@@ -359,16 +344,13 @@ static int sprd_rtc_set_time(struct device *dev, struct rtc_time *tm)
 		return ret;
 
 	if (!rtc->valid) {
-		/* Clear RTC power status firstly */
+		 
 		ret = regmap_write(rtc->regmap, rtc->base + SPRD_RTC_PWR_CTRL,
 				   SPRD_RTC_POWER_STS_CLEAR);
 		if (ret)
 			return ret;
 
-		/*
-		 * Set RTC power status to indicate now RTC has valid time
-		 * values.
-		 */
+		 
 		ret = regmap_write(rtc->regmap, rtc->base + SPRD_RTC_PWR_CTRL,
 				   SPRD_RTC_POWER_STS_VALID);
 		if (ret)
@@ -387,10 +369,7 @@ static int sprd_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	int ret;
 	u32 val;
 
-	/*
-	 * The RTC core checks to see if there is an alarm already set in RTC
-	 * hardware, and we always read the normal alarm at this time.
-	 */
+	 
 	ret = sprd_rtc_get_secs(rtc, SPRD_RTC_ALARM, &secs);
 	if (ret)
 		return ret;
@@ -419,23 +398,11 @@ static int sprd_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 		rtc_ktime_to_tm(rtc->rtc->aie_timer.node.expires);
 	int ret;
 
-	/*
-	 * We have 2 groups alarms: normal alarm and auxiliary alarm. Since
-	 * both normal alarm event and auxiliary alarm event can wake up system
-	 * from deep sleep, but only alarm event can power up system from power
-	 * down status. Moreover we do not need to poll about 125ms when
-	 * updating auxiliary alarm registers. Thus we usually set auxiliary
-	 * alarm when wake up system from deep sleep, and for other scenarios,
-	 * we should set normal alarm with polling status.
-	 *
-	 * So here we check if the alarm time is set by aie_timer, if yes, we
-	 * should set normal alarm, if not, we should set auxiliary alarm which
-	 * means it is just a wake event.
-	 */
+	 
 	if (!rtc->rtc->aie_timer.enabled || rtc_tm_sub(&aie_time, &alrm->time))
 		return sprd_rtc_set_aux_alarm(dev, alrm);
 
-	/* clear the alarm interrupt status firstly */
+	 
 	ret = regmap_write(rtc->regmap, rtc->base + SPRD_RTC_INT_CLR,
 			   SPRD_RTC_ALARM_EN);
 	if (ret)
@@ -453,17 +420,14 @@ static int sprd_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 		if (ret)
 			return ret;
 
-		/* unlock the alarm to enable the alarm function. */
+		 
 		ret = sprd_rtc_lock_alarm(rtc, false);
 	} else {
 		regmap_update_bits(rtc->regmap,
 				   rtc->base + SPRD_RTC_INT_EN,
 				   SPRD_RTC_ALARM_EN, 0);
 
-		/*
-		 * Lock the alarm function in case fake alarm event will power
-		 * up systems.
-		 */
+		 
 		ret = sprd_rtc_lock_alarm(rtc, true);
 	}
 
@@ -524,11 +488,7 @@ static int sprd_rtc_check_power_down(struct sprd_rtc *rtc)
 	if (ret)
 		return ret;
 
-	/*
-	 * If the RTC power status value is SPRD_RTC_POWER_RESET_VALUE, which
-	 * means the RTC has been powered down, so the RTC time values are
-	 * invalid.
-	 */
+	 
 	rtc->valid = val != SPRD_RTC_POWER_RESET_VALUE;
 	return 0;
 }
@@ -542,16 +502,7 @@ static int sprd_rtc_check_alarm_int(struct sprd_rtc *rtc)
 	if (ret)
 		return ret;
 
-	/*
-	 * The SPRD_RTC_INT_EN register is not put in always-power-on region
-	 * supplied by VDDRTC, so we should check if we need enable the alarm
-	 * interrupt when system booting.
-	 *
-	 * If we have set SPRD_RTC_POWEROFF_ALM_FLAG which is saved in
-	 * always-power-on region, that means we have set one alarm last time,
-	 * so we should enable the alarm interrupt to help RTC core to see if
-	 * there is an alarm already set in RTC hardware.
-	 */
+	 
 	if (!(val & SPRD_RTC_POWEROFF_ALM_FLAG))
 		return 0;
 
@@ -590,14 +541,14 @@ static int sprd_rtc_probe(struct platform_device *pdev)
 	rtc->dev = &pdev->dev;
 	platform_set_drvdata(pdev, rtc);
 
-	/* check if we need set the alarm interrupt */
+	 
 	ret = sprd_rtc_check_alarm_int(rtc);
 	if (ret) {
 		dev_err(&pdev->dev, "failed to check RTC alarm interrupt\n");
 		return ret;
 	}
 
-	/* check if RTC time values are valid */
+	 
 	ret = sprd_rtc_check_power_down(rtc);
 	if (ret) {
 		dev_err(&pdev->dev, "failed to check RTC time values\n");

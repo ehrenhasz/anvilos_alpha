@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * R-Car Gen4 SYSC Power management support
- *
- * Copyright (C) 2021 Renesas Electronics Corp.
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk/renesas.h>
@@ -21,33 +17,33 @@
 
 #include "rcar-gen4-sysc.h"
 
-/* SYSC Common */
-#define SYSCSR		0x000	/* SYSC Status Register */
-#define SYSCPONSR(x)	(0x800 + ((x) * 0x4)) /* Power-ON Status Register 0 */
-#define SYSCPOFFSR(x)	(0x808 + ((x) * 0x4)) /* Power-OFF Status Register */
-#define SYSCISCR(x)	(0x810 + ((x) * 0x4)) /* Interrupt Status/Clear Register */
-#define SYSCIER(x)	(0x820 + ((x) * 0x4)) /* Interrupt Enable Register */
-#define SYSCIMR(x)	(0x830 + ((x) * 0x4)) /* Interrupt Mask Register */
+ 
+#define SYSCSR		0x000	 
+#define SYSCPONSR(x)	(0x800 + ((x) * 0x4))  
+#define SYSCPOFFSR(x)	(0x808 + ((x) * 0x4))  
+#define SYSCISCR(x)	(0x810 + ((x) * 0x4))  
+#define SYSCIER(x)	(0x820 + ((x) * 0x4))  
+#define SYSCIMR(x)	(0x830 + ((x) * 0x4))  
 
-/* Power Domain Registers */
+ 
 #define PDRSR(n)	(0x1000 + ((n) * 0x40))
 #define PDRONCR(n)	(0x1004 + ((n) * 0x40))
 #define PDROFFCR(n)	(0x1008 + ((n) * 0x40))
 #define PDRESR(n)	(0x100C + ((n) * 0x40))
 
-/* PWRON/PWROFF */
-#define PWRON_PWROFF		BIT(0)	/* Power-ON/OFF request */
+ 
+#define PWRON_PWROFF		BIT(0)	 
 
-/* PDRESR */
+ 
 #define PDRESR_ERR		BIT(0)
 
-/* PDRSR */
-#define PDRSR_OFF		BIT(0)	/* Power-OFF state */
-#define PDRSR_ON		BIT(4)	/* Power-ON state */
-#define PDRSR_OFF_STATE		BIT(8)  /* Processing Power-OFF sequence */
-#define PDRSR_ON_STATE		BIT(12) /* Processing Power-ON sequence */
+ 
+#define PDRSR_OFF		BIT(0)	 
+#define PDRSR_ON		BIT(4)	 
+#define PDRSR_OFF_STATE		BIT(8)   
+#define PDRSR_ON_STATE		BIT(12)  
 
-#define SYSCSR_BUSY		GENMASK(1, 0)	/* All bit sets is not busy */
+#define SYSCSR_BUSY		GENMASK(1, 0)	 
 
 #define SYSCSR_TIMEOUT		10000
 #define SYSCSR_DELAY_US		10
@@ -62,7 +58,7 @@
 #define NUM_DOMAINS_EACH_REG	BITS_PER_TYPE(u32)
 
 static void __iomem *rcar_gen4_sysc_base;
-static DEFINE_SPINLOCK(rcar_gen4_sysc_lock); /* SMP CPUs + I/O devices */
+static DEFINE_SPINLOCK(rcar_gen4_sysc_lock);  
 
 static int rcar_gen4_sysc_pwr_on_off(u8 pdr, bool on)
 {
@@ -75,14 +71,14 @@ static int rcar_gen4_sysc_pwr_on_off(u8 pdr, bool on)
 	else
 		reg_offs = PDROFFCR(pdr);
 
-	/* Wait until SYSC is ready to accept a power request */
+	 
 	ret = readl_poll_timeout_atomic(rcar_gen4_sysc_base + SYSCSR, val,
 					(val & SYSCSR_BUSY) == SYSCSR_BUSY,
 					SYSCSR_DELAY_US, SYSCSR_TIMEOUT);
 	if (ret < 0)
 		return -EAGAIN;
 
-	/* Submit power shutoff or power resume request */
+	 
 	iowrite32(PWRON_PWROFF, rcar_gen4_sysc_base + reg_offs);
 
 	return 0;
@@ -123,10 +119,7 @@ static int rcar_gen4_sysc_power(u8 pdr, bool on)
 
 	isr_mask = BIT(bit_idx);
 
-	/*
-	 * The interrupt source needs to be enabled, but masked, to prevent the
-	 * CPU from receiving it.
-	 */
+	 
 	iowrite32(ioread32(rcar_gen4_sysc_base + SYSCIER(reg_idx)) | isr_mask,
 		  rcar_gen4_sysc_base + SYSCIER(reg_idx));
 	iowrite32(ioread32(rcar_gen4_sysc_base + SYSCIMR(reg_idx)) | isr_mask,
@@ -136,7 +129,7 @@ static int rcar_gen4_sysc_power(u8 pdr, bool on)
 	if (ret)
 		goto out;
 
-	/* Submit power shutoff or resume request until it was accepted */
+	 
 	for (k = 0; k < PDRESR_RETRIES; k++) {
 		ret = rcar_gen4_sysc_pwr_on_off(pdr, on);
 		if (ret)
@@ -154,7 +147,7 @@ static int rcar_gen4_sysc_power(u8 pdr, bool on)
 		goto out;
 	}
 
-	/* Wait until the power shutoff or resume request has completed * */
+	 
 	ret = readl_poll_timeout_atomic(rcar_gen4_sysc_base + SYSCISCR(reg_idx),
 					val, (val & isr_mask),
 					SYSCISR_DELAY_US, SYSCISR_TIMEOUT);
@@ -163,7 +156,7 @@ static int rcar_gen4_sysc_power(u8 pdr, bool on)
 		goto out;
 	}
 
-	/* Clear interrupt flags */
+	 
 	ret = clear_irq_flags(reg_idx, isr_mask);
 	if (ret)
 		goto out;
@@ -223,29 +216,20 @@ static int __init rcar_gen4_sysc_pd_setup(struct rcar_gen4_sysc_pd *pd)
 	int error;
 
 	if (pd->flags & PD_CPU) {
-		/*
-		 * This domain contains a CPU core and therefore it should
-		 * only be turned off if the CPU is not in use.
-		 */
+		 
 		pr_debug("PM domain %s contains %s\n", name, "CPU");
 		genpd->flags |= GENPD_FLAG_ALWAYS_ON;
 	} else if (pd->flags & PD_SCU) {
-		/*
-		 * This domain contains an SCU and cache-controller, and
-		 * therefore it should only be turned off if the CPU cores are
-		 * not in use.
-		 */
+		 
 		pr_debug("PM domain %s contains %s\n", name, "SCU");
 		genpd->flags |= GENPD_FLAG_ALWAYS_ON;
 	} else if (pd->flags & PD_NO_CR) {
-		/*
-		 * This domain cannot be turned off.
-		 */
+		 
 		genpd->flags |= GENPD_FLAG_ALWAYS_ON;
 	}
 
 	if (!(pd->flags & (PD_CPU | PD_SCU))) {
-		/* Enable Clock Domain for I/O devices */
+		 
 		genpd->flags |= GENPD_FLAG_PM_CLK | GENPD_FLAG_ACTIVE_WAKEUP;
 		genpd->attach_dev = cpg_mssr_attach_dev;
 		genpd->detach_dev = cpg_mssr_detach_dev;
@@ -255,7 +239,7 @@ static int __init rcar_gen4_sysc_pd_setup(struct rcar_gen4_sysc_pd *pd)
 	genpd->power_on = rcar_gen4_sysc_pd_power_on;
 
 	if (pd->flags & (PD_CPU | PD_NO_CR)) {
-		/* Skip CPUs (handled by SMP code) and areas without control */
+		 
 		pr_debug("%s: Not touching %s\n", __func__, genpd->name);
 		goto finalize;
 	}
@@ -285,7 +269,7 @@ static const struct of_device_id rcar_gen4_sysc_matches[] __initconst = {
 #ifdef CONFIG_SYSC_R8A779G0
 	{ .compatible = "renesas,r8a779g0-sysc", .data = &r8a779g0_sysc_info },
 #endif
-	{ /* sentinel */ }
+	{   }
 };
 
 struct rcar_gen4_pm_domains {
@@ -336,7 +320,7 @@ static int __init rcar_gen4_sysc_pd_init(void)
 		size_t n;
 
 		if (!area->name) {
-			/* Skip NULLified area */
+			 
 			continue;
 		}
 

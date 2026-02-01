@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2012 Freescale Semiconductor, Inc.
- * Copyright 2012 Linaro Ltd.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
@@ -29,21 +26,7 @@
 
 #define PLL_LOCK_TIMEOUT	10000
 
-/**
- * struct clk_pllv3 - IMX PLL clock version 3
- * @hw:		clock source
- * @base:	 base address of PLL registers
- * @power_bit:	 pll power bit mask
- * @powerup_set: set power_bit to power up the PLL
- * @div_mask:	 mask of divider bits
- * @div_shift:	 shift of divider bits
- * @ref_clock:	reference clock rate
- * @num_offset:	num register offset
- * @denom_offset: denom register offset
- *
- * IMX PLL clock version 3, found on i.MX6 series.  Divider for pllv3
- * is actually a multiplier, and always sits at bit 0.
- */
+ 
 struct clk_pllv3 {
 	struct clk_hw	hw;
 	void __iomem	*base;
@@ -62,7 +45,7 @@ static int clk_pllv3_wait_lock(struct clk_pllv3 *pll)
 {
 	u32 val = readl_relaxed(pll->base) & pll->power_bit;
 
-	/* No need to wait for lock when pll is not powered up */
+	 
 	if ((pll->powerup_set && !val) || (!pll->powerup_set && val))
 		return 0;
 
@@ -301,9 +284,9 @@ static const struct clk_ops clk_pllv3_av_ops = {
 };
 
 struct clk_pllv3_vf610_mf {
-	u32 mfi;	/* integer part, can be 20 or 22 */
-	u32 mfn;	/* numerator, 30-bit value */
-	u32 mfd;	/* denominator, 30-bit value, must be less than mfn */
+	u32 mfi;	 
+	u32 mfn;	 
+	u32 mfd;	 
 };
 
 static unsigned long clk_pllv3_vf610_mf_to_rate(unsigned long parent_rate,
@@ -325,14 +308,14 @@ static struct clk_pllv3_vf610_mf clk_pllv3_vf610_rate_to_mf(
 	u64 temp64;
 
 	mf.mfi = (rate >= 22 * parent_rate) ? 22 : 20;
-	mf.mfd = 0x3fffffff;	/* use max supported value for best accuracy */
+	mf.mfd = 0x3fffffff;	 
 
 	if (rate <= parent_rate * mf.mfi)
 		mf.mfn = 0;
 	else if (rate >= parent_rate * (mf.mfi + 1))
 		mf.mfn = mf.mfd - 1;
 	else {
-		/* rate = parent_rate * (mfi + mfn/mfd) */
+		 
 		temp64 = rate - parent_rate * mf.mfi;
 		temp64 *= mf.mfd;
 		temp64 = div64_ul(temp64, parent_rate);
@@ -373,9 +356,9 @@ static int clk_pllv3_vf610_set_rate(struct clk_hw *hw, unsigned long rate,
 
 	val = readl_relaxed(pll->base);
 	if (mf.mfi == 20)
-		val &= ~pll->div_mask;	/* clear bit for mfi=20 */
+		val &= ~pll->div_mask;	 
 	else
-		val |= pll->div_mask;	/* set bit for mfi=22 */
+		val |= pll->div_mask;	 
 	writel_relaxed(val, pll->base);
 
 	writel_relaxed(mf.mfn, pll->base + pll->num_offset);

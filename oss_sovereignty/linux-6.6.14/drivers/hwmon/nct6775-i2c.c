@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * nct6775-i2c - I2C driver for the hardware monitoring functionality of
- *	         Nuvoton NCT677x Super-I/O chips
- *
- * Copyright (C) 2022 Zev Weiss <zev@bewilderbeest.net>
- *
- * This driver interacts with the chip via it's "back door" i2c interface, as
- * is often exposed to a BMC.  Because the host may still be operating the
- * chip via the ("front door") LPC interface, this driver cannot assume that
- * it actually has full control of the chip, and in particular must avoid
- * making any changes that could confuse the host's LPC usage of it.  It thus
- * operates in a strictly read-only fashion, with the only exception being the
- * bank-select register (which seems, thankfully, to be replicated for the i2c
- * interface so it doesn't affect the LPC interface).
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -56,10 +42,7 @@ static int nct6775_i2c_read(void *ctx, unsigned int reg, unsigned int *val)
 	return 0;
 }
 
-/*
- * The write operation is a dummy so as not to disturb anything being done
- * with the chip via LPC.
- */
+ 
 static int nct6775_i2c_write(void *ctx, unsigned int reg, unsigned int value)
 {
 	struct nct6775_data *data = ctx;
@@ -67,10 +50,7 @@ static int nct6775_i2c_write(void *ctx, unsigned int reg, unsigned int value)
 
 	dev_dbg(&client->dev, "skipping attempted write: %02x -> %03x\n", value, reg);
 
-	/*
-	 * This is a lie, but writing anything but the bank-select register is
-	 * something this driver shouldn't be doing.
-	 */
+	 
 	return 0;
 }
 
@@ -115,29 +95,12 @@ static int nct6775_i2c_probe_init(struct nct6775_data *data)
 	u32 tsi_channel_mask;
 	struct i2c_client *client = data->driver_data;
 
-	/*
-	 * The i2c interface doesn't provide access to the control registers
-	 * needed to determine the presence of other fans, but fans 1 and 2
-	 * are (in principle) always there.
-	 *
-	 * In practice this is perhaps a little silly, because the system
-	 * using this driver is mostly likely a BMC, and hence probably has
-	 * totally separate fan tachs & pwms of its own that are actually
-	 * controlling/monitoring the fans -- these are thus unlikely to be
-	 * doing anything actually useful.
-	 */
+	 
 	data->has_fan = 0x03;
 	data->has_fan_min = 0x03;
 	data->has_pwm = 0x03;
 
-	/*
-	 * Because on a BMC this driver may be bound very shortly after power
-	 * is first applied to the device, the automatic TSI channel detection
-	 * in nct6775_probe() (which has already been run at this point) may
-	 * not find anything if a channel hasn't yet produced a temperature
-	 * reading.  Augment whatever was found via autodetection (if
-	 * anything) with the channels DT says should be active.
-	 */
+	 
 	if (!of_property_read_u32(client->dev.of_node, "nuvoton,tsi-channel-mask",
 				  &tsi_channel_mask))
 		data->have_tsi_temp |= tsi_channel_mask & GENMASK(NUM_TSI_TEMP - 1, 0);

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2012  Intel Corporation. All rights reserved.
- */
+ 
+ 
 
 #ifndef __LOCAL_HCI_H
 #define __LOCAL_HCI_H
@@ -14,12 +12,12 @@ struct gate_pipe_map {
 };
 
 struct hcp_message {
-	u8 header;		/* type -cmd,evt,rsp- + instruction */
+	u8 header;		 
 	u8 data[];
 } __packed;
 
 struct hcp_packet {
-	u8 header;		/* cbit+pipe */
+	u8 header;		 
 	struct hcp_message message;
 } __packed;
 
@@ -76,26 +74,26 @@ int nfc_hci_hcp_message_tx(struct nfc_hci_dev *hdev, u8 pipe,
 void nfc_hci_hcp_message_rx(struct nfc_hci_dev *hdev, u8 pipe, u8 type,
 			    u8 instruction, struct sk_buff *skb);
 
-/* HCP headers */
+ 
 #define NFC_HCI_HCP_PACKET_HEADER_LEN	1
 #define NFC_HCI_HCP_MESSAGE_HEADER_LEN	1
 #define NFC_HCI_HCP_HEADER_LEN		2
 
-/* HCP types */
+ 
 #define NFC_HCI_HCP_COMMAND	0x00
 #define NFC_HCI_HCP_EVENT	0x01
 #define NFC_HCI_HCP_RESPONSE	0x02
 
-/* Generic commands */
+ 
 #define NFC_HCI_ANY_SET_PARAMETER	0x01
 #define NFC_HCI_ANY_GET_PARAMETER	0x02
 #define NFC_HCI_ANY_OPEN_PIPE		0x03
 #define NFC_HCI_ANY_CLOSE_PIPE		0x04
 
-/* Reader RF commands */
+ 
 #define NFC_HCI_WR_XCHG_DATA		0x10
 
-/* Admin commands */
+ 
 #define NFC_HCI_ADM_CREATE_PIPE			0x10
 #define NFC_HCI_ADM_DELETE_PIPE			0x11
 #define NFC_HCI_ADM_NOTIFY_PIPE_CREATED		0x12
@@ -103,7 +101,7 @@ void nfc_hci_hcp_message_rx(struct nfc_hci_dev *hdev, u8 pipe, u8 type,
 #define NFC_HCI_ADM_CLEAR_ALL_PIPE		0x14
 #define NFC_HCI_ADM_NOTIFY_ALL_PIPE_CLEARED	0x15
 
-/* Generic responses */
+ 
 #define NFC_HCI_ANY_OK				0x00
 #define NFC_HCI_ANY_E_NOT_CONNECTED		0x01
 #define NFC_HCI_ANY_E_CMD_PAR_UNKNOWN		0x02
@@ -117,4 +115,4 @@ void nfc_hci_hcp_message_rx(struct nfc_hci_dev *hdev, u8 pipe, u8 type,
 #define NFC_HCI_ANY_E_REG_ACCESS_DENIED		0x0a
 #define NFC_HCI_ANY_E_PIPE_ACCESS_DENIED	0x0b
 
-#endif /* __LOCAL_HCI_H */
+#endif  

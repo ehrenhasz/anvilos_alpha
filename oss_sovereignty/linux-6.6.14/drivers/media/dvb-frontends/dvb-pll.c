@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * descriptions + helper functions for simple dvb plls.
- *
- * (c) 2004 Gerd Knorr <kraxel@bytesex.org> [SuSE Labs]
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -19,17 +15,17 @@
 	printk(KERN_DEBUG pr_fmt("%s: " fmt), __func__, ##arg)
 
 struct dvb_pll_priv {
-	/* pll number */
+	 
 	int nr;
 
-	/* i2c details */
+	 
 	int pll_i2c_address;
 	struct i2c_adapter *i2c;
 
-	/* the PLL descriptor */
+	 
 	const struct dvb_pll_desc *pll_desc;
 
-	/* cached frequency/bandwidth */
+	 
 	u32 frequency;
 	u32 bandwidth;
 };
@@ -46,7 +42,7 @@ static unsigned int id[DVB_PLL_MAX] =
 module_param_array(id, int, NULL, 0644);
 MODULE_PARM_DESC(id, "force pll id to use (DEBUG ONLY)");
 
-/* ----------------------------------------------------------- */
+ 
 
 struct dvb_pll_desc {
 	const char *name;
@@ -66,8 +62,8 @@ struct dvb_pll_desc {
 	} entries[];
 };
 
-/* ----------------------------------------------------------- */
-/* descriptions                                                */
+ 
+ 
 
 static const struct dvb_pll_desc dvb_pll_thomson_dtt7579 = {
 	.name  = "Thomson dtt7579",
@@ -150,7 +146,7 @@ static const struct dvb_pll_desc dvb_pll_lg_z201 = {
 };
 
 static const struct dvb_pll_desc dvb_pll_unknown_1 = {
-	.name  = "unknown 1", /* used by dntv live dvb-t */
+	.name  = "unknown 1",  
 	.min   = 174 * MHz,
 	.max   = 862 * MHz,
 	.iffreq= 36166667,
@@ -168,9 +164,7 @@ static const struct dvb_pll_desc dvb_pll_unknown_1 = {
 	},
 };
 
-/* Infineon TUA6010XS
- * used in Thomson Cable Tuner
- */
+ 
 static const struct dvb_pll_desc dvb_pll_tua6010xs = {
 	.name  = "Infineon TUA6010XS",
 	.min   = 44250 * kHz,
@@ -184,7 +178,7 @@ static const struct dvb_pll_desc dvb_pll_tua6010xs = {
 	},
 };
 
-/* Panasonic env57h1xd5 (some Philips PLL ?) */
+ 
 static const struct dvb_pll_desc dvb_pll_env57h1xd5 = {
 	.name  = "Panasonic ENV57H1XD5",
 	.min   = 44250 * kHz,
@@ -199,9 +193,7 @@ static const struct dvb_pll_desc dvb_pll_env57h1xd5 = {
 	},
 };
 
-/* Philips TDA6650/TDA6651
- * used in Panasonic ENV77H11D5
- */
+ 
 static void tda665x_bw(struct dvb_frontend *fe, u8 *buf)
 {
 	u32 bw = fe->dtv_property_cache.bandwidth_hz;
@@ -218,24 +210,22 @@ static const struct dvb_pll_desc dvb_pll_tda665x = {
 	.initdata = (u8[]){ 4, 0x0b, 0xf5, 0x85, 0xab },
 	.count = 12,
 	.entries = {
-		{   93834000, 166667, 0xca, 0x61 /* 011 0 0 0  01 */ },
-		{  123834000, 166667, 0xca, 0xa1 /* 101 0 0 0  01 */ },
-		{  161000000, 166667, 0xca, 0xa1 /* 101 0 0 0  01 */ },
-		{  163834000, 166667, 0xca, 0xc2 /* 110 0 0 0  10 */ },
-		{  253834000, 166667, 0xca, 0x62 /* 011 0 0 0  10 */ },
-		{  383834000, 166667, 0xca, 0xa2 /* 101 0 0 0  10 */ },
-		{  443834000, 166667, 0xca, 0xc2 /* 110 0 0 0  10 */ },
-		{  444000000, 166667, 0xca, 0xc4 /* 110 0 0 1  00 */ },
-		{  583834000, 166667, 0xca, 0x64 /* 011 0 0 1  00 */ },
-		{  793834000, 166667, 0xca, 0xa4 /* 101 0 0 1  00 */ },
-		{  444834000, 166667, 0xca, 0xc4 /* 110 0 0 1  00 */ },
-		{  861000000, 166667, 0xca, 0xe4 /* 111 0 0 1  00 */ },
+		{   93834000, 166667, 0xca, 0x61   },
+		{  123834000, 166667, 0xca, 0xa1   },
+		{  161000000, 166667, 0xca, 0xa1   },
+		{  163834000, 166667, 0xca, 0xc2   },
+		{  253834000, 166667, 0xca, 0x62   },
+		{  383834000, 166667, 0xca, 0xa2   },
+		{  443834000, 166667, 0xca, 0xc2   },
+		{  444000000, 166667, 0xca, 0xc4   },
+		{  583834000, 166667, 0xca, 0x64   },
+		{  793834000, 166667, 0xca, 0xa4   },
+		{  444834000, 166667, 0xca, 0xc4   },
+		{  861000000, 166667, 0xca, 0xe4   },
 	}
 };
 
-/* Infineon TUA6034
- * used in LG TDTP E102P
- */
+ 
 static void tua6034_bw(struct dvb_frontend *fe, u8 *buf)
 {
 	u32 bw = fe->dtv_property_cache.bandwidth_hz;
@@ -257,9 +247,7 @@ static const struct dvb_pll_desc dvb_pll_tua6034 = {
 	},
 };
 
-/* ALPS TDED4
- * used in Nebula-Cards and USB boxes
- */
+ 
 static void tded4_bw(struct dvb_frontend *fe, u8 *buf)
 {
 	u32 bw = fe->dtv_property_cache.bandwidth_hz;
@@ -282,9 +270,7 @@ static const struct dvb_pll_desc dvb_pll_tded4 = {
 	}
 };
 
-/* ALPS TDHU2
- * used in AverTVHD MCE A180
- */
+ 
 static const struct dvb_pll_desc dvb_pll_tdhu2 = {
 	.name = "ALPS TDHU2",
 	.min =  54 * MHz,
@@ -299,9 +285,7 @@ static const struct dvb_pll_desc dvb_pll_tdhu2 = {
 	}
 };
 
-/* Samsung TBMV30111IN / TBMV30712IN1
- * used in Air2PC ATSC - 2nd generation (nxt2002)
- */
+ 
 static const struct dvb_pll_desc dvb_pll_samsung_tbmv = {
 	.name = "Samsung TBMV30111IN / TBMV30712IN1",
 	.min =  54 * MHz,
@@ -318,14 +302,12 @@ static const struct dvb_pll_desc dvb_pll_samsung_tbmv = {
 	}
 };
 
-/*
- * Philips SD1878 Tuner.
- */
+ 
 static const struct dvb_pll_desc dvb_pll_philips_sd1878_tda8261 = {
 	.name  = "Philips SD1878",
 	.min   =  950 * MHz,
 	.max   = 2150 * MHz,
-	.iffreq= 249, /* zero-IF, offset 249 is to round up */
+	.iffreq= 249,  
 	.count = 4,
 	.entries = {
 		{ 1250000, 500, 0xc4, 0x00},
@@ -379,8 +361,8 @@ static void opera1_bw(struct dvb_frontend *fe, u8 *buf)
 		lpf = 0x3;
 		else
 		lpf = 0xb;
-	buf[2] ^= 0x1c; /* Flip bits 3-5 */
-	/* Set lpf */
+	buf[2] ^= 0x1c;  
+	 
 	buf[2] |= ((lpf >> 2) & 0x3) << 3;
 	buf[3] |= (lpf & 0x3) << 2;
 
@@ -433,7 +415,7 @@ static void samsung_dtos403ih102a_set(struct dvb_frontend *fe, u8 *buf)
 	return;
 }
 
-/* unknown pll used in Samsung DTOS403IH102A DVB-C tuner */
+ 
 static const struct dvb_pll_desc dvb_pll_samsung_dtos403ih102a = {
 	.name   = "Samsung DTOS403IH102A",
 	.min    = 44250 * kHz,
@@ -453,7 +435,7 @@ static const struct dvb_pll_desc dvb_pll_samsung_dtos403ih102a = {
 	}
 };
 
-/* Samsung TDTC9251DH0 DVB-T NIM, as used on AirStar 2 */
+ 
 static const struct dvb_pll_desc dvb_pll_samsung_tdtc9251dh0 = {
 	.name	= "Samsung TDTC9251DH0",
 	.min	=  48 * MHz,
@@ -467,32 +449,25 @@ static const struct dvb_pll_desc dvb_pll_samsung_tdtc9251dh0 = {
 	}
 };
 
-/* Samsung TBDU18132 DVB-S NIM with TSA5059 PLL, used in SkyStar2 DVB-S 2.3 */
+ 
 static const struct dvb_pll_desc dvb_pll_samsung_tbdu18132 = {
 	.name = "Samsung TBDU18132",
 	.min	=  950 * MHz,
-	.max	= 2150 * MHz, /* guesses */
+	.max	= 2150 * MHz,  
 	.iffreq = 0,
 	.count = 2,
 	.entries = {
 		{ 1550000, 125, 0x84, 0x82 },
 		{ 4095937, 125, 0x84, 0x80 },
 	}
-	/* TSA5059 PLL has a 17 bit divisor rather than the 15 bits supported
-	 * by this driver.  The two extra bits are 0x60 in the third byte.  15
-	 * bits is enough for over 4 GHz, which is enough to cover the range
-	 * of this tuner.  We could use the additional divisor bits by adding
-	 * more entries, e.g.
-	 { 0x0ffff * 125 + 125/2, 125, 0x84 | 0x20, },
-	 { 0x17fff * 125 + 125/2, 125, 0x84 | 0x40, },
-	 { 0x1ffff * 125 + 125/2, 125, 0x84 | 0x60, }, */
+	 
 };
 
-/* Samsung TBMU24112 DVB-S NIM with SL1935 zero-IF tuner */
+ 
 static const struct dvb_pll_desc dvb_pll_samsung_tbmu24112 = {
 	.name = "Samsung TBMU24112",
 	.min	=  950 * MHz,
-	.max	= 2150 * MHz, /* guesses */
+	.max	= 2150 * MHz,  
 	.iffreq = 0,
 	.count = 2,
 	.entries = {
@@ -501,15 +476,8 @@ static const struct dvb_pll_desc dvb_pll_samsung_tbmu24112 = {
 	}
 };
 
-/* Alps TDEE4 DVB-C NIM, used on Cablestar 2 */
-/* byte 4 : 1  *   *   AGD R3  R2  R1  R0
- * byte 5 : C1 *   RE  RTS BS4 BS3 BS2 BS1
- * AGD = 1, R3 R2 R1 R0 = 0 1 0 1 => byte 4 = 1**10101 = 0x95
- * Range(MHz)  C1 *  RE RTS BS4 BS3 BS2 BS1  Byte 5
- *  47 - 153   0  *  0   0   0   0   0   1   0x01
- * 153 - 430   0  *  0   0   0   0   1   0   0x02
- * 430 - 822   0  *  0   0   1   0   0   0   0x08
- * 822 - 862   1  *  0   0   1   0   0   0   0x88 */
+ 
+ 
 static const struct dvb_pll_desc dvb_pll_alps_tdee4 = {
 	.name = "ALPS TDEE4",
 	.min	=  47 * MHz,
@@ -524,8 +492,8 @@ static const struct dvb_pll_desc dvb_pll_alps_tdee4 = {
 	}
 };
 
-/* Infineon TUA6034 ISDB-T, used in Friio */
-/* CP cur. 50uA, AGC takeover: 103dBuV, PORT3 on */
+ 
+ 
 static const struct dvb_pll_desc dvb_pll_tua6034_friio = {
 	.name   = "Infineon TUA6034 ISDB-T (Friio)",
 	.min    =  90 * MHz,
@@ -541,7 +509,7 @@ static const struct dvb_pll_desc dvb_pll_tua6034_friio = {
 	}
 };
 
-/* Philips TDA6651 ISDB-T, used in Earthsoft PT1 */
+ 
 static const struct dvb_pll_desc dvb_pll_tda665x_earth_pt1 = {
 	.name   = "Philips TDA6651 ISDB-T (EarthSoft PT1)",
 	.min    =  90 * MHz,
@@ -563,7 +531,7 @@ static const struct dvb_pll_desc dvb_pll_tda665x_earth_pt1 = {
 	}
 };
 
-/* ----------------------------------------------------------- */
+ 
 
 static const struct dvb_pll_desc *pll_list[] = {
 	[DVB_PLL_UNDEFINED]              = NULL,
@@ -590,8 +558,8 @@ static const struct dvb_pll_desc *pll_list[] = {
 	[DVB_PLL_TDA665X_EARTH_PT1]      = &dvb_pll_tda665x_earth_pt1,
 };
 
-/* ----------------------------------------------------------- */
-/* code                                                        */
+ 
+ 
 
 static int dvb_pll_configure(struct dvb_frontend *fe, u8 *buf,
 			     const u32 frequency)
@@ -627,7 +595,7 @@ static int dvb_pll_configure(struct dvb_frontend *fe, u8 *buf,
 		dprintk("pll: %s: div=%d | buf=0x%02x,0x%02x,0x%02x,0x%02x\n",
 		       desc->name, div, buf[0], buf[1], buf[2], buf[3]);
 
-	// calculate the frequency we set it to
+	
 	return (div * desc->entries[i].stepsize) - desc->iffreq;
 }
 
@@ -659,7 +627,7 @@ static int dvb_pll_sleep(struct dvb_frontend *fe)
 		}
 		return 0;
 	}
-	/* Shouldn't be called when initdata is NULL, maybe BUG()? */
+	 
 	return -EINVAL;
 }
 
@@ -764,7 +732,7 @@ static int dvb_pll_init(struct dvb_frontend *fe)
 		}
 		return 0;
 	}
-	/* Shouldn't be called when initdata is NULL, maybe BUG()? */
+	 
 	return -EINVAL;
 }
 
@@ -885,16 +853,7 @@ dvb_pll_probe(struct i2c_client *client)
 	if (!dvb_pll_attach(fe, client->addr, client->adapter, desc_id))
 		return -ENOMEM;
 
-	/*
-	 * Unset tuner_ops.release (== dvb_pll_release)
-	 * which has been just set in the above dvb_pll_attach(),
-	 * because if tuner_ops.release was left defined,
-	 * this module would be 'put' twice on exit:
-	 * once by dvb_frontend_detach() and another by dvb_module_release().
-	 *
-	 * dvb_pll_release is instead executed in the i2c driver's .remove(),
-	 * keeping dvb_pll_attach untouched for legacy (dvb_attach) drivers.
-	 */
+	 
 	fe->ops.tuner_ops.release = NULL;
 	dev_info(&client->dev, "DVB Simple Tuner attached.\n");
 	return 0;

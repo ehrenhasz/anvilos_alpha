@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/* based on linux-kernel/tools/testing/selftests/net/msg_zerocopy.c */
+ 
+ 
 #include <assert.h>
 #include <errno.h>
 #include <error.h>
@@ -120,7 +120,7 @@ struct io_uring {
 # ifndef __NR_io_uring_register
 #  define __NR_io_uring_register	537
 # endif
-#else /* !__alpha__ */
+#else  
 # ifndef __NR_io_uring_setup
 #  define __NR_io_uring_setup		425
 # endif
@@ -493,7 +493,7 @@ static void parse_opts(int argc, char **argv)
 	const int max_payload_len = sizeof(payload) -
 				    sizeof(struct ipv6hdr) -
 				    sizeof(struct tcphdr) -
-				    40 /* max tcp options */;
+				    40  ;
 	struct sockaddr_in6 *addr6 = (void *) &cfg_dst_addr;
 	struct sockaddr_in *addr4 = (void *) &cfg_dst_addr;
 	char *daddr = NULL;

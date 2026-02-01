@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tools/testing/selftests/kvm/lib/x86_64/vmx.c
- *
- * Copyright (C) 2018, Google LLC.
- */
+
+ 
 
 #include <asm/msr-index.h>
 
@@ -51,7 +47,7 @@ int vcpu_enable_evmcs(struct kvm_vcpu *vcpu)
 	vcpu_enable_cap(vcpu, KVM_CAP_HYPERV_ENLIGHTENED_VMCS,
 			(unsigned long)&evmcs_ver);
 
-	/* KVM should return supported EVMCS version range */
+	 
 	TEST_ASSERT(((evmcs_ver >> 8) >= (evmcs_ver & 0xff)) &&
 		    (evmcs_ver & 0xff) > 0,
 		    "Incorrect EVMCS version range: %x:%x\n",
@@ -60,45 +56,35 @@ int vcpu_enable_evmcs(struct kvm_vcpu *vcpu)
 	return evmcs_ver;
 }
 
-/* Allocate memory regions for nested VMX tests.
- *
- * Input Args:
- *   vm - The VM to allocate guest-virtual addresses in.
- *
- * Output Args:
- *   p_vmx_gva - The guest virtual address for the struct vmx_pages.
- *
- * Return:
- *   Pointer to structure with the addresses of the VMX areas.
- */
+ 
 struct vmx_pages *
 vcpu_alloc_vmx(struct kvm_vm *vm, vm_vaddr_t *p_vmx_gva)
 {
 	vm_vaddr_t vmx_gva = vm_vaddr_alloc_page(vm);
 	struct vmx_pages *vmx = addr_gva2hva(vm, vmx_gva);
 
-	/* Setup of a region of guest memory for the vmxon region. */
+	 
 	vmx->vmxon = (void *)vm_vaddr_alloc_page(vm);
 	vmx->vmxon_hva = addr_gva2hva(vm, (uintptr_t)vmx->vmxon);
 	vmx->vmxon_gpa = addr_gva2gpa(vm, (uintptr_t)vmx->vmxon);
 
-	/* Setup of a region of guest memory for a vmcs. */
+	 
 	vmx->vmcs = (void *)vm_vaddr_alloc_page(vm);
 	vmx->vmcs_hva = addr_gva2hva(vm, (uintptr_t)vmx->vmcs);
 	vmx->vmcs_gpa = addr_gva2gpa(vm, (uintptr_t)vmx->vmcs);
 
-	/* Setup of a region of guest memory for the MSR bitmap. */
+	 
 	vmx->msr = (void *)vm_vaddr_alloc_page(vm);
 	vmx->msr_hva = addr_gva2hva(vm, (uintptr_t)vmx->msr);
 	vmx->msr_gpa = addr_gva2gpa(vm, (uintptr_t)vmx->msr);
 	memset(vmx->msr_hva, 0, getpagesize());
 
-	/* Setup of a region of guest memory for the shadow VMCS. */
+	 
 	vmx->shadow_vmcs = (void *)vm_vaddr_alloc_page(vm);
 	vmx->shadow_vmcs_hva = addr_gva2hva(vm, (uintptr_t)vmx->shadow_vmcs);
 	vmx->shadow_vmcs_gpa = addr_gva2gpa(vm, (uintptr_t)vmx->shadow_vmcs);
 
-	/* Setup of a region of guest memory for the VMREAD and VMWRITE bitmaps. */
+	 
 	vmx->vmread = (void *)vm_vaddr_alloc_page(vm);
 	vmx->vmread_hva = addr_gva2hva(vm, (uintptr_t)vmx->vmread);
 	vmx->vmread_gpa = addr_gva2gpa(vm, (uintptr_t)vmx->vmread);
@@ -120,11 +106,7 @@ bool prepare_for_vmx_operation(struct vmx_pages *vmx)
 	unsigned long cr0;
 	unsigned long cr4;
 
-	/*
-	 * Ensure bits in CR0 and CR4 are valid in VMX operation:
-	 * - Bit X is 1 in _FIXED0: bit X is fixed to 1 in CRx.
-	 * - Bit X is 0 in _FIXED1: bit X is fixed to 0 in CRx.
-	 */
+	 
 	__asm__ __volatile__("mov %%cr0, %0" : "=r"(cr0) : : "memory");
 	cr0 &= rdmsr(MSR_IA32_VMX_CR0_FIXED1);
 	cr0 |= rdmsr(MSR_IA32_VMX_CR0_FIXED0);
@@ -133,23 +115,18 @@ bool prepare_for_vmx_operation(struct vmx_pages *vmx)
 	__asm__ __volatile__("mov %%cr4, %0" : "=r"(cr4) : : "memory");
 	cr4 &= rdmsr(MSR_IA32_VMX_CR4_FIXED1);
 	cr4 |= rdmsr(MSR_IA32_VMX_CR4_FIXED0);
-	/* Enable VMX operation */
+	 
 	cr4 |= X86_CR4_VMXE;
 	__asm__ __volatile__("mov %0, %%cr4" : : "r"(cr4) : "memory");
 
-	/*
-	 * Configure IA32_FEATURE_CONTROL MSR to allow VMXON:
-	 *  Bit 0: Lock bit. If clear, VMXON causes a #GP.
-	 *  Bit 2: Enables VMXON outside of SMX operation. If clear, VMXON
-	 *    outside of SMX causes a #GP.
-	 */
+	 
 	required = FEAT_CTL_VMX_ENABLED_OUTSIDE_SMX;
 	required |= FEAT_CTL_LOCKED;
 	feature_control = rdmsr(MSR_IA32_FEAT_CTL);
 	if ((feature_control & required) != required)
 		wrmsr(MSR_IA32_FEAT_CTL, feature_control | required);
 
-	/* Enter VMX root operation. */
+	 
 	*(uint32_t *)(vmx->vmxon) = vmcs_revision();
 	if (vmxon(vmx->vmxon_gpa))
 		return false;
@@ -159,7 +136,7 @@ bool prepare_for_vmx_operation(struct vmx_pages *vmx)
 
 bool load_vmcs(struct vmx_pages *vmx)
 {
-	/* Load a VMCS. */
+	 
 	*(uint32_t *)(vmx->vmcs) = vmcs_revision();
 	if (vmclear(vmx->vmcs_gpa))
 		return false;
@@ -167,7 +144,7 @@ bool load_vmcs(struct vmx_pages *vmx)
 	if (vmptrld(vmx->vmcs_gpa))
 		return false;
 
-	/* Setup shadow VMCS, do not load it yet. */
+	 
 	*(uint32_t *)(vmx->shadow_vmcs) = vmcs_revision() | 0x80000000ul;
 	if (vmclear(vmx->shadow_vmcs_gpa))
 		return false;
@@ -185,9 +162,7 @@ bool ept_1g_pages_supported(void)
 	return ept_vpid_cap_supported(VMX_EPT_VPID_CAP_1G_PAGES);
 }
 
-/*
- * Initialize the control fields to the most basic settings possible.
- */
+ 
 static inline void init_vmcs_control_fields(struct vmx_pages *vmx)
 {
 	uint32_t sec_exec_ctl = 0;
@@ -201,7 +176,7 @@ static inline void init_vmcs_control_fields(struct vmx_pages *vmx)
 		uint64_t ept_paddr;
 		struct eptPageTablePointer eptp = {
 			.memory_type = VMX_BASIC_MEM_TYPE_WB,
-			.page_walk_length = 3, /* + 1 */
+			.page_walk_length = 3,  
 			.ad_enabled = ept_vpid_cap_supported(VMX_EPT_VPID_CAP_AD_BITS),
 			.address = vmx->eptp_gpa >> PAGE_SHIFT_4K,
 		};
@@ -221,14 +196,14 @@ static inline void init_vmcs_control_fields(struct vmx_pages *vmx)
 
 	vmwrite(EXCEPTION_BITMAP, 0);
 	vmwrite(PAGE_FAULT_ERROR_CODE_MASK, 0);
-	vmwrite(PAGE_FAULT_ERROR_CODE_MATCH, -1); /* Never match */
+	vmwrite(PAGE_FAULT_ERROR_CODE_MATCH, -1);  
 	vmwrite(CR3_TARGET_COUNT, 0);
 	vmwrite(VM_EXIT_CONTROLS, rdmsr(MSR_IA32_VMX_EXIT_CTLS) |
-		VM_EXIT_HOST_ADDR_SPACE_SIZE);	  /* 64-bit host */
+		VM_EXIT_HOST_ADDR_SPACE_SIZE);	   
 	vmwrite(VM_EXIT_MSR_STORE_COUNT, 0);
 	vmwrite(VM_EXIT_MSR_LOAD_COUNT, 0);
 	vmwrite(VM_ENTRY_CONTROLS, rdmsr(MSR_IA32_VMX_ENTRY_CTLS) |
-		VM_ENTRY_IA32E_MODE);		  /* 64-bit guest */
+		VM_ENTRY_IA32E_MODE);		   
 	vmwrite(VM_ENTRY_MSR_LOAD_COUNT, 0);
 	vmwrite(VM_ENTRY_INTR_INFO_FIELD, 0);
 	vmwrite(TPR_THRESHOLD, 0);
@@ -243,11 +218,7 @@ static inline void init_vmcs_control_fields(struct vmx_pages *vmx)
 	vmwrite(VMWRITE_BITMAP, vmx->vmwrite_gpa);
 }
 
-/*
- * Initialize the host state fields based on the current host state, with
- * the exception of HOST_RSP and HOST_RIP, which should be set by vmlaunch
- * or vmresume.
- */
+ 
 static inline void init_vmcs_host_state(void)
 {
 	uint32_t exit_controls = vmreadz(VM_EXIT_CONTROLS);
@@ -283,11 +254,7 @@ static inline void init_vmcs_host_state(void)
 	vmwrite(HOST_IA32_SYSENTER_EIP, rdmsr(MSR_IA32_SYSENTER_EIP));
 }
 
-/*
- * Initialize the guest state fields essentially as a clone of
- * the host state fields. Some host state fields have fixed
- * values, and we set the corresponding guest state fields accordingly.
- */
+ 
 static inline void init_vmcs_guest_state(void *rip, void *rsp)
 {
 	vmwrite(GUEST_ES_SELECTOR, vmreadz(HOST_ES_SELECTOR));
@@ -381,11 +348,7 @@ static void nested_create_pte(struct kvm_vm *vm,
 		else
 			pte->address = vm_alloc_page_table(vm) >> vm->page_shift;
 	} else {
-		/*
-		 * Entry already present.  Assert that the caller doesn't want
-		 * a hugepage at this level, and that there isn't a hugepage at
-		 * this level.
-		 */
+		 
 		TEST_ASSERT(current_level != target_level,
 			    "Cannot create hugepage at level: %u, nested_paddr: 0x%lx\n",
 			    current_level, nested_paddr);
@@ -438,10 +401,7 @@ void __nested_pg_map(struct vmx_pages *vmx, struct kvm_vm *vm,
 		pt = addr_gpa2hva(vm, pte->address * vm->page_size);
 	}
 
-	/*
-	 * For now mark these as accessed and dirty because the only
-	 * testcase we have needs that.  Can be reconsidered later.
-	 */
+	 
 	pte->accessed = true;
 	pte->dirty = true;
 
@@ -453,23 +413,7 @@ void nested_pg_map(struct vmx_pages *vmx, struct kvm_vm *vm,
 	__nested_pg_map(vmx, vm, nested_paddr, paddr, PG_LEVEL_4K);
 }
 
-/*
- * Map a range of EPT guest physical addresses to the VM's physical address
- *
- * Input Args:
- *   vm - Virtual Machine
- *   nested_paddr - Nested guest physical address to map
- *   paddr - VM Physical Address
- *   size - The size of the range to map
- *   level - The level at which to map the range
- *
- * Output Args: None
- *
- * Return: None
- *
- * Within the VM given by vm, creates a nested guest translation for the
- * page range starting at nested_paddr to the page range starting at paddr.
- */
+ 
 void __nested_map(struct vmx_pages *vmx, struct kvm_vm *vm,
 		  uint64_t nested_paddr, uint64_t paddr, uint64_t size,
 		  int level)
@@ -493,9 +437,7 @@ void nested_map(struct vmx_pages *vmx, struct kvm_vm *vm,
 	__nested_map(vmx, vm, nested_paddr, paddr, size, PG_LEVEL_4K);
 }
 
-/* Prepare an identity extended page table that maps all the
- * physical pages in VM.
- */
+ 
 void nested_map_memslot(struct vmx_pages *vmx, struct kvm_vm *vm,
 			uint32_t memslot)
 {
@@ -517,7 +459,7 @@ void nested_map_memslot(struct vmx_pages *vmx, struct kvm_vm *vm,
 	}
 }
 
-/* Identity map a region with 1GiB Pages. */
+ 
 void nested_identity_map_1g(struct vmx_pages *vmx, struct kvm_vm *vm,
 			    uint64_t addr, uint64_t size)
 {

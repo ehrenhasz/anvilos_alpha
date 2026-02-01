@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Common framework for low-level network console, dump, and debugger code
- *
- * Sep 8 2003  Matt Mackall <mpm@selenic.com>
- *
- * based on the netconsole code from:
- *
- * Copyright (C) 2001  Ingo Molnar <mingo@redhat.com>
- * Copyright (C) 2002  Red Hat, Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -38,10 +29,7 @@
 #include <trace/events/napi.h>
 #include <linux/kconfig.h>
 
-/*
- * We maintain a small pool of fully-sized skbs, to make sure the
- * message gets out even in extreme OOM situations.
- */
+ 
 
 #define MAX_UDP_CHUNK 1460
 #define MAX_SKBS 32
@@ -83,10 +71,7 @@ static netdev_tx_t netpoll_start_xmit(struct sk_buff *skb,
 	    !vlan_hw_offload_capable(features, skb->vlan_proto)) {
 		skb = __vlan_hwaccel_push_inside(skb);
 		if (unlikely(!skb)) {
-			/* This is actually a packet drop, but we
-			 * don't want the code that calls this
-			 * function to try and operate on a NULL skb.
-			 */
+			 
 			goto out;
 		}
 	}
@@ -115,7 +100,7 @@ static void queue_process(struct work_struct *work)
 		}
 
 		local_irq_save(flags);
-		/* check if skb->queue_mapping is still valid */
+		 
 		q_index = skb_get_queue_mapping(skb);
 		if (unlikely(q_index >= dev->real_num_tx_queues)) {
 			q_index = q_index % dev->real_num_tx_queues;
@@ -155,16 +140,11 @@ static void poll_one_napi(struct napi_struct *napi)
 {
 	int work;
 
-	/* If we set this bit but see that it has already been set,
-	 * that indicates that napi has been disabled and we need
-	 * to abort this operation
-	 */
+	 
 	if (test_and_set_bit(NAPI_STATE_NPSVC, &napi->state))
 		return;
 
-	/* We explicilty pass the polling call a budget of 0 to
-	 * indicate that we are clearing the Tx path only.
-	 */
+	 
 	work = napi->poll(napi, 0);
 	WARN_ONCE(work, "%pS exceeded budget in poll\n", napi->poll);
 	trace_napi_poll(napi, work, 0);
@@ -190,16 +170,11 @@ void netpoll_poll_dev(struct net_device *dev)
 	struct netpoll_info *ni = rcu_dereference_bh(dev->npinfo);
 	const struct net_device_ops *ops;
 
-	/* Don't do any rx activity if the dev_lock mutex is held
-	 * the dev_open/close paths use this to block netpoll activity
-	 * while changing device state
-	 */
+	 
 	if (!ni || down_trylock(&ni->dev_lock))
 		return;
 
-	/* Some drivers will take the same locks in poll and xmit,
-	 * we can't poll if local CPU is already in xmit.
-	 */
+	 
 	if (!netif_running(dev) || netif_local_xmit_active(dev)) {
 		up(&ni->dev_lock);
 		return;
@@ -275,7 +250,7 @@ static void zap_completion_queue(void)
 			clist = clist->next;
 			if (!skb_irq_freeable(skb)) {
 				refcount_set(&skb->users, 1);
-				dev_kfree_skb_any(skb); /* put this one back */
+				dev_kfree_skb_any(skb);  
 			} else {
 				__kfree_skb(skb);
 			}
@@ -322,13 +297,13 @@ static int netpoll_owner_active(struct net_device *dev)
 	return 0;
 }
 
-/* call with IRQ disabled */
+ 
 static netdev_tx_t __netpoll_send_skb(struct netpoll *np, struct sk_buff *skb)
 {
 	netdev_tx_t status = NETDEV_TX_BUSY;
 	struct net_device *dev;
 	unsigned long tries;
-	/* It is up to the caller to keep npinfo alive. */
+	 
 	struct netpoll_info *npinfo;
 
 	lockdep_assert_irqs_disabled();
@@ -341,13 +316,13 @@ static netdev_tx_t __netpoll_send_skb(struct netpoll *np, struct sk_buff *skb)
 		return NET_XMIT_DROP;
 	}
 
-	/* don't get messages out of order, and no recursion */
+	 
 	if (skb_queue_len(&npinfo->txq) == 0 && !netpoll_owner_active(dev)) {
 		struct netdev_queue *txq;
 
 		txq = netdev_core_pick_tx(dev, skb, NULL);
 
-		/* try until next clock tick */
+		 
 		for (tries = jiffies_to_usecs(1)/USEC_PER_POLL;
 		     tries > 0; --tries) {
 			if (HARD_TX_TRYLOCK(dev, txq)) {
@@ -361,7 +336,7 @@ static netdev_tx_t __netpoll_send_skb(struct netpoll *np, struct sk_buff *skb)
 
 			}
 
-			/* tickle device maybe there is some cleanup */
+			 
 			netpoll_poll_dev(np->dev);
 
 			udelay(USEC_PER_POLL);
@@ -446,7 +421,7 @@ void netpoll_send_udp(struct netpoll *np, const char *msg, int len)
 		skb_reset_network_header(skb);
 		ip6h = ipv6_hdr(skb);
 
-		/* ip6h->version = 6; ip6h->priority = 0; */
+		 
 		*(unsigned char *)ip6h = 0x60;
 		ip6h->flow_lbl[0] = 0;
 		ip6h->flow_lbl[1] = 0;
@@ -474,7 +449,7 @@ void netpoll_send_udp(struct netpoll *np, const char *msg, int len)
 		skb_reset_network_header(skb);
 		iph = ip_hdr(skb);
 
-		/* iph->version = 4; iph->ihl = 5; */
+		 
 		*(unsigned char *)iph = 0x45;
 		iph->tos      = 0;
 		put_unaligned(htons(ip_len), &(iph->tot_len));
@@ -569,7 +544,7 @@ int netpoll_parse_options(struct netpoll *np, char *opt)
 	cur++;
 
 	if (*cur != ',') {
-		/* parse out dev name */
+		 
 		if ((delim = strchr(cur, ',')) == NULL)
 			goto parse_failed;
 		*delim = 0;
@@ -579,7 +554,7 @@ int netpoll_parse_options(struct netpoll *np, char *opt)
 	cur++;
 
 	if (*cur != '@') {
-		/* dst port */
+		 
 		if ((delim = strchr(cur, '@')) == NULL)
 			goto parse_failed;
 		*delim = 0;
@@ -591,7 +566,7 @@ int netpoll_parse_options(struct netpoll *np, char *opt)
 	}
 	cur++;
 
-	/* dst ip */
+	 
 	if ((delim = strchr(cur, '/')) == NULL)
 		goto parse_failed;
 	*delim = 0;
@@ -605,7 +580,7 @@ int netpoll_parse_options(struct netpoll *np, char *opt)
 	cur = delim + 1;
 
 	if (*cur != 0) {
-		/* MAC address */
+		 
 		if (!mac_pton(cur, np->remote_mac))
 			goto parse_failed;
 	}
@@ -662,7 +637,7 @@ int __netpoll_setup(struct netpoll *np, struct net_device *ndev)
 
 	npinfo->netpoll = np;
 
-	/* last thing to do is link it to the net device structure */
+	 
 	rcu_assign_pointer(ndev->npinfo, npinfo);
 
 	return 0;
@@ -777,7 +752,7 @@ put_noaddr:
 		}
 	}
 
-	/* fill up the skb queue */
+	 
 	refill_skbs();
 
 	err = __netpoll_setup(np, ndev);
@@ -808,12 +783,12 @@ static void rcu_cleanup_netpoll_info(struct rcu_head *rcu_head)
 
 	skb_queue_purge(&npinfo->txq);
 
-	/* we can't call cancel_delayed_work_sync here, as we are in softirq */
+	 
 	cancel_delayed_work(&npinfo->tx_work);
 
-	/* clean after last, unfinished work */
+	 
 	__skb_queue_purge(&npinfo->txq);
-	/* now cancel it again */
+	 
 	cancel_delayed_work(&npinfo->tx_work);
 	kfree(npinfo);
 }
@@ -846,7 +821,7 @@ void __netpoll_free(struct netpoll *np)
 {
 	ASSERT_RTNL();
 
-	/* Wait for transmitting packets to finish before freeing. */
+	 
 	synchronize_rcu();
 	__netpoll_cleanup(np);
 	kfree(np);

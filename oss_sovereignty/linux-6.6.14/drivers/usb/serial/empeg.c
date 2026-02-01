@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * USB Empeg empeg-car player driver
- *
- *	Copyright (C) 2000, 2001
- *	    Gary Brubaker (xavyer@ix.netcom.com)
- *
- *	Copyright (C) 1999 - 2001
- *	    Greg Kroah-Hartman (greg@kroah.com)
- *
- * See Documentation/usb/usb-serial.rst for more information on using this
- * driver
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -30,13 +19,13 @@
 #define EMPEG_VENDOR_ID			0x084f
 #define EMPEG_PRODUCT_ID		0x0001
 
-/* function prototypes for an empeg-car player */
+ 
 static int  empeg_startup(struct usb_serial *serial);
 static void empeg_init_termios(struct tty_struct *tty);
 
 static const struct usb_device_id id_table[] = {
 	{ USB_DEVICE(EMPEG_VENDOR_ID, EMPEG_PRODUCT_ID) },
-	{ }					/* Terminating entry */
+	{ }					 
 };
 
 MODULE_DEVICE_TABLE(usb, id_table);
@@ -71,7 +60,7 @@ static int empeg_startup(struct usb_serial *serial)
 
 	r = usb_reset_configuration(serial->dev);
 
-	/* continue on with initialization */
+	 
 	return r;
 }
 
@@ -79,42 +68,34 @@ static void empeg_init_termios(struct tty_struct *tty)
 {
 	struct ktermios *termios = &tty->termios;
 
-	/*
-	 * The empeg-car player wants these particular tty settings.
-	 * You could, for example, change the baud rate, however the
-	 * player only supports 115200 (currently), so there is really
-	 * no point in support for changes to the tty settings.
-	 * (at least for now)
-	 *
-	 * The default requirements for this device are:
-	 */
+	 
 	termios->c_iflag
-		&= ~(IGNBRK	/* disable ignore break */
-		| BRKINT	/* disable break causes interrupt */
-		| PARMRK	/* disable mark parity errors */
-		| ISTRIP	/* disable clear high bit of input characters */
-		| INLCR		/* disable translate NL to CR */
-		| IGNCR		/* disable ignore CR */
-		| ICRNL		/* disable translate CR to NL */
-		| IXON);	/* disable enable XON/XOFF flow control */
+		&= ~(IGNBRK	 
+		| BRKINT	 
+		| PARMRK	 
+		| ISTRIP	 
+		| INLCR		 
+		| IGNCR		 
+		| ICRNL		 
+		| IXON);	 
 
 	termios->c_oflag
-		&= ~OPOST;	/* disable postprocess output characters */
+		&= ~OPOST;	 
 
 	termios->c_lflag
-		&= ~(ECHO	/* disable echo input characters */
-		| ECHONL	/* disable echo new line */
-		| ICANON	/* disable erase, kill, werase, and rprnt special characters */
-		| ISIG		/* disable interrupt, quit, and suspend special characters */
-		| IEXTEN);	/* disable non-POSIX special characters */
+		&= ~(ECHO	 
+		| ECHONL	 
+		| ICANON	 
+		| ISIG		 
+		| IEXTEN);	 
 
 	termios->c_cflag
-		&= ~(CSIZE	/* no size */
-		| PARENB	/* disable parity bit */
-		| CBAUD);	/* clear current baud rate */
+		&= ~(CSIZE	 
+		| PARENB	 
+		| CBAUD);	 
 
 	termios->c_cflag
-		|= CS8;		/* character size 8 bits */
+		|= CS8;		 
 
 	tty_encode_baud_rate(tty, 115200, 115200);
 }

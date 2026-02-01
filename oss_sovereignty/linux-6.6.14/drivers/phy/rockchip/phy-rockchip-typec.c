@@ -1,40 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) Fuzhou Rockchip Electronics Co.Ltd
- * Author: Chris Zhong <zyw@rock-chips.com>
- *         Kever Yang <kever.yang@rock-chips.com>
- *
- * The ROCKCHIP Type-C PHY has two PLL clocks. The first PLL clock
- * is used for USB3, the second PLL clock is used for DP. This Type-C PHY has
- * 3 working modes: USB3 only mode, DP only mode, and USB3+DP mode.
- * At USB3 only mode, both PLL clocks need to be initialized, this allows the
- * PHY to switch mode between USB3 and USB3+DP, without disconnecting the USB
- * device.
- * In The DP only mode, only the DP PLL needs to be powered on, and the 4 lanes
- * are all used for DP.
- *
- * This driver gets extcon cable state and property, then decides which mode to
- * select:
- *
- * 1. USB3 only mode:
- *    EXTCON_USB or EXTCON_USB_HOST state is true, and
- *    EXTCON_PROP_USB_SS property is true.
- *    EXTCON_DISP_DP state is false.
- *
- * 2. DP only mode:
- *    EXTCON_DISP_DP state is true, and
- *    EXTCON_PROP_USB_SS property is false.
- *    If EXTCON_USB_HOST state is true, it is DP + USB2 mode, since the USB2 phy
- *    is a separate phy, so this case is still DP only mode.
- *
- * 3. USB3+DP mode:
- *    EXTCON_USB_HOST and EXTCON_DISP_DP are both true, and
- *    EXTCON_PROP_USB_SS property is true.
- *
- * This Type-C PHY driver supports normal and flip orientation. The orientation
- * is reported by the EXTCON_PROP_USB_TYPEC_POLARITY property: true is flip
- * orientation, false is normal orientation.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -99,7 +64,7 @@
 #define CMN_TXPDCAL_CTRL		(0xf0 << 2)
 #define CMN_TXPDCAL_OVRD		(0xf1 << 2)
 
-/* For CMN_TXPUCAL_CTRL, CMN_TXPDCAL_CTRL */
+ 
 #define CMN_TXPXCAL_START		BIT(15)
 #define CMN_TXPXCAL_DONE		BIT(14)
 #define CMN_TXPXCAL_NO_RESPONSE		BIT(13)
@@ -108,15 +73,7 @@
 #define CMN_TXPU_ADJ_CTRL		(0x108 << 2)
 #define CMN_TXPD_ADJ_CTRL		(0x10c << 2)
 
-/*
- * For CMN_TXPUCAL_CTRL, CMN_TXPDCAL_CTRL,
- *     CMN_TXPU_ADJ_CTRL, CMN_TXPDCAL_CTRL
- *
- * NOTE: some of these registers are documented to be 2's complement
- * signed numbers, but then documented to be always positive.  Weird.
- * In such a case, using CMN_CALIB_CODE_POS() avoids the unnecessary
- * sign extension.
- */
+ 
 #define CMN_CALIB_CODE_WIDTH	7
 #define CMN_CALIB_CODE_OFFSET	0
 #define CMN_CALIB_CODE_MASK	GENMASK(CMN_CALIB_CODE_WIDTH, 0)
@@ -182,7 +139,7 @@
 #define TX_DIAG_TX_DRV(n)		((0x41e1 | ((n) << 9)) << 2)
 #define TX_DIAG_BGREF_PREDRV_DELAY	(0x41e7 << 2)
 
-/* Use this for "n" in macros like "_MULT_XXX" to target the aux channel */
+ 
 #define AUX_CH_LANE			8
 
 #define TX_ANA_CTRL_REG_1		(0x5020 << 2)
@@ -309,11 +266,7 @@
 #define TX_BIST_CTRL(n)			((0x4140 | ((n) << 9)) << 2)
 #define TX_BIST_UDDWR(n)		((0x4141 | ((n) << 9)) << 2)
 
-/*
- * Selects which PLL clock will be driven on the analog high speed
- * clock 0: PLL 0 div 1
- * clock 1: PLL 1 div 2
- */
+ 
 #define CLK_PLL_CONFIG			0X30
 #define CLK_PLL_MASK			0x33
 
@@ -346,17 +299,7 @@ struct usb3phy_reg {
 	u32 write_enable;
 };
 
-/**
- * struct rockchip_usb3phy_port_cfg - usb3-phy port configuration.
- * @reg: the base address for usb3-phy config.
- * @typec_conn_dir: the register of type-c connector direction.
- * @usb3tousb2_en: the register of type-c force usb2 to usb2 enable.
- * @external_psm: the register of type-c phy external psm clock.
- * @pipe_status: the register of type-c phy pipe status.
- * @usb3_host_disable: the register of type-c usb3 host disable.
- * @usb3_host_port: the register of type-c usb3 host port.
- * @uphy_dp_sel: the register of type-c phy DP select control.
- */
+ 
 struct rockchip_usb3phy_port_cfg {
 	unsigned int reg;
 	struct usb3phy_reg typec_conn_dir;
@@ -379,7 +322,7 @@ struct rockchip_typec_phy {
 	struct reset_control *pipe_rst;
 	struct reset_control *tcphy_rst;
 	const struct rockchip_usb3phy_port_cfg *port_cfgs;
-	/* mutex to protect access to individual PHYs */
+	 
 	struct mutex lock;
 
 	bool flip;
@@ -451,23 +394,17 @@ static const struct rockchip_usb3phy_port_cfg rk3399_usb3phy_port_cfgs[] = {
 		.usb3_host_port = { 0x2444, 12, 28 },
 		.uphy_dp_sel	= { 0x6268, 3, 19 },
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static void tcphy_cfg_24m(struct rockchip_typec_phy *tcphy)
 {
 	u32 i, rdata;
 
-	/*
-	 * cmn_ref_clk_sel = 3, select the 24Mhz for clk parent
-	 * cmn_psm_clk_dig_div = 2, set the clk division to 2
-	 */
+	 
 	writel(0x830, tcphy->base + PMA_CMN_CTRL1);
 	for (i = 0; i < 4; i++) {
-		/*
-		 * The following PHY configuration assumes a 24 MHz reference
-		 * clock.
-		 */
+		 
 		writel(0x90, tcphy->base + XCVR_DIAG_LANE_FCM_EN_MGN(i));
 		writel(0x960, tcphy->base + TX_RCVDET_EN_TMR(i));
 		writel(0x30, tcphy->base + TX_RCVDET_ST_TMR(i));
@@ -483,7 +420,7 @@ static void tcphy_cfg_usb3_pll(struct rockchip_typec_phy *tcphy)
 {
 	u32 i;
 
-	/* load the configuration of PLL0 */
+	 
 	for (i = 0; i < ARRAY_SIZE(usb3_pll_cfg); i++)
 		writel(usb3_pll_cfg[i].value,
 		       tcphy->base + usb3_pll_cfg[i].addr);
@@ -493,11 +430,11 @@ static void tcphy_cfg_dp_pll(struct rockchip_typec_phy *tcphy)
 {
 	u32 i;
 
-	/* set the default mode to RBR */
+	 
 	writel(DP_PLL_CLOCK_ENABLE | DP_PLL_ENABLE | DP_PLL_DATA_RATE_RBR,
 	       tcphy->base + DP_CLK_CTL);
 
-	/* load the configuration of PLL1 */
+	 
 	for (i = 0; i < ARRAY_SIZE(dp_pll_cfg); i++)
 		writel(dp_pll_cfg[i].value, tcphy->base + dp_pll_cfg[i].addr);
 }
@@ -570,13 +507,7 @@ static void tcphy_dp_aux_set_flip(struct rockchip_typec_phy *tcphy)
 {
 	u16 tx_ana_ctrl_reg_1;
 
-	/*
-	 * Select the polarity of the xcvr:
-	 * 1, Reverses the polarity (If TYPEC, Pulls ups aux_p and pull
-	 * down aux_m)
-	 * 0, Normal polarity (if TYPEC, pulls up aux_m and pulls down
-	 * aux_p)
-	 */
+	 
 	tx_ana_ctrl_reg_1 = readl(tcphy->base + TX_ANA_CTRL_REG_1);
 	if (!tcphy->flip)
 		tx_ana_ctrl_reg_1 |= AUXDA_POLARITY;
@@ -594,10 +525,7 @@ static void tcphy_dp_aux_calibration(struct rockchip_typec_phy *tcphy)
 	s32 pu_adj, pd_adj;
 	u16 calib;
 
-	/*
-	 * Calculate calibration code as per docs: use an average of the
-	 * pull down and pull up.  Then add in adjustments.
-	 */
+	 
 	val = readl(tcphy->base + CMN_TXPUCAL_CTRL);
 	pu_calib_code = CMN_CALIB_CODE_POS(val);
 	val = readl(tcphy->base + CMN_TXPDCAL_CTRL);
@@ -608,31 +536,27 @@ static void tcphy_dp_aux_calibration(struct rockchip_typec_phy *tcphy)
 	pd_adj = CMN_CALIB_CODE(val);
 	calib = (pu_calib_code + pd_calib_code) / 2 + pu_adj + pd_adj;
 
-	/* disable txda_cal_latch_en for rewrite the calibration values */
+	 
 	tx_ana_ctrl_reg_1 = readl(tcphy->base + TX_ANA_CTRL_REG_1);
 	tx_ana_ctrl_reg_1 &= ~TXDA_CAL_LATCH_EN;
 	writel(tx_ana_ctrl_reg_1, tcphy->base + TX_ANA_CTRL_REG_1);
 
-	/* write the calibration, then delay 10 ms as sample in docs */
+	 
 	val = readl(tcphy->base + TX_DIG_CTRL_REG_2);
 	val &= ~(TX_RESCAL_CODE_MASK << TX_RESCAL_CODE_OFFSET);
 	val |= calib << TX_RESCAL_CODE_OFFSET;
 	writel(val, tcphy->base + TX_DIG_CTRL_REG_2);
 	usleep_range(10000, 10050);
 
-	/*
-	 * Enable signal for latch that sample and holds calibration values.
-	 * Activate this signal for 1 clock cycle to sample new calibration
-	 * values.
-	 */
+	 
 	tx_ana_ctrl_reg_1 |= TXDA_CAL_LATCH_EN;
 	writel(tx_ana_ctrl_reg_1, tcphy->base + TX_ANA_CTRL_REG_1);
 	usleep_range(150, 200);
 
-	/* set TX Voltage Level and TX Deemphasis to 0 */
+	 
 	writel(0, tcphy->base + PHY_DP_TX_CTL);
 
-	/* re-enable decap */
+	 
 	tx_ana_ctrl_reg_2 = XCVR_DECAP_EN;
 	writel(tx_ana_ctrl_reg_2, tcphy->base + TX_ANA_CTRL_REG_2);
 	udelay(1);
@@ -649,40 +573,24 @@ static void tcphy_dp_aux_calibration(struct rockchip_typec_phy *tcphy)
 
 	writel(0, tcphy->base + TX_ANA_CTRL_REG_5);
 
-	/*
-	 * Programs txda_drv_ldo_prog[15:0], Sets driver LDO
-	 * voltage 16'h1001 for DP-AUX-TX and RX
-	 */
+	 
 	writel(0x1001, tcphy->base + TX_ANA_CTRL_REG_4);
 
-	/* re-enables Bandgap reference for LDO */
+	 
 	tx_ana_ctrl_reg_1 |= TXDA_DRV_LDO_EN;
 	writel(tx_ana_ctrl_reg_1, tcphy->base + TX_ANA_CTRL_REG_1);
 	udelay(5);
 	tx_ana_ctrl_reg_1 |= TXDA_BGREF_EN;
 	writel(tx_ana_ctrl_reg_1, tcphy->base + TX_ANA_CTRL_REG_1);
 
-	/*
-	 * re-enables the transmitter pre-driver, driver data selection MUX,
-	 * and receiver detect circuits.
-	 */
+	 
 	tx_ana_ctrl_reg_2 |= TXDA_DRV_PREDRV_EN;
 	writel(tx_ana_ctrl_reg_2, tcphy->base + TX_ANA_CTRL_REG_2);
 	udelay(1);
 	tx_ana_ctrl_reg_2 |= TXDA_DRV_PREDRV_EN_DEL;
 	writel(tx_ana_ctrl_reg_2, tcphy->base + TX_ANA_CTRL_REG_2);
 
-	/*
-	 * Do all the undocumented magic:
-	 * - Turn on TXDA_DP_AUX_EN, whatever that is, even though sample
-	 *   never shows this going on.
-	 * - Turn on TXDA_DECAP_EN (and TXDA_DECAP_EN_DEL) even though
-	 *   docs say for aux it's always 0.
-	 * - Turn off the LDO and BGREF, which we just spent time turning
-	 *   on above (???).
-	 *
-	 * Without this magic, things seem worse.
-	 */
+	 
 	tx_ana_ctrl_reg_1 |= TXDA_DP_AUX_EN;
 	tx_ana_ctrl_reg_1 |= TXDA_DECAP_EN;
 	tx_ana_ctrl_reg_1 &= ~TXDA_DRV_LDO_EN;
@@ -692,28 +600,16 @@ static void tcphy_dp_aux_calibration(struct rockchip_typec_phy *tcphy)
 	tx_ana_ctrl_reg_1 |= TXDA_DECAP_EN_DEL;
 	writel(tx_ana_ctrl_reg_1, tcphy->base + TX_ANA_CTRL_REG_1);
 
-	/*
-	 * Undo the work we did to set the LDO voltage.
-	 * This doesn't seem to help nor hurt, but it kinda goes with the
-	 * undocumented magic above.
-	 */
+	 
 	writel(0, tcphy->base + TX_ANA_CTRL_REG_4);
 
-	/* Don't set voltage swing to 400 mV peak to peak (differential) */
+	 
 	writel(0, tcphy->base + TXDA_COEFF_CALC_CTRL);
 
-	/* Init TXDA_CYA_AUXDA_CYA for unknown magic reasons */
+	 
 	writel(0, tcphy->base + TXDA_CYA_AUXDA_CYA);
 
-	/*
-	 * More undocumented magic, presumably the goal of which is to
-	 * make the "auxda_source_aux_oen" be ignored and instead to decide
-	 * about "high impedance state" based on what software puts in the
-	 * register TXDA_COEFF_CALC_CTRL (see TX_HIGH_Z).  Since we only
-	 * program that register once and we don't set the bit TX_HIGH_Z,
-	 * presumably the goal here is that we should never put the analog
-	 * driver in high impedance state.
-	 */
+	 
 	val = readl(tcphy->base + TX_DIG_CTRL_REG_2);
 	val |= TX_HIGH_Z_TM_EN;
 	writel(val, tcphy->base + TX_DIG_CTRL_REG_2);
@@ -878,7 +774,7 @@ static int rockchip_usb3_phy_power_on(struct phy *phy)
 		goto unlock_ret;
 	}
 
-	/* DP-only mode; fall back to USB2 */
+	 
 	if (!(new_mode & (MODE_DFP_USB | MODE_UFP_USB))) {
 		tcphy_cfg_usb3_to_usb2_only(tcphy, true);
 		goto unlock_ret;
@@ -893,13 +789,13 @@ static int rockchip_usb3_phy_power_on(struct phy *phy)
 			goto unlock_ret;
 	}
 
-	/* wait TCPHY for pipe ready */
+	 
 	for (timeout = 0; timeout < 100; timeout++) {
 		regmap_read(tcphy->grf_regs, reg->offset, &val);
 		if (!(val & BIT(reg->enable_bit))) {
 			tcphy->mode |= new_mode & (MODE_DFP_USB | MODE_UFP_USB);
 
-			/* enable usb3 host */
+			 
 			tcphy_cfg_usb3_to_usb2_only(tcphy, false);
 			goto unlock_ret;
 		}
@@ -964,10 +860,7 @@ static int rockchip_dp_phy_power_on(struct phy *phy)
 	if (tcphy->mode == new_mode)
 		goto unlock_ret;
 
-	/*
-	 * If the PHY has been power on, but the mode is not DP only mode,
-	 * re-init the PHY for setting all of 4 lanes to DP.
-	 */
+	 
 	if (new_mode == MODE_DFP_DP && tcphy->mode != MODE_DISCONNECT) {
 		tcphy_phy_deinit(tcphy);
 		ret = tcphy_phy_init(tcphy, new_mode);
@@ -1088,7 +981,7 @@ static void typec_phy_pre_init(struct rockchip_typec_phy *tcphy)
 	reset_control_assert(tcphy->uphy_rst);
 	reset_control_assert(tcphy->pipe_rst);
 
-	/* select external psm clock */
+	 
 	property_enable(tcphy, &cfg->external_psm, 1);
 	property_enable(tcphy, &cfg->usb3tousb2_en, 0);
 
@@ -1120,7 +1013,7 @@ static int rockchip_typec_phy_probe(struct platform_device *pdev)
 	if (IS_ERR(tcphy->base))
 		return PTR_ERR(tcphy->base);
 
-	/* find out a proper config which can be matched with dt. */
+	 
 	index = 0;
 	while (phy_cfgs[index].reg) {
 		if (phy_cfgs[index].reg == res->start) {
@@ -1203,7 +1096,7 @@ static const struct of_device_id rockchip_typec_phy_dt_ids[] = {
 		.compatible = "rockchip,rk3399-typec-phy",
 		.data = &rk3399_usb3phy_port_cfgs
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, rockchip_typec_phy_dt_ids);

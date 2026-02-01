@@ -1,26 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2019 Intel Corporation. */
+
+ 
 
 #include <linux/hash.h>
 #include <linux/bpf.h>
 #include <linux/filter.h>
 #include <linux/static_call.h>
 
-/* The BPF dispatcher is a multiway branch code generator. The
- * dispatcher is a mechanism to avoid the performance penalty of an
- * indirect call, which is expensive when retpolines are enabled. A
- * dispatch client registers a BPF program into the dispatcher, and if
- * there is available room in the dispatcher a direct call to the BPF
- * program will be generated. All calls to the BPF programs called via
- * the dispatcher will then be a direct call, instead of an
- * indirect. The dispatcher hijacks a trampoline function it via the
- * __fentry__ of the trampoline. The trampoline function has the
- * following signature:
- *
- * unsigned int trampoline(const void *ctx, const struct bpf_insn *insnsi,
- *                         unsigned int (*bpf_func)(const void *,
- *                                                  const struct bpf_insn *));
- */
+ 
 
 static struct bpf_dispatcher_prog *bpf_dispatcher_find_prog(
 	struct bpf_dispatcher *d, struct bpf_prog *prog)
@@ -114,9 +100,7 @@ static void bpf_dispatcher_update(struct bpf_dispatcher *d, int prev_num_progs)
 	new = d->num_progs ? d->image + noff : NULL;
 	tmp = d->num_progs ? d->rw_image + noff : NULL;
 	if (new) {
-		/* Prepare the dispatcher in d->rw_image. Then use
-		 * bpf_arch_text_copy to update d->image, which is RO+X.
-		 */
+		 
 		if (bpf_dispatcher_prepare(d, new, tmp))
 			return;
 		if (IS_ERR(bpf_arch_text_copy(new, tmp, PAGE_SIZE / 2)))
@@ -125,9 +109,7 @@ static void bpf_dispatcher_update(struct bpf_dispatcher *d, int prev_num_progs)
 
 	__BPF_DISPATCHER_UPDATE(d, new ?: (void *)&bpf_dispatcher_nop_func);
 
-	/* Make sure all the callers executing the previous/old half of the
-	 * image leave it, so following update call can modify it safely.
-	 */
+	 
 	synchronize_rcu();
 
 	if (new)

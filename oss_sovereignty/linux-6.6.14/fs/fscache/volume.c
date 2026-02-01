@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Volume-level cache cookie handling.
- *
- * Copyright (C) 2021 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define FSCACHE_DEBUG_LEVEL COOKIE
 #include <linux/export.h>
@@ -35,9 +31,7 @@ static void fscache_see_volume(struct fscache_volume *volume,
 	trace_fscache_volume(volume->debug_id, ref, where);
 }
 
-/*
- * Pin the cache behind a volume so that we can access it.
- */
+ 
 static void __fscache_begin_volume_access(struct fscache_volume *volume,
 					  struct fscache_cookie *cookie,
 					  enum fscache_access_trace why)
@@ -51,35 +45,7 @@ static void __fscache_begin_volume_access(struct fscache_volume *volume,
 				    n_accesses, why);
 }
 
-/**
- * fscache_begin_volume_access - Pin a cache so a volume can be accessed
- * @volume: The volume cookie
- * @cookie: A datafile cookie for a tracing reference (or NULL)
- * @why: An indication of the circumstances of the access for tracing
- *
- * Attempt to pin the cache to prevent it from going away whilst we're
- * accessing a volume and returns true if successful.  This works as follows:
- *
- *  (1) If the cache tests as not live (state is not FSCACHE_CACHE_IS_ACTIVE),
- *      then we return false to indicate access was not permitted.
- *
- *  (2) If the cache tests as live, then we increment the volume's n_accesses
- *      count and then recheck the cache liveness, ending the access if it
- *      ceased to be live.
- *
- *  (3) When we end the access, we decrement the volume's n_accesses and wake
- *      up the any waiters if it reaches 0.
- *
- *  (4) Whilst the cache is caching, the volume's n_accesses is kept
- *      artificially incremented to prevent wakeups from happening.
- *
- *  (5) When the cache is taken offline, the state is changed to prevent new
- *      accesses, the volume's n_accesses is decremented and we wait for it to
- *      become 0.
- *
- * The datafile @cookie and the @why indicator are merely provided for tracing
- * purposes.
- */
+ 
 bool fscache_begin_volume_access(struct fscache_volume *volume,
 				 struct fscache_cookie *cookie,
 				 enum fscache_access_trace why)
@@ -94,15 +60,7 @@ bool fscache_begin_volume_access(struct fscache_volume *volume,
 	return true;
 }
 
-/**
- * fscache_end_volume_access - Unpin a cache at the end of an access.
- * @volume: The volume cookie
- * @cookie: A datafile cookie for a tracing reference (or NULL)
- * @why: An indication of the circumstances of the access for tracing
- *
- * Unpin a cache volume after we've accessed it.  The datafile @cookie and the
- * @why indicator are merely provided for tracing purposes.
- */
+ 
 void fscache_end_volume_access(struct fscache_volume *volume,
 			       struct fscache_cookie *cookie,
 			       enum fscache_access_trace why)
@@ -152,11 +110,7 @@ static void fscache_wait_on_volume_collision(struct fscache_volume *candidate,
 	}
 }
 
-/*
- * Attempt to insert the new volume into the hash.  If there's a collision, we
- * wait for the old volume to complete if it's being relinquished and an error
- * otherwise.
- */
+ 
 static bool fscache_hash_volume(struct fscache_volume *candidate)
 {
 	struct fscache_volume *cursor;
@@ -193,9 +147,7 @@ collision:
 	return false;
 }
 
-/*
- * Allocate and initialise a volume representation cookie.
- */
+ 
 static struct fscache_volume *fscache_alloc_volume(const char *volume_key,
 						   const char *cache_name,
 						   const void *coherency_data,
@@ -231,9 +183,7 @@ static struct fscache_volume *fscache_alloc_volume(const char *volume_key,
 	refcount_set(&volume->ref, 1);
 	spin_lock_init(&volume->lock);
 
-	/* Stick the length on the front of the key and pad it out to make
-	 * hashing easier.
-	 */
+	 
 	hlen = round_up(1 + klen + 1, sizeof(__le32));
 	key = kzalloc(hlen, GFP_KERNEL);
 	if (!key)
@@ -262,10 +212,7 @@ err_cache:
 	return NULL;
 }
 
-/*
- * Create a volume's representation on disk.  Have a volume ref and a cache
- * access we have to release.
- */
+ 
 static void fscache_create_volume_work(struct work_struct *work)
 {
 	const struct fscache_cache_ops *ops;
@@ -284,15 +231,13 @@ static void fscache_create_volume_work(struct work_struct *work)
 	fscache_put_volume(volume, fscache_volume_put_create_work);
 }
 
-/*
- * Dispatch a worker thread to create a volume's representation on disk.
- */
+ 
 void fscache_create_volume(struct fscache_volume *volume, bool wait)
 {
 	if (test_and_set_bit(FSCACHE_VOLUME_CREATING, &volume->flags))
 		goto maybe_wait;
 	if (volume->cache_priv)
-		goto no_wait; /* We raced */
+		goto no_wait;  
 	if (!fscache_begin_cache_access(volume->cache,
 					fscache_access_acquire_volume))
 		goto no_wait;
@@ -313,9 +258,7 @@ no_wait:
 	wake_up_bit(&volume->flags, FSCACHE_VOLUME_CREATING);
 }
 
-/*
- * Acquire a volume representation cookie and link it to a (proposed) cache.
- */
+ 
 struct fscache_volume *__fscache_acquire_volume(const char *volume_key,
 						const char *cache_name,
 						const void *coherency_data,
@@ -354,9 +297,7 @@ static void fscache_wake_pending_volume(struct fscache_volume *volume,
 	}
 }
 
-/*
- * Remove a volume cookie from the hash table.
- */
+ 
 static void fscache_unhash_volume(struct fscache_volume *volume)
 {
 	struct hlist_bl_head *h;
@@ -372,9 +313,7 @@ static void fscache_unhash_volume(struct fscache_volume *volume)
 	hlist_bl_unlock(h);
 }
 
-/*
- * Drop a cache's volume attachments.
- */
+ 
 static void fscache_free_volume(struct fscache_volume *volume)
 {
 	struct fscache_cache *cache = volume->cache;
@@ -403,9 +342,7 @@ static void fscache_free_volume(struct fscache_volume *volume)
 	fscache_put_cache(cache, fscache_cache_put_volume);
 }
 
-/*
- * Drop a reference to a volume cookie.
- */
+ 
 void fscache_put_volume(struct fscache_volume *volume,
 			enum fscache_volume_trace where)
 {
@@ -421,9 +358,7 @@ void fscache_put_volume(struct fscache_volume *volume,
 	}
 }
 
-/*
- * Relinquish a volume representation cookie.
- */
+ 
 void __fscache_relinquish_volume(struct fscache_volume *volume,
 				 const void *coherency_data,
 				 bool invalidate)
@@ -441,20 +376,14 @@ void __fscache_relinquish_volume(struct fscache_volume *volume,
 }
 EXPORT_SYMBOL(__fscache_relinquish_volume);
 
-/**
- * fscache_withdraw_volume - Withdraw a volume from being cached
- * @volume: Volume cookie
- *
- * Withdraw a cache volume from service, waiting for all accesses to complete
- * before returning.
- */
+ 
 void fscache_withdraw_volume(struct fscache_volume *volume)
 {
 	int n_accesses;
 
 	_debug("withdraw V=%x", volume->debug_id);
 
-	/* Allow wakeups on dec-to-0 */
+	 
 	n_accesses = atomic_dec_return(&volume->n_accesses);
 	trace_fscache_access_volume(volume->debug_id, 0,
 				    refcount_read(&volume->ref),
@@ -466,9 +395,7 @@ void fscache_withdraw_volume(struct fscache_volume *volume)
 EXPORT_SYMBOL(fscache_withdraw_volume);
 
 #ifdef CONFIG_PROC_FS
-/*
- * Generate a list of volumes in /proc/fs/fscache/volumes
- */
+ 
 static int fscache_volumes_seq_show(struct seq_file *m, void *v)
 {
 	struct fscache_volume *volume;
@@ -517,4 +444,4 @@ const struct seq_operations fscache_volumes_seq_ops = {
 	.stop   = fscache_volumes_seq_stop,
 	.show   = fscache_volumes_seq_show,
 };
-#endif /* CONFIG_PROC_FS */
+#endif  

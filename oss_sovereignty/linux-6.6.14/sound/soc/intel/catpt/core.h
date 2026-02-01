@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2020 Intel Corporation. All rights reserved.
- *
- * Author: Cezary Rojewski <cezary.rojewski@intel.com>
- */
+ 
+ 
 
 #ifndef __SND_SOC_INTEL_CATPT_CORE_H
 #define __SND_SOC_INTEL_CATPT_CORE_H
@@ -52,7 +48,7 @@ struct catpt_module_type {
 	u32 entry_point;
 	u32 persistent_size;
 	u32 scratch_size;
-	/* DRAM, initial module state */
+	 
 	u32 state_offset;
 	u32 state_size;
 
@@ -124,11 +120,7 @@ int catpt_dsp_update_lpclock(struct catpt_dev *cdev);
 irqreturn_t catpt_dsp_irq_handler(int irq, void *dev_id);
 irqreturn_t catpt_dsp_irq_thread(int irq, void *dev_id);
 
-/*
- * IPC handlers may return positive values which denote successful
- * HOST <-> DSP communication yet failure to process specific request.
- * Use below macro to convert returned non-zero values appropriately
- */
+ 
 #define CATPT_IPC_ERROR(err) (((err) < 0) ? (err) : -EREMOTEIO)
 
 int catpt_dsp_send_msg_timeout(struct catpt_dev *cdev,

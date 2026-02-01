@@ -1,20 +1,4 @@
-/* provide a replacement fdopendir function
-   Copyright (C) 2004-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* written by Jim Meyering */
+ 
 
 #include <config.h>
 
@@ -26,7 +10,7 @@
 #if !HAVE_FDOPENDIR
 
 # if GNULIB_defined_DIR
-/* We are in control of the file descriptor of a DIR.  */
+ 
 
 #  include "dirent-private.h"
 
@@ -54,7 +38,7 @@ fdopendir (int fd)
   char path[_MAX_PATH];
   DIR *dirp;
 
-  /* Get a path from fd */
+   
   if (__libc_Back_ioFHToPath (fd, path, sizeof (path)))
     return NULL;
 
@@ -62,10 +46,10 @@ fdopendir (int fd)
   if (!dirp)
     return NULL;
 
-  /* Unregister fd registered by opendir() */
+   
   _gl_unregister_dirp_fd (dirfd (dirp));
 
-  /* Register our fd */
+   
   if (_gl_register_dirp_fd (fd, dirp))
     {
       int saved_errno = errno;
@@ -81,8 +65,7 @@ fdopendir (int fd)
 }
 
 # else
-/* We are not in control of the file descriptor of a DIR, and therefore have to
-   play tricks with file descriptors before and after a call to opendir().  */
+ 
 
 #  include "openat.h"
 #  include "openat-priv.h"
@@ -99,28 +82,7 @@ fdopendir (int fd)
 static DIR *fdopendir_with_dup (int, int, struct saved_cwd const *);
 static DIR *fd_clone_opendir (int, struct saved_cwd const *);
 
-/* Replacement for POSIX fdopendir.
-
-   First, try to simulate it via opendir ("/proc/self/fd/...").  Failing
-   that, simulate it by using fchdir metadata, or by doing
-   save_cwd/fchdir/opendir(".")/restore_cwd.
-   If either the save_cwd or the restore_cwd fails (relatively unlikely),
-   then give a diagnostic and exit nonzero.
-
-   If successful, the resulting stream is based on FD in
-   implementations where streams are based on file descriptors and in
-   applications where no other thread or signal handler allocates or
-   frees file descriptors.  In other cases, consult dirfd on the result
-   to find out whether FD is still being used.
-
-   Otherwise, this function works just like POSIX fdopendir.
-
-   W A R N I N G:
-
-   Unlike other fd-related functions, this one places constraints on FD.
-   If this function returns successfully, FD is under control of the
-   dirent.h system, and the caller should not close or modify the state of
-   FD other than by the dirent.h functions.  */
+ 
 DIR *
 fdopendir (int fd)
 {
@@ -144,17 +106,7 @@ fdopendir (int fd)
   return dir;
 }
 
-/* Like fdopendir, except that if OLDER_DUPFD is not -1, it is known
-   to be a dup of FD which is less than FD - 1 and which will be
-   closed by the caller and not otherwise used by the caller.  This
-   function makes sure that FD is closed and all file descriptors less
-   than FD are open, and then calls fd_clone_opendir on a dup of FD.
-   That way, barring race conditions, fd_clone_opendir returns a
-   stream whose file descriptor is FD.
-
-   If REPLACE_FCHDIR or CWD is null, use opendir ("/proc/self/fd/...",
-   falling back on fchdir metadata.  Otherwise, CWD is a saved version
-   of the working directory; use fchdir/opendir(".")/restore_cwd(CWD).  */
+ 
 static DIR *
 fdopendir_with_dup (int fd, int older_dupfd, struct saved_cwd const *cwd)
 {
@@ -192,9 +144,7 @@ fdopendir_with_dup (int fd, int older_dupfd, struct saved_cwd const *cwd)
     }
 }
 
-/* Like fdopendir, except the result controls a clone of FD.  It is
-   the caller's responsibility both to close FD and (if the result is
-   not null) to closedir the result.  */
+ 
 static DIR *
 fd_clone_opendir (int fd, struct saved_cwd const *cwd)
 {
@@ -217,10 +167,7 @@ fd_clone_opendir (int fd, struct saved_cwd const *cwd)
           char const *name = _gl_directory_name (fd);
           DIR *dp = name ? opendir (name) : NULL;
 
-          /* The caller has done an elaborate dance to arrange for opendir to
-             consume just the right file descriptor.  If dirfd returns -1,
-             though, we're on a system like mingw where opendir does not
-             consume a file descriptor.  Consume it via 'dup' instead.  */
+           
           if (dp && dirfd (dp) < 0)
             dup (fd);
 
@@ -248,14 +195,14 @@ fd_clone_opendir (int fd, struct saved_cwd const *cwd)
 
 # endif
 
-#else /* HAVE_FDOPENDIR */
+#else  
 
 # include <errno.h>
 # include <sys/stat.h>
 
 # undef fdopendir
 
-/* Like fdopendir, but work around GNU/Hurd bug by validating FD.  */
+ 
 
 DIR *
 rpl_fdopendir (int fd)
@@ -271,4 +218,4 @@ rpl_fdopendir (int fd)
   return fdopendir (fd);
 }
 
-#endif /* HAVE_FDOPENDIR */
+#endif  

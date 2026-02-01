@@ -1,27 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- *  ChromeOS Privacy Screen support
- *
- * Copyright (C) 2022 Google LLC
- *
- * This is the Chromeos privacy screen provider, present on certain chromebooks,
- * represented by a GOOG0010 device in the ACPI. This ACPI device, if present,
- * will cause the i915 drm driver to probe defer until this driver registers
- * the privacy-screen.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <drm/drm_privacy_screen_driver.h>
 
-/*
- * The DSM (Device Specific Method) constants below are the agreed API with
- * the firmware team, on how to control privacy screen using ACPI methods.
- */
-#define PRIV_SCRN_DSM_REVID		1	/* DSM version */
-#define PRIV_SCRN_DSM_FN_GET_STATUS	1	/* Get privacy screen status */
-#define PRIV_SCRN_DSM_FN_ENABLE		2	/* Enable privacy screen */
-#define PRIV_SCRN_DSM_FN_DISABLE	3	/* Disable privacy screen */
+ 
+#define PRIV_SCRN_DSM_REVID		1	 
+#define PRIV_SCRN_DSM_FN_GET_STATUS	1	 
+#define PRIV_SCRN_DSM_FN_ENABLE		2	 
+#define PRIV_SCRN_DSM_FN_DISABLE	3	 
 
 static const guid_t chromeos_privacy_screen_dsm_guid =
 		    GUID_INIT(0xc7033113, 0x8720, 0x4ceb,
@@ -131,7 +119,7 @@ static void chromeos_privacy_screen_remove(struct acpi_device *adev)
 }
 
 static const struct acpi_device_id chromeos_privacy_screen_device_ids[] = {
-	{"GOOG0010", 0}, /* Google's electronic privacy screen for eDP-1 */
+	{"GOOG0010", 0},  
 	{}
 };
 MODULE_DEVICE_TABLE(acpi, chromeos_privacy_screen_device_ids);

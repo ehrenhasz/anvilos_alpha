@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Routines for control of the AK4117 via 4-wire serial interface
- *  IEC958 (S/PDIF) receiver by Asahi Kasei
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/delay.h>
@@ -18,7 +14,7 @@ MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_DESCRIPTION("AK4117 IEC958 (S/PDIF) receiver by Asahi Kasei");
 MODULE_LICENSE("GPL");
 
-#define AK4117_ADDR			0x00 /* fixed address */
+#define AK4117_ADDR			0x00  
 
 static void snd_ak4117_timer(struct timer_list *t);
 
@@ -112,15 +108,15 @@ void snd_ak4117_reinit(struct ak4117 *chip)
 
 	del_timer(&chip->timer);
 	chip->init = 1;
-	/* bring the chip to reset state and powerdown state */
+	 
 	reg_write(chip, AK4117_REG_PWRDN, 0);
 	udelay(200);
-	/* release reset, but leave powerdown */
+	 
 	reg_write(chip, AK4117_REG_PWRDN, (old | AK4117_RST) & ~AK4117_PWN);
 	udelay(200);
 	for (reg = 1; reg < 5; reg++)
 		reg_write(chip, reg, chip->regmap[reg]);
-	/* release powerdown, everything is initialized now */
+	 
 	reg_write(chip, AK4117_REG_PWRDN, old | AK4117_RST | AK4117_PWN);
 	chip->init = 0;
 	mod_timer(&chip->timer, 1 + jiffies);
@@ -305,7 +301,7 @@ static int snd_ak4117_spdif_qget(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-/* Don't forget to change AK4117_CONTROLS define!!! */
+ 
 static const struct snd_kcontrol_new snd_ak4117_iec958_controls[] = {
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_PCM,
@@ -452,7 +448,7 @@ int snd_ak4117_check_rate_and_errors(struct ak4117 *ak4117, unsigned int flags)
 		goto __rate;
 	rcs0 = reg_read(ak4117, AK4117_REG_RCS0);
 	rcs2 = reg_read(ak4117, AK4117_REG_RCS2);
-	// printk(KERN_DEBUG "AK IRQ: rcs0 = 0x%x, rcs1 = 0x%x, rcs2 = 0x%x\n", rcs0, rcs1, rcs2);
+	
 	spin_lock_irqsave(&ak4117->lock, _flags);
 	if (rcs0 & AK4117_PAR)
 		ak4117->errors[AK4117_PARITY_ERRORS]++;
@@ -480,7 +476,7 @@ int snd_ak4117_check_rate_and_errors(struct ak4117 *ak4117, unsigned int flags)
 	if (rcs2 & AK4117_QCRC)
 		snd_ctl_notify(ak4117->card, SNDRV_CTL_EVENT_MASK_VALUE, &ak4117->kctls[3]->id);
 
-	/* rate change */
+	 
 	if (c1 & 0x0f)
 		snd_ctl_notify(ak4117->card, SNDRV_CTL_EVENT_MASK_VALUE, &ak4117->kctls[4]->id);
 
@@ -500,12 +496,12 @@ int snd_ak4117_check_rate_and_errors(struct ak4117 *ak4117, unsigned int flags)
 		ak4117->change_callback(ak4117, c0, c1);
 
       __rate:
-	/* compare rate */
+	 
 	res = external_rate(rcs1);
 	if (!(flags & AK4117_CHECK_NO_RATE) && runtime && runtime->rate != res) {
 		snd_pcm_stream_lock_irqsave(ak4117->substream, _flags);
 		if (snd_pcm_running(ak4117->substream)) {
-			// printk(KERN_DEBUG "rate changed (%i <- %i)\n", runtime->rate, res);
+			
 			snd_pcm_stop(ak4117->substream, SNDRV_PCM_STATE_DRAINING);
 			wake_up(&runtime->sleep);
 			res = 1;

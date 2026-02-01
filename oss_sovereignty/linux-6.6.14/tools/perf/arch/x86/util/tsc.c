@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/types.h>
 #include <math.h>
 #include <string.h>
@@ -17,13 +17,7 @@ u64 rdtsc(void)
 	return low | ((u64)high) << 32;
 }
 
-/*
- * Derive the TSC frequency in Hz from the /proc/cpuinfo, for example:
- * ...
- * model name      : Intel(R) Xeon(R) Gold 6154 CPU @ 3.00GHz
- * ...
- * will return 3000000000.
- */
+ 
 static double cpuinfo_tsc_freq(void)
 {
 	double result = 0;
@@ -70,17 +64,14 @@ double arch_get_tsc_freq(void)
 	if (!strstr(vendor, "Intel"))
 		return 0;
 
-	/*
-	 * Don't support Time Stamp Counter and
-	 * Nominal Core Crystal Clock Information Leaf.
-	 */
+	 
 	if (lvl < 0x15) {
 		tsc = cpuinfo_tsc_freq();
 		return tsc;
 	}
 
 	cpuid(0x15, 0, &a, &b, &c, &d);
-	/* TSC frequency is not enumerated */
+	 
 	if (!a || !b || !c) {
 		tsc = cpuinfo_tsc_freq();
 		return tsc;

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  linux/include/linux/serial_8250.h
- *
- *  Copyright (C) 2004 Russell King
- */
+ 
+ 
 #ifndef _LINUX_SERIAL_8250_H
 #define _LINUX_SERIAL_8250_H
 
@@ -14,38 +10,23 @@
 
 struct uart_8250_port;
 
-/*
- * This is the platform device platform_data structure
- *
- * @mapsize:	Port size for ioremap()
- * @bugs:	Port bugs
- *
- * @dl_read: ``u32 ()(struct uart_8250_port *up)``
- *
- *	UART divisor latch read.
- *
- * @dl_write: ``void ()(struct uart_8250_port *up, u32 value)``
- *
- *	Write @value into UART divisor latch.
- *
- *	Locking: Caller holds port's lock.
- */
+ 
 struct plat_serial8250_port {
-	unsigned long	iobase;		/* io base address */
-	void __iomem	*membase;	/* ioremap cookie or NULL */
-	resource_size_t	mapbase;	/* resource base */
+	unsigned long	iobase;		 
+	void __iomem	*membase;	 
+	resource_size_t	mapbase;	 
 	resource_size_t	mapsize;
-	unsigned int	uartclk;	/* UART clock rate */
-	unsigned int	irq;		/* interrupt number */
-	unsigned long	irqflags;	/* request_irq flags */
+	unsigned int	uartclk;	 
+	unsigned int	irq;		 
+	unsigned long	irqflags;	 
 	void            *private_data;
-	unsigned char	regshift;	/* register shift */
-	unsigned char	iotype;		/* UPIO_* */
+	unsigned char	regshift;	 
+	unsigned char	iotype;		 
 	unsigned char	hub6;
-	unsigned char	has_sysrq;	/* supports magic SysRq */
-	unsigned int	type;		/* If UPF_FIXED_TYPE */
-	upf_t		flags;		/* UPF_* flags */
-	u16		bugs;		/* port bugs */
+	unsigned char	has_sysrq;	 
+	unsigned int	type;		 
+	upf_t		flags;		 
+	u16		bugs;		 
 	unsigned int	(*serial_in)(struct uart_port *, int);
 	void		(*serial_out)(struct uart_port *, int, int);
 	u32		(*dl_read)(struct uart_8250_port *up);
@@ -62,10 +43,7 @@ struct plat_serial8250_port {
 	void		(*handle_break)(struct uart_port *);
 };
 
-/*
- * Allocate 8250 platform device IDs.  Nothing is implied by
- * the numbering here, except for the legacy entry being -1.
- */
+ 
 enum {
 	PLAT8250_DEV_LEGACY = -1,
 	PLAT8250_DEV_PLATFORM,
@@ -83,14 +61,7 @@ enum {
 struct uart_8250_dma;
 struct uart_8250_port;
 
-/**
- * 8250 core driver operations
- *
- * @setup_irq()		Setup irq handling. The universal 8250 driver links this
- *			port to the irq chain. Other drivers may @request_irq().
- * @release_irq()	Undo irq handling. The universal 8250 driver unlinks
- *			the port from the irq chain.
- */
+ 
 struct uart_8250_ops {
 	int		(*setup_irq)(struct uart_8250_port *);
 	void		(*release_irq)(struct uart_8250_port *);
@@ -98,55 +69,34 @@ struct uart_8250_ops {
 };
 
 struct uart_8250_em485 {
-	struct hrtimer		start_tx_timer; /* "rs485 start tx" timer */
-	struct hrtimer		stop_tx_timer;  /* "rs485 stop tx" timer */
-	struct hrtimer		*active_timer;  /* pointer to active timer */
-	struct uart_8250_port	*port;          /* for hrtimer callbacks */
-	unsigned int		tx_stopped:1;	/* tx is currently stopped */
+	struct hrtimer		start_tx_timer;  
+	struct hrtimer		stop_tx_timer;   
+	struct hrtimer		*active_timer;   
+	struct uart_8250_port	*port;           
+	unsigned int		tx_stopped:1;	 
 };
 
-/*
- * This should be used by drivers which want to register
- * their own 8250 ports without registering their own
- * platform device.  Using these will make your driver
- * dependent on the 8250 driver.
- *
- * @dl_read: ``u32 ()(struct uart_8250_port *port)``
- *
- *	UART divisor latch read.
- *
- * @dl_write: ``void ()(struct uart_8250_port *port, u32 value)``
- *
- *	Write @value into UART divisor latch.
- *
- *	Locking: Caller holds port's lock.
- */
+ 
 struct uart_8250_port {
 	struct uart_port	port;
-	struct timer_list	timer;		/* "no irq" timer */
-	struct list_head	list;		/* ports on this IRQ */
-	u32			capabilities;	/* port capabilities */
-	u16			bugs;		/* port bugs */
-	unsigned int		tx_loadsz;	/* transmit fifo load size */
+	struct timer_list	timer;		 
+	struct list_head	list;		 
+	u32			capabilities;	 
+	u16			bugs;		 
+	unsigned int		tx_loadsz;	 
 	unsigned char		acr;
 	unsigned char		fcr;
 	unsigned char		ier;
 	unsigned char		lcr;
 	unsigned char		mcr;
-	unsigned char		cur_iotype;	/* Running I/O type */
+	unsigned char		cur_iotype;	 
 	unsigned int		rpm_tx_active;
-	unsigned char		canary;		/* non-zero during system sleep
-						 *   if no_console_suspend
-						 */
+	unsigned char		canary;		 
 	unsigned char		probe;
 	struct mctrl_gpios	*gpios;
 #define UART_PROBE_RSA	(1 << 0)
 
-	/*
-	 * Some bits in registers are cleared on a read, so they must
-	 * be saved whenever the register is read but the bits will not
-	 * be immediately processed.
-	 */
+	 
 #define LSR_SAVE_FLAGS UART_LSR_BRK_ERROR_BITS
 	u16			lsr_saved_flags;
 	u16			lsr_save_mask;
@@ -156,7 +106,7 @@ struct uart_8250_port {
 	struct uart_8250_dma	*dma;
 	const struct uart_8250_ops *ops;
 
-	/* 8250 specific callbacks */
+	 
 	u32			(*dl_read)(struct uart_8250_port *up);
 	void			(*dl_write)(struct uart_8250_port *up, u32 value);
 
@@ -164,7 +114,7 @@ struct uart_8250_port {
 	void			(*rs485_start_tx)(struct uart_8250_port *);
 	void			(*rs485_stop_tx)(struct uart_8250_port *);
 
-	/* Serial port overrun backoff */
+	 
 	struct delayed_work overrun_backoff;
 	u32 overrun_backoff_time_ms;
 };

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  cx18 functions for DVB support
- *
- *  Copyright (c) 2008 Steven Toth <stoth@linuxtv.org>
- */
+ 
+ 
 
 #include "cx18-driver.h"
 

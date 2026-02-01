@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include "udp_limit.skel.h"
 
@@ -26,9 +26,7 @@ void test_udp_limit(void)
 	if (!ASSERT_OK_PTR(skel->links.sock_release, "cg_attach_sock_release"))
 		goto close_skeleton;
 
-	/* BPF program enforces a single UDP socket per cgroup,
-	 * verify that.
-	 */
+	 
 	fd1 = socket(AF_INET, SOCK_DGRAM, 0);
 	if (!ASSERT_GE(fd1, 0, "socket(fd1)"))
 		goto close_skeleton;
@@ -37,7 +35,7 @@ void test_udp_limit(void)
 	if (!ASSERT_LT(fd2, 0, "socket(fd2)"))
 		goto close_skeleton;
 
-	/* We can reopen again after close. */
+	 
 	close(fd1);
 	fd1 = -1;
 
@@ -45,17 +43,11 @@ void test_udp_limit(void)
 	if (!ASSERT_GE(fd1, 0, "socket(fd1-again)"))
 		goto close_skeleton;
 
-	/* Make sure the program was invoked the expected
-	 * number of times:
-	 * - open fd1           - BPF_CGROUP_INET_SOCK_CREATE
-	 * - attempt to openfd2 - BPF_CGROUP_INET_SOCK_CREATE
-	 * - close fd1          - BPF_CGROUP_INET_SOCK_RELEASE
-	 * - open fd1 again     - BPF_CGROUP_INET_SOCK_CREATE
-	 */
+	 
 	if (!ASSERT_EQ(skel->bss->invocations, 4, "bss-invocations"))
 		goto close_skeleton;
 
-	/* We should still have a single socket in use */
+	 
 	if (!ASSERT_EQ(skel->bss->in_use, 1, "bss-in_use"))
 		goto close_skeleton;
 

@@ -1,68 +1,13 @@
-/*
- * ---------------------------------------------------------------------------
- * Copyright (c) 1998-2007, Brian Gladman, Worcester, UK. All rights reserved.
- *
- * LICENSE TERMS
- *
- * The free distribution and use of this software is allowed (with or without
- * changes) provided that:
- *
- *  1. source code distributions include the above copyright notice, this
- *	 list of conditions and the following disclaimer;
- *
- *  2. binary distributions include the above copyright notice, this list
- *	 of conditions and the following disclaimer in their documentation;
- *
- *  3. the name of the copyright holder is not used to endorse products
- *	 built using this software without specific written permission.
- *
- * DISCLAIMER
- *
- * This software is provided 'as is' with no explicit or implied warranties
- * in respect of its properties, including, but not limited to, correctness
- * and/or fitness for purpose.
- * ---------------------------------------------------------------------------
- * Issue Date: 20/12/2007
- */
+ 
 
 #include <aes/aes_impl.h>
 #include "aesopt.h"
 #include "aestab.h"
 #include "aestab2.h"
 
-/*
- *	Initialise the key schedule from the user supplied key. The key
- *	length can be specified in bytes, with legal values of 16, 24
- *	and 32, or in bits, with legal values of 128, 192 and 256. These
- *	values correspond with Nk values of 4, 6 and 8 respectively.
- *
- *	The following macros implement a single cycle in the key
- *	schedule generation process. The number of cycles needed
- *	for each cx->n_col and nk value is:
- *
- *	nk =		4  5  6  7  8
- *	------------------------------
- *	cx->n_col = 4	10  9  8  7  7
- *	cx->n_col = 5	14 11 10  9  9
- *	cx->n_col = 6	19 15 12 11 11
- *	cx->n_col = 7	21 19 16 13 14
- *	cx->n_col = 8	29 23 19 17 14
- */
+ 
 
-/*
- * OpenSolaris changes
- * 1. Added header files aes_impl.h and aestab2.h
- * 2. Changed uint_8t and uint_32t to uint8_t and uint32_t
- * 3. Remove code under ifdef USE_VIA_ACE_IF_PRESENT (always undefined)
- * 4. Removed always-defined ifdefs FUNCS_IN_C, ENC_KEYING_IN_C,
- *	AES_128, AES_192, AES_256, AES_VAR defines
- * 5. Changed aes_encrypt_key* aes_decrypt_key* functions to "static void"
- * 6. Changed N_COLS to MAX_AES_NB
- * 7. Replaced functions aes_encrypt_key and aes_decrypt_key with
- *	OpenSolaris-compatible functions rijndael_key_setup_enc_amd64 and
- *	rijndael_key_setup_dec_amd64
- * 8. cstyled code and removed lint warnings
- */
+ 
 
 #if defined(REDUCE_CODE_SIZE)
 #define	ls_box ls_sub
@@ -75,7 +20,7 @@
 #ifdef DEC_KS_UNROLL
 #undef DEC_KS_UNROLL
 #endif
-#endif	/* REDUCE_CODE_SIZE */
+#endif	 
 
 
 #define	ke4(k, i) \
@@ -107,7 +52,7 @@ aes_encrypt_key128(const unsigned char *key, uint32_t rk[])
 		for (i = 0; i < 9; ++i)
 			ke4(rk, i);
 	}
-#endif	/* ENC_KS_UNROLL */
+#endif	 
 	ke4(rk, 9);
 }
 
@@ -148,7 +93,7 @@ aes_encrypt_key192(const unsigned char *key, uint32_t rk[])
 		for (i = 0; i < 7; ++i)
 			ke6(rk, i);
 	}
-#endif	/* ENC_KS_UNROLL */
+#endif	 
 	kef6(rk, 7);
 }
 
@@ -193,23 +138,12 @@ aes_encrypt_key256(const unsigned char *key, uint32_t rk[])
 		for (i = 0; i < 6; ++i)
 			ke8(rk,  i);
 	}
-#endif	/* ENC_KS_UNROLL */
+#endif	 
 	kef8(rk, 6);
 }
 
 
-/*
- * Expand the cipher key into the encryption key schedule.
- *
- * Return the number of rounds for the given cipher key size.
- * The size of the key schedule depends on the number of rounds
- * (which can be computed from the size of the key), i.e. 4 * (Nr + 1).
- *
- * Parameters:
- * rk		AES key schedule 32-bit array to be initialized
- * cipherKey	User key
- * keyBits	AES key size (128, 192, or 256 bits)
- */
+ 
 int
 rijndael_key_setup_enc_amd64(uint32_t rk[], const uint32_t cipherKey[],
     int keyBits)
@@ -224,7 +158,7 @@ rijndael_key_setup_enc_amd64(uint32_t rk[], const uint32_t cipherKey[],
 	case 256:
 		aes_encrypt_key256((unsigned char *)&cipherKey[0], rk);
 		return (14);
-	default: /* should never get here */
+	default:  
 		break;
 	}
 
@@ -232,8 +166,8 @@ rijndael_key_setup_enc_amd64(uint32_t rk[], const uint32_t cipherKey[],
 }
 
 
-/* this is used to store the decryption round keys  */
-/* in forward or reverse order */
+ 
+ 
 
 #ifdef AES_REV_DKS
 #define	v(n, i)  ((n) - (i) + 2 * ((i) & 3))
@@ -248,7 +182,7 @@ rijndael_key_setup_enc_amd64(uint32_t rk[], const uint32_t cipherKey[],
 #if defined(dec_imvars)
 #define	d_vars  dec_imvars
 #endif
-#endif	/* FUNCS_IN_C & DEC_KEYING_IN_C */
+#endif	 
 
 
 #define	k4e(k, i) \
@@ -351,7 +285,7 @@ aes_decrypt_key128(const unsigned char *key, uint32_t rk[])
 			rk[i] = inv_mcol(rk[i]);
 #endif
 	}
-#endif	/* DEC_KS_UNROLL */
+#endif	 
 }
 
 
@@ -542,22 +476,11 @@ aes_decrypt_key256(const unsigned char *key, uint32_t rk[])
 			rk[i] = inv_mcol(rk[i]);
 #endif
 	}
-#endif	/* DEC_KS_UNROLL */
+#endif	 
 }
 
 
-/*
- * Expand the cipher key into the decryption key schedule.
- *
- * Return the number of rounds for the given cipher key size.
- * The size of the key schedule depends on the number of rounds
- * (which can be computed from the size of the key), i.e. 4 * (Nr + 1).
- *
- * Parameters:
- * rk		AES key schedule 32-bit array to be initialized
- * cipherKey	User key
- * keyBits	AES key size (128, 192, or 256 bits)
- */
+ 
 int
 rijndael_key_setup_dec_amd64(uint32_t rk[], const uint32_t cipherKey[],
     int keyBits)
@@ -572,7 +495,7 @@ rijndael_key_setup_dec_amd64(uint32_t rk[], const uint32_t cipherKey[],
 	case 256:
 		aes_decrypt_key256((unsigned char *)&cipherKey[0], rk);
 		return (14);
-	default: /* should never get here */
+	default:  
 		break;
 	}
 

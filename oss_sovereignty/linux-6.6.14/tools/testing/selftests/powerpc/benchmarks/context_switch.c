@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Context switch microbenchmark.
- *
- * Copyright (C) 2015 Anton Blanchard <anton@au.ibm.com>, IBM
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <errno.h>
@@ -42,10 +38,7 @@ vector int a, b, c;
 #ifdef __powerpc__
 static int touch_altivec = 1;
 
-/*
- * Note: LTO (Link Time Optimisation) doesn't play well with this function
- * attribute. Be very careful enabling LTO for this test.
- */
+ 
 static void __attribute__((__target__("no-vsx"))) altivec_touch_fn(void)
 {
 	c = a + b;
@@ -491,7 +484,7 @@ int main(int argc, char *argv[])
 	       cpu1, cpu2, touch_fp ?  "yes" : "no", touch_altivec ? "yes" : "no",
 	       touch_vector ? "yes" : "no", touch_vdso ? "yes" : "no");
 
-	/* Create a new process group so we can signal everyone for exit */
+	 
 	setpgid(getpid(), getpid());
 
 	signal(SIGUSR1, sigusr1_handler);

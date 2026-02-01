@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2015 Samsung Electronics Co., Ltd.
-//	      http://www.samsung.com/
-//
-// Exynos - SROM Controller support
-// Author: Pankaj Dubey <pankaj.dubey@samsung.com>
+
+
+
+
+
+
+
 
 #include <linux/io.h>
 #include <linux/init.h>
@@ -17,7 +17,7 @@
 #include "exynos-srom.h"
 
 static const unsigned long exynos_srom_offsets[] = {
-	/* SROM side */
+	 
 	EXYNOS_SROM_BW,
 	EXYNOS_SROM_BC0,
 	EXYNOS_SROM_BC1,
@@ -25,22 +25,13 @@ static const unsigned long exynos_srom_offsets[] = {
 	EXYNOS_SROM_BC3,
 };
 
-/**
- * struct exynos_srom_reg_dump: register dump of SROM Controller registers.
- * @offset: srom register offset from the controller base address.
- * @value: the value of register under the offset.
- */
+ 
 struct exynos_srom_reg_dump {
 	u32     offset;
 	u32     value;
 };
 
-/**
- * struct exynos_srom: platform data for exynos srom controller driver.
- * @dev: platform device pointer
- * @reg_base: srom base address
- * @reg_offset: exynos_srom_reg_dump pointer to hold offset and its value.
- */
+ 
 struct exynos_srom {
 	struct device *dev;
 	void __iomem *reg_base;
@@ -81,7 +72,7 @@ static int exynos_srom_configure_bank(struct exynos_srom *srom,
 				       ARRAY_SIZE(timing)))
 		return -EINVAL;
 
-	bank *= 4; /* Convert bank into shift/offset */
+	bank *= 4;  
 
 	cs = 1 << EXYNOS_SROM_BW__BYTEENABLE__SHIFT;
 	if (width == 2)
@@ -145,10 +136,7 @@ static int exynos_srom_probe(struct platform_device *pdev)
 		}
 	}
 
-	/*
-	 * If any bank failed to configure, we still provide suspend/resume,
-	 * but do not probe child devices
-	 */
+	 
 	if (bad_bank_config)
 		return 0;
 

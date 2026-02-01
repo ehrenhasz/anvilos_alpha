@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* PKCS#8 Private Key parser [RFC 5208].
- *
- * Copyright (C) 2016 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define pr_fmt(fmt) "PKCS8: "fmt
 #include <linux/module.h>
@@ -19,17 +15,14 @@
 
 struct pkcs8_parse_context {
 	struct public_key *pub;
-	unsigned long	data;			/* Start of data */
-	enum OID	last_oid;		/* Last OID encountered */
-	enum OID	algo_oid;		/* Algorithm OID */
+	unsigned long	data;			 
+	enum OID	last_oid;		 
+	enum OID	algo_oid;		 
 	u32		key_size;
 	const void	*key;
 };
 
-/*
- * Note an OID when we find one for later processing when we know how to
- * interpret it.
- */
+ 
 int pkcs8_note_OID(void *context, size_t hdrlen,
 		   unsigned char tag,
 		   const void *value, size_t vlen)
@@ -47,9 +40,7 @@ int pkcs8_note_OID(void *context, size_t hdrlen,
 	return 0;
 }
 
-/*
- * Note the version number of the ASN.1 blob.
- */
+ 
 int pkcs8_note_version(void *context, size_t hdrlen,
 		       unsigned char tag,
 		       const void *value, size_t vlen)
@@ -61,9 +52,7 @@ int pkcs8_note_version(void *context, size_t hdrlen,
 	return 0;
 }
 
-/*
- * Note the public algorithm.
- */
+ 
 int pkcs8_note_algo(void *context, size_t hdrlen,
 		    unsigned char tag,
 		    const void *value, size_t vlen)
@@ -77,9 +66,7 @@ int pkcs8_note_algo(void *context, size_t hdrlen,
 	return 0;
 }
 
-/*
- * Note the key data of the ASN.1 blob.
- */
+ 
 int pkcs8_note_key(void *context, size_t hdrlen,
 		   unsigned char tag,
 		   const void *value, size_t vlen)
@@ -91,9 +78,7 @@ int pkcs8_note_key(void *context, size_t hdrlen,
 	return 0;
 }
 
-/*
- * Parse a PKCS#8 private key blob.
- */
+ 
 static struct public_key *pkcs8_parse(const void *data, size_t datalen)
 {
 	struct pkcs8_parse_context ctx;
@@ -109,7 +94,7 @@ static struct public_key *pkcs8_parse(const void *data, size_t datalen)
 
 	ctx.data = (unsigned long)data;
 
-	/* Attempt to decode the private key */
+	 
 	ret = asn1_ber_decoder(&pkcs8_decoder, &ctx, data, datalen);
 	if (ret < 0)
 		goto error_decode;
@@ -130,9 +115,7 @@ error:
 	return ERR_PTR(ret);
 }
 
-/*
- * Attempt to parse a data blob for a key as a PKCS#8 private key.
- */
+ 
 static int pkcs8_key_preparse(struct key_preparsed_payload *prep)
 {
 	struct public_key *pub;
@@ -144,7 +127,7 @@ static int pkcs8_key_preparse(struct key_preparsed_payload *prep)
 	pr_devel("Cert Key Algo: %s\n", pub->pkey_algo);
 	pub->id_type = "PKCS8";
 
-	/* We're pinning the module by being linked against it */
+	 
 	__module_get(public_key_subtype.owner);
 	prep->payload.data[asym_subtype] = &public_key_subtype;
 	prep->payload.data[asym_key_ids] = NULL;
@@ -160,9 +143,7 @@ static struct asymmetric_key_parser pkcs8_key_parser = {
 	.parse	= pkcs8_key_preparse,
 };
 
-/*
- * Module stuff
- */
+ 
 static int __init pkcs8_key_init(void)
 {
 	return register_asymmetric_key_parser(&pkcs8_key_parser);

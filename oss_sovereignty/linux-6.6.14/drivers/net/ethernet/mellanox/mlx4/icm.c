@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2005, 2006, 2007, 2008 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2006, 2007 Cisco Systems, Inc.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/errno.h>
 #include <linux/mm.h>
@@ -42,11 +11,7 @@
 #include "icm.h"
 #include "fw.h"
 
-/*
- * We allocate in as big chunks as we can, up to a maximum of 256 KB
- * per chunk. Note that the chunks are not necessarily in contiguous
- * physical memory.
- */
+ 
 enum {
 	MLX4_ICM_ALLOC_SIZE	= 1 << 18,
 	MLX4_TABLE_CHUNK_SIZE	= 1 << 18,
@@ -138,7 +103,7 @@ struct mlx4_icm *mlx4_alloc_icm(struct mlx4_dev *dev, int npages,
 	gfp_t mask;
 	int ret;
 
-	/* We use sg_set_buf for coherent allocs, which assumes low memory */
+	 
 	BUG_ON(coherent && (gfp_mask & __GFP_HIGHMEM));
 
 	icm = kmalloc_node(sizeof(*icm),
@@ -347,11 +312,7 @@ void *mlx4_table_find(struct mlx4_icm_table *table, u32 obj,
 				len = sg_dma_len(&chunk->sg[i]);
 				dma_addr = sg_dma_address(&chunk->sg[i]);
 
-				/* XXX: we should never do this for highmem
-				 * allocation.  This function either needs
-				 * to be split, or the kernel virtual address
-				 * return needs to be made optional.
-				 */
+				 
 				page = sg_page(&chunk->sg[i]);
 				addr = lowmem_page_address(page);
 			}
@@ -362,11 +323,7 @@ void *mlx4_table_find(struct mlx4_icm_table *table, u32 obj,
 				dma_offset -= len;
 			}
 
-			/*
-			 * DMA mapping can merge pages but not split them,
-			 * so if we found the page, dma_handle has already
-			 * been assigned to.
-			 */
+			 
 			if (len > offset)
 				goto out;
 			offset -= len;
@@ -456,10 +413,7 @@ int mlx4_init_icm_table(struct mlx4_dev *dev, struct mlx4_icm_table *table,
 			goto err;
 		}
 
-		/*
-		 * Add a reference to this ICM chunk so that it never
-		 * gets freed (since it contains reserved firmware objects).
-		 */
+		 
 		++table->icm[i]->refcount;
 	}
 

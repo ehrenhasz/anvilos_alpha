@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
-* Copyright (c) 2016 MediaTek Inc.
-* Author: Andrew-CT Chen <andrew-ct.chen@mediatek.com>
-*/
+
+ 
 #include <linux/clk.h>
 #include <linux/debugfs.h>
 #include <linux/firmware.h>
@@ -19,32 +16,28 @@
 
 #include "mtk_vpu.h"
 
-/*
- * VPU (video processor unit) is a tiny processor controlling video hardware
- * related to video codec, scaling and color format converting.
- * VPU interfaces with other blocks by share memory and interrupt.
- */
+ 
 
 #define INIT_TIMEOUT_MS		2000U
 #define IPI_TIMEOUT_MS		2000U
 #define VPU_IDLE_TIMEOUT_MS	1000U
 #define VPU_FW_VER_LEN		16
 
-/* maximum program/data TCM (Tightly-Coupled Memory) size */
+ 
 #define VPU_PTCM_SIZE		(96 * SZ_1K)
 #define VPU_DTCM_SIZE		(32 * SZ_1K)
-/* the offset to get data tcm address */
+ 
 #define VPU_DTCM_OFFSET		0x18000UL
-/* daynamic allocated maximum extended memory size */
+ 
 #define VPU_EXT_P_SIZE		SZ_1M
 #define VPU_EXT_D_SIZE		SZ_4M
-/* maximum binary firmware size */
+ 
 #define VPU_P_FW_SIZE		(VPU_PTCM_SIZE + VPU_EXT_P_SIZE)
 #define VPU_D_FW_SIZE		(VPU_DTCM_SIZE + VPU_EXT_D_SIZE)
-/* the size of share buffer between Host and  VPU */
+ 
 #define SHARE_BUF_SIZE		48
 
-/* binary firmware name */
+ 
 #define VPU_P_FW		"vpu_p.bin"
 #define VPU_D_FW		"vpu_d.bin"
 #define VPU_P_FW_NEW		"mediatek/mt8173/vpu_p.bin"
@@ -65,83 +58,44 @@
 #define VPU_RA_REG		0x0068
 #define VPU_WDT_REG		0x0084
 
-/* vpu inter-processor communication interrupt */
+ 
 #define VPU_IPC_INT		BIT(8)
-/* vpu idle state */
+ 
 #define VPU_IDLE_STATE		BIT(23)
 
-/**
- * enum vpu_fw_type - VPU firmware type
- *
- * @P_FW: program firmware
- * @D_FW: data firmware
- *
- */
+ 
 enum vpu_fw_type {
 	P_FW,
 	D_FW,
 };
 
-/**
- * struct vpu_mem - VPU extended program/data memory information
- *
- * @va:		the kernel virtual memory address of VPU extended memory
- * @pa:		the physical memory address of VPU extended memory
- *
- */
+ 
 struct vpu_mem {
 	void *va;
 	dma_addr_t pa;
 };
 
-/**
- * struct vpu_regs - VPU TCM and configuration registers
- *
- * @tcm:	the register for VPU Tightly-Coupled Memory
- * @cfg:	the register for VPU configuration
- * @irq:	the irq number for VPU interrupt
- */
+ 
 struct vpu_regs {
 	void __iomem *tcm;
 	void __iomem *cfg;
 	int irq;
 };
 
-/**
- * struct vpu_wdt_handler - VPU watchdog reset handler
- *
- * @reset_func:	reset handler
- * @priv:	private data
- */
+ 
 struct vpu_wdt_handler {
 	void (*reset_func)(void *);
 	void *priv;
 };
 
-/**
- * struct vpu_wdt - VPU watchdog workqueue
- *
- * @handler:	VPU watchdog reset handler
- * @ws:		workstruct for VPU watchdog
- * @wq:		workqueue for VPU watchdog
- */
+ 
 struct vpu_wdt {
 	struct vpu_wdt_handler handler[VPU_RST_MAX];
 	struct work_struct ws;
 	struct workqueue_struct *wq;
 };
 
-/**
- * struct vpu_run - VPU initialization status
- *
- * @signaled:		the signal of vpu initialization completed
- * @fw_ver:		VPU firmware version
- * @dec_capability:	decoder capability which is not used for now and
- *			the value is reserved for future use
- * @enc_capability:	encoder capability which is not used for now and
- *			the value is reserved for future use
- * @wq:			wait queue for VPU initialization status
- */
+ 
 struct vpu_run {
 	u32 signaled;
 	char fw_ver[VPU_FW_VER_LEN];
@@ -150,62 +104,21 @@ struct vpu_run {
 	wait_queue_head_t wq;
 };
 
-/**
- * struct vpu_ipi_desc - VPU IPI descriptor
- *
- * @handler:	IPI handler
- * @name:	the name of IPI handler
- * @priv:	the private data of IPI handler
- */
+ 
 struct vpu_ipi_desc {
 	ipi_handler_t handler;
 	const char *name;
 	void *priv;
 };
 
-/**
- * struct share_obj - DTCM (Data Tightly-Coupled Memory) buffer shared with
- *		      AP and VPU
- *
- * @id:		IPI id
- * @len:	share buffer length
- * @share_buf:	share buffer data
- */
+ 
 struct share_obj {
 	s32 id;
 	u32 len;
 	unsigned char share_buf[SHARE_BUF_SIZE];
 };
 
-/**
- * struct mtk_vpu - vpu driver data
- * @extmem:		VPU extended memory information
- * @reg:		VPU TCM and configuration registers
- * @run:		VPU initialization status
- * @wdt:		VPU watchdog workqueue
- * @ipi_desc:		VPU IPI descriptor
- * @recv_buf:		VPU DTCM share buffer for receiving. The
- *			receive buffer is only accessed in interrupt context.
- * @send_buf:		VPU DTCM share buffer for sending
- * @dev:		VPU struct device
- * @clk:		VPU clock on/off
- * @fw_loaded:		indicate VPU firmware loaded
- * @enable_4GB:		VPU 4GB mode on/off
- * @vpu_mutex:		protect mtk_vpu (except recv_buf) and ensure only
- *			one client to use VPU service at a time. For example,
- *			suppose a client is using VPU to decode VP8.
- *			If the other client wants to encode VP8,
- *			it has to wait until VP8 decode completes.
- * @wdt_refcnt:		WDT reference count to make sure the watchdog can be
- *			disabled if no other client is using VPU service
- * @ack_wq:		The wait queue for each codec and mdp. When sleeping
- *			processes wake up, they will check the condition
- *			"ipi_id_ack" to run the corresponding action or
- *			go back to sleep.
- * @ipi_id_ack:		The ACKs for registered IPI function sending
- *			interrupt to VPU
- *
- */
+ 
 struct mtk_vpu {
 	struct vpu_mem extmem[2];
 	struct vpu_regs reg;
@@ -218,7 +131,7 @@ struct mtk_vpu {
 	struct clk *clk;
 	bool fw_loaded;
 	bool enable_4GB;
-	struct mutex vpu_mutex; /* for protecting vpu data data structure */
+	struct mutex vpu_mutex;  
 	u32 wdt_refcnt;
 	wait_queue_head_t ack_wq;
 	bool ipi_id_ack[IPI_MAX];
@@ -241,7 +154,7 @@ static inline bool vpu_running(struct mtk_vpu *vpu)
 
 static void vpu_clock_disable(struct mtk_vpu *vpu)
 {
-	/* Disable VPU watchdog */
+	 
 	mutex_lock(&vpu->vpu_mutex);
 	if (!--vpu->wdt_refcnt)
 		vpu_cfg_writel(vpu,
@@ -259,7 +172,7 @@ static int vpu_clock_enable(struct mtk_vpu *vpu)
 	ret = clk_enable(vpu->clk);
 	if (ret)
 		return ret;
-	/* Enable VPU watchdog */
+	 
 	mutex_lock(&vpu->vpu_mutex);
 	if (!vpu->wdt_refcnt++)
 		vpu_cfg_writel(vpu,
@@ -338,7 +251,7 @@ int vpu_ipi_send(struct platform_device *pdev,
 
 	mutex_lock(&vpu->vpu_mutex);
 
-	 /* Wait until VPU receives the last command */
+	  
 	timeout = jiffies + msecs_to_jiffies(IPI_TIMEOUT_MS);
 	do {
 		if (time_after(jiffies, timeout)) {
@@ -354,12 +267,12 @@ int vpu_ipi_send(struct platform_device *pdev,
 	writel(id, &send_obj->id);
 
 	vpu->ipi_id_ack[id] = false;
-	/* send the command to VPU */
+	 
 	vpu_cfg_writel(vpu, 0x1, HOST_TO_VPU);
 
 	mutex_unlock(&vpu->vpu_mutex);
 
-	/* wait for VPU's ACK */
+	 
 	timeout = msecs_to_jiffies(IPI_TIMEOUT_MS);
 	ret = wait_event_timeout(vpu->ack_wq, vpu->ipi_id_ack[id], timeout);
 	vpu->ipi_id_ack[id] = false;
@@ -495,7 +408,7 @@ struct platform_device *vpu_get_plat_device(struct platform_device *pdev)
 }
 EXPORT_SYMBOL_GPL(vpu_get_plat_device);
 
-/* load vpu program/data memory */
+ 
 static int load_requested_vpu(struct mtk_vpu *vpu,
 			      u8 fw_type)
 {
@@ -531,10 +444,10 @@ static int load_requested_vpu(struct mtk_vpu *vpu,
 	dev_dbg(vpu->dev, "Downloaded fw %s size: %zu.\n",
 		fw_name,
 		dl_size);
-	/* reset VPU */
+	 
 	vpu_cfg_writel(vpu, 0x0, VPU_RESET);
 
-	/* handle extended firmware size */
+	 
 	if (dl_size > tcm_size) {
 		dev_dbg(vpu->dev, "fw size %zu > limited fw size %zu\n",
 			dl_size, tcm_size);
@@ -546,7 +459,7 @@ static int load_requested_vpu(struct mtk_vpu *vpu,
 	if (fw_type == D_FW)
 		dest += VPU_DTCM_OFFSET;
 	memcpy(dest, vpu_fw->data, dl_size);
-	/* download to extended memory if need */
+	 
 	if (extra_fw_size > 0) {
 		dest = vpu->extmem[fw_type].va;
 		dev_dbg(vpu->dev, "download extended memory type %x\n",
@@ -593,14 +506,14 @@ int vpu_load_firmware(struct platform_device *pdev)
 
 	run->signaled = false;
 	dev_dbg(vpu->dev, "firmware request\n");
-	/* Downloading program firmware to device*/
+	 
 	ret = load_requested_vpu(vpu, P_FW);
 	if (ret < 0) {
 		dev_err(dev, "Failed to request %s, %d\n", VPU_P_FW, ret);
 		goto OUT_LOAD_FW;
 	}
 
-	/* Downloading data firmware to device */
+	 
 	ret = load_requested_vpu(vpu, D_FW);
 	if (ret < 0) {
 		dev_err(dev, "Failed to request %s, %d\n", VPU_D_FW, ret);
@@ -608,7 +521,7 @@ int vpu_load_firmware(struct platform_device *pdev)
 	}
 
 	vpu->fw_loaded = true;
-	/* boot up vpu */
+	 
 	vpu_cfg_writel(vpu, 0x1, VPU_RESET);
 
 	ret = wait_event_interruptible_timeout(run->wq,
@@ -664,7 +577,7 @@ static ssize_t vpu_debug_read(struct file *file, char __user *user_buf,
 		return 0;
 	}
 
-	/* vpu register status */
+	 
 	running = vpu_running(vpu);
 	pc = vpu_cfg_readl(vpu, VPU_PC_REG);
 	wdt = vpu_cfg_readl(vpu, VPU_WDT_REG);
@@ -699,7 +612,7 @@ static const struct file_operations vpu_debug_fops = {
 	.open = simple_open,
 	.read = vpu_debug_read,
 };
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 
 static void vpu_free_ext_mem(struct mtk_vpu *vpu, u8 fw_type)
 {
@@ -727,7 +640,7 @@ static int vpu_alloc_ext_mem(struct mtk_vpu *vpu, u32 fw_type)
 		return -ENOMEM;
 	}
 
-	/* Disable extend0. Enable extend1 */
+	 
 	vpu_cfg_writel(vpu, 0x1, vpu_ext_mem0);
 	vpu_cfg_writel(vpu, (vpu->extmem[fw_type].pa & 0xFFFFF000) + offset_4gb,
 		       vpu_ext_mem1);
@@ -762,10 +675,10 @@ static void vpu_ipi_handler(struct mtk_vpu *vpu)
 
 static int vpu_ipi_init(struct mtk_vpu *vpu)
 {
-	/* Disable VPU to host interrupt */
+	 
 	vpu_cfg_writel(vpu, 0x0, VPU_TO_HOST);
 
-	/* shared buffer initialization */
+	 
 	vpu->recv_buf = vpu->reg.tcm + VPU_DTCM_OFFSET;
 	vpu->send_buf = vpu->recv_buf + 1;
 	memset_io(vpu->recv_buf, 0, sizeof(struct share_obj));
@@ -780,11 +693,7 @@ static irqreturn_t vpu_irq_handler(int irq, void *priv)
 	u32 vpu_to_host;
 	int ret;
 
-	/*
-	 * Clock should have been enabled already.
-	 * Enable again in case vpu_ipi_send times out
-	 * and has disabled the clock.
-	 */
+	 
 	ret = clk_enable(vpu->clk);
 	if (ret) {
 		dev_err(vpu->dev, "[VPU] enable clock failed %d\n", ret);
@@ -798,7 +707,7 @@ static irqreturn_t vpu_irq_handler(int irq, void *priv)
 		queue_work(vpu->wdt.wq, &vpu->wdt.ws);
 	}
 
-	/* VPU won't send another interrupt until we set VPU_TO_HOST to 0. */
+	 
 	vpu_cfg_writel(vpu, 0x0, VPU_TO_HOST);
 	clk_disable(vpu->clk);
 
@@ -830,7 +739,7 @@ static int mtk_vpu_probe(struct platform_device *pdev)
 	if (IS_ERR((__force void *)vpu->reg.cfg))
 		return PTR_ERR((__force void *)vpu->reg.cfg);
 
-	/* Get VPU clock */
+	 
 	vpu->clk = devm_clk_get(dev, "main");
 	if (IS_ERR(vpu->clk)) {
 		dev_err(dev, "get vpu clock failed\n");
@@ -845,7 +754,7 @@ static int mtk_vpu_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* VPU watchdog */
+	 
 	vpu->wdt.wq = create_singlethread_workqueue("vpu_wdt");
 	if (!vpu->wdt.wq) {
 		dev_err(dev, "initialize wdt workqueue failed\n");
@@ -868,7 +777,7 @@ static int mtk_vpu_probe(struct platform_device *pdev)
 		goto disable_vpu_clk;
 	}
 
-	/* register vpu initialization IPI */
+	 
 	ret = vpu_ipi_register(pdev, IPI_VPU_INIT, vpu_init_ipi_handler,
 			       "vpu_init", vpu);
 	if (ret) {
@@ -881,7 +790,7 @@ static int mtk_vpu_probe(struct platform_device *pdev)
 					  &vpu_debug_fops);
 #endif
 
-	/* Set PTCM to 96K and DTCM to 32K */
+	 
 	vpu_cfg_writel(vpu, 0x2, VPU_TCM_CFG);
 
 	vpu->enable_4GB = !!(totalram_pages() > (SZ_2G >> PAGE_SHIFT));
@@ -891,7 +800,7 @@ static int mtk_vpu_probe(struct platform_device *pdev)
 		ret = of_reserved_mem_device_init(dev);
 		if (ret)
 			dev_info(dev, "init reserved memory failed\n");
-			/* continue to use dynamic allocation if failed */
+			 
 	}
 
 	ret = vpu_alloc_ext_mem(vpu, D_FW);
@@ -989,10 +898,10 @@ static int mtk_vpu_suspend(struct device *dev)
 	}
 
 	mutex_lock(&vpu->vpu_mutex);
-	/* disable vpu timer interrupt */
+	 
 	vpu_cfg_writel(vpu, vpu_cfg_readl(vpu, VPU_INT_STATUS) | VPU_IDLE_STATE,
 		       VPU_INT_STATUS);
-	/* check if vpu is idle for system suspend */
+	 
 	timeout = jiffies + msecs_to_jiffies(VPU_IDLE_TIMEOUT_MS);
 	do {
 		if (time_after(jiffies, timeout)) {
@@ -1024,7 +933,7 @@ static int mtk_vpu_resume(struct device *dev)
 	}
 
 	mutex_lock(&vpu->vpu_mutex);
-	/* enable vpu timer interrupt */
+	 
 	vpu_cfg_writel(vpu,
 		       vpu_cfg_readl(vpu, VPU_INT_STATUS) & ~(VPU_IDLE_STATE),
 		       VPU_INT_STATUS);

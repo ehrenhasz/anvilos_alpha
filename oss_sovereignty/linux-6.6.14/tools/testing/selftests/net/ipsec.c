@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ipsec.c - Check xfrm on veth inside a net-ns.
- * Copyright (c) 2018 Dmitry Safonov
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -43,14 +40,14 @@
 
 #define BUILD_BUG_ON(condition) ((void)sizeof(char[1 - 2*!!(condition)]))
 
-#define IPV4_STR_SZ	16	/* xxx.xxx.xxx.xxx is longest + \0 */
+#define IPV4_STR_SZ	16	 
 #define MAX_PAYLOAD	2048
 #define XFRM_ALGO_KEY_BUF_SIZE	512
-#define MAX_PROCESSES	(1 << 14) /* /16 mask divided by /30 subnets */
-#define INADDR_A	((in_addr_t) 0x0a000000) /* 10.0.0.0 */
-#define INADDR_B	((in_addr_t) 0xc0a80000) /* 192.168.0.0 */
+#define MAX_PROCESSES	(1 << 14)  
+#define INADDR_A	((in_addr_t) 0x0a000000)  
+#define INADDR_B	((in_addr_t) 0xc0a80000)  
 
-/* /30 mask for one veth connection */
+ 
 #define PREFIX_LEN	30
 #define child_ip(nr)	(4*nr + 1)
 #define grchild_ip(nr)	(4*nr + 2)
@@ -65,11 +62,7 @@ static int nsfd_childa	= -1;
 static int nsfd_childb	= -1;
 static long page_size;
 
-/*
- * ksft_cnt is static in kselftest, so isn't shared with children.
- * We have to send a test result back to parent and count there.
- * results_fd is a pipe with test feedback from children.
- */
+ 
 static int results_fd[2];
 
 const unsigned int ping_delay_nsec	= 50 * 1000 * 1000;
@@ -163,10 +156,7 @@ static int switch_ns(int fd)
 	return 0;
 }
 
-/*
- * Running the test inside a new parent net namespace to bother less
- * about cleanup on error-path.
- */
+ 
 static int init_namespaces(void)
 {
 	nsfd_parent = unshare_open();
@@ -215,7 +205,7 @@ static inline struct rtattr *rtattr_hdr(struct nlmsghdr *nh)
 static int rtattr_pack(struct nlmsghdr *nh, size_t req_sz,
 		unsigned short rta_type, const void *payload, size_t size)
 {
-	/* NLMSG_ALIGNTO == RTA_ALIGNTO, nlmsg_len already aligned */
+	 
 	struct rtattr *attr = rtattr_hdr(nh);
 	size_t nl_size = RTA_ALIGN(nh->nlmsg_len) + RTA_LENGTH(size);
 
@@ -541,7 +531,7 @@ struct xfrm_desc {
 	char		c_algo[ALGO_LEN];
 	char		ae_algo[ALGO_LEN];
 	unsigned int	icv_len;
-	/* unsigned key_len; */
+	 
 };
 
 enum msg_type {
@@ -587,7 +577,7 @@ static void write_msg(int fd, struct test_desc *msg, bool exit_of_fail)
 {
 	ssize_t bytes = write(fd, msg, sizeof(*msg));
 
-	/* Make sure that write/read is atomic to a pipe */
+	 
 	BUILD_BUG_ON(sizeof(struct test_desc) > PIPE_BUF);
 
 	if (bytes < 0) {
@@ -691,7 +681,7 @@ static int udp_ping_send(int sock[2], in_addr_t dest_ip, unsigned int port,
 		if (errno != EAGAIN)
 			pr_err("recv()");
 		return -1;
-	} else if (r_bytes == 0) { /* EOF */
+	} else if (r_bytes == 0) {  
 		printk("EOF on reply to ping");
 		return -1;
 	} else if (r_bytes != buf_len || memcmp(buf, sock_buf, buf_len)) {
@@ -720,7 +710,7 @@ static int udp_ping_reply(int sock[2], in_addr_t dest_ip, unsigned int port,
 			pr_err("recv()");
 		return -1;
 	}
-	if (r_bytes == 0) { /* EOF */
+	if (r_bytes == 0) {  
 		printk("EOF on reply to ping");
 		return -1;
 	}
@@ -763,7 +753,7 @@ static int do_ping(int cmd_fd, char *buf, size_t buf_len, struct in_addr from,
 
 	write_msg(cmd_fd, &msg, 0);
 	if (init_side) {
-		/* The other end sends ip to ping */
+		 
 		read_msg(cmd_fd, &msg, 0);
 		if (msg.type != MSG_PING)
 			return -1;
@@ -842,7 +832,7 @@ static int xfrm_state_pack_algo(struct nlmsghdr *nh, size_t req_sz,
 	clen = strlen(desc->c_algo);
 	aelen = strlen(desc->ae_algo);
 
-	/* Verify desc */
+	 
 	switch (desc->proto) {
 	case IPPROTO_AH:
 		if (!alen || elen || clen || aelen) {
@@ -927,22 +917,22 @@ static int xfrm_state_add(int xfrm_sock, uint32_t seq, uint32_t spi,
 	req.nh.nlmsg_flags	= NLM_F_REQUEST | NLM_F_ACK;
 	req.nh.nlmsg_seq	= seq;
 
-	/* Fill selector. */
+	 
 	memcpy(&req.info.sel.daddr, &dst, sizeof(dst));
 	memcpy(&req.info.sel.saddr, &src, sizeof(src));
 	req.info.sel.family		= AF_INET;
 	req.info.sel.prefixlen_d	= PREFIX_LEN;
 	req.info.sel.prefixlen_s	= PREFIX_LEN;
 
-	/* Fill id */
+	 
 	memcpy(&req.info.id.daddr, &dst, sizeof(dst));
-	/* Note: zero-spi cannot be deleted */
+	 
 	req.info.id.spi = spi;
 	req.info.id.proto	= desc->proto;
 
 	memcpy(&req.info.saddr, &src, sizeof(src));
 
-	/* Fill lifteme_cfg */
+	 
 	req.info.lft.soft_byte_limit	= XFRM_INF;
 	req.info.lft.hard_byte_limit	= XFRM_INF;
 	req.info.lft.soft_packet_limit	= XFRM_INF;
@@ -995,7 +985,7 @@ static bool xfrm_usersa_found(struct xfrm_usersa_info *info, uint32_t spi,
 	if (info->family != AF_INET || info->mode != XFRM_MODE_TUNNEL)
 		return false;
 
-	/* XXX: check xfrm algo, see xfrm_state_pack_algo(). */
+	 
 
 	return true;
 }
@@ -1026,12 +1016,9 @@ static int xfrm_state_check(int xfrm_sock, uint32_t seq, uint32_t spi,
 	req.nh.nlmsg_flags	= NLM_F_REQUEST | NLM_F_DUMP;
 	req.nh.nlmsg_seq	= seq;
 
-	/*
-	 * Add dump filter by source address as there may be other tunnels
-	 * in this netns (if tests run in parallel).
-	 */
+	 
 	filter.family = AF_INET;
-	filter.splen = 0x1f;	/* 0xffffffff mask see addr_match() */
+	filter.splen = 0x1f;	 
 	memcpy(&filter.saddr, &src, sizeof(src));
 	if (rtattr_pack(&req.nh, sizeof(req), XFRMA_ADDRESS_FILTER,
 				&filter, sizeof(filter)))
@@ -1082,7 +1069,7 @@ static int xfrm_set(int xfrm_sock, uint32_t *seq,
 		return -1;
 	}
 
-	/* Check dumps for XFRM_MSG_GETSA */
+	 
 	err = xfrm_state_check(xfrm_sock, (*seq)++, gen_spi(src), src, dst, desc);
 	err |= xfrm_state_check(xfrm_sock, (*seq)++, gen_spi(src), dst, src, desc);
 	if (err) {
@@ -1111,14 +1098,14 @@ static int xfrm_policy_add(int xfrm_sock, uint32_t seq, uint32_t spi,
 	req.nh.nlmsg_flags	= NLM_F_REQUEST | NLM_F_ACK;
 	req.nh.nlmsg_seq	= seq;
 
-	/* Fill selector. */
+	 
 	memcpy(&req.info.sel.daddr, &dst, sizeof(tundst));
 	memcpy(&req.info.sel.saddr, &src, sizeof(tunsrc));
 	req.info.sel.family		= AF_INET;
 	req.info.sel.prefixlen_d	= PREFIX_LEN;
 	req.info.sel.prefixlen_s	= PREFIX_LEN;
 
-	/* Fill lifteme_cfg */
+	 
 	req.info.lft.soft_byte_limit	= XFRM_INF;
 	req.info.lft.hard_byte_limit	= XFRM_INF;
 	req.info.lft.soft_packet_limit	= XFRM_INF;
@@ -1126,9 +1113,9 @@ static int xfrm_policy_add(int xfrm_sock, uint32_t seq, uint32_t spi,
 
 	req.info.dir = dir;
 
-	/* Fill tmpl */
+	 
 	memcpy(&tmpl.id.daddr, &dst, sizeof(dst));
-	/* Note: zero-spi cannot be deleted */
+	 
 	tmpl.id.spi = spi;
 	tmpl.id.proto	= proto;
 	tmpl.family	= AF_INET;
@@ -1184,7 +1171,7 @@ static int xfrm_policy_del(int xfrm_sock, uint32_t seq,
 	req.nh.nlmsg_flags	= NLM_F_REQUEST | NLM_F_ACK;
 	req.nh.nlmsg_seq	= seq;
 
-	/* Fill id */
+	 
 	memcpy(&req.id.sel.daddr, &dst, sizeof(tundst));
 	memcpy(&req.id.sel.saddr, &src, sizeof(tunsrc));
 	req.id.sel.family		= AF_INET;
@@ -1238,7 +1225,7 @@ static int xfrm_state_del(int xfrm_sock, uint32_t seq, uint32_t spi,
 	memcpy(&req.id.daddr, &dst, sizeof(dst));
 	req.id.family		= AF_INET;
 	req.id.proto		= proto;
-	/* Note: zero-spi cannot be deleted */
+	 
 	req.id.spi = spi;
 
 	memcpy(&saddr, &src, sizeof(src));
@@ -1537,7 +1524,7 @@ static int xfrm_expire_policy(int xfrm_sock, uint32_t *seq,
 	req.nh.nlmsg_flags	= NLM_F_REQUEST | NLM_F_ACK;
 	req.nh.nlmsg_seq	= (*seq)++;
 
-	/* Fill selector. */
+	 
 	memcpy(&req.expire.pol.sel.daddr, &dst, sizeof(tundst));
 	memcpy(&req.expire.pol.sel.saddr, &src, sizeof(tunsrc));
 	req.expire.pol.sel.family	= AF_INET;
@@ -1711,19 +1698,13 @@ static int xfrm_spdinfo_attrs(int xfrm_sock, uint32_t *seq)
 		return -1;
 	}
 
-	/* Restore the default */
+	 
 	if (xfrm_spdinfo_set_thresh(xfrm_sock, seq, 32, 32, 128, 128, false)) {
 		pr_err("Can't restore SPD HTHRESH");
 		return KSFT_FAIL;
 	}
 
-	/*
-	 * At this moment xfrm uses nlmsg_parse_deprecated(), which
-	 * implies NL_VALIDATE_LIBERAL - ignoring attributes with
-	 * (type > maxtype). nla_parse_depricated_strict() would enforce
-	 * it. Or even stricter nla_parse().
-	 * Right now it's not expected to fail, but to be ignored.
-	 */
+	 
 	if (xfrm_spdinfo_set_thresh(xfrm_sock, seq, 32, 32, 128, 128, true))
 		return KSFT_PASS;
 
@@ -1742,7 +1723,7 @@ static int child_serv(int xfrm_sock, uint32_t *seq,
 	tunsrc = inet_makeaddr(INADDR_A, child_ip(nr));
 	tundst = inet_makeaddr(INADDR_A, grchild_ip(nr));
 
-	/* UDP pinging without xfrm */
+	 
 	if (do_ping(cmd_fd, buf, page_size, src, true, 0, 0, udp_ping_send)) {
 		printk("ping failed before setting xfrm");
 		return KSFT_FAIL;
@@ -1767,7 +1748,7 @@ static int child_serv(int xfrm_sock, uint32_t *seq,
 		goto delete;
 	}
 
-	/* UDP pinging with xfrm tunnel */
+	 
 	if (do_ping(cmd_fd, buf, page_size, tunsrc,
 				true, 0, 0, udp_ping_send)) {
 		printk("ping failed for xfrm");
@@ -1776,7 +1757,7 @@ static int child_serv(int xfrm_sock, uint32_t *seq,
 
 	ret = KSFT_PASS;
 delete:
-	/* xfrm delete */
+	 
 	memset(&msg, 0, sizeof(msg));
 	msg.type = MSG_XFRM_DEL;
 	memcpy(&msg.body.xfrm_desc, desc, sizeof(*desc));
@@ -1814,7 +1795,7 @@ static int child_f(unsigned int nr, int test_desc_fd, int cmd_fd, void *buf)
 		exit(KSFT_FAIL);
 	}
 
-	/* Check that seq sock is ready, just for sure. */
+	 
 	memset(&msg, 0, sizeof(msg));
 	msg.type = MSG_ACK;
 	write_msg(cmd_fd, &msg, 1);
@@ -1828,7 +1809,7 @@ static int child_f(unsigned int nr, int test_desc_fd, int cmd_fd, void *buf)
 		ssize_t received = read(test_desc_fd, &desc, sizeof(desc));
 		int ret;
 
-		if (received == 0) /* EOF */
+		if (received == 0)  
 			break;
 
 		if (received != sizeof(desc)) {
@@ -1891,7 +1872,7 @@ static void grand_child_serv(unsigned int nr, int cmd_fd, void *buf,
 		break;
 	case MSG_PING:
 		tun_reply = memcmp(&dst, &msg->body.ping.reply_ip, sizeof(in_addr_t));
-		/* UDP pinging without xfrm */
+		 
 		if (do_ping(cmd_fd, buf, page_size, tun_reply ? tunsrc : src,
 				false, msg->body.ping.port,
 				msg->body.ping.reply_ip, udp_ping_reply)) {
@@ -1968,7 +1949,7 @@ static int start_child(unsigned int nr, char *veth, int test_desc_fd[2])
 		pr_err("fork()");
 		return -1;
 	} else if (child) {
-		/* in parent - selftest */
+		 
 		return switch_ns(nsfd_parent);
 	}
 
@@ -1977,7 +1958,7 @@ static int start_child(unsigned int nr, char *veth, int test_desc_fd[2])
 		return -1;
 	}
 
-	/* child */
+	 
 	data_map = mmap(0, page_size, PROT_READ | PROT_WRITE,
 			MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 	if (data_map == MAP_FAILED) {
@@ -2059,7 +2040,7 @@ char *ah_list[] = {
 char *comp_list[] = {
 	"deflate",
 #if 0
-	/* No compression backend realization */
+	 
 	"lzs", "lzjh"
 #endif
 };
@@ -2070,7 +2051,7 @@ char *e_list[] = {
 };
 char *ae_list[] = {
 #if 0
-	/* not implemented */
+	 
 	"rfc4106(gcm(aes))", "rfc4309(ccm(aes))", "rfc4543(gcm(aes))",
 	"rfc7539esp(chacha20,poly1305)"
 #endif
@@ -2120,23 +2101,7 @@ static int write_proto_plan(int fd, int proto)
 	return 0;
 }
 
-/*
- * Some structures in xfrm uapi header differ in size between
- * 64-bit and 32-bit ABI:
- *
- *             32-bit UABI               |            64-bit UABI
- *  -------------------------------------|-------------------------------------
- *   sizeof(xfrm_usersa_info)     = 220  |  sizeof(xfrm_usersa_info)     = 224
- *   sizeof(xfrm_userpolicy_info) = 164  |  sizeof(xfrm_userpolicy_info) = 168
- *   sizeof(xfrm_userspi_info)    = 228  |  sizeof(xfrm_userspi_info)    = 232
- *   sizeof(xfrm_user_acquire)    = 276  |  sizeof(xfrm_user_acquire)    = 280
- *   sizeof(xfrm_user_expire)     = 224  |  sizeof(xfrm_user_expire)     = 232
- *   sizeof(xfrm_user_polexpire)  = 168  |  sizeof(xfrm_user_polexpire)  = 176
- *
- * Check the affected by the UABI difference structures.
- * Also, check translation for xfrm_set_spdinfo: it has it's own attributes
- * which needs to be correctly copied, but not translated.
- */
+ 
 const unsigned int compat_plan = 5;
 static int write_compat_struct_tests(int test_desc_fd)
 {
@@ -2235,7 +2200,7 @@ static int check_results(void)
 		ssize_t received = read(results_fd[0], &tr, sizeof(tr));
 		print_res result;
 
-		if (received == 0) /* EOF */
+		if (received == 0)  
 			break;
 
 		if (received != sizeof(tr)) {

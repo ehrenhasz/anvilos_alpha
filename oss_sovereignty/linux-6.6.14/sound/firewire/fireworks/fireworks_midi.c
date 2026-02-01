@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * fireworks_midi.c - a part of driver for Fireworks based devices
- *
- * Copyright (c) 2009-2010 Clemens Ladisch
- * Copyright (c) 2013-2014 Takashi Sakamoto
- */
+
+ 
 #include "fireworks.h"
 
 static int midi_open(struct snd_rawmidi_substream *substream)
@@ -105,7 +100,7 @@ int snd_efw_create_midi_devices(struct snd_efw *efw)
 	struct snd_rawmidi_str *str;
 	int err;
 
-	/* create midi ports */
+	 
 	err = snd_rawmidi_new(efw->card, efw->card->driver, 0,
 			      efw->midi_out_ports, efw->midi_in_ports,
 			      &rmidi);

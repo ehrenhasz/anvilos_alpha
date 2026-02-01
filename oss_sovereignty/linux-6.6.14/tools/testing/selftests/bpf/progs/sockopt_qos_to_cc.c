@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 #include <string.h>
 #include <linux/tcp.h>
 #include <netinet/in.h>
@@ -24,7 +24,7 @@ int sockopt_qos_to_cc(struct bpf_sockopt *ctx)
 		goto out;
 
 	if (optval + 1 > optval_end)
-		return 0; /* EPERM, bounds check */
+		return 0;  
 
 	if (bpf_getsockopt(ctx->sk, SOL_TCP, TCP_CONGESTION, &buf, sizeof(buf)))
 		return 0;
@@ -40,7 +40,7 @@ int sockopt_qos_to_cc(struct bpf_sockopt *ctx)
 	return 1;
 
 out:
-	/* optval larger than PAGE_SIZE use kernel's buffer. */
+	 
 	if (ctx->optlen > page_size)
 		ctx->optlen = 0;
 	return 1;

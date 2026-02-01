@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * builtin-report.c
- *
- * Builtin report command: Analyze the perf.data input file,
- * look up and read DSOs and symbol information and display
- * a histogram of results, along various sorting keys.
- */
+
+ 
 #include "builtin.h"
 
 #include "util/config.h"
@@ -47,7 +41,7 @@
 #include "util/time-utils.h"
 #include "util/auxtrace.h"
 #include "util/units.h"
-#include "util/util.h" // perf_tip()
+#include "util/util.h" 
 #include "ui/ui.h"
 #include "ui/progress.h"
 #include "util/block-info.h"
@@ -252,11 +246,7 @@ static int process_feature_event(struct perf_session *session,
 		session_done = 1;
 	}
 
-	/*
-	 * (feat_id = HEADER_LAST_FEATURE) is the end marker which
-	 * means all features are received, now we can force the
-	 * group if needed.
-	 */
+	 
 	setup_forced_leader(rep, session->evlist);
 	return 0;
 }
@@ -303,10 +293,7 @@ static int process_sample_event(struct perf_tool *tool,
 		goto out_put;
 
 	if (sort__mode == SORT_MODE__BRANCH) {
-		/*
-		 * A non-synthesized event might not have a branch stack if
-		 * branch stacks have been synthesized (using itrace options).
-		 */
+		 
 		if (!sample->branch_stack)
 			goto out_put;
 
@@ -360,7 +347,7 @@ static int process_read_event(struct perf_tool *tool,
 	return 0;
 }
 
-/* For pipe mode, sample_type is not currently set */
+ 
 static int report__setup_sample_type(struct report *rep)
 {
 	struct perf_session *session = rep->session;
@@ -404,7 +391,7 @@ static int report__setup_sample_type(struct report *rep)
 	}
 
 	if (symbol_conf.cumulate_callchain) {
-		/* Silently ignore if callchain is missing */
+		 
 		if (!(sample_type & PERF_SAMPLE_CALLCHAIN)) {
 			symbol_conf.cumulate_callchain = false;
 			perf_hpp__cancel_cumulate();
@@ -421,11 +408,7 @@ static int report__setup_sample_type(struct report *rep)
 	}
 
 	if (sort__mode == SORT_MODE__MEMORY) {
-		/*
-		 * FIXUP: prior to kernel 5.18, Arm SPE missed to set
-		 * PERF_SAMPLE_DATA_SRC bit in sample type.  For backward
-		 * compatibility, set the bit if it's an old perf data file.
-		 */
+		 
 		evlist__for_each_entry(session->evlist, evsel) {
 			if (strstr(evsel->name, "arm_spe") &&
 				!(sample_type & PERF_SAMPLE_DATA_SRC)) {
@@ -449,7 +432,7 @@ static int report__setup_sample_type(struct report *rep)
 		rep->stitch_lbr = false;
 	}
 
-	/* ??? handle more cases than just ANY? */
+	 
 	if (!(evlist__combined_branch_type(session->evlist) & PERF_SAMPLE_BRANCH_ANY))
 		rep->nonany_branch_mode = true;
 
@@ -654,7 +637,7 @@ static int report__browse_hists(struct report *rep)
 
 	path = system_path(TIPDIR);
 	if (perf_tip(&help, path) || help == NULL) {
-		/* fallback for people who don't install perf ;-) */
+		 
 		free(path);
 		path = system_path(DOCDIR);
 		if (perf_tip(&help, path) || help == NULL)
@@ -671,10 +654,7 @@ static int report__browse_hists(struct report *rep)
 
 		ret = evlist__tui_browse_hists(evlist, help, NULL, rep->min_percent,
 					       &session->header.env, true, &rep->annotation_opts);
-		/*
-		 * Usually "ret" is the last pressed key, and we only
-		 * care if the key notifies us to switch data file.
-		 */
+		 
 		if (ret != K_SWITCH_INPUT_DATA && ret != K_RELOAD)
 			ret = 0;
 		break;
@@ -709,7 +689,7 @@ static int report__collapse_hists(struct report *rep)
 		if (ret < 0)
 			break;
 
-		/* Non-group events are considered as leader */
+		 
 		if (symbol_conf.event_group && !evsel__is_group_leader(pos)) {
 			struct hists *leader_hists = evsel__hists(evsel__leader(pos));
 
@@ -826,11 +806,11 @@ static struct task *tasks_list(struct task *task, struct machine *machine)
 	struct thread *parent_thread, *thread = task->thread;
 	struct task   *parent_task;
 
-	/* Already listed. */
+	 
 	if (!list_empty(&task->list))
 		return NULL;
 
-	/* Last one in the chain. */
+	 
 	if (thread__ppid(thread) == -1)
 		return task;
 
@@ -894,12 +874,9 @@ static int tasks_print(struct report *rep, FILE *fp)
 	struct rb_node *nd;
 	LIST_HEAD(list);
 
-	/*
-	 * No locking needed while accessing machine->threads,
-	 * because --tasks is single threaded command.
-	 */
+	 
 
-	/* Count all the threads. */
+	 
 	for (i = 0; i < THREADS__TABLE_SIZE; i++)
 		nr += machine->threads[i].nr;
 
@@ -921,11 +898,7 @@ static int tasks_print(struct report *rep, FILE *fp)
 		}
 	}
 
-	/*
-	 * Iterate every task down to the unprocessed parent
-	 * and link all in task children list. Task with no
-	 * parent is added into 'list'.
-	 */
+	 
 	for (itask = 0; itask < nr; itask++) {
 		task = tasks + itask;
 
@@ -979,7 +952,7 @@ static int __cmd_report(struct report *rep)
 
 	ret = report__setup_sample_type(rep);
 	if (ret) {
-		/* report__setup_sample_type() already showed error message */
+		 
 		return ret;
 	}
 
@@ -1033,10 +1006,7 @@ static int __cmd_report(struct report *rep)
 	if (session_done())
 		return 0;
 
-	/*
-	 * recalculate number of entries after collapsing since it
-	 * might be changed during the collapse phase.
-	 */
+	 
 	rep->nr_entries = 0;
 	evlist__for_each_entry(session->evlist, pos)
 		rep->nr_entries += evsel__hists(pos)->nr_entries;
@@ -1075,9 +1045,7 @@ report_parse_callchain_opt(const struct option *opt, const char *arg, int unset)
 	struct callchain_param *callchain = opt->value;
 
 	callchain->enabled = !unset;
-	/*
-	 * --no-call-graph
-	 */
+	 
 	if (unset) {
 		symbol_conf.use_callchain = false;
 		callchain->mode = CHAIN_NONE;
@@ -1174,10 +1142,7 @@ static int process_attr(struct perf_tool *tool __maybe_unused,
 	if (err)
 		return err;
 
-	/*
-	 * Check if we need to enable callchains based
-	 * on events sample_type.
-	 */
+	 
 	sample_type = evlist__combined_sample_type(*pevlist);
 	callchain_param_setup(sample_type, perf_env__arch((*pevlist)->env));
 	return 0;
@@ -1419,10 +1384,7 @@ int cmd_report(int argc, const char **argv)
 
 	argc = parse_options(argc, argv, options, report_usage, 0);
 	if (argc) {
-		/*
-		 * Special case: if there's an argument left then assume that
-		 * it's a symbol filter:
-		 */
+		 
 		if (argc > 1)
 			usage_with_options(report_usage, options);
 
@@ -1526,11 +1488,7 @@ repeat:
 
 	memset(&report.brtype_stat, 0, sizeof(struct branch_type_stat));
 
-	/*
-	 * Branch mode is a tristate:
-	 * -1 means default, so decide based on the file having branch data.
-	 * 0/1 means the user chose a mode.
-	 */
+	 
 	if (((branch_mode == -1 && has_br_stack) || branch_mode == 1) &&
 	    !branch_call_mode) {
 		sort__mode = SORT_MODE__BRANCH;
@@ -1555,7 +1513,7 @@ repeat:
 	}
 
 	if (symbol_conf.report_hierarchy) {
-		/* disable incompatible options */
+		 
 		symbol_conf.cumulate_callchain = false;
 
 		if (field_order) {
@@ -1579,7 +1537,7 @@ repeat:
 		use_browser = 2;
 #endif
 
-	/* Force tty output for header output and per-thread stat. */
+	 
 	if (report.header || report.header_only || report.show_threads)
 		use_browser = 0;
 	if (report.header || report.header_only)
@@ -1638,10 +1596,7 @@ repeat:
 					   report.show_full_info);
 		if (report.header_only) {
 			if (data.is_pipe) {
-				/*
-				 * we need to process first few records
-				 * which contains PERF_RECORD_HEADER_FEATURE.
-				 */
+				 
 				perf_session__process_events(session);
 			}
 			ret = 0;
@@ -1653,28 +1608,15 @@ repeat:
 		      stdout);
 	}
 
-	/*
-	 * Only in the TUI browser we are doing integrated annotation,
-	 * so don't allocate extra space that won't be used in the stdio
-	 * implementation.
-	 */
+	 
 	if (ui__has_annotation() || report.symbol_ipc ||
 	    report.total_cycles_mode) {
 		ret = symbol__annotation_init();
 		if (ret < 0)
 			goto error;
-		/*
- 		 * For searching by name on the "Browse map details".
- 		 * providing it only in verbose mode not to bloat too
- 		 * much struct symbol.
- 		 */
+		 
 		if (verbose > 0) {
-			/*
-			 * XXX: Need to provide a less kludgy way to ask for
-			 * more space per symbol, the u32 is for the index on
-			 * the ui browser.
-			 * See symbol__browser_index.
-			 */
+			 
 			symbol_conf.priv_size += sizeof(u32);
 		}
 		annotation_config__init(&report.annotation_opts);

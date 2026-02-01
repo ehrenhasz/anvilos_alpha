@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Touchscreen driver for Dialog Semiconductor DA9034
- *
- * Copyright (C) 2006-2008 Marvell International Ltd.
- *	Fengwei Yin <fengwei.yin@marvell.com>
- *	Bin Yang  <bin.yang@marvell.com>
- *	Eric Miao <eric.miao@marvell.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -33,10 +26,10 @@
 #define DA9034_TSI_XY_LSB	0x6e
 
 enum {
-	STATE_IDLE,	/* wait for pendown */
-	STATE_BUSY,	/* TSI busy sampling */
-	STATE_STOP,	/* sample available */
-	STATE_WAIT,	/* Wait to start next sample */
+	STATE_IDLE,	 
+	STATE_BUSY,	 
+	STATE_STOP,	 
+	STATE_WAIT,	 
 };
 
 enum {
@@ -147,9 +140,7 @@ static void da9034_event_handler(struct da9034_touch *touch, int event)
 		if (event != EVENT_PEN_DOWN)
 			break;
 
-		/* Enable auto measurement of the TSI, this will
-		 * automatically disable pen down detection
-		 */
+		 
 		err = start_tsi(touch);
 		if (err)
 			goto err_reset;
@@ -165,20 +156,14 @@ static void da9034_event_handler(struct da9034_touch *touch, int event)
 		if (err)
 			goto err_reset;
 
-		/* Disable auto measurement of the TSI, so that
-		 * pen down status will be available
-		 */
+		 
 		err = stop_tsi(touch);
 		if (err)
 			goto err_reset;
 
 		touch->state = STATE_STOP;
 
-		/* FIXME: PEN_{UP/DOWN} events are expected to be
-		 * available by stopping TSI, but this is found not
-		 * always true, delay and simulate such an event
-		 * here is more reliable
-		 */
+		 
 		mdelay(1);
 		da9034_event_handler(touch,
 				     is_pen_down(touch) ? EVENT_PEN_DOWN :
@@ -253,13 +238,13 @@ static int da9034_touch_open(struct input_dev *dev)
 	if (ret)
 		return -EBUSY;
 
-	/* Enable ADC LDO */
+	 
 	ret = da903x_set_bits(touch->da9034_dev,
 			DA9034_MANUAL_CTRL, DA9034_LDO_ADC_EN);
 	if (ret)
 		return ret;
 
-	/* TSI_DELAY: 3 slots, TSI_SKIP: 3 slots */
+	 
 	ret = da903x_write(touch->da9034_dev, DA9034_TSI_CTRL1, 0x1b);
 	if (ret)
 		return ret;
@@ -287,7 +272,7 @@ static void da9034_touch_close(struct input_dev *dev)
 	stop_tsi(touch);
 	detect_pen_down(touch, 0);
 
-	/* Disable ADC LDO */
+	 
 	da903x_clr_bits(touch->da9034_dev,
 			DA9034_MANUAL_CTRL, DA9034_LDO_ADC_EN);
 }
@@ -314,7 +299,7 @@ static int da9034_touch_probe(struct platform_device *pdev)
 		touch->x_inverted	= pdata->x_inverted;
 		touch->y_inverted	= pdata->y_inverted;
 	} else {
-		/* fallback into default */
+		 
 		touch->interval_ms	= 10;
 	}
 

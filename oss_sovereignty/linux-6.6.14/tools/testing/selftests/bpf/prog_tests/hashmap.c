@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
 
-/*
- * Tests for libbpf's hashmap.
- *
- * Copyright (c) 2019 Facebook
- */
+
+ 
 #include "test_progs.h"
 #include "bpf/hashmap.h"
 #include <stddef.h>
@@ -256,7 +252,7 @@ static bool str_equal_fn(long a, long b, void *ctx)
 	return strcmp((char *)a, (char *)b) == 0;
 }
 
-/* Verify that hashmap interface works with pointer keys and values */
+ 
 static void test_hashmap_ptr_iface(void)
 {
 	const char *key, *value, *old_key, *old_value;
@@ -344,15 +340,12 @@ static void test_hashmap_multimap(void)
 	long found_msk;
 	int err, bkt;
 
-	/* force collisions */
+	 
 	map = hashmap__new(collision_hash_fn, equal_fn, NULL);
 	if (!ASSERT_OK_PTR(map, "hashmap__new"))
 		return;
 
-	/* set up multimap:
-	 * [0] -> 1, 2, 4;
-	 * [1] -> 8, 16, 32;
-	 */
+	 
 	err = hashmap__append(map, k1, 1);
 	if (CHECK(err, "elem_add", "failed to add k/v: %d\n", err))
 		goto cleanup;
@@ -377,7 +370,7 @@ static void test_hashmap_multimap(void)
 		  "invalid map size: %zu\n", hashmap__size(map)))
 		goto cleanup;
 
-	/* verify global iteration still works and sees all values */
+	 
 	found_msk = 0;
 	hashmap__for_each_entry(map, entry, bkt) {
 		found_msk |= entry->value;
@@ -386,7 +379,7 @@ static void test_hashmap_multimap(void)
 		  "not all keys iterated: %lx\n", found_msk))
 		goto cleanup;
 
-	/* iterate values for key 1 */
+	 
 	found_msk = 0;
 	hashmap__for_each_key_entry(map, entry, k1) {
 		found_msk |= entry->value;
@@ -395,7 +388,7 @@ static void test_hashmap_multimap(void)
 		  "invalid k1 values: %lx\n", found_msk))
 		goto cleanup;
 
-	/* iterate values for key 2 */
+	 
 	found_msk = 0;
 	hashmap__for_each_key_entry(map, entry, k2) {
 		found_msk |= entry->value;
@@ -415,7 +408,7 @@ static void test_hashmap_empty()
 	struct hashmap *map;
 	long k = 0;
 
-	/* force collisions */
+	 
 	map = hashmap__new(hash_fn, equal_fn, NULL);
 	if (!ASSERT_OK_PTR(map, "hashmap__new"))
 		goto cleanup;

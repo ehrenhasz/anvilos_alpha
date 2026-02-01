@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * rx51.c  --  SoC audio for Nokia RX-51
- *
- * Copyright (C) 2008 - 2009 Nokia Corporation
- *
- * Contact: Peter Ujfalusi <peter.ujfalusi@ti.com>
- *          Eduardo Valentin <eduardo.valentin@nokia.com>
- *          Jarkko Nikula <jarkko.nikula@bitmer.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio.h>
@@ -26,9 +18,9 @@
 
 enum {
 	RX51_JACK_DISABLED,
-	RX51_JACK_TVOUT,		/* tv-out with stereo output */
-	RX51_JACK_HP,			/* headphone: stereo output, no mic */
-	RX51_JACK_HS,			/* headset: stereo output with mic */
+	RX51_JACK_TVOUT,		 
+	RX51_JACK_HP,			 
+	RX51_JACK_HS,			 
 };
 
 struct rx51_audio_pdata {
@@ -105,7 +97,7 @@ static int rx51_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
 	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
 
-	/* Set the codec system clock for DAC and ADC */
+	 
 	return snd_soc_dai_set_sysclk(codec_dai, 0, 19200000,
 				      SND_SOC_CLOCK_IN);
 }
@@ -274,7 +266,7 @@ static int rx51_aic34_init(struct snd_soc_pcm_runtime *rtd)
 		return err;
 	}
 
-	/* AV jack detection */
+	 
 	err = snd_soc_card_jack_new(rtd->card, "AV Jack",
 				    SND_JACK_HEADSET | SND_JACK_VIDEOOUT,
 				    &rx51_av_jack);
@@ -283,7 +275,7 @@ static int rx51_aic34_init(struct snd_soc_pcm_runtime *rtd)
 		return err;
 	}
 
-	/* prepare gpio for snd_soc_jack_add_gpios */
+	 
 	rx51_av_jack_gpios[0].gpio = desc_to_gpio(pdata->jack_detection_gpio);
 	devm_gpiod_put(card->dev, pdata->jack_detection_gpio);
 
@@ -298,7 +290,7 @@ static int rx51_aic34_init(struct snd_soc_pcm_runtime *rtd)
 	return err;
 }
 
-/* Digital audio interface glue - connects codec <--> CPU */
+ 
 SND_SOC_DAILINK_DEFS(aic34,
 	DAILINK_COMP_ARRAY(COMP_CPU("omap-mcbsp.2")),
 	DAILINK_COMP_ARRAY(COMP_CODEC("tlv320aic3x-codec.2-0018",
@@ -337,7 +329,7 @@ static struct snd_soc_codec_conf rx51_codec_conf[] = {
 	},
 };
 
-/* Audio card */
+ 
 static struct snd_soc_card rx51_sound_card = {
 	.name = "RX-51",
 	.owner = THIS_MODULE,

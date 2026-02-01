@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe driver for Renesas R-Car SoCs
- *  Copyright (C) 2014-2020 Renesas Electronics Europe Ltd
- *
- * Author: Phil Edworthy <phil.edworthy@renesas.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/pci.h>
@@ -63,7 +58,7 @@ int rcar_pcie_wait_for_dl(struct rcar_pcie *pcie)
 void rcar_pcie_set_outbound(struct rcar_pcie *pcie, int win,
 			    struct resource_entry *window)
 {
-	/* Setup PCIe address space mappings for each resource */
+	 
 	struct resource *res = window->res;
 	resource_size_t res_start;
 	resource_size_t size;
@@ -71,10 +66,7 @@ void rcar_pcie_set_outbound(struct rcar_pcie *pcie, int win,
 
 	rcar_pci_write_reg(pcie, 0x00000000, PCIEPTCTLR(win));
 
-	/*
-	 * The PAMR mask is calculated in units of 128Bytes, which
-	 * keeps things pretty simple.
-	 */
+	 
 	size = resource_size(res);
 	if (size > 128)
 		mask = (roundup_pow_of_two(size) / SZ_128) - 1;
@@ -91,7 +83,7 @@ void rcar_pcie_set_outbound(struct rcar_pcie *pcie, int win,
 	rcar_pci_write_reg(pcie, lower_32_bits(res_start) & ~0x7F,
 			   PCIEPALR(win));
 
-	/* First resource is for IO */
+	 
 	mask = PAR_ENABLE;
 	if (res->flags & IORESOURCE_IO)
 		mask |= IO_SPACE;
@@ -102,10 +94,7 @@ void rcar_pcie_set_outbound(struct rcar_pcie *pcie, int win,
 void rcar_pcie_set_inbound(struct rcar_pcie *pcie, u64 cpu_addr,
 			   u64 pci_addr, u64 flags, int idx, bool host)
 {
-	/*
-	 * Set up 64-bit inbound regions as the range parser doesn't
-	 * distinguish between 32 and 64-bit types.
-	 */
+	 
 	if (host)
 		rcar_pci_write_reg(pcie, lower_32_bits(pci_addr),
 				   PCIEPRAR(idx));

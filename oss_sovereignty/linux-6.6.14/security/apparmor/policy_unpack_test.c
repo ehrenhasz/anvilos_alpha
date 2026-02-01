@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * KUnit tests for AppArmor's policy unpack.
- */
+
+ 
 
 #include <kunit/test.h>
 #include <kunit/visibility.h>
@@ -380,11 +378,7 @@ static void policy_unpack_test_unpack_u16_chunk_basic(struct kunit *test)
 	size_t size;
 
 	puf->e->pos += TEST_U16_OFFSET;
-	/*
-	 * WARNING: For unit testing purposes, we're pushing puf->e->end past
-	 * the end of the allocated memory. Doing anything other than comparing
-	 * memory addresses is dangerous.
-	 */
+	 
 	puf->e->end += TEST_U16_DATA;
 
 	size = aa_unpack_u16_chunk(puf->e, &chunk);
@@ -419,11 +413,7 @@ static void policy_unpack_test_unpack_u16_chunk_out_of_bounds_2(
 	size_t size;
 
 	puf->e->pos += TEST_U16_OFFSET;
-	/*
-	 * WARNING: For unit testing purposes, we're pushing puf->e->end past
-	 * the end of the allocated memory. Doing anything other than comparing
-	 * memory addresses is dangerous.
-	 */
+	 
 	puf->e->end = puf->e->pos + TEST_U16_DATA - 1;
 
 	size = aa_unpack_u16_chunk(puf->e, &chunk);

@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * OpenCores tiny SPI master driver
- *
- * https://opencores.org/project,tiny_spi
- *
- * Copyright (C) 2011 Thomas Chou <thomas@wytron.com.tw>
- *
- * Based on spi_s3c24xx.c, which is:
- * Copyright (c) 2006 Ben Dooks
- * Copyright (c) 2006 Simtec Electronics
- *	Ben Dooks <ben@simtec.co.uk>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/errno.h>
@@ -34,7 +23,7 @@
 #define TINY_SPI_STATUS_TXR 0x2
 
 struct tiny_spi {
-	/* bitbang has to be first */
+	 
 	struct spi_bitbang bitbang;
 	struct completion done;
 
@@ -112,14 +101,14 @@ static int tiny_spi_txrx_bufs(struct spi_device *spi, struct spi_transfer *t)
 	unsigned int i;
 
 	if (hw->irq >= 0) {
-		/* use interrupt driven data transfer */
+		 
 		hw->len = t->len;
 		hw->txp = t->tx_buf;
 		hw->rxp = t->rx_buf;
 		hw->txc = 0;
 		hw->rxc = 0;
 
-		/* send the first byte */
+		 
 		if (t->len > 1) {
 			writeb(hw->txp ? *hw->txp++ : 0,
 			       hw->base + TINY_SPI_TXDATA);
@@ -137,7 +126,7 @@ static int tiny_spi_txrx_bufs(struct spi_device *spi, struct spi_transfer *t)
 
 		wait_for_completion(&hw->done);
 	} else {
-		/* we need to tighten the transfer loop */
+		 
 		writeb(txp ? *txp++ : 0, hw->base + TINY_SPI_TXDATA);
 		for (i = 1; i < t->len; i++) {
 			writeb(txp ? *txp++ : 0, hw->base + TINY_SPI_TXDATA);
@@ -201,12 +190,12 @@ static int tiny_spi_of_probe(struct platform_device *pdev)
 		hw->baudwidth = val;
 	return 0;
 }
-#else /* !CONFIG_OF */
+#else  
 static int tiny_spi_of_probe(struct platform_device *pdev)
 {
 	return 0;
 }
-#endif /* CONFIG_OF */
+#endif  
 
 static int tiny_spi_probe(struct platform_device *pdev)
 {
@@ -219,7 +208,7 @@ static int tiny_spi_probe(struct platform_device *pdev)
 	if (!master)
 		return err;
 
-	/* setup the master state. */
+	 
 	master->bus_num = pdev->id;
 	master->mode_bits = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH;
 	master->setup = tiny_spi_setup;
@@ -228,18 +217,18 @@ static int tiny_spi_probe(struct platform_device *pdev)
 	hw = spi_master_get_devdata(master);
 	platform_set_drvdata(pdev, hw);
 
-	/* setup the state for the bitbang driver */
+	 
 	hw->bitbang.master = master;
 	hw->bitbang.setup_transfer = tiny_spi_setup_transfer;
 	hw->bitbang.txrx_bufs = tiny_spi_txrx_bufs;
 
-	/* find and map our resources */
+	 
 	hw->base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(hw->base)) {
 		err = PTR_ERR(hw->base);
 		goto exit;
 	}
-	/* irq is optional */
+	 
 	hw->irq = platform_get_irq(pdev, 0);
 	if (hw->irq >= 0) {
 		init_completion(&hw->done);
@@ -248,7 +237,7 @@ static int tiny_spi_probe(struct platform_device *pdev)
 		if (err)
 			goto exit;
 	}
-	/* find platform data */
+	 
 	if (platp) {
 		hw->freq = platp->freq;
 		hw->baudwidth = platp->baudwidth;
@@ -258,7 +247,7 @@ static int tiny_spi_probe(struct platform_device *pdev)
 			goto exit;
 	}
 
-	/* register our spi controller */
+	 
 	err = spi_bitbang_start(&hw->bitbang);
 	if (err)
 		goto exit;
@@ -286,7 +275,7 @@ static const struct of_device_id tiny_spi_match[] = {
 	{},
 };
 MODULE_DEVICE_TABLE(of, tiny_spi_match);
-#endif /* CONFIG_OF */
+#endif  
 
 static struct platform_driver tiny_spi_driver = {
 	.probe = tiny_spi_probe,

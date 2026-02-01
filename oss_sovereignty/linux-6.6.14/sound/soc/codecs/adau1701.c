@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for ADAU1701 SigmaDSP processor
- *
- * Copyright 2011 Analog Devices Inc.
- * Author: Lars-Peter Clausen <lars@metafoo.de>
- *	based on an inital version by Cliff Cai <cliff.cai@analog.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -320,7 +314,7 @@ static int adau1701_reset(struct snd_soc_component *component, unsigned int clkd
 			__assign_bit(0, values, 1);
 			__assign_bit(1, values, 0);
 			break;
-		case 0: /* fallback */
+		case 0:  
 		case 512:
 			__assign_bit(0, values, 1);
 			__assign_bit(1, values, 1);
@@ -335,17 +329,14 @@ static int adau1701_reset(struct snd_soc_component *component, unsigned int clkd
 
 	if (adau1701->gpio_nreset) {
 		gpiod_set_value_cansleep(adau1701->gpio_nreset, 0);
-		/* minimum reset time is 20ns */
+		 
 		udelay(1);
 		gpiod_set_value_cansleep(adau1701->gpio_nreset, 1);
-		/* power-up time may be as long as 85ms */
+		 
 		mdelay(85);
 	}
 
-	/*
-	 * Postpone the firmware download to a point in time when we
-	 * know the correct PLL setup
-	 */
+	 
 	if (clkdiv != ADAU1707_CLKDIV_UNSET) {
 		ret = sigmadsp_setup(adau1701->sigmadsp, rate);
 		if (ret) {
@@ -442,11 +433,7 @@ static int adau1701_hw_params(struct snd_pcm_substream *substream,
 	unsigned int val;
 	int ret;
 
-	/*
-	 * If the mclk/lrclk ratio changes, the chip needs updated PLL
-	 * mode GPIO settings, and a full reset cycle, including a new
-	 * firmware upload.
-	 */
+	 
 	if (clkdiv != adau1701->pll_clkdiv) {
 		ret = adau1701_reset(component, clkdiv, params_rate(params));
 		if (ret < 0)
@@ -486,7 +473,7 @@ static int adau1701_set_dai_fmt(struct snd_soc_dai *codec_dai,
 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_CBP_CFP:
-		/* master, 64-bits per sample, 1 frame per sample */
+		 
 		seroctl |= ADAU1701_SEROCTL_MASTER | ADAU1701_SEROCTL_OBF16
 				| ADAU1701_SEROCTL_OLF1024;
 		break;
@@ -496,7 +483,7 @@ static int adau1701_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	/* clock inversion */
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
 		invert_lrclk = false;
@@ -561,12 +548,12 @@ static int adau1701_set_bias_level(struct snd_soc_component *component,
 	case SND_SOC_BIAS_PREPARE:
 		break;
 	case SND_SOC_BIAS_STANDBY:
-		/* Enable VREF and VREF buffer */
+		 
 		regmap_update_bits(adau1701->regmap,
 				   ADAU1701_AUXNPOW, mask, 0x00);
 		break;
 	case SND_SOC_BIAS_OFF:
-		/* Disable VREF and VREF buffer */
+		 
 		regmap_update_bits(adau1701->regmap,
 				   ADAU1701_AUXNPOW, mask, mask);
 		break;
@@ -683,20 +670,15 @@ static int adau1701_probe(struct snd_soc_component *component)
 		return ret;
 	}
 
-	/*
-	 * Let the pll_clkdiv variable default to something that won't happen
-	 * at runtime. That way, we can postpone the firmware download from
-	 * adau1701_reset() to a point in time when we know the correct PLL
-	 * mode parameters.
-	 */
+	 
 	adau1701->pll_clkdiv = ADAU1707_CLKDIV_UNSET;
 
-	/* initalize with pre-configured pll mode settings */
+	 
 	ret = adau1701_reset(component, adau1701->pll_clkdiv, 0);
 	if (ret < 0)
 		goto exit_regulators_disable;
 
-	/* set up pin config */
+	 
 	val = 0;
 	for (i = 0; i < 6; i++)
 		val |= adau1701->pin_config[i] << (i * 4);
@@ -755,7 +737,7 @@ static int adau1701_resume(struct snd_soc_component *component)
 #else
 #define adau1701_resume 	NULL
 #define adau1701_suspend 	NULL
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct snd_soc_component_driver adau1701_component_drv = {
 	.probe			= adau1701_probe,

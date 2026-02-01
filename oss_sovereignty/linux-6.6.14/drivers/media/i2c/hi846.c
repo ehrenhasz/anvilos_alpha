@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2021 Purism SPC
+
+
 
 #include <asm/unaligned.h>
 #include <linux/clk.h>
@@ -18,11 +18,11 @@
 #define HI846_MEDIA_BUS_FORMAT		MEDIA_BUS_FMT_SGBRG10_1X10
 #define HI846_RGB_DEPTH			10
 
-/* Frame length lines / vertical timings */
+ 
 #define HI846_REG_FLL			0x0006
 #define HI846_FLL_MAX			0xffff
 
-/* Horizontal timing */
+ 
 #define HI846_REG_LLP			0x0008
 #define HI846_LINE_LENGTH		3800
 
@@ -53,23 +53,19 @@
 
 #define HI846_REG_UNKNOWN_006A		0x006a
 
-/*
- * Long exposure time. Actually, exposure is a 20 bit value that
- * includes the lower 4 bits of 0x0073 too. Only 16 bits are used
- * right now
- */
+ 
 #define HI846_REG_EXPOSURE		0x0074
 #define HI846_EXPOSURE_MIN		6
 #define HI846_EXPOSURE_MAX_MARGIN	2
 #define HI846_EXPOSURE_STEP		1
 
-/* Analog gain controls from sensor */
+ 
 #define HI846_REG_ANALOG_GAIN		0x0077
 #define HI846_ANAL_GAIN_MIN		0
 #define HI846_ANAL_GAIN_MAX		240
 #define HI846_ANAL_GAIN_STEP		8
 
-/* Digital gain controls from sensor */
+ 
 #define HI846_REG_MWB_GR_GAIN_H		0x0078
 #define HI846_REG_MWB_GR_GAIN_L		0x0079
 #define HI846_REG_MWB_GB_GAIN_H		0x007a
@@ -104,11 +100,11 @@
 
 #define HI846_REG_UNKNOWN_051E		0x051e
 
-/* Formatter */
+ 
 #define HI846_REG_X_START_H		0x0804
 #define HI846_REG_X_START_L		0x0805
 
-/* MIPI */
+ 
 #define HI846_REG_UNKNOWN_0900		0x0900
 #define HI846_REG_MIPI_TX_OP_EN		0x0901
 #define HI846_REG_MIPI_TX_OP_MODE	0x0902
@@ -134,32 +130,32 @@
 #define HI846_REG_UNKNOWN_0958		0x0958
 #define HI846_REG_UNKNOWN_095A		0x095a
 
-/* ISP Common */
+ 
 #define HI846_REG_MODE_SELECT		0x0a00
 #define HI846_MODE_STANDBY		0x00
 #define HI846_MODE_STREAMING		0x01
 #define HI846_REG_FAST_STANDBY_MODE	0x0a02
 #define HI846_REG_ISP_EN_H		0x0a04
 
-/* Test Pattern Control */
+ 
 #define HI846_REG_ISP			0x0a05
 #define HI846_REG_ISP_TPG_EN		0x01
-#define HI846_REG_TEST_PATTERN		0x020a /* 1-9 */
+#define HI846_REG_TEST_PATTERN		0x020a  
 
 #define HI846_REG_UNKNOWN_0A0C		0x0a0c
 
-/* Windowing */
+ 
 #define HI846_REG_X_OUTPUT_SIZE_H	0x0a12
 #define HI846_REG_X_OUTPUT_SIZE_L	0x0a13
 #define HI846_REG_Y_OUTPUT_SIZE_H	0x0a14
 #define HI846_REG_Y_OUTPUT_SIZE_L	0x0a15
 
-/* ISP Common */
+ 
 #define HI846_REG_PEDESTAL_EN		0x0a1a
 
 #define HI846_REG_UNKNOWN_0A1E		0x0a1e
 
-/* Horizontal Binning Mode */
+ 
 #define HI846_REG_HBIN_MODE		0x0a22
 
 #define HI846_REG_UNKNOWN_0A24		0x0a24
@@ -168,7 +164,7 @@
 #define HI846_REG_UNKNOWN_0B12		0x0b12
 #define HI846_REG_UNKNOWN_0B14		0x0b14
 
-/* BLC (Black Level Calibration) */
+ 
 #define HI846_REG_BLC_CTL0		0x0c00
 
 #define HI846_REG_UNKNOWN_0C06		0x0c06
@@ -187,7 +183,7 @@
 #define HI846_REG_UNKNOWN_0F04		0x0f04
 #define HI846_REG_UNKNOWN_0F08		0x0f08
 
-/* PLL */
+ 
 #define HI846_REG_PLL_CFG_MIPI2_H	0x0f2a
 #define HI846_REG_PLL_CFG_MIPI2_L	0x0f2b
 
@@ -210,34 +206,34 @@ struct hi846_reg_list {
 };
 
 struct hi846_mode {
-	/* Frame width in pixels */
+	 
 	u32 width;
 
-	/* Frame height in pixels */
+	 
 	u32 height;
 
-	/* Horizontal timing size */
+	 
 	u32 llp;
 
-	/* Link frequency needed for this resolution */
+	 
 	u8 link_freq_index;
 
 	u16 fps;
 
-	/* Vertical timining size */
+	 
 	u16 frame_len;
 
 	const struct hi846_reg_list reg_list_config;
 	const struct hi846_reg_list reg_list_2lane;
 	const struct hi846_reg_list reg_list_4lane;
 
-	/* Position inside of the 3264x2448 pixel array */
+	 
 	struct v4l2_rect crop;
 };
 
 static const struct hi846_reg hi846_init_2lane[] = {
 	{HI846_REG_MODE_SELECT,		0x0000},
-	/* regs below are unknown */
+	 
 	{0x2000, 0x100a},
 	{0x2002, 0x00ff},
 	{0x2004, 0x0007},
@@ -374,7 +370,7 @@ static const struct hi846_reg hi846_init_2lane[] = {
 	{0x3312, 0x0000},
 	{0x3314, 0xfc94},
 	{0x3316, 0xc3d8},
-	/* regs above are unknown */
+	 
 	{HI846_REG_MODE_SELECT,			0x0000},
 	{HI846_REG_UNKNOWN_0E04,		0x0012},
 	{HI846_REG_Y_ODD_INC_FOBP,		0x1111},
@@ -780,10 +776,10 @@ static const struct hi846_reg hi846_init_4lane[] = {
 	{0x0410, 0x008d},
 	{0x0412, 0x011a},
 	{0x0414, 0x864c},
-	/* for OTP */
+	 
 	{0x021c, 0x0003},
 	{0x021e, 0x0235},
-	/* for OTP */
+	 
 	{0x0c00, 0x9950},
 	{0x0c06, 0x0021},
 	{0x0c10, 0x0040},
@@ -855,7 +851,7 @@ static const struct hi846_reg mode_640x480_config[] = {
 	{HI846_REG_X_OUTPUT_SIZE_H,		0x0280},
 	{HI846_REG_Y_OUTPUT_SIZE_H,		0x01e0},
 
-	/* For OTP */
+	 
 	{HI846_REG_UNKNOWN_021C,		0x0003},
 	{HI846_REG_UNKNOWN_021E,		0x0235},
 
@@ -905,7 +901,7 @@ static const struct hi846_reg mode_1280x720_config[] = {
 	{HI846_REG_Y_OUTPUT_SIZE_H,		0x02d0},
 	{HI846_REG_EXPOSURE,			0x0344},
 
-	/* For OTP */
+	 
 	{HI846_REG_UNKNOWN_021C,		0x0003},
 	{HI846_REG_UNKNOWN_021E,		0x0235},
 
@@ -939,7 +935,7 @@ static const struct hi846_reg mode_1280x720_mipi_2lane[] = {
 };
 
 static const struct hi846_reg mode_1280x720_mipi_4lane[] = {
-	/* 360Mbps */
+	 
 	{HI846_REG_UNKNOWN_0900,		0x0300},
 	{HI846_REG_MIPI_TX_OP_MODE,		0xc319},
 	{HI846_REG_UNKNOWN_0914,		0xc105},
@@ -975,7 +971,7 @@ static const struct hi846_reg mode_1632x1224_config[] = {
 	{HI846_REG_Y_OUTPUT_SIZE_H,		0x04c8},
 	{HI846_REG_EXPOSURE,			0x09d8},
 
-	/* For OTP */
+	 
 	{HI846_REG_UNKNOWN_021C,		0x0003},
 	{HI846_REG_UNKNOWN_021E,		0x0235},
 
@@ -1143,9 +1139,9 @@ struct hi846_datafmt {
 };
 
 static const char * const hi846_supply_names[] = {
-	"vddio", /* Digital I/O (1.8V or 2.8V) */
-	"vdda", /* Analog (2.8V) */
-	"vddd", /* Digital Core (1.2V) */
+	"vddio",  
+	"vdda",  
+	"vddd",  
 };
 
 #define HI846_NUM_SUPPLIES ARRAY_SIZE(hi846_supply_names)
@@ -1167,7 +1163,7 @@ struct hi846 {
 	struct v4l2_ctrl *hblank;
 	struct v4l2_ctrl *exposure;
 
-	struct mutex mutex; /* protect cur_mode, streaming and chip access */
+	struct mutex mutex;  
 	const struct hi846_mode *cur_mode;
 	bool streaming;
 };
@@ -1342,9 +1338,9 @@ static int hi846_set_ctrl(struct v4l2_ctrl *ctrl)
 	int ret = 0;
 	u32 shutter, frame_len;
 
-	/* Propagate change of current control to all related controls */
+	 
 	if (ctrl->id == V4L2_CID_VBLANK) {
-		/* Update max exposure while meeting expected vblanking */
+		 
 		exposure_max = hi846->cur_mode->height + ctrl->val -
 			       HI846_EXPOSURE_MAX_MARGIN;
 		__v4l2_ctrl_modify_range(hi846->exposure,
@@ -1370,9 +1366,9 @@ static int hi846_set_ctrl(struct v4l2_ctrl *ctrl)
 		shutter = ctrl->val;
 		frame_len = hi846->cur_mode->frame_len;
 
-		if (shutter > frame_len - 6) { /* margin */
+		if (shutter > frame_len - 6) {  
 			frame_len = shutter + 6;
-			if (frame_len > 0xffff) { /* max frame len */
+			if (frame_len > 0xffff) {  
 				frame_len = 0xffff;
 			}
 		}
@@ -1387,7 +1383,7 @@ static int hi846_set_ctrl(struct v4l2_ctrl *ctrl)
 		break;
 
 	case V4L2_CID_VBLANK:
-		/* Update FLL that meets expected vertical blanking */
+		 
 		hi846_write_reg_16(hi846, HI846_REG_FLL,
 				   hi846->cur_mode->height + ctrl->val, &ret);
 		break;
@@ -1563,14 +1559,7 @@ static int hi846_start_streaming(struct hi846 *hi846)
 	if (ret)
 		return ret;
 
-	/*
-	 * Reading 0x0034 is purely done for debugging reasons: It is not
-	 * documented in the DS but only mentioned once:
-	 * "If 0x0034[2] bit is disabled , Visible pixel width and height is 0."
-	 * So even though that sounds like we won't see anything, we don't
-	 * know more about this, so in that case only inform the user but do
-	 * nothing more.
-	 */
+	 
 	ret = hi846_read_reg(hi846, 0x0034, &val);
 	if (ret)
 		return ret;
@@ -1648,7 +1637,7 @@ static int hi846_power_on(struct hi846 *hi846)
 	if (hi846->shutdown_gpio)
 		gpiod_set_value_cansleep(hi846->shutdown_gpio, 0);
 
-	/* 30us = 2400 cycles at 80Mhz */
+	 
 	usleep_range(30, 60);
 	if (hi846->rst_gpio)
 		gpiod_set_value_cansleep(hi846->rst_gpio, 0);
@@ -1777,7 +1766,7 @@ static int hi846_set_format(struct v4l2_subdev *sd,
 	__v4l2_ctrl_s_ctrl_int64(hi846->pixel_rate,
 				 hi846_calc_pixel_rate(hi846));
 
-	/* Update limits and set FPS to default */
+	 
 	vblank_def = hi846->cur_mode->frame_len - hi846->cur_mode->height;
 	__v4l2_ctrl_modify_range(hi846->vblank,
 				 hi846->cur_mode->frame_len -
@@ -2026,7 +2015,7 @@ static int hi846_parse_dt(struct hi846 *hi846, struct device *dev)
 		goto check_hwcfg_error;
 	}
 
-	/* Check that link frequences for all the modes are in device tree */
+	 
 	fq = hi846_check_link_freqs(hi846, &bus_cfg);
 	if (fq) {
 		dev_err(dev, "Link frequency of %lld is not supported\n", fq);

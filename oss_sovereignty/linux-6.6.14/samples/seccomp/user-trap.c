@@ -116,14 +116,11 @@ static int handle_req(struct seccomp_notif *req,
 		return -1;
 	}
 
-	/* Only allow bind mounts. */
+	 
 	if (!(req->data.args[3] & MS_BIND))
 		return 0;
 
-	/*
-	 * Ok, let's read the task's memory to see where they wanted their
-	 * mount to go.
-	 */
+	 
 	snprintf(path, sizeof(path), "/proc/%d/mem", req->pid);
 	mem = open(path, O_RDONLY);
 	if (mem < 0) {
@@ -131,27 +128,13 @@ static int handle_req(struct seccomp_notif *req,
 		return -1;
 	}
 
-	/*
-	 * Now we avoid a TOCTOU: we referred to a pid by its pid, but since
-	 * the pid that made the syscall may have died, we need to confirm that
-	 * the pid is still valid after we open its /proc/pid/mem file. We can
-	 * ask the listener fd this as follows.
-	 *
-	 * Note that this check should occur *after* any task-specific
-	 * resources are opened, to make sure that the task has not died and
-	 * we're not wrongly reading someone else's state in order to make
-	 * decisions.
-	 */
+	 
 	if (ioctl(listener, SECCOMP_IOCTL_NOTIF_ID_VALID, &req->id) < 0) {
 		fprintf(stderr, "task died before we could map its memory\n");
 		goto out;
 	}
 
-	/*
-	 * Phew, we've got the right /proc/pid/mem. Now we can read it. Note
-	 * that to avoid another TOCTOU, we should read all of the pointer args
-	 * before we decide to allow the syscall.
-	 */
+	 
 	if (lseek(mem, req->data.args[0], SEEK_SET) < 0) {
 		perror("seek");
 		goto out;
@@ -174,11 +157,7 @@ static int handle_req(struct seccomp_notif *req,
 		goto out;
 	}
 
-	/*
-	 * Our policy is to only allow bind mounts inside /tmp. This isn't very
-	 * interesting, because we could do unprivlieged bind mounts with user
-	 * namespaces already, but you get the idea.
-	 */
+	 
 	if (!strncmp(source, "/tmp/", 5) && !strncmp(target, "/tmp/", 5)) {
 		if (mount(source, target, NULL, req->data.args[3], NULL) < 0) {
 			ret = -1;
@@ -188,9 +167,7 @@ static int handle_req(struct seccomp_notif *req,
 		resp->error = 0;
 	}
 
-	/* Even if we didn't allow it because of policy, generating the
-	 * response was be a success, because we want to tell the worker EPERM.
-	 */
+	 
 	ret = 0;
 
 out:
@@ -222,18 +199,13 @@ int main(void)
 			exit(1);
 		}
 
-		/*
-		 * Drop privileges. We definitely can't mount as uid 1000.
-		 */
+		 
 		if (setuid(1000) < 0) {
 			perror("setuid");
 			exit(1);
 		}
 
-		/*
-		 * Send the listener to the parent; also serves as
-		 * synchronization.
-		 */
+		 
 		if (send_fd(sk_pair[1], listener) < 0)
 			exit(1);
 		close(listener);
@@ -243,9 +215,7 @@ int main(void)
 			exit(1);
 		}
 
-		/*
-		 * Try a bad mount just for grins.
-		 */
+		 
 		if (mount("/dev/sda", "/tmp/foo", NULL, 0, NULL) != -1) {
 			fprintf(stderr, "huh? mounted /dev/sda?\n");
 			exit(1);
@@ -256,9 +226,7 @@ int main(void)
 			exit(1);
 		}
 
-		/*
-		 * Ok, we expect this one to succeed.
-		 */
+		 
 		if (mount("/tmp/foo", "/tmp/foo", NULL, MS_BIND, NULL) < 0) {
 			perror("mount");
 			exit(1);
@@ -267,18 +235,12 @@ int main(void)
 		exit(0);
 	}
 
-	/*
-	 * Get the listener from the child.
-	 */
+	 
 	listener = recv_fd(sk_pair[0]);
 	if (listener < 0)
 		goto out_kill;
 
-	/*
-	 * Fork a task to handle the requests. This isn't strictly necessary,
-	 * but it makes the particular writing of this sample easier, since we
-	 * can just wait ofr the tracee to exit and kill the tracer.
-	 */
+	 
 	tracer = fork();
 	if (tracer < 0) {
 		perror("fork");
@@ -314,15 +276,7 @@ int main(void)
 			if (handle_req(req, resp, listener) < 0)
 				goto out_resp;
 
-			/*
-			 * ENOENT here means that the task may have gotten a
-			 * signal and restarted the syscall. It's up to the
-			 * handler to decide what to do in this case, but for
-			 * the sample code, we just ignore it. Probably
-			 * something better should happen, like undoing the
-			 * mount, or keeping track of the args to make sure we
-			 * don't do it again.
-			 */
+			 
 			if (ioctl(listener, SECCOMP_IOCTL_NOTIF_SEND, resp) < 0 &&
 			    errno != ENOENT) {
 				perror("ioctl send");

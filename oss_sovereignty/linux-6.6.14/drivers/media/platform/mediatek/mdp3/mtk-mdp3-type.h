@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2023 MediaTek Inc.
- * Author: Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
- */
+ 
+ 
 
 #ifndef __MTK_MDP3_TYPE_H__
 #define __MTK_MDP3_TYPE_H__
@@ -50,4 +47,4 @@ struct img_mmsys_ctrl {
 	u32 num_sets;
 } __packed;
 
-#endif  /* __MTK_MDP3_TYPE_H__ */
+#endif   

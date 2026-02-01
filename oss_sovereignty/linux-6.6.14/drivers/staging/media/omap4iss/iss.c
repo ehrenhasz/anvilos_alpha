@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * TI OMAP4 ISS V4L2 Driver
- *
- * Copyright (C) 2012, Texas Instruments
- *
- * Author: Sergio Aguirre <sergio.a.aguirre@gmail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -47,26 +41,14 @@ static void iss_print_status(struct iss_device *iss)
 	dev_dbg(iss->dev, "-----------------------------------------------\n");
 }
 
-/*
- * omap4iss_flush - Post pending L3 bus writes by doing a register readback
- * @iss: OMAP4 ISS device
- *
- * In order to force posting of pending writes, we need to write and
- * readback the same register, in this case the revision register.
- *
- * See this link for reference:
- *   https://www.mail-archive.com/linux-omap@vger.kernel.org/msg08149.html
- */
+ 
 static void omap4iss_flush(struct iss_device *iss)
 {
 	iss_reg_write(iss, OMAP4_ISS_MEM_TOP, ISS_HL_REVISION, 0);
 	iss_reg_read(iss, OMAP4_ISS_MEM_TOP, ISS_HL_REVISION);
 }
 
-/*
- * iss_isp_enable_interrupts - Enable ISS ISP interrupts.
- * @iss: OMAP4 ISS device
- */
+ 
 static void omap4iss_isp_enable_interrupts(struct iss_device *iss)
 {
 	static const u32 isp_irq = ISP5_IRQ_OCP_ERR |
@@ -75,31 +57,25 @@ static void omap4iss_isp_enable_interrupts(struct iss_device *iss)
 				   ISP5_IRQ_RSZ_INT_DMA |
 				   ISP5_IRQ_ISIF_INT(0);
 
-	/* Enable ISP interrupts */
+	 
 	iss_reg_write(iss, OMAP4_ISS_MEM_ISP_SYS1, ISP5_IRQSTATUS(0), isp_irq);
 	iss_reg_write(iss, OMAP4_ISS_MEM_ISP_SYS1, ISP5_IRQENABLE_SET(0),
 		      isp_irq);
 }
 
-/*
- * iss_isp_disable_interrupts - Disable ISS interrupts.
- * @iss: OMAP4 ISS device
- */
+ 
 static void omap4iss_isp_disable_interrupts(struct iss_device *iss)
 {
 	iss_reg_write(iss, OMAP4_ISS_MEM_ISP_SYS1, ISP5_IRQENABLE_CLR(0), ~0);
 }
 
-/*
- * iss_enable_interrupts - Enable ISS interrupts.
- * @iss: OMAP4 ISS device
- */
+ 
 static void iss_enable_interrupts(struct iss_device *iss)
 {
 	static const u32 hl_irq = ISS_HL_IRQ_CSIA | ISS_HL_IRQ_CSIB
 				| ISS_HL_IRQ_ISP(0);
 
-	/* Enable HL interrupts */
+	 
 	iss_reg_write(iss, OMAP4_ISS_MEM_TOP, ISS_HL_IRQSTATUS(5), hl_irq);
 	iss_reg_write(iss, OMAP4_ISS_MEM_TOP, ISS_HL_IRQENABLE_SET(5), hl_irq);
 
@@ -107,10 +83,7 @@ static void iss_enable_interrupts(struct iss_device *iss)
 		omap4iss_isp_enable_interrupts(iss);
 }
 
-/*
- * iss_disable_interrupts - Disable ISS interrupts.
- * @iss: OMAP4 ISS device
- */
+ 
 static void iss_disable_interrupts(struct iss_device *iss)
 {
 	if (iss->regs[OMAP4_ISS_MEM_ISP_SYS1])
@@ -158,15 +131,7 @@ int omap4iss_get_external_info(struct iss_pipeline *pipe,
 	return 0;
 }
 
-/*
- * Configure the bridge. Valid inputs are
- *
- * IPIPEIF_INPUT_CSI2A: CSI2a receiver
- * IPIPEIF_INPUT_CSI2B: CSI2b receiver
- *
- * The bridge and lane shifter are configured according to the selected input
- * and the ISP platform data.
- */
+ 
 void omap4iss_configure_bridge(struct iss_device *iss,
 			       enum ipipeif_input_entity input)
 {
@@ -297,16 +262,7 @@ static void iss_isp_isr_dbg(struct iss_device *iss, u32 irqstatus)
 }
 #endif
 
-/*
- * iss_isr - Interrupt Service Routine for ISS module.
- * @irq: Not used currently.
- * @_iss: Pointer to the OMAP4 ISS device
- *
- * Handles the corresponding callback if plugged in.
- *
- * Returns IRQ_HANDLED when IRQ was correctly handled, or IRQ_NONE when the
- * IRQ wasn't handled.
- */
+ 
 static irqreturn_t iss_isr(int irq, void *_iss)
 {
 	static const u32 ipipeif_events = ISP5_IRQ_IPIPEIF_IRQ |
@@ -362,23 +318,9 @@ static const struct media_device_ops iss_media_ops = {
 	.link_notify = v4l2_pipeline_link_notify,
 };
 
-/* -----------------------------------------------------------------------------
- * Pipeline stream management
- */
+ 
 
-/*
- * iss_pipeline_disable - Disable streaming on a pipeline
- * @pipe: ISS pipeline
- * @until: entity at which to stop pipeline walk
- *
- * Walk the entities chain starting at the pipeline output video node and stop
- * all modules in the chain. Wait synchronously for the modules to be stopped if
- * necessary.
- *
- * If the until argument isn't NULL, stop the pipeline walk when reaching the
- * until entity. This is used to disable a partially started pipeline due to a
- * subdev start error.
- */
+ 
 static int iss_pipeline_disable(struct iss_pipeline *pipe,
 				struct media_entity *until)
 {
@@ -408,10 +350,7 @@ static int iss_pipeline_disable(struct iss_pipeline *pipe,
 		if (ret < 0) {
 			dev_warn(iss->dev, "%s: module stop timeout.\n",
 				 subdev->name);
-			/* If the entity failed to stopped, assume it has
-			 * crashed. Mark it as such, the ISS will be reset when
-			 * applications will release it.
-			 */
+			 
 			media_entity_enum_set(&iss->crashed, &subdev->entity);
 			failure = -ETIMEDOUT;
 		}
@@ -420,17 +359,7 @@ static int iss_pipeline_disable(struct iss_pipeline *pipe,
 	return failure;
 }
 
-/*
- * iss_pipeline_enable - Enable streaming on a pipeline
- * @pipe: ISS pipeline
- * @mode: Stream mode (single shot or continuous)
- *
- * Walk the entities chain starting at the pipeline output video node and start
- * all modules in the chain in the given mode.
- *
- * Return 0 if successful, or the return value of the failed video::s_stream
- * operation otherwise.
- */
+ 
 static int iss_pipeline_enable(struct iss_pipeline *pipe,
 			       enum iss_pipeline_stream_state mode)
 {
@@ -441,12 +370,7 @@ static int iss_pipeline_enable(struct iss_pipeline *pipe,
 	unsigned long flags;
 	int ret;
 
-	/* If one of the entities in the pipeline has crashed it will not work
-	 * properly. Refuse to start streaming in that case. This check must be
-	 * performed before the loop below to avoid starting entities if the
-	 * pipeline won't start anyway (those entities would then likely fail to
-	 * stop, making the problem worse).
-	 */
+	 
 	if (media_entity_enum_intersects(&pipe->ent_enum, &iss->crashed))
 		return -EIO;
 
@@ -489,18 +413,7 @@ static int iss_pipeline_enable(struct iss_pipeline *pipe,
 	return 0;
 }
 
-/*
- * omap4iss_pipeline_set_stream - Enable/disable streaming on a pipeline
- * @pipe: ISS pipeline
- * @state: Stream state (stopped, single shot or continuous)
- *
- * Set the pipeline to the given stream state. Pipelines can be started in
- * single-shot or continuous mode.
- *
- * Return 0 if successful, or the return value of the failed video::s_stream
- * operation otherwise. The pipeline state is not updated when the operation
- * fails, except when stopping the pipeline.
- */
+ 
 int omap4iss_pipeline_set_stream(struct iss_pipeline *pipe,
 				 enum iss_pipeline_stream_state state)
 {
@@ -517,15 +430,7 @@ int omap4iss_pipeline_set_stream(struct iss_pipeline *pipe,
 	return ret;
 }
 
-/*
- * omap4iss_pipeline_cancel_stream - Cancel stream on a pipeline
- * @pipe: ISS pipeline
- *
- * Cancelling a stream mark all buffers on all video nodes in the pipeline as
- * erroneous and makes sure no new buffer can be queued. This function is called
- * when a fatal error that prevents any further operation on the pipeline
- * occurs.
- */
+ 
 void omap4iss_pipeline_cancel_stream(struct iss_pipeline *pipe)
 {
 	if (pipe->input)
@@ -534,15 +439,7 @@ void omap4iss_pipeline_cancel_stream(struct iss_pipeline *pipe)
 		omap4iss_video_cancel_stream(pipe->output);
 }
 
-/*
- * iss_pipeline_is_last - Verify if entity has an enabled link to the output
- *			  video node
- * @me: ISS module's media entity
- *
- * Returns 1 if the entity has an enabled link to the output video node or 0
- * otherwise. It's true only while pipeline can have no more than one output
- * node.
- */
+ 
 static int iss_pipeline_is_last(struct media_entity *me)
 {
 	struct iss_pipeline *pipe;
@@ -579,7 +476,7 @@ static int iss_isp_reset(struct iss_device *iss)
 {
 	unsigned int timeout;
 
-	/* Fist, ensure that the ISP is IDLE (no transactions happening) */
+	 
 	iss_reg_update(iss, OMAP4_ISS_MEM_ISP_SYS1, ISP5_SYSCONFIG,
 		       ISP5_SYSCONFIG_STANDBYMODE_MASK,
 		       ISP5_SYSCONFIG_STANDBYMODE_SMART);
@@ -594,7 +491,7 @@ static int iss_isp_reset(struct iss_device *iss)
 		return -ETIMEDOUT;
 	}
 
-	/* Now finally, do the reset */
+	 
 	iss_reg_set(iss, OMAP4_ISS_MEM_ISP_SYS1, ISP5_SYSCONFIG,
 		    ISP5_SYSCONFIG_SOFTRESET);
 
@@ -609,15 +506,7 @@ static int iss_isp_reset(struct iss_device *iss)
 	return 0;
 }
 
-/*
- * iss_module_sync_idle - Helper to sync module with its idle state
- * @me: ISS submodule's media entity
- * @wait: ISS submodule's wait queue for streamoff/interrupt synchronization
- * @stopping: flag which tells module wants to stop
- *
- * This function checks if ISS submodule needs to wait for next interrupt. If
- * yes, makes the caller to sleep while waiting for such event.
- */
+ 
 int omap4iss_module_sync_idle(struct media_entity *me, wait_queue_head_t *wait,
 			      atomic_t *stopping)
 {
@@ -630,22 +519,11 @@ int omap4iss_module_sync_idle(struct media_entity *me, wait_queue_head_t *wait,
 	     !iss_pipeline_ready(pipe)))
 		return 0;
 
-	/*
-	 * atomic_set() doesn't include memory barrier on ARM platform for SMP
-	 * scenario. We'll call it here to avoid race conditions.
-	 */
+	 
 	atomic_set(stopping, 1);
 	smp_wmb();
 
-	/*
-	 * If module is the last one, it's writing to memory. In this case,
-	 * it's necessary to check if the module is already paused due to
-	 * DMA queue underrun or if it has to wait for next interrupt to be
-	 * idle.
-	 * If it isn't the last one, the function won't sleep but *stopping
-	 * will still be set to warn next submodule caller's interrupt the
-	 * module wants to be idle.
-	 */
+	 
 	if (!iss_pipeline_is_last(me))
 		return 0;
 
@@ -667,15 +545,7 @@ int omap4iss_module_sync_idle(struct media_entity *me, wait_queue_head_t *wait,
 	return 0;
 }
 
-/*
- * omap4iss_module_sync_is_stopped - Helper to verify if module was stopping
- * @wait: ISS submodule's wait queue for streamoff/interrupt synchronization
- * @stopping: flag which tells module wants to stop
- *
- * This function checks if ISS submodule was stopping. In case of yes, it
- * notices the caller by setting stopping to 0 and waking up the wait queue.
- * Returns 1 if it was stopping or 0 otherwise.
- */
+ 
 int omap4iss_module_sync_is_stopping(wait_queue_head_t *wait,
 				     atomic_t *stopping)
 {
@@ -687,9 +557,7 @@ int omap4iss_module_sync_is_stopping(wait_queue_head_t *wait,
 	return 0;
 }
 
-/* --------------------------------------------------------------------------
- * Clock management
- */
+ 
 
 #define ISS_CLKCTRL_MASK	(ISS_CLKCTRL_CSI2_A |\
 				 ISS_CLKCTRL_CSI2_B |\
@@ -712,7 +580,7 @@ static int __iss_subclk_update(struct iss_device *iss)
 	iss_reg_update(iss, OMAP4_ISS_MEM_TOP, ISS_CLKCTRL,
 		       ISS_CLKCTRL_MASK, clk);
 
-	/* Wait for HW assertion */
+	 
 	while (--timeout > 0) {
 		udelay(1);
 		if ((iss_reg_read(iss, OMAP4_ISS_MEM_TOP, ISS_CLKSTAT) &
@@ -791,12 +659,7 @@ void omap4iss_isp_subclk_disable(struct iss_device *iss,
 	__iss_isp_subclk_update(iss);
 }
 
-/*
- * iss_enable_clocks - Enable ISS clocks
- * @iss: OMAP4 ISS device
- *
- * Return 0 if successful, or clk_enable return value if any of tthem fails.
- */
+ 
 static int iss_enable_clocks(struct iss_device *iss)
 {
 	int ret;
@@ -817,10 +680,7 @@ static int iss_enable_clocks(struct iss_device *iss)
 	return 0;
 }
 
-/*
- * iss_disable_clocks - Disable ISS clocks
- * @iss: OMAP4 ISS device
- */
+ 
 static void iss_disable_clocks(struct iss_device *iss)
 {
 	clk_disable(iss->iss_ctrlclk);
@@ -844,16 +704,7 @@ static int iss_get_clocks(struct iss_device *iss)
 	return 0;
 }
 
-/*
- * omap4iss_get - Acquire the ISS resource.
- *
- * Initializes the clocks for the first acquire.
- *
- * Increment the reference count on the ISS. If the first reference is taken,
- * enable clocks and power-up all submodules.
- *
- * Return a pointer to the ISS device structure, or NULL if an error occurred.
- */
+ 
 struct iss_device *omap4iss_get(struct iss_device *iss)
 {
 	struct iss_device *__iss = iss;
@@ -880,12 +731,7 @@ out:
 	return __iss;
 }
 
-/*
- * omap4iss_put - Release the ISS
- *
- * Decrement the reference count on the ISS. If the last reference is released,
- * power-down all submodules, disable clocks and free temporary buffers.
- */
+ 
 void omap4iss_put(struct iss_device *iss)
 {
 	if (!iss)
@@ -895,11 +741,7 @@ void omap4iss_put(struct iss_device *iss)
 	WARN_ON(iss->ref_count == 0);
 	if (--iss->ref_count == 0) {
 		iss_disable_interrupts(iss);
-		/* Reset the ISS if an entity has failed to stop. This is the
-		 * only way to recover from such conditions, although it would
-		 * be worth investigating whether resetting the ISP only can't
-		 * fix the problem in some cases.
-		 */
+		 
 		if (!media_entity_enum_empty(&iss->crashed))
 			iss_reset(iss);
 		iss_disable_clocks(iss);
@@ -928,17 +770,7 @@ static void iss_unregister_entities(struct iss_device *iss)
 	media_device_unregister(&iss->media_dev);
 }
 
-/*
- * iss_register_subdev_group - Register a group of subdevices
- * @iss: OMAP4 ISS device
- * @board_info: I2C subdevs board information array
- *
- * Register all I2C subdevices in the board_info array. The array must be
- * terminated by a NULL entry, and the first entry must be the sensor.
- *
- * Return a pointer to the sensor media entity if it has been successfully
- * registered, or NULL otherwise.
- */
+ 
 static struct v4l2_subdev *
 iss_register_subdev_group(struct iss_device *iss,
 			  struct iss_subdev_i2c_board_info *board_info)
@@ -1003,7 +835,7 @@ static int iss_register_entities(struct iss_device *iss)
 		goto done;
 	}
 
-	/* Register internal entities */
+	 
 	ret = omap4iss_csi2_register_entities(&iss->csi2a, &iss->v4l2_dev);
 	if (ret < 0)
 		goto done;
@@ -1024,7 +856,7 @@ static int iss_register_entities(struct iss_device *iss)
 	if (ret < 0)
 		goto done;
 
-	/* Register external entities */
+	 
 	for (subdevs = pdata->subdevs; subdevs && subdevs->subdevs; ++subdevs) {
 		struct v4l2_subdev *sensor;
 		struct media_entity *input;
@@ -1037,10 +869,7 @@ static int iss_register_entities(struct iss_device *iss)
 
 		sensor->host_priv = subdevs;
 
-		/* Connect the sensor to the correct interface module.
-		 * CSI2a receiver through CSIPHY1, or
-		 * CSI2b receiver through CSIPHY2
-		 */
+		 
 		switch (subdevs->interface) {
 		case ISS_INTERFACE_CSI2A_PHY1:
 			input = &iss->csi2a.subdev.entity;
@@ -1078,12 +907,7 @@ done:
 	return ret;
 }
 
-/*
- * iss_create_links() - Pads links creation for the subdevices
- * @iss : Pointer to ISS device
- *
- * return negative error code or zero on success
- */
+ 
 static int iss_create_links(struct iss_device *iss)
 {
 	int ret;
@@ -1106,7 +930,7 @@ static int iss_create_links(struct iss_device *iss)
 		return ret;
 	}
 
-	/* Connect the submodules. */
+	 
 	ret = media_create_pad_link(
 			&iss->csi2a.subdev.entity, CSI2_PAD_SOURCE,
 			&iss->ipipeif.subdev.entity, IPIPEIF_PAD_SINK, 0);
@@ -1220,17 +1044,14 @@ static int iss_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, iss);
 
-	/*
-	 * TODO: When implementing DT support switch to syscon regmap lookup by
-	 * phandle.
-	 */
+	 
 	iss->syscon = syscon_regmap_lookup_by_compatible("syscon");
 	if (IS_ERR(iss->syscon)) {
 		ret = PTR_ERR(iss->syscon);
 		goto error;
 	}
 
-	/* Clocks */
+	 
 	ret = iss_map_mem_resource(pdev, iss, OMAP4_ISS_MEM_TOP);
 	if (ret < 0)
 		goto error;
@@ -1257,12 +1078,12 @@ static int iss_probe(struct platform_device *pdev)
 			goto error_iss;
 	}
 
-	/* Configure BTE BW_LIMITER field to max recommended value (1 GB) */
+	 
 	iss_reg_update(iss, OMAP4_ISS_MEM_BTE, BTE_CTRL,
 		       BTE_CTRL_BW_LIMITER_MASK,
 		       18 << BTE_CTRL_BW_LIMITER_SHIFT);
 
-	/* Perform ISP reset */
+	 
 	ret = omap4iss_subclk_enable(iss, OMAP4_ISS_SUBCLK_ISP);
 	if (ret < 0)
 		goto error_iss;
@@ -1274,7 +1095,7 @@ static int iss_probe(struct platform_device *pdev)
 	dev_info(iss->dev, "ISP Revision %08x found\n",
 		 iss_reg_read(iss, OMAP4_ISS_MEM_ISP_SYS1, ISP5_REVISION));
 
-	/* Interrupt */
+	 
 	ret = platform_get_irq(pdev, 0);
 	if (ret <= 0) {
 		ret = -ENODEV;
@@ -1289,7 +1110,7 @@ static int iss_probe(struct platform_device *pdev)
 		goto error_iss;
 	}
 
-	/* Entities */
+	 
 	ret = iss_initialize_modules(iss);
 	if (ret < 0)
 		goto error_iss;

@@ -1,25 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "pp_debug.h"
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -91,13 +70,7 @@ static int atomctrl_retrieve_ac_timing(
 	return 0;
 }
 
-/**
- * atomctrl_set_mc_reg_address_table - Get memory clock AC timing registers index from VBIOS table
- * VBIOS set end of memory clock AC timing registers by ucPreRegDataLength bit6 = 1
- * @reg_block: the address ATOM_INIT_REG_BLOCK
- * @table: the address of MCRegTable
- * Return:   0
- */
+ 
 static int atomctrl_set_mc_reg_address_table(
 		ATOM_INIT_REG_BLOCK *reg_block,
 		pp_atomctrl_mc_reg_table *table)
@@ -107,12 +80,12 @@ static int atomctrl_set_mc_reg_address_table(
 			/ sizeof(ATOM_INIT_REG_INDEX_FORMAT));
 	ATOM_INIT_REG_INDEX_FORMAT *format = &reg_block->asRegIndexBuf[0];
 
-	num_entries--;        /* subtract 1 data end mark entry */
+	num_entries--;         
 
 	PP_ASSERT_WITH_CODE((num_entries <= VBIOS_MC_REGISTER_ARRAY_SIZE),
 			"Invalid VramInfo table.", return -1);
 
-	/* ucPreRegDataLength bit6 = 1 is the end of memory clock AC timing registers */
+	 
 	while ((!(format->ucPreRegDataLength & ACCESS_PLACEHOLDER)) &&
 			(i < num_entries)) {
 		table->mc_reg_address[i].s1 =
@@ -203,9 +176,7 @@ int atomctrl_initialize_mc_reg_table_v2_2(
 	return result;
 }
 
-/*
- * Set DRAM timings based on engine clock and memory clock.
- */
+ 
 int atomctrl_set_engine_dram_timings_rv770(
 		struct pp_hwmgr *hwmgr,
 		uint32_t engine_clock,
@@ -215,12 +186,12 @@ int atomctrl_set_engine_dram_timings_rv770(
 
 	SET_ENGINE_CLOCK_PS_ALLOCATION engine_clock_parameters;
 
-	/* They are both in 10KHz Units. */
+	 
 	engine_clock_parameters.ulTargetEngineClock =
 		cpu_to_le32((engine_clock & SET_CLOCK_FREQ_MASK) |
 			    ((COMPUTE_ENGINE_PLL_PARAM << 24)));
 
-	/* in 10 khz units.*/
+	 
 	engine_clock_parameters.sReserved.ulClock =
 		cpu_to_le32(memory_clock & SET_CLOCK_FREQ_MASK);
 
@@ -229,12 +200,7 @@ int atomctrl_set_engine_dram_timings_rv770(
 			(uint32_t *)&engine_clock_parameters);
 }
 
-/*
- * Private Function to get the PowerPlay Table Address.
- * WARNING: The tabled returned by this function is in
- * dynamically allocated memory.
- * The caller has to release if by calling kfree.
- */
+ 
 static ATOM_VOLTAGE_OBJECT_INFO *get_voltage_info_table(void *device)
 {
 	int index = GetIndexIntoMasterTable(DATA, VoltageObjectInfo);
@@ -274,14 +240,7 @@ static const ATOM_VOLTAGE_OBJECT_V3 *atomctrl_lookup_voltage_type_v3(
 	return NULL;
 }
 
-/**
- * atomctrl_get_memory_pll_dividers_si
- *
- * @hwmgr:           input parameter: pointer to HwMgr
- * @clock_value:     input parameter: memory clock
- * @mpll_param:      output parameter: memory clock parameters
- * @strobe_mode:     input parameter: 1 for strobe mode,  0 for performance mode
- */
+ 
 int atomctrl_get_memory_pll_dividers_si(
 		struct pp_hwmgr *hwmgr,
 		uint32_t clock_value,
@@ -327,13 +286,7 @@ int atomctrl_get_memory_pll_dividers_si(
 	return result;
 }
 
-/**
- * atomctrl_get_memory_pll_dividers_vi
- *
- * @hwmgr:                 input parameter: pointer to HwMgr
- * @clock_value:           input parameter: memory clock
- * @mpll_param:            output parameter: memory clock parameters
- */
+ 
 int atomctrl_get_memory_pll_dividers_vi(struct pp_hwmgr *hwmgr,
 		uint32_t clock_value, pp_atomctrl_memory_clock_param *mpll_param)
 {
@@ -368,7 +321,7 @@ int atomctrl_get_memory_pll_dividers_ai(struct pp_hwmgr *hwmgr,
 			GetIndexIntoMasterTable(COMMAND, ComputeMemoryClockParam),
 			(uint32_t *)&mpll_parameters);
 
-	/* VEGAM's mpll takes sometime to finish computing */
+	 
 	udelay(10);
 
 	if (!result) {
@@ -514,9 +467,7 @@ int atomctrl_get_dfs_pll_dividers_vi(
 	return result;
 }
 
-/*
- * Get the reference clock in 10KHz
- */
+ 
 uint32_t atomctrl_get_reference_clock(struct pp_hwmgr *hwmgr)
 {
 	ATOM_FIRMWARE_INFO *fw_info;
@@ -537,12 +488,7 @@ uint32_t atomctrl_get_reference_clock(struct pp_hwmgr *hwmgr)
 	return clock;
 }
 
-/*
- * Returns true if the given voltage type is controlled by GPIO pins.
- * voltage_type is one of SET_VOLTAGE_TYPE_ASIC_VDDC,
- * SET_VOLTAGE_TYPE_ASIC_MVDDC, SET_VOLTAGE_TYPE_ASIC_MVDDQ.
- * voltage_mode is one of ATOM_SET_VOLTAGE, ATOM_SET_VOLTAGE_PHASE
- */
+ 
 bool atomctrl_is_voltage_controlled_by_gpio_v3(
 		struct pp_hwmgr *hwmgr,
 		uint8_t voltage_type,
@@ -632,12 +578,7 @@ static bool atomctrl_lookup_gpio_pin(
 	return false;
 }
 
-/*
- * Private Function to get the PowerPlay Table Address.
- * WARNING: The tabled returned by this function is in
- * dynamically allocated memory.
- * The caller has to release if by calling kfree.
- */
+ 
 static ATOM_GPIO_PIN_LUT *get_gpio_lookup_table(void *device)
 {
 	u8 frev, crev;
@@ -655,9 +596,7 @@ static ATOM_GPIO_PIN_LUT *get_gpio_lookup_table(void *device)
 	return (ATOM_GPIO_PIN_LUT *)table_address;
 }
 
-/*
- * Returns 1 if the given pin id find in lookup table.
- */
+ 
 bool atomctrl_get_pp_assign_pin(
 		struct pp_hwmgr *hwmgr,
 		const uint32_t pinId,
@@ -725,10 +664,7 @@ int atomctrl_calculate_voltage_evv_on_sclk(
 	     getASICProfilingInfo->asHeader.ucTableContentRevision < 4))
 		return -1;
 
-	/*-----------------------------------------------------------
-	 *GETTING MULTI-STEP PARAMETERS RELATED TO CURRENT DPM LEVEL
-	 *-----------------------------------------------------------
-	 */
+	 
 	fRLL_LoadLine = Divide(getASICProfilingInfo->ulLoadLineSlop, 1000);
 
 	switch (dpm_level) {
@@ -758,11 +694,8 @@ int atomctrl_calculate_voltage_evv_on_sclk(
 		fDerateTDP = GetScaledFraction(le32_to_cpu(getASICProfilingInfo->ulTdpDerateDPM0), 1000);
 	}
 
-	/*-------------------------
-	 * DECODING FUSE VALUES
-	 * ------------------------
-	 */
-	/*Decode RO_Fused*/
+	 
+	 
 	sRO_fuse = getASICProfilingInfo->sRoFuse;
 
 	sInput_FuseValues.usEfuseIndex = sRO_fuse.usEfuseIndex;
@@ -778,7 +711,7 @@ int atomctrl_calculate_voltage_evv_on_sclk(
 	if (result)
 		return result;
 
-	/* Finally, the actual fuse value */
+	 
 	ul_RO_fused = le32_to_cpu(sOutput_FuseValues.ulEfuseValue);
 	fMin = GetScaledFraction(le32_to_cpu(sRO_fuse.ulEfuseMin), 1);
 	fRange = GetScaledFraction(le32_to_cpu(sRO_fuse.ulEfuseEncodeRange), 1);
@@ -890,16 +823,8 @@ int atomctrl_calculate_voltage_evv_on_sclk(
 	fKv_b_fused = fDecodeLogisticFuse(ul_Kv_b_fused,
 			fAverage, fRange, sKv_b_fuse.ucEfuseLength);
 
-	/* Decoding the Leakage - No special struct container */
-	/*
-	 * usLkgEuseIndex=56
-	 * ucLkgEfuseBitLSB=6
-	 * ucLkgEfuseLength=10
-	 * ulLkgEncodeLn_MaxDivMin=69077
-	 * ulLkgEncodeMax=1000000
-	 * ulLkgEncodeMin=1000
-	 * ulEfuseLogisticAlpha=13
-	 */
+	 
+	 
 
 	sInput_FuseValues.usEfuseIndex = getASICProfilingInfo->usLkgEuseIndex;
 	sInput_FuseValues.ucBitShift = getASICProfilingInfo->ucLkgEfuseBitLSB;
@@ -922,10 +847,7 @@ int atomctrl_calculate_voltage_evv_on_sclk(
 			fLn_MaxDivMin, fMin, getASICProfilingInfo->ucLkgEfuseLength);
 	fLkg_FT = fFT_Lkg_V0NORM;
 
-	/*-------------------------------------------
-	 * PART 2 - Grabbing all required values
-	 *-------------------------------------------
-	 */
+	 
 	fSM_A0 = fMultiply(GetScaledFraction(le32_to_cpu(getASICProfilingInfo->ulSM_A0), 1000000),
 			ConvertToFraction(uPow(-1, getASICProfilingInfo->ucSM_A0_sign)));
 	fSM_A1 = fMultiply(GetScaledFraction(le32_to_cpu(getASICProfilingInfo->ulSM_A1), 1000000),
@@ -980,10 +902,7 @@ int atomctrl_calculate_voltage_evv_on_sclk(
 	fV_min = fDivide(GetScaledFraction(
 				 le32_to_cpu(getASICProfilingInfo->ulMinVddc), 1000), ConvertToFraction(4));
 
-	/*-----------------------
-	 * PART 3
-	 *-----------------------
-	 */
+	 
 
 	fA_Term = fAdd(fMargin_RO_a, fAdd(fMultiply(fSM_A4, fSclk), fSM_A5));
 	fB_Term = fAdd(fAdd(fMultiply(fSM_A2, fSclk), fSM_A6), fMargin_RO_b);
@@ -1028,11 +947,7 @@ int atomctrl_calculate_voltage_evv_on_sclk(
 			fAdd(fMargin_fixed,
 			fSqrt(fAdd(fSquared_Sigma_FMAX,
 			fAdd(fSquared_Sigma_DC, fSquared_Sigma_CR))))));
-	/*
-	 fA_Term = fSM_A4 * (fSclk + fSclk_margin) + fSM_A5;
-	 fB_Term = fSM_A2 * (fSclk + fSclk_margin) + fSM_A6;
-	 fC_Term = fRO_DC_margin + fSM_A0 * fLkg_FT + fSM_A1 * fLkg_FT * (fSclk + fSclk_margin) + fSM_A3 * (fSclk + fSclk_margin) + fSM_A7 - fRO_fused;
-	 */
+	 
 
 	fA_Term = fAdd(fMultiply(fSM_A4, fAdd(fSclk, fSclk_margin)), fSM_A5);
 	fB_Term = fAdd(fMultiply(fSM_A2, fAdd(fSclk, fSclk_margin)), fSM_A6);
@@ -1058,10 +973,7 @@ int atomctrl_calculate_voltage_evv_on_sclk(
 
 	fEVV_V = fRoundUpByStepSize(fEVV_V, fStepSize, 0);
 
-	/*-----------------
-	 * PART 4
-	 *-----------------
-	 */
+	 
 
 	fV_x = fV_min;
 
@@ -1103,16 +1015,7 @@ int atomctrl_calculate_voltage_evv_on_sclk(
 	return result;
 }
 
-/**
- * atomctrl_get_voltage_evv_on_sclk: gets voltage via call to ATOM COMMAND table.
- * @hwmgr:              input: pointer to hwManager
- * @voltage_type:       input: type of EVV voltage VDDC or VDDGFX
- * @sclk:               input: in 10Khz unit. DPM state SCLK frequency
- *		         which is define in PPTable SCLK/VDDC dependence
- *			 table associated with this virtual_voltage_Id
- * @virtual_voltage_Id: input: voltage id which match per voltage DPM state: 0xff01, 0xff02.. 0xff08
- * @voltage: 	        output: real voltage level in unit of mv
- */
+ 
 int atomctrl_get_voltage_evv_on_sclk(
 		struct pp_hwmgr *hwmgr,
 		uint8_t voltage_type,
@@ -1143,12 +1046,7 @@ int atomctrl_get_voltage_evv_on_sclk(
 	return result;
 }
 
-/**
- * atomctrl_get_voltage_evv: gets voltage via call to ATOM COMMAND table.
- * @hwmgr:              input: pointer to hwManager
- * @virtual_voltage_id: input: voltage id which match per voltage DPM state: 0xff01, 0xff02.. 0xff08
- * @voltage: 	       output: real voltage level in unit of mv
- */
+ 
 int atomctrl_get_voltage_evv(struct pp_hwmgr *hwmgr,
 			     uint16_t virtual_voltage_id,
 			     uint16_t *voltage)
@@ -1158,10 +1056,10 @@ int atomctrl_get_voltage_evv(struct pp_hwmgr *hwmgr,
 	int result;
 	int entry_id;
 
-	/* search for leakage voltage ID 0xff01 ~ 0xff08 and sckl */
+	 
 	for (entry_id = 0; entry_id < hwmgr->dyn_state.vddc_dependency_on_sclk->count; entry_id++) {
 		if (hwmgr->dyn_state.vddc_dependency_on_sclk->entries[entry_id].v == virtual_voltage_id) {
-			/* found */
+			 
 			break;
 		}
 	}
@@ -1190,9 +1088,7 @@ int atomctrl_get_voltage_evv(struct pp_hwmgr *hwmgr,
 	return result;
 }
 
-/*
- * Get the mpll reference clock in 10KHz
- */
+ 
 uint32_t atomctrl_get_mpll_reference_clock(struct pp_hwmgr *hwmgr)
 {
 	ATOM_COMMON_TABLE_HEADER *fw_info;
@@ -1223,9 +1119,7 @@ uint32_t atomctrl_get_mpll_reference_clock(struct pp_hwmgr *hwmgr)
 	return clock;
 }
 
-/*
- * Get the asic internal spread spectrum table
- */
+ 
 static ATOM_ASIC_INTERNAL_SS_INFO *asic_internal_ss_get_ss_table(void *device)
 {
 	ATOM_ASIC_INTERNAL_SS_INFO *table = NULL;
@@ -1251,9 +1145,7 @@ bool atomctrl_is_asic_internal_ss_supported(struct pp_hwmgr *hwmgr)
 		return false;
 }
 
-/*
- * Get the asic internal spread spectrum assignment
- */
+ 
 static int asic_internal_ss_get_ss_asignment(struct pp_hwmgr *hwmgr,
 		const uint8_t clockSource,
 		const uint32_t clockSpeed,
@@ -1314,9 +1206,7 @@ static int asic_internal_ss_get_ss_asignment(struct pp_hwmgr *hwmgr,
 	return entry_found ? 0 : 1;
 }
 
-/*
- * Get the memory clock spread spectrum info
- */
+ 
 int atomctrl_get_memory_clock_spread_spectrum(
 		struct pp_hwmgr *hwmgr,
 		const uint32_t memory_clock,
@@ -1326,9 +1216,7 @@ int atomctrl_get_memory_clock_spread_spectrum(
 			ASIC_INTERNAL_MEMORY_SS, memory_clock, ssInfo);
 }
 
-/*
- * Get the engine clock spread spectrum info
- */
+ 
 int atomctrl_get_engine_clock_spread_spectrum(
 		struct pp_hwmgr *hwmgr,
 		const uint32_t engine_clock,

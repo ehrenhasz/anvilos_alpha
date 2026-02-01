@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/ceph/ceph_debug.h>
 
 #include <linux/inet.h>
 
 #include <linux/ceph/decode.h>
-#include <linux/ceph/messenger.h>  /* for ceph_pr_addr() */
+#include <linux/ceph/messenger.h>   
 
 static int
 ceph_decode_entity_addr_versioned(void **p, void *end,
@@ -39,7 +39,7 @@ ceph_decode_entity_addr_versioned(void **p, void *end,
 			le16_to_cpu((__force __le16)addr->in_addr.ss_family);
 	}
 
-	/* Advance past anything the client doesn't yet understand */
+	 
 	*p = struct_end;
 	ret = 0;
 bad:
@@ -52,13 +52,10 @@ ceph_decode_entity_addr_legacy(void **p, void *end,
 {
 	int ret = -EINVAL;
 
-	/* Skip rest of type field */
+	 
 	ceph_decode_skip_n(p, end, 3, bad);
 
-	/*
-	 * Clients that don't support ADDR2 always send TYPE_NONE, change it
-	 * to TYPE_LEGACY for forward compatibility.
-	 */
+	 
 	addr->type = CEPH_ENTITY_ADDR_TYPE_LEGACY;
 	ceph_decode_copy_safe(p, end, &addr->nonce, sizeof(addr->nonce), bad);
 	memset(&addr->in_addr, 0, sizeof(addr->in_addr));
@@ -86,12 +83,7 @@ bad:
 }
 EXPORT_SYMBOL(ceph_decode_entity_addr);
 
-/*
- * Return addr of desired type (MSGR2 or LEGACY) or error.
- * Make sure there is only one match.
- *
- * Assume encoding with MSG_ADDR2.
- */
+ 
 int ceph_decode_entity_addrvec(void **p, void *end, bool msgr2,
 			       struct ceph_entity_addr *addr)
 {
@@ -136,10 +128,10 @@ int ceph_decode_entity_addrvec(void **p, void *end, bool msgr2,
 		return 0;
 
 	if (!addr_cnt)
-		return 0;  /* normal -- e.g. unused OSD id/slot */
+		return 0;   
 
 	if (addr_cnt == 1 && !memchr_inv(&tmp_addr, 0, sizeof(tmp_addr)))
-		return 0;  /* weird but effectively the same as !addr_cnt */
+		return 0;   
 
 	pr_err("no match of type %d in addrvec\n", le32_to_cpu(my_type));
 	return -ENOENT;
@@ -180,7 +172,7 @@ void ceph_encode_entity_addr(void **p, const struct ceph_entity_addr *addr)
 	sa_family_t family = get_unaligned(&addr->in_addr.ss_family);
 	int addr_len = get_sockaddr_encoding_len(family);
 
-	ceph_encode_8(p, 1);  /* marker */
+	ceph_encode_8(p, 1);   
 	ceph_start_encoding(p, 1, 1, sizeof(addr->type) +
 				     sizeof(addr->nonce) +
 				     sizeof(u32) + addr_len);

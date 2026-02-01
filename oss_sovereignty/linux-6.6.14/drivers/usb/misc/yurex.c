@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Meywa-Denki & KAYAC YUREX
- *
- * Copyright (C) 2010 Tomoki Sekiyama (tomoki.sekiyama@gmail.com)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -34,10 +30,10 @@
 #define YUREX_BUF_SIZE		8
 #define YUREX_WRITE_TIMEOUT	(HZ*2)
 
-/* table of devices that work with this driver */
+ 
 static struct usb_device_id yurex_table[] = {
 	{ USB_DEVICE(YUREX_VENDOR_ID, YUREX_PRODUCT_ID) },
-	{ }					/* Terminating entry */
+	{ }					 
 };
 MODULE_DEVICE_TABLE(usb, yurex_table);
 
@@ -47,16 +43,16 @@ MODULE_DEVICE_TABLE(usb, yurex_table);
 #define YUREX_MINOR_BASE	192
 #endif
 
-/* Structure to hold all of our device specific stuff */
+ 
 struct usb_yurex {
 	struct usb_device	*udev;
 	struct usb_interface	*interface;
 	__u8			int_in_endpointAddr;
-	struct urb		*urb;		/* URB for interrupt in */
-	unsigned char           *int_buffer;	/* buffer for intterupt in */
-	struct urb		*cntl_urb;	/* URB for control msg */
-	struct usb_ctrlrequest	*cntl_req;	/* req for control msg */
-	unsigned char		*cntl_buffer;	/* buffer for control msg */
+	struct urb		*urb;		 
+	unsigned char           *int_buffer;	 
+	struct urb		*cntl_urb;	 
+	struct usb_ctrlrequest	*cntl_req;	 
+	unsigned char		*cntl_buffer;	 
 
 	struct kref		kref;
 	struct mutex		io_mutex;
@@ -65,7 +61,7 @@ struct usb_yurex {
 	wait_queue_head_t	waitq;
 
 	spinlock_t		lock;
-	__s64			bbu;		/* BBU from device */
+	__s64			bbu;		 
 };
 #define to_yurex_dev(d) container_of(d, struct usb_yurex, kref)
 
@@ -84,7 +80,7 @@ static void yurex_control_callback(struct urb *urb)
 		wake_up_interruptible(&dev->waitq);
 		return;
 	}
-	/* on success, sender woken up by CMD_ACK int in, or timeout */
+	 
 }
 
 static void yurex_delete(struct kref *kref)
@@ -111,10 +107,7 @@ static void yurex_delete(struct kref *kref)
 	kfree(dev);
 }
 
-/*
- * usb class driver info in order to get a minor number from the usb core,
- * and to have the device registered with the driver core
- */
+ 
 static struct usb_class_driver yurex_class = {
 	.name =		"yurex%d",
 	.fops =		&yurex_fops,
@@ -130,9 +123,9 @@ static void yurex_interrupt(struct urb *urb)
 	int retval, i;
 
 	switch (status) {
-	case 0: /*success*/
+	case 0:  
 		break;
-	/* The device is terminated or messed up, give up */
+	 
 	case -EOVERFLOW:
 		dev_err(&dev->interface->dev,
 			"%s - overflow with length %d, actual length is %d\n",
@@ -151,7 +144,7 @@ static void yurex_interrupt(struct urb *urb)
 		return;
 	}
 
-	/* handle received message */
+	 
 	switch (buf[0]) {
 	case CMD_COUNT:
 	case CMD_READ:
@@ -196,7 +189,7 @@ static int yurex_probe(struct usb_interface *interface, const struct usb_device_
 	DEFINE_WAIT(wait);
 	int res;
 
-	/* allocate memory for our device state and initialize it */
+	 
 	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
 	if (!dev)
 		goto error;
@@ -208,7 +201,7 @@ static int yurex_probe(struct usb_interface *interface, const struct usb_device_
 	dev->udev = usb_get_dev(interface_to_usbdev(interface));
 	dev->interface = usb_get_intf(interface);
 
-	/* set up the endpoint information */
+	 
 	iface_desc = interface->cur_altsetting;
 	res = usb_find_int_in_endpoint(iface_desc, &endpoint);
 	if (res) {
@@ -219,17 +212,17 @@ static int yurex_probe(struct usb_interface *interface, const struct usb_device_
 
 	dev->int_in_endpointAddr = endpoint->bEndpointAddress;
 
-	/* allocate control URB */
+	 
 	dev->cntl_urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!dev->cntl_urb)
 		goto error;
 
-	/* allocate buffer for control req */
+	 
 	dev->cntl_req = kmalloc(YUREX_BUF_SIZE, GFP_KERNEL);
 	if (!dev->cntl_req)
 		goto error;
 
-	/* allocate buffer for control msg */
+	 
 	dev->cntl_buffer = usb_alloc_coherent(dev->udev, YUREX_BUF_SIZE,
 					      GFP_KERNEL,
 					      &dev->cntl_urb->transfer_dma);
@@ -238,7 +231,7 @@ static int yurex_probe(struct usb_interface *interface, const struct usb_device_
 		goto error;
 	}
 
-	/* configure control URB */
+	 
 	dev->cntl_req->bRequestType = USB_DIR_OUT | USB_TYPE_CLASS |
 				      USB_RECIP_INTERFACE;
 	dev->cntl_req->bRequest	= HID_REQ_SET_REPORT;
@@ -253,12 +246,12 @@ static int yurex_probe(struct usb_interface *interface, const struct usb_device_
 	dev->cntl_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
 
 
-	/* allocate interrupt URB */
+	 
 	dev->urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!dev->urb)
 		goto error;
 
-	/* allocate buffer for interrupt in */
+	 
 	dev->int_buffer = usb_alloc_coherent(dev->udev, YUREX_BUF_SIZE,
 					GFP_KERNEL, &dev->urb->transfer_dma);
 	if (!dev->int_buffer) {
@@ -266,7 +259,7 @@ static int yurex_probe(struct usb_interface *interface, const struct usb_device_
 		goto error;
 	}
 
-	/* configure interrupt URB */
+	 
 	usb_fill_int_urb(dev->urb, dev->udev,
 			 usb_rcvintpipe(dev->udev, dev->int_in_endpointAddr),
 			 dev->int_buffer, YUREX_BUF_SIZE, yurex_interrupt,
@@ -278,11 +271,11 @@ static int yurex_probe(struct usb_interface *interface, const struct usb_device_
 		goto error;
 	}
 
-	/* save our data pointer in this interface device */
+	 
 	usb_set_intfdata(interface, dev);
 	dev->bbu = -1;
 
-	/* we can register the device now, as it is ready */
+	 
 	retval = usb_register_dev(interface, &yurex_class);
 	if (retval) {
 		dev_err(&interface->dev,
@@ -299,7 +292,7 @@ static int yurex_probe(struct usb_interface *interface, const struct usb_device_
 
 error:
 	if (dev)
-		/* this frees allocated memory */
+		 
 		kref_put(&dev->kref, yurex_delete);
 	return retval;
 }
@@ -312,21 +305,21 @@ static void yurex_disconnect(struct usb_interface *interface)
 	dev = usb_get_intfdata(interface);
 	usb_set_intfdata(interface, NULL);
 
-	/* give back our minor */
+	 
 	usb_deregister_dev(interface, &yurex_class);
 
-	/* prevent more I/O from starting */
+	 
 	usb_poison_urb(dev->urb);
 	usb_poison_urb(dev->cntl_urb);
 	mutex_lock(&dev->io_mutex);
 	dev->disconnected = 1;
 	mutex_unlock(&dev->io_mutex);
 
-	/* wakeup waiters */
+	 
 	kill_fasync(&dev->async_queue, SIGIO, POLL_IN);
 	wake_up_interruptible(&dev->waitq);
 
-	/* decrement our usage count */
+	 
 	kref_put(&dev->kref, yurex_delete);
 
 	dev_info(&interface->dev, "USB YUREX #%d now disconnected\n", minor);
@@ -371,10 +364,10 @@ static int yurex_open(struct inode *inode, struct file *file)
 		goto exit;
 	}
 
-	/* increment our usage count for the device */
+	 
 	kref_get(&dev->kref);
 
-	/* save our object in the file's private structure */
+	 
 	mutex_lock(&dev->io_mutex);
 	file->private_data = dev;
 	mutex_unlock(&dev->io_mutex);
@@ -391,7 +384,7 @@ static int yurex_release(struct inode *inode, struct file *file)
 	if (dev == NULL)
 		return -ENODEV;
 
-	/* decrement the count on our device */
+	 
 	kref_put(&dev->kref, yurex_delete);
 	return 0;
 }
@@ -407,7 +400,7 @@ static ssize_t yurex_read(struct file *file, char __user *buffer, size_t count,
 	dev = file->private_data;
 
 	mutex_lock(&dev->io_mutex);
-	if (dev->disconnected) {		/* already disconnected */
+	if (dev->disconnected) {		 
 		mutex_unlock(&dev->io_mutex);
 		return -ENODEV;
 	}
@@ -437,12 +430,12 @@ static ssize_t yurex_write(struct file *file, const char __user *user_buffer,
 	count = min(sizeof(buffer) - 1, count);
 	dev = file->private_data;
 
-	/* verify that we actually have some data to write */
+	 
 	if (count == 0)
 		goto error;
 
 	mutex_lock(&dev->io_mutex);
-	if (dev->disconnected) {		/* already disconnected */
+	if (dev->disconnected) {		 
 		mutex_unlock(&dev->io_mutex);
 		retval = -ENODEV;
 		goto error;
@@ -487,7 +480,7 @@ static ssize_t yurex_write(struct file *file, const char __user *user_buffer,
 		return -EINVAL;
 	}
 
-	/* send the data as the control msg */
+	 
 	prepare_to_wait(&dev->waitq, &wait, TASK_INTERRUPTIBLE);
 	dev_dbg(&dev->interface->dev, "%s - submit %c\n", __func__,
 		dev->cntl_buffer[0]);
@@ -496,7 +489,7 @@ static ssize_t yurex_write(struct file *file, const char __user *user_buffer,
 		timeout = schedule_timeout(YUREX_WRITE_TIMEOUT);
 	finish_wait(&dev->waitq, &wait);
 
-	/* make sure URB is idle after timeout or (spurious) CMD_ACK */
+	 
 	usb_kill_urb(dev->cntl_urb);
 
 	mutex_unlock(&dev->io_mutex);

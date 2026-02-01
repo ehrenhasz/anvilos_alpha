@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Freescale SSI ALSA SoC Digital Audio Interface (DAI) debugging functions
-//
-// Copyright 2014 Markus Pargmann <mpa@pengutronix.de>, Pengutronix
-//
-// Split from fsl_ssi.c
+
+
+
+
+
+
+
 
 #include <linux/debugfs.h>
 #include <linux/device.h>
@@ -78,11 +78,7 @@ void fsl_ssi_dbg_isr(struct fsl_ssi_dbg *dbg, u32 sisr)
 		dbg->stats.tfe0++;
 }
 
-/*
- * Show the statistics of a flag only if its interrupt is enabled
- *
- * Compilers will optimize it to a no-op if the interrupt is disabled
- */
+ 
 #define SIER_SHOW(flag, name) \
 	do { \
 		if (SSI_SIER_##flag) \
@@ -90,11 +86,7 @@ void fsl_ssi_dbg_isr(struct fsl_ssi_dbg *dbg, u32 sisr)
 	} while (0)
 
 
-/*
- * Display the statistics for the current SSI device
- *
- * To avoid confusion, only show those counts that are enabled
- */
+ 
 static int fsl_ssi_stats_show(struct seq_file *s, void *unused)
 {
 	struct fsl_ssi_dbg *ssi_dbg = s->private;

@@ -1,13 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
+ 
 
-/* Authors: Cheng Xu <chengyou@linux.alibaba.com> */
-/*          Kai Shen <kaishen@linux.alibaba.com> */
-/* Copyright (c) 2020-2022, Alibaba Group. */
+ 
+ 
+ 
 
-/* Authors: Bernard Metzler <bmt@zurich.ibm.com> */
-/*          Greg Joyce <greg@opengridcomputing.com> */
-/* Copyright (c) 2008-2019, IBM Corporation */
-/* Copyright (c) 2017, Open Grid Computing, Inc. */
+ 
+ 
+ 
+ 
 
 #ifndef __ERDMA_CM_H__
 #define __ERDMA_CM_H__
@@ -16,7 +16,7 @@
 #include <net/sock.h>
 #include <rdma/iw_cm.h>
 
-/* iWarp MPA protocol defs */
+ 
 #define MPA_REVISION_EXT_1 129
 #define MPA_MAX_PRIVDATA RDMA_MAX_PRIVATE_DATA
 #define MPA_KEY_REQ "MPA ID Req Frame"
@@ -29,9 +29,7 @@ struct mpa_rr_params {
 	__be16 pd_len;
 };
 
-/*
- * MPA request/response Hdr bits & fields
- */
+ 
 enum {
 	MPA_RR_FLAG_MARKERS = cpu_to_be16(0x8000),
 	MPA_RR_FLAG_CRC = cpu_to_be16(0x4000),
@@ -40,9 +38,7 @@ enum {
 	MPA_RR_MASK_REVISION = cpu_to_be16(0x00ff)
 };
 
-/*
- * MPA request/reply header
- */
+ 
 struct mpa_rr {
 	u8 key[16];
 	struct mpa_rr_params params;
@@ -58,7 +54,7 @@ enum {
 };
 
 struct erdma_mpa_info {
-	struct mpa_rr hdr; /* peer mpa hdr in host byte order */
+	struct mpa_rr hdr;  
 	struct erdma_mpa_ext ext_data;
 	char *pdata;
 	int bytes_rcvd;
@@ -107,10 +103,10 @@ struct erdma_cep {
 	int ird;
 
 	int pd_len;
-	/* hold user's private data. */
+	 
 	void *private_data;
 
-	/* Saved upcalls of socket llp.sock */
+	 
 	void (*sk_state_change)(struct sock *sk);
 	void (*sk_data_ready)(struct sock *sk);
 	void (*sk_error_report)(struct sock *sk);
@@ -123,8 +119,8 @@ struct erdma_cep {
 enum erdma_work_type {
 	ERDMA_CM_WORK_ACCEPT = 1,
 	ERDMA_CM_WORK_READ_MPAHDR,
-	ERDMA_CM_WORK_CLOSE_LLP, /* close socket */
-	ERDMA_CM_WORK_PEER_CLOSE, /* socket indicated peer close */
+	ERDMA_CM_WORK_CLOSE_LLP,  
+	ERDMA_CM_WORK_PEER_CLOSE,  
 	ERDMA_CM_WORK_MPATIMEOUT,
 	ERDMA_CM_WORK_CONNECTED,
 	ERDMA_CM_WORK_CONNECTTIMEOUT

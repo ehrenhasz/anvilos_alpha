@@ -1,34 +1,8 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright 2010 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- *
- * Portions Copyright 2012 Martin Matuska <martin@matuska.org>
- */
+ 
 
-/*
- * Copyright (c) 2013, 2015 by Delphix. All rights reserved.
- */
+ 
 
 #include <ctype.h>
 #include <libnvpair.h>
@@ -44,14 +18,9 @@
 #include <zfs_fletcher.h>
 #include "zstream.h"
 
-/*
- * If dump mode is enabled, the number of bytes to print per line
- */
+ 
 #define	BYTES_PER_LINE	16
-/*
- * If dump mode is enabled, the number of bytes to group together, separated
- * by newlines or spaces
- */
+ 
 #define	DUMP_GROUPING	4
 
 static uint64_t total_stream_len = 0;
@@ -71,11 +40,7 @@ safe_malloc(size_t size)
 	return (rv);
 }
 
-/*
- * ssread - send stream read.
- *
- * Read while computing incremental checksum
- */
+ 
 static size_t
 ssread(void *buf, size_t len, zio_cksum_t *cksum)
 {
@@ -123,9 +88,7 @@ read_hdr(dmu_replay_record_t *drr, zio_cksum_t *cksum)
 	return (sizeof (*drr));
 }
 
-/*
- * Print part of a block in ASCII characters
- */
+ 
 static void
 print_ascii_block(char *subbuf, int length)
 {
@@ -141,21 +104,12 @@ print_ascii_block(char *subbuf, int length)
 	(void) printf("\n");
 }
 
-/*
- * print_block - Dump the contents of a modified block to STDOUT
- *
- * Assume that buf has capacity evenly divisible by BYTES_PER_LINE
- */
+ 
 static void
 print_block(char *buf, int length)
 {
 	int i;
-	/*
-	 * Start printing ASCII characters at a constant offset, after
-	 * the hex prints. Leave 3 characters per byte on a line (2 digit
-	 * hex number plus 1 space) plus spaces between characters and
-	 * groupings.
-	 */
+	 
 	int ascii_start = BYTES_PER_LINE * 3 +
 	    BYTES_PER_LINE / DUMP_GROUPING + 2;
 
@@ -167,16 +121,12 @@ print_block(char *buf, int length)
 		for (j = 0; j < this_line_length; j++) {
 			int buf_offset = i + j;
 
-			/*
-			 * Separate every DUMP_GROUPING bytes by a space.
-			 */
+			 
 			if (buf_offset % DUMP_GROUPING == 0) {
 				print_offset += printf(" ");
 			}
 
-			/*
-			 * Print the two-digit hex value for this byte.
-			 */
+			 
 			unsigned char hex_print = buf[buf_offset];
 			print_offset += printf("%02x ", hex_print);
 		}
@@ -187,10 +137,7 @@ print_block(char *buf, int length)
 	}
 }
 
-/*
- * Print an array of bytes to stdout as hexadecimal characters. str must
- * have buf_len * 2 + 1 bytes of space.
- */
+ 
 static void
 sprintf_bytes(char *str, uint8_t *buf, uint_t buf_len)
 {
@@ -235,11 +182,7 @@ zstream_do_dump(int argc, char *argv[])
 	boolean_t verbose = B_FALSE;
 	boolean_t very_verbose = B_FALSE;
 	boolean_t first = B_TRUE;
-	/*
-	 * dump flag controls whether the contents of any modified data blocks
-	 * are printed to the console during processing of the stream. Warning:
-	 * for large streams, this can obviously lead to massive prints.
-	 */
+	 
 	boolean_t dump = B_FALSE;
 	int err;
 	zio_cksum_t zc = { { 0 } };
@@ -299,20 +242,13 @@ zstream_do_dump(int argc, char *argv[])
 	while (read_hdr(drr, &zc)) {
 		uint64_t featureflags = 0;
 
-		/*
-		 * If this is the first DMU record being processed, check for
-		 * the magic bytes and figure out the endian-ness based on them.
-		 */
+		 
 		if (first) {
 			if (drrb->drr_magic == BSWAP_64(DMU_BACKUP_MAGIC)) {
 				do_byteswap = B_TRUE;
 				if (do_cksum) {
 					ZIO_SET_CHECKSUM(&zc, 0, 0, 0, 0);
-					/*
-					 * recalculate header checksum now
-					 * that we know it needs to be
-					 * byteswapped.
-					 */
+					 
 					fletcher_4_incremental_byteswap(drr,
 					    sizeof (dmu_replay_record_t), &zc);
 				}
@@ -329,13 +265,7 @@ zstream_do_dump(int argc, char *argv[])
 			    BSWAP_32(drr->drr_payloadlen);
 		}
 
-		/*
-		 * At this point, the leading fields of the replay record
-		 * (drr_type and drr_payloadlen) have been byte-swapped if
-		 * necessary, but the rest of the data structure (the
-		 * union of type-specific structures) is still in its
-		 * original state.
-		 */
+		 
 		if (drr->drr_type >= DRR_NUMTYPES) {
 			(void) printf("INVALID record found: type 0x%x\n",
 			    drr->drr_type);
@@ -417,11 +347,7 @@ zstream_do_dump(int argc, char *argv[])
 				drre->drr_checksum.zc_word[3] =
 				    BSWAP_64(drre->drr_checksum.zc_word[3]);
 			}
-			/*
-			 * We compare against the *previous* checksum
-			 * value, because the stored checksum is of
-			 * everything before the DRR_END record.
-			 */
+			 
 			if (do_cksum && !ZIO_CHECKSUM_EQUAL(drre->drr_checksum,
 			    pcksum)) {
 				(void) printf("Expected checksum differs from "
@@ -535,10 +461,7 @@ zstream_do_dump(int argc, char *argv[])
 
 			payload_size = DRR_WRITE_PAYLOAD_SIZE(drrw);
 
-			/*
-			 * If this is verbose and/or dump output,
-			 * print info on the modified block
-			 */
+			 
 			if (verbose) {
 				sprintf_bytes(salt, drrw->drr_salt,
 				    ZIO_DATA_SALT_LEN);
@@ -569,13 +492,9 @@ zstream_do_dump(int argc, char *argv[])
 				    mac);
 			}
 
-			/*
-			 * Read the contents of the block in from STDIN to buf
-			 */
+			 
 			(void) ssread(buf, payload_size, &zc);
-			/*
-			 * If in dump mode
-			 */
+			 
 			if (dump) {
 				print_block(buf, payload_size);
 			}
@@ -752,7 +671,7 @@ zstream_do_dump(int argc, char *argv[])
 			}
 			break;
 		case DRR_NUMTYPES:
-			/* should never be reached */
+			 
 			exit(1);
 		}
 		if (drr->drr_type != DRR_BEGIN && very_verbose) {
@@ -769,7 +688,7 @@ zstream_do_dump(int argc, char *argv[])
 	free(buf);
 	fletcher_4_fini();
 
-	/* Print final summary */
+	 
 
 	(void) printf("SUMMARY:\n");
 	(void) printf("\tTotal DRR_BEGIN records = %lld (%llu bytes)\n",

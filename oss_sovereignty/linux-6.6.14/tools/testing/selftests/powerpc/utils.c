@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2013-2015, Michael Ellerman, IBM Corp.
- */
 
-#define _GNU_SOURCE	/* For CPU_ZERO etc. */
+ 
+
+#define _GNU_SOURCE	 
 
 #include <elf.h>
 #include <errno.h>
@@ -48,7 +46,7 @@ int read_file(const char *path, char *buf, size_t count, size_t *len)
 	if (len)
 		*len = rc;
 
-	/* Overflow if there are still more bytes after filling the buffer */
+	 
 	if (rc == count) {
 		rc = read(fd, &eof, 1);
 		if (rc != 0) {
@@ -77,11 +75,7 @@ int read_file_alloc(const char *path, char **buf, size_t *len)
 	if (fd < 0)
 		return -errno;
 
-	/*
-	 * We don't use stat & preallocate st_size because some non-files
-	 * report 0 file size. Instead just dynamically grow the buffer
-	 * as needed.
-	 */
+	 
 	while (1) {
 		ssize_t rc;
 
@@ -187,13 +181,13 @@ static int validate_int_parse(const char *buffer, size_t count, char *end)
 {
 	int err = 0;
 
-	/* Require at least one digit */
+	 
 	if (end == buffer) {
 		err = -EINVAL;
 		goto out;
 	}
 
-	/* Require all remaining characters be whitespace-ish */
+	 
 	for (; end < buffer + count; end++) {
 		if (*end == '\0')
 			break;
@@ -333,7 +327,7 @@ int write_long(const char *path, long result, int base)
 	int len;
 	char buffer[32];
 
-	/* Decimal only for now: no format specifier for signed hex values */
+	 
 	if (base != 10) {
 		err = -EINVAL;
 		goto out;
@@ -435,12 +429,12 @@ int pick_online_cpu(void)
 		goto done;
 	}
 
-	/* We prefer a primary thread, but skip 0 */
+	 
 	for (cpu = 8; cpu < ncpus; cpu += 8)
 		if (CPU_ISSET_S(cpu, size, mask))
 			goto done;
 
-	/* Search for anything, but in reverse */
+	 
 	for (cpu = ncpus - 1; cpu >= 0; cpu--)
 		if (CPU_ISSET_S(cpu, size, mask))
 			goto done;

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2007 PA Semi, Inc
- *
- * Authors: Egor Martovetsky <egor@pasemi.com>
- *	    Olof Johansson <olof@lixom.net>
- *
- * Maintained by: Olof Johansson <olof@lixom.net>
- *
- * Based on arch/powerpc/platforms/cell/cbe_cpufreq.c:
- * (C) Copyright IBM Deutschland Entwicklung GmbH 2005
- */
+
+ 
 
 #include <linux/cpufreq.h>
 #include <linux/timer.h>
@@ -29,23 +19,20 @@
 #define SDCPWR_PWST0_REG	0x0000
 #define SDCPWR_GIZTIME_REG	0x0440
 
-/* SDCPWR_GIZTIME_REG fields */
+ 
 #define SDCPWR_GIZTIME_GR	0x80000000
 #define SDCPWR_GIZTIME_LONGLOCK	0x000000ff
 
-/* Offset of ASR registers from SDC base */
+ 
 #define SDCASR_OFFSET		0x120000
 
 static void __iomem *sdcpwr_mapbase;
 static void __iomem *sdcasr_mapbase;
 
-/* Current astate, is used when waking up from power savings on
- * one core, in case the other core has switched states during
- * the idle time.
- */
+ 
 static int current_astate;
 
-/* We support 5(A0-A4) power states excluding turbo(A5-A6) modes */
+ 
 static struct cpufreq_frequency_table pas_freqs[] = {
 	{0, 0,	0},
 	{0, 1,	0},
@@ -55,9 +42,7 @@ static struct cpufreq_frequency_table pas_freqs[] = {
 	{0, 0,	CPUFREQ_TABLE_END},
 };
 
-/*
- * hardware specific functions
- */
+ 
 
 static int get_astate_freq(int astate)
 {
@@ -83,7 +68,7 @@ static int get_gizmo_latency(void)
 
 	giztime = in_le32(sdcpwr_mapbase + SDCPWR_GIZTIME_REG);
 
-	/* just provide the upper bound */
+	 
 	if (giztime & SDCPWR_GIZTIME_GR)
 		ret = (giztime & SDCPWR_GIZTIME_LONGLOCK) * 128000;
 	else
@@ -96,7 +81,7 @@ static void set_astate(int cpu, unsigned int astate)
 {
 	unsigned long flags;
 
-	/* Return if called before init has run */
+	 
 	if (unlikely(!sdcasr_mapbase))
 		return;
 
@@ -117,9 +102,7 @@ void restore_astate(int cpu)
 	set_astate(cpu, current_astate);
 }
 
-/*
- * cpufreq functions
- */
+ 
 
 static int pas_cpufreq_cpu_init(struct cpufreq_policy *policy)
 {
@@ -142,7 +125,7 @@ static int pas_cpufreq_cpu_init(struct cpufreq_policy *policy)
 		goto out;
 	}
 
-	/* we need the freq in kHz */
+	 
 	max_freq = *max_freqp / 1000;
 
 	dn = of_find_compatible_node(NULL, NULL, "1682m-sdc");
@@ -183,7 +166,7 @@ static int pas_cpufreq_cpu_init(struct cpufreq_policy *policy)
 	pr_debug("max clock-frequency is at %u kHz\n", max_freq);
 	pr_debug("initializing frequency table\n");
 
-	/* initialize frequency table */
+	 
 	cpufreq_for_each_entry_idx(pos, pas_freqs, idx) {
 		pos->frequency = get_astate_freq(pos->driver_data) * 100000;
 		pr_debug("%d: %d\n", idx, pos->frequency);
@@ -206,10 +189,7 @@ out:
 
 static int pas_cpufreq_cpu_exit(struct cpufreq_policy *policy)
 {
-	/*
-	 * We don't support CPU hotplug. Don't unmap after the system
-	 * has already made it to a running state.
-	 */
+	 
 	if (system_state >= SYSTEM_RUNNING)
 		return 0;
 
@@ -250,9 +230,7 @@ static struct cpufreq_driver pas_cpufreq_driver = {
 	.attr		= cpufreq_generic_attr,
 };
 
-/*
- * module init and destoy
- */
+ 
 
 static int __init pas_cpufreq_init(void)
 {

@@ -1,22 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * QLogic iSCSI HBA Driver
- * Copyright (c)  2003-2013 QLogic Corporation
- */
+ 
+ 
 
-/*
- *
- * qla4xxx_lookup_ddb_by_fw_index
- *	This routine locates a device handle given the firmware device
- *	database index.	 If device doesn't exist, returns NULL.
- *
- * Input:
- *	ha - Pointer to host adapter structure.
- *	fw_ddb_index - Firmware's device database index
- *
- * Returns:
- *	Pointer to the corresponding internal device database structure
- */
+ 
 static inline struct ddb_entry *
 qla4xxx_lookup_ddb_by_fw_index(struct scsi_qla_host *ha, uint32_t fw_ddb_index)
 {

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IIO driver for the 3-axis accelerometer Domintech DMARD09.
- *
- * Copyright (c) 2016, Jelle van der Waa <jelle@vdwaa.nl>
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/module.h>
@@ -57,10 +53,7 @@ static int dmard09_read_raw(struct iio_dev *indio_dev,
 
 	switch (mask) {
 	case IIO_CHAN_INFO_RAW:
-		/*
-		 * Read from the DMAR09_REG_STAT register, since the chip
-		 * caches reads from the individual X, Y, Z registers.
-		 */
+		 
 		ret = i2c_smbus_read_i2c_block_data(data->client,
 						    DMARD09_REG_STAT,
 						    DMARD09_BUF_LEN, buf);
@@ -72,7 +65,7 @@ static int dmard09_read_raw(struct iio_dev *indio_dev,
 
 		accel = get_unaligned_le16(&buf[chan->address]);
 
-		/* Remove lower 3 bits and sign extend */
+		 
 		accel <<= 4;
 		accel >>= 7;
 

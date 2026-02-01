@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Digital Audio (PCM) abstract layer
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -213,12 +210,7 @@ static const char * const snd_pcm_format_names[] = {
 	FORMAT(DSD_U32_BE),
 };
 
-/**
- * snd_pcm_format_name - Return a name string for the given PCM format
- * @format: PCM format
- *
- * Return: the format name string
- */
+ 
 const char *snd_pcm_format_name(snd_pcm_format_t format)
 {
 	if ((__force unsigned int)format >= ARRAY_SIZE(snd_pcm_format_names))
@@ -585,23 +577,20 @@ static int snd_pcm_substream_proc_init(struct snd_pcm_substream *substream)
 		entry->c.text.write = snd_pcm_xrun_injection_write;
 		entry->mode = S_IFREG | 0200;
 	}
-#endif /* CONFIG_SND_PCM_XRUN_DEBUG */
+#endif  
 
 	return 0;
 }
 
-#else /* !CONFIG_SND_VERBOSE_PROCFS */
+#else  
 static inline int snd_pcm_stream_proc_init(struct snd_pcm_str *pstr) { return 0; }
 static inline int snd_pcm_stream_proc_done(struct snd_pcm_str *pstr) { return 0; }
 static inline int snd_pcm_substream_proc_init(struct snd_pcm_substream *substream) { return 0; }
-#endif /* CONFIG_SND_VERBOSE_PROCFS */
+#endif  
 
 static const struct attribute_group *pcm_dev_attr_groups[];
 
-/*
- * PM callbacks: we need to deal only with suspend here, as the resume is
- * triggered either from user-space or the driver's resume callback
- */
+ 
 #ifdef CONFIG_PM_SLEEP
 static int do_pcm_suspend(struct device *dev)
 {
@@ -617,25 +606,13 @@ static const struct dev_pm_ops pcm_dev_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(do_pcm_suspend, NULL)
 };
 
-/* device type for PCM -- basically only for passing PM callbacks */
+ 
 static const struct device_type pcm_dev_type = {
 	.name = "pcm",
 	.pm = &pcm_dev_pm_ops,
 };
 
-/**
- * snd_pcm_new_stream - create a new PCM stream
- * @pcm: the pcm instance
- * @stream: the stream direction, SNDRV_PCM_STREAM_XXX
- * @substream_count: the number of substreams
- *
- * Creates a new stream for the pcm.
- * The corresponding stream on the pcm must have been empty before
- * calling this, i.e. zero must be given to the argument of
- * snd_pcm_new().
- *
- * Return: Zero if successful, or a negative error code on failure.
- */
+ 
 int snd_pcm_new_stream(struct snd_pcm *pcm, int stream, int substream_count)
 {
 	int idx, err;
@@ -760,22 +737,7 @@ free_pcm:
 	return err;
 }
 
-/**
- * snd_pcm_new - create a new PCM instance
- * @card: the card instance
- * @id: the id string
- * @device: the device index (zero based)
- * @playback_count: the number of substreams for playback
- * @capture_count: the number of substreams for capture
- * @rpcm: the pointer to store the new pcm instance
- *
- * Creates a new PCM instance.
- *
- * The pcm operators have to be set afterwards to the new instance
- * via snd_pcm_set_ops().
- *
- * Return: Zero if successful, or a negative error code on failure.
- */
+ 
 int snd_pcm_new(struct snd_card *card, const char *id, int device,
 		int playback_count, int capture_count, struct snd_pcm **rpcm)
 {
@@ -784,26 +746,7 @@ int snd_pcm_new(struct snd_card *card, const char *id, int device,
 }
 EXPORT_SYMBOL(snd_pcm_new);
 
-/**
- * snd_pcm_new_internal - create a new internal PCM instance
- * @card: the card instance
- * @id: the id string
- * @device: the device index (zero based - shared with normal PCMs)
- * @playback_count: the number of substreams for playback
- * @capture_count: the number of substreams for capture
- * @rpcm: the pointer to store the new pcm instance
- *
- * Creates a new internal PCM instance with no userspace device or procfs
- * entries. This is used by ASoC Back End PCMs in order to create a PCM that
- * will only be used internally by kernel drivers. i.e. it cannot be opened
- * by userspace. It provides existing ASoC components drivers with a substream
- * and access to any private data.
- *
- * The pcm operators have to be set afterwards to the new instance
- * via snd_pcm_set_ops().
- *
- * Return: Zero if successful, or a negative error code on failure.
- */
+ 
 int snd_pcm_new_internal(struct snd_card *card, const char *id, int device,
 	int playback_count, int capture_count,
 	struct snd_pcm **rpcm)
@@ -830,7 +773,7 @@ static void snd_pcm_free_stream(struct snd_pcm_str * pstr)
 	struct snd_pcm_oss_setup *setup, *setupn;
 #endif
 
-	/* free all proc files under the stream */
+	 
 	snd_pcm_stream_proc_done(pstr);
 
 	substream = pstr->substream;
@@ -921,7 +864,7 @@ int snd_pcm_attach_substream(struct snd_pcm *pcm, int stream,
 	if (file->f_flags & O_APPEND) {
 		if (prefer_subdevice < 0) {
 			if (pstr->substream_count > 1)
-				return -EINVAL; /* must be unique */
+				return -EINVAL;  
 			substream = pstr->substream;
 		} else {
 			for (substream = pstr->substream; substream;
@@ -1000,7 +943,7 @@ void snd_pcm_detach_substream(struct snd_pcm_substream *substream)
 	free_pages_exact(runtime->control,
 		       PAGE_ALIGN(sizeof(struct snd_pcm_mmap_control)));
 	kfree(runtime->hw_constraints.rules);
-	/* Avoid concurrent access to runtime via PCM timer interface */
+	 
 	if (substream->timer) {
 		spin_lock_irq(&substream->timer->lock);
 		substream->runtime = NULL;
@@ -1077,7 +1020,7 @@ static int snd_pcm_dev_register(struct snd_device *device)
 			devtype = SNDRV_DEVICE_TYPE_PCM_CAPTURE;
 			break;
 		}
-		/* register pcm */
+		 
 		err = snd_register_device(devtype, pcm->card, pcm->device,
 					  &snd_pcm_f_ops[cidx], pcm,
 					  pcm->streams[cidx].dev);
@@ -1113,7 +1056,7 @@ static int snd_pcm_dev_disconnect(struct snd_device *device)
 		if (substream->runtime) {
 			if (snd_pcm_running(substream))
 				snd_pcm_stop(substream, SNDRV_PCM_STATE_DISCONNECTED);
-			/* to be sure, set the state unconditionally */
+			 
 			__snd_pcm_set_state(substream->runtime,
 					    SNDRV_PCM_STATE_DISCONNECTED);
 			wake_up(&substream->runtime->sleep);
@@ -1137,17 +1080,7 @@ static int snd_pcm_dev_disconnect(struct snd_device *device)
 }
 
 #if IS_ENABLED(CONFIG_SND_PCM_OSS)
-/**
- * snd_pcm_notify - Add/remove the notify list
- * @notify: PCM notify list
- * @nfree: 0 = register, 1 = unregister
- *
- * This adds the given notifier to the global list so that the callback is
- * called for each registered PCM devices.  This exists only for PCM OSS
- * emulation, so far.
- *
- * Return: zero if successful, or a negative error code
- */
+ 
 int snd_pcm_notify(struct snd_pcm_notify *notify, int nfree)
 {
 	struct snd_pcm *pcm;
@@ -1171,12 +1104,10 @@ int snd_pcm_notify(struct snd_pcm_notify *notify, int nfree)
 	return 0;
 }
 EXPORT_SYMBOL(snd_pcm_notify);
-#endif /* CONFIG_SND_PCM_OSS */
+#endif  
 
 #ifdef CONFIG_SND_PROC_FS
-/*
- *  Info interface
- */
+ 
 
 static void snd_pcm_proc_read(struct snd_info_entry *entry,
 			      struct snd_info_buffer *buffer)
@@ -1220,15 +1151,13 @@ static void snd_pcm_proc_done(void)
 	snd_info_free_entry(snd_pcm_proc_entry);
 }
 
-#else /* !CONFIG_SND_PROC_FS */
+#else  
 #define snd_pcm_proc_init()
 #define snd_pcm_proc_done()
-#endif /* CONFIG_SND_PROC_FS */
+#endif  
 
 
-/*
- *  ENTRY functions
- */
+ 
 
 static int __init alsa_pcm_init(void)
 {

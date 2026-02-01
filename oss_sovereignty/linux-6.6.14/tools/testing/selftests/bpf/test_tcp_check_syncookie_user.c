@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2018 Facebook
-// Copyright (c) 2019 Cloudflare
+
+
+
 
 #include <limits.h>
 #include <string.h>
@@ -170,8 +170,8 @@ static int run_test(int server_fd, int results_fd, bool xdp,
 	}
 
 	if (xdp && value_gen == 0) {
-		// SYN packets do not get passed through generic XDP, skip the
-		// rest of the test.
+		
+		
 		printf("Skipping XDP cookie check\n");
 		goto out;
 	}
@@ -211,7 +211,7 @@ static bool get_port(int server_fd, in_port_t *port)
 		return false;
 	}
 
-	/* sin_port and sin6_port are located at the same offset. */
+	 
 	*port = addr.sin_port;
 	return true;
 }
@@ -234,7 +234,7 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	/* Use libbpf 1.0 API mode */
+	 
 	libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
 
 	results = get_map_fd_by_prog_id(atoi(argv[1]), &xdp);

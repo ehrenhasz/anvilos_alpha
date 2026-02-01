@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *	Driver for Allwinner A10 PS2 host controller
- *
- *	Author: Vishnu Patekar <vishnupatekar0510@gmail.com>
- *		Aaron.maoye <leafy.myeh@newbietech.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/serio.h>
@@ -18,23 +13,23 @@
 
 #define DRIVER_NAME		"sun4i-ps2"
 
-/* register offset definitions */
-#define PS2_REG_GCTL		0x00	/* PS2 Module Global Control Reg */
-#define PS2_REG_DATA		0x04	/* PS2 Module Data Reg		*/
-#define PS2_REG_LCTL		0x08	/* PS2 Module Line Control Reg */
-#define PS2_REG_LSTS		0x0C	/* PS2 Module Line Status Reg	*/
-#define PS2_REG_FCTL		0x10	/* PS2 Module FIFO Control Reg */
-#define PS2_REG_FSTS		0x14	/* PS2 Module FIFO Status Reg	*/
-#define PS2_REG_CLKDR		0x18	/* PS2 Module Clock Divider Reg*/
+ 
+#define PS2_REG_GCTL		0x00	 
+#define PS2_REG_DATA		0x04	 
+#define PS2_REG_LCTL		0x08	 
+#define PS2_REG_LSTS		0x0C	 
+#define PS2_REG_FCTL		0x10	 
+#define PS2_REG_FSTS		0x14	 
+#define PS2_REG_CLKDR		0x18	 
 
-/*  PS2 GLOBAL CONTROL REGISTER PS2_GCTL */
+ 
 #define PS2_GCTL_INTFLAG	BIT(4)
 #define PS2_GCTL_INTEN		BIT(3)
 #define PS2_GCTL_RESET		BIT(2)
 #define PS2_GCTL_MASTER		BIT(1)
 #define PS2_GCTL_BUSEN		BIT(0)
 
-/* PS2 LINE CONTROL REGISTER */
+ 
 #define PS2_LCTL_NOACK		BIT(18)
 #define PS2_LCTL_TXDTOEN	BIT(8)
 #define PS2_LCTL_STOPERREN	BIT(3)
@@ -42,7 +37,7 @@
 #define PS2_LCTL_PARERREN	BIT(1)
 #define PS2_LCTL_RXDTOEN	BIT(0)
 
-/* PS2 LINE STATUS REGISTER */
+ 
 #define PS2_LSTS_TXTDO		BIT(8)
 #define PS2_LSTS_STOPERR	BIT(3)
 #define PS2_LSTS_ACKERR		BIT(2)
@@ -53,7 +48,7 @@
 	(PS2_LSTS_TXTDO | PS2_LSTS_STOPERR | PS2_LSTS_ACKERR | \
 	PS2_LSTS_PARERR | PS2_LSTS_RXTDO)
 
-/* PS2 FIFO CONTROL REGISTER */
+ 
 #define PS2_FCTL_TXRST		BIT(17)
 #define PS2_FCTL_RXRST		BIT(16)
 #define PS2_FCTL_TXUFIEN	BIT(10)
@@ -63,7 +58,7 @@
 #define PS2_FCTL_RXOFIEN	BIT(1)
 #define PS2_FCTL_RXRDYIEN	BIT(0)
 
-/* PS2 FIFO STATUS REGISTER */
+ 
 #define PS2_FSTS_TXUF		BIT(10)
 #define PS2_FSTS_TXOF		BIT(9)
 #define PS2_FSTS_TXRDY		BIT(8)
@@ -81,13 +76,13 @@ struct sun4i_ps2data {
 	struct serio *serio;
 	struct device *dev;
 
-	/* IO mapping base */
+	 
 	void __iomem	*reg_base;
 
-	/* clock management */
+	 
 	struct clk	*clk;
 
-	/* irq */
+	 
 	spinlock_t	lock;
 	int		irq;
 };
@@ -103,11 +98,11 @@ static irqreturn_t sun4i_ps2_interrupt(int irq, void *dev_id)
 
 	spin_lock(&drvdata->lock);
 
-	/* Get the PS/2 interrupts and clear them */
+	 
 	intr_status  = readl(drvdata->reg_base + PS2_REG_LSTS);
 	fifo_status  = readl(drvdata->reg_base + PS2_REG_FSTS);
 
-	/* Check line status register */
+	 
 	if (intr_status & PS2_LINE_ERROR_BIT) {
 		rxflags = (intr_status & PS2_LINE_ERROR_BIT) ? SERIO_FRAME : 0;
 		rxflags |= (intr_status & PS2_LSTS_PARERR) ? SERIO_PARITY : 0;
@@ -118,7 +113,7 @@ static irqreturn_t sun4i_ps2_interrupt(int irq, void *dev_id)
 		writel(rval, drvdata->reg_base + PS2_REG_LSTS);
 	}
 
-	/* Check FIFO status register */
+	 
 	if (fifo_status & PS2_FIFO_ERROR_BIT) {
 		rval = PS2_FSTS_TXUF | PS2_FSTS_TXOF | PS2_FSTS_TXRDY |
 			PS2_FSTS_RXUF | PS2_FSTS_RXOF | PS2_FSTS_RXRDY;
@@ -148,12 +143,12 @@ static int sun4i_ps2_open(struct serio *serio)
 	u32 rval;
 	unsigned long flags;
 
-	/* Set line control and enable interrupt */
+	 
 	rval = PS2_LCTL_STOPERREN | PS2_LCTL_ACKERREN
 		| PS2_LCTL_PARERREN | PS2_LCTL_RXDTOEN;
 	writel(rval, drvdata->reg_base + PS2_REG_LCTL);
 
-	/* Reset FIFO */
+	 
 	rval = PS2_FCTL_TXRST | PS2_FCTL_RXRST | PS2_FCTL_TXUFIEN
 		| PS2_FCTL_TXOFIEN | PS2_FCTL_RXUFIEN
 		| PS2_FCTL_RXOFIEN | PS2_FCTL_RXRDYIEN;
@@ -161,13 +156,13 @@ static int sun4i_ps2_open(struct serio *serio)
 	writel(rval, drvdata->reg_base + PS2_REG_FCTL);
 
 	src_clk = clk_get_rate(drvdata->clk);
-	/* Set clock divider register */
+	 
 	clk_scdf = src_clk / PS2_SAMPLE_CLK - 1;
 	clk_pcdf = PS2_SAMPLE_CLK / PS2_SCLK - 1;
 	rval = (clk_scdf << 8) | clk_pcdf;
 	writel(rval, drvdata->reg_base + PS2_REG_CLKDR);
 
-	/* Set global control register */
+	 
 	rval = PS2_GCTL_RESET | PS2_GCTL_INTEN | PS2_GCTL_MASTER
 		| PS2_GCTL_BUSEN;
 
@@ -183,7 +178,7 @@ static void sun4i_ps2_close(struct serio *serio)
 	struct sun4i_ps2data *drvdata = serio->port_data;
 	u32 rval;
 
-	/* Shut off the interrupt */
+	 
 	rval = readl(drvdata->reg_base + PS2_REG_GCTL);
 	writel(rval & ~(PS2_GCTL_INTEN), drvdata->reg_base + PS2_REG_GCTL);
 
@@ -207,7 +202,7 @@ static int sun4i_ps2_write(struct serio *serio, unsigned char val)
 
 static int sun4i_ps2_probe(struct platform_device *pdev)
 {
-	struct resource *res; /* IO mem resources */
+	struct resource *res;  
 	struct sun4i_ps2data *drvdata;
 	struct serio *serio;
 	struct device *dev = &pdev->dev;
@@ -222,7 +217,7 @@ static int sun4i_ps2_probe(struct platform_device *pdev)
 
 	spin_lock_init(&drvdata->lock);
 
-	/* IO */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res) {
 		dev_err(dev, "failed to locate registers\n");
@@ -259,10 +254,10 @@ static int sun4i_ps2_probe(struct platform_device *pdev)
 	strscpy(serio->name, dev_name(dev), sizeof(serio->name));
 	strscpy(serio->phys, dev_name(dev), sizeof(serio->phys));
 
-	/* shutoff interrupt */
+	 
 	writel(0, drvdata->reg_base + PS2_REG_GCTL);
 
-	/* Get IRQ for the device */
+	 
 	drvdata->irq = platform_get_irq(pdev, 0);
 	if (drvdata->irq < 0) {
 		error = drvdata->irq;
@@ -283,7 +278,7 @@ static int sun4i_ps2_probe(struct platform_device *pdev)
 	serio_register_port(serio);
 	platform_set_drvdata(pdev, drvdata);
 
-	return 0;	/* success */
+	return 0;	 
 
 err_disable_clk:
 	clk_disable_unprepare(drvdata->clk);

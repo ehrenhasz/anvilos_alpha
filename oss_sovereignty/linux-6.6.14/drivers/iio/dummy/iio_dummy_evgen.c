@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2011 Jonathan Cameron
- *
- * Companion module to the iio simple dummy example driver.
- * The purpose of this is to generate 'fake' event interrupts thus
- * allowing that driver's code to be as close as possible to that of
- * a normal driver talking to hardware.  The approach used here
- * is not intended to be general and just happens to work for this
- * particular use case.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -23,18 +14,10 @@
 #include <linux/iio/sysfs.h>
 #include <linux/irq_sim.h>
 
-/* Fiddly bit of faking and irq without hardware */
+ 
 #define IIO_EVENTGEN_NO 10
 
-/**
- * struct iio_dummy_eventgen - event generator specific state
- * @regs: irq regs we are faking
- * @lock: protect the evgen state
- * @inuse: mask of which irqs are connected
- * @irq_sim: interrupt simulator
- * @base: base of irq range
- * @irq_sim_domain: irq simulator domain
- */
+ 
 struct iio_dummy_eventgen {
 	struct iio_dummy_regs regs[IIO_EVENTGEN_NO];
 	struct mutex lock;
@@ -42,7 +25,7 @@ struct iio_dummy_eventgen {
 	struct irq_domain *irq_sim_domain;
 };
 
-/* We can only ever have one instance of this 'device' */
+ 
 static struct iio_dummy_eventgen *iio_evgen;
 
 static int iio_dummy_evgen_create(void)
@@ -66,12 +49,7 @@ static int iio_dummy_evgen_create(void)
 	return 0;
 }
 
-/**
- * iio_dummy_evgen_get_irq() - get an evgen provided irq for a device
- *
- * This function will give a free allocated irq to a client device.
- * That irq can then be caused to 'fire' by using the associated sysfs file.
- */
+ 
 int iio_dummy_evgen_get_irq(void)
 {
 	int i, ret = 0;
@@ -95,12 +73,7 @@ int iio_dummy_evgen_get_irq(void)
 }
 EXPORT_SYMBOL_GPL(iio_dummy_evgen_get_irq);
 
-/**
- * iio_dummy_evgen_release_irq() - give the irq back.
- * @irq: irq being returned to the pool
- *
- * Used by client driver instances to give the irqs back when they disconnect
- */
+ 
 void iio_dummy_evgen_release_irq(int irq)
 {
 	struct irq_data *irqd = irq_get_irq_data(irq);

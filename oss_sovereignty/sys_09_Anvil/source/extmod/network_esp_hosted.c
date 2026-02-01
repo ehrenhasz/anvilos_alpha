@@ -1,30 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2023 Arduino SA
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * ESP-Hosted network interface.
- */
+ 
 
 #include "py/mphal.h"
 
@@ -59,13 +33,13 @@ static esp_hosted_obj_t esp_hosted_ap_if = {{(mp_obj_type_t *)&mod_network_esp_h
 static mp_obj_t network_esp_hosted_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args) {
     mp_arg_check_num(n_args, n_kw, 0, 1, false);
     mp_obj_t esp_hosted_obj;
-    // TODO fix
+    
     if (n_args == 0 || mp_obj_get_int(args[0]) == ESP_HOSTED_STA_IF) {
         esp_hosted_obj = MP_OBJ_FROM_PTR(&esp_hosted_sta_if);
     } else {
         esp_hosted_obj = MP_OBJ_FROM_PTR(&esp_hosted_ap_if);
     }
-    // Register with network module
+    
     mod_network_register_nic(esp_hosted_obj);
     return esp_hosted_obj;
 }
@@ -76,10 +50,10 @@ static mp_obj_t network_esp_hosted_active(size_t n_args, const mp_obj_t *args) {
     if (n_args == 2) {
         bool active = mp_obj_is_true(args[1]);
         if (active) {
-            // If the active NIC is changing disable the active one first.
-            // Note the host driver, firmware and ESP all support simultaneous AP/STA,
-            // however modnetwork.c doesn't support routing traffic to different NICs
-            // at the moment.
+            
+            
+            
+            
             if (self->itf == ESP_HOSTED_STA_IF && esp_hosted_wifi_link_status(ESP_HOSTED_AP_IF)) {
                 esp_hosted_wifi_disable(ESP_HOSTED_AP_IF);
             } else if (self->itf == ESP_HOSTED_AP_IF && esp_hosted_wifi_link_status(ESP_HOSTED_STA_IF)) {
@@ -129,12 +103,12 @@ static mp_obj_t network_esp_hosted_connect(mp_uint_t n_args, const mp_obj_t *pos
         { MP_QSTR_channel,  MP_ARG_KW_ONLY | MP_ARG_INT, {.u_int = 0} },
     };
 
-    // Extract args.
+    
     esp_hosted_obj_t *self = MP_OBJ_TO_PTR(pos_args[0]);
     mp_arg_val_t args[MP_ARRAY_SIZE(allowed_args)];
     mp_arg_parse_all(n_args - 1, pos_args + 1, kw_args, MP_ARRAY_SIZE(allowed_args), allowed_args, args);
 
-    // get ssid
+    
     const char *ssid = NULL;
     if (args[ARG_ssid].u_obj != mp_const_none) {
         ssid = mp_obj_str_get_str(args[ARG_ssid].u_obj);
@@ -142,13 +116,13 @@ static mp_obj_t network_esp_hosted_connect(mp_uint_t n_args, const mp_obj_t *pos
         mp_raise_msg(&mp_type_OSError, MP_ERROR_TEXT("SSID can't be empty!"));
     }
 
-    // get bssid (if any)
+    
     const char *bssid = NULL;
     if (args[ARG_bssid].u_obj != mp_const_none) {
         bssid = mp_obj_str_get_str(args[ARG_bssid].u_obj);
     }
 
-    // get key and security
+    
     const char *key = NULL;
     mp_uint_t security = ESP_HOSTED_SEC_OPEN;
     if (args[ARG_key].u_obj != mp_const_none) {
@@ -159,22 +133,22 @@ static mp_obj_t network_esp_hosted_connect(mp_uint_t n_args, const mp_obj_t *pos
         }
     }
 
-    // get channel
+    
     mp_uint_t channel = args[ARG_channel].u_int;
 
-    // If connected or AP active disconnect/stop AP first.
+    
     if (esp_hosted_wifi_is_connected(self->itf)) {
         esp_hosted_wifi_disconnect(self->itf);
     }
 
     if (self->itf == ESP_HOSTED_STA_IF) {
-        // Initialize WiFi in Station mode.
+        
         if (esp_hosted_wifi_connect(ssid, bssid, security, key, channel) != 0) {
             mp_raise_msg_varg(&mp_type_OSError,
                 MP_ERROR_TEXT("could not connect to ssid=%s, sec=%d, key=%s\n"), ssid, security, key);
         }
     } else {
-        // Initialize WiFi in AP mode.
+        
         if (esp_hosted_wifi_start_ap(ssid, security, key, channel) != 0) {
             mp_raise_msg(&mp_type_OSError, MP_ERROR_TEXT("failed to start in AP mode"));
         }
@@ -215,7 +189,7 @@ static mp_obj_t network_esp_hosted_config(size_t n_args, const mp_obj_t *args, m
     esp_hosted_obj_t *self = MP_OBJ_TO_PTR(args[0]);
 
     if (kwargs->used == 0) {
-        // Get config value
+        
         if (n_args != 2) {
             mp_raise_TypeError(MP_ERROR_TEXT("must query one param"));
         }
@@ -254,7 +228,7 @@ static mp_obj_t network_esp_hosted_config(size_t n_args, const mp_obj_t *args, m
         if (self->itf != MOD_NETWORK_AP_IF) {
             mp_raise_ValueError(MP_ERROR_TEXT("AP required"));
         }
-        // Call connect to set WiFi access point.
+        
         return network_esp_hosted_connect(n_args, args, kwargs);
     }
 
@@ -266,11 +240,11 @@ static mp_obj_t network_esp_hosted_status(size_t n_args, const mp_obj_t *args) {
     esp_hosted_obj_t *self = MP_OBJ_TO_PTR(args[0]);
 
     if (n_args == 1) {
-        // no arguments: return link status
+        
         return mp_obj_new_bool(esp_hosted_wifi_link_status(self->itf));
     }
 
-    // Query parameter.
+    
     switch (mp_obj_str_get_qstr(args[1])) {
         case MP_QSTR_rssi: {
             esp_hosted_netinfo_t netinfo;
@@ -310,14 +284,14 @@ static const mp_rom_map_elem_t network_esp_hosted_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_config),              MP_ROM_PTR(&network_esp_hosted_config_obj) },
     { MP_ROM_QSTR(MP_QSTR_status),              MP_ROM_PTR(&network_esp_hosted_status_obj) },
 
-    // Class constants.
+    
     { MP_ROM_QSTR(MP_QSTR_IF_STA),              MP_ROM_INT(MOD_NETWORK_STA_IF) },
     { MP_ROM_QSTR(MP_QSTR_IF_AP),               MP_ROM_INT(MOD_NETWORK_AP_IF) },
     { MP_ROM_QSTR(MP_QSTR_SEC_OPEN),            MP_ROM_INT(ESP_HOSTED_SEC_OPEN) },
     { MP_ROM_QSTR(MP_QSTR_SEC_WEP),             MP_ROM_INT(ESP_HOSTED_SEC_WEP) },
     { MP_ROM_QSTR(MP_QSTR_SEC_WPA_WPA2),        MP_ROM_INT(ESP_HOSTED_SEC_WPA_WPA2_PSK) },
 
-    // For backwards compatibility.
+    
     { MP_ROM_QSTR(MP_QSTR_OPEN),                MP_ROM_INT(ESP_HOSTED_SEC_OPEN) },
     { MP_ROM_QSTR(MP_QSTR_WEP),                 MP_ROM_INT(ESP_HOSTED_SEC_WEP) },
     { MP_ROM_QSTR(MP_QSTR_WPA_PSK),             MP_ROM_INT(ESP_HOSTED_SEC_WPA_WPA2_PSK) },
@@ -334,4 +308,4 @@ MP_DEFINE_CONST_OBJ_TYPE(
 
 MP_REGISTER_ROOT_POINTER(struct _machine_spi_obj_t *mp_wifi_spi);
 
-#endif // #if MICROPY_PY_BLUETOOTH && MICROPY_PY_NETWORK_ESP_HOSTED
+#endif 

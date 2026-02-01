@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * GPIO driver for NXP LPC18xx/43xx.
- *
- * Copyright (C) 2018 Vladimir Zapolskiy <vz@mleia.com>
- * Copyright (C) 2015 Joachim Eastwood <manabian@gmail.com>
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/gpio/driver.h>
@@ -18,13 +12,13 @@
 #include <linux/pinctrl/consumer.h>
 #include <linux/platform_device.h>
 
-/* LPC18xx GPIO register offsets */
+ 
 #define LPC18XX_REG_DIR(n)	(0x2000 + n * sizeof(u32))
 
 #define LPC18XX_MAX_PORTS	8
 #define LPC18XX_PINS_PER_PORT	32
 
-/* LPC18xx GPIO pin interrupt controller register offsets */
+ 
 #define LPC18XX_GPIO_PIN_IC_ISEL	0x00
 #define LPC18XX_GPIO_PIN_IC_IENR	0x04
 #define LPC18XX_GPIO_PIN_IC_SIENR	0x08
@@ -175,10 +169,7 @@ static int lpc18xx_gpio_pin_ic_domain_alloc(struct irq_domain *domain,
 	if (hwirq >= NR_LPC18XX_GPIO_PIN_IC_IRQS)
 		return -EINVAL;
 
-	/*
-	 * All LPC18xx/LPC43xx GPIO pin hardware interrupts are translated
-	 * into edge interrupts 32...39 on parent Cortex-M3/M4 NVIC
-	 */
+	 
 	parent_fwspec.fwnode = domain->parent->fwnode;
 	parent_fwspec.param_count = 1;
 	parent_fwspec.param[0] = hwirq + 32;
@@ -338,7 +329,7 @@ static int lpc18xx_gpio_probe(struct platform_device *pdev)
 
 	index = of_property_match_string(dev->of_node, "reg-names", "gpio");
 	if (index < 0) {
-		/* To support backward compatibility take the first resource */
+		 
 		gc->base = devm_platform_ioremap_resource(pdev, 0);
 	} else {
 		struct resource res;
@@ -375,7 +366,7 @@ static int lpc18xx_gpio_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* On error GPIO pin interrupt controller just won't be registered */
+	 
 	lpc18xx_gpio_pin_ic_probe(gc);
 
 	return 0;

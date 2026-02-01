@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Allwinner A64 Display Engine 2.0 Bus Driver
- *
- * Copyright (C) 2018 Icenowy Zheng <icenowy@aosc.io>
- */
+
+ 
 
 #include <linux/of_platform.h>
 #include <linux/platform_device.h>
@@ -32,7 +28,7 @@ static int sun50i_de2_bus_remove(struct platform_device *pdev)
 
 static const struct of_device_id sun50i_de2_bus_of_match[] = {
 	{ .compatible = "allwinner,sun50i-a64-de2", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver sun50i_de2_bus_driver = {

@@ -1,13 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Test for perf events with SIGTRAP across all threads.
- *
- * Copyright (C) 2021, Google LLC.
- */
+
+ 
 
 #define _GNU_SOURCE
 
-/* We need the latest siginfo from the kernel repo. */
+ 
 #include <sys/types.h>
 #include <asm/siginfo.h>
 #define __have_siginfo_t 1
@@ -35,15 +31,15 @@
 
 #define NUM_THREADS 5
 
-/* Data shared between test body, threads, and signal handler. */
+ 
 static struct {
-	int tids_want_signal;		/* Which threads still want a signal. */
-	int signal_count;		/* Sanity check number of signals received. */
-	volatile int iterate_on;	/* Variable to set breakpoint on. */
-	siginfo_t first_siginfo;	/* First observed siginfo_t. */
+	int tids_want_signal;		 
+	int signal_count;		 
+	volatile int iterate_on;	 
+	siginfo_t first_siginfo;	 
 } ctx;
 
-/* Unique value to check si_perf_data is correctly set from perf_event_attr::sig_data. */
+ 
 #define TEST_SIG_DATA(addr, id) (~(unsigned long)(addr) + id)
 
 static struct perf_event_attr make_event_attr(bool enabled, volatile void *addr,
@@ -57,13 +53,13 @@ static struct perf_event_attr make_event_attr(bool enabled, volatile void *addr,
 		.bp_addr	= (unsigned long)addr,
 		.bp_type	= HW_BREAKPOINT_RW,
 		.bp_len		= HW_BREAKPOINT_LEN_1,
-		.inherit	= 1, /* Children inherit events ... */
-		.inherit_thread = 1, /* ... but only cloned with CLONE_THREAD. */
-		.remove_on_exec = 1, /* Required by sigtrap. */
-		.sigtrap	= 1, /* Request synchronous SIGTRAP on event. */
+		.inherit	= 1,  
+		.inherit_thread = 1,  
+		.remove_on_exec = 1,  
+		.sigtrap	= 1,  
 		.sig_data	= TEST_SIG_DATA(addr, id),
-		.exclude_kernel = 1, /* To allow */
-		.exclude_hv     = 1, /* running as !root */
+		.exclude_kernel = 1,  
+		.exclude_hv     = 1,  
 	};
 	return attr;
 }
@@ -75,10 +71,7 @@ static void sigtrap_handler(int signum, siginfo_t *info, void *ucontext)
 		return;
 	}
 
-	/*
-	 * The data in siginfo_t we're interested in should all be the same
-	 * across threads.
-	 */
+	 
 	if (!__atomic_fetch_add(&ctx.signal_count, 1, __ATOMIC_RELAXED))
 		ctx.first_siginfo = *info;
 	__atomic_fetch_sub(&ctx.tids_want_signal, syscall(__NR_gettid), __ATOMIC_RELAXED);
@@ -94,11 +87,11 @@ static void *test_thread(void *arg)
 	pthread_barrier_wait(barrier);
 
 	__atomic_fetch_add(&ctx.tids_want_signal, tid, __ATOMIC_RELAXED);
-	iter = ctx.iterate_on; /* read */
+	iter = ctx.iterate_on;  
 	if (iter >= 0) {
 		for (i = 0; i < iter - 1; i++) {
 			__atomic_fetch_add(&ctx.tids_want_signal, tid, __ATOMIC_RELAXED);
-			ctx.iterate_on = iter; /* idempotent write */
+			ctx.iterate_on = iter;  
 		}
 	} else {
 		while (ctx.iterate_on);
@@ -123,17 +116,17 @@ FIXTURE_SETUP(sigtrap_threads)
 
 	memset(&ctx, 0, sizeof(ctx));
 
-	/* Initialize sigtrap handler. */
+	 
 	action.sa_flags = SA_SIGINFO | SA_NODEFER;
 	action.sa_sigaction = sigtrap_handler;
 	sigemptyset(&action.sa_mask);
 	ASSERT_EQ(sigaction(SIGTRAP, &action, &self->oldact), 0);
 
-	/* Initialize perf event. */
+	 
 	self->fd = syscall(__NR_perf_event_open, &attr, 0, -1, -1, PERF_FLAG_FD_CLOEXEC);
 	ASSERT_NE(self->fd, -1);
 
-	/* Spawn threads inheriting perf event. */
+	 
 	pthread_barrier_init(&self->barrier, NULL, NUM_THREADS + 1);
 	for (i = 0; i < NUM_THREADS; i++)
 		ASSERT_EQ(pthread_create(&self->threads[i], NULL, test_thread, &self->barrier), 0);
@@ -174,12 +167,12 @@ TEST_F(sigtrap_threads, enable_event)
 	EXPECT_EQ(ctx.first_siginfo.si_perf_type, PERF_TYPE_BREAKPOINT);
 	EXPECT_EQ(ctx.first_siginfo.si_perf_data, TEST_SIG_DATA(&ctx.iterate_on, 0));
 
-	/* Check enabled for parent. */
+	 
 	ctx.iterate_on = 0;
 	EXPECT_EQ(ctx.signal_count, NUM_THREADS + 1);
 }
 
-/* Test that modification propagates to all inherited events. */
+ 
 TEST_F(sigtrap_threads, modify_and_enable_event)
 {
 	struct perf_event_attr new_attr = make_event_attr(true, &ctx.iterate_on, 42);
@@ -193,12 +186,12 @@ TEST_F(sigtrap_threads, modify_and_enable_event)
 	EXPECT_EQ(ctx.first_siginfo.si_perf_type, PERF_TYPE_BREAKPOINT);
 	EXPECT_EQ(ctx.first_siginfo.si_perf_data, TEST_SIG_DATA(&ctx.iterate_on, 42));
 
-	/* Check enabled for parent. */
+	 
 	ctx.iterate_on = 0;
 	EXPECT_EQ(ctx.signal_count, NUM_THREADS + 1);
 }
 
-/* Stress test event + signal handling. */
+ 
 TEST_F(sigtrap_threads, signal_stress)
 {
 	ctx.iterate_on = 3000;

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-#define _GNU_SOURCE /* for program_invocation_short_name */
+
+#define _GNU_SOURCE  
 #include <fcntl.h>
 #include <pthread.h>
 #include <sched.h>
@@ -17,17 +17,11 @@
 #include <kvm_util.h>
 #include <processor.h>
 
-/*
- * s390x needs at least 1MB alignment, and the x86_64 MOVE/DELETE tests need a
- * 2MB sized and aligned region so that the initial region corresponds to
- * exactly one large page.
- */
+ 
 #define MEM_REGION_SIZE		0x200000
 
 #ifdef __x86_64__
-/*
- * Somewhat arbitrary location and slot, intended to not overlap anything.
- */
+ 
 #define MEM_REGION_GPA		0xc0000000
 #define MEM_REGION_SLOT		10
 
@@ -57,11 +51,7 @@ static void *vcpu_worker(void *data)
 	struct ucall uc;
 	uint64_t cmd;
 
-	/*
-	 * Loop until the guest is done.  Re-enter the guest on all MMIO exits,
-	 * which will occur if the guest attempts to access a memslot after it
-	 * has been deleted or while it is being moved .
-	 */
+	 
 	while (1) {
 		vcpu_run(vcpu);
 
@@ -104,7 +94,7 @@ static void wait_for_vcpu(void)
 	TEST_ASSERT(!sem_timedwait(&vcpu_ready, &ts),
 		    "sem_timedwait() failed: %d\n", errno);
 
-	/* Wait for the vCPU thread to reenter the guest. */
+	 
 	usleep(100000);
 }
 
@@ -121,22 +111,19 @@ static struct kvm_vm *spawn_vm(struct kvm_vcpu **vcpu, pthread_t *vcpu_thread,
 				    MEM_REGION_GPA, MEM_REGION_SLOT,
 				    MEM_REGION_SIZE / getpagesize(), 0);
 
-	/*
-	 * Allocate and map two pages so that the GPA accessed by guest_code()
-	 * stays valid across the memslot move.
-	 */
+	 
 	gpa = vm_phy_pages_alloc(vm, 2, MEM_REGION_GPA, MEM_REGION_SLOT);
 	TEST_ASSERT(gpa == MEM_REGION_GPA, "Failed vm_phy_pages_alloc\n");
 
 	virt_map(vm, MEM_REGION_GPA, MEM_REGION_GPA, 2);
 
-	/* Ditto for the host mapping so that both pages can be zeroed. */
+	 
 	hva = addr_gpa2hva(vm, MEM_REGION_GPA);
 	memset(hva, 0, 2 * 4096);
 
 	pthread_create(vcpu_thread, NULL, vcpu_worker, *vcpu);
 
-	/* Ensure the guest thread is spun up. */
+	 
 	wait_for_vcpu();
 
 	return vm;
@@ -149,27 +136,22 @@ static void guest_code_move_memory_region(void)
 
 	GUEST_SYNC(0);
 
-	/*
-	 * Spin until the memory region starts getting moved to a
-	 * misaligned address.
-	 * Every region move may or may not trigger MMIO, as the
-	 * window where the memslot is invalid is usually quite small.
-	 */
+	 
 	val = guest_spin_on_val(0);
 	__GUEST_ASSERT(val == 1 || val == MMIO_VAL,
 		       "Expected '1' or MMIO ('%llx'), got '%llx'", MMIO_VAL, val);
 
-	/* Spin until the misaligning memory region move completes. */
+	 
 	val = guest_spin_on_val(MMIO_VAL);
 	__GUEST_ASSERT(val == 1 || val == 0,
 		       "Expected '0' or '1' (no MMIO), got '%llx'", val);
 
-	/* Spin until the memory region starts to get re-aligned. */
+	 
 	val = guest_spin_on_val(0);
 	__GUEST_ASSERT(val == 1 || val == MMIO_VAL,
 		       "Expected '1' or MMIO ('%llx'), got '%llx'", MMIO_VAL, val);
 
-	/* Spin until the re-aligning memory region move completes. */
+	 
 	val = guest_spin_on_val(MMIO_VAL);
 	GUEST_ASSERT_EQ(val, 1);
 
@@ -187,31 +169,20 @@ static void test_move_memory_region(void)
 
 	hva = addr_gpa2hva(vm, MEM_REGION_GPA);
 
-	/*
-	 * Shift the region's base GPA.  The guest should not see "2" as the
-	 * hva->gpa translation is misaligned, i.e. the guest is accessing a
-	 * different host pfn.
-	 */
+	 
 	vm_mem_region_move(vm, MEM_REGION_SLOT, MEM_REGION_GPA - 4096);
 	WRITE_ONCE(*hva, 2);
 
-	/*
-	 * The guest _might_ see an invalid memslot and trigger MMIO, but it's
-	 * a tiny window.  Spin and defer the sync until the memslot is
-	 * restored and guest behavior is once again deterministic.
-	 */
+	 
 	usleep(100000);
 
-	/*
-	 * Note, value in memory needs to be changed *before* restoring the
-	 * memslot, else the guest could race the update and see "2".
-	 */
+	 
 	WRITE_ONCE(*hva, 1);
 
-	/* Restore the original base, the guest should see "1". */
+	 
 	vm_mem_region_move(vm, MEM_REGION_SLOT, MEM_REGION_GPA);
 	wait_for_vcpu();
-	/* Defered sync from when the memslot was misaligned (above). */
+	 
 	wait_for_vcpu();
 
 	pthread_join(vcpu_thread, NULL);
@@ -225,15 +196,15 @@ static void guest_code_delete_memory_region(void)
 
 	GUEST_SYNC(0);
 
-	/* Spin until the memory region is deleted. */
+	 
 	val = guest_spin_on_val(0);
 	GUEST_ASSERT_EQ(val, MMIO_VAL);
 
-	/* Spin until the memory region is recreated. */
+	 
 	val = guest_spin_on_val(MMIO_VAL);
 	GUEST_ASSERT_EQ(val, 0);
 
-	/* Spin until the memory region is deleted. */
+	 
 	val = guest_spin_on_val(0);
 	GUEST_ASSERT_EQ(val, MMIO_VAL);
 
@@ -243,7 +214,7 @@ static void guest_code_delete_memory_region(void)
 	    "final_rip_start: .quad 1b\n\t"
 	    ".popsection");
 
-	/* Spin indefinitely (until the code memslot is deleted). */
+	 
 	guest_spin_on_val(MMIO_VAL);
 
 	asm("1:\n\t"
@@ -265,24 +236,21 @@ static void test_delete_memory_region(void)
 
 	vm = spawn_vm(&vcpu, &vcpu_thread, guest_code_delete_memory_region);
 
-	/* Delete the memory region, the guest should not die. */
+	 
 	vm_mem_region_delete(vm, MEM_REGION_SLOT);
 	wait_for_vcpu();
 
-	/* Recreate the memory region.  The guest should see "0". */
+	 
 	vm_userspace_mem_region_add(vm, VM_MEM_SRC_ANONYMOUS_THP,
 				    MEM_REGION_GPA, MEM_REGION_SLOT,
 				    MEM_REGION_SIZE / getpagesize(), 0);
 	wait_for_vcpu();
 
-	/* Delete the region again so that there's only one memslot left. */
+	 
 	vm_mem_region_delete(vm, MEM_REGION_SLOT);
 	wait_for_vcpu();
 
-	/*
-	 * Delete the primary memslot.  This should cause an emulation error or
-	 * shutdown due to the page tables getting nuked.
-	 */
+	 
 	vm_mem_region_delete(vm, 0);
 
 	pthread_join(vcpu_thread, NULL);
@@ -295,10 +263,7 @@ static void test_delete_memory_region(void)
 
 	vcpu_regs_get(vcpu, &regs);
 
-	/*
-	 * On AMD, after KVM_EXIT_SHUTDOWN the VMCB has been reinitialized already,
-	 * so the instruction pointer would point to the reset vector.
-	 */
+	 
 	if (run->exit_reason == KVM_EXIT_INTERNAL_ERROR)
 		TEST_ASSERT(regs.rip >= final_rip_start &&
 			    regs.rip < final_rip_end,
@@ -324,12 +289,9 @@ static void test_zero_memory_regions(void)
 
 	kvm_vm_free(vm);
 }
-#endif /* __x86_64__ */
+#endif  
 
-/*
- * Test it can be added memory slots up to KVM_CAP_NR_MEMSLOTS, then any
- * tentative to add further slots should fail.
- */
+ 
 static void test_add_max_memory_regions(void)
 {
 	int ret;
@@ -340,7 +302,7 @@ static void test_add_max_memory_regions(void)
 	size_t alignment;
 
 #ifdef __s390x__
-	/* On s390x, the host address must be aligned to 1M (due to PGSTEs) */
+	 
 	alignment = 0x100000;
 #else
 	alignment = 1;
@@ -353,7 +315,7 @@ static void test_add_max_memory_regions(void)
 
 	vm = vm_create_barebones();
 
-	/* Check it can be added memory slots up to the maximum allowed */
+	 
 	pr_info("Adding slots 0..%i, each memory region with %dK size\n",
 		(max_mem_slots - 1), MEM_REGION_SIZE >> 10);
 
@@ -369,7 +331,7 @@ static void test_add_max_memory_regions(void)
 					  MEM_REGION_SIZE,
 					  mem_aligned + (uint64_t)slot * MEM_REGION_SIZE);
 
-	/* Check it cannot be added memory slots beyond the limit */
+	 
 	mem_extra = mmap(NULL, MEM_REGION_SIZE, PROT_READ | PROT_WRITE,
 			 MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 	TEST_ASSERT(mem_extra != MAP_FAILED, "Failed to mmap() host");
@@ -392,10 +354,7 @@ int main(int argc, char *argv[])
 #endif
 
 #ifdef __x86_64__
-	/*
-	 * FIXME: the zero-memslot test fails on aarch64 and s390x because
-	 * KVM_RUN fails with ENOEXEC or EFAULT.
-	 */
+	 
 	test_zero_memory_regions();
 #endif
 

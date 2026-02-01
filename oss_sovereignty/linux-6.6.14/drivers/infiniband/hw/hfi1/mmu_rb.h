@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2020 Cornelis Networks, Inc.
- * Copyright(c) 2016 Intel Corporation.
- */
+ 
+ 
 
 #ifndef _HFI1_MMU_RB_H
 #define _HFI1_MMU_RB_H
@@ -19,7 +16,7 @@ struct mmu_rb_node {
 	struct kref refcount;
 };
 
-/* filter and evict must not sleep. Only remove is allowed to sleep. */
+ 
 struct mmu_rb_ops {
 	bool (*filter)(struct mmu_rb_node *node, unsigned long addr,
 		       unsigned long len);
@@ -29,17 +26,11 @@ struct mmu_rb_ops {
 };
 
 struct mmu_rb_handler {
-	/*
-	 * struct mmu_notifier is 56 bytes, and spinlock_t is 4 bytes, so
-	 * they fit together in one cache line.  mn is relatively rarely
-	 * accessed, so co-locating the spinlock with it achieves much of
-	 * the cacheline contention reduction of giving the spinlock its own
-	 * cacheline without the overhead of doing so.
-	 */
+	 
 	struct mmu_notifier mn;
-	spinlock_t lock;        /* protect the RB tree */
+	spinlock_t lock;         
 
-	/* Begin on a new cachline boundary here */
+	 
 	struct rb_root_cached root ____cacheline_aligned_in_smp;
 	void *ops_arg;
 	struct mmu_rb_ops *ops;
@@ -64,4 +55,4 @@ struct mmu_rb_node *hfi1_mmu_rb_get_first(struct mmu_rb_handler *handler,
 					  unsigned long addr,
 					  unsigned long len);
 
-#endif /* _HFI1_MMU_RB_H */
+#endif  

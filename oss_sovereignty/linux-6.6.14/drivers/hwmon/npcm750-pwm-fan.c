@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2014-2018 Nuvoton Technology corporation.
+
+
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -15,7 +15,7 @@
 #include <linux/sysfs.h>
 #include <linux/thermal.h>
 
-/* NPCM7XX PWM registers */
+ 
 #define NPCM7XX_PWM_REG_BASE(base, n)    ((base) + ((n) * 0x1000L))
 
 #define NPCM7XX_PWM_REG_PR(base, n)	(NPCM7XX_PWM_REG_BASE(base, n) + 0x00)
@@ -45,17 +45,17 @@
 #define NPCM7XX_PWM_CTRL_CH2_EN_BIT		BIT(12)
 #define NPCM7XX_PWM_CTRL_CH3_EN_BIT		BIT(16)
 
-/* Define the maximum PWM channel number */
+ 
 #define NPCM7XX_PWM_MAX_CHN_NUM			8
 #define NPCM7XX_PWM_MAX_CHN_NUM_IN_A_MODULE	4
 #define NPCM7XX_PWM_MAX_MODULES                 2
 
-/* Define the Counter Register, value = 100 for match 100% */
+ 
 #define NPCM7XX_PWM_COUNTER_DEFAULT_NUM		255
 #define NPCM7XX_PWM_CMR_DEFAULT_NUM		255
 #define NPCM7XX_PWM_CMR_MAX			255
 
-/* default all PWM channels PRESCALE2 = 1 */
+ 
 #define NPCM7XX_PWM_PRESCALE2_DEFAULT_CH0	0x4
 #define NPCM7XX_PWM_PRESCALE2_DEFAULT_CH1	0x40
 #define NPCM7XX_PWM_PRESCALE2_DEFAULT_CH2	0x400
@@ -76,7 +76,7 @@
 					NPCM7XX_PWM_CTRL_CH2_MODE_BIT | \
 					NPCM7XX_PWM_CTRL_CH3_MODE_BIT)
 
-/* NPCM7XX FAN Tacho registers */
+ 
 #define NPCM7XX_FAN_REG_BASE(base, n)	((base) + ((n) * 0x1000L))
 
 #define NPCM7XX_FAN_REG_TCNT1(base, n)    (NPCM7XX_FAN_REG_BASE(base, n) + 0x00)
@@ -137,18 +137,13 @@
 #define NPCM7XX_FAN_TCPCFG_LOAEN	BIT(1)
 #define NPCM7XX_FAN_TCPCFG_CPASEL	BIT(0)
 
-/* FAN General Definition */
-/* Define the maximum FAN channel number */
+ 
+ 
 #define NPCM7XX_FAN_MAX_MODULE			8
 #define NPCM7XX_FAN_MAX_CHN_NUM_IN_A_MODULE	2
 #define NPCM7XX_FAN_MAX_CHN_NUM			16
 
-/*
- * Get Fan Tach Timeout (base on clock 214843.75Hz, 1 cnt = 4.654us)
- * Timeout 94ms ~= 0x5000
- * (The minimum FAN speed could to support ~640RPM/pulse 1,
- * 320RPM/pulse 2, ...-- 10.6Hz)
- */
+ 
 #define NPCM7XX_FAN_TIMEOUT	0x5000
 #define NPCM7XX_FAN_TCNT	0xFFFF
 #define NPCM7XX_FAN_TCPA	(NPCM7XX_FAN_TCNT - NPCM7XX_FAN_TIMEOUT)
@@ -162,10 +157,10 @@
 #define NPCM7XX_FAN_CMPA				0
 #define NPCM7XX_FAN_CMPB				1
 
-/* Obtain the fan number */
+ 
 #define NPCM7XX_FAN_INPUT(fan, cmp)		(((fan) << 1) + (cmp))
 
-/* fan sample status */
+ 
 #define FAN_DISABLE				0xFF
 #define FAN_INIT				0x00
 #define FAN_PREPARE_TO_GET_FIRST_CAPTURE	0x01
@@ -214,12 +209,10 @@ static int npcm7xx_pwm_config_set(struct npcm7xx_pwm_fan_data *data,
 	u32 module = (channel / NPCM7XX_PWM_MAX_CHN_NUM_IN_A_MODULE);
 	u32 tmp_buf, ctrl_en_bit, env_bit;
 
-	/*
-	 * Config PWM Comparator register for setting duty cycle
-	 */
+	 
 	mutex_lock(&data->pwm_lock[module]);
 
-	/* write new CMR value  */
+	 
 	iowrite32(val, NPCM7XX_PWM_REG_CMRx(data->pwm_base, module, pwm_ch));
 	tmp_buf = ioread32(NPCM7XX_PWM_REG_CR(data->pwm_base, module));
 
@@ -246,11 +239,11 @@ static int npcm7xx_pwm_config_set(struct npcm7xx_pwm_fan_data *data,
 	}
 
 	if (val == 0) {
-		/* Disable PWM */
+		 
 		tmp_buf &= ~ctrl_en_bit;
 		tmp_buf |= env_bit;
 	} else {
-		/* Enable PWM */
+		 
 		tmp_buf |= ctrl_en_bit;
 		tmp_buf &= ~env_bit;
 	}
@@ -271,22 +264,17 @@ static inline void npcm7xx_fan_start_capture(struct npcm7xx_pwm_fan_data *data,
 
 	fan_id = NPCM7XX_FAN_INPUT(fan, cmp);
 
-	/* to check whether any fan tach is enable */
+	 
 	if (data->fan_dev[fan_id].fan_st_flg != FAN_DISABLE) {
-		/* reset status */
+		 
 		spin_lock_irqsave(&data->fan_lock[fan], flags);
 
 		data->fan_dev[fan_id].fan_st_flg = FAN_INIT;
 		reg_int = ioread8(NPCM7XX_FAN_REG_TIEN(data->fan_base, fan));
 
-		/*
-		 * the interrupt enable bits do not need to be cleared before
-		 * it sets, the interrupt enable bits are cleared only on reset.
-		 * the clock unit control register is behaving in the same
-		 * manner that the interrupt enable register behave.
-		 */
+		 
 		if (cmp == NPCM7XX_FAN_CMPA) {
-			/* enable interrupt */
+			 
 			iowrite8(reg_int | (NPCM7XX_FAN_TIEN_TAIEN |
 					    NPCM7XX_FAN_TIEN_TEIEN),
 				 NPCM7XX_FAN_REG_TIEN(data->fan_base, fan));
@@ -295,11 +283,11 @@ static inline void npcm7xx_fan_start_capture(struct npcm7xx_pwm_fan_data *data,
 				| ioread8(NPCM7XX_FAN_REG_TCKC(data->fan_base,
 							       fan));
 
-			/* start to Capture */
+			 
 			iowrite8(reg_mode, NPCM7XX_FAN_REG_TCKC(data->fan_base,
 								fan));
 		} else {
-			/* enable interrupt */
+			 
 			iowrite8(reg_int | (NPCM7XX_FAN_TIEN_TBIEN |
 					    NPCM7XX_FAN_TIEN_TFIEN),
 				 NPCM7XX_FAN_REG_TIEN(data->fan_base, fan));
@@ -309,7 +297,7 @@ static inline void npcm7xx_fan_start_capture(struct npcm7xx_pwm_fan_data *data,
 				| ioread8(NPCM7XX_FAN_REG_TCKC(data->fan_base,
 							       fan));
 
-			/* start to Capture */
+			 
 			iowrite8(reg_mode,
 				 NPCM7XX_FAN_REG_TCKC(data->fan_base, fan));
 		}
@@ -318,10 +306,7 @@ static inline void npcm7xx_fan_start_capture(struct npcm7xx_pwm_fan_data *data,
 	}
 }
 
-/*
- * Enable a background timer to poll fan tach value, (200ms * 4)
- * to polling all fan
- */
+ 
 static void npcm7xx_fan_polling(struct timer_list *t)
 {
 	struct npcm7xx_pwm_fan_data *data;
@@ -329,13 +314,10 @@ static void npcm7xx_fan_polling(struct timer_list *t)
 
 	data = from_timer(data, t, fan_timer);
 
-	/*
-	 * Polling two module per one round,
-	 * FAN01 & FAN89 / FAN23 & FAN1011 / FAN45 & FAN1213 / FAN67 & FAN1415
-	 */
+	 
 	for (i = data->fan_select; i < NPCM7XX_FAN_MAX_MODULE;
 	      i = i + 4) {
-		/* clear the flag and reset the counter (TCNT) */
+		 
 		iowrite8(NPCM7XX_FAN_TICLR_CLEAR_ALL,
 			 NPCM7XX_FAN_REG_TICLR(data->fan_base, i));
 
@@ -354,7 +336,7 @@ static void npcm7xx_fan_polling(struct timer_list *t)
 	data->fan_select++;
 	data->fan_select &= 0x3;
 
-	/* reset the timer interval */
+	 
 	data->fan_timer.expires = jiffies +
 		msecs_to_jiffies(NPCM7XX_FAN_POLL_TIMER_200MS);
 	add_timer(&data->fan_timer);
@@ -373,32 +355,29 @@ static inline void npcm7xx_fan_compute(struct npcm7xx_pwm_fan_data *data,
 	else
 		fan_cap = ioread16(NPCM7XX_FAN_REG_TCRB(data->fan_base, fan));
 
-	/* clear capature flag, H/W will auto reset the NPCM7XX_FAN_TCNTx */
+	 
 	iowrite8(flag_clear, NPCM7XX_FAN_REG_TICLR(data->fan_base, fan));
 
 	if (data->fan_dev[fan_id].fan_st_flg == FAN_INIT) {
-		/* First capture, drop it */
+		 
 		data->fan_dev[fan_id].fan_st_flg =
 			FAN_PREPARE_TO_GET_FIRST_CAPTURE;
 
-		/* reset counter */
+		 
 		data->fan_dev[fan_id].fan_cnt_tmp = 0;
 	} else if (data->fan_dev[fan_id].fan_st_flg < FAN_ENOUGH_SAMPLE) {
-		/*
-		 * collect the enough sample,
-		 * (ex: 2 pulse fan need to get 2 sample)
-		 */
+		 
 		data->fan_dev[fan_id].fan_cnt_tmp +=
 			(NPCM7XX_FAN_TCNT - fan_cap);
 
 		data->fan_dev[fan_id].fan_st_flg++;
 	} else {
-		/* get enough sample or fan disable */
+		 
 		if (data->fan_dev[fan_id].fan_st_flg == FAN_ENOUGH_SAMPLE) {
 			data->fan_dev[fan_id].fan_cnt_tmp +=
 				(NPCM7XX_FAN_TCNT - fan_cap);
 
-			/* compute finial average cnt per pulse */
+			 
 			data->fan_dev[fan_id].fan_cnt =
 				data->fan_dev[fan_id].fan_cnt_tmp /
 				FAN_ENOUGH_SAMPLE;
@@ -408,12 +387,12 @@ static inline void npcm7xx_fan_compute(struct npcm7xx_pwm_fan_data *data,
 
 		reg_int =  ioread8(NPCM7XX_FAN_REG_TIEN(data->fan_base, fan));
 
-		/* disable interrupt */
+		 
 		iowrite8((reg_int & ~flag_int),
 			 NPCM7XX_FAN_REG_TIEN(data->fan_base, fan));
 		reg_mode =  ioread8(NPCM7XX_FAN_REG_TCKC(data->fan_base, fan));
 
-		/* stop capturing */
+		 
 		iowrite8((reg_mode & ~flag_mode),
 			 NPCM7XX_FAN_REG_TCKC(data->fan_base, fan));
 	}
@@ -450,28 +429,24 @@ static inline void npcm7xx_check_cmp(struct npcm7xx_pwm_fan_data *data,
 	if (flag & flag_timeout) {
 		reg_int =  ioread8(NPCM7XX_FAN_REG_TIEN(data->fan_base, fan));
 
-		/* disable interrupt */
+		 
 		iowrite8((reg_int & ~flag_int),
 			 NPCM7XX_FAN_REG_TIEN(data->fan_base, fan));
 
-		/* clear interrupt flag */
+		 
 		iowrite8(flag_clear,
 			 NPCM7XX_FAN_REG_TICLR(data->fan_base, fan));
 
 		reg_mode =  ioread8(NPCM7XX_FAN_REG_TCKC(data->fan_base, fan));
 
-		/* stop capturing */
+		 
 		iowrite8((reg_mode & ~flag_mode),
 			 NPCM7XX_FAN_REG_TCKC(data->fan_base, fan));
 
-		/*
-		 *  If timeout occurs (NPCM7XX_FAN_TIMEOUT), the fan doesn't
-		 *  connect or speed is lower than 10.6Hz (320RPM/pulse2).
-		 *  In these situation, the RPM output should be zero.
-		 */
+		 
 		data->fan_dev[fan_id].fan_cnt = 0;
 	} else {
-	    /* input capture is occurred */
+	     
 		if (flag & flag_cap)
 			npcm7xx_fan_compute(data, fan, cmp, fan_id, flag_int,
 					    flag_mode, flag_clear);
@@ -564,7 +539,7 @@ static int npcm7xx_read_fan(struct device *dev, u32 attr, int channel,
 		if (data->fan_dev[channel].fan_cnt <= 0)
 			return data->fan_dev[channel].fan_cnt;
 
-		/* Convert the raw reading to RPM */
+		 
 		if (data->fan_dev[channel].fan_cnt > 0 &&
 		    data->fan_dev[channel].fan_pls_per_rev > 0)
 			*val = ((data->input_clk_freq * 60) /
@@ -677,20 +652,17 @@ static u32 npcm7xx_pwm_init(struct npcm7xx_pwm_fan_data *data)
 
 	data->pwm_clk_freq = clk_get_rate(data->pwm_clk);
 
-	/* Adjust NPCM7xx PWMs output frequency to ~25Khz */
+	 
 	output_freq = data->pwm_clk_freq / PWN_CNT_DEFAULT;
 	prescale_val = DIV_ROUND_CLOSEST(output_freq, PWM_OUTPUT_FREQ_25KHZ);
 
-	/* If prescale_val = 0, then the prescale output clock is stopped */
+	 
 	if (prescale_val < MIN_PRESCALE1)
 		prescale_val = MIN_PRESCALE1;
-	/*
-	 * prescale_val need to decrement in one because in the PWM Prescale
-	 * register the Prescale value increment by one
-	 */
+	 
 	prescale_val--;
 
-	/* Setting PWM Prescale Register value register to both modules */
+	 
 	prescale_val |= (prescale_val << NPCM7XX_PWM_PRESCALE_SHIFT_CH01);
 
 	for (m = 0; m < NPCM7XX_PWM_MAX_MODULES  ; m++) {
@@ -717,43 +689,43 @@ static void npcm7xx_fan_init(struct npcm7xx_pwm_fan_data *data)
 	u32 apb_clk_freq;
 
 	for (md = 0; md < NPCM7XX_FAN_MAX_MODULE; md++) {
-		/* stop FAN0~7 clock */
+		 
 		iowrite8(NPCM7XX_FAN_TCKC_CLKX_NONE,
 			 NPCM7XX_FAN_REG_TCKC(data->fan_base, md));
 
-		/* disable all interrupt */
+		 
 		iowrite8(0x00, NPCM7XX_FAN_REG_TIEN(data->fan_base, md));
 
-		/* clear all interrupt */
+		 
 		iowrite8(NPCM7XX_FAN_TICLR_CLEAR_ALL,
 			 NPCM7XX_FAN_REG_TICLR(data->fan_base, md));
 
-		/* set FAN0~7 clock prescaler */
+		 
 		iowrite8(NPCM7XX_FAN_CLK_PRESCALE,
 			 NPCM7XX_FAN_REG_TPRSC(data->fan_base, md));
 
-		/* set FAN0~7 mode (high-to-low transition) */
+		 
 		iowrite8((NPCM7XX_FAN_TMCTRL_MODE_5 | NPCM7XX_FAN_TMCTRL_TBEN |
 			  NPCM7XX_FAN_TMCTRL_TAEN),
 			 NPCM7XX_FAN_REG_TMCTRL(data->fan_base, md));
 
-		/* set FAN0~7 Initial Count/Cap */
+		 
 		iowrite16(NPCM7XX_FAN_TCNT,
 			  NPCM7XX_FAN_REG_TCNT1(data->fan_base, md));
 		iowrite16(NPCM7XX_FAN_TCNT,
 			  NPCM7XX_FAN_REG_TCNT2(data->fan_base, md));
 
-		/* set FAN0~7 compare (equal to count) */
+		 
 		iowrite8((NPCM7XX_FAN_TCPCFG_EQAEN | NPCM7XX_FAN_TCPCFG_EQBEN),
 			 NPCM7XX_FAN_REG_TCPCFG(data->fan_base, md));
 
-		/* set FAN0~7 compare value */
+		 
 		iowrite16(NPCM7XX_FAN_TCPA,
 			  NPCM7XX_FAN_REG_TCPA(data->fan_base, md));
 		iowrite16(NPCM7XX_FAN_TCPB,
 			  NPCM7XX_FAN_REG_TCPB(data->fan_base, md));
 
-		/* set FAN0~7 fan input FANIN 0~15 */
+		 
 		iowrite8(NPCM7XX_FAN_TINASEL_FANIN_DEFAULT,
 			 NPCM7XX_FAN_REG_TINASEL(data->fan_base, md));
 		iowrite8(NPCM7XX_FAN_TINASEL_FANIN_DEFAULT,
@@ -770,7 +742,7 @@ static void npcm7xx_fan_init(struct npcm7xx_pwm_fan_data *data)
 
 	apb_clk_freq = clk_get_rate(data->fan_clk);
 
-	/* Fan tach input clock = APB clock / prescalar, default is 255. */
+	 
 	data->input_clk_freq = apb_clk_freq / (NPCM7XX_FAN_CLK_PRESCALE + 1);
 }
 
@@ -998,7 +970,7 @@ static int npcm7xx_pwm_fan_probe(struct platform_device *pdev)
 
 	for (i = 0; i < NPCM7XX_FAN_MAX_CHN_NUM; i++) {
 		if (data->fan_present[i]) {
-			/* fan timer initialization */
+			 
 			data->fan_timer.expires = jiffies +
 				msecs_to_jiffies(NPCM7XX_FAN_POLL_TIMER_200MS);
 			timer_setup(&data->fan_timer,

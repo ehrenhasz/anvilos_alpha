@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/* Copyright (C) 2020 MediaTek Inc. */
+ 
+ 
 
 #ifndef __MT7915_EEPROM_H
 #define __MT7915_EEPROM_H
@@ -25,7 +25,7 @@ enum mt7915_eeprom_field {
 	MT_EE_TX0_POWER_5G =	0x34b,
 	MT_EE_RATE_DELTA_2G_V2 = 0x7d3,
 	MT_EE_RATE_DELTA_5G_V2 = 0x81e,
-	MT_EE_RATE_DELTA_6G_V2 = 0x884, /* 6g fields only appear in eeprom v2 */
+	MT_EE_RATE_DELTA_6G_V2 = 0x884,  
 	MT_EE_TX0_POWER_2G_V2 =	0x441,
 	MT_EE_TX0_POWER_5G_V2 =	0x445,
 	MT_EE_TX0_POWER_6G_V2 =	0x465,
@@ -33,7 +33,7 @@ enum mt7915_eeprom_field {
 
 	__MT_EE_MAX =		0xe00,
 	__MT_EE_MAX_V2 =	0x1000,
-	/* 0xe10 ~ 0x5780 used to save group cal data */
+	 
 	MT_EE_PRECAL =		0xe10,
 	MT_EE_PRECAL_V2 =	0x1010
 };

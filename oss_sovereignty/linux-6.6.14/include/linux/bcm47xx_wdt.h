@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef LINUX_BCM47XX_WDT_H_
 #define LINUX_BCM47XX_WDT_H_
 
@@ -24,4 +24,4 @@ static inline void *bcm47xx_wdt_get_drvdata(struct bcm47xx_wdt *wdt)
 {
 	return wdt->driver_data;
 }
-#endif /* LINUX_BCM47XX_WDT_H_ */
+#endif  

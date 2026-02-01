@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2020 TOSHIBA CORPORATION
- * Copyright (c) 2020 Toshiba Electronic Devices & Storage Corporation
- * Copyright (c) 2020 Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/io.h>
@@ -14,7 +10,7 @@
 
 #define tmpv7700_MAGIC_NUM 0x4932f70e
 
-/* register offset */
+ 
 #define REG_KEY_CTRL	0x0000
 #define REG_KEY_CMD	0x0004
 #define REG_PINMUX1	0x3000
@@ -37,7 +33,7 @@
 #define REG_IO_PUDSEL1	0x3044
 #define REG_IO_PUDSEL2	0x3048
 
-/* PIN */
+ 
 static const struct visconti_desc_pin pins_tmpv7700[] = {
 	VISCONTI_PIN(PINCTRL_PIN(0, "gpio0"), REG_IO_DSEL4, 24,
 		    REG_IO_PUDE1, REG_IO_PUDSEL1, 30),
@@ -111,7 +107,7 @@ static const struct visconti_desc_pin pins_tmpv7700[] = {
 		    REG_IO_PUDE1, REG_IO_PUDSEL1, 29),
 };
 
-/* Group */
+ 
 VISCONTI_PINS(i2c0, 0, 1);
 VISCONTI_PINS(i2c1, 2, 3);
 VISCONTI_PINS(i2c2, 12, 13);
@@ -210,7 +206,7 @@ static const struct visconti_pin_group groups_tmpv7700[] = {
 	VISCONTI_PIN_GROUP(pcmif_in, REG_PINMUX5, GENMASK(11, 0), 0x00000222),
 };
 
-/* MUX */
+ 
 VISCONTI_GROUPS(i2c0, "i2c0_grp");
 VISCONTI_GROUPS(i2c1, "i2c1_grp");
 VISCONTI_GROUPS(i2c2, "i2c2_grp");
@@ -269,7 +265,7 @@ static const struct visconti_pin_function functions_tmpv7700[] = {
 	VISCONTI_PIN_FUNCTION(pcmif_out),
 };
 
-/* GPIO MUX */
+ 
 #define tmpv7700_GPIO_MUX(off, msk)	\
 {					\
 	.offset = off,			\
@@ -318,7 +314,7 @@ static void tmpv7700_pinctrl_unlock(void __iomem *base)
 	writel(tmpv7700_MAGIC_NUM, base + REG_KEY_CMD);
 }
 
-/* chip dependent data */
+ 
 static const struct visconti_pinctrl_devdata tmpv7700_pinctrl_data = {
 	.pins = pins_tmpv7700,
 	.nr_pins = ARRAY_SIZE(pins_tmpv7700),

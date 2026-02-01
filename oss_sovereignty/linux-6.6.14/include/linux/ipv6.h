@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _IPV6_H
 #define _IPV6_H
 
@@ -6,9 +6,7 @@
 
 #define ipv6_optlen(p)  (((p)->hdrlen+1) << 3)
 #define ipv6_authlen(p) (((p)->hdrlen+2) << 2)
-/*
- * This structure contains configuration options per IPv6 link.
- */
+ 
 struct ipv6_devconf {
 	__s32		forwarding;
 	__s32		hop_limit;
@@ -117,10 +115,7 @@ static inline unsigned int ipv6_transport_len(const struct sk_buff *skb)
 	       skb_network_header_len(skb);
 }
 
-/* 
-   This structure contains results of exthdrs parsing
-   as offsets from skb->nh.
- */
+ 
 
 struct inet6_skb_parm {
 	int			iif;
@@ -177,7 +172,7 @@ static inline bool inet6_is_jumbogram(const struct sk_buff *skb)
 	return !!(IP6CB(skb)->flags & IP6SKB_JUMBOGRAM);
 }
 
-/* can not be used in TCP layer after tcp_v6_fill_cb */
+ 
 static inline int inet6_sdif(const struct sk_buff *skb)
 {
 #if IS_ENABLED(CONFIG_NET_L3_MASTER_DEV)
@@ -201,7 +196,7 @@ struct inet6_cork {
 	u8 tclass;
 };
 
-/* struct ipv6_pinfo - ipv6 private area */
+ 
 struct ipv6_pinfo {
 	struct in6_addr 	saddr;
 	struct in6_pktinfo	sticky_pktinfo;
@@ -213,10 +208,7 @@ struct ipv6_pinfo {
 	__be32			flow_label;
 	__u32			frag_size;
 
-	/*
-	 * Packed in 16bits.
-	 * Omit one shift by putting the signed field at MSB.
-	 */
+	 
 #if defined(__BIG_ENDIAN_BITFIELD)
 	__s16			hop_limit:9;
 	__u16			__unused_1:7;
@@ -226,7 +218,7 @@ struct ipv6_pinfo {
 #endif
 
 #if defined(__BIG_ENDIAN_BITFIELD)
-	/* Packed in 16bits. */
+	 
 	__s16			mcast_hops:9;
 	__u16			__unused_2:6,
 				mc_loop:1;
@@ -238,7 +230,7 @@ struct ipv6_pinfo {
 	int			ucast_oif;
 	int			mcast_oif;
 
-	/* pktoption flags */
+	 
 	union {
 		struct {
 			__u16	srcrt:1,
@@ -256,21 +248,18 @@ struct ipv6_pinfo {
 				rxpmtu:1,
 				rxorigdstaddr:1,
 				recvfragsize:1;
-				/* 1 bits hole */
+				 
 		} bits;
 		__u16		all;
 	} rxopt;
 
-	/* sockopt flags */
+	 
 	__u16			recverr:1,
 	                        sndflow:1,
 				repflow:1,
 				pmtudisc:3,
-				padding:1,	/* 1 bit hole */
-				srcprefs:3,	/* 001: prefer temporary address
-						 * 010: prefer public address
-						 * 100: prefer care-of address
-						 */
+				padding:1,	 
+				srcprefs:3,	 
 				dontfrag:1,
 				autoflowlabel:1,
 				autoflowlabel_set:1,
@@ -293,12 +282,12 @@ struct ipv6_pinfo {
 	struct inet6_cork	cork;
 };
 
-/* WARNING: don't change the layout of the members in {raw,udp,tcp}6_sock! */
+ 
 struct raw6_sock {
-	/* inet_sock has to be the first member of raw6_sock */
+	 
 	struct inet_sock	inet;
-	__u32			checksum;	/* perform checksum */
-	__u32			offset;		/* checksum offset  */
+	__u32			checksum;	 
+	__u32			offset;		 
 	struct icmp6_filter	filter;
 	__u32			ip6mr_table;
 
@@ -346,7 +335,7 @@ static inline const struct in6_addr *inet6_rcv_saddr(const struct sock *sk)
 
 static inline int inet_v6_ipv6only(const struct sock *sk)
 {
-	/* ipv6only field is at same position for timewait and other sockets */
+	 
 	return ipv6_only_sock(sk);
 }
 #else
@@ -370,5 +359,5 @@ static inline struct raw6_sock *raw6_sk(const struct sock *sk)
 
 #define inet6_rcv_saddr(__sk)	NULL
 #define inet_v6_ipv6only(__sk)		0
-#endif /* IS_ENABLED(CONFIG_IPV6) */
-#endif /* _IPV6_H */
+#endif  
+#endif  

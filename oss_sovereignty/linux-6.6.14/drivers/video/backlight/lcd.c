@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LCD Lowlevel Control Abstraction
- *
- * Copyright (C) 2003,2004 Hewlett-Packard Company
- *
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -20,10 +15,7 @@
 
 #if defined(CONFIG_FB) || (defined(CONFIG_FB_MODULE) && \
 			   defined(CONFIG_LCD_CLASS_DEVICE_MODULE))
-/* This callback gets called when something important happens inside a
- * framebuffer driver. We're looking if that important event is blanking,
- * and if it is, we're switching lcd power as well ...
- */
+ 
 static int fb_notifier_callback(struct notifier_block *self,
 				 unsigned long event, void *data)
 {
@@ -68,7 +60,7 @@ static int lcd_register_fb(struct lcd_device *ld)
 static inline void lcd_unregister_fb(struct lcd_device *ld)
 {
 }
-#endif /* CONFIG_FB */
+#endif  
 
 static ssize_t lcd_power_show(struct device *dev, struct device_attribute *attr,
 		char *buf)
@@ -175,18 +167,7 @@ static struct attribute *lcd_device_attrs[] = {
 };
 ATTRIBUTE_GROUPS(lcd_device);
 
-/**
- * lcd_device_register - register a new object of lcd_device class.
- * @name: the name of the new object(must be the same as the name of the
- *   respective framebuffer device).
- * @parent: pointer to the parent's struct device .
- * @devdata: an optional pointer to be stored in the device. The
- *   methods may retrieve it by using lcd_get_data(ld).
- * @ops: the lcd operations structure.
- *
- * Creates and registers a new lcd device. Returns either an ERR_PTR()
- * or a pointer to the newly allocated device.
- */
+ 
 struct lcd_device *lcd_device_register(const char *name, struct device *parent,
 		void *devdata, struct lcd_ops *ops)
 {
@@ -226,12 +207,7 @@ struct lcd_device *lcd_device_register(const char *name, struct device *parent,
 }
 EXPORT_SYMBOL(lcd_device_register);
 
-/**
- * lcd_device_unregister - unregisters a object of lcd_device class.
- * @ld: the lcd device object to be unregistered and freed.
- *
- * Unregisters a previously registered via lcd_device_register object.
- */
+ 
 void lcd_device_unregister(struct lcd_device *ld)
 {
 	if (!ld)
@@ -260,20 +236,7 @@ static int devm_lcd_device_match(struct device *dev, void *res, void *data)
 	return *r == data;
 }
 
-/**
- * devm_lcd_device_register - resource managed lcd_device_register()
- * @dev: the device to register
- * @name: the name of the device
- * @parent: a pointer to the parent device
- * @devdata: an optional pointer to be stored for private driver use
- * @ops: the lcd operations structure
- *
- * @return a struct lcd on success, or an ERR_PTR on error
- *
- * Managed lcd_device_register(). The lcd_device returned from this function
- * are automatically freed on driver detach. See lcd_device_register()
- * for more information.
- */
+ 
 struct lcd_device *devm_lcd_device_register(struct device *dev,
 		const char *name, struct device *parent,
 		void *devdata, struct lcd_ops *ops)
@@ -296,15 +259,7 @@ struct lcd_device *devm_lcd_device_register(struct device *dev,
 }
 EXPORT_SYMBOL(devm_lcd_device_register);
 
-/**
- * devm_lcd_device_unregister - resource managed lcd_device_unregister()
- * @dev: the device to unregister
- * @ld: the lcd device to unregister
- *
- * Deallocated a lcd allocated with devm_lcd_device_register(). Normally
- * this function will not need to be called and the resource management
- * code will ensure that the resource is freed.
- */
+ 
 void devm_lcd_device_unregister(struct device *dev, struct lcd_device *ld)
 {
 	int rc;
@@ -334,10 +289,7 @@ static int __init lcd_class_init(void)
 	return 0;
 }
 
-/*
- * if this is compiled into the kernel, we need to ensure that the
- * class is registered before users of the class try to register lcd's
- */
+ 
 postcore_initcall(lcd_class_init);
 module_exit(lcd_class_exit);
 

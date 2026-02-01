@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 Maxime Ripard
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -53,10 +50,7 @@ static unsigned long ccu_mp_find_best_with_parent_adj(struct clk_hw *hw,
 
 	parent_rate_saved = *parent;
 
-	/*
-	 * The maximum divider we can use without overflowing
-	 * unsigned long in rate * m * p below
-	 */
+	 
 	maxdiv = max_m * max_p;
 	maxdiv = min(ULONG_MAX / rate, maxdiv);
 
@@ -68,12 +62,7 @@ static unsigned long ccu_mp_find_best_with_parent_adj(struct clk_hw *hw,
 				break;
 
 			if (rate * div == parent_rate_saved) {
-				/*
-				 * It's the most ideal case if the requested
-				 * rate can be divided from parent clock without
-				 * needing to change parent rate, so return the
-				 * divider immediately.
-				 */
+				 
 				*parent = parent_rate_saved;
 				return rate;
 			}
@@ -152,7 +141,7 @@ static unsigned long ccu_mp_recalc_rate(struct clk_hw *hw,
 	unsigned int m, p;
 	u32 reg;
 
-	/* Adjust parent_rate according to pre-dividers */
+	 
 	parent_rate = ccu_mux_helper_apply_prediv(&cmp->common, &cmp->mux, -1,
 						  parent_rate);
 
@@ -192,14 +181,14 @@ static int ccu_mp_set_rate(struct clk_hw *hw, unsigned long rate,
 	unsigned int m, p;
 	u32 reg;
 
-	/* Adjust parent_rate according to pre-dividers */
+	 
 	parent_rate = ccu_mux_helper_apply_prediv(&cmp->common, &cmp->mux, -1,
 						  parent_rate);
 
 	max_m = cmp->m.max ?: 1 << cmp->m.width;
 	max_p = cmp->p.max ?: 1 << ((1 << cmp->p.width) - 1);
 
-	/* Adjust target rate according to post-dividers */
+	 
 	if (cmp->common.features & CCU_FEATURE_FIXED_POSTDIV)
 		rate = rate * cmp->fixed_post_div;
 
@@ -248,22 +237,7 @@ const struct clk_ops ccu_mp_ops = {
 };
 EXPORT_SYMBOL_NS_GPL(ccu_mp_ops, SUNXI_CCU);
 
-/*
- * Support for MMC timing mode switching
- *
- * The MMC clocks on some SoCs support switching between old and
- * new timing modes. A platform specific API is provided to query
- * and set the timing mode on supported SoCs.
- *
- * In addition, a special class of ccu_mp_ops is provided, which
- * takes in to account the timing mode switch. When the new timing
- * mode is active, the clock output rate is halved. This new class
- * is a wrapper around the generic ccu_mp_ops. When clock rates
- * are passed through to ccu_mp_ops callbacks, they are doubled
- * if the new timing mode bit is set, to account for the post
- * divider. Conversely, when clock rates are passed back, they
- * are halved if the mode bit is set.
- */
+ 
 
 static unsigned long ccu_mp_mmc_recalc_rate(struct clk_hw *hw,
 					    unsigned long parent_rate)
@@ -284,7 +258,7 @@ static int ccu_mp_mmc_determine_rate(struct clk_hw *hw,
 	u32 val = readl(cm->base + cm->reg);
 	int ret;
 
-	/* adjust the requested clock rate */
+	 
 	if (val & CCU_MMC_NEW_TIMING_MODE) {
 		req->rate *= 2;
 		req->min_rate *= 2;
@@ -293,7 +267,7 @@ static int ccu_mp_mmc_determine_rate(struct clk_hw *hw,
 
 	ret = ccu_mp_determine_rate(hw, req);
 
-	/* re-adjust the requested clock rate back */
+	 
 	if (val & CCU_MMC_NEW_TIMING_MODE) {
 		req->rate /= 2;
 		req->min_rate /= 2;

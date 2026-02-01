@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung LSI S5C73M3 8M pixel camera driver
- *
- * Copyright (C) 2012, Samsung Electronics, Co., Ltd.
- * Sylwester Nawrocki <s.nawrocki@samsung.com>
- * Andrzej Hajda <a.hajda@samsung.com>
- */
+
+ 
 
 #include <linux/sizes.h>
 #include <linux/delay.h>
@@ -100,7 +94,7 @@ static int s5c73m3_set_colorfx(struct s5c73m3 *state, int val)
 	return -EINVAL;
 }
 
-/* Set exposure metering/exposure bias */
+ 
 static int s5c73m3_set_exposure(struct s5c73m3 *state, int auto_exp)
 {
 	struct v4l2_subdev *sd = &state->sensor_sd;
@@ -288,20 +282,20 @@ static int s5c73m3_set_jpeg_quality(struct s5c73m3 *state, int quality)
 static int s5c73m3_set_scene_program(struct s5c73m3 *state, int val)
 {
 	static const unsigned short scene_lookup[] = {
-		COMM_SCENE_MODE_NONE,	     /* V4L2_SCENE_MODE_NONE */
-		COMM_SCENE_MODE_AGAINST_LIGHT,/* V4L2_SCENE_MODE_BACKLIGHT */
-		COMM_SCENE_MODE_BEACH,	     /* V4L2_SCENE_MODE_BEACH_SNOW */
-		COMM_SCENE_MODE_CANDLE,	     /* V4L2_SCENE_MODE_CANDLE_LIGHT */
-		COMM_SCENE_MODE_DAWN,	     /* V4L2_SCENE_MODE_DAWN_DUSK */
-		COMM_SCENE_MODE_FALL,	     /* V4L2_SCENE_MODE_FALL_COLORS */
-		COMM_SCENE_MODE_FIRE,	     /* V4L2_SCENE_MODE_FIREWORKS */
-		COMM_SCENE_MODE_LANDSCAPE,    /* V4L2_SCENE_MODE_LANDSCAPE */
-		COMM_SCENE_MODE_NIGHT,	     /* V4L2_SCENE_MODE_NIGHT */
-		COMM_SCENE_MODE_INDOOR,	     /* V4L2_SCENE_MODE_PARTY_INDOOR */
-		COMM_SCENE_MODE_PORTRAIT,     /* V4L2_SCENE_MODE_PORTRAIT */
-		COMM_SCENE_MODE_SPORTS,	     /* V4L2_SCENE_MODE_SPORTS */
-		COMM_SCENE_MODE_SUNSET,	     /* V4L2_SCENE_MODE_SUNSET */
-		COMM_SCENE_MODE_TEXT,	     /* V4L2_SCENE_MODE_TEXT */
+		COMM_SCENE_MODE_NONE,	      
+		COMM_SCENE_MODE_AGAINST_LIGHT, 
+		COMM_SCENE_MODE_BEACH,	      
+		COMM_SCENE_MODE_CANDLE,	      
+		COMM_SCENE_MODE_DAWN,	      
+		COMM_SCENE_MODE_FALL,	      
+		COMM_SCENE_MODE_FIRE,	      
+		COMM_SCENE_MODE_LANDSCAPE,     
+		COMM_SCENE_MODE_NIGHT,	      
+		COMM_SCENE_MODE_INDOOR,	      
+		COMM_SCENE_MODE_PORTRAIT,      
+		COMM_SCENE_MODE_SPORTS,	      
+		COMM_SCENE_MODE_SUNSET,	      
+		COMM_SCENE_MODE_TEXT,	      
 	};
 
 	v4l2_dbg(1, s5c73m3_dbg, &state->sensor_sd, "Setting %s scene mode\n",
@@ -342,11 +336,7 @@ static int s5c73m3_s_ctrl(struct v4l2_ctrl *ctrl)
 		 ctrl->name, ctrl->val);
 
 	mutex_lock(&state->lock);
-	/*
-	 * If the device is not powered up by the host driver do
-	 * not apply any controls to H/W at this time. Instead
-	 * the controls will be restored right after power-up.
-	 */
+	 
 	if (state->power == 0)
 		goto unlock;
 
@@ -426,15 +416,15 @@ static const struct v4l2_ctrl_ops s5c73m3_ctrl_ops = {
 	.s_ctrl			= s5c73m3_s_ctrl,
 };
 
-/* Supported manual ISO values */
+ 
 static const s64 iso_qmenu[] = {
-	/* COMM_ISO: 0x0001...0x0004 */
+	 
 	100, 200, 400, 800,
 };
 
-/* Supported exposure bias values (-2.0EV...+2.0EV) */
+ 
 static const s64 ev_bias_qmenu[] = {
-	/* COMM_EV: 0x0000...0x0008 */
+	 
 	-2000, -1500, -1000, -500, 0, 500, 1000, 1500, 2000
 };
 
@@ -448,12 +438,12 @@ int s5c73m3_init_controls(struct s5c73m3 *state)
 	if (ret)
 		return ret;
 
-	/* White balance */
+	 
 	ctrls->auto_wb = v4l2_ctrl_new_std_menu(hdl, ops,
 			V4L2_CID_AUTO_N_PRESET_WHITE_BALANCE,
 			9, ~0x15e, V4L2_WHITE_BALANCE_AUTO);
 
-	/* Exposure (only automatic exposure) */
+	 
 	ctrls->auto_exposure = v4l2_ctrl_new_std_menu(hdl, ops,
 			V4L2_CID_EXPOSURE_AUTO, 0, ~0x01, V4L2_EXPOSURE_AUTO);
 
@@ -467,7 +457,7 @@ int s5c73m3_init_controls(struct s5c73m3 *state)
 			V4L2_CID_EXPOSURE_METERING,
 			2, ~0x7, V4L2_EXPOSURE_METERING_AVERAGE);
 
-	/* Auto focus */
+	 
 	ctrls->focus_auto = v4l2_ctrl_new_std(hdl, ops,
 			V4L2_CID_FOCUS_AUTO, 0, 1, 1, 0);
 
@@ -490,7 +480,7 @@ int s5c73m3_init_controls(struct s5c73m3 *state)
 			~(1 << V4L2_AUTO_FOCUS_RANGE_NORMAL |
 			  1 << V4L2_AUTO_FOCUS_RANGE_MACRO),
 			V4L2_AUTO_FOCUS_RANGE_NORMAL);
-	/* ISO sensitivity */
+	 
 	ctrls->auto_iso = v4l2_ctrl_new_std_menu(hdl, ops,
 			V4L2_CID_ISO_SENSITIVITY_AUTO, 1, 0,
 			V4L2_ISO_SENSITIVITY_AUTO);

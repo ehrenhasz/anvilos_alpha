@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <inttypes.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -92,7 +92,7 @@ static int __cmd_record(int argc, const char **argv, struct perf_mem *mem)
 	argc = parse_options(argc, argv, options, record_mem_usage,
 			     PARSE_OPT_KEEP_UNKNOWN);
 
-	/* Max number of arguments multiplied by number of PMUs that can support them. */
+	 
 	rec_argc = argc + 9 * perf_pmus__num_mem_pmus();
 
 	if (mem->cpu_list)
@@ -102,9 +102,7 @@ static int __cmd_record(int argc, const char **argv, struct perf_mem *mem)
 	if (!rec_argv)
 		return -1;
 
-	/*
-	 * Save the allocated event name strings.
-	 */
+	 
 	rec_tmp = calloc(rec_argc + 1, sizeof(char *));
 	if (!rec_tmp) {
 		free(rec_argv);
@@ -115,10 +113,7 @@ static int __cmd_record(int argc, const char **argv, struct perf_mem *mem)
 
 	e = perf_mem_events__ptr(PERF_MEM_EVENTS__LOAD_STORE);
 
-	/*
-	 * The load and store operations are required, use the event
-	 * PERF_MEM_EVENTS__LOAD_STORE if it is supported.
-	 */
+	 
 	if (e->tag &&
 	    (mem->operation & MEM_OPERATION_LOAD) &&
 	    (mem->operation & MEM_OPERATION_STORE)) {
@@ -275,7 +270,7 @@ static int report_raw_events(struct perf_mem *mem)
 {
 	struct itrace_synth_opts itrace_synth_opts = {
 		.set = true,
-		.mem = true,	/* Only enable memory event */
+		.mem = true,	 
 		.default_no_sample = true,
 	};
 
@@ -324,10 +319,7 @@ static char *get_sort_order(struct perf_mem *mem)
 	bool has_extra_options = (mem->phys_addr | mem->data_page_size) ? true : false;
 	char sort[128];
 
-	/*
-	 * there is no weight (cost) associated with stores, so don't print
-	 * the column
-	 */
+	 
 	if (!(mem->operation & MEM_OPERATION_LOAD)) {
 		strcpy(sort, "--sort=mem,sym,dso,symbol_daddr,"
 			     "dso_daddr,tlb,locked");
@@ -362,7 +354,7 @@ static int report_events(int argc, const char **argv, struct perf_mem *mem)
 
 	rep_argv[i++] = "report";
 	rep_argv[i++] = "--mem-mode";
-	rep_argv[i++] = "-n"; /* display number of samples */
+	rep_argv[i++] = "-n";  
 
 	new_sort_order = get_sort_order(mem);
 	if (new_sort_order)
@@ -403,14 +395,14 @@ parse_mem_ops(const struct option *opt, const char *str, int unset)
 	if (unset)
 		return 0;
 
-	/* str may be NULL in case no arg is passed to -t */
+	 
 	if (str) {
-		/* because str is read-only */
+		 
 		s = os = strdup(str);
 		if (!s)
 			return -1;
 
-		/* reset mode */
+		 
 		*mode = 0;
 
 		for (;;) {
@@ -465,9 +457,7 @@ int cmd_mem(int argc, const char **argv)
 			.ordered_events	= true,
 		},
 		.input_name		 = "perf.data",
-		/*
-		 * default to both load an store sampling
-		 */
+		 
 		.operation		 = MEM_OPERATION_LOAD | MEM_OPERATION_STORE,
 	};
 	const struct option mem_options[] = {

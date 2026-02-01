@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef __QCOM_APR_H_
 #define __QCOM_APR_H_
@@ -13,13 +13,7 @@ extern struct bus_type aprbus;
 
 #define APR_HDR_LEN(hdr_len) ((hdr_len)/4)
 
-/*
- * HEADER field
- * version:0:3
- * header_size : 4:7
- * message_type : 8:9
- * reserved: 10:15
- */
+ 
 #define APR_HDR_FIELD(msg_type, hdr_len, ver)\
 	(((msg_type & 0x3) << 8) | ((hdr_len & 0xF) << 4) | (ver & 0xF))
 
@@ -27,17 +21,17 @@ extern struct bus_type aprbus;
 #define APR_SEQ_CMD_HDR_FIELD APR_HDR_FIELD(APR_MSG_TYPE_SEQ_CMD, \
 					    APR_HDR_LEN(APR_HDR_SIZE), \
 					    APR_PKT_VER)
-/* Version */
+ 
 #define APR_PKT_VER		0x0
 
-/* Command and Response Types */
+ 
 #define APR_MSG_TYPE_EVENT	0x0
 #define APR_MSG_TYPE_CMD_RSP	0x1
 #define APR_MSG_TYPE_SEQ_CMD	0x2
 #define APR_MSG_TYPE_NSEQ_CMD	0x3
 #define APR_MSG_TYPE_MAX	0x04
 
-/* APR Basic Response Message */
+ 
 #define APR_BASIC_RSP_RESULT 0x000110E8
 #define APR_RSP_ACCEPTED     0x000100BE
 
@@ -46,7 +40,7 @@ struct aprv2_ibasic_rsp_result_t {
 	uint32_t status;
 };
 
-/* hdr field Ver [0:3], Size [4:7], Message type [8:10] */
+ 
 #define APR_HDR_FIELD_VER(h)		(h & 0x000F)
 #define APR_HDR_FIELD_SIZE(h)		((h & 0x00F0) >> 4)
 #define APR_HDR_FIELD_SIZE_BYTES(h)	(((h & 0x00F0) >> 4) * 4)
@@ -118,7 +112,7 @@ struct gpr_ibasic_rsp_accepted_t {
 	uint32_t opcode;
 };
 
-/* Bits 0 to 15 -- Minor version,  Bits 16 to 31 -- Major version */
+ 
 #define APR_SVC_MAJOR_VERSION(v)	((v >> 16) & 0xFF)
 #define APR_SVC_MINOR_VERSION(v)	(v & 0xFF)
 
@@ -164,23 +158,13 @@ struct apr_driver {
 typedef struct apr_driver gpr_driver_t;
 #define to_apr_driver(d) container_of(d, struct apr_driver, driver)
 
-/*
- * use a macro to avoid include chaining to get THIS_MODULE
- */
+ 
 #define apr_driver_register(drv) __apr_driver_register(drv, THIS_MODULE)
 
 int __apr_driver_register(struct apr_driver *drv, struct module *owner);
 void apr_driver_unregister(struct apr_driver *drv);
 
-/**
- * module_apr_driver() - Helper macro for registering a aprbus driver
- * @__apr_driver: apr_driver struct
- *
- * Helper macro for aprbus drivers which do not do anything special in
- * module init/exit. This eliminates a lot of boilerplate. Each module
- * may only use this macro once, and calling it replaces module_init()
- * and module_exit()
- */
+ 
 #define module_apr_driver(__apr_driver) \
 	module_driver(__apr_driver, apr_driver_register, \
 			apr_driver_unregister)
@@ -194,4 +178,4 @@ void gpr_free_port(gpr_port_t *port);
 int gpr_send_port_pkt(gpr_port_t *port, struct gpr_pkt *pkt);
 int gpr_send_pkt(gpr_device_t *gdev, struct gpr_pkt *pkt);
 
-#endif /* __QCOM_APR_H_ */
+#endif  

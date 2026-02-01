@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/*
- * Copyright (c) 2018 BayLibre, SAS.
- * Author: Jerome Brunet <jbrunet@baylibre.com>
- */
+ 
+ 
 
 #ifndef _MESON_AIU_H
 #define _MESON_AIU_H
@@ -86,4 +83,4 @@ extern const struct snd_soc_dai_ops aiu_encoder_spdif_dai_ops;
 #define AIU_MEM_I2S_BUF_CNTL		0x1d8
 #define AIU_MEM_IEC958_BUF_CNTL		0x1fc
 
-#endif /* _MESON_AIU_H */
+#endif  

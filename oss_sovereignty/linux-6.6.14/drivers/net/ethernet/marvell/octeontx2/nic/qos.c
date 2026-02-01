@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell RVU Ethernet driver
- *
- * Copyright (C) 2023 Marvell.
- *
- */
+
+ 
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/inetdevice.h>
@@ -90,11 +86,11 @@ static void otx2_config_sched_shaping(struct otx2_nic *pfvf,
 
 	otx2_qos_get_regaddr(node, cfg, *num_regs);
 
-	/* configure parent txschq */
+	 
 	cfg->regval[*num_regs] = node->parent->schq << 16;
 	(*num_regs)++;
 
-	/* configure prio/quantum */
+	 
 	if (node->qid == OTX2_QOS_QID_NONE) {
 		cfg->regval[*num_regs] =  node->prio << 24 |
 					  mtu_to_dwrr_weight(pfvf, pfvf->tx_max_pktlen);
@@ -102,7 +98,7 @@ static void otx2_config_sched_shaping(struct otx2_nic *pfvf,
 		return;
 	}
 
-	/* configure priority/quantum  */
+	 
 	if (node->is_static) {
 		cfg->regval[*num_regs] =
 			(node->schq - node->parent->prio_anchor) << 24;
@@ -115,16 +111,14 @@ static void otx2_config_sched_shaping(struct otx2_nic *pfvf,
 	}
 	(*num_regs)++;
 
-	/* configure PIR */
+	 
 	maxrate = (node->rate > node->ceil) ? node->rate : node->ceil;
 
 	cfg->regval[*num_regs] =
 		otx2_get_txschq_rate_regval(pfvf, maxrate, 65536);
 	(*num_regs)++;
 
-	/* Don't configure CIR when both CIR+PIR not supported
-	 * On 96xx, CIR + PIR + RED_ALGO=STALL causes deadlock
-	 */
+	 
 	if (!test_bit(QOS_CIR_PIR_SUPPORT, &pfvf->hw.cap_flag))
 		return;
 
@@ -143,7 +137,7 @@ static void __otx2_qos_txschq_cfg(struct otx2_nic *pfvf,
 
 	level = node->level;
 
-	/* program txschq registers */
+	 
 	if (level == NIX_TXSCH_LVL_SMQ) {
 		cfg->reg[num_regs] = NIX_AF_SMQX_CFG(node->schq);
 		cfg->regval[num_regs] = ((u64)pfvf->tx_max_pktlen << 8) |
@@ -157,7 +151,7 @@ static void __otx2_qos_txschq_cfg(struct otx2_nic *pfvf,
 	} else if (level == NIX_TXSCH_LVL_TL4) {
 		otx2_config_sched_shaping(pfvf, node, cfg, &num_regs);
 	} else if (level == NIX_TXSCH_LVL_TL3) {
-		/* configure link cfg */
+		 
 		if (level == pfvf->qos.link_cfg_lvl) {
 			cfg->reg[num_regs] = NIX_AF_TL3_TL2X_LINKX_CFG(node->schq, hw->tx_link);
 			cfg->regval[num_regs] = BIT_ULL(13) | BIT_ULL(12);
@@ -166,14 +160,14 @@ static void __otx2_qos_txschq_cfg(struct otx2_nic *pfvf,
 
 		otx2_config_sched_shaping(pfvf, node, cfg, &num_regs);
 	} else if (level == NIX_TXSCH_LVL_TL2) {
-		/* configure link cfg */
+		 
 		if (level == pfvf->qos.link_cfg_lvl) {
 			cfg->reg[num_regs] = NIX_AF_TL3_TL2X_LINKX_CFG(node->schq, hw->tx_link);
 			cfg->regval[num_regs] = BIT_ULL(13) | BIT_ULL(12);
 			num_regs++;
 		}
 
-		/* check if node is root */
+		 
 		if (node->qid == OTX2_QOS_QID_INNER && !node->parent) {
 			cfg->reg[num_regs] = NIX_AF_TL2X_SCHEDULE(node->schq);
 			cfg->regval[num_regs] =  TXSCH_TL1_DFLT_RR_PRIO << 24 |
@@ -257,11 +251,11 @@ static void otx2_qos_free_hw_cfg(struct otx2_nic *pfvf,
 {
 	mutex_lock(&pfvf->qos.qos_lock);
 
-	/* free child node hw mappings */
+	 
 	otx2_qos_free_hw_node(pfvf, node);
 	otx2_qos_free_hw_node_schq(pfvf, node);
 
-	/* free node hw mappings */
+	 
 	otx2_txschq_free_one(pfvf, node->level, node->schq);
 
 	mutex_unlock(&pfvf->qos.qos_lock);
@@ -342,9 +336,7 @@ static void otx2_qos_fill_cfg_tl(struct otx2_qos_node *parent,
 		otx2_qos_fill_cfg_schq(node, cfg);
 	}
 
-	/* Assign the required number of transmit schedular queues under the
-	 * given class
-	 */
+	 
 	cfg->schq_contig[parent->level - 1] += parent->child_dwrr_cnt +
 					       parent->max_static_prio + 1;
 }
@@ -742,7 +734,7 @@ static void __otx2_qos_assign_base_idx_tl(struct otx2_nic *pfvf,
 	if (tmp->txschq_idx != OTX2_QOS_INVALID_TXSCHQ_IDX)
 		return;
 
-	/* assign static nodes 1:1 prio mapping first, then remaining nodes */
+	 
 	for (idx = 0; idx < child_cnt; idx++) {
 		if (tmp->is_static && tmp->prio == idx &&
 		    !test_bit(idx, child_idx_bmap)) {
@@ -768,7 +760,7 @@ static int otx2_qos_assign_base_idx_tl(struct otx2_nic *pfvf,
 	list_for_each_entry(tmp, &node->child_list, list)
 		tmp->txschq_idx = OTX2_QOS_INVALID_TXSCHQ_IDX;
 
-	/* allocate child index array */
+	 
 	child_cnt = node->child_dwrr_cnt + node->max_static_prio + 1;
 	child_idx_bmap = kcalloc(BITS_TO_LONGS(child_cnt),
 				 sizeof(unsigned long),
@@ -779,7 +771,7 @@ static int otx2_qos_assign_base_idx_tl(struct otx2_nic *pfvf,
 	list_for_each_entry(tmp, &node->child_list, list)
 		otx2_qos_assign_base_idx_tl(pfvf, tmp);
 
-	/* assign base index of static priority children first */
+	 
 	list_for_each_entry(tmp, &node->child_list, list) {
 		if (!tmp->is_static)
 			continue;
@@ -787,7 +779,7 @@ static int otx2_qos_assign_base_idx_tl(struct otx2_nic *pfvf,
 					      child_cnt);
 	}
 
-	/* assign base index of dwrr priority children */
+	 
 	list_for_each_entry(tmp, &node->child_list, list)
 		__otx2_qos_assign_base_idx_tl(pfvf, tmp, child_idx_bmap,
 					      child_cnt);
@@ -1024,14 +1016,14 @@ static int otx2_qos_root_add(struct otx2_nic *pfvf, u16 htb_maj_id, u16 htb_defc
 		return err;
 	}
 
-	/* allocate txschq queue */
+	 
 	new_cfg = kzalloc(sizeof(*new_cfg), GFP_KERNEL);
 	if (!new_cfg) {
 		NL_SET_ERR_MSG_MOD(extack, "Memory allocation error");
 		err = -ENOMEM;
 		goto free_root_node;
 	}
-	/* allocate htb root node */
+	 
 	new_cfg->schq[root->level] = 1;
 	err = otx2_qos_txschq_alloc(pfvf, new_cfg);
 	if (err) {
@@ -1039,7 +1031,7 @@ static int otx2_qos_root_add(struct otx2_nic *pfvf, u16 htb_maj_id, u16 htb_defc
 		goto free_root_node;
 	}
 
-	/* Update TL1 RR PRIO */
+	 
 	if (root->level == NIX_TXSCH_LVL_TL1) {
 		root->child_dwrr_prio = pfvf->hw.txschq_aggr_lvl_rr_prio;
 		netdev_dbg(pfvf->netdev,
@@ -1052,7 +1044,7 @@ static int otx2_qos_root_add(struct otx2_nic *pfvf, u16 htb_maj_id, u16 htb_defc
 		goto out;
 	}
 
-	/* update the txschq configuration in hw */
+	 
 	err = otx2_qos_txschq_update_root_cfg(pfvf, root, new_cfg);
 	if (err) {
 		NL_SET_ERR_MSG_MOD(extack,
@@ -1062,7 +1054,7 @@ static int otx2_qos_root_add(struct otx2_nic *pfvf, u16 htb_maj_id, u16 htb_defc
 
 out:
 	WRITE_ONCE(pfvf->qos.defcls, htb_defcls);
-	/* Pairs with smp_load_acquire() in ndo_select_queue */
+	 
 	smp_store_release(&pfvf->qos.maj_id, htb_maj_id);
 	kfree(new_cfg);
 	return 0;
@@ -1081,12 +1073,12 @@ static int otx2_qos_root_destroy(struct otx2_nic *pfvf)
 
 	netdev_dbg(pfvf->netdev, "TC_HTB_DESTROY\n");
 
-	/* find root node */
+	 
 	root = otx2_sw_node_find(pfvf, OTX2_QOS_ROOT_CLASSID);
 	if (!root)
 		return -ENOENT;
 
-	/* free the hw mappings */
+	 
 	otx2_qos_destroy_node(pfvf, root);
 
 	return 0;
@@ -1097,9 +1089,7 @@ static int otx2_qos_validate_quantum(struct otx2_nic *pfvf, u32 quantum)
 	u32 rr_weight = otx2_qos_quantum_to_dwrr_weight(pfvf, quantum);
 	int err = 0;
 
-	/* Max Round robin weight supported by octeontx2 and CN10K
-	 * is different. Validate accordingly
-	 */
+	 
 	if (is_dev_otx2(pfvf->pdev))
 		err = (rr_weight > OTX2_MAX_RR_QUANTUM) ? -EINVAL : 0;
 	else if	(rr_weight > CN10K_MAX_RR_WEIGHT)
@@ -1152,7 +1142,7 @@ static int otx2_qos_validate_configuration(struct otx2_qos_node *parent,
 
 static void otx2_reset_dwrr_prio(struct otx2_qos_node *parent, u64 prio)
 {
-	/* For PF, root node dwrr priority is static */
+	 
 	if (parent->level == NIX_TXSCH_LVL_TL1)
 		return;
 
@@ -1186,7 +1176,7 @@ static bool is_qos_node_dwrr(struct otx2_qos_node *parent,
 					    node->prio);
 				break;
 			}
-			/* mark old node as dwrr */
+			 
 			node->is_static = false;
 			parent->child_dwrr_cnt++;
 			parent->child_static_cnt--;
@@ -1225,7 +1215,7 @@ static int otx2_qos_leaf_alloc_queue(struct otx2_nic *pfvf, u16 classid,
 		goto out;
 	}
 
-	/* get parent node */
+	 
 	parent = otx2_sw_node_find(pfvf, parent_classid);
 	if (!parent) {
 		NL_SET_ERR_MSG_MOD(extack, "parent node not found");
@@ -1258,7 +1248,7 @@ static int otx2_qos_leaf_alloc_queue(struct otx2_nic *pfvf, u16 classid,
 
 	set_bit(prio, parent->prio_bmap);
 
-	/* read current txschq configuration */
+	 
 	old_cfg = kzalloc(sizeof(*old_cfg), GFP_KERNEL);
 	if (!old_cfg) {
 		NL_SET_ERR_MSG_MOD(extack, "Memory allocation error");
@@ -1267,7 +1257,7 @@ static int otx2_qos_leaf_alloc_queue(struct otx2_nic *pfvf, u16 classid,
 	}
 	otx2_qos_read_txschq_cfg(pfvf, parent, old_cfg);
 
-	/* allocate a new sq */
+	 
 	qid = otx2_qos_get_qid(pfvf);
 	if (qid < 0) {
 		NL_SET_ERR_MSG_MOD(extack, "Reached max supported QOS SQ's");
@@ -1275,10 +1265,10 @@ static int otx2_qos_leaf_alloc_queue(struct otx2_nic *pfvf, u16 classid,
 		goto free_old_cfg;
 	}
 
-	/* Actual SQ mapping will be updated after SMQ alloc */
+	 
 	pfvf->qos.qid_to_sqmap[qid] = OTX2_QOS_INVALID_SQ;
 
-	/* allocate and initialize a new child node */
+	 
 	node = otx2_qos_sw_create_leaf_node(pfvf, parent, classid, prio, rate,
 					    ceil, quantum, qid, static_cfg);
 	if (IS_ERR(node)) {
@@ -1287,7 +1277,7 @@ static int otx2_qos_leaf_alloc_queue(struct otx2_nic *pfvf, u16 classid,
 		goto free_old_cfg;
 	}
 
-	/* push new txschq config to hw */
+	 
 	new_cfg = kzalloc(sizeof(*new_cfg), GFP_KERNEL);
 	if (!new_cfg) {
 		NL_SET_ERR_MSG_MOD(extack, "Memory allocation error");
@@ -1299,7 +1289,7 @@ static int otx2_qos_leaf_alloc_queue(struct otx2_nic *pfvf, u16 classid,
 		NL_SET_ERR_MSG_MOD(extack, "HTB HW configuration error");
 		kfree(new_cfg);
 		otx2_qos_sw_node_delete(pfvf, node);
-		/* restore the old qos tree */
+		 
 		err = otx2_qos_txschq_update_config(pfvf, parent, old_cfg);
 		if (err) {
 			netdev_err(pfvf->netdev,
@@ -1311,13 +1301,13 @@ static int otx2_qos_leaf_alloc_queue(struct otx2_nic *pfvf, u16 classid,
 		goto free_old_cfg;
 	}
 
-	/* update tx_real_queues */
+	 
 	otx2_qos_update_tx_netdev_queues(pfvf);
 
-	/* free new txschq config */
+	 
 	kfree(new_cfg);
 
-	/* free old txschq config */
+	 
 	otx2_qos_free_cfg(pfvf, old_cfg);
 	kfree(old_cfg);
 
@@ -1364,14 +1354,14 @@ static int otx2_qos_leaf_to_inner(struct otx2_nic *pfvf, u16 classid,
 		goto out;
 	}
 
-	/* find node related to classid */
+	 
 	node = otx2_sw_node_find(pfvf, classid);
 	if (!node) {
 		NL_SET_ERR_MSG_MOD(extack, "HTB node not found");
 		ret = -ENOENT;
 		goto out;
 	}
-	/* check max qos txschq level */
+	 
 	if (node->level == NIX_TXSCH_LVL_MDQ) {
 		NL_SET_ERR_MSG_MOD(extack, "HTB qos level not supported");
 		ret = -EOPNOTSUPP;
@@ -1393,10 +1383,10 @@ static int otx2_qos_leaf_to_inner(struct otx2_nic *pfvf, u16 classid,
 
 	set_bit(prio, node->prio_bmap);
 
-	/* store the qid to assign to leaf node */
+	 
 	qid = node->qid;
 
-	/* read current txschq configuration */
+	 
 	old_cfg = kzalloc(sizeof(*old_cfg), GFP_KERNEL);
 	if (!old_cfg) {
 		NL_SET_ERR_MSG_MOD(extack, "Memory allocation error");
@@ -1405,13 +1395,13 @@ static int otx2_qos_leaf_to_inner(struct otx2_nic *pfvf, u16 classid,
 	}
 	otx2_qos_read_txschq_cfg(pfvf, node, old_cfg);
 
-	/* delete the txschq nodes allocated for this node */
+	 
 	otx2_qos_free_sw_node_schq(pfvf, node);
 
-	/* mark this node as htb inner node */
+	 
 	WRITE_ONCE(node->qid, OTX2_QOS_QID_INNER);
 
-	/* allocate and initialize a new child node */
+	 
 	child = otx2_qos_sw_create_leaf_node(pfvf, node, child_classid,
 					     prio, rate, ceil, quantum,
 					     qid, static_cfg);
@@ -1421,7 +1411,7 @@ static int otx2_qos_leaf_to_inner(struct otx2_nic *pfvf, u16 classid,
 		goto free_old_cfg;
 	}
 
-	/* push new txschq config to hw */
+	 
 	new_cfg = kzalloc(sizeof(*new_cfg), GFP_KERNEL);
 	if (!new_cfg) {
 		NL_SET_ERR_MSG_MOD(extack, "Memory allocation error");
@@ -1433,7 +1423,7 @@ static int otx2_qos_leaf_to_inner(struct otx2_nic *pfvf, u16 classid,
 		NL_SET_ERR_MSG_MOD(extack, "HTB HW configuration error");
 		kfree(new_cfg);
 		otx2_qos_sw_node_delete(pfvf, child);
-		/* restore the old qos tree */
+		 
 		WRITE_ONCE(node->qid, qid);
 		err = otx2_qos_alloc_txschq_node(pfvf, node);
 		if (err) {
@@ -1451,10 +1441,10 @@ static int otx2_qos_leaf_to_inner(struct otx2_nic *pfvf, u16 classid,
 		goto free_old_cfg;
 	}
 
-	/* free new txschq config */
+	 
 	kfree(new_cfg);
 
-	/* free old txschq config */
+	 
 	otx2_qos_free_cfg(pfvf, old_cfg);
 	kfree(old_cfg);
 
@@ -1484,7 +1474,7 @@ static int otx2_qos_leaf_del(struct otx2_nic *pfvf, u16 *classid,
 
 	netdev_dbg(pfvf->netdev, "TC_HTB_LEAF_DEL classid %04x\n", *classid);
 
-	/* find node related to classid */
+	 
 	node = otx2_sw_node_find(pfvf, *classid);
 	if (!node) {
 		NL_SET_ERR_MSG_MOD(extack, "HTB node not found");
@@ -1509,7 +1499,7 @@ static int otx2_qos_leaf_del(struct otx2_nic *pfvf, u16 *classid,
 		clear_bit(prio, parent->prio_bmap);
 	}
 
-	/* Reset DWRR priority if all dwrr nodes are deleted */
+	 
 	if (!parent->child_dwrr_cnt)
 		otx2_reset_dwrr_prio(parent, prio);
 
@@ -1532,14 +1522,14 @@ static int otx2_qos_leaf_del_last(struct otx2_nic *pfvf, u16 classid, bool force
 	netdev_dbg(pfvf->netdev,
 		   "TC_HTB_LEAF_DEL_LAST classid %04x\n", classid);
 
-	/* find node related to classid */
+	 
 	node = otx2_sw_node_find(pfvf, classid);
 	if (!node) {
 		NL_SET_ERR_MSG_MOD(extack, "HTB node not found");
 		return -ENOENT;
 	}
 
-	/* save qid for use by parent */
+	 
 	qid = node->qid;
 	prio = node->prio;
 
@@ -1552,7 +1542,7 @@ static int otx2_qos_leaf_del_last(struct otx2_nic *pfvf, u16 classid, bool force
 	if (!node->is_static)
 		dwrr_del_node = true;
 
-	/* destroy the leaf node */
+	 
 	otx2_qos_destroy_node(pfvf, node);
 	pfvf->qos.qid_to_sqmap[qid] = OTX2_QOS_INVALID_SQ;
 
@@ -1563,14 +1553,14 @@ static int otx2_qos_leaf_del_last(struct otx2_nic *pfvf, u16 classid, bool force
 		clear_bit(prio, parent->prio_bmap);
 	}
 
-	/* Reset DWRR priority if all dwrr nodes are deleted */
+	 
 	if (!parent->child_dwrr_cnt)
 		otx2_reset_dwrr_prio(parent, prio);
 
 	if (!parent->child_static_cnt)
 		parent->max_static_prio = 0;
 
-	/* create downstream txschq entries to parent */
+	 
 	err = otx2_qos_alloc_txschq_node(pfvf, parent);
 	if (err) {
 		NL_SET_ERR_MSG_MOD(extack, "HTB failed to create txsch configuration");
@@ -1579,13 +1569,13 @@ static int otx2_qos_leaf_del_last(struct otx2_nic *pfvf, u16 classid, bool force
 	WRITE_ONCE(parent->qid, qid);
 	__set_bit(qid, pfvf->qos.qos_sq_bmap);
 
-	/* push new txschq config to hw */
+	 
 	new_cfg = kzalloc(sizeof(*new_cfg), GFP_KERNEL);
 	if (!new_cfg) {
 		NL_SET_ERR_MSG_MOD(extack, "Memory allocation error");
 		return -ENOMEM;
 	}
-	/* fill txschq cfg and push txschq cfg to hw */
+	 
 	otx2_qos_fill_cfg_schq(parent, new_cfg);
 	err = otx2_qos_push_txschq_cfg(pfvf, parent, new_cfg);
 	if (err) {
@@ -1595,7 +1585,7 @@ static int otx2_qos_leaf_del_last(struct otx2_nic *pfvf, u16 classid, bool force
 	}
 	kfree(new_cfg);
 
-	/* update tx_real_queues */
+	 
 	otx2_qos_update_tx_netdev_queues(pfvf);
 
 	return 0;
@@ -1640,7 +1630,7 @@ void otx2_qos_config_txschq(struct otx2_nic *pfvf)
 
 root_destroy:
 	netdev_err(pfvf->netdev, "Failed to update Scheduler/Shaping config in Hardware\n");
-	/* Free resources allocated */
+	 
 	otx2_qos_root_destroy(pfvf);
 }
 

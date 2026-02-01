@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-/*
- * Copyright 2018-2019 IBM Corporation.
- */
+
+ 
 
 #define __SANE_USERSPACE_TYPES__
 
@@ -38,8 +36,8 @@ static int do_count_loop(struct event *events, bool is_p9, s64 *miss_percent)
 	event_read(&events[0]);
 	event_read(&events[1]);
 
-	// We could scale all the events by running/enabled but we're lazy
-	// As long as the PMU is uncontended they should all run
+	
+	
 	FAIL_IF(events[0].result.running != events[0].result.enabled);
 	FAIL_IF(events[1].result.running != events[1].result.enabled);
 
@@ -73,7 +71,7 @@ static void setup_event(struct event *e, u64 config, char *name)
 
 enum spectre_v2_state {
 	VULNERABLE = 0,
-	UNKNOWN = 1,		// Works with FAIL_IF()
+	UNKNOWN = 1,		
 	NOT_AFFECTED,
 	BRANCH_SERIALISATION,
 	COUNT_CACHE_DISABLED,
@@ -91,17 +89,17 @@ static enum spectre_v2_state get_sysfs_state(void)
 	memset(buf, 0, sizeof(buf));
 	FAIL_IF(read_sysfs_file("devices/system/cpu/vulnerabilities/spectre_v2", buf, sizeof(buf)));
 
-	// Make sure it's NULL terminated
+	
 	buf[sizeof(buf) - 1] = '\0';
 
-	// Trim the trailing newline
+	
 	len = strlen(buf);
 	FAIL_IF(len < 1);
 	buf[len - 1] = '\0';
 
 	printf("sysfs reports: '%s'\n", buf);
 
-	// Order matters
+	
 	if (strstr(buf, "Vulnerable"))
 		state = VULNERABLE;
 	else if (strstr(buf, "Not affected"))
@@ -120,10 +118,10 @@ static enum spectre_v2_state get_sysfs_state(void)
 	return state;
 }
 
-#define PM_BR_PRED_CCACHE	0x040a4	// P8 + P9
-#define PM_BR_MPRED_CCACHE	0x040ac	// P8 + P9
-#define PM_BR_PRED_PCACHE	0x048a0	// P9 only
-#define PM_BR_MPRED_PCACHE	0x048b0	// P9 only
+#define PM_BR_PRED_CCACHE	0x040a4	
+#define PM_BR_MPRED_CCACHE	0x040ac	
+#define PM_BR_PRED_PCACHE	0x048a0	
+#define PM_BR_MPRED_PCACHE	0x048b0	
 
 int spectre_v2_test(void)
 {
@@ -132,7 +130,7 @@ int spectre_v2_test(void)
 	s64 miss_percent;
 	bool is_p9;
 
-	// The PMU events we use only work on Power8 or later
+	
 	SKIP_IF(!have_hwcap2(PPC_FEATURE2_ARCH_2_07));
 
 	state = get_sysfs_state();
@@ -151,7 +149,7 @@ int spectre_v2_test(void)
 	is_p9 = ((mfspr(SPRN_PVR) >>  16) & 0xFFFF) == 0x4e;
 
 	if (is_p9) {
-		// Count pattern cache too
+		
 		setup_event(&events[2], PM_BR_PRED_PCACHE,  "PM_BR_PRED_PCACHE");
 		setup_event(&events[3], PM_BR_MPRED_PCACHE, "PM_BR_MPRED_PCACHE");
 
@@ -180,17 +178,10 @@ int spectre_v2_test(void)
 	case NOT_AFFECTED:
 	case COUNT_CACHE_FLUSH_SW:
 	case COUNT_CACHE_FLUSH_HW:
-		// These should all not affect userspace branch prediction
+		
 		if (miss_percent > 15) {
 			if (miss_percent > 95) {
-				/*
-				 * Such a mismatch may be caused by a system being unaware
-				 * the count cache is disabled. This may be to enable
-				 * guest migration between hosts with different settings.
-				 * Return skip code to avoid detecting this as an error.
-				 * We are not vulnerable and reporting otherwise, so
-				 * missing such a mismatch is safe.
-				 */
+				 
 				printf("Branch misses > 95%% unexpected in this configuration.\n");
 				printf("Count cache likely disabled without Linux knowing.\n");
 				if (state == COUNT_CACHE_FLUSH_SW)
@@ -204,7 +195,7 @@ int spectre_v2_test(void)
 		}
 		break;
 	case BRANCH_SERIALISATION:
-		// This seems to affect userspace branch prediction a bit?
+		
 		if (miss_percent > 25) {
 			printf("Branch misses > 25%% unexpected in this configuration!\n");
 			printf("Possible mismatch between reported & actual mitigation\n");

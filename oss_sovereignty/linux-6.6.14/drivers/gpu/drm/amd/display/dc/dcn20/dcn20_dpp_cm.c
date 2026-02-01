@@ -1,27 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 
@@ -53,7 +30,7 @@ static void dpp2_enable_cm_block(
 	struct dcn20_dpp *dpp = TO_DCN20_DPP(dpp_base);
 
 	unsigned int cm_bypass_mode = 0;
-	//Temp, put CM in bypass mode
+	
 	if (dpp_base->ctx->dc->debug.cm_in_bypass)
 		cm_bypass_mode = 1;
 
@@ -140,7 +117,7 @@ void dpp2_set_degamma(
 
 	switch (mode) {
 	case IPP_DEGAMMA_MODE_BYPASS:
-		/* Setting de gamma bypass for now */
+		 
 		REG_UPDATE(CM_DGAM_CONTROL, CM_DGAM_LUT_MODE, 0);
 		break;
 	case IPP_DEGAMMA_MODE_HW_sRGB:
@@ -172,15 +149,12 @@ static void program_gamut_remap(
 		return;
 	}
 
-	/* determine which gamut_remap coefficients (A or B) we are using
-	 * currently. select the alternate set to double buffer
-	 * the update so gamut_remap is updated on frame boundary
-	 */
+	 
 	IX_REG_GET(CM_TEST_DEBUG_INDEX, CM_TEST_DEBUG_DATA,
 					CM_TEST_DEBUG_DATA_STATUS_IDX,
 					CM_TEST_DEBUG_DATA_GAMUT_REMAP_MODE, &cur_select);
 
-	/* value stored in dbg reg will be 1 greater than mode we want */
+	 
 	if (cur_select != DCN2_GAMUT_REMAP_COEF_A)
 		select = DCN2_GAMUT_REMAP_COEF_A;
 	else
@@ -218,7 +192,7 @@ void dpp2_cm_set_gamut_remap(
 	int i = 0;
 
 	if (adjust->gamut_adjust_type != GRAPHICS_GAMUT_ADJUST_TYPE_SW)
-		/* Bypass if type is bypass or hw */
+		 
 		program_gamut_remap(dpp, NULL, DCN2_GAMUT_REMAP_BYPASS);
 	else {
 		struct fixed31_32 arr_matrix[12];
@@ -268,10 +242,7 @@ void dpp2_program_input_csc(
 		regval = tbl_entry->regval;
 	}
 
-	/* determine which CSC coefficients (A or B) we are using
-	 * currently.  select the alternate set to double buffer
-	 * the CSC update so CSC is updated on frame boundary
-	 */
+	 
 	IX_REG_GET(CM_TEST_DEBUG_INDEX, CM_TEST_DEBUG_DATA,
 					CM_TEST_DEBUG_DATA_STATUS_IDX,
 					CM_TEST_DEBUG_DATA_ICSC_MODE, &cur_select);
@@ -382,7 +353,7 @@ static void dcn20_dpp_cm_get_reg_field(
 	reg->masks.exp_resion_start_segment = dpp->tf_mask->CM_BLNDGAM_RAMA_EXP_REGION_START_SEGMENT_B;
 }
 
-/*program blnd lut RAM A*/
+ 
 static void dpp20_program_blnd_luta_settings(
 		struct dpp *dpp_base,
 		const struct pwl_params *params)
@@ -410,7 +381,7 @@ static void dpp20_program_blnd_luta_settings(
 	cm_helper_program_xfer_func(dpp->base.ctx, params, &gam_regs);
 }
 
-/*program blnd lut RAM B*/
+ 
 static void dpp20_program_blnd_lutb_settings(
 		struct dpp *dpp_base,
 		const struct pwl_params *params)
@@ -570,7 +541,7 @@ static void dpp20_configure_shaper_lut(
 	REG_SET(CM_SHAPER_LUT_INDEX, 0, CM_SHAPER_LUT_INDEX, 0);
 }
 
-/*program shaper RAM A*/
+ 
 
 static void dpp20_program_shaper_luta_settings(
 		struct dpp *dpp_base,
@@ -721,7 +692,7 @@ static void dpp20_program_shaper_luta_settings(
 		CM_SHAPER_RAMA_EXP_REGION33_NUM_SEGMENTS, curve[1].segments_num);
 }
 
-/*program shaper RAM B*/
+ 
 static void dpp20_program_shaper_lutb_settings(
 		struct dpp *dpp_base,
 		const struct pwl_params *params)
@@ -950,11 +921,7 @@ static enum dc_lut_mode get3dlut_config(
 
 	return mode;
 }
-/*
- * select ramA or ramB, or bypass
- * select color channel size 10 or 12 bits
- * select 3dlut size 17x17x17 or 9x9x9
- */
+ 
 static void dpp20_set_3dlut_mode(
 		struct dpp *dpp_base,
 		enum dc_lut_mode mode,
@@ -1022,9 +989,7 @@ static void dpp20_set3dlut_ram12(
 	}
 }
 
-/*
- * load selected lut with 10 bits color channels
- */
+ 
 static void dpp20_set3dlut_ram10(
 		struct dpp *dpp_base,
 		const struct dc_rgb *lut,

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define _GNU_SOURCE
 
@@ -321,7 +321,7 @@ static int sock_listen_mptcp(const char * const listenaddr,
 			set_mptfo(sock, pf);
 
 		if (bind(sock, a->ai_addr, a->ai_addrlen) == 0)
-			break; /* success */
+			break;  
 
 		perror("bind");
 		close(sock);
@@ -387,12 +387,12 @@ static int sock_connect_mptcp(const char * const remoteaddr,
 				winfo->off = syn_copied;
 				winfo->len -= syn_copied;
 				*peer = a;
-				break; /* success */
+				break;  
 			}
 		} else {
 			if (connect(sock, a->ai_addr, a->ai_addrlen) == 0) {
 				*peer = a;
-				break; /* success */
+				break;  
 			}
 		}
 		if (cfg_sockopt_types.mptfo) {
@@ -432,7 +432,7 @@ static size_t do_rnd_write(const int fd, char *buf, const size_t len)
 	if (bw < 0)
 		return bw;
 
-	/* let the join handshake complete, before going on */
+	 
 	if (cfg_join && first) {
 		usleep(200000);
 		first = false;
@@ -603,10 +603,7 @@ static void set_nonblock(int fd, bool nonblock)
 
 static void shut_wr(int fd)
 {
-	/* Close our write side, ev. give some time
-	 * for address notification and/or checking
-	 * the current status
-	 */
+	 
 	if (cfg_wait)
 		usleep(cfg_wait);
 
@@ -647,7 +644,7 @@ static int copyfd_io_poll(int infd, int peerfd, int outfd,
 		if (fds.revents & POLLIN) {
 			ssize_t rb = sizeof(rbuf);
 
-			/* limit the total amount of read data to the trunc value*/
+			 
 			if (cfg_truncate > 0) {
 				if (rb + total_rlen > cfg_truncate)
 					rb = cfg_truncate - total_rlen;
@@ -656,18 +653,16 @@ static int copyfd_io_poll(int infd, int peerfd, int outfd,
 				len = do_rnd_read(peerfd, rbuf, sizeof(rbuf));
 			}
 			if (len == 0) {
-				/* no more data to receive:
-				 * peer has closed its write side
-				 */
+				 
 				fds.events &= ~POLLIN;
 
 				if ((fds.events & POLLOUT) == 0) {
 					*in_closed_after_out = true;
-					/* and nothing more to send */
+					 
 					break;
 				}
 
-			/* Else, still have data to transmit */
+			 
 			} else if (len < 0) {
 				if (cfg_rcv_trunc)
 					return 0;
@@ -688,7 +683,7 @@ static int copyfd_io_poll(int infd, int peerfd, int outfd,
 			if (winfo->len > 0) {
 				ssize_t bw;
 
-				/* limit the total amount of written data to the trunc value */
+				 
 				if (cfg_truncate > 0 && winfo->len + total_wlen > cfg_truncate)
 					winfo->len = cfg_truncate - total_wlen;
 
@@ -704,11 +699,11 @@ static int copyfd_io_poll(int infd, int peerfd, int outfd,
 				winfo->len -= bw;
 				total_wlen += bw;
 			} else if (winfo->len == 0) {
-				/* We have no more data to send. */
+				 
 				fds.events &= ~POLLOUT;
 
 				if ((fds.events & POLLIN) == 0)
-					/* ... and peer also closed already */
+					 
 					break;
 
 				shut_wr(peerfd);
@@ -733,7 +728,7 @@ static int copyfd_io_poll(int infd, int peerfd, int outfd,
 			break;
 	}
 
-	/* leave some time for late join/announce */
+	 
 	if (cfg_remove && !quit)
 		usleep(cfg_wait);
 
@@ -966,9 +961,7 @@ static int copyfd_io(int infd, int peerfd, int outfd, bool close_peerfd, struct 
 			       delta_ms, cfg_time);
 		}
 
-		/* show the runtime only if this end shutdown(wr) before receiving the EOF,
-		 * (that is, if this end got the longer runtime)
-		 */
+		 
 		if (in_closed_after_out)
 			fprintf(stderr, "%d", delta_ms);
 	}
@@ -1220,9 +1213,7 @@ void xdisconnect(int fd, int addrlen)
 
 	shutdown(fd, SHUT_WR);
 
-	/* while until the pending data is completely flushed, the later
-	 * disconnect will bypass/ignore/drop any pending data.
-	 */
+	 
 	for (i = 0; ; i += msec_sleep) {
 		if (ioctl(fd, SIOCOUTQ, &queued) < 0)
 			xerror("can't query out socket queue: %d", errno);
@@ -1285,9 +1276,7 @@ again:
 	} else if (--cfg_repeat > 0) {
 		xdisconnect(fd, peer->ai_addrlen);
 
-		/* the socket could be unblocking at this point, we need the
-		 * connect to be blocking
-		 */
+		 
 		set_nonblock(fd, false);
 		if (connect(fd, peer->ai_addr, peer->ai_addrlen))
 			xerror("can't reconnect: %d", errno);
@@ -1312,7 +1301,7 @@ int parse_proto(const char *proto)
 	fprintf(stderr, "Unknown protocol: %s\n.", proto);
 	die_usage();
 
-	/* silence compiler warning */
+	 
 	return 0;
 }
 
@@ -1333,7 +1322,7 @@ int parse_mode(const char *mode)
 
 	die_usage();
 
-	/* silence compiler warning */
+	 
 	return 0;
 }
 
@@ -1353,7 +1342,7 @@ int parse_peek(const char *mode)
 
 	die_usage();
 
-	/* silence compiler warning */
+	 
 	return 0;
 }
 
@@ -1389,9 +1378,7 @@ static void parse_opts(int argc, char **argv)
 		case 'f':
 			cfg_truncate = atoi(optarg);
 
-			/* when receiving a fastclose, ignore PIPE signals and
-			 * all the I/O errors later in the code
-			 */
+			 
 			if (cfg_truncate < 0) {
 				cfg_rcv_trunc = true;
 				signal(SIGPIPE, handle_signal);

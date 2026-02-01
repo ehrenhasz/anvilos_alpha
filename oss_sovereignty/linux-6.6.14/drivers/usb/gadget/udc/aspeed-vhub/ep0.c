@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * aspeed-vhub -- Driver for Aspeed SoC "vHub" USB gadget
- *
- * ep0.c - Endpoint 0 handling
- *
- * Copyright 2017 IBM Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -45,11 +39,7 @@ int ast_vhub_reply(struct ast_vhub_ep *ep, char *ptr, int len)
 	req->complete = NULL;
 	req->zero = true;
 
-	/*
-	 * Call internal queue directly after dropping the lock. This is
-	 * safe to do as the reply is always the last thing done when
-	 * processing a SETUP packet, usually as a tail call
-	 */
+	 
 	spin_unlock(&ep->vhub->lock);
 	if (ep->ep.ops->queue(&ep->ep, req, GFP_ATOMIC))
 		rc = std_req_stall;
@@ -67,12 +57,12 @@ int __ast_vhub_simple_reply(struct ast_vhub_ep *ep, int len, ...)
 
 	va_start(args, len);
 
-	/* Copy data directly into EP buffer */
+	 
 	for (i = 0; i < len; i++)
 		buffer[i] = va_arg(args, int);
 	va_end(args);
 
-	/* req->buf NULL means data is already there */
+	 
 	return ast_vhub_reply(ep, NULL, len);
 }
 
@@ -85,10 +75,7 @@ void ast_vhub_ep0_handle_setup(struct ast_vhub_ep *ep)
 	if (WARN_ON(ep->d_idx != 0))
 		return;
 
-	/*
-	 * Grab the setup packet from the chip and byteswap
-	 * interesting fields
-	 */
+	 
 	memcpy_fromio(&crq, ep->ep0.setup, sizeof(crq));
 
 	EPDBG(ep, "SETUP packet %02x/%02x/%04x/%04x/%04x [%s] st=%d\n",
@@ -99,27 +86,18 @@ void ast_vhub_ep0_handle_setup(struct ast_vhub_ep *ep)
 	       (crq.bRequestType & USB_DIR_IN) ? "in" : "out",
 	       ep->ep0.state);
 
-	/*
-	 * Check our state, cancel pending requests if needed
-	 *
-	 * Note: Under some circumstances, we can get a new setup
-	 * packet while waiting for the stall ack, just accept it.
-	 *
-	 * In any case, a SETUP packet in wrong state should have
-	 * reset the HW state machine, so let's just log, nuke
-	 * requests, move on.
-	 */
+	 
 	if (ep->ep0.state != ep0_state_token &&
 	    ep->ep0.state != ep0_state_stall) {
 		EPDBG(ep, "wrong state\n");
 		ast_vhub_nuke(ep, -EIO);
 	}
 
-	/* Calculate next state for EP0 */
+	 
 	ep->ep0.state = ep0_state_data;
 	ep->ep0.dir_in = !!(crq.bRequestType & USB_DIR_IN);
 
-	/* If this is the vHub, we handle requests differently */
+	 
 	std_req_rc = std_req_driver;
 	if (ep->dev == NULL) {
 		if ((crq.bRequestType & USB_TYPE_MASK) == USB_TYPE_STANDARD)
@@ -131,7 +109,7 @@ void ast_vhub_ep0_handle_setup(struct ast_vhub_ep *ep)
 	} else if ((crq.bRequestType & USB_TYPE_MASK) == USB_TYPE_STANDARD)
 		std_req_rc = ast_vhub_std_dev_request(ep, &crq);
 
-	/* Act upon result */
+	 
 	switch(std_req_rc) {
 	case std_req_complete:
 		goto complete;
@@ -143,7 +121,7 @@ void ast_vhub_ep0_handle_setup(struct ast_vhub_ep *ep)
 		return;
 	}
 
-	/* Pass request up to the gadget driver */
+	 
 	if (WARN_ON(!ep->dev))
 		goto stall;
 	if (ep->dev->driver) {
@@ -179,13 +157,11 @@ static void ast_vhub_ep0_do_send(struct ast_vhub_ep *ep,
 	unsigned int chunk;
 	u32 reg;
 
-	/* If this is a 0-length request, it's the gadget trying to
-	 * send a status on our behalf. We take it from here.
-	 */
+	 
 	if (req->req.length == 0)
 		req->last_desc = 1;
 
-	/* Are we done ? Complete request, otherwise wait for next interrupt */
+	 
 	if (req->last_desc >= 0) {
 		EPVDBG(ep, "complete send %d/%d\n",
 		       req->req.actual, req->req.length);
@@ -195,10 +171,7 @@ static void ast_vhub_ep0_do_send(struct ast_vhub_ep *ep,
 		return;
 	}
 
-	/*
-	 * Next chunk cropped to max packet size. Also check if this
-	 * is the last packet
-	 */
+	 
 	chunk = req->req.length - req->req.actual;
 	if (chunk > ep->ep.maxpacket)
 		chunk = ep->ep.maxpacket;
@@ -208,16 +181,13 @@ static void ast_vhub_ep0_do_send(struct ast_vhub_ep *ep,
 	EPVDBG(ep, "send chunk=%d last=%d, req->act=%d mp=%d\n",
 	       chunk, req->last_desc, req->req.actual, ep->ep.maxpacket);
 
-	/*
-	 * Copy data if any (internal requests already have data
-	 * in the EP buffer)
-	 */
+	 
 	if (chunk && req->req.buf)
 		memcpy(ep->buf, req->req.buf + req->req.actual, chunk);
 
 	vhub_dma_workaround(ep->buf);
 
-	/* Remember chunk size and trigger send */
+	 
 	reg = VHUB_EP0_SET_TX_LEN(chunk);
 	writel(reg, ep->ep0.ctlstat);
 	writel(reg | VHUB_EP0_TX_BUFF_RDY, ep->ep0.ctlstat);
@@ -228,7 +198,7 @@ static void ast_vhub_ep0_rx_prime(struct ast_vhub_ep *ep)
 {
 	EPVDBG(ep, "rx prime\n");
 
-	/* Prime endpoint for receiving data */
+	 
 	writel(VHUB_EP0_RX_BUFF_RDY, ep->ep0.ctlstat);
 }
 
@@ -238,12 +208,12 @@ static void ast_vhub_ep0_do_receive(struct ast_vhub_ep *ep, struct ast_vhub_req 
 	unsigned int remain;
 	int rc = 0;
 
-	/* We are receiving... grab request */
+	 
 	remain = req->req.length - req->req.actual;
 
 	EPVDBG(ep, "receive got=%d remain=%d\n", len, remain);
 
-	/* Are we getting more than asked ? */
+	 
 	if (len > remain) {
 		EPDBG(ep, "receiving too much (ovf: %d) !\n",
 		      len - remain);
@@ -251,7 +221,7 @@ static void ast_vhub_ep0_do_receive(struct ast_vhub_ep *ep, struct ast_vhub_req 
 		rc = -EOVERFLOW;
 	}
 
-	/* Hardware return wrong data len */
+	 
 	if (len < ep->ep.maxpacket && len != remain) {
 		EPDBG(ep, "using expected data len instead\n");
 		len = remain;
@@ -261,7 +231,7 @@ static void ast_vhub_ep0_do_receive(struct ast_vhub_ep *ep, struct ast_vhub_req 
 		memcpy(req->req.buf + req->req.actual, ep->buf, len);
 	req->req.actual += len;
 
-	/* Done ? */
+	 
 	if (len < ep->ep.maxpacket || len == remain) {
 		ep->ep0.state = ep0_state_status;
 		writel(VHUB_EP0_TX_BUFF_RDY, ep->ep0.ctlstat);
@@ -278,10 +248,10 @@ void ast_vhub_ep0_handle_ack(struct ast_vhub_ep *ep, bool in_ack)
 	bool stall = false;
 	u32 stat;
 
-	/* Read EP0 status */
+	 
 	stat = readl(ep->ep0.ctlstat);
 
-	/* Grab current request if any */
+	 
 	req = list_first_entry_or_null(&ep->queue, struct ast_vhub_req, queue);
 
 	EPVDBG(ep, "ACK status=%08x,state=%d is_in=%d in_ack=%d req=%p\n",
@@ -289,7 +259,7 @@ void ast_vhub_ep0_handle_ack(struct ast_vhub_ep *ep, bool in_ack)
 
 	switch(ep->ep0.state) {
 	case ep0_state_token:
-		/* There should be no request queued in that state... */
+		 
 		if (req) {
 			dev_warn(dev, "request present while in TOKEN state\n");
 			ast_vhub_nuke(ep, -EINVAL);
@@ -298,57 +268,47 @@ void ast_vhub_ep0_handle_ack(struct ast_vhub_ep *ep, bool in_ack)
 		stall = true;
 		break;
 	case ep0_state_data:
-		/* Check the state bits corresponding to our direction */
+		 
 		if ((ep->ep0.dir_in && (stat & VHUB_EP0_TX_BUFF_RDY)) ||
 		    (!ep->ep0.dir_in && (stat & VHUB_EP0_RX_BUFF_RDY)) ||
 		    (ep->ep0.dir_in != in_ack)) {
-			/* In that case, ignore interrupt */
+			 
 			dev_warn(dev, "irq state mismatch");
 			break;
 		}
-		/*
-		 * We are in data phase and there's no request, something is
-		 * wrong, stall
-		 */
+		 
 		if (!req) {
 			dev_warn(dev, "data phase, no request\n");
 			stall = true;
 			break;
 		}
 
-		/* We have a request, handle data transfers */
+		 
 		if (ep->ep0.dir_in)
 			ast_vhub_ep0_do_send(ep, req);
 		else
 			ast_vhub_ep0_do_receive(ep, req, VHUB_EP0_RX_LEN(stat));
 		return;
 	case ep0_state_status:
-		/* Nuke stale requests */
+		 
 		if (req) {
 			dev_warn(dev, "request present while in STATUS state\n");
 			ast_vhub_nuke(ep, -EINVAL);
 		}
 
-		/*
-		 * If the status phase completes with the wrong ack, stall
-		 * the endpoint just in case, to abort whatever the host
-		 * was doing.
-		 */
+		 
 		if (ep->ep0.dir_in == in_ack) {
 			dev_warn(dev, "status direction mismatch\n");
 			stall = true;
 		}
 		break;
 	case ep0_state_stall:
-		/*
-		 * There shouldn't be any request left, but nuke just in case
-		 * otherwise the stale request will block subsequent ones
-		 */
+		 
 		ast_vhub_nuke(ep, -EIO);
 		break;
 	}
 
-	/* Reset to token state or stall */
+	 
 	if (stall) {
 		writel(VHUB_EP0_CTRL_STALL, ep->ep0.ctlstat);
 		ep->ep0.state = ep0_state_stall;
@@ -365,7 +325,7 @@ static int ast_vhub_ep0_queue(struct usb_ep* u_ep, struct usb_request *u_req,
 	struct device *dev = &vhub->pdev->dev;
 	unsigned long flags;
 
-	/* Paranoid cheks */
+	 
 	if (!u_req || (!u_req->complete && !req->internal)) {
 		dev_warn(dev, "Bogus EP0 request ! u_req=%p\n", u_req);
 		if (u_req) {
@@ -375,15 +335,15 @@ static int ast_vhub_ep0_queue(struct usb_ep* u_ep, struct usb_request *u_req,
 		return -EINVAL;
 	}
 
-	/* Not endpoint 0 ? */
+	 
 	if (WARN_ON(ep->d_idx != 0))
 		return -EINVAL;
 
-	/* Disabled device */
+	 
 	if (ep->dev && !ep->dev->enabled)
 		return -ESHUTDOWN;
 
-	/* Data, no buffer and not internal ? */
+	 
 	if (u_req->length && !u_req->buf && !req->internal) {
 		dev_warn(dev, "Request with no buffer !\n");
 		return -EINVAL;
@@ -394,7 +354,7 @@ static int ast_vhub_ep0_queue(struct usb_ep* u_ep, struct usb_request *u_req,
 	       u_req->length, u_req->zero,
 	       u_req->short_not_ok, ep->ep0.dir_in);
 
-	/* Initialize request progress fields */
+	 
 	u_req->status = -EINPROGRESS;
 	u_req->actual = 0;
 	req->last_desc = -1;
@@ -402,7 +362,7 @@ static int ast_vhub_ep0_queue(struct usb_ep* u_ep, struct usb_request *u_req,
 
 	spin_lock_irqsave(&vhub->lock, flags);
 
-	/* EP0 can only support a single request at a time */
+	 
 	if (!list_empty(&ep->queue) ||
 	    ep->ep0.state == ep0_state_token ||
 	    ep->ep0.state == ep0_state_stall) {
@@ -413,20 +373,20 @@ static int ast_vhub_ep0_queue(struct usb_ep* u_ep, struct usb_request *u_req,
 		return -EBUSY;
 	}
 
-	/* Add request to list and kick processing if empty */
+	 
 	list_add_tail(&req->queue, &ep->queue);
 
 	if (ep->ep0.dir_in) {
-		/* IN request, send data */
+		 
 		ast_vhub_ep0_do_send(ep, req);
 	} else if (u_req->length == 0) {
-		/* 0-len request, send completion as rx */
+		 
 		EPVDBG(ep, "0-length rx completion\n");
 		ep->ep0.state = ep0_state_status;
 		writel(VHUB_EP0_TX_BUFF_RDY, ep->ep0.ctlstat);
 		ast_vhub_done(ep, req, 0);
 	} else {
-		/* OUT request, start receiver */
+		 
 		ast_vhub_ep0_rx_prime(ep);
 	}
 
@@ -445,20 +405,17 @@ static int ast_vhub_ep0_dequeue(struct usb_ep* u_ep, struct usb_request *u_req)
 
 	spin_lock_irqsave(&vhub->lock, flags);
 
-	/* Only one request can be in the queue */
+	 
 	req = list_first_entry_or_null(&ep->queue, struct ast_vhub_req, queue);
 
-	/* Is it ours ? */
+	 
 	if (req && u_req == &req->req) {
 		EPVDBG(ep, "dequeue req @%p\n", req);
 
-		/*
-		 * We don't have to deal with "active" as all
-		 * DMAs go to the EP buffers, not the request.
-		 */
+		 
 		ast_vhub_done(ep, req, -ECONNRESET);
 
-		/* We do stall the EP to clean things up in HW */
+		 
 		writel(VHUB_EP0_CTRL_STALL, ep->ep0.ctlstat);
 		ep->ep0.state = ep0_state_status;
 		ep->ep0.dir_in = false;
@@ -503,7 +460,7 @@ void ast_vhub_init_ep0(struct ast_vhub *vhub, struct ast_vhub_ep *ep,
 	INIT_LIST_HEAD(&ep->ep0.req.queue);
 	ep->ep0.req.internal = true;
 
-	/* Small difference between vHub and devices */
+	 
 	if (dev) {
 		ep->ep0.ctlstat = dev->regs + AST_VHUB_DEV_EP0_CTRL;
 		ep->ep0.setup = vhub->regs +

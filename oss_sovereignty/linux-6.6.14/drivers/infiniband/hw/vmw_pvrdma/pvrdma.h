@@ -1,47 +1,4 @@
-/*
- * Copyright (c) 2012-2016 VMware, Inc.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of EITHER the GNU General Public License
- * version 2 as published by the Free Software Foundation or the BSD
- * 2-Clause License. This program is distributed in the hope that it
- * will be useful, but WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED
- * WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License version 2 for more details at
- * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program available in the file COPYING in the main
- * directory of this source tree.
- *
- * The BSD 2-Clause License
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #ifndef __PVRDMA_H__
 #define __PVRDMA_H__
@@ -61,12 +18,10 @@
 #include "pvrdma_dev_api.h"
 #include "pvrdma_verbs.h"
 
-/* NOT the same as BIT_MASK(). */
+ 
 #define PVRDMA_MASK(n) ((n << 1) - 1)
 
-/*
- * VMware PVRDMA PCI device id.
- */
+ 
 #define PCI_DEVICE_ID_VMWARE_PVRDMA	0x0820
 
 #define PVRDMA_NUM_RING_PAGES		4
@@ -86,7 +41,7 @@ struct pvrdma_page_dir {
 struct pvrdma_cq {
 	struct ib_cq ibcq;
 	int offset;
-	spinlock_t cq_lock; /* Poll lock. */
+	spinlock_t cq_lock;  
 	struct pvrdma_uar_map *uar;
 	struct ib_umem *umem;
 	struct pvrdma_ring_state *ring_state;
@@ -102,7 +57,7 @@ struct pvrdma_id_table {
 	u32 top;
 	u32 max;
 	u32 mask;
-	spinlock_t lock; /* Table lock. */
+	spinlock_t lock;  
 	unsigned long *table;
 };
 
@@ -150,7 +105,7 @@ struct pvrdma_user_mr {
 
 struct pvrdma_wq {
 	struct pvrdma_ring *ring;
-	spinlock_t lock; /* Work queue lock. */
+	spinlock_t lock;  
 	int wqe_cnt;
 	int wqe_size;
 	int max_sg;
@@ -165,7 +120,7 @@ struct pvrdma_ah {
 struct pvrdma_srq {
 	struct ib_srq ibsrq;
 	int offset;
-	spinlock_t lock; /* SRQ lock. */
+	spinlock_t lock;  
 	int wqe_cnt;
 	int wqe_size;
 	int max_gs;
@@ -195,31 +150,31 @@ struct pvrdma_qp {
 	u8 port;
 	u8 state;
 	bool is_kernel;
-	struct mutex mutex; /* QP state mutex. */
+	struct mutex mutex;  
 	refcount_t refcnt;
 	struct completion free;
 };
 
 struct pvrdma_dev {
-	/* PCI device-related information. */
+	 
 	struct ib_device ib_dev;
 	struct pci_dev *pdev;
 	void __iomem *regs;
-	struct pvrdma_device_shared_region *dsr; /* Shared region pointer */
-	dma_addr_t dsrbase; /* Shared region base address */
+	struct pvrdma_device_shared_region *dsr;  
+	dma_addr_t dsrbase;  
 	void *cmd_slot;
 	void *resp_slot;
 	unsigned long flags;
 	struct list_head device_link;
 	unsigned int dsr_version;
 
-	/* Locking and interrupt information. */
-	spinlock_t cmd_lock; /* Command lock. */
+	 
+	spinlock_t cmd_lock;  
 	struct semaphore cmd_sema;
 	struct completion cmd_done;
 	unsigned int nr_vectors;
 
-	/* RDMA-related device information. */
+	 
 	union ib_gid *sgid_tbl;
 	struct pvrdma_ring_state *async_ring_state;
 	struct pvrdma_page_dir async_pdir;
@@ -234,9 +189,9 @@ struct pvrdma_dev {
 	struct pvrdma_uar_table uar_table;
 	struct pvrdma_uar_map driver_uar;
 	__be64 sys_image_guid;
-	spinlock_t desc_lock; /* Device modification lock. */
+	spinlock_t desc_lock;  
 	u32 port_cap_mask;
-	struct mutex port_mutex; /* Port modification mutex. */
+	struct mutex port_mutex;  
 	bool ib_active;
 	atomic_t num_qps;
 	atomic_t num_cqs;
@@ -244,7 +199,7 @@ struct pvrdma_dev {
 	atomic_t num_pds;
 	atomic_t num_ahs;
 
-	/* Network device information. */
+	 
 	struct net_device *netdev;
 	struct notifier_block nb_netdev;
 };
@@ -552,4 +507,4 @@ int pvrdma_page_dir_insert_page_list(struct pvrdma_page_dir *pdir,
 int pvrdma_cmd_post(struct pvrdma_dev *dev, union pvrdma_cmd_req *req,
 		    union pvrdma_cmd_resp *rsp, unsigned resp_code);
 
-#endif /* __PVRDMA_H__ */
+#endif  

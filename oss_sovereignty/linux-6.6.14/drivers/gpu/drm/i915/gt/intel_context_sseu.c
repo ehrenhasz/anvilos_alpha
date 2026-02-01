@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include "i915_drv.h"
 #include "i915_vma.h"
@@ -45,12 +43,7 @@ gen8_modify_rpcs(struct intel_context *ce, const struct intel_sseu sseu)
 
 	lockdep_assert_held(&ce->pin_mutex);
 
-	/*
-	 * If the context is not idle, we have to submit an ordered request to
-	 * modify its context image via the kernel context (writing to our own
-	 * image, or into the registers directory, does not stick). Pristine
-	 * and idle contexts will be configured on pinning.
-	 */
+	 
 	if (!intel_context_pin_if_active(ce))
 		return 0;
 
@@ -60,7 +53,7 @@ gen8_modify_rpcs(struct intel_context *ce, const struct intel_sseu sseu)
 		goto out_unpin;
 	}
 
-	/* Serialise with the remote context */
+	 
 	ret = intel_context_prepare_remote_request(ce, rq);
 	if (ret == 0)
 		ret = gen8_emit_rpcs_config(rq, ce, sseu);
@@ -83,7 +76,7 @@ intel_context_reconfigure_sseu(struct intel_context *ce,
 	if (ret)
 		return ret;
 
-	/* Nothing to do if unmodified. */
+	 
 	if (!memcmp(&ce->sseu, &sseu, sizeof(sseu)))
 		goto unlock;
 

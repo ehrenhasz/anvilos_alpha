@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- *
- * This is an implementation of the ChaCha20Poly1305 AEAD construction.
- *
- * Information: https://tools.ietf.org/html/rfc8439
- */
+
+ 
 
 #include <crypto/algapi.h>
 #include <crypto/chacha20poly1305.h>
@@ -43,7 +37,7 @@ static void xchacha_init(u32 *chacha_state, const u8 *key, const u8 *nonce)
 
 	chacha_load_key(k, key);
 
-	/* Compute the subkey given the original key and first 128 nonce bits */
+	 
 	chacha_init(chacha_state, k, nonce);
 	hchacha_block(chacha_state, k, 20);
 

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * r8a7792 Clock Pulse Generator / Module Standby and Software Reset
- *
- * Copyright (C) 2017 Glider bvba
- *
- * Based on clk-rcar-gen2.c
- *
- * Copyright (C) 2013 Ideas On Board SPRL
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/init.h>
@@ -20,28 +12,28 @@
 #include "rcar-gen2-cpg.h"
 
 enum clk_ids {
-	/* Core Clock Outputs exported to DT */
+	 
 	LAST_DT_CORE_CLK = R8A7792_CLK_OSC,
 
-	/* External Input Clocks */
+	 
 	CLK_EXTAL,
 
-	/* Internal Core Clocks */
+	 
 	CLK_MAIN,
 	CLK_PLL0,
 	CLK_PLL1,
 	CLK_PLL3,
 	CLK_PLL1_DIV2,
 
-	/* Module Clocks */
+	 
 	MOD_CLK_BASE
 };
 
 static const struct cpg_core_clk r8a7792_core_clks[] __initconst = {
-	/* External Clock Inputs */
+	 
 	DEF_INPUT("extal",     CLK_EXTAL),
 
-	/* Internal Core Clocks */
+	 
 	DEF_BASE(".main",       CLK_MAIN, CLK_TYPE_GEN2_MAIN, CLK_EXTAL),
 	DEF_BASE(".pll0",       CLK_PLL0, CLK_TYPE_GEN2_PLL0, CLK_MAIN),
 	DEF_BASE(".pll1",       CLK_PLL1, CLK_TYPE_GEN2_PLL1, CLK_MAIN),
@@ -49,7 +41,7 @@ static const struct cpg_core_clk r8a7792_core_clks[] __initconst = {
 
 	DEF_FIXED(".pll1_div2", CLK_PLL1_DIV2, CLK_PLL1, 2, 1),
 
-	/* Core Clock Outputs */
+	 
 	DEF_BASE("qspi", R8A7792_CLK_QSPI, CLK_TYPE_GEN2_QSPI, CLK_PLL1_DIV2),
 
 	DEF_FIXED("z",      R8A7792_CLK_Z,     CLK_PLL0,          1, 1),
@@ -152,30 +144,13 @@ static const struct mssr_mod_clk r8a7792_mod_clks[] __initconst = {
 };
 
 static const unsigned int r8a7792_crit_mod_clks[] __initconst = {
-	MOD_CLK_ID(402),	/* RWDT */
-	MOD_CLK_ID(408),	/* INTC-SYS (GIC) */
+	MOD_CLK_ID(402),	 
+	MOD_CLK_ID(408),	 
 };
 
-/*
- * CPG Clock Data
- */
+ 
 
-/*
- *   MD		EXTAL		PLL0	PLL1	PLL3
- * 14 13 19	(MHz)		*1	*2
- *---------------------------------------------------
- * 0  0  0	15		x200/3	x208/2	x106
- * 0  0  1	15		x200/3	x208/2	x88
- * 0  1  0	20		x150/3	x156/2	x80
- * 0  1  1	20		x150/3	x156/2	x66
- * 1  0  0	26 / 2		x230/3	x240/2	x122
- * 1  0  1	26 / 2		x230/3	x240/2	x102
- * 1  1  0	30 / 2		x200/3	x208/2	x106
- * 1  1  1	30 / 2		x200/3	x208/2	x88
- *
- * *1 :	Table 7.5b indicates VCO output (PLL0 = VCO/3)
- * *2 :	Table 7.5b indicates VCO output (PLL1 = VCO/2)
- */
+ 
 #define CPG_PLL_CONFIG_INDEX(md)	((((md) & BIT(14)) >> 12) | \
 					 (((md) & BIT(13)) >> 12) | \
 					 (((md) & BIT(19)) >> 19))
@@ -206,22 +181,22 @@ static int __init r8a7792_cpg_mssr_init(struct device *dev)
 }
 
 const struct cpg_mssr_info r8a7792_cpg_mssr_info __initconst = {
-	/* Core Clocks */
+	 
 	.core_clks = r8a7792_core_clks,
 	.num_core_clks = ARRAY_SIZE(r8a7792_core_clks),
 	.last_dt_core_clk = LAST_DT_CORE_CLK,
 	.num_total_core_clks = MOD_CLK_BASE,
 
-	/* Module Clocks */
+	 
 	.mod_clks = r8a7792_mod_clks,
 	.num_mod_clks = ARRAY_SIZE(r8a7792_mod_clks),
 	.num_hw_mod_clks = 12 * 32,
 
-	/* Critical Module Clocks */
+	 
 	.crit_mod_clks = r8a7792_crit_mod_clks,
 	.num_crit_mod_clks = ARRAY_SIZE(r8a7792_crit_mod_clks),
 
-	/* Callbacks */
+	 
 	.init = r8a7792_cpg_mssr_init,
 	.cpg_clk_register = rcar_gen2_cpg_clk_register,
 };

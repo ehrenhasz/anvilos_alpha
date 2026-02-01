@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * (c) 2001 Micro Solutions Inc.
- *
- * backpack.c is a low-level protocol driver for the Micro Solutions
- * "BACKPACK" parallel port IDE adapter (works on Series 6 drives).
- *
- * Written by: Ken Hahn (linux-dev@micro-solutions.com)
- *             Clive Turvey (linux-dev@micro-solutions.com)
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -16,39 +8,39 @@
 #include <linux/parport.h>
 #include "pata_parport.h"
 
-/* 60772 Commands */
+ 
 #define ACCESS_REG		0x00
 #define ACCESS_PORT		0x40
 
 #define ACCESS_READ		0x00
 #define ACCESS_WRITE		0x20
 
-/* 60772 Command Prefix */
-#define CMD_PREFIX_SET		0xe0	// Special command that modifies next command's operation
-#define CMD_PREFIX_RESET	0xc0	// Resets current cmd modifier reg bits
- #define PREFIX_IO16		0x01	// perform 16-bit wide I/O
- #define PREFIX_FASTWR		0x04	// enable PPC mode fast-write
- #define PREFIX_BLK		0x08	// enable block transfer mode
+ 
+#define CMD_PREFIX_SET		0xe0	
+#define CMD_PREFIX_RESET	0xc0	
+ #define PREFIX_IO16		0x01	
+ #define PREFIX_FASTWR		0x04	
+ #define PREFIX_BLK		0x08	
 
-/* 60772 Registers */
-#define REG_STATUS		0x00	// status register
- #define STATUS_IRQA		0x01	// Peripheral IRQA line
- #define STATUS_EEPROM_DO	0x40	// Serial EEPROM data bit
-#define REG_VERSION		0x01	// PPC version register (read)
-#define REG_HWCFG		0x02	// Hardware Config register
-#define REG_RAMSIZE		0x03	// Size of RAM Buffer
+ 
+#define REG_STATUS		0x00	
+ #define STATUS_IRQA		0x01	
+ #define STATUS_EEPROM_DO	0x40	
+#define REG_VERSION		0x01	
+#define REG_HWCFG		0x02	
+#define REG_RAMSIZE		0x03	
  #define RAMSIZE_128K		0x02
-#define REG_EEPROM		0x06	// EEPROM control register
- #define EEPROM_SK		0x01	// eeprom SK bit
- #define EEPROM_DI		0x02	// eeprom DI bit
- #define EEPROM_CS		0x04	// eeprom CS bit
- #define EEPROM_EN		0x08	// eeprom output enable
-#define REG_BLKSIZE		0x08	// Block transfer len (24 bit)
+#define REG_EEPROM		0x06	
+ #define EEPROM_SK		0x01	
+ #define EEPROM_DI		0x02	
+ #define EEPROM_CS		0x04	
+ #define EEPROM_EN		0x08	
+#define REG_BLKSIZE		0x08	
 
-/* flags */
+ 
 #define fifo_wait		0x10
 
-/* DONT CHANGE THESE LEST YOU BREAK EVERYTHING - BIT FIELD DEPENDENCIES */
+ 
 #define PPCMODE_UNI_SW		0
 #define PPCMODE_UNI_FW		1
 #define PPCMODE_BI_SW		2
@@ -243,7 +235,7 @@ static void bpck6_read_block(struct pi_adapter *pi, char *buf, int len)
 
 			parport_frob_control(pi->pardev->port,
 					PARPORT_CONTROL_STROBE,
-					PARPORT_CONTROL_INIT); /* DATA STROBE */
+					PARPORT_CONTROL_INIT);  
 			d = parport_read_status(pi->pardev->port);
 			d = ((d & 0x80) >> 1) | ((d & 0x38) >> 3);
 			parport_frob_control(pi->pardev->port,
@@ -325,11 +317,11 @@ static int bpck6_open(struct pi_adapter *pi)
 		goto fail;
 
 	if (i & 4) {
-		/* EPP */
+		 
 		parport_frob_control(pi->pardev->port,
 			PARPORT_CONTROL_SELECT | PARPORT_CONTROL_INIT, 0);
 	} else {
-		/* PPC/ECP */
+		 
 		parport_frob_control(pi->pardev->port, PARPORT_CONTROL_SELECT, 0);
 	}
 
@@ -354,11 +346,11 @@ fail:
 static void bpck6_deselect(struct pi_adapter *pi)
 {
 	if (mode_map[pi->mode] & 4) {
-		/* EPP */
+		 
 		parport_frob_control(pi->pardev->port, PARPORT_CONTROL_INIT,
 				     PARPORT_CONTROL_INIT);
 	} else {
-		/* PPC/ECP */
+		 
 		parport_frob_control(pi->pardev->port, PARPORT_CONTROL_SELECT,
 				     PARPORT_CONTROL_SELECT);
 	}
@@ -390,18 +382,18 @@ static void bpck6_disconnect(struct pi_adapter *pi)
 	bpck6_deselect(pi);
 }
 
-/* check for 8-bit port */
+ 
 static int bpck6_test_port(struct pi_adapter *pi)
 {
 	dev_dbg(&pi->dev, "PARPORT indicates modes=%x for lp=0x%lx\n",
 		pi->pardev->port->modes, pi->pardev->port->base);
 
-	/* look at the parport device to see what modes we can use */
+	 
 	if (pi->pardev->port->modes & PARPORT_MODE_EPP)
-		return 5; /* Can do EPP */
+		return 5;  
 	if (pi->pardev->port->modes & PARPORT_MODE_TRISTATE)
 		return 2;
-	return 1; /* Just flat SPP */
+	return 1;  
 }
 
 static int bpck6_probe_unit(struct pi_adapter *pi)
@@ -411,7 +403,7 @@ static int bpck6_probe_unit(struct pi_adapter *pi)
 	dev_dbg(&pi->dev, "PROBE UNIT %x on port:%x\n", pi->unit, pi->port);
 
 	saved_mode = pi->mode;
-	/*LOWER DOWN TO UNIDIRECTIONAL*/
+	 
 	pi->mode = 0;
 
 	out = bpck6_open(pi);
@@ -444,7 +436,7 @@ static struct pi_protocol bpck6 = {
 	.owner		= THIS_MODULE,
 	.name		= "bpck6",
 	.max_mode	= 5,
-	.epp_first	= 2, /* 2-5 use epp (need 8 ports) */
+	.epp_first	= 2,  
 	.max_units	= 255,
 	.write_regr	= bpck6_write_regr,
 	.read_regr	= bpck6_read_regr,

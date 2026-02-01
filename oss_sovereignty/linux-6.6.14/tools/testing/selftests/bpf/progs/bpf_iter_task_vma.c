@@ -1,17 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include "bpf_iter.h"
 #include <bpf/bpf_helpers.h>
 
 char _license[] SEC("license") = "GPL";
 
-/* Copied from mm.h */
+ 
 #define VM_READ		0x00000001
 #define VM_WRITE	0x00000002
 #define VM_EXEC		0x00000004
 #define VM_MAYSHARE	0x00000080
 
-/* Copied from kdev_t.h */
+ 
 #define MINORBITS	20
 #define MINORMASK	((1U << MINORBITS) - 1)
 #define MAJOR(dev)	((unsigned int) ((dev) >> MINORBITS))

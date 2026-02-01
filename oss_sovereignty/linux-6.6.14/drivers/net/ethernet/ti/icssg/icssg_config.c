@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* ICSSG Ethernet driver
- *
- * Copyright (C) 2022 Texas Instruments Incorporated - https://www.ti.com
- */
+
+ 
 
 #include <linux/iopoll.h>
 #include <linux/regmap.h>
@@ -12,12 +9,9 @@
 #include "icssg_switch_map.h"
 #include "icssg_mii_rt.h"
 
-/* TX IPG Values to be set for 100M link speed. These values are
- * in ocp_clk cycles. So need change if ocp_clk is changed for a specific
- * h/w design.
- */
+ 
 
-/* IPG is in core_clk cycles */
+ 
 #define MII_RT_TX_IPG_100M	0x17
 #define MII_RT_TX_IPG_1G	0xb
 
@@ -32,19 +26,19 @@
 #define	RECYCLE_Q_SLICE0	16
 #define	RECYCLE_Q_SLICE1	17
 
-#define	ICSSG_NUM_OTHER_QUEUES	5	/* port, host and special queues */
+#define	ICSSG_NUM_OTHER_QUEUES	5	 
 
 #define	PORT_HI_Q_SLICE0	32
 #define	PORT_LO_Q_SLICE0	33
 #define	HOST_HI_Q_SLICE0	34
 #define	HOST_LO_Q_SLICE0	35
-#define	HOST_SPL_Q_SLICE0	40	/* Special Queue */
+#define	HOST_SPL_Q_SLICE0	40	 
 
 #define	PORT_HI_Q_SLICE1	36
 #define	PORT_LO_Q_SLICE1	37
 #define	HOST_HI_Q_SLICE1	38
 #define	HOST_LO_Q_SLICE1	39
-#define	HOST_SPL_Q_SLICE1	41	/* Special Queue */
+#define	HOST_SPL_Q_SLICE1	41	 
 
 #define MII_RXCFG_DEFAULT	(PRUSS_MII_RT_RXCFG_RX_ENABLE | \
 				 PRUSS_MII_RT_RXCFG_RX_DATA_RDY_MODE_DIS | \
@@ -73,13 +67,7 @@
 #define FDB_EN_ALL		(FDB_PRU0_EN | FDB_PRU1_EN | \
 				 FDB_HOST_EN | FDB_VLAN_EN)
 
-/**
- * struct map - ICSSG Queue Map
- * @queue: Queue number
- * @pd_addr_start: Packet descriptor queue reserved memory
- * @flags: Flags
- * @special: Indicates whether this queue is a special queue or not
- */
+ 
 struct map {
 	int queue;
 	u32 pd_addr_start;
@@ -87,7 +75,7 @@ struct map {
 	bool special;
 };
 
-/* Hardware queue map for ICSSG */
+ 
 static const struct map hwq_map[2][ICSSG_NUM_OTHER_QUEUES] = {
 	{
 		{ PORT_HI_Q_SLICE0, PORT_DESC0_HI, 0x200000, 0 },
@@ -127,9 +115,7 @@ static void icssg_config_mii_init(struct prueth_emac *emac)
 	if (slice == ICSS_MII1)
 		rxcfg |= PRUSS_MII_RT_RXCFG_RX_MUX_SEL;
 
-	/* In MII mode TX lines swapped inside ICSSG, so TX_MUX_SEL cfg need
-	 * to be swapped also comparing to RGMII mode.
-	 */
+	 
 	if (emac->phy_if == PHY_INTERFACE_MODE_MII && slice == ICSS_MII0)
 		txcfg |= PRUSS_MII_RT_TXCFG_TX_MUX_SEL;
 	else if (emac->phy_if != PHY_INTERFACE_MODE_MII && slice == ICSS_MII1)
@@ -148,7 +134,7 @@ static void icssg_miig_queues_init(struct prueth *prueth, int slice)
 	int queue = 0, i, j;
 	u32 *pdword;
 
-	/* reset hwqueues */
+	 
 	if (slice)
 		queue = ICSSG_NUM_TX_QUEUES;
 
@@ -165,8 +151,8 @@ static void icssg_miig_queues_init(struct prueth *prueth, int slice)
 			     hwq_map[slice][i].queue);
 	}
 
-	/* initialize packet descriptors in SMEM */
-	/* push pakcet descriptors to hwqueues */
+	 
+	 
 
 	pdword = (u32 *)pd;
 	for (j = 0; j < ICSSG_NUM_OTHER_QUEUES; j++) {
@@ -211,11 +197,11 @@ void icssg_config_ipg(struct prueth_emac *emac)
 		icssg_mii_update_ipg(prueth->mii_rt, slice, MII_RT_TX_IPG_100M);
 		break;
 	case SPEED_10:
-		/* IPG for 10M is same as 100M */
+		 
 		icssg_mii_update_ipg(prueth->mii_rt, slice, MII_RT_TX_IPG_100M);
 		break;
 	default:
-		/* Other links speeds not supported */
+		 
 		netdev_err(emac->ndev, "Unsupported link speed\n");
 		return;
 	}
@@ -258,9 +244,7 @@ static int prueth_emac_buffer_setup(struct prueth_emac *emac)
 	u32 addr;
 	int i;
 
-	/* Layout to have 64KB aligned buffer pool
-	 * |BPOOL0|BPOOL1|RX_CTX0|RX_CTX1|
-	 */
+	 
 
 	addr = lower_32_bits(prueth->msmcram.pa);
 	if (slice)
@@ -272,7 +256,7 @@ static int prueth_emac_buffer_setup(struct prueth_emac *emac)
 	}
 
 	bpool_cfg = emac->dram.va + BUFFER_POOL_0_ADDR_OFFSET;
-	/* workaround for f/w bug. bpool 0 needs to be initilalized */
+	 
 	writel(addr, &bpool_cfg[0].addr);
 	writel(0, &bpool_cfg[0].len);
 
@@ -289,7 +273,7 @@ static int prueth_emac_buffer_setup(struct prueth_emac *emac)
 	else
 		addr += PRUETH_EMAC_RX_CTX_BUF_SIZE * 2;
 
-	/* Pre-emptible RX buffer queue */
+	 
 	rxq_ctx = emac->dram.va + HOST_RX_Q_PRE_CONTEXT_OFFSET;
 	for (i = 0; i < 3; i++)
 		writel(addr, &rxq_ctx->start[i]);
@@ -297,7 +281,7 @@ static int prueth_emac_buffer_setup(struct prueth_emac *emac)
 	addr += PRUETH_EMAC_RX_CTX_BUF_SIZE;
 	writel(addr, &rxq_ctx->end);
 
-	/* Express RX buffer queue */
+	 
 	rxq_ctx = emac->dram.va + HOST_RX_Q_EXP_CONTEXT_OFFSET;
 	for (i = 0; i < 3; i++)
 		writel(addr, &rxq_ctx->start[i]);
@@ -310,9 +294,7 @@ static int prueth_emac_buffer_setup(struct prueth_emac *emac)
 
 static void icssg_init_emac_mode(struct prueth *prueth)
 {
-	/* When the device is configured as a bridge and it is being brought
-	 * back to the emac mode, the host mac address has to be set as 0.
-	 */
+	 
 	u8 mac[ETH_ALEN] = { 0 };
 
 	if (prueth->emacs_initialized)
@@ -321,7 +303,7 @@ static void icssg_init_emac_mode(struct prueth *prueth)
 	regmap_update_bits(prueth->miig_rt, FDB_GEN_CFG1,
 			   SMEM_VLAN_OFFSET_MASK, 0);
 	regmap_write(prueth->miig_rt, FDB_GEN_CFG2, 0);
-	/* Clear host MAC address */
+	 
 	icssg_class_set_host_mac_addr(prueth->miig_rt, mac);
 }
 
@@ -349,15 +331,15 @@ int icssg_config(struct prueth *prueth, struct prueth_emac *emac, int slice)
 	icssg_config_ipg(emac);
 	icssg_update_rgmii_cfg(prueth->miig_rt, emac);
 
-	/* set GPI mode */
+	 
 	pruss_cfg_gpimode(prueth->pruss, prueth->pru_id[slice],
 			  PRUSS_GPI_MODE_MII);
 
-	/* enable XFR shift for PRU and RTU */
+	 
 	pruss_cfg_xfr_enable(prueth->pruss, PRU_TYPE_PRU, true);
 	pruss_cfg_xfr_enable(prueth->pruss, PRU_TYPE_RTU, true);
 
-	/* set C28 to 0x100 */
+	 
 	pru_rproc_set_ctable(prueth->pru[slice], PRU_C28, 0x100 << 8);
 	pru_rproc_set_ctable(prueth->rtu[slice], PRU_C28, 0x100 << 8);
 	pru_rproc_set_ctable(prueth->txpru[slice], PRU_C28, 0x100 << 8);
@@ -377,27 +359,27 @@ int icssg_config(struct prueth *prueth, struct prueth_emac *emac, int slice)
 	return 0;
 }
 
-/* Bitmask for ICSSG r30 commands */
+ 
 static const struct icssg_r30_cmd emac_r32_bitmask[] = {
-	{{0xffff0004, 0xffff0100, 0xffff0004, EMAC_NONE}},	/* EMAC_PORT_DISABLE */
-	{{0xfffb0040, 0xfeff0200, 0xfeff0200, EMAC_NONE}},	/* EMAC_PORT_BLOCK */
-	{{0xffbb0000, 0xfcff0000, 0xdcfb0000, EMAC_NONE}},	/* EMAC_PORT_FORWARD */
-	{{0xffbb0000, 0xfcff0000, 0xfcff2000, EMAC_NONE}},	/* EMAC_PORT_FORWARD_WO_LEARNING */
-	{{0xffff0001, EMAC_NONE,  EMAC_NONE, EMAC_NONE}},	/* ACCEPT ALL */
-	{{0xfffe0002, EMAC_NONE,  EMAC_NONE, EMAC_NONE}},	/* ACCEPT TAGGED */
-	{{0xfffc0000, EMAC_NONE,  EMAC_NONE, EMAC_NONE}},	/* ACCEPT UNTAGGED and PRIO */
-	{{EMAC_NONE,  0xffff0020, EMAC_NONE, EMAC_NONE}},	/* TAS Trigger List change */
-	{{EMAC_NONE,  0xdfff1000, EMAC_NONE, EMAC_NONE}},	/* TAS set state ENABLE*/
-	{{EMAC_NONE,  0xefff2000, EMAC_NONE, EMAC_NONE}},	/* TAS set state RESET*/
-	{{EMAC_NONE,  0xcfff0000, EMAC_NONE, EMAC_NONE}},	/* TAS set state DISABLE*/
-	{{EMAC_NONE,  EMAC_NONE,  0xffff0400, EMAC_NONE}},	/* UC flooding ENABLE*/
-	{{EMAC_NONE,  EMAC_NONE,  0xfbff0000, EMAC_NONE}},	/* UC flooding DISABLE*/
-	{{EMAC_NONE,  EMAC_NONE,  0xffff0800, EMAC_NONE}},	/* MC flooding ENABLE*/
-	{{EMAC_NONE,  EMAC_NONE,  0xf7ff0000, EMAC_NONE}},	/* MC flooding DISABLE*/
-	{{EMAC_NONE,  0xffff4000, EMAC_NONE, EMAC_NONE}},	/* Preemption on Tx ENABLE*/
-	{{EMAC_NONE,  0xbfff0000, EMAC_NONE, EMAC_NONE}},	/* Preemption on Tx DISABLE*/
-	{{0xffff0010,  EMAC_NONE, 0xffff0010, EMAC_NONE}},	/* VLAN AWARE*/
-	{{0xffef0000,  EMAC_NONE, 0xffef0000, EMAC_NONE}}	/* VLAN UNWARE*/
+	{{0xffff0004, 0xffff0100, 0xffff0004, EMAC_NONE}},	 
+	{{0xfffb0040, 0xfeff0200, 0xfeff0200, EMAC_NONE}},	 
+	{{0xffbb0000, 0xfcff0000, 0xdcfb0000, EMAC_NONE}},	 
+	{{0xffbb0000, 0xfcff0000, 0xfcff2000, EMAC_NONE}},	 
+	{{0xffff0001, EMAC_NONE,  EMAC_NONE, EMAC_NONE}},	 
+	{{0xfffe0002, EMAC_NONE,  EMAC_NONE, EMAC_NONE}},	 
+	{{0xfffc0000, EMAC_NONE,  EMAC_NONE, EMAC_NONE}},	 
+	{{EMAC_NONE,  0xffff0020, EMAC_NONE, EMAC_NONE}},	 
+	{{EMAC_NONE,  0xdfff1000, EMAC_NONE, EMAC_NONE}},	 
+	{{EMAC_NONE,  0xefff2000, EMAC_NONE, EMAC_NONE}},	 
+	{{EMAC_NONE,  0xcfff0000, EMAC_NONE, EMAC_NONE}},	 
+	{{EMAC_NONE,  EMAC_NONE,  0xffff0400, EMAC_NONE}},	 
+	{{EMAC_NONE,  EMAC_NONE,  0xfbff0000, EMAC_NONE}},	 
+	{{EMAC_NONE,  EMAC_NONE,  0xffff0800, EMAC_NONE}},	 
+	{{EMAC_NONE,  EMAC_NONE,  0xf7ff0000, EMAC_NONE}},	 
+	{{EMAC_NONE,  0xffff4000, EMAC_NONE, EMAC_NONE}},	 
+	{{EMAC_NONE,  0xbfff0000, EMAC_NONE, EMAC_NONE}},	 
+	{{0xffff0010,  EMAC_NONE, 0xffff0010, EMAC_NONE}},	 
+	{{0xffef0000,  EMAC_NONE, 0xffef0000, EMAC_NONE}}	 
 };
 
 int emac_set_port_state(struct prueth_emac *emac,
@@ -415,13 +397,13 @@ int emac_set_port_state(struct prueth_emac *emac,
 		return -EINVAL;
 	}
 
-	/* only one command at a time allowed to firmware */
+	 
 	mutex_lock(&emac->cmd_lock);
 
 	for (i = 0; i < 4; i++)
 		writel(emac_r32_bitmask[cmd].cmd[i], &p->cmd[i]);
 
-	/* wait for done */
+	 
 	ret = read_poll_timeout(emac_r30_is_done, done, done == 1,
 				1000, 10000, false, emac);
 
@@ -448,7 +430,7 @@ void icssg_config_set_speed(struct prueth_emac *emac)
 		fw_speed = FW_LINK_SPEED_10M;
 		break;
 	default:
-		/* Other links speeds not supported */
+		 
 		netdev_err(emac->ndev, "Unsupported link speed\n");
 		return;
 	}

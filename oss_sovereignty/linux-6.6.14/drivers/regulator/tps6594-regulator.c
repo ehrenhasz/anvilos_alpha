@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Regulator driver for tps6594 PMIC
-//
-// Copyright (C) 2023 BayLibre Incorporated - https://www.baylibre.com/
+
+
+
+
+
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -24,14 +24,14 @@
 #define REGS_INT_NB	4
 
 enum tps6594_regulator_id {
-	/* DCDC's */
+	 
 	TPS6594_BUCK_1,
 	TPS6594_BUCK_2,
 	TPS6594_BUCK_3,
 	TPS6594_BUCK_4,
 	TPS6594_BUCK_5,
 
-	/* LDOs */
+	 
 	TPS6594_LDO_1,
 	TPS6594_LDO_2,
 	TPS6594_LDO_3,
@@ -39,7 +39,7 @@ enum tps6594_regulator_id {
 };
 
 enum tps6594_multi_regulator_id {
-	/* Multi-phase DCDC's */
+	 
 	TPS6594_BUCK_12,
 	TPS6594_BUCK_34,
 	TPS6594_BUCK_123,
@@ -122,7 +122,7 @@ static const struct linear_range ldos_4_ranges[] = {
 	REGULATOR_LINEAR_RANGE(1200000, 0x20, 0x74, 25000),
 };
 
-/* Operations permitted on BUCK1/2/3/4/5 */
+ 
 static const struct regulator_ops tps6594_bucks_ops = {
 	.is_enabled		= regulator_is_enabled_regmap,
 	.enable			= regulator_enable_regmap,
@@ -135,7 +135,7 @@ static const struct regulator_ops tps6594_bucks_ops = {
 
 };
 
-/* Operations permitted on LDO1/2/3 */
+ 
 static const struct regulator_ops tps6594_ldos_1_2_3_ops = {
 	.is_enabled		= regulator_is_enabled_regmap,
 	.enable			= regulator_enable_regmap,
@@ -148,7 +148,7 @@ static const struct regulator_ops tps6594_ldos_1_2_3_ops = {
 	.get_bypass		= regulator_get_bypass_regmap,
 };
 
-/* Operations permitted on LDO4 */
+ 
 static const struct regulator_ops tps6594_ldos_4_ops = {
 	.is_enabled		= regulator_is_enabled_regmap,
 	.enable			= regulator_enable_regmap,
@@ -351,7 +351,7 @@ static irqreturn_t tps6594_regulator_irq_handler(int irq, void *data)
 	struct tps6594_regulator_irq_data *irq_data = data;
 
 	if (irq_data->type->event_name[0] == '\0') {
-		/* This is the timeout interrupt no specific regulator */
+		 
 		dev_err(irq_data->dev,
 			"System was put in shutdown due to timeout during an active or standby transition.\n");
 		return IRQ_HANDLED;
@@ -434,14 +434,7 @@ static int tps6594_regulator_probe(struct platform_device *pdev)
 	config.driver_data = tps;
 	config.regmap = tps->regmap;
 
-	/*
-	 * Switch case defines different possible multi phase config
-	 * This is based on dts buck node name.
-	 * Buck node name must be chosen accordingly.
-	 * Default case is no Multiphase buck.
-	 * In case of Multiphase configuration, value should be defined for
-	 * buck_configured to avoid creating bucks for every buck in multiphase
-	 */
+	 
 	for (multi = MULTI_FIRST; multi < MULTI_NUM; multi++) {
 		np = of_find_node_by_name(tps->dev->of_node, multiphases[multi]);
 		npname = of_node_full_name(np);
@@ -456,7 +449,7 @@ static int tps6594_regulator_probe(struct platform_device *pdev)
 				buck_configured[0] = 1;
 				buck_configured[1] = 1;
 				break;
-			/* multiphase buck34 is supported only with buck12 */
+			 
 			case MULTI_BUCK12_34:
 				buck_multi[0] = 1;
 				buck_multi[1] = 1;
@@ -483,7 +476,7 @@ static int tps6594_regulator_probe(struct platform_device *pdev)
 	}
 
 	if (tps->chip_id == LP8764) {
-		/* There is only 4 buck on LP8764 */
+		 
 		buck_configured[4] = 1;
 		reg_irq_nb = size_mul(REGS_INT_NB, (BUCK_NB - 1));
 	} else {
@@ -505,7 +498,7 @@ static int tps6594_regulator_probe(struct platform_device *pdev)
 					     "failed to register %s regulator\n",
 					     pdev->name);
 
-		/* config multiphase buck12+buck34 */
+		 
 		if (i == 1)
 			buck_idx = 2;
 		error = tps6594_request_reg_irqs(pdev, rdev, irq_data,
@@ -549,7 +542,7 @@ static int tps6594_regulator_probe(struct platform_device *pdev)
 			return error;
 	}
 
-	/* LP8764 dosen't have LDO */
+	 
 	if (tps->chip_id != LP8764) {
 		for (i = 0; i < ARRAY_SIZE(ldo_regs); i++) {
 			rdev = devm_regulator_register(&pdev->dev, &ldo_regs[i], &config);

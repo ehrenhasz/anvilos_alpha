@@ -1,20 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * HCTR2 length-preserving encryption mode
- *
- * Copyright 2021 Google LLC
- */
+
+ 
 
 
-/*
- * HCTR2 is a length-preserving encryption mode that is efficient on
- * processors with instructions to accelerate AES and carryless
- * multiplication, e.g. x86 processors with AES-NI and CLMUL, and ARM
- * processors with the ARMv8 crypto extensions.
- *
- * For more details, see the paper: "Length-preserving encryption with HCTR2"
- * (https://eprint.iacr.org/2021/1441.pdf)
- */
+ 
 
 #include <crypto/internal/cipher.h>
 #include <crypto/internal/hash.h>
@@ -25,13 +13,7 @@
 
 #define BLOCKCIPHER_BLOCK_SIZE		16
 
-/*
- * The specification allows variable-length tweaks, but Linux's crypto API
- * currently only allows algorithms to support a single length.  The "natural"
- * tweak length for HCTR2 is 16, since that fits into one POLYVAL block for
- * the best performance.  But longer tweaks are useful for fscrypt, to avoid
- * needing to derive per-file keys.  So instead we use two blocks, or 32 bytes.
- */
+ 
 #define TWEAK_SIZE		32
 
 struct hctr2_instance_ctx {
@@ -46,14 +28,7 @@ struct hctr2_tfm_ctx {
 	struct crypto_shash *polyval;
 	u8 L[BLOCKCIPHER_BLOCK_SIZE];
 	int hashed_tweak_offset;
-	/*
-	 * This struct is allocated with extra space for two exported hash
-	 * states.  Since the hash state size is not known at compile-time, we
-	 * can't add these to the struct directly.
-	 *
-	 * hashed_tweaklen_divisible;
-	 * hashed_tweaklen_remainder;
-	 */
+	 
 };
 
 struct hctr2_request_ctx {
@@ -63,21 +38,12 @@ struct hctr2_request_ctx {
 	struct scatterlist *bulk_part_src;
 	struct scatterlist sg_src[2];
 	struct scatterlist sg_dst[2];
-	/*
-	 * Sub-request sizes are unknown at compile-time, so they need to go
-	 * after the members with known sizes.
-	 */
+	 
 	union {
 		struct shash_desc hash_desc;
 		struct skcipher_request xctr_req;
 	} u;
-	/*
-	 * This struct is allocated with extra space for one exported hash
-	 * state.  Since the hash state size is not known at compile-time, we
-	 * can't add it to the struct directly.
-	 *
-	 * hashed_tweak;
-	 */
+	 
 };
 
 static inline u8 *hctr2_hashed_tweaklen(const struct hctr2_tfm_ctx *tctx,
@@ -85,7 +51,7 @@ static inline u8 *hctr2_hashed_tweaklen(const struct hctr2_tfm_ctx *tctx,
 {
 	u8 *p = (u8 *)tctx + sizeof(*tctx);
 
-	if (has_remainder) /* For messages not a multiple of block length */
+	if (has_remainder)  
 		p += crypto_shash_statesize(tctx->polyval);
 	return p;
 }
@@ -96,16 +62,7 @@ static inline u8 *hctr2_hashed_tweak(const struct hctr2_tfm_ctx *tctx,
 	return (u8 *)rctx + tctx->hashed_tweak_offset;
 }
 
-/*
- * The input data for each HCTR2 hash step begins with a 16-byte block that
- * contains the tweak length and a flag that indicates whether the input is evenly
- * divisible into blocks.  Since this implementation only supports one tweak
- * length, we precompute the two hash states resulting from hashing the two
- * possible values of this initial block.  This reduces by one block the amount of
- * data that needs to be hashed for each encryption/decryption
- *
- * These precomputed hashes are stored in hctr2_tfm_ctx.
- */
+ 
 static int hctr2_hash_tweaklen(struct hctr2_tfm_ctx *tctx, bool has_remainder)
 {
 	SHASH_DESC_ON_STACK(shash, tfm->polyval);
@@ -184,8 +141,8 @@ static int hctr2_hash_tweak(struct skcipher_request *req)
 	if (err)
 		return err;
 
-	// Store the hashed tweak, since we need it when computing both
-	// H(T || N) and H(T || V).
+	 
+	 
 	return crypto_shash_export(hash_desc, hctr2_hashed_tweak(tctx, rctx));
 }
 
@@ -235,8 +192,8 @@ static int hctr2_finish(struct skcipher_request *req)
 	struct shash_desc *hash_desc = &rctx->u.hash_desc;
 	int err;
 
-	// U = UU ^ H(T || V)
-	// or M = MM ^ H(T || N)
+	 
+	 
 	hash_desc->tfm = tctx->polyval;
 	err = crypto_shash_import(hash_desc, hctr2_hashed_tweak(tctx, rctx));
 	if (err)
@@ -246,7 +203,7 @@ static int hctr2_finish(struct skcipher_request *req)
 		return err;
 	crypto_xor(rctx->first_block, digest, BLOCKCIPHER_BLOCK_SIZE);
 
-	// Copy U (or M) into dst scatterlist
+	 
 	scatterwalk_map_and_copy(rctx->first_block, req->dst,
 				 0, BLOCKCIPHER_BLOCK_SIZE, 1);
 	return 0;
@@ -271,22 +228,22 @@ static int hctr2_crypt(struct skcipher_request *req, bool enc)
 	int bulk_len = req->cryptlen - BLOCKCIPHER_BLOCK_SIZE;
 	int err;
 
-	// Requests must be at least one block
+	 
 	if (req->cryptlen < BLOCKCIPHER_BLOCK_SIZE)
 		return -EINVAL;
 
-	// Copy M (or U) into a temporary buffer
+	 
 	scatterwalk_map_and_copy(rctx->first_block, req->src,
 				 0, BLOCKCIPHER_BLOCK_SIZE, 0);
 
-	// Create scatterlists for N and V
+	 
 	rctx->bulk_part_src = scatterwalk_ffwd(rctx->sg_src, req->src,
 					       BLOCKCIPHER_BLOCK_SIZE);
 	rctx->bulk_part_dst = scatterwalk_ffwd(rctx->sg_dst, req->dst,
 					       BLOCKCIPHER_BLOCK_SIZE);
 
-	// MM = M ^ H(T || N)
-	// or UU = U ^ H(T || V)
+	 
+	 
 	err = hctr2_hash_tweak(req);
 	if (err)
 		return err;
@@ -295,8 +252,8 @@ static int hctr2_crypt(struct skcipher_request *req, bool enc)
 		return err;
 	crypto_xor(digest, rctx->first_block, BLOCKCIPHER_BLOCK_SIZE);
 
-	// UU = E(MM)
-	// or MM = D(UU)
+	 
+	 
 	if (enc)
 		crypto_cipher_encrypt_one(tctx->blockcipher, rctx->first_block,
 					  digest);
@@ -304,12 +261,12 @@ static int hctr2_crypt(struct skcipher_request *req, bool enc)
 		crypto_cipher_decrypt_one(tctx->blockcipher, rctx->first_block,
 					  digest);
 
-	// S = MM ^ UU ^ L
+	 
 	crypto_xor(digest, rctx->first_block, BLOCKCIPHER_BLOCK_SIZE);
 	crypto_xor_cpy(rctx->xctr_iv, digest, tctx->L, BLOCKCIPHER_BLOCK_SIZE);
 
-	// V = XCTR(S, N)
-	// or N = XCTR(S, V)
+	 
+	 
 	skcipher_request_set_tfm(&rctx->u.xctr_req, tctx->xctr);
 	skcipher_request_set_crypt(&rctx->u.xctr_req, rctx->bulk_part_src,
 				   rctx->bulk_part_dst, bulk_len,
@@ -425,7 +382,7 @@ static int hctr2_create_common(struct crypto_template *tmpl,
 		return -ENOMEM;
 	ictx = skcipher_instance_ctx(inst);
 
-	/* Stream cipher, xctr(block_cipher) */
+	 
 	err = crypto_grab_skcipher(&ictx->xctr_spawn,
 				   skcipher_crypto_instance(inst),
 				   xctr_name, 0, mask);
@@ -444,7 +401,7 @@ static int hctr2_create_common(struct crypto_template *tmpl,
 		goto err_free_inst;
 	blockcipher_name[len - 1] = 0;
 
-	/* Block cipher, e.g. "aes" */
+	 
 	err = crypto_grab_cipher(&ictx->blockcipher_spawn,
 				 skcipher_crypto_instance(inst),
 				 blockcipher_name, 0, mask);
@@ -452,12 +409,12 @@ static int hctr2_create_common(struct crypto_template *tmpl,
 		goto err_free_inst;
 	blockcipher_alg = crypto_spawn_cipher_alg(&ictx->blockcipher_spawn);
 
-	/* Require blocksize of 16 bytes */
+	 
 	err = -EINVAL;
 	if (blockcipher_alg->cra_blocksize != BLOCKCIPHER_BLOCK_SIZE)
 		goto err_free_inst;
 
-	/* Polyval ε-∆U hash function */
+	 
 	err = crypto_grab_shash(&ictx->polyval_spawn,
 				skcipher_crypto_instance(inst),
 				polyval_name, 0, mask);
@@ -465,12 +422,12 @@ static int hctr2_create_common(struct crypto_template *tmpl,
 		goto err_free_inst;
 	polyval_alg = crypto_spawn_shash_alg(&ictx->polyval_spawn);
 
-	/* Ensure Polyval is being used */
+	 
 	err = -EINVAL;
 	if (strcmp(polyval_alg->base.cra_name, "polyval") != 0)
 		goto err_free_inst;
 
-	/* Instance fields */
+	 
 
 	err = -ENAMETOOLONG;
 	if (snprintf(inst->alg.base.cra_name, CRYPTO_MAX_ALG_NAME, "hctr2(%s)",
@@ -487,10 +444,7 @@ static int hctr2_create_common(struct crypto_template *tmpl,
 				     polyval_alg->statesize * 2;
 	inst->alg.base.cra_alignmask = xctr_alg->base.cra_alignmask |
 				       polyval_alg->base.cra_alignmask;
-	/*
-	 * The hash function is called twice, so it is weighted higher than the
-	 * xctr and blockcipher.
-	 */
+	 
 	inst->alg.base.cra_priority = (2 * xctr_alg->base.cra_priority +
 				       4 * polyval_alg->base.cra_priority +
 				       blockcipher_alg->cra_priority) / 7;
@@ -548,12 +502,12 @@ static int hctr2_create(struct crypto_template *tmpl, struct rtattr **tb)
 
 static struct crypto_template hctr2_tmpls[] = {
 	{
-		/* hctr2_base(xctr_name, polyval_name) */
+		 
 		.name = "hctr2_base",
 		.create = hctr2_create_base,
 		.module = THIS_MODULE,
 	}, {
-		/* hctr2(blockcipher_name) */
+		 
 		.name = "hctr2",
 		.create = hctr2_create,
 		.module = THIS_MODULE,

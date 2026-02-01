@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * adt7x10.c - Part of lm_sensors, Linux kernel modules for hardware
- *	 monitoring
- * This driver handles the ADT7410 and compatible digital temperature sensors.
- * Hartmut Knaack <knaack.h@gmx.de> 2012-07-22
- * based on lm75.c by Frodo Looijaard <frodol@dds.nl>
- * and adt7410.c from iio-staging by Sonic Zhang <sonic.zhang@analog.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -22,17 +15,13 @@
 
 #include "adt7x10.h"
 
-/*
- * ADT7X10 status
- */
+ 
 #define ADT7X10_STAT_T_LOW		(1 << 4)
 #define ADT7X10_STAT_T_HIGH		(1 << 5)
 #define ADT7X10_STAT_T_CRIT		(1 << 6)
 #define ADT7X10_STAT_NOT_RDY		(1 << 7)
 
-/*
- * ADT7X10 config
- */
+ 
 #define ADT7X10_FAULT_QUEUE_MASK	(1 << 0 | 1 << 1)
 #define ADT7X10_CT_POLARITY		(1 << 2)
 #define ADT7X10_INT_POLARITY		(1 << 3)
@@ -42,23 +31,21 @@
 #define ADT7X10_PD			(1 << 5 | 1 << 6)
 #define ADT7X10_RESOLUTION		(1 << 7)
 
-/*
- * ADT7X10 masks
- */
+ 
 #define ADT7X10_T13_VALUE_MASK		0xFFF8
 #define ADT7X10_T_HYST_MASK		0xF
 
-/* straight from the datasheet */
+ 
 #define ADT7X10_TEMP_MIN (-55000)
 #define ADT7X10_TEMP_MAX 150000
 
-/* Each client has this additional data */
+ 
 struct adt7x10_data {
 	struct regmap		*regmap;
 	struct mutex		update_lock;
 	u8			config;
 	u8			oldconfig;
-	bool			valid;		/* true if temperature valid */
+	bool			valid;		 
 };
 
 enum {
@@ -69,10 +56,10 @@ enum {
 };
 
 static const u8 ADT7X10_REG_TEMP[] = {
-	[adt7x10_temperature] = ADT7X10_TEMPERATURE,		/* input */
-	[adt7x10_t_alarm_high] = ADT7X10_T_ALARM_HIGH,		/* high */
-	[adt7x10_t_alarm_low] = ADT7X10_T_ALARM_LOW,		/* low */
-	[adt7x10_t_crit] = ADT7X10_T_CRIT,			/* critical */
+	[adt7x10_temperature] = ADT7X10_TEMPERATURE,		 
+	[adt7x10_t_alarm_high] = ADT7X10_T_ALARM_HIGH,		 
+	[adt7x10_t_alarm_low] = ADT7X10_T_ALARM_LOW,		 
+	[adt7x10_t_crit] = ADT7X10_T_CRIT,			 
 };
 
 static irqreturn_t adt7x10_irq_handler(int irq, void *private)
@@ -120,17 +107,14 @@ static s16 ADT7X10_TEMP_TO_REG(long temp)
 
 static int ADT7X10_REG_TO_TEMP(struct adt7x10_data *data, s16 reg)
 {
-	/* in 13 bit mode, bits 0-2 are status flags - mask them out */
+	 
 	if (!(data->config & ADT7X10_RESOLUTION))
 		reg &= ADT7X10_T13_VALUE_MASK;
-	/*
-	 * temperature is stored in twos complement format, in steps of
-	 * 1/128°C
-	 */
+	 
 	return DIV_ROUND_CLOSEST(reg * 1000, 128);
 }
 
-/*-----------------------------------------------------------------------*/
+ 
 
 static int adt7x10_temp_read(struct adt7x10_data *data, int index, long *val)
 {
@@ -139,7 +123,7 @@ static int adt7x10_temp_read(struct adt7x10_data *data, int index, long *val)
 
 	mutex_lock(&data->update_lock);
 	if (index == adt7x10_temperature && !data->valid) {
-		/* wait for valid temperature */
+		 
 		ret = adt7x10_temp_ready(data->regmap);
 		if (ret) {
 			mutex_unlock(&data->update_lock);
@@ -186,11 +170,8 @@ static int adt7x10_hyst_read(struct adt7x10_data *data, int index, long *val)
 
 	hyst = (hyst & ADT7X10_T_HYST_MASK) * 1000;
 
-	/*
-	 * hysteresis is stored as a 4 bit offset in the device, convert it
-	 * to an absolute value
-	 */
-	/* min has positive offset, others have negative */
+	 
+	 
 	if (index == adt7x10_t_alarm_low)
 		hyst = -hyst;
 
@@ -205,7 +186,7 @@ static int adt7x10_hyst_write(struct adt7x10_data *data, long hyst)
 
 	mutex_lock(&data->update_lock);
 
-	/* convert absolute hysteresis value to a 4 bit delta value */
+	 
 	ret = regmap_read(data->regmap, ADT7X10_T_ALARM_HIGH, &regval);
 	if (ret < 0)
 		goto abort;
@@ -352,7 +333,7 @@ int adt7x10_probe(struct device *dev, const char *name, int irq,
 	dev_set_drvdata(dev, data);
 	mutex_init(&data->update_lock);
 
-	/* configure as specified */
+	 
 	ret = regmap_read(regmap, ADT7X10_CONFIG, &config);
 	if (ret < 0) {
 		dev_dbg(dev, "Can't read config? %d\n", ret);
@@ -360,9 +341,7 @@ int adt7x10_probe(struct device *dev, const char *name, int irq,
 	}
 	data->oldconfig = config;
 
-	/*
-	 * Set to 16 bit resolution, continous conversion and comparator mode.
-	 */
+	 
 	data->config = data->oldconfig;
 	data->config &= ~(ADT7X10_MODE_MASK | ADT7X10_CT_POLARITY |
 			ADT7X10_INT_POLARITY);

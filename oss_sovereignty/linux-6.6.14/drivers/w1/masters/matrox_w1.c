@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	matrox_w1.c
- *
- * Copyright (c) 2004 Evgeniy Polyakov <zbr@ioremap.net>
- */
+
+ 
 
 #include <asm/types.h>
 #include <linux/atomic.h>
@@ -22,9 +18,7 @@
 
 #include <linux/w1.h>
 
-/*
- * Matrox G400 DDC registers.
- */
+ 
 
 #define MATROX_G400_DDC_CLK		(1<<4)
 #define MATROX_G400_DDC_DATA		(1<<1)
@@ -52,17 +46,7 @@ struct matrox_device {
 	struct w1_bus_master *bus_master;
 };
 
-/*
- * These functions read and write DDC Data bit.
- *
- * Using tristate pins, since i can't find any open-drain pin in whole motherboard.
- * Unfortunately we can't connect to Intel's 82801xx IO controller
- * since we don't know motherboard schema, which has pretty unused(may be not) GPIO.
- *
- * I've heard that PIIX also has open drain pin.
- *
- * Port mapping.
- */
+ 
 static inline u8 matrox_w1_read_reg(struct matrox_device *dev, u8 reg)
 {
 	u8 ret;
@@ -127,9 +111,7 @@ static int matrox_w1_probe(struct pci_dev *pdev, const struct pci_device_id *ent
 
 	dev->bus_master = (struct w1_bus_master *)(dev + 1);
 
-	/*
-	 * True for G400, for some other we need resource 0, see drivers/video/matrox/matroxfb_base.c
-	 */
+	 
 
 	dev->phys_addr = pci_resource_start(pdev, 1);
 

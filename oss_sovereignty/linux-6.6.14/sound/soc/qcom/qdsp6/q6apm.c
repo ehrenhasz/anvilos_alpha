@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020, Linaro Limited
+
+
 
 #include <dt-bindings/soc/qcom,gpr.h>
 #include <linux/delay.h>
@@ -18,7 +18,7 @@
 #include "audioreach.h"
 #include "q6apm.h"
 
-/* Graph Management */
+ 
 struct apm_graph_mgmt_cmd {
 	struct apm_module_param_data param_data;
 	uint32_t num_sub_graphs;
@@ -706,7 +706,7 @@ static int q6apm_audio_probe(struct snd_soc_component *component)
 
 static void q6apm_audio_remove(struct snd_soc_component *component)
 {
-	/* remove topology */
+	 
 	snd_soc_tplg_component_remove(component);
 }
 
@@ -779,7 +779,7 @@ static int apm_callback(struct gpr_resp_pkt *data, void *priv, int op)
 	case APM_CMD_RSP_GET_SPF_STATE:
 		apm->result.opcode = hdr->opcode;
 		apm->result.status = 0;
-		/* First word of result it state */
+		 
 		apm->state = result->opcode;
 		wake_up(&apm->wait);
 		break;

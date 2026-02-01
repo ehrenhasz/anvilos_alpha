@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 Intel Corporation
- *
- * Driver for UPISEMI us5182d Proximity and Ambient Light Sensor.
- *
- * To do: Interrupt support.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -42,18 +36,13 @@
 
 #define US5182D_REG_CFG4				0x10
 
-/*
- * Registers for tuning the auto dark current cancelling feature.
- * DARK_TH(reg 0x27,0x28) - threshold (counts) for auto dark cancelling.
- * when ALS  > DARK_TH --> ALS_Code = ALS - Upper(0x2A) * Dark
- * when ALS < DARK_TH --> ALS_Code = ALS - Lower(0x29) * Dark
- */
+ 
 #define US5182D_REG_UDARK_TH			0x27
 #define US5182D_REG_DARK_AUTO_EN		0x2b
 #define US5182D_REG_AUTO_LDARK_GAIN		0x29
 #define US5182D_REG_AUTO_HDARK_GAIN		0x2a
 
-/* Thresholds for events: px low (0x08-l, 0x09-h), px high (0x0a-l 0x0b-h) */
+ 
 #define US5182D_REG_PXL_TH			0x08
 #define US5182D_REG_PXH_TH			0x0a
 
@@ -87,19 +76,16 @@
 
 #define US5182D_READ_BYTE			1
 #define US5182D_READ_WORD			2
-#define US5182D_OPSTORE_SLEEP_TIME		20 /* ms */
-#define US5182D_SLEEP_MS			3000 /* ms */
+#define US5182D_OPSTORE_SLEEP_TIME		20  
+#define US5182D_SLEEP_MS			3000  
 #define US5182D_PXH_TH_DISABLE			0xffff
 #define US5182D_PXL_TH_DISABLE			0x0000
 
-/* Available ranges: [12354, 7065, 3998, 2202, 1285, 498, 256, 138] lux */
+ 
 static const int us5182d_scales[] = {188500, 107800, 61000, 33600, 19600, 7600,
 				     3900, 2100};
 
-/*
- * Experimental thresholds that work with US5182D sensor on evaluation board
- * roughly between 12-32 lux
- */
+ 
 static u16 us5182d_dark_ths_vals[] = {170, 200, 512, 512, 800, 2000, 4000,
 				      8000};
 
@@ -118,10 +104,10 @@ struct us5182d_data {
 	struct i2c_client *client;
 	struct mutex lock;
 
-	/* Glass attenuation factor */
+	 
 	u32 ga;
 
-	/* Dark gain tuning */
+	 
 	u8 lower_dark_gain;
 	u8 upper_dark_gain;
 	u16 *us5182d_dark_ths;
@@ -203,10 +189,7 @@ static int us5182d_oneshot_en(struct us5182d_data *data)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * In oneshot mode the chip will power itself down after taking the
-	 * required measurement.
-	 */
+	 
 	ret = ret | US5182D_CFG0_ONESHOT_EN;
 
 	return i2c_smbus_write_byte_data(data->client, US5182D_REG_CFG0, ret);
@@ -223,15 +206,11 @@ static int us5182d_set_opmode(struct us5182d_data *data, u8 mode)
 	if (ret < 0)
 		return ret;
 
-	/* update mode */
+	 
 	ret = ret & ~US5182D_OPMODE_MASK;
 	ret = ret | (mode << US5182D_OPMODE_SHIFT);
 
-	/*
-	 * After updating the operating mode, the chip requires that
-	 * the operation is stored, by writing 1 in the STORE_MODE
-	 * register (auto-clearing).
-	 */
+	 
 	ret = i2c_smbus_write_byte_data(data->client, US5182D_REG_CFG0, ret);
 	if (ret < 0)
 		return ret;
@@ -442,15 +421,7 @@ static int us5182d_read_raw(struct iio_dev *indio_dev,
 	}
 }
 
-/**
- * us5182d_update_dark_th - update Darh_Th registers
- * @data:	us5182d_data structure
- * @index:	index in us5182d_dark_ths array to use for the updated value
- *
- * Function needs to be called with a lock held because it needs two i2c write
- * byte operations as these registers (0x27 0x28) don't work in word mode
- * accessing.
- */
+ 
 static int us5182d_update_dark_th(struct us5182d_data *data, int index)
 {
 	__be16 dark_th = cpu_to_be16(data->us5182d_dark_ths[index]);
@@ -465,14 +436,7 @@ static int us5182d_update_dark_th(struct us5182d_data *data, int index)
 					((u8 *)&dark_th)[1]);
 }
 
-/**
- * us5182d_apply_scale - update the ALS scale
- * @data:	us5182d_data structure
- * @index:	index in us5182d_scales array to use for the updated value
- *
- * Function needs to be called with a lock held as we're having more than one
- * i2c operation.
- */
+ 
 static int us5182d_apply_scale(struct us5182d_data *data, int index)
 {
 	int ret;

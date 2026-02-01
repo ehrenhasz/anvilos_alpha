@@ -1,37 +1,19 @@
-/* gen-helpfiles - create files containing builtin help text */
+ 
 
-/* Copyright (C) 2012-2021 Free Software Foundation, Inc.
+ 
 
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-/* This links with a specially-generated version of builtins.c and takes
-   the long_doc members of each struct builtin element and writes those to
-   the file named by the `handle' member of the struct builtin element. */
+ 
 
 #if !defined (CROSS_COMPILING) 
 #  include <config.h>
-#else	/* CROSS_COMPILING */
-/* A conservative set of defines based on POSIX/SUS3/XPG6 */
+#else	 
+ 
 #  define HAVE_UNISTD_H
 #  define HAVE_STRING_H
 #  define HAVE_STDLIB_H
 
 #  define HAVE_RENAME
-#endif /* CROSS_COMPILING */
+#endif  
 
 #if defined (HAVE_UNISTD_H)
 #  ifdef _MINIX
@@ -65,7 +47,7 @@
 #undef xfree
 
 #undef malloc
-#undef free		/* defined in xmalloc.h */
+#undef free		 
 #endif
 
 #ifndef errno
@@ -74,36 +56,31 @@ extern int errno;
 
 #if !defined (__STDC__) && !defined (strcpy)
 extern char *strcpy ();
-#endif /* !__STDC__ && !strcpy */
+#endif  
 
 #define whitespace(c) (((c) == ' ') || ((c) == '\t'))
 
-/* Flag values that builtins can have. */
+ 
 #define BUILTIN_FLAG_SPECIAL	0x01
 #define BUILTIN_FLAG_ASSIGNMENT 0x02
 #define BUILTIN_FLAG_POSIX_BUILTIN 0x04
 
 #define BASE_INDENT	4
 
-/* Non-zero means to produce separate help files for each builtin, named by
-   the builtin name, in `./helpfiles'. */
+ 
 int separate_helpfiles = 0;
 
-/* Non-zero means to create single C strings for each `longdoc', with
-   embedded newlines, for ease of translation. */
+ 
 int single_longdoc_strings = 1;
 
-/* The name of a directory into which the separate external help files will
-   eventually be installed. */
+ 
 char *helpfile_directory;
 
-/* Forward declarations. */
+ 
 
 int write_helpfiles PARAMS((struct builtin *));
 
-/* For each file mentioned on the command line, process it and
-   write the information to STRUCTFILE and EXTERNFILE, while
-   creating the production file if necessary. */
+ 
 int
 main (argc, argv)
      int argc;
@@ -133,10 +110,7 @@ main (argc, argv)
   exit (0);
 }
 
-/* Write DOCUMENTATION to STREAM, perhaps surrounding it with double-quotes
-   and quoting special characters in the string.  Handle special things for
-   internationalization (gettext) and the single-string vs. multiple-strings
-   issues. */
+ 
 void
 write_documentation (stream, documentation, indentation)
      FILE *stream;

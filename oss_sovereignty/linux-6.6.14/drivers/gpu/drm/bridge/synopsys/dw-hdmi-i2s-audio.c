@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * dw-hdmi-i2s-audio.c
- *
- * Copyright (c) 2017 Renesas Solutions Corp.
- * Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/module.h>
@@ -44,20 +39,20 @@ static int dw_hdmi_i2s_hw_params(struct device *dev, void *data,
 	u8 conf1 = 0;
 	u8 inputclkfs = 0;
 
-	/* it cares I2S only */
+	 
 	if (fmt->bit_clk_provider | fmt->frame_clk_provider) {
 		dev_err(dev, "unsupported clock settings\n");
 		return -EINVAL;
 	}
 
-	/* Reset the FIFOs before applying new params */
+	 
 	hdmi_write(audio, HDMI_AUD_CONF0_SW_RESET, HDMI_AUD_CONF0);
 	hdmi_write(audio, (u8)~HDMI_MC_SWRSTZ_I2SSWRST_REQ, HDMI_MC_SWRSTZ);
 
 	inputclkfs	= HDMI_AUD_INPUTCLKFS_64FS;
 	conf0		= (HDMI_AUD_CONF0_I2S_SELECT | HDMI_AUD_CONF0_I2S_EN0);
 
-	/* Enable the required i2s lanes */
+	 
 	switch (hparms->channels) {
 	case 7 ... 8:
 		conf0 |= HDMI_AUD_CONF0_I2S_EN3;
@@ -67,7 +62,7 @@ static int dw_hdmi_i2s_hw_params(struct device *dev, void *data,
 		fallthrough;
 	case 3 ... 4:
 		conf0 |= HDMI_AUD_CONF0_I2S_EN1;
-		/* Fall-thru */
+		 
 	}
 
 	switch (hparms->sample_width) {
@@ -141,7 +136,7 @@ static int dw_hdmi_i2s_get_eld(struct device *dev, void *data, uint8_t *buf,
 	if (eld)
 		memcpy(buf, eld, min_t(size_t, MAX_ELD_BYTES, len));
 	else
-		/* Pass en empty ELD if connector not available */
+		 
 		memset(buf, 0, len);
 
 	return 0;
@@ -157,10 +152,7 @@ static int dw_hdmi_i2s_get_dai_id(struct snd_soc_component *component,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * HDMI sound should be located as reg = <2>
-	 * Then, it is sound port 0
-	 */
+	 
 	if (of_ep.port == 2)
 		return 0;
 

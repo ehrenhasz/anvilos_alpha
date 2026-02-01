@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * STM32 Timer Encoder and Counter driver
- *
- * Copyright (C) STMicroelectronics 2018
- *
- * Author: Benjamin Gaignard <benjamin.gaignard@st.com>
- *
- */
+
+ 
 #include <linux/counter.h>
 #include <linux/mfd/stm32-timers.h>
 #include <linux/mod_devicetable.h>
@@ -119,17 +112,17 @@ static int stm32_count_function_write(struct counter_device *counter,
 		return -EINVAL;
 	}
 
-	/* Store enable status */
+	 
 	regmap_read(priv->regmap, TIM_CR1, &cr1);
 
 	regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_CEN, 0);
 
 	regmap_update_bits(priv->regmap, TIM_SMCR, TIM_SMCR_SMS, sms);
 
-	/* Make sure that registers are updated */
+	 
 	regmap_update_bits(priv->regmap, TIM_EGR, TIM_EGR_UG, TIM_EGR_UG);
 
-	/* Restore the enable status */
+	 
 	regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_CEN, cr1);
 
 	return 0;
@@ -170,7 +163,7 @@ static int stm32_count_ceiling_write(struct counter_device *counter,
 	if (ceiling > priv->max_arr)
 		return -ERANGE;
 
-	/* TIMx_ARR register shouldn't be buffered (ARPE=0) */
+	 
 	regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_ARPE, 0);
 	regmap_write(priv->regmap, TIM_ARR, ceiling);
 
@@ -210,7 +203,7 @@ static int stm32_count_enable_write(struct counter_device *counter,
 			clk_disable(priv->clk);
 	}
 
-	/* Keep enabled state to properly handle low power states */
+	 
 	priv->enabled = enable;
 
 	return 0;
@@ -242,25 +235,25 @@ static int stm32_action_read(struct counter_device *counter,
 
 	switch (function) {
 	case COUNTER_FUNCTION_INCREASE:
-		/* counts on internal clock when CEN=1 */
+		 
 		*action = COUNTER_SYNAPSE_ACTION_NONE;
 		return 0;
 	case COUNTER_FUNCTION_QUADRATURE_X2_A:
-		/* counts up/down on TI1FP1 edge depending on TI2FP2 level */
+		 
 		if (synapse->signal->id == count->synapses[0].signal->id)
 			*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
 		else
 			*action = COUNTER_SYNAPSE_ACTION_NONE;
 		return 0;
 	case COUNTER_FUNCTION_QUADRATURE_X2_B:
-		/* counts up/down on TI2FP2 edge depending on TI1FP1 level */
+		 
 		if (synapse->signal->id == count->synapses[1].signal->id)
 			*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
 		else
 			*action = COUNTER_SYNAPSE_ACTION_NONE;
 		return 0;
 	case COUNTER_FUNCTION_QUADRATURE_X4:
-		/* counts up/down on both TI1FP1 and TI2FP2 edges */
+		 
 		*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
 		return 0;
 	default:
@@ -342,10 +335,10 @@ static int stm32_timer_cnt_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, priv);
 
-	/* Reset input selector to its default input */
+	 
 	regmap_write(priv->regmap, TIM_TISEL, 0x0);
 
-	/* Register Counter device */
+	 
 	ret = devm_counter_add(dev, counter);
 	if (ret < 0)
 		dev_err_probe(dev, ret, "Failed to add counter\n");
@@ -357,15 +350,15 @@ static int __maybe_unused stm32_timer_cnt_suspend(struct device *dev)
 {
 	struct stm32_timer_cnt *priv = dev_get_drvdata(dev);
 
-	/* Only take care of enabled counter: don't disturb other MFD child */
+	 
 	if (priv->enabled) {
-		/* Backup registers that may get lost in low power mode */
+		 
 		regmap_read(priv->regmap, TIM_SMCR, &priv->bak.smcr);
 		regmap_read(priv->regmap, TIM_ARR, &priv->bak.arr);
 		regmap_read(priv->regmap, TIM_CNT, &priv->bak.cnt);
 		regmap_read(priv->regmap, TIM_CR1, &priv->bak.cr1);
 
-		/* Disable the counter */
+		 
 		regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_CEN, 0);
 		clk_disable(priv->clk);
 	}
@@ -385,12 +378,12 @@ static int __maybe_unused stm32_timer_cnt_resume(struct device *dev)
 	if (priv->enabled) {
 		clk_enable(priv->clk);
 
-		/* Restore registers that may have been lost */
+		 
 		regmap_write(priv->regmap, TIM_SMCR, priv->bak.smcr);
 		regmap_write(priv->regmap, TIM_ARR, priv->bak.arr);
 		regmap_write(priv->regmap, TIM_CNT, priv->bak.cnt);
 
-		/* Also re-enables the counter */
+		 
 		regmap_write(priv->regmap, TIM_CR1, priv->bak.cr1);
 	}
 

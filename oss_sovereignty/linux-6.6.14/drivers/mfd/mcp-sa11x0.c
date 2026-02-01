@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/drivers/mfd/mcp-sa11x0.c
- *
- *  Copyright (C) 2001-2005 Russell King
- *
- *  SA11x0 MCP (Multimedia Communications Port) driver.
- *
- *  MCP read/write timeouts from Jordi Colomer, rehacked by rmk.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/io.h>
 #include <linux/errno.h>
@@ -31,7 +23,7 @@ struct mcp_sa11x0 {
 	u32		mccr1;
 };
 
-/* Register offsets */
+ 
 #define MCCR0(m)	((m)->base0 + 0x00)
 #define MCDR0(m)	((m)->base0 + 0x08)
 #define MCDR1(m)	((m)->base0 + 0x0c)
@@ -65,12 +57,7 @@ mcp_sa11x0_set_audio_divisor(struct mcp *mcp, unsigned int divisor)
 	writel_relaxed(m->mccr0, MCCR0(m));
 }
 
-/*
- * Write data to the device.  The bit should be set after 3 subframe
- * times (each frame is 64 clocks).  We wait a maximum of 6 subframes.
- * We really should try doing something more productive while we
- * wait.
- */
+ 
 static void
 mcp_sa11x0_write(struct mcp *mcp, unsigned int reg, unsigned int val)
 {
@@ -92,12 +79,7 @@ mcp_sa11x0_write(struct mcp *mcp, unsigned int reg, unsigned int val)
 		printk(KERN_WARNING "mcp: write timed out\n");
 }
 
-/*
- * Read data from the device.  The bit should be set after 3 subframe
- * times (each frame is 64 clocks).  We wait a maximum of 6 subframes.
- * We really should try doing something more productive while we
- * wait.
- */
+ 
 static unsigned int
 mcp_sa11x0_read(struct mcp *mcp, unsigned int reg)
 {
@@ -138,9 +120,7 @@ static void mcp_sa11x0_disable(struct mcp *mcp)
 	writel_relaxed(m->mccr0, MCCR0(m));
 }
 
-/*
- * Our methods.
- */
+ 
 static struct mcp_ops mcp_sa11x0 = {
 	.set_telecom_divisor	= mcp_sa11x0_set_telecom_divisor,
 	.set_audio_divisor	= mcp_sa11x0_set_audio_divisor,
@@ -201,19 +181,12 @@ static int mcp_sa11x0_probe(struct platform_device *dev)
 
 	platform_set_drvdata(dev, mcp);
 
-	/*
-	 * Initialise device.  Note that we initially
-	 * set the sampling rate to minimum.
-	 */
+	 
 	writel_relaxed(-1, MCSR(m));
 	writel_relaxed(m->mccr1, MCCR1(m));
 	writel_relaxed(m->mccr0, MCCR0(m));
 
-	/*
-	 * Calculate the read/write timeout (us) from the bit clock
-	 * rate.  This is the period for 3 64-bit frames.  Always
-	 * round this time up.
-	 */
+	 
 	mcp->rw_timeout = DIV_ROUND_UP(64 * 3 * 1000000, mcp->sclk_rate);
 
 	ret = mcp_host_add(mcp, data->codec_pdata);
@@ -295,9 +268,7 @@ static struct platform_driver mcp_sa11x0_driver = {
 	},
 };
 
-/*
- * This needs re-working
- */
+ 
 module_platform_driver(mcp_sa11x0_driver);
 
 MODULE_ALIAS("platform:" DRIVER_NAME);

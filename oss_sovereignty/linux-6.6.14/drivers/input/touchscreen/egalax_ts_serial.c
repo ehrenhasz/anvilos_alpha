@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * EETI Egalax serial touchscreen driver
- *
- * Copyright (c) 2015 Zoltán Böszörményi <zboszor@pr.hu>
- *
- * based on the
- *
- * Hampshire serial touchscreen driver (Copyright (c) 2010 Adam Bennett)
- */
+
+ 
 
 
 #include <linux/errno.h>
@@ -19,9 +11,7 @@
 
 #define DRIVER_DESC	"EETI Egalax serial touchscreen driver"
 
-/*
- * Definitions & global arrays.
- */
+ 
 
 #define EGALAX_FORMAT_MAX_LENGTH	6
 #define EGALAX_FORMAT_START_BIT		BIT(7)
@@ -34,9 +24,7 @@
 #define EGALAX_MIN_YC			0
 #define EGALAX_MAX_YC			0x4000
 
-/*
- * Per-touchscreen data.
- */
+ 
 struct egalax {
 	struct input_dev *input;
 	struct serio *serio;
@@ -88,11 +76,7 @@ static irqreturn_t egalax_interrupt(struct serio *serio,
 	return IRQ_HANDLED;
 }
 
-/*
- * egalax_connect() is the routine that is called when someone adds a
- * new serio device that supports egalax protocol and registers it as
- * an input device. This is usually accomplished using inputattach.
- */
+ 
 static int egalax_connect(struct serio *serio, struct serio_driver *drv)
 {
 	struct egalax *egalax;
@@ -157,9 +141,7 @@ static void egalax_disconnect(struct serio *serio)
 	kfree(egalax);
 }
 
-/*
- * The serio driver structure.
- */
+ 
 
 static const struct serio_device_id egalax_serio_ids[] = {
 	{

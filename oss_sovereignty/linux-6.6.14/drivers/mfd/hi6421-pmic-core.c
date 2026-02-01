@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Device driver for Hi6421 PMIC
- *
- * Copyright (c) <2011-2014> HiSilicon Technologies Co., Ltd.
- *              http://www.hisilicon.com
- * Copyright (c) <2013-2017> Linaro Ltd.
- *              https://www.linaro.org
- *
- * Author: Guodong Xu <guodong.xu@linaro.org>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -81,7 +72,7 @@ static int hi6421_pmic_probe(struct platform_device *pdev)
 
 	switch (type) {
 	case HI6421:
-		/* set over-current protection debounce 8ms */
+		 
 		regmap_update_bits(pmic->regmap, HI6421_OCP_DEB_CTRL_REG,
 				(HI6421_OCP_DEB_SEL_MASK
 				 | HI6421_OCP_EN_DEBOUNCE_MASK

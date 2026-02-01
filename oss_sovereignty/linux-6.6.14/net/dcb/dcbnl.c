@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2008-2011, Intel Corporation.
- *
- * Description: Data Center Bridging netlink interface
- * Author: Lucy Liu <lucy.liu@intel.com>
- */
+
+ 
 
 #include <linux/netdevice.h>
 #include <linux/netlink.h>
@@ -17,30 +12,11 @@
 #include <linux/init.h>
 #include <net/sock.h>
 
-/* Data Center Bridging (DCB) is a collection of Ethernet enhancements
- * intended to allow network traffic with differing requirements
- * (highly reliable, no drops vs. best effort vs. low latency) to operate
- * and co-exist on Ethernet.  Current DCB features are:
- *
- * Enhanced Transmission Selection (aka Priority Grouping [PG]) - provides a
- *   framework for assigning bandwidth guarantees to traffic classes.
- *
- * Priority-based Flow Control (PFC) - provides a flow control mechanism which
- *   can work independently for each 802.1p priority.
- *
- * Congestion Notification - provides a mechanism for end-to-end congestion
- *   control for protocols which do not have built-in congestion management.
- *
- * More information about the emerging standards for these Ethernet features
- * can be found at: http://www.ieee802.org/1/pages/dcbridges.html
- *
- * This file implements an rtnetlink interface to allow configuration of DCB
- * features for capable devices.
- */
+ 
 
-/**************** DCB attribute policies *************************************/
+ 
 
-/* DCB netlink attributes policy */
+ 
 static const struct nla_policy dcbnl_rtnl_policy[DCB_ATTR_MAX + 1] = {
 	[DCB_ATTR_IFNAME]      = {.type = NLA_NUL_STRING, .len = IFNAMSIZ - 1},
 	[DCB_ATTR_STATE]       = {.type = NLA_U8},
@@ -57,7 +33,7 @@ static const struct nla_policy dcbnl_rtnl_policy[DCB_ATTR_MAX + 1] = {
 	[DCB_ATTR_FEATCFG]     = {.type = NLA_NESTED},
 };
 
-/* DCB priority flow control to User Priority nested attributes */
+ 
 static const struct nla_policy dcbnl_pfc_up_nest[DCB_PFC_UP_ATTR_MAX + 1] = {
 	[DCB_PFC_UP_ATTR_0]   = {.type = NLA_U8},
 	[DCB_PFC_UP_ATTR_1]   = {.type = NLA_U8},
@@ -70,7 +46,7 @@ static const struct nla_policy dcbnl_pfc_up_nest[DCB_PFC_UP_ATTR_MAX + 1] = {
 	[DCB_PFC_UP_ATTR_ALL] = {.type = NLA_FLAG},
 };
 
-/* DCB priority grouping nested attributes */
+ 
 static const struct nla_policy dcbnl_pg_nest[DCB_PG_ATTR_MAX + 1] = {
 	[DCB_PG_ATTR_TC_0]      = {.type = NLA_NESTED},
 	[DCB_PG_ATTR_TC_1]      = {.type = NLA_NESTED},
@@ -92,7 +68,7 @@ static const struct nla_policy dcbnl_pg_nest[DCB_PG_ATTR_MAX + 1] = {
 	[DCB_PG_ATTR_BW_ID_ALL] = {.type = NLA_FLAG},
 };
 
-/* DCB traffic class nested attributes. */
+ 
 static const struct nla_policy dcbnl_tc_param_nest[DCB_TC_ATTR_PARAM_MAX + 1] = {
 	[DCB_TC_ATTR_PARAM_PGID]            = {.type = NLA_U8},
 	[DCB_TC_ATTR_PARAM_UP_MAPPING]      = {.type = NLA_U8},
@@ -101,7 +77,7 @@ static const struct nla_policy dcbnl_tc_param_nest[DCB_TC_ATTR_PARAM_MAX + 1] = 
 	[DCB_TC_ATTR_PARAM_ALL]             = {.type = NLA_FLAG},
 };
 
-/* DCB capabilities nested attributes. */
+ 
 static const struct nla_policy dcbnl_cap_nest[DCB_CAP_ATTR_MAX + 1] = {
 	[DCB_CAP_ATTR_ALL]     = {.type = NLA_FLAG},
 	[DCB_CAP_ATTR_PG]      = {.type = NLA_U8},
@@ -114,14 +90,14 @@ static const struct nla_policy dcbnl_cap_nest[DCB_CAP_ATTR_MAX + 1] = {
 	[DCB_CAP_ATTR_DCBX]    = {.type = NLA_U8},
 };
 
-/* DCB capabilities nested attributes. */
+ 
 static const struct nla_policy dcbnl_numtcs_nest[DCB_NUMTCS_ATTR_MAX + 1] = {
 	[DCB_NUMTCS_ATTR_ALL]     = {.type = NLA_FLAG},
 	[DCB_NUMTCS_ATTR_PG]      = {.type = NLA_U8},
 	[DCB_NUMTCS_ATTR_PFC]     = {.type = NLA_U8},
 };
 
-/* DCB BCN nested attributes. */
+ 
 static const struct nla_policy dcbnl_bcn_nest[DCB_BCN_ATTR_MAX + 1] = {
 	[DCB_BCN_ATTR_RP_0]         = {.type = NLA_U8},
 	[DCB_BCN_ATTR_RP_1]         = {.type = NLA_U8},
@@ -150,14 +126,14 @@ static const struct nla_policy dcbnl_bcn_nest[DCB_BCN_ATTR_MAX + 1] = {
 	[DCB_BCN_ATTR_ALL]          = {.type = NLA_FLAG},
 };
 
-/* DCB APP nested attributes. */
+ 
 static const struct nla_policy dcbnl_app_nest[DCB_APP_ATTR_MAX + 1] = {
 	[DCB_APP_ATTR_IDTYPE]       = {.type = NLA_U8},
 	[DCB_APP_ATTR_ID]           = {.type = NLA_U16},
 	[DCB_APP_ATTR_PRIORITY]     = {.type = NLA_U8},
 };
 
-/* IEEE 802.1Qaz nested attributes. */
+ 
 static const struct nla_policy dcbnl_ieee_policy[DCB_ATTR_IEEE_MAX + 1] = {
 	[DCB_ATTR_IEEE_ETS]	    = {.len = sizeof(struct ieee_ets)},
 	[DCB_ATTR_IEEE_PFC]	    = {.len = sizeof(struct ieee_pfc)},
@@ -169,7 +145,7 @@ static const struct nla_policy dcbnl_ieee_policy[DCB_ATTR_IEEE_MAX + 1] = {
 	[DCB_ATTR_DCB_APP_TRUST_TABLE] = {.type = NLA_NESTED},
 };
 
-/* DCB number of traffic classes nested attributes. */
+ 
 static const struct nla_policy dcbnl_featcfg_nest[DCB_FEATCFG_ATTR_MAX + 1] = {
 	[DCB_FEATCFG_ATTR_ALL]      = {.type = NLA_FLAG},
 	[DCB_FEATCFG_ATTR_PG]       = {.type = NLA_U8},
@@ -241,7 +217,7 @@ static struct sk_buff *dcbnl_newmsg(int type, u8 cmd, u32 port, u32 seq,
 static int dcbnl_getstate(struct net_device *netdev, struct nlmsghdr *nlh,
 			  u32 seq, struct nlattr **tb, struct sk_buff *skb)
 {
-	/* if (!tb[DCB_ATTR_STATE] || !netdev->dcbnl_ops->getstate) */
+	 
 	if (!netdev->dcbnl_ops->getstate)
 		return -EOPNOTSUPP;
 
@@ -480,12 +456,12 @@ static int dcbnl_getapp(struct net_device *netdev, struct nlmsghdr *nlh,
 	if (ret)
 		return ret;
 
-	/* all must be non-null */
+	 
 	if ((!app_tb[DCB_APP_ATTR_IDTYPE]) ||
 	    (!app_tb[DCB_APP_ATTR_ID]))
 		return -EINVAL;
 
-	/* either by eth type or by socket number */
+	 
 	idtype = nla_get_u8(app_tb[DCB_APP_ATTR_IDTYPE]);
 	if ((idtype != DCB_APP_IDTYPE_ETHTYPE) &&
 	    (idtype != DCB_APP_IDTYPE_PORTNUM))
@@ -549,13 +525,13 @@ static int dcbnl_setapp(struct net_device *netdev, struct nlmsghdr *nlh,
 	if (ret)
 		return ret;
 
-	/* all must be non-null */
+	 
 	if ((!app_tb[DCB_APP_ATTR_IDTYPE]) ||
 	    (!app_tb[DCB_APP_ATTR_ID]) ||
 	    (!app_tb[DCB_APP_ATTR_PRIORITY]))
 		return -EINVAL;
 
-	/* either by eth type or by socket number */
+	 
 	idtype = nla_get_u8(app_tb[DCB_APP_ATTR_IDTYPE]);
 	if ((idtype != DCB_APP_IDTYPE_ETHTYPE) &&
 	    (idtype != DCB_APP_IDTYPE_PORTNUM))
@@ -639,12 +615,12 @@ static int __dcbnl_pg_getcfg(struct net_device *netdev, struct nlmsghdr *nlh,
 		up_map = DCB_ATTR_VALUE_UNDEFINED;
 
 		if (dir) {
-			/* Rx */
+			 
 			netdev->dcbnl_ops->getpgtccfgrx(netdev,
 						i - DCB_PG_ATTR_TC_0, &prio,
 						&pgid, &tc_pct, &up_map);
 		} else {
-			/* Tx */
+			 
 			netdev->dcbnl_ops->getpgtccfgtx(netdev,
 						i - DCB_PG_ATTR_TC_0, &prio,
 						&pgid, &tc_pct, &up_map);
@@ -693,11 +669,11 @@ static int __dcbnl_pg_getcfg(struct net_device *netdev, struct nlmsghdr *nlh,
 		tc_pct = DCB_ATTR_VALUE_UNDEFINED;
 
 		if (dir) {
-			/* Rx */
+			 
 			netdev->dcbnl_ops->getpgbwgcfgrx(netdev,
 					i - DCB_PG_ATTR_BW_ID_0, &tc_pct);
 		} else {
-			/* Tx */
+			 
 			netdev->dcbnl_ops->getpgbwgcfgtx(netdev,
 					i - DCB_PG_ATTR_BW_ID_0, &tc_pct);
 		}
@@ -854,14 +830,14 @@ static int __dcbnl_pg_setcfg(struct net_device *netdev, struct nlmsghdr *nlh,
 			up_map =
 			     nla_get_u8(param_tb[DCB_TC_ATTR_PARAM_UP_MAPPING]);
 
-		/* dir: Tx = 0, Rx = 1 */
+		 
 		if (dir) {
-			/* Rx */
+			 
 			netdev->dcbnl_ops->setpgtccfgrx(netdev,
 				i - DCB_PG_ATTR_TC_0,
 				prio, pgid, tc_pct, up_map);
 		} else {
-			/* Tx */
+			 
 			netdev->dcbnl_ops->setpgtccfgtx(netdev,
 				i - DCB_PG_ATTR_TC_0,
 				prio, pgid, tc_pct, up_map);
@@ -874,13 +850,13 @@ static int __dcbnl_pg_setcfg(struct net_device *netdev, struct nlmsghdr *nlh,
 
 		tc_pct = nla_get_u8(pg_tb[i]);
 
-		/* dir: Tx = 0, Rx = 1 */
+		 
 		if (dir) {
-			/* Rx */
+			 
 			netdev->dcbnl_ops->setpgbwgcfgrx(netdev,
 					 i - DCB_PG_ATTR_BW_ID_0, tc_pct);
 		} else {
-			/* Tx */
+			 
 			netdev->dcbnl_ops->setpgbwgcfgtx(netdev,
 					 i - DCB_PG_ATTR_BW_ID_0, tc_pct);
 		}
@@ -1015,10 +991,7 @@ static int dcbnl_build_peer_app(struct net_device *netdev, struct sk_buff* skb,
 	int err;
 
 
-	/**
-	 * retrieve the peer app configuration form the driver. If the driver
-	 * handlers fail exit without doing anything
-	 */
+	 
 	err = ops->peer_getappinfo(netdev, &info, &app_count);
 	if (!err && app_count) {
 		table = kmalloc_array(app_count, sizeof(struct dcb_app),
@@ -1033,10 +1006,7 @@ static int dcbnl_build_peer_app(struct net_device *netdev, struct sk_buff* skb,
 		u16 i;
 		struct nlattr *app;
 
-		/**
-		 * build the message, from here on the only possible failure
-		 * is due to the skb size
-		 */
+		 
 		err = -EMSGSIZE;
 
 		app = nla_nest_start_noflag(skb, app_nested_type);
@@ -1100,9 +1070,7 @@ out:
 	return err;
 }
 
-/* Set or delete APP table or rewrite table entries. The APP struct is validated
- * and the appropriate callback function is called.
- */
+ 
 static int dcbnl_app_table_setdel(struct nlattr *attr,
 				  struct net_device *netdev,
 				  int (*setdel)(struct net_device *dev,
@@ -1135,7 +1103,7 @@ static int dcbnl_app_table_setdel(struct nlattr *attr,
 	return 0;
 }
 
-/* Handle IEEE 802.1Qaz/802.1Qau/802.1Qbb GET commands. */
+ 
 static int dcbnl_ieee_fill(struct sk_buff *skb, struct net_device *netdev)
 {
 	const struct dcbnl_rtnl_ops *ops = netdev->dcbnl_ops;
@@ -1269,7 +1237,7 @@ static int dcbnl_ieee_fill(struct sk_buff *skb, struct net_device *netdev)
 			return err;
 	}
 
-	/* get peer info if available */
+	 
 	if (ops->ieee_peer_getets) {
 		struct ieee_ets ets;
 		memset(&ets, 0, sizeof(ets));
@@ -1374,7 +1342,7 @@ static int dcbnl_cee_fill(struct sk_buff *skb, struct net_device *netdev)
 	if (!cee)
 		goto nla_put_failure;
 
-	/* local pg */
+	 
 	if (ops->getpgtccfgtx && ops->getpgbwgcfgtx) {
 		err = dcbnl_cee_pg_fill(skb, netdev, 1);
 		if (err)
@@ -1387,7 +1355,7 @@ static int dcbnl_cee_fill(struct sk_buff *skb, struct net_device *netdev)
 			goto nla_put_failure;
 	}
 
-	/* local pfc */
+	 
 	if (ops->getpfccfg) {
 		struct nlattr *pfc_nest = nla_nest_start_noflag(skb,
 								DCB_ATTR_CEE_PFC);
@@ -1403,7 +1371,7 @@ static int dcbnl_cee_fill(struct sk_buff *skb, struct net_device *netdev)
 		nla_nest_end(skb, pfc_nest);
 	}
 
-	/* local app */
+	 
 	spin_lock_bh(&dcb_lock);
 	app = nla_nest_start_noflag(skb, DCB_ATTR_CEE_APP_TABLE);
 	if (!app)
@@ -1443,7 +1411,7 @@ static int dcbnl_cee_fill(struct sk_buff *skb, struct net_device *netdev)
 
 	spin_unlock_bh(&dcb_lock);
 
-	/* features flags */
+	 
 	if (ops->getfeatcfg) {
 		struct nlattr *feat = nla_nest_start_noflag(skb,
 							    DCB_ATTR_CEE_FEAT);
@@ -1459,7 +1427,7 @@ static int dcbnl_cee_fill(struct sk_buff *skb, struct net_device *netdev)
 		nla_nest_end(skb, feat);
 	}
 
-	/* peer info if available */
+	 
 	if (ops->cee_peer_getpg) {
 		struct cee_pg pg;
 		memset(&pg, 0, sizeof(pg));
@@ -1488,7 +1456,7 @@ static int dcbnl_cee_fill(struct sk_buff *skb, struct net_device *netdev)
 	}
 	nla_nest_end(skb, cee);
 
-	/* DCBX state */
+	 
 	if (dcbx >= 0) {
 		err = nla_put_u8(skb, DCB_ATTR_DCBX, dcbx);
 		if (err)
@@ -1525,11 +1493,11 @@ static int dcbnl_notify(struct net_device *dev, int event, int cmd,
 		err = dcbnl_cee_fill(skb, dev);
 
 	if (err < 0) {
-		/* Report error to broadcast listeners */
+		 
 		nlmsg_free(skb);
 		rtnl_set_sk_err(net, RTNLGRP_DCB, err);
 	} else {
-		/* End nlmsg and notify broadcast listeners */
+		 
 		nlmsg_end(skb, nlh);
 		rtnl_notify(skb, net, 0, RTNLGRP_DCB, NULL, GFP_KERNEL);
 	}
@@ -1551,12 +1519,7 @@ int dcbnl_cee_notify(struct net_device *dev, int event, int cmd,
 }
 EXPORT_SYMBOL(dcbnl_cee_notify);
 
-/* Handle IEEE 802.1Qaz/802.1Qau/802.1Qbb SET commands.
- * If any requested operation can not be completed
- * the entire msg is aborted and error value is returned.
- * No attempt is made to reconcile the case where only part of the
- * cmd can be completed.
- */
+ 
 static int dcbnl_ieee_set(struct net_device *netdev, struct nlmsghdr *nlh,
 			  u32 seq, struct nlattr **tb, struct sk_buff *skb)
 {
@@ -1671,7 +1634,7 @@ static int dcbnl_ieee_set(struct net_device *netdev, struct nlmsghdr *nlh,
 				goto err;
 			}
 
-			/* Duplicate selector ? */
+			 
 			for (i = 0; i < nselectors; i++) {
 				if (selectors[i] == selector) {
 					err = -EINVAL;
@@ -1746,7 +1709,7 @@ err:
 }
 
 
-/* DCBX configuration */
+ 
 static int dcbnl_getdcbx(struct net_device *netdev, struct nlmsghdr *nlh,
 			 u32 seq, struct nlattr **tb, struct sk_buff *skb)
 {
@@ -1857,7 +1820,7 @@ err:
 	return ret;
 }
 
-/* Handle CEE DCBX GET commands. */
+ 
 static int dcbnl_cee_get(struct net_device *netdev, struct nlmsghdr *nlh,
 			 u32 seq, struct nlattr **tb, struct sk_buff *skb)
 {
@@ -1870,10 +1833,10 @@ static int dcbnl_cee_get(struct net_device *netdev, struct nlmsghdr *nlh,
 }
 
 struct reply_func {
-	/* reply netlink message type */
+	 
 	int	type;
 
-	/* function to fill message contents */
+	 
 	int   (*cb)(struct net_device *, struct nlmsghdr *, u32,
 		    struct nlattr **, struct sk_buff *);
 };
@@ -1932,7 +1895,7 @@ static int dcb_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
 	if (dcb->cmd > DCB_CMD_MAX)
 		return -EINVAL;
 
-	/* check if a reply function has been defined for the command */
+	 
 	fn = &reply_funcs[dcb->cmd];
 	if (!fn->cb)
 		return -EOPNOTSUPP;
@@ -2015,15 +1978,7 @@ static int dcb_app_add(struct list_head *list, const struct dcb_app *app,
 	return 0;
 }
 
-/**
- * dcb_getapp - retrieve the DCBX application user priority
- * @dev: network interface
- * @app: application to get user priority of
- *
- * On success returns a non-zero 802.1p user priority bitmap
- * otherwise returns 0 as the invalid user priority bitmap to
- * indicate an error.
- */
+ 
 u8 dcb_getapp(struct net_device *dev, struct dcb_app *app)
 {
 	struct dcb_app_type *itr;
@@ -2039,15 +1994,7 @@ u8 dcb_getapp(struct net_device *dev, struct dcb_app *app)
 }
 EXPORT_SYMBOL(dcb_getapp);
 
-/**
- * dcb_setapp - add CEE dcb application data to app list
- * @dev: network interface
- * @new: application data to add
- *
- * Priority 0 is an invalid priority in CEE spec. This routine
- * removes applications from the app list if the priority is
- * set to zero. Priority is expected to be 8-bit 802.1p user priority bitmap
- */
+ 
 int dcb_setapp(struct net_device *dev, struct dcb_app *new)
 {
 	struct dcb_app_type *itr;
@@ -2060,7 +2007,7 @@ int dcb_setapp(struct net_device *dev, struct dcb_app *new)
 		event.dcbx = dev->dcbnl_ops->getdcbx(dev);
 
 	spin_lock_bh(&dcb_lock);
-	/* Search for existing match and replace */
+	 
 	itr = dcb_app_lookup(new, dev->ifindex, -1);
 	if (itr) {
 		if (new->priority)
@@ -2071,7 +2018,7 @@ int dcb_setapp(struct net_device *dev, struct dcb_app *new)
 		}
 		goto out;
 	}
-	/* App type does not exist add new application type */
+	 
 	if (new->priority)
 		err = dcb_app_add(&dcb_app_list, new, dev->ifindex);
 out:
@@ -2082,15 +2029,7 @@ out:
 }
 EXPORT_SYMBOL(dcb_setapp);
 
-/**
- * dcb_ieee_getapp_mask - retrieve the IEEE DCB application priority
- * @dev: network interface
- * @app: where to store the retrieve application data
- *
- * Helper routine which on success returns a non-zero 802.1Qaz user
- * priority bitmap otherwise returns 0 to indicate the dcb_app was
- * not found in APP list.
- */
+ 
 u8 dcb_ieee_getapp_mask(struct net_device *dev, struct dcb_app *app)
 {
 	struct dcb_app_type *itr;
@@ -2106,7 +2045,7 @@ u8 dcb_ieee_getapp_mask(struct net_device *dev, struct dcb_app *app)
 }
 EXPORT_SYMBOL(dcb_ieee_getapp_mask);
 
-/* Get protocol value from rewrite entry. */
+ 
 u16 dcb_getrewr(struct net_device *dev, struct dcb_app *app)
 {
 	struct dcb_app_type *itr;
@@ -2122,13 +2061,13 @@ u16 dcb_getrewr(struct net_device *dev, struct dcb_app *app)
 }
 EXPORT_SYMBOL(dcb_getrewr);
 
- /* Add rewrite entry to the rewrite list. */
+  
 int dcb_setrewr(struct net_device *dev, struct dcb_app *new)
 {
 	int err;
 
 	spin_lock_bh(&dcb_lock);
-	/* Search for existing match and abort if found. */
+	 
 	if (dcb_rewr_lookup(new, dev->ifindex, new->protocol)) {
 		err = -EEXIST;
 		goto out;
@@ -2142,14 +2081,14 @@ out:
 }
 EXPORT_SYMBOL(dcb_setrewr);
 
-/* Delete rewrite entry from the rewrite list. */
+ 
 int dcb_delrewr(struct net_device *dev, struct dcb_app *del)
 {
 	struct dcb_app_type *itr;
 	int err = -ENOENT;
 
 	spin_lock_bh(&dcb_lock);
-	/* Search for existing match and remove it. */
+	 
 	itr = dcb_rewr_lookup(del, dev->ifindex, del->protocol);
 	if (itr) {
 		list_del(&itr->list);
@@ -2163,16 +2102,7 @@ int dcb_delrewr(struct net_device *dev, struct dcb_app *del)
 }
 EXPORT_SYMBOL(dcb_delrewr);
 
-/**
- * dcb_ieee_setapp - add IEEE dcb application data to app list
- * @dev: network interface
- * @new: application data to add
- *
- * This adds Application data to the list. Multiple application
- * entries may exists for the same selector and protocol as long
- * as the priorities are different. Priority is expected to be a
- * 3-bit unsigned integer
- */
+ 
 int dcb_ieee_setapp(struct net_device *dev, struct dcb_app *new)
 {
 	struct dcb_app_type event;
@@ -2184,7 +2114,7 @@ int dcb_ieee_setapp(struct net_device *dev, struct dcb_app *new)
 		event.dcbx = dev->dcbnl_ops->getdcbx(dev);
 
 	spin_lock_bh(&dcb_lock);
-	/* Search for existing match and abort if found */
+	 
 	if (dcb_app_lookup(new, dev->ifindex, new->priority)) {
 		err = -EEXIST;
 		goto out;
@@ -2199,13 +2129,7 @@ out:
 }
 EXPORT_SYMBOL(dcb_ieee_setapp);
 
-/**
- * dcb_ieee_delapp - delete IEEE dcb application data from list
- * @dev: network interface
- * @del: application data to delete
- *
- * This removes a matching APP data from the APP list
- */
+ 
 int dcb_ieee_delapp(struct net_device *dev, struct dcb_app *del)
 {
 	struct dcb_app_type *itr;
@@ -2218,7 +2142,7 @@ int dcb_ieee_delapp(struct net_device *dev, struct dcb_app *del)
 		event.dcbx = dev->dcbnl_ops->getdcbx(dev);
 
 	spin_lock_bh(&dcb_lock);
-	/* Search for existing match and remove it. */
+	 
 	if ((itr = dcb_app_lookup(del, dev->ifindex, del->priority))) {
 		list_del(&itr->list);
 		kfree(itr);
@@ -2232,9 +2156,7 @@ int dcb_ieee_delapp(struct net_device *dev, struct dcb_app *del)
 }
 EXPORT_SYMBOL(dcb_ieee_delapp);
 
-/* dcb_getrewr_prio_pcp_mask_map - For a given device, find mapping from
- * priorities to the PCP and DEI values assigned to that priority.
- */
+ 
 void dcb_getrewr_prio_pcp_mask_map(const struct net_device *dev,
 				   struct dcb_rewr_prio_pcp_map *p_map)
 {
@@ -2258,9 +2180,7 @@ void dcb_getrewr_prio_pcp_mask_map(const struct net_device *dev,
 }
 EXPORT_SYMBOL(dcb_getrewr_prio_pcp_mask_map);
 
-/* dcb_getrewr_prio_dscp_mask_map - For a given device, find mapping from
- * priorities to the DSCP values assigned to that priority.
- */
+ 
 void dcb_getrewr_prio_dscp_mask_map(const struct net_device *dev,
 				    struct dcb_ieee_app_prio_map *p_map)
 {
@@ -2284,12 +2204,7 @@ void dcb_getrewr_prio_dscp_mask_map(const struct net_device *dev,
 }
 EXPORT_SYMBOL(dcb_getrewr_prio_dscp_mask_map);
 
-/*
- * dcb_ieee_getapp_prio_dscp_mask_map - For a given device, find mapping from
- * priorities to the DSCP values assigned to that priority. Initialize p_map
- * such that each map element holds a bit mask of DSCP values configured for
- * that priority by APP entries.
- */
+ 
 void dcb_ieee_getapp_prio_dscp_mask_map(const struct net_device *dev,
 					struct dcb_ieee_app_prio_map *p_map)
 {
@@ -2313,12 +2228,7 @@ void dcb_ieee_getapp_prio_dscp_mask_map(const struct net_device *dev,
 }
 EXPORT_SYMBOL(dcb_ieee_getapp_prio_dscp_mask_map);
 
-/*
- * dcb_ieee_getapp_dscp_prio_mask_map - For a given device, find mapping from
- * DSCP values to the priorities assigned to that DSCP value. Initialize p_map
- * such that each map element holds a bit mask of priorities configured for a
- * given DSCP value by APP entries.
- */
+ 
 void
 dcb_ieee_getapp_dscp_prio_mask_map(const struct net_device *dev,
 				   struct dcb_ieee_app_dscp_map *p_map)
@@ -2340,16 +2250,7 @@ dcb_ieee_getapp_dscp_prio_mask_map(const struct net_device *dev,
 }
 EXPORT_SYMBOL(dcb_ieee_getapp_dscp_prio_mask_map);
 
-/*
- * Per 802.1Q-2014, the selector value of 1 is used for matching on Ethernet
- * type, with valid PID values >= 1536. A special meaning is then assigned to
- * protocol value of 0: "default priority. For use when priority is not
- * otherwise specified".
- *
- * dcb_ieee_getapp_default_prio_mask - For a given device, find all APP entries
- * of the form {$PRIO, ETHERTYPE, 0} and construct a bit mask of all default
- * priorities set by these entries.
- */
+ 
 u8 dcb_ieee_getapp_default_prio_mask(const struct net_device *dev)
 {
 	int ifindex = dev->ifindex;

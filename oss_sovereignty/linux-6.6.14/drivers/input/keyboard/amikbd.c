@@ -1,14 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) 2000-2001 Vojtech Pavlik
- *
- *  Based on the work of:
- *	Hamish Macdonald
- */
 
-/*
- * Amiga keyboard driver for Linux/m68k
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -128,7 +121,7 @@ static unsigned char amikbd_keycode[0x78] __initdata = {
 
 static void __init amikbd_init_console_keymaps(void)
 {
-	/* We can spare 512 bytes on stack for temp_map in init path. */
+	 
 	unsigned short temp_map[NR_KEYS];
 	int i, j;
 
@@ -148,9 +141,9 @@ static void __init amikbd_init_console_keymaps(void)
 		memcpy(key_maps[i], temp_map, sizeof(temp_map));
 	}
 }
-#else /* !CONFIG_HW_CONSOLE */
+#else  
 static inline void amikbd_init_console_keymaps(void) {}
-#endif /* !CONFIG_HW_CONSOLE */
+#endif  
 
 static const char *amikbd_messages[8] = {
 	[0] = KERN_ALERT "amikbd: Ctrl-Amiga-Amiga reset warning!!\n",
@@ -168,16 +161,16 @@ static irqreturn_t amikbd_interrupt(int irq, void *data)
 	struct input_dev *dev = data;
 	unsigned char scancode, down;
 
-	scancode = ~ciaa.sdr;		/* get and invert scancode (keyboard is active low) */
-	ciaa.cra |= 0x40;		/* switch SP pin to output for handshake */
-	udelay(85);			/* wait until 85 us have expired */
-	ciaa.cra &= ~0x40;		/* switch CIA serial port to input mode */
+	scancode = ~ciaa.sdr;		 
+	ciaa.cra |= 0x40;		 
+	udelay(85);			 
+	ciaa.cra &= ~0x40;		 
 
-	down = !(scancode & 1);		/* lowest bit is release bit */
+	down = !(scancode & 1);		 
 	scancode >>= 1;
 
-	if (scancode < 0x78) {		/* scancodes < 0x78 are keys */
-		if (scancode == 98) {	/* CapsLock is a toggle switch key on Amiga */
+	if (scancode < 0x78) {		 
+		if (scancode == 98) {	 
 			input_report_key(dev, scancode, 1);
 			input_report_key(dev, scancode, 0);
 		} else {
@@ -185,7 +178,7 @@ static irqreturn_t amikbd_interrupt(int irq, void *data)
 		}
 
 		input_sync(dev);
-	} else				/* scancodes >= 0x78 are error codes */
+	} else				 
 		printk(amikbd_messages[scancode - 0x78]);
 
 	return IRQ_HANDLED;
@@ -216,7 +209,7 @@ static int __init amikbd_probe(struct platform_device *pdev)
 
 	amikbd_init_console_keymaps();
 
-	ciaa.cra &= ~0x41;	 /* serial data in, turn off TA */
+	ciaa.cra &= ~0x41;	  
 	err = devm_request_irq(&pdev->dev, IRQ_AMIGA_CIAA_SP, amikbd_interrupt,
 			       0, "amikbd", dev);
 	if (err)

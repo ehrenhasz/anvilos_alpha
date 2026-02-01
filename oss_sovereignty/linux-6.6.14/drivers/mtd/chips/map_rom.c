@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Common code to handle map devices which are simple ROM
- * (C) 2000 Red Hat.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -100,7 +97,7 @@ static int maprom_read (struct mtd_info *mtd, loff_t from, size_t len, size_t *r
 
 static void maprom_nop(struct mtd_info *mtd)
 {
-	/* Nothing to see here */
+	 
 }
 
 static int maprom_write (struct mtd_info *mtd, loff_t to, size_t len, size_t *retlen, const u_char *buf)
@@ -110,7 +107,7 @@ static int maprom_write (struct mtd_info *mtd, loff_t to, size_t len, size_t *re
 
 static int maprom_erase (struct mtd_info *mtd, struct erase_info *info)
 {
-	/* We do our best 8) */
+	 
 	return -EROFS;
 }
 

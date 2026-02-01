@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ak4641.c  --  AK4641 ALSA Soc Audio driver
- *
- * Copyright (C) 2008 Harald Welte <laforge@gnufiish.org>
- * Copyright (C) 2011 Dmitry Artamonow <mad_soft@inbox.ru>
- *
- * Based on ak4535.c by Richard Purdie
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -24,7 +17,7 @@
 #include <sound/tlv.h>
 #include <sound/ak4641.h>
 
-/* AK4641 register space */
+ 
 #define AK4641_PM1		0x00
 #define AK4641_PM2		0x01
 #define AK4641_SIG1		0x02
@@ -46,7 +39,7 @@
 #define AK4641_EQHI		0x12
 #define AK4641_BTIF		0x13
 
-/* codec private data */
+ 
 struct ak4641_priv {
 	struct regmap *regmap;
 	unsigned int sysclk;
@@ -54,9 +47,7 @@ struct ak4641_priv {
 	int playback_fs;
 };
 
-/*
- * ak4641 register cache
- */
+ 
 static const struct reg_default ak4641_reg_defaults[] = {
 	{  0, 0x00 }, {  1, 0x80 }, {  2, 0x00 }, {  3, 0x80 },
 	{  4, 0x02 }, {  5, 0x00 }, {  6, 0x11 }, {  7, 0x05 },
@@ -73,7 +64,7 @@ static int ak4641_set_deemph(struct snd_soc_component *component)
 	int i, best = 0;
 
 	for (i = 0 ; i < ARRAY_SIZE(deemph_settings); i++) {
-		/* if deemphasis is on, select the nearest available rate */
+		 
 		if (ak4641->deemph && deemph_settings[i] != 0 &&
 		    abs(deemph_settings[i] - ak4641->playback_fs) <
 		    abs(deemph_settings[best] - ak4641->playback_fs))
@@ -174,7 +165,7 @@ static const struct snd_kcontrol_new ak4641_snd_controls[] = {
 	SOC_SINGLE_TLV("EQ5 10 kHz Volume", AK4641_EQHI, 0, 15, 1, eq_tlv),
 };
 
-/* Mono 1 Mixer */
+ 
 static const struct snd_kcontrol_new ak4641_mono1_mixer_controls[] = {
 	SOC_DAPM_SINGLE_TLV("Mic Mono Sidetone Volume", AK4641_VOL, 7, 1, 0,
 						mic_mono_sidetone_tlv),
@@ -182,7 +173,7 @@ static const struct snd_kcontrol_new ak4641_mono1_mixer_controls[] = {
 	SOC_DAPM_SINGLE("Mono Playback Switch", AK4641_SIG1, 5, 1, 0),
 };
 
-/* Stereo Mixer */
+ 
 static const struct snd_kcontrol_new ak4641_stereo_mixer_controls[] = {
 	SOC_DAPM_SINGLE_TLV("Mic Sidetone Volume", AK4641_VOL, 4, 7, 0,
 						mic_stereo_sidetone_tlv),
@@ -191,25 +182,25 @@ static const struct snd_kcontrol_new ak4641_stereo_mixer_controls[] = {
 	SOC_DAPM_SINGLE("Aux Bypass Switch", AK4641_SIG2, 5, 1, 0),
 };
 
-/* Input Mixer */
+ 
 static const struct snd_kcontrol_new ak4641_input_mixer_controls[] = {
 	SOC_DAPM_SINGLE("Mic Capture Switch", AK4641_MIC, 2, 1, 0),
 	SOC_DAPM_SINGLE("Aux Capture Switch", AK4641_MIC, 5, 1, 0),
 };
 
-/* Mic mux */
+ 
 static const struct snd_kcontrol_new ak4641_mic_mux_control =
 	SOC_DAPM_ENUM("Mic Select", ak4641_mic_select_enum);
 
-/* Input mux */
+ 
 static const struct snd_kcontrol_new ak4641_input_mux_control =
 	SOC_DAPM_ENUM("Input Select", ak4641_mic_or_dac_enum);
 
-/* mono 2 switch */
+ 
 static const struct snd_kcontrol_new ak4641_mono2_control =
 	SOC_DAPM_SINGLE("Switch", AK4641_SIG1, 0, 1, 0);
 
-/* ak4641 dapm widgets */
+ 
 static const struct snd_soc_dapm_widget ak4641_dapm_widgets[] = {
 	SND_SOC_DAPM_MIXER("Stereo Mixer", SND_SOC_NOPM, 0, 0,
 		&ak4641_stereo_mixer_controls[0],
@@ -255,16 +246,16 @@ static const struct snd_soc_dapm_widget ak4641_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route ak4641_audio_map[] = {
-	/* Stereo Mixer */
+	 
 	{"Stereo Mixer", "Playback Switch", "DAC"},
 	{"Stereo Mixer", "Mic Sidetone Switch", "Input Mux"},
 	{"Stereo Mixer", "Aux Bypass Switch", "AUX In"},
 
-	/* Mono 1 Mixer */
+	 
 	{"Mono1 Mixer", "Mic Mono Sidetone Switch", "Input Mux"},
 	{"Mono1 Mixer", "Mono Playback Switch", "DAC"},
 
-	/* Mic */
+	 
 	{"Mic", NULL, "AIN"},
 	{"Mic Mux", "Internal", "Mic Int Bias"},
 	{"Mic Mux", "External", "Mic Ext Bias"},
@@ -272,30 +263,30 @@ static const struct snd_soc_dapm_route ak4641_audio_map[] = {
 	{"Mic Ext Bias", NULL, "MICEXT"},
 	{"MICOUT", NULL, "Mic Mux"},
 
-	/* Input Mux */
+	 
 	{"Input Mux", "Microphone", "Mic"},
 	{"Input Mux", "Voice DAC", "Voice DAC"},
 
-	/* Line Out */
+	 
 	{"LOUT", NULL, "Line Out"},
 	{"ROUT", NULL, "Line Out"},
 	{"Line Out", NULL, "Stereo Mixer"},
 
-	/* Mono 1 Out */
+	 
 	{"MOUT1", NULL, "Mono Out"},
 	{"Mono Out", NULL, "Mono1 Mixer"},
 
-	/* Mono 2 Out */
+	 
 	{"MOUT2", NULL, "Mono 2 Enable"},
 	{"Mono 2 Enable", "Switch", "Mono Out 2"},
 	{"Mono Out 2", NULL, "Stereo Mixer"},
 
 	{"Voice ADC", NULL, "Mono 2 Enable"},
 
-	/* Aux In */
+	 
 	{"AUX In", NULL, "AUX"},
 
-	/* ADC */
+	 
 	{"ADC", NULL, "Input Mixer"},
 	{"Input Mixer", "Mic Capture Switch", "Mic"},
 	{"Input Mixer", "Aux Capture Switch", "AUX In"},
@@ -325,7 +316,7 @@ static int ak4641_i2s_hw_params(struct snd_pcm_substream *substream,
 	else
 		return -EINVAL;
 
-	/* set fs */
+	 
 	switch (fs) {
 	case 1024:
 		mode2 = (0x2 << 5);
@@ -343,7 +334,7 @@ static int ak4641_i2s_hw_params(struct snd_pcm_substream *substream,
 
 	snd_soc_component_update_bits(component, AK4641_MODE2, (0x3 << 5), mode2);
 
-	/* Update de-emphasis filter for the new rate */
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
 		ak4641->playback_fs = rate;
 		ak4641_set_deemph(component);
@@ -359,7 +350,7 @@ static int ak4641_pcm_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	u8 btif;
 	int ret;
 
-	/* interface format */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		btif = (0x3 << 5);
@@ -367,10 +358,10 @@ static int ak4641_pcm_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	case SND_SOC_DAIFMT_LEFT_J:
 		btif = (0x2 << 5);
 		break;
-	case SND_SOC_DAIFMT_DSP_A:	/* MSB after FRM */
+	case SND_SOC_DAIFMT_DSP_A:	 
 		btif = (0x0 << 5);
 		break;
-	case SND_SOC_DAIFMT_DSP_B:	/* MSB during FRM */
+	case SND_SOC_DAIFMT_DSP_B:	 
 		btif = (0x1 << 5);
 		break;
 	default:
@@ -390,7 +381,7 @@ static int ak4641_i2s_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	struct snd_soc_component *component = codec_dai->component;
 	u8 mode1 = 0;
 
-	/* interface format */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		mode1 = 0x02;
@@ -421,11 +412,11 @@ static int ak4641_set_bias_level(struct snd_soc_component *component,
 
 	switch (level) {
 	case SND_SOC_BIAS_ON:
-		/* unmute */
+		 
 		snd_soc_component_update_bits(component, AK4641_DAC, 0x20, 0);
 		break;
 	case SND_SOC_BIAS_PREPARE:
-		/* mute */
+		 
 		snd_soc_component_update_bits(component, AK4641_DAC, 0x20, 0x20);
 		break;
 	case SND_SOC_BIAS_STANDBY:
@@ -473,7 +464,7 @@ static const struct snd_soc_dai_ops ak4641_i2s_dai_ops = {
 };
 
 static const struct snd_soc_dai_ops ak4641_pcm_dai_ops = {
-	.hw_params    = NULL, /* rates are controlled by BT chip */
+	.hw_params    = NULL,  
 	.set_fmt      = ak4641_pcm_set_dai_fmt,
 	.mute_stream  = ak4641_mute,
 	.set_sysclk   = ak4641_set_dai_sysclk,
@@ -575,7 +566,7 @@ static int ak4641_i2c_probe(struct i2c_client *i2c)
 			if (ret)
 				goto err_gpio;
 
-			udelay(1); /* > 150 ns */
+			udelay(1);  
 			gpio_set_value(pdata->gpio_npdn, 1);
 		}
 	}

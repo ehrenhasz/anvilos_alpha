@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 1999 - 2018 Intel Corporation. */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/module.h>
@@ -18,7 +18,7 @@ static ssize_t ixgbe_dbg_common_ops_read(struct file *filp, char __user *buffer,
 	char *buf;
 	int len;
 
-	/* don't allow partial reads */
+	 
 	if (*ppos != 0)
 		return 0;
 
@@ -38,13 +38,7 @@ static ssize_t ixgbe_dbg_common_ops_read(struct file *filp, char __user *buffer,
 	return len;
 }
 
-/**
- * ixgbe_dbg_reg_ops_read - read for reg_ops datum
- * @filp: the opened file
- * @buffer: where to write the data for the user to read
- * @count: the size of the user's buffer
- * @ppos: file position offset
- **/
+ 
 static ssize_t ixgbe_dbg_reg_ops_read(struct file *filp, char __user *buffer,
 				      size_t count, loff_t *ppos)
 {
@@ -52,13 +46,7 @@ static ssize_t ixgbe_dbg_reg_ops_read(struct file *filp, char __user *buffer,
 					 ixgbe_dbg_reg_ops_buf);
 }
 
-/**
- * ixgbe_dbg_reg_ops_write - write into reg_ops datum
- * @filp: the opened file
- * @buffer: where to find the user's data
- * @count: the length of the user's data
- * @ppos: file position offset
- **/
+ 
 static ssize_t ixgbe_dbg_reg_ops_write(struct file *filp,
 				     const char __user *buffer,
 				     size_t count, loff_t *ppos)
@@ -66,7 +54,7 @@ static ssize_t ixgbe_dbg_reg_ops_write(struct file *filp,
 	struct ixgbe_adapter *adapter = filp->private_data;
 	int len;
 
-	/* don't allow partial writes */
+	 
 	if (*ppos != 0)
 		return 0;
 	if (count >= sizeof(ixgbe_dbg_reg_ops_buf))
@@ -121,13 +109,7 @@ static const struct file_operations ixgbe_dbg_reg_ops_fops = {
 
 static char ixgbe_dbg_netdev_ops_buf[256] = "";
 
-/**
- * ixgbe_dbg_netdev_ops_read - read for netdev_ops datum
- * @filp: the opened file
- * @buffer: where to write the data for the user to read
- * @count: the size of the user's buffer
- * @ppos: file position offset
- **/
+ 
 static ssize_t ixgbe_dbg_netdev_ops_read(struct file *filp, char __user *buffer,
 					 size_t count, loff_t *ppos)
 {
@@ -135,13 +117,7 @@ static ssize_t ixgbe_dbg_netdev_ops_read(struct file *filp, char __user *buffer,
 					 ixgbe_dbg_netdev_ops_buf);
 }
 
-/**
- * ixgbe_dbg_netdev_ops_write - write into netdev_ops datum
- * @filp: the opened file
- * @buffer: where to find the user's data
- * @count: the length of the user's data
- * @ppos: file position offset
- **/
+ 
 static ssize_t ixgbe_dbg_netdev_ops_write(struct file *filp,
 					  const char __user *buffer,
 					  size_t count, loff_t *ppos)
@@ -149,7 +125,7 @@ static ssize_t ixgbe_dbg_netdev_ops_write(struct file *filp,
 	struct ixgbe_adapter *adapter = filp->private_data;
 	int len;
 
-	/* don't allow partial writes */
+	 
 	if (*ppos != 0)
 		return 0;
 	if (count >= sizeof(ixgbe_dbg_netdev_ops_buf))
@@ -166,7 +142,7 @@ static ssize_t ixgbe_dbg_netdev_ops_write(struct file *filp,
 	ixgbe_dbg_netdev_ops_buf[len] = '\0';
 
 	if (strncmp(ixgbe_dbg_netdev_ops_buf, "tx_timeout", 10) == 0) {
-		/* TX Queue number below is wrong, but ixgbe does not use it */
+		 
 		adapter->netdev->netdev_ops->ndo_tx_timeout(adapter->netdev,
 							    UINT_MAX);
 		e_dev_info("tx_timeout called\n");
@@ -185,10 +161,7 @@ static const struct file_operations ixgbe_dbg_netdev_ops_fops = {
 	.write = ixgbe_dbg_netdev_ops_write,
 };
 
-/**
- * ixgbe_dbg_adapter_init - setup the debugfs directory for the adapter
- * @adapter: the adapter that is starting up
- **/
+ 
 void ixgbe_dbg_adapter_init(struct ixgbe_adapter *adapter)
 {
 	const char *name = pci_name(adapter->pdev);
@@ -200,27 +173,20 @@ void ixgbe_dbg_adapter_init(struct ixgbe_adapter *adapter)
 			    adapter, &ixgbe_dbg_netdev_ops_fops);
 }
 
-/**
- * ixgbe_dbg_adapter_exit - clear out the adapter's debugfs entries
- * @adapter: the adapter that is exiting
- **/
+ 
 void ixgbe_dbg_adapter_exit(struct ixgbe_adapter *adapter)
 {
 	debugfs_remove_recursive(adapter->ixgbe_dbg_adapter);
 	adapter->ixgbe_dbg_adapter = NULL;
 }
 
-/**
- * ixgbe_dbg_init - start up debugfs for the driver
- **/
+ 
 void ixgbe_dbg_init(void)
 {
 	ixgbe_dbg_root = debugfs_create_dir(ixgbe_driver_name, NULL);
 }
 
-/**
- * ixgbe_dbg_exit - clean out the driver's debugfs entries
- **/
+ 
 void ixgbe_dbg_exit(void)
 {
 	debugfs_remove_recursive(ixgbe_dbg_root);

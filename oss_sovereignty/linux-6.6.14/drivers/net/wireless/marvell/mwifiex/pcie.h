@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* @file mwifiex_pcie.h
- *
- * @brief This file contains definitions for PCI-E interface.
- * driver.
- *
- * Copyright 2011-2020 NXP
- */
+ 
+ 
 
 #ifndef	_MWIFIEX_PCIE_H
 #define	_MWIFIEX_PCIE_H
@@ -37,7 +31,7 @@
 #define CHIP_VER_PCIEUART	0x3
 #define CHIP_MAGIC_VALUE	0x24
 
-/* Constants for Buffer Descriptor (BD) rings */
+ 
 #define MWIFIEX_MAX_TXRX_BD			0x20
 #define MWIFIEX_TXBD_MASK			0x3F
 #define MWIFIEX_RXBD_MASK			0x3F
@@ -45,7 +39,7 @@
 #define MWIFIEX_MAX_EVT_BD			0x08
 #define MWIFIEX_EVTBD_MASK			0x0f
 
-/* PCIE INTERNAL REGISTERS */
+ 
 #define PCIE_SCRATCH_0_REG				0xC10
 #define PCIE_SCRATCH_1_REG				0xC14
 #define PCIE_CPU_INT_EVENT				0xC18
@@ -97,11 +91,11 @@
 #define MWIFIEX_BD_FLAG_TX_START_PTR			BIT(16)
 #define MWIFIEX_BD_FLAG_TX_ROLLOVER_IND			BIT(26)
 
-/* Max retry number of command write */
+ 
 #define MAX_WRITE_IOMEM_RETRY				2
-/* Define PCIE block size for firmware download */
+ 
 #define MWIFIEX_PCIE_BLOCK_SIZE_FW_DNLD		256
-/* FW awake cookie after FW ready */
+ 
 #define FW_AWAKE_COOKIE						(0xAA55AA55)
 #define MWIFIEX_DEF_SLEEP_COOKIE			0xBEEFBEEF
 #define MWIFIEX_SLEEP_COOKIE_SIZE			4
@@ -287,4 +281,4 @@ mwifiex_pcie_txbd_not_full(struct pcie_service_card *card)
 	return 0;
 }
 
-#endif /* _MWIFIEX_PCIE_H */
+#endif  

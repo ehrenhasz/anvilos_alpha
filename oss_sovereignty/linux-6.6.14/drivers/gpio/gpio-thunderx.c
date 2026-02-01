@@ -1,10 +1,4 @@
-/*
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 2016, 2017 Cavium Inc.
- */
+ 
 
 #include <linux/bitops.h>
 #include <linux/gpio/driver.h>
@@ -52,8 +46,8 @@ struct thunderx_line {
 struct thunderx_gpio {
 	struct gpio_chip	chip;
 	u8 __iomem		*register_base;
-	struct msix_entry	*msix_entries;	/* per line MSI-X */
-	struct thunderx_line	*line_entries;	/* per line irq info */
+	struct msix_entry	*msix_entries;	 
+	struct thunderx_line	*line_entries;	 
 	raw_spinlock_t		lock;
 	unsigned long		invert_mask[2];
 	unsigned long		od_mask[2];
@@ -78,10 +72,7 @@ static bool thunderx_gpio_is_gpio_nowarn(struct thunderx_gpio *txgpio,
 	return (bit_cfg & GPIO_BIT_CFG_PIN_SEL_MASK) == 0;
 }
 
-/*
- * Check (and WARN) that the pin is available for GPIO.  We will not
- * allow modification of the state of non-GPIO pins from this driver.
- */
+ 
 static bool thunderx_gpio_is_gpio(struct thunderx_gpio *txgpio,
 				  unsigned int line)
 {
@@ -159,11 +150,7 @@ static int thunderx_gpio_get_direction(struct gpio_chip *chip, unsigned int line
 	u64 bit_cfg;
 
 	if (!thunderx_gpio_is_gpio_nowarn(txgpio, line))
-		/*
-		 * Say it is input for now to avoid WARNing on
-		 * gpiochip_add_data().  We will WARN if someone
-		 * requests it or tries to use it.
-		 */
+		 
 		return 1;
 
 	bit_cfg = readq(txgpio->register_base + bit_cfg_reg(line));
@@ -199,11 +186,7 @@ static int thunderx_gpio_set_config(struct gpio_chip *chip,
 	bit_cfg = readq(txgpio->register_base + bit_cfg_reg(line));
 	switch (pinconf_to_config_param(cfg)) {
 	case PIN_CONFIG_DRIVE_OPEN_DRAIN:
-		/*
-		 * Weird, setting open-drain mode causes signal
-		 * inversion.  Note this so we can compensate in the
-		 * dir_out function.
-		 */
+		 
 		set_bit(line, txgpio->invert_mask);
 		new_invert  = true;
 		set_bit(line, txgpio->od_mask);
@@ -219,15 +202,15 @@ static int thunderx_gpio_set_config(struct gpio_chip *chip,
 		break;
 	case PIN_CONFIG_INPUT_DEBOUNCE:
 		arg = pinconf_to_config_argument(cfg);
-		if (arg > 1228) { /* 15 * 2^15 * 2.5nS maximum */
+		if (arg > 1228) {  
 			ret = -EINVAL;
 			break;
 		}
-		arg *= 400; /* scale to 2.5nS clocks. */
+		arg *= 400;  
 		sel = 0;
 		while (arg > 15) {
 			sel++;
-			arg++; /* always round up */
+			arg++;  
 			arg >>= 1;
 		}
 		txgpio->line_entries[line].fil_bits =
@@ -243,10 +226,7 @@ static int thunderx_gpio_set_config(struct gpio_chip *chip,
 	}
 	raw_spin_unlock(&txgpio->lock);
 
-	/*
-	 * If currently output and OPEN_DRAIN changed, install the new
-	 * settings
-	 */
+	 
 	if ((new_invert != orig_invert || new_od != orig_od) &&
 	    (bit_cfg & GPIO_BIT_CFG_TX_OE))
 		ret = thunderx_gpio_dir_out(chip, line, orig_dat ^ new_invert);
@@ -372,12 +352,7 @@ static void thunderx_gpio_irq_disable(struct irq_data *d)
 	gpiochip_disable_irq(gc, irqd_to_hwirq(d));
 }
 
-/*
- * Interrupts are chained from underlying MSI-X vectors.  We have
- * these irq_chip functions to be able to handle level triggering
- * semantics and other acknowledgment tasks associated with the GPIO
- * mechanism.
- */
+ 
 static const struct irq_chip thunderx_gpio_irq_chip = {
 	.name			= "GPIO",
 	.irq_enable		= thunderx_gpio_irq_enable,
@@ -464,7 +439,7 @@ static int thunderx_gpio_probe(struct pci_dev *pdev,
 	}
 
 	if (pdev->subsystem_device == 0xa10a) {
-		/* CN88XX has no GPIO_CONST register*/
+		 
 		ngpio = 50;
 		txgpio->base_msi = 48;
 	} else {
@@ -497,11 +472,7 @@ static int thunderx_gpio_probe(struct pci_dev *pdev,
 		txgpio->msix_entries[i].entry = txgpio->base_msi + (2 * i);
 		txgpio->line_entries[i].line = i;
 		txgpio->line_entries[i].txgpio = txgpio;
-		/*
-		 * If something has already programmed the pin, use
-		 * the existing glitch filter settings, otherwise go
-		 * to 400nS.
-		 */
+		 
 		txgpio->line_entries[i].fil_bits = bit_cfg ?
 			(bit_cfg & GPIO_BIT_CFG_FIL_MASK) : GLITCH_FILTER_400NS;
 
@@ -512,7 +483,7 @@ static int thunderx_gpio_probe(struct pci_dev *pdev,
 	}
 
 
-	/* Enable all MSI-X for interrupts on all possible lines. */
+	 
 	err = pci_enable_msix_range(pdev, txgpio->msix_entries, ngpio, ngpio);
 	if (err < 0)
 		goto out;
@@ -521,7 +492,7 @@ static int thunderx_gpio_probe(struct pci_dev *pdev,
 	chip->parent = dev;
 	chip->owner = THIS_MODULE;
 	chip->request = thunderx_gpio_request;
-	chip->base = -1; /* System allocated */
+	chip->base = -1;  
 	chip->can_sleep = false;
 	chip->ngpio = ngpio;
 	chip->get_direction = thunderx_gpio_get_direction;
@@ -545,7 +516,7 @@ static int thunderx_gpio_probe(struct pci_dev *pdev,
 	if (err)
 		goto out;
 
-	/* Push on irq_data and the domain for each line. */
+	 
 	for (i = 0; i < ngpio; i++) {
 		struct irq_fwspec fwspec;
 
@@ -584,7 +555,7 @@ static void thunderx_gpio_remove(struct pci_dev *pdev)
 
 static const struct pci_device_id thunderx_gpio_id_table[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, 0xA00A) },
-	{ 0, }	/* end of table */
+	{ 0, }	 
 };
 
 MODULE_DEVICE_TABLE(pci, thunderx_gpio_id_table);

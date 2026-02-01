@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * RTC driver for the interal RTC block in the Amlogic Meson6, Meson8,
- * Meson8b and Meson8m2 SoCs.
- *
- * The RTC is split in to two parts, the AHB front end and a simple serial
- * connection to the actual registers. This driver manages both parts.
- *
- * Copyright (c) 2018 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
- * Copyright (c) 2015 Ben Dooks <ben.dooks@codethink.co.uk> for Codethink Ltd
- * Based on origin by Carlo Caione <carlo@endlessm.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -24,7 +14,7 @@
 #include <linux/reset.h>
 #include <linux/rtc.h>
 
-/* registers accessed from cpu bus */
+ 
 #define RTC_ADDR0				0x00
 	#define RTC_ADDR0_LINE_SCLK		BIT(0)
 	#define RTC_ADDR0_LINE_SEN		BIT(1)
@@ -43,7 +33,7 @@
 #define RTC_REG4				0x10
 	#define RTC_REG4_STATIC_VALUE		GENMASK(7, 0)
 
-/* rtc registers accessed via rtc-serial interface */
+ 
 #define RTC_COUNTER		(0)
 #define RTC_SEC_ADJ		(2)
 #define RTC_REGMEM_0		(4)
@@ -51,20 +41,20 @@
 #define RTC_REGMEM_2		(6)
 #define RTC_REGMEM_3		(7)
 
-#define RTC_ADDR_BITS		(3)	/* number of address bits to send */
-#define RTC_DATA_BITS		(32)	/* number of data bits to tx/rx */
+#define RTC_ADDR_BITS		(3)	 
+#define RTC_DATA_BITS		(32)	 
 
 #define MESON_STATIC_BIAS_CUR	(0x5 << 1)
 #define MESON_STATIC_VOLTAGE	(0x3 << 11)
 #define MESON_STATIC_DEFAULT    (MESON_STATIC_BIAS_CUR | MESON_STATIC_VOLTAGE)
 
 struct meson_rtc {
-	struct rtc_device	*rtc;		/* rtc device we created */
-	struct device		*dev;		/* device we bound from */
-	struct reset_control	*reset;		/* reset source */
-	struct regulator	*vdd;		/* voltage input */
-	struct regmap		*peripheral;	/* peripheral registers */
-	struct regmap		*serial;	/* serial registers */
+	struct rtc_device	*rtc;		 
+	struct device		*dev;		 
+	struct reset_control	*reset;		 
+	struct regulator	*vdd;		 
+	struct regmap		*peripheral;	 
+	struct regmap		*serial;	 
 };
 
 static const struct regmap_config meson_rtc_peripheral_regmap_config = {
@@ -76,7 +66,7 @@ static const struct regmap_config meson_rtc_peripheral_regmap_config = {
 	.fast_io	= true,
 };
 
-/* RTC front-end serialiser controls */
+ 
 
 static void meson_rtc_sclk_pulse(struct meson_rtc *rtc)
 {
@@ -134,12 +124,12 @@ static int meson_rtc_get_bus(struct meson_rtc *rtc)
 	int ret, retries;
 	u32 val;
 
-	/* prepare bus for transfers, set all lines low */
+	 
 	val = RTC_ADDR0_LINE_SDI | RTC_ADDR0_LINE_SEN | RTC_ADDR0_LINE_SCLK;
 	regmap_update_bits(rtc->peripheral, RTC_ADDR0, val, 0);
 
 	for (retries = 0; retries < 3; retries++) {
-		/* wait for the bus to be ready */
+		 
 		if (!regmap_read_poll_timeout(rtc->peripheral, RTC_ADDR1, val,
 					      val & RTC_ADDR1_S_READY, 10,
 					      10000))
@@ -215,18 +205,18 @@ static int meson_rtc_write_static(struct meson_rtc *rtc, u32 data)
 	regmap_write(rtc->peripheral, RTC_REG4,
 		     FIELD_PREP(RTC_REG4_STATIC_VALUE, (data >> 8)));
 
-	/* write the static value and start the auto serializer */
+	 
 	tmp = FIELD_PREP(RTC_ADDR0_DATA, (data & 0xff)) | RTC_ADDR0_START_SER;
 	regmap_update_bits(rtc->peripheral, RTC_ADDR0,
 			   RTC_ADDR0_DATA | RTC_ADDR0_START_SER, tmp);
 
-	/* wait for the auto serializer to complete */
+	 
 	return regmap_read_poll_timeout(rtc->peripheral, RTC_REG4, tmp,
 					!(tmp & RTC_ADDR0_WAIT_SER), 10,
 					10000);
 }
 
-/* RTC interface layer functions */
+ 
 
 static int meson_rtc_gettime(struct device *dev, struct rtc_time *tm)
 {
@@ -253,7 +243,7 @@ static const struct rtc_class_ops meson_rtc_ops = {
 	.set_time	= meson_rtc_settime,
 };
 
-/* NVMEM interface layer functions */
+ 
 
 static int meson_rtc_regmem_read(void *context, unsigned int offset,
 				 void *buf, size_t bytes)
@@ -354,10 +344,7 @@ static int meson_rtc_probe(struct platform_device *pdev)
 		goto out_disable_vdd;
 	}
 
-	/*
-	 * check if we can read RTC counter, if not then the RTC is probably
-	 * not functional. If it isn't probably best to not bind.
-	 */
+	 
 	ret = regmap_read(rtc->serial, RTC_COUNTER, &tm);
 	if (ret) {
 		dev_err(dev, "cannot read RTC counter, RTC not functional\n");

@@ -1,54 +1,40 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of UBIFS.
- *
- * Copyright (C) 2006-2008 Nokia Corporation.
- *
- * Authors: Artem Bityutskiy (Битюцкий Артём)
- *          Adrian Hunter
- */
 
-/*
- * This file implements UBIFS superblock. The superblock is stored at the first
- * LEB of the volume and is never changed by UBIFS. Only user-space tools may
- * change it. The superblock node mostly contains geometry information.
- */
+ 
+
+ 
 
 #include "ubifs.h"
 #include <linux/slab.h>
 #include <linux/math64.h>
 #include <linux/uuid.h>
 
-/*
- * Default journal size in logical eraseblocks as a percent of total
- * flash size.
- */
+ 
 #define DEFAULT_JNL_PERCENT 5
 
-/* Default maximum journal size in bytes */
+ 
 #define DEFAULT_MAX_JNL (32*1024*1024)
 
-/* Default indexing tree fanout */
+ 
 #define DEFAULT_FANOUT 8
 
-/* Default number of data journal heads */
+ 
 #define DEFAULT_JHEADS_CNT 1
 
-/* Default positions of different LEBs in the main area */
+ 
 #define DEFAULT_IDX_LEB  0
 #define DEFAULT_DATA_LEB 1
 #define DEFAULT_GC_LEB   2
 
-/* Default number of LEB numbers in LPT's save table */
+ 
 #define DEFAULT_LSAVE_CNT 256
 
-/* Default reserved pool size as a percent of maximum free space */
+ 
 #define DEFAULT_RP_PERCENT 5
 
-/* The default maximum size of reserved pool in bytes */
+ 
 #define DEFAULT_MAX_RP_SIZE (5*1024*1024)
 
-/* Default time granularity in nanoseconds */
+ 
 #define DEFAULT_TIME_GRAN 1000000000
 
 static int get_default_compressor(struct ubifs_info *c)
@@ -65,13 +51,7 @@ static int get_default_compressor(struct ubifs_info *c)
 	return UBIFS_COMPR_NONE;
 }
 
-/**
- * create_default_filesystem - format empty UBI volume.
- * @c: UBIFS file-system description object
- *
- * This function creates default empty file-system. Returns zero in case of
- * success and a negative error code in case of failure.
- */
+ 
 static int create_default_filesystem(struct ubifs_info *c)
 {
 	struct ubifs_sb_node *sup;
@@ -91,15 +71,12 @@ static int create_default_filesystem(struct ubifs_info *c)
 	u8 hash[UBIFS_HASH_ARR_SZ];
 	u8 hash_lpt[UBIFS_HASH_ARR_SZ];
 
-	/* Some functions called from here depend on the @c->key_len filed */
+	 
 	c->key_len = UBIFS_SK_LEN;
 
-	/*
-	 * First of all, we have to calculate default file-system geometry -
-	 * log size, journal size, etc.
-	 */
+	 
 	if (c->leb_cnt < 0x7FFFFFFF / DEFAULT_JNL_PERCENT)
-		/* We can first multiply then divide and have no overflow */
+		 
 		jnl_lebs = c->leb_cnt * DEFAULT_JNL_PERCENT / 100;
 	else
 		jnl_lebs = (c->leb_cnt / 100) * DEFAULT_JNL_PERCENT;
@@ -109,18 +86,13 @@ static int create_default_filesystem(struct ubifs_info *c)
 	if (jnl_lebs * c->leb_size > DEFAULT_MAX_JNL)
 		jnl_lebs = DEFAULT_MAX_JNL / c->leb_size;
 
-	/*
-	 * The log should be large enough to fit reference nodes for all bud
-	 * LEBs. Because buds do not have to start from the beginning of LEBs
-	 * (half of the LEB may contain committed data), the log should
-	 * generally be larger, make it twice as large.
-	 */
+	 
 	tmp = 2 * (c->ref_node_alsz * jnl_lebs) + c->leb_size - 1;
 	log_lebs = tmp / c->leb_size;
-	/* Plus one LEB reserved for commit */
+	 
 	log_lebs += 1;
 	if (c->leb_cnt - min_leb_cnt > 8) {
-		/* And some extra space to allow writes while committing */
+		 
 		log_lebs += 1;
 		min_leb_cnt += 1;
 	}
@@ -129,19 +101,10 @@ static int create_default_filesystem(struct ubifs_info *c)
 	if (max_buds < UBIFS_MIN_BUD_LEBS)
 		max_buds = UBIFS_MIN_BUD_LEBS;
 
-	/*
-	 * Orphan nodes are stored in a separate area. One node can store a lot
-	 * of orphan inode numbers, but when new orphan comes we just add a new
-	 * orphan node. At some point the nodes are consolidated into one
-	 * orphan node.
-	 */
+	 
 	orph_lebs = UBIFS_MIN_ORPH_LEBS;
 	if (c->leb_cnt - min_leb_cnt > 1)
-		/*
-		 * For debugging purposes it is better to have at least 2
-		 * orphan LEBs, because the orphan subsystem would need to do
-		 * consolidations and would be stressed more.
-		 */
+		 
 		orph_lebs += 1;
 
 	main_lebs = c->leb_cnt - UBIFS_SB_LEBS - UBIFS_MST_LEBS - log_lebs;
@@ -172,7 +135,7 @@ static int create_default_filesystem(struct ubifs_info *c)
 		goto out;
 	}
 
-	/* Create default superblock */
+	 
 
 	tmp64 = (long long)max_buds * c->leb_size;
 	if (big_lpt)
@@ -222,7 +185,7 @@ static int create_default_filesystem(struct ubifs_info *c)
 
 	dbg_gen("default superblock created at LEB 0:0");
 
-	/* Create default master node */
+	 
 
 	mst->ch.node_type = UBIFS_MST_NODE;
 	mst->log_lnum     = cpu_to_le32(UBIFS_LOG_LNUM);
@@ -250,7 +213,7 @@ static int create_default_filesystem(struct ubifs_info *c)
 	mst->leb_cnt      = cpu_to_le32(c->leb_cnt);
 	ubifs_copy_hash(c, hash_lpt, mst->hash_lpt);
 
-	/* Calculate lprops statistics */
+	 
 	tmp64 = main_bytes;
 	tmp64 -= ALIGN(ubifs_idx_node_sz(c, 1), c->min_io_size);
 	tmp64 -= ALIGN(UBIFS_INO_NODE_SZ, c->min_io_size);
@@ -263,7 +226,7 @@ static int create_default_filesystem(struct ubifs_info *c)
 	tmp64 -= ALIGN(ubifs_idx_node_sz(c, 1), 8);
 	mst->total_dirty = cpu_to_le64(tmp64);
 
-	/*  The indexing LEB does not contribute to dark space */
+	 
 	tmp64 = ((long long)(c->main_lebs - 1) * c->dark_wm);
 	mst->total_dark = cpu_to_le64(tmp64);
 
@@ -271,7 +234,7 @@ static int create_default_filesystem(struct ubifs_info *c)
 
 	dbg_gen("default master node created at LEB %d:0", UBIFS_MST_LNUM);
 
-	/* Create the root indexing node */
+	 
 
 	c->key_fmt = UBIFS_SIMPLE_KEY_FMT;
 	c->key_hash = key_r5_hash;
@@ -287,7 +250,7 @@ static int create_default_filesystem(struct ubifs_info *c)
 	dbg_gen("default root indexing node created LEB %d:0",
 		main_first + DEFAULT_IDX_LEB);
 
-	/* Create default root inode */
+	 
 
 	ino_key_init_flash(c, &ino->key, UBIFS_ROOT_INO);
 	ino->ch.node_type = UBIFS_INO_NODE;
@@ -305,17 +268,13 @@ static int create_default_filesystem(struct ubifs_info *c)
 	ino->mode = cpu_to_le32(S_IFDIR | S_IRUGO | S_IWUSR | S_IXUGO);
 	ino->size = cpu_to_le64(UBIFS_INO_NODE_SZ);
 
-	/* Set compression enabled by default */
+	 
 	ino->flags = cpu_to_le32(UBIFS_COMPR_FL);
 
 	dbg_gen("root inode created at LEB %d:0",
 		main_first + DEFAULT_DATA_LEB);
 
-	/*
-	 * The first node in the log has to be the commit start node. This is
-	 * always the case during normal file-system operation. Write a fake
-	 * commit start node to the log.
-	 */
+	 
 
 	cs->ch.node_type = UBIFS_CS_NODE;
 
@@ -366,16 +325,7 @@ out:
 	return err;
 }
 
-/**
- * validate_sb - validate superblock node.
- * @c: UBIFS file-system description object
- * @sup: superblock node
- *
- * This function validates superblock node @sup. Since most of data was read
- * from the superblock and stored in @c, the function validates fields in @c
- * instead. Returns zero in case of success and %-EINVAL in case of validation
- * failure.
- */
+ 
 static int validate_sb(struct ubifs_info *c, struct ubifs_sb_node *sup)
 {
 	long long max_bytes;
@@ -411,11 +361,7 @@ static int validate_sb(struct ubifs_info *c, struct ubifs_sb_node *sup)
 		goto failed;
 	}
 
-	/*
-	 * Calculate minimum allowed amount of main area LEBs. This is very
-	 * similar to %UBIFS_MIN_LEB_CNT, but we take into account real what we
-	 * have just read from the superblock.
-	 */
+	 
 	min_leb_cnt = UBIFS_SB_LEBS + UBIFS_MST_LEBS + c->log_lebs;
 	min_leb_cnt += c->lpt_lebs + c->orph_lebs + c->jhead_cnt + 6;
 
@@ -510,14 +456,7 @@ failed:
 	return -EINVAL;
 }
 
-/**
- * ubifs_read_sb_node - read superblock node.
- * @c: UBIFS file-system description object
- *
- * This function returns a pointer to the superblock node or a negative error
- * code. Note, the user of this function is responsible of kfree()'ing the
- * returned superblock buffer.
- */
+ 
 static struct ubifs_sb_node *ubifs_read_sb_node(struct ubifs_info *c)
 {
 	struct ubifs_sb_node *sup;
@@ -579,11 +518,7 @@ static int authenticate_sb_node(struct ubifs_info *c,
 		return -EINVAL;
 	}
 
-	/*
-	 * The super block node can either be authenticated by a HMAC or
-	 * by a signature in a ubifs_sig_node directly following the
-	 * super block node to support offline image creation.
-	 */
+	 
 	if (ubifs_hmac_zero(c, sup->hmac)) {
 		err = ubifs_sb_verify_signature(c, sup);
 	} else {
@@ -605,13 +540,7 @@ static int authenticate_sb_node(struct ubifs_info *c,
 	return err;
 }
 
-/**
- * ubifs_write_sb_node - write superblock node.
- * @c: UBIFS file-system description object
- * @sup: superblock node read with 'ubifs_read_sb_node()'
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 int ubifs_write_sb_node(struct ubifs_info *c, struct ubifs_sb_node *sup)
 {
 	int len = ALIGN(UBIFS_SB_NODE_SZ, c->min_io_size);
@@ -625,14 +554,7 @@ int ubifs_write_sb_node(struct ubifs_info *c, struct ubifs_sb_node *sup)
 	return ubifs_leb_change(c, UBIFS_SB_LNUM, sup, len);
 }
 
-/**
- * ubifs_read_superblock - read superblock.
- * @c: UBIFS file-system description object
- *
- * This function finds, reads and checks the superblock. If an empty UBI volume
- * is being mounted, this function creates default superblock. Returns zero in
- * case of success, and a negative error code in case of failure.
- */
+ 
 int ubifs_read_superblock(struct ubifs_info *c)
 {
 	int err, sup_flags;
@@ -653,10 +575,7 @@ int ubifs_read_superblock(struct ubifs_info *c)
 	c->fmt_version = le32_to_cpu(sup->fmt_version);
 	c->ro_compat_version = le32_to_cpu(sup->ro_compat_version);
 
-	/*
-	 * The software supports all previous versions but not future versions,
-	 * due to the unavailability of time-travelling equipment.
-	 */
+	 
 	if (c->fmt_version > UBIFS_FORMAT_VERSION) {
 		ubifs_assert(c, !c->ro_media || c->ro_mount);
 		if (!c->ro_mount ||
@@ -673,11 +592,7 @@ int ubifs_read_superblock(struct ubifs_info *c)
 			goto out;
 		}
 
-		/*
-		 * The FS is mounted R/O, and the media format is
-		 * R/O-compatible with the UBIFS implementation, so we can
-		 * mount.
-		 */
+		 
 		c->rw_incompat = 1;
 	}
 
@@ -753,7 +668,7 @@ int ubifs_read_superblock(struct ubifs_info *c)
 		goto out;
 	}
 
-	/* Automatically increase file system size to the maximum size */
+	 
 	if (c->leb_cnt < c->vi.size && c->leb_cnt < c->max_leb_cnt) {
 		int old_leb_cnt = c->leb_cnt;
 
@@ -781,17 +696,7 @@ out:
 	return err;
 }
 
-/**
- * fixup_leb - fixup/unmap an LEB containing free space.
- * @c: UBIFS file-system description object
- * @lnum: the LEB number to fix up
- * @len: number of used bytes in LEB (starting at offset 0)
- *
- * This function reads the contents of the given LEB number @lnum, then fixes
- * it up, so that empty min. I/O units in the end of LEB are actually erased on
- * flash (rather than being just all-0xff real data). If the LEB is completely
- * empty, it is simply unmapped.
- */
+ 
 static int fixup_leb(struct ubifs_info *c, int lnum, int len)
 {
 	int err;
@@ -813,13 +718,7 @@ static int fixup_leb(struct ubifs_info *c, int lnum, int len)
 	return ubifs_leb_change(c, lnum, c->sbuf, len);
 }
 
-/**
- * fixup_free_space - find & remap all LEBs containing free space.
- * @c: UBIFS file-system description object
- *
- * This function walks through all LEBs in the filesystem and fiexes up those
- * containing free/empty space.
- */
+ 
 static int fixup_free_space(struct ubifs_info *c)
 {
 	int lnum, err = 0;
@@ -827,14 +726,14 @@ static int fixup_free_space(struct ubifs_info *c)
 
 	ubifs_get_lprops(c);
 
-	/* Fixup LEBs in the master area */
+	 
 	for (lnum = UBIFS_MST_LNUM; lnum < UBIFS_LOG_LNUM; lnum++) {
 		err = fixup_leb(c, lnum, c->mst_offs + c->mst_node_alsz);
 		if (err)
 			goto out;
 	}
 
-	/* Unmap unused log LEBs */
+	 
 	lnum = ubifs_next_log_lnum(c, c->lhead_lnum);
 	while (lnum != c->ltail_lnum) {
 		err = fixup_leb(c, lnum, 0);
@@ -843,16 +742,13 @@ static int fixup_free_space(struct ubifs_info *c)
 		lnum = ubifs_next_log_lnum(c, lnum);
 	}
 
-	/*
-	 * Fixup the log head which contains the only a CS node at the
-	 * beginning.
-	 */
+	 
 	err = fixup_leb(c, c->lhead_lnum,
 			ALIGN(UBIFS_CS_NODE_SZ, c->min_io_size));
 	if (err)
 		goto out;
 
-	/* Fixup LEBs in the LPT area */
+	 
 	for (lnum = c->lpt_first; lnum <= c->lpt_last; lnum++) {
 		int free = c->ltab[lnum - c->lpt_first].free;
 
@@ -863,14 +759,14 @@ static int fixup_free_space(struct ubifs_info *c)
 		}
 	}
 
-	/* Unmap LEBs in the orphans area */
+	 
 	for (lnum = c->orph_first; lnum <= c->orph_last; lnum++) {
 		err = fixup_leb(c, lnum, 0);
 		if (err)
 			goto out;
 	}
 
-	/* Fixup LEBs in the main area */
+	 
 	for (lnum = c->main_first; lnum < c->leb_cnt; lnum++) {
 		lprops = ubifs_lpt_lookup(c, lnum);
 		if (IS_ERR(lprops)) {
@@ -890,19 +786,7 @@ out:
 	return err;
 }
 
-/**
- * ubifs_fixup_free_space - find & fix all LEBs with free space.
- * @c: UBIFS file-system description object
- *
- * This function fixes up LEBs containing free space on first mount, if the
- * appropriate flag was set when the FS was created. Each LEB with one or more
- * empty min. I/O unit (i.e. free-space-count > 0) is re-written, to make sure
- * the free space is actually erased. E.g., this is necessary for some NAND
- * chips, since the free space may have been programmed like real "0xff" data
- * (generating a non-0xff ECC), causing future writes to the not-really-erased
- * NAND pages to behave badly. After the space is fixed up, the superblock flag
- * is cleared, so that this is skipped for all future mounts.
- */
+ 
 int ubifs_fixup_free_space(struct ubifs_info *c)
 {
 	int err;
@@ -917,7 +801,7 @@ int ubifs_fixup_free_space(struct ubifs_info *c)
 	if (err)
 		return err;
 
-	/* Free-space fixup is no longer required */
+	 
 	c->space_fixup = 0;
 	sup->flags &= cpu_to_le32(~UBIFS_FLG_SPACE_FIXUP);
 

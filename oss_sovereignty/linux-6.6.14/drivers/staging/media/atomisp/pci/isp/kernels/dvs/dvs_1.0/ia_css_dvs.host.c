@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include "hmm.h"
 
@@ -76,12 +64,12 @@ convert_coords_to_ispparams(
 	unsigned int dvs_interp_envelope = (DVS_GDC_INTERP_METHOD == HRT_GDC_BLI_MODE ?
 					    DVS_GDC_BLI_INTERP_ENVELOPE : DVS_GDC_BCI_INTERP_ENVELOPE);
 
-	/* number of blocks per height and width */
+	 
 	unsigned int num_blocks_y =  (uv_flag ? DVS_NUM_BLOCKS_Y_CHROMA(
 					  o_height) : DVS_NUM_BLOCKS_Y(o_height));
 	unsigned int num_blocks_x =  (uv_flag ? DVS_NUM_BLOCKS_X_CHROMA(
 					  o_width)  : DVS_NUM_BLOCKS_X(
-					  o_width)); // round num_x up to blockdim_x, if it concerns the Y0Y1 block (uv_flag==0) round up to even
+					  o_width)); 
 
 	unsigned int in_stride = i_stride * DVS_INPUT_BYTES_PER_PIXEL;
 	unsigned int width, height;
@@ -95,7 +83,7 @@ convert_coords_to_ispparams(
 
 	ptr = (struct gdc_warp_param_mem_s *)gdc_warp_table->address;
 
-	ptr += (2 * uv_flag); /* format is Y0 Y1 UV, so UV starts at 3rd position */
+	ptr += (2 * uv_flag);  
 
 	if (uv_flag == 0) {
 		xbuff = config->xcoords_y;
@@ -115,7 +103,7 @@ convert_coords_to_ispparams(
 	IA_CSS_LOG("width %d height %d", width, height);
 
 	assert(width == num_blocks_x +
-	       1); // the width and height of the provided morphing table should be 1 more than the number of blocks
+	       1); 
 	assert(height == num_blocks_y + 1);
 
 	for (j = 0; j < num_blocks_y; j++) {
@@ -135,10 +123,10 @@ convert_coords_to_ispparams(
 			ymin = min(y00, y01);
 			ymax = max(y10, y11);
 
-			/* Assert that right column's X is greater */
+			 
 			assert(x01 >= xmin);
 			assert(x11 >= xmin);
-			/* Assert that bottom row's Y is greater */
+			 
 			assert(y10 >= ymin);
 			assert(y11 >= ymin);
 
@@ -148,8 +136,7 @@ convert_coords_to_ispparams(
 				    << (XMEM_ALIGN_LOG2);
 			s.in_addr_offset = topleft_y * in_stride + topleft_x;
 
-			/* similar to topleft_y calculation, but round up if ymax
-			 * has any fraction bits */
+			 
 			bottom_y = CEIL_DIV(ymax, 1 << DVS_COORD_FRAC_BITS);
 			s.in_block_height = bottom_y - topleft_y + dvs_interp_envelope;
 
@@ -169,7 +156,7 @@ convert_coords_to_ispparams(
 			s.p2_y = y10 - topleft_y_frac;
 			s.p3_y = y11 - topleft_y_frac;
 
-			// block should fit within the boundingbox.
+			
 			assert(s.p0_x < (s.in_block_width << DVS_COORD_FRAC_BITS));
 			assert(s.p1_x < (s.in_block_width << DVS_COORD_FRAC_BITS));
 			assert(s.p2_x < (s.in_block_width << DVS_COORD_FRAC_BITS));
@@ -179,7 +166,7 @@ convert_coords_to_ispparams(
 			assert(s.p2_y < (s.in_block_height << DVS_COORD_FRAC_BITS));
 			assert(s.p3_y < (s.in_block_height << DVS_COORD_FRAC_BITS));
 
-			// block size should be greater than zero.
+			
 			assert(s.p0_x < s.p1_x);
 			assert(s.p2_x < s.p3_x);
 			assert(s.p0_y < s.p2_y);
@@ -210,10 +197,9 @@ convert_coords_to_ispparams(
 
 			*ptr = s;
 
-			// storage format:
-			// Y0 Y1 UV0 Y2 Y3 UV1
-			/* if uv_flag equals true increment with 2 incase x is odd, this to
-			skip the uv position. */
+			
+			
+			 
 			if (uv_flag)
 				ptr += 3;
 			else
@@ -242,7 +228,7 @@ convert_allocate_dvs_6axis_config(
 	if (!me)
 		return NULL;
 
-	/*DVS only supports input frame of YUV420 or NV12. Fail for all other cases*/
+	 
 	assert((dvs_in_frame_info->format == IA_CSS_FRAME_FORMAT_NV12)
 	       || (dvs_in_frame_info->format == IA_CSS_FRAME_FORMAT_YUV420));
 
@@ -251,16 +237,16 @@ convert_allocate_dvs_6axis_config(
 	o_width  = binary->out_frame_info[0].res.width;
 	o_height = binary->out_frame_info[0].res.height;
 
-	/* Y plane */
+	 
 	convert_coords_to_ispparams(me, dvs_6axis_config,
 				    i_stride, o_width, o_height, 0);
 
 	if (dvs_in_frame_info->format == IA_CSS_FRAME_FORMAT_YUV420) {
-		/*YUV420 has half the stride for U/V plane*/
+		 
 		i_stride /= 2;
 	}
 
-	/* UV plane (packed inside the y plane) */
+	 
 	convert_coords_to_ispparams(me, dvs_6axis_config,
 				    i_stride, o_width / 2, o_height / 2, 1);
 

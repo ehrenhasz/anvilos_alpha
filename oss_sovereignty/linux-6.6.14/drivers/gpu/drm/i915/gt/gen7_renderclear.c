@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include "gen7_renderclear.h"
 #include "i915_drv.h"
@@ -43,12 +41,7 @@ struct batch_vals {
 
 static int num_primitives(const struct batch_vals *bv)
 {
-	/*
-	 * We need to saturate the GPU with work in order to dispatch
-	 * a shader on every HW thread, and clear the thread-local registers.
-	 * In short, we have to dispatch work faster than the shaders can
-	 * run in order to fill the EU and occupy each HW thread.
-	 */
+	 
 	return bv->max_threads;
 }
 
@@ -73,7 +66,7 @@ batch_get_defaults(struct drm_i915_private *i915, struct batch_vals *bv)
 	} else {
 		switch (INTEL_INFO(i915)->gt) {
 		default:
-		case 1: /* including vlv */
+		case 1:  
 			bv->max_threads = 36;
 			break;
 		case 2:
@@ -224,7 +217,7 @@ gen7_fill_interface_descriptor(struct batch_chunk *state,
 	*cs++ = 0;
 	*cs++ = 0;
 
-	/* 1 - 63dummy idds */
+	 
 	memset32(cs, 0x00, (count - 1) * 8);
 	batch_advance(state, cs + (count - 1) * 8);
 
@@ -238,18 +231,18 @@ gen7_emit_state_base_address(struct batch_chunk *batch,
 	u32 *cs = batch_alloc_items(batch, 0, 10);
 
 	*cs++ = STATE_BASE_ADDRESS | (10 - 2);
-	/* general */
+	 
 	*cs++ = batch_addr(batch) | BASE_ADDRESS_MODIFY;
-	/* surface */
+	 
 	*cs++ = (batch_addr(batch) + surface_state_base) | BASE_ADDRESS_MODIFY;
-	/* dynamic */
+	 
 	*cs++ = batch_addr(batch) | BASE_ADDRESS_MODIFY;
-	/* indirect */
+	 
 	*cs++ = batch_addr(batch) | BASE_ADDRESS_MODIFY;
-	/* instruction */
+	 
 	*cs++ = batch_addr(batch) | BASE_ADDRESS_MODIFY;
 
-	/* general/dynamic/indirect/instruction access Bound */
+	 
 	*cs++ = 0;
 	*cs++ = BASE_ADDRESS_MODIFY;
 	*cs++ = 0;
@@ -268,18 +261,18 @@ gen7_emit_vfe_state(struct batch_chunk *batch,
 
 	*cs++ = MEDIA_VFE_STATE | (8 - 2);
 
-	/* scratch buffer */
+	 
 	*cs++ = 0;
 
-	/* number of threads & urb entries for GPGPU vs Media Mode */
+	 
 	*cs++ = threads << 16 | 1 << 8 | mode << 2;
 
 	*cs++ = 0;
 
-	/* urb entry size & curbe size in 256 bits unit */
+	 
 	*cs++ = urb_size << 16 | curbe_size;
 
-	/* scoreboard */
+	 
 	*cs++ = 0;
 	*cs++ = 0;
 	*cs++ = 0;
@@ -297,10 +290,7 @@ gen7_emit_interface_descriptor_load(struct batch_chunk *batch,
 	*cs++ = 0;
 	*cs++ = count * 8 * sizeof(*cs);
 
-	/*
-	 * interface descriptor address - it is relative to the dynamics base
-	 * address
-	 */
+	 
 	*cs++ = interface_descriptor;
 	batch_advance(batch, cs);
 }
@@ -318,18 +308,18 @@ gen7_emit_media_object(struct batch_chunk *batch,
 
 	*cs++ = MEDIA_OBJECT | (pkt - 2);
 
-	/* interface descriptor offset */
+	 
 	*cs++ = 0;
 
-	/* without indirect data */
-	*cs++ = 0;
-	*cs++ = 0;
-
-	/* scoreboard */
+	 
 	*cs++ = 0;
 	*cs++ = 0;
 
-	/* inline */
+	 
+	*cs++ = 0;
+	*cs++ = 0;
+
+	 
 	*cs++ = y_offset << 16 | x_offset;
 	*cs++ = 0;
 	*cs++ = GT3_INLINE_DATA_DELAYS;
@@ -356,7 +346,7 @@ static void gen7_emit_pipeline_invalidate(struct batch_chunk *batch)
 {
 	u32 *cs = batch_alloc_items(batch, 0, 10);
 
-	/* ivb: Stall before STATE_CACHE_INVALIDATE */
+	 
 	*cs++ = GFX_OP_PIPE_CONTROL(5);
 	*cs++ = PIPE_CONTROL_STALL_AT_SCOREBOARD |
 		PIPE_CONTROL_CS_STALL;
@@ -393,7 +383,7 @@ static void emit_batch(struct i915_vma * const vma,
 						     &cb_kernel_ivb,
 						     desc_count);
 
-	/* Reset inherited context registers */
+	 
 	gen7_emit_pipeline_flush(&cmds);
 	gen7_emit_pipeline_invalidate(&cmds);
 	batch_add(&cmds, MI_LOAD_REGISTER_IMM(2));
@@ -407,7 +397,7 @@ static void emit_batch(struct i915_vma * const vma,
 	gen7_emit_pipeline_invalidate(&cmds);
 	gen7_emit_pipeline_flush(&cmds);
 
-	/* Switch to the media pipeline and our base address */
+	 
 	gen7_emit_pipeline_invalidate(&cmds);
 	batch_add(&cmds, PIPELINE_SELECT | PIPELINE_SELECT_MEDIA);
 	batch_add(&cmds, MI_NOOP);
@@ -417,11 +407,11 @@ static void emit_batch(struct i915_vma * const vma,
 	gen7_emit_state_base_address(&cmds, descriptors);
 	gen7_emit_pipeline_invalidate(&cmds);
 
-	/* Set the clear-residual kernel state */
+	 
 	gen7_emit_vfe_state(&cmds, bv, urb_size - 1, 0, 0);
 	gen7_emit_interface_descriptor_load(&cmds, descriptors, desc_count);
 
-	/* Execute the kernel on all HW threads */
+	 
 	for (i = 0; i < num_primitives(bv); i++)
 		gen7_emit_media_object(&cmds, i);
 

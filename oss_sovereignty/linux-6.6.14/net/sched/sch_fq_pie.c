@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Flow Queue PIE discipline
- *
- * Copyright (C) 2019 Mohit P. Tahiliani <tahiliani@nitk.edu.in>
- * Copyright (C) 2019 Sachin D. Patil <sdp.sachin@gmail.com>
- * Copyright (C) 2019 V. Saicharan <vsaicharan1998@gmail.com>
- * Copyright (C) 2019 Mohit Bhasi <mohitbhasi1998@gmail.com>
- * Copyright (C) 2019 Leslie Monis <lesliemonis@gmail.com>
- * Copyright (C) 2019 Gautam Ramakrishnan <gautamramk@gmail.com>
- */
+
+ 
 
 #include <linux/jhash.h>
 #include <linux/sizes.h>
@@ -15,32 +7,9 @@
 #include <net/pkt_cls.h>
 #include <net/pie.h>
 
-/* Flow Queue PIE
- *
- * Principles:
- *   - Packets are classified on flows.
- *   - This is a Stochastic model (as we use a hash, several flows might
- *                                 be hashed to the same slot)
- *   - Each flow has a PIE managed queue.
- *   - Flows are linked onto two (Round Robin) lists,
- *     so that new flows have priority on old ones.
- *   - For a given flow, packets are not reordered.
- *   - Drops during enqueue only.
- *   - ECN capability is off by default.
- *   - ECN threshold (if ECN is enabled) is at 10% by default.
- *   - Uses timestamps to calculate queue delay by default.
- */
+ 
 
-/**
- * struct fq_pie_flow - contains data for each flow
- * @vars:	pie vars associated with the flow
- * @deficit:	number of remaining byte credits
- * @backlog:	size of data in the flow
- * @qlen:	number of packets in the flow
- * @flowchain:	flowchain for the flow
- * @head:	first packet in the flow
- * @tail:	last packet in the flow
- */
+ 
 struct fq_pie_flow {
 	struct pie_vars vars;
 	s32 deficit;
@@ -52,7 +21,7 @@ struct fq_pie_flow {
 };
 
 struct fq_pie_sched_data {
-	struct tcf_proto __rcu *filter_list; /* optional external classifier */
+	struct tcf_proto __rcu *filter_list;  
 	struct tcf_block *block;
 	struct fq_pie_flow *flows;
 	struct Qdisc *sch;
@@ -114,7 +83,7 @@ static unsigned int fq_pie_classify(struct sk_buff *skb, struct Qdisc *sch,
 	return 0;
 }
 
-/* add skb to flow queue (tail add) */
+ 
 static inline void flow_queue_add(struct fq_pie_flow *flow,
 				  struct sk_buff *skb)
 {
@@ -137,7 +106,7 @@ static int fq_pie_qdisc_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 	u32 pkt_len;
 	u32 idx;
 
-	/* Classifies packet into corresponding flow */
+	 
 	idx = fq_pie_classify(skb, sch, &ret);
 	if (idx == 0) {
 		if (ret & __NET_XMIT_BYPASS)
@@ -148,11 +117,11 @@ static int fq_pie_qdisc_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 	idx--;
 
 	sel_flow = &q->flows[idx];
-	/* Checks whether adding a new packet would exceed memory limit */
+	 
 	get_pie_cb(skb)->mem_usage = skb->truesize;
 	memory_limited = q->memory_usage > q->memory_limit + skb->truesize;
 
-	/* Checks if the qdisc is full */
+	 
 	if (unlikely(qdisc_qlen(sch) >= sch->limit)) {
 		q->stats.overlimit++;
 		goto out;
@@ -166,14 +135,12 @@ static int fq_pie_qdisc_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 	} else if (q->p_params.ecn &&
 		   sel_flow->vars.prob <= (MAX_PROB / 100) * q->ecn_prob &&
 		   INET_ECN_set_ce(skb)) {
-		/* If packet is ecn capable, mark it if drop probability
-		 * is lower than the parameter ecn_prob, else drop it.
-		 */
+		 
 		q->stats.ecn_mark++;
 		enqueue = true;
 	}
 	if (enqueue) {
-		/* Set enqueue time only when dq_rate_estimator is disabled. */
+		 
 		if (!q->p_params.dq_rate_estimator)
 			pie_set_enqueue_time(skb);
 
@@ -249,7 +216,7 @@ begin:
 	}
 
 	flow = list_first_entry(head, struct fq_pie_flow, flowchain);
-	/* Flow has exhausted all its credits */
+	 
 	if (flow->deficit <= 0) {
 		flow->deficit += q->quantum;
 		list_move_tail(&flow->flowchain, &q->old_flows);
@@ -265,7 +232,7 @@ begin:
 	}
 
 	if (!skb) {
-		/* force a pass through old_flows to prevent starvation */
+		 
 		if (head == &q->new_flows && !list_empty(&q->old_flows))
 			list_move_tail(&flow->flowchain, &q->old_flows);
 		else
@@ -315,17 +282,17 @@ static int fq_pie_change(struct Qdisc *sch, struct nlattr *opt,
 		}
 	}
 
-	/* convert from microseconds to pschedtime */
+	 
 	if (tb[TCA_FQ_PIE_TARGET]) {
-		/* target is in us */
+		 
 		u32 target = nla_get_u32(tb[TCA_FQ_PIE_TARGET]);
 
-		/* convert to pschedtime */
+		 
 		q->p_params.target =
 			PSCHED_NS2TICKS((u64)target * NSEC_PER_USEC);
 	}
 
-	/* tupdate is in jiffies */
+	 
 	if (tb[TCA_FQ_PIE_TUPDATE])
 		q->p_params.tupdate =
 			usecs_to_jiffies(nla_get_u32(tb[TCA_FQ_PIE_TUPDATE]));
@@ -355,7 +322,7 @@ static int fq_pie_change(struct Qdisc *sch, struct nlattr *opt,
 		q->p_params.dq_rate_estimator =
 			nla_get_u32(tb[TCA_FQ_PIE_DQ_RATE_ESTIMATOR]);
 
-	/* Drop excess packets if new limit is lower */
+	 
 	while (sch->q.qlen > sch->limit) {
 		struct sk_buff *skb = fq_pie_qdisc_dequeue(sch);
 
@@ -378,14 +345,14 @@ static void fq_pie_timer(struct timer_list *t)
 	struct fq_pie_sched_data *q = from_timer(q, t, adapt_timer);
 	unsigned long next, tupdate;
 	struct Qdisc *sch = q->sch;
-	spinlock_t *root_lock; /* to lock qdisc for probability calculations */
+	spinlock_t *root_lock;  
 	int max_cnt, i;
 
 	rcu_read_lock();
 	root_lock = qdisc_lock(qdisc_root_sleeping(sch));
 	spin_lock(root_lock);
 
-	/* Limit this expensive loop to 2048 flows per round. */
+	 
 	max_cnt = min_t(int, q->flows_cnt - q->flows_cursor, 2048);
 	for (i = 0; i < max_cnt; i++) {
 		pie_calculate_probability(&q->p_params,
@@ -469,7 +436,7 @@ static int fq_pie_dump(struct Qdisc *sch, struct sk_buff *skb)
 	if (!opts)
 		return -EMSGSIZE;
 
-	/* convert target from pschedtime to us */
+	 
 	if (nla_put_u32(skb, TCA_FQ_PIE_LIMIT, sch->limit) ||
 	    nla_put_u32(skb, TCA_FQ_PIE_FLOWS, q->flows_cnt) ||
 	    nla_put_u32(skb, TCA_FQ_PIE_TARGET,
@@ -530,7 +497,7 @@ static void fq_pie_reset(struct Qdisc *sch)
 	for (idx = 0; idx < q->flows_cnt; idx++) {
 		struct fq_pie_flow *flow = q->flows + idx;
 
-		/* Removes all packets from flow */
+		 
 		rtnl_kfree_skbs(flow->head, flow->tail);
 		flow->head = NULL;
 

@@ -1,38 +1,4 @@
-/*
- * Copyright (c) 2005 Topspin Communications.  All rights reserved.
- * Copyright (c) 2005, 2006 Cisco Systems.  All rights reserved.
- * Copyright (c) 2005-2017 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2005 Voltaire, Inc. All rights reserved.
- * Copyright (c) 2005 PathScale, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #ifndef RDMA_CORE_H
 #define RDMA_CORE_H
@@ -50,15 +16,7 @@ void uverbs_destroy_ufile_hw(struct ib_uverbs_file *ufile,
 
 int uobj_destroy(struct ib_uobject *uobj, struct uverbs_attr_bundle *attrs);
 
-/*
- * Get an ib_uobject that corresponds to the given id from ufile, assuming
- * the object is from the given type. Lock it to the required access when
- * applicable.
- * This function could create (access == NEW), destroy (access == DESTROY)
- * or unlock (access == READ || access == WRITE) objects if required.
- * The action will be finalized only when uverbs_finalize_object or
- * uverbs_finalize_objects are called.
- */
+ 
 struct ib_uobject *
 uverbs_get_uobject_from_file(u16 object_id, enum uverbs_obj_access access,
 			     s64 id, struct uverbs_attr_bundle *attrs);
@@ -74,15 +32,9 @@ void release_ufile_idr_uobject(struct ib_uverbs_file *ufile);
 
 struct ib_udata *uverbs_get_cleared_udata(struct uverbs_attr_bundle *attrs);
 
-/*
- * This is the runtime description of the uverbs API, used by the syscall
- * machinery to validate and dispatch calls.
- */
+ 
 
-/*
- * Depending on ID the slot pointer in the radix tree points at one of these
- * structs.
- */
+ 
 
 struct uverbs_api_ioctl_method {
 	int(__rcu *handler)(struct uverbs_attr_bundle *attrs);
@@ -111,7 +63,7 @@ struct uverbs_api_attr {
 };
 
 struct uverbs_api {
-	/* radix tree contains struct uverbs_api_* pointers */
+	 
 	struct radix_tree_root radix;
 	enum rdma_driver_id driver_id;
 
@@ -122,11 +74,7 @@ struct uverbs_api {
 	const struct uverbs_api_write_method **write_ex_methods;
 };
 
-/*
- * Get an uverbs_api_object that corresponds to the given object_id.
- * Note:
- * -ENOMSG means that any object is allowed to match during lookup.
- */
+ 
 static inline const struct uverbs_api_object *
 uapi_get_object(struct uverbs_api *uapi, u16 object_id)
 {
@@ -188,4 +136,4 @@ void uverbs_fill_udata(struct uverbs_attr_bundle *bundle,
 		       struct ib_udata *udata, unsigned int attr_in,
 		       unsigned int attr_out);
 
-#endif /* RDMA_CORE_H */
+#endif  

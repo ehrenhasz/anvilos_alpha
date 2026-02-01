@@ -1,27 +1,10 @@
-/* Split a double into fraction and mantissa.
-   Copyright (C) 2007-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Paolo Bonzini <bonzini@gnu.org>, 2003, and
-   Bruno Haible <bruno@clisp.org>, 2007.  */
+ 
 
 #if ! defined USE_LONG_DOUBLE
 # include <config.h>
 #endif
 
-/* Specification.  */
+ 
 #include <math.h>
 
 #include <float.h>
@@ -32,9 +15,7 @@
 # include "isnand-nolibm.h"
 #endif
 
-/* This file assumes FLT_RADIX = 2.  If FLT_RADIX is a power of 2 greater
-   than 2, or not even a power of 2, some rounding errors can occur, so that
-   then the returned mantissa is only guaranteed to be <= 1.0, not < 1.0.  */
+ 
 
 #ifdef USE_LONG_DOUBLE
 # define FUNC frexpl
@@ -61,7 +42,7 @@ FUNC (DOUBLE x, int *expptr)
   int exponent;
   DECL_ROUNDING
 
-  /* Test for NaN, infinity, and zero.  */
+   
   if (ISNAN (x) || x + x == x)
     {
       *expptr = 0;
@@ -78,21 +59,19 @@ FUNC (DOUBLE x, int *expptr)
   BEGIN_ROUNDING ();
 
   {
-    /* Since the exponent is an 'int', it fits in 64 bits.  Therefore the
-       loops are executed no more than 64 times.  */
-    DOUBLE pow2[64]; /* pow2[i] = 2^2^i */
-    DOUBLE powh[64]; /* powh[i] = 2^-2^i */
+     
+    DOUBLE pow2[64];  
+    DOUBLE powh[64];  
     int i;
 
     exponent = 0;
     if (x >= L_(1.0))
       {
-        /* A positive exponent.  */
-        DOUBLE pow2_i; /* = pow2[i] */
-        DOUBLE powh_i; /* = powh[i] */
+         
+        DOUBLE pow2_i;  
+        DOUBLE powh_i;  
 
-        /* Invariants: pow2_i = 2^2^i, powh_i = 2^-2^i,
-           x * 2^exponent = argument, x >= 1.0.  */
+         
         for (i = 0, pow2_i = L_(2.0), powh_i = L_(0.5);
              ;
              i++, pow2_i = pow2_i * pow2_i, powh_i = powh_i * powh_i)
@@ -108,8 +87,7 @@ FUNC (DOUBLE x, int *expptr)
             pow2[i] = pow2_i;
             powh[i] = powh_i;
           }
-        /* Avoid making x too small, as it could become a denormalized
-           number and thus lose precision.  */
+         
         while (i > 0 && x < pow2[i - 1])
           {
             i--;
@@ -117,16 +95,15 @@ FUNC (DOUBLE x, int *expptr)
           }
         exponent += (1 << i);
         x *= powh_i;
-        /* Here 2^-2^i <= x < 1.0.  */
+         
       }
     else
       {
-        /* A negative or zero exponent.  */
-        DOUBLE pow2_i; /* = pow2[i] */
-        DOUBLE powh_i; /* = powh[i] */
+         
+        DOUBLE pow2_i;  
+        DOUBLE powh_i;  
 
-        /* Invariants: pow2_i = 2^2^i, powh_i = 2^-2^i,
-           x * 2^exponent = argument, x < 1.0.  */
+         
         for (i = 0, pow2_i = L_(2.0), powh_i = L_(0.5);
              ;
              i++, pow2_i = pow2_i * pow2_i, powh_i = powh_i * powh_i)
@@ -142,10 +119,10 @@ FUNC (DOUBLE x, int *expptr)
             pow2[i] = pow2_i;
             powh[i] = powh_i;
           }
-        /* Here 2^-2^i <= x < 1.0.  */
+         
       }
 
-    /* Invariants: x * 2^exponent = argument, and 2^-2^i <= x < 1.0.  */
+     
     while (i > 0)
       {
         i--;
@@ -155,7 +132,7 @@ FUNC (DOUBLE x, int *expptr)
             x *= pow2[i];
           }
       }
-    /* Here 0.5 <= x < 1.0.  */
+     
   }
 
   if (sign < 0)

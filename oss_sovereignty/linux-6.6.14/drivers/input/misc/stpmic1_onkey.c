@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) STMicroelectronics 2018
-// Author: Pascal Paillet <p.paillet@st.com> for STMicroelectronics.
+
+
+
 
 #include <linux/input.h>
 #include <linux/interrupt.h>
@@ -11,12 +11,7 @@
 #include <linux/property.h>
 #include <linux/regmap.h>
 
-/**
- * struct stpmic1_onkey - OnKey data
- * @input_dev:		pointer to input device
- * @irq_falling:	irq that we are hooked on to
- * @irq_rising:		irq that we are hooked on to
- */
+ 
 struct stpmic1_onkey {
 	struct input_dev *input_dev;
 	int irq_falling;
@@ -113,7 +108,7 @@ static int stpmic1_onkey_probe(struct platform_device *pdev)
 
 	onkey->input_dev = input_dev;
 
-	/* interrupt is nested in a thread */
+	 
 	error = devm_request_threaded_irq(dev, onkey->irq_falling, NULL,
 					  onkey_falling_irq, IRQF_ONESHOT,
 					  dev_name(dev), onkey);

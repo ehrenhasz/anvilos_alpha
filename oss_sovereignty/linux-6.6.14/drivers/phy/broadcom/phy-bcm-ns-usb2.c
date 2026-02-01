@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Broadcom Northstar USB 2.0 PHY Driver
- *
- * Copyright (C) 2016 Rafał Miłecki <zajec5@gmail.com>
- */
+
+ 
 
 #include <linux/bcma/bcma.h>
 #include <linux/clk.h>
@@ -25,7 +21,7 @@ struct bcm_ns_usb2 {
 	struct regmap *clkset;
 	void __iomem *base;
 
-	/* Deprecated binding */
+	 
 	void __iomem *dmu;
 };
 
@@ -62,16 +58,16 @@ static int bcm_ns_usb2_phy_init(struct phy *phy)
 		usb_pll_pdiv = 1 << 3;
 	}
 
-	/* Calculate ndiv based on a solid 1920 MHz that is for USB2 PHY */
+	 
 	usb_pll_ndiv = (1920000000 * usb_pll_pdiv) / ref_clk_rate;
 
-	/* Unlock DMU PLL settings with some magic value */
+	 
 	if (usb2->clkset)
 		regmap_write(usb2->clkset, 0, 0x0000ea68);
 	else
 		writel(0x0000ea68, usb2->dmu + BCMA_DMU_CRU_CLKSET_KEY);
 
-	/* Write USB 2.0 PLL control setting */
+	 
 	usb2ctl &= ~BCMA_DMU_CRU_USB2_CONTROL_USB_PLL_NDIV_MASK;
 	usb2ctl |= usb_pll_ndiv << BCMA_DMU_CRU_USB2_CONTROL_USB_PLL_NDIV_SHIFT;
 	if (usb2->base)
@@ -79,7 +75,7 @@ static int bcm_ns_usb2_phy_init(struct phy *phy)
 	else
 		writel(usb2ctl, usb2->dmu + BCMA_DMU_CRU_USB2_CONTROL);
 
-	/* Lock DMU PLL settings */
+	 
 	if (usb2->clkset)
 		regmap_write(usb2->clkset, 0, 0x00000000);
 	else

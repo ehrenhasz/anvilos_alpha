@@ -1,7 +1,4 @@
-/* SPDX-License-Identifier: MIT
- *
- * Copyright © 2019 Intel Corporation
- */
+ 
 
 #ifndef _INTEL_DSB_H
 #define _INTEL_DSB_H

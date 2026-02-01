@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * mma8452.c - Support for following Freescale / NXP 3-axis accelerometers:
- *
- * device name	digital output	7-bit I2C slave address (pin selectable)
- * ---------------------------------------------------------------------
- * MMA8451Q	14 bit		0x1c / 0x1d
- * MMA8452Q	12 bit		0x1c / 0x1d
- * MMA8453Q	10 bit		0x1c / 0x1d
- * MMA8652FC	12 bit		0x1d
- * MMA8653FC	10 bit		0x1d
- * FXLS8471Q	14 bit		0x1e / 0x1d / 0x1c / 0x1f
- *
- * Copyright 2015 Martin Kepplinger <martink@posteo.de>
- * Copyright 2014 Peter Meerwald <pmeerw@pmeerw.net>
- *
- *
- * TODO: orientation events
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -35,7 +18,7 @@
 
 #define MMA8452_STATUS				0x00
 #define  MMA8452_STATUS_DRDY			(BIT(2) | BIT(1) | BIT(0))
-#define MMA8452_OUT_X				0x01 /* MSB first */
+#define MMA8452_OUT_X				0x01  
 #define MMA8452_OUT_Y				0x03
 #define MMA8452_OUT_Z				0x05
 #define MMA8452_INT_SRC				0x0c
@@ -75,7 +58,7 @@
 #define  MMA8452_CTRL_ACTIVE			BIT(0)
 #define  MMA8452_CTRL_DR_MASK			GENMASK(5, 3)
 #define  MMA8452_CTRL_DR_SHIFT			3
-#define  MMA8452_CTRL_DR_DEFAULT		0x4 /* 50 Hz sample frequency */
+#define  MMA8452_CTRL_DR_DEFAULT		0x4  
 #define MMA8452_CTRL_REG2			0x2b
 #define  MMA8452_CTRL_REG2_RST			BIT(6)
 #define  MMA8452_CTRL_REG2_MODS_SHIFT		3
@@ -112,28 +95,14 @@ struct mma8452_data {
 	struct regulator *vdd_reg;
 	struct regulator *vddio_reg;
 
-	/* Ensure correct alignment of time stamp when present */
+	 
 	struct {
 		__be16 channels[3];
 		s64 ts __aligned(8);
 	} buffer;
 };
 
- /**
-  * struct mma8452_event_regs - chip specific data related to events
-  * @ev_cfg:			event config register address
-  * @ev_cfg_ele:			latch bit in event config register
-  * @ev_cfg_chan_shift:		number of the bit to enable events in X
-  *				direction; in event config register
-  * @ev_src:			event source register address
-  * @ev_ths:			event threshold register address
-  * @ev_ths_mask:		mask for the threshold value
-  * @ev_count:			event count (period) register address
-  *
-  * Since not all chips supported by the driver support comparing high pass
-  * filtered data for events (interrupts), different interrupt sources are
-  * used for different chips and the relevant registers are included here.
-  */
+  
 struct mma8452_event_regs {
 	u8 ev_cfg;
 	u8 ev_cfg_ele;
@@ -164,19 +133,7 @@ static const struct mma8452_event_regs trans_ev_regs = {
 	.ev_count = MMA8452_TRANSIENT_COUNT,
 };
 
-/**
- * struct mma_chip_info - chip specific data
- * @name:			part number of device reported via 'name' attr
- * @chip_id:			WHO_AM_I register's value
- * @channels:			struct iio_chan_spec matching the device's
- *				capabilities
- * @num_channels:		number of channels
- * @mma_scales:			scale factors for converting register values
- *				to m/s^2; 3 modes: 2g, 4g, 8g; 2 integers
- *				per mode: m/s^2 and micro m/s^2
- * @all_events:			all events supported by this chip
- * @enabled_events:		event flags enabled and handled by this driver
- */
+ 
 struct mma_chip_info {
 	const char *name;
 	u8 chip_id;
@@ -269,7 +226,7 @@ static ssize_t mma8452_show_int_plus_micros(char *buf, const int (*vals)[2],
 		len += scnprintf(buf + len, PAGE_SIZE - len, "%d.%06d ",
 				 vals[n][0], vals[n][1]);
 
-	/* replace trailing space by newline */
+	 
 	buf[len - 1] = '\n';
 
 	return len;
@@ -296,27 +253,27 @@ static const int mma8452_samp_freq[8][2] = {
 	{6, 250000}, {1, 560000}
 };
 
-/* Datasheet table: step time "Relationship with the ODR" (sample frequency) */
+ 
 static const unsigned int mma8452_time_step_us[4][8] = {
-	{ 1250, 2500, 5000, 10000, 20000, 20000, 20000, 20000 },  /* normal */
-	{ 1250, 2500, 5000, 10000, 20000, 80000, 80000, 80000 },  /* l p l n */
-	{ 1250, 2500, 2500, 2500, 2500, 2500, 2500, 2500 },	  /* high res*/
-	{ 1250, 2500, 5000, 10000, 20000, 80000, 160000, 160000 } /* l p */
+	{ 1250, 2500, 5000, 10000, 20000, 20000, 20000, 20000 },   
+	{ 1250, 2500, 5000, 10000, 20000, 80000, 80000, 80000 },   
+	{ 1250, 2500, 2500, 2500, 2500, 2500, 2500, 2500 },	   
+	{ 1250, 2500, 5000, 10000, 20000, 80000, 160000, 160000 }  
 };
 
-/* Datasheet table "High-Pass Filter Cutoff Options" */
+ 
 static const int mma8452_hp_filter_cutoff[4][8][4][2] = {
-	{ /* normal */
-	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} },		/* 800 Hz sample */
-	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} },		/* 400 Hz sample */
-	{ {8, 0}, {4, 0}, {2, 0}, {1, 0} },		/* 200 Hz sample */
-	{ {4, 0}, {2, 0}, {1, 0}, {0, 500000} },	/* 100 Hz sample */
-	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	/* 50 Hz sample */
-	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	/* 12.5 Hz sample */
-	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	/* 6.25 Hz sample */
-	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} }	/* 1.56 Hz sample */
+	{  
+	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} },		 
+	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} },		 
+	{ {8, 0}, {4, 0}, {2, 0}, {1, 0} },		 
+	{ {4, 0}, {2, 0}, {1, 0}, {0, 500000} },	 
+	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	 
+	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	 
+	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	 
+	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} }	 
 	},
-	{ /* low noise low power */
+	{  
 	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} },
 	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} },
 	{ {8, 0}, {4, 0}, {2, 0}, {1, 0} },
@@ -326,7 +283,7 @@ static const int mma8452_hp_filter_cutoff[4][8][4][2] = {
 	{ {0, 500000}, {0, 250000}, {0, 125000}, {0, 063000} },
 	{ {0, 500000}, {0, 250000}, {0, 125000}, {0, 063000} }
 	},
-	{ /* high resolution */
+	{  
 	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} },
 	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} },
 	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} },
@@ -336,7 +293,7 @@ static const int mma8452_hp_filter_cutoff[4][8][4][2] = {
 	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} },
 	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} }
 	},
-	{ /* low power */
+	{  
 	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} },
 	{ {8, 0}, {4, 0}, {2, 0}, {1, 0} },
 	{ {4, 0}, {2, 0}, {1, 0}, {0, 500000} },
@@ -348,13 +305,13 @@ static const int mma8452_hp_filter_cutoff[4][8][4][2] = {
 	}
 };
 
-/* Datasheet table "MODS Oversampling modes averaging values at each ODR" */
+ 
 static const u16 mma8452_os_ratio[4][8] = {
-	/* 800 Hz, 400 Hz, ... , 1.56 Hz */
-	{ 2, 4, 4, 4, 4, 16, 32, 128 },		/* normal */
-	{ 2, 4, 4, 4, 4, 4, 8, 32 },		/* low power low noise */
-	{ 2, 4, 8, 16, 32, 128, 256, 1024 },	/* high resolution */
-	{ 2, 2, 2, 2, 2, 2, 4, 16 }		/* low power */
+	 
+	{ 2, 4, 4, 4, 4, 16, 32, 128 },		 
+	{ 2, 4, 4, 4, 4, 4, 8, 32 },		 
+	{ 2, 4, 8, 16, 32, 128, 256, 1024 },	 
+	{ 2, 2, 2, 2, 2, 2, 4, 16 }		 
 };
 
 static int mma8452_get_power_mode(struct mma8452_data *data)
@@ -583,7 +540,7 @@ static int mma8452_active(struct mma8452_data *data)
 					 data->ctrl_reg1);
 }
 
-/* returns >0 if active, 0 if in standby and <0 on error */
+ 
 static int mma8452_is_active(struct mma8452_data *data)
 {
 	int reg;
@@ -608,7 +565,7 @@ static int mma8452_change_config(struct mma8452_data *data, u8 reg, u8 val)
 		goto fail;
 	}
 
-	/* config can only be changed when in standby */
+	 
 	if (is_active > 0) {
 		ret = mma8452_standby(data);
 		if (ret < 0)
@@ -647,7 +604,7 @@ static int mma8452_set_power_mode(struct mma8452_data *data, u8 mode)
 	return mma8452_change_config(data, MMA8452_CTRL_REG2, reg);
 }
 
-/* returns >0 if in freefall mode, 0 if not or <0 if an error occurred */
+ 
 static int mma8452_freefall_mode_enabled(struct mma8452_data *data)
 {
 	int val;
@@ -1177,10 +1134,7 @@ static const struct iio_event_spec mma8452_motion_event[] = {
 	},
 };
 
-/*
- * Threshold is configured in fixed 8G/127 steps regardless of
- * currently selected scale for measurement.
- */
+ 
 static IIO_CONST_ATTR_NAMED(accel_transient_scale, in_accel_scale, "0.617742");
 
 static struct attribute *mma8452_event_attributes[] = {
@@ -1324,20 +1278,9 @@ static const struct mma_chip_info mma_chip_info_table[] = {
 		.chip_id = MMA8451_DEVICE_ID,
 		.channels = mma8451_channels,
 		.num_channels = ARRAY_SIZE(mma8451_channels),
-		/*
-		 * Hardware has fullscale of -2G, -4G, -8G corresponding to
-		 * raw value -8192 for 14 bit, -2048 for 12 bit or -512 for 10
-		 * bit.
-		 * The userspace interface uses m/s^2 and we declare micro units
-		 * So scale factor for 12 bit here is given by:
-		 *	g * N * 1000000 / 2048 for N = 2, 4, 8 and g=9.80665
-		 */
+		 
 		.mma_scales = { {0, 2394}, {0, 4788}, {0, 9577} },
-		/*
-		 * Although we enable the interrupt sources once and for
-		 * all here the event detection itself is not enabled until
-		 * userspace asks for it by mma8452_write_event_config()
-		 */
+		 
 		.all_events = MMA8452_INT_DRDY |
 					MMA8452_INT_TRANS |
 					MMA8452_INT_FF_MT,
@@ -1350,11 +1293,7 @@ static const struct mma_chip_info mma_chip_info_table[] = {
 		.channels = mma8452_channels,
 		.num_channels = ARRAY_SIZE(mma8452_channels),
 		.mma_scales = { {0, 9577}, {0, 19154}, {0, 38307} },
-		/*
-		 * Although we enable the interrupt sources once and for
-		 * all here the event detection itself is not enabled until
-		 * userspace asks for it by mma8452_write_event_config()
-		 */
+		 
 		.all_events = MMA8452_INT_DRDY |
 					MMA8452_INT_TRANS |
 					MMA8452_INT_FF_MT,
@@ -1367,11 +1306,7 @@ static const struct mma_chip_info mma_chip_info_table[] = {
 		.channels = mma8453_channels,
 		.num_channels = ARRAY_SIZE(mma8453_channels),
 		.mma_scales = { {0, 38307}, {0, 76614}, {0, 153228} },
-		/*
-		 * Although we enable the interrupt sources once and for
-		 * all here the event detection itself is not enabled until
-		 * userspace asks for it by mma8452_write_event_config()
-		 */
+		 
 		.all_events = MMA8452_INT_DRDY |
 					MMA8452_INT_TRANS |
 					MMA8452_INT_FF_MT,
@@ -1394,11 +1329,7 @@ static const struct mma_chip_info mma_chip_info_table[] = {
 		.channels = mma8653_channels,
 		.num_channels = ARRAY_SIZE(mma8653_channels),
 		.mma_scales = { {0, 38307}, {0, 76614}, {0, 153228} },
-		/*
-		 * Although we enable the interrupt sources once and for
-		 * all here the event detection itself is not enabled until
-		 * userspace asks for it by mma8452_write_event_config()
-		 */
+		 
 		.all_events = MMA8452_INT_DRDY |
 					MMA8452_INT_FF_MT,
 		.enabled_events = MMA8452_INT_FF_MT,
@@ -1409,11 +1340,7 @@ static const struct mma_chip_info mma_chip_info_table[] = {
 		.channels = mma8451_channels,
 		.num_channels = ARRAY_SIZE(mma8451_channels),
 		.mma_scales = { {0, 2394}, {0, 4788}, {0, 9577} },
-		/*
-		 * Although we enable the interrupt sources once and for
-		 * all here the event detection itself is not enabled until
-		 * userspace asks for it by mma8452_write_event_config()
-		 */
+		 
 		.all_events = MMA8452_INT_DRDY |
 					MMA8452_INT_TRANS |
 					MMA8452_INT_FF_MT,
@@ -1511,12 +1438,7 @@ static int mma8452_reset(struct i2c_client *client)
 	int i;
 	int ret;
 
-	/*
-	 * Find on fxls8471, after config reset bit, it reset immediately,
-	 * and will not give ACK, so here do not check the return value.
-	 * The following code will read the reset register, and check whether
-	 * this reset works.
-	 */
+	 
 	i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG2,
 					MMA8452_CTRL_REG2_RST);
 
@@ -1524,7 +1446,7 @@ static int mma8452_reset(struct i2c_client *client)
 		usleep_range(100, 200);
 		ret = i2c_smbus_read_byte_data(client, MMA8452_CTRL_REG2);
 		if (ret == -EIO)
-			continue; /* I2C comm reset */
+			continue;  
 		if (ret < 0)
 			return ret;
 		if (!(ret & MMA8452_CTRL_REG2_RST))
@@ -1636,10 +1558,7 @@ static int mma8452_probe(struct i2c_client *client)
 	if (ret < 0)
 		goto disable_regulators;
 
-	/*
-	 * By default set transient threshold to max to avoid events if
-	 * enabling without configuring threshold.
-	 */
+	 
 	ret = i2c_smbus_write_byte_data(client, MMA8452_TRANSIENT_THS,
 					MMA8452_TRANSIENT_THS_MASK);
 	if (ret < 0)

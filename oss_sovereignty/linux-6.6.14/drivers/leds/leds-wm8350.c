@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LED driver for WM8350 driven LEDS.
- *
- * Copyright(C) 2007, 2008 Wolfson Microelectronics PLC.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
@@ -14,7 +10,7 @@
 #include <linux/slab.h>
 #include <linux/module.h>
 
-/* Microamps */
+ 
 static const int isink_cur[] = {
 	4,
 	5,
@@ -155,11 +151,7 @@ static int wm8350_led_set(struct led_classdev *led_cdev,
 		return wm8350_led_disable(led);
 	}
 
-	/* This scales linearly into the index of valid current
-	 * settings which results in a linear scaling of perceived
-	 * brightness due to the non-linear current settings provided
-	 * by the hardware.
-	 */
+	 
 	uA = (led->max_uA_index * led->value) / LED_FULL;
 	spin_unlock_irqrestore(&led->value_lock, flags);
 	BUG_ON(uA >= ARRAY_SIZE(isink_cur));

@@ -1,22 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Second generation of pinmux driver for Amlogic Meson-AXG SoC.
- *
- * Copyright (c) 2017 Baylibre SAS.
- * Author:  Jerome Brunet  <jbrunet@baylibre.com>
- *
- * Copyright (c) 2017 Amlogic, Inc. All rights reserved.
- * Author: Xingyu Chen <xingyu.chen@amlogic.com>
- */
 
-/*
- * This new generation of pinctrl IP is mainly adopted by the
- * Meson-AXG SoC and later series, which use 4-width continuous
- * register bit to select the function for each pin.
- *
- * The value 0 is always selecting the GPIO mode, while other
- * values (start from 1) for selecting the function mode.
- */
+ 
+
+ 
 #include <linux/device.h>
 #include <linux/regmap.h>
 #include <linux/pinctrl/pinctrl.h>

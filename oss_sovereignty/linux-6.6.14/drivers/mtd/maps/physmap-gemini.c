@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cortina Systems Gemini OF physmap add-on
- * Copyright (C) 2017 Linus Walleij <linus.walleij@linaro.org>
- *
- * This SoC has an elaborate flash control register, so we need to
- * detect and set it up when booting on this platform.
- */
+
+ 
 #include <linux/export.h>
 #include <linux/of.h>
 #include <linux/mtd/map.h>
@@ -17,34 +11,31 @@
 #include <linux/pinctrl/consumer.h>
 #include "physmap-gemini.h"
 
-/*
- * The Flash-relevant parts of the global status register
- * These would also be relevant for a NAND driver.
- */
+ 
 #define GLOBAL_STATUS			0x04
 #define FLASH_TYPE_MASK			(0x3 << 24)
 #define FLASH_TYPE_NAND_2K		(0x3 << 24)
 #define FLASH_TYPE_NAND_512		(0x2 << 24)
 #define FLASH_TYPE_PARALLEL		(0x1 << 24)
 #define FLASH_TYPE_SERIAL		(0x0 << 24)
-/* if parallel */
-#define FLASH_WIDTH_16BIT		(1 << 23)	/* else 8 bit */
-/* if serial */
-#define FLASH_ATMEL			(1 << 23)	/* else STM */
+ 
+#define FLASH_WIDTH_16BIT		(1 << 23)	 
+ 
+#define FLASH_ATMEL			(1 << 23)	 
 
 #define FLASH_SIZE_MASK			(0x3 << 21)
-#define NAND_256M			(0x3 << 21)	/* and more */
+#define NAND_256M			(0x3 << 21)	 
 #define NAND_128M			(0x2 << 21)
 #define NAND_64M			(0x1 << 21)
 #define NAND_32M			(0x0 << 21)
-#define ATMEL_16M			(0x3 << 21)	/* and more */
+#define ATMEL_16M			(0x3 << 21)	 
 #define ATMEL_8M			(0x2 << 21)
 #define ATMEL_4M_2M			(0x1 << 21)
-#define ATMEL_1M			(0x0 << 21)	/* and less */
-#define STM_32M				(1 << 22)	/* and more */
-#define STM_16M				(0 << 22)	/* and less */
+#define ATMEL_1M			(0x0 << 21)	 
+#define STM_32M				(1 << 22)	 
+#define STM_16M				(0 << 22)	 
 
-#define FLASH_PARALLEL_HIGH_PIN_CNT	(1 << 20)	/* else low pin cnt */
+#define FLASH_PARALLEL_HIGH_PIN_CNT	(1 << 20)	 
 
 struct gemini_flash {
 	struct device *dev;
@@ -53,7 +44,7 @@ struct gemini_flash {
 	struct pinctrl_state *disabled_state;
 };
 
-/* Static local state */
+ 
 static struct gemini_flash *gf;
 
 static void gemini_flash_enable_pins(void)
@@ -126,7 +117,7 @@ int of_flash_probe_gemini(struct platform_device *pdev,
 	u32 val;
 	int ret;
 
-	/* Multiplatform guard */
+	 
 	if (!of_device_is_compatible(np, "cortina,gemini-flash"))
 		return 0;
 
@@ -148,17 +139,13 @@ int of_flash_probe_gemini(struct platform_device *pdev,
 	}
 	dev_dbg(dev, "global status reg: %08x\n", val);
 
-	/*
-	 * It would be contradictory if a physmap flash was NOT parallel.
-	 */
+	 
 	if ((val & FLASH_TYPE_MASK) != FLASH_TYPE_PARALLEL) {
 		dev_err(dev, "flash is not parallel\n");
 		return -ENODEV;
 	}
 
-	/*
-	 * Complain if DT data and hardware definition is different.
-	 */
+	 
 	if (val & FLASH_WIDTH_16BIT) {
 		if (map->bankwidth != 2)
 			dev_warn(dev, "flash hardware say flash is 16 bit wide but DT says it is %d bits wide\n",

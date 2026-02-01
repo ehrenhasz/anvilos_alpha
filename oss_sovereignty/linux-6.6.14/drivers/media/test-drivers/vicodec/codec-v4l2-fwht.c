@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1
-/*
- * A V4L2 frontend for the FWHT codec
- *
- * Copyright 2018 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/string.h>
@@ -103,10 +99,7 @@ static int prepare_raw_frame(struct fwht_raw_frame *rf,
 	rf->alpha = NULL;
 	rf->components_num = info->components_num;
 
-	/*
-	 * The buffer is NULL if it is the reference
-	 * frame of an I-frame in the stateless decoder
-	 */
+	 
 	if (!buf) {
 		rf->luma = NULL;
 		rf->cb = NULL;
@@ -309,7 +302,7 @@ int v4l2_fwht_decode(struct v4l2_fwht_state *state, u8 *p_in, u8 *p_out)
 	    state->header.magic2 != FWHT_MAGIC2)
 		return -EINVAL;
 
-	/* TODO: support resolution changes */
+	 
 	if (ntohl(state->header.width)  != state->visible_width ||
 	    ntohl(state->header.height) != state->visible_height)
 		return -EINVAL;

@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-// Copyright(c) 2023 Intel Corporation. All rights reserved.
 
-/*
- * Soundwire Intel ops for LunarLake
- */
+
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/device.h>
@@ -16,9 +14,7 @@
 #include "bus.h"
 #include "intel.h"
 
-/*
- * shim vendor-specific (vs) ops
- */
+ 
 
 static void intel_shim_vs_init(struct sdw_intel *sdw)
 {
@@ -53,15 +49,15 @@ static void intel_shim_wake(struct sdw_intel *sdw, bool wake_enable)
 	wake_en = intel_readw(shim_vs, SDW_SHIM2_INTEL_VS_WAKEEN);
 
 	if (wake_enable) {
-		/* Enable the wakeup */
+		 
 		wake_en |= SDW_SHIM2_INTEL_VS_WAKEEN_PWE;
 		intel_writew(shim_vs, SDW_SHIM2_INTEL_VS_WAKEEN, wake_en);
 	} else {
-		/* Disable the wake up interrupt */
+		 
 		wake_en &= ~SDW_SHIM2_INTEL_VS_WAKEEN_PWE;
 		intel_writew(shim_vs, SDW_SHIM2_INTEL_VS_WAKEEN, wake_en);
 
-		/* Clear wake status (W1C) */
+		 
 		wake_sts = intel_readw(shim_vs, SDW_SHIM2_INTEL_VS_WAKESTS);
 		wake_sts |= SDW_SHIM2_INTEL_VS_WAKEEN_PWS;
 		intel_writew(shim_vs, SDW_SHIM2_INTEL_VS_WAKESTS, wake_sts);
@@ -80,7 +76,7 @@ static int intel_link_power_up(struct sdw_intel *sdw)
 	mutex_lock(sdw->link_res->shim_lock);
 
 	if (!*shim_mask) {
-		/* we first need to program the SyncPRD/CPU registers */
+		 
 		dev_dbg(sdw->cdns.dev, "first link up, programming SYNCPRD\n");
 
 		if (prop->mclk_freq % 6000000)
@@ -104,7 +100,7 @@ static int intel_link_power_up(struct sdw_intel *sdw)
 	}
 
 	if (!*shim_mask) {
-		/* SYNCPU will change once link is active */
+		 
 		ret =  hdac_bus_eml_sdw_wait_syncpu_unlocked(sdw->link_res->hbus);
 		if (ret < 0) {
 			dev_err(sdw->cdns.dev, "%s: hdac_bus_eml_sdw_wait_syncpu failed: %d\n",
@@ -142,10 +138,7 @@ static int intel_link_power_down(struct sdw_intel *sdw)
 		dev_err(sdw->cdns.dev, "%s: hdac_bus_eml_sdw_power_down failed: %d\n",
 			__func__, ret);
 
-		/*
-		 * we leave the sdw->cdns.link_up flag as false since we've disabled
-		 * the link at this point and cannot handle interrupts any longer.
-		 */
+		 
 	}
 
 	mutex_unlock(sdw->link_res->shim_lock);
@@ -193,7 +186,7 @@ static bool intel_check_cmdsync_unlocked(struct sdw_intel *sdw)
 	return hdac_bus_eml_sdw_check_cmdsync_unlocked(sdw->link_res->hbus);
 }
 
-/* DAI callbacks */
+ 
 static int intel_params_stream(struct sdw_intel *sdw,
 			       struct snd_pcm_substream *substream,
 			       struct snd_soc_dai *dai,
@@ -235,9 +228,7 @@ static int intel_free_stream(struct sdw_intel *sdw,
 	return 0;
 }
 
-/*
- * DAI operations
- */
+ 
 static int intel_hw_params(struct snd_pcm_substream *substream,
 			   struct snd_pcm_hw_params *params,
 			   struct snd_soc_dai *dai)
@@ -268,16 +259,16 @@ static int intel_hw_params(struct snd_pcm_substream *substream,
 		goto error;
 	}
 
-	/* the SHIM will be configured in the callback functions */
+	 
 
 	sdw_cdns_config_stream(cdns, ch, dir, pdi);
 
-	/* store pdi and state, may be needed in prepare step */
+	 
 	dai_runtime->paused = false;
 	dai_runtime->suspended = false;
 	dai_runtime->pdi = pdi;
 
-	/* Inform DSP about PDI stream number */
+	 
 	ret = intel_params_stream(sdw, substream, dai, params,
 				  sdw->instance,
 				  pdi->intel_alh_id);
@@ -291,7 +282,7 @@ static int intel_hw_params(struct snd_pcm_substream *substream,
 
 	sconfig.bps = snd_pcm_format_width(params_format(params));
 
-	/* Port configuration */
+	 
 	pconfig = kzalloc(sizeof(*pconfig), GFP_KERNEL);
 	if (!pconfig) {
 		ret =  -ENOMEM;
@@ -335,26 +326,20 @@ static int intel_prepare(struct snd_pcm_substream *substream,
 
 		dai_runtime->suspended = false;
 
-		/*
-		 * .prepare() is called after system resume, where we
-		 * need to reinitialize the SHIM/ALH/Cadence IP.
-		 * .prepare() is also called to deal with underflows,
-		 * but in those cases we cannot touch ALH/SHIM
-		 * registers
-		 */
+		 
 
-		/* configure stream */
+		 
 		ch = params_channels(hw_params);
 		if (substream->stream == SNDRV_PCM_STREAM_CAPTURE)
 			dir = SDW_DATA_DIR_RX;
 		else
 			dir = SDW_DATA_DIR_TX;
 
-		/* the SHIM will be configured in the callback functions */
+		 
 
 		sdw_cdns_config_stream(cdns, ch, dir, dai_runtime->pdi);
 
-		/* Inform DSP about PDI stream number */
+		 
 		ret = intel_params_stream(sdw, substream, dai,
 					  hw_params,
 					  sdw->instance,
@@ -376,12 +361,7 @@ intel_hw_free(struct snd_pcm_substream *substream, struct snd_soc_dai *dai)
 	if (!dai_runtime)
 		return -EIO;
 
-	/*
-	 * The sdw stream state will transition to RELEASED when stream->
-	 * master_list is empty. So the stream state will transition to
-	 * DEPREPARED for the first cpu-dai and to RELEASED for the last
-	 * cpu-dai.
-	 */
+	 
 	ret = sdw_stream_remove_master(&cdns->bus, dai_runtime->stream);
 	if (ret < 0) {
 		dev_err(dai->dev, "remove master from stream %s failed: %d\n",
@@ -427,10 +407,7 @@ static int intel_trigger(struct snd_pcm_substream *substream, int cmd, struct sn
 	struct sdw_cdns_dai_runtime *dai_runtime;
 	int ret = 0;
 
-	/*
-	 * The .trigger callback is used to program HDaudio DMA and send required IPC to audio
-	 * firmware.
-	 */
+	 
 	if (res->ops && res->ops->trigger) {
 		ret = res->ops->trigger(substream, cmd, dai);
 		if (ret < 0)
@@ -447,12 +424,7 @@ static int intel_trigger(struct snd_pcm_substream *substream, int cmd, struct sn
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_SUSPEND:
 
-		/*
-		 * The .prepare callback is used to deal with xruns and resume operations.
-		 * In the case of xruns, the DMAs and SHIM registers cannot be touched,
-		 * but for resume operations the DMAs and SHIM registers need to be initialized.
-		 * the .trigger callback is used to track the suspend case only.
-		 */
+		 
 
 		dai_runtime->suspended = true;
 
@@ -485,16 +457,14 @@ static const struct snd_soc_component_driver dai_component = {
 	.name			= "soundwire",
 };
 
-/*
- * PDI routines
- */
+ 
 static void intel_pdi_init(struct sdw_intel *sdw,
 			   struct sdw_cdns_stream_config *config)
 {
 	void __iomem *shim = sdw->link_res->shim;
 	int pcm_cap;
 
-	/* PCM Stream Capability */
+	 
 	pcm_cap = intel_readw(shim, SDW_SHIM2_PCMSCAP);
 
 	config->pcm_bd = FIELD_GET(SDW_SHIM2_PCMSCAP_BSS, pcm_cap);
@@ -510,7 +480,7 @@ intel_pdi_get_ch_cap(struct sdw_intel *sdw, unsigned int pdi_num)
 {
 	void __iomem *shim = sdw->link_res->shim;
 
-	/* zero based values for channel count in register */
+	 
 	return intel_readw(shim, SDW_SHIM2_PCMSYCHC(pdi_num)) + 1;
 }
 
@@ -588,7 +558,7 @@ static int intel_register_dai(struct sdw_intel *sdw)
 	int ret;
 	int off = 0;
 
-	/* Read the PDI config and initialize cadence PDI */
+	 
 	intel_pdi_init(sdw, &config);
 	ret = sdw_cdns_pdi_init(cdns, config);
 	if (ret)
@@ -596,7 +566,7 @@ static int intel_register_dai(struct sdw_intel *sdw)
 
 	intel_pdi_stream_ch_update(sdw, &sdw->cdns.pcm);
 
-	/* DAIs are created based on total number of PDIs supported */
+	 
 	num_dai = cdns->pcm.num_pdi;
 
 	dai_runtime_array = devm_kcalloc(cdns->dev, num_dai,
@@ -610,7 +580,7 @@ static int intel_register_dai(struct sdw_intel *sdw)
 	if (!dais)
 		return -ENOMEM;
 
-	/* Create PCM DAIs */
+	 
 	stream = &cdns->pcm;
 
 	ret = intel_create_dai(cdns, dais, INTEL_PDI_IN, cdns->pcm.num_in,

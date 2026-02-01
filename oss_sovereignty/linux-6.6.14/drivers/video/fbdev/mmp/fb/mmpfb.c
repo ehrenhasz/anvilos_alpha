@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * linux/drivers/video/mmp/fb/mmpfb.c
- * Framebuffer driver for Marvell Display controller.
- *
- * Copyright (C) 2012 Marvell Technology Group Ltd.
- * Authors: Zhou Zhu <zzhu3@marvell.com>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/dma-mapping.h>
 #include <linux/platform_device.h>
@@ -13,15 +7,11 @@
 
 static int var_to_pixfmt(struct fb_var_screeninfo *var)
 {
-	/*
-	 * Pseudocolor mode?
-	 */
+	 
 	if (var->bits_per_pixel == 8)
 		return PIXFMT_PSEUDOCOLOR;
 
-	/*
-	 * Check for YUV422PLANAR.
-	 */
+	 
 	if (var->bits_per_pixel == 16 && var->red.length == 8 &&
 			var->green.length == 4 && var->blue.length == 4) {
 		if (var->green.offset >= var->blue.offset)
@@ -30,9 +20,7 @@ static int var_to_pixfmt(struct fb_var_screeninfo *var)
 			return PIXFMT_YVU422P;
 	}
 
-	/*
-	 * Check for YUV420PLANAR.
-	 */
+	 
 	if (var->bits_per_pixel == 12 && var->red.length == 8 &&
 			var->green.length == 2 && var->blue.length == 2) {
 		if (var->green.offset >= var->blue.offset)
@@ -41,9 +29,7 @@ static int var_to_pixfmt(struct fb_var_screeninfo *var)
 			return PIXFMT_YVU420P;
 	}
 
-	/*
-	 * Check for YUV422PACK.
-	 */
+	 
 	if (var->bits_per_pixel == 16 && var->red.length == 16 &&
 			var->green.length == 16 && var->blue.length == 16) {
 		if (var->red.offset == 0)
@@ -54,9 +40,7 @@ static int var_to_pixfmt(struct fb_var_screeninfo *var)
 			return PIXFMT_VYUY;
 	}
 
-	/*
-	 * Check for 565/1555.
-	 */
+	 
 	if (var->bits_per_pixel == 16 && var->red.length <= 5 &&
 			var->green.length <= 6 && var->blue.length <= 5) {
 		if (var->transp.length == 0) {
@@ -67,9 +51,7 @@ static int var_to_pixfmt(struct fb_var_screeninfo *var)
 		}
 	}
 
-	/*
-	 * Check for 888/A888.
-	 */
+	 
 	if (var->bits_per_pixel <= 32 && var->red.length <= 8 &&
 			var->green.length <= 8 && var->blue.length <= 8) {
 		if (var->bits_per_pixel == 24 && var->transp.length == 0) {
@@ -213,13 +195,7 @@ static void pixfmt_to_var(struct fb_var_screeninfo *var, int pix_fmt)
 	}
 }
 
-/*
- * fb framework has its limitation:
- * 1. input color/output color is not seprated
- * 2. fb_videomode not include output color
- * so for fb usage, we keep a output format which is not changed
- *  then it's added for mmpmode
- */
+ 
 static void fbmode_to_mmpmode(struct mmp_mode *mode,
 		struct fb_videomode *videomode, int output_fmt)
 {
@@ -240,7 +216,7 @@ static void fbmode_to_mmpmode(struct mmp_mode *mode,
 	mode->vsync_len = videomode->vsync_len;
 	mode->hsync_invert = !!(videomode->sync & FB_SYNC_HOR_HIGH_ACT);
 	mode->vsync_invert = !!(videomode->sync & FB_SYNC_VERT_HIGH_ACT);
-	/* no defined flag in fb, use vmode>>3*/
+	 
 	mode->invert_pixclock = !!(videomode->vmode & 8);
 	mode->pix_fmt_out = output_fmt;
 }
@@ -276,17 +252,13 @@ static int mmpfb_check_var(struct fb_var_screeninfo *var,
 
 	if (var->bits_per_pixel == 8)
 		return -EINVAL;
-	/*
-	 * Basic geometry sanity checks.
-	 */
+	 
 	if (var->xoffset + var->xres > var->xres_virtual)
 		return -EINVAL;
 	if (var->yoffset + var->yres > var->yres_virtual)
 		return -EINVAL;
 
-	/*
-	 * Check size of framebuffer.
-	 */
+	 
 	if (var->xres_virtual * var->yres_virtual *
 			(var->bits_per_pixel >> 3) > fbi->fb_size)
 		return -EINVAL;
@@ -324,7 +296,7 @@ static int mmpfb_setcolreg(unsigned int regno, unsigned int red,
 
 	if (info->fix.visual == FB_VISUAL_PSEUDOCOLOR && regno < 256) {
 		val = to_rgb(red, green, blue);
-		/* TODO */
+		 
 	}
 
 	return 0;
@@ -351,14 +323,14 @@ static int var_update(struct fb_info *info)
 	struct fb_videomode *m;
 	int pix_fmt;
 
-	/* set pix_fmt */
+	 
 	pix_fmt = var_to_pixfmt(var);
 	if (pix_fmt < 0)
 		return -EINVAL;
 	pixfmt_to_var(var, pix_fmt);
 	fbi->pix_fmt = pix_fmt;
 
-	/* set var according to best video mode*/
+	 
 	m = (struct fb_videomode *)fb_match_mode(var, &info->modelist);
 	if (!m) {
 		dev_err(fbi->dev, "set par: no match mode, use best mode\n");
@@ -368,7 +340,7 @@ static int var_update(struct fb_info *info)
 	}
 	memcpy(&fbi->mode, m, sizeof(struct fb_videomode));
 
-	/* fix to 2* yres */
+	 
 	var->yres_virtual = var->yres * 2;
 	info->fix.visual = (pix_fmt == PIXFMT_PSEUDOCOLOR) ?
 		FB_VISUAL_PSEUDOCOLOR : FB_VISUAL_TRUECOLOR;
@@ -407,14 +379,14 @@ static int mmpfb_set_par(struct fb_info *info)
 	if (ret != 0)
 		return ret;
 
-	/* set window/path according to new videomode */
+	 
 	fbmode_to_mmpmode(&mode, &fbi->mode, fbi->output_fmt);
 	mmp_path_set_mode(fbi->path, &mode);
 
-	/* set window related info */
+	 
 	mmpfb_set_win(info);
 
-	/* set address always */
+	 
 	memset(&addr, 0, sizeof(addr));
 	addr.phys[0] = (var->yoffset * var->xres_virtual + var->xoffset)
 		* var->bits_per_pixel / 8 + fbi->fb_start_dma;
@@ -428,12 +400,12 @@ static void mmpfb_power(struct mmpfb_info *fbi, int power)
 	struct mmp_addr addr;
 	struct fb_var_screeninfo *var = &fbi->fb_info->var;
 
-	/* for power on, always set address/window again */
+	 
 	if (power) {
-		/* set window related info */
+		 
 		mmpfb_set_win(fbi->fb_info);
 
-		/* set address always */
+		 
 		memset(&addr, 0, sizeof(addr));
 		addr.phys[0] = fbi->fb_start_dma +
 			(var->yoffset * var->xres_virtual + var->xoffset)
@@ -469,13 +441,13 @@ static int modes_setup(struct mmpfb_info *fbi)
 	struct fb_info *info = fbi->fb_info;
 	int videomode_num, i;
 
-	/* get videomodes from path */
+	 
 	videomode_num = mmp_path_get_modelist(fbi->path, &mmp_modes);
 	if (!videomode_num) {
 		dev_warn(fbi->dev, "can't get videomode num\n");
 		return 0;
 	}
-	/* put videomode list to info structure */
+	 
 	videomodes = kcalloc(videomode_num, sizeof(struct fb_videomode),
 			     GFP_KERNEL);
 	if (!videomodes)
@@ -485,7 +457,7 @@ static int modes_setup(struct mmpfb_info *fbi)
 		mmpmode_to_fbmode(&videomodes[i], &mmp_modes[i]);
 	fb_videomode_to_modelist(videomodes, videomode_num, &info->modelist);
 
-	/* set videomode[0] as default mode */
+	 
 	memcpy(&fbi->mode, &videomodes[0], sizeof(struct fb_videomode));
 	fbi->output_fmt = mmp_modes[0].pix_fmt_out;
 	fb_videomode_to_var(&info->var, &fbi->mode);
@@ -499,7 +471,7 @@ static int fb_info_setup(struct fb_info *info,
 			struct mmpfb_info *fbi)
 {
 	int ret = 0;
-	/* Initialise static fb parameters.*/
+	 
 	info->flags = FBINFO_PARTIAL_PAN_OK |
 		FBINFO_HWACCEL_XPAN | FBINFO_HWACCEL_YPAN;
 	info->node = -1;
@@ -521,7 +493,7 @@ static int fb_info_setup(struct fb_info *info,
 	info->screen_buffer = fbi->fb_start;
 	info->screen_size = fbi->fb_size;
 
-	/* For FB framework: Allocate color map and Register framebuffer*/
+	 
 	if (fb_alloc_cmap(&info->cmap, 256, 0) < 0)
 		ret = -ENOMEM;
 
@@ -546,13 +518,13 @@ static int mmpfb_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* initialize fb */
+	 
 	info = framebuffer_alloc(sizeof(struct mmpfb_info), &pdev->dev);
 	if (info == NULL)
 		return -ENOMEM;
 	fbi = info->par;
 
-	/* init fb */
+	 
 	fbi->fb_info = info;
 	platform_set_drvdata(pdev, fbi);
 	fbi->dev = &pdev->dev;
@@ -561,7 +533,7 @@ static int mmpfb_probe(struct platform_device *pdev)
 	pixfmt_to_var(&info->var, fbi->pix_fmt);
 	mutex_init(&fbi->access_ok);
 
-	/* get display path by name */
+	 
 	fbi->path = mmp_get_path(mi->path_name);
 	if (!fbi->path) {
 		dev_err(&pdev->dev, "can't get the path %s\n", mi->path_name);
@@ -571,13 +543,13 @@ static int mmpfb_probe(struct platform_device *pdev)
 
 	dev_info(fbi->dev, "path %s get\n", fbi->path->name);
 
-	/* get overlay */
+	 
 	fbi->overlay = mmp_path_get_overlay(fbi->path, mi->overlay_id);
 	if (!fbi->overlay) {
 		ret = -EINVAL;
 		goto failed_destroy_mutex;
 	}
-	/* set fetch used */
+	 
 	mmp_overlay_set_fetch(fbi->overlay, mi->dmafetch_id);
 
 	modes_num = modes_setup(fbi);
@@ -586,15 +558,12 @@ static int mmpfb_probe(struct platform_device *pdev)
 		goto failed_destroy_mutex;
 	}
 
-	/*
-	 * if get modes success, means not hotplug panels, use caculated buffer
-	 * or use default size
-	 */
+	 
 	if (modes_num > 0) {
-		/* fix to 2* yres */
+		 
 		info->var.yres_virtual = info->var.yres * 2;
 
-		/* Allocate framebuffer memory: size = modes xy *4 */
+		 
 		fbi->fb_size = info->var.xres_virtual * info->var.yres_virtual
 				* info->var.bits_per_pixel / 8;
 	} else {
@@ -610,7 +579,7 @@ static int mmpfb_probe(struct platform_device *pdev)
 	}
 	dev_info(fbi->dev, "fb %dk allocated\n", fbi->fb_size/1024);
 
-	/* fb power on */
+	 
 	if (modes_num > 0)
 		mmpfb_power(fbi, 1);
 

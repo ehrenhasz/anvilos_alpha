@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * sd_dif.c - SCSI Data Integrity Field
- *
- * Copyright (C) 2007, 2008 Oracle Corporation
- * Written by: Martin K. Petersen <martin.petersen@oracle.com>
- */
+
+ 
 
 #include <linux/blk-integrity.h>
 #include <linux/t10-pi.h>
@@ -21,9 +16,7 @@
 
 #include "sd.h"
 
-/*
- * Configure exchange of protection information between OS and HBA.
- */
+ 
 void sd_dif_config_host(struct scsi_disk *sdkp)
 {
 	struct scsi_device *sdp = sdkp->device;
@@ -46,7 +39,7 @@ void sd_dif_config_host(struct scsi_disk *sdkp)
 
 	memset(&bi, 0, sizeof(bi));
 
-	/* Enable DMA of protection information */
+	 
 	if (scsi_host_get_guard(sdkp->device->host) & SHOST_DIX_GUARD_IP) {
 		if (type == T10_PI_TYPE3_PROTECTION)
 			bi.profile = &t10_pi_type3_ip;

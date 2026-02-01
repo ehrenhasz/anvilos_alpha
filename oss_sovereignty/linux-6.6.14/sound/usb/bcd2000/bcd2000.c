@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Behringer BCD2000 driver
- *
- *   Copyright (C) 2014 Mario Kicherer (dev@kicherer.org)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -85,7 +81,7 @@ static int bcd2000_midi_input_close(struct snd_rawmidi_substream *substream)
 	return 0;
 }
 
-/* (de)register midi substream from client */
+ 
 static void bcd2000_midi_input_trigger(struct snd_rawmidi_substream *substream,
 						int up)
 {
@@ -110,7 +106,7 @@ static void bcd2000_midi_handle_input(struct bcd2000 *bcd2k,
 
 	payload_length = buf[0];
 
-	/* ignore packets without payload */
+	 
 	if (payload_length == 0)
 		return;
 
@@ -134,14 +130,11 @@ static void bcd2000_midi_send(struct bcd2000 *bcd2k)
 	if (!midi_out_substream)
 		return;
 
-	/* copy command prefix bytes */
+	 
 	memcpy(bcd2k->midi_out_buf, device_cmd_prefix,
 		sizeof(device_cmd_prefix));
 
-	/*
-	 * get MIDI packet and leave space for command prefix
-	 * and payload length
-	 */
+	 
 	len = snd_rawmidi_transmit(midi_out_substream,
 				bcd2k->midi_out_buf + 3, BUFSIZE - 3);
 
@@ -152,14 +145,14 @@ static void bcd2000_midi_send(struct bcd2000 *bcd2k)
 	if (len <= 0)
 		return;
 
-	/* set payload length */
+	 
 	bcd2k->midi_out_buf[2] = len;
 	bcd2k->midi_out_urb->transfer_buffer_length = BUFSIZE;
 
 	bcd2000_dump_buffer(PREFIX "sending to device: ",
 			bcd2k->midi_out_buf, len+3);
 
-	/* send packet to the BCD2000 */
+	 
 	ret = usb_submit_urb(bcd2k->midi_out_urb, GFP_ATOMIC);
 	if (ret < 0)
 		dev_err(&bcd2k->dev->dev, PREFIX
@@ -186,7 +179,7 @@ static int bcd2000_midi_output_close(struct snd_rawmidi_substream *substream)
 	return 0;
 }
 
-/* (de)register midi substream from client */
+ 
 static void bcd2000_midi_output_trigger(struct snd_rawmidi_substream *substream,
 						int up)
 {
@@ -194,7 +187,7 @@ static void bcd2000_midi_output_trigger(struct snd_rawmidi_substream *substream,
 
 	if (up) {
 		bcd2k->midi_out_substream = substream;
-		/* check if there is data userspace wants to send */
+		 
 		if (!bcd2k->midi_out_active)
 			bcd2000_midi_send(bcd2k);
 	} else {
@@ -215,7 +208,7 @@ static void bcd2000_output_complete(struct urb *urb)
 	if (urb->status == -ESHUTDOWN)
 		return;
 
-	/* check if there is more data userspace wants to send */
+	 
 	bcd2000_midi_send(bcd2k);
 }
 
@@ -235,7 +228,7 @@ static void bcd2000_input_complete(struct urb *urb)
 		bcd2000_midi_handle_input(bcd2k, urb->transfer_buffer,
 					urb->actual_length);
 
-	/* return URB to device */
+	 
 	ret = usb_submit_urb(bcd2k->midi_in_urb, GFP_ATOMIC);
 	if (ret < 0)
 		dev_err(&bcd2k->dev->dev, PREFIX
@@ -263,11 +256,11 @@ static void bcd2000_init_device(struct bcd2000 *bcd2k)
 	usb_anchor_urb(bcd2k->midi_out_urb, &bcd2k->anchor);
 	usb_anchor_urb(bcd2k->midi_in_urb, &bcd2k->anchor);
 
-	/* copy init sequence into buffer */
+	 
 	memcpy(bcd2k->midi_out_buf, bcd2000_init_sequence, 52);
 	bcd2k->midi_out_urb->transfer_buffer_length = 52;
 
-	/* submit sequence */
+	 
 	ret = usb_submit_urb(bcd2k->midi_out_urb, GFP_KERNEL);
 	if (ret < 0)
 		dev_err(&bcd2k->dev->dev, PREFIX
@@ -276,14 +269,14 @@ static void bcd2000_init_device(struct bcd2000 *bcd2k)
 	else
 		bcd2k->midi_out_active = 1;
 
-	/* pass URB to device to enable button and controller events */
+	 
 	ret = usb_submit_urb(bcd2k->midi_in_urb, GFP_KERNEL);
 	if (ret < 0)
 		dev_err(&bcd2k->dev->dev, PREFIX
 			"%s: usb_submit_urb() in failed, ret=%d: ",
 			__func__, ret);
 
-	/* ensure initialization is finished */
+	 
 	usb_wait_anchor_empty_timeout(&bcd2k->anchor, 1000);
 }
 
@@ -293,8 +286,8 @@ static int bcd2000_init_midi(struct bcd2000 *bcd2k)
 	struct snd_rawmidi *rmidi;
 
 	ret = snd_rawmidi_new(bcd2k->card, bcd2k->card->shortname, 0,
-					1, /* output */
-					1, /* input */
+					1,  
+					1,  
 					&rmidi);
 
 	if (ret < 0)
@@ -333,7 +326,7 @@ static int bcd2000_init_midi(struct bcd2000 *bcd2k)
 				bcd2k->midi_out_buf, BUFSIZE,
 				bcd2000_output_complete, bcd2k, 1);
 
-	/* sanity checks of EPs before actually submitting */
+	 
 	if (usb_urb_ep_type_check(bcd2k->midi_in_urb) ||
 	    usb_urb_ep_type_check(bcd2k->midi_out_urb)) {
 		dev_err(&bcd2k->dev->dev, "invalid MIDI EP\n");
@@ -433,7 +426,7 @@ static void bcd2000_disconnect(struct usb_interface *interface)
 
 	mutex_lock(&devices_mutex);
 
-	/* make sure that userspace cannot create new requests */
+	 
 	snd_card_disconnect(bcd2k->card);
 
 	bcd2000_free_usb_related_resources(bcd2k, interface);

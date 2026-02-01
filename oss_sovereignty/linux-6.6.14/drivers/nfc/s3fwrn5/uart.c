@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * UART Link Layer for S3FWRN82 NCI based Driver
- *
- * Copyright (C) 2015 Samsung Electronics
- * Robert Baldyga <r.baldyga@samsung.com>
- * Copyright (C) 2020 Samsung Electronics
- * Bongsu Jeon <bongsu.jeon@samsung.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>

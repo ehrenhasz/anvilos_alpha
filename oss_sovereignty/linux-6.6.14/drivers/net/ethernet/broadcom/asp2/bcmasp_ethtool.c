@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define pr_fmt(fmt)				"bcmasp_ethtool: " fmt
 
 #include <asm-generic/unaligned.h>
@@ -40,14 +40,14 @@ struct bcmasp_stats {
 #define STAT_BCMASP_RX_CTRL_PER_INTF(str, offset) \
 	STAT_BCMASP_OFFSET(str, BCMASP_STAT_RX_CTRL_PER_INTF, offset)
 
-/* Must match the order of struct bcmasp_mib_counters */
+ 
 static const struct bcmasp_stats bcmasp_gstrings_stats[] = {
-	/* EDPKT counters */
+	 
 	STAT_BCMASP_RX_EDPKT("RX Time Stamp", ASP_EDPKT_RX_TS_COUNTER),
 	STAT_BCMASP_RX_EDPKT("RX PKT Count", ASP_EDPKT_RX_PKT_CNT),
 	STAT_BCMASP_RX_EDPKT("RX PKT Buffered", ASP_EDPKT_HDR_EXTR_CNT),
 	STAT_BCMASP_RX_EDPKT("RX PKT Pushed to DRAM", ASP_EDPKT_HDR_OUT_CNT),
-	/* ASP RX control */
+	 
 	STAT_BCMASP_RX_CTRL_PER_INTF("Frames From Unimac",
 				     ASP_RX_CTRL_UMAC_0_FRAME_COUNT),
 	STAT_BCMASP_RX_CTRL_PER_INTF("Frames From Port",
@@ -58,7 +58,7 @@ static const struct bcmasp_stats bcmasp_gstrings_stats[] = {
 			    ASP_RX_CTRL_FB_OUT_FRAME_COUNT),
 	STAT_BCMASP_RX_CTRL("Frames Out(Filters)",
 			    ASP_RX_CTRL_FB_FILT_OUT_FRAME_COUNT),
-	/* Software maintained statistics */
+	 
 	STAT_BCMASP_SOFT_MIB("RX SKB Alloc Failed"),
 	STAT_BCMASP_SOFT_MIB("TX DMA Failed"),
 	STAT_BCMASP_SOFT_MIB("Multicast Filters Full"),
@@ -209,7 +209,7 @@ static int bcmasp_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 	if (!device_can_wakeup(kdev))
 		return -EOPNOTSUPP;
 
-	/* Interface Specific */
+	 
 	intf->wolopts = wol->wolopts;
 	if (intf->wolopts & WAKE_MAGICSECURE)
 		memcpy(intf->sopass, wol->sopass, sizeof(wol->sopass));
@@ -231,7 +231,7 @@ static int bcmasp_flow_insert(struct net_device *dev, struct ethtool_rxnfc *cmd)
 	if (cmd->fs.ring_cookie == RX_CLS_FLOW_WAKE)
 		wake = true;
 
-	/* Currently only supports WAKE filters */
+	 
 	if (!wake)
 		return -EOPNOTSUPP;
 
@@ -247,7 +247,7 @@ static int bcmasp_flow_insert(struct net_device *dev, struct ethtool_rxnfc *cmd)
 		return -EOPNOTSUPP;
 	}
 
-	/* Check if filter already exists */
+	 
 	if (bcmasp_netfilt_check_dup(intf, &cmd->fs))
 		return -EINVAL;
 
@@ -255,13 +255,11 @@ static int bcmasp_flow_insert(struct net_device *dev, struct ethtool_rxnfc *cmd)
 	if (IS_ERR(nfilter))
 		return PTR_ERR(nfilter);
 
-	/* Return the location where we did insert the filter */
+	 
 	cmd->fs.location = nfilter->hw_index;
 	memcpy(&nfilter->fs, &cmd->fs, sizeof(struct ethtool_rx_flow_spec));
 
-	/* Since we only support wake filters, defer register programming till
-	 * suspend time.
-	 */
+	 
 	return 0;
 }
 
@@ -328,7 +326,7 @@ static int bcmasp_get_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd,
 	switch (cmd->cmd) {
 	case ETHTOOL_GRXCLSRLCNT:
 		cmd->rule_cnt = bcmasp_netfilt_get_active(intf);
-		/* We support specifying rule locations */
+		 
 		cmd->data |= RX_CLS_LOC_SPECIAL;
 		break;
 	case ETHTOOL_GRXCLSRULE:

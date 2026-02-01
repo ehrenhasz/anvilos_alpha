@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause
-/*
- * Copyright (c) 2020, MIPI Alliance, Inc.
- *
- * Author: Nicolas Pitre <npitre@baylibre.com>
- *
- * I3C HCI v2.0 Command Descriptor Handling
- *
- * Note: The I3C HCI v2.0 spec is still in flux. The code here will change.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/i3c/master.h>
@@ -17,9 +9,7 @@
 #include "xfer_mode_rate.h"
 
 
-/*
- * Unified Data Transfer Command
- */
+ 
 
 #define CMD_0_ATTR_U			FIELD_PREP(CMD_0_ATTR, 0x4)
 
@@ -49,9 +39,7 @@
 #define CMD_U0_RnW				   W0_BIT_(  7)
 #define CMD_U0_TID(v)			FIELD_PREP(W0_MASK(  6,   3), v)
 
-/*
- * Address Assignment Command
- */
+ 
 
 #define CMD_0_ATTR_A			FIELD_PREP(CMD_0_ATTR, 0x2)
 
@@ -131,7 +119,7 @@ static void hci_cmd_v2_prep_private_xfer(struct i3c_hci *hci,
 		case 0:
 			break;
 		}
-		/* we consumed all the data with the cmd descriptor */
+		 
 		xfer->data = NULL;
 	} else {
 		xfer->cmd_desc[0] =
@@ -193,7 +181,7 @@ static int hci_cmd_v2_prep_ccc(struct i3c_hci *hci, struct hci_xfer *xfer,
 		case 0:
 			break;
 		}
-		/* we consumed all the data with the cmd descriptor */
+		 
 		xfer->data = NULL;
 	} else {
 		xfer->cmd_desc[0] =
@@ -281,7 +269,7 @@ static int hci_cmd_v2_daa(struct i3c_hci *hci)
 			break;
 		}
 		if (RESP_STATUS(xfer[0].response) != RESP_SUCCESS) {
-			ret = 0;  /* no more devices to be assigned */
+			ret = 0;   
 			break;
 		}
 		if (RESP_STATUS(xfer[1].response) != RESP_SUCCESS) {
@@ -295,10 +283,7 @@ static int hci_cmd_v2_daa(struct i3c_hci *hci)
 		dcr = FIELD_GET(W1_MASK(63, 56), device_id[1]);
 		DBG("assigned address %#x to device PID=0x%llx DCR=%#x BCR=%#x",
 		    next_addr, pid, dcr, bcr);
-		/*
-		 * TODO: Extend the subsystem layer to allow for registering
-		 * new device and provide BCR/DCR/PID at the same time.
-		 */
+		 
 		ret = i3c_master_add_i3c_dev_locked(&hci->master, next_addr);
 		if (ret)
 			break;

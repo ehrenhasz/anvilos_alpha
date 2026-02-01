@@ -16,4 +16,4 @@ int aspeed_gpio_copro_release_gpio(struct gpio_desc *desc);
 int aspeed_gpio_copro_set_ops(const struct aspeed_gpio_copro_ops *ops, void *data);
 
 
-#endif /* __GPIO_ASPEED_H */
+#endif  

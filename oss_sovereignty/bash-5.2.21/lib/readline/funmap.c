@@ -1,23 +1,6 @@
-/* funmap.c -- attach names to functions. */
+ 
 
-/* Copyright (C) 1987-2021 Free Software Foundation, Inc.
-
-   This file is part of the GNU Readline Library (Readline), a library
-   for reading lines of text with interactive input and history editing.      
-
-   Readline is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Readline is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Readline.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #define READLINE_LIBRARY
 
@@ -27,13 +10,13 @@
 
 #if !defined (BUFSIZ)
 #include <stdio.h>
-#endif /* BUFSIZ */
+#endif  
 
 #if defined (HAVE_STDLIB_H)
 #  include <stdlib.h>
 #else
 #  include "ansi_stdlib.h"
-#endif /* HAVE_STDLIB_H */
+#endif  
 
 #include "rlconf.h"
 #include "readline.h"
@@ -52,8 +35,7 @@ FUNMAP **funmap;
 static int funmap_size;
 static int funmap_entry;
 
-/* After initializing the function map, this is the index of the first
-   program specific function. */
+ 
 int funmap_program_specific_entry_start;
 
 static const FUNMAP default_funmap[] = {
@@ -160,7 +142,7 @@ static const FUNMAP default_funmap[] = {
   { "vi-backward-bigword", rl_vi_bWord },
   { "vi-backward-word", rl_vi_bword },
   { "vi-bWord", rl_vi_bWord },
-  { "vi-bword", rl_vi_bword },	/* BEWARE: name matching is case insensitive */
+  { "vi-bword", rl_vi_bword },	 
   { "vi-change-case", rl_vi_change_case },
   { "vi-change-char", rl_vi_change_char },
   { "vi-change-to", rl_vi_change_to },
@@ -174,13 +156,13 @@ static const FUNMAP default_funmap[] = {
   { "vi-end-bigword", rl_vi_eWord },
   { "vi-end-word", rl_vi_end_word },
   { "vi-eof-maybe", rl_vi_eof_maybe },
-  { "vi-eword", rl_vi_eword },	/* BEWARE: name matching is case insensitive */
+  { "vi-eword", rl_vi_eword },	 
   { "vi-fWord", rl_vi_fWord },
   { "vi-fetch-history", rl_vi_fetch_history },
   { "vi-first-print", rl_vi_first_print },
   { "vi-forward-bigword", rl_vi_fWord },
   { "vi-forward-word", rl_vi_fword },
-  { "vi-fword", rl_vi_fword },	/* BEWARE: name matching is case insensitive */
+  { "vi-fword", rl_vi_fword },	 
   { "vi-goto-mark", rl_vi_goto_mark },
   { "vi-insert-beg", rl_vi_insert_beg },
   { "vi-insertion-mode", rl_vi_insert_mode },
@@ -204,7 +186,7 @@ static const FUNMAP default_funmap[] = {
   { "vi-yank-arg", rl_vi_yank_arg },
   { "vi-yank-pop", rl_vi_yank_pop },
   { "vi-yank-to", rl_vi_yank_to },
-#endif /* VI_MODE */
+#endif  
 
  {(char *)NULL, (rl_command_func_t *)NULL }
 };
@@ -228,7 +210,7 @@ rl_add_funmap_entry (const char *name, rl_command_func_t *function)
 
 static int funmap_initialized;
 
-/* Make the funmap contain all of the default entries. */
+ 
 void
 rl_initialize_funmap (void)
 {
@@ -244,16 +226,14 @@ rl_initialize_funmap (void)
   funmap_program_specific_entry_start = i;
 }
 
-/* Produce a NULL terminated array of known function names.  The array
-   is sorted.  The array itself is allocated, but not the strings inside.
-   You should free () the array when you done, but not the pointers. */
+ 
 const char **
 rl_funmap_names (void)
 {
   const char **result;
   int result_size, result_index;
 
-  /* Make sure that the function map has been initialized. */
+   
   rl_initialize_funmap ();
 
   for (result_index = result_size = 0, result = (const char **)NULL; funmap[result_index]; result_index++)

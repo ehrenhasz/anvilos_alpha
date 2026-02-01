@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PNI RM3100 3-axis geomagnetic sensor driver core.
- *
- * Copyright (C) 2018 Song Qiang <songqiang1304521@gmail.com>
- *
- * User Manual available at
- * <https://www.pnicorp.com/download/rm3100-user-manual/>
- *
- * TODO: event generation, pm.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -26,33 +17,33 @@
 
 #include "rm3100.h"
 
-/* Cycle Count Registers. */
+ 
 #define RM3100_REG_CC_X			0x05
 #define RM3100_REG_CC_Y			0x07
 #define RM3100_REG_CC_Z			0x09
 
-/* Poll Measurement Mode register. */
+ 
 #define RM3100_REG_POLL			0x00
 #define		RM3100_POLL_X		BIT(4)
 #define		RM3100_POLL_Y		BIT(5)
 #define		RM3100_POLL_Z		BIT(6)
 
-/* Continuous Measurement Mode register. */
+ 
 #define RM3100_REG_CMM			0x01
 #define		RM3100_CMM_START	BIT(0)
 #define		RM3100_CMM_X		BIT(4)
 #define		RM3100_CMM_Y		BIT(5)
 #define		RM3100_CMM_Z		BIT(6)
 
-/* TiMe Rate Configuration register. */
+ 
 #define RM3100_REG_TMRC			0x0B
 #define RM3100_TMRC_OFFSET		0x92
 
-/* Result Status register. */
+ 
 #define RM3100_REG_STATUS		0x34
 #define		RM3100_STATUS_DRDY	BIT(7)
 
-/* Measurement result registers. */
+ 
 #define RM3100_REG_MX2			0x24
 #define RM3100_REG_MY2			0x27
 #define RM3100_REG_MZ2			0x2a
@@ -64,10 +55,7 @@
 #define RM3100_V_REG_START		RM3100_REG_POLL
 #define RM3100_V_REG_END		RM3100_REG_STATUS
 
-/*
- * This is computed by hand, is the sum of channel storage bits and padding
- * bits, which is 4+4+4+12=24 in here.
- */
+ 
 #define RM3100_SCAN_BYTES		24
 
 #define RM3100_CMM_AXIS_SHIFT		4
@@ -78,17 +66,11 @@ struct rm3100_data {
 	bool use_interrupt;
 	int conversion_time;
 	int scale;
-	/* Ensure naturally aligned timestamp */
+	 
 	u8 buffer[RM3100_SCAN_BYTES] __aligned(8);
 	struct iio_trigger *drdy_trig;
 
-	/*
-	 * This lock is for protecting the consistency of series of i2c
-	 * operations, that is, to make sure a measurement process will
-	 * not be interrupted by a set frequency operation, which should
-	 * be taken where a series of i2c operation starts, released where
-	 * the operation ends.
-	 */
+	 
 	struct mutex lock;
 };
 
@@ -127,10 +109,7 @@ static irqreturn_t rm3100_thread_fn(int irq, void *d)
 	struct iio_dev *indio_dev = d;
 	struct rm3100_data *data = iio_priv(indio_dev);
 
-	/*
-	 * Write operation to any register or read operation
-	 * to first byte of results will clear the interrupt.
-	 */
+	 
 	regmap_write(data->regmap, RM3100_REG_POLL, 0);
 
 	return IRQ_HANDLED;
@@ -156,16 +135,7 @@ static int rm3100_wait_measurement(struct rm3100_data *data)
 	int tries = 20;
 	int ret;
 
-	/*
-	 * A read cycle of 400kbits i2c bus is about 20us, plus the time
-	 * used for scheduling, a read cycle of fast mode of this device
-	 * can reach 1.7ms, it may be possible for data to arrive just
-	 * after we check the RM3100_REG_STATUS. In this case, irq_handler is
-	 * called before measuring_done is reinitialized, it will wait
-	 * forever for data that has already been ready.
-	 * Reinitialize measuring_done before looking up makes sure we
-	 * will always capture interrupt no matter when it happens.
-	 */
+	 
 	if (data->use_interrupt)
 		reinit_completion(&data->measuring_done);
 
@@ -267,11 +237,7 @@ static const struct attribute_group rm3100_attribute_group = {
 
 #define RM3100_SAMP_NUM			14
 
-/*
- * Frequency : rm3100_samp_rates[][0].rm3100_samp_rates[][1]Hz.
- * Time between reading: rm3100_sam_rates[][2]ms.
- * The first one is actually 1.7ms.
- */
+ 
 static const int rm3100_samp_rates[RM3100_SAMP_NUM][3] = {
 	{600, 0, 2}, {300, 0, 3}, {150, 0, 7}, {75, 0, 13}, {37, 0, 27},
 	{18, 0, 55}, {9, 0, 110}, {4, 500000, 220}, {2, 300000, 440},
@@ -306,11 +272,7 @@ static int rm3100_set_cycle_count(struct rm3100_data *data, int val)
 			return ret;
 	}
 
-	/*
-	 * The scale of this sensor depends on the cycle count value, these
-	 * three values are corresponding to the cycle count value 50, 100,
-	 * 200. scale = output / gain * 10^4.
-	 */
+	 
 	switch (val) {
 	case 50:
 		data->scale = 500;
@@ -318,11 +280,7 @@ static int rm3100_set_cycle_count(struct rm3100_data *data, int val)
 	case 100:
 		data->scale = 263;
 		break;
-	/*
-	 * case 200:
-	 * This function will never be called by users' code, so here we
-	 * assume that it will never get a wrong parameter.
-	 */
+	 
 	default:
 		data->scale = 133;
 	}
@@ -339,7 +297,7 @@ static int rm3100_set_samp_freq(struct iio_dev *indio_dev, int val, int val2)
 	int i;
 
 	mutex_lock(&data->lock);
-	/* All cycle count registers use the same value. */
+	 
 	ret = regmap_read(regmap, RM3100_REG_CC_X, &cycle_count);
 	if (ret < 0)
 		goto unlock_return;
@@ -358,7 +316,7 @@ static int rm3100_set_samp_freq(struct iio_dev *indio_dev, int val, int val2)
 	if (ret < 0)
 		goto unlock_return;
 
-	/* Checking if cycle count registers need changing. */
+	 
 	if (val == 600 && cycle_count == 200) {
 		ret = rm3100_set_cycle_count(data, 100);
 		if (ret < 0)
@@ -370,7 +328,7 @@ static int rm3100_set_samp_freq(struct iio_dev *indio_dev, int val, int val2)
 	}
 
 	if (iio_buffer_enabled(indio_dev)) {
-		/* Writing TMRC registers requires CMM reset. */
+		 
 		ret = regmap_write(regmap, RM3100_REG_CMM, 0);
 		if (ret < 0)
 			goto unlock_return;
@@ -441,7 +399,7 @@ static int rm3100_buffer_preenable(struct iio_dev *indio_dev)
 {
 	struct rm3100_data *data = iio_priv(indio_dev);
 
-	/* Starting channels enabled. */
+	 
 	return regmap_write(data->regmap, RM3100_REG_CMM,
 		(*indio_dev->active_scan_mask & 0x7) << RM3100_CMM_AXIS_SHIFT |
 		RM3100_CMM_START);
@@ -476,7 +434,7 @@ static irqreturn_t rm3100_trigger_handler(int irq, void *p)
 		mutex_unlock(&data->lock);
 		if (ret < 0)
 			goto done;
-		/* Convert XXXYYYZZZxxx to XXXxYYYxZZZx. x for paddings. */
+		 
 		for (i = 2; i > 0; i--)
 			memmove(data->buffer + i * 4, data->buffer + i * 3, 3);
 		break;
@@ -512,10 +470,7 @@ static irqreturn_t rm3100_trigger_handler(int irq, void *p)
 		}
 		mutex_unlock(&data->lock);
 	}
-	/*
-	 * Always using the same buffer so that we wouldn't need to set the
-	 * paddings to 0 in case of leaking any data.
-	 */
+	 
 	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
 					   pf->timestamp);
 done:
@@ -586,11 +541,11 @@ int rm3100_common_probe(struct device *dev, struct regmap *regmap, int irq)
 	ret = regmap_read(regmap, RM3100_REG_TMRC, &tmp);
 	if (ret < 0)
 		return ret;
-	/* Initializing max wait time, which is double conversion time. */
+	 
 	data->conversion_time = rm3100_samp_rates[tmp - RM3100_TMRC_OFFSET][2]
 				* 2;
 
-	/* Cycle count values may not be what we want. */
+	 
 	if ((tmp - RM3100_TMRC_OFFSET) == 0)
 		rm3100_set_cycle_count(data, 100);
 	else

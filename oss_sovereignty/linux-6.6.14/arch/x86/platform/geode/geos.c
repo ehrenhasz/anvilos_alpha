@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * System Specific setup for Traverse Technologies GEOS.
- * At the moment this means setup of GPIO control of LEDs.
- *
- * Copyright (C) 2008 Constantin Baranov <const@mimas.ru>
- * Copyright (C) 2011 Ed Wildgoose <kernel@wildgooses.com>
- *                and Philip Prindeville <philipp@redfish-solutions.com>
- *
- * TODO: There are large similarities with leds-net5501.c
- * by Alessandro Zummo <a.zummo@towertech.it>
- * In the future leds-net5501.c should be migrated over to platform
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -74,7 +63,7 @@ static struct gpio_led_platform_data geos_leds_data = {
 static struct gpiod_lookup_table geos_leds_gpio_table = {
 	.dev_id = "leds-gpio",
 	.table = {
-		/* The Geode GPIOs should be on the CS5535 companion chip */
+		 
 		GPIO_LOOKUP_IDX("cs5535-gpio", 6, NULL, 0, GPIO_ACTIVE_LOW),
 		GPIO_LOOKUP_IDX("cs5535-gpio", 25, NULL, 1, GPIO_ACTIVE_LOW),
 		GPIO_LOOKUP_IDX("cs5535-gpio", 27, NULL, 2, GPIO_ACTIVE_LOW),
@@ -95,7 +84,7 @@ static struct platform_device *geos_devs[] __initdata = {
 
 static void __init register_geos(void)
 {
-	/* Setup LED control through leds-gpio driver */
+	 
 	gpiod_add_lookup_table(&geos_leds_gpio_table);
 	platform_add_devices(geos_devs, ARRAY_SIZE(geos_devs));
 }

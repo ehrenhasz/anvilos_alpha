@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <dirent.h>
 #include <errno.h>
 #include <stdio.h>
@@ -31,7 +31,7 @@
 
 #define MAX_NAME_LEN 100
 
-/** Strings corresponding to enum perf_type_id. */
+ 
 static const char * const event_type_descriptors[] = {
 	"Hardware event",
 	"Software event",
@@ -56,9 +56,7 @@ static const struct event_symbol event_symbols_tool[PERF_TOOL_MAX] = {
 	},
 };
 
-/*
- * Print the events from <debugfs_mount_point>/tracing/events
- */
+ 
 void print_tracepoint_events(const struct print_callbacks *print_cb __maybe_unused, void *print_state __maybe_unused)
 {
 	char *events_path = get_tracing_file("events");
@@ -110,16 +108,16 @@ void print_tracepoint_events(const struct print_callbacks *print_cb __maybe_unus
 			snprintf(evt_path, MAXPATHLEN, "%s:%s",
 				 sys_dirent->d_name, evt_dirent->d_name);
 			print_cb->print_event(print_state,
-					/*topic=*/NULL,
-					/*pmu_name=*/NULL,
+					 NULL,
+					 NULL,
 					evt_path,
-					/*event_alias=*/NULL,
-					/*scale_unit=*/NULL,
-					/*deprecated=*/false,
+					 NULL,
+					 NULL,
+					 false,
 					"Tracepoint event",
-					/*desc=*/NULL,
-					/*long_desc=*/NULL,
-					/*encoding_desc=*/NULL);
+					 NULL,
+					 NULL,
+					 NULL);
 next_evt:
 			free(evt_namelist[j]);
 		}
@@ -144,12 +142,7 @@ void print_sdt_events(const struct print_callbacks *print_cb, void *print_state)
 	struct str_node *bid_nd, *sdt_name, *next_sdt_name;
 	const char *last_sdt_name = NULL;
 
-	/*
-	 * The implicitly sorted sdtlist will hold the tracepoint name followed
-	 * by @<buildid>. If the tracepoint name is unique (determined by
-	 * looking at the adjacent nodes) the @<buildid> is dropped otherwise
-	 * the executable path and buildid are added to the name.
-	 */
+	 
 	sdtlist = strlist__new(NULL, NULL);
 	if (!sdtlist) {
 		pr_debug("Failed to allocate new strlist for SDT\n");
@@ -213,16 +206,16 @@ void print_sdt_events(const struct print_callbacks *print_cb, void *print_state)
 			}
 		}
 		print_cb->print_event(print_state,
-				/*topic=*/NULL,
-				/*pmu_name=*/NULL,
+				 NULL,
+				 NULL,
 				evt_name ?: sdt_name->s,
-				/*event_alias=*/NULL,
-				/*deprecated=*/false,
-				/*scale_unit=*/NULL,
+				 NULL,
+				 false,
+				 NULL,
 				"SDT event",
-				/*desc=*/NULL,
-				/*long_desc=*/NULL,
-				/*encoding_desc=*/NULL);
+				 NULL,
+				 NULL,
+				 NULL);
 
 		free(evt_name);
 	}
@@ -250,13 +243,7 @@ bool is_event_supported(u8 type, u64 config)
 		ret = open_return >= 0;
 
 		if (open_return == -EACCES) {
-			/*
-			 * This happens if the paranoid value
-			 * /proc/sys/kernel/perf_event_paranoid is set to 2
-			 * Re-run with exclude_kernel set; we don't do that
-			 * by default as some ARM machines do not support it.
-			 *
-			 */
+			 
 			evsel->core.attr.exclude_kernel = 1;
 			ret = evsel__open(evsel, NULL, tmap) >= 0;
 		}
@@ -272,17 +259,14 @@ int print_hwcache_events(const struct print_callbacks *print_cb, void *print_sta
 	struct perf_pmu *pmu = NULL;
 	const char *event_type_descriptor = event_type_descriptors[PERF_TYPE_HW_CACHE];
 
-	/*
-	 * Only print core PMUs, skipping uncore for performance and
-	 * PERF_TYPE_SOFTWARE that can succeed in opening legacy cache evenst.
-	 */
+	 
 	while ((pmu = perf_pmus__scan_core(pmu)) != NULL) {
 		if (pmu->is_uncore || pmu->type == PERF_TYPE_SOFTWARE)
 			continue;
 
 		for (int type = 0; type < PERF_COUNT_HW_CACHE_MAX; type++) {
 			for (int op = 0; op < PERF_COUNT_HW_CACHE_OP_MAX; op++) {
-				/* skip invalid cache type */
+				 
 				if (!evsel__is_cache_op_valid(type, op))
 					continue;
 
@@ -306,12 +290,12 @@ int print_hwcache_events(const struct print_callbacks *print_cb, void *print_sta
 							pmu->name,
 							name,
 							alias_name,
-							/*scale_unit=*/NULL,
-							/*deprecated=*/false,
+							 NULL,
+							 false,
 							event_type_descriptor,
-							/*desc=*/NULL,
-							/*long_desc=*/NULL,
-							/*encoding_desc=*/NULL);
+							 NULL,
+							 NULL,
+							 NULL);
 				}
 			}
 		}
@@ -321,19 +305,19 @@ int print_hwcache_events(const struct print_callbacks *print_cb, void *print_sta
 
 void print_tool_events(const struct print_callbacks *print_cb, void *print_state)
 {
-	// Start at 1 because the first enum entry means no tool event.
+	 
 	for (int i = 1; i < PERF_TOOL_MAX; ++i) {
 		print_cb->print_event(print_state,
 				"tool",
-				/*pmu_name=*/NULL,
+				 NULL,
 				event_symbols_tool[i].symbol,
 				event_symbols_tool[i].alias,
-				/*scale_unit=*/NULL,
-				/*deprecated=*/false,
+				 NULL,
+				 false,
 				"Tool event",
-				/*desc=*/NULL,
-				/*long_desc=*/NULL,
-				/*encoding_desc=*/NULL);
+				 NULL,
+				 NULL,
+				 NULL);
 	}
 }
 
@@ -349,10 +333,7 @@ void print_symbol_events(const struct print_callbacks *print_cb, void *print_sta
 		return;
 	}
 	for (unsigned int i = 0; i < max; i++) {
-		/*
-		 * New attr.config still not supported here, the latest
-		 * example was PERF_COUNT_SW_CGROUP_SWITCHES
-		 */
+		 
 		if (syms[i].symbol == NULL)
 			continue;
 
@@ -376,23 +357,21 @@ void print_symbol_events(const struct print_callbacks *print_cb, void *print_sta
 			alias += 4;
 		}
 		print_cb->print_event(print_state,
-				/*topic=*/NULL,
-				/*pmu_name=*/NULL,
+				 NULL,
+				 NULL,
 				nd->s,
 				alias,
-				/*scale_unit=*/NULL,
-				/*deprecated=*/false,
+				 NULL,
+				 false,
 				event_type_descriptors[type],
-				/*desc=*/NULL,
-				/*long_desc=*/NULL,
-				/*encoding_desc=*/NULL);
+				 NULL,
+				 NULL,
+				 NULL);
 	}
 	strlist__delete(evt_name_list);
 }
 
-/*
- * Print the help text for the event symbols:
- */
+ 
 void print_events(const struct print_callbacks *print_cb, void *print_state)
 {
 	print_symbol_events(print_cb, print_state, PERF_TYPE_HARDWARE,
@@ -407,40 +386,40 @@ void print_events(const struct print_callbacks *print_cb, void *print_state)
 	perf_pmus__print_pmu_events(print_cb, print_state);
 
 	print_cb->print_event(print_state,
-			/*topic=*/NULL,
-			/*pmu_name=*/NULL,
+			 NULL,
+			 NULL,
 			"rNNN",
-			/*event_alias=*/NULL,
-			/*scale_unit=*/NULL,
-			/*deprecated=*/false,
+			 NULL,
+			 NULL,
+			 false,
 			event_type_descriptors[PERF_TYPE_RAW],
-			/*desc=*/NULL,
-			/*long_desc=*/NULL,
-			/*encoding_desc=*/NULL);
+			 NULL,
+			 NULL,
+			 NULL);
 
 	print_cb->print_event(print_state,
-			/*topic=*/NULL,
-			/*pmu_name=*/NULL,
+			 NULL,
+			 NULL,
 			"cpu/t1=v1[,t2=v2,t3 ...]/modifier",
-			/*event_alias=*/NULL,
-			/*scale_unit=*/NULL,
-			/*deprecated=*/false,
+			 NULL,
+			 NULL,
+			 false,
 			event_type_descriptors[PERF_TYPE_RAW],
 			"(see 'man perf-list' on how to encode it)",
-			/*long_desc=*/NULL,
-			/*encoding_desc=*/NULL);
+			 NULL,
+			 NULL);
 
 	print_cb->print_event(print_state,
-			/*topic=*/NULL,
-			/*pmu_name=*/NULL,
+			 NULL,
+			 NULL,
 			"mem:<addr>[/len][:access]",
-			/*scale_unit=*/NULL,
-			/*event_alias=*/NULL,
-			/*deprecated=*/false,
+			 NULL,
+			 NULL,
+			 false,
 			event_type_descriptors[PERF_TYPE_BREAKPOINT],
-			/*desc=*/NULL,
-			/*long_desc=*/NULL,
-			/*encoding_desc=*/NULL);
+			 NULL,
+			 NULL,
+			 NULL);
 
 	print_tracepoint_events(print_cb, print_state);
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/drivers/rtc/rtc-pl030.c
- *
- *  Copyright (C) 2000-2001 Deep Blue Solutions Ltd.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/rtc.h>
 #include <linux/init.h>
@@ -58,14 +54,7 @@ static int pl030_read_time(struct device *dev, struct rtc_time *tm)
 	return 0;
 }
 
-/*
- * Set the RTC time.  Unfortunately, we can't accurately set
- * the point at which the counter updates.
- *
- * Also, since RTC_LR is transferred to RTC_CR on next rising
- * edge of the 1Hz clock, we must write the time one second
- * in advance.
- */
+ 
 static int pl030_set_time(struct device *dev, struct rtc_time *tm)
 {
 	struct pl030_rtc *rtc = dev_get_drvdata(dev);

@@ -1,44 +1,11 @@
-/*
- * Copyright (C) 2008-2023 Free Software Foundation, Inc.
- * Written by Eric Blake
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-#include <stdlib.h>
-
-#include "signature.h"
-SIGNATURE_CHECK (strtold, long double, (char const *, char **));
-
-#include <errno.h>
-#include <float.h>
-#include <math.h>
-#include <string.h>
-
-#include "isnanl-nolibm.h"
-#include "minus-zero.h"
-#include "macros.h"
-
-/* Avoid requiring -lm just for fabsl.  */
+ 
 #define FABSL(d) ((d) < 0.0L ? -(d) : (d))
 
 int
 main (void)
 {
   int status = 0;
-  /* Subject sequence empty or invalid.  */
+   
   {
     const char input[] = "";
     char *ptr;
@@ -91,7 +58,7 @@ main (void)
     result = strtold (input, &ptr);
     ASSERT (result == 0.0L);
     ASSERT (!signbit (result));
-    ASSERT (ptr == input);              /* IRIX 6.5 */
+    ASSERT (ptr == input);               
     ASSERT (errno == 0 || errno == EINVAL);
   }
   {
@@ -102,7 +69,7 @@ main (void)
     result = strtold (input, &ptr);
     ASSERT (result == 0.0L);
     ASSERT (!signbit (result));
-    ASSERT (ptr == input);              /* IRIX 6.5 */
+    ASSERT (ptr == input);               
     ASSERT (errno == 0 || errno == EINVAL);
   }
   {
@@ -128,7 +95,7 @@ main (void)
     ASSERT (errno == 0 || errno == EINVAL);
   }
 
-  /* Simple floating point values.  */
+   
   {
     const char input[] = "1";
     char *ptr;
@@ -240,7 +207,7 @@ main (void)
     ASSERT (errno == 0);
   }
 
-  /* Zero.  */
+   
   {
     const char input[] = "0";
     char *ptr;
@@ -303,12 +270,12 @@ main (void)
     errno = 0;
     result = strtold (input, &ptr);
     ASSERT (result == 0.0L);
-    ASSERT (!!signbit (result) == !!signbit (minus_zerol)); /* IRIX 6.5 */
+    ASSERT (!!signbit (result) == !!signbit (minus_zerol));  
     ASSERT (ptr == input + 2);
     ASSERT (errno == 0);
   }
 
-  /* Suffixes.  */
+   
   {
     const char input[] = "1f";
     char *ptr;
@@ -365,8 +332,8 @@ main (void)
     long double result;
     errno = 0;
     result = strtold (input, &ptr);
-    ASSERT (result == 1.0L);            /* HP-UX 11.31/ia64, IRIX 6.5 */
-    ASSERT (ptr == input + 1);          /* HP-UX 11.31/ia64, IRIX 6.5 */
+    ASSERT (result == 1.0L);             
+    ASSERT (ptr == input + 1);           
     ASSERT (errno == 0);
   }
   {
@@ -377,7 +344,7 @@ main (void)
     result = strtold (input, &ptr);
     ASSERT (result == 0.0L);
     ASSERT (!signbit (result));
-    ASSERT (ptr == input + 1);          /* glibc-2.3.2, Mac OS X 10.5, Haiku */
+    ASSERT (ptr == input + 1);           
     ASSERT (errno == 0);
   }
   {
@@ -398,8 +365,8 @@ main (void)
     errno = 0;
     result = strtold (input, &ptr);
     ASSERT (result == 0.0L);
-    ASSERT (!!signbit (result) == !!signbit (minus_zerol)); /* Mac OS X 10.5, IRIX 6.5 */
-    ASSERT (ptr == input + 2);          /* glibc-2.3.2, Mac OS X 10.5, Haiku */
+    ASSERT (!!signbit (result) == !!signbit (minus_zerol));  
+    ASSERT (ptr == input + 2);           
     ASSERT (errno == 0);
   }
   {
@@ -410,7 +377,7 @@ main (void)
     result = strtold (input, &ptr);
     ASSERT (result == 0.0L);
     ASSERT (!signbit (result));
-    ASSERT (ptr == input + 1);          /* glibc-2.3.2, Mac OS X 10.5, Haiku */
+    ASSERT (ptr == input + 1);           
     ASSERT (errno == 0);
   }
   {
@@ -421,7 +388,7 @@ main (void)
     result = strtold (input, &ptr);
     ASSERT (result == 0.0L);
     ASSERT (!signbit (result));
-    ASSERT (ptr == input + 1);          /* glibc-2.3.2, Mac OS X 10.5, Haiku */
+    ASSERT (ptr == input + 1);           
     ASSERT (errno == 0);
   }
   {
@@ -432,7 +399,7 @@ main (void)
     result = strtold (input, &ptr);
     ASSERT (result == 0.0L);
     ASSERT (!signbit (result));
-    ASSERT (ptr == input + 1);          /* glibc-2.3.2, Mac OS X 10.5, Haiku */
+    ASSERT (ptr == input + 1);           
     ASSERT (errno == 0);
   }
   {
@@ -443,7 +410,7 @@ main (void)
     result = strtold (input, &ptr);
     ASSERT (result == 0.0L);
     ASSERT (!signbit (result));
-    ASSERT (ptr == input + 1);          /* glibc-2.3.2, Mac OS X 10.5, Haiku */
+    ASSERT (ptr == input + 1);           
     ASSERT (errno == 0);
   }
   {
@@ -454,7 +421,7 @@ main (void)
     result = strtold (input, &ptr);
     ASSERT (result == 0.0L);
     ASSERT (!signbit (result));
-    ASSERT (ptr == input + 1);          /* glibc-2.3.2, Mac OS X 10.5, Haiku */
+    ASSERT (ptr == input + 1);           
     ASSERT (errno == 0);
   }
   {
@@ -465,7 +432,7 @@ main (void)
     result = strtold (input, &ptr);
     ASSERT (result == 0.0L);
     ASSERT (!signbit (result));
-    ASSERT (ptr == input + 1);          /* glibc-2.3.2, Mac OS X 10.5, Haiku */
+    ASSERT (ptr == input + 1);           
     ASSERT (errno == 0);
   }
   {
@@ -476,7 +443,7 @@ main (void)
     result = strtold (input, &ptr);
     ASSERT (result == 0.0L);
     ASSERT (!signbit (result));
-    ASSERT (ptr == input + 1);          /* glibc-2.3.2, Mac OS X 10.5, Haiku */
+    ASSERT (ptr == input + 1);           
     ASSERT (errno == 0);
   }
   {
@@ -500,7 +467,7 @@ main (void)
     ASSERT (errno == 0);
   }
 
-  /* Overflow/underflow.  */
+   
   {
     const char input[] = "1E1000000";
     char *ptr;
@@ -540,11 +507,8 @@ main (void)
     result = strtold (input, &ptr);
     ASSERT (-LDBL_MIN <= result && result <= 0.0L);
 #if 0
-    /* FIXME - this is glibc bug 5995; POSIX allows returning positive
-       0 on negative underflow, even though quality of implementation
-       demands preserving the sign.  Disable this test until fixed
-       glibc is more prevalent.  */
-    ASSERT (!!signbit (result) == !!signbit (minus_zerol)); /* glibc-2.3.2, Haiku */
+     
+    ASSERT (!!signbit (result) == !!signbit (minus_zerol));  
 #endif
     ASSERT (ptr == input + 10);
     ASSERT (errno == ERANGE);
@@ -555,9 +519,9 @@ main (void)
     long double result;
     errno = 0;
     result = strtold (input, &ptr);
-    ASSERT (result == 1.0L);            /* HP-UX 11.31/ia64, IRIX 6.5 */
-    ASSERT (ptr == input + 1);          /* HP-UX 11.31/ia64, IRIX 6.5 */
-    ASSERT (errno == 0);                /* HP-UX 11.31/ia64, IRIX 6.5 */
+    ASSERT (result == 1.0L);             
+    ASSERT (ptr == input + 1);           
+    ASSERT (errno == 0);                 
   }
   {
     const char input[] = "0x1P 1000000";
@@ -565,21 +529,21 @@ main (void)
     long double result;
     errno = 0;
     result = strtold (input, &ptr);
-    ASSERT (result == 1.0L);            /* HP-UX 11.31/ia64, IRIX 6.5, mingw */
-    ASSERT (ptr == input + 3);          /* HP-UX 11.31/ia64, IRIX 6.5, mingw */
+    ASSERT (result == 1.0L);             
+    ASSERT (ptr == input + 3);           
     ASSERT (errno == 0);
   }
 
-  /* Infinity.  */
+   
   {
     const char input[] = "iNf";
     char *ptr;
     long double result;
     errno = 0;
     result = strtold (input, &ptr);
-    ASSERT (result == HUGE_VALL);       /* IRIX 6.5 */
-    ASSERT (ptr == input + 3);          /* IRIX 6.5 */
-    ASSERT (errno == 0);                /* HP-UX 11.31/ia64 */
+    ASSERT (result == HUGE_VALL);        
+    ASSERT (ptr == input + 3);           
+    ASSERT (errno == 0);                 
   }
   {
     const char input[] = "-InF";
@@ -587,9 +551,9 @@ main (void)
     long double result;
     errno = 0;
     result = strtold (input, &ptr);
-    ASSERT (result == -HUGE_VALL);      /* IRIX 6.5 */
-    ASSERT (ptr == input + 4);          /* IRIX 6.5 */
-    ASSERT (errno == 0);                /* HP-UX 11.31/ia64 */
+    ASSERT (result == -HUGE_VALL);       
+    ASSERT (ptr == input + 4);           
+    ASSERT (errno == 0);                 
   }
   {
     const char input[] = "infinite";
@@ -597,9 +561,9 @@ main (void)
     long double result;
     errno = 0;
     result = strtold (input, &ptr);
-    ASSERT (result == HUGE_VALL);       /* IRIX 6.5 */
-    ASSERT (ptr == input + 3);          /* IRIX 6.5 */
-    ASSERT (errno == 0);                /* HP-UX 11.31/ia64 */
+    ASSERT (result == HUGE_VALL);        
+    ASSERT (ptr == input + 3);           
+    ASSERT (errno == 0);                 
   }
   {
     const char input[] = "infinitY";
@@ -607,9 +571,9 @@ main (void)
     long double result;
     errno = 0;
     result = strtold (input, &ptr);
-    ASSERT (result == HUGE_VALL);       /* IRIX 6.5 */
-    ASSERT (ptr == input + 8);          /* IRIX 6.5 */
-    ASSERT (errno == 0);                /* HP-UX 11.31/ia64 */
+    ASSERT (result == HUGE_VALL);        
+    ASSERT (ptr == input + 8);           
+    ASSERT (errno == 0);                 
   }
   {
     const char input[] = "infinitY.";
@@ -617,13 +581,12 @@ main (void)
     long double result;
     errno = 0;
     result = strtold (input, &ptr);
-    ASSERT (result == HUGE_VALL);       /* IRIX 6.5 */
-    ASSERT (ptr == input + 8);          /* IRIX 6.5 */
-    ASSERT (errno == 0);                /* HP-UX 11.31/ia64 */
+    ASSERT (result == HUGE_VALL);        
+    ASSERT (ptr == input + 8);           
+    ASSERT (errno == 0);                 
   }
 
-  /* NaN.  Some processors set the sign bit of the default NaN, so all
-     we check is that using a sign changes the result.  */
+   
   {
     const char input[] = "-nan";
     char *ptr1;
@@ -633,17 +596,16 @@ main (void)
     errno = 0;
     result1 = strtold (input, &ptr1);
     result2 = strtold (input + 1, &ptr2);
-#if 1 /* All known CPUs support NaNs.  */
-    ASSERT (isnanl (result1));          /* IRIX 6.5 */
-    ASSERT (isnanl (result2));          /* IRIX 6.5 */
+#if 1  
+    ASSERT (isnanl (result1));           
+    ASSERT (isnanl (result2));           
 # if 0
-    /* Sign bits of NaN is a portability sticking point, not worth
-       worrying about.  */
+     
     ASSERT (!!signbit (result1) != !!signbit (result2));
 # endif
-    ASSERT (ptr1 == input + 4);         /* IRIX 6.5 */
-    ASSERT (ptr2 == input + 4);         /* IRIX 6.5 */
-    ASSERT (errno == 0);                /* HP-UX 11.31/ia64 */
+    ASSERT (ptr1 == input + 4);          
+    ASSERT (ptr2 == input + 4);          
+    ASSERT (errno == 0);                 
 #else
     ASSERT (result1 == 0.0L);
     ASSERT (result2 == 0.0L);
@@ -663,13 +625,13 @@ main (void)
     errno = 0;
     result1 = strtold (input, &ptr1);
     result2 = strtold (input + 1, &ptr2);
-#if 1 /* All known CPUs support NaNs.  */
-    ASSERT (isnanl (result1));          /* IRIX 6.5 */
-    ASSERT (isnanl (result2));          /* IRIX 6.5 */
+#if 1  
+    ASSERT (isnanl (result1));           
+    ASSERT (isnanl (result2));           
     ASSERT (!!signbit (result1) == !!signbit (result2));
-    ASSERT (ptr1 == input + 4);         /* Mac OS X 10.5, IRIX 6.5 */
-    ASSERT (ptr2 == input + 4);         /* Mac OS X 10.5, IRIX 6.5 */
-    ASSERT (errno == 0);                /* HP-UX 11.31/ia64 */
+    ASSERT (ptr1 == input + 4);          
+    ASSERT (ptr2 == input + 4);          
+    ASSERT (errno == 0);                 
 #else
     ASSERT (result1 == 0.0L);
     ASSERT (result2 == 0.0L);
@@ -689,17 +651,16 @@ main (void)
     errno = 0;
     result1 = strtold (input, &ptr1);
     result2 = strtold (input + 1, &ptr2);
-#if 1 /* All known CPUs support NaNs.  */
-    ASSERT (isnanl (result1));          /* IRIX 6.5 */
-    ASSERT (isnanl (result2));          /* IRIX 6.5 */
+#if 1  
+    ASSERT (isnanl (result1));           
+    ASSERT (isnanl (result2));           
 # if 0
-    /* Sign bits of NaN is a portability sticking point, not worth
-       worrying about.  */
-    ASSERT (!!signbit (result1) != !!signbit (result2)); /* glibc-2.3.2, musl libc, OpenBSD 6.0, IRIX 6.5, mingw, Haiku */
+     
+    ASSERT (!!signbit (result1) != !!signbit (result2));  
 # endif
-    ASSERT (ptr1 == input + 6);         /* glibc-2.3.2, IRIX 6.5, mingw, Haiku */
-    ASSERT (ptr2 == input + 6);         /* glibc-2.3.2, IRIX 6.5, mingw, Haiku */
-    ASSERT (errno == 0);                /* HP-UX 11.31/ia64, Haiku */
+    ASSERT (ptr1 == input + 6);          
+    ASSERT (ptr2 == input + 6);          
+    ASSERT (errno == 0);                 
 #else
     ASSERT (result1 == 0.0L);
     ASSERT (result2 == 0.0L);
@@ -716,10 +677,10 @@ main (void)
     long double result;
     errno = 0;
     result = strtold (input, &ptr);
-#if 1 /* All known CPUs support NaNs.  */
-    ASSERT (isnanl (result));           /* IRIX 6.5 */
-    ASSERT (ptr == input + 6);          /* glibc-2.3.2, IRIX 6.5, mingw, Haiku */
-    ASSERT (errno == 0);                /* HP-UX 11.31/ia64, Haiku */
+#if 1  
+    ASSERT (isnanl (result));            
+    ASSERT (ptr == input + 6);           
+    ASSERT (errno == 0);                 
 #else
     ASSERT (result == 0.0L);
     ASSERT (!signbit (result));
@@ -728,9 +689,7 @@ main (void)
 #endif
   }
   {
-    /* The behavior of nan(0) is implementation-defined, but all
-       implementations we know of which handle optional
-       n-char-sequences handle nan(0) the same as nan().  */
+     
     const char input[] = "-nan(0).";
     char *ptr1;
     char *ptr2;
@@ -739,17 +698,16 @@ main (void)
     errno = 0;
     result1 = strtold (input, &ptr1);
     result2 = strtold (input + 1, &ptr2);
-#if 1 /* All known CPUs support NaNs.  */
-    ASSERT (isnanl (result1));          /* IRIX 6.5 */
-    ASSERT (isnanl (result2));          /* IRIX 6.5 */
+#if 1  
+    ASSERT (isnanl (result1));           
+    ASSERT (isnanl (result2));           
 # if 0
-    /* Sign bits of NaN is a portability sticking point, not worth
-       worrying about.  */
+     
     ASSERT (!!signbit (result1) != !!signbit (result2));
 # endif
-    ASSERT (ptr1 == input + 7);         /* glibc-2.3.2, IRIX 6.5, mingw, Haiku */
-    ASSERT (ptr2 == input + 7);         /* glibc-2.3.2, IRIX 6.5, mingw, Haiku */
-    ASSERT (errno == 0);                /* HP-UX 11.31/ia64 */
+    ASSERT (ptr1 == input + 7);          
+    ASSERT (ptr2 == input + 7);          
+    ASSERT (errno == 0);                 
 #else
     ASSERT (result1 == 0.0L);
     ASSERT (result2 == 0.0L);
@@ -761,15 +719,15 @@ main (void)
 #endif
   }
 
-  /* Hex.  */
+   
   {
     const char input[] = "0xa";
     char *ptr;
     long double result;
     errno = 0;
     result = strtold (input, &ptr);
-    ASSERT (result == 10.0L);           /* IRIX 6.5, mingw */
-    ASSERT (ptr == input + 3);          /* IRIX 6.5, mingw */
+    ASSERT (result == 10.0L);            
+    ASSERT (ptr == input + 3);           
     ASSERT (errno == 0);
   }
   {
@@ -778,8 +736,8 @@ main (void)
     long double result;
     errno = 0;
     result = strtold (input, &ptr);
-    ASSERT (result == 10.0L);           /* IRIX 6.5, mingw */
-    ASSERT (ptr == input + 3);          /* IRIX 6.5, mingw */
+    ASSERT (result == 10.0L);            
+    ASSERT (ptr == input + 3);           
     ASSERT (errno == 0);
   }
   {
@@ -788,8 +746,8 @@ main (void)
     long double result;
     errno = 0;
     result = strtold (input, &ptr);
-    ASSERT (result == 1.0L);            /* IRIX 6.5, mingw */
-    ASSERT (ptr == input + 3);          /* IRIX 6.5, mingw */
+    ASSERT (result == 1.0L);             
+    ASSERT (ptr == input + 3);           
     ASSERT (errno == 0);
   }
   {
@@ -798,8 +756,8 @@ main (void)
     long double result;
     errno = 0;
     result = strtold (input, &ptr);
-    ASSERT (result == 1.0L);            /* IRIX 6.5, mingw */
-    ASSERT (ptr == input + 3);          /* IRIX 6.5, mingw */
+    ASSERT (result == 1.0L);             
+    ASSERT (ptr == input + 3);           
     ASSERT (errno == 0);
   }
   {
@@ -808,8 +766,8 @@ main (void)
     long double result;
     errno = 0;
     result = strtold (input, &ptr);
-    ASSERT (result == 1.0L);            /* IRIX 6.5, mingw */
-    ASSERT (ptr == input + 3);          /* IRIX 6.5, mingw */
+    ASSERT (result == 1.0L);             
+    ASSERT (ptr == input + 3);           
     ASSERT (errno == 0);
   }
   {
@@ -818,8 +776,8 @@ main (void)
     long double result;
     errno = 0;
     result = strtold (input, &ptr);
-    ASSERT (result == 2.0L);            /* IRIX 6.5, mingw */
-    ASSERT (ptr == input + 6);          /* IRIX 6.5, mingw */
+    ASSERT (result == 2.0L);             
+    ASSERT (ptr == input + 6);           
     ASSERT (errno == 0);
   }
   {
@@ -828,8 +786,8 @@ main (void)
     long double result;
     errno = 0;
     result = strtold (input, &ptr);
-    ASSERT (result == 2.0L);            /* IRIX 6.5, mingw */
-    ASSERT (ptr == input + 6);          /* IRIX 6.5, mingw */
+    ASSERT (result == 2.0L);             
+    ASSERT (ptr == input + 6);           
     ASSERT (errno == 0);
   }
   {
@@ -838,8 +796,8 @@ main (void)
     long double result;
     errno = 0;
     result = strtold (input, &ptr);
-    ASSERT (result == 2.0L);            /* IRIX 6.5, mingw */
-    ASSERT (ptr == input + 6);          /* IRIX 6.5, mingw */
+    ASSERT (result == 2.0L);             
+    ASSERT (ptr == input + 6);           
     ASSERT (errno == 0);
   }
   {
@@ -848,12 +806,12 @@ main (void)
     long double result;
     errno = 0;
     result = strtold (input, &ptr);
-    ASSERT (result == 1.0L);            /* HP-UX 11.31/ia64, IRIX 6.5, mingw */
-    ASSERT (ptr == input + 3);          /* HP-UX 11.31/ia64, IRIX 6.5, mingw */
+    ASSERT (result == 1.0L);             
+    ASSERT (ptr == input + 3);           
     ASSERT (errno == 0);
   }
 
-  /* Large buffers.  */
+   
   {
     size_t m = 1000000;
     char *input = malloc (m + 1);
@@ -891,8 +849,7 @@ main (void)
     free (input);
   }
 #if 0
-  /* Newlib has an artificial limit of 20000 for the exponent.  TODO -
-     gnulib should fix this.  */
+   
   {
     size_t m = 1000000;
     char *input = malloc (m + 1);
@@ -914,9 +871,9 @@ main (void)
         input[m] = '\0';
         errno = 0;
         result = strtold (input, &ptr);
-        ASSERT (result == 1.0L);        /* Mac OS X 10.5, FreeBSD 11.0, NetBSD 7.1, OpenBSD 6.0, Minix 3.3, IRIX 6.5, mingw */
+        ASSERT (result == 1.0L);         
         ASSERT (ptr == input + m);
-        ASSERT (errno == 0);            /* Mac OS X 10.5, FreeBSD 11.0, NetBSD 7.1, OpenBSD 6.0, Minix 3.3, IRIX 6.5, mingw */
+        ASSERT (errno == 0);             
       }
     free (input);
   }
@@ -940,9 +897,9 @@ main (void)
         input[m] = '\0';
         errno = 0;
         result = strtold (input, &ptr);
-        ASSERT (result == 1.0L);        /* Mac OS X 10.5, FreeBSD 11.0, NetBSD 7.1, OpenBSD 6.0, Minix 3.3, IRIX 6.5, mingw */
+        ASSERT (result == 1.0L);         
         ASSERT (ptr == input + m);
-        ASSERT (errno == 0);            /* Mac OS X 10.5, FreeBSD 11.0, NetBSD 7.1, OpenBSD 6.0, Minix 3.3, IRIX 6.5, mingw */
+        ASSERT (errno == 0);             
       }
     free (input);
   }
@@ -963,18 +920,15 @@ main (void)
         errno = 0;
         result = strtold (input, &ptr);
         ASSERT (result == 0.0L);
-        ASSERT (!!signbit (result) == !!signbit (minus_zerol)); /* IRIX 6.5 */
+        ASSERT (!!signbit (result) == !!signbit (minus_zerol));  
         ASSERT (ptr == input + m);
         ASSERT (errno == 0);
       }
     free (input);
   }
 
-  /* Rounding.  */
-  /* TODO - is it worth some tests of rounding for typical IEEE corner
-     cases, such as .5 ULP rounding up to the smallest denormal and
-     not causing underflow, or LDBL_MIN - .5 ULP not causing an
-     infinite loop?  */
+   
+   
 
   return status;
 }

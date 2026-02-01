@@ -1,19 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *
- *  Generic Bluetooth HCI UART driver
- *
- *  Copyright (C) 2015-2018  Intel Corporation
- */
+ 
+ 
 
 #include <asm/unaligned.h>
 
 struct h4_recv_pkt {
-	u8  type;	/* Packet type */
-	u8  hlen;	/* Header length */
-	u8  loff;	/* Data length offset in header */
-	u8  lsize;	/* Data length field size */
-	u16 maxlen;	/* Max overall packet length */
+	u8  type;	 
+	u8  hlen;	 
+	u8  loff;	 
+	u8  lsize;	 
+	u16 maxlen;	 
 	int (*recv)(struct hci_dev *hdev, struct sk_buff *skb);
 };
 
@@ -45,7 +40,7 @@ static inline struct sk_buff *h4_recv_buf(struct hci_dev *hdev,
 					  const struct h4_recv_pkt *pkts,
 					  int pkts_count)
 {
-	/* Check for error from previous call */
+	 
 	if (IS_ERR(skb))
 		skb = NULL;
 
@@ -67,7 +62,7 @@ static inline struct sk_buff *h4_recv_buf(struct hci_dev *hdev,
 				break;
 			}
 
-			/* Check for invalid packet type */
+			 
 			if (!skb)
 				return ERR_PTR(-EILSEQ);
 
@@ -81,7 +76,7 @@ static inline struct sk_buff *h4_recv_buf(struct hci_dev *hdev,
 		count -= len;
 		buffer += len;
 
-		/* Check for partial packet */
+		 
 		if (skb->len < hci_skb_expect(skb))
 			continue;
 
@@ -100,11 +95,11 @@ static inline struct sk_buff *h4_recv_buf(struct hci_dev *hdev,
 
 			switch ((&pkts[i])->lsize) {
 			case 0:
-				/* No variable data length */
+				 
 				dlen = 0;
 				break;
 			case 1:
-				/* Single octet variable length */
+				 
 				dlen = skb->data[(&pkts[i])->loff];
 				hci_skb_expect(skb) += dlen;
 
@@ -114,7 +109,7 @@ static inline struct sk_buff *h4_recv_buf(struct hci_dev *hdev,
 				}
 				break;
 			case 2:
-				/* Double octet variable length */
+				 
 				dlen = get_unaligned_le16(skb->data +
 							  (&pkts[i])->loff);
 				hci_skb_expect(skb) += dlen;
@@ -125,18 +120,18 @@ static inline struct sk_buff *h4_recv_buf(struct hci_dev *hdev,
 				}
 				break;
 			default:
-				/* Unsupported variable length */
+				 
 				kfree_skb(skb);
 				return ERR_PTR(-EILSEQ);
 			}
 
 			if (!dlen) {
-				/* No more data, complete frame */
+				 
 				(&pkts[i])->recv(hdev, skb);
 				skb = NULL;
 			}
 		} else {
-			/* Complete frame */
+			 
 			(&pkts[i])->recv(hdev, skb);
 			skb = NULL;
 		}

@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright 2023 NXP
-//
+
+
+
+
 
 #include <dt-bindings/clock/imx8-clock.h>
 #include <linux/clk-provider.h>
@@ -18,55 +18,31 @@
 
 #include "clk.h"
 
-/**
- * struct clk_imx_acm_pm_domains - structure for multi power domain
- * @pd_dev: power domain device
- * @pd_dev_link: power domain device link
- * @num_domains: power domain nummber
- */
+ 
 struct clk_imx_acm_pm_domains {
 	struct device **pd_dev;
 	struct device_link **pd_dev_link;
 	int    num_domains;
 };
 
-/**
- * struct clk_imx8_acm_sel - for clock mux
- * @name: clock name
- * @clkid: clock id
- * @parents: clock parents
- * @num_parents: clock parents number
- * @reg: register offset
- * @shift: bit shift in register
- * @width: bits width
- */
+ 
 struct clk_imx8_acm_sel {
 	const char			*name;
 	int				clkid;
-	const struct clk_parent_data	*parents;	/* For mux */
+	const struct clk_parent_data	*parents;	 
 	int				num_parents;
 	u32				reg;
 	u8				shift;
 	u8				width;
 };
 
-/**
- * struct imx8_acm_soc_data - soc specific data
- * @sels: pointer to struct clk_imx8_acm_sel
- * @num_sels: numbers of items
- */
+ 
 struct imx8_acm_soc_data {
 	struct clk_imx8_acm_sel *sels;
 	unsigned int num_sels;
 };
 
-/**
- * struct imx8_acm_priv - private structure
- * @dev_pm: multi power domain
- * @soc_data: pointer to soc data
- * @reg: base address of registers
- * @regs: save registers for suspend
- */
+ 
 struct imx8_acm_priv {
 	struct clk_imx_acm_pm_domains dev_pm;
 	const struct imx8_acm_soc_data *soc_data;
@@ -248,11 +224,7 @@ static struct clk_imx8_acm_sel imx8dxl_sels[] = {
 	{ "acm_mqs_mclk_sel", IMX_ADMA_ACM_MQS_TX_CLK_SEL, imx8dxl_mclk_sels, ARRAY_SIZE(imx8dxl_mclk_sels), 0x1C0000, 0, 2 },
 };
 
-/**
- * clk_imx_acm_attach_pm_domains: attach multi power domains
- * @dev: device pointer
- * @dev_pm: power domains for device
- */
+ 
 static int clk_imx_acm_attach_pm_domains(struct device *dev,
 					 struct clk_imx_acm_pm_domains *dev_pm)
 {
@@ -305,11 +277,7 @@ detach_pm:
 	return ret;
 }
 
-/**
- * clk_imx_acm_detach_pm_domains: detach multi power domains
- * @dev: deivice pointer
- * @dev_pm: multi power domain for device
- */
+ 
 static int clk_imx_acm_detach_pm_domains(struct device *dev,
 					 struct clk_imx_acm_pm_domains *dev_pm)
 {
@@ -427,7 +395,7 @@ static const struct of_device_id imx8_acm_match[] = {
 	{ .compatible = "fsl,imx8qm-acm", .data = &imx8qm_acm_data },
 	{ .compatible = "fsl,imx8qxp-acm", .data = &imx8qxp_acm_data },
 	{ .compatible = "fsl,imx8dxl-acm", .data = &imx8dxl_acm_data },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx8_acm_match);
 

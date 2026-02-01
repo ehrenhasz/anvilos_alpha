@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define KBUILD_MODNAME "foo"
 #include <string.h>
 #include <linux/in.h>
@@ -11,7 +11,7 @@
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_endian.h>
 
-/* One map use devmap, another one use devmap_hash for testing */
+ 
 struct {
 	__uint(type, BPF_MAP_TYPE_DEVMAP);
 	__uint(key_size, sizeof(int));
@@ -26,7 +26,7 @@ struct {
 	__uint(max_entries, 128);
 } map_egress SEC(".maps");
 
-/* map to store egress interfaces mac addresses */
+ 
 struct {
 	__uint(type, BPF_MAP_TYPE_HASH);
 	__type(key, __u32);
@@ -50,19 +50,19 @@ int xdp_redirect_map_multi_prog(struct xdp_md *ctx)
 
 	h_proto = eth->h_proto;
 
-	/* Using IPv4 for (BPF_F_BROADCAST | BPF_F_EXCLUDE_INGRESS) testing */
+	 
 	if (h_proto == bpf_htons(ETH_P_IP))
 		return bpf_redirect_map(&map_all, 0,
 					BPF_F_BROADCAST | BPF_F_EXCLUDE_INGRESS);
-	/* Using IPv6 for none flag testing */
+	 
 	else if (h_proto == bpf_htons(ETH_P_IPV6))
 		return bpf_redirect_map(&map_all, if_index, 0);
-	/* All others for BPF_F_BROADCAST testing */
+	 
 	else
 		return bpf_redirect_map(&map_all, 0, BPF_F_BROADCAST);
 }
 
-/* The following 2 progs are for 2nd devmap prog testing */
+ 
 SEC("xdp")
 int xdp_redirect_map_all_prog(struct xdp_md *ctx)
 {

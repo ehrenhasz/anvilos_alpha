@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2005-2006 Fen Systems Ltd.
- * Copyright 2005-2013 Solarflare Communications Inc.
- */
+
+ 
 
 #include <linux/filter.h>
 #include <linux/module.h>
@@ -38,11 +34,7 @@
 #include "mcdi_pcol.h"
 #include "workarounds.h"
 
-/**************************************************************************
- *
- * Configurable values
- *
- *************************************************************************/
+ 
 
 module_param_named(interrupt_mode, efx_interrupt_mode, uint, 0444);
 MODULE_PARM_DESC(interrupt_mode,
@@ -51,36 +43,16 @@ MODULE_PARM_DESC(interrupt_mode,
 module_param(rss_cpus, uint, 0444);
 MODULE_PARM_DESC(rss_cpus, "Number of CPUs to use for Receive-Side Scaling");
 
-/*
- * Use separate channels for TX and RX events
- *
- * Set this to 1 to use separate channels for TX and RX. It allows us
- * to control interrupt affinity separately for TX and RX.
- *
- * This is only used in MSI-X interrupt mode
- */
+ 
 bool efx_separate_tx_channels;
 module_param(efx_separate_tx_channels, bool, 0444);
 MODULE_PARM_DESC(efx_separate_tx_channels,
 		 "Use separate channels for TX and RX");
 
-/* Initial interrupt moderation settings.  They can be modified after
- * module load with ethtool.
- *
- * The default for RX should strike a balance between increasing the
- * round-trip latency and reducing overhead.
- */
+ 
 static unsigned int rx_irq_mod_usec = 60;
 
-/* Initial interrupt moderation settings.  They can be modified after
- * module load with ethtool.
- *
- * This default is chosen to ensure that a 10G link does not go idle
- * while a TX queue is stopped after it has become full.  A queue is
- * restarted when it drops below half full.  The time this takes (assuming
- * worst case 3 descriptors per packet and 1024 descriptors) is
- *   512 / 3 * 1.2 = 205 usec.
- */
+ 
 static unsigned int tx_irq_mod_usec = 150;
 
 static bool phy_flash_cfg;
@@ -94,11 +66,7 @@ static unsigned debug = (NETIF_MSG_DRV | NETIF_MSG_PROBE |
 module_param(debug, uint, 0);
 MODULE_PARM_DESC(debug, "Bitmapped debugging message enable value");
 
-/**************************************************************************
- *
- * Utility functions and prototypes
- *
- *************************************************************************/
+ 
 
 static void efx_remove_port(struct efx_nic *efx);
 static int efx_xdp_setup_prog(struct efx_nic *efx, struct bpf_prog *prog);
@@ -106,11 +74,7 @@ static int efx_xdp(struct net_device *dev, struct netdev_bpf *xdp);
 static int efx_xdp_xmit(struct net_device *dev, int n, struct xdp_frame **xdpfs,
 			u32 flags);
 
-/**************************************************************************
- *
- * Port handling
- *
- **************************************************************************/
+ 
 
 static void efx_fini_port(struct efx_nic *efx);
 
@@ -123,12 +87,12 @@ static int efx_probe_port(struct efx_nic *efx)
 	if (phy_flash_cfg)
 		efx->phy_mode = PHY_MODE_SPECIAL;
 
-	/* Connect up MAC/PHY operations table */
+	 
 	rc = efx->type->probe_port(efx);
 	if (rc)
 		return rc;
 
-	/* Initialise MAC address to permanent address */
+	 
 	eth_hw_addr_set(efx->net_dev, efx->net_dev->perm_addr);
 
 	return 0;
@@ -144,7 +108,7 @@ static int efx_init_port(struct efx_nic *efx)
 
 	efx->port_initialized = true;
 
-	/* Ensure the PHY advertises the correct flow control settings */
+	 
 	rc = efx_mcdi_port_reconfigure(efx);
 	if (rc && rc != -EPERM)
 		goto fail;
@@ -177,11 +141,7 @@ static void efx_remove_port(struct efx_nic *efx)
 	efx->type->remove_port(efx);
 }
 
-/**************************************************************************
- *
- * NIC handling
- *
- **************************************************************************/
+ 
 
 static LIST_HEAD(efx_primary_list);
 static LIST_HEAD(efx_unassociated_list);
@@ -198,7 +158,7 @@ static void efx_associate(struct efx_nic *efx)
 	struct efx_nic *other, *next;
 
 	if (efx->primary == efx) {
-		/* Adding primary function; look for secondaries */
+		 
 
 		netif_dbg(efx, probe, efx->net_dev, "adding to primary list\n");
 		list_add_tail(&efx->node, &efx_primary_list);
@@ -217,7 +177,7 @@ static void efx_associate(struct efx_nic *efx)
 			}
 		}
 	} else {
-		/* Adding secondary function; look for primary */
+		 
 
 		list_for_each_entry(other, &efx_primary_list, node) {
 			if (efx_same_controller(efx, other)) {
@@ -260,7 +220,7 @@ static int efx_probe_nic(struct efx_nic *efx)
 
 	netif_dbg(efx, probe, efx->net_dev, "creating NIC\n");
 
-	/* Carry out hardware-type specific initialisation */
+	 
 	rc = efx->type->probe(efx);
 	if (rc)
 		return rc;
@@ -274,9 +234,7 @@ static int efx_probe_nic(struct efx_nic *efx)
 			goto fail1;
 		}
 
-		/* Determine the number of channels and queues by trying
-		 * to hook in MSI-X interrupts.
-		 */
+		 
 		rc = efx_probe_interrupts(efx);
 		if (rc)
 			goto fail1;
@@ -285,13 +243,13 @@ static int efx_probe_nic(struct efx_nic *efx)
 		if (rc)
 			goto fail1;
 
-		/* dimension_resources can fail with EAGAIN */
+		 
 		rc = efx->type->dimension_resources(efx);
 		if (rc != 0 && rc != -EAGAIN)
 			goto fail2;
 
 		if (rc == -EAGAIN)
-			/* try again with new max_channels */
+			 
 			efx_remove_interrupts(efx);
 
 	} while (rc == -EAGAIN);
@@ -301,7 +259,7 @@ static int efx_probe_nic(struct efx_nic *efx)
 				    sizeof(efx->rss_context.rx_hash_key));
 	efx_set_default_rx_indir_table(efx, &efx->rss_context);
 
-	/* Initialise the interrupt moderation settings */
+	 
 	efx->irq_mod_step_us = DIV_ROUND_UP(efx->timer_quantum_ns, 1000);
 	efx_init_irq_moderation(efx, tx_irq_mod_usec, rx_irq_mod_usec, true,
 				true);
@@ -323,11 +281,7 @@ static void efx_remove_nic(struct efx_nic *efx)
 	efx->type->remove(efx);
 }
 
-/**************************************************************************
- *
- * NIC startup/shutdown
- *
- *************************************************************************/
+ 
 
 static int efx_probe_all(struct efx_nic *efx)
 {
@@ -353,7 +307,7 @@ static int efx_probe_all(struct efx_nic *efx)
 
 #ifdef CONFIG_SFC_SRIOV
 	rc = efx->type->vswitching_probe(efx);
-	if (rc) /* not fatal; the PF will still work fine */
+	if (rc)  
 		netif_warn(efx, probe, efx->net_dev,
 			   "failed to setup vswitching rc=%d;"
 			   " VFs may not function\n", rc);
@@ -403,29 +357,23 @@ static void efx_remove_all(struct efx_nic *efx)
 	efx_remove_nic(efx);
 }
 
-/**************************************************************************
- *
- * Interrupt moderation
- *
- **************************************************************************/
+ 
 unsigned int efx_usecs_to_ticks(struct efx_nic *efx, unsigned int usecs)
 {
 	if (usecs == 0)
 		return 0;
 	if (usecs * 1000 < efx->timer_quantum_ns)
-		return 1; /* never round down to 0 */
+		return 1;  
 	return usecs * 1000 / efx->timer_quantum_ns;
 }
 
 unsigned int efx_ticks_to_usecs(struct efx_nic *efx, unsigned int ticks)
 {
-	/* We must round up when converting ticks to microseconds
-	 * because we round down when converting the other way.
-	 */
+	 
 	return DIV_ROUND_UP(ticks * efx->timer_quantum_ns, 1000);
 }
 
-/* Set interrupt moderation parameters */
+ 
 int efx_init_irq_moderation(struct efx_nic *efx, unsigned int tx_usecs,
 			    unsigned int rx_usecs, bool rx_adaptive,
 			    bool rx_may_override_tx)
@@ -467,10 +415,7 @@ void efx_get_irq_moderation(struct efx_nic *efx, unsigned int *tx_usecs,
 	*rx_adaptive = efx->irq_rx_adaptive;
 	*rx_usecs = efx->irq_rx_moderation_us;
 
-	/* If channels are shared between RX and TX, so is IRQ
-	 * moderation.  Otherwise, IRQ moderation is the same for all
-	 * TX channels and is not adaptive.
-	 */
+	 
 	if (efx->tx_channel_offset == 0) {
 		*tx_usecs = *rx_usecs;
 	} else {
@@ -481,15 +426,9 @@ void efx_get_irq_moderation(struct efx_nic *efx, unsigned int *tx_usecs,
 	}
 }
 
-/**************************************************************************
- *
- * ioctls
- *
- *************************************************************************/
+ 
 
-/* Net device ioctl
- * Context: process, rtnl_lock() held.
- */
+ 
 static int efx_ioctl(struct net_device *net_dev, struct ifreq *ifr, int cmd)
 {
 	struct efx_nic *efx = efx_netdev_priv(net_dev);
@@ -500,7 +439,7 @@ static int efx_ioctl(struct net_device *net_dev, struct ifreq *ifr, int cmd)
 	if (cmd == SIOCGHWTSTAMP)
 		return efx_ptp_get_ts_config(efx, ifr);
 
-	/* Convert phy_id from older PRTAD/DEVAD format */
+	 
 	if ((cmd == SIOCGMIIREG || cmd == SIOCSMIIREG) &&
 	    (data->phy_id & 0xfc00) == 0x0400)
 		data->phy_id ^= MDIO_PHY_ID_C45 | 0x0400;
@@ -508,13 +447,9 @@ static int efx_ioctl(struct net_device *net_dev, struct ifreq *ifr, int cmd)
 	return mdio_mii_ioctl(&efx->mdio, data, cmd);
 }
 
-/**************************************************************************
- *
- * Kernel net device interface
- *
- *************************************************************************/
+ 
 
-/* Context: process, rtnl_lock() held. */
+ 
 int efx_net_open(struct net_device *net_dev)
 {
 	struct efx_nic *efx = efx_netdev_priv(net_dev);
@@ -531,8 +466,7 @@ int efx_net_open(struct net_device *net_dev)
 	if (efx_mcdi_poll_reboot(efx) && efx_reset(efx, RESET_TYPE_ALL))
 		return -EIO;
 
-	/* Notify the kernel of the link state polled during driver load,
-	 * before the monitor starts running */
+	 
 	efx_link_status_changed(efx);
 
 	efx_start_all(efx);
@@ -544,10 +478,7 @@ int efx_net_open(struct net_device *net_dev)
 	return 0;
 }
 
-/* Context: process, rtnl_lock() held.
- * Note that the kernel will ignore our return code; this method
- * should really be a void.
- */
+ 
 int efx_net_stop(struct net_device *net_dev)
 {
 	struct efx_nic *efx = efx_netdev_priv(net_dev);
@@ -555,7 +486,7 @@ int efx_net_stop(struct net_device *net_dev)
 	netif_dbg(efx, ifdown, efx->net_dev, "closing on CPU %d\n",
 		  raw_smp_processor_id());
 
-	/* Stop the device and flush all the channels */
+	 
 	efx_stop_all(efx);
 
 	return 0;
@@ -631,14 +562,14 @@ static int efx_xdp_setup_prog(struct efx_nic *efx, struct bpf_prog *prog)
 
 	old_prog = rtnl_dereference(efx->xdp_prog);
 	rcu_assign_pointer(efx->xdp_prog, prog);
-	/* Release the reference that was originally passed by the caller. */
+	 
 	if (old_prog)
 		bpf_prog_put(old_prog);
 
 	return 0;
 }
 
-/* Context: process, rtnl_lock() held. */
+ 
 static int efx_xdp(struct net_device *dev, struct netdev_bpf *xdp)
 {
 	struct efx_nic *efx = efx_netdev_priv(dev);
@@ -711,10 +642,7 @@ static int efx_register_netdev(struct efx_nic *efx)
 
 	rtnl_lock();
 
-	/* Enable resets to be scheduled and check whether any were
-	 * already requested.  If so, the NIC is probably hosed so we
-	 * abort.
-	 */
+	 
 	if (efx->reset_pending) {
 		pci_err(efx->pci_dev, "aborting probe due to scheduled reset\n");
 		rc = -EIO;
@@ -726,7 +654,7 @@ static int efx_register_netdev(struct efx_nic *efx)
 		goto fail_locked;
 	efx_update_name(efx);
 
-	/* Always start with carrier off; PHY events will detect the link */
+	 
 	netif_carrier_off(net_dev);
 
 	rc = register_netdevice(net_dev);
@@ -783,38 +711,30 @@ static void efx_unregister_netdev(struct efx_nic *efx)
 	}
 }
 
-/**************************************************************************
- *
- * List of NICs we support
- *
- **************************************************************************/
+ 
 
-/* PCI device ID table */
+ 
 static const struct pci_device_id efx_pci_table[] = {
-	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x0903),  /* SFC9120 PF */
+	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x0903),   
 	 .driver_data = (unsigned long) &efx_hunt_a0_nic_type},
-	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x1903),  /* SFC9120 VF */
+	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x1903),   
 	 .driver_data = (unsigned long) &efx_hunt_a0_vf_nic_type},
-	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x0923),  /* SFC9140 PF */
+	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x0923),   
 	 .driver_data = (unsigned long) &efx_hunt_a0_nic_type},
-	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x1923),  /* SFC9140 VF */
+	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x1923),   
 	 .driver_data = (unsigned long) &efx_hunt_a0_vf_nic_type},
-	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x0a03),  /* SFC9220 PF */
+	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x0a03),   
 	 .driver_data = (unsigned long) &efx_hunt_a0_nic_type},
-	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x1a03),  /* SFC9220 VF */
+	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x1a03),   
 	 .driver_data = (unsigned long) &efx_hunt_a0_vf_nic_type},
-	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x0b03),  /* SFC9250 PF */
+	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x0b03),   
 	 .driver_data = (unsigned long) &efx_hunt_a0_nic_type},
-	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x1b03),  /* SFC9250 VF */
+	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x1b03),   
 	 .driver_data = (unsigned long) &efx_hunt_a0_vf_nic_type},
-	{0}			/* end of list */
+	{0}			 
 };
 
-/**************************************************************************
- *
- * Data housekeeping
- *
- **************************************************************************/
+ 
 
 void efx_update_sw_stats(struct efx_nic *efx, u64 *stats)
 {
@@ -827,20 +747,12 @@ void efx_update_sw_stats(struct efx_nic *efx, u64 *stats)
 	stats[GENERIC_STAT_rx_noskb_drops] = atomic_read(&efx->n_rx_noskb_drops);
 }
 
-/**************************************************************************
- *
- * PCI interface
- *
- **************************************************************************/
+ 
 
-/* Main body of final NIC shutdown code
- * This is called only at module unload (or hotplug removal).
- */
+ 
 static void efx_pci_remove_main(struct efx_nic *efx)
 {
-	/* Flush reset_work. It can no longer be scheduled since we
-	 * are not READY.
-	 */
+	 
 	WARN_ON(efx_net_active(efx->state));
 	efx_flush_reset_workqueue(efx);
 
@@ -853,10 +765,7 @@ static void efx_pci_remove_main(struct efx_nic *efx)
 	efx_remove_all(efx);
 }
 
-/* Final NIC shutdown
- * This is called only at module unload (or hotplug removal).  A PF can call
- * this on its VFs to ensure they are unbound first.
- */
+ 
 static void efx_pci_remove(struct pci_dev *pci_dev)
 {
 	struct efx_probe_data *probe_data;
@@ -866,7 +775,7 @@ static void efx_pci_remove(struct pci_dev *pci_dev)
 	if (!efx)
 		return;
 
-	/* Mark the NIC as fini, then stop the interface */
+	 
 	rtnl_lock();
 	efx_dissociate(efx);
 	dev_close(efx->net_dev);
@@ -894,10 +803,7 @@ static void efx_pci_remove(struct pci_dev *pci_dev)
 	kfree(probe_data);
 };
 
-/* NIC VPD information
- * Called during probe to display the part number of the
- * installed NIC.
- */
+ 
 static void efx_probe_vpd_strings(struct efx_nic *efx)
 {
 	struct pci_dev *dev = efx->pci_dev;
@@ -929,14 +835,12 @@ static void efx_probe_vpd_strings(struct efx_nic *efx)
 }
 
 
-/* Main body of NIC initialisation
- * This is called at module load (or hotplug insertion, theoretically).
- */
+ 
 static int efx_pci_probe_main(struct efx_nic *efx)
 {
 	int rc;
 
-	/* Do start-of-day initialisation */
+	 
 	rc = efx_probe_all(efx);
 	if (rc)
 		goto fail1;
@@ -998,28 +902,25 @@ static int efx_pci_probe_post_io(struct efx_nic *efx)
 				rc);
 	}
 
-	/* Determine netdevice features */
+	 
 	net_dev->features |= efx->type->offload_features;
 
-	/* Add TSO features */
+	 
 	if (efx->type->tso_versions && efx->type->tso_versions(efx))
 		net_dev->features |= NETIF_F_TSO | NETIF_F_TSO6;
 
-	/* Mask for features that also apply to VLAN devices */
+	 
 	net_dev->vlan_features |= (NETIF_F_HW_CSUM | NETIF_F_SG |
 				   NETIF_F_HIGHDMA | NETIF_F_ALL_TSO |
 				   NETIF_F_RXCSUM);
 
-	/* Determine user configurable features */
+	 
 	net_dev->hw_features |= net_dev->features & ~efx->fixed_features;
 
-	/* Disable receiving frames with bad FCS, by default. */
+	 
 	net_dev->features &= ~NETIF_F_RXALL;
 
-	/* Disable VLAN filtering by default.  It may be enforced if
-	 * the feature is fixed (i.e. VLAN filters are required to
-	 * receive VLAN tagged packets due to vPort restrictions).
-	 */
+	 
 	net_dev->features &= ~NETIF_F_HW_VLAN_CTAG_FILTER;
 	net_dev->features |= efx->fixed_features;
 
@@ -1027,7 +928,7 @@ static int efx_pci_probe_post_io(struct efx_nic *efx)
 				NETDEV_XDP_ACT_REDIRECT |
 				NETDEV_XDP_ACT_NDO_XMIT;
 
-	/* devlink creation, registration and lock */
+	 
 	rc = efx_probe_devlink_and_lock(efx);
 	if (rc)
 		pci_err(efx->pci_dev, "devlink registration failed");
@@ -1041,15 +942,7 @@ static int efx_pci_probe_post_io(struct efx_nic *efx)
 	return rc;
 }
 
-/* NIC initialisation
- *
- * This is called at module load (or hotplug insertion,
- * theoretically).  It sets up PCI mappings, resets the NIC,
- * sets up and registers the network devices with the kernel and hooks
- * the interrupt service routine.  It does not prepare the device for
- * transmission; this is left to the first time one of the network
- * interfaces is brought up (i.e. efx_net_open).
- */
+ 
 static int efx_pci_probe(struct pci_dev *pci_dev,
 			 const struct pci_device_id *entry)
 {
@@ -1058,14 +951,14 @@ static int efx_pci_probe(struct pci_dev *pci_dev,
 	struct efx_nic *efx;
 	int rc;
 
-	/* Allocate probe data and struct efx_nic */
+	 
 	probe_data = kzalloc(sizeof(*probe_data), GFP_KERNEL);
 	if (!probe_data)
 		return -ENOMEM;
 	probe_data->pci_dev = pci_dev;
 	efx = &probe_data->efx;
 
-	/* Allocate and initialise a struct net_device */
+	 
 	net_dev = alloc_etherdev_mq(sizeof(probe_data), EFX_MAX_CORE_TX_QUEUES);
 	if (!net_dev) {
 		rc = -ENOMEM;
@@ -1089,7 +982,7 @@ static int efx_pci_probe(struct pci_dev *pci_dev,
 	if (!efx->type->is_vf)
 		efx_probe_vpd_strings(efx);
 
-	/* Set up basic I/O (BAR mappings etc) */
+	 
 	rc = efx_init_io(efx, efx->type->mem_bar(efx), efx->type->max_dma_mask,
 			 efx->type->mem_map_size(efx));
 	if (rc)
@@ -1097,15 +990,11 @@ static int efx_pci_probe(struct pci_dev *pci_dev,
 
 	rc = efx_pci_probe_post_io(efx);
 	if (rc) {
-		/* On failure, retry once immediately.
-		 * If we aborted probe due to a scheduled reset, dismiss it.
-		 */
+		 
 		efx->reset_pending = 0;
 		rc = efx_pci_probe_post_io(efx);
 		if (rc) {
-			/* On another failure, retry once more
-			 * after a 50-305ms delay.
-			 */
+			 
 			unsigned char r;
 
 			get_random_bytes(&r, 1);
@@ -1119,7 +1008,7 @@ static int efx_pci_probe(struct pci_dev *pci_dev,
 
 	netif_dbg(efx, probe, efx->net_dev, "initialisation successful\n");
 
-	/* Try to create MTDs, but allow this to fail */
+	 
 	rtnl_lock();
 	rc = efx_mtd_probe(efx);
 	rtnl_unlock();
@@ -1145,9 +1034,7 @@ static int efx_pci_probe(struct pci_dev *pci_dev,
 	return rc;
 }
 
-/* efx_pci_sriov_configure returns the actual number of Virtual Functions
- * enabled on success
- */
+ 
 #ifdef CONFIG_SFC_SRIOV
 static int efx_pci_sriov_configure(struct pci_dev *dev, int num_vfs)
 {
@@ -1223,7 +1110,7 @@ static int efx_pm_thaw(struct device *dev)
 
 	rtnl_unlock();
 
-	/* Reschedule any quenched resets scheduled during efx_pm_freeze() */
+	 
 	efx_queue_reset_work(efx);
 
 	return 0;
@@ -1247,7 +1134,7 @@ static int efx_pm_poweroff(struct device *dev)
 	return pci_set_power_state(pci_dev, PCI_D3hot);
 }
 
-/* Used for both resume and restore */
+ 
 static int efx_pm_resume(struct device *dev)
 {
 	struct pci_dev *pci_dev = to_pci_dev(dev);
@@ -1307,11 +1194,7 @@ static struct pci_driver efx_pci_driver = {
 #endif
 };
 
-/**************************************************************************
- *
- * Kernel module interface
- *
- *************************************************************************/
+ 
 
 static int __init efx_init_module(void)
 {

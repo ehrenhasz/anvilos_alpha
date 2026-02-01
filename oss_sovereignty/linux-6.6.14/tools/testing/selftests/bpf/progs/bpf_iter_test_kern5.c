@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include "bpf_iter.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
@@ -29,7 +29,7 @@ int dump_bpf_hash_map(struct bpf_iter__bpf_map_elem *ctx)
 	if (key == (void *)0)
 		return 0;
 
-	/* out of bound access w.r.t. hashmap1 */
+	 
 	key_sum += *(__u32 *)(key + sizeof(struct key_t));
 	return 0;
 }

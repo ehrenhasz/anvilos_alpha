@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Management Complex (MC) userspace support
- *
- * Copyright 2021 NXP
- *
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/fs.h>
@@ -336,7 +331,7 @@ static struct fsl_mc_cmd_desc fsl_mc_accepted_cmds[] = {
 		.size = 8,
 	},
 
-	/* Common commands amongst all types of objects. Must be checked last. */
+	 
 	[OPEN] = {
 		.cmdid_value = 0x8000,
 		.cmdid_mask = 0xFC00,
@@ -381,7 +376,7 @@ static int fsl_mc_command_check(struct fsl_mc_device *mc_dev,
 	char *mc_cmd_end;
 	char sum = 0;
 
-	/* Check if this is an accepted MC command */
+	 
 	cmdid = mc_cmd_hdr_read_cmdid(mc_cmd);
 	for (i = 0; i < FSL_MC_NUM_ACCEPTED_CMDS; i++) {
 		desc = &fsl_mc_accepted_cmds[i];
@@ -393,9 +388,7 @@ static int fsl_mc_command_check(struct fsl_mc_device *mc_dev,
 		return -EACCES;
 	}
 
-	/* Check if the size of the command is honored. Anything beyond the
-	 * last valid byte of the command should be zeroed.
-	 */
+	 
 	mc_cmd_max_size = sizeof(*mc_cmd);
 	mc_cmd_end = ((char *)mc_cmd) + desc->size;
 	for (i = desc->size; i < mc_cmd_max_size; i++)
@@ -406,10 +399,7 @@ static int fsl_mc_command_check(struct fsl_mc_device *mc_dev,
 		return -EACCES;
 	}
 
-	/* Some MC commands request a token to be passed so that object
-	 * identification is possible. Check if the token passed in the command
-	 * is as expected.
-	 */
+	 
 	token_provided = mc_cmd_hdr_read_token(mc_cmd) ? true : false;
 	if (token_provided != desc->token) {
 		dev_err(&mc_dev->dev, "MC command 0x%04x: token 0x%04x is invalid!\n",
@@ -417,9 +407,9 @@ static int fsl_mc_command_check(struct fsl_mc_device *mc_dev,
 		return -EACCES;
 	}
 
-	/* If needed, check if the module ID passed is valid */
+	 
 	if (desc->flags & FSL_MC_CHECK_MODULE_ID) {
-		/* The module ID is represented by bits [4:9] from the cmdid */
+		 
 		module_id = (cmdid & GENMASK(9, 4)) >> 4;
 		if (module_id == 0 || module_id > FSL_MC_MAX_MODULE_ID) {
 			dev_err(&mc_dev->dev, "MC command 0x%04x: unknown module ID 0x%x\n",
@@ -428,9 +418,7 @@ static int fsl_mc_command_check(struct fsl_mc_device *mc_dev,
 		}
 	}
 
-	/* Some commands alter how hardware resources are managed. For these
-	 * commands, check for CAP_NET_ADMIN.
-	 */
+	 
 	if (desc->flags & FSL_MC_CAP_NET_ADMIN_NEEDED) {
 		if (!capable(CAP_NET_ADMIN)) {
 			dev_err(&mc_dev->dev, "MC command 0x%04x: needs CAP_NET_ADMIN!\n",

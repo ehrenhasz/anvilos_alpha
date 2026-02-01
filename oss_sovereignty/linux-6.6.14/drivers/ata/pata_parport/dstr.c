@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * (c) 1997-1998  Grant R. Guenther <grant@torque.net>
- *
- * dstr.c is a low-level protocol driver for the DataStor EP2000 parallel
- * to IDE adapter chip.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -15,13 +10,7 @@
 #include <asm/io.h>
 #include "pata_parport.h"
 
-/*
- * mode codes:  0  nybble reads, 8-bit writes
- *		1  8-bit reads and writes
- *		2  8-bit EPP mode
- *		3  EPP-16
- *		4  EPP-32
- */
+ 
 
 #define j44(a, b)  (((a >> 3) & 0x07) | ((~a >> 4) & 0x08) | \
 		    ((b << 1) & 0x70) | ((~b) & 0x80))
@@ -30,10 +19,7 @@
 #define P2	w2(5);w2(7);w2(5);w2(4);
 #define P3      w2(6);w2(4);w2(6);w2(4);
 
-/*
- * cont = 0 - access the IDE register file
- * cont = 1 - access the IDE command set
- */
+ 
 static int  cont_map[2] = { 0x20, 0x40 };
 
 static int dstr_read_regr(struct pi_adapter *pi, int cont, int regr)

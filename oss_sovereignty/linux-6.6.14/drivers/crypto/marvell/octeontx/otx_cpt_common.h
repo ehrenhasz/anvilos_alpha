@@ -1,12 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- * Marvell OcteonTX CPT driver
- *
- * Copyright (C) 2019 Marvell International Ltd.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
+ 
 
 #ifndef __OTX_CPT_COMMON_H
 #define __OTX_CPT_COMMON_H
@@ -29,7 +21,7 @@ enum otx_cptvf_type {
 	BAD_OTX_CPTVF_TYPE,
 };
 
-/* VF-PF message opcodes */
+ 
 enum otx_cpt_mbox_opcode {
 	OTX_CPT_MSG_VF_UP = 1,
 	OTX_CPT_MSG_VF_DOWN,
@@ -42,10 +34,10 @@ enum otx_cpt_mbox_opcode {
 	OTX_CPT_MSG_NACK
 };
 
-/* OcteonTX CPT mailbox structure */
+ 
 struct otx_cpt_mbox {
-	u64 msg; /* Message type MBOX[0] */
-	u64 data;/* Data         MBOX[1] */
+	u64 msg;  
+	u64 data; 
 };
 
-#endif /* __OTX_CPT_COMMON_H */
+#endif  

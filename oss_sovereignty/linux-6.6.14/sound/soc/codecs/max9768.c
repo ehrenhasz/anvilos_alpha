@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MAX9768 AMP driver
- *
- * Copyright (C) 2011, 2012 by Wolfram Sang, Pengutronix e.K.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -17,11 +13,11 @@
 #include <sound/tlv.h>
 #include <sound/max9768.h>
 
-/* "Registers" */
+ 
 #define MAX9768_VOL 0
 #define MAX9768_CTRL 3
 
-/* Commands */
+ 
 #define MAX9768_CTRL_PWM 0x15
 #define MAX9768_CTRL_FILTERLESS 0x16
 
@@ -178,12 +174,12 @@ static int max9768_i2c_probe(struct i2c_client *client)
 		return -ENOMEM;
 
 	if (pdata) {
-		/* Mute on powerup to avoid clicks */
+		 
 		err = devm_gpio_request_one(&client->dev, pdata->mute_gpio,
 				GPIOF_INIT_HIGH, "MAX9768 Mute");
 		max9768->mute_gpio = err ?: pdata->mute_gpio;
 
-		/* Activate chip by releasing shutdown, enables I2C */
+		 
 		err = devm_gpio_request_one(&client->dev, pdata->shdn_gpio,
 				GPIOF_INIT_HIGH, "MAX9768 Shutdown");
 		max9768->shdn_gpio = err ?: pdata->shdn_gpio;

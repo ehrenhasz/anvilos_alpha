@@ -1,16 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0
-/* net/atm/signaling.c - ATM signaling */
 
-/* Written 1995-2000 by Werner Almesberger, EPFL LRC/ICA */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":%s: " fmt, __func__
 
-#include <linux/errno.h>	/* error codes */
-#include <linux/kernel.h>	/* printk */
+#include <linux/errno.h>	 
+#include <linux/kernel.h>	 
 #include <linux/skbuff.h>
 #include <linux/wait.h>
-#include <linux/sched.h>	/* jiffies and HZ */
-#include <linux/atm.h>		/* ATM stuff */
+#include <linux/sched.h>	 
+#include <linux/atm.h>		 
 #include <linux/atmsap.h>
 #include <linux/atmsvc.h>
 #include <linux/atmdev.h>
@@ -45,16 +45,13 @@ static void modify_qos(struct atm_vcc *vcc, struct atmsvc_msg *msg)
 	if (!vcc->dev->ops->change_qos)
 		msg->reply = -EOPNOTSUPP;
 	else {
-		/* should lock VCC */
+		 
 		msg->reply = vcc->dev->ops->change_qos(vcc, &msg->qos,
 						       msg->reply);
 		if (!msg->reply)
 			msg->type = as_okay;
 	}
-	/*
-	 * Should probably just turn around the old skb. But then, the buffer
-	 * space accounting needs to follow the change too. Maybe later.
-	 */
+	 
 	while (!(skb = alloc_skb(sizeof(struct atmsvc_msg), GFP_KERNEL)))
 		schedule();
 	*(struct atmsvc_msg *)skb_put(skb, sizeof(struct atmsvc_msg)) = *msg;
@@ -126,7 +123,7 @@ as_indicate_complete:
 	case as_addparty:
 	case as_dropparty:
 		WRITE_ONCE(sk->sk_err_soft, -msg->reply);
-					/* < 0 failure, otherwise ep_ref */
+					 
 		clear_bit(ATM_VF_WAITING, &vcc->flags);
 		break;
 	default:
@@ -169,7 +166,7 @@ void sigd_enq2(struct atm_vcc *vcc, enum atmsvc_msg_type type,
 	if (vcc) {
 		if (type == as_connect && test_bit(ATM_VF_SESSION, &vcc->flags))
 			msg->session = ++session;
-			/* every new pmp connect gets the next session number */
+			 
 	}
 	sigd_put_skb(skb);
 	if (vcc)
@@ -181,7 +178,7 @@ void sigd_enq(struct atm_vcc *vcc, enum atmsvc_msg_type type,
 	      const struct sockaddr_atmsvc *svc)
 {
 	sigd_enq2(vcc, type, listen_vcc, pvc, svc, vcc ? &vcc->qos : NULL, 0);
-	/* other ISP applications may use "reply" */
+	 
 }
 
 static void purge_vcc(struct atm_vcc *vcc)

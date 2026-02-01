@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1
-/*
- * trace/beauty/socket.c
- *
- *  Copyright (C) 2018, Red Hat Inc, Arnaldo Carvalho de Melo <acme@redhat.com>
- */
+
+ 
 
 #include "trace/beauty/beauty.h"
 #include <sys/types.h>

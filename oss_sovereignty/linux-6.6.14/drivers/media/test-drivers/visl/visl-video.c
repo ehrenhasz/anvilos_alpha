@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Contains the driver implementation for the V4L2 stateless interface.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/font.h>

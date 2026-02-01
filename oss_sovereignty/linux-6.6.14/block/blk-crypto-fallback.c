@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019 Google LLC
- */
 
-/*
- * Refer to Documentation/block/inline-encryption.rst for detailed explanation.
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) "blk-crypto-fallback: " fmt
 
@@ -39,12 +35,7 @@ MODULE_PARM_DESC(num_prealloc_crypt_fallback_ctxs,
 
 struct bio_fallback_crypt_ctx {
 	struct bio_crypt_ctx crypt_ctx;
-	/*
-	 * Copy of the bvec_iter when this bio was submitted.
-	 * We only want to en/decrypt the part of the bio as described by the
-	 * bvec_iter upon submission because bio might be split before being
-	 * resubmitted
-	 */
+	 
 	struct bvec_iter crypt_iter;
 	union {
 		struct {
@@ -61,15 +52,7 @@ struct bio_fallback_crypt_ctx {
 static struct kmem_cache *bio_fallback_crypt_ctx_cache;
 static mempool_t *bio_fallback_crypt_ctx_pool;
 
-/*
- * Allocating a crypto tfm during I/O can deadlock, so we have to preallocate
- * all of a mode's tfms when that mode starts being used. Since each mode may
- * need all the keyslots at some point, each mode needs its own tfm for each
- * keyslot; thus, a keyslot may contain tfms for multiple modes.  However, to
- * match the behavior of real inline encryption hardware (which only supports a
- * single encryption context per keyslot), we only allow one tfm per keyslot to
- * be used at a time - the rest of the unused tfms have their keys cleared.
- */
+ 
 static DEFINE_MUTEX(tfms_init_lock);
 static bool tfms_inited[BLK_ENCRYPTION_MODE_MAX];
 
@@ -83,10 +66,7 @@ static struct workqueue_struct *blk_crypto_wq;
 static mempool_t *blk_crypto_bounce_page_pool;
 static struct bio_set crypto_bio_split;
 
-/*
- * This is the key we set when evicting a keyslot. This *should* be the all 0's
- * key, but AES-XTS rejects that key, so we use some random bytes instead.
- */
+ 
 static u8 blank_key[BLK_CRYPTO_MAX_KEY_SIZE];
 
 static void blk_crypto_fallback_evict_keyslot(unsigned int slot)
@@ -97,7 +77,7 @@ static void blk_crypto_fallback_evict_keyslot(unsigned int slot)
 
 	WARN_ON(slotp->crypto_mode == BLK_ENCRYPTION_MODE_INVALID);
 
-	/* Clear the key in the skcipher */
+	 
 	err = crypto_skcipher_setkey(slotp->tfms[crypto_mode], blank_key,
 				     blk_crypto_modes[crypto_mode].keysize);
 	WARN_ON(err);
@@ -251,13 +231,7 @@ static void blk_crypto_dun_to_iv(const u64 dun[BLK_CRYPTO_DUN_ARRAY_SIZE],
 		iv->dun[i] = cpu_to_le64(dun[i]);
 }
 
-/*
- * The crypto API fallback's encryption routine.
- * Allocate a bounce bio for encryption, encrypt the input bio using crypto API,
- * and replace *bio_ptr with the bounce bio. May split input bio if it's too
- * large. Returns true on success. Returns false and sets bio->bi_status on
- * error.
- */
+ 
 static bool blk_crypto_fallback_encrypt_bio(struct bio **bio_ptr)
 {
 	struct bio *src_bio, *enc_bio;
@@ -273,7 +247,7 @@ static bool blk_crypto_fallback_encrypt_bio(struct bio **bio_ptr)
 	bool ret = false;
 	blk_status_t blk_st;
 
-	/* Split the bio if it's too big for single page bvec */
+	 
 	if (!blk_crypto_fallback_split_bio_if_needed(bio_ptr))
 		return false;
 
@@ -281,17 +255,14 @@ static bool blk_crypto_fallback_encrypt_bio(struct bio **bio_ptr)
 	bc = src_bio->bi_crypt_context;
 	data_unit_size = bc->bc_key->crypto_cfg.data_unit_size;
 
-	/* Allocate bounce bio for encryption */
+	 
 	enc_bio = blk_crypto_fallback_clone_bio(src_bio);
 	if (!enc_bio) {
 		src_bio->bi_status = BLK_STS_RESOURCE;
 		return false;
 	}
 
-	/*
-	 * Get a blk-crypto-fallback keyslot that contains a crypto_skcipher for
-	 * this bio's algorithm and key.
-	 */
+	 
 	blk_st = blk_crypto_get_keyslot(blk_crypto_fallback_profile,
 					bc->bc_key, &slot);
 	if (blk_st != BLK_STS_OK) {
@@ -299,7 +270,7 @@ static bool blk_crypto_fallback_encrypt_bio(struct bio **bio_ptr)
 		goto out_put_enc_bio;
 	}
 
-	/* and then allocate an skcipher_request for it */
+	 
 	if (!blk_crypto_fallback_alloc_cipher_req(slot, &ciph_req, &wait)) {
 		src_bio->bi_status = BLK_STS_RESOURCE;
 		goto out_release_keyslot;
@@ -312,7 +283,7 @@ static bool blk_crypto_fallback_encrypt_bio(struct bio **bio_ptr)
 	skcipher_request_set_crypt(ciph_req, &src, &dst, data_unit_size,
 				   iv.bytes);
 
-	/* Encrypt each page in the bounce bio */
+	 
 	for (i = 0; i < enc_bio->bi_vcnt; i++) {
 		struct bio_vec *enc_bvec = &enc_bio->bi_io_vec[i];
 		struct page *plaintext_page = enc_bvec->bv_page;
@@ -331,7 +302,7 @@ static bool blk_crypto_fallback_encrypt_bio(struct bio **bio_ptr)
 		sg_set_page(&dst, ciphertext_page, data_unit_size,
 			    enc_bvec->bv_offset);
 
-		/* Encrypt each data unit in this page */
+		 
 		for (j = 0; j < enc_bvec->bv_len; j += data_unit_size) {
 			blk_crypto_dun_to_iv(curr_dun, &iv);
 			if (crypto_wait_req(crypto_skcipher_encrypt(ciph_req),
@@ -369,10 +340,7 @@ out_put_enc_bio:
 	return ret;
 }
 
-/*
- * The crypto API fallback's main decryption routine.
- * Decrypts input bio in place, and calls bio_endio on the bio.
- */
+ 
 static void blk_crypto_fallback_decrypt_bio(struct work_struct *work)
 {
 	struct bio_fallback_crypt_ctx *f_ctx =
@@ -391,10 +359,7 @@ static void blk_crypto_fallback_decrypt_bio(struct work_struct *work)
 	unsigned int i;
 	blk_status_t blk_st;
 
-	/*
-	 * Get a blk-crypto-fallback keyslot that contains a crypto_skcipher for
-	 * this bio's algorithm and key.
-	 */
+	 
 	blk_st = blk_crypto_get_keyslot(blk_crypto_fallback_profile,
 					bc->bc_key, &slot);
 	if (blk_st != BLK_STS_OK) {
@@ -402,7 +367,7 @@ static void blk_crypto_fallback_decrypt_bio(struct work_struct *work)
 		goto out_no_keyslot;
 	}
 
-	/* and then allocate an skcipher_request for it */
+	 
 	if (!blk_crypto_fallback_alloc_cipher_req(slot, &ciph_req, &wait)) {
 		bio->bi_status = BLK_STS_RESOURCE;
 		goto out;
@@ -413,13 +378,13 @@ static void blk_crypto_fallback_decrypt_bio(struct work_struct *work)
 	skcipher_request_set_crypt(ciph_req, &sg, &sg, data_unit_size,
 				   iv.bytes);
 
-	/* Decrypt each segment in the bio */
+	 
 	__bio_for_each_segment(bv, bio, iter, f_ctx->crypt_iter) {
 		struct page *page = bv.bv_page;
 
 		sg_set_page(&sg, page, data_unit_size, bv.bv_offset);
 
-		/* Decrypt each data unit in the segment */
+		 
 		for (i = 0; i < bv.bv_len; i += data_unit_size) {
 			blk_crypto_dun_to_iv(curr_dun, &iv);
 			if (crypto_wait_req(crypto_skcipher_decrypt(ciph_req),
@@ -440,14 +405,7 @@ out_no_keyslot:
 	bio_endio(bio);
 }
 
-/**
- * blk_crypto_fallback_decrypt_endio - queue bio for fallback decryption
- *
- * @bio: the bio to queue
- *
- * Restore bi_private and bi_end_io, and queue the bio for decryption into a
- * workqueue, since this function will be called from an atomic context.
- */
+ 
 static void blk_crypto_fallback_decrypt_endio(struct bio *bio)
 {
 	struct bio_fallback_crypt_ctx *f_ctx = bio->bi_private;
@@ -455,7 +413,7 @@ static void blk_crypto_fallback_decrypt_endio(struct bio *bio)
 	bio->bi_private = f_ctx->bi_private_orig;
 	bio->bi_end_io = f_ctx->bi_end_io_orig;
 
-	/* If there was an IO error, don't queue for decrypt. */
+	 
 	if (bio->bi_status) {
 		mempool_free(f_ctx, bio_fallback_crypt_ctx_pool);
 		bio_endio(bio);
@@ -467,26 +425,7 @@ static void blk_crypto_fallback_decrypt_endio(struct bio *bio)
 	queue_work(blk_crypto_wq, &f_ctx->work);
 }
 
-/**
- * blk_crypto_fallback_bio_prep - Prepare a bio to use fallback en/decryption
- *
- * @bio_ptr: pointer to the bio to prepare
- *
- * If bio is doing a WRITE operation, this splits the bio into two parts if it's
- * too big (see blk_crypto_fallback_split_bio_if_needed()). It then allocates a
- * bounce bio for the first part, encrypts it, and updates bio_ptr to point to
- * the bounce bio.
- *
- * For a READ operation, we mark the bio for decryption by using bi_private and
- * bi_end_io.
- *
- * In either case, this function will make the bio look like a regular bio (i.e.
- * as if no encryption context was ever specified) for the purposes of the rest
- * of the stack except for blk-integrity (blk-integrity and blk-crypto are not
- * currently supported together).
- *
- * Return: true on success. Sets bio->bi_status and returns false on error.
- */
+ 
 bool blk_crypto_fallback_bio_prep(struct bio **bio_ptr)
 {
 	struct bio *bio = *bio_ptr;
@@ -494,7 +433,7 @@ bool blk_crypto_fallback_bio_prep(struct bio **bio_ptr)
 	struct bio_fallback_crypt_ctx *f_ctx;
 
 	if (WARN_ON_ONCE(!tfms_inited[bc->bc_key->crypto_cfg.crypto_mode])) {
-		/* User didn't call blk_crypto_start_using_key() first */
+		 
 		bio->bi_status = BLK_STS_IOERR;
 		return false;
 	}
@@ -508,10 +447,7 @@ bool blk_crypto_fallback_bio_prep(struct bio **bio_ptr)
 	if (bio_data_dir(bio) == WRITE)
 		return blk_crypto_fallback_encrypt_bio(bio_ptr);
 
-	/*
-	 * bio READ case: Set up a f_ctx in the bio's bi_private and set the
-	 * bi_end_io appropriately to trigger decryption when the bio is ended.
-	 */
+	 
 	f_ctx = mempool_alloc(bio_fallback_crypt_ctx_pool, GFP_NOIO);
 	f_ctx->crypt_ctx = *bc;
 	f_ctx->crypt_iter = bio->bi_iter;
@@ -544,7 +480,7 @@ static int blk_crypto_fallback_init(void)
 	if (err)
 		goto out;
 
-	/* Dynamic allocation is needed because of lockdep_register_key(). */
+	 
 	blk_crypto_fallback_profile =
 		kzalloc(sizeof(*blk_crypto_fallback_profile), GFP_KERNEL);
 	if (!blk_crypto_fallback_profile) {
@@ -561,7 +497,7 @@ static int blk_crypto_fallback_init(void)
 	blk_crypto_fallback_profile->ll_ops = blk_crypto_fallback_ll_ops;
 	blk_crypto_fallback_profile->max_dun_bytes_supported = BLK_CRYPTO_MAX_IV_SIZE;
 
-	/* All blk-crypto modes have a crypto API fallback. */
+	 
 	for (i = 0; i < BLK_ENCRYPTION_MODE_MAX; i++)
 		blk_crypto_fallback_profile->modes_supported[i] = 0xFFFFFFFF;
 	blk_crypto_fallback_profile->modes_supported[BLK_ENCRYPTION_MODE_INVALID] = 0;
@@ -614,10 +550,7 @@ out:
 	return err;
 }
 
-/*
- * Prepare blk-crypto-fallback for the specified crypto mode.
- * Returns -ENOPKG if the needed crypto API support is missing.
- */
+ 
 int blk_crypto_fallback_start_using_mode(enum blk_crypto_mode_num mode_num)
 {
 	const char *cipher_str = blk_crypto_modes[mode_num].cipher_str;
@@ -625,11 +558,7 @@ int blk_crypto_fallback_start_using_mode(enum blk_crypto_mode_num mode_num)
 	unsigned int i;
 	int err = 0;
 
-	/*
-	 * Fast path
-	 * Ensure that updates to blk_crypto_keyslots[i].tfms[mode_num]
-	 * for each i are visible before we try to access them.
-	 */
+	 
 	if (likely(smp_load_acquire(&tfms_inited[mode_num])))
 		return 0;
 
@@ -659,10 +588,7 @@ int blk_crypto_fallback_start_using_mode(enum blk_crypto_mode_num mode_num)
 					  CRYPTO_TFM_REQ_FORBID_WEAK_KEYS);
 	}
 
-	/*
-	 * Ensure that updates to blk_crypto_keyslots[i].tfms[mode_num]
-	 * for each i are visible before we set tfms_inited[mode_num].
-	 */
+	 
 	smp_store_release(&tfms_inited[mode_num], true);
 	goto out;
 

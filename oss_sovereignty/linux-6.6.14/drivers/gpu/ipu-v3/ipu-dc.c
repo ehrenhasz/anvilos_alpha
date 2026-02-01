@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2010 Sascha Hauer <s.hauer@pengutronix.de>
- * Copyright (C) 2005-2009 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/module.h>
@@ -80,14 +77,14 @@ struct ipu_dc_priv;
 enum ipu_dc_map {
 	IPU_DC_MAP_RGB24,
 	IPU_DC_MAP_RGB565,
-	IPU_DC_MAP_GBR24, /* TVEv2 */
+	IPU_DC_MAP_GBR24,  
 	IPU_DC_MAP_BGR666,
 	IPU_DC_MAP_LVDS666,
 	IPU_DC_MAP_BGR24,
 };
 
 struct ipu_dc {
-	/* The display interface number assigned to this dc channel */
+	 
 	unsigned int		di;
 	void __iomem		*base;
 	struct ipu_dc_priv	*priv;
@@ -174,15 +171,10 @@ int ipu_dc_init_sync(struct ipu_dc *dc, struct ipu_di *di, bool interlaced,
 
 	map = ipu_bus_format_to_map(bus_format);
 
-	/*
-	 * In interlaced mode we need more counters to create the asymmetric
-	 * per-field VSYNC signals. The pixel active signal synchronising DC
-	 * to DI moves to signal generator #6 (see ipu-di.c). In progressive
-	 * mode counter #5 is used.
-	 */
+	 
 	sync = interlaced ? 6 : 5;
 
-	/* Reserve 5 microcode template words for each DI */
+	 
 	if (dc->di)
 		addr = 5;
 	else
@@ -193,14 +185,14 @@ int ipu_dc_init_sync(struct ipu_dc *dc, struct ipu_di *di, bool interlaced,
 		dc_link_event(dc, DC_EVT_EOL, addr, 2);
 		dc_link_event(dc, DC_EVT_NEW_DATA, addr, 1);
 
-		/* Init template microcode */
+		 
 		dc_write_tmpl(dc, addr, WROD(0), 0, map, SYNC_WAVE, 0, sync, 1);
 	} else {
 		dc_link_event(dc, DC_EVT_NL, addr + 2, 3);
 		dc_link_event(dc, DC_EVT_EOL, addr + 3, 2);
 		dc_link_event(dc, DC_EVT_NEW_DATA, addr + 1, 1);
 
-		/* Init template microcode */
+		 
 		dc_write_tmpl(dc, addr + 2, WROD(0), 0, map, SYNC_WAVE, 8, sync, 1);
 		dc_write_tmpl(dc, addr + 3, WROD(0), 0, map, SYNC_WAVE, 4, sync, 0);
 		dc_write_tmpl(dc, addr + 4, WRG, 0, map, NULL_WAVE, 0, 0, 1);
@@ -382,41 +374,41 @@ int ipu_dc_init(struct ipu_soc *ipu, struct device *dev,
 	dev_dbg(dev, "DC base: 0x%08lx template base: 0x%08lx\n",
 			base, template_base);
 
-	/* rgb24 */
+	 
 	ipu_dc_map_clear(priv, IPU_DC_MAP_RGB24);
-	ipu_dc_map_config(priv, IPU_DC_MAP_RGB24, 0, 7, 0xff); /* blue */
-	ipu_dc_map_config(priv, IPU_DC_MAP_RGB24, 1, 15, 0xff); /* green */
-	ipu_dc_map_config(priv, IPU_DC_MAP_RGB24, 2, 23, 0xff); /* red */
+	ipu_dc_map_config(priv, IPU_DC_MAP_RGB24, 0, 7, 0xff);  
+	ipu_dc_map_config(priv, IPU_DC_MAP_RGB24, 1, 15, 0xff);  
+	ipu_dc_map_config(priv, IPU_DC_MAP_RGB24, 2, 23, 0xff);  
 
-	/* rgb565 */
+	 
 	ipu_dc_map_clear(priv, IPU_DC_MAP_RGB565);
-	ipu_dc_map_config(priv, IPU_DC_MAP_RGB565, 0, 4, 0xf8); /* blue */
-	ipu_dc_map_config(priv, IPU_DC_MAP_RGB565, 1, 10, 0xfc); /* green */
-	ipu_dc_map_config(priv, IPU_DC_MAP_RGB565, 2, 15, 0xf8); /* red */
+	ipu_dc_map_config(priv, IPU_DC_MAP_RGB565, 0, 4, 0xf8);  
+	ipu_dc_map_config(priv, IPU_DC_MAP_RGB565, 1, 10, 0xfc);  
+	ipu_dc_map_config(priv, IPU_DC_MAP_RGB565, 2, 15, 0xf8);  
 
-	/* gbr24 */
+	 
 	ipu_dc_map_clear(priv, IPU_DC_MAP_GBR24);
-	ipu_dc_map_config(priv, IPU_DC_MAP_GBR24, 2, 15, 0xff); /* green */
-	ipu_dc_map_config(priv, IPU_DC_MAP_GBR24, 1, 7, 0xff); /* blue */
-	ipu_dc_map_config(priv, IPU_DC_MAP_GBR24, 0, 23, 0xff); /* red */
+	ipu_dc_map_config(priv, IPU_DC_MAP_GBR24, 2, 15, 0xff);  
+	ipu_dc_map_config(priv, IPU_DC_MAP_GBR24, 1, 7, 0xff);  
+	ipu_dc_map_config(priv, IPU_DC_MAP_GBR24, 0, 23, 0xff);  
 
-	/* bgr666 */
+	 
 	ipu_dc_map_clear(priv, IPU_DC_MAP_BGR666);
-	ipu_dc_map_config(priv, IPU_DC_MAP_BGR666, 0, 5, 0xfc); /* blue */
-	ipu_dc_map_config(priv, IPU_DC_MAP_BGR666, 1, 11, 0xfc); /* green */
-	ipu_dc_map_config(priv, IPU_DC_MAP_BGR666, 2, 17, 0xfc); /* red */
+	ipu_dc_map_config(priv, IPU_DC_MAP_BGR666, 0, 5, 0xfc);  
+	ipu_dc_map_config(priv, IPU_DC_MAP_BGR666, 1, 11, 0xfc);  
+	ipu_dc_map_config(priv, IPU_DC_MAP_BGR666, 2, 17, 0xfc);  
 
-	/* lvds666 */
+	 
 	ipu_dc_map_clear(priv, IPU_DC_MAP_LVDS666);
-	ipu_dc_map_config(priv, IPU_DC_MAP_LVDS666, 0, 5, 0xfc); /* blue */
-	ipu_dc_map_config(priv, IPU_DC_MAP_LVDS666, 1, 13, 0xfc); /* green */
-	ipu_dc_map_config(priv, IPU_DC_MAP_LVDS666, 2, 21, 0xfc); /* red */
+	ipu_dc_map_config(priv, IPU_DC_MAP_LVDS666, 0, 5, 0xfc);  
+	ipu_dc_map_config(priv, IPU_DC_MAP_LVDS666, 1, 13, 0xfc);  
+	ipu_dc_map_config(priv, IPU_DC_MAP_LVDS666, 2, 21, 0xfc);  
 
-	/* bgr24 */
+	 
 	ipu_dc_map_clear(priv, IPU_DC_MAP_BGR24);
-	ipu_dc_map_config(priv, IPU_DC_MAP_BGR24, 2, 7, 0xff); /* red */
-	ipu_dc_map_config(priv, IPU_DC_MAP_BGR24, 1, 15, 0xff); /* green */
-	ipu_dc_map_config(priv, IPU_DC_MAP_BGR24, 0, 23, 0xff); /* blue */
+	ipu_dc_map_config(priv, IPU_DC_MAP_BGR24, 2, 7, 0xff);  
+	ipu_dc_map_config(priv, IPU_DC_MAP_BGR24, 1, 15, 0xff);  
+	ipu_dc_map_config(priv, IPU_DC_MAP_BGR24, 0, 23, 0xff);  
 
 	return 0;
 }

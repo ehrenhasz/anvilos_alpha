@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #include "common.h"
 
 	.data
@@ -17,15 +17,15 @@ pattern:
 
 	.text
 FUNC_START(_start)
-	/* Load the pattern */
+	 
 	ld	r15, pattern@TOC(%r2)
 
-	/* Setup CR, only CR2-CR4 are maintained */
+	 
 	lis	r3, 0x00FF
 	ori	r3, r3, 0xF000
 	mtcr	r3
 
-	/* Load the pattern slightly modified into the registers */
+	 
 	mr	r3, r15
 	addi	r4, r15, 4
 
@@ -37,12 +37,12 @@ FUNC_START(_start)
 	addi	r7, r15, 7
 	addi	r8, r15, 8
 
-	/* r9 - r12 are clobbered */
+	 
 
 	addi	r13, r15, 13
 	addi	r14, r15, 14
 
-	/* Skip r15 we're using it */
+	 
 
 	addi	r16, r15, 16
 	addi	r17, r15, 17
@@ -61,29 +61,26 @@ FUNC_START(_start)
 	addi	r30, r15, 30
 	addi	r31, r15, 31
 
-	/*
-	 * Call the syscall to switch endian.
-	 * It clobbers r9-r12, XER, CTR and CR0-1,5-7.
-	 */
+	 
 	li r0, __NR_switch_endian
 	sc
 
-	tdi   0, 0, 0x48	// b +8 if the endian was switched
-	b     .Lfail	  	// exit if endian didn't switch
+	tdi   0, 0, 0x48	 
+	b     .Lfail	  	 
 
 #include "check-reversed.S"
 
-	/* Flip back, r0 already has the switch syscall number */
-	.long	0x02000044	/* sc */
+	 
+	.long	0x02000044	 
 
 #include "check.S"
 
 	ld	r4, success_message@got(%r2)
-	li	r5, 28	// strlen(success_message)
-	li	r14, 0	// exit status
+	li	r5, 28	 
+	li	r14, 0	 
 .Lout:
 	li	r0, __NR_write
-	li	r3, 1	/* stdout */
+	li	r3, 1	 
 	sc
 	li      r0, __NR_exit
 	mr	r3, r14
@@ -92,6 +89,6 @@ FUNC_START(_start)
 
 .Lfail:
 	ld	r4, failure_message@got(%r2)
-	li	r5, 28	// strlen(failure_message)
+	li	r5, 28	 
 	li	r14, 1
 	b	.Lout

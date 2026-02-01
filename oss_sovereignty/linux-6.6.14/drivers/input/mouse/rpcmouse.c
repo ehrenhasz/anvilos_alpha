@@ -1,18 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Acorn RiscPC mouse driver for Linux/ARM
- *
- *  Copyright (c) 2000-2002 Vojtech Pavlik
- *  Copyright (C) 1996-2002 Russell King
- */
 
-/*
- *
- * This handles the Acorn RiscPCs mouse.  We basically have a couple of
- * hardware registers that track the sensor count for the X-Y movement and
- * another register holding the button state.  On every VSYNC interrupt we read
- * the complete state and then work out if something has changed.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/ptrace.h>

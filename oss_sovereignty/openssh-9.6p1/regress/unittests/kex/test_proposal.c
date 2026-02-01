@@ -1,9 +1,5 @@
-/* 	$OpenBSD: test_proposal.c,v 1.2 2023/03/06 12:15:47 dtucker Exp $ */
-/*
- * Regress test KEX
- *
- * Placed in the public domain
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -41,7 +37,7 @@ kex_proposal_tests(void)
 	struct ssh ssh;
 	char *result, *out, *in;
 	struct {
-		char *in;	/* TODO: make this const */
+		char *in;	 
 		char *out;
 		int compat;
 	} tests[] = {
@@ -49,30 +45,30 @@ kex_proposal_tests(void)
 		{ KEXALGOS, DHGEX256","DHGEX1, SSH_BUG_CURVE25519PAD },
 		{ KEXALGOS, CURVE25519, SSH_OLD_DHGEX },
 		{ "a,"KEXALGOS, "a", SSH_BUG_CURVE25519PAD|SSH_OLD_DHGEX },
-		/* TODO: enable once compat_kex_proposal doesn't fatal() */
-		/* { KEXALGOS, "", SSH_BUG_CURVE25519PAD|SSH_OLD_DHGEX }, */
+		 
+		 
 	};
 
 	TEST_START("compat_kex_proposal");
 	for (i = 0; i < sizeof(tests) / sizeof(*tests); i++) {
 		ssh.compat = tests[i].compat;
-		/* match entire string */
+		 
 		result = compat_kex_proposal(&ssh, tests[i].in);
 		ASSERT_STRING_EQ(result, tests[i].out);
 		free(result);
-		/* match at end */
+		 
 		in = kex_names_cat("a", tests[i].in);
 		out = kex_names_cat("a", tests[i].out);
 		result = compat_kex_proposal(&ssh, in);
 		ASSERT_STRING_EQ(result, out);
 		free(result); free(in); free(out);
-		/* match at start */
+		 
 		in = kex_names_cat(tests[i].in, "a");
 		out = kex_names_cat(tests[i].out, "a");
 		result = compat_kex_proposal(&ssh, in);
 		ASSERT_STRING_EQ(result, out);
 		free(result); free(in); free(out);
-		/* match in middle */
+		 
 		xasprintf(&in, "a,%s,b", tests[i].in);
 		if (*(tests[i].out) == '\0')
 			out = xstrdup("a,b");

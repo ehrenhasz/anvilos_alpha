@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  jmb38x_ms.c - JMicron jmb38x MemoryStick card reader
- *
- *  Copyright (C) 2008 Alex Dubov <oakad@yahoo.com>
- */
+
+ 
 
 #include <linux/spinlock.h>
 #include <linux/interrupt.h>

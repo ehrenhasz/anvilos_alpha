@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
- *
- * @File	cthardware.c
- *
- * @Brief
- * This file contains the implementation of hardware access methord.
- *
- * @Author	Liu Chun
- * @Date 	Jun 26 2008
- */
+
+ 
 
 #include "cthardware.h"
 #include "cthw20k1.h"
@@ -47,10 +37,10 @@ int destroy_hw_obj(struct hw *hw)
 	int err;
 
 	switch (hw->pci->device) {
-	case 0x0005:	/* 20k1 device */
+	case 0x0005:	 
 		err = destroy_20k1_hw_obj(hw);
 		break;
-	case 0x000B:	/* 20k2 device */
+	case 0x000B:	 
 		err = destroy_20k2_hw_obj(hw);
 		break;
 	default:
@@ -67,7 +57,7 @@ unsigned int get_field(unsigned int data, unsigned int field)
 
 	if (WARN_ON(!field))
 		return 0;
-	/* @field should always be greater than 0 */
+	 
 	for (i = 0; !(field & (1 << i)); )
 		i++;
 
@@ -80,7 +70,7 @@ void set_field(unsigned int *data, unsigned int field, unsigned int value)
 
 	if (WARN_ON(!field))
 		return;
-	/* @field should always be greater than 0 */
+	 
 	for (i = 0; !(field & (1 << i)); )
 		i++;
 

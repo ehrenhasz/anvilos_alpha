@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2014 Redpine Signals Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/firmware.h>
 #include <net/bluetooth/bluetooth.h>
@@ -21,7 +7,7 @@
 #include "rsi_sdio.h"
 #include "rsi_common.h"
 
-/* FLASH Firmware */
+ 
 static struct ta_metadata metadata_flash_content[] = {
 	{"flash_content", 0x00010000},
 	{"rsi/rs9113_wlan_qspi.rps", 0x00010000},
@@ -77,7 +63,7 @@ int rsi_prepare_mgmt_desc(struct rsi_common *common, struct sk_buff *skb)
 	tx_params = (struct skb_info *)info->driver_data;
 	vif = tx_params->vif;
 
-	/* Update header size */
+	 
 	header_size = FRAME_DESC_SZ + sizeof(struct rsi_xtended_desc);
 	if (header_size > skb_headroom(skb)) {
 		rsi_dbg(ERR_ZONE,
@@ -148,7 +134,7 @@ int rsi_prepare_mgmt_desc(struct rsi_common *common, struct sk_buff *skb)
 	return 0;
 }
 
-/* This function prepares descriptor for given data packet */
+ 
 int rsi_prepare_data_desc(struct rsi_common *common, struct sk_buff *skb)
 {
 	struct rsi_hw *adapter = common->priv;
@@ -219,7 +205,7 @@ int rsi_prepare_data_desc(struct rsi_common *common, struct sk_buff *skb)
 	data_desc->header_len = ieee80211_size;
 
 	if (common->rate_config[common->band].fixed_enabled) {
-		/* Send fixed rate */
+		 
 		u16 fixed_rate = common->rate_config[common->band].fixed_hw_rate;
 
 		data_desc->frame_info = cpu_to_le16(RATE_INFO_ENABLE);
@@ -229,7 +215,7 @@ int rsi_prepare_data_desc(struct rsi_common *common, struct sk_buff *skb)
 			data_desc->bbp_info = cpu_to_le16(FULL40M_ENABLE);
 
 		if (common->vif_info[0].sgi && (fixed_rate & 0x100)) {
-		       /* Only MCS rates */
+		        
 			data_desc->rate_info |=
 				cpu_to_le16(ENABLE_SHORTGI_RATE);
 		}
@@ -293,7 +279,7 @@ int rsi_prepare_data_desc(struct rsi_common *common, struct sk_buff *skb)
 	return 0;
 }
 
-/* This function sends received data packet from driver to device */
+ 
 int rsi_send_data_pkt(struct rsi_common *common, struct sk_buff *skb)
 {
 	struct rsi_hw *adapter = common->priv;
@@ -326,14 +312,7 @@ err:
 	return status;
 }
 
-/**
- * rsi_send_mgmt_pkt() - This functions sends the received management packet
- *			 from driver to device.
- * @common: Pointer to the driver private structure.
- * @skb: Pointer to the socket buffer structure.
- *
- * Return: status: 0 on success, -1 on failure.
- */
+ 
 int rsi_send_mgmt_pkt(struct rsi_common *common,
 		      struct sk_buff *skb)
 {
@@ -366,7 +345,7 @@ int rsi_send_mgmt_pkt(struct rsi_common *common,
 	mgmt_desc = (struct rsi_mgmt_desc *)skb->data;
 	xtend_desc = (struct rsi_xtended_desc *)&skb->data[FRAME_DESC_SZ];
 
-	/* Indicate to firmware to give cfm for probe */
+	 
 	if (ieee80211_is_probe_req(wh->frame_control) &&
 	    !info->control.vif->cfg.assoc) {
 		rsi_dbg(INFO_ZONE,
@@ -558,9 +537,7 @@ static int bl_write_cmd(struct rsi_hw *adapter, u8 cmd, u8 exp_resp,
 	mdelay(1);
 
 	if (cmd == LOAD_HOSTED_FW || cmd == JUMP_TO_ZERO_PC) {
-		/* JUMP_TO_ZERO_PC doesn't expect
-		 * any response. So return from here
-		 */
+		 
 		return 0;
 	}
 
@@ -709,7 +686,7 @@ static u32 read_flash_capacity(struct rsi_hw *adapter)
 	}
 	rsi_dbg(INIT_ZONE, "Flash capacity: %d KiloBytes\n", flash_sz);
 
-	return (flash_sz * 1024); /* Return size in kbytes */
+	return (flash_sz * 1024);  
 }
 
 static int ping_pong_write(struct rsi_hw *adapter, u8 cmd, u8 *addr, u32 size)
@@ -921,7 +898,7 @@ static int rsi_load_9113_firmware(struct rsi_hw *adapter)
 	content_size = fw_entry->size;
 	rsi_dbg(INFO_ZONE, "FW Length = %d bytes\n", content_size);
 
-	/* Get the firmware version */
+	 
 	common->lmac_ver.ver.info.fw_ver[0] =
 		fw_entry->data[LMAC_VER_OFFSET_9113] & 0xFF;
 	common->lmac_ver.ver.info.fw_ver[1] =

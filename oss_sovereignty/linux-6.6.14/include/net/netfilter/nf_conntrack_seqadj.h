@@ -1,16 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _NF_CONNTRACK_SEQADJ_H
 #define _NF_CONNTRACK_SEQADJ_H
 
 #include <net/netfilter/nf_conntrack_extend.h>
 
-/**
- * struct nf_ct_seqadj - sequence number adjustment information
- *
- * @correction_pos: position of the last TCP sequence number modification
- * @offset_before: sequence number offset before last modification
- * @offset_after: sequence number offset after last modification
- */
+ 
 struct nf_ct_seqadj {
 	u32		correction_pos;
 	s32		offset_before;
@@ -42,4 +36,4 @@ int nf_ct_seq_adjust(struct sk_buff *skb, struct nf_conn *ct,
 		     enum ip_conntrack_info ctinfo, unsigned int protoff);
 s32 nf_ct_seq_offset(const struct nf_conn *ct, enum ip_conntrack_dir, u32 seq);
 
-#endif /* _NF_CONNTRACK_SEQADJ_H */
+#endif  

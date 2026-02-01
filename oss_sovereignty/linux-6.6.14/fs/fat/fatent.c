@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2004, OGAWA Hirofumi
- */
+
+ 
 
 #include <linux/blkdev.h>
 #include <linux/sched/signal.h>
@@ -81,7 +79,7 @@ static int fat12_ent_bread(struct super_block *sb, struct fat_entry *fatent,
 	if ((offset + 1) < sb->s_blocksize)
 		fatent->nr_bhs = 1;
 	else {
-		/* This entry is block boundary, it needs the next block */
+		 
 		blocknr++;
 		bhs[1] = sb_bread(sb, blocknr);
 		if (!bhs[1])
@@ -324,18 +322,18 @@ static inline int fat_ent_update_ptr(struct super_block *sb,
 	const struct fatent_operations *ops = sbi->fatent_ops;
 	struct buffer_head **bhs = fatent->bhs;
 
-	/* Is this fatent's blocks including this entry? */
+	 
 	if (!fatent->nr_bhs || bhs[0]->b_blocknr != blocknr)
 		return 0;
 	if (is_fat12(sbi)) {
 		if ((offset + 1) < sb->s_blocksize) {
-			/* This entry is on bhs[0]. */
+			 
 			if (fatent->nr_bhs == 2) {
 				brelse(bhs[1]);
 				fatent->nr_bhs = 1;
 			}
 		} else {
-			/* This entry needs the next block. */
+			 
 			if (fatent->nr_bhs != 2)
 				return 0;
 			if (bhs[1]->b_blocknr != (blocknr + 1))
@@ -372,7 +370,7 @@ int fat_ent_read(struct inode *inode, struct fat_entry *fatent, int entry)
 	return ops->ent_get(fatent);
 }
 
-/* FIXME: We can write the blocks as more big chunk. */
+ 
 static int fat_mirror_bhs(struct super_block *sb, struct buffer_head **bhs,
 			  int nr_bhs)
 {
@@ -390,7 +388,7 @@ static int fat_mirror_bhs(struct super_block *sb, struct buffer_head **bhs,
 				err = -ENOMEM;
 				goto error;
 			}
-			/* Avoid race with userspace read via bdev */
+			 
 			lock_buffer(c_bh);
 			memcpy(c_bh->b_data, bhs[n]->b_data, sb->s_blocksize);
 			set_buffer_uptodate(c_bh);
@@ -472,7 +470,7 @@ int fat_alloc_clusters(struct inode *inode, int *cluster, int nr_cluster)
 	struct buffer_head *bhs[MAX_BUF_PER_PAGE];
 	int i, count, err, nr_bhs, idx_clus;
 
-	BUG_ON(nr_cluster > (MAX_BUF_PER_PAGE / 2));	/* fixed limit */
+	BUG_ON(nr_cluster > (MAX_BUF_PER_PAGE / 2));	 
 
 	lock_fat(sbi);
 	if (sbi->free_clusters != -1 && sbi->free_clus_valid &&
@@ -494,12 +492,12 @@ int fat_alloc_clusters(struct inode *inode, int *cluster, int nr_cluster)
 		if (err)
 			goto out;
 
-		/* Find the free entries in a block */
+		 
 		do {
 			if (ops->ent_get(&fatent) == FAT_ENT_FREE) {
 				int entry = fatent.entry;
 
-				/* make the cluster chain */
+				 
 				ops->ent_put(&fatent, FAT_ENT_EOF);
 				if (prev_ent.nr_bhs)
 					ops->ent_put(&prev_ent, entry);
@@ -515,10 +513,7 @@ int fat_alloc_clusters(struct inode *inode, int *cluster, int nr_cluster)
 				if (idx_clus == nr_cluster)
 					goto out;
 
-				/*
-				 * fat_collect_bhs() gets ref-count of bhs,
-				 * so we can still use the prev_ent.
-				 */
+				 
 				prev_ent = fatent;
 			}
 			count++;
@@ -527,7 +522,7 @@ int fat_alloc_clusters(struct inode *inode, int *cluster, int nr_cluster)
 		} while (fat_ent_next(sbi, &fatent));
 	}
 
-	/* Couldn't allocate the free entries */
+	 
 	sbi->free_clusters = 0;
 	sbi->free_clus_valid = 1;
 	err = -ENOSPC;
@@ -577,11 +572,7 @@ int fat_free_clusters(struct inode *inode, int cluster)
 		}
 
 		if (sbi->options.discard) {
-			/*
-			 * Issue discard for the sectors we no longer
-			 * care about, batching contiguous clusters
-			 * into one request
-			 */
+			 
 			if (cluster != fatent.entry + 1) {
 				int nr_clus = fatent.entry - first_cl + 1;
 
@@ -651,11 +642,7 @@ static void fat_ra_init(struct super_block *sb, struct fatent_ra *ra,
 	const struct fatent_operations *ops = sbi->fatent_ops;
 	sector_t blocknr, block_end;
 	int offset;
-	/*
-	 * This is the sequential read, so ra_pages * 2 (but try to
-	 * align the optimal hardware IO size).
-	 * [BTW, 128kb covers the whole sectors for FAT12 and FAT16]
-	 */
+	 
 	unsigned long ra_pages = sb->s_bdi->ra_pages;
 	unsigned int reada_blocks;
 
@@ -666,20 +653,20 @@ static void fat_ra_init(struct super_block *sb, struct fatent_ra *ra,
 		ra_pages = rounddown(ra_pages, sb->s_bdi->io_pages);
 	reada_blocks = ra_pages << (PAGE_SHIFT - sb->s_blocksize_bits + 1);
 
-	/* Initialize the range for sequential read */
+	 
 	ops->ent_blocknr(sb, fatent->entry, &offset, &blocknr);
 	ops->ent_blocknr(sb, ent_limit - 1, &offset, &block_end);
 	ra->cur = 0;
 	ra->limit = (block_end + 1) - blocknr;
 
-	/* Advancing the window at half size */
+	 
 	ra->ra_blocks = reada_blocks >> 1;
 	ra->ra_advance = ra->cur;
 	ra->ra_next = ra->cur;
 	ra->ra_limit = ra->cur + min_t(sector_t, reada_blocks, ra->limit);
 }
 
-/* Assuming to be called before reading a new block (increments ->cur). */
+ 
 static void fat_ent_reada(struct super_block *sb, struct fatent_ra *ra,
 			  struct fat_entry *fatent)
 {
@@ -697,15 +684,12 @@ static void fat_ent_reada(struct super_block *sb, struct fatent_ra *ra,
 
 		diff = blocknr - ra->cur;
 		blk_start_plug(&plug);
-		/*
-		 * FIXME: we would want to directly use the bio with
-		 * pages to reduce the number of segments.
-		 */
+		 
 		for (; ra->ra_next < ra->ra_limit; ra->ra_next++)
 			sb_breadahead(sb, ra->ra_next + diff);
 		blk_finish_plug(&plug);
 
-		/* Advance the readahead window */
+		 
 		ra->ra_advance += ra->ra_blocks;
 		ra->ra_limit += min_t(sector_t,
 				      ra->ra_blocks, ra->limit - ra->ra_limit);
@@ -730,7 +714,7 @@ int fat_count_free_clusters(struct super_block *sb)
 	fatent_set_entry(&fatent, FAT_START_ENT);
 	fat_ra_init(sb, &fatent_ra, &fatent, sbi->max_cluster);
 	while (fatent.entry < sbi->max_cluster) {
-		/* readahead of fat blocks */
+		 
 		fat_ent_reada(sb, &fatent_ra, &fatent);
 
 		err = fat_ent_read_block(sb, &fatent);
@@ -770,12 +754,7 @@ int fat_trim_fs(struct inode *inode, struct fstrim_range *range)
 	u32 free = 0;
 	int err = 0;
 
-	/*
-	 * FAT data is organized as clusters, trim at the granulary of cluster.
-	 *
-	 * fstrim_range is in byte, convert values to cluster index.
-	 * Treat sectors before data region as all used, not to trim them.
-	 */
+	 
 	ent_start = max_t(u64, range->start>>sbi->cluster_bits, FAT_START_ENT);
 	ent_end = ent_start + (range->len >> sbi->cluster_bits) - 1;
 	minlen = range->minlen >> sbi->cluster_bits;
@@ -790,7 +769,7 @@ int fat_trim_fs(struct inode *inode, struct fstrim_range *range)
 	fatent_set_entry(&fatent, ent_start);
 	fat_ra_init(sb, &fatent_ra, &fatent, ent_end + 1);
 	while (fatent.entry <= ent_end) {
-		/* readahead of fat blocks */
+		 
 		fat_ent_reada(sb, &fatent_ra, &fatent);
 
 		err = fat_ent_read_block(sb, &fatent);
@@ -826,7 +805,7 @@ int fat_trim_fs(struct inode *inode, struct fstrim_range *range)
 			lock_fat(sbi);
 		}
 	}
-	/* handle scenario when tail entries are all free */
+	 
 	if (free && free >= minlen) {
 		u32 clus = fatent.entry - free;
 

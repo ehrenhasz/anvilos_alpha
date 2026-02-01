@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Hisilicon Hi6220 reset controller driver
- *
- * Copyright (c) 2016 Linaro Limited.
- * Copyright (c) 2015-2016 HiSilicon Limited.
- *
- * Author: Feng Chen <puck.chen@hisilicon.com>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/init.h>
@@ -128,12 +121,7 @@ static int hi6220_ao_deassert(struct reset_controller_dev *rc_dev,
 	struct regmap *regmap = data->regmap;
 	int ret;
 
-	/*
-	 * It was suggested to disable isolation before enabling
-	 * the clocks and deasserting reset, to avoid glitches.
-	 * But this order is preserved to keep it matching the
-	 * vendor code.
-	 */
+	 
 	ret = regmap_write(regmap, AO_SCTRL_SC_PW_RSTDIS0, BIT(idx));
 	if (ret)
 		return ret;
@@ -200,7 +188,7 @@ static const struct of_device_id hi6220_reset_match[] = {
 		.compatible = "hisilicon,hi6220-aoctrl",
 		.data = (void *)AO,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, hi6220_reset_match);
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Broadcom AVS RO thermal sensor driver
- *
- * based on brcmstb_thermal
- *
- * Copyright (C) 2020 Stefan Wahren
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -48,7 +42,7 @@ static int bcm2711_get_temp(struct thermal_zone_device *tz, int *temp)
 
 	val &= AVS_RO_TEMP_STATUS_DATA_MSK;
 
-	/* Convert a HW code to a temperature reading (millidegree celsius) */
+	 
 	*temp = slope * val + offset;
 
 	return 0;
@@ -77,8 +71,8 @@ static int bcm2711_thermal_probe(struct platform_device *pdev)
 	if (!priv)
 		return -ENOMEM;
 
-	/* get regmap from syscon node */
-	parent = of_get_parent(dev->of_node); /* parent should be syscon node */
+	 
+	parent = of_get_parent(dev->of_node);  
 	regmap = syscon_node_to_regmap(parent);
 	of_node_put(parent);
 	if (IS_ERR(regmap)) {

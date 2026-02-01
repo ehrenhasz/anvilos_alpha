@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl1271
- *
- * Copyright (C) 2008-2010 Nokia Corporation
- *
- * Contact: Luciano Coelho <luciano.coelho@nokia.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -56,16 +50,7 @@ int wlcore_translate_addr(struct wl1271 *wl, int addr)
 {
 	struct wlcore_partition_set *part = &wl->curr_part;
 
-	/*
-	 * To translate, first check to which window of addresses the
-	 * particular address belongs. Then subtract the starting address
-	 * of that window from the address. Then, add offset of the
-	 * translated region.
-	 *
-	 * The translated regions occur next to each other in physical device
-	 * memory, so just add the sizes of the preceding address regions to
-	 * get the offset to the new region.
-	 */
+	 
 	if ((addr >= part->mem.start) &&
 	    (addr < part->mem.start + part->mem.size))
 		return addr - part->mem.start;
@@ -86,46 +71,13 @@ int wlcore_translate_addr(struct wl1271 *wl, int addr)
 }
 EXPORT_SYMBOL_GPL(wlcore_translate_addr);
 
-/* Set the partitions to access the chip addresses
- *
- * To simplify driver code, a fixed (virtual) memory map is defined for
- * register and memory addresses. Because in the chipset, in different stages
- * of operation, those addresses will move around, an address translation
- * mechanism is required.
- *
- * There are four partitions (three memory and one register partition),
- * which are mapped to two different areas of the hardware memory.
- *
- *                                Virtual address
- *                                     space
- *
- *                                    |    |
- *                                 ...+----+--> mem.start
- *          Physical address    ...   |    |
- *               space       ...      |    | [PART_0]
- *                        ...         |    |
- *  00000000  <--+----+...         ...+----+--> mem.start + mem.size
- *               |    |         ...   |    |
- *               |MEM |      ...      |    |
- *               |    |   ...         |    |
- *  mem.size  <--+----+...            |    | {unused area)
- *               |    |   ...         |    |
- *               |REG |      ...      |    |
- *  mem.size     |    |         ...   |    |
- *      +     <--+----+...         ...+----+--> reg.start
- *  reg.size     |    |   ...         |    |
- *               |MEM2|      ...      |    | [PART_1]
- *               |    |         ...   |    |
- *                                 ...+----+--> reg.start + reg.size
- *                                    |    |
- *
- */
+ 
 int wlcore_set_partition(struct wl1271 *wl,
 			 const struct wlcore_partition_set *p)
 {
 	int ret;
 
-	/* copy partition info */
+	 
 	memcpy(&wl->curr_part, p, sizeof(*p));
 
 	wl1271_debug(DEBUG_IO, "mem_start %08X mem_size %08X",
@@ -161,17 +113,7 @@ int wlcore_set_partition(struct wl1271 *wl,
 	if (ret < 0)
 		goto out;
 
-	/* wl12xx only: We don't need the size of the last partition,
-	 * as it is automatically calculated based on the total memory
-	 * size and the sizes of the previous partitions.
-	 *
-	 * wl18xx re-defines the HW_PART3 addresses for logger over
-	 * SDIO support. wl12xx is expecting the write to
-	 * HW_PART3_START_ADDR at offset 24. This creates conflict
-	 * between the addresses.
-	 * In order to fix this the expected value is written to
-	 * HW_PART3_SIZE_ADDR instead which is at offset 24 after changes.
-	 */
+	 
 	ret = wlcore_raw_write32(wl, HW_PART3_START_ADDR, p->mem3.start);
 	if (ret < 0)
 		goto out;

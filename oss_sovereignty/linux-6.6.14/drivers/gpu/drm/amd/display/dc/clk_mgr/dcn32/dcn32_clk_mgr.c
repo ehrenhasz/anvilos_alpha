@@ -1,27 +1,4 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dccg.h"
 #include "clk_mgr_internal.h"
@@ -121,7 +98,7 @@ static const struct clk_mgr_mask clk_mgr_mask_dcn321 = {
 };
 
 
-/* Query SMU for all clock states for a particular clock */
+ 
 static void dcn32_init_single_clock(struct clk_mgr_internal *clk_mgr, PPCLK_e clk, unsigned int *entry_0,
 		unsigned int *num_levels)
 {
@@ -131,14 +108,14 @@ static void dcn32_init_single_clock(struct clk_mgr_internal *clk_mgr, PPCLK_e cl
 	uint32_t ret = dcn30_smu_get_dpm_freq_by_index(clk_mgr, clk, 0xFF);
 
 	if (ret & (1 << 31))
-		/* fine-grained, only min and max */
+		 
 		*num_levels = 2;
 	else
-		/* discrete, a number of fixed states */
-		/* will set num_levels to 0 on failure */
+		 
+		 
 		*num_levels = ret & 0xFF;
 
-	/* if the initial message failed, num_levels will be 0 */
+	 
 	for (i = 0; i < *num_levels; i++) {
 		*((unsigned int *)entry_i) = (dcn30_smu_get_dpm_freq_by_index(clk_mgr, clk, i) & 0xFFFF);
 		entry_i += sizeof(clk_mgr->base.bw_params->clk_table.entries[0]);
@@ -178,19 +155,19 @@ void dcn32_init_clocks(struct clk_mgr *clk_mgr_base)
 	dcn30_smu_check_driver_if_version(clk_mgr);
 	dcn30_smu_check_msg_header_version(clk_mgr);
 
-	/* DCFCLK */
+	 
 	dcn32_init_single_clock(clk_mgr, PPCLK_DCFCLK,
 			&clk_mgr_base->bw_params->clk_table.entries[0].dcfclk_mhz,
 			&num_entries_per_clk->num_dcfclk_levels);
 	clk_mgr_base->bw_params->dc_mode_limit.dcfclk_mhz = dcn30_smu_get_dc_mode_max_dpm_freq(clk_mgr, PPCLK_DCFCLK);
 
-	/* SOCCLK */
+	 
 	dcn32_init_single_clock(clk_mgr, PPCLK_SOCCLK,
 					&clk_mgr_base->bw_params->clk_table.entries[0].socclk_mhz,
 					&num_entries_per_clk->num_socclk_levels);
 	clk_mgr_base->bw_params->dc_mode_limit.socclk_mhz = dcn30_smu_get_dc_mode_max_dpm_freq(clk_mgr, PPCLK_SOCCLK);
 
-	/* DTBCLK */
+	 
 	if (!clk_mgr->base.ctx->dc->debug.disable_dtb_ref_clk_switch) {
 		dcn32_init_single_clock(clk_mgr, PPCLK_DTBCLK,
 				&clk_mgr_base->bw_params->clk_table.entries[0].dtbclk_mhz,
@@ -199,13 +176,13 @@ void dcn32_init_clocks(struct clk_mgr *clk_mgr_base)
 				dcn30_smu_get_dc_mode_max_dpm_freq(clk_mgr, PPCLK_DTBCLK);
 	}
 
-	/* DISPCLK */
+	 
 	dcn32_init_single_clock(clk_mgr, PPCLK_DISPCLK,
 			&clk_mgr_base->bw_params->clk_table.entries[0].dispclk_mhz,
 			&num_entries_per_clk->num_dispclk_levels);
 	num_levels = num_entries_per_clk->num_dispclk_levels;
 	clk_mgr_base->bw_params->dc_mode_limit.dispclk_mhz = dcn30_smu_get_dc_mode_max_dpm_freq(clk_mgr, PPCLK_DISPCLK);
-	//HW recommends limit of 1950 MHz in display clock for all DCN3.2.x
+	
 	if (clk_mgr_base->bw_params->dc_mode_limit.dispclk_mhz > 1950)
 		clk_mgr_base->bw_params->dc_mode_limit.dispclk_mhz = 1950;
 
@@ -233,11 +210,11 @@ void dcn32_init_clocks(struct clk_mgr *clk_mgr_base)
 					= khz_to_mhz_ceil(clk_mgr_base->ctx->dc->debug.min_dpp_clk_khz);
 	}
 
-	/* Get UCLK, update bounding box */
+	 
 	clk_mgr_base->funcs->get_memclk_states_from_smu(clk_mgr_base);
 
 	DC_FP_START();
-	/* WM range table */
+	 
 	dcn32_build_wm_range_table(clk_mgr);
 	DC_FP_END();
 }
@@ -254,7 +231,7 @@ static void dcn32_update_clocks_update_dtb_dto(struct clk_mgr_internal *clk_mgr,
 		struct pipe_ctx *pipe_ctx = &context->res_ctx.pipe_ctx[i];
 		struct dtbclk_dto_params dto_params = {0};
 
-		/* use mask to program DTO once per tg */
+		 
 		if (pipe_ctx->stream_res.tg &&
 				!(tg_mask & (1 << pipe_ctx->stream_res.tg->inst))) {
 			tg_mask |= (1 << pipe_ctx->stream_res.tg->inst);
@@ -263,16 +240,12 @@ static void dcn32_update_clocks_update_dtb_dto(struct clk_mgr_internal *clk_mgr,
 			dto_params.ref_dtbclk_khz = ref_dtbclk_khz;
 
 			dccg->funcs->set_dtbclk_dto(clk_mgr->dccg, &dto_params);
-			//dccg->funcs->set_audio_dtbclk_dto(clk_mgr->dccg, &dto_params);
+			
 		}
 	}
 }
 
-/* Since DPPCLK request to PMFW needs to be exact (due to DPP DTO programming),
- * update DPPCLK to be the exact frequency that will be set after the DPPCLK
- * divider is updated. This will prevent rounding issues that could cause DPP
- * refclk and DPP DTO to not match up.
- */
+ 
 static void dcn32_update_dppclk_dispclk_freq(struct clk_mgr_internal *clk_mgr, struct dc_clocks *new_clocks)
 {
 	int dpp_divider = 0;
@@ -304,14 +277,10 @@ void dcn32_update_clocks_update_dpp_dto(struct clk_mgr_internal *clk_mgr,
 		if (context->res_ctx.pipe_ctx[i].plane_res.dpp)
 			dpp_inst = context->res_ctx.pipe_ctx[i].plane_res.dpp->inst;
 		else if (!context->res_ctx.pipe_ctx[i].plane_res.dpp && dppclk_khz == 0) {
-			/* dpp == NULL && dppclk_khz == 0 is valid because of pipe harvesting.
-			 * In this case just continue in loop
-			 */
+			 
 			continue;
 		} else if (!context->res_ctx.pipe_ctx[i].plane_res.dpp && dppclk_khz > 0) {
-			/* The software state is not valid if dpp resource is NULL and
-			 * dppclk_khz > 0.
-			 */
+			 
 			ASSERT(false);
 			continue;
 		}
@@ -345,7 +314,7 @@ static void dcn32_update_clocks_update_dentist(
 	REG_GET(DENTIST_DISPCLK_CNTL,
 			DENTIST_DISPCLK_WDIVIDER, &old_dispclk_wdivider);
 
-	/* When changing divider to or from 127, some extra programming is required to prevent corruption */
+	 
 	if (old_dispclk_wdivider == 127 && new_dispclk_wdivider != 127) {
 		for (i = 0; i < clk_mgr->base.ctx->dc->res_pool->pipe_count; i++) {
 			struct pipe_ctx *pipe_ctx = &context->res_ctx.pipe_ctx[i];
@@ -357,7 +326,7 @@ static void dcn32_update_clocks_update_dentist(
 
 			if (!resource_is_pipe_type(pipe_ctx, OTG_MASTER))
 				continue;
-			/* Virtual encoders don't have this function */
+			 
 			if (!stream_enc->funcs->get_fifo_cal_average_level)
 				continue;
 			fifo_level = stream_enc->funcs->get_fifo_cal_average_level(
@@ -375,7 +344,7 @@ static void dcn32_update_clocks_update_dentist(
 					false);
 		}
 	} else if (new_dispclk_wdivider == 127 && old_dispclk_wdivider != 127) {
-		/* request clock with 126 divider first */
+		 
 		uint32_t temp_disp_divider = dentist_get_divider_from_did(126);
 		uint32_t temp_dispclk_khz = (DENTIST_DIVIDER_RANGE_SCALE_FACTOR * clk_mgr->base.dentist_vco_freq_khz) / temp_disp_divider;
 
@@ -403,7 +372,7 @@ static void dcn32_update_clocks_update_dentist(
 
 			if (!resource_is_pipe_type(pipe_ctx, OTG_MASTER))
 				continue;
-			/* Virtual encoders don't have this function */
+			 
 			if (!stream_enc->funcs->get_fifo_cal_average_level)
 				continue;
 			fifo_level = stream_enc->funcs->get_fifo_cal_average_level(
@@ -417,7 +386,7 @@ static void dcn32_update_clocks_update_dentist(
 		}
 	}
 
-	/* do requested DISPCLK updates*/
+	 
 	if (clk_mgr->smu_present)
 		dcn32_smu_set_hard_min_by_freq(clk_mgr, PPCLK_DISPCLK, khz_to_mhz_ceil(clk_mgr->base.clks.dispclk_khz));
 
@@ -443,7 +412,7 @@ static int dcn32_get_dispclk_from_dentist(struct clk_mgr *clk_mgr_base)
 	REG_GET(DENTIST_DISPCLK_CNTL, DENTIST_DISPCLK_WDIVIDER, &dispclk_wdivider);
 	disp_divider = dentist_get_divider_from_did(dispclk_wdivider);
 
-	/* Return DISPCLK freq in Khz */
+	 
 	if (disp_divider)
 		return (DENTIST_DIVIDER_RANGE_SCALE_FACTOR * clk_mgr->base.dentist_vco_freq_khz) / disp_divider;
 
@@ -471,16 +440,12 @@ static void dcn32_update_clocks(struct clk_mgr *clk_mgr_base,
 
 	if (clk_mgr_base->clks.dispclk_khz == 0 ||
 			(dc->debug.force_clock_mode & 0x1)) {
-		/* This is from resume or boot up, if forced_clock cfg option used,
-		 * we bypass program dispclk and DPPCLK, but need set them for S3.
-		 */
+		 
 		force_reset = true;
 
 		dcn2_read_clocks_from_hw_dentist(clk_mgr_base);
 
-		/* Force_clock_mode 0x1:  force reset the clock even it is the same clock
-		 * as long as it is in Passive level.
-		 */
+		 
 	}
 	display_count = clk_mgr_helper_get_active_display_cnt(dc, context);
 
@@ -499,9 +464,9 @@ static void dcn32_update_clocks(struct clk_mgr *clk_mgr_base,
 				!dc->work_arounds.clock_update_disable_mask.fclk) {
 			clk_mgr_base->clks.fclk_p_state_change_support = fclk_p_state_change_support;
 
-			/* To enable FCLK P-state switching, send FCLK_PSTATE_SUPPORTED message to PMFW */
+			 
 			if (clk_mgr_base->ctx->dce_version != DCN_VERSION_3_21 && clk_mgr_base->clks.fclk_p_state_change_support) {
-				/* Handle the code for sending a message to PMFW that FCLK P-state change is supported */
+				 
 				dcn32_smu_send_fclk_pstate_message(clk_mgr, FCLK_PSTATE_SUPPORTED);
 			}
 		}
@@ -523,7 +488,7 @@ static void dcn32_update_clocks(struct clk_mgr *clk_mgr_base,
 		}
 
 		if (should_set_clock(safe_to_lower, new_clocks->socclk_khz, clk_mgr_base->clks.socclk_khz))
-			/* We don't actually care about socclk, don't notify SMU of hard min */
+			 
 			clk_mgr_base->clks.socclk_khz = new_clocks->socclk_khz;
 
 		clk_mgr_base->clks.prev_p_state_change_support = clk_mgr_base->clks.p_state_change_support;
@@ -540,13 +505,10 @@ static void dcn32_update_clocks(struct clk_mgr *clk_mgr_base,
 				!dc->work_arounds.clock_update_disable_mask.uclk) {
 			clk_mgr_base->clks.p_state_change_support = p_state_change_support;
 
-			/* to disable P-State switching, set UCLK min = max */
+			 
 			if (!clk_mgr_base->clks.p_state_change_support) {
 				if (dc->clk_mgr->dc_mode_softmax_enabled) {
-					/* On DCN32x we will never have the functional UCLK min above the softmax
-					 * since we calculate mode support based on softmax being the max UCLK
-					 * frequency.
-					 */
+					 
 					dcn32_smu_set_hard_min_by_freq(clk_mgr, PPCLK_UCLK,
 							dc->clk_mgr->bw_params->dc_mode_softmax_memclk);
 				} else {
@@ -560,25 +522,25 @@ static void dcn32_update_clocks(struct clk_mgr *clk_mgr_base,
 		else
 			dcn32_smu_wait_for_dmub_ack_mclk(clk_mgr, false);
 
-		/* Always update saved value, even if new value not set due to P-State switching unsupported. Also check safe_to_lower for FCLK */
+		 
 		if (safe_to_lower && (clk_mgr_base->clks.fclk_p_state_change_support != clk_mgr_base->clks.fclk_prev_p_state_change_support)) {
 			update_fclk = true;
 		}
 
 		if (clk_mgr_base->ctx->dce_version != DCN_VERSION_3_21 && !clk_mgr_base->clks.fclk_p_state_change_support && update_fclk &&
 				!dc->work_arounds.clock_update_disable_mask.fclk) {
-			/* Handle code for sending a message to PMFW that FCLK P-state change is not supported */
+			 
 			dcn32_smu_send_fclk_pstate_message(clk_mgr, FCLK_PSTATE_NOTSUPPORTED);
 		}
 
-		/* Always update saved value, even if new value not set due to P-State switching unsupported */
+		 
 		if (should_set_clock(safe_to_lower, new_clocks->dramclk_khz, clk_mgr_base->clks.dramclk_khz) &&
 				!dc->work_arounds.clock_update_disable_mask.uclk) {
 			clk_mgr_base->clks.dramclk_khz = new_clocks->dramclk_khz;
 			update_uclk = true;
 		}
 
-		/* set UCLK to requested value if P-State switching is supported, or to re-enable P-State switching */
+		 
 		if (clk_mgr_base->clks.p_state_change_support &&
 				(update_uclk || !clk_mgr_base->clks.prev_p_state_change_support) &&
 				!dc->work_arounds.clock_update_disable_mask.uclk)
@@ -614,10 +576,10 @@ static void dcn32_update_clocks(struct clk_mgr *clk_mgr_base,
 		new_clocks->ref_dtbclk_khz = clk_mgr_base->bw_params->clk_table.entries[0].dtbclk_mhz * 1000;
 	}
 
-	/* clock limits are received with MHz precision, divide by 1000 to prevent setting clocks at every call */
+	 
 	if (!dc->debug.disable_dtb_ref_clk_switch &&
 			should_set_clock(safe_to_lower, new_clocks->ref_dtbclk_khz / 1000, clk_mgr_base->clks.ref_dtbclk_khz / 1000)) {
-		/* DCCG requires KHz precision for DTBCLK */
+		 
 		clk_mgr_base->clks.ref_dtbclk_khz =
 				dcn32_smu_set_hard_min_by_freq(clk_mgr, PPCLK_DTBCLK, khz_to_mhz_ceil(new_clocks->ref_dtbclk_khz));
 		dcn32_update_clocks_update_dtb_dto(clk_mgr, context, clk_mgr_base->clks.ref_dtbclk_khz);
@@ -625,25 +587,22 @@ static void dcn32_update_clocks(struct clk_mgr *clk_mgr_base,
 
 	if (dc->config.forced_clocks == false || (force_reset && safe_to_lower)) {
 		if (dpp_clock_lowered) {
-			/* if clock is being lowered, increase DTO before lowering refclk */
+			 
 			dcn32_update_clocks_update_dpp_dto(clk_mgr, context, safe_to_lower);
 			dcn32_update_clocks_update_dentist(clk_mgr, context);
 			if (clk_mgr->smu_present)
 				dcn32_smu_set_hard_min_by_freq(clk_mgr, PPCLK_DPPCLK, khz_to_mhz_ceil(clk_mgr_base->clks.dppclk_khz));
 		} else {
-			/* if clock is being raised, increase refclk before lowering DTO */
+			 
 			if (update_dppclk || update_dispclk)
 				dcn32_update_clocks_update_dentist(clk_mgr, context);
-			/* There is a check inside dcn20_update_clocks_update_dpp_dto which ensures
-			 * that we do not lower dto when it is not safe to lower. We do not need to
-			 * compare the current and new dppclk before calling this function.
-			 */
+			 
 			dcn32_update_clocks_update_dpp_dto(clk_mgr, context, safe_to_lower);
 		}
 	}
 
 	if (update_dispclk && dmcu && dmcu->funcs->is_dmcu_initialized(dmcu))
-		/*update dmcu for wait_loop count*/
+		 
 		dmcu->funcs->set_psr_wait_loop(dmcu,
 				clk_mgr_base->clks.dispclk_khz / 1000 / 7);
 }
@@ -653,20 +612,17 @@ static uint32_t dcn32_get_vco_frequency_from_reg(struct clk_mgr_internal *clk_mg
 		struct fixed31_32 pll_req;
 		uint32_t pll_req_reg = 0;
 
-		/* get FbMult value */
+		 
 		if (ASICREV_IS_GC_11_0_2(clk_mgr->base.ctx->asic_id.hw_internal_rev))
 			pll_req_reg = REG_READ(CLK0_CLK_PLL_REQ);
 		else
 			pll_req_reg = REG_READ(CLK1_CLK_PLL_REQ);
 
-		/* set up a fixed-point number
-		 * this works because the int part is on the right edge of the register
-		 * and the frac part is on the left edge
-		 */
+		 
 		pll_req = dc_fixpt_from_int(pll_req_reg & clk_mgr->clk_mgr_mask->FbMult_int);
 		pll_req.value |= pll_req_reg & clk_mgr->clk_mgr_mask->FbMult_frac;
 
-		/* multiply by REFCLK period */
+		 
 		pll_req = dc_fixpt_mul_int(pll_req, clk_mgr->dfs_ref_freq_khz);
 
 		return dc_fixpt_floor(pll_req);
@@ -684,56 +640,56 @@ static void dcn32_dump_clk_registers(struct clk_state_registers_and_bypass *regs
 	uint32_t target_div = 0;
 
 	if (ASICREV_IS_GC_11_0_2(clk_mgr->base.ctx->asic_id.hw_internal_rev)) {
-		/* DFS Slice 0 is used for DISPCLK */
+		 
 		dispclk_did = REG_READ(CLK0_CLK0_DFS_CNTL);
-		/* DFS Slice 1 is used for DPPCLK */
+		 
 		dppclk_did = REG_READ(CLK0_CLK1_DFS_CNTL);
-		/* DFS Slice 2 is used for DPREFCLK */
+		 
 		dprefclk_did = REG_READ(CLK0_CLK2_DFS_CNTL);
-		/* DFS Slice 3 is used for DCFCLK */
+		 
 		dcfclk_did = REG_READ(CLK0_CLK3_DFS_CNTL);
-		/* DFS Slice 4 is used for DTBCLK */
+		 
 		dtbclk_did = REG_READ(CLK0_CLK4_DFS_CNTL);
 	} else {
-		/* DFS Slice 0 is used for DISPCLK */
+		 
 		dispclk_did = REG_READ(CLK1_CLK0_DFS_CNTL);
-		/* DFS Slice 1 is used for DPPCLK */
+		 
 		dppclk_did = REG_READ(CLK1_CLK1_DFS_CNTL);
-		/* DFS Slice 2 is used for DPREFCLK */
+		 
 		dprefclk_did = REG_READ(CLK1_CLK2_DFS_CNTL);
-		/* DFS Slice 3 is used for DCFCLK */
+		 
 		dcfclk_did = REG_READ(CLK1_CLK3_DFS_CNTL);
-		/* DFS Slice 4 is used for DTBCLK */
+		 
 		dtbclk_did = REG_READ(CLK1_CLK4_DFS_CNTL);
 	}
 
-	/* Convert DISPCLK DFS Slice DID to divider*/
+	 
 	target_div = dentist_get_divider_from_did(dispclk_did);
-	//Get dispclk in khz
+	
 	regs_and_bypass->dispclk = (DENTIST_DIVIDER_RANGE_SCALE_FACTOR
 			* clk_mgr->base.dentist_vco_freq_khz) / target_div;
 
-	/* Convert DISPCLK DFS Slice DID to divider*/
+	 
 	target_div = dentist_get_divider_from_did(dppclk_did);
-	//Get dppclk in khz
+	
 	regs_and_bypass->dppclk = (DENTIST_DIVIDER_RANGE_SCALE_FACTOR
 			* clk_mgr->base.dentist_vco_freq_khz) / target_div;
 
-	/* Convert DPREFCLK DFS Slice DID to divider*/
+	 
 	target_div = dentist_get_divider_from_did(dprefclk_did);
-	//Get dprefclk in khz
+	
 	regs_and_bypass->dprefclk = (DENTIST_DIVIDER_RANGE_SCALE_FACTOR
 			* clk_mgr->base.dentist_vco_freq_khz) / target_div;
 
-	/* Convert DCFCLK DFS Slice DID to divider*/
+	 
 	target_div = dentist_get_divider_from_did(dcfclk_did);
-	//Get dcfclk in khz
+	
 	regs_and_bypass->dcfclk = (DENTIST_DIVIDER_RANGE_SCALE_FACTOR
 			* clk_mgr->base.dentist_vco_freq_khz) / target_div;
 
-	/* Convert DTBCLK DFS Slice DID to divider*/
+	 
 	target_div = dentist_get_divider_from_did(dtbclk_did);
-	//Get dtbclk in khz
+	
 	regs_and_bypass->dtbclk = (DENTIST_DIVIDER_RANGE_SCALE_FACTOR
 			* clk_mgr->base.dentist_vco_freq_khz) / target_div;
 }
@@ -749,19 +705,14 @@ static void dcn32_clock_read_ss_info(struct clk_mgr_internal *clk_mgr)
 		enum bp_result result = bp->funcs->get_spread_spectrum_info(
 				bp, AS_SIGNAL_TYPE_GPU_PLL, 0, &info);
 
-		/* SSInfo.spreadSpectrumPercentage !=0 would be sign
-		 * that SS is enabled
-		 */
+		 
 		if (result == BP_RESULT_OK &&
 				info.spread_spectrum_percentage != 0) {
 			clk_mgr->ss_on_dprefclk = true;
 			clk_mgr->dprefclk_ss_divider = info.spread_percentage_divider;
 
 			if (info.type.CENTER_MODE == 0) {
-				/* Currently for DP Reference clock we
-				 * need only SS percentage for
-				 * downspread
-				 */
+				 
 				clk_mgr->dprefclk_ss_percentage =
 						info.spread_spectrum_percentage;
 			}
@@ -782,7 +733,7 @@ static void dcn32_notify_wm_ranges(struct clk_mgr *clk_mgr_base)
 
 	memset(table, 0, sizeof(*table));
 
-	/* collect valid ranges, place in pmfw table */
+	 
 	for (i = 0; i < WM_SET_COUNT; i++)
 		if (clk_mgr->base.bw_params->wm_table.nv_entries[i].valid) {
 			table->Watermarks.WatermarkRow[i].WmSetting = i;
@@ -793,7 +744,7 @@ static void dcn32_notify_wm_ranges(struct clk_mgr *clk_mgr_base)
 	dcn32_smu_transfer_wm_table_dram_2_smu(clk_mgr);
 }
 
-/* Set min memclk to minimum, either constrained by the current mode or DPM0 */
+ 
 static void dcn32_set_hard_min_memclk(struct clk_mgr *clk_mgr_base, bool current_mode)
 {
 	struct clk_mgr_internal *clk_mgr = TO_CLK_MGR_INTERNAL(clk_mgr_base);
@@ -814,7 +765,7 @@ static void dcn32_set_hard_min_memclk(struct clk_mgr *clk_mgr_base, bool current
 	}
 }
 
-/* Set max memclk to highest DPM value */
+ 
 static void dcn32_set_hard_max_memclk(struct clk_mgr *clk_mgr_base)
 {
 	struct clk_mgr_internal *clk_mgr = TO_CLK_MGR_INTERNAL(clk_mgr_base);
@@ -825,7 +776,7 @@ static void dcn32_set_hard_max_memclk(struct clk_mgr *clk_mgr_base)
 	dcn30_smu_set_hard_max_by_freq(clk_mgr, PPCLK_UCLK, clk_mgr_base->bw_params->max_memclk_mhz);
 }
 
-/* Get current memclk states, update bounding box */
+ 
 static void dcn32_get_memclk_states_from_smu(struct clk_mgr *clk_mgr_base)
 {
 	struct clk_mgr_internal *clk_mgr = TO_CLK_MGR_INTERNAL(clk_mgr_base);
@@ -835,14 +786,14 @@ static void dcn32_get_memclk_states_from_smu(struct clk_mgr *clk_mgr_base)
 	if (!clk_mgr->smu_present)
 		return;
 
-	/* Refresh memclk and fclk states */
+	 
 	dcn32_init_single_clock(clk_mgr, PPCLK_UCLK,
 			&clk_mgr_base->bw_params->clk_table.entries[0].memclk_mhz,
 			&num_entries_per_clk->num_memclk_levels);
 	clk_mgr_base->bw_params->dc_mode_limit.memclk_mhz = dcn30_smu_get_dc_mode_max_dpm_freq(clk_mgr, PPCLK_UCLK);
 	clk_mgr_base->bw_params->dc_mode_softmax_memclk = clk_mgr_base->bw_params->dc_mode_limit.memclk_mhz;
 
-	/* memclk must have at least one level */
+	 
 	num_entries_per_clk->num_memclk_levels = num_entries_per_clk->num_memclk_levels ? num_entries_per_clk->num_memclk_levels : 1;
 
 	dcn32_init_single_clock(clk_mgr, PPCLK_FCLK,
@@ -866,7 +817,7 @@ static void dcn32_get_memclk_states_from_smu(struct clk_mgr *clk_mgr_base)
 		dcn32_patch_dpm_table(clk_mgr_base->bw_params);
 
 	DC_FP_START();
-	/* Refresh bounding box */
+	 
 	clk_mgr_base->ctx->dc->res_pool->funcs->update_bw_bounding_box(
 			clk_mgr->base.ctx->dc, clk_mgr_base->bw_params);
 	DC_FP_END();
@@ -975,13 +926,10 @@ void dcn32_clk_mgr_construct(
 	clk_mgr->ss_on_dprefclk = false;
 	clk_mgr->dfs_ref_freq_khz = 100000;
 
-	/* Changed from DCN3.2_clock_frequency doc to match
-	 * dcn32_dump_clk_registers from 4 * dentist_vco_freq_khz /
-	 * dprefclk DID divider
-	 */
+	 
 	clk_mgr->base.dprefclk_khz = 716666;
 	if (ctx->dc->debug.disable_dtb_ref_clk_switch) {
-		//initialize DTB ref clock value if DPM disabled
+		
 		if (ctx->dce_version == DCN_VERSION_3_21)
 			clk_mgr->base.clks.ref_dtbclk_khz = 477800;
 		else
@@ -989,12 +937,12 @@ void dcn32_clk_mgr_construct(
 	}
 
 
-	/* integer part is now VCO frequency in kHz */
+	 
 	clk_mgr->base.dentist_vco_freq_khz = dcn32_get_vco_frequency_from_reg(clk_mgr);
 
-	/* in case we don't get a value from the register, use default */
+	 
 	if (clk_mgr->base.dentist_vco_freq_khz == 0)
-		clk_mgr->base.dentist_vco_freq_khz = 4300000; /* Updated as per HW docs */
+		clk_mgr->base.dentist_vco_freq_khz = 4300000;  
 
 	dcn32_dump_clk_registers(&clk_mgr->base.boot_snapshot, &clk_mgr->base, &log_info);
 
@@ -1014,7 +962,7 @@ void dcn32_clk_mgr_construct(
 
 	clk_mgr->base.bw_params = kzalloc(sizeof(*clk_mgr->base.bw_params), GFP_KERNEL);
 
-	/* need physical address of table to give to PMFW */
+	 
 	clk_mgr->wm_range_table = dm_helpers_allocate_gpu_mem(clk_mgr->base.ctx,
 			DC_MEM_ALLOC_TYPE_GART, sizeof(WatermarksExternal_t),
 			&clk_mgr->wm_range_table_addr);

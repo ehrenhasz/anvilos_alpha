@@ -1,14 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// kselftest for the ALSA PCM API
-//
-// Original author: Jaroslav Kysela <perex@perex.cz>
-// Copyright (c) 2022 Red Hat Inc.
 
-// This test will iterate over all cards detected in the system, exercising
-// every PCM device it can find.  This may conflict with other system
-// software if there is audio activity so is best run on a system with a
-// minimal active userspace.
+
+
+
+
+
+
+
+
+
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,7 +47,7 @@ struct pcm_data *pcm_missing = NULL;
 
 snd_config_t *default_pcm_config;
 
-/* Lock while reporting results since kselftest doesn't */
+ 
 pthread_mutex_t results_lock = PTHREAD_MUTEX_INITIALIZER;
 
 enum test_class {
@@ -240,7 +240,7 @@ static void find_pcms(void)
 			}
 		}
 
-		/* check for missing devices */
+		 
 		missing_devices(card, card_config);
 
 	next_card:
@@ -440,7 +440,7 @@ __format:
 			 (long)rperiod_size, (long)rbuffer_size,
 			 (long)start_threshold);
 
-	/* Set all the params, actually run the test */
+	 
 	skip = false;
 
 	timestamp_now(&tstamp);
@@ -487,10 +487,7 @@ __close:
 	switch (class) {
 	case TEST_CLASS_SYSTEM:
 		test_class_name = "system";
-		/*
-		 * Anything specified as specific to this system
-		 * should always be supported.
-		 */
+		 
 		ksft_test_result(!skip, "%s.%s.%d.%d.%d.%s.params\n",
 				 test_class_name, test_name,
 				 data->card, data->device, data->subdevice,
@@ -590,7 +587,7 @@ int main(void)
 		cfg = pcm->pcm_config;
 		if (cfg == NULL)
 			continue;
-		/* Setting params is reported as a separate test */
+		 
 		num_tests = conf_get_count(cfg, "test", NULL) * 2;
 		if (num_tests > 0)
 			num_pcm_tests += num_tests;

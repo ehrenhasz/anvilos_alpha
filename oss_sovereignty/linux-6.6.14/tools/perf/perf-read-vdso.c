@@ -1,13 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdio.h>
 #include <string.h>
 
 #define VDSO__MAP_NAME "[vdso]"
 
-/*
- * Include definition of find_map() also used in util/vdso.c for
- * building perf.
- */
+ 
 #include "util/find-map.c"
 
 int main(void)

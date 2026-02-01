@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+ 
 
 #ifndef ASIC_REG_PSOC_RESET_CONF_REGS_H_
 #define ASIC_REG_PSOC_RESET_CONF_REGS_H_
 
-/*
- *****************************************
- *   PSOC_RESET_CONF
- *   (Prototype: PSOC_RESET_CONF)
- *****************************************
- */
+ 
 
 #define mmPSOC_RESET_CONF_PSOC_PRSTN_RST_CFG 0x4C74000
 
@@ -986,4 +973,4 @@
 
 #define mmPSOC_RESET_CONF_NIC_CH_2_CLK_RST_CTRL 0x4C74DD8
 
-#endif /* ASIC_REG_PSOC_RESET_CONF_REGS_H_ */
+#endif  

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2015-2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -37,17 +37,17 @@ enum mlxsw_pci_queue_type {
 #define MLXSW_PCI_QUEUE_TYPE_COUNT	4
 
 static const u16 mlxsw_pci_doorbell_type_offset[] = {
-	MLXSW_PCI_DOORBELL_SDQ_OFFSET,	/* for type MLXSW_PCI_QUEUE_TYPE_SDQ */
-	MLXSW_PCI_DOORBELL_RDQ_OFFSET,	/* for type MLXSW_PCI_QUEUE_TYPE_RDQ */
-	MLXSW_PCI_DOORBELL_CQ_OFFSET,	/* for type MLXSW_PCI_QUEUE_TYPE_CQ */
-	MLXSW_PCI_DOORBELL_EQ_OFFSET,	/* for type MLXSW_PCI_QUEUE_TYPE_EQ */
+	MLXSW_PCI_DOORBELL_SDQ_OFFSET,	 
+	MLXSW_PCI_DOORBELL_RDQ_OFFSET,	 
+	MLXSW_PCI_DOORBELL_CQ_OFFSET,	 
+	MLXSW_PCI_DOORBELL_EQ_OFFSET,	 
 };
 
 static const u16 mlxsw_pci_doorbell_arm_type_offset[] = {
-	0, /* unused */
-	0, /* unused */
-	MLXSW_PCI_DOORBELL_ARM_CQ_OFFSET, /* for type MLXSW_PCI_QUEUE_TYPE_CQ */
-	MLXSW_PCI_DOORBELL_ARM_EQ_OFFSET, /* for type MLXSW_PCI_QUEUE_TYPE_EQ */
+	0,  
+	0,  
+	MLXSW_PCI_DOORBELL_ARM_CQ_OFFSET,  
+	MLXSW_PCI_DOORBELL_ARM_EQ_OFFSET,  
 };
 
 struct mlxsw_pci_mem_item {
@@ -57,7 +57,7 @@ struct mlxsw_pci_mem_item {
 };
 
 struct mlxsw_pci_queue_elem_info {
-	char *elem; /* pointer to actual dma mapped element mem chunk */
+	char *elem;  
 	union {
 		struct {
 			struct sk_buff *skb;
@@ -69,16 +69,16 @@ struct mlxsw_pci_queue_elem_info {
 };
 
 struct mlxsw_pci_queue {
-	spinlock_t lock; /* for queue accesses */
+	spinlock_t lock;  
 	struct mlxsw_pci_mem_item mem_item;
 	struct mlxsw_pci_queue_elem_info *elem_info;
 	u16 producer_counter;
 	u16 consumer_counter;
-	u16 count; /* number of elements in queue */
-	u8 num; /* queue number */
-	u8 elem_size; /* size of one element */
+	u16 count;  
+	u8 num;  
+	u8 elem_size;  
 	enum mlxsw_pci_queue_type type;
-	struct tasklet_struct tasklet; /* queue processing tasklet */
+	struct tasklet_struct tasklet;  
 	struct mlxsw_pci *pci;
 	union {
 		struct {
@@ -96,7 +96,7 @@ struct mlxsw_pci_queue {
 
 struct mlxsw_pci_queue_type_group {
 	struct mlxsw_pci_queue *q;
-	u8 count; /* number of queues in group */
+	u8 count;  
 };
 
 struct mlxsw_pci {
@@ -115,7 +115,7 @@ struct mlxsw_pci {
 	struct {
 		struct mlxsw_pci_mem_item out_mbox;
 		struct mlxsw_pci_mem_item in_mbox;
-		struct mutex lock; /* Lock access to command registers */
+		struct mutex lock;  
 		bool nopoll;
 		wait_queue_head_t wait;
 		bool wait_done;
@@ -126,8 +126,8 @@ struct mlxsw_pci {
 	} cmd;
 	struct mlxsw_bus_info bus_info;
 	const struct pci_device_id *id;
-	enum mlxsw_pci_cqe_v max_cqe_ver; /* Maximal supported CQE version */
-	u8 num_sdq_cqs; /* Number of CQs used for SDQs */
+	enum mlxsw_pci_cqe_v max_cqe_ver;  
+	u8 num_sdq_cqs;  
 };
 
 static void mlxsw_pci_queue_tasklet_schedule(struct mlxsw_pci_queue *q)
@@ -257,14 +257,14 @@ static void __mlxsw_pci_queue_doorbell_arm_set(struct mlxsw_pci *mlxsw_pci,
 static void mlxsw_pci_queue_doorbell_producer_ring(struct mlxsw_pci *mlxsw_pci,
 						   struct mlxsw_pci_queue *q)
 {
-	wmb(); /* ensure all writes are done before we ring a bell */
+	wmb();  
 	__mlxsw_pci_queue_doorbell_set(mlxsw_pci, q, q->producer_counter);
 }
 
 static void mlxsw_pci_queue_doorbell_consumer_ring(struct mlxsw_pci *mlxsw_pci,
 						   struct mlxsw_pci_queue *q)
 {
-	wmb(); /* ensure all writes are done before we ring a bell */
+	wmb();  
 	__mlxsw_pci_queue_doorbell_set(mlxsw_pci, q,
 				       q->consumer_counter + q->count);
 }
@@ -273,7 +273,7 @@ static void
 mlxsw_pci_queue_doorbell_arm_consumer_ring(struct mlxsw_pci *mlxsw_pci,
 					   struct mlxsw_pci_queue *q)
 {
-	wmb(); /* ensure all writes are done before we ring a bell */
+	wmb();  
 	__mlxsw_pci_queue_doorbell_arm_set(mlxsw_pci, q, q->consumer_counter);
 }
 
@@ -298,11 +298,11 @@ static int mlxsw_pci_sdq_init(struct mlxsw_pci *mlxsw_pci, char *mbox,
 	lp = q->num == MLXSW_PCI_SDQ_EMAD_INDEX ? MLXSW_CMD_MBOX_SW2HW_DQ_SDQ_LP_IGNORE_WQE :
 						  MLXSW_CMD_MBOX_SW2HW_DQ_SDQ_LP_WQE;
 
-	/* Set CQ of same number of this SDQ. */
+	 
 	mlxsw_cmd_mbox_sw2hw_dq_cq_set(mbox, q->num);
 	mlxsw_cmd_mbox_sw2hw_dq_sdq_lp_set(mbox, lp);
 	mlxsw_cmd_mbox_sw2hw_dq_sdq_tclass_set(mbox, tclass);
-	mlxsw_cmd_mbox_sw2hw_dq_log2_dq_sz_set(mbox, 3); /* 8 pages */
+	mlxsw_cmd_mbox_sw2hw_dq_log2_dq_sz_set(mbox, 3);  
 	for (i = 0; i < MLXSW_PCI_AQ_PAGES; i++) {
 		dma_addr_t mapaddr = __mlxsw_pci_queue_page_get(q, i);
 
@@ -400,11 +400,9 @@ static int mlxsw_pci_rdq_init(struct mlxsw_pci *mlxsw_pci, char *mbox,
 	q->producer_counter = 0;
 	q->consumer_counter = 0;
 
-	/* Set CQ of same number of this RDQ with base
-	 * above SDQ count as the lower ones are assigned to SDQs.
-	 */
+	 
 	mlxsw_cmd_mbox_sw2hw_dq_cq_set(mbox, sdq_count + q->num);
-	mlxsw_cmd_mbox_sw2hw_dq_log2_dq_sz_set(mbox, 3); /* 8 pages */
+	mlxsw_cmd_mbox_sw2hw_dq_log2_dq_sz_set(mbox, 3);  
 	for (i = 0; i < MLXSW_PCI_AQ_PAGES; i++) {
 		dma_addr_t mapaddr = __mlxsw_pci_queue_page_get(q, i);
 
@@ -423,7 +421,7 @@ static int mlxsw_pci_rdq_init(struct mlxsw_pci *mlxsw_pci, char *mbox,
 		err = mlxsw_pci_rdq_skb_alloc(mlxsw_pci, elem_info);
 		if (err)
 			goto rollback;
-		/* Everything is set up, ring doorbell to pass elem to HW */
+		 
 		q->producer_counter++;
 		mlxsw_pci_queue_doorbell_producer_ring(mlxsw_pci, q);
 	}
@@ -686,7 +684,7 @@ static void mlxsw_pci_cqe_rdq_handle(struct mlxsw_pci *mlxsw_pci,
 	mlxsw_core_skb_receive(mlxsw_pci->core, skb, &rx_info);
 
 out:
-	/* Everything is set up, ring doorbell to pass elem to HW */
+	 
 	q->producer_counter++;
 	mlxsw_pci_queue_doorbell_producer_ring(mlxsw_pci, q);
 	return;
@@ -704,7 +702,7 @@ static char *mlxsw_pci_cq_sw_cqe_get(struct mlxsw_pci_queue *q)
 	if (mlxsw_pci_elem_hw_owned(q, owner_bit))
 		return NULL;
 	q->consumer_counter++;
-	rmb(); /* make sure we read owned bit before the rest of elem */
+	rmb();  
 	return elem;
 }
 
@@ -773,8 +771,8 @@ static int mlxsw_pci_eq_init(struct mlxsw_pci *mlxsw_pci, char *mbox,
 		mlxsw_pci_eqe_owner_set(elem, 1);
 	}
 
-	mlxsw_cmd_mbox_sw2hw_eq_int_msix_set(mbox, 1); /* MSI-X used */
-	mlxsw_cmd_mbox_sw2hw_eq_st_set(mbox, 1); /* armed */
+	mlxsw_cmd_mbox_sw2hw_eq_int_msix_set(mbox, 1);  
+	mlxsw_cmd_mbox_sw2hw_eq_st_set(mbox, 1);  
 	mlxsw_cmd_mbox_sw2hw_eq_log_eq_size_set(mbox, ilog2(q->count));
 	for (i = 0; i < MLXSW_PCI_AQ_PAGES; i++) {
 		dma_addr_t mapaddr = __mlxsw_pci_queue_page_get(q, i);
@@ -817,7 +815,7 @@ static char *mlxsw_pci_eq_sw_eqe_get(struct mlxsw_pci_queue *q)
 	if (mlxsw_pci_elem_hw_owned(q, owner_bit))
 		return NULL;
 	q->consumer_counter++;
-	rmb(); /* make sure we read owned bit before the rest of elem */
+	rmb();  
 	return elem;
 }
 
@@ -837,10 +835,7 @@ static void mlxsw_pci_eq_tasklet(struct tasklet_struct *t)
 
 	while ((eqe = mlxsw_pci_eq_sw_eqe_get(q))) {
 
-		/* Command interface completion events are always received on
-		 * queue MLXSW_PCI_EQ_ASYNC_NUM (EQ0) and completion events
-		 * are mapped to queue MLXSW_PCI_EQ_COMP_NUM (EQ1).
-		 */
+		 
 		switch (q->num) {
 		case MLXSW_PCI_EQ_ASYNC_NUM:
 			mlxsw_pci_eq_cmd_event(mlxsw_pci, eqe);
@@ -958,9 +953,7 @@ static int mlxsw_pci_queue_init(struct mlxsw_pci *mlxsw_pci, char *mbox,
 		goto err_elem_info_alloc;
 	}
 
-	/* Initialize dma mapped elements info elem_info for
-	 * future easy access.
-	 */
+	 
 	for (i = 0; i < q->count; i++) {
 		struct mlxsw_pci_queue_elem_info *elem_info;
 
@@ -1113,7 +1106,7 @@ static int mlxsw_pci_aqs_init(struct mlxsw_pci *mlxsw_pci, char *mbox)
 		goto err_rdqs_init;
 	}
 
-	/* We have to poll in command interface until queues are initialized */
+	 
 	mlxsw_pci->cmd.nopoll = true;
 	return 0;
 
@@ -1355,7 +1348,7 @@ static int mlxsw_pci_fw_area_init(struct mlxsw_pci *mlxsw_pci, char *mbox,
 			goto err_alloc;
 		}
 		mlxsw_cmd_mbox_map_fa_pa_set(mbox, nent, mem_item->mapaddr);
-		mlxsw_cmd_mbox_map_fa_log2size_set(mbox, nent, 0); /* 1 page */
+		mlxsw_cmd_mbox_map_fa_log2size_set(mbox, nent, 0);  
 		if (++nent == MLXSW_CMD_MAP_FA_VPM_ENTRIES_MAX) {
 			err = mlxsw_cmd_map_fa(mlxsw_pci->core, mbox, nent);
 			if (err)
@@ -1447,7 +1440,7 @@ static int mlxsw_pci_sys_ready_wait(struct mlxsw_pci *mlxsw_pci,
 	unsigned long end;
 	u32 val;
 
-	/* We must wait for the HW to become responsive. */
+	 
 	msleep(MLXSW_PCI_SW_RESET_WAIT_MSECS);
 
 	end = jiffies + msecs_to_jiffies(MLXSW_PCI_SW_RESET_TIMEOUT_MSECS);
@@ -1618,10 +1611,7 @@ static int mlxsw_pci_init(void *bus_priv, struct mlxsw_core *mlxsw_core,
 	if (err)
 		goto err_config_profile;
 
-	/* Some resources depend on unified bridge model, which is configured
-	 * as part of config_profile. Query the resources again to get correct
-	 * values.
-	 */
+	 
 	err = mlxsw_core_resources_query(mlxsw_core, mbox, res);
 	if (err)
 		goto err_requery_resources;
@@ -1720,7 +1710,7 @@ static int mlxsw_pci_skb_transmit(void *bus_priv, struct sk_buff *skb,
 	spin_lock_bh(&q->lock);
 	elem_info = mlxsw_pci_queue_elem_info_producer_get(q);
 	if (!elem_info) {
-		/* queue is full */
+		 
 		err = -EAGAIN;
 		goto unlock;
 	}
@@ -1728,7 +1718,7 @@ static int mlxsw_pci_skb_transmit(void *bus_priv, struct sk_buff *skb,
 	elem_info->u.sdq.skb = skb;
 
 	wqe = elem_info->elem;
-	mlxsw_pci_wqe_c_set(wqe, 1); /* always report completion */
+	mlxsw_pci_wqe_c_set(wqe, 1);  
 	mlxsw_pci_wqe_lp_set(wqe, 0);
 	mlxsw_pci_wqe_type_set(wqe, MLXSW_PCI_WQE_TYPE_ETHERNET);
 
@@ -1751,11 +1741,11 @@ static int mlxsw_pci_skb_transmit(void *bus_priv, struct sk_buff *skb,
 	if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP))
 		skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
 
-	/* Set unused sq entries byte count to zero. */
+	 
 	for (i++; i < MLXSW_PCI_WQE_SG_ENTRIES; i++)
 		mlxsw_pci_wqe_byte_count_set(wqe, i, 0);
 
-	/* Everything is set up, ring producer doorbell to get HW going */
+	 
 	q->producer_counter++;
 	mlxsw_pci_queue_doorbell_producer_ring(mlxsw_pci, q);
 
@@ -1805,7 +1795,7 @@ static int mlxsw_pci_cmd_exec(void *bus_priv, u16 opcode, u8 opcode_mod,
 
 	*p_wait_done = false;
 
-	wmb(); /* all needs to be written before we write control register */
+	wmb();  
 	mlxsw_pci_write32(mlxsw_pci, CIR_CTRL,
 			  MLXSW_PCI_CIR_CTRL_GO_BIT |
 			  (evreq ? MLXSW_PCI_CIR_CTRL_EVREQ_BIT : 0) |
@@ -1840,10 +1830,7 @@ static int mlxsw_pci_cmd_exec(void *bus_priv, u16 opcode, u8 opcode_mod,
 	}
 
 	if (!err && out_mbox && out_mbox_direct) {
-		/* Some commands don't use output param as address to mailbox
-		 * but they store output directly into registers. In that case,
-		 * copy registers into mbox buffer.
-		 */
+		 
 		__be32 tmp;
 
 		if (!evreq) {

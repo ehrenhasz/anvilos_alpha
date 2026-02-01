@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2022, Analog Devices Inc.
+
+
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -304,47 +304,47 @@ static const struct snd_kcontrol_new max98388_snd_controls[] = {
 		   MAX98388_SPK_CFG_VOL_RMPUP_SHIFT, 1, 0),
 	SOC_SINGLE("Ramp Down Switch", MAX98388_R2091_SPK_CH_CFG,
 		   MAX98388_SPK_CFG_VOL_RMPDN_SHIFT, 1, 0),
-	/* Two Cell Mode Enable */
+	 
 	SOC_SINGLE("OP Mode Switch", MAX98388_R2092_SPK_AMP_OUT_CFG,
 		   MAX98388_SPK_AMP_OUT_MODE_SHIFT, 1, 0),
-	/* Speaker Amplifier Overcurrent Automatic Restart Enable */
+	 
 	SOC_SINGLE("OVC Autorestart Switch", MAX98388_R210E_AUTO_RESTART,
 		   MAX98388_OVC_AUTORESTART_SHIFT, 1, 0),
-	/* Thermal Shutdown Automatic Restart Enable */
+	 
 	SOC_SINGLE("THERM Autorestart Switch", MAX98388_R210E_AUTO_RESTART,
 		   MAX98388_THERM_AUTORESTART_SHIFT, 1, 0),
-	/* PVDD UVLO Auto Restart */
+	 
 	SOC_SINGLE("UVLO Autorestart Switch", MAX98388_R210E_AUTO_RESTART,
 		   MAX98388_PVDD_UVLO_AUTORESTART_SHIFT, 1, 0),
-	/* Clock Monitor Automatic Restart Enable */
+	 
 	SOC_SINGLE("CMON Autorestart Switch", MAX98388_R210E_AUTO_RESTART,
 		   MAX98388_CMON_AUTORESTART_SHIFT, 1, 0),
 	SOC_SINGLE("CLK Monitor Switch", MAX98388_R2037_ERR_MON_CTRL,
 		   MAX98388_CLOCK_MON_SHIFT, 1, 0),
-	/* Pinknoise Generator Enable */
+	 
 	SOC_SINGLE("Pinknoise Gen Switch", MAX98388_R209E_SPK_CH_PINK_NOISE_EN,
 		   MAX98388_PINK_NOISE_GEN_SHIFT, 1, 0),
-	/* Dither Enable */
+	 
 	SOC_SINGLE("Dither Switch", MAX98388_R2091_SPK_CH_CFG,
 		   MAX98388_SPK_CFG_DITH_EN_SHIFT, 1, 0),
 	SOC_SINGLE("VI Dither Switch", MAX98388_R20A0_IV_DATA_DSP_CTRL,
 		   MAX98388_AMP_DSP_CTRL_DITH_SHIFT, 1, 0),
-	/* DC Blocker Enable */
+	 
 	SOC_SINGLE("DC Blocker Switch", MAX98388_R2091_SPK_CH_CFG,
 		   MAX98388_SPK_CFG_DCBLK_SHIFT, 1, 0),
 	SOC_SINGLE("Voltage DC Blocker Switch", MAX98388_R20A0_IV_DATA_DSP_CTRL,
 		   MAX98388_AMP_DSP_CTRL_VOL_DCBLK_SHIFT, 1, 0),
 	SOC_SINGLE("Current DC Blocker Switch", MAX98388_R20A0_IV_DATA_DSP_CTRL,
 		   MAX98388_AMP_DSP_CTRL_CUR_DCBLK_SHIFT, 1, 0),
-	/* Digital Volume */
+	 
 	SOC_SINGLE_TLV("Digital Volume", MAX98388_R2090_SPK_CH_VOL_CTRL,
 		       0, 0x7F, 1, max98388_digital_tlv),
-	/* Speaker Volume */
+	 
 	SOC_SINGLE_TLV("Speaker Volume", MAX98388_R2092_SPK_AMP_OUT_CFG,
 		       0, 5, 0, max98388_amp_gain_tlv),
 	SOC_ENUM("Thermal Warn Thresh", max98388_thermal_warning_thresh_enum),
 	SOC_ENUM("Thermal SHDN Thresh", max98388_thermal_shutdown_thresh_enum),
-	/* Brownout Protection Automatic Level Control */
+	 
 	SOC_SINGLE("ALC Switch", MAX98388_R20EF_BP_ALC_EN, 0, 1, 0),
 	SOC_ENUM("ALC Thresh", max98388_alc_thresh_single_enum),
 	SOC_ENUM("ALC Attack Rate", max98388_alc_attack_rate_enum),
@@ -358,13 +358,13 @@ static const struct snd_kcontrol_new max98388_snd_controls[] = {
 	SOC_SINGLE("ALC Mute Switch", MAX98388_R20E4_BP_ALC_MUTE,
 		   MAX98388_ALC_MUTE_EN_SHIFT, 1, 0),
 	SOC_ENUM("ALC Mute Delay", max98388_alc_mute_delay_enum),
-	/* Speaker Monitor */
+	 
 	SOC_SINGLE("SPKMON Switch", MAX98388_R2037_ERR_MON_CTRL,
 		   MAX98388_SPK_MON_SHIFT, 1, 0),
 	SOC_ENUM("SPKMON Thresh", max98388_spkmon_thresh_enum),
 	SOC_ENUM("SPKMON Load", max98388_spkmon_load_enum),
 	SOC_ENUM("SPKMON Duration", max98388_spkmon_duration_enum),
-	/* General Parameters */
+	 
 	SOC_ENUM("Fall Slew Rate", max98388_edge_rate_falling_enum),
 	SOC_ENUM("Rise Slew Rate", max98388_edge_rate_rising_enum),
 	SOC_SINGLE("AMP SSM Switch", MAX98388_R2093_SPK_AMP_SSM_CFG,
@@ -373,12 +373,12 @@ static const struct snd_kcontrol_new max98388_snd_controls[] = {
 };
 
 static const struct snd_soc_dapm_route max98388_audio_map[] = {
-	/* Plabyack */
+	 
 	{"DAI Sel Mux", "Left", "Amp Enable"},
 	{"DAI Sel Mux", "Right", "Amp Enable"},
 	{"DAI Sel Mux", "LeftRight", "Amp Enable"},
 	{"BE_OUT", NULL, "DAI Sel Mux"},
-	/* Capture */
+	 
 	{ "ADC Voltage", NULL, "VMON"},
 	{ "ADC Current", NULL, "IMON"},
 	{ "VI Sense", "Switch", "ADC Voltage"},
@@ -391,7 +391,7 @@ static void max98388_reset(struct max98388_priv *max98388, struct device *dev)
 {
 	int ret, reg, count;
 
-	/* Software Reset */
+	 
 	ret = regmap_update_bits(max98388->regmap,
 				 MAX98388_R2000_SW_RESET,
 				 MAX98388_SOFT_RESET,
@@ -402,7 +402,7 @@ static void max98388_reset(struct max98388_priv *max98388, struct device *dev)
 	count = 0;
 	while (count < 3) {
 		usleep_range(10000, 11000);
-		/* Software Reset Verification */
+		 
 		ret = regmap_read(max98388->regmap,
 				  MAX98388_R22FF_REV_ID, &reg);
 		if (!ret) {
@@ -418,23 +418,23 @@ static int max98388_probe(struct snd_soc_component *component)
 {
 	struct max98388_priv *max98388 = snd_soc_component_get_drvdata(component);
 
-	/* Software Reset */
+	 
 	max98388_reset(max98388, component->dev);
 
-	/* General channel source configuration */
+	 
 	regmap_write(max98388->regmap,
 		     MAX98388_R2059_PCM_RX_SRC2,
 		     0x10);
 
-	/* Enable DC blocker */
+	 
 	regmap_write(max98388->regmap,
 		     MAX98388_R2091_SPK_CH_CFG,
 		     0x1);
-	/* Enable IMON VMON DC blocker */
+	 
 	regmap_write(max98388->regmap,
 		     MAX98388_R20A0_IV_DATA_DSP_CTRL,
 		     0x3);
-	/* TX slot configuration */
+	 
 	regmap_write(max98388->regmap,
 		     MAX98388_R2044_PCM_TX_CTRL1,
 		     max98388->v_slot);
@@ -442,17 +442,17 @@ static int max98388_probe(struct snd_soc_component *component)
 	regmap_write(max98388->regmap,
 		     MAX98388_R2045_PCM_TX_CTRL2,
 		     max98388->i_slot);
-	/* Enable Auto-restart behavior by default */
+	 
 	regmap_write(max98388->regmap,
 		     MAX98388_R210E_AUTO_RESTART, 0xF);
-	/* Set interleave mode */
+	 
 	if (max98388->interleave_mode)
 		regmap_update_bits(max98388->regmap,
 				   MAX98388_R2040_PCM_MODE_CFG,
 				   MAX98388_PCM_TX_CH_INTERLEAVE_MASK,
 				   MAX98388_PCM_TX_CH_INTERLEAVE_MASK);
 
-	/* Speaker Amplifier Channel Enable */
+	 
 	regmap_update_bits(max98388->regmap,
 			   MAX98388_R209F_SPK_CH_AMP_EN,
 			   MAX98388_SPK_EN_MASK, 1);
@@ -486,7 +486,7 @@ static int max98388_dai_set_fmt(struct snd_soc_dai *codec_dai,
 			   MAX98388_PCM_MODE_CFG_PCM_BCLKEDGE,
 			   invert);
 
-	/* interface format */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		format = MAX98388_PCM_FORMAT_I2S;
@@ -512,7 +512,7 @@ static int max98388_dai_set_fmt(struct snd_soc_dai *codec_dai,
 	return 0;
 }
 
-/* BCLKs per LRCLK */
+ 
 static const int bclk_sel_table[] = {
 	32, 48, 64, 96, 128, 192, 256, 384, 512, 320,
 };
@@ -520,7 +520,7 @@ static const int bclk_sel_table[] = {
 static int max98388_get_bclk_sel(int bclk)
 {
 	int i;
-	/* match BCLKs per LRCLK */
+	 
 	for (i = 0; i < ARRAY_SIZE(bclk_sel_table); i++) {
 		if (bclk_sel_table[i] == bclk)
 			return i + 2;
@@ -532,12 +532,12 @@ static int max98388_set_clock(struct snd_soc_component *component,
 			      struct snd_pcm_hw_params *params)
 {
 	struct max98388_priv *max98388 = snd_soc_component_get_drvdata(component);
-	/* BCLK/LRCLK ratio calculation */
+	 
 	int blr_clk_ratio = params_channels(params) * max98388->ch_size;
 	int value;
 
 	if (!max98388->tdm_mode) {
-		/* BCLK configuration */
+		 
 		value = max98388_get_bclk_sel(blr_clk_ratio);
 		if (!value) {
 			dev_err(component->dev, "format unsupported %d\n",
@@ -564,7 +564,7 @@ static int max98388_dai_hw_params(struct snd_pcm_substream *substream,
 	int ret, reg;
 	int status = 0;
 
-	/* pcm mode configuration */
+	 
 	switch (snd_pcm_format_width(params_format(params))) {
 	case 16:
 		chan_sz = MAX98388_PCM_MODE_CFG_CHANSZ_16;
@@ -588,7 +588,7 @@ static int max98388_dai_hw_params(struct snd_pcm_substream *substream,
 	if (ret < 0)
 		goto err;
 
-	/* GLOBAL_EN OFF prior to the channel size re-configure */
+	 
 	if (chan_sz != (reg & MAX98388_PCM_MODE_CFG_CHANSZ_MASK))	{
 		ret = regmap_read(max98388->regmap,
 				  MAX98388_R210F_GLOBAL_EN, &status);
@@ -607,7 +607,7 @@ static int max98388_dai_hw_params(struct snd_pcm_substream *substream,
 	dev_dbg(component->dev, "format supported %d",
 		params_format(params));
 
-	/* sampling rate configuration */
+	 
 	switch (params_rate(params)) {
 	case 8000:
 		sampling_rate = MAX98388_PCM_SR_8000;
@@ -648,13 +648,13 @@ static int max98388_dai_hw_params(struct snd_pcm_substream *substream,
 		goto err;
 	}
 
-	/* set DAI_SR to correct LRCLK frequency */
+	 
 	regmap_update_bits(max98388->regmap,
 			   MAX98388_R2042_PCM_SR_SETUP,
 			   MAX98388_PCM_SR_MASK,
 			   sampling_rate);
 
-	/* set sampling rate of IV */
+	 
 	if (max98388->interleave_mode &&
 	    sampling_rate > MAX98388_PCM_SR_16000)
 		regmap_update_bits(max98388->regmap,
@@ -701,7 +701,7 @@ static int max98388_dai_tdm_slot(struct snd_soc_dai *dai,
 	else
 		max98388->tdm_mode = true;
 
-	/* BCLK configuration */
+	 
 	bsel = max98388_get_bclk_sel(slots * slot_width);
 	if (bsel == 0) {
 		dev_err(component->dev, "BCLK %d not supported\n",
@@ -714,7 +714,7 @@ static int max98388_dai_tdm_slot(struct snd_soc_dai *dai,
 			   MAX98388_PCM_CLK_SETUP_BSEL_MASK,
 			   bsel);
 
-	/* Channel size configuration */
+	 
 	switch (slot_width) {
 	case 16:
 		chan_sz = MAX98388_PCM_MODE_CFG_CHANSZ_16;
@@ -735,7 +735,7 @@ static int max98388_dai_tdm_slot(struct snd_soc_dai *dai,
 			   MAX98388_R2040_PCM_MODE_CFG,
 			   MAX98388_PCM_MODE_CFG_CHANSZ_MASK, chan_sz);
 
-	/* Rx slot configuration */
+	 
 	slot_found = 0;
 	mask = rx_mask;
 	for (cnt = 0 ; cnt < MAX_NUM_SLOTS ; cnt++, mask >>= 1) {
@@ -756,7 +756,7 @@ static int max98388_dai_tdm_slot(struct snd_soc_dai *dai,
 		}
 	}
 
-	/* speaker feedback slot configuration */
+	 
 	slot_found = 0;
 	mask = tx_mask;
 	for (cnt = 0 ; cnt < MAX_NUM_SLOTS ; cnt++, mask >>= 1) {
@@ -933,16 +933,16 @@ static int max98388_i2c_probe(struct i2c_client *i2c)
 
 	i2c_set_clientdata(i2c, max98388);
 
-	/* regmap initialization */
+	 
 	max98388->regmap = devm_regmap_init_i2c(i2c, &max98388_regmap);
 	if (IS_ERR(max98388->regmap))
 		return dev_err_probe(&i2c->dev, PTR_ERR(max98388->regmap),
 				     "Failed to allocate register map.\n");
 
-	/* voltage/current slot & gpio configuration */
+	 
 	max98388_read_deveice_property(&i2c->dev, max98388);
 
-	/* Device Reset */
+	 
 	max98388->reset_gpio = devm_gpiod_get_optional(&i2c->dev,
 						       "reset", GPIOD_OUT_HIGH);
 	if (IS_ERR(max98388->reset_gpio))
@@ -952,11 +952,11 @@ static int max98388_i2c_probe(struct i2c_client *i2c)
 	if (max98388->reset_gpio) {
 		usleep_range(5000, 6000);
 		gpiod_set_value_cansleep(max98388->reset_gpio, 0);
-		/* Wait for the hw reset done */
+		 
 		usleep_range(5000, 6000);
 	}
 
-	/* Read Revision ID */
+	 
 	ret = regmap_read(max98388->regmap,
 			  MAX98388_R22FF_REV_ID, &reg);
 	if (ret < 0)
@@ -965,7 +965,7 @@ static int max98388_i2c_probe(struct i2c_client *i2c)
 
 	dev_info(&i2c->dev, "MAX98388 revisionID: 0x%02X\n", reg);
 
-	/* codec registration */
+	 
 	ret = devm_snd_soc_register_component(&i2c->dev,
 					      &soc_codec_dev_max98388,
 					      max98388_dai,

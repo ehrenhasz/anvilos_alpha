@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2021 MediaTek Inc.
- *
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/iopoll.h>
@@ -19,7 +17,7 @@
 static const struct sdio_device_id mt7921s_table[] = {
 	{ SDIO_DEVICE(SDIO_VENDOR_ID_MEDIATEK, 0x7901),
 		.driver_data = (kernel_ulong_t)MT7921_FIRMWARE_WM },
-	{ }	/* Terminating entry */
+	{ }	 
 };
 
 static void mt7921s_txrx_worker(struct mt76_worker *w)
@@ -220,9 +218,7 @@ static int mt7921s_suspend(struct device *__dev)
 	if (err < 0)
 		goto restore_suspend;
 
-	/* always enable deep sleep during suspend to reduce
-	 * power consumption
-	 */
+	 
 	mt76_connac_mcu_set_deep_sleep(mdev, true);
 
 	mt76_txq_schedule_all(&dev->mphy);
@@ -236,7 +232,7 @@ static int mt7921s_suspend(struct device *__dev)
 	wait_event_timeout(dev->mt76.sdio.wait,
 			   mt76s_txqs_empty(&dev->mt76), 5 * HZ);
 
-	/* It is supposed that SDIO bus is idle at the point */
+	 
 	err = mt76_connac_mcu_set_hif_suspend(mdev, true);
 	if (err)
 		goto restore_worker;
@@ -295,7 +291,7 @@ static int mt7921s_resume(struct device *__dev)
 	mt76_worker_enable(&mdev->sdio.net_worker);
 	mt76_worker_enable(&mdev->sdio.stat_worker);
 
-	/* restore previous ds setting */
+	 
 	if (!pm->ds_enable)
 		mt76_connac_mcu_set_deep_sleep(mdev, false);
 

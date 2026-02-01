@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/bio.h>
 #include <linux/export.h>
 #include <xen/xen.h>
 #include <xen/page.h>
 
-/* check if @page can be merged with 'vec1' */
+ 
 bool xen_biovec_phys_mergeable(const struct bio_vec *vec1,
 			       const struct page *page)
 {
@@ -14,10 +14,7 @@ bool xen_biovec_phys_mergeable(const struct bio_vec *vec1,
 
 	return bfn1 + PFN_DOWN(vec1->bv_offset + vec1->bv_len) == bfn2;
 #else
-	/*
-	 * XXX: Add support for merging bio_vec when using different page
-	 * size in Xen and Linux.
-	 */
+	 
 	return false;
 #endif
 }

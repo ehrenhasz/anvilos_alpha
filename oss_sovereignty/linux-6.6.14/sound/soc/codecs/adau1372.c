@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Analog Devices ADAU1372 Audio Codec driver
- *
- * Copyright 2016 Analog Devices Inc.
- * Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -113,13 +108,13 @@ static const unsigned int adau1372_rates[] = {
 	[ADAU1372_SAI0_FS_192] = 192000,
 };
 
-/* 8k, 12k, 24k, 48k */
+ 
 #define ADAU1372_RATE_MASK_TDM8 0x17
-/* + 16k, 96k */
+ 
 #define ADAU1372_RATE_MASK_TDM4_MASTER (ADAU1372_RATE_MASK_TDM8 | 0x48 | 0x20)
-/* +32k */
+ 
 #define ADAU1372_RATE_MASK_TDM4 (ADAU1372_RATE_MASK_TDM4_MASTER | 0x20)
-/* + 192k */
+ 
 #define ADAU1372_RATE_MASK_TDM2 (ADAU1372_RATE_MASK_TDM4 | 0x80)
 
 static const DECLARE_TLV_DB_MINMAX(adau1372_digital_tlv, -9563, 0);
@@ -681,9 +676,9 @@ static int adau1372_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
 	struct adau1372 *adau1372 = snd_soc_dai_get_drvdata(dai);
 	unsigned int sai0, sai1;
 
-	/* I2S mode */
+	 
 	if (slots == 0) {
-		/* The other settings dont matter in I2S mode */
+		 
 		regmap_update_bits(adau1372->regmap, ADAU1372_REG_SAI0,
 				   ADAU1372_SAI0_SAI_MASK, ADAU1372_SAI0_SAI_I2S);
 		adau1372->rate_constraints.mask = ADAU1372_RATE_MASK_TDM2;
@@ -691,7 +686,7 @@ static int adau1372_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
 		return 0;
 	}
 
-	/* We have 8 channels anything outside that is not supported */
+	 
 	if ((tx_mask & ~0xff) != 0 || (rx_mask & ~0xff) != 0)
 		return -EINVAL;
 
@@ -732,7 +727,7 @@ static int adau1372_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
 	regmap_update_bits(adau1372->regmap, ADAU1372_REG_SAI0, ADAU1372_SAI0_SAI_MASK, sai0);
 	regmap_update_bits(adau1372->regmap, ADAU1372_REG_SAI1, ADAU1372_SAI1_BCLK_TDMC, sai1);
 
-	/* Mask is inverted in hardware */
+	 
 	regmap_write(adau1372->regmap, ADAU1372_REG_SOUT_CTRL, ~tx_mask);
 
 	return 0;
@@ -769,7 +764,7 @@ static void adau1372_enable_pll(struct adau1372 *adau1372)
 	regmap_update_bits(adau1372->regmap, ADAU1372_REG_CLK_CTRL,
 			   ADAU1372_CLK_CTRL_PLL_EN, ADAU1372_CLK_CTRL_PLL_EN);
 	do {
-		/* Takes about 1ms to lock */
+		 
 		usleep_range(1000, 2000);
 		ret = regmap_read(adau1372->regmap, ADAU1372_REG_PLL(5), &val);
 		if (ret)
@@ -798,10 +793,7 @@ static void adau1372_set_power(struct adau1372 *adau1372, bool enable)
 
 		regcache_cache_only(adau1372->regmap, false);
 
-		/*
-		 * Clocks needs to be enabled before any other register can be
-		 * accessed.
-		 */
+		 
 		if (adau1372->use_pll) {
 			adau1372_enable_pll(adau1372);
 			clk_ctrl |= ADAU1372_CLK_CTRL_CLKSRC;
@@ -812,11 +804,7 @@ static void adau1372_set_power(struct adau1372 *adau1372, bool enable)
 		regcache_sync(adau1372->regmap);
 	} else {
 		if (adau1372->pd_gpio) {
-			/*
-			 * This will turn everything off and reset the register
-			 * map. No need to do any register writes to manually
-			 * turn things off.
-			 */
+			 
 			gpiod_set_value(adau1372->pd_gpio, 1);
 			regcache_mark_dirty(adau1372->regmap);
 		} else {
@@ -944,11 +932,7 @@ int adau1372_probe(struct device *dev, struct regmap *regmap,
 
 	dev_set_drvdata(dev, adau1372);
 
-	/*
-	 * The datasheet says that the internal MCLK always needs to run at
-	 * 12.288MHz. Automatically choose a valid configuration from the
-	 * external clock.
-	 */
+	 
 	rate = clk_get_rate(adau1372->mclk);
 
 	switch (rate) {
@@ -967,24 +951,18 @@ int adau1372_probe(struct device *dev, struct regmap *regmap,
 		break;
 	}
 
-	/*
-	 * Most of the registers are inaccessible unless the internal clock is
-	 * enabled.
-	 */
+	 
 	regcache_cache_only(regmap, true);
 
 	regmap_update_bits(regmap, ADAU1372_REG_CLK_CTRL, ADAU1372_CLK_CTRL_CC_MDIV, clk_ctrl);
 
-	/*
-	 * No pinctrl support yet, put the multi-purpose pins in the most
-	 * sensible mode for general purpose CODEC operation.
-	 */
-	regmap_write(regmap, ADAU1372_REG_MODE_MP(1), 0x00); /* SDATA OUT */
-	regmap_write(regmap, ADAU1372_REG_MODE_MP(6), 0x12); /* CLOCKOUT */
+	 
+	regmap_write(regmap, ADAU1372_REG_MODE_MP(1), 0x00);  
+	regmap_write(regmap, ADAU1372_REG_MODE_MP(6), 0x12);  
 
 	regmap_write(regmap, ADAU1372_REG_OP_STAGE_MUTE, 0x0);
 
-	regmap_write(regmap, 0x7, 0x01); /* CLOCK OUT */
+	regmap_write(regmap, 0x7, 0x01);  
 
 	return  devm_snd_soc_register_component(dev, &adau1372_driver, &adau1372_dai_driver, 1);
 }

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	DCCP over IPv6
- *	Linux INET6 implementation
- *
- *	Based on net/dccp6/ipv6.c
- *
- *	Arnaldo Carvalho de Melo <acme@ghostprotocols.net>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/random.h>
@@ -40,12 +33,12 @@ struct dccp_v6_pernet {
 
 static unsigned int dccp_v6_pernet_id __read_mostly;
 
-/* The per-net v6_ctl_sk is used for sending RSTs and ACKs */
+ 
 
 static const struct inet_connection_sock_af_ops dccp_ipv6_mapped;
 static const struct inet_connection_sock_af_ops dccp_ipv6_af_ops;
 
-/* add pseudo-header to DCCP checksum stored in skb->csum */
+ 
 static inline __sum16 dccp_v6_csum_finish(struct sk_buff *skb,
 				      const struct in6_addr *saddr,
 				      const struct in6_addr *daddr)
@@ -160,18 +153,14 @@ static int dccp_v6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 
 	icmpv6_err_convert(type, code, &err);
 
-	/* Might be for an request_sock */
+	 
 	switch (sk->sk_state) {
 	case DCCP_REQUESTING:
-	case DCCP_RESPOND:  /* Cannot happen.
-			       It can, it SYNs are crossed. --ANK */
+	case DCCP_RESPOND:   
 		if (!sock_owned_by_user(sk)) {
 			__DCCP_INC_STATS(DCCP_MIB_ATTEMPTFAILS);
 			sk->sk_err = err;
-			/*
-			 * Wake people up to see the error
-			 * (see connect in sock.c)
-			 */
+			 
 			sk_error_report(sk);
 			dccp_done(sk);
 		} else {
@@ -292,7 +281,7 @@ static void dccp_v6_ctl_send_reset(const struct sock *sk, struct sk_buff *rxskb)
 	fl6.fl6_sport = dccp_hdr(skb)->dccph_sport;
 	security_skb_classify_flow(rxskb, flowi6_to_flowi_common(&fl6));
 
-	/* sk = NULL, but it is safe for now. RST socket required. */
+	 
 	dst = ip6_dst_lookup_flow(sock_net(ctl_sk), ctl_sk, &fl6, NULL);
 	if (!IS_ERR(dst)) {
 		skb_dst_set(skb, dst);
@@ -328,7 +317,7 @@ static int dccp_v6_conn_request(struct sock *sk, struct sk_buff *skb)
 		return dccp_v4_conn_request(sk, skb);
 
 	if (!ipv6_unicast_destination(skb))
-		return 0;	/* discard, don't send a reset here */
+		return 0;	 
 
 	if (ipv6_addr_v4mapped(&ipv6_hdr(skb)->saddr)) {
 		__IP6_INC_STATS(sock_net(sk), NULL, IPSTATS_MIB_INHDRERRORS);
@@ -339,9 +328,7 @@ static int dccp_v6_conn_request(struct sock *sk, struct sk_buff *skb)
 		dcb->dccpd_reset_code = DCCP_RESET_CODE_BAD_SERVICE_CODE;
 		goto drop;
 	}
-	/*
-	 * There are no SYN attacks on IPv6, yet...
-	 */
+	 
 	dcb->dccpd_reset_code = DCCP_RESET_CODE_TOO_BUSY;
 	if (inet_csk_reqsk_queue_is_full(sk))
 		goto drop;
@@ -377,18 +364,12 @@ static int dccp_v6_conn_request(struct sock *sk, struct sk_buff *skb)
 	}
 	ireq->ir_iif = READ_ONCE(sk->sk_bound_dev_if);
 
-	/* So that link locals have meaning */
+	 
 	if (!ireq->ir_iif &&
 	    ipv6_addr_type(&ireq->ir_v6_rmt_addr) & IPV6_ADDR_LINKLOCAL)
 		ireq->ir_iif = inet6_iif(skb);
 
-	/*
-	 * Step 3: Process LISTEN state
-	 *
-	 *   Set S.ISR, S.GSR, S.SWL, S.SWH from packet or Init Cookie
-	 *
-	 * Setting S.SWL/S.SWH to is deferred to dccp_create_openreq_child().
-	 */
+	 
 	dreq->dreq_isr	   = dcb->dccpd_seq;
 	dreq->dreq_gsr     = dreq->dreq_isr;
 	dreq->dreq_iss	   = dccp_v6_init_sequence(skb);
@@ -425,9 +406,7 @@ static struct sock *dccp_v6_request_recv_sock(const struct sock *sk,
 	struct sock *newsk;
 
 	if (skb->protocol == htons(ETH_P_IP)) {
-		/*
-		 *	v6 mapped
-		 */
+		 
 		newsk = dccp_v4_request_recv_sock(sk, skb, req, dst,
 						  req_unhash, own_req);
 		if (newsk == NULL)
@@ -452,16 +431,9 @@ static struct sock *dccp_v6_request_recv_sock(const struct sock *sk,
 		newnp->mcast_oif   = inet_iif(skb);
 		newnp->mcast_hops  = ip_hdr(skb)->ttl;
 
-		/*
-		 * No need to charge this sock to the relevant IPv6 refcnt debug socks count
-		 * here, dccp_create_openreq_child now does this for us, see the comment in
-		 * that function for the gory details. -acme
-		 */
+		 
 
-		/* It is tricky place. Until this moment IPv4 tcp
-		   worked with IPv6 icsk.icsk_af_ops.
-		   Sync it now.
-		 */
+		 
 		dccp_sync_mss(newsk, inet_csk(newsk)->icsk_pmtu_cookie);
 
 		return newsk;
@@ -483,11 +455,7 @@ static struct sock *dccp_v6_request_recv_sock(const struct sock *sk,
 	if (newsk == NULL)
 		goto out_nonewsk;
 
-	/*
-	 * No need to charge this sock to the relevant IPv6 refcnt debug socks
-	 * count here, dccp_create_openreq_child now does this for us, see the
-	 * comment in that function for the gory details. -acme
-	 */
+	 
 
 	ip6_dst_store(newsk, dst, NULL, NULL);
 	newsk->sk_route_caps = dst->dev->features & ~(NETIF_F_IP_CSUM |
@@ -504,13 +472,10 @@ static struct sock *dccp_v6_request_recv_sock(const struct sock *sk,
 	newsk->sk_v6_rcv_saddr	= ireq->ir_v6_loc_addr;
 	newsk->sk_bound_dev_if	= ireq->ir_iif;
 
-	/* Now IPv6 options...
-
-	   First: no IPv4 options.
-	 */
+	 
 	newinet->inet_opt = NULL;
 
-	/* Clone RX bits */
+	 
 	newnp->rxopt.all = np->rxopt.all;
 
 	newnp->ipv6_mc_list = NULL;
@@ -521,12 +486,7 @@ static struct sock *dccp_v6_request_recv_sock(const struct sock *sk,
 	newnp->mcast_oif  = inet6_iif(skb);
 	newnp->mcast_hops = ipv6_hdr(skb)->hop_limit;
 
-	/*
-	 * Clone native IPv6 options from listening socket (if any)
-	 *
-	 * Yes, keeping reference count would be much more clever, but we make
-	 * one more one thing there: reattach optmem to newsk.
-	 */
+	 
 	opt = ireq->ipv6_opt;
 	if (!opt)
 		opt = rcu_dereference(np->opt);
@@ -550,7 +510,7 @@ static struct sock *dccp_v6_request_recv_sock(const struct sock *sk,
 		goto out;
 	}
 	*own_req = inet_ehash_nolisten(newsk, req_to_sk(req_unhash), NULL);
-	/* Clone pktoptions received with SYN, if we own the req */
+	 
 	if (*own_req && ireq->pktopts) {
 		newnp->pktoptions = skb_clone_and_charge_r(ireq->pktopts, newsk);
 		consume_skb(ireq->pktopts);
@@ -568,26 +528,13 @@ out:
 	return NULL;
 }
 
-/* The socket must have it's spinlock held when we get
- * here.
- *
- * We have a potential double-lock case here, so even when
- * doing backlog processing we use the BH locking scheme.
- * This is because we cannot sleep with the original spinlock
- * held.
- */
+ 
 static int dccp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
 {
 	struct ipv6_pinfo *np = inet6_sk(sk);
 	struct sk_buff *opt_skb = NULL;
 
-	/* Imagine: socket is IPv6. IPv4 packet arrives,
-	   goes to IPv4 receive handler and backlogged.
-	   From backlog it always goes here. Kerboom...
-	   Fortunately, dccp_rcv_established and rcv_established
-	   handle them correctly, but it is not case with
-	   dccp_v6_hnd_req and dccp_v6_ctl_send_reset().   --ANK
-	 */
+	 
 
 	if (skb->protocol == htons(ETH_P_IP))
 		return dccp_v4_do_rcv(sk, skb);
@@ -595,28 +542,13 @@ static int dccp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
 	if (sk_filter(sk, skb))
 		goto discard;
 
-	/*
-	 * socket locking is here for SMP purposes as backlog rcv is currently
-	 * called with bh processing disabled.
-	 */
+	 
 
-	/* Do Stevens' IPV6_PKTOPTIONS.
-
-	   Yes, guys, it is the only place in our code, where we
-	   may make it not affecting IPv4.
-	   The rest of code is protocol independent,
-	   and I do not like idea to uglify IPv4.
-
-	   Actually, all the idea behind IPV6_PKTOPTIONS
-	   looks not very well thought. For now we latch
-	   options, received in the last packet, enqueued
-	   by tcp. Feel free to propose better solution.
-					       --ANK (980728)
-	 */
+	 
 	if (np->rxopt.all)
 		opt_skb = skb_clone_and_charge_r(skb, sk);
 
-	if (sk->sk_state == DCCP_OPEN) { /* Fast path */
+	if (sk->sk_state == DCCP_OPEN) {  
 		if (dccp_rcv_established(sk, skb, dccp_hdr(skb), skb->len))
 			goto reset;
 		if (opt_skb)
@@ -624,30 +556,7 @@ static int dccp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
 		return 0;
 	}
 
-	/*
-	 *  Step 3: Process LISTEN state
-	 *     If S.state == LISTEN,
-	 *	 If P.type == Request or P contains a valid Init Cookie option,
-	 *	      (* Must scan the packet's options to check for Init
-	 *		 Cookies.  Only Init Cookies are processed here,
-	 *		 however; other options are processed in Step 8.  This
-	 *		 scan need only be performed if the endpoint uses Init
-	 *		 Cookies *)
-	 *	      (* Generate a new socket and switch to that socket *)
-	 *	      Set S := new socket for this port pair
-	 *	      S.state = RESPOND
-	 *	      Choose S.ISS (initial seqno) or set from Init Cookies
-	 *	      Initialize S.GAR := S.ISS
-	 *	      Set S.ISR, S.GSR, S.SWL, S.SWH from packet or Init Cookies
-	 *	      Continue with S.state == RESPOND
-	 *	      (* A Response packet will be generated in Step 11 *)
-	 *	 Otherwise,
-	 *	      Generate Reset(No Connection) unless P.type == Reset
-	 *	      Drop packet and return
-	 *
-	 * NOTE: the check for the packet types is done in
-	 *	 dccp_rcv_state_process
-	 */
+	 
 
 	if (dccp_rcv_state_process(sk, skb, dccp_hdr(skb), skb->len))
 		goto reset;
@@ -663,9 +572,7 @@ discard:
 	kfree_skb(skb);
 	return 0;
 
-/* Handling IPV6_PKTOPTIONS skb the similar
- * way it's done for net/ipv6/tcp_ipv6.c
- */
+ 
 ipv6_pktoptions:
 	if (!((1 << sk->sk_state) & (DCCPF_CLOSED | DCCPF_LISTEN))) {
 		if (np->rxopt.bits.rxinfo || np->rxopt.bits.rxoinfo)
@@ -699,12 +606,12 @@ static int dccp_v6_rcv(struct sk_buff *skb)
 	struct sock *sk;
 	int min_cov;
 
-	/* Step 1: Check header basics */
+	 
 
 	if (dccp_invalid_packet(skb))
 		goto discard_it;
 
-	/* Step 1: If header checksum is incorrect, drop packet and return. */
+	 
 	if (dccp_v6_csum_finish(skb, &ipv6_hdr(skb)->saddr,
 				     &ipv6_hdr(skb)->daddr)) {
 		DCCP_WARN("dropped packet with invalid checksum\n");
@@ -731,12 +638,7 @@ lookup:
 		goto no_dccp_socket;
 	}
 
-	/*
-	 * Step 2:
-	 *	... or S.state == TIMEWAIT,
-	 *		Generate Reset(No Connection) unless P.type == Reset
-	 *		Drop packet and return
-	 */
+	 
 	if (sk->sk_state == DCCP_TIME_WAIT) {
 		dccp_pr_debug("sk->sk_state == DCCP_TIME_WAIT: do_time_wait\n");
 		inet_twsk_put(inet_twsk(sk));
@@ -769,16 +671,12 @@ lookup:
 			return 0;
 		}
 	}
-	/*
-	 * RFC 4340, sec. 9.2.1: Minimum Checksum Coverage
-	 *	o if MinCsCov = 0, only packets with CsCov = 0 are accepted
-	 *	o if MinCsCov > 0, also accept packets with CsCov >= MinCsCov
-	 */
+	 
 	min_cov = dccp_sk(sk)->dccps_pcrlen;
 	if (dh->dccph_cscov  &&  (min_cov == 0 || dh->dccph_cscov < min_cov))  {
 		dccp_pr_debug("Packet CsCov %d does not satisfy MinCsCov %d\n",
 			      dh->dccph_cscov, min_cov);
-		/* FIXME: send Data Dropped option (see also dccp_v4_rcv) */
+		 
 		goto discard_and_relse;
 	}
 
@@ -792,12 +690,7 @@ lookup:
 no_dccp_socket:
 	if (!xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb))
 		goto discard_it;
-	/*
-	 * Step 2:
-	 *	If no socket ...
-	 *		Generate Reset(No Connection) unless P.type == Reset
-	 *		Drop packet and return
-	 */
+	 
 	if (dh->dccph_type != DCCP_PKT_RESET) {
 		DCCP_SKB_CB(skb)->dccpd_reset_code =
 					DCCP_RESET_CODE_NO_CONNECTION;
@@ -850,9 +743,7 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
 			fl6_sock_release(flowlabel);
 		}
 	}
-	/*
-	 * connect() to INADDR_ANY means loopback (BSD'ism).
-	 */
+	 
 	if (ipv6_addr_any(&usin->sin6_addr))
 		usin->sin6_addr.s6_addr[15] = 1;
 
@@ -864,9 +755,7 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
 	if (addr_type & IPV6_ADDR_LINKLOCAL) {
 		if (addr_len >= sizeof(struct sockaddr_in6) &&
 		    usin->sin6_scope_id) {
-			/* If interface is set while binding, indices
-			 * must coincide.
-			 */
+			 
 			if (sk->sk_bound_dev_if &&
 			    sk->sk_bound_dev_if != usin->sin6_scope_id)
 				return -EINVAL;
@@ -874,7 +763,7 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
 			sk->sk_bound_dev_if = usin->sin6_scope_id;
 		}
 
-		/* Connect to link-local address requires an interface */
+		 
 		if (!sk->sk_bound_dev_if)
 			return -EINVAL;
 	}
@@ -882,9 +771,7 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
 	sk->sk_v6_daddr = usin->sin6_addr;
 	np->flow_label = fl6.flowlabel;
 
-	/*
-	 * DCCP over IPv4
-	 */
+	 
 	if (addr_type == IPV6_ADDR_MAPPED) {
 		u32 exthdrlen = icsk->icsk_ext_hdr_len;
 		struct sockaddr_in sin;
@@ -940,7 +827,7 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
 			goto failure;
 	}
 
-	/* set the source address */
+	 
 	np->saddr = *saddr;
 	inet->inet_rcv_saddr = LOOPBACK4_IPV6;
 
@@ -990,9 +877,7 @@ static const struct inet_connection_sock_af_ops dccp_ipv6_af_ops = {
 	.sockaddr_len	   = sizeof(struct sockaddr_in6),
 };
 
-/*
- *	DCCP over IPv4 via INET6 API
- */
+ 
 static const struct inet_connection_sock_af_ops dccp_ipv6_mapped = {
 	.queue_xmit	   = ip_queue_xmit,
 	.send_check	   = dccp_v4_send_check,
@@ -1012,9 +897,7 @@ static void dccp_v6_sk_destruct(struct sock *sk)
 	inet6_sock_destruct(sk);
 }
 
-/* NOTE: A lot of things set to zero explicitly by call to
- *       sk_alloc() so need not be done here.
- */
+ 
 static int dccp_v6_init_sock(struct sock *sk)
 {
 	static __u8 dccp_v6_ctl_sock_initialized;
@@ -1170,11 +1053,7 @@ static void __exit dccp_v6_exit(void)
 module_init(dccp_v6_init);
 module_exit(dccp_v6_exit);
 
-/*
- * __stringify doesn't likes enums, so use SOCK_DCCP (6) and IPPROTO_DCCP (33)
- * values directly, Also cover the case where the protocol is not specified,
- * i.e. net-pf-PF_INET6-proto-0-type-SOCK_DCCP
- */
+ 
 MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_INET6, 33, 6);
 MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_INET6, 0, 6);
 MODULE_LICENSE("GPL");

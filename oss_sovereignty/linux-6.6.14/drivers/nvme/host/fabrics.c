@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NVMe over Fabrics common host code.
- * Copyright (c) 2015-2016 HGST, a Western Digital Company.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/init.h>
 #include <linux/miscdevice.h>
@@ -42,12 +39,7 @@ static struct nvmf_host *nvmf_host_add(const char *hostnqn, uuid_t *id)
 
 	mutex_lock(&nvmf_hosts_mutex);
 
-	/*
-	 * We have defined a host as how it is perceived by the target.
-	 * Therefore, we don't allow different Host NQNs with the same Host ID.
-	 * Similarly, we do not allow the usage of the same Host NQN with
-	 * different Host IDs. This'll maintain unambiguous host identification.
-	 */
+	 
 	list_for_each_entry(host, &nvmf_hosts, list) {
 		bool same_hostnqn = !strcmp(host->nqn, hostnqn);
 		bool same_hostid = uuid_equal(&host->id, id);
@@ -120,12 +112,7 @@ static void nvmf_host_put(struct nvmf_host *host)
 		kref_put(&host->ref, nvmf_host_destroy);
 }
 
-/**
- * nvmf_get_address() -  Get address/port
- * @ctrl:	Host NVMe controller instance which we got the address
- * @buf:	OUTPUT parameter that will contain the address/port
- * @size:	buffer size
- */
+ 
 int nvmf_get_address(struct nvme_ctrl *ctrl, char *buf, int size)
 {
 	int len = 0;
@@ -147,27 +134,7 @@ int nvmf_get_address(struct nvme_ctrl *ctrl, char *buf, int size)
 }
 EXPORT_SYMBOL_GPL(nvmf_get_address);
 
-/**
- * nvmf_reg_read32() -  NVMe Fabrics "Property Get" API function.
- * @ctrl:	Host NVMe controller instance maintaining the admin
- *		queue used to submit the property read command to
- *		the allocated NVMe controller resource on the target system.
- * @off:	Starting offset value of the targeted property
- *		register (see the fabrics section of the NVMe standard).
- * @val:	OUTPUT parameter that will contain the value of
- *		the property after a successful read.
- *
- * Used by the host system to retrieve a 32-bit capsule property value
- * from an NVMe controller on the target system.
- *
- * ("Capsule property" is an "PCIe register concept" applied to the
- * NVMe fabrics space.)
- *
- * Return:
- *	0: successful read
- *	> 0: NVMe error status code
- *	< 0: Linux errno error code
- */
+ 
 int nvmf_reg_read32(struct nvme_ctrl *ctrl, u32 off, u32 *val)
 {
 	struct nvme_command cmd = { };
@@ -192,27 +159,7 @@ int nvmf_reg_read32(struct nvme_ctrl *ctrl, u32 off, u32 *val)
 }
 EXPORT_SYMBOL_GPL(nvmf_reg_read32);
 
-/**
- * nvmf_reg_read64() -  NVMe Fabrics "Property Get" API function.
- * @ctrl:	Host NVMe controller instance maintaining the admin
- *		queue used to submit the property read command to
- *		the allocated controller resource on the target system.
- * @off:	Starting offset value of the targeted property
- *		register (see the fabrics section of the NVMe standard).
- * @val:	OUTPUT parameter that will contain the value of
- *		the property after a successful read.
- *
- * Used by the host system to retrieve a 64-bit capsule property value
- * from an NVMe controller on the target system.
- *
- * ("Capsule property" is an "PCIe register concept" applied to the
- * NVMe fabrics space.)
- *
- * Return:
- *	0: successful read
- *	> 0: NVMe error status code
- *	< 0: Linux errno error code
- */
+ 
 int nvmf_reg_read64(struct nvme_ctrl *ctrl, u32 off, u64 *val)
 {
 	struct nvme_command cmd = { };
@@ -237,27 +184,7 @@ int nvmf_reg_read64(struct nvme_ctrl *ctrl, u32 off, u64 *val)
 }
 EXPORT_SYMBOL_GPL(nvmf_reg_read64);
 
-/**
- * nvmf_reg_write32() -  NVMe Fabrics "Property Write" API function.
- * @ctrl:	Host NVMe controller instance maintaining the admin
- *		queue used to submit the property read command to
- *		the allocated NVMe controller resource on the target system.
- * @off:	Starting offset value of the targeted property
- *		register (see the fabrics section of the NVMe standard).
- * @val:	Input parameter that contains the value to be
- *		written to the property.
- *
- * Used by the NVMe host system to write a 32-bit capsule property value
- * to an NVMe controller on the target system.
- *
- * ("Capsule property" is an "PCIe register concept" applied to the
- * NVMe fabrics space.)
- *
- * Return:
- *	0: successful write
- *	> 0: NVMe error status code
- *	< 0: Linux errno error code
- */
+ 
 int nvmf_reg_write32(struct nvme_ctrl *ctrl, u32 off, u32 val)
 {
 	struct nvme_command cmd = { };
@@ -279,17 +206,7 @@ int nvmf_reg_write32(struct nvme_ctrl *ctrl, u32 off, u32 val)
 }
 EXPORT_SYMBOL_GPL(nvmf_reg_write32);
 
-/**
- * nvmf_log_connect_error() - Error-parsing-diagnostic print out function for
- * 				connect() errors.
- * @ctrl:	The specific /dev/nvmeX device that had the error.
- * @errval:	Error code to be decoded in a more human-friendly
- * 		printout.
- * @offset:	For use with the NVMe error code
- * 		NVME_SC_CONNECT_INVALID_PARAM.
- * @cmd:	This is the SQE portion of a submission capsule.
- * @data:	This is the "Data" portion of a submission capsule.
- */
+ 
 static void nvmf_log_connect_error(struct nvme_ctrl *ctrl,
 		int errval, int offset, struct nvme_command *cmd,
 		struct nvmf_connect_data *data)
@@ -404,9 +321,7 @@ static void nvmf_connect_cmd_prep(struct nvme_ctrl *ctrl, u16 qid,
 	} else {
 		cmd->connect.sqsize = cpu_to_le16(NVME_AQ_DEPTH - 1);
 
-		/*
-		 * set keep-alive timeout in seconds granularity (ms * 1000)
-		 */
+		 
 		cmd->connect.kato = cpu_to_le32(ctrl->kato * 1000);
 	}
 
@@ -414,26 +329,7 @@ static void nvmf_connect_cmd_prep(struct nvme_ctrl *ctrl, u16 qid,
 		cmd->connect.cattr |= NVME_CONNECT_DISABLE_SQFLOW;
 }
 
-/**
- * nvmf_connect_admin_queue() - NVMe Fabrics Admin Queue "Connect"
- *				API function.
- * @ctrl:	Host nvme controller instance used to request
- *              a new NVMe controller allocation on the target
- *              system and  establish an NVMe Admin connection to
- *              that controller.
- *
- * This function enables an NVMe host device to request a new allocation of
- * an NVMe controller resource on a target system as well establish a
- * fabrics-protocol connection of the NVMe Admin queue between the
- * host system device and the allocated NVMe controller on the
- * target system via a NVMe Fabrics "Connect" command.
- *
- * Return:
- *	0: success
- *	> 0: NVMe error status code
- *	< 0: Linux errno error code
- *
- */
+ 
 int nvmf_connect_admin_queue(struct nvme_ctrl *ctrl)
 {
 	struct nvme_command cmd = { };
@@ -460,14 +356,14 @@ int nvmf_connect_admin_queue(struct nvme_ctrl *ctrl)
 	result = le32_to_cpu(res.u32);
 	ctrl->cntlid = result & 0xFFFF;
 	if (result & (NVME_CONNECT_AUTHREQ_ATR | NVME_CONNECT_AUTHREQ_ASCR)) {
-		/* Secure concatenation is not implemented */
+		 
 		if (result & NVME_CONNECT_AUTHREQ_ASCR) {
 			dev_warn(ctrl->device,
 				 "qid 0: secure concatenation is not supported\n");
 			ret = NVME_SC_AUTH_REQUIRED;
 			goto out_free_data;
 		}
-		/* Authentication required */
+		 
 		ret = nvme_auth_negotiate(ctrl, 0);
 		if (ret) {
 			dev_warn(ctrl->device,
@@ -489,26 +385,7 @@ out_free_data:
 }
 EXPORT_SYMBOL_GPL(nvmf_connect_admin_queue);
 
-/**
- * nvmf_connect_io_queue() - NVMe Fabrics I/O Queue "Connect"
- *			     API function.
- * @ctrl:	Host nvme controller instance used to establish an
- *		NVMe I/O queue connection to the already allocated NVMe
- *		controller on the target system.
- * @qid:	NVMe I/O queue number for the new I/O connection between
- *		host and target (note qid == 0 is illegal as this is
- *		the Admin queue, per NVMe standard).
- *
- * This function issues a fabrics-protocol connection
- * of a NVMe I/O queue (via NVMe Fabrics "Connect" command)
- * between the host system device and the allocated NVMe controller
- * on the target system.
- *
- * Return:
- *	0: success
- *	> 0: NVMe error status code
- *	< 0: Linux errno error code
- */
+ 
 int nvmf_connect_io_queue(struct nvme_ctrl *ctrl, u16 qid)
 {
 	struct nvme_command cmd = { };
@@ -532,14 +409,14 @@ int nvmf_connect_io_queue(struct nvme_ctrl *ctrl, u16 qid)
 	}
 	result = le32_to_cpu(res.u32);
 	if (result & (NVME_CONNECT_AUTHREQ_ATR | NVME_CONNECT_AUTHREQ_ASCR)) {
-		/* Secure concatenation is not implemented */
+		 
 		if (result & NVME_CONNECT_AUTHREQ_ASCR) {
 			dev_warn(ctrl->device,
 				 "qid 0: secure concatenation is not supported\n");
 			ret = NVME_SC_AUTH_REQUIRED;
 			goto out_free_data;
 		}
-		/* Authentication required */
+		 
 		ret = nvme_auth_negotiate(ctrl, qid);
 		if (ret) {
 			dev_warn(ctrl->device,
@@ -568,15 +445,7 @@ bool nvmf_should_reconnect(struct nvme_ctrl *ctrl)
 }
 EXPORT_SYMBOL_GPL(nvmf_should_reconnect);
 
-/**
- * nvmf_register_transport() - NVMe Fabrics Library registration function.
- * @ops:	Transport ops instance to be registered to the
- *		common fabrics library.
- *
- * API function that registers the type of specific transport fabric
- * being implemented to the common NVMe fabrics library. Part of
- * the overall init sequence of starting up a fabrics driver.
- */
+ 
 int nvmf_register_transport(struct nvmf_transport_ops *ops)
 {
 	if (!ops->create_ctrl)
@@ -590,15 +459,7 @@ int nvmf_register_transport(struct nvmf_transport_ops *ops)
 }
 EXPORT_SYMBOL_GPL(nvmf_register_transport);
 
-/**
- * nvmf_unregister_transport() - NVMe Fabrics Library unregistration function.
- * @ops:	Transport ops instance to be unregistered from the
- *		common fabrics library.
- *
- * Fabrics API function that unregisters the type of specific transport
- * fabric being implemented from the common NVMe fabrics library.
- * Part of the overall exit sequence of unloading the implemented driver.
- */
+ 
 void nvmf_unregister_transport(struct nvmf_transport_ops *ops)
 {
 	down_write(&nvmf_transports_rwsem);
@@ -663,7 +524,7 @@ static int nvmf_parse_options(struct nvmf_ctrl_options *opts,
 	uuid_t hostid;
 	char hostnqn[NVMF_NQN_SIZE];
 
-	/* Set defaults */
+	 
 	opts->queue_size = NVMF_DEF_QUEUE_SIZE;
 	opts->nr_io_queues = num_online_cpus();
 	opts->reconnect_delay = NVMF_DEF_RECONNECT_DELAY;
@@ -672,13 +533,13 @@ static int nvmf_parse_options(struct nvmf_ctrl_options *opts,
 	opts->fast_io_fail_tmo = NVMF_DEF_FAIL_FAST_TMO;
 	opts->hdr_digest = false;
 	opts->data_digest = false;
-	opts->tos = -1; /* < 0 == use transport default */
+	opts->tos = -1;  
 
 	options = o = kstrdup(buf, GFP_KERNEL);
 	if (!options)
 		return -ENOMEM;
 
-	/* use default host if not given by user space */
+	 
 	uuid_copy(&hostid, &nvmf_default_host->id);
 	strscpy(hostnqn, nvmf_default_host->nqn, NVMF_NQN_SIZE);
 
@@ -777,7 +638,7 @@ static int nvmf_parse_options(struct nvmf_ctrl_options *opts,
 				ret = -EINVAL;
 				goto out;
 			} else if (token == 0 && !opts->discovery_nqn) {
-				/* Allowed for debug */
+				 
 				pr_warn("keep_alive_tmo 0 won't execute keep alives!!!\n");
 			}
 			opts->kato = token;
@@ -1000,29 +861,21 @@ void nvmf_set_io_queues(struct nvmf_ctrl_options *opts, u32 nr_io_queues,
 			u32 io_queues[HCTX_MAX_TYPES])
 {
 	if (opts->nr_write_queues && opts->nr_io_queues < nr_io_queues) {
-		/*
-		 * separate read/write queues
-		 * hand out dedicated default queues only after we have
-		 * sufficient read queues.
-		 */
+		 
 		io_queues[HCTX_TYPE_READ] = opts->nr_io_queues;
 		nr_io_queues -= io_queues[HCTX_TYPE_READ];
 		io_queues[HCTX_TYPE_DEFAULT] =
 			min(opts->nr_write_queues, nr_io_queues);
 		nr_io_queues -= io_queues[HCTX_TYPE_DEFAULT];
 	} else {
-		/*
-		 * shared read/write queues
-		 * either no write queues were requested, or we don't have
-		 * sufficient queue count to have dedicated default queues.
-		 */
+		 
 		io_queues[HCTX_TYPE_DEFAULT] =
 			min(opts->nr_io_queues, nr_io_queues);
 		nr_io_queues -= io_queues[HCTX_TYPE_DEFAULT];
 	}
 
 	if (opts->nr_poll_queues && nr_io_queues) {
-		/* map dedicated poll queues only if we have queues left */
+		 
 		io_queues[HCTX_TYPE_POLL] =
 			min(opts->nr_poll_queues, nr_io_queues);
 	}
@@ -1035,7 +888,7 @@ void nvmf_map_queues(struct blk_mq_tag_set *set, struct nvme_ctrl *ctrl,
 	struct nvmf_ctrl_options *opts = ctrl->opts;
 
 	if (opts->nr_write_queues && io_queues[HCTX_TYPE_READ]) {
-		/* separate read/write queues */
+		 
 		set->map[HCTX_TYPE_DEFAULT].nr_queues =
 			io_queues[HCTX_TYPE_DEFAULT];
 		set->map[HCTX_TYPE_DEFAULT].queue_offset = 0;
@@ -1044,7 +897,7 @@ void nvmf_map_queues(struct blk_mq_tag_set *set, struct nvme_ctrl *ctrl,
 		set->map[HCTX_TYPE_READ].queue_offset =
 			io_queues[HCTX_TYPE_DEFAULT];
 	} else {
-		/* shared read/write queues */
+		 
 		set->map[HCTX_TYPE_DEFAULT].nr_queues =
 			io_queues[HCTX_TYPE_DEFAULT];
 		set->map[HCTX_TYPE_DEFAULT].queue_offset = 0;
@@ -1056,7 +909,7 @@ void nvmf_map_queues(struct blk_mq_tag_set *set, struct nvme_ctrl *ctrl,
 	blk_mq_map_queues(&set->map[HCTX_TYPE_DEFAULT]);
 	blk_mq_map_queues(&set->map[HCTX_TYPE_READ]);
 	if (opts->nr_poll_queues && io_queues[HCTX_TYPE_POLL]) {
-		/* map dedicated poll queues only if we have queues left */
+		 
 		set->map[HCTX_TYPE_POLL].nr_queues = io_queues[HCTX_TYPE_POLL];
 		set->map[HCTX_TYPE_POLL].queue_offset =
 			io_queues[HCTX_TYPE_DEFAULT] +
@@ -1100,19 +953,7 @@ bool nvmf_ip_options_match(struct nvme_ctrl *ctrl,
 	    strcmp(opts->trsvcid, ctrl->opts->trsvcid))
 		return false;
 
-	/*
-	 * Checking the local address or host interfaces is rough.
-	 *
-	 * In most cases, none is specified and the host port or
-	 * host interface is selected by the stack.
-	 *
-	 * Assume no match if:
-	 * -  local address or host interface is specified and address
-	 *    or host interface is not the same
-	 * -  local address or host interface is not specified but
-	 *    remote is, or vice versa (admin using specific
-	 *    host_traddr/host_iface when it matters).
-	 */
+	 
 	if ((opts->mask & NVMF_OPT_HOST_TRADDR) &&
 	    (ctrl->opts->mask & NVMF_OPT_HOST_TRADDR)) {
 		if (strcmp(opts->host_traddr, ctrl->opts->host_traddr))
@@ -1197,11 +1038,7 @@ nvmf_create_ctrl(struct device *dev, const char *buf)
 
 	request_module("nvme-%s", opts->transport);
 
-	/*
-	 * Check the generic options first as we need a valid transport for
-	 * the lookup below.  Then clear the generic flags so that transport
-	 * drivers don't have to care about them.
-	 */
+	 
 	ret = nvmf_check_required_opts(opts, NVMF_REQUIRED_OPTS);
 	if (ret)
 		goto out_free_opts;
@@ -1293,10 +1130,7 @@ static void __nvmf_concat_opt_tokens(struct seq_file *seq_file)
 	const struct match_token *tok;
 	int idx;
 
-	/*
-	 * Add dummy entries for instance and cntlid to
-	 * signal an invalid/non-existing controller
-	 */
+	 
 	seq_puts(seq_file, "instance=-1,cntlid=-1");
 	for (idx = 0; idx < ARRAY_SIZE(opt_tokens); idx++) {
 		tok = &opt_tokens[idx];
@@ -1329,10 +1163,7 @@ out_unlock:
 
 static int nvmf_dev_open(struct inode *inode, struct file *file)
 {
-	/*
-	 * The miscdevice code initializes file->private_data, but doesn't
-	 * make use of it later.
-	 */
+	 
 	file->private_data = NULL;
 	return single_open(file, nvmf_dev_show, NULL);
 }

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019 MediaTek Inc.
- * Author: Ran Bi <ran.bi@mediatek.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/init.h>
@@ -125,7 +122,7 @@ static irqreturn_t rtc_irq_handler_thread(int irq, void *data)
 	struct mt2712_rtc *mt2712_rtc = data;
 	u16 irqsta;
 
-	/* Clear interrupt */
+	 
 	irqsta = mt2712_readl(mt2712_rtc, MT2712_IRQ_STA);
 	if (irqsta & MT2712_IRQ_STA_AL) {
 		rtc_update_irq(mt2712_rtc->rtc, 1, RTC_IRQF | RTC_AF);
@@ -164,7 +161,7 @@ static int mt2712_rtc_read_time(struct device *dev, struct rtc_time *tm)
 
 	do {
 		__mt2712_rtc_read_time(mt2712_rtc, tm, &sec);
-	} while (sec < tm->tm_sec);	/* SEC has carried */
+	} while (sec < tm->tm_sec);	 
 
 	return 0;
 }
@@ -257,7 +254,7 @@ static int mt2712_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alm)
 		       & ~(MT2712_YEA_MASK))
 		      | ((tm->tm_year - 100) & MT2712_YEA_MASK));
 
-	/* mask day of week */
+	 
 	mt2712_writel(mt2712_rtc, MT2712_AL_MASK, MT2712_AL_MASK_DOW);
 	mt2712_rtc_write_trigger(mt2712_rtc);
 
@@ -266,7 +263,7 @@ static int mt2712_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alm)
 	return 0;
 }
 
-/* Init RTC register */
+ 
 static void mt2712_rtc_hw_init(struct mt2712_rtc *mt2712_rtc)
 {
 	u32 p1, p2;
@@ -276,7 +273,7 @@ static void mt2712_rtc_hw_init(struct mt2712_rtc *mt2712_rtc)
 
 	mt2712_writel(mt2712_rtc, MT2712_CII_EN, 0);
 	mt2712_writel(mt2712_rtc, MT2712_AL_MASK, 0);
-	/* necessary before set MT2712_POWERKEY */
+	 
 	mt2712_writel(mt2712_rtc, MT2712_CON0, 0x4848);
 	mt2712_writel(mt2712_rtc, MT2712_CON1, 0x0048);
 
@@ -292,7 +289,7 @@ static void mt2712_rtc_hw_init(struct mt2712_rtc *mt2712_rtc)
 		mt2712_rtc->powerlost = false;
 	}
 
-	/* RTC need POWERKEY1/2 match, then goto normal work mode */
+	 
 	mt2712_writel(mt2712_rtc, MT2712_POWERKEY1, MT2712_POWERKEY1_KEY);
 	mt2712_writel(mt2712_rtc, MT2712_POWERKEY2, MT2712_POWERKEY2_KEY);
 	mt2712_rtc_write_trigger(mt2712_rtc);
@@ -322,7 +319,7 @@ static int mt2712_rtc_probe(struct platform_device *pdev)
 	if (IS_ERR(mt2712_rtc->base))
 		return PTR_ERR(mt2712_rtc->base);
 
-	/* rtc hw init */
+	 
 	mt2712_rtc_hw_init(mt2712_rtc);
 
 	mt2712_rtc->irq = platform_get_irq(pdev, 0);

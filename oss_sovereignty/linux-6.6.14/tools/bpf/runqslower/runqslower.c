@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
-// Copyright (c) 2019 Facebook
+
+
 #include <argp.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -122,7 +122,7 @@ int main(int argc, char **argv)
 
 	libbpf_set_print(libbpf_print_fn);
 
-	/* Use libbpf 1.0 API mode */
+	 
 	libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
 
 	obj = runqslower_bpf__open();
@@ -131,7 +131,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	/* initialize global data (filtering options) */
+	 
 	obj->rodata->targ_pid = env.pid;
 	obj->rodata->min_us = env.min_us;
 

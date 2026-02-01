@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * rt711-sdw.h -- RT711 ALSA SoC audio driver header
- *
- * Copyright(c) 2019 Realtek Semiconductor Corp.
- */
+ 
+ 
 
 #ifndef __RT711_SDW_H__
 #define __RT711_SDW_H__
@@ -280,4 +276,4 @@ static const struct reg_default rt711_reg_defaults[] = {
 	{ 0x752091, 0x0000 },
 };
 
-#endif /* __RT711_SDW_H__ */
+#endif  

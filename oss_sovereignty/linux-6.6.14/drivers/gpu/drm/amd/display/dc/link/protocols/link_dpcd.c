@@ -1,34 +1,6 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
-/* FILE POLICY AND INTENDED USAGE:
- *
- * This file implements basic dpcd read/write functionality. It also does basic
- * dpcd range check to ensure that every dpcd request is compliant with specs
- * range requirements.
- */
+ 
 
 #include "link_dpcd.h"
 #include <drm/display/drm_dp_helper.h>
@@ -71,11 +43,7 @@ static enum dc_status internal_link_write_dpcd(
 	return DC_OK;
 }
 
-/*
- * Partition the entire DPCD address space
- * XXX: This partitioning must cover the entire DPCD address space,
- * and must contain no gaps or overlapping address ranges.
- */
+ 
 static const struct dpcd_address_range mandatory_dpcd_partitions[] = {
 	{ 0, DP_TRAINING_PATTERN_SET_PHY_REPEATER(DP_PHY_LTTPR1) - 1},
 	{ DP_TRAINING_PATTERN_SET_PHY_REPEATER(DP_PHY_LTTPR1), DP_TRAINING_PATTERN_SET_PHY_REPEATER(DP_PHY_LTTPR2) - 1 },
@@ -86,9 +54,7 @@ static const struct dpcd_address_range mandatory_dpcd_partitions[] = {
 	{ DP_TRAINING_PATTERN_SET_PHY_REPEATER(DP_PHY_LTTPR6), DP_TRAINING_PATTERN_SET_PHY_REPEATER(DP_PHY_LTTPR7) - 1 },
 	{ DP_TRAINING_PATTERN_SET_PHY_REPEATER(DP_PHY_LTTPR7), DP_TRAINING_PATTERN_SET_PHY_REPEATER(DP_PHY_LTTPR8) - 1 },
 	{ DP_TRAINING_PATTERN_SET_PHY_REPEATER(DP_PHY_LTTPR8), DP_FEC_STATUS_PHY_REPEATER(DP_PHY_LTTPR1) - 1 },
-	/*
-	 * The FEC registers are contiguous
-	 */
+	 
 	{ DP_FEC_STATUS_PHY_REPEATER(DP_PHY_LTTPR1), DP_FEC_STATUS_PHY_REPEATER(DP_PHY_LTTPR1) - 1 },
 	{ DP_FEC_STATUS_PHY_REPEATER(DP_PHY_LTTPR2), DP_FEC_STATUS_PHY_REPEATER(DP_PHY_LTTPR2) - 1 },
 	{ DP_FEC_STATUS_PHY_REPEATER(DP_PHY_LTTPR3), DP_FEC_STATUS_PHY_REPEATER(DP_PHY_LTTPR3) - 1 },
@@ -97,7 +63,7 @@ static const struct dpcd_address_range mandatory_dpcd_partitions[] = {
 	{ DP_FEC_STATUS_PHY_REPEATER(DP_PHY_LTTPR6), DP_FEC_STATUS_PHY_REPEATER(DP_PHY_LTTPR6) - 1 },
 	{ DP_FEC_STATUS_PHY_REPEATER(DP_PHY_LTTPR7), DP_FEC_STATUS_PHY_REPEATER(DP_PHY_LTTPR7) - 1 },
 	{ DP_FEC_STATUS_PHY_REPEATER(DP_PHY_LTTPR8), DP_LTTPR_MAX_ADD },
-	/* all remaining DPCD addresses */
+	 
 	{ DP_LTTPR_MAX_ADD + 1, DP_DPCD_MAX_ADD } };
 
 static inline bool do_addresses_intersect_with_range(
@@ -113,10 +79,7 @@ static uint32_t dpcd_get_next_partition_size(const uint32_t address, const uint3
 	const uint32_t end_address = END_ADDRESS(address, size);
 	uint32_t partition_iterator = 0;
 
-	/*
-	 * find current partition
-	 * this loop spins forever if partition map above is not surjective
-	 */
+	 
 	while (!do_addresses_intersect_with_range(&mandatory_dpcd_partitions[partition_iterator],
 				address, end_address))
 		partition_iterator++;
@@ -125,16 +88,11 @@ static uint32_t dpcd_get_next_partition_size(const uint32_t address, const uint3
 	return ADDRESS_RANGE_SIZE(address, mandatory_dpcd_partitions[partition_iterator].end);
 }
 
-/*
- * Ranges of DPCD addresses that must be read in a single transaction
- * XXX: Do not allow any two address ranges in this array to overlap
- */
+ 
 static const struct dpcd_address_range mandatory_dpcd_blocks[] = {
 	{ DP_LT_TUNABLE_PHY_REPEATER_FIELD_DATA_STRUCTURE_REV, DP_PHY_REPEATER_EXTENDED_WAIT_TIMEOUT }};
 
-/*
- * extend addresses to read all mandatory blocks together
- */
+ 
 static void dpcd_extend_address_range(
 		const uint32_t in_address,
 		uint8_t * const in_data,
@@ -168,9 +126,7 @@ static void dpcd_extend_address_range(
 	}
 }
 
-/*
- * Reduce the AUX reply down to the values the caller requested
- */
+ 
 static void dpcd_reduce_address_range(
 		const uint32_t extended_address,
 		uint8_t * const extended_data,
@@ -181,11 +137,7 @@ static void dpcd_reduce_address_range(
 {
 	const uint32_t offset = reduced_address - extended_address;
 
-	/*
-	 * If the address is same, address was not extended.
-	 * So we do not need to free any memory.
-	 * The data is in original buffer(reduced_data).
-	 */
+	 
 	if (extended_data == reduced_data)
 		return;
 
@@ -203,10 +155,10 @@ enum dc_status core_link_read_dpcd(
 	uint32_t partitioned_address;
 	uint8_t *extended_data;
 	uint32_t extended_size;
-	/* size of the remaining partitioned address space */
+	 
 	uint32_t size_left_to_read;
 	enum dc_status status;
-	/* size of the next partition to be read from */
+	 
 	uint32_t partition_size;
 	uint32_t data_index = 0;
 

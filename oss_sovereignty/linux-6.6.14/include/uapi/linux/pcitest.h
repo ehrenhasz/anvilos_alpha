@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- * pcitest.h - PCI test uapi defines
- *
- * Copyright (C) 2017 Texas Instruments
- * Author: Kishon Vijay Abraham I <kishon@ti.com>
- *
- */
+ 
+ 
 
 #ifndef __UAPI_LINUX_PCITEST_H
 #define __UAPI_LINUX_PCITEST_H
@@ -28,4 +22,4 @@ struct pci_endpoint_test_xfer_param {
 	unsigned char flags;
 };
 
-#endif /* __UAPI_LINUX_PCITEST_H */
+#endif  

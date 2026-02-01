@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/* QLogic qede NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+ 
+ 
 
 #ifndef _QEDE_PTP_H_
 #define _QEDE_PTP_H_
@@ -23,7 +20,7 @@ static inline void qede_ptp_record_rx_ts(struct qede_dev *edev,
 					 union eth_rx_cqe *cqe,
 					 struct sk_buff *skb)
 {
-	/* Check if this packet was timestamped */
+	 
 	if (unlikely(le16_to_cpu(cqe->fast_path_regular.pars_flags.flags) &
 		     (1 << PARSING_AND_ERR_FLAGS_TIMESTAMPRECORDED_SHIFT))) {
 		if (likely(le16_to_cpu(cqe->fast_path_regular.pars_flags.flags)
@@ -35,4 +32,4 @@ static inline void qede_ptp_record_rx_ts(struct qede_dev *edev,
 		}
 	}
 }
-#endif /* _QEDE_PTP_H_ */
+#endif  

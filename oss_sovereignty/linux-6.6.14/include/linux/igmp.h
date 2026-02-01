@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *	Linux NET3:	Internet Group Management Protocol  [IGMP]
- *
- *	Authors:
- *		Alan Cox <alan@lxorguk.ukuu.org.uk>
- *
- *	Extended to talk the BSD extended IGMP protocol of mrouted 3.6
- */
+ 
+ 
 #ifndef _LINUX_IGMP_H
 #define _LINUX_IGMP_H
 
@@ -42,27 +35,25 @@ struct ip_sf_socklist {
 	__be32			sl_addr[];
 };
 
-#define IP_SFBLOCK	10	/* allocate this many at once */
+#define IP_SFBLOCK	10	 
 
-/* ip_mc_socklist is real list now. Speed is not argument;
-   this list never used in fast path code
- */
+ 
 
 struct ip_mc_socklist {
 	struct ip_mc_socklist __rcu *next_rcu;
 	struct ip_mreqn		multi;
-	unsigned int		sfmode;		/* MCAST_{INCLUDE,EXCLUDE} */
+	unsigned int		sfmode;		 
 	struct ip_sf_socklist __rcu	*sflist;
 	struct rcu_head		rcu;
 };
 
 struct ip_sf_list {
 	struct ip_sf_list	*sf_next;
-	unsigned long		sf_count[2];	/* include/exclude counts */
+	unsigned long		sf_count[2];	 
 	__be32			sf_inaddr;
-	unsigned char		sf_gsresp;	/* include in g & s response? */
-	unsigned char		sf_oldin;	/* change state */
-	unsigned char		sf_crcount;	/* retrans. left to send */
+	unsigned char		sf_gsresp;	 
+	unsigned char		sf_oldin;	 
+	unsigned char		sf_crcount;	 
 };
 
 struct ip_mc_list {
@@ -85,12 +76,12 @@ struct ip_mc_list {
 	char			reporter;
 	char			unsolicit_count;
 	char			loaded;
-	unsigned char		gsquery;	/* check source marks? */
+	unsigned char		gsquery;	 
 	unsigned char		crcount;
 	struct rcu_head		rcu;
 };
 
-/* V3 exponential field decoding */
+ 
 #define IGMPV3_MASK(value, nb) ((nb)>=32 ? (value) : ((1<<(nb))-1) & (value))
 #define IGMPV3_EXP(thresh, nbmant, nbexp, value) \
 	((value) < (thresh) ? (value) : \

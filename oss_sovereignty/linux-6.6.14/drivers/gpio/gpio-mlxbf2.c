@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright (C) 2020-2021 NVIDIA CORPORATION & AFFILIATES
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -21,29 +19,17 @@
 #include <linux/spinlock.h>
 #include <linux/types.h>
 
-/*
- * There are 3 YU GPIO blocks:
- * gpio[0]: HOST_GPIO0->HOST_GPIO31
- * gpio[1]: HOST_GPIO32->HOST_GPIO63
- * gpio[2]: HOST_GPIO64->HOST_GPIO69
- */
+ 
 #define MLXBF2_GPIO_MAX_PINS_PER_BLOCK 32
 
-/*
- * arm_gpio_lock register:
- * bit[31]	lock status: active if set
- * bit[15:0]	set lock
- * The lock is enabled only if 0xd42f is written to this field
- */
+ 
 #define YU_ARM_GPIO_LOCK_ADDR		0x2801088
 #define YU_ARM_GPIO_LOCK_SIZE		0x8
 #define YU_LOCK_ACTIVE_BIT(val)		(val >> 31)
 #define YU_ARM_GPIO_LOCK_ACQUIRE	0xd42f
 #define YU_ARM_GPIO_LOCK_RELEASE	0x0
 
-/*
- * gpio[x] block registers and their offset
- */
+ 
 #define YU_GPIO_DATAIN			0x04
 #define YU_GPIO_MODE1			0x08
 #define YU_GPIO_MODE0			0x0c
@@ -63,18 +49,18 @@ struct mlxbf2_gpio_context_save_regs {
 	u32 gpio_mode1;
 };
 
-/* BlueField-2 gpio block context structure. */
+ 
 struct mlxbf2_gpio_context {
 	struct gpio_chip gc;
 
-	/* YU GPIO blocks address */
+	 
 	void __iomem *gpio_io;
 	struct device *dev;
 
 	struct mlxbf2_gpio_context_save_regs *csave_regs;
 };
 
-/* BlueField-2 gpio shared structure. */
+ 
 struct mlxbf2_gpio_param {
 	void __iomem *io;
 	struct resource *res;
@@ -91,7 +77,7 @@ static struct mlxbf2_gpio_param yu_arm_gpio_lock_param = {
 	.lock = &yu_arm_gpio_lock_mutex,
 };
 
-/* Request memory region and map yu_arm_gpio_lock resource */
+ 
 static int mlxbf2_gpio_get_lock_res(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -101,7 +87,7 @@ static int mlxbf2_gpio_get_lock_res(struct platform_device *pdev)
 
 	mutex_lock(yu_arm_gpio_lock_param.lock);
 
-	/* Check if the memory map already exists */
+	 
 	if (yu_arm_gpio_lock_param.io)
 		goto exit;
 
@@ -123,10 +109,7 @@ exit:
 	return ret;
 }
 
-/*
- * Acquire the YU arm_gpio_lock to be able to change the direction
- * mode. If the lock_active bit is already set, return an error.
- */
+ 
 static int mlxbf2_gpio_lock_acquire(struct mlxbf2_gpio_context *gs)
 {
 	u32 arm_gpio_lock_val;
@@ -136,9 +119,7 @@ static int mlxbf2_gpio_lock_acquire(struct mlxbf2_gpio_context *gs)
 
 	arm_gpio_lock_val = readl(yu_arm_gpio_lock_param.io);
 
-	/*
-	 * When lock active bit[31] is set, ModeX is write enabled
-	 */
+	 
 	if (YU_LOCK_ACTIVE_BIT(arm_gpio_lock_val)) {
 		raw_spin_unlock(&gs->gc.bgpio_lock);
 		mutex_unlock(yu_arm_gpio_lock_param.lock);
@@ -150,9 +131,7 @@ static int mlxbf2_gpio_lock_acquire(struct mlxbf2_gpio_context *gs)
 	return 0;
 }
 
-/*
- * Release the YU arm_gpio_lock after changing the direction mode.
- */
+ 
 static void mlxbf2_gpio_lock_release(struct mlxbf2_gpio_context *gs)
 	__releases(&gs->gc.bgpio_lock)
 	__releases(yu_arm_gpio_lock_param.lock)
@@ -162,34 +141,16 @@ static void mlxbf2_gpio_lock_release(struct mlxbf2_gpio_context *gs)
 	mutex_unlock(yu_arm_gpio_lock_param.lock);
 }
 
-/*
- * mode0 and mode1 are both locked by the gpio_lock field.
- *
- * Together, mode0 and mode1 define the gpio Mode dependeing also
- * on Reg_DataOut.
- *
- * {mode1,mode0}:{Reg_DataOut=0,Reg_DataOut=1}->{DataOut=0,DataOut=1}
- *
- * {0,0}:Reg_DataOut{0,1}->{Z,Z} Input PAD
- * {0,1}:Reg_DataOut{0,1}->{0,1} Full drive Output PAD
- * {1,0}:Reg_DataOut{0,1}->{0,Z} 0-set PAD to low, 1-float
- * {1,1}:Reg_DataOut{0,1}->{Z,1} 0-float, 1-set PAD to high
- */
+ 
 
-/*
- * Set input direction:
- * {mode1,mode0} = {0,0}
- */
+ 
 static int mlxbf2_gpio_direction_input(struct gpio_chip *chip,
 				       unsigned int offset)
 {
 	struct mlxbf2_gpio_context *gs = gpiochip_get_data(chip);
 	int ret;
 
-	/*
-	 * Although the arm_gpio_lock was set in the probe function, check again
-	 * if it is still enabled to be able to write to the ModeX registers.
-	 */
+	 
 	ret = mlxbf2_gpio_lock_acquire(gs);
 	if (ret < 0)
 		return ret;
@@ -202,10 +163,7 @@ static int mlxbf2_gpio_direction_input(struct gpio_chip *chip,
 	return ret;
 }
 
-/*
- * Set output direction:
- * {mode1,mode0} = {0,1}
- */
+ 
 static int mlxbf2_gpio_direction_output(struct gpio_chip *chip,
 					unsigned int offset,
 					int value)
@@ -213,11 +171,7 @@ static int mlxbf2_gpio_direction_output(struct gpio_chip *chip,
 	struct mlxbf2_gpio_context *gs = gpiochip_get_data(chip);
 	int ret = 0;
 
-	/*
-	 * Although the arm_gpio_lock was set in the probe function,
-	 * check again it is still enabled to be able to write to the
-	 * ModeX registers.
-	 */
+	 
 	ret = mlxbf2_gpio_lock_acquire(gs);
 	if (ret < 0)
 		return ret;
@@ -343,7 +297,7 @@ static const struct irq_chip mlxbf2_gpio_irq_chip = {
 	GPIOCHIP_IRQ_RESOURCE_HELPERS,
 };
 
-/* BlueField-2 GPIO driver initialization routine. */
+ 
 static int
 mlxbf2_gpio_probe(struct platform_device *pdev)
 {
@@ -363,7 +317,7 @@ mlxbf2_gpio_probe(struct platform_device *pdev)
 
 	gs->dev = dev;
 
-	/* YU GPIO block address */
+	 
 	gs->gpio_io = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(gs->gpio_io))
 		return PTR_ERR(gs->gpio_io);
@@ -403,15 +357,12 @@ mlxbf2_gpio_probe(struct platform_device *pdev)
 		gpio_irq_chip_set_chip(girq, &mlxbf2_gpio_irq_chip);
 		girq->handler = handle_simple_irq;
 		girq->default_type = IRQ_TYPE_NONE;
-		/* This will let us handle the parent IRQ in the driver */
+		 
 		girq->num_parents = 0;
 		girq->parents = NULL;
 		girq->parent_handler = NULL;
 
-		/*
-		 * Directly request the irq here instead of passing
-		 * a flow-handler because the irq is shared.
-		 */
+		 
 		ret = devm_request_irq(dev, irq, mlxbf2_gpio_irq_handler,
 				       IRQF_SHARED, name, gs);
 		if (ret) {

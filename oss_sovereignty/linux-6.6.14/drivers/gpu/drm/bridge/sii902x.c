@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2018 Renesas Electronics
- *
- * Copyright (C) 2016 Atmel
- *		      Bo Shen <voice.shen@atmel.com>
- *
- * Authors:	      Bo Shen <voice.shen@atmel.com>
- *		      Boris Brezillon <boris.brezillon@free-electrons.com>
- *		      Wu, Songjun <Songjun.Wu@atmel.com>
- *
- * Copyright (C) 2010-2011 Freescale Semiconductor, Inc. All Rights Reserved.
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/i2c-mux.h>
@@ -71,7 +60,7 @@
 #define SII902X_AVI_POWER_STATE_MSK		GENMASK(1, 0)
 #define SII902X_AVI_POWER_STATE_D(l)		((l) & SII902X_AVI_POWER_STATE_MSK)
 
-/* Audio  */
+ 
 #define SII902X_TPI_I2S_ENABLE_MAPPING_REG	0x1f
 #define SII902X_TPI_I2S_CONFIG_FIFO0			(0 << 0)
 #define SII902X_TPI_I2S_CONFIG_FIFO1			(1 << 0)
@@ -149,7 +138,7 @@
 
 #define SII902X_REG_TPI_RQB			0xc7
 
-/* Indirect internal register access */
+ 
 #define SII902X_IND_SET_PAGE			0xbc
 #define SII902X_IND_OFFSET			0xbd
 #define SII902X_IND_VALUE			0xbe
@@ -172,10 +161,7 @@ struct sii902x {
 	struct gpio_desc *reset_gpio;
 	struct i2c_mux_core *i2cmux;
 	bool sink_is_hdmi;
-	/*
-	 * Mutex protects audio and video functions from interfering
-	 * each other, by keeping their i2c command sequences atomic.
-	 */
+	 
 	struct mutex mutex;
 	struct sii902x_audio {
 		struct platform_device *pdev;
@@ -241,7 +227,7 @@ static void sii902x_reset(struct sii902x *sii902x)
 
 	gpiod_set_value_cansleep(sii902x->reset_gpio, 1);
 
-	/* The datasheet says treset-min = 100us. Make it 150us to be sure. */
+	 
 	usleep_range(150, 200);
 
 	gpiod_set_value_cansleep(sii902x->reset_gpio, 0);
@@ -317,7 +303,7 @@ static int sii902x_get_modes(struct drm_connector *connector)
 static enum drm_mode_status sii902x_mode_valid(struct drm_connector *connector,
 					       struct drm_display_mode *mode)
 {
-	/* TODO: check mode */
+	 
 
 	return MODE_OK;
 }
@@ -407,7 +393,7 @@ static void sii902x_bridge_mode_set(struct drm_bridge *bridge,
 		goto out;
 	}
 
-	/* Do not send the infoframe header, but keep the CRC field. */
+	 
 	regmap_bulk_write(regmap, SII902X_TPI_AVI_INFOFRAME,
 			  buf + HDMI_INFOFRAME_HEADER_SIZE - 1,
 			  HDMI_AVI_INFOFRAME_SIZE + 1);
@@ -499,10 +485,7 @@ static int sii902x_bridge_atomic_check(struct drm_bridge *bridge,
 				       struct drm_crtc_state *crtc_state,
 				       struct drm_connector_state *conn_state)
 {
-	/*
-	 * There might be flags negotiation supported in future but
-	 * set the bus flags in atomic_check statically for now.
-	 */
+	 
 	bridge_state->input_bus_cfg.flags = bridge->timings->input_bus_flags;
 
 	return 0;
@@ -712,7 +695,7 @@ static int sii902x_audio_hw_params(struct device *dev, void *data,
 	if (ret)
 		goto out;
 
-	/* Decode Level 0 Packets */
+	 
 	ret = regmap_write(sii902x->regmap, SII902X_IND_SET_PAGE, 0x02);
 	if (ret)
 		goto out;
@@ -791,10 +774,7 @@ static int sii902x_audio_get_dai_id(struct snd_soc_component *component,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * HDMI sound should be located at reg = <3>
-	 * Return expected DAI index 0.
-	 */
+	 
 	if (of_ep.port == SII902X_AUDIO_PORT_INDEX)
 		return 0;
 
@@ -827,7 +807,7 @@ static int sii902x_audio_codec_init(struct sii902x *sii902x,
 	};
 	struct hdmi_codec_pdata codec_data = {
 		.ops = &sii902x_audio_codec_ops,
-		.i2s = 1, /* Only i2s support for now. */
+		.i2s = 1,  
 		.spdif = 0,
 		.max_i2s_channels = 0,
 	};
@@ -889,7 +869,7 @@ static const struct regmap_access_table sii902x_volatile_table = {
 static const struct regmap_config sii902x_regmap_config = {
 	.reg_bits = 8,
 	.val_bits = 8,
-	.disable_locking = true, /* struct sii902x mutex should be enough */
+	.disable_locking = true,  
 	.max_register = SII902X_TPI_MISC_INFOFRAME_END,
 	.volatile_table = &sii902x_volatile_table,
 	.cache_type = REGCACHE_NONE,
@@ -917,18 +897,7 @@ static irqreturn_t sii902x_interrupt(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/*
- * The purpose of sii902x_i2c_bypass_select is to enable the pass through
- * mode of the HDMI transmitter. Do not use regmap from within this function,
- * only use sii902x_*_unlocked functions to read/modify/write registers.
- * We are holding the parent adapter lock here, keep this in mind before
- * adding more i2c transactions.
- *
- * Also, since SII902X_SYS_CTRL_DATA is used with regmap_update_bits elsewhere
- * in this driver, we need to make sure that we only touch 0x1A[2:1] from
- * within sii902x_i2c_bypass_select and sii902x_i2c_bypass_deselect, and that
- * we leave the remaining bits as we have found them.
- */
+ 
 static int sii902x_i2c_bypass_select(struct i2c_mux_core *mux, u32 chan_id)
 {
 	struct sii902x *sii902x = i2c_mux_priv(mux);
@@ -962,18 +931,7 @@ static int sii902x_i2c_bypass_select(struct i2c_mux_core *mux, u32 chan_id)
 				      status);
 }
 
-/*
- * The purpose of sii902x_i2c_bypass_deselect is to disable the pass through
- * mode of the HDMI transmitter. Do not use regmap from within this function,
- * only use sii902x_*_unlocked functions to read/modify/write registers.
- * We are holding the parent adapter lock here, keep this in mind before
- * adding more i2c transactions.
- *
- * Also, since SII902X_SYS_CTRL_DATA is used with regmap_update_bits elsewhere
- * in this driver, we need to make sure that we only touch 0x1A[2:1] from
- * within sii902x_i2c_bypass_select and sii902x_i2c_bypass_deselect, and that
- * we leave the remaining bits as we have found them.
- */
+ 
 static int sii902x_i2c_bypass_deselect(struct i2c_mux_core *mux, u32 chan_id)
 {
 	struct sii902x *sii902x = i2c_mux_priv(mux);
@@ -983,18 +941,10 @@ static int sii902x_i2c_bypass_deselect(struct i2c_mux_core *mux, u32 chan_id)
 	u8 status;
 	int ret;
 
-	/*
-	 * When the HDMI transmitter is in pass through mode, we need an
-	 * (undocumented) additional delay between STOP and START conditions
-	 * to guarantee the bus won't get stuck.
-	 */
+	 
 	udelay(30);
 
-	/*
-	 * Sometimes the I2C bus can stall after failure to use the
-	 * EDID channel. Retry a few times to see if things clear
-	 * up, else continue anyway.
-	 */
+	 
 	retries = 5;
 	do {
 		ret = sii902x_read_unlocked(sii902x->i2c, SII902X_SYS_CTRL_DATA,
@@ -1064,7 +1014,7 @@ static int sii902x_init(struct sii902x *sii902x)
 		return -EINVAL;
 	}
 
-	/* Clear all pending interrupts */
+	 
 	regmap_read(sii902x->regmap, SII902X_INT_STATUS, &status);
 	regmap_write(sii902x->regmap, SII902X_INT_STATUS, status);
 

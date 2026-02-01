@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IIO driver for the Apex Embedded Systems STX104
- * Copyright (C) 2016 William Breathitt Gray
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
 #include <linux/device.h>
@@ -59,22 +56,22 @@ MODULE_PARM_DESC(base, "Apex Embedded Systems STX104 base addresses");
 #define STX104_AIO_DATA_STRIDE 2
 #define STX104_DAC_OFFSET(_channel) (STX104_DAC_BASE + STX104_AIO_DATA_STRIDE * (_channel))
 
-/* ADC Channel */
+ 
 #define STX104_FC GENMASK(3, 0)
 #define STX104_LC GENMASK(7, 4)
 #define STX104_SINGLE_CHANNEL(_channel) \
 	(u8_encode_bits(_channel, STX104_FC) | u8_encode_bits(_channel, STX104_LC))
 
-/* ADC Status */
+ 
 #define STX104_SD BIT(5)
 #define STX104_CNV BIT(7)
 #define STX104_DIFFERENTIAL 1
 
-/* ADC Control */
+ 
 #define STX104_ALSS GENMASK(1, 0)
 #define STX104_SOFTWARE_TRIGGER u8_encode_bits(0x0, STX104_ALSS)
 
-/* ADC Configuration */
+ 
 #define STX104_GAIN GENMASK(1, 0)
 #define STX104_ADBU BIT(2)
 #define STX104_BIPOLAR 0
@@ -83,12 +80,7 @@ MODULE_PARM_DESC(base, "Apex Embedded Systems STX104 base addresses");
 #define STX104_GAIN_X4 2
 #define STX104_GAIN_X8 3
 
-/**
- * struct stx104_iio - IIO device private data structure
- * @lock: synchronization lock to prevent I/O race conditions
- * @aio_data_map: Regmap for analog I/O data
- * @aio_ctl_map: Regmap for analog I/O control
- */
+ 
 struct stx104_iio {
 	struct mutex lock;
 	struct regmap *aio_data_map;
@@ -197,7 +189,7 @@ static int stx104_read_raw(struct iio_dev *indio_dev,
 
 		mutex_lock(&priv->lock);
 
-		/* select ADC channel */
+		 
 		err = regmap_write(priv->aio_ctl_map, STX104_ADC_CHANNEL,
 				   STX104_SINGLE_CHANNEL(chan->channel));
 		if (err) {
@@ -205,14 +197,7 @@ static int stx104_read_raw(struct iio_dev *indio_dev,
 			return err;
 		}
 
-		/*
-		 * Trigger ADC sample capture by writing to the 8-bit Software Strobe Register and
-		 * wait for completion; the conversion time range is 5 microseconds to 53.68 seconds
-		 * in steps of 25 nanoseconds. The actual Analog Input Frame Timer time interval is
-		 * calculated as:
-		 * ai_time_frame_ns = ( AIFT + 1 ) * ( 25 nanoseconds ).
-		 * Where 0 <= AIFT <= 2147483648.
-		 */
+		 
 		err = regmap_write(priv->aio_ctl_map, STX104_SOFTWARE_STROBE, 0);
 		if (err) {
 			mutex_unlock(&priv->lock);
@@ -235,7 +220,7 @@ static int stx104_read_raw(struct iio_dev *indio_dev,
 		mutex_unlock(&priv->lock);
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_OFFSET:
-		/* get ADC bipolar/unipolar configuration */
+		 
 		err = regmap_read(priv->aio_ctl_map, STX104_ADC_CONFIGURATION, &adc_config);
 		if (err)
 			return err;
@@ -243,7 +228,7 @@ static int stx104_read_raw(struct iio_dev *indio_dev,
 		*val = (u8_get_bits(adc_config, STX104_ADBU) == STX104_BIPOLAR) ? -32768 : 0;
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SCALE:
-		/* get ADC bipolar/unipolar and gain configuration */
+		 
 		err = regmap_read(priv->aio_ctl_map, STX104_ADC_CONFIGURATION, &adc_config);
 		if (err)
 			return err;
@@ -265,7 +250,7 @@ static int stx104_write_raw(struct iio_dev *indio_dev,
 
 	switch (mask) {
 	case IIO_CHAN_INFO_HARDWAREGAIN:
-		/* Only four gain states (x1, x2, x4, x8) */
+		 
 		switch (val) {
 		case 1:
 			gain = STX104_GAIN_X1;
@@ -302,7 +287,7 @@ static const struct iio_info stx104_info = {
 	.write_raw = stx104_write_raw
 };
 
-/* single-ended input channels configuration */
+ 
 static const struct iio_chan_spec stx104_channels_sing[] = {
 	STX104_OUT_CHAN(0), STX104_OUT_CHAN(1),
 	STX104_IN_CHAN(0, 0), STX104_IN_CHAN(1, 0), STX104_IN_CHAN(2, 0),
@@ -312,7 +297,7 @@ static const struct iio_chan_spec stx104_channels_sing[] = {
 	STX104_IN_CHAN(12, 0), STX104_IN_CHAN(13, 0), STX104_IN_CHAN(14, 0),
 	STX104_IN_CHAN(15, 0)
 };
-/* differential input channels configuration */
+ 
 static const struct iio_chan_spec stx104_channels_diff[] = {
 	STX104_OUT_CHAN(0), STX104_OUT_CHAN(1),
 	STX104_IN_CHAN(0, 1), STX104_IN_CHAN(1, 1), STX104_IN_CHAN(2, 1),
@@ -324,7 +309,7 @@ static int stx104_reg_mask_xlate(struct gpio_regmap *const gpio, const unsigned 
 				 unsigned int offset, unsigned int *const reg,
 				 unsigned int *const mask)
 {
-	/* Output lines are located at same register bit offsets as input lines */
+	 
 	if (offset >= 4)
 		offset -= 4;
 
@@ -343,17 +328,17 @@ static int stx104_init_hw(struct stx104_iio *const priv)
 {
 	int err;
 
-	/* configure device for software trigger operation */
+	 
 	err = regmap_write(priv->aio_ctl_map, STX104_ADC_CONTROL, STX104_SOFTWARE_TRIGGER);
 	if (err)
 		return err;
 
-	/* initialize gain setting to x1 */
+	 
 	err = regmap_write(priv->aio_ctl_map, STX104_ADC_CONFIGURATION, STX104_GAIN_X1);
 	if (err)
 		return err;
 
-	/* initialize DAC outputs to 0V */
+	 
 	err = regmap_write(priv->aio_data_map, STX104_DAC_BASE, 0);
 	if (err)
 		return err;

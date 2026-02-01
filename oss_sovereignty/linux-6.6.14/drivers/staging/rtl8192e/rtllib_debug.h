@@ -1,22 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
- *
- * Contact Information: wlanfae <wlanfae@realtek.com>
- */
+ 
+ 
 #ifndef _RTL_DEBUG_H
 #define _RTL_DEBUG_H
 
 #include <linux/bits.h>
 
-/* Allow files to override DRV_NAME */
+ 
 #ifndef DRV_NAME
 #define DRV_NAME "rtllib_92e"
 #endif
 
 extern u32 rt_global_debug_component;
 
-/* These are the defines for rt_global_debug_component */
+ 
 enum RTL_DEBUG {
 	COMP_TRACE		= BIT(0),
 	COMP_DBG		= BIT(1),

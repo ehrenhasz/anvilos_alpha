@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Marvell Armada XP SoC clocks
- *
- * Copyright (C) 2012 Marvell
- *
- * Gregory CLEMENT <gregory.clement@free-electrons.com>
- * Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
- * Andrew Lunn <andrew@lunn.ch>
- *
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/clk-provider.h>
@@ -16,19 +7,14 @@
 #include <linux/of.h>
 #include "common.h"
 
-/*
- * Core Clocks
- *
- * Armada XP Sample At Reset is a 64 bit bitfiled split in two
- * register of 32 bits
- */
+ 
 
-#define SARL				0	/* Low part [0:31] */
+#define SARL				0	 
 #define	 SARL_AXP_PCLK_FREQ_OPT		21
 #define	 SARL_AXP_PCLK_FREQ_OPT_MASK	0x7
 #define	 SARL_AXP_FAB_FREQ_OPT		24
 #define	 SARL_AXP_FAB_FREQ_OPT_MASK	0xF
-#define SARH				4	/* High part [32:63] */
+#define SARH				4	 
 #define	 SARH_AXP_PCLK_FREQ_OPT		(52-32)
 #define	 SARH_AXP_PCLK_FREQ_OPT_MASK	0x1
 #define	 SARH_AXP_PCLK_FREQ_OPT_SHIFT	3
@@ -44,7 +30,7 @@ static const struct coreclk_ratio axp_coreclk_ratios[] __initconst = {
 	{ .id = AXP_CPU_TO_DRAMCLK, .name = "dramclk" },
 };
 
-/* Armada XP TCLK frequency is fixed to 250MHz */
+ 
 static u32 __init axp_get_tclk_freq(void __iomem *sar)
 {
 	return 250000000;
@@ -72,10 +58,7 @@ static u32 __init axp_get_cpu_freq(void __iomem *sar)
 
 	cpu_freq_select = ((readl(sar + SARL) >> SARL_AXP_PCLK_FREQ_OPT) &
 			   SARL_AXP_PCLK_FREQ_OPT_MASK);
-	/*
-	 * The upper bit is not contiguous to the other ones and
-	 * located in the high part of the SAR registers
-	 */
+	 
 	cpu_freq_select |= (((readl(sar + SARH) >> SARH_AXP_PCLK_FREQ_OPT) &
 	     SARH_AXP_PCLK_FREQ_OPT_MASK) << SARH_AXP_PCLK_FREQ_OPT_SHIFT);
 	if (cpu_freq_select >= ARRAY_SIZE(axp_cpu_freqs)) {
@@ -125,10 +108,7 @@ static void __init axp_get_clk_ratio(
 {
 	u32 opt = ((readl(sar + SARL) >> SARL_AXP_FAB_FREQ_OPT) &
 	      SARL_AXP_FAB_FREQ_OPT_MASK);
-	/*
-	 * The upper bit is not contiguous to the other ones and
-	 * located in the high part of the SAR registers
-	 */
+	 
 	opt |= (((readl(sar + SARH) >> SARH_AXP_FAB_FREQ_OPT) &
 		 SARH_AXP_FAB_FREQ_OPT_MASK) << SARH_AXP_FAB_FREQ_OPT_SHIFT);
 
@@ -156,9 +136,7 @@ static const struct coreclk_soc_desc axp_coreclks = {
 	.num_ratios = ARRAY_SIZE(axp_coreclk_ratios),
 };
 
-/*
- * Clock Gating Control
- */
+ 
 
 static const struct clk_gating_soc_desc axp_gating_desc[] __initconst = {
 	{ "audio", NULL, 0, 0 },

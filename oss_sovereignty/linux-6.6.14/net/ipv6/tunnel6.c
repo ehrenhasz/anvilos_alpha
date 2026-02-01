@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C)2003,2004 USAGI/WIDE Project
- *
- * Authors	Mitsuru KANDA  <mk@linux-ipv6.org>
- *		YOSHIFUJI Hideaki <yoshfuji@linux-ipv6.org>
- */
+
+ 
 
 #define pr_fmt(fmt) "IPv6: " fmt
 

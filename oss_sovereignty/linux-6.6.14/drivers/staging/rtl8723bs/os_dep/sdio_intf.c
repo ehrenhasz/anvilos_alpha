@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2012 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+
+ 
 #include <drv_types.h>
 #include <rtw_debug.h>
 #include <hal_btcoex.h>
@@ -20,7 +16,7 @@ static const struct sdio_device_id sdio_ids[] = {
 	{ SDIO_DEVICE(0x024c, 0x0626), },
 	{ SDIO_DEVICE(0x024c, 0x0627), },
 	{ SDIO_DEVICE(0x024c, 0xb723), },
-	{ /* end: all zeroes */				},
+	{  				},
 };
 MODULE_DEVICE_TABLE(sdio, sdio_ids);
 
@@ -119,7 +115,7 @@ static u32 sdio_init(struct dvobj_priv *dvobj)
 	psdio_data = &dvobj->intf_data;
 	func = psdio_data->func;
 
-	/* 3 1. init SDIO bus */
+	 
 	sdio_claim_host(func);
 
 	err = sdio_enable_func(func);
@@ -215,7 +211,7 @@ static void sdio_dvobj_deinit(struct sdio_func *func)
 
 void rtw_set_hal_ops(struct adapter *padapter)
 {
-	/* alloc memory for HAL DATA */
+	 
 	rtw_hal_data_init(padapter);
 
 	rtl8723bs_set_hal_ops(padapter);
@@ -226,7 +222,7 @@ static void sd_intf_start(struct adapter *padapter)
 	if (!padapter)
 		return;
 
-	/*  hal dep */
+	 
 	rtw_hal_enable_interrupt(padapter);
 }
 
@@ -235,7 +231,7 @@ static void sd_intf_stop(struct adapter *padapter)
 	if (!padapter)
 		return;
 
-	/*  hal dep */
+	 
 	rtw_hal_disable_interrupt(padapter);
 }
 
@@ -259,7 +255,7 @@ static struct adapter *rtw_sdio_if1_init(struct dvobj_priv *dvobj, const struct 
 	dvobj->padapters = padapter;
 	padapter->iface_id = 0;
 
-	/* 3 1. init network device data */
+	 
 	pnetdev = rtw_init_netdev(padapter);
 	if (!pnetdev)
 		goto free_adapter;
@@ -268,13 +264,13 @@ static struct adapter *rtw_sdio_if1_init(struct dvobj_priv *dvobj, const struct 
 
 	padapter = rtw_netdev_priv(pnetdev);
 
-	/* 3 3. init driver special setting, interface, OS and hardware relative */
+	 
 
-	/* 4 3.1 set hardware operation functions */
+	 
 	rtw_set_hal_ops(padapter);
 
 
-	/* 3 5. initialize Chip version */
+	 
 	padapter->intf_start = &sd_intf_start;
 	padapter->intf_stop = &sd_intf_stop;
 
@@ -292,17 +288,17 @@ static struct adapter *rtw_sdio_if1_init(struct dvobj_priv *dvobj, const struct 
 
 	hal_btcoex_Initialize((void *) padapter);
 
-	/* 3 6. read efuse/eeprom data */
+	 
 	rtw_hal_read_chip_info(padapter);
 
-	/* 3 7. init driver common data */
+	 
 	if (rtw_init_drv_sw(padapter) == _FAIL)
 		goto free_hal_data;
 
 	rtw_wdev_alloc(padapter, dvobj_to_dev(dvobj));
 
-	/* 3 8. get WLan MAC address */
-	/*  set mac addr */
+	 
+	 
 	rtw_macaddr_cfg(&psdio->func->dev, padapter->eeprompriv.mac_addr);
 
 	rtw_hal_disable_interrupt(padapter);
@@ -353,12 +349,7 @@ static void rtw_sdio_if1_deinit(struct adapter *if1)
 		rtw_free_netdev(pnetdev);
 }
 
-/*
- * drv_init() - a device potentially for us
- *
- * notes: drv_init() is called when the bus driver has located a card for us to support.
- *        We accept the new device by returning 0.
- */
+ 
 static int rtw_drv_init(
 	struct sdio_func *func,
 	const struct sdio_device_id *id)
@@ -375,7 +366,7 @@ static int rtw_drv_init(
 	if (!if1)
 		goto free_dvobj;
 
-	/* dev_alloc_name && register_netdev */
+	 
 	status = rtw_drv_register_netdev(if1);
 	if (status != _SUCCESS)
 		goto free_if1;
@@ -409,7 +400,7 @@ static void rtw_dev_remove(struct sdio_func *func)
 	if (!padapter->bSurpriseRemoved) {
 		int err;
 
-		/* test surprise remove */
+		 
 		sdio_claim_host(func);
 		sdio_readb(func, 0, &err);
 		sdio_release_host(func);

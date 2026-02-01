@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* drivers/char/watchdog/scx200_wdt.c
 
-   National Semiconductor SCx200 Watchdog support
-
-   Copyright (c) 2001,2002 Christer Weinigel <wingel@nano-system.com>
-
-   Some code taken from:
-   National Semiconductor PC87307/PC97307 (ala SC1200) WDT driver
-   (c) Copyright 2002 Zwane Mwaikambo <zwane@commfireservices.com>
-
-
-   The author(s) of this software shall not be held liable for damages
-   of any nature resulting due to the use of this software. This
-   software is provided AS-IS with no warranties. */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -35,7 +22,7 @@ MODULE_AUTHOR("Christer Weinigel <wingel@nano-system.com>");
 MODULE_DESCRIPTION("NatSemi SCx200 Watchdog Driver");
 MODULE_LICENSE("GPL");
 
-static int margin = 60;		/* in seconds */
+static int margin = 60;		 
 module_param(margin, int, 0);
 MODULE_PARM_DESC(margin, "Watchdog margin in seconds");
 
@@ -48,11 +35,11 @@ static char expect_close;
 static unsigned long open_lock;
 static DEFINE_SPINLOCK(scx_lock);
 
-/* Bits of the WDCNFG register */
-#define W_ENABLE 0x00fa		/* Enable watchdog */
-#define W_DISABLE 0x0000	/* Disable watchdog */
+ 
+#define W_ENABLE 0x00fa		 
+#define W_DISABLE 0x0000	 
 
-/* The scaling factor for the timer, this depends on the value of W_ENABLE */
+ 
 #define W_SCALE (32768/1024)
 
 static void scx200_wdt_ping(void)
@@ -94,7 +81,7 @@ static void scx200_wdt_disable(void)
 
 static int scx200_wdt_open(struct inode *inode, struct file *file)
 {
-	/* only allow one at a time */
+	 
 	if (test_and_set_bit(0, &open_lock))
 		return -EBUSY;
 	scx200_wdt_enable();
@@ -131,7 +118,7 @@ static struct notifier_block scx200_wdt_notifier = {
 static ssize_t scx200_wdt_write(struct file *file, const char __user *data,
 				     size_t len, loff_t *ppos)
 {
-	/* check for a magic close character */
+	 
 	if (len) {
 		size_t i;
 
@@ -218,7 +205,7 @@ static int __init scx200_wdt_init(void)
 
 	pr_debug("NatSemi SCx200 Watchdog Driver\n");
 
-	/* check that we have found the configuration block */
+	 
 	if (!scx200_cb_present())
 		return -ENODEV;
 

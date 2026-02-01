@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2017 NXP Semiconductors.
- * Author: Marco Franchi <marco.franchi@nxp.com>
- *
- * Based on Panel Simple driver by Thierry Reding <treding@nvidia.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -29,10 +24,7 @@ struct seiko_panel_desc {
 
 	unsigned int bpc;
 
-	/**
-	 * @width: width (in millimeters) of the panel's active display area
-	 * @height: height (in millimeters) of the panel's active display area
-	 */
+	 
 	struct {
 		unsigned int width;
 		unsigned int height;
@@ -145,7 +137,7 @@ static int seiko_panel_unprepare(struct drm_panel *panel)
 
 	regulator_disable(p->avdd);
 
-	/* Add a 100ms delay as per the panel datasheet */
+	 
 	msleep(100);
 
 	regulator_disable(p->dvdd);
@@ -169,7 +161,7 @@ static int seiko_panel_prepare(struct drm_panel *panel)
 		return err;
 	}
 
-	/* Add a 100ms delay as per the panel datasheet */
+	 
 	msleep(100);
 
 	err = regulator_enable(p->avdd);
@@ -206,7 +198,7 @@ static int seiko_panel_get_modes(struct drm_panel *panel,
 {
 	struct seiko_panel *p = to_seiko_panel(panel);
 
-	/* add hard-coded panel modes */
+	 
 	return seiko_panel_get_fixed_modes(p, connector);
 }
 
@@ -323,7 +315,7 @@ static const struct of_device_id platform_of_match[] = {
 		.compatible = "sii,43wvf1g",
 		.data = &seiko_43wvf1g,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, platform_of_match);

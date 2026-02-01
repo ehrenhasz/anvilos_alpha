@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file is part of UBIFS.
- *
- * Copyright (C) 2018 Pengutronix, Sascha Hauer <s.hauer@pengutronix.de>
- */
 
-/*
- * This file implements various helper functions for UBIFS authentication support
- */
+ 
+
+ 
 
 #include <linux/crypto.h>
 #include <linux/verification.h>
@@ -18,14 +12,7 @@
 
 #include "ubifs.h"
 
-/**
- * ubifs_node_calc_hash - calculate the hash of a UBIFS node
- * @c: UBIFS file-system description object
- * @node: the node to calculate a hash for
- * @hash: the returned hash
- *
- * Returns 0 for success or a negative error code otherwise.
- */
+ 
 int __ubifs_node_calc_hash(const struct ubifs_info *c, const void *node,
 			    u8 *hash)
 {
@@ -35,31 +22,14 @@ int __ubifs_node_calc_hash(const struct ubifs_info *c, const void *node,
 				       hash);
 }
 
-/**
- * ubifs_hash_calc_hmac - calculate a HMAC from a hash
- * @c: UBIFS file-system description object
- * @hash: the node to calculate a HMAC for
- * @hmac: the returned HMAC
- *
- * Returns 0 for success or a negative error code otherwise.
- */
+ 
 static int ubifs_hash_calc_hmac(const struct ubifs_info *c, const u8 *hash,
 				 u8 *hmac)
 {
 	return crypto_shash_tfm_digest(c->hmac_tfm, hash, c->hash_len, hmac);
 }
 
-/**
- * ubifs_prepare_auth_node - Prepare an authentication node
- * @c: UBIFS file-system description object
- * @node: the node to calculate a hash for
- * @inhash: input hash of previous nodes
- *
- * This function prepares an authentication node for writing onto flash.
- * It creates a HMAC from the given input hash and writes it to the node.
- *
- * Returns 0 for success or a negative error code otherwise.
- */
+ 
 int ubifs_prepare_auth_node(struct ubifs_info *c, void *node,
 			     struct shash_desc *inhash)
 {
@@ -111,29 +81,13 @@ static struct shash_desc *ubifs_get_desc(const struct ubifs_info *c,
 	return desc;
 }
 
-/**
- * __ubifs_hash_get_desc - get a descriptor suitable for hashing a node
- * @c: UBIFS file-system description object
- *
- * This function returns a descriptor suitable for hashing a node. Free after use
- * with kfree.
- */
+ 
 struct shash_desc *__ubifs_hash_get_desc(const struct ubifs_info *c)
 {
 	return ubifs_get_desc(c, c->hash_tfm);
 }
 
-/**
- * ubifs_bad_hash - Report hash mismatches
- * @c: UBIFS file-system description object
- * @node: the node
- * @hash: the expected hash
- * @lnum: the LEB @node was read from
- * @offs: offset in LEB @node was read from
- *
- * This function reports a hash mismatch when a node has a different hash than
- * expected.
- */
+ 
 void ubifs_bad_hash(const struct ubifs_info *c, const void *node, const u8 *hash,
 		    int lnum, int offs)
 {
@@ -150,16 +104,7 @@ void ubifs_bad_hash(const struct ubifs_info *c, const void *node, const u8 *hash
 	ubifs_err(c, "hash calculated: %*ph%s", len, calc, cont);
 }
 
-/**
- * __ubifs_node_check_hash - check the hash of a node against given hash
- * @c: UBIFS file-system description object
- * @node: the node
- * @expected: the expected hash
- *
- * This function calculates a hash over a node and compares it to the given hash.
- * Returns 0 if both hashes are equal or authentication is disabled, otherwise a
- * negative error code is returned.
- */
+ 
 int __ubifs_node_check_hash(const struct ubifs_info *c, const void *node,
 			    const u8 *expected)
 {
@@ -176,18 +121,7 @@ int __ubifs_node_check_hash(const struct ubifs_info *c, const void *node,
 	return 0;
 }
 
-/**
- * ubifs_sb_verify_signature - verify the signature of a superblock
- * @c: UBIFS file-system description object
- * @sup: The superblock node
- *
- * To support offline signed images the superblock can be signed with a
- * PKCS#7 signature. The signature is placed directly behind the superblock
- * node in an ubifs_sig_node.
- *
- * Returns 0 when the signature can be successfully verified or a negative
- * error code if not.
- */
+ 
 int ubifs_sb_verify_signature(struct ubifs_info *c,
 			      const struct ubifs_sb_node *sup)
 {
@@ -247,12 +181,7 @@ out_destroy:
 	return err;
 }
 
-/**
- * ubifs_init_authentication - initialize UBIFS authentication support
- * @c: UBIFS file-system description object
- *
- * This function returns 0 for success or a negative error code otherwise.
- */
+ 
 int ubifs_init_authentication(struct ubifs_info *c)
 {
 	struct key *keyring_key;
@@ -294,7 +223,7 @@ int ubifs_init_authentication(struct ubifs_info *c)
 
 	ukp = user_key_payload_locked(keyring_key);
 	if (!ukp) {
-		/* key was revoked before we acquired its semaphore */
+		 
 		err = -EKEYREVOKED;
 		goto out;
 	}
@@ -357,12 +286,7 @@ out:
 	return err;
 }
 
-/**
- * __ubifs_exit_authentication - release resource
- * @c: UBIFS file-system description object
- *
- * This function releases the authentication related resources.
- */
+ 
 void __ubifs_exit_authentication(struct ubifs_info *c)
 {
 	if (!ubifs_authenticated(c))
@@ -373,18 +297,7 @@ void __ubifs_exit_authentication(struct ubifs_info *c)
 	kfree(c->log_hash);
 }
 
-/**
- * ubifs_node_calc_hmac - calculate the HMAC of a UBIFS node
- * @c: UBIFS file-system description object
- * @node: the node to insert a HMAC into.
- * @len: the length of the node
- * @ofs_hmac: the offset in the node where the HMAC is inserted
- * @hmac: returned HMAC
- *
- * This function calculates a HMAC of a UBIFS node. The HMAC is expected to be
- * embedded into the node, so this area is not covered by the HMAC. Also not
- * covered is the UBIFS_NODE_MAGIC and the CRC of the node.
- */
+ 
 static int ubifs_node_calc_hmac(const struct ubifs_info *c, const void *node,
 				int len, int ofs_hmac, void *hmac)
 {
@@ -401,12 +314,12 @@ static int ubifs_node_calc_hmac(const struct ubifs_info *c, const void *node,
 	if (err)
 		return err;
 
-	/* behind common node header CRC up to HMAC begin */
+	 
 	err = crypto_shash_update(shash, node + 8, ofs_hmac - 8);
 	if (err < 0)
 		return err;
 
-	/* behind HMAC, if any */
+	 
 	if (len - ofs_hmac - hmac_len > 0) {
 		err = crypto_shash_update(shash, node + ofs_hmac + hmac_len,
 			    len - ofs_hmac - hmac_len);
@@ -417,34 +330,14 @@ static int ubifs_node_calc_hmac(const struct ubifs_info *c, const void *node,
 	return crypto_shash_final(shash, hmac);
 }
 
-/**
- * __ubifs_node_insert_hmac - insert a HMAC into a UBIFS node
- * @c: UBIFS file-system description object
- * @node: the node to insert a HMAC into.
- * @len: the length of the node
- * @ofs_hmac: the offset in the node where the HMAC is inserted
- *
- * This function inserts a HMAC at offset @ofs_hmac into the node given in
- * @node.
- *
- * This function returns 0 for success or a negative error code otherwise.
- */
+ 
 int __ubifs_node_insert_hmac(const struct ubifs_info *c, void *node, int len,
 			    int ofs_hmac)
 {
 	return ubifs_node_calc_hmac(c, node, len, ofs_hmac, node + ofs_hmac);
 }
 
-/**
- * __ubifs_node_verify_hmac - verify the HMAC of UBIFS node
- * @c: UBIFS file-system description object
- * @node: the node to insert a HMAC into.
- * @len: the length of the node
- * @ofs_hmac: the offset in the node where the HMAC is inserted
- *
- * This function verifies the HMAC at offset @ofs_hmac of the node given in
- * @node. Returns 0 if successful or a negative error code otherwise.
- */
+ 
 int __ubifs_node_verify_hmac(const struct ubifs_info *c, const void *node,
 			     int len, int ofs_hmac)
 {
@@ -494,18 +387,7 @@ out:
 	return err;
 }
 
-/**
- * ubifs_hmac_wkm - Create a HMAC of the well known message
- * @c: UBIFS file-system description object
- * @hmac: The HMAC of the well known message
- *
- * This function creates a HMAC of a well known message. This is used
- * to check if the provided key is suitable to authenticate a UBIFS
- * image. This is only a convenience to the user to provide a better
- * error message when the wrong key is provided.
- *
- * This function returns 0 for success or a negative error code otherwise.
- */
+ 
 int ubifs_hmac_wkm(struct ubifs_info *c, u8 *hmac)
 {
 	SHASH_DESC_ON_STACK(shash, c->hmac_tfm);
@@ -532,14 +414,7 @@ int ubifs_hmac_wkm(struct ubifs_info *c, u8 *hmac)
 	return 0;
 }
 
-/*
- * ubifs_hmac_zero - test if a HMAC is zero
- * @c: UBIFS file-system description object
- * @hmac: the HMAC to test
- *
- * This function tests if a HMAC is zero and returns true if it is
- * and false otherwise.
- */
+ 
 bool ubifs_hmac_zero(struct ubifs_info *c, const u8 *hmac)
 {
 	return !memchr_inv(hmac, 0, c->hmac_desc_len);

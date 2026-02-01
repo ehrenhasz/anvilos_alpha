@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "../pci.h"
@@ -27,15 +27,15 @@ static bool _rtl92s_firmware_enable_cpu(struct ieee80211_hw *hw)
 
 	_rtl92s_fw_set_rqpn(hw);
 
-	/* Enable CPU. */
+	 
 	tmpu1b = rtl_read_byte(rtlpriv, SYS_CLKR);
-	/* AFE source */
+	 
 	rtl_write_byte(rtlpriv, SYS_CLKR, (tmpu1b | SYS_CPU_CLKSEL));
 
 	tmpu2b = rtl_read_word(rtlpriv, REG_SYS_FUNC_EN);
 	rtl_write_word(rtlpriv, REG_SYS_FUNC_EN, (tmpu2b | FEN_CPUEN));
 
-	/* Polling IMEM Ready after CPU has refilled. */
+	 
 	do {
 		cpustatus = rtl_read_byte(rtlpriv, TCR);
 		if (cpustatus & IMEM_RDY) {
@@ -100,7 +100,7 @@ static u8 _rtl92s_firmware_header_map_rftype(struct ieee80211_hw *hw)
 static void _rtl92s_firmwareheader_priveupdate(struct ieee80211_hw *hw,
 		struct fw_priv *pfw_priv)
 {
-	/* Update RF types for RATR settings. */
+	 
 	pfw_priv->rf_config = _rtl92s_firmware_header_map_rftype(hw);
 }
 
@@ -159,8 +159,8 @@ static bool _rtl92s_firmware_downloadcode(struct ieee80211_hw *hw,
 			last_inipkt = 1;
 		}
 
-		/* Allocate skb buffer to contain firmware */
-		/* info and tx descriptor info. */
+		 
+		 
 		skb = dev_alloc_skb(frag_length);
 		if (!skb)
 			return false;
@@ -202,7 +202,7 @@ static bool _rtl92s_firmware_checkready(struct ieee80211_hw *hw,
 
 	switch (loadfw_status) {
 	case FW_STATUS_LOAD_IMEM:
-		/* Polling IMEM code done. */
+		 
 		do {
 			cpustatus = rtl_read_byte(rtlpriv, TCR);
 			if (cpustatus & IMEM_CODE_DONE)
@@ -218,8 +218,8 @@ static bool _rtl92s_firmware_checkready(struct ieee80211_hw *hw,
 		break;
 
 	case FW_STATUS_LOAD_EMEM:
-		/* Check Put Code OK and Turn On CPU */
-		/* Polling EMEM code done. */
+		 
+		 
 		do {
 			cpustatus = rtl_read_byte(rtlpriv, TCR);
 			if (cpustatus & EMEM_CODE_DONE)
@@ -233,7 +233,7 @@ static bool _rtl92s_firmware_checkready(struct ieee80211_hw *hw,
 			goto status_check_fail;
 		}
 
-		/* Turn On CPU */
+		 
 		rtstatus = _rtl92s_firmware_enable_cpu(hw);
 		if (!rtstatus) {
 			pr_err("Enable CPU fail!\n");
@@ -242,7 +242,7 @@ static bool _rtl92s_firmware_checkready(struct ieee80211_hw *hw,
 		break;
 
 	case FW_STATUS_LOAD_DMEM:
-		/* Polling DMEM code done */
+		 
 		do {
 			cpustatus = rtl_read_byte(rtlpriv, TCR);
 			if (cpustatus & DMEM_CODE_DONE)
@@ -260,8 +260,8 @@ static bool _rtl92s_firmware_checkready(struct ieee80211_hw *hw,
 			"DMEM code download success, cpustatus(%#x)\n",
 			cpustatus);
 
-		/* Prevent Delay too much and being scheduled out */
-		/* Polling Load Firmware ready */
+		 
+		 
 		pollingcnt = 2000;
 		do {
 			cpustatus = rtl_read_byte(rtlpriv, TCR);
@@ -281,8 +281,8 @@ static bool _rtl92s_firmware_checkready(struct ieee80211_hw *hw,
 			goto status_check_fail;
 		}
 
-		/* If right here, we can set TCR/RCR to desired value  */
-		/* and config MAC lookback mode to normal mode */
+		 
+		 
 		tmpu4b = rtl_read_dword(rtlpriv, TCR);
 		rtl_write_dword(rtlpriv, TCR, (tmpu4b & (~TCR_ICV)));
 
@@ -293,7 +293,7 @@ static bool _rtl92s_firmware_checkready(struct ieee80211_hw *hw,
 		rtl_dbg(rtlpriv, COMP_INIT, DBG_LOUD,
 			"Current RCR settings(%#x)\n", tmpu4b);
 
-		/* Set to normal mode. */
+		 
 		rtl_write_byte(rtlpriv, LBKMD_SEL, LBK_NORMAL);
 		break;
 
@@ -331,11 +331,11 @@ int rtl92s_download_fw(struct ieee80211_hw *hw)
 
 	puc_mappedfile = firmware->sz_fw_tmpbuffer;
 
-	/* 1. Retrieve FW header. */
+	 
 	firmware->pfwheader = (struct fw_hdr *) puc_mappedfile;
 	pfwheader = firmware->pfwheader;
 	firmware->firmwareversion =  byte(pfwheader->version, 0);
-	firmware->pfwheader->fwpriv.hci_sel = 1;/* pcie */
+	firmware->pfwheader->fwpriv.hci_sel = 1; 
 
 	rtl_dbg(rtlpriv, COMP_INIT, DBG_LOUD,
 		"signature:%x, version:%x, size:%x, imemsize:%x, sram size:%x\n",
@@ -343,7 +343,7 @@ int rtl92s_download_fw(struct ieee80211_hw *hw)
 		pfwheader->version, pfwheader->dmem_size,
 		pfwheader->img_imem_size, pfwheader->img_sram_size);
 
-	/* 2. Retrieve IMEM image. */
+	 
 	if ((pfwheader->img_imem_size == 0) || (pfwheader->img_imem_size >
 	    sizeof(firmware->fw_imem))) {
 		pr_err("memory for data image is less than IMEM required\n");
@@ -356,7 +356,7 @@ int rtl92s_download_fw(struct ieee80211_hw *hw)
 		firmware->fw_imem_len = pfwheader->img_imem_size;
 	}
 
-	/* 3. Retriecve EMEM image. */
+	 
 	if (pfwheader->img_sram_size > sizeof(firmware->fw_emem)) {
 		pr_err("memory for data image is less than EMEM required\n");
 		goto fail;
@@ -368,10 +368,10 @@ int rtl92s_download_fw(struct ieee80211_hw *hw)
 		firmware->fw_emem_len = pfwheader->img_sram_size;
 	}
 
-	/* 4. download fw now */
+	 
 	fwstatus = _rtl92s_firmware_get_nextstatus(firmware->fwstatus);
 	while (fwstatus != FW_STATUS_READY) {
-		/* Image buffer redirection. */
+		 
 		switch (fwstatus) {
 		case FW_STATUS_LOAD_IMEM:
 			puc_mappedfile = firmware->fw_imem;
@@ -382,7 +382,7 @@ int rtl92s_download_fw(struct ieee80211_hw *hw)
 			ul_filelength = firmware->fw_emem_len;
 			break;
 		case FW_STATUS_LOAD_DMEM:
-			/* Partial update the content of header private. */
+			 
 			pfwheader = firmware->pfwheader;
 			pfw_priv = &pfwheader->fwpriv;
 			_rtl92s_firmwareheader_priveupdate(hw, pfw_priv);
@@ -396,7 +396,7 @@ int rtl92s_download_fw(struct ieee80211_hw *hw)
 			goto fail;
 		}
 
-		/* <2> Download image file */
+		 
 		rtstatus = _rtl92s_firmware_downloadcode(hw, puc_mappedfile,
 				ul_filelength);
 
@@ -405,7 +405,7 @@ int rtl92s_download_fw(struct ieee80211_hw *hw)
 			goto fail;
 		}
 
-		/* <3> Check whether load FW process is ready */
+		 
 		rtstatus = _rtl92s_firmware_checkready(hw, fwstatus);
 		if (!rtstatus) {
 			pr_err("rtl8192se: firmware fail!\n");
@@ -430,40 +430,40 @@ static u32 _rtl92s_fill_h2c_cmd(struct sk_buff *skb, u32 h2cbufferlen,
 	u8 i = 0;
 
 	do {
-		/* 8 - Byte alignment */
+		 
 		len = H2C_TX_CMD_HDR_LEN + N_BYTE_ALIGMENT(pcmd_len[i], 8);
 
-		/* Buffer length is not enough */
+		 
 		if (h2cbufferlen < totallen + len + tx_desclen)
 			break;
 
-		/* Clear content */
+		 
 		ph2c_buffer = skb_put(skb, (u32)len);
 		memset((ph2c_buffer + totallen + tx_desclen), 0, len);
 
-		/* CMD len */
+		 
 		le32p_replace_bits((__le32 *)(ph2c_buffer + totallen +
 					      tx_desclen), pcmd_len[i],
 				   GENMASK(15, 0));
 
-		/* CMD ID */
+		 
 		le32p_replace_bits((__le32 *)(ph2c_buffer + totallen +
 					      tx_desclen), pelement_id[i],
 				   GENMASK(23, 16));
 
-		/* CMD Sequence */
+		 
 		*cmd_start_seq = *cmd_start_seq % 0x80;
 		le32p_replace_bits((__le32 *)(ph2c_buffer + totallen +
 					      tx_desclen), *cmd_start_seq,
 				   GENMASK(30, 24));
 		++*cmd_start_seq;
 
-		/* Copy memory */
+		 
 		memcpy((ph2c_buffer + totallen + tx_desclen +
 			H2C_TX_CMD_HDR_LEN), pcmb_buffer[i], pcmd_len[i]);
 
-		/* CMD continue */
-		/* set the continue in prevoius cmd. */
+		 
+		 
 		if (i < cmd_num - 1)
 			le32p_replace_bits((__le32 *)(ph2c_buffer +
 						      pre_continueoffset),
@@ -483,10 +483,10 @@ static u32 _rtl92s_get_h2c_cmdlen(u32 h2cbufferlen, u32 cmd_num, u32 *pcmd_len)
 	u8 i = 0;
 
 	do {
-		/* 8 - Byte alignment */
+		 
 		len = H2C_TX_CMD_HDR_LEN + N_BYTE_ALIGMENT(pcmd_len[i], 8);
 
-		/* Buffer length is not enough */
+		 
 		if (h2cbufferlen < totallen + len + tx_desclen)
 			break;
 
@@ -570,7 +570,7 @@ void rtl92s_set_fw_pwrmode_cmd(struct ieee80211_hw *hw, u8 mode)
 	pwrmode.smart_ps = 1;
 	pwrmode.bcn_pass_period = 10;
 
-	/* Set beacon pass count */
+	 
 	if (pwrmode.mode == FW_PS_MIN_MODE)
 		max_wakeup_period = mac->vif->bss_conf.beacon_int;
 	else if (pwrmode.mode == FW_PS_MAX_MODE)

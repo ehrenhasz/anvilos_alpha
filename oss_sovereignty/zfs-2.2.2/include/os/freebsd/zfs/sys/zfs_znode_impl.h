@@ -1,29 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2015 by Delphix. All rights reserved.
- * Copyright (c) 2014 Integros [integros.com]
- * Copyright 2016 Nexenta Systems, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef	_FREEBSD_ZFS_SYS_ZNODE_IMPL_H
 #define	_FREEBSD_ZFS_SYS_ZNODE_IMPL_H
@@ -46,11 +22,7 @@
 extern "C" {
 #endif
 
-/*
- * Directory entry locks control access to directory entries.
- * They are used to protect creates, deletes, and renames.
- * Each directory znode has a mutex and a list of locked names.
- */
+ 
 #define	ZNODE_OS_FIELDS                 \
 	struct zfsvfs	*z_zfsvfs;      \
 	vnode_t		*z_vnode;       \
@@ -63,11 +35,7 @@ extern "C" {
 
 #define	ZFS_LINK_MAX	UINT64_MAX
 
-/*
- * ZFS minor numbers can refer to either a control device instance or
- * a zvol. Depending on the value of zss_type, zss_data points to either
- * a zvol_state_t or a zfs_onexit_t.
- */
+ 
 enum zfs_soft_state_type {
 	ZSST_ZVOL,
 	ZSST_CTLDEV
@@ -78,25 +46,9 @@ typedef struct zfs_soft_state {
 	void *zss_data;
 } zfs_soft_state_t;
 
-/*
- * Range locking rules
- * --------------------
- * 1. When truncating a file (zfs_create, zfs_setattr, zfs_space) the whole
- *    file range needs to be locked as RL_WRITER. Only then can the pages be
- *    freed etc and zp_size reset. zp_size must be set within range lock.
- * 2. For writes and punching holes (zfs_write & zfs_space) just the range
- *    being written or freed needs to be locked as RL_WRITER.
- *    Multiple writes at the end of the file must coordinate zp_size updates
- *    to ensure data isn't lost. A compare and swap loop is currently used
- *    to ensure the file size is at least the offset last written.
- * 3. For reads (zfs_read, zfs_get_data & zfs_putapage) just the range being
- *    read needs to be locked as RL_READER. A check against zp_size can then
- *    be made for reading beyond end of file.
- */
+ 
 
-/*
- * Convert between znode pointers and vnode pointers
- */
+ 
 #define	ZTOV(ZP)	((ZP)->z_vnode)
 #define	ZTOI(ZP)	((ZP)->z_vnode)
 #define	VTOZ(VP)	((struct znode *)(VP)->v_data)
@@ -123,7 +75,7 @@ typedef struct zfs_soft_state {
 #define	zn_rlimit_fsize_uio(zp, uio) \
     vn_rlimit_fsize(ZTOV(zp), GET_UIO_STRUCT(uio), zfs_uio_td(uio))
 
-/* Called on entry to each ZFS vnode and vfs operation  */
+ 
 static inline int
 zfs_enter(zfsvfs_t *zfsvfs, const char *tag)
 {
@@ -135,16 +87,14 @@ zfs_enter(zfsvfs_t *zfsvfs, const char *tag)
 	return (0);
 }
 
-/* Must be called before exiting the vop */
+ 
 static inline void
 zfs_exit(zfsvfs_t *zfsvfs, const char *tag)
 {
 	ZFS_TEARDOWN_EXIT_READ(zfsvfs, tag);
 }
 
-/*
- * Macros for dealing with dmu_buf_hold
- */
+ 
 #define	ZFS_OBJ_HASH(obj_num)	((obj_num) & (ZFS_OBJ_MTX_SZ - 1))
 #define	ZFS_OBJ_MUTEX(zfsvfs, obj_num)	\
 	(&(zfsvfs)->z_hold_mtx[ZFS_OBJ_HASH(obj_num)])
@@ -155,14 +105,14 @@ zfs_exit(zfsvfs_t *zfsvfs, const char *tag)
 #define	ZFS_OBJ_HOLD_EXIT(zfsvfs, obj_num) \
 	mutex_exit(ZFS_OBJ_MUTEX((zfsvfs), (obj_num)))
 
-/* Encode ZFS stored time values from a struct timespec */
+ 
 #define	ZFS_TIME_ENCODE(tp, stmp)		\
 {						\
 	(stmp)[0] = (uint64_t)(tp)->tv_sec;	\
 	(stmp)[1] = (uint64_t)(tp)->tv_nsec;	\
 }
 
-/* Decode ZFS stored time values to a struct timespec */
+ 
 #define	ZFS_TIME_DECODE(tp, stmp)		\
 {						\
 	(tp)->tv_sec = (time_t)(stmp)[0];		\
@@ -186,4 +136,4 @@ extern int zfs_rlimit_fsize(off_t fsize);
 }
 #endif
 
-#endif	/* _FREEBSD_SYS_FS_ZFS_ZNODE_H */
+#endif	 

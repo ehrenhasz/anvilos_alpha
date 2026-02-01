@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * RISC-V SBI based earlycon
- *
- * Copyright (C) 2018 Anup Patel <anup@brainfault.org>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/console.h>
 #include <linux/init.h>

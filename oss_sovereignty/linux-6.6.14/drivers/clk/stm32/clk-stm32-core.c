@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics 2022 - All Rights Reserved
- * Author: Gabriel Fernandez <gabriel.fernandez@foss.st.com> for STMicroelectronics.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -79,14 +76,14 @@ int stm32_rcc_init(struct device *dev, const struct of_device_id *match_data,
 		return -ENODEV;
 	}
 
-	/* RCC Reset Configuration */
+	 
 	err = stm32_rcc_reset_init(dev, match, base);
 	if (err) {
 		pr_err("stm32 reset failed to initialize\n");
 		return err;
 	}
 
-	/* RCC Clock Configuration */
+	 
 	err = stm32_rcc_clock_init(dev, match, base);
 	if (err) {
 		pr_err("stm32 clock failed to initialize\n");
@@ -360,7 +357,7 @@ static long clk_stm32_divider_round_rate(struct clk_hw *hw, unsigned long rate,
 
 	divider = &div->clock_data->dividers[div->div_id];
 
-	/* if read only, just return current value */
+	 
 	if (divider->flags & CLK_DIVIDER_READ_ONLY) {
 		u32 val;
 
@@ -438,7 +435,7 @@ static int clk_stm32_composite_determine_rate(struct clk_hw *hw,
 
 	divider = &composite->clock_data->dividers[composite->div_id];
 
-	/* if read only, just return current value */
+	 
 	if (divider->flags & CLK_DIVIDER_READ_ONLY) {
 		u32 val;
 

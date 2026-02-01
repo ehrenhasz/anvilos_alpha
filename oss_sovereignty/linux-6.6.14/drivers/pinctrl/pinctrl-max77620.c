@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MAX77620 pin control driver.
- *
- * Copyright (c) 2016, NVIDIA CORPORATION.  All rights reserved.
- *
- * Author:
- *	Chaitanya Bandi <bandik@nvidia.com>
- *	Laxman Dewangan <ldewangan@nvidia.com>
- */
+
+ 
 
 #include <linux/mfd/max77620.h>
 #include <linux/mod_devicetable.h>

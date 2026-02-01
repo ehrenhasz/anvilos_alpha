@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+
 #include "nv20.h"
 #include "regs.h"
 
@@ -9,9 +9,7 @@
 #include <subdev/fb.h>
 #include <subdev/timer.h>
 
-/*******************************************************************************
- * PGRAPH context
- ******************************************************************************/
+ 
 
 int
 nv20_gr_chan_init(struct nvkm_object *object)
@@ -141,9 +139,7 @@ nv20_gr_chan_new(struct nvkm_gr *base, struct nvkm_chan *fifoch,
 	return 0;
 }
 
-/*******************************************************************************
- * PGRAPH engine/subdev functions
- ******************************************************************************/
+ 
 
 void
 nv20_gr_tile(struct nvkm_gr *base, int i, struct nvkm_fb_tile *tile)
@@ -260,7 +256,7 @@ nv20_gr_init(struct nvkm_gr *base)
 	nvkm_wr32(device, NV04_PGRAPH_DEBUG_0, 0xFFFFFFFF);
 	nvkm_wr32(device, NV04_PGRAPH_DEBUG_0, 0x00000000);
 	nvkm_wr32(device, NV04_PGRAPH_DEBUG_1, 0x00118700);
-	nvkm_wr32(device, NV04_PGRAPH_DEBUG_3, 0xF3CE0475); /* 0x4 = auto ctx switch */
+	nvkm_wr32(device, NV04_PGRAPH_DEBUG_3, 0xF3CE0475);  
 	nvkm_wr32(device, NV10_PGRAPH_DEBUG_4, 0x00000000);
 	nvkm_wr32(device, 0x40009C           , 0x00000040);
 
@@ -296,7 +292,7 @@ nv20_gr_init(struct nvkm_gr *base)
 	tmp = nvkm_rd32(device, NV10_PGRAPH_SURFACE) | 0x00020100;
 	nvkm_wr32(device, NV10_PGRAPH_SURFACE, tmp);
 
-	/* begin RAM config */
+	 
 	vramsz = device->func->resource_size(device, 1) - 1;
 	nvkm_wr32(device, 0x4009A4, nvkm_rd32(device, 0x100200));
 	nvkm_wr32(device, 0x4009A8, nvkm_rd32(device, 0x100204));
@@ -309,7 +305,7 @@ nv20_gr_init(struct nvkm_gr *base)
 	nvkm_wr32(device, 0x400864, vramsz - 1);
 	nvkm_wr32(device, 0x400868, vramsz - 1);
 
-	/* interesting.. the below overwrites some of the tile setup above.. */
+	 
 	nvkm_wr32(device, 0x400B20, 0x00000000);
 	nvkm_wr32(device, 0x400B04, 0xFFFFFFFF);
 
@@ -350,21 +346,21 @@ nv20_gr = {
 	.tile = nv20_gr_tile,
 	.chan_new = nv20_gr_chan_new,
 	.sclass = {
-		{ -1, -1, 0x0012, &nv04_gr_object }, /* beta1 */
-		{ -1, -1, 0x0019, &nv04_gr_object }, /* clip */
-		{ -1, -1, 0x0030, &nv04_gr_object }, /* null */
-		{ -1, -1, 0x0039, &nv04_gr_object }, /* m2mf */
-		{ -1, -1, 0x0043, &nv04_gr_object }, /* rop */
-		{ -1, -1, 0x0044, &nv04_gr_object }, /* patt */
-		{ -1, -1, 0x004a, &nv04_gr_object }, /* gdi */
-		{ -1, -1, 0x0062, &nv04_gr_object }, /* surf2d */
-		{ -1, -1, 0x0072, &nv04_gr_object }, /* beta4 */
-		{ -1, -1, 0x0089, &nv04_gr_object }, /* sifm */
-		{ -1, -1, 0x008a, &nv04_gr_object }, /* ifc */
-		{ -1, -1, 0x0096, &nv04_gr_object }, /* celcius */
-		{ -1, -1, 0x0097, &nv04_gr_object }, /* kelvin */
-		{ -1, -1, 0x009e, &nv04_gr_object }, /* swzsurf */
-		{ -1, -1, 0x009f, &nv04_gr_object }, /* imageblit */
+		{ -1, -1, 0x0012, &nv04_gr_object },  
+		{ -1, -1, 0x0019, &nv04_gr_object },  
+		{ -1, -1, 0x0030, &nv04_gr_object },  
+		{ -1, -1, 0x0039, &nv04_gr_object },  
+		{ -1, -1, 0x0043, &nv04_gr_object },  
+		{ -1, -1, 0x0044, &nv04_gr_object },  
+		{ -1, -1, 0x004a, &nv04_gr_object },  
+		{ -1, -1, 0x0062, &nv04_gr_object },  
+		{ -1, -1, 0x0072, &nv04_gr_object },  
+		{ -1, -1, 0x0089, &nv04_gr_object },  
+		{ -1, -1, 0x008a, &nv04_gr_object },  
+		{ -1, -1, 0x0096, &nv04_gr_object },  
+		{ -1, -1, 0x0097, &nv04_gr_object },  
+		{ -1, -1, 0x009e, &nv04_gr_object },  
+		{ -1, -1, 0x009f, &nv04_gr_object },  
 		{}
 	}
 };

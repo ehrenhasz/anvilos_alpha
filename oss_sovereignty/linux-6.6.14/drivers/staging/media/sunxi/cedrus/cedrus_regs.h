@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Cedrus VPU driver
- *
- * Copyright (c) 2013-2016 Jens Kuske <jenskuske@gmail.com>
- * Copyright (C) 2016 Florent Revest <florent.revest@free-electrons.com>
- * Copyright (C) 2018 Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- */
+ 
+ 
 
 #ifndef _CEDRUS_REGS_H_
 #define _CEDRUS_REGS_H_
@@ -13,21 +7,7 @@
 #define SHIFT_AND_MASK_BITS(v, h, l) \
 	(((unsigned long)(v) << (l)) & GENMASK(h, l))
 
-/*
- * Common acronyms and contractions used in register descriptions:
- * * VLD : Variable-Length Decoder
- * * IQ: Inverse Quantization
- * * IDCT: Inverse Discrete Cosine Transform
- * * MC: Motion Compensation
- * * STCD: Start Code Detect
- * * SDRT: Scale Down and Rotate
- * * WB: Writeback
- * * BITS/BS: Bitstream
- * * MB: Macroblock
- * * CTU: Coding Tree Unit
- * * CTB: Coding Tree Block
- * * IDX: Index
- */
+ 
 
 #define VE_ENGINE_DEC_MPEG			0x100
 #define VE_ENGINE_DEC_H264			0x200

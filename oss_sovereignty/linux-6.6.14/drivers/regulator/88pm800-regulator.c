@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Regulators driver for Marvell 88PM800
- *
- * Copyright (C) 2012 Marvell International Ltd.
- * Joseph(Yossi) Hanin <yhanin@marvell.com>
- * Yi Zhang <yizhang@marvell.com>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/init.h>
@@ -19,8 +13,8 @@
 #include <linux/of.h>
 #include <linux/regulator/of_regulator.h>
 
-/* LDO1 with DVC[0..3] */
-#define PM800_LDO1_VOUT		(0x08) /* VOUT1 */
+ 
+#define PM800_LDO1_VOUT		(0x08)  
 #define PM800_LDO1_VOUT_2	(0x09)
 #define PM800_LDO1_VOUT_3	(0x0A)
 #define PM800_LDO2_VOUT		(0x0B)
@@ -42,7 +36,7 @@
 #define PM800_LDO18_VOUT	(0x1B)
 #define PM800_LDO19_VOUT	(0x1C)
 
-/* BUCK1 with DVC[0..3] */
+ 
 #define PM800_BUCK1		(0x3C)
 #define PM800_BUCK1_1		(0x3D)
 #define PM800_BUCK1_2		(0x3E)
@@ -74,15 +68,7 @@ struct pm800_regulator_info {
 	int max_ua;
 };
 
-/*
- * vreg - the buck regs string.
- * ereg - the string for the enable register.
- * ebit - the bit number in the enable register.
- * amax - the current
- * Buck has 2 kinds of voltage steps. It is easy to find voltage by ranges,
- * not the constant voltage table.
- * n_volt - Number of available selectors
- */
+ 
 #define PM800_BUCK(match, vreg, ereg, ebit, amax, volt_ranges, n_volt)	\
 {									\
 	.desc	= {							\
@@ -104,15 +90,7 @@ struct pm800_regulator_info {
 	.max_ua	= (amax),						\
 }
 
-/*
- * vreg - the LDO regs string
- * ereg -  the string for the enable register.
- * ebit - the bit number in the enable register.
- * amax - the current
- * volt_table - the LDO voltage table
- * For all the LDOes, there are too many ranges. Using volt_table will be
- * simpler and faster.
- */
+ 
 #define PM800_LDO(match, vreg, ereg, ebit, amax, ldo_volt_table)	\
 {									\
 	.desc	= {							\
@@ -133,13 +111,13 @@ struct pm800_regulator_info {
 	.max_ua	= (amax),						\
 }
 
-/* Ranges are sorted in ascending order. */
+ 
 static const struct linear_range buck1_volt_range[] = {
 	REGULATOR_LINEAR_RANGE(600000, 0, 0x4f, 12500),
 	REGULATOR_LINEAR_RANGE(1600000, 0x50, 0x54, 50000),
 };
 
-/* BUCK 2~5 have same ranges. */
+ 
 static const struct linear_range buck2_5_volt_range[] = {
 	REGULATOR_LINEAR_RANGE(600000, 0, 0x4f, 12500),
 	REGULATOR_LINEAR_RANGE(1600000, 0x50, 0x72, 50000),
@@ -154,13 +132,13 @@ static const unsigned int ldo2_volt_table[] = {
 	1700000, 1800000, 1900000, 2000000, 2100000, 2500000, 2700000, 2800000,
 };
 
-/* LDO 3~17 have same voltage table. */
+ 
 static const unsigned int ldo3_17_volt_table[] = {
 	1200000, 1250000, 1700000, 1800000, 1850000, 1900000, 2500000, 2600000,
 	2700000, 2750000, 2800000, 2850000, 2900000, 3000000, 3100000, 3300000,
 };
 
-/* LDO 18~19 have same voltage table. */
+ 
 static const unsigned int ldo18_19_volt_table[] = {
 	1700000, 1800000, 1900000, 2500000, 2800000, 2900000, 3100000, 3300000,
 };
@@ -194,7 +172,7 @@ static const struct regulator_ops pm800_volt_table_ops = {
 	.get_current_limit	= pm800_get_current_limit,
 };
 
-/* The array is indexed by id(PM800_ID_XXX) */
+ 
 static struct pm800_regulator_info pm800_regulator_info[] = {
 	PM800_BUCK(buck1, BUCK1, BUCK_ENA, 0, 3000000, buck1_volt_range, 0x55),
 	PM800_BUCK(buck2, BUCK2, BUCK_ENA, 1, 1200000, buck2_5_volt_range, 0x73),
@@ -234,7 +212,7 @@ static int pm800_regulator_probe(struct platform_device *pdev)
 	if (pdata && pdata->num_regulators) {
 		unsigned int count = 0;
 
-		/* Check whether num_regulator is valid. */
+		 
 		for (i = 0; i < ARRAY_SIZE(pdata->regulators); i++) {
 			if (pdata->regulators[i])
 				count++;

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * vgic_irq.c - Test userspace injection of IRQs
- *
- * This test validates the injection of IRQs from userspace using various
- * methods (e.g., KVM_IRQ_LINE) and modes (e.g., EOI). The guest "asks" the
- * host to inject a specific intid via a GUEST_SYNC call, and then checks that
- * it received it.
- */
+
+ 
 #include <asm/kvm.h>
 #include <asm/kvm_para.h>
 #include <sys/eventfd.h>
@@ -22,40 +15,28 @@
 #define GICD_BASE_GPA		0x08000000ULL
 #define GICR_BASE_GPA		0x080A0000ULL
 
-/*
- * Stores the user specified args; it's passed to the guest and to every test
- * function.
- */
+ 
 struct test_args {
-	uint32_t nr_irqs; /* number of KVM supported IRQs. */
-	bool eoi_split; /* 1 is eoir+dir, 0 is eoir only */
-	bool level_sensitive; /* 1 is level, 0 is edge */
-	int kvm_max_routes; /* output of KVM_CAP_IRQ_ROUTING */
-	bool kvm_supports_irqfd; /* output of KVM_CAP_IRQFD */
+	uint32_t nr_irqs;  
+	bool eoi_split;  
+	bool level_sensitive;  
+	int kvm_max_routes;  
+	bool kvm_supports_irqfd;  
 };
 
-/*
- * KVM implements 32 priority levels:
- * 0x00 (highest priority) - 0xF8 (lowest priority), in steps of 8
- *
- * Note that these macros will still be correct in the case that KVM implements
- * more priority levels. Also note that 32 is the minimum for GICv3 and GICv2.
- */
+ 
 #define KVM_NUM_PRIOS		32
-#define KVM_PRIO_SHIFT		3 /* steps of 8 = 1 << 3 */
-#define KVM_PRIO_STEPS		(1 << KVM_PRIO_SHIFT) /* 8 */
+#define KVM_PRIO_SHIFT		3  
+#define KVM_PRIO_STEPS		(1 << KVM_PRIO_SHIFT)  
 #define LOWEST_PRIO		(KVM_NUM_PRIOS - 1)
-#define CPU_PRIO_MASK		(LOWEST_PRIO << KVM_PRIO_SHIFT)	/* 0xf8 */
+#define CPU_PRIO_MASK		(LOWEST_PRIO << KVM_PRIO_SHIFT)	 
 #define IRQ_DEFAULT_PRIO	(LOWEST_PRIO - 1)
-#define IRQ_DEFAULT_PRIO_REG	(IRQ_DEFAULT_PRIO << KVM_PRIO_SHIFT) /* 0xf0 */
+#define IRQ_DEFAULT_PRIO_REG	(IRQ_DEFAULT_PRIO << KVM_PRIO_SHIFT)  
 
 static void *dist = (void *)GICD_BASE_GPA;
 static void *redist = (void *)GICR_BASE_GPA;
 
-/*
- * The kvm_inject_* utilities are used by the guest to ask the host to inject
- * interrupts (e.g., using the KVM_IRQ_LINE ioctl).
- */
+ 
 
 typedef enum {
 	KVM_INJECT_EDGE_IRQ_LINE = 1,
@@ -75,16 +56,16 @@ struct kvm_inject_args {
 	bool expect_failure;
 };
 
-/* Used on the guest side to perform the hypercall. */
+ 
 static void kvm_inject_call(kvm_inject_cmd cmd, uint32_t first_intid,
 		uint32_t num, int level, bool expect_failure);
 
-/* Used on the host side to get the hypercall info. */
+ 
 static void kvm_inject_get_call(struct kvm_vm *vm, struct ucall *uc,
 		struct kvm_inject_args *args);
 
 #define _KVM_INJECT_MULTI(cmd, intid, num, expect_failure)			\
-	kvm_inject_call(cmd, intid, num, -1 /* not used */, expect_failure)
+	kvm_inject_call(cmd, intid, num, -1  , expect_failure)
 
 #define KVM_INJECT_MULTI(cmd, intid, num)					\
 	_KVM_INJECT_MULTI(cmd, intid, num, false)
@@ -100,12 +81,12 @@ static void kvm_inject_get_call(struct kvm_vm *vm, struct ucall *uc,
 
 struct kvm_inject_desc {
 	kvm_inject_cmd cmd;
-	/* can inject PPIs, PPIs, and/or SPIs. */
+	 
 	bool sgi, ppi, spi;
 };
 
 static struct kvm_inject_desc inject_edge_fns[] = {
-	/*                                      sgi    ppi    spi */
+	 
 	{ KVM_INJECT_EDGE_IRQ_LINE,		false, false, true },
 	{ KVM_INJECT_IRQFD,			false, false, true },
 	{ KVM_WRITE_ISPENDR,			true,  false, true },
@@ -113,7 +94,7 @@ static struct kvm_inject_desc inject_edge_fns[] = {
 };
 
 static struct kvm_inject_desc inject_level_fns[] = {
-	/*                                      sgi    ppi    spi */
+	 
 	{ KVM_SET_IRQ_LINE_HIGH,		false, true,  true },
 	{ KVM_SET_LEVEL_INFO_HIGH,		false, true,  true },
 	{ KVM_INJECT_IRQFD,			false, false, true },
@@ -122,7 +103,7 @@ static struct kvm_inject_desc inject_level_fns[] = {
 };
 
 static struct kvm_inject_desc set_active_fns[] = {
-	/*                                      sgi    ppi    spi */
+	 
 	{ KVM_WRITE_ISACTIVER,			true,  true,  true },
 	{ 0, },
 };
@@ -137,7 +118,7 @@ static struct kvm_inject_desc set_active_fns[] = {
 #define for_each_supported_activate_fn(args, t, f)				\
 	for_each_supported_inject_fn((args), (t), (f))
 
-/* Shared between the guest main thread and the IRQ handlers. */
+ 
 volatile uint64_t irq_handled;
 volatile uint32_t irqnr_received[MAX_SPI + 1];
 
@@ -253,7 +234,7 @@ static void test_inject_fail(struct test_args *args,
 	reset_stats();
 
 	_KVM_INJECT(cmd, intid, true);
-	/* no IRQ to handle on entry */
+	 
 
 	GUEST_ASSERT_EQ(irq_handled, 0);
 	GUEST_ASSERT_IAR_EMPTY();
@@ -267,7 +248,7 @@ static void guest_inject(struct test_args *args,
 
 	reset_stats();
 
-	/* Cycle over all priorities to make things more interesting. */
+	 
 	for (i = first_intid; i < num + first_intid; i++)
 		gic_set_priority(i, (i % (KVM_NUM_PRIOS - 1)) << 3);
 
@@ -277,7 +258,7 @@ static void guest_inject(struct test_args *args,
 	while (irq_handled < num) {
 		asm volatile("wfi\n"
 			     "msr daifclr, #2\n"
-			     /* handle IRQ */
+			      
 			     "msr daifset, #2\n"
 			     : : : "memory");
 	}
@@ -291,12 +272,7 @@ static void guest_inject(struct test_args *args,
 	reset_priorities(args);
 }
 
-/*
- * Restore the active state of multiple concurrent IRQs (given by
- * concurrent_irqs).  This does what a live-migration would do on the
- * destination side assuming there are some active IRQs that were not
- * deactivated yet.
- */
+ 
 static void guest_restore_active(struct test_args *args,
 		uint32_t first_intid, uint32_t num,
 		kvm_inject_cmd cmd)
@@ -304,20 +280,14 @@ static void guest_restore_active(struct test_args *args,
 	uint32_t prio, intid, ap1r;
 	int i;
 
-	/*
-	 * Set the priorities of the first (KVM_NUM_PRIOS - 1) IRQs
-	 * in descending order, so intid+1 can preempt intid.
-	 */
+	 
 	for (i = 0, prio = (num - 1) * 8; i < num; i++, prio -= 8) {
 		GUEST_ASSERT(prio >= 0);
 		intid = i + first_intid;
 		gic_set_priority(intid, prio);
 	}
 
-	/*
-	 * In a real migration, KVM would restore all GIC state before running
-	 * guest code.
-	 */
+	 
 	for (i = 0; i < num; i++) {
 		intid = i + first_intid;
 		KVM_ACTIVATE(cmd, intid);
@@ -326,9 +296,9 @@ static void guest_restore_active(struct test_args *args,
 		gic_write_ap1r0(ap1r);
 	}
 
-	/* This is where the "migration" would occur. */
+	 
 
-	/* finish handling the IRQs starting with the highest priority one. */
+	 
 	for (i = 0; i < num; i++) {
 		intid = num - i - 1 + first_intid;
 		gic_set_eoi(intid);
@@ -342,12 +312,7 @@ static void guest_restore_active(struct test_args *args,
 	GUEST_ASSERT_IAR_EMPTY();
 }
 
-/*
- * Polls the IAR until it's not a spurious interrupt.
- *
- * This function should only be used in test_inject_preemption (with IRQs
- * masked).
- */
+ 
 static uint32_t wait_for_and_activate_irq(void)
 {
 	uint32_t intid;
@@ -360,11 +325,7 @@ static uint32_t wait_for_and_activate_irq(void)
 	return intid;
 }
 
-/*
- * Inject multiple concurrent IRQs (num IRQs starting at first_intid) and
- * handle them without handling the actual exceptions.  This is done by masking
- * interrupts for the whole test.
- */
+ 
 static void test_inject_preemption(struct test_args *args,
 		uint32_t first_intid, int num,
 		kvm_inject_cmd cmd)
@@ -372,9 +333,7 @@ static void test_inject_preemption(struct test_args *args,
 	uint32_t intid, prio, step = KVM_PRIO_STEPS;
 	int i;
 
-	/* Set the priorities of the first (KVM_NUM_PRIOS - 1) IRQs
-	 * in descending order, so intid+1 can preempt intid.
-	 */
+	 
 	for (i = 0, prio = (num - 1) * step; i < num; i++, prio -= step) {
 		GUEST_ASSERT(prio >= 0);
 		intid = i + first_intid;
@@ -387,14 +346,14 @@ static void test_inject_preemption(struct test_args *args,
 		uint32_t tmp;
 		intid = i + first_intid;
 		KVM_INJECT(cmd, intid);
-		/* Each successive IRQ will preempt the previous one. */
+		 
 		tmp = wait_for_and_activate_irq();
 		GUEST_ASSERT_EQ(tmp, intid);
 		if (args->level_sensitive)
 			guest_set_irq_line(intid, 0);
 	}
 
-	/* finish handling the IRQs starting with the highest priority one. */
+	 
 	for (i = 0; i < num; i++) {
 		intid = num - i - 1 + first_intid;
 		gic_set_eoi(intid);
@@ -443,12 +402,7 @@ static void test_injection_failure(struct test_args *args,
 
 static void test_preemption(struct test_args *args, struct kvm_inject_desc *f)
 {
-	/*
-	 * Test up to 4 levels of preemption. The reason is that KVM doesn't
-	 * currently implement the ability to have more than the number-of-LRs
-	 * number of concurrently active IRQs. The number of LRs implemented is
-	 * IMPLEMENTATION DEFINED, however, it seems that most implement 4.
-	 */
+	 
 	if (f->sgi)
 		test_inject_preemption(args, MIN_SGI, 4, f->cmd);
 
@@ -461,7 +415,7 @@ static void test_preemption(struct test_args *args, struct kvm_inject_desc *f)
 
 static void test_restore_active(struct test_args *args, struct kvm_inject_desc *f)
 {
-	/* Test up to 4 active IRQs. Same reason as in test_preemption. */
+	 
 	if (f->sgi)
 		guest_restore_active(args, MIN_SGI, 4, f->cmd);
 
@@ -496,17 +450,14 @@ static void guest_code(struct test_args *args)
 
 	local_irq_enable();
 
-	/* Start the tests. */
+	 
 	for_each_supported_inject_fn(args, inject_fns, f) {
 		test_injection(args, f);
 		test_preemption(args, f);
 		test_injection_failure(args, f);
 	}
 
-	/*
-	 * Restore the active state of IRQs. This would happen when live
-	 * migrating IRQs in the middle of being handled.
-	 */
+	 
 	for_each_supported_activate_fn(args, set_active_fns, f)
 		test_restore_active(args, f);
 
@@ -521,7 +472,7 @@ static void kvm_irq_line_check(struct kvm_vm *vm, uint32_t intid, int level,
 	if (!expect_failure) {
 		kvm_arm_irq_line(vm, intid, level);
 	} else {
-		/* The interface doesn't allow larger intid's. */
+		 
 		if (intid > KVM_ARM_IRQ_NUM_MASK)
 			return;
 
@@ -539,12 +490,7 @@ void kvm_irq_set_level_info_check(int gic_fd, uint32_t intid, int level,
 		kvm_irq_set_level_info(gic_fd, intid, level);
 	} else {
 		int ret = _kvm_irq_set_level_info(gic_fd, intid, level);
-		/*
-		 * The kernel silently fails for invalid SPIs and SGIs (which
-		 * are not level-sensitive). It only checks for intid to not
-		 * spill over 1U << 10 (the max reserved SPI). Also, callers
-		 * are supposed to mask the intid with 0x3ff (1023).
-		 */
+		 
 		if (intid > VGIC_MAX_RESERVED)
 			TEST_ASSERT(ret != 0 && errno == EINVAL,
 				"Bad intid %i did not cause VGIC_GRP_LEVEL_INFO "
@@ -574,7 +520,7 @@ static void kvm_set_gsi_routing_irqchip_check(struct kvm_vm *vm,
 		kvm_gsi_routing_write(vm, routing);
 	} else {
 		ret = _kvm_gsi_routing_write(vm, routing);
-		/* The kernel only checks e->irqchip.pin >= KVM_IRQCHIP_NUM_PINS */
+		 
 		if (((uint64_t)intid + num - 1 - MIN_SPI) >= KVM_IRQCHIP_NUM_PINS)
 			TEST_ASSERT(ret != 0 && errno == EINVAL,
 				"Bad intid %u did not cause KVM_SET_GSI_ROUTING "
@@ -590,13 +536,7 @@ static void kvm_irq_write_ispendr_check(int gic_fd, uint32_t intid,
 					struct kvm_vcpu *vcpu,
 					bool expect_failure)
 {
-	/*
-	 * Ignore this when expecting failure as invalid intids will lead to
-	 * either trying to inject SGIs when we configured the test to be
-	 * level_sensitive (or the reverse), or inject large intids which
-	 * will lead to writing above the ISPENDR register space (and we
-	 * don't want to do that either).
-	 */
+	 
 	if (!expect_failure)
 		kvm_irq_write_ispendr(gic_fd, intid, vcpu);
 }
@@ -610,22 +550,14 @@ static void kvm_routing_and_irqfd_check(struct kvm_vm *vm,
 	int ret, f;
 	uint64_t i;
 
-	/*
-	 * There is no way to try injecting an SGI or PPI as the interface
-	 * starts counting from the first SPI (above the private ones), so just
-	 * exit.
-	 */
+	 
 	if (INTID_IS_SGI(intid) || INTID_IS_PPI(intid))
 		return;
 
 	kvm_set_gsi_routing_irqchip_check(vm, intid, num,
 			kvm_max_routes, expect_failure);
 
-	/*
-	 * If expect_failure, then just to inject anyway. These
-	 * will silently fail. And in any case, the guest will check
-	 * that no actual interrupt was injected for those cases.
-	 */
+	 
 
 	for (f = 0, i = intid; i < (uint64_t)intid + num; i++, f++) {
 		fd[f] = eventfd(0, 0);
@@ -652,7 +584,7 @@ static void kvm_routing_and_irqfd_check(struct kvm_vm *vm,
 		close(fd[f]);
 }
 
-/* handles the valid case: intid=0xffffffff num=1 */
+ 
 #define for_each_intid(first, num, tmp, i)					\
 	for ((tmp) = (i) = (first);						\
 		(tmp) < (uint64_t)(first) + (uint64_t)(num);			\
@@ -671,7 +603,7 @@ static void run_guest_cmd(struct kvm_vcpu *vcpu, int gic_fd,
 	uint64_t tmp;
 	uint32_t i;
 
-	/* handles the valid case: intid=0xffffffff num=1 */
+	 
 	assert(intid < UINT_MAX - num || num == 1);
 
 	switch (cmd) {
@@ -759,7 +691,7 @@ static void test_vgic(uint32_t nr_irqs, bool level_sensitive, bool eoi_split)
 	vm_init_descriptor_tables(vm);
 	vcpu_init_descriptor_tables(vcpu);
 
-	/* Setup the guest args page (so it gets the args). */
+	 
 	args_gva = vm_vaddr_alloc_page(vm);
 	memcpy(addr_gva2hva(vm, args_gva), &args, sizeof(args));
 	vcpu_args_set(vcpu, 1, args_gva);
@@ -838,15 +770,12 @@ int main(int argc, char **argv)
 		}
 	}
 
-	/*
-	 * If the user just specified nr_irqs and/or gic_version, then run all
-	 * combinations.
-	 */
+	 
 	if (default_args) {
-		test_vgic(nr_irqs, false /* level */, false /* eoi_split */);
-		test_vgic(nr_irqs, false /* level */, true /* eoi_split */);
-		test_vgic(nr_irqs, true /* level */, false /* eoi_split */);
-		test_vgic(nr_irqs, true /* level */, true /* eoi_split */);
+		test_vgic(nr_irqs, false  , false  );
+		test_vgic(nr_irqs, false  , true  );
+		test_vgic(nr_irqs, true  , false  );
+		test_vgic(nr_irqs, true  , true  );
 	} else {
 		test_vgic(nr_irqs, level_sensitive, eoi_split);
 	}

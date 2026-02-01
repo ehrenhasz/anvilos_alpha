@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Maxim Integrated
- * 7-bit, Multi-Channel Sink/Source Current DAC Driver
- * Copyright (C) 2017 Maxim Integrated
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -31,14 +27,7 @@
 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
 }
 
-/*
- * DS4424 DAC control register 8 bits
- * [7]		0: to sink; 1: to source
- * [6:0]	steps to sink/source
- * bit[7] looks like a sign bit, but the value of the register is
- * not a two's complement code considering the bit[6:0] is a absolute
- * distance from the zero point.
- */
+ 
 union ds4424_raw_data {
 	struct {
 		u8 dx:7;

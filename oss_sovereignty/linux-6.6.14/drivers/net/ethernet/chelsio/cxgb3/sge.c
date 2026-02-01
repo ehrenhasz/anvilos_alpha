@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2005-2008 Chelsio, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 #include <linux/skbuff.h>
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -54,11 +24,7 @@
 #define SGE_RX_PULL_LEN    128
 
 #define SGE_PG_RSVD SMP_CACHE_BYTES
-/*
- * Page chunk size for FL0 buffers if FL0 is to be populated with page chunks.
- * It must be a divisor of PAGE_SIZE.  If set to 0 FL0 will use sk_buffs
- * directly.
- */
+ 
 #define FL0_PG_CHUNK_SIZE  2048
 #define FL0_PG_ORDER 0
 #define FL0_PG_ALLOC_SIZE (PAGE_SIZE << FL0_PG_ORDER)
@@ -69,30 +35,23 @@
 #define SGE_RX_DROP_THRES 16
 #define RX_RECLAIM_PERIOD (HZ/4)
 
-/*
- * Max number of Rx buffers we replenish at a time.
- */
+ 
 #define MAX_RX_REFILL 16U
-/*
- * Period of the Tx buffer reclaim timer.  This timer does not need to run
- * frequently as Tx buffers are usually reclaimed by new Tx packets.
- */
+ 
 #define TX_RECLAIM_PERIOD (HZ / 4)
 #define TX_RECLAIM_TIMER_CHUNK 64U
 #define TX_RECLAIM_CHUNK 16U
 
-/* WR size in bytes */
+ 
 #define WR_LEN (WR_FLITS * 8)
 
-/*
- * Types of Tx queues in each queue set.  Order here matters, do not change.
- */
+ 
 enum { TXQ_ETH, TXQ_OFLD, TXQ_CTRL };
 
-/* Values for sge_txq.flags */
+ 
 enum {
-	TXQ_RUNNING = 1 << 0,	/* fetch engine is running */
-	TXQ_LAST_PKT_DB = 1 << 1,	/* last packet rang the doorbell */
+	TXQ_RUNNING = 1 << 0,	 
+	TXQ_LAST_PKT_DB = 1 << 1,	 
 };
 
 struct tx_desc {
@@ -106,15 +65,15 @@ struct rx_desc {
 	__be32 addr_hi;
 };
 
-struct tx_sw_desc {		/* SW state per Tx descriptor */
+struct tx_sw_desc {		 
 	struct sk_buff *skb;
-	u8 eop;       /* set if last descriptor for packet */
-	u8 addr_idx;  /* buffer index of first SGL entry in descriptor */
-	u8 fragidx;   /* first page fragment associated with descriptor */
-	s8 sflit;     /* start flit of first SGL entry in descriptor */
+	u8 eop;        
+	u8 addr_idx;   
+	u8 fragidx;    
+	s8 sflit;      
 };
 
-struct rx_sw_desc {                /* SW state per Rx descriptor */
+struct rx_sw_desc {                 
 	union {
 		struct sk_buff *skb;
 		struct fl_pg_chunk pg_chunk;
@@ -122,7 +81,7 @@ struct rx_sw_desc {                /* SW state per Rx descriptor */
 	DEFINE_DMA_UNMAP_ADDR(dma_addr);
 };
 
-struct rsp_desc {		/* response queue descriptor */
+struct rsp_desc {		 
 	struct rss_header rss_hdr;
 	__be32 flags;
 	__be32 len_cq;
@@ -132,23 +91,13 @@ struct rsp_desc {		/* response queue descriptor */
 	);
 };
 
-/*
- * Holds unmapping information for Tx packets that need deferred unmapping.
- * This structure lives at skb->head and must be allocated by callers.
- */
+ 
 struct deferred_unmap_info {
 	struct pci_dev *pdev;
 	dma_addr_t addr[MAX_SKB_FRAGS + 1];
 };
 
-/*
- * Maps a number of flits to the number of Tx descriptors that can hold them.
- * The formula is
- *
- * desc = 1 + (flits - 2) / (WR_FLITS - 1).
- *
- * HW allows up to 4 descriptors to be combined into a WR.
- */
+ 
 static u8 flit_desc_map[] = {
 	0,
 #if SGE_NUM_GENBITS == 1
@@ -176,15 +125,7 @@ static inline struct sge_qset *txq_to_qset(const struct sge_txq *q, int qidx)
 	return container_of(q, struct sge_qset, txq[qidx]);
 }
 
-/**
- *	refill_rspq - replenish an SGE response queue
- *	@adapter: the adapter
- *	@q: the response queue to replenish
- *	@credits: how many new responses to make available
- *
- *	Replenishes a response queue by making the supplied number of responses
- *	available to HW.
- */
+ 
 static inline void refill_rspq(struct adapter *adapter,
 			       const struct sge_rspq *q, unsigned int credits)
 {
@@ -193,12 +134,7 @@ static inline void refill_rspq(struct adapter *adapter,
 		     V_RSPQ(q->cntxt_id) | V_CREDITS(credits));
 }
 
-/**
- *	need_skb_unmap - does the platform need unmapping of sk_buffs?
- *
- *	Returns true if the platform needs sk_buff unmapping.  The compiler
- *	optimizes away unnecessary code if this returns true.
- */
+ 
 static inline int need_skb_unmap(void)
 {
 #ifdef CONFIG_NEED_DMA_MAP_STATE
@@ -208,28 +144,7 @@ static inline int need_skb_unmap(void)
 #endif
 }
 
-/**
- *	unmap_skb - unmap a packet main body and its page fragments
- *	@skb: the packet
- *	@q: the Tx queue containing Tx descriptors for the packet
- *	@cidx: index of Tx descriptor
- *	@pdev: the PCI device
- *
- *	Unmap the main body of an sk_buff and its page fragments, if any.
- *	Because of the fairly complicated structure of our SGLs and the desire
- *	to conserve space for metadata, the information necessary to unmap an
- *	sk_buff is spread across the sk_buff itself (buffer lengths), the HW Tx
- *	descriptors (the physical addresses of the various data buffers), and
- *	the SW descriptor state (assorted indices).  The send functions
- *	initialize the indices for the first packet descriptor so we can unmap
- *	the buffers held in the first Tx descriptor here, and we have enough
- *	information at this point to set the state for the next Tx descriptor.
- *
- *	Note that it is possible to clean up the first descriptor of a packet
- *	before the send routines have written the next descriptors, but this
- *	race does not cause any problem.  We just end up writing the unmapping
- *	info for the descriptor first.
- */
+ 
 static inline void unmap_skb(struct sk_buff *skb, struct sge_txq *q,
 			     unsigned int cidx, struct pci_dev *pdev)
 {
@@ -262,23 +177,15 @@ static inline void unmap_skb(struct sk_buff *skb, struct sge_txq *q,
 		frag_idx++;
 	}
 
-	if (frag_idx < nfrags) {   /* SGL continues into next Tx descriptor */
+	if (frag_idx < nfrags) {    
 		d = cidx + 1 == q->size ? q->sdesc : d + 1;
 		d->fragidx = frag_idx;
 		d->addr_idx = j;
-		d->sflit = curflit - WR_FLITS - j; /* sflit can be -1 */
+		d->sflit = curflit - WR_FLITS - j;  
 	}
 }
 
-/**
- *	free_tx_desc - reclaims Tx descriptors and their buffers
- *	@adapter: the adapter
- *	@q: the Tx queue to reclaim descriptors from
- *	@n: the number of descriptors to reclaim
- *
- *	Reclaims Tx descriptors from an SGE Tx queue and frees the associated
- *	Tx buffers.  Called with the Tx queue lock held.
- */
+ 
 static void free_tx_desc(struct adapter *adapter, struct sge_txq *q,
 			 unsigned int n)
 {
@@ -291,7 +198,7 @@ static void free_tx_desc(struct adapter *adapter, struct sge_txq *q,
 
 	d = &q->sdesc[cidx];
 	while (n--) {
-		if (d->skb) {	/* an SGL is present */
+		if (d->skb) {	 
 			if (need_unmap)
 				unmap_skb(d->skb, q, cidx, pdev);
 			if (d->eop) {
@@ -308,16 +215,7 @@ static void free_tx_desc(struct adapter *adapter, struct sge_txq *q,
 	q->cidx = cidx;
 }
 
-/**
- *	reclaim_completed_tx - reclaims completed Tx descriptors
- *	@adapter: the adapter
- *	@q: the Tx queue to reclaim completed descriptors from
- *	@chunk: maximum number of descriptors to reclaim
- *
- *	Reclaims Tx descriptors that the SGE has indicated it has processed,
- *	and frees the associated buffers if possible.  Called with the Tx
- *	queue's lock held.
- */
+ 
 static inline unsigned int reclaim_completed_tx(struct adapter *adapter,
 						struct sge_txq *q,
 						unsigned int chunk)
@@ -333,12 +231,7 @@ static inline unsigned int reclaim_completed_tx(struct adapter *adapter,
 	return q->processed - q->cleaned;
 }
 
-/**
- *	should_restart_tx - are there enough resources to restart a Tx queue?
- *	@q: the Tx queue
- *
- *	Checks if there are enough descriptors to restart a suspended Tx queue.
- */
+ 
 static inline int should_restart_tx(const struct sge_txq *q)
 {
 	unsigned int r = q->processed - q->cleaned;
@@ -365,14 +258,7 @@ static void clear_rx_desc(struct pci_dev *pdev, const struct sge_fl *q,
 	}
 }
 
-/**
- *	free_rx_bufs - free the Rx buffers on an SGE free list
- *	@pdev: the PCI device associated with the adapter
- *	@q: the SGE free list to clean up
- *
- *	Release the buffers on an SGE free-buffer Rx queue.  HW fetching from
- *	this queue should be stopped before calling this function.
- */
+ 
 static void free_rx_bufs(struct pci_dev *pdev, struct sge_fl *q)
 {
 	unsigned int cidx = q->cidx;
@@ -392,18 +278,7 @@ static void free_rx_bufs(struct pci_dev *pdev, struct sge_fl *q)
 	}
 }
 
-/**
- *	add_one_rx_buf - add a packet buffer to a free-buffer list
- *	@va:  buffer start VA
- *	@len: the buffer length
- *	@d: the HW Rx descriptor to write
- *	@sd: the SW Rx descriptor to write
- *	@gen: the generation bit value
- *	@pdev: the PCI device associated with the adapter
- *
- *	Add a buffer of the given length to the supplied HW and SW Rx
- *	descriptors.
- */
+ 
 static inline int add_one_rx_buf(void *va, unsigned int len,
 				 struct rx_desc *d, struct rx_sw_desc *sd,
 				 unsigned int gen, struct pci_dev *pdev)
@@ -487,17 +362,7 @@ static inline void ring_fl_db(struct adapter *adap, struct sge_fl *q)
 	}
 }
 
-/**
- *	refill_fl - refill an SGE free-buffer list
- *	@adap: the adapter
- *	@q: the free-list to refill
- *	@n: the number of new buffers to allocate
- *	@gfp: the gfp flags for allocating new buffers
- *
- *	(Re)populate an SGE free-buffer list with up to @n new packet buffers,
- *	allocated with the supplied gfp flags.  The caller must assure that
- *	@n does not exceed the queue's capacity.
- */
+ 
 static int refill_fl(struct adapter *adap, struct sge_fl *q, int n, gfp_t gfp)
 {
 	struct rx_sw_desc *sd = &q->sdesc[q->pidx];
@@ -562,15 +427,7 @@ static inline void __refill_fl(struct adapter *adap, struct sge_fl *fl)
 		  GFP_ATOMIC | __GFP_COMP);
 }
 
-/**
- *	recycle_rx_buf - recycle a receive buffer
- *	@adap: the adapter
- *	@q: the SGE free list
- *	@idx: index of buffer to recycle
- *
- *	Recycles the specified buffer on the given free list by adding it at
- *	the next available slot on the list.
- */
+ 
 static void recycle_rx_buf(struct adapter *adap, struct sge_fl *q,
 			   unsigned int idx)
 {
@@ -578,8 +435,8 @@ static void recycle_rx_buf(struct adapter *adap, struct sge_fl *q,
 	struct rx_desc *to = &q->desc[q->pidx];
 
 	q->sdesc[q->pidx] = q->sdesc[idx];
-	to->addr_lo = from->addr_lo;	/* already big endian */
-	to->addr_hi = from->addr_hi;	/* likewise */
+	to->addr_lo = from->addr_lo;	 
+	to->addr_hi = from->addr_hi;	 
 	dma_wmb();
 	to->len_gen = cpu_to_be32(V_FLD_GEN1(q->gen));
 	to->gen2 = cpu_to_be32(V_FLD_GEN2(q->gen));
@@ -594,23 +451,7 @@ static void recycle_rx_buf(struct adapter *adap, struct sge_fl *q,
 	ring_fl_db(adap, q);
 }
 
-/**
- *	alloc_ring - allocate resources for an SGE descriptor ring
- *	@pdev: the PCI device
- *	@nelem: the number of descriptors
- *	@elem_size: the size of each descriptor
- *	@sw_size: the size of the SW state associated with each ring element
- *	@phys: the physical address of the allocated ring
- *	@metadata: address of the array holding the SW state for the ring
- *
- *	Allocates resources for an SGE descriptor ring, such as Tx queues,
- *	free buffer lists, or response queues.  Each SGE ring requires
- *	space for its HW descriptors plus, optionally, space for the SW state
- *	associated with each HW entry (the metadata).  The function returns
- *	three values: the virtual address for the HW ring (the return value
- *	of the function), the physical address of the HW ring, and the address
- *	of the SW ring.
- */
+ 
 static void *alloc_ring(struct pci_dev *pdev, size_t nelem, size_t elem_size,
 			size_t sw_size, dma_addr_t * phys, void *metadata)
 {
@@ -632,14 +473,7 @@ static void *alloc_ring(struct pci_dev *pdev, size_t nelem, size_t elem_size,
 	return p;
 }
 
-/**
- *	t3_reset_qset - reset a sge qset
- *	@q: the queue set
- *
- *	Reset the qset structure.
- *	the NAPI structure is preserved in the event of
- *	the qset's reincarnation, for example during EEH recovery.
- */
+ 
 static void t3_reset_qset(struct sge_qset *q)
 {
 	if (q->adap &&
@@ -653,22 +487,14 @@ static void t3_reset_qset(struct sge_qset *q)
 	memset(q->fl, 0, sizeof(struct sge_fl) * SGE_RXQ_PER_SET);
 	memset(q->txq, 0, sizeof(struct sge_txq) * SGE_TXQ_PER_SET);
 	q->txq_stopped = 0;
-	q->tx_reclaim_timer.function = NULL; /* for t3_stop_sge_timers() */
+	q->tx_reclaim_timer.function = NULL;  
 	q->rx_reclaim_timer.function = NULL;
 	q->nomem = 0;
 	napi_free_frags(&q->napi);
 }
 
 
-/**
- *	t3_free_qset - free the resources of an SGE queue set
- *	@adapter: the adapter owning the queue set
- *	@q: the queue set
- *
- *	Release the HW and SW resources associated with an SGE queue set, such
- *	as HW contexts, packet buffers, and descriptor rings.  Traffic to the
- *	queue set must be quiesced prior to calling this.
- */
+ 
 static void t3_free_qset(struct adapter *adapter, struct sge_qset *q)
 {
 	int i;
@@ -716,13 +542,7 @@ static void t3_free_qset(struct adapter *adapter, struct sge_qset *q)
 	t3_reset_qset(q);
 }
 
-/**
- *	init_qset_cntxt - initialize an SGE queue set context info
- *	@qs: the queue set
- *	@id: the queue set id
- *
- *	Initializes the TIDs and context ids for the queues of a queue set.
- */
+ 
 static void init_qset_cntxt(struct sge_qset *qs, unsigned int id)
 {
 	qs->rspq.cntxt_id = id;
@@ -735,47 +555,21 @@ static void init_qset_cntxt(struct sge_qset *qs, unsigned int id)
 	qs->txq[TXQ_CTRL].token = FW_CTRL_TID_START + id;
 }
 
-/**
- *	sgl_len - calculates the size of an SGL of the given capacity
- *	@n: the number of SGL entries
- *
- *	Calculates the number of flits needed for a scatter/gather list that
- *	can hold the given number of entries.
- */
+ 
 static inline unsigned int sgl_len(unsigned int n)
 {
-	/* alternatively: 3 * (n / 2) + 2 * (n & 1) */
+	 
 	return (3 * n) / 2 + (n & 1);
 }
 
-/**
- *	flits_to_desc - returns the num of Tx descriptors for the given flits
- *	@n: the number of flits
- *
- *	Calculates the number of Tx descriptors needed for the supplied number
- *	of flits.
- */
+ 
 static inline unsigned int flits_to_desc(unsigned int n)
 {
 	BUG_ON(n >= ARRAY_SIZE(flit_desc_map));
 	return flit_desc_map[n];
 }
 
-/**
- *	get_packet - return the next ingress packet buffer from a free list
- *	@adap: the adapter that received the packet
- *	@fl: the SGE free list holding the packet
- *	@len: the packet length including any SGE padding
- *	@drop_thres: # of remaining buffers before we start dropping packets
- *
- *	Get the next packet from a free list and complete setup of the
- *	sk_buff.  If the packet is small we make a copy and recycle the
- *	original buffer, otherwise we use the original buffer itself.  If a
- *	positive drop threshold is supplied packets are dropped and their
- *	buffers recycled if (a) the number of remaining buffers is under the
- *	threshold and the packet is too big to copy, or (b) the packet should
- *	be copied but there is no memory for the copy.
- */
+ 
 static struct sk_buff *get_packet(struct adapter *adap, struct sge_fl *fl,
 				  unsigned int len, unsigned int drop_thres)
 {
@@ -817,25 +611,7 @@ use_orig_buf:
 	return skb;
 }
 
-/**
- *	get_packet_pg - return the next ingress packet buffer from a free list
- *	@adap: the adapter that received the packet
- *	@fl: the SGE free list holding the packet
- *	@q: the queue
- *	@len: the packet length including any SGE padding
- *	@drop_thres: # of remaining buffers before we start dropping packets
- *
- *	Get the next packet from a free list populated with page chunks.
- *	If the packet is small we make a copy and recycle the original buffer,
- *	otherwise we attach the original buffer as a page fragment to a fresh
- *	sk_buff.  If a positive drop threshold is supplied packets are dropped
- *	and their buffers recycled if (a) the number of remaining buffers is
- *	under the threshold and the packet is too big to copy, or (b) there's
- *	no system memory.
- *
- * 	Note: this function is similar to @get_packet but deals with Rx buffers
- * 	that are page chunks rather than sk_buffs.
- */
+ 
 static struct sk_buff *get_packet_pg(struct adapter *adap, struct sge_fl *fl,
 				     struct sge_rspq *q, unsigned int len,
 				     unsigned int drop_thres)
@@ -903,19 +679,11 @@ recycle:
 	}
 
 	fl->credits--;
-	/*
-	 * We do not refill FLs here, we let the caller do it to overlap a
-	 * prefetch.
-	 */
+	 
 	return newskb;
 }
 
-/**
- *	get_imm_packet - return the next ingress packet buffer from a response
- *	@resp: the response descriptor containing the packet data
- *
- *	Return a packet containing the immediate data of the given response.
- */
+ 
 static inline struct sk_buff *get_imm_packet(const struct rsp_desc *resp)
 {
 	struct sk_buff *skb = alloc_skb(IMMED_PKT_SIZE, GFP_ATOMIC);
@@ -928,13 +696,7 @@ static inline struct sk_buff *get_imm_packet(const struct rsp_desc *resp)
 	return skb;
 }
 
-/**
- *	calc_tx_descs - calculate the number of Tx descriptors for a packet
- *	@skb: the packet
- *
- * 	Returns the number of Tx descriptors needed for the given Ethernet
- * 	packet.  Ethernet packets require addition of WR and CPL headers.
- */
+ 
 static inline unsigned int calc_tx_descs(const struct sk_buff *skb)
 {
 	unsigned int flits;
@@ -948,13 +710,7 @@ static inline unsigned int calc_tx_descs(const struct sk_buff *skb)
 	return flits_to_desc(flits);
 }
 
-/*	map_skb - map a packet main body and its page fragments
- *	@pdev: the PCI device
- *	@skb: the packet
- *	@addr: placeholder to save the mapped addresses
- *
- *	map the main body of an sk_buff and its page fragments, if any.
- */
+ 
 static int map_skb(struct pci_dev *pdev, const struct sk_buff *skb,
 		   dma_addr_t *addr)
 {
@@ -992,18 +748,7 @@ out_err:
 	return -ENOMEM;
 }
 
-/**
- *	write_sgl - populate a scatter/gather list for a packet
- *	@skb: the packet
- *	@sgp: the SGL to populate
- *	@start: start address of skb main body data to include in the SGL
- *	@len: length of skb main body data to include in the SGL
- *	@addr: the list of the mapped addresses
- *
- *	Copies the scatter/gather list for the buffers that make up a packet
- *	and returns the SGL size in 8-byte words.  The caller must size the SGL
- *	appropriately.
- */
+ 
 static inline unsigned int write_sgl(const struct sk_buff *skb,
 				     struct sg_ent *sgp, unsigned char *start,
 				     unsigned int len, const dma_addr_t *addr)
@@ -1030,18 +775,7 @@ static inline unsigned int write_sgl(const struct sk_buff *skb,
 	return ((nfrags + (len != 0)) * 3) / 2 + j;
 }
 
-/**
- *	check_ring_tx_db - check and potentially ring a Tx queue's doorbell
- *	@adap: the adapter
- *	@q: the Tx queue
- *
- *	Ring the doorbel if a Tx queue is asleep.  There is a natural race,
- *	where the HW is going to sleep just after we checked, however,
- *	then the interrupt handler will detect the outstanding TX packet
- *	and ring the doorbell for us.
- *
- *	When GTS is disabled we unconditionally ring the doorbell.
- */
+ 
 static inline void check_ring_tx_db(struct adapter *adap, struct sge_txq *q)
 {
 #if USE_GTS
@@ -1052,7 +786,7 @@ static inline void check_ring_tx_db(struct adapter *adap, struct sge_txq *q)
 			     F_SELEGRCNTX | V_EGRCNTX(q->cntxt_id));
 	}
 #else
-	wmb();			/* write descriptors before telling HW */
+	wmb();			 
 	t3_write_reg(adap, A_SG_KDOORBELL,
 		     F_SELEGRCNTX | V_EGRCNTX(q->cntxt_id));
 #endif
@@ -1065,25 +799,7 @@ static inline void wr_gen2(struct tx_desc *d, unsigned int gen)
 #endif
 }
 
-/**
- *	write_wr_hdr_sgl - write a WR header and, optionally, SGL
- *	@ndesc: number of Tx descriptors spanned by the SGL
- *	@skb: the packet corresponding to the WR
- *	@d: first Tx descriptor to be written
- *	@pidx: index of above descriptors
- *	@q: the SGE Tx queue
- *	@sgl: the SGL
- *	@flits: number of flits to the start of the SGL in the first descriptor
- *	@sgl_flits: the SGL size in flits
- *	@gen: the Tx descriptor generation
- *	@wr_hi: top 32 bits of WR header based on WR type (big endian)
- *	@wr_lo: low 32 bits of WR header based on WR type (big endian)
- *
- *	Write a work request header and an associated SGL.  If the SGL is
- *	small enough to fit into one Tx descriptor it has already been written
- *	and we just need to write the WR header.  Otherwise we distribute the
- *	SGL across the number of descriptors it spans.
- */
+ 
 static void write_wr_hdr_sgl(unsigned int ndesc, struct sk_buff *skb,
 			     struct tx_desc *d, unsigned int pidx,
 			     const struct sge_txq *q,
@@ -1159,20 +875,7 @@ static void write_wr_hdr_sgl(unsigned int ndesc, struct sk_buff *skb,
 	}
 }
 
-/**
- *	write_tx_pkt_wr - write a TX_PKT work request
- *	@adap: the adapter
- *	@skb: the packet to send
- *	@pi: the egress interface
- *	@pidx: index of the first Tx descriptor to write
- *	@gen: the generation value to use
- *	@q: the Tx queue
- *	@ndesc: number of descriptors the packet will occupy
- *	@compl: the value of the COMPL bit to use
- *	@addr: address
- *
- *	Generate a TX_PKT work request to send the supplied packet.
- */
+ 
 static void write_tx_pkt_wr(struct adapter *adap, struct sk_buff *skb,
 			    const struct port_info *pi,
 			    unsigned int pidx, unsigned int gen,
@@ -1207,7 +910,7 @@ static void write_tx_pkt_wr(struct adapter *adap, struct sk_buff *skb,
 		flits = 3;
 	} else {
 		cntrl |= V_TXPKT_OPCODE(CPL_TX_PKT);
-		cntrl |= F_TXPKT_IPCSUM_DIS;	/* SW calculates IP csum */
+		cntrl |= F_TXPKT_IPCSUM_DIS;	 
 		cntrl |= V_TXPKT_L4CSUM_DIS(skb->ip_summed != CHECKSUM_PARTIAL);
 		cpl->cntrl = htonl(cntrl);
 
@@ -1250,13 +953,7 @@ static inline void t3_stop_tx_queue(struct netdev_queue *txq,
 	q->stops++;
 }
 
-/**
- *	t3_eth_xmit - add a packet to the Ethernet Tx queue
- *	@skb: the packet
- *	@dev: the egress net device
- *
- *	Add a packet to an SGE Tx queue.  Runs with softirqs disabled.
- */
+ 
 netdev_tx_t t3_eth_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	int qidx;
@@ -1268,10 +965,7 @@ netdev_tx_t t3_eth_xmit(struct sk_buff *skb, struct net_device *dev)
 	struct sge_txq *q;
 	dma_addr_t addr[MAX_SKB_FRAGS + 1];
 
-	/*
-	 * The chip min packet length is 9 octets but play safe and reject
-	 * anything shorter than an Ethernet header.
-	 */
+	 
 	if (unlikely(skb->len < ETH_HLEN)) {
 		dev_kfree_skb_any(skb);
 		return NETDEV_TX_OK;
@@ -1295,7 +989,7 @@ netdev_tx_t t3_eth_xmit(struct sk_buff *skb, struct net_device *dev)
 		return NETDEV_TX_BUSY;
 	}
 
-	/* Check if ethernet packet can't be sent as immediate data */
+	 
 	if (skb->len > (WR_LEN - sizeof(struct cpl_tx_pkt))) {
 		if (unlikely(map_skb(adap->pdev, skb, addr) < 0)) {
 			dev_kfree_skb(skb);
@@ -1325,7 +1019,7 @@ netdev_tx_t t3_eth_xmit(struct sk_buff *skb, struct net_device *dev)
 		q->gen ^= 1;
 	}
 
-	/* update port statistics */
+	 
 	if (skb->ip_summed == CHECKSUM_PARTIAL)
 		qs->port_stats[SGE_PSTAT_TX_CSUM]++;
 	if (skb_shinfo(skb)->gso_size)
@@ -1333,30 +1027,7 @@ netdev_tx_t t3_eth_xmit(struct sk_buff *skb, struct net_device *dev)
 	if (skb_vlan_tag_present(skb))
 		qs->port_stats[SGE_PSTAT_VLANINS]++;
 
-	/*
-	 * We do not use Tx completion interrupts to free DMAd Tx packets.
-	 * This is good for performance but means that we rely on new Tx
-	 * packets arriving to run the destructors of completed packets,
-	 * which open up space in their sockets' send queues.  Sometimes
-	 * we do not get such new packets causing Tx to stall.  A single
-	 * UDP transmitter is a good example of this situation.  We have
-	 * a clean up timer that periodically reclaims completed packets
-	 * but it doesn't run often enough (nor do we want it to) to prevent
-	 * lengthy stalls.  A solution to this problem is to run the
-	 * destructor early, after the packet is queued but before it's DMAd.
-	 * A cons is that we lie to socket memory accounting, but the amount
-	 * of extra memory is reasonable (limited by the number of Tx
-	 * descriptors), the packets do actually get freed quickly by new
-	 * packets almost always, and for protocols like TCP that wait for
-	 * acks to really free up the data the extra memory is even less.
-	 * On the positive side we run the destructors on the sending CPU
-	 * rather than on a potentially different completing CPU, usually a
-	 * good thing.  We also run them without holding our Tx queue lock,
-	 * unlike what reclaim_completed_tx() would otherwise do.
-	 *
-	 * Run the destructor before telling the DMA engine about the packet
-	 * to make sure it doesn't complete and get freed prematurely.
-	 */
+	 
 	if (likely(!skb_shared(skb)))
 		skb_orphan(skb);
 
@@ -1365,18 +1036,7 @@ netdev_tx_t t3_eth_xmit(struct sk_buff *skb, struct net_device *dev)
 	return NETDEV_TX_OK;
 }
 
-/**
- *	write_imm - write a packet into a Tx descriptor as immediate data
- *	@d: the Tx descriptor to write
- *	@skb: the packet
- *	@len: the length of packet data to write as immediate data
- *	@gen: the generation bit value to write
- *
- *	Writes a packet as immediate data into a Tx descriptor.  The packet
- *	contains a work request at its beginning.  We must write the packet
- *	carefully so the SGE doesn't read it accidentally before it's written
- *	in its entirety.
- */
+ 
 static inline void write_imm(struct tx_desc *d, struct sk_buff *skb,
 			     unsigned int len, unsigned int gen)
 {
@@ -1397,24 +1057,7 @@ static inline void write_imm(struct tx_desc *d, struct sk_buff *skb,
 	kfree_skb(skb);
 }
 
-/**
- *	check_desc_avail - check descriptor availability on a send queue
- *	@adap: the adapter
- *	@q: the send queue
- *	@skb: the packet needing the descriptors
- *	@ndesc: the number of Tx descriptors needed
- *	@qid: the Tx queue number in its queue set (TXQ_OFLD or TXQ_CTRL)
- *
- *	Checks if the requested number of Tx descriptors is available on an
- *	SGE send queue.  If the queue is already suspended or not enough
- *	descriptors are available the packet is queued for later transmission.
- *	Must be called with the Tx queue locked.
- *
- *	Returns 0 if enough descriptors are available, 1 if there aren't
- *	enough descriptors and the packet has been queued, and 2 if the caller
- *	needs to retry because there weren't enough descriptors at the
- *	beginning of the call but some freed up in the mean time.
- */
+ 
 static inline int check_desc_avail(struct adapter *adap, struct sge_txq *q,
 				   struct sk_buff *skb, unsigned int ndesc,
 				   unsigned int qid)
@@ -1439,14 +1082,7 @@ static inline int check_desc_avail(struct adapter *adap, struct sge_txq *q,
 	return 0;
 }
 
-/**
- *	reclaim_completed_tx_imm - reclaim completed control-queue Tx descs
- *	@q: the SGE control Tx queue
- *
- *	This is a variant of reclaim_completed_tx() that is used for Tx queues
- *	that send only immediate data (presently just the control queues) and
- *	thus do not have any sk_buffs to release.
- */
+ 
 static inline void reclaim_completed_tx_imm(struct sge_txq *q)
 {
 	unsigned int reclaim = q->processed - q->cleaned;
@@ -1460,16 +1096,7 @@ static inline int immediate(const struct sk_buff *skb)
 	return skb->len <= WR_LEN;
 }
 
-/**
- *	ctrl_xmit - send a packet through an SGE control Tx queue
- *	@adap: the adapter
- *	@q: the control queue
- *	@skb: the packet
- *
- *	Send a packet through an SGE control Tx queue.  Packets sent through
- *	a control queue must fit entirely as immediate data in a single Tx
- *	descriptor and have no page fragments.
- */
+ 
 static int ctrl_xmit(struct adapter *adap, struct sge_txq *q,
 		     struct sk_buff *skb)
 {
@@ -1511,12 +1138,7 @@ static int ctrl_xmit(struct adapter *adap, struct sge_txq *q,
 	return NET_XMIT_SUCCESS;
 }
 
-/**
- *	restart_ctrlq - restart a suspended control queue
- *	@w: pointer to the work associated with this handler
- *
- *	Resumes transmission on a suspended Tx control queue.
- */
+ 
 static void restart_ctrlq(struct work_struct *w)
 {
 	struct sk_buff *skb;
@@ -1555,9 +1177,7 @@ static void restart_ctrlq(struct work_struct *w)
 		     F_SELEGRCNTX | V_EGRCNTX(q->cntxt_id));
 }
 
-/*
- * Send a management message through control queue 0
- */
+ 
 int t3_mgmt_tx(struct adapter *adap, struct sk_buff *skb)
 {
 	int ret;
@@ -1568,14 +1188,7 @@ int t3_mgmt_tx(struct adapter *adap, struct sk_buff *skb)
 	return ret;
 }
 
-/**
- *	deferred_unmap_destructor - unmap a packet when it is freed
- *	@skb: the packet
- *
- *	This is the packet destructor used for Tx packets that need to remain
- *	mapped until they are freed rather than until their Tx descriptors are
- *	freed.
- */
+ 
 static void deferred_unmap_destructor(struct sk_buff *skb)
 {
 	int i;
@@ -1613,19 +1226,7 @@ static void setup_deferred_unmapping(struct sk_buff *skb, struct pci_dev *pdev,
 		*p = be64_to_cpu(sgl->addr[0]);
 }
 
-/**
- *	write_ofld_wr - write an offload work request
- *	@adap: the adapter
- *	@skb: the packet to send
- *	@q: the Tx queue
- *	@pidx: index of the first Tx descriptor to write
- *	@gen: the generation value to use
- *	@ndesc: number of descriptors the packet will occupy
- *	@addr: the address
- *
- *	Write an offload work request to send the supplied packet.  The packet
- *	data already carry the work request with most fields populated.
- */
+ 
 static void write_ofld_wr(struct adapter *adap, struct sk_buff *skb,
 			  struct sge_txq *q, unsigned int pidx,
 			  unsigned int gen, unsigned int ndesc,
@@ -1642,7 +1243,7 @@ static void write_ofld_wr(struct adapter *adap, struct sk_buff *skb,
 		return;
 	}
 
-	/* Only TX_DATA builds SGLs */
+	 
 
 	from = (struct work_request_hdr *)skb->data;
 	memcpy(&d->flit[1], &from[1],
@@ -1662,35 +1263,22 @@ static void write_ofld_wr(struct adapter *adap, struct sk_buff *skb,
 			 gen, from->wr_hi, from->wr_lo);
 }
 
-/**
- *	calc_tx_descs_ofld - calculate # of Tx descriptors for an offload packet
- *	@skb: the packet
- *
- * 	Returns the number of Tx descriptors needed for the given offload
- * 	packet.  These packets are already fully constructed.
- */
+ 
 static inline unsigned int calc_tx_descs_ofld(const struct sk_buff *skb)
 {
 	unsigned int flits, cnt;
 
 	if (skb->len <= WR_LEN)
-		return 1;	/* packet fits as immediate data */
+		return 1;	 
 
-	flits = skb_transport_offset(skb) / 8;	/* headers */
+	flits = skb_transport_offset(skb) / 8;	 
 	cnt = skb_shinfo(skb)->nr_frags;
 	if (skb_tail_pointer(skb) != skb_transport_header(skb))
 		cnt++;
 	return flits_to_desc(flits + sgl_len(cnt));
 }
 
-/**
- *	ofld_xmit - send a packet through an offload queue
- *	@adap: the adapter
- *	@q: the Tx offload queue
- *	@skb: the packet
- *
- *	Send an offload packet through an SGE offload queue.
- */
+ 
 static int ofld_xmit(struct adapter *adap, struct sge_txq *q,
 		     struct sk_buff *skb)
 {
@@ -1703,7 +1291,7 @@ again:	reclaim_completed_tx(adap, q, TX_RECLAIM_CHUNK);
 	ret = check_desc_avail(adap, q, skb, ndesc, TXQ_OFLD);
 	if (unlikely(ret)) {
 		if (ret == 1) {
-			skb->priority = ndesc;	/* save for restart */
+			skb->priority = ndesc;	 
 			spin_unlock(&q->lock);
 			return NET_XMIT_CN;
 		}
@@ -1731,12 +1319,7 @@ again:	reclaim_completed_tx(adap, q, TX_RECLAIM_CHUNK);
 	return NET_XMIT_SUCCESS;
 }
 
-/**
- *	restart_offloadq - restart a suspended offload queue
- *	@w: pointer to the work associated with this handler
- *
- *	Resumes transmission on a suspended Tx offload queue.
- */
+ 
 static void restart_offloadq(struct work_struct *w)
 {
 	struct sk_buff *skb;
@@ -1797,39 +1380,19 @@ again:	reclaim_completed_tx(adap, q, TX_RECLAIM_CHUNK);
 			     F_SELEGRCNTX | V_EGRCNTX(q->cntxt_id));
 }
 
-/**
- *	queue_set - return the queue set a packet should use
- *	@skb: the packet
- *
- *	Maps a packet to the SGE queue set it should use.  The desired queue
- *	set is carried in bits 1-3 in the packet's priority.
- */
+ 
 static inline int queue_set(const struct sk_buff *skb)
 {
 	return skb->priority >> 1;
 }
 
-/**
- *	is_ctrl_pkt - return whether an offload packet is a control packet
- *	@skb: the packet
- *
- *	Determines whether an offload packet should use an OFLD or a CTRL
- *	Tx queue.  This is indicated by bit 0 in the packet's priority.
- */
+ 
 static inline int is_ctrl_pkt(const struct sk_buff *skb)
 {
 	return skb->priority & 1;
 }
 
-/**
- *	t3_offload_tx - send an offload packet
- *	@tdev: the offload device to send to
- *	@skb: the packet
- *
- *	Sends an offload packet.  We use the packet priority to select the
- *	appropriate Tx queue as follows: bit 0 indicates whether the packet
- *	should be sent as regular or control, bits 1-3 select the queue set.
- */
+ 
 int t3_offload_tx(struct t3cdev *tdev, struct sk_buff *skb)
 {
 	struct adapter *adap = tdev2adap(tdev);
@@ -1841,15 +1404,7 @@ int t3_offload_tx(struct t3cdev *tdev, struct sk_buff *skb)
 	return ofld_xmit(adap, &qs->txq[TXQ_OFLD], skb);
 }
 
-/**
- *	offload_enqueue - add an offload packet to an SGE offload receive queue
- *	@q: the SGE response queue
- *	@skb: the packet
- *
- *	Add a new offload packet to an SGE response queue's offload packet
- *	queue.  If the packet is the first on the queue it schedules the RX
- *	softirq to process the queue.
- */
+ 
 static inline void offload_enqueue(struct sge_rspq *q, struct sk_buff *skb)
 {
 	int was_empty = skb_queue_empty(&q->rx_queue);
@@ -1863,15 +1418,7 @@ static inline void offload_enqueue(struct sge_rspq *q, struct sk_buff *skb)
 	}
 }
 
-/**
- *	deliver_partial_bundle - deliver a (partial) bundle of Rx offload pkts
- *	@tdev: the offload device that will be receiving the packets
- *	@q: the SGE response queue that assembled the bundle
- *	@skbs: the partial bundle
- *	@n: the number of packets in the bundle
- *
- *	Delivers a (partial) bundle of Rx offload packets to an offload device.
- */
+ 
 static inline void deliver_partial_bundle(struct t3cdev *tdev,
 					  struct sge_rspq *q,
 					  struct sk_buff *skbs[], int n)
@@ -1882,17 +1429,7 @@ static inline void deliver_partial_bundle(struct t3cdev *tdev,
 	}
 }
 
-/**
- *	ofld_poll - NAPI handler for offload packets in interrupt mode
- *	@napi: the network device doing the polling
- *	@budget: polling budget
- *
- *	The NAPI handler for offload packets when a response queue is serviced
- *	by the hard interrupt handler, i.e., when it's operating in non-polling
- *	mode.  Creates small packet batches and sends them through the offload
- *	receive handler.  Batches need to be of modest size as we do prefetches
- *	on the packets in each.
- */
+ 
 static int ofld_poll(struct napi_struct *napi, int budget)
 {
 	struct sge_qset *qs = container_of(napi, struct sge_qset, napi);
@@ -1932,7 +1469,7 @@ static int ofld_poll(struct napi_struct *napi, int budget)
 			}
 		}
 		if (!skb_queue_empty(&queue)) {
-			/* splice remaining packets back onto Rx queue */
+			 
 			spin_lock_irq(&q->lock);
 			skb_queue_splice(&queue, &q->rx_queue);
 			spin_unlock_irq(&q->lock);
@@ -1943,17 +1480,7 @@ static int ofld_poll(struct napi_struct *napi, int budget)
 	return work_done;
 }
 
-/**
- *	rx_offload - process a received offload packet
- *	@tdev: the offload device receiving the packet
- *	@rq: the response queue that received the packet
- *	@skb: the packet
- *	@rx_gather: a gather list of packets if we are building a bundle
- *	@gather_idx: index of the next available slot in the bundle
- *
- *	Process an ingress offload packet and add it to the offload ingress
- *	queue. 	Returns the index of the next available slot in the bundle.
- */
+ 
 static inline int rx_offload(struct t3cdev *tdev, struct sge_rspq *rq,
 			     struct sk_buff *skb, struct sk_buff *rx_gather[],
 			     unsigned int gather_idx)
@@ -1975,13 +1502,7 @@ static inline int rx_offload(struct t3cdev *tdev, struct sge_rspq *rq,
 	return gather_idx;
 }
 
-/**
- *	restart_tx - check whether to restart suspended Tx queues
- *	@qs: the queue set to resume
- *
- *	Restarts suspended Tx queues of an SGE queue set if they have enough
- *	free resources to resume operation.
- */
+ 
 static void restart_tx(struct sge_qset *qs)
 {
 	if (test_bit(TXQ_ETH, &qs->txq_stopped) &&
@@ -1997,7 +1518,7 @@ static void restart_tx(struct sge_qset *qs)
 	    test_and_clear_bit(TXQ_OFLD, &qs->txq_stopped)) {
 		qs->txq[TXQ_OFLD].restarts++;
 
-		/* The work can be quite lengthy so we use driver's own queue */
+		 
 		queue_work(cxgb3_wq, &qs->txq[TXQ_OFLD].qresume_task);
 	}
 	if (test_bit(TXQ_CTRL, &qs->txq_stopped) &&
@@ -2005,19 +1526,12 @@ static void restart_tx(struct sge_qset *qs)
 	    test_and_clear_bit(TXQ_CTRL, &qs->txq_stopped)) {
 		qs->txq[TXQ_CTRL].restarts++;
 
-		/* The work can be quite lengthy so we use driver's own queue */
+		 
 		queue_work(cxgb3_wq, &qs->txq[TXQ_CTRL].qresume_task);
 	}
 }
 
-/**
- *	cxgb3_arp_process - process an ARP request probing a private IP address
- *	@pi: the port info
- *	@skb: the skbuff containing the ARP request
- *
- *	Check if the ARP request is probing the private IP address
- *	dedicated to iSCSI, generate an ARP reply if so.
- */
+ 
 static void cxgb3_arp_process(struct port_info *pi, struct sk_buff *skb)
 {
 	struct net_device *dev = skb->dev;
@@ -2069,18 +1583,7 @@ static void cxgb3_process_iscsi_prov_pack(struct port_info *pi,
 
 }
 
-/**
- *	rx_eth - process an ingress ethernet packet
- *	@adap: the adapter
- *	@rq: the response queue that received the packet
- *	@skb: the packet
- *	@pad: padding
- *	@lro: large receive offload
- *
- *	Process an ingress ethernet packet and deliver it to the stack.
- *	The padding is 2 if the packet was delivered in an Rx buffer and 0
- *	if it was immediate data in a response.
- */
+ 
 static void rx_eth(struct adapter *adap, struct sge_rspq *rq,
 		   struct sk_buff *skb, int pad, int lro)
 {
@@ -2120,17 +1623,7 @@ static inline int is_eth_tcp(u32 rss)
 	return G_HASHTYPE(ntohl(rss)) == RSS_HASH_4_TUPLE;
 }
 
-/**
- *	lro_add_page - add a page chunk to an LRO session
- *	@adap: the adapter
- *	@qs: the associated queue set
- *	@fl: the free list containing the page chunk to add
- *	@len: packet length
- *	@complete: Indicates the last fragment of a frame
- *
- *	Add a received packet contained in a page chunk to an existing LRO
- *	session.
- */
+ 
 static void lro_add_page(struct adapter *adap, struct sge_qset *qs,
 			 struct sge_fl *fl, int len, int complete)
 {
@@ -2204,15 +1697,7 @@ static void lro_add_page(struct adapter *adap, struct sge_qset *qs,
 	napi_gro_frags(&qs->napi);
 }
 
-/**
- *	handle_rsp_cntrl_info - handles control information in a response
- *	@qs: the queue set corresponding to the response
- *	@flags: the response control flags
- *
- *	Handles the control information of an SGE response, such as GTS
- *	indications and completion credits for the queue set's Tx queues.
- *	HW coalesces credits, we don't do any extra SW coalescing.
- */
+ 
 static inline void handle_rsp_cntrl_info(struct sge_qset *qs, u32 flags)
 {
 	unsigned int credits;
@@ -2239,16 +1724,7 @@ static inline void handle_rsp_cntrl_info(struct sge_qset *qs, u32 flags)
 		qs->txq[TXQ_OFLD].processed += credits;
 }
 
-/**
- *	check_ring_db - check if we need to ring any doorbells
- *	@adap: the adapter
- *	@qs: the queue set whose Tx queues are to be examined
- *	@sleeping: indicates which Tx queue sent GTS
- *
- *	Checks if some of a queue set's Tx queues need to ring their doorbells
- *	to resume transmission after idling while they still have unprocessed
- *	descriptors.
- */
+ 
 static void check_ring_db(struct adapter *adap, struct sge_qset *qs,
 			  unsigned int sleeping)
 {
@@ -2275,14 +1751,7 @@ static void check_ring_db(struct adapter *adap, struct sge_qset *qs,
 	}
 }
 
-/**
- *	is_new_response - check if a response is newly written
- *	@r: the response descriptor
- *	@q: the response queue
- *
- *	Returns true if a response descriptor contains a yet unprocessed
- *	response.
- */
+ 
 static inline int is_new_response(const struct rsp_desc *r,
 				  const struct sge_rspq *q)
 {
@@ -2301,24 +1770,10 @@ static inline void clear_rspq_bufstate(struct sge_rspq * const q)
 			V_RSPD_TXQ1_CR(M_RSPD_TXQ1_CR) | \
 			V_RSPD_TXQ2_CR(M_RSPD_TXQ2_CR))
 
-/* How long to delay the next interrupt in case of memory shortage, in 0.1us. */
+ 
 #define NOMEM_INTR_DELAY 2500
 
-/**
- *	process_responses - process responses from an SGE response queue
- *	@adap: the adapter
- *	@qs: the queue set to which the response queue belongs
- *	@budget: how many responses can be processed in this round
- *
- *	Process responses from an SGE response queue up to the supplied budget.
- *	Responses include received packets as well as credits and other events
- *	for the queues that belong to the response queue's queue set.
- *	A negative budget is effectively unlimited.
- *
- *	Additionally choose the interrupt holdoff time for the next interrupt
- *	on this queue.  If the system is under memory shortage use a fairly
- *	long delay to help recovery.
- */
+ 
 static int process_responses(struct adapter *adap, struct sge_qset *qs,
 			     int budget)
 {
@@ -2359,7 +1814,7 @@ static int process_responses(struct adapter *adap, struct sge_qset *qs,
 no_mem:
 				q->next_holdoff = NOMEM_INTR_DELAY;
 				q->nomem++;
-				/* consume one credit since we tried */
+				 
 				budget_left--;
 				break;
 			}
@@ -2430,7 +1885,7 @@ next_fl:
 				rx_eth(adap, q, skb, ethpad, lro);
 			else {
 				q->offload_pkts++;
-				/* Preserve the RSS info in csum & priority */
+				 
 				skb->csum = rss_hi;
 				skb->priority = rss_lo;
 				ngathered = rx_offload(&adap->tdev, q, skb,
@@ -2449,7 +1904,7 @@ next_fl:
 	if (sleeping)
 		check_ring_db(adap, qs, sleeping);
 
-	smp_mb();		/* commit Tx queue .processed updates */
+	smp_mb();		 
 	if (unlikely(qs->txq_stopped != 0))
 		restart_tx(qs);
 
@@ -2464,13 +1919,7 @@ static inline int is_pure_response(const struct rsp_desc *r)
 	return (n | r->len_cq) == 0;
 }
 
-/**
- *	napi_rx_handler - the NAPI handler for Rx processing
- *	@napi: the napi instance
- *	@budget: how many packets we can process in this round
- *
- *	Handler for new data events when using NAPI.
- */
+ 
 static int napi_rx_handler(struct napi_struct *napi, int budget)
 {
 	struct sge_qset *qs = container_of(napi, struct sge_qset, napi);
@@ -2480,20 +1929,7 @@ static int napi_rx_handler(struct napi_struct *napi, int budget)
 	if (likely(work_done < budget)) {
 		napi_complete_done(napi, work_done);
 
-		/*
-		 * Because we don't atomically flush the following
-		 * write it is possible that in very rare cases it can
-		 * reach the device in a way that races with a new
-		 * response being written plus an error interrupt
-		 * causing the NAPI interrupt handler below to return
-		 * unhandled status to the OS.  To protect against
-		 * this would require flushing the write and doing
-		 * both the write and the flush with interrupts off.
-		 * Way too expensive and unjustifiable given the
-		 * rarity of the race.
-		 *
-		 * The race cannot happen at all with MSI-X.
-		 */
+		 
 		t3_write_reg(adap, A_SG_GTS, V_RSPQ(qs->rspq.cntxt_id) |
 			     V_NEWTIMER(qs->rspq.next_holdoff) |
 			     V_NEWINDEX(qs->rspq.cidx));
@@ -2501,28 +1937,13 @@ static int napi_rx_handler(struct napi_struct *napi, int budget)
 	return work_done;
 }
 
-/*
- * Returns true if the device is already scheduled for polling.
- */
+ 
 static inline int napi_is_scheduled(struct napi_struct *napi)
 {
 	return test_bit(NAPI_STATE_SCHED, &napi->state);
 }
 
-/**
- *	process_pure_responses - process pure responses from a response queue
- *	@adap: the adapter
- *	@qs: the queue set owning the response queue
- *	@r: the first pure response to process
- *
- *	A simpler version of process_responses() that handles only pure (i.e.,
- *	non data-carrying) responses.  Such respones are too light-weight to
- *	justify calling a softirq under NAPI, so we handle them specially in
- *	the interrupt handler.  The function is called with a pointer to a
- *	response, which the caller must ensure is a valid pure response.
- *
- *	Returns 1 if it encounters a valid data-carrying response, 0 otherwise.
- */
+ 
 static int process_pure_responses(struct adapter *adap, struct sge_qset *qs,
 				  struct rsp_desc *r)
 {
@@ -2558,28 +1979,14 @@ static int process_pure_responses(struct adapter *adap, struct sge_qset *qs,
 	if (sleeping)
 		check_ring_db(adap, qs, sleeping);
 
-	smp_mb();		/* commit Tx queue .processed updates */
+	smp_mb();		 
 	if (unlikely(qs->txq_stopped != 0))
 		restart_tx(qs);
 
 	return is_new_response(r, q);
 }
 
-/**
- *	handle_responses - decide what to do with new responses in NAPI mode
- *	@adap: the adapter
- *	@q: the response queue
- *
- *	This is used by the NAPI interrupt handlers to decide what to do with
- *	new SGE responses.  If there are no new responses it returns -1.  If
- *	there are new responses and they are pure (i.e., non-data carrying)
- *	it handles them straight in hard interrupt context as they are very
- *	cheap and don't deliver any packets.  Finally, if there are any data
- *	signaling responses it schedules the NAPI handler.  Returns 1 if it
- *	schedules NAPI, 0 if all new responses were pure.
- *
- *	The caller must ascertain NAPI is not already running.
- */
+ 
 static inline int handle_responses(struct adapter *adap, struct sge_rspq *q)
 {
 	struct sge_qset *qs = rspq_to_qset(q);
@@ -2597,10 +2004,7 @@ static inline int handle_responses(struct adapter *adap, struct sge_rspq *q)
 	return 1;
 }
 
-/*
- * The MSI-X interrupt handler for an SGE response queue for the non-NAPI case
- * (i.e., response queue serviced in hard interrupt).
- */
+ 
 static irqreturn_t t3_sge_intr_msix(int irq, void *cookie)
 {
 	struct sge_qset *qs = cookie;
@@ -2616,10 +2020,7 @@ static irqreturn_t t3_sge_intr_msix(int irq, void *cookie)
 	return IRQ_HANDLED;
 }
 
-/*
- * The MSI-X interrupt handler for an SGE response queue for the NAPI case
- * (i.e., response queue serviced by NAPI polling).
- */
+ 
 static irqreturn_t t3_sge_intr_msix_napi(int irq, void *cookie)
 {
 	struct sge_qset *qs = cookie;
@@ -2633,12 +2034,7 @@ static irqreturn_t t3_sge_intr_msix_napi(int irq, void *cookie)
 	return IRQ_HANDLED;
 }
 
-/*
- * The non-NAPI MSI interrupt handler.  This needs to handle data events from
- * SGE response queues as well as error and other async events as they all use
- * the same MSI vector.  We use one SGE response queue per port in this mode
- * and protect all response queues with queue 0's lock.
- */
+ 
 static irqreturn_t t3_intr_msi(int irq, void *cookie)
 {
 	int new_packets = 0;
@@ -2682,13 +2078,7 @@ static int rspq_check_napi(struct sge_qset *qs)
 	return 0;
 }
 
-/*
- * The MSI interrupt handler for the NAPI case (i.e., response queues serviced
- * by NAPI polling).  Handles data events from SGE response queues as well as
- * error and other async events as they all use the same MSI vector.  We use
- * one SGE response queue per port in this mode and protect all response
- * queues with queue 0's lock.
- */
+ 
 static irqreturn_t t3_intr_msi_napi(int irq, void *cookie)
 {
 	int new_packets;
@@ -2707,9 +2097,7 @@ static irqreturn_t t3_intr_msi_napi(int irq, void *cookie)
 	return IRQ_HANDLED;
 }
 
-/*
- * A helper function that processes responses and issues GTS.
- */
+ 
 static inline int process_responses_gts(struct adapter *adap,
 					struct sge_rspq *rq)
 {
@@ -2721,12 +2109,7 @@ static inline int process_responses_gts(struct adapter *adap,
 	return work;
 }
 
-/*
- * The legacy INTx interrupt handler.  This needs to handle data events from
- * SGE response queues as well as error and other async events as they all use
- * the same interrupt pin.  We use one SGE response queue per port in this mode
- * and protect all response queues with queue 0's lock.
- */
+ 
 static irqreturn_t t3_intr(int irq, void *cookie)
 {
 	int work_done, w0, w1;
@@ -2742,7 +2125,7 @@ static irqreturn_t t3_intr(int irq, void *cookie)
 
 	if (likely(w0 | w1)) {
 		t3_write_reg(adap, A_PL_CLI, 0);
-		t3_read_reg(adap, A_PL_CLI);	/* flush */
+		t3_read_reg(adap, A_PL_CLI);	 
 
 		if (likely(w0))
 			process_responses_gts(adap, q0);
@@ -2758,13 +2141,7 @@ static irqreturn_t t3_intr(int irq, void *cookie)
 	return IRQ_RETVAL(work_done != 0);
 }
 
-/*
- * Interrupt handler for legacy INTx interrupts for T3B-based cards.
- * Handles data events from SGE response queues as well as error and other
- * async events as they all use the same interrupt pin.  We use one SGE
- * response queue per port in this mode and protect all response queues with
- * queue 0's lock.
- */
+ 
 static irqreturn_t t3b_intr(int irq, void *cookie)
 {
 	u32 map;
@@ -2774,7 +2151,7 @@ static irqreturn_t t3b_intr(int irq, void *cookie)
 	t3_write_reg(adap, A_PL_CLI, 0);
 	map = t3_read_reg(adap, A_SG_DATA_INTR);
 
-	if (unlikely(!map))	/* shared interrupt, most likely */
+	if (unlikely(!map))	 
 		return IRQ_NONE;
 
 	spin_lock(&q0->lock);
@@ -2792,13 +2169,7 @@ static irqreturn_t t3b_intr(int irq, void *cookie)
 	return IRQ_HANDLED;
 }
 
-/*
- * NAPI interrupt handler for legacy INTx interrupts for T3B-based cards.
- * Handles data events from SGE response queues as well as error and other
- * async events as they all use the same interrupt pin.  We use one SGE
- * response queue per port in this mode and protect all response queues with
- * queue 0's lock.
- */
+ 
 static irqreturn_t t3b_intr_napi(int irq, void *cookie)
 {
 	u32 map;
@@ -2809,7 +2180,7 @@ static irqreturn_t t3b_intr_napi(int irq, void *cookie)
 	t3_write_reg(adap, A_PL_CLI, 0);
 	map = t3_read_reg(adap, A_SG_DATA_INTR);
 
-	if (unlikely(!map))	/* shared interrupt, most likely */
+	if (unlikely(!map))	 
 		return IRQ_NONE;
 
 	spin_lock(&q0->lock);
@@ -2827,15 +2198,7 @@ static irqreturn_t t3b_intr_napi(int irq, void *cookie)
 	return IRQ_HANDLED;
 }
 
-/**
- *	t3_intr_handler - select the top-level interrupt handler
- *	@adap: the adapter
- *	@polling: whether using NAPI to service response queues
- *
- *	Selects the top-level interrupt handler based on the type of interrupts
- *	(MSI-X, MSI, or legacy) and whether NAPI will be used to service the
- *	response queues.
- */
+ 
 irq_handler_t t3_intr_handler(struct adapter *adap, int polling)
 {
 	if (adap->flags & USING_MSIX)
@@ -2856,12 +2219,7 @@ irq_handler_t t3_intr_handler(struct adapter *adap, int polling)
 #define SGE_FATALERR (SGE_PARERR | SGE_FRAMINGERR | F_RSPQCREDITOVERFOW | \
 		      F_RSPQDISABLED)
 
-/**
- *	t3_sge_err_intr_handler - SGE async event interrupt handler
- *	@adapter: the adapter
- *
- *	Interrupt handler for SGE asynchronous (non-data) events.
- */
+ 
 void t3_sge_err_intr_handler(struct adapter *adapter)
 {
 	unsigned int v, status = t3_read_reg(adapter, A_SG_INT_CAUSE) &
@@ -2899,24 +2257,7 @@ void t3_sge_err_intr_handler(struct adapter *adapter)
 		t3_fatal_err(adapter);
 }
 
-/**
- *	sge_timer_tx - perform periodic maintenance of an SGE qset
- *	@t: a timer list containing the SGE queue set to maintain
- *
- *	Runs periodically from a timer to perform maintenance of an SGE queue
- *	set.  It performs two tasks:
- *
- *	Cleans up any completed Tx descriptors that may still be pending.
- *	Normal descriptor cleanup happens when new packets are added to a Tx
- *	queue so this timer is relatively infrequent and does any cleanup only
- *	if the Tx queue has not seen any new packets in a while.  We make a
- *	best effort attempt to reclaim descriptors, in that we don't wait
- *	around if we cannot get a queue's lock (which most likely is because
- *	someone else is queueing new packets and so will also handle the clean
- *	up).  Since control queues use immediate data exclusively we don't
- *	bother cleaning them up here.
- *
- */
+ 
 static void sge_timer_tx(struct timer_list *t)
 {
 	struct sge_qset *qs = from_timer(qs, t, tx_reclaim_timer);
@@ -2943,20 +2284,7 @@ static void sge_timer_tx(struct timer_list *t)
 	mod_timer(&qs->tx_reclaim_timer, jiffies + next_period);
 }
 
-/**
- *	sge_timer_rx - perform periodic maintenance of an SGE qset
- *	@t: the timer list containing the SGE queue set to maintain
- *
- *	a) Replenishes Rx queues that have run out due to memory shortage.
- *	Normally new Rx buffers are added when existing ones are consumed but
- *	when out of memory a queue can become empty.  We try to add only a few
- *	buffers here, the queue will be replenished fully as these new buffers
- *	are used up if memory shortage has subsided.
- *
- *	b) Return coalesced response queue credits in case a response queue is
- *	starved.
- *
- */
+ 
 static void sge_timer_rx(struct timer_list *t)
 {
 	spinlock_t *lock;
@@ -3000,37 +2328,15 @@ out:
 	mod_timer(&qs->rx_reclaim_timer, jiffies + RX_RECLAIM_PERIOD);
 }
 
-/**
- *	t3_update_qset_coalesce - update coalescing settings for a queue set
- *	@qs: the SGE queue set
- *	@p: new queue set parameters
- *
- *	Update the coalescing settings for an SGE queue set.  Nothing is done
- *	if the queue set is not initialized yet.
- */
+ 
 void t3_update_qset_coalesce(struct sge_qset *qs, const struct qset_params *p)
 {
-	qs->rspq.holdoff_tmr = max(p->coalesce_usecs * 10, 1U);/* can't be 0 */
+	qs->rspq.holdoff_tmr = max(p->coalesce_usecs * 10, 1U); 
 	qs->rspq.polling = p->polling;
 	qs->napi.poll = p->polling ? napi_rx_handler : ofld_poll;
 }
 
-/**
- *	t3_sge_alloc_qset - initialize an SGE queue set
- *	@adapter: the adapter
- *	@id: the queue set id
- *	@nports: how many Ethernet ports will be using this queue set
- *	@irq_vec_idx: the IRQ vector index for response queue interrupts
- *	@p: configuration parameters for this queue set
- *	@ntxq: number of Tx queues for the queue set
- *	@dev: net device associated with this queue set
- *	@netdevq: net device TX queue associated with this queue set
- *
- *	Allocate resources and initialize an SGE queue set.  A queue set
- *	comprises a response queue, two Rx free-buffer queues, and up to 3
- *	Tx queues.  The Tx queues are assigned roles in the order Ethernet
- *	queue, offload queue, and control queue.
- */
+ 
 int t3_sge_alloc_qset(struct adapter *adapter, unsigned int id, int nports,
 		      int irq_vec_idx, const struct qset_params *p,
 		      int ntxq, struct net_device *dev,
@@ -3064,10 +2370,7 @@ int t3_sge_alloc_qset(struct adapter *adapter, unsigned int id, int nports,
 		goto err;
 
 	for (i = 0; i < ntxq; ++i) {
-		/*
-		 * The control queue always uses immediate data so does not
-		 * need to keep track of any sk_buffs.
-		 */
+		 
 		size_t sz = i == TXQ_CTRL ? 0 : sizeof(struct tx_sw_desc);
 
 		q->txq[i].desc = alloc_ring(adapter->pdev, p->txq_size[i],
@@ -3120,7 +2423,7 @@ int t3_sge_alloc_qset(struct adapter *adapter, unsigned int id, int nports,
 
 	spin_lock_irq(&adapter->sge.reg_lock);
 
-	/* FL threshold comparison uses < */
+	 
 	ret = t3_sge_init_rspcntxt(adapter, q->rspq.cntxt_id, irq_vec_idx,
 				   q->rspq.phys_addr, q->rspq.size,
 				   q->fl[0].buf_size - SGE_PG_RSVD, 1, 0);
@@ -3199,12 +2502,7 @@ err:
 	return ret;
 }
 
-/**
- *      t3_start_sge_timers - start SGE timer call backs
- *      @adap: the adapter
- *
- *      Starts each SGE queue set's timer call back
- */
+ 
 void t3_start_sge_timers(struct adapter *adap)
 {
 	int i;
@@ -3222,12 +2520,7 @@ void t3_start_sge_timers(struct adapter *adap)
 	}
 }
 
-/**
- *	t3_stop_sge_timers - stop SGE timer call backs
- *	@adap: the adapter
- *
- *	Stops each SGE queue set's timer call back
- */
+ 
 void t3_stop_sge_timers(struct adapter *adap)
 {
 	int i;
@@ -3242,12 +2535,7 @@ void t3_stop_sge_timers(struct adapter *adap)
 	}
 }
 
-/**
- *	t3_free_sge_resources - free SGE resources
- *	@adap: the adapter
- *
- *	Frees resources used by the SGE queue sets.
- */
+ 
 void t3_free_sge_resources(struct adapter *adap)
 {
 	int i;
@@ -3256,49 +2544,26 @@ void t3_free_sge_resources(struct adapter *adap)
 		t3_free_qset(adap, &adap->sge.qs[i]);
 }
 
-/**
- *	t3_sge_start - enable SGE
- *	@adap: the adapter
- *
- *	Enables the SGE for DMAs.  This is the last step in starting packet
- *	transfers.
- */
+ 
 void t3_sge_start(struct adapter *adap)
 {
 	t3_set_reg_field(adap, A_SG_CONTROL, F_GLOBALENABLE, F_GLOBALENABLE);
 }
 
-/**
- *	t3_sge_stop_dma - Disable SGE DMA engine operation
- *	@adap: the adapter
- *
- *	Can be invoked from interrupt context e.g.  error handler.
- *
- *	Note that this function cannot disable the restart of works as
- *	it cannot wait if called from interrupt context, however the
- *	works will have no effect since the doorbells are disabled. The
- *	driver will call tg3_sge_stop() later from process context, at
- *	which time the works will be stopped if they are still running.
- */
+ 
 void t3_sge_stop_dma(struct adapter *adap)
 {
 	t3_set_reg_field(adap, A_SG_CONTROL, F_GLOBALENABLE, 0);
 }
 
-/**
- *	t3_sge_stop - disable SGE operation completly
- *	@adap: the adapter
- *
- *	Called from process context. Disables the DMA engine and any
- *	pending queue restart works.
- */
+ 
 void t3_sge_stop(struct adapter *adap)
 {
 	int i;
 
 	t3_sge_stop_dma(adap);
 
-	/* workqueues aren't initialized otherwise */
+	 
 	if (!(adap->flags & FULL_INIT_DONE))
 		return;
 	for (i = 0; i < SGE_QSETS; ++i) {
@@ -3309,16 +2574,7 @@ void t3_sge_stop(struct adapter *adap)
 	}
 }
 
-/**
- *	t3_sge_init - initialize SGE
- *	@adap: the adapter
- *	@p: the SGE parameters
- *
- *	Performs SGE initialization needed every time after a chip reset.
- *	We do not initialize any of the queue sets here, instead the driver
- *	top-level must request those individually.  We also do not enable DMA
- *	here, that should be done after the queues have been set up.
- */
+ 
 void t3_sge_init(struct adapter *adap, struct sge_params *p)
 {
 	unsigned int ctrl, ups = ffs(pci_resource_len(adap->pdev, 2) >> 12);
@@ -3349,15 +2605,7 @@ void t3_sge_init(struct adapter *adap, struct sge_params *p)
 	t3_write_reg(adap, A_SG_DRB_PRI_THRESH, 63 * 1024);
 }
 
-/**
- *	t3_sge_prep - one-time SGE initialization
- *	@adap: the associated adapter
- *	@p: SGE parameters
- *
- *	Performs one-time initialization of SGE SW state.  Includes determining
- *	defaults for the assorted SGE parameters, which admins can change until
- *	they are used to initialize the SGE.
- */
+ 
 void t3_sge_prep(struct adapter *adap, struct sge_params *p)
 {
 	int i;

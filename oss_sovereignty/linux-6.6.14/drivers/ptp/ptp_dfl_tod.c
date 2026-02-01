@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * DFL device driver for Time-of-Day (ToD) private feature
- *
- * Copyright (C) 2023 Intel Corporation
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -17,18 +13,10 @@
 
 #define FME_FEATURE_ID_TOD		0x22
 
-/* ToD clock register space. */
+ 
 #define TOD_CLK_FREQ			0x038
 
-/*
- * The read sequence of ToD timestamp registers: TOD_NANOSEC, TOD_SECONDSL and
- * TOD_SECONDSH, because there is a hardware snapshot whenever the TOD_NANOSEC
- * register is read.
- *
- * The ToD IP requires writing registers in the reverse order to the read sequence.
- * The timestamp is corrected when the TOD_NANOSEC register is written, so the
- * sequence of write TOD registers: TOD_SECONDSH, TOD_SECONDSL and TOD_NANOSEC.
- */
+ 
 #define TOD_SECONDSH			0x100
 #define TOD_SECONDSL			0x104
 #define TOD_NANOSEC			0x108
@@ -64,19 +52,14 @@ struct dfl_tod {
 	struct device *dev;
 	struct ptp_clock *ptp_clock;
 
-	/* ToD Clock address space */
+	 
 	void __iomem *tod_ctrl;
 
-	/* ToD clock registers protection */
+	 
 	spinlock_t tod_lock;
 };
 
-/*
- * A fine ToD HW clock offset adjustment. To perform the fine offset adjustment, the
- * adjust_period and adjust_count argument are used to update the TOD_ADJUST_PERIOD
- * and TOD_ADJUST_COUNT register for in hardware. The dt->tod_lock spinlock must be
- * held when calling this function.
- */
+ 
 static int fine_adjust_tod_clock(struct dfl_tod *dt, u32 adjust_period,
 				 u32 adjust_count)
 {
@@ -86,15 +69,12 @@ static int fine_adjust_tod_clock(struct dfl_tod *dt, u32 adjust_period,
 	writel(adjust_period, base + TOD_ADJUST_PERIOD);
 	writel(adjust_count, base + TOD_ADJUST_COUNT);
 
-	/* Wait for present offset adjustment update to complete */
+	 
 	return readl_poll_timeout_atomic(base + TOD_ADJUST_COUNT, val, !val, TOD_ADJUST_INTERVAL_US,
 				  TOD_ADJUST_MAX_US);
 }
 
-/*
- * A coarse ToD HW clock offset adjustment. The coarse time adjustment performs by
- * adding or subtracting the delta value from the current ToD HW clock time.
- */
+ 
 static int coarse_adjust_tod_clock(struct dfl_tod *dt, s64 delta)
 {
 	u32 seconds_msb, seconds_lsb, nanosec;
@@ -108,7 +88,7 @@ static int coarse_adjust_tod_clock(struct dfl_tod *dt, s64 delta)
 	seconds_lsb = readl(base + TOD_SECONDSL);
 	seconds_msb = readl(base + TOD_SECONDSH);
 
-	/* Calculate new time */
+	 
 	seconds = CAL_SECONDS(seconds_msb, seconds_lsb);
 	now = seconds * NSEC_PER_SEC + nanosec + delta;
 
@@ -131,20 +111,17 @@ static int dfl_tod_adjust_fine(struct ptp_clock_info *ptp, long scaled_ppm)
 	unsigned long flags, rate;
 	u64 ppb;
 
-	/* Get the clock rate from clock frequency register offset */
+	 
 	rate = readl(base + TOD_CLK_FREQ);
 
-	/* add GIGA as nominal ppb */
+	 
 	ppb = scaled_ppm_to_ppb(scaled_ppm) + GIGA;
 
 	tod_period = div_u64_rem(ppb << PERIOD_FRAC_OFFSET, rate, &tod_rem);
 	if (tod_period > TOD_PERIOD_MAX)
 		return -ERANGE;
 
-	/*
-	 * The drift of ToD adjusted periodically by adding a drift_adjust_fns
-	 * correction value every drift_adjust_rate count of clock cycles.
-	 */
+	 
 	tod_drift_adjust_fns = tod_rem / gcd(tod_rem, rate);
 	tod_drift_adjust_rate = rate / gcd(tod_rem, rate);
 
@@ -184,12 +161,7 @@ static int dfl_tod_adjust_time(struct ptp_clock_info *ptp, s64 delta)
 
 	spin_lock_irqsave(&dt->tod_lock, flags);
 
-	/*
-	 * Get the maximum possible value of the Period register offset
-	 * adjustment in nanoseconds scale. This depends on the current
-	 * Period register setting and the maximum and minimum possible
-	 * values of the Period register.
-	 */
+	 
 	period = readl(base + TOD_PERIOD);
 
 	if (neg_adj) {
@@ -209,11 +181,11 @@ static int dfl_tod_adjust_time(struct ptp_clock_info *ptp, s64 delta)
 	if (count > TOD_ADJUST_COUNT_MAX) {
 		ret = coarse_adjust_tod_clock(dt, delta);
 	} else {
-		/* Adjust the period by count cycles to adjust the time */
+		 
 		if (count)
 			ret = fine_adjust_tod_clock(dt, adj_period, count);
 
-		/* If there is a remainder, adjust the period for an additional cycle */
+		 
 		if (rem)
 			ret = fine_adjust_tod_clock(dt, rem_period, 1);
 	}

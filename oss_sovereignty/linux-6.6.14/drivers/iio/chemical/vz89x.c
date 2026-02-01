@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * vz89x.c - Support for SGX Sensortech MiCS VZ89X VOC sensors
- *
- * Copyright (C) 2015-2018
- * Author: Matt Ranostay <matt.ranostay@konsulko.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mutex.h>
@@ -140,12 +135,7 @@ static const struct attribute_group vz89x_attrs_group = {
 	.attrs = vz89x_attributes,
 };
 
-/*
- * Chipset sometime updates in the middle of a reading causing it to reset the
- * data pointer, and causing invalid reading of previous data.
- * We can check for this by reading MSB of the resistance reading that is
- * always zero, and by also confirming the VOC_short isn't zero.
- */
+ 
 
 static bool vz89x_measurement_is_valid(struct vz89x_data *data)
 {
@@ -155,7 +145,7 @@ static bool vz89x_measurement_is_valid(struct vz89x_data *data)
 	return !!(data->buffer[data->chip->read_size - 1] > 0);
 }
 
-/* VZ89TE device has a modified CRC-8 two complement check */
+ 
 static bool vz89te_measurement_is_valid(struct vz89x_data *data)
 {
 	u8 crc = 0;
@@ -218,7 +208,7 @@ static int vz89x_get_measurement(struct vz89x_data *data)
 	const struct vz89x_chip_data *chip = data->chip;
 	int ret;
 
-	/* sensor can only be polled once a second max per datasheet */
+	 
 	if (!time_after(jiffies, data->last_update + HZ))
 		return data->is_valid ? 0 : -EAGAIN;
 

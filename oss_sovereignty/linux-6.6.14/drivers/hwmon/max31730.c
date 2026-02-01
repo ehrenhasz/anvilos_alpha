@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for MAX31730 3-Channel Remote Temperature Sensor
- *
- * Copyright (c) 2019 Guenter Roeck <linux@roeck-us.net>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/err.h>
@@ -14,11 +10,11 @@
 #include <linux/of.h>
 #include <linux/slab.h>
 
-/* Addresses scanned */
+ 
 static const unsigned short normal_i2c[] = { 0x1c, 0x1d, 0x1e, 0x1f, 0x4c,
 					     0x4d, 0x4e, 0x4f, I2C_CLIENT_END };
 
-/* The MAX31730 registers */
+ 
 #define MAX31730_REG_TEMP		0x00
 #define MAX31730_REG_CONF		0x13
 #define  MAX31730_STOP			BIT(7)
@@ -41,7 +37,7 @@ static const unsigned short normal_i2c[] = { 0x1c, 0x1d, 0x1e, 0x1f, 0x4c,
 #define MAX31730_TEMP_MIN		(-128000)
 #define MAX31730_TEMP_MAX		127937
 
-/* Each client has this additional data */
+ 
 struct max31730_data {
 	struct i2c_client	*client;
 	u8			orig_conf;
@@ -50,7 +46,7 @@ struct max31730_data {
 	u8			channel_enable;
 };
 
-/*-----------------------------------------------------------------------*/
+ 
 
 static inline long max31730_reg_to_mc(s16 temp)
 {
@@ -308,7 +304,7 @@ max31730_probe(struct i2c_client *client)
 
 	data->client = client;
 
-	/* Cache original configuration and enable status */
+	 
 	status = i2c_smbus_read_byte_data(client, MAX31730_REG_CHANNEL_ENABLE);
 	if (status < 0)
 		return status;
@@ -367,7 +363,7 @@ static bool max31730_check_reg_temp(struct i2c_client *client,
 	return regval < 0 || (regval & 0x0f);
 }
 
-/* Return 0 if detection is successful, -ENODEV otherwise */
+ 
 static int max31730_detect(struct i2c_client *client,
 			   struct i2c_board_info *info)
 {
@@ -386,7 +382,7 @@ static int max31730_detect(struct i2c_client *client,
 	if (regval != MAX31730_MFG_REV)
 		return -ENODEV;
 
-	/* lower 4 bit of temperature and limit registers must be 0 */
+	 
 	if (max31730_check_reg_temp(client, MAX31730_REG_TEMP_MIN))
 		return -ENODEV;
 

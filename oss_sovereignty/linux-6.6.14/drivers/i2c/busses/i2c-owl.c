@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Actions Semiconductor Owl SoC's I2C driver
- *
- * Copyright (c) 2014 Actions Semi Inc.
- * Author: David Liu <liuwei@actions-semi.com>
- *
- * Copyright (c) 2018 Linaro Ltd.
- * Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -19,7 +11,7 @@
 #include <linux/of.h>
 #include <linux/platform_device.h>
 
-/* I2C registers */
+ 
 #define OWL_I2C_REG_CTL		0x0000
 #define OWL_I2C_REG_CLKDIV	0x0004
 #define OWL_I2C_REG_STAT	0x0008
@@ -32,7 +24,7 @@
 #define OWL_I2C_REG_DATCNT	0x0024
 #define OWL_I2C_REG_RCNT	0x0028
 
-/* I2Cx_CTL Bit Mask */
+ 
 #define OWL_I2C_CTL_RB		BIT(1)
 #define OWL_I2C_CTL_GBCC(x)	(((x) & 0x3) << 2)
 #define	OWL_I2C_CTL_GBCC_NONE	OWL_I2C_CTL_GBCC(0)
@@ -46,7 +38,7 @@
 
 #define OWL_I2C_DIV_FACTOR(x)	((x) & 0xff)
 
-/* I2Cx_STAT Bit Mask */
+ 
 #define OWL_I2C_STAT_RACK	BIT(0)
 #define OWL_I2C_STAT_BEB	BIT(1)
 #define OWL_I2C_STAT_IRQP	BIT(2)
@@ -59,7 +51,7 @@
 #define OWL_I2C_STAT_SAMB	BIT(9)
 #define OWL_I2C_STAT_SRGC	BIT(10)
 
-/* I2Cx_CMD Bit Mask */
+ 
 #define OWL_I2C_CMD_SBE		BIT(0)
 #define OWL_I2C_CMD_RBE		BIT(4)
 #define OWL_I2C_CMD_DE		BIT(8)
@@ -72,12 +64,12 @@
 #define OWL_I2C_CMD_AS(x)	(((x) & 0x7) << 1)
 #define OWL_I2C_CMD_SAS(x)	(((x) & 0x7) << 5)
 
-/* I2Cx_FIFOCTL Bit Mask */
+ 
 #define OWL_I2C_FIFOCTL_NIB	BIT(0)
 #define OWL_I2C_FIFOCTL_RFR	BIT(1)
 #define OWL_I2C_FIFOCTL_TFR	BIT(2)
 
-/* I2Cc_FIFOSTAT Bit Mask */
+ 
 #define OWL_I2C_FIFOSTAT_CECB	BIT(0)
 #define OWL_I2C_FIFOSTAT_RNB	BIT(1)
 #define OWL_I2C_FIFOSTAT_RFE	BIT(2)
@@ -85,7 +77,7 @@
 #define OWL_I2C_FIFOSTAT_TFD	GENMASK(23, 16)
 #define OWL_I2C_FIFOSTAT_RFD	GENMASK(15, 8)
 
-/* I2C bus timeout */
+ 
 #define OWL_I2C_TIMEOUT_MS	(4 * 1000)
 #define OWL_I2C_TIMEOUT		msecs_to_jiffies(OWL_I2C_TIMEOUT_MS)
 
@@ -126,7 +118,7 @@ static void owl_i2c_reset(struct owl_i2c_dev *i2c_dev)
 	owl_i2c_update_reg(i2c_dev->base + OWL_I2C_REG_CTL,
 			   OWL_I2C_CTL_EN, true);
 
-	/* Clear status registers */
+	 
 	writel(0, i2c_dev->base + OWL_I2C_REG_STAT);
 }
 
@@ -134,12 +126,12 @@ static int owl_i2c_reset_fifo(struct owl_i2c_dev *i2c_dev)
 {
 	unsigned int val, timeout = 0;
 
-	/* Reset FIFO */
+	 
 	owl_i2c_update_reg(i2c_dev->base + OWL_I2C_REG_FIFOCTL,
 			   OWL_I2C_FIFOCTL_RFR | OWL_I2C_FIFOCTL_TFR,
 			   true);
 
-	/* Wait 50ms for FIFO reset complete */
+	 
 	do {
 		val = readl(i2c_dev->base + OWL_I2C_REG_FIFOCTL);
 		if (!(val & (OWL_I2C_FIFOCTL_RFR | OWL_I2C_FIFOCTL_TFR)))
@@ -161,7 +153,7 @@ static void owl_i2c_set_freq(struct owl_i2c_dev *i2c_dev)
 
 	val = DIV_ROUND_UP(i2c_dev->clk_rate, i2c_dev->bus_freq * 16);
 
-	/* Set clock divider factor */
+	 
 	writel(OWL_I2C_DIV_FACTOR(val), i2c_dev->base + OWL_I2C_REG_CLKDIV);
 }
 
@@ -172,27 +164,27 @@ static void owl_i2c_xfer_data(struct owl_i2c_dev *i2c_dev)
 
 	i2c_dev->err = 0;
 
-	/* Handle NACK from slave */
+	 
 	fifostat = readl(i2c_dev->base + OWL_I2C_REG_FIFOSTAT);
 	if (fifostat & OWL_I2C_FIFOSTAT_RNB) {
 		i2c_dev->err = -ENXIO;
-		/* Clear NACK error bit by writing "1" */
+		 
 		owl_i2c_update_reg(i2c_dev->base + OWL_I2C_REG_FIFOSTAT,
 				   OWL_I2C_FIFOSTAT_RNB, true);
 		return;
 	}
 
-	/* Handle bus error */
+	 
 	stat = readl(i2c_dev->base + OWL_I2C_REG_STAT);
 	if (stat & OWL_I2C_STAT_BEB) {
 		i2c_dev->err = -EIO;
-		/* Clear BUS error bit by writing "1" */
+		 
 		owl_i2c_update_reg(i2c_dev->base + OWL_I2C_REG_STAT,
 				   OWL_I2C_STAT_BEB, true);
 		return;
 	}
 
-	/* Handle FIFO read */
+	 
 	if (msg->flags & I2C_M_RD) {
 		while ((readl(i2c_dev->base + OWL_I2C_REG_FIFOSTAT) &
 			OWL_I2C_FIFOSTAT_RFE) && i2c_dev->msg_ptr < msg->len) {
@@ -200,7 +192,7 @@ static void owl_i2c_xfer_data(struct owl_i2c_dev *i2c_dev)
 							     OWL_I2C_REG_RXDAT);
 		}
 	} else {
-		/* Handle the remaining bytes which were not sent */
+		 
 		while (!(readl(i2c_dev->base + OWL_I2C_REG_FIFOSTAT) &
 			 OWL_I2C_FIFOSTAT_TFF) && i2c_dev->msg_ptr < msg->len) {
 			writel(msg->buf[i2c_dev->msg_ptr++],
@@ -217,7 +209,7 @@ static irqreturn_t owl_i2c_interrupt(int irq, void *_dev)
 
 	owl_i2c_xfer_data(i2c_dev);
 
-	/* Clear pending interrupts */
+	 
 	owl_i2c_update_reg(i2c_dev->base + OWL_I2C_REG_STAT,
 			   OWL_I2C_STAT_IRQP, true);
 
@@ -237,7 +229,7 @@ static int owl_i2c_check_bus_busy(struct i2c_adapter *adap)
 	struct owl_i2c_dev *i2c_dev = i2c_get_adapdata(adap);
 	unsigned long timeout;
 
-	/* Check for Bus busy */
+	 
 	timeout = jiffies + OWL_I2C_TIMEOUT;
 	while (readl(i2c_dev->base + OWL_I2C_REG_STAT) & OWL_I2C_STAT_BBB) {
 		if (time_after(jiffies, timeout)) {
@@ -261,31 +253,28 @@ static int owl_i2c_xfer_common(struct i2c_adapter *adap, struct i2c_msg *msgs,
 
 	spin_lock_irqsave(&i2c_dev->lock, flags);
 
-	/* Reset I2C controller */
+	 
 	owl_i2c_reset(i2c_dev);
 
-	/* Set bus frequency */
+	 
 	owl_i2c_set_freq(i2c_dev);
 
-	/*
-	 * Spinlock should be released before calling reset FIFO and
-	 * bus busy check since those functions may sleep
-	 */
+	 
 	spin_unlock_irqrestore(&i2c_dev->lock, flags);
 
-	/* Reset FIFO */
+	 
 	ret = owl_i2c_reset_fifo(i2c_dev);
 	if (ret)
 		goto unlocked_err_exit;
 
-	/* Check for bus busy */
+	 
 	ret = owl_i2c_check_bus_busy(adap);
 	if (ret)
 		goto unlocked_err_exit;
 
 	spin_lock_irqsave(&i2c_dev->lock, flags);
 
-	/* Check for Arbitration lost */
+	 
 	val = readl(i2c_dev->base + OWL_I2C_REG_STAT);
 	if (val & OWL_I2C_STAT_LAB) {
 		val &= ~OWL_I2C_STAT_LAB;
@@ -297,35 +286,32 @@ static int owl_i2c_xfer_common(struct i2c_adapter *adap, struct i2c_msg *msgs,
 	if (!atomic)
 		reinit_completion(&i2c_dev->msg_complete);
 
-	/* Enable/disable I2C controller interrupt */
+	 
 	owl_i2c_update_reg(i2c_dev->base + OWL_I2C_REG_CTL,
 			   OWL_I2C_CTL_IRQE, !atomic);
 
-	/*
-	 * Select: FIFO enable, Master mode, Stop enable, Data count enable,
-	 * Send start bit
-	 */
+	 
 	i2c_cmd = OWL_I2C_CMD_SECL | OWL_I2C_CMD_MSS | OWL_I2C_CMD_SE |
 		  OWL_I2C_CMD_NS | OWL_I2C_CMD_DE | OWL_I2C_CMD_SBE;
 
-	/* Handle repeated start condition */
+	 
 	if (num > 1) {
-		/* Set internal address length and enable repeated start */
+		 
 		i2c_cmd |= OWL_I2C_CMD_AS(msgs[0].len + 1) |
 			   OWL_I2C_CMD_SAS(1) | OWL_I2C_CMD_RBE;
 
-		/* Write slave address */
+		 
 		addr = i2c_8bit_addr_from_msg(&msgs[0]);
 		writel(addr, i2c_dev->base + OWL_I2C_REG_TXDAT);
 
-		/* Write internal register address */
+		 
 		for (idx = 0; idx < msgs[0].len; idx++)
 			writel(msgs[0].buf[idx],
 			       i2c_dev->base + OWL_I2C_REG_TXDAT);
 
 		msg = &msgs[1];
 	} else {
-		/* Set address length */
+		 
 		i2c_cmd |= OWL_I2C_CMD_AS(1);
 		msg = &msgs[0];
 	}
@@ -333,16 +319,16 @@ static int owl_i2c_xfer_common(struct i2c_adapter *adap, struct i2c_msg *msgs,
 	i2c_dev->msg = msg;
 	i2c_dev->msg_ptr = 0;
 
-	/* Set data count for the message */
+	 
 	writel(msg->len, i2c_dev->base + OWL_I2C_REG_DATCNT);
 
 	addr = i2c_8bit_addr_from_msg(msg);
 	writel(addr, i2c_dev->base + OWL_I2C_REG_TXDAT);
 
 	if (!(msg->flags & I2C_M_RD)) {
-		/* Write data to FIFO */
+		 
 		for (idx = 0; idx < msg->len; idx++) {
-			/* Check for FIFO full */
+			 
 			if (readl(i2c_dev->base + OWL_I2C_REG_FIFOSTAT) &
 			    OWL_I2C_FIFOSTAT_TFF)
 				break;
@@ -354,7 +340,7 @@ static int owl_i2c_xfer_common(struct i2c_adapter *adap, struct i2c_msg *msgs,
 		i2c_dev->msg_ptr = idx;
 	}
 
-	/* Ignore the NACK if needed */
+	 
 	if (msg->flags & I2C_M_IGNORE_NAK)
 		owl_i2c_update_reg(i2c_dev->base + OWL_I2C_REG_FIFOCTL,
 				   OWL_I2C_FIFOCTL_NIB, true);
@@ -362,13 +348,13 @@ static int owl_i2c_xfer_common(struct i2c_adapter *adap, struct i2c_msg *msgs,
 		owl_i2c_update_reg(i2c_dev->base + OWL_I2C_REG_FIFOCTL,
 				   OWL_I2C_FIFOCTL_NIB, false);
 
-	/* Start the transfer */
+	 
 	writel(i2c_cmd, i2c_dev->base + OWL_I2C_REG_CMD);
 
 	spin_unlock_irqrestore(&i2c_dev->lock, flags);
 
 	if (atomic) {
-		/* Wait for Command Execute Completed or NACK Error bits */
+		 
 		ret = readl_poll_timeout_atomic(i2c_dev->base + OWL_I2C_REG_FIFOSTAT,
 						val, val & (OWL_I2C_FIFOSTAT_CECB |
 							    OWL_I2C_FIFOSTAT_RNB),
@@ -384,7 +370,7 @@ static int owl_i2c_xfer_common(struct i2c_adapter *adap, struct i2c_msg *msgs,
 
 	if (ret) {
 		dev_err(&adap->dev, "Transaction timed out\n");
-		/* Send stop condition and release the bus */
+		 
 		owl_i2c_update_reg(i2c_dev->base + OWL_I2C_REG_CTL,
 				   OWL_I2C_CTL_GBCC_STOP | OWL_I2C_CTL_RB,
 				   true);
@@ -400,7 +386,7 @@ err_exit:
 	spin_unlock_irqrestore(&i2c_dev->lock, flags);
 
 unlocked_err_exit:
-	/* Disable I2C controller */
+	 
 	owl_i2c_update_reg(i2c_dev->base + OWL_I2C_REG_CTL,
 			   OWL_I2C_CTL_EN, false);
 
@@ -455,7 +441,7 @@ static int owl_i2c_probe(struct platform_device *pdev)
 				 &i2c_dev->bus_freq))
 		i2c_dev->bus_freq = I2C_MAX_STANDARD_MODE_FREQ;
 
-	/* We support only frequencies of 100k and 400k for now */
+	 
 	if (i2c_dev->bus_freq != I2C_MAX_STANDARD_MODE_FREQ &&
 	    i2c_dev->bus_freq != I2C_MAX_FAST_MODE_FREQ) {
 		dev_err(dev, "invalid clock-frequency %d\n", i2c_dev->bus_freq);
@@ -502,7 +488,7 @@ static const struct of_device_id owl_i2c_of_match[] = {
 	{ .compatible = "actions,s500-i2c" },
 	{ .compatible = "actions,s700-i2c" },
 	{ .compatible = "actions,s900-i2c" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, owl_i2c_of_match);
 

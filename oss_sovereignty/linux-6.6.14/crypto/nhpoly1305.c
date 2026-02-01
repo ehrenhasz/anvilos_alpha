@@ -1,34 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NHPoly1305 - ε-almost-∆-universal hash function for Adiantum
- *
- * Copyright 2018 Google LLC
- */
 
-/*
- * "NHPoly1305" is the main component of Adiantum hashing.
- * Specifically, it is the calculation
- *
- *	H_L ← Poly1305_{K_L}(NH_{K_N}(pad_{128}(L)))
- *
- * from the procedure in section 6.4 of the Adiantum paper [1].  It is an
- * ε-almost-∆-universal (ε-∆U) hash function for equal-length inputs over
- * Z/(2^{128}Z), where the "∆" operation is addition.  It hashes 1024-byte
- * chunks of the input with the NH hash function [2], reducing the input length
- * by 32x.  The resulting NH digests are evaluated as a polynomial in
- * GF(2^{130}-5), like in the Poly1305 MAC [3].  Note that the polynomial
- * evaluation by itself would suffice to achieve the ε-∆U property; NH is used
- * for performance since it's over twice as fast as Poly1305.
- *
- * This is *not* a cryptographic hash function; do not use it as such!
- *
- * [1] Adiantum: length-preserving encryption for entry-level processors
- *     (https://eprint.iacr.org/2018/720.pdf)
- * [2] UMAC: Fast and Secure Message Authentication
- *     (https://fastcrypto.org/umac/umac_proc.pdf)
- * [3] The Poly1305-AES message-authentication code
- *     (https://cr.yp.to/mac/poly1305-20050329.pdf)
- */
+ 
+
+ 
 
 #include <asm/unaligned.h>
 #include <crypto/algapi.h>
@@ -72,7 +45,7 @@ static void nh_generic(const u32 *key, const u8 *message, size_t message_len,
 	hash[3] = cpu_to_le64(sums[3]);
 }
 
-/* Pass the next NH hash value through Poly1305 */
+ 
 static void process_nh_hash_value(struct nhpoly1305_state *state,
 				  const struct nhpoly1305_key *key)
 {
@@ -82,13 +55,7 @@ static void process_nh_hash_value(struct nhpoly1305_state *state,
 			     NH_HASH_BYTES / POLY1305_BLOCK_SIZE, 1);
 }
 
-/*
- * Feed the next portion of the source data, as a whole number of 16-byte
- * "NH message units", through NH and Poly1305.  Each NH hash is taken over
- * 1024 bytes, except possibly the final one which is taken over a multiple of
- * 16 bytes up to 1024.  Also, in the case where data is passed in misaligned
- * chunks, we combine partial hashes; the end result is the same either way.
- */
+ 
 static void nhpoly1305_units(struct nhpoly1305_state *state,
 			     const struct nhpoly1305_key *key,
 			     const u8 *src, unsigned int srclen, nh_t nh_fn)
@@ -97,12 +64,12 @@ static void nhpoly1305_units(struct nhpoly1305_state *state,
 		unsigned int bytes;
 
 		if (state->nh_remaining == 0) {
-			/* Starting a new NH message */
+			 
 			bytes = min_t(unsigned int, srclen, NH_MESSAGE_BYTES);
 			nh_fn(key->nh_key, src, bytes, state->nh_hash);
 			state->nh_remaining = NH_MESSAGE_BYTES - bytes;
 		} else {
-			/* Continuing a previous NH message */
+			 
 			__le64 tmp_hash[NH_NUM_PASSES];
 			unsigned int pos;
 			int i;

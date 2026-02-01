@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for Cirrus Logic EP93xx SPI controller.
- *
- * Copyright (C) 2010-2011 Mika Westerberg
- *
- * Explicit FIFO handling code was inspired by amba-pl022 driver.
- *
- * Chip select support using other than built-in GPIOs by H. Hartley Sweeten.
- *
- * For more information about the SPI controller see documentation on Cirrus
- * Logic web site:
- *     https://www.cirrus.com/en/pubs/manual/EP93xx_Users_Guide_UM1.pdf
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/clk.h>
@@ -60,29 +48,12 @@
 #define SSPIIR_RORIS		BIT(2)
 #define SSPICR			SSPIIR
 
-/* timeout in milliseconds */
+ 
 #define SPI_TIMEOUT		5
-/* maximum depth of RX/TX FIFO */
+ 
 #define SPI_FIFO_SIZE		8
 
-/**
- * struct ep93xx_spi - EP93xx SPI controller structure
- * @clk: clock for the controller
- * @mmio: pointer to ioremap()'d registers
- * @sspdr_phys: physical address of the SSPDR register
- * @tx: current byte in transfer to transmit
- * @rx: current byte in transfer to receive
- * @fifo_level: how full is FIFO (%0..%SPI_FIFO_SIZE - %1). Receiving one
- *              frame decreases this level and sending one frame increases it.
- * @dma_rx: RX DMA channel
- * @dma_tx: TX DMA channel
- * @dma_rx_data: RX parameters passed to the DMA engine
- * @dma_tx_data: TX parameters passed to the DMA engine
- * @rx_sgt: sg table for RX transfers
- * @tx_sgt: sg table for TX transfers
- * @zeropage: dummy page used as RX buffer when only TX buffer is passed in by
- *            the client
- */
+ 
 struct ep93xx_spi {
 	struct clk			*clk;
 	void __iomem			*mmio;
@@ -99,16 +70,10 @@ struct ep93xx_spi {
 	void				*zeropage;
 };
 
-/* converts bits per word to CR0.DSS value */
+ 
 #define bits_per_word_to_dss(bpw)	((bpw) - 1)
 
-/**
- * ep93xx_spi_calc_divisors() - calculates SPI clock divisors
- * @host: SPI host
- * @rate: desired SPI output clock rate
- * @div_cpsr: pointer to return the cpsr (pre-scaler) divider
- * @div_scr: pointer to return the scr divider
- */
+ 
 static int ep93xx_spi_calc_divisors(struct spi_controller *host,
 				    u32 rate, u8 *div_cpsr, u8 *div_scr)
 {
@@ -116,20 +81,10 @@ static int ep93xx_spi_calc_divisors(struct spi_controller *host,
 	unsigned long spi_clk_rate = clk_get_rate(espi->clk);
 	int cpsr, scr;
 
-	/*
-	 * Make sure that max value is between values supported by the
-	 * controller.
-	 */
+	 
 	rate = clamp(rate, host->min_speed_hz, host->max_speed_hz);
 
-	/*
-	 * Calculate divisors so that we can get speed according the
-	 * following formula:
-	 *	rate = spi_clock_rate / (cpsr * (1 + scr))
-	 *
-	 * cpsr must be even number and starts from 2, scr can be any number
-	 * between 0 and 255.
-	 */
+	 
 	for (cpsr = 2; cpsr <= 254; cpsr += 2) {
 		for (scr = 0; scr <= 255; scr++) {
 			if ((spi_clk_rate / (cpsr * (scr + 1))) <= rate) {
@@ -212,29 +167,19 @@ static void ep93xx_do_read(struct spi_controller *host)
 	}
 }
 
-/**
- * ep93xx_spi_read_write() - perform next RX/TX transfer
- * @host: SPI host
- *
- * This function transfers next bytes (or half-words) to/from RX/TX FIFOs. If
- * called several times, the whole transfer will be completed. Returns
- * %-EINPROGRESS when current transfer was not yet completed otherwise %0.
- *
- * When this function is finished, RX FIFO should be empty and TX FIFO should be
- * full.
- */
+ 
 static int ep93xx_spi_read_write(struct spi_controller *host)
 {
 	struct ep93xx_spi *espi = spi_controller_get_devdata(host);
 	struct spi_transfer *xfer = host->cur_msg->state;
 
-	/* read as long as RX FIFO has frames in it */
+	 
 	while ((readl(espi->mmio + SSPSR) & SSPSR_RNE)) {
 		ep93xx_do_read(host);
 		espi->fifo_level--;
 	}
 
-	/* write as long as TX FIFO has room */
+	 
 	while (espi->fifo_level < SPI_FIFO_SIZE && espi->tx < xfer->len) {
 		ep93xx_do_write(host);
 		espi->fifo_level++;
@@ -259,15 +204,7 @@ ep93xx_dma_data_to_trans_dir(enum dma_data_direction dir)
 	}
 }
 
-/**
- * ep93xx_spi_dma_prepare() - prepares a DMA transfer
- * @host: SPI host
- * @dir: DMA transfer direction
- *
- * Function configures the DMA, maps the buffer and prepares the DMA
- * descriptor. Returns a valid DMA descriptor in case of success and ERR_PTR
- * in case of failure.
- */
+ 
 static struct dma_async_tx_descriptor *
 ep93xx_spi_dma_prepare(struct spi_controller *host,
 		       enum dma_data_direction dir)
@@ -312,15 +249,7 @@ ep93xx_spi_dma_prepare(struct spi_controller *host,
 	if (ret)
 		return ERR_PTR(ret);
 
-	/*
-	 * We need to split the transfer into PAGE_SIZE'd chunks. This is
-	 * because we are using @espi->zeropage to provide a zero RX buffer
-	 * for the TX transfers and we have only allocated one page for that.
-	 *
-	 * For performance reasons we allocate a new sg_table only when
-	 * needed. Otherwise we will re-use the current one. Eventually the
-	 * last sg_table is released in ep93xx_spi_release_dma().
-	 */
+	 
 
 	nents = DIV_ROUND_UP(len, PAGE_SIZE);
 	if (nents != sgt->nents) {
@@ -365,14 +294,7 @@ ep93xx_spi_dma_prepare(struct spi_controller *host,
 	return txd;
 }
 
-/**
- * ep93xx_spi_dma_finish() - finishes with a DMA transfer
- * @host: SPI host
- * @dir: DMA transfer direction
- *
- * Function finishes with the DMA transfer. After this, the DMA buffer is
- * unmapped.
- */
+ 
 static void ep93xx_spi_dma_finish(struct spi_controller *host,
 				  enum dma_data_direction dir)
 {
@@ -419,18 +341,18 @@ static int ep93xx_spi_dma_transfer(struct spi_controller *host)
 		return PTR_ERR(txd);
 	}
 
-	/* We are ready when RX is done */
+	 
 	rxd->callback = ep93xx_spi_dma_callback;
 	rxd->callback_param = host;
 
-	/* Now submit both descriptors and start DMA */
+	 
 	dmaengine_submit(rxd);
 	dmaengine_submit(txd);
 
 	dma_async_issue_pending(espi->dma_rx);
 	dma_async_issue_pending(espi->dma_tx);
 
-	/* signal that we need to wait for completion */
+	 
 	return 1;
 }
 
@@ -440,36 +362,22 @@ static irqreturn_t ep93xx_spi_interrupt(int irq, void *dev_id)
 	struct ep93xx_spi *espi = spi_controller_get_devdata(host);
 	u32 val;
 
-	/*
-	 * If we got ROR (receive overrun) interrupt we know that something is
-	 * wrong. Just abort the message.
-	 */
+	 
 	if (readl(espi->mmio + SSPIIR) & SSPIIR_RORIS) {
-		/* clear the overrun interrupt */
+		 
 		writel(0, espi->mmio + SSPICR);
 		dev_warn(&host->dev,
 			 "receive overrun, aborting the message\n");
 		host->cur_msg->status = -EIO;
 	} else {
-		/*
-		 * Interrupt is either RX (RIS) or TX (TIS). For both cases we
-		 * simply execute next data transfer.
-		 */
+		 
 		if (ep93xx_spi_read_write(host)) {
-			/*
-			 * In normal case, there still is some processing left
-			 * for current transfer. Let's wait for the next
-			 * interrupt then.
-			 */
+			 
 			return IRQ_HANDLED;
 		}
 	}
 
-	/*
-	 * Current transfer is finished, either with error or with success. In
-	 * any case we disable interrupts and notify the worker to handle
-	 * any post-processing of the message.
-	 */
+	 
 	val = readl(espi->mmio + SSPCR1);
 	val &= ~(SSPCR1_RORIE | SSPCR1_TIE | SSPCR1_RIE);
 	writel(val, espi->mmio + SSPCR1);
@@ -497,22 +405,18 @@ static int ep93xx_spi_transfer_one(struct spi_controller *host,
 	espi->rx = 0;
 	espi->tx = 0;
 
-	/*
-	 * There is no point of setting up DMA for the transfers which will
-	 * fit into the FIFO and can be transferred with a single interrupt.
-	 * So in these cases we will be using PIO and don't bother for DMA.
-	 */
+	 
 	if (espi->dma_rx && xfer->len > SPI_FIFO_SIZE)
 		return ep93xx_spi_dma_transfer(host);
 
-	/* Using PIO so prime the TX FIFO and enable interrupts */
+	 
 	ep93xx_spi_read_write(host);
 
 	val = readl(espi->mmio + SSPCR1);
 	val |= (SSPCR1_RORIE | SSPCR1_TIE | SSPCR1_RIE);
 	writel(val, espi->mmio + SSPCR1);
 
-	/* signal that we need to wait for completion */
+	 
 	return 1;
 }
 
@@ -522,9 +426,7 @@ static int ep93xx_spi_prepare_message(struct spi_controller *host,
 	struct ep93xx_spi *espi = spi_controller_get_devdata(host);
 	unsigned long timeout;
 
-	/*
-	 * Just to be sure: flush any data from RX FIFO.
-	 */
+	 
 	timeout = jiffies + msecs_to_jiffies(SPI_TIMEOUT);
 	while (readl(espi->mmio + SSPSR) & SSPSR_RNE) {
 		if (time_after(jiffies, timeout)) {
@@ -535,10 +437,7 @@ static int ep93xx_spi_prepare_message(struct spi_controller *host,
 		readl(espi->mmio + SSPDR);
 	}
 
-	/*
-	 * We explicitly handle FIFO level. This way we don't have to check TX
-	 * FIFO status using %SSPSR_TNF bit which may cause RX FIFO overruns.
-	 */
+	 
 	espi->fifo_level = 0;
 
 	return 0;
@@ -675,10 +574,7 @@ static int ep93xx_spi_probe(struct platform_device *pdev)
 	host->bus_num = pdev->id;
 	host->mode_bits = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH;
 	host->bits_per_word_mask = SPI_BPW_RANGE_MASK(4, 16);
-	/*
-	 * The SPI core will count the number of GPIO descriptors to figure
-	 * out the number of chip selects available on the platform.
-	 */
+	 
 	host->num_chipselect = 0;
 
 	platform_set_drvdata(pdev, host);
@@ -692,10 +588,7 @@ static int ep93xx_spi_probe(struct platform_device *pdev)
 		goto fail_release_host;
 	}
 
-	/*
-	 * Calculate maximum and minimum supported clock rates
-	 * for the controller.
-	 */
+	 
 	host->max_speed_hz = clk_get_rate(espi->clk) / 2;
 	host->min_speed_hz = clk_get_rate(espi->clk) / (254 * 256);
 
@@ -716,7 +609,7 @@ static int ep93xx_spi_probe(struct platform_device *pdev)
 	if (info->use_dma && ep93xx_spi_setup_dma(espi))
 		dev_warn(&pdev->dev, "DMA setup failed. Falling back to PIO\n");
 
-	/* make sure that the hardware is disabled */
+	 
 	writel(0, espi->mmio + SSPCR1);
 
 	error = devm_spi_register_controller(&pdev->dev, host);

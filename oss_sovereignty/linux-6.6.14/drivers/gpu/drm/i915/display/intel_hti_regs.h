@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_HTI_REGS_H__
 #define __INTEL_HTI_REGS_H__
@@ -13,4 +11,4 @@
 #define   HDPORT_DDI_USED(phy)		REG_BIT(2 * (phy) + 1)
 #define   HDPORT_ENABLED		REG_BIT(0)
 
-#endif /* __INTEL_HTI_REGS_H__ */
+#endif  

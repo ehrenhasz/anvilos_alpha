@@ -1,19 +1,4 @@
-/*
- * Copyright (c) 2010-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2012 Qualcomm Atheros, Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #ifndef CORE_H
 #define CORE_H
@@ -49,22 +34,22 @@
 #define ATH6KL_APSD_NUM_OF_AC		0x4
 #define ATH6KL_APSD_FRAME_MASK		0xF
 
-/* Extra bytes for htc header alignment */
+ 
 #define ATH6KL_HTC_ALIGN_BYTES 3
 
-/* MAX_HI_COOKIE_NUM are reserved for high priority traffic */
+ 
 #define MAX_DEF_COOKIE_NUM                180
-#define MAX_HI_COOKIE_NUM                 18	/* 10% of MAX_COOKIE_NUM */
+#define MAX_HI_COOKIE_NUM                 18	 
 #define MAX_COOKIE_NUM                 (MAX_DEF_COOKIE_NUM + MAX_HI_COOKIE_NUM)
 
 #define MAX_DEFAULT_SEND_QUEUE_DEPTH      (MAX_DEF_COOKIE_NUM / WMM_NUM_AC)
 
-#define DISCON_TIMER_INTVAL               10000  /* in msec */
+#define DISCON_TIMER_INTVAL               10000   
 
-/* Channel dwell time in fg scan */
-#define ATH6KL_FG_SCAN_INTERVAL		50 /* in ms */
+ 
+#define ATH6KL_FG_SCAN_INTERVAL		50  
 
-/* includes also the null byte */
+ 
 #define ATH6KL_FIRMWARE_MAGIC               "QCA-ATH6KL"
 
 enum ath6kl_fw_ie_type {
@@ -84,74 +69,58 @@ enum ath6kl_fw_capability {
 	ATH6KL_FW_CAPABILITY_HOST_P2P = 0,
 	ATH6KL_FW_CAPABILITY_SCHED_SCAN = 1,
 
-	/*
-	 * Firmware is capable of supporting P2P mgmt operations on a
-	 * station interface. After group formation, the station
-	 * interface will become a P2P client/GO interface as the case may be
-	 */
+	 
 	ATH6KL_FW_CAPABILITY_STA_P2PDEV_DUPLEX,
 
-	/*
-	 * Firmware has support to cleanup inactive stations
-	 * in AP mode.
-	 */
+	 
 	ATH6KL_FW_CAPABILITY_INACTIVITY_TIMEOUT,
 
-	/* Firmware has support to override rsn cap of rsn ie */
+	 
 	ATH6KL_FW_CAPABILITY_RSN_CAP_OVERRIDE,
 
-	/*
-	 * Multicast support in WOW and host awake mode.
-	 * Allow all multicast in host awake mode.
-	 * Apply multicast filter in WOW mode.
-	 */
+	 
 	ATH6KL_FW_CAPABILITY_WOW_MULTICAST_FILTER,
 
-	/* Firmware supports enhanced bmiss detection */
+	 
 	ATH6KL_FW_CAPABILITY_BMISS_ENHANCE,
 
-	/*
-	 * FW supports matching of ssid in schedule scan
-	 */
+	 
 	ATH6KL_FW_CAPABILITY_SCHED_SCAN_MATCH_LIST,
 
-	/* Firmware supports filtering BSS results by RSSI */
+	 
 	ATH6KL_FW_CAPABILITY_RSSI_SCAN_THOLD,
 
-	/* FW sets mac_addr[4] ^= 0x80 for newly created interfaces */
+	 
 	ATH6KL_FW_CAPABILITY_CUSTOM_MAC_ADDR,
 
-	/* Firmware supports TX error rate notification */
+	 
 	ATH6KL_FW_CAPABILITY_TX_ERR_NOTIFY,
 
-	/* supports WMI_SET_REGDOMAIN_CMDID command */
+	 
 	ATH6KL_FW_CAPABILITY_REGDOMAIN,
 
-	/* Firmware supports sched scan decoupled from host sleep */
+	 
 	ATH6KL_FW_CAPABILITY_SCHED_SCAN_V2,
 
-	/*
-	 * Firmware capability for hang detection through heart beat
-	 * challenge messages.
-	 */
+	 
 	ATH6KL_FW_CAPABILITY_HEART_BEAT_POLL,
 
-	/* WMI_SET_TX_SELECT_RATES_CMDID uses 64 bit size rate table */
+	 
 	ATH6KL_FW_CAPABILITY_64BIT_RATES,
 
-	/* WMI_AP_CONN_INACT_CMDID uses minutes as units */
+	 
 	ATH6KL_FW_CAPABILITY_AP_INACTIVITY_MINS,
 
-	/* use low priority endpoint for all data */
+	 
 	ATH6KL_FW_CAPABILITY_MAP_LP_ENDPOINT,
 
-	/* ratetable is the 2 stream version (max MCS15) */
+	 
 	ATH6KL_FW_CAPABILITY_RATETABLE_MCS15,
 
-	/* firmware doesn't support IP checksumming */
+	 
 	ATH6KL_FW_CAPABILITY_NO_IP_CHECKSUM,
 
-	/* this needs to be last */
+	 
 	ATH6KL_FW_CAPABILITY_MAX,
 };
 
@@ -172,10 +141,10 @@ enum ath6kl_hw_flags {
 #define ATH6KL_FW_API4_FILE "fw-4.bin"
 #define ATH6KL_FW_API5_FILE "fw-5.bin"
 
-/* AR6003 1.0 definitions */
+ 
 #define AR6003_HW_1_0_VERSION                 0x300002ba
 
-/* AR6003 2.0 definitions */
+ 
 #define AR6003_HW_2_0_VERSION                 0x30000384
 #define AR6003_HW_2_0_PATCH_DOWNLOAD_ADDRESS  0x57e910
 #define AR6003_HW_2_0_FW_DIR			"ath6k/AR6003/hw2.0"
@@ -187,7 +156,7 @@ enum ath6kl_hw_flags {
 #define AR6003_HW_2_0_DEFAULT_BOARD_DATA_FILE \
 			AR6003_HW_2_0_FW_DIR "/bdata.SD31.bin"
 
-/* AR6003 3.0 definitions */
+ 
 #define AR6003_HW_2_1_1_VERSION                 0x30000582
 #define AR6003_HW_2_1_1_FW_DIR			"ath6k/AR6003/hw2.1.1"
 #define AR6003_HW_2_1_1_OTP_FILE		"otp.bin"
@@ -200,7 +169,7 @@ enum ath6kl_hw_flags {
 #define AR6003_HW_2_1_1_DEFAULT_BOARD_DATA_FILE	\
 			AR6003_HW_2_1_1_FW_DIR "/bdata.SD31.bin"
 
-/* AR6004 1.0 definitions */
+ 
 #define AR6004_HW_1_0_VERSION                 0x30000623
 #define AR6004_HW_1_0_FW_DIR			"ath6k/AR6004/hw1.0"
 #define AR6004_HW_1_0_FIRMWARE_FILE		"fw.ram.bin"
@@ -208,7 +177,7 @@ enum ath6kl_hw_flags {
 #define AR6004_HW_1_0_DEFAULT_BOARD_DATA_FILE \
 	AR6004_HW_1_0_FW_DIR "/bdata.DB132.bin"
 
-/* AR6004 1.1 definitions */
+ 
 #define AR6004_HW_1_1_VERSION                 0x30000001
 #define AR6004_HW_1_1_FW_DIR			"ath6k/AR6004/hw1.1"
 #define AR6004_HW_1_1_FIRMWARE_FILE		"fw.ram.bin"
@@ -216,7 +185,7 @@ enum ath6kl_hw_flags {
 #define AR6004_HW_1_1_DEFAULT_BOARD_DATA_FILE \
 	AR6004_HW_1_1_FW_DIR "/bdata.DB132.bin"
 
-/* AR6004 1.2 definitions */
+ 
 #define AR6004_HW_1_2_VERSION                 0x300007e8
 #define AR6004_HW_1_2_FW_DIR			"ath6k/AR6004/hw1.2"
 #define AR6004_HW_1_2_FIRMWARE_FILE           "fw.ram.bin"
@@ -224,7 +193,7 @@ enum ath6kl_hw_flags {
 #define AR6004_HW_1_2_DEFAULT_BOARD_DATA_FILE \
 	AR6004_HW_1_2_FW_DIR "/bdata.bin"
 
-/* AR6004 1.3 definitions */
+ 
 #define AR6004_HW_1_3_VERSION			0x31c8088a
 #define AR6004_HW_1_3_FW_DIR			"ath6k/AR6004/hw1.3"
 #define AR6004_HW_1_3_FIRMWARE_FILE		"fw.ram.bin"
@@ -234,7 +203,7 @@ enum ath6kl_hw_flags {
 #define AR6004_HW_1_3_BOARD_DATA_FILE	      AR6004_HW_1_3_FW_DIR "/bdata.bin"
 #define AR6004_HW_1_3_DEFAULT_BOARD_DATA_FILE AR6004_HW_1_3_FW_DIR "/bdata.bin"
 
-/* AR6004 3.0 definitions */
+ 
 #define AR6004_HW_3_0_VERSION			0x31C809F8
 #define AR6004_HW_3_0_FW_DIR			"ath6k/AR6004/hw3.0"
 #define AR6004_HW_3_0_FIRMWARE_FILE		"fw.ram.bin"
@@ -244,14 +213,14 @@ enum ath6kl_hw_flags {
 #define AR6004_HW_3_0_BOARD_DATA_FILE	      AR6004_HW_3_0_FW_DIR "/bdata.bin"
 #define AR6004_HW_3_0_DEFAULT_BOARD_DATA_FILE AR6004_HW_3_0_FW_DIR "/bdata.bin"
 
-/* Per STA data, used in AP mode */
+ 
 #define STA_PS_AWAKE		BIT(0)
 #define	STA_PS_SLEEP		BIT(1)
 #define	STA_PS_POLLED		BIT(2)
 #define STA_PS_APSD_TRIGGER     BIT(3)
 #define STA_PS_APSD_EOSP        BIT(4)
 
-/* HTC TX packet tagging definitions */
+ 
 #define ATH6KL_CONTROL_PKT_TAG    HTC_TX_PACKET_TAG_USER_DEFINED
 #define ATH6KL_DATA_PKT_TAG       (ATH6KL_CONTROL_PKT_TAG + 1)
 
@@ -273,33 +242,26 @@ enum ath6kl_hw_flags {
 
 #define AGGR_NUM_OF_FREE_NETBUFS    16
 
-#define AGGR_RX_TIMEOUT     100	/* in ms */
+#define AGGR_RX_TIMEOUT     100	 
 
 #define WMI_TIMEOUT (2 * HZ)
 
 #define MBOX_YIELD_LIMIT 99
 
-#define ATH6KL_DEFAULT_LISTEN_INTVAL	100 /* in TUs */
+#define ATH6KL_DEFAULT_LISTEN_INTVAL	100  
 #define ATH6KL_DEFAULT_BMISS_TIME	1500
-#define ATH6KL_MAX_WOW_LISTEN_INTL	300 /* in TUs */
+#define ATH6KL_MAX_WOW_LISTEN_INTL	300  
 #define ATH6KL_MAX_BMISS_TIME		5000
 
-/* configuration lags */
-/*
- * ATH6KL_CONF_IGNORE_ERP_BARKER: Ignore the barker premable in
- * ERP IE of beacon to determine the short premable support when
- * sending (Re)Assoc req.
- * ATH6KL_CONF_IGNORE_PS_FAIL_EVT_IN_SCAN: Don't send the power
- * module state transition failure events which happen during
- * scan, to the host.
- */
+ 
+ 
 #define ATH6KL_CONF_IGNORE_ERP_BARKER		BIT(0)
 #define ATH6KL_CONF_IGNORE_PS_FAIL_EVT_IN_SCAN  BIT(1)
 #define ATH6KL_CONF_ENABLE_11N			BIT(2)
 #define ATH6KL_CONF_ENABLE_TX_BURST		BIT(3)
 #define ATH6KL_CONF_UART_DEBUG			BIT(4)
 
-#define P2P_WILDCARD_SSID_LEN			7 /* DIRECT- */
+#define P2P_WILDCARD_SSID_LEN			7  
 
 enum wlan_low_pwr_state {
 	WLAN_POWER_STATE_ON,
@@ -329,17 +291,7 @@ struct rxtid {
 	struct skb_hold_q *hold_q;
 	struct sk_buff_head q;
 
-	/*
-	 * lock mainly protects seq_next and hold_q. Movement of seq_next
-	 * needs to be protected between aggr_timeout() and
-	 * aggr_process_recv_frm(). hold_q will be holding the pending
-	 * reorder frames and it's access should also be protected.
-	 * Some of the other fields like hold_q_sz, win_sz and aggr are
-	 * initialized/reset when receiving addba/delba req, also while
-	 * deleting aggr state all the pending buffers are flushed before
-	 * resetting these fields, so there should not be any race in accessing
-	 * these fields.
-	 */
+	 
 	spinlock_t lock;
 };
 
@@ -419,7 +371,7 @@ struct ath6kl_sta {
 	u8 wpa_ie[ATH6KL_MAX_IE];
 	struct sk_buff_head psq;
 
-	/* protects psq, mgmt_psq, apsdq, and mgmt_psq_len fields */
+	 
 	spinlock_t psq_lock;
 
 	struct list_head mgmt_psq;
@@ -526,22 +478,16 @@ struct ath6kl_mbox_info {
 	u32 gmbox_sz;
 };
 
-/*
- * 802.11i defines an extended IV for use with non-WEP ciphers.
- * When the EXTIV bit is set in the key id byte an additional
- * 4 bytes immediately follow the IV for TKIP.  For CCMP the
- * EXTIV bit is likewise set but the 8 bytes represent the
- * CCMP header rather than IV+extended-IV.
- */
+ 
 
 #define ATH6KL_KEYBUF_SIZE 16
-#define ATH6KL_MICBUF_SIZE (8+8)	/* space for both tx and rx */
+#define ATH6KL_MICBUF_SIZE (8+8)	 
 
 #define ATH6KL_KEY_XMIT  0x01
 #define ATH6KL_KEY_RECV  0x02
-#define ATH6KL_KEY_DEFAULT   0x80	/* default xmit key */
+#define ATH6KL_KEY_DEFAULT   0x80	 
 
-/* Initial group key for AP mode */
+ 
 struct ath6kl_req_key {
 	bool valid;
 	u8 key_index;
@@ -560,7 +506,7 @@ enum ath6kl_htc_type {
 	ATH6KL_HTC_TYPE_PIPE,
 };
 
-/* Max number of filters that hw supports */
+ 
 #define ATH6K_MAX_MC_FILTERS_PER_LIST 7
 struct ath6kl_mc_filter {
 	struct list_head list;
@@ -573,13 +519,10 @@ struct ath6kl_htcap {
 	unsigned short cap_info;
 };
 
-/*
- * Driver's maximum limit, note that some firmwares support only one vif
- * and the runtime (current) limit must be checked from ar->vif_max.
- */
+ 
 #define ATH6KL_VIF_MAX	3
 
-/* vif flags info */
+ 
 enum ath6kl_vif_state {
 	CONNECTED,
 	CONNECT_PEND,
@@ -601,7 +544,7 @@ struct ath6kl_vif {
 	struct wireless_dev wdev;
 	struct net_device *ndev;
 	struct ath6kl *ar;
-	/* Lock to protect vif specific net_stats and flags */
+	 
 	spinlock_t if_lock;
 	u8 fw_vif_idx;
 	unsigned long flags;
@@ -654,11 +597,11 @@ static inline struct ath6kl_vif *ath6kl_vif_from_wdev(struct wireless_dev *wdev)
 }
 
 #define WOW_LIST_ID		0
-#define WOW_HOST_REQ_DELAY	500 /* ms */
+#define WOW_HOST_REQ_DELAY	500  
 
-#define ATH6KL_SCHED_SCAN_RESULT_DELAY 5000 /* ms */
+#define ATH6KL_SCHED_SCAN_RESULT_DELAY 5000  
 
-/* Flag info */
+ 
 enum ath6kl_dev_state {
 	WMI_ENABLED,
 	WMI_READY,
@@ -682,7 +625,7 @@ enum ath6kl_state {
 	ATH6KL_STATE_RECOVERY,
 };
 
-/* Fw error recovery */
+ 
 #define ATH6KL_HB_RESP_MISS_THRES	5
 
 enum ath6kl_fw_err {
@@ -708,17 +651,14 @@ struct ath6kl {
 	enum ath6kl_hif_type hif_type;
 	void *hif_priv;
 	struct list_head vif_list;
-	/* Lock to avoid race in vif_list entries among add/del/traverse */
+	 
 	spinlock_t list_lock;
 	u8 num_vif;
 	unsigned int vif_max;
 	u8 max_norm_iface;
 	u8 avail_idx_map;
 
-	/*
-	 * Protects at least amsdu_rx_buffer_queue, ath6kl_alloc_cookie()
-	 * calls, tx_pending and total_tx_data_pend.
-	 */
+	 
 	spinlock_t lock;
 
 	struct semaphore sem;
@@ -750,10 +690,7 @@ struct ath6kl {
 	u32 want_ch_switch;
 	u16 last_ch;
 
-	/*
-	 * FIXME: protects access to mcastpsq but is actually useless as
-	 * all skbe_queue_*() functions provide serialisation themselves
-	 */
+	 
 	spinlock_t mcastpsq_lock;
 
 	u8 intra_bss;
@@ -870,7 +807,7 @@ struct ath6kl {
 		u8 keepalive;
 		u8 disc_timeout;
 	} debug;
-#endif /* CONFIG_ATH6KL_DEBUG */
+#endif  
 };
 
 static inline struct ath6kl *ath6kl_priv(struct net_device *dev)
@@ -981,7 +918,7 @@ int ath6kl_core_init(struct ath6kl *ar, enum ath6kl_htc_type htc_type);
 void ath6kl_core_cleanup(struct ath6kl *ar);
 void ath6kl_core_destroy(struct ath6kl *ar);
 
-/* Fw error recovery */
+ 
 void ath6kl_init_hw_restart(struct ath6kl *ar);
 void ath6kl_recovery_err_notify(struct ath6kl *ar, enum ath6kl_fw_err reason);
 void ath6kl_recovery_hb_event(struct ath6kl *ar, u32 cookie);
@@ -989,4 +926,4 @@ void ath6kl_recovery_init(struct ath6kl *ar);
 void ath6kl_recovery_cleanup(struct ath6kl *ar);
 void ath6kl_recovery_suspend(struct ath6kl *ar);
 void ath6kl_recovery_resume(struct ath6kl *ar);
-#endif /* CORE_H */
+#endif  

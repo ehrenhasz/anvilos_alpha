@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Renesas Ethernet SERDES device driver
- *
- * Copyright (C) 2022 Renesas Electronics Corporation
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -38,11 +35,7 @@ struct r8a779f0_eth_serdes_drv_data {
 	bool initialized;
 };
 
-/*
- * The datasheet describes initialization procedure without any information
- * about registers' name/bits. So, this is all black magic to initialize
- * the hardware.
- */
+ 
 static void r8a779f0_eth_serdes_write32(void __iomem *addr, u32 offs, u32 bank, u32 data)
 {
 	iowrite32(bank, addr + R8A779F0_ETH_SERDES_BANK_SELECT);
@@ -150,7 +143,7 @@ r8a779f0_eth_serdes_chan_setting(struct r8a779f0_eth_serdes_channel *channel)
 		else if (channel->speed == 100)
 			r8a779f0_eth_serdes_write32(channel->addr, 0x0000, 0x1f00, 0x2100);
 
-		/* For AN_ON */
+		 
 		r8a779f0_eth_serdes_write32(channel->addr, 0x0004, 0x1f80, 0x0005);
 		r8a779f0_eth_serdes_write32(channel->addr, 0x0028, 0x1f80, 0x07a1);
 		r8a779f0_eth_serdes_write32(channel->addr, 0x0000, 0x1f80, 0x0208);
@@ -169,7 +162,7 @@ r8a779f0_eth_serdes_chan_speed(struct r8a779f0_eth_serdes_channel *channel)
 
 	switch (channel->phy_interface) {
 	case PHY_INTERFACE_MODE_SGMII:
-		/* For AN_ON */
+		 
 		if (channel->speed == 1000)
 			r8a779f0_eth_serdes_write32(channel->addr, 0x0000, 0x1f00, 0x1140);
 		else if (channel->speed == 100)
@@ -197,7 +190,7 @@ static int r8a779f0_eth_serdes_monitor_linkup(struct r8a779f0_eth_serdes_channel
 		if (!ret)
 			break;
 
-		/* restart */
+		 
 		r8a779f0_eth_serdes_write32(channel->addr, 0x0144, 0x180, 0x0100);
 		udelay(1);
 		r8a779f0_eth_serdes_write32(channel->addr, 0x0144, 0x180, 0x0000);

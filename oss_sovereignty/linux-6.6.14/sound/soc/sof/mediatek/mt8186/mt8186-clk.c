@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// Copyright(c) 2022 Mediatek Corporation. All rights reserved.
-//
-// Author: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-//         Tinghan Shen <tinghan.shen@mediatek.com>
-//
-// Hardware interface for mt8186 DSP clock
+
+
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/io.h>

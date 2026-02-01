@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2010 - 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include "system_global.h"
 
@@ -21,10 +9,8 @@
 #include "platform_support.h"
 #include "ia_css_isys.h"
 #include "bitop_support.h"
-#include "ia_css_pipeline.h"	/* ia_css_pipeline_get_pipe_io_status() */
-#include "sh_css_internal.h"	/* sh_css_sp_pipeline_io_status
-				 * SH_CSS_MAX_SP_THREADS
-				 */
+#include "ia_css_pipeline.h"	 
+#include "sh_css_internal.h"	 
 #include "csi_rx_rmgr.h"
 
 static isys_csi_rx_rsrc_t  isys_csi_rx_rsrc[N_CSI_RX_BACKEND_ID];

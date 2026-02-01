@@ -1,95 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Windfarm PowerMac thermal control. iMac G5
- *
- * (c) Copyright 2005 Benjamin Herrenschmidt, IBM Corp.
- *                    <benh@kernel.crashing.org>
- *
- * The algorithm used is the PID control algorithm, used the same
- * way the published Darwin code does, using the same values that
- * are present in the Darwin 8.2 snapshot property lists (note however
- * that none of the code has been re-used, it's a complete re-implementation
- *
- * The various control loops found in Darwin config file are:
- *
- * PowerMac8,1 and PowerMac8,2
- * ===========================
- *
- * System Fans control loop. Different based on models. In addition to the
- * usual PID algorithm, the control loop gets 2 additional pairs of linear
- * scaling factors (scale/offsets) expressed as 4.12 fixed point values
- * signed offset, unsigned scale)
- *
- * The targets are modified such as:
- *  - the linked control (second control) gets the target value as-is
- *    (typically the drive fan)
- *  - the main control (first control) gets the target value scaled with
- *    the first pair of factors, and is then modified as below
- *  - the value of the target of the CPU Fan control loop is retrieved,
- *    scaled with the second pair of factors, and the max of that and
- *    the scaled target is applied to the main control.
- *
- * # model_id: 2
- *   controls       : system-fan, drive-bay-fan
- *   sensors        : hd-temp
- *   PID params     : G_d = 0x15400000
- *                    G_p = 0x00200000
- *                    G_r = 0x000002fd
- *                    History = 2 entries
- *                    Input target = 0x3a0000
- *                    Interval = 5s
- *   linear-factors : offset = 0xff38 scale  = 0x0ccd
- *                    offset = 0x0208 scale  = 0x07ae
- *
- * # model_id: 3
- *   controls       : system-fan, drive-bay-fan
- *   sensors        : hd-temp
- *   PID params     : G_d = 0x08e00000
- *                    G_p = 0x00566666
- *                    G_r = 0x0000072b
- *                    History = 2 entries
- *                    Input target = 0x350000
- *                    Interval = 5s
- *   linear-factors : offset = 0xff38 scale  = 0x0ccd
- *                    offset = 0x0000 scale  = 0x0000
- *
- * # model_id: 5
- *   controls       : system-fan
- *   sensors        : hd-temp
- *   PID params     : G_d = 0x15400000
- *                    G_p = 0x00233333
- *                    G_r = 0x000002fd
- *                    History = 2 entries
- *                    Input target = 0x3a0000
- *                    Interval = 5s
- *   linear-factors : offset = 0x0000 scale  = 0x1000
- *                    offset = 0x0091 scale  = 0x0bae
- *
- * CPU Fan control loop. The loop is identical for all models. it
- * has an additional pair of scaling factor. This is used to scale the
- * systems fan control loop target result (the one before it gets scaled
- * by the System Fans control loop itself). Then, the max value of the
- * calculated target value and system fan value is sent to the fans
- *
- *   controls       : cpu-fan
- *   sensors        : cpu-temp cpu-power
- *   PID params     : From SMU sdb partition
- *   linear-factors : offset = 0xfb50 scale  = 0x1000
- *
- * CPU Slew control loop. Not implemented. The cpufreq driver in linux is
- * completely separate for now, though we could find a way to link it, either
- * as a client reacting to overtemp notifications, or directling monitoring
- * the CPU temperature
- *
- * WARNING ! The CPU control loop requires the CPU tmax for the current
- * operating point. However, we currently are completely separated from
- * the cpufreq driver and thus do not know what the current operating
- * point is. Fortunately, we also do not have any hardware supporting anything
- * but operating point 0 at the moment, thus we just peek that value directly
- * from the SDB partition. If we ever end up with actually slewing the system
- * clock and thus changing operating points, we'll have to find a way to
- * communicate with the CPU freq driver;
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/errno.h>
@@ -122,14 +32,12 @@
 #define DBG(args...)	do { } while(0)
 #endif
 
-/* define this to force CPU overtemp to 74 degree, useful for testing
- * the overtemp code
- */
+ 
 #undef HACKED_OVERTEMP
 
-static int wf_smu_mach_model;	/* machine model id */
+static int wf_smu_mach_model;	 
 
-/* Controls & sensors */
+ 
 static struct wf_sensor	*sensor_cpu_power;
 static struct wf_sensor	*sensor_cpu_temp;
 static struct wf_sensor	*sensor_hd_temp;
@@ -138,11 +46,11 @@ static struct wf_control *fan_hd;
 static struct wf_control *fan_system;
 static struct wf_control *cpufreq_clamp;
 
-/* Set to kick the control loop into life */
+ 
 static int wf_smu_all_controls_ok, wf_smu_all_sensors_ok;
 static bool wf_smu_started;
 
-/* Failure handling.. could be nicer */
+ 
 #define FAILURE_FAN		0x01
 #define FAILURE_SENSOR		0x02
 #define FAILURE_OVERTEMP	0x04
@@ -151,15 +59,9 @@ static unsigned int wf_smu_failure_state;
 static int wf_smu_readjust, wf_smu_skipping;
 static bool wf_smu_overtemp;
 
-/*
- * ****** System Fans Control Loop ******
- *
- */
+ 
 
-/* Parameters for the System Fans control loop. Parameters
- * not in this table such as interval, history size, ...
- * are common to all versions and thus hard coded for now.
- */
+ 
 struct wf_smu_sys_fans_param {
 	int	model_id;
 	s32	itarget;
@@ -174,8 +76,7 @@ struct wf_smu_sys_fans_param {
 #define WF_SMU_SYS_FANS_INTERVAL	5
 #define WF_SMU_SYS_FANS_HISTORY_SIZE	2
 
-/* State data used by the system fans control loop
- */
+ 
 struct wf_smu_sys_fans_state {
 	int			ticks;
 	s32			sys_setpoint;
@@ -187,11 +88,9 @@ struct wf_smu_sys_fans_state {
 	struct wf_pid_state	pid;
 };
 
-/*
- * Configs for SMU System Fan control loop
- */
+ 
 static struct wf_smu_sys_fans_param wf_smu_sys_all_params[] = {
-	/* Model ID 2 */
+	 
 	{
 		.model_id	= 2,
 		.itarget	= 0x3a0000,
@@ -203,7 +102,7 @@ static struct wf_smu_sys_fans_param wf_smu_sys_all_params[] = {
 		.offset1	= 0x0208,
 		.scale1		= 0x07ae,
 	},
-	/* Model ID 3 */
+	 
 	{
 		.model_id	= 3,
 		.itarget	= 0x350000,
@@ -215,7 +114,7 @@ static struct wf_smu_sys_fans_param wf_smu_sys_all_params[] = {
 		.offset1	= 0x0000,
 		.scale1		= 0x0000,
 	},
-	/* Model ID 5 */
+	 
 	{
 		.model_id	= 5,
 		.itarget	= 0x3a0000,
@@ -232,10 +131,7 @@ static struct wf_smu_sys_fans_param wf_smu_sys_all_params[] = {
 
 static struct wf_smu_sys_fans_state *wf_smu_sys_fans;
 
-/*
- * ****** CPU Fans Control Loop ******
- *
- */
+ 
 
 
 #define WF_SMU_CPU_FANS_INTERVAL	1
@@ -243,8 +139,7 @@ static struct wf_smu_sys_fans_state *wf_smu_sys_fans;
 #define WF_SMU_CPU_FANS_SIBLING_SCALE	0x00001000
 #define WF_SMU_CPU_FANS_SIBLING_OFFSET	0xfffffb50
 
-/* State data used by the cpu fans control loop
- */
+ 
 struct wf_smu_cpu_fans_state {
 	int			ticks;
 	s32			cpu_setpoint;
@@ -257,10 +152,7 @@ static struct wf_smu_cpu_fans_state *wf_smu_cpu_fans;
 
 
 
-/*
- * ***** Implementation *****
- *
- */
+ 
 
 static void wf_smu_create_sys_fans(void)
 {
@@ -268,21 +160,21 @@ static void wf_smu_create_sys_fans(void)
 	struct wf_pid_param pid_param;
 	int i;
 
-	/* First, locate the params for this model */
+	 
 	for (i = 0; i < WF_SMU_SYS_FANS_NUM_CONFIGS; i++)
 		if (wf_smu_sys_all_params[i].model_id == wf_smu_mach_model) {
 			param = &wf_smu_sys_all_params[i];
 			break;
 		}
 
-	/* No params found, put fans to max */
+	 
 	if (param == NULL) {
 		printk(KERN_WARNING "windfarm: System fan config not found "
 		       "for this machine model, max fan speed\n");
 		goto fail;
 	}
 
-	/* Alloc & initialize state */
+	 
 	wf_smu_sys_fans = kmalloc(sizeof(struct wf_smu_sys_fans_state),
 				  GFP_KERNEL);
 	if (wf_smu_sys_fans == NULL) {
@@ -296,7 +188,7 @@ static void wf_smu_create_sys_fans(void)
 	wf_smu_sys_fans->scale1 = param->scale1;
 	wf_smu_sys_fans->offset1 = param->offset1;
 
-	/* Fill PID params */
+	 
 	pid_param.gd = param->gd;
 	pid_param.gp = param->gp;
 	pid_param.gr = param->gr;
@@ -399,7 +291,7 @@ static void wf_smu_create_cpu_fans(void)
 	struct smu_sdbp_fvt *fvt;
 	s32 tmax, tdelta, maxpow, powadj;
 
-	/* First, locate the PID params in SMU SBD */
+	 
 	hdr = smu_get_sdb_partition(SMU_SDB_CPUPIDDATA_ID, NULL);
 	if (!hdr) {
 		printk(KERN_WARNING "windfarm: CPU PID fan config not found "
@@ -408,17 +300,15 @@ static void wf_smu_create_cpu_fans(void)
 	}
 	piddata = (struct smu_sdbp_cpupiddata *)&hdr[1];
 
-	/* Get the FVT params for operating point 0 (the only supported one
-	 * for now) in order to get tmax
-	 */
+	 
 	hdr = smu_get_sdb_partition(SMU_SDB_FVT_ID, NULL);
 	if (hdr) {
 		fvt = (struct smu_sdbp_fvt *)&hdr[1];
 		tmax = ((s32)fvt->maxtemp) << 16;
 	} else
-		tmax = 0x5e0000; /* 94 degree default */
+		tmax = 0x5e0000;  
 
-	/* Alloc & initialize state */
+	 
 	wf_smu_cpu_fans = kmalloc(sizeof(struct wf_smu_cpu_fans_state),
 				  GFP_KERNEL);
 	if (wf_smu_cpu_fans == NULL)
@@ -428,7 +318,7 @@ static void wf_smu_create_cpu_fans(void)
 	wf_smu_cpu_fans->scale = WF_SMU_CPU_FANS_SIBLING_SCALE;
 	wf_smu_cpu_fans->offset = WF_SMU_CPU_FANS_SIBLING_OFFSET;
 
-	/* Fill PID params */
+	 
 	pid_param.interval = WF_SMU_CPU_FANS_INTERVAL;
 	pid_param.history_len = piddata->history_len;
 	if (pid_param.history_len > WF_CPU_PID_MAX_HISTORY) {
@@ -535,10 +425,7 @@ static void wf_smu_cpu_fans_tick(struct wf_smu_cpu_fans_state *st)
 	}
 }
 
-/*
- * ****** Setup / Init / Misc ... ******
- *
- */
+ 
 
 static void wf_smu_tick(void)
 {
@@ -552,7 +439,7 @@ static void wf_smu_tick(void)
 		wf_smu_started = true;
 	}
 
-	/* Skipping ticks */
+	 
 	if (wf_smu_skipping && --wf_smu_skipping)
 		return;
 
@@ -565,9 +452,7 @@ static void wf_smu_tick(void)
 	wf_smu_readjust = 0;
 	new_failure = wf_smu_failure_state & ~last_failure;
 
-	/* If entering failure mode, clamp cpufreq and ramp all
-	 * fans to full speed.
-	 */
+	 
 	if (wf_smu_failure_state && !last_failure) {
 		if (cpufreq_clamp)
 			wf_control_set_max(cpufreq_clamp);
@@ -579,30 +464,21 @@ static void wf_smu_tick(void)
 			wf_control_set_max(fan_hd);
 	}
 
-	/* If leaving failure mode, unclamp cpufreq and readjust
-	 * all fans on next iteration
-	 */
+	 
 	if (!wf_smu_failure_state && last_failure) {
 		if (cpufreq_clamp)
 			wf_control_set_min(cpufreq_clamp);
 		wf_smu_readjust = 1;
 	}
 
-	/* Overtemp condition detected, notify and start skipping a couple
-	 * ticks to let the temperature go down
-	 */
+	 
 	if (new_failure & FAILURE_OVERTEMP) {
 		wf_set_overtemp();
 		wf_smu_skipping = 2;
 		wf_smu_overtemp = true;
 	}
 
-	/* We only clear the overtemp condition if overtemp is cleared
-	 * _and_ no other failure is present. Since a sensor error will
-	 * clear the overtemp condition (can't measure temperature) at
-	 * the control loop levels, but we don't want to keep it clear
-	 * here in this case
-	 */
+	 
 	if (!wf_smu_failure_state && wf_smu_overtemp) {
 		wf_clear_overtemp();
 		wf_smu_overtemp = false;
@@ -629,9 +505,7 @@ static void wf_smu_new_control(struct wf_control *ct)
 			cpufreq_clamp = ct;
 	}
 
-	/* Darwin property list says the HD fan is only for model ID
-	 * 0, 1, 2 and 3
-	 */
+	 
 
 	if (wf_smu_mach_model > 3) {
 		if (fan_system && fan_cpu_main && cpufreq_clamp)
@@ -728,19 +602,11 @@ static int wf_smu_remove(struct platform_device *ddev)
 {
 	wf_unregister_client(&wf_smu_events);
 
-	/* XXX We don't have yet a guarantee that our callback isn't
-	 * in progress when returning from wf_unregister_client, so
-	 * we add an arbitrary delay. I'll have to fix that in the core
-	 */
+	 
 	msleep(1000);
 
-	/* Release all sensors */
-	/* One more crappy race: I don't think we have any guarantee here
-	 * that the attribute callback won't race with the sensor beeing
-	 * disposed of, and I'm not 100% certain what best way to deal
-	 * with that except by adding locks all over... I'll do that
-	 * eventually but heh, who ever rmmod this module anyway ?
-	 */
+	 
+	 
 	if (sensor_cpu_power)
 		wf_put_sensor(sensor_cpu_power);
 	if (sensor_cpu_temp)
@@ -748,7 +614,7 @@ static int wf_smu_remove(struct platform_device *ddev)
 	if (sensor_hd_temp)
 		wf_put_sensor(sensor_hd_temp);
 
-	/* Release all controls */
+	 
 	if (fan_cpu_main)
 		wf_put_control(fan_cpu_main);
 	if (fan_hd)
@@ -758,7 +624,7 @@ static int wf_smu_remove(struct platform_device *ddev)
 	if (cpufreq_clamp)
 		wf_put_control(cpufreq_clamp);
 
-	/* Destroy control loops state structures */
+	 
 	kfree(wf_smu_sys_fans);
 	kfree(wf_smu_cpu_fans);
 
@@ -789,7 +655,7 @@ static int __init wf_smu_init(void)
 		request_module("windfarm_lm75_sensor");
 		request_module("windfarm_cpufreq_clamp");
 
-#endif /* MODULE */
+#endif  
 		platform_driver_register(&wf_smu_driver);
 	}
 

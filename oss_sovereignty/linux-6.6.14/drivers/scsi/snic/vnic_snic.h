@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright 2014 Cisco Systems, Inc.  All rights reserved. */
+ 
+ 
 
 #ifndef _VNIC_SNIC_H_
 #define _VNIC_SNIC_H_
@@ -22,7 +22,7 @@
 #define VNIC_SNIC_LUNS_PER_TARGET_MIN       1
 #define VNIC_SNIC_LUNS_PER_TARGET_MAX       1024
 
-/* Device-specific region: scsi configuration */
+ 
 struct vnic_snic_config {
 	u32 flags;
 	u32 wq_enet_desc_count;
@@ -37,4 +37,4 @@ struct vnic_snic_config {
 	u8 xpt_type;
 	u8 hid;
 };
-#endif /* _VNIC_SNIC_H_ */
+#endif  

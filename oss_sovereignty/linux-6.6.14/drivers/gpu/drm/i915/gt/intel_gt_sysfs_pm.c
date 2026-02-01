@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2022 Intel Corporation
- */
+
+ 
 
 #include <drm/drm_device.h>
 #include <linux/sysfs.h>
@@ -87,11 +85,11 @@ sysfs_gt_attribute_r_func(struct kobject *kobj, struct attribute *attr,
 	return ret;
 }
 
-/* RC6 interfaces will show the minimum RC6 residency value */
+ 
 #define sysfs_gt_attribute_r_min_func(d, a, f) \
 		sysfs_gt_attribute_r_func(d, a, f, INTEL_GT_SYSFS_MIN)
 
-/* Frequency interfaces will show the maximum frequency value */
+ 
 #define sysfs_gt_attribute_r_max_func(d, a, f) \
 		sysfs_gt_attribute_r_func(d, a, f, INTEL_GT_SYSFS_MAX)
 
@@ -307,10 +305,7 @@ static void intel_sysfs_rc6_init(struct intel_gt *gt, struct kobject *kobj)
 	if (ret)
 		gt_warn(gt, "failed to create RC6 sysfs files (%pe)\n", ERR_PTR(ret));
 
-	/*
-	 * cannot use the is_visible() attribute because
-	 * the upper object inherits from the parent group.
-	 */
+	 
 	if (HAS_RC6p(gt->i915)) {
 		ret = __intel_gt_sysfs_create_group(kobj, rc6p_attr_group);
 		if (ret)
@@ -412,7 +407,7 @@ INTEL_GT_SYSFS_STORE(min_freq_mhz, __set_min_freq);
 		INTEL_GT_RPS_SYSFS_ATTR(_name, 0644, _name##_show, _name##_store,	\
 					_name##_dev_show, _name##_dev_store)
 
-/* The below macros generate static structures */
+ 
 INTEL_GT_RPS_SYSFS_ATTR_RO(act_freq_mhz);
 INTEL_GT_RPS_SYSFS_ATTR_RO(cur_freq_mhz);
 INTEL_GT_RPS_SYSFS_ATTR_RW(boost_freq_mhz);
@@ -530,41 +525,7 @@ static const struct attribute *throttle_reason_attrs[] = {
 	NULL
 };
 
-/*
- * Scaling for multipliers (aka frequency factors).
- * The format of the value in the register is u8.8.
- *
- * The presentation to userspace is inspired by the perf event framework.
- * See:
- *   Documentation/ABI/testing/sysfs-bus-event_source-devices-events
- * for description of:
- *   /sys/bus/event_source/devices/<pmu>/events/<event>.scale
- *
- * Summary: Expose two sysfs files for each multiplier.
- *
- * 1. File <attr> contains a raw hardware value.
- * 2. File <attr>.scale contains the multiplicative scale factor to be
- *    used by userspace to compute the actual value.
- *
- * So userspace knows that to get the frequency_factor it multiplies the
- * provided value by the specified scale factor and vice-versa.
- *
- * That way there is no precision loss in the kernel interface and API
- * is future proof should one day the hardware register change to u16.u16,
- * on some platform. (Or any other fixed point representation.)
- *
- * Example:
- * File <attr> contains the value 2.5, represented as u8.8 0x0280, which
- * is comprised of:
- * - an integer part of 2
- * - a fractional part of 0x80 (representing 0x80 / 2^8 == 0x80 / 256).
- * File <attr>.scale contains a string representation of floating point
- * value 0.00390625 (which is (1 / 256)).
- * Userspace computes the actual value:
- *   0x0280 * 0.00390625 -> 2.5
- * or converts an actual value to the value to be written into <attr>:
- *   2.5 / 0.00390625 -> 0x0280
- */
+ 
 
 #define U8_8_VAL_MASK           0xffff
 #define U8_8_SCALE_TO_VALUE     "0.00390625"
@@ -578,7 +539,7 @@ static ssize_t freq_factor_scale_show(struct kobject *kobj,
 
 static u32 media_ratio_mode_to_factor(u32 mode)
 {
-	/* 0 -> 0, 1 -> 256, 2 -> 128 */
+	 
 	return !mode ? mode : 256 / mode;
 }
 
@@ -591,16 +552,10 @@ static ssize_t media_freq_factor_show(struct kobject *kobj,
 	intel_wakeref_t wakeref;
 	u32 mode;
 
-	/*
-	 * Retrieve media_ratio_mode from GEN6_RPNSWREQ bit 13 set by
-	 * GuC. GEN6_RPNSWREQ:13 value 0 represents 1:2 and 1 represents 1:1
-	 */
+	 
 	if (IS_XEHPSDV(gt->i915) &&
 	    slpc->media_ratio_mode == SLPC_MEDIA_RATIO_MODE_DYNAMIC_CONTROL) {
-		/*
-		 * For XEHPSDV dynamic mode GEN6_RPNSWREQ:13 does not contain
-		 * the media_ratio_mode, just return the cached media ratio
-		 */
+		 
 		mode = slpc->media_ratio_mode;
 	} else {
 		with_intel_runtime_pm(gt->uncore->rpm, wakeref)
@@ -657,7 +612,7 @@ static ssize_t media_RP0_freq_mhz_show(struct kobject *kobj,
 	if (err)
 		return err;
 
-	/* Fused media RP0 read from pcode is in units of 50 MHz */
+	 
 	val *= GT_FREQUENCY_MULTIPLIER;
 
 	return sysfs_emit(buff, "%u\n", val);
@@ -678,7 +633,7 @@ static ssize_t media_RPn_freq_mhz_show(struct kobject *kobj,
 	if (err)
 		return err;
 
-	/* Fused media RPn read from pcode is in units of 50 MHz */
+	 
 	val *= GT_FREQUENCY_MULTIPLIER;
 
 	return sysfs_emit(buff, "%u\n", val);
@@ -873,7 +828,7 @@ void intel_gt_sysfs_pm_init(struct intel_gt *gt, struct kobject *kobj)
 	if (ret)
 		gt_warn(gt, "failed to create RPS sysfs files (%pe)", ERR_PTR(ret));
 
-	/* end of the legacy interfaces */
+	 
 	if (!is_object_gt(kobj))
 		return;
 

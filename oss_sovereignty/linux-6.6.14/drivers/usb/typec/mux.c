@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * USB Type-C Multiplexer/DeMultiplexer Switch support
- *
- * Copyright (C) 2018 Intel Corporation
- * Author: Heikki Krogerus <heikki.krogerus@linux.intel.com>
- *         Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/list.h>
@@ -37,37 +31,18 @@ static void *typec_switch_match(const struct fwnode_handle *fwnode,
 {
 	struct device *dev;
 
-	/*
-	 * Device graph (OF graph) does not give any means to identify the
-	 * device type or the device class of the remote port parent that @fwnode
-	 * represents, so in order to identify the type or the class of @fwnode
-	 * an additional device property is needed. With typec switches the
-	 * property is named "orientation-switch" (@id). The value of the device
-	 * property is ignored.
-	 */
+	 
 	if (id && !fwnode_property_present(fwnode, id))
 		return NULL;
 
-	/*
-	 * At this point we are sure that @fwnode is a typec switch in all
-	 * cases. If the switch hasn't yet been registered for some reason, the
-	 * function "defers probe" for now.
-	 */
+	 
 	dev = class_find_device(&typec_mux_class, NULL, fwnode,
 				switch_fwnode_match);
 
 	return dev ? to_typec_switch_dev(dev) : ERR_PTR(-EPROBE_DEFER);
 }
 
-/**
- * fwnode_typec_switch_get - Find USB Type-C orientation switch
- * @fwnode: The caller device node
- *
- * Finds a switch linked with @dev. Returns a reference to the switch on
- * success, NULL if no matching connection was found, or
- * ERR_PTR(-EPROBE_DEFER) when a connection was found but the switch
- * has not been enumerated yet.
- */
+ 
 struct typec_switch *fwnode_typec_switch_get(struct fwnode_handle *fwnode)
 {
 	struct typec_switch_dev *sw_devs[TYPEC_MUX_MAX_DEVS];
@@ -117,12 +92,7 @@ put_sw_devs:
 }
 EXPORT_SYMBOL_GPL(fwnode_typec_switch_get);
 
-/**
- * typec_switch_put - Release USB Type-C orientation switch
- * @sw: USB Type-C orientation switch
- *
- * Decrement reference count for @sw.
- */
+ 
 void typec_switch_put(struct typec_switch *sw)
 {
 	struct typec_switch_dev *sw_dev;
@@ -151,16 +121,7 @@ const struct device_type typec_switch_dev_type = {
 	.release = typec_switch_release,
 };
 
-/**
- * typec_switch_register - Register USB Type-C orientation switch
- * @parent: Parent device
- * @desc: Orientation switch description
- *
- * This function registers a switch that can be used for routing the correct
- * data pairs depending on the cable plug orientation from the USB Type-C
- * connector to the USB controllers. USB Type-C plugs can be inserted
- * right-side-up or upside-down.
- */
+ 
 struct typec_switch_dev *
 typec_switch_register(struct device *parent,
 		      const struct typec_switch_desc *desc)
@@ -222,12 +183,7 @@ int typec_switch_set(struct typec_switch *sw,
 }
 EXPORT_SYMBOL_GPL(typec_switch_set);
 
-/**
- * typec_switch_unregister - Unregister USB Type-C orientation switch
- * @sw_dev: USB Type-C orientation switch
- *
- * Unregister switch that was registered with typec_switch_register().
- */
+ 
 void typec_switch_unregister(struct typec_switch_dev *sw_dev)
 {
 	if (!IS_ERR_OR_NULL(sw_dev))
@@ -247,7 +203,7 @@ void *typec_switch_get_drvdata(struct typec_switch_dev *sw_dev)
 }
 EXPORT_SYMBOL_GPL(typec_switch_get_drvdata);
 
-/* ------------------------------------------------------------------------- */
+ 
 
 struct typec_mux {
 	struct typec_mux_dev *mux_devs[TYPEC_MUX_MAX_DEVS];
@@ -267,14 +223,7 @@ static void *typec_mux_match(const struct fwnode_handle *fwnode,
 {
 	struct device *dev;
 
-	/*
-	 * Device graph (OF graph) does not give any means to identify the
-	 * device type or the device class of the remote port parent that @fwnode
-	 * represents, so in order to identify the type or the class of @fwnode
-	 * an additional device property is needed. With typec muxes the
-	 * property is named "mode-switch" (@id). The value of the device
-	 * property is ignored.
-	 */
+	 
 	if (id && !fwnode_property_present(fwnode, id))
 		return NULL;
 
@@ -284,15 +233,7 @@ static void *typec_mux_match(const struct fwnode_handle *fwnode,
 	return dev ? to_typec_mux_dev(dev) : ERR_PTR(-EPROBE_DEFER);
 }
 
-/**
- * fwnode_typec_mux_get - Find USB Type-C Multiplexer
- * @fwnode: The caller device node
- *
- * Finds a mux linked to the caller. This function is primarily meant for the
- * Type-C drivers. Returns a reference to the mux on success, NULL if no
- * matching connection was found, or ERR_PTR(-EPROBE_DEFER) when a connection
- * was found but the mux has not been enumerated yet.
- */
+ 
 struct typec_mux *fwnode_typec_mux_get(struct fwnode_handle *fwnode)
 {
 	struct typec_mux_dev *mux_devs[TYPEC_MUX_MAX_DEVS];
@@ -342,12 +283,7 @@ put_mux_devs:
 }
 EXPORT_SYMBOL_GPL(fwnode_typec_mux_get);
 
-/**
- * typec_mux_put - Release handle to a Multiplexer
- * @mux: USB Type-C Connector Multiplexer/DeMultiplexer
- *
- * Decrements reference count for @mux.
- */
+ 
 void typec_mux_put(struct typec_mux *mux)
 {
 	struct typec_mux_dev *mux_dev;
@@ -396,16 +332,7 @@ const struct device_type typec_mux_dev_type = {
 	.release = typec_mux_release,
 };
 
-/**
- * typec_mux_register - Register Multiplexer routing USB Type-C pins
- * @parent: Parent device
- * @desc: Multiplexer description
- *
- * USB Type-C connectors can be used for alternate modes of operation besides
- * USB when Accessory/Alternate Modes are supported. With some of those modes,
- * the pins on the connector need to be reconfigured. This function registers
- * multiplexer switches routing the pins on the connector.
- */
+ 
 struct typec_mux_dev *
 typec_mux_register(struct device *parent, const struct typec_mux_desc *desc)
 {
@@ -444,12 +371,7 @@ typec_mux_register(struct device *parent, const struct typec_mux_desc *desc)
 }
 EXPORT_SYMBOL_GPL(typec_mux_register);
 
-/**
- * typec_mux_unregister - Unregister Multiplexer Switch
- * @mux_dev: USB Type-C Connector Multiplexer/DeMultiplexer
- *
- * Unregister mux that was registered with typec_mux_register().
- */
+ 
 void typec_mux_unregister(struct typec_mux_dev *mux_dev)
 {
 	if (!IS_ERR_OR_NULL(mux_dev))

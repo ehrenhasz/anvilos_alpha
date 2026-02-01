@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Copyright (c) 2015-2016 Quantenna Communications. All rights reserved. */
+ 
+ 
 
 #ifndef _QTN_FMAC_QLINK_UTIL_H_
 #define _QTN_FMAC_QLINK_UTIL_H_
@@ -70,4 +70,4 @@ void qlink_utils_regrule_q2nl(struct ieee80211_reg_rule *rule,
 	((const u8 *)(_tlv_last) == \
 		(const u8 *)(_start) + round_up(_datalen, QLINK_ALIGN))
 
-#endif /* _QTN_FMAC_QLINK_UTIL_H_ */
+#endif  

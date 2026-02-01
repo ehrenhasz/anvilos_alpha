@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * CTR: Counter mode
- *
- * Copyright (c) 2007 Herbert Xu <herbert@gondor.apana.org.au>
- */
+ 
+ 
 
 #ifndef _CRYPTO_CTR_H
 #define _CRYPTO_CTR_H
@@ -27,7 +23,7 @@ static inline int crypto_ctr_encrypt_walk(struct skcipher_request *req,
 	struct skcipher_walk walk;
 	int err;
 
-	/* avoid integer division due to variable blocksize parameter */
+	 
 	if (WARN_ON_ONCE(!is_power_of_2(blocksize)))
 		return -EINVAL;
 
@@ -62,4 +58,4 @@ static inline int crypto_ctr_encrypt_walk(struct skcipher_request *req,
 	return err;
 }
 
-#endif  /* _CRYPTO_CTR_H */
+#endif   

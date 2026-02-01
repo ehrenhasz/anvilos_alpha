@@ -1,32 +1,4 @@
-/*
- * Network-device interface management.
- *
- * Copyright (c) 2004-2005, Keir Fraser
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation; or, when distributed
- * separately from the Linux kernel or incorporated into other
- * software packages, subject to the following license:
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this source file (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy, modify,
- * merge, publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
+ 
 
 #include "common.h"
 
@@ -41,14 +13,10 @@
 #include <asm/xen/hypercall.h>
 #include <xen/balloon.h>
 
-/* Number of bytes allowed on the internal guest Rx queue. */
+ 
 #define XENVIF_RX_QUEUE_BYTES (XEN_NETIF_RX_RING_SIZE/2 * PAGE_SIZE)
 
-/* This function is used to set SKBFL_ZEROCOPY_ENABLE as well as
- * increasing the inflight counter. We need to increase the inflight
- * counter because core driver calls into xenvif_zerocopy_callback
- * which calls xenvif_skb_zerocopy_complete.
- */
+ 
 void xenvif_skb_zerocopy_prepare(struct xenvif_queue *queue,
 				 struct sk_buff *skb)
 {
@@ -60,10 +28,7 @@ void xenvif_skb_zerocopy_complete(struct xenvif_queue *queue)
 {
 	atomic_dec(&queue->inflight_packets);
 
-	/* Wake the dealloc thread _after_ decrementing inflight_packets so
-	 * that if kthread_stop() has already been called, the dealloc thread
-	 * does not wait forever with nothing to wake it.
-	 */
+	 
 	wake_up(&queue->dealloc_wq);
 }
 
@@ -106,10 +71,7 @@ static int xenvif_poll(struct napi_struct *napi, int budget)
 		container_of(napi, struct xenvif_queue, napi);
 	int work_done;
 
-	/* This vif is rogue, we pretend we've there is nothing to do
-	 * for this vif to deschedule it from NAPI. But this interface
-	 * will be turned off in thread context later.
-	 */
+	 
 	if (unlikely(queue->vif->disabled)) {
 		napi_complete(napi);
 		return 0;
@@ -119,9 +81,7 @@ static int xenvif_poll(struct napi_struct *napi, int budget)
 
 	if (work_done < budget) {
 		napi_complete_done(napi, work_done);
-		/* If the queue is rate-limited, it shall be
-		 * rescheduled in the timer callback.
-		 */
+		 
 		if (likely(!queue->rate_limited))
 			xenvif_napi_schedule_or_enable_events(queue);
 	}
@@ -182,8 +142,7 @@ static u16 xenvif_select_queue(struct net_device *dev, struct sk_buff *skb,
 	unsigned int size = vif->hash.size;
 	unsigned int num_queues;
 
-	/* If queues are not set up internally - always return 0
-	 * as the packet going to be dropped anyway */
+	 
 	num_queues = READ_ONCE(vif->num_queues);
 	if (num_queues < 1)
 		return 0;
@@ -212,15 +171,12 @@ xenvif_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	BUG_ON(skb->dev != dev);
 
-	/* Drop the packet if queues are not set up.
-	 * This handler should be called inside an RCU read section
-	 * so we don't need to enter it here explicitly.
-	 */
+	 
 	num_queues = READ_ONCE(vif->num_queues);
 	if (num_queues < 1)
 		goto drop;
 
-	/* Obtain the queue to be used to transmit this packet */
+	 
 	index = skb_get_queue_mapping(skb);
 	if (index >= num_queues) {
 		pr_warn_ratelimited("Invalid queue %hu for packet on interface %s\n",
@@ -229,7 +185,7 @@ xenvif_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	}
 	queue = &vif->queues[index];
 
-	/* Drop the packet if queue is not ready */
+	 
 	if (queue->task == NULL ||
 	    queue->dealloc_task == NULL ||
 	    !xenvif_schedulable(vif))
@@ -245,10 +201,7 @@ xenvif_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	cb = XENVIF_RX_CB(skb);
 	cb->expires = jiffies + vif->drain_timeout;
 
-	/* If there is no hash algorithm configured then make sure there
-	 * is no hash information in the socket buffer otherwise it
-	 * would be incorrectly forwarded to the frontend.
-	 */
+	 
 	if (vif->hash.alg == XEN_NETIF_CTRL_HASH_ALGORITHM_NONE)
 		skb_clear_hash(skb);
 
@@ -279,7 +232,7 @@ static struct net_device_stats *xenvif_get_stats(struct net_device *dev)
 	rcu_read_lock();
 	num_queues = READ_ONCE(vif->num_queues);
 
-	/* Aggregate tx and rx stats from each queue */
+	 
 	for (index = 0; index < num_queues; ++index) {
 		queue = &vif->queues[index];
 		rx_bytes += queue->stats.rx_bytes;
@@ -386,9 +339,7 @@ static const struct xenvif_stat {
 		"rx_gso_checksum_fixup",
 		offsetof(struct xenvif_stats, rx_gso_checksum_fixup)
 	},
-	/* If (sent != success + fail), there are probably packets never
-	 * freed up properly!
-	 */
+	 
 	{
 		"tx_zerocopy_sent",
 		offsetof(struct xenvif_stats, tx_zerocopy_sent),
@@ -401,9 +352,7 @@ static const struct xenvif_stat {
 		"tx_zerocopy_fail",
 		offsetof(struct xenvif_stats, tx_zerocopy_fail)
 	},
-	/* Number of packets exceeding MAX_SKB_FRAG slots. You should use
-	 * a guest with the same MAX_SKB_FRAG
-	 */
+	 
 	{
 		"tx_frag_overflow",
 		offsetof(struct xenvif_stats, tx_frag_overflow)
@@ -488,10 +437,7 @@ struct xenvif *xenvif_alloc(struct device *parent, domid_t domid,
 	char name[IFNAMSIZ] = {};
 
 	snprintf(name, IFNAMSIZ - 1, "vif%u.%u", domid, handle);
-	/* Allocate a netdev with the max. supported number of queues.
-	 * When the guest selects the desired number, it will be updated
-	 * via netif_set_real_num_*_queues().
-	 */
+	 
 	dev = alloc_netdev_mq(sizeof(struct xenvif), name, NET_NAME_UNKNOWN,
 			      ether_setup, xenvif_max_queues);
 	if (dev == NULL) {
@@ -512,7 +458,7 @@ struct xenvif *xenvif_alloc(struct device *parent, domid_t domid,
 	vif->drain_timeout = msecs_to_jiffies(rx_drain_timeout_msecs);
 	vif->stall_timeout = msecs_to_jiffies(rx_stall_timeout_msecs);
 
-	/* Start out with no queues. */
+	 
 	vif->queues = NULL;
 	vif->num_queues = 0;
 
@@ -531,12 +477,7 @@ struct xenvif *xenvif_alloc(struct device *parent, domid_t domid,
 	dev->min_mtu = ETH_MIN_MTU;
 	dev->max_mtu = ETH_MAX_MTU - VLAN_ETH_HLEN;
 
-	/*
-	 * Initialise a dummy MAC address. We choose the numerically
-	 * largest non-broadcast address to prevent the address getting
-	 * stolen by an Ethernet bridge for STP purposes.
-	 * (FE:FF:FF:FF:FF:FF)
-	 */
+	 
 	eth_hw_addr_set(dev, dummy_addr);
 
 	netif_carrier_off(dev);
@@ -577,10 +518,7 @@ int xenvif_init_queue(struct xenvif_queue *queue)
 	spin_lock_init(&queue->callback_lock);
 	spin_lock_init(&queue->response_lock);
 
-	/* If ballooning is disabled, this will consume real memory, so you
-	 * better enable it. The long term solution would be to use just a
-	 * bunch of valid page descriptors, without dependency on ballooning
-	 */
+	 
 	err = gnttab_alloc_pages(MAX_PENDING_REQS,
 				 queue->mmap_pages);
 	if (err) {
@@ -730,10 +668,7 @@ int xenvif_connect_data(struct xenvif_queue *queue,
 	if (IS_ERR(task))
 		goto kthread_err;
 	queue->task = task;
-	/*
-	 * Take a reference to the task in order to prevent it from being freed
-	 * if the thread function returns before kthread_stop is called.
-	 */
+	 
 	get_task_struct(task);
 
 	task = kthread_run(xenvif_dealloc_kthread, queue,
@@ -743,7 +678,7 @@ int xenvif_connect_data(struct xenvif_queue *queue,
 	queue->dealloc_task = task;
 
 	if (tx_evtchn == rx_evtchn) {
-		/* feature-split-event-channels == 0 */
+		 
 		err = bind_interdomain_evtchn_to_irqhandler_lateeoi(
 			dev, tx_evtchn, xenvif_interrupt, 0,
 			queue->name, queue);
@@ -752,7 +687,7 @@ int xenvif_connect_data(struct xenvif_queue *queue,
 		queue->tx_irq = queue->rx_irq = err;
 		disable_irq(queue->tx_irq);
 	} else {
-		/* feature-split-event-channels == 1 */
+		 
 		snprintf(queue->tx_irq_name, sizeof(queue->tx_irq_name),
 			 "%s-tx", queue->name);
 		err = bind_interdomain_evtchn_to_irqhandler_lateeoi(
@@ -790,7 +725,7 @@ void xenvif_carrier_off(struct xenvif *vif)
 
 	rtnl_lock();
 	if (test_and_clear_bit(VIF_STATUS_CONNECTED, &vif->status)) {
-		netif_carrier_off(dev); /* discard queued packets */
+		netif_carrier_off(dev);  
 		if (netif_running(dev))
 			xenvif_down(vif);
 	}
@@ -829,10 +764,7 @@ void xenvif_disconnect_ctrl(struct xenvif *vif)
 	}
 }
 
-/* Reverse the relevant parts of xenvif_init_queue().
- * Used for queue teardown from xenvif_free(), and on the
- * error handling paths in xenbus.c:connect().
- */
+ 
 void xenvif_deinit_queue(struct xenvif_queue *queue)
 {
 	gnttab_free_pages(MAX_PENDING_REQS, queue->mmap_pages);

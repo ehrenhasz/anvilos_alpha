@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NAND Flash Controller Device Driver for DT
- *
- * Copyright © 2011, Picochip.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -20,11 +16,11 @@
 
 struct denali_dt {
 	struct denali_controller controller;
-	struct clk *clk;	/* core clock */
-	struct clk *clk_x;	/* bus interface clock */
-	struct clk *clk_ecc;	/* ECC circuit clock */
-	struct reset_control *rst;	/* core reset */
-	struct reset_control *rst_reg;	/* register reset */
+	struct clk *clk;	 
+	struct clk *clk_x;	 
+	struct clk *clk_ecc;	 
+	struct reset_control *rst;	 
+	struct reset_control *rst_reg;	 
 };
 
 struct denali_dt_data {
@@ -74,7 +70,7 @@ static const struct of_device_id denali_nand_dt_ids[] = {
 		.compatible = "socionext,uniphier-denali-nand-v5b",
 		.data = &denali_uniphier_v5b_data,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, denali_nand_dt_ids);
 
@@ -180,11 +176,7 @@ static int denali_dt_probe(struct platform_device *pdev)
 	denali->clk_rate = clk_get_rate(dt->clk);
 	denali->clk_x_rate = clk_get_rate(dt->clk_x);
 
-	/*
-	 * Deassert the register reset, and the core reset in this order.
-	 * Deasserting the core reset while the register reset is asserted
-	 * will cause unpredictable behavior in the controller.
-	 */
+	 
 	ret = reset_control_deassert(dt->rst_reg);
 	if (ret)
 		goto out_disable_clk_ecc;
@@ -193,11 +185,7 @@ static int denali_dt_probe(struct platform_device *pdev)
 	if (ret)
 		goto out_assert_rst_reg;
 
-	/*
-	 * When the reset is deasserted, the initialization sequence is kicked
-	 * (bootstrap process). The driver must wait until it finished.
-	 * Otherwise, it will result in unpredictable behavior.
-	 */
+	 
 	usleep_range(200, 1000);
 
 	ret = denali_init(denali);

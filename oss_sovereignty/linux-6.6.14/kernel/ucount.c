@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/stat.h>
 #include <linux/sysctl.h>
@@ -44,11 +44,11 @@ static int set_permissions(struct ctl_table_header *head,
 		container_of(head->set, struct user_namespace, set);
 	int mode;
 
-	/* Allow users with CAP_SYS_RESOURCE unrestrained access */
+	 
 	if (ns_capable(user_ns, CAP_SYS_RESOURCE))
 		mode = (table->mode & S_IRWXU) >> 6;
 	else
-	/* Allow all others at most read-only access */
+	 
 		mode = table->mode & S_IROTH;
 	return (mode << 6) | (mode << 3) | mode;
 }
@@ -89,7 +89,7 @@ static struct ctl_table user_table[] = {
 #endif
 	{ }
 };
-#endif /* CONFIG_SYSCTL */
+#endif  
 
 bool setup_userns_sysctls(struct user_namespace *ns)
 {
@@ -149,7 +149,7 @@ static void hlist_add_ucounts(struct ucounts *ucounts)
 
 static inline bool get_ucounts_or_wrap(struct ucounts *ucounts)
 {
-	/* Returns true on a successful get, false if the count wraps. */
+	 
 	return !atomic_add_negative(1, &ucounts->count);
 }
 
@@ -280,7 +280,7 @@ long inc_rlimit_ucounts(struct ucounts *ucounts, enum rlimit_type type, long v)
 bool dec_rlimit_ucounts(struct ucounts *ucounts, enum rlimit_type type, long v)
 {
 	struct ucounts *iter;
-	long new = -1; /* Silence compiler warning */
+	long new = -1;  
 	for (iter = ucounts; iter; iter = iter->ns->ucounts) {
 		long dec = atomic_long_sub_return(v, &iter->rlimit[type]);
 		WARN_ON_ONCE(dec < 0);
@@ -310,7 +310,7 @@ void dec_rlimit_put_ucounts(struct ucounts *ucounts, enum rlimit_type type)
 
 long inc_rlimit_get_ucounts(struct ucounts *ucounts, enum rlimit_type type)
 {
-	/* Caller must hold a reference to ucounts */
+	 
 	struct ucounts *iter;
 	long max = LONG_MAX;
 	long dec, ret = 0;
@@ -322,10 +322,7 @@ long inc_rlimit_get_ucounts(struct ucounts *ucounts, enum rlimit_type type)
 		if (iter == ucounts)
 			ret = new;
 		max = get_userns_rlimit_max(iter->ns, type);
-		/*
-		 * Grab an extra ucount reference for the caller when
-		 * the rlimit count was previously 0.
-		 */
+		 
 		if (new != 1)
 			continue;
 		if (!get_ucounts(iter))
@@ -360,11 +357,7 @@ static __init int user_namespace_sysctl_init(void)
 #ifdef CONFIG_SYSCTL
 	static struct ctl_table_header *user_header;
 	static struct ctl_table empty[1];
-	/*
-	 * It is necessary to register the user directory in the
-	 * default set so that registrations in the child sets work
-	 * properly.
-	 */
+	 
 	user_header = register_sysctl_sz("user", empty, 0);
 	kmemleak_ignore(user_header);
 	BUG_ON(!user_header);

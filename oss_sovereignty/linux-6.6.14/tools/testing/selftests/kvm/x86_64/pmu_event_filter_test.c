@@ -1,35 +1,24 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Test for x86 KVM_SET_PMU_EVENT_FILTER.
- *
- * Copyright (C) 2022, Google LLC.
- *
- * This work is licensed under the terms of the GNU GPL, version 2.
- *
- * Verifies the expected behavior of allow lists and deny lists for
- * virtual PMU events.
- */
 
-#define _GNU_SOURCE /* for program_invocation_short_name */
+ 
+
+#define _GNU_SOURCE  
 #include "test_util.h"
 #include "kvm_util.h"
 #include "processor.h"
 
-/*
- * In lieu of copying perf_event.h into tools...
- */
+ 
 #define ARCH_PERFMON_EVENTSEL_OS			(1ULL << 17)
 #define ARCH_PERFMON_EVENTSEL_ENABLE			(1ULL << 22)
 
-/* End of stuff taken from perf_event.h. */
+ 
 
-/* Oddly, this isn't in perf_event.h. */
+ 
 #define ARCH_PERFMON_BRANCHES_RETIRED		5
 
 #define NUM_BRANCHES 42
 #define INTEL_PMC_IDX_FIXED		32
 
-/* Matches KVM_PMU_EVENT_FILTER_MAX_EVENTS in pmu.c */
+ 
 #define MAX_FILTER_EVENTS		300
 #define MAX_TEST_EVENTS		10
 
@@ -37,44 +26,20 @@
 #define PMU_EVENT_FILTER_INVALID_FLAGS			(KVM_PMU_EVENT_FLAGS_VALID_MASK << 1)
 #define PMU_EVENT_FILTER_INVALID_NEVENTS		(MAX_FILTER_EVENTS + 1)
 
-/*
- * This is how the event selector and unit mask are stored in an AMD
- * core performance event-select register. Intel's format is similar,
- * but the event selector is only 8 bits.
- */
+ 
 #define EVENT(select, umask) ((select & 0xf00UL) << 24 | (select & 0xff) | \
 			      (umask & 0xff) << 8)
 
-/*
- * "Branch instructions retired", from the Intel SDM, volume 3,
- * "Pre-defined Architectural Performance Events."
- */
+ 
 
 #define INTEL_BR_RETIRED EVENT(0xc4, 0)
 
-/*
- * "Retired branch instructions", from Processor Programming Reference
- * (PPR) for AMD Family 17h Model 01h, Revision B1 Processors,
- * Preliminary Processor Programming Reference (PPR) for AMD Family
- * 17h Model 31h, Revision B0 Processors, and Preliminary Processor
- * Programming Reference (PPR) for AMD Family 19h Model 01h, Revision
- * B1 Processors Volume 1 of 2.
- */
+ 
 
 #define AMD_ZEN_BR_RETIRED EVENT(0xc2, 0)
 
 
-/*
- * "Retired instructions", from Processor Programming Reference
- * (PPR) for AMD Family 17h Model 01h, Revision B1 Processors,
- * Preliminary Processor Programming Reference (PPR) for AMD Family
- * 17h Model 31h, Revision B0 Processors, and Preliminary Processor
- * Programming Reference (PPR) for AMD Family 19h Model 01h, Revision
- * B1 Processors Volume 1 of 2.
- *                      --- and ---
- * "Instructions retired", from the Intel SDM, volume 3,
- * "Pre-defined Architectural Performance Events."
- */
+ 
 
 #define INST_RETIRED EVENT(0xc0, 0)
 
@@ -87,11 +52,7 @@ struct __kvm_pmu_event_filter {
 	__u64 events[MAX_FILTER_EVENTS];
 };
 
-/*
- * This event list comprises Intel's eight architectural events plus
- * AMD's "retired branch instructions" for Zen[123] (and possibly
- * other AMD CPUs).
- */
+ 
 static const struct __kvm_pmu_event_filter base_event_filter = {
 	.nevents = ARRAY_SIZE(base_event_filter.events),
 	.events = {
@@ -115,21 +76,13 @@ struct {
 	uint64_t instructions_retired;
 } pmc_results;
 
-/*
- * If we encounter a #GP during the guest PMU sanity check, then the guest
- * PMU is not functional. Inform the hypervisor via GUEST_SYNC(0).
- */
+ 
 static void guest_gp_handler(struct ex_regs *regs)
 {
 	GUEST_SYNC(-EFAULT);
 }
 
-/*
- * Check that we can write a new value to the given MSR and read it back.
- * The caller should provide a non-empty set of bits that are safe to flip.
- *
- * Return on success. GUEST_SYNC(0) on error.
- */
+ 
 static void check_msr(uint32_t msr, uint64_t bits_to_flip)
 {
 	uint64_t v = rdmsr(msr) ^ bits_to_flip;
@@ -175,11 +128,7 @@ static void intel_guest_code(void)
 	}
 }
 
-/*
- * To avoid needing a check for CPUID.80000001:ECX.PerfCtrExtCore[bit 23],
- * this code uses the always-available, legacy K7 PMU MSRs, which alias to
- * the first four of the six extended core PMU MSRs.
- */
+ 
 static void amd_guest_code(void)
 {
 	check_msr(MSR_K7_EVNTSEL0, 0xffff);
@@ -198,10 +147,7 @@ static void amd_guest_code(void)
 	}
 }
 
-/*
- * Run the VM to the next GUEST_SYNC(value), and return the value passed
- * to the sync. Any other exit from the guest is fatal.
- */
+ 
 static uint64_t run_vcpu_to_sync(struct kvm_vcpu *vcpu)
 {
 	struct ucall uc;
@@ -227,14 +173,7 @@ static void run_vcpu_and_sync_pmc_results(struct kvm_vcpu *vcpu)
 	sync_global_from_guest(vcpu->vm, pmc_results);
 }
 
-/*
- * In a nested environment or if the vPMU is disabled, the guest PMU
- * might not work as architected (accessing the PMU MSRs may raise
- * #GP, or writes could simply be discarded). In those situations,
- * there is no point in running these tests. The guest code will perform
- * a sanity check and then GUEST_SYNC(success). In the case of failure,
- * the behavior of the guest on resumption is undefined.
- */
+ 
 static bool sanity_check_pmu(struct kvm_vcpu *vcpu)
 {
 	uint64_t r;
@@ -246,10 +185,7 @@ static bool sanity_check_pmu(struct kvm_vcpu *vcpu)
 	return !r;
 }
 
-/*
- * Remove the first occurrence of 'event' (if any) from the filter's
- * event list.
- */
+ 
 static void remove_event(struct __kvm_pmu_event_filter *f, uint64_t event)
 {
 	bool found = false;
@@ -369,11 +305,7 @@ static void test_not_member_allow_list(struct kvm_vcpu *vcpu)
 	ASSERT_PMC_NOT_COUNTING_INSTRUCTIONS();
 }
 
-/*
- * Verify that setting KVM_PMU_CAP_DISABLE prevents the use of the PMU.
- *
- * Note that KVM_CAP_PMU_CAPABILITY must be invoked prior to creating VCPUs.
- */
+ 
 static void test_pmu_config_disable(void (*guest_code)(void))
 {
 	struct kvm_vcpu *vcpu;
@@ -398,11 +330,7 @@ static void test_pmu_config_disable(void (*guest_code)(void))
 	kvm_vm_free(vm);
 }
 
-/*
- * On Intel, check for a non-zero PMU version, at least one general-purpose
- * counter per logical processor, and support for counting the number of branch
- * instructions retired.
- */
+ 
 static bool use_intel_pmu(void)
 {
 	return host_cpu_is_intel &&
@@ -426,14 +354,7 @@ static bool is_zen3(uint32_t family, uint32_t model)
 	return family == 0x19 && model <= 0x0f;
 }
 
-/*
- * Determining AMD support for a PMU event requires consulting the AMD
- * PPR for the CPU or reference material derived therefrom. The AMD
- * test code herein has been verified to work on Zen1, Zen2, and Zen3.
- *
- * Feel free to add more AMD CPUs that are documented to support event
- * select 0xc2 umask 0 as "retired branch instructions."
- */
+ 
 static bool use_amd_pmu(void)
 {
 	uint32_t family = kvm_cpu_family();
@@ -445,12 +366,7 @@ static bool use_amd_pmu(void)
 		 is_zen3(family, model));
 }
 
-/*
- * "MEM_INST_RETIRED.ALL_LOADS", "MEM_INST_RETIRED.ALL_STORES", and
- * "MEM_INST_RETIRED.ANY" from https://perfmon-events.intel.com/
- * supported on Intel Xeon processors:
- *  - Sapphire Rapids, Ice Lake, Cascade Lake, Skylake.
- */
+ 
 #define MEM_INST_RETIRED		0xD0
 #define MEM_INST_RETIRED_LOAD		EVENT(MEM_INST_RETIRED, 0x81)
 #define MEM_INST_RETIRED_STORE		EVENT(MEM_INST_RETIRED, 0x82)
@@ -463,12 +379,12 @@ static bool supports_event_mem_inst_retired(void)
 	cpuid(1, &eax, &ebx, &ecx, &edx);
 	if (x86_family(eax) == 0x6) {
 		switch (x86_model(eax)) {
-		/* Sapphire Rapids */
+		 
 		case 0x8F:
-		/* Ice Lake */
+		 
 		case 0x6A:
-		/* Skylake */
-		/* Cascade Lake */
+		 
+		 
 		case 0x55:
 			return true;
 		}
@@ -477,14 +393,7 @@ static bool supports_event_mem_inst_retired(void)
 	return false;
 }
 
-/*
- * "LS Dispatch", from Processor Programming Reference
- * (PPR) for AMD Family 17h Model 01h, Revision B1 Processors,
- * Preliminary Processor Programming Reference (PPR) for AMD Family
- * 17h Model 31h, Revision B0 Processors, and Preliminary Processor
- * Programming Reference (PPR) for AMD Family 19h Model 01h, Revision
- * B1 Processors Volume 1 of 2.
- */
+ 
 #define LS_DISPATCH		0x29
 #define LS_DISPATCH_LOAD	EVENT(LS_DISPATCH, BIT(0))
 #define LS_DISPATCH_STORE	EVENT(LS_DISPATCH, BIT(1))
@@ -497,10 +406,7 @@ static bool supports_event_mem_inst_retired(void)
 
 static void masked_events_guest_test(uint32_t msr_base)
 {
-	/*
-	 * The actual value of the counters don't determine the outcome of
-	 * the test.  Only that they are zero or non-zero.
-	 */
+	 
 	const uint64_t loads = rdmsr(msr_base + 0);
 	const uint64_t stores = rdmsr(msr_base + 1);
 	const uint64_t loads_stores = rdmsr(msr_base + 2);
@@ -582,14 +488,7 @@ struct masked_events_test {
 	uint32_t flags;
 };
 
-/*
- * These are the test cases for the masked events tests.
- *
- * For each test, the guest enables 3 PMU counters (loads, stores,
- * loads + stores).  The filter is then set in KVM with the masked events
- * provided.  The test then verifies that the counters agree with which
- * ones should be counting and which ones should be filtered.
- */
+ 
 const struct masked_events_test test_cases[] = {
 	{
 		.intel_events = {
@@ -692,7 +591,7 @@ static void run_masked_events_tests(struct kvm_vcpu *vcpu, uint64_t *events,
 	for (i = 0; i < ntests; i++) {
 		const struct masked_events_test *test = &test_cases[i];
 
-		/* Do any test case events overflow MAX_TEST_EVENTS? */
+		 
 		assert(test->intel_event_end == 0);
 		assert(test->amd_event_end == 0);
 
@@ -732,10 +631,10 @@ static void test_masked_events(struct kvm_vcpu *vcpu)
 	int nevents = MAX_FILTER_EVENTS - MAX_TEST_EVENTS;
 	uint64_t events[MAX_FILTER_EVENTS];
 
-	/* Run the test cases against a sparse PMU event filter. */
+	 
 	run_masked_events_tests(vcpu, events, 0);
 
-	/* Run the test cases against a dense PMU event filter. */
+	 
 	add_dummy_events(events, MAX_FILTER_EVENTS);
 	run_masked_events_tests(vcpu, events, nevents);
 }
@@ -770,10 +669,7 @@ static void test_filter_ioctl(struct kvm_vcpu *vcpu)
 	uint64_t e = ~0ul;
 	int r;
 
-	/*
-	 * Unfortunately having invalid bits set in event data is expected to
-	 * pass when flags == 0 (bits other than eventsel+umask).
-	 */
+	 
 	r = set_pmu_single_event_filter(vcpu, e, 0, KVM_PMU_EVENT_ALLOW);
 	TEST_ASSERT(r == 0, "Valid PMU Event Filter is failing");
 
@@ -815,7 +711,7 @@ static void intel_run_fixed_counter_guest_code(uint8_t fixed_ctr_idx)
 		wrmsr(MSR_CORE_PERF_GLOBAL_CTRL, 0);
 		wrmsr(MSR_CORE_PERF_FIXED_CTR0 + fixed_ctr_idx, 0);
 
-		/* Only OS_EN bit is enabled for fixed counter[idx]. */
+		 
 		wrmsr(MSR_CORE_PERF_FIXED_CTR_CTRL, BIT_ULL(4 * fixed_ctr_idx));
 		wrmsr(MSR_CORE_PERF_GLOBAL_CTRL,
 		      BIT_ULL(INTEL_PMC_IDX_FIXED + fixed_ctr_idx));
@@ -861,10 +757,7 @@ static void __test_fixed_counter_bitmap(struct kvm_vcpu *vcpu, uint8_t idx,
 	TEST_ASSERT(nr_fixed_counters < sizeof(bitmap) * 8,
 		    "Invalid nr_fixed_counters");
 
-	/*
-	 * Check the fixed performance counter can count normally when KVM
-	 * userspace doesn't set any pmu filter.
-	 */
+	 
 	count = run_vcpu_to_sync(vcpu);
 	TEST_ASSERT(count, "Unexpected count value: %ld\n", count);
 
@@ -878,10 +771,7 @@ static void __test_fixed_counter_bitmap(struct kvm_vcpu *vcpu, uint8_t idx,
 						       bitmap);
 		TEST_ASSERT_EQ(!!count, !(bitmap & BIT(idx)));
 
-		/*
-		 * Check that fixed_counter_bitmap has higher priority than
-		 * events[] when both are set.
-		 */
+		 
 		count = test_set_gp_and_fixed_event_filter(vcpu,
 							   KVM_PMU_EVENT_ALLOW,
 							   bitmap);
@@ -901,10 +791,7 @@ static void test_fixed_counter_bitmap(void)
 	struct kvm_vcpu *vcpu;
 	uint8_t idx;
 
-	/*
-	 * Check that pmu_event_filter works as expected when it's applied to
-	 * fixed performance counters.
-	 */
+	 
 	for (idx = 0; idx < nr_fixed_counters; idx++) {
 		vm = vm_create_with_one_vcpu(&vcpu,
 					     intel_run_fixed_counter_guest_code);

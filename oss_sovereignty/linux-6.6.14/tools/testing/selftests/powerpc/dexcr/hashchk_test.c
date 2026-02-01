@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #define _GNU_SOURCE
 
@@ -40,10 +40,7 @@ static void hashchk_handler(int signum, siginfo_t *info, void *context)
 	longjmp(hashchk_detected_buf, 0);
 }
 
-/*
- * Check that hashchk triggers when DEXCR[NPHIE] is enabled
- * and is detected as such by the kernel exception handler
- */
+ 
 static int hashchk_detected_test(void)
 {
 	struct sigaction old;
@@ -76,7 +73,7 @@ static void fill_hash_values(void)
 	for (unsigned long i = 0; i < HASH_COUNT; i++)
 		hashst(i, &hash_values[i]);
 
-	/* Used to ensure the checks uses the same addresses as the hashes */
+	 
 	hash_values[HASH_COUNT] = (unsigned long)&hash_values;
 }
 
@@ -109,10 +106,7 @@ static int hashchk_exec_child(void)
 
 static char *hashchk_exec_child_args[] = { "hashchk_exec_child", NULL };
 
-/*
- * Check that new programs get different keys so a malicious process
- * can't recreate a victim's hash values.
- */
+ 
 static int hashchk_exec_random_key_test(void)
 {
 	pid_t pid;
@@ -138,20 +132,17 @@ static int hashchk_exec_random_key_test(void)
 	FAIL_IF_MSG(read(pipefd[0], hash_values, sizeof(hash_values)) != sizeof(hash_values),
 		    "missing expected child output");
 
-	/* Verify the child used the same hash_values address */
+	 
 	FAIL_IF_EXIT_MSG(hash_values[HASH_COUNT] != (unsigned long)&hash_values,
 			 "bad address check");
 
-	/* If all hashes are the same it means (most likely) same key */
+	 
 	FAIL_IF_MSG(count_hash_values_matches() == HASH_COUNT, "shared key detected");
 
 	return 0;
 }
 
-/*
- * Check that forks share the same key so that existing hash values
- * remain valid.
- */
+ 
 static int hashchk_fork_share_key_test(void)
 {
 	pid_t pid;
@@ -182,10 +173,7 @@ static int hashchk_clone_child_fn(void *args)
 	return 0;
 }
 
-/*
- * Check that threads share the same key so that existing hash values
- * remain valid.
- */
+ 
 static int hashchk_clone_share_key_test(void)
 {
 	void *child_stack;

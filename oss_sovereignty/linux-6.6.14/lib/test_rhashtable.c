@@ -1,14 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Resizable, Scalable, Concurrent Hash Table
- *
- * Copyright (c) 2014-2015 Thomas Graf <tgraf@suug.ch>
- * Copyright (c) 2008-2014 Patrick McHardy <kaber@trash.net>
- */
 
-/**************************************************************************
- * Self Test
- **************************************************************************/
+ 
+
+ 
 
 #include <linux/init.h>
 #include <linux/jhash.h>
@@ -213,10 +206,7 @@ static s64 __init test_rhashtable(struct rhashtable *ht, struct test_obj *array,
 	unsigned int i, insert_retries = 0;
 	s64 start, end;
 
-	/*
-	 * Insertion Test:
-	 * Insert entries into table with all keys even numbers
-	 */
+	 
 	pr_info("  Adding %d keys\n", entries);
 	start = ktime_get_ns();
 	for (i = 0; i < entries; i++) {
@@ -475,7 +465,7 @@ static unsigned int __init print_ht(struct rhltable *rhlt)
 	unsigned int i, cnt = 0;
 
 	ht = &rhlt->ht;
-	/* Take the mutex to avoid RCU warning */
+	 
 	mutex_lock(&ht->mutex);
 	tbl = rht_dereference(ht->tbl, ht);
 	for (i = 0; i < tbl->size; i++) {
@@ -567,12 +557,11 @@ static int __init test_insert_duplicates_run(void)
 
 	pr_info("test inserting duplicates\n");
 
-	/* two different values that map to same bucket */
+	 
 	rhl_test_objects[0].value.id = 1;
 	rhl_test_objects[1].value.id = 21;
 
-	/* and another duplicate with same as [0] value
-	 * which will be second on the bucket list */
+	 
 	rhl_test_objects[2].value.id = rhl_test_objects[0].value.id;
 
 	test_insert_dup(rhl_test_objects, 2, false);
@@ -777,7 +766,7 @@ static int __init test_rht_init(void)
 	}
 	if (wait_event_interruptible(startup_wait, atomic_read(&startup_count) == 0))
 		pr_err("  wait_event interruptible failed\n");
-	/* count is 0 now, set it to -1 and wake up all threads together */
+	 
 	atomic_dec(&startup_count);
 	wake_up_all(&startup_wait);
 	for (i = 0; i < tcount; i++) {
@@ -793,10 +782,7 @@ static int __init test_rht_init(void)
 	vfree(tdata);
 	vfree(objs);
 
-	/*
-	 * rhltable_remove is very expensive, default values can cause test
-	 * to run for 2 minutes or more,  use a smaller number instead.
-	 */
+	 
 	err = test_rhltable(entries / 16);
 	pr_info("Started %d threads, %d failed, rhltable test returns %d\n",
 	        started_threads, failed_threads, err);

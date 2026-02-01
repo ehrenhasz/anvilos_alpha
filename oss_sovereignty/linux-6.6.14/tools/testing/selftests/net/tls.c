@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define _GNU_SOURCE
 
@@ -151,7 +151,7 @@ static void ulp_sock_pair(struct __test_metadata *_metadata,
 	ASSERT_EQ(ret, 0);
 }
 
-/* Produce a basic cmsg */
+ 
 static int tls_send_cmsg(int fd, unsigned char record_type,
 			 void *data, size_t len, int flags)
 {
@@ -170,7 +170,7 @@ static int tls_send_cmsg(int fd, unsigned char record_type,
 	msg.msg_controllen = sizeof(cbuf);
 	cmsg = CMSG_FIRSTHDR(&msg);
 	cmsg->cmsg_level = SOL_TLS;
-	/* test sending non-record types. */
+	 
 	cmsg->cmsg_type = TLS_SET_RECORD_TYPE;
 	cmsg->cmsg_len = CMSG_LEN(cmsg_len);
 	*CMSG_DATA(cmsg) = record_type;
@@ -227,7 +227,7 @@ FIXTURE_TEARDOWN(tls_basic)
 	close(self->cfd);
 }
 
-/* Send some data through with ULP but no keys */
+ 
 TEST_F(tls_basic, base_base)
 {
 	char const *test_str = "test_read";
@@ -821,7 +821,7 @@ TEST_F(tls, recv_and_splice)
 
 	ASSERT_GE(pipe(p), 0);
 	EXPECT_EQ(send(self->fd, mem_send, send_len, 0), send_len);
-	/* Recv hald of the record, splice the other half */
+	 
 	EXPECT_EQ(recv(self->cfd, mem_recv, half, MSG_WAITALL), half);
 	EXPECT_EQ(splice(self->cfd, NULL, p[1], NULL, half, SPLICE_F_NONBLOCK),
 		  half);
@@ -1058,7 +1058,7 @@ TEST_F(tls, recv_peek_multiple_records)
 	memset(buf, 0, len);
 	EXPECT_EQ(recv(self->cfd, buf, len, MSG_PEEK | MSG_WAITALL), len);
 
-	/* MSG_PEEK can only peek into the current record. */
+	 
 	len = strlen(test_str_first);
 	EXPECT_EQ(memcmp(test_str_first, buf, len), 0);
 
@@ -1066,15 +1066,11 @@ TEST_F(tls, recv_peek_multiple_records)
 	memset(buf, 0, len);
 	EXPECT_EQ(recv(self->cfd, buf, len, MSG_WAITALL), len);
 
-	/* Non-MSG_PEEK will advance strparser (and therefore record)
-	 * however.
-	 */
+	 
 	len = strlen(test_str) + 1;
 	EXPECT_EQ(memcmp(test_str, buf, len), 0);
 
-	/* MSG_MORE will hold current record open, so later MSG_PEEK
-	 * will see everything.
-	 */
+	 
 	len = strlen(test_str_first);
 	EXPECT_EQ(send(self->fd, test_str_first, len, MSG_MORE), len);
 
@@ -1180,7 +1176,7 @@ TEST_F(tls, pollin)
 	EXPECT_EQ(poll(&fd, 1, 20), 1);
 	EXPECT_EQ(fd.revents & POLLIN, 1);
 	EXPECT_EQ(recv(self->cfd, buf, send_len, MSG_WAITALL), send_len);
-	/* Test timing out */
+	 
 	EXPECT_EQ(poll(&fd, 1, 20), 0);
 }
 
@@ -1194,7 +1190,7 @@ TEST_F(tls, poll_wait)
 	fd.fd = self->cfd;
 	fd.events = POLLIN;
 	EXPECT_EQ(send(self->fd, test_str, send_len, 0), send_len);
-	/* Set timeout to inf. secs */
+	 
 	EXPECT_EQ(poll(&fd, 1, -1), 1);
 	EXPECT_EQ(fd.revents & POLLIN, 1);
 	EXPECT_EQ(recv(self->cfd, recv_mem, send_len, MSG_WAITALL), send_len);
@@ -1208,16 +1204,16 @@ TEST_F(tls, poll_wait_split)
 
 	fd.fd = self->cfd;
 	fd.events = POLLIN;
-	/* Send 20 bytes */
+	 
 	EXPECT_EQ(send(self->fd, send_mem, sizeof(send_mem), 0),
 		  sizeof(send_mem));
-	/* Poll with inf. timeout */
+	 
 	EXPECT_EQ(poll(&fd, 1, -1), 1);
 	EXPECT_EQ(fd.revents & POLLIN, 1);
 	EXPECT_EQ(recv(self->cfd, recv_mem, sizeof(recv_mem), MSG_WAITALL),
 		  sizeof(recv_mem));
 
-	/* Now the remaining 5 bytes of record data are in TLS ULP */
+	 
 	fd.fd = self->cfd;
 	fd.events = POLLIN;
 	EXPECT_EQ(poll(&fd, 1, -1), 1);
@@ -1234,7 +1230,7 @@ TEST_F(tls, blocking)
 	EXPECT_NE(res, -1);
 
 	if (res) {
-		/* parent */
+		 
 		size_t left = data;
 		char buf[16384];
 		int status;
@@ -1252,7 +1248,7 @@ TEST_F(tls, blocking)
 		EXPECT_EQ(status, 0);
 		EXPECT_EQ(res, pid2);
 	} else {
-		/* child */
+		 
 		size_t left = data;
 		char buf[16384];
 
@@ -1277,9 +1273,7 @@ TEST_F(tls, nonblocking)
 	fcntl(self->fd, F_SETFL, flags | O_NONBLOCK);
 	fcntl(self->cfd, F_SETFL, flags | O_NONBLOCK);
 
-	/* Ensure nonblocking behavior by imposing a small send
-	 * buffer.
-	 */
+	 
 	EXPECT_EQ(setsockopt(self->fd, SOL_SOCKET, SO_SNDBUF,
 			     &sendbuf, sizeof(sendbuf)), 0);
 
@@ -1287,7 +1281,7 @@ TEST_F(tls, nonblocking)
 	EXPECT_NE(res, -1);
 
 	if (res) {
-		/* parent */
+		 
 		bool eagain = false;
 		size_t left = data;
 		char buf[16384];
@@ -1313,7 +1307,7 @@ TEST_F(tls, nonblocking)
 		EXPECT_EQ(status, 0);
 		EXPECT_EQ(res, pid2);
 	} else {
-		/* child */
+		 
 		bool eagain = false;
 		size_t left = data;
 		char buf[16384];
@@ -1346,19 +1340,19 @@ test_mutliproc(struct __test_metadata *_metadata, struct _test_data_tls *self,
 	char buf[file_sz];
 	pid_t pid;
 
-	/* Only allow multiples for simplicity */
+	 
 	ASSERT_EQ(!(n_readers % n_writers) || !(n_writers % n_readers), true);
 	read_bias = n_writers / n_readers ?: 1;
 	write_bias = n_readers / n_writers ?: 1;
 
-	/* prep a file to send */
+	 
 	fd = open("/tmp/", O_TMPFILE | O_RDWR, 0600);
 	ASSERT_GE(fd, 0);
 
 	memset(buf, 0xac, file_sz);
 	ASSERT_EQ(write(fd, buf, file_sz), file_sz);
 
-	/* spawn children */
+	 
 	for (child_id = 0; child_id < n_children; child_id++) {
 		pid = fork();
 		ASSERT_NE(pid, -1);
@@ -1366,7 +1360,7 @@ test_mutliproc(struct __test_metadata *_metadata, struct _test_data_tls *self,
 			break;
 	}
 
-	/* parent waits for all children */
+	 
 	if (pid) {
 		for (i = 0; i < n_children; i++) {
 			int status;
@@ -1378,7 +1372,7 @@ test_mutliproc(struct __test_metadata *_metadata, struct _test_data_tls *self,
 		return;
 	}
 
-	/* Split threads for reading and writing */
+	 
 	if (child_id < n_readers) {
 		size_t left = data * read_bias;
 		char rb[8001];
@@ -1454,7 +1448,7 @@ TEST_F(tls, control_msg)
 
 	EXPECT_EQ(tls_send_cmsg(self->fd, record_type, test_str, send_len, 0),
 		  send_len);
-	/* Should fail because we didn't provide a control message */
+	 
 	EXPECT_EQ(recv(self->cfd, buf, send_len, 0), -1);
 
 	EXPECT_EQ(tls_recv_cmsg(_metadata, self->cfd, record_type,
@@ -1462,7 +1456,7 @@ TEST_F(tls, control_msg)
 		  send_len);
 	EXPECT_EQ(memcmp(buf, test_str, send_len), 0);
 
-	/* Recv the message again without MSG_PEEK */
+	 
 	memset(buf, 0, sizeof(buf));
 
 	EXPECT_EQ(tls_recv_cmsg(_metadata, self->cfd, record_type,
@@ -1527,7 +1521,7 @@ TEST_F(tls, getsockopt)
 	struct tls_crypto_info_keys expect, get;
 	socklen_t len;
 
-	/* get only the version/cipher */
+	 
 	len = sizeof(struct tls_crypto_info);
 	memrnd(&get, sizeof(get));
 	EXPECT_EQ(getsockopt(self->fd, SOL_TLS, TLS_TX, &get, &len), 0);
@@ -1535,7 +1529,7 @@ TEST_F(tls, getsockopt)
 	EXPECT_EQ(get.crypto_info.version, variant->tls_version);
 	EXPECT_EQ(get.crypto_info.cipher_type, variant->cipher_type);
 
-	/* get the full crypto_info */
+	 
 	tls_crypto_info_init(variant->tls_version, variant->cipher_type, &expect);
 	len = expect.len;
 	memrnd(&get, sizeof(get));
@@ -1545,12 +1539,12 @@ TEST_F(tls, getsockopt)
 	EXPECT_EQ(get.crypto_info.cipher_type, variant->cipher_type);
 	EXPECT_EQ(memcmp(&get, &expect, expect.len), 0);
 
-	/* short get should fail */
+	 
 	len = sizeof(struct tls_crypto_info) - 1;
 	EXPECT_EQ(getsockopt(self->fd, SOL_TLS, TLS_TX, &get, &len), -1);
 	EXPECT_EQ(errno, EINVAL);
 
-	/* partial get of the cipher data should fail */
+	 
 	len = expect.len - 1;
 	EXPECT_EQ(getsockopt(self->fd, SOL_TLS, TLS_TX, &get, &len), -1);
 	EXPECT_EQ(errno, EINVAL);
@@ -1653,24 +1647,24 @@ TEST_F(tls_err, bad_in_large_read)
 	if (self->notls)
 		SKIP(return, "no TLS support");
 
-	/* Put 3 records in the sockets */
+	 
 	for (i = 0; i < 3; i++) {
 		memrnd(txt[i], sizeof(txt[i]));
 		EXPECT_EQ(send(self->fd, txt[i], sizeof(txt[i]), 0),
 			  sizeof(txt[i]));
 		n = recv(self->cfd, cip[i], sizeof(cip[i]), 0);
 		EXPECT_GT(n, sizeof(txt[i]));
-		/* Break the third message */
+		 
 		if (i == 2)
 			cip[2][n - 1]++;
 		EXPECT_EQ(send(self->fd2, cip[i], n, 0), n);
 	}
 
-	/* We should be able to receive the first two messages */
+	 
 	EXPECT_EQ(recv(self->cfd2, buf, sizeof(buf), 0), sizeof(txt[0]) * 2);
 	EXPECT_EQ(memcmp(buf, txt[0], sizeof(txt[0])), 0);
 	EXPECT_EQ(memcmp(buf + sizeof(txt[0]), txt[1], sizeof(txt[1])), 0);
-	/* Third mesasge is bad */
+	 
 	EXPECT_EQ(recv(self->cfd2, buf, sizeof(buf), 0), -1);
 	EXPECT_EQ(errno, EBADMSG);
 	EXPECT_EQ(recv(self->cfd2, buf, sizeof(buf), 0), -1);
@@ -1689,7 +1683,7 @@ TEST_F(tls_err, bad_cmsg)
 	if (self->notls)
 		SKIP(return, "no TLS support");
 
-	/* Queue up one data record */
+	 
 	memrnd(txt, sizeof(txt));
 	EXPECT_EQ(send(self->fd, txt, sizeof(txt), 0), sizeof(txt));
 	n = recv(self->cfd, cip, sizeof(cip), 0);
@@ -1698,7 +1692,7 @@ TEST_F(tls_err, bad_cmsg)
 
 	EXPECT_EQ(tls_send_cmsg(self->fd, 100, test_str, send_len, 0), 10);
 	n = recv(self->cfd, cip, sizeof(cip), 0);
-	cip[n - 1]++; /* Break it */
+	cip[n - 1]++;  
 	EXPECT_GT(n, send_len);
 	EXPECT_EQ(send(self->fd2, cip, n, 0), n);
 
@@ -1726,7 +1720,7 @@ TEST_F(tls_err, timeo)
 	ASSERT_GE(ret, 0);
 
 	if (ret) {
-		usleep(1000); /* Give child a head start */
+		usleep(1000);  
 
 		EXPECT_EQ(recv(self->cfd2, buf, sizeof(buf), 0), -1);
 		EXPECT_EQ(errno, EAGAIN);
@@ -1761,13 +1755,13 @@ TEST_F(tls_err, poll_partial_rec)
 	rec_len = recv(self->cfd, rec, sizeof(rec), 0);
 	EXPECT_GT(rec_len, sizeof(buf));
 
-	/* Write 100B, not the full record ... */
+	 
 	EXPECT_EQ(send(self->fd2, rec, 100, 0), 100);
-	/* ... no full record should mean no POLLIN */
+	 
 	pfd.fd = self->cfd2;
 	pfd.events = POLLIN;
 	EXPECT_EQ(poll(&pfd, 1, 1), 0);
-	/* Now write the rest, and it should all pop out of the other end. */
+	 
 	EXPECT_EQ(send(self->fd2, rec + 100, rec_len - 100, 0), rec_len - 100);
 	pfd.fd = self->cfd2;
 	pfd.events = POLLIN;
@@ -1802,11 +1796,11 @@ TEST_F(tls_err, epoll_partial_rec)
 	rec_len = recv(self->cfd, rec, sizeof(rec), 0);
 	EXPECT_GT(rec_len, sizeof(buf));
 
-	/* Write 100B, not the full record ... */
+	 
 	EXPECT_EQ(send(self->fd2, rec, 100, 0), 100);
-	/* ... no full record should mean no POLLIN */
+	 
 	EXPECT_EQ(epoll_wait(epollfd, events, 10, 0), 0);
-	/* Now write the rest, and it should all pop out of the other end. */
+	 
 	EXPECT_EQ(send(self->fd2, rec + 100, rec_len - 100, 0), rec_len - 100);
 	EXPECT_EQ(epoll_wait(epollfd, events, 10, 0), 1);
 	EXPECT_EQ(recv(self->cfd2, rec, sizeof(rec), 0), sizeof(buf));
@@ -1842,11 +1836,11 @@ TEST_F(tls_err, poll_partial_rec_async)
 		int status, pid2;
 
 		close(p[1]);
-		usleep(1000); /* Give child a head start */
+		usleep(1000);  
 
 		EXPECT_EQ(send(self->fd2, rec, 100, 0), 100);
 
-		EXPECT_EQ(read(p[0], &token, 1), 1); /* Barrier #1 */
+		EXPECT_EQ(read(p[0], &token, 1), 1);  
 
 		EXPECT_EQ(send(self->fd2, rec + 100, rec_len - 100, 0),
 			  rec_len - 100);
@@ -1857,12 +1851,12 @@ TEST_F(tls_err, poll_partial_rec_async)
 	} else {
 		close(p[0]);
 
-		/* Child should sleep in poll(), never get a wake */
+		 
 		pfd.fd = self->cfd2;
 		pfd.events = POLLIN;
 		EXPECT_EQ(poll(&pfd, 1, 5), 0);
 
-		EXPECT_EQ(write(p[1], &token, 1), 1); /* Barrier #1 */
+		EXPECT_EQ(write(p[1], &token, 1), 1);  
 
 		pfd.fd = self->cfd2;
 		pfd.events = POLLIN;
@@ -1898,7 +1892,7 @@ TEST(non_established) {
 
 	ret = setsockopt(fd, IPPROTO_TCP, TCP_ULP, "tls", sizeof("tls"));
 	EXPECT_EQ(ret, -1);
-	/* TLS ULP not supported */
+	 
 	if (errno == ENOENT)
 		return;
 	EXPECT_EQ(errno, ENOTCONN);

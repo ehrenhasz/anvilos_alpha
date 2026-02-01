@@ -1,11 +1,6 @@
-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
 
-/*
- * Copyright (C) 2013-2015 Alexei Starovoitov <ast@kernel.org>
- * Copyright (C) 2015 Wang Nan <wangnan0@huawei.com>
- * Copyright (C) 2015 Huawei Inc.
- * Copyright (C) 2017 Nicira, Inc.
- */
+
+ 
 
 #undef _GNU_SOURCE
 #include <stdio.h>
@@ -14,7 +9,7 @@
 #include "libbpf.h"
 #include "libbpf_internal.h"
 
-/* make sure libbpf doesn't use kernel-only integer typedefs */
+ 
 #pragma GCC poison u8 u16 u32 u64 s8 s16 s32 s64
 
 #define ERRNO_OFFSET(e)		((e) - __LIBBPF_ERRNO__START)
@@ -58,10 +53,7 @@ int libbpf_strerror(int err, char *buf, size_t size)
 		msg = libbpf_strerror_table[ERRNO_OFFSET(err)];
 		ret = snprintf(buf, size, "%s", msg);
 		buf[size - 1] = '\0';
-		/* The length of the buf and msg is positive.
-		 * A negative number may be returned only when the
-		 * size exceeds INT_MAX. Not likely to appear.
-		 */
+		 
 		if (ret >= size)
 			return libbpf_err(-ERANGE);
 		return 0;

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2012 Red Hat
- *
- * based in parts on udlfb.c:
- * Copyright (C) 2009 Roberto De Ioris <roberto@unbit.it>
- * Copyright (C) 2009 Jaya Kumar <jayakumar.lkml@gmail.com>
- * Copyright (C) 2009 Bernie Thompson <bernie@plugable.com>
- */
+ 
+ 
 
 #ifndef UDL_DRV_H
 #define UDL_DRV_H
@@ -51,7 +44,7 @@ struct urb_list {
 
 struct udl_connector {
 	struct drm_connector connector;
-	/* last udl_detect edid */
+	 
 	struct edid *edid;
 };
 
@@ -83,7 +76,7 @@ static inline struct usb_device *udl_to_usb_device(struct udl_device *udl)
 	return interface_to_usbdev(to_usb_interface(udl->drm.dev));
 }
 
-/* modeset */
+ 
 int udl_modeset_init(struct drm_device *dev);
 struct drm_connector *udl_connector_init(struct drm_device *dev);
 

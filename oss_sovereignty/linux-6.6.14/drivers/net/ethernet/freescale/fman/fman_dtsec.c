@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later
-/*
- * Copyright 2008 - 2015 Freescale Semiconductor Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -19,18 +17,18 @@
 #include <linux/mii.h>
 #include <linux/netdevice.h>
 
-/* TBI register addresses */
+ 
 #define MII_TBICON		0x11
 
-/* TBICON register bit fields */
-#define TBICON_SOFT_RESET	0x8000	/* Soft reset */
-#define TBICON_DISABLE_RX_DIS	0x2000	/* Disable receive disparity */
-#define TBICON_DISABLE_TX_DIS	0x1000	/* Disable transmit disparity */
-#define TBICON_AN_SENSE		0x0100	/* Auto-negotiation sense enable */
-#define TBICON_CLK_SELECT	0x0020	/* Clock select */
-#define TBICON_MI_MODE		0x0010	/* GMII mode (TBI if not set) */
+ 
+#define TBICON_SOFT_RESET	0x8000	 
+#define TBICON_DISABLE_RX_DIS	0x2000	 
+#define TBICON_DISABLE_TX_DIS	0x1000	 
+#define TBICON_AN_SENSE		0x0100	 
+#define TBICON_CLK_SELECT	0x0020	 
+#define TBICON_MI_MODE		0x0010	 
 
-/* Interrupt Mask Register (IMASK) */
+ 
 #define DTSEC_IMASK_BREN	0x80000000
 #define DTSEC_IMASK_RXCEN	0x40000000
 #define DTSEC_IMASK_MSROEN	0x04000000
@@ -65,14 +63,14 @@
 		DTSEC_IMASK_TDPEEN  |	\
 		DTSEC_IMASK_RDPEEN))
 
-/* dtsec timestamp event bits */
+ 
 #define TMR_PEMASK_TSREEN	0x00010000
 #define TMR_PEVENT_TSRE		0x00010000
 
-/* Group address bit indication */
+ 
 #define MAC_GROUP_ADDRESS	0x0000010000000000ULL
 
-/* Defaults */
+ 
 #define DEFAULT_HALFDUP_RETRANSMIT		0xf
 #define DEFAULT_HALFDUP_COLL_WINDOW		0x37
 #define DEFAULT_TX_PAUSE_TIME			0xf000
@@ -85,7 +83,7 @@
 #define DEFAULT_BACK_TO_BACK_IPG		0x60
 #define DEFAULT_MAXIMUM_FRAME			0x600
 
-/* register related defines (bits, field offsets..) */
+ 
 #define DTSEC_ID2_INT_REDUCED_OFF	0x00010000
 
 #define DTSEC_ECNTRL_GMIIM		0x00000040
@@ -135,7 +133,7 @@
 #define HAFDUP_RETRANSMISSION_MAX_SHIFT	12
 #define HAFDUP_RETRANSMISSION_MAX		0x0000f000
 
-#define NUM_OF_HASH_REGS	8	/* Number of hash table registers */
+#define NUM_OF_HASH_REGS	8	 
 
 #define PTV_PTE_MASK		0xffff0000
 #define PTV_PT_MASK		0x0000ffff
@@ -146,135 +144,100 @@
 #define MAX_RETRANSMISSION		0x0f
 #define MAX_COLLISION_WINDOW		0x03ff
 
-/* Hash table size (32 bits*8 regs) */
+ 
 #define DTSEC_HASH_TABLE_SIZE		256
-/* Extended Hash table size (32 bits*16 regs) */
+ 
 #define EXTENDED_HASH_TABLE_SIZE	512
 
-/* dTSEC Memory Map registers */
+ 
 struct dtsec_regs {
-	/* dTSEC General Control and Status Registers */
-	u32 tsec_id;		/* 0x000 ETSEC_ID register */
-	u32 tsec_id2;		/* 0x004 ETSEC_ID2 register */
-	u32 ievent;		/* 0x008 Interrupt event register */
-	u32 imask;		/* 0x00C Interrupt mask register */
+	 
+	u32 tsec_id;		 
+	u32 tsec_id2;		 
+	u32 ievent;		 
+	u32 imask;		 
 	u32 reserved0010[1];
-	u32 ecntrl;		/* 0x014 E control register */
-	u32 ptv;		/* 0x018 Pause time value register */
-	u32 tbipa;		/* 0x01C TBI PHY address register */
-	u32 tmr_ctrl;		/* 0x020 Time-stamp Control register */
-	u32 tmr_pevent;		/* 0x024 Time-stamp event register */
-	u32 tmr_pemask;		/* 0x028 Timer event mask register */
+	u32 ecntrl;		 
+	u32 ptv;		 
+	u32 tbipa;		 
+	u32 tmr_ctrl;		 
+	u32 tmr_pevent;		 
+	u32 tmr_pemask;		 
 	u32 reserved002c[5];
-	u32 tctrl;		/* 0x040 Transmit control register */
+	u32 tctrl;		 
 	u32 reserved0044[3];
-	u32 rctrl;		/* 0x050 Receive control register */
+	u32 rctrl;		 
 	u32 reserved0054[11];
-	u32 igaddr[8];		/* 0x080-0x09C Individual/group address */
-	u32 gaddr[8];		/* 0x0A0-0x0BC Group address registers 0-7 */
+	u32 igaddr[8];		 
+	u32 gaddr[8];		 
 	u32 reserved00c0[16];
-	u32 maccfg1;		/* 0x100 MAC configuration #1 */
-	u32 maccfg2;		/* 0x104 MAC configuration #2 */
-	u32 ipgifg;		/* 0x108 IPG/IFG */
-	u32 hafdup;		/* 0x10C Half-duplex */
-	u32 maxfrm;		/* 0x110 Maximum frame */
+	u32 maccfg1;		 
+	u32 maccfg2;		 
+	u32 ipgifg;		 
+	u32 hafdup;		 
+	u32 maxfrm;		 
 	u32 reserved0114[10];
-	u32 ifstat;		/* 0x13C Interface status */
-	u32 macstnaddr1;	/* 0x140 Station Address,part 1 */
-	u32 macstnaddr2;	/* 0x144 Station Address,part 2 */
+	u32 ifstat;		 
+	u32 macstnaddr1;	 
+	u32 macstnaddr2;	 
 	struct {
-		u32 exact_match1;	/* octets 1-4 */
-		u32 exact_match2;	/* octets 5-6 */
-	} macaddr[15];		/* 0x148-0x1BC mac exact match addresses 1-15 */
+		u32 exact_match1;	 
+		u32 exact_match2;	 
+	} macaddr[15];		 
 	u32 reserved01c0[16];
-	u32 tr64;	/* 0x200 Tx and Rx 64 byte frame counter */
-	u32 tr127;	/* 0x204 Tx and Rx 65 to 127 byte frame counter */
-	u32 tr255;	/* 0x208 Tx and Rx 128 to 255 byte frame counter */
-	u32 tr511;	/* 0x20C Tx and Rx 256 to 511 byte frame counter */
-	u32 tr1k;	/* 0x210 Tx and Rx 512 to 1023 byte frame counter */
-	u32 trmax;	/* 0x214 Tx and Rx 1024 to 1518 byte frame counter */
+	u32 tr64;	 
+	u32 tr127;	 
+	u32 tr255;	 
+	u32 tr511;	 
+	u32 tr1k;	 
+	u32 trmax;	 
 	u32 trmgv;
-	/* 0x218 Tx and Rx 1519 to 1522 byte good VLAN frame count */
-	u32 rbyt;	/* 0x21C receive byte counter */
-	u32 rpkt;	/* 0x220 receive packet counter */
-	u32 rfcs;	/* 0x224 receive FCS error counter */
-	u32 rmca;	/* 0x228 RMCA Rx multicast packet counter */
-	u32 rbca;	/* 0x22C Rx broadcast packet counter */
-	u32 rxcf;	/* 0x230 Rx control frame packet counter */
-	u32 rxpf;	/* 0x234 Rx pause frame packet counter */
-	u32 rxuo;	/* 0x238 Rx unknown OP code counter */
-	u32 raln;	/* 0x23C Rx alignment error counter */
-	u32 rflr;	/* 0x240 Rx frame length error counter */
-	u32 rcde;	/* 0x244 Rx code error counter */
-	u32 rcse;	/* 0x248 Rx carrier sense error counter */
-	u32 rund;	/* 0x24C Rx undersize packet counter */
-	u32 rovr;	/* 0x250 Rx oversize packet counter */
-	u32 rfrg;	/* 0x254 Rx fragments counter */
-	u32 rjbr;	/* 0x258 Rx jabber counter */
-	u32 rdrp;	/* 0x25C Rx drop */
-	u32 tbyt;	/* 0x260 Tx byte counter */
-	u32 tpkt;	/* 0x264 Tx packet counter */
-	u32 tmca;	/* 0x268 Tx multicast packet counter */
-	u32 tbca;	/* 0x26C Tx broadcast packet counter */
-	u32 txpf;	/* 0x270 Tx pause control frame counter */
-	u32 tdfr;	/* 0x274 Tx deferral packet counter */
-	u32 tedf;	/* 0x278 Tx excessive deferral packet counter */
-	u32 tscl;	/* 0x27C Tx single collision packet counter */
-	u32 tmcl;	/* 0x280 Tx multiple collision packet counter */
-	u32 tlcl;	/* 0x284 Tx late collision packet counter */
-	u32 txcl;	/* 0x288 Tx excessive collision packet counter */
-	u32 tncl;	/* 0x28C Tx total collision counter */
+	 
+	u32 rbyt;	 
+	u32 rpkt;	 
+	u32 rfcs;	 
+	u32 rmca;	 
+	u32 rbca;	 
+	u32 rxcf;	 
+	u32 rxpf;	 
+	u32 rxuo;	 
+	u32 raln;	 
+	u32 rflr;	 
+	u32 rcde;	 
+	u32 rcse;	 
+	u32 rund;	 
+	u32 rovr;	 
+	u32 rfrg;	 
+	u32 rjbr;	 
+	u32 rdrp;	 
+	u32 tbyt;	 
+	u32 tpkt;	 
+	u32 tmca;	 
+	u32 tbca;	 
+	u32 txpf;	 
+	u32 tdfr;	 
+	u32 tedf;	 
+	u32 tscl;	 
+	u32 tmcl;	 
+	u32 tlcl;	 
+	u32 txcl;	 
+	u32 tncl;	 
 	u32 reserved0290[1];
-	u32 tdrp;	/* 0x294 Tx drop frame counter */
-	u32 tjbr;	/* 0x298 Tx jabber frame counter */
-	u32 tfcs;	/* 0x29C Tx FCS error counter */
-	u32 txcf;	/* 0x2A0 Tx control frame counter */
-	u32 tovr;	/* 0x2A4 Tx oversize frame counter */
-	u32 tund;	/* 0x2A8 Tx undersize frame counter */
-	u32 tfrg;	/* 0x2AC Tx fragments frame counter */
-	u32 car1;	/* 0x2B0 carry register one register* */
-	u32 car2;	/* 0x2B4 carry register two register* */
-	u32 cam1;	/* 0x2B8 carry register one mask register */
-	u32 cam2;	/* 0x2BC carry register two mask register */
+	u32 tdrp;	 
+	u32 tjbr;	 
+	u32 tfcs;	 
+	u32 txcf;	 
+	u32 tovr;	 
+	u32 tund;	 
+	u32 tfrg;	 
+	u32 car1;	 
+	u32 car2;	 
+	u32 cam1;	 
+	u32 cam2;	 
 	u32 reserved02c0[848];
 };
 
-/* struct dtsec_cfg - dTSEC configuration
- * Transmit half-duplex flow control, under software control for 10/100-Mbps
- * half-duplex media. If set, back pressure is applied to media by raising
- * carrier.
- * halfdup_retransmit:
- * Number of retransmission attempts following a collision.
- * If this is exceeded dTSEC aborts transmission due to excessive collisions.
- * The standard specifies the attempt limit to be 15.
- * halfdup_coll_window:
- * The number of bytes of the frame during which collisions may occur.
- * The default value of 55 corresponds to the frame byte at the end of the
- * standard 512-bit slot time window. If collisions are detected after this
- * byte, the late collision event is asserted and transmission of current
- * frame is aborted.
- * tx_pad_crc:
- * Pad and append CRC. If set, the MAC pads all ransmitted short frames and
- * appends a CRC to every frame regardless of padding requirement.
- * tx_pause_time:
- * Transmit pause time value. This pause value is used as part of the pause
- * frame to be sent when a transmit pause frame is initiated.
- * If set to 0 this disables transmission of pause frames.
- * preamble_len:
- * Length, in bytes, of the preamble field preceding each Ethernet
- * start-of-frame delimiter byte. The default value of 0x7 should be used in
- * order to guarantee reliable operation with IEEE 802.3 compliant hardware.
- * rx_prepend:
- * Packet alignment padding length. The specified number of bytes (1-31)
- * of zero padding are inserted before the start of each received frame.
- * For Ethernet, where optional preamble extraction is enabled, the padding
- * appears before the preamble, otherwise the padding precedes the
- * layer 2 header.
- *
- * This structure contains basic dTSEC configuration and must be passed to
- * init() function. A default set of configuration values can be
- * obtained by calling set_dflts().
- */
+ 
 struct dtsec_cfg {
 	u16 halfdup_retransmit;
 	u16 halfdup_coll_window;
@@ -293,21 +256,21 @@ struct dtsec_cfg {
 };
 
 struct fman_mac {
-	/* pointer to dTSEC memory mapped registers */
+	 
 	struct dtsec_regs __iomem *regs;
-	/* MAC address of device */
+	 
 	u64 addr;
-	/* Ethernet physical interface */
+	 
 	phy_interface_t phy_if;
 	u16 max_speed;
-	struct mac_device *dev_id; /* device cookie used by the exception cbs */
+	struct mac_device *dev_id;  
 	fman_mac_exception_cb *exception_cb;
 	fman_mac_exception_cb *event_cb;
-	/* Number of individual addresses in registers for this station */
+	 
 	u8 num_of_ind_addr_in_regs;
-	/* pointer to driver's global address hash table */
+	 
 	struct eth_hash_t *multicast_addr_hash;
-	/* pointer to driver's individual address hash table */
+	 
 	struct eth_hash_t *unicast_addr_hash;
 	u8 mac_id;
 	u32 exceptions;
@@ -327,7 +290,7 @@ static void set_dflts(struct dtsec_cfg *cfg)
 	cfg->halfdup_coll_window = DEFAULT_HALFDUP_COLL_WINDOW;
 	cfg->tx_pad_crc = true;
 	cfg->tx_pause_time = DEFAULT_TX_PAUSE_TIME;
-	/* PHY address 0 is reserved (DPAA RM) */
+	 
 	cfg->rx_prepend = DEFAULT_RX_PREPEND;
 	cfg->ptp_tsu_en = true;
 	cfg->ptp_exception_en = true;
@@ -360,7 +323,7 @@ static int init(struct dtsec_regs __iomem *regs, struct dtsec_cfg *cfg,
 	u32 tmp = 0;
 	int i;
 
-	/* Soft reset */
+	 
 	iowrite32be(MACCFG1_SOFT_RESET, &regs->maccfg1);
 	iowrite32be(0, &regs->maccfg1);
 
@@ -372,15 +335,12 @@ static int init(struct dtsec_regs __iomem *regs, struct dtsec_cfg *cfg,
 
 	tmp = 0;
 	tmp |= (cfg->rx_prepend << RCTRL_PAL_SHIFT) & RCTRL_PAL_MASK;
-	/* Accept short frames */
+	 
 	tmp |= RCTRL_RSF;
 
 	iowrite32be(tmp, &regs->rctrl);
 
-	/* Assign a Phy Address to the TBI (TBIPA).
-	 * Done also in cases where TBI is not selected to avoid conflict with
-	 * the external PHY's Physical address
-	 */
+	 
 	iowrite32be(tbi_addr, &regs->tbipa);
 
 	iowrite32be(0, &regs->tmr_ctrl);
@@ -429,7 +389,7 @@ static int init(struct dtsec_regs __iomem *regs, struct dtsec_cfg *cfg,
 
 	iowrite32be(tmp, &regs->hafdup);
 
-	/* Initialize Maximum frame length */
+	 
 	iowrite32be(cfg->maximum_frame, &regs->maxfrm);
 
 	iowrite32be(0xffffffff, &regs->cam1);
@@ -444,11 +404,11 @@ static int init(struct dtsec_regs __iomem *regs, struct dtsec_cfg *cfg,
 		set_mac_address(regs, (const u8 *)eth_addr);
 	}
 
-	/* HASH */
+	 
 	for (i = 0; i < NUM_OF_HASH_REGS; i++) {
-		/* Initialize IADDRx */
+		 
 		iowrite32be(0, &regs->igaddr[i]);
-		/* Initialize GADDRx */
+		 
 		iowrite32be(0, &regs->gaddr[i]);
 	}
 
@@ -503,9 +463,7 @@ static int check_init_parameters(struct fman_mac *dtsec)
 		pr_err("collisionWindow can't be greater than %d\n",
 		       MAX_COLLISION_WINDOW);
 		return -EINVAL;
-	/* If Auto negotiation process is disabled, need to set up the PHY
-	 * using the MII Management Interface
-	 */
+	 
 	}
 	if (!dtsec->exception_cb) {
 		pr_err("uninitialized exception_cb\n");
@@ -590,7 +548,7 @@ static void dtsec_isr(void *handle)
 	struct dtsec_regs __iomem *regs = dtsec->regs;
 	u32 event;
 
-	/* do not handle MDIO events */
+	 
 	event = ioread32be(&regs->ievent) &
 		(u32)(~(DTSEC_IMASK_MMRDEN | DTSEC_IMASK_MMWREN));
 
@@ -616,28 +574,20 @@ static void dtsec_isr(void *handle)
 	if (event & DTSEC_IMASK_CRLEN)
 		dtsec->exception_cb(dtsec->dev_id, FM_MAC_EX_1G_COL_RET_LMT);
 	if (event & DTSEC_IMASK_XFUNEN) {
-		/* FM_TX_LOCKUP_ERRATA_DTSEC6 Errata workaround */
-		/* FIXME: This races with the rest of the driver! */
+		 
+		 
 		if (dtsec->fm_rev_info.major == 2) {
 			u32 tpkt1, tmp_reg1, tpkt2, tmp_reg2, i;
-			/* a. Write 0x00E0_0C00 to DTSEC_ID
-			 *	This is a read only register
-			 * b. Read and save the value of TPKT
-			 */
+			 
 			tpkt1 = ioread32be(&regs->tpkt);
 
-			/* c. Read the register at dTSEC address offset 0x32C */
+			 
 			tmp_reg1 = ioread32be(&regs->reserved02c0[27]);
 
-			/* d. Compare bits [9:15] to bits [25:31] of the
-			 * register at address offset 0x32C.
-			 */
+			 
 			if ((tmp_reg1 & 0x007F0000) !=
 				(tmp_reg1 & 0x0000007F)) {
-				/* If they are not equal, save the value of
-				 * this register and wait for at least
-				 * MAXFRM*16 ns
-				 */
+				 
 				usleep_range((u32)(min
 					(dtsec_get_max_frame_length(dtsec) *
 					16 / 1000, 1)), (u32)
@@ -645,32 +595,21 @@ static void dtsec_isr(void *handle)
 					(dtsec) * 16 / 1000, 1) + 1));
 			}
 
-			/* e. Read and save TPKT again and read the register
-			 * at dTSEC address offset 0x32C again
-			 */
+			 
 			tpkt2 = ioread32be(&regs->tpkt);
 			tmp_reg2 = ioread32be(&regs->reserved02c0[27]);
 
-			/* f. Compare the value of TPKT saved in step b to
-			 * value read in step e. Also compare bits [9:15] of
-			 * the register at offset 0x32C saved in step d to the
-			 * value of bits [9:15] saved in step e. If the two
-			 * registers values are unchanged, then the transmit
-			 * portion of the dTSEC controller is locked up and
-			 * the user should proceed to the recover sequence.
-			 */
+			 
 			if ((tpkt1 == tpkt2) && ((tmp_reg1 & 0x007F0000) ==
 				(tmp_reg2 & 0x007F0000))) {
-				/* recover sequence */
+				 
 
-				/* a.Write a 1 to RCTRL[GRS] */
+				 
 
 				iowrite32be(ioread32be(&regs->rctrl) |
 					    RCTRL_GRS, &regs->rctrl);
 
-				/* b.Wait until IEVENT[GRSC]=1, or at least
-				 * 100 us has elapsed.
-				 */
+				 
 				for (i = 0; i < 100; i++) {
 					if (ioread32be(&regs->ievent) &
 					    DTSEC_IMASK_GRSCEN)
@@ -684,17 +623,14 @@ static void dtsec_isr(void *handle)
 				else
 					pr_debug("Rx lockup due to Tx lockup\n");
 
-				/* c.Write a 1 to bit n of FM_RSTC
-				 * (offset 0x0CC of FPM)
-				 */
+				 
 				fman_reset_mac(dtsec->fm, dtsec->mac_id);
 
-				/* d.Wait 4 Tx clocks (32 ns) */
+				 
 				udelay(1);
 
-				/* e.Write a 0 to bit n of FM_RSTC. */
-				/* cleared by FMAN
-				 */
+				 
+				 
 			}
 		}
 
@@ -710,7 +646,7 @@ static void dtsec_isr(void *handle)
 	if (event & DTSEC_IMASK_RDPEEN)
 		dtsec->exception_cb(dtsec->dev_id, FM_MAC_1G_RX_DATA_ERR);
 
-	/* masked interrupts */
+	 
 	WARN_ON(event & DTSEC_IMASK_ABRTEN);
 	WARN_ON(event & DTSEC_IMASK_IFERREN);
 }
@@ -741,11 +677,11 @@ static void free_init_resources(struct fman_mac *dtsec)
 	fman_unregister_intr(dtsec->fm, FMAN_MOD_MAC, dtsec->mac_id,
 			     FMAN_INTR_TYPE_NORMAL);
 
-	/* release the driver's group hash table */
+	 
 	free_hash_table(dtsec->multicast_addr_hash);
 	dtsec->multicast_addr_hash = NULL;
 
-	/* release the driver's individual hash table */
+	 
 	free_hash_table(dtsec->unicast_addr_hash);
 	dtsec->unicast_addr_hash = NULL;
 }
@@ -800,27 +736,27 @@ static void graceful_stop(struct fman_mac *dtsec)
 	struct dtsec_regs __iomem *regs = dtsec->regs;
 	u32 tmp;
 
-	/* Graceful stop - Assert the graceful Rx stop bit */
+	 
 	tmp = ioread32be(&regs->rctrl) | RCTRL_GRS;
 	iowrite32be(tmp, &regs->rctrl);
 
 	if (dtsec->fm_rev_info.major == 2) {
-		/* Workaround for dTSEC Errata A002 */
+		 
 		usleep_range(100, 200);
 	} else {
-		/* Workaround for dTSEC Errata A004839 */
+		 
 		usleep_range(10, 50);
 	}
 
-	/* Graceful stop - Assert the graceful Tx stop bit */
+	 
 	if (dtsec->fm_rev_info.major == 2) {
-		/* dTSEC Errata A004: Do not use TCTRL[GTS]=1 */
+		 
 		pr_debug("GTS not supported due to DTSEC_A004 Errata.\n");
 	} else {
 		tmp = ioread32be(&regs->tctrl) | TCTRL_GTS;
 		iowrite32be(tmp, &regs->tctrl);
 
-		/* Workaround for dTSEC Errata A0012, A0014 */
+		 
 		usleep_range(10, 50);
 	}
 }
@@ -843,7 +779,7 @@ static int dtsec_set_tx_pause_frames(struct fman_mac *dtsec,
 	u32 ptv = 0;
 
 	if (pause_time) {
-		/* FM_BAD_TX_TS_IN_B_2_B_ERRATA_DTSEC_A003 Errata workaround */
+		 
 		if (dtsec->fm_rev_info.major == 2 && pause_time <= 320) {
 			pr_warn("pause-time: %d illegal.Should be > 320\n",
 				pause_time);
@@ -855,7 +791,7 @@ static int dtsec_set_tx_pause_frames(struct fman_mac *dtsec,
 		ptv |= pause_time & PTV_PT_MASK;
 		iowrite32be(ptv, &regs->ptv);
 
-		/* trigger the transmission of a flow-control pause frame */
+		 
 		iowrite32be(ioread32be(&regs->maccfg1) | MACCFG1_TX_FLOW,
 			    &regs->maccfg1);
 	} else
@@ -961,12 +897,12 @@ static void dtsec_link_up(struct phylink_config *config, struct phy_device *phy,
 
 	mac_dev->update_speed(mac_dev, speed);
 
-	/* Enable */
+	 
 	tmp = ioread32be(&regs->maccfg1);
 	tmp |= MACCFG1_RX_EN | MACCFG1_TX_EN;
 	iowrite32be(tmp, &regs->maccfg1);
 
-	/* Graceful start - clear the graceful Rx/Tx stop bit */
+	 
 	graceful_start(dtsec);
 }
 
@@ -977,7 +913,7 @@ static void dtsec_link_down(struct phylink_config *config, unsigned int mode,
 	struct dtsec_regs __iomem *regs = dtsec->regs;
 	u32 tmp;
 
-	/* Graceful stop - Assert the graceful Rx/Tx stop bit */
+	 
 	graceful_stop(dtsec);
 
 	tmp = ioread32be(&regs->maccfg1);
@@ -997,9 +933,7 @@ static int dtsec_modify_mac_address(struct fman_mac *dtsec,
 {
 	graceful_stop(dtsec);
 
-	/* Initialize MAC Station Address registers (1 & 2)
-	 * Station address have to be swapped (big endian to little endian
-	 */
+	 
 	dtsec->addr = ENET_ADDR_TO_UINT64(*enet_addr);
 	set_mac_address(dtsec->regs, (const u8 *)(*enet_addr));
 
@@ -1023,7 +957,7 @@ static int dtsec_add_hash_mac_address(struct fman_mac *dtsec,
 	ghtx = (bool)((ioread32be(&regs->rctrl) & RCTRL_GHTX) ? true : false);
 	mcast = (bool)((addr & MAC_GROUP_ADDRESS) ? true : false);
 
-	/* Cannot handle unicast mac addr when GHTX is on */
+	 
 	if (ghtx && !mcast) {
 		pr_err("Could not compute hash bucket\n");
 		return -EINVAL;
@@ -1031,30 +965,20 @@ static int dtsec_add_hash_mac_address(struct fman_mac *dtsec,
 	crc = crc32_le(crc, (u8 *)eth_addr, ETH_ALEN);
 	crc = bitrev32(crc);
 
-	/* considering the 9 highest order bits in crc H[8:0]:
-	 *if ghtx = 0 H[8:6] (highest order 3 bits) identify the hash register
-	 *and H[5:1] (next 5 bits) identify the hash bit
-	 *if ghts = 1 H[8:5] (highest order 4 bits) identify the hash register
-	 *and H[4:0] (next 5 bits) identify the hash bit.
-	 *
-	 *In bucket index output the low 5 bits identify the hash register
-	 *bit, while the higher 4 bits identify the hash register
-	 */
+	 
 
 	if (ghtx) {
 		bucket = (s32)((crc >> 23) & 0x1ff);
 	} else {
 		bucket = (s32)((crc >> 24) & 0xff);
-		/* if !ghtx and mcast the bit must be set in gaddr instead of
-		 *igaddr.
-		 */
+		 
 		if (mcast)
 			bucket += 0x100;
 	}
 
 	set_bucket(dtsec->regs, bucket, true);
 
-	/* Create element to be added to the driver hash table */
+	 
 	hash_entry = kmalloc(sizeof(*hash_entry), GFP_ATOMIC);
 	if (!hash_entry)
 		return -ENOMEM;
@@ -1062,7 +986,7 @@ static int dtsec_add_hash_mac_address(struct fman_mac *dtsec,
 	INIT_LIST_HEAD(&hash_entry->node);
 
 	if (addr & MAC_GROUP_ADDRESS)
-		/* Group Address */
+		 
 		list_add_tail(&hash_entry->node,
 			      &dtsec->multicast_addr_hash->lsts[bucket]);
 	else
@@ -1126,7 +1050,7 @@ static int dtsec_del_hash_mac_address(struct fman_mac *dtsec,
 	ghtx = (bool)((ioread32be(&regs->rctrl) & RCTRL_GHTX) ? true : false);
 	mcast = (bool)((addr & MAC_GROUP_ADDRESS) ? true : false);
 
-	/* Cannot handle unicast mac addr when GHTX is on */
+	 
 	if (ghtx && !mcast) {
 		pr_err("Could not compute hash bucket\n");
 		return -EINVAL;
@@ -1138,15 +1062,13 @@ static int dtsec_del_hash_mac_address(struct fman_mac *dtsec,
 		bucket = (s32)((crc >> 23) & 0x1ff);
 	} else {
 		bucket = (s32)((crc >> 24) & 0xff);
-		/* if !ghtx and mcast the bit must be set
-		 * in gaddr instead of igaddr.
-		 */
+		 
 		if (mcast)
 			bucket += 0x100;
 	}
 
 	if (addr & MAC_GROUP_ADDRESS) {
-		/* Group Address */
+		 
 		list_for_each(pos,
 			      &dtsec->multicast_addr_hash->lsts[bucket]) {
 			hash_entry = ETH_HASH_ENTRY_OBJ(pos);
@@ -1159,7 +1081,7 @@ static int dtsec_del_hash_mac_address(struct fman_mac *dtsec,
 		if (list_empty(&dtsec->multicast_addr_hash->lsts[bucket]))
 			set_bucket(dtsec->regs, bucket, false);
 	} else {
-		/* Individual Address */
+		 
 		list_for_each(pos,
 			      &dtsec->unicast_addr_hash->lsts[bucket]) {
 			hash_entry = ETH_HASH_ENTRY_OBJ(pos);
@@ -1173,7 +1095,7 @@ static int dtsec_del_hash_mac_address(struct fman_mac *dtsec,
 			set_bucket(dtsec->regs, bucket, false);
 	}
 
-	/* address does not exist */
+	 
 	WARN_ON(!hash_entry);
 
 	return 0;
@@ -1184,7 +1106,7 @@ static int dtsec_set_promiscuous(struct fman_mac *dtsec, bool new_val)
 	struct dtsec_regs __iomem *regs = dtsec->regs;
 	u32 tmp;
 
-	/* Set unicast promiscuous */
+	 
 	tmp = ioread32be(&regs->rctrl);
 	if (new_val)
 		tmp |= RCTRL_UPROM;
@@ -1193,7 +1115,7 @@ static int dtsec_set_promiscuous(struct fman_mac *dtsec, bool new_val)
 
 	iowrite32be(tmp, &regs->rctrl);
 
-	/* Set multicast promiscuous */
+	 
 	tmp = ioread32be(&regs->rctrl);
 	if (new_val)
 		tmp |= RCTRL_MPROM;
@@ -1284,14 +1206,14 @@ static int dtsec_init(struct fman_mac *dtsec)
 		return err;
 	}
 
-	/* Configure the TBI PHY Control Register */
+	 
 	tbicon = TBICON_CLK_SELECT | TBICON_SOFT_RESET;
 	mdiodev_write(dtsec->tbidev, MII_TBICON, tbicon);
 
 	tbicon = TBICON_CLK_SELECT;
 	mdiodev_write(dtsec->tbidev, MII_TBICON, tbicon);
 
-	/* Max Frame Length */
+	 
 	max_frm_ln = (u16)ioread32be(&regs->maxfrm);
 	err = fman_set_mac_max_frame(dtsec->fm, dtsec->mac_id, max_frm_ln);
 	if (err) {
@@ -1315,10 +1237,10 @@ static int dtsec_init(struct fman_mac *dtsec)
 		return -ENOMEM;
 	}
 
-	/* register err intr handler for dtsec to FPM (err) */
+	 
 	fman_register_intr(dtsec->fm, FMAN_MOD_MAC, dtsec->mac_id,
 			   FMAN_INTR_TYPE_ERR, dtsec_isr, dtsec);
-	/* register 1588 intr handler for TMR to FPM (normal) */
+	 
 	fman_register_intr(dtsec->fm, FMAN_MOD_MAC, dtsec->mac_id,
 			   FMAN_INTR_TYPE_NORMAL, dtsec_1588_isr, dtsec);
 
@@ -1347,17 +1269,17 @@ static struct fman_mac *dtsec_config(struct mac_device *mac_dev,
 	struct fman_mac *dtsec;
 	struct dtsec_cfg *dtsec_drv_param;
 
-	/* allocate memory for the UCC GETH data structure. */
+	 
 	dtsec = kzalloc(sizeof(*dtsec), GFP_KERNEL);
 	if (!dtsec)
 		return NULL;
 
-	/* allocate memory for the d_tsec driver parameters data structure. */
+	 
 	dtsec_drv_param = kzalloc(sizeof(*dtsec_drv_param), GFP_KERNEL);
 	if (!dtsec_drv_param)
 		goto err_dtsec;
 
-	/* Plant parameter structure pointer */
+	 
 	dtsec->dtsec_drv_param = dtsec_drv_param;
 
 	set_dflts(dtsec_drv_param);
@@ -1387,7 +1309,7 @@ static struct fman_mac *dtsec_config(struct mac_device *mac_dev,
 
 	dtsec->fm = params->fm;
 
-	/* Save FMan revision */
+	 
 	fman_get_revision(dtsec->fm, &dtsec->fm_rev_info);
 
 	return dtsec;
@@ -1452,10 +1374,7 @@ int dtsec_initialization(struct mac_device *mac_dev,
 
 	supported = mac_dev->phylink_config.supported_interfaces;
 
-	/* FIXME: Can we use DTSEC_ID2_INT_FULL_OFF to determine if these are
-	 * supported? If not, we can determine support via the phy if SerDes
-	 * support is added.
-	 */
+	 
 	if (mac_dev->phy_if == PHY_INTERFACE_MODE_SGMII ||
 	    mac_dev->phy_if == PHY_INTERFACE_MODE_1000BASEX) {
 		__set_bit(PHY_INTERFACE_MODE_SGMII, supported);
@@ -1467,12 +1386,7 @@ int dtsec_initialization(struct mac_device *mac_dev,
 	if (!(ioread32be(&dtsec->regs->tsec_id2) & DTSEC_ID2_INT_REDUCED_OFF)) {
 		phy_interface_set_rgmii(supported);
 
-		/* DTSEC_ID2_INT_REDUCED_OFF indicates that the dTSEC supports
-		 * RMII and RGMII. However, the only SoCs which support RMII
-		 * are the P1017 and P1023. Avoid advertising this mode on
-		 * other SoCs. This is a bit of a moot point, since there's no
-		 * in-tree support for ethernet on these platforms...
-		 */
+		 
 		if (of_machine_is_compatible("fsl,P1023") ||
 		    of_machine_is_compatible("fsl,P1023RDB"))
 			__set_bit(PHY_INTERFACE_MODE_RMII, supported);
@@ -1486,7 +1400,7 @@ int dtsec_initialization(struct mac_device *mac_dev,
 	if (err < 0)
 		goto _return_fm_mac_free;
 
-	/* For 1G MAC, disable by default the MIB counters overflow interrupt */
+	 
 	err = dtsec_set_exception(dtsec, FM_MAC_EX_1G_RX_MIB_CNT_OVFL, false);
 	if (err < 0)
 		goto _return_fm_mac_free;

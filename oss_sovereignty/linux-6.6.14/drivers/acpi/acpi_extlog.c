@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Extended Error Log driver
- *
- * Copyright (C) 2013 Intel Corp.
- * Author: Chen, Gong <gong.chen@intel.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/acpi.h>
@@ -19,7 +14,7 @@
 #include "apei/apei-internal.h"
 #include <ras/ras_event.h>
 
-#define EXT_ELOG_ENTRY_MASK	GENMASK_ULL(51, 0) /* elog entry address mask */
+#define EXT_ELOG_ENTRY_MASK	GENMASK_ULL(51, 0)  
 
 #define EXTLOG_DSM_REV		0x0
 #define	EXTLOG_FN_ADDR		0x1
@@ -32,26 +27,26 @@
 	"Can not request iomem region <0x%016llx-0x%016llx> - eMCA disabled\n"
 
 struct extlog_l1_head {
-	u32 ver;	/* Header Version */
-	u32 hdr_len;	/* Header Length */
-	u64 total_len;	/* entire L1 Directory length including this header */
-	u64 elog_base;	/* MCA Error Log Directory base address */
-	u64 elog_len;	/* MCA Error Log Directory length */
-	u32 flags;	/* bit 0 - OS/VMM Opt-in */
+	u32 ver;	 
+	u32 hdr_len;	 
+	u64 total_len;	 
+	u64 elog_base;	 
+	u64 elog_len;	 
+	u32 flags;	 
 	u8  rev0[12];
-	u32 entries;	/* Valid L1 Directory entries per logical processor */
+	u32 entries;	 
 	u8  rev1[12];
 };
 
 static u8 extlog_dsm_uuid[] __initdata = "663E35AF-CC10-41A4-88EA-5470AF055295";
 
-/* L1 table related physical address */
+ 
 static u64 elog_base;
 static size_t elog_size;
 static u64 l1_dirbase;
 static size_t l1_size;
 
-/* L1 table related virtual address */
+ 
 static void __iomem *extlog_l1_addr;
 static void __iomem *elog_addr;
 
@@ -84,7 +79,7 @@ static struct acpi_hest_generic_status *extlog_elog_entry_check(int cpu, int ban
 	data &= EXT_ELOG_ENTRY_MASK;
 	estatus = (struct acpi_hest_generic_status *)ELOG_ENTRY_ADDR(data);
 
-	/* if no valid data in elog entry, just return */
+	 
 	if (estatus->block_status == 0)
 		return NULL;
 
@@ -113,7 +108,7 @@ static void __print_extlog_rcd(const char *pfx,
 static int print_extlog_rcd(const char *pfx,
 			    struct acpi_hest_generic_status *estatus, int cpu)
 {
-	/* Not more than 2 messages every 5 seconds */
+	 
 	static DEFINE_RATELIMIT_STATE(ratelimit_corrected, 5*HZ, 2);
 	static DEFINE_RATELIMIT_STATE(ratelimit_uncorrected, 5*HZ, 2);
 	struct ratelimit_state *ratelimit;
@@ -154,7 +149,7 @@ static int extlog_print(struct notifier_block *nb, unsigned long val,
 	}
 
 	memcpy(elog_buf, (void *)estatus, ELOG_ENTRY_LEN);
-	/* clear record status to enable BIOS to update it again */
+	 
 	estatus->block_status = 0;
 
 	tmp = (struct acpi_hest_generic_status *)elog_buf;
@@ -164,7 +159,7 @@ static int extlog_print(struct notifier_block *nb, unsigned long val,
 		goto out;
 	}
 
-	/* log event via trace */
+	 
 	err_seq++;
 	apei_estatus_for_each_section(tmp, gdata) {
 		if (gdata->validation_bits & CPER_SEC_VALID_FRU_ID)
@@ -211,7 +206,7 @@ static bool __init extlog_get_l1addr(void)
 		ACPI_FREE(obj);
 	}
 
-	/* Spec says L1 directory must be 4K aligned, bail out if it isn't */
+	 
 	if (l1_dirbase & ((1 << 12) - 1)) {
 		pr_warn(FW_BUG "L1 Directory is invalid at physical %llx\n",
 			l1_dirbase);
@@ -240,7 +235,7 @@ static int __init extlog_init(void)
 		return -ENODEV;
 
 	rc = -EINVAL;
-	/* get L1 header to fetch necessary information */
+	 
 	l1_hdr_size = sizeof(struct extlog_l1_head);
 	r = request_mem_region(l1_dirbase, l1_hdr_size, "L1 DIR HDR");
 	if (!r) {
@@ -259,7 +254,7 @@ static int __init extlog_init(void)
 	acpi_os_unmap_iomem(extlog_l1_hdr, l1_hdr_size);
 	release_mem_region(l1_dirbase, l1_hdr_size);
 
-	/* remap L1 header again based on completed information */
+	 
 	r = request_mem_region(l1_dirbase, l1_size, "L1 Table");
 	if (!r) {
 		pr_warn(FW_BUG EMCA_BUG,
@@ -270,7 +265,7 @@ static int __init extlog_init(void)
 	extlog_l1_addr = acpi_os_map_iomem(l1_dirbase, l1_size);
 	l1_entry_base = (u64 *)((u8 *)extlog_l1_addr + l1_hdr_size);
 
-	/* remap elog table */
+	 
 	r = request_mem_region(elog_base, elog_size, "Elog Table");
 	if (!r) {
 		pr_warn(FW_BUG EMCA_BUG,
@@ -281,13 +276,13 @@ static int __init extlog_init(void)
 	elog_addr = acpi_os_map_iomem(elog_base, elog_size);
 
 	rc = -ENOMEM;
-	/* allocate buffer to save elog record */
+	 
 	elog_buf = kmalloc(ELOG_ENTRY_LEN, GFP_KERNEL);
 	if (elog_buf == NULL)
 		goto err_release_elog;
 
 	mce_register_decode_chain(&extlog_mce_dec);
-	/* enable OS to be involved to take over management from BIOS */
+	 
 	((struct extlog_l1_head *)extlog_l1_addr)->flags |= FLAG_OS_OPTIN;
 
 	return 0;

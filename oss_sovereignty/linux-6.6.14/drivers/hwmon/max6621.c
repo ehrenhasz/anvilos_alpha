@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hardware monitoring driver for Maxim MAX6621
- *
- * Copyright (c) 2017 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2017 Vadim Pasternak <vadimp@mellanox.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/hwmon.h>
@@ -62,35 +57,14 @@
 #define MAX6621_CONFIG1_INIT		((MAX6621_PECI_BIT_TIME << 8) | \
 					 MAX6621_PECI_RETRY_NUM)
 
-/* Error codes */
-#define MAX6621_TRAN_FAILED	0x8100	/*
-					 * PECI transaction failed for more
-					 * than the configured number of
-					 * consecutive retries.
-					 */
-#define MAX6621_POOL_DIS	0x8101	/*
-					 * Polling disabled for requested
-					 * socket/domain.
-					 */
-#define MAX6621_POOL_UNCOMPLETE	0x8102	/*
-					 * First poll not yet completed for
-					 * requested socket/domain (on
-					 * startup).
-					 */
-#define MAX6621_SD_DIS		0x8103	/*
-					 * Read maximum temperature requested,
-					 * but no sockets/domains enabled or
-					 * all enabled sockets/domains have
-					 * errors; or read maximum temperature
-					 * address requested, but read maximum
-					 * temperature was not called.
-					 */
-#define MAX6621_ALERT_DIS	0x8104	/*
-					 * Get alert socket/domain requested,
-					 * but no alert active.
-					 */
-#define MAX6621_PECI_ERR_MIN	0x8000	/* Intel spec PECI error min value. */
-#define MAX6621_PECI_ERR_MAX	0x80ff	/* Intel spec PECI error max value. */
+ 
+#define MAX6621_TRAN_FAILED	0x8100	 
+#define MAX6621_POOL_DIS	0x8101	 
+#define MAX6621_POOL_UNCOMPLETE	0x8102	 
+#define MAX6621_SD_DIS		0x8103	 
+#define MAX6621_ALERT_DIS	0x8104	 
+#define MAX6621_PECI_ERR_MIN	0x8000	 
+#define MAX6621_PECI_ERR_MAX	0x80ff	 
 
 static const u32 max6621_temp_regs[] = {
 	MAX6621_TEMP_MAX_REG, MAX6621_TEMP_S0D0_REG, MAX6621_TEMP_S1D0_REG,
@@ -117,13 +91,7 @@ static const int max6621_temp_alert_chan2reg[] = {
 	MAX6621_TEMP_S3_ALERT_REG,
 };
 
-/**
- * struct max6621_data - private data:
- *
- * @client: I2C client;
- * @regmap: register map handle;
- * @input_chan2reg: mapping from channel to register;
- */
+ 
 struct max6621_data {
 	struct i2c_client	*client;
 	struct regmap		*regmap;
@@ -139,7 +107,7 @@ static umode_t
 max6621_is_visible(const void *data, enum hwmon_sensor_types type, u32 attr,
 		   int channel)
 {
-	/* Skip channels which are not physically conncted. */
+	 
 	if (((struct max6621_data *)data)->input_chan2reg[channel] < 0)
 		return 0;
 
@@ -220,11 +188,7 @@ max6621_read(struct device *dev, enum hwmon_sensor_types type, u32 attr,
 			if (ret)
 				return ret;
 
-			/*
-			 * Bit MAX6621_REG_TEMP_SHIFT represents 1 degree step.
-			 * The temperature is given in two's complement and 8
-			 * bits is used for the register conversion.
-			 */
+			 
 			temp = (regval >> MAX6621_REG_TEMP_SHIFT);
 			*val = temp * 1000L;
 
@@ -258,12 +222,7 @@ max6621_read(struct device *dev, enum hwmon_sensor_types type, u32 attr,
 
 			break;
 		case hwmon_temp_crit_alarm:
-			/*
-			 * Set val to zero to recover the case, when reading
-			 * MAX6621_TEMP_ALERT_CAUSE_REG results in for example
-			 * MAX6621_ALERT_DIS. Reading will return with error,
-			 * but in such case alarm should be returned as 0.
-			 */
+			 
 			*val = 0;
 			ret = regmap_read(data->regmap,
 					  MAX6621_TEMP_ALERT_CAUSE_REG,
@@ -273,17 +232,14 @@ max6621_read(struct device *dev, enum hwmon_sensor_types type, u32 attr,
 
 			ret = max6621_verify_reg_data(dev, regval);
 			if (ret) {
-				/* Do not report error if alert is disabled. */
+				 
 				if (regval == MAX6621_ALERT_DIS)
 					return 0;
 				else
 					return ret;
 			}
 
-			/*
-			 * Clear the alert automatically, using send-byte
-			 * smbus protocol for clearing alert.
-			 */
+			 
 			if (regval) {
 				ret = i2c_smbus_write_byte(data->client,
 						MAX6621_CLEAR_ALERT_REG);
@@ -317,7 +273,7 @@ max6621_write(struct device *dev, enum hwmon_sensor_types type, u32 attr,
 	case hwmon_temp:
 		switch (attr) {
 		case hwmon_temp_offset:
-			/* Clamp to allowed range to prevent overflow. */
+			 
 			val = clamp_val(val, MAX6621_TEMP_INPUT_MIN,
 					MAX6621_TEMP_INPUT_MAX);
 			val = max6621_temp_mc2reg(val);
@@ -327,7 +283,7 @@ max6621_write(struct device *dev, enum hwmon_sensor_types type, u32 attr,
 		case hwmon_temp_crit:
 			channel -= MAX6621_TEMP_ALERT_CHAN_SHIFT;
 			reg = max6621_temp_alert_chan2reg[channel];
-			/* Clamp to allowed range to prevent overflow. */
+			 
 			val = clamp_val(val, MAX6621_TEMP_INPUT_MIN,
 					MAX6621_TEMP_INPUT_MAX);
 			val = val / 1000L;
@@ -496,25 +452,25 @@ static int max6621_probe(struct i2c_client *client)
 	i2c_set_clientdata(client, data);
 	data->client = client;
 
-	/* Set CONFIG0 register masking temperature alerts and PEC. */
+	 
 	ret = regmap_write(data->regmap, MAX6621_CONFIG0_REG,
 			   MAX6621_CONFIG0_INIT);
 	if (ret)
 		return ret;
 
-	/* Set CONFIG1 register for PEC access retry number. */
+	 
 	ret = regmap_write(data->regmap, MAX6621_CONFIG1_REG,
 			   MAX6621_CONFIG1_INIT);
 	if (ret)
 		return ret;
 
-	/* Sync registers with hardware. */
+	 
 	regcache_mark_dirty(data->regmap);
 	ret = regcache_sync(data->regmap);
 	if (ret)
 		return ret;
 
-	/* Verify which temperature input registers are enabled. */
+	 
 	for (i = 0; i < MAX6621_TEMP_INPUT_REG_NUM; i++) {
 		ret = i2c_smbus_read_word_data(client, max6621_temp_regs[i]);
 		if (ret < 0)

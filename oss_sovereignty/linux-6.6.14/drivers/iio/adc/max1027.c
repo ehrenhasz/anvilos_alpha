@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
- /*
-  * iio/adc/max1027.c
-  * Copyright (C) 2014 Philippe Reynes
-  *
-  * based on linux/drivers/iio/ad7923.c
-  * Copyright 2011 Analog Devices Inc (from AD7923 Driver)
-  * Copyright 2012 CS Systemes d'Information
-  *
-  * max1027.c
-  *
-  * Partial support for max1027 and similar chips.
-  */
+
+  
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -29,7 +18,7 @@
 #define MAX1027_AVG_REG   BIT(5)
 #define MAX1027_RST_REG   BIT(4)
 
-/* conversion register */
+ 
 #define MAX1027_TEMP      BIT(0)
 #define MAX1027_SCAN_0_N  (0x00 << 1)
 #define MAX1027_SCAN_N_M  (0x01 << 1)
@@ -37,7 +26,7 @@
 #define MAX1027_NOSCAN    (0x03 << 1)
 #define MAX1027_CHAN(n)   ((n) << 3)
 
-/* setup register */
+ 
 #define MAX1027_UNIPOLAR  0x02
 #define MAX1027_BIPOLAR   0x03
 #define MAX1027_REF_MODE0 (0x00 << 2)
@@ -49,7 +38,7 @@
 #define MAX1027_CKS_MODE2 (0x02 << 4)
 #define MAX1027_CKS_MODE3 (0x03 << 4)
 
-/* averaging register */
+ 
 #define MAX1027_NSCAN_4   0x00
 #define MAX1027_NSCAN_8   0x01
 #define MAX1027_NSCAN_12  0x02
@@ -60,7 +49,7 @@
 #define MAX1027_NAVG_32   (0x03 << 2)
 #define MAX1027_AVG_EN    BIT(4)
 
-/* Device can achieve 300ksps so we assume a 3.33us conversion delay */
+ 
 #define MAX1027_CONVERSION_UDELAY 4
 
 enum max1027_id {
@@ -175,20 +164,7 @@ static const struct iio_chan_spec max1231_channels[] = {
 	MAX1X31_CHANNELS(12),
 };
 
-/*
- * These devices are able to scan from 0 to N, N being the highest voltage
- * channel requested by the user. The temperature can be included or not,
- * but cannot be retrieved alone. Based on the below
- * ->available_scan_masks, the core will select the most appropriate
- * ->active_scan_mask and the "minimum" number of channels will be
- * scanned and pushed to the buffers.
- *
- * For example, if the user wants channels 1, 4 and 5, all channels from
- * 0 to 5 will be scanned and pushed to the IIO buffers. The core will then
- * filter out the unneeded samples based on the ->active_scan_mask that has
- * been selected and only channels 1, 4 and 5 will be available to the user
- * in the shared buffer.
- */
+ 
 #define MAX1X27_SCAN_MASK_TEMP BIT(0)
 
 #define MAX1X27_SCAN_MASKS(temp)					\
@@ -297,7 +273,7 @@ static int max1027_wait_eoc(struct iio_dev *indio_dev)
 	return 0;
 }
 
-/* Scan from chan 0 to the highest requested channel. Include temperature on demand. */
+ 
 static int max1027_configure_chans_and_start(struct iio_dev *indio_dev)
 {
 	struct max1027_state *st = iio_priv(indio_dev);
@@ -316,11 +292,7 @@ static int max1027_enable_trigger(struct iio_dev *indio_dev, bool enable)
 
 	st->reg = MAX1027_SETUP_REG | MAX1027_REF_MODE2;
 
-	/*
-	 * Start acquisition on:
-	 * MODE0: external hardware trigger wired to the cnvst input pin
-	 * MODE2: conversion register write
-	 */
+	 
 	if (enable)
 		st->reg |= MAX1027_CKS_MODE0;
 	else
@@ -340,7 +312,7 @@ static int max1027_read_single_value(struct iio_dev *indio_dev,
 	if (ret)
 		return ret;
 
-	/* Configure conversion register with the requested chan */
+	 
 	st->reg = MAX1027_CONV_REG | MAX1027_CHAN(chan->channel) |
 		  MAX1027_NOSCAN;
 	if (chan->type == IIO_TEMP)
@@ -352,16 +324,12 @@ static int max1027_read_single_value(struct iio_dev *indio_dev,
 		goto release;
 	}
 
-	/*
-	 * For an unknown reason, when we use the mode "10" (write
-	 * conversion register), the interrupt doesn't occur every time.
-	 * So we just wait the maximum conversion time and deliver the value.
-	 */
+	 
 	ret = max1027_wait_eoc(indio_dev);
 	if (ret)
 		goto release;
 
-	/* Read result */
+	 
 	ret = spi_read(st->spi, st->buffer, (chan->type == IIO_TEMP) ? 4 : 2);
 
 release:
@@ -437,12 +405,7 @@ static int max1027_set_cnvst_trigger_state(struct iio_trigger *trig, bool state)
 	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
 	int ret;
 
-	/*
-	 * In order to disable the convst trigger, start acquisition on
-	 * conversion register write, which basically disables triggering
-	 * conversions upon cnvst changes and thus has the effect of disabling
-	 * the external hardware trigger.
-	 */
+	 
 	ret = max1027_enable_trigger(indio_dev, state);
 	if (ret)
 		return ret;
@@ -466,7 +429,7 @@ static int max1027_read_scan(struct iio_dev *indio_dev)
 	if (*indio_dev->active_scan_mask & MAX1X27_SCAN_MASK_TEMP)
 		scanned_chans++;
 
-	/* fill buffer with all channel */
+	 
 	ret = spi_read(st->spi, st->buffer, scanned_chans * 2);
 	if (ret < 0)
 		return ret;
@@ -481,17 +444,7 @@ static irqreturn_t max1027_handler(int irq, void *private)
 	struct iio_dev *indio_dev = private;
 	struct max1027_state *st = iio_priv(indio_dev);
 
-	/*
-	 * If buffers are disabled (raw read) or when using external triggers,
-	 * we just need to unlock the waiters which will then handle the data.
-	 *
-	 * When using the internal trigger, we must hand-off the choice of the
-	 * handler to the core which will then lookup through the interrupt tree
-	 * for the right handler registered with iio_triggered_buffer_setup()
-	 * to execute, as this trigger might very well be used in conjunction
-	 * with another device. The core will then call the relevant handler to
-	 * perform the data processing step.
-	 */
+	 
 	if (!iio_buffer_enabled(indio_dev))
 		complete(&st->complete);
 	else
@@ -511,7 +464,7 @@ static irqreturn_t max1027_trigger_handler(int irq, void *private)
 		if (ret)
 			goto out;
 
-		/* This is a threaded handler, it is fine to wait for an IRQ */
+		 
 		ret = max1027_wait_eoc(indio_dev);
 		if (ret)
 			goto out;
@@ -570,7 +523,7 @@ static int max1027_probe(struct spi_device *spi)
 	if (!st->buffer)
 		return -ENOMEM;
 
-	/* Enable triggered buffers */
+	 
 	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
 					      &iio_pollfunc_store_time,
 					      &max1027_trigger_handler,
@@ -580,7 +533,7 @@ static int max1027_probe(struct spi_device *spi)
 		return ret;
 	}
 
-	/* If there is an EOC interrupt, register the cnvst hardware trigger */
+	 
 	if (spi->irq) {
 		st->trig = devm_iio_trigger_alloc(&spi->dev, "%s-trigger",
 						  indio_dev->name);
@@ -610,7 +563,7 @@ static int max1027_probe(struct spi_device *spi)
 		}
 	}
 
-	/* Internal reset */
+	 
 	st->reg = MAX1027_RST_REG;
 	ret = spi_write(st->spi, &st->reg, 1);
 	if (ret < 0) {
@@ -618,7 +571,7 @@ static int max1027_probe(struct spi_device *spi)
 		return ret;
 	}
 
-	/* Disable averaging */
+	 
 	st->reg = MAX1027_AVG_REG;
 	ret = spi_write(st->spi, &st->reg, 1);
 	if (ret < 0) {
@@ -626,7 +579,7 @@ static int max1027_probe(struct spi_device *spi)
 		return ret;
 	}
 
-	/* Assume conversion on register write for now */
+	 
 	ret = max1027_enable_trigger(indio_dev, false);
 	if (ret)
 		return ret;

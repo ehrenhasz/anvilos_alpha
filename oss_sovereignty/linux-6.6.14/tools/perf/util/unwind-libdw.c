@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/compiler.h>
 #include <elfutils/libdw.h>
 #include <elfutils/libdwfl.h>
@@ -38,7 +38,7 @@ static const Dwfl_Callbacks offline_callbacks = {
 	.find_debuginfo		= __find_debuginfo,
 	.debuginfo_path		= &debuginfo_path,
 	.section_address	= dwfl_offline_section_address,
-	// .find_elf is not set as we use dwfl_report_elf() instead.
+	
 };
 
 static int __report_module(struct addr_location *al, u64 ip,
@@ -47,10 +47,7 @@ static int __report_module(struct addr_location *al, u64 ip,
 	Dwfl_Module *mod;
 	struct dso *dso = NULL;
 	Dwarf_Addr base;
-	/*
-	 * Some callers will use al->sym, so we can't just use the
-	 * cheaper thread__find_map() here.
-	 */
+	 
 	thread__find_symbol(ui->thread, PERF_RECORD_MISC_USER, ip, al);
 
 	if (al->map)
@@ -59,13 +56,7 @@ static int __report_module(struct addr_location *al, u64 ip,
 	if (!dso)
 		return 0;
 
-	/*
-	 * The generated JIT DSO files only map the code segment without
-	 * ELF headers.  Since JIT codes used to be packed in a memory
-	 * segment, calculating the base address using pgoff falls into
-	 * a different code in another DSO.  So just use the map->start
-	 * directly to pick the correct one.
-	 */
+	 
 	if (!strncmp(dso->long_name, "/tmp/jitted-", 12))
 		base = map__start(al->map);
 	else
@@ -116,10 +107,7 @@ static int report_module(u64 ip, struct unwind_info *ui)
 	return res;
 }
 
-/*
- * Store all entries within entries array,
- * we will process it after we finish unwind.
- */
+ 
 static int entry(u64 ip, struct unwind_info *ui)
 
 {
@@ -147,7 +135,7 @@ static int entry(u64 ip, struct unwind_info *ui)
 
 static pid_t next_thread(Dwfl *dwfl, void *arg, void **thread_argp)
 {
-	/* We want only single thread to be processed. */
+	 
 	if (*thread_argp != NULL)
 		return 0;
 
@@ -197,7 +185,7 @@ static bool memory_read(Dwfl *dwfl __maybe_unused, Dwarf_Addr addr, Dwarf_Word *
 
 	end = start + stack->size;
 
-	/* Check overflow. */
+	 
 	if (addr + sizeof(Dwarf_Word) < addr)
 		return false;
 
@@ -238,7 +226,7 @@ frame_callback(Dwfl_Frame *state, void *arg)
 		return DWARF_CB_ABORT;
 	}
 
-	// report the module before we query for isactivation
+	 
 	report_module(pc, ui);
 
 	if (!dwfl_frame_pc(state, &pc, &isactivation)) {
@@ -303,9 +291,7 @@ int unwind__get_entries(unwind_entry_cb_t cb, void *arg,
 	if (err && ui->max_stack != max_stack)
 		err = 0;
 
-	/*
-	 * Display what we got based on the order setup.
-	 */
+	 
 	for (i = 0; i < ui->idx && !err; i++) {
 		int j = i;
 

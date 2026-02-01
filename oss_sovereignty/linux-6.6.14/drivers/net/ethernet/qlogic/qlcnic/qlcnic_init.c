@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic qlcnic NIC Driver
- * Copyright (c) 2009-2013 QLogic Corporation
- */
+
+ 
 
 #include "qlcnic.h"
 #include "qlcnic_hw.h"
@@ -223,10 +220,7 @@ int qlcnic_alloc_sw_resources(struct qlcnic_adapter *adapter)
 			goto err_out;
 
 		INIT_LIST_HEAD(&rds_ring->free_list);
-		/*
-		 * Now go through all of them, set reference handles
-		 * and put them in the queues.
-		 */
+		 
 		rx_buf = rds_ring->rx_buf_arr;
 		for (i = 0; i < rds_ring->num_desc; i++) {
 			list_add_tail(&rx_buf->list,
@@ -260,10 +254,7 @@ err_out:
 	return -ENOMEM;
 }
 
-/*
- * Utility to translate from internal Phantom CRB address
- * to external PCI CRB address.
- */
+ 
 static u32 qlcnic_decode_crb_addr(u32 addr)
 {
 	int i;
@@ -322,7 +313,7 @@ static int do_rom_fast_read(struct qlcnic_adapter *adapter,
 		dev_err(&adapter->pdev->dev, "Error waiting for rom done\n");
 		return -EIO;
 	}
-	/* reset abyte_cnt and dummy_byte_cnt */
+	 
 	QLCWR32(adapter, QLCNIC_ROMUSB_ROM_ABYTE_CNT, 0);
 	udelay(10);
 	QLCWR32(adapter, QLCNIC_ROMUSB_ROM_DUMMY_BYTE_CNT, 0);
@@ -391,8 +382,8 @@ int qlcnic_pinit_from_rom(struct qlcnic_adapter *adapter)
 	QLC_SHARED_REG_WR32(adapter, QLCNIC_CMDPEG_STATE, 0);
 	QLC_SHARED_REG_WR32(adapter, QLCNIC_RCVPEG_STATE, 0);
 
-	/* Halt all the indiviual PEGs and other blocks */
-	/* disable all I2Q */
+	 
+	 
 	QLCWR32(adapter, QLCNIC_CRB_I2Q + 0x10, 0x0);
 	QLCWR32(adapter, QLCNIC_CRB_I2Q + 0x14, 0x0);
 	QLCWR32(adapter, QLCNIC_CRB_I2Q + 0x18, 0x0);
@@ -400,36 +391,36 @@ int qlcnic_pinit_from_rom(struct qlcnic_adapter *adapter)
 	QLCWR32(adapter, QLCNIC_CRB_I2Q + 0x20, 0x0);
 	QLCWR32(adapter, QLCNIC_CRB_I2Q + 0x24, 0x0);
 
-	/* disable all niu interrupts */
+	 
 	QLCWR32(adapter, QLCNIC_CRB_NIU + 0x40, 0xff);
-	/* disable xge rx/tx */
+	 
 	QLCWR32(adapter, QLCNIC_CRB_NIU + 0x70000, 0x00);
-	/* disable xg1 rx/tx */
+	 
 	QLCWR32(adapter, QLCNIC_CRB_NIU + 0x80000, 0x00);
-	/* disable sideband mac */
+	 
 	QLCWR32(adapter, QLCNIC_CRB_NIU + 0x90000, 0x00);
-	/* disable ap0 mac */
+	 
 	QLCWR32(adapter, QLCNIC_CRB_NIU + 0xa0000, 0x00);
-	/* disable ap1 mac */
+	 
 	QLCWR32(adapter, QLCNIC_CRB_NIU + 0xb0000, 0x00);
 
-	/* halt sre */
+	 
 	val = QLCRD32(adapter, QLCNIC_CRB_SRE + 0x1000, &err);
 	if (err == -EIO)
 		return err;
 	QLCWR32(adapter, QLCNIC_CRB_SRE + 0x1000, val & (~(0x1)));
 
-	/* halt epg */
+	 
 	QLCWR32(adapter, QLCNIC_CRB_EPG + 0x1300, 0x1);
 
-	/* halt timers */
+	 
 	QLCWR32(adapter, QLCNIC_CRB_TIMER + 0x0, 0x0);
 	QLCWR32(adapter, QLCNIC_CRB_TIMER + 0x8, 0x0);
 	QLCWR32(adapter, QLCNIC_CRB_TIMER + 0x10, 0x0);
 	QLCWR32(adapter, QLCNIC_CRB_TIMER + 0x18, 0x0);
 	QLCWR32(adapter, QLCNIC_CRB_TIMER + 0x100, 0x0);
 	QLCWR32(adapter, QLCNIC_CRB_TIMER + 0x200, 0x0);
-	/* halt pegs */
+	 
 	QLCWR32(adapter, QLCNIC_CRB_PEG_NET_0 + 0x3c, 1);
 	QLCWR32(adapter, QLCNIC_CRB_PEG_NET_1 + 0x3c, 1);
 	QLCWR32(adapter, QLCNIC_CRB_PEG_NET_2 + 0x3c, 1);
@@ -437,10 +428,10 @@ int qlcnic_pinit_from_rom(struct qlcnic_adapter *adapter)
 	QLCWR32(adapter, QLCNIC_CRB_PEG_NET_4 + 0x3c, 1);
 	msleep(20);
 
-	/* big hammer don't reset CAM block on reset */
+	 
 	QLCWR32(adapter, QLCNIC_ROMUSB_GLB_SW_RESET, 0xfeffffff);
 
-	/* Init HW CRB block */
+	 
 	if (qlcnic_rom_fast_read(adapter, 0, &n) != 0 || (n != 0xcafecafe) ||
 			qlcnic_rom_fast_read(adapter, 4, &n) != 0) {
 		dev_err(&pdev->dev, "ERROR Reading crb_init area: val:%x\n", n);
@@ -482,24 +473,24 @@ int qlcnic_pinit_from_rom(struct qlcnic_adapter *adapter)
 		if (off & 1)
 			continue;
 
-		/* skipping cold reboot MAGIC */
+		 
 		if (off == QLCNIC_CAM_RAM(0x1fc))
 			continue;
 		if (off == (QLCNIC_CRB_I2C0 + 0x1c))
 			continue;
-		if (off == (ROMUSB_GLB + 0xbc)) /* do not reset PCI */
+		if (off == (ROMUSB_GLB + 0xbc))  
 			continue;
 		if (off == (ROMUSB_GLB + 0xa8))
 			continue;
-		if (off == (ROMUSB_GLB + 0xc8)) /* core clock */
+		if (off == (ROMUSB_GLB + 0xc8))  
 			continue;
-		if (off == (ROMUSB_GLB + 0x24)) /* MN clock */
+		if (off == (ROMUSB_GLB + 0x24))  
 			continue;
-		if (off == (ROMUSB_GLB + 0x1c)) /* MS clock */
+		if (off == (ROMUSB_GLB + 0x1c))  
 			continue;
 		if ((off & 0x0ff00000) == QLCNIC_CRB_DDR_NET)
 			continue;
-		/* skip the function enable register */
+		 
 		if (off == QLCNIC_PCIE_REG(PCIE_SETUP_FUNCTION))
 			continue;
 		if (off == QLCNIC_PCIE_REG(PCIE_SETUP_FUNCTION2))
@@ -508,8 +499,8 @@ int qlcnic_pinit_from_rom(struct qlcnic_adapter *adapter)
 			continue;
 
 		init_delay = 1;
-		/* After writing this register, HW needs time for CRB */
-		/* to quiet down (else crb_window returns 0xffffffff) */
+		 
+		 
 		if (off == QLCNIC_ROMUSB_GLB_SW_RESET)
 			init_delay = 1000;
 
@@ -519,7 +510,7 @@ int qlcnic_pinit_from_rom(struct qlcnic_adapter *adapter)
 	}
 	kfree(buf);
 
-	/* Initialize protocol process engine */
+	 
 	QLCWR32(adapter, QLCNIC_CRB_PEG_NET_D + 0xec, 0x1e);
 	QLCWR32(adapter, QLCNIC_CRB_PEG_NET_D + 0x4c, 8);
 	QLCWR32(adapter, QLCNIC_CRB_PEG_NET_I + 0x4c, 8);
@@ -703,7 +694,7 @@ qlcnic_check_flash_fw_ver(struct qlcnic_adapter *adapter)
 						 &fw_entry);
 
 	if (!ret)
-		/* 0-4:-signature,  4-8:-fw version */
+		 
 		qlcnic_rom_fast_read(adapter, fw_entry.start_addr + 4,
 				     (int *)&ver);
 	else

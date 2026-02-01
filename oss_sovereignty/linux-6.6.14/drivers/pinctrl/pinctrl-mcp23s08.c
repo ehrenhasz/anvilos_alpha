@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* MCP23S08 SPI/I2C GPIO driver */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/kernel.h>
@@ -21,12 +21,8 @@
 
 #include "pinctrl-mcp23s08.h"
 
-/* Registers are all 8 bits wide.
- *
- * The mcp23s17 has twice as many bits, and can be configured to work
- * with either 16 bit registers or with two adjacent 8 bit banks.
- */
-#define MCP_IODIR	0x00		/* init/reset:  all ones */
+ 
+#define MCP_IODIR	0x00		 
 #define MCP_IPOL	0x01
 #define MCP_GPINTEN	0x02
 #define MCP_DEFVAL	0x03
@@ -274,7 +270,7 @@ static const struct pinconf_ops mcp_pinconf_ops = {
 	.is_generic = true,
 };
 
-/*----------------------------------------------------------------------*/
+ 
 
 static int mcp23s08_direction_input(struct gpio_chip *chip, unsigned offset)
 {
@@ -295,7 +291,7 @@ static int mcp23s08_get(struct gpio_chip *chip, unsigned offset)
 
 	mutex_lock(&mcp->lock);
 
-	/* REVISIT reading this clears any IRQ ... */
+	 
 	ret = mcp_read(mcp, MCP_GPIO, &status);
 	if (ret < 0)
 		status = 0;
@@ -317,7 +313,7 @@ static int mcp23s08_get_multiple(struct gpio_chip *chip,
 
 	mutex_lock(&mcp->lock);
 
-	/* REVISIT reading this clears any IRQ ... */
+	 
 	ret = mcp_read(mcp, MCP_GPIO, &status);
 	if (ret < 0)
 		status = 0;
@@ -371,7 +367,7 @@ mcp23s08_direction_output(struct gpio_chip *chip, unsigned offset, int value)
 	return status;
 }
 
-/*----------------------------------------------------------------------*/
+ 
 static irqreturn_t mcp23s08_irq(int irq, void *data)
 {
 	struct mcp23s08 *mcp = data;
@@ -385,7 +381,7 @@ static irqreturn_t mcp23s08_irq(int irq, void *data)
 		goto unlock;
 
 	if (intf == 0) {
-		/* There is no interrupt pending */
+		 
 		goto unlock;
 	}
 
@@ -398,7 +394,7 @@ static irqreturn_t mcp23s08_irq(int irq, void *data)
 	if (mcp_read(mcp, MCP_DEFVAL, &defval))
 		goto unlock;
 
-	/* This clears the interrupt(configurable on S18) */
+	 
 	if (mcp_read(mcp, MCP_GPIO, &gpio))
 		goto unlock;
 
@@ -411,23 +407,7 @@ static irqreturn_t mcp23s08_irq(int irq, void *data)
 		intcap, intf, gpio_orig, gpio);
 
 	for (i = 0; i < mcp->chip.ngpio; i++) {
-		/* We must check all of the inputs on the chip,
-		 * otherwise we may not notice a change on >=2 pins.
-		 *
-		 * On at least the mcp23s17, INTCAP is only updated
-		 * one byte at a time(INTCAPA and INTCAPB are
-		 * not written to at the same time - only on a per-bank
-		 * basis).
-		 *
-		 * INTF only contains the single bit that caused the
-		 * interrupt per-bank.  On the mcp23s17, there is
-		 * INTFA and INTFB.  If two pins are changed on the A
-		 * side at the same time, INTF will only have one bit
-		 * set.  If one pin on the A side and one pin on the B
-		 * side are changed at the same time, INTF will have
-		 * two bits set.  Thus, INTF can't be the only check
-		 * to see if the input has changed.
-		 */
+		 
 
 		intf_set = intf & BIT(i);
 		if (i < 8 && intf_set)
@@ -576,7 +556,7 @@ static const struct irq_chip mcp23s08_irq_chip = {
 	GPIOCHIP_IRQ_RESOURCE_HELPERS,
 };
 
-/*----------------------------------------------------------------------*/
+ 
 
 int mcp23s08_probe_one(struct mcp23s08 *mcp, struct device *dev,
 		       unsigned int addr, unsigned int type, unsigned int base)
@@ -606,9 +586,7 @@ int mcp23s08_probe_one(struct mcp23s08 *mcp, struct device *dev,
 
 	mcp->reset_gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
 
-	/* verify MCP_IOCON.SEQOP = 0, so sequential reads work,
-	 * and MCP_IOCON.HAEN = 1, so we work with all chips.
-	 */
+	 
 
 	ret = mcp_read(mcp, MCP_IOCON, &status);
 	if (ret < 0)
@@ -627,7 +605,7 @@ int mcp23s08_probe_one(struct mcp23s08 *mcp, struct device *dev,
 
 	if ((status & IOCON_SEQOP) || !(status & IOCON_HAEN) || mirror ||
 	     mcp->irq_active_high || open_drain) {
-		/* mcp23s17 has IOCON twice, make sure they are in sync */
+		 
 		status &= ~(IOCON_SEQOP | (IOCON_SEQOP << 8));
 		status |= IOCON_HAEN | (IOCON_HAEN << 8);
 		if (mcp->irq_active_high)
@@ -653,7 +631,7 @@ int mcp23s08_probe_one(struct mcp23s08 *mcp, struct device *dev,
 		struct gpio_irq_chip *girq = &mcp->chip.irq;
 
 		gpio_irq_chip_set_chip(girq, &mcp23s08_irq_chip);
-		/* This will let us handle the parent IRQ in the driver */
+		 
 		girq->parent_handler = NULL;
 		girq->num_parents = 0;
 		girq->parents = NULL;

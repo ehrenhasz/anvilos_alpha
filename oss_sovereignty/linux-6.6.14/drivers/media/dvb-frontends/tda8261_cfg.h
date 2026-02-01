@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-	TDA8261 8PSK/QPSK tuner driver
-	Copyright (C) Manu Abraham (abraham.manu@gmail.com)
-
-*/
+ 
+ 
 
 static int tda8261_get_frequency(struct dvb_frontend *fe, u32 *frequency)
 {
@@ -42,7 +38,7 @@ static int tda8261_set_frequency(struct dvb_frontend *fe, u32 frequency)
 
 static int tda8261_get_bandwidth(struct dvb_frontend *fe, u32 *bandwidth)
 {
-	/* FIXME! need to calculate Bandwidth */
+	 
 	*bandwidth = 40000000;
 
 	return 0;

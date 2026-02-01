@@ -1,25 +1,4 @@
-/*
- * Copyright 2013 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/firmware.h>
 #include <linux/pci.h>
@@ -722,7 +701,7 @@ static int ci_power_control_set_level(struct radeon_device *rdev)
 	s32 adjust_percent;
 	s32 target_tdp;
 	int ret = 0;
-	bool adjust_polarity = false; /* ??? */
+	bool adjust_polarity = false;  
 
 	if (pi->caps_power_containment) {
 		adjust_percent = adjust_polarity ?
@@ -754,9 +733,7 @@ bool ci_dpm_vblank_too_short(struct radeon_device *rdev)
 	u32 vblank_time = r600_dpm_get_vblank_time(rdev);
 	u32 switch_limit = pi->mem_gddr5 ? 450 : 300;
 
-	/* disable mclk switching if the refresh is >120Hz, even if the
-        * blanking period would allow it
-        */
+	 
 	if (r600_dpm_get_vrefresh(rdev) > 120)
 		return true;
 
@@ -810,7 +787,7 @@ static void ci_apply_state_adjust_rules(struct radeon_device *rdev,
 		}
 	}
 
-	/* XXX validate the min clocks required for display */
+	 
 
 	if (disable_mclk_switching) {
 		mclk  = ps->performance_levels[ps->performance_level_count - 1].mclk;
@@ -865,7 +842,7 @@ static int ci_thermal_set_temperature_range(struct radeon_device *rdev,
 	WREG32_SMC(CG_THERMAL_INT, tmp);
 
 #if 0
-	/* XXX: need to figure out how to handle this properly */
+	 
 	tmp = RREG32_SMC(CG_THERMAL_CTRL);
 	tmp &= DIG_THERM_DPM_MASK;
 	tmp |= DIG_THERM_DPM(high_temp / 1000);
@@ -1108,12 +1085,12 @@ int ci_fan_ctrl_set_fan_speed_percent(struct radeon_device *rdev,
 void ci_fan_ctrl_set_mode(struct radeon_device *rdev, u32 mode)
 {
 	if (mode) {
-		/* stop auto-manage */
+		 
 		if (rdev->pm.dpm.fan.ucode_fan_control)
 			ci_fan_ctrl_stop_smc_fan_control(rdev);
 		ci_fan_ctrl_set_static_mode(rdev, mode);
 	} else {
-		/* restart auto-manage */
+		 
 		if (rdev->pm.dpm.fan.ucode_fan_control)
 			ci_thermal_start_smc_fan_control(rdev);
 		else
@@ -3834,10 +3811,7 @@ static void ci_find_dpm_states_clocks_in_dpm_table(struct radeon_device *rdev,
 	if (i >= sclk_table->count) {
 		pi->need_update_smu7_dpm_table |= DPMTABLE_OD_UPDATE_SCLK;
 	} else {
-		/* XXX The current code always reprogrammed the sclk levels,
-		 * but we don't currently handle disp sclk requirements
-		 * so just skip it.
-		 */
+		 
 		if (CISLAND_MINIMUM_ENGINE_CLOCK != CISLAND_MINIMUM_ENGINE_CLOCK)
 			pi->need_update_smu7_dpm_table |= DPMTABLE_UPDATE_SCLK;
 	}
@@ -4060,7 +4034,7 @@ static int ci_update_uvd_dpm(struct radeon_device *rdev, bool gate)
 static u8 ci_get_vce_boot_level(struct radeon_device *rdev)
 {
 	u8 i;
-	u32 min_evclk = 30000; /* ??? */
+	u32 min_evclk = 30000;  
 	struct radeon_vce_clock_voltage_dependency_table *table =
 		&rdev->pm.dpm.dyn_state.vce_clock_voltage_dependency_table;
 
@@ -4082,7 +4056,7 @@ static int ci_update_vce_dpm(struct radeon_device *rdev,
 
 	if (radeon_current_state->evclk != radeon_new_state->evclk) {
 		if (radeon_new_state->evclk) {
-			/* turn the clocks on when encoding */
+			 
 			cik_update_cg(rdev, RADEON_CG_BLOCK_VCE, false);
 
 			pi->smc_state_table.VceBootLevel = ci_get_vce_boot_level(rdev);
@@ -4093,7 +4067,7 @@ static int ci_update_vce_dpm(struct radeon_device *rdev,
 
 			ret = ci_enable_vce_dpm(rdev, true);
 		} else {
-			/* turn the clocks off when not encoding */
+			 
 			cik_update_cg(rdev, RADEON_CG_BLOCK_VCE, true);
 
 			ret = ci_enable_vce_dpm(rdev, false);
@@ -4798,7 +4772,7 @@ static int ci_get_current_pcie_lane_number(struct radeon_device *rdev)
 	case RADEON_PCIE_LC_LINK_WIDTH_X8:
 		return 8;
 	case RADEON_PCIE_LC_LINK_WIDTH_X12:
-		/* not actually supported */
+		 
 		return 12;
 	case RADEON_PCIE_LC_LINK_WIDTH_X0:
 	case RADEON_PCIE_LC_LINK_WIDTH_X16:
@@ -5465,7 +5439,7 @@ static void ci_parse_pplib_clock_info(struct radeon_device *rdev,
 		pi->ulv.cg_ulv_parameter = CISLANDS_CGULVPARAMETER_DFLT;
 	}
 
-	/* patch up boot state */
+	 
 	if (rps->class & ATOM_PPLIB_CLASSIFICATION_BOOT) {
 		pl->mclk = pi->vbios_boot_state.mclk_bootup_value;
 		pl->sclk = pi->vbios_boot_state.sclk_bootup_value;
@@ -5580,7 +5554,7 @@ static int ci_parse_power_table(struct radeon_device *rdev)
 		rdev->pm.dpm.num_ps = i + 1;
 	}
 
-	/* fill in the vce power states */
+	 
 	for (i = 0; i < RADEON_MAX_VCE_LEVELS; i++) {
 		u32 sclk, mclk;
 		clock_array_index = rdev->pm.dpm.vce_states[i].clk_idx;
@@ -5731,7 +5705,7 @@ int ci_dpm_init(struct radeon_device *rdev)
 	pi->pcie_dpm_key_disabled = 0;
 	pi->thermal_sclk_dpm_enabled = 0;
 
-	/* mclk dpm is unstable on some R7 260X cards with the old mc ucode */
+	 
 	if ((rdev->pdev->device == 0x6658) &&
 	    (rdev->mc_fw->size == (BONAIRE_MC_UCODE_SIZE * 4))) {
 		pi->mclk_dpm_key_disabled = 1;
@@ -5900,7 +5874,7 @@ int ci_dpm_init(struct radeon_device *rdev)
 
 	pi->uvd_power_gated = false;
 
-	/* make sure dc limits are valid */
+	 
 	if ((rdev->pm.dpm.dyn_state.max_clock_voltage_on_dc.sclk == 0) ||
 	    (rdev->pm.dpm.dyn_state.max_clock_voltage_on_dc.mclk == 0))
 		rdev->pm.dpm.dyn_state.max_clock_voltage_on_dc =

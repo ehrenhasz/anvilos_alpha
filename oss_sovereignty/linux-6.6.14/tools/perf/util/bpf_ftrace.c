@@ -36,7 +36,7 @@ int perf_ftrace__latency_prepare_bpf(struct perf_ftrace *ftrace)
 		return -1;
 	}
 
-	/* don't need to set cpu filter for system-wide mode */
+	 
 	if (ftrace->target.cpu_list) {
 		ncpus = perf_cpu_map__nr(ftrace->evlist->core.user_requested_cpus);
 		bpf_map__set_max_entries(skel->maps.cpu_filter, ncpus);
@@ -99,7 +99,7 @@ int perf_ftrace__latency_prepare_bpf(struct perf_ftrace *ftrace)
 		goto out;
 	}
 
-	/* XXX: we don't actually use this fd - just for poll() */
+	 
 	return open("/dev/null", O_RDONLY);
 
 out:

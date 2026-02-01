@@ -1,12 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_X86_SIGNAL_H
 #define _ASM_X86_SIGNAL_H
 
 #ifndef __ASSEMBLY__
 #include <linux/linkage.h>
 
-/* Most things should be clean enough to redefine this at will, if care
-   is taken to make libc match.  */
+ 
 
 #define _NSIG		64
 
@@ -18,17 +17,17 @@
 
 #define _NSIG_WORDS	(_NSIG / _NSIG_BPW)
 
-typedef unsigned long old_sigset_t;		/* at least 32 bits */
+typedef unsigned long old_sigset_t;		 
 
 typedef struct {
 	unsigned long sig[_NSIG_WORDS];
 } sigset_t;
 
-/* non-uapi in-kernel SA_FLAGS for those indicates ABI for a signal frame */
+ 
 #define SA_IA32_ABI	0x02000000u
 #define SA_X32_ABI	0x01000000u
 
-#endif /* __ASSEMBLY__ */
+#endif  
 #include <uapi/asm/signal.h>
 #ifndef __ASSEMBLY__
 
@@ -95,11 +94,11 @@ static inline int __gen_sigismember(sigset_t *set, int _sig)
 
 struct pt_regs;
 
-#else /* __i386__ */
+#else  
 
 #undef __HAVE_ARCH_SIG_BITOPS
 
-#endif /* !__i386__ */
+#endif  
 
-#endif /* __ASSEMBLY__ */
-#endif /* _ASM_X86_SIGNAL_H */
+#endif  
+#endif  

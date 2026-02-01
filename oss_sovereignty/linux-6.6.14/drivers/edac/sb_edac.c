@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Intel Sandy Bridge -EN/-EP/-EX Memory Controller kernel module
- *
- * This driver supports the memory controllers found on the Intel
- * processor family Sandy Bridge.
- *
- * Copyright (c) 2011 by:
- *	 Mauro Carvalho Chehab
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -27,31 +20,25 @@
 
 #include "edac_module.h"
 
-/* Static vars */
+ 
 static LIST_HEAD(sbridge_edac_list);
 
-/*
- * Alter this version for the module when modifications are made
- */
+ 
 #define SBRIDGE_REVISION    " Ver: 1.1.2 "
 #define EDAC_MOD_STR	    "sb_edac"
 
-/*
- * Debug macros
- */
+ 
 #define sbridge_printk(level, fmt, arg...)			\
 	edac_printk(level, "sbridge", fmt, ##arg)
 
 #define sbridge_mc_printk(mci, level, fmt, arg...)		\
 	edac_mc_chipset_printk(mci, level, "sbridge", fmt, ##arg)
 
-/*
- * Get a bit field at register value <v>, from bit <lo> to bit <hi>
- */
+ 
 #define GET_BITFIELD(v, lo, hi)	\
 	(((v) & GENMASK_ULL(hi, lo)) >> (lo))
 
-/* Devices 12 Function 6, Offsets 0x80 to 0xcc */
+ 
 static const u32 sbridge_dram_rule[] = {
 	0x80, 0x88, 0x90, 0x98, 0xa0,
 	0xa8, 0xb0, 0xb8, 0xc0, 0xc8,
@@ -65,11 +52,11 @@ static const u32 ibridge_dram_rule[] = {
 };
 
 static const u32 knl_dram_rule[] = {
-	0x60, 0x68, 0x70, 0x78, 0x80, /* 0-4 */
-	0x88, 0x90, 0x98, 0xa0, 0xa8, /* 5-9 */
-	0xb0, 0xb8, 0xc0, 0xc8, 0xd0, /* 10-14 */
-	0xd8, 0xe0, 0xe8, 0xf0, 0xf8, /* 15-19 */
-	0x100, 0x108, 0x110, 0x118,   /* 20-23 */
+	0x60, 0x68, 0x70, 0x78, 0x80,  
+	0x88, 0x90, 0x98, 0xa0, 0xa8,  
+	0xb0, 0xb8, 0xc0, 0xc8, 0xd0,  
+	0xd8, 0xe0, 0xe8, 0xf0, 0xf8,  
+	0x100, 0x108, 0x110, 0x118,    
 };
 
 #define DRAM_RULE_ENABLE(reg)	GET_BITFIELD(reg, 0,  0)
@@ -102,11 +89,11 @@ static const u32 ibridge_interleave_list[] = {
 };
 
 static const u32 knl_interleave_list[] = {
-	0x64, 0x6c, 0x74, 0x7c, 0x84, /* 0-4 */
-	0x8c, 0x94, 0x9c, 0xa4, 0xac, /* 5-9 */
-	0xb4, 0xbc, 0xc4, 0xcc, 0xd4, /* 10-14 */
-	0xdc, 0xe4, 0xec, 0xf4, 0xfc, /* 15-19 */
-	0x104, 0x10c, 0x114, 0x11c,   /* 20-23 */
+	0x64, 0x6c, 0x74, 0x7c, 0x84,  
+	0x8c, 0x94, 0x9c, 0xa4, 0xac,  
+	0xb4, 0xbc, 0xc4, 0xcc, 0xd4,  
+	0xdc, 0xe4, 0xec, 0xf4, 0xfc,  
+	0x104, 0x10c, 0x114, 0x11c,    
 };
 #define MAX_INTERLEAVE							\
 	(max_t(unsigned int, ARRAY_SIZE(sbridge_interleave_list),	\
@@ -147,7 +134,7 @@ static inline int sad_pkg(const struct interleave_pkg *table, u32 reg,
 			    table[interleave].end);
 }
 
-/* Devices 12 Function 7 */
+ 
 
 #define TOLM		0x80
 #define TOHM		0x84
@@ -161,7 +148,7 @@ static inline int sad_pkg(const struct interleave_pkg *table, u32 reg,
 #define GET_TOLM(reg)		((GET_BITFIELD(reg, 0,  3) << 28) | 0x3ffffff)
 #define GET_TOHM(reg)		((GET_BITFIELD(reg, 0, 20) << 25) | 0x3ffffff)
 
-/* Device 13 Function 6 */
+ 
 
 #define SAD_TARGET	0xf0
 
@@ -171,7 +158,7 @@ static inline int sad_pkg(const struct interleave_pkg *table, u32 reg,
 
 #define SAD_CONTROL	0xf4
 
-/* Device 14 function 0 */
+ 
 
 static const u32 tad_dram_rule[] = {
 	0x40, 0x44, 0x48, 0x4c,
@@ -188,7 +175,7 @@ static const u32 tad_dram_rule[] = {
 #define TAD_TGT1(reg)		GET_BITFIELD(reg,  2,  3)
 #define TAD_TGT0(reg)		GET_BITFIELD(reg,  0,  1)
 
-/* Device 15, function 0 */
+ 
 
 #define MCMTR			0x7c
 #define KNL_MCMTR		0x624
@@ -197,12 +184,12 @@ static const u32 tad_dram_rule[] = {
 #define IS_LOCKSTEP_ENABLED(mcmtr)	GET_BITFIELD(mcmtr, 1, 1)
 #define IS_CLOSE_PG(mcmtr)		GET_BITFIELD(mcmtr, 0, 0)
 
-/* Device 15, function 1 */
+ 
 
 #define RASENABLES		0xac
 #define IS_MIRROR_ENABLED(reg)		GET_BITFIELD(reg, 0, 0)
 
-/* Device 15, functions 2-5 */
+ 
 
 static const int mtr_regs[] = {
 	0x80, 0x84, 0x88,
@@ -248,18 +235,16 @@ static const u32 rir_offset[MAX_RIR_RANGES][MAX_RIR_WAY] = {
 #define RIR_OFFSET(type, reg) (((type) == HASWELL || (type) == BROADWELL) ? \
 	GET_BITFIELD(reg,  2, 15) : GET_BITFIELD(reg,  2, 14))
 
-/* Device 16, functions 2-7 */
+ 
 
-/*
- * FIXME: Implement the error count reads directly
- */
+ 
 
 #define RANK_ODD_OV(reg)		GET_BITFIELD(reg, 31, 31)
 #define RANK_ODD_ERR_CNT(reg)		GET_BITFIELD(reg, 16, 30)
 #define RANK_EVEN_OV(reg)		GET_BITFIELD(reg, 15, 15)
 #define RANK_EVEN_ERR_CNT(reg)		GET_BITFIELD(reg,  0, 14)
 
-#if 0 /* Currently unused*/
+#if 0  
 static const u32 correrrcnt[] = {
 	0x104, 0x108, 0x10c, 0x110,
 };
@@ -273,22 +258,20 @@ static const u32 correrrthrsld[] = {
 #define RANK_EVEN_ERR_THRSLD(reg)	GET_BITFIELD(reg,  0, 14)
 
 
-/* Device 17, function 0 */
+ 
 
 #define SB_RANK_CFG_A		0x0328
 
 #define IB_RANK_CFG_A		0x0320
 
-/*
- * sbridge structs
- */
+ 
 
-#define NUM_CHANNELS		6	/* Max channels per MC */
-#define MAX_DIMMS		3	/* Max DIMMS per channel */
-#define KNL_MAX_CHAS		38	/* KNL max num. of Cache Home Agents */
-#define KNL_MAX_CHANNELS	6	/* KNL max num. of PCI channels */
-#define KNL_MAX_EDCS		8	/* Embedded DRAM controllers */
-#define CHANNEL_UNSPECIFIED	0xf	/* Intel IA32 SDM 15-14 */
+#define NUM_CHANNELS		6	 
+#define MAX_DIMMS		3	 
+#define KNL_MAX_CHAS		38	 
+#define KNL_MAX_CHANNELS	6	 
+#define KNL_MAX_EDCS		8	 
+#define CHANNEL_UNSPECIFIED	0xf	 
 
 enum type {
 	SANDY_BRIDGE,
@@ -376,15 +359,15 @@ struct knl_pvt {
 	struct pci_dev          *pci_mc1;
 	struct pci_dev          *pci_mc0_misc;
 	struct pci_dev          *pci_mc1_misc;
-	struct pci_dev          *pci_mc_info; /* tolm, tohm */
+	struct pci_dev          *pci_mc_info;  
 };
 
 struct sbridge_pvt {
-	/* Devices per socket */
+	 
 	struct pci_dev		*pci_ddrio;
 	struct pci_dev		*pci_sad0, *pci_sad1;
 	struct pci_dev		*pci_br0, *pci_br1;
-	/* Devices per memory controller */
+	 
 	struct pci_dev		*pci_ha, *pci_ta, *pci_ras;
 	struct pci_dev		*pci_tad[NUM_CHANNELS];
 
@@ -393,12 +376,12 @@ struct sbridge_pvt {
 	struct sbridge_info	info;
 	struct sbridge_channel	channel[NUM_CHANNELS];
 
-	/* Memory type detection */
+	 
 	bool			is_cur_addr_mirrored, is_lockstep, is_close_pg;
 	bool			is_chan_hash;
 	enum mirroring_mode	mirror_mode;
 
-	/* Memory description */
+	 
 	u64			tolm, tohm;
 	struct knl_pvt knl;
 };
@@ -409,10 +392,10 @@ struct sbridge_pvt {
 	.dom = domain
 
 static const struct pci_id_descr pci_dev_descr_sbridge[] = {
-		/* Processor Home Agent */
+		 
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_SBRIDGE_IMC_HA0,   0, IMC0) },
 
-		/* Memory controller */
+		 
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_SBRIDGE_IMC_TA,    0, IMC0) },
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_SBRIDGE_IMC_RAS,   0, IMC0) },
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_SBRIDGE_IMC_TAD0,  0, IMC0) },
@@ -421,11 +404,11 @@ static const struct pci_id_descr pci_dev_descr_sbridge[] = {
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_SBRIDGE_IMC_TAD3,  0, IMC0) },
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_SBRIDGE_IMC_DDRIO, 1, SOCK) },
 
-		/* System Address Decoder */
+		 
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_SBRIDGE_SAD0,      0, SOCK) },
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_SBRIDGE_SAD1,      0, SOCK) },
 
-		/* Broadcast Registers */
+		 
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_SBRIDGE_BR,        0, SOCK) },
 };
 
@@ -439,19 +422,14 @@ static const struct pci_id_descr pci_dev_descr_sbridge[] = {
 
 static const struct pci_id_table pci_dev_descr_sbridge_table[] = {
 	PCI_ID_TABLE_ENTRY(pci_dev_descr_sbridge, ARRAY_SIZE(pci_dev_descr_sbridge), 1, SANDY_BRIDGE),
-	{0,}			/* 0 terminated list. */
+	{0,}			 
 };
 
-/* This changes depending if 1HA or 2HA:
- * 1HA:
- *	0x0eb8 (17.0) is DDRIO0
- * 2HA:
- *	0x0ebc (17.4) is DDRIO0
- */
+ 
 #define PCI_DEVICE_ID_INTEL_IBRIDGE_IMC_1HA_DDRIO0	0x0eb8
 #define PCI_DEVICE_ID_INTEL_IBRIDGE_IMC_2HA_DDRIO0	0x0ebc
 
-/* pci ids */
+ 
 #define PCI_DEVICE_ID_INTEL_IBRIDGE_IMC_HA0		0x0ea0
 #define PCI_DEVICE_ID_INTEL_IBRIDGE_IMC_HA0_TA		0x0ea8
 #define PCI_DEVICE_ID_INTEL_IBRIDGE_IMC_HA0_RAS		0x0e71
@@ -471,11 +449,11 @@ static const struct pci_id_table pci_dev_descr_sbridge_table[] = {
 #define PCI_DEVICE_ID_INTEL_IBRIDGE_IMC_HA1_TAD3	0x0e6d
 
 static const struct pci_id_descr pci_dev_descr_ibridge[] = {
-		/* Processor Home Agent */
+		 
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_IBRIDGE_IMC_HA0,        0, IMC0) },
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_IBRIDGE_IMC_HA1,        1, IMC1) },
 
-		/* Memory controller */
+		 
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_IBRIDGE_IMC_HA0_TA,     0, IMC0) },
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_IBRIDGE_IMC_HA0_RAS,    0, IMC0) },
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_IBRIDGE_IMC_HA0_TAD0,   0, IMC0) },
@@ -483,7 +461,7 @@ static const struct pci_id_descr pci_dev_descr_ibridge[] = {
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_IBRIDGE_IMC_HA0_TAD2,   0, IMC0) },
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_IBRIDGE_IMC_HA0_TAD3,   0, IMC0) },
 
-		/* Optional, mode 2HA */
+		 
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_IBRIDGE_IMC_HA1_TA,     1, IMC1) },
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_IBRIDGE_IMC_HA1_RAS,    1, IMC1) },
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_IBRIDGE_IMC_HA1_TAD0,   1, IMC1) },
@@ -494,10 +472,10 @@ static const struct pci_id_descr pci_dev_descr_ibridge[] = {
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_IBRIDGE_IMC_1HA_DDRIO0, 1, SOCK) },
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_IBRIDGE_IMC_2HA_DDRIO0, 1, SOCK) },
 
-		/* System Address Decoder */
+		 
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_IBRIDGE_SAD,            0, SOCK) },
 
-		/* Broadcast Registers */
+		 
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_IBRIDGE_BR0,            1, SOCK) },
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_IBRIDGE_BR1,            0, SOCK) },
 
@@ -505,26 +483,12 @@ static const struct pci_id_descr pci_dev_descr_ibridge[] = {
 
 static const struct pci_id_table pci_dev_descr_ibridge_table[] = {
 	PCI_ID_TABLE_ENTRY(pci_dev_descr_ibridge, 12, 2, IVY_BRIDGE),
-	{0,}			/* 0 terminated list. */
+	{0,}			 
 };
 
-/* Haswell support */
-/* EN processor:
- *	- 1 IMC
- *	- 3 DDR3 channels, 2 DPC per channel
- * EP processor:
- *	- 1 or 2 IMC
- *	- 4 DDR4 channels, 3 DPC per channel
- * EP 4S processor:
- *	- 2 IMC
- *	- 4 DDR4 channels, 3 DPC per channel
- * EX processor:
- *	- 2 IMC
- *	- each IMC interfaces with a SMI 2 channel
- *	- each SMI channel interfaces with a scalable memory buffer
- *	- each scalable memory buffer supports 4 DDR3/DDR4 channels, 3 DPC
- */
-#define HASWELL_DDRCRCLKCONTROLS 0xa10 /* Ditto on Broadwell */
+ 
+ 
+#define HASWELL_DDRCRCLKCONTROLS 0xa10  
 #define HASWELL_HASYSDEFEATURE2 0x84
 #define PCI_DEVICE_ID_INTEL_HASWELL_IMC_VTD_MISC 0x2f28
 #define PCI_DEVICE_ID_INTEL_HASWELL_IMC_HA0	0x2fa0
@@ -548,7 +512,7 @@ static const struct pci_id_table pci_dev_descr_ibridge_table[] = {
 #define PCI_DEVICE_ID_INTEL_HASWELL_IMC_DDRIO2 0x2fb9
 #define PCI_DEVICE_ID_INTEL_HASWELL_IMC_DDRIO3 0x2fbb
 static const struct pci_id_descr pci_dev_descr_haswell[] = {
-	/* first item must be the HA */
+	 
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_HASWELL_IMC_HA0,      0, IMC0) },
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_HASWELL_IMC_HA1,      1, IMC1) },
 
@@ -576,37 +540,29 @@ static const struct pci_id_descr pci_dev_descr_haswell[] = {
 
 static const struct pci_id_table pci_dev_descr_haswell_table[] = {
 	PCI_ID_TABLE_ENTRY(pci_dev_descr_haswell, 13, 2, HASWELL),
-	{0,}			/* 0 terminated list. */
+	{0,}			 
 };
 
-/* Knight's Landing Support */
-/*
- * KNL's memory channels are swizzled between memory controllers.
- * MC0 is mapped to CH3,4,5 and MC1 is mapped to CH0,1,2
- */
+ 
+ 
 #define knl_channel_remap(mc, chan) ((mc) ? (chan) : (chan) + 3)
 
-/* Memory controller, TAD tables, error injection - 2-8-0, 2-9-0 (2 of these) */
+ 
 #define PCI_DEVICE_ID_INTEL_KNL_IMC_MC       0x7840
-/* DRAM channel stuff; bank addrs, dimmmtr, etc.. 2-8-2 - 2-9-4 (6 of these) */
+ 
 #define PCI_DEVICE_ID_INTEL_KNL_IMC_CHAN     0x7843
-/* kdrwdbu TAD limits/offsets, MCMTR - 2-10-1, 2-11-1 (2 of these) */
+ 
 #define PCI_DEVICE_ID_INTEL_KNL_IMC_TA       0x7844
-/* CHA broadcast registers, dram rules - 1-29-0 (1 of these) */
+ 
 #define PCI_DEVICE_ID_INTEL_KNL_IMC_SAD0     0x782a
-/* SAD target - 1-29-1 (1 of these) */
+ 
 #define PCI_DEVICE_ID_INTEL_KNL_IMC_SAD1     0x782b
-/* Caching / Home Agent */
+ 
 #define PCI_DEVICE_ID_INTEL_KNL_IMC_CHA      0x782c
-/* Device with TOLM and TOHM, 0-5-0 (1 of these) */
+ 
 #define PCI_DEVICE_ID_INTEL_KNL_IMC_TOLHM    0x7810
 
-/*
- * KNL differs from SB, IB, and Haswell in that it has multiple
- * instances of the same device with the same device ID, so we handle that
- * by creating as many copies in the table as we expect to find.
- * (Like device ID must be grouped together.)
- */
+ 
 
 static const struct pci_id_descr pci_dev_descr_knl[] = {
 	[0 ... 1]   = { PCI_DESCR(PCI_DEVICE_ID_INTEL_KNL_IMC_MC,    0, IMC0)},
@@ -623,24 +579,7 @@ static const struct pci_id_table pci_dev_descr_knl_table[] = {
 	{0,}
 };
 
-/*
- * Broadwell support
- *
- * DE processor:
- *	- 1 IMC
- *	- 2 DDR3 channels, 2 DPC per channel
- * EP processor:
- *	- 1 or 2 IMC
- *	- 4 DDR4 channels, 3 DPC per channel
- * EP 4S processor:
- *	- 2 IMC
- *	- 4 DDR4 channels, 3 DPC per channel
- * EX processor:
- *	- 2 IMC
- *	- each IMC interfaces with a SMI 2 channel
- *	- each SMI channel interfaces with a scalable memory buffer
- *	- each scalable memory buffer supports 4 DDR3/DDR4 channels, 3 DPC
- */
+ 
 #define PCI_DEVICE_ID_INTEL_BROADWELL_IMC_VTD_MISC 0x6f28
 #define PCI_DEVICE_ID_INTEL_BROADWELL_IMC_HA0	0x6fa0
 #define PCI_DEVICE_ID_INTEL_BROADWELL_IMC_HA1	0x6f60
@@ -661,7 +600,7 @@ static const struct pci_id_table pci_dev_descr_knl_table[] = {
 #define PCI_DEVICE_ID_INTEL_BROADWELL_IMC_DDRIO0 0x6faf
 
 static const struct pci_id_descr pci_dev_descr_broadwell[] = {
-	/* first item must be the HA */
+	 
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_BROADWELL_IMC_HA0,      0, IMC0) },
 	{ PCI_DESCR(PCI_DEVICE_ID_INTEL_BROADWELL_IMC_HA1,      1, IMC1) },
 
@@ -686,13 +625,11 @@ static const struct pci_id_descr pci_dev_descr_broadwell[] = {
 
 static const struct pci_id_table pci_dev_descr_broadwell_table[] = {
 	PCI_ID_TABLE_ENTRY(pci_dev_descr_broadwell, 10, 2, BROADWELL),
-	{0,}			/* 0 terminated list. */
+	{0,}			 
 };
 
 
-/****************************************************************************
-			Ancillary status routines
- ****************************************************************************/
+ 
 
 static inline int numrank(enum type type, u32 mtr)
 {
@@ -743,10 +680,7 @@ static struct sbridge_dev *get_sbridge_dev(int seg, u8 bus, enum domain dom,
 {
 	struct sbridge_dev *sbridge_dev;
 
-	/*
-	 * If we have devices scattered across several busses that pertain
-	 * to the same memory controller, we'll lump them all together.
-	 */
+	 
 	if (multi_bus) {
 		return list_first_entry_or_null(&sbridge_edac_list,
 				struct sbridge_dev, list);
@@ -801,7 +735,7 @@ static u64 sbridge_get_tolm(struct sbridge_pvt *pvt)
 {
 	u32 reg;
 
-	/* Address range is 32:28 */
+	 
 	pci_read_config_dword(pvt->pci_sad1, TOLM, &reg);
 	return GET_TOLM(reg);
 }
@@ -889,7 +823,7 @@ static enum mem_type get_memory_type(struct sbridge_pvt *pvt)
 		pci_read_config_dword(pvt->pci_ddrio, pvt->info.rankcfgr,
 				      &reg);
 		if (GET_BITFIELD(reg, 11, 11))
-			/* FIXME: Can also be LRDIMM */
+			 
 			mtype = MEM_RDDR3;
 		else
 			mtype = MEM_DDR3;
@@ -910,7 +844,7 @@ static enum mem_type haswell_get_memory_type(struct sbridge_pvt *pvt)
 
 	pci_read_config_dword(pvt->pci_ddrio,
 			      HASWELL_DDRCRCLKCONTROLS, &reg);
-	/* Is_Rdimm */
+	 
 	if (GET_BITFIELD(reg, 16, 16))
 		registered = true;
 
@@ -933,13 +867,13 @@ out:
 
 static enum dev_type knl_get_width(struct sbridge_pvt *pvt, u32 mtr)
 {
-	/* for KNL value is fixed */
+	 
 	return DEV_X16;
 }
 
 static enum dev_type sbridge_get_width(struct sbridge_pvt *pvt, u32 mtr)
 {
-	/* there's no way to figure out */
+	 
 	return DEV_UNKNOWN;
 }
 
@@ -964,22 +898,19 @@ static enum dev_type __ibridge_get_width(u32 mtr)
 
 static enum dev_type ibridge_get_width(struct sbridge_pvt *pvt, u32 mtr)
 {
-	/*
-	 * ddr3_width on the documentation but also valid for DDR4 on
-	 * Haswell
-	 */
+	 
 	return __ibridge_get_width(GET_BITFIELD(mtr, 7, 8));
 }
 
 static enum dev_type broadwell_get_width(struct sbridge_pvt *pvt, u32 mtr)
 {
-	/* ddr3_width on the documentation but also valid for DDR4 */
+	 
 	return __ibridge_get_width(GET_BITFIELD(mtr, 8, 9));
 }
 
 static enum mem_type knl_get_memory_type(struct sbridge_pvt *pvt)
 {
-	/* DDR4 RDIMMS and LRDIMMS are supported */
+	 
 	return MEM_RDDR4;
 }
 
@@ -1006,22 +937,13 @@ static u8 knl_get_node_id(struct sbridge_pvt *pvt)
 	return GET_BITFIELD(reg, 0, 2);
 }
 
-/*
- * Use the reporting bank number to determine which memory
- * controller (also known as "ha" for "home agent"). Sandy
- * Bridge only has one memory controller per socket, so the
- * answer is always zero.
- */
+ 
 static u8 sbridge_get_ha(u8 bank)
 {
 	return 0;
 }
 
-/*
- * On Ivy Bridge, Haswell and Broadwell the error may be in a
- * home agent bank (7, 8), or one of the per-channel memory
- * controller banks (9 .. 16).
- */
+ 
 static u8 ibridge_get_ha(u8 bank)
 {
 	switch (bank) {
@@ -1034,7 +956,7 @@ static u8 ibridge_get_ha(u8 bank)
 	}
 }
 
-/* Not used, but included for safety/symmetry */
+ 
 static u8 knl_get_ha(u8 bank)
 {
 	return 0xff;
@@ -1088,7 +1010,7 @@ static u64 haswell_rir_limit(u32 reg)
 
 static inline u8 sad_pkg_socket(u8 pkg)
 {
-	/* on Ivy Bridge, nodeID is SASS, where A is HA and S is node id */
+	 
 	return ((pkg >> 3) << 2) | (pkg & 0x3);
 }
 
@@ -1101,54 +1023,37 @@ static int haswell_chan_hash(int idx, u64 addr)
 {
 	int i;
 
-	/*
-	 * XOR even bits from 12:26 to bit0 of idx,
-	 *     odd bits from 13:27 to bit1
-	 */
+	 
 	for (i = 12; i < 28; i += 2)
 		idx ^= (addr >> i) & 3;
 
 	return idx;
 }
 
-/* Low bits of TAD limit, and some metadata. */
+ 
 static const u32 knl_tad_dram_limit_lo[] = {
 	0x400, 0x500, 0x600, 0x700,
 	0x800, 0x900, 0xa00, 0xb00,
 };
 
-/* Low bits of TAD offset. */
+ 
 static const u32 knl_tad_dram_offset_lo[] = {
 	0x404, 0x504, 0x604, 0x704,
 	0x804, 0x904, 0xa04, 0xb04,
 };
 
-/* High 16 bits of TAD limit and offset. */
+ 
 static const u32 knl_tad_dram_hi[] = {
 	0x408, 0x508, 0x608, 0x708,
 	0x808, 0x908, 0xa08, 0xb08,
 };
 
-/* Number of ways a tad entry is interleaved. */
+ 
 static const u32 knl_tad_ways[] = {
 	8, 6, 4, 3, 2, 1,
 };
 
-/*
- * Retrieve the n'th Target Address Decode table entry
- * from the memory controller's TAD table.
- *
- * @pvt:	driver private data
- * @entry:	which entry you want to retrieve
- * @mc:		which memory controller (0 or 1)
- * @offset:	output tad range offset
- * @limit:	output address of first byte above tad range
- * @ways:	output number of interleave ways
- *
- * The offset value has curious semantics.  It's a sort of running total
- * of the sizes of all the memory regions that aren't mapped in this
- * tad table.
- */
+ 
 static int knl_get_tad(const struct sbridge_pvt *pvt,
 		const int entry,
 		const int mc,
@@ -1179,7 +1084,7 @@ static int knl_get_tad(const struct sbridge_pvt *pvt,
 	pci_read_config_dword(pci_mc,
 			knl_tad_dram_hi[entry], &reg_hi);
 
-	/* Is this TAD entry enabled? */
+	 
 	if (!GET_BITFIELD(reg_limit_lo, 0, 0))
 		return -ENODEV;
 
@@ -1195,10 +1100,7 @@ static int knl_get_tad(const struct sbridge_pvt *pvt,
 		return -ENODEV;
 	}
 
-	/*
-	 * The least significant 6 bits of base and limit are truncated.
-	 * For limit, we fill the missing bits with 1s.
-	 */
+	 
 	*offset = ((u64) GET_BITFIELD(reg_offset_lo, 6, 31) << 6) |
 				((u64) GET_BITFIELD(reg_hi, 0,  15) << 32);
 	*limit = ((u64) GET_BITFIELD(reg_limit_lo,  6, 31) << 6) | 63 |
@@ -1207,7 +1109,7 @@ static int knl_get_tad(const struct sbridge_pvt *pvt,
 	return 0;
 }
 
-/* Determine which memory controller is responsible for a given channel. */
+ 
 static int knl_channel_mc(int channel)
 {
 	WARN_ON(channel < 0 || channel >= 6);
@@ -1215,43 +1117,14 @@ static int knl_channel_mc(int channel)
 	return channel < 3 ? 1 : 0;
 }
 
-/*
- * Get the Nth entry from EDC_ROUTE_TABLE register.
- * (This is the per-tile mapping of logical interleave targets to
- *  physical EDC modules.)
- *
- * entry 0: 0:2
- *       1: 3:5
- *       2: 6:8
- *       3: 9:11
- *       4: 12:14
- *       5: 15:17
- *       6: 18:20
- *       7: 21:23
- * reserved: 24:31
- */
+ 
 static u32 knl_get_edc_route(int entry, u32 reg)
 {
 	WARN_ON(entry >= KNL_MAX_EDCS);
 	return GET_BITFIELD(reg, entry*3, (entry*3)+2);
 }
 
-/*
- * Get the Nth entry from MC_ROUTE_TABLE register.
- * (This is the per-tile mapping of logical interleave targets to
- *  physical DRAM channels modules.)
- *
- * entry 0: mc 0:2   channel 18:19
- *       1: mc 3:5   channel 20:21
- *       2: mc 6:8   channel 22:23
- *       3: mc 9:11  channel 24:25
- *       4: mc 12:14 channel 26:27
- *       5: mc 15:17 channel 28:29
- * reserved: 30:31
- *
- * Though we have 3 bits to identify the MC, we should only see
- * the values 0 or 1.
- */
+ 
 
 static u32 knl_get_mc_route(int entry, u32 reg)
 {
@@ -1265,10 +1138,7 @@ static u32 knl_get_mc_route(int entry, u32 reg)
 	return knl_channel_remap(mc, chan);
 }
 
-/*
- * Render the EDC_ROUTE register in human-readable form.
- * Output string s should be at least KNL_MAX_EDCS*2 bytes.
- */
+ 
 static void knl_show_edc_route(u32 reg, char *s)
 {
 	int i;
@@ -1281,10 +1151,7 @@ static void knl_show_edc_route(u32 reg, char *s)
 	s[KNL_MAX_EDCS*2 - 1] = '\0';
 }
 
-/*
- * Render the MC_ROUTE register in human-readable form.
- * Output string s should be at least KNL_MAX_CHANNELS*2 bytes.
- */
+ 
 static void knl_show_mc_route(u32 reg, char *s)
 {
 	int i;
@@ -1300,49 +1167,22 @@ static void knl_show_mc_route(u32 reg, char *s)
 #define KNL_EDC_ROUTE 0xb8
 #define KNL_MC_ROUTE 0xb4
 
-/* Is this dram rule backed by regular DRAM in flat mode? */
+ 
 #define KNL_EDRAM(reg) GET_BITFIELD(reg, 29, 29)
 
-/* Is this dram rule cached? */
+ 
 #define KNL_CACHEABLE(reg) GET_BITFIELD(reg, 28, 28)
 
-/* Is this rule backed by edc ? */
+ 
 #define KNL_EDRAM_ONLY(reg) GET_BITFIELD(reg, 29, 29)
 
-/* Is this rule backed by DRAM, cacheable in EDRAM? */
+ 
 #define KNL_CACHEABLE(reg) GET_BITFIELD(reg, 28, 28)
 
-/* Is this rule mod3? */
+ 
 #define KNL_MOD3(reg) GET_BITFIELD(reg, 27, 27)
 
-/*
- * Figure out how big our RAM modules are.
- *
- * The DIMMMTR register in KNL doesn't tell us the size of the DIMMs, so we
- * have to figure this out from the SAD rules, interleave lists, route tables,
- * and TAD rules.
- *
- * SAD rules can have holes in them (e.g. the 3G-4G hole), so we have to
- * inspect the TAD rules to figure out how large the SAD regions really are.
- *
- * When we know the real size of a SAD region and how many ways it's
- * interleaved, we know the individual contribution of each channel to
- * TAD is size/ways.
- *
- * Finally, we have to check whether each channel participates in each SAD
- * region.
- *
- * Fortunately, KNL only supports one DIMM per channel, so once we know how
- * much memory the channel uses, we know the DIMM is at least that large.
- * (The BIOS might possibly choose not to map all available memory, in which
- * case we will underreport the size of the DIMM.)
- *
- * In theory, we could try to determine the EDC sizes as well, but that would
- * only work in flat mode, not in cache mode.
- *
- * @mc_sizes: Output sizes of channels (must have space for KNL_MAX_CHANNELS
- *            elements)
- */
+ 
 static int knl_get_dimm_capacity(struct sbridge_pvt *pvt, u64 *mc_sizes)
 {
 	u64 sad_base, sad_limit = 0;
@@ -1352,7 +1192,7 @@ static int knl_get_dimm_capacity(struct sbridge_pvt *pvt, u64 *mc_sizes)
 	int intrlv_ways, tad_ways;
 	u32 first_pkg, pkg;
 	int i;
-	u64 sad_actual_size[2]; /* sad size accounting for holes, per mc */
+	u64 sad_actual_size[2];  
 	u32 dram_rule, interleave_reg;
 	u32 mc_route_reg[KNL_MAX_CHAS];
 	u32 edc_route_reg[KNL_MAX_CHAS];
@@ -1367,7 +1207,7 @@ static int knl_get_dimm_capacity(struct sbridge_pvt *pvt, u64 *mc_sizes)
 	for (i = 0; i < KNL_MAX_CHANNELS; i++)
 		mc_sizes[i] = 0;
 
-	/* Read the EDC route table in each CHA. */
+	 
 	cur_reg_start = 0;
 	for (i = 0; i < KNL_MAX_CHAS; i++) {
 		pci_read_config_dword(pvt->knl.pci_cha[i],
@@ -1393,7 +1233,7 @@ static int knl_get_dimm_capacity(struct sbridge_pvt *pvt, u64 *mc_sizes)
 		edac_dbg(0, "edc route table for CHA %d-%d: %s\n",
 			cur_reg_start, i-1, edc_route_string);
 
-	/* Read the MC route table in each CHA. */
+	 
 	cur_reg_start = 0;
 	for (i = 0; i < KNL_MAX_CHAS; i++) {
 		pci_read_config_dword(pvt->knl.pci_cha[i],
@@ -1418,9 +1258,9 @@ static int knl_get_dimm_capacity(struct sbridge_pvt *pvt, u64 *mc_sizes)
 		edac_dbg(0, "mc route table for CHA %d-%d: %s\n",
 			cur_reg_start, i-1, mc_route_string);
 
-	/* Process DRAM rules */
+	 
 	for (sad_rule = 0; sad_rule < pvt->info.max_sad; sad_rule++) {
-		/* previous limit becomes the new base */
+		 
 		sad_base = sad_limit;
 
 		pci_read_config_dword(pvt->pci_sad0,
@@ -1436,10 +1276,7 @@ static int knl_get_dimm_capacity(struct sbridge_pvt *pvt, u64 *mc_sizes)
 		pci_read_config_dword(pvt->pci_sad0,
 			pvt->info.interleave_list[sad_rule], &interleave_reg);
 
-		/*
-		 * Find out how many ways this dram rule is interleaved.
-		 * We stop when we see the first channel again.
-		 */
+		 
 		first_pkg = sad_pkg(pvt->info.interleave_pkg,
 						interleave_reg, 0);
 		for (intrlv_ways = 1; intrlv_ways < 8; intrlv_ways++) {
@@ -1447,10 +1284,7 @@ static int knl_get_dimm_capacity(struct sbridge_pvt *pvt, u64 *mc_sizes)
 						interleave_reg, intrlv_ways);
 
 			if ((pkg & 0x8) == 0) {
-				/*
-				 * 0 bit means memory is non-local,
-				 * which KNL doesn't support
-				 */
+				 
 				edac_dbg(0, "Unexpected interleave target %d\n",
 					pkg);
 				return -1;
@@ -1469,17 +1303,7 @@ static int knl_get_dimm_capacity(struct sbridge_pvt *pvt, u64 *mc_sizes)
 			intrlv_ways,
 			edram_only ? ", EDRAM" : "");
 
-		/*
-		 * Find out how big the SAD region really is by iterating
-		 * over TAD tables (SAD regions may contain holes).
-		 * Each memory controller might have a different TAD table, so
-		 * we have to look at both.
-		 *
-		 * Livespace is the memory that's mapped in this TAD table,
-		 * deadspace is the holes (this could be the MMIO hole, or it
-		 * could be memory that's mapped by the other TAD table but
-		 * not this one).
-		 */
+		 
 		for (mc = 0; mc < 2; mc++) {
 			sad_actual_size[mc] = 0;
 			tad_livespace = 0;
@@ -1507,7 +1331,7 @@ static int knl_get_dimm_capacity(struct sbridge_pvt *pvt, u64 *mc_sizes)
 					if (tad_limit+1 > sad_limit) {
 						edac_dbg(0, "TAD region overlaps upper SAD boundary -- TAD tables may be configured incorrectly.\n");
 					} else {
-						/* TAD region is completely inside SAD region */
+						 
 						edac_dbg(3, "TAD region %d 0x%llx - 0x%llx (%lld bytes) table%d\n",
 							tad_rule, tad_base,
 							tad_limit, tad_size,
@@ -1523,17 +1347,15 @@ static int knl_get_dimm_capacity(struct sbridge_pvt *pvt, u64 *mc_sizes)
 				mc, sad_actual_size[mc], sad_actual_size[mc]);
 		}
 
-		/* Ignore EDRAM rule */
+		 
 		if (edram_only)
 			continue;
 
-		/* Figure out which channels participate in interleave. */
+		 
 		for (channel = 0; channel < KNL_MAX_CHANNELS; channel++)
 			participants[channel] = 0;
 
-		/* For each channel, does at least one CHA have
-		 * this channel mapped to the given target?
-		 */
+		 
 		for (channel = 0; channel < KNL_MAX_CHANNELS; channel++) {
 			int target;
 			int cha;
@@ -1647,7 +1469,7 @@ static int __populate_dimms(struct mem_ctl_info *mci,
 				ranks = numrank(pvt->info.type, mtr);
 
 				if (pvt->info.type == KNIGHTS_LANDING) {
-					/* For DDR4, this is fixed. */
+					 
 					cols = 1 << 10;
 					rows = knl_mc_sizes[i] /
 						((u64) cols * ranks * banks * 8);
@@ -1697,9 +1519,7 @@ static int get_dimm_config(struct mem_ctl_info *mci)
 		 pvt->sbridge_dev->node_id,
 		 pvt->sbridge_dev->source_id);
 
-	/* KNL doesn't support mirroring or lockstep,
-	 * and is always closed page
-	 */
+	 
 	if (pvt->info.type == KNIGHTS_LANDING) {
 		mode = EDAC_S4ECD4ED;
 		pvt->mirror_mode = NON_MIRRORING;
@@ -1772,9 +1592,7 @@ static void get_memory_layout(const struct mem_ctl_info *mci)
 	u32 gb, mb;
 	u32 rir_way;
 
-	/*
-	 * Step 1) Get TOLM/TOHM ranges
-	 */
+	 
 
 	pvt->tolm = pvt->info.get_tolm(pvt);
 	tmp_mb = (1 + pvt->tolm) >> 20;
@@ -1783,7 +1601,7 @@ static void get_memory_layout(const struct mem_ctl_info *mci)
 	edac_dbg(0, "TOLM: %u.%03u GB (0x%016Lx)\n",
 		gb, (mb*1000)/1024, (u64)pvt->tolm);
 
-	/* Address range is already 45:25 */
+	 
 	pvt->tohm = pvt->info.get_tohm(pvt);
 	tmp_mb = (1 + pvt->tohm) >> 20;
 
@@ -1791,15 +1609,10 @@ static void get_memory_layout(const struct mem_ctl_info *mci)
 	edac_dbg(0, "TOHM: %u.%03u GB (0x%016Lx)\n",
 		gb, (mb*1000)/1024, (u64)pvt->tohm);
 
-	/*
-	 * Step 2) Get SAD range and SAD Interleave list
-	 * TAD registers contain the interleave wayness. However, it
-	 * seems simpler to just discover it indirectly, with the
-	 * algorithm bellow.
-	 */
+	 
 	prv = 0;
 	for (n_sads = 0; n_sads < pvt->info.max_sad; n_sads++) {
-		/* SAD_LIMIT Address range is 45:26 */
+		 
 		pci_read_config_dword(pvt->pci_sad0, pvt->info.dram_rule[n_sads],
 				      &reg);
 		limit = pvt->info.sad_limit(reg);
@@ -1837,9 +1650,7 @@ static void get_memory_layout(const struct mem_ctl_info *mci)
 	if (pvt->info.type == KNIGHTS_LANDING)
 		return;
 
-	/*
-	 * Step 3) Get TAD range
-	 */
+	 
 	prv = 0;
 	for (n_tads = 0; n_tads < MAX_TAD; n_tads++) {
 		pci_read_config_dword(pvt->pci_ha, tad_dram_rule[n_tads], &reg);
@@ -1862,9 +1673,7 @@ static void get_memory_layout(const struct mem_ctl_info *mci)
 		prv = limit;
 	}
 
-	/*
-	 * Step 4) Get TAD offsets, per each channel
-	 */
+	 
 	for (i = 0; i < NUM_CHANNELS; i++) {
 		if (!pvt->channel[i].dimms)
 			continue;
@@ -1882,9 +1691,7 @@ static void get_memory_layout(const struct mem_ctl_info *mci)
 		}
 	}
 
-	/*
-	 * Step 6) Get RIR Wayness/Limit, per each channel
-	 */
+	 
 	for (i = 0; i < NUM_CHANNELS; i++) {
 		if (!pvt->channel[i].dimms)
 			continue;
@@ -2000,7 +1807,7 @@ static bool sb_decode_ddr4(struct mem_ctl_info *mci, int ch, u8 rank,
 	if (pvt->is_close_pg) {
 		row = sb_bits(rank_addr, rowbits, sb_close_row);
 		col = sb_bits(rank_addr, colbits, sb_close_column);
-		col |= 0x400; /* C10 is autoprecharge, always set */
+		col |= 0x400;  
 		bank_address = sb_bank_bits(rank_addr, 8, 9, bank_xor_enable, 22, 28);
 		bank_group = sb_bank_bits(rank_addr, 6, 7, bank_xor_enable, 20, 21);
 	} else {
@@ -2051,13 +1858,7 @@ static int get_memory_error_data(struct mem_ctl_info *mci,
 	u64			rank_addr;
 	enum mem_type		mtype;
 
-	/*
-	 * Step 0) Check if the address is at special memory ranges
-	 * The check bellow is probably enough to fill all cases where
-	 * the error is not inside a memory, except for the legacy
-	 * range (e. g. VGA addresses). It is unlikely, however, that the
-	 * memory controller would generate an error on that range.
-	 */
+	 
 	if ((addr > (u64) pvt->tolm) && (addr < (1LL << 32))) {
 		sprintf(msg, "Error at TOLM area, on addr 0x%08Lx", addr);
 		return -EINVAL;
@@ -2067,9 +1868,7 @@ static int get_memory_error_data(struct mem_ctl_info *mci,
 		return -EINVAL;
 	}
 
-	/*
-	 * Step 1) Get socket
-	 */
+	 
 	for (n_sads = 0; n_sads < pvt->info.max_sad; n_sads++) {
 		pci_read_config_dword(pvt->pci_sad0, pvt->info.dram_rule[n_sads],
 				      &reg);
@@ -2141,14 +1940,14 @@ static int get_memory_error_data(struct mem_ctl_info *mci,
 		int bits, a7mode = A7MODE(dram_rule);
 
 		if (a7mode) {
-			/* A7 mode swaps P9 with P6 */
+			 
 			bits = GET_BITFIELD(addr, 7, 8) << 1;
 			bits |= GET_BITFIELD(addr, 9, 9);
 		} else
 			bits = GET_BITFIELD(addr, 6, 8);
 
 		if (interleave_mode == 0) {
-			/* interleave mode will XOR {8,7,6} with {18,17,16} */
+			 
 			idx = GET_BITFIELD(addr, 16, 18);
 			idx ^= bits;
 		} else
@@ -2159,7 +1958,7 @@ static int get_memory_error_data(struct mem_ctl_info *mci,
 		sad_ha = sad_pkg_ha(pkg);
 
 		if (a7mode) {
-			/* MCChanShiftUpEnable */
+			 
 			pci_read_config_dword(pvt->pci_ha, HASWELL_HASYSDEFEATURE2, &reg);
 			shiftup = GET_BITFIELD(reg, 22, 22);
 		}
@@ -2167,7 +1966,7 @@ static int get_memory_error_data(struct mem_ctl_info *mci,
 		edac_dbg(0, "SAD interleave package: %d = CPU socket %d, HA %i, shiftup: %i\n",
 			 idx, *socket, sad_ha, shiftup);
 	} else {
-		/* Ivy Bridge's SAD mode doesn't support XOR interleave mode */
+		 
 		idx = (addr >> 6) & 7;
 		pkg = sad_pkg(pvt->info.interleave_pkg, reg, idx);
 		*socket = sad_pkg_socket(pkg);
@@ -2178,10 +1977,7 @@ static int get_memory_error_data(struct mem_ctl_info *mci,
 
 	*ha = sad_ha;
 
-	/*
-	 * Move to the proper node structure, in order to access the
-	 * right PCI registers
-	 */
+	 
 	new_mci = get_mci_for_node_id(*socket, sad_ha);
 	if (!new_mci) {
 		sprintf(msg, "Struct for socket #%u wasn't initialized",
@@ -2191,9 +1987,7 @@ static int get_memory_error_data(struct mem_ctl_info *mci,
 	mci = new_mci;
 	pvt = mci->pvt_info;
 
-	/*
-	 * Step 2) Get memory channel
-	 */
+	 
 	prv = 0;
 	pci_ha = pvt->pci_ha;
 	for (n_tads = 0; n_tads < MAX_TAD; n_tads++) {
@@ -2224,9 +2018,7 @@ static int get_memory_error_data(struct mem_ctl_info *mci,
 	}
 	idx = idx % ch_way;
 
-	/*
-	 * FIXME: Shouldn't we use CHN_IDX_OFFSET() here, when ch_way == 3 ???
-	 */
+	 
 	switch (idx) {
 	case 0:
 		base_ch = TAD_TGT0(reg);
@@ -2283,8 +2075,8 @@ static int get_memory_error_data(struct mem_ctl_info *mci,
 		 base_ch,
 		 *channel_mask);
 
-	/* Calculate channel address */
-	/* Remove the TAD offset */
+	 
+	 
 
 	if (offset > addr) {
 		sprintf(msg, "Can't calculate ch addr: TAD offset 0x%08Lx is too high for addr 0x%08Lx!",
@@ -2298,9 +2090,7 @@ static int get_memory_error_data(struct mem_ctl_info *mci,
 	ch_addr <<= (6 + shiftup);
 	ch_addr |= addr & ((1 << (6 + shiftup)) - 1);
 
-	/*
-	 * Step 3) Decode rank
-	 */
+	 
 	for (n_rir = 0; n_rir < MAX_RIR_RANGES; n_rir++) {
 		pci_read_config_dword(pvt->pci_tad[base_ch], rir_way_limit[n_rir], &reg);
 
@@ -2327,7 +2117,7 @@ static int get_memory_error_data(struct mem_ctl_info *mci,
 	if (pvt->is_close_pg)
 		idx = (ch_addr >> 6);
 	else
-		idx = (ch_addr >> 13);	/* FIXME: Datasheet says to shift by 15 */
+		idx = (ch_addr >> 13);	 
 	idx %= 1 << rir_way;
 
 	pci_read_config_dword(pvt->pci_tad[base_ch], rir_offset[n_rir][idx], &reg);
@@ -2419,14 +2209,9 @@ static int get_memory_error_data_from_mce(struct mem_ctl_info *mci,
 	return 0;
 }
 
-/****************************************************************************
-	Device initialization routines: put/get, init/exit
- ****************************************************************************/
+ 
 
-/*
- *	sbridge_put_all_devices	'put' all the devices that we have
- *				reserved via 'get'
- */
+ 
 static void sbridge_put_devices(struct sbridge_dev *sbridge_dev)
 {
 	int i;
@@ -2482,7 +2267,7 @@ static int sbridge_get_onedevice(struct pci_dev **prev,
 		if (dev_descr->optional)
 			return 0;
 
-		/* if the HA wasn't found */
+		 
 		if (devno == 0)
 			return -ENODEV;
 
@@ -2490,7 +2275,7 @@ static int sbridge_get_onedevice(struct pci_dev **prev,
 			"Device not found: %04x:%04x\n",
 			PCI_VENDOR_ID_INTEL, dev_descr->dev_id);
 
-		/* End of list, leave */
+		 
 		return -ENODEV;
 	}
 	seg = pci_domain_nr(pdev->bus);
@@ -2500,7 +2285,7 @@ next_imc:
 	sbridge_dev = get_sbridge_dev(seg, bus, dev_descr->dom,
 				      multi_bus, sbridge_dev);
 	if (!sbridge_dev) {
-		/* If the HA1 wasn't found, don't create EDAC second memory controller */
+		 
 		if (dev_descr->dom == IMC1 && devno != 1) {
 			edac_dbg(0, "Skip IMC1: %04x:%04x (since HA1 was absent)\n",
 				 PCI_VENDOR_ID_INTEL, dev_descr->dev_id);
@@ -2529,7 +2314,7 @@ next_imc:
 
 	sbridge_dev->pdev[sbridge_dev->i_devs++] = pdev;
 
-	/* pdev belongs to more than one IMC, do extra gets */
+	 
 	if (++i > 1)
 		pci_dev_get(pdev);
 
@@ -2537,7 +2322,7 @@ next_imc:
 		goto next_imc;
 
 out_imc:
-	/* Be sure that the device is enabled */
+	 
 	if (unlikely(pci_enable_device(pdev) < 0)) {
 		sbridge_printk(KERN_ERR,
 			"Couldn't enable %04x:%04x\n",
@@ -2548,11 +2333,7 @@ out_imc:
 	edac_dbg(0, "Detected %04x:%04x\n",
 		 PCI_VENDOR_ID_INTEL, dev_descr->dev_id);
 
-	/*
-	 * As stated on drivers/pci/search.c, the reference count for
-	 * @from is always decremented if it is not %NULL. So, as we need
-	 * to get all devices up to null, we need to do a get for the device
-	 */
+	 
 	pci_dev_get(pdev);
 
 	*prev = pdev;
@@ -2560,15 +2341,7 @@ out_imc:
 	return 0;
 }
 
-/*
- * sbridge_get_all_devices - Find and perform 'get' operation on the MCH's
- *			     devices we want to reference for this driver.
- * @num_mc: pointer to the memory controllers count, to be incremented in case
- *	    of success.
- * @table: model specific table
- *
- * returns 0 in case of success or error code
- */
+ 
 static int sbridge_get_all_devices(u8 *num_mc,
 					const struct pci_id_table *table)
 {
@@ -2605,11 +2378,7 @@ static int sbridge_get_all_devices(u8 *num_mc,
 	return 0;
 }
 
-/*
- * Device IDs for {SBRIDGE,IBRIDGE,HASWELL,BROADWELL}_IMC_HA0_TAD0 are in
- * the format: XXXa. So we can convert from a device to the corresponding
- * channel like this
- */
+ 
 #define TAD_DEV_TO_CHAN(dev) (((dev) & 0xf) - 0xa)
 
 static int sbridge_mci_bind_devs(struct mem_ctl_info *mci,
@@ -2667,7 +2436,7 @@ static int sbridge_mci_bind_devs(struct mem_ctl_info *mci,
 			 pdev);
 	}
 
-	/* Check if everything were registered */
+	 
 	if (!pvt->pci_sad0 || !pvt->pci_sad1 || !pvt->pci_ha ||
 	    !pvt->pci_ras || !pvt->pci_ta)
 		goto enodev;
@@ -2751,13 +2520,13 @@ static int ibridge_mci_bind_devs(struct mem_ctl_info *mci,
 			 pdev);
 	}
 
-	/* Check if everything were registered */
+	 
 	if (!pvt->pci_sad0 || !pvt->pci_ha || !pvt->pci_br0 ||
 	    !pvt->pci_br1 || !pvt->pci_ras || !pvt->pci_ta)
 		goto enodev;
 
-	if (saw_chan_mask != 0x0f && /* -EN/-EX */
-	    saw_chan_mask != 0x03)   /* -EP */
+	if (saw_chan_mask != 0x0f &&  
+	    saw_chan_mask != 0x03)    
 		goto enodev;
 	return 0;
 
@@ -2780,9 +2549,9 @@ static int haswell_mci_bind_devs(struct mem_ctl_info *mci,
 	u8 saw_chan_mask = 0;
 	int i;
 
-	/* there's only one device per system; not tied to any bus */
+	 
 	if (pvt->info.pci_vtd == NULL)
-		/* result will be checked later */
+		 
 		pvt->info.pci_vtd = pci_get_device(PCI_VENDOR_ID_INTEL,
 						   PCI_DEVICE_ID_INTEL_HASWELL_IMC_VTD_MISC,
 						   NULL);
@@ -2842,13 +2611,13 @@ static int haswell_mci_bind_devs(struct mem_ctl_info *mci,
 			 pdev);
 	}
 
-	/* Check if everything were registered */
+	 
 	if (!pvt->pci_sad0 || !pvt->pci_ha || !pvt->pci_sad1 ||
 	    !pvt->pci_ras  || !pvt->pci_ta || !pvt->info.pci_vtd)
 		goto enodev;
 
-	if (saw_chan_mask != 0x0f && /* -EN/-EX */
-	    saw_chan_mask != 0x03)   /* -EP */
+	if (saw_chan_mask != 0x0f &&  
+	    saw_chan_mask != 0x03)    
 		goto enodev;
 	return 0;
 
@@ -2865,9 +2634,9 @@ static int broadwell_mci_bind_devs(struct mem_ctl_info *mci,
 	u8 saw_chan_mask = 0;
 	int i;
 
-	/* there's only one device per system; not tied to any bus */
+	 
 	if (pvt->info.pci_vtd == NULL)
-		/* result will be checked later */
+		 
 		pvt->info.pci_vtd = pci_get_device(PCI_VENDOR_ID_INTEL,
 						   PCI_DEVICE_ID_INTEL_BROADWELL_IMC_VTD_MISC,
 						   NULL);
@@ -2923,13 +2692,13 @@ static int broadwell_mci_bind_devs(struct mem_ctl_info *mci,
 			 pdev);
 	}
 
-	/* Check if everything were registered */
+	 
 	if (!pvt->pci_sad0 || !pvt->pci_ha || !pvt->pci_sad1 ||
 	    !pvt->pci_ras  || !pvt->pci_ta || !pvt->info.pci_vtd)
 		goto enodev;
 
-	if (saw_chan_mask != 0x0f && /* -EN/-EX */
-	    saw_chan_mask != 0x03)   /* -EP */
+	if (saw_chan_mask != 0x0f &&  
+	    saw_chan_mask != 0x03)    
 		goto enodev;
 	return 0;
 
@@ -2953,7 +2722,7 @@ static int knl_mci_bind_devs(struct mem_ctl_info *mci,
 		if (!pdev)
 			continue;
 
-		/* Extract PCI device and function. */
+		 
 		dev = (pdev->devfn >> 3) & 0x1f;
 		func = pdev->devfn & 0x7;
 
@@ -2980,9 +2749,7 @@ static int knl_mci_bind_devs(struct mem_ctl_info *mci,
 			break;
 
 		case PCI_DEVICE_ID_INTEL_KNL_IMC_CHA:
-			/* There are one of these per tile, and range from
-			 * 1.14.0 to 1.18.5.
-			 */
+			 
 			devidx = ((dev-14)*8)+func;
 
 			if (devidx < 0 || devidx >= KNL_MAX_CHAS) {
@@ -3000,10 +2767,7 @@ static int knl_mci_bind_devs(struct mem_ctl_info *mci,
 		case PCI_DEVICE_ID_INTEL_KNL_IMC_CHAN:
 			devidx = -1;
 
-			/*
-			 *  MC0 channels 0-2 are device 9 function 2-4,
-			 *  MC1 channels 3-5 are device 8 function 2-4.
-			 */
+			 
 
 			if (dev == 9)
 				devidx = func-2;
@@ -3063,16 +2827,9 @@ enodev:
 	return -ENODEV;
 }
 
-/****************************************************************************
-			Error check routines
- ****************************************************************************/
+ 
 
-/*
- * While Sandy Bridge has error count registers, SMI BIOS read values from
- * and resets the counters. So, they are not reliable for the OS to read
- * from them. So, we have no option but to just trust on whatever MCE is
- * telling us about the errors.
- */
+ 
 static void sbridge_mce_output_error(struct mem_ctl_info *mci,
 				    const struct mce *m)
 {
@@ -3089,11 +2846,7 @@ static void sbridge_mce_output_error(struct mem_ctl_info *mci,
 	u32 errcode = GET_BITFIELD(m->status, 0, 15);
 	u32 channel = GET_BITFIELD(m->status, 0, 3);
 	u32 optypenum = GET_BITFIELD(m->status, 4, 6);
-	/*
-	 * Bits 5-0 of MCi_MISC give the least significant bit that is valid.
-	 * A value 6 is for cache line aligned address, a value 12 is for page
-	 * aligned address reported by patrol scrubber.
-	 */
+	 
 	u32 lsb = GET_BITFIELD(m->misc, 0, 5);
 	long channel_mask, first_channel;
 	u8  rank = 0xff, socket, ha;
@@ -3116,17 +2869,7 @@ static void sbridge_mce_output_error(struct mem_ctl_info *mci,
 		tp_event = HW_EVENT_ERR_CORRECTED;
 	}
 
-	/*
-	 * According with Table 15-9 of the Intel Architecture spec vol 3A,
-	 * memory errors should fit in this mask:
-	 *	000f 0000 1mmm cccc (binary)
-	 * where:
-	 *	f = Correction Report Filtering Bit. If 1, subsequent errors
-	 *	    won't be shown
-	 *	mmm = error type
-	 *	cccc = channel
-	 * If the mask doesn't match, report an error to the parsing logic
-	 */
+	 
 	switch (optypenum) {
 	case 0:
 		optype = "generic undef request error";
@@ -3159,12 +2902,7 @@ static void sbridge_mce_output_error(struct mem_ctl_info *mci,
 		} else {
 			char A = *("A");
 
-			/*
-			 * Reported channel is in range 0-2, so we can't map it
-			 * back to mc. To figure out mc we check machine check
-			 * bank register that reported this error.
-			 * bank15 means mc0 and bank16 means mc1.
-			 */
+			 
 			channel = knl_channel_remap(m->bank == 16, channel);
 			channel_mask = 1 << channel;
 
@@ -3210,12 +2948,7 @@ static void sbridge_mce_output_error(struct mem_ctl_info *mci,
 	else
 		dimm = 2;
 
-	/*
-	 * FIXME: On some memory configurations (mirror, lockstep), the
-	 * Memory Controller can't point the error to a single DIMM. The
-	 * EDAC core should be handling the channel mask, in order to point
-	 * to the group of dimm's where the error may be happening.
-	 */
+	 
 	if (!pvt->is_lockstep && !pvt->is_cur_addr_mirrored && !pvt->is_close_pg)
 		channel = first_channel;
 	snprintf(msg_full, sizeof(msg_full),
@@ -3230,12 +2963,12 @@ static void sbridge_mce_output_error(struct mem_ctl_info *mci,
 
 	edac_dbg(0, "%s\n", msg_full);
 
-	/* FIXME: need support for channel mask */
+	 
 
 	if (channel == CHANNEL_UNSPECIFIED)
 		channel = -1;
 
-	/* Call the helper to output message */
+	 
 	edac_mc_handle_error(tp_event, mci, core_err_cnt,
 			     m->addr >> PAGE_SHIFT, m->addr & ~PAGE_MASK, 0,
 			     channel, dimm, -1,
@@ -3248,10 +2981,7 @@ err_parsing:
 
 }
 
-/*
- * Check that logging is enabled and that this is the right type
- * of error for us to handle.
- */
+ 
 static int sbridge_mce_check_error(struct notifier_block *nb, unsigned long val,
 				   void *data)
 {
@@ -3262,24 +2992,19 @@ static int sbridge_mce_check_error(struct notifier_block *nb, unsigned long val,
 	if (mce->kflags & MCE_HANDLED_CEC)
 		return NOTIFY_DONE;
 
-	/*
-	 * Just let mcelog handle it if the error is
-	 * outside the memory controller. A memory error
-	 * is indicated by bit 7 = 1 and bits = 8-11,13-15 = 0.
-	 * bit 12 has an special meaning.
-	 */
+	 
 	if ((mce->status & 0xefff) >> 7 != 1)
 		return NOTIFY_DONE;
 
-	/* Check ADDRV bit in STATUS */
+	 
 	if (!GET_BITFIELD(mce->status, 58, 58))
 		return NOTIFY_DONE;
 
-	/* Check MISCV bit in STATUS */
+	 
 	if (!GET_BITFIELD(mce->status, 59, 59))
 		return NOTIFY_DONE;
 
-	/* Check address type in MISC (physical address only) */
+	 
 	if (GET_BITFIELD(mce->misc, 6, 8) != 2)
 		return NOTIFY_DONE;
 
@@ -3307,7 +3032,7 @@ static int sbridge_mce_check_error(struct notifier_block *nb, unsigned long val,
 
 	sbridge_mce_output_error(mci, mce);
 
-	/* Advice mcelog that the error were handled */
+	 
 	mce->kflags |= MCE_HANDLED_EDAC;
 	return NOTIFY_OK;
 }
@@ -3317,9 +3042,7 @@ static struct notifier_block sbridge_mce_dec = {
 	.priority	= MCE_PRIO_EDAC,
 };
 
-/****************************************************************************
-			EDAC register/unregister logic
- ****************************************************************************/
+ 
 
 static void sbridge_unregister_mci(struct sbridge_dev *sbridge_dev)
 {
@@ -3335,7 +3058,7 @@ static void sbridge_unregister_mci(struct sbridge_dev *sbridge_dev)
 	edac_dbg(0, "MC: mci = %p, dev = %p\n",
 		 mci, &sbridge_dev->pdev[0]->dev);
 
-	/* Remove MC sysfs nodes */
+	 
 	edac_mc_del_mc(mci->pdev);
 
 	edac_dbg(1, "%s: free mci struct\n", mci->ctl_name);
@@ -3352,7 +3075,7 @@ static int sbridge_register_mci(struct sbridge_dev *sbridge_dev, enum type type)
 	struct pci_dev *pdev = sbridge_dev->pdev[0];
 	int rc;
 
-	/* allocate a new MC control structure */
+	 
 	layers[0].type = EDAC_MC_LAYER_CHANNEL;
 	layers[0].size = type == KNIGHTS_LANDING ?
 		KNL_MAX_CHANNELS : NUM_CHANNELS;
@@ -3372,7 +3095,7 @@ static int sbridge_register_mci(struct sbridge_dev *sbridge_dev, enum type type)
 	pvt = mci->pvt_info;
 	memset(pvt, 0, sizeof(*pvt));
 
-	/* Associate sbridge_dev and mci for future usage */
+	 
 	pvt->sbridge_dev = sbridge_dev;
 	sbridge_dev->mci = mci;
 
@@ -3403,7 +3126,7 @@ static int sbridge_register_mci(struct sbridge_dev *sbridge_dev, enum type type)
 		pvt->info.interleave_pkg = ibridge_interleave_pkg;
 		pvt->info.get_width = ibridge_get_width;
 
-		/* Store pci devices at mci for faster access */
+		 
 		rc = ibridge_mci_bind_devs(mci, sbridge_dev);
 		if (unlikely(rc < 0))
 			goto fail0;
@@ -3428,7 +3151,7 @@ static int sbridge_register_mci(struct sbridge_dev *sbridge_dev, enum type type)
 		pvt->info.interleave_pkg = sbridge_interleave_pkg;
 		pvt->info.get_width = sbridge_get_width;
 
-		/* Store pci devices at mci for faster access */
+		 
 		rc = sbridge_mci_bind_devs(mci, sbridge_dev);
 		if (unlikely(rc < 0))
 			goto fail0;
@@ -3437,7 +3160,7 @@ static int sbridge_register_mci(struct sbridge_dev *sbridge_dev, enum type type)
 			pvt->sbridge_dev->source_id, pvt->sbridge_dev->dom);
 		break;
 	case HASWELL:
-		/* rankcfgr isn't used */
+		 
 		pvt->info.get_tolm = haswell_get_tolm;
 		pvt->info.get_tohm = haswell_get_tohm;
 		pvt->info.dram_rule = ibridge_dram_rule;
@@ -3453,7 +3176,7 @@ static int sbridge_register_mci(struct sbridge_dev *sbridge_dev, enum type type)
 		pvt->info.interleave_pkg = ibridge_interleave_pkg;
 		pvt->info.get_width = ibridge_get_width;
 
-		/* Store pci devices at mci for faster access */
+		 
 		rc = haswell_mci_bind_devs(mci, sbridge_dev);
 		if (unlikely(rc < 0))
 			goto fail0;
@@ -3462,7 +3185,7 @@ static int sbridge_register_mci(struct sbridge_dev *sbridge_dev, enum type type)
 			pvt->sbridge_dev->source_id, pvt->sbridge_dev->dom);
 		break;
 	case BROADWELL:
-		/* rankcfgr isn't used */
+		 
 		pvt->info.get_tolm = haswell_get_tolm;
 		pvt->info.get_tohm = haswell_get_tohm;
 		pvt->info.dram_rule = ibridge_dram_rule;
@@ -3478,7 +3201,7 @@ static int sbridge_register_mci(struct sbridge_dev *sbridge_dev, enum type type)
 		pvt->info.interleave_pkg = ibridge_interleave_pkg;
 		pvt->info.get_width = broadwell_get_width;
 
-		/* Store pci devices at mci for faster access */
+		 
 		rc = broadwell_mci_bind_devs(mci, sbridge_dev);
 		if (unlikely(rc < 0))
 			goto fail0;
@@ -3487,7 +3210,7 @@ static int sbridge_register_mci(struct sbridge_dev *sbridge_dev, enum type type)
 			pvt->sbridge_dev->source_id, pvt->sbridge_dev->dom);
 		break;
 	case KNIGHTS_LANDING:
-		/* pvt->info.rankcfgr == ??? */
+		 
 		pvt->info.get_tolm = knl_get_tolm;
 		pvt->info.get_tohm = knl_get_tohm;
 		pvt->info.dram_rule = knl_dram_rule;
@@ -3517,7 +3240,7 @@ static int sbridge_register_mci(struct sbridge_dev *sbridge_dev, enum type type)
 		goto fail0;
 	}
 
-	/* Get dimm basic config and the memory layout */
+	 
 	rc = get_dimm_config(mci);
 	if (rc < 0) {
 		edac_dbg(0, "MC: failed to get_dimm_config()\n");
@@ -3525,10 +3248,10 @@ static int sbridge_register_mci(struct sbridge_dev *sbridge_dev, enum type type)
 	}
 	get_memory_layout(mci);
 
-	/* record ptr to the generic device */
+	 
 	mci->pdev = &pdev->dev;
 
-	/* add this new MC control structure to EDAC's list of MCs */
+	 
 	if (unlikely(edac_mc_add_mc(mci))) {
 		edac_dbg(0, "MC: failed edac_mc_add_mc()\n");
 		rc = -EINVAL;
@@ -3557,13 +3280,7 @@ static const struct x86_cpu_id sbridge_cpuids[] = {
 };
 MODULE_DEVICE_TABLE(x86cpu, sbridge_cpuids);
 
-/*
- *	sbridge_probe	Get all devices and register memory controllers
- *			present.
- *	return:
- *		0 for FOUND a device
- *		< 0 for error code
- */
+ 
 
 static int sbridge_probe(const struct x86_cpu_id *id)
 {
@@ -3572,7 +3289,7 @@ static int sbridge_probe(const struct x86_cpu_id *id)
 	struct sbridge_dev *sbridge_dev;
 	struct pci_id_table *ptable = (struct pci_id_table *)id->driver_data;
 
-	/* get the pci devices we want to reserve for our use */
+	 
 	rc = sbridge_get_all_devices(&num_mc, ptable);
 
 	if (unlikely(rc < 0)) {
@@ -3605,10 +3322,7 @@ fail0:
 	return rc;
 }
 
-/*
- *	sbridge_remove	cleanup
- *
- */
+ 
 static void sbridge_remove(void)
 {
 	struct sbridge_dev *sbridge_dev;
@@ -3618,14 +3332,11 @@ static void sbridge_remove(void)
 	list_for_each_entry(sbridge_dev, &sbridge_edac_list, list)
 		sbridge_unregister_mci(sbridge_dev);
 
-	/* Release PCI resources */
+	 
 	sbridge_put_all_devices();
 }
 
-/*
- *	sbridge_init		Module entry function
- *			Try to initialize this module for its devices
- */
+ 
 static int __init sbridge_init(void)
 {
 	const struct x86_cpu_id *id;
@@ -3648,7 +3359,7 @@ static int __init sbridge_init(void)
 	if (!id)
 		return -ENODEV;
 
-	/* Ensure that the OPSTATE is set correctly for POLL or NMI */
+	 
 	opstate_init();
 
 	rc = sbridge_probe(id);
@@ -3664,10 +3375,7 @@ static int __init sbridge_init(void)
 	return rc;
 }
 
-/*
- *	sbridge_exit()	Module exit function
- *			Unregister the driver
- */
+ 
 static void __exit sbridge_exit(void)
 {
 	edac_dbg(2, "\n");
@@ -3683,6 +3391,6 @@ MODULE_PARM_DESC(edac_op_state, "EDAC Error Reporting state: 0=Poll,1=NMI");
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Mauro Carvalho Chehab");
-MODULE_AUTHOR("Red Hat Inc. (https://www.redhat.com)");
+MODULE_AUTHOR("Red Hat Inc. (https:
 MODULE_DESCRIPTION("MC Driver for Intel Sandy Bridge and Ivy Bridge memory controllers - "
 		   SBRIDGE_REVISION);

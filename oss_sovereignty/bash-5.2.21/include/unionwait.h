@@ -1,23 +1,6 @@
-/* unionwait.h -- definitions for using a `union wait' on systems without
-   one. */
+ 
 
-/* Copyright (C) 1996 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #ifndef _UNIONWAIT_H
 #define _UNIONWAIT_H
@@ -25,59 +8,55 @@
 #if !defined (WORDS_BIGENDIAN)
 union wait
   {
-    int	w_status;		/* used in syscall */
+    int	w_status;		 
 
-    /* Terminated process status. */
+     
     struct
       {
 	unsigned short
-	  w_Termsig  : 7,	/* termination signal */
-	  w_Coredump : 1,	/* core dump indicator */
-	  w_Retcode  : 8,	/* exit code if w_termsig==0 */
-	  w_Fill1    : 16;	/* high 16 bits unused */
+	  w_Termsig  : 7,	 
+	  w_Coredump : 1,	 
+	  w_Retcode  : 8,	 
+	  w_Fill1    : 16;	 
       } w_T;
 
-    /* Stopped process status.  Returned
-       only for traced children unless requested
-       with the WUNTRACED option bit. */
+     
     struct
       {
 	unsigned short
-	  w_Stopval : 8,	/* == W_STOPPED if stopped */
-	  w_Stopsig : 8,	/* actually zero on XENIX */
-	  w_Fill2   : 16;	/* high 16 bits unused */
+	  w_Stopval : 8,	 
+	  w_Stopsig : 8,	 
+	  w_Fill2   : 16;	 
       } w_S;
   };
 
-#else  /* WORDS_BIGENDIAN */
+#else   
 
-/* This is for big-endian machines like the IBM RT, HP 9000, or Sun-3 */
+ 
 
 union wait
   {
-    int	w_status;		/* used in syscall */
+    int	w_status;		 
 
-    /* Terminated process status. */
+     
     struct
       {
-	unsigned short w_Fill1    : 16;	/* high 16 bits unused */
-	unsigned       w_Retcode  : 8;	/* exit code if w_termsig==0 */
-	unsigned       w_Coredump : 1;	/* core dump indicator */
-	unsigned       w_Termsig  : 7;	/* termination signal */
+	unsigned short w_Fill1    : 16;	 
+	unsigned       w_Retcode  : 8;	 
+	unsigned       w_Coredump : 1;	 
+	unsigned       w_Termsig  : 7;	 
       } w_T;
 
-    /* Stopped process status.  Returned
-       only for traced children unless requested
-       with the WUNTRACED option bit. */
+     
     struct
       {
-	unsigned short w_Fill2   : 16;	/* high 16 bits unused */
-	unsigned       w_Stopsig : 8;	/* signal that stopped us */
-	unsigned       w_Stopval : 8;	/* == W_STOPPED if stopped */
+	unsigned short w_Fill2   : 16;	 
+	unsigned       w_Stopsig : 8;	 
+	unsigned       w_Stopval : 8;	 
       } w_S;
   };
 
-#endif /* WORDS_BIGENDIAN */
+#endif  
 
 #define w_termsig  w_T.w_Termsig
 #define w_coredump w_T.w_Coredump
@@ -95,4 +74,4 @@ union wait
 #define WEXITSTATUS(x) ((x).w_retcode)
 #define WIFCORED(x)    ((x).w_coredump)
 
-#endif /* _UNIONWAIT_H */
+#endif  

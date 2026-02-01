@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This file is part of wl1271
- *
- * Copyright (C) 2009-2010 Nokia Corporation
- *
- * Contact: Luciano Coelho <luciano.coelho@nokia.com>
- */
+ 
+ 
 
 #ifndef __SCAN_H__
 #define __SCAN_H__
@@ -34,12 +28,12 @@ void wlcore_scan_sched_scan_results(struct wl1271 *wl);
 #define WL1271_SCAN_OPT_PASSIVE	       1
 #define WL1271_SCAN_OPT_SPLIT_SCAN     2
 #define WL1271_SCAN_OPT_PRIORITY_HIGH  4
-/* scan even if we fail to enter psm */
+ 
 #define WL1271_SCAN_OPT_FORCE          8
 #define WL1271_SCAN_BAND_2_4_GHZ 0
 #define WL1271_SCAN_BAND_5_GHZ 1
 
-#define WL1271_SCAN_TIMEOUT    30000 /* msec */
+#define WL1271_SCAN_TIMEOUT    30000  
 
 enum {
 	WL1271_SCAN_STATE_IDLE,
@@ -59,21 +53,12 @@ struct wl1271_cmd_trigger_scan_to {
 #define MAX_CHANNELS_2GHZ	14
 #define MAX_CHANNELS_4GHZ	4
 
-/*
- * This max value here is used only for the struct definition of
- * wlcore_scan_channels. This struct is used by both 12xx
- * and 18xx (which have different max 5ghz channels value).
- * In order to make sure this is large enough, just use the
- * max possible 5ghz channels.
- */
+ 
 #define MAX_CHANNELS_5GHZ	42
 
 #define SCAN_MAX_CYCLE_INTERVALS 16
 
-/* The FW intervals can take up to 16 entries.
- * The 1st entry isn't used (scan is immediate). The last
- * entry should be used for the long_interval
- */
+ 
 #define SCAN_MAX_SHORT_INTERVALS (SCAN_MAX_CYCLE_INTERVALS - 2)
 #define SCAN_MAX_BANDS 3
 
@@ -90,8 +75,7 @@ enum {
 	SCAN_BSS_TYPE_ANY,
 };
 
-#define SCAN_CHANNEL_FLAGS_DFS		BIT(0) /* channel is passive until an
-						  activity is detected on it */
+#define SCAN_CHANNEL_FLAGS_DFS		BIT(0)  
 #define SCAN_CHANNEL_FLAGS_DFS_ENABLED	BIT(1)
 
 struct conn_scan_ch_params {
@@ -102,7 +86,7 @@ struct conn_scan_ch_params {
 	u8  channel;
 	u8  tx_power_att;
 
-	/* bit 0: DFS channel; bit 1: DFS enabled */
+	 
 	u8  flags;
 
 	u8  padding[3];
@@ -119,7 +103,7 @@ struct wl1271_ssid {
 	u8 type;
 	u8 len;
 	u8 ssid[IEEE80211_MAX_SSID_LEN];
-	/* u8 padding[2]; */
+	 
 } __packed;
 
 struct wl1271_cmd_sched_scan_ssid_list {
@@ -132,10 +116,10 @@ struct wl1271_cmd_sched_scan_ssid_list {
 } __packed;
 
 struct wlcore_scan_channels {
-	u8 passive[SCAN_MAX_BANDS]; /* number of passive scan channels */
-	u8 active[SCAN_MAX_BANDS];  /* number of active scan channels */
-	u8 dfs;		   /* number of dfs channels in 5ghz */
-	u8 passive_active; /* number of passive before active channels 2.4ghz */
+	u8 passive[SCAN_MAX_BANDS];  
+	u8 active[SCAN_MAX_BANDS];   
+	u8 dfs;		    
+	u8 passive_active;  
 
 	struct conn_scan_ch_params channels_2[MAX_CHANNELS_2GHZ];
 	struct conn_scan_ch_params channels_5[MAX_CHANNELS_5GHZ];
@@ -161,4 +145,4 @@ wlcore_scan_sched_scan_ssid_list(struct wl1271 *wl,
 				 struct wl12xx_vif *wlvif,
 				 struct cfg80211_sched_scan_request *req);
 
-#endif /* __WL1271_SCAN_H__ */
+#endif  

@@ -1,15 +1,4 @@
-/*
- * Copyright (c) 2014-2016, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU Lesser General Public License,
- * version 2.1, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
- * more details.
- */
+ 
 #ifndef __NDCTL_H__
 #define __NDCTL_H__
 
@@ -100,13 +89,13 @@ struct nd_cmd_clear_error {
 enum {
 	ND_CMD_IMPLEMENTED = 0,
 
-	/* bus commands */
+	 
 	ND_CMD_ARS_CAP = 1,
 	ND_CMD_ARS_START = 2,
 	ND_CMD_ARS_STATUS = 3,
 	ND_CMD_CLEAR_ERROR = 4,
 
-	/* per-dimm commands */
+	 
 	ND_CMD_SMART = 1,
 	ND_CMD_SMART_THRESHOLD = 2,
 	ND_CMD_DIMM_FLAGS = 3,
@@ -184,12 +173,12 @@ static inline const char *nvdimm_cmd_name(unsigned cmd)
 #define ND_IOCTL_CLEAR_ERROR		_IOWR(ND_IOCTL, ND_CMD_CLEAR_ERROR,\
 					struct nd_cmd_clear_error)
 
-#define ND_DEVICE_DIMM 1            /* nd_dimm: container for "config data" */
-#define ND_DEVICE_REGION_PMEM 2     /* nd_region: (parent of PMEM namespaces) */
-#define ND_DEVICE_REGION_BLK 3      /* nd_region: (parent of BLK namespaces) */
-#define ND_DEVICE_NAMESPACE_IO 4    /* legacy persistent memory */
-#define ND_DEVICE_NAMESPACE_PMEM 5  /* PMEM namespace (may alias with BLK) */
-#define ND_DEVICE_DAX_PMEM 7        /* Device DAX interface to pmem */
+#define ND_DEVICE_DIMM 1             
+#define ND_DEVICE_REGION_PMEM 2      
+#define ND_DEVICE_REGION_BLK 3       
+#define ND_DEVICE_NAMESPACE_IO 4     
+#define ND_DEVICE_NAMESPACE_PMEM 5   
+#define ND_DEVICE_DAX_PMEM 7         
 
 enum nd_driver_flags {
 	ND_DRIVER_DIMM            = 1 << ND_DEVICE_DIMM,
@@ -205,38 +194,19 @@ enum ars_masks {
 	ARS_EXT_STATUS_SHIFT = 16,
 };
 
-/*
- * struct nd_cmd_pkg
- *
- * is a wrapper to a quasi pass thru interface for invoking firmware
- * associated with nvdimms.
- *
- * INPUT PARAMETERS
- *
- * nd_family corresponds to the firmware (e.g. DSM) interface.
- *
- * nd_command are the function index advertised by the firmware.
- *
- * nd_size_in is the size of the input parameters being passed to firmware
- *
- * OUTPUT PARAMETERS
- *
- * nd_fw_size is the size of the data firmware wants to return for
- * the call.  If nd_fw_size is greater than size of nd_size_out, only
- * the first nd_size_out bytes are returned.
- */
+ 
 
 struct nd_cmd_pkg {
-	__u64   nd_family;		/* family of commands */
+	__u64   nd_family;		 
 	__u64   nd_command;
-	__u32   nd_size_in;		/* INPUT: size of input args */
-	__u32   nd_size_out;		/* INPUT: size of payload */
-	__u32   nd_reserved2[9];	/* reserved must be zero */
-	__u32   nd_fw_size;		/* OUTPUT: size fw wants to return */
-	unsigned char nd_payload[];	/* Contents of call      */
+	__u32   nd_size_in;		 
+	__u32   nd_size_out;		 
+	__u32   nd_reserved2[9];	 
+	__u32   nd_fw_size;		 
+	unsigned char nd_payload[];	 
 };
 
-/* These NVDIMM families represent pre-standardization command sets */
+ 
 #define NVDIMM_FAMILY_INTEL 0
 #define NVDIMM_FAMILY_HPE1 1
 #define NVDIMM_FAMILY_HPE2 2
@@ -252,4 +222,4 @@ struct nd_cmd_pkg {
 #define ND_IOCTL_CALL			_IOWR(ND_IOCTL, ND_CMD_CALL,\
 					struct nd_cmd_pkg)
 
-#endif /* __NDCTL_H__ */
+#endif  

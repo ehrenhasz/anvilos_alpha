@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// rt1015p.c  --  RT1015P ALSA SoC audio amplifier driver
-//
-// Copyright 2020 The Linux Foundation. All rights reserved.
+
+
+
+
+
 
 #include <linux/acpi.h>
 #include <linux/delay.h>

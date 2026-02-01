@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Marvell Berlin SATA PHY driver
- *
- * Copyright (C) 2014 Marvell Technology Group Ltd.
- *
- * Antoine Ténart <antoine.tenart@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -31,19 +25,19 @@
 #define BG2_PHY_BASE		0x080
 #define BG2Q_PHY_BASE		0x200
 
-/* register 0x01 */
+ 
 #define REF_FREF_SEL_25		BIT(0)
 #define PHY_BERLIN_MODE_SATA	(0x0 << 5)
 
-/* register 0x02 */
+ 
 #define USE_MAX_PLL_RATE	BIT(12)
 
-/* register 0x23 */
+ 
 #define DATA_BIT_WIDTH_10	(0x0 << 10)
 #define DATA_BIT_WIDTH_20	(0x1 << 10)
 #define DATA_BIT_WIDTH_40	(0x2 << 10)
 
-/* register 0x25 */
+ 
 #define PHY_GEN_MAX_1_5		(0x0 << 10)
 #define PHY_GEN_MAX_3_0		(0x1 << 10)
 #define PHY_GEN_MAX_6_0		(0x2 << 10)
@@ -68,10 +62,10 @@ static inline void phy_berlin_sata_reg_setbits(void __iomem *ctrl_reg,
 {
 	u32 regval;
 
-	/* select register */
+	 
 	writel(phy_base + reg, ctrl_reg + PORT_VSR_ADDR);
 
-	/* set bits */
+	 
 	regval = readl(ctrl_reg + PORT_VSR_DATA);
 	regval &= ~mask;
 	regval |= val;
@@ -89,36 +83,36 @@ static int phy_berlin_sata_power_on(struct phy *phy)
 
 	spin_lock(&priv->lock);
 
-	/* Power on PHY */
+	 
 	writel(CONTROL_REGISTER, priv->base + HOST_VSA_ADDR);
 	regval = readl(priv->base + HOST_VSA_DATA);
 	regval &= ~desc->power_bit;
 	writel(regval, priv->base + HOST_VSA_DATA);
 
-	/* Configure MBus */
+	 
 	writel(MBUS_SIZE_CONTROL, priv->base + HOST_VSA_ADDR);
 	regval = readl(priv->base + HOST_VSA_DATA);
 	regval |= MBUS_WRITE_REQUEST_SIZE_128 | MBUS_READ_REQUEST_SIZE_128;
 	writel(regval, priv->base + HOST_VSA_DATA);
 
-	/* set PHY mode and ref freq to 25 MHz */
+	 
 	phy_berlin_sata_reg_setbits(ctrl_reg, priv->phy_base, 0x01,
 				    0x00ff,
 				    REF_FREF_SEL_25 | PHY_BERLIN_MODE_SATA);
 
-	/* set PHY up to 6 Gbps */
+	 
 	phy_berlin_sata_reg_setbits(ctrl_reg, priv->phy_base, 0x25,
 				    0x0c00, PHY_GEN_MAX_6_0);
 
-	/* set 40 bits width */
+	 
 	phy_berlin_sata_reg_setbits(ctrl_reg, priv->phy_base, 0x23,
 				    0x0c00, DATA_BIT_WIDTH_40);
 
-	/* use max pll rate */
+	 
 	phy_berlin_sata_reg_setbits(ctrl_reg, priv->phy_base, 0x02,
 				    0x0000, USE_MAX_PLL_RATE);
 
-	/* set Gen3 controller speed */
+	 
 	regval = readl(ctrl_reg + PORT_SCR_CTL);
 	regval &= ~GENMASK(7, 4);
 	regval |= 0x30;
@@ -141,7 +135,7 @@ static int phy_berlin_sata_power_off(struct phy *phy)
 
 	spin_lock(&priv->lock);
 
-	/* Power down PHY */
+	 
 	writel(CONTROL_REGISTER, priv->base + HOST_VSA_ADDR);
 	regval = readl(priv->base + HOST_VSA_DATA);
 	regval |= desc->power_bit;
@@ -265,7 +259,7 @@ static int phy_berlin_sata_probe(struct platform_device *pdev)
 
 		priv->phys[i++] = phy_desc;
 
-		/* Make sure the PHY is off */
+		 
 		phy_berlin_sata_power_off(phy);
 	}
 

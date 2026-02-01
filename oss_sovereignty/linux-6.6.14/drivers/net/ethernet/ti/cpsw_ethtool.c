@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Texas Instruments Ethernet Switch Driver ethtool intf
- *
- * Copyright (C) 2019 Texas Instruments
- */
+
+ 
 
 #include <linux/if_ether.h>
 #include <linux/if_vlan.h>
@@ -188,9 +184,7 @@ int cpsw_set_coalesce(struct net_device *ndev, struct ethtool_coalesce *coal,
 		coal_intvl = CPSW_CMINTMIN_INTVL;
 
 	if (coal_intvl > CPSW_CMINTMAX_INTVL) {
-		/* Interrupt pacer works with 4us Pulse, we can
-		 * throttle further by dilating the 4us pulse.
-		 */
+		 
 		addnl_dvdr = CPSW_INTPRESCALE_MASK / prescale;
 
 		if (addnl_dvdr > 1) {
@@ -280,7 +274,7 @@ void cpsw_get_ethtool_stats(struct net_device *ndev,
 	struct cpdma_chan_stats ch_stats;
 	int i, l, ch;
 
-	/* Collect Davinci CPDMA stats for Rx and Tx Channel */
+	 
 	for (l = 0; l < CPSW_STATS_COMMON_LEN; l++)
 		data[l] = readl(cpsw->hw_stats +
 				cpsw_gstrings_stats[l].stat_offset);
@@ -352,7 +346,7 @@ void cpsw_get_regs(struct net_device *ndev, struct ethtool_regs *regs, void *p)
 	u32 *reg = p;
 	struct cpsw_common *cpsw = ndev_to_cpsw(ndev);
 
-	/* update CPSW IP version */
+	 
 	regs->version = cpsw->version;
 
 	cpsw_ale_dump(cpsw->ale, reg);
@@ -463,11 +457,10 @@ static void cpsw_suspend_data_pass(struct net_device *ndev)
 	struct cpsw_common *cpsw = ndev_to_cpsw(ndev);
 	int i;
 
-	/* Disable NAPI scheduling */
+	 
 	cpsw_intr_disable(cpsw);
 
-	/* Stop all transmit queues for every network device.
-	 */
+	 
 	for (i = 0; i < cpsw->data.slaves; i++) {
 		ndev = cpsw->slaves[i].ndev;
 		if (!(ndev && netif_running(ndev)))
@@ -475,11 +468,11 @@ static void cpsw_suspend_data_pass(struct net_device *ndev)
 
 		netif_tx_stop_all_queues(ndev);
 
-		/* Barrier, so that stop_queue visible to other cpus */
+		 
 		smp_mb__after_atomic();
 	}
 
-	/* Handle rest of tx packets and stop cpdma channels */
+	 
 	cpdma_ctlr_stop(cpsw->dma);
 }
 
@@ -489,7 +482,7 @@ static int cpsw_resume_data_pass(struct net_device *ndev)
 	struct cpsw_common *cpsw = priv->cpsw;
 	int i, ret;
 
-	/* After this receive is started */
+	 
 	if (cpsw->usage_count) {
 		ret = cpsw_fill_rx_channels(priv);
 		if (ret)
@@ -499,7 +492,7 @@ static int cpsw_resume_data_pass(struct net_device *ndev)
 		cpsw_intr_enable(cpsw);
 	}
 
-	/* Resume transmit for every affected interface */
+	 
 	for (i = 0; i < cpsw->data.slaves; i++) {
 		ndev = cpsw->slaves[i].ndev;
 		if (ndev && netif_running(ndev))
@@ -520,7 +513,7 @@ static int cpsw_check_ch_settings(struct cpsw_common *cpsw,
 	if (ch->combined_count)
 		return -EINVAL;
 
-	/* verify we have at least one channel in each direction */
+	 
 	if (!ch->rx_count || !ch->tx_count)
 		return -EINVAL;
 
@@ -623,7 +616,7 @@ int cpsw_set_channels_common(struct net_device *ndev,
 		if (!(sl_ndev && netif_running(sl_ndev)))
 			continue;
 
-		/* Inform stack about new count of queues */
+		 
 		ret = netif_set_real_num_tx_queues(sl_ndev, cpsw->tx_ch_num);
 		if (ret) {
 			dev_err(priv->dev, "cannot set real number of tx queues\n");
@@ -663,7 +656,7 @@ void cpsw_get_ringparam(struct net_device *ndev,
 	struct cpsw_priv *priv = netdev_priv(ndev);
 	struct cpsw_common *cpsw = priv->cpsw;
 
-	/* not supported */
+	 
 	ering->tx_max_pending = cpsw->descs_pool_size - CPSW_MAX_QUEUES;
 	ering->tx_pending = cpdma_get_num_tx_descs(cpsw->dma);
 	ering->rx_max_pending = cpsw->descs_pool_size - CPSW_MAX_QUEUES;
@@ -678,7 +671,7 @@ int cpsw_set_ringparam(struct net_device *ndev,
 	struct cpsw_common *cpsw = ndev_to_cpsw(ndev);
 	int descs_num, ret;
 
-	/* ignore ering->tx_pending - only rx_pending adjustment is supported */
+	 
 
 	if (ering->rx_mini_pending || ering->rx_jumbo_pending ||
 	    ering->rx_pending < CPSW_MAX_QUEUES ||

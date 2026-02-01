@@ -1,26 +1,4 @@
-/*
- * Copyright 2011 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "mxms.h"
 
 #include <subdev/bios.h>
@@ -55,35 +33,28 @@ mxm_match_dcb(struct nvkm_mxm *mxm, u8 *data, void *info)
 
 	mxms_output_device(mxm, data, &ctx->desc);
 
-	/* match dcb encoder type to mxm-ods device type */
+	 
 	if ((ctx->outp[0] & 0x0000000f) != ctx->desc.outp_type)
 		return true;
 
-	/* digital output, have some extra stuff to match here, there's a
-	 * table in the vbios that provides a mapping from the mxm digital
-	 * connection enum values to SOR/link
-	 */
+	 
 	if ((desc & 0x00000000000000f0) >= 0x20) {
-		/* check against sor index */
+		 
 		u8 link = mxm_sor_map(bios, ctx->desc.dig_conn);
 		if ((ctx->outp[0] & 0x0f000000) != (link & 0x0f) << 24)
 			return true;
 
-		/* check dcb entry has a compatible link field */
+		 
 		link = (link & 0x30) >> 4;
 		if ((link & ((ctx->outp[1] & 0x00000030) >> 4)) != link)
 			return true;
 	}
 
-	/* mark this descriptor accounted for by setting invalid device type,
-	 * except of course some manufactures don't follow specs properly and
-	 * we need to avoid killing off the TMDS function on DP connectors
-	 * if MXM-SIS is missing an entry for it.
-	 */
+	 
 	data[0] &= ~0xf0;
 	if (ctx->desc.outp_type == 6 && ctx->desc.conn_type == 6 &&
 	    mxms_foreach(mxm, 0x01, mxm_match_tmds_partner, ctx)) {
-		data[0] |= 0x20; /* modify descriptor to match TMDS now */
+		data[0] |= 0x20;  
 	} else {
 		data[0] |= 0xf0;
 	}
@@ -99,9 +70,7 @@ mxm_dcb_sanitise_entry(struct nvkm_bios *bios, void *data, int idx, u16 pdcb)
 	u8 type, i2cidx, link, ver, len;
 	u8 *conn;
 
-	/* look for an output device structure that matches this dcb entry.
-	 * if one isn't found, disable it.
-	 */
+	 
 	if (mxms_foreach(mxm, 0x01, mxm_match_dcb, &ctx)) {
 		nvkm_debug(&mxm->subdev, "disable %d: %08x %08x\n",
 			   idx, ctx.outp[0], ctx.outp[1]);
@@ -109,10 +78,7 @@ mxm_dcb_sanitise_entry(struct nvkm_bios *bios, void *data, int idx, u16 pdcb)
 		return 0;
 	}
 
-	/* modify the output's ddc/aux port, there's a pointer to a table
-	 * with the mapping from mxm ddc/aux port to dcb i2c_index in the
-	 * vbios mxm table
-	 */
+	 
 	i2cidx = mxm_ddc_map(bios, ctx.desc.ddc_port);
 	if ((ctx.outp[0] & 0x0000000f) != DCB_OUTPUT_DP)
 		i2cidx = (i2cidx & 0x0f) << 4;
@@ -124,10 +90,10 @@ mxm_dcb_sanitise_entry(struct nvkm_bios *bios, void *data, int idx, u16 pdcb)
 		ctx.outp[0] |= i2cidx;
 	}
 
-	/* override dcb sorconf.link, based on what mxm data says */
+	 
 	switch (ctx.desc.outp_type) {
-	case 0x00: /* Analog CRT */
-	case 0x01: /* Analog TV/HDTV */
+	case 0x00:  
+	case 0x01:  
 		break;
 	default:
 		link = mxm_sor_map(bios, ctx.desc.dig_conn) & 0x30;
@@ -136,32 +102,26 @@ mxm_dcb_sanitise_entry(struct nvkm_bios *bios, void *data, int idx, u16 pdcb)
 		break;
 	}
 
-	/* we may need to fixup various other vbios tables based on what
-	 * the descriptor says the connector type should be.
-	 *
-	 * in a lot of cases, the vbios tables will claim DVI-I is possible,
-	 * and the mxm data says the connector is really HDMI.  another
-	 * common example is DP->eDP.
-	 */
+	 
 	conn  = bios->data;
 	conn += nvbios_connEe(bios, (ctx.outp[0] & 0x0000f000) >> 12, &ver, &len);
 	type  = conn[0];
 	switch (ctx.desc.conn_type) {
-	case 0x01: /* LVDS */
-		ctx.outp[1] |= 0x00000004; /* use_power_scripts */
-		/* XXX: modify default link width in LVDS table */
+	case 0x01:  
+		ctx.outp[1] |= 0x00000004;  
+		 
 		break;
-	case 0x02: /* HDMI */
+	case 0x02:  
 		type = DCB_CONNECTOR_HDMI_1;
 		break;
-	case 0x03: /* DVI-D */
+	case 0x03:  
 		type = DCB_CONNECTOR_DVI_D;
 		break;
-	case 0x0e: /* eDP, falls through to DPint */
+	case 0x0e:  
 		ctx.outp[1] |= 0x00010000;
 		fallthrough;
-	case 0x07: /* DP internal, wtf is this?? HP8670w */
-		ctx.outp[1] |= 0x00000004; /* use_power_scripts? */
+	case 0x07:  
+		ctx.outp[1] |= 0x00000004;  
 		type = DCB_CONNECTOR_eDP;
 		break;
 	default:

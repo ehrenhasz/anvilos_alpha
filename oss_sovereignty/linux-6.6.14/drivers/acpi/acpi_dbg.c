@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ACPI AML interfacing support
- *
- * Copyright (C) 2015, Intel Corporation
- * Authors: Lv Zheng <lv.zheng@intel.com>
- */
 
-/* #define DEBUG */
+ 
+
+ 
 #define pr_fmt(fmt) "ACPI: AML: " fmt
 
 #include <linux/kernel.h>
@@ -35,10 +30,10 @@
 
 #define ACPI_AML_OPENED		0x0001
 #define ACPI_AML_CLOSED		0x0002
-#define ACPI_AML_IN_USER	0x0004 /* user space is writing cmd */
-#define ACPI_AML_IN_KERN	0x0008 /* kernel space is reading cmd */
-#define ACPI_AML_OUT_USER	0x0010 /* user space is reading log */
-#define ACPI_AML_OUT_KERN	0x0020 /* kernel space is writing log */
+#define ACPI_AML_IN_USER	0x0004  
+#define ACPI_AML_IN_KERN	0x0008  
+#define ACPI_AML_OUT_USER	0x0010  
+#define ACPI_AML_OUT_KERN	0x0020  
 #define ACPI_AML_USER		(ACPI_AML_IN_USER | ACPI_AML_OUT_USER)
 #define ACPI_AML_KERN		(ACPI_AML_IN_KERN | ACPI_AML_OUT_KERN)
 #define ACPI_AML_BUSY		(ACPI_AML_USER | ACPI_AML_KERN)
@@ -71,13 +66,7 @@ static inline bool __acpi_aml_running(void)
 
 static inline bool __acpi_aml_access_ok(unsigned long flag)
 {
-	/*
-	 * The debugger interface is in opened state (OPENED && !CLOSED),
-	 * then it is allowed to access the debugger buffers from either
-	 * user space or the kernel space.
-	 * In addition, for the kernel space, only the debugger thread
-	 * (thread ID matched) is allowed to access.
-	 */
+	 
 	if (!(acpi_aml_io.flags & ACPI_AML_OPENED) ||
 	    (acpi_aml_io.flags & ACPI_AML_CLOSED) ||
 	    !__acpi_aml_running())
@@ -90,10 +79,7 @@ static inline bool __acpi_aml_access_ok(unsigned long flag)
 
 static inline bool __acpi_aml_readable(struct circ_buf *circ, unsigned long flag)
 {
-	/*
-	 * Another read is not in progress and there is data in buffer
-	 * available for read.
-	 */
+	 
 	if (!(acpi_aml_io.flags & flag) && circ_count(circ))
 		return true;
 	return false;
@@ -101,10 +87,7 @@ static inline bool __acpi_aml_readable(struct circ_buf *circ, unsigned long flag
 
 static inline bool __acpi_aml_writable(struct circ_buf *circ, unsigned long flag)
 {
-	/*
-	 * Another write is not in progress and there is buffer space
-	 * available for write.
-	 */
+	 
 	if (!(acpi_aml_io.flags & flag) && circ_space(circ))
 		return true;
 	return false;
@@ -146,10 +129,7 @@ static bool acpi_aml_used(void)
 {
 	bool ret;
 
-	/*
-	 * The usage count is prepared to avoid race conditions between the
-	 * starts and the stops of the debugger thread.
-	 */
+	 
 	mutex_lock(&acpi_aml_io.lock);
 	ret = __acpi_aml_used();
 	mutex_unlock(&acpi_aml_io.lock);
@@ -257,12 +237,12 @@ static int acpi_aml_write_kern(const char *buf, int len)
 	ret = acpi_aml_lock_write(crc, ACPI_AML_OUT_KERN);
 	if (ret < 0)
 		return ret;
-	/* sync tail before inserting logs */
+	 
 	smp_mb();
 	p = &crc->buf[crc->head];
 	n = min(len, circ_space_to_end(crc));
 	memcpy(p, buf, n);
-	/* sync head after inserting logs */
+	 
 	smp_wmb();
 	crc->head = (crc->head + n) & (ACPI_AML_BUF_SIZE - 1);
 	acpi_aml_unlock_fifo(ACPI_AML_OUT_KERN, true);
@@ -278,25 +258,18 @@ static int acpi_aml_readb_kern(void)
 	ret = acpi_aml_lock_read(crc, ACPI_AML_IN_KERN);
 	if (ret < 0)
 		return ret;
-	/* sync head before removing cmds */
+	 
 	smp_rmb();
 	p = &crc->buf[crc->tail];
 	ret = (int)*p;
-	/* sync tail before inserting cmds */
+	 
 	smp_mb();
 	crc->tail = (crc->tail + 1) & (ACPI_AML_BUF_SIZE - 1);
 	acpi_aml_unlock_fifo(ACPI_AML_IN_KERN, true);
 	return ret;
 }
 
-/*
- * acpi_aml_write_log() - Capture debugger output
- * @msg: the debugger output
- *
- * This function should be used to implement acpi_os_printf() to filter out
- * the debugger output and store the output into the debugger interface
- * buffer. Return the size of stored logs or errno.
- */
+ 
 static ssize_t acpi_aml_write_log(const char *msg)
 {
 	int ret = 0;
@@ -312,10 +285,7 @@ again:
 		if (ret == -EAGAIN) {
 			ret = wait_event_interruptible(acpi_aml_io.wait,
 				acpi_aml_kern_writable());
-			/*
-			 * We need to retry when the condition
-			 * becomes true.
-			 */
+			 
 			if (ret == 0)
 				goto again;
 			break;
@@ -328,38 +298,22 @@ again:
 	return size > 0 ? size : ret;
 }
 
-/*
- * acpi_aml_read_cmd() - Capture debugger input
- * @msg: the debugger input
- * @size: the size of the debugger input
- *
- * This function should be used to implement acpi_os_get_line() to capture
- * the debugger input commands and store the input commands into the
- * debugger interface buffer. Return the size of stored commands or errno.
- */
+ 
 static ssize_t acpi_aml_read_cmd(char *msg, size_t count)
 {
 	int ret = 0;
 	int size = 0;
 
-	/*
-	 * This is ensured by the running fact of the debugger thread
-	 * unless a bug is introduced.
-	 */
+	 
 	BUG_ON(!acpi_aml_initialized);
 	while (count > 0) {
 again:
-		/*
-		 * Check each input byte to find the end of the command.
-		 */
+		 
 		ret = acpi_aml_readb_kern();
 		if (ret == -EAGAIN) {
 			ret = wait_event_interruptible(acpi_aml_io.wait,
 				acpi_aml_kern_readable());
-			/*
-			 * We need to retry when the condition becomes
-			 * true.
-			 */
+			 
 			if (ret == 0)
 				goto again;
 		}
@@ -369,10 +323,7 @@ again:
 		size++;
 		count--;
 		if (ret == '\n') {
-			/*
-			 * acpi_os_get_line() requires a zero terminated command
-			 * string.
-			 */
+			 
 			*(msg + size - 1) = '\0';
 			break;
 		}
@@ -407,14 +358,7 @@ static int acpi_aml_thread(void *unused)
 	return 0;
 }
 
-/*
- * acpi_aml_create_thread() - Create AML debugger thread
- * @function: the debugger thread callback
- * @context: the context to be passed to the debugger thread
- *
- * This function should be used to implement acpi_os_execute() which is
- * used by the ACPICA debugger to create the debugger thread.
- */
+ 
 static int acpi_aml_create_thread(acpi_osd_exec_callback function, void *context)
 {
 	struct task_struct *t;
@@ -465,19 +409,13 @@ static int acpi_aml_open(struct inode *inode, struct file *file)
 	acpi_status status;
 
 	mutex_lock(&acpi_aml_io.lock);
-	/*
-	 * The debugger interface is being closed, no new user is allowed
-	 * during this period.
-	 */
+	 
 	if (acpi_aml_io.flags & ACPI_AML_CLOSED) {
 		ret = -EBUSY;
 		goto err_lock;
 	}
 	if ((file->f_flags & O_ACCMODE) != O_WRONLY) {
-		/*
-		 * Only one reader is allowed to initiate the debugger
-		 * thread.
-		 */
+		 
 		if (acpi_aml_active_reader) {
 			ret = -EBUSY;
 			goto err_lock;
@@ -486,10 +424,7 @@ static int acpi_aml_open(struct inode *inode, struct file *file)
 			acpi_aml_active_reader = file;
 		}
 	} else {
-		/*
-		 * No writer is allowed unless the debugger thread is
-		 * ready.
-		 */
+		 
 		if (!(acpi_aml_io.flags & ACPI_AML_OPENED)) {
 			ret = -ENODEV;
 			goto err_lock;
@@ -536,23 +471,13 @@ static int acpi_aml_release(struct inode *inode, struct file *file)
 		pr_debug("Closing debugger interface.\n");
 		acpi_aml_io.flags |= ACPI_AML_CLOSED;
 
-		/*
-		 * Wake up all user space/kernel space blocked
-		 * readers/writers.
-		 */
+		 
 		wake_up_interruptible(&acpi_aml_io.wait);
 		mutex_unlock(&acpi_aml_io.lock);
-		/*
-		 * Wait all user space/kernel space readers/writers to
-		 * stop so that ACPICA command loop of the debugger thread
-		 * should fail all its command line reads after this point.
-		 */
+		 
 		wait_event(acpi_aml_io.wait, !acpi_aml_busy());
 
-		/*
-		 * Then we try to terminate the debugger thread if it is
-		 * not terminated.
-		 */
+		 
 		pr_debug("Terminating debugger thread.\n");
 		acpi_terminate_debugger();
 		wait_event(acpi_aml_io.wait, !acpi_aml_used());
@@ -579,7 +504,7 @@ static int acpi_aml_read_user(char __user *buf, int len)
 	ret = acpi_aml_lock_read(crc, ACPI_AML_OUT_USER);
 	if (ret < 0)
 		return ret;
-	/* sync head before removing logs */
+	 
 	smp_rmb();
 	p = &crc->buf[crc->tail];
 	n = min(len, circ_count_to_end(crc));
@@ -587,7 +512,7 @@ static int acpi_aml_read_user(char __user *buf, int len)
 		ret = -EFAULT;
 		goto out;
 	}
-	/* sync tail after removing logs */
+	 
 	smp_mb();
 	crc->tail = (crc->tail + n) & (ACPI_AML_BUF_SIZE - 1);
 	ret = n;
@@ -616,10 +541,7 @@ again:
 			else {
 				ret = wait_event_interruptible(acpi_aml_io.wait,
 					acpi_aml_user_readable());
-				/*
-				 * We need to retry when the condition
-				 * becomes true.
-				 */
+				 
 				if (ret == 0)
 					goto again;
 			}
@@ -649,7 +571,7 @@ static int acpi_aml_write_user(const char __user *buf, int len)
 	ret = acpi_aml_lock_write(crc, ACPI_AML_IN_USER);
 	if (ret < 0)
 		return ret;
-	/* sync tail before inserting cmds */
+	 
 	smp_mb();
 	p = &crc->buf[crc->head];
 	n = min(len, circ_space_to_end(crc));
@@ -657,7 +579,7 @@ static int acpi_aml_write_user(const char __user *buf, int len)
 		ret = -EFAULT;
 		goto out;
 	}
-	/* sync head after inserting cmds */
+	 
 	smp_wmb();
 	crc->head = (crc->head + n) & (ACPI_AML_BUF_SIZE - 1);
 	ret = n;
@@ -686,10 +608,7 @@ again:
 			else {
 				ret = wait_event_interruptible(acpi_aml_io.wait,
 					acpi_aml_user_writable());
-				/*
-				 * We need to retry when the condition
-				 * becomes true.
-				 */
+				 
 				if (ret == 0)
 					goto again;
 			}
@@ -745,7 +664,7 @@ static int __init acpi_aml_init(void)
 	if (acpi_disabled)
 		return -ENODEV;
 
-	/* Initialize AML IO interface */
+	 
 	mutex_init(&acpi_aml_io.lock);
 	init_waitqueue_head(&acpi_aml_io.wait);
 	acpi_aml_io.out_crc.buf = acpi_aml_io.out_buf;

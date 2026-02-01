@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Generic platform ehci driver
- *
- * Copyright 2007 Steven Brown <sbrown@cortland.com>
- * Copyright 2010-2012 Hauke Mehrtens <hauke@hauke-m.de>
- * Copyright 2014 Hans de Goede <hdegoede@redhat.com>
- *
- * Derived from the ohci-ssb driver
- * Copyright 2007 Michael Buesch <m@bues.ch>
- *
- * Derived from the EHCI-PCI driver
- * Copyright (c) 2000-2004 by David Brownell
- *
- * Derived from the ohci-pci driver
- * Copyright 1999 Roman Weissgaerber
- * Copyright 2000-2002 David Brownell
- * Copyright 1999 Linus Torvalds
- * Copyright 1999 Gregory P. Smith
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -128,17 +110,7 @@ static struct usb_ehci_pdata ehci_platform_defaults = {
 	.power_off =		ehci_platform_power_off,
 };
 
-/**
- * quirk_poll_check_port_status - Poll port_status if the device sticks
- * @ehci: the ehci hcd pointer
- *
- * Since EHCI/OHCI controllers on R-Car Gen3 SoCs are possible to be getting
- * stuck very rarely after a full/low usb device was disconnected. To
- * detect such a situation, the controllers require a special way which poll
- * the EHCI PORTSC register.
- *
- * Return: true if the controller's port_status indicated getting stuck
- */
+ 
 static bool quirk_poll_check_port_status(struct ehci_hcd *ehci)
 {
 	u32 port_status = ehci_readl(ehci, &ehci->regs->port_status[0]);
@@ -152,15 +124,7 @@ static bool quirk_poll_check_port_status(struct ehci_hcd *ehci)
 	return false;
 }
 
-/**
- * quirk_poll_rebind_companion - rebind comanion device to recover
- * @ehci: the ehci hcd pointer
- *
- * Since EHCI/OHCI controllers on R-Car Gen3 SoCs are possible to be getting
- * stuck very rarely after a full/low usb device was disconnected. To
- * recover from such a situation, the controllers require changing the OHCI
- * functional state.
- */
+ 
 static void quirk_poll_rebind_companion(struct ehci_hcd *ehci)
 {
 	struct device *companion_dev;
@@ -185,7 +149,7 @@ static void quirk_poll_work(struct work_struct *work)
 	struct ehci_hcd *ehci = container_of((void *)priv, struct ehci_hcd,
 					     priv);
 
-	/* check the status twice to reduce misdetection rate */
+	 
 	if (!quirk_poll_check_port_status(ehci))
 		return;
 	udelay(10);
@@ -203,12 +167,7 @@ static void quirk_poll_timer(struct timer_list *t)
 					     priv);
 
 	if (quirk_poll_check_port_status(ehci)) {
-		/*
-		 * Now scheduling the work for testing the port more. Note that
-		 * updating the status is possible to be delayed when
-		 * reconnection. So, this uses delayed work with 5 ms delay
-		 * to avoid misdetection.
-		 */
+		 
 		schedule_delayed_work(&priv->poll_work, msecs_to_jiffies(5));
 	}
 
@@ -230,7 +189,7 @@ static void quirk_poll_end(struct ehci_platform_priv *priv)
 
 static const struct soc_device_attribute quirk_poll_match[] = {
 	{ .family = "R-Car Gen3" },
-	{ /* sentinel*/ }
+	{   }
 };
 
 static int ehci_platform_probe(struct platform_device *dev)
@@ -245,10 +204,7 @@ static int ehci_platform_probe(struct platform_device *dev)
 	if (usb_disabled())
 		return -ENODEV;
 
-	/*
-	 * Use reasonable defaults so platforms don't have to provide these
-	 * with DT probing on ARM.
-	 */
+	 
 	if (!pdata)
 		pdata = &ehci_platform_defaults;
 
@@ -490,7 +446,7 @@ MODULE_DEVICE_TABLE(of, vt8500_ehci_ids);
 
 #ifdef CONFIG_ACPI
 static const struct acpi_device_id ehci_acpi_match[] = {
-	{ "PNP0D20", 0 }, /* EHCI controller without debug */
+	{ "PNP0D20", 0 },  
 	{ }
 };
 MODULE_DEVICE_TABLE(acpi, ehci_acpi_match);

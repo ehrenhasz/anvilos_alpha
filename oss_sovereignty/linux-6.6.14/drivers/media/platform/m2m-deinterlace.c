@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * V4L2 deinterlacing support.
- *
- * Copyright (c) 2012 Vista Silicon S.L.
- * Javier Martin <javier.martin@vista-silicon.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -27,7 +22,7 @@ MODULE_VERSION("0.0.1");
 static bool debug;
 module_param(debug, bool, 0644);
 
-/* Flags that indicate a format can be used for capture/output */
+ 
 #define MEM2MEM_CAPTURE	(1 << 0)
 #define MEM2MEM_OUTPUT	(1 << 1)
 
@@ -38,7 +33,7 @@ module_param(debug, bool, 0644);
 
 struct deinterlace_fmt {
 	u32	fourcc;
-	/* Types the format can be used for */
+	 
 	u32	types;
 };
 
@@ -55,7 +50,7 @@ static struct deinterlace_fmt formats[] = {
 
 #define NUM_FORMATS ARRAY_SIZE(formats)
 
-/* Per-queue, driver-specific private data */
+ 
 struct deinterlace_q_data {
 	unsigned int		width;
 	unsigned int		height;
@@ -84,7 +79,7 @@ enum {
 	YUYV_DMA_EVEN_DOUBLING,
 };
 
-/* Source and destination queue data */
+ 
 static struct deinterlace_q_data q_data[2];
 
 static struct deinterlace_q_data *get_q_data(enum v4l2_buf_type type)
@@ -135,16 +130,14 @@ struct deinterlace_ctx {
 	struct v4l2_fh		fh;
 	struct deinterlace_dev	*dev;
 
-	/* Abort requested by m2m */
+	 
 	int			aborting;
 	enum v4l2_colorspace	colorspace;
 	dma_cookie_t		cookie;
 	struct dma_interleaved_template *xt;
 };
 
-/*
- * mem2mem callbacks
- */
+ 
 static int deinterlace_job_ready(void *priv)
 {
 	struct deinterlace_ctx *ctx = priv;
@@ -318,7 +311,7 @@ static void deinterlace_issue_dma(struct deinterlace_ctx *ctx, int op,
 		break;
 	}
 
-	/* Common parameters for al transfers */
+	 
 	ctx->xt->frame_size = 1;
 	ctx->xt->dir = DMA_MEM_TO_MEM;
 	ctx->xt->src_sgl = false;
@@ -359,21 +352,7 @@ static void deinterlace_device_run(void *priv)
 
 	dst_q_data = get_q_data(V4L2_BUF_TYPE_VIDEO_CAPTURE);
 
-	/*
-	 * 4 possible field conversions are possible at the moment:
-	 *  V4L2_FIELD_SEQ_TB --> V4L2_FIELD_INTERLACED_TB:
-	 *	two separate fields in the same input buffer are interlaced
-	 *	in the output buffer using weaving. Top field comes first.
-	 *  V4L2_FIELD_SEQ_TB --> V4L2_FIELD_NONE:
-	 *	top field from the input buffer is copied to the output buffer
-	 *	using line doubling. Bottom field from the input buffer is discarded.
-	 * V4L2_FIELD_SEQ_BT --> V4L2_FIELD_INTERLACED_BT:
-	 *	two separate fields in the same input buffer are interlaced
-	 *	in the output buffer using weaving. Bottom field comes first.
-	 * V4L2_FIELD_SEQ_BT --> V4L2_FIELD_NONE:
-	 *	bottom field from the input buffer is copied to the output buffer
-	 *	using line doubling. Top field from the input buffer is discarded.
-	 */
+	 
 	switch (dst_q_data->fmt->fourcc) {
 	case V4L2_PIX_FMT_YUV420:
 		switch (dst_q_data->field) {
@@ -425,9 +404,7 @@ static void deinterlace_device_run(void *priv)
 	dprintk(ctx->dev, "%s: DMA issue done.\n", __func__);
 }
 
-/*
- * video ioctls
- */
+ 
 static int vidioc_querycap(struct file *file, void *priv,
 			   struct v4l2_capability *cap)
 {
@@ -446,23 +423,22 @@ static int enum_fmt(struct v4l2_fmtdesc *f, u32 type)
 
 	for (i = 0; i < NUM_FORMATS; ++i) {
 		if (formats[i].types & type) {
-			/* index-th format of type type found ? */
+			 
 			if (num == f->index)
 				break;
-			/* Correct type but haven't reached our index yet,
-			 * just increment per-type index */
+			 
 			++num;
 		}
 	}
 
 	if (i < NUM_FORMATS) {
-		/* Format found */
+		 
 		fmt = &formats[i];
 		f->pixelformat = fmt->fourcc;
 		return 0;
 	}
 
-	/* Format not found */
+	 
 	return -EINVAL;
 }
 
@@ -662,14 +638,14 @@ static int vidioc_streamon(struct file *file, void *priv,
 	s_q_data = get_q_data(V4L2_BUF_TYPE_VIDEO_OUTPUT);
 	d_q_data = get_q_data(V4L2_BUF_TYPE_VIDEO_CAPTURE);
 
-	/* Check that src and dst queues have the same pix format */
+	 
 	if (s_q_data->fmt->fourcc != d_q_data->fmt->fourcc) {
 		v4l2_err(&ctx->dev->v4l2_dev,
 			 "src and dst formats don't match.\n");
 		return -EINVAL;
 	}
 
-	/* Check that input and output deinterlacing types are compatible */
+	 
 	switch (s_q_data->field) {
 	case V4L2_FIELD_SEQ_BT:
 		if (d_q_data->field != V4L2_FIELD_NONE &&
@@ -721,9 +697,7 @@ static const struct v4l2_ioctl_ops deinterlace_ioctl_ops = {
 };
 
 
-/*
- * Queue operations
- */
+ 
 struct vb2_dc_conf {
 	struct device           *dev;
 };
@@ -835,9 +809,7 @@ static int queue_init(void *priv, struct vb2_queue *src_vq,
 	return vb2_queue_init(dst_vq);
 }
 
-/*
- * File operations
- */
+ 
 static int deinterlace_open(struct file *file)
 {
 	struct deinterlace_dev *pcdev = video_drvdata(file);

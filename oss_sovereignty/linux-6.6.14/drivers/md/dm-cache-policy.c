@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Red Hat. All rights reserved.
- *
- * This file is released under the GPL.
- */
+
+ 
 
 #include "dm-cache-policy-internal.h"
 #include "dm.h"
@@ -11,7 +7,7 @@
 #include <linux/module.h>
 #include <linux/slab.h>
 
-/*----------------------------------------------------------------*/
+ 
 
 #define DM_MSG_PREFIX "cache-policy"
 
@@ -81,7 +77,7 @@ int dm_cache_policy_register(struct dm_cache_policy_type *type)
 {
 	int r;
 
-	/* One size fits all for now */
+	 
 	if (type->hint_size != 0 && type->hint_size != 4) {
 		DMWARN("hint size must be 0 or 4 but %llu supplied.", (unsigned long long) type->hint_size);
 		return -EINVAL;
@@ -147,7 +143,7 @@ const char *dm_cache_policy_get_name(struct dm_cache_policy *p)
 {
 	struct dm_cache_policy_type *t = p->private;
 
-	/* if t->real is set then an alias was used (e.g. "default") */
+	 
 	if (t->real)
 		return t->real->name;
 
@@ -171,4 +167,4 @@ size_t dm_cache_policy_get_hint_size(struct dm_cache_policy *p)
 }
 EXPORT_SYMBOL_GPL(dm_cache_policy_get_hint_size);
 
-/*----------------------------------------------------------------*/
+ 

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Mediatek 8173 ALSA SoC AFE platform driver
- *
- * Copyright (c) 2015 MediaTek Inc.
- * Author: Koro Chen <koro.chen@mediatek.com>
- *             Sascha Hauer <s.hauer@pengutronix.de>
- *             Hidalgo Huang <hidalgo.huang@mediatek.com>
- *             Ir Lian <ir.lian@mediatek.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -21,9 +13,7 @@
 #include "../common/mtk-afe-platform-driver.h"
 #include "../common/mtk-afe-fe-dai.h"
 
-/*****************************************************************************
- *                  R E G I S T E R       D E F I N I T I O N
- *****************************************************************************/
+ 
 #define AUDIO_TOP_CON0		0x0000
 #define AUDIO_TOP_CON1		0x0004
 #define AFE_DAC_CON0		0x0010
@@ -40,7 +30,7 @@
 #define AFE_CONN8		0x0464
 #define AFE_HDMI_CONN0		0x0390
 
-/* Memory interface */
+ 
 #define AFE_DL1_BASE		0x0040
 #define AFE_DL1_CUR		0x0044
 #define AFE_DL1_END		0x0048
@@ -78,30 +68,30 @@
 
 #define AFE_IRQ_STATUS_BITS	0xff
 
-/* AUDIO_TOP_CON0 (0x0000) */
+ 
 #define AUD_TCON0_PDN_SPDF		(0x1 << 21)
 #define AUD_TCON0_PDN_HDMI		(0x1 << 20)
 #define AUD_TCON0_PDN_24M		(0x1 << 9)
 #define AUD_TCON0_PDN_22M		(0x1 << 8)
 #define AUD_TCON0_PDN_AFE		(0x1 << 2)
 
-/* AFE_I2S_CON1 (0x0034) */
+ 
 #define AFE_I2S_CON1_LOW_JITTER_CLK	(0x1 << 12)
 #define AFE_I2S_CON1_RATE(x)		(((x) & 0xf) << 8)
 #define AFE_I2S_CON1_FORMAT_I2S		(0x1 << 3)
 #define AFE_I2S_CON1_EN			(0x1 << 0)
 
-/* AFE_I2S_CON2 (0x0038) */
+ 
 #define AFE_I2S_CON2_LOW_JITTER_CLK	(0x1 << 12)
 #define AFE_I2S_CON2_RATE(x)		(((x) & 0xf) << 8)
 #define AFE_I2S_CON2_FORMAT_I2S		(0x1 << 3)
 #define AFE_I2S_CON2_EN			(0x1 << 0)
 
-/* AFE_CONN_24BIT (0x006c) */
+ 
 #define AFE_CONN_24BIT_O04		(0x1 << 4)
 #define AFE_CONN_24BIT_O03		(0x1 << 3)
 
-/* AFE_HDMI_CONN0 (0x0390) */
+ 
 #define AFE_HDMI_CONN0_O37_I37		(0x7 << 21)
 #define AFE_HDMI_CONN0_O36_I36		(0x6 << 18)
 #define AFE_HDMI_CONN0_O35_I33		(0x3 << 15)
@@ -111,7 +101,7 @@
 #define AFE_HDMI_CONN0_O31_I31		(0x1 << 3)
 #define AFE_HDMI_CONN0_O30_I30		(0x0 << 0)
 
-/* AFE_TDM_CON1 (0x0548) */
+ 
 #define AFE_TDM_CON1_LRCK_WIDTH(x)	(((x) - 1) << 24)
 #define AFE_TDM_CON1_32_BCK_CYCLES	(0x2 << 12)
 #define AFE_TDM_CON1_WLEN_32BIT		(0x2 << 8)
@@ -201,18 +191,18 @@ static int mt8173_afe_set_i2s(struct mtk_base_afe *afe, unsigned int rate)
 	if (fs < 0)
 		return -EINVAL;
 
-	/* from external ADC */
+	 
 	regmap_update_bits(afe->regmap, AFE_ADDA_TOP_CON0, 0x1, 0x1);
 	regmap_update_bits(afe->regmap, AFE_ADDA2_TOP_CON0, 0x1, 0x1);
 
-	/* set input */
+	 
 	val = AFE_I2S_CON2_LOW_JITTER_CLK |
 	      AFE_I2S_CON2_RATE(fs) |
 	      AFE_I2S_CON2_FORMAT_I2S;
 
 	regmap_update_bits(afe->regmap, AFE_I2S_CON2, ~AFE_I2S_CON2_EN, val);
 
-	/* set output */
+	 
 	val = AFE_I2S_CON1_LOW_JITTER_CLK |
 	      AFE_I2S_CON1_RATE(fs) |
 	      AFE_I2S_CON1_FORMAT_I2S;
@@ -229,10 +219,10 @@ static void mt8173_afe_set_i2s_enable(struct mtk_base_afe *afe, bool enable)
 	if (!!(val & AFE_I2S_CON2_EN) == enable)
 		return;
 
-	/* input */
+	 
 	regmap_update_bits(afe->regmap, AFE_I2S_CON2, 0x1, enable);
 
-	/* output */
+	 
 	regmap_update_bits(afe->regmap, AFE_I2S_CON1, 0x1, enable);
 }
 
@@ -329,7 +319,7 @@ static int mt8173_afe_i2s_prepare(struct snd_pcm_substream *substream,
 				 runtime->rate * 256, NULL, 0);
 	mt8173_afe_dais_set_clks(afe, afe_priv->clocks[MT8173_CLK_I2S2_M],
 				 runtime->rate * 256, NULL, 0);
-	/* config I2S */
+	 
 	ret = mt8173_afe_set_i2s(afe, substream->runtime->rate);
 	if (ret)
 		return ret;
@@ -383,13 +373,13 @@ static int mt8173_afe_hdmi_prepare(struct snd_pcm_substream *substream,
 	val = AFE_TDM_CON1_BCK_INV |
 	      AFE_TDM_CON1_LRCK_INV |
 	      AFE_TDM_CON1_1_BCK_DELAY |
-	      AFE_TDM_CON1_MSB_ALIGNED | /* I2S mode */
+	      AFE_TDM_CON1_MSB_ALIGNED |  
 	      AFE_TDM_CON1_WLEN_32BIT |
 	      AFE_TDM_CON1_32_BCK_CYCLES |
 	      AFE_TDM_CON1_LRCK_WIDTH(32);
 	regmap_update_bits(afe->regmap, AFE_TDM_CON1, ~AFE_TDM_CON1_EN, val);
 
-	/* set tdm2 config */
+	 
 	switch (runtime->channels) {
 	case 1:
 	case 2:
@@ -442,7 +432,7 @@ static int mt8173_afe_hdmi_trigger(struct snd_pcm_substream *substream, int cmd,
 		regmap_update_bits(afe->regmap, AUDIO_TOP_CON0,
 				   AUD_TCON0_PDN_HDMI | AUD_TCON0_PDN_SPDF, 0);
 
-		/* set connections:  O30~O37: L/R/LS/RS/C/LFE/CH7/CH8 */
+		 
 		regmap_write(afe->regmap, AFE_HDMI_CONN0,
 				 AFE_HDMI_CONN0_O30_I30 |
 				 AFE_HDMI_CONN0_O31_I31 |
@@ -453,19 +443,19 @@ static int mt8173_afe_hdmi_trigger(struct snd_pcm_substream *substream, int cmd,
 				 AFE_HDMI_CONN0_O36_I36 |
 				 AFE_HDMI_CONN0_O37_I37);
 
-		/* enable Out control */
+		 
 		regmap_update_bits(afe->regmap, AFE_HDMI_OUT_CON0, 0x1, 0x1);
 
-		/* enable tdm */
+		 
 		regmap_update_bits(afe->regmap, AFE_TDM_CON1, 0x1, 0x1);
 
 		return 0;
 	case SNDRV_PCM_TRIGGER_STOP:
 	case SNDRV_PCM_TRIGGER_SUSPEND:
-		/* disable tdm */
+		 
 		regmap_update_bits(afe->regmap, AFE_TDM_CON1, 0x1, 0);
 
-		/* disable Out control */
+		 
 		regmap_update_bits(afe->regmap, AFE_HDMI_OUT_CON0, 0x1, 0);
 
 		regmap_update_bits(afe->regmap, AUDIO_TOP_CON0,
@@ -512,7 +502,7 @@ static int mt8173_irq_fs(struct snd_pcm_substream *substream, unsigned int rate)
 	return mt8173_afe_i2s_fs(rate);
 }
 
-/* BE DAIs */
+ 
 static const struct snd_soc_dai_ops mt8173_afe_i2s_ops = {
 	.startup	= mt8173_afe_i2s_startup,
 	.shutdown	= mt8173_afe_i2s_shutdown,
@@ -527,9 +517,9 @@ static const struct snd_soc_dai_ops mt8173_afe_hdmi_ops = {
 };
 
 static struct snd_soc_dai_driver mt8173_afe_pcm_dais[] = {
-	/* FE DAIs: memory intefaces to CPU */
+	 
 	{
-		.name = "DL1", /* downlink 1 */
+		.name = "DL1",  
 		.id = MT8173_AFE_MEMIF_DL1,
 		.playback = {
 			.stream_name = "DL1",
@@ -540,7 +530,7 @@ static struct snd_soc_dai_driver mt8173_afe_pcm_dais[] = {
 		},
 		.ops = &mtk_afe_fe_ops,
 	}, {
-		.name = "VUL", /* voice uplink */
+		.name = "VUL",  
 		.id = MT8173_AFE_MEMIF_VUL,
 		.capture = {
 			.stream_name = "VUL",
@@ -551,7 +541,7 @@ static struct snd_soc_dai_driver mt8173_afe_pcm_dais[] = {
 		},
 		.ops = &mtk_afe_fe_ops,
 	}, {
-	/* BE DAIs */
+	 
 		.name = "I2S",
 		.id = MT8173_AFE_IO_I2S,
 		.playback = {
@@ -574,7 +564,7 @@ static struct snd_soc_dai_driver mt8173_afe_pcm_dais[] = {
 };
 
 static struct snd_soc_dai_driver mt8173_afe_hdmi_dais[] = {
-	/* FE DAIs */
+	 
 	{
 		.name = "HDMI",
 		.id = MT8173_AFE_MEMIF_HDMI,
@@ -590,7 +580,7 @@ static struct snd_soc_dai_driver mt8173_afe_hdmi_dais[] = {
 		},
 		.ops = &mtk_afe_fe_ops,
 	}, {
-	/* BE DAIs */
+	 
 		.name = "HDMIO",
 		.id = MT8173_AFE_IO_HDMI,
 		.playback = {
@@ -626,7 +616,7 @@ static const struct snd_kcontrol_new mt8173_afe_o10_mix[] = {
 };
 
 static const struct snd_soc_dapm_widget mt8173_afe_pcm_widgets[] = {
-	/* inter-connections */
+	 
 	SND_SOC_DAPM_MIXER("I03", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("I04", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("I05", SND_SOC_NOPM, 0, 0, NULL, 0),
@@ -938,7 +928,7 @@ static irqreturn_t mt8173_afe_irq_handler(int irq, void *dev_id)
 	}
 
 err_irq:
-	/* clear irq */
+	 
 	regmap_write(afe->regmap, AFE_IRQ_CLR,
 		     reg_value & AFE_IRQ_STATUS_BITS);
 
@@ -950,10 +940,10 @@ static int mt8173_afe_runtime_suspend(struct device *dev)
 	struct mtk_base_afe *afe = dev_get_drvdata(dev);
 	struct mt8173_afe_private *afe_priv = afe->platform_priv;
 
-	/* disable AFE */
+	 
 	regmap_update_bits(afe->regmap, AFE_DAC_CON0, 0x1, 0);
 
-	/* disable AFE clk */
+	 
 	regmap_update_bits(afe->regmap, AUDIO_TOP_CON0,
 			   AUD_TCON0_PDN_AFE, AUD_TCON0_PDN_AFE);
 
@@ -999,17 +989,17 @@ static int mt8173_afe_runtime_resume(struct device *dev)
 	if (ret)
 		goto err_i2s2_m;
 
-	/* enable AFE clk */
+	 
 	regmap_update_bits(afe->regmap, AUDIO_TOP_CON0, AUD_TCON0_PDN_AFE, 0);
 
-	/* set O3/O4 16bits */
+	 
 	regmap_update_bits(afe->regmap, AFE_CONN_24BIT,
 			   AFE_CONN_24BIT_O03 | AFE_CONN_24BIT_O04, 0);
 
-	/* unmask all IRQs */
+	 
 	regmap_update_bits(afe->regmap, AFE_IRQ_MCU_EN, 0xff, 0xff);
 
-	/* enable AFE */
+	 
 	regmap_update_bits(afe->regmap, AFE_DAC_CON0, 0x1, 0x1);
 	return 0;
 
@@ -1041,8 +1031,8 @@ static int mt8173_afe_init_audio_clk(struct mtk_base_afe *afe)
 			return PTR_ERR(afe_priv->clocks[i]);
 		}
 	}
-	clk_set_rate(afe_priv->clocks[MT8173_CLK_BCK0], 22579200); /* 22M */
-	clk_set_rate(afe_priv->clocks[MT8173_CLK_BCK1], 24576000); /* 24M */
+	clk_set_rate(afe_priv->clocks[MT8173_CLK_BCK0], 22579200);  
+	clk_set_rate(afe_priv->clocks[MT8173_CLK_BCK1], 24576000);  
 	return 0;
 }
 
@@ -1083,14 +1073,14 @@ static int mt8173_afe_pcm_dev_probe(struct platform_device *pdev)
 	if (IS_ERR(afe->regmap))
 		return PTR_ERR(afe->regmap);
 
-	/* initial audio related clock */
+	 
 	ret = mt8173_afe_init_audio_clk(afe);
 	if (ret) {
 		dev_err(afe->dev, "mt8173_afe_init_audio_clk fail\n");
 		return ret;
 	}
 
-	/* memif % irq initialize*/
+	 
 	afe->memif_size = MT8173_AFE_MEMIF_NUM;
 	afe->memif = devm_kcalloc(afe->dev, afe->memif_size,
 				  sizeof(*afe->memif), GFP_KERNEL);

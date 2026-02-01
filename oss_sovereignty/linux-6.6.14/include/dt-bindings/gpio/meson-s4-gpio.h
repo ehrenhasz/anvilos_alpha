@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
-/*
- * Copyright (c) 2021 Amlogic, Inc. All rights reserved.
- * Author: Qianggui Song <qianggui.song@amlogic.com>
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_MESON_S4_GPIO_H
 #define _DT_BINDINGS_MESON_S4_GPIO_H
@@ -96,4 +93,4 @@
 #define	GPIOZ_12	80
 
 #define	GPIO_TEST_N	81
-#endif /* _DT_BINDINGS_MESON_S4_GPIO_H */
+#endif  

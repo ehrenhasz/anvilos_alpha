@@ -1,13 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * bebob_proc.c - a part of driver for BeBoB based devices
- *
- * Copyright (c) 2013-2014 Takashi Sakamoto
- */
+
+ 
 
 #include "./bebob.h"
 
-/* contents of information register */
+ 
 struct hw_info {
 	u64 manufacturer;
 	u32 protocol_ver;
@@ -23,12 +19,7 @@ struct hw_info {
 	u32 max_size;
 	u64 bld_date;
 	u64 bld_time;
-/* may not used in product
-	u64 dbg_date;
-	u64 dbg_time;
-	u32 dbg_id;
-	u32 dbg_version;
-*/
+ 
 } __packed;
 
 static void
@@ -170,10 +161,7 @@ void snd_bebob_proc_init(struct snd_bebob *bebob)
 {
 	struct snd_info_entry *root;
 
-	/*
-	 * All nodes are automatically removed at snd_card_disconnect(),
-	 * by following to link list.
-	 */
+	 
 	root = snd_info_create_card_entry(bebob->card, "firewire",
 					  bebob->card->proc_root);
 	if (root == NULL)

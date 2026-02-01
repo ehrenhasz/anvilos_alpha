@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * cxd2880-spi.c
- * Sony CXD2880 DVB-T2/T tuner + demodulator driver
- * SPI adapter
- *
- * Copyright (C) 2016, 2017, 2018 Sony Semiconductor Solutions Corporation
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": %s: " fmt, __func__
 
@@ -49,7 +43,7 @@ struct cxd2880_dvb_spi {
 	struct dmx_frontend dmx_fe;
 	struct task_struct *cxd2880_ts_read_thread;
 	struct spi_device *spi;
-	struct mutex spi_mutex; /* For SPI access exclusive control */
+	struct mutex spi_mutex;  
 	int feed_count;
 	int all_pid_feed_count;
 	struct regulator *vcc_supply;
@@ -442,11 +436,7 @@ static int cxd2880_stop_feed(struct dvb_demux_feed *feed)
 	}
 
 	if (feed->pid == 0x2000) {
-		/*
-		 * Special PID case.
-		 * Number of 0x2000 feed request was stored
-		 * in dvb_spi->all_pid_feed_count.
-		 */
+		 
 		if (dvb_spi->all_pid_feed_count <= 0) {
 			pr_err("PID %d not found\n", feed->pid);
 			return -EINVAL;
@@ -499,7 +489,7 @@ static int cxd2880_stop_feed(struct dvb_demux_feed *feed)
 
 static const struct of_device_id cxd2880_spi_of_match[] = {
 	{ .compatible = "sony,cxd2880" },
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, cxd2880_spi_of_match);
@@ -647,7 +637,7 @@ cxd2880_spi_remove(struct spi_device *spi)
 
 static const struct spi_device_id cxd2880_spi_id[] = {
 	{ "cxd2880", 0 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(spi, cxd2880_spi_id);
 

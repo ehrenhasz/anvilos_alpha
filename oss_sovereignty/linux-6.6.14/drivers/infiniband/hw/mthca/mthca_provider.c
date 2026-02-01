@@ -1,38 +1,4 @@
-/*
- * Copyright (c) 2004, 2005 Topspin Communications.  All rights reserved.
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
- * Copyright (c) 2005, 2006 Cisco Systems.  All rights reserved.
- * Copyright (c) 2005 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2004 Voltaire, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <rdma/ib_smi.h>
 #include <rdma/ib_umem.h>
@@ -130,7 +96,7 @@ static int mthca_query_port(struct ib_device *ibdev,
 	if (!in_mad || !out_mad)
 		goto out;
 
-	/* props being zeroed by the caller, avoid zeroing it here */
+	 
 
 	ib_init_query_mad(in_mad);
 	in_mad->attr_id  = IB_SMP_ATTR_PORT_INFO;
@@ -531,7 +497,7 @@ static int mthca_create_qp(struct ib_qp *ibqp,
 		break;
 	}
 	default:
-		/* Don't support raw QPs */
+		 
 		return -EOPNOTSUPP;
 	}
 
@@ -617,7 +583,7 @@ static int mthca_create_cq(struct ib_cq *ibcq,
 	}
 
 	for (nent = 1; nent <= entries; nent <<= 1)
-		; /* nothing */
+		;  
 
 	err = mthca_init_cq(to_mdev(ibdev), nent, context,
 			    udata ? ucmd.pdn : to_mdev(ibdev)->driver_pd.pd_num,
@@ -879,10 +845,7 @@ static struct ib_mr *mthca_reg_user_mr(struct ib_pd *pd, u64 start, u64 length,
 	rdma_umem_for_each_dma_block(mr->umem, &biter, PAGE_SIZE) {
 		pages[i++] = rdma_block_iter_dma_address(&biter);
 
-		/*
-		 * Be friendly to write_mtt and pass it chunks
-		 * of appropriate size.
-		 */
+		 
 		if (i == write_mtt_size) {
 			err = mthca_write_mtt(dev, mr->mtt, n, pages, i);
 			if (err)

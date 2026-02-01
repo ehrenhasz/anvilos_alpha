@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * VFIO based AP device driver
- *
- * Copyright IBM Corp. 2018
- *
- * Author(s): Tony Krowiak <akrowiak@linux.ibm.com>
- *	      Pierre Morel <pmorel@linux.ibm.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -26,9 +19,7 @@ MODULE_LICENSE("GPL v2");
 struct ap_matrix_dev *matrix_dev;
 debug_info_t *vfio_ap_dbf_info;
 
-/* Only type 10 adapters (CEX4 and later) are supported
- * by the AP matrix device driver
- */
+ 
 static struct ap_device_id ap_queue_ids[] = {
 	{ .dev_type = AP_DEVICE_TYPE_CEX4,
 	  .match_flags = AP_DEVICE_ID_MATCH_QUEUE_TYPE },
@@ -40,7 +31,7 @@ static struct ap_device_id ap_queue_ids[] = {
 	  .match_flags = AP_DEVICE_ID_MATCH_QUEUE_TYPE },
 	{ .dev_type = AP_DEVICE_TYPE_CEX8,
 	  .match_flags = AP_DEVICE_ID_MATCH_QUEUE_TYPE },
-	{ /* end of sibling */ },
+	{   },
 };
 
 static struct ap_driver vfio_ap_drv = {
@@ -89,7 +80,7 @@ static int vfio_ap_matrix_dev_create(void)
 		goto matrix_alloc_err;
 	}
 
-	/* Fill in config info via PQAP(QCI), if available */
+	 
 	if (test_facility(12)) {
 		ret = ap_qci(&matrix_dev->info);
 		if (ret)
@@ -159,7 +150,7 @@ static int __init vfio_ap_init(void)
 	if (ret)
 		return ret;
 
-	/* If there are no AP instructions, there is nothing to pass through. */
+	 
 	if (!ap_instructions_available())
 		return -ENODEV;
 

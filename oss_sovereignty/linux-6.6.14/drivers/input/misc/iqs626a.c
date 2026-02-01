@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Azoteq IQS626A Capacitive Touch Controller
- *
- * Copyright (C) 2020 Jeff LaBundy <jeff@labundy.com>
- *
- * This driver registers up to 2 input devices: one representing capacitive or
- * inductive keys as well as Hall-effect switches, and one for a trackpad that
- * can express various gestures.
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/completion.h>
@@ -502,10 +494,7 @@ iqs626_parse_events(struct iqs626_private *iqs626,
 			continue;
 
 		if (ch_id == IQS626_CH_TP_2 || ch_id == IQS626_CH_TP_3) {
-			/*
-			 * Trackpad touch events are simply described under the
-			 * trackpad child node.
-			 */
+			 
 			ev_node = fwnode_handle_get(ch_node);
 		} else {
 			ev_name = iqs626_events[i].name;
@@ -995,10 +984,7 @@ iqs626_parse_channel(struct iqs626_private *iqs626,
 				      &val) && val) {
 		unsigned int orig_val = val--;
 
-		/*
-		 * In the case of the generic channels, the charge cycle time
-		 * field doubles in size and straddles two separate registers.
-		 */
+		 
 		if (ch_id == IQS626_CH_GEN_0 ||
 		    ch_id == IQS626_CH_GEN_1 ||
 		    ch_id == IQS626_CH_GEN_2) {
@@ -1390,11 +1376,7 @@ static int iqs626_parse_prop(struct iqs626_private *iqs626)
 
 	general |= IQS626_SYS_SETTINGS_EVENT_MODE;
 
-	/*
-	 * Enable streaming during normal-power mode if the trackpad is used to
-	 * report raw coordinates instead of gestures. In that case, the device
-	 * returns to event mode during low-power mode.
-	 */
+	 
 	if (sys_reg->active & iqs626_channels[IQS626_CH_TP_2].active &&
 	    sys_reg->event_mask & IQS626_EVENT_MASK_GESTURE)
 		general |= IQS626_SYS_SETTINGS_EVENT_MODE_LP;
@@ -1459,10 +1441,7 @@ static int iqs626_input_init(struct iqs626_private *iqs626)
 	iqs626->trackpad->name = "iqs626a_trackpad";
 	iqs626->trackpad->id.bustype = BUS_I2C;
 
-	/*
-	 * Present the trackpad as a traditional pointing device if no gestures
-	 * have been mapped to a keycode.
-	 */
+	 
 	if (sys_reg->event_mask & IQS626_EVENT_MASK_GESTURE) {
 		u8 tp_mask = iqs626_channels[IQS626_CH_TP_3].active;
 
@@ -1511,11 +1490,7 @@ static int iqs626_report(struct iqs626_private *iqs626)
 		return error;
 	}
 
-	/*
-	 * The device resets itself if its own watchdog bites, which can happen
-	 * in the event of an I2C communication error. In this case, the device
-	 * asserts a SHOW_RESET interrupt and all registers must be restored.
-	 */
+	 
 	if (be16_to_cpu(flags.system) & IQS626_SYS_FLAGS_SHOW_RESET) {
 		dev_err(&client->dev, "Unexpected device reset\n");
 
@@ -1531,11 +1506,7 @@ static int iqs626_report(struct iqs626_private *iqs626)
 	if (be16_to_cpu(flags.system) & IQS626_SYS_FLAGS_IN_ATI)
 		return 0;
 
-	/*
-	 * Unlike the ULP or generic channels, the Hall channel does not have a
-	 * direction flag. Instead, the direction (i.e. magnet polarity) can be
-	 * derived based on the sign of the 2's complement differential output.
-	 */
+	 
 	if (sys_reg->active & iqs626_channels[IQS626_CH_HALL].active) {
 		error = regmap_raw_read(iqs626->regmap, IQS626_HALL_OUTPUT,
 					&hall_output, sizeof(hall_output));
@@ -1570,10 +1541,7 @@ static int iqs626_report(struct iqs626_private *iqs626)
 
 	input_sync(iqs626->keypad);
 
-	/*
-	 * The following completion signals that ATI has finished, any initial
-	 * switch states have been reported and the keypad can be registered.
-	 */
+	 
 	complete_all(&iqs626->ati_done);
 
 	if (!(sys_reg->active & iqs626_channels[IQS626_CH_TP_2].active))
@@ -1597,10 +1565,7 @@ static int iqs626_report(struct iqs626_private *iqs626)
 		if (flags.gesture & GENMASK(IQS626_GESTURE_TAP, 0)) {
 			input_sync(iqs626->trackpad);
 
-			/*
-			 * Momentary gestures are followed by a complementary
-			 * release cycle so as to emulate a full keystroke.
-			 */
+			 
 			for (i = 0; i < IQS626_GESTURE_HOLD; i++)
 				input_report_key(iqs626->trackpad,
 						 iqs626->tp_code[i], 0);
@@ -1619,11 +1584,7 @@ static irqreturn_t iqs626_irq(int irq, void *context)
 	if (iqs626_report(iqs626))
 		return IRQ_NONE;
 
-	/*
-	 * The device does not deassert its interrupt (RDY) pin until shortly
-	 * after receiving an I2C stop condition; the following delay ensures
-	 * the interrupt handler does not return before this time.
-	 */
+	 
 	iqs626_irq_wait();
 
 	return IRQ_HANDLED;
@@ -1691,10 +1652,7 @@ static int iqs626_probe(struct i2c_client *client)
 		return -ETIMEDOUT;
 	}
 
-	/*
-	 * The keypad may include one or more switches and is not registered
-	 * until ATI is complete and the initial switch states are read.
-	 */
+	 
 	error = input_register_device(iqs626->keypad);
 	if (error)
 		dev_err(&client->dev, "Failed to register keypad: %d\n", error);
@@ -1714,20 +1672,13 @@ static int iqs626_suspend(struct device *dev)
 
 	disable_irq(client->irq);
 
-	/*
-	 * Automatic power mode switching must be disabled before the device is
-	 * forced into any particular power mode. In this case, the device will
-	 * transition into normal-power mode.
-	 */
+	 
 	error = regmap_update_bits(iqs626->regmap, IQS626_SYS_SETTINGS,
 				   IQS626_SYS_SETTINGS_DIS_AUTO, ~0);
 	if (error)
 		goto err_irq;
 
-	/*
-	 * The following check ensures the device has completed its transition
-	 * into normal-power mode before a manual mode switch is performed.
-	 */
+	 
 	error = regmap_read_poll_timeout(iqs626->regmap, IQS626_SYS_FLAGS, val,
 					!(val & IQS626_SYS_FLAGS_PWR_MODE_MASK),
 					 IQS626_PWR_MODE_POLL_SLEEP_US,
@@ -1742,11 +1693,7 @@ static int iqs626_suspend(struct device *dev)
 	if (error)
 		goto err_irq;
 
-	/*
-	 * This last check ensures the device has completed its transition into
-	 * the desired power mode to prevent any spurious interrupts from being
-	 * triggered after iqs626_suspend has already returned.
-	 */
+	 
 	error = regmap_read_poll_timeout(iqs626->regmap, IQS626_SYS_FLAGS, val,
 					 (val & IQS626_SYS_FLAGS_PWR_MODE_MASK)
 					 == (iqs626->suspend_mode <<
@@ -1778,10 +1725,7 @@ static int iqs626_resume(struct device *dev)
 	if (error)
 		goto err_irq;
 
-	/*
-	 * This check ensures the device has returned to normal-power mode
-	 * before automatic power mode switching is re-enabled.
-	 */
+	 
 	error = regmap_read_poll_timeout(iqs626->regmap, IQS626_SYS_FLAGS, val,
 					!(val & IQS626_SYS_FLAGS_PWR_MODE_MASK),
 					 IQS626_PWR_MODE_POLL_SLEEP_US,
@@ -1794,11 +1738,7 @@ static int iqs626_resume(struct device *dev)
 	if (error)
 		goto err_irq;
 
-	/*
-	 * This step reports any events that may have been "swallowed" as a
-	 * result of polling PWR_MODE (which automatically acknowledges any
-	 * pending interrupts).
-	 */
+	 
 	error = iqs626_report(iqs626);
 
 err_irq:

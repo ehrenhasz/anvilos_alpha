@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas Electronics uPD78F0730 USB to serial converter driver
- *
- * Copyright (C) 2014,2016 Maksim Salau <maksim.salau@gmail.com>
- *
- * Protocol of the adaptor is described in the application note U19660EJ1V0AN00
- * μPD78F0730 8-bit Single-Chip Microcontroller
- * USB-to-Serial Conversion Software
- * <https://www.renesas.com/en-eu/doc/DocumentServer/026/U19660EJ1V0AN00.pdf>
- *
- * The adaptor functionality is limited to the following:
- * - data bits: 7 or 8
- * - stop bits: 1 or 2
- * - parity: even, odd or none
- * - flow control: none
- * - baud rates: 0, 2400, 4800, 9600, 19200, 38400, 57600, 115200, 153600
- * - signals: DTR, RTS and BREAK
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -29,96 +12,91 @@
 #define DRIVER_AUTHOR "Maksim Salau <maksim.salau@gmail.com>"
 
 static const struct usb_device_id id_table[] = {
-	{ USB_DEVICE(0x0409, 0x0063) }, /* V850ESJX3-STICK */
-	{ USB_DEVICE(0x045B, 0x0212) }, /* YRPBRL78G13, YRPBRL78G14 */
-	{ USB_DEVICE(0x064B, 0x7825) }, /* Analog Devices EVAL-ADXL362Z-DB */
+	{ USB_DEVICE(0x0409, 0x0063) },  
+	{ USB_DEVICE(0x045B, 0x0212) },  
+	{ USB_DEVICE(0x064B, 0x7825) },  
 	{}
 };
 
 MODULE_DEVICE_TABLE(usb, id_table);
 
-/*
- * Each adaptor is associated with a private structure, that holds the current
- * state of control signals (DTR, RTS and BREAK).
- */
+ 
 struct upd78f0730_port_private {
-	struct mutex	lock;		/* mutex to protect line_signals */
+	struct mutex	lock;		 
 	u8		line_signals;
 };
 
-/* Op-codes of control commands */
+ 
 #define UPD78F0730_CMD_LINE_CONTROL	0x00
 #define UPD78F0730_CMD_SET_DTR_RTS	0x01
 #define UPD78F0730_CMD_SET_XON_XOFF_CHR	0x02
 #define UPD78F0730_CMD_OPEN_CLOSE	0x03
 #define UPD78F0730_CMD_SET_ERR_CHR	0x04
 
-/* Data sizes in UPD78F0730_CMD_LINE_CONTROL command */
+ 
 #define UPD78F0730_DATA_SIZE_7_BITS	0x00
 #define UPD78F0730_DATA_SIZE_8_BITS	0x01
 #define UPD78F0730_DATA_SIZE_MASK	0x01
 
-/* Stop-bit modes in UPD78F0730_CMD_LINE_CONTROL command */
+ 
 #define UPD78F0730_STOP_BIT_1_BIT	0x00
 #define UPD78F0730_STOP_BIT_2_BIT	0x02
 #define UPD78F0730_STOP_BIT_MASK	0x02
 
-/* Parity modes in UPD78F0730_CMD_LINE_CONTROL command */
+ 
 #define UPD78F0730_PARITY_NONE	0x00
 #define UPD78F0730_PARITY_EVEN	0x04
 #define UPD78F0730_PARITY_ODD	0x08
 #define UPD78F0730_PARITY_MASK	0x0C
 
-/* Flow control modes in UPD78F0730_CMD_LINE_CONTROL command */
+ 
 #define UPD78F0730_FLOW_CONTROL_NONE	0x00
 #define UPD78F0730_FLOW_CONTROL_HW	0x10
 #define UPD78F0730_FLOW_CONTROL_SW	0x20
 #define UPD78F0730_FLOW_CONTROL_MASK	0x30
 
-/* Control signal bits in UPD78F0730_CMD_SET_DTR_RTS command */
+ 
 #define UPD78F0730_RTS		0x01
 #define UPD78F0730_DTR		0x02
 #define UPD78F0730_BREAK	0x04
 
-/* Port modes in UPD78F0730_CMD_OPEN_CLOSE command */
+ 
 #define UPD78F0730_PORT_CLOSE	0x00
 #define UPD78F0730_PORT_OPEN	0x01
 
-/* Error character substitution modes in UPD78F0730_CMD_SET_ERR_CHR command */
+ 
 #define UPD78F0730_ERR_CHR_DISABLED	0x00
 #define UPD78F0730_ERR_CHR_ENABLED	0x01
 
-/*
- * Declaration of command structures
- */
+ 
 
-/* UPD78F0730_CMD_LINE_CONTROL command */
+ 
 struct upd78f0730_line_control {
 	u8	opcode;
 	__le32	baud_rate;
 	u8	params;
 } __packed;
 
-/* UPD78F0730_CMD_SET_DTR_RTS command */
+ 
 struct upd78f0730_set_dtr_rts {
 	u8 opcode;
 	u8 params;
 };
 
-/* UPD78F0730_CMD_SET_XON_OFF_CHR command */
+ 
 struct upd78f0730_set_xon_xoff_chr {
 	u8 opcode;
 	u8 xon;
 	u8 xoff;
 };
 
-/* UPD78F0730_CMD_OPEN_CLOSE command */
+ 
 struct upd78f0730_open_close {
 	u8 opcode;
 	u8 state;
 };
 
-/* UPD78F0730_CMD_SET_ERR_CHR command */
+ 
 struct upd78f0730_set_err_chr {
 	u8 opcode;
 	u8 state;
@@ -292,7 +270,7 @@ static speed_t upd78f0730_get_baud_rate(struct tty_struct *tty)
 			return baud_rate;
 	}
 
-	/* If the baud rate is not supported, switch to the default one */
+	 
 	tty_encode_baud_rate(tty, 9600, 9600);
 
 	return tty_get_baud_rate(tty);

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
-* Copyright (C) 2006 Red Hat, Inc. All Rights Reserved.
-* Written by David Howells (dhowells@redhat.com)
-*/
+
+ 
 
 #include <linux/nfs_fs.h>
 #include "nfs4_fs.h"
@@ -19,7 +16,7 @@ int nfs4_get_rootfh(struct nfs_server *server, struct nfs_fh *mntfh, bool auth_p
 	if (fsinfo.fattr == NULL)
 		goto out;
 
-	/* Start by getting the root filehandle from the server */
+	 
 	ret = nfs4_proc_get_rootfh(server, mntfh, &fsinfo, auth_probe);
 	if (ret < 0) {
 		dprintk("nfs4_get_rootfh: getroot error = %d\n", -ret);

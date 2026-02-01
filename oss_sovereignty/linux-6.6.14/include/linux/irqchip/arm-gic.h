@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  include/linux/irqchip/arm-gic.h
- *
- *  Copyright (C) 2002 ARM Limited, All Rights Reserved.
- */
+ 
+ 
 #ifndef __LINUX_IRQCHIP_ARM_GIC_H
 #define __LINUX_IRQCHIP_ARM_GIC_H
 
@@ -139,16 +135,10 @@ void gic_cpu_restore(struct gic_chip_data *gic);
 void gic_dist_save(struct gic_chip_data *gic);
 void gic_dist_restore(struct gic_chip_data *gic);
 
-/*
- * Subdrivers that need some preparatory work can initialize their
- * chips and call this to register their GICs.
- */
+ 
 int gic_of_init(struct device_node *node, struct device_node *parent);
 
-/*
- * Initialises and registers a non-root or child GIC chip. Memory for
- * the gic_chip_data structure is dynamically allocated.
- */
+ 
 int gic_of_init_child(struct device *dev, struct gic_chip_data **gic, int irq);
 
 void gic_send_sgi(unsigned int cpu_id, unsigned int irq);
@@ -156,5 +146,5 @@ int gic_get_cpu_id(unsigned int cpu);
 void gic_migrate_target(unsigned int new_cpu_id);
 unsigned long gic_get_sgir_physaddr(void);
 
-#endif /* __ASSEMBLY */
+#endif  
 #endif

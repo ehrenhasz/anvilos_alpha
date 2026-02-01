@@ -1,20 +1,4 @@
-/* Test of readutmp module.
-   Copyright (C) 2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2023.  */
+ 
 
 #include <config.h>
 
@@ -60,44 +44,10 @@ main (int argc, char *argv[])
   printf ("    Time (GMT)             User          Device        PID    nation Exit  B U  Host\n");
   printf ("------------------- ------------------ ----------- ---------- ------ ----  - -  ----\n");
 
-  /* What do the results look like?
-     * On Alpine Linux, Cygwin, Android, the output is empty.
-     * The entries are usually not sorted according to the Time column, so
-       we do it here.
-     * In the User column, special values exist:
-       - The empty string denotes a system event.
-         Seen on glibc, macOS, FreeBSD, NetBSD, OpenBSD, AIX
-       - The value "reboot" denotes a reboot.
-         Seen on glibc
-       - The value "runlevel" denotes a runlevel change.
-         Seen on glibc
-       - The value "LOGIN" denotes the start of a virtual console.
-         Seen on glibc, Solaris
-       - The value "/usr/libexec/getty" denotes the start of a virtual console.
-         Seen on NetBSD
-     * In the Device column:
-       - The empty string denotes a system event.
-         Seen on macOS, FreeBSD, AIX
-       - The value "~" denotes an event with no associated device.
-         Seen on glibc
-       - The values "system boot", "system down", "run-level N" are
-         seen on NetBSD, AIX, Solaris.
-       - The values "old time", "new time" are
-         seen on Solaris.
-       - Common devices are:
-         - On glibc: "ttyN" (console) and "pts/N" (pseudo-terminals).
-         - On macOS: "ttysNNN" (pseudo-terminals).
-         - On FreeBSD: "ttyvN" (console).
-         - On NetBSD: "ttyEN", "constty" (console).
-         - On OpenBSD: "ttyCN", "console" (console) and "ttypN" (pseudo-terminals).
-         - on AIX: "vtyN" (console) and "pts/N" (pseudo-terminals).
-         - On Solaris: "vt/N", "console" (console) and "pts/N" (pseudo-terminals).
-     * The PID column is zero on platforms without a 'ut_pid' field: OpenBSD.
-   */
+   
   if (num_entries > 0)
     {
-      /* Sort the entries according to increasing UT_TIME_MEMBER (entry).
-         Use a stable sort algorithm.  */
+       
       merge_sort_inplace (entries, num_entries,
                           XNMALLOC (num_entries, STRUCT_UTMP));
 
@@ -138,19 +88,17 @@ main (int argc, char *argv[])
         }
       fflush (stdout);
 
-      /* If the first time is more than 5 years in the past or the last time
-         is more than a week in the future, the time_t members are wrong.  */
+       
       time_t first = UT_TIME_MEMBER (&entries[0]);
       time_t last = UT_TIME_MEMBER (&entries[num_entries - 1]);
       time_t now = time (NULL);
       ASSERT (first >= now - 157680000);
       ASSERT (last <= now + 604800);
 
-      /* read_utmp should not produce multiple BOOT_TIME entries.  */
+       
       ASSERT (boot_time_count <= 1);
 
-      /* read_utmp should fake a BOOT_TIME entry if needed.
-         Platform specific hacks go into lib/boot-time-aux.h.  */
+       
       ASSERT (boot_time_count >= 1);
     }
 

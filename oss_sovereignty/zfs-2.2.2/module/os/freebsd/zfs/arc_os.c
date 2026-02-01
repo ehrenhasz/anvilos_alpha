@@ -1,23 +1,4 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
 #include <sys/spa.h>
 #include <sys/zio.h>
@@ -64,10 +45,7 @@ arc_free_target_init(void *unused __unused)
 SYSINIT(arc_free_target_init, SI_SUB_KTHREAD_PAGE, SI_ORDER_ANY,
     arc_free_target_init, NULL);
 
-/*
- * We don't have a tunable for arc_free_target due to the dependency on
- * pagedaemon initialisation.
- */
+ 
 ZFS_MODULE_PARAM_CALL(zfs_arc, zfs_arc_, free_target,
     param_set_arc_free_target, 0, CTLFLAG_RW,
 	"Desired number of free pages below which ARC triggers reclaim");
@@ -81,26 +59,13 @@ arc_available_memory(void)
 	int64_t lowest = INT64_MAX;
 	int64_t n __unused;
 
-	/*
-	 * Cooperate with pagedaemon when it's time for it to scan
-	 * and reclaim some pages.
-	 */
+	 
 	n = PAGESIZE * ((int64_t)freemem - zfs_arc_free_target);
 	if (n < lowest) {
 		lowest = n;
 	}
 #if defined(__i386) || !defined(UMA_MD_SMALL_ALLOC)
-	/*
-	 * If we're on an i386 platform, it's possible that we'll exhaust the
-	 * kernel heap space before we ever run out of available physical
-	 * memory.  Most checks of the size of the heap_area compare against
-	 * tune.t_minarmem, which is the minimum available real memory that we
-	 * can have in the system.  However, this is generally fixed at 25 pages
-	 * which is so low that it's useless.  In this comparison, we seek to
-	 * calculate the total heap-size, and reclaim if more than 3/4ths of the
-	 * heap is allocated.  (Or, in the calculation, if less than 1/4th is
-	 * free)
-	 */
+	 
 	n = uma_avail() - (long)(uma_limit() / 4);
 	if (n < lowest) {
 		lowest = n;
@@ -111,9 +76,7 @@ arc_available_memory(void)
 	return (lowest);
 }
 
-/*
- * Return a default max arc size based on the amount of physical memory.
- */
+ 
 uint64_t
 arc_default_max(uint64_t min, uint64_t allmem)
 {
@@ -162,11 +125,7 @@ arc_lowmem(void *arg __unused, int howto __unused)
 	DTRACE_PROBE2(arc__needfree, int64_t, free_memory, int64_t, to_free);
 	arc_reduce_target_size(to_free);
 
-	/*
-	 * It is unsafe to block here in arbitrary threads, because we can come
-	 * here from ARC itself and may hold ARC locks and thus risk a deadlock
-	 * with ARC reclaim thread.
-	 */
+	 
 	if (curproc == pageproc)
 		arc_wait_for_eviction(to_free, B_FALSE);
 }

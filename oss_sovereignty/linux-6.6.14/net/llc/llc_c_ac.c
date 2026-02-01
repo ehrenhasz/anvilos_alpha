@@ -1,22 +1,4 @@
-/*
- * llc_c_ac.c - actions performed during connection state transition.
- *
- * Description:
- *   Functions in this module are implementation of connection component actions
- *   Details of actions can be found in IEEE-802.2 standard document.
- *   All functions have one connection and one event as input argument. All of
- *   them return 0 On success and 1 otherwise.
- *
- * Copyright (c) 1997 by Procom Technology, Inc.
- * 		 2001-2003 by Arnaldo Carvalho de Melo <acme@conectiva.com.br>
- *
- * This program can be redistributed or modified under the terms of the
- * GNU General Public License as published by the Free Software Foundation.
- * This program is distributed without any warranty or implied warranty
- * of merchantability or fitness for a particular purpose.
- *
- * See the GNU General Public License for more details.
- */
+ 
 #include <linux/netdevice.h>
 #include <linux/slab.h>
 #include <net/llc_conn.h>
@@ -850,16 +832,7 @@ int llc_conn_ac_start_p_timer(struct sock *sk, struct sk_buff *skb)
 	return 0;
 }
 
-/**
- *	llc_conn_ac_send_ack_if_needed - check if ack is needed
- *	@sk: current connection structure
- *	@skb: current event
- *
- *	Checks number of received PDUs which have not been acknowledged, yet,
- *	If number of them reaches to "npta"(Number of PDUs To Acknowledge) then
- *	sends an RR response as acknowledgement for them.  Returns 0 for
- *	success, 1 otherwise.
- */
+ 
 int llc_conn_ac_send_ack_if_needed(struct sock *sk, struct sk_buff *skb)
 {
 	u8 pf_bit;
@@ -882,31 +855,14 @@ int llc_conn_ac_send_ack_if_needed(struct sock *sk, struct sk_buff *skb)
 	return 0;
 }
 
-/**
- *	llc_conn_ac_rst_sendack_flag - resets ack_must_be_send flag
- *	@sk: current connection structure
- *	@skb: current event
- *
- *	This action resets ack_must_be_send flag of given connection, this flag
- *	indicates if there is any PDU which has not been acknowledged yet.
- *	Returns 0 for success, 1 otherwise.
- */
+ 
 int llc_conn_ac_rst_sendack_flag(struct sock *sk, struct sk_buff *skb)
 {
 	llc_sk(sk)->ack_must_be_send = llc_sk(sk)->ack_pf = 0;
 	return 0;
 }
 
-/**
- *	llc_conn_ac_send_i_rsp_f_set_ackpf - acknowledge received PDUs
- *	@sk: current connection structure
- *	@skb: current event
- *
- *	Sends an I response PDU with f-bit set to ack_pf flag as acknowledge to
- *	all received PDUs which have not been acknowledged, yet. ack_pf flag is
- *	set to one if one PDU with p-bit set to one is received.  Returns 0 for
- *	success, 1 otherwise.
- */
+ 
 static int llc_conn_ac_send_i_rsp_f_set_ackpf(struct sock *sk,
 					      struct sk_buff *skb)
 {
@@ -926,16 +882,7 @@ static int llc_conn_ac_send_i_rsp_f_set_ackpf(struct sock *sk,
 	return rc;
 }
 
-/**
- *	llc_conn_ac_send_i_as_ack - sends an I-format PDU to acknowledge rx PDUs
- *	@sk: current connection structure.
- *	@skb: current event.
- *
- *	This action sends an I-format PDU as acknowledge to received PDUs which
- *	have not been acknowledged, yet, if there is any. By using of this
- *	action number of acknowledgements decreases, this technic is called
- *	piggy backing. Returns 0 for success, 1 otherwise.
- */
+ 
 int llc_conn_ac_send_i_as_ack(struct sock *sk, struct sk_buff *skb)
 {
 	struct llc_sock *llc = llc_sk(sk);
@@ -952,16 +899,7 @@ int llc_conn_ac_send_i_as_ack(struct sock *sk, struct sk_buff *skb)
 	return ret;
 }
 
-/**
- *	llc_conn_ac_send_rr_rsp_f_set_ackpf - ack all rx PDUs not yet acked
- *	@sk: current connection structure.
- *	@skb: current event.
- *
- *	This action sends an RR response with f-bit set to ack_pf flag as
- *	acknowledge to all received PDUs which have not been acknowledged, yet,
- *	if there is any. ack_pf flag indicates if a PDU has been received with
- *	p-bit set to one. Returns 0 for success, 1 otherwise.
- */
+ 
 static int llc_conn_ac_send_rr_rsp_f_set_ackpf(struct sock *sk,
 					       struct sk_buff *skb)
 {
@@ -987,16 +925,7 @@ free:
 	goto out;
 }
 
-/**
- *	llc_conn_ac_inc_npta_value - tries to make value of npta greater
- *	@sk: current connection structure.
- *	@skb: current event.
- *
- *	After "inc_cntr" times calling of this action, "npta" increase by one.
- *	this action tries to make vale of "npta" greater as possible; number of
- *	acknowledgements decreases by increasing of "npta". Returns 0 for
- *	success, 1 otherwise.
- */
+ 
 static int llc_conn_ac_inc_npta_value(struct sock *sk, struct sk_buff *skb)
 {
 	struct llc_sock *llc = llc_sk(sk);
@@ -1012,14 +941,7 @@ static int llc_conn_ac_inc_npta_value(struct sock *sk, struct sk_buff *skb)
 	return 0;
 }
 
-/**
- *	llc_conn_ac_adjust_npta_by_rr - decreases "npta" by one
- *	@sk: current connection structure.
- *	@skb: current event.
- *
- *	After receiving "dec_cntr" times RR command, this action decreases
- *	"npta" by one. Returns 0 for success, 1 otherwise.
- */
+ 
 int llc_conn_ac_adjust_npta_by_rr(struct sock *sk, struct sk_buff *skb)
 {
 	struct llc_sock *llc = llc_sk(sk);
@@ -1038,14 +960,7 @@ int llc_conn_ac_adjust_npta_by_rr(struct sock *sk, struct sk_buff *skb)
 	return 0;
 }
 
-/**
- *	llc_conn_ac_adjust_npta_by_rnr - decreases "npta" by one
- *	@sk: current connection structure.
- *	@skb: current event.
- *
- *	After receiving "dec_cntr" times RNR command, this action decreases
- *	"npta" by one. Returns 0 for success, 1 otherwise.
- */
+ 
 int llc_conn_ac_adjust_npta_by_rnr(struct sock *sk, struct sk_buff *skb)
 {
 	struct llc_sock *llc = llc_sk(sk);
@@ -1062,15 +977,7 @@ int llc_conn_ac_adjust_npta_by_rnr(struct sock *sk, struct sk_buff *skb)
 	return 0;
 }
 
-/**
- *	llc_conn_ac_dec_tx_win_size - decreases tx window size
- *	@sk: current connection structure.
- *	@skb: current event.
- *
- *	After receiving of a REJ command or response, transmit window size is
- *	decreased by number of PDUs which are outstanding yet. Returns 0 for
- *	success, 1 otherwise.
- */
+ 
 int llc_conn_ac_dec_tx_win_size(struct sock *sk, struct sk_buff *skb)
 {
 	struct llc_sock *llc = llc_sk(sk);
@@ -1083,14 +990,7 @@ int llc_conn_ac_dec_tx_win_size(struct sock *sk, struct sk_buff *skb)
 	return 0;
 }
 
-/**
- *	llc_conn_ac_inc_tx_win_size - tx window size is inc by 1
- *	@sk: current connection structure.
- *	@skb: current event.
- *
- *	After receiving an RR response with f-bit set to one, transmit window
- *	size is increased by one. Returns 0 for success, 1 otherwise.
- */
+ 
 int llc_conn_ac_inc_tx_win_size(struct sock *sk, struct sk_buff *skb)
 {
 	struct llc_sock *llc = llc_sk(sk);
@@ -1177,15 +1077,12 @@ int llc_conn_ac_upd_nr_received(struct sock *sk, struct sk_buff *skb)
 
 	llc->last_nr = PDU_SUPV_GET_Nr(pdu);
 	acked = llc_conn_remove_acked_pdus(sk, llc->last_nr, &unacked);
-	/* On loopback we don't queue I frames in unack_pdu_q queue. */
+	 
 	if (acked > 0 || (llc->dev->flags & IFF_LOOPBACK)) {
 		llc->retry_count = 0;
 		del_timer(&llc->ack_timer.timer);
 		if (llc->failed_data_req) {
-			/* already, we did not accept data from upper layer
-			 * (tx_window full or unacceptable state). Now, we
-			 * can send data and must inform to upper layer.
-			 */
+			 
 			llc->failed_data_req = 0;
 			llc_conn_ac_data_confirm(sk, skb);
 		}
@@ -1378,44 +1275,22 @@ int llc_conn_ac_upd_vs(struct sock *sk, struct sk_buff *skb)
 	return 0;
 }
 
-/*
- * Non-standard actions; these not contained in IEEE specification; for
- * our own usage
- */
-/**
- *	llc_conn_disc - removes connection from SAP list and frees it
- *	@sk: closed connection
- *	@skb: occurred event
- */
+ 
+ 
 int llc_conn_disc(struct sock *sk, struct sk_buff *skb)
 {
-	/* FIXME: this thing seems to want to die */
+	 
 	return 0;
 }
 
-/**
- *	llc_conn_reset - resets connection
- *	@sk : reseting connection.
- *	@skb: occurred event.
- *
- *	Stop all timers, empty all queues and reset all flags.
- */
+ 
 int llc_conn_reset(struct sock *sk, struct sk_buff *skb)
 {
 	llc_sk_reset(sk);
 	return 0;
 }
 
-/**
- *	llc_circular_between - designates that b is between a and c or not
- *	@a: lower bound
- *	@b: element to see if is between a and b
- *	@c: upper bound
- *
- *	This function designates that b is between a and c or not (for example,
- *	0 is between 127 and 1). Returns 1 if b is between a and c, 0
- *	otherwise.
- */
+ 
 u8 llc_circular_between(u8 a, u8 b, u8 c)
 {
 	b = b - a;
@@ -1423,17 +1298,7 @@ u8 llc_circular_between(u8 a, u8 b, u8 c)
 	return b <= c;
 }
 
-/**
- *	llc_process_tmr_ev - timer backend
- *	@sk: active connection
- *	@skb: occurred event
- *
- *	This function is called from timer callback functions. When connection
- *	is busy (during sending a data frame) timer expiration event must be
- *	queued. Otherwise this event can be sent to connection state machine.
- *	Queued events will process by llc_backlog_rcv function after sending
- *	data frame.
- */
+ 
 static void llc_process_tmr_ev(struct sock *sk, struct sk_buff *skb)
 {
 	if (llc_sk(sk)->state == LLC_CONN_OUT_OF_SVC) {

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * fs/f2fs/acl.c
- *
- * Copyright (c) 2012 Samsung Electronics Co., Ltd.
- *             http://www.samsung.com/
- *
- * Portions of this code from linux/fs/ext2/acl.c
- *
- * Copyright (C) 2001-2003 Andreas Gruenbacher, <agruen@suse.de>
- */
+
+ 
 #include <linux/f2fs_fs.h>
 #include "f2fs.h"
 #include "xattr.h"
@@ -287,10 +278,7 @@ int f2fs_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,
 	return __f2fs_set_acl(idmap, inode, type, acl, NULL);
 }
 
-/*
- * Most part of f2fs_acl_clone, f2fs_acl_create_masq, f2fs_acl_create
- * are copied from posix_acl.c
- */
+ 
 static struct posix_acl *f2fs_acl_clone(const struct posix_acl *acl,
 							gfp_t flags)
 {
@@ -313,7 +301,7 @@ static int f2fs_acl_create_masq(struct posix_acl *acl, umode_t *mode_p)
 	umode_t mode = *mode_p;
 	int not_equiv = 0;
 
-	/* assert(atomic_read(acl->a_refcount) == 1); */
+	 
 
 	FOREACH_ACL_ENTRY(pa, acl, pe) {
 		switch (pa->e_tag) {

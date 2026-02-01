@@ -1,32 +1,9 @@
-/*
- * Copyright 2012-16 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 #include "dm_services.h"
 
 #include "dce/dce_11_0_d.h"
 #include "dce/dce_11_0_sh_mask.h"
-/* TODO: this needs to be looked at, used by Stella's workaround*/
+ 
 #include "gmc/gmc_8_2_d.h"
 #include "gmc/gmc_8_2_sh_mask.h"
 
@@ -56,14 +33,14 @@ static void set_flip_control(
 			value);
 }
 
-/* chroma part */
+ 
 static void program_pri_addr_c(
 	struct dce_mem_input *mem_input110,
 	PHYSICAL_ADDRESS_LOC address)
 {
 	uint32_t value = 0;
 	uint32_t temp = 0;
-	/*high register MUST be programmed first*/
+	 
 	temp = address.high_part &
 UNP_GRPH_PRIMARY_SURFACE_ADDRESS_HIGH_C__GRPH_PRIMARY_SURFACE_ADDRESS_HIGH_C_MASK;
 
@@ -91,7 +68,7 @@ UNP_GRPH_PRIMARY_SURFACE_ADDRESS_HIGH_C__GRPH_PRIMARY_SURFACE_ADDRESS_HIGH_C_MAS
 		value);
 }
 
-/* luma part */
+ 
 static void program_pri_addr_l(
 	struct dce_mem_input *mem_input110,
 	PHYSICAL_ADDRESS_LOC address)
@@ -99,7 +76,7 @@ static void program_pri_addr_l(
 	uint32_t value = 0;
 	uint32_t temp = 0;
 
-	/*high register MUST be programmed first*/
+	 
 	temp = address.high_part &
 UNP_GRPH_PRIMARY_SURFACE_ADDRESS_HIGH_L__GRPH_PRIMARY_SURFACE_ADDRESS_HIGH_L_MASK;
 
@@ -146,7 +123,7 @@ static void program_addr(
 			addr->video_progressive.luma_addr);
 		break;
 	default:
-		/* not supported */
+		 
 		BREAK_TO_DEBUGGER();
 	}
 }
@@ -425,7 +402,7 @@ static void program_pixel_format(
 				mem_input110->base.ctx,
 				mmUNP_GRPH_CONTROL_EXP);
 
-		/* VIDEO FORMAT 0 */
+		 
 		set_reg_field_value(
 				value,
 				0,
@@ -437,7 +414,7 @@ static void program_pixel_format(
 				value);
 
 	} else {
-		/* Video 422 and 420 needs UNP_GRPH_CONTROL_EXP programmed */
+		 
 		uint32_t value;
 		uint8_t video_format;
 
@@ -501,29 +478,29 @@ static bool dce_mem_input_v_program_surface_flip_and_addr(
 	return true;
 }
 
-/* Scatter Gather param tables */
+ 
 static const unsigned int dvmm_Hw_Setting_2DTiling[4][9] = {
 		{  8, 64, 64,  8,  8, 1, 4, 0, 0},
 		{ 16, 64, 32,  8, 16, 1, 8, 0, 0},
 		{ 32, 32, 32, 16, 16, 1, 8, 0, 0},
-		{ 64,  8, 32, 16, 16, 1, 8, 0, 0}, /* fake */
+		{ 64,  8, 32, 16, 16, 1, 8, 0, 0},  
 };
 
 static const unsigned int dvmm_Hw_Setting_1DTiling[4][9] = {
-		{  8, 512, 8, 1, 0, 1, 0, 0, 0},  /* 0 for invalid */
+		{  8, 512, 8, 1, 0, 1, 0, 0, 0},   
 		{ 16, 256, 8, 2, 0, 1, 0, 0, 0},
 		{ 32, 128, 8, 4, 0, 1, 0, 0, 0},
-		{ 64,  64, 8, 4, 0, 1, 0, 0, 0}, /* fake */
+		{ 64,  64, 8, 4, 0, 1, 0, 0, 0},  
 };
 
 static const unsigned int dvmm_Hw_Setting_Linear[4][9] = {
 		{  8, 4096, 1, 8, 0, 1, 0, 0, 0},
 		{ 16, 2048, 1, 8, 0, 1, 0, 0, 0},
 		{ 32, 1024, 1, 8, 0, 1, 0, 0, 0},
-		{ 64,  512, 1, 8, 0, 1, 0, 0, 0}, /* new for 64bpp from HW */
+		{ 64,  512, 1, 8, 0, 1, 0, 0, 0},  
 };
 
-/* Helper to get table entry from surface info */
+ 
 static const unsigned int *get_dvmm_hw_setting(
 		union dc_tiling_info *tiling_info,
 		enum surface_pixel_format format,
@@ -607,7 +584,7 @@ static void dce_mem_input_v_program_pte_vm(
 	}
 
 	value = dm_read_reg(mem_input110->base.ctx, mmUNP_PIPE_OUTSTANDING_REQUEST_LIMIT);
-	/* TODO: un-hardcode requestlimit */
+	 
 	set_reg_field_value(value, 0xff, UNP_PIPE_OUTSTANDING_REQUEST_LIMIT, UNP_PIPE_OUTSTANDING_REQUEST_LIMIT_L);
 	set_reg_field_value(value, 0xff, UNP_PIPE_OUTSTANDING_REQUEST_LIMIT, UNP_PIPE_OUTSTANDING_REQUEST_LIMIT_C);
 	dm_write_reg(mem_input110->base.ctx, mmUNP_PIPE_OUTSTANDING_REQUEST_LIMIT, value);
@@ -659,11 +636,11 @@ static void program_urgency_watermark(
 	struct dce_watermarks marks_low,
 	uint32_t total_dest_line_time_ns)
 {
-	/* register value */
+	 
 	uint32_t urgency_cntl = 0;
 	uint32_t wm_mask_cntl = 0;
 
-	/*Write mask to enable reading/writing of watermark set A*/
+	 
 	wm_mask_cntl = dm_read_reg(ctx, wm_addr);
 	set_reg_field_value(wm_mask_cntl,
 			1,
@@ -686,7 +663,7 @@ static void program_urgency_watermark(
 		URGENCY_HIGH_WATERMARK);
 	dm_write_reg(ctx, urgency_addr, urgency_cntl);
 
-	/*Write mask to enable reading/writing of watermark set B*/
+	 
 	wm_mask_cntl = dm_read_reg(ctx, wm_addr);
 	set_reg_field_value(wm_mask_cntl,
 			2,
@@ -741,11 +718,11 @@ static void program_stutter_watermark(
 	const uint32_t wm_addr,
 	struct dce_watermarks marks)
 {
-	/* register value */
+	 
 	uint32_t stutter_cntl = 0;
 	uint32_t wm_mask_cntl = 0;
 
-	/*Write mask to enable reading/writing of watermark set A*/
+	 
 
 	wm_mask_cntl = dm_read_reg(ctx, wm_addr);
 	set_reg_field_value(wm_mask_cntl,
@@ -773,14 +750,14 @@ static void program_stutter_watermark(
 		DPGV0_PIPE_STUTTER_CONTROL,
 		STUTTER_IGNORE_FBC);
 
-	/*Write watermark set A*/
+	 
 	set_reg_field_value(stutter_cntl,
 		marks.a_mark,
 		DPGV0_PIPE_STUTTER_CONTROL,
 		STUTTER_EXIT_SELF_REFRESH_WATERMARK);
 	dm_write_reg(ctx, stutter_addr, stutter_cntl);
 
-	/*Write mask to enable reading/writing of watermark set B*/
+	 
 	wm_mask_cntl = dm_read_reg(ctx, wm_addr);
 	set_reg_field_value(wm_mask_cntl,
 		2,
@@ -789,7 +766,7 @@ static void program_stutter_watermark(
 	dm_write_reg(ctx, wm_addr, wm_mask_cntl);
 
 	stutter_cntl = dm_read_reg(ctx, stutter_addr);
-	/*Write watermark set B*/
+	 
 	set_reg_field_value(stutter_cntl,
 		marks.b_mark,
 		DPGV0_PIPE_STUTTER_CONTROL,
@@ -825,7 +802,7 @@ static void program_nbp_watermark(
 {
 	uint32_t value;
 
-	/* Write mask to enable reading/writing of watermark set A */
+	 
 
 	value = dm_read_reg(ctx, wm_mask_ctrl_addr);
 
@@ -855,7 +832,7 @@ static void program_nbp_watermark(
 		NB_PSTATE_CHANGE_NOT_SELF_REFRESH_DURING_REQUEST);
 	dm_write_reg(ctx, nbp_pstate_ctrl_addr, value);
 
-	/* Write watermark set A */
+	 
 	value = dm_read_reg(ctx, nbp_pstate_ctrl_addr);
 	set_reg_field_value(
 		value,
@@ -864,7 +841,7 @@ static void program_nbp_watermark(
 		NB_PSTATE_CHANGE_WATERMARK);
 	dm_write_reg(ctx, nbp_pstate_ctrl_addr, value);
 
-	/* Write mask to enable reading/writing of watermark set B */
+	 
 	value = dm_read_reg(ctx, wm_mask_ctrl_addr);
 	set_reg_field_value(
 		value,
@@ -891,7 +868,7 @@ static void program_nbp_watermark(
 		NB_PSTATE_CHANGE_NOT_SELF_REFRESH_DURING_REQUEST);
 	dm_write_reg(ctx, nbp_pstate_ctrl_addr, value);
 
-	/* Write watermark set B */
+	 
 	value = dm_read_reg(ctx, nbp_pstate_ctrl_addr);
 	set_reg_field_value(
 		value,
@@ -967,9 +944,9 @@ static void dce_mem_input_program_chroma_display_marks(
 
 static void dce110_allocate_mem_input_v(
 	struct mem_input *mi,
-	uint32_t h_total,/* for current stream */
-	uint32_t v_total,/* for current stream */
-	uint32_t pix_clk_khz,/* for current stream */
+	uint32_t h_total, 
+	uint32_t v_total, 
+	uint32_t pix_clk_khz, 
 	uint32_t total_stream_num)
 {
 	uint32_t addr;
@@ -1029,9 +1006,9 @@ static const struct mem_input_funcs dce110_mem_input_v_funcs = {
 	.mem_input_is_flip_pending =
 			dce_mem_input_v_is_surface_pending
 };
-/*****************************************/
-/* Constructor, Destructor               */
-/*****************************************/
+ 
+ 
+ 
 
 void dce110_mem_input_v_construct(
 	struct dce_mem_input *dce_mi,

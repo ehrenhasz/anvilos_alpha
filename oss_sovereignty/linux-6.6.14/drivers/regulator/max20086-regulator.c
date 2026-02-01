@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-//
-// max20086-regulator.c - MAX20086-MAX20089 camera power protector driver
-//
-// Copyright (C) 2022 Laurent Pinchart <laurent.pinchart@idesonboard.com>
-// Copyright (C) 2018 Avnet, Inc.
+
+
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/gpio/consumer.h>
@@ -15,7 +15,7 @@
 #include <linux/regulator/of_regulator.h>
 #include <linux/slab.h>
 
-/* Register Offset */
+ 
 #define MAX20086_REG_MASK		0x00
 #define MAX20086_REG_CONFIG		0x01
 #define	MAX20086_REG_ID			0x02
@@ -27,14 +27,14 @@
 #define	MAX20086_REG_ADC3		0x08
 #define	MAX20086_REG_ADC4		0x09
 
-/* DEVICE IDs */
+ 
 #define MAX20086_DEVICE_ID_MAX20086	0x40
 #define MAX20086_DEVICE_ID_MAX20087	0x20
 #define MAX20086_DEVICE_ID_MAX20088	0x10
 #define MAX20086_DEVICE_ID_MAX20089	0x00
 #define DEVICE_ID_MASK			0xf0
 
-/* Register bits */
+ 
 #define MAX20086_EN_MASK		0x0f
 #define MAX20086_EN_OUT1		0x01
 #define MAX20086_EN_OUT2		0x02
@@ -242,7 +242,7 @@ static int max20086_i2c_probe(struct i2c_client *i2c)
 	if (ret < 0)
 		return ret;
 
-	/* Until IRQ support is added, just disable all interrupts. */
+	 
 	ret = regmap_update_bits(chip->regmap, MAX20086_REG_MASK,
 				 MAX20086_INT_DISABLE_ALL,
 				 MAX20086_INT_DISABLE_ALL);
@@ -251,13 +251,7 @@ static int max20086_i2c_probe(struct i2c_client *i2c)
 		return ret;
 	}
 
-	/*
-	 * Get the enable GPIO. If any of the outputs is marked as being
-	 * enabled at boot, request the GPIO with an initial high state to
-	 * avoid disabling outputs that may have been turned on by the boot
-	 * loader. Otherwise, request it with a low state to enter lower-power
-	 * shutdown.
-	 */
+	 
 	flags = boot_on ? GPIOD_OUT_HIGH : GPIOD_OUT_LOW;
 	chip->ena_gpiod = devm_gpiod_get(chip->dev, "enable", flags);
 	if (IS_ERR(chip->ena_gpiod)) {
@@ -280,7 +274,7 @@ static const struct i2c_device_id max20086_i2c_id[] = {
 	{ "max20087" },
 	{ "max20088" },
 	{ "max20089" },
-	{ /* Sentinel */ },
+	{   },
 };
 
 MODULE_DEVICE_TABLE(i2c, max20086_i2c_id);
@@ -311,7 +305,7 @@ static const struct of_device_id max20086_dt_ids[] __maybe_unused = {
 			.num_outputs = 2,
 		}
 	},
-	{ /* Sentinel */ },
+	{   },
 };
 
 MODULE_DEVICE_TABLE(of, max20086_dt_ids);

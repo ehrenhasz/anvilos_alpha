@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019 Broadcom.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -17,43 +15,14 @@
 #define MAX_TEE_PARAM_ARRY_MEMB		4
 
 enum ta_cmd {
-	/*
-	 * TA_CMD_BNXT_FASTBOOT - boot bnxt device by copying f/w into sram
-	 *
-	 *	param[0] unused
-	 *	param[1] unused
-	 *	param[2] unused
-	 *	param[3] unused
-	 *
-	 * Result:
-	 *	TEE_SUCCESS - Invoke command success
-	 *	TEE_ERROR_ITEM_NOT_FOUND - Corrupt f/w image found on memory
-	 */
+	 
 	TA_CMD_BNXT_FASTBOOT = 0,
 
-	/*
-	 * TA_CMD_BNXT_COPY_COREDUMP - copy the core dump into shm
-	 *
-	 *	param[0] (inout memref) - Coredump buffer memory reference
-	 *	param[1] (in value) - value.a: offset, data to be copied from
-	 *			      value.b: size of data to be copied
-	 *	param[2] unused
-	 *	param[3] unused
-	 *
-	 * Result:
-	 *	TEE_SUCCESS - Invoke command success
-	 *	TEE_ERROR_BAD_PARAMETERS - Incorrect input param
-	 *	TEE_ERROR_ITEM_NOT_FOUND - Corrupt core dump
-	 */
+	 
 	TA_CMD_BNXT_COPY_COREDUMP = 3,
 };
 
-/**
- * struct tee_bnxt_fw_private - OP-TEE bnxt private data
- * @dev:		OP-TEE based bnxt device.
- * @ctx:		OP-TEE context handler.
- * @session_id:		TA session identifier.
- */
+ 
 struct tee_bnxt_fw_private {
 	struct device *dev;
 	struct tee_context *ctx;
@@ -74,7 +43,7 @@ static void prepare_args(int cmd,
 	arg->session = pvt_data.session_id;
 	arg->num_params = MAX_TEE_PARAM_ARRY_MEMB;
 
-	/* Fill invoke cmd params */
+	 
 	switch (cmd) {
 	case TA_CMD_BNXT_COPY_COREDUMP:
 		param[0].attr = TEE_IOCTL_PARAM_ATTR_TYPE_MEMREF_INOUT;
@@ -85,17 +54,12 @@ static void prepare_args(int cmd,
 		break;
 	case TA_CMD_BNXT_FASTBOOT:
 	default:
-		/* Nothing to do */
+		 
 		break;
 	}
 }
 
-/**
- * tee_bnxt_fw_load() - Load the bnxt firmware
- *		    Uses an OP-TEE call to start a secure
- *		    boot process.
- * Returns 0 on success, negative errno otherwise.
- */
+ 
 int tee_bnxt_fw_load(void)
 {
 	int ret = 0;
@@ -119,15 +83,7 @@ int tee_bnxt_fw_load(void)
 }
 EXPORT_SYMBOL(tee_bnxt_fw_load);
 
-/**
- * tee_bnxt_copy_coredump() - Copy coredump from the allocated memory
- *			    Uses an OP-TEE call to copy coredump
- * @buf:	destination buffer where core dump is copied into
- * @offset:	offset from the base address of core dump area
- * @size:	size of the dump
- *
- * Returns 0 on success, negative errno otherwise.
- */
+ 
 int tee_bnxt_copy_coredump(void *buf, u32 offset, u32 size)
 {
 	struct tee_ioctl_invoke_arg arg;
@@ -147,7 +103,7 @@ int tee_bnxt_copy_coredump(void *buf, u32 offset, u32 size)
 
 		nbytes = min_t(u32, rbytes, param[0].u.memref.size);
 
-		/* Fill additional invoke cmd params */
+		 
 		param[1].u.value.a = offset;
 		param[1].u.value.b = nbytes;
 
@@ -190,13 +146,13 @@ static int tee_bnxt_fw_probe(struct device *dev)
 
 	memset(&sess_arg, 0, sizeof(sess_arg));
 
-	/* Open context with TEE driver */
+	 
 	pvt_data.ctx = tee_client_open_context(NULL, optee_ctx_match, NULL,
 					       NULL);
 	if (IS_ERR(pvt_data.ctx))
 		return -ENODEV;
 
-	/* Open session with Bnxt load Trusted App */
+	 
 	export_uuid(sess_arg.uuid, &bnxt_device->id.uuid);
 	sess_arg.clnt_login = TEE_IOCTL_LOGIN_PUBLIC;
 	sess_arg.num_params = 0;

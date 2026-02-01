@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ARM PL35X NAND flash controller driver
- *
- * Copyright (C) 2017 Xilinx, Inc
- * Author:
- *   Miquel Raynal <miquel.raynal@bootlin.com>
- * Original work (rewritten):
- *   Punnaiah Choudary Kalluri <punnaia@xilinx.com>
- *   Naga Sureshkumar Relli <nagasure@xilinx.com>
- */
+
+ 
 
 #include <linux/amba/bus.h>
 #include <linux/err.h>
@@ -30,19 +21,19 @@
 
 #define PL35X_NANDC_DRIVER_NAME "pl35x-nand-controller"
 
-/* SMC controller status register (RO) */
+ 
 #define PL35X_SMC_MEMC_STATUS 0x0
 #define   PL35X_SMC_MEMC_STATUS_RAW_INT_STATUS1	BIT(6)
-/* SMC clear config register (WO) */
+ 
 #define PL35X_SMC_MEMC_CFG_CLR 0xC
 #define   PL35X_SMC_MEMC_CFG_CLR_INT_DIS_1	BIT(1)
 #define   PL35X_SMC_MEMC_CFG_CLR_INT_CLR_1	BIT(4)
 #define   PL35X_SMC_MEMC_CFG_CLR_ECC_INT_DIS_1	BIT(6)
-/* SMC direct command register (WO) */
+ 
 #define PL35X_SMC_DIRECT_CMD 0x10
 #define   PL35X_SMC_DIRECT_CMD_NAND_CS (0x4 << 23)
 #define   PL35X_SMC_DIRECT_CMD_UPD_REGS (0x2 << 21)
-/* SMC set cycles register (WO) */
+ 
 #define PL35X_SMC_CYCLES 0x14
 #define   PL35X_SMC_NAND_TRC_CYCLES(x) ((x) << 0)
 #define   PL35X_SMC_NAND_TWC_CYCLES(x) ((x) << 4)
@@ -51,39 +42,39 @@
 #define   PL35X_SMC_NAND_TCLR_CYCLES(x) ((x) << 14)
 #define   PL35X_SMC_NAND_TAR_CYCLES(x) ((x) << 17)
 #define   PL35X_SMC_NAND_TRR_CYCLES(x) ((x) << 20)
-/* SMC set opmode register (WO) */
+ 
 #define PL35X_SMC_OPMODE 0x18
 #define   PL35X_SMC_OPMODE_BW_8 0
 #define   PL35X_SMC_OPMODE_BW_16 1
-/* SMC ECC status register (RO) */
+ 
 #define PL35X_SMC_ECC_STATUS 0x400
 #define   PL35X_SMC_ECC_STATUS_ECC_BUSY BIT(6)
-/* SMC ECC configuration register */
+ 
 #define PL35X_SMC_ECC_CFG 0x404
 #define   PL35X_SMC_ECC_CFG_MODE_MASK 0xC
 #define   PL35X_SMC_ECC_CFG_MODE_BYPASS 0
 #define   PL35X_SMC_ECC_CFG_MODE_APB BIT(2)
 #define   PL35X_SMC_ECC_CFG_MODE_MEM BIT(3)
 #define   PL35X_SMC_ECC_CFG_PGSIZE_MASK	0x3
-/* SMC ECC command 1 register */
+ 
 #define PL35X_SMC_ECC_CMD1 0x408
 #define   PL35X_SMC_ECC_CMD1_WRITE(x) ((x) << 0)
 #define   PL35X_SMC_ECC_CMD1_READ(x) ((x) << 8)
 #define   PL35X_SMC_ECC_CMD1_READ_END(x) ((x) << 16)
 #define   PL35X_SMC_ECC_CMD1_READ_END_VALID(x) ((x) << 24)
-/* SMC ECC command 2 register */
+ 
 #define PL35X_SMC_ECC_CMD2 0x40C
 #define   PL35X_SMC_ECC_CMD2_WRITE_COL_CHG(x) ((x) << 0)
 #define   PL35X_SMC_ECC_CMD2_READ_COL_CHG(x) ((x) << 8)
 #define   PL35X_SMC_ECC_CMD2_READ_COL_CHG_END(x) ((x) << 16)
 #define   PL35X_SMC_ECC_CMD2_READ_COL_CHG_END_VALID(x) ((x) << 24)
-/* SMC ECC value registers (RO) */
+ 
 #define PL35X_SMC_ECC_VALUE(x) (0x418 + (4 * (x)))
 #define   PL35X_SMC_ECC_VALUE_IS_CORRECTABLE(x) ((x) & BIT(27))
 #define   PL35X_SMC_ECC_VALUE_HAS_FAILED(x) ((x) & BIT(28))
 #define   PL35X_SMC_ECC_VALUE_IS_VALID(x) ((x) & BIT(30))
 
-/* NAND AXI interface */
+ 
 #define PL35X_SMC_CMD_PHASE 0
 #define PL35X_SMC_CMD_PHASE_CMD0(x) ((x) << 3)
 #define PL35X_SMC_CMD_PHASE_CMD1(x) ((x) << 11)
@@ -122,17 +113,7 @@ struct pl35x_nand {
 	u32 timings;
 };
 
-/**
- * struct pl35x_nandc - NAND flash controller driver structure
- * @dev: Kernel device
- * @conf_regs: SMC configuration registers for command phase
- * @io_regs: NAND data registers for data phase
- * @controller: Core NAND controller structure
- * @chip: NAND chip information structure
- * @selected_chip: NAND chip currently selected by the controller
- * @assigned_cs: List of assigned CS
- * @ecc_buf: Temporary buffer to extract ECC bytes
- */
+ 
 struct pl35x_nandc {
 	struct device *dev;
 	void __iomem *conf_regs;
@@ -187,7 +168,7 @@ static const struct mtd_ooblayout_ops pl35x_ecc_ooblayout16_ops = {
 	.free = pl35x_ecc_ooblayout16_free,
 };
 
-/* Generic flash bbt decriptors */
+ 
 static u8 bbt_pattern[] = { 'B', 'b', 't', '0' };
 static u8 mirror_pattern[] = { '1', 't', 'b', 'B' };
 
@@ -318,11 +299,11 @@ static void pl35x_nand_select_target(struct nand_chip *chip,
 	if (chip == nfc->selected_chip)
 		return;
 
-	/* Setup the timings */
+	 
 	writel(plnand->timings, nfc->conf_regs + PL35X_SMC_CYCLES);
 	pl35x_smc_update_regs(nfc);
 
-	/* Configure the ECC engine */
+	 
 	writel(plnand->ecc_cfg, nfc->conf_regs + PL35X_SMC_ECC_CFG);
 
 	nfc->selected_chip = chip;
@@ -351,7 +332,7 @@ static void pl35x_nand_read_data_op(struct nand_chip *chip, u8 *in,
 		buf32[i] = readl(nfc->io_regs + data_phase_addr);
 	}
 
-	/* No working extra flags on unaligned data accesses */
+	 
 	for (i = in_start; i < len; i++)
 		buf8[i] = readb(nfc->io_regs + PL35X_SMC_DATA_PHASE);
 
@@ -383,7 +364,7 @@ static void pl35x_nand_write_data_op(struct nand_chip *chip, const u8 *out,
 		writel(buf32[i], nfc->io_regs + data_phase_addr);
 	}
 
-	/* No working extra flags on unaligned data accesses */
+	 
 	for (i = in_start; i < len; i++)
 		writeb(buf8[i], nfc->io_regs + PL35X_SMC_DATA_PHASE);
 
@@ -412,23 +393,23 @@ static int pl35x_nand_correct_data(struct pl35x_nandc *nfc, unsigned char *buf,
 	ecc_odd = read_ecc_lower ^ calc_ecc_lower;
 	ecc_even = read_ecc_upper ^ calc_ecc_upper;
 
-	/* No error */
+	 
 	if (likely(!ecc_odd && !ecc_even))
 		return 0;
 
-	/* One error in the main data; to be corrected */
+	 
 	if (ecc_odd == (~ecc_even & PL35X_NAND_ECC_BITS_MASK)) {
-		/* Bits [11:3] of error code give the byte offset */
+		 
 		byte_addr = (ecc_odd >> 3) & PL35X_NAND_ECC_BYTE_OFF_MASK;
-		/* Bits [2:0] of error code give the bit offset */
+		 
 		bit_addr = ecc_odd & PL35X_NAND_ECC_BIT_OFF_MASK;
-		/* Toggle the faulty bit */
+		 
 		buf[byte_addr] ^= (BIT(bit_addr));
 
 		return 1;
 	}
 
-	/* One error in the ECC data; no action needed */
+	 
 	if (hweight32(ecc_odd | ecc_even) == 1)
 		return 1;
 
@@ -475,7 +456,7 @@ static int pl35x_nand_recover_data_hwecc(struct pl35x_nandc *nfc,
 
 	for (chunk = 0; chunk < chip->ecc.steps;
 	     chunk++, data += chip->ecc.size, read_ecc += chip->ecc.bytes) {
-		/* Read ECC value for each chunk */
+		 
 		ecc_value = readl(nfc->conf_regs + PL35X_SMC_ECC_VALUE(chunk));
 
 		if (!PL35X_SMC_ECC_VALUE_IS_VALID(ecc_value))
@@ -530,19 +511,19 @@ static int pl35x_nand_write_page_hwecc(struct nand_chip *chip,
 			addr2 |= PL35X_SMC_CMD_PHASE_ADDR(row - 4, addr);
 	}
 
-	/* Send the command and address cycles */
+	 
 	writel(addr1, nfc->io_regs + cmd_addr);
 	if (plnand->addr_cycles > 4)
 		writel(addr2, nfc->io_regs + cmd_addr);
 
-	/* Write the data with the engine enabled */
+	 
 	pl35x_nand_write_data_op(chip, buf, mtd->writesize, false,
 				 0, PL35X_SMC_DATA_PHASE_ECC_LAST);
 	ret = pl35x_smc_wait_for_ecc_done(nfc);
 	if (ret)
 		goto disable_ecc_engine;
 
-	/* Copy the HW calculated ECC bytes in the OOB buffer */
+	 
 	ret = pl35x_nand_read_eccbytes(nfc, chip, nfc->ecc_buf);
 	if (ret)
 		goto disable_ecc_engine;
@@ -555,7 +536,7 @@ static int pl35x_nand_write_page_hwecc(struct nand_chip *chip,
 	if (ret)
 		goto disable_ecc_engine;
 
-	/* Write the spare area with ECC bytes */
+	 
 	pl35x_nand_write_data_op(chip, chip->oob_poi, mtd->oobsize, false, 0,
 				 PL35X_SMC_CMD_PHASE_CMD1(NAND_CMD_PAGEPROG) |
 				 PL35X_SMC_CMD_PHASE_CMD1_VALID |
@@ -564,7 +545,7 @@ static int pl35x_nand_write_page_hwecc(struct nand_chip *chip,
 	if (ret)
 		goto disable_ecc_engine;
 
-	/* Check write status on the chip side */
+	 
 	ret = nand_status_op(chip, &status);
 	if (ret)
 		goto disable_ecc_engine;
@@ -578,17 +559,7 @@ disable_ecc_engine:
 	return ret;
 }
 
-/*
- * This functions reads data and checks the data integrity by comparing hardware
- * generated ECC values and read ECC values from spare area.
- *
- * There is a limitation with SMC controller: ECC_LAST must be set on the
- * last data access to tell the ECC engine not to expect any further data.
- * In practice, this implies to shrink the last data transfert by eg. 4 bytes,
- * and doing a last 4-byte transfer with the additional bit set. The last block
- * should be aligned with the end of an ECC block. Because of this limitation,
- * it is not possible to use the core routines.
- */
+ 
 static int pl35x_nand_read_page_hwecc(struct nand_chip *chip,
 				      u8 *buf, int oob_required, int page)
 {
@@ -622,25 +593,25 @@ static int pl35x_nand_read_page_hwecc(struct nand_chip *chip,
 			addr2 |= PL35X_SMC_CMD_PHASE_ADDR(row - 4, addr);
 	}
 
-	/* Send the command and address cycles */
+	 
 	writel(addr1, nfc->io_regs + cmd_addr);
 	if (plnand->addr_cycles > 4)
 		writel(addr2, nfc->io_regs + cmd_addr);
 
-	/* Wait the data to be available in the NAND cache */
+	 
 	ndelay(PSEC_TO_NSEC(sdr->tRR_min));
 	ret = pl35x_smc_wait_for_irq(nfc);
 	if (ret)
 		goto disable_ecc_engine;
 
-	/* Retrieve the raw data with the engine enabled */
+	 
 	pl35x_nand_read_data_op(chip, buf, mtd->writesize, false,
 				0, PL35X_SMC_DATA_PHASE_ECC_LAST);
 	ret = pl35x_smc_wait_for_ecc_done(nfc);
 	if (ret)
 		goto disable_ecc_engine;
 
-	/* Retrieve the stored ECC bytes */
+	 
 	pl35x_nand_read_data_op(chip, chip->oob_poi, mtd->oobsize, false,
 				0, PL35X_SMC_DATA_PHASE_CLEAR_CS);
 	ret = mtd_ooblayout_get_eccbytes(mtd, nfc->ecc_buf, chip->oob_poi, 0,
@@ -650,7 +621,7 @@ static int pl35x_nand_read_page_hwecc(struct nand_chip *chip,
 
 	pl35x_smc_set_ecc_mode(nfc, chip, PL35X_SMC_ECC_CFG_MODE_BYPASS);
 
-	/* Correct the data and report failures */
+	 
 	return pl35x_nand_recover_data_hwecc(nfc, chip, buf, nfc->ecc_buf);
 
 disable_ecc_engine:
@@ -716,14 +687,14 @@ static int pl35x_nand_exec_op(struct nand_chip *chip,
 		last_instr_type = instr->type;
 	}
 
-	/* Command phase */
+	 
 	cmd_addr |= PL35X_SMC_CMD_PHASE | cmd0 | cmd1 |
 		    (cmd1_valid ? PL35X_SMC_CMD_PHASE_CMD1_VALID : 0);
 	writel(addr1, nfc->io_regs + cmd_addr);
 	if (naddrs > 4)
 		writel(addr2, nfc->io_regs + cmd_addr);
 
-	/* Data phase */
+	 
 	if (data_instr && data_instr->type == NAND_OP_DATA_OUT_INSTR) {
 		last_flags = PL35X_SMC_DATA_PHASE_CLEAR_CS;
 		if (cmds == 2)
@@ -801,17 +772,10 @@ static int pl35x_nfc_setup_interface(struct nand_chip *chip, int cs,
 		return PTR_ERR(mclk);
 	}
 
-	/*
-	 * SDR timings are given in pico-seconds while NFC timings must be
-	 * expressed in NAND controller clock cycles. We use the TO_CYCLE()
-	 * macro to convert from one to the other.
-	 */
+	 
 	period_ns = NSEC_PER_SEC / clk_get_rate(mclk);
 
-	/*
-	 * PL35X SMC needs one extra read cycle in SDR Mode 5. This is not
-	 * written anywhere in the datasheet but is an empirical observation.
-	 */
+	 
 	val = TO_CYCLES(sdr->tRC_min, period_ns);
 	if (sdr->tRC_min <= 20000)
 		val++;
@@ -825,10 +789,7 @@ static int pl35x_nfc_setup_interface(struct nand_chip *chip, int cs,
 	if (tmgs.t_wc != val || tmgs.t_wc < 2)
 		return -EINVAL;
 
-	/*
-	 * For all SDR modes, PL35X SMC needs tREA_max being 1,
-	 * this is also an empirical result.
-	 */
+	 
 	tmgs.t_rea = 1;
 
 	val = TO_CYCLES(sdr->tWP_min, period_ns);
@@ -921,7 +882,7 @@ static int pl35x_nand_init_hw_ecc_controller(struct pl35x_nandc *nfc,
 
 	switch (mtd->oobsize) {
 	case 16:
-		/* Legacy Xilinx layout */
+		 
 		mtd_set_ooblayout(mtd, &pl35x_ecc_ooblayout16_ops);
 		chip->bbt_options |= NAND_BBT_NO_OOB_BBM;
 		break;
@@ -970,7 +931,7 @@ static int pl35x_nand_attach_chip(struct nand_chip *chip)
 
 	switch (chip->ecc.engine_type) {
 	case NAND_ECC_ENGINE_TYPE_ON_DIE:
-		/* Keep these legacy BBT descriptors for ON_DIE situations */
+		 
 		chip->bbt_td = &bbt_main_descr;
 		chip->bbt_md = &bbt_mirror_descr;
 		fallthrough;
@@ -1001,26 +962,23 @@ static int pl35x_nand_reset_state(struct pl35x_nandc *nfc)
 {
 	int ret;
 
-	/* Disable interrupts and clear their status */
+	 
 	writel(PL35X_SMC_MEMC_CFG_CLR_INT_CLR_1 |
 	       PL35X_SMC_MEMC_CFG_CLR_ECC_INT_DIS_1 |
 	       PL35X_SMC_MEMC_CFG_CLR_INT_DIS_1,
 	       nfc->conf_regs + PL35X_SMC_MEMC_CFG_CLR);
 
-	/* Set default bus width to 8-bit */
+	 
 	ret = pl35x_smc_set_buswidth(nfc, PL35X_SMC_OPMODE_BW_8);
 	if (ret)
 		return ret;
 
-	/* Ensure the ECC controller is bypassed by default */
+	 
 	ret = pl35x_smc_set_ecc_mode(nfc, NULL, PL35X_SMC_ECC_CFG_MODE_BYPASS);
 	if (ret)
 		return ret;
 
-	/*
-	 * Configure the commands that the ECC block uses to detect the
-	 * operations it should start/end.
-	 */
+	 
 	writel(PL35X_SMC_ECC_CMD1_WRITE(NAND_CMD_SEQIN) |
 	       PL35X_SMC_ECC_CMD1_READ(NAND_CMD_READ0) |
 	       PL35X_SMC_ECC_CMD1_READ_END(NAND_CMD_READSTART) |

@@ -1,9 +1,5 @@
-/* 	$OpenBSD: tests.c,v 1.3 2021/12/14 21:25:27 deraadt Exp $ */
-/*
- * Regress test for sshbuf.h buffer API
- *
- * Placed in the public domain
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -135,7 +131,7 @@ tests(void)
 	    msg, namespace);
  	TEST_DONE();
 #endif
-#endif /* ENABLE_SK */
+#endif  
 
 	sshbuf_free(msg);
 	free(namespace);

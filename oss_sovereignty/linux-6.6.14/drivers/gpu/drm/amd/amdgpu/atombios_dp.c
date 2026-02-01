@@ -1,29 +1,4 @@
-/*
- * Copyright 2007-8 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- *          Jerome Glisse
- */
+ 
 
 #include <drm/amdgpu_drm.h>
 #include <drm/display/drm_dp_helper.h>
@@ -37,7 +12,7 @@
 #include "amdgpu_connectors.h"
 #include "amdgpu_atombios.h"
 
-/* move these to drm_dp_helper.c/h */
+ 
 #define DP_LINK_CONFIGURATION_SIZE 9
 #define DP_DPCD_SIZE DP_RECEIVER_CAP_SIZE
 
@@ -48,7 +23,7 @@ static char *pre_emph_names[] = {
 	"0dB", "3.5dB", "6dB", "9.5dB"
 };
 
-/***** amdgpu AUX functions *****/
+ 
 
 union aux_channel_transaction {
 	PROCESS_AUX_CHANNEL_TRANSACTION_PS_ALLOCATION v1;
@@ -87,20 +62,20 @@ static int amdgpu_atombios_dp_process_aux_ch(struct amdgpu_i2c_chan *chan,
 
 	*ack = args.v2.ucReplyStatus;
 
-	/* timeout */
+	 
 	if (args.v2.ucReplyStatus == 1) {
 		r = -ETIMEDOUT;
 		goto done;
 	}
 
-	/* flags not zero */
+	 
 	if (args.v2.ucReplyStatus == 2) {
 		DRM_DEBUG_KMS("dp_aux_ch flags not zero\n");
 		r = -EIO;
 		goto done;
 	}
 
-	/* error */
+	 
 	if (args.v2.ucReplyStatus == 3) {
 		DRM_DEBUG_KMS("dp_aux_ch error\n");
 		r = -EIO;
@@ -146,9 +121,7 @@ amdgpu_atombios_dp_aux_transfer(struct drm_dp_aux *aux, struct drm_dp_aux_msg *m
 	switch (msg->request & ~DP_AUX_I2C_MOT) {
 	case DP_AUX_NATIVE_WRITE:
 	case DP_AUX_I2C_WRITE:
-		/* tx_size needs to be 4 even for bare address packets since the atom
-		 * table needs the info in tx_buf[3].
-		 */
+		 
 		tx_size = HEADER_SIZE + msg->size;
 		if (msg->size == 0)
 			tx_buf[3] |= BARE_ADDRESS_SIZE << 4;
@@ -158,14 +131,12 @@ amdgpu_atombios_dp_aux_transfer(struct drm_dp_aux *aux, struct drm_dp_aux_msg *m
 		ret = amdgpu_atombios_dp_process_aux_ch(chan,
 						 tx_buf, tx_size, NULL, 0, delay, &ack);
 		if (ret >= 0)
-			/* Return payload size. */
+			 
 			ret = msg->size;
 		break;
 	case DP_AUX_NATIVE_READ:
 	case DP_AUX_I2C_READ:
-		/* tx_size needs to be 4 even for bare address packets since the atom
-		 * table needs the info in tx_buf[3].
-		 */
+		 
 		tx_size = HEADER_SIZE;
 		if (msg->size == 0)
 			tx_buf[3] |= BARE_ADDRESS_SIZE << 4;
@@ -195,7 +166,7 @@ void amdgpu_atombios_dp_aux_init(struct amdgpu_connector *amdgpu_connector)
 	amdgpu_connector->ddc_bus->has_aux = true;
 }
 
-/***** general DP utility functions *****/
+ 
 
 #define DP_VOLTAGE_MAX         DP_TRAIN_VOLTAGE_SWING_LEVEL_3
 #define DP_PRE_EMPHASIS_MAX    DP_TRAIN_PRE_EMPH_LEVEL_3
@@ -237,8 +208,8 @@ static void amdgpu_atombios_dp_get_adjust_train(const u8 link_status[DP_LINK_STA
 		train_set[lane] = v | p;
 }
 
-/* convert bits per color to bits per pixel */
-/* get bpc from the EDID */
+ 
+ 
 static unsigned amdgpu_atombios_dp_convert_bpc_to_bpp(int bpc)
 {
 	if (bpc == 0)
@@ -247,7 +218,7 @@ static unsigned amdgpu_atombios_dp_convert_bpc_to_bpp(int bpc)
 		return bpc * 3;
 }
 
-/***** amdgpu specific DP functions *****/
+ 
 
 static int amdgpu_atombios_dp_get_dp_link_config(struct drm_connector *connector,
 						 const u8 dpcd[DP_DPCD_SIZE],
@@ -382,7 +353,7 @@ int amdgpu_atombios_dp_get_panel_mode(struct drm_encoder *encoder,
 		return panel_mode;
 
 	if (dp_bridge != ENCODER_OBJECT_ID_NONE) {
-		/* DP bridge chips */
+		 
 		if (drm_dp_dpcd_readb(&amdgpu_connector->ddc_bus->aux,
 				      DP_EDP_CONFIGURATION_CAP, &tmp) == 1) {
 			if (tmp & 1)
@@ -394,7 +365,7 @@ int amdgpu_atombios_dp_get_panel_mode(struct drm_encoder *encoder,
 				panel_mode = DP_PANEL_MODE_EXTERNAL_DP_MODE;
 		}
 	} else if (connector->connector_type == DRM_MODE_CONNECTOR_eDP) {
-		/* eDP */
+		 
 		if (drm_dp_dpcd_readb(&amdgpu_connector->ddc_bus->aux,
 				      DP_EDP_CONFIGURATION_CAP, &tmp) == 1) {
 			if (tmp & 1)
@@ -477,7 +448,7 @@ void amdgpu_atombios_dp_set_rx_power_state(struct drm_connector *connector,
 
 	dig_connector = amdgpu_connector->con_priv;
 
-	/* power up/down the sink */
+	 
 	if (dig_connector->dpcd[0] >= 0x11) {
 		drm_dp_dpcd_writeb(&amdgpu_connector->ddc_bus->aux,
 				   DP_SET_POWER, power_state);
@@ -502,12 +473,12 @@ struct amdgpu_atombios_dp_link_train_info {
 static void
 amdgpu_atombios_dp_update_vs_emph(struct amdgpu_atombios_dp_link_train_info *dp_info)
 {
-	/* set the initial vs/emph on the source */
+	 
 	amdgpu_atombios_encoder_setup_dig_transmitter(dp_info->encoder,
 					       ATOM_TRANSMITTER_ACTION_SETUP_VSEMPH,
-					       0, dp_info->train_set[0]); /* sets all lanes at once */
+					       0, dp_info->train_set[0]);  
 
-	/* set the vs/emph on the sink */
+	 
 	drm_dp_dpcd_write(dp_info->aux, DP_TRAINING_LANE0_SET,
 			  dp_info->train_set, dp_info->dp_lane_count);
 }
@@ -517,7 +488,7 @@ amdgpu_atombios_dp_set_tp(struct amdgpu_atombios_dp_link_train_info *dp_info, in
 {
 	int rtp = 0;
 
-	/* set training pattern on the source */
+	 
 	switch (tp) {
 	case DP_TRAINING_PATTERN_1:
 		rtp = ATOM_ENCODER_CMD_DP_LINK_TRAINING_PATTERN1;
@@ -531,7 +502,7 @@ amdgpu_atombios_dp_set_tp(struct amdgpu_atombios_dp_link_train_info *dp_info, in
 	}
 	amdgpu_atombios_encoder_setup_dig_encoder(dp_info->encoder, rtp, 0);
 
-	/* enable training pattern on the sink */
+	 
 	drm_dp_dpcd_writeb(dp_info->aux, DP_TRAINING_PATTERN_SET, tp);
 }
 
@@ -542,10 +513,10 @@ amdgpu_atombios_dp_link_train_init(struct amdgpu_atombios_dp_link_train_info *dp
 	struct amdgpu_encoder_atom_dig *dig = amdgpu_encoder->enc_priv;
 	u8 tmp;
 
-	/* power up the sink */
+	 
 	amdgpu_atombios_dp_set_rx_power_state(dp_info->connector, DP_SET_POWER_D0);
 
-	/* possibly enable downspread on the sink */
+	 
 	if (dp_info->dpcd[3] & 0x1)
 		drm_dp_dpcd_writeb(dp_info->aux,
 				   DP_DOWNSPREAD_CTRL, DP_SPREAD_AMP_0_5);
@@ -556,21 +527,21 @@ amdgpu_atombios_dp_link_train_init(struct amdgpu_atombios_dp_link_train_info *dp
 	if (dig->panel_mode == DP_PANEL_MODE_INTERNAL_DP2_MODE)
 		drm_dp_dpcd_writeb(dp_info->aux, DP_EDP_CONFIGURATION_SET, 1);
 
-	/* set the lane count on the sink */
+	 
 	tmp = dp_info->dp_lane_count;
 	if (drm_dp_enhanced_frame_cap(dp_info->dpcd))
 		tmp |= DP_LANE_COUNT_ENHANCED_FRAME_EN;
 	drm_dp_dpcd_writeb(dp_info->aux, DP_LANE_COUNT_SET, tmp);
 
-	/* set the link rate on the sink */
+	 
 	tmp = drm_dp_link_rate_to_bw_code(dp_info->dp_clock);
 	drm_dp_dpcd_writeb(dp_info->aux, DP_LINK_BW_SET, tmp);
 
-	/* start training on the source */
+	 
 	amdgpu_atombios_encoder_setup_dig_encoder(dp_info->encoder,
 					   ATOM_ENCODER_CMD_DP_LINK_TRAINING_START, 0);
 
-	/* disable the training pattern on the sink */
+	 
 	drm_dp_dpcd_writeb(dp_info->aux,
 			   DP_TRAINING_PATTERN_SET,
 			   DP_TRAINING_PATTERN_DISABLE);
@@ -583,12 +554,12 @@ amdgpu_atombios_dp_link_train_finish(struct amdgpu_atombios_dp_link_train_info *
 {
 	udelay(400);
 
-	/* disable the training pattern on the sink */
+	 
 	drm_dp_dpcd_writeb(dp_info->aux,
 			   DP_TRAINING_PATTERN_SET,
 			   DP_TRAINING_PATTERN_DISABLE);
 
-	/* disable the training pattern on the source */
+	 
 	amdgpu_atombios_encoder_setup_dig_encoder(dp_info->encoder,
 					   ATOM_ENCODER_CMD_DP_LINK_TRAINING_COMPLETE, 0);
 
@@ -608,7 +579,7 @@ amdgpu_atombios_dp_link_train_cr(struct amdgpu_atombios_dp_link_train_info *dp_i
 
 	udelay(400);
 
-	/* clock recovery loop */
+	 
 	clock_recovery = false;
 	dp_info->tries = 0;
 	voltage = 0xff;
@@ -646,7 +617,7 @@ amdgpu_atombios_dp_link_train_cr(struct amdgpu_atombios_dp_link_train_info *dp_i
 
 		voltage = dp_info->train_set[0] & DP_TRAIN_VOLTAGE_SWING_MASK;
 
-		/* Compute new train_set as requested by sink */
+		 
 		amdgpu_atombios_dp_get_adjust_train(dp_info->link_status, dp_info->dp_lane_count,
 					     dp_info->train_set);
 
@@ -674,7 +645,7 @@ amdgpu_atombios_dp_link_train_ce(struct amdgpu_atombios_dp_link_train_info *dp_i
 	else
 		amdgpu_atombios_dp_set_tp(dp_info, DP_TRAINING_PATTERN_2);
 
-	/* channel equalization loop */
+	 
 	dp_info->tries = 0;
 	channel_eq = false;
 	while (1) {
@@ -691,13 +662,13 @@ amdgpu_atombios_dp_link_train_ce(struct amdgpu_atombios_dp_link_train_info *dp_i
 			break;
 		}
 
-		/* Try 5 times */
+		 
 		if (dp_info->tries > 5) {
 			DRM_ERROR("channel eq failed: 5 tries\n");
 			break;
 		}
 
-		/* Compute new train_set as requested by sink */
+		 
 		amdgpu_atombios_dp_get_adjust_train(dp_info->link_status, dp_info->dp_lane_count,
 					     dp_info->train_set);
 

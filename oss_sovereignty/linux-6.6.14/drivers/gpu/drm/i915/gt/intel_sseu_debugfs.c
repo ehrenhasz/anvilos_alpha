@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: MIT
 
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 
 #include <linux/bitmap.h>
 #include <linux/string_helpers.h>
@@ -30,7 +28,7 @@ static void cherryview_sseu_device_status(struct intel_gt *gt,
 		unsigned int eu_cnt;
 
 		if (sig1[ss] & CHV_SS_PG_ENABLE)
-			/* skip disabled subslice */
+			 
 			continue;
 
 		sseu->slice_mask = BIT(0);
@@ -56,12 +54,7 @@ static void gen11_sseu_device_status(struct intel_gt *gt,
 	int s, ss;
 
 	for (s = 0; s < info->sseu.max_slices; s++) {
-		/*
-		 * FIXME: Valid SS Mask respects the spec and read
-		 * only valid bits for those registers, excluding reserved
-		 * although this seems wrong because it would leave many
-		 * subslices without ACK.
-		 */
+		 
 		s_reg[s] = intel_uncore_read(uncore, GEN10_SLICE_PGCTL_ACK(s)) &
 			GEN10_PGCTL_VALID_SS_MASK(s);
 		eu_reg[2 * s] = intel_uncore_read(uncore,
@@ -81,7 +74,7 @@ static void gen11_sseu_device_status(struct intel_gt *gt,
 
 	for (s = 0; s < info->sseu.max_slices; s++) {
 		if ((s_reg[s] & GEN9_PGCTL_SLICE_ACK) == 0)
-			/* skip disabled slice */
+			 
 			continue;
 
 		sseu->slice_mask |= BIT(s);
@@ -92,7 +85,7 @@ static void gen11_sseu_device_status(struct intel_gt *gt,
 
 			if (info->sseu.has_subslice_pg &&
 			    !(s_reg[s] & (GEN9_PGCTL_SS_ACK(ss))))
-				/* skip disabled subslice */
+				 
 				continue;
 
 			eu_cnt = 2 * hweight32(eu_reg[2 * s + ss / 2] &
@@ -134,7 +127,7 @@ static void gen9_sseu_device_status(struct intel_gt *gt,
 
 	for (s = 0; s < info->sseu.max_slices; s++) {
 		if ((s_reg[s] & GEN9_PGCTL_SLICE_ACK) == 0)
-			/* skip disabled slice */
+			 
 			continue;
 
 		sseu->slice_mask |= BIT(s);
@@ -147,7 +140,7 @@ static void gen9_sseu_device_status(struct intel_gt *gt,
 
 			if (IS_GEN9_LP(gt->i915)) {
 				if (!(s_reg[s] & (GEN9_PGCTL_SS_ACK(ss))))
-					/* skip disabled subslice */
+					 
 					continue;
 
 				sseu->subslice_mask.hsw[s] |= BIT(ss);
@@ -181,7 +174,7 @@ static void bdw_sseu_device_status(struct intel_gt *gt,
 		sseu->eu_total = sseu->eu_per_subslice *
 				 intel_sseu_subslice_total(sseu);
 
-		/* subtract fused off EU(s) from enabled slice(s) */
+		 
 		for (s = 0; s < fls(sseu->slice_mask); s++) {
 			u8 subslice_7eu = info->sseu.subslice_7eu[s];
 
@@ -224,10 +217,7 @@ static void i915_print_sseu_info(struct seq_file *m,
 		   str_yes_no(sseu->has_eu_pg));
 }
 
-/*
- * this is called from top-level debugfs as well, so we can't get the gt from
- * the seq_file.
- */
+ 
 int intel_sseu_status(struct seq_file *m, struct intel_gt *gt)
 {
 	struct drm_i915_private *i915 = gt->i915;

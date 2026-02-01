@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * IPWireless 3G PCMCIA Network Driver
- *
- * Original code
- *   by Stephen Blackheath <stephen@blacksapphire.com>,
- *      Ben Martel <benm@symmetric.co.nz>
- *
- * Copyrighted as follows:
- *   Copyright (C) 2004 by Symmetric Systems Ltd (NZ)
- *
- * Various driver changes and rewrites, port to new kernels
- *   Copyright (C) 2006-2007 Jiri Kosina
- *
- * Misc code cleanups and updates
- *   Copyright (C) 2007 David Sterba
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -73,11 +58,7 @@ static char *tty_type_name(int tty_type)
 
 static struct ipw_tty *get_tty(int index)
 {
-	/*
-	 * The 'ras_raw' channel is only available when 'loopback' mode
-	 * is enabled.
-	 * Number of minor starts with 16 (_RANGE * _RAS_RAW).
-	 */
+	 
 	if (!ipwireless_loopback && index >=
 			 IPWIRELESS_PCMCIA_MINOR_RANGE * TTYTYPE_RAS_RAW)
 		return NULL;
@@ -149,7 +130,7 @@ static void ipw_close(struct tty_struct *linux_tty, struct file *filp)
 	ipw_hangup(linux_tty);
 }
 
-/* Take data received from hardware, and send it out the tty */
+ 
 void ipwireless_tty_received(struct ipw_tty *tty, unsigned char *data,
 			unsigned int length)
 {
@@ -179,10 +160,7 @@ static void ipw_write_packet_sent_callback(void *callback_data,
 {
 	struct ipw_tty *tty = callback_data;
 
-	/*
-	 * Packet has been sent, so we subtract the number of bytes from our
-	 * tally of outstanding TX bytes.
-	 */
+	 
 	tty->tx_bytes_queued -= packet_length;
 }
 
@@ -204,7 +182,7 @@ static ssize_t ipw_write(struct tty_struct *linux_tty, const u8 *buf,
 	room = IPWIRELESS_TX_QUEUE_SIZE - tty->tx_bytes_queued;
 	if (room < 0)
 		room = 0;
-	/* Don't allow caller to write any more than we have room for */
+	 
 	if (count > room)
 		count = room;
 
@@ -232,7 +210,7 @@ static unsigned int ipw_write_room(struct tty_struct *linux_tty)
 	struct ipw_tty *tty = linux_tty->driver_data;
 	int room;
 
-	/* FIXME: Exactly how is the tty object locked here .. */
+	 
 	if (!tty)
 		return 0;
 
@@ -266,7 +244,7 @@ static int ipwireless_get_serial_info(struct tty_struct *linux_tty,
 static int ipwireless_set_serial_info(struct tty_struct *linux_tty,
 				      struct serial_struct *ss)
 {
-	return 0;	/* Keeps the PCMCIA scripts happy. */
+	return 0;	 
 }
 
 static unsigned int ipw_chars_in_buffer(struct tty_struct *linux_tty)
@@ -352,7 +330,7 @@ static int set_control_lines(struct ipw_tty *tty, unsigned int set,
 static int ipw_tiocmget(struct tty_struct *linux_tty)
 {
 	struct ipw_tty *tty = linux_tty->driver_data;
-	/* FIXME: Exactly how is the tty object locked here .. */
+	 
 
 	if (!tty)
 		return -ENODEV;
@@ -368,7 +346,7 @@ ipw_tiocmset(struct tty_struct *linux_tty,
 	     unsigned int set, unsigned int clear)
 {
 	struct ipw_tty *tty = linux_tty->driver_data;
-	/* FIXME: Exactly how is the tty object locked here .. */
+	 
 
 	if (!tty)
 		return -ENODEV;
@@ -390,7 +368,7 @@ static int ipw_ioctl(struct tty_struct *linux_tty,
 	if (!tty->port.count)
 		return -EINVAL;
 
-	/* FIXME: Exactly how is the tty object locked here .. */
+	 
 	if (tty->tty_type == TTYTYPE_MODEM) {
 		switch (cmd) {
 		case PPPIOCGCHAN:
@@ -456,7 +434,7 @@ static int add_tty(int j,
 		ipwireless_associate_network_tty(network,
 						 secondary_channel_idx,
 						 ttys[j]);
-	/* check if we provide raw device (if loopback is enabled) */
+	 
 	if (get_tty(j))
 		printk(KERN_INFO IPWIRELESS_PCCARD_NAME
 		       ": registering %s device ttyIPWp%d\n",
@@ -506,9 +484,7 @@ struct ipw_tty *ipwireless_tty_create(struct ipw_hardware *hardware,
 	return NULL;
 }
 
-/*
- * Must be called before ipwireless_network_free().
- */
+ 
 void ipwireless_tty_free(struct ipw_tty *tty)
 {
 	int j;
@@ -527,10 +503,8 @@ void ipwireless_tty_free(struct ipw_tty *tty)
 			if (ttyj->port.tty != NULL) {
 				mutex_unlock(&ttyj->ipw_tty_mutex);
 				tty_vhangup(ttyj->port.tty);
-				/* FIXME: Exactly how is the tty object locked here
-				   against a parallel ioctl etc */
-				/* FIXME2: hangup does not mean all processes
-				 * are gone */
+				 
+				 
 				mutex_lock(&ttyj->ipw_tty_mutex);
 			}
 			while (ttyj->port.count)
@@ -614,10 +588,7 @@ ipwireless_tty_notify_control_line_change(struct ipw_tty *tty,
 	tty->control_lines = (tty->control_lines & ~changed_mask)
 		| (control_lines & changed_mask);
 
-	/*
-	 * If DCD is de-asserted, we close the tty so pppd can tell that we
-	 * have gone offline.
-	 */
+	 
 	if ((old_control_lines & IPW_CONTROL_LINE_DCD)
 			&& !(tty->control_lines & IPW_CONTROL_LINE_DCD)
 			&& tty->port.tty) {

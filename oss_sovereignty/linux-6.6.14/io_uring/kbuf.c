@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/fs.h>
@@ -19,7 +19,7 @@
 
 #define BGID_ARRAY	64
 
-/* BIDs are addressed by a 16-bit field in a CQE */
+ 
 #define MAX_BIDS_PER_BGID (1 << 16)
 
 struct io_provide_buf {
@@ -59,11 +59,7 @@ static inline struct io_buffer_list *io_buffer_get_list(struct io_ring_ctx *ctx,
 static int io_buffer_add_list(struct io_ring_ctx *ctx,
 			      struct io_buffer_list *bl, unsigned int bgid)
 {
-	/*
-	 * Store buffer group ID and finally mark the list as visible.
-	 * The normal lookup doesn't care about the visibility as we're
-	 * always under the ->uring_lock, but the RCU lookup from mmap does.
-	 */
+	 
 	bl->bgid = bgid;
 	smp_store_release(&bl->is_ready, 1);
 
@@ -79,12 +75,7 @@ void io_kbuf_recycle_legacy(struct io_kiocb *req, unsigned issue_flags)
 	struct io_buffer_list *bl;
 	struct io_buffer *buf;
 
-	/*
-	 * For legacy provided buffer mode, don't recycle if we already did
-	 * IO to this buffer. For ring-mapped provided buffer mode, we should
-	 * increment ring->head to explicitly monopolize the buffer to avoid
-	 * multiple use.
-	 */
+	 
 	if (req->flags & REQ_F_PARTIAL_IO)
 		return;
 
@@ -104,20 +95,9 @@ unsigned int __io_put_kbuf(struct io_kiocb *req, unsigned issue_flags)
 {
 	unsigned int cflags;
 
-	/*
-	 * We can add this buffer back to two lists:
-	 *
-	 * 1) The io_buffers_cache list. This one is protected by the
-	 *    ctx->uring_lock. If we already hold this lock, add back to this
-	 *    list as we can grab it from issue as well.
-	 * 2) The io_buffers_comp list. This one is protected by the
-	 *    ctx->completion_lock.
-	 *
-	 * We migrate buffers from the comp_list to the issue cache list
-	 * when we need one.
-	 */
+	 
 	if (req->flags & REQ_F_BUFFER_RING) {
-		/* no buffers to recycle for this case */
+		 
 		cflags = __io_put_kbuf_list(req, NULL);
 	} else if (issue_flags & IO_URING_F_UNLOCKED) {
 		struct io_ring_ctx *ctx = req->ctx;
@@ -163,7 +143,7 @@ static void __user *io_ring_buffer_select(struct io_kiocb *req, size_t *len,
 		return NULL;
 
 	head &= bl->mask;
-	/* mmaped buffers are always contig */
+	 
 	if (bl->is_mmap || head < IO_BUFFER_LIST_BUF_PER_PAGE) {
 		buf = &br->bufs[head];
 	} else {
@@ -179,16 +159,7 @@ static void __user *io_ring_buffer_select(struct io_kiocb *req, size_t *len,
 	req->buf_index = buf->bid;
 
 	if (issue_flags & IO_URING_F_UNLOCKED || !file_can_poll(req->file)) {
-		/*
-		 * If we came in unlocked, we have no choice but to consume the
-		 * buffer here, otherwise nothing ensures that the buffer won't
-		 * get used by others. This does mean it'll be pinned until the
-		 * IO completes, coming in unlocked means we're being called from
-		 * io-wq context and there may be further retries in async hybrid
-		 * mode. For the locked case, the caller must call commit when
-		 * the transfer completes (or if we get -EAGAIN and must poll of
-		 * retry).
-		 */
+		 
 		req->buf_list = NULL;
 		bl->head++;
 	}
@@ -233,9 +204,7 @@ static __cold int io_init_bl_list(struct io_ring_ctx *ctx)
 	return 0;
 }
 
-/*
- * Mark the given mapped range as free for reuse
- */
+ 
 static void io_kbuf_mark_free(struct io_ring_ctx *ctx, struct io_buffer_list *bl)
 {
 	struct io_buf_free *ibf;
@@ -247,7 +216,7 @@ static void io_kbuf_mark_free(struct io_ring_ctx *ctx, struct io_buffer_list *bl
 		}
 	}
 
-	/* can't happen... */
+	 
 	WARN_ON_ONCE(1);
 }
 
@@ -256,17 +225,14 @@ static int __io_remove_buffers(struct io_ring_ctx *ctx,
 {
 	unsigned i = 0;
 
-	/* shouldn't happen */
+	 
 	if (!nbufs)
 		return 0;
 
 	if (bl->is_mapped) {
 		i = bl->buf_ring->tail - bl->head;
 		if (bl->is_mmap) {
-			/*
-			 * io_kbuf_list_free() will free the page(s) at
-			 * ->release() time.
-			 */
+			 
 			io_kbuf_mark_free(ctx, bl);
 			bl->buf_ring = NULL;
 			bl->is_mmap = 0;
@@ -279,13 +245,13 @@ static int __io_remove_buffers(struct io_ring_ctx *ctx,
 			bl->buf_pages = NULL;
 			bl->buf_nr_pages = 0;
 		}
-		/* make sure it's seen as empty */
+		 
 		INIT_LIST_HEAD(&bl->buf_list);
 		bl->is_mapped = 0;
 		return i;
 	}
 
-	/* protects io_buffers_cache */
+	 
 	lockdep_assert_held(&ctx->uring_lock);
 
 	while (!list_empty(&bl->buf_list)) {
@@ -360,7 +326,7 @@ int io_remove_buffers(struct io_kiocb *req, unsigned int issue_flags)
 	bl = io_buffer_get_list(ctx, p->bgid);
 	if (bl) {
 		ret = -EINVAL;
-		/* can't use provide/remove buffers command on mapped buffers */
+		 
 		if (!bl->is_mapped)
 			ret = __io_remove_buffers(ctx, bl, p->nbufs);
 	}
@@ -413,11 +379,7 @@ static int io_refill_buffer_cache(struct io_ring_ctx *ctx)
 	struct page *page;
 	int bufs_in_page;
 
-	/*
-	 * Completions that don't happen inline (eg not under uring_lock) will
-	 * add to ->io_buffers_comp. If we don't have any free buffers, check
-	 * the completion list and splice those entries first.
-	 */
+	 
 	if (!list_empty_careful(&ctx->io_buffers_comp)) {
 		spin_lock(&ctx->completion_lock);
 		if (!list_empty(&ctx->io_buffers_comp)) {
@@ -429,10 +391,7 @@ static int io_refill_buffer_cache(struct io_ring_ctx *ctx)
 		spin_unlock(&ctx->completion_lock);
 	}
 
-	/*
-	 * No free buffers and no completion entries either. Allocate a new
-	 * page worth of buffer entries and add those to our freelist.
-	 */
+	 
 	page = alloc_page(GFP_KERNEL_ACCOUNT);
 	if (!page)
 		return -ENOMEM;
@@ -501,12 +460,7 @@ int io_provide_buffers(struct io_kiocb *req, unsigned int issue_flags)
 		INIT_LIST_HEAD(&bl->buf_list);
 		ret = io_buffer_add_list(ctx, bl, p->bgid);
 		if (ret) {
-			/*
-			 * Doesn't need rcu free as it was never visible, but
-			 * let's keep it consistent throughout. Also can't
-			 * be a lower indexed array group, as adding one
-			 * where lookup failed cannot happen.
-			 */
+			 
 			if (p->bgid >= BGID_ARRAY)
 				kfree_rcu(bl, rcu);
 			else
@@ -514,7 +468,7 @@ int io_provide_buffers(struct io_kiocb *req, unsigned int issue_flags)
 			goto err;
 		}
 	}
-	/* can't add buffers via this command for a mapped buffer ring */
+	 
 	if (bl->is_mapped) {
 		ret = -EINVAL;
 		goto err;
@@ -543,28 +497,14 @@ static int io_pin_pbuf_ring(struct io_uring_buf_reg *reg,
 	if (IS_ERR(pages))
 		return PTR_ERR(pages);
 
-	/*
-	 * Apparently some 32-bit boxes (ARM) will return highmem pages,
-	 * which then need to be mapped. We could support that, but it'd
-	 * complicate the code and slowdown the common cases quite a bit.
-	 * So just error out, returning -EINVAL just like we did on kernels
-	 * that didn't support mapped buffer rings.
-	 */
+	 
 	for (i = 0; i < nr_pages; i++)
 		if (PageHighMem(pages[i]))
 			goto error_unpin;
 
 	br = page_address(pages[0]);
 #ifdef SHM_COLOUR
-	/*
-	 * On platforms that have specific aliasing requirements, SHM_COLOUR
-	 * is set and we must guarantee that the kernel and user side align
-	 * nicely. We cannot do that if IOU_PBUF_RING_MMAP isn't set and
-	 * the application mmap's the provided ring buffer. Fail the request
-	 * if we, by chance, don't end up with aligned addresses. The app
-	 * should use IOU_PBUF_RING_MMAP instead, and liburing will handle
-	 * this transparently.
-	 */
+	 
 	if ((reg->ring_addr | (unsigned long) br) & (SHM_COLOUR - 1))
 		goto error_unpin;
 #endif
@@ -581,11 +521,7 @@ error_unpin:
 	return -EINVAL;
 }
 
-/*
- * See if we have a suitable region that we can reuse, rather than allocate
- * both a new io_buf_free and mem region again. We leave it on the list as
- * even a reused entry will need freeing at ring release.
- */
+ 
 static struct io_buf_free *io_lookup_buf_free_entry(struct io_ring_ctx *ctx,
 						    size_t ring_size)
 {
@@ -619,14 +555,14 @@ static int io_alloc_pbuf_ring(struct io_ring_ctx *ctx,
 
 	ring_size = reg->ring_entries * sizeof(struct io_uring_buf_ring);
 
-	/* Reuse existing entry, if we can */
+	 
 	ibf = io_lookup_buf_free_entry(ctx, ring_size);
 	if (!ibf) {
 		ptr = io_mem_alloc(ring_size);
 		if (IS_ERR(ptr))
 			return PTR_ERR(ptr);
 
-		/* Allocate and store deferred free entry */
+		 
 		ibf = kmalloc(sizeof(*ibf), GFP_KERNEL_ACCOUNT);
 		if (!ibf) {
 			io_mem_free(ptr);
@@ -671,7 +607,7 @@ int io_register_pbuf_ring(struct io_ring_ctx *ctx, void __user *arg)
 	if (!is_power_of_2(reg.ring_entries))
 		return -EINVAL;
 
-	/* cannot disambiguate full vs empty due to head/tail size */
+	 
 	if (reg.ring_entries >= 65536)
 		return -EINVAL;
 
@@ -683,7 +619,7 @@ int io_register_pbuf_ring(struct io_ring_ctx *ctx, void __user *arg)
 
 	bl = io_buffer_get_list(ctx, reg.bgid);
 	if (bl) {
-		/* if mapped buffer ring OR classic exists, don't allow */
+		 
 		if (bl->is_mapped || !list_empty(&bl->buf_list))
 			return -EEXIST;
 	} else {
@@ -745,21 +681,14 @@ void *io_pbuf_get_address(struct io_ring_ctx *ctx, unsigned long bgid)
 
 	if (!bl || !bl->is_mmap)
 		return NULL;
-	/*
-	 * Ensure the list is fully setup. Only strictly needed for RCU lookup
-	 * via mmap, and in that case only for the array indexed groups. For
-	 * the xarray lookups, it's either visible and ready, or not at all.
-	 */
+	 
 	if (!smp_load_acquire(&bl->is_ready))
 		return NULL;
 
 	return bl->buf_ring;
 }
 
-/*
- * Called at or after ->release(), free the mmap'ed buffers that we used
- * for memory mapped provided buffer rings.
- */
+ 
 void io_kbuf_mmap_list_free(struct io_ring_ctx *ctx)
 {
 	struct io_buf_free *ibf;

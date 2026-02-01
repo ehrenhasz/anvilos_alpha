@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ADGS1408/ADGS1409 SPI MUX driver
- *
- * Copyright 2018 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/mod_devicetable.h>
@@ -88,7 +84,7 @@ static int adgs1408_probe(struct spi_device *spi)
 	case MUX_IDLE_DISCONNECT:
 	case MUX_IDLE_AS_IS:
 	case 0 ... 7:
-		/* adgs1409 supports only 4 states */
+		 
 		if (idle_state < mux->states) {
 			mux->idle_state = idle_state;
 			break;

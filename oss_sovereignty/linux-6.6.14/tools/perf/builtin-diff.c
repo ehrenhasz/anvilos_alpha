@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * builtin-diff.c
- *
- * Builtin diff command: Analyze two perf.data input files, look up and read
- * DSOs and symbol information, sort them and produce a diff.
- */
+
+ 
 #include "builtin.h"
 
 #include "util/debug.h"
@@ -46,7 +41,7 @@ struct perf_diff {
 	bool				 stream;
 };
 
-/* Diff command specific HPP columns. */
+ 
 enum {
 	PERF_HPP_DIFF__BASELINE,
 	PERF_HPP_DIFF__PERIOD,
@@ -109,7 +104,7 @@ enum {
 	COMPUTE_DELTA_ABS,
 	COMPUTE_CYCLES,
 	COMPUTE_MAX,
-	COMPUTE_STREAM,	/* After COMPUTE_MAX to avoid use current compute arrays */
+	COMPUTE_STREAM,	 
 };
 
 const char *compute_names[COMPUTE_MAX] = {
@@ -244,12 +239,9 @@ static int setup_compute(const struct option *opt, const char *str,
 	if (option) {
 		unsigned len = option++ - str;
 
-		/*
-		 * The str data are not writeable, so we need
-		 * to use another buffer.
-		 */
+		 
 
-		/* No option value is longer. */
+		 
 		if (len >= sizeof(buf))
 			return -EINVAL;
 
@@ -452,12 +444,7 @@ static int diff__process_sample_event(struct perf_tool *tool,
 		}
 	}
 
-	/*
-	 * The total_period is updated here before going to the output
-	 * tree since normally only the baseline hists will call
-	 * hists__output_resort() and precompute needs the total
-	 * period in order to sort entries by percentage delta.
-	 */
+	 
 	hists->stats.total_period += sample->period;
 	if (!al.filtered)
 		hists->stats.total_non_filtered_period += sample->period;
@@ -819,10 +806,7 @@ hist_entry__cmp_compute(struct hist_entry *left, struct hist_entry *right,
 	if (!p_left || !p_right)
 		return p_left ? -1 : 1;
 
-	/*
-	 * We have 2 entries of same kind, let's
-	 * make the data comparison.
-	 */
+	 
 	return __hist_entry__cmp_compute(p_left, p_right, c);
 }
 
@@ -842,11 +826,7 @@ hist_entry__cmp_compute_idx(struct hist_entry *left, struct hist_entry *right,
 		return p_left ? -1 : 1;
 
 	if (c != COMPUTE_DELTA && c != COMPUTE_DELTA_ABS) {
-		/*
-		 * The delta can be computed without the baseline, but
-		 * others are not.  Put those entries which have no
-		 * values below.
-		 */
+		 
 		if (left->dummy && right->dummy)
 			return 0;
 
@@ -1011,7 +991,7 @@ static void data_process(void)
 		if (verbose > 0 || ((data__files_cnt > 2) && !quiet))
 			data__fprintf();
 
-		/* Don't sort callchain for perf diff */
+		 
 		evsel__reset_sample_bit(evsel_base, CALLCHAIN);
 
 		hists__process(hists_base);
@@ -1051,11 +1031,7 @@ static int process_base_stream(struct data__file *data_base,
 
 static void stream_process(void)
 {
-	/*
-	 * Stream comparison only supports two data files.
-	 * perf.data.old and perf.data. data__files[0] is perf.data.old,
-	 * data__files[1] is perf.data.
-	 */
+	 
 	process_base_stream(&data__files[0], &data__files[1],
 			    "# Output based on old perf data:\n#\n");
 }
@@ -1093,10 +1069,7 @@ static int parse_absolute_time(struct data__file *d, char **pstr)
 	char *p = *pstr;
 	int ret;
 
-	/*
-	 * Absolute timestamp for one file has the format: a.b,c.d
-	 * For multiple files, the format is: a.b,c.d:a.b,c.d
-	 */
+	 
 	p = strchr(*pstr, ':');
 	if (p) {
 		if (p == *pstr) {
@@ -1171,7 +1144,7 @@ static int check_file_brstack(void)
 			return 0;
 	}
 
-	/* Set only all files having branch stacks */
+	 
 	pdiff.has_br_stack = true;
 	return 0;
 }
@@ -1365,9 +1338,7 @@ static int cycles_printf(struct hist_entry *he, struct hist_entry *pair,
 		return 0;
 	}
 
-	/*
-	 * Avoid printing the warning "addr2line_init failed for ..."
-	 */
+	 
 	symbol_conf.disable_add2line_warn = true;
 
 	bi = block_he->block_info;
@@ -1548,10 +1519,7 @@ static int hpp__color_cycles_hist(struct perf_hpp_fmt *fmt,
 			     avg_stats(&block_he->diff.stats));
 
 	if (ret) {
-		/*
-		 * Padding spaces if number of sparks less than NUM_SPARKS
-		 * otherwise the output is not aligned.
-		 */
+		 
 		pad = NUM_SPARKS - ((ret - 1) / 3);
 		scnprintf(buf, sizeof(buf), "%s%5.1f%% %s", "\u00B1", r, spark);
 		ret = scnprintf(hpp->buf, hpp->size, "%*s",
@@ -1603,7 +1571,7 @@ hpp__entry_pair(struct hist_entry *he, struct hist_entry *pair,
 		break;
 
 	case PERF_HPP_DIFF__RATIO:
-		/* No point for ratio number if we are dummy.. */
+		 
 		if (he->dummy) {
 			scnprintf(buf, size, "N/A");
 			break;
@@ -1619,7 +1587,7 @@ hpp__entry_pair(struct hist_entry *he, struct hist_entry *pair,
 		break;
 
 	case PERF_HPP_DIFF__WEIGHTED_DIFF:
-		/* No point for wdiff number if we are dummy.. */
+		 
 		if (he->dummy) {
 			scnprintf(buf, size, "N/A");
 			break;
@@ -1654,7 +1622,7 @@ __hpp__entry_global(struct hist_entry *he, struct diff_hpp_fmt *dfmt,
 	struct hist_entry *pair = get_pair_fmt(he, dfmt);
 	int idx = dfmt->idx;
 
-	/* baseline is special */
+	 
 	if (idx == PERF_HPP_DIFF__BASELINE)
 		hpp__entry_baseline(he, buf, size);
 	else {
@@ -1716,7 +1684,7 @@ static void init_header(struct data__file *d, struct diff_hpp_fmt *dfmt)
 	header = columns[dfmt->idx].name;
 	width  = columns[dfmt->idx].width;
 
-	/* Only our defined HPP fmts should appear here. */
+	 
 	BUG_ON(!header);
 
 	if (data__files_cnt > 2)
@@ -1749,7 +1717,7 @@ static void data__hpp_register(struct data__file *d, int idx)
 	fmt->cmp    = hist_entry__cmp_nop;
 	fmt->collapse = hist_entry__cmp_nop;
 
-	/* TODO more colors */
+	 
 	switch (idx) {
 	case PERF_HPP_DIFF__BASELINE:
 		fmt->color = hpp__color_baseline;
@@ -1797,28 +1765,14 @@ static int ui_init(void)
 
 	data__for_each_file(i, d) {
 
-		/*
-		 * Baseline or compute related columns:
-		 *
-		 *   PERF_HPP_DIFF__BASELINE
-		 *   PERF_HPP_DIFF__DELTA
-		 *   PERF_HPP_DIFF__RATIO
-		 *   PERF_HPP_DIFF__WEIGHTED_DIFF
-		 *   PERF_HPP_DIFF__CYCLES
-		 */
+		 
 		data__hpp_register(d, i ? compute_2_hpp[compute] :
 					  PERF_HPP_DIFF__BASELINE);
 
 		if (cycles_hist && i)
 			data__hpp_register(d, PERF_HPP_DIFF__CYCLES_HIST);
 
-		/*
-		 * And the rest:
-		 *
-		 * PERF_HPP_DIFF__FORMULA
-		 * PERF_HPP_DIFF__PERIOD
-		 * PERF_HPP_DIFF__PERIOD_BASELINE
-		 */
+		 
 		if (show_formula && i)
 			data__hpp_register(d, PERF_HPP_DIFF__FORMULA);
 
@@ -1830,17 +1784,7 @@ static int ui_init(void)
 	if (!sort_compute)
 		return 0;
 
-	/*
-	 * Prepend an fmt to sort on columns at 'sort_compute' first.
-	 * This fmt is added only to the sort list but not to the
-	 * output fields list.
-	 *
-	 * Note that this column (data) can be compared twice - one
-	 * for this 'sort_compute' fmt and another for the normal
-	 * diff_hpp_fmt.  But it shouldn't a problem as most entries
-	 * will be sorted out by first try or baseline and comparing
-	 * is not a costly operation.
-	 */
+	 
 	fmt = zalloc(sizeof(*fmt));
 	if (fmt == NULL) {
 		pr_err("Memory allocation failed\n");
@@ -1864,10 +1808,7 @@ static int ui_init(void)
 		fmt->sort = hist_entry__cmp_delta_abs_idx;
 		break;
 	case COMPUTE_CYCLES:
-		/*
-		 * Should set since 'fmt->sort' is called without
-		 * checking valid during sorting
-		 */
+		 
 		fmt->sort = hist_entry__cmp_nop;
 		break;
 	default:

@@ -1,27 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright 2011 Nexenta Systems, Inc.  All rights reserved.
- */
+ 
+ 
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -112,15 +90,13 @@
     ACE_SUCCESSFUL_ACCESS_ACE_FLAG | ACE_FAILED_ACCESS_ACE_FLAG | \
     ACE_IDENTIFIER_GROUP | ACE_OWNER | ACE_GROUP | ACE_EVERYONE)
 
-/*
- * ACL conversion helpers
- */
+ 
 
 typedef enum {
 	ace_unused,
 	ace_user_obj,
 	ace_user,
-	ace_group, /* includes GROUP and GROUP_OBJ */
+	ace_group,  
 	ace_other_obj
 } ace_to_aent_state_t;
 
@@ -145,17 +121,10 @@ typedef struct ace_list {
 	int hasmask;
 	int dfacl_flag;
 	ace_to_aent_state_t state;
-	int seen; /* bitmask of all aclent_t a_type values seen */
+	int seen;  
 } ace_list_t;
 
-/*
- * Generic shellsort, from K&R (1st ed, p 58.), somewhat modified.
- * v = Ptr to array/vector of objs
- * n = # objs in the array
- * s = size of each obj (must be multiples of a word size)
- * f = ptr to function to compare two objs
- *	returns (-1 = less than, 0 = equal, 1 = greater than
- */
+ 
 void
 ksort(caddr_t v, int n, int s, int (*f)(void *, void *))
 {
@@ -163,11 +132,11 @@ ksort(caddr_t v, int n, int s, int (*f)(void *, void *))
 	unsigned int *p1, *p2;
 	unsigned int tmp;
 
-	/* No work to do */
+	 
 	if (v == NULL || n <= 1)
 		return;
 
-	/* Sanity check on arguments */
+	 
 	ASSERT3U(((uintptr_t)v & 0x3), ==, 0);
 	ASSERT3S((s & 0x3), ==, 0);
 	ASSERT3S(s, >, 0);
@@ -188,34 +157,29 @@ ksort(caddr_t v, int n, int s, int (*f)(void *, void *))
 	}
 }
 
-/*
- * Compare two acls, all fields.  Returns:
- * -1 (less than)
- *  0 (equal)
- * +1 (greater than)
- */
+ 
 int
 cmp2acls(void *a, void *b)
 {
 	aclent_t *x = (aclent_t *)a;
 	aclent_t *y = (aclent_t *)b;
 
-	/* Compare types */
+	 
 	if (x->a_type < y->a_type)
 		return (-1);
 	if (x->a_type > y->a_type)
 		return (1);
-	/* Equal types; compare id's */
+	 
 	if (x->a_id < y->a_id)
 		return (-1);
 	if (x->a_id > y->a_id)
 		return (1);
-	/* Equal ids; compare perms */
+	 
 	if (x->a_perm < y->a_perm)
 		return (-1);
 	if (x->a_perm > y->a_perm)
 		return (1);
-	/* Totally equal */
+	 
 	return (0);
 }
 
@@ -255,9 +219,7 @@ acl_alloc(enum acl_type type)
 	return (aclp);
 }
 
-/*
- * Free acl_t structure
- */
+ 
 void
 acl_free(acl_t *aclp)
 {
@@ -313,11 +275,7 @@ access_mask_set(int haswriteperm, int hasreadperm, int isowner, int isallow)
 		else if (haswriteperm)
 			write_attrs_set = ACL_WRITE_ATTRS_WRITER_SET_DENY;
 		else
-			/*
-			 * If the entity is not the owner and does not
-			 * have write permissions ACE_WRITE_ATTRIBUTES will
-			 * always go in the DENY ACE.
-			 */
+			 
 			access_mask |= ACE_WRITE_ATTRIBUTES;
 	}
 
@@ -337,10 +295,7 @@ access_mask_set(int haswriteperm, int hasreadperm, int isowner, int isallow)
 	return (access_mask);
 }
 
-/*
- * Given an mode_t, convert it into an access_mask as used
- * by nfsace, assuming aclent_t -> nfsace semantics.
- */
+ 
 static uint32_t
 mode_to_ace_access(mode_t mode, boolean_t isdir, int isowner, int isallow)
 {
@@ -356,12 +311,7 @@ mode_to_ace_access(mode_t mode, boolean_t isdir, int isowner, int isallow)
 		hasreadperm = !(mode & S_IROTH);
 	}
 
-	/*
-	 * The following call takes care of correctly setting the following
-	 * mask bits in the access_mask:
-	 * ACE_SYNCHRONIZE, ACE_WRITE_OWNER, ACE_DELETE,
-	 * ACE_WRITE_ATTRIBUTES, ACE_WRITE_NAMED_ATTRS, ACE_READ_NAMED_ATTRS
-	 */
+	 
 	access = access_mask_set(haswriteperm, hasreadperm, isowner, isallow);
 
 	if (isallow) {
@@ -373,18 +323,18 @@ mode_to_ace_access(mode_t mode, boolean_t isdir, int isowner, int isallow)
 			access |= ACE_WRITE_ACL;
 	}
 
-	/* read */
+	 
 	if (mode & S_IROTH) {
 		access |= ACE_READ_DATA;
 	}
-	/* write */
+	 
 	if (mode & S_IWOTH) {
 		access |= ACE_WRITE_DATA |
 		    ACE_APPEND_DATA;
 		if (isdir)
 			access |= ACE_DELETE_CHILD;
 	}
-	/* exec */
+	 
 	if (mode & S_IXOTH) {
 		access |= ACE_EXECUTE;
 	}
@@ -392,10 +342,7 @@ mode_to_ace_access(mode_t mode, boolean_t isdir, int isowner, int isallow)
 	return (access);
 }
 
-/*
- * Given an nfsace (presumably an ALLOW entry), make a
- * corresponding DENY entry at the address given.
- */
+ 
 static void
 ace_make_deny(ace_t *allow, ace_t *deny, int isdir, int isowner)
 {
@@ -415,11 +362,7 @@ ace_make_deny(ace_t *allow, ace_t *deny, int isdir, int isowner)
 	    ACE_WRITE_DATA), (allow->a_access_mask & ACE_READ_DATA), isowner,
 	    B_FALSE);
 }
-/*
- * Make an initial pass over an array of aclent_t's.  Gather
- * information such as an ACL_MASK (if any), number of users,
- * number of groups, and whether the array needs to be sorted.
- */
+ 
 static int
 ln_aent_preprocess(aclent_t *aclent, int n,
     int *hasmask, mode_t *mask,
@@ -464,11 +407,7 @@ out:
 	return (error);
 }
 
-/*
- * Convert an array of aclent_t into an array of nfsace entries,
- * following POSIX draft -> nfsv4 conversion semantics as outlined in
- * the IETF draft.
- */
+ 
 static int
 ln_aent_to_ace(aclent_t *aclent, int n, ace_t **acepp, int *rescount, int isdir)
 {
@@ -485,20 +424,16 @@ ln_aent_to_ace(aclent_t *aclent, int n, ace_t **acepp, int *rescount, int isdir)
 	if (error != 0)
 		goto out;
 
-	/* allow + deny for each aclent */
+	 
 	resultsize = n * 2;
 	if (hasmask) {
-		/*
-		 * stick extra deny on the group_obj and on each
-		 * user|group for the mask (the group_obj was added
-		 * into the count for numgroup)
-		 */
+		 
 		resultsize += numuser + numgroup;
-		/* ... and don't count the mask itself */
+		 
 		resultsize -= 2;
 	}
 
-	/* sort the source if necessary */
+	 
 	if (needsort)
 		ksort((caddr_t)aclent, n, sizeof (aclent_t), cmp2acls);
 
@@ -508,14 +443,11 @@ ln_aent_to_ace(aclent_t *aclent, int n, ace_t **acepp, int *rescount, int isdir)
 	acep = result;
 
 	for (i = 0; i < n; i++) {
-		/*
-		 * don't process CLASS_OBJ (mask); mask was grabbed in
-		 * ln_aent_preprocess()
-		 */
+		 
 		if (aclent[i].a_type & CLASS_OBJ)
 			continue;
 
-		/* If we need an ACL_MASK emulator, prepend it now */
+		 
 		if ((hasmask) &&
 		    (aclent[i].a_type & (USER | GROUP | GROUP_OBJ))) {
 			acep->a_type = ACE_ACCESS_DENIED_ACE_TYPE;
@@ -535,35 +467,24 @@ ln_aent_to_ace(aclent_t *aclent, int n, ace_t **acepp, int *rescount, int isdir)
 				    ACE_FILE_INHERIT_ACE |
 				    ACE_DIRECTORY_INHERIT_ACE;
 			}
-			/*
-			 * Set the access mask for the prepended deny
-			 * ace.  To do this, we invert the mask (found
-			 * in ln_aent_preprocess()) then convert it to an
-			 * DENY ace access_mask.
-			 */
+			 
 			acep->a_access_mask = mode_to_ace_access((mask ^ 07),
 			    isdir, 0, 0);
 			acep += 1;
 		}
 
-		/* handle a_perm -> access_mask */
+		 
 		acep->a_access_mask = mode_to_ace_access(aclent[i].a_perm,
 		    isdir, aclent[i].a_type & USER_OBJ, 1);
 
-		/* emulate a default aclent */
+		 
 		if (aclent[i].a_type & ACL_DEFAULT) {
 			acep->a_flags |= ACE_INHERIT_ONLY_ACE |
 			    ACE_FILE_INHERIT_ACE |
 			    ACE_DIRECTORY_INHERIT_ACE;
 		}
 
-		/*
-		 * handle a_perm and a_id
-		 *
-		 * this must be done last, since it involves the
-		 * corresponding deny aces, which are handled
-		 * differently for each different a_type.
-		 */
+		 
 		if (aclent[i].a_type & USER_OBJ) {
 			acep->a_who = (uid_t)-1;
 			acep->a_flags |= ACE_OWNER;
@@ -581,32 +502,10 @@ ln_aent_to_ace(aclent_t *aclent, int n, ace_t **acepp, int *rescount, int isdir)
 				acep->a_who = aclent[i].a_id;
 			}
 			acep->a_flags |= ACE_IDENTIFIER_GROUP;
-			/*
-			 * Set the corresponding deny for the group ace.
-			 *
-			 * The deny aces go after all of the groups, unlike
-			 * everything else, where they immediately follow
-			 * the allow ace.
-			 *
-			 * We calculate "skip", the number of slots to
-			 * skip ahead for the deny ace, here.
-			 *
-			 * The pattern is:
-			 * MD1 A1 MD2 A2 MD3 A3 D1 D2 D3
-			 * thus, skip is
-			 * (2 * numgroup) - 1 - groupi
-			 * (2 * numgroup) to account for MD + A
-			 * - 1 to account for the fact that we're on the
-			 * access (A), not the mask (MD)
-			 * - groupi to account for the fact that we have
-			 * passed up groupi number of MD's.
-			 */
+			 
 			skip = (2 * numgroup) - 1 - groupi;
 			ace_make_deny(acep, acep + skip, isdir, B_FALSE);
-			/*
-			 * If we just did the last group, skip acep past
-			 * all of the denies; else, just move ahead one.
-			 */
+			 
 			if (++groupi >= numgroup)
 				acep += numgroup + 1;
 			else
@@ -706,11 +605,11 @@ ace_mask_to_mode(uint32_t  mask, o_mode_t *modep, boolean_t isdir)
 	o_mode_t mode = 0;
 	uint32_t bits, wantbits;
 
-	/* read */
+	 
 	if (mask & ACE_READ_DATA)
 		mode |= S_IROTH;
 
-	/* write */
+	 
 	wantbits = (ACE_WRITE_DATA | ACE_APPEND_DATA);
 	if (isdir)
 		wantbits |= ACE_DELETE_CHILD;
@@ -723,7 +622,7 @@ ace_mask_to_mode(uint32_t  mask, o_mode_t *modep, boolean_t isdir)
 		mode |= S_IWOTH;
 	}
 
-	/* exec */
+	 
 	if (mask & ACE_EXECUTE) {
 		mode |= S_IXOTH;
 	}
@@ -759,12 +658,7 @@ ace_list_init(ace_list_t *al, int dfacl_flag)
 	al->dfacl_flag = dfacl_flag;
 }
 
-/*
- * Find or create an acevals holder for a given id and avl tree.
- *
- * Note that only one thread will ever touch these avl trees, so
- * there is no need for locking.
- */
+ 
 static acevals_t *
 acevals_find(ace_t *ace, avl_tree_t *avl, int *num)
 {
@@ -776,7 +670,7 @@ acevals_find(ace_t *ace, avl_tree_t *avl, int *num)
 	if (rc != NULL)
 		return (rc);
 
-	/* this memory is freed by ln_ace_to_aent()->ace_list_free() */
+	 
 	if (cacl_malloc((void **)&rc, sizeof (acevals_t)) != 0)
 		return (NULL);
 
@@ -878,7 +772,7 @@ access_mask_check(ace_t *acep, int mask_bit, int isowner)
 			}
 		}
 	} else {
-		/* ACE_ACCESS_ALLOWED_ACE_TYPE */
+		 
 		if (acl_consume & set_allow) {
 			if (!(acep->a_access_mask & mask_bit)) {
 				return (ENOTSUP);
@@ -898,20 +792,20 @@ ace_to_aent_legal(ace_t *acep)
 	int error = 0;
 	int isowner;
 
-	/* only ALLOW or DENY */
+	 
 	if ((acep->a_type != ACE_ACCESS_ALLOWED_ACE_TYPE) &&
 	    (acep->a_type != ACE_ACCESS_DENIED_ACE_TYPE)) {
 		error = ENOTSUP;
 		goto out;
 	}
 
-	/* check for invalid flags */
+	 
 	if (acep->a_flags & ~(ACE_VALID_FLAG_BITS)) {
 		error = EINVAL;
 		goto out;
 	}
 
-	/* some flags are illegal */
+	 
 	if (acep->a_flags & (ACE_SUCCESSFUL_ACCESS_ACE_FLAG |
 	    ACE_FAILED_ACCESS_ACE_FLAG |
 	    ACE_NO_PROPAGATE_INHERIT_ACE)) {
@@ -919,7 +813,7 @@ ace_to_aent_legal(ace_t *acep)
 		goto out;
 	}
 
-	/* check for invalid masks */
+	 
 	if (acep->a_access_mask & ~(ACE_VALID_MASK_BITS)) {
 		error = EINVAL;
 		goto out;
@@ -955,7 +849,7 @@ ace_to_aent_legal(ace_t *acep)
 	if (error)
 		goto out;
 
-	/* more detailed checking of masks */
+	 
 	if (acep->a_type == ACE_ACCESS_ALLOWED_ACE_TYPE) {
 		if (! (acep->a_access_mask & ACE_READ_ATTRIBUTES)) {
 			error = ENOTSUP;
@@ -973,7 +867,7 @@ ace_to_aent_legal(ace_t *acep)
 		}
 	}
 
-	/* ACL enforcement */
+	 
 	if ((acep->a_access_mask & ACE_READ_ACL) &&
 	    (acep->a_type != ACE_ACCESS_ALLOWED_ACE_TYPE)) {
 		error = ENOTSUP;
@@ -999,7 +893,7 @@ out:
 static int
 ace_allow_to_mode(uint32_t mask, o_mode_t *modep, boolean_t isdir)
 {
-	/* ACE_READ_ACL and ACE_READ_ATTRIBUTES must both be set */
+	 
 	if ((mask & (ACE_READ_ACL | ACE_READ_ATTRIBUTES)) !=
 	    (ACE_READ_ACL | ACE_READ_ATTRIBUTES)) {
 		return (ENOTSUP);
@@ -1068,10 +962,7 @@ ace_list_to_aent(ace_list_t *list, aclent_t **aclentp, int *aclcnt,
 	}
 
 	resultcount = 3 + list->numusers + list->numgroups;
-	/*
-	 * This must be the same condition as below, when we add the CLASS_OBJ
-	 * (aka ACL mask)
-	 */
+	 
 	if ((list->hasmask) || (! list->dfacl_flag))
 		resultcount += 1;
 
@@ -1082,7 +973,7 @@ ace_list_to_aent(ace_list_t *list, aclent_t **aclentp, int *aclcnt,
 	}
 	aent = result;
 
-	/* USER_OBJ */
+	 
 	if (!(list->user_obj.aent_type & USER_OBJ)) {
 		error = EINVAL;
 		goto out;
@@ -1094,7 +985,7 @@ ace_list_to_aent(ace_list_t *list, aclent_t **aclentp, int *aclcnt,
 	if (error != 0)
 		goto out;
 	++aent;
-	/* USER */
+	 
 	vals = NULL;
 	for (vals = avl_first(&list->user); vals != NULL;
 	    vals = AVL_NEXT(&list->user, vals)) {
@@ -1108,7 +999,7 @@ ace_list_to_aent(ace_list_t *list, aclent_t **aclentp, int *aclcnt,
 			goto out;
 		++aent;
 	}
-	/* GROUP_OBJ */
+	 
 	if (!(list->group_obj.aent_type & GROUP_OBJ)) {
 		error = EINVAL;
 		goto out;
@@ -1118,7 +1009,7 @@ ace_list_to_aent(ace_list_t *list, aclent_t **aclentp, int *aclcnt,
 	if (error != 0)
 		goto out;
 	++aent;
-	/* GROUP */
+	 
 	vals = NULL;
 	for (vals = avl_first(&list->group); vals != NULL;
 	    vals = AVL_NEXT(&list->group, vals)) {
@@ -1132,12 +1023,7 @@ ace_list_to_aent(ace_list_t *list, aclent_t **aclentp, int *aclcnt,
 			goto out;
 		++aent;
 	}
-	/*
-	 * CLASS_OBJ (aka ACL_MASK)
-	 *
-	 * An ACL_MASK is not fabricated if the ACL is a default ACL.
-	 * This is to follow UFS's behavior.
-	 */
+	 
 	if ((list->hasmask) || (! list->dfacl_flag)) {
 		if (list->hasmask) {
 			uint32_t flips = ACE_POSIX_SUPPORTED_BITS;
@@ -1148,7 +1034,7 @@ ace_list_to_aent(ace_list_t *list, aclent_t **aclentp, int *aclcnt,
 			if (error != 0)
 				goto out;
 		} else {
-			/* fabricate the ACL_MASK from the group permissions */
+			 
 			error = ace_mask_to_mode(list->group_obj.allowed,
 			    &aent->a_perm, isdir);
 			if (error != 0)
@@ -1158,7 +1044,7 @@ ace_list_to_aent(ace_list_t *list, aclent_t **aclentp, int *aclcnt,
 		aent->a_type = CLASS_OBJ | list->dfacl_flag;
 		++aent;
 	}
-	/* OTHER_OBJ */
+	 
 	if (!(list->other_obj.aent_type & OTHER_OBJ)) {
 		error = EINVAL;
 		goto out;
@@ -1182,9 +1068,7 @@ out:
 }
 
 
-/*
- * free all data associated with an ace_list
- */
+ 
 static void
 ace_list_free(ace_list_t *al)
 {
@@ -1204,7 +1088,7 @@ ace_list_free(ace_list_t *al)
 	avl_destroy(&al->user);
 	avl_destroy(&al->group);
 
-	/* free the container itself */
+	 
 	cacl_free(al, sizeof (ace_list_t));
 }
 
@@ -1223,10 +1107,7 @@ acevals_compare(const void *va, const void *vb)
 		return (-1);
 }
 
-/*
- * Convert a list of ace_t entries to equivalent regular and default
- * aclent_t lists.  Return error (ENOTSUP) when conversion is not possible.
- */
+ 
 static int
 ln_ace_to_aent(ace_t *ace, int n, uid_t owner, gid_t group,
     aclent_t **aclentp, int *aclcnt, aclent_t **dfaclentp, int *dfaclcnt,
@@ -1244,7 +1125,7 @@ ln_ace_to_aent(ace_t *ace, int n, uid_t owner, gid_t group,
 	*dfaclentp = NULL;
 	*dfaclcnt = 0;
 
-	/* we need at least user_obj, group_obj, and other_obj */
+	 
 	if (n < 6) {
 		error = ENOTSUP;
 		goto out;
@@ -1275,30 +1156,27 @@ ln_ace_to_aent(ace_t *ace, int n, uid_t owner, gid_t group,
 	    offsetof(acevals_t, avl));
 	ace_list_init(dfacl, ACL_DEFAULT);
 
-	/* process every ace_t... */
+	 
 	for (i = 0; i < n; i++) {
 		acep = &ace[i];
 
-		/* rule out certain cases quickly */
+		 
 		error = ace_to_aent_legal(acep);
 		if (error != 0)
 			goto out;
 
-		/*
-		 * Turn off these bits in order to not have to worry about
-		 * them when doing the checks for compliments.
-		 */
+		 
 		acep->a_access_mask &= ~(ACE_WRITE_OWNER | ACE_DELETE |
 		    ACE_SYNCHRONIZE | ACE_WRITE_ATTRIBUTES |
 		    ACE_READ_NAMED_ATTRS | ACE_WRITE_NAMED_ATTRS);
 
-		/* see if this should be a regular or default acl */
+		 
 		bits = acep->a_flags &
 		    (ACE_INHERIT_ONLY_ACE |
 		    ACE_FILE_INHERIT_ACE |
 		    ACE_DIRECTORY_INHERIT_ACE);
 		if (bits != 0) {
-			/* all or nothing on these inherit bits */
+			 
 			if (bits != (ACE_INHERIT_ONLY_ACE |
 			    ACE_FILE_INHERIT_ACE |
 			    ACE_DIRECTORY_INHERIT_ACE)) {
@@ -1366,19 +1244,16 @@ ln_ace_to_aent(ace_t *ace, int n, uid_t owner, gid_t group,
 		}
 
 		if (acep->a_type == ACE_ACCESS_ALLOWED_ACE_TYPE) {
-			/* no more than one allowed per aclent_t */
+			 
 			if (vals->allowed != ACE_MASK_UNDEFINED) {
 				error = ENOTSUP;
 				goto out;
 			}
 			vals->allowed = acep->a_access_mask;
 		} else {
-			/*
-			 * it's a DENY; if there was a previous DENY, it
-			 * must have been an ACL_MASK.
-			 */
+			 
 			if (vals->denied != ACE_MASK_UNDEFINED) {
-				/* ACL_MASK is for USER and GROUP only */
+				 
 				if ((acl->state != ace_user) &&
 				    (acl->state != ace_group)) {
 					error = ENOTSUP;
@@ -1388,7 +1263,7 @@ ln_ace_to_aent(ace_t *ace, int n, uid_t owner, gid_t group,
 				if (! acl->hasmask) {
 					acl->hasmask = 1;
 					acl->acl_mask = vals->denied;
-				/* check for mismatched ACL_MASK emulations */
+				 
 				} else if (acl->acl_mask != vals->denied) {
 					error = ENOTSUP;
 					goto out;
@@ -1399,7 +1274,7 @@ ln_ace_to_aent(ace_t *ace, int n, uid_t owner, gid_t group,
 		}
 	}
 
-	/* done collating; produce the aclent_t lists */
+	 
 	if (normacl->state != ace_unused) {
 		error = ace_list_to_aent(normacl, aclentp, aclcnt,
 		    owner, group, isdir);
@@ -1441,9 +1316,7 @@ convert_ace_to_aent(ace_t *acebufp, int acecnt, boolean_t isdir,
 
 
 	if (dfaclcnt != 0) {
-		/*
-		 * Slap aclentp and dfaclentp into a single array.
-		 */
+		 
 		aclsz = sizeof (aclent_t) * aclcnt;
 		dfaclsz = sizeof (aclent_t) * dfaclcnt;
 		aclentp = cacl_realloc(aclentp, aclsz, aclsz + dfaclsz);
@@ -1474,9 +1347,7 @@ acl_translate(acl_t *aclp, int target_flavor, boolean_t isdir, uid_t owner,
 	void *acldata;
 	int error;
 
-	/*
-	 * See if we need to translate
-	 */
+	 
 	if ((target_flavor == _ACL_ACE_ENABLED && aclp->acl_type == ACE_T) ||
 	    (target_flavor == _ACL_ACLENT_ENABLED &&
 	    aclp->acl_type == ACLENT_T))
@@ -1505,9 +1376,7 @@ acl_translate(acl_t *aclp, int target_flavor, boolean_t isdir, uid_t owner,
 		goto out;
 	}
 
-	/*
-	 * replace old acl with newly translated acl
-	 */
+	 
 	cacl_free(aclp->acl_aclp, aclp->acl_cnt * aclp->acl_entry_size);
 	aclp->acl_aclp = acldata;
 	aclp->acl_cnt = aclcnt;
@@ -1529,7 +1398,7 @@ out:
 	return (error);
 #endif
 }
-#endif /* !_KERNEL */
+#endif  
 
 #define	SET_ACE(acl, index, who, mask, type, flags) { \
 	acl[0][index].a_who = (uint32_t)who; \
@@ -1545,7 +1414,7 @@ acl_trivial_access_masks(mode_t mode, boolean_t isdir, trivial_acl_t *masks)
 	uint32_t write_mask = ACE_WRITE_DATA|ACE_APPEND_DATA;
 	uint32_t execute_mask = ACE_EXECUTE;
 
-	(void) isdir;	/* will need this later */
+	(void) isdir;	 
 
 	masks->deny1 = 0;
 	if (!(mode & S_IRUSR) && (mode & (S_IRGRP|S_IROTH)))
@@ -1643,15 +1512,7 @@ acl_trivial_create(mode_t mode, boolean_t isdir, ace_t **acl, int *count)
 	return (0);
 }
 
-/*
- * ace_trivial:
- * determine whether an ace_t acl is trivial
- *
- * Trivialness implies that the acl is composed of only
- * owner, group, everyone entries.  ACL can't
- * have read_acl denied, and write_owner/write_acl/write_attributes
- * can only be owner@ entry.
- */
+ 
 int
 ace_trivial_common(void *acep, int aclcnt,
     uintptr_t (*walk)(void *, uintptr_t, int aclcnt,
@@ -1678,25 +1539,15 @@ ace_trivial_common(void *acep, int aclcnt,
 		    ACE_INHERIT_ONLY_ACE))
 			return (1);
 
-		/*
-		 * Special check for some special bits
-		 *
-		 * Don't allow anybody to deny reading basic
-		 * attributes or a files ACL.
-		 */
+		 
 		if ((mask & (ACE_READ_ACL|ACE_READ_ATTRIBUTES)) &&
 		    (type == ACE_ACCESS_DENIED_ACE_TYPE))
 			return (1);
 
-		/*
-		 * Delete permissions are never set by default
-		 */
+		 
 		if (mask & (ACE_DELETE|ACE_DELETE_CHILD))
 			return (1);
-		/*
-		 * only allow owner@ to have
-		 * write_acl/write_owner/write_attributes/write_xattr/
-		 */
+		 
 		if (type == ACE_ACCESS_ALLOWED_ACE_TYPE &&
 		    (!(flags & ACE_OWNER) && (mask &
 		    (ACE_WRITE_OWNER|ACE_WRITE_ACL| ACE_WRITE_ATTRIBUTES|

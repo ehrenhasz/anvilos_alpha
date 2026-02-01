@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2023 Renesas Electronics Corporation
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/driver.h>
@@ -30,7 +28,7 @@ static void rzv2m_pwc_gpio_set(struct gpio_chip *chip, unsigned int offset,
 	struct rzv2m_pwc_priv *priv = gpiochip_get_data(chip);
 	u32 reg;
 
-	/* BIT 16 enables write to BIT 0, and BIT 17 enables write to BIT 1 */
+	 
 	reg = BIT(offset + 16);
 	if (value)
 		reg |= BIT(offset);
@@ -97,12 +95,7 @@ static int rzv2m_pwc_probe(struct platform_device *pdev)
 	if (IS_ERR(priv->base))
 		return PTR_ERR(priv->base);
 
-	/*
-	 * The register used by this driver cannot be read, therefore set the
-	 * outputs to their default values and initialize priv->ch_en_bits
-	 * accordingly. BIT 16 enables write to BIT 0, BIT 17 enables write to
-	 * BIT 1, and the default value of both BIT 0 and BIT 1 is 0.
-	 */
+	 
 	writel(BIT(17) | BIT(16), priv->base + PWC_GPIO);
 	bitmap_zero(priv->ch_en_bits, 2);
 
@@ -123,7 +116,7 @@ static int rzv2m_pwc_probe(struct platform_device *pdev)
 
 static const struct of_device_id rzv2m_pwc_of_match[] = {
 	{ .compatible = "renesas,rzv2m-pwc" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, rzv2m_pwc_of_match);
 

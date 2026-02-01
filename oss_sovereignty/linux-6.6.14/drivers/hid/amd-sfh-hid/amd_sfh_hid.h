@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * AMD MP2 Sensors transport driver
- *
- * Copyright 2020-2021 Advanced Micro Devices, Inc.
- * Authors: Nehal Bakulchandra Shah <Nehal-bakulchandra.shah@amd.com>
- *	    Sandeep Singh <sandeep.singh@amd.com>
- *	    Basavaraj Natikar <Basavaraj.Natikar@amd.com>
- */
+ 
+ 
 
 #ifndef AMDSFH_HID_H
 #define AMDSFH_HID_H
@@ -56,23 +49,14 @@ struct amdtp_cl_data {
 	struct request_list req_list;
 };
 
-/**
- * struct amdtp_hid_data - Per instance HID data
- * @index:		Device index in the order of enumeration
- * @request_done:	Get Feature/Input report complete flag
- *			used during get/set request from hid core
- * @cli_data:		Link to the client instance
- * @hid_wait:		Completion waitq
- *
- * Used to tie hid->driver data to driver client instance
- */
+ 
 struct amdtp_hid_data {
 	int index;
 	struct amdtp_cl_data *cli_data;
 	wait_queue_head_t hid_wait;
 };
 
-/* Interface functions between HID LL driver and AMD SFH client */
+ 
 void hid_amdtp_set_feature(struct hid_device *hid, char *buf, u32 len, int report_id);
 void hid_amdtp_get_report(struct hid_device *hid, int report_id, int report_type);
 int amdtp_hid_probe(u32 cur_hid_dev, struct amdtp_cl_data *cli_data);

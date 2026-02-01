@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #ifndef IOU_FILE_TABLE_H
 #define IOU_FILE_TABLE_H
 

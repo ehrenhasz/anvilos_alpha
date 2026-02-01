@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Bridge multicast support.
- *
- * Copyright (c) 2010 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/export.h>
@@ -197,14 +193,7 @@ struct net_bridge_mdb_entry *br_mdb_get(struct net_bridge_mcast *brmctx,
 	return br_mdb_ip_get_rcu(br, &ip);
 }
 
-/* IMPORTANT: this function must be used only when the contexts cannot be
- * passed down (e.g. timer) and must be used for read-only purposes because
- * the vlan snooping option can change, so it can return any context
- * (non-vlan or vlan). Its initial intended purpose is to read timer values
- * from the *current* context based on the option. At worst that could lead
- * to inconsistent timers when the contexts are changed, i.e. src timer
- * which needs to re-arm with a specific delay taken from the old context
- */
+ 
 static struct net_bridge_mcast_port *
 br_multicast_pg_to_port_ctx(const struct net_bridge_port_group *pg)
 {
@@ -213,17 +202,12 @@ br_multicast_pg_to_port_ctx(const struct net_bridge_port_group *pg)
 
 	lockdep_assert_held_once(&pg->key.port->br->multicast_lock);
 
-	/* if vlan snooping is disabled use the port's multicast context */
+	 
 	if (!pg->key.addr.vid ||
 	    !br_opt_get(pg->key.port->br, BROPT_MCAST_VLAN_SNOOPING_ENABLED))
 		goto out;
 
-	/* locking is tricky here, due to different rules for multicast and
-	 * vlans we need to take rcu to find the vlan and make sure it has
-	 * the BR_VLFLAG_MCAST_ENABLED flag set, it can only change under
-	 * multicast_lock which must be already held here, so the vlan's pmctx
-	 * can safely be used on return
-	 */
+	 
 	rcu_read_lock();
 	vlan = br_vlan_find(nbp_vlan_group_rcu(pg->key.port), pg->key.addr.vid);
 	if (vlan && !br_multicast_port_ctx_vlan_disabled(&vlan->port_mcast_ctx))
@@ -246,7 +230,7 @@ br_multicast_port_vid_to_port_ctx(struct net_bridge_port *port, u16 vid)
 	if (!br_opt_get(port->br, BROPT_MCAST_VLAN_SNOOPING_ENABLED))
 		return NULL;
 
-	/* Take RCU to access the vlan. */
+	 
 	rcu_read_lock();
 
 	vlan = br_vlan_find(nbp_vlan_group_rcu(port), vid);
@@ -258,11 +242,7 @@ br_multicast_port_vid_to_port_ctx(struct net_bridge_port *port, u16 vid)
 	return pmctx;
 }
 
-/* when snooping we need to check if the contexts should be used
- * in the following order:
- * - if pmctx is non-NULL (port), check if it should be used
- * - if pmctx is NULL (bridge), check if brmctx should be used
- */
+ 
 static bool
 br_multicast_ctx_should_use(const struct net_bridge_mcast *brmctx,
 			    const struct net_bridge_mcast_port *pmctx)
@@ -332,14 +312,7 @@ static void __fwd_del_star_excl(struct net_bridge_port_group *pg,
 	br_multicast_find_del_pg(br, src_pg);
 }
 
-/* When a port group transitions to (or is added as) EXCLUDE we need to add it
- * to all other ports' S,G entries which are not blocked by the current group
- * for proper replication, the assumption is that any S,G blocked entries
- * are already added so the S,G,port lookup should skip them.
- * When a port group transitions from EXCLUDE -> INCLUDE mode or is being
- * deleted we need to remove it from all ports' S,G entries where it was
- * automatically installed before (i.e. where it's MDB_PG_FLAGS_STAR_EXCL).
- */
+ 
 void br_multicast_star_g_handle_mode(struct net_bridge_port_group *pg,
 				     u8 filter_mode)
 {
@@ -385,7 +358,7 @@ void br_multicast_star_g_handle_mode(struct net_bridge_port_group *pg,
 	}
 }
 
-/* called when adding a new S,G with host_joined == false by default */
+ 
 static void br_multicast_sg_host_state(struct net_bridge_mdb_entry *star_mp,
 				       struct net_bridge_port_group *sg)
 {
@@ -402,7 +375,7 @@ static void br_multicast_sg_host_state(struct net_bridge_mdb_entry *star_mp,
 	sg_mp->host_joined = true;
 }
 
-/* set the host_joined state of all of *,G's S,G entries */
+ 
 static void br_multicast_star_g_host_state(struct net_bridge_mdb_entry *star_mp)
 {
 	struct net_bridge *br = star_mp->br;
@@ -437,13 +410,11 @@ static void br_multicast_sg_del_exclude_ports(struct net_bridge_mdb_entry *sgmp)
 	struct net_bridge_port_group __rcu **pp;
 	struct net_bridge_port_group *p;
 
-	/* *,G exclude ports are only added to S,G entries */
+	 
 	if (WARN_ON(br_multicast_is_star_g(&sgmp->addr)))
 		return;
 
-	/* we need the STAR_EXCLUDE ports if there are non-STAR_EXCLUDE ports
-	 * we should ignore perm entries since they're managed by user-space
-	 */
+	 
 	for (pp = &sgmp->ports;
 	     (p = mlock_dereference(*pp, sgmp->br)) != NULL;
 	     pp = &p->next)
@@ -451,10 +422,7 @@ static void br_multicast_sg_del_exclude_ports(struct net_bridge_mdb_entry *sgmp)
 				  MDB_PG_FLAGS_PERMANENT)))
 			return;
 
-	/* currently the host can only have joined the *,G which means
-	 * we treat it as EXCLUDE {}, so for an S,G it's considered a
-	 * STAR_EXCLUDE entry and we can safely leave it
-	 */
+	 
 	sgmp->host_joined = false;
 
 	for (pp = &sgmp->ports;
@@ -483,7 +451,7 @@ void br_multicast_sg_add_exclude_ports(struct net_bridge_mdb_entry *star_mp,
 	br_multicast_sg_host_state(star_mp, sg);
 	memset(&sg_key, 0, sizeof(sg_key));
 	sg_key.addr = sg->key.addr;
-	/* we need to add all exclude ports to the S,G */
+	 
 	for (pg = mlock_dereference(star_mp->ports, br);
 	     pg;
 	     pg = mlock_dereference(pg->next, br)) {
@@ -539,12 +507,12 @@ static void br_multicast_fwd_src_add(struct net_bridge_group_src *src)
 	src->flags |= BR_SGRP_F_INSTALLED;
 	sg->flags &= ~MDB_PG_FLAGS_STAR_EXCL;
 
-	/* if it was added by user-space as perm we can skip next steps */
+	 
 	if (sg->rt_protocol != RTPROT_KERNEL &&
 	    (sg->flags & MDB_PG_FLAGS_PERMANENT))
 		return;
 
-	/* the kernel is now responsible for removing this S,G */
+	 
 	del_timer(&sg->timer);
 	star_mp = br_mdb_ip_get(src->br, &src->pg->key.addr);
 	if (!star_mp)
@@ -588,7 +556,7 @@ static void br_multicast_fwd_src_remove(struct net_bridge_group_src *src,
 	src->flags &= ~BR_SGRP_F_INSTALLED;
 }
 
-/* install S,G and based on src's timer enable or disable forwarding */
+ 
 static void br_multicast_fwd_src_handle(struct net_bridge_group_src *src)
 {
 	struct net_bridge_port_group_sg_key sg_key;
@@ -727,7 +695,7 @@ static int br_multicast_port_ngroups_inc(struct net_bridge_port *port,
 
 	lockdep_assert_held_once(&port->br->multicast_lock);
 
-	/* Always count on the port context. */
+	 
 	err = br_multicast_port_ngroups_inc_one(&port->multicast_ctx, extack,
 						"Port");
 	if (err) {
@@ -735,9 +703,7 @@ static int br_multicast_port_ngroups_inc(struct net_bridge_port *port,
 		return err;
 	}
 
-	/* Only count on the VLAN context if VID is given, and if snooping on
-	 * that VLAN is enabled.
-	 */
+	 
 	if (!group->vid)
 		return 0;
 
@@ -1125,7 +1091,7 @@ static struct sk_buff *br_ip6_multicast_alloc_query(struct net_bridge_mcast *brm
 	__br_multicast_query_handle_vlan(brmctx, pmctx, skb);
 	skb->protocol = htons(ETH_P_IPV6);
 
-	/* Ethernet header */
+	 
 	skb_reset_mac_header(skb);
 	eth = eth_hdr(skb);
 
@@ -1133,7 +1099,7 @@ static struct sk_buff *br_ip6_multicast_alloc_query(struct net_bridge_mcast *brm
 	eth->h_proto = htons(ETH_P_IPV6);
 	skb_put(skb, sizeof(*eth));
 
-	/* IPv6 header + HbH option */
+	 
 	skb_set_network_header(skb, skb->len);
 	ip6h = ipv6_hdr(skb);
 
@@ -1153,18 +1119,18 @@ static struct sk_buff *br_ip6_multicast_alloc_query(struct net_bridge_mcast *brm
 	ipv6_eth_mc_map(&ip6h->daddr, eth->h_dest);
 
 	hopopt = (u8 *)(ip6h + 1);
-	hopopt[0] = IPPROTO_ICMPV6;		/* next hdr */
-	hopopt[1] = 0;				/* length of HbH */
-	hopopt[2] = IPV6_TLV_ROUTERALERT;	/* Router Alert */
-	hopopt[3] = 2;				/* Length of RA Option */
-	hopopt[4] = 0;				/* Type = 0x0000 (MLD) */
+	hopopt[0] = IPPROTO_ICMPV6;		 
+	hopopt[1] = 0;				 
+	hopopt[2] = IPV6_TLV_ROUTERALERT;	 
+	hopopt[3] = 2;				 
+	hopopt[4] = 0;				 
 	hopopt[5] = 0;
-	hopopt[6] = IPV6_TLV_PAD1;		/* Pad1 */
-	hopopt[7] = IPV6_TLV_PAD1;		/* Pad1 */
+	hopopt[6] = IPV6_TLV_PAD1;		 
+	hopopt[7] = IPV6_TLV_PAD1;		 
 
 	skb_put(skb, sizeof(*ip6h) + 8);
 
-	/* ICMPv6 */
+	 
 	skb_set_transport_header(skb, skb->len);
 	interval = ipv6_addr_any(group) ?
 			brmctx->multicast_query_response_interval :
@@ -1567,7 +1533,7 @@ static int br_multicast_add_group(struct net_bridge_mcast *brmctx,
 	spin_lock(&brmctx->br->multicast_lock);
 	pg = __br_multicast_add_group(brmctx, pmctx, group, src, filter_mode,
 				      igmpv2_mldv1, false);
-	/* NULL is considered valid for host joined groups */
+	 
 	err = PTR_ERR_OR_ZERO(pg);
 	spin_unlock(&brmctx->br->multicast_lock);
 
@@ -1873,7 +1839,7 @@ static void br_multicast_send_query(struct net_bridge_mcast *brmctx,
 	if (!other_query || timer_pending(&other_query->timer))
 		return;
 
-	/* we're about to select ourselves as querier */
+	 
 	if (!pmctx && querier->port_ifidx) {
 		struct br_ip zeroip = {};
 
@@ -2043,7 +2009,7 @@ void br_multicast_del_port(struct net_bridge_port *port)
 	HLIST_HEAD(deleted_head);
 	struct hlist_node *n;
 
-	/* Take care of the remaining groups, only perm ones should be left */
+	 
 	spin_lock_bh(&br->multicast_lock);
 	hlist_for_each_entry_safe(pg, n, &port->mglist, mglist)
 		br_multicast_find_del_pg(br, pg);
@@ -2086,13 +2052,7 @@ static void __br_multicast_enable_port_ctx(struct net_bridge_mcast_port *pmctx)
 		struct net_bridge_port_group *pg;
 		u32 n = 0;
 
-		/* The mcast_n_groups counter might be wrong. First,
-		 * BR_VLFLAG_MCAST_ENABLED is toggled before temporary entries
-		 * are flushed, thus mcast_n_groups after the toggle does not
-		 * reflect the true values. And second, permanent entries added
-		 * while BR_VLFLAG_MCAST_ENABLED was disabled, are not reflected
-		 * either. Thus we have to refresh the counter.
-		 */
+		 
 
 		hlist_for_each_entry(pg, &pmctx->port->mglist, mglist) {
 			if (pg->key.addr.vid == pmctx->vlan->vid)
@@ -2245,11 +2205,7 @@ static void __grp_send_query_and_rexmit(struct net_bridge_mcast *brmctx,
 		mod_timer(&pg->timer, now + br_multicast_lmqt(brmctx));
 }
 
-/* State          Msg type      New state                Actions
- * INCLUDE (A)    IS_IN (B)     INCLUDE (A+B)            (B)=GMI
- * INCLUDE (A)    ALLOW (B)     INCLUDE (A+B)            (B)=GMI
- * EXCLUDE (X,Y)  ALLOW (A)     EXCLUDE (X+A,Y-A)        (A)=GMI
- */
+ 
 static bool br_multicast_isinc_allow(const struct net_bridge_mcast *brmctx,
 				     struct net_bridge_port_group *pg, void *h_addr,
 				     void *srcs, u32 nsrcs, size_t addr_size,
@@ -2283,11 +2239,7 @@ static bool br_multicast_isinc_allow(const struct net_bridge_mcast *brmctx,
 	return changed;
 }
 
-/* State          Msg type      New state                Actions
- * INCLUDE (A)    IS_EX (B)     EXCLUDE (A*B,B-A)        (B-A)=0
- *                                                       Delete (A-B)
- *                                                       Group Timer=GMI
- */
+ 
 static void __grp_src_isexc_incl(const struct net_bridge_mcast *brmctx,
 				 struct net_bridge_port_group *pg, void *h_addr,
 				 void *srcs, u32 nsrcs, size_t addr_size,
@@ -2319,12 +2271,7 @@ static void __grp_src_isexc_incl(const struct net_bridge_mcast *brmctx,
 	__grp_src_delete_marked(pg);
 }
 
-/* State          Msg type      New state                Actions
- * EXCLUDE (X,Y)  IS_EX (A)     EXCLUDE (A-Y,Y*A)        (A-X-Y)=GMI
- *                                                       Delete (X-A)
- *                                                       Delete (Y-A)
- *                                                       Group Timer=GMI
- */
+ 
 static bool __grp_src_isexc_excl(const struct net_bridge_mcast *brmctx,
 				 struct net_bridge_port_group *pg, void *h_addr,
 				 void *srcs, u32 nsrcs, size_t addr_size,
@@ -2392,10 +2339,7 @@ static bool br_multicast_isexc(const struct net_bridge_mcast *brmctx,
 	return changed;
 }
 
-/* State          Msg type      New state                Actions
- * INCLUDE (A)    TO_IN (B)     INCLUDE (A+B)            (B)=GMI
- *                                                       Send Q(G,A-B)
- */
+ 
 static bool __grp_src_toin_incl(struct net_bridge_mcast *brmctx,
 				struct net_bridge_mcast_port *pmctx,
 				struct net_bridge_port_group *pg, void *h_addr,
@@ -2438,11 +2382,7 @@ static bool __grp_src_toin_incl(struct net_bridge_mcast *brmctx,
 	return changed;
 }
 
-/* State          Msg type      New state                Actions
- * EXCLUDE (X,Y)  TO_IN (A)     EXCLUDE (X+A,Y-A)        (A)=GMI
- *                                                       Send Q(G,X-A)
- *                                                       Send Q(G)
- */
+ 
 static bool __grp_src_toin_excl(struct net_bridge_mcast *brmctx,
 				struct net_bridge_mcast_port *pmctx,
 				struct net_bridge_port_group *pg, void *h_addr,
@@ -2512,21 +2452,14 @@ static bool br_multicast_toin(struct net_bridge_mcast *brmctx,
 	if (br_multicast_eht_should_del_pg(pg)) {
 		pg->flags |= MDB_PG_FLAGS_FAST_LEAVE;
 		br_multicast_find_del_pg(pg->key.port->br, pg);
-		/* a notification has already been sent and we shouldn't
-		 * access pg after the delete so we have to return false
-		 */
+		 
 		changed = false;
 	}
 
 	return changed;
 }
 
-/* State          Msg type      New state                Actions
- * INCLUDE (A)    TO_EX (B)     EXCLUDE (A*B,B-A)        (B-A)=0
- *                                                       Delete (A-B)
- *                                                       Send Q(G,A*B)
- *                                                       Group Timer=GMI
- */
+ 
 static void __grp_src_toex_incl(struct net_bridge_mcast *brmctx,
 				struct net_bridge_mcast_port *pmctx,
 				struct net_bridge_port_group *pg, void *h_addr,
@@ -2564,13 +2497,7 @@ static void __grp_src_toex_incl(struct net_bridge_mcast *brmctx,
 		__grp_src_query_marked_and_rexmit(brmctx, pmctx, pg);
 }
 
-/* State          Msg type      New state                Actions
- * EXCLUDE (X,Y)  TO_EX (A)     EXCLUDE (A-Y,Y*A)        (A-X-Y)=Group Timer
- *                                                       Delete (X-A)
- *                                                       Delete (Y-A)
- *                                                       Send Q(G,A-Y)
- *                                                       Group Timer=GMI
- */
+ 
 static bool __grp_src_toex_excl(struct net_bridge_mcast *brmctx,
 				struct net_bridge_mcast_port *pmctx,
 				struct net_bridge_port_group *pg, void *h_addr,
@@ -2644,9 +2571,7 @@ static bool br_multicast_toex(struct net_bridge_mcast *brmctx,
 	return changed;
 }
 
-/* State          Msg type      New state                Actions
- * INCLUDE (A)    BLOCK (B)     INCLUDE (A)              Send Q(G,A*B)
- */
+ 
 static bool __grp_src_block_incl(struct net_bridge_mcast *brmctx,
 				 struct net_bridge_mcast_port *pmctx,
 				 struct net_bridge_port_group *pg, void *h_addr,
@@ -2681,10 +2606,7 @@ static bool __grp_src_block_incl(struct net_bridge_mcast *brmctx,
 	return changed;
 }
 
-/* State          Msg type      New state                Actions
- * EXCLUDE (X,Y)  BLOCK (A)     EXCLUDE (X+(A-Y),Y)      (A-X-Y)=Group Timer
- *                                                       Send Q(G,A-Y)
- */
+ 
 static bool __grp_src_block_excl(struct net_bridge_mcast *brmctx,
 				 struct net_bridge_mcast_port *pmctx,
 				 struct net_bridge_port_group *pg, void *h_addr,
@@ -2749,9 +2671,7 @@ static bool br_multicast_block(struct net_bridge_mcast *brmctx,
 		if (br_multicast_eht_should_del_pg(pg))
 			pg->flags |= MDB_PG_FLAGS_FAST_LEAVE;
 		br_multicast_find_del_pg(pg->key.port->br, pg);
-		/* a notification has already been sent and we shouldn't
-		 * access pg after the delete so we have to return false
-		 */
+		 
 		changed = false;
 	}
 
@@ -2852,7 +2772,7 @@ static int br_ip4_multicast_igmp3_report(struct net_bridge_mcast *brmctx,
 		pg = br_multicast_find_port(mdst, pmctx->port, src);
 		if (!pg || (pg->flags & MDB_PG_FLAGS_PERMANENT))
 			goto unlock_continue;
-		/* reload grec and host addr */
+		 
 		grec = (void *)(skb->data + len - sizeof(*grec) - (nsrcs * 4));
 		h_addr = &ip_hdr(skb)->saddr;
 		switch (type) {
@@ -3103,19 +3023,19 @@ __br_multicast_get_querier_port(struct net_bridge *br,
 
 size_t br_multicast_querier_state_size(void)
 {
-	return nla_total_size(0) +		/* nest attribute */
-	       nla_total_size(sizeof(__be32)) + /* BRIDGE_QUERIER_IP_ADDRESS */
-	       nla_total_size(sizeof(int)) +    /* BRIDGE_QUERIER_IP_PORT */
-	       nla_total_size_64bit(sizeof(u64)) + /* BRIDGE_QUERIER_IP_OTHER_TIMER */
+	return nla_total_size(0) +		 
+	       nla_total_size(sizeof(__be32)) +  
+	       nla_total_size(sizeof(int)) +     
+	       nla_total_size_64bit(sizeof(u64)) +  
 #if IS_ENABLED(CONFIG_IPV6)
-	       nla_total_size(sizeof(struct in6_addr)) + /* BRIDGE_QUERIER_IPV6_ADDRESS */
-	       nla_total_size(sizeof(int)) +		 /* BRIDGE_QUERIER_IPV6_PORT */
-	       nla_total_size_64bit(sizeof(u64)) +	 /* BRIDGE_QUERIER_IPV6_OTHER_TIMER */
+	       nla_total_size(sizeof(struct in6_addr)) +  
+	       nla_total_size(sizeof(int)) +		  
+	       nla_total_size_64bit(sizeof(u64)) +	  
 #endif
 	       0;
 }
 
-/* protected by rtnl or rcu */
+ 
 int br_multicast_dump_querier_state(struct sk_buff *skb,
 				    const struct net_bridge_mcast *brmctx,
 				    int nest_attr)
@@ -3269,10 +3189,7 @@ static bool br_multicast_no_router_otherpf(struct net_bridge_mcast_port *pmctx,
 #endif
 }
 
-/* Add port to router_list
- *  list is maintained ordered by pointer value
- *  and locked by br->multicast_lock and RCU
- */
+ 
 static void br_multicast_add_router(struct net_bridge_mcast *brmctx,
 				    struct net_bridge_mcast_port *pmctx,
 				    struct hlist_node *rlist,
@@ -3290,20 +3207,14 @@ static void br_multicast_add_router(struct net_bridge_mcast *brmctx,
 	else
 		hlist_add_head_rcu(rlist, mc_router_list);
 
-	/* For backwards compatibility for now, only notify if we
-	 * switched from no IPv4/IPv6 multicast router to a new
-	 * IPv4 or IPv6 multicast router.
-	 */
+	 
 	if (br_multicast_no_router_otherpf(pmctx, rlist)) {
 		br_rtr_notify(pmctx->port->br->dev, pmctx, RTM_NEWMDB);
 		br_port_mc_router_state_change(pmctx->port, true);
 	}
 }
 
-/* Add port to router_list
- *  list is maintained ordered by pointer value
- *  and locked by br->multicast_lock and RCU
- */
+ 
 static void br_ip4_multicast_add_router(struct net_bridge_mcast *brmctx,
 					struct net_bridge_mcast_port *pmctx)
 {
@@ -3311,10 +3222,7 @@ static void br_ip4_multicast_add_router(struct net_bridge_mcast *brmctx,
 				&brmctx->ip4_mc_router_list);
 }
 
-/* Add port to router_list
- *  list is maintained ordered by pointer value
- *  and locked by br->multicast_lock and RCU
- */
+ 
 static void br_ip6_multicast_add_router(struct net_bridge_mcast *brmctx,
 					struct net_bridge_mcast_port *pmctx)
 {
@@ -3943,9 +3851,7 @@ int br_multicast_rcv(struct net_bridge_mcast **brmctx,
 	if (br_opt_get((*brmctx)->br, BROPT_MCAST_VLAN_SNOOPING_ENABLED) && vlan) {
 		const struct net_bridge_vlan *masterv;
 
-		/* the vlan has the master flag set only when transmitting
-		 * through the bridge device
-		 */
+		 
 		if (br_vlan_is_master(vlan)) {
 			masterv = vlan;
 			*brmctx = &vlan->br_mcast_ctx;
@@ -4208,10 +4114,7 @@ void br_multicast_toggle_one_vlan(struct net_bridge_vlan *vlan, bool on)
 {
 	struct net_bridge *br;
 
-	/* it's okay to check for the flag without the multicast lock because it
-	 * can only change under RTNL -> multicast_lock, we need the latter to
-	 * sync with timers and packets
-	 */
+	 
 	if (on == !!(vlan->priv_flags & BR_VLFLAG_MCAST_ENABLED))
 		return;
 
@@ -4290,7 +4193,7 @@ int br_multicast_toggle_vlan_snooping(struct net_bridge *br, bool on,
 
 	br_opt_toggle(br, BROPT_MCAST_VLAN_SNOOPING_ENABLED, on);
 
-	/* disable/enable non-vlan mcast contexts based on vlan snooping */
+	 
 	if (on)
 		__br_multicast_stop(&br->multicast_ctx);
 	else
@@ -4312,9 +4215,7 @@ bool br_multicast_toggle_global_vlan(struct net_bridge_vlan *vlan, bool on)
 {
 	ASSERT_RTNL();
 
-	/* BR_VLFLAG_GLOBAL_MCAST_ENABLED relies on eventual consistency and
-	 * requires only RTNL to change
-	 */
+	 
 	if (on == !!(vlan->priv_flags & BR_VLFLAG_GLOBAL_MCAST_ENABLED))
 		return false;
 
@@ -4403,9 +4304,7 @@ br_multicast_rport_del_notify(struct net_bridge_mcast_port *pmctx, bool deleted)
 	if (!deleted)
 		return;
 
-	/* For backwards compatibility for now, only notify if there is
-	 * no multicast router anymore for both IPv4 and IPv6.
-	 */
+	 
 	if (!hlist_unhashed(&pmctx->ip4_rlist))
 		return;
 #if IS_ENABLED(CONFIG_IPV6)
@@ -4416,7 +4315,7 @@ br_multicast_rport_del_notify(struct net_bridge_mcast_port *pmctx, bool deleted)
 	br_rtr_notify(pmctx->port->br->dev, pmctx, RTM_DELMDB);
 	br_port_mc_router_state_change(pmctx->port, false);
 
-	/* don't allow timer refresh */
+	 
 	if (pmctx->multicast_router == MDB_RTR_TYPE_TEMP)
 		pmctx->multicast_router = MDB_RTR_TYPE_TEMP_QUERY;
 }
@@ -4432,7 +4331,7 @@ int br_multicast_set_port_router(struct net_bridge_mcast_port *pmctx,
 	brmctx = br_multicast_port_ctx_get_global(pmctx);
 	spin_lock_bh(&brmctx->br->multicast_lock);
 	if (pmctx->multicast_router == val) {
-		/* Refresh the temp router port timer */
+		 
 		if (pmctx->multicast_router == MDB_RTR_TYPE_TEMP) {
 			mod_timer(&pmctx->ip4_mc_router_timer,
 				  now + brmctx->multicast_querier_interval);
@@ -4583,18 +4482,7 @@ int br_multicast_toggle(struct net_bridge *br, unsigned long val,
 unlock:
 	spin_unlock_bh(&br->multicast_lock);
 
-	/* br_multicast_join_snoopers has the potential to cause
-	 * an MLD Report/Leave to be delivered to br_multicast_rcv,
-	 * which would in turn call br_multicast_add_group, which would
-	 * attempt to acquire multicast_lock. This function should be
-	 * called after the lock has been released to avoid deadlocks on
-	 * multicast_lock.
-	 *
-	 * br_multicast_leave_snoopers does not have the problem since
-	 * br_multicast_rcv first checks BROPT_MULTICAST_ENABLED, and
-	 * returns without calling br_multicast_ipv4/6_rcv if it's not
-	 * enabled. Moved both functions out just for symmetry.
-	 */
+	 
 	if (change_snoopers) {
 		if (br_opt_get(br, BROPT_MULTICAST_ENABLED))
 			br_multicast_join_snoopers(br);
@@ -4662,7 +4550,7 @@ unlock:
 int br_multicast_set_igmp_version(struct net_bridge_mcast *brmctx,
 				  unsigned long val)
 {
-	/* Currently we support only version 2 and 3 */
+	 
 	switch (val) {
 	case 2:
 	case 3:
@@ -4682,7 +4570,7 @@ int br_multicast_set_igmp_version(struct net_bridge_mcast *brmctx,
 int br_multicast_set_mld_version(struct net_bridge_mcast *brmctx,
 				 unsigned long val)
 {
-	/* Currently we support version 1 and 2 */
+	 
 	switch (val) {
 	case 1:
 	case 2:
@@ -4731,23 +4619,7 @@ void br_multicast_set_startup_query_intvl(struct net_bridge_mcast *brmctx,
 	brmctx->multicast_startup_query_interval = intvl_jiffies;
 }
 
-/**
- * br_multicast_list_adjacent - Returns snooped multicast addresses
- * @dev:	The bridge port adjacent to which to retrieve addresses
- * @br_ip_list:	The list to store found, snooped multicast IP addresses in
- *
- * Creates a list of IP addresses (struct br_ip_list) sensed by the multicast
- * snooping feature on all bridge ports of dev's bridge device, excluding
- * the addresses from dev itself.
- *
- * Returns the number of items added to br_ip_list.
- *
- * Notes:
- * - br_ip_list needs to be initialized by caller
- * - br_ip_list might contain duplicates in the end
- *   (needs to be taken care of by caller)
- * - br_ip_list needs to be freed by caller
- */
+ 
 int br_multicast_list_adjacent(struct net_device *dev,
 			       struct list_head *br_ip_list)
 {
@@ -4788,15 +4660,7 @@ unlock:
 }
 EXPORT_SYMBOL_GPL(br_multicast_list_adjacent);
 
-/**
- * br_multicast_has_querier_anywhere - Checks for a querier on a bridge
- * @dev: The bridge port providing the bridge on which to check for a querier
- * @proto: The protocol family to check for: IGMP -> ETH_P_IP, MLD -> ETH_P_IPV6
- *
- * Checks whether the given interface has a bridge on top and if so returns
- * true if a valid querier exists anywhere on the bridged link layer.
- * Otherwise returns false.
- */
+ 
 bool br_multicast_has_querier_anywhere(struct net_device *dev, int proto)
 {
 	struct net_bridge *br;
@@ -4825,15 +4689,7 @@ unlock:
 }
 EXPORT_SYMBOL_GPL(br_multicast_has_querier_anywhere);
 
-/**
- * br_multicast_has_querier_adjacent - Checks for a querier behind a bridge port
- * @dev: The bridge port adjacent to which to check for a querier
- * @proto: The protocol family to check for: IGMP -> ETH_P_IP, MLD -> ETH_P_IPV6
- *
- * Checks whether the given interface has a bridge on top and if so returns
- * true if a selected querier is behind one of the other ports of this
- * bridge. Otherwise returns false.
- */
+ 
 bool br_multicast_has_querier_adjacent(struct net_device *dev, int proto)
 {
 	struct net_bridge_mcast *brmctx;
@@ -4879,15 +4735,7 @@ unlock:
 }
 EXPORT_SYMBOL_GPL(br_multicast_has_querier_adjacent);
 
-/**
- * br_multicast_has_router_adjacent - Checks for a router behind a bridge port
- * @dev: The bridge port adjacent to which to check for a multicast router
- * @proto: The protocol family to check for: IGMP -> ETH_P_IP, MLD -> ETH_P_IPV6
- *
- * Checks whether the given interface has a bridge on top and if so returns
- * true if a multicast router is behind one of the other ports of this
- * bridge. Otherwise returns false.
- */
+ 
 bool br_multicast_has_router_adjacent(struct net_device *dev, int proto)
 {
 	struct net_bridge_mcast_port *pmctx;
@@ -4925,9 +4773,7 @@ bool br_multicast_has_router_adjacent(struct net_device *dev, int proto)
 		break;
 #endif
 	default:
-		/* when compiled without IPv6 support, be conservative and
-		 * always assume presence of an IPv6 multicast router
-		 */
+		 
 		ret = true;
 	}
 
@@ -5003,7 +4849,7 @@ static void br_mcast_stats_add(struct bridge_mcast_stats __percpu *stats,
 			break;
 		}
 		break;
-#endif /* CONFIG_IPV6 */
+#endif  
 	}
 	u64_stats_update_end(&pstats->syncp);
 }
@@ -5014,7 +4860,7 @@ void br_multicast_count(struct net_bridge *br,
 {
 	struct bridge_mcast_stats __percpu *stats;
 
-	/* if multicast_disabled is true then igmp type can't be set */
+	 
 	if (!type || !br_opt_get(br, BROPT_MULTICAST_STATS_ENABLED))
 		return;
 
@@ -5042,7 +4888,7 @@ void br_multicast_uninit_stats(struct net_bridge *br)
 	free_percpu(br->mcast_stats);
 }
 
-/* noinline for https://bugs.llvm.org/show_bug.cgi?id=45802#c9 */
+/* noinline for https:
 static noinline_for_stack void mcast_stats_add_dir(u64 *dst, u64 *src)
 {
 	dst[BR_MCAST_DIR_RX] += src[BR_MCAST_DIR_RX];

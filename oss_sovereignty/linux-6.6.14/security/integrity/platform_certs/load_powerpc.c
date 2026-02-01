@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019 IBM Corporation
- * Author: Nayna Jain
- *
- *      - loads keys and hashes stored and controlled by the firmware.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <linux/cred.h>
@@ -18,14 +13,7 @@
 #define extract_esl(db, data, size, offset)	\
 	do { db = data + offset; size = size - offset; } while (0)
 
-/*
- * Get a certificate list blob from the named secure variable.
- *
- * Returns:
- *  - a pointer to a kmalloc'd buffer containing the cert list on success
- *  - NULL if the key does not exist
- *  - an ERR_PTR on error
- */
+ 
 static __init void *get_cert_list(u8 *key, unsigned long keylen, u64 *size)
 {
 	int rc;
@@ -51,11 +39,7 @@ static __init void *get_cert_list(u8 *key, unsigned long keylen, u64 *size)
 	return db;
 }
 
-/*
- * Load the certs contained in the keys databases into the platform trusted
- * keyring and the blacklisted X.509 cert SHA256 hashes into the blacklist
- * keyring.
- */
+ 
 static int __init load_powerpc_certs(void)
 {
 	void *db = NULL, *dbx = NULL, *data = NULL;
@@ -74,20 +58,17 @@ static int __init load_powerpc_certs(void)
 	if (len <= 0)
 		return -ENODEV;
 
-	// Check for known secure boot implementations from OPAL or PLPKS
+	 
 	if (strcmp("ibm,edk2-compat-v1", buf) && strcmp("ibm,plpks-sb-v1", buf)) {
 		pr_err("Unsupported secvar implementation \"%s\", not loading certs\n", buf);
 		return -ENODEV;
 	}
 
 	if (strcmp("ibm,plpks-sb-v1", buf) == 0)
-		/* PLPKS authenticated variables ESL data is prefixed with 8 bytes of timestamp */
+		 
 		offset = 8;
 
-	/*
-	 * Get db, and dbx. They might not exist, so it isn't an error if we
-	 * can't get them.
-	 */
+	 
 	data = get_cert_list("db", 3, &dsize);
 	if (!data) {
 		pr_info("Couldn't get db list from firmware\n");

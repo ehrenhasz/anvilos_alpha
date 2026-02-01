@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ARMv8 PMUv3 Performance Events handling code.
- *
- * Copyright (C) 2012 ARM Limited
- * Author: Will Deacon <will.deacon@arm.com>
- *
- * This code is based heavily on the ARMv7 perf event code.
- */
+
+ 
 
 #include <asm/irq_regs.h>
 #include <asm/perf_event.h>
@@ -26,21 +19,17 @@
 
 #include <asm/arm_pmuv3.h>
 
-/* ARMv8 Cortex-A53 specific event types. */
+ 
 #define ARMV8_A53_PERFCTR_PREF_LINEFILL				0xC2
 
-/* ARMv8 Cavium ThunderX specific event types. */
+ 
 #define ARMV8_THUNDER_PERFCTR_L1D_CACHE_MISS_ST			0xE9
 #define ARMV8_THUNDER_PERFCTR_L1D_CACHE_PREF_ACCESS		0xEA
 #define ARMV8_THUNDER_PERFCTR_L1D_CACHE_PREF_MISS		0xEB
 #define ARMV8_THUNDER_PERFCTR_L1I_CACHE_PREF_ACCESS		0xEC
 #define ARMV8_THUNDER_PERFCTR_L1I_CACHE_PREF_MISS		0xED
 
-/*
- * ARMv8 Architectural defined events, not all of these may
- * be supported on any given implementation. Unsupported events will
- * be disabled at run-time based on the PMCEID registers.
- */
+ 
 static const unsigned armv8_pmuv3_perf_map[PERF_COUNT_HW_MAX] = {
 	PERF_MAP_ALL_UNSUPPORTED,
 	[PERF_COUNT_HW_CPU_CYCLES]		= ARMV8_PMUV3_PERFCTR_CPU_CYCLES,
@@ -199,7 +188,7 @@ static struct attribute *armv8_pmuv3_event_attrs[] = {
 	ARMV8_EVENT_ATTR(inst_spec, ARMV8_PMUV3_PERFCTR_INST_SPEC),
 	ARMV8_EVENT_ATTR(ttbr_write_retired, ARMV8_PMUV3_PERFCTR_TTBR_WRITE_RETIRED),
 	ARMV8_EVENT_ATTR(bus_cycles, ARMV8_PMUV3_PERFCTR_BUS_CYCLES),
-	/* Don't expose the chain event in /sys, since it's useless in isolation */
+	 
 	ARMV8_EVENT_ATTR(l1d_cache_allocate, ARMV8_PMUV3_PERFCTR_L1D_CACHE_ALLOCATE),
 	ARMV8_EVENT_ATTR(l2d_cache_allocate, ARMV8_PMUV3_PERFCTR_L2D_CACHE_ALLOCATE),
 	ARMV8_EVENT_ATTR(br_retired, ARMV8_PMUV3_PERFCTR_BR_RETIRED),
@@ -356,7 +345,7 @@ static ssize_t bus_width_show(struct device *dev, struct device_attribute *attr,
 			& ARMV8_PMU_BUS_WIDTH_MASK;
 	u32 val = 0;
 
-	/* Encoded as Log2(number of bytes), plus one */
+	 
 	if (bus_width > 2 && bus_width < 13)
 		val = 1 << (bus_width - 1);
 
@@ -377,21 +366,12 @@ static const struct attribute_group armv8_pmuv3_caps_attr_group = {
 	.attrs = armv8_pmuv3_caps_attrs,
 };
 
-/*
- * Perf Events' indices
- */
+ 
 #define	ARMV8_IDX_CYCLE_COUNTER	0
 #define	ARMV8_IDX_COUNTER0	1
 #define	ARMV8_IDX_CYCLE_COUNTER_USER	32
 
-/*
- * We unconditionally enable ARMv8.5-PMU long event counter support
- * (64-bit events) where supported. Indicate if this arm_pmu has long
- * event counter support.
- *
- * On AArch32, long counters make no sense (you can't access the top
- * bits), so we only enable this on AArch64.
- */
+ 
 static bool armv8pmu_has_long_event(struct arm_pmu *cpu_pmu)
 {
 	return (IS_ENABLED(CONFIG_ARM64) && is_pmuv3p5(cpu_pmu->pmuver));
@@ -402,11 +382,7 @@ static inline bool armv8pmu_event_has_user_read(struct perf_event *event)
 	return event->hw.flags & PERF_EVENT_FLAG_USER_READ_CNT;
 }
 
-/*
- * We must chain two programmable counters for 64 bit events,
- * except when we have allocated the 64bit cycle counter (for CPU
- * cycles event) or when user space counter access is enabled.
- */
+ 
 static inline bool armv8pmu_event_is_chained(struct perf_event *event)
 {
 	int idx = event->hw.idx;
@@ -418,13 +394,9 @@ static inline bool armv8pmu_event_is_chained(struct perf_event *event)
 	       (idx != ARMV8_IDX_CYCLE_COUNTER);
 }
 
-/*
- * ARMv8 low level PMU access
- */
+ 
 
-/*
- * Perf Event to low level counters mapping
- */
+ 
 #define	ARMV8_IDX_TO_COUNTER(x)	\
 	(((x) - ARMV8_IDX_COUNTER0) & ARMV8_PMU_COUNTER_MASK)
 
@@ -467,12 +439,7 @@ static inline u64 armv8pmu_read_hw_counter(struct perf_event *event)
 	return val;
 }
 
-/*
- * The cycle counter is always a 64-bit counter. When ARMV8_PMU_PMCR_LP
- * is set the event counters also become 64-bit counters. Unless the
- * user has requested a long counter (attr.config1) then we want to
- * interrupt upon 32-bit overflow - we achieve this by applying a bias.
- */
+ 
 static bool armv8pmu_event_needs_bias(struct perf_event *event)
 {
 	struct arm_pmu *cpu_pmu = to_arm_pmu(event->pmu);
@@ -565,11 +532,7 @@ static inline void armv8pmu_write_event_type(struct perf_event *event)
 	struct hw_perf_event *hwc = &event->hw;
 	int idx = hwc->idx;
 
-	/*
-	 * For chained events, the low counter is programmed to count
-	 * the event of interest and the high counter is programmed
-	 * with CHAIN event code with filters set to count at all ELs.
-	 */
+	 
 	if (armv8pmu_event_is_chained(event)) {
 		u32 chain_evt = ARMV8_PMUV3_PERFCTR_CHAIN |
 				ARMV8_PMU_INCLUDE_EL2;
@@ -596,10 +559,7 @@ static u32 armv8pmu_event_cnten_mask(struct perf_event *event)
 
 static inline void armv8pmu_enable_counter(u32 mask)
 {
-	/*
-	 * Make sure event configuration register writes are visible before we
-	 * enable the counter.
-	 * */
+	 
 	isb();
 	write_pmcntenset(mask);
 }
@@ -611,7 +571,7 @@ static inline void armv8pmu_enable_event_counter(struct perf_event *event)
 
 	kvm_set_pmu_events(mask, attr);
 
-	/* We rely on the hypervisor switch code to enable guest counters */
+	 
 	if (!kvm_pmu_counter_deferred(attr))
 		armv8pmu_enable_counter(mask);
 }
@@ -619,10 +579,7 @@ static inline void armv8pmu_enable_event_counter(struct perf_event *event)
 static inline void armv8pmu_disable_counter(u32 mask)
 {
 	write_pmcntenclr(mask);
-	/*
-	 * Make sure the effects of disabling the counter are visible before we
-	 * start configuring the event.
-	 */
+	 
 	isb();
 }
 
@@ -633,7 +590,7 @@ static inline void armv8pmu_disable_event_counter(struct perf_event *event)
 
 	kvm_clr_pmu_events(mask);
 
-	/* We rely on the hypervisor switch code to disable guest counters */
+	 
 	if (!kvm_pmu_counter_deferred(attr))
 		armv8pmu_disable_counter(mask);
 }
@@ -653,7 +610,7 @@ static inline void armv8pmu_disable_intens(u32 mask)
 {
 	write_pmintenclr(mask);
 	isb();
-	/* Clear the overflow flag in case an interrupt is pending. */
+	 
 	write_pmovsclr(mask);
 	isb();
 }
@@ -668,10 +625,10 @@ static inline u32 armv8pmu_getreset_flags(void)
 {
 	u32 value;
 
-	/* Read */
+	 
 	value = read_pmovsclr();
 
-	/* Write to clear flags */
+	 
 	value &= ARMV8_PMU_OVSR_MASK;
 	write_pmovsclr(value);
 
@@ -682,12 +639,7 @@ static void update_pmuserenr(u64 val)
 {
 	lockdep_assert_irqs_disabled();
 
-	/*
-	 * The current PMUSERENR_EL0 value might be the value for the guest.
-	 * If that's the case, have KVM keep tracking of the register value
-	 * for the host EL0 so that KVM can restore it before returning to
-	 * the host EL0. Otherwise, update the register now.
-	 */
+	 
 	if (kvm_set_pmuserenr(val))
 		return;
 
@@ -704,7 +656,7 @@ static void armv8pmu_enable_user_access(struct arm_pmu *cpu_pmu)
 	int i;
 	struct pmu_hw_events *cpuc = this_cpu_ptr(cpu_pmu->hw_events);
 
-	/* Clear any unused counters to avoid leaking their contents */
+	 
 	for_each_clear_bit(i, cpuc->used_mask, cpu_pmu->num_events) {
 		if (i == ARMV8_IDX_CYCLE_COUNTER)
 			write_pmccntr(0);
@@ -717,10 +669,7 @@ static void armv8pmu_enable_user_access(struct arm_pmu *cpu_pmu)
 
 static void armv8pmu_enable_event(struct perf_event *event)
 {
-	/*
-	 * Enable counter and interrupt, and set the counter to count
-	 * the event that we're interested in.
-	 */
+	 
 	armv8pmu_disable_event_counter(event);
 	armv8pmu_write_event_type(event);
 	armv8pmu_enable_event_irq(event);
@@ -747,7 +696,7 @@ static void armv8pmu_start(struct arm_pmu *cpu_pmu)
 	else
 		armv8pmu_disable_user_access();
 
-	/* Enable all counters */
+	 
 	armv8pmu_pmcr_write(armv8pmu_pmcr_read() | ARMV8_PMU_PMCR_E);
 
 	kvm_vcpu_pmu_resync_el0();
@@ -755,7 +704,7 @@ static void armv8pmu_start(struct arm_pmu *cpu_pmu)
 
 static void armv8pmu_stop(struct arm_pmu *cpu_pmu)
 {
-	/* Disable all counters */
+	 
 	armv8pmu_pmcr_write(armv8pmu_pmcr_read() & ~ARMV8_PMU_PMCR_E);
 }
 
@@ -767,39 +716,27 @@ static irqreturn_t armv8pmu_handle_irq(struct arm_pmu *cpu_pmu)
 	struct pt_regs *regs;
 	int idx;
 
-	/*
-	 * Get and reset the IRQ flags
-	 */
+	 
 	pmovsr = armv8pmu_getreset_flags();
 
-	/*
-	 * Did an overflow occur?
-	 */
+	 
 	if (!armv8pmu_has_overflowed(pmovsr))
 		return IRQ_NONE;
 
-	/*
-	 * Handle the counter(s) overflow(s)
-	 */
+	 
 	regs = get_irq_regs();
 
-	/*
-	 * Stop the PMU while processing the counter overflows
-	 * to prevent skews in group events.
-	 */
+	 
 	armv8pmu_stop(cpu_pmu);
 	for (idx = 0; idx < cpu_pmu->num_events; ++idx) {
 		struct perf_event *event = cpuc->events[idx];
 		struct hw_perf_event *hwc;
 
-		/* Ignore if we don't have an event. */
+		 
 		if (!event)
 			continue;
 
-		/*
-		 * We have a single interrupt for all counters. Check that
-		 * each counter has overflowed before we process it.
-		 */
+		 
 		if (!armv8pmu_counter_has_overflowed(pmovsr, idx))
 			continue;
 
@@ -809,11 +746,7 @@ static irqreturn_t armv8pmu_handle_irq(struct arm_pmu *cpu_pmu)
 		if (!armpmu_event_set_period(event))
 			continue;
 
-		/*
-		 * Perf event overflow will queue the processing of the event as
-		 * an irq_work which will be taken care of in the handling of
-		 * IPI_IRQ_WORK.
-		 */
+		 
 		if (perf_event_overflow(event, &data, regs))
 			cpu_pmu->disable(event);
 	}
@@ -839,16 +772,13 @@ static int armv8pmu_get_chain_idx(struct pmu_hw_events *cpuc,
 {
 	int idx;
 
-	/*
-	 * Chaining requires two consecutive event counters, where
-	 * the lower idx must be even.
-	 */
+	 
 	for (idx = ARMV8_IDX_COUNTER0 + 1; idx < cpu_pmu->num_events; idx += 2) {
 		if (!test_and_set_bit(idx, cpuc->used_mask)) {
-			/* Check if the preceding even counter is available */
+			 
 			if (!test_and_set_bit(idx - 1, cpuc->used_mask))
 				return idx;
-			/* Release the Odd counter */
+			 
 			clear_bit(idx, cpuc->used_mask);
 		}
 	}
@@ -862,7 +792,7 @@ static int armv8pmu_get_event_idx(struct pmu_hw_events *cpuc,
 	struct hw_perf_event *hwc = &event->hw;
 	unsigned long evtype = hwc->config_base & ARMV8_PMU_EVTYPE_EVENT;
 
-	/* Always prefer to place a cycle counter into the cycle counter. */
+	 
 	if (evtype == ARMV8_PMUV3_PERFCTR_CPU_CYCLES) {
 		if (!test_and_set_bit(ARMV8_IDX_CYCLE_COUNTER, cpuc->used_mask))
 			return ARMV8_IDX_CYCLE_COUNTER;
@@ -872,9 +802,7 @@ static int armv8pmu_get_event_idx(struct pmu_hw_events *cpuc,
 				return -EAGAIN;
 	}
 
-	/*
-	 * Otherwise use events counters
-	 */
+	 
 	if (armv8pmu_event_is_chained(event))
 		return	armv8pmu_get_chain_idx(cpuc, cpu_pmu);
 	else
@@ -896,20 +824,14 @@ static int armv8pmu_user_event_idx(struct perf_event *event)
 	if (!sysctl_perf_user_access || !armv8pmu_event_has_user_read(event))
 		return 0;
 
-	/*
-	 * We remap the cycle counter index to 32 to
-	 * match the offset applied to the rest of
-	 * the counter indices.
-	 */
+	 
 	if (event->hw.idx == ARMV8_IDX_CYCLE_COUNTER)
 		return ARMV8_IDX_CYCLE_COUNTER_USER;
 
 	return event->hw.idx;
 }
 
-/*
- * Add an event filter to a given event.
- */
+ 
 static int armv8pmu_set_event_filter(struct hw_perf_event *event,
 				     struct perf_event_attr *attr)
 {
@@ -918,12 +840,7 @@ static int armv8pmu_set_event_filter(struct hw_perf_event *event,
 	if (attr->exclude_idle)
 		return -EPERM;
 
-	/*
-	 * If we're running in hyp mode, then we *are* the hypervisor.
-	 * Therefore we ignore exclude_hv in this configuration, since
-	 * there's no hypervisor to sample anyway. This is consistent
-	 * with other architectures (x86 and Power).
-	 */
+	 
 	if (is_kernel_in_hyp_mode()) {
 		if (!attr->exclude_kernel && !attr->exclude_host)
 			config_base |= ARMV8_PMU_INCLUDE_EL2;
@@ -936,19 +853,14 @@ static int armv8pmu_set_event_filter(struct hw_perf_event *event,
 			config_base |= ARMV8_PMU_INCLUDE_EL2;
 	}
 
-	/*
-	 * Filter out !VHE kernels and guest kernels
-	 */
+	 
 	if (attr->exclude_kernel)
 		config_base |= ARMV8_PMU_EXCLUDE_EL1;
 
 	if (attr->exclude_user)
 		config_base |= ARMV8_PMU_EXCLUDE_EL0;
 
-	/*
-	 * Install the filter into config_base as this is used to
-	 * construct the event type.
-	 */
+	 
 	event->config_base = config_base;
 
 	return 0;
@@ -959,20 +871,17 @@ static void armv8pmu_reset(void *info)
 	struct arm_pmu *cpu_pmu = (struct arm_pmu *)info;
 	u64 pmcr;
 
-	/* The counter and interrupt enable registers are unknown at reset. */
+	 
 	armv8pmu_disable_counter(U32_MAX);
 	armv8pmu_disable_intens(U32_MAX);
 
-	/* Clear the counters we flip at guest entry/exit */
+	 
 	kvm_clr_pmu_events(U32_MAX);
 
-	/*
-	 * Initialize & Reset PMNC. Request overflow interrupt for
-	 * 64 bit cycle counter but cheat in armv8pmu_write_counter().
-	 */
+	 
 	pmcr = ARMV8_PMU_PMCR_P | ARMV8_PMU_PMCR_C | ARMV8_PMU_PMCR_LC;
 
-	/* Enable long event counter support where available */
+	 
 	if (armv8pmu_has_long_event(cpu_pmu))
 		pmcr |= ARMV8_PMU_PMCR_LP;
 
@@ -1014,25 +923,14 @@ static int __armv8_pmuv3_map_event(struct perf_event *event,
 
 	hw_event_id = __armv8_pmuv3_map_event_id(armpmu, event);
 
-	/*
-	 * CHAIN events only work when paired with an adjacent counter, and it
-	 * never makes sense for a user to open one in isolation, as they'll be
-	 * rotated arbitrarily.
-	 */
+	 
 	if (hw_event_id == ARMV8_PMUV3_PERFCTR_CHAIN)
 		return -EINVAL;
 
 	if (armv8pmu_event_is_64bit(event))
 		event->hw.flags |= ARMPMU_EVT_64BIT;
 
-	/*
-	 * User events must be allocated into a single counter, and so
-	 * must not be chained.
-	 *
-	 * Most 64-bit events require long counter support, but 64-bit
-	 * CPU_CYCLES events can be placed into the dedicated cycle
-	 * counter when this is free.
-	 */
+	 
 	if (armv8pmu_event_want_user_access(event)) {
 		if (!(event->attach_state & PERF_ATTACH_TASK))
 			return -EINVAL;
@@ -1044,7 +942,7 @@ static int __armv8_pmuv3_map_event(struct perf_event *event,
 		event->hw.flags |= PERF_EVENT_FLAG_USER_READ_CNT;
 	}
 
-	/* Only expose micro/arch events supported by this PMU */
+	 
 	if ((hw_event_id > 0) && (hw_event_id < ARMV8_PMUV3_MAX_COMMON_EVENTS)
 	    && test_bit(hw_event_id, armpmu->pmceid_bitmap)) {
 		return hw_event_id;
@@ -1106,11 +1004,11 @@ static void __armv8pmu_probe_pmu(void *info)
 	cpu_pmu->pmuver = pmuver;
 	probe->present = true;
 
-	/* Read the nb of CNTx counters supported from PMNC */
+	 
 	cpu_pmu->num_events = (armv8pmu_pmcr_read() >> ARMV8_PMU_PMCR_N_SHIFT)
 		& ARMV8_PMU_PMCR_N_MASK;
 
-	/* Add the CPU cycles counter */
+	 
 	cpu_pmu->num_events += 1;
 
 	pmceid[0] = pmceid_raw[0] = read_pmceid0();
@@ -1125,7 +1023,7 @@ static void __armv8pmu_probe_pmu(void *info)
 	bitmap_from_arr32(cpu_pmu->pmceid_ext_bitmap,
 			     pmceid, ARMV8_PMUV3_MAX_COMMON_EVENTS);
 
-	/* store PMMIR register for sysfs */
+	 
 	if (is_pmuv3p4(pmuver) && (pmceid_raw[1] & BIT(31)))
 		cpu_pmu->reg_pmmir = read_pmmir();
 	else
@@ -1398,11 +1296,7 @@ void arch_perf_update_userpage(struct perf_event *event,
 		userpg->time_cycles = rd->epoch_cyc;
 		userpg->time_mask = rd->sched_clock_mask;
 
-		/*
-		 * Subtract the cycle base, such that software that
-		 * doesn't know about cap_user_time_short still 'works'
-		 * assuming no wraps.
-		 */
+		 
 		ns = mul_u64_u32_shr(rd->epoch_cyc, rd->mult, rd->shift);
 		userpg->time_zero -= ns;
 
@@ -1410,21 +1304,13 @@ void arch_perf_update_userpage(struct perf_event *event,
 
 	userpg->time_offset = userpg->time_zero - now;
 
-	/*
-	 * time_shift is not expected to be greater than 31 due to
-	 * the original published conversion algorithm shifting a
-	 * 32-bit value (now specifies a 64-bit value) - refer
-	 * perf_event_mmap_page documentation in perf_event.h.
-	 */
+	 
 	if (userpg->time_shift == 32) {
 		userpg->time_shift = 31;
 		userpg->time_mult >>= 1;
 	}
 
-	/*
-	 * Internal timekeeping for enabled/running/stopped times
-	 * is always computed with the sched_clock.
-	 */
+	 
 	userpg->cap_user_time = 1;
 	userpg->cap_user_time_zero = 1;
 	userpg->cap_user_time_short = 1;

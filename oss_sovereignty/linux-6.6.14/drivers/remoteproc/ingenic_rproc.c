@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Ingenic JZ47xx remoteproc driver
- * Copyright 2019, Paul Cercueil <paul@crapouillou.net>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -49,15 +46,7 @@ static const struct vpu_mem_map vpu_mem_map[] = {
 	{ "sram",  0x132f0000 },
 };
 
-/**
- * struct vpu - Ingenic VPU remoteproc private structure
- * @irq: interrupt number
- * @clks: pointers to the VPU and AUX clocks
- * @aux_base: raw pointer to the AUX interface registers
- * @mem_info: array of struct vpu_mem_info, which contain the mapping info of
- *            each of the external memories
- * @dev: private pointer to the device
- */
+ 
 struct vpu {
 	int irq;
 	struct clk_bulk_data clks[2];
@@ -71,7 +60,7 @@ static int ingenic_rproc_prepare(struct rproc *rproc)
 	struct vpu *vpu = rproc->priv;
 	int ret;
 
-	/* The clocks must be enabled for the firmware to be loaded in TCSM */
+	 
 	ret = clk_bulk_prepare_enable(ARRAY_SIZE(vpu->clks), vpu->clks);
 	if (ret)
 		dev_err(vpu->dev, "Unable to start clocks: %d\n", ret);
@@ -95,7 +84,7 @@ static int ingenic_rproc_start(struct rproc *rproc)
 
 	enable_irq(vpu->irq);
 
-	/* Reset the AUX and enable message IRQ */
+	 
 	ctrl = AUX_CTRL_NMI_RESETS | AUX_CTRL_NMI | AUX_CTRL_MSG_IRQ_EN;
 	writel(ctrl, vpu->aux_base + REG_AUX_CTRL);
 
@@ -108,7 +97,7 @@ static int ingenic_rproc_stop(struct rproc *rproc)
 
 	disable_irq(vpu->irq);
 
-	/* Keep AUX in reset mode */
+	 
 	writel(AUX_CTRL_SW_RESET, vpu->aux_base + REG_AUX_CTRL);
 
 	return 0;
@@ -157,7 +146,7 @@ static irqreturn_t vpu_interrupt(int irq, void *data)
 
 	vring = readl(vpu->aux_base + REG_AUX_MSG);
 
-	/* Ack the interrupt */
+	 
 	writel(0, vpu->aux_base + REG_AUX_MSG_ACK);
 
 	return rproc_vq_interrupt(rproc, vring);

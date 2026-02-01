@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-	Frontend-driver for TwinHan DST Frontend
-
-	Copyright (C) 2003 Jamie Honan
-	Copyright (C) 2004, 2005 Manu Abraham (manu@kromtek.com)
-
-*/
+ 
+ 
 
 #ifndef DST_COMMON_H
 #define DST_COMMON_H
@@ -43,7 +37,7 @@
 #define DST_TYPE_HAS_DBOARD	2048
 #define DST_TYPE_HAS_VLF	4096
 
-/*	Card capability list	*/
+ 
 
 #define DST_TYPE_HAS_MAC	1
 #define DST_TYPE_HAS_DISEQC3	2
@@ -51,20 +45,20 @@
 #define DST_TYPE_HAS_DISEQC5	8
 #define DST_TYPE_HAS_MOTO	16
 #define DST_TYPE_HAS_CA		32
-#define	DST_TYPE_HAS_ANALOG	64	/*	Analog inputs	*/
+#define	DST_TYPE_HAS_ANALOG	64	 
 #define DST_TYPE_HAS_SESSION	128
 
 #define TUNER_TYPE_MULTI	1
 #define TUNER_TYPE_UNKNOWN	2
-/*	DVB-S		*/
+ 
 #define TUNER_TYPE_L64724	4
 #define TUNER_TYPE_STV0299	8
 #define TUNER_TYPE_MB86A15	16
 
-/*	DVB-T		*/
+ 
 #define TUNER_TYPE_TDA10046	32
 
-/*	ATSC		*/
+ 
 #define TUNER_TYPE_NXT200x	64
 
 
@@ -73,7 +67,7 @@
 #define RDC_8820_INT		2
 #define RDC_8820_RESET		4
 
-/*	DST Communication	*/
+ 
 #define GET_REPLY		1
 #define NO_REPLY		0
 
@@ -88,21 +82,21 @@ struct dst_state {
 
 	struct bt878* bt;
 
-	/* configuration settings */
+	 
 	const struct dst_config* config;
 
 	struct dvb_frontend frontend;
 
-	/* private ASIC data */
+	 
 	u8 tx_tuna[10];
 	u8 rx_tuna[10];
 	u8 rxbuffer[10];
 	u8 diseq_flags;
 	u8 dst_type;
 	u32 type_flags;
-	u32 frequency;		/* intermediate frequency in kHz for QPSK */
+	u32 frequency;		 
 	enum fe_spectral_inversion inversion;
-	u32 symbol_rate;	/* symbol rate in Symbols per second */
+	u32 symbol_rate;	 
 	enum fe_code_rate fec;
 	enum fe_sec_voltage voltage;
 	enum fe_sec_tone_mode tone;
@@ -148,7 +142,7 @@ struct dst_types {
 
 struct dst_config
 {
-	/* the ASIC i2c address */
+	 
 	u8 demod_address;
 };
 
@@ -167,4 +161,4 @@ struct dst_state* dst_attach(struct dst_state* state, struct dvb_adapter *dvb_ad
 struct dvb_device *dst_ca_attach(struct dst_state *state, struct dvb_adapter *dvb_adapter);
 
 
-#endif // DST_COMMON_H
+#endif 

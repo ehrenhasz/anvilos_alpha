@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VMware VMCI Driver
- *
- * Copyright (C) 2012 VMware, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/slab.h>
 #include "vmci_handle_array.h"
@@ -47,7 +43,7 @@ int vmci_handle_arr_append_entry(struct vmci_handle_arr **array_ptr,
 	struct vmci_handle_arr *array = *array_ptr;
 
 	if (unlikely(array->size >= array->capacity)) {
-		/* reallocate. */
+		 
 		struct vmci_handle_arr *new_array;
 		u32 capacity_bump = min(array->max_capacity - array->capacity,
 					array->capacity);
@@ -71,9 +67,7 @@ int vmci_handle_arr_append_entry(struct vmci_handle_arr **array_ptr,
 	return VMCI_SUCCESS;
 }
 
-/*
- * Handle that was removed, VMCI_INVALID_HANDLE if entry not found.
- */
+ 
 struct vmci_handle vmci_handle_arr_remove_entry(struct vmci_handle_arr *array,
 						struct vmci_handle entry_handle)
 {
@@ -93,9 +87,7 @@ struct vmci_handle vmci_handle_arr_remove_entry(struct vmci_handle_arr *array,
 	return handle;
 }
 
-/*
- * Handle that was removed, VMCI_INVALID_HANDLE if array was empty.
- */
+ 
 struct vmci_handle vmci_handle_arr_remove_tail(struct vmci_handle_arr *array)
 {
 	struct vmci_handle handle = VMCI_INVALID_HANDLE;
@@ -109,9 +101,7 @@ struct vmci_handle vmci_handle_arr_remove_tail(struct vmci_handle_arr *array)
 	return handle;
 }
 
-/*
- * Handle at given index, VMCI_INVALID_HANDLE if invalid index.
- */
+ 
 struct vmci_handle
 vmci_handle_arr_get_entry(const struct vmci_handle_arr *array, u32 index)
 {
@@ -133,10 +123,7 @@ bool vmci_handle_arr_has_entry(const struct vmci_handle_arr *array,
 	return false;
 }
 
-/*
- * NULL if the array is empty. Otherwise, a pointer to the array
- * of VMCI handles in the handle array.
- */
+ 
 struct vmci_handle *vmci_handle_arr_get_handles(struct vmci_handle_arr *array)
 {
 	if (array->size)

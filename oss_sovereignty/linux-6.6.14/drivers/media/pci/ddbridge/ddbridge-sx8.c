@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ddbridge-sx8.c: Digital Devices MAX SX8 driver
- *
- * Copyright (C) 2018 Digital Devices GmbH
- *                    Marcus Metzler <mocm@metzlerbros.de>
- *                    Ralph Metzler <rjkm@metzlerbros.de>
- */
+
+ 
 
 #include "ddbridge.h"
 #include "ddbridge-io.h"
@@ -366,17 +360,7 @@ static int set_parameters(struct dvb_frontend *fe)
 		u32 mask;
 
 		switch (p->modulation) {
-		/* uncomment whenever these modulations hit the DVB API
-		 *	case APSK_256:
-		 *		mask = 0x7f;
-		 *		break;
-		 *	case APSK_128:
-		 *		mask = 0x3f;
-		 *		break;
-		 *	case APSK_64:
-		 *		mask = 0x1f;
-		 *		break;
-		 */
+		 
 		case APSK_32:
 			mask = 0x0f;
 			break;

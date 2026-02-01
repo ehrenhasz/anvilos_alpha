@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * wm8998.c -- ALSA SoC Audio driver for WM8998 codecs
- *
- * Copyright 2015 Cirrus Logic, Inc.
- *
- * Author: Richard Fitzgerald <rf@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -1355,9 +1349,9 @@ static int wm8998_probe(struct platform_device *pdev)
 	}
 
 	wm8998->core.arizona = arizona;
-	wm8998->core.num_inputs = 3;	/* IN1L, IN1R, IN2 */
+	wm8998->core.num_inputs = 3;	 
 
-	/* This may return -EPROBE_DEFER, so do this early on */
+	 
 	ret = arizona_jack_codec_dev_probe(&wm8998->core, &pdev->dev);
 	if (ret)
 		return ret;
@@ -1375,7 +1369,7 @@ static int wm8998_probe(struct platform_device *pdev)
 	for (i = 0; i < ARRAY_SIZE(wm8998_dai); i++)
 		arizona_init_dai(&wm8998->core, i);
 
-	/* Latch volume update bits */
+	 
 	for (i = 0; i < ARRAY_SIZE(wm8998_digital_vu); i++)
 		regmap_update_bits(arizona->regmap, wm8998_digital_vu[i],
 				   WM8998_DIG_VU, WM8998_DIG_VU);

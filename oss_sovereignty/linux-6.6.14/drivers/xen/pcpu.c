@@ -1,35 +1,4 @@
-/******************************************************************************
- * pcpu.c
- * Management physical cpu in dom0, get pcpu info and provide sys interface
- *
- * Copyright (c) 2012 Intel Corporation
- * Author: Liu, Jinsong <jinsong.liu@intel.com>
- * Author: Jiang, Yunhong <yunhong.jiang@intel.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation; or, when distributed
- * separately from the Linux kernel or incorporated into other
- * software packages, subject to the following license:
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this source file (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy, modify,
- * merge, publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
+ 
 
 #define pr_fmt(fmt) "xen_cpu: " fmt
 
@@ -51,12 +20,7 @@
 #include <acpi/processor.h>
 #endif
 
-/*
- * @cpu_id: Xen physical cpu logic number
- * @flags: Xen physical cpu status flag
- * - XEN_PCPU_FLAGS_ONLINE: cpu is online
- * - XEN_PCPU_FLAGS_INVALID: cpu is not present
- */
+ 
 struct pcpu {
 	struct list_head list;
 	struct device dev;
@@ -145,11 +109,7 @@ static umode_t pcpu_dev_is_visible(struct kobject *kobj,
 				   struct attribute *attr, int idx)
 {
 	struct device *dev = kobj_to_dev(kobj);
-	/*
-	 * Xen never offline cpu0 due to several restrictions
-	 * and assumptions. This basically doesn't add a sys control
-	 * to user, one cannot attempt to offline BSP.
-	 */
+	 
 	return dev->id ? attr->mode : 0;
 }
 
@@ -173,12 +133,12 @@ static void pcpu_online_status(struct xenpf_pcpuinfo *info,
 {
 	if (xen_pcpu_online(info->flags) &&
 	   !xen_pcpu_online(pcpu->flags)) {
-		/* the pcpu is onlined */
+		 
 		pcpu->flags |= XEN_PCPU_FLAGS_ONLINE;
 		kobject_uevent(&pcpu->dev.kobj, KOBJ_ONLINE);
 	} else if (!xen_pcpu_online(info->flags) &&
 		    xen_pcpu_online(pcpu->flags)) {
-		/* The pcpu is offlined */
+		 
 		pcpu->flags &= ~XEN_PCPU_FLAGS_ONLINE;
 		kobject_uevent(&pcpu->dev.kobj, KOBJ_OFFLINE);
 	}
@@ -212,7 +172,7 @@ static void unregister_and_remove_pcpu(struct pcpu *pcpu)
 		return;
 
 	dev = &pcpu->dev;
-	/* pcpu remove would be implicitly done */
+	 
 	device_unregister(dev);
 }
 
@@ -256,7 +216,7 @@ static struct pcpu *create_and_register_pcpu(struct xenpf_pcpuinfo *info)
 	pcpu->acpi_id = info->acpi_id;
 	pcpu->flags = info->flags;
 
-	/* Need hold on xen_pcpu_lock before pcpu list manipulations */
+	 
 	list_add_tail(&pcpu->list, &xen_pcpus);
 
 	err = register_pcpu(pcpu);
@@ -268,9 +228,7 @@ static struct pcpu *create_and_register_pcpu(struct xenpf_pcpuinfo *info)
 	return pcpu;
 }
 
-/*
- * Caller should hold the xen_pcpu_lock
- */
+ 
 static int sync_pcpu(uint32_t cpu, uint32_t *max_cpu)
 {
 	int ret;
@@ -292,9 +250,7 @@ static int sync_pcpu(uint32_t cpu, uint32_t *max_cpu)
 
 	pcpu = get_pcpu(cpu);
 
-	/*
-	 * Only those at cpu present map has its sys interface.
-	 */
+	 
 	if (info->flags & XEN_PCPU_FLAGS_INVALID) {
 		unregister_and_remove_pcpu(pcpu);
 		return 0;
@@ -310,14 +266,10 @@ static int sync_pcpu(uint32_t cpu, uint32_t *max_cpu)
 	return 0;
 }
 
-/*
- * Sync dom0's pcpu information with xen hypervisor's
- */
+ 
 static int xen_sync_pcpus(void)
 {
-	/*
-	 * Boot cpu always have cpu_id 0 in xen
-	 */
+	 
 	uint32_t cpu = 0, max_cpu = 0;
 	int err = 0;
 	struct pcpu *pcpu, *tmp;

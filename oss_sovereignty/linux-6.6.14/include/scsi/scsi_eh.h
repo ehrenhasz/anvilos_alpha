@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _SCSI_SCSI_EH_H
 #define _SCSI_SCSI_EH_H
 
@@ -30,7 +30,7 @@ extern bool scsi_get_sense_info_fld(const u8 *sense_buffer, int sb_len,
 extern int scsi_ioctl_reset(struct scsi_device *, int __user *);
 
 struct scsi_eh_save {
-	/* saved state */
+	 
 	int result;
 	unsigned int resid_len;
 	int eh_eflags;
@@ -50,4 +50,4 @@ extern void scsi_eh_prep_cmnd(struct scsi_cmnd *scmd,
 extern void scsi_eh_restore_cmnd(struct scsi_cmnd* scmd,
 		struct scsi_eh_save *ses);
 
-#endif /* _SCSI_SCSI_EH_H */
+#endif  

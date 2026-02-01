@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2019 MediaTek Inc.
- * Author: Wendell Lin <wendell.lin@mediatek.com>
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_MT6779_H
 #define _DT_BINDINGS_CLK_MT6779_H
 
-/* TOPCKGEN */
+ 
 #define CLK_TOP_AXI			1
 #define CLK_TOP_MM			2
 #define CLK_TOP_CAM			3
@@ -162,7 +159,7 @@
 #define CLK_TOP_UNIVPLL_D3_D16		152
 #define CLK_TOP_NR_CLK			153
 
-/* APMIXED */
+ 
 #define CLK_APMIXED_ARMPLL_LL		1
 #define CLK_APMIXED_ARMPLL_BL		2
 #define CLK_APMIXED_ARMPLL_BB		3
@@ -189,7 +186,7 @@
 #define CLK_APMIXED_MIPID1_26M		24
 #define CLK_APMIXED_NR_CLK		25
 
-/* CAMSYS */
+ 
 #define CLK_CAM_LARB10			1
 #define CLK_CAM_DFP_VAD			2
 #define CLK_CAM_LARB11			3
@@ -205,7 +202,7 @@
 #define CLK_CAM_FAKE_ENG		13
 #define CLK_CAM_NR_CLK			14
 
-/* INFRA */
+ 
 #define CLK_INFRA_PMIC_TMR		1
 #define CLK_INFRA_PMIC_AP		2
 #define CLK_INFRA_PMIC_MD		3
@@ -315,11 +312,11 @@
 #define CLK_INFRA_SPI7			107
 #define CLK_INFRA_NR_CLK		108
 
-/* MFGCFG */
+ 
 #define CLK_MFGCFG_BG3D			1
 #define CLK_MFGCFG_NR_CLK		2
 
-/* IMG */
+ 
 #define CLK_IMG_WPE_A			1
 #define CLK_IMG_MFB			2
 #define CLK_IMG_DIP			3
@@ -327,7 +324,7 @@
 #define CLK_IMG_LARB5			5
 #define CLK_IMG_NR_CLK			6
 
-/* IPE */
+ 
 #define CLK_IPE_LARB7			1
 #define CLK_IPE_LARB8			2
 #define CLK_IPE_SMI_SUBCOM		3
@@ -337,7 +334,7 @@
 #define CLK_IPE_DPE			7
 #define CLK_IPE_NR_CLK			8
 
-/* MM_CONFIG */
+ 
 #define CLK_MM_SMI_COMMON		1
 #define CLK_MM_SMI_LARB0		2
 #define CLK_MM_SMI_LARB1		3
@@ -390,19 +387,19 @@
 #define CLK_MM_DISP_OVL_FBDC		50
 #define CLK_MM_NR_CLK			51
 
-/* VDEC_GCON */
+ 
 #define CLK_VDEC_VDEC			1
 #define CLK_VDEC_LARB1			2
 #define CLK_VDEC_GCON_NR_CLK		3
 
-/* VENC_GCON */
+ 
 #define CLK_VENC_GCON_LARB		1
 #define CLK_VENC_GCON_VENC		2
 #define CLK_VENC_GCON_JPGENC		3
 #define CLK_VENC_GCON_GALS		4
 #define CLK_VENC_GCON_NR_CLK		5
 
-/* AUD */
+ 
 #define CLK_AUD_AFE			1
 #define CLK_AUD_22M			2
 #define CLK_AUD_24M			3
@@ -433,4 +430,4 @@
 #define CLK_AUD_3RD_DAC_HIRES		28
 #define CLK_AUD_NR_CLK			29
 
-#endif /* _DT_BINDINGS_CLK_MT6779_H */
+#endif  

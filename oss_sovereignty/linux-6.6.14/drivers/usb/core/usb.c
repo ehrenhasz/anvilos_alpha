@@ -1,27 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * drivers/usb/core/usb.c
- *
- * (C) Copyright Linus Torvalds 1999
- * (C) Copyright Johannes Erdfelt 1999-2001
- * (C) Copyright Andreas Gal 1999
- * (C) Copyright Gregory P. Smith 1999
- * (C) Copyright Deti Fliegl 1999 (new USB architecture)
- * (C) Copyright Randy Dunlap 2000
- * (C) Copyright David Brownell 2000-2004
- * (C) Copyright Yggdrasil Computing, Inc. 2000
- *     (usb_device_id matching changes by Adam J. Richter)
- * (C) Copyright Greg Kroah-Hartman 2002-2003
- *
- * Released under the GPLv2 only.
- *
- * NOTE! This is not actually a driver at all, rather this is
- * just a collection of helper routines that implement the
- * generic USB things that the real drivers can use..
- *
- * Think of this as a "USB library" rather than anything else,
- * with no callbacks.  Callbacks are evil.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -49,13 +27,11 @@
 
 const char *usbcore_name = "usbcore";
 
-static bool nousb;	/* Disable USB when built into kernel image */
+static bool nousb;	 
 
 module_param(nousb, bool, 0444);
 
-/*
- * for external read access to <nousb>
- */
+ 
 int usb_disabled(void)
 {
 	return nousb;
@@ -63,7 +39,7 @@ int usb_disabled(void)
 EXPORT_SYMBOL_GPL(usb_disabled);
 
 #ifdef	CONFIG_PM
-/* Default delay value, in seconds */
+ 
 static int usb_autosuspend_delay = CONFIG_USB_AUTOSUSPEND_DELAY;
 module_param_named(autosuspend, usb_autosuspend_delay, int, 0644);
 MODULE_PARM_DESC(autosuspend, "default autosuspend delay");
@@ -115,23 +91,7 @@ static bool match_endpoint(struct usb_endpoint_descriptor *epd,
 			(!int_in || *int_in) && (!int_out || *int_out);
 }
 
-/**
- * usb_find_common_endpoints() -- look up common endpoint descriptors
- * @alt:	alternate setting to search
- * @bulk_in:	pointer to descriptor pointer, or NULL
- * @bulk_out:	pointer to descriptor pointer, or NULL
- * @int_in:	pointer to descriptor pointer, or NULL
- * @int_out:	pointer to descriptor pointer, or NULL
- *
- * Search the alternate setting's endpoint descriptors for the first bulk-in,
- * bulk-out, interrupt-in and interrupt-out endpoints and return them in the
- * provided pointers (unless they are NULL).
- *
- * If a requested endpoint is not found, the corresponding pointer is set to
- * NULL.
- *
- * Return: Zero if all requested descriptors were found, or -ENXIO otherwise.
- */
+ 
 int usb_find_common_endpoints(struct usb_host_interface *alt,
 		struct usb_endpoint_descriptor **bulk_in,
 		struct usb_endpoint_descriptor **bulk_out,
@@ -161,23 +121,7 @@ int usb_find_common_endpoints(struct usb_host_interface *alt,
 }
 EXPORT_SYMBOL_GPL(usb_find_common_endpoints);
 
-/**
- * usb_find_common_endpoints_reverse() -- look up common endpoint descriptors
- * @alt:	alternate setting to search
- * @bulk_in:	pointer to descriptor pointer, or NULL
- * @bulk_out:	pointer to descriptor pointer, or NULL
- * @int_in:	pointer to descriptor pointer, or NULL
- * @int_out:	pointer to descriptor pointer, or NULL
- *
- * Search the alternate setting's endpoint descriptors for the last bulk-in,
- * bulk-out, interrupt-in and interrupt-out endpoints and return them in the
- * provided pointers (unless they are NULL).
- *
- * If a requested endpoint is not found, the corresponding pointer is set to
- * NULL.
- *
- * Return: Zero if all requested descriptors were found, or -ENXIO otherwise.
- */
+ 
 int usb_find_common_endpoints_reverse(struct usb_host_interface *alt,
 		struct usb_endpoint_descriptor **bulk_in,
 		struct usb_endpoint_descriptor **bulk_out,
@@ -207,16 +151,7 @@ int usb_find_common_endpoints_reverse(struct usb_host_interface *alt,
 }
 EXPORT_SYMBOL_GPL(usb_find_common_endpoints_reverse);
 
-/**
- * usb_find_endpoint() - Given an endpoint address, search for the endpoint's
- * usb_host_endpoint structure in an interface's current altsetting.
- * @intf: the interface whose current altsetting should be searched
- * @ep_addr: the endpoint address (number and direction) to find
- *
- * Search the altsetting's list of endpoints for one with the specified address.
- *
- * Return: Pointer to the usb_host_endpoint if found, %NULL otherwise.
- */
+ 
 static const struct usb_host_endpoint *usb_find_endpoint(
 		const struct usb_interface *intf, unsigned int ep_addr)
 {
@@ -232,17 +167,7 @@ static const struct usb_host_endpoint *usb_find_endpoint(
 	return NULL;
 }
 
-/**
- * usb_check_bulk_endpoints - Check whether an interface's current altsetting
- * contains a set of bulk endpoints with the given addresses.
- * @intf: the interface whose current altsetting should be searched
- * @ep_addrs: 0-terminated array of the endpoint addresses (number and
- * direction) to look for
- *
- * Search for endpoints with the specified addresses and check their types.
- *
- * Return: %true if all the endpoints are found and are bulk, %false otherwise.
- */
+ 
 bool usb_check_bulk_endpoints(
 		const struct usb_interface *intf, const u8 *ep_addrs)
 {
@@ -257,18 +182,7 @@ bool usb_check_bulk_endpoints(
 }
 EXPORT_SYMBOL_GPL(usb_check_bulk_endpoints);
 
-/**
- * usb_check_int_endpoints - Check whether an interface's current altsetting
- * contains a set of interrupt endpoints with the given addresses.
- * @intf: the interface whose current altsetting should be searched
- * @ep_addrs: 0-terminated array of the endpoint addresses (number and
- * direction) to look for
- *
- * Search for endpoints with the specified addresses and check their types.
- *
- * Return: %true if all the endpoints are found and are interrupt,
- * %false otherwise.
- */
+ 
 bool usb_check_int_endpoints(
 		const struct usb_interface *intf, const u8 *ep_addrs)
 {
@@ -283,17 +197,7 @@ bool usb_check_int_endpoints(
 }
 EXPORT_SYMBOL_GPL(usb_check_int_endpoints);
 
-/**
- * usb_find_alt_setting() - Given a configuration, find the alternate setting
- * for the given interface.
- * @config: the configuration to search (not necessarily the current config).
- * @iface_num: interface number to search in
- * @alt_num: alternate interface setting number to search for.
- *
- * Search the configuration's interface cache for the given alt setting.
- *
- * Return: The alternate setting, if found. %NULL otherwise.
- */
+ 
 struct usb_host_interface *usb_find_alt_setting(
 		struct usb_host_config *config,
 		unsigned int iface_num,
@@ -324,27 +228,7 @@ struct usb_host_interface *usb_find_alt_setting(
 }
 EXPORT_SYMBOL_GPL(usb_find_alt_setting);
 
-/**
- * usb_ifnum_to_if - get the interface object with a given interface number
- * @dev: the device whose current configuration is considered
- * @ifnum: the desired interface
- *
- * This walks the device descriptor for the currently active configuration
- * to find the interface object with the particular interface number.
- *
- * Note that configuration descriptors are not required to assign interface
- * numbers sequentially, so that it would be incorrect to assume that
- * the first interface in that descriptor corresponds to interface zero.
- * This routine helps device drivers avoid such mistakes.
- * However, you should make sure that you do the right thing with any
- * alternate settings available for this interfaces.
- *
- * Don't call this function unless you are bound to one of the interfaces
- * on this device or you have locked the device!
- *
- * Return: A pointer to the interface that has @ifnum as interface number,
- * if found. %NULL otherwise.
- */
+ 
 struct usb_interface *usb_ifnum_to_if(const struct usb_device *dev,
 				      unsigned ifnum)
 {
@@ -362,25 +246,7 @@ struct usb_interface *usb_ifnum_to_if(const struct usb_device *dev,
 }
 EXPORT_SYMBOL_GPL(usb_ifnum_to_if);
 
-/**
- * usb_altnum_to_altsetting - get the altsetting structure with a given alternate setting number.
- * @intf: the interface containing the altsetting in question
- * @altnum: the desired alternate setting number
- *
- * This searches the altsetting array of the specified interface for
- * an entry with the correct bAlternateSetting value.
- *
- * Note that altsettings need not be stored sequentially by number, so
- * it would be incorrect to assume that the first altsetting entry in
- * the array corresponds to altsetting zero.  This routine helps device
- * drivers avoid such mistakes.
- *
- * Don't call this function unless you are bound to the intf interface
- * or you have locked the device!
- *
- * Return: A pointer to the entry of the altsetting array of @intf that
- * has @altnum as the alternate setting number. %NULL if not found.
- */
+ 
 struct usb_host_interface *usb_altnum_to_altsetting(
 					const struct usb_interface *intf,
 					unsigned int altnum)
@@ -414,17 +280,7 @@ static int __find_interface(struct device *dev, const void *data)
 	return intf->minor == arg->minor;
 }
 
-/**
- * usb_find_interface - find usb_interface pointer for driver and device
- * @drv: the driver whose current configuration is considered
- * @minor: the minor number of the desired device
- *
- * This walks the bus device list and returns a pointer to the interface
- * with the matching minor and driver.  Note, this only works for devices
- * that share the USB major number.
- *
- * Return: A pointer to the interface with the matching major and @minor.
- */
+ 
 struct usb_interface *usb_find_interface(struct usb_driver *drv, int minor)
 {
 	struct find_interface_arg argb;
@@ -435,7 +291,7 @@ struct usb_interface *usb_find_interface(struct usb_driver *drv, int minor)
 
 	dev = bus_find_device(&usb_bus_type, NULL, &argb, __find_interface);
 
-	/* Drop reference count from bus_find_device */
+	 
 	put_device(dev);
 
 	return dev ? to_usb_interface(dev) : NULL;
@@ -451,22 +307,14 @@ static int __each_dev(struct device *dev, void *data)
 {
 	struct each_dev_arg *arg = (struct each_dev_arg *)data;
 
-	/* There are struct usb_interface on the same bus, filter them out */
+	 
 	if (!is_usb_device(dev))
 		return 0;
 
 	return arg->fn(to_usb_device(dev), arg->data);
 }
 
-/**
- * usb_for_each_dev - iterate over all USB devices in the system
- * @data: data pointer that will be handed to the callback function
- * @fn: callback function to be called for each USB device
- *
- * Iterate over all USB devices and call @fn for each, passing it @data. If it
- * returns anything other than 0, we break the iteration prematurely and return
- * that value.
- */
+ 
 int usb_for_each_dev(void *data, int (*fn)(struct usb_device *, void *))
 {
 	struct each_dev_arg arg = {data, fn};
@@ -475,13 +323,7 @@ int usb_for_each_dev(void *data, int (*fn)(struct usb_device *, void *))
 }
 EXPORT_SYMBOL_GPL(usb_for_each_dev);
 
-/**
- * usb_release_dev - free a usb device structure when all users of it are finished.
- * @dev: device that's been disconnected
- *
- * Will be called only by the device core when all users of this usb device are
- * done.
- */
+ 
 static void usb_release_dev(struct device *dev)
 {
 	struct usb_device *udev;
@@ -517,21 +359,16 @@ static int usb_dev_uevent(const struct device *dev, struct kobj_uevent_env *env)
 
 #ifdef	CONFIG_PM
 
-/* USB device Power-Management thunks.
- * There's no need to distinguish here between quiescing a USB device
- * and powering it down; the generic_suspend() routine takes care of
- * it by skipping the usb_port_suspend() call for a quiesce.  And for
- * USB interfaces there's no difference at all.
- */
+ 
 
 static int usb_dev_prepare(struct device *dev)
 {
-	return 0;		/* Implement eventually? */
+	return 0;		 
 }
 
 static void usb_dev_complete(struct device *dev)
 {
-	/* Currently used only for rebinding interfaces */
+	 
 	usb_resume_complete(dev);
 }
 
@@ -579,7 +416,7 @@ static const struct dev_pm_ops usb_device_pm_ops = {
 	.runtime_idle =		usb_runtime_idle,
 };
 
-#endif	/* CONFIG_PM */
+#endif	 
 
 
 static char *usb_devnode(const struct device *dev,
@@ -607,7 +444,7 @@ static bool usb_dev_authorized(struct usb_device *dev, struct usb_hcd *hcd)
 	struct usb_hub *hub;
 
 	if (!dev->parent)
-		return true; /* Root hub always ok [and always wired] */
+		return true;  
 
 	switch (hcd->dev_policy) {
 	case USB_DEVICE_AUTHORIZE_NONE:
@@ -624,22 +461,7 @@ static bool usb_dev_authorized(struct usb_device *dev, struct usb_hcd *hcd)
 	}
 }
 
-/**
- * usb_alloc_dev - usb device constructor (usbcore-internal)
- * @parent: hub to which device is connected; null to allocate a root hub
- * @bus: bus used to access the device
- * @port1: one-based index of port; ignored for root hubs
- *
- * Context: task context, might sleep.
- *
- * Only hub drivers (including virtual root hub drivers for host
- * controllers) should ever call this.
- *
- * This call may not be used in a non-sleeping context.
- *
- * Return: On success, a pointer to the allocated usb device. %NULL on
- * failure.
- */
+ 
 struct usb_device *usb_alloc_dev(struct usb_device *parent,
 				 struct usb_bus *bus, unsigned port1)
 {
@@ -655,7 +477,7 @@ struct usb_device *usb_alloc_dev(struct usb_device *parent,
 		kfree(dev);
 		return NULL;
 	}
-	/* Root hubs aren't true devices, so don't allocate HCD resources */
+	 
 	if (usb_hcd->driver->alloc_dev && parent &&
 		!usb_hcd->driver->alloc_dev(usb_hcd, dev)) {
 		usb_put_hcd(bus_to_hcd(bus));
@@ -675,18 +497,11 @@ struct usb_device *usb_alloc_dev(struct usb_device *parent,
 	INIT_LIST_HEAD(&dev->ep0.urb_list);
 	dev->ep0.desc.bLength = USB_DT_ENDPOINT_SIZE;
 	dev->ep0.desc.bDescriptorType = USB_DT_ENDPOINT;
-	/* ep0 maxpacket comes later, from device descriptor */
+	 
 	usb_enable_endpoint(dev, &dev->ep0, false);
 	dev->can_submit = 1;
 
-	/* Save readable and stable topology id, distinguishing devices
-	 * by location for diagnostics, tools, driver model, etc.  The
-	 * string is a path along hub ports, from the root.  Each device's
-	 * dev->devpath will be stable until USB is re-cabled, and hubs
-	 * are often labeled with these port numbers.  The name isn't
-	 * as stable:  bus->busnum changes easily from modprobe order,
-	 * cardbus or pci hotplugging, and so on.
-	 */
+	 
 	if (unlikely(!parent)) {
 		dev->devpath[0] = '0';
 		dev->route = 0;
@@ -695,16 +510,16 @@ struct usb_device *usb_alloc_dev(struct usb_device *parent,
 		device_set_of_node_from_dev(&dev->dev, bus->sysdev);
 		dev_set_name(&dev->dev, "usb%d", bus->busnum);
 	} else {
-		/* match any labeling on the hubs; it's one-based */
+		 
 		if (parent->devpath[0] == '0') {
 			snprintf(dev->devpath, sizeof dev->devpath,
 				"%d", port1);
-			/* Root ports are not counted in route string */
+			 
 			dev->route = 0;
 		} else {
 			snprintf(dev->devpath, sizeof dev->devpath,
 				"%s.%d", parent->devpath, port1);
-			/* Route string assumes hubs have less than 16 ports */
+			 
 			if (port1 < 15)
 				dev->route = parent->route +
 					(port1 << ((parent->level - 1)*4));
@@ -717,13 +532,13 @@ struct usb_device *usb_alloc_dev(struct usb_device *parent,
 		dev_set_name(&dev->dev, "%d-%s", bus->busnum, dev->devpath);
 
 		if (!parent->parent) {
-			/* device under root hub's port */
+			 
 			raw_port = usb_hcd_find_raw_port_number(usb_hcd,
 				port1);
 		}
 		dev->dev.of_node = usb_of_get_device_node(parent, raw_port);
 
-		/* hub driver sets up TT records */
+		 
 	}
 
 	dev->portnum = port1;
@@ -743,22 +558,7 @@ struct usb_device *usb_alloc_dev(struct usb_device *parent,
 }
 EXPORT_SYMBOL_GPL(usb_alloc_dev);
 
-/**
- * usb_get_dev - increments the reference count of the usb device structure
- * @dev: the device being referenced
- *
- * Each live reference to a device should be refcounted.
- *
- * Drivers for USB interfaces should normally record such references in
- * their probe() methods, when they bind to an interface, and release
- * them by calling usb_put_dev(), in their disconnect() methods.
- * However, if a driver does not access the usb_device structure after
- * its disconnect() method returns then refcounting is not necessary,
- * because the USB core guarantees that a usb_device will not be
- * deallocated until after all of its interface drivers have been unbound.
- *
- * Return: A pointer to the device with the incremented reference counter.
- */
+ 
 struct usb_device *usb_get_dev(struct usb_device *dev)
 {
 	if (dev)
@@ -767,13 +567,7 @@ struct usb_device *usb_get_dev(struct usb_device *dev)
 }
 EXPORT_SYMBOL_GPL(usb_get_dev);
 
-/**
- * usb_put_dev - release a use of the usb device structure
- * @dev: device that's been disconnected
- *
- * Must be called when a user of a device is finished with it.  When the last
- * user of the device calls this function, the memory of the device is freed.
- */
+ 
 void usb_put_dev(struct usb_device *dev)
 {
 	if (dev)
@@ -781,22 +575,7 @@ void usb_put_dev(struct usb_device *dev)
 }
 EXPORT_SYMBOL_GPL(usb_put_dev);
 
-/**
- * usb_get_intf - increments the reference count of the usb interface structure
- * @intf: the interface being referenced
- *
- * Each live reference to a interface must be refcounted.
- *
- * Drivers for USB interfaces should normally record such references in
- * their probe() methods, when they bind to an interface, and release
- * them by calling usb_put_intf(), in their disconnect() methods.
- * However, if a driver does not access the usb_interface structure after
- * its disconnect() method returns then refcounting is not necessary,
- * because the USB core guarantees that a usb_interface will not be
- * deallocated until after its driver has been unbound.
- *
- * Return: A pointer to the interface with the incremented reference counter.
- */
+ 
 struct usb_interface *usb_get_intf(struct usb_interface *intf)
 {
 	if (intf)
@@ -805,14 +584,7 @@ struct usb_interface *usb_get_intf(struct usb_interface *intf)
 }
 EXPORT_SYMBOL_GPL(usb_get_intf);
 
-/**
- * usb_put_intf - release a use of the usb interface structure
- * @intf: interface that's been decremented
- *
- * Must be called when a user of an interface is finished with it.  When the
- * last user of the interface calls this function, the memory of the interface
- * is freed.
- */
+ 
 void usb_put_intf(struct usb_interface *intf)
 {
 	if (intf)
@@ -820,20 +592,7 @@ void usb_put_intf(struct usb_interface *intf)
 }
 EXPORT_SYMBOL_GPL(usb_put_intf);
 
-/**
- * usb_intf_get_dma_device - acquire a reference on the usb interface's DMA endpoint
- * @intf: the usb interface
- *
- * While a USB device cannot perform DMA operations by itself, many USB
- * controllers can. A call to usb_intf_get_dma_device() returns the DMA endpoint
- * for the given USB interface, if any. The returned device structure must be
- * released with put_device().
- *
- * See also usb_get_dma_device().
- *
- * Returns: A reference to the usb interface's DMA endpoint; or NULL if none
- *          exists.
- */
+ 
 struct device *usb_intf_get_dma_device(struct usb_interface *intf)
 {
 	struct usb_device *udev = interface_to_usbdev(intf);
@@ -852,36 +611,9 @@ struct device *usb_intf_get_dma_device(struct usb_interface *intf)
 }
 EXPORT_SYMBOL_GPL(usb_intf_get_dma_device);
 
-/*			USB device locking
- *
- * USB devices and interfaces are locked using the semaphore in their
- * embedded struct device.  The hub driver guarantees that whenever a
- * device is connected or disconnected, drivers are called with the
- * USB device locked as well as their particular interface.
- *
- * Complications arise when several devices are to be locked at the same
- * time.  Only hub-aware drivers that are part of usbcore ever have to
- * do this; nobody else needs to worry about it.  The rule for locking
- * is simple:
- *
- *	When locking both a device and its parent, always lock the
- *	parent first.
- */
+ 
 
-/**
- * usb_lock_device_for_reset - cautiously acquire the lock for a usb device structure
- * @udev: device that's being locked
- * @iface: interface bound to the driver making the request (optional)
- *
- * Attempts to acquire the device lock, but fails if the device is
- * NOTATTACHED or SUSPENDED, or if iface is specified and the interface
- * is neither BINDING nor BOUND.  Rather than sleeping to wait for the
- * lock, the routine polls repeatedly.  This is to prevent deadlock with
- * disconnect; in some drivers (such as usb-storage) the disconnect()
- * or suspend() method will block waiting for a device reset to complete.
- *
- * Return: A negative error code for failure, otherwise 0.
- */
+ 
 int usb_lock_device_for_reset(struct usb_device *udev,
 			      const struct usb_interface *iface)
 {
@@ -897,8 +629,7 @@ int usb_lock_device_for_reset(struct usb_device *udev,
 
 	while (!usb_trylock_device(udev)) {
 
-		/* If we can't acquire the lock after waiting one second,
-		 * we're probably deadlocked */
+		 
 		if (time_after(jiffies, jiffies_expire))
 			return -EBUSY;
 
@@ -915,31 +646,15 @@ int usb_lock_device_for_reset(struct usb_device *udev,
 }
 EXPORT_SYMBOL_GPL(usb_lock_device_for_reset);
 
-/**
- * usb_get_current_frame_number - return current bus frame number
- * @dev: the device whose bus is being queried
- *
- * Return: The current frame number for the USB host controller used
- * with the given USB device. This can be used when scheduling
- * isochronous requests.
- *
- * Note: Different kinds of host controller have different "scheduling
- * horizons". While one type might support scheduling only 32 frames
- * into the future, others could support scheduling up to 1024 frames
- * into the future.
- *
- */
+ 
 int usb_get_current_frame_number(struct usb_device *dev)
 {
 	return usb_hcd_get_frame_number(dev);
 }
 EXPORT_SYMBOL_GPL(usb_get_current_frame_number);
 
-/*-------------------------------------------------------------------*/
-/*
- * __usb_get_extra_descriptor() finds a descriptor of specific type in the
- * extra field of the interface and endpoint descriptor structs.
- */
+ 
+ 
 
 int __usb_get_extra_descriptor(char *buffer, unsigned size,
 			       unsigned char type, void **ptr, size_t minsize)
@@ -970,29 +685,7 @@ int __usb_get_extra_descriptor(char *buffer, unsigned size,
 }
 EXPORT_SYMBOL_GPL(__usb_get_extra_descriptor);
 
-/**
- * usb_alloc_coherent - allocate dma-consistent buffer for URB_NO_xxx_DMA_MAP
- * @dev: device the buffer will be used with
- * @size: requested buffer size
- * @mem_flags: affect whether allocation may block
- * @dma: used to return DMA address of buffer
- *
- * Return: Either null (indicating no buffer could be allocated), or the
- * cpu-space pointer to a buffer that may be used to perform DMA to the
- * specified device.  Such cpu-space buffers are returned along with the DMA
- * address (through the pointer provided).
- *
- * Note:
- * These buffers are used with URB_NO_xxx_DMA_MAP set in urb->transfer_flags
- * to avoid behaviors like using "DMA bounce buffers", or thrashing IOMMU
- * hardware during URB completion/resubmit.  The implementation varies between
- * platforms, depending on details of how DMA will work to this device.
- * Using these buffers also eliminates cacheline sharing problems on
- * architectures where CPU caches are not DMA-coherent.  On systems without
- * bus-snooping caches, these buffers are uncached.
- *
- * When the buffer is no longer used, free it with usb_free_coherent().
- */
+ 
 void *usb_alloc_coherent(struct usb_device *dev, size_t size, gfp_t mem_flags,
 			 dma_addr_t *dma)
 {
@@ -1002,17 +695,7 @@ void *usb_alloc_coherent(struct usb_device *dev, size_t size, gfp_t mem_flags,
 }
 EXPORT_SYMBOL_GPL(usb_alloc_coherent);
 
-/**
- * usb_free_coherent - free memory allocated with usb_alloc_coherent()
- * @dev: device the buffer was used with
- * @size: requested buffer size
- * @addr: CPU address of buffer
- * @dma: DMA address of buffer
- *
- * This reclaims an I/O buffer, letting it be reused.  The memory must have
- * been allocated using usb_alloc_coherent(), and the parameters must match
- * those provided in that allocation request.
- */
+ 
 void usb_free_coherent(struct usb_device *dev, size_t size, void *addr,
 		       dma_addr_t dma)
 {
@@ -1024,9 +707,7 @@ void usb_free_coherent(struct usb_device *dev, size_t size, void *addr,
 }
 EXPORT_SYMBOL_GPL(usb_free_coherent);
 
-/*
- * Notifications of device and interface registration
- */
+ 
 static int usb_bus_notify(struct notifier_block *nb, unsigned long action,
 		void *data)
 {
@@ -1065,9 +746,7 @@ static void usb_debugfs_cleanup(void)
 	debugfs_lookup_and_remove("devices", usb_debug_root);
 }
 
-/*
- * Init
- */
+ 
 static int __init usb_init(void)
 {
 	int retval;
@@ -1125,12 +804,10 @@ out:
 	return retval;
 }
 
-/*
- * Cleanup
- */
+ 
 static void __exit usb_exit(void)
 {
-	/* This will matter if shutdown/reboot does exitcalls. */
+	 
 	if (usb_disabled())
 		return;
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Pin controller and GPIO driver for Amlogic Meson8b.
- *
- * Copyright (C) 2015 Endless Mobile, Inc.
- * Author: Carlo Caione <carlo@endlessm.com>
- */
+
+ 
 
 #include <dt-bindings/gpio/meson8b-gpio.h>
 #include "pinctrl-meson.h"
@@ -118,16 +113,12 @@ static const struct pinctrl_pin_desc meson8b_aobus_pins[] = {
 	MESON_PIN(GPIOAO_12),
 	MESON_PIN(GPIOAO_13),
 
-	/*
-	 * The following 2 pins are not mentionned in the public datasheet
-	 * According to this datasheet, they can't be used with the gpio
-	 * interrupt controller
-	 */
+	 
 	MESON_PIN(GPIO_BSD_EN),
 	MESON_PIN(GPIO_TEST_N),
 };
 
-/* bank X */
+ 
 static const unsigned int sd_d0_a_pins[]	= { GPIOX_0 };
 static const unsigned int sd_d1_a_pins[]	= { GPIOX_1 };
 static const unsigned int sd_d2_a_pins[]	= { GPIOX_2 };
@@ -187,7 +178,7 @@ static const unsigned int i2c_sda_d0_pins[]	= { GPIOX_16 };
 static const unsigned int i2c_sck_d0_pins[]	= { GPIOX_17 };
 static const unsigned int tsin_d_valid_b_pins[] = { GPIOX_20 };
 
-/* bank Y */
+ 
 static const unsigned int tsin_d_valid_a_pins[] = { GPIOY_0 };
 static const unsigned int tsin_sop_a_pins[]	= { GPIOY_1 };
 static const unsigned int tsin_d17_a_pins[] = {
@@ -202,7 +193,7 @@ static const unsigned int xtal_24m_pins[]	= { GPIOY_3 };
 static const unsigned int iso7816_2_clk_pins[]	= { GPIOY_13 };
 static const unsigned int iso7816_2_data_pins[] = { GPIOY_14 };
 
-/* bank DV */
+ 
 static const unsigned int pwm_d_pins[]		= { GPIODV_28 };
 static const unsigned int pwm_c0_pins[]		= { GPIODV_29 };
 
@@ -226,7 +217,7 @@ static const unsigned int i2c_sck_b0_pins[]	= { GPIODV_27 };
 static const unsigned int i2c_sda_c0_pins[]	= { GPIODV_28 };
 static const unsigned int i2c_sck_c0_pins[]	= { GPIODV_29 };
 
-/* bank H */
+ 
 static const unsigned int hdmi_hpd_pins[]	= { GPIOH_0 };
 static const unsigned int hdmi_sda_pins[]	= { GPIOH_1 };
 static const unsigned int hdmi_scl_pins[]	= { GPIOH_2 };
@@ -255,7 +246,7 @@ static const unsigned int i2c_sck_c1_pins[]	= { GPIOH_6 };
 static const unsigned int i2c_sda_d1_pins[]	= { GPIOH_7 };
 static const unsigned int i2c_sck_d1_pins[]	= { GPIOH_8 };
 
-/* bank BOOT */
+ 
 static const unsigned int nand_io_pins[] = {
 	BOOT_0, BOOT_1, BOOT_2, BOOT_3, BOOT_4, BOOT_5, BOOT_6, BOOT_7
 };
@@ -288,7 +279,7 @@ static const unsigned int sd_d3_c_pins[]	= { BOOT_3 };
 static const unsigned int sd_cmd_c_pins[]	= { BOOT_8 };
 static const unsigned int sd_clk_c_pins[]	= { BOOT_10 };
 
-/* bank CARD */
+ 
 static const unsigned int sd_d1_b_pins[]	= { CARD_0 };
 static const unsigned int sd_d0_b_pins[]	= { CARD_1 };
 static const unsigned int sd_clk_b_pins[]	= { CARD_2 };
@@ -302,7 +293,7 @@ static const unsigned int sdxc_d0_b_pins[]	= { CARD_1 };
 static const unsigned int sdxc_clk_b_pins[]	= { CARD_2 };
 static const unsigned int sdxc_cmd_b_pins[]	= { CARD_3 };
 
-/* bank AO */
+ 
 static const unsigned int uart_tx_ao_a_pins[]	= { GPIOAO_0 };
 static const unsigned int uart_rx_ao_a_pins[]	= { GPIOAO_1 };
 static const unsigned int uart_cts_ao_a_pins[]	= { GPIOAO_2 };
@@ -335,7 +326,7 @@ static const unsigned int i2s_in_ch01_pins[]	= { GPIOAO_6 };
 static const unsigned int i2s_ao_clk_in_pins[]	= { GPIOAO_9 };
 static const unsigned int i2s_lr_clk_in_pins[]	= { GPIOAO_10 };
 
-/* bank DIF */
+ 
 static const unsigned int eth_rxd1_pins[]	= { DIF_0_P };
 static const unsigned int eth_rxd0_pins[]	= { DIF_0_N };
 static const unsigned int eth_rx_dv_pins[]	= { DIF_1_P };
@@ -440,7 +431,7 @@ static struct meson_pmx_group meson8b_cbus_groups[] = {
 	GPIO_GROUP(DIF_4_P),
 	GPIO_GROUP(DIF_4_N),
 
-	/* bank X */
+	 
 	GROUP(sd_d0_a,		8,	5),
 	GROUP(sd_d1_a,		8,	4),
 	GROUP(sd_d2_a,		8,	3),
@@ -493,7 +484,7 @@ static struct meson_pmx_group meson8b_cbus_groups[] = {
 	GROUP(i2c_sck_d0,	4,	4),
 	GROUP(tsin_d_valid_b,	3,	9),
 
-	/* bank Y */
+	 
 	GROUP(tsin_d_valid_a,	3,	2),
 	GROUP(tsin_sop_a,	3,	1),
 	GROUP(tsin_d17_a,	3,	5),
@@ -504,7 +495,7 @@ static struct meson_pmx_group meson8b_cbus_groups[] = {
 	GROUP(iso7816_2_clk,	5,	7),
 	GROUP(iso7816_2_data,	5,	6),
 
-	/* bank DV */
+	 
 	GROUP(pwm_d,		3,	26),
 	GROUP(pwm_c0,		3,	25),
 	GROUP(pwm_vs_2,		7,	28),
@@ -523,7 +514,7 @@ static struct meson_pmx_group meson8b_cbus_groups[] = {
 	GROUP(i2c_sda_c0,	9,	27),
 	GROUP(i2c_sck_c0,	9,	26),
 
-	/* bank H */
+	 
 	GROUP(hdmi_hpd,		1,	26),
 	GROUP(hdmi_sda,		1,	25),
 	GROUP(hdmi_scl,		1,	24),
@@ -549,7 +540,7 @@ static struct meson_pmx_group meson8b_cbus_groups[] = {
 	GROUP(i2c_sda_d1,	4,	3),
 	GROUP(i2c_sck_d1,	4,	2),
 
-	/* bank BOOT */
+	 
 	GROUP(nand_io,		2,	26),
 	GROUP(nand_io_ce0,	2,	25),
 	GROUP(nand_io_ce1,	2,	24),
@@ -576,7 +567,7 @@ static struct meson_pmx_group meson8b_cbus_groups[] = {
 	GROUP(sd_cmd_c,		6,	30),
 	GROUP(sd_clk_c,		6,	31),
 
-	/* bank CARD */
+	 
 	GROUP(sd_d1_b,		2,	14),
 	GROUP(sd_d0_b,		2,	15),
 	GROUP(sd_clk_b,		2,	11),
@@ -588,7 +579,7 @@ static struct meson_pmx_group meson8b_cbus_groups[] = {
 	GROUP(sdxc_clk_b,	2,	5),
 	GROUP(sdxc_cmd_b,	2,	4),
 
-	/* bank DIF */
+	 
 	GROUP(eth_rxd1,		6,	0),
 	GROUP(eth_rxd0,		6,	1),
 	GROUP(eth_rx_dv,	6,	2),
@@ -621,7 +612,7 @@ static struct meson_pmx_group meson8b_aobus_groups[] = {
 	GPIO_GROUP(GPIO_BSD_EN),
 	GPIO_GROUP(GPIO_TEST_N),
 
-	/* bank AO */
+	 
 	GROUP(uart_tx_ao_a,	0,	12),
 	GROUP(uart_rx_ao_a,	0,	11),
 	GROUP(uart_cts_ao_a,	0,	10),
@@ -918,7 +909,7 @@ static struct meson_pmx_func meson8b_aobus_functions[] = {
 };
 
 static struct meson_bank meson8b_cbus_banks[] = {
-	/*   name        first          last        irq       pullen   pull     dir      out      in   */
+	 
 	BANK("X0..11",	 GPIOX_0,	GPIOX_11,   97, 108,  4,  0,   4,  0,   0,  0,   1,  0,   2,  0),
 	BANK("X16..21",	 GPIOX_16,	GPIOX_21,  113, 118,  4, 16,   4, 16,   0, 16,   1, 16,   2, 16),
 	BANK("Y0..1",	 GPIOY_0,	GPIOY_1,    80,  81,  3,  0,   3,  0,   3,  0,   4,  0,   5,  0),
@@ -930,16 +921,12 @@ static struct meson_bank meson8b_cbus_banks[] = {
 	BANK("CARD",	 CARD_0,	CARD_6,     43,  49,  2, 20,   2, 20,   0, 22,   1, 22,   2, 22),
 	BANK("BOOT",	 BOOT_0,	BOOT_18,    24,  42,  2,  0,   2,  0,   9,  0,  10,  0,  11,  0),
 
-	/*
-	 * The following bank is not mentionned in the public datasheet
-	 * There is no information whether it can be used with the gpio
-	 * interrupt controller
-	 */
+	 
 	BANK("DIF",	 DIF_0_P,	DIF_4_N,    -1,  -1,  5,  8,   5,  8,  12, 12,  13, 12,  14, 12),
 };
 
 static struct meson_bank meson8b_aobus_banks[] = {
-	/*   name    first     lastc        irq    pullen  pull    dir     out     in  */
+	 
 	BANK("AO",   GPIOAO_0, GPIO_TEST_N, 0, 13, 0,  16, 0, 0,  0,  0,  0, 16,  1,  0),
 };
 

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* QLogic qed NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/stddef.h>
 #include <linux/pci.h>
@@ -64,7 +61,7 @@ MODULE_LICENSE("GPL");
 
 MODULE_FIRMWARE(QED_FW_FILE_NAME);
 
-/* MFW speed capabilities maps */
+ 
 
 struct qed_mfw_speed_map {
 	u32		mfw_val;
@@ -250,7 +247,7 @@ module_init(qed_init);
 
 static void __exit qed_exit(void)
 {
-	/* To prevent marking this module as "permanent" */
+	 
 }
 module_exit(qed_exit);
 
@@ -270,9 +267,7 @@ static void qed_free_pci(struct qed_dev *cdev)
 
 #define PCI_REVISION_ID_ERROR_VAL	0xff
 
-/* Performs PCI initializations as well as initializing PCI-related parameters
- * in the device structrue. Returns 0 in case of success.
- */
+ 
 static int qed_init_pci(struct qed_dev *cdev, struct pci_dev *pdev)
 {
 	u8 rev_id;
@@ -471,7 +466,7 @@ static struct qed_dev *qed_alloc_cdev(struct pci_dev *pdev)
 	return cdev;
 }
 
-/* Sets the requested power state */
+ 
 static int qed_set_power_state(struct qed_dev *cdev, pci_power_t state)
 {
 	if (!cdev)
@@ -481,7 +476,7 @@ static int qed_set_power_state(struct qed_dev *cdev, pci_power_t state)
 	return 0;
 }
 
-/* probing */
+ 
 static struct qed_dev *qed_probe(struct pci_dev *pdev,
 				 struct qed_probe_params *params)
 {
@@ -569,10 +564,7 @@ static int qed_enable_msix(struct qed_dev *cdev,
 	    (rc % cdev->num_hwfns)) {
 		pci_disable_msix(cdev->pdev);
 
-		/* If fastpath is initialized, we need at least one interrupt
-		 * per hwfn [and the slow path interrupts]. New requested number
-		 * should be a multiple of the number of hwfns.
-		 */
+		 
 		cnt = (rc / cdev->num_hwfns) * cdev->num_hwfns;
 		DP_NOTICE(cdev,
 			  "Trying to enable MSI-X with less vectors (%d out of %d)\n",
@@ -583,13 +575,9 @@ static int qed_enable_msix(struct qed_dev *cdev,
 			rc = cnt;
 	}
 
-	/* For VFs, we should return with an error in case we didn't get the
-	 * exact number of msix vectors as we requested.
-	 * Not doing that will lead to a crash when starting queues for
-	 * this VF.
-	 */
+	 
 	if ((IS_PF(cdev) && rc > 0) || (IS_VF(cdev) && rc == cnt)) {
-		/* MSI-x configuration was achieved */
+		 
 		int_params->out.int_mode = QED_INT_MODE_MSIX;
 		int_params->out.num_vectors = rc;
 		rc = 0;
@@ -602,7 +590,7 @@ static int qed_enable_msix(struct qed_dev *cdev,
 	return rc;
 }
 
-/* This function outputs the int mode and the number of enabled msix vector */
+ 
 static int qed_set_int_mode(struct qed_dev *cdev, bool force_mode)
 {
 	struct qed_int_params *int_params = &cdev->int_params;
@@ -611,7 +599,7 @@ static int qed_set_int_mode(struct qed_dev *cdev, bool force_mode)
 
 	switch (int_params->in.int_mode) {
 	case QED_INT_MODE_MSIX:
-		/* Allocate MSIX table */
+		 
 		cnt = int_params->in.num_vectors;
 		int_params->msix_table = kcalloc(cnt, sizeof(*tbl), GFP_KERNEL);
 		if (!int_params->msix_table) {
@@ -619,7 +607,7 @@ static int qed_set_int_mode(struct qed_dev *cdev, bool force_mode)
 			goto out;
 		}
 
-		/* Enable MSIX */
+		 
 		rc = qed_enable_msix(cdev, int_params);
 		if (!rc)
 			goto out;
@@ -706,14 +694,14 @@ static irqreturn_t qed_single_int(int irq, void *dev_instance)
 
 		hwfn = &cdev->hwfns[i];
 
-		/* Slowpath interrupt */
+		 
 		if (unlikely(status & 0x1)) {
 			tasklet_schedule(&hwfn->sp_dpc);
 			status &= ~0x1;
 			rc = IRQ_HANDLED;
 		}
 
-		/* Fastpath interrupts */
+		 
 		for (j = 0; j < 64; j++) {
 			if ((0x2ULL << j) & status) {
 				struct qed_simd_fp_handler *p_handler =
@@ -781,10 +769,7 @@ int qed_slowpath_irq_req(struct qed_hwfn *hwfn)
 
 static void qed_slowpath_tasklet_flush(struct qed_hwfn *p_hwfn)
 {
-	/* Calling the disable function will make sure that any
-	 * currently-running function is completed. The following call to the
-	 * enable function makes this sequence a flush-like operation.
-	 */
+	 
 	if (p_hwfn->b_sp_dpc_enabled) {
 		tasklet_disable(&p_hwfn->sp_dpc);
 		tasklet_enable(&p_hwfn->sp_dpc);
@@ -851,7 +836,7 @@ static int qed_nic_setup(struct qed_dev *cdev)
 {
 	int rc, i;
 
-	/* Determine if interface is going to require LL2 */
+	 
 	if (QED_LEADING_HWFN(cdev)->hw_info.personality != QED_PCI_ETH) {
 		for (i = 0; i < cdev->num_hwfns; i++) {
 			struct qed_hwfn *p_hwfn = &cdev->hwfns[i];
@@ -875,7 +860,7 @@ static int qed_set_int_fp(struct qed_dev *cdev, u16 cnt)
 {
 	int limit = 0;
 
-	/* Mark the fastpath as free/used */
+	 
 	cdev->int_params.fp_initialized = cnt ? true : false;
 
 	if (cdev->int_params.out.int_mode != QED_INT_MODE_MSIX)
@@ -899,9 +884,7 @@ static int qed_get_int_fp(struct qed_dev *cdev, struct qed_int_info *info)
 		return -EINVAL;
 	}
 
-	/* Need to expose only MSI-X information; Single IRQ is handled solely
-	 * by qed.
-	 */
+	 
 	if (cdev->int_params.out.int_mode == QED_INT_MODE_MSIX) {
 		int msix_base = cdev->int_params.fp_msix_base;
 
@@ -931,10 +914,10 @@ static int qed_slowpath_setup_int(struct qed_dev *cdev,
 		memset(&sb_cnt_info, 0, sizeof(sb_cnt_info));
 		qed_int_get_num_sbs(&cdev->hwfns[i], &sb_cnt_info);
 		cdev->int_params.in.num_vectors += sb_cnt_info.cnt;
-		cdev->int_params.in.num_vectors++; /* slowpath */
+		cdev->int_params.in.num_vectors++;  
 	}
 
-	/* We want a minimum of one slowpath and one fastpath vector per hwfn */
+	 
 	cdev->int_params.in.min_msix_cnt = cdev->num_hwfns * 2;
 
 	if (is_kdump_kernel()) {
@@ -1000,7 +983,7 @@ static int qed_slowpath_vf_setup_int(struct qed_dev *cdev)
 		cdev->int_params.in.num_vectors += vectors;
 	}
 
-	/* We want a minimum of one fastpath vector per vf hwfn */
+	 
 	cdev->int_params.in.min_msix_cnt = cdev->num_hwfns;
 
 	rc = qed_set_int_mode(cdev, true);
@@ -1088,17 +1071,14 @@ static void qed_update_pf_params(struct qed_dev *cdev,
 		params->rdma_pf_params.num_qps = QED_ROCE_QPS;
 		params->rdma_pf_params.min_dpis = QED_ROCE_DPIS;
 		params->rdma_pf_params.num_srqs = QED_RDMA_SRQS;
-		/* divide by 3 the MRs to avoid MF ILT overflow */
+		 
 		params->rdma_pf_params.gl_pi = QED_ROCE_PROTOCOL_INDEX;
 	}
 
 	if (cdev->num_hwfns > 1 || IS_VF(cdev))
 		params->eth_pf_params.num_arfs_filters = 0;
 
-	/* In case we might support RDMA, don't allow qede to be greedy
-	 * with the L2 contexts. Allow for 64 queues [rx, tx cos, xdp]
-	 * per hwfn.
-	 */
+	 
 	if (QED_IS_RDMA_PERSONALITY(QED_LEADING_HWFN(cdev))) {
 		u16 *num_cons;
 
@@ -1125,10 +1105,10 @@ static int qed_slowpath_delayed_work(struct qed_hwfn *hwfn,
 	if (!hwfn->slowpath_wq_active)
 		return -EINVAL;
 
-	/* Memory barrier for setting atomic bit */
+	 
 	smp_mb__before_atomic();
 	set_bit(wq_flag, &hwfn->slowpath_task_flags);
-	/* Memory barrier after setting atomic bit */
+	 
 	smp_mb__after_atomic();
 	queue_delayed_work(hwfn->slowpath_wq, &hwfn->slowpath_task, delay);
 
@@ -1137,10 +1117,10 @@ static int qed_slowpath_delayed_work(struct qed_hwfn *hwfn,
 
 void qed_periodic_db_rec_start(struct qed_hwfn *p_hwfn)
 {
-	/* Reset periodic Doorbell Recovery counter */
+	 
 	p_hwfn->periodic_db_rec_count = QED_PERIODIC_DB_REC_COUNT;
 
-	/* Don't schedule periodic Doorbell Recovery if already scheduled */
+	 
 	if (test_bit(QED_SLOWPATH_PERIODIC_DB_REC,
 		     &p_hwfn->slowpath_task_flags))
 		return;
@@ -1160,7 +1140,7 @@ static void qed_slowpath_wq_stop(struct qed_dev *cdev)
 		if (!cdev->hwfns[i].slowpath_wq)
 			continue;
 
-		/* Stop queuing new delayed works */
+		 
 		cdev->hwfns[i].slowpath_wq_active = false;
 
 		cancel_delayed_work(&cdev->hwfns[i].slowpath_task);
@@ -1188,7 +1168,7 @@ static void qed_slowpath_task(struct work_struct *work)
 
 	if (test_and_clear_bit(QED_SLOWPATH_PERIODIC_DB_REC,
 			       &hwfn->slowpath_task_flags)) {
-		/* skip qed_db_rec_handler during recovery/unload */
+		 
 		if (hwfn->cdev->recov_in_prog || !hwfn->slowpath_wq_active)
 			goto out;
 
@@ -1286,18 +1266,18 @@ static int qed_slowpath_start(struct qed_dev *cdev,
 		goto err1;
 
 	if (IS_PF(cdev)) {
-		/* Allocate stream for unzipping */
+		 
 		rc = qed_alloc_stream_mem(cdev);
 		if (rc)
 			goto err2;
 
-		/* First Dword used to differentiate between various sources */
+		 
 		data = cdev->firmware->data + sizeof(u32);
 
 		qed_dbg_pf_init(cdev);
 	}
 
-	/* Start the slowpath */
+	 
 	memset(&hw_init_params, 0, sizeof(hw_init_params));
 	memset(&tunn_info, 0, sizeof(tunn_info));
 	tunn_info.vxlan.b_mode_enabled = true;
@@ -1338,7 +1318,7 @@ static int qed_slowpath_start(struct qed_dev *cdev,
 					   BIT(QED_MODE_IPGRE_TUNN));
 	}
 
-	/* Allocate LL2 interface if needed */
+	 
 	if (QED_LEADING_HWFN(cdev)->using_ll2) {
 		rc = qed_ll2_alloc_if(cdev);
 		if (rc)
@@ -1447,7 +1427,7 @@ static u32 qed_sb_init(struct qed_dev *cdev,
 	u16 rel_sb_id;
 	u32 rc;
 
-	/* RoCE/Storage use a single engine in CMT mode while L2 uses both */
+	 
 	if (type == QED_SB_TYPE_L2_QUEUE) {
 		p_hwfn = &cdev->hwfns[sb_id % cdev->num_hwfns];
 		rel_sb_id = sb_id / cdev->num_hwfns;
@@ -1485,7 +1465,7 @@ static u32 qed_sb_release(struct qed_dev *cdev,
 	u16 rel_sb_id;
 	u32 rc;
 
-	/* RoCE/Storage use a single engine in CMT mode while L2 uses both */
+	 
 	if (type == QED_SB_TYPE_L2_QUEUE) {
 		p_hwfn = &cdev->hwfns[sb_id % cdev->num_hwfns];
 		rel_sb_id = sb_id / cdev->num_hwfns;
@@ -1662,13 +1642,10 @@ static int qed_set_link(struct qed_dev *cdev, struct qed_link_params *params)
 	if (!cdev)
 		return -ENODEV;
 
-	/* The link should be set only once per PF */
+	 
 	hwfn = &cdev->hwfns[0];
 
-	/* When VF wants to set link, force it to read the bulletin instead.
-	 * This mimics the PF behavior, where a noitification [both immediate
-	 * and possible later] would be generated when changing properties.
-	 */
+	 
 	if (IS_VF(cdev)) {
 		qed_schedule_iov(hwfn, QED_IOV_WQ_VF_FORCE_LINK_QUERY_FLAG);
 		return 0;
@@ -1864,7 +1841,7 @@ static void qed_fill_link_capability(struct qed_hwfn *hwfn,
 		if (capability & NVM_CFG1_PORT_DRV_SPEED_CAPABILITY_MASK_20G)
 			phylink_set(if_caps, 20000baseKR2_Full);
 
-		/* For DAC media multiple speed capabilities are supported */
+		 
 		capability |= speed_mask;
 
 		if (capability & NVM_CFG1_PORT_DRV_SPEED_CAPABILITY_MASK_1G)
@@ -2079,13 +2056,13 @@ static void qed_fill_link(struct qed_hwfn *hwfn,
 
 	memset(if_link, 0, sizeof(*if_link));
 
-	/* Prepare source inputs */
+	 
 	if (qed_get_link_data(hwfn, &params, &link, &link_caps)) {
 		dev_warn(&hwfn->cdev->pdev->dev, "no link data available\n");
 		return;
 	}
 
-	/* Set the link parameters to pass to protocol driver */
+	 
 	if (link.link_up)
 		if_link->link_up = true;
 
@@ -2125,22 +2102,22 @@ static void qed_fill_link(struct qed_hwfn *hwfn,
 	if_link->sup_fec = link_caps.fec_default;
 	if_link->active_fec = params.fec;
 
-	/* Fill link advertised capability */
+	 
 	qed_fill_link_capability(hwfn, ptt, params.speed.advertised_speeds,
 				 if_link->advertised_caps);
 
-	/* Fill link supported capability */
+	 
 	qed_fill_link_capability(hwfn, ptt, link_caps.speed_capabilities,
 				 if_link->supported_caps);
 
-	/* Fill partner advertised capability */
+	 
 	qed_lp_caps_to_speed_mask(link.partner_adv_speed, &speed_mask);
 	qed_fill_link_capability(hwfn, ptt, speed_mask, if_link->lp_caps);
 
 	if (link.link_up)
 		if_link->speed = link.speed;
 
-	/* TODO - fill duplex properly */
+	 
 	if_link->duplex = DUPLEX_FULL;
 	qed_mcp_get_media_type(hwfn, ptt, &media_type);
 	if_link->port = qed_get_port_type(media_type);
@@ -2168,7 +2145,7 @@ static void qed_fill_link(struct qed_hwfn *hwfn,
 		if_link->eee_supported = true;
 		if_link->eee_active = link.eee_active;
 		if_link->sup_caps = link_caps.eee_speed_caps;
-		/* MFW clears adv_caps on eee disable; use configured value */
+		 
 		if_link->eee.adv_caps = link.eee_adv_caps ? link.eee_adv_caps :
 					params.eee.adv_caps;
 		if_link->eee.lp_adv_caps = link.eee_lp_adv_caps;
@@ -2256,12 +2233,12 @@ static u32 qed_nvm_flash_image_access_crc(struct qed_dev *cdev,
 	u8 *buf = NULL;
 	int rc;
 
-	/* Allocate a buffer for holding the nvram image */
+	 
 	buf = kzalloc(nvm_image->length, GFP_KERNEL);
 	if (!buf)
 		return -ENOMEM;
 
-	/* Read image into buffer */
+	 
 	rc = qed_mcp_nvm_read(cdev, nvm_image->start_addr,
 			      buf, nvm_image->length);
 	if (rc) {
@@ -2269,15 +2246,11 @@ static u32 qed_nvm_flash_image_access_crc(struct qed_dev *cdev,
 		goto out;
 	}
 
-	/* Convert the buffer into big-endian format (excluding the
-	 * closing 4 bytes of CRC).
-	 */
+	 
 	cpu_to_be32_array((__force __be32 *)buf, (const u32 *)buf,
 			  DIV_ROUND_UP(nvm_image->length - 4, 4));
 
-	/* Calc CRC for the "actual" image buffer, i.e. not including
-	 * the last 4 CRC bytes.
-	 */
+	 
 	*crc = ~crc32(~0U, buf, nvm_image->length - 4);
 	*crc = (__force u32)cpu_to_be32p(crc);
 
@@ -2287,17 +2260,7 @@ out:
 	return rc;
 }
 
-/* Binary file format -
- *     /----------------------------------------------------------------------\
- * 0B  |                       0x4 [command index]                            |
- * 4B  | image_type     | Options        |  Number of register settings       |
- * 8B  |                       Value                                          |
- * 12B |                       Mask                                           |
- * 16B |                       Offset                                         |
- *     \----------------------------------------------------------------------/
- * There can be several Value-Mask-Offset sets as specified by 'Number of...'.
- * Options - 0'b - Calculate & Update CRC for image
- */
+ 
 static int qed_nvm_flash_image_access(struct qed_dev *cdev, const u8 **data,
 				      bool *check_resp)
 {
@@ -2350,7 +2313,7 @@ static int qed_nvm_flash_image_access(struct qed_dev *cdev, const u8 **data,
 		goto exit;
 	}
 
-	/* Iterate over the values for setting */
+	 
 	while (len) {
 		u32 offset, mask, value, cur_value;
 		u8 buf[4];
@@ -2391,15 +2354,7 @@ exit:
 	return rc;
 }
 
-/* Binary file format -
- *     /----------------------------------------------------------------------\
- * 0B  |                       0x3 [command index]                            |
- * 4B  | b'0: check_response?   | b'1-31  reserved                            |
- * 8B  | File-type |                   reserved                               |
- * 12B |                    Image length in bytes                             |
- *     \----------------------------------------------------------------------/
- *     Start a new file of the provided type
- */
+ 
 static int qed_nvm_flash_image_file_start(struct qed_dev *cdev,
 					  const u8 **data, bool *check_resp)
 {
@@ -2425,17 +2380,7 @@ static int qed_nvm_flash_image_file_start(struct qed_dev *cdev,
 	return rc;
 }
 
-/* Binary file format -
- *     /----------------------------------------------------------------------\
- * 0B  |                       0x2 [command index]                            |
- * 4B  |                       Length in bytes                                |
- * 8B  | b'0: check_response?   | b'1-31  reserved                            |
- * 12B |                       Offset in bytes                                |
- * 16B |                       Data ...                                       |
- *     \----------------------------------------------------------------------/
- *     Write data as part of a file that was previously started. Data should be
- *     of length equal to that provided in the message
- */
+ 
 static int qed_nvm_flash_image_file_data(struct qed_dev *cdev,
 					 const u8 **data, bool *check_resp)
 {
@@ -2461,26 +2406,20 @@ static int qed_nvm_flash_image_file_data(struct qed_dev *cdev,
 	return rc;
 }
 
-/* Binary file format [General header] -
- *     /----------------------------------------------------------------------\
- * 0B  |                       QED_NVM_SIGNATURE                              |
- * 4B  |                       Length in bytes                                |
- * 8B  | Highest command in this batchfile |          Reserved                |
- *     \----------------------------------------------------------------------/
- */
+ 
 static int qed_nvm_flash_image_validate(struct qed_dev *cdev,
 					const struct firmware *image,
 					const u8 **data)
 {
 	u32 signature, len;
 
-	/* Check minimum size */
+	 
 	if (image->size < 12) {
 		DP_ERR(cdev, "Image is too short [%08x]\n", (u32)image->size);
 		return -EINVAL;
 	}
 
-	/* Check signature */
+	 
 	signature = *((u32 *)(*data));
 	if (signature != QED_NVM_SIGNATURE) {
 		DP_ERR(cdev, "Wrong signature '%08x'\n", signature);
@@ -2488,7 +2427,7 @@ static int qed_nvm_flash_image_validate(struct qed_dev *cdev,
 	}
 
 	*data += 4;
-	/* Validate internal size equals the image-size */
+	 
 	len = *((u32 *)(*data));
 	if (len != image->size) {
 		DP_ERR(cdev, "Size mismatch: internal = %08x image = %08x\n",
@@ -2497,7 +2436,7 @@ static int qed_nvm_flash_image_validate(struct qed_dev *cdev,
 	}
 
 	*data += 4;
-	/* Make sure driver familiar with all commands necessary for this */
+	 
 	if (*((u16 *)(*data)) >= QED_NVM_FLASH_CMD_NVM_MAX) {
 		DP_ERR(cdev, "File contains unsupported commands [Need %04x]\n",
 		       *((u16 *)(*data)));
@@ -2509,20 +2448,7 @@ static int qed_nvm_flash_image_validate(struct qed_dev *cdev,
 	return 0;
 }
 
-/* Binary file format -
- *     /----------------------------------------------------------------------\
- * 0B  |                       0x5 [command index]                            |
- * 4B  | Number of config attributes     |          Reserved                  |
- * 4B  | Config ID                       | Entity ID      | Length            |
- * 4B  | Value                                                                |
- *     |                                                                      |
- *     \----------------------------------------------------------------------/
- * There can be several cfg_id-entity_id-Length-Value sets as specified by
- * 'Number of config attributes'.
- *
- * The API parses config attributes from the user provided buffer and flashes
- * them to the respective NVM path using Management FW inerface.
- */
+ 
 static int qed_nvm_flash_cfg_write(struct qed_dev *cdev, const u8 **data)
 {
 	struct qed_hwfn *hwfn = QED_LEADING_HWFN(cdev);
@@ -2537,16 +2463,14 @@ static int qed_nvm_flash_cfg_write(struct qed_dev *cdev, const u8 **data)
 	if (!ptt)
 		return -EAGAIN;
 
-	/* NVM CFG ID attribute header */
+	 
 	*data += 4;
 	count = *((u16 *)*data);
 	*data += 4;
 
 	DP_VERBOSE(cdev, NETIF_MSG_DRV,
 		   "Read config ids: num_attrs = %0d\n", count);
-	/* NVM CFG ID attributes. Start loop index from 1 to avoid additional
-	 * arithmetic operations in the implementation.
-	 */
+	 
 	for (i = 1; i <= count; i++) {
 		cfg_id = *((u16 *)*data);
 		*data += 2;
@@ -2563,7 +2487,7 @@ static int qed_nvm_flash_cfg_write(struct qed_dev *cdev, const u8 **data)
 			need_nvm_init = false;
 		}
 
-		/* Commit to flash and free the resources */
+		 
 		if (!(i % QED_NVM_CFG_MAX_ATTRS) || i == count) {
 			flags |= QED_NVM_CFG_OPTION_COMMIT |
 				 QED_NVM_CFG_OPTION_FREE;
@@ -2664,7 +2588,7 @@ static int qed_nvm_flash(struct qed_dev *cdev, const char *name)
 	while (data < data_end) {
 		bool check_resp = false;
 
-		/* Parse the actual command */
+		 
 		cmd_type = *((u32 *)data);
 		switch (cmd_type) {
 		case QED_NVM_FLASH_CMD_FILE_DATA:
@@ -2693,7 +2617,7 @@ static int qed_nvm_flash(struct qed_dev *cdev, const char *name)
 			goto exit;
 		}
 
-		/* Check response if needed */
+		 
 		if (check_resp) {
 			u32 mcp_response = 0;
 
@@ -2764,10 +2688,7 @@ void qed_hw_error_occurred(struct qed_hwfn *p_hwfn,
 
 	DP_NOTICE(p_hwfn, "HW error occurred [%s]\n", err_str);
 
-	/* Call the HW error handler of the protocol driver.
-	 * If it is not available - perform a minimal handling of preventing
-	 * HW attentions from being reasserted.
-	 */
+	 
 	if (ops && ops->schedule_hw_err_handler)
 		ops->schedule_hw_err_handler(cookie, err_type);
 	else
@@ -3117,10 +3038,10 @@ int qed_mfw_tlv_req(struct qed_hwfn *hwfn)
 	DP_VERBOSE(hwfn->cdev, NETIF_MSG_DRV,
 		   "Scheduling slowpath task [Flag: %d]\n",
 		   QED_SLOWPATH_MFW_TLV_REQ);
-	/* Memory barrier for setting atomic bit */
+	 
 	smp_mb__before_atomic();
 	set_bit(QED_SLOWPATH_MFW_TLV_REQ, &hwfn->slowpath_task_flags);
-	/* Memory barrier after setting atomic bit */
+	 
 	smp_mb__after_atomic();
 	queue_delayed_work(hwfn->slowpath_wq, &hwfn->slowpath_task, 0);
 

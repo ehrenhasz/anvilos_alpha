@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2015 PLUMgrid, http://plumgrid.com
- */
+
+ 
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -31,14 +30,14 @@ static void print_old_objects(int fd)
 	__u64 key, next_key;
 	struct pair v;
 
-	key = write(1, "\e[1;1H\e[2J", 11); /* clear screen */
+	key = write(1, "\e[1;1H\e[2J", 11);  
 
 	key = -1;
 	while (bpf_map_get_next_key(fd, &key, &next_key) == 0) {
 		bpf_map_lookup_elem(fd, &next_key, &v);
 		key = next_key;
 		if (val - v.val < 1000000000ll)
-			/* object was allocated more then 1 sec ago */
+			 
 			continue;
 		printf("obj 0x%llx is %2lldsec old was allocated at ip %llx\n",
 		       next_key, (val - v.val) / 1000000000ll, v.ip);
@@ -60,7 +59,7 @@ int main(int ac, char **argv)
 		return 0;
 	}
 
-	/* load BPF program */
+	 
 	if (bpf_object__load(obj)) {
 		fprintf(stderr, "ERROR: loading BPF object file failed\n");
 		goto cleanup;

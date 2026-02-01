@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Atlantic Network Driver
- *
- * Copyright (C) 2018-2019 aQuantia Corporation
- * Copyright (C) 2019-2020 Marvell International Ltd.
- */
+
+ 
 
 #include "aq_phy.h"
 
@@ -27,10 +23,10 @@ u16 aq_mdio_read_word(struct aq_hw_s *aq_hw, u16 mmd, u16 addr)
 {
 	u16 phy_addr = aq_hw->phy_id << 5 | mmd;
 
-	/* Set Address register. */
+	 
 	hw_atl_glb_mdio_iface4_set(aq_hw, (addr & HW_ATL_MDIO_ADDRESS_MSK) <<
 				   HW_ATL_MDIO_ADDRESS_SHIFT);
-	/* Send Address command. */
+	 
 	hw_atl_glb_mdio_iface2_set(aq_hw, HW_ATL_MDIO_EXECUTE_OPERATION_MSK |
 				   (3 << HW_ATL_MDIO_OP_MODE_SHIFT) |
 				   ((phy_addr & HW_ATL_MDIO_PHY_ADDRESS_MSK) <<
@@ -38,12 +34,12 @@ u16 aq_mdio_read_word(struct aq_hw_s *aq_hw, u16 mmd, u16 addr)
 
 	aq_mdio_busy_wait(aq_hw);
 
-	/* Send Read command. */
+	 
 	hw_atl_glb_mdio_iface2_set(aq_hw, HW_ATL_MDIO_EXECUTE_OPERATION_MSK |
 				   (1 << HW_ATL_MDIO_OP_MODE_SHIFT) |
 				   ((phy_addr & HW_ATL_MDIO_PHY_ADDRESS_MSK) <<
 				    HW_ATL_MDIO_PHY_ADDRESS_SHIFT));
-	/* Read result. */
+	 
 	aq_mdio_busy_wait(aq_hw);
 
 	return (u16)hw_atl_glb_mdio_iface5_get(aq_hw);
@@ -53,10 +49,10 @@ void aq_mdio_write_word(struct aq_hw_s *aq_hw, u16 mmd, u16 addr, u16 data)
 {
 	u16 phy_addr = aq_hw->phy_id << 5 | mmd;
 
-	/* Set Address register. */
+	 
 	hw_atl_glb_mdio_iface4_set(aq_hw, (addr & HW_ATL_MDIO_ADDRESS_MSK) <<
 				   HW_ATL_MDIO_ADDRESS_SHIFT);
-	/* Send Address command. */
+	 
 	hw_atl_glb_mdio_iface2_set(aq_hw, HW_ATL_MDIO_EXECUTE_OPERATION_MSK |
 				   (3 << HW_ATL_MDIO_OP_MODE_SHIFT) |
 				   ((phy_addr & HW_ATL_MDIO_PHY_ADDRESS_MSK) <<
@@ -66,7 +62,7 @@ void aq_mdio_write_word(struct aq_hw_s *aq_hw, u16 mmd, u16 addr, u16 data)
 
 	hw_atl_glb_mdio_iface3_set(aq_hw, (data & HW_ATL_MDIO_WRITE_DATA_MSK) <<
 				   HW_ATL_MDIO_WRITE_DATA_SHIFT);
-	/* Send Write command. */
+	 
 	hw_atl_glb_mdio_iface2_set(aq_hw, HW_ATL_MDIO_EXECUTE_OPERATION_MSK |
 				   (2 << HW_ATL_MDIO_OP_MODE_SHIFT) |
 				   ((phy_addr & HW_ATL_MDIO_PHY_ADDRESS_MSK) <<
@@ -116,7 +112,7 @@ bool aq_phy_init_phy_id(struct aq_hw_s *aq_hw)
 
 	for (aq_hw->phy_id = 0; aq_hw->phy_id < HW_ATL_PHY_ID_MAX;
 	     ++aq_hw->phy_id) {
-		/* PMA Standard Device Identifier 2: Address 1.3 */
+		 
 		val = aq_phy_read_reg(aq_hw, MDIO_MMD_PMAPMD, 3);
 
 		if (val != 0xffff)
@@ -134,10 +130,7 @@ bool aq_phy_init(struct aq_hw_s *aq_hw)
 		if (!aq_phy_init_phy_id(aq_hw))
 			return false;
 
-	/* PMA Standard Device Identifier:
-	 * Address 1.2 = MSW,
-	 * Address 1.3 = LSW
-	 */
+	 
 	dev_id = aq_phy_read_reg(aq_hw, MDIO_MMD_PMAPMD, 2);
 	dev_id <<= 16;
 	dev_id |= aq_phy_read_reg(aq_hw, MDIO_MMD_PMAPMD, 3);

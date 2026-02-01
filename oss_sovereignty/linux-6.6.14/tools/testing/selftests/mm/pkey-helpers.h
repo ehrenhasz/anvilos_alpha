@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _PKEYS_HELPER_H
 #define _PKEYS_HELPER_H
 #define _GNU_SOURCE
@@ -15,7 +15,7 @@
 
 #include "../kselftest.h"
 
-/* Define some kernel-like types */
+ 
 #define  u8 __u8
 #define u16 __u16
 #define u32 __u32
@@ -46,12 +46,7 @@ static inline void sigsafe_printf(const char *format, ...)
 		va_end(ap);
 	} else {
 		int ret;
-		/*
-		 * No printf() functions are signal-safe.
-		 * They deadlock easily. Write the format
-		 * string to get some output, even if
-		 * incomplete.
-		 */
+		 
 		ret = write(1, format, strlen(format));
 		if (ret < 0)
 			exit(1);
@@ -87,22 +82,22 @@ int mprotect_pkey(void *ptr, size_t size, unsigned long orig_prot,
 		unsigned long pkey);
 void record_pkey_malloc(void *ptr, long size, int prot);
 
-#if defined(__i386__) || defined(__x86_64__) /* arch */
+#if defined(__i386__) || defined(__x86_64__)  
 #include "pkey-x86.h"
-#elif defined(__powerpc64__) /* arch */
+#elif defined(__powerpc64__)  
 #include "pkey-powerpc.h"
-#else /* arch */
+#else  
 #error Architecture not supported
-#endif /* arch */
+#endif  
 
 #define PKEY_MASK	(PKEY_DISABLE_ACCESS | PKEY_DISABLE_WRITE)
 
 static inline u64 set_pkey_bits(u64 reg, int pkey, u64 flags)
 {
 	u32 shift = pkey_bit_position(pkey);
-	/* mask out bits from pkey in old value */
+	 
 	reg &= ~((u64)PKEY_MASK << shift);
-	/* OR in new bits for pkey */
+	 
 	reg |= (flags & PKEY_MASK) << shift;
 	return reg;
 }
@@ -110,10 +105,7 @@ static inline u64 set_pkey_bits(u64 reg, int pkey, u64 flags)
 static inline u64 get_pkey_bits(u64 reg, int pkey)
 {
 	u32 shift = pkey_bit_position(pkey);
-	/*
-	 * shift down the relevant bits to the lowest two, then
-	 * mask off all the other higher bits
-	 */
+	 
 	return ((reg >> shift) & PKEY_MASK);
 }
 
@@ -137,7 +129,7 @@ static inline void write_pkey_reg(u64 pkey_reg)
 {
 	dprintf4("%s() changing %016llx to %016llx\n", __func__,
 			__read_pkey_reg(), pkey_reg);
-	/* will do the shadow check for us: */
+	 
 	read_pkey_reg();
 	__write_pkey_reg(pkey_reg);
 	shadow_pkey_reg = pkey_reg;
@@ -145,10 +137,7 @@ static inline void write_pkey_reg(u64 pkey_reg)
 			pkey_reg, __read_pkey_reg());
 }
 
-/*
- * These are technically racy. since something could
- * change PKEY register between the read and the write.
- */
+ 
 static inline void __pkey_access_allow(int pkey, int do_allow)
 {
 	u64 pkey_reg = read_pkey_reg();
@@ -197,7 +186,7 @@ static inline u32 *siginfo_get_pkey_ptr(siginfo_t *si)
 
 static inline int kernel_has_pkeys(void)
 {
-	/* try allocating a key and see if it succeeds */
+	 
 	int ret = sys_pkey_alloc(0, 0);
 	if (ret <= 0) {
 		return 0;
@@ -208,13 +197,13 @@ static inline int kernel_has_pkeys(void)
 
 static inline int is_pkeys_supported(void)
 {
-	/* check if the cpu supports pkeys */
+	 
 	if (!cpu_has_pkeys()) {
 		dprintf1("SKIP: %s: no CPU support\n", __func__);
 		return 0;
 	}
 
-	/* check if the kernel supports pkeys */
+	 
 	if (!kernel_has_pkeys()) {
 		dprintf1("SKIP: %s: no kernel support\n", __func__);
 		return 0;
@@ -223,4 +212,4 @@ static inline int is_pkeys_supported(void)
 	return 1;
 }
 
-#endif /* _PKEYS_HELPER_H */
+#endif  

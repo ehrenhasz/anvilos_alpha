@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2019 Netronome Systems, Inc. */
+
+ 
 
 #include <net/devlink.h>
 
@@ -7,17 +7,7 @@
 #include "nfpcore/nfp_nsp.h"
 #include "nfp_main.h"
 
-/**
- * struct nfp_devlink_param_u8_arg - Devlink u8 parameter get/set arguments
- * @hwinfo_name:	HWinfo key name
- * @default_hi_val:	Default HWinfo value if HWinfo doesn't exist
- * @invalid_dl_val:	Devlink value to use if HWinfo is unknown/invalid.
- *			-errno if there is no unknown/invalid value available
- * @hi_to_dl:	HWinfo to devlink value mapping
- * @dl_to_hi:	Devlink to hwinfo value mapping
- * @max_dl_val:	Maximum devlink value supported, for validation only
- * @max_hi_val:	Maximum HWinfo value supported, for validation only
- */
+ 
 struct nfp_devlink_param_u8_arg {
 	const char *hwinfo_name;
 	const char *default_hi_val;
@@ -152,7 +142,7 @@ nfp_devlink_param_u8_set(struct devlink *devlink, u32 id,
 		return err;
 	}
 
-	/* Note the value has already been validated. */
+	 
 	snprintf(hwinfo, sizeof(hwinfo), "%s=%u",
 		 arg->hwinfo_name, arg->dl_to_hi[ctx->val.vu8]);
 	err = nfp_nsp_hwinfo_set(nsp, hwinfo, sizeof(hwinfo));

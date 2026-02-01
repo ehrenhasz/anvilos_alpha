@@ -1,38 +1,4 @@
-/*
- * net/tipc/server.c: TIPC server infrastructure
- *
- * Copyright (c) 2012-2013, Wind River Systems
- * Copyright (c) 2017-2018, Ericsson AB
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the names of the copyright holders nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include "subscr.h"
 #include "topsrv.h"
@@ -45,28 +11,17 @@
 #include <linux/module.h>
 #include <trace/events/sock.h>
 
-/* Number of messages to send before rescheduling */
+ 
 #define MAX_SEND_MSG_COUNT	25
 #define MAX_RECV_MSG_COUNT	25
 #define CF_CONNECTED		1
 
 #define TIPC_SERVER_NAME_LEN	32
 
-/**
- * struct tipc_topsrv - TIPC server structure
- * @conn_idr: identifier set of connection
- * @idr_lock: protect the connection identifier set
- * @idr_in_use: amount of allocated identifier entry
- * @net: network namspace instance
- * @awork: accept work item
- * @rcv_wq: receive workqueue
- * @send_wq: send workqueue
- * @listener: topsrv listener socket
- * @name: server name
- */
+ 
 struct tipc_topsrv {
 	struct idr conn_idr;
-	spinlock_t idr_lock; /* for idr list */
+	spinlock_t idr_lock;  
 	int idr_in_use;
 	struct net *net;
 	struct work_struct awork;
@@ -76,20 +31,7 @@ struct tipc_topsrv {
 	char name[TIPC_SERVER_NAME_LEN];
 };
 
-/**
- * struct tipc_conn - TIPC connection structure
- * @kref: reference counter to connection object
- * @conid: connection identifier
- * @sock: socket handler associated with connection
- * @flags: indicates connection state
- * @server: pointer to connected server
- * @sub_list: lsit to all pertaing subscriptions
- * @sub_lock: lock protecting the subscription list
- * @rwork: receive work item
- * @outqueue: pointer to first outbound message in queue
- * @outqueue_lock: control access to the outqueue
- * @swork: send work item
- */
+ 
 struct tipc_conn {
 	struct kref kref;
 	int conid;
@@ -97,14 +39,14 @@ struct tipc_conn {
 	unsigned long flags;
 	struct tipc_topsrv *server;
 	struct list_head sub_list;
-	spinlock_t sub_lock; /* for subscription list */
+	spinlock_t sub_lock;  
 	struct work_struct rwork;
 	struct list_head outqueue;
-	spinlock_t outqueue_lock; /* for outqueue */
+	spinlock_t outqueue_lock;  
 	struct work_struct swork;
 };
 
-/* An entry waiting to be sent */
+ 
 struct outqueue_entry {
 	bool inactive;
 	struct tipc_event evt;
@@ -167,11 +109,11 @@ static void tipc_conn_close(struct tipc_conn *con)
 	}
 	write_unlock_bh(&sk->sk_callback_lock);
 
-	/* Handle concurrent calls from sending and receiving threads */
+	 
 	if (!disconnect)
 		return;
 
-	/* Don't flush pending works, -just let them expire */
+	 
 	kernel_sock_shutdown(con->sock, SHUT_RDWR);
 
 	conn_put(con);
@@ -225,9 +167,7 @@ static struct tipc_conn *tipc_conn_lookup(struct tipc_topsrv *s, int conid)
 	return con;
 }
 
-/* tipc_conn_delete_sub - delete a specific or all subscriptions
- * for a given subscriber
- */
+ 
 static void tipc_conn_delete_sub(struct tipc_conn *con, struct tipc_subscr *s)
 {
 	struct tipc_net *tn = tipc_net(con->server->net);
@@ -286,7 +226,7 @@ static void tipc_conn_send_to_sock(struct tipc_conn *con)
 			tipc_topsrv_kern_evt(srv->net, evt);
 		}
 
-		/* Don't starve users filling buffers */
+		 
 		if (++count >= MAX_SEND_MSG_COUNT) {
 			cond_resched();
 			count = 0;
@@ -308,9 +248,7 @@ static void tipc_conn_send_work(struct work_struct *work)
 	conn_put(con);
 }
 
-/* tipc_topsrv_queue_evt() - interrupt level call from a subscription instance
- * The queued work is launched into tipc_conn_send_work()->tipc_conn_send_to_sock()
- */
+ 
 void tipc_topsrv_queue_evt(struct net *net, int conid,
 			   u32 event, struct tipc_event *evt)
 {
@@ -340,10 +278,7 @@ err:
 	conn_put(con);
 }
 
-/* tipc_conn_write_space - interrupt callback after a sendmsg EAGAIN
- * Indicates that there now is more space in the send buffer
- * The queued work is launched into tipc_send_work()->tipc_conn_send_to_sock()
- */
+ 
 static void tipc_conn_write_space(struct sock *sk)
 {
 	struct tipc_conn *con;
@@ -403,7 +338,7 @@ static int tipc_conn_rcv_from_sock(struct tipc_conn *con)
 		return -EWOULDBLOCK;
 	if (ret == sizeof(s)) {
 		read_lock_bh(&sk->sk_callback_lock);
-		/* RACE: the connection can be closed in the meantime */
+		 
 		if (likely(connected(con)))
 			ret = tipc_conn_rcv_sub(srv, con, &s);
 		read_unlock_bh(&sk->sk_callback_lock);
@@ -424,7 +359,7 @@ static void tipc_conn_recv_work(struct work_struct *work)
 		if (tipc_conn_rcv_from_sock(con))
 			break;
 
-		/* Don't flood Rx machine */
+		 
 		if (++count >= MAX_RECV_MSG_COUNT) {
 			cond_resched();
 			count = 0;
@@ -433,9 +368,7 @@ static void tipc_conn_recv_work(struct work_struct *work)
 	conn_put(con);
 }
 
-/* tipc_conn_data_ready - interrupt callback indicating the socket has data
- * The queued work is launched into tipc_recv_work()->tipc_conn_rcv_from_sock()
- */
+ 
 static void tipc_conn_data_ready(struct sock *sk)
 {
 	struct tipc_conn *con;
@@ -478,7 +411,7 @@ static void tipc_topsrv_accept(struct work_struct *work)
 			sock_release(newsock);
 			return;
 		}
-		/* Register callbacks */
+		 
 		newsk = newsock->sk;
 		write_lock_bh(&newsk->sk_callback_lock);
 		newsk->sk_data_ready = tipc_conn_data_ready;
@@ -486,15 +419,13 @@ static void tipc_topsrv_accept(struct work_struct *work)
 		newsk->sk_user_data = con;
 		write_unlock_bh(&newsk->sk_callback_lock);
 
-		/* Wake up receive process in case of 'SYN+' message */
+		 
 		newsk->sk_data_ready(newsk);
 		conn_put(con);
 	}
 }
 
-/* tipc_topsrv_listener_data_ready - interrupt callback with connection request
- * The queued job is launched into tipc_topsrv_accept()
- */
+ 
 static void tipc_topsrv_listener_data_ready(struct sock *sk)
 {
 	struct tipc_topsrv *srv;
@@ -546,21 +477,7 @@ static int tipc_topsrv_create_listener(struct tipc_topsrv *srv)
 	if (rc < 0)
 		goto err;
 
-	/* As server's listening socket owner and creator is the same module,
-	 * we have to decrease TIPC module reference count to guarantee that
-	 * it remains zero after the server socket is created, otherwise,
-	 * executing "rmmod" command is unable to make TIPC module deleted
-	 * after TIPC module is inserted successfully.
-	 *
-	 * However, the reference count is ever increased twice in
-	 * sock_create_kern(): one is to increase the reference count of owner
-	 * of TIPC socket's proto_ops struct; another is to increment the
-	 * reference count of owner of TIPC proto struct. Therefore, we must
-	 * decrement the module reference count twice to ensure that it keeps
-	 * zero after server's listening socket is created. Of course, we
-	 * must bump the module reference count twice as well before the socket
-	 * is closed.
-	 */
+	 
 	module_put(lsock->ops->owner);
 	module_put(sk->sk_prot_creator->owner);
 

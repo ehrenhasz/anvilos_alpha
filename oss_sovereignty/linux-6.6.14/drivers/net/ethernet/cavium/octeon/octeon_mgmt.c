@@ -1,10 +1,4 @@
-/*
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 2009-2012 Cavium, Inc
- */
+ 
 
 #include <linux/platform_device.h>
 #include <linux/dma-mapping.h>
@@ -33,13 +27,11 @@
 
 #define OCTEON_MGMT_NAPI_WEIGHT 16
 
-/* Ring sizes that are powers of two allow for more efficient modulo
- * opertions.
- */
+ 
 #define OCTEON_MGMT_RX_RING_SIZE 512
 #define OCTEON_MGMT_TX_RING_SIZE 128
 
-/* Allow 8 bytes for vlan and FCS. */
+ 
 #define OCTEON_MGMT_RX_HEADROOM (ETH_HLEN + ETH_FCS_LEN + VLAN_HLEN)
 
 union mgmt_port_ring_entry {
@@ -49,13 +41,13 @@ union mgmt_port_ring_entry {
 #define RING_ENTRY_CODE_MORE 0x10
 #ifdef __BIG_ENDIAN_BITFIELD
 		u64 reserved_62_63:2;
-		/* Length of the buffer/packet in bytes */
+		 
 		u64 len:14;
-		/* For TX, signals that the packet should be timestamped */
+		 
 		u64 tstamp:1;
-		/* The RX error code */
+		 
 		u64 code:7;
-		/* Physical address of the buffer */
+		 
 		u64 addr:40;
 #else
 		u64 addr:40;
@@ -127,10 +119,10 @@ struct octeon_mgmt {
 	unsigned int tx_next;
 	unsigned int tx_next_clean;
 	unsigned int tx_current_fill;
-	/* The tx_list lock also protects the ring related variables */
+	 
 	struct sk_buff_head tx_list;
 
-	/* RX variables only touched in napi_poll.  No locking necessary. */
+	 
 	u64 *rx_ring;
 	dma_addr_t rx_ring_handle;
 	unsigned int rx_next;
@@ -217,7 +209,7 @@ static void octeon_mgmt_rx_fill_ring(struct net_device *netdev)
 		union mgmt_port_ring_entry re;
 		struct sk_buff *skb;
 
-		/* CN56XX pass 1 needs 8 bytes of padding.  */
+		 
 		size = netdev->mtu + OCTEON_MGMT_RX_HEADROOM + 8 + NET_IP_ALIGN;
 
 		skb = netdev_alloc_skb(netdev, size);
@@ -232,11 +224,9 @@ static void octeon_mgmt_rx_fill_ring(struct net_device *netdev)
 					   size,
 					   DMA_FROM_DEVICE);
 
-		/* Put it in the ring.  */
+		 
 		p->rx_ring[p->rx_next_fill] = re.d64;
-		/* Make sure there is no reorder of filling the ring and ringing
-		 * the bell
-		 */
+		 
 		wmb();
 
 		dma_sync_single_for_device(p->dev, p->rx_ring_handle,
@@ -245,7 +235,7 @@ static void octeon_mgmt_rx_fill_ring(struct net_device *netdev)
 		p->rx_next_fill =
 			(p->rx_next_fill + 1) % OCTEON_MGMT_RX_RING_SIZE;
 		p->rx_current_fill++;
-		/* Ring the bell.  */
+		 
 		cvmx_write_csr(p->mix + MIX_IRING2, 1);
 	}
 }
@@ -281,7 +271,7 @@ static void octeon_mgmt_clean_tx_buffers(struct octeon_mgmt *p)
 		mix_orcnt.u64 = 0;
 		mix_orcnt.s.orcnt = 1;
 
-		/* Acknowledge to hardware that we have the buffer.  */
+		 
 		cvmx_write_csr(p->mix + MIX_ORCNT, mix_orcnt.u64);
 		p->tx_current_fill--;
 
@@ -290,17 +280,17 @@ static void octeon_mgmt_clean_tx_buffers(struct octeon_mgmt *p)
 		dma_unmap_single(p->dev, re.s.addr, re.s.len,
 				 DMA_TO_DEVICE);
 
-		/* Read the hardware TX timestamp if one was recorded */
+		 
 		if (unlikely(re.s.tstamp)) {
 			struct skb_shared_hwtstamps ts;
 			u64 ns;
 
 			memset(&ts, 0, sizeof(ts));
-			/* Read the timestamp */
+			 
 			ns = cvmx_read_csr(CVMX_MIXX_TSTAMP(p->port));
-			/* Remove the timestamp from the FIFO */
+			 
 			cvmx_write_csr(CVMX_MIXX_TSCTL(p->port), 0);
-			/* Tell the kernel about the timestamp */
+			 
 			ts.hwtstamp = ns_to_ktime(ns);
 			skb_tstamp_tx(skb, &ts);
 		}
@@ -328,12 +318,12 @@ static void octeon_mgmt_update_rx_stats(struct net_device *netdev)
 	unsigned long flags;
 	u64 drop, bad;
 
-	/* These reads also clear the count registers.  */
+	 
 	drop = cvmx_read_csr(p->agl + AGL_GMX_RX_STATS_PKTS_DRP);
 	bad = cvmx_read_csr(p->agl + AGL_GMX_RX_STATS_PKTS_BAD);
 
 	if (drop || bad) {
-		/* Do an atomic update. */
+		 
 		spin_lock_irqsave(&p->lock, flags);
 		netdev->stats.rx_errors += bad;
 		netdev->stats.rx_dropped += drop;
@@ -349,12 +339,12 @@ static void octeon_mgmt_update_tx_stats(struct net_device *netdev)
 	union cvmx_agl_gmx_txx_stat0 s0;
 	union cvmx_agl_gmx_txx_stat1 s1;
 
-	/* These reads also clear the count registers.  */
+	 
 	s0.u64 = cvmx_read_csr(p->agl + AGL_GMX_TX_STAT0);
 	s1.u64 = cvmx_read_csr(p->agl + AGL_GMX_TX_STAT1);
 
 	if (s0.s.xsdef || s0.s.xscol || s1.s.scol || s1.s.mcol) {
-		/* Do an atomic update. */
+		 
 		spin_lock_irqsave(&p->lock, flags);
 		netdev->stats.tx_errors += s0.s.xsdef + s0.s.xscol;
 		netdev->stats.collisions += s1.s.scol + s1.s.mcol;
@@ -362,10 +352,7 @@ static void octeon_mgmt_update_tx_stats(struct net_device *netdev)
 	}
 }
 
-/*
- * Dequeue a receive skb and its corresponding ring entry.  The ring
- * entry is returned, *pskb is updated to point to the skb.
- */
+ 
 static u64 octeon_mgmt_dequeue_rx_buffer(struct octeon_mgmt *p,
 					 struct sk_buff **pskb)
 {
@@ -402,12 +389,12 @@ static int octeon_mgmt_receive_one(struct octeon_mgmt *p)
 
 	re.d64 = octeon_mgmt_dequeue_rx_buffer(p, &skb);
 	if (likely(re.s.code == RING_ENTRY_CODE_DONE)) {
-		/* A good packet, send it up. */
+		 
 		skb_put(skb, re.s.len);
 good:
-		/* Process the RX timestamp if it was recorded */
+		 
 		if (p->has_rx_tstamp) {
-			/* The first 8 bytes are the timestamp */
+			 
 			u64 ns = *(u64 *)skb->data;
 			struct skb_shared_hwtstamps *ts;
 			ts = skb_hwtstamps(skb);
@@ -420,13 +407,7 @@ good:
 		netif_receive_skb(skb);
 		rc = 0;
 	} else if (re.s.code == RING_ENTRY_CODE_MORE) {
-		/* Packet split across skbs.  This can happen if we
-		 * increase the MTU.  Buffers that are already in the
-		 * rx ring can then end up being too small.  As the rx
-		 * ring is refilled, buffers sized for the new MTU
-		 * will be used and we should go back to the normal
-		 * non-split case.
-		 */
+		 
 		skb_put(skb, re.s.len);
 		do {
 			re2.d64 = octeon_mgmt_dequeue_rx_buffer(p, &skb2);
@@ -448,15 +429,13 @@ good:
 		} while (re2.s.code == RING_ENTRY_CODE_MORE);
 		goto good;
 	} else {
-		/* Some other error, discard it. */
+		 
 		dev_kfree_skb_any(skb);
-		/* Error statistics are accumulated in
-		 * octeon_mgmt_update_rx_stats.
-		 */
+		 
 	}
 	goto done;
 split_error:
-	/* Discard the whole mess. */
+	 
 	dev_kfree_skb_any(skb);
 	dev_kfree_skb_any(skb2);
 	while (re2.s.code == RING_ENTRY_CODE_MORE) {
@@ -466,7 +445,7 @@ split_error:
 	netdev->stats.rx_errors++;
 
 done:
-	/* Tell the hardware we processed a packet.  */
+	 
 	mix_ircnt.u64 = 0;
 	mix_ircnt.s.ircnt = 1;
 	cvmx_write_csr(p->mix + MIX_IRCNT, mix_ircnt.u64);
@@ -486,7 +465,7 @@ static int octeon_mgmt_receive_packets(struct octeon_mgmt *p, int budget)
 		if (!rc)
 			work_done++;
 
-		/* Check for more packets. */
+		 
 		mix_ircnt.u64 = cvmx_read_csr(p->mix + MIX_IRCNT);
 	}
 
@@ -504,7 +483,7 @@ static int octeon_mgmt_napi_poll(struct napi_struct *napi, int budget)
 	work_done = octeon_mgmt_receive_packets(p, budget);
 
 	if (work_done < budget) {
-		/* We stopped because no more packets were available. */
+		 
 		napi_complete_done(napi, work_done);
 		octeon_mgmt_enable_rx_irq(p);
 	}
@@ -513,7 +492,7 @@ static int octeon_mgmt_napi_poll(struct napi_struct *napi, int budget)
 	return work_done;
 }
 
-/* Reset the hardware to clean state.  */
+ 
 static void octeon_mgmt_reset_hw(struct octeon_mgmt *p)
 {
 	union cvmx_mixx_ctl mix_ctl;
@@ -565,8 +544,8 @@ static void octeon_mgmt_set_rx_filtering(struct net_device *netdev)
 	union cvmx_agl_gmx_prtx_cfg agl_gmx_prtx;
 	unsigned long flags;
 	unsigned int prev_packet_enable;
-	unsigned int cam_mode = 1; /* 1 - Accept on CAM match */
-	unsigned int multicast_mode = 1; /* 1 - Reject all multicast.  */
+	unsigned int cam_mode = 1;  
+	unsigned int multicast_mode = 1;  
 	struct octeon_mgmt_cam_state cam_state;
 	struct netdev_hw_addr *ha;
 	int available_cam_entries;
@@ -577,22 +556,20 @@ static void octeon_mgmt_set_rx_filtering(struct net_device *netdev)
 		cam_mode = 0;
 		available_cam_entries = 8;
 	} else {
-		/* One CAM entry for the primary address, leaves seven
-		 * for the secondary addresses.
-		 */
+		 
 		available_cam_entries = 7 - netdev->uc.count;
 	}
 
 	if (netdev->flags & IFF_MULTICAST) {
 		if (cam_mode == 0 || (netdev->flags & IFF_ALLMULTI) ||
 		    netdev_mc_count(netdev) > available_cam_entries)
-			multicast_mode = 2; /* 2 - Accept all multicast.  */
+			multicast_mode = 2;  
 		else
-			multicast_mode = 0; /* 0 - Use CAM.  */
+			multicast_mode = 0;  
 	}
 
 	if (cam_mode == 1) {
-		/* Add primary address. */
+		 
 		octeon_mgmt_cam_state_add(&cam_state, netdev->dev_addr);
 		netdev_for_each_uc_addr(ha, netdev)
 			octeon_mgmt_cam_state_add(&cam_state, ha->addr);
@@ -604,7 +581,7 @@ static void octeon_mgmt_set_rx_filtering(struct net_device *netdev)
 
 	spin_lock_irqsave(&p->lock, flags);
 
-	/* Disable packet I/O. */
+	 
 	agl_gmx_prtx.u64 = cvmx_read_csr(p->agl + AGL_GMX_PRT_CFG);
 	prev_packet_enable = agl_gmx_prtx.s.en;
 	agl_gmx_prtx.s.en = 0;
@@ -613,7 +590,7 @@ static void octeon_mgmt_set_rx_filtering(struct net_device *netdev)
 	adr_ctl.u64 = 0;
 	adr_ctl.s.cam_mode = cam_mode;
 	adr_ctl.s.mcst = multicast_mode;
-	adr_ctl.s.bcst = 1;     /* Allow broadcast */
+	adr_ctl.s.bcst = 1;      
 
 	cvmx_write_csr(p->agl + AGL_GMX_RX_ADR_CTL, adr_ctl.u64);
 
@@ -625,7 +602,7 @@ static void octeon_mgmt_set_rx_filtering(struct net_device *netdev)
 	cvmx_write_csr(p->agl + AGL_GMX_RX_ADR_CAM5, cam_state.cam[5]);
 	cvmx_write_csr(p->agl + AGL_GMX_RX_ADR_CAM_EN, cam_state.cam_mask);
 
-	/* Restore packet I/O. */
+	 
 	agl_gmx_prtx.s.en = prev_packet_enable;
 	cvmx_write_csr(p->agl + AGL_GMX_PRT_CFG, agl_gmx_prtx.u64);
 
@@ -651,15 +628,9 @@ static int octeon_mgmt_change_mtu(struct net_device *netdev, int new_mtu)
 
 	netdev->mtu = new_mtu;
 
-	/* HW lifts the limit if the frame is VLAN tagged
-	 * (+4 bytes per each tag, up to two tags)
-	 */
+	 
 	cvmx_write_csr(p->agl + AGL_GMX_RX_FRM_MAX, max_packet);
-	/* Set the hardware to truncate packets larger than the MTU. The jabber
-	 * register must be set to a multiple of 8 bytes, so round up. JABBER is
-	 * an unconditional limit, so we need to account for two possible VLAN
-	 * tags.
-	 */
+	 
 	cvmx_write_csr(p->agl + AGL_GMX_RX_JABBER,
 		       (max_packet + 7 + VLAN_HLEN * 2) & 0xfff8);
 
@@ -674,7 +645,7 @@ static irqreturn_t octeon_mgmt_interrupt(int cpl, void *dev_id)
 
 	mixx_isr.u64 = cvmx_read_csr(p->mix + MIX_ISR);
 
-	/* Clear any pending interrupts */
+	 
 	cvmx_write_csr(p->mix + MIX_ISR, mixx_isr.u64);
 	cvmx_read_csr(p->mix + MIX_ISR);
 
@@ -702,15 +673,12 @@ static int octeon_mgmt_ioctl_hwtstamp(struct net_device *netdev,
 	if (copy_from_user(&config, rq->ifr_data, sizeof(config)))
 		return -EFAULT;
 
-	/* Check the status of hardware for tiemstamps */
+	 
 	if (OCTEON_IS_MODEL(OCTEON_CN6XXX)) {
-		/* Get the current state of the PTP clock */
+		 
 		ptp.u64 = cvmx_read_csr(CVMX_MIO_PTP_CLOCK_CFG);
 		if (!ptp.s.ext_clk_en) {
-			/* The clock has not been configured to use an
-			 * external source.  Program it to use the main clock
-			 * reference.
-			 */
+			 
 			u64 clock_comp = (NSEC_PER_SEC << 32) /	octeon_get_io_clock_rate();
 			if (!ptp.s.ptp_en)
 				cvmx_write_csr(CVMX_MIO_PTP_CLOCK_COMP, clock_comp);
@@ -718,14 +686,14 @@ static int octeon_mgmt_ioctl_hwtstamp(struct net_device *netdev,
 				    "PTP Clock using sclk reference @ %lldHz\n",
 				    (NSEC_PER_SEC << 32) / clock_comp);
 		} else {
-			/* The clock is already programmed to use a GPIO */
+			 
 			u64 clock_comp = cvmx_read_csr(CVMX_MIO_PTP_CLOCK_COMP);
 			netdev_info(netdev,
 				    "PTP Clock using GPIO%d @ %lld Hz\n",
 				    ptp.s.ext_clk_in, (NSEC_PER_SEC << 32) / clock_comp);
 		}
 
-		/* Enable the clock if it wasn't done already */
+		 
 		if (!ptp.s.ptp_en) {
 			ptp.s.ptp_en = 1;
 			cvmx_write_csr(CVMX_MIO_PTP_CLOCK_CFG, ptp.u64);
@@ -799,7 +767,7 @@ static void octeon_mgmt_disable_link(struct octeon_mgmt *p)
 {
 	union cvmx_agl_gmx_prtx_cfg prtx_cfg;
 
-	/* Disable GMX before we make any changes. */
+	 
 	prtx_cfg.u64 = cvmx_read_csr(p->agl + AGL_GMX_PRT_CFG);
 	prtx_cfg.s.en = 0;
 	prtx_cfg.s.tx_en = 0;
@@ -822,7 +790,7 @@ static void octeon_mgmt_enable_link(struct octeon_mgmt *p)
 {
 	union cvmx_agl_gmx_prtx_cfg prtx_cfg;
 
-	/* Restore the GMX enable state only if link is set */
+	 
 	prtx_cfg.u64 = cvmx_read_csr(p->agl + AGL_GMX_PRT_CFG);
 	prtx_cfg.s.tx_en = 1;
 	prtx_cfg.s.rx_en = 1;
@@ -863,24 +831,24 @@ static void octeon_mgmt_update_link(struct octeon_mgmt *p)
 		}
 		break;
 	case 1000:
-		/* 1000 MBits is only supported on 6XXX chips */
+		 
 		if (OCTEON_IS_MODEL(OCTEON_CN6XXX)) {
 			prtx_cfg.s.speed = 1;
 			prtx_cfg.s.speed_msb = 0;
-			/* Only matters for half-duplex */
+			 
 			prtx_cfg.s.slottime = 1;
 			prtx_cfg.s.burst = phydev->duplex;
 		}
 		break;
-	case 0:  /* No link */
+	case 0:   
 	default:
 		break;
 	}
 
-	/* Write the new GMX setting with the port still disabled. */
+	 
 	cvmx_write_csr(p->agl + AGL_GMX_PRT_CFG, prtx_cfg.u64);
 
-	/* Read GMX CFG again to make sure the config is completed. */
+	 
 	prtx_cfg.u64 = cvmx_read_csr(p->agl + AGL_GMX_PRT_CFG);
 
 	if (OCTEON_IS_MODEL(OCTEON_CN6XXX)) {
@@ -889,9 +857,9 @@ static void octeon_mgmt_update_link(struct octeon_mgmt *p)
 
 		prtx_ctl.u64 = cvmx_read_csr(p->agl_prt_ctl);
 		agl_clk.u64 = cvmx_read_csr(p->agl + AGL_GMX_TX_CLK);
-		/* MII (both speeds) and RGMII 1000 speed. */
+		 
 		agl_clk.s.clk_cnt = 1;
-		if (prtx_ctl.s.mode == 0) { /* RGMII mode */
+		if (prtx_ctl.s.mode == 0) {  
 			if (phydev->speed == 10)
 				agl_clk.s.clk_cnt = 50;
 			else if (phydev->speed == 100)
@@ -948,7 +916,7 @@ static int octeon_mgmt_init_phy(struct net_device *netdev)
 	struct phy_device *phydev = NULL;
 
 	if (octeon_is_simulation() || p->phy_np == NULL) {
-		/* No PHYs in the simulator. */
+		 
 		netif_carrier_on(netdev);
 		return 0;
 	}
@@ -976,7 +944,7 @@ static int octeon_mgmt_open(struct net_device *netdev)
 	union cvmx_mixx_intena mix_intena;
 	struct sockaddr sa;
 
-	/* Allocate ring buffers.  */
+	 
 	p->tx_ring = kzalloc(ring_size_to_bytes(OCTEON_MGMT_TX_RING_SIZE),
 			     GFP_KERNEL);
 	if (!p->tx_ring)
@@ -1007,7 +975,7 @@ static int octeon_mgmt_open(struct net_device *netdev)
 
 	mix_ctl.u64 = cvmx_read_csr(p->mix + MIX_CTL);
 
-	/* Bring it out of reset if needed. */
+	 
 	if (mix_ctl.s.reset) {
 		mix_ctl.s.reset = 0;
 		cvmx_write_csr(p->mix + MIX_CTL, mix_ctl.u64);
@@ -1023,9 +991,7 @@ static int octeon_mgmt_open(struct net_device *netdev)
 	}
 	if (OCTEON_IS_MODEL(OCTEON_CN56XX_PASS1_X)
 		|| OCTEON_IS_MODEL(OCTEON_CN52XX_PASS1_X)) {
-		/* Force compensation values, as they are not
-		 * determined properly by HW
-		 */
+		 
 		union cvmx_agl_gmx_drv_ctl drv_ctl;
 
 		drv_ctl.u64 = cvmx_read_csr(CVMX_AGL_GMX_DRV_CTL);
@@ -1056,27 +1022,25 @@ static int octeon_mgmt_open(struct net_device *netdev)
 
 	octeon_mgmt_change_mtu(netdev, netdev->mtu);
 
-	/* Enable the port HW. Packets are not allowed until
-	 * cvmx_mgmt_port_enable() is called.
-	 */
+	 
 	mix_ctl.u64 = 0;
-	mix_ctl.s.crc_strip = 1;    /* Strip the ending CRC */
-	mix_ctl.s.en = 1;           /* Enable the port */
-	mix_ctl.s.nbtarb = 0;       /* Arbitration mode */
-	/* MII CB-request FIFO programmable high watermark */
+	mix_ctl.s.crc_strip = 1;     
+	mix_ctl.s.en = 1;            
+	mix_ctl.s.nbtarb = 0;        
+	 
 	mix_ctl.s.mrq_hwm = 1;
 #ifdef __LITTLE_ENDIAN
 	mix_ctl.s.lendian = 1;
 #endif
 	cvmx_write_csr(p->mix + MIX_CTL, mix_ctl.u64);
 
-	/* Read the PHY to find the mode of the interface. */
+	 
 	if (octeon_mgmt_init_phy(netdev)) {
 		dev_err(p->dev, "Cannot initialize PHY on MIX%d.\n", p->port);
 		goto err_noirq;
 	}
 
-	/* Set the mode of the interface, RGMII/MII. */
+	 
 	if (OCTEON_IS_MODEL(OCTEON_CN6XXX) && netdev->phydev) {
 		union cvmx_agl_prtx_ctl agl_prtx_ctl;
 		int rgmii_mode =
@@ -1089,13 +1053,10 @@ static int octeon_mgmt_open(struct net_device *netdev)
 		agl_prtx_ctl.s.mode = rgmii_mode ? 0 : 1;
 		cvmx_write_csr(p->agl_prt_ctl,	agl_prtx_ctl.u64);
 
-		/* MII clocks counts are based on the 125Mhz
-		 * reference, which has an 8nS period. So our delays
-		 * need to be multiplied by this factor.
-		 */
+		 
 #define NS_PER_PHY_CLK 8
 
-		/* Take the DLL and clock tree out of reset */
+		 
 		agl_prtx_ctl.u64 = cvmx_read_csr(p->agl_prt_ctl);
 		agl_prtx_ctl.s.clkrst = 0;
 		if (rgmii_mode) {
@@ -1103,44 +1064,37 @@ static int octeon_mgmt_open(struct net_device *netdev)
 			agl_prtx_ctl.s.clktx_byp = 0;
 		}
 		cvmx_write_csr(p->agl_prt_ctl,	agl_prtx_ctl.u64);
-		cvmx_read_csr(p->agl_prt_ctl); /* Force write out before wait */
+		cvmx_read_csr(p->agl_prt_ctl);  
 
-		/* Wait for the DLL to lock. External 125 MHz
-		 * reference clock must be stable at this point.
-		 */
+		 
 		ndelay(256 * NS_PER_PHY_CLK);
 
-		/* Enable the interface */
+		 
 		agl_prtx_ctl.u64 = cvmx_read_csr(p->agl_prt_ctl);
 		agl_prtx_ctl.s.enable = 1;
 		cvmx_write_csr(p->agl_prt_ctl, agl_prtx_ctl.u64);
 
-		/* Read the value back to force the previous write */
+		 
 		agl_prtx_ctl.u64 = cvmx_read_csr(p->agl_prt_ctl);
 
-		/* Enable the compensation controller */
+		 
 		agl_prtx_ctl.s.comp = 1;
 		agl_prtx_ctl.s.drv_byp = 0;
 		cvmx_write_csr(p->agl_prt_ctl,	agl_prtx_ctl.u64);
-		/* Force write out before wait. */
+		 
 		cvmx_read_csr(p->agl_prt_ctl);
 
-		/* For compensation state to lock. */
+		 
 		ndelay(1040 * NS_PER_PHY_CLK);
 
-		/* Default Interframe Gaps are too small.  Recommended
-		 * workaround is.
-		 *
-		 * AGL_GMX_TX_IFG[IFG1]=14
-		 * AGL_GMX_TX_IFG[IFG2]=10
-		 */
+		 
 		cvmx_write_csr(CVMX_AGL_GMX_TX_IFG, 0xae);
 	}
 
 	octeon_mgmt_rx_fill_ring(netdev);
 
-	/* Clear statistics. */
-	/* Clear on read. */
+	 
+	 
 	cvmx_write_csr(p->agl + AGL_GMX_RX_STATS_CTL, 1);
 	cvmx_write_csr(p->agl + AGL_GMX_RX_STATS_PKTS_DRP, 0);
 	cvmx_write_csr(p->agl + AGL_GMX_RX_STATS_PKTS_BAD, 0);
@@ -1149,7 +1103,7 @@ static int octeon_mgmt_open(struct net_device *netdev)
 	cvmx_write_csr(p->agl + AGL_GMX_TX_STAT0, 0);
 	cvmx_write_csr(p->agl + AGL_GMX_TX_STAT1, 0);
 
-	/* Clear any pending interrupts */
+	 
 	cvmx_write_csr(p->mix + MIX_ISR, cvmx_read_csr(p->mix + MIX_ISR));
 
 	if (request_irq(p->irq, octeon_mgmt_interrupt, 0, netdev->name,
@@ -1158,52 +1112,48 @@ static int octeon_mgmt_open(struct net_device *netdev)
 		goto err_noirq;
 	}
 
-	/* Interrupt every single RX packet */
+	 
 	mix_irhwm.u64 = 0;
 	mix_irhwm.s.irhwm = 0;
 	cvmx_write_csr(p->mix + MIX_IRHWM, mix_irhwm.u64);
 
-	/* Interrupt when we have 1 or more packets to clean.  */
+	 
 	mix_orhwm.u64 = 0;
 	mix_orhwm.s.orhwm = 0;
 	cvmx_write_csr(p->mix + MIX_ORHWM, mix_orhwm.u64);
 
-	/* Enable receive and transmit interrupts */
+	 
 	mix_intena.u64 = 0;
 	mix_intena.s.ithena = 1;
 	mix_intena.s.othena = 1;
 	cvmx_write_csr(p->mix + MIX_INTENA, mix_intena.u64);
 
-	/* Enable packet I/O. */
+	 
 
 	rxx_frm_ctl.u64 = 0;
 	rxx_frm_ctl.s.ptp_mode = p->has_rx_tstamp ? 1 : 0;
 	rxx_frm_ctl.s.pre_align = 1;
-	/* When set, disables the length check for non-min sized pkts
-	 * with padding in the client data.
-	 */
+	 
 	rxx_frm_ctl.s.pad_len = 1;
-	/* When set, disables the length check for VLAN pkts */
+	 
 	rxx_frm_ctl.s.vlan_len = 1;
-	/* When set, PREAMBLE checking is  less strict */
+	 
 	rxx_frm_ctl.s.pre_free = 1;
-	/* Control Pause Frames can match station SMAC */
+	 
 	rxx_frm_ctl.s.ctl_smac = 0;
-	/* Control Pause Frames can match globally assign Multicast address */
+	 
 	rxx_frm_ctl.s.ctl_mcst = 1;
-	/* Forward pause information to TX block */
+	 
 	rxx_frm_ctl.s.ctl_bck = 1;
-	/* Drop Control Pause Frames */
+	 
 	rxx_frm_ctl.s.ctl_drp = 1;
-	/* Strip off the preamble */
+	 
 	rxx_frm_ctl.s.pre_strp = 1;
-	/* This port is configured to send PREAMBLE+SFD to begin every
-	 * frame.  GMX checks that the PREAMBLE is sent correctly.
-	 */
+	 
 	rxx_frm_ctl.s.pre_chk = 1;
 	cvmx_write_csr(p->agl + AGL_GMX_RX_FRM_CTL, rxx_frm_ctl.u64);
 
-	/* Configure the port duplex, speed and enables */
+	 
 	octeon_mgmt_disable_link(p);
 	if (netdev->phydev)
 		octeon_mgmt_update_link(p);
@@ -1211,9 +1161,7 @@ static int octeon_mgmt_open(struct net_device *netdev)
 
 	p->last_link = 0;
 	p->last_speed = 0;
-	/* PHY is not present in simulator. The carrier is enabled
-	 * while initializing the phy for simulator, leave it enabled.
-	 */
+	 
 	if (netdev->phydev) {
 		netif_carrier_off(netdev);
 		phy_start(netdev->phydev);
@@ -1255,7 +1203,7 @@ static int octeon_mgmt_stop(struct net_device *netdev)
 
 	free_irq(p->irq, netdev);
 
-	/* dma_unmap is a nop on Octeon, so just free everything.  */
+	 
 	skb_queue_purge(&p->tx_list);
 	skb_queue_purge(&p->rx_list);
 
@@ -1305,7 +1253,7 @@ octeon_mgmt_xmit(struct sk_buff *skb, struct net_device *netdev)
 
 	__skb_queue_tail(&p->tx_list, skb);
 
-	/* Put it in the ring.  */
+	 
 	p->tx_ring[p->tx_next] = re.d64;
 	p->tx_next = (p->tx_next + 1) % OCTEON_MGMT_TX_RING_SIZE;
 	p->tx_current_fill++;
@@ -1319,7 +1267,7 @@ octeon_mgmt_xmit(struct sk_buff *skb, struct net_device *netdev)
 	netdev->stats.tx_packets++;
 	netdev->stats.tx_bytes += skb->len;
 
-	/* Ring the bell.  */
+	 
 	cvmx_write_csr(p->mix + MIX_ORING2, 1);
 
 	netif_trans_update(netdev);

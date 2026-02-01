@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	IPv6 virtual tunneling interface
- *
- *	Copyright (C) 2013 secunet Security Networks AG
- *
- *	Author:
- *	Steffen Klassert <steffen.klassert@secunet.com>
- *
- *	Based on:
- *	net/ipv6/ip6_tunnel.c
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/capability.h>
@@ -63,9 +53,9 @@ static struct rtnl_link_ops vti6_link_ops __read_mostly;
 
 static unsigned int vti6_net_id __read_mostly;
 struct vti6_net {
-	/* the vti6 tunnel fallback device */
+	 
 	struct net_device *fb_tnl_dev;
-	/* lists for storing tunnels in use */
+	 
 	struct ip6_tnl __rcu *tnls_r_l[IP6_VTI_HASH_SIZE];
 	struct ip6_tnl __rcu *tnls_wc[1];
 	struct ip6_tnl __rcu **tnls[2];
@@ -74,17 +64,7 @@ struct vti6_net {
 #define for_each_vti6_tunnel_rcu(start) \
 	for (t = rcu_dereference(start); t; t = rcu_dereference(t->next))
 
-/**
- * vti6_tnl_lookup - fetch tunnel matching the end-point addresses
- *   @net: network namespace
- *   @remote: the address of the tunnel exit-point
- *   @local: the address of the tunnel entry-point
- *
- * Return:
- *   tunnel matching given end-points if found,
- *   else fallback tunnel if its device is up,
- *   else %NULL
- **/
+ 
 static struct ip6_tnl *
 vti6_tnl_lookup(struct net *net, const struct in6_addr *remote,
 		const struct in6_addr *local)
@@ -123,17 +103,7 @@ vti6_tnl_lookup(struct net *net, const struct in6_addr *remote,
 	return NULL;
 }
 
-/**
- * vti6_tnl_bucket - get head of list matching given tunnel parameters
- *   @ip6n: the private data for ip6_vti in the netns
- *   @p: parameters containing tunnel end-points
- *
- * Description:
- *   vti6_tnl_bucket() returns the head of the list matching the
- *   &struct in6_addr entries laddr and raddr in @p.
- *
- * Return: head of IPv6 tunnel list
- **/
+ 
 static struct ip6_tnl __rcu **
 vti6_tnl_bucket(struct vti6_net *ip6n, const struct __ip6_tnl_parm *p)
 {
@@ -238,20 +208,7 @@ failed:
 	return NULL;
 }
 
-/**
- * vti6_locate - find or create tunnel matching given parameters
- *   @net: network namespace
- *   @p: tunnel parameters
- *   @create: != 0 if allowed to create new tunnel if no match found
- *
- * Description:
- *   vti6_locate() first tries to locate an existing tunnel
- *   based on @parms. If this is unsuccessful, but @create is set a new
- *   tunnel device is created and registered for use.
- *
- * Return:
- *   matching tunnel or NULL
- **/
+ 
 static struct ip6_tnl *vti6_locate(struct net *net, struct __ip6_tnl_parm *p,
 				   int create)
 {
@@ -277,13 +234,7 @@ static struct ip6_tnl *vti6_locate(struct net *net, struct __ip6_tnl_parm *p,
 	return vti6_tnl_create(net, p);
 }
 
-/**
- * vti6_dev_uninit - tunnel device uninitializer
- *   @dev: the device to be destroyed
- *
- * Description:
- *   vti6_dev_uninit() removes tunnel from its list
- **/
+ 
 static void vti6_dev_uninit(struct net_device *dev)
 {
 	struct ip6_tnl *t = netdev_priv(dev);
@@ -394,19 +345,7 @@ static int vti6_rcv_cb(struct sk_buff *skb, int err)
 	return 0;
 }
 
-/**
- * vti6_addr_conflict - compare packet addresses to tunnel's own
- *   @t: the outgoing tunnel device
- *   @hdr: IPv6 header from the incoming packet
- *
- * Description:
- *   Avoid trivial tunneling loop by checking that tunnel exit-point
- *   doesn't match source of incoming packet.
- *
- * Return:
- *   1 if conflict,
- *   0 else
- **/
+ 
 static inline bool
 vti6_addr_conflict(const struct ip6_tnl *t, const struct ipv6hdr *hdr)
 {
@@ -420,9 +359,7 @@ static bool vti6_state_check(const struct xfrm_state *x,
 	xfrm_address_t *daddr = (xfrm_address_t *)dst;
 	xfrm_address_t *saddr = (xfrm_address_t *)src;
 
-	/* if there is no transform then this tunnel is not functional.
-	 * Or if the xfrm is not mode tunnel.
-	 */
+	 
 	if (!x || x->props.mode != XFRM_MODE_TUNNEL ||
 	    x->props.family != AF_INET6)
 		return false;
@@ -436,12 +373,7 @@ static bool vti6_state_check(const struct xfrm_state *x,
 	return true;
 }
 
-/**
- * vti6_xmit - send a packet
- *   @skb: the outgoing socket buffer
- *   @dev: the outgoing tunnel device
- *   @fl: the flow informations for the xfrm_lookup
- **/
+ 
 static int
 vti6_xmit(struct sk_buff *skb, struct net_device *dev, struct flowi *fl)
 {
@@ -579,7 +511,7 @@ vti6_tnl_xmit(struct sk_buff *skb, struct net_device *dev)
 		goto tx_err;
 	}
 
-	/* override mark with tunnel output key */
+	 
 	fl.flowi_mark = be32_to_cpu(t->parms.o_key);
 
 	ret = vti6_xmit(skb, dev, &fl);
@@ -698,15 +630,7 @@ static void vti6_link_config(struct ip6_tnl *t, bool keep_mtu)
 	dev->mtu = max_t(int, mtu, IPV4_MIN_MTU);
 }
 
-/**
- * vti6_tnl_change - update the tunnel parameters
- *   @t: tunnel to be changed
- *   @p: tunnel configuration parameters
- *   @keep_mtu: MTU was set from userspace, don't re-compute it
- *
- * Description:
- *   vti6_tnl_change() updates the tunnel parameters
- **/
+ 
 static int
 vti6_tnl_change(struct ip6_tnl *t, const struct __ip6_tnl_parm *p,
 		bool keep_mtu)
@@ -768,34 +692,7 @@ vti6_parm_to_user(struct ip6_tnl_parm2 *u, const struct __ip6_tnl_parm *p)
 	memcpy(u->name, p->name, sizeof(u->name));
 }
 
-/**
- * vti6_siocdevprivate - configure vti6 tunnels from userspace
- *   @dev: virtual device associated with tunnel
- *   @ifr: unused
- *   @data: parameters passed from userspace
- *   @cmd: command to be performed
- *
- * Description:
- *   vti6_siocdevprivate() is used for managing vti6 tunnels
- *   from userspace.
- *
- *   The possible commands are the following:
- *     %SIOCGETTUNNEL: get tunnel parameters for device
- *     %SIOCADDTUNNEL: add tunnel matching given tunnel parameters
- *     %SIOCCHGTUNNEL: change tunnel parameters to those given
- *     %SIOCDELTUNNEL: delete tunnel
- *
- *   The fallback device "ip6_vti0", created during module
- *   initialization, can be used for creating other tunnel devices.
- *
- * Return:
- *   0 on success,
- *   %-EFAULT if unable to copy data to or from userspace,
- *   %-EPERM if current process hasn't %CAP_NET_ADMIN set
- *   %-EINVAL if passed tunnel parameters are invalid,
- *   %-EEXIST if changing a tunnel's parameters would cause a conflict
- *   %-ENODEV if attempting to change or delete a nonexisting device
- **/
+ 
 static int
 vti6_siocdevprivate(struct net_device *dev, struct ifreq *ifr, void __user *data, int cmd)
 {
@@ -896,13 +793,7 @@ static const struct net_device_ops vti6_netdev_ops = {
 	.ndo_get_iflink = ip6_tnl_get_iflink,
 };
 
-/**
- * vti6_dev_setup - setup virtual tunnel device
- *   @dev: virtual device associated with tunnel
- *
- * Description:
- *   Initialize function pointers and device parameters
- **/
+ 
 static void vti6_dev_setup(struct net_device *dev)
 {
 	dev->netdev_ops = &vti6_netdev_ops;
@@ -916,15 +807,12 @@ static void vti6_dev_setup(struct net_device *dev)
 	dev->flags |= IFF_NOARP;
 	dev->addr_len = sizeof(struct in6_addr);
 	netif_keep_dst(dev);
-	/* This perm addr will be used as interface identifier by IPv6 */
+	 
 	dev->addr_assign_type = NET_ADDR_RANDOM;
 	eth_random_addr(dev->perm_addr);
 }
 
-/**
- * vti6_dev_init_gen - general initializer for all tunnel devices
- *   @dev: virtual device associated with tunnel
- **/
+ 
 static inline int vti6_dev_init_gen(struct net_device *dev)
 {
 	struct ip6_tnl *t = netdev_priv(dev);
@@ -938,10 +826,7 @@ static inline int vti6_dev_init_gen(struct net_device *dev)
 	return 0;
 }
 
-/**
- * vti6_dev_init - initializer for all non fallback tunnel devices
- *   @dev: virtual device associated with tunnel
- **/
+ 
 static int vti6_dev_init(struct net_device *dev)
 {
 	struct ip6_tnl *t = netdev_priv(dev);
@@ -953,12 +838,7 @@ static int vti6_dev_init(struct net_device *dev)
 	return 0;
 }
 
-/**
- * vti6_fb_tnl_dev_init - initializer for fallback tunnel device
- *   @dev: fallback device
- *
- * Return: 0
- **/
+ 
 static int __net_init vti6_fb_tnl_dev_init(struct net_device *dev)
 {
 	struct ip6_tnl *t = netdev_priv(dev);
@@ -1059,17 +939,17 @@ static int vti6_changelink(struct net_device *dev, struct nlattr *tb[],
 static size_t vti6_get_size(const struct net_device *dev)
 {
 	return
-		/* IFLA_VTI_LINK */
+		 
 		nla_total_size(4) +
-		/* IFLA_VTI_LOCAL */
+		 
 		nla_total_size(sizeof(struct in6_addr)) +
-		/* IFLA_VTI_REMOTE */
+		 
 		nla_total_size(sizeof(struct in6_addr)) +
-		/* IFLA_VTI_IKEY */
+		 
 		nla_total_size(4) +
-		/* IFLA_VTI_OKEY */
+		 
 		nla_total_size(4) +
-		/* IFLA_VTI_FWMARK */
+		 
 		nla_total_size(4) +
 		0;
 }
@@ -1247,11 +1127,7 @@ static struct xfrm6_tunnel vti_ip6ip_handler __read_mostly = {
 };
 #endif
 
-/**
- * vti6_tunnel_init - register protocol and reserve needed resources
- *
- * Return: 0 on success
- **/
+ 
 static int __init vti6_tunnel_init(void)
 {
 	const char *msg;
@@ -1308,9 +1184,7 @@ pernet_dev_failed:
 	return err;
 }
 
-/**
- * vti6_tunnel_cleanup - free resources and unregister protocol
- **/
+ 
 static void __exit vti6_tunnel_cleanup(void)
 {
 	rtnl_link_unregister(&vti6_link_ops);

@@ -1,15 +1,11 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Rockchip ISP1 Driver - Params subdevice
- *
- * Copyright (C) 2017 Rockchip Electronics Co., Ltd.
- */
+
+ 
 
 #include <media/v4l2-common.h>
 #include <media/v4l2-event.h>
 #include <media/v4l2-ioctl.h>
 #include <media/videobuf2-core.h>
-#include <media/videobuf2-vmalloc.h>	/* for ISP params */
+#include <media/videobuf2-vmalloc.h>	 
 
 #include "rkisp1-common.h"
 
@@ -51,19 +47,14 @@ rkisp1_param_clear_bits(struct rkisp1_params *params, u32 reg, u32 bit_mask)
 	rkisp1_write(params->rkisp1, reg, val & ~bit_mask);
 }
 
-/* ISP BP interface function */
+ 
 static void rkisp1_dpcc_config(struct rkisp1_params *params,
 			       const struct rkisp1_cif_isp_dpcc_config *arg)
 {
 	unsigned int i;
 	u32 mode;
 
-	/*
-	 * The enable bit is controlled in rkisp1_isp_isr_other_config() and
-	 * must be preserved. The grayscale mode should be configured
-	 * automatically based on the media bus code on the ISP sink pad, so
-	 * only the STAGE1_ENABLE bit can be set by userspace.
-	 */
+	 
 	mode = rkisp1_read(params->rkisp1, RKISP1_CIF_ISP_DPCC_MODE);
 	mode &= RKISP1_CIF_ISP_DPCC_MODE_DPCC_ENABLE;
 	mode |= arg->mode & RKISP1_CIF_ISP_DPCC_MODE_STAGE1_ENABLE;
@@ -101,16 +92,16 @@ static void rkisp1_dpcc_config(struct rkisp1_params *params,
 		     arg->ro_limits & RKISP1_CIF_ISP_DPCC_RO_LIMIT_MASK);
 }
 
-/* ISP black level subtraction interface function */
+ 
 static void rkisp1_bls_config(struct rkisp1_params *params,
 			      const struct rkisp1_cif_isp_bls_config *arg)
 {
-	/* avoid to override the old enable value */
+	 
 	u32 new_control;
 
 	new_control = rkisp1_read(params->rkisp1, RKISP1_CIF_ISP_BLS_CTRL);
 	new_control &= RKISP1_CIF_ISP_BLS_ENA;
-	/* fixed subtraction values */
+	 
 	if (!arg->enable_auto) {
 		const struct rkisp1_cif_isp_bls_fixed_val *pval =
 								&arg->fixed_val;
@@ -193,7 +184,7 @@ static void rkisp1_bls_config(struct rkisp1_params *params,
 	rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_BLS_CTRL, new_control);
 }
 
-/* ISP LS correction interface function */
+ 
 static void
 rkisp1_lsc_matrix_config_v10(struct rkisp1_params *params,
 			     const struct rkisp1_cif_isp_lsc_config *pconfig)
@@ -204,7 +195,7 @@ rkisp1_lsc_matrix_config_v10(struct rkisp1_params *params,
 
 	lsc_status = rkisp1_read(rkisp1, RKISP1_CIF_ISP_LSC_STATUS);
 
-	/* RKISP1_CIF_ISP_LSC_TABLE_ADDRESS_153 = ( 17 * 18 ) >> 1 */
+	 
 	sram_addr = lsc_status & RKISP1_CIF_ISP_LSC_ACTIVE_TABLE ?
 		    RKISP1_CIF_ISP_LSC_TABLE_ADDRESS_0 :
 		    RKISP1_CIF_ISP_LSC_TABLE_ADDRESS_153;
@@ -213,17 +204,14 @@ rkisp1_lsc_matrix_config_v10(struct rkisp1_params *params,
 	rkisp1_write(rkisp1, RKISP1_CIF_ISP_LSC_GB_TABLE_ADDR, sram_addr);
 	rkisp1_write(rkisp1, RKISP1_CIF_ISP_LSC_B_TABLE_ADDR, sram_addr);
 
-	/* program data tables (table size is 9 * 17 = 153) */
+	 
 	for (i = 0; i < RKISP1_CIF_ISP_LSC_SAMPLES_MAX; i++) {
 		const __u16 *r_tbl = pconfig->r_data_tbl[i];
 		const __u16 *gr_tbl = pconfig->gr_data_tbl[i];
 		const __u16 *gb_tbl = pconfig->gb_data_tbl[i];
 		const __u16 *b_tbl = pconfig->b_data_tbl[i];
 
-		/*
-		 * 17 sectors with 2 values in one DWORD = 9
-		 * DWORDs (2nd value of last DWORD unused)
-		 */
+		 
 		for (j = 0; j < RKISP1_CIF_ISP_LSC_SAMPLES_MAX - 1; j += 2) {
 			rkisp1_write(rkisp1, RKISP1_CIF_ISP_LSC_R_TABLE_DATA,
 				     RKISP1_CIF_ISP_LSC_TABLE_DATA_V10(
@@ -264,7 +252,7 @@ rkisp1_lsc_matrix_config_v12(struct rkisp1_params *params,
 
 	lsc_status = rkisp1_read(rkisp1, RKISP1_CIF_ISP_LSC_STATUS);
 
-	/* RKISP1_CIF_ISP_LSC_TABLE_ADDRESS_153 = ( 17 * 18 ) >> 1 */
+	 
 	sram_addr = lsc_status & RKISP1_CIF_ISP_LSC_ACTIVE_TABLE ?
 		    RKISP1_CIF_ISP_LSC_TABLE_ADDRESS_0 :
 		    RKISP1_CIF_ISP_LSC_TABLE_ADDRESS_153;
@@ -273,17 +261,14 @@ rkisp1_lsc_matrix_config_v12(struct rkisp1_params *params,
 	rkisp1_write(rkisp1, RKISP1_CIF_ISP_LSC_GB_TABLE_ADDR, sram_addr);
 	rkisp1_write(rkisp1, RKISP1_CIF_ISP_LSC_B_TABLE_ADDR, sram_addr);
 
-	/* program data tables (table size is 9 * 17 = 153) */
+	 
 	for (i = 0; i < RKISP1_CIF_ISP_LSC_SAMPLES_MAX; i++) {
 		const __u16 *r_tbl = pconfig->r_data_tbl[i];
 		const __u16 *gr_tbl = pconfig->gr_data_tbl[i];
 		const __u16 *gb_tbl = pconfig->gb_data_tbl[i];
 		const __u16 *b_tbl = pconfig->b_data_tbl[i];
 
-		/*
-		 * 17 sectors with 2 values in one DWORD = 9
-		 * DWORDs (2nd value of last DWORD unused)
-		 */
+		 
 		for (j = 0; j < RKISP1_CIF_ISP_LSC_SAMPLES_MAX - 1; j += 2) {
 			rkisp1_write(rkisp1, RKISP1_CIF_ISP_LSC_R_TABLE_DATA,
 				     RKISP1_CIF_ISP_LSC_TABLE_DATA_V12(
@@ -321,35 +306,35 @@ static void rkisp1_lsc_config(struct rkisp1_params *params,
 	u32 lsc_ctrl, data;
 	unsigned int i;
 
-	/* To config must be off , store the current status firstly */
+	 
 	lsc_ctrl = rkisp1_read(rkisp1, RKISP1_CIF_ISP_LSC_CTRL);
 	rkisp1_param_clear_bits(params, RKISP1_CIF_ISP_LSC_CTRL,
 				RKISP1_CIF_ISP_LSC_CTRL_ENA);
 	params->ops->lsc_matrix_config(params, arg);
 
 	for (i = 0; i < RKISP1_CIF_ISP_LSC_SECTORS_TBL_SIZE / 2; i++) {
-		/* program x size tables */
+		 
 		data = RKISP1_CIF_ISP_LSC_SECT_SIZE(arg->x_size_tbl[i * 2],
 						    arg->x_size_tbl[i * 2 + 1]);
 		rkisp1_write(rkisp1, RKISP1_CIF_ISP_LSC_XSIZE(i), data);
 
-		/* program x grad tables */
+		 
 		data = RKISP1_CIF_ISP_LSC_SECT_GRAD(arg->x_grad_tbl[i * 2],
 						    arg->x_grad_tbl[i * 2 + 1]);
 		rkisp1_write(rkisp1, RKISP1_CIF_ISP_LSC_XGRAD(i), data);
 
-		/* program y size tables */
+		 
 		data = RKISP1_CIF_ISP_LSC_SECT_SIZE(arg->y_size_tbl[i * 2],
 						    arg->y_size_tbl[i * 2 + 1]);
 		rkisp1_write(rkisp1, RKISP1_CIF_ISP_LSC_YSIZE(i), data);
 
-		/* program y grad tables */
+		 
 		data = RKISP1_CIF_ISP_LSC_SECT_GRAD(arg->y_grad_tbl[i * 2],
 						    arg->y_grad_tbl[i * 2 + 1]);
 		rkisp1_write(rkisp1, RKISP1_CIF_ISP_LSC_YGRAD(i), data);
 	}
 
-	/* restore the lsc ctrl status */
+	 
 	if (lsc_ctrl & RKISP1_CIF_ISP_LSC_CTRL_ENA)
 		rkisp1_param_set_bits(params, RKISP1_CIF_ISP_LSC_CTRL,
 				      RKISP1_CIF_ISP_LSC_CTRL_ENA);
@@ -358,7 +343,7 @@ static void rkisp1_lsc_config(struct rkisp1_params *params,
 					RKISP1_CIF_ISP_LSC_CTRL_ENA);
 }
 
-/* ISP Filtering function */
+ 
 static void rkisp1_flt_config(struct rkisp1_params *params,
 			      const struct rkisp1_cif_isp_flt_config *arg)
 {
@@ -391,7 +376,7 @@ static void rkisp1_flt_config(struct rkisp1_params *params,
 		     RKISP1_CIF_ISP_FLT_CHROMA_H_MODE(arg->chr_h_mode) |
 		     RKISP1_CIF_ISP_FLT_GREEN_STAGE1(arg->grn_stage1));
 
-	/* avoid to override the old enable value */
+	 
 	filt_mode = rkisp1_read(params->rkisp1, RKISP1_CIF_ISP_FILT_MODE);
 	filt_mode &= RKISP1_CIF_ISP_FLT_ENA;
 	if (arg->mode)
@@ -402,22 +387,22 @@ static void rkisp1_flt_config(struct rkisp1_params *params,
 	rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_FILT_MODE, filt_mode);
 }
 
-/* ISP demosaic interface function */
+ 
 static int rkisp1_bdm_config(struct rkisp1_params *params,
 			     const struct rkisp1_cif_isp_bdm_config *arg)
 {
 	u32 bdm_th;
 
-	/* avoid to override the old enable value */
+	 
 	bdm_th = rkisp1_read(params->rkisp1, RKISP1_CIF_ISP_DEMOSAIC);
 	bdm_th &= RKISP1_CIF_ISP_DEMOSAIC_BYPASS;
 	bdm_th |= arg->demosaic_th & ~RKISP1_CIF_ISP_DEMOSAIC_BYPASS;
-	/* set demosaic threshold */
+	 
 	rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_DEMOSAIC, bdm_th);
 	return 0;
 }
 
-/* ISP GAMMA correction interface function */
+ 
 static void rkisp1_sdg_config(struct rkisp1_params *params,
 			      const struct rkisp1_cif_isp_sdg_config *arg)
 {
@@ -441,7 +426,7 @@ static void rkisp1_sdg_config(struct rkisp1_params *params,
 	}
 }
 
-/* ISP GAMMA correction interface function */
+ 
 static void rkisp1_goc_config_v10(struct rkisp1_params *params,
 				  const struct rkisp1_cif_isp_goc_config *arg)
 {
@@ -478,7 +463,7 @@ static void rkisp1_goc_config_v12(struct rkisp1_params *params,
 	}
 }
 
-/* ISP Cross Talk */
+ 
 static void rkisp1_ctk_config(struct rkisp1_params *params,
 			      const struct rkisp1_cif_isp_ctk_config *arg)
 {
@@ -500,7 +485,7 @@ static void rkisp1_ctk_enable(struct rkisp1_params *params, bool en)
 	if (en)
 		return;
 
-	/* Write back the default values. */
+	 
 	rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_CT_COEFF_0, 0x80);
 	rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_CT_COEFF_1, 0);
 	rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_CT_COEFF_2, 0);
@@ -516,18 +501,18 @@ static void rkisp1_ctk_enable(struct rkisp1_params *params, bool en)
 	rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_CT_OFFSET_B, 0);
 }
 
-/* ISP White Balance Mode */
+ 
 static void rkisp1_awb_meas_config_v10(struct rkisp1_params *params,
 				       const struct rkisp1_cif_isp_awb_meas_config *arg)
 {
 	u32 reg_val = 0;
-	/* based on the mode,configure the awb module */
+	 
 	if (arg->awb_mode == RKISP1_CIF_ISP_AWB_MODE_YCBCR) {
-		/* Reference Cb and Cr */
+		 
 		rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_AWB_REF_V10,
 			     RKISP1_CIF_ISP_AWB_REF_CR_SET(arg->awb_ref_cr) |
 			     arg->awb_ref_cb);
-		/* Yc Threshold */
+		 
 		rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_AWB_THRESH_V10,
 			     RKISP1_CIF_ISP_AWB_MAX_Y_SET(arg->max_y) |
 			     RKISP1_CIF_ISP_AWB_MIN_Y_SET(arg->min_y) |
@@ -542,17 +527,17 @@ static void rkisp1_awb_meas_config_v10(struct rkisp1_params *params,
 		reg_val &= ~RKISP1_CIF_ISP_AWB_YMAX_CMP_EN;
 	rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_AWB_PROP_V10, reg_val);
 
-	/* window offset */
+	 
 	rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_AWB_WND_V_OFFS_V10,
 		     arg->awb_wnd.v_offs);
 	rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_AWB_WND_H_OFFS_V10,
 		     arg->awb_wnd.h_offs);
-	/* AWB window size */
+	 
 	rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_AWB_WND_V_SIZE_V10,
 		     arg->awb_wnd.v_size);
 	rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_AWB_WND_H_SIZE_V10,
 		     arg->awb_wnd.h_size);
-	/* Number of frames */
+	 
 	rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_AWB_FRAMES_V10,
 		     arg->frames);
 }
@@ -561,13 +546,13 @@ static void rkisp1_awb_meas_config_v12(struct rkisp1_params *params,
 				       const struct rkisp1_cif_isp_awb_meas_config *arg)
 {
 	u32 reg_val = 0;
-	/* based on the mode,configure the awb module */
+	 
 	if (arg->awb_mode == RKISP1_CIF_ISP_AWB_MODE_YCBCR) {
-		/* Reference Cb and Cr */
+		 
 		rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_AWB_REF_V12,
 			     RKISP1_CIF_ISP_AWB_REF_CR_SET(arg->awb_ref_cr) |
 			     arg->awb_ref_cb);
-		/* Yc Threshold */
+		 
 		rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_AWB_THRESH_V12,
 			     RKISP1_CIF_ISP_AWB_MAX_Y_SET(arg->max_y) |
 			     RKISP1_CIF_ISP_AWB_MIN_Y_SET(arg->min_y) |
@@ -584,10 +569,10 @@ static void rkisp1_awb_meas_config_v12(struct rkisp1_params *params,
 	reg_val |= RKISP1_CIF_ISP_AWB_SET_FRAMES_V12(arg->frames);
 	rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_AWB_PROP_V12, reg_val);
 
-	/* window offset */
+	 
 	rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_AWB_OFFS_V12,
 		     arg->awb_wnd.v_offs << 16 | arg->awb_wnd.h_offs);
-	/* AWB window size */
+	 
 	rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_AWB_SIZE_V12,
 		     arg->awb_wnd.v_size << 16 | arg->awb_wnd.h_size);
 }
@@ -599,7 +584,7 @@ rkisp1_awb_meas_enable_v10(struct rkisp1_params *params,
 {
 	u32 reg_val = rkisp1_read(params->rkisp1, RKISP1_CIF_ISP_AWB_PROP_V10);
 
-	/* switch off */
+	 
 	reg_val &= RKISP1_CIF_ISP_AWB_MODE_MASK_NONE;
 
 	if (en) {
@@ -611,7 +596,7 @@ rkisp1_awb_meas_enable_v10(struct rkisp1_params *params,
 		rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_AWB_PROP_V10,
 			     reg_val);
 
-		/* Measurements require AWB block be active. */
+		 
 		rkisp1_param_set_bits(params, RKISP1_CIF_ISP_CTRL,
 				      RKISP1_CIF_ISP_CTRL_ISP_AWB_ENA);
 	} else {
@@ -629,7 +614,7 @@ rkisp1_awb_meas_enable_v12(struct rkisp1_params *params,
 {
 	u32 reg_val = rkisp1_read(params->rkisp1, RKISP1_CIF_ISP_AWB_PROP_V12);
 
-	/* switch off */
+	 
 	reg_val &= RKISP1_CIF_ISP_AWB_MODE_MASK_NONE;
 
 	if (en) {
@@ -641,7 +626,7 @@ rkisp1_awb_meas_enable_v12(struct rkisp1_params *params,
 		rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_AWB_PROP_V12,
 			     reg_val);
 
-		/* Measurements require AWB block be active. */
+		 
 		rkisp1_param_set_bits(params, RKISP1_CIF_ISP_CTRL,
 				      RKISP1_CIF_ISP_CTRL_ISP_AWB_ENA);
 	} else {
@@ -684,7 +669,7 @@ static void rkisp1_aec_config_v10(struct rkisp1_params *params,
 	unsigned int block_hsize, block_vsize;
 	u32 exp_ctrl;
 
-	/* avoid to override the old enable value */
+	 
 	exp_ctrl = rkisp1_read(params->rkisp1, RKISP1_CIF_ISP_EXP_CTRL);
 	exp_ctrl &= RKISP1_CIF_ISP_EXP_ENA;
 	if (arg->autostop)
@@ -717,7 +702,7 @@ static void rkisp1_aec_config_v12(struct rkisp1_params *params,
 	u32 wnd_num_idx = 1;
 	static const u32 ae_wnd_num[] = { 5, 9, 15, 15 };
 
-	/* avoid to override the old enable value */
+	 
 	exp_ctrl = rkisp1_read(params->rkisp1, RKISP1_CIF_ISP_EXP_CTRL);
 	exp_ctrl &= RKISP1_CIF_ISP_EXP_ENA;
 	if (arg->autostop)
@@ -786,7 +771,7 @@ static void rkisp1_hst_config_v10(struct rkisp1_params *params,
 	unsigned int i;
 	u32 hist_prop;
 
-	/* avoid to override the old enable value */
+	 
 	hist_prop = rkisp1_read(params->rkisp1, RKISP1_CIF_ISP_HIST_PROP_V10);
 	hist_prop &= RKISP1_CIF_ISP_HIST_PROP_MODE_MASK_V10;
 	hist_prop |= RKISP1_CIF_ISP_HIST_PREDIV_SET_V10(arg->histogram_predivider);
@@ -824,10 +809,10 @@ static void rkisp1_hst_config_v12(struct rkisp1_params *params,
 	u8 weight15x15[RKISP1_CIF_ISP_HIST_WEIGHT_REG_SIZE_V12];
 	static const u32 hist_wnd_num[] = { 5, 9, 15, 15 };
 
-	/* now we just support 9x9 window */
+	 
 	wnd_num_idx = 1;
 	memset(weight15x15, 0x00, sizeof(weight15x15));
-	/* avoid to override the old enable value */
+	 
 	hist_ctrl = rkisp1_read(params->rkisp1, RKISP1_CIF_ISP_HIST_CTRL_V12);
 	hist_ctrl &= RKISP1_CIF_ISP_HIST_CTRL_MODE_MASK_V12 |
 		     RKISP1_CIF_ISP_HIST_CTRL_EN_MASK_V12;
@@ -917,7 +902,7 @@ static void rkisp1_afm_config_v10(struct rkisp1_params *params,
 	u32 afm_ctrl = rkisp1_read(params->rkisp1, RKISP1_CIF_ISP_AFM_CTRL);
 	unsigned int i;
 
-	/* Switch off to configure. */
+	 
 	rkisp1_param_clear_bits(params, RKISP1_CIF_ISP_AFM_CTRL,
 				RKISP1_CIF_ISP_AFM_ENA);
 
@@ -934,7 +919,7 @@ static void rkisp1_afm_config_v10(struct rkisp1_params *params,
 	rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_AFM_THRES, arg->thres);
 	rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_AFM_VAR_SHIFT,
 		     arg->var_shift);
-	/* restore afm status */
+	 
 	rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_AFM_CTRL, afm_ctrl);
 }
 
@@ -947,7 +932,7 @@ static void rkisp1_afm_config_v12(struct rkisp1_params *params,
 	u32 lum_var_shift, afm_var_shift;
 	unsigned int i;
 
-	/* Switch off to configure. */
+	 
 	rkisp1_param_clear_bits(params, RKISP1_CIF_ISP_AFM_CTRL,
 				RKISP1_CIF_ISP_AFM_ENA);
 
@@ -970,7 +955,7 @@ static void rkisp1_afm_config_v12(struct rkisp1_params *params,
 		     RKISP1_CIF_ISP_AFM_SET_SHIFT_b_V12(lum_var_shift, afm_var_shift) |
 		     RKISP1_CIF_ISP_AFM_SET_SHIFT_c_V12(lum_var_shift, afm_var_shift));
 
-	/* restore afm status */
+	 
 	rkisp1_write(params->rkisp1, RKISP1_CIF_ISP_AFM_CTRL, afm_ctrl);
 }
 
@@ -994,10 +979,7 @@ static void rkisp1_ie_config(struct rkisp1_params *params,
 			     arg->eff_tint);
 		eff_ctrl |= RKISP1_CIF_IMG_EFF_CTRL_MODE_SEPIA;
 		break;
-		/*
-		 * Color selection is similar to water color(AQUA):
-		 * grayscale + selected color w threshold
-		 */
+		 
 	case V4L2_COLORFX_AQUA:
 		eff_ctrl |= RKISP1_CIF_IMG_EFF_CTRL_MODE_COLOR_SEL;
 		rkisp1_write(params->rkisp1, RKISP1_CIF_IMG_EFF_COLOR_SEL,
@@ -1143,7 +1125,7 @@ static void rkisp1_csm_config(struct rkisp1_params *params)
 			     csm[i]);
 }
 
-/* ISP De-noise Pre-Filter(DPF) function */
+ 
 static void rkisp1_dpf_config(struct rkisp1_params *params,
 			      const struct rkisp1_cif_isp_dpf_config *arg)
 {
@@ -1249,7 +1231,7 @@ rkisp1_isp_isr_other_config(struct rkisp1_params *params,
 	module_cfg_update = new_params->module_cfg_update;
 	module_ens = new_params->module_ens;
 
-	/* update dpc config */
+	 
 	if (module_cfg_update & RKISP1_CIF_ISP_MODULE_DPCC)
 		rkisp1_dpcc_config(params,
 				   &new_params->others.dpcc_config);
@@ -1265,7 +1247,7 @@ rkisp1_isp_isr_other_config(struct rkisp1_params *params,
 						RKISP1_CIF_ISP_DPCC_MODE_DPCC_ENABLE);
 	}
 
-	/* update bls config */
+	 
 	if (module_cfg_update & RKISP1_CIF_ISP_MODULE_BLS)
 		rkisp1_bls_config(params,
 				  &new_params->others.bls_config);
@@ -1281,7 +1263,7 @@ rkisp1_isp_isr_other_config(struct rkisp1_params *params,
 						RKISP1_CIF_ISP_BLS_ENA);
 	}
 
-	/* update sdg config */
+	 
 	if (module_cfg_update & RKISP1_CIF_ISP_MODULE_SDG)
 		rkisp1_sdg_config(params,
 				  &new_params->others.sdg_config);
@@ -1297,7 +1279,7 @@ rkisp1_isp_isr_other_config(struct rkisp1_params *params,
 						RKISP1_CIF_ISP_CTRL_ISP_GAMMA_IN_ENA);
 	}
 
-	/* update awb gains */
+	 
 	if (module_cfg_update & RKISP1_CIF_ISP_MODULE_AWB_GAIN)
 		params->ops->awb_gain_config(params, &new_params->others.awb_gain_config);
 
@@ -1312,7 +1294,7 @@ rkisp1_isp_isr_other_config(struct rkisp1_params *params,
 						RKISP1_CIF_ISP_CTRL_ISP_AWB_ENA);
 	}
 
-	/* update bdm config */
+	 
 	if (module_cfg_update & RKISP1_CIF_ISP_MODULE_BDM)
 		rkisp1_bdm_config(params,
 				  &new_params->others.bdm_config);
@@ -1328,7 +1310,7 @@ rkisp1_isp_isr_other_config(struct rkisp1_params *params,
 						RKISP1_CIF_ISP_DEMOSAIC_BYPASS);
 	}
 
-	/* update filter config */
+	 
 	if (module_cfg_update & RKISP1_CIF_ISP_MODULE_FLT)
 		rkisp1_flt_config(params,
 				  &new_params->others.flt_config);
@@ -1344,7 +1326,7 @@ rkisp1_isp_isr_other_config(struct rkisp1_params *params,
 						RKISP1_CIF_ISP_FLT_ENA);
 	}
 
-	/* update ctk config */
+	 
 	if (module_cfg_update & RKISP1_CIF_ISP_MODULE_CTK)
 		rkisp1_ctk_config(params,
 				  &new_params->others.ctk_config);
@@ -1352,7 +1334,7 @@ rkisp1_isp_isr_other_config(struct rkisp1_params *params,
 	if (module_en_update & RKISP1_CIF_ISP_MODULE_CTK)
 		rkisp1_ctk_enable(params, !!(module_ens & RKISP1_CIF_ISP_MODULE_CTK));
 
-	/* update goc config */
+	 
 	if (module_cfg_update & RKISP1_CIF_ISP_MODULE_GOC)
 		params->ops->goc_config(params, &new_params->others.goc_config);
 
@@ -1367,7 +1349,7 @@ rkisp1_isp_isr_other_config(struct rkisp1_params *params,
 						RKISP1_CIF_ISP_CTRL_ISP_GAMMA_OUT_ENA);
 	}
 
-	/* update cproc config */
+	 
 	if (module_cfg_update & RKISP1_CIF_ISP_MODULE_CPROC)
 		rkisp1_cproc_config(params,
 				    &new_params->others.cproc_config);
@@ -1383,14 +1365,14 @@ rkisp1_isp_isr_other_config(struct rkisp1_params *params,
 						RKISP1_CIF_C_PROC_CTR_ENABLE);
 	}
 
-	/* update ie config */
+	 
 	if (module_cfg_update & RKISP1_CIF_ISP_MODULE_IE)
 		rkisp1_ie_config(params, &new_params->others.ie_config);
 
 	if (module_en_update & RKISP1_CIF_ISP_MODULE_IE)
 		rkisp1_ie_enable(params, !!(module_ens & RKISP1_CIF_ISP_MODULE_IE));
 
-	/* update dpf config */
+	 
 	if (module_cfg_update & RKISP1_CIF_ISP_MODULE_DPF)
 		rkisp1_dpf_config(params, &new_params->others.dpf_config);
 
@@ -1407,7 +1389,7 @@ rkisp1_isp_isr_other_config(struct rkisp1_params *params,
 
 	if ((module_en_update & RKISP1_CIF_ISP_MODULE_DPF_STRENGTH) ||
 	    (module_cfg_update & RKISP1_CIF_ISP_MODULE_DPF_STRENGTH)) {
-		/* update dpf strength config */
+		 
 		rkisp1_dpf_strength_config(params,
 					   &new_params->others.dpf_strength_config);
 	}
@@ -1423,7 +1405,7 @@ rkisp1_isp_isr_lsc_config(struct rkisp1_params *params,
 	module_cfg_update = new_params->module_cfg_update;
 	module_ens = new_params->module_ens;
 
-	/* update lsc config */
+	 
 	if (module_cfg_update & RKISP1_CIF_ISP_MODULE_LSC)
 		rkisp1_lsc_config(params,
 				  &new_params->others.lsc_config);
@@ -1449,7 +1431,7 @@ static void rkisp1_isp_isr_meas_config(struct rkisp1_params *params,
 	module_cfg_update = new_params->module_cfg_update;
 	module_ens = new_params->module_ens;
 
-	/* update awb config */
+	 
 	if (module_cfg_update & RKISP1_CIF_ISP_MODULE_AWB)
 		params->ops->awb_meas_config(params, &new_params->meas.awb_meas_config);
 
@@ -1458,7 +1440,7 @@ static void rkisp1_isp_isr_meas_config(struct rkisp1_params *params,
 					     &new_params->meas.awb_meas_config,
 					     !!(module_ens & RKISP1_CIF_ISP_MODULE_AWB));
 
-	/* update afc config */
+	 
 	if (module_cfg_update & RKISP1_CIF_ISP_MODULE_AFC)
 		params->ops->afm_config(params,
 					&new_params->meas.afc_config);
@@ -1474,7 +1456,7 @@ static void rkisp1_isp_isr_meas_config(struct rkisp1_params *params,
 						RKISP1_CIF_ISP_AFM_ENA);
 	}
 
-	/* update hst config */
+	 
 	if (module_cfg_update & RKISP1_CIF_ISP_MODULE_HST)
 		params->ops->hst_config(params,
 					&new_params->meas.hst_config);
@@ -1484,7 +1466,7 @@ static void rkisp1_isp_isr_meas_config(struct rkisp1_params *params,
 					&new_params->meas.hst_config,
 					!!(module_ens & RKISP1_CIF_ISP_MODULE_HST));
 
-	/* update aec config */
+	 
 	if (module_cfg_update & RKISP1_CIF_ISP_MODULE_AEC)
 		params->ops->aec_config(params,
 					&new_params->meas.aec_config);
@@ -1539,18 +1521,11 @@ void rkisp1_params_isr(struct rkisp1_device *rkisp1)
 	rkisp1_isp_isr_lsc_config(params, new_params);
 	rkisp1_isp_isr_meas_config(params, new_params);
 
-	/* update shadow register immediately */
+	 
 	rkisp1_param_set_bits(params, RKISP1_CIF_ISP_CTRL,
 			      RKISP1_CIF_ISP_CTRL_ISP_CFG_UPD);
 
-	/*
-	 * This isr is called when the ISR finishes processing a frame
-	 * (RKISP1_CIF_ISP_FRAME). Configurations performed here will be
-	 * applied on the next frame. Since frame_sequence is updated on the
-	 * vertical sync signal, we should use frame_sequence + 1 here to
-	 * indicate to userspace on which frame these parameters are being
-	 * applied.
-	 */
+	 
 	rkisp1_params_complete_buffer(params, cur_buf,
 				      rkisp1->isp.frame_sequence + 1);
 
@@ -1582,7 +1557,7 @@ static const struct rkisp1_cif_isp_hst_config rkisp1_hst_params_default_config =
 		RKISP1_DEFAULT_WIDTH >> 1, RKISP1_DEFAULT_HEIGHT >> 1
 	},
 	{
-		0, /* To be filled in with 0x01 at runtime. */
+		0,  
 	}
 };
 
@@ -1631,7 +1606,7 @@ void rkisp1_params_pre_configure(struct rkisp1_params *params,
 
 	spin_lock_irq(&params->config_lock);
 
-	/* apply the first buffer if there is one already */
+	 
 
 	if (!rkisp1_params_get_buffer(params, &cur_buf, &new_params))
 		goto unlock;
@@ -1639,7 +1614,7 @@ void rkisp1_params_pre_configure(struct rkisp1_params *params,
 	rkisp1_isp_isr_other_config(params, new_params);
 	rkisp1_isp_isr_meas_config(params, new_params);
 
-	/* update shadow register immediately */
+	 
 	rkisp1_param_set_bits(params, RKISP1_CIF_ISP_CTRL,
 			      RKISP1_CIF_ISP_CTRL_ISP_CFG_UPD);
 
@@ -1654,21 +1629,14 @@ void rkisp1_params_post_configure(struct rkisp1_params *params)
 
 	spin_lock_irq(&params->config_lock);
 
-	/*
-	 * Apply LSC parameters from the first buffer (if any is already
-	 * available. This must be done after the ISP gets started in the
-	 * ISP8000Nano v18.02 (found in the i.MX8MP) as access to the LSC RAM
-	 * is gated by the ISP_CTRL.ISP_ENABLE bit. As this initialization
-	 * ordering doesn't affect other ISP versions negatively, do so
-	 * unconditionally.
-	 */
+	 
 
 	if (!rkisp1_params_get_buffer(params, &cur_buf, &new_params))
 		goto unlock;
 
 	rkisp1_isp_isr_lsc_config(params, new_params);
 
-	/* update shadow register immediately */
+	 
 	rkisp1_param_set_bits(params, RKISP1_CIF_ISP_CTRL,
 			      RKISP1_CIF_ISP_CTRL_ISP_CFG_UPD);
 
@@ -1678,10 +1646,7 @@ unlock:
 	spin_unlock_irq(&params->config_lock);
 }
 
-/*
- * Not called when the camera is active, therefore there is no need to acquire
- * a lock.
- */
+ 
 void rkisp1_params_disable(struct rkisp1_params *params)
 {
 	rkisp1_param_clear_bits(params, RKISP1_CIF_ISP_DPCC_MODE,
@@ -1781,7 +1746,7 @@ static int rkisp1_params_querycap(struct file *file,
 	return 0;
 }
 
-/* ISP params video device IOCTLs */
+ 
 static const struct v4l2_ioctl_ops rkisp1_params_ioctl = {
 	.vidioc_reqbufs = vb2_ioctl_reqbufs,
 	.vidioc_querybuf = vb2_ioctl_querybuf,
@@ -1847,11 +1812,7 @@ static void rkisp1_params_vb2_stop_streaming(struct vb2_queue *vq)
 	struct rkisp1_buffer *buf;
 	LIST_HEAD(tmp_list);
 
-	/*
-	 * we first move the buffers into a local list 'tmp_list'
-	 * and then we can iterate it and call vb2_buffer_done
-	 * without holding the lock
-	 */
+	 
 	spin_lock_irq(&params->config_lock);
 	list_splice_init(&params->params, &tmp_list);
 	spin_unlock_irq(&params->config_lock);
@@ -1928,10 +1889,7 @@ int rkisp1_params_register(struct rkisp1_device *rkisp1)
 	vdev->ioctl_ops = &rkisp1_params_ioctl;
 	vdev->fops = &rkisp1_params_fops;
 	vdev->release = video_device_release_empty;
-	/*
-	 * Provide a mutex to v4l2 core. It will be used
-	 * to protect all fops and v4l2 ioctls.
-	 */
+	 
 	vdev->lock = &node->vlock;
 	vdev->v4l2_dev = &rkisp1->v4l2_dev;
 	vdev->queue = &node->buf_queue;

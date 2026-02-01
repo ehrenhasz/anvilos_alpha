@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/platform_device.h>
 #include <linux/memregion.h>
 #include <linux/module.h>
@@ -17,12 +17,7 @@ static int dax_hmem_probe(struct platform_device *pdev)
 	struct memregion_info *mri;
 	struct dev_dax_data data;
 
-	/*
-	 * @region_idle == true indicates that an administrative agent
-	 * wants to manipulate the range partitioning before the devices
-	 * are created, so do not send them to the dax_kmem driver by
-	 * default.
-	 */
+	 
 	if (region_idle)
 		flags = 0;
 
@@ -158,7 +153,7 @@ static __exit void dax_hmem_exit(void)
 module_init(dax_hmem_init);
 module_exit(dax_hmem_exit);
 
-/* Allow for CXL to define its own dax regions */
+ 
 #if IS_ENABLED(CONFIG_CXL_REGION)
 #if IS_MODULE(CONFIG_CXL_ACPI)
 MODULE_SOFTDEP("pre: cxl_acpi");

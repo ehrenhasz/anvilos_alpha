@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/usb.h>
@@ -10,9 +9,9 @@
 
 static const struct usb_device_id rtw_8723du_id_table[] = {
 	{ USB_DEVICE_AND_INTERFACE_INFO(RTW_USB_VENDOR_ID_REALTEK, 0xd723, 0xff, 0xff, 0xff),
-	  .driver_info = (kernel_ulong_t)&(rtw8723d_hw_spec) }, /* 8723DU 1*1 */
+	  .driver_info = (kernel_ulong_t)&(rtw8723d_hw_spec) },  
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x7392, 0xd611, 0xff, 0xff, 0xff),
-	  .driver_info = (kernel_ulong_t)&(rtw8723d_hw_spec) }, /* Edimax EW-7611ULB V2 */
+	  .driver_info = (kernel_ulong_t)&(rtw8723d_hw_spec) },  
 	{ },
 };
 MODULE_DEVICE_TABLE(usb, rtw_8723du_id_table);

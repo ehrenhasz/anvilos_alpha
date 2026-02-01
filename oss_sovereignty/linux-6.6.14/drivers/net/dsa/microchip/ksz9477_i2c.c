@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Microchip KSZ9477 series register access through I2C
- *
- * Copyright (C) 2018-2019 Microchip Technology Inc.
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/kernel.h>
@@ -42,7 +38,7 @@ static int ksz9477_i2c_probe(struct i2c_client *i2c)
 
 	ret = ksz_switch_register(dev);
 
-	/* Main DSA driver may not be started yet. */
+	 
 	if (ret)
 		return ret;
 

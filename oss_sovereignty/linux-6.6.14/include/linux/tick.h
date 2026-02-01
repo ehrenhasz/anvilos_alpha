@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Tick related global functions
- */
+ 
+ 
 #ifndef _LINUX_TICK_H
 #define _LINUX_TICK_H
 
@@ -15,19 +13,19 @@
 
 #ifdef CONFIG_GENERIC_CLOCKEVENTS
 extern void __init tick_init(void);
-/* Should be core only, but ARM BL switcher requires it */
+ 
 extern void tick_suspend_local(void);
-/* Should be core only, but XEN resume magic and ARM BL switcher require it */
+ 
 extern void tick_resume_local(void);
 extern void tick_handover_do_timer(void);
 extern void tick_cleanup_dead_cpu(int cpu);
-#else /* CONFIG_GENERIC_CLOCKEVENTS */
+#else  
 static inline void tick_init(void) { }
 static inline void tick_suspend_local(void) { }
 static inline void tick_resume_local(void) { }
 static inline void tick_handover_do_timer(void) { }
 static inline void tick_cleanup_dead_cpu(int cpu) { }
-#endif /* !CONFIG_GENERIC_CLOCKEVENTS */
+#endif  
 
 #if defined(CONFIG_GENERIC_CLOCKEVENTS) && defined(CONFIG_SUSPEND)
 extern void tick_freeze(void);
@@ -67,7 +65,7 @@ enum tick_broadcast_state {
 extern void tick_broadcast_control(enum tick_broadcast_mode mode);
 #else
 static inline void tick_broadcast_control(enum tick_broadcast_mode mode) { }
-#endif /* BROADCAST */
+#endif  
 
 #if defined(CONFIG_GENERIC_CLOCKEVENTS_BROADCAST) && defined(CONFIG_HOTPLUG_CPU)
 extern void tick_offline_cpu(unsigned int cpu);
@@ -148,7 +146,7 @@ static inline void tick_nohz_idle_stop_tick_protected(void)
 	local_irq_enable();
 }
 
-#else /* !CONFIG_NO_HZ_COMMON */
+#else  
 #define tick_nohz_enabled (0)
 static inline int tick_nohz_tick_stopped(void) { return 0; }
 static inline int tick_nohz_tick_stopped_cpu(int cpu) { return 0; }
@@ -160,7 +158,7 @@ static inline void tick_nohz_idle_exit(void) { }
 static inline bool tick_nohz_idle_got_tick(void) { return false; }
 static inline ktime_t tick_nohz_get_next_hrtimer(void)
 {
-	/* Next wake up is the tick period, assume it starts now */
+	 
 	return ktime_add(ktime_get(), TICK_NSEC);
 }
 static inline ktime_t tick_nohz_get_sleep_length(ktime_t *delta_next)
@@ -172,7 +170,7 @@ static inline u64 get_cpu_idle_time_us(int cpu, u64 *unused) { return -1; }
 static inline u64 get_cpu_iowait_time_us(int cpu, u64 *unused) { return -1; }
 
 static inline void tick_nohz_idle_stop_tick_protected(void) { }
-#endif /* !CONFIG_NO_HZ_COMMON */
+#endif  
 
 #ifdef CONFIG_NO_HZ_FULL
 extern bool tick_nohz_full_running;
@@ -186,11 +184,7 @@ static inline bool tick_nohz_full_enabled(void)
 	return tick_nohz_full_running;
 }
 
-/*
- * Check if a CPU is part of the nohz_full subset. Arrange for evaluating
- * the cpu expression (typically smp_processor_id()) _after_ the static
- * key.
- */
+ 
 #define tick_nohz_full_cpu(_cpu) ({					\
 	bool __ret = false;						\
 	if (tick_nohz_full_enabled())					\
@@ -218,10 +212,7 @@ extern void tick_nohz_dep_clear_signal(struct signal_struct *signal,
 				       enum tick_dep_bits bit);
 extern bool tick_nohz_cpu_hotpluggable(unsigned int cpu);
 
-/*
- * The below are tick_nohz_[set,clear]_dep() wrappers that optimize off-cases
- * on top of static keys.
- */
+ 
 static inline void tick_dep_set(enum tick_dep_bits bit)
 {
 	if (tick_nohz_full_enabled())

@@ -1,36 +1,4 @@
-/*
- * Copyright (c) 2004 Topspin Communications.  All rights reserved.
- * Copyright (c) 2005 Voltaire, Inc.  All rights reserved.
- * Copyright (c) 2006 Intel Corporation.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/init.h>
 #include <linux/err.h>
@@ -58,7 +26,7 @@
 #define IB_SA_LOCAL_SVC_TIMEOUT_DEFAULT		2000
 #define IB_SA_LOCAL_SVC_TIMEOUT_MAX		200000
 #define IB_SA_CPI_MAX_RETRY_CNT			3
-#define IB_SA_CPI_RETRY_WAIT			1000 /*msecs */
+#define IB_SA_CPI_RETRY_WAIT			1000  
 static int sa_local_svc_timeout_ms = IB_SA_LOCAL_SVC_TIMEOUT_DEFAULT;
 
 struct ib_sa_sm_ah {
@@ -93,7 +61,7 @@ struct ib_sa_port {
 	struct work_struct   update_task;
 	struct ib_sa_classport_cache classport_info;
 	struct delayed_work ib_cpi_work;
-	spinlock_t                   classport_lock; /* protects class port info set */
+	spinlock_t                   classport_lock;  
 	spinlock_t           ah_lock;
 	u32		     port_num;
 };
@@ -114,10 +82,10 @@ struct ib_sa_query {
 	struct ib_sa_sm_ah     *sm_ah;
 	int			id;
 	u32			flags;
-	struct list_head	list; /* Local svc request list */
-	u32			seq; /* Local svc request sequence number */
-	unsigned long		timeout; /* Local svc timeout */
-	u8			path_use; /* How will the pathrecord be used */
+	struct list_head	list;  
+	u32			seq;  
+	unsigned long		timeout;  
+	u8			path_use;  
 };
 
 #define IB_SA_ENABLE_LOCAL_SERVICE	0x00000001
@@ -708,7 +676,7 @@ static void ib_nl_set_path_rec_attrs(struct sk_buff *skb,
 
 	query->mad_buf->context[1] = NULL;
 
-	/* Construct the family header first */
+	 
 	header = skb_put(skb, NLMSG_ALIGN(sizeof(*header)));
 	strscpy_pad(header->device_name,
 		    dev_name(&query->port->agent->device->dev),
@@ -722,7 +690,7 @@ static void ib_nl_set_path_rec_attrs(struct sk_buff *skb,
 		query->path_use = LS_RESOLVE_PATH_USE_UNIDIRECTIONAL;
 	header->path_use = query->path_use;
 
-	/* Now build the attributes */
+	 
 	if (comp_mask & IB_SA_PATH_REC_SERVICE_ID) {
 		val64 = be64_to_cpu(sa_rec->service_id);
 		nla_put(skb, RDMA_NLA_F_MANDATORY | LS_NLA_TYPE_SERVICE_ID,
@@ -767,14 +735,11 @@ static int ib_nl_get_path_rec_attrs_len(ib_sa_comp_mask comp_mask)
 	if (comp_mask & IB_SA_PATH_REC_QOS_CLASS)
 		len += nla_total_size(sizeof(u16));
 
-	/*
-	 * Make sure that at least some of the required comp_mask bits are
-	 * set.
-	 */
+	 
 	if (WARN_ON(len == 0))
 		return len;
 
-	/* Add the family header */
+	 
 	len += NLMSG_ALIGN(sizeof(struct rdma_ls_resolve_header));
 
 	return len;
@@ -804,7 +769,7 @@ static int ib_nl_make_request(struct ib_sa_query *query, gfp_t gfp_mask)
 	if (!skb)
 		return -ENOMEM;
 
-	/* Put nlmsg header only for now */
+	 
 	data = ibnl_put_msg(skb, &nlh, query->seq, 0, RDMA_NL_LS,
 			    RDMA_NL_LS_OP_RESOLVE, NLM_F_REQUEST);
 	if (!data) {
@@ -812,10 +777,10 @@ static int ib_nl_make_request(struct ib_sa_query *query, gfp_t gfp_mask)
 		return -EMSGSIZE;
 	}
 
-	/* Add attributes */
+	 
 	ib_nl_set_path_rec_attrs(skb, query);
 
-	/* Repair the nlmsg header length */
+	 
 	nlmsg_end(skb, nlh);
 
 	gfp_flag = ((gfp_mask & GFP_ATOMIC) == GFP_ATOMIC) ? GFP_ATOMIC :
@@ -827,11 +792,11 @@ static int ib_nl_make_request(struct ib_sa_query *query, gfp_t gfp_mask)
 	if (ret)
 		goto out;
 
-	/* Put the request on the list.*/
+	 
 	delay = msecs_to_jiffies(sa_local_svc_timeout_ms);
 	query->timeout = delay + jiffies;
 	list_add_tail(&query->list, &ib_nl_request_list);
-	/* Start the timeout if this is the only request */
+	 
 	if (ib_nl_request_list.next == &query->list)
 		queue_delayed_work(ib_nl_wq, &ib_nl_timed_work, delay);
 
@@ -849,7 +814,7 @@ static int ib_nl_cancel_request(struct ib_sa_query *query)
 
 	spin_lock_irqsave(&ib_nl_request_lock, flags);
 	list_for_each_entry(wait_query, &ib_nl_request_list, list) {
-		/* Let the timeout to take care of the callback */
+		 
 		if (query == wait_query) {
 			query->flags |= IB_SA_CANCEL;
 			query->timeout = jiffies;
@@ -969,7 +934,7 @@ static void ib_nl_request_timeout(struct work_struct *work)
 
 		list_del(&query->list);
 		ib_sa_disable_local_svc(query);
-		/* Hold the lock to protect against query cancellation */
+		 
 		if (ib_sa_query_cancelled(query))
 			ret = -1;
 		else
@@ -1028,7 +993,7 @@ int ib_nl_handle_set_timeout(struct sk_buff *skb,
 			else
 				query->timeout += delta;
 
-			/* Get the new delay from the first entry */
+			 
 			if (!delay) {
 				delay = query->timeout - jiffies;
 				if (delay <= 0)
@@ -1077,10 +1042,7 @@ int ib_nl_handle_resolve_resp(struct sk_buff *skb,
 
 	spin_lock_irqsave(&ib_nl_request_lock, flags);
 	list_for_each_entry(iter, &ib_nl_request_list, list) {
-		/*
-		 * If the query is cancelled, let the timeout routine
-		 * take care of it.
-		 */
+		 
 		if (nlh->nlmsg_seq == iter->seq) {
 			if (!ib_sa_query_cancelled(iter)) {
 				list_del(&iter->list);
@@ -1098,7 +1060,7 @@ int ib_nl_handle_resolve_resp(struct sk_buff *skb,
 	send_buf = query->mad_buf;
 
 	if (!ib_nl_is_good_resolve_resp(nlh)) {
-		/* if the result is a failure, send out the packet via IB */
+		 
 		ib_sa_disable_local_svc(query);
 		ret = ib_post_send_mad(query->mad_buf, NULL);
 		spin_unlock_irqrestore(&ib_nl_request_lock, flags);
@@ -1138,15 +1100,7 @@ void ib_sa_unregister_client(struct ib_sa_client *client)
 }
 EXPORT_SYMBOL(ib_sa_unregister_client);
 
-/**
- * ib_sa_cancel_query - try to cancel an SA query
- * @id:ID of query to cancel
- * @query:query pointer to cancel
- *
- * Try to cancel an SA query.  If the id and query don't match up or
- * the query has already completed, nothing is done.  Otherwise the
- * query is canceled and will complete with a status of -EINTR.
- */
+ 
 void ib_sa_cancel_query(int id, struct ib_sa_query *query)
 {
 	unsigned long flags;
@@ -1160,11 +1114,7 @@ void ib_sa_cancel_query(int id, struct ib_sa_query *query)
 	mad_buf = query->mad_buf;
 	xa_unlock_irqrestore(&queries, flags);
 
-	/*
-	 * If the query is still on the netlink request list, schedule
-	 * it to be cancelled by the timeout routine. Otherwise, it has been
-	 * sent to the MAD layer and has to be cancelled from there.
-	 */
+	 
 	if (!ib_nl_cancel_request(query))
 		ib_cancel_mad(mad_buf);
 }
@@ -1211,22 +1161,7 @@ static int init_ah_attr_grh_fields(struct ib_device *device, u32 port_num,
 	return 0;
 }
 
-/**
- * ib_init_ah_attr_from_path - Initialize address handle attributes based on
- *   an SA path record.
- * @device: Device associated ah attributes initialization.
- * @port_num: Port on the specified device.
- * @rec: path record entry to use for ah attributes initialization.
- * @ah_attr: address handle attributes to initialization from path record.
- * @gid_attr: SGID attribute to consider during initialization.
- *
- * When ib_init_ah_attr_from_path() returns success,
- * (a) for IB link layer it optionally contains a reference to SGID attribute
- * when GRH is present for IB link layer.
- * (b) for RoCE link layer it contains a reference to SGID attribute.
- * User must invoke rdma_destroy_ah_attr() to release reference to SGID
- * attributes which are initialized using ib_init_ah_attr_from_path().
- */
+ 
 int ib_init_ah_attr_from_path(struct ib_device *device, u32 port_num,
 			      struct sa_path_rec *rec,
 			      struct rdma_ah_attr *ah_attr,
@@ -1278,10 +1213,7 @@ static int alloc_mad(struct ib_sa_query *query, gfp_t gfp_mask)
 	query->sm_ah = query->port->sm_ah;
 	spin_unlock_irqrestore(&query->port->ah_lock, flags);
 
-	/*
-	 * Always check if sm_ah has valid dlid assigned,
-	 * before querying for class port info
-	 */
+	 
 	if ((rdma_query_ah(query->sm_ah->ah, &ah_attr) < 0) ||
 	    !rdma_is_valid_unicast_lid(&ah_attr)) {
 		kref_put(&query->sm_ah->ref, free_sm_ah);
@@ -1347,7 +1279,7 @@ static int send_mad(struct ib_sa_query *query, unsigned long timeout_ms,
 	query->mad_buf->timeout_ms  = timeout_ms / nmbr_sa_query_retries;
 	query->mad_buf->retries = nmbr_sa_query_retries;
 	if (!query->mad_buf->timeout_ms) {
-		/* Special case, very small timeout_ms */
+		 
 		query->mad_buf->timeout_ms = 1;
 		query->mad_buf->retries = timeout_ms;
 	}
@@ -1370,11 +1302,7 @@ static int send_mad(struct ib_sa_query *query, unsigned long timeout_ms,
 		xa_unlock_irqrestore(&queries, flags);
 	}
 
-	/*
-	 * It's not safe to dereference query any more, because the
-	 * send may already have completed and freed the query in
-	 * another context.
-	 */
+	 
 	return ret ? ret : id;
 }
 
@@ -1417,14 +1345,7 @@ enum opa_pr_supported {
 	PR_IB_SUPPORTED
 };
 
-/*
- * opa_pr_query_possible - Check if current PR query can be an OPA query.
- *
- * Retuns PR_NOT_SUPPORTED if a path record query is not
- * possible, PR_OPA_SUPPORTED if an OPA path record query
- * is possible and PR_IB_SUPPORTED if an IB path record
- * query is possible.
- */
+ 
 static int opa_pr_query_possible(struct ib_sa_client *client,
 				 struct ib_sa_device *sa_dev,
 				 struct ib_device *device, u32 port_num)
@@ -1488,31 +1409,7 @@ static void ib_sa_path_rec_release(struct ib_sa_query *sa_query)
 	kfree(query);
 }
 
-/**
- * ib_sa_path_rec_get - Start a Path get query
- * @client:SA client
- * @device:device to send query on
- * @port_num: port number to send query on
- * @rec:Path Record to send in query
- * @comp_mask:component mask to send in query
- * @timeout_ms:time to wait for response
- * @gfp_mask:GFP mask to use for internal allocations
- * @callback:function called when query completes, times out or is
- * canceled
- * @context:opaque user context passed to callback
- * @sa_query:query context, used to cancel query
- *
- * Send a Path Record Get query to the SA to look up a path.  The
- * callback function will be called when the query completes (or
- * fails); status is 0 for a successful response, -EINTR if the query
- * is canceled, -ETIMEDOUT is the query timed out, or -EIO if an error
- * occurred sending the query.  The resp parameter of the callback is
- * only valid if status is 0.
- *
- * If the return value of ib_sa_path_rec_get() is negative, it is an
- * error code.  Otherwise it is a query ID that can be used to cancel
- * the query.
- */
+ 
 int ib_sa_path_rec_get(struct ib_sa_client *client,
 		       struct ib_device *device, u32 port_num,
 		       struct sa_path_rec *rec,
@@ -1708,7 +1605,7 @@ err1:
 	return ret;
 }
 
-/* Support GuidInfoRecord */
+ 
 static void ib_sa_guidinfo_rec_callback(struct ib_sa_query *sa_query,
 					int status, struct ib_sa_mad *mad)
 {
@@ -1937,9 +1834,7 @@ static void update_ib_cpi(struct work_struct *work)
 	unsigned long flags;
 	int ret;
 
-	/* If the classport info is valid, nothing
-	 * to do here.
-	 */
+	 
 	spin_lock_irqsave(&port->classport_lock, flags);
 	if (port->classport_info.valid) {
 		spin_unlock_irqrestore(&port->classport_lock, flags);
@@ -1963,9 +1858,7 @@ free_cb_err:
 	kfree(cb_context);
 	spin_lock_irqsave(&port->classport_lock, flags);
 
-	/* If the classport info is still not valid, the query should have
-	 * failed for some reason. Retry issuing the query
-	 */
+	 
 	if (!port->classport_info.valid) {
 		port->classport_info.retry_cnt++;
 		if (port->classport_info.retry_cnt <=
@@ -1991,7 +1884,7 @@ static void send_handler(struct ib_mad_agent *agent,
 	if (query->callback)
 		switch (mad_send_wc->status) {
 		case IB_WC_SUCCESS:
-			/* No callback -- already got recv */
+			 
 			break;
 		case IB_WC_RESP_TIMEOUT_ERR:
 			query->callback(query, -ETIMEDOUT, NULL);
@@ -2073,12 +1966,7 @@ static void update_sm_ah(struct work_struct *work)
 	grh_required = rdma_is_grh_required(port->agent->device,
 					    port->port_num);
 
-	/*
-	 * The OPA sm_lid of 0xFFFF needs special handling so that it can be
-	 * differentiated from a permissive LID of 0xFFFF.  We set the
-	 * grh_required flag here so the SA can program the DGID in the
-	 * address handle appropriately
-	 */
+	 
 	if (ah_attr.type == RDMA_AH_ATTR_TYPE_OPA &&
 	    (grh_required ||
 	     port_attr.sm_lid == be16_to_cpu(IB_LID_PERMISSIVE)))
@@ -2202,12 +2090,7 @@ static int ib_sa_add_one(struct ib_device *device)
 
 	ib_set_client_data(device, &sa_client, sa_dev);
 
-	/*
-	 * We register our event handler after everything is set up,
-	 * and then update our cached info after the event handler is
-	 * registered to avoid any problems if a port changes state
-	 * during our initialization.
-	 */
+	 
 
 	INIT_IB_EVENT_HANDLER(&sa_dev->event_handler, device, ib_sa_event);
 	ib_register_event_handler(&sa_dev->event_handler);

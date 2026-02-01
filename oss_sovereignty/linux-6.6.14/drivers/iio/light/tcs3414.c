@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tcs3414.c - Support for TAOS TCS3414 digital color sensor
- *
- * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
- *
- * Digital color sensor with 16-bit channels for red, green, blue, clear);
- * 7-bit I2C slave address 0x39 (TCS3414) or 0x29, 0x49, 0x59 (TCS3413,
- * TCS3415, TCS3416, resp.)
- *
- * TODO: sync, interrupt support, thresholds, prescaler
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -53,7 +43,7 @@ struct tcs3414_data {
 	u8 control;
 	u8 gain;
 	u8 timing;
-	/* Ensure timestamp is naturally aligned */
+	 
 	struct {
 		u16 chans[4];
 		s64 timestamp __aligned(8);
@@ -77,12 +67,12 @@ struct tcs3414_data {
 	}, \
 }
 
-/* scale factors: 1/gain */
+ 
 static const int tcs3414_scales[][2] = {
 	{1, 0}, {0, 250000}, {0, 62500}, {0, 15625}
 };
 
-/* integration time in ms */
+ 
 static const int tcs3414_times[] = { 12, 100, 400 };
 
 static const struct iio_chan_spec tcs3414_channels[] = {
@@ -325,7 +315,7 @@ static int tcs3414_probe(struct i2c_client *client)
 	if (ret < 0)
 		return ret;
 
-	data->timing = TCS3414_INTEG_12MS; /* free running */
+	data->timing = TCS3414_INTEG_12MS;  
 	ret = i2c_smbus_write_byte_data(data->client, TCS3414_TIMING,
 		data->timing);
 	if (ret < 0)

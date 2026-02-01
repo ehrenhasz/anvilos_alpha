@@ -1,26 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- *
- * Modifications for inclusion into the Linux staging tree are
- * Copyright(c) 2010 Larry Finger. All rights reserved.
- *
- * Contact information:
- * WLAN FAE <wlanfae@realtek.com>
- * Larry Finger <Larry.Finger@lwfinger.net>
- *
- ******************************************************************************/
+ 
+ 
 #ifndef _RTL8712_RECV_H_
 #define _RTL8712_RECV_H_
 
 #include "osdep_service.h"
 #include "drv_types.h"
 
-/* Realtek's v2.6.6 reduced this to 4. However, under heavy network and CPU
- * loads, even 8 receive buffers might not be enough; cutting it to 4 seemed
- * unwise.
- */
+ 
 #define NR_RECVBUFF (8)
 
 #define NR_PREALLOC_RECV_SKB (8)
@@ -32,10 +18,10 @@
 #define MAX_RECVBUF_SZ 9100
 #define RECVBUFF_ALIGN_SZ 512
 #define RSVD_ROOM_SZ (0)
-/*These definition is used for Rx packet reordering.*/
+ 
 #define SN_LESS(a, b)		(((a-b) & 0x800) != 0)
 #define SN_EQUAL(a, b)	(a == b)
-#define REORDER_WAIT_TIME	30 /* (ms)*/
+#define REORDER_WAIT_TIME	30  
 
 struct recv_stat {
 	__le32 rxdw0;
@@ -47,10 +33,7 @@ struct recv_stat {
 };
 
 struct phy_cck_rx_status {
-	/* For CCK rate descriptor. This is a unsigned 8:1 variable.
-	 * LSB bit present 0.5. And MSB 7 bts present a signed value.
-	 * Range from -64~+63.5.
-	 */
+	 
 	u8	adc_pwdb_X[4];
 	u8	sq_rpt;
 	u8	cck_agc_rpt;
@@ -103,14 +86,7 @@ struct recv_buf {
 	u8 *pallocated_buf;
 };
 
-/*
- *	head  ----->
- *		data  ----->
- *			payload
- *		tail  ----->
- *	end   ----->
- *	len = (unsigned int )(tail - data);
- */
+ 
 struct recv_frame_hdr {
 	struct list_head list;
 	_pkt	*pkt;
@@ -125,7 +101,7 @@ struct recv_frame_hdr {
 	u8 *rx_end;
 	void *precvbuf;
 	struct sta_info *psta;
-	/*for A-MPDU Rx reordering buffer control*/
+	 
 	struct recv_reorder_ctrl *preorder_ctrl;
 };
 

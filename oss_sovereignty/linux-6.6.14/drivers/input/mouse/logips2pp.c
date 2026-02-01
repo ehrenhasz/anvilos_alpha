@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Logitech PS/2++ mouse driver
- *
- * Copyright (c) 1999-2003 Vojtech Pavlik <vojtech@suse.cz>
- * Copyright (c) 2003 Eric Wong <eric@yhbt.net>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/input.h>
@@ -14,13 +9,13 @@
 #include "psmouse.h"
 #include "logips2pp.h"
 
-/* Logitech mouse types */
+ 
 #define PS2PP_KIND_WHEEL	1
 #define PS2PP_KIND_MX		2
 #define PS2PP_KIND_TP3		3
 #define PS2PP_KIND_TRACKMAN	4
 
-/* Logitech mouse features */
+ 
 #define PS2PP_WHEEL		BIT(0)
 #define PS2PP_HWHEEL		BIT(1)
 #define PS2PP_SIDE_BTN		BIT(2)
@@ -34,9 +29,7 @@ struct ps2pp_info {
 	u16 features;
 };
 
-/*
- * Process a PS2++ or PS2T++ packet.
- */
+ 
 
 static psmouse_ret_t ps2pp_process_byte(struct psmouse *psmouse)
 {
@@ -46,16 +39,14 @@ static psmouse_ret_t ps2pp_process_byte(struct psmouse *psmouse)
 	if (psmouse->pktcnt < 3)
 		return PSMOUSE_GOOD_DATA;
 
-/*
- * Full packet accumulated, process it
- */
+ 
 
 	if ((packet[0] & 0x48) == 0x48 && (packet[1] & 0x02) == 0x02) {
 
-		/* Logitech extended packet */
+		 
 		switch ((packet[1] >> 4) | (packet[0] & 0x30)) {
 
-		case 0x0d: /* Mouse extra info */
+		case 0x0d:  
 
 			input_report_rel(dev,
 				packet[2] & 0x80 ? REL_HWHEEL : REL_WHEEL,
@@ -65,7 +56,7 @@ static psmouse_ret_t ps2pp_process_byte(struct psmouse *psmouse)
 
 			break;
 
-		case 0x0e: /* buttons 4, 5, 6, 7, 8, 9, 10 info */
+		case 0x0e:  
 
 			input_report_key(dev, BTN_SIDE,    packet[2] & BIT(0));
 			input_report_key(dev, BTN_EXTRA,   packet[2] & BIT(1));
@@ -75,7 +66,7 @@ static psmouse_ret_t ps2pp_process_byte(struct psmouse *psmouse)
 
 			break;
 
-		case 0x0f: /* TouchPad extra info */
+		case 0x0f:  
 
 			input_report_rel(dev,
 				packet[2] & 0x08 ? REL_HWHEEL : REL_WHEEL,
@@ -93,7 +84,7 @@ static psmouse_ret_t ps2pp_process_byte(struct psmouse *psmouse)
 		psmouse_report_standard_buttons(dev, packet[0]);
 
 	} else {
-		/* Standard PS/2 motion data */
+		 
 		psmouse_report_standard_packet(dev, packet);
 	}
 
@@ -103,12 +94,7 @@ static psmouse_ret_t ps2pp_process_byte(struct psmouse *psmouse)
 
 }
 
-/*
- * ps2pp_cmd() sends a PS2++ command, sliced into two bit
- * pieces through the SETRES command. This is needed to send extended
- * commands to mice on notebooks that try to understand the PS/2 protocol
- * Ugly.
- */
+ 
 
 static int ps2pp_cmd(struct psmouse *psmouse, u8 *param, u8 command)
 {
@@ -125,13 +111,7 @@ static int ps2pp_cmd(struct psmouse *psmouse, u8 *param, u8 command)
 	return 0;
 }
 
-/*
- * SmartScroll / CruiseControl for some newer Logitech mice Defaults to
- * enabled if we do nothing to it. Of course I put this in because I want it
- * disabled :P
- * 1 - enabled (if previously disabled, also default)
- * 0 - disabled
- */
+ 
 
 static void ps2pp_set_smartscroll(struct psmouse *psmouse, bool smartscroll)
 {
@@ -176,11 +156,7 @@ static ssize_t ps2pp_attr_set_smartscroll(struct psmouse *psmouse, void *data,
 PSMOUSE_DEFINE_ATTR(smartscroll, S_IWUSR | S_IRUGO, NULL,
 		    ps2pp_attr_show_smartscroll, ps2pp_attr_set_smartscroll);
 
-/*
- * Support 800 dpi resolution _only_ if the user wants it (there are good
- * reasons to not use it even if the mouse supports it, and of course there are
- * also good reasons to use it, let the user decide).
- */
+ 
 
 static void ps2pp_set_resolution(struct psmouse *psmouse,
 				 unsigned int resolution)
@@ -207,10 +183,10 @@ static void ps2pp_disconnect(struct psmouse *psmouse)
 static const struct ps2pp_info *get_model_info(unsigned char model)
 {
 	static const struct ps2pp_info ps2pp_list[] = {
-		{  1,	0,			0 },	/* Simple 2-button mouse */
+		{  1,	0,			0 },	 
 		{ 12,	0,			PS2PP_SIDE_BTN},
 		{ 13,	0,			0 },
-		{ 15,	PS2PP_KIND_MX,					/* MX1000 */
+		{ 15,	PS2PP_KIND_MX,					 
 				PS2PP_WHEEL | PS2PP_SIDE_BTN | PS2PP_TASK_BTN |
 				PS2PP_EXTRA_BTN | PS2PP_NAV_BTN | PS2PP_HWHEEL },
 		{ 40,	0,			PS2PP_SIDE_BTN },
@@ -221,18 +197,18 @@ static const struct ps2pp_info *get_model_info(unsigned char model)
 		{ 51,	0,			0 },
 		{ 52,	PS2PP_KIND_WHEEL,	PS2PP_SIDE_BTN | PS2PP_WHEEL },
 		{ 53,	PS2PP_KIND_WHEEL,	PS2PP_WHEEL },
-		{ 56,	PS2PP_KIND_WHEEL,	PS2PP_SIDE_BTN | PS2PP_WHEEL }, /* Cordless MouseMan Wheel */
-		{ 61,	PS2PP_KIND_MX,					/* MX700 */
+		{ 56,	PS2PP_KIND_WHEEL,	PS2PP_SIDE_BTN | PS2PP_WHEEL },  
+		{ 61,	PS2PP_KIND_MX,					 
 				PS2PP_WHEEL | PS2PP_SIDE_BTN | PS2PP_TASK_BTN |
 				PS2PP_EXTRA_BTN | PS2PP_NAV_BTN },
-		{ 66,	PS2PP_KIND_MX,					/* MX3100 receiver */
+		{ 66,	PS2PP_KIND_MX,					 
 				PS2PP_WHEEL | PS2PP_SIDE_BTN | PS2PP_TASK_BTN |
 				PS2PP_EXTRA_BTN | PS2PP_NAV_BTN | PS2PP_HWHEEL },
-		{ 72,	PS2PP_KIND_TRACKMAN,	0 },			/* T-CH11: TrackMan Marble */
-		{ 73,	PS2PP_KIND_TRACKMAN,	PS2PP_SIDE_BTN },	/* TrackMan FX */
+		{ 72,	PS2PP_KIND_TRACKMAN,	0 },			 
+		{ 73,	PS2PP_KIND_TRACKMAN,	PS2PP_SIDE_BTN },	 
 		{ 75,	PS2PP_KIND_WHEEL,	PS2PP_WHEEL },
 		{ 76,	PS2PP_KIND_WHEEL,	PS2PP_WHEEL },
-		{ 79,	PS2PP_KIND_TRACKMAN,	PS2PP_WHEEL },		/* TrackMan with wheel */
+		{ 79,	PS2PP_KIND_TRACKMAN,	PS2PP_WHEEL },		 
 		{ 80,	PS2PP_KIND_WHEEL,	PS2PP_SIDE_BTN | PS2PP_WHEEL },
 		{ 81,	PS2PP_KIND_WHEEL,	PS2PP_WHEEL },
 		{ 83,	PS2PP_KIND_WHEEL,	PS2PP_WHEEL },
@@ -243,14 +219,14 @@ static const struct ps2pp_info *get_model_info(unsigned char model)
 		{ 96,	0,			0 },
 		{ 97,	PS2PP_KIND_TP3,		PS2PP_WHEEL | PS2PP_HWHEEL },
 		{ 99,	PS2PP_KIND_WHEEL,	PS2PP_WHEEL },
-		{ 100,	PS2PP_KIND_MX,					/* MX510 */
+		{ 100,	PS2PP_KIND_MX,					 
 				PS2PP_WHEEL | PS2PP_SIDE_BTN | PS2PP_TASK_BTN |
 				PS2PP_EXTRA_BTN | PS2PP_NAV_BTN },
-		{ 111,  PS2PP_KIND_MX,	PS2PP_WHEEL | PS2PP_SIDE_BTN },	/* MX300 reports task button as side */
-		{ 112,	PS2PP_KIND_MX,					/* MX500 */
+		{ 111,  PS2PP_KIND_MX,	PS2PP_WHEEL | PS2PP_SIDE_BTN },	 
+		{ 112,	PS2PP_KIND_MX,					 
 				PS2PP_WHEEL | PS2PP_SIDE_BTN | PS2PP_TASK_BTN |
 				PS2PP_EXTRA_BTN | PS2PP_NAV_BTN },
-		{ 114,	PS2PP_KIND_MX,					/* MX310 */
+		{ 114,	PS2PP_KIND_MX,					 
 				PS2PP_WHEEL | PS2PP_SIDE_BTN |
 				PS2PP_TASK_BTN | PS2PP_EXTRA_BTN }
 	};
@@ -263,9 +239,7 @@ static const struct ps2pp_info *get_model_info(unsigned char model)
 	return NULL;
 }
 
-/*
- * Set up input device's properties based on the detected mouse model.
- */
+ 
 
 static void ps2pp_set_model_properties(struct psmouse *psmouse,
 				       const struct ps2pp_info *model_info,
@@ -312,11 +286,7 @@ static void ps2pp_set_model_properties(struct psmouse *psmouse,
 		break;
 
 	default:
-		/*
-		 * Set name to "Mouse" only when using PS2++,
-		 * otherwise let other protocols define suitable
-		 * name
-		 */
+		 
 		if (using_ps2pp)
 			psmouse->name = "Mouse";
 		break;
@@ -348,11 +318,7 @@ static int ps2pp_setup_protocol(struct psmouse *psmouse,
 	return 0;
 }
 
-/*
- * Logitech magic init. Detect whether the mouse is a Logitech one
- * and its exact model and try turning on extended protocol for ones
- * that support it.
- */
+ 
 
 int ps2pp_detect(struct psmouse *psmouse, bool set_properties)
 {
@@ -380,18 +346,16 @@ int ps2pp_detect(struct psmouse *psmouse, bool set_properties)
 	model_info = get_model_info(model);
 	if (model_info) {
 
-/*
- * Do Logitech PS2++ / PS2T++ magic init.
- */
-		if (model_info->kind == PS2PP_KIND_TP3) { /* Touch Pad 3 */
+ 
+		if (model_info->kind == PS2PP_KIND_TP3) {  
 
-			/* Unprotect RAM */
+			 
 			param[0] = 0x11; param[1] = 0x04; param[2] = 0x68;
 			ps2_command(ps2dev, param, 0x30d1);
-			/* Enable features */
+			 
 			param[0] = 0x11; param[1] = 0x05; param[2] = 0x0b;
 			ps2_command(ps2dev, param, 0x30d1);
-			/* Enable PS2++ */
+			 
 			param[0] = 0x11; param[1] = 0x09; param[2] = 0xc3;
 			ps2_command(ps2dev, param, 0x30d1);
 
@@ -405,7 +369,7 @@ int ps2pp_detect(struct psmouse *psmouse, bool set_properties)
 		} else {
 
 			param[0] = param[1] = param[2] = 0;
-			ps2pp_cmd(psmouse, param, 0x39); /* Magic knock */
+			ps2pp_cmd(psmouse, param, 0x39);  
 			ps2pp_cmd(psmouse, param, 0xDB);
 
 			if ((param[0] & 0x78) == 0x48 &&

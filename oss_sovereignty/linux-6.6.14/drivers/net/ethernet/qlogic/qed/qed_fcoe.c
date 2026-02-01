@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* QLogic qed NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/types.h>
 #include <asm/byteorder.h>
@@ -99,7 +96,7 @@ qed_sp_fcoe_func_start(struct qed_hwfn *p_hwfn,
 	__le16 tmp;
 	u8 i;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = qed_spq_get_cid(p_hwfn);
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -116,7 +113,7 @@ qed_sp_fcoe_func_start(struct qed_hwfn *p_hwfn,
 	p_data = &p_ramrod->init_ramrod_data;
 	fcoe_pf_params = &p_hwfn->pf_params.fcoe_pf_params;
 
-	/* Sanity */
+	 
 	if (fcoe_pf_params->num_cqs > p_hwfn->hw_info.feat_num[QED_FCOE_CQ]) {
 		DP_ERR(p_hwfn,
 		       "Cannot satisfy CQ amount. CQs requested %d, CQs available %d. Aborting function start\n",
@@ -234,7 +231,7 @@ qed_sp_fcoe_conn_offload(struct qed_hwfn *p_hwfn,
 	__le16 tmp;
 	int rc;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = p_conn->icid;
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -250,7 +247,7 @@ qed_sp_fcoe_conn_offload(struct qed_hwfn *p_hwfn,
 	p_ramrod = &p_ent->ramrod.fcoe_conn_ofld;
 	p_data = &p_ramrod->offload_ramrod_data;
 
-	/* Transmission PQ is the first of the PF */
+	 
 	physical_q0 = qed_get_cm_pq_idx(p_hwfn, PQ_FLAGS_OFLD);
 	p_conn->physical_q0 = physical_q0;
 	p_data->physical_q0 = cpu_to_le16(physical_q0);
@@ -311,7 +308,7 @@ qed_sp_fcoe_conn_destroy(struct qed_hwfn *p_hwfn,
 	struct qed_sp_init_data init_data;
 	int rc = 0;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = p_conn->icid;
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -342,7 +339,7 @@ qed_sp_fcoe_func_stop(struct qed_hwfn *p_hwfn,
 	u32 active_segs = 0;
 	int rc = 0;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = p_hwfn->pf_params.fcoe_pf_params.dummy_icid;
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -534,7 +531,7 @@ int qed_fcoe_alloc(struct qed_hwfn *p_hwfn)
 {
 	struct qed_fcoe_info *p_fcoe_info;
 
-	/* Allocate LL2's set struct */
+	 
 	p_fcoe_info = kzalloc(sizeof(*p_fcoe_info), GFP_KERNEL);
 	if (!p_fcoe_info) {
 		DP_NOTICE(p_hwfn, "Failed to allocate qed_fcoe_info'\n");
@@ -610,7 +607,7 @@ qed_fcoe_acquire_connection(struct qed_hwfn *p_hwfn,
 	if (rc)
 		return rc;
 
-	/* Use input connection [if provided] or allocate a new one */
+	 
 	if (p_in_conn) {
 		p_conn = p_in_conn;
 	} else {
@@ -788,7 +785,7 @@ static int qed_fcoe_stop(struct qed_dev *cdev)
 	if (!p_ptt)
 		return -EAGAIN;
 
-	/* Stop the fcoe */
+	 
 	rc = qed_sp_fcoe_func_stop(QED_AFFIN_HWFN(cdev), p_ptt,
 				   QED_SPQ_MODE_EBLOCK, NULL);
 	cdev->flags &= ~QED_FLAG_STORAGE_STARTED;
@@ -835,7 +832,7 @@ static int qed_fcoe_start(struct qed_dev *cdev, struct qed_fcoe_tid *tasks)
 			return rc;
 		}
 
-		/* Fill task information */
+		 
 		tasks->size = tid_info->tid_size;
 		tasks->num_tids_per_block = tid_info->num_tids_per_block;
 		memcpy(tasks->blocks, tid_info->blocks,
@@ -854,14 +851,14 @@ static int qed_fcoe_acquire_conn(struct qed_dev *cdev,
 	struct qed_hash_fcoe_con *hash_con;
 	int rc;
 
-	/* Allocate a hashed connection */
+	 
 	hash_con = kzalloc(sizeof(*hash_con), GFP_KERNEL);
 	if (!hash_con) {
 		DP_NOTICE(cdev, "Failed to allocate hashed connection\n");
 		return -ENOMEM;
 	}
 
-	/* Acquire the connection */
+	 
 	rc = qed_fcoe_acquire_connection(QED_AFFIN_HWFN(cdev), NULL,
 					 &hash_con->con);
 	if (rc) {
@@ -870,7 +867,7 @@ static int qed_fcoe_acquire_conn(struct qed_dev *cdev,
 		return rc;
 	}
 
-	/* Added the connection to hash table */
+	 
 	*handle = hash_con->con->icid;
 	*fw_cid = hash_con->con->fw_cid;
 	hash_add(cdev->connections, &hash_con->node, *handle);
@@ -914,7 +911,7 @@ static int qed_fcoe_offload_conn(struct qed_dev *cdev,
 		return -EINVAL;
 	}
 
-	/* Update the connection with information from the params */
+	 
 	con = hash_con->con;
 
 	con->sq_pbl_addr = conn_info->sq_pbl_addr;
@@ -966,7 +963,7 @@ static int qed_fcoe_destroy_conn(struct qed_dev *cdev,
 		return -EINVAL;
 	}
 
-	/* Update the connection with information from the params */
+	 
 	con = hash_con->con;
 	con->terminate_params = terminate_params;
 
@@ -992,7 +989,7 @@ void qed_get_protocol_stats_fcoe(struct qed_dev *cdev,
 {
 	struct qed_fcoe_stats proto_stats;
 
-	/* Retrieve FW statistics */
+	 
 	memset(&proto_stats, 0, sizeof(proto_stats));
 	if (qed_fcoe_stats_context(cdev, &proto_stats, is_atomic)) {
 		DP_VERBOSE(cdev, QED_MSG_STORAGE,
@@ -1000,7 +997,7 @@ void qed_get_protocol_stats_fcoe(struct qed_dev *cdev,
 		return;
 	}
 
-	/* Translate FW statistics into struct */
+	 
 	stats->rx_pkts = proto_stats.fcoe_rx_data_pkt_cnt +
 			 proto_stats.fcoe_rx_xfer_pkt_cnt +
 			 proto_stats.fcoe_rx_other_pkt_cnt;
@@ -1009,7 +1006,7 @@ void qed_get_protocol_stats_fcoe(struct qed_dev *cdev,
 			 proto_stats.fcoe_tx_other_pkt_cnt;
 	stats->fcs_err = proto_stats.fcoe_silent_drop_pkt_crc_error_cnt;
 
-	/* Request protocol driver to fill-in the rest */
+	 
 	if (cdev->protocol_ops.fcoe && cdev->ops_cookie) {
 		struct qed_fcoe_cb_ops *ops = cdev->protocol_ops.fcoe;
 		void *cookie = cdev->ops_cookie;

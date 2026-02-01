@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Watchdog driver for Marvell Armada 37xx SoCs
- *
- * Author: Marek Behún <kabel@kernel.org>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -19,33 +15,17 @@
 #include <linux/types.h>
 #include <linux/watchdog.h>
 
-/*
- * There are four counters that can be used for watchdog on Armada 37xx.
- * The addresses for counter control registers are register base plus ID*0x10,
- * where ID is 0, 1, 2 or 3.
- *
- * In this driver we use IDs 0 and 1. Counter ID 1 is used as watchdog counter,
- * while counter ID 0 is used to implement pinging the watchdog: counter ID 1 is
- * set to restart counting from initial value on counter ID 0 end count event.
- * Pinging is done by forcing immediate end count event on counter ID 0.
- * If only one counter was used, pinging would have to be implemented by
- * disabling and enabling the counter, leaving the system in a vulnerable state
- * for a (really) short period of time.
- *
- * Counters ID 2 and 3 are enabled by default even before U-Boot loads,
- * therefore this driver does not provide a way to use them, eg. by setting a
- * property in device tree.
- */
+ 
 
 #define CNTR_ID_RETRIGGER		0
 #define CNTR_ID_WDOG			1
 
-/* relative to cpu_misc */
+ 
 #define WDT_TIMER_SELECT		0x64
 #define WDT_TIMER_SELECT_MASK		0xf
 #define WDT_TIMER_SELECT_VAL		BIT(CNTR_ID_WDOG)
 
-/* relative to reg */
+ 
 #define CNTR_CTRL(id)			((id) * 0x10)
 #define CNTR_CTRL_ENABLE		0x0001
 #define CNTR_CTRL_ACTIVE		0x0002
@@ -76,7 +56,7 @@ struct armada_37xx_watchdog {
 	struct watchdog_device wdt;
 	struct regmap *cpu_misc;
 	void __iomem *reg;
-	u64 timeout; /* in clock ticks */
+	u64 timeout;  
 	unsigned long clk_rate;
 	struct clk *clk;
 };
@@ -85,10 +65,7 @@ static u64 get_counter_value(struct armada_37xx_watchdog *dev, int id)
 {
 	u64 val;
 
-	/*
-	 * when low is read, high is latched into flip-flops so that it can be
-	 * read consistently without using software debouncing
-	 */
+	 
 	val = readl(dev->reg + CNTR_COUNT_LOW(id));
 	val |= ((u64)readl(dev->reg + CNTR_COUNT_HIGH(id))) << 32;
 
@@ -129,13 +106,13 @@ static void init_counter(struct armada_37xx_watchdog *dev, int id, u32 mode,
 	reg &= ~(CNTR_CTRL_MODE_MASK | CNTR_CTRL_PRESCALE_MASK |
 		 CNTR_CTRL_TRIG_SRC_MASK);
 
-	/* set mode */
+	 
 	reg |= mode & CNTR_CTRL_MODE_MASK;
 
-	/* set prescaler to the min value */
+	 
 	reg |= CNTR_CTRL_PRESCALE_MIN << CNTR_CTRL_PRESCALE_SHIFT;
 
-	/* set trigger source */
+	 
 	reg |= trig_src & CNTR_CTRL_TRIG_SRC_MASK;
 
 	writel(reg, dev->reg + CNTR_CTRL(id));
@@ -145,7 +122,7 @@ static int armada_37xx_wdt_ping(struct watchdog_device *wdt)
 {
 	struct armada_37xx_watchdog *dev = watchdog_get_drvdata(wdt);
 
-	/* counter 1 is retriggered by forcing end count on counter 0 */
+	 
 	counter_disable(dev, CNTR_ID_RETRIGGER);
 	counter_enable(dev, CNTR_ID_RETRIGGER);
 
@@ -170,11 +147,7 @@ static int armada_37xx_wdt_set_timeout(struct watchdog_device *wdt,
 
 	wdt->timeout = timeout;
 
-	/*
-	 * Compute the timeout in clock rate. We use smallest possible
-	 * prescaler, which divides the clock rate by 2
-	 * (CNTR_CTRL_PRESCALE_MIN).
-	 */
+	 
 	dev->timeout = (u64)dev->clk_rate * timeout;
 	do_div(dev->timeout, CNTR_CTRL_PRESCALE_MIN);
 
@@ -199,22 +172,22 @@ static int armada_37xx_wdt_start(struct watchdog_device *wdt)
 {
 	struct armada_37xx_watchdog *dev = watchdog_get_drvdata(wdt);
 
-	/* select counter 1 as watchdog counter */
+	 
 	regmap_write(dev->cpu_misc, WDT_TIMER_SELECT, WDT_TIMER_SELECT_VAL);
 
-	/* init counter 0 as retrigger counter for counter 1 */
+	 
 	init_counter(dev, CNTR_ID_RETRIGGER, CNTR_CTRL_MODE_ONESHOT, 0);
 	set_counter_value(dev, CNTR_ID_RETRIGGER, 0);
 
-	/* init counter 1 to be retriggerable by counter 0 end count */
+	 
 	init_counter(dev, CNTR_ID_WDOG, CNTR_CTRL_MODE_HWSIG,
 		     CNTR_CTRL_TRIG_SRC_PREV_CNTR);
 	set_counter_value(dev, CNTR_ID_WDOG, dev->timeout);
 
-	/* enable counter 1 */
+	 
 	counter_enable(dev, CNTR_ID_WDOG);
 
-	/* start counter 1 by forcing immediate end count on counter 0 */
+	 
 	counter_enable(dev, CNTR_ID_RETRIGGER);
 
 	return 0;
@@ -273,7 +246,7 @@ static int armada_37xx_wdt_probe(struct platform_device *pdev)
 	if (!dev->reg)
 		return -ENOMEM;
 
-	/* init clock */
+	 
 	dev->clk = devm_clk_get_enabled(&pdev->dev, NULL);
 	if (IS_ERR(dev->clk))
 		return PTR_ERR(dev->clk);
@@ -282,16 +255,12 @@ static int armada_37xx_wdt_probe(struct platform_device *pdev)
 	if (!dev->clk_rate)
 		return -EINVAL;
 
-	/*
-	 * Since the timeout in seconds is given as 32 bit unsigned int, and
-	 * the counters hold 64 bit values, even after multiplication by clock
-	 * rate the counter can hold timeout of UINT_MAX seconds.
-	 */
+	 
 	dev->wdt.min_timeout = 1;
 	dev->wdt.max_timeout = UINT_MAX;
 	dev->wdt.parent = &pdev->dev;
 
-	/* default value, possibly override by module parameter or dtb */
+	 
 	dev->wdt.timeout = WATCHDOG_TIMEOUT;
 	watchdog_init_timeout(&dev->wdt, timeout, &pdev->dev);
 

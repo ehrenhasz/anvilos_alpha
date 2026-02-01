@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <errno.h>
 #include <unistd.h>
 #include <sys/syscall.h>
@@ -94,10 +94,7 @@ static int get_group_fd(struct perf_evsel *evsel, int cpu_map_idx, int thread, i
 		return 0;
 	}
 
-	/*
-	 * Leader must be already processed/open,
-	 * if not it's a bug.
-	 */
+	 
 	if (!leader->fd)
 		return -ENOTCONN;
 
@@ -292,7 +289,7 @@ void *perf_evsel__mmap_base(struct perf_evsel *evsel, int cpu_map_idx, int threa
 int perf_evsel__read_size(struct perf_evsel *evsel)
 {
 	u64 read_format = evsel->attr.read_format;
-	int entry = sizeof(u64); /* value */
+	int entry = sizeof(u64);  
 	int size = 0;
 	int nr = 1;
 
@@ -317,7 +314,7 @@ int perf_evsel__read_size(struct perf_evsel *evsel)
 	return size;
 }
 
-/* This only reads values for the leader */
+ 
 static int perf_evsel__read_group(struct perf_evsel *evsel, int cpu_map_idx,
 				  int thread, struct perf_counts_values *count)
 {
@@ -339,16 +336,13 @@ static int perf_evsel__read_group(struct perf_evsel *evsel, int cpu_map_idx,
 		return -errno;
 	}
 
-	/*
-	 * This reads only the leader event intentionally since we don't have
-	 * perf counts values for sibling events.
-	 */
+	 
 	if (read_format & PERF_FORMAT_TOTAL_TIME_ENABLED)
 		count->ena = data[idx++];
 	if (read_format & PERF_FORMAT_TOTAL_TIME_RUNNING)
 		count->run = data[idx++];
 
-	/* value is always available */
+	 
 	count->val = data[idx++];
 	if (read_format & PERF_FORMAT_ID)
 		count->id = data[idx++];
@@ -359,10 +353,7 @@ static int perf_evsel__read_group(struct perf_evsel *evsel, int cpu_map_idx,
 	return 0;
 }
 
-/*
- * The perf read format is very flexible.  It needs to set the proper
- * values according to the read format.
- */
+ 
 static void perf_evsel__adjust_values(struct perf_evsel *evsel, u64 *buf,
 				      struct perf_counts_values *count)
 {

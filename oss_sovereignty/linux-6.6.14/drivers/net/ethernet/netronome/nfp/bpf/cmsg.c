@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2017-2018 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/bpf.h>
 #include <linux/bitops.h>
@@ -302,11 +302,11 @@ nfp_bpf_ctrl_entry_op(struct bpf_offloaded_map *offmap, enum nfp_ccm_type op,
 	u32 cache_gen;
 	int err;
 
-	/* FW messages have no space for more than 32 bits of flags */
+	 
 	if (flags >> 32)
 		return -EOPNOTSUPP;
 
-	/* Handle op cache */
+	 
 	n_entries = nfp_bpf_ctrl_op_cache_get(nfp_map, op, key, out_key,
 					      out_value, &cache_gen);
 	if (!n_entries)
@@ -323,7 +323,7 @@ nfp_bpf_ctrl_entry_op(struct bpf_offloaded_map *offmap, enum nfp_ccm_type op,
 	req->count = cpu_to_be32(n_entries);
 	req->flags = cpu_to_be32(flags);
 
-	/* Copy inputs */
+	 
 	if (key)
 		memcpy(nfp_bpf_ctrl_req_key(bpf, req, 0), key, map->key_size);
 	if (value)
@@ -346,9 +346,7 @@ nfp_bpf_ctrl_entry_op(struct bpf_offloaded_map *offmap, enum nfp_ccm_type op,
 	reply = (void *)skb->data;
 	count = be32_to_cpu(reply->count);
 	err = nfp_bpf_ctrl_rc_to_errno(bpf, &reply->reply_hdr);
-	/* FW responds with message sized to hold the good entries,
-	 * plus one extra entry if there was an error.
-	 */
+	 
 	reply_entries = count + !!err;
 	if (n_entries > 1 && count)
 		err = 0;
@@ -362,7 +360,7 @@ nfp_bpf_ctrl_entry_op(struct bpf_offloaded_map *offmap, enum nfp_ccm_type op,
 		goto err_free;
 	}
 
-	/* Copy outputs */
+	 
 	if (out_key)
 		memcpy(out_key, nfp_bpf_ctrl_reply_key(bpf, reply, 0),
 		       map->key_size);

@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/ucs2_string.h>
 #include <linux/module.h>
 
-/* Return the number of unicode characters in data */
+ 
 unsigned long
 ucs2_strnlen(const ucs2_char_t *s, size_t maxlength)
 {
@@ -21,10 +21,7 @@ ucs2_strlen(const ucs2_char_t *s)
 }
 EXPORT_SYMBOL(ucs2_strlen);
 
-/*
- * Return the number of bytes is the length of this string
- * Note: this is NOT the same as the number of unicode characters
- */
+ 
 unsigned long
 ucs2_strsize(const ucs2_char_t *data, unsigned long maxlength)
 {
@@ -42,7 +39,7 @@ ucs2_strncmp(const ucs2_char_t *a, const ucs2_char_t *b, size_t len)
                         return -1;
                 if (*a > *b)
                         return 1;
-                if (*a == 0) /* implies *b == 0 */
+                if (*a == 0)  
                         return 0;
                 a++;
                 b++;
@@ -72,13 +69,7 @@ ucs2_utf8size(const ucs2_char_t *src)
 }
 EXPORT_SYMBOL(ucs2_utf8size);
 
-/*
- * copy at most maxlength bytes of whole utf8 characters to dest from the
- * ucs2 string src.
- *
- * The return value is the number of characters copied, not including the
- * final NUL character.
- */
+ 
 unsigned long
 ucs2_as_utf8(u8 *dest, const ucs2_char_t *src, unsigned long maxlength)
 {

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * reg-virtual-consumer.c
- *
- * Copyright 2008 Wolfson Microelectronics PLC.
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/mutex.h>
@@ -235,10 +229,7 @@ static ssize_t set_mode(struct device *dev, struct device_attribute *attr,
 	unsigned int mode;
 	int ret;
 
-	/*
-	 * sysfs_streq() doesn't need the \n's, but we add them so the strings
-	 * will be shared with show_mode(), above.
-	 */
+	 
 	if (sysfs_streq(buf, "fast\n"))
 		mode = REGULATOR_MODE_FAST;
 	else if (sysfs_streq(buf, "normal\n"))
@@ -314,11 +305,7 @@ static int regulator_virtual_probe(struct platform_device *pdev)
 	if (drvdata == NULL)
 		return -ENOMEM;
 
-	/*
-	 * This virtual consumer does not have any hardware-defined supply
-	 * name, so just allow the regulator to be specified in a property
-	 * named "default-supply" when we're being probed from devicetree.
-	 */
+	 
 	if (!reg_id && pdev->dev.of_node)
 		reg_id = "default";
 

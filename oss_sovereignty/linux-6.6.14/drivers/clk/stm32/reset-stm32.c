@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics 2022 - All Rights Reserved
- * Author: Gabriel Fernandez <gabriel.fernandez@foss.st.com> for STMicroelectronics.
- */
+
+ 
 
 #include <linux/of.h>
 #include <linux/platform_device.h>
@@ -16,7 +13,7 @@
 #define STM32_RESET_ID_MASK GENMASK(15, 0)
 
 struct stm32_reset_data {
-	/* reset lock */
+	 
 	spinlock_t			lock;
 	struct reset_controller_dev	rcdev;
 	void __iomem			*membase;

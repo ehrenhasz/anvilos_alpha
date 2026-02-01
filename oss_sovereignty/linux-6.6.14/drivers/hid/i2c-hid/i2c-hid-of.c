@@ -1,23 +1,4 @@
-/*
- * HID over I2C Open Firmware Subclass
- *
- * Copyright (c) 2012 Benjamin Tissoires <benjamin.tissoires@gmail.com>
- * Copyright (c) 2012 Ecole Nationale de l'Aviation Civile, France
- * Copyright (c) 2012 Red Hat, Inc
- *
- * This code was forked out of the core code, which was partly based on
- * "USB HID support for Linux":
- *
- *  Copyright (c) 1999 Andreas Gal
- *  Copyright (c) 2000-2005 Vojtech Pavlik <vojtech@suse.cz>
- *  Copyright (c) 2005 Michael Haboustak <mike-@cinci.rr.com> for Concept2, Inc
- *  Copyright (c) 2007-2008 Oliver Neukum
- *  Copyright (c) 2006-2010 Jiri Kosina
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file COPYING in the main directory of this archive for
- * more details.
- */
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -104,15 +85,11 @@ static int i2c_hid_of_probe(struct i2c_client *client)
 	if (!device_property_read_u32(dev, "post-power-on-delay-ms", &val))
 		ihid_of->post_power_delay_ms = val;
 
-	/*
-	 * Note this is a kernel internal device-property set by x86 platform code,
-	 * this MUST not be used in devicetree files without first adding it to
-	 * the DT bindings.
-	 */
+	 
 	if (!device_property_read_u32(dev, "post-reset-deassert-delay-ms", &val))
 		ihid_of->post_reset_delay_ms = val;
 
-	/* Start out with reset asserted */
+	 
 	ihid_of->reset_gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
 	if (IS_ERR(ihid_of->reset_gpio))
 		return PTR_ERR(ihid_of->reset_gpio);

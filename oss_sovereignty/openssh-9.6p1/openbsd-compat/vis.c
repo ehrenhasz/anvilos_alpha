@@ -1,34 +1,7 @@
-/*	$OpenBSD: vis.c,v 1.25 2015/09/13 11:32:51 guenther Exp $ */
-/*-
- * Copyright (c) 1989, 1993
- *	The Regents of the University of California.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the University nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- */
+ 
+ 
 
-/* OPENBSD ORIGINAL: lib/libc/gen/vis.c */
+ 
 
 #include "includes.h"
 #if !defined(HAVE_STRNVIS) || defined(BROKEN_STRNVIS)
@@ -55,9 +28,7 @@
 		(c) == '\007' || (c) == '\r' ||				\
 		isgraph((u_char)(c))))))
 
-/*
- * vis - visually encode characters
- */
+ 
 char *
 vis(char *dst, int c, int flag, int nextc)
 {
@@ -144,19 +115,7 @@ done:
 }
 DEF_WEAK(vis);
 
-/*
- * strvis, strnvis, strvisx - visually encode characters from src into dst
- *	
- *	Dst must be 4 times the size of src to account for possible
- *	expansion.  The length of dst, not including the trailing NULL,
- *	is returned. 
- *
- *	Strnvis will write no more than siz-1 bytes (and will NULL terminate).
- *	The number of bytes needed to fully encode the string is returned.
- *
- *	Strvisx encodes exactly len bytes from src into dst.
- *	This is useful for encoding a block of data.
- */
+ 
 int
 strvis(char *dst, const char *src, int flag)
 {
@@ -182,7 +141,7 @@ strnvis(char *dst, const char *src, size_t siz, int flag)
 		if (isvisible(c, flag)) {
 			if ((c == '"' && (flag & VIS_DQ) != 0) ||
 			    (c == '\\' && (flag & VIS_NOSLASH) == 0)) {
-				/* need space for the extra '\\' */
+				 
 				if (dst + 1 >= end) {
 					i = 2;
 					break;
@@ -206,7 +165,7 @@ strnvis(char *dst, const char *src, size_t siz, int flag)
 	if (siz > 0)
 		*dst = '\0';
 	if (dst + i > end) {
-		/* adjust return value for truncation */
+		 
 		while ((c = *src))
 			dst += vis(tbuf, c, flag, *++src) - tbuf;
 	}

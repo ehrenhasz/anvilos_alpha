@@ -1,23 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * CXL Flash Device Driver
- *
- * Written by: Matthew R. Ochs <mrochs@linux.vnet.ibm.com>, IBM Corporation
- *             Uma Krishnan <ukrishn@linux.vnet.ibm.com>, IBM Corporation
- *
- * Copyright (C) 2018 IBM Corporation
- */
+
+ 
 
 #include <misc/cxl.h>
 
 #include "backend.h"
 
-/*
- * The following routines map the cxlflash backend operations to existing CXL
- * kernel API function and are largely simple shims that provide an abstraction
- * for converting generic context and AFU cookies into cxl_context or cxl_afu
- * pointers.
- */
+ 
 
 static void __iomem *cxlflash_psa_map(void *ctx_cookie)
 {
@@ -47,7 +35,7 @@ static void cxlflash_unmap_afu_irq(void *ctx_cookie, int num, void *cookie)
 
 static u64 cxlflash_get_irq_objhndl(void *ctx_cookie, int irq)
 {
-	/* Dummy fop for cxl */
+	 
 	return 0;
 }
 
@@ -114,7 +102,7 @@ static void *cxlflash_create_afu(struct pci_dev *dev)
 
 static void cxlflash_destroy_afu(void *afu)
 {
-	/* Dummy fop for cxl */
+	 
 }
 
 static struct file *cxlflash_get_fd(void *ctx_cookie,

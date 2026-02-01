@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (C) 2022 MediaTek Inc.
- * Author: Hui Liu <hui.liu@mediatek.com>
- */
+ 
+ 
 
 #ifndef __MEDIATEK_MT8188_PINFUNC_H
 #define __MEDIATEK_MT8188_PINFUNC_H
@@ -1277,4 +1274,4 @@
 #define PINMUX_GPIO176__FUNC_B_GPIO176 (MTK_PIN_NO(176) | 0)
 #define PINMUX_GPIO176__FUNC_B0_SPMI_M_SDA (MTK_PIN_NO(176) | 1)
 
-#endif /* __MEDIATEK_MT8188-PINFUNC_H */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NXP Wireless LAN device driver: major functions
- *
- * Copyright 2011-2020 NXP
- */
+
+ 
 
 #include <linux/suspend.h>
 
@@ -38,21 +34,7 @@ MODULE_PARM_DESC(aggr_ctrl, "usb tx aggregation enable:1, disable:0");
 
 const u16 mwifiex_1d_to_wmm_queue[8] = { 1, 0, 0, 1, 2, 2, 3, 3 };
 
-/*
- * This function registers the device and performs all the necessary
- * initializations.
- *
- * The following initialization operations are performed -
- *      - Allocate adapter structure
- *      - Save interface specific operations table in adapter
- *      - Call interface specific initialization routine
- *      - Allocate private structures
- *      - Set default adapter structure parameters
- *      - Initialize locks
- *
- * In case of any errors during inittialization, this function also ensures
- * proper cleanup before exiting.
- */
+ 
 static int mwifiex_register(void *card, struct device *dev,
 			    struct mwifiex_if_ops *if_ops, void **padapter)
 {
@@ -67,11 +49,11 @@ static int mwifiex_register(void *card, struct device *dev,
 	adapter->dev = dev;
 	adapter->card = card;
 
-	/* Save interface specific operations in adapter */
+	 
 	memmove(&adapter->if_ops, if_ops, sizeof(struct mwifiex_if_ops));
 	adapter->debug_mask = debug_mask;
 
-	/* card specific initialization has been deferred until now .. */
+	 
 	if (adapter->if_ops.init_if)
 		if (adapter->if_ops.init_if(adapter))
 			goto error;
@@ -79,7 +61,7 @@ static int mwifiex_register(void *card, struct device *dev,
 	adapter->priv_num = 0;
 
 	for (i = 0; i < MWIFIEX_MAX_BSS_NUM; i++) {
-		/* Allocate memory for private structure */
+		 
 		adapter->priv[i] =
 			kzalloc(sizeof(struct mwifiex_private), GFP_KERNEL);
 		if (!adapter->priv[i])
@@ -106,16 +88,7 @@ error:
 	return -1;
 }
 
-/*
- * This function unregisters the device and performs all the necessary
- * cleanups.
- *
- * The following cleanup operations are performed -
- *      - Free the timers
- *      - Free beacon buffers
- *      - Free private structures
- *      - Free adapter structure
- */
+ 
 static int mwifiex_unregister(struct mwifiex_adapter *adapter)
 {
 	s32 i;
@@ -125,7 +98,7 @@ static int mwifiex_unregister(struct mwifiex_adapter *adapter)
 
 	timer_shutdown_sync(&adapter->cmd_timer);
 
-	/* Free private structures */
+	 
 	for (i = 0; i < adapter->priv_num; i++) {
 		if (adapter->priv[i]) {
 			mwifiex_free_curr_bcn(adapter->priv[i]);
@@ -186,7 +159,7 @@ static int mwifiex_process_rx(struct mwifiex_adapter *adapter)
 		spin_unlock_bh(&adapter->rx_proc_lock);
 	}
 
-	/* Check for Rx data */
+	 
 	while ((skb = skb_dequeue(&adapter->rx_data_q))) {
 		atomic_dec(&adapter->rx_pending);
 		if ((adapter->delay_main_work ||
@@ -231,21 +204,7 @@ static void maybe_quirk_fw_disable_ds(struct mwifiex_adapter *adapter)
 	}
 }
 
-/*
- * The main process.
- *
- * This function is the main procedure of the driver and handles various driver
- * operations. It runs in a loop and provides the core functionalities.
- *
- * The main responsibilities of this function are -
- *      - Ensure concurrency control
- *      - Handle pending interrupts and call interrupt handlers
- *      - Wake up the card if required
- *      - Handle command responses and call response handlers
- *      - Handle events and call event handlers
- *      - Execute pending commands
- *      - Transmit pending data packets
- */
+ 
 int mwifiex_main_process(struct mwifiex_adapter *adapter)
 {
 	int ret = 0;
@@ -253,7 +212,7 @@ int mwifiex_main_process(struct mwifiex_adapter *adapter)
 
 	spin_lock_irqsave(&adapter->main_proc_lock, flags);
 
-	/* Check if already processing */
+	 
 	if (adapter->mwifiex_processing || adapter->main_locked) {
 		adapter->more_task_flag = true;
 		spin_unlock_irqrestore(&adapter->main_proc_lock, flags);
@@ -267,13 +226,7 @@ process_start:
 		if (adapter->hw_status == MWIFIEX_HW_STATUS_NOT_READY)
 			break;
 
-		/* For non-USB interfaces, If we process interrupts first, it
-		 * would increase RX pending even further. Avoid this by
-		 * checking if rx_pending has crossed high threshold and
-		 * schedule rx work queue and then process interrupts.
-		 * For USB interface, there are no interrupts. We already have
-		 * HIGH_RX_PENDING check in usb.c
-		 */
+		 
 		if (atomic_read(&adapter->rx_pending) >= HIGH_RX_PENDING &&
 		    adapter->iface_type != MWIFIEX_USB) {
 			adapter->delay_main_work = true;
@@ -281,7 +234,7 @@ process_start:
 			break;
 		}
 
-		/* Handle pending interrupt if any */
+		 
 		if (adapter->int_status) {
 			if (adapter->hs_activated)
 				mwifiex_process_hs_config(adapter);
@@ -292,7 +245,7 @@ process_start:
 		if (adapter->rx_work_enabled && adapter->data_received)
 			mwifiex_queue_rx_work(adapter);
 
-		/* Need to wake up the card ? */
+		 
 		if ((adapter->ps_state == PS_STATE_SLEEP) &&
 		    (adapter->pm_wakeup_card_req &&
 		     !adapter->pm_wakeup_fw_try) &&
@@ -313,7 +266,7 @@ process_start:
 			if (adapter->ps_state == PS_STATE_SLEEP)
 				adapter->ps_state = PS_STATE_AWAKE;
 		} else {
-			/* We have tried to wakeup the card already */
+			 
 			if (adapter->pm_wakeup_fw_try)
 				break;
 			if (adapter->ps_state == PS_STATE_PRE_SLEEP)
@@ -346,18 +299,18 @@ process_start:
 			}
 		}
 
-		/* Check for event */
+		 
 		if (adapter->event_received) {
 			adapter->event_received = false;
 			mwifiex_process_event(adapter);
 		}
 
-		/* Check for Cmd Resp */
+		 
 		if (adapter->cmd_resp_received) {
 			adapter->cmd_resp_received = false;
 			mwifiex_process_cmdresp(adapter);
 
-			/* call mwifiex back when init_fw is done */
+			 
 			if (adapter->hw_status == MWIFIEX_HW_STATUS_INIT_DONE) {
 				adapter->hw_status = MWIFIEX_HW_STATUS_READY;
 				mwifiex_init_fw_complete(adapter);
@@ -365,14 +318,11 @@ process_start:
 			}
 		}
 
-		/* Check if we need to confirm Sleep Request
-		   received previously */
+		 
 		if (adapter->ps_state == PS_STATE_PRE_SLEEP)
 			mwifiex_check_ps_cond(adapter);
 
-		/* * The ps_state may have been changed during processing of
-		 * Sleep Request event.
-		 */
+		 
 		if ((adapter->ps_state == PS_STATE_SLEEP) ||
 		    (adapter->ps_state == PS_STATE_PRE_SLEEP) ||
 		    (adapter->ps_state == PS_STATE_SLEEP_CFM)) {
@@ -396,9 +346,7 @@ process_start:
 			}
 		}
 
-		/** If USB Multi channel setup ongoing,
-		 *  wait for ready to tx data.
-		 */
+		 
 		if (adapter->iface_type == MWIFIEX_USB &&
 		    adapter->usb_mc_setup)
 			continue;
@@ -498,12 +446,7 @@ process_start:
 }
 EXPORT_SYMBOL_GPL(mwifiex_main_process);
 
-/*
- * This function frees the adapter structure.
- *
- * Additionally, this closes the netlink socket, frees the timers
- * and private structures.
- */
+ 
 static void mwifiex_free_adapter(struct mwifiex_adapter *adapter)
 {
 	if (!adapter) {
@@ -515,10 +458,7 @@ static void mwifiex_free_adapter(struct mwifiex_adapter *adapter)
 	pr_debug("info: %s: free adapter\n", __func__);
 }
 
-/*
- * This function cancels all works in the queue and destroys
- * the main workqueue.
- */
+ 
 static void mwifiex_terminate_workqueue(struct mwifiex_adapter *adapter)
 {
 	if (adapter->workqueue) {
@@ -532,13 +472,7 @@ static void mwifiex_terminate_workqueue(struct mwifiex_adapter *adapter)
 	}
 }
 
-/*
- * This function gets firmware and initializes it.
- *
- * The main initialization steps followed are -
- *      - Download the correct firmware to card
- *      - Issue the init commands to firmware
- */
+ 
 static int _mwifiex_fw_dpc(const struct firmware *firmware, void *context)
 {
 	int ret;
@@ -578,7 +512,7 @@ static int _mwifiex_fw_dpc(const struct firmware *firmware, void *context)
 				    "Cal data request_firmware() failed\n");
 	}
 
-	/* enable host interrupt after fw dnld is successful */
+	 
 	if (adapter->if_ops.enable_int) {
 		if (adapter->if_ops.enable_int(adapter))
 			goto err_dnld_fw;
@@ -592,7 +526,7 @@ static int _mwifiex_fw_dpc(const struct firmware *firmware, void *context)
 		adapter->hw_status = MWIFIEX_HW_STATUS_READY;
 		goto done;
 	}
-	/* Wait for mwifiex_init to complete */
+	 
 	if (!adapter->mfg_mode) {
 		wait_event_interruptible(adapter->init_wait_q,
 					 adapter->init_wait_q_woken);
@@ -621,7 +555,7 @@ static int _mwifiex_fw_dpc(const struct firmware *firmware, void *context)
 
 	rtnl_lock();
 	wiphy_lock(adapter->wiphy);
-	/* Create station interface by default */
+	 
 	wdev = mwifiex_add_virtual_intf(adapter->wiphy, "mlan%d", NET_NAME_ENUM,
 					NL80211_IFTYPE_STATION, NULL);
 	if (IS_ERR(wdev)) {
@@ -701,7 +635,7 @@ done:
 			device_init_wakeup(adapter->dev, false);
 		mwifiex_free_adapter(adapter);
 	}
-	/* Tell all current and future waiters we're finished */
+	 
 	complete_all(fw_done);
 
 	return init_failed ? -EIO : 0;
@@ -712,18 +646,13 @@ static void mwifiex_fw_dpc(const struct firmware *firmware, void *context)
 	_mwifiex_fw_dpc(firmware, context);
 }
 
-/*
- * This function gets the firmware and (if called asynchronously) kicks off the
- * HW init when done.
- */
+ 
 static int mwifiex_init_hw_fw(struct mwifiex_adapter *adapter,
 			      bool req_fw_nowait)
 {
 	int ret;
 
-	/* Override default firmware with manufacturing one if
-	 * manufacturing mode is enabled
-	 */
+	 
 	if (mfg_mode)
 		strscpy(adapter->fw_name, MFG_FIRMWARE,
 			sizeof(adapter->fw_name));
@@ -744,11 +673,7 @@ static int mwifiex_init_hw_fw(struct mwifiex_adapter *adapter,
 	return ret;
 }
 
-/*
- * CFG802.11 network device handler for open.
- *
- * Starts the data queue.
- */
+ 
 static int
 mwifiex_open(struct net_device *dev)
 {
@@ -757,9 +682,7 @@ mwifiex_open(struct net_device *dev)
 	return 0;
 }
 
-/*
- * CFG802.11 network device handler for close.
- */
+ 
 static int
 mwifiex_close(struct net_device *dev)
 {
@@ -807,9 +730,7 @@ mwifiex_bypass_tx_queue(struct mwifiex_private *priv,
 
 	return false;
 }
-/*
- * Add buffer into wmm tx queue and queue work to transmit it.
- */
+ 
 int mwifiex_queue_tx_pkt(struct mwifiex_private *priv, struct sk_buff *skb)
 {
 	struct netdev_queue *txq;
@@ -872,16 +793,14 @@ mwifiex_clone_skb_for_tx_status(struct mwifiex_private *priv,
 			skb = orig_skb;
 		}
 	} else {
-		/* couldn't clone -- lose tx status ... */
+		 
 		skb = orig_skb;
 	}
 
 	return skb;
 }
 
-/*
- * CFG802.11 network device handler for data transmission.
- */
+ 
 static netdev_tx_t
 mwifiex_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
 {
@@ -910,7 +829,7 @@ mwifiex_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		mwifiex_dbg(priv->adapter, DATA,
 			    "data: Tx: insufficient skb headroom %d\n",
 			    skb_headroom(skb));
-		/* Insufficient skb headroom - allocate a new skb */
+		 
 		new_skb =
 			skb_realloc_headroom(skb, MWIFIEX_MIN_DATA_HEADER_LEN);
 		if (unlikely(!new_skb)) {
@@ -942,13 +861,7 @@ mwifiex_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
 						      skb,
 					MWIFIEX_BUF_FLAG_EAPOL_TX_STATUS, NULL);
 
-	/* Record the current time the packet was queued; used to
-	 * determine the amount of time the packet was queued in
-	 * the driver before it was sent to the firmware.
-	 * The delay is then sent along with the packet to the
-	 * firmware for aggregate delay calculation for stats and
-	 * MSDU lifetime expiry.
-	 */
+	 
 	__net_timestamp(skb);
 
 	if (ISSUPP_TDLS_ENABLED(priv->adapter->fw_cap_info) &&
@@ -975,7 +888,7 @@ int mwifiex_set_mac_address(struct mwifiex_private *priv,
 	if (external) {
 		mac_addr = ether_addr_to_u64(new_mac);
 	} else {
-		/* Internal mac address change */
+		 
 		if (priv->bss_type == MWIFIEX_BSS_TYPE_ANY)
 			return -EOPNOTSUPP;
 
@@ -985,7 +898,7 @@ int mwifiex_set_mac_address(struct mwifiex_private *priv,
 			mac_addr |= BIT_ULL(MWIFIEX_MAC_LOCAL_ADMIN_BIT);
 			mac_addr += priv->bss_num;
 		} else if (priv->adapter->priv[0] != priv) {
-			/* Set mac address based on bss_type/bss_num */
+			 
 			mac_addr ^= BIT_ULL(priv->bss_type + 8);
 			mac_addr += priv->bss_num;
 		}
@@ -993,7 +906,7 @@ int mwifiex_set_mac_address(struct mwifiex_private *priv,
 
 	u64_to_ether_addr(mac_addr, priv->curr_addr);
 
-	/* Send request to firmware */
+	 
 	ret = mwifiex_send_cmd(priv, HostCmd_CMD_802_11_MAC_ADDRESS,
 			       HostCmd_ACT_GEN_SET, 0, NULL, true);
 
@@ -1008,8 +921,7 @@ int mwifiex_set_mac_address(struct mwifiex_private *priv,
 	return 0;
 }
 
-/* CFG802.11 network device handler for setting MAC address.
- */
+ 
 static int
 mwifiex_ndo_set_mac_address(struct net_device *dev, void *addr)
 {
@@ -1019,9 +931,7 @@ mwifiex_ndo_set_mac_address(struct net_device *dev, void *addr)
 	return mwifiex_set_mac_address(priv, dev, true, hw_addr->sa_data);
 }
 
-/*
- * CFG802.11 network device handler for setting multicast list.
- */
+ 
 static void mwifiex_set_multicast_list(struct net_device *dev)
 {
 	struct mwifiex_private *priv = mwifiex_netdev_get_priv(dev);
@@ -1040,9 +950,7 @@ static void mwifiex_set_multicast_list(struct net_device *dev)
 	mwifiex_request_set_multicast_list(priv, &mcast_list);
 }
 
-/*
- * CFG802.11 network device handler for transmission timeout.
- */
+ 
 static void
 mwifiex_tx_timeout(struct net_device *dev, unsigned int txqueue)
 {
@@ -1093,9 +1001,7 @@ EXPORT_SYMBOL_GPL(mwifiex_multi_chan_resync);
 
 void mwifiex_upload_device_dump(struct mwifiex_adapter *adapter)
 {
-	/* Dump all the memory data into single file, a userspace script will
-	 * be used to split all the memory data to multiple files
-	 */
+	 
 	mwifiex_dbg(adapter, MSG,
 		    "== mwifiex dump information to /sys/class/devcoredump start\n");
 	dev_coredumpv(adapter->dev, adapter->devdump_data, adapter->devdump_len,
@@ -1103,10 +1009,7 @@ void mwifiex_upload_device_dump(struct mwifiex_adapter *adapter)
 	mwifiex_dbg(adapter, MSG,
 		    "== mwifiex dump information to /sys/class/devcoredump end\n");
 
-	/* Device dump data will be freed in device coredump release function
-	 * after 5 min. Here reset adapter->devdump_data and ->devdump_len
-	 * to avoid it been accidentally reused.
-	 */
+	 
 	adapter->devdump_data = NULL;
 	adapter->devdump_len = 0;
 }
@@ -1238,7 +1141,7 @@ void mwifiex_prepare_fw_dump_info(struct mwifiex_adapter *adapter)
 	}
 
 	if (dump_len + 1 + adapter->devdump_len > MWIFIEX_FW_DUMP_SIZE) {
-		/* Realloc in case buffer overflow */
+		 
 		fw_dump_ptr = vzalloc(dump_len + 1 + adapter->devdump_len);
 		mwifiex_dbg(adapter, MSG, "Realloc device dump data.\n");
 		if (!fw_dump_ptr) {
@@ -1291,9 +1194,7 @@ void mwifiex_prepare_fw_dump_info(struct mwifiex_adapter *adapter)
 }
 EXPORT_SYMBOL_GPL(mwifiex_prepare_fw_dump_info);
 
-/*
- * CFG802.11 network device handler for statistics retrieval.
- */
+ 
 static struct net_device_stats *mwifiex_get_stats(struct net_device *dev)
 {
 	struct mwifiex_private *priv = mwifiex_netdev_get_priv(dev);
@@ -1309,7 +1210,7 @@ mwifiex_netdev_select_wmm_queue(struct net_device *dev, struct sk_buff *skb,
 	return mwifiex_1d_to_wmm_queue[skb->priority];
 }
 
-/* Network device handlers */
+ 
 static const struct net_device_ops mwifiex_netdev_ops = {
 	.ndo_open = mwifiex_open,
 	.ndo_stop = mwifiex_close,
@@ -1322,32 +1223,13 @@ static const struct net_device_ops mwifiex_netdev_ops = {
 	.ndo_select_queue = mwifiex_netdev_select_wmm_queue,
 };
 
-/*
- * This function initializes the private structure parameters.
- *
- * The following wait queues are initialized -
- *      - IOCTL wait queue
- *      - Command wait queue
- *      - Statistics wait queue
- *
- * ...and the following default parameters are set -
- *      - Current key index     : Set to 0
- *      - Rate index            : Set to auto
- *      - Media connected       : Set to disconnected
- *      - Adhoc link sensed     : Set to false
- *      - Nick name             : Set to null
- *      - Number of Tx timeout  : Set to 0
- *      - Device address        : Set to current address
- *      - Rx histogram statistc : Set to 0
- *
- * In addition, the CFG80211 work queue is also created.
- */
+ 
 void mwifiex_init_priv_params(struct mwifiex_private *priv,
 			      struct net_device *dev)
 {
 	dev->netdev_ops = &mwifiex_netdev_ops;
 	dev->needs_free_netdev = true;
-	/* Initialize private structure */
+	 
 	priv->current_key_index = 0;
 	priv->media_connected = false;
 	memset(priv->mgmt_ie, 0,
@@ -1370,9 +1252,7 @@ void mwifiex_init_priv_params(struct mwifiex_private *priv,
 	}
 }
 
-/*
- * This function check if command is pending.
- */
+ 
 int is_command_pending(struct mwifiex_adapter *adapter)
 {
 	int is_cmd_pend_q_empty;
@@ -1384,11 +1264,7 @@ int is_command_pending(struct mwifiex_adapter *adapter)
 	return !is_cmd_pend_q_empty;
 }
 
-/*
- * This is the RX work queue function.
- *
- * It handles the RX operations.
- */
+ 
 static void mwifiex_rx_work_queue(struct work_struct *work)
 {
 	struct mwifiex_adapter *adapter =
@@ -1399,12 +1275,7 @@ static void mwifiex_rx_work_queue(struct work_struct *work)
 	mwifiex_process_rx(adapter);
 }
 
-/*
- * This is the main work queue function.
- *
- * It handles the main process, which in turn handles the complete
- * driver operations.
- */
+ 
 static void mwifiex_main_work_queue(struct work_struct *work)
 {
 	struct mwifiex_adapter *adapter =
@@ -1415,15 +1286,13 @@ static void mwifiex_main_work_queue(struct work_struct *work)
 	mwifiex_main_process(adapter);
 }
 
-/* Common teardown code used for both device removal and reset */
+ 
 static void mwifiex_uninit_sw(struct mwifiex_adapter *adapter)
 {
 	struct mwifiex_private *priv;
 	int i;
 
-	/* We can no longer handle interrupts once we start doing the teardown
-	 * below.
-	 */
+	 
 	if (adapter->if_ops.disable_int)
 		adapter->if_ops.disable_int(adapter);
 
@@ -1431,7 +1300,7 @@ static void mwifiex_uninit_sw(struct mwifiex_adapter *adapter)
 	mwifiex_terminate_workqueue(adapter);
 	adapter->int_status = 0;
 
-	/* Stop data */
+	 
 	for (i = 0; i < adapter->priv_num; i++) {
 		priv = adapter->priv[i];
 		if (priv && priv->netdev) {
@@ -1464,11 +1333,7 @@ static void mwifiex_uninit_sw(struct mwifiex_adapter *adapter)
 		rtnl_lock();
 		if (priv->netdev &&
 		    priv->wdev.iftype != NL80211_IFTYPE_UNSPECIFIED) {
-			/*
-			 * Close the netdev now, because if we do it later, the
-			 * netdev notifiers will need to acquire the wiphy lock
-			 * again --> deadlock.
-			 */
+			 
 			dev_close(priv->wdev.netdev);
 			wiphy_lock(adapter->wiphy);
 			mwifiex_del_virtual_intf(adapter->wiphy, &priv->wdev);
@@ -1485,9 +1350,7 @@ static void mwifiex_uninit_sw(struct mwifiex_adapter *adapter)
 	mwifiex_free_cmd_buffers(adapter);
 }
 
-/*
- * This function can be used for shutting down the adapter SW.
- */
+ 
 int mwifiex_shutdown_sw(struct mwifiex_adapter *adapter)
 {
 	struct mwifiex_private *priv;
@@ -1496,7 +1359,7 @@ int mwifiex_shutdown_sw(struct mwifiex_adapter *adapter)
 		return 0;
 
 	wait_for_completion(adapter->fw_done);
-	/* Caller should ensure we aren't suspending while this happens */
+	 
 	reinit_completion(adapter->fw_done);
 
 	priv = mwifiex_get_priv(adapter, MWIFIEX_BSS_ROLE_ANY);
@@ -1514,9 +1377,7 @@ int mwifiex_shutdown_sw(struct mwifiex_adapter *adapter)
 }
 EXPORT_SYMBOL_GPL(mwifiex_shutdown_sw);
 
-/* This function can be used for reinitting the adapter SW. Required
- * code is extracted from mwifiex_add_card()
- */
+ 
 int
 mwifiex_reinit_sw(struct mwifiex_adapter *adapter)
 {
@@ -1558,10 +1419,7 @@ mwifiex_reinit_sw(struct mwifiex_adapter *adapter)
 		INIT_WORK(&adapter->rx_work, mwifiex_rx_work_queue);
 	}
 
-	/* Register the device. Fill up the private data structure with
-	 * relevant information from the card. Some code extracted from
-	 * mwifiex_register_dev()
-	 */
+	 
 	mwifiex_dbg(adapter, INFO, "%s, mwifiex_init_hw_fw()...\n", __func__);
 
 	if (mwifiex_init_hw_fw(adapter, false)) {
@@ -1570,7 +1428,7 @@ mwifiex_reinit_sw(struct mwifiex_adapter *adapter)
 		goto err_init_fw;
 	}
 
-	/* _mwifiex_fw_dpc() does its own cleanup */
+	 
 	ret = _mwifiex_fw_dpc(adapter->firmware, adapter);
 	if (ret) {
 		pr_err("Failed to bring up adapter: %d\n", ret);
@@ -1610,7 +1468,7 @@ static irqreturn_t mwifiex_irq_wakeup_handler(int irq, void *priv)
 	adapter->wake_by_wifi = true;
 	disable_irq_nosync(irq);
 
-	/* Notify PM core we are wakeup source */
+	 
 	pm_wakeup_event(adapter->dev, 0);
 	pm_system_wakeup();
 
@@ -1652,19 +1510,7 @@ err_exit:
 	adapter->irq_wakeup = -1;
 }
 
-/*
- * This function adds the card.
- *
- * This function follows the following major steps to set up the device -
- *      - Initialize software. This includes probing the card, registering
- *        the interface operations table, and allocating/initializing the
- *        adapter structure
- *      - Set up the netlink socket
- *      - Create and start the main work queue
- *      - Register the device
- *      - Initialize firmware and hardware
- *      - Add logical interfaces
- */
+ 
 int
 mwifiex_add_card(void *card, struct completion *fw_done,
 		 struct mwifiex_if_ops *if_ops, u8 iface_type,
@@ -1714,8 +1560,7 @@ mwifiex_add_card(void *card, struct completion *fw_done,
 		INIT_WORK(&adapter->rx_work, mwifiex_rx_work_queue);
 	}
 
-	/* Register the device. Fill up the private data structure with relevant
-	   information from the card. */
+	 
 	if (adapter->if_ops.register_dev(adapter)) {
 		pr_err("%s: failed to register mwifiex device\n", __func__);
 		goto err_registerdev;
@@ -1751,17 +1596,7 @@ err_init_sw:
 }
 EXPORT_SYMBOL_GPL(mwifiex_add_card);
 
-/*
- * This function removes the card.
- *
- * This function follows the following major steps to remove the device -
- *      - Stop data traffic
- *      - Shutdown firmware
- *      - Remove the logical interfaces
- *      - Terminate the work queue
- *      - Unregister the device
- *      - Free the adapter structure
- */
+ 
 int mwifiex_remove_card(struct mwifiex_adapter *adapter)
 {
 	if (!adapter)
@@ -1773,12 +1608,12 @@ int mwifiex_remove_card(struct mwifiex_adapter *adapter)
 	if (adapter->irq_wakeup >= 0)
 		device_init_wakeup(adapter->dev, false);
 
-	/* Unregister device */
+	 
 	mwifiex_dbg(adapter, INFO,
 		    "info: unregister device\n");
 	if (adapter->if_ops.unregister_dev)
 		adapter->if_ops.unregister_dev(adapter);
-	/* Free adapter structure */
+	 
 	mwifiex_dbg(adapter, INFO,
 		    "info: free adapter\n");
 	mwifiex_free_adapter(adapter);
@@ -1810,11 +1645,7 @@ void _mwifiex_dbg(const struct mwifiex_adapter *adapter, int mask,
 }
 EXPORT_SYMBOL_GPL(_mwifiex_dbg);
 
-/*
- * This function initializes the module.
- *
- * The debug FS is also initialized if configured.
- */
+ 
 static int
 mwifiex_init_module(void)
 {
@@ -1824,11 +1655,7 @@ mwifiex_init_module(void)
 	return 0;
 }
 
-/*
- * This function cleans up the module.
- *
- * The debug FS is removed if available.
- */
+ 
 static void
 mwifiex_cleanup_module(void)
 {

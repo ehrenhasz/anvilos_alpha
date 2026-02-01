@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *
- * sched-pipe.c
- *
- * pipe: Benchmark for pipe()
- *
- * Based on pipe-test-1m.c by Ingo Molnar <mingo@redhat.com>
- *  http://people.redhat.com/mingo/cfs-scheduler/tools/pipe-test-1m.c
- * Ported to perf by Hitoshi Mitake <mitake@dcl.info.waseda.ac.jp>
- */
+
+ 
 #include <subcmd/parse-options.h>
 #include "bench.h"
 
@@ -37,7 +28,7 @@ struct thread_data {
 #define LOOPS_DEFAULT 1000000
 static	int			loops = LOOPS_DEFAULT;
 
-/* Use processes by default: */
+ 
 static bool			threaded;
 
 static const struct option options[] = {
@@ -83,11 +74,7 @@ int bench_sched_pipe(int argc, const char **argv)
 	int nr_threads = 2;
 	int t;
 
-	/*
-	 * why does "ret" exist?
-	 * discarding returned value of read(), write()
-	 * causes error in building environment for perf
-	 */
+	 
 	int __maybe_unused ret, wait_stat;
 	pid_t pid, retpid __maybe_unused;
 
@@ -173,7 +160,7 @@ int bench_sched_pipe(int argc, const char **argv)
 		break;
 
 	default:
-		/* reaching here is something disaster */
+		 
 		fprintf(stderr, "Unknown format:%d\n", bench_format);
 		exit(1);
 		break;

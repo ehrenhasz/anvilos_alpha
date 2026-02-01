@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * sst_acpi.c - SST (LPE) driver init file for ACPI enumeration.
- *
- * Copyright (c) 2013, Intel Corporation.
- *
- *  Authors:	Ramesh Babu K V <Ramesh.Babu@intel.com>
- *  Authors:	Omair Mohammed Abdullah <omair.m.abdullah@intel.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/fs.h>
@@ -34,12 +27,12 @@
 #include "../../common/soc-intel-quirks.h"
 #include "sst.h"
 
-/* LPE viewpoint addresses */
+ 
 #define SST_BYT_IRAM_PHY_START	0xff2c0000
 #define SST_BYT_IRAM_PHY_END	0xff2d4000
 #define SST_BYT_DRAM_PHY_START	0xff300000
 #define SST_BYT_DRAM_PHY_END	0xff320000
-#define SST_BYT_IMR_VIRT_START	0xc0000000 /* virtual addr in LPE */
+#define SST_BYT_IMR_VIRT_START	0xc0000000  
 #define SST_BYT_IMR_VIRT_END	0xc01fffff
 #define SST_BYT_SHIM_PHY_ADDR	0xff340000
 #define SST_BYT_MBOX_PHY_ADDR	0xff344000
@@ -103,7 +96,7 @@ static const struct sst_res_info byt_rvp_res_info = {
 	.acpi_ipc_irq_index = 5,
 };
 
-/* BYTCR has different BIOS from BYT */
+ 
 static const struct sst_res_info bytcr_res_info = {
 	.shim_offset = 0x140000,
 	.shim_size = 0x000100,
@@ -134,9 +127,7 @@ static struct sst_platform_info byt_rvp_platform_data = {
 	.streams_lost_on_suspend = true,
 };
 
-/* Cherryview (Cherrytrail and Braswell) uses same mrfld dpcm fw as Baytrail,
- * so pdata is same as Baytrail, minus the streams_lost_on_suspend quirk.
- */
+ 
 static struct sst_platform_info chv_platform_data = {
 	.probe_data = &byt_fwparse_info,
 	.ipc_info = &byt_ipc_info,
@@ -150,8 +141,8 @@ static int sst_platform_get_resources(struct intel_sst_drv *ctx)
 	struct resource *rsrc;
 	struct platform_device *pdev = to_platform_device(ctx->dev);
 
-	/* All ACPI resource request here */
-	/* Get Shim addr */
+	 
+	 
 	rsrc = platform_get_resource(pdev, IORESOURCE_MEM,
 					ctx->pdata->res_info->acpi_lpe_res_index);
 	if (!rsrc) {
@@ -190,10 +181,10 @@ static int sst_platform_get_resources(struct intel_sst_drv *ctx)
 		return -EIO;
 	}
 
-	/* reassign physical address to LPE viewpoint address */
+	 
 	ctx->shim_phy_add = ctx->pdata->res_info->shim_phy_addr;
 
-	/* Get mailbox addr */
+	 
 	ctx->mailbox_add = rsrc->start + ctx->pdata->res_info->mbox_offset;
 	dev_info(ctx->dev, "Mailbox base: %#x", ctx->mailbox_add);
 	ctx->mailbox = devm_ioremap(ctx->dev, ctx->mailbox_add,
@@ -203,7 +194,7 @@ static int sst_platform_get_resources(struct intel_sst_drv *ctx)
 		return -EIO;
 	}
 
-	/* reassign physical address to LPE viewpoint address */
+	 
 	ctx->mailbox_add = ctx->info.mailbox_start;
 
 	rsrc = platform_get_resource(pdev, IORESOURCE_MEM,
@@ -222,7 +213,7 @@ static int sst_platform_get_resources(struct intel_sst_drv *ctx)
 		return -EIO;
 	}
 
-	/* Find the IRQ */
+	 
 	ctx->irq_num = platform_get_irq(pdev,
 				ctx->pdata->res_info->acpi_ipc_irq_index);
 	if (ctx->irq_num <= 0)
@@ -281,11 +272,11 @@ static int sst_acpi_probe(struct platform_device *pdev)
 		return ret;
 
 	if (soc_intel_is_byt_cr(pdev)) {
-		/* override resource info */
+		 
 		byt_rvp_platform_data.res_info = &bytcr_res_info;
 	}
 
-	/* update machine parameters */
+	 
 	mach->mach_params.acpi_ipc_irq_index =
 		pdata->res_info->acpi_ipc_irq_index;
 
@@ -297,10 +288,7 @@ static int sst_acpi_probe(struct platform_device *pdev)
 		return PTR_ERR(plat_dev);
 	}
 
-	/*
-	 * Create platform device for sst machine driver,
-	 * pass machine info as pdata
-	 */
+	 
 	mdev = platform_device_register_data(dev, mach->drv_name, -1,
 					(const void *)mach, sizeof(*mach));
 	if (IS_ERR(mdev)) {
@@ -309,7 +297,7 @@ static int sst_acpi_probe(struct platform_device *pdev)
 		return PTR_ERR(mdev);
 	}
 
-	/* Fill sst platform data */
+	 
 	ctx->pdata = pdata;
 	strcpy(ctx->firmware_name, mach->fw_filename);
 
@@ -326,14 +314,7 @@ static int sst_acpi_probe(struct platform_device *pdev)
 	return ret;
 }
 
-/**
-* sst_acpi_remove - remove function
-*
-* @pdev:	platform device structure
-*
-* This function is called by OS when a device is unloaded
-* This frees the interrupt etc
-*/
+ 
 static void sst_acpi_remove(struct platform_device *pdev)
 {
 	struct intel_sst_drv *ctx;

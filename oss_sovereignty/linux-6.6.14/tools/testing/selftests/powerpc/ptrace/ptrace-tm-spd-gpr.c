@@ -1,14 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Ptrace test for GPR/FPR registers in TM Suspend context
- *
- * Copyright (C) 2015 Anshuman Khandual, IBM Corporation.
- */
+
+ 
 #include "ptrace.h"
 #include "ptrace-gpr.h"
 #include "tm.h"
 
-/* Tracer and Tracee Shared Data */
+ 
 int shm_id;
 int *cptr, *pptr;
 
@@ -54,7 +50,7 @@ trans:
 		"ori %[res], 0, 0;"
 		"b 3f;"
 
-		/* Transaction abort handler */
+		 
 		"2: ;"
 		"li 0, 1;"
 		"ori %[res], 0, 0;"

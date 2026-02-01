@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file contains common tag-based KASAN code.
- *
- * Copyright (c) 2018 Google, Inc.
- * Copyright (c) 2020 Google, Inc.
- */
+
+ 
 
 #include <linux/atomic.h>
 #include <linux/init.h>
@@ -30,17 +25,17 @@ enum kasan_arg_stacktrace {
 
 static enum kasan_arg_stacktrace kasan_arg_stacktrace __initdata;
 
-/* Whether to collect alloc/free stack traces. */
+ 
 DEFINE_STATIC_KEY_TRUE(kasan_flag_stacktrace);
 
-/* Non-zero, as initial pointer values are 0. */
+ 
 #define STACK_RING_BUSY_PTR ((void *)1)
 
 struct kasan_stack_ring stack_ring = {
 	.lock = __RW_LOCK_UNLOCKED(stack_ring.lock)
 };
 
-/* kasan.stacktrace=off/on */
+ 
 static int __init early_kasan_flag_stacktrace(char *arg)
 {
 	if (!arg)
@@ -57,7 +52,7 @@ static int __init early_kasan_flag_stacktrace(char *arg)
 }
 early_param("kasan.stacktrace", early_kasan_flag_stacktrace);
 
-/* kasan.stack_ring_size=<number of entries> */
+ 
 static int __init early_kasan_flag_stack_ring_size(char *arg)
 {
 	if (!arg)
@@ -71,7 +66,7 @@ void __init kasan_init_tags(void)
 {
 	switch (kasan_arg_stacktrace) {
 	case KASAN_ARG_STACKTRACE_DEFAULT:
-		/* Default is specified by kasan_flag_stacktrace definition. */
+		 
 		break;
 	case KASAN_ARG_STACKTRACE_OFF:
 		static_branch_disable(&kasan_flag_stacktrace);
@@ -103,31 +98,26 @@ static void save_stack_info(struct kmem_cache *cache, void *object,
 
 	stack = kasan_save_stack(gfp_flags, true);
 
-	/*
-	 * Prevent save_stack_info() from modifying stack ring
-	 * when kasan_complete_mode_report_info() is walking it.
-	 */
+	 
 	read_lock_irqsave(&stack_ring.lock, flags);
 
 next:
 	pos = atomic64_fetch_add(1, &stack_ring.pos);
 	entry = &stack_ring.entries[pos % stack_ring.size];
 
-	/* Detect stack ring entry slots that are being written to. */
+	 
 	old_ptr = READ_ONCE(entry->ptr);
 	if (old_ptr == STACK_RING_BUSY_PTR)
-		goto next; /* Busy slot. */
+		goto next;  
 	if (!try_cmpxchg(&entry->ptr, &old_ptr, STACK_RING_BUSY_PTR))
-		goto next; /* Busy slot. */
+		goto next;  
 
 	WRITE_ONCE(entry->size, cache->object_size);
 	WRITE_ONCE(entry->pid, current->pid);
 	WRITE_ONCE(entry->stack, stack);
 	WRITE_ONCE(entry->is_free, is_free);
 
-	/*
-	 * Paired with smp_load_acquire() in kasan_complete_mode_report_info().
-	 */
+	 
 	smp_store_release(&entry->ptr, (s64)object);
 
 	read_unlock_irqrestore(&stack_ring.lock, flags);

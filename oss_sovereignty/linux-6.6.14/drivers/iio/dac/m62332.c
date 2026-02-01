@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  m62332.c - Support for Mitsubishi m62332 DAC
- *
- *  Copyright (c) 2014 Dmitry Eremin-Solenikov
- *
- *  Based on max517 driver:
- *  Copyright (C) 2010, 2011 Roland Stigge <stigge@antcom.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -81,12 +74,12 @@ static int m62332_read_raw(struct iio_dev *indio_dev,
 
 	switch (mask) {
 	case IIO_CHAN_INFO_SCALE:
-		/* Corresponds to Vref / 2^(bits) */
+		 
 		ret = regulator_get_voltage(data->vcc);
 		if (ret < 0)
 			return ret;
 
-		*val = ret / 1000; /* mV */
+		*val = ret / 1000;  
 		*val2 = 8;
 
 		return IIO_VAL_FRACTIONAL_LOG2;

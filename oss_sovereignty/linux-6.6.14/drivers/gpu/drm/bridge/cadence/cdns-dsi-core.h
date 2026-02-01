@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright: 2017 Cadence Design Systems, Inc.
- *
- * Author: Boris Brezillon <boris.brezillon@bootlin.com>
- */
+ 
+ 
 
 #ifndef __CDNS_DSI_H__
 #define __CDNS_DSI_H__
@@ -47,13 +43,7 @@ struct cdns_dsi_input {
 
 struct cdns_dsi;
 
-/**
- * struct cdns_dsi_platform_ops - CDNS DSI Platform operations
- * @init: Called in the CDNS DSI probe
- * @deinit: Called in the CDNS DSI remove
- * @enable: Called at the beginning of CDNS DSI bridge enable
- * @disable: Called at the end of CDNS DSI bridge disable
- */
+ 
 struct cdns_dsi_platform_ops {
 	int (*init)(struct cdns_dsi *dsi);
 	void (*deinit)(struct cdns_dsi *dsi);
@@ -81,4 +71,4 @@ struct cdns_dsi {
 	struct phy *dphy;
 };
 
-#endif /* !__CDNS_DSI_H__ */
+#endif  

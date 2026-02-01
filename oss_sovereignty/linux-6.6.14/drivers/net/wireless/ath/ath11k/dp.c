@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <crypto/hash.h>
 #include "core.h"
@@ -24,7 +21,7 @@ void ath11k_dp_peer_cleanup(struct ath11k *ar, int vdev_id, const u8 *addr)
 	struct ath11k_base *ab = ar->ab;
 	struct ath11k_peer *peer;
 
-	/* TODO: Any other peer specific DP cleanup */
+	 
 
 	spin_lock_bh(&ab->base_lock);
 	peer = ath11k_peer_find(ab, vdev_id, addr);
@@ -48,7 +45,7 @@ int ath11k_dp_peer_setup(struct ath11k *ar, int vdev_id, const u8 *addr)
 	u32 reo_dest;
 	int ret = 0, tid;
 
-	/* NOTE: reo_dest ring id starts from 1 unlike mac_id which starts from 0 */
+	 
 	reo_dest = ar->dp.mac_id + 1;
 	ret = ath11k_wmi_set_peer_param(ar, addr, vdev_id,
 					WMI_PEER_SET_DEFAULT_ROUTING,
@@ -77,7 +74,7 @@ int ath11k_dp_peer_setup(struct ath11k *ar, int vdev_id, const u8 *addr)
 		goto peer_clean;
 	}
 
-	/* TODO: Setup other peer specific resource used in data path */
+	 
 
 	return 0;
 
@@ -237,7 +234,7 @@ int ath11k_dp_srng_setup(struct ath11k_base *ab, struct dp_srng *ring,
 	ring->size = (num_entries * entry_sz) + HAL_RING_BASE_ALIGN - 1;
 
 	if (ab->hw_params.alloc_cacheable_memory) {
-		/* Allocate the reo dst and tx completion rings from cacheable memory */
+		 
 		switch (type) {
 		case HAL_REO_DST:
 		case HAL_WBM2SW_RELEASE:
@@ -292,7 +289,7 @@ int ath11k_dp_srng_setup(struct ath11k_base *ab, struct dp_srng *ring,
 					HAL_SRNG_INT_TIMER_THRESHOLD_TX;
 			break;
 		}
-		/* follow through when ring_num >= 3 */
+		 
 		fallthrough;
 	case HAL_REO_EXCEPTION:
 	case HAL_REO_REINJECT:
@@ -471,9 +468,7 @@ static int ath11k_dp_srng_common_setup(struct ath11k_base *ab)
 		goto err;
 	}
 
-	/* When hash based routing of rx packet is enabled, 32 entries to map
-	 * the hash values to the ring will be configured.
-	 */
+	 
 	ab->hw_params.hw_ops->reo_setup(ab);
 
 	return 0;
@@ -717,11 +712,11 @@ int ath11k_dp_link_desc_setup(struct ath11k_base *ab,
 	if (ret)
 		return ret;
 
-	/* Setup link desc idle list for HW internal usage */
+	 
 	entry_sz = ath11k_hal_srng_get_entrysize(ab, ring_type);
 	tot_mem_sz = entry_sz * n_link_desc;
 
-	/* Setup scatter desc list when the total memory requirement is more */
+	 
 	if (tot_mem_sz > DP_LINK_DESC_ALLOC_SIZE_THRESH &&
 	    ring_type != HAL_RXDMA_MONITOR_DESC) {
 		ret = ath11k_dp_scatter_idle_link_desc_setup(ab, tot_mem_sz,
@@ -862,7 +857,7 @@ int ath11k_dp_service_srng(struct ath11k_base *ab,
 			}
 		}
 	}
-	/* TODO: Implement handler for other interrupts */
+	 
 
 done:
 	return tot_work_done;
@@ -914,7 +909,7 @@ int ath11k_dp_pdev_alloc(struct ath11k_base *ab)
 	int ret;
 	int i;
 
-	/* TODO:Per-pdev rx ring unlike tx ring which is mapped to different AC's */
+	 
 	for (i = 0; i < ab->num_radios; i++) {
 		ar = ab->pdevs[i].ar;
 		ret = ath11k_dp_rx_pdev_alloc(ab, i);
@@ -951,7 +946,7 @@ int ath11k_dp_htt_connect(struct ath11k_dp *dp)
 	conn_req.ep_ops.ep_tx_complete = ath11k_dp_htt_htc_tx_complete;
 	conn_req.ep_ops.ep_rx_complete = ath11k_dp_htt_htc_t2h_msg_handler;
 
-	/* connect to control service */
+	 
 	conn_req.service_id = ATH11K_HTC_SVC_ID_HTT_DATA_MSG;
 
 	status = ath11k_htc_connect_service(&dp->ab->htc, &conn_req,
@@ -967,11 +962,7 @@ int ath11k_dp_htt_connect(struct ath11k_dp *dp)
 
 static void ath11k_dp_update_vdev_search(struct ath11k_vif *arvif)
 {
-	 /* When v2_map_support is true:for STA mode, enable address
-	  * search index, tcl uses ast_hash value in the descriptor.
-	  * When v2_map_support is false: for STA mode, don't enable
-	  * address search index.
-	  */
+	  
 	switch (arvif->vdev_type) {
 	case WMI_VDEV_TYPE_STA:
 		if (arvif->ar->ab->hw_params.htt_peer_map_v2) {
@@ -1001,7 +992,7 @@ void ath11k_dp_vdev_tx_attach(struct ath11k *ar, struct ath11k_vif *arvif)
 			       FIELD_PREP(HTT_TCL_META_DATA_PDEV_ID,
 					  ar->pdev->pdev_id);
 
-	/* set HTT extension valid bit to 0 by default */
+	 
 	arvif->tcl_metadata &= ~HTT_TCL_META_DATA_VALID_HTT;
 
 	ath11k_dp_update_vdev_search(arvif);
@@ -1041,7 +1032,7 @@ void ath11k_dp_free(struct ath11k_base *ab)
 		kfree(dp->tx_ring[i].tx_status);
 	}
 
-	/* Deinit any SOC level resource */
+	 
 }
 
 int ath11k_dp_alloc(struct ath11k_base *ab)
@@ -1100,7 +1091,7 @@ int ath11k_dp_alloc(struct ath11k_base *ab)
 	for (i = 0; i < HAL_DSCP_TID_MAP_TBL_NUM_ENTRIES_MAX; i++)
 		ath11k_hal_tx_set_dscp_tid_map(ab, i);
 
-	/* Init any SOC level resource for DP */
+	 
 
 	return 0;
 
@@ -1123,11 +1114,7 @@ static void ath11k_dp_shadow_timer_handler(struct timer_list *t)
 
 	spin_lock_bh(&srng->lock);
 
-	/* when the timer is fired, the handler checks whether there
-	 * are new TX happened. The handler updates HP only when there
-	 * are no TX operations during the timeout interval, and stop
-	 * the timer. Timer will be started again when TX happens again.
-	 */
+	 
 	if (update_timer->timer_tx_num != update_timer->tx_num) {
 		update_timer->timer_tx_num = update_timer->tx_num;
 		mod_timer(&update_timer->timer, jiffies +

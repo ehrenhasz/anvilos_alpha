@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * t5403.c - Support for EPCOS T5403 pressure/temperature sensor
- *
- * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
- *
- * (7-bit I2C slave address 0x77)
- *
- * TODO: end-of-conversion irq
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -15,15 +7,15 @@
 #include <linux/iio/sysfs.h>
 #include <linux/delay.h>
 
-#define T5403_DATA 0xf5 /* data, LSB first, 16 bit */
-#define T5403_CALIB_DATA 0x8e /* 10 calibration coeff., LSB first, 16 bit */
-#define T5403_SLAVE_ADDR 0x88 /* I2C slave address, 0x77 */
+#define T5403_DATA 0xf5  
+#define T5403_CALIB_DATA 0x8e  
+#define T5403_SLAVE_ADDR 0x88  
 #define T5403_COMMAND 0xf1
 
-/* command bits */
-#define T5403_MODE_SHIFT 3 /* conversion time: 2, 8, 16, 66 ms */
-#define T5403_PT BIT(1) /* 0 .. pressure, 1 .. temperature measurement */
-#define T5403_SCO BIT(0) /* start conversion */
+ 
+#define T5403_MODE_SHIFT 3  
+#define T5403_PT BIT(1)  
+#define T5403_SCO BIT(0)  
 
 #define T5403_MODE_LOW 0
 #define T5403_MODE_STANDARD 1
@@ -47,7 +39,7 @@ struct t5403_data {
 
 static int t5403_read(struct t5403_data *data, bool pressure)
 {
-	int wait_time = 3;  /* wakeup time in ms */
+	int wait_time = 3;   
 
 	int ret = i2c_smbus_write_byte_data(data->client, T5403_COMMAND,
 		(pressure ? (data->mode << T5403_MODE_SHIFT) : T5403_PT) |
@@ -81,7 +73,7 @@ static int t5403_comp_pressure(struct t5403_data *data, int *val, int *val2)
 		goto done;
 	p_r = ret;
 
-	/* see EPCOS application note */
+	 
 	S = T5403_C_U16(3) + (s32) T5403_C_U16(4) * t_r / 0x20000 +
 		T5403_C(5) * t_r / 0x8000 * t_r / 0x80000 +
 		T5403_C(9) * t_r / 0x8000 * t_r / 0x8000 * t_r / 0x10000;
@@ -114,7 +106,7 @@ static int t5403_comp_temp(struct t5403_data *data, int *val)
 		goto done;
 	t_r = ret;
 
-	/* see EPCOS application note */
+	 
 	*val = ((s32) T5403_C_U16(1) * t_r / 0x100 +
 		(s32) T5403_C_U16(2) * 0x40) * 1000 / 0x10000;
 

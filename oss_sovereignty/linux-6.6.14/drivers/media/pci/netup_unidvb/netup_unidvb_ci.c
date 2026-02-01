@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * netup_unidvb_ci.c
- *
- * DVB CAM support for NetUP Universal Dual DVB-CI
- *
- * Copyright (C) 2014 NetUP Inc.
- * Copyright (C) 2014 Sergey Kozlov <serjk@netup.ru>
- * Copyright (C) 2014 Abylay Ospan <aospan@netup.ru>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -19,20 +11,20 @@
 #include <linux/delay.h>
 #include "netup_unidvb.h"
 
-/* CI slot 0 base address */
+ 
 #define CAM0_CONFIG		0x0
 #define CAM0_IO			0x8000
 #define CAM0_MEM		0x10000
 #define CAM0_SZ			32
-/* CI slot 1 base address */
+ 
 #define CAM1_CONFIG		0x20000
 #define CAM1_IO			0x28000
 #define CAM1_MEM		0x30000
 #define CAM1_SZ			32
-/* ctrlstat registers */
+ 
 #define CAM_CTRLSTAT_READ_SET	0x4980
 #define CAM_CTRLSTAT_CLR	0x4982
-/* register bits */
+ 
 #define BIT_CAM_STCHG		(1<<0)
 #define BIT_CAM_PRESENT		(1<<1)
 #define BIT_CAM_RESET		(1<<2)
@@ -40,7 +32,7 @@
 #define BIT_CAM_READY		(1<<4)
 #define BIT_CAM_ERROR		(1<<5)
 #define BIT_CAM_OVERCURR	(1<<6)
-/* BIT_CAM_BYPASS bit shift for SLOT 1 */
+ 
 #define CAM1_SHIFT 8
 
 irqreturn_t netup_ci_interrupt(struct netup_unidvb_dev *ndev)
@@ -60,7 +52,7 @@ static int netup_unidvb_ci_slot_ts_ctl(struct dvb_ca_en50221 *en50221,
 		__func__, readw(dev->bmmio0 + CAM_CTRLSTAT_READ_SET));
 	if (slot != 0)
 		return -EINVAL;
-	/* pass data to CAM module */
+	 
 	writew(BIT_CAM_BYPASS << shift, dev->bmmio0 + CAM_CTRLSTAT_CLR);
 	dev_dbg(&dev->pci_dev->dev, "%s(): CAM_CTRLSTAT=0x%x done\n",
 		__func__, readw(dev->bmmio0 + CAM_CTRLSTAT_READ_SET));
@@ -91,10 +83,10 @@ static int netup_unidvb_ci_slot_reset(struct dvb_ca_en50221 *en50221,
 		__func__, readw(dev->bmmio0 + CAM_CTRLSTAT_READ_SET));
 reset:
 	timeout = jiffies + msecs_to_jiffies(5000);
-	/* start reset */
+	 
 	writew(BIT_CAM_RESET << shift, dev->bmmio0 + CAM_CTRLSTAT_READ_SET);
 	dev_dbg(&dev->pci_dev->dev, "%s(): waiting for reset\n", __func__);
-	/* wait until reset done */
+	 
 	while (time_before(jiffies, timeout)) {
 		ci_stat = readw(dev->bmmio0 + CAM_CTRLSTAT_READ_SET);
 		if (ci_stat & (BIT_CAM_READY << shift))

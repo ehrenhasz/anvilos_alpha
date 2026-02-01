@@ -1,15 +1,11 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Rockchip ISP1 Driver - Stats subdevice
- *
- * Copyright (C) 2017 Rockchip Electronics Co., Ltd.
- */
+
+ 
 
 #include <media/v4l2-common.h>
 #include <media/v4l2-event.h>
 #include <media/v4l2-ioctl.h>
 #include <media/videobuf2-core.h>
-#include <media/videobuf2-vmalloc.h>	/* for ISP statistics */
+#include <media/videobuf2-vmalloc.h>	 
 
 #include "rkisp1-common.h"
 
@@ -60,7 +56,7 @@ static int rkisp1_stats_querycap(struct file *file,
 	return 0;
 }
 
-/* ISP video device IOCTLs */
+ 
 static const struct v4l2_ioctl_ops rkisp1_stats_ioctl = {
 	.vidioc_reqbufs = vb2_ioctl_reqbufs,
 	.vidioc_querybuf = vb2_ioctl_querybuf,
@@ -177,7 +173,7 @@ rkisp1_stats_init_vb2_queue(struct vb2_queue *q, struct rkisp1_stats *stats)
 static void rkisp1_stats_get_awb_meas_v10(struct rkisp1_stats *stats,
 					  struct rkisp1_stat_buffer *pbuf)
 {
-	/* Protect against concurrent access from ISR? */
+	 
 	struct rkisp1_device *rkisp1 = stats->rkisp1;
 	u32 reg_val;
 
@@ -198,7 +194,7 @@ static void rkisp1_stats_get_awb_meas_v10(struct rkisp1_stats *stats,
 static void rkisp1_stats_get_awb_meas_v12(struct rkisp1_stats *stats,
 					  struct rkisp1_stat_buffer *pbuf)
 {
-	/* Protect against concurrent access from ISR? */
+	 
 	struct rkisp1_device *rkisp1 = stats->rkisp1;
 	u32 reg_val;
 
@@ -368,7 +364,7 @@ rkisp1_stats_send_measurement(struct rkisp1_stats *stats, u32 isp_ris)
 	unsigned int frame_sequence = stats->rkisp1->isp.frame_sequence;
 	u64 timestamp = ktime_get_ns();
 
-	/* get one empty buffer */
+	 
 	if (!list_empty(&stats->stat)) {
 		cur_buf = list_first_entry(&stats->stat,
 					   struct rkisp1_buffer, queue);

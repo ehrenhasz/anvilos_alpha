@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ip_vs_app.c: Application module support for IPVS
- *
- * Authors:     Wensong Zhang <wensong@linuxvirtualserver.org>
- *
- * Most code here is taken from ip_masq_app.c in kernel 2.2. The difference
- * is that ip_vs_app module handles the reverse direction (incoming requests
- * and outgoing responses).
- *
- *		IP_MASQ_APP application masquerading module
- *
- * Author:	Juan Jose Ciarlante, <jjciarla@raiz.uncu.edu.ar>
- */
+
+ 
 
 #define KMSG_COMPONENT "IPVS"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -39,9 +27,7 @@ EXPORT_SYMBOL(register_ip_vs_app_inc);
 
 static DEFINE_MUTEX(__ip_vs_app_mutex);
 
-/*
- *	Get an ip_vs_app object
- */
+ 
 static inline int ip_vs_app_get(struct ip_vs_app *app)
 {
 	return try_module_get(app->module);
@@ -66,9 +52,7 @@ static void ip_vs_app_inc_rcu_free(struct rcu_head *head)
 	ip_vs_app_inc_destroy(inc);
 }
 
-/*
- *	Allocate/initialize app incarnation and register it in proto apps.
- */
+ 
 static int
 ip_vs_app_inc_new(struct netns_ipvs *ipvs, struct ip_vs_app *app, __u16 proto,
 		  __u16 port)
@@ -118,9 +102,7 @@ ip_vs_app_inc_new(struct netns_ipvs *ipvs, struct ip_vs_app *app, __u16 proto,
 }
 
 
-/*
- *	Release app incarnation
- */
+ 
 static void
 ip_vs_app_inc_release(struct netns_ipvs *ipvs, struct ip_vs_app *inc)
 {
@@ -141,10 +123,7 @@ ip_vs_app_inc_release(struct netns_ipvs *ipvs, struct ip_vs_app *inc)
 }
 
 
-/*
- *	Get reference to app inc (only called from softirq)
- *
- */
+ 
 int ip_vs_app_inc_get(struct ip_vs_app *inc)
 {
 	int result;
@@ -156,9 +135,7 @@ int ip_vs_app_inc_get(struct ip_vs_app *inc)
 }
 
 
-/*
- *	Put the app inc (only called from timer or net softirq)
- */
+ 
 void ip_vs_app_inc_put(struct ip_vs_app *inc)
 {
 	atomic_dec(&inc->usecnt);
@@ -166,9 +143,7 @@ void ip_vs_app_inc_put(struct ip_vs_app *inc)
 }
 
 
-/*
- *	Register an application incarnation in protocol applications
- */
+ 
 int
 register_ip_vs_app_inc(struct netns_ipvs *ipvs, struct ip_vs_app *app, __u16 proto,
 		       __u16 port)
@@ -185,7 +160,7 @@ register_ip_vs_app_inc(struct netns_ipvs *ipvs, struct ip_vs_app *app, __u16 pro
 }
 
 
-/* Register application for netns */
+ 
 struct ip_vs_app *register_ip_vs_app(struct netns_ipvs *ipvs, struct ip_vs_app *app)
 {
 	struct ip_vs_app *a;
@@ -193,7 +168,7 @@ struct ip_vs_app *register_ip_vs_app(struct netns_ipvs *ipvs, struct ip_vs_app *
 
 	mutex_lock(&__ip_vs_app_mutex);
 
-	/* increase the module use count */
+	 
 	if (!ip_vs_use_count_inc()) {
 		err = -ENOENT;
 		goto out_unlock;
@@ -202,7 +177,7 @@ struct ip_vs_app *register_ip_vs_app(struct netns_ipvs *ipvs, struct ip_vs_app *
 	list_for_each_entry(a, &ipvs->app_list, a_list) {
 		if (!strcmp(app->name, a->name)) {
 			err = -EEXIST;
-			/* decrease the module use count */
+			 
 			ip_vs_use_count_dec();
 			goto out_unlock;
 		}
@@ -210,7 +185,7 @@ struct ip_vs_app *register_ip_vs_app(struct netns_ipvs *ipvs, struct ip_vs_app *
 	a = kmemdup(app, sizeof(*app), GFP_KERNEL);
 	if (!a) {
 		err = -ENOMEM;
-		/* decrease the module use count */
+		 
 		ip_vs_use_count_dec();
 		goto out_unlock;
 	}
@@ -224,11 +199,7 @@ out_unlock:
 }
 
 
-/*
- *	ip_vs_app unregistration routine
- *	We are sure there are no app incarnations attached to services
- *	Caller should use synchronize_rcu() or rcu_barrier()
- */
+ 
 void unregister_ip_vs_app(struct netns_ipvs *ipvs, struct ip_vs_app *app)
 {
 	struct ip_vs_app *a, *anxt, *inc, *nxt;
@@ -245,7 +216,7 @@ void unregister_ip_vs_app(struct netns_ipvs *ipvs, struct ip_vs_app *app)
 		list_del(&a->a_list);
 		kfree(a);
 
-		/* decrease the module use count */
+		 
 		ip_vs_use_count_dec();
 	}
 
@@ -253,9 +224,7 @@ void unregister_ip_vs_app(struct netns_ipvs *ipvs, struct ip_vs_app *app)
 }
 
 
-/*
- *	Bind ip_vs_conn to its ip_vs_app (called by cp constructor)
- */
+ 
 int ip_vs_bind_app(struct ip_vs_conn *cp,
 		   struct ip_vs_protocol *pp)
 {
@@ -263,9 +232,7 @@ int ip_vs_bind_app(struct ip_vs_conn *cp,
 }
 
 
-/*
- *	Unbind cp from application incarnation (called by cp destructor)
- */
+ 
 void ip_vs_unbind_app(struct ip_vs_conn *cp)
 {
 	struct ip_vs_app *inc = cp->app;
@@ -282,18 +249,12 @@ void ip_vs_unbind_app(struct ip_vs_conn *cp)
 }
 
 
-/*
- *	Fixes th->seq based on ip_vs_seq info.
- */
+ 
 static inline void vs_fix_seq(const struct ip_vs_seq *vseq, struct tcphdr *th)
 {
 	__u32 seq = ntohl(th->seq);
 
-	/*
-	 *	Adjust seq with delta-offset for all packets after
-	 *	the most recent resized pkt seq and with previous_delta offset
-	 *	for all packets	before most recent resized pkt seq.
-	 */
+	 
 	if (vseq->delta || vseq->previous_delta) {
 		if(after(seq, vseq->init_seq)) {
 			th->seq = htonl(seq + vseq->delta);
@@ -308,22 +269,15 @@ static inline void vs_fix_seq(const struct ip_vs_seq *vseq, struct tcphdr *th)
 }
 
 
-/*
- *	Fixes th->ack_seq based on ip_vs_seq info.
- */
+ 
 static inline void
 vs_fix_ack_seq(const struct ip_vs_seq *vseq, struct tcphdr *th)
 {
 	__u32 ack_seq = ntohl(th->ack_seq);
 
-	/*
-	 * Adjust ack_seq with delta-offset for
-	 * the packets AFTER most recent resized pkt has caused a shift
-	 * for packets before most recent resized pkt, use previous_delta
-	 */
+	 
 	if (vseq->delta || vseq->previous_delta) {
-		/* since ack_seq is the number of octet that is expected
-		   to receive next, so compare it with init_seq+delta */
+		 
 		if(after(ack_seq, vseq->init_seq+vseq->delta)) {
 			th->ack_seq = htonl(ack_seq - vseq->delta);
 			IP_VS_DBG(9, "%s(): subtracted delta "
@@ -339,14 +293,11 @@ vs_fix_ack_seq(const struct ip_vs_seq *vseq, struct tcphdr *th)
 }
 
 
-/*
- *	Updates ip_vs_seq if pkt has been resized
- *	Assumes already checked proto==IPPROTO_TCP and diff!=0.
- */
+ 
 static inline void vs_seq_update(struct ip_vs_conn *cp, struct ip_vs_seq *vseq,
 				 unsigned int flag, __u32 seq, int diff)
 {
-	/* spinlock is to keep updating cp->flags atomic */
+	 
 	spin_lock_bh(&cp->lock);
 	if (!(cp->flags & flag) || after(seq, vseq->init_seq)) {
 		vseq->previous_delta = vseq->delta;
@@ -371,31 +322,23 @@ static inline int app_tcp_pkt_out(struct ip_vs_conn *cp, struct sk_buff *skb,
 
 	th = (struct tcphdr *)(skb_network_header(skb) + tcp_offset);
 
-	/*
-	 *	Remember seq number in case this pkt gets resized
-	 */
+	 
 	seq = ntohl(th->seq);
 
-	/*
-	 *	Fix seq stuff if flagged as so.
-	 */
+	 
 	if (cp->flags & IP_VS_CONN_F_OUT_SEQ)
 		vs_fix_seq(&cp->out_seq, th);
 	if (cp->flags & IP_VS_CONN_F_IN_SEQ)
 		vs_fix_ack_seq(&cp->in_seq, th);
 
-	/*
-	 *	Call private output hook function
-	 */
+	 
 	if (app->pkt_out == NULL)
 		return 1;
 
 	if (!app->pkt_out(app, cp, skb, &diff, ipvsh))
 		return 0;
 
-	/*
-	 *	Update ip_vs seq stuff if len has changed.
-	 */
+	 
 	if (diff != 0)
 		vs_seq_update(cp, &cp->out_seq,
 			      IP_VS_CONN_F_OUT_SEQ, seq, diff);
@@ -403,30 +346,21 @@ static inline int app_tcp_pkt_out(struct ip_vs_conn *cp, struct sk_buff *skb,
 	return 1;
 }
 
-/*
- *	Output pkt hook. Will call bound ip_vs_app specific function
- *	called by ipvs packet handler, assumes previously checked cp!=NULL
- *	returns false if it can't handle packet (oom)
- */
+ 
 int ip_vs_app_pkt_out(struct ip_vs_conn *cp, struct sk_buff *skb,
 		      struct ip_vs_iphdr *ipvsh)
 {
 	struct ip_vs_app *app;
 
-	/*
-	 *	check if application module is bound to
-	 *	this ip_vs_conn.
-	 */
+	 
 	if ((app = cp->app) == NULL)
 		return 1;
 
-	/* TCP is complicated */
+	 
 	if (cp->protocol == IPPROTO_TCP)
 		return app_tcp_pkt_out(cp, skb, app, ipvsh);
 
-	/*
-	 *	Call private output hook function
-	 */
+	 
 	if (app->pkt_out == NULL)
 		return 1;
 
@@ -448,31 +382,23 @@ static inline int app_tcp_pkt_in(struct ip_vs_conn *cp, struct sk_buff *skb,
 
 	th = (struct tcphdr *)(skb_network_header(skb) + tcp_offset);
 
-	/*
-	 *	Remember seq number in case this pkt gets resized
-	 */
+	 
 	seq = ntohl(th->seq);
 
-	/*
-	 *	Fix seq stuff if flagged as so.
-	 */
+	 
 	if (cp->flags & IP_VS_CONN_F_IN_SEQ)
 		vs_fix_seq(&cp->in_seq, th);
 	if (cp->flags & IP_VS_CONN_F_OUT_SEQ)
 		vs_fix_ack_seq(&cp->out_seq, th);
 
-	/*
-	 *	Call private input hook function
-	 */
+	 
 	if (app->pkt_in == NULL)
 		return 1;
 
 	if (!app->pkt_in(app, cp, skb, &diff, ipvsh))
 		return 0;
 
-	/*
-	 *	Update ip_vs seq stuff if len has changed.
-	 */
+	 
 	if (diff != 0)
 		vs_seq_update(cp, &cp->in_seq,
 			      IP_VS_CONN_F_IN_SEQ, seq, diff);
@@ -480,30 +406,21 @@ static inline int app_tcp_pkt_in(struct ip_vs_conn *cp, struct sk_buff *skb,
 	return 1;
 }
 
-/*
- *	Input pkt hook. Will call bound ip_vs_app specific function
- *	called by ipvs packet handler, assumes previously checked cp!=NULL.
- *	returns false if can't handle packet (oom).
- */
+ 
 int ip_vs_app_pkt_in(struct ip_vs_conn *cp, struct sk_buff *skb,
 		     struct ip_vs_iphdr *ipvsh)
 {
 	struct ip_vs_app *app;
 
-	/*
-	 *	check if application module is bound to
-	 *	this ip_vs_conn.
-	 */
+	 
 	if ((app = cp->app) == NULL)
 		return 1;
 
-	/* TCP is complicated */
+	 
 	if (cp->protocol == IPPROTO_TCP)
 		return app_tcp_pkt_in(cp, skb, app, ipvsh);
 
-	/*
-	 *	Call private input hook function
-	 */
+	 
 	if (app->pkt_in == NULL)
 		return 1;
 
@@ -512,9 +429,7 @@ int ip_vs_app_pkt_in(struct ip_vs_conn *cp, struct sk_buff *skb,
 
 
 #ifdef CONFIG_PROC_FS
-/*
- *	/proc/net/ip_vs_app entry function
- */
+ 
 
 static struct ip_vs_app *ip_vs_app_idx(struct netns_ipvs *ipvs, loff_t pos)
 {
@@ -557,7 +472,7 @@ static void *ip_vs_app_seq_next(struct seq_file *seq, void *v, loff_t *pos)
 	if ((e = inc->a_list.next) != &app->incs_list)
 		return list_entry(e, struct ip_vs_app, a_list);
 
-	/* go on to next application */
+	 
 	for (e = app->a_list.next; e != &ipvs->app_list; e = e->next) {
 		app = list_entry(e, struct ip_vs_app, a_list);
 		list_for_each_entry(inc, &app->incs_list, a_list) {
@@ -610,7 +525,7 @@ int __net_init ip_vs_app_net_init(struct netns_ipvs *ipvs)
 
 void __net_exit ip_vs_app_net_cleanup(struct netns_ipvs *ipvs)
 {
-	unregister_ip_vs_app(ipvs, NULL /* all */);
+	unregister_ip_vs_app(ipvs, NULL  );
 #ifdef CONFIG_PROC_FS
 	remove_proc_entry("ip_vs_app", ipvs->net->proc_net);
 #endif

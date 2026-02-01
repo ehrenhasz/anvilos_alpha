@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic Fibre Channel HBA Driver
- * Copyright (c)  2003-2014 QLogic Corporation
- */
+
+ 
 
 #include <linux/vmalloc.h>
 #include <linux/delay.h>
@@ -29,7 +26,7 @@ static const uint32_t qla8044_reg_tbl[] = {
 	QLA8044_ASIC_TEMP,
 };
 
-/* 8044 Flash Read/Write functions */
+ 
 uint32_t
 qla8044_rd_reg(struct qla_hw_data *ha, ulong addr)
 {
@@ -116,14 +113,7 @@ qla8044_wr_reg_indirect(scsi_qla_host_t *vha, uint32_t addr, uint32_t data)
 	return ret_val;
 }
 
-/*
- * qla8044_read_write_crb_reg - Read from raddr and write value to waddr.
- *
- * @ha : Pointer to adapter structure
- * @raddr : CRB address to read from
- * @waddr : CRB address to write to
- *
- */
+ 
 static void
 qla8044_read_write_crb_reg(struct scsi_qla_host *vha,
 	uint32_t raddr, uint32_t waddr)
@@ -141,7 +131,7 @@ qla8044_poll_wait_for_ready(struct scsi_qla_host *vha, uint32_t addr1,
 	unsigned long timeout;
 	uint32_t temp = 0;
 
-	/* jiffies after 100ms */
+	 
 	timeout = jiffies + msecs_to_jiffies(TIMEOUT_100_MS);
 	do {
 		qla8044_rd_reg_indirect(vha, addr1, &temp);
@@ -188,7 +178,7 @@ qla8044_poll_wait_ipmdio_bus_idle(struct scsi_qla_host *vha,
 	unsigned long timeout;
 	uint32_t temp;
 
-	/* jiffies after 100 msecs */
+	 
 	timeout = jiffies + msecs_to_jiffies(TIMEOUT_100_MS);
 	do {
 		temp = qla8044_ipmdio_rd_reg(vha, addr1, addr3, mask, addr2);
@@ -223,16 +213,7 @@ qla8044_ipmdio_wr_reg(struct scsi_qla_host *vha, uint32_t addr1,
 
 	return 0;
 }
-/*
- * qla8044_rmw_crb_reg - Read value from raddr, AND with test_mask,
- * Shift Left,Right/OR/XOR with values RMW header and write value to waddr.
- *
- * @vha : Pointer to adapter structure
- * @raddr : CRB address to read from
- * @waddr : CRB address to write to
- * @p_rmw_hdr : header with shift/or/xor values.
- *
- */
+ 
 static void
 qla8044_rmw_crb_reg(struct scsi_qla_host *vha,
 	uint32_t raddr, uint32_t waddr,	struct qla8044_rmw *p_rmw_hdr)
@@ -278,31 +259,7 @@ qla8044_clear_qsnt_ready(struct scsi_qla_host *vha)
 	    __func__, vha->host_no, qsnt_state);
 }
 
-/**
- * qla8044_lock_recovery - Recovers the idc_lock.
- * @vha : Pointer to adapter structure
- *
- * Lock Recovery Register
- * 5-2	Lock recovery owner: Function ID of driver doing lock recovery,
- *	valid if bits 1..0 are set by driver doing lock recovery.
- * 1-0  1 - Driver intends to force unlock the IDC lock.
- *	2 - Driver is moving forward to unlock the IDC lock. Driver clears
- *	    this field after force unlocking the IDC lock.
- *
- * Lock Recovery process
- * a. Read the IDC_LOCK_RECOVERY register. If the value in bits 1..0 is
- *    greater than 0, then wait for the other driver to unlock otherwise
- *    move to the next step.
- * b. Indicate intent to force-unlock by writing 1h to the IDC_LOCK_RECOVERY
- *    register bits 1..0 and also set the function# in bits 5..2.
- * c. Read the IDC_LOCK_RECOVERY register again after a delay of 200ms.
- *    Wait for the other driver to perform lock recovery if the function
- *    number in bits 5..2 has changed, otherwise move to the next step.
- * d. Write a value of 2h to the IDC_LOCK_RECOVERY register bits 1..0
- *    leaving your function# in bits 5..2.
- * e. Force unlock using the DRIVER_UNLOCK register and immediately clear
- *    the IDC_LOCK_RECOVERY bits 5..0 by writing 0.
- **/
+ 
 static int
 qla8044_lock_recovery(struct scsi_qla_host *vha)
 {
@@ -311,17 +268,17 @@ qla8044_lock_recovery(struct scsi_qla_host *vha)
 
 	lockid = qla8044_rd_reg(ha, QLA8044_DRV_LOCKRECOVERY);
 
-	/* Check for other Recovery in progress, go wait */
+	 
 	if ((lockid & IDC_LOCK_RECOVERY_STATE_MASK) != 0)
 		return QLA_FUNCTION_FAILED;
 
-	/* Intent to Recover */
+	 
 	qla8044_wr_reg(ha, QLA8044_DRV_LOCKRECOVERY,
 	    (ha->portnum <<
 	     IDC_LOCK_RECOVERY_STATE_SHIFT_BITS) | INTENT_TO_RECOVER);
 	msleep(200);
 
-	/* Check Intent to Recover is advertised */
+	 
 	lockid = qla8044_rd_reg(ha, QLA8044_DRV_LOCKRECOVERY);
 	if ((lockid & IDC_LOCK_RECOVERY_OWNER_MASK) != (ha->portnum <<
 	    IDC_LOCK_RECOVERY_STATE_SHIFT_BITS))
@@ -330,19 +287,19 @@ qla8044_lock_recovery(struct scsi_qla_host *vha)
 	ql_dbg(ql_dbg_p3p, vha, 0xb08B, "%s:%d: IDC Lock recovery initiated\n"
 	    , __func__, ha->portnum);
 
-	/* Proceed to Recover */
+	 
 	qla8044_wr_reg(ha, QLA8044_DRV_LOCKRECOVERY,
 	    (ha->portnum << IDC_LOCK_RECOVERY_STATE_SHIFT_BITS) |
 	    PROCEED_TO_RECOVER);
 
-	/* Force Unlock() */
+	 
 	qla8044_wr_reg(ha, QLA8044_DRV_LOCK_ID, 0xFF);
 	qla8044_rd_reg(ha, QLA8044_DRV_UNLOCK);
 
-	/* Clear bits 0-5 in IDC_RECOVERY register*/
+	 
 	qla8044_wr_reg(ha, QLA8044_DRV_LOCKRECOVERY, 0);
 
-	/* Get lock() */
+	 
 	lock = qla8044_rd_reg(ha, QLA8044_DRV_LOCK);
 	if (lock) {
 		lockid = qla8044_rd_reg(ha, QLA8044_DRV_LOCK_ID);
@@ -361,12 +318,11 @@ qla8044_idc_lock(struct qla_hw_data *ha)
 	scsi_qla_host_t *vha = pci_get_drvdata(ha->pdev);
 
 	while (status == 0) {
-		/* acquire semaphore5 from PCI HW block */
+		 
 		status = qla8044_rd_reg(ha, QLA8044_DRV_LOCK);
 
 		if (status) {
-			/* Increment Counter (8-31) and update func_num (0-7) on
-			 * getting a successful lock  */
+			 
 			lock_id = qla8044_rd_reg(ha, QLA8044_DRV_LOCK_ID);
 			lock_id = ((lock_id + (1 << 8)) & ~0xFF) | ha->portnum;
 			qla8044_wr_reg(ha, QLA8044_DRV_LOCK_ID, lock_id);
@@ -387,29 +343,22 @@ qla8044_idc_lock(struct qla_hw_data *ha)
 			    __func__, ha->portnum, func_num, lock_cnt,
 			    (first_owner & 0xFF));
 			if (first_owner != tmo_owner) {
-				/* Some other driver got lock,
-				 * OR same driver got lock again (counter
-				 * value changed), when we were waiting for
-				 * lock. Retry for another 2 sec */
+				 
 				ql_dbg(ql_dbg_p3p, vha, 0xb115,
 				    "%s: %d: IDC lock failed\n",
 				    __func__, ha->portnum);
 				timeout = 0;
 			} else {
-				/* Same driver holding lock > 2sec.
-				 * Force Recovery */
+				 
 				if (qla8044_lock_recovery(vha) == QLA_SUCCESS) {
-					/* Recovered and got lock */
+					 
 					ret_val = QLA_SUCCESS;
 					ql_dbg(ql_dbg_p3p, vha, 0xb116,
 					    "%s:IDC lock Recovery by %d"
 					    "successful...\n", __func__,
 					     ha->portnum);
 				}
-				/* Recovery Failed, some other function
-				 * has the lock, wait for 2secs
-				 * and retry
-				 */
+				 
 				ql_dbg(ql_dbg_p3p, vha, 0xb08a,
 				       "%s: IDC lock Recovery by %d "
 				       "failed, Retrying timeout\n", __func__,
@@ -437,12 +386,12 @@ qla8044_idc_unlock(struct qla_hw_data *ha)
 		return;
 	}
 
-	/* Keep lock counter value, update the ha->func_num to 0xFF */
+	 
 	qla8044_wr_reg(ha, QLA8044_DRV_LOCK_ID, (id | 0xFF));
 	qla8044_rd_reg(ha, QLA8044_DRV_UNLOCK);
 }
 
-/* 8044 Flash Lock/Unlock functions */
+ 
 static int
 qla8044_flash_lock(scsi_qla_host_t *vha)
 {
@@ -477,7 +426,7 @@ qla8044_flash_unlock(scsi_qla_host_t *vha)
 {
 	struct qla_hw_data *ha = vha->hw;
 
-	/* Reading FLASH_UNLOCK register unlocks the Flash */
+	 
 	qla8044_wr_reg(ha, QLA8044_FLASH_LOCK_ID, 0xFF);
 	qla8044_rd_reg(ha, QLA8044_FLASH_UNLOCK);
 }
@@ -488,21 +437,15 @@ void qla8044_flash_lock_recovery(struct scsi_qla_host *vha)
 {
 
 	if (qla8044_flash_lock(vha)) {
-		/* Someone else is holding the lock. */
+		 
 		ql_log(ql_log_warn, vha, 0xb120, "Resetting flash_lock\n");
 	}
 
-	/*
-	 * Either we got the lock, or someone
-	 * else died while holding it.
-	 * In either case, unlock.
-	 */
+	 
 	qla8044_flash_unlock(vha);
 }
 
-/*
- * Address and length are byte address
- */
+ 
 static int
 qla8044_read_flash_data(scsi_qla_host_t *vha,  uint8_t *p_data,
 	uint32_t flash_addr, int u32_word_count)
@@ -555,9 +498,7 @@ exit_lock_error:
 	return ret_val;
 }
 
-/*
- * Address and length are byte address
- */
+ 
 void *
 qla8044_read_optrom_data(struct scsi_qla_host *vha, void *buf,
 	uint32_t offset, uint32_t length)
@@ -590,15 +531,7 @@ qla8044_need_reset(struct scsi_qla_host *vha)
 	return rval;
 }
 
-/*
- * qla8044_write_list - Write the value (p_entry->arg2) to address specified
- * by p_entry->arg1 for all entries in header with delay of p_hdr->delay between
- * entries.
- *
- * @vha : Pointer to adapter structure
- * @p_hdr : reset_entry header for WRITE_LIST opcode.
- *
- */
+ 
 static void
 qla8044_write_list(struct scsi_qla_host *vha,
 	struct qla8044_reset_entry_hdr *p_hdr)
@@ -616,15 +549,7 @@ qla8044_write_list(struct scsi_qla_host *vha,
 	}
 }
 
-/*
- * qla8044_read_write_list - Read from address specified by p_entry->arg1,
- * write value read to address specified by p_entry->arg2, for all entries in
- * header with delay of p_hdr->delay between entries.
- *
- * @vha : Pointer to adapter structure
- * @p_hdr : reset_entry header for READ_WRITE_LIST opcode.
- *
- */
+ 
 static void
 qla8044_read_write_list(struct scsi_qla_host *vha,
 	struct qla8044_reset_entry_hdr *p_hdr)
@@ -643,18 +568,7 @@ qla8044_read_write_list(struct scsi_qla_host *vha,
 	}
 }
 
-/*
- * qla8044_poll_reg - Poll the given CRB addr for duration msecs till
- * value read ANDed with test_mask is equal to test_result.
- *
- * @ha : Pointer to adapter structure
- * @addr : CRB register address
- * @duration : Poll for total of "duration" msecs
- * @test_mask : Mask value read with "test_mask"
- * @test_result : Compare (value&test_mask) with test_result.
- *
- * Return Value - QLA_SUCCESS/QLA_FUNCTION_FAILED
- */
+ 
 static int
 qla8044_poll_reg(struct scsi_qla_host *vha, uint32_t addr,
 	int duration, uint32_t test_mask, uint32_t test_result)
@@ -670,7 +584,7 @@ qla8044_poll_reg(struct scsi_qla_host *vha, uint32_t addr,
 		goto exit_poll_reg;
 	}
 
-	/* poll every 1/10 of the total duration */
+	 
 	retries = duration/10;
 
 	do {
@@ -699,15 +613,7 @@ exit_poll_reg:
 	return timeout_error;
 }
 
-/*
- * qla8044_poll_list - For all entries in the POLL_LIST header, poll read CRB
- * register specified by p_entry->arg1 and compare (value AND test_mask) with
- * test_result to validate it. Wait for p_hdr->delay between processing entries.
- *
- * @ha : Pointer to adapter structure
- * @p_hdr : reset_entry header for POLL_LIST opcode.
- *
- */
+ 
 static void
 qla8044_poll_list(struct scsi_qla_host *vha,
 	struct qla8044_reset_entry_hdr *p_hdr)
@@ -721,9 +627,7 @@ qla8044_poll_list(struct scsi_qla_host *vha,
 	p_poll = (struct qla8044_poll *)
 		((char *)p_hdr + sizeof(struct qla8044_reset_entry_hdr));
 
-	/* Entries start after 8 byte qla8044_poll, poll header contains
-	 * the test_mask, test_value.
-	 */
+	 
 	p_entry = (struct qla8044_entry *)((char *)p_poll +
 	    sizeof(struct qla8044_poll));
 
@@ -740,11 +644,7 @@ qla8044_poll_list(struct scsi_qla_host *vha,
 				    p_entry->arg1, delay,
 				    p_poll->test_mask,
 				    p_poll->test_value)) {
-					/*If
-					* (data_read&test_mask != test_value)
-					* read TIMEOUT_ADDR (arg1) and
-					* ADDR (arg2) registers
-					*/
+					 
 					qla8044_rd_reg_indirect(vha,
 					    p_entry->arg1, &value);
 					qla8044_rd_reg_indirect(vha,
@@ -755,15 +655,7 @@ qla8044_poll_list(struct scsi_qla_host *vha,
 	}
 }
 
-/*
- * qla8044_poll_write_list - Write dr_value, ar_value to dr_addr/ar_addr,
- * read ar_addr, if (value& test_mask != test_mask) re-read till timeout
- * expires.
- *
- * @vha : Pointer to adapter structure
- * @p_hdr : reset entry header for POLL_WRITE_LIST opcode.
- *
- */
+ 
 static void
 qla8044_poll_write_list(struct scsi_qla_host *vha,
 	struct qla8044_reset_entry_hdr *p_hdr)
@@ -802,15 +694,7 @@ qla8044_poll_write_list(struct scsi_qla_host *vha,
 	}
 }
 
-/*
- * qla8044_read_modify_write - Read value from p_entry->arg1, modify the
- * value, write value to p_entry->arg2. Process entries with p_hdr->delay
- * between entries.
- *
- * @vha : Pointer to adapter structure
- * @p_hdr : header with shift/or/xor values.
- *
- */
+ 
 static void
 qla8044_read_modify_write(struct scsi_qla_host *vha,
 	struct qla8044_reset_entry_hdr *p_hdr)
@@ -833,14 +717,7 @@ qla8044_read_modify_write(struct scsi_qla_host *vha,
 	}
 }
 
-/*
- * qla8044_pause - Wait for p_hdr->delay msecs, called between processing
- * two entries of a sequence.
- *
- * @vha : Pointer to adapter structure
- * @p_hdr : Common reset entry header.
- *
- */
+ 
 static
 void qla8044_pause(struct scsi_qla_host *vha,
 	struct qla8044_reset_entry_hdr *p_hdr)
@@ -849,13 +726,7 @@ void qla8044_pause(struct scsi_qla_host *vha,
 		mdelay((uint32_t)((long)p_hdr->delay));
 }
 
-/*
- * qla8044_template_end - Indicates end of reset sequence processing.
- *
- * @vha : Pointer to adapter structure
- * @p_hdr : Common reset entry header.
- *
- */
+ 
 static void
 qla8044_template_end(struct scsi_qla_host *vha,
 	struct qla8044_reset_entry_hdr *p_hdr)
@@ -872,15 +743,7 @@ qla8044_template_end(struct scsi_qla_host *vha,
 	}
 }
 
-/*
- * qla8044_poll_read_list - Write ar_value to ar_addr register, read ar_addr,
- * if (value & test_mask != test_value) re-read till timeout value expires,
- * read dr_addr register and assign to reset_tmplt.array.
- *
- * @vha : Pointer to adapter structure
- * @p_hdr : Common reset entry header.
- *
- */
+ 
 static void
 qla8044_poll_read_list(struct scsi_qla_host *vha,
 	struct qla8044_reset_entry_hdr *p_hdr)
@@ -925,17 +788,7 @@ qla8044_poll_read_list(struct scsi_qla_host *vha,
 	}
 }
 
-/*
- * qla8031_process_reset_template - Process all entries in reset template
- * till entry with SEQ_END opcode, which indicates end of the reset template
- * processing. Each entry has a Reset Entry header, entry opcode/command, with
- * size of the entry, number of entries in sub-sequence and delay in microsecs
- * or timeout in millisecs.
- *
- * @ha : Pointer to adapter structure
- * @p_buff : Common reset entry header.
- *
- */
+ 
 static void
 qla8044_process_reset_template(struct scsi_qla_host *vha,
 	char *p_buff)
@@ -987,9 +840,7 @@ qla8044_process_reset_template(struct scsi_qla_host *vha,
 			    "entry = %d\n", __func__, p_hdr->cmd, index);
 			break;
 		}
-		/*
-		 *Set pointer to next entry in the sequence.
-		*/
+		 
 		p_entry += p_hdr->size;
 	}
 	vha->reset_tmplt.seq_index = index;
@@ -1055,10 +906,10 @@ qla8044_lockless_flash_read_u32(struct scsi_qla_host *vha,
 		goto exit_lockless_read;
 	}
 
-	/* Check if data is spread across multiple sectors  */
+	 
 	if ((flash_offset + (u32_word_count * sizeof(uint32_t))) >
 	    (QLA8044_FLASH_SECTOR_SIZE - 1)) {
-		/* Multi sector read */
+		 
 		for (i = 0; i < u32_word_count; i++) {
 			ret_val = qla8044_rd_reg_indirect(vha,
 			    QLA8044_FLASH_DIRECT_DATA(addr), &u32_word);
@@ -1073,7 +924,7 @@ qla8044_lockless_flash_read_u32(struct scsi_qla_host *vha,
 			addr = addr + 4;
 			flash_offset = flash_offset + 4;
 			if (flash_offset > (QLA8044_FLASH_SECTOR_SIZE - 1)) {
-				/* This write is needed once for each sector */
+				 
 				ret_val = qla8044_wr_reg_indirect(vha,
 				    QLA8044_FLASH_DIRECT_WINDOW, (addr));
 				if (ret_val != QLA_SUCCESS) {
@@ -1087,7 +938,7 @@ qla8044_lockless_flash_read_u32(struct scsi_qla_host *vha,
 			}
 		}
 	} else {
-		/* Single sector read */
+		 
 		for (i = 0; i < u32_word_count; i++) {
 			ret_val = qla8044_rd_reg_indirect(vha,
 			    QLA8044_FLASH_DIRECT_DATA(addr), &u32_word);
@@ -1107,16 +958,7 @@ exit_lockless_read:
 	return ret_val;
 }
 
-/*
- * qla8044_ms_mem_write_128b - Writes data to MS/off-chip memory
- *
- * @vha : Pointer to adapter structure
- * addr : Flash address to write to
- * data : Data to be written
- * count : word_count to be written
- *
- * Return Value - QLA_SUCCESS/QLA_FUNCTION_FAILED
- */
+ 
 static int
 qla8044_ms_mem_write_128b(struct scsi_qla_host *vha,
 	uint64_t addr, uint32_t *data, uint32_t count)
@@ -1126,14 +968,14 @@ qla8044_ms_mem_write_128b(struct scsi_qla_host *vha,
 	unsigned long flags;
 	struct qla_hw_data *ha = vha->hw;
 
-	/* Only 128-bit aligned access */
+	 
 	if (addr & 0xF) {
 		ret_val = QLA_FUNCTION_FAILED;
 		goto exit_ms_mem_write;
 	}
 	write_lock_irqsave(&ha->hw_lock, flags);
 
-	/* Write address */
+	 
 	ret_val = qla8044_wr_reg_indirect(vha, MD_MIU_TEST_AGT_ADDR_HI, 0);
 	if (ret_val == QLA_FUNCTION_FAILED) {
 		ql_log(ql_log_fatal, vha, 0xb0a1,
@@ -1153,7 +995,7 @@ qla8044_ms_mem_write_128b(struct scsi_qla_host *vha,
 		ret_val = qla8044_wr_reg_indirect(vha,
 		    MD_MIU_TEST_AGT_ADDR_LO, addr);
 
-		/* Write data */
+		 
 		ret_val += qla8044_wr_reg_indirect(vha,
 		    MD_MIU_TEST_AGT_WRDATA_LO, *data++);
 		ret_val += qla8044_wr_reg_indirect(vha,
@@ -1169,7 +1011,7 @@ qla8044_ms_mem_write_128b(struct scsi_qla_host *vha,
 			goto exit_ms_mem_write_unlock;
 		}
 
-		/* Check write status */
+		 
 		ret_val = qla8044_wr_reg_indirect(vha, MD_MIU_TEST_AGT_CTRL,
 		    MIU_TA_CTL_WRITE_ENABLE);
 		ret_val += qla8044_wr_reg_indirect(vha, MD_MIU_TEST_AGT_CTRL,
@@ -1193,7 +1035,7 @@ qla8044_ms_mem_write_128b(struct scsi_qla_host *vha,
 				break;
 		}
 
-		/* Status check failed */
+		 
 		if (j >= MAX_CTL_CHECK) {
 			ql_log(ql_log_fatal, vha, 0xb0a5,
 			    "%s: MS memory write failed!\n",
@@ -1223,11 +1065,11 @@ qla8044_copy_bootloader(struct scsi_qla_host *vha)
 	dest = qla8044_rd_reg(ha, QLA8044_BOOTLOADER_ADDR);
 	size = qla8044_rd_reg(ha, QLA8044_BOOTLOADER_SIZE);
 
-	/* 128 bit alignment check */
+	 
 	if (size & 0xF)
 		size = (size + 16) & ~0xF;
 
-	/* 16 byte count */
+	 
 	count = size/16;
 
 	p_cache = vmalloc(size);
@@ -1249,7 +1091,7 @@ qla8044_copy_bootloader(struct scsi_qla_host *vha)
 	ql_dbg(ql_dbg_p3p, vha, 0xb0a8, "%s: Read F/W from flash!\n",
 	    __func__);
 
-	/* 128 bit/16 byte write to MS memory */
+	 
 	ret_val = qla8044_ms_mem_write_128b(vha, dest,
 	    (uint32_t *)p_cache, count);
 	if (ret_val == QLA_FUNCTION_FAILED) {
@@ -1276,7 +1118,7 @@ qla8044_restart(struct scsi_qla_host *vha)
 
 	qla8044_process_stop_seq(vha);
 
-	/* Collect minidump */
+	 
 	if (ql2xmdenable)
 		qla8044_get_minidump(vha);
 	else
@@ -1293,9 +1135,7 @@ qla8044_restart(struct scsi_qla_host *vha)
 		goto exit_restart;
 	}
 
-	/*
-	 *  Loads F/W from flash
-	 */
+	 
 	qla8044_wr_reg(ha, QLA8044_FW_IMAGE_VALID, QLA8044_BOOT_FROM_FLASH);
 
 	qla8044_process_start_seq(vha);
@@ -1304,14 +1144,7 @@ exit_restart:
 	return ret_val;
 }
 
-/*
- * qla8044_check_cmd_peg_status - Check peg status to see if Peg is
- * initialized.
- *
- * @ha : Pointer to adapter structure
- *
- * Return Value - QLA_SUCCESS/QLA_FUNCTION_FAILED
- */
+ 
 static int
 qla8044_check_cmd_peg_status(struct scsi_qla_host *vha)
 {
@@ -1376,12 +1209,7 @@ qla8044_clear_drv_active(struct qla_hw_data *ha)
 	qla8044_wr_direct(vha, QLA8044_CRB_DRV_ACTIVE_INDEX, drv_active);
 }
 
-/*
- * qla8044_device_bootstrap - Initialize device, set DEV_READY, start fw
- * @ha: pointer to adapter structure
- *
- * Note: IDC lock must be held upon entry
- **/
+ 
 static int
 qla8044_device_bootstrap(struct scsi_qla_host *vha)
 {
@@ -1410,12 +1238,12 @@ qla8044_device_bootstrap(struct scsi_qla_host *vha)
 		}
 		qla8044_flash_lock_recovery(vha);
 	} else {
-		/* We are trying to perform a recovery here. */
+		 
 		if (ha->flags.isp82xx_fw_hung)
 			qla8044_flash_lock_recovery(vha);
 	}
 
-	/* set to DEV_INITIALIZING */
+	 
 	ql_log(ql_log_info, vha, 0xb0b2,
 	    "%s: HW State: INITIALIZING\n", __func__);
 	qla8044_wr_direct(vha, QLA8044_CRB_DEV_STATE_INDEX,
@@ -1434,8 +1262,7 @@ qla8044_device_bootstrap(struct scsi_qla_host *vha)
 		return rval;
 	}
 
-	/* For ISP8044, If IDC_CTRL GRACEFUL_RESET_BIT1 is set , reset it after
-	 * device goes to INIT state. */
+	 
 	idc_ctrl = qla8044_rd_reg(ha, QLA8044_IDC_DRV_CTRL);
 	if (idc_ctrl & GRACEFUL_RESET_BIT1) {
 		qla8044_wr_reg(ha, QLA8044_IDC_DRV_CTRL,
@@ -1451,7 +1278,7 @@ dev_ready:
 	return rval;
 }
 
-/*-------------------------Reset Sequence Functions-----------------------*/
+ 
 static void
 qla8044_dump_reset_seq_hdr(struct scsi_qla_host *vha)
 {
@@ -1474,13 +1301,7 @@ qla8044_dump_reset_seq_hdr(struct scsi_qla_host *vha)
 	    *(phdr+13), *(phdr+14), *(phdr+15));
 }
 
-/*
- * qla8044_reset_seq_checksum_test - Validate Reset Sequence template.
- *
- * @ha : Pointer to adapter structure
- *
- * Return Value - QLA_SUCCESS/QLA_FUNCTION_FAILED
- */
+ 
 static int
 qla8044_reset_seq_checksum_test(struct scsi_qla_host *vha)
 {
@@ -1494,7 +1315,7 @@ qla8044_reset_seq_checksum_test(struct scsi_qla_host *vha)
 	while (sum >> 16)
 		sum = (sum & 0xFFFF) +  (sum >> 16);
 
-	/* checksum of 0 indicates a valid template */
+	 
 	if (~sum) {
 		return QLA_SUCCESS;
 	} else {
@@ -1504,12 +1325,7 @@ qla8044_reset_seq_checksum_test(struct scsi_qla_host *vha)
 	}
 }
 
-/*
- * qla8044_read_reset_template - Read Reset Template from Flash, validate
- * the template and store offsets of stop/start/init offsets in ha->reset_tmplt.
- *
- * @ha : Pointer to adapter structure
- */
+ 
 void
 qla8044_read_reset_template(struct scsi_qla_host *vha)
 {
@@ -1535,7 +1351,7 @@ qla8044_read_reset_template(struct scsi_qla_host *vha)
 	    "%s: Read template hdr size %d from Flash\n",
 	    __func__, tmplt_hdr_def_size);
 
-	/* Copy template header from flash */
+	 
 	if (qla8044_read_flash_data(vha, p_buff, addr, tmplt_hdr_def_size)) {
 		ql_log(ql_log_fatal, vha, 0xb0ba,
 		    "%s: Failed to read reset template\n", __func__);
@@ -1545,7 +1361,7 @@ qla8044_read_reset_template(struct scsi_qla_host *vha)
 	vha->reset_tmplt.hdr =
 	 (struct qla8044_reset_template_hdr *) vha->reset_tmplt.buff;
 
-	/* Validate the template header size and signature */
+	 
 	tmplt_hdr_size = vha->reset_tmplt.hdr->hdr_size/sizeof(uint32_t);
 	if ((tmplt_hdr_size != tmplt_hdr_def_size) ||
 	    (vha->reset_tmplt.hdr->signature != RESET_TMPLT_HDR_SIGNATURE)) {
@@ -1565,14 +1381,14 @@ qla8044_read_reset_template(struct scsi_qla_host *vha)
 	    "%s: Read rest of the template size %d\n",
 	    __func__, vha->reset_tmplt.hdr->size);
 
-	/* Copy rest of the template */
+	 
 	if (qla8044_read_flash_data(vha, p_buff, addr, tmplt_hdr_def_size)) {
 		ql_log(ql_log_fatal, vha, 0xb0bd,
 		    "%s: Failed to read reset template\n", __func__);
 		goto exit_read_template_error;
 	}
 
-	/* Integrity check */
+	 
 	if (qla8044_reset_seq_checksum_test(vha)) {
 		ql_log(ql_log_fatal, vha, 0xb0be,
 		    "%s: Reset Seq checksum failed!\n", __func__);
@@ -1583,7 +1399,7 @@ qla8044_read_reset_template(struct scsi_qla_host *vha)
 	    "%s: Reset Seq checksum passed! Get stop, "
 	    "start and init seq offsets\n", __func__);
 
-	/* Get STOP, START, INIT sequence offsets */
+	 
 	vha->reset_tmplt.init_offset = vha->reset_tmplt.buff +
 	    vha->reset_tmplt.hdr->init_seq_offset;
 
@@ -1625,8 +1441,7 @@ qla8044_set_rst_ready(struct scsi_qla_host *vha)
 
 	drv_state = qla8044_rd_direct(vha, QLA8044_CRB_DRV_STATE_INDEX);
 
-	/* For ISP8044, drv_active register has 1 bit per function,
-	 * shift 1 by func_num to set a bit for the function.*/
+	 
 	drv_state |= (1 << ha->portnum);
 
 	ql_log(ql_log_info, vha, 0xb0c1,
@@ -1635,12 +1450,7 @@ qla8044_set_rst_ready(struct scsi_qla_host *vha)
 	qla8044_wr_direct(vha, QLA8044_CRB_DRV_STATE_INDEX, drv_state);
 }
 
-/**
- * qla8044_need_reset_handler - Code to start reset sequence
- * @vha: pointer to adapter structure
- *
- * Note: IDC lock must be held upon entry
- */
+ 
 static void
 qla8044_need_reset_handler(struct scsi_qla_host *vha)
 {
@@ -1672,7 +1482,7 @@ qla8044_need_reset_handler(struct scsi_qla_host *vha)
 
 	qla8044_set_rst_ready(vha);
 
-	/* wait for 10 seconds for reset ack from all functions */
+	 
 	reset_timeout = jiffies + (ha->fcoe_reset_timeout * HZ);
 
 	do {
@@ -1696,7 +1506,7 @@ qla8044_need_reset_handler(struct scsi_qla_host *vha)
 	} while (((drv_state & drv_active) != drv_active) &&
 	    (dev_state == QLA8XXX_DEV_NEED_RESET));
 
-	/* Remove IDC participation of functions not acknowledging */
+	 
 	if (drv_state != drv_active) {
 		ql_log(ql_log_info, vha, 0xb0c7,
 		    "%s(%ld): Function %d turning off drv_active of non-acking function 0x%x\n",
@@ -1706,10 +1516,7 @@ qla8044_need_reset_handler(struct scsi_qla_host *vha)
 		qla8044_wr_direct(vha, QLA8044_CRB_DRV_ACTIVE_INDEX,
 		    drv_active);
 	} else {
-		/*
-		 * Reset owner should execute reset recovery,
-		 * if all functions acknowledged
-		 */
+		 
 		if ((ha->flags.nic_core_reset_owner) &&
 		    (dev_state == QLA8XXX_DEV_NEED_RESET)) {
 			ha->flags.nic_core_reset_owner = 0;
@@ -1718,16 +1525,13 @@ qla8044_need_reset_handler(struct scsi_qla_host *vha)
 		}
 	}
 
-	/* Exit if non active function */
+	 
 	if (!(drv_active & (1 << ha->portnum))) {
 		ha->flags.nic_core_reset_owner = 0;
 		return;
 	}
 
-	/*
-	 * Execute Reset Recovery if Reset Owner or Function 7
-	 * is the only active function
-	 */
+	 
 	if (ha->flags.nic_core_reset_owner ||
 	    ((drv_state & drv_active) == QLA8044_FUN7_ACTIVE_INDEX)) {
 		ha->flags.nic_core_reset_owner = 0;
@@ -1743,8 +1547,7 @@ qla8044_set_drv_active(struct scsi_qla_host *vha)
 
 	drv_active = qla8044_rd_direct(vha, QLA8044_CRB_DRV_ACTIVE_INDEX);
 
-	/* For ISP8044, drv_active register has 1 bit per function,
-	 * shift 1 by func_num to set a bit for the function.*/
+	 
 	drv_active |= (1 << ha->portnum);
 
 	ql_log(ql_log_info, vha, 0xb0c8,
@@ -1815,7 +1618,7 @@ qla8044_set_idc_ver(struct scsi_qla_host *vha)
 		}
 	}
 
-	/* Update IDC_MINOR_VERSION */
+	 
 	idc_ver = qla8044_rd_reg(ha, QLA8044_CRB_IDC_VER_MINOR);
 	idc_ver &= ~(0x03 << (ha->portnum * 2));
 	idc_ver |= (QLA8044_IDC_VER_MIN_VALUE << (ha->portnum * 2));
@@ -1841,8 +1644,7 @@ qla8044_update_idc_reg(struct scsi_qla_host *vha)
 	drv_active = qla8044_rd_direct(vha,
 	    QLA8044_CRB_DRV_ACTIVE_INDEX);
 
-	/* If we are the first driver to load and
-	 * ql2xdontresethba is not set, clear IDC_CTRL BIT0. */
+	 
 	if ((drv_active == (1 << ha->portnum)) && !ql2xdontresethba)
 		qla8044_clear_idc_dontreset(vha);
 
@@ -1855,10 +1657,7 @@ exit_update_idc_reg:
 	return rval;
 }
 
-/**
- * qla8044_need_qsnt_handler - Code to start qsnt
- * @vha: pointer to adapter structure
- */
+ 
 static void
 qla8044_need_qsnt_handler(struct scsi_qla_host *vha)
 {
@@ -1873,20 +1672,17 @@ qla8044_need_qsnt_handler(struct scsi_qla_host *vha)
 
 	qla8044_set_qsnt_ready(vha);
 
-	/* Wait for 30 secs for all functions to ack qsnt mode */
+	 
 	qsnt_timeout = jiffies + (QSNT_ACK_TOV * HZ);
 	drv_state = qla8044_rd_direct(vha, QLA8044_CRB_DRV_STATE_INDEX);
 	drv_active = qla8044_rd_direct(vha, QLA8044_CRB_DRV_ACTIVE_INDEX);
 
-	/* Shift drv_active by 1 to match drv_state. As quiescent ready bit
-	   position is at bit 1 and drv active is at bit 0 */
+	 
 	drv_active = drv_active << 1;
 
 	while (drv_state != drv_active) {
 		if (time_after_eq(jiffies, qsnt_timeout)) {
-			/* Other functions did not ack, changing state to
-			 * DEV_READY
-			 */
+			 
 			clear_bit(ISP_QUIESCE_NEEDED, &vha->dpc_flags);
 			qla8044_wr_direct(vha, QLA8044_CRB_DEV_STATE_INDEX,
 					    QLA8XXX_DEV_READY);
@@ -1906,7 +1702,7 @@ qla8044_need_qsnt_handler(struct scsi_qla_host *vha)
 		drv_active = drv_active << 1;
 	}
 
-	/* All functions have Acked. Set quiescent state */
+	 
 	dev_state = qla8044_rd_direct(vha, QLA8044_CRB_DEV_STATE_INDEX);
 
 	if (dev_state == QLA8XXX_DEV_NEED_QUIESCENT) {
@@ -1917,12 +1713,7 @@ qla8044_need_qsnt_handler(struct scsi_qla_host *vha)
 	}
 }
 
-/*
- * qla8044_device_state_handler - Adapter state machine
- * @ha: pointer to host adapter structure.
- *
- * Note: IDC lock must be UNLOCKED upon entry
- **/
+ 
 int
 qla8044_device_state_handler(struct scsi_qla_host *vha)
 {
@@ -1940,7 +1731,7 @@ qla8044_device_state_handler(struct scsi_qla_host *vha)
 	    "Device state is 0x%x = %s\n",
 	    dev_state, qdev_state(dev_state));
 
-	/* wait for 30 seconds for device to go ready */
+	 
 	dev_init_timeout = jiffies + (ha->fcoe_dev_init_timeout * HZ);
 
 	qla8044_idc_lock(ha);
@@ -1963,7 +1754,7 @@ qla8044_device_state_handler(struct scsi_qla_host *vha)
 		    "Device state is 0x%x = %s\n",
 		    dev_state, qdev_state(dev_state));
 
-		/* NOTE: Make sure idc unlocked upon exit of switch statement */
+		 
 		switch (dev_state) {
 		case QLA8XXX_DEV_READY:
 			ha->flags.nic_core_reset_owner = 0;
@@ -1977,16 +1768,14 @@ qla8044_device_state_handler(struct scsi_qla_host *vha)
 			qla8044_idc_lock(ha);
 			break;
 		case QLA8XXX_DEV_NEED_RESET:
-			/* For ISP8044, if NEED_RESET is set by any driver,
-			 * it should be honored, irrespective of IDC_CTRL
-			 * DONTRESET_BIT0 */
+			 
 			qla8044_need_reset_handler(vha);
 			break;
 		case QLA8XXX_DEV_NEED_QUIESCENT:
-			/* idc locked/unlocked in handler */
+			 
 			qla8044_need_qsnt_handler(vha);
 
-			/* Reset the init timeout after qsnt handler */
+			 
 			dev_init_timeout = jiffies +
 			    (ha->fcoe_reset_timeout * HZ);
 			break;
@@ -1998,7 +1787,7 @@ qla8044_device_state_handler(struct scsi_qla_host *vha)
 			msleep(1000);
 			qla8044_idc_lock(ha);
 
-			/* Reset the init timeout after qsnt handler */
+			 
 			dev_init_timeout = jiffies +
 			    (ha->fcoe_reset_timeout * HZ);
 			break;
@@ -2024,12 +1813,7 @@ exit_error:
 	return rval;
 }
 
-/**
- * qla8044_check_temp - Check the ISP82XX temperature.
- * @vha: adapter block pointer.
- *
- * Note: The caller should not hold the idc lock.
- */
+ 
 static int
 qla8044_check_temp(struct scsi_qla_host *vha)
 {
@@ -2064,12 +1848,7 @@ int qla8044_read_temperature(scsi_qla_host_t *vha)
 	return qla82xx_get_temp_val(temp);
 }
 
-/**
- * qla8044_check_fw_alive  - Check firmware health
- * @vha: Pointer to host adapter structure.
- *
- * Context: Interrupt
- */
+ 
 int
 qla8044_check_fw_alive(struct scsi_qla_host *vha)
 {
@@ -2080,7 +1859,7 @@ qla8044_check_fw_alive(struct scsi_qla_host *vha)
 	fw_heartbeat_counter = qla8044_rd_direct(vha,
 	    QLA8044_PEG_ALIVE_COUNTER_INDEX);
 
-	/* If PEG_ALIVE_COUNTER is 0xffffffff, AER/EEH is in progress, ignore */
+	 
 	if (fw_heartbeat_counter == 0xffffffff) {
 		ql_dbg(ql_dbg_p3p, vha, 0xb0d4,
 		    "scsi%ld: %s: Device in frozen "
@@ -2091,7 +1870,7 @@ qla8044_check_fw_alive(struct scsi_qla_host *vha)
 
 	if (vha->fw_heartbeat_counter == fw_heartbeat_counter) {
 		vha->seconds_since_last_heartbeat++;
-		/* FW not alive after 2 seconds */
+		 
 		if (vha->seconds_since_last_heartbeat == 2) {
 			vha->seconds_since_last_heartbeat = 0;
 			halt_status1 = qla8044_rd_direct(vha,
@@ -2122,7 +1901,7 @@ qla8044_watchdog(struct scsi_qla_host *vha)
 	int halt_status_unrecoverable = 0;
 	struct qla_hw_data *ha = vha->hw;
 
-	/* don't poll if reset is going on or FW hang in quiescent state */
+	 
 	if (!(test_bit(ABORT_ISP_ACTIVE, &vha->dpc_flags) ||
 	    test_bit(FCOE_CTX_RESET_NEEDED, &vha->dpc_flags))) {
 		dev_state = qla8044_rd_direct(vha, QLA8044_CRB_DEV_STATE_INDEX);
@@ -2153,7 +1932,7 @@ qla8044_watchdog(struct scsi_qla_host *vha)
 			set_bit(ISP_QUIESCE_NEEDED, &vha->dpc_flags);
 			qla2xxx_wake_dpc(vha);
 		} else  {
-			/* Check firmware health */
+			 
 			if (ha->flags.isp82xx_fw_hung) {
 				halt_status = qla8044_rd_direct(vha,
 					QLA8044_PEG_HALT_STATUS1_INDEX);
@@ -2169,9 +1948,7 @@ qla8044_watchdog(struct scsi_qla_host *vha)
 						halt_status_unrecoverable = 1;
 				}
 
-				/* Since we cannot change dev_state in interrupt
-				 * context, set appropriate DPC flag then wakeup
-				 *  DPC */
+				 
 				if (halt_status_unrecoverable) {
 					set_bit(ISP_UNRECOVERABLE,
 					    &vha->dpc_flags);
@@ -2254,7 +2031,7 @@ qla8044_minidump_process_control(struct scsi_qla_host *vha,
 				    crb_entry->value_1) {
 					break;
 				} else if (time_after_eq(jiffies, wtime)) {
-					/* capturing dump failed */
+					 
 					rval = QLA_FUNCTION_FAILED;
 					break;
 				} else {
@@ -2413,7 +2190,7 @@ qla8044_minidump_process_rdmem(struct scsi_qla_host *vha,
 	return QLA_SUCCESS;
 }
 
-/* ISP83xx flash read for _RDROM _BOARD */
+ 
 static uint32_t
 qla8044_minidump_process_rdrom(struct scsi_qla_host *vha,
 	struct qla8044_minidump_entry_hdr *entry_hdr, uint32_t **d_ptr)
@@ -2495,7 +2272,7 @@ qla8044_minidump_process_l2tag(struct scsi_qla_host *vha,
 				if ((c_value_r & p_mask) == 0) {
 					break;
 				} else if (time_after_eq(jiffies, w_time)) {
-					/* capturing dump failed */
+					 
 					return rval;
 				}
 			} while (1);
@@ -2637,7 +2414,7 @@ qla8044_minidump_process_queue(struct scsi_qla_host *vha,
 	*d_ptr = data_ptr;
 }
 
-/* ISP83xx functions to process new minidump entries... */
+ 
 static uint32_t
 qla8044_minidump_process_pollrd(struct scsi_qla_host *vha,
 	struct qla8044_minidump_entry_hdr *entry_hdr,
@@ -2804,7 +2581,7 @@ error:
 #define ISP8044_PEX_DMA_CMD_STS_AND_CNTRL	0x08
 
 #define ISP8044_PEX_DMA_READ_SIZE	(16 * 1024)
-#define ISP8044_PEX_DMA_MAX_WAIT	(100 * 100) /* Max wait of 100 msecs */
+#define ISP8044_PEX_DMA_MAX_WAIT	(100 * 100)  
 
 static int
 qla8044_check_dma_engine_state(struct scsi_qla_host *vha)
@@ -2821,14 +2598,14 @@ qla8044_check_dma_engine_state(struct scsi_qla_host *vha)
 	dma_base_addr = ISP8044_PEX_DMA_BASE_ADDRESS +
 		(dma_eng_num * ISP8044_PEX_DMA_NUM_OFFSET);
 
-	/* Read the pex-dma's command-status-and-control register. */
+	 
 	rval = qla8044_rd_reg_indirect(vha,
 	    (dma_base_addr + ISP8044_PEX_DMA_CMD_STS_AND_CNTRL),
 	    &cmd_sts_and_cntrl);
 	if (rval)
 		return QLA_FUNCTION_FAILED;
 
-	/* Check if requested pex-dma engine is available. */
+	 
 	if (cmd_sts_and_cntrl & BIT_31)
 		return QLA_SUCCESS;
 
@@ -2868,7 +2645,7 @@ qla8044_start_pex_dma(struct scsi_qla_host *vha,
 	if (rval)
 		goto error_exit;
 
-	/* Wait for dma operation to complete. */
+	 
 	for (wait = 0; wait < ISP8044_PEX_DMA_MAX_WAIT; wait++) {
 		rval = qla8044_rd_reg_indirect(vha,
 		    (dma_base_addr + ISP8044_PEX_DMA_CMD_STS_AND_CNTRL),
@@ -2882,7 +2659,7 @@ qla8044_start_pex_dma(struct scsi_qla_host *vha,
 		udelay(10);
 	}
 
-	/* Wait a max of 100 ms, otherwise fallback to rdmem entry read */
+	 
 	if (wait >= ISP8044_PEX_DMA_MAX_WAIT) {
 		rval = QLA_FUNCTION_FAILED;
 		goto error_exit;
@@ -2922,14 +2699,8 @@ qla8044_minidump_pex_dma_read(struct scsi_qla_host *vha,
 		return QLA_FUNCTION_FAILED;
 	}
 
-	/* Prepare pex-dma descriptor to be written to MS memory. */
-	/* dma-desc-cmd layout:
-	 *		0-3: dma-desc-cmd 0-3
-	 *		4-7: pcid function number
-	 *		8-15: dma-desc-cmd 8-15
-	 * dma_bus_addr: dma buffer address
-	 * cmd.read_data_size: amount of data-chunk to be read.
-	 */
+	 
+	 
 	dma_desc.cmd.dma_desc_cmd = (m_hdr->dma_desc_cmd & 0xff0f);
 	dma_desc.cmd.dma_desc_cmd |=
 	    ((PCI_FUNC(ha->pdev->devfn) & 0xf) << 0x4);
@@ -2938,10 +2709,7 @@ qla8044_minidump_pex_dma_read(struct scsi_qla_host *vha,
 	dma_desc.cmd.read_data_size = chunk_size = ISP8044_PEX_DMA_READ_SIZE;
 	read_size = 0;
 
-	/*
-	 * Perform rdmem operation using pex-dma.
-	 * Prepare dma in chunks of ISP8044_PEX_DMA_READ_SIZE.
-	 */
+	 
 	while (read_size < m_hdr->read_data_size) {
 		if (m_hdr->read_data_size - read_size <
 		    ISP8044_PEX_DMA_READ_SIZE) {
@@ -2951,7 +2719,7 @@ qla8044_minidump_pex_dma_read(struct scsi_qla_host *vha,
 
 		dma_desc.src_addr = m_hdr->read_addr + read_size;
 
-		/* Prepare: Write pex-dma descriptor to MS memory. */
+		 
 		rval = qla8044_ms_mem_write_128b(vha,
 		    m_hdr->desc_card_addr, (uint32_t *)&dma_desc,
 		    (sizeof(struct qla8044_pex_dma_descriptor)/16));
@@ -2965,7 +2733,7 @@ qla8044_minidump_pex_dma_read(struct scsi_qla_host *vha,
 		    "%s: Dma-descriptor: Instruct for rdmem dma "
 		    "(chunk_size 0x%x).\n", __func__, chunk_size);
 
-		/* Execute: Start pex-dma operation. */
+		 
 		rval = qla8044_start_pex_dma(vha, m_hdr);
 		if (rval)
 			goto error_exit;
@@ -3205,11 +2973,7 @@ error:
 	return -1;
 }
 
-/*
- *
- * qla8044_collect_md_data - Retrieve firmware minidump data.
- * @ha: pointer to adapter structure
- **/
+ 
 int
 qla8044_collect_md_data(struct scsi_qla_host *vha)
 {
@@ -3275,7 +3039,7 @@ qla8044_collect_md_data(struct scsi_qla_host *vha)
 
 	f_capture_mask = tmplt_hdr->capture_debug_level & 0xFF;
 
-	/* Validate whether required debug level is set */
+	 
 	if ((f_capture_mask & 0x3) != 0x3) {
 		ql_log(ql_log_warn, vha, 0xb10f,
 		    "Minimum required capture mask[0x%x] level not set\n",
@@ -3293,7 +3057,7 @@ qla8044_collect_md_data(struct scsi_qla_host *vha)
 	    "[%s]: Total_data_size 0x%x, %d obtained\n",
 	   __func__, ha->md_dump_size, ha->md_dump_size);
 
-	/* Update current timestamp before taking dump */
+	 
 	now = get_jiffies_64();
 	timestamp = (u32)(jiffies_to_msecs(now) / 1000);
 	tmplt_hdr->driver_timestamp = timestamp;
@@ -3303,7 +3067,7 @@ qla8044_collect_md_data(struct scsi_qla_host *vha)
 	tmplt_hdr->saved_state_array[QLA8044_SS_OCM_WNDREG_INDEX] =
 	    tmplt_hdr->ocm_window_reg[ha->portnum];
 
-	/* Walk through the entry headers - validate/perform required action */
+	 
 	for (i = 0; i < num_entry_hdr; i++) {
 		if (data_collected > ha->md_dump_size) {
 			ql_log(ql_log_info, vha, 0xb103,
@@ -3325,9 +3089,7 @@ qla8044_collect_md_data(struct scsi_qla_host *vha)
 		    data_collected,
 		    (ha->md_dump_size - data_collected));
 
-		/* Decode the entry type and take required action to capture
-		 * debug data
-		 */
+		 
 		switch (entry_hdr->entry_type) {
 		case QLA82XX_RDEND:
 			qla8044_mark_entry_skipped(vha, entry_hdr, i);
@@ -3439,9 +3201,7 @@ qla8044_collect_md_data(struct scsi_qla_host *vha)
 		data_collected = (uint8_t *)data_ptr -
 		    (uint8_t *)((uint8_t *)ha->md_dump);
 skip_nxt_entry:
-		/*
-		 * next entry in the template
-		 */
+		 
 		entry_hdr = (struct qla8044_minidump_entry_hdr *)
 		    (((uint8_t *)entry_hdr) + entry_hdr->entry_size);
 	}
@@ -3554,9 +3314,7 @@ exit_func:
 	return ret_val;
 }
 
-/*
- * This function assumes that the flash lock is held.
- */
+ 
 static int
 qla8044_unprotect_flash(scsi_qla_host_t *vha)
 {
@@ -3571,9 +3329,7 @@ qla8044_unprotect_flash(scsi_qla_host_t *vha)
 	return ret_val;
 }
 
-/*
- * This function assumes that the flash lock is held.
- */
+ 
 static int
 qla8044_protect_flash(scsi_qla_host_t *vha)
 {
@@ -3634,17 +3390,7 @@ qla8044_erase_flash_sector(struct scsi_qla_host *vha,
 	return ret_val;
 }
 
-/*
- * qla8044_flash_write_u32 - Write data to flash
- *
- * @ha : Pointer to adapter structure
- * addr : Flash address to write to
- * p_data : Data to be written
- *
- * Return Value - QLA_SUCCESS/QLA_FUNCTION_FAILED
- *
- * NOTE: Lock should be held on entry
- */
+ 
 static int
 qla8044_flash_write_u32(struct scsi_qla_host *vha, uint32_t addr,
 			uint32_t *p_data)
@@ -3701,7 +3447,7 @@ qla8044_write_flash_buffer_mode(scsi_qla_host_t *vha, uint32_t *dwptr,
 	qla8044_wr_reg_indirect(vha, QLA8044_FLASH_ADDR,
 	    QLA8044_FLASH_FIRST_TEMP_VAL);
 
-	/* First DWORD write to FLASH_WRDATA */
+	 
 	ret = qla8044_wr_reg_indirect(vha, QLA8044_FLASH_WRDATA,
 	    *dwptr++);
 	qla8044_wr_reg_indirect(vha, QLA8044_FLASH_CONTROL,
@@ -3720,7 +3466,7 @@ qla8044_write_flash_buffer_mode(scsi_qla_host_t *vha, uint32_t *dwptr,
 	    QLA8044_FLASH_SECOND_TEMP_VAL);
 
 
-	/* Second to N-1 DWORDS writes */
+	 
 	while (dwords != 1) {
 		qla8044_wr_reg_indirect(vha, QLA8044_FLASH_WRDATA, *dwptr++);
 		qla8044_wr_reg_indirect(vha, QLA8044_FLASH_CONTROL,
@@ -3737,7 +3483,7 @@ qla8044_write_flash_buffer_mode(scsi_qla_host_t *vha, uint32_t *dwptr,
 	qla8044_wr_reg_indirect(vha, QLA8044_FLASH_ADDR,
 	    QLA8044_FLASH_FIRST_TEMP_VAL | (faddr >> 2));
 
-	/* Last DWORD write */
+	 
 	qla8044_wr_reg_indirect(vha, QLA8044_FLASH_WRDATA, *dwptr++);
 	qla8044_wr_reg_indirect(vha, QLA8044_FLASH_CONTROL,
 	    QLA8044_FLASH_LAST_MS_PATTERN);
@@ -3753,7 +3499,7 @@ qla8044_write_flash_buffer_mode(scsi_qla_host_t *vha, uint32_t *dwptr,
 		ql_log(ql_log_warn, vha, 0xb12b,
 		    "%s: Failed.\n", __func__);
 		spi_val = 0;
-		/* Operation failed, clear error bit. */
+		 
 		qla8044_rd_reg_indirect(vha, QLA8044_FLASH_SPI_CONTROL,
 		    &spi_val);
 		qla8044_wr_reg_indirect(vha, QLA8044_FLASH_SPI_CONTROL,
@@ -3801,19 +3547,17 @@ qla8044_write_optrom_data(struct scsi_qla_host *vha, void *buf,
 	memcpy(p_cache, buf, length);
 	p_src = p_cache;
 	dword_count = length / sizeof(uint32_t);
-	/* Since the offset and legth are sector aligned, it will be always
-	 * multiple of burst_iter_count (64)
-	 */
+	 
 	burst_iter_count = dword_count / QLA8044_MAX_OPTROM_BURST_DWORDS;
 	erase_sec_count = length / QLA8044_SECTOR_SIZE;
 
-	/* Suspend HBA. */
+	 
 	scsi_block_requests(vha->host);
-	/* Lock and enable write for whole operation. */
+	 
 	qla8044_flash_lock(vha);
 	qla8044_unprotect_flash(vha);
 
-	/* Erasing the sectors */
+	 
 	for (i = 0; i < erase_sec_count; i++) {
 		rval = qla8044_erase_flash_sector(vha, erase_offset);
 		ql_dbg(ql_dbg_user, vha, 0xb138,
@@ -3833,11 +3577,11 @@ qla8044_write_optrom_data(struct scsi_qla_host *vha, void *buf,
 
 	for (i = 0; i < burst_iter_count; i++) {
 
-		/* Go with write. */
+		 
 		rval = qla8044_write_flash_buffer_mode(vha, (uint32_t *)p_src,
 		    offset, QLA8044_MAX_OPTROM_BURST_DWORDS);
 		if (rval) {
-			/* Buffer Mode failed skip to dword mode */
+			 
 			ql_log(ql_log_warn, vha, 0xb122,
 			    "Failed to write flash in buffer mode, "
 			    "Reverting to slow-write.\n");
@@ -3863,15 +3607,7 @@ out:
 #define LEG_INT_PTR_B31		(1 << 31)
 #define LEG_INT_PTR_B30		(1 << 30)
 #define PF_BITS_MASK		(0xF << 16)
-/**
- * qla8044_intr_handler() - Process interrupts for the ISP8044
- * @irq: interrupt number
- * @dev_id: SCSI driver HA context
- *
- * Called by system whenever the host adapter generates an interrupt.
- *
- * Returns handled flag.
- */
+ 
 irqreturn_t
 qla8044_intr_handler(int irq, void *dev_id)
 {
@@ -3900,7 +3636,7 @@ qla8044_intr_handler(int irq, void *dev_id)
 
 	leg_int_ptr = qla8044_rd_reg(ha, LEG_INTR_PTR_OFFSET);
 
-	/* Legacy interrupt is valid if bit31 of leg_int_ptr is set */
+	 
 	if (!(leg_int_ptr & (LEG_INT_PTR_B31))) {
 		ql_dbg(ql_dbg_p3p, vha, 0xb144,
 		    "%s: Legacy Interrupt Bit 31 not set, "
@@ -3909,7 +3645,7 @@ qla8044_intr_handler(int irq, void *dev_id)
 	}
 
 	pf_bit = ha->portnum << 16;
-	/* Validate the PCIE function ID set in leg_int_ptr bits [19..16] */
+	 
 	if ((leg_int_ptr & (PF_BITS_MASK)) != pf_bit) {
 		ql_dbg(ql_dbg_p3p, vha, 0xb145,
 		    "%s: Incorrect function ID 0x%x in "
@@ -3919,10 +3655,7 @@ qla8044_intr_handler(int irq, void *dev_id)
 		return IRQ_NONE;
 	}
 
-	/* To de-assert legacy interrupt, write 0 to Legacy Interrupt Trigger
-	 * Control register and poll till Legacy Interrupt Pointer register
-	 * bit32 is 0.
-	 */
+	 
 	qla8044_wr_reg(ha, LEG_INTR_TRIG_OFFSET, 0);
 	do {
 		leg_int_ptr = qla8044_rd_reg(ha, LEG_INTR_PTR_OFFSET);
@@ -3989,11 +3722,7 @@ qla8044_clear_rst_ready(scsi_qla_host_t *vha)
 
 	drv_state = qla8044_rd_direct(vha, QLA8044_CRB_DRV_STATE_INDEX);
 
-	/*
-	 * For ISP8044, drv_active register has 1 bit per function,
-	 * shift 1 by func_num to set a bit for the function.
-	 * For ISP82xx, drv_active has 4 bits per function
-	 */
+	 
 	drv_state &= ~(1 << vha->hw->portnum);
 
 	ql_dbg(ql_dbg_p3p, vha, 0xb13d,
@@ -4014,15 +3743,9 @@ qla8044_abort_isp(scsi_qla_host_t *vha)
 	if (ql2xdontresethba)
 		qla8044_set_idc_dontreset(vha);
 
-	/* If device_state is NEED_RESET, go ahead with
-	 * Reset,irrespective of ql2xdontresethba. This is to allow a
-	 * non-reset-owner to force a reset. Non-reset-owner sets
-	 * the IDC_CTRL BIT0 to prevent Reset-owner from doing a Reset
-	 * and then forces a Reset by setting device_state to
-	 * NEED_RESET. */
+	 
 	if (dev_state == QLA8XXX_DEV_READY) {
-		/* If IDC_CTRL DONTRESETHBA_BIT0 is set don't do reset
-		 * recovery */
+		 
 		if (qla8044_idc_dontreset(ha) == DONTRESET_BIT0) {
 			ql_dbg(ql_dbg_p3p, vha, 0xb13e,
 			    "Reset recovery disabled\n");
@@ -4036,9 +3759,7 @@ qla8044_abort_isp(scsi_qla_host_t *vha)
 		    QLA8XXX_DEV_NEED_RESET);
 	}
 
-	/* For ISP8044, Reset owner is NIC, iSCSI or FCOE based on priority
-	 * and which drivers are present. Unlike ISP82XX, the function setting
-	 * NEED_RESET, may not be the Reset owner. */
+	 
 	qla83xx_reset_ownership(vha);
 
 	qla8044_idc_unlock(ha);

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2016 Mellanox Technologies Ltd. All rights reserved.
- * Copyright (c) 2015 System Fabric Works, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/vmalloc.h>
 #include <linux/mm.h>
@@ -26,14 +23,11 @@ void rxe_mmap_release(struct kref *ref)
 
 	spin_unlock_bh(&rxe->pending_lock);
 
-	vfree(ip->obj);		/* buf */
+	vfree(ip->obj);		 
 	kfree(ip);
 }
 
-/*
- * open and close keep track of how many times the memory region is mapped,
- * to avoid releasing it.
- */
+ 
 static void rxe_vma_open(struct vm_area_struct *vma)
 {
 	struct rxe_mmap_info *ip = vma->vm_private_data;
@@ -53,12 +47,7 @@ static const struct vm_operations_struct rxe_vm_ops = {
 	.close = rxe_vma_close,
 };
 
-/**
- * rxe_mmap - create a new mmap region
- * @context: the IB user context of the process making the mmap() call
- * @vma: the VMA to be initialized
- * Return zero if the mmap is OK. Otherwise, return an errno.
- */
+ 
 int rxe_mmap(struct ib_ucontext *context, struct vm_area_struct *vma)
 {
 	struct rxe_dev *rxe = to_rdev(context->device);
@@ -67,17 +56,13 @@ int rxe_mmap(struct ib_ucontext *context, struct vm_area_struct *vma)
 	struct rxe_mmap_info *ip, *pp;
 	int ret;
 
-	/*
-	 * Search the device's list of objects waiting for a mmap call.
-	 * Normally, this list is very short since a call to create a
-	 * CQ, QP, or SRQ is soon followed by a call to mmap().
-	 */
+	 
 	spin_lock_bh(&rxe->pending_lock);
 	list_for_each_entry_safe(ip, pp, &rxe->pending_mmaps, pending_mmaps) {
 		if (context != ip->context || (__u64)offset != ip->info.offset)
 			continue;
 
-		/* Don't allow a mmap larger than the object. */
+		 
 		if (size > ip->info.size) {
 			rxe_dbg_dev(rxe, "mmap region is larger than the object!\n");
 			spin_unlock_bh(&rxe->pending_lock);
@@ -109,9 +94,7 @@ done:
 	return ret;
 }
 
-/*
- * Allocate information for rxe_mmap
- */
+ 
 struct rxe_mmap_info *rxe_create_mmap_info(struct rxe_dev *rxe, u32 size,
 					   struct ib_udata *udata, void *obj)
 {

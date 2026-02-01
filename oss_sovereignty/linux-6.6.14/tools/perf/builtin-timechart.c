@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * builtin-timechart.c - make an svg timechart of system activity
- *
- * (C) Copyright 2009 Intel Corporation
- *
- * Authors:
- *     Arjan van de Ven <arjan@linux.intel.com>
- */
+
+ 
 
 #include <errno.h>
 #include <inttypes.h>
@@ -14,7 +7,7 @@
 #include "builtin.h"
 #include "util/color.h"
 #include <linux/list.h>
-#include "util/evlist.h" // for struct evsel_str_handler
+#include "util/evlist.h" 
 #include "util/evsel.h"
 #include <linux/kernel.h>
 #include <linux/rbtree.h>
@@ -58,8 +51,8 @@ struct timechart {
 	struct wake_event	*wake_events;
 	int			proc_num;
 	unsigned int		numcpus;
-	u64			min_freq,	/* Lowest CPU frequency seen */
-				max_freq,	/* Highest CPU frequency seen */
+	u64			min_freq,	 
+				max_freq,	 
 				turbo_frequency,
 				first_time, last_time;
 	bool			power_only,
@@ -67,7 +60,7 @@ struct timechart {
 				with_backtrace,
 				topology;
 	bool			force;
-	/* IO related settings */
+	 
 	bool			io_only,
 				skip_eagain;
 	u64			io_events;
@@ -79,15 +72,7 @@ struct per_pidcomm;
 struct cpu_sample;
 struct io_sample;
 
-/*
- * Datastructure layout:
- * We keep an list of "pid"s, matching the kernels notion of a task struct.
- * Each "pid" entry, has a list of "comm"s.
- *	this is because we want to track different programs different, while
- *	exec will reuse the original pid (by design).
- * Each comm has a list of samples that will be used to draw
- * final graph.
- */
+ 
 
 struct per_pid {
 	struct per_pid *next;
@@ -402,7 +387,7 @@ static void p_state_change(struct timechart *tchart, int cpu, u64 timestamp, u64
 {
 	struct power_event *pwr;
 
-	if (new_freq > 8000000) /* detect invalid data */
+	if (new_freq > 8000000)  
 		return;
 
 	pwr = p_state_end(tchart, cpu, timestamp);
@@ -540,10 +525,7 @@ static const char *cat_backtrace(union perf_event *event,
 				pr_debug("invalid callchain context: "
 					 "%"PRId64"\n", (s64) ip);
 
-				/*
-				 * It seems the callchain is corrupted.
-				 * Discard all.
-				 */
+				 
 				zfree(&p);
 				goto exit;
 			}
@@ -689,19 +671,16 @@ process_sample_power_frequency(struct timechart *tchart,
 	p_state_change(tchart, cpu_id, sample->time, value);
 	return 0;
 }
-#endif /* SUPPORT_OLD_POWER_EVENTS */
+#endif  
 
-/*
- * After the last sample we need to wrap up the current C/P state
- * and close out each CPU for these.
- */
+ 
 static void end_sample_processing(struct timechart *tchart)
 {
 	u64 cpu;
 	struct power_event *pwr;
 
 	for (cpu = 0; cpu <= tchart->numcpus; cpu++) {
-		/* C state */
+		 
 #if 0
 		pwr = zalloc(sizeof(*pwr));
 		if (!pwr)
@@ -716,7 +695,7 @@ static void end_sample_processing(struct timechart *tchart)
 
 		tchart->power_events = pwr;
 #endif
-		/* P state */
+		 
 
 		pwr = p_state_end(tchart, cpu, tchart->last_time);
 		if (!pwr)
@@ -747,8 +726,7 @@ static int pid_begin_io_sample(struct timechart *tchart, int pid, int type,
 		pr_warning("Skip invalid start event: "
 			   "previous event already started!\n");
 
-		/* remove previous event that has been started,
-		 * we are not sure we will ever get an end for it */
+		 
 		c->io_samples = prev->next;
 		free(prev);
 		return 0;
@@ -783,7 +761,7 @@ static int pid_end_io_sample(struct timechart *tchart, int pid, int type,
 
 	sample = c->io_samples;
 
-	if (!sample) /* skip partially captured events */
+	if (!sample)  
 		return 0;
 
 	if (sample->end_time) {
@@ -800,12 +778,11 @@ static int pid_end_io_sample(struct timechart *tchart, int pid, int type,
 	sample->end_time = end;
 	prev = sample->next;
 
-	/* we want to be able to see small and fast transfers, so make them
-	 * at least min_time long, but don't overlap them */
+	 
 	if (sample->end_time - sample->start_time < tchart->min_time)
 		sample->end_time = sample->start_time + tchart->min_time;
 	if (prev && sample->start_time < prev->end_time) {
-		if (prev->err) /* try to make errors more visible */
+		if (prev->err)  
 			sample->start_time = prev->end_time;
 		else
 			prev->end_time = sample->start_time;
@@ -824,7 +801,7 @@ static int pid_end_io_sample(struct timechart *tchart, int pid, int type,
 		sample->bytes = ret;
 	}
 
-	/* merge two requests to make svg smaller and render-friendly */
+	 
 	if (prev &&
 	    prev->type == sample->type &&
 	    prev->err == sample->err &&
@@ -967,13 +944,11 @@ process_exit_poll(struct timechart *tchart,
 				 sample->time, ret);
 }
 
-/*
- * Sort the pid datastructure
- */
+ 
 static void sort_pids(struct timechart *tchart)
 {
 	struct per_pid *new_list, *p, *cursor, *prev;
-	/* sort by ppid first, then by pid, lowest to highest */
+	 
 
 	new_list = NULL;
 
@@ -992,7 +967,7 @@ static void sort_pids(struct timechart *tchart)
 		while (cursor) {
 			if (cursor->ppid > p->ppid ||
 				(cursor->ppid == p->ppid && cursor->pid > p->pid)) {
-				/* must insert before */
+				 
 				if (prev) {
 					p->next = prev->next;
 					prev->next = p;
@@ -1021,9 +996,7 @@ static void draw_c_p_states(struct timechart *tchart)
 	struct power_event *pwr;
 	pwr = tchart->power_events;
 
-	/*
-	 * two pass drawing so that the P state bars are on top of the C state blocks
-	 */
+	 
 	while (pwr) {
 		if (pwr->type == CSTATE)
 			svg_cstate(pwr->cpu, pwr->start_time, pwr->end_time, pwr->state);
@@ -1052,7 +1025,7 @@ static void draw_wakeups(struct timechart *tchart)
 		int from = 0, to = 0;
 		char *task_from = NULL, *task_to = NULL;
 
-		/* locate the column of the waker and wakee */
+		 
 		p = tchart->all_data;
 		while (p) {
 			if (p->pid == we->waker || p->pid == we->wakee) {
@@ -1294,7 +1267,7 @@ static void draw_process_bars(struct timechart *tchart)
 
 			if (c->comm) {
 				char comm[256];
-				if (c->total_time > 5000000000) /* 5 seconds */
+				if (c->total_time > 5000000000)  
 					sprintf(comm, "%s:%i (%2.2fs)", c->comm, p->pid, c->total_time / (double)NSEC_PER_SEC);
 				else
 					sprintf(comm, "%s:%i (%3.1fms)", c->comm, p->pid, c->total_time / (double)NSEC_PER_MSEC);
@@ -1353,7 +1326,7 @@ static int determine_display_tasks_filtered(struct timechart *tchart)
 		if (p->start_time == 1)
 			p->start_time = tchart->first_time;
 
-		/* no exit marker, task kept running to the end */
+		 
 		if (p->end_time == 0)
 			p->end_time = tchart->last_time;
 
@@ -1393,7 +1366,7 @@ static int determine_display_tasks(struct timechart *tchart, u64 threshold)
 		if (p->start_time == 1)
 			p->start_time = tchart->first_time;
 
-		/* no exit marker, task kept running to the end */
+		 
 		if (p->end_time == 0)
 			p->end_time = tchart->last_time;
 		if (p->total_time >= threshold)
@@ -1430,7 +1403,7 @@ static int determine_display_io_tasks(struct timechart *timechart, u64 threshold
 
 	p = timechart->all_data;
 	while (p) {
-		/* no exit marker, task kept running to the end */
+		 
 		if (p->end_time == 0)
 			p->end_time = timechart->last_time;
 
@@ -1466,8 +1439,7 @@ static void write_svg_file(struct timechart *tchart, const char *filename)
 	if (tchart->power_only)
 		tchart->proc_num = 0;
 
-	/* We'd like to show at least proc_num tasks;
-	 * be less picky if we have fewer */
+	 
 	do {
 		if (process_filter)
 			count = determine_display_tasks_filtered(tchart);

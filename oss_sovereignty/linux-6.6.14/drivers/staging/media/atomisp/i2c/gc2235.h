@@ -1,22 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for GalaxyCore GC2235 2M camera sensor.
- *
- * Copyright (c) 2014 Intel Corporation. All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.
- *
- */
+ 
+ 
 
 #ifndef __GC2235_H__
 #define __GC2235_H__
@@ -34,38 +17,24 @@
 
 #include "../include/linux/atomisp_platform.h"
 
-/*
- * FIXME: non-preview resolutions are currently broken
- */
+ 
 #define ENABLE_NON_PREVIEW     0
 
-/* Defines for register writes and register array processing */
+ 
 #define I2C_MSG_LENGTH		0x2
 #define I2C_RETRY_COUNT		5
 
-#define GC2235_FOCAL_LENGTH_NUM	278	/*2.78mm*/
+#define GC2235_FOCAL_LENGTH_NUM	278	 
 
 #define MAX_FMTS		1
 
-/*
- * focal length bits definition:
- * bits 31-16: numerator, bits 15-0: denominator
- */
+ 
 #define GC2235_FOCAL_LENGTH_DEFAULT 0x1160064
 
-/*
- * current f-number bits definition:
- * bits 31-16: numerator, bits 15-0: denominator
- */
+ 
 #define GC2235_F_NUMBER_DEFAULT 0x1a000a
 
-/*
- * f-number range bits definition:
- * bits 31-24: max f-number numerator
- * bits 23-16: max f-number denominator
- * bits 15-8: min f-number numerator
- * bits 7-0: min f-number denominator
- */
+ 
 #define GC2235_F_NUMBER_RANGE 0x1a0a1a0a
 #define GC2235_ID	0x2235
 
@@ -74,12 +43,8 @@
 #define GC2235_COARSE_INTG_TIME_MIN 1
 #define GC2235_COARSE_INTG_TIME_MAX_MARGIN 6
 
-/*
- * GC2235 System control registers
- */
-/*
- * GC2235 System control registers
- */
+ 
+ 
 #define GC2235_SENSOR_ID_H		0xF0
 #define GC2235_SENSOR_ID_L		0xF1
 #define GC2235_RESET_RELATED		0xFE
@@ -143,9 +108,7 @@ struct gc2235_format {
 	struct gc2235_reg *regs;
 };
 
-/*
- * gc2235 device structure.
- */
+ 
 struct gc2235_device {
 	struct v4l2_subdev sd;
 	struct media_pad pad;
@@ -162,23 +125,16 @@ enum gc2235_tok_type {
 	GC2235_8BIT  = 0x0001,
 	GC2235_16BIT = 0x0002,
 	GC2235_32BIT = 0x0004,
-	GC2235_TOK_TERM   = 0xf000,	/* terminating token for reg list */
-	GC2235_TOK_DELAY  = 0xfe00,	/* delay token for reg list */
+	GC2235_TOK_TERM   = 0xf000,	 
+	GC2235_TOK_DELAY  = 0xfe00,	 
 	GC2235_TOK_MASK = 0xfff0
 };
 
-/**
- * struct gc2235_reg - MI sensor  register format
- * @type: type of the register
- * @reg: 8-bit offset to register
- * @val: 8/16/32-bit register value
- *
- * Define a structure for sensor register initialization values
- */
+ 
 struct gc2235_reg {
 	enum gc2235_tok_type type;
 	u8 reg;
-	u32 val;	/* @set value for read/mod/write, @mask */
+	u32 val;	 
 };
 
 #define to_gc2235_sensor(x) container_of(x, struct gc2235_device, sd)
@@ -196,21 +152,21 @@ struct gc2235_write_ctrl {
 };
 
 static struct gc2235_reg const gc2235_stream_on[] = {
-	{ GC2235_8BIT, 0xfe, 0x03}, /* switch to P3 */
-	{ GC2235_8BIT, 0x10, 0x91}, /* start mipi */
-	{ GC2235_8BIT, 0xfe, 0x00}, /* switch to P0 */
+	{ GC2235_8BIT, 0xfe, 0x03},  
+	{ GC2235_8BIT, 0x10, 0x91},  
+	{ GC2235_8BIT, 0xfe, 0x00},  
 	{ GC2235_TOK_TERM, 0, 0 }
 };
 
 static struct gc2235_reg const gc2235_stream_off[] = {
-	{ GC2235_8BIT, 0xfe, 0x03}, /* switch to P3 */
-	{ GC2235_8BIT, 0x10, 0x01}, /* stop mipi */
-	{ GC2235_8BIT, 0xfe, 0x00}, /* switch to P0 */
+	{ GC2235_8BIT, 0xfe, 0x03},  
+	{ GC2235_8BIT, 0x10, 0x01},  
+	{ GC2235_8BIT, 0xfe, 0x00},  
 	{ GC2235_TOK_TERM, 0, 0 }
 };
 
 static struct gc2235_reg const gc2235_init_settings[] = {
-	/* System */
+	 
 	{ GC2235_8BIT, 0xfe, 0x80 },
 	{ GC2235_8BIT, 0xfe, 0x80 },
 	{ GC2235_8BIT, 0xfe, 0x80 },
@@ -222,20 +178,20 @@ static struct gc2235_reg const gc2235_init_settings[] = {
 	{ GC2235_8BIT, 0xf9, 0xfe },
 	{ GC2235_8BIT, 0xfa, 0x00 },
 	{ GC2235_8BIT, 0xfe, 0x00 },
-	/* Analog & cisctl */
+	 
 	{ GC2235_8BIT, 0x03, 0x04 },
 	{ GC2235_8BIT, 0x04, 0x9E },
 	{ GC2235_8BIT, 0x05, 0x00 },
 	{ GC2235_8BIT, 0x06, 0xfd },
 	{ GC2235_8BIT, 0x07, 0x00 },
 	{ GC2235_8BIT, 0x08, 0x14 },
-	{ GC2235_8BIT, 0x0a, 0x02 }, /* row start */
-	{ GC2235_8BIT, 0x0c, 0x00 }, /* col start */
-	{ GC2235_8BIT, 0x0d, 0x04 }, /* win height 1232 */
+	{ GC2235_8BIT, 0x0a, 0x02 },  
+	{ GC2235_8BIT, 0x0c, 0x00 },  
+	{ GC2235_8BIT, 0x0d, 0x04 },  
 	{ GC2235_8BIT, 0x0e, 0xd0 },
-	{ GC2235_8BIT, 0x0f, 0x06 }, /* win width: 1616 */
+	{ GC2235_8BIT, 0x0f, 0x06 },  
 	{ GC2235_8BIT, 0x10, 0x60 },
-	{ GC2235_8BIT, 0x17, 0x15 }, /* mirror flip */
+	{ GC2235_8BIT, 0x17, 0x15 },  
 	{ GC2235_8BIT, 0x18, 0x1a },
 	{ GC2235_8BIT, 0x19, 0x06 },
 	{ GC2235_8BIT, 0x1a, 0x01 },
@@ -247,10 +203,10 @@ static struct gc2235_reg const gc2235_init_settings[] = {
 	{ GC2235_8BIT, 0x22, 0x83 },
 	{ GC2235_8BIT, 0x23, 0x42 },
 	{ GC2235_8BIT, 0x24, 0x16 },
-	{ GC2235_8BIT, 0x26, 0x01 }, /*analog gain*/
+	{ GC2235_8BIT, 0x26, 0x01 },  
 	{ GC2235_8BIT, 0x27, 0x30 },
-	{ GC2235_8BIT, 0x3f, 0x00 }, /* PRC */
-	/* blk */
+	{ GC2235_8BIT, 0x3f, 0x00 },  
+	 
 	{ GC2235_8BIT, 0x40, 0xa3 },
 	{ GC2235_8BIT, 0x41, 0x82 },
 	{ GC2235_8BIT, 0x43, 0x20 },
@@ -266,58 +222,56 @@ static struct gc2235_reg const gc2235_init_settings[] = {
 	{ GC2235_8BIT, 0x67, 0x20 },
 	{ GC2235_8BIT, 0x68, 0x20 },
 	{ GC2235_8BIT, 0x69, 0x20 },
-	/* Gain */
+	 
 	{ GC2235_8BIT, 0xb2, 0x00 },
 	{ GC2235_8BIT, 0xb3, 0x40 },
 	{ GC2235_8BIT, 0xb4, 0x40 },
 	{ GC2235_8BIT, 0xb5, 0x40 },
-	/* Dark sun */
+	 
 	{ GC2235_8BIT, 0xbc, 0x00 },
 
 	{ GC2235_8BIT, 0xfe, 0x03 },
-	{ GC2235_8BIT, 0x10, 0x01 }, /* disable mipi */
-	{ GC2235_8BIT, 0xfe, 0x00 }, /* switch to P0 */
+	{ GC2235_8BIT, 0x10, 0x01 },  
+	{ GC2235_8BIT, 0xfe, 0x00 },  
 	{ GC2235_TOK_TERM, 0, 0 }
 };
 
-/*
- * Register settings for various resolution
- */
+ 
 #if ENABLE_NON_PREVIEW
 static struct gc2235_reg const gc2235_1296_736_30fps[] = {
 	{ GC2235_8BIT, 0x8b, 0xa0 },
 	{ GC2235_8BIT, 0x8c, 0x02 },
 
-	{ GC2235_8BIT, 0x07, 0x01 }, /* VBI */
+	{ GC2235_8BIT, 0x07, 0x01 },  
 	{ GC2235_8BIT, 0x08, 0x44 },
-	{ GC2235_8BIT, 0x09, 0x00 }, /* row start */
+	{ GC2235_8BIT, 0x09, 0x00 },  
 	{ GC2235_8BIT, 0x0a, 0xf0 },
-	{ GC2235_8BIT, 0x0b, 0x00 }, /* col start */
+	{ GC2235_8BIT, 0x0b, 0x00 },  
 	{ GC2235_8BIT, 0x0c, 0xa0 },
-	{ GC2235_8BIT, 0x0d, 0x02 }, /* win height 736 */
+	{ GC2235_8BIT, 0x0d, 0x02 },  
 	{ GC2235_8BIT, 0x0e, 0xf0 },
-	{ GC2235_8BIT, 0x0f, 0x05 }, /* win width: 1296 */
+	{ GC2235_8BIT, 0x0f, 0x05 },  
 	{ GC2235_8BIT, 0x10, 0x20 },
 
 	{ GC2235_8BIT, 0x90, 0x01 },
 	{ GC2235_8BIT, 0x92, 0x08 },
 	{ GC2235_8BIT, 0x94, 0x08 },
-	{ GC2235_8BIT, 0x95, 0x02 }, /* crop win height 736 */
+	{ GC2235_8BIT, 0x95, 0x02 },  
 	{ GC2235_8BIT, 0x96, 0xe0 },
-	{ GC2235_8BIT, 0x97, 0x05 }, /* crop win width 1296 */
+	{ GC2235_8BIT, 0x97, 0x05 },  
 	{ GC2235_8BIT, 0x98, 0x10 },
-	/* mimi init */
-	{ GC2235_8BIT, 0xfe, 0x03 }, /* switch to P3 */
+	 
+	{ GC2235_8BIT, 0xfe, 0x03 },  
 	{ GC2235_8BIT, 0x01, 0x07 },
 	{ GC2235_8BIT, 0x02, 0x11 },
 	{ GC2235_8BIT, 0x03, 0x11 },
 	{ GC2235_8BIT, 0x06, 0x80 },
 	{ GC2235_8BIT, 0x11, 0x2b },
-	/* set mipi buffer */
-	{ GC2235_8BIT, 0x12, 0x54 }, /* val_low = (width * 10 / 8) & 0xFF */
-	{ GC2235_8BIT, 0x13, 0x06 }, /* val_high = (width * 10 / 8) >> 8 */
+	 
+	{ GC2235_8BIT, 0x12, 0x54 },  
+	{ GC2235_8BIT, 0x13, 0x06 },  
 
-	{ GC2235_8BIT, 0x15, 0x12 }, /* DPHY mode*/
+	{ GC2235_8BIT, 0x15, 0x12 },  
 	{ GC2235_8BIT, 0x04, 0x10 },
 	{ GC2235_8BIT, 0x05, 0x00 },
 	{ GC2235_8BIT, 0x17, 0x01 },
@@ -332,8 +286,8 @@ static struct gc2235_reg const gc2235_1296_736_30fps[] = {
 	{ GC2235_8BIT, 0x2a, 0x02 },
 	{ GC2235_8BIT, 0x2b, 0x02 },
 
-	{ GC2235_8BIT, 0x10, 0x01 }, /* disable mipi */
-	{ GC2235_8BIT, 0xfe, 0x00 }, /* switch to P0 */
+	{ GC2235_8BIT, 0x10, 0x01 },  
+	{ GC2235_8BIT, 0xfe, 0x00 },  
 	{ GC2235_TOK_TERM, 0, 0 }
 };
 
@@ -341,36 +295,36 @@ static struct gc2235_reg const gc2235_960_640_30fps[] = {
 	{ GC2235_8BIT, 0x8b, 0xa0 },
 	{ GC2235_8BIT, 0x8c, 0x02 },
 
-	{ GC2235_8BIT, 0x07, 0x02 }, /* VBI */
+	{ GC2235_8BIT, 0x07, 0x02 },  
 	{ GC2235_8BIT, 0x08, 0xA4 },
-	{ GC2235_8BIT, 0x09, 0x01 }, /* row start */
+	{ GC2235_8BIT, 0x09, 0x01 },  
 	{ GC2235_8BIT, 0x0a, 0x18 },
-	{ GC2235_8BIT, 0x0b, 0x01 }, /* col start */
+	{ GC2235_8BIT, 0x0b, 0x01 },  
 	{ GC2235_8BIT, 0x0c, 0x40 },
-	{ GC2235_8BIT, 0x0d, 0x02 }, /* win height 656 */
+	{ GC2235_8BIT, 0x0d, 0x02 },  
 	{ GC2235_8BIT, 0x0e, 0x90 },
-	{ GC2235_8BIT, 0x0f, 0x03 }, /* win width: 976 */
+	{ GC2235_8BIT, 0x0f, 0x03 },  
 	{ GC2235_8BIT, 0x10, 0xd0 },
 
 	{ GC2235_8BIT, 0x90, 0x01 },
 	{ GC2235_8BIT, 0x92, 0x02 },
 	{ GC2235_8BIT, 0x94, 0x06 },
-	{ GC2235_8BIT, 0x95, 0x02 }, /* crop win height 640 */
+	{ GC2235_8BIT, 0x95, 0x02 },  
 	{ GC2235_8BIT, 0x96, 0x80 },
-	{ GC2235_8BIT, 0x97, 0x03 }, /* crop win width 960 */
+	{ GC2235_8BIT, 0x97, 0x03 },  
 	{ GC2235_8BIT, 0x98, 0xc0 },
-	/* mimp init */
-	{ GC2235_8BIT, 0xfe, 0x03 }, /* switch to P3 */
+	 
+	{ GC2235_8BIT, 0xfe, 0x03 },  
 	{ GC2235_8BIT, 0x01, 0x07 },
 	{ GC2235_8BIT, 0x02, 0x11 },
 	{ GC2235_8BIT, 0x03, 0x11 },
 	{ GC2235_8BIT, 0x06, 0x80 },
 	{ GC2235_8BIT, 0x11, 0x2b },
-	/* set mipi buffer */
-	{ GC2235_8BIT, 0x12, 0xb0 }, /* val_low = (width * 10 / 8) & 0xFF */
-	{ GC2235_8BIT, 0x13, 0x04 }, /* val_high = (width * 10 / 8) >> 8 */
+	 
+	{ GC2235_8BIT, 0x12, 0xb0 },  
+	{ GC2235_8BIT, 0x13, 0x04 },  
 
-	{ GC2235_8BIT, 0x15, 0x12 }, /* DPHY mode*/
+	{ GC2235_8BIT, 0x15, 0x12 },  
 	{ GC2235_8BIT, 0x04, 0x10 },
 	{ GC2235_8BIT, 0x05, 0x00 },
 	{ GC2235_8BIT, 0x17, 0x01 },
@@ -383,8 +337,8 @@ static struct gc2235_reg const gc2235_960_640_30fps[] = {
 	{ GC2235_8BIT, 0x29, 0x01 },
 	{ GC2235_8BIT, 0x2a, 0x02 },
 	{ GC2235_8BIT, 0x2b, 0x02 },
-	{ GC2235_8BIT, 0x10, 0x01 }, /* disable mipi */
-	{ GC2235_8BIT, 0xfe, 0x00 }, /* switch to P0 */
+	{ GC2235_8BIT, 0x10, 0x01 },  
+	{ GC2235_8BIT, 0xfe, 0x00 },  
 	{ GC2235_TOK_TERM, 0, 0 }
 };
 #endif
@@ -393,30 +347,30 @@ static struct gc2235_reg const gc2235_1600_900_30fps[] = {
 	{ GC2235_8BIT, 0x8b, 0xa0 },
 	{ GC2235_8BIT, 0x8c, 0x02 },
 
-	{ GC2235_8BIT, 0x0d, 0x03 }, /* win height 932 */
+	{ GC2235_8BIT, 0x0d, 0x03 },  
 	{ GC2235_8BIT, 0x0e, 0xa4 },
-	{ GC2235_8BIT, 0x0f, 0x06 }, /* win width: 1632 */
+	{ GC2235_8BIT, 0x0f, 0x06 },  
 	{ GC2235_8BIT, 0x10, 0x50 },
 
 	{ GC2235_8BIT, 0x90, 0x01 },
 	{ GC2235_8BIT, 0x92, 0x02 },
 	{ GC2235_8BIT, 0x94, 0x06 },
-	{ GC2235_8BIT, 0x95, 0x03 }, /* crop win height 900 */
+	{ GC2235_8BIT, 0x95, 0x03 },  
 	{ GC2235_8BIT, 0x96, 0x84 },
-	{ GC2235_8BIT, 0x97, 0x06 }, /* crop win width 1600 */
+	{ GC2235_8BIT, 0x97, 0x06 },  
 	{ GC2235_8BIT, 0x98, 0x40 },
-	/* mimi init */
-	{ GC2235_8BIT, 0xfe, 0x03 }, /* switch to P3 */
+	 
+	{ GC2235_8BIT, 0xfe, 0x03 },  
 	{ GC2235_8BIT, 0x01, 0x07 },
 	{ GC2235_8BIT, 0x02, 0x11 },
 	{ GC2235_8BIT, 0x03, 0x11 },
 	{ GC2235_8BIT, 0x06, 0x80 },
 	{ GC2235_8BIT, 0x11, 0x2b },
-	/* set mipi buffer */
-	{ GC2235_8BIT, 0x12, 0xd0 }, /* val_low = (width * 10 / 8) & 0xFF */
-	{ GC2235_8BIT, 0x13, 0x07 }, /* val_high = (width * 10 / 8) >> 8 */
+	 
+	{ GC2235_8BIT, 0x12, 0xd0 },  
+	{ GC2235_8BIT, 0x13, 0x07 },  
 
-	{ GC2235_8BIT, 0x15, 0x12 }, /* DPHY mode*/
+	{ GC2235_8BIT, 0x15, 0x12 },  
 	{ GC2235_8BIT, 0x04, 0x10 },
 	{ GC2235_8BIT, 0x05, 0x00 },
 	{ GC2235_8BIT, 0x17, 0x01 },
@@ -429,8 +383,8 @@ static struct gc2235_reg const gc2235_1600_900_30fps[] = {
 	{ GC2235_8BIT, 0x29, 0x01 },
 	{ GC2235_8BIT, 0x2a, 0x02 },
 	{ GC2235_8BIT, 0x2b, 0x02 },
-	{ GC2235_8BIT, 0x10, 0x01 }, /* disable mipi */
-	{ GC2235_8BIT, 0xfe, 0x00 }, /* switch to P0 */
+	{ GC2235_8BIT, 0x10, 0x01 },  
+	{ GC2235_8BIT, 0xfe, 0x00 },  
 	{ GC2235_TOK_TERM, 0, 0 }
 };
 
@@ -438,30 +392,30 @@ static struct gc2235_reg const gc2235_1616_1082_30fps[] = {
 	{ GC2235_8BIT, 0x8b, 0xa0 },
 	{ GC2235_8BIT, 0x8c, 0x02 },
 
-	{ GC2235_8BIT, 0x0d, 0x04 }, /* win height 1232 */
+	{ GC2235_8BIT, 0x0d, 0x04 },  
 	{ GC2235_8BIT, 0x0e, 0xd0 },
-	{ GC2235_8BIT, 0x0f, 0x06 }, /* win width: 1616 */
+	{ GC2235_8BIT, 0x0f, 0x06 },  
 	{ GC2235_8BIT, 0x10, 0x50 },
 
 	{ GC2235_8BIT, 0x90, 0x01 },
 	{ GC2235_8BIT, 0x92, 0x4a },
 	{ GC2235_8BIT, 0x94, 0x00 },
-	{ GC2235_8BIT, 0x95, 0x04 }, /* crop win height 1082 */
+	{ GC2235_8BIT, 0x95, 0x04 },  
 	{ GC2235_8BIT, 0x96, 0x3a },
-	{ GC2235_8BIT, 0x97, 0x06 }, /* crop win width 1616 */
+	{ GC2235_8BIT, 0x97, 0x06 },  
 	{ GC2235_8BIT, 0x98, 0x50 },
-	/* mimp init */
-	{ GC2235_8BIT, 0xfe, 0x03 }, /* switch to P3 */
+	 
+	{ GC2235_8BIT, 0xfe, 0x03 },  
 	{ GC2235_8BIT, 0x01, 0x07 },
 	{ GC2235_8BIT, 0x02, 0x11 },
 	{ GC2235_8BIT, 0x03, 0x11 },
 	{ GC2235_8BIT, 0x06, 0x80 },
 	{ GC2235_8BIT, 0x11, 0x2b },
-	/* set mipi buffer */
-	{ GC2235_8BIT, 0x12, 0xe4 }, /* val_low = (width * 10 / 8) & 0xFF */
-	{ GC2235_8BIT, 0x13, 0x07 }, /* val_high = (width * 10 / 8) >> 8 */
+	 
+	{ GC2235_8BIT, 0x12, 0xe4 },  
+	{ GC2235_8BIT, 0x13, 0x07 },  
 
-	{ GC2235_8BIT, 0x15, 0x12 }, /* DPHY mode*/
+	{ GC2235_8BIT, 0x15, 0x12 },  
 	{ GC2235_8BIT, 0x04, 0x10 },
 	{ GC2235_8BIT, 0x05, 0x00 },
 	{ GC2235_8BIT, 0x17, 0x01 },
@@ -474,8 +428,8 @@ static struct gc2235_reg const gc2235_1616_1082_30fps[] = {
 	{ GC2235_8BIT, 0x29, 0x01 },
 	{ GC2235_8BIT, 0x2a, 0x02 },
 	{ GC2235_8BIT, 0x2b, 0x02 },
-	{ GC2235_8BIT, 0x10, 0x01 }, /* disable mipi */
-	{ GC2235_8BIT, 0xfe, 0x00 }, /* switch to P0 */
+	{ GC2235_8BIT, 0x10, 0x01 },  
+	{ GC2235_8BIT, 0xfe, 0x00 },  
 	{ GC2235_TOK_TERM, 0, 0 }
 };
 
@@ -483,29 +437,29 @@ static struct gc2235_reg const gc2235_1616_1216_30fps[] = {
 	{ GC2235_8BIT, 0x8b, 0xa0 },
 	{ GC2235_8BIT, 0x8c, 0x02 },
 
-	{ GC2235_8BIT, 0x0d, 0x04 }, /* win height 1232 */
+	{ GC2235_8BIT, 0x0d, 0x04 },  
 	{ GC2235_8BIT, 0x0e, 0xd0 },
-	{ GC2235_8BIT, 0x0f, 0x06 }, /* win width: 1616 */
+	{ GC2235_8BIT, 0x0f, 0x06 },  
 	{ GC2235_8BIT, 0x10, 0x50 },
 
 	{ GC2235_8BIT, 0x90, 0x01 },
 	{ GC2235_8BIT, 0x92, 0x02 },
 	{ GC2235_8BIT, 0x94, 0x00 },
-	{ GC2235_8BIT, 0x95, 0x04 }, /* crop win height 1216 */
+	{ GC2235_8BIT, 0x95, 0x04 },  
 	{ GC2235_8BIT, 0x96, 0xc0 },
-	{ GC2235_8BIT, 0x97, 0x06 }, /* crop win width 1616 */
+	{ GC2235_8BIT, 0x97, 0x06 },  
 	{ GC2235_8BIT, 0x98, 0x50 },
-	/* mimi init */
-	{ GC2235_8BIT, 0xfe, 0x03 }, /* switch to P3 */
+	 
+	{ GC2235_8BIT, 0xfe, 0x03 },  
 	{ GC2235_8BIT, 0x01, 0x07 },
 	{ GC2235_8BIT, 0x02, 0x11 },
 	{ GC2235_8BIT, 0x03, 0x11 },
 	{ GC2235_8BIT, 0x06, 0x80 },
 	{ GC2235_8BIT, 0x11, 0x2b },
-	/* set mipi buffer */
-	{ GC2235_8BIT, 0x12, 0xe4 }, /* val_low = (width * 10 / 8) & 0xFF */
-	{ GC2235_8BIT, 0x13, 0x07 }, /* val_high = (width * 10 / 8) >> 8 */
-	{ GC2235_8BIT, 0x15, 0x12 }, /* DPHY mode*/
+	 
+	{ GC2235_8BIT, 0x12, 0xe4 },  
+	{ GC2235_8BIT, 0x13, 0x07 },  
+	{ GC2235_8BIT, 0x15, 0x12 },  
 	{ GC2235_8BIT, 0x04, 0x10 },
 	{ GC2235_8BIT, 0x05, 0x00 },
 	{ GC2235_8BIT, 0x17, 0x01 },
@@ -518,8 +472,8 @@ static struct gc2235_reg const gc2235_1616_1216_30fps[] = {
 	{ GC2235_8BIT, 0x29, 0x01 },
 	{ GC2235_8BIT, 0x2a, 0x02 },
 	{ GC2235_8BIT, 0x2b, 0x02 },
-	{ GC2235_8BIT, 0x10, 0x01 }, /* disable mipi */
-	{ GC2235_8BIT, 0xfe, 0x00 }, /* switch to P0 */
+	{ GC2235_8BIT, 0x10, 0x01 },  
+	{ GC2235_8BIT, 0xfe, 0x00 },  
 	{ GC2235_TOK_TERM, 0, 0 }
 };
 
@@ -566,10 +520,7 @@ static struct gc2235_resolution gc2235_res_preview[] = {
 
 #define N_RES_PREVIEW (ARRAY_SIZE(gc2235_res_preview))
 
-/*
- * Disable non-preview configurations until the configuration selection is
- * improved.
- */
+ 
 #if ENABLE_NON_PREVIEW
 static struct gc2235_resolution gc2235_res_still[] = {
 	{

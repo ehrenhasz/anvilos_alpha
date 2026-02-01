@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Qualcomm PCIe root complex driver
- *
- * Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
- * Copyright 2015 Linaro Limited.
- *
- * Author: Stanimir Varbanov <svarbanov@mm-sol.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/crc8.h>
@@ -34,7 +27,7 @@
 #include "../../pci.h"
 #include "pcie-designware.h"
 
-/* PARF registers */
+ 
 #define PARF_SYS_CTRL				0x00
 #define PARF_PM_CTRL				0x20
 #define PARF_PCS_DEEMPH				0x34
@@ -54,21 +47,21 @@
 #define PARF_DEVICE_TYPE			0x1000
 #define PARF_BDF_TO_SID_TABLE_N			0x2000
 
-/* ELBI registers */
+ 
 #define ELBI_SYS_CTRL				0x04
 
-/* DBI registers */
+ 
 #define AXI_MSTR_RESP_COMP_CTRL0		0x818
 #define AXI_MSTR_RESP_COMP_CTRL1		0x81c
 
-/* MHI registers */
+ 
 #define PARF_DEBUG_CNT_PM_LINKST_IN_L2		0xc04
 #define PARF_DEBUG_CNT_PM_LINKST_IN_L1		0xc0c
 #define PARF_DEBUG_CNT_PM_LINKST_IN_L0S		0xc10
 #define PARF_DEBUG_CNT_AUX_CLK_IN_L1SUB_L1	0xc84
 #define PARF_DEBUG_CNT_AUX_CLK_IN_L1SUB_L2	0xc88
 
-/* PARF_SYS_CTRL register fields */
+ 
 #define MAC_PHY_POWERDOWN_IN_P2_D_MUX_EN	BIT(29)
 #define MST_WAKEUP_EN				BIT(13)
 #define SLV_WAKEUP_EN				BIT(12)
@@ -79,58 +72,58 @@
 #define L23_CLK_RMV_DIS				BIT(2)
 #define L1_CLK_RMV_DIS				BIT(1)
 
-/* PARF_PM_CTRL register fields */
+ 
 #define REQ_NOT_ENTR_L1				BIT(5)
 
-/* PARF_PCS_DEEMPH register fields */
+ 
 #define PCS_DEEMPH_TX_DEEMPH_GEN1(x)		FIELD_PREP(GENMASK(21, 16), x)
 #define PCS_DEEMPH_TX_DEEMPH_GEN2_3_5DB(x)	FIELD_PREP(GENMASK(13, 8), x)
 #define PCS_DEEMPH_TX_DEEMPH_GEN2_6DB(x)	FIELD_PREP(GENMASK(5, 0), x)
 
-/* PARF_PCS_SWING register fields */
+ 
 #define PCS_SWING_TX_SWING_FULL(x)		FIELD_PREP(GENMASK(14, 8), x)
 #define PCS_SWING_TX_SWING_LOW(x)		FIELD_PREP(GENMASK(6, 0), x)
 
-/* PARF_PHY_CTRL register fields */
+ 
 #define PHY_CTRL_PHY_TX0_TERM_OFFSET_MASK	GENMASK(20, 16)
 #define PHY_CTRL_PHY_TX0_TERM_OFFSET(x)		FIELD_PREP(PHY_CTRL_PHY_TX0_TERM_OFFSET_MASK, x)
 #define PHY_TEST_PWR_DOWN			BIT(0)
 
-/* PARF_PHY_REFCLK register fields */
+ 
 #define PHY_REFCLK_SSP_EN			BIT(16)
 #define PHY_REFCLK_USE_PAD			BIT(12)
 
-/* PARF_CONFIG_BITS register fields */
+ 
 #define PHY_RX0_EQ(x)				FIELD_PREP(GENMASK(26, 24), x)
 
-/* PARF_SLV_ADDR_SPACE_SIZE register value */
+ 
 #define SLV_ADDR_SPACE_SZ			0x10000000
 
-/* PARF_MHI_CLOCK_RESET_CTRL register fields */
+ 
 #define AHB_CLK_EN				BIT(0)
 #define MSTR_AXI_CLK_EN				BIT(1)
 #define BYPASS					BIT(4)
 
-/* PARF_AXI_MSTR_WR_ADDR_HALT register fields */
+ 
 #define EN					BIT(31)
 
-/* PARF_LTSSM register fields */
+ 
 #define LTSSM_EN				BIT(8)
 
-/* PARF_DEVICE_TYPE register fields */
+ 
 #define DEVICE_TYPE_RC				0x4
 
-/* ELBI_SYS_CTRL register fields */
+ 
 #define ELBI_SYS_CTRL_LT_ENABLE			BIT(0)
 
-/* AXI_MSTR_RESP_COMP_CTRL0 register fields */
+ 
 #define CFG_REMOTE_RD_REQ_BRIDGE_SIZE_2K	0x4
 #define CFG_REMOTE_RD_REQ_BRIDGE_SIZE_4K	0x5
 
-/* AXI_MSTR_RESP_COMP_CTRL1 register fields */
+ 
 #define CFG_BRIDGE_SB_INIT			BIT(0)
 
-/* PCI_EXP_SLTCAP register fields */
+ 
 #define PCIE_CAP_SLOT_POWER_LIMIT_VAL		FIELD_PREP(PCI_EXP_SLTCAP_SPLV, 250)
 #define PCIE_CAP_SLOT_POWER_LIMIT_SCALE		FIELD_PREP(PCI_EXP_SLTCAP_SPLS, 1)
 #define PCIE_CAP_SLOT_VAL			(PCI_EXP_SLTCAP_ABP | \
@@ -229,8 +222,8 @@ struct qcom_pcie_cfg {
 
 struct qcom_pcie {
 	struct dw_pcie *pci;
-	void __iomem *parf;			/* DT parf */
-	void __iomem *elbi;			/* DT elbi */
+	void __iomem *parf;			 
+	void __iomem *elbi;			 
 	void __iomem *mhi;
 	union qcom_pcie_resources res;
 	struct phy *phy;
@@ -251,7 +244,7 @@ static void qcom_ep_reset_assert(struct qcom_pcie *pcie)
 
 static void qcom_ep_reset_deassert(struct qcom_pcie *pcie)
 {
-	/* Ensure that PERST has been asserted for at least 100 ms */
+	 
 	msleep(100);
 	gpiod_set_value_cansleep(pcie->reset, 0);
 	usleep_range(PERST_DELAY_US, PERST_DELAY_US + 500);
@@ -261,7 +254,7 @@ static int qcom_pcie_start_link(struct dw_pcie *pci)
 {
 	struct qcom_pcie *pcie = to_qcom_pcie(pci);
 
-	/* Enable Link Training state machine */
+	 
 	if (pcie->cfg->ops->ltssm_enable)
 		pcie->cfg->ops->ltssm_enable(pcie);
 
@@ -286,7 +279,7 @@ static void qcom_pcie_2_1_0_ltssm_enable(struct qcom_pcie *pcie)
 {
 	u32 val;
 
-	/* enable link training */
+	 
 	val = readl(pcie->elbi + ELBI_SYS_CTRL);
 	val |= ELBI_SYS_CTRL_LT_ENABLE;
 	writel(val, pcie->elbi + ELBI_SYS_CTRL);
@@ -314,12 +307,12 @@ static int qcom_pcie_get_resources_2_1_0(struct qcom_pcie *pcie)
 	res->clks[3].id = "aux";
 	res->clks[4].id = "ref";
 
-	/* iface, core, phy are required */
+	 
 	ret = devm_clk_bulk_get(dev, 3, res->clks);
 	if (ret < 0)
 		return ret;
 
-	/* aux, ref are optional */
+	 
 	ret = devm_clk_bulk_get_optional(dev, 2, res->clks + 3);
 	if (ret < 0)
 		return ret;
@@ -331,7 +324,7 @@ static int qcom_pcie_get_resources_2_1_0(struct qcom_pcie *pcie)
 	res->resets[4].id = "phy";
 	res->resets[5].id = "ext";
 
-	/* ext is optional on APQ8016 */
+	 
 	res->num_resets = is_apq ? 5 : 6;
 	ret = devm_reset_control_bulk_get_exclusive(dev, res->num_resets, res->resets);
 	if (ret < 0)
@@ -359,7 +352,7 @@ static int qcom_pcie_init_2_1_0(struct qcom_pcie *pcie)
 	struct device *dev = pci->dev;
 	int ret;
 
-	/* reset the PCIe interface as uboot can leave it undefined state */
+	 
 	ret = reset_control_bulk_assert(res->num_resets, res->resets);
 	if (ret < 0) {
 		dev_err(dev, "cannot assert resets\n");
@@ -391,7 +384,7 @@ static int qcom_pcie_post_init_2_1_0(struct qcom_pcie *pcie)
 	u32 val;
 	int ret;
 
-	/* enable PCIe clocks and resets */
+	 
 	val = readl(pcie->parf + PARF_PHY_CTRL);
 	val &= ~PHY_TEST_PWR_DOWN;
 	writel(val, pcie->parf + PARF_PHY_CTRL);
@@ -413,25 +406,25 @@ static int qcom_pcie_post_init_2_1_0(struct qcom_pcie *pcie)
 	}
 
 	if (of_device_is_compatible(node, "qcom,pcie-ipq8064")) {
-		/* set TX termination offset */
+		 
 		val = readl(pcie->parf + PARF_PHY_CTRL);
 		val &= ~PHY_CTRL_PHY_TX0_TERM_OFFSET_MASK;
 		val |= PHY_CTRL_PHY_TX0_TERM_OFFSET(7);
 		writel(val, pcie->parf + PARF_PHY_CTRL);
 	}
 
-	/* enable external reference clock */
+	 
 	val = readl(pcie->parf + PARF_PHY_REFCLK);
-	/* USE_PAD is required only for ipq806x */
+	 
 	if (!of_device_is_compatible(node, "qcom,pcie-apq8064"))
 		val &= ~PHY_REFCLK_USE_PAD;
 	val |= PHY_REFCLK_SSP_EN;
 	writel(val, pcie->parf + PARF_PHY_REFCLK);
 
-	/* wait for clock acquisition */
+	 
 	usleep_range(1000, 1500);
 
-	/* Set the Max TLP size to 2K, instead of using default of 4K */
+	 
 	writel(CFG_REMOTE_RD_REQ_BRIDGE_SIZE_2K,
 	       pci->dbi_base + AXI_MSTR_RESP_COMP_CTRL0);
 	writel(CFG_BRIDGE_SB_INIT,
@@ -512,7 +505,7 @@ err_assert_reset:
 
 static int qcom_pcie_post_init_1_0_0(struct qcom_pcie *pcie)
 {
-	/* change DBI base address */
+	 
 	writel(0, pcie->parf + PARF_DBI_BASE_ADDR);
 
 	if (IS_ENABLED(CONFIG_PCI_MSI)) {
@@ -531,7 +524,7 @@ static void qcom_pcie_2_3_2_ltssm_enable(struct qcom_pcie *pcie)
 {
 	u32 val;
 
-	/* enable link training */
+	 
 	val = readl(pcie->parf + PARF_LTSSM);
 	val |= LTSSM_EN;
 	writel(val, pcie->parf + PARF_LTSSM);
@@ -598,15 +591,15 @@ static int qcom_pcie_post_init_2_3_2(struct qcom_pcie *pcie)
 {
 	u32 val;
 
-	/* enable PCIe clocks and resets */
+	 
 	val = readl(pcie->parf + PARF_PHY_CTRL);
 	val &= ~PHY_TEST_PWR_DOWN;
 	writel(val, pcie->parf + PARF_PHY_CTRL);
 
-	/* change DBI base address */
+	 
 	writel(0, pcie->parf + PARF_DBI_BASE_ADDR);
 
-	/* MAC PHY_POWERDOWN MUX DISABLE  */
+	 
 	val = readl(pcie->parf + PARF_SYS_CTRL);
 	val &= ~MAC_PHY_POWERDOWN_IN_P2_D_MUX_EN;
 	writel(val, pcie->parf + PARF_SYS_CTRL);
@@ -637,7 +630,7 @@ static int qcom_pcie_get_resources_2_4_0(struct qcom_pcie *pcie)
 	res->clks[2].id = "slave_bus";
 	res->clks[3].id = "iface";
 
-	/* qcom,pcie-ipq4019 is defined without "iface" */
+	 
 	res->num_clks = is_ipq ? 3 : 4;
 
 	ret = devm_clk_bulk_get(dev, res->num_clks, res->clks);
@@ -766,10 +759,7 @@ static int qcom_pcie_init_2_3_3(struct qcom_pcie *pcie)
 		return ret;
 	}
 
-	/*
-	 * Don't have a way to see if the reset has completed.
-	 * Wait for some time.
-	 */
+	 
 	usleep_range(2000, 2500);
 
 	ret = clk_bulk_prepare_enable(ARRAY_SIZE(res->clks), res->clks);
@@ -781,10 +771,7 @@ static int qcom_pcie_init_2_3_3(struct qcom_pcie *pcie)
 	return 0;
 
 err_assert_resets:
-	/*
-	 * Not checking for failure, will anyway return
-	 * the original failure in 'ret'.
-	 */
+	 
 	reset_control_bulk_assert(ARRAY_SIZE(res->rst), res->rst);
 
 	return ret;
@@ -914,21 +901,21 @@ static int qcom_pcie_init_2_7_0(struct qcom_pcie *pcie)
 		goto err_disable_clocks;
 	}
 
-	/* Wait for reset to complete, required on SM8450 */
+	 
 	usleep_range(1000, 1500);
 
-	/* configure PCIe to RC mode */
+	 
 	writel(DEVICE_TYPE_RC, pcie->parf + PARF_DEVICE_TYPE);
 
-	/* enable PCIe clocks and resets */
+	 
 	val = readl(pcie->parf + PARF_PHY_CTRL);
 	val &= ~PHY_TEST_PWR_DOWN;
 	writel(val, pcie->parf + PARF_PHY_CTRL);
 
-	/* change DBI base address */
+	 
 	writel(0, pcie->parf + PARF_DBI_BASE_ADDR);
 
-	/* MAC PHY_POWERDOWN MUX DISABLE  */
+	 
 	val = readl(pcie->parf + PARF_SYS_CTRL);
 	val &= ~MAC_PHY_POWERDOWN_IN_P2_D_MUX_EN;
 	writel(val, pcie->parf + PARF_SYS_CTRL);
@@ -937,7 +924,7 @@ static int qcom_pcie_init_2_7_0(struct qcom_pcie *pcie)
 	val |= BYPASS;
 	writel(val, pcie->parf + PARF_MHI_CLOCK_RESET_CTRL);
 
-	/* Enable L1 and L1SS */
+	 
 	val = readl(pcie->parf + PARF_PM_CTRL);
 	val &= ~REQ_NOT_ENTR_L1;
 	writel(val, pcie->parf + PARF_PM_CTRL);
@@ -973,7 +960,7 @@ static void qcom_pcie_deinit_2_7_0(struct qcom_pcie *pcie)
 
 static int qcom_pcie_config_sid_1_9_0(struct qcom_pcie *pcie)
 {
-	/* iommu map structure */
+	 
 	struct {
 		u32 bdf;
 		u32 phandle;
@@ -1001,13 +988,13 @@ static int qcom_pcie_config_sid_1_9_0(struct qcom_pcie *pcie)
 
 	crc8_populate_msb(qcom_pcie_crc8_table, QCOM_PCIE_CRC8_POLYNOMIAL);
 
-	/* Registers need to be zero out first */
+	 
 	memset_io(bdf_to_sid_base, 0, CRC8_TABLE_SIZE * sizeof(u32));
 
-	/* Extract the SMMU SID base from the first entry of iommu-map */
+	 
 	smmu_sid_base = map[0].smmu_sid;
 
-	/* Look for an available entry to hold the mapping */
+	 
 	for (i = 0; i < nr_map; i++) {
 		__be16 bdf_be = cpu_to_be16(map[i].bdf);
 		u32 val;
@@ -1017,12 +1004,12 @@ static int qcom_pcie_config_sid_1_9_0(struct qcom_pcie *pcie)
 
 		val = readl(bdf_to_sid_base + hash * sizeof(u32));
 
-		/* If the register is already populated, look for next available entry */
+		 
 		while (val) {
 			u8 current_hash = hash++;
 			u8 next_mask = 0xff;
 
-			/* If NEXT field is NULL then update it with next hash */
+			 
 			if (!(val & next_mask)) {
 				val |= (u32)hash;
 				writel(val, bdf_to_sid_base + current_hash * sizeof(u32));
@@ -1031,7 +1018,7 @@ static int qcom_pcie_config_sid_1_9_0(struct qcom_pcie *pcie)
 			val = readl(bdf_to_sid_base + hash * sizeof(u32));
 		}
 
-		/* BDF [31:16] | SID [15:8] | NEXT [7:0] */
+		 
 		val = map[i].bdf << 16 | (map[i].smmu_sid - smmu_sid_base) << 8 | 0;
 		writel(val, bdf_to_sid_base + hash * sizeof(u32));
 	}
@@ -1084,10 +1071,7 @@ static int qcom_pcie_init_2_9_0(struct qcom_pcie *pcie)
 		return ret;
 	}
 
-	/*
-	 * Delay periods before and after reset deassert are working values
-	 * from downstream Codeaurora kernel
-	 */
+	 
 	usleep_range(2000, 2500);
 
 	ret = reset_control_deassert(res->rst);
@@ -1219,7 +1203,7 @@ static const struct dw_pcie_host_ops qcom_pcie_dw_ops = {
 	.host_deinit	= qcom_pcie_host_deinit,
 };
 
-/* Qcom IP rev.: 2.1.0	Synopsys IP rev.: 4.01a */
+ 
 static const struct qcom_pcie_ops ops_2_1_0 = {
 	.get_resources = qcom_pcie_get_resources_2_1_0,
 	.init = qcom_pcie_init_2_1_0,
@@ -1228,7 +1212,7 @@ static const struct qcom_pcie_ops ops_2_1_0 = {
 	.ltssm_enable = qcom_pcie_2_1_0_ltssm_enable,
 };
 
-/* Qcom IP rev.: 1.0.0	Synopsys IP rev.: 4.11a */
+ 
 static const struct qcom_pcie_ops ops_1_0_0 = {
 	.get_resources = qcom_pcie_get_resources_1_0_0,
 	.init = qcom_pcie_init_1_0_0,
@@ -1237,7 +1221,7 @@ static const struct qcom_pcie_ops ops_1_0_0 = {
 	.ltssm_enable = qcom_pcie_2_1_0_ltssm_enable,
 };
 
-/* Qcom IP rev.: 2.3.2	Synopsys IP rev.: 4.21a */
+ 
 static const struct qcom_pcie_ops ops_2_3_2 = {
 	.get_resources = qcom_pcie_get_resources_2_3_2,
 	.init = qcom_pcie_init_2_3_2,
@@ -1246,7 +1230,7 @@ static const struct qcom_pcie_ops ops_2_3_2 = {
 	.ltssm_enable = qcom_pcie_2_3_2_ltssm_enable,
 };
 
-/* Qcom IP rev.: 2.4.0	Synopsys IP rev.: 4.20a */
+ 
 static const struct qcom_pcie_ops ops_2_4_0 = {
 	.get_resources = qcom_pcie_get_resources_2_4_0,
 	.init = qcom_pcie_init_2_4_0,
@@ -1255,7 +1239,7 @@ static const struct qcom_pcie_ops ops_2_4_0 = {
 	.ltssm_enable = qcom_pcie_2_3_2_ltssm_enable,
 };
 
-/* Qcom IP rev.: 2.3.3	Synopsys IP rev.: 4.30a */
+ 
 static const struct qcom_pcie_ops ops_2_3_3 = {
 	.get_resources = qcom_pcie_get_resources_2_3_3,
 	.init = qcom_pcie_init_2_3_3,
@@ -1264,7 +1248,7 @@ static const struct qcom_pcie_ops ops_2_3_3 = {
 	.ltssm_enable = qcom_pcie_2_3_2_ltssm_enable,
 };
 
-/* Qcom IP rev.: 2.7.0	Synopsys IP rev.: 4.30a */
+ 
 static const struct qcom_pcie_ops ops_2_7_0 = {
 	.get_resources = qcom_pcie_get_resources_2_7_0,
 	.init = qcom_pcie_init_2_7_0,
@@ -1273,7 +1257,7 @@ static const struct qcom_pcie_ops ops_2_7_0 = {
 	.ltssm_enable = qcom_pcie_2_3_2_ltssm_enable,
 };
 
-/* Qcom IP rev.: 1.9.0 */
+ 
 static const struct qcom_pcie_ops ops_1_9_0 = {
 	.get_resources = qcom_pcie_get_resources_2_7_0,
 	.init = qcom_pcie_init_2_7_0,
@@ -1283,7 +1267,7 @@ static const struct qcom_pcie_ops ops_1_9_0 = {
 	.config_sid = qcom_pcie_config_sid_1_9_0,
 };
 
-/* Qcom IP rev.: 2.9.0  Synopsys IP rev.: 5.00a */
+ 
 static const struct qcom_pcie_ops ops_2_9_0 = {
 	.get_resources = qcom_pcie_get_resources_2_9_0,
 	.init = qcom_pcie_init_2_9_0,
@@ -1338,13 +1322,7 @@ static int qcom_pcie_icc_init(struct qcom_pcie *pcie)
 	if (IS_ERR(pcie->icc_mem))
 		return PTR_ERR(pcie->icc_mem);
 
-	/*
-	 * Some Qualcomm platforms require interconnect bandwidth constraints
-	 * to be set before enabling interconnect clocks.
-	 *
-	 * Set an initial peak bandwidth corresponding to single-lane Gen 1
-	 * for the pcie-mem path.
-	 */
+	 
 	ret = icc_set_bw(pcie->icc_mem, 0, MBps_to_icc(250));
 	if (ret) {
 		dev_err(pci->dev, "failed to set interconnect bandwidth: %d\n",
@@ -1368,7 +1346,7 @@ static void qcom_pcie_icc_update(struct qcom_pcie *pcie)
 	offset = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);
 	status = readw(pci->dbi_base + offset + PCI_EXP_LNKSTA);
 
-	/* Only update constraints if link is up. */
+	 
 	if (!(status & PCI_EXP_LNKSTA_DLLLA))
 		return;
 
@@ -1489,7 +1467,7 @@ static int qcom_pcie_probe(struct platform_device *pdev)
 		goto err_pm_runtime_put;
 	}
 
-	/* MHI region is optional */
+	 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "mhi");
 	if (res) {
 		pcie->mhi = devm_ioremap_resource(dev, res);
@@ -1548,31 +1526,14 @@ static int qcom_pcie_suspend_noirq(struct device *dev)
 	struct qcom_pcie *pcie = dev_get_drvdata(dev);
 	int ret;
 
-	/*
-	 * Set minimum bandwidth required to keep data path functional during
-	 * suspend.
-	 */
+	 
 	ret = icc_set_bw(pcie->icc_mem, 0, kBps_to_icc(1));
 	if (ret) {
 		dev_err(dev, "Failed to set interconnect bandwidth: %d\n", ret);
 		return ret;
 	}
 
-	/*
-	 * Turn OFF the resources only for controllers without active PCIe
-	 * devices. For controllers with active devices, the resources are kept
-	 * ON and the link is expected to be in L0/L1 (sub)states.
-	 *
-	 * Turning OFF the resources for controllers with active PCIe devices
-	 * will trigger access violation during the end of the suspend cycle,
-	 * as kernel tries to access the PCIe devices config space for masking
-	 * MSIs.
-	 *
-	 * Also, it is not desirable to put the link into L2/L3 state as that
-	 * implies VDD supply will be removed and the devices may go into
-	 * powerdown state. This will affect the lifetime of the storage devices
-	 * like NVMe.
-	 */
+	 
 	if (!dw_pcie_link_up(pcie->pci)) {
 		qcom_pcie_host_deinit(&pcie->pci->pp);
 		pcie->suspended = true;

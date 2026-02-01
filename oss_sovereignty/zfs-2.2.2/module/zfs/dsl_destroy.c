@@ -1,30 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2018 by Delphix. All rights reserved.
- * Copyright (c) 2013 Steven Hartland. All rights reserved.
- * Copyright (c) 2013 by Joyent, Inc. All rights reserved.
- * Copyright (c) 2016 Actifio, Inc. All rights reserved.
- */
+ 
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/dsl_userhold.h>
@@ -60,10 +35,7 @@ dsl_destroy_snapshot_check_impl(dsl_dataset_t *ds, boolean_t defer)
 	if (dsl_dataset_long_held(ds))
 		return (SET_ERROR(EBUSY));
 
-	/*
-	 * Only allow deferred destroy on pools that support it.
-	 * NOTE: deferred destroy is only supported on snapshots.
-	 */
+	 
 	if (defer) {
 		if (spa_version(ds->ds_dir->dd_pool->dp_spa) <
 		    SPA_VERSION_USERREFS)
@@ -71,16 +43,11 @@ dsl_destroy_snapshot_check_impl(dsl_dataset_t *ds, boolean_t defer)
 		return (0);
 	}
 
-	/*
-	 * If this snapshot has an elevated user reference count,
-	 * we can't destroy it yet.
-	 */
+	 
 	if (ds->ds_userrefs > 0)
 		return (SET_ERROR(EBUSY));
 
-	/*
-	 * Can't delete a branch point.
-	 */
+	 
 	if (dsl_dataset_phys(ds)->ds_num_children > 1)
 		return (SET_ERROR(EEXIST));
 
@@ -100,11 +67,7 @@ dsl_destroy_snapshot_check(void *arg, dmu_tx_t *tx)
 
 	error = dsl_dataset_hold(dp, dsname, FTAG, &ds);
 
-	/*
-	 * If the snapshot does not exist, silently ignore it, and
-	 * dsl_destroy_snapshot_sync() will be a no-op
-	 * (it's "already destroyed").
-	 */
+	 
 	if (error == ENOENT)
 		return (0);
 
@@ -170,11 +133,11 @@ process_old_deadlist(dsl_dataset_t *ds, dsl_dataset_t *ds_prev,
 	VERIFY0(zio_wait(poa.pio));
 	ASSERT3U(poa.used, ==, dsl_dataset_phys(ds)->ds_unique_bytes);
 
-	/* change snapused */
+	 
 	dsl_dir_diduse_space(ds->ds_dir, DD_USED_SNAP,
 	    -poa.used, -poa.comp, -poa.uncomp, tx);
 
-	/* swap next's deadlist to our deadlist */
+	 
 	dsl_deadlist_close(&ds->ds_deadlist);
 	dsl_deadlist_close(&ds_next->ds_deadlist);
 	deadlist_obj = dsl_dataset_phys(ds)->ds_deadlist_obj;
@@ -206,11 +169,7 @@ dsl_dir_remove_clones_key_impl(dsl_dir_t *dd, uint64_t mintxg, dmu_tx_t *tx,
 {
 	objset_t *mos = dd->dd_pool->dp_meta_objset;
 
-	/*
-	 * If it is the old version, dd_clones doesn't exist so we can't
-	 * find the clones, but dsl_deadlist_remove_key() is a no-op so it
-	 * doesn't matter.
-	 */
+	 
 	if (dsl_dir_phys(dd)->dd_clones == 0)
 		return;
 
@@ -275,7 +234,7 @@ dsl_destroy_snapshot_handle_remaps(dsl_dataset_t *ds, dsl_dataset_t *ds_next,
 {
 	dsl_pool_t *dp = ds->ds_dir->dd_pool;
 
-	/* Move blocks to be obsoleted to pool's obsolete list. */
+	 
 	if (dsl_dataset_remap_deadlist_exists(ds_next)) {
 		if (!bpobj_is_open(&dp->dp_obsolete_bpobj))
 			dsl_pool_create_obsolete_bpobj(dp, tx);
@@ -285,7 +244,7 @@ dsl_destroy_snapshot_handle_remaps(dsl_dataset_t *ds, dsl_dataset_t *ds_next,
 		    dsl_dataset_phys(ds)->ds_prev_snap_txg, tx);
 	}
 
-	/* Merge our deadlist into next's and free it. */
+	 
 	if (dsl_dataset_remap_deadlist_exists(ds)) {
 		uint64_t remap_deadlist_object =
 		    dsl_dataset_get_remap_deadlist_object(ds);
@@ -333,7 +292,7 @@ dsl_destroy_snapshot_sync_impl(dsl_dataset_t *ds, boolean_t defer, dmu_tx_t *tx)
 	ASSERT3U(dsl_dataset_phys(ds)->ds_num_children, <=, 1);
 
 	if (zfs_snapshot_history_enabled) {
-		/* We need to log before removing it from the namespace. */
+		 
 		spa_history_log_internal_ds(ds, "destroy", tx, " ");
 	}
 
@@ -394,7 +353,7 @@ dsl_destroy_snapshot_sync_impl(dsl_dataset_t *ds, boolean_t defer, dmu_tx_t *tx)
 		process_old_deadlist(ds, ds_prev, ds_next,
 		    after_branch_point, tx);
 	} else {
-		/* Adjust prev's unique space. */
+		 
 		if (ds_prev && !after_branch_point) {
 			dsl_deadlist_space_range(&ds_next->ds_deadlist,
 			    dsl_dataset_phys(ds_prev)->ds_prev_snap_txg,
@@ -403,29 +362,25 @@ dsl_destroy_snapshot_sync_impl(dsl_dataset_t *ds, boolean_t defer, dmu_tx_t *tx)
 			dsl_dataset_phys(ds_prev)->ds_unique_bytes += used;
 		}
 
-		/* Adjust snapused. */
+		 
 		dsl_deadlist_space_range(&ds_next->ds_deadlist,
 		    dsl_dataset_phys(ds)->ds_prev_snap_txg, UINT64_MAX,
 		    &used, &comp, &uncomp);
 		dsl_dir_diduse_space(ds->ds_dir, DD_USED_SNAP,
 		    -used, -comp, -uncomp, tx);
 
-		/* Move blocks to be freed to pool's free list. */
+		 
 		dsl_deadlist_move_bpobj(&ds_next->ds_deadlist,
 		    &dp->dp_free_bpobj, dsl_dataset_phys(ds)->ds_prev_snap_txg,
 		    tx);
 		dsl_dir_diduse_space(tx->tx_pool->dp_free_dir,
 		    DD_USED_HEAD, used, comp, uncomp, tx);
 
-		/* Merge our deadlist into next's and free it. */
+		 
 		dsl_deadlist_merge(&ds_next->ds_deadlist,
 		    dsl_dataset_phys(ds)->ds_deadlist_obj, tx);
 
-		/*
-		 * We are done with the deadlist tree (generated/used
-		 * by dsl_deadlist_move_bpobj() and dsl_deadlist_merge()).
-		 * Discard it to save memory.
-		 */
+		 
 		dsl_deadlist_discard_tree(&ds_next->ds_deadlist);
 	}
 
@@ -437,7 +392,7 @@ dsl_destroy_snapshot_sync_impl(dsl_dataset_t *ds, boolean_t defer, dmu_tx_t *tx)
 	dsl_destroy_snapshot_handle_remaps(ds, ds_next, tx);
 
 	if (!book_exists) {
-		/* Collapse range in clone heads */
+		 
 		dsl_dir_remove_clones_key(ds->ds_dir,
 		    dsl_dataset_phys(ds)->ds_creation_txg, tx);
 	}
@@ -445,15 +400,7 @@ dsl_destroy_snapshot_sync_impl(dsl_dataset_t *ds, boolean_t defer, dmu_tx_t *tx)
 	if (ds_next->ds_is_snapshot) {
 		dsl_dataset_t *ds_nextnext;
 
-		/*
-		 * Update next's unique to include blocks which
-		 * were previously shared by only this snapshot
-		 * and it.  Those blocks will be born after the
-		 * prev snap and before this snap, and will have
-		 * died after the next snap and before the one
-		 * after that (ie. be on the snap after next's
-		 * deadlist).
-		 */
+		 
 		VERIFY0(dsl_dataset_hold_obj(dp,
 		    dsl_dataset_phys(ds_next)->ds_next_snap_obj,
 		    FTAG, &ds_nextnext));
@@ -465,13 +412,13 @@ dsl_destroy_snapshot_sync_impl(dsl_dataset_t *ds, boolean_t defer, dmu_tx_t *tx)
 		dsl_dataset_rele(ds_nextnext, FTAG);
 		ASSERT3P(ds_next->ds_prev, ==, NULL);
 
-		/* Collapse range in this head. */
+		 
 		dsl_dataset_t *hds;
 		VERIFY0(dsl_dataset_hold_obj(dp,
 		    dsl_dir_phys(ds->ds_dir)->dd_head_dataset_obj,
 		    FTAG, &hds));
 		if (!book_exists) {
-			/* Collapse range in this head. */
+			 
 			dsl_deadlist_remove_key(&hds->ds_deadlist,
 			    dsl_dataset_phys(ds)->ds_creation_txg, tx);
 		}
@@ -493,11 +440,7 @@ dsl_destroy_snapshot_sync_impl(dsl_dataset_t *ds, boolean_t defer, dmu_tx_t *tx)
 
 		dsl_dataset_recalc_head_uniq(ds_next);
 
-		/*
-		 * Reduce the amount of our unconsumed refreservation
-		 * being charged to our parent by the amount of
-		 * new unique data we have gained.
-		 */
+		 
 		if (old_unique < ds_next->ds_reserved) {
 			int64_t mrsdelta;
 			uint64_t new_unique =
@@ -512,16 +455,13 @@ dsl_destroy_snapshot_sync_impl(dsl_dataset_t *ds, boolean_t defer, dmu_tx_t *tx)
 	}
 	dsl_dataset_rele(ds_next, FTAG);
 
-	/*
-	 * This must be done after the dsl_traverse(), because it will
-	 * re-open the objset.
-	 */
+	 
 	if (ds->ds_objset) {
 		dmu_objset_evict(ds->ds_objset);
 		ds->ds_objset = NULL;
 	}
 
-	/* remove from snapshot namespace */
+	 
 	dsl_dataset_t *ds_head;
 	ASSERT(dsl_dataset_phys(ds)->ds_snapnames_zapobj == 0);
 	VERIFY0(dsl_dataset_hold_obj(dp,
@@ -584,19 +524,7 @@ dsl_destroy_snapshot_sync(void *arg, dmu_tx_t *tx)
 	dsl_dataset_rele(ds, FTAG);
 }
 
-/*
- * The semantics of this function are described in the comment above
- * lzc_destroy_snaps().  To summarize:
- *
- * The snapshots must all be in the same pool.
- *
- * Snapshots that don't exist will be silently ignored (considered to be
- * "already deleted").
- *
- * On success, all snaps will be destroyed and this will return 0.
- * On failure, no snaps will be destroyed, the errlist will be filled in,
- * and this will return an errno.
- */
+ 
 int
 dsl_destroy_snapshots_nvl(nvlist_t *snaps, boolean_t defer,
     nvlist_t *errlist)
@@ -604,11 +532,7 @@ dsl_destroy_snapshots_nvl(nvlist_t *snaps, boolean_t defer,
 	if (nvlist_next_nvpair(snaps, NULL) == NULL)
 		return (0);
 
-	/*
-	 * lzc_destroy_snaps() is documented to take an nvlist whose
-	 * values "don't matter".  We need to convert that nvlist to
-	 * one that we know can be converted to LUA.
-	 */
+	 
 	nvlist_t *snaps_normalized = fnvlist_alloc();
 	for (nvpair_t *pair = nvlist_next_nvpair(snaps, NULL);
 	    pair != NULL; pair = nvlist_next_nvpair(snaps, pair)) {
@@ -669,11 +593,7 @@ dsl_destroy_snapshots_nvl(nvlist_t *snaps, boolean_t defer,
 	}
 	fnvlist_free(wrapper);
 
-	/*
-	 * lzc_destroy_snaps() is documented to fill the errlist with
-	 * int32 values, so we need to convert the int64 values that are
-	 * returned from LUA.
-	 */
+	 
 	int rv = 0;
 	nvlist_t *errlist_raw = fnvlist_lookup_nvlist(result, ZCP_RET_RETURN);
 	for (nvpair_t *pair = nvlist_next_nvpair(errlist_raw, NULL);
@@ -720,10 +640,7 @@ kill_blkptr(spa_t *spa, zilog_t *zilog, const blkptr_t *bp,
 
 	if (zb->zb_level == ZB_ZIL_LEVEL) {
 		ASSERT(zilog != NULL);
-		/*
-		 * It's a block in the intent log.  It has no
-		 * accounting, so just free it.
-		 */
+		 
 		dsl_free(ka->tx->tx_pool, ka->tx->tx_txg, bp);
 	} else {
 		ASSERT(zilog == NULL);
@@ -744,13 +661,7 @@ old_synchronous_dataset_destroy(dsl_dataset_t *ds, dmu_tx_t *tx)
 	    "(synchronous, mintxg=%llu)",
 	    (long long)dsl_dataset_phys(ds)->ds_prev_snap_txg);
 
-	/*
-	 * Free everything that we point to (that's born after
-	 * the previous snapshot, if we are a clone)
-	 *
-	 * NB: this should be very quick, because we already
-	 * freed all the objects in open context.
-	 */
+	 
 	ka.ds = ds;
 	ka.tx = tx;
 	VERIFY0(traverse_dataset(ds,
@@ -778,18 +689,12 @@ dsl_destroy_head_check_impl(dsl_dataset_t *ds, int expected_holds)
 
 	mos = ds->ds_dir->dd_pool->dp_meta_objset;
 
-	/*
-	 * Can't delete a head dataset if there are snapshots of it.
-	 * (Except if the only snapshots are from the branch we cloned
-	 * from.)
-	 */
+	 
 	if (ds->ds_prev != NULL &&
 	    dsl_dataset_phys(ds->ds_prev)->ds_next_snap_obj == ds->ds_object)
 		return (SET_ERROR(EBUSY));
 
-	/*
-	 * Can't delete if there are children of this fs.
-	 */
+	 
 	error = zap_count(mos,
 	    dsl_dir_phys(ds->ds_dir)->dd_child_dir_zapobj, &count);
 	if (error != 0)
@@ -800,7 +705,7 @@ dsl_destroy_head_check_impl(dsl_dataset_t *ds, int expected_holds)
 	if (dsl_dir_is_clone(ds->ds_dir) && DS_IS_DEFER_DESTROY(ds->ds_prev) &&
 	    dsl_dataset_phys(ds->ds_prev)->ds_num_children == 2 &&
 	    ds->ds_prev->ds_userrefs == 0) {
-		/* We need to remove the origin snapshot as well. */
+		 
 		if (!zfs_refcount_is_zero(&ds->ds_prev->ds_longholds))
 			return (SET_ERROR(EBUSY));
 	}
@@ -838,15 +743,12 @@ dsl_dir_destroy_sync(uint64_t ddobj, dmu_tx_t *tx)
 
 	ASSERT0(dsl_dir_phys(dd)->dd_head_dataset_obj);
 
-	/* Decrement the filesystem count for all parent filesystems. */
+	 
 	if (dd->dd_parent != NULL)
 		dsl_fs_ss_count_adjust(dd->dd_parent, -1,
 		    DD_FIELD_FILESYSTEM_COUNT, tx);
 
-	/*
-	 * Remove our reservation. The impl() routine avoids setting the
-	 * actual property, which would require the (already destroyed) ds.
-	 */
+	 
 	dsl_dir_set_reservation_sync_impl(dd, 0, tx);
 
 	ASSERT0(dsl_dir_phys(dd)->dd_used_bytes);
@@ -882,21 +784,14 @@ dsl_clone_destroy_assert(dsl_dir_t *dd)
 
 	ASSERT3U(dsl_dir_phys(dd)->dd_used_bytes, ==, used);
 	ASSERT3U(dsl_dir_phys(dd)->dd_compressed_bytes, ==, comp);
-	/*
-	 * Greater than because we do not track embedded block pointers in
-	 * the livelist
-	 */
+	 
 	ASSERT3U(dsl_dir_phys(dd)->dd_uncompressed_bytes, >=, uncomp);
 
 	ASSERT(list_is_empty(&dd->dd_pending_allocs.bpl_list));
 	ASSERT(list_is_empty(&dd->dd_pending_frees.bpl_list));
 }
 
-/*
- * Start the delete process for a clone. Free its zil, verify the space usage
- * and queue the blkptrs for deletion by adding the livelist to the pool-wide
- * delete queue.
- */
+ 
 static void
 dsl_async_clone_destroy(dsl_dataset_t *ds, dmu_tx_t *tx)
 {
@@ -916,15 +811,15 @@ dsl_async_clone_destroy(dsl_dataset_t *ds, dmu_tx_t *tx)
 	spa_history_log_internal_ds(ds, "destroy", tx,
 	    "(livelist, mintxg=%llu)", (long long)mintxg);
 
-	/* Check that the clone is in a correct state to be deleted */
+	 
 	dsl_clone_destroy_assert(dd);
 
-	/* Destroy the zil */
+	 
 	zil_destroy_sync(dmu_objset_zil(os), tx);
 
 	VERIFY0(zap_lookup(mos, dd->dd_object,
 	    DD_FIELD_LIVELIST, sizeof (uint64_t), 1, &to_delete));
-	/* Initialize deleted_clones entry to track livelists to cleanup */
+	 
 	int error = zap_lookup(mos, DMU_POOL_DIRECTORY_OBJECT,
 	    DMU_POOL_DELETED_CLONES, sizeof (uint64_t), 1, &zap_obj);
 	if (error == ENOENT) {
@@ -941,7 +836,7 @@ dsl_async_clone_destroy(dsl_dataset_t *ds, dmu_tx_t *tx)
 	}
 	VERIFY0(zap_add_int(mos, zap_obj, to_delete, tx));
 
-	/* Clone is no longer using space, now tracked by dp_free_dir */
+	 
 	dsl_deadlist_space(&dd->dd_livelist, &used, &comp, &uncomp);
 	dsl_dir_diduse_space(dd, DD_USED_HEAD,
 	    -used, -comp, -dsl_dir_phys(dd)->dd_uncompressed_bytes,
@@ -952,10 +847,7 @@ dsl_async_clone_destroy(dsl_dataset_t *ds, dmu_tx_t *tx)
 	zthr_wakeup(spa->spa_livelist_delete_zthr);
 }
 
-/*
- * Move the bptree into the pool's list of trees to clean up, update space
- * accounting information and destroy the zil.
- */
+ 
 static void
 dsl_async_dataset_destroy(dsl_dataset_t *ds, dmu_tx_t *tx)
 {
@@ -1028,7 +920,7 @@ dsl_destroy_head_sync_impl(dsl_dataset_t *ds, dmu_tx_t *tx)
 	    dsl_dataset_phys(ds->ds_prev)->ds_num_children == 2 &&
 	    ds->ds_prev->ds_userrefs == 0);
 
-	/* Remove our reservation. */
+	 
 	if (ds->ds_reserved != 0) {
 		dsl_dataset_set_refreservation_sync_impl(ds,
 		    (ZPROP_SRC_NONE | ZPROP_SRC_LOCAL | ZPROP_SRC_RECEIVED),
@@ -1046,7 +938,7 @@ dsl_destroy_head_sync_impl(dsl_dataset_t *ds, dmu_tx_t *tx)
 	dsl_scan_ds_destroyed(ds, tx);
 
 	if (dsl_dataset_phys(ds)->ds_prev_snap_obj != 0) {
-		/* This is a clone */
+		 
 		ASSERT(ds->ds_prev != NULL);
 		ASSERT3U(dsl_dataset_phys(ds->ds_prev)->ds_next_snap_obj, !=,
 		    obj);
@@ -1062,12 +954,7 @@ dsl_destroy_head_sync_impl(dsl_dataset_t *ds, dmu_tx_t *tx)
 		dsl_dataset_phys(ds->ds_prev)->ds_num_children--;
 	}
 
-	/*
-	 * Destroy the deadlist. Unless it's a clone, the
-	 * deadlist should be empty since the dataset has no snapshots.
-	 * (If it's a clone, it's safe to ignore the deadlist contents
-	 * since they are still referenced by the origin snapshot.)
-	 */
+	 
 	dsl_deadlist_close(&ds->ds_deadlist);
 	dsl_deadlist_free(mos, dsl_dataset_phys(ds)->ds_deadlist_obj, tx);
 	dmu_buf_will_dirty(ds->ds_dbuf, tx);
@@ -1076,11 +963,7 @@ dsl_destroy_head_sync_impl(dsl_dataset_t *ds, dmu_tx_t *tx)
 	if (dsl_dataset_remap_deadlist_exists(ds))
 		dsl_dataset_destroy_remap_deadlist(ds, tx);
 
-	/*
-	 * Each destroy is responsible for both destroying (enqueuing
-	 * to be destroyed) the blkptrs comprising the dataset as well as
-	 * those belonging to the zil.
-	 */
+	 
 	if (dsl_deadlist_is_open(&ds->ds_dir->dd_livelist)) {
 		dsl_async_clone_destroy(ds, tx);
 	} else if (spa_feature_is_enabled(dp->dp_spa,
@@ -1101,16 +984,13 @@ dsl_destroy_head_sync_impl(dsl_dataset_t *ds, dmu_tx_t *tx)
 		ds->ds_prev = NULL;
 	}
 
-	/*
-	 * This must be done after the dsl_traverse(), because it will
-	 * re-open the objset.
-	 */
+	 
 	if (ds->ds_objset) {
 		dmu_objset_evict(ds->ds_objset);
 		ds->ds_objset = NULL;
 	}
 
-	/* Erase the link in the dir */
+	 
 	dmu_buf_will_dirty(ds->ds_dir->dd_dbuf, tx);
 	dsl_dir_phys(ds->ds_dir)->dd_head_dataset_obj = 0;
 	ddobj = ds->ds_dir->dd_object;
@@ -1160,7 +1040,7 @@ dsl_destroy_head_sync_impl(dsl_dataset_t *ds, dmu_tx_t *tx)
 		dsl_destroy_snapshot_sync_impl(prev, B_FALSE, tx);
 		dsl_dataset_rele(prev, FTAG);
 	}
-	/* Delete errlog. */
+	 
 	if (spa_feature_is_enabled(dp->dp_spa, SPA_FEATURE_HEAD_ERRLOG))
 		spa_delete_dataset_errlog(dp->dp_spa, ds->ds_object, tx);
 }
@@ -1187,7 +1067,7 @@ dsl_destroy_head_begin_sync(void *arg, dmu_tx_t *tx)
 
 	VERIFY0(dsl_dataset_hold(dp, ddha->ddha_name, FTAG, &ds));
 
-	/* Mark it as inconsistent on-disk, in case we crash */
+	 
 	dmu_buf_will_dirty(ds->ds_dbuf, tx);
 	dsl_dataset_phys(ds)->ds_flags |= DS_FLAG_INCONSISTENT;
 
@@ -1224,12 +1104,7 @@ dsl_destroy_head(const char *name)
 		if (error != 0)
 			return (error);
 
-		/*
-		 * Head deletion is processed in one txg on old pools;
-		 * remove the objects from open context so that the txg sync
-		 * is not too long. This optimization can only work for
-		 * encrypted datasets if the wrapping key is loaded.
-		 */
+		 
 		error = dmu_objset_own(name, DMU_OST_ANY, B_FALSE, B_TRUE,
 		    FTAG, &os);
 		if (error == 0) {
@@ -1240,7 +1115,7 @@ dsl_destroy_head(const char *name)
 			    error = dmu_object_next(os, &obj, FALSE,
 			    prev_snap_txg))
 				(void) dmu_free_long_object(os, obj);
-			/* sync out all frees */
+			 
 			txg_wait_synced(dmu_objset_pool(os), 0);
 			dmu_objset_disown(os, B_TRUE, FTAG);
 		}
@@ -1250,12 +1125,7 @@ dsl_destroy_head(const char *name)
 	    dsl_destroy_head_sync, &ddha, 0, ZFS_SPACE_CHECK_DESTROY));
 }
 
-/*
- * Note, this function is used as the callback for dmu_objset_find().  We
- * always return 0 so that we will continue to find and process
- * inconsistent datasets, even if we encounter an error trying to
- * process one of them.
- */
+ 
 int
 dsl_destroy_inconsistent(const char *dsname, void *arg)
 {
@@ -1265,10 +1135,7 @@ dsl_destroy_inconsistent(const char *dsname, void *arg)
 	if (dmu_objset_hold(dsname, FTAG, &os) == 0) {
 		boolean_t need_destroy = DS_IS_INCONSISTENT(dmu_objset_ds(os));
 
-		/*
-		 * If the dataset is inconsistent because a resumable receive
-		 * has failed, then do not destroy it.
-		 */
+		 
 		if (dsl_dataset_has_resume_receive_state(dmu_objset_ds(os)))
 			need_destroy = B_FALSE;
 

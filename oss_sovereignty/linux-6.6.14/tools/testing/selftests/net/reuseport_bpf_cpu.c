@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Test functionality of BPF filters with SO_REUSEPORT.  This program creates
- * an SO_REUSEPORT receiver group containing one socket per CPU core. It then
- * creates a BPF program that will select a socket from this group based
- * on the core id that receives the packet.  The sending code artificially
- * moves itself to run on different core ids and sends one message from
- * each core.  Since these packets are delivered over loopback, they should
- * arrive on the same core that sent them.  The receiving code then ensures
- * that the packet was received on the socket for the corresponding core id.
- * This entire process is done for several different core id permutations
- * and for each IPv4/IPv6 and TCP/UDP combination.
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -77,9 +66,9 @@ static void build_rcv_group(int *rcv_fd, size_t len, int family, int proto)
 static void attach_bpf(int fd)
 {
 	struct sock_filter code[] = {
-		/* A = raw_smp_processor_id() */
+		 
 		{ BPF_LD  | BPF_W | BPF_ABS, 0, 0, SKF_AD_OFF + SKF_AD_CPU },
-		/* return A */
+		 
 		{ BPF_RET | BPF_A, 0, 0, 0 },
 	};
 	struct sock_fprog p = {
@@ -199,25 +188,25 @@ static void test(int *rcv_fd, int len, int family, int proto)
 			error(1, errno, "failed to register sock epoll");
 	}
 
-	/* Forward iterate */
+	 
 	for (cpu = 0; cpu < len; ++cpu) {
 		send_from_cpu(cpu, family, proto);
 		receive_on_cpu(rcv_fd, len, epfd, cpu, proto);
 	}
 
-	/* Reverse iterate */
+	 
 	for (cpu = len - 1; cpu >= 0; --cpu) {
 		send_from_cpu(cpu, family, proto);
 		receive_on_cpu(rcv_fd, len, epfd, cpu, proto);
 	}
 
-	/* Even cores */
+	 
 	for (cpu = 0; cpu < len; cpu += 2) {
 		send_from_cpu(cpu, family, proto);
 		receive_on_cpu(rcv_fd, len, epfd, cpu, proto);
 	}
 
-	/* Odd cores */
+	 
 	for (cpu = 1; cpu < len; cpu += 2) {
 		send_from_cpu(cpu, family, proto);
 		receive_on_cpu(rcv_fd, len, epfd, cpu, proto);

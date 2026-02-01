@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014-2015 Imagination Technologies Ltd.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -20,7 +18,7 @@
 #include <linux/iio/trigger_consumer.h>
 #include <linux/iio/triggered_buffer.h>
 
-/* Registers */
+ 
 #define CC10001_ADC_CONFIG		0x00
 #define CC10001_ADC_START_CONV		BIT(4)
 #define CC10001_ADC_MODE_SINGLE_CONV	BIT(5)
@@ -43,12 +41,7 @@
 #define CC10001_INVALID_SAMPLED		0xffff
 #define CC10001_MAX_POLL_COUNT		20
 
-/*
- * As per device specification, wait six clock cycles after power-up to
- * activate START. Since adding two more clock cycles delay does not
- * impact the performance too much, we are adding two additional cycles delay
- * intentionally here.
- */
+ 
 #define	CC10001_WAIT_CYCLES		8
 
 struct cc10001_adc_device {
@@ -92,7 +85,7 @@ static void cc10001_adc_start(struct cc10001_adc_device *adc_dev,
 {
 	u32 val;
 
-	/* Channel selection and mode of operation */
+	 
 	val = (channel & CC10001_ADC_CH_MASK) | CC10001_ADC_MODE_SINGLE_CONV;
 	cc10001_adc_write_reg(adc_dev, CC10001_ADC_CONFIG, val);
 
@@ -126,7 +119,7 @@ static u16 cc10001_adc_poll_done(struct iio_dev *indio_dev,
 			return CC10001_INVALID_SAMPLED;
 	}
 
-	/* Read the 10 bit output register */
+	 
 	return cc10001_adc_read_reg(adc_dev, CC10001_ADC_DDATA_OUT) &
 			       CC10001_ADC_DATA_MASK;
 }
@@ -152,7 +145,7 @@ static irqreturn_t cc10001_adc_trigger_h(int irq, void *p)
 	if (!adc_dev->shared)
 		cc10001_adc_power_up(adc_dev);
 
-	/* Calculate delay step for eoc and sampled data */
+	 
 	delay_ns = adc_dev->eoc_delay_ns / CC10001_MAX_POLL_COUNT;
 
 	i = 0;
@@ -197,7 +190,7 @@ static u16 cc10001_adc_read_raw_voltage(struct iio_dev *indio_dev,
 	if (!adc_dev->shared)
 		cc10001_adc_power_up(adc_dev);
 
-	/* Calculate delay step for eoc and sampled data */
+	 
 	delay_ns = adc_dev->eoc_delay_ns / CC10001_MAX_POLL_COUNT;
 
 	cc10001_adc_start(adc_dev, chan->channel);
@@ -371,18 +364,14 @@ static int cc10001_adc_probe(struct platform_device *pdev)
 	adc_dev->eoc_delay_ns = NSEC_PER_SEC / adc_clk_rate;
 	adc_dev->start_delay_ns = adc_dev->eoc_delay_ns * CC10001_WAIT_CYCLES;
 
-	/*
-	 * There is only one register to power-up/power-down the AUX ADC.
-	 * If the ADC is shared among multiple CPUs, always power it up here.
-	 * If the ADC is used only by the MIPS, power-up/power-down at runtime.
-	 */
+	 
 	if (adc_dev->shared)
 		cc10001_adc_power_up(adc_dev);
 
 	ret = devm_add_action_or_reset(dev, cc10001_pd_cb, adc_dev);
 	if (ret)
 		return ret;
-	/* Setup the ADC channels available on the device */
+	 
 	ret = cc10001_adc_channel_init(indio_dev, channel_map);
 	if (ret < 0)
 		return ret;

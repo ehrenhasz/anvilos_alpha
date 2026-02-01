@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Driver for the Integrant ITD1000 "Zero-IF Tuner IC for Direct Broadcast Satellite"
- *
- *  Copyright (c) 2007 Patrick Boettcher <pb@linuxtv.org>
- */
+ 
+ 
 
 #ifndef ITD1000_PRIV_H
 #define ITD1000_PRIV_H
@@ -12,11 +8,9 @@ struct itd1000_state {
 	struct itd1000_config *cfg;
 	struct i2c_adapter    *i2c;
 
-	u32 frequency; /* contains the value resulting from the LO-setting */
+	u32 frequency;  
 
-	/* ugly workaround for flexcop's incapable i2c-controller
-	 * FIXME, if possible
-	 */
+	 
 	u8 shadow[256];
 };
 

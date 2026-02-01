@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * x86_energy_perf_policy -- set the energy versus performance
- * policy preference bias on recent X86 processors.
- */
-/*
- * Copyright (c) 2010 - 2017 Intel Corporation.
- * Len Brown <len.brown@intel.com>
- */
+
+ 
+ 
 
 #define _GNU_SOURCE
 #include MSRHEADER
@@ -81,22 +75,20 @@ size_t cpu_setsize;
 
 char *proc_stat = "/proc/stat";
 
-unsigned int has_epb;	/* MSR_IA32_ENERGY_PERF_BIAS */
-unsigned int has_hwp;	/* IA32_PM_ENABLE, IA32_HWP_CAPABILITIES */
-			/* IA32_HWP_REQUEST, IA32_HWP_STATUS */
-unsigned int has_hwp_notify;		/* IA32_HWP_INTERRUPT */
-unsigned int has_hwp_activity_window;	/* IA32_HWP_REQUEST[bits 41:32] */
-unsigned int has_hwp_epp;	/* IA32_HWP_REQUEST[bits 31:24] */
-unsigned int has_hwp_request_pkg;	/* IA32_HWP_REQUEST_PKG */
+unsigned int has_epb;	 
+unsigned int has_hwp;	 
+			 
+unsigned int has_hwp_notify;		 
+unsigned int has_hwp_activity_window;	 
+unsigned int has_hwp_epp;	 
+unsigned int has_hwp_request_pkg;	 
 
 unsigned int bdx_highest_ratio;
 
 #define PATH_TO_CPU "/sys/devices/system/cpu/"
 #define SYSFS_PATH_MAX 255
 
-/*
- * maintain compatibility with original implementation, but don't document it:
- */
+ 
 void usage(void)
 {
 	fprintf(stderr, "%s [options] [scope][field value]\n", progname);
@@ -113,11 +105,7 @@ void usage(void)
 	exit(1);
 }
 
-/*
- * If bdx_highest_ratio is set,
- * then we must translate between MSR format and simple ratio
- * used on the cmdline.
- */
+ 
 int ratio_2_msr_perf(int ratio)
 {
 	int msr_perf;
@@ -141,7 +129,7 @@ int msr_perf_2_ratio(int msr_perf)
 		return msr_perf;
 
 	d = (double)msr_perf * (double) bdx_highest_ratio / 255.0;
-	d = d + 0.5;	/* round */
+	d = d + 0.5;	 
 	ratio = (int)d;
 
 	if (debug)
@@ -176,10 +164,7 @@ int parse_cmdline_epb(int i)
 #define HWP_CAP_LOWEST 0
 #define HWP_CAP_HIGHEST 255
 
-/*
- * "performance" changes hwp_min to cap.highest
- * All others leave it at cap.lowest
- */
+ 
 int parse_cmdline_hwp_min(int i)
 {
 	update_hwp_min = 1;
@@ -195,10 +180,7 @@ int parse_cmdline_hwp_min(int i)
 	}
 	return i;
 }
-/*
- * "power" changes hwp_max to cap.lowest
- * All others leave it at cap.highest
- */
+ 
 int parse_cmdline_hwp_max(int i)
 {
 	update_hwp_max = 1;
@@ -214,10 +196,7 @@ int parse_cmdline_hwp_max(int i)
 	}
 	return i;
 }
-/*
- * for --hwp-des, all strings leave it in autonomous mode
- * If you want to change it, you need to explicitly pick a value
- */
+ 
 int parse_cmdline_hwp_desired(int i)
 {
 	update_hwp_desired = 1;
@@ -228,7 +207,7 @@ int parse_cmdline_hwp_desired(int i)
 	case OPTARG_BALANCE_PERFORMANCE:
 	case OPTARG_NORMAL:
 	case OPTARG_PERFORMANCE:
-		return 0;	/* autonomous */
+		return 0;	 
 	}
 	return i;
 }
@@ -421,7 +400,7 @@ void parse_cmdline_cpu(char *s)
 			if (*startp == 0)
 				break;
 		}
-		/* "--cpu even" is not documented */
+		 
 		if (strncmp(startp, "even", 4) == 0) {
 			for (cpu = 0; cpu <= max_cpu_num; cpu += 2) {
 				if (CPU_ISSET_S(cpu, cpu_setsize, cpu_present_set))
@@ -432,7 +411,7 @@ void parse_cmdline_cpu(char *s)
 				break;
 		}
 
-		/* "--cpu odd" is not documented */
+		 
 		if (strncmp(startp, "odd", 3) == 0) {
 			for (cpu = 1; cpu <= max_cpu_num; cpu += 2) {
 				if (CPU_ISSET_S(cpu, cpu_setsize, cpu_present_set))
@@ -589,7 +568,7 @@ void cmdline(int argc, char **argv)
 			req_update.hwp_epp = parse_cmdline_hwp_epp(parse_optarg_string(optarg));
 			break;
 		case 'r':
-			/* v1 used -r to specify read-only mode, now the default */
+			 
 			break;
 		case 't':
 			turbo_update_value = parse_cmdline_turbo(parse_optarg_string(optarg));
@@ -612,10 +591,7 @@ void cmdline(int argc, char **argv)
 			usage();
 		}
 	}
-	/*
-	 * v1 allowed "performance"|"normal"|"power" with no policy specifier
-	 * to update BIAS.  Continue to support that, even though no longer documented.
-	 */
+	 
 	if (argc == optind + 1)
 		new_epb = parse_cmdline_epb(parse_optarg_string(argv[optind]));
 
@@ -625,9 +601,7 @@ void cmdline(int argc, char **argv)
 	}
 }
 
-/*
- * Open a file, and exit on failure
- */
+ 
 FILE *fopen_or_die(const char *path, const char *mode)
 {
 	FILE *filep = fopen(path, "r");
@@ -643,7 +617,7 @@ void err_on_hypervisor(void)
 	char *flags, *hypervisor;
 	char *buffer;
 
-	/* On VMs /proc/cpuinfo contains a "flags" entry for hypervisor */
+	 
 	cpuinfo = fopen_or_die("/proc/cpuinfo", "ro");
 
 	buffer = malloc(4096);
@@ -940,22 +914,14 @@ int print_pkg_msrs(int pkg)
 	return 0;
 }
 
-/*
- * Assumption: All HWP systems have 100 MHz bus clock
- */
+ 
 int ratio_2_sysfs_khz(int ratio)
 {
-	int bclk_khz = 100 * 1000;	/* 100,000 KHz = 100 MHz */
+	int bclk_khz = 100 * 1000;	 
 
 	return ratio * bclk_khz;
 }
-/*
- * If HWP is enabled and cpufreq sysfs attribtes are present,
- * then update sysfs, so that it will not become
- * stale when we write to MSRs.
- * (intel_pstate's max_perf_pct and min_perf_pct will follow cpufreq,
- *  so we don't have to touch that.)
- */
+ 
 void update_cpufreq_scaling_freq(int is_max, int cpu, unsigned int ratio)
 {
 	char pathname[64];
@@ -984,11 +950,7 @@ void update_cpufreq_scaling_freq(int is_max, int cpu, unsigned int ratio)
 	fclose(fp);
 }
 
-/*
- * We update all sysfs before updating any MSRs because of
- * bugs in cpufreq/intel_pstate where the sysfs writes
- * for a CPU may change the min/max values on other CPUS.
- */
+ 
 
 int update_sysfs(int cpu)
 {
@@ -1012,18 +974,18 @@ int update_sysfs(int cpu)
 
 int verify_hwp_req_self_consistency(int cpu, struct msr_hwp_request *req)
 {
-	/* fail if min > max requested */
+	 
 	if (req->hwp_min > req->hwp_max) {
 		errx(1, "cpu%d: requested hwp-min %d > hwp_max %d",
 			cpu, req->hwp_min, req->hwp_max);
 	}
 
-	/* fail if desired > max requestd */
+	 
 	if (req->hwp_desired && (req->hwp_desired > req->hwp_max)) {
 		errx(1, "cpu%d: requested hwp-desired %d > hwp_max %d",
 			cpu, req->hwp_desired, req->hwp_max);
 	}
-	/* fail if desired < min requestd */
+	 
 	if (req->hwp_desired && (req->hwp_desired < req->hwp_min)) {
 		errx(1, "cpu%d: requested hwp-desired %d < requested hwp_min %d",
 			cpu, req->hwp_desired, req->hwp_min);
@@ -1206,11 +1168,7 @@ int update_cpu_msrs(int cpu)
 					printf("cpu%d: turbo ENABLE\n", cpu);
 			}
 		} else {
-			/*
-			 * if "turbo_is_enabled" were known to be describe this cpu
-			 * then we could use it here to skip redundant disable requests.
-			 * but cpu may be in a different package, so we always write.
-			 */
+			 
 			msr |= MSR_IA32_MISC_ENABLE_TURBO_DISABLE;
 			put_msr(cpu, MSR_IA32_MISC_ENABLE, msr);
 			if (verbose)
@@ -1272,10 +1230,7 @@ int mark_cpu_present(int cpu)
 	return 0;
 }
 
-/*
- * run func(cpu) on every cpu in /proc/stat
- * return max_cpu number
- */
+ 
 int for_all_proc_cpus(int (func)(int))
 {
 	FILE *fp;
@@ -1325,16 +1280,16 @@ void init_data_structures(void)
 	for_all_proc_cpus(mark_cpu_present);
 }
 
-/* clear has_hwp if it is not enable (or being enabled) */
+ 
 
 void verify_hwp_is_enabled(void)
 {
 	unsigned long long msr;
 
-	if (!has_hwp)	/* set in early_cpuid() */
+	if (!has_hwp)	 
 		return;
 
-	/* MSR_PM_ENABLE[1] == 1 if HWP is enabled and MSRs visible */
+	 
 	get_msr(base_cpu, MSR_PM_ENABLE, &msr);
 	if ((msr & 1) == 0) {
 		fprintf(stderr, "HWP can be enabled using '--hwp-enable'\n");
@@ -1348,20 +1303,20 @@ int req_update_bounds_check(void)
 	if (!hwp_update_enabled())
 		return 0;
 
-	/* fail if min > max requested */
+	 
 	if ((update_hwp_max && update_hwp_min) &&
 	    (req_update.hwp_min > req_update.hwp_max)) {
 		printf("hwp-min %d > hwp_max %d\n", req_update.hwp_min, req_update.hwp_max);
 		return -EINVAL;
 	}
 
-	/* fail if desired > max requestd */
+	 
 	if (req_update.hwp_desired && update_hwp_max &&
 	    (req_update.hwp_desired > req_update.hwp_max)) {
 		printf("hwp-desired cannot be greater than hwp_max\n");
 		return -EINVAL;
 	}
-	/* fail if desired < min requestd */
+	 
 	if (req_update.hwp_desired && update_hwp_min &&
 	    (req_update.hwp_desired < req_update.hwp_min)) {
 		printf("hwp-desired cannot be less than hwp_min\n");
@@ -1398,11 +1353,7 @@ static void get_cpuid_or_exit(unsigned int leaf,
 		errx(1, "Processor not supported\n");
 }
 
-/*
- * early_cpuid()
- * initialize turbo_is_enabled, has_hwp, has_epb
- * before cmdline is parsed
- */
+ 
 void early_cpuid(void)
 {
 	unsigned int eax, ebx, ecx, edx;
@@ -1428,11 +1379,7 @@ void early_cpuid(void)
 	has_epb = (ecx >> 3) & 1;
 }
 
-/*
- * parse_cpuid()
- * set
- * has_hwp, has_hwp_notify, has_hwp_activity_window, has_hwp_epp, has_hwp_request_pkg, has_epb
- */
+ 
 void parse_cpuid(void)
 {
 	unsigned int eax, ebx, ecx, edx, max_level;
@@ -1475,8 +1422,8 @@ void parse_cpuid(void)
 
 
 	get_cpuid_or_exit(0x6, &eax, &ebx, &ecx, &edx);
-	/* turbo_is_enabled already set */
-	/* has_hwp already set */
+	 
+	 
 	has_hwp_notify = eax & (1 << 8);
 	has_hwp_activity_window = eax & (1 << 9);
 	has_hwp_epp = eax & (1 << 10);
@@ -1485,7 +1432,7 @@ void parse_cpuid(void)
 	if (!has_hwp_request_pkg && update_hwp_use_pkg)
 		errx(1, "--hwp-use-pkg is not available on this hardware");
 
-	/* has_epb already set */
+	 
 
 	if (debug)
 		fprintf(stderr,
@@ -1498,7 +1445,7 @@ void parse_cpuid(void)
 			has_hwp_request_pkg ? "" : "No-",
 			has_epb ? "" : "No-");
 
-	return;	/* success */
+	return;	 
 }
 
 int main(int argc, char **argv)
@@ -1507,7 +1454,7 @@ int main(int argc, char **argv)
 	probe_dev_msr();
 	init_data_structures();
 
-	early_cpuid();	/* initial cpuid parse before cmdline */
+	early_cpuid();	 
 
 	cmdline(argc, argv);
 
@@ -1516,24 +1463,21 @@ int main(int argc, char **argv)
 
 	parse_cpuid();
 
-	 /* If CPU-set and PKG-set are not initialized, default to all CPUs */
+	  
 	if ((cpu_selected_set == 0) && (pkg_selected_set == 0))
 		cpu_selected_set = cpu_present_set;
 
-	/*
-	 * If HWP is being enabled, do it now, so that subsequent operations
-	 * that access HWP registers can work.
-	 */
+	 
 	if (update_hwp_enable)
 		for_all_cpus_in_set(cpu_setsize, cpu_selected_set, enable_hwp_on_cpu);
 
-	/* If HWP present, but disabled, warn and ignore from here forward */
+	 
 	verify_hwp_is_enabled();
 
 	if (req_update_bounds_check())
 		return -EINVAL;
 
-	/* display information only, no updates to settings */
+	 
 	if (!update_epb && !update_turbo && !hwp_update_enabled()) {
 		if (cpu_selected_set)
 			for_all_cpus_in_set(cpu_setsize, cpu_selected_set, print_cpu_msrs);
@@ -1548,7 +1492,7 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	/* update CPU set */
+	 
 	if (cpu_selected_set) {
 		for_all_cpus_in_set(cpu_setsize, cpu_selected_set, update_sysfs);
 		for_all_cpus_in_set(cpu_setsize, cpu_selected_set, update_cpu_msrs);

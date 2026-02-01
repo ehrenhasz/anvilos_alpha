@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Microchip AXI PCIe Bridge host controller driver
- *
- * Copyright (c) 2018 - 2020 Microchip Corporation. All rights reserved.
- *
- * Author: Daire McNamara <daire.mcnamara@microchip.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -20,17 +14,17 @@
 
 #include "../pci.h"
 
-/* Number of MSI IRQs */
+ 
 #define MC_MAX_NUM_MSI_IRQS			32
 
-/* PCIe Bridge Phy and Controller Phy offsets */
+ 
 #define MC_PCIE1_BRIDGE_ADDR			0x00008000u
 #define MC_PCIE1_CTRL_ADDR			0x0000a000u
 
 #define MC_PCIE_BRIDGE_ADDR			(MC_PCIE1_BRIDGE_ADDR)
 #define MC_PCIE_CTRL_ADDR			(MC_PCIE1_CTRL_ADDR)
 
-/* PCIe Bridge Phy Regs */
+ 
 #define PCIE_PCI_IRQ_DW0			0xa8
 #define  MSIX_CAP_MASK				BIT(31)
 #define  NUM_MSI_MSGS_MASK			GENMASK(6, 4)
@@ -86,7 +80,7 @@
 #define IMSI_ADDR				0x190
 #define ISTATUS_MSI				0x194
 
-/* PCIe Master table init defines */
+ 
 #define ATR0_PCIE_WIN0_SRCADDR_PARAM		0x600u
 #define  ATR0_PCIE_ATR_SIZE			0x25
 #define  ATR0_PCIE_ATR_SIZE_SHIFT		1
@@ -95,7 +89,7 @@
 #define ATR0_PCIE_WIN0_TRSL_ADDR_UDW		0x60cu
 #define ATR0_PCIE_WIN0_TRSL_PARAM		0x610u
 
-/* PCIe AXI slave table init defines */
+ 
 #define ATR0_AXI4_SLV0_SRCADDR_PARAM		0x800u
 #define  ATR_SIZE_SHIFT				1
 #define  ATR_IMPL_ENABLE			1
@@ -108,7 +102,7 @@
 
 #define ATR_ENTRY_SIZE				32
 
-/* PCIe Controller Phy Regs */
+ 
 #define SEC_ERROR_EVENT_CNT			0x20
 #define DED_ERROR_EVENT_CNT			0x24
 #define SEC_ERROR_INT				0x28
@@ -160,10 +154,10 @@
 #define  PCIE_EVENT_INT_ENB_SHIFT		16
 #define  NUM_PCIE_EVENTS			(3)
 
-/* PCIe Config space MSI capability structure */
+ 
 #define MC_MSI_CAP_CTRL_OFFSET			0xe0u
 
-/* Events */
+ 
 #define EVENT_PCIE_L2_EXIT			0
 #define EVENT_PCIE_HOTRST_EXIT			1
 #define EVENT_PCIE_DLUP_EXIT			2
@@ -256,7 +250,7 @@ struct event_map {
 };
 
 struct mc_msi {
-	struct mutex lock;		/* Protect used bitmap */
+	struct mutex lock;		 
 	struct irq_domain *msi_domain;
 	struct irq_domain *dev_domain;
 	u32 num_vectors;
@@ -392,17 +386,17 @@ static void mc_pcie_enable_msi(struct mc_pcie *port, void __iomem *ecam)
 	u16 reg;
 	u8 queue_size;
 
-	/* Fixup MSI enable flag */
+	 
 	reg = readw_relaxed(ecam + MC_MSI_CAP_CTRL_OFFSET + PCI_MSI_FLAGS);
 	reg |= PCI_MSI_FLAGS_ENABLE;
 	writew_relaxed(reg, ecam + MC_MSI_CAP_CTRL_OFFSET + PCI_MSI_FLAGS);
 
-	/* Fixup PCI MSI queue flags */
+	 
 	queue_size = FIELD_GET(PCI_MSI_FLAGS_QMASK, reg);
 	reg |= FIELD_PREP(PCI_MSI_FLAGS_QSIZE, queue_size);
 	writew_relaxed(reg, ecam + MC_MSI_CAP_CTRL_OFFSET + PCI_MSI_FLAGS);
 
-	/* Fixup MSI addr fields */
+	 
 	writel_relaxed(lower_32_bits(msi->vector_phy),
 		       ecam + MC_MSI_CAP_CTRL_OFFSET + PCI_MSI_ADDRESS_LO);
 	writel_relaxed(upper_32_bits(msi->vector_phy),
@@ -879,10 +873,7 @@ static int mc_pcie_init_clks(struct device *dev)
 	int i;
 	struct clk *fic;
 
-	/*
-	 * PCIe may be clocked via Fabric Interface using between 1 and 4
-	 * clocks. Scan DT for clocks and enable them if present
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(poss_clks); i++) {
 		fic = mc_pcie_init_clk(dev, poss_clks[i]);
 		if (IS_ERR(fic))
@@ -898,7 +889,7 @@ static int mc_pcie_init_irq_domains(struct mc_pcie *port)
 	struct device_node *node = dev->of_node;
 	struct device_node *pcie_intc_node;
 
-	/* Setup INTx */
+	 
 	pcie_intc_node = of_get_next_child(node, NULL);
 	if (!pcie_intc_node) {
 		dev_err(dev, "failed to find PCIe Intc node\n");
@@ -1016,29 +1007,29 @@ static void mc_disable_interrupts(struct mc_pcie *port)
 	void __iomem *ctrl_base_addr = port->axi_base_addr + MC_PCIE_CTRL_ADDR;
 	u32 val;
 
-	/* Ensure ECC bypass is enabled */
+	 
 	val = ECC_CONTROL_TX_RAM_ECC_BYPASS |
 	      ECC_CONTROL_RX_RAM_ECC_BYPASS |
 	      ECC_CONTROL_PCIE2AXI_RAM_ECC_BYPASS |
 	      ECC_CONTROL_AXI2PCIE_RAM_ECC_BYPASS;
 	writel_relaxed(val, ctrl_base_addr + ECC_CONTROL);
 
-	/* Disable SEC errors and clear any outstanding */
+	 
 	writel_relaxed(SEC_ERROR_INT_ALL_RAM_SEC_ERR_INT, ctrl_base_addr +
 		       SEC_ERROR_INT_MASK);
 	mc_clear_secs(port);
 
-	/* Disable DED errors and clear any outstanding */
+	 
 	writel_relaxed(DED_ERROR_INT_ALL_RAM_DED_ERR_INT, ctrl_base_addr +
 		       DED_ERROR_INT_MASK);
 	mc_clear_deds(port);
 
-	/* Disable local interrupts and clear any outstanding */
+	 
 	writel_relaxed(0, bridge_base_addr + IMASK_LOCAL);
 	writel_relaxed(GENMASK(31, 0), bridge_base_addr + ISTATUS_LOCAL);
 	writel_relaxed(GENMASK(31, 0), bridge_base_addr + ISTATUS_MSI);
 
-	/* Disable PCIe events and clear any outstanding */
+	 
 	val = PCIE_EVENT_INT_L2_EXIT_INT |
 	      PCIE_EVENT_INT_HOTRST_EXIT_INT |
 	      PCIE_EVENT_INT_DLUP_EXIT_INT |
@@ -1047,7 +1038,7 @@ static void mc_disable_interrupts(struct mc_pcie *port)
 	      PCIE_EVENT_INT_DLUP_EXIT_INT_MASK;
 	writel_relaxed(val, ctrl_base_addr + PCIE_EVENT_INT);
 
-	/* Disable host interrupts and clear any outstanding */
+	 
 	writel_relaxed(0, bridge_base_addr + IMASK_HOST);
 	writel_relaxed(GENMASK(31, 0), bridge_base_addr + ISTATUS_HOST);
 }
@@ -1091,7 +1082,7 @@ static int mc_init_interrupts(struct platform_device *pdev, struct mc_pcie *port
 		return -ENXIO;
 	}
 
-	/* Plug the INTx chained handler */
+	 
 	irq_set_chained_handler_and_data(intx_irq, mc_handle_intx, port);
 
 	msi_irq = irq_create_mapping(port->event_domain,
@@ -1099,10 +1090,10 @@ static int mc_init_interrupts(struct platform_device *pdev, struct mc_pcie *port
 	if (!msi_irq)
 		return -ENXIO;
 
-	/* Plug the MSI chained handler */
+	 
 	irq_set_chained_handler_and_data(msi_irq, mc_handle_msi, port);
 
-	/* Plug the main event chained handler */
+	 
 	irq_set_chained_handler_and_data(irq, mc_handle_event, port);
 
 	return 0;
@@ -1116,20 +1107,20 @@ static int mc_platform_init(struct pci_config_window *cfg)
 		port->axi_base_addr + MC_PCIE_BRIDGE_ADDR;
 	int ret;
 
-	/* Configure address translation table 0 for PCIe config space */
+	 
 	mc_pcie_setup_window(bridge_base_addr, 0, cfg->res.start,
 			     cfg->res.start,
 			     resource_size(&cfg->res));
 
-	/* Need some fixups in config space */
+	 
 	mc_pcie_enable_msi(port, cfg->win);
 
-	/* Configure non-config space outbound ranges */
+	 
 	ret = mc_pcie_setup_windows(pdev, port);
 	if (ret)
 		return ret;
 
-	/* Address translation is up; safe to enable interrupts */
+	 
 	ret = mc_init_interrupts(pdev, port);
 	if (ret)
 		return ret;
@@ -1158,19 +1149,19 @@ static int mc_host_probe(struct platform_device *pdev)
 
 	bridge_base_addr = port->axi_base_addr + MC_PCIE_BRIDGE_ADDR;
 
-	/* Allow enabling MSI by disabling MSI-X */
+	 
 	val = readl(bridge_base_addr + PCIE_PCI_IRQ_DW0);
 	val &= ~MSIX_CAP_MASK;
 	writel(val, bridge_base_addr + PCIE_PCI_IRQ_DW0);
 
-	/* Pick num vectors from bitfile programmed onto FPGA fabric */
+	 
 	val = readl(bridge_base_addr + PCIE_PCI_IRQ_DW0);
 	val &= NUM_MSI_MSGS_MASK;
 	val >>= NUM_MSI_MSGS_SHIFT;
 
 	port->msi.num_vectors = 1 << val;
 
-	/* Pick vector address from design */
+	 
 	port->msi.vector_phy = readl_relaxed(bridge_base_addr + IMSI_ADDR);
 
 	ret = mc_pcie_init_clks(dev);

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com
- *  Author: Peter Ujfalusi <peter.ujfalusi@ti.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -26,7 +23,7 @@ static const struct soc_device_attribute k3_soc_devices[] = {
 	{ .family = "AM62X", .data = &am62_ep_map },
 	{ .family = "AM62AX", .data = &am62a_ep_map },
 	{ .family = "J784S4", .data = &j784s4_ep_map },
-	{ /* sentinel */ }
+	{   }
 };
 
 struct psil_endpoint_config *psil_get_ep_config(u32 thread_id)
@@ -50,7 +47,7 @@ struct psil_endpoint_config *psil_get_ep_config(u32 thread_id)
 	mutex_unlock(&ep_map_mutex);
 
 	if (thread_id & K3_PSIL_DST_THREAD_ID_OFFSET && soc_ep_map->dst) {
-		/* check in destination thread map */
+		 
 		for (i = 0; i < soc_ep_map->dst_count; i++) {
 			if (soc_ep_map->dst[i].thread_id == thread_id)
 				return &soc_ep_map->dst[i].ep_config;

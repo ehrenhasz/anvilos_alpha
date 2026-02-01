@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * PSCI CPU idle driver.
- *
- * Copyright (C) 2019 ARM Ltd.
- * Author: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
- */
+
+ 
 
 #define pr_fmt(fmt) "CPUidle PSCI: " fmt
 
@@ -62,7 +57,7 @@ static __cpuidle int __psci_enter_domain_idle_state(struct cpuidle_device *dev,
 	if (ret)
 		return -1;
 
-	/* Do runtime PM to manage a hierarchical CPU toplogy. */
+	 
 	if (s2idle)
 		dev_pm_genpd_suspend(pd_dev);
 	else
@@ -81,7 +76,7 @@ static __cpuidle int __psci_enter_domain_idle_state(struct cpuidle_device *dev,
 
 	cpu_pm_exit();
 
-	/* Clear the domain state to start fresh when back from idle. */
+	 
 	psci_set_domain_state(0);
 	return ret;
 }
@@ -115,7 +110,7 @@ static int psci_idle_cpuhp_down(unsigned int cpu)
 
 	if (pd_dev) {
 		pm_runtime_put_sync(pd_dev);
-		/* Clear domain state to start fresh at next online. */
+		 
 		psci_set_domain_state(0);
 	}
 
@@ -136,11 +131,11 @@ static void psci_idle_syscore_switch(bool suspend)
 		} else if (dev) {
 			dev_pm_genpd_resume(dev);
 
-			/* Account for userspace having offlined a CPU. */
+			 
 			if (pm_runtime_status_suspended(dev))
 				pm_runtime_set_active(dev);
 
-			/* Clear domain state to re-start fresh. */
+			 
 			if (!cleared) {
 				psci_set_domain_state(0);
 				cleared = true;
@@ -217,7 +212,7 @@ static int psci_dt_cpu_init_topology(struct cpuidle_driver *drv,
 				     struct psci_cpuidle_data *data,
 				     unsigned int state_count, int cpu)
 {
-	/* Currently limit the hierarchical topology to be used in OSI mode. */
+	 
 	if (!psci_has_osi_support())
 		return 0;
 
@@ -228,11 +223,7 @@ static int psci_dt_cpu_init_topology(struct cpuidle_driver *drv,
 	if (IS_ERR_OR_NULL(data->dev))
 		return PTR_ERR_OR_ZERO(data->dev);
 
-	/*
-	 * Using the deepest state for the CPU to trigger a potential selection
-	 * of a shared state for the domain, assumes the domain states are all
-	 * deeper states.
-	 */
+	 
 	drv->states[state_count - 1].flags |= CPUIDLE_FLAG_RCU_IDLE;
 	drv->states[state_count - 1].enter = psci_enter_domain_idle_state;
 	drv->states[state_count - 1].enter_s2idle = psci_enter_s2idle_domain_idle_state;
@@ -250,7 +241,7 @@ static int psci_dt_cpu_init_idle(struct device *dev, struct cpuidle_driver *drv,
 	struct device_node *state_node;
 	struct psci_cpuidle_data *data = per_cpu_ptr(&psci_cpuidle_data, cpu);
 
-	state_count++; /* Add WFI state too */
+	state_count++;  
 	psci_states = devm_kcalloc(dev, state_count, sizeof(*psci_states),
 				   GFP_KERNEL);
 	if (!psci_states)
@@ -273,12 +264,12 @@ static int psci_dt_cpu_init_idle(struct device *dev, struct cpuidle_driver *drv,
 	if (i != state_count)
 		return -ENODEV;
 
-	/* Initialize optional data, used for the hierarchical topology. */
+	 
 	ret = psci_dt_cpu_init_topology(drv, data, state_count, cpu);
 	if (ret < 0)
 		return ret;
 
-	/* Idle states parsed correctly, store them in the per-cpu struct. */
+	 
 	data->psci_states = psci_states;
 	return 0;
 }
@@ -289,10 +280,7 @@ static int psci_cpu_init_idle(struct device *dev, struct cpuidle_driver *drv,
 	struct device_node *cpu_node;
 	int ret;
 
-	/*
-	 * If the PSCI cpu_suspend function hook has not been initialized
-	 * idle states must not be enabled, so bail out
-	 */
+	 
 	if (!psci_ops.cpu_suspend)
 		return -EOPNOTSUPP;
 
@@ -326,10 +314,7 @@ static int psci_idle_init_cpu(struct device *dev, int cpu)
 	if (!cpu_node)
 		return -ENODEV;
 
-	/*
-	 * Check whether the enable-method for the cpu is PSCI, fail
-	 * if it is not.
-	 */
+	 
 	enable_method = of_get_property(cpu_node, "enable-method", NULL);
 	if (!enable_method || (strcmp(enable_method, "psci")))
 		ret = -ENODEV;
@@ -346,10 +331,7 @@ static int psci_idle_init_cpu(struct device *dev, int cpu)
 	drv->owner = THIS_MODULE;
 	drv->cpumask = (struct cpumask *)cpumask_of(cpu);
 
-	/*
-	 * PSCI idle states relies on architectural WFI to be represented as
-	 * state index 0.
-	 */
+	 
 	drv->states[0].enter = psci_enter_idle_state;
 	drv->states[0].exit_latency = 1;
 	drv->states[0].target_residency = 1;
@@ -357,20 +339,12 @@ static int psci_idle_init_cpu(struct device *dev, int cpu)
 	strcpy(drv->states[0].name, "WFI");
 	strcpy(drv->states[0].desc, "ARM WFI");
 
-	/*
-	 * If no DT idle states are detected (ret == 0) let the driver
-	 * initialization fail accordingly since there is no reason to
-	 * initialize the idle driver if only wfi is supported, the
-	 * default archictectural back-end already executes wfi
-	 * on idle entry.
-	 */
+	 
 	ret = dt_init_idle_driver(drv, psci_idle_state_match, 1);
 	if (ret <= 0)
 		return ret ? : -ENODEV;
 
-	/*
-	 * Initialize PSCI idle states.
-	 */
+	 
 	ret = psci_cpu_init_idle(dev, drv, cpu, ret);
 	if (ret) {
 		pr_err("CPU %d failed to PSCI idle\n", cpu);
@@ -389,13 +363,7 @@ deinit:
 	return ret;
 }
 
-/*
- * psci_idle_probe - Initializes PSCI cpuidle driver
- *
- * Initializes PSCI cpuidle driver for all CPUs, if any CPU fails
- * to register cpuidle driver then rollback to cancel all CPUs
- * registration.
- */
+ 
 static int psci_cpuidle_probe(struct platform_device *pdev)
 {
 	int cpu, ret;

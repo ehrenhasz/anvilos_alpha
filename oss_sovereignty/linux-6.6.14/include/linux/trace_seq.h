@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_TRACE_SEQ_H
 #define _LINUX_TRACE_SEQ_H
 
@@ -6,10 +6,7 @@
 
 #include <asm/page.h>
 
-/*
- * Trace sequences are used to allow a function to call several other functions
- * to create a string of data to use (up to a max of PAGE_SIZE).
- */
+ 
 
 struct trace_seq {
 	char			buffer[PAGE_SIZE];
@@ -24,54 +21,26 @@ trace_seq_init(struct trace_seq *s)
 	s->full = 0;
 }
 
-/**
- * trace_seq_used - amount of actual data written to buffer
- * @s: trace sequence descriptor
- *
- * Returns the amount of data written to the buffer.
- *
- * IMPORTANT!
- *
- * Use this instead of @s->seq.len if you need to pass the amount
- * of data from the buffer to another buffer (userspace, or what not).
- * The @s->seq.len on overflow is bigger than the buffer size and
- * using it can cause access to undefined memory.
- */
+ 
 static inline int trace_seq_used(struct trace_seq *s)
 {
 	return seq_buf_used(&s->seq);
 }
 
-/**
- * trace_seq_buffer_ptr - return pointer to next location in buffer
- * @s: trace sequence descriptor
- *
- * Returns the pointer to the buffer where the next write to
- * the buffer will happen. This is useful to save the location
- * that is about to be written to and then return the result
- * of that write.
- */
+ 
 static inline char *
 trace_seq_buffer_ptr(struct trace_seq *s)
 {
 	return s->buffer + seq_buf_used(&s->seq);
 }
 
-/**
- * trace_seq_has_overflowed - return true if the trace_seq took too much
- * @s: trace sequence descriptor
- *
- * Returns true if too much data was added to the trace_seq and it is
- * now full and will not take anymore.
- */
+ 
 static inline bool trace_seq_has_overflowed(struct trace_seq *s)
 {
 	return s->full || seq_buf_has_overflowed(&s->seq);
 }
 
-/*
- * Currently only defined when tracing is enabled.
- */
+ 
 #ifdef CONFIG_TRACING
 extern __printf(2, 3)
 void trace_seq_printf(struct trace_seq *s, const char *fmt, ...);
@@ -97,7 +66,7 @@ extern int trace_seq_hex_dump(struct trace_seq *s, const char *prefix_str,
 			      const void *buf, size_t len, bool ascii);
 char *trace_seq_acquire(struct trace_seq *s, unsigned int len);
 
-#else /* CONFIG_TRACING */
+#else  
 static inline __printf(2, 3)
 void trace_seq_printf(struct trace_seq *s, const char *fmt, ...)
 {
@@ -144,6 +113,6 @@ static inline char *trace_seq_acquire(struct trace_seq *s, unsigned int len)
 {
 	return NULL;
 }
-#endif /* CONFIG_TRACING */
+#endif  
 
-#endif /* _LINUX_TRACE_SEQ_H */
+#endif  

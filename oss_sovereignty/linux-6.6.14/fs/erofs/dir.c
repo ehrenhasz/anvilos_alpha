@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017-2018 HUAWEI, Inc.
- *             https://www.huawei.com/
- * Copyright (C) 2022, Alibaba Cloud
- */
+
+ 
 #include "internal.h"
 
 static int erofs_fill_dentries(struct inode *dir, struct dir_context *ctx,
@@ -22,13 +18,13 @@ static int erofs_fill_dentries(struct inode *dir, struct dir_context *ctx,
 		nameoff = le16_to_cpu(de->nameoff);
 		de_name = (char *)dentry_blk + nameoff;
 
-		/* the last dirent in the block? */
+		 
 		if (de + 1 >= end)
 			de_namelen = strnlen(de_name, maxsize - nameoff);
 		else
 			de_namelen = le16_to_cpu(de[1].nameoff) - nameoff;
 
-		/* a corrupted entry is found */
+		 
 		if (nameoff + de_namelen > maxsize ||
 		    de_namelen > EROFS_NAME_LEN) {
 			erofs_err(dir->i_sb, "bogus dirent @ nid %llu",
@@ -81,7 +77,7 @@ static int erofs_readdir(struct file *f, struct dir_context *ctx)
 
 		maxsize = min_t(unsigned int, dirsize - ctx->pos + ofs, bsz);
 
-		/* search dirents at the arbitrary position */
+		 
 		if (initial) {
 			initial = false;
 

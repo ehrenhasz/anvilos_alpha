@@ -1,9 +1,4 @@
-/* Copyright (c) 2017 Facebook
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- */
+ 
 #include <stddef.h>
 #include <stdbool.h>
 #include <string.h>
@@ -26,9 +21,7 @@ static inline __u32 rol32(__u32 word, unsigned int shift)
 	return (word << shift) | (word >> ((-shift) & 31));
 }
 
-/* copy paste of jhash from kernel sources to make sure llvm
- * can compile it into valid sequence of bpf instructions
- */
+ 
 #define __jhash_mix(a, b, c)			\
 {						\
 	a -= c;  a ^= rol32(c, 4);  c += b;	\
@@ -83,7 +76,7 @@ static inline u32 jhash(const void *key, u32 length, u32 initval)
 	case 2:  a += (u32)k[1]<<8;
 	case 1:  a += k[0];
 		 __jhash_final(a, b, c);
-	case 0: /* Nothing left to add */
+	case 0:  
 		break;
 	}
 

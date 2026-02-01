@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Ingenic JZ47xx KMS driver
-//
-// Copyright (C) 2019, Paul Cercueil <paul@crapouillou.net>
+
+
+
+
+
 
 #include "ingenic-drm.h"
 
@@ -50,7 +50,7 @@ struct ingenic_dma_hwdesc {
 	u32 addr;
 	u32 id;
 	u32 cmd;
-	/* extended hw descriptor for jz4780 */
+	 
 	u32 offsize;
 	u32 pagewidth;
 	u32 cpos;
@@ -82,11 +82,7 @@ struct ingenic_drm_private_state {
 
 struct ingenic_drm {
 	struct drm_device drm;
-	/*
-	 * f1 (aka. foreground1) is our primary plane, on top of which
-	 * f0 (aka. foreground0) can be overlayed. Z-order is fixed in
-	 * hardware and cannot be changed.
-	 */
+	 
 	struct drm_plane f0, f1, *ipu_plane;
 	struct drm_crtc crtc;
 
@@ -101,17 +97,7 @@ struct ingenic_drm {
 	bool panel_is_sharp;
 	bool no_vblank;
 
-	/*
-	 * clk_mutex is used to synchronize the pixel clock rate update with
-	 * the VBLANK. When the pixel clock's parent clock needs to be updated,
-	 * clock_nb's notifier function will lock the mutex, then wait until the
-	 * next VBLANK. At that point, the parent clock's rate can be updated,
-	 * and the mutex is then unlocked. If an atomic commit happens in the
-	 * meantime, it will lock on the mutex, effectively waiting until the
-	 * clock update process finishes. Finally, the pixel clock's rate will
-	 * be recomputed when the mutex has been released, in the pending atomic
-	 * commit, or a future one.
-	 */
+	 
 	struct mutex clk_mutex;
 	bool update_clk_rate;
 	struct notifier_block clock_nb;
@@ -250,7 +236,7 @@ static void ingenic_drm_crtc_atomic_enable(struct drm_crtc *crtc,
 	if (WARN_ON(IS_ERR(priv_state)))
 		return;
 
-	/* Set addresses of our DMA descriptor chains */
+	 
 	next_id = priv_state->use_palette ? HWDESC_PALETTE : 0;
 	regmap_write(priv->map, JZ_REG_LCD_DA0, dma_hwdesc_addr(priv, next_id));
 	regmap_write(priv->map, JZ_REG_LCD_DA1, dma_hwdesc_addr(priv, 1));
@@ -323,11 +309,7 @@ static void ingenic_drm_crtc_update_timings(struct ingenic_drm *priv,
 			   JZ_LCD_CTRL_OFUP | JZ_LCD_CTRL_BURST_MASK,
 			   JZ_LCD_CTRL_OFUP | priv->soc_info->max_burst);
 
-	/*
-	 * IPU restart - specify how much time the LCDC will wait before
-	 * transferring a new frame from the IPU. The value is the one
-	 * suggested in the programming manual.
-	 */
+	 
 	regmap_write(priv->map, JZ_REG_LCD_IPUR, JZ_LCD_IPUR_IPUREN |
 		     (ht * vpe / 3) << JZ_LCD_IPUR_IPUR_LSB);
 }
@@ -363,14 +345,14 @@ static int ingenic_drm_crtc_atomic_check(struct drm_crtc *crtc,
 			if (IS_ERR(ipu_state))
 				return PTR_ERR(ipu_state);
 
-			/* IPU and F1 planes cannot be enabled at the same time. */
+			 
 			if (f1_state->fb && ipu_state->fb) {
 				dev_dbg(priv->dev, "Cannot enable both F1 and IPU\n");
 				return -EINVAL;
 			}
 		}
 
-		/* If all the planes are disabled, we won't get a VBLANK IRQ */
+		 
 		priv->no_vblank = !f1_state->fb && !f0_state->fb &&
 				  !(ipu_state && ipu_state->fb);
 	}
@@ -406,10 +388,7 @@ static void ingenic_drm_crtc_atomic_begin(struct drm_crtc *crtc,
 
 	if (priv->soc_info->has_osd &&
 	    drm_atomic_crtc_needs_modeset(crtc_state)) {
-		/*
-		 * If IPU plane is enabled, enable IPU as source for the F1
-		 * plane; otherwise use regular DMA.
-		 */
+		 
 		if (priv->ipu_plane && priv->ipu_plane->state->fb)
 			ctrl |= JZ_LCD_OSDCTRL_IPU;
 
@@ -487,10 +466,7 @@ static int ingenic_drm_plane_atomic_check(struct drm_plane *plane,
 	if (ret)
 		return ret;
 
-	/*
-	 * If OSD is not available, check that the width/height match.
-	 * Note that state->src_* are in 16.16 fixed-point format.
-	 */
+	 
 	if (!priv->soc_info->has_osd &&
 	    (new_plane_state->src_x != 0 ||
 	     (new_plane_state->src_w >> 16) != new_plane_state->crtc_w ||
@@ -500,10 +476,7 @@ static int ingenic_drm_plane_atomic_check(struct drm_plane *plane,
 	priv_state->use_palette = new_plane_state->fb &&
 		new_plane_state->fb->format->format == DRM_FORMAT_C8;
 
-	/*
-	 * Require full modeset if enabling or disabling a plane, or changing
-	 * its position, size or depth.
-	 */
+	 
 	if (priv->soc_info->has_osd &&
 	    (!old_plane_state->fb || !new_plane_state->fb ||
 	     old_plane_state->crtc_x != new_plane_state->crtc_x ||
@@ -689,7 +662,7 @@ static void ingenic_drm_plane_atomic_update(struct drm_plane *plane,
 		if (priv->soc_info->use_extended_hwdesc) {
 			hwdesc->cmd |= JZ_LCD_CMD_FRM_ENABLE;
 
-			/* Extended 8-byte descriptor */
+			 
 			hwdesc->cpos = 0;
 			hwdesc->offsize = 0;
 			hwdesc->pagewidth = 0;
@@ -814,12 +787,7 @@ static int ingenic_drm_bridge_atomic_check(struct drm_bridge *bridge,
 	switch (bridge_state->output_bus_cfg.format) {
 	case MEDIA_BUS_FMT_RGB888_3X8:
 	case MEDIA_BUS_FMT_RGB888_3X8_DELTA:
-		/*
-		 * The LCD controller expects timing values in dot-clock ticks,
-		 * which is 3x the timing values in pixels when using a 3x8-bit
-		 * display; but it will count the display area size in pixels
-		 * either way. Go figure.
-		 */
+		 
 		mode->crtc_clock = mode->clock * 3;
 		mode->crtc_hsync_start = mode->hsync_start * 3 - mode->hdisplay * 2;
 		mode->crtc_hsync_end = mode->hsync_end * 3 - mode->hdisplay * 2;
@@ -1179,13 +1147,13 @@ static int ingenic_drm_bind(struct device *dev, bool has_components)
 	if (!priv->dma_hwdescs)
 		return -ENOMEM;
 
-	/* Configure DMA hwdesc for foreground0 plane */
+	 
 	ingenic_drm_configure_hwdesc_plane(priv, 0);
 
-	/* Configure DMA hwdesc for foreground1 plane */
+	 
 	ingenic_drm_configure_hwdesc_plane(priv, 1);
 
-	/* Configure DMA hwdesc for palette */
+	 
 	ingenic_drm_configure_hwdesc_palette(priv);
 
 	primary = priv->soc_info->has_osd ? &priv->f1 : &priv->f0;
@@ -1260,7 +1228,7 @@ static int ingenic_drm_bind(struct device *dev, bool has_components)
 		ret = drm_of_find_panel_or_bridge(dev->of_node, 0, i, &panel, &bridge);
 		if (ret) {
 			if (ret == -ENODEV)
-				break; /* we're done */
+				break;  
 			if (ret != -EPROBE_DEFER)
 				dev_err(dev, "Failed to get bridge handle\n");
 			return ret;
@@ -1334,11 +1302,7 @@ static int ingenic_drm_bind(struct device *dev, bool has_components)
 		parent_clk = clk_get_parent(priv->lcd_clk);
 		parent_rate = clk_get_rate(parent_clk);
 
-		/* LCD Device clock must be 3x the pixel clock for STN panels,
-		 * or 1.5x the pixel clock for TFT panels. To avoid having to
-		 * check for the LCD device clock everytime we do a mode change,
-		 * we set the LCD device clock to the highest rate possible.
-		 */
+		 
 		ret = clk_set_rate(priv->lcd_clk, parent_rate);
 		if (ret) {
 			dev_err(dev, "Unable to set LCD clock rate\n");
@@ -1352,7 +1316,7 @@ static int ingenic_drm_bind(struct device *dev, bool has_components)
 		}
 	}
 
-	/* Enable OSD if available */
+	 
 	if (soc_info->has_osd)
 		osdc |= JZ_LCD_OSDC_OSDEN;
 	if (soc_info->has_alpha)
@@ -1438,7 +1402,7 @@ static int ingenic_drm_probe(struct platform_device *pdev)
 	if (!IS_ENABLED(CONFIG_DRM_INGENIC_IPU))
 		return ingenic_drm_bind(dev, false);
 
-	/* IPU is at port address 8 */
+	 
 	np = of_graph_get_remote_node(dev->of_node, 8, 0);
 	if (!np)
 		return ingenic_drm_bind(dev, false);
@@ -1523,7 +1487,7 @@ static const struct jz_soc_info jz4740_soc_info = {
 	.max_burst = JZ_LCD_CTRL_BURST_16,
 	.formats_f1 = jz4740_formats,
 	.num_formats_f1 = ARRAY_SIZE(jz4740_formats),
-	/* JZ4740 has only one plane */
+	 
 };
 
 static const struct jz_soc_info jz4725b_soc_info = {
@@ -1583,7 +1547,7 @@ static const struct jz_soc_info jz4780_soc_info = {
 	.has_osd = true,
 	.has_alpha = true,
 	.use_extended_hwdesc = true,
-	.plane_f0_not_working = true,	/* REVISIT */
+	.plane_f0_not_working = true,	 
 	.max_width = 4096,
 	.max_height = 2048,
 	.max_burst = JZ_LCD_CTRL_BURST_64,
@@ -1600,7 +1564,7 @@ static const struct of_device_id ingenic_drm_of_match[] = {
 	{ .compatible = "ingenic,jz4760b-lcd", .data = &jz4760b_soc_info },
 	{ .compatible = "ingenic,jz4770-lcd", .data = &jz4770_soc_info },
 	{ .compatible = "ingenic,jz4780-lcd", .data = &jz4780_soc_info },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, ingenic_drm_of_match);
 

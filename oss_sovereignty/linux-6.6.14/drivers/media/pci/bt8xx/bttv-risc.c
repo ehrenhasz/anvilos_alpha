@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
 
-    bttv-risc.c  --  interfaces to other kernel modules
-
-    bttv risc code handling
-	- memory management
-	- generation
-
-    (c) 2000-2003 Gerd Knorr <kraxel@bytesex.org>
-
-
-*/
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -28,8 +17,8 @@
 
 #define VCR_HACK_LINES 4
 
-/* ---------------------------------------------------------- */
-/* risc code generators                                       */
+ 
+ 
 
 int
 bttv_risc_packed(struct bttv *btv, struct btcx_riscmem *risc,
@@ -43,10 +32,7 @@ bttv_risc_packed(struct bttv *btv, struct btcx_riscmem *risc,
 	__le32 *rp;
 	int rc;
 
-	/* estimate risc mem: worst case is one write per page border +
-	   one write per scan line + sync + jump (all 2 dwords).  padding
-	   can cause next bpl to start close to a page border.  First DMA
-	   region may be smaller than PAGE_SIZE */
+	 
 	instructions  = skip_lines * 4;
 	instructions += (1 + ((bpl + padding) * store_lines)
 			 / PAGE_SIZE + store_lines) * 8;
@@ -54,7 +40,7 @@ bttv_risc_packed(struct bttv *btv, struct btcx_riscmem *risc,
 	if ((rc = btcx_riscmem_alloc(btv->c.pci,risc,instructions)) < 0)
 		return rc;
 
-	/* sync instruction */
+	 
 	rp = risc->cpu;
 	*(rp++) = cpu_to_le32(BT848_RISC_SYNC|BT848_FIFO_STATUS_FM1);
 	*(rp++) = cpu_to_le32(0);
@@ -64,7 +50,7 @@ bttv_risc_packed(struct bttv *btv, struct btcx_riscmem *risc,
 				      BT848_RISC_EOL | bpl);
 	}
 
-	/* scan lines */
+	 
 	sg = sglist;
 	for (line = 0; line < store_lines; line++) {
 		if ((line >= (store_lines - VCR_HACK_LINES)) &&
@@ -75,13 +61,13 @@ bttv_risc_packed(struct bttv *btv, struct btcx_riscmem *risc,
 			sg = sg_next(sg);
 		}
 		if (bpl <= sg_dma_len(sg)-offset) {
-			/* fits into current chunk */
+			 
 			*(rp++)=cpu_to_le32(BT848_RISC_WRITE|BT848_RISC_SOL|
 					    BT848_RISC_EOL|bpl);
 			*(rp++)=cpu_to_le32(sg_dma_address(sg)+offset);
 			offset+=bpl;
 		} else {
-			/* scanline needs to be split */
+			 
 			todo = bpl;
 			*(rp++)=cpu_to_le32(BT848_RISC_WRITE|BT848_RISC_SOL|
 					    (sg_dma_len(sg)-offset));
@@ -104,7 +90,7 @@ bttv_risc_packed(struct bttv *btv, struct btcx_riscmem *risc,
 		offset += padding;
 	}
 
-	/* save pointer to jmp instruction address */
+	 
 	risc->jmp = rp;
 	WARN_ON((risc->jmp - risc->cpu + 2) * sizeof(*risc->cpu) > risc->size);
 	return 0;
@@ -128,21 +114,19 @@ bttv_risc_planar(struct bttv *btv, struct btcx_riscmem *risc,
 	int topfield = (0 == yoffset);
 	int rc;
 
-	/* estimate risc mem: worst case is one write per page border +
-	   one write per scan line (5 dwords)
-	   plus sync + jump (2 dwords) */
+	 
 	instructions  = ((3 + (ybpl + ypadding) * ylines * 2)
 			 / PAGE_SIZE) + ylines;
 	instructions += 2;
 	if ((rc = btcx_riscmem_alloc(btv->c.pci,risc,instructions*4*5)) < 0)
 		return rc;
 
-	/* sync instruction */
+	 
 	rp = risc->cpu;
 	*(rp++) = cpu_to_le32(BT848_RISC_SYNC|BT848_FIFO_STATUS_FM3);
 	*(rp++) = cpu_to_le32(0);
 
-	/* scan lines */
+	 
 	ysg = sglist;
 	usg = sglist;
 	vsg = sglist;
@@ -172,13 +156,13 @@ bttv_risc_planar(struct bttv *btv, struct btcx_riscmem *risc,
 		}
 
 		for (todo = ybpl; todo > 0; todo -= ylen) {
-			/* go to next sg entry if needed */
+			 
 			while (yoffset && yoffset >= sg_dma_len(ysg)) {
 				yoffset -= sg_dma_len(ysg);
 				ysg = sg_next(ysg);
 			}
 
-			/* calculate max number of bytes we can write */
+			 
 			ylen = todo;
 			if (yoffset + ylen > sg_dma_len(ysg))
 				ylen = sg_dma_len(ysg) - yoffset;
@@ -205,7 +189,7 @@ bttv_risc_planar(struct bttv *btv, struct btcx_riscmem *risc,
 			if (ylen == todo)
 				ri |= BT848_RISC_EOL;
 
-			/* write risc instruction */
+			 
 			*(rp++)=cpu_to_le32(ri | ylen);
 			*(rp++)=cpu_to_le32(((ylen >> hshift) << 16) |
 					    (ylen >> hshift));
@@ -225,13 +209,13 @@ bttv_risc_planar(struct bttv *btv, struct btcx_riscmem *risc,
 		}
 	}
 
-	/* save pointer to jmp instruction address */
+	 
 	risc->jmp = rp;
 	WARN_ON((risc->jmp - risc->cpu + 2) * sizeof(*risc->cpu) > risc->size);
 	return 0;
 }
 
-/* ---------------------------------------------------------- */
+ 
 
 static void
 bttv_calc_geo_old(struct bttv *btv, struct bttv_geometry *geo,
@@ -294,21 +278,20 @@ bttv_calc_geo		(struct bttv *                  btv,
 	     && crop->top == tvnorm->cropcap.defrect.top
 	     && crop->width == tvnorm->cropcap.defrect.width
 	     && crop->height == tvnorm->cropcap.defrect.height
-	     && width <= tvnorm->swidth /* see PAL-Nc et al */)
+	     && width <= tvnorm->swidth  )
 	    || btv->input == btv->dig) {
 		bttv_calc_geo_old(btv, geo, width, height,
 				  both_fields, tvnorm);
 		return;
 	}
 
-	/* For bug compatibility the image size checks permit scale
-	   factors > 16. See bttv_crop_calc_limits(). */
+	 
 	c_width = min((unsigned int) crop->width, width * 16);
 	c_height = min((unsigned int) crop->height, height * 16);
 
 	geo->width = width;
 	geo->hscale = (c_width * 4096U + (width >> 1)) / width - 4096;
-	/* Even to store Cb first, odd for Cr. */
+	 
 	geo->hdelay = ((crop->left * width + c_width) / c_width) & ~1;
 
 	geo->sheight = c_height;
@@ -357,8 +340,8 @@ bttv_apply_geo(struct bttv *btv, struct bttv_geometry *geo, int odd)
 	btwrite(geo->vtotal & 0xff,   BT848_VTOTAL_LO);
 }
 
-/* ---------------------------------------------------------- */
-/* risc group / risc main loop / dma management               */
+ 
+ 
 
 static void bttv_set_risc_status(struct bttv *btv)
 {
@@ -454,7 +437,7 @@ bttv_risc_init_main(struct bttv *btv)
 	btv->main.cpu[2] = cpu_to_le32(BT848_RISC_JUMP);
 	btv->main.cpu[3] = cpu_to_le32(btv->main.dma + (4<<2));
 
-	/* top field */
+	 
 	btv->main.cpu[4] = cpu_to_le32(BT848_RISC_JUMP);
 	btv->main.cpu[5] = cpu_to_le32(btv->main.dma + (6<<2));
 	btv->main.cpu[6] = cpu_to_le32(BT848_RISC_JUMP);
@@ -464,13 +447,13 @@ bttv_risc_init_main(struct bttv *btv)
 				       BT848_FIFO_STATUS_VRO);
 	btv->main.cpu[9] = cpu_to_le32(0);
 
-	/* bottom field */
+	 
 	btv->main.cpu[10] = cpu_to_le32(BT848_RISC_JUMP);
 	btv->main.cpu[11] = cpu_to_le32(btv->main.dma + (12<<2));
 	btv->main.cpu[12] = cpu_to_le32(BT848_RISC_JUMP);
 	btv->main.cpu[13] = cpu_to_le32(btv->main.dma + (14<<2));
 
-	/* jump back to top field */
+	 
 	btv->main.cpu[14] = cpu_to_le32(BT848_RISC_JUMP);
 	btv->main.cpu[15] = cpu_to_le32(btv->main.dma + (0<<2));
 
@@ -508,7 +491,7 @@ int bttv_buffer_risc_vbi(struct bttv *btv, struct bttv_buffer *buf)
 {
 	int r = 0;
 	unsigned int offset;
-	unsigned int bpl = 2044; /* max. vbipack */
+	unsigned int bpl = 2044;  
 	unsigned int padding = VBI_BPL - bpl;
 	unsigned int skip_lines0 = 0;
 	unsigned int skip_lines1 = 0;
@@ -544,7 +527,7 @@ int bttv_buffer_risc_vbi(struct bttv *btv, struct bttv_buffer *buf)
 	if (btv->vbi_fmt.end >= tvnorm->cropcap.bounds.top)
 		min_vdelay += btv->vbi_fmt.end - tvnorm->cropcap.bounds.top;
 
-	/* For bttv_buffer_activate_vbi(). */
+	 
 	buf->geo.vdelay = min_vdelay;
 
 	return r;
@@ -569,7 +552,7 @@ bttv_buffer_activate_vbi(struct bttv *btv,
 
 		list_del(&vbi->list);
 
-		/* VDELAY is start of video, end of VBI capturing. */
+		 
 		crop = btread(BT848_E_CROP);
 		vdelay = btread(BT848_E_VDELAY_LO) + ((crop & 0xc0) << 2);
 
@@ -605,7 +588,7 @@ int
 bttv_buffer_activate_video(struct bttv *btv,
 			   struct bttv_buffer_set *set)
 {
-	/* video capture */
+	 
 	if (NULL != set->top  &&  NULL != set->bottom) {
 		if (set->top == set->bottom) {
 			if (set->top->list.next)
@@ -653,9 +636,9 @@ bttv_buffer_activate_video(struct bttv *btv,
 	return 0;
 }
 
-/* ---------------------------------------------------------- */
+ 
 
-/* calculate geometry, build risc code */
+ 
 int
 bttv_buffer_risc(struct bttv *btv, struct bttv_buffer *buf)
 {
@@ -665,7 +648,7 @@ bttv_buffer_risc(struct bttv *btv, struct bttv_buffer *buf)
 	struct scatterlist *list = sgt->sgl;
 	unsigned long size = (btv->fmt->depth * btv->width * btv->height) >> 3;
 
-	/* packed pixel modes */
+	 
 	if (btv->fmt->flags & FORMAT_FLAGS_PACKED) {
 		int bpl = (btv->fmt->depth >> 3) * btv->width;
 		int bpf = bpl * (btv->height >> 1);
@@ -699,21 +682,21 @@ bttv_buffer_risc(struct bttv *btv, struct bttv_buffer *buf)
 			return -EINVAL;
 		}
 	}
-	/* planar modes */
+	 
 	if (btv->fmt->flags & FORMAT_FLAGS_PLANAR) {
 		int uoffset, voffset;
 		int ypadding, cpadding, lines;
 
-		/* calculate chroma offsets */
+		 
 		uoffset = btv->width * btv->height;
 		voffset = btv->width * btv->height;
 		if (btv->fmt->flags & FORMAT_FLAGS_CrCb) {
-			/* Y-Cr-Cb plane order */
+			 
 			uoffset >>= btv->fmt->hshift;
 			uoffset >>= btv->fmt->vshift;
 			uoffset  += voffset;
 		} else {
-			/* Y-Cb-Cr plane order */
+			 
 			voffset >>= btv->fmt->hshift;
 			voffset >>= btv->fmt->vshift;
 			voffset  += uoffset;
@@ -784,9 +767,9 @@ bttv_buffer_risc(struct bttv *btv, struct bttv_buffer *buf)
 			return -EINVAL;
 		}
 	}
-	/* raw data */
+	 
 	if (btv->fmt->flags & FORMAT_FLAGS_RAW) {
-		/* build risc code */
+		 
 		buf->vbuf.field = V4L2_FIELD_SEQ_TB;
 		bttv_calc_geo(btv, &buf->geo, tvnorm->swidth, tvnorm->sheight,
 			      1, tvnorm, &btv->crop[!!btv->do_crop].rect);
@@ -796,7 +779,7 @@ bttv_buffer_risc(struct bttv *btv, struct bttv_buffer *buf)
 				     RAW_BPL, 0, 0, RAW_LINES);
 	}
 
-	/* copy format info */
+	 
 	buf->btformat = btv->fmt->btformat;
 	buf->btswap   = btv->fmt->btswap;
 

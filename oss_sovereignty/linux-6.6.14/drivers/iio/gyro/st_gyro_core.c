@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * STMicroelectronics gyroscopes driver
- *
- * Copyright 2012-2013 STMicroelectronics Inc.
- *
- * Denis Ciocca <denis.ciocca@st.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -21,12 +15,12 @@
 
 #define ST_GYRO_NUMBER_DATA_CHANNELS		3
 
-/* DEFAULT VALUE FOR SENSORS */
+ 
 #define ST_GYRO_DEFAULT_OUT_X_L_ADDR		0x28
 #define ST_GYRO_DEFAULT_OUT_Y_L_ADDR		0x2a
 #define ST_GYRO_DEFAULT_OUT_Z_L_ADDR		0x2c
 
-/* FULLSCALE */
+ 
 #define ST_GYRO_FS_AVL_245DPS			245
 #define ST_GYRO_FS_AVL_250DPS			250
 #define ST_GYRO_FS_AVL_500DPS			500
@@ -124,11 +118,7 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
 				.addr = 0x22,
 				.mask = 0x08,
 			},
-			/*
-			 * The sensor has IHL (active low) and open
-			 * drain settings, but only for INT1 and not
-			 * for the DRDY line on INT2.
-			 */
+			 
 			.stat_drdy = {
 				.addr = ST_SENSORS_DEFAULT_STAT_ADDR,
 				.mask = 0x07,
@@ -202,11 +192,7 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
 				.addr = 0x22,
 				.mask = 0x08,
 			},
-			/*
-			 * The sensor has IHL (active low) and open
-			 * drain settings, but only for INT1 and not
-			 * for the DRDY line on INT2.
-			 */
+			 
 			.stat_drdy = {
 				.addr = ST_SENSORS_DEFAULT_STAT_ADDR,
 				.mask = 0x07,
@@ -276,11 +262,7 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
 				.addr = 0x22,
 				.mask = BIT(3),
 			},
-			/*
-			 * The sensor has IHL (active low) and open
-			 * drain settings, but only for INT1 and not
-			 * for the DRDY line on INT2.
-			 */
+			 
 			.stat_drdy = {
 				.addr = ST_SENSORS_DEFAULT_STAT_ADDR,
 				.mask = GENMASK(2, 0),
@@ -350,11 +332,7 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
 				.addr = 0x22,
 				.mask = 0x08,
 			},
-			/*
-			 * The sensor has IHL (active low) and open
-			 * drain settings, but only for INT1 and not
-			 * for the DRDY line on INT2.
-			 */
+			 
 			.stat_drdy = {
 				.addr = ST_SENSORS_DEFAULT_STAT_ADDR,
 				.mask = 0x07,
@@ -369,7 +347,7 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
 	},
 };
 
-/* DRDY on gyros is available only on INT2 pin */
+ 
 static const struct st_sensors_platform_data gyro_pdata = {
 	.drdy_int_pin = 2,
 };
@@ -449,12 +427,7 @@ static const struct iio_trigger_ops st_gyro_trigger_ops = {
 #define ST_GYRO_TRIGGER_OPS NULL
 #endif
 
-/*
- * st_gyro_get_settings() - get sensor settings from device name
- * @name: device name buffer reference.
- *
- * Return: valid reference on success, NULL otherwise.
- */
+ 
 const struct st_sensor_settings *st_gyro_get_settings(const char *name)
 {
 	int index = st_sensors_get_settings_index(name,

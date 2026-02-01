@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Backlight Driver for Intel-based Apples
- *
- *  Copyright (c) Red Hat <mjg@redhat.com>
- *  Based on code from Pommed:
- *  Copyright (C) 2006 Nicolas Boichat <nicolas @boichat.ch>
- *  Copyright (C) 2006 Felipe Alfaro Solana <felipe_alfaro @linuxmail.org>
- *  Copyright (C) 2007 Julien BLACHE <jb@jblache.org>
- *
- *  This driver triggers SMIs which cause the firmware to change the
- *  backlight brightness. This is icky in many ways, but it's impractical to
- *  get at the firmware code in order to figure out what it's actually doing.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -29,24 +17,22 @@
 static struct backlight_device *apple_backlight_device;
 
 struct hw_data {
-	/* I/O resource to allocate. */
+	 
 	unsigned long iostart;
 	unsigned long iolen;
-	/* Backlight operations structure. */
+	 
 	const struct backlight_ops backlight_ops;
 	void (*set_brightness)(int);
 };
 
 static const struct hw_data *hw_data;
 
-/* Module parameters. */
+ 
 static int debug;
 module_param_named(debug, debug, int, 0644);
 MODULE_PARM_DESC(debug, "Set to one to enable debugging messages.");
 
-/*
- * Implementation for machines with Intel chipset.
- */
+ 
 static void intel_chipset_set_brightness(int intensity)
 {
 	outb(0x04 | (intensity << 4), 0xb3);
@@ -89,9 +75,7 @@ static const struct hw_data intel_chipset_data = {
 	.set_brightness = intel_chipset_set_brightness,
 };
 
-/*
- * Implementation for machines with Nvidia chipset.
- */
+ 
 static void nvidia_chipset_set_brightness(int intensity)
 {
 	outb(0x04 | (intensity << 4), 0x52f);
@@ -159,7 +143,7 @@ static int apple_bl_add(struct acpi_device *dev)
 		return -ENODEV;
 	}
 
-	/* Check that the hardware responds - this may not work under EFI */
+	 
 
 	intensity = hw_data->backlight_ops.get_brightness(NULL);
 
@@ -217,10 +201,7 @@ static struct acpi_driver apple_bl_driver = {
 
 static int __init apple_bl_init(void)
 {
-	/*
-	 * Use ACPI video detection code to see if this driver should register
-	 * or if another driver, e.g. the apple-gmux driver should be used.
-	 */
+	 
 	if (acpi_video_get_backlight_type() != acpi_backlight_vendor)
 		return -ENODEV;
 

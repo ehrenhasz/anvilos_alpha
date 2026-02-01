@@ -1,25 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef PP_ATOMFWCTRL_H
 #define PP_ATOMFWCTRL_H
@@ -58,10 +37,10 @@ struct pp_atomfwctrl_gpio_pin_assignment {
 };
 
 struct pp_atomfwctrl_clock_dividers_soc15 {
-	uint32_t   ulClock;           /* the actual clock */
-	uint32_t   ulDid;             /* DFS divider */
-	uint32_t   ulPll_fb_mult;     /* Feedback Multiplier:  bit 8:0 int, bit 15:12 post_div, bit 31:16 frac */
-	uint32_t   ulPll_ss_fbsmult;  /* Spread FB Multiplier: bit 8:0 int, bit 31:16 frac */
+	uint32_t   ulClock;            
+	uint32_t   ulDid;              
+	uint32_t   ulPll_fb_mult;      
+	uint32_t   ulPll_ss_fbsmult;   
 	uint16_t   usPll_ss_slew_frac;
 	uint8_t    ucPll_ss_enable;
 	uint8_t    ucReserve;

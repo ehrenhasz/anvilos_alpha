@@ -1,39 +1,6 @@
-/*
- * Copyright 2023 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
-/* FILE POLICY AND INTENDED USAGE:
- * This file owns the programming sequence of stream's dpms state associated
- * with the link and link's enable/disable sequences as result of the stream's
- * dpms state change.
- *
- * TODO - The reason link owns stream's dpms programming sequence is
- * because dpms programming sequence is highly dependent on underlying signal
- * specific link protocols. This unfortunately causes link to own a portion of
- * stream state programming sequence. This creates a gray area where the
- * boundary between link and stream is not clearly defined.
- */
+ 
 
 #include "link_dpms.h"
 #include "link_hwss.h"
@@ -82,9 +49,9 @@ void link_blank_all_dp_displays(struct dc *dc)
 			(dc->links[i]->priv == NULL) || (dc->links[i]->local_sink == NULL))
 			continue;
 
-		/* DP 2.0 spec requires that we read LTTPR caps first */
+		 
 		dp_retrieve_lttpr_cap(dc->links[i]);
-		/* if any of the displays are lit up turn them off */
+		 
 		status = core_link_read_dpcd(dc->links[i], DP_SET_POWER,
 							&dpcd_power_state, sizeof(dpcd_power_state));
 
@@ -105,7 +72,7 @@ void link_blank_all_edp_displays(struct dc *dc)
 			(!dc->links[i]->edp_sink_present))
 			continue;
 
-		/* if any of the displays are lit up turn them off */
+		 
 		status = core_link_read_dpcd(dc->links[i], DP_SET_POWER,
 							&dpcd_power_state, sizeof(dpcd_power_state));
 
@@ -164,9 +131,7 @@ void link_set_all_streams_dpms_off_for_link(struct dc_link *link)
 				state);
 	}
 
-	/* link can be also enabled by vbios. In this case it is not recorded
-	 * in pipe_ctx. Disable link phy here to make sure it is completely off
-	 */
+	 
 	dp_disable_link_phy(link, &link_res, link->connector_signal);
 }
 
@@ -176,9 +141,7 @@ void link_resume(struct dc_link *link)
 		program_hpd_filter(link);
 }
 
-/* This function returns true if the pipe is used to feed video signal directly
- * to the link.
- */
+ 
 static bool is_master_pipe_for_link(const struct dc_link *link,
 		const struct pipe_ctx *pipe)
 {
@@ -186,10 +149,7 @@ static bool is_master_pipe_for_link(const struct dc_link *link,
 			pipe->stream->link == link;
 }
 
-/*
- * This function finds all master pipes feeding to a given link with dpms set to
- * on in given dc state.
- */
+ 
 void link_get_master_pipes_with_dpms_on(const struct dc_link *link,
 		struct dc_state *state,
 		uint8_t *count,
@@ -221,13 +181,9 @@ static bool get_ext_hdmi_settings(struct pipe_ctx *pipe_ctx,
 	if (integrated_info == NULL)
 		return false;
 
-	/*
-	 * Get retimer settings from sbios for passing SI eye test for DCE11
-	 * The setting values are varied based on board revision and port id
-	 * Therefore the setting values of each ports is passed by sbios.
-	 */
+	 
 
-	// Check if current bios contains ext Hdmi settings
+	
 	if (integrated_info->gpu_cap_info & 0x20) {
 		switch (eng_id) {
 		case ENGINE_ID_DIGA:
@@ -283,7 +239,7 @@ static bool get_ext_hdmi_settings(struct pipe_ctx *pipe_ctx,
 		}
 
 		if (result == true) {
-			// Validate settings from bios integrated info table
+			
 			if (settings->slv_addr == 0)
 				return false;
 			if (settings->reg_num > 9)
@@ -349,10 +305,10 @@ static void write_i2c_retimer_setting(
 
 	memset(&buffer, 0, sizeof(buffer));
 
-	/* Start Ext-Hdmi programming*/
+	 
 
 	for (i = 0; i < settings->reg_num; i++) {
-		/* Apply 3G settings */
+		 
 		if (settings->reg_settings[i].i2c_reg_index <= 0x20) {
 
 			buffer[0] = settings->reg_settings[i].i2c_reg_index;

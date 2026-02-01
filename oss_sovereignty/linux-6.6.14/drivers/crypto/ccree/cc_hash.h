@@ -1,9 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2012-2019 ARM Limited (or its affiliates). */
+ 
+ 
 
-/* \file cc_hash.h
- * ARM CryptoCell Hash Crypto API
- */
+ 
 
 #ifndef __CC_HASH_H__
 #define __CC_HASH_H__
@@ -24,16 +22,14 @@
 
 #define CC_EXPORT_MAGIC 0xC2EE1070U
 
-/* this struct was taken from drivers/crypto/nx/nx-aes-xcbc.c and it is used
- * for xcbc/cmac statesize
- */
+ 
 struct aeshash_state {
 	u8 state[AES_BLOCK_SIZE];
 	unsigned int count;
 	u8 buffer[AES_BLOCK_SIZE];
 };
 
-/* ahash state */
+ 
 struct ahash_req_ctx {
 	u8 buffers[2][CC_MAX_HASH_BLCK_SIZE] ____cacheline_aligned;
 	u8 digest_result_buff[CC_MAX_HASH_DIGEST_SIZE] ____cacheline_aligned;
@@ -48,7 +44,7 @@ struct ahash_req_ctx {
 	dma_addr_t digest_result_dma_addr;
 	u32 buf_cnt[2];
 	u32 buff_index;
-	u32 xcbc_count; /* count xcbc update operatations */
+	u32 xcbc_count;  
 	struct scatterlist buff_sg[2];
 	struct scatterlist *curr_sg;
 	u32 in_nents;
@@ -80,27 +76,10 @@ int cc_hash_alloc(struct cc_drvdata *drvdata);
 int cc_init_hash_sram(struct cc_drvdata *drvdata);
 int cc_hash_free(struct cc_drvdata *drvdata);
 
-/**
- * cc_digest_len_addr() - Gets the initial digest length
- *
- * @drvdata: Associated device driver context
- * @mode: The Hash mode. Supported modes: MD5/SHA1/SHA224/SHA256/SHA384/SHA512
- *
- * Return:
- * Returns the address of the initial digest length in SRAM
- */
+ 
 u32 cc_digest_len_addr(void *drvdata, u32 mode);
 
-/**
- * cc_larval_digest_addr() - Gets the address of the initial digest in SRAM
- * according to the given hash mode
- *
- * @drvdata: Associated device driver context
- * @mode: The Hash mode. Supported modes: MD5/SHA1/SHA224/SHA256/SHA384/SHA512
- *
- * Return:
- * The address of the initial digest in SRAM
- */
+ 
 u32 cc_larval_digest_addr(void *drvdata, u32 mode);
 
-#endif /*__CC_HASH_H__*/
+#endif  

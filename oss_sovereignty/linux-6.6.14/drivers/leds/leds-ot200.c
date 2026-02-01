@@ -1,11 +1,4 @@
-/*
- * Bachmann ot200 leds driver.
- *
- * Author: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
- *         Christian Gmeiner <christian.gmeiner@gmail.com>
- *
- * License: GPL as published by the FSF.
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
@@ -22,10 +15,7 @@ struct ot200_led {
 	u8 mask;
 };
 
-/*
- * The device has three leds on the back panel (led_err, led_init and led_run)
- * and can handle up to seven leds on the front panel.
- */
+ 
 
 static struct ot200_led leds[] = {
 	{
@@ -82,10 +72,7 @@ static struct ot200_led leds[] = {
 
 static DEFINE_SPINLOCK(value_lock);
 
-/*
- * we need to store the current led states, as it is not
- * possible to read the current led state via inb().
- */
+ 
 static u8 leds_back;
 static u8 leds_front;
 
@@ -129,8 +116,8 @@ static int ot200_led_probe(struct platform_device *pdev)
 			return ret;
 	}
 
-	leds_front = 0;		/* turn off all front leds */
-	leds_back = BIT(1);	/* turn on init led */
+	leds_front = 0;		 
+	leds_back = BIT(1);	 
 	outb(leds_front, 0x49);
 	outb(leds_back, 0x5a);
 

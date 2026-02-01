@@ -1,31 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * cs5530.c - Initialisation code for Cyrix/NatSemi VSA1 softaudio
- *
- * 	(C) Copyright 2007 Ash Willis <ashwillis@programmer.net>
- *	(C) Copyright 2003 Red Hat Inc <alan@lxorguk.ukuu.org.uk>
- *
- * This driver was ported (shamelessly ripped ;) from oss/kahlua.c but I did
- * mess with it a bit. The chip seems to have to have trouble with full duplex
- * mode. If we're recording in 8bit 8000kHz, say, and we then attempt to
- * simultaneously play back audio at 16bit 44100kHz, the device actually plays
- * back in the same format in which it is capturing. By forcing the chip to
- * always play/capture in 16/44100, we can let alsa-lib convert the samples and
- * that way we can hack up some full duplex audio. 
- * 
- * XpressAudio(tm) is used on the Cyrix MediaGX (now NatSemi Geode) systems.
- * The older version (VSA1) provides fairly good soundblaster emulation
- * although there are a couple of bugs: large DMA buffers break record,
- * and the MPU event handling seems suspect. VSA2 allows the native driver
- * to control the AC97 audio engine directly and requires a different driver.
- *
- * Thanks to National Semiconductor for providing the needed information
- * on the XpressAudio(tm) internals.
- *
- * TO DO:
- *	Investigate whether we can portably support Cognac (5520) in the
- *	same manner.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -98,14 +72,7 @@ static int snd_cs5530_create(struct snd_card *card,
 	mem = pcim_iomap_table(pci)[0];
 	map = readw(mem + 0x18);
 
-	/* Map bits
-		0:1	* 0x20 + 0x200 = sb base
-		2	sb enable
-		3	adlib enable
-		5	MPU enable 0x330
-		6	MPU enable 0x300
-
-	   The other bits may be used internally so must be masked */
+	 
 
 	sb_base = 0x220 + 0x20 * (map & 3);
 

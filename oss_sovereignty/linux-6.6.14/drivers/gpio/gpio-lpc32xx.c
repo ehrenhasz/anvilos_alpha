@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * GPIO driver for LPC32xx SoC
- *
- * Author: Kevin Wells <kevin.wells@nxp.com>
- *
- * Copyright (C) 2010 NXP Semiconductors
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -77,9 +71,7 @@ struct gpio_regs {
 	unsigned long dir_clr;
 };
 
-/*
- * GPIO names
- */
+ 
 static const char *gpio_p0_names[LPC32XX_GPIO_P0_MAX] = {
 	"p0.0", "p0.1", "p0.2", "p0.3",
 	"p0.4", "p0.5", "p0.6", "p0.7"
@@ -240,10 +232,7 @@ static int __get_gpio_state_p3(struct lpc32xx_gpio_chip *group,
 {
 	int state = gpreg_read(group, group->gpio_grp->inp_state);
 
-	/*
-	 * P3 GPIO pin input mapping is not contiguous, GPIOP3-0..4 is mapped
-	 * to bits 10..14, while GPIOP3-5 is mapped to bit 24.
-	 */
+	 
 	return GPIO3_PIN_IN_SEL(state, pin);
 }
 
@@ -259,9 +248,7 @@ static int __get_gpo_state_p3(struct lpc32xx_gpio_chip *group,
 	return GPO3_PIN_IN_SEL(gpreg_read(group, group->gpio_grp->outp_state), pin);
 }
 
-/*
- * GPIO primitives.
- */
+ 
 static int lpc32xx_gpio_dir_input_p012(struct gpio_chip *chip,
 	unsigned pin)
 {
@@ -491,7 +478,7 @@ static struct lpc32xx_gpio_chip lpc32xx_gpiochip[] = {
 static int lpc32xx_of_xlate(struct gpio_chip *gc,
 			    const struct of_phandle_args *gpiospec, u32 *flags)
 {
-	/* Is this the correct bank? */
+	 
 	u32 bank = gpiospec->args[0];
 	if ((bank >= ARRAY_SIZE(lpc32xx_gpiochip) ||
 	    (gc != &lpc32xx_gpiochip[bank].chip)))

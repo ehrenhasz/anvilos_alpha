@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
-/*
- * Copyright (C) 2020 VMware, Inc., Palo Alto, CA., USA
- *
- * PTP clock driver for VMware precision clock virtual device.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -38,9 +34,7 @@ static int ptp_vmw_pclk_read(u64 *ns)
 	return ret;
 }
 
-/*
- * PTP clock ops.
- */
+ 
 
 static int ptp_vmw_adjtime(struct ptp_clock_info *info, s64 delta)
 {
@@ -85,9 +79,7 @@ static struct ptp_clock_info ptp_vmw_clock_info = {
 	.enable		= ptp_vmw_enable,
 };
 
-/*
- * ACPI driver ops for VMware "precision clock" virtual device.
- */
+ 
 
 static int ptp_vmw_acpi_add(struct acpi_device *device)
 {

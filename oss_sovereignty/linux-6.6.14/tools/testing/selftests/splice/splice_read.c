@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <errno.h>
 #include <fcntl.h>
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 		size = statbuf.st_size;
 	}
 
-	/* splice(2) file to stdout. */
+	 
 	spliced = splice(fd, NULL, STDOUT_FILENO, NULL,
 		      size, SPLICE_F_MOVE);
 	if (spliced < 0) {

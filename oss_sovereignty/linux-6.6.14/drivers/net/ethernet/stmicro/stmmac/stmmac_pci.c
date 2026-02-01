@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*******************************************************************************
-  This contains the functions to handle the pci driver.
 
-  Copyright (C) 2011-2012  Vayavya Labs Pvt Ltd
-
-
-  Author: Rayagond Kokatanur <rayagond@vayavyalabs.com>
-  Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-*******************************************************************************/
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/pci.h>
@@ -21,37 +13,37 @@ struct stmmac_pci_info {
 
 static void common_default_data(struct plat_stmmacenet_data *plat)
 {
-	plat->clk_csr = 2;	/* clk_csr_i = 20-35MHz & MDC = clk_csr_i/16 */
+	plat->clk_csr = 2;	 
 	plat->has_gmac = 1;
 	plat->force_sf_dma_mode = 1;
 
 	plat->mdio_bus_data->needs_reset = true;
 
-	/* Set default value for multicast hash bins */
+	 
 	plat->multicast_filter_bins = HASH_TABLE_SIZE;
 
-	/* Set default value for unicast filter entries */
+	 
 	plat->unicast_filter_entries = 1;
 
-	/* Set the maxmtu to a default of JUMBO_LEN */
+	 
 	plat->maxmtu = JUMBO_LEN;
 
-	/* Set default number of RX and TX queues to use */
+	 
 	plat->tx_queues_to_use = 1;
 	plat->rx_queues_to_use = 1;
 
-	/* Disable Priority config by default */
+	 
 	plat->tx_queues_cfg[0].use_prio = false;
 	plat->rx_queues_cfg[0].use_prio = false;
 
-	/* Disable RX queues routing by default */
+	 
 	plat->rx_queues_cfg[0].pkt_route = 0x0;
 }
 
 static int stmmac_default_data(struct pci_dev *pdev,
 			       struct plat_stmmacenet_data *plat)
 {
-	/* Set common default data first */
+	 
 	common_default_data(plat);
 
 	plat->bus_id = 1;
@@ -60,7 +52,7 @@ static int stmmac_default_data(struct pci_dev *pdev,
 
 	plat->dma_cfg->pbl = 32;
 	plat->dma_cfg->pblx8 = true;
-	/* TODO: AXI */
+	 
 
 	return 0;
 }
@@ -80,16 +72,16 @@ static int snps_gmac5_default_data(struct pci_dev *pdev,
 	plat->flags |= STMMAC_FLAG_TSO_EN;
 	plat->pmt = 1;
 
-	/* Set default value for multicast hash bins */
+	 
 	plat->multicast_filter_bins = HASH_TABLE_SIZE;
 
-	/* Set default value for unicast filter entries */
+	 
 	plat->unicast_filter_entries = 1;
 
-	/* Set the maxmtu to a default of JUMBO_LEN */
+	 
 	plat->maxmtu = JUMBO_LEN;
 
-	/* Set default number of RX and TX queues to use */
+	 
 	plat->tx_queues_to_use = 4;
 	plat->rx_queues_to_use = 4;
 
@@ -117,7 +109,7 @@ static int snps_gmac5_default_data(struct pci_dev *pdev,
 	plat->dma_cfg->pbl = 32;
 	plat->dma_cfg->pblx8 = true;
 
-	/* Axi Configuration */
+	 
 	plat->axi = devm_kzalloc(&pdev->dev, sizeof(*plat->axi), GFP_KERNEL);
 	if (!plat->axi)
 		return -ENOMEM;
@@ -138,18 +130,7 @@ static const struct stmmac_pci_info snps_gmac5_pci_info = {
 	.setup = snps_gmac5_default_data,
 };
 
-/**
- * stmmac_pci_probe
- *
- * @pdev: pci device pointer
- * @id: pointer to table of device id/id's.
- *
- * Description: This probing function gets called for all PCI devices which
- * match the ID table and are not "owned" by other driver yet. This function
- * gets passed a "struct pci_dev *" for each device whose entry in the ID table
- * matches the device. The probe functions returns zero when the driver choose
- * to take "ownership" of the device or an error code(-ve no) otherwise.
- */
+ 
 static int stmmac_pci_probe(struct pci_dev *pdev,
 			    const struct pci_device_id *id)
 {
@@ -180,7 +161,7 @@ static int stmmac_pci_probe(struct pci_dev *pdev,
 	if (!plat->safety_feat_cfg)
 		return -ENOMEM;
 
-	/* Enable pci device */
+	 
 	ret = pcim_enable_device(pdev);
 	if (ret) {
 		dev_err(&pdev->dev, "%s: ERROR: failed to enable device\n",
@@ -188,7 +169,7 @@ static int stmmac_pci_probe(struct pci_dev *pdev,
 		return ret;
 	}
 
-	/* Get the base address of device */
+	 
 	for (i = 0; i < PCI_STD_NUM_BARS; i++) {
 		if (pci_resource_len(pdev, i) == 0)
 			continue;
@@ -222,13 +203,7 @@ static int stmmac_pci_probe(struct pci_dev *pdev,
 	return stmmac_dvr_probe(&pdev->dev, plat, &res);
 }
 
-/**
- * stmmac_pci_remove
- *
- * @pdev: platform device pointer
- * Description: this function calls the main to free the net resources
- * and releases the PCI resources.
- */
+ 
 static void stmmac_pci_remove(struct pci_dev *pdev)
 {
 	int i;
@@ -280,7 +255,7 @@ static int __maybe_unused stmmac_pci_resume(struct device *dev)
 
 static SIMPLE_DEV_PM_OPS(stmmac_pm_ops, stmmac_pci_suspend, stmmac_pci_resume);
 
-/* synthetic ID, no official vendor */
+ 
 #define PCI_VENDOR_ID_STMMAC		0x0700
 
 #define PCI_DEVICE_ID_STMMAC_STMMAC		0x1108

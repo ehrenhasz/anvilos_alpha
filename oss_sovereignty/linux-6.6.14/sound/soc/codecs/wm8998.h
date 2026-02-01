@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * wm8998.h -- ALSA SoC Audio driver for WM8998 codecs
- *
- * Copyright 2015 Cirrus Logic, Inc.
- *
- * Author: Richard Fitzgerald <rf@opensource.wolfsonmicro.com>
- */
+ 
+ 
 
 #ifndef _WM8998_H
 #define _WM8998_H

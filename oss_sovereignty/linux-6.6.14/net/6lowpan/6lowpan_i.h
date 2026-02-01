@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __6LOWPAN_I_H
 #define __6LOWPAN_I_H
 
@@ -6,7 +6,7 @@
 
 #include <net/6lowpan.h>
 
-/* caller need to be sure it's dev->type is ARPHRD_6LOWPAN */
+ 
 static inline bool lowpan_is_ll(const struct net_device *dev,
 				enum lowpan_lltypes lltype)
 {
@@ -29,6 +29,6 @@ static inline void lowpan_dev_debugfs_exit(struct net_device *dev) { }
 
 static inline void __init lowpan_debugfs_init(void) { }
 static inline void lowpan_debugfs_exit(void) { }
-#endif /* CONFIG_6LOWPAN_DEBUGFS */
+#endif  
 
-#endif /* __6LOWPAN_I_H */
+#endif  

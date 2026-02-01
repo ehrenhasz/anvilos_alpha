@@ -1,30 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * mm/percpu-km.c - kernel memory based chunk allocation
- *
- * Copyright (C) 2010		SUSE Linux Products GmbH
- * Copyright (C) 2010		Tejun Heo <tj@kernel.org>
- *
- * Chunks are allocated as a contiguous kernel memory using gfp
- * allocation.  This is to be used on nommu architectures.
- *
- * To use percpu-km,
- *
- * - define CONFIG_NEED_PER_CPU_KM from the arch Kconfig.
- *
- * - CONFIG_NEED_PER_CPU_PAGE_FIRST_CHUNK must not be defined.  It's
- *   not compatible with PER_CPU_KM.  EMBED_FIRST_CHUNK should work
- *   fine.
- *
- * - NUMA is not supported.  When setting up the first chunk,
- *   @cpu_distance_fn should be NULL or report all CPUs to be nearer
- *   than or at LOCAL_DISTANCE.
- *
- * - It's best if the chunk size is power of two multiple of
- *   PAGE_SIZE.  Because each chunk is allocated as a contiguous
- *   kernel memory block using alloc_pages(), memory will be wasted if
- *   chunk size is not aligned.  percpu-km code will whine about it.
- */
+
+ 
 
 #if defined(CONFIG_SMP) && defined(CONFIG_NEED_PER_CPU_PAGE_FIRST_CHUNK)
 #error "contiguous percpu allocation is incompatible with paged first chunk"
@@ -35,7 +10,7 @@
 static void pcpu_post_unmap_tlb_flush(struct pcpu_chunk *chunk,
 				      int page_start, int page_end)
 {
-	/* nothing */
+	 
 }
 
 static int pcpu_populate_chunk(struct pcpu_chunk *chunk,
@@ -47,7 +22,7 @@ static int pcpu_populate_chunk(struct pcpu_chunk *chunk,
 static void pcpu_depopulate_chunk(struct pcpu_chunk *chunk,
 				  int page_start, int page_end)
 {
-	/* nada */
+	 
 }
 
 static struct pcpu_chunk *pcpu_create_chunk(gfp_t gfp)
@@ -108,7 +83,7 @@ static int __init pcpu_verify_alloc_info(const struct pcpu_alloc_info *ai)
 {
 	size_t nr_pages, alloc_pages;
 
-	/* all units must be in a single group */
+	 
 	if (ai->nr_groups != 1) {
 		pr_crit("can't handle more than one group\n");
 		return -EINVAL;

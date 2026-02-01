@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Common values for ARC4 Cipher Algorithm
- */
+ 
+ 
 
 #ifndef _CRYPTO_ARC4_H
 #define _CRYPTO_ARC4_H
@@ -20,4 +18,4 @@ struct arc4_ctx {
 int arc4_setkey(struct arc4_ctx *ctx, const u8 *in_key, unsigned int key_len);
 void arc4_crypt(struct arc4_ctx *ctx, u8 *out, const u8 *in, unsigned int len);
 
-#endif /* _CRYPTO_ARC4_H */
+#endif  

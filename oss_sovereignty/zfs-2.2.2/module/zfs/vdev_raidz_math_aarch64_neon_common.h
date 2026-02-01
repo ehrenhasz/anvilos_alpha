@@ -1,26 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (C) 2016 Romain Dolbeau. All rights reserved.
- */
+ 
+ 
 
 #include <sys/types.h>
 #include <sys/simd.h>
@@ -41,14 +20,7 @@
 #define	VR6_(_1, _2, _3, _4, _5, _6, REG, ...) "%[w"#REG"]"
 #define	VR7_(_1, _2, _3, _4, _5, _6, _7, REG, ...) "%[w"#REG"]"
 
-/*
- * Here we need registers not used otherwise.
- * They will be used in unused ASM for the case
- * with more registers than required... but GCC
- * will still need to make sure the constraints
- * are correct, and duplicate constraints are illegal
- * ... and we use the "register" number as a name
- */
+ 
 
 #define	VR0(r...) VR0_(r)
 #define	VR1(r...) VR1_(r)
@@ -384,12 +356,7 @@ typedef struct v {
 	}								\
 }
 
-/*
- * Unfortunately cannot use the macro, because GCC
- * will try to use the macro name and not value
- * later on...
- * Kept as a reference to what a numbered variable is
- */
+ 
 #define	_00	"v17"
 #define	_1d	"v16"
 #define	_temp0	"v19"
@@ -453,14 +420,7 @@ typedef struct v {
 	MUL2(r);							\
 }
 
-/*
- * Unfortunately cannot use the macro, because GCC
- * will try to use the macro name and not value
- * later on...
- * Kept as a reference to what a register is
- * (here we're using actual registers for the
- * clobbered ones)
- */
+ 
 #define	_0f		"v15"
 #define	_a_save		"v14"
 #define	_b_save		"v13"
@@ -474,11 +434,11 @@ typedef struct v {
 	switch (REG_CNT(r)) {						\
 	case 2:								\
 		__asm(							\
-		/* lts for upper part */				\
+		 				\
 		"movi v15.16b,#0x0f\n"					\
 		"ld1 { v10.4s },%[lt0]\n"				\
 		"ld1 { v11.4s },%[lt1]\n"				\
-		/* upper part */					\
+		 					\
 		"and v14.16b," VR0(r) ".16b,v15.16b\n"			\
 		"and v13.16b," VR1(r) ".16b,v15.16b\n"			\
 		"ushr " VR0(r) ".16b," VR0(r) ".16b,#4\n"		\
@@ -491,10 +451,10 @@ typedef struct v {
 									\
 		"eor " VR0(r) ".16b,v15.16b,v12.16b\n"			\
 		"eor " VR1(r) ".16b,v11.16b,v10.16b\n"			\
-		/* lts for lower part */				\
+		 				\
 		"ld1 { v10.4s },%[lt2]\n"				\
 		"ld1 { v15.4s },%[lt3]\n"				\
-		/* lower part */					\
+		 					\
 		"tbl v12.16b,{v10.16b},v14.16b\n"			\
 		"tbl v10.16b,{v10.16b},v13.16b\n"			\
 		"tbl v11.16b,{v15.16b},v14.16b\n"			\
@@ -534,7 +494,7 @@ typedef struct v {
 #define	raidz_math_begin()	kfpu_begin()
 #define	raidz_math_end()	kfpu_end()
 
-/* Overkill... */
+ 
 #if defined(_KERNEL)
 #define	GEN_X_DEFINE_0_3()	\
 register unsigned char w0 asm("v0") __attribute__((vector_size(16)));	\

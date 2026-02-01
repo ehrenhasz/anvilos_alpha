@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2016-present, Facebook, Inc.
- * All rights reserved.
- *
- */
+
+ 
 
 #include <linux/bio.h>
 #include <linux/bitmap.h>
@@ -25,7 +21,7 @@
 #define ZSTD_BTRFS_MAX_INPUT (1 << ZSTD_BTRFS_MAX_WINDOWLOG)
 #define ZSTD_BTRFS_DEFAULT_LEVEL 3
 #define ZSTD_BTRFS_MAX_LEVEL 15
-/* 307s to avoid pathologically clashing with transaction commit */
+ 
 #define ZSTD_BTRFS_RECLAIM_JIFFIES (307 * HZ)
 
 static zstd_parameters zstd_get_btrfs_parameters(unsigned int level,
@@ -45,32 +41,14 @@ struct workspace {
 	char *buf;
 	unsigned int level;
 	unsigned int req_level;
-	unsigned long last_used; /* jiffies */
+	unsigned long last_used;  
 	struct list_head list;
 	struct list_head lru_list;
 	zstd_in_buffer in_buf;
 	zstd_out_buffer out_buf;
 };
 
-/*
- * Zstd Workspace Management
- *
- * Zstd workspaces have different memory requirements depending on the level.
- * The zstd workspaces are managed by having individual lists for each level
- * and a global lru.  Forward progress is maintained by protecting a max level
- * workspace.
- *
- * Getting a workspace is done by using the bitmap to identify the levels that
- * have available workspaces and scans up.  This lets us recycle higher level
- * workspaces because of the monotonic memory guarantee.  A workspace's
- * last_used is only updated if it is being used by the corresponding memory
- * level.  Putting a workspace involves adding it back to the appropriate places
- * and adding it back to the lru if necessary.
- *
- * A timer is used to reclaim workspaces if they have not been used for
- * ZSTD_BTRFS_RECLAIM_JIFFIES.  This helps keep only active workspaces around.
- * The upper bound is provided by the workqueue limit which is 2 (percpu limit).
- */
+ 
 
 struct zstd_workspace_manager {
 	const struct btrfs_compress_op *ops;
@@ -94,16 +72,7 @@ static inline struct workspace *list_to_workspace(struct list_head *list)
 void zstd_free_workspace(struct list_head *ws);
 struct list_head *zstd_alloc_workspace(unsigned int level);
 
-/*
- * Timer callback to free unused workspaces.
- *
- * @t: timer
- *
- * This scans the lru_list and attempts to reclaim any workspace that hasn't
- * been used for ZSTD_BTRFS_RECLAIM_JIFFIES.
- *
- * The context is softirq and does not need the _bh locking primitives.
- */
+ 
 static void zstd_reclaim_timer_fn(struct timer_list *timer)
 {
 	unsigned long reclaim_threshold = jiffies - ZSTD_BTRFS_RECLAIM_JIFFIES;
@@ -124,7 +93,7 @@ static void zstd_reclaim_timer_fn(struct timer_list *timer)
 		if (time_after(victim->last_used, reclaim_threshold))
 			break;
 
-		/* workspace is in use */
+		 
 		if (victim->req_level)
 			continue;
 
@@ -144,15 +113,7 @@ static void zstd_reclaim_timer_fn(struct timer_list *timer)
 	spin_unlock(&wsm.lock);
 }
 
-/*
- * zstd_calc_ws_mem_sizes - calculate monotonic memory bounds
- *
- * It is possible based on the level configurations that a higher level
- * workspace uses less memory than a lower level workspace.  In order to reuse
- * workspaces, this must be made a monotonic relationship.  This precomputes
- * the required memory for each level and enforces the monotonicity between
- * level and memory required.
- */
+ 
 static void zstd_calc_ws_mem_sizes(void)
 {
 	size_t max_size = 0;
@@ -217,17 +178,7 @@ void zstd_cleanup_workspace_manager(void)
 	del_timer_sync(&wsm.timer);
 }
 
-/*
- * zstd_find_workspace - find workspace
- * @level: compression level
- *
- * This iterates over the set bits in the active_map beginning at the requested
- * compression level.  This lets us utilize already allocated workspaces before
- * allocating a new one.  If the workspace is of a larger size, it is used, but
- * the place in the lru_list and last_used times are not updated.  This is to
- * offer the opportunity to reclaim the workspace in favor of allocating an
- * appropriately sized one in the future.
- */
+ 
 static struct list_head *zstd_find_workspace(unsigned int level)
 {
 	struct list_head *ws;
@@ -240,7 +191,7 @@ static struct list_head *zstd_find_workspace(unsigned int level)
 			ws = wsm.idle_ws[i].next;
 			workspace = list_to_workspace(ws);
 			list_del_init(ws);
-			/* keep its place if it's a lower level using this */
+			 
 			workspace->req_level = level;
 			if (level == workspace->level)
 				list_del(&workspace->lru_list);
@@ -255,21 +206,13 @@ static struct list_head *zstd_find_workspace(unsigned int level)
 	return NULL;
 }
 
-/*
- * zstd_get_workspace - zstd's get_workspace
- * @level: compression level
- *
- * If @level is 0, then any compression level can be used.  Therefore, we begin
- * scanning from 1.  We first scan through possible workspaces and then after
- * attempt to allocate a new workspace.  If we fail to allocate one due to
- * memory pressure, go to sleep waiting for the max level workspace to free up.
- */
+ 
 struct list_head *zstd_get_workspace(unsigned int level)
 {
 	struct list_head *ws;
 	unsigned int nofs_flag;
 
-	/* level == 0 means we can use any workspace */
+	 
 	if (!level)
 		level = 1;
 
@@ -295,25 +238,16 @@ again:
 	return ws;
 }
 
-/*
- * zstd_put_workspace - zstd put_workspace
- * @ws: list_head for the workspace
- *
- * When putting back a workspace, we only need to update the LRU if we are of
- * the requested compression level.  Here is where we continue to protect the
- * max level workspace or update last_used accordingly.  If the reclaim timer
- * isn't set, it is also set here.  Only the max level workspace tries and wakes
- * up waiting workspaces.
- */
+ 
 void zstd_put_workspace(struct list_head *ws)
 {
 	struct workspace *workspace = list_to_workspace(ws);
 
 	spin_lock_bh(&wsm.lock);
 
-	/* A node is only taken off the lru if we are the corresponding level */
+	 
 	if (workspace->req_level == workspace->level) {
-		/* Hide a max level workspace from reclaim */
+		 
 		if (list_empty(&wsm.idle_ws[ZSTD_BTRFS_MAX_LEVEL - 1])) {
 			INIT_LIST_HEAD(&workspace->lru_list);
 		} else {
@@ -378,8 +312,8 @@ int zstd_compress_pages(struct list_head *ws, struct address_space *mapping,
 	zstd_cstream *stream;
 	int ret = 0;
 	int nr_pages = 0;
-	struct page *in_page = NULL;  /* The current page to read */
-	struct page *out_page = NULL; /* The current page to write to */
+	struct page *in_page = NULL;   
+	struct page *out_page = NULL;  
 	unsigned long tot_in = 0;
 	unsigned long tot_out = 0;
 	unsigned long len = *total_out;
@@ -392,7 +326,7 @@ int zstd_compress_pages(struct list_head *ws, struct address_space *mapping,
 	*total_out = 0;
 	*total_in = 0;
 
-	/* Initialize the stream */
+	 
 	stream = zstd_init_cstream(&params, len, workspace->mem,
 			workspace->size);
 	if (!stream) {
@@ -401,14 +335,14 @@ int zstd_compress_pages(struct list_head *ws, struct address_space *mapping,
 		goto out;
 	}
 
-	/* map in the first page of input data */
+	 
 	in_page = find_get_page(mapping, start >> PAGE_SHIFT);
 	workspace->in_buf.src = kmap_local_page(in_page);
 	workspace->in_buf.pos = 0;
 	workspace->in_buf.size = min_t(size_t, len, PAGE_SIZE);
 
 
-	/* Allocate and map in the output buffer */
+	 
 	out_page = alloc_page(GFP_NOFS);
 	if (out_page == NULL) {
 		ret = -ENOMEM;
@@ -431,7 +365,7 @@ int zstd_compress_pages(struct list_head *ws, struct address_space *mapping,
 			goto out;
 		}
 
-		/* Check to see if we are making it bigger */
+		 
 		if (tot_in + workspace->in_buf.pos > 8192 &&
 				tot_in + workspace->in_buf.pos <
 				tot_out + workspace->out_buf.pos) {
@@ -439,14 +373,14 @@ int zstd_compress_pages(struct list_head *ws, struct address_space *mapping,
 			goto out;
 		}
 
-		/* We've reached the end of our output range */
+		 
 		if (workspace->out_buf.pos >= max_out) {
 			tot_out += workspace->out_buf.pos;
 			ret = -E2BIG;
 			goto out;
 		}
 
-		/* Check if we need more output space */
+		 
 		if (workspace->out_buf.pos == workspace->out_buf.size) {
 			tot_out += PAGE_SIZE;
 			max_out -= PAGE_SIZE;
@@ -466,13 +400,13 @@ int zstd_compress_pages(struct list_head *ws, struct address_space *mapping,
 							PAGE_SIZE);
 		}
 
-		/* We've reached the end of the input */
+		 
 		if (workspace->in_buf.pos >= len) {
 			tot_in += workspace->in_buf.pos;
 			break;
 		}
 
-		/* Check if we need more input */
+		 
 		if (workspace->in_buf.pos == workspace->in_buf.size) {
 			tot_in += PAGE_SIZE;
 			kunmap_local(workspace->in_buf.src);
@@ -590,7 +524,7 @@ int zstd_decompress_bio(struct list_head *ws, struct compressed_bio *cb)
 		if (workspace->in_buf.pos >= srclen)
 			break;
 
-		/* Check if we've hit the end of a frame */
+		 
 		if (ret2 == 0)
 			break;
 
@@ -651,7 +585,7 @@ int zstd_decompress(struct list_head *ws, const u8 *data_in,
 		unsigned long buf_offset;
 		unsigned long bytes;
 
-		/* Check if the frame is over and we still need more input */
+		 
 		if (ret2 == 0) {
 			pr_debug("BTRFS: zstd_decompress_stream ended early\n");
 			ret = -EIO;
@@ -695,7 +629,7 @@ finish:
 }
 
 const struct btrfs_compress_op btrfs_zstd_compress = {
-	/* ZSTD uses own workspace manager */
+	 
 	.workspace_manager = NULL,
 	.max_level	= ZSTD_BTRFS_MAX_LEVEL,
 	.default_level	= ZSTD_BTRFS_DEFAULT_LEVEL,

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __PERF_TOP_H
 #define __PERF_TOP_H 1
 
@@ -23,10 +23,7 @@ struct perf_top {
 	struct record_opts record_opts;
 	struct annotation_options annotation_opts;
 	struct evswitch	   evswitch;
-	/*
-	 * Symbols will be added here in perf_event__process_sample and will
-	 * get out after decayed.
-	 */
+	 
 	u64		   samples, lost, lost_total, drop, drop_total;
 	u64		   kernel_samples, us_samples;
 	u64		   exact_samples;
@@ -63,4 +60,4 @@ struct perf_top {
 
 size_t perf_top__header_snprintf(struct perf_top *top, char *bf, size_t size);
 void perf_top__reset_sample_counters(struct perf_top *top);
-#endif /* __PERF_TOP_H */
+#endif  

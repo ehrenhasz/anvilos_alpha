@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2021 ARM Limited.
-// Original author: Mark Brown <broonie@kernel.org>
-//
-// Trivial syscall overhead benchmark.
-//
-// This is implemented in asm to ensure that we don't have any issues with
-// system libraries using instructions that disrupt the test.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 
 #include <asm/unistd.h>
 #include "assembler.h"
@@ -28,7 +28,7 @@
 	puts	"\n"
 .endm
 
-// Main program entry point
+ 
 .globl _start
 function _start
 	puts	"Iterations per test: "
@@ -38,11 +38,11 @@ function _start
 	bl	putdec
 	puts	"\n"
 
-	// Test having never used SVE
+	 
 	puts	"No SVE: "
 	test_loop
 
-	// Check for SVE support - should use hwcap but that's hard in asm
+	 
 	mrs	x0, ID_AA64PFR0_EL1
 	ubfx	x0, x0, #32, #4
 	cbnz	x0, 1f
@@ -50,7 +50,7 @@ function _start
 	b	out
 1:
 
-	// Execute a SVE instruction
+	 
 	puts	"SVE VL: "
 	rdvl	x0, #8
 	bl	putdec
@@ -59,11 +59,11 @@ function _start
 	puts	"SVE used once: "
 	test_loop
 
-	// Use SVE per syscall
+	 
 	puts	"SVE used per syscall: "
 	test_loop "rdvl x0, #8"
 
-	//  And we're done
+	 
 out:
 	mov	x0, #0
 	mov	x8, #__NR_exit

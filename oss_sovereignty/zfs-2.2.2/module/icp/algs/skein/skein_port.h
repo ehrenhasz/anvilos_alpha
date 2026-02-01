@@ -1,66 +1,35 @@
-/*
- * Platform-specific definitions for Skein hash function.
- *
- * Source code author: Doug Whiting, 2008.
- *
- * This algorithm and source code is released to the public domain.
- *
- * Many thanks to Brian Gladman for his portable header files.
- *
- * To port Skein to an "unsupported" platform, change the definitions
- * in this file appropriately.
- */
-/* Copyright 2013 Doug Whiting. This code is released to the public domain. */
+ 
+ 
 
 #ifndef	_SKEIN_PORT_H_
 #define	_SKEIN_PORT_H_
 
-#include <sys/types.h>	/* get integer type definitions */
+#include <sys/types.h>	 
 
 #ifndef	RotL_64
 #define	RotL_64(x, N)	(((x) << (N)) | ((x) >> (64 - (N))))
 #endif
 
-/*
- * Skein is "natively" little-endian (unlike SHA-xxx), for optimal
- * performance on x86 CPUs. The Skein code requires the following
- * definitions for dealing with endianness:
- *
- *    SKEIN_NEED_SWAP:  0 for little-endian, 1 for big-endian
- *    Skein_Put64_LSB_First
- *    Skein_Get64_LSB_First
- *    Skein_Swap64
- *
- * If SKEIN_NEED_SWAP is defined at compile time, it is used here
- * along with the portable versions of Put64/Get64/Swap64, which
- * are slow in general.
- *
- * Otherwise, an "auto-detect" of endianness is attempted below.
- * If the default handling doesn't work well, the user may insert
- * platform-specific code instead (e.g., for big-endian CPUs).
- *
- */
-#ifndef	SKEIN_NEED_SWAP		/* compile-time "override" for endianness? */
+ 
+#ifndef	SKEIN_NEED_SWAP		 
 
-#include <sys/isa_defs.h>	/* get endianness selection */
+#include <sys/isa_defs.h>	 
 
 #if	defined(_ZFS_BIG_ENDIAN)
-/* here for big-endian CPUs */
+ 
 #define	SKEIN_NEED_SWAP   (1)
 #else
-/* here for x86 and x86-64 CPUs (and other detected little-endian CPUs) */
+ 
 #define	SKEIN_NEED_SWAP   (0)
 #define	Skein_Put64_LSB_First(dst08, src64, bCnt) memcpy(dst08, src64, bCnt)
 #define	Skein_Get64_LSB_First(dst64, src08, wCnt) \
 	memcpy(dst64, src08, 8 * (wCnt))
 #endif
 
-#endif				/* ifndef SKEIN_NEED_SWAP */
+#endif				 
 
-/*
- * Provide any definitions still needed.
- */
-#ifndef	Skein_Swap64	/* swap for big-endian, nop for little-endian */
+ 
+#ifndef	Skein_Swap64	 
 #if	SKEIN_NEED_SWAP
 #define	Skein_Swap64(w64)				\
 	(((((uint64_t)(w64)) & 0xFF) << 56) |		\
@@ -74,31 +43,25 @@
 #else
 #define	Skein_Swap64(w64)  (w64)
 #endif
-#endif				/* ifndef Skein_Swap64 */
+#endif				 
 
 #ifndef	Skein_Put64_LSB_First
 static inline void
 Skein_Put64_LSB_First(uint8_t *dst, const uint64_t *src, size_t bCnt)
 {
-	/*
-	 * this version is fully portable (big-endian or little-endian),
-	 * but slow
-	 */
+	 
 	size_t n;
 
 	for (n = 0; n < bCnt; n++)
 		dst[n] = (uint8_t)(src[n >> 3] >> (8 * (n & 7)));
 }
-#endif				/* ifndef Skein_Put64_LSB_First */
+#endif				 
 
 #ifndef	Skein_Get64_LSB_First
 static inline void
 Skein_Get64_LSB_First(uint64_t *dst, const uint8_t *src, size_t wCnt)
 {
-	/*
-	 * this version is fully portable (big-endian or little-endian),
-	 * but slow
-	 */
+	 
 	size_t n;
 
 	for (n = 0; n < 8 * wCnt; n += 8)
@@ -111,6 +74,6 @@ Skein_Get64_LSB_First(uint64_t *dst, const uint8_t *src, size_t wCnt)
 		    (((uint64_t)src[n + 6]) << 48) +
 		    (((uint64_t)src[n + 7]) << 56);
 }
-#endif				/* ifndef Skein_Get64_LSB_First */
+#endif				 
 
-#endif	/* _SKEIN_PORT_H_ */
+#endif	 

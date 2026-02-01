@@ -1,28 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011, 2018 by Delphix. All rights reserved.
- * Copyright (c) 2017 Datto Inc.
- */
+ 
+ 
 
 #include <sys/bpobj.h>
 #include <sys/zfs_context.h>
@@ -31,9 +8,7 @@
 #include <sys/zfeature.h>
 #include <sys/zap.h>
 
-/*
- * Return an empty bpobj, preferably the empty dummy one (dp_empty_bpobj).
- */
+ 
 uint64_t
 bpobj_alloc_empty(objset_t *os, int blocksize, dmu_tx_t *tx)
 {
@@ -188,7 +163,7 @@ bpobj_is_open(const bpobj_t *bpo)
 void
 bpobj_close(bpobj_t *bpo)
 {
-	/* Lame workaround for closing a bpobj that was never opened. */
+	 
 	if (bpo->bpo_object == 0)
 		return;
 
@@ -220,24 +195,15 @@ bpobj_is_empty(bpobj_t *bpo)
 	return (is_empty);
 }
 
-/*
- * A recursive iteration of the bpobjs would be nice here but we run the risk
- * of overflowing function stack space.  Instead, find each subobj and add it
- * to the head of our list so it can be scanned for subjobjs.  Like a
- * recursive implementation, the "deepest" subobjs will be freed first.
- * When a subobj is found to have no additional subojs, free it.
- */
+ 
 typedef struct bpobj_info {
 	bpobj_t *bpi_bpo;
-	/*
-	 * This object is a subobj of bpi_parent,
-	 * at bpi_index in its subobj array.
-	 */
+	 
 	struct bpobj_info *bpi_parent;
 	uint64_t bpi_index;
-	/* How many of our subobj's are left to process. */
+	 
 	uint64_t bpi_unprocessed_subobjs;
-	/* True after having visited this bpo's directly referenced BPs. */
+	 
 	boolean_t bpi_visited;
 	list_node_t bpi_node;
 } bpobj_info_t;
@@ -255,9 +221,7 @@ bpi_alloc(bpobj_t *bpo, bpobj_info_t *parent, uint64_t index)
 	return (bpi);
 }
 
-/*
- * Update bpobj and all of its parents with new space accounting.
- */
+ 
 static void
 propagate_space_reduction(bpobj_info_t *bpi, int64_t freed,
     int64_t comp_freed, int64_t uncomp_freed, dmu_tx_t *tx)
@@ -356,15 +320,7 @@ bpobj_iterate_blkptrs(bpobj_info_t *bpi, bpobj_itor_t func, void *arg,
 	return (err);
 }
 
-/*
- * Given an initial bpo, start by freeing the BPs that are directly referenced
- * by that bpo. If the bpo has subobjs, read in its last subobj and push the
- * subobj to our stack. By popping items off our stack, eventually we will
- * encounter a bpo that has no subobjs.  We can free its bpobj_info_t, and if
- * requested also free the now-empty bpo from disk and decrement
- * its parent's subobj count. We continue popping each subobj from our stack,
- * visiting its last subobj until they too have no more subobjs, and so on.
- */
+ 
 static int
 bpobj_iterate_impl(bpobj_t *initial_bpo, bpobj_itor_t func, void *arg,
     dmu_tx_t *tx, boolean_t free, uint64_t *bpobj_size)
@@ -373,10 +329,7 @@ bpobj_iterate_impl(bpobj_t *initial_bpo, bpobj_itor_t func, void *arg,
 	bpobj_info_t *bpi;
 	int err = 0;
 
-	/*
-	 * Create a "stack" for us to work with without worrying about
-	 * stack overflows. Initialize it with the initial_bpo.
-	 */
+	 
 	list_create(&stack, sizeof (bpobj_info_t),
 	    offsetof(bpobj_info_t, bpi_node));
 	mutex_enter(&initial_bpo->bpo_lock);
@@ -403,24 +356,16 @@ bpobj_iterate_impl(bpobj_t *initial_bpo, bpobj_itor_t func, void *arg,
 			if (err != 0)
 				break;
 		}
-		/*
-		 * We've finished with this bpo's directly-referenced BP's and
-		 * it has no more unprocessed subobjs. We can free its
-		 * bpobj_info_t (unless it is the topmost, initial_bpo).
-		 * If we are freeing from disk, we can also do that.
-		 */
+		 
 		if (bpi->bpi_unprocessed_subobjs == 0) {
-			/*
-			 * If there are no entries, there should
-			 * be no bytes.
-			 */
+			 
 			if (bpobj_is_empty_impl(bpo)) {
 				ASSERT0(bpo->bpo_phys->bpo_bytes);
 				ASSERT0(bpo->bpo_phys->bpo_comp);
 				ASSERT0(bpo->bpo_phys->bpo_uncomp);
 			}
 
-			/* The initial_bpo has no parent and is not closed. */
+			 
 			if (bpi->bpi_parent != NULL) {
 				if (free) {
 					bpobj_t *p = bpi->bpi_parent->bpi_bpo;
@@ -440,7 +385,7 @@ bpobj_iterate_impl(bpobj_t *initial_bpo, bpobj_itor_t func, void *arg,
 					    bpi->bpi_index * sizeof (uint64_t),
 					    sizeof (uint64_t), tx));
 
-					/* eliminate the empty subobj list */
+					 
 					if (bpo->bpo_havesubobj &&
 					    bpo->bpo_phys->bpo_subobjs != 0) {
 						ASSERT0(bpo->bpo_phys->
@@ -466,20 +411,15 @@ bpobj_iterate_impl(bpobj_t *initial_bpo, bpobj_itor_t func, void *arg,
 				mutex_exit(&bpo->bpo_lock);
 			}
 
-			/*
-			 * Finished processing this bpo. Unlock, and free
-			 * our "stack" info.
-			 */
+			 
 			list_remove_head(&stack);
 			kmem_free(bpi, sizeof (bpobj_info_t));
 		} else {
-			/*
-			 * We have unprocessed subobjs. Process the next one.
-			 */
+			 
 			ASSERT(bpo->bpo_havecomp);
 			ASSERT3P(bpobj_size, ==, NULL);
 
-			/* Add the last subobj to stack. */
+			 
 			int64_t i = bpi->bpi_unprocessed_subobjs - 1;
 			uint64_t offset = i * sizeof (uint64_t);
 
@@ -510,11 +450,7 @@ bpobj_iterate_impl(bpobj_t *initial_bpo, bpobj_itor_t func, void *arg,
 			bpi->bpi_unprocessed_subobjs--;
 		}
 	}
-	/*
-	 * Cleanup anything left on the "stack" after we left the loop.
-	 * Every bpo on the stack is locked so we must remember to undo
-	 * that now (in LIFO order).
-	 */
+	 
 	while ((bpi = list_remove_head(&stack)) != NULL) {
 		bpobj_t *bpo = bpi->bpi_bpo;
 		ASSERT(err != 0);
@@ -522,7 +458,7 @@ bpobj_iterate_impl(bpobj_t *initial_bpo, bpobj_itor_t func, void *arg,
 
 		mutex_exit(&bpo->bpo_lock);
 
-		/* do not free the initial_bpo */
+		 
 		if (bpi->bpi_parent != NULL) {
 			bpobj_close(bpi->bpi_bpo);
 			kmem_free(bpi->bpi_bpo, sizeof (bpobj_t));
@@ -535,30 +471,14 @@ bpobj_iterate_impl(bpobj_t *initial_bpo, bpobj_itor_t func, void *arg,
 	return (err);
 }
 
-/*
- * Iterate and remove the entries.  If func returns nonzero, iteration
- * will stop and that entry will not be removed.
- */
+ 
 int
 bpobj_iterate(bpobj_t *bpo, bpobj_itor_t func, void *arg, dmu_tx_t *tx)
 {
 	return (bpobj_iterate_impl(bpo, func, arg, tx, B_TRUE, NULL));
 }
 
-/*
- * Iterate the entries.  If func returns nonzero, iteration will stop.
- *
- * If there are no subobjs:
- *
- * *bpobj_size can be used to return the number of block pointers in the
- * bpobj.  Note that this may be different from the number of block pointers
- * that are iterated over, if iteration is terminated early (e.g. by the func
- * returning nonzero).
- *
- * If there are concurrent (or subsequent) modifications to the bpobj then the
- * returned *bpobj_size can be passed as "start" to
- * livelist_bpobj_iterate_from_nofree() to iterate the newly added entries.
- */
+ 
 int
 bpobj_iterate_nofree(bpobj_t *bpo, bpobj_itor_t func, void *arg,
     uint64_t *bpobj_size)
@@ -566,11 +486,7 @@ bpobj_iterate_nofree(bpobj_t *bpo, bpobj_itor_t func, void *arg,
 	return (bpobj_iterate_impl(bpo, func, arg, NULL, B_FALSE, bpobj_size));
 }
 
-/*
- * Iterate over the blkptrs in the bpobj beginning at index start. If func
- * returns nonzero, iteration will stop. This is a livelist specific function
- * since it assumes that there are no subobjs present.
- */
+ 
 int
 livelist_bpobj_iterate_from_nofree(bpobj_t *bpo, bpobj_itor_t func, void *arg,
     int64_t start)
@@ -583,91 +499,7 @@ livelist_bpobj_iterate_from_nofree(bpobj_t *bpo, bpobj_itor_t func, void *arg,
 	return (err);
 }
 
-/*
- * Logically add subobj's contents to the parent bpobj.
- *
- * In the most general case, this is accomplished in constant time by adding
- * a reference to subobj.  This case is used when enqueuing a large subobj:
- * +--------------+                        +--------------+
- * | bpobj        |----------------------->| subobj list  |
- * +----+----+----+----+----+              +-----+-----+--+--+
- * | bp | bp | bp | bp | bp |              | obj | obj | obj |
- * +----+----+----+----+----+              +-----+-----+-----+
- *
- * +--------------+                        +--------------+
- * | sub-bpobj    |----------------------> | subsubobj    |
- * +----+----+----+----+---------+----+    +-----+-----+--+--------+-----+
- * | bp | bp | bp | bp |   ...   | bp |    | obj | obj |    ...    | obj |
- * +----+----+----+----+---------+----+    +-----+-----+-----------+-----+
- *
- * Result: sub-bpobj added to parent's subobj list.
- * +--------------+                        +--------------+
- * | bpobj        |----------------------->| subobj list  |
- * +----+----+----+----+----+              +-----+-----+--+--+-----+
- * | bp | bp | bp | bp | bp |              | obj | obj | obj | OBJ |
- * +----+----+----+----+----+              +-----+-----+-----+--|--+
- *                                                              |
- *       /-----------------------------------------------------/
- *       v
- * +--------------+                        +--------------+
- * | sub-bpobj    |----------------------> | subsubobj    |
- * +----+----+----+----+---------+----+    +-----+-----+--+--------+-----+
- * | bp | bp | bp | bp |   ...   | bp |    | obj | obj |    ...    | obj |
- * +----+----+----+----+---------+----+    +-----+-----+-----------+-----+
- *
- *
- * In a common case, the subobj is small: its bp's and its list of subobj's
- * are each stored in a single block.  In this case we copy the subobj's
- * contents to the parent:
- * +--------------+                        +--------------+
- * | bpobj        |----------------------->| subobj list  |
- * +----+----+----+----+----+              +-----+-----+--+--+
- * | bp | bp | bp | bp | bp |              | obj | obj | obj |
- * +----+----+----+----+----+              +-----+-----+-----+
- *                          ^                                ^
- * +--------------+         |              +--------------+  |
- * | sub-bpobj    |---------^------------> | subsubobj    |  ^
- * +----+----+----+         |              +-----+-----+--+  |
- * | BP | BP |-->-->-->-->-/               | OBJ | OBJ |-->-/
- * +----+----+                             +-----+-----+
- *
- * Result: subobj destroyed, contents copied to parent:
- * +--------------+                        +--------------+
- * | bpobj        |----------------------->| subobj list  |
- * +----+----+----+----+----+----+----+    +-----+-----+--+--+-----+-----+
- * | bp | bp | bp | bp | bp | BP | BP |    | obj | obj | obj | OBJ | OBJ |
- * +----+----+----+----+----+----+----+    +-----+-----+-----+-----+-----+
- *
- *
- * If the subobj has many BP's but few subobj's, we can copy the sub-subobj's
- * but retain the sub-bpobj:
- * +--------------+                        +--------------+
- * | bpobj        |----------------------->| subobj list  |
- * +----+----+----+----+----+              +-----+-----+--+--+
- * | bp | bp | bp | bp | bp |              | obj | obj | obj |
- * +----+----+----+----+----+              +-----+-----+-----+
- *                                                           ^
- * +--------------+                        +--------------+  |
- * | sub-bpobj    |----------------------> | subsubobj    |  ^
- * +----+----+----+----+---------+----+    +-----+-----+--+  |
- * | bp | bp | bp | bp |   ...   | bp |    | OBJ | OBJ |-->-/
- * +----+----+----+----+---------+----+    +-----+-----+
- *
- * Result: sub-sub-bpobjs and subobj added to parent's subobj list.
- * +--------------+                     +--------------+
- * | bpobj        |-------------------->| subobj list  |
- * +----+----+----+----+----+           +-----+-----+--+--+-----+-----+------+
- * | bp | bp | bp | bp | bp |           | obj | obj | obj | OBJ | OBJ | OBJ* |
- * +----+----+----+----+----+           +-----+-----+-----+-----+-----+--|---+
- *                                                                       |
- *       /--------------------------------------------------------------/
- *       v
- * +--------------+
- * | sub-bpobj    |
- * +----+----+----+----+---------+----+
- * | bp | bp | bp | bp |   ...   | bp |
- * +----+----+----+----+---------+----+
- */
+ 
 void
 bpobj_enqueue_subobj(bpobj_t *bpo, uint64_t subobj, dmu_tx_t *tx)
 {
@@ -689,7 +521,7 @@ bpobj_enqueue_subobj(bpobj_t *bpo, uint64_t subobj, dmu_tx_t *tx)
 
 	VERIFY3U(0, ==, bpobj_open(&subbpo, bpo->bpo_os, subobj));
 	if (bpobj_is_empty(&subbpo)) {
-		/* No point in having an empty subobj. */
+		 
 		bpobj_close(&subbpo);
 		bpobj_free(bpo->bpo_os, subobj, tx);
 		return;
@@ -707,11 +539,7 @@ bpobj_enqueue_subobj(bpobj_t *bpo, uint64_t subobj, dmu_tx_t *tx)
 		ASSERT3U(doi.doi_type, ==, DMU_OT_BPOBJ_SUBOBJ);
 	}
 
-	/*
-	 * If subobj has only one block of subobjs, then move subobj's
-	 * subobjs to bpo's subobj list directly.  This reduces recursion in
-	 * bpobj_iterate due to nested subobjs.
-	 */
+	 
 	subsubobjs = subbpo.bpo_phys->bpo_subobjs;
 	if (subsubobjs != 0) {
 		VERIFY0(dmu_object_info(bpo->bpo_os, subsubobjs, &doi));
@@ -720,12 +548,7 @@ bpobj_enqueue_subobj(bpobj_t *bpo, uint64_t subobj, dmu_tx_t *tx)
 		}
 	}
 
-	/*
-	 * If, in addition to having only one block of subobj's, subobj has
-	 * only one block of bp's, then move subobj's bp's to bpo's bp list
-	 * directly. This reduces recursion in bpobj_iterate due to nested
-	 * subobjs.
-	 */
+	 
 	VERIFY3U(0, ==, dmu_object_info(bpo->bpo_os, subobj, &doi));
 	if (doi.doi_max_offset > doi.doi_data_block_size || !copy_subsub) {
 		copy_bps = B_FALSE;
@@ -737,10 +560,7 @@ bpobj_enqueue_subobj(bpobj_t *bpo, uint64_t subobj, dmu_tx_t *tx)
 
 		VERIFY0(dmu_buf_hold(bpo->bpo_os, subsubobjs,
 		    0, FTAG, &subdb, 0));
-		/*
-		 * Make sure that we are not asking dmu_write()
-		 * to write more data than we have in our buffer.
-		 */
+		 
 		VERIFY3U(subdb->db_size, >=,
 		    numsubsub * sizeof (subobj));
 		if (bpo->bpo_phys->bpo_subobjs == 0) {
@@ -768,10 +588,7 @@ bpobj_enqueue_subobj(bpobj_t *bpo, uint64_t subobj, dmu_tx_t *tx)
 		VERIFY0(dmu_buf_hold(bpo->bpo_os, subobj,
 		    0, FTAG, &bps, 0));
 
-		/*
-		 * Make sure that we are not asking dmu_write()
-		 * to write more data than we have in our buffer.
-		 */
+		 
 		VERIFY3U(bps->db_size, >=, numbps * sizeof (blkptr_t));
 		dmu_write(bpo->bpo_os, bpo->bpo_object,
 		    bpo->bpo_phys->bpo_num_blkptrs * sizeof (blkptr_t),
@@ -804,9 +621,7 @@ bpobj_enqueue_subobj(bpobj_t *bpo, uint64_t subobj, dmu_tx_t *tx)
 
 }
 
-/*
- * Prefetch metadata required for bpobj_enqueue_subobj().
- */
+ 
 void
 bpobj_prefetch_subobj(bpobj_t *bpo, uint64_t subobj)
 {
@@ -880,22 +695,12 @@ bpobj_enqueue(bpobj_t *bpo, const blkptr_t *bp, boolean_t bp_freed,
 	ASSERT(bpo->bpo_object != dmu_objset_pool(bpo->bpo_os)->dp_empty_bpobj);
 
 	if (BP_IS_EMBEDDED(bp)) {
-		/*
-		 * The bpobj will compress better without the payload.
-		 *
-		 * Note that we store EMBEDDED bp's because they have an
-		 * uncompressed size, which must be accounted for.  An
-		 * alternative would be to add their size to bpo_uncomp
-		 * without storing the bp, but that would create additional
-		 * complications: bpo_uncomp would be inconsistent with the
-		 * set of BP's stored, and bpobj_iterate() wouldn't visit
-		 * all the space accounted for in the bpobj.
-		 */
+		 
 		memset(&stored_bp, 0, sizeof (stored_bp));
 		stored_bp.blk_prop = bp->blk_prop;
 		stored_bp.blk_birth = bp->blk_birth;
 	} else if (!BP_GET_DEDUP(bp)) {
-		/* The bpobj will compress better without the checksum */
+		 
 		memset(&stored_bp.blk_cksum, 0, sizeof (stored_bp.blk_cksum));
 	}
 
@@ -983,10 +788,7 @@ bpobj_space(bpobj_t *bpo, uint64_t *usedp, uint64_t *compp, uint64_t *uncompp)
 	}
 }
 
-/*
- * Return the amount of space in the bpobj which is:
- * mintxg < blk_birth <= maxtxg
- */
+ 
 int
 bpobj_space_range(bpobj_t *bpo, uint64_t mintxg, uint64_t maxtxg,
     uint64_t *usedp, uint64_t *compp, uint64_t *uncompp)
@@ -996,10 +798,7 @@ bpobj_space_range(bpobj_t *bpo, uint64_t mintxg, uint64_t maxtxg,
 
 	ASSERT(bpobj_is_open(bpo));
 
-	/*
-	 * As an optimization, if they want the whole txg range, just
-	 * get bpo_bytes rather than iterating over the bps.
-	 */
+	 
 	if (mintxg < TXG_INITIAL && maxtxg == UINT64_MAX && bpo->bpo_havecomp)
 		return (bpobj_space(bpo, usedp, compp, uncompp));
 
@@ -1014,11 +813,7 @@ bpobj_space_range(bpobj_t *bpo, uint64_t mintxg, uint64_t maxtxg,
 	return (err);
 }
 
-/*
- * A bpobj_itor_t to append blkptrs to a bplist. Note that while blkptrs in a
- * bpobj are designated as free or allocated that information is not preserved
- * in bplists.
- */
+ 
 int
 bplist_append_cb(void *arg, const blkptr_t *bp, boolean_t bp_freed,
     dmu_tx_t *tx)

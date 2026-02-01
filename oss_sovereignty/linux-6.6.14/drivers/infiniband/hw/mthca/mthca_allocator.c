@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2004 Topspin Communications.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/errno.h>
 #include <linux/slab.h>
@@ -36,7 +6,7 @@
 
 #include "mthca_dev.h"
 
-/* Trivial bitmap-based allocator */
+ 
 u32 mthca_alloc(struct mthca_alloc *alloc)
 {
 	unsigned long flags;
@@ -79,7 +49,7 @@ void mthca_free(struct mthca_alloc *alloc, u32 obj)
 int mthca_alloc_init(struct mthca_alloc *alloc, u32 num, u32 mask,
 		     u32 reserved)
 {
-	/* num must be a power of 2 */
+	 
 	if (num != 1 << (ffs(num) - 1))
 		return -EINVAL;
 
@@ -102,11 +72,7 @@ void mthca_alloc_cleanup(struct mthca_alloc *alloc)
 	bitmap_free(alloc->table);
 }
 
-/*
- * Array of pointers with lazy allocation of leaf pages.  Callers of
- * _get, _set and _clear methods must use a lock or otherwise
- * serialize access to the array.
- */
+ 
 
 #define MTHCA_ARRAY_MASK (PAGE_SIZE / sizeof (void *) - 1)
 
@@ -124,7 +90,7 @@ int mthca_array_set(struct mthca_array *array, int index, void *value)
 {
 	int p = (index * sizeof (void *)) >> PAGE_SHIFT;
 
-	/* Allocate with GFP_ATOMIC because we'll be called with locks held. */
+	 
 	if (!array->page_list[p].page)
 		array->page_list[p].page = (void **) get_zeroed_page(GFP_ATOMIC);
 
@@ -180,12 +146,7 @@ void mthca_array_cleanup(struct mthca_array *array, int nent)
 	kfree(array->page_list);
 }
 
-/*
- * Handling for queue buffers -- we allocate a bunch of memory and
- * register it in a memory region at HCA virtual address 0.  If the
- * requested size is > max_direct, we split the allocation into
- * multiple pages, so we don't require too much contiguous memory.
- */
+ 
 
 int mthca_buf_alloc(struct mthca_dev *dev, int size, int max_direct,
 		    union mthca_buf *buf, int *is_direct, struct mthca_pd *pd,

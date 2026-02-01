@@ -1,26 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2007, 2010, Oracle and/or its affiliates. All rights reserved.
- */
+ 
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/dmu.h>
@@ -34,20 +13,7 @@
 #endif
 #include <sys/zfs_fuid.h>
 
-/*
- * FUID Domain table(s).
- *
- * The FUID table is stored as a packed nvlist of an array
- * of nvlists which contain an index, domain string and offset
- *
- * During file system initialization the nvlist(s) are read and
- * two AVL trees are created.  One tree is keyed by the index number
- * and the other by the domain string.  Nodes are never removed from
- * trees, but new entries may be added.  If a new entry is added then
- * the zfsvfs->z_fuid_dirty flag is set to true and the caller will then
- * be responsible for calling zfs_fuid_sync() to sync the changes to disk.
- *
- */
+ 
 
 #define	FUID_IDX	"fuid_idx"
 #define	FUID_DOMAIN	"fuid_domain"
@@ -63,9 +29,7 @@ typedef struct fuid_domain {
 
 static const char *const nulldomain = "";
 
-/*
- * Compare two indexes.
- */
+ 
 static int
 idx_compare(const void *arg1, const void *arg2)
 {
@@ -75,9 +39,7 @@ idx_compare(const void *arg1, const void *arg2)
 	return (TREE_CMP(node1->f_idx, node2->f_idx));
 }
 
-/*
- * Compare two domain strings.
- */
+ 
 static int
 domain_compare(const void *arg1, const void *arg2)
 {
@@ -99,10 +61,7 @@ zfs_fuid_avl_tree_create(avl_tree_t *idx_tree, avl_tree_t *domain_tree)
 	    sizeof (fuid_domain_t), offsetof(fuid_domain_t, f_domnode));
 }
 
-/*
- * load initial fuid domain and idx trees.  This function is used by
- * both the kernel and zdb.
- */
+ 
 uint64_t
 zfs_fuid_table_load(objset_t *os, uint64_t fuid_obj, avl_tree_t *idx_tree,
     avl_tree_t *domain_tree)
@@ -185,9 +144,7 @@ zfs_fuid_idx_domain(avl_tree_t *idx_tree, uint32_t idx)
 }
 
 #ifdef _KERNEL
-/*
- * Load the fuid table(s) into memory.
- */
+ 
 static void
 zfs_fuid_init(zfsvfs_t *zfsvfs)
 {
@@ -212,9 +169,7 @@ zfs_fuid_init(zfsvfs_t *zfsvfs)
 	rw_exit(&zfsvfs->z_fuid_lock);
 }
 
-/*
- * sync out AVL trees to persistent storage.
- */
+ 
 void
 zfs_fuid_sync(zfsvfs_t *zfsvfs, dmu_tx_t *tx)
 {
@@ -233,9 +188,7 @@ zfs_fuid_sync(zfsvfs_t *zfsvfs, dmu_tx_t *tx)
 
 	rw_enter(&zfsvfs->z_fuid_lock, RW_WRITER);
 
-	/*
-	 * First see if table needs to be created?
-	 */
+	 
 	if (zfsvfs->z_fuid_obj == 0) {
 		zfsvfs->z_fuid_obj = dmu_object_alloc(zfsvfs->z_os,
 		    DMU_OT_FUID, 1 << 14, DMU_OT_FUID_SIZE,
@@ -282,14 +235,7 @@ zfs_fuid_sync(zfsvfs_t *zfsvfs, dmu_tx_t *tx)
 	rw_exit(&zfsvfs->z_fuid_lock);
 }
 
-/*
- * Query domain table for a given domain.
- *
- * If domain isn't found and addok is set, it is added to AVL trees and
- * the zfsvfs->z_fuid_dirty flag will be set to TRUE.  It will then be
- * necessary for the caller or another thread to detect the dirty table
- * and sync out the changes.
- */
+ 
 static int
 zfs_fuid_find_by_domain(zfsvfs_t *zfsvfs, const char *domain,
     const char **retdomain, boolean_t addok)
@@ -298,11 +244,7 @@ zfs_fuid_find_by_domain(zfsvfs_t *zfsvfs, const char *domain,
 	avl_index_t loc;
 	krw_t rw = RW_READER;
 
-	/*
-	 * If the dummy "nobody" domain then return an index of 0
-	 * to cause the created FUID to be a standard POSIX id
-	 * for the user nobody.
-	 */
+	 
 	if (domain[0] == '\0') {
 		if (retdomain)
 			*retdomain = nulldomain;
@@ -349,12 +291,7 @@ retry:
 	}
 }
 
-/*
- * Query domain table by index, returning domain string
- *
- * Returns a pointer from an avl node of the domain string.
- *
- */
+ 
 const char *
 zfs_fuid_find_by_idx(zfsvfs_t *zfsvfs, uint32_t idx)
 {
@@ -404,9 +341,7 @@ uid_t
 zfs_fuid_map_id(zfsvfs_t *zfsvfs, uint64_t fuid,
     cred_t *cr, zfs_fuid_type_t type)
 {
-	/*
-	 * The Linux port only supports POSIX IDs, use the passed id.
-	 */
+	 
 	return (fuid);
 }
 
@@ -436,13 +371,7 @@ zfs_fuid_map_id(zfsvfs_t *zfsvfs, uint64_t fuid,
 }
 #endif
 
-/*
- * Add a FUID node to the list of fuid's being created for this
- * ACL
- *
- * If ACL has multiple domains, then keep only one copy of each unique
- * domain.
- */
+ 
 void
 zfs_fuid_node_add(zfs_fuid_info_t **fuidpp, const char *domain, uint32_t rid,
     uint64_t idx, uint64_t id, zfs_fuid_type_t type)
@@ -457,11 +386,7 @@ zfs_fuid_node_add(zfs_fuid_info_t **fuidpp, const char *domain, uint32_t rid,
 		*fuidpp = zfs_fuid_info_alloc();
 
 	fuidp = *fuidpp;
-	/*
-	 * First find fuid domain index in linked list
-	 *
-	 * If one isn't found then create an entry.
-	 */
+	 
 
 	for (fuididx = 1, fuid_domain = list_head(&fuidp->z_domains);
 	    fuid_domain; fuid_domain = list_next(&fuidp->z_domains,
@@ -483,9 +408,7 @@ zfs_fuid_node_add(zfs_fuid_info_t **fuidpp, const char *domain, uint32_t rid,
 
 	if (type == ZFS_ACE_USER || type == ZFS_ACE_GROUP) {
 
-		/*
-		 * Now allocate fuid entry and add it on the end of the list
-		 */
+		 
 
 		fuid = kmem_alloc(sizeof (zfs_fuid_t), KM_SLEEP);
 		fuid->z_id = id;
@@ -503,14 +426,7 @@ zfs_fuid_node_add(zfs_fuid_info_t **fuidpp, const char *domain, uint32_t rid,
 }
 
 #ifdef HAVE_KSID
-/*
- * Create a file system FUID, based on information in the users cred
- *
- * If cred contains KSID_OWNER then it should be used to determine
- * the uid otherwise cred's uid will be used. By default cred's gid
- * is used unless it's an ephemeral ID in which case KSID_GROUP will
- * be used if it exists.
- */
+ 
 uint64_t
 zfs_fuid_create_cred(zfsvfs_t *zfsvfs, zfs_fuid_type_t type,
     cred_t *cr, zfs_fuid_info_t **fuidp)
@@ -534,9 +450,7 @@ zfs_fuid_create_cred(zfsvfs_t *zfsvfs, zfs_fuid_type_t type,
 		return ((uint64_t)id);
 	}
 
-	/*
-	 * ksid is present and FUID is supported
-	 */
+	 
 	id = (type == ZFS_OWNER) ? ksid_getid(ksid) : crgetgid(cr);
 
 	if (!IS_EPHEMERAL(id))
@@ -554,20 +468,9 @@ zfs_fuid_create_cred(zfsvfs_t *zfsvfs, zfs_fuid_type_t type,
 
 	return (FUID_ENCODE(idx, rid));
 }
-#endif /* HAVE_KSID */
+#endif  
 
-/*
- * Create a file system FUID for an ACL ace
- * or a chown/chgrp of the file.
- * This is similar to zfs_fuid_create_cred, except that
- * we can't find the domain + rid information in the
- * cred.  Instead we have to query Winchester for the
- * domain and rid.
- *
- * During replay operations the domain+rid information is
- * found in the zfs_fuid_info_t that the replay code has
- * attached to the zfsvfs of the file system.
- */
+ 
 uint64_t
 zfs_fuid_create(zfsvfs_t *zfsvfs, uint64_t id, cred_t *cr,
     zfs_fuid_type_t type, zfs_fuid_info_t **fuidpp)
@@ -581,13 +484,7 @@ zfs_fuid_create(zfsvfs_t *zfsvfs, uint64_t id, cred_t *cr,
 	zfs_fuid_t *zfuid = NULL;
 	zfs_fuid_info_t *fuidp = NULL;
 
-	/*
-	 * If POSIX ID, or entry is already a FUID then
-	 * just return the id
-	 *
-	 * We may also be handed an already FUID'ized id via
-	 * chmod.
-	 */
+	 
 
 	if (!zfsvfs->z_use_fuids || !IS_EPHEMERAL(id) || fuid_idx != 0)
 		return (id);
@@ -595,12 +492,7 @@ zfs_fuid_create(zfsvfs_t *zfsvfs, uint64_t id, cred_t *cr,
 	if (zfsvfs->z_replay) {
 		fuidp = zfsvfs->z_fuid_replay;
 
-		/*
-		 * If we are passed an ephemeral id, but no
-		 * fuid_info was logged then return NOBODY.
-		 * This is most likely a result of idmap service
-		 * not being available.
-		 */
+		 
 		if (fuidp == NULL)
 			return (UID_NOBODY);
 
@@ -633,11 +525,7 @@ zfs_fuid_create(zfsvfs_t *zfsvfs, uint64_t id, cred_t *cr,
 			    &domain, &rid);
 
 		if (status != 0) {
-			/*
-			 * When returning nobody we will need to
-			 * make a dummy fuid table entry for logging
-			 * purposes.
-			 */
+			 
 			rid = UID_NOBODY;
 			domain = nulldomain;
 		}
@@ -654,9 +542,7 @@ zfs_fuid_create(zfsvfs_t *zfsvfs, uint64_t id, cred_t *cr,
 	}
 	return (FUID_ENCODE(idx, rid));
 #else
-	/*
-	 * The Linux port only supports POSIX IDs, use the passed id.
-	 */
+	 
 	return (id);
 #endif
 }
@@ -673,10 +559,7 @@ zfs_fuid_destroy(zfsvfs_t *zfsvfs)
 	rw_exit(&zfsvfs->z_fuid_lock);
 }
 
-/*
- * Allocate zfs_fuid_info for tracking FUIDs created during
- * zfs_mknode, VOP_SETATTR() or VOP_SETSECATTR()
- */
+ 
 zfs_fuid_info_t *
 zfs_fuid_info_alloc(void)
 {
@@ -690,9 +573,7 @@ zfs_fuid_info_alloc(void)
 	return (fuidp);
 }
 
-/*
- * Release all memory associated with zfs_fuid_info_t
- */
+ 
 void
 zfs_fuid_info_free(zfs_fuid_info_t *fuidp)
 {
@@ -712,13 +593,7 @@ zfs_fuid_info_free(zfs_fuid_info_t *fuidp)
 	kmem_free(fuidp, sizeof (zfs_fuid_info_t));
 }
 
-/*
- * Check to see if id is a groupmember.  If cred
- * has ksid info then sidlist is checked first
- * and if still not found then POSIX groups are checked
- *
- * Will use a straight FUID compare when possible.
- */
+ 
 boolean_t
 zfs_groupmember(zfsvfs_t *zfsvfs, uint64_t id, cred_t *cr)
 {
@@ -759,11 +634,9 @@ zfs_groupmember(zfsvfs_t *zfsvfs, uint64_t id, cred_t *cr)
 			}
 		}
 	}
-#endif /* illumos */
+#endif  
 
-	/*
-	 * Not found in ksidlist, check posix groups
-	 */
+	 
 	gid = zfs_fuid_map_id(zfsvfs, id, cr, ZFS_GROUP);
 	return (groupmember(gid, cr));
 }
@@ -783,9 +656,7 @@ zfs_fuid_txhold(zfsvfs_t *zfsvfs, dmu_tx_t *tx)
 	}
 }
 
-/*
- * buf must be big enough (eg, 32 bytes)
- */
+ 
 int
 zfs_id_to_fuidstr(zfsvfs_t *zfsvfs, const char *domain, uid_t rid,
     char *buf, size_t len, boolean_t addok)

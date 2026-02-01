@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* 10G controller driver for Samsung SoCs
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Author: Siva Reddy Kallam <siva.kallam@samsung.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -35,7 +29,7 @@ struct sxgbe_stats {
 }
 
 static const struct sxgbe_stats sxgbe_gstrings_stats[] = {
-	/* TX/RX IRQ events */
+	 
 	SXGBE_STAT(tx_process_stopped_irq),
 	SXGBE_STAT(tx_ctxt_desc_err),
 	SXGBE_STAT(tx_threshold),
@@ -51,7 +45,7 @@ static const struct sxgbe_stats sxgbe_gstrings_stats[] = {
 	SXGBE_STAT(rx_process_stopped_irq),
 	SXGBE_STAT(rx_underflow_irq),
 
-	/* Bus access errors */
+	 
 	SXGBE_STAT(fatal_bus_error_irq),
 	SXGBE_STAT(tx_read_transfer_err),
 	SXGBE_STAT(tx_write_transfer_err),
@@ -64,15 +58,15 @@ static const struct sxgbe_stats sxgbe_gstrings_stats[] = {
 	SXGBE_STAT(rx_buffer_access_err),
 	SXGBE_STAT(rx_data_transfer_err),
 
-	/* EEE-LPI stats */
+	 
 	SXGBE_STAT(tx_lpi_entry_n),
 	SXGBE_STAT(tx_lpi_exit_n),
 	SXGBE_STAT(rx_lpi_entry_n),
 	SXGBE_STAT(rx_lpi_exit_n),
 	SXGBE_STAT(eee_wakeup_error_n),
 
-	/* RX specific */
-	/* L2 error */
+	 
+	 
 	SXGBE_STAT(rx_code_gmii_err),
 	SXGBE_STAT(rx_watchdog_err),
 	SXGBE_STAT(rx_crc_err),
@@ -81,7 +75,7 @@ static const struct sxgbe_stats sxgbe_gstrings_stats[] = {
 	SXGBE_STAT(ip_payload_err),
 	SXGBE_STAT(overflow_error),
 
-	/* L2 Pkt type */
+	 
 	SXGBE_STAT(len_pkt),
 	SXGBE_STAT(mac_ctl_pkt),
 	SXGBE_STAT(dcb_ctl_pkt),
@@ -96,7 +90,7 @@ static const struct sxgbe_stats sxgbe_gstrings_stats[] = {
 	SXGBE_STAT(dvlan_osvlan_icvlan_pkt),
 	SXGBE_STAT(dvan_ocvlan_icvlan_pkt),
 
-	/* L3/L4 Pkt type */
+	 
 	SXGBE_STAT(not_ip_pkt),
 	SXGBE_STAT(ip4_tcp_pkt),
 	SXGBE_STAT(ip4_udp_pkt),
@@ -107,7 +101,7 @@ static const struct sxgbe_stats sxgbe_gstrings_stats[] = {
 	SXGBE_STAT(ip6_icmp_pkt),
 	SXGBE_STAT(ip6_unknown_pkt),
 
-	/* Filter specific */
+	 
 	SXGBE_STAT(vlan_filter_match),
 	SXGBE_STAT(sa_filter_fail),
 	SXGBE_STAT(da_filter_fail),
@@ -115,7 +109,7 @@ static const struct sxgbe_stats sxgbe_gstrings_stats[] = {
 	SXGBE_STAT(l3_filter_match),
 	SXGBE_STAT(l4_filter_match),
 
-	/* RX context specific */
+	 
 	SXGBE_STAT(timestamp_dropped),
 	SXGBE_STAT(rx_msg_type_no_ptp),
 	SXGBE_STAT(rx_ptp_type_sync),
@@ -157,15 +151,12 @@ static int sxgbe_set_eee(struct net_device *dev,
 	if (!priv->eee_enabled) {
 		sxgbe_disable_eee_mode(priv);
 	} else {
-		/* We are asking for enabling the EEE but it is safe
-		 * to verify all by invoking the eee_init function.
-		 * In case of failure it will return an error.
-		 */
+		 
 		priv->eee_enabled = sxgbe_eee_init(priv);
 		if (!priv->eee_enabled)
 			return -EOPNOTSUPP;
 
-		/* Do not change tx_lpi_timer in case of failure */
+		 
 		priv->tx_lpi_timer = edata->tx_lpi_timer;
 	}
 
@@ -315,7 +306,7 @@ static int sxgbe_get_rss_hash_opts(struct sxgbe_priv_data *priv,
 {
 	cmd->data = 0;
 
-	/* Report default options for RSS on sxgbe */
+	 
 	switch (cmd->flow_type) {
 	case TCP_V4_FLOW:
 	case UDP_V4_FLOW:
@@ -368,9 +359,7 @@ static int sxgbe_set_rss_hash_opt(struct sxgbe_priv_data *priv,
 {
 	u32 reg_val = 0;
 
-	/* RSS does not support anything other than hashing
-	 * to queues on src and dst IPs and ports
-	 */
+	 
 	if (cmd->data & ~(RXH_IP_SRC | RXH_IP_DST |
 			  RXH_L4_B_0_1 | RXH_L4_B_2_3))
 		return -EINVAL;
@@ -415,7 +404,7 @@ static int sxgbe_set_rss_hash_opt(struct sxgbe_priv_data *priv,
 		return -EINVAL;
 	}
 
-	/* Read SXGBE RSS control register and update */
+	 
 	reg_val |= readl(priv->ioaddr + SXGBE_CORE_RSS_CTL_REG);
 	writel(reg_val, priv->ioaddr + SXGBE_CORE_RSS_CTL_REG);
 	readl(priv->ioaddr + SXGBE_CORE_RSS_CTL_REG);
@@ -450,21 +439,21 @@ static void sxgbe_get_regs(struct net_device *dev,
 
 	memset(reg_space, 0x0, REG_SPACE_SIZE);
 
-	/* MAC registers */
+	 
 	for (reg_offset = START_MAC_REG_OFFSET;
 	     reg_offset <= MAX_MAC_REG_OFFSET; reg_offset += 4) {
 		reg_space[reg_ix] = readl(ioaddr + reg_offset);
 		reg_ix++;
 	}
 
-	/* MTL registers */
+	 
 	for (reg_offset = START_MTL_REG_OFFSET;
 	     reg_offset <= MAX_MTL_REG_OFFSET; reg_offset += 4) {
 		reg_space[reg_ix] = readl(ioaddr + reg_offset);
 		reg_ix++;
 	}
 
-	/* DMA registers */
+	 
 	for (reg_offset = START_DMA_REG_OFFSET;
 	     reg_offset <= MAX_DMA_REG_OFFSET; reg_offset += 4) {
 		reg_space[reg_ix] = readl(ioaddr + reg_offset);

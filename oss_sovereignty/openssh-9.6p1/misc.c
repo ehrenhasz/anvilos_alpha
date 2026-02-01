@@ -1,21 +1,5 @@
-/* $OpenBSD: misc.c,v 1.189 2023/10/12 03:36:32 djm Exp $ */
-/*
- * Copyright (c) 2000 Markus Friedl.  All rights reserved.
- * Copyright (c) 2005-2020 Damien Miller.  All rights reserved.
- * Copyright (c) 2004 Henning Brauer <henning@openbsd.org>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
+ 
 
 
 #include "includes.h"
@@ -77,7 +61,7 @@
 #include "ssherr.h"
 #include "platform.h"
 
-/* remove newline at end of string */
+ 
 char *
 chop(char *s)
 {
@@ -93,7 +77,7 @@ chop(char *s)
 
 }
 
-/* remove whitespace from end of string */
+ 
 void
 rtrim(char *s)
 {
@@ -107,7 +91,7 @@ rtrim(char *s)
 	}
 }
 
-/* set/unset filedescriptor to non-blocking */
+ 
 int
 set_nonblock(int fd)
 {
@@ -164,7 +148,7 @@ ssh_gai_strerror(int gaierr)
 	return gai_strerror(gaierr);
 }
 
-/* disable nagle on socket */
+ 
 void
 set_nodelay(int fd)
 {
@@ -186,7 +170,7 @@ set_nodelay(int fd)
 		error("setsockopt TCP_NODELAY: %.100s", strerror(errno));
 }
 
-/* Allow local port reuse in TIME_WAIT */
+ 
 int
 set_reuseaddr(int fd)
 {
@@ -199,7 +183,7 @@ set_reuseaddr(int fd)
 	return 0;
 }
 
-/* Get/set routing domain */
+ 
 char *
 get_rdomain(int fd)
 {
@@ -217,7 +201,7 @@ get_rdomain(int fd)
 	}
 	xasprintf(&ret, "%d", rtable);
 	return ret;
-#else /* defined(__OpenBSD__) */
+#else  
 	return NULL;
 #endif
 }
@@ -232,11 +216,11 @@ set_rdomain(int fd, const char *name)
 	const char *errstr;
 
 	if (name == NULL)
-		return 0; /* default table */
+		return 0;  
 
 	rtable = (int)strtonum(name, 0, 255, &errstr);
 	if (errstr != NULL) {
-		/* Shouldn't happen */
+		 
 		error("Invalid routing domain \"%s\": %s", name, errstr);
 		return -1;
 	}
@@ -247,7 +231,7 @@ set_rdomain(int fd, const char *name)
 		return -1;
 	}
 	return 0;
-#else /* defined(__OpenBSD__) */
+#else  
 	error("Setting routing domain is not supported on this platform");
 	return -1;
 #endif
@@ -278,7 +262,7 @@ set_sock_tos(int fd, int tos)
 
 	switch ((af = get_sock_af(fd))) {
 	case -1:
-		/* assume not a socket */
+		 
 		break;
 	case AF_INET:
 # ifdef IP_TOS
@@ -288,7 +272,7 @@ set_sock_tos(int fd, int tos)
 			error("setsockopt socket %d IP_TOS %d: %s",
 			    fd, tos, strerror(errno));
 		}
-# endif /* IP_TOS */
+# endif  
 		break;
 	case AF_INET6:
 # ifdef IPV6_TCLASS
@@ -298,20 +282,16 @@ set_sock_tos(int fd, int tos)
 			error("setsockopt socket %d IPV6_TCLASS %d: %s",
 			    fd, tos, strerror(errno));
 		}
-# endif /* IPV6_TCLASS */
+# endif  
 		break;
 	default:
 		debug2_f("unsupported socket family %d", af);
 		break;
 	}
-#endif /* IP_TOS_IS_BROKEN */
+#endif  
 }
 
-/*
- * Wait up to *timeoutp milliseconds for events on fd. Updates
- * *timeoutp with time remaining.
- * Returns 0 if fd ready or -1 on timeout or error (see errno).
- */
+ 
 static int
 waitfd(int fd, int *timeoutp, short events, volatile sig_atomic_t *stop)
 {
@@ -353,28 +333,18 @@ waitfd(int fd, int *timeoutp, short events, volatile sig_atomic_t *stop)
 		else if (r == 0)
 			break;
 	}
-	/* timeout */
+	 
 	errno = ETIMEDOUT;
 	return -1;
 }
 
-/*
- * Wait up to *timeoutp milliseconds for fd to be readable. Updates
- * *timeoutp with time remaining.
- * Returns 0 if fd ready or -1 on timeout or error (see errno).
- */
+ 
 int
 waitrfd(int fd, int *timeoutp, volatile sig_atomic_t *stop) {
 	return waitfd(fd, timeoutp, POLLIN, stop);
 }
 
-/*
- * Attempt a non-blocking connect(2) to the specified address, waiting up to
- * *timeoutp milliseconds for the connection to complete. If the timeout is
- * <=0, then wait indefinitely.
- *
- * Returns 0 on success or -1 on failure.
- */
+ 
 int
 timeout_connect(int sockfd, const struct sockaddr *serv_addr,
     socklen_t addrlen, int *timeoutp)
@@ -382,14 +352,14 @@ timeout_connect(int sockfd, const struct sockaddr *serv_addr,
 	int optval = 0;
 	socklen_t optlen = sizeof(optval);
 
-	/* No timeout: just do a blocking connect() */
+	 
 	if (timeoutp == NULL || *timeoutp <= 0)
 		return connect(sockfd, serv_addr, addrlen);
 
 	set_nonblock(sockfd);
 	for (;;) {
 		if (connect(sockfd, serv_addr, addrlen) == 0) {
-			/* Succeeded already? */
+			 
 			unset_nonblock(sockfd);
 			return 0;
 		} else if (errno == EINTR)
@@ -402,7 +372,7 @@ timeout_connect(int sockfd, const struct sockaddr *serv_addr,
 	if (waitfd(sockfd, timeoutp, POLLIN | POLLOUT, NULL) == -1)
 		return -1;
 
-	/* Completed or failed */
+	 
 	if (getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &optval, &optlen) == -1) {
 		debug("getsockopt: %s", strerror(errno));
 		return -1;
@@ -415,11 +385,11 @@ timeout_connect(int sockfd, const struct sockaddr *serv_addr,
 	return 0;
 }
 
-/* Characters considered whitespace in strsep calls. */
+ 
 #define WHITESPACE " \t\r\n"
 #define QUOTE	"\""
 
-/* return next token in configuration line */
+ 
 static char *
 strdelim_internal(char **s, int split_equals)
 {
@@ -437,10 +407,10 @@ strdelim_internal(char **s, int split_equals)
 		return (old);
 
 	if (*s[0] == '\"') {
-		memmove(*s, *s + 1, strlen(*s)); /* move nul too */
-		/* Find matching quote */
+		memmove(*s, *s + 1, strlen(*s));  
+		 
 		if ((*s = strpbrk(*s, QUOTE)) == NULL) {
-			return (NULL);		/* no matching quote */
+			return (NULL);		 
 		} else {
 			*s[0] = '\0';
 			*s += strspn(*s + 1, WHITESPACE) + 1;
@@ -448,12 +418,12 @@ strdelim_internal(char **s, int split_equals)
 		}
 	}
 
-	/* Allow only one '=' to be skipped */
+	 
 	if (split_equals && *s[0] == '=')
 		wspace = 1;
 	*s[0] = '\0';
 
-	/* Skip any extra whitespace after first token */
+	 
 	*s += strspn(*s + 1, WHITESPACE) + 1;
 	if (split_equals && *s[0] == '=' && !wspace)
 		*s += strspn(*s + 1, WHITESPACE) + 1;
@@ -461,19 +431,14 @@ strdelim_internal(char **s, int split_equals)
 	return (old);
 }
 
-/*
- * Return next token in configuration line; splts on whitespace or a
- * single '=' character.
- */
+ 
 char *
 strdelim(char **s)
 {
 	return strdelim_internal(s, 1);
 }
 
-/*
- * Return next token in configuration line; splts on whitespace only.
- */
+ 
 char *
 strdelimw(char **s)
 {
@@ -506,11 +471,7 @@ pwcopy(struct passwd *pw)
 	return copy;
 }
 
-/*
- * Convert ASCII string to TCP/IP port number.
- * Port must be >=0 and <=65535.
- * Return -1 if invalid.
- */
+ 
 int
 a2port(const char *s)
 {
@@ -563,27 +524,7 @@ a2tun(const char *s, int *remote)
 #define DAYS		(HOURS * 24)
 #define WEEKS		(DAYS * 7)
 
-/*
- * Convert a time string into seconds; format is
- * a sequence of:
- *      time[qualifier]
- *
- * Valid time qualifiers are:
- *      <none>  seconds
- *      s|S     seconds
- *      m|M     minutes
- *      h|H     hours
- *      d|D     days
- *      w|W     weeks
- *
- * Examples:
- *      90m     90 minutes
- *      1h30m   90 minutes
- *      2d      2 days
- *      1w      1 week
- *
- * Return -1 if time string is invalid.
- */
+ 
 int
 convtime(const char *s)
 {
@@ -653,7 +594,7 @@ const char *
 fmt_timeframe(time_t t)
 {
 	char		*buf;
-	static char	 tfbuf[TF_BUFS][TF_LEN];	/* ring buffer */
+	static char	 tfbuf[TF_BUFS][TF_LEN];	 
 	static int	 idx = 0;
 	unsigned int	 sec, min, hrs, day;
 	unsigned long long	week;
@@ -683,10 +624,7 @@ fmt_timeframe(time_t t)
 	return (buf);
 }
 
-/*
- * Returns a standardized host+port identifier string.
- * Caller must free returned string.
- */
+ 
 char *
 put_host_port(const char *host, u_short port)
 {
@@ -700,14 +638,7 @@ put_host_port(const char *host, u_short port)
 	return hoststr;
 }
 
-/*
- * Search for next delimiter between hostnames/addresses and ports.
- * Argument may be modified (for termination).
- * Returns *cp if parsing succeeds.
- * *cp is set to the start of the next field, if one was found.
- * The delimiter char, if present, is stored in delim.
- * If this is the last field, *cp is set to NULL.
- */
+ 
 char *
 hpdelim2(char **cp, char *delim)
 {
@@ -723,18 +654,18 @@ hpdelim2(char **cp, char *delim)
 		else
 			s++;
 	} else if ((s = strpbrk(s, ":/")) == NULL)
-		s = *cp + strlen(*cp); /* skip to end (see first case below) */
+		s = *cp + strlen(*cp);  
 
 	switch (*s) {
 	case '\0':
-		*cp = NULL;	/* no more fields*/
+		*cp = NULL;	 
 		break;
 
 	case ':':
 	case '/':
 		if (delim != NULL)
 			*delim = *s;
-		*s = '\0';	/* terminate */
+		*s = '\0';	 
 		*cp = s + 1;
 		break;
 
@@ -745,7 +676,7 @@ hpdelim2(char **cp, char *delim)
 	return old;
 }
 
-/* The common case: only accept colon as delimiter. */
+ 
 char *
 hpdelim(char **cp)
 {
@@ -772,7 +703,7 @@ colon(char *cp)
 {
 	int flag = 0;
 
-	if (*cp == ':')		/* Leading colon is part of file name. */
+	if (*cp == ':')		 
 		return NULL;
 	if (*cp == '[')
 		flag = 1;
@@ -790,15 +721,7 @@ colon(char *cp)
 	return NULL;
 }
 
-/*
- * Parse a [user@]host:[path] string.
- * Caller must free returned user, host and path.
- * Any of the pointer return arguments may be NULL (useful for syntax checking).
- * If user was not specified then *userp will be set to NULL.
- * If host was not specified then *hostp will be set to NULL.
- * If path was not specified then *pathp will be set to ".".
- * Returns 0 on success, -1 on failure.
- */
+ 
 int
 parse_user_host_path(const char *s, char **userp, char **hostp, char **pathp)
 {
@@ -815,17 +738,17 @@ parse_user_host_path(const char *s, char **userp, char **hostp, char **pathp)
 
 	sdup = xstrdup(s);
 
-	/* Check for remote syntax: [user@]host:[path] */
+	 
 	if ((tmp = colon(sdup)) == NULL)
 		goto out;
 
-	/* Extract optional path */
+	 
 	*tmp++ = '\0';
 	if (*tmp == '\0')
 		tmp = ".";
 	path = xstrdup(tmp);
 
-	/* Extract optional user and mandatory host */
+	 
 	tmp = strrchr(sdup, '@');
 	if (tmp != NULL) {
 		*tmp++ = '\0';
@@ -837,7 +760,7 @@ parse_user_host_path(const char *s, char **userp, char **hostp, char **pathp)
 		user = NULL;
 	}
 
-	/* Success */
+	 
 	if (userp != NULL) {
 		*userp = user;
 		user = NULL;
@@ -859,14 +782,7 @@ out:
 	return ret;
 }
 
-/*
- * Parse a [user@]host[:port] string.
- * Caller must free returned user and host.
- * Any of the pointer return arguments may be NULL (useful for syntax checking).
- * If user was not specified then *userp will be set to NULL.
- * If port was not specified then *portp will be -1.
- * Returns 0 on success, -1 on failure.
- */
+ 
 int
 parse_user_host_port(const char *s, char **userp, char **hostp, int *portp)
 {
@@ -883,7 +799,7 @@ parse_user_host_port(const char *s, char **userp, char **hostp, int *portp)
 
 	if ((sdup = tmp = strdup(s)) == NULL)
 		return -1;
-	/* Extract optional username */
+	 
 	if ((cp = strrchr(tmp, '@')) != NULL) {
 		*cp = '\0';
 		if (*tmp == '\0')
@@ -892,16 +808,16 @@ parse_user_host_port(const char *s, char **userp, char **hostp, int *portp)
 			goto out;
 		tmp = cp + 1;
 	}
-	/* Extract mandatory hostname */
+	 
 	if ((cp = hpdelim(&tmp)) == NULL || *cp == '\0')
 		goto out;
 	host = xstrdup(cleanhostname(cp));
-	/* Convert and verify optional port */
+	 
 	if (tmp != NULL && *tmp != '\0') {
 		if ((port = a2port(tmp)) <= 0)
 			goto out;
 	}
-	/* Success */
+	 
 	if (userp != NULL) {
 		*userp = user;
 		user = NULL;
@@ -920,10 +836,7 @@ parse_user_host_port(const char *s, char **userp, char **hostp, int *portp)
 	return ret;
 }
 
-/*
- * Converts a two-byte hex string to decimal.
- * Returns the decimal value or -1 for invalid input.
- */
+ 
 static int
 hexchar(const char *s)
 {
@@ -943,10 +856,7 @@ hexchar(const char *s)
 	return (result[0] << 4) | result[1];
 }
 
-/*
- * Decode an url-encoded string.
- * Returns a newly allocated string on success or NULL on failure.
- */
+ 
 static char *
 urldecode(const char *src)
 {
@@ -982,18 +892,7 @@ urldecode(const char *src)
 	return ret;
 }
 
-/*
- * Parse an (scp|ssh|sftp)://[user@]host[:port][/path] URI.
- * See https://tools.ietf.org/html/draft-ietf-secsh-scp-sftp-ssh-uri-04
- * Either user or path may be url-encoded (but not host or port).
- * Caller must free returned user, host and path.
- * Any of the pointer return arguments may be NULL (useful for syntax checking)
- * but the scheme must always be specified.
- * If user was not specified then *userp will be set to NULL.
- * If port was not specified then *portp will be -1.
- * If path was not specified then *pathp will be set to NULL.
- * Returns 0 on success, 1 if non-uri/wrong scheme, -1 on error/invalid uri.
- */
+ 
 int
 parse_uri(const char *scheme, const char *uri, char **userp, char **hostp,
     int *portp, char **pathp)
@@ -1004,7 +903,7 @@ parse_uri(const char *scheme, const char *uri, char **userp, char **hostp,
 	size_t len;
 
 	len = strlen(scheme);
-	if (strncmp(uri, scheme, len) != 0 || strncmp(uri + len, "://", 3) != 0)
+	if (strncmp(uri, scheme, len) != 0 || strncmp(uri + len, ":
 		return 1;
 	uri += len + 3;
 
@@ -1696,20 +1595,20 @@ monotime_ts(struct timespec *ts)
 # ifdef CLOCK_BOOTTIME
 		if (clock_gettime(CLOCK_BOOTTIME, ts) == 0)
 			return;
-# endif /* CLOCK_BOOTTIME */
+# endif  
 # ifdef CLOCK_MONOTONIC
 		if (clock_gettime(CLOCK_MONOTONIC, ts) == 0)
 			return;
-# endif /* CLOCK_MONOTONIC */
+# endif  
 # ifdef CLOCK_REALTIME
-		/* Not monotonic, but we're almost out of options here. */
+		 
 		if (clock_gettime(CLOCK_REALTIME, ts) == 0)
 			return;
-# endif /* CLOCK_REALTIME */
+# endif  
 		debug3("clock_gettime: %s", strerror(errno));
 		gettime_failed = 1;
 	}
-#endif /* HAVE_CLOCK_GETTIME && (BOOTTIME || MONOTONIC || REALTIME) */
+#endif  
 	gettimeofday(&tv, NULL);
 	ts->tv_sec = tv.tv_sec;
 	ts->tv_nsec = (long)tv.tv_usec * 1000;
@@ -1754,7 +1653,7 @@ bandwidth_limit_init(struct bwlimit *bw, u_int64_t kbps, size_t buflen)
 	timerclear(&bw->bwend);
 }
 
-/* Callback from read/write loop to insert bandwidth-limiting delays */
+ 
 void
 bandwidth_limit(struct bwlimit *bw, size_t read_len)
 {
@@ -1783,7 +1682,7 @@ bandwidth_limit(struct bwlimit *bw, size_t read_len)
 	if (timercmp(&bw->bwstart, &bw->bwend, >)) {
 		timersub(&bw->bwstart, &bw->bwend, &bw->bwend);
 
-		/* Adjust the wait time */
+		 
 		if (bw->bwend.tv_sec) {
 			bw->thresh /= 2;
 			if (bw->thresh < bw->buflen / 4)
@@ -1806,7 +1705,7 @@ bandwidth_limit(struct bwlimit *bw, size_t read_len)
 	monotime_tv(&bw->bwstart);
 }
 
-/* Make a template filename for mk[sd]temp() */
+ 
 void
 mktemp_proto(char *s, size_t len)
 {
@@ -1827,7 +1726,7 @@ static const struct {
 	const char *name;
 	int value;
 } ipqos[] = {
-	{ "none", INT_MAX },		/* can't use 0 here; that's CS0 */
+	{ "none", INT_MAX },		 
 	{ "af11", IPTOS_DSCP_AF11 },
 	{ "af12", IPTOS_DSCP_AF12 },
 	{ "af13", IPTOS_DSCP_AF13 },
@@ -1869,7 +1768,7 @@ parse_ipqos(const char *cp)
 		if (strcasecmp(cp, ipqos[i].name) == 0)
 			return ipqos[i].value;
 	}
-	/* Try parsing as an integer */
+	 
 	val = strtol(cp, &ep, 0);
 	if (*cp == '\0' || *ep != '\0' || val < 0 || val > 255)
 		return -1;
@@ -1953,10 +1852,7 @@ sock_set_v6only(int s)
 #endif
 }
 
-/*
- * Compares two strings that maybe be NULL. Returns non-zero if strings
- * are both NULL or are identical, returns zero otherwise.
- */
+ 
 static int
 strcmp_maybe_null(const char *a, const char *b)
 {
@@ -1967,10 +1863,7 @@ strcmp_maybe_null(const char *a, const char *b)
 	return 1;
 }
 
-/*
- * Compare two forwards, returning non-zero if they are identical or
- * zero otherwise.
- */
+ 
 int
 forward_equals(const struct Forward *a, const struct Forward *b)
 {
@@ -1986,11 +1879,11 @@ forward_equals(const struct Forward *a, const struct Forward *b)
 		return 0;
 	if (strcmp_maybe_null(a->connect_path, b->connect_path) == 0)
 		return 0;
-	/* allocated_port and handle are not checked */
+	 
 	return 1;
 }
 
-/* returns 1 if process is already daemonized, 0 otherwise */
+ 
 int
 daemonized(void)
 {
@@ -1998,21 +1891,17 @@ daemonized(void)
 
 	if ((fd = open(_PATH_TTY, O_RDONLY | O_NOCTTY)) >= 0) {
 		close(fd);
-		return 0;	/* have controlling terminal */
+		return 0;	 
 	}
 	if (getppid() != 1)
-		return 0;	/* parent is not init */
+		return 0;	 
 	if (getsid(0) != getpid())
-		return 0;	/* not session leader */
+		return 0;	 
 	debug3("already daemonized");
 	return 1;
 }
 
-/*
- * Splits 's' into an argument vector. Handles quoted string and basic
- * escape characters (\\, \", \'). Caller must free the argument vector
- * and its members.
- */
+ 
 int
 argv_split(const char *s, int *argcp, char ***argvp, int terminate_on_comment)
 {
@@ -2024,50 +1913,50 @@ argv_split(const char *s, int *argcp, char ***argvp, int terminate_on_comment)
 	*argcp = 0;
 
 	for (i = 0; s[i] != '\0'; i++) {
-		/* Skip leading whitespace */
+		 
 		if (s[i] == ' ' || s[i] == '\t')
 			continue;
 		if (terminate_on_comment && s[i] == '#')
 			break;
-		/* Start of a token */
+		 
 		quote = 0;
 
 		argv = xreallocarray(argv, (argc + 2), sizeof(*argv));
 		arg = argv[argc++] = xcalloc(1, strlen(s + i) + 1);
 		argv[argc] = NULL;
 
-		/* Copy the token in, removing escapes */
+		 
 		for (j = 0; s[i] != '\0'; i++) {
 			if (s[i] == '\\') {
 				if (s[i + 1] == '\'' ||
 				    s[i + 1] == '\"' ||
 				    s[i + 1] == '\\' ||
 				    (quote == 0 && s[i + 1] == ' ')) {
-					i++; /* Skip '\' */
+					i++;  
 					arg[j++] = s[i];
 				} else {
-					/* Unrecognised escape */
+					 
 					arg[j++] = s[i];
 				}
 			} else if (quote == 0 && (s[i] == ' ' || s[i] == '\t'))
-				break; /* done */
+				break;  
 			else if (quote == 0 && (s[i] == '\"' || s[i] == '\''))
-				quote = s[i]; /* quote start */
+				quote = s[i];  
 			else if (quote != 0 && s[i] == quote)
-				quote = 0; /* quote end */
+				quote = 0;  
 			else
 				arg[j++] = s[i];
 		}
 		if (s[i] == '\0') {
 			if (quote != 0) {
-				/* Ran out of string looking for close quote */
+				 
 				r = SSH_ERR_INVALID_FORMAT;
 				goto out;
 			}
 			break;
 		}
 	}
-	/* Success */
+	 
 	*argcp = argc;
 	*argvp = argv;
 	argc = 0;
@@ -2082,10 +1971,7 @@ argv_split(const char *s, int *argcp, char ***argvp, int terminate_on_comment)
 	return r;
 }
 
-/*
- * Reassemble an argument vector into a string, quoting and escaping as
- * necessary. Caller must free returned string.
- */
+ 
 char *
 argv_assemble(int argc, char **argv)
 {
@@ -2113,7 +1999,7 @@ argv_assemble(int argc, char **argv)
 			case '"':
 				if ((r = sshbuf_put_u8(arg, '\\')) != 0)
 					break;
-				/* FALLTHROUGH */
+				 
 			default:
 				r = sshbuf_put_u8(arg, c);
 				break;
@@ -2166,7 +2052,7 @@ argv_free(char **av, int ac)
 	free(av);
 }
 
-/* Returns 0 if pid exited cleanly, non-zero otherwise */
+ 
 int
 exited_cleanly(pid_t pid, const char *tag, const char *cmd, int quiet)
 {
@@ -2189,19 +2075,7 @@ exited_cleanly(pid_t pid, const char *tag, const char *cmd, int quiet)
 	return 0;
 }
 
-/*
- * Check a given path for security. This is defined as all components
- * of the path to the file must be owned by either the owner of
- * of the file or root and no directories must be group or world writable.
- *
- * XXX Should any specific check be done for sym links ?
- *
- * Takes a file name, its stat information (preferably from fstat() to
- * avoid races), the uid of the expected owner, their home directory and an
- * error buffer plus max size as arguments.
- *
- * Returns 0 on success and -1 on failure
- */
+ 
 int
 safe_path(const char *name, struct stat *stp, const char *pw_dir,
     uid_t uid, char *err, size_t errlen)
@@ -2230,7 +2104,7 @@ safe_path(const char *name, struct stat *stp, const char *pw_dir,
 		return -1;
 	}
 
-	/* for each component of the canonical path, walking upwards */
+	 
 	for (;;) {
 		if ((cp = dirname(buf)) == NULL) {
 			snprintf(err, errlen, "dirname() failed");
@@ -2246,33 +2120,25 @@ safe_path(const char *name, struct stat *stp, const char *pw_dir,
 			return -1;
 		}
 
-		/* If are past the homedir then we can stop */
+		 
 		if (comparehome && strcmp(homedir, buf) == 0)
 			break;
 
-		/*
-		 * dirname should always complete with a "/" path,
-		 * but we can be paranoid and check for "." too
-		 */
+		 
 		if ((strcmp("/", buf) == 0) || (strcmp(".", buf) == 0))
 			break;
 	}
 	return 0;
 }
 
-/*
- * Version of safe_path() that accepts an open file descriptor to
- * avoid races.
- *
- * Returns 0 on success and -1 on failure
- */
+ 
 int
 safe_path_fd(int fd, const char *file, struct passwd *pw,
     char *err, size_t errlen)
 {
 	struct stat st;
 
-	/* check the open file to avoid races */
+	 
 	if (fstat(fd, &st) == -1) {
 		snprintf(err, errlen, "cannot stat file %s: %s",
 		    file, strerror(errno));
@@ -2281,10 +2147,7 @@ safe_path_fd(int fd, const char *file, struct passwd *pw,
 	return safe_path(file, &st, pw->pw_dir, pw->pw_uid, err, errlen);
 }
 
-/*
- * Sets the value of the given variable in the environment.  If the variable
- * already exists, its value is overridden.
- */
+ 
 void
 child_set_env(char ***envp, u_int *envsizep, const char *name,
 	const char *value)
@@ -2298,10 +2161,7 @@ child_set_env(char ***envp, u_int *envsizep, const char *name,
 		return;
 	}
 
-	/*
-	 * If we're passed an uninitialized list, allocate a single null
-	 * entry before continuing.
-	 */
+	 
 	if ((*envp == NULL) != (*envsizep == 0))
 		fatal_f("environment size mismatch");
 	if (*envp == NULL && *envsizep == 0) {
@@ -2310,21 +2170,17 @@ child_set_env(char ***envp, u_int *envsizep, const char *name,
 		*envsizep = 1;
 	}
 
-	/*
-	 * Find the slot where the value should be stored.  If the variable
-	 * already exists, we reuse the slot; otherwise we append a new slot
-	 * at the end of the array, expanding if necessary.
-	 */
+	 
 	env = *envp;
 	namelen = strlen(name);
 	for (i = 0; env[i]; i++)
 		if (strncmp(env[i], name, namelen) == 0 && env[i][namelen] == '=')
 			break;
 	if (env[i]) {
-		/* Reuse the slot. */
+		 
 		free(env[i]);
 	} else {
-		/* New variable.  Expand if necessary. */
+		 
 		envsize = *envsizep;
 		if (i >= envsize - 1) {
 			if (envsize >= 1000)
@@ -2333,20 +2189,17 @@ child_set_env(char ***envp, u_int *envsizep, const char *name,
 			env = (*envp) = xreallocarray(env, envsize, sizeof(char *));
 			*envsizep = envsize;
 		}
-		/* Need to set the NULL pointer at end of array beyond the new slot. */
+		 
 		env[i + 1] = NULL;
 	}
 
-	/* Allocate space and format the variable in the appropriate slot. */
-	/* XXX xasprintf */
+	 
+	 
 	env[i] = xmalloc(strlen(name) + 1 + strlen(value) + 1);
 	snprintf(env[i], strlen(name) + 1 + strlen(value) + 1, "%s=%s", name, value);
 }
 
-/*
- * Check and optionally lowercase a domain name, also removes trailing '.'
- * Returns 1 on success and 0 on failure, storing an error message in errstr.
- */
+ 
 int
 valid_domain(char *name, int makelower, const char **errstr)
 {
@@ -2373,7 +2226,7 @@ valid_domain(char *name, int makelower, const char **errstr)
 			goto bad;
 		}
 		if (c != '.' && c != '-' && !isalnum(c) &&
-		    c != '_') /* technically invalid, but common */ {
+		    c != '_')   {
 			snprintf(errbuf, sizeof(errbuf), "domain name "
 			    "\"%.100s\" contains invalid characters", name);
 			goto bad;
@@ -2391,11 +2244,7 @@ bad:
 	return 0;
 }
 
-/*
- * Verify that a environment variable name (not including initial '$') is
- * valid; consisting of one or more alphanumeric or underscore characters only.
- * Returns 1 on valid, 0 otherwise.
- */
+ 
 int
 valid_env_name(const char *name)
 {
@@ -2444,22 +2293,18 @@ parse_absolute_time(const char *s, uint64_t *tp)
 		is_utc = 1;
 		l -= 3;
 	}
-	/*
-	 * POSIX strptime says "The application shall ensure that there
-	 * is white-space or other non-alphanumeric characters between
-	 * any two conversion specifications" so arrange things this way.
-	 */
+	 
 	switch (l) {
-	case 8: /* YYYYMMDD */
+	case 8:  
 		fmt = "%Y-%m-%d";
 		snprintf(buf, sizeof(buf), "%.4s-%.2s-%.2s", s, s + 4, s + 6);
 		break;
-	case 12: /* YYYYMMDDHHMM */
+	case 12:  
 		fmt = "%Y-%m-%dT%H:%M";
 		snprintf(buf, sizeof(buf), "%.4s-%.2s-%.2sT%.2s:%.2s",
 		    s, s + 4, s + 6, s + 8, s + 10);
 		break;
-	case 14: /* YYYYMMDDHHMMSS */
+	case 14:  
 		fmt = "%Y-%m-%dT%H:%M:%S";
 		snprintf(buf, sizeof(buf), "%.4s-%.2s-%.2sT%.2s:%.2s:%.2s",
 		    s, s + 4, s + 6, s + 8, s + 10, s + 12);
@@ -2478,7 +2323,7 @@ parse_absolute_time(const char *s, uint64_t *tp)
 		if ((tt = mktime(&tm)) < 0)
 			return SSH_ERR_INVALID_FORMAT;
 	}
-	/* success */
+	 
 	*tp = (uint64_t)tt;
 	return 0;
 }
@@ -2493,11 +2338,7 @@ format_absolute_time(uint64_t t, char *buf, size_t len)
 	strftime(buf, len, "%Y-%m-%dT%H:%M:%S", &tm);
 }
 
-/*
- * Parse a "pattern=interval" clause (e.g. a ChannelTimeout).
- * Returns 0 on success or non-zero on failure.
- * Caller must free *typep.
- */
+ 
 int
 parse_pattern_interval(const char *s, char **typep, int *secsp)
 {
@@ -2521,7 +2362,7 @@ parse_pattern_interval(const char *s, char **typep, int *secsp)
 		free(sdup);
 		return -1;
 	}
-	/* success */
+	 
 	if (typep != NULL)
 		*typep = xstrdup(sdup);
 	if (secsp != NULL)
@@ -2530,7 +2371,7 @@ parse_pattern_interval(const char *s, char **typep, int *secsp)
 	return 0;
 }
 
-/* check if path is absolute */
+ 
 int
 path_absolute(const char *path)
 {
@@ -2547,15 +2388,9 @@ skip_space(char **cpp)
 	*cpp = cp;
 }
 
-/* authorized_key-style options parsing helpers */
+ 
 
-/*
- * Match flag 'opt' in *optsp, and if allow_negate is set then also match
- * 'no-opt'. Returns -1 if option not matched, 1 if option matches or 0
- * if negated option matches.
- * If the option or negated option matches, then *optsp is updated to
- * point to the first character after the option.
- */
+ 
 int
 opt_flag(const char *opt, int allow_negate, const char **optsp)
 {
@@ -2649,7 +2484,7 @@ ssh_signal(int signum, sshsig_t handler)
 {
 	struct sigaction sa, osa;
 
-	/* mask all other signals while in handler */
+	 
 	memset(&sa, 0, sizeof(sa));
 	sa.sa_handler = handler;
 	sigfillset(&sa.sa_mask);
@@ -2685,15 +2520,7 @@ stdfd_devnull(int do_stdin, int do_stdout, int do_stderr)
 	return ret;
 }
 
-/*
- * Runs command in a subprocess with a minimal environment.
- * Returns pid on success, 0 on failure.
- * The child stdout and stderr maybe captured, left attached or sent to
- * /dev/null depending on the contents of flags.
- * "tag" is prepended to log messages.
- * NB. "command" is only used for logging; the actual command executed is
- * av[0].
- */
+ 
 pid_t
 subprocess(const char *tag, const char *command,
     int ac, char **av, FILE **child, u_int flags,
@@ -2707,9 +2534,9 @@ subprocess(const char *tag, const char *command,
 	u_int nenv = 0;
 	char **env = NULL;
 
-	/* If dropping privs, then must specify user and restore function */
+	 
 	if (drop_privs != NULL && (pw == NULL || restore_privs == NULL)) {
-		error("%s: inconsistent arguments", tag); /* XXX fatal? */
+		error("%s: inconsistent arguments", tag);  
 		return 0;
 	}
 	if (pw == NULL && (pw = getpwuid(getuid())) == NULL) {
@@ -2722,7 +2549,7 @@ subprocess(const char *tag, const char *command,
 	debug3_f("%s command \"%s\" running as %s (flags 0x%x)",
 	    tag, command, pw->pw_name, flags);
 
-	/* Check consistency */
+	 
 	if ((flags & SSH_SUBPROCESS_STDOUT_DISCARD) != 0 &&
 	    (flags & SSH_SUBPROCESS_STDOUT_CAPTURE) != 0) {
 		error_f("inconsistent flags");
@@ -2733,10 +2560,7 @@ subprocess(const char *tag, const char *command,
 		return 0;
 	}
 
-	/*
-	 * If executing an explicit binary, then verify the it exists
-	 * and appears safe-ish to execute
-	 */
+	 
 	if (!path_absolute(av[0])) {
 		error("%s path is not absolute", tag);
 		return 0;
@@ -2753,7 +2577,7 @@ subprocess(const char *tag, const char *command,
 		error("Unsafe %s \"%s\": %s", tag, av[0], errmsg);
 		goto restore_return;
 	}
-	/* Prepare to keep the child's stdout if requested */
+	 
 	if (pipe(p) == -1) {
 		error("%s: pipe: %s", tag, strerror(errno));
  restore_return:
@@ -2765,13 +2589,13 @@ subprocess(const char *tag, const char *command,
 		restore_privs();
 
 	switch ((pid = fork())) {
-	case -1: /* error */
+	case -1:  
 		error("%s: fork: %s", tag, strerror(errno));
 		close(p[0]);
 		close(p[1]);
 		return 0;
-	case 0: /* child */
-		/* Prepare a minimal environment for the child. */
+	case 0:  
+		 
 		if ((flags & SSH_SUBPROCESS_PRESERVE_ENV) == 0) {
 			nenv = 5;
 			env = xcalloc(sizeof(*env), nenv);
@@ -2796,7 +2620,7 @@ subprocess(const char *tag, const char *command,
 			_exit(1);
 		}
 
-		/* Set up stdout as requested; leave stderr in place for now. */
+		 
 		fd = -1;
 		if ((flags & SSH_SUBPROCESS_STDOUT_CAPTURE) != 0)
 			fd = p[1];
@@ -2824,7 +2648,7 @@ subprocess(const char *tag, const char *command,
 			    strerror(errno));
 			_exit(1);
 		}
-		/* stdin is pointed to /dev/null at this point */
+		 
 		if ((flags & SSH_SUBPROCESS_STDOUT_DISCARD) != 0 &&
 		    dup2(STDIN_FILENO, STDERR_FILENO) == -1) {
 			error("%s: dup2: %s", tag, strerror(errno));
@@ -2837,7 +2661,7 @@ subprocess(const char *tag, const char *command,
 		error("%s %s \"%s\": %s", tag, env == NULL ? "execv" : "execve",
 		    command, strerror(errno));
 		_exit(127);
-	default: /* parent */
+	default:  
 		break;
 	}
 
@@ -2847,13 +2671,13 @@ subprocess(const char *tag, const char *command,
 	else if ((f = fdopen(p[0], "r")) == NULL) {
 		error("%s: fdopen: %s", tag, strerror(errno));
 		close(p[0]);
-		/* Don't leave zombie child */
+		 
 		kill(pid, SIGTERM);
 		while (waitpid(pid, NULL, 0) == -1 && errno == EINTR)
 			;
 		return 0;
 	}
-	/* Success */
+	 
 	debug3_f("%s pid %ld", tag, (long)pid);
 	if (child != NULL)
 		*child = f;
@@ -2884,7 +2708,7 @@ lookup_setenv_in_list(const char *env, char * const *envs, size_t nenvs)
 	name = xstrdup(env);
 	if ((cp = strchr(name, '=')) == NULL) {
 		free(name);
-		return NULL; /* not env=val */
+		return NULL;  
 	}
 	*cp = '\0';
 	ret = lookup_env_in_list(name, envs, nenvs);
@@ -2892,24 +2716,18 @@ lookup_setenv_in_list(const char *env, char * const *envs, size_t nenvs)
 	return ret;
 }
 
-/*
- * Helpers for managing poll(2)/ppoll(2) timeouts
- * Will remember the earliest deadline and return it for use in poll/ppoll.
- */
+ 
 
-/* Initialise a poll/ppoll timeout with an indefinite deadline */
+ 
 void
 ptimeout_init(struct timespec *pt)
 {
-	/*
-	 * Deliberately invalid for ppoll(2).
-	 * Will be converted to NULL in ptimeout_get_tspec() later.
-	 */
+	 
 	pt->tv_sec = -1;
 	pt->tv_nsec = 0;
 }
 
-/* Specify a poll/ppoll deadline of at most 'sec' seconds */
+ 
 void
 ptimeout_deadline_sec(struct timespec *pt, long sec)
 {
@@ -2919,7 +2737,7 @@ ptimeout_deadline_sec(struct timespec *pt, long sec)
 	}
 }
 
-/* Specify a poll/ppoll deadline of at most 'p' (timespec) */
+ 
 static void
 ptimeout_deadline_tsp(struct timespec *pt, struct timespec *p)
 {
@@ -2927,7 +2745,7 @@ ptimeout_deadline_tsp(struct timespec *pt, struct timespec *p)
 		*pt = *p;
 }
 
-/* Specify a poll/ppoll deadline of at most 'ms' milliseconds */
+ 
 void
 ptimeout_deadline_ms(struct timespec *pt, long ms)
 {
@@ -2938,7 +2756,7 @@ ptimeout_deadline_ms(struct timespec *pt, long ms)
 	ptimeout_deadline_tsp(pt, &p);
 }
 
-/* Specify a poll/ppoll deadline at wall clock monotime 'when' (timespec) */
+ 
 void
 ptimeout_deadline_monotime_tsp(struct timespec *pt, struct timespec *when)
 {
@@ -2947,7 +2765,7 @@ ptimeout_deadline_monotime_tsp(struct timespec *pt, struct timespec *when)
 	monotime_ts(&now);
 
 	if (timespeccmp(&now, when, >=)) {
-		/* 'when' is now or in the past. Timeout ASAP */
+		 
 		pt->tv_sec = 0;
 		pt->tv_nsec = 0;
 	} else {
@@ -2956,7 +2774,7 @@ ptimeout_deadline_monotime_tsp(struct timespec *pt, struct timespec *when)
 	}
 }
 
-/* Specify a poll/ppoll deadline at wall clock monotime 'when' */
+ 
 void
 ptimeout_deadline_monotime(struct timespec *pt, time_t when)
 {
@@ -2967,7 +2785,7 @@ ptimeout_deadline_monotime(struct timespec *pt, time_t when)
 	ptimeout_deadline_monotime_tsp(pt, &t);
 }
 
-/* Get a poll(2) timeout value in milliseconds */
+ 
 int
 ptimeout_get_ms(struct timespec *pt)
 {
@@ -2978,24 +2796,21 @@ ptimeout_get_ms(struct timespec *pt)
 	return (pt->tv_sec * 1000) + (pt->tv_nsec / 1000000);
 }
 
-/* Get a ppoll(2) timeout value as a timespec pointer */
+ 
 struct timespec *
 ptimeout_get_tsp(struct timespec *pt)
 {
 	return pt->tv_sec == -1 ? NULL : pt;
 }
 
-/* Returns non-zero if a timeout has been set (i.e. is not indefinite) */
+ 
 int
 ptimeout_isset(struct timespec *pt)
 {
 	return pt->tv_sec != -1;
 }
 
-/*
- * Returns zero if the library at 'path' contains symbol 's', nonzero
- * otherwise.
- */
+ 
 int
 lib_contains_symbol(const char *path, const char *s)
 {
@@ -3014,12 +2829,12 @@ lib_contains_symbol(const char *path, const char *s)
 		error_f("library %s does not contain symbol %s", path, s);
 		goto out;
 	}
-	/* success */
+	 
 	ret = 0;
  out:
 	free(nl[0].n_name);
 	return ret;
-#else /* HAVE_NLIST_H */
+#else  
 	int fd, ret = -1;
 	struct stat st;
 	void *m = NULL;
@@ -3054,12 +2869,12 @@ lib_contains_symbol(const char *path, const char *s)
 		error_f("%s does not contain expected string %s", path, s);
 		goto out;
 	}
-	/* success */
+	 
 	ret = 0;
  out:
 	if (m != NULL && m != MAP_FAILED)
 		munmap(m, sz);
 	close(fd);
 	return ret;
-#endif /* HAVE_NLIST_H */
+#endif  
 }

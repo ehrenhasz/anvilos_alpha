@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Network Service Header
- *
- * Copyright (c) 2017 Red Hat, Inc. -- Jiri Benc <jbenc@redhat.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/netdevice.h>
@@ -26,7 +22,7 @@ int nsh_push(struct sk_buff *skb, const struct nshhdr *pushed_nh)
 			return -EAFNOSUPPORT;
 	}
 
-	/* Add the NSH header */
+	 
 	if (skb_cow_head(skb, length) < 0)
 		return -ENOMEM;
 

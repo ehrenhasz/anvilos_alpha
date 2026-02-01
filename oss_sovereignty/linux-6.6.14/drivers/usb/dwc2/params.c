@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/*
- * Copyright (C) 2004-2016 Synopsys, Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -327,7 +325,7 @@ const struct pci_device_id dwc2_pci_ids[] = {
 		PCI_DEVICE(PCI_VENDOR_ID_LOONGSON, PCI_DEVICE_ID_LOONGSON_DWC2),
 		.driver_data = (unsigned long)dwc2_set_loongson_params,
 	},
-	{ /* end: all zeroes */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(pci, dwc2_pci_ids);
 EXPORT_SYMBOL_GPL(dwc2_pci_ids);
@@ -396,10 +394,7 @@ static void dwc2_set_param_phy_utmi_width(struct dwc2_hsotg *hsotg)
 	       GHWCFG4_UTMI_PHY_DATA_WIDTH_8) ? 8 : 16;
 
 	if (hsotg->phy) {
-		/*
-		 * If using the generic PHY framework, check if the PHY bus
-		 * width is 8-bit and set the phyif appropriately.
-		 */
+		 
 		if (phy_get_bus_width(hsotg->phy) == 8)
 			val = 8;
 	}
@@ -453,13 +448,7 @@ static void dwc2_set_param_lpm(struct dwc2_hsotg *hsotg)
 	}
 }
 
-/**
- * dwc2_set_default_params() - Set all core parameters to their
- * auto-detected default values.
- *
- * @hsotg: Programming view of the DWC_otg controller
- *
- */
+ 
 static void dwc2_set_default_params(struct dwc2_hsotg *hsotg)
 {
 	struct dwc2_hw_params *hw = &hsotg->hw_params;
@@ -510,28 +499,14 @@ static void dwc2_set_default_params(struct dwc2_hsotg *hsotg)
 		p->g_dma = dma_capable;
 		p->g_dma_desc = hw->dma_desc_enable;
 
-		/*
-		 * The values for g_rx_fifo_size (2048) and
-		 * g_np_tx_fifo_size (1024) come from the legacy s3c
-		 * gadget driver. These defaults have been hard-coded
-		 * for some time so many platforms depend on these
-		 * values. Leave them as defaults for now and only
-		 * auto-detect if the hardware does not support the
-		 * default.
-		 */
+		 
 		p->g_rx_fifo_size = 2048;
 		p->g_np_tx_fifo_size = 1024;
 		dwc2_set_param_tx_fifo_sizes(hsotg);
 	}
 }
 
-/**
- * dwc2_get_device_properties() - Read in device properties.
- *
- * @hsotg: Programming view of the DWC_otg controller
- *
- * Read in the device properties and adjust core parameters if needed.
- */
+ 
 static void dwc2_get_device_properties(struct dwc2_hsotg *hsotg)
 {
 	struct dwc2_core_params *p = &hsotg->params;
@@ -567,11 +542,11 @@ static void dwc2_check_param_otg_cap(struct dwc2_hsotg *hsotg)
 	int valid = 1;
 
 	if (hsotg->params.otg_caps.hnp_support && hsotg->params.otg_caps.srp_support) {
-		/* check HNP && SRP capable */
+		 
 		if (hsotg->hw_params.op_mode != GHWCFG2_OP_MODE_HNP_SRP_CAPABLE)
 			valid = 0;
 	} else if (!hsotg->params.otg_caps.hnp_support) {
-		/* check SRP only capable */
+		 
 		if (hsotg->params.otg_caps.srp_support) {
 			switch (hsotg->hw_params.op_mode) {
 			case GHWCFG2_OP_MODE_HNP_SRP_CAPABLE:
@@ -584,7 +559,7 @@ static void dwc2_check_param_otg_cap(struct dwc2_hsotg *hsotg)
 				break;
 			}
 		}
-		/* else: NO HNP && NO SRP capable: always valid */
+		 
 	} else {
 		valid = 0;
 	}
@@ -820,11 +795,7 @@ static void dwc2_check_params(struct dwc2_hsotg *hsotg)
 	}
 }
 
-/*
- * Gets host hardware parameters. Forces host mode if not currently in
- * host mode. Should be called immediately after a core soft reset in
- * order to get the reset values.
- */
+ 
 static void dwc2_get_host_hwparams(struct dwc2_hsotg *hsotg)
 {
 	struct dwc2_hw_params *hw = &hsotg->hw_params;
@@ -845,11 +816,7 @@ static void dwc2_get_host_hwparams(struct dwc2_hsotg *hsotg)
 				      FIFOSIZE_DEPTH_SHIFT;
 }
 
-/*
- * Gets device hardware parameters. Forces device mode if not
- * currently in device mode. Should be called immediately after a core
- * soft reset in order to get the reset values.
- */
+ 
 static void dwc2_get_dev_hwparams(struct dwc2_hsotg *hsotg)
 {
 	struct dwc2_hw_params *hw = &hsotg->hw_params;
@@ -875,13 +842,7 @@ static void dwc2_get_dev_hwparams(struct dwc2_hsotg *hsotg)
 				       FIFOSIZE_DEPTH_SHIFT;
 }
 
-/**
- * dwc2_get_hwparams() - During device initialization, read various hardware
- *                       configuration registers and interpret the contents.
- *
- * @hsotg: Programming view of the DWC_otg controller
- *
- */
+ 
 int dwc2_get_hwparams(struct dwc2_hsotg *hsotg)
 {
 	struct dwc2_hw_params *hw = &hsotg->hw_params;
@@ -895,10 +856,10 @@ int dwc2_get_hwparams(struct dwc2_hsotg *hsotg)
 	hwcfg4 = dwc2_readl(hsotg, GHWCFG4);
 	grxfsiz = dwc2_readl(hsotg, GRXFSIZ);
 
-	/* hwcfg1 */
+	 
 	hw->dev_ep_dirs = hwcfg1;
 
-	/* hwcfg2 */
+	 
 	hw->op_mode = (hwcfg2 & GHWCFG2_OP_MODE_MASK) >>
 		      GHWCFG2_OP_MODE_SHIFT;
 	hw->arch = (hwcfg2 & GHWCFG2_ARCHITECTURE_MASK) >>
@@ -922,7 +883,7 @@ int dwc2_get_hwparams(struct dwc2_hsotg *hsotg)
 		(hwcfg2 & GHWCFG2_DEV_TOKEN_Q_DEPTH_MASK) >>
 		GHWCFG2_DEV_TOKEN_Q_DEPTH_SHIFT;
 
-	/* hwcfg3 */
+	 
 	width = (hwcfg3 & GHWCFG3_XFER_SIZE_CNTR_WIDTH_MASK) >>
 		GHWCFG3_XFER_SIZE_CNTR_WIDTH_SHIFT;
 	hw->max_transfer_size = (1 << (width + 11)) - 1;
@@ -934,7 +895,7 @@ int dwc2_get_hwparams(struct dwc2_hsotg *hsotg)
 			      GHWCFG3_DFIFO_DEPTH_SHIFT;
 	hw->lpm_mode = !!(hwcfg3 & GHWCFG3_OTG_LPM_EN);
 
-	/* hwcfg4 */
+	 
 	hw->en_multiple_tx_fifo = !!(hwcfg4 & GHWCFG4_DED_FIFO_EN);
 	hw->num_dev_perio_in_ep = (hwcfg4 & GHWCFG4_NUM_DEV_PERIO_IN_EP_MASK) >>
 				  GHWCFG4_NUM_DEV_PERIO_IN_EP_SHIFT;
@@ -950,14 +911,10 @@ int dwc2_get_hwparams(struct dwc2_hsotg *hsotg)
 	hw->service_interval_mode = !!(hwcfg4 &
 				       GHWCFG4_SERVICE_INTERVAL_SUPPORTED);
 
-	/* fifo sizes */
+	 
 	hw->rx_fifo_size = (grxfsiz & GRXFSIZ_DEPTH_MASK) >>
 				GRXFSIZ_DEPTH_SHIFT;
-	/*
-	 * Host specific hardware parameters. Reading these parameters
-	 * requires the controller to be in host mode. The mode will
-	 * be forced, if necessary, to read these values.
-	 */
+	 
 	dwc2_get_host_hwparams(hsotg);
 	dwc2_get_dev_hwparams(hsotg);
 

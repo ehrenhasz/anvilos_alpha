@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2009-2010, Lars-Peter Clausen <lars@metafoo.de>
- *  Copyright (C) 2013, Imagination Technologies
- *
- *  JZ4740 SD/MMC controller driver
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -126,19 +121,7 @@ enum jz4740_mmc_state {
 	JZ4740_MMC_STATE_DONE,
 };
 
-/*
- * The MMC core allows to prepare a mmc_request while another mmc_request
- * is in-flight. This is used via the pre_req/post_req hooks.
- * This driver uses the pre_req/post_req hooks to map/unmap the mmc_request.
- * Following what other drivers do (sdhci, dw_mmc) we use the following cookie
- * flags to keep track of the mmc_request mapping state.
- *
- * COOKIE_UNMAPPED: the request is not mapped.
- * COOKIE_PREMAPPED: the request was mapped in pre_req,
- * and should be unmapped in post_req.
- * COOKIE_MAPPED: the request was mapped in the irq handler,
- * and should be unmapped before mmc_request_done is called..
- */
+ 
 enum jz4780_cookie {
 	COOKIE_UNMAPPED = 0,
 	COOKIE_PREMAPPED,
@@ -173,15 +156,12 @@ struct jz4740_mmc_host {
 	struct sg_mapping_iter miter;
 	enum jz4740_mmc_state state;
 
-	/* DMA support */
+	 
 	struct dma_chan *dma_rx;
 	struct dma_chan *dma_tx;
 	bool use_dma;
 
-/* The DMA trigger level is 8 words, that is to say, the DMA read
- * trigger is when data words in MSC_RXFIFO is >= 8 and the DMA write
- * trigger is when data words in MSC_TXFIFO is < 8.
- */
+ 
 #define JZ4740_MMC_FIFO_HALF_SIZE 8
 };
 
@@ -211,8 +191,8 @@ static uint32_t jz4740_mmc_read_irq_reg(struct jz4740_mmc_host *host)
 		return readw(host->base + JZ_REG_MMC_IREG);
 }
 
-/*----------------------------------------------------------------------------*/
-/* DMA infrastructure */
+ 
+ 
 
 static void jz4740_mmc_release_dma_channels(struct jz4740_mmc_host *host)
 {
@@ -250,10 +230,7 @@ static int jz4740_mmc_acquire_dma_channels(struct jz4740_mmc_host *host)
 		return PTR_ERR(host->dma_rx);
 	}
 
-	/*
-	 * Limit the maximum segment size in any SG entry according to
-	 * the parameters of the DMA engine device.
-	 */
+	 
 	if (host->dma_tx) {
 		struct device *dev = host->dma_tx->device->dev;
 		unsigned int max_seg_size = dma_get_max_seg_size(dev);
@@ -292,9 +269,7 @@ static void jz4740_mmc_dma_unmap(struct jz4740_mmc_host *host,
 	data->host_cookie = COOKIE_UNMAPPED;
 }
 
-/* Prepares DMA data for current or next transfer.
- * A request can be in-flight when this is called.
- */
+ 
 static int jz4740_mmc_prepare_dma_data(struct jz4740_mmc_host *host,
 				       struct mmc_data *data,
 				       int cookie)
@@ -401,7 +376,7 @@ static void jz4740_mmc_post_request(struct mmc_host *mmc,
 	}
 }
 
-/*----------------------------------------------------------------------------*/
+ 
 
 static void jz4740_mmc_set_irq_enabled(struct jz4740_mmc_host *host,
 	unsigned int irq, bool enabled)
@@ -619,8 +594,7 @@ static bool jz4740_mmc_read_data(struct jz4740_mmc_host *host,
 	}
 	sg_miter_stop(miter);
 
-	/* For whatever reason there is sometime one word more in the fifo then
-	 * requested */
+	 
 	timeout = 1000;
 	status = readl(host->base + JZ_REG_MMC_STATUS);
 	while (!(status & JZ_MMC_STATUS_DATA_FIFO_EMPTY) && --timeout) {
@@ -707,15 +681,7 @@ static void jz4740_mmc_send_command(struct jz4740_mmc_host *host,
 		if (cmd->data->flags & MMC_DATA_WRITE)
 			cmdat |= JZ_MMC_CMDAT_WRITE;
 		if (host->use_dma) {
-			/*
-			 * The JZ4780's MMC controller has integrated DMA ability
-			 * in addition to being able to use the external DMA
-			 * controller. It moves DMA control bits to a separate
-			 * register. The DMA_SEL bit chooses the external
-			 * controller over the integrated one. Earlier SoCs
-			 * can only use the external controller, and have a
-			 * single DMA enable bit in CMDAT.
-			 */
+			 
 			if (host->version >= JZ_MMC_JZ4780) {
 				writel(JZ_MMC_DMAC_DMA_EN | JZ_MMC_DMAC_DMA_SEL,
 				       host->base + JZ_REG_MMC_DMAC);
@@ -776,20 +742,11 @@ static irqreturn_t jz_mmc_irq_worker(int irq, void *devid)
 
 	case JZ4740_MMC_STATE_TRANSFER_DATA:
 		if (host->use_dma) {
-			/* Use DMA if enabled.
-			 * Data transfer direction is defined later by
-			 * relying on data flags in
-			 * jz4740_mmc_prepare_dma_data() and
-			 * jz4740_mmc_start_dma_transfer().
-			 */
+			 
 			timeout = jz4740_mmc_start_dma_transfer(host, data);
 			data->bytes_xfered = data->blocks * data->blksz;
 		} else if (data->flags & MMC_DATA_READ)
-			/* Use PIO if DMA is not enabled.
-			 * Data transfer direction was defined before
-			 * by relying on data flags in
-			 * jz_mmc_prepare_data_transfer().
-			 */
+			 
 			timeout = jz4740_mmc_read_data(host, data);
 		else
 			timeout = jz4740_mmc_write_data(host, data);
@@ -1000,13 +957,13 @@ static int jz4740_voltage_switch(struct mmc_host *mmc, struct mmc_ios *ios)
 {
 	int ret;
 
-	/* vqmmc regulator is available */
+	 
 	if (!IS_ERR(mmc->supply.vqmmc)) {
 		ret = mmc_regulator_set_vqmmc(mmc, ios);
 		return ret < 0 ? ret : 0;
 	}
 
-	/* no vqmmc regulator, assume fixed regulator at 3/3.3V */
+	 
 	if (ios->signal_voltage == MMC_SIGNAL_VOLTAGE_330)
 		return 0;
 
@@ -1054,7 +1011,7 @@ static int jz4740_mmc_probe(struct platform_device* pdev)
 	if (match) {
 		host->version = (enum jz4740_mmc_version)match->data;
 	} else {
-		/* JZ4740 should be the only one using legacy probe */
+		 
 		host->version = JZ_MMC_JZ4740;
 	}
 
@@ -1089,22 +1046,14 @@ static int jz4740_mmc_probe(struct platform_device* pdev)
 	if (!mmc->f_max)
 		mmc->f_max = JZ_MMC_CLK_RATE;
 
-	/*
-	 * There seems to be a problem with this driver on the JZ4760 and
-	 * JZ4760B SoCs. There, when using the maximum rate supported (50 MHz),
-	 * the communication fails with many SD cards.
-	 * Until this bug is sorted out, limit the maximum rate to 24 MHz.
-	 */
+	 
 	if (host->version == JZ_MMC_JZ4760 && mmc->f_max > JZ_MMC_CLK_RATE)
 		mmc->f_max = JZ_MMC_CLK_RATE;
 
 	mmc->f_min = mmc->f_max / 128;
 	mmc->ocr_avail = MMC_VDD_32_33 | MMC_VDD_33_34;
 
-	/*
-	 * We use a fixed timeout of 5s, hence inform the core about it. A
-	 * future improvement should instead respect the cmd->busy_timeout.
-	 */
+	 
 	mmc->max_busy_timeout = JZ_MMC_REQ_TIMEOUT_MS;
 
 	mmc->max_blk_size = (1 << 10) - 1;

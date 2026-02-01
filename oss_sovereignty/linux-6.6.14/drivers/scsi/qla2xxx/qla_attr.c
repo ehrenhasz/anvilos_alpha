@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic Fibre Channel HBA Driver
- * Copyright (c)  2003-2014 QLogic Corporation
- */
+
+ 
 #include "qla_def.h"
 #include "qla_target.h"
 
@@ -13,7 +10,7 @@
 
 static int qla24xx_vport_disable(struct fc_vport *, bool);
 
-/* SYSFS attributes --------------------------------------------------------- */
+ 
 
 static ssize_t
 qla2x00_sysfs_read_fw_dump(struct file *filp, struct kobject *kobj,
@@ -232,7 +229,7 @@ qla2x00_sysfs_write_nvram(struct file *filp, struct kobject *kobj,
 	    !ha->isp_ops->write_nvram)
 		return -EINVAL;
 
-	/* Checksum NVRAM. */
+	 
 	if (IS_FWI2_CAPABLE(ha)) {
 		__le32 *iter = (__force __le32 *)buf;
 		uint32_t chksum;
@@ -266,7 +263,7 @@ qla2x00_sysfs_write_nvram(struct file *filp, struct kobject *kobj,
 		return -EAGAIN;
 	}
 
-	/* Write NVRAM. */
+	 
 	ha->isp_ops->write_nvram(vha, buf, ha->nvram_base, count);
 	ha->isp_ops->read_nvram(vha, ha->nvram, ha->nvram_base,
 	    count);
@@ -274,7 +271,7 @@ qla2x00_sysfs_write_nvram(struct file *filp, struct kobject *kobj,
 
 	ql_dbg(ql_dbg_user, vha, 0x7060,
 	    "Setting ISP_ABORT_NEEDED\n");
-	/* NVRAM settings take effect immediately. */
+	 
 	set_bit(ISP_ABORT_NEEDED, &vha->dpc_flags);
 	qla2xxx_wake_dpc(vha);
 	qla2x00_wait_for_chip_reset(vha);
@@ -442,30 +439,7 @@ qla2x00_sysfs_write_optrom_ctl(struct file *filp, struct kobject *kobj,
 			goto out;
 		}
 
-		/*
-		 * We need to be more restrictive on which FLASH regions are
-		 * allowed to be updated via user-space.  Regions accessible
-		 * via this method include:
-		 *
-		 * ISP21xx/ISP22xx/ISP23xx type boards:
-		 *
-		 * 	0x000000 -> 0x020000 -- Boot code.
-		 *
-		 * ISP2322/ISP24xx type boards:
-		 *
-		 * 	0x000000 -> 0x07ffff -- Boot code.
-		 * 	0x080000 -> 0x0fffff -- Firmware.
-		 *
-		 * ISP25xx type boards:
-		 *
-		 * 	0x000000 -> 0x07ffff -- Boot code.
-		 * 	0x080000 -> 0x0fffff -- Firmware.
-		 * 	0x120000 -> 0x12ffff -- VPD and HBA parameters.
-		 *
-		 * > ISP25xx type boards:
-		 *
-		 *      None -- should go through BSG.
-		 */
+		 
 		valid = 0;
 		if (ha->optrom_size == OPTROM_SIZE_2300 && start == 0)
 			valid = 1;
@@ -617,11 +591,11 @@ qla2x00_sysfs_write_vpd(struct file *filp, struct kobject *kobj,
 		return -EAGAIN;
 	}
 
-	/* Write NVRAM. */
+	 
 	ha->isp_ops->write_nvram(vha, buf, ha->vpd_base, count);
 	ha->isp_ops->read_nvram(vha, ha->vpd, ha->vpd_base, count);
 
-	/* Update flash version information for 4Gb & above. */
+	 
 	if (!IS_FWI2_CAPABLE(ha)) {
 		mutex_unlock(&ha->optrom_mutex);
 		return -EINVAL;
@@ -758,11 +732,11 @@ qla2x00_sysfs_write_reset(struct file *filp, struct kobject *kobj,
 			qla83xx_idc_unlock(vha, 0);
 			break;
 		} else {
-			/* Make sure FC side is not in reset */
+			 
 			WARN_ON_ONCE(qla2x00_wait_for_hba_online(vha) !=
 				     QLA_SUCCESS);
 
-			/* Issue MPI reset */
+			 
 			scsi_block_requests(vha->host);
 			if (qla81xx_restart_mpi_firmware(vha) != QLA_SUCCESS)
 				ql_log(ql_log_warn, vha, 0x7070,
@@ -1065,7 +1039,7 @@ qla2x00_free_sysfs_attr(scsi_qla_host_t *vha, bool stop_beacon)
 		ha->isp_ops->beacon_off(vha);
 }
 
-/* Scsi_Host attributes. */
+ 
 
 static ssize_t
 qla2x00_driver_version_show(struct device *dev,
@@ -1240,7 +1214,7 @@ qla2x00_zio_store(struct device *dev, struct device_attribute *attr,
 	else
 		zio_mode = QLA_ZIO_DISABLED;
 
-	/* Update per-hba values and queue a reset. */
+	 
 	if (zio_mode != QLA_ZIO_DISABLED || ha->zio_mode != QLA_ZIO_DISABLED) {
 		ha->zio_mode = zio_mode;
 		set_bit(ISP_ABORT_NEEDED, &vha->dpc_flags);
@@ -1399,7 +1373,7 @@ qla2x00_beacon_config_store(struct device *dev, struct device_attribute *attr,
 	}
 
 	if (n == 2) {
-		/* check led index */
+		 
 		if (word[0] == 0) {
 			options |= BIT_2;
 			led[0] = word[1];
@@ -1928,7 +1902,7 @@ qla2x00_mpi_pause_store(struct device *dev,
 
 static DEVICE_ATTR(mpi_pause, S_IWUSR, NULL, qla2x00_mpi_pause_store);
 
-/* ----- */
+ 
 
 static ssize_t
 qlini_mode_show(struct device *dev, struct device_attribute *attr, char *buf)
@@ -1939,7 +1913,7 @@ qlini_mode_show(struct device *dev, struct device_attribute *attr, char *buf)
 	len += scnprintf(buf + len, PAGE_SIZE-len,
 	    "Supported options: enabled | disabled | dual | exclusive\n");
 
-	/* --- */
+	 
 	len += scnprintf(buf + len, PAGE_SIZE-len, "Current selection: ");
 
 	switch (vha->qlini_mode) {
@@ -1983,7 +1957,7 @@ static void qla_set_ini_mode(scsi_qla_host_t *vha, int op)
 	};
 	int action = NO_ACTION;
 	int set_mode = 0;
-	u8  eo_toggle = 0;	/* exchange offload flipped */
+	u8  eo_toggle = 0;	 
 
 	switch (vha->qlini_mode) {
 	case QLA2XXX_INI_MODE_DISABLED:
@@ -1997,11 +1971,7 @@ static void qla_set_ini_mode(scsi_qla_host_t *vha, int op)
 				    vha->u_ql2xexchoffld) &&
 				    NEED_EXCH_OFFLOAD(vha->u_ql2xexchoffld)) ||
 				    eo_toggle) {
-					/*
-					 * The number of exchange to be offload
-					 * was tweaked or offload option was
-					 * flipped
-					 */
+					 
 					action = MODE_CHANGE_ACCEPT;
 				} else {
 					action = MODE_CHANGE_NO_ACTION;
@@ -2019,11 +1989,7 @@ static void qla_set_ini_mode(scsi_qla_host_t *vha, int op)
 				    vha->u_ql2xexchoffld) &&
 				    NEED_EXCH_OFFLOAD(vha->u_ql2xexchoffld)) ||
 				    eo_toggle) {
-					/*
-					 * The number of exchange to be offload
-					 * was tweaked or offload option was
-					 * flipped
-					 */
+					 
 					action = MODE_CHANGE_ACCEPT;
 				} else {
 					action = MODE_CHANGE_NO_ACTION;
@@ -2034,7 +2000,7 @@ static void qla_set_ini_mode(scsi_qla_host_t *vha, int op)
 			break;
 		case QLA2XXX_INI_MODE_DUAL:
 			action = MODE_CHANGE_ACCEPT;
-			/* active_mode is target only, reset it to dual */
+			 
 			if (qla_tgt_mode_enabled(vha)) {
 				set_mode = 1;
 				action = MODE_CHANGE_ACCEPT;
@@ -2065,11 +2031,7 @@ static void qla_set_ini_mode(scsi_qla_host_t *vha, int op)
 				    vha->u_ql2xexchoffld) &&
 				    NEED_EXCH_OFFLOAD(vha->u_ql2xexchoffld)) ||
 				    eo_toggle)
-					/*
-					 * The number of exchange to be offload
-					 * was tweaked or offload option was
-					 * flipped
-					 */
+					 
 					action = MODE_CHANGE_ACCEPT;
 				else
 					action = NO_ACTION;
@@ -2094,7 +2056,7 @@ static void qla_set_ini_mode(scsi_qla_host_t *vha, int op)
 				action = MODE_CHANGE_NO_ACTION;
 			break;
 
-		case QLA2XXX_INI_MODE_DUAL: /* exclusive -> dual */
+		case QLA2XXX_INI_MODE_DUAL:  
 			if (qla_tgt_mode_enabled(vha)) {
 				action = MODE_CHANGE_ACCEPT;
 				set_mode = 1;
@@ -2177,7 +2139,7 @@ static void qla_set_ini_mode(scsi_qla_host_t *vha, int op)
 		case QLA2XXX_INI_MODE_DISABLED:
 			if (qla_tgt_mode_enabled(vha) ||
 			    qla_dual_mode_enabled(vha)) {
-				/* turning off initiator mode */
+				 
 				set_mode = 1;
 				action = MODE_CHANGE_ACCEPT;
 			} else {
@@ -2548,7 +2510,7 @@ const struct attribute_group *qla2x00_host_groups[] = {
 	NULL
 };
 
-/* Host attributes. */
+ 
 
 static void
 qla2x00_get_host_port_id(struct Scsi_Host *shost)
@@ -2718,19 +2680,13 @@ qla2x00_dev_loss_tmo_callbk(struct fc_rport *rport)
 	       DBG_FCPORT_PRFMT(fcport, "dev_loss_tmo expiry, rport_state=%d",
 				rport->port_state));
 
-	/*
-	 * Now that the rport has been deleted, set the fcport state to
-	 * FCS_DEVICE_DEAD, if the fcport is still lost.
-	 */
+	 
 	if (fcport->scan_state != QLA_FCPORT_FOUND)
 		qla2x00_set_fcport_state(fcport, FCS_DEVICE_DEAD);
 
-	/*
-	 * Transport has effectively 'deleted' the rport, clear
-	 * all local references.
-	 */
+	 
 	spin_lock_irqsave(host->host_lock, flags);
-	/* Confirm port has not reappeared before clearing pointers. */
+	 
 	if (rport->port_state != FC_PORTSTATE_ONLINE) {
 		fcport->rport = NULL;
 		*((fc_port_t **)rport->dd_data) = NULL;
@@ -2768,12 +2724,7 @@ qla2x00_terminate_rport_io(struct fc_rport *rport)
 			0, WAIT_TARGET);
 		return;
 	}
-	/*
-	 * At this point all fcport's software-states are cleared.  Perform any
-	 * final cleanup of firmware resources (PCBs and XCBs).
-	 *
-	 * Attempt to cleanup only lost devices.
-	 */
+	 
 	if (fcport->loop_id != FC_NO_LOOP_ID) {
 		if (IS_FWI2_CAPABLE(fcport->vha->hw) &&
 		    fcport->scan_state != QLA_FCPORT_FOUND) {
@@ -2791,7 +2742,7 @@ qla2x00_terminate_rport_io(struct fc_rport *rport)
 		}
 	}
 
-	/* check for any straggling io left behind */
+	 
 	if (qla2x00_eh_wait_for_pending_commands(fcport->vha, fcport->d_id.b24, 0, WAIT_TARGET)) {
 		ql_log(ql_log_warn, vha, 0x300b,
 		       "IO not return.  Resetting. \n");
@@ -2857,7 +2808,7 @@ qla2x00_get_fc_host_stats(struct Scsi_Host *shost)
 		rval = qla24xx_get_isp_stats(base_vha, stats, stats_dma, 0);
 	} else if (atomic_read(&base_vha->loop_state) == LOOP_READY &&
 	    !ha->dpc_active) {
-		/* Must be in a 'READY' state for statistics retrieval. */
+		 
 		rval = qla2x00_get_link_status(base_vha, base_vha->loop_id,
 						stats, stats_dma);
 	}
@@ -2865,7 +2816,7 @@ qla2x00_get_fc_host_stats(struct Scsi_Host *shost)
 	if (rval != QLA_SUCCESS)
 		goto done_free;
 
-	/* --- */
+	 
 	for (i = 0; i < vha->hw->max_qpairs; i++) {
 		qpair = vha->hw->queue_pair_map[i];
 		if (!qpair)
@@ -2884,7 +2835,7 @@ qla2x00_get_fc_host_stats(struct Scsi_Host *shost)
 	or += vha->qla_stats.output_requests;
 	ib += vha->qla_stats.input_bytes;
 	ob += vha->qla_stats.output_bytes;
-	/* --- */
+	 
 
 	p->link_failure_count = le32_to_cpu(stats->link_fail_cnt);
 	p->loss_of_sync_count = le32_to_cpu(stats->loss_sync_cnt);
@@ -2960,7 +2911,7 @@ qla2x00_reset_host_stats(struct Scsi_Host *shost)
 			return;
 		}
 
-		/* reset firmware statistics */
+		 
 		rval = qla24xx_get_isp_stats(base_vha, stats, stats_dma, BIT_0);
 		if (rval != QLA_SUCCESS)
 			ql_log(ql_log_warn, vha, 0x70de,
@@ -3067,18 +3018,18 @@ qla24xx_vport_create(struct fc_vport *fc_vport, bool disable)
 	} else
 		atomic_set(&vha->vp_state, VP_FAILED);
 
-	/* ready to create vport */
+	 
 	ql_log(ql_log_info, vha, 0x7080,
 	    "VP entry id %d assigned.\n", vha->vp_idx);
 
-	/* initialized vport states */
+	 
 	atomic_set(&vha->loop_state, LOOP_DOWN);
 	vha->vp_err_state = VP_ERR_PORTDWN;
 	vha->vp_prev_err_state = VP_ERR_UNKWN;
-	/* Check if physical ha port is Up */
+	 
 	if (atomic_read(&base_vha->loop_state) == LOOP_DOWN ||
 	    atomic_read(&base_vha->loop_state) == LOOP_DEAD) {
-		/* Don't retry or attempt login of this virtual port */
+		 
 		ql_dbg(ql_dbg_user, vha, 0x7081,
 		    "Vport loop state is not UP.\n");
 		atomic_set(&vha->loop_state, LOOP_DEAD);
@@ -3119,7 +3070,7 @@ qla24xx_vport_create(struct fc_vport *fc_vport, bool disable)
 		goto vport_create_failed_2;
 	}
 
-	/* initialize attributes */
+	 
 	fc_host_dev_loss_tmo(vha->host) = ha->port_down_retry_count;
 	fc_host_node_name(vha->host) = wwn_to_u64(vha->node_name);
 	fc_host_port_name(vha->host) = wwn_to_u64(vha->port_name);
@@ -3134,7 +3085,7 @@ qla24xx_vport_create(struct fc_vport *fc_vport, bool disable)
 	if (!ql2xmqsupport || !ha->npiv_info)
 		goto vport_queue;
 
-	/* Create a request queue in QoS mode for the vport */
+	 
 	for (cnt = 0; cnt < ha->nvram_npiv_size; cnt++) {
 		if (memcmp(ha->npiv_info[cnt].port_name, vha->port_name, 8) == 0
 			&& memcmp(ha->npiv_info[cnt].node_name, vha->node_name,
@@ -3201,7 +3152,7 @@ qla24xx_vport_delete(struct fc_vport *fc_vport)
 
 	scsi_remove_host(vha->host);
 
-	/* Allow timer to run to drain queued items, when removing vp */
+	 
 	qla24xx_deallocate_vp_id(vha);
 
 	if (vha->timer_active) {

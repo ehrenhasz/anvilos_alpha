@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * OSS compatible sequencer driver
- *
- * OSS compatible i/o control
- *
- * Copyright (C) 1998,99 Takashi Iwai <tiwai@suse.de>
- */
+
+ 
 
 #include "seq_oss_device.h"
 #include "seq_oss_readq.h"

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2019 David Lechner <david@lechnology.com>
- *
- * Counter driver for Texas Instruments Enhanced Quadrature Encoder Pulse (eQEP)
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/counter.h>
@@ -15,7 +11,7 @@
 #include <linux/regmap.h>
 #include <linux/types.h>
 
-/* 32-bit registers */
+ 
 #define QPOSCNT		0x0
 #define QPOSINIT	0x4
 #define QPOSMAX		0x8
@@ -26,22 +22,22 @@
 #define QUTMR		0x1c
 #define QUPRD		0x20
 
-/* 16-bit registers */
-#define QWDTMR		0x0	/* 0x24 */
-#define QWDPRD		0x2	/* 0x26 */
-#define QDECCTL		0x4	/* 0x28 */
-#define QEPCTL		0x6	/* 0x2a */
-#define QCAPCTL		0x8	/* 0x2c */
-#define QPOSCTL		0xa	/* 0x2e */
-#define QEINT		0xc	/* 0x30 */
-#define QFLG		0xe	/* 0x32 */
-#define QCLR		0x10	/* 0x34 */
-#define QFRC		0x12	/* 0x36 */
-#define QEPSTS		0x14	/* 0x38 */
-#define QCTMR		0x16	/* 0x3a */
-#define QCPRD		0x18	/* 0x3c */
-#define QCTMRLAT	0x1a	/* 0x3e */
-#define QCPRDLAT	0x1c	/* 0x40 */
+ 
+#define QWDTMR		0x0	 
+#define QWDPRD		0x2	 
+#define QDECCTL		0x4	 
+#define QEPCTL		0x6	 
+#define QCAPCTL		0x8	 
+#define QPOSCTL		0xa	 
+#define QEINT		0xc	 
+#define QFLG		0xe	 
+#define QCLR		0x10	 
+#define QFRC		0x12	 
+#define QEPSTS		0x14	 
+#define QCTMR		0x16	 
+#define QCPRD		0x18	 
+#define QCTMRLAT	0x1a	 
+#define QCPRDLAT	0x1c	 
 
 #define QDECCTL_QSRC_SHIFT	14
 #define QDECCTL_QSRC		GENMASK(15, 14)
@@ -67,13 +63,13 @@
 #define QEPCTL_UTE		BIT(1)
 #define QEPCTL_WDE		BIT(0)
 
-/* EQEP Inputs */
+ 
 enum {
-	TI_EQEP_SIGNAL_QEPA,	/* QEPA/XCLK */
-	TI_EQEP_SIGNAL_QEPB,	/* QEPB/XDIR */
+	TI_EQEP_SIGNAL_QEPA,	 
+	TI_EQEP_SIGNAL_QEPB,	 
 };
 
-/* Position Counter Input Modes */
+ 
 enum ti_eqep_count_func {
 	TI_EQEP_COUNT_FUNC_QUAD_COUNT,
 	TI_EQEP_COUNT_FUNC_DIR_COUNT,
@@ -165,7 +161,7 @@ static int ti_eqep_function_write(struct counter_device *counter,
 		qsrc = TI_EQEP_COUNT_FUNC_DOWN_COUNT;
 		break;
 	default:
-		/* should never reach this path */
+		 
 		return -EINVAL;
 	}
 
@@ -189,15 +185,11 @@ static int ti_eqep_action_read(struct counter_device *counter,
 
 	switch (function) {
 	case COUNTER_FUNCTION_QUADRATURE_X4:
-		/* In quadrature mode, the rising and falling edge of both
-		 * QEPA and QEPB trigger QCLK.
-		 */
+		 
 		*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
 		return 0;
 	case COUNTER_FUNCTION_PULSE_DIRECTION:
-		/* In direction-count mode only rising edge of QEPA is counted
-		 * and QEPB gives direction.
-		 */
+		 
 		switch (synapse->signal->id) {
 		case TI_EQEP_SIGNAL_QEPA:
 			*action = COUNTER_SYNAPSE_ACTION_RISING_EDGE;
@@ -206,14 +198,12 @@ static int ti_eqep_action_read(struct counter_device *counter,
 			*action = COUNTER_SYNAPSE_ACTION_NONE;
 			return 0;
 		default:
-			/* should never reach this path */
+			 
 			return -EINVAL;
 		}
 	case COUNTER_FUNCTION_INCREASE:
 	case COUNTER_FUNCTION_DECREASE:
-		/* In up/down-count modes only QEPA is counted and QEPB is not
-		 * used.
-		 */
+		 
 		switch (synapse->signal->id) {
 		case TI_EQEP_SIGNAL_QEPA:
 			err = regmap_read(priv->regmap16, QDECCTL, &qdecctl);
@@ -229,11 +219,11 @@ static int ti_eqep_action_read(struct counter_device *counter,
 			*action = COUNTER_SYNAPSE_ACTION_NONE;
 			return 0;
 		default:
-			/* should never reach this path */
+			 
 			return -EINVAL;
 		}
 	default:
-		/* should never reach this path */
+		 
 		return -EINVAL;
 	}
 }
@@ -407,11 +397,7 @@ static int ti_eqep_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, counter);
 
-	/*
-	 * Need to make sure power is turned on. On AM33xx, this comes from the
-	 * parent PWMSS bus driver. On AM17xx, this comes from the PSC power
-	 * domain.
-	 */
+	 
 	pm_runtime_enable(dev);
 	pm_runtime_get_sync(dev);
 

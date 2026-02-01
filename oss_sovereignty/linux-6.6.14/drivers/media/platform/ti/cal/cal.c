@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI Camera Access Layer (CAL) - Driver
- *
- * Copyright (c) 2015-2020 Texas Instruments Inc.
- *
- * Authors:
- *	Benoit Parrot <bparrot@ti.com>
- *	Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -53,10 +45,7 @@ bool cal_mc_api = CAL_MC_API_DEFAULT;
 module_param_named(mc_api, cal_mc_api, bool, 0444);
 MODULE_PARM_DESC(mc_api, "activates the MC API");
 
-/* ------------------------------------------------------------------
- *	Format Handling
- * ------------------------------------------------------------------
- */
+ 
 
 const struct cal_format_info cal_formats[] = {
 	{
@@ -156,10 +145,7 @@ const struct cal_format_info *cal_format_by_code(u32 code)
 	return NULL;
 }
 
-/* ------------------------------------------------------------------
- *	Platform Data
- * ------------------------------------------------------------------
- */
+ 
 
 static const struct cal_camerarx_data dra72x_cal_camerarx[] = {
 	{
@@ -235,10 +221,7 @@ static const struct cal_data am654_cal_data = {
 	.num_csi2_phy = ARRAY_SIZE(am654_cal_csi_phy),
 };
 
-/* ------------------------------------------------------------------
- *	I/O Register Accessors
- * ------------------------------------------------------------------
- */
+ 
 
 void cal_quickdump_regs(struct cal_dev *cal)
 {
@@ -261,10 +244,7 @@ void cal_quickdump_regs(struct cal_dev *cal)
 	}
 }
 
-/* ------------------------------------------------------------------
- *	Context Management
- * ------------------------------------------------------------------
- */
+ 
 
 #define CAL_MAX_PIX_PROC 4
 
@@ -303,14 +283,7 @@ static void cal_ctx_csi2_config(struct cal_ctx *ctx)
 
 	val = cal_read(ctx->cal, CAL_CSI2_CTX(ctx->phy->instance, ctx->csi2_ctx));
 	cal_set_field(&val, ctx->cport, CAL_CSI2_CTX_CPORT_MASK);
-	/*
-	 * DT type: MIPI CSI-2 Specs
-	 *   0x1: All - DT filter is disabled
-	 *  0x24: RGB888 1 pixel  = 3 bytes
-	 *  0x2B: RAW10  4 pixels = 5 bytes
-	 *  0x2A: RAW8   1 pixel  = 1 byte
-	 *  0x1E: YUV422 2 pixels = 4 bytes
-	 */
+	 
 	cal_set_field(&val, ctx->datatype, CAL_CSI2_CTX_DT_MASK);
 	cal_set_field(&val, ctx->vc, CAL_CSI2_CTX_VC_MASK);
 	cal_set_field(&val, ctx->v_fmt.fmt.pix.height, CAL_CSI2_CTX_LINES_MASK);
@@ -345,15 +318,7 @@ static void cal_ctx_pix_proc_config(struct cal_ctx *ctx)
 		pack = CAL_PIX_PROC_PACK_B16;
 		break;
 	default:
-		/*
-		 * If you see this warning then it means that you added
-		 * some new entry in the cal_formats[] array with a different
-		 * bit per pixel values then the one supported below.
-		 * Either add support for the new bpp value below or adjust
-		 * the new entry to use one of the value below.
-		 *
-		 * Instead of failing here just use 8 bpp as a default.
-		 */
+		 
 		dev_warn_once(ctx->cal->dev,
 			      "%s:%d:%s: bpp:%d unsupported! Overwritten with 8.\n",
 			      __FILE__, __LINE__, __func__, ctx->fmtinfo->bpp);
@@ -398,13 +363,9 @@ static void cal_ctx_wr_dma_config(struct cal_ctx *ctx)
 		cal_read(ctx->cal, CAL_WR_DMA_OFST(ctx->dma_ctx)));
 
 	val = cal_read(ctx->cal, CAL_WR_DMA_XSIZE(ctx->dma_ctx));
-	/* 64 bit word means no skipping */
+	 
 	cal_set_field(&val, 0, CAL_WR_DMA_XSIZE_XSKIP_MASK);
-	/*
-	 * The XSIZE field is expressed in 64-bit units and prevents overflows
-	 * in case of synchronization issues by limiting the number of bytes
-	 * written per line.
-	 */
+	 
 	cal_set_field(&val, stride / 8, CAL_WR_DMA_XSIZE_MASK);
 	cal_write(ctx->cal, CAL_WR_DMA_XSIZE(ctx->dma_ctx), val);
 	ctx_dbg(3, ctx, "CAL_WR_DMA_XSIZE(%d) = 0x%08x\n", ctx->dma_ctx,
@@ -515,10 +476,7 @@ void cal_ctx_start(struct cal_ctx *ctx)
 {
 	struct cal_camerarx *phy = ctx->phy;
 
-	/*
-	 * Reset the frame number & sequence number, but only if the
-	 * virtual channel is not already in use.
-	 */
+	 
 
 	spin_lock(&phy->vc_lock);
 
@@ -531,13 +489,13 @@ void cal_ctx_start(struct cal_ctx *ctx)
 
 	ctx->dma.state = CAL_DMA_RUNNING;
 
-	/* Configure the CSI-2, pixel processing and write DMA contexts. */
+	 
 	cal_ctx_csi2_config(ctx);
 	if (ctx->use_pix_proc)
 		cal_ctx_pix_proc_config(ctx);
 	cal_ctx_wr_dma_config(ctx);
 
-	/* Enable IRQ_WDMA_END and IRQ_WDMA_START. */
+	 
 	cal_write(ctx->cal, CAL_HL_IRQENABLE_SET(1),
 		  CAL_HL_IRQ_WDMA_END_MASK(ctx->dma_ctx));
 	cal_write(ctx->cal, CAL_HL_IRQENABLE_SET(2),
@@ -557,10 +515,7 @@ void cal_ctx_stop(struct cal_ctx *ctx)
 	phy->vc_enable_count[ctx->vc]--;
 	spin_unlock(&phy->vc_lock);
 
-	/*
-	 * Request DMA stop and wait until it completes. If completion times
-	 * out, forcefully disable the DMA.
-	 */
+	 
 	spin_lock_irq(&ctx->dma.lock);
 	ctx->dma.state = CAL_DMA_STOP_REQUESTED;
 	spin_unlock_irq(&ctx->dma.lock);
@@ -572,7 +527,7 @@ void cal_ctx_stop(struct cal_ctx *ctx)
 		cal_ctx_wr_dma_disable(ctx);
 	}
 
-	/* Disable IRQ_WDMA_END and IRQ_WDMA_START. */
+	 
 	cal_write(ctx->cal, CAL_HL_IRQENABLE_CLR(1),
 		  CAL_HL_IRQ_WDMA_END_MASK(ctx->dma_ctx));
 	cal_write(ctx->cal, CAL_HL_IRQENABLE_CLR(2),
@@ -580,24 +535,17 @@ void cal_ctx_stop(struct cal_ctx *ctx)
 
 	ctx->dma.state = CAL_DMA_STOPPED;
 
-	/* Disable CSI2 context */
+	 
 	cal_write(ctx->cal, CAL_CSI2_CTX(ctx->phy->instance, ctx->csi2_ctx), 0);
 
-	/* Disable pix proc */
+	 
 	if (ctx->use_pix_proc)
 		cal_write(ctx->cal, CAL_PIX_PROC(ctx->pix_proc), 0);
 }
 
-/* ------------------------------------------------------------------
- *	IRQ Handling
- * ------------------------------------------------------------------
- */
+ 
 
-/*
- * Track a sequence number for each virtual channel, which is shared by
- * all contexts using the same virtual channel. This is done using the
- * CSI-2 frame number as a base.
- */
+ 
 static void cal_update_seq_number(struct cal_ctx *ctx)
 {
 	struct cal_dev *cal = ctx->cal;
@@ -626,18 +574,11 @@ static inline void cal_irq_wdma_start(struct cal_ctx *ctx)
 	spin_lock(&ctx->dma.lock);
 
 	if (ctx->dma.state == CAL_DMA_STOP_REQUESTED) {
-		/*
-		 * If a stop is requested, disable the write DMA context
-		 * immediately. The CAL_WR_DMA_CTRL_j.MODE field is shadowed,
-		 * the current frame will complete and the DMA will then stop.
-		 */
+		 
 		cal_ctx_wr_dma_disable(ctx);
 		ctx->dma.state = CAL_DMA_STOP_PENDING;
 	} else if (!list_empty(&ctx->dma.queue) && !ctx->dma.pending) {
-		/*
-		 * Otherwise, if a new buffer is available, queue it to the
-		 * hardware.
-		 */
+		 
 		struct cal_buffer *buf;
 		dma_addr_t addr;
 
@@ -661,13 +602,13 @@ static inline void cal_irq_wdma_end(struct cal_ctx *ctx)
 
 	spin_lock(&ctx->dma.lock);
 
-	/* If the DMA context was stopping, it is now stopped. */
+	 
 	if (ctx->dma.state == CAL_DMA_STOP_PENDING) {
 		ctx->dma.state = CAL_DMA_STOPPED;
 		wake_up(&ctx->dma.wait);
 	}
 
-	/* If a new buffer was queued, complete the current buffer. */
+	 
 	if (ctx->dma.pending) {
 		buf = ctx->dma.active;
 		ctx->dma.active = ctx->dma.pending;
@@ -687,21 +628,7 @@ static inline void cal_irq_wdma_end(struct cal_ctx *ctx)
 
 static void cal_irq_handle_wdma(struct cal_ctx *ctx, bool start, bool end)
 {
-	/*
-	 * CAL HW interrupts are inherently racy. If we get both start and end
-	 * interrupts, we don't know what has happened: did the DMA for a single
-	 * frame start and end, or did one frame end and a new frame start?
-	 *
-	 * Usually for normal pixel frames we get the interrupts separately. If
-	 * we do get both, we have to guess. The assumption in the code below is
-	 * that the active vertical area is larger than the blanking vertical
-	 * area, and thus it is more likely that we get the end of the old frame
-	 * and the start of a new frame.
-	 *
-	 * However, for embedded data, which is only a few lines high, we always
-	 * get both interrupts. Here the assumption is that we get both for the
-	 * same frame.
-	 */
+	 
 	if (ctx->v_fmt.fmt.pix.height < 10) {
 		if (start)
 			cal_irq_wdma_start(ctx);
@@ -768,13 +695,10 @@ static irqreturn_t cal_irq(int irq_cal, void *data)
 	return IRQ_HANDLED;
 }
 
-/* ------------------------------------------------------------------
- *	Asynchronous V4L2 subdev binding
- * ------------------------------------------------------------------
- */
+ 
 
 struct cal_v4l2_async_subdev {
-	struct v4l2_async_connection asd; /* Must be first */
+	struct v4l2_async_connection asd;  
 	struct cal_camerarx *phy;
 };
 
@@ -908,15 +832,9 @@ static void cal_async_notifier_unregister(struct cal_dev *cal)
 	v4l2_async_nf_cleanup(&cal->notifier);
 }
 
-/* ------------------------------------------------------------------
- *	Media and V4L2 device handling
- * ------------------------------------------------------------------
- */
+ 
 
-/*
- * Register user-facing devices. To be called at the end of the probe function
- * when all resources are initialized and ready.
- */
+ 
 static int cal_media_register(struct cal_dev *cal)
 {
 	int ret;
@@ -927,10 +845,7 @@ static int cal_media_register(struct cal_dev *cal)
 		return ret;
 	}
 
-	/*
-	 * Register the async notifier. This may trigger registration of the
-	 * V4L2 video devices if all subdevs are ready.
-	 */
+	 
 	ret = cal_async_notifier_register(cal);
 	if (ret) {
 		media_device_unregister(&cal->mdev);
@@ -940,15 +855,12 @@ static int cal_media_register(struct cal_dev *cal)
 	return 0;
 }
 
-/*
- * Unregister the user-facing devices, but don't free memory yet. To be called
- * at the beginning of the remove function, to disallow access from userspace.
- */
+ 
 static void cal_media_unregister(struct cal_dev *cal)
 {
 	unsigned int i;
 
-	/* Unregister all the V4L2 video devices. */
+	 
 	for (i = 0; i < cal->num_contexts; i++)
 		cal_ctx_v4l2_unregister(cal->ctx[i]);
 
@@ -956,10 +868,7 @@ static void cal_media_unregister(struct cal_dev *cal)
 	media_device_unregister(&cal->mdev);
 }
 
-/*
- * Initialize the in-kernel objects. To be called at the beginning of the probe
- * function, before the V4L2 device is used by the driver.
- */
+ 
 static int cal_media_init(struct cal_dev *cal)
 {
 	struct media_device *mdev = &cal->mdev;
@@ -970,10 +879,7 @@ static int cal_media_init(struct cal_dev *cal)
 	strscpy(mdev->model, "CAL", sizeof(mdev->model));
 	media_device_init(mdev);
 
-	/*
-	 * Initialize the V4L2 device (despite the function name, this performs
-	 * initialization, not registration).
-	 */
+	 
 	cal->v4l2_dev.mdev = mdev;
 	ret = v4l2_device_register(cal->dev, &cal->v4l2_dev);
 	if (ret) {
@@ -986,11 +892,7 @@ static int cal_media_init(struct cal_dev *cal)
 	return 0;
 }
 
-/*
- * Cleanup the in-kernel objects, freeing memory. To be called at the very end
- * of the remove sequence, when nothing (including userspace) can access the
- * objects anymore.
- */
+ 
 static void cal_media_cleanup(struct cal_dev *cal)
 {
 	v4l2_device_unregister(&cal->v4l2_dev);
@@ -999,10 +901,7 @@ static void cal_media_cleanup(struct cal_dev *cal)
 	vb2_dma_contig_clear_max_seg_size(cal->dev);
 }
 
-/* ------------------------------------------------------------------
- *	Initialization and module stuff
- * ------------------------------------------------------------------
- */
+ 
 
 static struct cal_ctx *cal_ctx_create(struct cal_dev *cal, int inst)
 {
@@ -1056,7 +955,7 @@ static const struct of_device_id cal_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, cal_of_match);
 
-/* Get hardware revision and info. */
+ 
 
 #define CAL_HL_HWINFO_VALUE		0xa3c90469
 
@@ -1108,10 +1007,7 @@ static int cal_init_camerarx_regmap(struct cal_dev *cal)
 	dev_warn(cal->dev, "failed to get ti,camerrx-control: %ld\n",
 		 PTR_ERR(syscon));
 
-	/*
-	 * Backward DTS compatibility. If syscon entry is not present then
-	 * check if the camerrx_control resource is present.
-	 */
+	 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
 					   "camerrx_control");
 	base = devm_ioremap_resource(cal->dev, res);
@@ -1134,10 +1030,7 @@ static int cal_init_camerarx_regmap(struct cal_dev *cal)
 		return PTR_ERR(syscon);
 	}
 
-	/*
-	 * In this case the base already point to the direct CM register so no
-	 * need for an offset.
-	 */
+	 
 	cal->syscon_camerrx = syscon;
 	cal->syscon_camerrx_offset = 0;
 
@@ -1165,7 +1058,7 @@ static int cal_probe(struct platform_device *pdev)
 	cal->dev = &pdev->dev;
 	platform_set_drvdata(pdev, cal);
 
-	/* Acquire resources: clocks, CAMERARX regmap, I/O memory and IRQ. */
+	 
 	cal->fclk = devm_clk_get(&pdev->dev, "fck");
 	if (IS_ERR(cal->fclk)) {
 		dev_err(&pdev->dev, "cannot get CAL fclk\n");
@@ -1192,7 +1085,7 @@ static int cal_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Read the revision and hardware info to verify hardware access. */
+	 
 	pm_runtime_enable(&pdev->dev);
 	ret = pm_runtime_resume_and_get(&pdev->dev);
 	if (ret)
@@ -1201,12 +1094,12 @@ static int cal_probe(struct platform_device *pdev)
 	cal_get_hwinfo(cal);
 	pm_runtime_put_sync(&pdev->dev);
 
-	/* Initialize the media device. */
+	 
 	ret = cal_media_init(cal);
 	if (ret < 0)
 		goto error_pm_runtime;
 
-	/* Create CAMERARX PHYs. */
+	 
 	for (i = 0; i < cal->data->num_csi2_phy; ++i) {
 		cal->phy[i] = cal_camerarx_create(cal, i);
 		if (IS_ERR(cal->phy[i])) {
@@ -1225,7 +1118,7 @@ static int cal_probe(struct platform_device *pdev)
 		goto error_camerarx;
 	}
 
-	/* Create contexts. */
+	 
 	for (i = 0; i < cal->data->num_csi2_phy; ++i) {
 		if (!cal->phy[i]->source_node)
 			continue;
@@ -1240,7 +1133,7 @@ static int cal_probe(struct platform_device *pdev)
 		cal->num_contexts++;
 	}
 
-	/* Register the media device. */
+	 
 	ret = cal_media_register(cal);
 	if (ret)
 		goto error_context;
@@ -1298,18 +1191,12 @@ static int cal_runtime_resume(struct device *dev)
 	u32 val;
 
 	if (cal->data->flags & DRA72_CAL_PRE_ES2_LDO_DISABLE) {
-		/*
-		 * Apply errata on both port everytime we (re-)enable
-		 * the clock
-		 */
+		 
 		for (i = 0; i < cal->data->num_csi2_phy; i++)
 			cal_camerarx_i913_errata(cal->phy[i]);
 	}
 
-	/*
-	 * Enable global interrupts that are not related to a particular
-	 * CAMERARAX or context.
-	 */
+	 
 	cal_write(cal, CAL_HL_IRQENABLE_SET(0), CAL_HL_IRQ_OCPO_ERR_MASK);
 
 	val = cal_read(cal, CAL_CTRL);

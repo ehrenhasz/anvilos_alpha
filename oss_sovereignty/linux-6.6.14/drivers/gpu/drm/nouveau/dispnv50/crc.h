@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NV50_CRC_H__
 #define __NV50_CRC_H__
 
@@ -24,11 +24,7 @@ enum nv50_crc_source {
 	NV50_CRC_SOURCE_OUTP_INACTIVE,
 };
 
-/* RG -> SF (DP only)
- *    -> SOR
- *    -> PIOR
- *    -> DAC
- */
+ 
 enum nv50_crc_source_type {
 	NV50_CRC_SOURCE_TYPE_NONE = 0,
 	NV50_CRC_SOURCE_TYPE_SOR,
@@ -95,7 +91,7 @@ extern const struct nv50_crc_func crc907d;
 extern const struct nv50_crc_func crcc37d;
 extern const struct nv50_crc_func crcc57d;
 
-#else /* IS_ENABLED(CONFIG_DEBUG_FS) */
+#else  
 struct nv50_crc {};
 struct nv50_crc_func {};
 struct nv50_crc_atom {};
@@ -127,5 +123,5 @@ nv50_crc_atomic_set(struct nv50_head *head, struct nv50_head_atom *state) {}
 static inline void
 nv50_crc_atomic_clr(struct nv50_head *head) {}
 
-#endif /* IS_ENABLED(CONFIG_DEBUG_FS) */
-#endif /* !__NV50_CRC_H__ */
+#endif  
+#endif  

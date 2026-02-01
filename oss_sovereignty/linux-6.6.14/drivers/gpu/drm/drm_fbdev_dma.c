@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+
 
 #include <linux/fb.h>
 
@@ -10,15 +10,13 @@
 
 #include <drm/drm_fbdev_dma.h>
 
-/*
- * struct fb_ops
- */
+ 
 
 static int drm_fbdev_dma_fb_open(struct fb_info *info, int user)
 {
 	struct drm_fb_helper *fb_helper = info->par;
 
-	/* No need to take a ref for fbcon because it unbinds on unregister */
+	 
 	if (user && !try_module_get(fb_helper->dev->driver->fops->owner))
 		return -ENODEV;
 
@@ -69,9 +67,7 @@ static const struct fb_ops drm_fbdev_dma_fb_ops = {
 	.fb_destroy = drm_fbdev_dma_fb_destroy,
 };
 
-/*
- * struct drm_fb_helper
- */
+ 
 
 static int drm_fbdev_dma_helper_fb_probe(struct drm_fb_helper *fb_helper,
 					 struct drm_fb_helper_surface_size *sizes)
@@ -99,7 +95,7 @@ static int drm_fbdev_dma_helper_fb_probe(struct drm_fb_helper *fb_helper,
 
 	fb = buffer->fb;
 	if (drm_WARN_ON(dev, fb->funcs->dirty)) {
-		ret = -ENODEV; /* damage handling not supported; use generic emulation */
+		ret = -ENODEV;  
 		goto err_drm_client_buffer_delete;
 	}
 
@@ -107,7 +103,7 @@ static int drm_fbdev_dma_helper_fb_probe(struct drm_fb_helper *fb_helper,
 	if (ret) {
 		goto err_drm_client_buffer_delete;
 	} else if (drm_WARN_ON(dev, map.is_iomem)) {
-		ret = -ENODEV; /* I/O memory not supported; use generic emulation */
+		ret = -ENODEV;  
 		goto err_drm_client_buffer_delete;
 	}
 
@@ -124,10 +120,10 @@ static int drm_fbdev_dma_helper_fb_probe(struct drm_fb_helper *fb_helper,
 
 	info->fbops = &drm_fbdev_dma_fb_ops;
 
-	/* screen */
-	info->flags |= FBINFO_VIRTFB; /* system memory */
+	 
+	info->flags |= FBINFO_VIRTFB;  
 	if (dma_obj->map_noncoherent)
-		info->flags |= FBINFO_READS_FAST; /* signal caching */
+		info->flags |= FBINFO_READS_FAST;  
 	info->screen_size = sizes->surface_height * fb->pitches[0];
 	info->screen_buffer = map.vaddr;
 	info->fix.smem_start = page_to_phys(virt_to_page(info->screen_buffer));
@@ -148,9 +144,7 @@ static const struct drm_fb_helper_funcs drm_fbdev_dma_helper_funcs = {
 	.fb_probe = drm_fbdev_dma_helper_fb_probe,
 };
 
-/*
- * struct drm_client_funcs
- */
+ 
 
 static void drm_fbdev_dma_client_unregister(struct drm_client_dev *client)
 {
@@ -208,26 +202,7 @@ static const struct drm_client_funcs drm_fbdev_dma_client_funcs = {
 	.hotplug	= drm_fbdev_dma_client_hotplug,
 };
 
-/**
- * drm_fbdev_dma_setup() - Setup fbdev emulation for GEM DMA helpers
- * @dev: DRM device
- * @preferred_bpp: Preferred bits per pixel for the device.
- *                 32 is used if this is zero.
- *
- * This function sets up fbdev emulation for GEM DMA drivers that support
- * dumb buffers with a virtual address and that can be mmap'ed.
- * drm_fbdev_dma_setup() shall be called after the DRM driver registered
- * the new DRM device with drm_dev_register().
- *
- * Restore, hotplug events and teardown are all taken care of. Drivers that do
- * suspend/resume need to call drm_fb_helper_set_suspend_unlocked() themselves.
- * Simple drivers might use drm_mode_config_helper_suspend().
- *
- * This function is safe to call even when there are no connectors present.
- * Setup will be retried on the next hotplug event.
- *
- * The fbdev is destroyed by drm_dev_unregister().
- */
+ 
 void drm_fbdev_dma_setup(struct drm_device *dev, unsigned int preferred_bpp)
 {
 	struct drm_fb_helper *fb_helper;

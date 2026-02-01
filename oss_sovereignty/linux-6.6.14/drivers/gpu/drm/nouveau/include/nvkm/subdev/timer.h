@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_TIMER_H__
 #define __NVKM_TIMER_H__
 #include <core/subdev.h>
@@ -40,14 +40,7 @@ void nvkm_timer_wait_init(struct nvkm_device *, u64 nsec,
 			  struct nvkm_timer_wait *);
 s64 nvkm_timer_wait_test(struct nvkm_timer_wait *);
 
-/* Delay based on GPU time (ie. PTIMER).
- *
- * Will return -ETIMEDOUT unless the loop was terminated with 'break',
- * where it will return the number of nanoseconds taken instead.
- *
- * NVKM_DELAY can be passed for 'cond' to disable the timeout warning,
- * which is useful for unconditional delay loops.
- */
+ 
 #define NVKM_DELAY _warn = false;
 #define nvkm_nsec(d,n,cond...) ({                                              \
 	struct nvkm_timer_wait _wait;                                          \

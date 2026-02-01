@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2016 Rockchip Electronics Co. Ltd.
- * Author: Lin Huang <hl@rock-chips.com>
- */
+
+ 
 
 #include <linux/arm-smccc.h>
 #include <linux/clk.h>

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Microsemi Ocelot IRQ controller driver
- *
- * Copyright (c) 2017 Microsemi Corporation
- */
+
+ 
 #include <linux/bitops.h>
 #include <linux/irq.h>
 #include <linux/of_address.h>
@@ -162,11 +158,11 @@ static int __init vcoreiii_irq_init(struct device_node *node,
 		gc->chip_types[0].chip.irq_unmask = irq_gc_unmask_enable_reg;
 	}
 
-	/* Mask and ack all interrupts */
+	 
 	irq_reg_writel(gc, 0, p->reg_off_ena);
 	irq_reg_writel(gc, 0xffffffff, p->reg_off_sticky);
 
-	/* Overall init */
+	 
 	if (p->flags & FLAGS_NEED_INIT_ENABLE)
 		irq_reg_writel(gc, BIT(0), p->reg_off_ena_irq0);
 

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2020 huangzhenwei@allwinnertech.com
- * Copyright (C) 2021 Samuel Holland <samuel@sholland.org>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -24,17 +21,17 @@ static const struct clk_parent_data r_ahb_apb0_parents[] = {
 };
 static SUNXI_CCU_MP_DATA_WITH_MUX(r_ahb_clk, "r-ahb",
 				  r_ahb_apb0_parents, 0x000,
-				  0, 5,		/* M */
-				  8, 2,		/* P */
-				  24, 3,	/* mux */
+				  0, 5,		 
+				  8, 2,		 
+				  24, 3,	 
 				  0);
 static const struct clk_hw *r_ahb_hw = &r_ahb_clk.common.hw;
 
 static SUNXI_CCU_MP_DATA_WITH_MUX(r_apb0_clk, "r-apb0",
 				  r_ahb_apb0_parents, 0x00c,
-				  0, 5,		/* M */
-				  8, 2,		/* P */
-				  24, 3,	/* mux */
+				  0, 5,		 
+				  8, 2,		 
+				  24, 3,	 
 				  0);
 static const struct clk_hw *r_apb0_hw = &r_apb0_clk.common.hw;
 
@@ -51,10 +48,10 @@ static const struct clk_parent_data r_ir_rx_parents[] = {
 };
 static SUNXI_CCU_MP_DATA_WITH_MUX_GATE(r_ir_rx_clk, "r-ir-rx",
 				       r_ir_rx_parents, 0x1c0,
-				       0, 5,	/* M */
-				       8, 2,	/* P */
-				       24, 2,	/* mux */
-				       BIT(31),	/* gate */
+				       0, 5,	 
+				       8, 2,	 
+				       24, 2,	 
+				       BIT(31),	 
 				       0);
 
 static SUNXI_CCU_GATE_HWS(bus_r_ir_rx_clk,	"bus-r-ir-rx",	&r_apb0_hw,

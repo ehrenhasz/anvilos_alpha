@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016-2019 The Linux Foundation. All rights reserved.
- * Copyright (c) 2023, Linaro Ltd.
- * Author: Caleb Connolly <caleb.connolly@linaro.org>
- *
- * This driver is for the switch-mode battery charger and boost
- * hardware found in pmi8998 and related PMICs.
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/devm-helpers.h>
@@ -23,7 +16,7 @@
 #include <linux/types.h>
 #include <linux/workqueue.h>
 
-/* clang-format off */
+ 
 #define BATTERY_CHARGER_STATUS_1			0x06
 #define BVR_INITIAL_RAMP_BIT				BIT(7)
 #define CC_SOFT_TERMINATE_BIT				BIT(6)
@@ -347,9 +340,9 @@
 #define DCP_CURRENT_UA					1500000
 #define CURRENT_MAX_UA					DCP_CURRENT_UA
 
-/* pmi8998 registers represent current in increments of 1/40th of an amp */
+ 
 #define CURRENT_SCALE_FACTOR				25000
-/* clang-format on */
+ 
 
 enum charger_status {
 	TRICKLE_CHARGE = 0,
@@ -368,20 +361,7 @@ struct smb2_register {
 	u8 val;
 };
 
-/**
- * struct smb2_chip - smb2 chip structure
- * @dev:		Device reference for power_supply
- * @name:		The platform device name
- * @base:		Base address for smb2 registers
- * @regmap:		Register map
- * @batt_info:		Battery data from DT
- * @status_change_work: Worker to handle plug/unplug events
- * @cable_irq:		USB plugin IRQ
- * @wakeup_enabled:	If the cable IRQ will cause a wakeup
- * @usb_in_i_chan:	USB_IN current measurement channel
- * @usb_in_v_chan:	USB_IN voltage measurement channel
- * @chg_psy:		Charger power supply instance
- */
+ 
 struct smb2_chip {
 	struct device *dev;
 	const char *name;
@@ -434,10 +414,7 @@ static int smb2_get_prop_usb_online(struct smb2_chip *chip, int *val)
 	return 0;
 }
 
-/*
- * Qualcomm "automatic power source detection" aka APSD
- * tells us what type of charger we're connected to.
- */
+ 
 static int smb2_apsd_get_charger_type(struct smb2_chip *chip, int *val)
 {
 	unsigned int apsd_stat, stat;
@@ -472,7 +449,7 @@ static int smb2_apsd_get_charger_type(struct smb2_chip *chip, int *val)
 		*val = POWER_SUPPLY_USB_TYPE_CDP;
 	else if (stat & (DCP_CHARGER_BIT | OCP_CHARGER_BIT | FLOAT_CHARGER_BIT))
 		*val = POWER_SUPPLY_USB_TYPE_DCP;
-	else /* SDP_CHARGER_BIT (or others) */
+	else  
 		*val = POWER_SUPPLY_USB_TYPE_SDP;
 
 	return 0;
@@ -728,7 +705,7 @@ static irqreturn_t smb2_handle_batt_overvoltage(int irq, void *data)
 		    &status);
 
 	if (status & CHARGER_ERROR_STATUS_BAT_OV_BIT) {
-		/* The hardware stops charging automatically */
+		 
 		dev_err(chip->dev, "battery overvoltage detected\n");
 		power_supply_changed(chip->chg_psy);
 	}
@@ -784,85 +761,59 @@ static const struct power_supply_desc smb2_psy_desc = {
 	.property_is_writeable = smb2_property_is_writable,
 };
 
-/* Init sequence derived from vendor downstream driver */
+ 
 static const struct smb2_register smb2_init_seq[] = {
 	{ .addr = AICL_RERUN_TIME_CFG, .mask = AICL_RERUN_TIME_MASK, .val = 0 },
-	/*
-	 * By default configure us as an upstream facing port
-	 * FIXME: This will be handled by the type-c driver
-	 */
+	 
 	{ .addr = TYPE_C_INTRPT_ENB_SOFTWARE_CTRL,
 	  .mask = TYPEC_POWER_ROLE_CMD_MASK | VCONN_EN_SRC_BIT |
 		  VCONN_EN_VALUE_BIT,
 	  .val = VCONN_EN_SRC_BIT },
-	/*
-	 * Disable Type-C factory mode and stay in Attached.SRC state when VCONN
-	 * over-current happens
-	 */
+	 
 	{ .addr = TYPE_C_CFG,
 	  .mask = FACTORY_MODE_DETECTION_EN_BIT | VCONN_OC_CFG_BIT,
 	  .val = 0 },
-	/* Configure VBUS for software control */
+	 
 	{ .addr = OTG_CFG, .mask = OTG_EN_SRC_CFG_BIT, .val = 0 },
-	/*
-	 * Use VBAT to determine the recharge threshold when battery is full
-	 * rather than the state of charge.
-	 */
+	 
 	{ .addr = FG_UPDATE_CFG_2_SEL,
 	  .mask = SOC_LT_CHG_RECHARGE_THRESH_SEL_BIT |
 		  VBT_LT_CHG_RECHARGE_THRESH_SEL_BIT,
 	  .val = VBT_LT_CHG_RECHARGE_THRESH_SEL_BIT },
-	/* Enable charging */
+	 
 	{ .addr = USBIN_OPTIONS_1_CFG, .mask = HVDCP_EN_BIT, .val = 0 },
 	{ .addr = CHARGING_ENABLE_CMD,
 	  .mask = CHARGING_ENABLE_CMD_BIT,
 	  .val = CHARGING_ENABLE_CMD_BIT },
-	/*
-	 * Match downstream defaults
-	 * CHG_EN_SRC_BIT - charger enable is controlled by software
-	 * CHG_EN_POLARITY_BIT - polarity of charge enable pin when in HW control
-	 *                       pulled low on OnePlus 6 and SHIFT6mq
-	 * PRETOFAST_TRANSITION_CFG_BIT -
-	 * BAT_OV_ECC_BIT -
-	 * I_TERM_BIT - Current termination ?? 0 = enabled
-	 * AUTO_RECHG_BIT - Enable automatic recharge when battery is full
-	 *                  0 = enabled
-	 * EN_ANALOG_DROP_IN_VBATT_BIT
-	 * CHARGER_INHIBIT_BIT - Inhibit charging based on battery voltage
-	 *                       instead of ??
-	 */
+	 
 	{ .addr = CHGR_CFG2,
 	  .mask = CHG_EN_SRC_BIT | CHG_EN_POLARITY_BIT |
 		  PRETOFAST_TRANSITION_CFG_BIT | BAT_OV_ECC_BIT | I_TERM_BIT |
 		  AUTO_RECHG_BIT | EN_ANALOG_DROP_IN_VBATT_BIT |
 		  CHARGER_INHIBIT_BIT,
 	  .val = CHARGER_INHIBIT_BIT },
-	/* STAT pin software override, match downstream. Parallell charging? */
+	 
 	{ .addr = STAT_CFG,
 	  .mask = STAT_SW_OVERRIDE_CFG_BIT,
 	  .val = STAT_SW_OVERRIDE_CFG_BIT },
-	/* Set the default SDP charger type to a 500ma USB 2.0 port */
+	 
 	{ .addr = USBIN_ICL_OPTIONS,
 	  .mask = USB51_MODE_BIT | USBIN_MODE_CHG_BIT,
 	  .val = USB51_MODE_BIT },
-	/* Disable watchdog */
+	 
 	{ .addr = SNARL_BARK_BITE_WD_CFG, .mask = 0xff, .val = 0 },
 	{ .addr = WD_CFG,
 	  .mask = WATCHDOG_TRIGGER_AFP_EN_BIT | WDOG_TIMER_EN_ON_PLUGIN_BIT |
 		  BARK_WDOG_INT_EN_BIT,
 	  .val = 0 },
-	/* These bits aren't documented anywhere */
+	 
 	{ .addr = USBIN_5V_AICL_THRESHOLD_CFG,
 	  .mask = USBIN_5V_AICL_THRESHOLD_CFG_MASK,
 	  .val = 0x3 },
 	{ .addr = USBIN_CONT_AICL_THRESHOLD_CFG,
 	  .mask = USBIN_CONT_AICL_THRESHOLD_CFG_MASK,
 	  .val = 0x3 },
-	/*
-	 * Enable Automatic Input Current Limit, this will slowly ramp up the current
-	 * When connected to a wall charger, and automatically stop when it detects
-	 * the charger current limit (voltage drop?) or it reaches the programmed limit.
-	 */
+	 
 	{ .addr = USBIN_AICL_OPTIONS_CFG,
 	  .mask = USBIN_AICL_START_AT_MAX_BIT | USBIN_AICL_ADC_EN_BIT |
 		  USBIN_AICL_EN_BIT | SUSPEND_ON_COLLAPSE_USBIN_BIT |
@@ -870,18 +821,11 @@ static const struct smb2_register smb2_init_seq[] = {
 		  USBIN_LV_COLLAPSE_RESPONSE_BIT,
 	  .val = USBIN_HV_COLLAPSE_RESPONSE_BIT |
 		 USBIN_LV_COLLAPSE_RESPONSE_BIT | USBIN_AICL_EN_BIT },
-	/*
-	 * Set pre charge current to default, the OnePlus 6 bootloader
-	 * sets this very conservatively.
-	 */
+	 
 	{ .addr = PRE_CHARGE_CURRENT_CFG,
 	  .mask = PRE_CHARGE_CURRENT_SETTING_MASK,
 	  .val = 500000 / CURRENT_SCALE_FACTOR },
-	/*
-	 * This overrides all of the current limit options exposed to userspace
-	 * and prevents the device from pulling more than ~1A. This is done
-	 * to minimise potential fire hazard risks.
-	 */
+	 
 	{ .addr = FAST_CHARGE_CURRENT_CFG,
 	  .mask = FAST_CHARGE_CURRENT_SETTING_MASK,
 	  .val = 1000000 / CURRENT_SCALE_FACTOR },
@@ -1028,7 +972,7 @@ static int smb2_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, chip);
 
-	/* Initialise charger state */
+	 
 	schedule_delayed_work(&chip->status_change_work, 0);
 
 	return 0;
@@ -1037,7 +981,7 @@ static int smb2_probe(struct platform_device *pdev)
 static const struct of_device_id smb2_match_id_table[] = {
 	{ .compatible = "qcom,pmi8998-charger", .data = "pmi8998" },
 	{ .compatible = "qcom,pm660-charger", .data = "pm660" },
-	{ /* sentinal */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, smb2_match_id_table);
 

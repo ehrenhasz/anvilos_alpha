@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/net/sunrpc/socklib.c
- *
- * Common socket helper routines for RPC client and server
- *
- * Copyright (C) 1995, 1996 Olaf Kirch <okir@monad.swb.de>
- */
+
+ 
 
 #include <linux/compiler.h>
 #include <linux/netdevice.h>
@@ -21,9 +15,7 @@
 
 #include "socklib.h"
 
-/*
- * Helper structure for copying from an sk_buff.
- */
+ 
 struct xdr_skb_reader {
 	struct sk_buff	*skb;
 	unsigned int	offset;
@@ -34,15 +26,7 @@ struct xdr_skb_reader {
 typedef size_t (*xdr_skb_read_actor)(struct xdr_skb_reader *desc, void *to,
 				     size_t len);
 
-/**
- * xdr_skb_read_bits - copy some data bits from skb to internal buffer
- * @desc: sk_buff copy helper
- * @to: copy destination
- * @len: number of bytes to copy
- *
- * Possibly called several times to iterate over an sk_buff and copy
- * data out of it.
- */
+ 
 static size_t
 xdr_skb_read_bits(struct xdr_skb_reader *desc, void *to, size_t len)
 {
@@ -55,14 +39,7 @@ xdr_skb_read_bits(struct xdr_skb_reader *desc, void *to, size_t len)
 	return len;
 }
 
-/**
- * xdr_skb_read_and_csum_bits - copy and checksum from skb to buffer
- * @desc: sk_buff copy helper
- * @to: copy destination
- * @len: number of bytes to copy
- *
- * Same as skb_read_bits, but calculate a checksum at the same time.
- */
+ 
 static size_t xdr_skb_read_and_csum_bits(struct xdr_skb_reader *desc, void *to, size_t len)
 {
 	unsigned int pos;
@@ -78,14 +55,7 @@ static size_t xdr_skb_read_and_csum_bits(struct xdr_skb_reader *desc, void *to, 
 	return len;
 }
 
-/**
- * xdr_partial_copy_from_skb - copy data out of an skb
- * @xdr: target XDR buffer
- * @base: starting offset
- * @desc: sk_buff copy helper
- * @copy_actor: virtual method for copying data
- *
- */
+ 
 static ssize_t
 xdr_partial_copy_from_skb(struct xdr_buf *xdr, unsigned int base, struct xdr_skb_reader *desc, xdr_skb_read_actor copy_actor)
 {
@@ -120,8 +90,7 @@ xdr_partial_copy_from_skb(struct xdr_buf *xdr, unsigned int base, struct xdr_skb
 	do {
 		char *kaddr;
 
-		/* ACL likes to be lazy in allocating pages - ACLs
-		 * are small by default but can get huge. */
+		 
 		if ((xdr->flags & XDRBUF_SPARSE_PAGES) && *ppage == NULL) {
 			*ppage = alloc_page(GFP_NOWAIT | __GFP_NOWARN);
 			if (unlikely(*ppage == NULL)) {
@@ -159,14 +128,7 @@ out:
 	return copied;
 }
 
-/**
- * csum_partial_copy_to_xdr - checksum and copy data
- * @xdr: target XDR buffer
- * @skb: source skb
- *
- * We have set things up such that we perform the checksum of the UDP
- * packet in parallel with the copies into the RPC client iovec.  -DaveM
- */
+ 
 int csum_partial_copy_to_xdr(struct xdr_buf *xdr, struct sk_buff *skb)
 {
 	struct xdr_skb_reader	desc;
@@ -226,11 +188,7 @@ static int xprt_send_pagedata(struct socket *sock, struct msghdr *msg,
 	return xprt_sendmsg(sock, msg, base + xdr->page_base);
 }
 
-/* Common case:
- *  - stream transport
- *  - sending from byte 0 of the message
- *  - the message is wholly contained in @xdr's head iovec
- */
+ 
 static int xprt_send_rm_and_kvec(struct socket *sock, struct msghdr *msg,
 				 rpc_fraghdr marker, struct kvec *vec,
 				 size_t base)
@@ -248,19 +206,7 @@ static int xprt_send_rm_and_kvec(struct socket *sock, struct msghdr *msg,
 	return xprt_sendmsg(sock, msg, base);
 }
 
-/**
- * xprt_sock_sendmsg - write an xdr_buf directly to a socket
- * @sock: open socket to send on
- * @msg: socket message metadata
- * @xdr: xdr_buf containing this request
- * @base: starting position in the buffer
- * @marker: stream record marker field
- * @sent_p: return the total number of bytes successfully queued for sending
- *
- * Return values:
- *   On success, returns zero and fills in @sent_p.
- *   %-ENOTSOCK if  @sock is not a struct socket.
- */
+ 
 int xprt_sock_sendmsg(struct socket *sock, struct msghdr *msg,
 		      struct xdr_buf *xdr, unsigned int base,
 		      rpc_fraghdr marker, unsigned int *sent_p)

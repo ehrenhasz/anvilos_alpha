@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * The Gateworks System Controller (GSC) is a multi-function
- * device designed for use in Gateworks Single Board Computers.
- * The control interface is I2C, with an interrupt. The device supports
- * system functions such as push-button monitoring, multiple ADC's for
- * voltage and temperature monitoring, fan controller and watchdog monitor.
- *
- * Copyright (C) 2020 Gateworks Corporation
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/i2c.h>
@@ -22,11 +14,7 @@
 
 #include <asm/unaligned.h>
 
-/*
- * The GSC suffers from an errata where occasionally during
- * ADC cycles the chip can NAK I2C transactions. To ensure we have reliable
- * register access we place retries around register access.
- */
+ 
 #define I2C_RETRIES	3
 
 int gsc_write(void *context, unsigned int reg, unsigned int val)
@@ -36,10 +24,7 @@ int gsc_write(void *context, unsigned int reg, unsigned int val)
 
 	for (retry = 0; retry < I2C_RETRIES; retry++) {
 		ret = i2c_smbus_write_byte_data(client, reg, val);
-		/*
-		 * -EAGAIN returned when the i2c host controller is busy
-		 * -EIO returned when i2c device is busy
-		 */
+		 
 		if (ret != -EAGAIN && ret != -EIO)
 			break;
 	}
@@ -55,10 +40,7 @@ int gsc_read(void *context, unsigned int reg, unsigned int *val)
 
 	for (retry = 0; retry < I2C_RETRIES; retry++) {
 		ret = i2c_smbus_read_byte_data(client, reg);
-		/*
-		 * -EAGAIN returned when the i2c host controller is busy
-		 * -EIO returned when i2c device is busy
-		 */
+		 
 		if (ret != -EAGAIN && ret != -EIO)
 			break;
 	}
@@ -68,11 +50,7 @@ int gsc_read(void *context, unsigned int reg, unsigned int *val)
 }
 EXPORT_SYMBOL_GPL(gsc_read);
 
-/*
- * gsc_powerdown - API to use GSC to power down board for a specific time
- *
- * secs - number of seconds to remain powered off
- */
+ 
 static int gsc_powerdown(struct gsc_dev *gsc, unsigned long secs)
 {
 	int ret;

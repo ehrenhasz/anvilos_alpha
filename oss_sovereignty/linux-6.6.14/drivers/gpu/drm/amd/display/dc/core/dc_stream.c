@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 #include "basics/dc_common.h"
@@ -34,9 +11,7 @@
 
 #define DC_LOGGER dc->ctx->logger
 
-/*******************************************************************************
- * Private functions
- ******************************************************************************/
+ 
 void update_stream_signal(struct dc_stream_state *stream, struct dc_sink *sink)
 {
 	if (sink->sink_signal == SIGNAL_TYPE_NONE)
@@ -69,8 +44,8 @@ static bool dc_stream_construct(struct dc_stream_state *stream,
 	stream->qs_bit = dc_sink_data->edid_caps.qs_bit;
 	stream->qy_bit = dc_sink_data->edid_caps.qy_bit;
 
-	/* Copy audio modes */
-	/* TODO - Remove this translation */
+	 
+	 
 	for (i = 0; i < (dc_sink_data->edid_caps.audio_mode_count); i++) {
 		stream->audio_info.modes[i].channel_count = dc_sink_data->edid_caps.audio_modes[i].channel_count;
 		stream->audio_info.modes[i].format_code = dc_sink_data->edid_caps.audio_modes[i].format_code;
@@ -94,13 +69,12 @@ static bool dc_stream_construct(struct dc_stream_state *stream,
 		stream->audio_info.port_id[0] = dc_container_id->portId[0];
 		stream->audio_info.port_id[1] = dc_container_id->portId[1];
 	} else {
-		/* TODO - WindowDM has implemented,
-		other DMs need Unhardcode port_id */
+		 
 		stream->audio_info.port_id[0] = 0x5558859e;
 		stream->audio_info.port_id[1] = 0xd989449;
 	}
 
-	/* EDID CAP translation for HDMI 2.0 */
+	 
 	stream->timing.flags.LTE_340MCSC_SCRAMBLE = dc_sink_data->edid_caps.lte_340mcsc_scramble;
 
 	memset(&stream->timing.dsc_cfg, 0, sizeof(stream->timing.dsc_cfg));
@@ -199,7 +173,7 @@ struct dc_stream_state *dc_copy_stream(const struct dc_stream_state *stream)
 	new_stream->stream_id = new_stream->ctx->dc_stream_id_count;
 	new_stream->ctx->dc_stream_id_count++;
 
-	/* If using dynamic encoder assignment, wait till stream committed to assign encoder. */
+	 
 	if (new_stream->ctx->dc->res_pool->funcs->link_encs_assign)
 		new_stream->link_enc = NULL;
 
@@ -208,14 +182,7 @@ struct dc_stream_state *dc_copy_stream(const struct dc_stream_state *stream)
 	return new_stream;
 }
 
-/**
- * dc_stream_get_status_from_state - Get stream status from given dc state
- * @state: DC state to find the stream status in
- * @stream: The stream to get the stream status for
- *
- * The given stream is expected to exist in the given dc state. Otherwise, NULL
- * will be returned.
- */
+ 
 struct dc_stream_status *dc_stream_get_status_from_state(
 	struct dc_state *state,
 	struct dc_stream_state *stream)
@@ -233,13 +200,7 @@ struct dc_stream_status *dc_stream_get_status_from_state(
 	return NULL;
 }
 
-/**
- * dc_stream_get_status() - Get current stream status of the given stream state
- * @stream: The stream to get the stream status for.
- *
- * The given stream is expected to exist in dc->current_state. Otherwise, NULL
- * will be returned.
- */
+ 
 struct dc_stream_status *dc_stream_get_status(
 	struct dc_stream_state *stream)
 {
@@ -289,9 +250,7 @@ static void program_cursor_attributes(
 }
 
 #ifndef TRIM_FSFT
-/*
- * dc_optimize_timing_for_fsft() - dc to optimize timing
- */
+ 
 bool dc_optimize_timing_for_fsft(
 	struct dc_stream_state *pStream,
 	unsigned int max_input_rate_in_khz)
@@ -315,12 +274,7 @@ static bool is_subvp_high_refresh_candidate(struct dc_stream_state *stream)
 	refresh_rate = div_u64(refresh_rate, stream->timing.v_total);
 	refresh_rate = div_u64(refresh_rate, stream->timing.h_total);
 
-	/* If there's any stream that fits the SubVP high refresh criteria,
-	 * we must return true. This is because cursor updates are asynchronous
-	 * with full updates, so we could transition into a SubVP config and
-	 * remain in HW cursor mode if there's no cursor update which will
-	 * then cause corruption.
-	 */
+	 
 	if ((refresh_rate >= 120 && refresh_rate <= 175 &&
 			stream->timing.v_addressable >= 1440 &&
 			stream->timing.v_addressable <= 2160) &&
@@ -331,9 +285,7 @@ static bool is_subvp_high_refresh_candidate(struct dc_stream_state *stream)
 	return false;
 }
 
-/*
- * dc_stream_set_cursor_attributes() - Update cursor attributes and set cursor surface address
- */
+ 
 bool dc_stream_set_cursor_attributes(
 	struct dc_stream_state *stream,
 	const struct dc_cursor_attributes *attributes)
@@ -357,12 +309,7 @@ bool dc_stream_set_cursor_attributes(
 
 	dc = stream->ctx->dc;
 
-	/* SubVP is not compatible with HW cursor larger than 64 x 64 x 4.
-	 * Therefore, if cursor is greater than 64 x 64 x 4, fallback to SW cursor in the following case:
-	 * 1. If the config is a candidate for SubVP high refresh (both single an dual display configs)
-	 * 2. If not subvp high refresh, for single display cases, if resolution is >= 5K and refresh rate < 120hz
-	 * 3. If not subvp high refresh, for multi display cases, if resolution is >= 4K and refresh rate < 120hz
-	 */
+	 
 	if (dc->debug.allow_sw_cursor_fallback && attributes->height * attributes->width * 4 > 16384) {
 		if (!dc->debug.disable_subvp_high_refresh && is_subvp_high_refresh_candidate(stream))
 			return false;
@@ -377,7 +324,7 @@ bool dc_stream_set_cursor_attributes(
 	stream->cursor_attributes = *attributes;
 
 	dc_z10_restore(dc);
-	/* disable idle optimizations while updating cursor */
+	 
 	if (dc->idle_optimizations_allowed) {
 		dc_allow_idle_optimizations(dc, false);
 		reset_idle_optimizations = true;
@@ -385,7 +332,7 @@ bool dc_stream_set_cursor_attributes(
 
 	program_cursor_attributes(dc, stream, attributes);
 
-	/* re-enable idle optimizations if necessary */
+	 
 	if (reset_idle_optimizations)
 		dc_allow_idle_optimizations(dc, true);
 
@@ -450,7 +397,7 @@ bool dc_stream_set_cursor_position(
 	dc = stream->ctx->dc;
 	dc_z10_restore(dc);
 
-	/* disable idle optimizations if enabling cursor */
+	 
 	if (dc->idle_optimizations_allowed && (!stream->cursor_position.enable || dc->debug.exit_idle_opt_for_cursor_updates)
 			&& position->enable) {
 		dc_allow_idle_optimizations(dc, false);
@@ -460,7 +407,7 @@ bool dc_stream_set_cursor_position(
 	stream->cursor_position = *position;
 
 	program_cursor_position(dc, stream, position);
-	/* re-enable idle optimizations if necessary */
+	 
 	if (reset_idle_optimizations)
 		dc_allow_idle_optimizations(dc, true);
 
@@ -495,10 +442,10 @@ bool dc_stream_add_writeback(struct dc *dc,
 	dwb = dc->res_pool->dwbc[wb_info->dwb_pipe_inst];
 	dwb->dwb_is_drc = false;
 
-	/* recalculate and apply DML parameters */
+	 
 
 	for (i = 0; i < stream->num_wb_info; i++) {
-		/*dynamic update*/
+		 
 		if (stream->writeback_info[i].wb_enabled &&
 			stream->writeback_info[i].dwb_pipe_inst == wb_info->dwb_pipe_inst) {
 			stream->writeback_info[i] = *wb_info;
@@ -539,20 +486,20 @@ bool dc_stream_remove_writeback(struct dc *dc,
 		return false;
 	}
 
-//	stream->writeback_info[dwb_pipe_inst].wb_enabled = false;
+
 	for (i = 0; i < stream->num_wb_info; i++) {
-		/*dynamic update*/
+		 
 		if (stream->writeback_info[i].wb_enabled &&
 			stream->writeback_info[i].dwb_pipe_inst == dwb_pipe_inst) {
 			stream->writeback_info[i].wb_enabled = false;
 		}
 	}
 
-	/* remove writeback info for disabled writeback pipes from stream */
+	 
 	for (i = 0, j = 0; i < stream->num_wb_info; i++) {
 		if (stream->writeback_info[i].wb_enabled) {
 			if (j < i)
-				/* trim the array */
+				 
 				memcpy(&stream->writeback_info[j], &stream->writeback_info[i],
 						sizeof(struct dc_writeback_info));
 			j++;
@@ -670,7 +617,7 @@ bool dc_stream_dmdata_status_done(struct dc *dc, struct dc_stream_state *stream)
 		if (pipe->stream == stream)
 			break;
 	}
-	/* Stream not found, by default we'll assume HUBP fetched dm data */
+	 
 	if (i == MAX_PIPES)
 		return true;
 
@@ -685,11 +632,11 @@ bool dc_stream_set_dynamic_metadata(struct dc *dc,
 	struct hubp *hubp;
 	int i;
 
-	/* Dynamic metadata is only supported on HDMI or DP */
+	 
 	if (!dc_is_hdmi_signal(stream->signal) && !dc_is_dp_signal(stream->signal))
 		return false;
 
-	/* Check hardware support */
+	 
 	if (!dc->hwss.program_dmdata_engine)
 		return false;
 

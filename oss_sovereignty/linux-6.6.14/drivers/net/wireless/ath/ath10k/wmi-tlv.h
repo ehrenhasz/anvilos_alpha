@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (c) 2005-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2017 Qualcomm Atheros, Inc.
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 #ifndef _WMI_TLV_H
 #define _WMI_TLV_H
 
@@ -545,7 +541,7 @@ enum wmi_tlv_vdev_param {
 };
 
 enum wmi_tlv_peer_param {
-	WMI_TLV_PEER_SMPS_STATE = 0x1, /* see %wmi_peer_smps_state */
+	WMI_TLV_PEER_SMPS_STATE = 0x1,  
 	WMI_TLV_PEER_AMPDU      = 0x2,
 	WMI_TLV_PEER_AUTHORIZE  = 0x3,
 	WMI_TLV_PEER_CHAN_WIDTH = 0x4,
@@ -1386,15 +1382,7 @@ enum wmi_tlv_service {
 	WMI_TLV_SERVICE_PDEV_BSS_CHANNEL_INFO_64,
 	WMI_TLV_MAX_SERVICE = 128,
 
-/* NOTE:
- * The above service flags are delivered in the wmi_service_bitmap field
- * of the WMI_TLV_SERVICE_READY_EVENT message.
- * The below service flags are delivered in a WMI_TLV_SERVICE_AVAILABLE_EVENT
- * message rather than in the WMI_TLV_SERVICE_READY_EVENT message's
- * wmi_service_bitmap field.
- * The WMI_TLV_SERVICE_AVAILABLE_EVENT message immediately precedes the
- * WMI_TLV_SERVICE_READY_EVENT message.
- */
+ 
 
 	WMI_TLV_SERVICE_CHAN_LOAD_INFO = 128,
 	WMI_TLV_SERVICE_TX_PPDU_INFO_STATS_SUPPORT,
@@ -1733,7 +1721,7 @@ struct wmi_tlv_svc_rdy_ev {
 	__le32 max_bcn_ie_size;
 	__le32 num_mem_reqs;
 	__le32 max_num_scan_chans;
-	__le32 hw_bd_id; /* 0 means hw_bd_info is invalid */
+	__le32 hw_bd_id;  
 	struct wmi_tlv_hw_bd_info hw_bd_info[5];
 } __packed;
 
@@ -1787,18 +1775,18 @@ struct wmi_tlv_resource_config {
 	__le32 host_capab;
 } __packed;
 
-/* structure describing host memory chunk. */
+ 
 struct host_memory_chunk_tlv {
-	/* id of the request that is passed up in service ready */
+	 
 	__le32 req_id;
 
-	/* the physical address the memory chunk */
+	 
 	__le32 ptr;
 
-	/* size of the chunk */
+	 
 	__le32 size;
 
-	/* the upper 32 bit address valid only for more than 32 bit target */
+	 
 	__le32 ptr_high;
 } __packed;
 
@@ -1808,24 +1796,24 @@ struct wmi_tlv_init_cmd {
 } __packed;
 
 struct wmi_tlv_pdev_get_temp_cmd {
-	__le32 pdev_id; /* not used */
+	__le32 pdev_id;  
 } __packed;
 
 struct wmi_tlv_pdev_temperature_event {
 	__le32 tlv_hdr;
-	/* temperature value in Celsius degree */
+	 
 	__le32 temperature;
 	__le32 pdev_id;
 } __packed;
 
 struct wmi_tlv_pdev_set_param_cmd {
-	__le32 pdev_id; /* not used yet */
+	__le32 pdev_id;  
 	__le32 param_id;
 	__le32 param_value;
 } __packed;
 
 struct wmi_tlv_pdev_set_rd_cmd {
-	__le32 pdev_id; /* not used yet */
+	__le32 pdev_id;  
 	__le32 regd;
 	__le32 regd_2ghz;
 	__le32 regd_5ghz;
@@ -1838,11 +1826,7 @@ struct wmi_tlv_scan_chan_list_cmd {
 } __packed;
 
 struct wmi_scan_prob_req_oui_cmd {
-/* OUI to be used in Probe Request frame when random MAC address is
- * requested part of scan parameters. This is applied to both FW internal
- * scans and host initiated scans. Host can request for random MAC address
- * with WMI_SCAN_ADD_SPOOFED_MAC_IN_PROBE_REQ flag.
- */
+ 
 	__le32 prob_req_oui;
 }  __packed;
 
@@ -1882,7 +1866,7 @@ struct wmi_tlv_vdev_start_cmd {
 } __packed;
 
 enum {
-	WMI_TLV_PEER_TYPE_DEFAULT = 0, /* generic / non-BSS / self-peer */
+	WMI_TLV_PEER_TYPE_DEFAULT = 0,  
 	WMI_TLV_PEER_TYPE_BSS = 1,
 	WMI_TLV_PEER_TYPE_TDLS = 2,
 	WMI_TLV_PEER_TYPE_HOST_MAX = 127,
@@ -1916,13 +1900,13 @@ struct wmi_tlv_peer_assoc_cmd {
 } __packed;
 
 struct wmi_tlv_pdev_suspend {
-	__le32 pdev_id; /* not used yet */
+	__le32 pdev_id;  
 	__le32 opt;
 } __packed;
 
 struct wmi_tlv_pdev_set_wmm_cmd {
-	__le32 pdev_id; /* not used yet */
-	__le32 dg_type; /* no idea.. */
+	__le32 pdev_id;  
+	__le32 dg_type;  
 } __packed;
 
 struct wmi_tlv_vdev_wmm_params {
@@ -1977,7 +1961,7 @@ struct wmi_tlv_resume_cmd {
 } __packed;
 
 struct wmi_tlv_req_stats_cmd {
-	__le32 stats_id; /* wmi_stats_id */
+	__le32 stats_id;  
 	__le32 vdev_id;
 	struct wmi_mac_addr peer_macaddr;
 } __packed;
@@ -2002,7 +1986,7 @@ struct wmi_tlv_vdev_stats {
 	__le32 vdev_id;
 	__le32 beacon_snr;
 	__le32 data_snr;
-	__le32 num_tx_frames[4]; /* per-AC */
+	__le32 num_tx_frames[4];  
 	__le32 num_rx_frames;
 	__le32 num_tx_frames_retries[4];
 	__le32 num_tx_frames_failures[4];
@@ -2080,12 +2064,12 @@ struct wmi_tlv_diag_data_ev {
 struct wmi_tlv_sta_keepalive_cmd {
 	__le32 vdev_id;
 	__le32 enabled;
-	__le32 method; /* WMI_STA_KEEPALIVE_METHOD_ */
-	__le32 interval; /* in seconds */
+	__le32 method;  
+	__le32 interval;  
 } __packed;
 
 struct wmi_tlv_stats_ev {
-	__le32 stats_id; /* WMI_STAT_ */
+	__le32 stats_id;  
 	__le32 num_pdev_stats;
 	__le32 num_vdev_stats;
 	__le32 num_peer_stats;
@@ -2108,65 +2092,33 @@ struct wmi_tlv_peer_stats_info_ev {
 struct wmi_tlv_peer_stats_info {
 	struct wmi_mac_addr peer_macaddr;
 	struct {
-		/* lower 32 bits of the tx_bytes value */
+		 
 		__le32 low_32;
-		/* upper 32 bits of the tx_bytes value */
+		 
 		__le32 high_32;
 	} __packed tx_bytes;
 	struct {
-		/* lower 32 bits of the tx_packets value */
+		 
 		__le32 low_32;
-		/* upper 32 bits of the tx_packets value */
+		 
 		__le32 high_32;
 	} __packed tx_packets;
 	struct {
-		/* lower 32 bits of the rx_bytes value */
+		 
 		__le32 low_32;
-		/* upper 32 bits of the rx_bytes value */
+		 
 		__le32 high_32;
 	} __packed rx_bytes;
 	struct {
-		/* lower 32 bits of the rx_packets value */
+		 
 		__le32 low_32;
-		/* upper 32 bits of the rx_packets value */
+		 
 		__le32 high_32;
 	} __packed rx_packets;
 	__le32 tx_retries;
 	__le32 tx_failed;
 
-	/* rate information, it is output of WMI_ASSEMBLE_RATECODE_V1
-	 *  (in format of 0x1000RRRR)
-	 * The rate-code is a 4-bytes field in which,
-	 * for given rate, nss and preamble
-	 *
-	 * b'31-b'29 unused / reserved
-	 * b'28      indicate the version of rate-code (1 = RATECODE_V1)
-	 * b'27-b'11 unused / reserved
-	 * b'10-b'8  indicate the preamble (0 OFDM, 1 CCK, 2 HT, 3 VHT)
-	 * b'7-b'5   indicate the NSS (0 - 1x1, 1 - 2x2, 2 - 3x3, 3 - 4x4)
-	 * b'4-b'0   indicate the rate, which is indicated as follows:
-	 *	    OFDM :     0: OFDM 48 Mbps
-	 *		       1: OFDM 24 Mbps
-	 *		       2: OFDM 12 Mbps
-	 *		       3: OFDM 6 Mbps
-	 *		       4: OFDM 54 Mbps
-	 *		       5: OFDM 36 Mbps
-	 *		       6: OFDM 18 Mbps
-	 *		       7: OFDM 9 Mbps
-	 *	   CCK (pream == 1)
-	 *		       0: CCK 11 Mbps Long
-	 *		       1: CCK 5.5 Mbps Long
-	 *		       2: CCK 2 Mbps Long
-	 *		       3: CCK 1 Mbps Long
-	 *		       4: CCK 11 Mbps Short
-	 *		       5: CCK 5.5 Mbps Short
-	 *		       6: CCK 2 Mbps Short
-	 *	   HT/VHT (pream == 2/3)
-	 *		       0..7: MCS0..MCS7 (HT)
-	 *		       0..9: MCS0..MCS9 (11AC VHT)
-	 *		       0..11: MCS0..MCS11 (11AX VHT)
-	 * rate-code of the last transmission
-	 */
+	 
 	__le32 last_tx_rate_code;
 	__le32 last_rx_rate_code;
 	__le32 last_tx_bitrate_kbps;
@@ -2204,22 +2156,22 @@ struct wmi_tlv_wow_add_del_event_cmd {
 struct wmi_tlv_request_peer_stats_info {
 	__le32 request_type;
 	__le32 vdev_id;
-	/* peer MAC address */
+	 
 	struct wmi_mac_addr peer_macaddr;
 	__le32 reset_after_request;
 } __packed;
 
-/* Command to set/unset chip in quiet mode */
+ 
 struct wmi_tlv_set_quiet_cmd {
 	__le32 vdev_id;
 
-	/* in TUs */
+	 
 	__le32 period;
 
-	/* in TUs */
+	 
 	__le32 duration;
 
-	/* offset in TUs */
+	 
 	__le32 next_start;
 	__le32 enabled;
 } __packed;
@@ -2284,7 +2236,7 @@ struct wmi_tlv_wow_del_pattern_cmd {
 	__le32 pattern_type;
 } __packed;
 
-/* TDLS Options */
+ 
 enum wmi_tlv_tdls_options {
 	WMI_TLV_TDLS_OFFCHAN_EN = BIT(0),
 	WMI_TLV_TDLS_BUFFER_STA_EN = BIT(1),
@@ -2341,23 +2293,7 @@ struct wmi_tlv_adaptive_qcs {
 	__le32 enable;
 } __packed;
 
-/**
- * wmi_tlv_tx_pause_id - firmware tx queue pause reason types
- *
- * @WMI_TLV_TX_PAUSE_ID_MCC: used for by multi-channel firmware scheduler.
- *		Only vdev_map is valid.
- * @WMI_TLV_TX_PAUSE_ID_AP_PEER_PS: peer in AP mode is asleep.
- *		Only peer_id is valid.
- * @WMI_TLV_TX_PAUSE_ID_AP_PEER_UAPSD: Only peer_id and tid_map are valid.
- * @WMI_TLV_TX_PAUSE_ID_P2P_CLI_NOA: Only vdev_map is valid.
- * @WMI_TLV_TX_PAUSE_ID_P2P_GO_PS: Only vdev_map is valid.
- * @WMI_TLV_TX_PAUSE_ID_STA_ADD_BA: Only peer_id and tid_map are valid.
- * @WMI_TLV_TX_PAUSE_ID_AP_PS: When all peers are asleep in AP mode. Only
- *		vdev_map is valid.
- * @WMI_TLV_TX_PAUSE_ID_IBSS_PS: When all peers are asleep in IBSS mode. Only
- *		vdev_map is valid.
- * @WMI_TLV_TX_PAUSE_ID_HOST: Host itself requested tx pause.
- */
+ 
 enum wmi_tlv_tx_pause_id {
 	WMI_TLV_TX_PAUSE_ID_MCC = 1,
 	WMI_TLV_TX_PAUSE_ID_AP_PEER_PS = 2,
@@ -2438,7 +2374,7 @@ enum wmi_nlo_cipher_algorithm {
 	WMI_NLO_CIPHER_ALGO_WEP            = 0x101,
 };
 
-/* SSID broadcast  type passed in NLO params */
+ 
 enum wmi_nlo_ssid_bcastnwtype {
 	WMI_NLO_BCAST_UNKNOWN      = 0,
 	WMI_NLO_BCAST_NORMAL       = 1,
@@ -2455,9 +2391,7 @@ enum wmi_nlo_ssid_bcastnwtype {
 #define WMI_NLO_CONFIG_FAST_SCAN                        (0x1 << 5)
 #define WMI_NLO_CONFIG_SSID_HIDE_EN                     (0x1 << 6)
 
-/* This bit is used to indicate if EPNO or supplicant PNO is enabled.
- * Only one of them can be enabled at a given time
- */
+ 
 #define WMI_NLO_CONFIG_ENLO                             (0x1 << 7)
 #define WMI_NLO_CONFIG_SCAN_PASSIVE                     (0x1 << 8)
 #define WMI_NLO_CONFIG_ENLO_RESET                       (0x1 << 9)
@@ -2466,28 +2400,26 @@ enum wmi_nlo_ssid_bcastnwtype {
 #define WMI_NLO_CONFIG_ENABLE_IE_WHITELIST_IN_PROBE_REQ (0x1 << 12)
 #define WMI_NLO_CONFIG_ENABLE_CNLO_RSSI_CONFIG          (0x1 << 13)
 
-/* Whether directed scan needs to be performed (for hidden SSIDs) */
+ 
 #define WMI_ENLO_FLAG_DIRECTED_SCAN      1
 
-/* Whether PNO event shall be triggered if the network is found on A band */
+ 
 #define WMI_ENLO_FLAG_A_BAND             2
 
-/* Whether PNO event shall be triggered if the network is found on G band */
+ 
 #define WMI_ENLO_FLAG_G_BAND             4
 
-/* Whether strict matching is required (i.e. firmware shall not
- * match on the entire SSID)
- */
+ 
 #define WMI_ENLO_FLAG_STRICT_MATCH       8
 
-/* Code for matching the beacon AUTH IE - additional codes TBD */
-/* open */
+ 
+ 
 #define WMI_ENLO_AUTH_CODE_OPEN  1
 
-/* WPA_PSK or WPA2PSK */
+ 
 #define WMI_ENLO_AUTH_CODE_PSK   2
 
-/* any EAPOL */
+ 
 #define WMI_ENLO_AUTH_CODE_EAPOL 4
 
 struct wmi_nlo_ssid_param {
@@ -2508,10 +2440,7 @@ struct wmi_nlo_auth_param {
 struct wmi_nlo_bcast_nw_param {
 	__le32 valid;
 
-	/* If WMI_NLO_CONFIG_EPNO is not set. Supplicant PNO is enabled.
-	 * The value should be true/false. Otherwise EPNO is enabled.
-	 * bcast_nw_type would be used as a bit flag contains WMI_ENLO_FLAG_XXX
-	 */
+	 
 	__le32 bcast_nw_type;
 } __packed;
 
@@ -2521,97 +2450,76 @@ struct wmi_nlo_rssi_param {
 } __packed;
 
 struct nlo_configured_parameters {
-	/* TLV tag and len;*/
+	 
 	__le32 tlv_header;
 	struct wmi_nlo_ssid_param ssid;
 	struct wmi_nlo_enc_param enc_type;
 	struct wmi_nlo_auth_param auth_type;
 	struct wmi_nlo_rssi_param rssi_cond;
 
-	/* indicates if the SSID is hidden or not */
+	 
 	struct wmi_nlo_bcast_nw_param bcast_nw_type;
 } __packed;
 
-/* Support channel prediction for PNO scan after scanning top_k_num channels
- * if stationary_threshold is met.
- */
+ 
 struct nlo_channel_prediction_cfg {
 	__le32 tlv_header;
 
-	/* Enable or disable this feature. */
+	 
 	__le32 enable;
 
-	/* Top K channels will be scanned before deciding whether to further scan
-	 * or stop. Minimum value is 3 and maximum is 5.
-	 */
+	 
 	__le32 top_k_num;
 
-	/* Preconfigured stationary threshold.
-	 * Lesser value means more conservative. Bigger value means more aggressive.
-	 * Maximum is 100 and minimum is 0.
-	 */
+	 
 	__le32 stationary_threshold;
 
-	/* Periodic full channel scan in milliseconds unit.
-	 * After full_scan_period_ms since last full scan, channel prediction
-	 * scan is suppressed and will do full scan.
-	 * This is to help detecting sudden AP power-on or -off. Value 0 means no
-	 * full scan at all (not recommended).
-	 */
+	 
 	__le32 full_scan_period_ms;
 } __packed;
 
 struct enlo_candidate_score_params_t {
-	__le32 tlv_header;   /* TLV tag and len; */
+	__le32 tlv_header;    
 
-	/* minimum 5GHz RSSI for a BSSID to be considered (units = dBm) */
+	 
 	__le32 min_5ghz_rssi;
 
-	/* minimum 2.4GHz RSSI for a BSSID to be considered (units = dBm) */
+	 
 	__le32 min_24ghz_rssi;
 
-	/* the maximum score that a network can have before bonuses */
+	 
 	__le32 initial_score_max;
 
-	/* current_connection_bonus:
-	 * only report when there is a network's score this much higher
-	 * than the current connection
-	 */
+	 
 	__le32 current_connection_bonus;
 
-	/* score bonus for all networks with the same network flag */
+	 
 	__le32 same_network_bonus;
 
-	/* score bonus for networks that are not open */
+	 
 	__le32 secure_bonus;
 
-	/* 5GHz RSSI score bonus (applied to all 5GHz networks) */
+	 
 	__le32 band_5ghz_bonus;
 } __packed;
 
 struct connected_nlo_bss_band_rssi_pref_t {
-	__le32 tlv_header; /* TLV tag and len;*/
+	__le32 tlv_header;  
 
-	/* band which needs to get preference over other band
-	 * - see wmi_set_vdev_ie_band enum
-	 */
+	 
 	__le32 band;
 
-	/* Amount of RSSI preference (in dB) that can be given to a band */
+	 
 	__le32 rssi_pref;
 } __packed;
 
 struct connected_nlo_rssi_params_t {
-	__le32 tlv_header; /* TLV tag and len;*/
+	__le32 tlv_header;  
 
-	/* Relative rssi threshold (in dB) by which new BSS should have
-	 * better rssi than the current connected BSS.
-	 */
+	 
 	__le32 relative_rssi;
 
-	/* The amount of rssi preference (in dB) that can be given
-	 * to a 5G BSS over 2.4G BSS.
-	 */
+	 
 	__le32 relative_rssi_5g_pref;
 } __packed;
 
@@ -2620,55 +2528,47 @@ struct wmi_tlv_wow_nlo_config_cmd {
 	__le32 vdev_id;
 	__le32 fast_scan_max_cycles;
 	__le32 active_dwell_time;
-	__le32 passive_dwell_time; /* PDT in msecs */
+	__le32 passive_dwell_time;  
 	__le32 probe_bundle_size;
 
-	/* ART = IRT */
+	 
 	__le32 rest_time;
 
-	/* Max value that can be reached after SBM */
+	 
 	__le32 max_rest_time;
 
-	/* SBM */
+	 
 	__le32 scan_backoff_multiplier;
 
-	/* SCBM */
+	 
 	__le32 fast_scan_period;
 
-	/* specific to windows */
+	 
 	__le32 slow_scan_period;
 
 	__le32 no_of_ssids;
 
 	__le32 num_of_channels;
 
-	/* NLO scan start delay time in milliseconds */
+	 
 	__le32 delay_start_time;
 
-	/** MAC Address to use in Probe Req as SA **/
+	 
 	struct wmi_mac_addr mac_addr;
 
-	/** Mask on which MAC has to be randomized **/
+	 
 	struct wmi_mac_addr mac_mask;
 
-	/** IE bitmap to use in Probe Req **/
+	 
 	__le32 ie_bitmap[8];
 
-	/** Number of vendor OUIs. In the TLV vendor_oui[] **/
+	 
 	__le32 num_vendor_oui;
 
-	/** Number of connected NLO band preferences **/
+	 
 	__le32 num_cnlo_band_pref;
 
-	/* The TLVs will follow.
-	 * nlo_configured_parameters nlo_list[];
-	 * A_UINT32 channel_list[num_of_channels];
-	 * nlo_channel_prediction_cfg ch_prediction_cfg;
-	 * enlo_candidate_score_params candidate_score_params;
-	 * wmi_vendor_oui vendor_oui[num_vendor_oui];
-	 * connected_nlo_rssi_params cnlo_rssi_params;
-	 * connected_nlo_bss_band_rssi_pref cnlo_bss_band_rssi_pref[num_cnlo_band_pref];
-	 */
+	 
 } __packed;
 
 struct wmi_tlv_mgmt_tx_cmd {

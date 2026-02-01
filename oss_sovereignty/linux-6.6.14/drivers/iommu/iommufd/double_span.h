@@ -1,18 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.
- */
+ 
+ 
 #ifndef __IOMMUFD_DOUBLE_SPAN_H
 #define __IOMMUFD_DOUBLE_SPAN_H
 
 #include <linux/interval_tree.h>
 
-/*
- * This is a variation of the general interval_tree_span_iter that computes the
- * spans over the union of two different interval trees. Used ranges are broken
- * up and reported based on the tree that provides the interval. The first span
- * always takes priority. Like interval_tree_span_iter it is greedy and the same
- * value of is_used will not repeat on two iteration cycles.
- */
+ 
 struct interval_tree_double_span_iter {
 	struct rb_root_cached *itrees[2];
 	struct interval_tree_span_iter spans[2];
@@ -24,7 +17,7 @@ struct interval_tree_double_span_iter {
 		unsigned long last_hole;
 		unsigned long last_used;
 	};
-	/* 0 = hole, 1 = used span[0], 2 = used span[1], -1 done iteration */
+	 
 	int is_used;
 };
 

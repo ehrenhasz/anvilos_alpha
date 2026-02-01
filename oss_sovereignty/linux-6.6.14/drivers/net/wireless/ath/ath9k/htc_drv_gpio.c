@@ -1,32 +1,16 @@
-/*
- * Copyright (c) 2010-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include "htc.h"
 
-/******************/
-/*     BTCOEX     */
-/******************/
+ 
+ 
+ 
 
 #define ATH_HTC_BTCOEX_PRODUCT_ID "wb193"
 
 #ifdef CONFIG_ATH9K_BTCOEX_SUPPORT
 
-/*
- * Detects if there is any priority bt traffic
- */
+ 
 static void ath_detect_bt_priority(struct ath9k_htc_priv *priv)
 {
 	struct ath_btcoex *btcoex = &priv->btcoex;
@@ -39,7 +23,7 @@ static void ath_detect_bt_priority(struct ath9k_htc_priv *priv)
 			msecs_to_jiffies(ATH_BT_PRIORITY_TIME_THRESHOLD))) {
 		clear_bit(OP_BT_PRIORITY_DETECTED, &priv->op_flags);
 		clear_bit(OP_BT_SCAN, &priv->op_flags);
-		/* Detect if colocated bt started scanning */
+		 
 		if (btcoex->bt_priority_cnt >= ATH_BT_CNT_SCAN_THRESHOLD) {
 			ath_dbg(ath9k_hw_common(ah), BTCOEX,
 				"BT scan detected\n");
@@ -56,11 +40,7 @@ static void ath_detect_bt_priority(struct ath9k_htc_priv *priv)
 	}
 }
 
-/*
- * This is the master bt coex work which runs for every
- * 45ms, bt traffic will be given priority during 55% of this
- * period while wlan gets remaining 45%
- */
+ 
 static void ath_btcoex_period_work(struct work_struct *work)
 {
 	struct ath9k_htc_priv *priv = container_of(work, struct ath9k_htc_priv,
@@ -91,10 +71,7 @@ static void ath_btcoex_period_work(struct work_struct *work)
 				     msecs_to_jiffies(btcoex->btcoex_period));
 }
 
-/*
- * Work to time slice between wlan and bt traffic and
- * configure weight registers
- */
+ 
 static void ath_btcoex_duty_cycle_work(struct work_struct *work)
 {
 	struct ath9k_htc_priv *priv = container_of(work, struct ath9k_htc_priv,
@@ -127,9 +104,7 @@ static void ath_htc_init_btcoex_work(struct ath9k_htc_priv *priv)
 	INIT_DELAYED_WORK(&priv->duty_cycle_work, ath_btcoex_duty_cycle_work);
 }
 
-/*
- * (Re)start btcoex work
- */
+ 
 
 static void ath_htc_resume_btcoex_work(struct ath9k_htc_priv *priv)
 {
@@ -146,9 +121,7 @@ static void ath_htc_resume_btcoex_work(struct ath9k_htc_priv *priv)
 }
 
 
-/*
- * Cancel btcoex and bt duty cycle work.
- */
+ 
 static void ath_htc_cancel_btcoex_work(struct ath9k_htc_priv *priv)
 {
 	cancel_delayed_work_sync(&priv->coex_period_work);
@@ -185,9 +158,7 @@ void ath9k_htc_init_btcoex(struct ath9k_htc_priv *priv, char *product)
 	struct ath_common *common = ath9k_hw_common(ah);
 	int qnum;
 
-	/*
-	 * Check if BTCOEX is globally disabled.
-	 */
+	 
 	if (!common->btcoex_enabled) {
 		ah->btcoex_hw.scheme = ATH_BTCOEX_CFG_NONE;
 		return;
@@ -216,11 +187,11 @@ void ath9k_htc_init_btcoex(struct ath9k_htc_priv *priv, char *product)
 	}
 }
 
-#endif /* CONFIG_ATH9K_BTCOEX_SUPPORT */
+#endif  
 
-/*******/
-/* LED */
-/*******/
+ 
+ 
+ 
 
 #ifdef CONFIG_MAC80211_LEDS
 void ath9k_led_work(struct work_struct *work)
@@ -240,7 +211,7 @@ static void ath9k_led_brightness(struct led_classdev *led_cdev,
 						   struct ath9k_htc_priv,
 						   led_cdev);
 
-	/* Not locked, but it's just a tiny green light..*/
+	 
 	priv->brightness = brightness;
 	ieee80211_queue_work(priv->hw, &priv->led_work);
 }
@@ -260,11 +231,11 @@ void ath9k_deinit_leds(struct ath9k_htc_priv *priv)
 
 void ath9k_configure_leds(struct ath9k_htc_priv *priv)
 {
-	/* Configure gpio 1 for output */
+	 
 	ath9k_hw_gpio_request_out(priv->ah, priv->ah->led_pin,
 				  "ath9k-led",
 				  AR_GPIO_OUTPUT_MUX_AS_OUTPUT);
-	/* LED off, active low */
+	 
 	ath9k_hw_set_gpio(priv->ah, priv->ah->led_pin, 1);
 }
 
@@ -303,9 +274,9 @@ void ath9k_init_leds(struct ath9k_htc_priv *priv)
 }
 #endif
 
-/*******************/
-/*	Rfkill	   */
-/*******************/
+ 
+ 
+ 
 
 static bool ath_is_rfkill_set(struct ath9k_htc_priv *priv)
 {

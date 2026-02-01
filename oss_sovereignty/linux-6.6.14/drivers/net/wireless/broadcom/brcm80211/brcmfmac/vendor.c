@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2014 Broadcom Corporation
- */
+
+ 
 
 #include <linux/vmalloc.h>
 #include <net/cfg80211.h>

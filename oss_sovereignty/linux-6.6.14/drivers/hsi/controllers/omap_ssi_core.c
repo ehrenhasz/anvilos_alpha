@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* OMAP SSI driver.
- *
- * Copyright (C) 2010 Nokia Corporation. All rights reserved.
- * Copyright (C) 2014 Sebastian Reichel <sre@kernel.org>
- *
- * Contact: Carlos Chinea <carlos.chinea@nokia.com>
- */
+
+ 
 
 #include <linux/compiler.h>
 #include <linux/err.h>
@@ -33,7 +27,7 @@
 #include "omap_ssi_regs.h"
 #include "omap_ssi.h"
 
-/* For automatically allocated device IDs */
+ 
 static DEFINE_IDA(platform_omap_ssi_ida);
 
 #ifdef CONFIG_DEBUG_FS
@@ -114,14 +108,14 @@ static int ssi_debug_add_ctrl(struct hsi_controller *ssi)
 	struct omap_ssi_controller *omap_ssi = hsi_controller_drvdata(ssi);
 	struct dentry *dir;
 
-	/* SSI controller */
+	 
 	omap_ssi->dir = debugfs_create_dir(dev_name(&ssi->device), NULL);
 	if (!omap_ssi->dir)
 		return -ENOMEM;
 
 	debugfs_create_file("regs", S_IRUGO, omap_ssi->dir, ssi,
 								&ssi_regs_fops);
-	/* SSI GDD (DMA) */
+	 
 	dir = debugfs_create_dir("gdd", omap_ssi->dir);
 	if (!dir)
 		goto rback;
@@ -140,12 +134,9 @@ static void ssi_debug_remove_ctrl(struct hsi_controller *ssi)
 
 	debugfs_remove_recursive(omap_ssi->dir);
 }
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 
-/*
- * FIXME: Horrible HACK needed until we remove the useless wakeline test
- * in the CMT. To be removed !!!!
- */
+ 
 void ssi_waketest(struct hsi_client *cl, unsigned int enable)
 {
 	struct hsi_port *port = hsi_get_port(cl);
@@ -189,19 +180,19 @@ static void ssi_gdd_complete(struct hsi_controller *ssi, unsigned int lch)
 	} else {
 		dir = DMA_TO_DEVICE;
 		val = SSI_DATAACCEPT(msg->channel);
-		/* Keep clocks reference for write pio event */
+		 
 	}
 	dma_unmap_sg(&ssi->device, msg->sgt.sgl, msg->sgt.nents, dir);
 	csr = readw(omap_ssi->gdd + SSI_GDD_CSR_REG(lch));
-	omap_ssi->gdd_trn[lch].msg = NULL; /* release GDD lch */
+	omap_ssi->gdd_trn[lch].msg = NULL;  
 	dev_dbg(&port->device, "DMA completed ch %d ttype %d\n",
 				msg->channel, msg->ttype);
 	spin_unlock(&omap_ssi->lock);
-	if (csr & SSI_CSR_TOUR) { /* Timeout error */
+	if (csr & SSI_CSR_TOUR) {  
 		msg->status = HSI_STATUS_ERROR;
 		msg->actual_len = 0;
 		spin_lock(&omap_port->lock);
-		list_del(&msg->link); /* Dequeue msg */
+		list_del(&msg->link);  
 		spin_unlock(&omap_port->lock);
 
 		list_add_tail(&msg->link, &omap_port->errqueue);
@@ -287,12 +278,12 @@ static int ssi_clk_event(struct notifier_block *nb, unsigned long event,
 			if (!omap_port)
 				continue;
 
-			/* Workaround for SWBREAK + CAwake down race in CMT */
+			 
 			disable_irq(omap_port->wake_irq);
 
-			/* stop all ssi communication */
+			 
 			pinctrl_pm_select_idle_state(omap_port->pdev);
-			udelay(1); /* wait for racing frames */
+			udelay(1);  
 		}
 
 		break;
@@ -302,7 +293,7 @@ static int ssi_clk_event(struct notifier_block *nb, unsigned long event,
 	case POST_RATE_CHANGE:
 		dev_dbg(&ssi->device, "post rate change (%lu -> %lu)\n",
 			clk_data->old_rate, clk_data->new_rate);
-		omap_ssi->fck_rate = DIV_ROUND_CLOSEST(clk_data->new_rate, 1000); /* kHz */
+		omap_ssi->fck_rate = DIV_ROUND_CLOSEST(clk_data->new_rate, 1000);  
 
 		for (i = 0; i < ssi->num_ports; i++) {
 			omap_port = omap_ssi->port[i];
@@ -312,7 +303,7 @@ static int ssi_clk_event(struct notifier_block *nb, unsigned long event,
 
 			omap_ssi_port_update_fclk(ssi, omap_port);
 
-			/* resume ssi communication */
+			 
 			pinctrl_pm_select_default_state(omap_port->pdev);
 			enable_irq(omap_port->wake_irq);
 		}
@@ -404,7 +395,7 @@ static int ssi_add_controller(struct hsi_controller *ssi,
 	omap_ssi->fck_nb.priority = INT_MAX;
 	clk_notifier_register(omap_ssi->fck, &omap_ssi->fck_nb);
 
-	/* TODO: find register, which can be used to detect context loss */
+	 
 	omap_ssi->get_loss = NULL;
 
 	omap_ssi->max_speed = UINT_MAX;
@@ -431,9 +422,9 @@ static int ssi_hw_init(struct hsi_controller *ssi)
 		dev_err(&ssi->device, "runtime PM failed %d\n", err);
 		return err;
 	}
-	/* Resetting GDD */
+	 
 	writel_relaxed(SSI_SWRESET, omap_ssi->gdd + SSI_GDD_GRST_REG);
-	/* Get FCK rate in kHz */
+	 
 	omap_ssi->fck_rate = DIV_ROUND_CLOSEST(ssi_get_clk_rate(ssi), 1000);
 	dev_dbg(&ssi->device, "SSI fck rate %lu kHz\n", omap_ssi->fck_rate);
 
@@ -551,7 +542,7 @@ static int ssi_remove(struct platform_device *pd)
 {
 	struct hsi_controller *ssi = platform_get_drvdata(pd);
 
-	/* cleanup of of_platform_populate() call */
+	 
 	device_for_each_child(&pd->dev, NULL, ssi_remove_ports);
 
 #ifdef CONFIG_DEBUG_FS

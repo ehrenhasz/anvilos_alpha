@@ -1,60 +1,36 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * mass_storage.c -- Mass Storage USB Gadget
- *
- * Copyright (C) 2003-2008 Alan Stern
- * Copyright (C) 2009 Samsung Electronics
- *                    Author: Michal Nazarewicz <mina86@mina86.com>
- * All rights reserved.
- */
+
+ 
 
 
-/*
- * The Mass Storage Gadget acts as a USB Mass Storage device,
- * appearing to the host as a disk drive or as a CD-ROM drive.  In
- * addition to providing an example of a genuinely useful gadget
- * driver for a USB device, it also illustrates a technique of
- * double-buffering for increased throughput.  Last but not least, it
- * gives an easy way to probe the behavior of the Mass Storage drivers
- * in a USB host.
- *
- * Since this file serves only administrative purposes and all the
- * business logic is implemented in f_mass_storage.* file.  Read
- * comments in this file for more detailed description.
- */
+ 
 
 
 #include <linux/kernel.h>
 #include <linux/usb/ch9.h>
 #include <linux/module.h>
 
-/*-------------------------------------------------------------------------*/
+ 
 
 #define DRIVER_DESC		"Mass Storage Gadget"
 #define DRIVER_VERSION		"2009/09/11"
 
-/*
- * Thanks to NetChip Technologies for donating this product ID.
- *
- * DO NOT REUSE THESE IDs with any other driver!!  Ever!!
- * Instead:  allocate your own, using normal USB-IF procedures.
- */
-#define FSG_VENDOR_ID	0x0525	/* NetChip */
-#define FSG_PRODUCT_ID	0xa4a5	/* Linux-USB File-backed Storage Gadget */
+ 
+#define FSG_VENDOR_ID	0x0525	 
+#define FSG_PRODUCT_ID	0xa4a5	 
 
 #include "f_mass_storage.h"
 
-/*-------------------------------------------------------------------------*/
+ 
 USB_GADGET_COMPOSITE_OPTIONS();
 
 static struct usb_device_descriptor msg_device_desc = {
 	.bLength =		sizeof msg_device_desc,
 	.bDescriptorType =	USB_DT_DEVICE,
 
-	/* .bcdUSB = DYNAMIC */
+	 
 	.bDeviceClass =		USB_CLASS_PER_INTERFACE,
 
-	/* Vendor and product id can be overridden by module parameters.  */
+	 
 	.idVendor =		cpu_to_le16(FSG_VENDOR_ID),
 	.idProduct =		cpu_to_le16(FSG_PRODUCT_ID),
 	.bNumConfigurations =	1,
@@ -66,11 +42,11 @@ static struct usb_string strings_dev[] = {
 	[USB_GADGET_MANUFACTURER_IDX].s = "",
 	[USB_GADGET_PRODUCT_IDX].s = DRIVER_DESC,
 	[USB_GADGET_SERIAL_IDX].s = "",
-	{  } /* end of list */
+	{  }  
 };
 
 static struct usb_gadget_strings stringtab_dev = {
-	.language       = 0x0409,       /* en-us */
+	.language       = 0x0409,        
 	.strings        = strings_dev,
 };
 
@@ -82,7 +58,7 @@ static struct usb_gadget_strings *dev_strings[] = {
 static struct usb_function_instance *fi_msg;
 static struct usb_function *f_msg;
 
-/****************************** Configurations ******************************/
+ 
 
 static struct fsg_module_parameters mod_data = {
 	.stall = 1
@@ -93,15 +69,12 @@ static unsigned int fsg_num_buffers = CONFIG_USB_GADGET_STORAGE_NUM_BUFFERS;
 
 #else
 
-/*
- * Number of buffers we will use.
- * 2 is usually enough for good buffering pipeline
- */
+ 
 #define fsg_num_buffers	CONFIG_USB_GADGET_STORAGE_NUM_BUFFERS
 
-#endif /* CONFIG_USB_GADGET_DEBUG_FILES */
+#endif  
 
-FSG_MODULE_PARAMETERS(/* no prefix */, mod_data);
+FSG_MODULE_PARAMETERS( , mod_data);
 
 static int msg_do_config(struct usb_configuration *c)
 {
@@ -134,7 +107,7 @@ static struct usb_configuration msg_config_driver = {
 };
 
 
-/****************************** Gadget Bind ******************************/
+ 
 
 static int msg_bind(struct usb_composite_dev *cdev)
 {
@@ -219,7 +192,7 @@ static int msg_unbind(struct usb_composite_dev *cdev)
 	return 0;
 }
 
-/****************************** Some noise ******************************/
+ 
 
 static struct usb_composite_driver msg_driver = {
 	.name		= "g_mass_storage",

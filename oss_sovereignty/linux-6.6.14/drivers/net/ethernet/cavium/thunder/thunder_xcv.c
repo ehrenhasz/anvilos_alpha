@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Cavium, Inc.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/module.h>
@@ -20,7 +18,7 @@
 #define DRV_NAME	"thunder_xcv"
 #define DRV_VERSION	"1.0"
 
-/* Register offsets */
+ 
 #define XCV_RESET		0x00
 #define   PORT_EN		BIT_ULL(63)
 #define   CLK_RESET		BIT_ULL(15)
@@ -50,10 +48,10 @@ struct xcv {
 
 static struct xcv *xcv;
 
-/* Supported devices */
+ 
 static const struct pci_device_id xcv_id_table[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, 0xA056) },
-	{ 0, }  /* end of table */
+	{ 0, }   
 };
 
 MODULE_AUTHOR("Cavium Inc");
@@ -66,37 +64,33 @@ void xcv_init_hw(void)
 {
 	u64  cfg;
 
-	/* Take DLL out of reset */
+	 
 	cfg = readq_relaxed(xcv->reg_base + XCV_RESET);
 	cfg &= ~DLL_RESET;
 	writeq_relaxed(cfg, xcv->reg_base + XCV_RESET);
 
-	/* Take clock tree out of reset */
+	 
 	cfg = readq_relaxed(xcv->reg_base + XCV_RESET);
 	cfg &= ~CLK_RESET;
 	writeq_relaxed(cfg, xcv->reg_base + XCV_RESET);
-	/* Wait for DLL to lock */
+	 
 	msleep(1);
 
-	/* Configure DLL - enable or bypass
-	 * TX no bypass, RX bypass
-	 */
+	 
 	cfg = readq_relaxed(xcv->reg_base + XCV_DLL_CTL);
 	cfg &= ~0xFF03;
 	cfg |= CLKRX_BYP;
 	writeq_relaxed(cfg, xcv->reg_base + XCV_DLL_CTL);
 
-	/* Enable compensation controller and force the
-	 * write to be visible to HW by readig back.
-	 */
+	 
 	cfg = readq_relaxed(xcv->reg_base + XCV_RESET);
 	cfg |= COMP_EN;
 	writeq_relaxed(cfg, xcv->reg_base + XCV_RESET);
 	readq_relaxed(xcv->reg_base + XCV_RESET);
-	/* Wait for compensation state machine to lock */
+	 
 	msleep(10);
 
-	/* enable the XCV block */
+	 
 	cfg = readq_relaxed(xcv->reg_base + XCV_RESET);
 	cfg |= PORT_EN;
 	writeq_relaxed(cfg, xcv->reg_base + XCV_RESET);
@@ -123,26 +117,26 @@ void xcv_setup_link(bool link_up, int link_speed)
 		speed = 0;
 
 	if (link_up) {
-		/* set operating speed */
+		 
 		cfg = readq_relaxed(xcv->reg_base + XCV_CTL);
 		cfg &= ~0x03;
 		cfg |= speed;
 		writeq_relaxed(cfg, xcv->reg_base + XCV_CTL);
 
-		/* Reset datapaths */
+		 
 		cfg = readq_relaxed(xcv->reg_base + XCV_RESET);
 		cfg |= TX_DATA_RESET | RX_DATA_RESET;
 		writeq_relaxed(cfg, xcv->reg_base + XCV_RESET);
 
-		/* Enable the packet flow */
+		 
 		cfg = readq_relaxed(xcv->reg_base + XCV_RESET);
 		cfg |= TX_PKT_RESET | RX_PKT_RESET;
 		writeq_relaxed(cfg, xcv->reg_base + XCV_RESET);
 
-		/* Return credits to RGX */
+		 
 		writeq_relaxed(0x01, xcv->reg_base + XCV_BATCH_CRD_RET);
 	} else {
-		/* Disable packet flow */
+		 
 		cfg = readq_relaxed(xcv->reg_base + XCV_RESET);
 		cfg &= ~(TX_PKT_RESET | RX_PKT_RESET);
 		writeq_relaxed(cfg, xcv->reg_base + XCV_RESET);
@@ -175,7 +169,7 @@ static int xcv_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto err_disable_device;
 	}
 
-	/* MAP configuration registers */
+	 
 	xcv->reg_base = pcim_iomap(pdev, PCI_CFG_REG_BAR_NUM, 0);
 	if (!xcv->reg_base) {
 		dev_err(dev, "XCV: Cannot map CSR memory space, aborting\n");

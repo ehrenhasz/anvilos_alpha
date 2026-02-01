@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2013 Trond Myklebust <Trond.Myklebust@netapp.com>
- */
+
+ 
 #include <linux/nfs_fs.h>
 #include <linux/namei.h>
 #include "internal.h"

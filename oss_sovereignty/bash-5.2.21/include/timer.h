@@ -1,22 +1,6 @@
-/* timer.h -- data structures used by the shell timers in lib/sh/timers.c */
+ 
 
-/* Copyright (C) 2021 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -30,18 +14,18 @@ typedef struct _shtimer
   int fd;
   int flags;
 
-  int alrmflag;					/* should be set by alrm_handler */
+  int alrmflag;					 
 
   SigHandler *alrm_handler;
   SigHandler *old_handler;
 
   procenv_t jmpenv;
 
-  int (*tm_handler) (struct _shtimer *);	/* called on timeout if set */
-  PTR_T	*data;					/* reserved */
+  int (*tm_handler) (struct _shtimer *);	 
+  PTR_T	*data;					 
 } sh_timer;
 
-#define SHTIMER_ALARM	0x01			/* mutually exclusive */
+#define SHTIMER_ALARM	0x01			 
 #define SHTIMER_SELECT	0x02
 #define SHTIMER_LONGJMP	0x04
 

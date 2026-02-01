@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Machine driver for AMD Renoir platform using DMIC
-//
-//Copyright 2020 Advanced Micro Devices, Inc.
+
+
+
+
+
 
 #include <sound/soc.h>
 #include <sound/soc-dapm.h>

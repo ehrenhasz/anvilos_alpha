@@ -1,12 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020-21 Intel Corporation.
- */
+
+ 
 
 #include "iosm_ipc_protocol.h"
 #include "iosm_ipc_protocol_ops.h"
 
-/* Get the next free message element.*/
+ 
 static union ipc_mem_msg_entry *
 ipc_protocol_free_msg_get(struct iosm_protocol *ipc_protocol, int *index)
 {
@@ -19,26 +17,24 @@ ipc_protocol_free_msg_get(struct iosm_protocol *ipc_protocol, int *index)
 		return NULL;
 	}
 
-	/* Get the pointer to the next free message element,
-	 * reset the fields and mark is as invalid.
-	 */
+	 
 	msg = &ipc_protocol->p_ap_shm->msg_ring[head];
 	memset(msg, 0, sizeof(*msg));
 
-	/* return index in message ring */
+	 
 	*index = head;
 
 	return msg;
 }
 
-/* Updates the message ring Head pointer */
+ 
 void ipc_protocol_msg_hp_update(struct iosm_imem *ipc_imem)
 {
 	struct iosm_protocol *ipc_protocol = ipc_imem->ipc_protocol;
 	u32 head = le32_to_cpu(ipc_protocol->p_ap_shm->msg_head);
 	u32 new_head = (head + 1) % IPC_MEM_MSG_ENTRIES;
 
-	/* Update head pointer and fire doorbell. */
+	 
 	ipc_protocol->p_ap_shm->msg_head = cpu_to_le32(new_head);
 	ipc_protocol->old_msg_tail =
 		le32_to_cpu(ipc_protocol->p_ap_shm->msg_tail);
@@ -46,10 +42,7 @@ void ipc_protocol_msg_hp_update(struct iosm_imem *ipc_imem)
 	ipc_pm_signal_hpda_doorbell(&ipc_protocol->pm, IPC_HP_MR, false);
 }
 
-/* Allocate and prepare a OPEN_PIPE message.
- * This also allocates the memory for the new TDR structure and
- * updates the pipe structure referenced in the preparation arguments.
- */
+ 
 static int ipc_protocol_msg_prepipe_open(struct iosm_protocol *ipc_protocol,
 					 union ipc_msg_prep_args *args)
 {
@@ -65,15 +58,12 @@ static int ipc_protocol_msg_prepipe_open(struct iosm_protocol *ipc_protocol,
 		return -EIO;
 	}
 
-	/* Allocate the skbuf elements for the skbuf which are on the way.
-	 * SKB ring is internal memory allocation for driver. No need to
-	 * re-calculate the start and end addresses.
-	 */
+	 
 	skbr = kcalloc(pipe->nr_of_entries, sizeof(*skbr), GFP_ATOMIC);
 	if (!skbr)
 		return -ENOMEM;
 
-	/* Allocate the transfer descriptors for the pipe. */
+	 
 	tdr = dma_alloc_coherent(&ipc_protocol->pcie->pci->dev,
 				 pipe->nr_of_entries * sizeof(*tdr),
 				 &pipe->phy_tdr_start, GFP_ATOMIC);
@@ -134,11 +124,11 @@ static int ipc_protocol_msg_prep_sleep(struct iosm_protocol *ipc_protocol,
 		return -EIO;
 	}
 
-	/* Prepare and send the host sleep message to CP to enter or exit D3. */
+	 
 	msg->host_sleep.type_of_message = IPC_MEM_MSG_SLEEP;
-	msg->host_sleep.target = args->sleep.target; /* 0=host, 1=device */
+	msg->host_sleep.target = args->sleep.target;  
 
-	/* state; 0=enter, 1=exit 2=enter w/o protocol */
+	 
 	msg->host_sleep.state = args->sleep.state;
 
 	dev_dbg(ipc_protocol->dev, "IPC_MEM_MSG_SLEEP(target=%d; state=%d)",
@@ -169,7 +159,7 @@ static int ipc_protocol_msg_prep_feature_set(struct iosm_protocol *ipc_protocol,
 	return index;
 }
 
-/* Processes the message consumed by CP. */
+ 
 bool ipc_protocol_msg_process(struct iosm_imem *ipc_imem, int irq)
 {
 	struct iosm_protocol *ipc_protocol = ipc_imem->ipc_protocol;
@@ -198,7 +188,7 @@ bool ipc_protocol_msg_process(struct iosm_imem *ipc_imem, int irq)
 			msg->common.type_of_message,
 			msg->common.completion_status);
 
-		/* Update response with status and wake up waiting requestor */
+		 
 		if (rsp_ring[i]) {
 			rsp_ring[i]->status =
 				le32_to_cpu(msg->common.completion_status);
@@ -212,9 +202,7 @@ bool ipc_protocol_msg_process(struct iosm_imem *ipc_imem, int irq)
 	return msg_processed;
 }
 
-/* Sends data from UL list to CP for the provided pipe by updating the Head
- * pointer of given pipe.
- */
+ 
 bool ipc_protocol_ul_td_send(struct iosm_protocol *ipc_protocol,
 			     struct ipc_pipe *pipe,
 			     struct sk_buff_head *p_ul_list)
@@ -231,9 +219,7 @@ bool ipc_protocol_ul_td_send(struct iosm_protocol *ipc_protocol,
 		return false;
 	}
 
-	/* Get head and tail of the td list and calculate
-	 * the number of free elements.
-	 */
+	 
 	head = le32_to_cpu(ipc_protocol->p_ap_shm->head_array[pipe->pipe_nr]);
 	tail = pipe->old_tail;
 
@@ -251,17 +237,15 @@ bool ipc_protocol_ul_td_send(struct iosm_protocol *ipc_protocol,
 			break;
 		}
 
-		/* Get the td address. */
+		 
 		td = &pipe->tdr_start[head];
 
-		/* Take the first element of the uplink list and add it
-		 * to the td list.
-		 */
+		 
 		skb = skb_dequeue(p_ul_list);
 		if (WARN_ON(!skb))
 			break;
 
-		/* Save the reference to the uplink skbuf. */
+		 
 		pipe->skbr_start[head] = skb;
 
 		td->buffer.address = IPC_CB(skb)->mapping;
@@ -270,7 +254,7 @@ bool ipc_protocol_ul_td_send(struct iosm_protocol *ipc_protocol,
 
 		pipe->nr_of_queued_entries++;
 
-		/* Calculate the new head and save it. */
+		 
 		head++;
 		if (head >= pipe->nr_of_entries)
 			head = 0;
@@ -283,14 +267,14 @@ bool ipc_protocol_ul_td_send(struct iosm_protocol *ipc_protocol,
 		dev_dbg(ipc_protocol->dev, "New UL TDs Pipe:%d", pipe->pipe_nr);
 
 		pipe->old_head = head;
-		/* Trigger doorbell because of pending UL packets. */
+		 
 		hpda_pending = true;
 	}
 
 	return hpda_pending;
 }
 
-/* Checks for Tail pointer update from CP and returns the data as SKB. */
+ 
 struct sk_buff *ipc_protocol_ul_td_process(struct iosm_protocol *ipc_protocol,
 					   struct ipc_pipe *pipe)
 {
@@ -317,9 +301,7 @@ struct sk_buff *ipc_protocol_ul_td_process(struct iosm_protocol *ipc_protocol,
 	return skb;
 }
 
-/* Allocates an SKB for CP to send data and updates the Head Pointer
- * of the given Pipe#.
- */
+ 
 bool ipc_protocol_dl_td_prepare(struct iosm_protocol *ipc_protocol,
 				struct ipc_pipe *pipe)
 {
@@ -329,9 +311,7 @@ bool ipc_protocol_dl_td_prepare(struct iosm_protocol *ipc_protocol,
 	struct sk_buff *skb;
 	u32 tail;
 
-	/* Get head and tail of the td list and calculate
-	 * the number of free elements.
-	 */
+	 
 	head = le32_to_cpu(ipc_protocol->p_ap_shm->head_array[pipe->pipe_nr]);
 	tail = le32_to_cpu(ipc_protocol->p_ap_shm->tail_array[pipe->pipe_nr]);
 
@@ -342,10 +322,10 @@ bool ipc_protocol_dl_td_prepare(struct iosm_protocol *ipc_protocol,
 	if (new_head == tail)
 		return false;
 
-	/* Get the td address. */
+	 
 	td = &pipe->tdr_start[head];
 
-	/* Allocate the skbuf for the descriptor. */
+	 
 	skb = ipc_pcie_alloc_skb(ipc_protocol->pcie, pipe->buf_size, GFP_ATOMIC,
 				 &mapping, DMA_FROM_DEVICE,
 				 IPC_MEM_DL_ETH_OFFSET);
@@ -356,11 +336,11 @@ bool ipc_protocol_dl_td_prepare(struct iosm_protocol *ipc_protocol,
 	td->scs = cpu_to_le32(pipe->buf_size) & cpu_to_le32(SIZE_MASK);
 	td->next = 0;
 
-	/* store the new head value. */
+	 
 	ipc_protocol->p_ap_shm->head_array[pipe->pipe_nr] =
 		cpu_to_le32(new_head);
 
-	/* Save the reference to the skbuf. */
+	 
 	pipe->skbr_start[head] = skb;
 
 	pipe->nr_of_queued_entries++;
@@ -368,7 +348,7 @@ bool ipc_protocol_dl_td_prepare(struct iosm_protocol *ipc_protocol,
 	return true;
 }
 
-/* Processes DL TD's */
+ 
 struct sk_buff *ipc_protocol_dl_td_process(struct iosm_protocol *ipc_protocol,
 					   struct ipc_pipe *pipe)
 {
@@ -378,11 +358,11 @@ struct sk_buff *ipc_protocol_dl_td_process(struct iosm_protocol *ipc_protocol,
 	if (!pipe->tdr_start)
 		return NULL;
 
-	/* Copy the reference to the downlink buffer. */
+	 
 	p_td = &pipe->tdr_start[pipe->old_tail];
 	skb = pipe->skbr_start[pipe->old_tail];
 
-	/* Reset the ring elements. */
+	 
 	pipe->skbr_start[pipe->old_tail] = NULL;
 
 	pipe->nr_of_queued_entries--;
@@ -416,14 +396,14 @@ struct sk_buff *ipc_protocol_dl_td_process(struct iosm_protocol *ipc_protocol,
 		goto ret;
 	} else if (le32_to_cpu(p_td->scs) >> COMPLETION_STATUS ==
 		  IPC_MEM_TD_CS_ABORT) {
-		/* Discard aborted buffers. */
+		 
 		dev_dbg(ipc_protocol->dev, "discard 'aborted' buffers");
 		ipc_pcie_kfree_skb(ipc_protocol->pcie, skb);
 		skb = NULL;
 		goto ret;
 	}
 
-	/* Set the length field in skbuf. */
+	 
 	skb_put(skb, le32_to_cpu(p_td->scs) & SIZE_MASK);
 
 ret:
@@ -443,7 +423,7 @@ void ipc_protocol_get_head_tail_index(struct iosm_protocol *ipc_protocol,
 		*tail = le32_to_cpu(ipc_ap_shm->tail_array[pipe->pipe_nr]);
 }
 
-/* Frees the TDs given to CP.  */
+ 
 void ipc_protocol_pipe_cleanup(struct iosm_protocol *ipc_protocol,
 			       struct ipc_pipe *pipe)
 {
@@ -451,20 +431,18 @@ void ipc_protocol_pipe_cleanup(struct iosm_protocol *ipc_protocol,
 	u32 head;
 	u32 tail;
 
-	/* Get the start and the end of the buffer list. */
+	 
 	head = le32_to_cpu(ipc_protocol->p_ap_shm->head_array[pipe->pipe_nr]);
 	tail = pipe->old_tail;
 
-	/* Reset tail and head to 0. */
+	 
 	ipc_protocol->p_ap_shm->tail_array[pipe->pipe_nr] = 0;
 	ipc_protocol->p_ap_shm->head_array[pipe->pipe_nr] = 0;
 
-	/* Free pending uplink and downlink buffers. */
+	 
 	if (pipe->skbr_start) {
 		while (head != tail) {
-			/* Get the reference to the skbuf,
-			 * which is on the way and free it.
-			 */
+			 
 			skb = pipe->skbr_start[tail];
 			if (skb)
 				ipc_pcie_kfree_skb(ipc_protocol->pcie, skb);
@@ -480,7 +458,7 @@ void ipc_protocol_pipe_cleanup(struct iosm_protocol *ipc_protocol,
 
 	pipe->old_tail = 0;
 
-	/* Free and reset the td and skbuf circular buffers. kfree is save! */
+	 
 	if (pipe->tdr_start) {
 		dma_free_coherent(&ipc_protocol->pcie->pci->dev,
 				  sizeof(*pipe->tdr_start) * pipe->nr_of_entries,
@@ -522,7 +500,7 @@ int ipc_protocol_msg_prep(struct iosm_imem *ipc_imem,
 	case IPC_MSG_PREP_FEATURE_SET:
 		return ipc_protocol_msg_prep_feature_set(ipc_protocol, args);
 
-		/* Unsupported messages in protocol */
+		 
 	case IPC_MSG_PREP_MAP:
 	case IPC_MSG_PREP_UNMAP:
 	default:

@@ -1,43 +1,8 @@
-/****************************************************************************
- * Copyright 2020,2021 Thomas E. Dickey                                     *
- * Copyright 1998-2013,2014 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Juergen Pfeifer                         1996-on                 *
- *     and: Thomas E. Dickey                                                *
- ****************************************************************************/
+ 
 
-/*
- *	lib_slkrefr.c
- *	Write SLK window to the (virtual) screen.
- */
+ 
 #include <curses.priv.h>
 
 #ifndef CUR
@@ -52,9 +17,7 @@ MODULE_ID("$Id: lib_slkrefr.c,v 1.32 2021/09/04 10:54:35 tom Exp $")
 #define NumLabels    num_labels
 #endif
 
-/*
- * Paint the info line for the PC style SLK emulation.
- */
+ 
 static void
 slk_paint_info(WINDOW *win)
 {
@@ -72,9 +35,7 @@ slk_paint_info(WINDOW *win)
     }
 }
 
-/*
- * Write the soft labels to the soft-key window.
- */
+ 
 static void
 slk_intern_refresh(SCREEN *sp)
 {
@@ -113,9 +74,7 @@ slk_intern_refresh(SCREEN *sp)
 		    wmove(slk->win, SLK_LINES(fmt) - 1, slk->ent[i].ent_x);
 		    (void) wattrset(slk->win, (int) AttrOf(slk->attr));
 		    waddstr(slk->win, slk->ent[i].form_text);
-		    /* if we simulate SLK's, it is looking much more
-		       natural to use the current ATTRIBUTE also
-		       for the label window */
+		     
 		    (void) wattrset(slk->win, (int) WINDOW_ATTRS(StdScreen(sp)));
 		}
 	    }
@@ -137,9 +96,7 @@ slk_intern_refresh(SCREEN *sp)
     }
 }
 
-/*
- * Refresh the soft labels.
- */
+ 
 NCURSES_EXPORT(int)
 NCURSES_SP_NAME(slk_noutrefresh) (NCURSES_SP_DCL0)
 {
@@ -162,9 +119,7 @@ slk_noutrefresh(void)
 }
 #endif
 
-/*
- * Refresh the soft labels.
- */
+ 
 NCURSES_EXPORT(int)
 NCURSES_SP_NAME(slk_refresh) (NCURSES_SP_DCL0)
 {

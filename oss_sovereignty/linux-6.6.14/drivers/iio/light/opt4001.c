@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2023 Axis Communications AB
- *
- * Datasheet: https://www.ti.com/lit/gpn/opt4001
- *
- * Device driver for the Texas Instruments OPT4001.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/i2c.h>
@@ -16,23 +10,23 @@
 #include <linux/regmap.h>
 #include <linux/regulator/consumer.h>
 
-/* OPT4001 register set */
+ 
 #define OPT4001_LIGHT1_MSB    0x00
 #define OPT4001_LIGHT1_LSB    0x01
 #define OPT4001_CTRL          0x0A
 #define OPT4001_DEVICE_ID     0x11
 
-/* OPT4001 register mask */
+ 
 #define OPT4001_EXPONENT_MASK    GENMASK(15, 12)
 #define OPT4001_MSB_MASK         GENMASK(11, 0)
 #define OPT4001_LSB_MASK         GENMASK(15, 8)
 #define OPT4001_COUNTER_MASK     GENMASK(7, 4)
 #define OPT4001_CRC_MASK         GENMASK(3, 0)
 
-/* OPT4001 device id mask */
+ 
 #define OPT4001_DEVICE_ID_MASK   GENMASK(11, 0)
 
-/* OPT4001 control registers mask */
+ 
 #define OPT4001_CTRL_QWAKE_MASK          GENMASK(15, 15)
 #define OPT4001_CTRL_RANGE_MASK          GENMASK(13, 10)
 #define OPT4001_CTRL_CONV_TIME_MASK      GENMASK(9, 6)
@@ -41,16 +35,16 @@
 #define OPT4001_CTRL_INT_POL_MASK        GENMASK(2, 2)
 #define OPT4001_CTRL_FAULT_COUNT         GENMASK(0, 1)
 
-/* OPT4001 constants */
+ 
 #define OPT4001_DEVICE_ID_VAL            0x121
 
-/* OPT4001 operating modes */
+ 
 #define OPT4001_CTRL_OPER_MODE_OFF        0x0
 #define OPT4001_CTRL_OPER_MODE_FORCED     0x1
 #define OPT4001_CTRL_OPER_MODE_ONE_SHOT   0x2
 #define OPT4001_CTRL_OPER_MODE_CONTINUOUS 0x3
 
-/* OPT4001 conversion control register definitions */
+ 
 #define OPT4001_CTRL_CONVERSION_0_6MS   0x0
 #define OPT4001_CTRL_CONVERSION_1MS     0x1
 #define OPT4001_CTRL_CONVERSION_1_8MS   0x2
@@ -64,16 +58,13 @@
 #define OPT4001_CTRL_CONVERSION_400MS   0xa
 #define OPT4001_CTRL_CONVERSION_800MS   0xb
 
-/* OPT4001 scale light level range definitions */
+ 
 #define OPT4001_CTRL_LIGHT_SCALE_AUTO   12
 
-/* OPT4001 default values */
+ 
 #define OPT4001_DEFAULT_CONVERSION_TIME OPT4001_CTRL_CONVERSION_800MS
 
-/*
- * The different packaging of OPT4001 has different constants used when calculating
- * lux values.
- */
+ 
 struct opt4001_chip_info {
 	int mul;
 	int div;
@@ -114,10 +105,7 @@ static const int opt4001_int_time_available[][2] = {
 	{ 0, 800000 },
 };
 
-/*
- * Conversion time is integration time + time to set register
- * this is used as integration time.
- */
+ 
 static const int opt4001_int_time_reg[][2] = {
 	{    600,  OPT4001_CTRL_CONVERSION_0_6MS  },
 	{   1000,  OPT4001_CTRL_CONVERSION_1MS    },
@@ -234,7 +222,7 @@ static int opt4001_power_down(struct opt4001_chip *chip)
 		return ret;
 	}
 
-	/* MODE_OFF is 0x0 so just set bits to 0 */
+	 
 	reg &= ~OPT4001_CTRL_OPER_MODE_MASK;
 
 	ret = regmap_write(chip->regmap, OPT4001_CTRL, reg);
@@ -434,10 +422,7 @@ static int opt4001_probe(struct i2c_client *client)
 	return devm_iio_device_register(&client->dev, indio_dev);
 }
 
-/*
- * The compatible string determines which constants to use depending on
- * opt4001 packaging
- */
+ 
 static const struct i2c_device_id opt4001_id[] = {
 	{ "opt4001-sot-5x3", (kernel_ulong_t)&opt4001_sot_5x3_info },
 	{ "opt4001-picostar", (kernel_ulong_t)&opt4001_picostar_info },

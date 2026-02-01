@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Core driver for the generic pin config portions of the pin control subsystem
- *
- * Copyright (C) 2011 ST-Ericsson SA
- * Written on behalf of Linaro for ST-Ericsson
- *
- * Author: Linus Walleij <linus.walleij@linaro.org>
- */
+
+ 
 
 #define pr_fmt(fmt) "generic pinconfig core: " fmt
 
@@ -65,26 +58,26 @@ static void pinconf_generic_dump_one(struct pinctrl_dev *pctldev,
 		unsigned long config;
 		int ret;
 
-		/* We want to check out this parameter */
+		 
 		config = pinconf_to_config_packed(items[i].param, 0);
 		if (gname)
 			ret = pin_config_group_get(dev_name(pctldev->dev),
 						   gname, &config);
 		else
 			ret = pin_config_get_for_pin(pctldev, pin, &config);
-		/* These are legal errors */
+		 
 		if (ret == -EINVAL || ret == -ENOTSUPP)
 			continue;
 		if (ret) {
 			seq_printf(s, "ERROR READING CONFIG SETTING %d ", i);
 			continue;
 		}
-		/* comma between multiple configs */
+		 
 		if (*print_sep)
 			seq_puts(s, ", ");
 		*print_sep = 1;
 		seq_puts(s, items[i].display);
-		/* Print unit if available */
+		 
 		if (items[i].has_arg) {
 			seq_printf(s, " (%u",
 				   pinconf_to_config_argument(config));
@@ -96,17 +89,7 @@ static void pinconf_generic_dump_one(struct pinctrl_dev *pctldev,
 	}
 }
 
-/**
- * pinconf_generic_dump_pins - Print information about pin or group of pins
- * @pctldev:	Pincontrol device
- * @s:		File to print to
- * @gname:	Group name specifying pins
- * @pin:	Pin number specyfying pin
- *
- * Print the pinconf configuration for the requested pin(s) to @s. Pins can be
- * specified either by pin using @pin or by group using @gname. Only one needs
- * to be specified the other can be NULL/0.
- */
+ 
 void pinconf_generic_dump_pins(struct pinctrl_dev *pctldev, struct seq_file *s,
 			       const char *gname, unsigned pin)
 {
@@ -116,10 +99,10 @@ void pinconf_generic_dump_pins(struct pinctrl_dev *pctldev, struct seq_file *s,
 	if (!ops->is_generic)
 		return;
 
-	/* generic parameters */
+	 
 	pinconf_generic_dump_one(pctldev, s, gname, pin, conf_items,
 				 ARRAY_SIZE(conf_items), &print_sep);
-	/* driver-specific parameters */
+	 
 	if (pctldev->desc->num_custom_params &&
 	    pctldev->desc->custom_conf_items)
 		pinconf_generic_dump_one(pctldev, s, gname, pin,
@@ -188,19 +171,7 @@ static const struct pinconf_generic_params dt_params[] = {
 	{ "skew-delay", PIN_CONFIG_SKEW_DELAY, 0 },
 };
 
-/**
- * parse_dt_cfg() - Parse DT pinconf parameters
- * @np:	DT node
- * @params:	Array of describing generic parameters
- * @count:	Number of entries in @params
- * @cfg:	Array of parsed config options
- * @ncfg:	Number of entries in @cfg
- *
- * Parse the config options described in @params from @np and puts the result
- * in @cfg. @cfg does not need to be empty, entries are added beginning at
- * @ncfg. @ncfg is updated to reflect the number of entries after parsing. @cfg
- * needs to have enough memory allocated to hold all possible entries.
- */
+ 
 static void parse_dt_cfg(struct device_node *np,
 			 const struct pinconf_generic_params *params,
 			 unsigned int count, unsigned long *cfg,
@@ -215,11 +186,11 @@ static void parse_dt_cfg(struct device_node *np,
 
 		ret = of_property_read_u32(np, par->property, &val);
 
-		/* property not found */
+		 
 		if (ret == -EINVAL)
 			continue;
 
-		/* use default value, when no value is specified */
+		 
 		if (ret)
 			val = par->default_value;
 
@@ -229,15 +200,7 @@ static void parse_dt_cfg(struct device_node *np,
 	}
 }
 
-/**
- * pinconf_generic_parse_dt_config()
- * parse the config properties into generic pinconfig values.
- * @np: node containing the pinconfig properties
- * @pctldev: pincontrol device
- * @configs: array with nconfigs entries containing the generic pinconf values
- *           must be freed when no longer necessary.
- * @nconfigs: number of configurations
- */
+ 
 int pinconf_generic_parse_dt_config(struct device_node *np,
 				    struct pinctrl_dev *pctldev,
 				    unsigned long **configs,
@@ -250,7 +213,7 @@ int pinconf_generic_parse_dt_config(struct device_node *np,
 	if (!np)
 		return -EINVAL;
 
-	/* allocate a temporary array big enough to hold one of each option */
+	 
 	max_cfg = ARRAY_SIZE(dt_params);
 	if (pctldev)
 		max_cfg += pctldev->desc->num_custom_params;
@@ -266,17 +229,14 @@ int pinconf_generic_parse_dt_config(struct device_node *np,
 
 	ret = 0;
 
-	/* no configs found at all */
+	 
 	if (ncfg == 0) {
 		*configs = NULL;
 		*nconfigs = 0;
 		goto out;
 	}
 
-	/*
-	 * Now limit the number of configs to the real number of
-	 * found properties.
-	 */
+	 
 	*configs = kmemdup(cfg, ncfg * sizeof(unsigned long), GFP_KERNEL);
 	if (!*configs) {
 		ret = -ENOMEM;
@@ -310,7 +270,7 @@ int pinconf_generic_dt_subnode_to_map(struct pinctrl_dev *pctldev,
 	if (ret < 0) {
 		ret = of_property_count_strings(np, "groups");
 		if (ret < 0)
-			/* skip this node; may contain config child nodes */
+			 
 			return 0;
 		if (type == PIN_MAP_TYPE_INVALID)
 			type = PIN_MAP_TYPE_CONFIGS_GROUP;
@@ -323,7 +283,7 @@ int pinconf_generic_dt_subnode_to_map(struct pinctrl_dev *pctldev,
 
 	ret = of_property_read_string(np, "function", &function);
 	if (ret < 0) {
-		/* EINVAL=missing, which is fine since it's optional */
+		 
 		if (ret != -EINVAL)
 			dev_err(dev, "%pOF: could not parse property function\n",
 				np);

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #define pr_fmt(fmt) "IPsec: " fmt
 
 #include <crypto/aead.h>
@@ -35,14 +35,7 @@ struct esp_output_extra {
 
 #define ESP_SKB_CB(__skb) ((struct esp_skb_cb *)&((__skb)->cb[0]))
 
-/*
- * Allocate an AEAD request structure with extra space for SG and IV.
- *
- * For alignment considerations the IV is placed at the front, followed
- * by the request and finally the SG list.
- *
- * TODO: Use spare space in skb for this where possible.
- */
+ 
 static void *esp_alloc_tmp(struct crypto_aead *aead, int nfrags, int extralen)
 {
 	unsigned int len;
@@ -109,9 +102,7 @@ static void esp_ssg_unref(struct xfrm_state *x, void *tmp)
 	iv = esp_tmp_iv(aead, tmp, extralen);
 	req = esp_tmp_req(aead, iv);
 
-	/* Unref skb_frag_pages in the src scatterlist if necessary.
-	 * Skip the first sg which comes from skb->data.
-	 */
+	 
 	if (req->src != req->dst)
 		for (sg = sg_next(req->src); sg; sg = sg_next(sg))
 			put_page(sg_page(sg));
@@ -229,10 +220,7 @@ static int esp_output_tail_tcp(struct xfrm_state *x, struct sk_buff *skb)
 	err = xfrm_trans_queue_net(xs_net(x), skb, esp_output_tcp_encap_cb);
 	local_bh_enable();
 
-	/* EINPROGRESS just happens to do the right thing.  It
-	 * actually means that the skb has been consumed and
-	 * isn't coming back.
-	 */
+	 
 	return err ?: -EINPROGRESS;
 }
 #else
@@ -282,7 +270,7 @@ static void esp_output_done(void *data, int err)
 	}
 }
 
-/* Move ESP header back into place. */
+ 
 static void esp_restore_header(struct sk_buff *skb, unsigned int offset)
 {
 	struct ip_esp_hdr *esph = (void *)(skb->data + offset);
@@ -307,10 +295,7 @@ static struct ip_esp_hdr *esp_output_set_extra(struct sk_buff *skb,
 					       struct ip_esp_hdr *esph,
 					       struct esp_output_extra *extra)
 {
-	/* For ESN we move the header forward by 4 bytes to
-	 * accommodate the high bits.  We will move it back after
-	 * encryption.
-	 */
+	 
 	if ((x->props.flags & XFRM_STATE_ESN)) {
 		__u32 seqhi;
 		struct xfrm_offload *xo = xfrm_offload(skb);
@@ -448,7 +433,7 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
 	struct sk_buff *trailer;
 	int tailen = esp->tailen;
 
-	/* this is non-NULL only with TCP/UDP Encapsulation */
+	 
 	if (x->encap) {
 		int err = esp_output_encap(x, skb, esp);
 
@@ -597,7 +582,7 @@ int esp_output_tail(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
 
 		page = pfrag->page;
 		get_page(page);
-		/* replace page frags in skb with new page */
+		 
 		__skb_fill_page_desc(skb, 0, page, pfrag->offset, skb->data_len);
 		pfrag->offset = pfrag->offset + allocsize;
 		spin_unlock_bh(&x->lock);
@@ -664,7 +649,7 @@ static int esp_output(struct xfrm_state *x, struct sk_buff *skb)
 	esp.proto = *skb_mac_header(skb);
 	*skb_mac_header(skb) = IPPROTO_ESP;
 
-	/* skb is pure payload to encrypt */
+	 
 
 	aead = x->data;
 	alen = crypto_aead_authsize(aead);
@@ -784,12 +769,7 @@ int esp_input_done2(struct sk_buff *skb, int err)
 			goto out;
 		}
 
-		/*
-		 * 1) if the NAT-T peer's IP or port changed then
-		 *    advertise the change to the keying daemon.
-		 *    This is an inbound SA, so just compare
-		 *    SRC ports.
-		 */
+		 
 		if (iph->saddr != x->props.saddr.a4 ||
 		    source != encap->encap_sport) {
 			xfrm_address_t ipaddr;
@@ -797,22 +777,10 @@ int esp_input_done2(struct sk_buff *skb, int err)
 			ipaddr.a4 = iph->saddr;
 			km_new_mapping(x, &ipaddr, source);
 
-			/* XXX: perhaps add an extra
-			 * policy check here, to see
-			 * if we should allow or
-			 * reject a packet from a
-			 * different source
-			 * address/port.
-			 */
+			 
 		}
 
-		/*
-		 * 2) ignore UDP/TCP checksums in case
-		 *    of NAT-T in Transport Mode, or
-		 *    perform other post-processing fixes
-		 *    as per draft-ietf-ipsec-udp-encaps-06,
-		 *    section 3.1.2
-		 */
+		 
 		if (x->props.mode == XFRM_MODE_TRANSPORT)
 			skb->ip_summed = CHECKSUM_UNNECESSARY;
 	}
@@ -823,7 +791,7 @@ int esp_input_done2(struct sk_buff *skb, int err)
 	else
 		skb_set_transport_header(skb, -ihl);
 
-	/* RFC4303: Drop dummy packets without any error */
+	 
 	if (err == IPPROTO_NONE)
 		err = -EINVAL;
 
@@ -850,10 +818,7 @@ static void esp_input_set_header(struct sk_buff *skb, __be32 *seqhi)
 	struct xfrm_state *x = xfrm_input_state(skb);
 	struct ip_esp_hdr *esph;
 
-	/* For ESN we move the header forward by 4 bytes to
-	 * accommodate the high bits.  We will move it back after
-	 * decryption.
-	 */
+	 
 	if ((x->props.flags & XFRM_STATE_ESN)) {
 		esph = skb_push(skb, 4);
 		*seqhi = esph->spi;
@@ -870,11 +835,7 @@ static void esp_input_done_esn(void *data, int err)
 	esp_input_done(data, err);
 }
 
-/*
- * Note: detecting truncated vs. non-truncated authentication data is very
- * expensive, so we only support truncated data, which is the recommended
- * and common case.
- */
+ 
 static int esp_input(struct xfrm_state *x, struct sk_buff *skb)
 {
 	struct crypto_aead *aead = x->data;
@@ -1184,9 +1145,7 @@ static int esp_init_state(struct xfrm_state *x, struct netlink_ext_ack *extack)
 			break;
 #ifdef CONFIG_INET_ESPINTCP
 		case TCP_ENCAP_ESPINTCP:
-			/* only the length field, TCP encap is done by
-			 * the socket
-			 */
+			 
 			x->props.header_len += 2;
 			break;
 #endif

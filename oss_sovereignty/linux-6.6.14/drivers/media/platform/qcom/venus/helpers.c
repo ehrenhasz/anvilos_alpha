@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
- * Copyright (C) 2017 Linaro Ltd.
- */
+
+ 
 #include <linux/idr.h>
 #include <linux/list.h>
 #include <linux/mutex.h>
@@ -122,7 +119,7 @@ int venus_helper_queue_dpb_bufs(struct venus_inst *inst)
 		if (buf->owned_by == FIRMWARE)
 			continue;
 
-		/* free buffer from previous sequence which was released later */
+		 
 		if (dpb_size > buf->size) {
 			free_dpb_buf(inst, buf);
 			continue;
@@ -173,7 +170,7 @@ int venus_helper_alloc_dpb_bufs(struct venus_inst *inst)
 	int ret;
 	int id;
 
-	/* no need to allocate dpb buffers */
+	 
 	if (!inst->dpb_fmt)
 		return 0;
 
@@ -540,10 +537,7 @@ static bool is_dynamic_bufmode(struct venus_inst *inst)
 	struct venus_core *core = inst->core;
 	struct hfi_plat_caps *caps;
 
-	/*
-	 * v4 doesn't send BUFFER_ALLOC_MODE_SUPPORTED property and supports
-	 * dynamic buffer mode by default for HFI_BUFFER_OUTPUT/OUTPUT2.
-	 */
+	 
 	if (IS_V4(core) || IS_V6(core))
 		return true;
 
@@ -1336,7 +1330,7 @@ EXPORT_SYMBOL_GPL(venus_helper_set_bufsize);
 
 unsigned int venus_helper_get_opb_size(struct venus_inst *inst)
 {
-	/* the encoder has only one output */
+	 
 	if (inst->session_type == VIDC_SESSION_TYPE_ENC)
 		return inst->output_buf_size;
 
@@ -1502,7 +1496,7 @@ void venus_helper_vb2_buf_queue(struct vb2_buffer *vb)
 
 	v4l2_m2m_buf_queue(m2m_ctx, vbuf);
 
-	/* Skip processing queued capture buffers after LAST flag */
+	 
 	if (inst->session_type == VIDC_SESSION_TYPE_DEC &&
 	    V4L2_TYPE_IS_CAPTURE(vb->vb2_queue->type) &&
 	    inst->codec_state == VENUS_DEC_STATE_DRC)
@@ -1771,11 +1765,7 @@ int venus_helper_get_out_fmts(struct venus_inst *inst, u32 v4l2_fmt,
 						HFI_COLOR_FORMAT_YUV420_TP10_UBWC);
 		found = find_fmt_from_caps(caps, HFI_BUFFER_OUTPUT2, fmt);
 		if (found_ubwc && found) {
-			/*
-			 * Hard-code DPB buffers to be 10bit UBWC
-			 * until V4L2 is able to expose compressed/tiled
-			 * formats to applications.
-			 */
+			 
 			*out_fmt = HFI_COLOR_FORMAT_YUV420_TP10_UBWC;
 			*out2_fmt = fmt;
 			return 0;

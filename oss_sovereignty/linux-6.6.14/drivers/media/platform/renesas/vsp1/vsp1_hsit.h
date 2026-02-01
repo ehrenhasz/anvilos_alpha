@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * vsp1_hsit.h  --  R-Car VSP1 Hue Saturation value (Inverse) Transform
- *
- * Copyright (C) 2013 Renesas Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+ 
+ 
 #ifndef __VSP1_HSIT_H__
 #define __VSP1_HSIT_H__
 
@@ -31,4 +25,4 @@ static inline struct vsp1_hsit *to_hsit(struct v4l2_subdev *subdev)
 
 struct vsp1_hsit *vsp1_hsit_create(struct vsp1_device *vsp1, bool inverse);
 
-#endif /* __VSP1_HSIT_H__ */
+#endif  

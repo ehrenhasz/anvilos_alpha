@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// rcpm.c - Freescale QorIQ RCPM driver
-//
-// Copyright 2019-2020 NXP
-//
-// Author: Ran Wang <ran.wang_1@nxp.com>
+
+
+
+
+
+
+
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -45,12 +45,7 @@ static void copy_ippdexpcr1_setting(u32 val)
 	iounmap(regs);
 }
 
-/**
- * rcpm_pm_prepare - performs device-level tasks associated with power
- * management, such as programming related to the wakeup source control.
- * @dev: Device to handle.
- *
- */
+ 
 static int rcpm_pm_prepare(struct device *dev)
 {
 	int i, ret, idx;
@@ -68,10 +63,10 @@ static int rcpm_pm_prepare(struct device *dev)
 	base = rcpm->ippdexpcr_base;
 	idx = wakeup_sources_read_lock();
 
-	/* Begin with first registered wakeup source */
+	 
 	for_each_wakeup_source(ws) {
 
-		/* skip object which is not attached to device */
+		 
 		if (!ws->dev || !ws->dev->parent)
 			continue;
 
@@ -82,32 +77,19 @@ static int rcpm_pm_prepare(struct device *dev)
 		if (ret)
 			continue;
 
-		/*
-		 * For DT mode, would handle devices with "fsl,rcpm-wakeup"
-		 * pointing to the current RCPM node.
-		 *
-		 * For ACPI mode, currently we assume there is only one
-		 * RCPM controller existing.
-		 */
+		 
 		if (is_of_node(dev->fwnode))
 			if (np->phandle != value[0])
 				continue;
 
-		/* Property "#fsl,rcpm-wakeup-cells" of rcpm node defines the
-		 * number of IPPDEXPCR register cells, and "fsl,rcpm-wakeup"
-		 * of wakeup source IP contains an integer array: <phandle to
-		 * RCPM node, IPPDEXPCR0 setting, IPPDEXPCR1 setting,
-		 * IPPDEXPCR2 setting, etc>.
-		 *
-		 * So we will go thought them to collect setting data.
-		 */
+		 
 		for (i = 0; i < rcpm->wakeup_cells; i++)
 			setting[i] |= value[i + 1];
 	}
 
 	wakeup_sources_read_unlock(idx);
 
-	/* Program all IPPDEXPCRn once */
+	 
 	for (i = 0; i < rcpm->wakeup_cells; i++) {
 		u32 tmp = setting[i];
 		void __iomem *address = base + i * 4;
@@ -115,7 +97,7 @@ static int rcpm_pm_prepare(struct device *dev)
 		if (!tmp)
 			continue;
 
-		/* We can only OR related bits */
+		 
 		if (rcpm->little_endian) {
 			tmp |= ioread32(address);
 			iowrite32(tmp, address);
@@ -123,14 +105,7 @@ static int rcpm_pm_prepare(struct device *dev)
 			tmp |= ioread32be(address);
 			iowrite32be(tmp, address);
 		}
-		/*
-		 * Workaround of errata A-008646 on SoC LS1021A:
-		 * There is a bug of register ippdexpcr1.
-		 * Reading configuration register RCPM_IPPDEXPCR1
-		 * always return zero. So save ippdexpcr1's value
-		 * to register SCFG_SPARECR8.And the value of
-		 * ippdexpcr1 will be read from SCFG_SPARECR8.
-		 */
+		 
 		if (dev_of_node(dev) && (i == 1))
 			if (of_device_is_compatible(np, "fsl,ls1021a-rcpm"))
 				copy_ippdexpcr1_setting(tmp);

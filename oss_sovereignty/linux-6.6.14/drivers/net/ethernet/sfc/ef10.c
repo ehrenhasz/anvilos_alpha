@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2012-2013 Solarflare Communications Inc.
- */
+
+ 
 
 #include "net_driver.h"
 #include "rx_common.h"
@@ -25,7 +22,7 @@
 #include <linux/workqueue.h>
 #include <net/udp_tunnel.h>
 
-/* Hardware control for EF10 architecture including 'Huntington'. */
+ 
 
 #define EFX_EF10_DRVGEN_EV		7
 enum {
@@ -33,7 +30,7 @@ enum {
 	EFX_EF10_REFILL,
 };
 
-/* VLAN list entry */
+ 
 struct efx_ef10_vlan {
 	struct list_head list;
 	u16 vid;
@@ -51,21 +48,18 @@ static int efx_ef10_get_warm_boot_count(struct efx_nic *efx)
 		EFX_DWORD_FIELD(reg, EFX_WORD_0) : -EIO;
 }
 
-/* On all EF10s up to and including SFC9220 (Medford1), all PFs use BAR 0 for
- * I/O space and BAR 2(&3) for memory.  On SFC9250 (Medford2), there is no I/O
- * bar; PFs use BAR 0/1 for memory.
- */
+ 
 static unsigned int efx_ef10_pf_mem_bar(struct efx_nic *efx)
 {
 	switch (efx->pci_dev->device) {
-	case 0x0b03: /* SFC9250 PF */
+	case 0x0b03:  
 		return 0;
 	default:
 		return 2;
 	}
 }
 
-/* All VFs use BAR 0/1 for memory */
+ 
 static unsigned int efx_ef10_vf_mem_bar(struct efx_nic *efx)
 {
 	return 0;
@@ -136,8 +130,7 @@ static int efx_ef10_init_datapath_caps(struct efx_nic *efx)
 		nic_data->piobuf_size = ER_DZ_TX_PIOBUF_SIZE;
 	}
 
-	/* record the DPCPU firmware IDs to determine VEB vswitching support.
-	 */
+	 
 	nic_data->rx_dpcpu_fw_id =
 		MCDI_WORD(outbuf, GET_CAPABILITIES_OUT_RX_DPCPU_FW_ID);
 	nic_data->tx_dpcpu_fw_id =
@@ -158,7 +151,7 @@ static int efx_ef10_init_datapath_caps(struct efx_nic *efx)
 		if (rc)
 			return rc;
 	} else {
-		/* keep default VI stride */
+		 
 		netif_dbg(efx, probe, efx->net_dev,
 			  "firmware did not report VI window mode, assuming vi_stride = %u\n",
 			  efx->vi_stride);
@@ -171,7 +164,7 @@ static int efx_ef10_init_datapath_caps(struct efx_nic *efx)
 			  "firmware reports num_mac_stats = %u\n",
 			  efx->num_mac_stats);
 	} else {
-		/* leave num_mac_stats as the default value, MC_CMD_MAC_NSTATS */
+		 
 		netif_dbg(efx, probe, efx->net_dev,
 			  "firmware did not report num_mac_stats, assuming %u\n",
 			  efx->num_mac_stats);
@@ -225,25 +218,23 @@ static int efx_ef10_get_timer_workarounds(struct efx_nic *efx)
 	rc = efx_mcdi_get_workarounds(efx, &implemented, &enabled);
 
 	if (rc == -ENOSYS) {
-		/* Firmware without GET_WORKAROUNDS - not a problem. */
+		 
 		rc = 0;
 	} else if (rc == 0) {
-		/* Bug61265 workaround is always enabled if implemented. */
+		 
 		if (enabled & MC_CMD_GET_WORKAROUNDS_OUT_BUG61265)
 			nic_data->workaround_61265 = true;
 
 		if (enabled & MC_CMD_GET_WORKAROUNDS_OUT_BUG35388) {
 			nic_data->workaround_35388 = true;
 		} else if (implemented & MC_CMD_GET_WORKAROUNDS_OUT_BUG35388) {
-			/* Workaround is implemented but not enabled.
-			 * Try to enable it.
-			 */
+			 
 			rc = efx_mcdi_set_workaround(efx,
 						     MC_CMD_WORKAROUND_BUG35388,
 						     true, NULL);
 			if (rc == 0)
 				nic_data->workaround_35388 = true;
-			/* If we failed to set the workaround just carry on. */
+			 
 			rc = 0;
 		}
 	}
@@ -302,14 +293,14 @@ static int efx_ef10_get_timer_config(struct efx_nic *efx)
 	if (rc == 0) {
 		efx_ef10_process_timer_config(efx, outbuf);
 	} else if (rc == -ENOSYS || rc == -EPERM) {
-		/* Not available - fall back to Huntington defaults. */
+		 
 		unsigned int quantum;
 
 		rc = efx_ef10_get_sysclk_freq(efx);
 		if (rc < 0)
 			return rc;
 
-		quantum = 1536000 / rc; /* 1536 cycles */
+		quantum = 1536000 / rc;  
 		efx->timer_quantum_ns = quantum;
 		efx->timer_max_ns = efx->type->timer_period_max * quantum;
 		rc = 0;
@@ -419,9 +410,7 @@ static int efx_ef10_add_vlan(struct efx_nic *efx, u16 vid)
 
 	vlan = efx_ef10_find_vlan(efx, vid);
 	if (vlan) {
-		/* We add VID 0 on init. 8021q adds it on module init
-		 * for all interfaces with VLAN filtring feature.
-		 */
+		 
 		if (vid == 0)
 			goto done_unlock;
 		netif_warn(efx, drv, efx->net_dev,
@@ -485,10 +474,7 @@ static int efx_ef10_del_vlan(struct efx_nic *efx, u16 vid)
 	struct efx_ef10_vlan *vlan;
 	int rc = 0;
 
-	/* 8021q removes VID 0 on module unload for all interfaces
-	 * with VLAN filtering feature. We need to keep it to receive
-	 * untagged traffic.
-	 */
+	 
 	if (vid == 0)
 		return 0;
 
@@ -532,7 +518,7 @@ static int efx_ef10_probe(struct efx_nic *efx)
 		return -ENOMEM;
 	efx->nic_data = nic_data;
 
-	/* we assume later that we can copy from this buffer in dwords */
+	 
 	BUILD_BUG_ON(MCDI_CTL_SDU_LEN_MAX_V2 % 4);
 
 	rc = efx_nic_alloc_buffer(efx, &nic_data->mcdi_buf,
@@ -540,9 +526,7 @@ static int efx_ef10_probe(struct efx_nic *efx)
 	if (rc)
 		goto fail1;
 
-	/* Get the MC's warm boot count.  In case it's rebooting right
-	 * now, be prepared to retry.
-	 */
+	 
 	i = 0;
 	for (;;) {
 		rc = efx_ef10_get_warm_boot_count(efx);
@@ -554,11 +538,7 @@ static int efx_ef10_probe(struct efx_nic *efx)
 	}
 	nic_data->warm_boot_count = rc;
 
-	/* In case we're recovering from a crash (kexec), we want to
-	 * cancel any outstanding request by the previous user of this
-	 * function.  We send a special message using the least
-	 * significant bits of the 'high' (doorbell) register.
-	 */
+	 
 	_efx_writed(efx, cpu_to_le32(1), ER_DZ_MC_DB_HWRD);
 
 	rc = efx_mcdi_init(efx);
@@ -570,12 +550,12 @@ static int efx_ef10_probe(struct efx_nic *efx)
 		nic_data->udp_tunnels[i].type =
 			TUNNEL_ENCAP_UDP_PORT_ENTRY_INVALID;
 
-	/* Reset (most) configuration for this function */
+	 
 	rc = efx_mcdi_reset(efx, RESET_TYPE_ALL);
 	if (rc)
 		goto fail3;
 
-	/* Enable event logging */
+	 
 	rc = efx_mcdi_log_ctrl(efx, true, false, 0);
 	if (rc)
 		goto fail3;
@@ -599,10 +579,7 @@ static int efx_ef10_probe(struct efx_nic *efx)
 
 	efx_ef10_read_licensed_features(efx);
 
-	/* We can have one VI for each vi_stride-byte region.
-	 * However, until we use TX option descriptors we need up to four
-	 * TX queues per channel for different checksumming combinations.
-	 */
+	 
 	if (nic_data->datapath_caps &
 	    (1 << MC_CMD_GET_CAPABILITIES_OUT_VXLAN_NVGRE_LBN))
 		efx->tx_queues_per_channel = 4;
@@ -661,15 +638,12 @@ static int efx_ef10_probe(struct efx_nic *efx)
 	INIT_LIST_HEAD(&nic_data->vlan_list);
 	mutex_init(&nic_data->vlan_lock);
 
-	/* Add unspecified VID to support VLAN filtering being disabled */
+	 
 	rc = efx_ef10_add_vlan(efx, EFX_FILTER_VID_UNSPEC);
 	if (rc)
 		goto fail_add_vid_unspec;
 
-	/* If VLAN filtering is enabled, we need VID 0 to get untagged
-	 * traffic.  It is added automatically if 8021q module is loaded,
-	 * but we can't rely on it since module may be not loaded.
-	 */
+	 
 	rc = efx_ef10_add_vlan(efx, 0);
 	if (rc)
 		goto fail_add_vid_0;
@@ -746,9 +720,7 @@ static int efx_ef10_alloc_piobufs(struct efx_nic *efx, unsigned int n)
 		rc = efx_mcdi_rpc_quiet(efx, MC_CMD_ALLOC_PIOBUF, NULL, 0,
 					outbuf, sizeof(outbuf), &outlen);
 		if (rc) {
-			/* Don't display the MC error if we didn't have space
-			 * for a VF.
-			 */
+			 
 			if (!(efx_ef10_is_vf(efx) && rc == -ENOSPC))
 				efx_mcdi_display_error(efx, MC_CMD_ALLOC_PIOBUF,
 						       0, outbuf, outlen, rc);
@@ -783,7 +755,7 @@ static int efx_ef10_link_piobufs(struct efx_nic *efx)
 	BUILD_BUG_ON(MC_CMD_LINK_PIOBUF_OUT_LEN != 0);
 	BUILD_BUG_ON(MC_CMD_UNLINK_PIOBUF_OUT_LEN != 0);
 
-	/* Link a buffer to each VI in the write-combining mapping */
+	 
 	for (index = 0; index < nic_data->n_piobufs; ++index) {
 		MCDI_SET_DWORD(inbuf, LINK_PIOBUF_IN_PIOBUF_HANDLE,
 			       nic_data->piobuf_handle[index]);
@@ -804,31 +776,22 @@ static int efx_ef10_link_piobufs(struct efx_nic *efx)
 			  nic_data->pio_write_vi_base + index, index);
 	}
 
-	/* Link a buffer to each TX queue */
+	 
 	efx_for_each_channel(channel, efx) {
-		/* Extra channels, even those with TXQs (PTP), do not require
-		 * PIO resources.
-		 */
+		 
 		if (!channel->type->want_pio ||
 		    channel->channel >= efx->xdp_channel_offset)
 			continue;
 
 		efx_for_each_channel_tx_queue(tx_queue, channel) {
-			/* We assign the PIO buffers to queues in
-			 * reverse order to allow for the following
-			 * special case.
-			 */
+			 
 			offset = ((efx->tx_channel_offset + efx->n_tx_channels -
 				   tx_queue->channel->channel - 1) *
 				  efx_piobuf_size);
 			index = offset / nic_data->piobuf_size;
 			offset = offset % nic_data->piobuf_size;
 
-			/* When the host page size is 4K, the first
-			 * host page in the WC mapping may be within
-			 * the same VI page as the last TX queue.  We
-			 * can only link one buffer to each VI.
-			 */
+			 
 			if (tx_queue->queue == nic_data->pio_write_vi_base) {
 				BUG_ON(index != 0);
 				rc = 0;
@@ -845,9 +808,7 @@ static int efx_ef10_link_piobufs(struct efx_nic *efx)
 			}
 
 			if (rc) {
-				/* This is non-fatal; the TX path just
-				 * won't use PIO for this queue
-				 */
+				 
 				netif_err(efx, drv, efx->net_dev,
 					  "failed to link VI %u to PIO buffer %u (%d)\n",
 					  tx_queue->queue, index, rc);
@@ -869,9 +830,7 @@ static int efx_ef10_link_piobufs(struct efx_nic *efx)
 	return 0;
 
 fail:
-	/* inbuf was defined for MC_CMD_LINK_PIOBUF.  We can use the same
-	 * buffer for MC_CMD_UNLINK_PIOBUF because it's shorter.
-	 */
+	 
 	BUILD_BUG_ON(MC_CMD_LINK_PIOBUF_IN_LEN < MC_CMD_UNLINK_PIOBUF_IN_LEN);
 	while (index--) {
 		MCDI_SET_DWORD(inbuf, UNLINK_PIOBUF_IN_TXQ_INSTANCE,
@@ -888,13 +847,13 @@ static void efx_ef10_forget_old_piobufs(struct efx_nic *efx)
 	struct efx_channel *channel;
 	struct efx_tx_queue *tx_queue;
 
-	/* All our existing PIO buffers went away */
+	 
 	efx_for_each_channel(channel, efx)
 		efx_for_each_channel_tx_queue(tx_queue, channel)
 			tx_queue->piobuf = NULL;
 }
 
-#else /* !EFX_USE_PIO */
+#else  
 
 static int efx_ef10_alloc_piobufs(struct efx_nic *efx, unsigned int n)
 {
@@ -914,7 +873,7 @@ static void efx_ef10_forget_old_piobufs(struct efx_nic *efx)
 {
 }
 
-#endif /* EFX_USE_PIO */
+#endif  
 
 static void efx_ef10_remove(struct efx_nic *efx)
 {
@@ -1067,11 +1026,7 @@ static int efx_ef10_probe_vf(struct efx_nic *efx)
 	int rc;
 	struct pci_dev *pci_dev_pf;
 
-	/* If the parent PF has no VF data structure, it doesn't know about this
-	 * VF so fail probe.  The VF needs to be re-created.  This can happen
-	 * if the PF driver was unloaded while any VF was assigned to a guest
-	 * (using Xen, only).
-	 */
+	 
 	pci_dev_pf = efx->pci_dev->physfn;
 	if (pci_dev_pf) {
 		struct efx_nic *efx_pf = pci_get_drvdata(pci_dev_pf);
@@ -1130,9 +1085,7 @@ static int efx_ef10_alloc_vis(struct efx_nic *efx,
 				  &nic_data->n_allocated_vis);
 }
 
-/* Note that the failure path of this function does not free
- * resources, as this will be done by efx_ef10_remove().
- */
+ 
 static int efx_ef10_dimension_resources(struct efx_nic *efx)
 {
 	unsigned int min_vis = max_t(unsigned int, efx->tx_queues_per_channel,
@@ -1155,12 +1108,7 @@ static int efx_ef10_dimension_resources(struct efx_nic *efx)
 	}
 
 #ifdef EFX_USE_PIO
-	/* Try to allocate PIO buffers if wanted and if the full
-	 * number of PIO buffers would be sufficient to allocate one
-	 * copy-buffer per TX channel.  Failure is non-fatal, as there
-	 * are only a small number of PIO buffers shared between all
-	 * functions of the controller.
-	 */
+	 
 	if (efx_piobuf_size != 0 &&
 	    nic_data->piobuf_size / efx_piobuf_size * EF10_TX_PIOBUF_COUNT >=
 	    efx->n_tx_channels) {
@@ -1186,22 +1134,11 @@ static int efx_ef10_dimension_resources(struct efx_nic *efx)
 	nic_data->n_piobufs = 0;
 #endif
 
-	/* PIO buffers should be mapped with write-combining enabled,
-	 * and we want to make single UC and WC mappings rather than
-	 * several of each (in fact that's the only option if host
-	 * page size is >4K).  So we may allocate some extra VIs just
-	 * for writing PIO buffers through.
-	 *
-	 * The UC mapping contains (channel_vis - 1) complete VIs and the
-	 * first 4K of the next VI.  Then the WC mapping begins with
-	 * the remainder of this last VI.
-	 */
+	 
 	uc_mem_map_size = PAGE_ALIGN((channel_vis - 1) * efx->vi_stride +
 				     ER_DZ_TX_PIOBUF);
 	if (nic_data->n_piobufs) {
-		/* pio_write_vi_base rounds down to give the number of complete
-		 * VIs inside the UC mapping.
-		 */
+		 
 		pio_write_vi_base = uc_mem_map_size / efx->vi_stride;
 		wc_mem_map_size = (PAGE_ALIGN((pio_write_vi_base +
 					       nic_data->n_piobufs) *
@@ -1214,7 +1151,7 @@ static int efx_ef10_dimension_resources(struct efx_nic *efx)
 		max_vis = channel_vis;
 	}
 
-	/* In case the last attached driver failed to free VIs, do it now */
+	 
 	rc = efx_mcdi_free_vis(efx);
 	if (rc != 0)
 		return rc;
@@ -1227,11 +1164,7 @@ static int efx_ef10_dimension_resources(struct efx_nic *efx)
 		netif_info(efx, drv, efx->net_dev,
 			   "Could not allocate enough VIs to satisfy RSS"
 			   " requirements. Performance may not be optimal.\n");
-		/* We didn't get the VIs to populate our channels.
-		 * We could keep what we got but then we'd have more
-		 * interrupts than we need.
-		 * Instead calculate new max_channels and restart
-		 */
+		 
 		efx->max_channels = nic_data->n_allocated_vis;
 		efx->max_tx_channels =
 			nic_data->n_allocated_vis / efx->tx_queues_per_channel;
@@ -1240,9 +1173,7 @@ static int efx_ef10_dimension_resources(struct efx_nic *efx)
 		return -EAGAIN;
 	}
 
-	/* If we didn't get enough VIs to map all the PIO buffers, free the
-	 * PIO buffers
-	 */
+	 
 	if (nic_data->n_piobufs &&
 	    nic_data->n_allocated_vis <
 	    pio_write_vi_base + nic_data->n_piobufs) {
@@ -1252,7 +1183,7 @@ static int efx_ef10_dimension_resources(struct efx_nic *efx)
 		efx_ef10_free_piobufs(efx);
 	}
 
-	/* Shrink the original UC mapping of the memory BAR */
+	 
 	membase = ioremap(efx->membase_phys, uc_mem_map_size);
 	if (!membase) {
 		netif_err(efx, probe, efx->net_dev,
@@ -1263,7 +1194,7 @@ static int efx_ef10_dimension_resources(struct efx_nic *efx)
 	iounmap(efx->membase);
 	efx->membase = membase;
 
-	/* Set up the WC mapping if needed */
+	 
 	if (wc_mem_map_size) {
 		nic_data->wc_membase = ioremap_wc(efx->membase_phys +
 						  uc_mem_map_size,
@@ -1318,7 +1249,7 @@ static int efx_ef10_init_nic(struct efx_nic *efx)
 	}
 
 	if (efx->must_realloc_vis) {
-		/* We cannot let the number of VIs change now */
+		 
 		rc = efx_ef10_alloc_vis(efx, nic_data->n_allocated_vis,
 					nic_data->n_allocated_vis);
 		if (rc)
@@ -1339,10 +1270,7 @@ static int efx_ef10_init_nic(struct efx_nic *efx)
 				efx_ef10_free_piobufs(efx);
 		}
 
-		/* Log an error on failure, but this is non-fatal.
-		 * Permission errors are less important - we've presumably
-		 * had the PIO buffer licence removed.
-		 */
+		 
 		if (rc == -EPERM)
 			netif_dbg(efx, drv, efx->net_dev,
 				  "not permitted to restore PIO buffers\n");
@@ -1352,7 +1280,7 @@ static int efx_ef10_init_nic(struct efx_nic *efx)
 		nic_data->must_restore_piobufs = false;
 	}
 
-	/* encap features might change during reset if fw variant changed */
+	 
 	if (efx_has_cap(efx, VXLAN_NVGRE) && !efx_ef10_is_vf(efx))
 		net_dev->hw_enc_features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
 	else
@@ -1363,10 +1291,7 @@ static int efx_ef10_init_nic(struct efx_nic *efx)
 	tso_feats = NETIF_F_TSO | NETIF_F_TSO6;
 
 	if (efx_has_cap(efx, TX_TSO_V2_ENCAP)) {
-		/* If this is first nic_init, or if it is a reset and a new fw
-		 * variant has added new features, enable them by default.
-		 * If the features are not new, maintain their current value.
-		 */
+		 
 		if (!(net_dev->hw_features & tun_feats))
 			net_dev->features |= tun_feats;
 		net_dev->hw_enc_features |= tun_feats | tso_feats;
@@ -1377,7 +1302,7 @@ static int efx_ef10_init_nic(struct efx_nic *efx)
 		net_dev->features &= ~tun_feats;
 	}
 
-	/* don't fail init if RSS setup doesn't work */
+	 
 	rc = efx->type->rx_push_rss_config(efx, false,
 					   efx->rss_context.rx_indir_table, NULL);
 
@@ -1391,14 +1316,14 @@ static void efx_ef10_table_reset_mc_allocations(struct efx_nic *efx)
 	unsigned int i;
 #endif
 
-	/* All our allocations have been reset */
+	 
 	efx->must_realloc_vis = true;
 	efx_mcdi_filter_table_reset_mc_allocations(efx);
 	nic_data->must_restore_piobufs = true;
 	efx_ef10_forget_old_piobufs(efx);
 	efx->rss_context.context_id = EFX_MCDI_RSS_CONTEXT_INVALID;
 
-	/* Driver-created vswitches and vports must be re-created */
+	 
 	nic_data->must_probe_vswitching = true;
 	efx->vport_id = EVB_PORT_ID_ASSIGNED;
 #ifdef CONFIG_SFC_SRIOV
@@ -1427,9 +1352,7 @@ static int efx_ef10_map_reset_flags(u32 *flags)
 				 ETH_RESET_SHARED_SHIFT)
 	};
 
-	/* We assume for now that our PCI function is permitted to
-	 * reset everything.
-	 */
+	 
 
 	if ((*flags & EF10_RESET_MC) == EF10_RESET_MC) {
 		*flags &= ~EF10_RESET_MC;
@@ -1441,7 +1364,7 @@ static int efx_ef10_map_reset_flags(u32 *flags)
 		return RESET_TYPE_ALL;
 	}
 
-	/* no invisible reset implemented */
+	 
 
 	return -EINVAL;
 }
@@ -1450,18 +1373,11 @@ static int efx_ef10_reset(struct efx_nic *efx, enum reset_type reset_type)
 {
 	int rc = efx_mcdi_reset(efx, reset_type);
 
-	/* Unprivileged functions return -EPERM, but need to return success
-	 * here so that the datapath is brought back up.
-	 */
+	 
 	if (reset_type == RESET_TYPE_WORLD && rc == -EPERM)
 		rc = 0;
 
-	/* If it was a port reset, trigger reallocation of MC resources.
-	 * Note that on an MC reset nothing needs to be done now because we'll
-	 * detect the MC reset later and handle it then.
-	 * For an FLR, we never get an MC reset event, but the MC has reset all
-	 * resources assigned to us, so we have to trigger reallocation now.
-	 */
+	 
 	if ((reset_type == RESET_TYPE_ALL ||
 	     reset_type == RESET_TYPE_MCDI_TIMEOUT) && !rc)
 		efx_ef10_table_reset_mc_allocations(efx);
@@ -1609,11 +1525,7 @@ static const struct efx_hw_stat_desc efx_ef10_stat_desc[EF10_STAT_COUNT] = {
 			       (1ULL << GENERIC_STAT_rx_nodesc_trunc) |	\
 			       (1ULL << GENERIC_STAT_rx_noskb_drops))
 
-/* On 7000 series NICs, these statistics are only provided by the 10G MAC.
- * For a 10G/40G switchable port we do not expose these because they might
- * not include all the packets they should.
- * On 8000 series NICs these statistics are always provided.
- */
+ 
 #define HUNT_10G_ONLY_STAT_MASK ((1ULL << EF10_STAT_port_tx_control) |	\
 				 (1ULL << EF10_STAT_port_tx_lt64) |	\
 				 (1ULL << EF10_STAT_port_tx_64) |	\
@@ -1624,16 +1536,11 @@ static const struct efx_hw_stat_desc efx_ef10_stat_desc[EF10_STAT_COUNT] = {
 				 (1ULL << EF10_STAT_port_tx_1024_to_15xx) |\
 				 (1ULL << EF10_STAT_port_tx_15xx_to_jumbo))
 
-/* These statistics are only provided by the 40G MAC.  For a 10G/40G
- * switchable port we do expose these because the errors will otherwise
- * be silent.
- */
+ 
 #define HUNT_40G_EXTRA_STAT_MASK ((1ULL << EF10_STAT_port_rx_align_error) |\
 				  (1ULL << EF10_STAT_port_rx_length_error))
 
-/* These statistics are only provided if the firmware supports the
- * capability PM_AND_RXDP_COUNTERS.
- */
+ 
 #define HUNT_PM_AND_RXDP_STAT_MASK (					\
 	(1ULL << EF10_STAT_port_rx_pm_trunc_bb_overflow) |		\
 	(1ULL << EF10_STAT_port_rx_pm_discard_bb_overflow) |		\
@@ -1648,11 +1555,7 @@ static const struct efx_hw_stat_desc efx_ef10_stat_desc[EF10_STAT_COUNT] = {
 	(1ULL << EF10_STAT_port_rx_dp_hlb_fetch) |			\
 	(1ULL << EF10_STAT_port_rx_dp_hlb_wait))
 
-/* These statistics are only provided if the NIC supports MC_CMD_MAC_STATS_V2,
- * indicated by returning a value >= MC_CMD_MAC_NSTATS_V2 in
- * MC_CMD_GET_CAPABILITIES_V4_OUT_MAC_STATS_NUM_STATS.
- * These bits are in the second u64 of the raw mask.
- */
+ 
 #define EF10_FEC_STAT_MASK (						\
 	(1ULL << (EF10_STAT_fec_uncorrected_errors - 64)) |		\
 	(1ULL << (EF10_STAT_fec_corrected_errors - 64)) |		\
@@ -1661,11 +1564,7 @@ static const struct efx_hw_stat_desc efx_ef10_stat_desc[EF10_STAT_COUNT] = {
 	(1ULL << (EF10_STAT_fec_corrected_symbols_lane2 - 64)) |	\
 	(1ULL << (EF10_STAT_fec_corrected_symbols_lane3 - 64)))
 
-/* These statistics are only provided if the NIC supports MC_CMD_MAC_STATS_V3,
- * indicated by returning a value >= MC_CMD_MAC_NSTATS_V3 in
- * MC_CMD_GET_CAPABILITIES_V4_OUT_MAC_STATS_NUM_STATS.
- * These bits are in the second u64 of the raw mask.
- */
+ 
 #define EF10_CTPIO_STAT_MASK (						\
 	(1ULL << (EF10_STAT_ctpio_vi_busy_fallback - 64)) |		\
 	(1ULL << (EF10_STAT_ctpio_long_write_success - 64)) |		\
@@ -1696,7 +1595,7 @@ static u64 efx_ef10_raw_stat_mask(struct efx_nic *efx)
 
 	if (port_caps & (1 << MC_CMD_PHY_CAP_40000FDX_LBN)) {
 		raw_mask |= HUNT_40G_EXTRA_STAT_MASK;
-		/* 8000 series have everything even at 40G */
+		 
 		if (nic_data->datapath_caps2 &
 		    (1 << MC_CMD_GET_CAPABILITIES_V2_OUT_MAC_STATS_40G_TX_SIZE_BINS_LBN))
 			raw_mask |= HUNT_10G_ONLY_STAT_MASK;
@@ -1718,7 +1617,7 @@ static void efx_ef10_get_stat_mask(struct efx_nic *efx, unsigned long *mask)
 
 	raw_mask[0] = efx_ef10_raw_stat_mask(efx);
 
-	/* Only show vadaptor stats when EVB capability is present */
+	 
 	if (nic_data->datapath_caps &
 	    (1 << MC_CMD_GET_CAPABILITIES_OUT_EVB_LBN)) {
 		raw_mask[0] |= ~((1ULL << EF10_STAT_rx_unicast) - 1);
@@ -1726,14 +1625,11 @@ static void efx_ef10_get_stat_mask(struct efx_nic *efx, unsigned long *mask)
 	} else {
 		raw_mask[1] = 0;
 	}
-	/* Only show FEC stats when NIC supports MC_CMD_MAC_STATS_V2 */
+	 
 	if (efx->num_mac_stats >= MC_CMD_MAC_NSTATS_V2)
 		raw_mask[1] |= EF10_FEC_STAT_MASK;
 
-	/* CTPIO stats appear in V3. Only show them on devices that actually
-	 * support CTPIO. Although this driver doesn't use CTPIO others might,
-	 * and we may be reporting the stats for the underlying port.
-	 */
+	 
 	if (efx->num_mac_stats >= MC_CMD_MAC_NSTATS_V3 &&
 	    (nic_data->datapath_caps2 &
 	     (1 << MC_CMD_GET_CAPABILITIES_V4_OUT_CTPIO_LBN)))
@@ -1800,7 +1696,7 @@ static size_t efx_ef10_update_stats_common(struct efx_nic *efx, u64 *full_stats,
 
 	if (nic_data->datapath_caps &
 			1 << MC_CMD_GET_CAPABILITIES_OUT_EVB_LBN) {
-		/* Use vadaptor stats. */
+		 
 		core_stats->rx_packets = stats[EF10_STAT_rx_unicast] +
 					 stats[EF10_STAT_rx_multicast] +
 					 stats[EF10_STAT_rx_broadcast];
@@ -1821,7 +1717,7 @@ static size_t efx_ef10_update_stats_common(struct efx_nic *efx, u64 *full_stats,
 		core_stats->rx_errors = core_stats->rx_crc_errors;
 		core_stats->tx_errors = stats[EF10_STAT_tx_bad];
 	} else {
-		/* Use port stats. */
+		 
 		core_stats->rx_packets = stats[EF10_STAT_port_rx_packets];
 		core_stats->tx_packets = stats[EF10_STAT_port_tx_packets];
 		core_stats->rx_bytes = stats[EF10_STAT_port_rx_bytes];
@@ -1854,35 +1750,22 @@ static size_t efx_ef10_update_stats_pf(struct efx_nic *efx, u64 *full_stats,
 
 	efx_ef10_get_stat_mask(efx, mask);
 
-	/* If NIC was fini'd (probably resetting), then we can't read
-	 * updated stats right now.
-	 */
+	 
 	if (nic_data->mc_stats) {
 		efx_nic_copy_stats(efx, nic_data->mc_stats);
 		efx_nic_update_stats(efx_ef10_stat_desc, EF10_STAT_COUNT,
 				     mask, stats, nic_data->mc_stats, false);
 	}
 
-	/* Update derived statistics */
+	 
 	efx_nic_fix_nodesc_drop_stat(efx,
 				     &stats[EF10_STAT_port_rx_nodesc_drops]);
-	/* MC Firmware reads RX_BYTES and RX_GOOD_BYTES from the MAC.
-	 * It then calculates RX_BAD_BYTES and DMAs it to us with RX_BYTES.
-	 * We report these as port_rx_ stats. We are not given RX_GOOD_BYTES.
-	 * Here we calculate port_rx_good_bytes.
-	 */
+	 
 	stats[EF10_STAT_port_rx_good_bytes] =
 		stats[EF10_STAT_port_rx_bytes] -
 		stats[EF10_STAT_port_rx_bytes_minus_good_bytes];
 
-	/* The asynchronous reads used to calculate RX_BAD_BYTES in
-	 * MC Firmware are done such that we should not see an increase in
-	 * RX_BAD_BYTES when a good packet has arrived. Unfortunately this
-	 * does mean that the stat can decrease at times. Here we do not
-	 * update the stat unless it has increased or has gone to zero
-	 * (In the case of the NIC rebooting).
-	 * Please see Bug 33781 for a discussion of why things work this way.
-	 */
+	 
 	efx_update_diff_stat(&stats[EF10_STAT_port_rx_bad_bytes],
 			     stats[EF10_STAT_port_rx_bytes_minus_good_bytes]);
 	efx_update_sw_stats(efx, stats);
@@ -1926,7 +1809,7 @@ static int efx_ef10_try_update_nic_stats_vf(struct efx_nic *efx)
 				NULL, 0, NULL);
 	spin_lock_bh(&efx->stats_lock);
 	if (rc) {
-		/* Expect ENOENT if DMA queues have not been set up */
+		 
 		if (rc != -ENOENT || atomic_read(&efx->active_queues))
 			efx_mcdi_display_error(efx, MC_CMD_MAC_STATS,
 					       sizeof(inbuf), NULL, 0, rc);
@@ -1950,7 +1833,7 @@ static int efx_ef10_try_update_nic_stats_vf(struct efx_nic *efx)
 
 	efx_update_sw_stats(efx, stats);
 out:
-	/* releasing a DMA coherent buffer with BH disabled can panic */
+	 
 	spin_unlock_bh(&efx->stats_lock);
 	efx_nic_free_buffer(efx, &stats_buf);
 	spin_lock_bh(&efx->stats_lock);
@@ -1971,9 +1854,7 @@ static size_t efx_ef10_update_stats_atomic_vf(struct efx_nic *efx, u64 *full_sta
 {
 	struct efx_ef10_nic_data *nic_data = efx->nic_data;
 
-	/* In atomic context, cannot update HW stats.  Just update the
-	 * software stats and return so the caller can continue.
-	 */
+	 
 	efx_update_sw_stats(efx, nic_data->stats);
 	return efx_ef10_update_stats_common(efx, full_stats, core_stats);
 }
@@ -2057,12 +1938,7 @@ static void efx_ef10_mcdi_request(struct efx_nic *efx,
 	memcpy(pdu + hdr_len, sdu, sdu_len);
 	wmb();
 
-	/* The hardware provides 'low' and 'high' (doorbell) registers
-	 * for passing the 64-bit address of an MCDI request to
-	 * firmware.  However the dwords are swapped by firmware.  The
-	 * least significant bits of the doorbell are then 0 for all
-	 * MCDI requests due to alignment.
-	 */
+	 
 	_efx_writed(efx, cpu_to_le32((u64)nic_data->mcdi_buf.dma_addr >> 32),
 		    ER_DZ_MC_DB_LWRD);
 	_efx_writed(efx, cpu_to_le32((u32)nic_data->mcdi_buf.dma_addr),
@@ -2092,15 +1968,13 @@ static void efx_ef10_mcdi_reboot_detected(struct efx_nic *efx)
 {
 	struct efx_ef10_nic_data *nic_data = efx->nic_data;
 
-	/* All our allocations have been reset */
+	 
 	efx_ef10_table_reset_mc_allocations(efx);
 
-	/* The datapath firmware might have been changed */
+	 
 	nic_data->must_check_datapath_caps = true;
 
-	/* MAC statistics have been cleared on the NIC; clear the local
-	 * statistic that we update with efx_update_diff_stat().
-	 */
+	 
 	nic_data->stats[EF10_STAT_port_rx_bad_bytes] = 0;
 }
 
@@ -2111,11 +1985,7 @@ static int efx_ef10_mcdi_poll_reboot(struct efx_nic *efx)
 
 	rc = efx_ef10_get_warm_boot_count(efx);
 	if (rc < 0) {
-		/* The firmware is presumably in the process of
-		 * rebooting.  However, we are supposed to report each
-		 * reboot just once, so we must only do that once we
-		 * can read and store the updated warm boot count.
-		 */
+		 
 		return 0;
 	}
 
@@ -2128,13 +1998,7 @@ static int efx_ef10_mcdi_poll_reboot(struct efx_nic *efx)
 	return -EIO;
 }
 
-/* Handle an MSI interrupt
- *
- * Handle an MSI hardware interrupt.  This routine schedules event
- * queue processing.  No interrupt acknowledgement cycle is necessary.
- * Also, we never need to check that the interrupt is for us, since
- * MSI interrupts cannot be shared.
- */
+ 
 static irqreturn_t efx_ef10_msi_interrupt(int irq, void *dev_id)
 {
 	struct efx_msi_context *context = dev_id;
@@ -2144,11 +2008,11 @@ static irqreturn_t efx_ef10_msi_interrupt(int irq, void *dev_id)
 		   "IRQ %d on CPU %d\n", irq, raw_smp_processor_id());
 
 	if (likely(READ_ONCE(efx->irq_soft_enabled))) {
-		/* Note test interrupts */
+		 
 		if (context->index == efx->irq_level)
 			efx->last_irq_cpu = raw_smp_processor_id();
 
-		/* Schedule processing of the channel */
+		 
 		efx_schedule_channel_irq(efx->channel[context->index]);
 	}
 
@@ -2163,7 +2027,7 @@ static irqreturn_t efx_ef10_legacy_interrupt(int irq, void *dev_id)
 	efx_dword_t reg;
 	u32 queues;
 
-	/* Read the ISR which also ACKs the interrupts */
+	 
 	efx_readd(efx, &reg, ER_DZ_BIU_INT_ISR);
 	queues = EFX_DWORD_FIELD(reg, ERF_DZ_ISR_REG);
 
@@ -2171,7 +2035,7 @@ static irqreturn_t efx_ef10_legacy_interrupt(int irq, void *dev_id)
 		return IRQ_NONE;
 
 	if (likely(soft_enabled)) {
-		/* Note test interrupts */
+		 
 		if (queues & (1U << efx->irq_level))
 			efx->last_irq_cpu = raw_smp_processor_id();
 
@@ -2206,7 +2070,7 @@ static int efx_ef10_irq_test_generate(struct efx_nic *efx)
 
 static int efx_ef10_tx_probe(struct efx_tx_queue *tx_queue)
 {
-	/* low two bits of label are what we want for type */
+	 
 	BUILD_BUG_ON((EFX_TXQ_TYPE_OUTER_CSUM | EFX_TXQ_TYPE_INNER_CSUM) != 3);
 	tx_queue->type = tx_queue->label & 3;
 	return efx_nic_alloc_buffer(tx_queue->efx, &tx_queue->txd,
@@ -2215,7 +2079,7 @@ static int efx_ef10_tx_probe(struct efx_tx_queue *tx_queue)
 				    GFP_KERNEL);
 }
 
-/* This writes to the TX_DESC_WPTR and also pushes data */
+ 
 static inline void efx_ef10_push_tx_desc(struct efx_tx_queue *tx_queue,
 					 const efx_qword_t *txd)
 {
@@ -2229,8 +2093,7 @@ static inline void efx_ef10_push_tx_desc(struct efx_tx_queue *tx_queue,
 			ER_DZ_TX_DESC_UPD, tx_queue->queue);
 }
 
-/* Add Firmware-Assisted TSO v2 option descriptors to a queue.
- */
+ 
 int efx_ef10_tx_tso_desc(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
 			 bool *data_mapped)
 {
@@ -2266,17 +2129,7 @@ int efx_ef10_tx_tso_desc(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
 		tcp = tcp_hdr(skb);
 	}
 
-	/* 8000-series EF10 hardware requires that IP Total Length be
-	 * greater than or equal to the value it will have in each segment
-	 * (which is at most mss + 208 + TCP header length), but also less
-	 * than (0x10000 - inner_network_header).  Otherwise the TCP
-	 * checksum calculation will be broken for encapsulated packets.
-	 * We fill in ip->tot_len with 0xff30, which should satisfy the
-	 * first requirement unless the MSS is ridiculously large (which
-	 * should be impossible as the driver max MTU is 9216); it is
-	 * guaranteed to satisfy the second as we only attempt TSO if
-	 * inner_network_header <= 208.
-	 */
+	 
 	ip_tot_len = 0x10000 - EFX_TSO2_MAX_HDRLEN;
 	EFX_WARN_ON_ONCE_PARANOID(mss + EFX_TSO2_MAX_HDRLEN +
 				  (tcp->doff << 2u) > ip_tot_len);
@@ -2350,23 +2203,16 @@ static void efx_ef10_tx_init(struct efx_tx_queue *tx_queue)
 
 	nic_data = efx->nic_data;
 
-	/* Only attempt to enable TX timestamping if we have the license for it,
-	 * otherwise TXQ init will fail
-	 */
+	 
 	if (!(nic_data->licensed_features &
 	      (1 << LICENSED_V3_FEATURES_TX_TIMESTAMPS_LBN))) {
 		tx_queue->timestamping = false;
-		/* Disable sync events on this channel. */
+		 
 		if (efx->type->ptp_set_ts_sync_events)
 			efx->type->ptp_set_ts_sync_events(efx, false, false);
 	}
 
-	/* TSOv2 is a limited resource that can only be configured on a limited
-	 * number of queues. TSO without checksum offload is not really a thing,
-	 * so we only enable it for those queues.
-	 * TSOv2 cannot be used with Hardware timestamping, and is never needed
-	 * for XDP tx.
-	 */
+	 
 	if (efx_has_cap(efx, TX_TSO_V2)) {
 		if ((csum_offload || inner_csum) &&
 		    !tx_queue->timestamping && !tx_queue->xdp_tx) {
@@ -2382,12 +2228,7 @@ static void efx_ef10_tx_init(struct efx_tx_queue *tx_queue)
 	if (rc)
 		goto fail;
 
-	/* A previous user of this TX queue might have set us up the
-	 * bomb by writing a descriptor to the TX push collector but
-	 * not the doorbell.  (Each collector belongs to a port, not a
-	 * queue or function, so cannot easily be reset.)  We must
-	 * attempt to push a no-op descriptor in its place.
-	 */
+	 
 	tx_queue->buffer[0].flags = EFX_TX_BUF_OPTION;
 	tx_queue->insert_count = 1;
 	txd = efx_tx_desc(tx_queue, 0);
@@ -2415,7 +2256,7 @@ fail:
 		    tx_queue->queue);
 }
 
-/* This writes to the TX_DESC_WPTR; write pointer for TX descriptor ring */
+ 
 static inline void efx_ef10_notify_tx_desc(struct efx_tx_queue *tx_queue)
 {
 	unsigned int write_ptr;
@@ -2433,10 +2274,7 @@ static unsigned int efx_ef10_tx_limit_len(struct efx_tx_queue *tx_queue,
 					  dma_addr_t dma_addr, unsigned int len)
 {
 	if (len > EFX_EF10_MAX_TX_DESCRIPTOR_LEN) {
-		/* If we need to break across multiple descriptors we should
-		 * stop at a page boundary. This assumes the length limit is
-		 * greater than the page size.
-		 */
+		 
 		dma_addr_t end = dma_addr + EFX_EF10_MAX_TX_DESCRIPTOR_LEN;
 
 		BUILD_BUG_ON(EFX_EF10_MAX_TX_DESCRIPTOR_LEN < EFX_PAGE_SIZE);
@@ -2463,11 +2301,11 @@ static void efx_ef10_tx_write(struct efx_tx_queue *tx_queue)
 		txd = efx_tx_desc(tx_queue, write_ptr);
 		++tx_queue->write_count;
 
-		/* Create TX descriptor ring entry */
+		 
 		if (buffer->flags & EFX_TX_BUF_OPTION) {
 			*txd = buffer->option;
 			if (EFX_QWORD_FIELD(*txd, ESF_DZ_TX_OPTION_TYPE) == 1)
-				/* PIO descriptor */
+				 
 				tx_queue->packet_write_count = tx_queue->write_count;
 		} else {
 			tx_queue->packet_write_count = tx_queue->write_count;
@@ -2481,7 +2319,7 @@ static void efx_ef10_tx_write(struct efx_tx_queue *tx_queue)
 		}
 	} while (tx_queue->write_count != tx_queue->insert_count);
 
-	wmb(); /* Ensure descriptors are written before they are fetched */
+	wmb();  
 
 	if (efx_nic_may_push_tx_desc(tx_queue, old_write_count)) {
 		txd = efx_tx_desc(tx_queue,
@@ -2502,9 +2340,7 @@ static int efx_ef10_probe_multicast_chaining(struct efx_nic *efx)
 
 	rc = efx_mcdi_get_workarounds(efx, &implemented, &enabled);
 	if (rc == -ENOSYS) {
-		/* GET_WORKAROUNDS was implemented before this workaround,
-		 * thus it must be unavailable in this firmware.
-		 */
+		 
 		nic_data->workaround_26807 = false;
 		return 0;
 	}
@@ -2527,13 +2363,7 @@ static int efx_ef10_probe_multicast_chaining(struct efx_nic *efx)
 				netif_info(efx, drv, efx->net_dev,
 					   "other functions on NIC have been reset\n");
 
-				/* With MCFW v4.6.x and earlier, the
-				 * boot count will have incremented,
-				 * so re-read the warm_boot_count
-				 * value now to ensure this function
-				 * doesn't think it has changed next
-				 * time it checks.
-				 */
+				 
 				rc = efx_ef10_get_warm_boot_count(efx);
 				if (rc >= 0) {
 					nic_data->warm_boot_count = rc;
@@ -2583,7 +2413,7 @@ static void efx_ef10_filter_table_remove(struct efx_nic *efx)
 	up_write(&efx->filter_sem);
 }
 
-/* This creates an entry in the RX descriptor queue */
+ 
 static inline void
 efx_ef10_build_rx_desc(struct efx_rx_queue *rx_queue, unsigned int index)
 {
@@ -2603,7 +2433,7 @@ static void efx_ef10_rx_write(struct efx_rx_queue *rx_queue)
 	unsigned int write_count;
 	efx_dword_t reg;
 
-	/* Firmware requires that RX_DESC_WPTR be a multiple of 8 */
+	 
 	write_count = rx_queue->added_count & ~7;
 	if (rx_queue->notified_count == write_count)
 		return;
@@ -2635,9 +2465,7 @@ static void efx_ef10_rx_defer_refill(struct efx_rx_queue *rx_queue)
 
 	MCDI_SET_DWORD(inbuf, DRIVER_EVENT_IN_EVQ, channel->channel);
 
-	/* MCDI_SET_QWORD is not appropriate here since EFX_POPULATE_* has
-	 * already swapped the data to little-endian order.
-	 */
+	 
 	memcpy(MCDI_PTR(inbuf, DRIVER_EVENT_IN_DATA), &event.u64[0],
 	       sizeof(efx_qword_t));
 
@@ -2651,7 +2479,7 @@ efx_ef10_rx_defer_refill_complete(struct efx_nic *efx, unsigned long cookie,
 				  int rc, efx_dword_t *outbuf,
 				  size_t outlen_actual)
 {
-	/* nothing to do */
+	 
 }
 
 static int efx_ef10_ev_init(struct efx_channel *channel)
@@ -2694,7 +2522,7 @@ efx_ef10_handle_rx_bad_lbits(struct efx_rx_queue *rx_queue,
 	efx_schedule_reset(efx, RESET_TYPE_DISABLE);
 }
 
-/* partially received RX was aborted. clean up. */
+ 
 static void efx_ef10_handle_rx_abort(struct efx_rx_queue *rx_queue)
 {
 	unsigned int rx_desc_ptr;
@@ -2801,7 +2629,7 @@ static u16 efx_ef10_handle_rx_event_errors(struct efx_channel *channel,
 		return 0;
 	}
 
-	WARN_ON(!handled); /* No error bits were recognised */
+	WARN_ON(!handled);  
 	return 0;
 }
 
@@ -2821,7 +2649,7 @@ static int efx_ef10_handle_rx_event(struct efx_channel *channel,
 	if (unlikely(READ_ONCE(efx->reset_pending)))
 		return 0;
 
-	/* Basic packet information */
+	 
 	rx_bytes = EFX_QWORD_FIELD(*event, ESF_DZ_RX_BYTES);
 	next_ptr_lbits = EFX_QWORD_FIELD(*event, ESF_DZ_RX_DSC_PTR_LBITS);
 	rx_queue_label = EFX_QWORD_FIELD(*event, ESF_DZ_RX_QLABEL);
@@ -2850,7 +2678,7 @@ static int efx_ef10_handle_rx_event(struct efx_channel *channel,
 	if (n_descs != rx_queue->scatter_n + 1) {
 		struct efx_ef10_nic_data *nic_data = efx->nic_data;
 
-		/* detect rx abort */
+		 
 		if (unlikely(n_descs == rx_queue->scatter_n)) {
 			if (rx_queue->scatter_n == 0 || rx_bytes != 0)
 				netdev_WARN(efx->net_dev,
@@ -2862,10 +2690,7 @@ static int efx_ef10_handle_rx_event(struct efx_channel *channel,
 			return 0;
 		}
 
-		/* Check that RX completion merging is valid, i.e.
-		 * the current firmware supports it and this is a
-		 * non-scattered packet.
-		 */
+		 
 		if (!(nic_data->datapath_caps &
 		      (1 << MC_CMD_GET_CAPABILITIES_OUT_RX_BATCHING_LBN)) ||
 		    rx_queue->scatter_n != 0 || rx_cont) {
@@ -2877,7 +2702,7 @@ static int efx_ef10_handle_rx_event(struct efx_channel *channel,
 			return 0;
 		}
 
-		/* Merged completion for multiple non-scattered packets */
+		 
 		rx_queue->scatter_n = 1;
 		rx_queue->scatter_len = 0;
 		n_packets = n_descs;
@@ -2908,10 +2733,10 @@ static int efx_ef10_handle_rx_event(struct efx_channel *channel,
 			      rx_l4_class == ESE_FZ_L4_CLASS_UDP;
 
 		switch (rx_encap_hdr) {
-		case ESE_EZ_ENCAP_HDR_VXLAN: /* VxLAN or GENEVE */
-			flags |= EFX_RX_PKT_CSUMMED; /* outer UDP csum */
+		case ESE_EZ_ENCAP_HDR_VXLAN:  
+			flags |= EFX_RX_PKT_CSUMMED;  
 			if (tcpudp)
-				flags |= EFX_RX_PKT_CSUM_LEVEL; /* inner L4 */
+				flags |= EFX_RX_PKT_CSUM_LEVEL;  
 			break;
 		case ESE_EZ_ENCAP_HDR_GRE:
 		case ESE_EZ_ENCAP_HDR_NONE:
@@ -2931,7 +2756,7 @@ static int efx_ef10_handle_rx_event(struct efx_channel *channel,
 
 	channel->irq_mod_score += 2 * n_packets;
 
-	/* Handle received packet(s) */
+	 
 	for (i = 0; i < n_packets; i++) {
 		efx_rx_packet(rx_queue,
 			      rx_queue->removed_count & rx_queue->ptr_mask,
@@ -2974,44 +2799,23 @@ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
 	if (unlikely(EFX_QWORD_FIELD(*event, ESF_DZ_TX_DROP_EVENT)))
 		return 0;
 
-	/* Get the transmit queue */
+	 
 	tx_ev_q_label = EFX_QWORD_FIELD(*event, ESF_DZ_TX_QLABEL);
 	tx_queue = channel->tx_queue + (tx_ev_q_label % EFX_MAX_TXQ_PER_CHANNEL);
 
 	if (!tx_queue->timestamping) {
-		/* Transmit completion */
+		 
 		tx_ev_desc_ptr = EFX_QWORD_FIELD(*event, ESF_DZ_TX_DESCR_INDX);
 		return efx_xmit_done(tx_queue, tx_ev_desc_ptr & tx_queue->ptr_mask);
 	}
 
-	/* Transmit timestamps are only available for 8XXX series. They result
-	 * in up to three events per packet. These occur in order, and are:
-	 *  - the normal completion event (may be omitted)
-	 *  - the low part of the timestamp
-	 *  - the high part of the timestamp
-	 *
-	 * It's possible for multiple completion events to appear before the
-	 * corresponding timestamps. So we can for example get:
-	 *  COMP N
-	 *  COMP N+1
-	 *  TS_LO N
-	 *  TS_HI N
-	 *  TS_LO N+1
-	 *  TS_HI N+1
-	 *
-	 * In addition it's also possible for the adjacent completions to be
-	 * merged, so we may not see COMP N above. As such, the completion
-	 * events are not very useful here.
-	 *
-	 * Each part of the timestamp is itself split across two 16 bit
-	 * fields in the event.
-	 */
+	 
 	tx_ev_type = EFX_QWORD_FIELD(*event, ESF_EZ_TX_SOFT1);
 	work_done = 0;
 
 	switch (tx_ev_type) {
 	case TX_TIMESTAMP_EVENT_TX_EV_COMPLETION:
-		/* Ignore this event - see above. */
+		 
 		break;
 
 	case TX_TIMESTAMP_EVENT_TX_EV_TSTAMP_LO:
@@ -3052,7 +2856,7 @@ efx_ef10_handle_driver_event(struct efx_channel *channel, efx_qword_t *event)
 	case ESE_DZ_DRV_WAKE_UP_EV:
 		break;
 	case ESE_DZ_DRV_START_UP_EV:
-		/* event queue init complete. ok. */
+		 
 		break;
 	default:
 		netif_err(efx, hw, efx->net_dev,
@@ -3077,10 +2881,7 @@ static void efx_ef10_handle_driver_generated_event(struct efx_channel *channel,
 		channel->event_test_cpu = raw_smp_processor_id();
 		break;
 	case EFX_EF10_REFILL:
-		/* The queue must be empty, so we won't receive any rx
-		 * events, so efx_process_channel() won't refill the
-		 * queue. Refill it here
-		 */
+		 
 		efx_fast_push_rx_descriptors(&channel->rx_queue, true);
 		break;
 	default:
@@ -3132,9 +2933,7 @@ static int efx_ef10_ev_process(struct efx_channel *channel, int quota)
 		case ESE_DZ_EV_CODE_RX_EV:
 			spent += efx_ef10_handle_rx_event(channel, &event);
 			if (spent >= quota) {
-				/* XXX can we split a merged event to
-				 * avoid going over-quota?
-				 */
+				 
 				spent = quota;
 				goto out;
 			}
@@ -3215,9 +3014,7 @@ static void efx_ef10_ev_test_generate(struct efx_channel *channel)
 
 	MCDI_SET_DWORD(inbuf, DRIVER_EVENT_IN_EVQ, channel->channel);
 
-	/* MCDI_SET_QWORD is not appropriate here since EFX_POPULATE_* has
-	 * already swapped the data to little-endian order.
-	 */
+	 
 	memcpy(MCDI_PTR(inbuf, DRIVER_EVENT_IN_DATA), &event.u64[0],
 	       sizeof(efx_qword_t));
 
@@ -3244,7 +3041,7 @@ static int efx_ef10_vport_set_mac_address(struct efx_nic *efx)
 	u8 mac_old[ETH_ALEN];
 	int rc, rc2;
 
-	/* Only reconfigure a PF-created vport */
+	 
 	if (is_zero_ether_addr(nic_data->vport_mac))
 		return 0;
 
@@ -3269,7 +3066,7 @@ static int efx_ef10_vport_set_mac_address(struct efx_nic *efx)
 	} else {
 		rc2 = efx_ef10_vport_add_mac(efx, efx->vport_id, mac_old);
 		if (rc2) {
-			/* Failed to add original MAC, so clear vport_mac */
+			 
 			eth_zero_addr(nic_data->vport_mac);
 			goto reset_nic;
 		}
@@ -3307,17 +3104,13 @@ static int efx_ef10_set_mac_address(struct efx_nic *efx)
 	int rc;
 
 #ifdef CONFIG_SFC_SRIOV
-	/* If this function is a VF and we have access to the parent PF,
-	 * then use the PF control path to attempt to change the VF MAC address.
-	 */
+	 
 	if (efx->pci_dev->is_virtfn && efx->pci_dev->physfn) {
 		struct efx_nic *efx_pf = pci_get_drvdata(efx->pci_dev->physfn);
 		struct efx_ef10_nic_data *nic_data = efx->nic_data;
 		u8 mac[ETH_ALEN];
 
-		/* net_dev->dev_addr can be zeroed by efx_net_stop in
-		 * efx_ef10_sriov_set_vf_mac, so pass in a copy.
-		 */
+		 
 		ether_addr_copy(mac, efx->net_dev->dev_addr);
 
 		rc = efx_ef10_sriov_set_vf_mac(efx_pf, nic_data->vf_index, mac);
@@ -3355,11 +3148,7 @@ static int efx_ef10_set_mac_address(struct efx_nic *efx)
 			  "Cannot change MAC address; use sfboot to enable"
 			  " mac-spoofing on this interface\n");
 	} else if (rc == -ENOSYS && !efx_ef10_is_vf(efx)) {
-		/* If the active MCFW does not support MC_CMD_VADAPTOR_SET_MAC
-		 * fall-back to the method of changing the MAC address on the
-		 * vport.  This only applies to PFs because such versions of
-		 * MCFW do not support VFs.
-		 */
+		 
 		rc = efx_ef10_vport_set_mac_address(efx);
 	} else if (rc) {
 		efx_mcdi_display_error(efx, MC_CMD_VADAPTOR_SET_MAC,
@@ -3389,10 +3178,7 @@ static int efx_ef10_start_bist(struct efx_nic *efx, u32 bist_type)
 			    NULL, 0, NULL);
 }
 
-/* MC BISTs follow a different poll mechanism to phy BISTs.
- * The BIST is done in the poll handler on the MC, and the MCDI command
- * will block until the BIST is done.
- */
+ 
 static int efx_ef10_poll_bist(struct efx_nic *efx)
 {
 	int rc;
@@ -3522,17 +3308,14 @@ static int efx_ef10_mtd_probe_partition(struct efx_nic *efx,
 	if (protected &&
 	    (type != NVRAM_PARTITION_TYPE_DYNCONFIG_DEFAULTS &&
 	     type != NVRAM_PARTITION_TYPE_ROMCONFIG_DEFAULTS))
-		/* Hide protected partitions that don't provide defaults. */
+		 
 		return -ENODEV;
 
 	if (protected)
-		/* Protected partitions are read only. */
+		 
 		erase_size = 0;
 
-	/* If we've already exposed a partition of this type, hide this
-	 * duplicate.  All operations on MTDs are keyed by the type anyway,
-	 * so we can't act on the duplicate.
-	 */
+	 
 	if (__test_and_set_bit(type_idx, found))
 		return -EEXIST;
 
@@ -3557,7 +3340,7 @@ static int efx_ef10_mtd_probe_partition(struct efx_nic *efx,
 	part->common.mtd.flags = MTD_CAP_NORFLASH;
 	part->common.mtd.size = size;
 	part->common.mtd.erasesize = erase_size;
-	/* sfc_status is read-only */
+	 
 	if (!erase_size)
 		part->common.mtd.flags |= MTD_NO_ERASE;
 
@@ -3617,7 +3400,7 @@ fail:
 	return rc;
 }
 
-#endif /* CONFIG_SFC_MTD */
+#endif  
 
 static void efx_ef10_ptp_write_host_time(struct efx_nic *efx, u32 host_time)
 {
@@ -3719,7 +3502,7 @@ static int efx_ef10_ptp_set_ts_config(struct efx_nic *efx,
 	switch (init->rx_filter) {
 	case HWTSTAMP_FILTER_NONE:
 		efx_ef10_ptp_set_ts_sync_events(efx, false, false);
-		/* if TX timestamping is still requested then leave PTP on */
+		 
 		return efx_ptp_change_mode(efx,
 					   init->tx_type != HWTSTAMP_TX_OFF, 0);
 	case HWTSTAMP_FILTER_ALL:
@@ -3778,11 +3561,7 @@ static int efx_ef10_vlan_rx_kill_vid(struct efx_nic *efx, __be16 proto, u16 vid)
 	return efx_ef10_del_vlan(efx, vid);
 }
 
-/* We rely on the MCDI wiping out our TX rings if it made any changes to the
- * ports table, ensuring that any TSO descriptors that were made on a now-
- * removed tunnel port will be blown away and won't break things when we try
- * to transmit them using the new ports table.
- */
+ 
 static int efx_ef10_set_udp_tnl_ports(struct efx_nic *efx, bool unloading)
 {
 	struct efx_ef10_nic_data *nic_data = efx->nic_data;
@@ -3841,16 +3620,13 @@ static int efx_ef10_set_udp_tnl_ports(struct efx_nic *efx, bool unloading)
 	rc = efx_mcdi_rpc_quiet(efx, MC_CMD_SET_TUNNEL_ENCAP_UDP_PORTS,
 				inbuf, inlen, outbuf, sizeof(outbuf), &outlen);
 	if (rc == -EIO) {
-		/* Most likely the MC rebooted due to another function also
-		 * setting its tunnel port list. Mark the tunnel port list as
-		 * dirty, so it will be pushed upon coming up from the reboot.
-		 */
+		 
 		nic_data->udp_tunnels_dirty = true;
 		return 0;
 	}
 
 	if (rc) {
-		/* expected not available on unprivileged functions */
+		 
 		if (rc != -EPERM)
 			netif_warn(efx, drv, efx->net_dev,
 				   "Unable to set UDP tunnel ports; rc=%d.\n", rc);
@@ -3860,19 +3636,11 @@ static int efx_ef10_set_udp_tnl_ports(struct efx_nic *efx, bool unloading)
 			   "Rebooting MC due to UDP tunnel port list change\n");
 		will_reset = true;
 		if (unloading)
-			/* Delay for the MC reset to complete. This will make
-			 * unloading other functions a bit smoother. This is a
-			 * race, but the other unload will work whichever way
-			 * it goes, this just avoids an unnecessary error
-			 * message.
-			 */
+			 
 			msleep(100);
 	}
 	if (!will_reset && !unloading) {
-		/* The caller will have detached, relying on the MC reset to
-		 * trigger a re-attach.  Since there won't be an MC reset, we
-		 * have to do the attach ourselves.
-		 */
+		 
 		efx_device_attach_if_not_resetting(efx);
 	}
 
@@ -3886,9 +3654,7 @@ static int efx_ef10_udp_tnl_push_ports(struct efx_nic *efx)
 
 	mutex_lock(&nic_data->udp_tunnels_lock);
 	if (nic_data->udp_tunnels_dirty) {
-		/* Make sure all TX are stopped while we modify the table, else
-		 * we might race against an efx_features_check().
-		 */
+		 
 		efx_device_detach_sync(efx);
 		rc = efx_ef10_set_udp_tnl_ports(efx, false);
 	}
@@ -3915,9 +3681,7 @@ static int efx_ef10_udp_tnl_set_port(struct net_device *dev,
 		return -EOPNOTSUPP;
 
 	mutex_lock(&nic_data->udp_tunnels_lock);
-	/* Make sure all TX are stopped while we add to the table, else we
-	 * might race against an efx_features_check().
-	 */
+	 
 	efx_device_detach_sync(efx);
 	nic_data->udp_tunnels[entry].type = efx_tunnel_type;
 	nic_data->udp_tunnels[entry].port = ti->port;
@@ -3927,11 +3691,7 @@ static int efx_ef10_udp_tnl_set_port(struct net_device *dev,
 	return rc;
 }
 
-/* Called under the TX lock with the TX queue running, hence no-one can be
- * in the middle of updating the UDP tunnels table.  However, they could
- * have tried and failed the MCDI, in which case they'll have set the dirty
- * flag before dropping their locks.
- */
+ 
 static bool efx_ef10_udp_tnl_has_port(struct efx_nic *efx, __be16 port)
 {
 	struct efx_ef10_nic_data *nic_data = efx->nic_data;
@@ -3942,9 +3702,7 @@ static bool efx_ef10_udp_tnl_has_port(struct efx_nic *efx, __be16 port)
 		return false;
 
 	if (nic_data->udp_tunnels_dirty)
-		/* SW table may not match HW state, so just assume we can't
-		 * use any UDP tunnel offloads.
-		 */
+		 
 		return false;
 
 	for (i = 0; i < ARRAY_SIZE(nic_data->udp_tunnels); ++i)
@@ -3967,9 +3725,7 @@ static int efx_ef10_udp_tnl_unset_port(struct net_device *dev,
 	nic_data = efx->nic_data;
 
 	mutex_lock(&nic_data->udp_tunnels_lock);
-	/* Make sure all TX are stopped while we remove from the table, else we
-	 * might race against an efx_features_check().
-	 */
+	 
 	efx_device_detach_sync(efx);
 	nic_data->udp_tunnels[entry].type = TUNNEL_ENCAP_UDP_PORT_ENTRY_INVALID;
 	nic_data->udp_tunnels[entry].port = 0;
@@ -3992,9 +3748,7 @@ static const struct udp_tunnel_nic_info efx_ef10_udp_tunnels = {
 	},
 };
 
-/* EF10 may have multiple datapath firmware variants within a
- * single version.  Report which variants are running.
- */
+ 
 static size_t efx_ef10_print_additional_fwver(struct efx_nic *efx, char *buf,
 					      size_t len)
 {
@@ -4025,17 +3779,15 @@ static unsigned int efx_ef10_recycle_ring_size(const struct efx_nic *efx)
 {
 	unsigned int ret = EFX_RECYCLE_RING_SIZE_10G;
 
-	/* There is no difference between PFs and VFs. The side is based on
-	 * the maximum link speed of a given NIC.
-	 */
+	 
 	switch (efx->pci_dev->device & 0xfff) {
-	case 0x0903:	/* Farmingdale can do up to 10G */
+	case 0x0903:	 
 		break;
-	case 0x0923:	/* Greenport can do up to 40G */
-	case 0x0a03:	/* Medford can do up to 40G */
+	case 0x0923:	 
+	case 0x0a03:	 
 		ret *= 4;
 		break;
-	default:	/* Medford2 can do up to 100G */
+	default:	 
 		ret *= 10;
 	}
 

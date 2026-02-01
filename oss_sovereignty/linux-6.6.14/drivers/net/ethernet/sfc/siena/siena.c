@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2005-2006 Fen Systems Ltd.
- * Copyright 2006-2013 Solarflare Communications Inc.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -27,7 +23,7 @@
 #include "siena_sriov.h"
 #include "rx_common.h"
 
-/* Hardware control for SFC9000 family including SFL9021 (aka Siena). */
+ 
 
 static void siena_init_wol(struct efx_nic *efx);
 
@@ -104,9 +100,7 @@ static int siena_test_chip(struct efx_nic *efx, struct efx_self_tests *tests)
 
 	efx_siena_reset_down(efx, reset_method);
 
-	/* Reset the chip immediately so that it is completely
-	 * quiescent regardless of what any VF driver does.
-	 */
+	 
 	rc = efx_siena_mcdi_reset(efx, reset_method);
 	if (rc)
 		goto out;
@@ -122,12 +116,7 @@ out:
 	return rc ? rc : rc2;
 }
 
-/**************************************************************************
- *
- * PTP
- *
- **************************************************************************
- */
+ 
 
 static void siena_ptp_write_host_time(struct efx_nic *efx, u32 host_time)
 {
@@ -142,7 +131,7 @@ static int siena_ptp_set_ts_config(struct efx_nic *efx,
 
 	switch (init->rx_filter) {
 	case HWTSTAMP_FILTER_NONE:
-		/* if TX timestamping is still requested then leave PTP on */
+		 
 		return efx_siena_ptp_change_mode(efx,
 					init->tx_type != HWTSTAMP_TX_OFF,
 					efx_siena_ptp_get_mode(efx));
@@ -157,11 +146,7 @@ static int siena_ptp_set_ts_config(struct efx_nic *efx,
 		init->rx_filter = HWTSTAMP_FILTER_PTP_V2_L4_EVENT;
 		rc = efx_siena_ptp_change_mode(efx, true,
 					       MC_CMD_PTP_MODE_V2_ENHANCED);
-		/* bug 33070 - old versions of the firmware do not support the
-		 * improved UUID filtering option. Similarly old versions of the
-		 * application do not expect it to be enabled. If the firmware
-		 * does not accept the enhanced mode, fall back to the standard
-		 * PTP v2 UUID filtering. */
+		 
 		if (rc != 0)
 			rc = efx_siena_ptp_change_mode(efx, true,
 						       MC_CMD_PTP_MODE_V2);
@@ -171,12 +156,7 @@ static int siena_ptp_set_ts_config(struct efx_nic *efx,
 	}
 }
 
-/**************************************************************************
- *
- * Device reset
- *
- **************************************************************************
- */
+ 
 
 static int siena_map_reset_flags(u32 *flags)
 {
@@ -198,18 +178,13 @@ static int siena_map_reset_flags(u32 *flags)
 		return RESET_TYPE_ALL;
 	}
 
-	/* no invisible reset implemented */
+	 
 
 	return -EINVAL;
 }
 
 #ifdef CONFIG_EEH
-/* When a PCI device is isolated from the bus, a subsequent MMIO read is
- * required for the kernel EEH mechanisms to notice. As the Solarflare driver
- * was written to minimise MMIO read (for latency) then a periodic call to check
- * the EEH status of the device is required so that device recovery can happen
- * in a timely fashion.
- */
+ 
 static void siena_monitor(struct efx_nic *efx)
 {
 	struct eeh_dev *eehdev = pci_dev_to_eeh_dev(efx->pci_dev);
@@ -228,7 +203,7 @@ static int siena_probe_nvconfig(struct efx_nic *efx)
 
 	efx->timer_quantum_ns =
 		(caps & (1 << MC_CMD_CAPABILITIES_TURBO_ACTIVE_LBN)) ?
-		3072 : 6144; /* 768 cycles */
+		3072 : 6144;  
 	efx->timer_max_ns = efx->type->timer_period_max *
 			    efx->timer_quantum_ns;
 
@@ -237,17 +212,12 @@ static int siena_probe_nvconfig(struct efx_nic *efx)
 
 static int siena_dimension_resources(struct efx_nic *efx)
 {
-	/* Each port has a small block of internal SRAM dedicated to
-	 * the buffer table and descriptor caches.  In theory we can
-	 * map both blocks to one port, but we don't.
-	 */
+	 
 	efx_farch_dimension_resources(efx, FR_CZ_BUF_FULL_TBL_ROWS / 2);
 	return 0;
 }
 
-/* On all Falcon-architecture NICs, PFs use BAR 0 for I/O space and BAR 2(&3)
- * for memory.
- */
+ 
 static unsigned int siena_mem_bar(struct efx_nic *efx)
 {
 	return 2;
@@ -265,7 +235,7 @@ static int siena_probe_nic(struct efx_nic *efx)
 	efx_oword_t reg;
 	int rc;
 
-	/* Allocate storage for hardware specific data */
+	 
 	nic_data = kzalloc(sizeof(struct siena_nic_data), GFP_KERNEL);
 	if (!nic_data)
 		return -ENOMEM;
@@ -291,7 +261,7 @@ static int siena_probe_nic(struct efx_nic *efx)
 	if (rc)
 		goto fail1;
 
-	/* Now we can reset the NIC */
+	 
 	rc = efx_siena_mcdi_reset(efx, RESET_TYPE_ALL);
 	if (rc) {
 		netif_err(efx, probe, efx->net_dev, "failed to reset NIC\n");
@@ -300,7 +270,7 @@ static int siena_probe_nic(struct efx_nic *efx)
 
 	siena_init_wol(efx);
 
-	/* Allocate memory for INT_KER */
+	 
 	rc = efx_siena_alloc_buffer(efx, &efx->irq_status, sizeof(efx_oword_t),
 				    GFP_KERNEL);
 	if (rc)
@@ -313,7 +283,7 @@ static int siena_probe_nic(struct efx_nic *efx)
 		  efx->irq_status.addr,
 		  (unsigned long long)virt_to_phys(efx->irq_status.addr));
 
-	/* Read in the non-volatile configuration */
+	 
 	rc = siena_probe_nvconfig(efx);
 	if (rc == -EINVAL) {
 		netif_err(efx, probe, efx->net_dev,
@@ -350,10 +320,7 @@ static int siena_rx_pull_rss_config(struct efx_nic *efx)
 {
 	efx_oword_t temp;
 
-	/* Read from IPv6 RSS key as that's longer (the IPv4 key is just the
-	 * first 128 bits of the same key, assuming it's been set by
-	 * siena_rx_push_rss_config, below)
-	 */
+	 
 	efx_reado(efx, &temp, FR_CZ_RX_RSS_IPV6_REG1);
 	memcpy(efx->rss_context.rx_hash_key, &temp, sizeof(temp));
 	efx_reado(efx, &temp, FR_CZ_RX_RSS_IPV6_REG2);
@@ -370,13 +337,13 @@ static int siena_rx_push_rss_config(struct efx_nic *efx, bool user,
 {
 	efx_oword_t temp;
 
-	/* Set hash key for IPv4 */
+	 
 	if (key)
 		memcpy(efx->rss_context.rx_hash_key, key, sizeof(temp));
 	memcpy(&temp, efx->rss_context.rx_hash_key, sizeof(temp));
 	efx_writeo(efx, &temp, FR_BZ_RX_RSS_TKEY);
 
-	/* Enable IPv6 RSS */
+	 
 	BUILD_BUG_ON(sizeof(efx->rss_context.rx_hash_key) <
 		     2 * sizeof(temp) + FRF_CZ_RX_RSS_IPV6_TKEY_HI_WIDTH / 8 ||
 		     FRF_CZ_RX_RSS_IPV6_TKEY_HI_LBN != 0);
@@ -397,28 +364,23 @@ static int siena_rx_push_rss_config(struct efx_nic *efx, bool user,
 	return 0;
 }
 
-/* This call performs hardware-specific global initialisation, such as
- * defining the descriptor cache sizes and number of RSS channels.
- * It does not set up any buffers, descriptor rings or event queues.
- */
+ 
 static int siena_init_nic(struct efx_nic *efx)
 {
 	efx_oword_t temp;
 	int rc;
 
-	/* Recover from a failed assertion post-reset */
+	 
 	rc = efx_siena_mcdi_handle_assertion(efx);
 	if (rc)
 		return rc;
 
-	/* Squash TX of packets of 16 bytes or less */
+	 
 	efx_reado(efx, &temp, FR_AZ_TX_RESERVED);
 	EFX_SET_OWORD_FIELD(temp, FRF_BZ_TX_FLUSH_MIN_LEN_EN, 1);
 	efx_writeo(efx, &temp, FR_AZ_TX_RESERVED);
 
-	/* Do not enable TX_NO_EOP_DISC_EN, since it limits packets to 16
-	 * descriptors (which is bad).
-	 */
+	 
 	efx_reado(efx, &temp, FR_AZ_TX_CFG);
 	EFX_SET_OWORD_FIELD(temp, FRF_AZ_TX_NO_EOP_DISC_EN, 0);
 	EFX_SET_OWORD_FIELD(temp, FRF_CZ_TX_FILTER_EN_BIT, 1);
@@ -427,9 +389,7 @@ static int siena_init_nic(struct efx_nic *efx)
 	efx_reado(efx, &temp, FR_AZ_RX_CFG);
 	EFX_SET_OWORD_FIELD(temp, FRF_BZ_RX_DESC_PUSH_EN, 0);
 	EFX_SET_OWORD_FIELD(temp, FRF_BZ_RX_INGR_EN, 1);
-	/* Enable hash insertion. This is broken for the 'Falcon' hash
-	 * if IPv6 hashing is also enabled, so also select Toeplitz
-	 * TCP/IPv4 and IPv4 hashes. */
+	 
 	EFX_SET_OWORD_FIELD(temp, FRF_BZ_RX_HASH_INSRT_HDR, 1);
 	EFX_SET_OWORD_FIELD(temp, FRF_BZ_RX_HASH_ALG, 1);
 	EFX_SET_OWORD_FIELD(temp, FRF_BZ_RX_IP_HASH, 1);
@@ -438,14 +398,14 @@ static int siena_init_nic(struct efx_nic *efx)
 	efx_writeo(efx, &temp, FR_AZ_RX_CFG);
 
 	siena_rx_push_rss_config(efx, false, efx->rss_context.rx_indir_table, NULL);
-	efx->rss_context.context_id = 0; /* indicates RSS is active */
+	efx->rss_context.context_id = 0;  
 
-	/* Enable event logging */
+	 
 	rc = efx_siena_mcdi_log_ctrl(efx, true, false, 0);
 	if (rc)
 		return rc;
 
-	/* Set destination of both TX and RX Flush events */
+	 
 	EFX_POPULATE_OWORD_1(temp, FRF_BZ_FLS_EVQ_ID, 0);
 	efx_writeo(efx, &temp, FR_BZ_DP_CTRL);
 
@@ -467,7 +427,7 @@ static void siena_remove_nic(struct efx_nic *efx)
 	efx_siena_mcdi_detach(efx);
 	efx_siena_mcdi_fini(efx);
 
-	/* Tear down the private nic state */
+	 
 	kfree(efx->nic_data);
 	efx->nic_data = NULL;
 }
@@ -571,7 +531,7 @@ static int siena_try_update_nic_stats(struct efx_nic *efx)
 	if (generation_end != generation_start)
 		return -EAGAIN;
 
-	/* Update derived statistics */
+	 
 	efx_siena_fix_nodesc_drop_stat(efx,
 				       &stats[SIENA_STAT_rx_nodesc_drop_cnt]);
 	efx_update_diff_stat(&stats[SIENA_STAT_tx_good_bytes],
@@ -596,8 +556,7 @@ static size_t siena_update_nic_stats(struct efx_nic *efx, u64 *full_stats,
 	u64 *stats = nic_data->stats;
 	int retry;
 
-	/* If we're unlucky enough to read statistics wduring the DMA, wait
-	 * up to 10ms for it to finish (typically takes <500us) */
+	 
 	for (retry = 0; retry < 100; ++retry) {
 		if (siena_try_update_nic_stats(efx) == 0)
 			break;
@@ -660,12 +619,7 @@ static int siena_mac_reconfigure(struct efx_nic *efx, bool mtu_only __always_unu
 				  inbuf, sizeof(inbuf), NULL, 0, NULL);
 }
 
-/**************************************************************************
- *
- * Wake on LAN
- *
- **************************************************************************
- */
+ 
 
 static void siena_get_wol(struct efx_nic *efx, struct ethtool_wolinfo *wol)
 {
@@ -723,8 +677,7 @@ static void siena_init_wol(struct efx_nic *efx)
 	rc = efx_siena_mcdi_wol_filter_get_magic(efx, &nic_data->wol_filter_id);
 
 	if (rc != 0) {
-		/* If it failed, attempt to get into a synchronised
-		 * state with MC by resetting any set WoL filters */
+		 
 		efx_siena_mcdi_wol_filter_reset(efx);
 		nic_data->wol_filter_id = -1;
 	} else if (nic_data->wol_filter_id != -1) {
@@ -732,12 +685,7 @@ static void siena_init_wol(struct efx_nic *efx)
 	}
 }
 
-/**************************************************************************
- *
- * MCDI
- *
- **************************************************************************
- */
+ 
 
 #define MCDI_PDU(efx)							\
 	(efx_port_num(efx) ? MC_SMEM_P1_PDU_OFST : MC_SMEM_P0_PDU_OFST)
@@ -762,10 +710,10 @@ static void siena_mcdi_request(struct efx_nic *efx,
 	for (i = 0; i < inlen_dw; i++)
 		efx_writed(efx, &sdu[i], pdu + hdr_len + 4 * i);
 
-	/* Ensure the request is written out before the doorbell */
+	 
 	wmb();
 
-	/* ring the doorbell with a distinctive value */
+	 
 	_efx_writed(efx, (__force __le32) 0x45789abc, doorbell);
 }
 
@@ -776,10 +724,7 @@ static bool siena_mcdi_poll_response(struct efx_nic *efx)
 
 	efx_readd(efx, &hdr, pdu);
 
-	/* All 1's indicates that shared memory is in reset (and is
-	 * not a valid hdr). Wait for it to come out reset before
-	 * completing the command
-	 */
+	 
 	return EFX_DWORD_FIELD(hdr, EFX_DWORD_0) != 0xffffffff &&
 		EFX_DWORD_FIELD(hdr, MCDI_HEADER_RESPONSE);
 }
@@ -811,9 +756,7 @@ static int siena_mcdi_poll_reboot(struct efx_nic *efx)
 	EFX_ZERO_DWORD(reg);
 	efx_writed(efx, &reg, addr);
 
-	/* MAC statistics have been cleared on the NIC; clear the local
-	 * copies that we update with efx_update_diff_stat().
-	 */
+	 
 	nic_data->stats[SIENA_STAT_tx_good_bytes] = 0;
 	nic_data->stats[SIENA_STAT_rx_good_bytes] = 0;
 
@@ -823,12 +766,7 @@ static int siena_mcdi_poll_reboot(struct efx_nic *efx)
 		return -EIO;
 }
 
-/**************************************************************************
- *
- * MTD
- *
- **************************************************************************
- */
+ 
 
 #ifdef CONFIG_SFC_SIENA_MTD
 
@@ -876,7 +814,7 @@ static int siena_mtd_probe_partition(struct efx_nic *efx,
 	if (rc)
 		return rc;
 	if (protected)
-		return -ENODEV; /* hide it */
+		return -ENODEV;  
 
 	part->nvram_type = type;
 	part->common.dev_type_name = "Siena NVRAM manager";
@@ -954,27 +892,22 @@ fail:
 	return rc;
 }
 
-#endif /* CONFIG_SFC_SIENA_MTD */
+#endif  
 
 static unsigned int siena_check_caps(const struct efx_nic *efx,
 				     u8 flag, u32 offset)
 {
-	/* Siena did not support MC_CMD_GET_CAPABILITIES */
+	 
 	return 0;
 }
 
 static unsigned int efx_siena_recycle_ring_size(const struct efx_nic *efx)
 {
-	/* Maximum link speed is 10G */
+	 
 	return EFX_RECYCLE_RING_SIZE_10G;
 }
 
-/**************************************************************************
- *
- * Revision-dependent attributes used by efx.c and nic.c
- *
- **************************************************************************
- */
+ 
 
 const struct efx_nic_type siena_a0_nic_type = {
 	.is_vf = false,

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Platform UFS Host driver for Cadence controller
- *
- * Copyright (C) 2018 Cadence Design Systems, Inc.
- *
- * Authors:
- *	Jan Kotas <jank@cadence.com>
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/kernel.h>
@@ -23,17 +15,11 @@
 #define CDNS_UFS_MAX_L4_ATTRS 12
 
 struct cdns_ufs_host {
-	/**
-	 * cdns_ufs_dme_attr_val - for storing L4 attributes
-	 */
+	 
 	u32 cdns_ufs_dme_attr_val[CDNS_UFS_MAX_L4_ATTRS];
 };
 
-/**
- * cdns_ufs_get_l4_attr - get L4 attributes on local side
- * @hba: per adapter instance
- *
- */
+ 
 static void cdns_ufs_get_l4_attr(struct ufs_hba *hba)
 {
 	struct cdns_ufs_host *host = ufshcd_get_variant(hba);
@@ -64,11 +50,7 @@ static void cdns_ufs_get_l4_attr(struct ufs_hba *hba)
 		       &host->cdns_ufs_dme_attr_val[11]);
 }
 
-/**
- * cdns_ufs_set_l4_attr - set L4 attributes on local side
- * @hba: per adapter instance
- *
- */
+ 
 static void cdns_ufs_set_l4_attr(struct ufs_hba *hba)
 {
 	struct cdns_ufs_host *host = ufshcd_get_variant(hba);
@@ -100,12 +82,7 @@ static void cdns_ufs_set_l4_attr(struct ufs_hba *hba)
 		       host->cdns_ufs_dme_attr_val[11]);
 }
 
-/**
- * cdns_ufs_set_hclkdiv() - set HCLKDIV register value based on the core_clk.
- * @hba: host controller instance
- *
- * Return: zero for success and non-zero for failure.
- */
+ 
 static int cdns_ufs_set_hclkdiv(struct ufs_hba *hba)
 {
 	struct ufs_clk_info *clki;
@@ -132,22 +109,13 @@ static int cdns_ufs_set_hclkdiv(struct ufs_hba *hba)
 	core_clk_div = core_clk_rate / USEC_PER_SEC;
 
 	ufshcd_writel(hba, core_clk_div, CDNS_UFS_REG_HCLKDIV);
-	/**
-	 * Make sure the register was updated,
-	 * UniPro layer will not work with an incorrect value.
-	 */
+	 
 	mb();
 
 	return 0;
 }
 
-/**
- * cdns_ufs_hce_enable_notify() - set HCLKDIV register
- * @hba: host controller instance
- * @status: notify stage (pre, post change)
- *
- * Return: zero for success and non-zero for failure.
- */
+ 
 static int cdns_ufs_hce_enable_notify(struct ufs_hba *hba,
 				      enum ufs_notify_change_status status)
 {
@@ -157,12 +125,7 @@ static int cdns_ufs_hce_enable_notify(struct ufs_hba *hba,
 	return cdns_ufs_set_hclkdiv(hba);
 }
 
-/**
- * cdns_ufs_hibern8_notify() - save and restore L4 attributes.
- * @hba: host controller instance
- * @cmd: UIC Command
- * @status: notify stage (pre, post change)
- */
+ 
 static void cdns_ufs_hibern8_notify(struct ufs_hba *hba, enum uic_cmd_dme cmd,
 				    enum ufs_notify_change_status status)
 {
@@ -172,43 +135,23 @@ static void cdns_ufs_hibern8_notify(struct ufs_hba *hba, enum uic_cmd_dme cmd,
 		cdns_ufs_set_l4_attr(hba);
 }
 
-/**
- * cdns_ufs_link_startup_notify() - handle link startup.
- * @hba: host controller instance
- * @status: notify stage (pre, post change)
- *
- * Return: zero for success and non-zero for failure.
- */
+ 
 static int cdns_ufs_link_startup_notify(struct ufs_hba *hba,
 					enum ufs_notify_change_status status)
 {
 	if (status != PRE_CHANGE)
 		return 0;
 
-	/*
-	 * Some UFS devices have issues if LCC is enabled.
-	 * So we are setting PA_Local_TX_LCC_Enable to 0
-	 * before link startup which will make sure that both host
-	 * and device TX LCC are disabled once link startup is
-	 * completed.
-	 */
+	 
 	ufshcd_disable_host_tx_lcc(hba);
 
-	/*
-	 * Disabling Autohibern8 feature in cadence UFS
-	 * to mask unexpected interrupt trigger.
-	 */
+	 
 	hba->ahit = 0;
 
 	return 0;
 }
 
-/**
- * cdns_ufs_init - performs additional ufs initialization
- * @hba: host controller instance
- *
- * Return: status of initialization.
- */
+ 
 static int cdns_ufs_init(struct ufs_hba *hba)
 {
 	int status = 0;
@@ -226,17 +169,12 @@ static int cdns_ufs_init(struct ufs_hba *hba)
 	return status;
 }
 
-/**
- * cdns_ufs_m31_16nm_phy_initialization - performs m31 phy initialization
- * @hba: host controller instance
- *
- * Return: 0 (success).
- */
+ 
 static int cdns_ufs_m31_16nm_phy_initialization(struct ufs_hba *hba)
 {
 	u32 data;
 
-	/* Increase RX_Advanced_Min_ActivateTime_Capability */
+	 
 	data = ufshcd_readl(hba, CDNS_UFS_REG_PHY_XCFGD1);
 	data |= BIT(24);
 	ufshcd_writel(hba, data, CDNS_UFS_REG_PHY_XCFGD1);
@@ -275,12 +213,7 @@ static const struct of_device_id cdns_ufs_of_match[] = {
 
 MODULE_DEVICE_TABLE(of, cdns_ufs_of_match);
 
-/**
- * cdns_ufs_pltfrm_probe - probe routine of the driver
- * @pdev: pointer to platform device handle
- *
- * Return: zero for success and non-zero for failure.
- */
+ 
 static int cdns_ufs_pltfrm_probe(struct platform_device *pdev)
 {
 	int err;
@@ -291,7 +224,7 @@ static int cdns_ufs_pltfrm_probe(struct platform_device *pdev)
 	of_id = of_match_node(cdns_ufs_of_match, dev->of_node);
 	vops = (struct ufs_hba_variant_ops *)of_id->data;
 
-	/* Perform generic probe */
+	 
 	err = ufshcd_pltfrm_init(pdev, vops);
 	if (err)
 		dev_err(dev, "ufshcd_pltfrm_init() failed %d\n", err);
@@ -299,12 +232,7 @@ static int cdns_ufs_pltfrm_probe(struct platform_device *pdev)
 	return err;
 }
 
-/**
- * cdns_ufs_pltfrm_remove - removes the ufs driver
- * @pdev: pointer to platform device handle
- *
- * Return: 0 (success).
- */
+ 
 static int cdns_ufs_pltfrm_remove(struct platform_device *pdev)
 {
 	struct ufs_hba *hba =  platform_get_drvdata(pdev);

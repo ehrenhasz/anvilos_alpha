@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Expose the vboot context nvram to userspace
-//
-// Copyright (C) 2012 Google, Inc.
-// Copyright (C) 2015 Collabora Ltd.
+
+
+
+
+
 
 #include <linux/of.h>
 #include <linux/platform_device.h>
@@ -31,7 +31,7 @@ static ssize_t vboot_context_read(struct file *filp, struct kobject *kobj,
 	if (!msg)
 		return -ENOMEM;
 
-	/* NB: we only kmalloc()ated enough space for the op field */
+	 
 	params = (struct ec_params_vbnvcontext *)msg->data;
 	params->op = EC_VBNV_CONTEXT_OP_READ;
 
@@ -66,7 +66,7 @@ static ssize_t vboot_context_write(struct file *filp, struct kobject *kobj,
 	const size_t para_sz = sizeof(*params);
 	const size_t data_sz = sizeof(params->block);
 
-	/* Only write full values */
+	 
 	if (count != data_sz)
 		return -EINVAL;
 

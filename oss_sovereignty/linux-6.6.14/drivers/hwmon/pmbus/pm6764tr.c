@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Hardware monitoring driver for STMicroelectronics digital controller PM6764TR
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -58,7 +56,7 @@ static const struct of_device_id __maybe_unused pm6764tr_of_match[] = {
 	{}
 };
 
-/* This is the driver that will be inserted */
+ 
 static struct i2c_driver pm6764tr_driver = {
 	.driver = {
 		   .name = "pm6764tr",

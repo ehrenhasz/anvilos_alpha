@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Marvell Dove pinctrl driver based on mvebu pinctrl core
- *
- * Author: Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -19,17 +15,17 @@
 
 #include "pinctrl-mvebu.h"
 
-/* Internal registers can be configured at any 1 MiB aligned address */
+ 
 #define INT_REGS_MASK		~(SZ_1M - 1)
 #define MPP4_REGS_OFFS		0xd0440
 #define PMU_REGS_OFFS		0xd802c
 #define GC_REGS_OFFS		0xe802c
 
-/* MPP Base registers */
+ 
 #define PMU_MPP_GENERAL_CTRL	0x10
 #define  AU0_AC97_SEL		BIT(16)
 
-/* MPP Control 4 register */
+ 
 #define SPI_GPIO_SEL		BIT(5)
 #define UART1_GPIO_SEL		BIT(4)
 #define AU1_GPIO_SEL		BIT(3)
@@ -37,11 +33,11 @@
 #define SD1_GPIO_SEL		BIT(1)
 #define SD0_GPIO_SEL		BIT(0)
 
-/* PMU Signal Select registers */
+ 
 #define PMU_SIGNAL_SELECT_0	0x00
 #define PMU_SIGNAL_SELECT_1	0x04
 
-/* Global Config regmap registers */
+ 
 #define GLOBAL_CONFIG_1		0x00
 #define  TWSI_ENABLE_OPTION1	BIT(7)
 #define GLOBAL_CONFIG_2		0x04
@@ -107,19 +103,19 @@ static int dove_mpp4_ctrl_get(struct mvebu_mpp_ctrl_data *data, unsigned pid,
 	unsigned long mask;
 
 	switch (pid) {
-	case 24: /* mpp_camera */
+	case 24:  
 		mask = CAM_GPIO_SEL;
 		break;
-	case 40: /* mpp_sdio0 */
+	case 40:  
 		mask = SD0_GPIO_SEL;
 		break;
-	case 46: /* mpp_sdio1 */
+	case 46:  
 		mask = SD1_GPIO_SEL;
 		break;
-	case 58: /* mpp_spi0 */
+	case 58:  
 		mask = SPI_GPIO_SEL;
 		break;
-	case 62: /* mpp_uart1 */
+	case 62:  
 		mask = UART1_GPIO_SEL;
 		break;
 	default:
@@ -138,19 +134,19 @@ static int dove_mpp4_ctrl_set(struct mvebu_mpp_ctrl_data *data, unsigned pid,
 	unsigned long mask;
 
 	switch (pid) {
-	case 24: /* mpp_camera */
+	case 24:  
 		mask = CAM_GPIO_SEL;
 		break;
-	case 40: /* mpp_sdio0 */
+	case 40:  
 		mask = SD0_GPIO_SEL;
 		break;
-	case 46: /* mpp_sdio1 */
+	case 46:  
 		mask = SD1_GPIO_SEL;
 		break;
-	case 58: /* mpp_spi0 */
+	case 58:  
 		mask = SPI_GPIO_SEL;
 		break;
-	case 62: /* mpp_uart1 */
+	case 62:  
 		mask = UART1_GPIO_SEL;
 		break;
 	default:
@@ -231,10 +227,10 @@ static int dove_audio1_ctrl_get(struct mvebu_mpp_ctrl_data *data, unsigned pid,
 	if (gcfg2 & TWSI_OPTION3_GPIO)
 		*config |= BIT(0);
 
-	/* SSP/TWSI only if I2S1 not set*/
+	 
 	if ((*config & BIT(3)) == 0)
 		*config &= ~(BIT(2) | BIT(0));
-	/* TWSI only if SPDIFO not set*/
+	 
 	if ((*config & BIT(1)) == 0)
 		*config &= ~BIT(0);
 	return 0;
@@ -263,11 +259,7 @@ static int dove_audio1_ctrl_set(struct mvebu_mpp_ctrl_data *data, unsigned pid,
 	return 0;
 }
 
-/* mpp[52:57] gpio pins depend heavily on current config;
- * gpio_req does not try to mux in gpio capabilities to not
- * break other functions. If you require all mpps as gpio
- * enforce gpio setting by pinctrl mapping.
- */
+ 
 static int dove_audio1_ctrl_gpio_req(struct mvebu_mpp_ctrl_data *data,
 				     unsigned pid)
 {
@@ -276,26 +268,26 @@ static int dove_audio1_ctrl_gpio_req(struct mvebu_mpp_ctrl_data *data,
 	dove_audio1_ctrl_get(data, pid, &config);
 
 	switch (config) {
-	case 0x02: /* i2s1 : gpio[56:57] */
-	case 0x0e: /* ssp  : gpio[56:57] */
+	case 0x02:  
+	case 0x0e:  
 		if (pid >= 56)
 			return 0;
 		return -ENOTSUPP;
-	case 0x08: /* spdifo : gpio[52:55] */
-	case 0x0b: /* twsi   : gpio[52:55] */
+	case 0x08:  
+	case 0x0b:  
 		if (pid <= 55)
 			return 0;
 		return -ENOTSUPP;
-	case 0x0a: /* all gpio */
+	case 0x0a:  
 		return 0;
-	/* 0x00 : i2s1/spdifo : no gpio */
-	/* 0x0c : ssp/spdifo  : no gpio */
-	/* 0x0f : ssp/twsi    : no gpio */
+	 
+	 
+	 
 	}
 	return -ENOTSUPP;
 }
 
-/* mpp[52:57] has gpio pins capable of in and out */
+ 
 static int dove_audio1_ctrl_gpio_dir(struct mvebu_mpp_ctrl_data *data,
 				     unsigned pid, bool input)
 {
@@ -773,10 +765,7 @@ static int dove_pinctrl_probe(struct platform_device *pdev)
 
 	pdev->dev.platform_data = (void *)match->data;
 
-	/*
-	 * General MPP Configuration Register is part of pdma registers.
-	 * grab clk to make sure it is ticking.
-	 */
+	 
 	clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(clk)) {
 		dev_err(&pdev->dev, "Unable to get pdma clock");
@@ -797,7 +786,7 @@ static int dove_pinctrl_probe(struct platform_device *pdev)
 	for (i = 0; i < ARRAY_SIZE(dove_mpp_controls); i++)
 		mpp_data[i].base = base;
 
-	/* prepare fallback resource */
+	 
 	memcpy(&fb_res, mpp_res, sizeof(struct resource));
 	fb_res.start = 0;
 
@@ -841,7 +830,7 @@ static int dove_pinctrl_probe(struct platform_device *pdev)
 			return PTR_ERR(gconfmap);
 	}
 
-	/* Warn on any missing DT resource */
+	 
 	if (fb_res.start)
 		dev_warn(&pdev->dev, FW_BUG "Missing pinctrl regs in DTB. Please update your firmware.\n");
 

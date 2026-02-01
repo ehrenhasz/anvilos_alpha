@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  byt_cr_dpcm_rt5640.c - ASoc Machine driver for Intel Byt CR platform
- *
- *  Copyright (C) 2014 Intel Corp
- *  Author: Subhransu S. Prusty <subhransu.s.prusty@intel.com>
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/init.h>
@@ -71,8 +63,8 @@ enum {
 #define BYT_RT5640_OVCD_SF(quirk)	(((quirk) & GENMASK(14, 13)) >> 13)
 #define BYT_RT5640_JD_NOT_INV		BIT(16)
 #define BYT_RT5640_MONO_SPEAKER		BIT(17)
-#define BYT_RT5640_DIFF_MIC		BIT(18) /* default is single-ended */
-#define BYT_RT5640_SSP2_AIF2		BIT(19) /* default is using AIF1  */
+#define BYT_RT5640_DIFF_MIC		BIT(18)  
+#define BYT_RT5640_SSP2_AIF2		BIT(19)  
 #define BYT_RT5640_SSP0_AIF1		BIT(20)
 #define BYT_RT5640_SSP0_AIF2		BIT(21)
 #define BYT_RT5640_MCLK_EN		BIT(22)
@@ -92,7 +84,7 @@ enum {
 	 BYT_RT5640_OVCD_SF_0P75 |			\
 	 BYT_RT5640_DIFF_MIC)
 
-/* in-diff or dmic-pin + jdsrc + ovcd-th + -sf + jd-inv + terminating entry */
+ 
 #define MAX_NO_PROPS 6
 
 struct byt_rt5640_private {
@@ -204,17 +196,17 @@ static int byt_rt5640_prepare_and_enable_pll1(struct snd_soc_dai *codec_dai,
 {
 	int ret;
 
-	/* Configure the PLL before selecting it */
+	 
 	if (!(byt_rt5640_quirk & BYT_RT5640_MCLK_EN)) {
-		/* use bitclock as PLL input */
+		 
 		if ((byt_rt5640_quirk & BYT_RT5640_SSP0_AIF1) ||
 		    (byt_rt5640_quirk & BYT_RT5640_SSP0_AIF2)) {
-			/* 2x16 bit slots on SSP0 */
+			 
 			ret = snd_soc_dai_set_pll(codec_dai, 0,
 						  RT5640_PLL1_S_BCLK1,
 						  rate * 32, rate * 512);
 		} else {
-			/* 2x15 bit slots on SSP2 */
+			 
 			ret = snd_soc_dai_set_pll(codec_dai, 0,
 						  RT5640_PLL1_S_BCLK1,
 						  rate * 50, rate * 512);
@@ -284,11 +276,7 @@ static int platform_clock_control(struct snd_soc_dapm_widget *w,
 		}
 		ret = byt_rt5640_prepare_and_enable_pll1(codec_dai, 48000);
 	} else {
-		/*
-		 * Set codec clock source to internal clock before
-		 * turning off the platform clock. Codec needs clock
-		 * for Jack detection and button press
-		 */
+		 
 		ret = snd_soc_dai_set_sysclk(codec_dai, RT5640_SCLK_S_RCCLK,
 					     48000 * 512,
 					     SND_SOC_CLOCK_IN);
@@ -313,10 +301,7 @@ static int byt_rt5640_event_lineout(struct snd_soc_dapm_widget *w,
 	if (!(byt_rt5640_quirk & BYT_RT5640_LINEOUT_AS_HP2))
 		return 0;
 
-	/*
-	 * On devices which use line-out as a second headphones output,
-	 * the codec's GPIO1 pin is used to enable an external HP-amp.
-	 */
+	 
 
 	codec_dai = byt_rt5640_get_codec_dai(w->dapm);
 	if (!codec_dai)
@@ -458,7 +443,7 @@ static struct snd_soc_jack_pin rt5640_pins[] = {
 
 static struct snd_soc_jack_pin rt5640_pins2[] = {
 	{
-		/* The 2nd headset jack uses lineout with an external HP-amp */
+		 
 		.pin	= "Line Out",
 		.mask	= SND_JACK_HEADPHONE,
 	},
@@ -534,9 +519,9 @@ static int byt_rt5640_aif1_hw_params(struct snd_pcm_substream *substream,
 	return byt_rt5640_prepare_and_enable_pll1(dai, params_rate(params));
 }
 
-/* Please keep this list alphabetically sorted */
+ 
 static const struct dmi_system_id byt_rt5640_quirk_table[] = {
-	{	/* Acer Iconia One 7 B1-750 */
+	{	 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Insyde"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "VESPA2"),
@@ -548,7 +533,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_SSP0_AIF1 |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* Acer Iconia Tab 8 W1-810 */
+	{	 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Acer"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Iconia W1-810"),
@@ -560,7 +545,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_SSP0_AIF1 |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* Acer One 10 S1002 */
+	{	 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "One S1002"),
@@ -586,12 +571,12 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_MCLK_EN),
 	},
 	{
-		/* Advantech MICA-071 */
+		 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Advantech"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "MICA-071"),
 		},
-		/* OVCD Th = 1500uA to reliable detect head-phones vs -set */
+		 
 		.driver_data = (void *)(BYT_RT5640_IN3_MAP |
 					BYT_RT5640_JD_SRC_JD2_IN4N |
 					BYT_RT5640_OVCD_TH_1500UA |
@@ -673,11 +658,11 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_MCLK_EN |
 					BYT_RT5640_USE_AMCR0F28),
 	},
-	{	/* Chuwi Vi8 (CWI506) */
+	{	 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Insyde"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "i86"),
-			/* The above are too generic, also match BIOS info */
+			 
 			DMI_MATCH(DMI_BIOS_VERSION, "CHUWI.D86JLBNR"),
 		},
 		.driver_data = (void *)(BYTCR_INPUT_DEFAULTS |
@@ -686,7 +671,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_MCLK_EN),
 	},
 	{
-		/* Chuwi Vi10 (CWI505) */
+		 
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "Hampoo"),
 			DMI_MATCH(DMI_BOARD_NAME, "BYT-PF02"),
@@ -702,7 +687,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_MCLK_EN),
 	},
 	{
-		/* Chuwi Hi8 (CWI509) */
+		 
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "Hampoo"),
 			DMI_MATCH(DMI_BOARD_NAME, "BYT-PA03C"),
@@ -725,7 +710,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 		},
 		.driver_data = (void *)(BYT_RT5640_DMIC1_MAP),
 	},
-	{	/* Connect Tablet 9 */
+	{	 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Connect"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Tablet 9"),
@@ -747,7 +732,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_MONO_SPEAKER |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* Estar Beauty HD MID 7316R */
+	{	 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Estar"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "eSTAR BEAUTY HD Intel Quad core"),
@@ -757,11 +742,11 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_SSP0_AIF1 |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* Glavey TM800A550L */
+	{	 
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
 			DMI_MATCH(DMI_BOARD_NAME, "Aptio CRB"),
-			/* Above strings are too generic, also match on BIOS version */
+			 
 			DMI_MATCH(DMI_BIOS_VERSION, "ZY-8-BI-PX4S70VTR400-X423B-005-D"),
 		},
 		.driver_data = (void *)(BYTCR_INPUT_DEFAULTS |
@@ -780,7 +765,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_HSMIC2_ON_IN1 |
 					BYT_RT5640_JD_HP_ELITEP_1000G2),
 	},
-	{	/* HP Pavilion x2 10-k0XX, 10-n0XX */
+	{	 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "HP Pavilion x2 Detachable"),
@@ -792,7 +777,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_SSP0_AIF1 |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* HP Pavilion x2 10-p0XX */
+	{	 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "HP x2 Detachable 10-p0XX"),
@@ -803,7 +788,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_OVCD_SF_0P75 |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* HP Pro Tablet 408 */
+	{	 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "HP Pro Tablet 408"),
@@ -815,7 +800,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_SSP0_AIF1 |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* HP Stream 7 */
+	{	 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "HP Stream 7 Tablet"),
@@ -826,7 +811,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_SSP0_AIF1 |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* HP Stream 8 */
+	{	 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "HP Stream 8 Tablet"),
@@ -836,7 +821,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_SSP0_AIF1 |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* I.T.Works TW891 */
+	{	 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "To be filled by O.E.M."),
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "TW891"),
@@ -848,7 +833,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_SSP0_AIF1 |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* Lamina I8270 / T701BR.SE */
+	{	 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "Lamina"),
 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "T701BR.SE"),
@@ -859,7 +844,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_SSP0_AIF1 |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* Lenovo Miix 2 8 */
+	{	 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "LENOVO"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "20326"),
@@ -872,7 +857,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_MONO_SPEAKER |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* Lenovo Miix 3-830 */
+	{	 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "LENOVO"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_VERSION, "Lenovo MIIX 3-830"),
@@ -886,7 +871,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_SSP0_AIF1 |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* Linx Linx7 tablet */
+	{	 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "LINX"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "LINX7"),
@@ -898,11 +883,11 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_MCLK_EN),
 	},
 	{
-		/* Medion Lifetab S10346 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
 			DMI_MATCH(DMI_BOARD_NAME, "Aptio CRB"),
-			/* Above strings are much too generic, also match on BIOS date */
+			 
 			DMI_MATCH(DMI_BIOS_DATE, "10/22/2015"),
 		},
 		.driver_data = (void *)(BYTCR_INPUT_DEFAULTS |
@@ -910,7 +895,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_SSP0_AIF1 |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* Mele PCG03 Mini PC */
+	{	 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "Mini PC"),
 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "Mini PC"),
@@ -919,7 +904,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_NO_SPEAKERS |
 					BYT_RT5640_SSP0_AIF1),
 	},
-	{	/* MPMAN Converter 9, similar hw as the I.T.Works TW891 2-in-1 */
+	{	 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "MPMAN"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Converter9"),
@@ -930,7 +915,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_MCLK_EN),
 	},
 	{
-		/* MPMAN MPWIN895CL */
+		 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "MPMAN"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "MPWIN8900CL"),
@@ -940,7 +925,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_SSP0_AIF1 |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* MSI S100 tablet */
+	{	 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Micro-Star International Co., Ltd."),
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "S100"),
@@ -953,7 +938,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_DIFF_MIC |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* Nuvison/TMax TM800W560 */
+	{	 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "TMAX"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "TM800W560L"),
@@ -967,11 +952,11 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_SSP0_AIF1 |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* Onda v975w */
+	{	 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "Aptio CRB"),
-			/* The above are too generic, also match BIOS info */
+			 
 			DMI_EXACT_MATCH(DMI_BIOS_VERSION, "5.6.5"),
 			DMI_EXACT_MATCH(DMI_BIOS_DATE, "07/25/2014"),
 		},
@@ -982,11 +967,11 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_DIFF_MIC |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* Pipo W4 */
+	{	 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "Aptio CRB"),
-			/* The above are too generic, also match BIOS info */
+			 
 			DMI_MATCH(DMI_BIOS_VERSION, "V8L_WIN32_CHIPHD"),
 		},
 		.driver_data = (void *)(BYTCR_INPUT_DEFAULTS |
@@ -994,11 +979,11 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_SSP0_AIF1 |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* Point of View Mobii TAB-P800W (V2.0) */
+	{	 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "Aptio CRB"),
-			/* The above are too generic, also match BIOS info */
+			 
 			DMI_EXACT_MATCH(DMI_BIOS_VERSION, "3BAIR1014"),
 			DMI_EXACT_MATCH(DMI_BIOS_DATE, "10/24/2014"),
 		},
@@ -1011,11 +996,11 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_SSP0_AIF2 |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* Point of View Mobii TAB-P800W (V2.1) */
+	{	 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "Aptio CRB"),
-			/* The above are too generic, also match BIOS info */
+			 
 			DMI_EXACT_MATCH(DMI_BIOS_VERSION, "3BAIR1013"),
 			DMI_EXACT_MATCH(DMI_BIOS_DATE, "08/22/2014"),
 		},
@@ -1028,7 +1013,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_SSP0_AIF2 |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* Point of View Mobii TAB-P1005W-232 (V2.0) */
+	{	 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "POV"),
 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "I102A"),
@@ -1042,7 +1027,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_MCLK_EN),
 	},
 	{
-		/* Prowise PT301 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Prowise"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "PT301"),
@@ -1056,7 +1041,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_MCLK_EN),
 	},
 	{
-		/* Teclast X89 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "TECLAST"),
 			DMI_MATCH(DMI_BOARD_NAME, "tPAD"),
@@ -1068,7 +1053,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_SSP0_AIF1 |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* Toshiba Satellite Click Mini L9W-B */
+	{	 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "TOSHIBA"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "SATELLITE Click Mini L9W-B"),
@@ -1080,7 +1065,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_SSP0_AIF1 |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* Toshiba Encore WT8-A */
+	{	 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "TOSHIBA"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "TOSHIBA WT8-A"),
@@ -1092,7 +1077,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_JD_NOT_INV |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* Toshiba Encore WT10-A */
+	{	 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "TOSHIBA"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "TOSHIBA WT10-A-103"),
@@ -1104,11 +1089,11 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_SSP0_AIF2 |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* Voyo Winpad A15 */
+	{	 
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
 			DMI_MATCH(DMI_BOARD_NAME, "Aptio CRB"),
-			/* Above strings are too generic, also match on BIOS date */
+			 
 			DMI_MATCH(DMI_BIOS_DATE, "11/20/2014"),
 		},
 		.driver_data = (void *)(BYT_RT5640_IN1_MAP |
@@ -1118,7 +1103,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 					BYT_RT5640_DIFF_MIC |
 					BYT_RT5640_MCLK_EN),
 	},
-	{	/* Catch-all for generic Insyde tablets, must be last */
+	{	 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Insyde"),
 		},
@@ -1130,10 +1115,7 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
 	{}
 };
 
-/*
- * Note this MUST be called before snd_soc_register_card(), so that the props
- * are in place before the codec component driver's probe function parses them.
- */
+ 
 static int byt_rt5640_add_codec_device_props(struct device *i2c_dev,
 					     struct byt_rt5640_private *priv)
 {
@@ -1184,7 +1166,7 @@ static int byt_rt5640_add_codec_device_props(struct device *i2c_dev,
 
 	fwnode = fwnode_create_software_node(props, NULL);
 	if (IS_ERR(fwnode)) {
-		/* put_device() is handled in caller */
+		 
 		return PTR_ERR(fwnode);
 	}
 
@@ -1195,7 +1177,7 @@ static int byt_rt5640_add_codec_device_props(struct device *i2c_dev,
 	return ret;
 }
 
-/* Some Android devs specify IRQs/GPIOS in a special AMCR0F28 ACPI device */
+ 
 static const struct acpi_gpio_params amcr0f28_jd_gpio = { 1, 0, false };
 
 static const struct acpi_gpio_mapping amcr0f28_gpios[] = {
@@ -1253,7 +1235,7 @@ static int byt_rt5640_init(struct snd_soc_pcm_runtime *runtime)
 	card->dapm.idle_bias_off = true;
 	jack_data->use_platform_clock = true;
 
-	/* Start with RC clk for jack-detect (we disable MCLK below) */
+	 
 	if (byt_rt5640_quirk & BYT_RT5640_MCLK_EN)
 		snd_soc_component_update_bits(component, RT5640_GLB_CLK,
 			RT5640_SCLK_SRC_MASK, RT5640_SCLK_SRC_RCCLK);
@@ -1345,14 +1327,7 @@ static int byt_rt5640_init(struct snd_soc_pcm_runtime *runtime)
 			return ret;
 	}
 
-	/*
-	 * The firmware might enable the clock at boot (this information
-	 * may or may not be reflected in the enable clock register).
-	 * To change the rate we must disable the clock first to cover
-	 * these cases. Due to common clock framework restrictions that
-	 * do not allow to disable a clock that has not been enabled,
-	 * we need to enable the clock first.
-	 */
+	 
 	ret = clk_prepare_enable(priv->mclk);
 	if (!ret)
 		clk_disable_unprepare(priv->mclk);
@@ -1443,26 +1418,22 @@ static int byt_rt5640_codec_fixup(struct snd_soc_pcm_runtime *rtd,
 						SNDRV_PCM_HW_PARAM_CHANNELS);
 	int ret, bits;
 
-	/* The DSP will convert the FE rate to 48k, stereo */
+	 
 	rate->min = rate->max = 48000;
 	channels->min = channels->max = 2;
 
 	if ((byt_rt5640_quirk & BYT_RT5640_SSP0_AIF1) ||
 	    (byt_rt5640_quirk & BYT_RT5640_SSP0_AIF2)) {
-		/* set SSP0 to 16-bit */
+		 
 		params_set_format(params, SNDRV_PCM_FORMAT_S16_LE);
 		bits = 16;
 	} else {
-		/* set SSP2 to 24-bit */
+		 
 		params_set_format(params, SNDRV_PCM_FORMAT_S24_LE);
 		bits = 24;
 	}
 
-	/*
-	 * Default mode for SSP configuration is TDM 4 slot, override config
-	 * with explicit setting to I2S 2ch. The word length is set with
-	 * dai_set_tdm_slot() since there is no other API exposed
-	 */
+	 
 	ret = snd_soc_dai_set_fmt(asoc_rtd_to_cpu(rtd, 0),
 				  SND_SOC_DAIFMT_I2S     |
 				  SND_SOC_DAIFMT_NB_NF   |
@@ -1505,12 +1476,12 @@ SND_SOC_DAILINK_DEF(deepbuffer,
 	DAILINK_COMP_ARRAY(COMP_CPU("deepbuffer-cpu-dai")));
 
 SND_SOC_DAILINK_DEF(ssp2_port,
-	/* overwritten for ssp0 routing */
+	 
 	DAILINK_COMP_ARRAY(COMP_CPU("ssp2-port")));
 SND_SOC_DAILINK_DEF(ssp2_codec,
 	DAILINK_COMP_ARRAY(COMP_CODEC(
-	/* overwritten with HID */ "i2c-10EC5640:00",
-	/* changed w/ quirk */	"rt5640-aif1")));
+	  "i2c-10EC5640:00",
+	 	"rt5640-aif1")));
 
 SND_SOC_DAILINK_DEF(platform,
 	DAILINK_COMP_ARRAY(COMP_PLATFORM("sst-mfld-platform")));
@@ -1535,7 +1506,7 @@ static struct snd_soc_dai_link byt_rt5640_dais[] = {
 		.ops = &byt_rt5640_aif1_ops,
 		SND_SOC_DAILINK_REG(deepbuffer, dummy, platform),
 	},
-		/* back ends */
+		 
 	{
 		.name = "SSP2-Codec",
 		.id = 0,
@@ -1552,12 +1523,12 @@ static struct snd_soc_dai_link byt_rt5640_dais[] = {
 	},
 };
 
-/* SoC card */
+ 
 static char byt_rt5640_codec_name[SND_ACPI_I2C_ID_LEN];
 #if !IS_ENABLED(CONFIG_SND_SOC_INTEL_USER_FRIENDLY_LONG_NAMES)
-static char byt_rt5640_long_name[40]; /* = "bytcr-rt5640-*-spk-*-mic" */
+static char byt_rt5640_long_name[40];  
 #endif
-static char byt_rt5640_components[64]; /* = "cfg-spk:* cfg-mic:* ..." */
+static char byt_rt5640_components[64];  
 
 static int byt_rt5640_suspend(struct snd_soc_card *card)
 {
@@ -1597,12 +1568,12 @@ static int byt_rt5640_resume(struct snd_soc_card *card)
 	return 0;
 }
 
-/* use space before codec name to simplify card ID, and simplify driver name */
-#define SOF_CARD_NAME "bytcht rt5640" /* card name will be 'sof-bytcht rt5640' */
+ 
+#define SOF_CARD_NAME "bytcht rt5640"  
 #define SOF_DRIVER_NAME "SOF"
 
 #define CARD_NAME "bytcr-rt5640"
-#define DRIVER_NAME NULL /* card name will be used for driver name */
+#define DRIVER_NAME NULL  
 
 static struct snd_soc_card byt_rt5640_card = {
 	.owner = THIS_MODULE,
@@ -1617,9 +1588,9 @@ static struct snd_soc_card byt_rt5640_card = {
 	.resume_post = byt_rt5640_resume,
 };
 
-struct acpi_chan_package {   /* ACPICA seems to require 64 bit integers */
-	u64 aif_value;       /* 1: AIF1, 2: AIF2 */
-	u64 mclock_value;    /* usually 25MHz (0x17d7940), ignored */
+struct acpi_chan_package {    
+	u64 aif_value;        
+	u64 mclock_value;     
 };
 
 static int snd_byt_rt5640_mc_probe(struct platform_device *pdev)
@@ -1646,11 +1617,11 @@ static int snd_byt_rt5640_mc_probe(struct platform_device *pdev)
 	if (!priv)
 		return -ENOMEM;
 
-	/* register the soc card */
+	 
 	byt_rt5640_card.dev = dev;
 	snd_soc_card_set_drvdata(&byt_rt5640_card, priv);
 
-	/* fix index of codec dai */
+	 
 	for (i = 0; i < ARRAY_SIZE(byt_rt5640_dais); i++) {
 		if (!strcmp(byt_rt5640_dais[i].codecs->name,
 			    "i2c-10EC5640:00")) {
@@ -1659,7 +1630,7 @@ static int snd_byt_rt5640_mc_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* fixup codec name based on HID */
+	 
 	adev = acpi_dev_get_first_match_dev(mach->id, NULL, -1);
 	if (adev) {
 		snprintf(byt_rt5640_codec_name, sizeof(byt_rt5640_codec_name),
@@ -1676,27 +1647,18 @@ static int snd_byt_rt5640_mc_probe(struct platform_device *pdev)
 		return -EPROBE_DEFER;
 	priv->codec_dev = get_device(codec_dev);
 
-	/*
-	 * swap SSP0 if bytcr is detected
-	 * (will be overridden if DMI quirk is detected)
-	 */
+	 
 	if (soc_intel_is_byt()) {
 		if (mach->mach_params.acpi_ipc_irq_index == 0)
 			is_bytcr = true;
 	}
 
 	if (is_bytcr) {
-		/*
-		 * Baytrail CR platforms may have CHAN package in BIOS, try
-		 * to find relevant routing quirk based as done on Windows
-		 * platforms. We have to read the information directly from the
-		 * BIOS, at this stage the card is not created and the links
-		 * with the codec driver/pdata are non-existent
-		 */
+		 
 
 		struct acpi_chan_package chan_package = { 0 };
 
-		/* format specified: 2 64-bit integers */
+		 
 		struct acpi_buffer format = {sizeof("NN"), "NN"};
 		struct acpi_buffer state = {0, NULL};
 		struct snd_soc_acpi_package_context pkg_ctx;
@@ -1727,11 +1689,11 @@ static int snd_byt_rt5640_mc_probe(struct platform_device *pdev)
 		}
 
 		if (!pkg_found) {
-			/* no BIOS indications, assume SSP0-AIF2 connection */
+			 
 			byt_rt5640_quirk |= BYT_RT5640_SSP0_AIF2;
 		}
 
-		/* change defaults for Baytrail-CR capture */
+		 
 		byt_rt5640_quirk |= BYTCR_INPUT_DEFAULTS;
 	} else {
 		byt_rt5640_quirk |= BYT_RT5640_DMIC1_MAP |
@@ -1740,7 +1702,7 @@ static int snd_byt_rt5640_mc_probe(struct platform_device *pdev)
 				    BYT_RT5640_OVCD_SF_0P75;
 	}
 
-	/* check quirks before creating card */
+	 
 	dmi_id = dmi_first_match(byt_rt5640_quirk_table);
 	if (dmi_id)
 		byt_rt5640_quirk = (unsigned long)dmi_id->driver_data;
@@ -1764,7 +1726,7 @@ static int snd_byt_rt5640_mc_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Must be called before register_card, also see declaration comment. */
+	 
 	ret_val = byt_rt5640_add_codec_device_props(codec_dev, priv);
 	if (ret_val)
 		goto err_remove_gpios;
@@ -1790,10 +1752,7 @@ static int snd_byt_rt5640_mc_probe(struct platform_device *pdev)
 						"Failed to get MCLK from pmc_plt_clk_3\n");
 			goto err;
 		}
-		/*
-		 * Fall back to bit clock usage when clock is not
-		 * available likely due to missing dependencies.
-		 */
+		 
 		if (!priv->mclk)
 			byt_rt5640_quirk &= ~BYT_RT5640_MCLK_EN;
 	}
@@ -1834,7 +1793,7 @@ static int snd_byt_rt5640_mc_probe(struct platform_device *pdev)
 	byt_rt5640_card.long_name = byt_rt5640_long_name;
 #endif
 
-	/* override platform name, if required */
+	 
 	platform_name = mach->mach_params.platform;
 
 	ret_val = snd_soc_fixup_dai_links_platform_name(&byt_rt5640_card,
@@ -1844,7 +1803,7 @@ static int snd_byt_rt5640_mc_probe(struct platform_device *pdev)
 
 	sof_parent = snd_soc_acpi_sof_parent(dev);
 
-	/* set card and driver name */
+	 
 	if (sof_parent) {
 		byt_rt5640_card.name = SOF_CARD_NAME;
 		byt_rt5640_card.driver_name = SOF_DRIVER_NAME;
@@ -1853,7 +1812,7 @@ static int snd_byt_rt5640_mc_probe(struct platform_device *pdev)
 		byt_rt5640_card.driver_name = DRIVER_NAME;
 	}
 
-	/* set pm ops */
+	 
 	if (sof_parent)
 		dev->driver->pm = &snd_soc_pm_ops;
 

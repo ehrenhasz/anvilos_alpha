@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Common functions for loongson I2S controller driver
-//
-// Copyright (C) 2023 Loongson Technology Corporation Limited.
-// Author: Yingkun Meng <mengyingkun@loongson.cn>
-//
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -77,7 +77,7 @@ static int loongson_i2s_hw_params(struct snd_pcm_substream *substream,
 					       (bits * chans * fs * 2)) - 1;
 		mclk_ratio = DIV_ROUND_CLOSEST(clk_rate, (sysclk * 2)) - 1;
 
-		/* According to 2k1000LA user manual, set bits == depth */
+		 
 		val |= (bits << 24);
 		val |= (bits << 16);
 		val |= (bclk_ratio << 8);
@@ -145,7 +145,7 @@ static int loongson_i2s_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	case SND_SOC_DAIFMT_BC_FC:
 		break;
 	case SND_SOC_DAIFMT_BP_FC:
-		/* Enable master mode */
+		 
 		regmap_update_bits(i2s->regmap, LS_I2S_CTRL, I2S_CTRL_MASTER,
 				   I2S_CTRL_MASTER);
 		if (i2s->rev_id == 1) {
@@ -158,7 +158,7 @@ static int loongson_i2s_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		}
 		break;
 	case SND_SOC_DAIFMT_BC_FP:
-		/* Enable MCLK */
+		 
 		if (i2s->rev_id == 1) {
 			regmap_update_bits(i2s->regmap, LS_I2S_CTRL,
 					   I2S_CTRL_MCLK_EN,
@@ -172,7 +172,7 @@ static int loongson_i2s_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		}
 		break;
 	case SND_SOC_DAIFMT_BP_FP:
-		/* Enable MCLK */
+		 
 		if (i2s->rev_id == 1) {
 			regmap_update_bits(i2s->regmap, LS_I2S_CTRL,
 					   I2S_CTRL_MCLK_EN,
@@ -185,7 +185,7 @@ static int loongson_i2s_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 				dev_warn(dai->dev, "wait MCLK ready timeout\n");
 		}
 
-		/* Enable master mode */
+		 
 		regmap_update_bits(i2s->regmap, LS_I2S_CTRL, I2S_CTRL_MASTER,
 				   I2S_CTRL_MASTER);
 		if (i2s->rev_id == 1) {

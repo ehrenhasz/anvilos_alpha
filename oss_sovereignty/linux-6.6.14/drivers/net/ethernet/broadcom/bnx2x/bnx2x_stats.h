@@ -1,21 +1,4 @@
-/* bnx2x_stats.h: QLogic Everest network driver.
- *
- * Copyright (c) 2007-2013 Broadcom Corporation
- * Copyright (c) 2014 QLogic Corporation
- * All rights reserved
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- *
- * Maintained by: Ariel Elior <ariel.elior@qlogic.com>
- * Written by: Eliezer Tamir
- * Based on code from Michael Chan's bnx2 driver
- * UDP CSUM errata workaround by Arik Gendelman
- * Slowpath and fastpath rework by Vladislav Zolotarov
- * Statistics and Link management by Yitchak Gertner
- *
- */
+ 
 #ifndef BNX2X_STATS_H
 #define BNX2X_STATS_H
 
@@ -193,7 +176,7 @@ struct bnx2x_eth_stats {
 
 	u32 nig_timer_max;
 
-	/* TPA */
+	 
 	u32 total_tpa_aggregations_hi;
 	u32 total_tpa_aggregations_lo;
 	u32 total_tpa_aggregated_frames_hi;
@@ -201,20 +184,20 @@ struct bnx2x_eth_stats {
 	u32 total_tpa_bytes_hi;
 	u32 total_tpa_bytes_lo;
 
-	/* PFC */
+	 
 	u32 pfc_frames_received_hi;
 	u32 pfc_frames_received_lo;
 	u32 pfc_frames_sent_hi;
 	u32 pfc_frames_sent_lo;
 
-	/* Recovery */
+	 
 	u32 recoverable_error;
 	u32 unrecoverable_error;
 	u32 driver_filtered_tx_pkt;
-	/* src: Clear-on-Read register; Will not survive PMF Migration */
+	 
 	u32 eee_tx_lpi;
 
-	/* PTP */
+	 
 	u32 ptp_skip_tx_ts;
 };
 
@@ -267,7 +250,7 @@ struct bnx2x_eth_q_stats {
 	u32 total_transmitted_dropped_packets_error_hi;
 	u32 total_transmitted_dropped_packets_error_lo;
 
-	/* TPA */
+	 
 	u32 total_tpa_aggregations_hi;
 	u32 total_tpa_aggregations_lo;
 	u32 total_tpa_aggregated_frames_hi;
@@ -283,7 +266,7 @@ struct bnx2x_eth_stats_old {
 };
 
 struct bnx2x_eth_q_stats_old {
-	/* Fields to perserve over fw reset*/
+	 
 	u32 total_unicast_bytes_received_hi;
 	u32 total_unicast_bytes_received_lo;
 	u32 total_broadcast_bytes_received_hi;
@@ -299,7 +282,7 @@ struct bnx2x_eth_q_stats_old {
 	u32 total_tpa_bytes_hi;
 	u32 total_tpa_bytes_lo;
 
-	/* Fields to perserve last of */
+	 
 	u32 total_bytes_received_hi;
 	u32 total_bytes_received_lo;
 	u32 total_bytes_transmitted_hi;
@@ -340,11 +323,9 @@ struct bnx2x_fw_port_stats_old {
 	 u32 mac_discard;
 };
 
-/****************************************************************************
-* Macros
-****************************************************************************/
+ 
 
-/* sum[hi:lo] += add[hi:lo] */
+ 
 #define ADD_64(s_hi, a_hi, s_lo, a_lo) \
 	do { \
 		s_lo += a_lo; \
@@ -354,7 +335,7 @@ struct bnx2x_fw_port_stats_old {
 #define LE32_0 ((__force __le32) 0)
 #define LE16_0 ((__force __le16) 0)
 
-/* The _force is for cases where high value is 0 */
+ 
 #define ADD_64_LE(s_hi, a_hi_le, s_lo, a_lo_le) \
 		ADD_64(s_hi, le32_to_cpu(a_hi_le), \
 		       s_lo, le32_to_cpu(a_lo_le))
@@ -363,28 +344,28 @@ struct bnx2x_fw_port_stats_old {
 		ADD_64(s_hi, le16_to_cpu(a_hi_le), \
 		       s_lo, le16_to_cpu(a_lo_le))
 
-/* difference = minuend - subtrahend */
+ 
 #define DIFF_64(d_hi, m_hi, s_hi, d_lo, m_lo, s_lo) \
 	do { \
 		if (m_lo < s_lo) { \
-			/* underflow */ \
+			  \
 			d_hi = m_hi - s_hi; \
 			if (d_hi > 0) { \
-				/* we can 'loan' 1 */ \
+				  \
 				d_hi--; \
 				d_lo = m_lo + (UINT_MAX - s_lo) + 1; \
 			} else { \
-				/* m_hi <= s_hi */ \
+				  \
 				d_hi = 0; \
 				d_lo = 0; \
 			} \
 		} else { \
-			/* m_lo >= s_lo */ \
+			  \
 			if (m_hi < s_hi) { \
 				d_hi = 0; \
 				d_lo = 0; \
 			} else { \
-				/* m_hi >= s_hi */ \
+				  \
 				d_hi = m_hi - s_hi; \
 				d_lo = m_lo - s_lo; \
 			} \
@@ -409,7 +390,7 @@ struct bnx2x_fw_port_stats_old {
 		       estats->t##_lo, diff.lo); \
 	} while (0)
 
-/* sum[hi:lo] += add */
+ 
 #define ADD_EXTEND_64(s_hi, s_lo, a) \
 	do { \
 		s_lo += a; \
@@ -526,13 +507,13 @@ struct bnx2x_fw_port_stats_old {
 		estats_old->t##_lo = estats->t##_lo; \
 	} while (0)
 
-/* minuend -= subtrahend */
+ 
 #define SUB_64(m_hi, s_hi, m_lo, s_lo) \
 	do { \
 		DIFF_64(m_hi, m_hi, s_hi, m_lo, m_lo, s_lo); \
 	} while (0)
 
-/* minuend[hi:lo] -= subtrahend */
+ 
 #define SUB_EXTEND_64(m_hi, m_lo, s) \
 	do { \
 		SUB_64(m_hi, 0, m_lo, s); \
@@ -544,7 +525,7 @@ struct bnx2x_fw_port_stats_old {
 		SUB_EXTEND_64(qstats->t##_hi, qstats->t##_lo, diff); \
 	} while (0)
 
-/* forward */
+ 
 struct bnx2x;
 
 void bnx2x_memset_stats(struct bnx2x *bp);
@@ -554,13 +535,9 @@ int bnx2x_stats_safe_exec(struct bnx2x *bp,
 			  void (func_to_exec)(void *cookie),
 			  void *cookie);
 
-/**
- * bnx2x_save_statistics - save statistics when unloading.
- *
- * @bp:		driver handle
- */
+ 
 void bnx2x_save_statistics(struct bnx2x *bp);
 
 void bnx2x_afex_collect_stats(struct bnx2x *bp, void *void_afex_stats,
 			      u32 stats_type);
-#endif /* BNX2X_STATS_H */
+#endif  

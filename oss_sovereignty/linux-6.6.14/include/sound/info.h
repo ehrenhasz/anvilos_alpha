@@ -1,24 +1,21 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+ 
 #ifndef __SOUND_INFO_H
 #define __SOUND_INFO_H
 
-/*
- *  Header file for info interface
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- */
+ 
 
 #include <linux/poll.h>
 #include <linux/seq_file.h>
 #include <sound/core.h>
 
-/* buffer for information */
+ 
 struct snd_info_buffer {
-	char *buffer;		/* pointer to begin of buffer */
-	unsigned int curr;	/* current position in buffer */
-	unsigned int size;	/* current size */
-	unsigned int len;	/* total length of buffer */
-	int stop;		/* stop flag */
-	int error;		/* error code */
+	char *buffer;		 
+	unsigned int curr;	 
+	unsigned int size;	 
+	unsigned int len;	 
+	int stop;		 
+	int error;		 
 };
 
 #define SNDRV_INFO_CONTENT_TEXT		0
@@ -94,15 +91,7 @@ void snd_card_info_read_oss(struct snd_info_buffer *buffer);
 static inline void snd_card_info_read_oss(struct snd_info_buffer *buffer) {}
 #endif
 
-/**
- * snd_iprintf - printf on the procfs buffer
- * @buf: the procfs buffer
- * @fmt: the printf format
- *
- * Outputs the string on the procfs buffer just like printf().
- *
- * Return: zero for success, or a negative error code.
- */
+ 
 #define snd_iprintf(buf, fmt, args...) \
 	seq_printf((struct seq_file *)(buf)->buffer, fmt, ##args)
 
@@ -126,7 +115,7 @@ void snd_info_card_disconnect(struct snd_card *card);
 void snd_info_card_id_change(struct snd_card *card);
 int snd_info_register(struct snd_info_entry *entry);
 
-/* for card drivers */
+ 
 static inline int snd_card_proc_new(struct snd_card *card, const char *name,
 				    struct snd_info_entry **entryp)
 {
@@ -191,16 +180,7 @@ static inline int snd_info_check_reserved_words(const char *str) { return 1; }
 
 #endif
 
-/**
- * snd_card_ro_proc_new - Create a read-only text proc file entry for the card
- * @card: the card instance
- * @name: the file name
- * @private_data: the arbitrary private data
- * @read: the read callback
- *
- * This proc file entry will be registered via snd_card_register() call, and
- * it will be removed automatically at the card removal, too.
- */
+ 
 static inline int
 snd_card_ro_proc_new(struct snd_card *card, const char *name,
 		     void *private_data,
@@ -210,9 +190,7 @@ snd_card_ro_proc_new(struct snd_card *card, const char *name,
 	return snd_card_rw_proc_new(card, name, private_data, read, NULL);
 }
 
-/*
- * OSS info part
- */
+ 
 
 #if defined(CONFIG_SND_OSSEMUL) && defined(CONFIG_SND_PROC_FS)
 
@@ -227,6 +205,6 @@ snd_card_ro_proc_new(struct snd_card *card, const char *name,
 int snd_oss_info_register(int dev, int num, char *string);
 #define snd_oss_info_unregister(dev, num) snd_oss_info_register(dev, num, NULL)
 
-#endif /* CONFIG_SND_OSSEMUL && CONFIG_SND_PROC_FS */
+#endif  
 
-#endif /* __SOUND_INFO_H */
+#endif  

@@ -1,36 +1,19 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
- * All rights reserved.
- *
- * Purpose: rf function code
- *
- * Author: Jerry Chen
- *
- * Date: Feb. 19, 2004
- *
- * Functions:
- *      IFRFbWriteEmbedded      - Embedded write RF register via MAC
- *
- * Revision History:
- *	RobertYu 2005
- *	chester 2008
- *
- */
+
+ 
 
 #include "mac.h"
 #include "srom.h"
 #include "rf.h"
 #include "baseband.h"
 
-#define BY_AL2230_REG_LEN     23 /* 24bit */
+#define BY_AL2230_REG_LEN     23  
 #define CB_AL2230_INIT_SEQ    15
-#define SWITCH_CHANNEL_DELAY_AL2230 200 /* us */
+#define SWITCH_CHANNEL_DELAY_AL2230 200  
 #define AL2230_PWR_IDX_LEN    64
 
-#define BY_AL7230_REG_LEN     23 /* 24bit */
+#define BY_AL7230_REG_LEN     23  
 #define CB_AL7230_INIT_SEQ    16
-#define SWITCH_CHANNEL_DELAY_AL7230 200 /* us */
+#define SWITCH_CHANNEL_DELAY_AL7230 200  
 #define AL7230_PWR_IDX_LEN    64
 
 static const unsigned long al2230_init_table[CB_AL2230_INIT_SEQ] = {
@@ -52,37 +35,37 @@ static const unsigned long al2230_init_table[CB_AL2230_INIT_SEQ] = {
 };
 
 static const unsigned long al2230_channel_table0[CB_MAX_CHANNEL] = {
-	0x03F79000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 1, Tf = 2412MHz */
-	0x03F79000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 2, Tf = 2417MHz */
-	0x03E79000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 3, Tf = 2422MHz */
-	0x03E79000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 4, Tf = 2427MHz */
-	0x03F7A000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 5, Tf = 2432MHz */
-	0x03F7A000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 6, Tf = 2437MHz */
-	0x03E7A000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 7, Tf = 2442MHz */
-	0x03E7A000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 8, Tf = 2447MHz */
-	0x03F7B000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 9, Tf = 2452MHz */
-	0x03F7B000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 10, Tf = 2457MHz */
-	0x03E7B000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 11, Tf = 2462MHz */
-	0x03E7B000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 12, Tf = 2467MHz */
-	0x03F7C000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 13, Tf = 2472MHz */
-	0x03E7C000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW  /* channel = 14, Tf = 2412M */
+	0x03F79000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x03F79000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x03E79000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x03E79000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x03F7A000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x03F7A000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x03E7A000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x03E7A000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x03F7B000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x03F7B000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x03E7B000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x03E7B000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x03F7C000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x03E7C000 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW   
 };
 
 static const unsigned long al2230_channel_table1[CB_MAX_CHANNEL] = {
-	0x03333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 1, Tf = 2412MHz */
-	0x0B333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 2, Tf = 2417MHz */
-	0x03333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 3, Tf = 2422MHz */
-	0x0B333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 4, Tf = 2427MHz */
-	0x03333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 5, Tf = 2432MHz */
-	0x0B333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 6, Tf = 2437MHz */
-	0x03333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 7, Tf = 2442MHz */
-	0x0B333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 8, Tf = 2447MHz */
-	0x03333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 9, Tf = 2452MHz */
-	0x0B333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 10, Tf = 2457MHz */
-	0x03333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 11, Tf = 2462MHz */
-	0x0B333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 12, Tf = 2467MHz */
-	0x03333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW, /* channel = 13, Tf = 2472MHz */
-	0x06666100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW  /* channel = 14, Tf = 2412M */
+	0x03333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x0B333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x03333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x0B333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x03333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x0B333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x03333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x0B333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x03333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x0B333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x03333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x0B333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x03333100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW,  
+	0x06666100 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW   
 };
 
 static unsigned long al2230_power_table[AL2230_PWR_IDX_LEN] = {
@@ -152,19 +135,7 @@ static unsigned long al2230_power_table[AL2230_PWR_IDX_LEN] = {
 	0x0407F900 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW
 };
 
-/*
- * Description: Write to IF/RF, by embedded programming
- *
- * Parameters:
- *  In:
- *      iobase      - I/O base address
- *      dwData      - data to write
- *  Out:
- *      none
- *
- * Return Value: true if succeeded; false if failed.
- *
- */
+ 
 bool IFRFbWriteEmbedded(struct vnt_private *priv, unsigned long dwData)
 {
 	void __iomem *iobase = priv->port_offset;
@@ -173,7 +144,7 @@ bool IFRFbWriteEmbedded(struct vnt_private *priv, unsigned long dwData)
 
 	iowrite32((u32)dwData, iobase + MAC_REG_IFREGCTL);
 
-	/* W_MAX_TIMEOUT is the timeout period */
+	 
 	for (ww = 0; ww < W_MAX_TIMEOUT; ww++) {
 		dwValue = ioread32(iobase + MAC_REG_IFREGCTL);
 		if (dwValue & IFREGCTL_DONE)
@@ -186,18 +157,7 @@ bool IFRFbWriteEmbedded(struct vnt_private *priv, unsigned long dwData)
 	return true;
 }
 
-/*
- * Description: AIROHA IFRF chip init function
- *
- * Parameters:
- *  In:
- *      iobase      - I/O base address
- *  Out:
- *      none
- *
- * Return Value: true if succeeded; false if failed.
- *
- */
+ 
 static bool RFbAL2230Init(struct vnt_private *priv)
 {
 	void __iomem *iobase = priv->port_offset;
@@ -206,29 +166,29 @@ static bool RFbAL2230Init(struct vnt_private *priv)
 
 	ret = true;
 
-	/* 3-wire control for normal mode */
+	 
 	iowrite8(0, iobase + MAC_REG_SOFTPWRCTL);
 
 	vt6655_mac_word_reg_bits_on(iobase, MAC_REG_SOFTPWRCTL,
 				    (SOFTPWRCTL_SWPECTI | SOFTPWRCTL_TXPEINV));
-	/* PLL  Off */
+	 
 	vt6655_mac_word_reg_bits_off(iobase, MAC_REG_SOFTPWRCTL, SOFTPWRCTL_SWPE3);
 
-	/* patch abnormal AL2230 frequency output */
+	 
 	IFRFbWriteEmbedded(priv, (0x07168700 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW));
 
 	for (ii = 0; ii < CB_AL2230_INIT_SEQ; ii++)
 		ret &= IFRFbWriteEmbedded(priv, al2230_init_table[ii]);
-	MACvTimer0MicroSDelay(priv, 30); /* delay 30 us */
+	MACvTimer0MicroSDelay(priv, 30);  
 
-	/* PLL On */
+	 
 	vt6655_mac_word_reg_bits_on(iobase, MAC_REG_SOFTPWRCTL, SOFTPWRCTL_SWPE3);
 
-	MACvTimer0MicroSDelay(priv, 150);/* 150us */
+	MACvTimer0MicroSDelay(priv, 150); 
 	ret &= IFRFbWriteEmbedded(priv, (0x00d80f00 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW));
-	MACvTimer0MicroSDelay(priv, 30);/* 30us */
+	MACvTimer0MicroSDelay(priv, 30); 
 	ret &= IFRFbWriteEmbedded(priv, (0x00780f00 + (BY_AL2230_REG_LEN << 3) + IFREGCTL_REGW));
-	MACvTimer0MicroSDelay(priv, 30);/* 30us */
+	MACvTimer0MicroSDelay(priv, 30); 
 	ret &= IFRFbWriteEmbedded(priv,
 				  al2230_init_table[CB_AL2230_INIT_SEQ - 1]);
 
@@ -237,7 +197,7 @@ static bool RFbAL2230Init(struct vnt_private *priv)
 								 SOFTPWRCTL_SWPECTI  |
 								 SOFTPWRCTL_TXPEINV));
 
-	/* 3-wire control for power saving mode */
+	 
 	iowrite8(PSSIG_WPE3 | PSSIG_WPE2, iobase + MAC_REG_PSPWRSIG);
 
 	return ret;
@@ -253,28 +213,16 @@ static bool RFbAL2230SelectChannel(struct vnt_private *priv, unsigned char byCha
 	ret &= IFRFbWriteEmbedded(priv, al2230_channel_table0[byChannel - 1]);
 	ret &= IFRFbWriteEmbedded(priv, al2230_channel_table1[byChannel - 1]);
 
-	/* Set Channel[7] = 0 to tell H/W channel is changing now. */
+	 
 	iowrite8(byChannel & 0x7F, iobase + MAC_REG_CHANNEL);
 	MACvTimer0MicroSDelay(priv, SWITCH_CHANNEL_DELAY_AL2230);
-	/* Set Channel[7] = 1 to tell H/W channel change is done. */
+	 
 	iowrite8(byChannel | 0x80, iobase + MAC_REG_CHANNEL);
 
 	return ret;
 }
 
-/*
- * Description: RF init function
- *
- * Parameters:
- *  In:
- *      byBBType
- *      byRFType
- *  Out:
- *      none
- *
- * Return Value: true if succeeded; false if failed.
- *
- */
+ 
 bool RFbInit(struct vnt_private *priv)
 {
 	bool ret = true;
@@ -295,19 +243,7 @@ bool RFbInit(struct vnt_private *priv)
 	return ret;
 }
 
-/*
- * Description: Select channel
- *
- * Parameters:
- *  In:
- *      byRFType
- *      byChannel    - Channel number
- *  Out:
- *      none
- *
- * Return Value: true if succeeded; false if failed.
- *
- */
+ 
 bool RFbSelectChannel(struct vnt_private *priv, unsigned char byRFType,
 		      u16 byChannel)
 {
@@ -318,7 +254,7 @@ bool RFbSelectChannel(struct vnt_private *priv, unsigned char byRFType,
 	case RF_AL2230S:
 		ret = RFbAL2230SelectChannel(priv, byChannel);
 		break;
-		/*{{ RobertYu: 20050104 */
+		 
 	case RF_NOTHING:
 		ret = true;
 		break;
@@ -329,18 +265,7 @@ bool RFbSelectChannel(struct vnt_private *priv, unsigned char byRFType,
 	return ret;
 }
 
-/*
- * Description: Write WakeProgSyn
- *
- * Parameters:
- *  In:
- *      priv        - Device Structure
- *      rf_type     - RF type
- *      channel     - Channel number
- *
- * Return Value: true if succeeded; false if failed.
- *
- */
+ 
 bool rf_write_wake_prog_syn(struct vnt_private *priv, unsigned char rf_type,
 			    u16 channel)
 {
@@ -358,7 +283,7 @@ bool rf_write_wake_prog_syn(struct vnt_private *priv, unsigned char rf_type,
 		if (channel > CB_MAX_CHANNEL_24G)
 			return false;
 
-		 /* Init Reg + Channel Reg (2) */
+		  
 		init_count = CB_AL2230_INIT_SEQ + 2;
 		sleep_count = 0;
 
@@ -369,7 +294,7 @@ bool rf_write_wake_prog_syn(struct vnt_private *priv, unsigned char rf_type,
 		MACvSetMISCFifo(priv, idx++, al2230_channel_table1[channel - 1]);
 		break;
 
-		/* Need to check, PLLON need to be low for channel setting */
+		 
 
 	case RF_NOTHING:
 		return true;
@@ -383,19 +308,7 @@ bool rf_write_wake_prog_syn(struct vnt_private *priv, unsigned char rf_type,
 	return true;
 }
 
-/*
- * Description: Set Tx power
- *
- * Parameters:
- *  In:
- *      iobase         - I/O base address
- *      dwRFPowerTable - RF Tx Power Setting
- *  Out:
- *      none
- *
- * Return Value: true if succeeded; false if failed.
- *
- */
+ 
 bool RFbSetPower(struct vnt_private *priv, unsigned int rate, u16 uCH)
 {
 	bool ret;
@@ -448,19 +361,7 @@ bool RFbSetPower(struct vnt_private *priv, unsigned int rate, u16 uCH)
 	return ret;
 }
 
-/*
- * Description: Set Tx power
- *
- * Parameters:
- *  In:
- *      iobase         - I/O base address
- *      dwRFPowerTable - RF Tx Power Setting
- *  Out:
- *      none
- *
- * Return Value: true if succeeded; false if failed.
- *
- */
+ 
 
 bool RFbRawSetPower(struct vnt_private *priv, unsigned char byPwr,
 		    unsigned int rate)
@@ -498,21 +399,7 @@ bool RFbRawSetPower(struct vnt_private *priv, unsigned char byPwr,
 	return ret;
 }
 
-/*
- *
- * Routine Description:
- *     Translate RSSI to dBm
- *
- * Parameters:
- *  In:
- *      priv         - The adapter to be translated
- *      byCurrRSSI      - RSSI to be translated
- *  Out:
- *      pdwdbm          - Translated dbm number
- *
- * Return Value: none
- *
- */
+ 
 void
 RFvRSSITodBm(struct vnt_private *priv, unsigned char byCurrRSSI, long *pldBm)
 {

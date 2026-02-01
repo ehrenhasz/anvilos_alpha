@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+ 
+ 
 
 #ifndef __DEBUG_GLOBAL_H_INCLUDED__
 #define __DEBUG_GLOBAL_H_INCLUDED__
@@ -35,19 +23,9 @@
 
 #define DEBUG_BUFFER_ISP_DMEM_ADDR       0x0
 
-/*
- * Enable HAS_WATCHDOG_SP_THREAD_DEBUG for additional SP thread and
- * pipe information on watchdog output
- * #undef HAS_WATCHDOG_SP_THREAD_DEBUG
- * #define HAS_WATCHDOG_SP_THREAD_DEBUG
- */
+ 
 
-/*
- * The linear buffer mode will accept data until the first
- * overflow and then stop accepting new data
- * The circular buffer mode will accept if there is place
- * and discard the data if the buffer is full
- */
+ 
 typedef enum {
 	DEBUG_BUFFER_MODE_LINEAR = 0,
 	DEBUG_BUFFER_MODE_CIRCULAR,
@@ -62,8 +40,7 @@ struct debug_data_s {
 	u32			buf[DEBUG_BUF_SIZE];
 };
 
-/* thread.sp.c doesn't have a notion of HIVE_ISP_DDR_WORD_BYTES
-   still one point of control is needed for debug purposes */
+ 
 
 #ifdef HIVE_ISP_DDR_WORD_BYTES
 struct debug_data_ddr_s {
@@ -79,4 +56,4 @@ struct debug_data_ddr_s {
 };
 #endif
 
-#endif /* __DEBUG_GLOBAL_H_INCLUDED__ */
+#endif  

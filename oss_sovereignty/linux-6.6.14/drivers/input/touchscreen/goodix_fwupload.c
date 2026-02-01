@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Goodix Touchscreen firmware upload support
- *
- * Copyright (c) 2021 Hans de Goede <hdegoede@redhat.com>
- *
- * This is a rewrite of gt9xx_update.c from the Allwinner H3 BSP which is:
- * Copyright (c) 2010 - 2012 Goodix Technology.
- * Author: andrew@goodix.com
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/firmware.h>
@@ -75,7 +67,7 @@ static int goodix_firmware_verify(struct device *dev, const struct firmware *fw)
 	dev_info(dev, "Firmware hardware info %02x%02x%02x%02x\n",
 		 fw_header->hw_info[0], fw_header->hw_info[1],
 		 fw_header->hw_info[2], fw_header->hw_info[3]);
-	/* pid is a 8 byte buffer containing a string, weird I know */
+	 
 	memcpy(buf, fw_header->pid, 8);
 	buf[8] = 0;
 	dev_info(dev, "Firmware PID: %s VID: %02x%02x\n", buf,
@@ -109,43 +101,43 @@ static int goodix_enter_upload_mode(struct i2c_client *client)
 		return -EIO;
 	}
 
-	/* DSP_CK and DSP_ALU_CK PowerOn */
+	 
 	error = goodix_i2c_write_u8(client, GOODIX_REG_MISCTL_DSP_CTL, 0x00);
 	if (error)
 		return error;
 
-	/* Disable watchdog */
+	 
 	error = goodix_i2c_write_u8(client, GOODIX_REG_MISCTL_TMR0_EN, 0x00);
 	if (error)
 		return error;
 
-	/* Clear cache enable */
+	 
 	error = goodix_i2c_write_u8(client, GOODIX_REG_MISCTL_CACHE_EN, 0x00);
 	if (error)
 		return error;
 
-	/* Set boot from SRAM */
+	 
 	error = goodix_i2c_write_u8(client, GOODIX_REG_MISCTL_BOOTCTL, 0x02);
 	if (error)
 		return error;
 
-	/* Software reboot */
+	 
 	error = goodix_i2c_write_u8(client,
 				    GOODIX_REG_MISCTL_CPU_SWRST_PULSE, 0x01);
 	if (error)
 		return error;
 
-	/* Clear control flag */
+	 
 	error = goodix_i2c_write_u8(client, GOODIX_REG_MISCTL_BOOTCTL, 0x00);
 	if (error)
 		return error;
 
-	/* Set scramble */
+	 
 	error = goodix_i2c_write_u8(client, GOODIX_REG_MISCTL_BOOT_OPT, 0x00);
 	if (error)
 		return error;
 
-	/* Enable accessing code */
+	 
 	error = goodix_i2c_write_u8(client, GOODIX_REG_MISCTL_MEM_CD_EN, 0x01);
 	if (error)
 		return error;
@@ -158,12 +150,12 @@ static int goodix_start_firmware(struct i2c_client *client)
 	int error;
 	u8 val;
 
-	/* Init software watchdog */
+	 
 	error = goodix_i2c_write_u8(client, GOODIX_REG_SW_WDT, 0xaa);
 	if (error)
 		return error;
 
-	/* Release SS51 & DSP */
+	 
 	error = goodix_i2c_write_u8(client, GOODIX_REG_MISCTL_SWRST, 0x00);
 	if (error)
 		return error;
@@ -172,13 +164,13 @@ static int goodix_start_firmware(struct i2c_client *client)
 	if (error)
 		return error;
 
-	/* The value we've written to SW_WDT should have been cleared now */
+	 
 	if (val == 0xaa) {
 		dev_err(&client->dev, "Error SW_WDT reg not cleared on fw startup\n");
 		return -EIO;
 	}
 
-	/* Re-init software watchdog */
+	 
 	error = goodix_i2c_write_u8(client, GOODIX_REG_SW_WDT, 0xaa);
 	if (error)
 		return error;
@@ -213,7 +205,7 @@ static int goodix_firmware_upload(struct goodix_ts_data *ts)
 	if (error)
 		goto release;
 
-	/* Select SRAM bank 0 and upload section 1 & 2 */
+	 
 	error = goodix_i2c_write_u8(ts->client,
 				    GOODIX_REG_MISCTL_SRAM_BANK, 0x00);
 	if (error)
@@ -225,7 +217,7 @@ static int goodix_firmware_upload(struct goodix_ts_data *ts)
 	if (error)
 		goto release;
 
-	/* Select SRAM bank 1 and upload section 3 & 4 */
+	 
 	error = goodix_i2c_write_u8(ts->client,
 				    GOODIX_REG_MISCTL_SRAM_BANK, 0x01);
 	if (error)
@@ -237,7 +229,7 @@ static int goodix_firmware_upload(struct goodix_ts_data *ts)
 	if (error)
 		goto release;
 
-	/* Select SRAM bank 2 and upload the DSP firmware */
+	 
 	error = goodix_i2c_write_u8(ts->client,
 				    GOODIX_REG_MISCTL_SRAM_BANK, 0x02);
 	if (error)
@@ -264,7 +256,7 @@ static int goodix_prepare_bak_ref(struct goodix_ts_data *ts)
 	u8 have_key, driver_num, sensor_num;
 
 	if (ts->bak_ref)
-		return 0; /* Already done */
+		return 0;  
 
 	have_key = (ts->config[GOODIX_CFG_LOC_HAVE_KEY] & 0x01);
 
@@ -286,21 +278,7 @@ static int goodix_prepare_bak_ref(struct goodix_ts_data *ts)
 	if (!ts->bak_ref)
 		return -ENOMEM;
 
-	/*
-	 * The bak_ref array contains the backup of an array of (self/auto)
-	 * calibration related values which the Android version of the driver
-	 * stores on the filesystem so that it can be restored after reboot.
-	 * The mainline kernel never writes directly to the filesystem like
-	 * this, we always start will all the values which give a correction
-	 * factor in approx. the -20 - +20 range (in 2s complement) set to 0.
-	 *
-	 * Note the touchscreen works fine without restoring the reference
-	 * values after a reboot / power-cycle.
-	 *
-	 * The last 2 bytes are a 16 bits unsigned checksum which is expected
-	 * to make the addition al all 16 bit unsigned values in the array add
-	 * up to 1 (rather then the usual 0), so we must set the last byte to 1.
-	 */
+	 
 	ts->bak_ref[ts->bak_ref_len - 1] = 1;
 
 	return 0;
@@ -308,7 +286,7 @@ static int goodix_prepare_bak_ref(struct goodix_ts_data *ts)
 
 static int goodix_send_main_clock(struct goodix_ts_data *ts)
 {
-	u32 main_clk = 54; /* Default main clock */
+	u32 main_clk = 54;  
 	u8 checksum = 0;
 	int i;
 
@@ -320,7 +298,7 @@ static int goodix_send_main_clock(struct goodix_ts_data *ts)
 		checksum += main_clk;
 	}
 
-	/* The value of all bytes combines must be 0 */
+	 
 	ts->main_clk[GOODIX_MAIN_CLK_LEN - 1] = 256 - checksum;
 
 	return goodix_i2c_write(ts->client, GOODIX_REG_MAIN_CLK,
@@ -356,10 +334,7 @@ bool goodix_handle_fw_request(struct goodix_ts_data *ts)
 
 	switch (val) {
 	case GOODIX_RQST_RESPONDED:
-		/*
-		 * If we read back our own last ack the IRQ was not for
-		 * a request.
-		 */
+		 
 		return false;
 	case GOODIX_RQST_CONFIG:
 		error = goodix_send_cfg(ts, ts->config, ts->chip->config_len);
@@ -397,7 +372,7 @@ bool goodix_handle_fw_request(struct goodix_ts_data *ts)
 		dev_err_ratelimited(&ts->client->dev, "Unknown Request: 0x%02x\n", val);
 	}
 
-	/* Ack the request */
+	 
 	goodix_i2c_write_u8(ts->client,
 			    GOODIX_REG_REQUEST, GOODIX_RQST_RESPONDED);
 	return true;

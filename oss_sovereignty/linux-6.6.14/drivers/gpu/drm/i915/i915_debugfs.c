@@ -1,30 +1,4 @@
-/*
- * Copyright © 2008 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- * Authors:
- *    Eric Anholt <eric@anholt.net>
- *    Keith Packard <keithp@keithp.com>
- *
- */
+ 
 
 #include <linux/sched/mm.h>
 #include <linux/sort.h>
@@ -309,7 +283,7 @@ static ssize_t gpu_state_read(struct file *file, char __user *ubuf,
 	if (!error)
 		return 0;
 
-	/* Bounce buffer required because of kernfs __user API convenience. */
+	 
 	buf = kmalloc(count, GFP_KERNEL);
 	if (!buf)
 		return -ENOMEM;
@@ -447,7 +421,7 @@ static int i915_swizzle_info(struct seq_file *m, void *data)
 	if (dev_priv->gem_quirks & GEM_QUIRK_PIN_SWIZZLED_PAGES)
 		seq_puts(m, "L-shaped memory detected\n");
 
-	/* On BDW+, swizzling is not used. See detect_bit_6_swizzle() */
+	 
 	if (GRAPHICS_VER(dev_priv) >= 8 || IS_VALLEYVIEW(dev_priv))
 		return 0;
 
@@ -621,7 +595,7 @@ static int i915_wedged_get(void *data, u64 *val)
 		if (ret)
 			return ret;
 
-		/* at least one tile should be wedged */
+		 
 		if (*val)
 			break;
 	}
@@ -650,10 +624,7 @@ i915_perf_noa_delay_set(void *data, u64 val)
 {
 	struct drm_i915_private *i915 = data;
 
-	/*
-	 * This would lead to infinite waits as we're doing timestamp
-	 * difference on the CS with only 32bits.
-	 */
+	 
 	if (intel_gt_ns_to_clock_interval(to_gt(i915), val) > U32_MAX)
 		return -EINVAL;
 

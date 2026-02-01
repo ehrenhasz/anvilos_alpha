@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IIO driver for Domintech DMARD06 accelerometer
- *
- * Copyright (C) 2016 Aleksei Mamlin <mamlinav@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -12,7 +8,7 @@
 
 #define DMARD06_DRV_NAME		"dmard06"
 
-/* Device data registers */
+ 
 #define DMARD06_CHIP_ID_REG		0x0f
 #define DMARD06_TOUT_REG		0x40
 #define DMARD06_XOUT_REG		0x41
@@ -20,22 +16,22 @@
 #define DMARD06_ZOUT_REG		0x43
 #define DMARD06_CTRL1_REG		0x44
 
-/* Device ID value */
+ 
 #define DMARD05_CHIP_ID			0x05
 #define DMARD06_CHIP_ID			0x06
 #define DMARD07_CHIP_ID			0x07
 
-/* Device values */
+ 
 #define DMARD05_AXIS_SCALE_VAL		15625
 #define DMARD06_AXIS_SCALE_VAL		31250
 #define DMARD06_TEMP_CENTER_VAL		25
 #define DMARD06_SIGN_BIT		7
 
-/* Device power modes */
+ 
 #define DMARD06_MODE_NORMAL		0x27
 #define DMARD06_MODE_POWERDOWN		0x00
 
-/* Device channels */
+ 
 #define DMARD06_ACCEL_CHANNEL(_axis, _reg) {			\
 	.type = IIO_ACCEL,					\
 	.address = _reg,					\

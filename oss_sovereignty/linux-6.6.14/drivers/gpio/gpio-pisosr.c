@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015-2023 Texas Instruments Incorporated - https://www.ti.com/
- *	Andrew Davis <afd@ti.com>
- */
+
+ 
 
 #include <linux/bitmap.h>
 #include <linux/bitops.h>
@@ -15,15 +12,7 @@
 
 #define DEFAULT_NGPIO 8
 
-/**
- * struct pisosr_gpio - GPIO driver data
- * @chip: GPIO controller chip
- * @spi: SPI device pointer
- * @buffer: Buffer for device reads
- * @buffer_size: Size of buffer
- * @load_gpio: GPIO pin used to load input into device
- * @lock: Protects read sequences
- */
+ 
 struct pisosr_gpio {
 	struct gpio_chip chip;
 	struct spi_device *spi;
@@ -41,9 +30,9 @@ static int pisosr_gpio_refresh(struct pisosr_gpio *gpio)
 
 	if (gpio->load_gpio) {
 		gpiod_set_value_cansleep(gpio->load_gpio, 1);
-		udelay(1); /* registers load time (~10ns) */
+		udelay(1);  
 		gpiod_set_value_cansleep(gpio->load_gpio, 0);
-		udelay(1); /* registers recovery time (~5ns) */
+		udelay(1);  
 	}
 
 	ret = spi_read(gpio->spi, gpio->buffer, gpio->buffer_size);
@@ -56,21 +45,21 @@ static int pisosr_gpio_refresh(struct pisosr_gpio *gpio)
 static int pisosr_gpio_get_direction(struct gpio_chip *chip,
 				     unsigned offset)
 {
-	/* This device always input */
+	 
 	return GPIO_LINE_DIRECTION_IN;
 }
 
 static int pisosr_gpio_direction_input(struct gpio_chip *chip,
 				       unsigned offset)
 {
-	/* This device always input */
+	 
 	return 0;
 }
 
 static int pisosr_gpio_direction_output(struct gpio_chip *chip,
 					unsigned offset, int value)
 {
-	/* This device is input only */
+	 
 	return -EINVAL;
 }
 
@@ -78,7 +67,7 @@ static int pisosr_gpio_get(struct gpio_chip *chip, unsigned offset)
 {
 	struct pisosr_gpio *gpio = gpiochip_get_data(chip);
 
-	/* Refresh may not always be needed */
+	 
 	pisosr_gpio_refresh(gpio);
 
 	return (gpio->buffer[offset / 8] >> (offset % 8)) & 0x1;
@@ -163,13 +152,13 @@ static int pisosr_gpio_probe(struct spi_device *spi)
 
 static const struct spi_device_id pisosr_gpio_id_table[] = {
 	{ "pisosr-gpio", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(spi, pisosr_gpio_id_table);
 
 static const struct of_device_id pisosr_gpio_of_match_table[] = {
 	{ .compatible = "pisosr-gpio", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, pisosr_gpio_of_match_table);
 

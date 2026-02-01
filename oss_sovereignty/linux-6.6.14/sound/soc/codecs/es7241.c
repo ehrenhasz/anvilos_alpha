@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-//
-// Copyright (c) 2018 BayLibre, SAS.
-// Author: Jerome Brunet <jbrunet@baylibre.com>
+
+
+
+
 
 #include <linux/gpio/consumer.h>
 #include <linux/of_platform.h>
@@ -35,14 +35,14 @@ struct es7241_data {
 
 static void es7241_set_mode(struct es7241_data *priv,  int m0, int m1)
 {
-	/* put the device in reset */
+	 
 	gpiod_set_value_cansleep(priv->reset, 0);
 
-	/* set the mode */
+	 
 	gpiod_set_value_cansleep(priv->m0, m0);
 	gpiod_set_value_cansleep(priv->m1, m1);
 
-	/* take the device out of reset - datasheet does not specify a delay */
+	 
 	gpiod_set_value_cansleep(priv->reset, 1);
 }
 
@@ -71,10 +71,7 @@ static int es7241_set_provider_mode(struct es7241_data *priv,
 				    const struct es7241_clock_mode *mode,
 				    unsigned int mfs)
 {
-	/*
-	 * We can't really set clock ratio, if the mclk/lrclk is different
-	 * from what we provide, then error out
-	 */
+	 
 	if (mfs && mfs != mode->mst_mfs)
 		return -EINVAL;
 
@@ -104,7 +101,7 @@ static int es7241_hw_params(struct snd_pcm_substream *substream,
 			return es7241_set_provider_mode(priv, mode, mfs);
 	}
 
-	/* should not happen */
+	 
 	dev_err(dai->dev, "unsupported rate: %u\n", rate);
 	return -EINVAL;
 }
@@ -174,7 +171,7 @@ static struct snd_soc_dai_driver es7241_dai = {
 
 static const struct es7241_clock_mode es7241_modes[] = {
 	{
-		/* Single speed mode */
+		 
 		.rate_min = 8000,
 		.rate_max = 50000,
 		.slv_mfs = (unsigned int[]) { 256, 384, 512, 768, 1024 },
@@ -183,7 +180,7 @@ static const struct es7241_clock_mode es7241_modes[] = {
 		.mst_m0 = 0,
 		.mst_m1 = 0,
 	}, {
-		/* Double speed mode */
+		 
 		.rate_min = 50000,
 		.rate_max = 100000,
 		.slv_mfs = (unsigned int[]) { 128, 192 },
@@ -192,7 +189,7 @@ static const struct es7241_clock_mode es7241_modes[] = {
 		.mst_m0 = 1,
 		.mst_m1 = 0,
 	}, {
-		/* Quad speed mode */
+		 
 		.rate_min = 100000,
 		.rate_max = 200000,
 		.slv_mfs = (unsigned int[]) { 64 },
@@ -238,10 +235,7 @@ static void es7241_parse_fmt(struct device *dev, struct es7241_data *priv)
 {
 	bool is_leftj;
 
-	/*
-	 * The format is given by a pull resistor on the SDOUT pin:
-	 * pull-up for i2s, pull-down for left justified.
-	 */
+	 
 	is_leftj = of_property_read_bool(dev->of_node,
 					 "everest,sdout-pull-down");
 	if (is_leftj)

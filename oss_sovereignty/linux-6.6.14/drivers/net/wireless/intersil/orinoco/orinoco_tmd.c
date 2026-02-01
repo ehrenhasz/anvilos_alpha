@@ -1,41 +1,4 @@
-/* orinoco_tmd.c
- *
- * Driver for Prism II devices which would usually be driven by orinoco_cs,
- * but are connected to the PCI bus by a TMD7160.
- *
- * Copyright (C) 2003 Joerg Dorchain <joerg AT dorchain.net>
- * based heavily upon orinoco_plx.c Copyright (C) 2001 Daniel Barlow
- *
- * The contents of this file are subject to the Mozilla Public License
- * Version 1.1 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License
- * at http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
- * the License for the specific language governing rights and
- * limitations under the License.
- *
- * Alternatively, the contents of this file may be used under the
- * terms of the GNU General Public License version 2 (the "GPL"), in
- * which case the provisions of the GPL are applicable instead of the
- * above.  If you wish to allow the use of your version of this file
- * only under the terms of the GPL and not to allow others to use your
- * version of this file under the MPL, indicate your decision by
- * deleting the provisions above and replace them with the notice and
- * other provisions required by the GPL.  If you do not delete the
- * provisions above, a recipient may use your version of this file
- * under either the MPL or the GPL.
- *
- * The actual driving is done by main.c, this is just resource
- * allocation stuff.
- *
- * This driver is modeled after the orinoco_plx driver. The main
- * difference is that the TMD chip has only IO port ranges and doesn't
- * provide access to the PCMCIA attribute space.
- *
- * Pheecom sells cards with the TMD chip as "ASIC version"
- */
+ 
 
 #define DRIVER_NAME "orinoco_tmd"
 #define PFX DRIVER_NAME ": "
@@ -50,13 +13,11 @@
 #include "orinoco.h"
 #include "orinoco_pci.h"
 
-#define COR_VALUE	(COR_LEVEL_REQ | COR_FUNC_ENA) /* Enable PC card with interrupt in level trigger */
-#define COR_RESET     (0x80)	/* reset bit in the COR register */
-#define TMD_RESET_TIME	(500)	/* milliseconds */
+#define COR_VALUE	(COR_LEVEL_REQ | COR_FUNC_ENA)  
+#define COR_RESET     (0x80)	 
+#define TMD_RESET_TIME	(500)	 
 
-/*
- * Do a soft reset of the card using the Configuration Option Register
- */
+ 
 static int orinoco_tmd_cor_reset(struct orinoco_private *priv)
 {
 	struct hermes *hw = &priv->hw;
@@ -70,7 +31,7 @@ static int orinoco_tmd_cor_reset(struct orinoco_private *priv)
 	iowrite8(COR_VALUE, card->bridge_io);
 	mdelay(1);
 
-	/* Just in case, wait more until the card is no longer busy */
+	 
 	timeout = jiffies + msecs_to_jiffies(TMD_RESET_TIME);
 	reg = hermes_read_regn(hw, CMD);
 	while (time_before(jiffies, timeout) && (reg & HERMES_CMD_BUSY)) {
@@ -78,7 +39,7 @@ static int orinoco_tmd_cor_reset(struct orinoco_private *priv)
 		reg = hermes_read_regn(hw, CMD);
 	}
 
-	/* Still busy? */
+	 
 	if (reg & HERMES_CMD_BUSY) {
 		printk(KERN_ERR PFX "Busy timeout\n");
 		return -ETIMEDOUT;
@@ -122,7 +83,7 @@ static int orinoco_tmd_init_one(struct pci_dev *pdev,
 		goto fail_map_hermes;
 	}
 
-	/* Allocate network device */
+	 
 	priv = alloc_orinocodev(sizeof(*card), &pdev->dev,
 				orinoco_tmd_cor_reset, NULL);
 	if (!priv) {
@@ -202,7 +163,7 @@ static void orinoco_tmd_remove_one(struct pci_dev *pdev)
 }
 
 static const struct pci_device_id orinoco_tmd_id_table[] = {
-	{0x15e8, 0x0131, PCI_ANY_ID, PCI_ANY_ID,},      /* NDC and OEMs, e.g. pheecom */
+	{0x15e8, 0x0131, PCI_ANY_ID, PCI_ANY_ID,},       
 	{0,},
 };
 

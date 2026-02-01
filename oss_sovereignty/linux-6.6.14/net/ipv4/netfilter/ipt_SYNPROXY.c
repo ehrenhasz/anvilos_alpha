@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013 Patrick McHardy <kaber@trash.net>
- */
+
+ 
 
 #include <linux/netfilter_ipv4/ip_tables.h>
 #include <linux/netfilter/x_tables.h>
@@ -29,7 +27,7 @@ synproxy_tg4(struct sk_buff *skb, const struct xt_action_param *par)
 		return NF_DROP;
 
 	if (th->syn && !(th->ack || th->fin || th->rst)) {
-		/* Initial SYN from client */
+		 
 		this_cpu_inc(snet->stats->syn_received);
 
 		if (th->ece && th->cwr)
@@ -49,7 +47,7 @@ synproxy_tg4(struct sk_buff *skb, const struct xt_action_param *par)
 		consume_skb(skb);
 		return NF_STOLEN;
 	} else if (th->ack && !(th->fin || th->rst || th->syn)) {
-		/* ACK from client */
+		 
 		if (synproxy_recv_client_ack(net, skb, th, &opts, ntohl(th->seq))) {
 			consume_skb(skb);
 			return NF_STOLEN;

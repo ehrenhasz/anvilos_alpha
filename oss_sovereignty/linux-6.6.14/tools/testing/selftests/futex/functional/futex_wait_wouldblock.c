@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/******************************************************************************
- *
- *   Copyright © International Business Machines  Corp., 2009
- *
- * DESCRIPTION
- *      Test if FUTEX_WAIT op returns -EWOULDBLOCK if the futex value differs
- *      from the expected one.
- *
- * AUTHOR
- *      Gowrishankar <gowrishankar.m@in.ibm.com>
- *
- * HISTORY
- *      2009-Nov-14: Initial version by Gowrishankar <gowrishankar.m@in.ibm.com>
- *
- *****************************************************************************/
+
+ 
 
 #include <errno.h>
 #include <getopt.h>

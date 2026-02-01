@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <net/pkt_cls.h>
 #include <net/pkt_sched.h>

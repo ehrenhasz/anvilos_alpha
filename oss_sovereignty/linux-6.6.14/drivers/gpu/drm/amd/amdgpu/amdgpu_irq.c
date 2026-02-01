@@ -1,46 +1,6 @@
-/*
- * Copyright 2008 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- * Copyright 2009 Jerome Glisse.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- *          Jerome Glisse
- */
+ 
 
-/**
- * DOC: Interrupt Handling
- *
- * Interrupts generated within GPU hardware raise interrupt requests that are
- * passed to amdgpu IRQ handler which is responsible for detecting source and
- * type of the interrupt and dispatching matching handlers. If handling an
- * interrupt requires calling kernel functions that may sleep processing is
- * dispatched to work handlers.
- *
- * If MSI functionality is not disabled by module parameter then MSI
- * support will be enabled.
- *
- * For GPU interrupt sources that may be driven by another driver, IRQ domain
- * support is used (with mapping between virtual and hardware IRQs).
- */
+ 
 
 #include <linux/irq.h>
 #include <linux/pci.h>
@@ -114,13 +74,7 @@ const int node_id_to_phys_map[NODEID_MAX] = {
 	[XCD7_NODEID] = 7,
 };
 
-/**
- * amdgpu_irq_disable_all - disable *all* interrupts
- *
- * @adev: amdgpu device pointer
- *
- * Disable all types of interrupts from all sources.
- */
+ 
 void amdgpu_irq_disable_all(struct amdgpu_device *adev)
 {
 	unsigned long irqflags;
@@ -150,17 +104,7 @@ void amdgpu_irq_disable_all(struct amdgpu_device *adev)
 	spin_unlock_irqrestore(&adev->irq.lock, irqflags);
 }
 
-/**
- * amdgpu_irq_handler - IRQ handler
- *
- * @irq: IRQ number (unused)
- * @arg: pointer to DRM device
- *
- * IRQ handler for amdgpu driver (all ASICs).
- *
- * Returns:
- * result of handling the IRQ, as defined by &irqreturn_t
- */
+ 
 static irqreturn_t amdgpu_irq_handler(int irq, void *arg)
 {
 	struct drm_device *dev = (struct drm_device *) arg;
@@ -176,13 +120,7 @@ static irqreturn_t amdgpu_irq_handler(int irq, void *arg)
 	return ret;
 }
 
-/**
- * amdgpu_irq_handle_ih1 - kick of processing for IH1
- *
- * @work: work structure in struct amdgpu_irq
- *
- * Kick of processing IH ring 1.
- */
+ 
 static void amdgpu_irq_handle_ih1(struct work_struct *work)
 {
 	struct amdgpu_device *adev = container_of(work, struct amdgpu_device,
@@ -191,13 +129,7 @@ static void amdgpu_irq_handle_ih1(struct work_struct *work)
 	amdgpu_ih_process(adev, &adev->irq.ih1);
 }
 
-/**
- * amdgpu_irq_handle_ih2 - kick of processing for IH2
- *
- * @work: work structure in struct amdgpu_irq
- *
- * Kick of processing IH ring 2.
- */
+ 
 static void amdgpu_irq_handle_ih2(struct work_struct *work)
 {
 	struct amdgpu_device *adev = container_of(work, struct amdgpu_device,
@@ -206,13 +138,7 @@ static void amdgpu_irq_handle_ih2(struct work_struct *work)
 	amdgpu_ih_process(adev, &adev->irq.ih2);
 }
 
-/**
- * amdgpu_irq_handle_ih_soft - kick of processing for ih_soft
- *
- * @work: work structure in struct amdgpu_irq
- *
- * Kick of processing IH soft ring.
- */
+ 
 static void amdgpu_irq_handle_ih_soft(struct work_struct *work)
 {
 	struct amdgpu_device *adev = container_of(work, struct amdgpu_device,
@@ -221,17 +147,7 @@ static void amdgpu_irq_handle_ih_soft(struct work_struct *work)
 	amdgpu_ih_process(adev, &adev->irq.ih_soft);
 }
 
-/**
- * amdgpu_msi_ok - check whether MSI functionality is enabled
- *
- * @adev: amdgpu device pointer (unused)
- *
- * Checks whether MSI functionality has been disabled via module parameter
- * (all ASICs).
- *
- * Returns:
- * *true* if MSIs are allowed to be enabled or *false* otherwise
- */
+ 
 static bool amdgpu_msi_ok(struct amdgpu_device *adev)
 {
 	if (amdgpu_msi == 1)
@@ -250,24 +166,14 @@ static void amdgpu_restore_msix(struct amdgpu_device *adev)
 	if (!(ctrl & PCI_MSIX_FLAGS_ENABLE))
 		return;
 
-	/* VF FLR */
+	 
 	ctrl &= ~PCI_MSIX_FLAGS_ENABLE;
 	pci_write_config_word(adev->pdev, adev->pdev->msix_cap + PCI_MSIX_FLAGS, ctrl);
 	ctrl |= PCI_MSIX_FLAGS_ENABLE;
 	pci_write_config_word(adev->pdev, adev->pdev->msix_cap + PCI_MSIX_FLAGS, ctrl);
 }
 
-/**
- * amdgpu_irq_init - initialize interrupt handling
- *
- * @adev: amdgpu device pointer
- *
- * Sets up work functions for hotplug and reset interrupts, enables MSI
- * functionality, initializes vblank, hotplug and reset interrupt handling.
- *
- * Returns:
- * 0 on success or error code on failure
- */
+ 
 int amdgpu_irq_init(struct amdgpu_device *adev)
 {
 	int r = 0;
@@ -275,7 +181,7 @@ int amdgpu_irq_init(struct amdgpu_device *adev)
 
 	spin_lock_init(&adev->irq.lock);
 
-	/* Enable MSI if not disabled by module parameter */
+	 
 	adev->irq.msi_enabled = false;
 
 	if (amdgpu_msi_ok(adev)) {
@@ -287,7 +193,7 @@ int amdgpu_irq_init(struct amdgpu_device *adev)
 		else
 			flags = PCI_IRQ_MSI | PCI_IRQ_MSIX;
 
-		/* we only need one vector */
+		 
 		nvec = pci_alloc_irq_vectors(adev->pdev, 1, 1, flags);
 		if (nvec > 0) {
 			adev->irq.msi_enabled = true;
@@ -299,13 +205,13 @@ int amdgpu_irq_init(struct amdgpu_device *adev)
 	INIT_WORK(&adev->irq.ih2_work, amdgpu_irq_handle_ih2);
 	INIT_WORK(&adev->irq.ih_soft_work, amdgpu_irq_handle_ih_soft);
 
-	/* Use vector 0 for MSI-X. */
+	 
 	r = pci_irq_vector(adev->pdev, 0);
 	if (r < 0)
 		return r;
 	irq = r;
 
-	/* PCI devices require shared interrupts. */
+	 
 	r = request_irq(irq, amdgpu_irq_handler, IRQF_SHARED, adev_to_drm(adev)->driver->name,
 			adev_to_drm(adev));
 	if (r)
@@ -334,15 +240,7 @@ void amdgpu_irq_fini_hw(struct amdgpu_device *adev)
 	amdgpu_ih_ring_fini(adev, &adev->irq.ih2);
 }
 
-/**
- * amdgpu_irq_fini_sw - shut down interrupt handling
- *
- * @adev: amdgpu device pointer
- *
- * Tears down work functions for hotplug and reset interrupts, disables MSI
- * functionality, shuts down vblank, hotplug and reset interrupt handling,
- * turns off interrupts from all sources (all ASICs).
- */
+ 
 void amdgpu_irq_fini_sw(struct amdgpu_device *adev)
 {
 	unsigned int i, j;
@@ -365,19 +263,7 @@ void amdgpu_irq_fini_sw(struct amdgpu_device *adev)
 	}
 }
 
-/**
- * amdgpu_irq_add_id - register IRQ source
- *
- * @adev: amdgpu device pointer
- * @client_id: client id
- * @src_id: source id
- * @source: IRQ source pointer
- *
- * Registers IRQ source on a client.
- *
- * Returns:
- * 0 on success or error code otherwise
- */
+ 
 int amdgpu_irq_add_id(struct amdgpu_device *adev,
 		      unsigned int client_id, unsigned int src_id,
 		      struct amdgpu_irq_src *source)
@@ -418,14 +304,7 @@ int amdgpu_irq_add_id(struct amdgpu_device *adev,
 	return 0;
 }
 
-/**
- * amdgpu_irq_dispatch - dispatch IRQ to IP blocks
- *
- * @adev: amdgpu device pointer
- * @ih: interrupt ring instance
- *
- * Dispatches IRQ to IP blocks.
- */
+ 
 void amdgpu_irq_dispatch(struct amdgpu_device *adev,
 			 struct amdgpu_ih_ring *ih)
 {
@@ -471,7 +350,7 @@ void amdgpu_irq_dispatch(struct amdgpu_device *adev,
 			src_id, client_id);
 	}
 
-	/* Send it to amdkfd as well if it isn't already handled */
+	 
 	if (!handled)
 		amdgpu_amdkfd_interrupt(adev, entry.iv_entry);
 
@@ -479,16 +358,7 @@ void amdgpu_irq_dispatch(struct amdgpu_device *adev,
 		ih->processed_timestamp = entry.timestamp;
 }
 
-/**
- * amdgpu_irq_delegate - delegate IV to soft IH ring
- *
- * @adev: amdgpu device pointer
- * @entry: IV entry
- * @num_dw: size of IV
- *
- * Delegate the IV to the soft IH ring and schedule processing of it. Used
- * if the hardware delegation to IH1 or IH2 doesn't work for some reason.
- */
+ 
 void amdgpu_irq_delegate(struct amdgpu_device *adev,
 			 struct amdgpu_iv_entry *entry,
 			 unsigned int num_dw)
@@ -497,15 +367,7 @@ void amdgpu_irq_delegate(struct amdgpu_device *adev,
 	schedule_work(&adev->irq.ih_soft_work);
 }
 
-/**
- * amdgpu_irq_update - update hardware interrupt state
- *
- * @adev: amdgpu device pointer
- * @src: interrupt source pointer
- * @type: type of interrupt
- *
- * Updates interrupt state for the specific source (all ASICs).
- */
+ 
 int amdgpu_irq_update(struct amdgpu_device *adev,
 			     struct amdgpu_irq_src *src, unsigned int type)
 {
@@ -515,9 +377,7 @@ int amdgpu_irq_update(struct amdgpu_device *adev,
 
 	spin_lock_irqsave(&adev->irq.lock, irqflags);
 
-	/* We need to determine after taking the lock, otherwise
-	 * we might disable just enabled interrupts again
-	 */
+	 
 	if (amdgpu_irq_enabled(adev, src, type))
 		state = AMDGPU_IRQ_STATE_ENABLE;
 	else
@@ -528,14 +388,7 @@ int amdgpu_irq_update(struct amdgpu_device *adev,
 	return r;
 }
 
-/**
- * amdgpu_irq_gpu_reset_resume_helper - update interrupt states on all sources
- *
- * @adev: amdgpu device pointer
- *
- * Updates state of all types of interrupts on all sources on resume after
- * reset.
- */
+ 
 void amdgpu_irq_gpu_reset_resume_helper(struct amdgpu_device *adev)
 {
 	int i, j, k;
@@ -558,18 +411,7 @@ void amdgpu_irq_gpu_reset_resume_helper(struct amdgpu_device *adev)
 	}
 }
 
-/**
- * amdgpu_irq_get - enable interrupt
- *
- * @adev: amdgpu device pointer
- * @src: interrupt source pointer
- * @type: type of interrupt
- *
- * Enables specified type of interrupt on the specified source (all ASICs).
- *
- * Returns:
- * 0 on success or error code otherwise
- */
+ 
 int amdgpu_irq_get(struct amdgpu_device *adev, struct amdgpu_irq_src *src,
 		   unsigned int type)
 {
@@ -588,18 +430,7 @@ int amdgpu_irq_get(struct amdgpu_device *adev, struct amdgpu_irq_src *src,
 	return 0;
 }
 
-/**
- * amdgpu_irq_put - disable interrupt
- *
- * @adev: amdgpu device pointer
- * @src: interrupt source pointer
- * @type: type of interrupt
- *
- * Enables specified type of interrupt on the specified source (all ASICs).
- *
- * Returns:
- * 0 on success or error code otherwise
- */
+ 
 int amdgpu_irq_put(struct amdgpu_device *adev, struct amdgpu_irq_src *src,
 		   unsigned int type)
 {
@@ -621,19 +452,7 @@ int amdgpu_irq_put(struct amdgpu_device *adev, struct amdgpu_irq_src *src,
 	return 0;
 }
 
-/**
- * amdgpu_irq_enabled - check whether interrupt is enabled or not
- *
- * @adev: amdgpu device pointer
- * @src: interrupt source pointer
- * @type: type of interrupt
- *
- * Checks whether the given type of interrupt is enabled on the given source.
- *
- * Returns:
- * *true* if interrupt is enabled, *false* if interrupt is disabled or on
- * invalid parameters
- */
+ 
 bool amdgpu_irq_enabled(struct amdgpu_device *adev, struct amdgpu_irq_src *src,
 			unsigned int type)
 {
@@ -649,37 +468,25 @@ bool amdgpu_irq_enabled(struct amdgpu_device *adev, struct amdgpu_irq_src *src,
 	return !!atomic_read(&src->enabled_types[type]);
 }
 
-/* XXX: Generic IRQ handling */
+ 
 static void amdgpu_irq_mask(struct irq_data *irqd)
 {
-	/* XXX */
+	 
 }
 
 static void amdgpu_irq_unmask(struct irq_data *irqd)
 {
-	/* XXX */
+	 
 }
 
-/* amdgpu hardware interrupt chip descriptor */
+ 
 static struct irq_chip amdgpu_irq_chip = {
 	.name = "amdgpu-ih",
 	.irq_mask = amdgpu_irq_mask,
 	.irq_unmask = amdgpu_irq_unmask,
 };
 
-/**
- * amdgpu_irqdomain_map - create mapping between virtual and hardware IRQ numbers
- *
- * @d: amdgpu IRQ domain pointer (unused)
- * @irq: virtual IRQ number
- * @hwirq: hardware irq number
- *
- * Current implementation assigns simple interrupt handler to the given virtual
- * IRQ.
- *
- * Returns:
- * 0 on success or error code otherwise
- */
+ 
 static int amdgpu_irqdomain_map(struct irq_domain *d,
 				unsigned int irq, irq_hw_number_t hwirq)
 {
@@ -691,22 +498,12 @@ static int amdgpu_irqdomain_map(struct irq_domain *d,
 	return 0;
 }
 
-/* Implementation of methods for amdgpu IRQ domain */
+ 
 static const struct irq_domain_ops amdgpu_hw_irqdomain_ops = {
 	.map = amdgpu_irqdomain_map,
 };
 
-/**
- * amdgpu_irq_add_domain - create a linear IRQ domain
- *
- * @adev: amdgpu device pointer
- *
- * Creates an IRQ domain for GPU interrupt sources
- * that may be driven by another driver (e.g., ACP).
- *
- * Returns:
- * 0 on success or error code otherwise
- */
+ 
 int amdgpu_irq_add_domain(struct amdgpu_device *adev)
 {
 	adev->irq.domain = irq_domain_add_linear(NULL, AMDGPU_MAX_IRQ_SRC_ID,
@@ -719,14 +516,7 @@ int amdgpu_irq_add_domain(struct amdgpu_device *adev)
 	return 0;
 }
 
-/**
- * amdgpu_irq_remove_domain - remove the IRQ domain
- *
- * @adev: amdgpu device pointer
- *
- * Removes the IRQ domain for GPU interrupt sources
- * that may be driven by another driver (e.g., ACP).
- */
+ 
 void amdgpu_irq_remove_domain(struct amdgpu_device *adev)
 {
 	if (adev->irq.domain) {
@@ -735,19 +525,7 @@ void amdgpu_irq_remove_domain(struct amdgpu_device *adev)
 	}
 }
 
-/**
- * amdgpu_irq_create_mapping - create mapping between domain Linux IRQs
- *
- * @adev: amdgpu device pointer
- * @src_id: IH source id
- *
- * Creates mapping between a domain IRQ (GPU IH src id) and a Linux IRQ
- * Use this for components that generate a GPU interrupt, but are driven
- * by a different driver (e.g., ACP).
- *
- * Returns:
- * Linux IRQ
- */
+ 
 unsigned int amdgpu_irq_create_mapping(struct amdgpu_device *adev, unsigned int src_id)
 {
 	adev->irq.virq[src_id] = irq_create_mapping(adev->irq.domain, src_id);

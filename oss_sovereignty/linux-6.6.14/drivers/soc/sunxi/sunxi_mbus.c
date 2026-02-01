@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2020 Maxime Ripard <maxime@cerno.tech> */
+
+ 
 
 #include <linux/device.h>
 #include <linux/dma-map-ops.h>
@@ -9,12 +9,7 @@
 #include <linux/platform_device.h>
 
 static const char * const sunxi_mbus_devices[] = {
-	/*
-	 * The display engine virtual devices are not strictly speaking
-	 * connected to the MBUS, but since DRM will perform all the
-	 * memory allocations and DMA operations through that device, we
-	 * need to have the quirk on those devices too.
-	 */
+	 
 	"allwinner,sun4i-a10-display-engine",
 	"allwinner,sun5i-a10s-display-engine",
 	"allwinner,sun5i-a13-display-engine",
@@ -25,10 +20,7 @@ static const char * const sunxi_mbus_devices[] = {
 	"allwinner,sun8i-a33-display-engine",
 	"allwinner,sun9i-a80-display-engine",
 
-	/*
-	 * And now we have the regular devices connected to the MBUS
-	 * (that we know of).
-	 */
+	 
 	"allwinner,sun4i-a10-csi1",
 	"allwinner,sun4i-a10-display-backend",
 	"allwinner,sun4i-a10-display-frontend",
@@ -66,22 +58,11 @@ static int sunxi_mbus_notifier(struct notifier_block *nb,
 	if (event != BUS_NOTIFY_ADD_DEVICE)
 		return NOTIFY_DONE;
 
-	/*
-	 * Only the devices that need a large memory bandwidth do DMA
-	 * directly over the memory bus (called MBUS), instead of going
-	 * through the regular system bus.
-	 */
+	 
 	if (!of_device_compatible_match(dev->of_node, sunxi_mbus_devices))
 		return NOTIFY_DONE;
 
-	/*
-	 * Devices with an interconnects property have the MBUS
-	 * relationship described in their DT and dealt with by
-	 * of_dma_configure, so we can just skip them.
-	 *
-	 * Older DTs or SoCs who are not clearly understood need to set
-	 * that DMA offset though.
-	 */
+	 
 	if (of_property_present(dev->of_node, "interconnects"))
 		return NOTIFY_DONE;
 

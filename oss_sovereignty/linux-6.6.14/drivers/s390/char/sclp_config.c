@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *    Copyright IBM Corp. 2007
- */
+
+ 
 
 #define KMSG_COMPONENT "sclp_config"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -100,7 +98,7 @@ static int sclp_ofb_send_req(char *ev_data, size_t len)
 	sccb = (struct sclp_ofb_sccb *) get_zeroed_page(GFP_KERNEL | GFP_DMA);
 	if (!sccb)
 		return -ENOMEM;
-	/* Setup SCCB for Control-Program Identification */
+	 
 	sccb->header.length = sizeof(struct sclp_ofb_sccb);
 	sccb->ofb_evbuf.header.length = sizeof(struct sclp_ofb_evbuf);
 	sccb->ofb_evbuf.header.type = EVTYP_CONFMGMDATA;

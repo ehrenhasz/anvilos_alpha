@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Common EFI memory map functions.
- */
+
+ 
 
 #define pr_fmt(fmt) "efi: " fmt
 
@@ -45,20 +43,11 @@ void __init __efi_memmap_free(u64 phys, unsigned long size, unsigned long flags)
 	}
 }
 
-/**
- * efi_memmap_alloc - Allocate memory for the EFI memory map
- * @num_entries: Number of entries in the allocated map.
- * @data: efi memmap installation parameters
- *
- * Depending on whether mm_init() has already been invoked or not,
- * either memblock or "normal" page allocation is used.
- *
- * Returns zero on success, a negative error code on failure.
- */
+ 
 int __init efi_memmap_alloc(unsigned int num_entries,
 		struct efi_memory_map_data *data)
 {
-	/* Expect allocation parameters are zero initialized */
+	 
 	WARN_ON(data->phys_map || data->size);
 
 	data->size = num_entries * efi.memmap.desc_size;
@@ -80,16 +69,7 @@ int __init efi_memmap_alloc(unsigned int num_entries,
 	return 0;
 }
 
-/**
- * efi_memmap_install - Install a new EFI memory map in efi.memmap
- * @data: efi memmap installation parameters
- *
- * Unlike efi_memmap_init_*(), this function does not allow the caller
- * to switch from early to late mappings. It simply uses the existing
- * mapping function and installs the new memmap.
- *
- * Returns zero on success, a negative error code on failure.
- */
+ 
 int __init efi_memmap_install(struct efi_memory_map_data *data)
 {
 	efi_memmap_unmap();
@@ -100,14 +80,7 @@ int __init efi_memmap_install(struct efi_memory_map_data *data)
 	return __efi_memmap_init(data);
 }
 
-/**
- * efi_memmap_split_count - Count number of additional EFI memmap entries
- * @md: EFI memory descriptor to split
- * @range: Address range (start, end) to split around
- *
- * Returns the number of additional EFI memmap entries required to
- * accommodate @range.
- */
+ 
 int __init efi_memmap_split_count(efi_memory_desc_t *md, struct range *range)
 {
 	u64 m_start, m_end;
@@ -117,21 +90,21 @@ int __init efi_memmap_split_count(efi_memory_desc_t *md, struct range *range)
 	start = md->phys_addr;
 	end = start + (md->num_pages << EFI_PAGE_SHIFT) - 1;
 
-	/* modifying range */
+	 
 	m_start = range->start;
 	m_end = range->end;
 
 	if (m_start <= start) {
-		/* split into 2 parts */
+		 
 		if (start < m_end && m_end < end)
 			count++;
 	}
 
 	if (start < m_start && m_start < end) {
-		/* split into 3 parts */
+		 
 		if (m_end < end)
 			count += 2;
-		/* split into 2 parts */
+		 
 		if (end <= m_end)
 			count++;
 	}
@@ -139,15 +112,7 @@ int __init efi_memmap_split_count(efi_memory_desc_t *md, struct range *range)
 	return count;
 }
 
-/**
- * efi_memmap_insert - Insert a memory region in an EFI memmap
- * @old_memmap: The existing EFI memory map structure
- * @buf: Address of buffer to store new map
- * @mem: Memory map entry to insert
- *
- * It is suggested that you call efi_memmap_split_count() first
- * to see how large @buf needs to be.
- */
+ 
 void __init efi_memmap_insert(struct efi_memory_map *old_memmap, void *buf,
 			      struct efi_mem_range *mem)
 {
@@ -156,16 +121,12 @@ void __init efi_memmap_insert(struct efi_memory_map *old_memmap, void *buf,
 	u64 start, end;
 	void *old, *new;
 
-	/* modifying range */
+	 
 	m_start = mem->range.start;
 	m_end = mem->range.end;
 	m_attr = mem->attribute;
 
-	/*
-	 * The EFI memory map deals with regions in EFI_PAGE_SIZE
-	 * units. Ensure that the region described by 'mem' is aligned
-	 * correctly.
-	 */
+	 
 	if (!IS_ALIGNED(m_start, EFI_PAGE_SIZE) ||
 	    !IS_ALIGNED(m_end + 1, EFI_PAGE_SIZE)) {
 		WARN_ON(1);
@@ -176,7 +137,7 @@ void __init efi_memmap_insert(struct efi_memory_map *old_memmap, void *buf,
 	     old < old_memmap->map_end;
 	     old += old_memmap->desc_size, new += old_memmap->desc_size) {
 
-		/* copy original EFI memory descriptor */
+		 
 		memcpy(new, old, old_memmap->desc_size);
 		md = new;
 		start = md->phys_addr;
@@ -187,11 +148,11 @@ void __init efi_memmap_insert(struct efi_memory_map *old_memmap, void *buf,
 
 		if (m_start <= start &&
 		    (start < m_end && m_end < end)) {
-			/* first part */
+			 
 			md->attribute |= m_attr;
 			md->num_pages = (m_end - md->phys_addr + 1) >>
 				EFI_PAGE_SHIFT;
-			/* latter part */
+			 
 			new += old_memmap->desc_size;
 			memcpy(new, old, old_memmap->desc_size);
 			md = new;
@@ -201,10 +162,10 @@ void __init efi_memmap_insert(struct efi_memory_map *old_memmap, void *buf,
 		}
 
 		if ((start < m_start && m_start < end) && m_end < end) {
-			/* first part */
+			 
 			md->num_pages = (m_start - md->phys_addr) >>
 				EFI_PAGE_SHIFT;
-			/* middle part */
+			 
 			new += old_memmap->desc_size;
 			memcpy(new, old, old_memmap->desc_size);
 			md = new;
@@ -212,7 +173,7 @@ void __init efi_memmap_insert(struct efi_memory_map *old_memmap, void *buf,
 			md->phys_addr = m_start;
 			md->num_pages = (m_end - m_start + 1) >>
 				EFI_PAGE_SHIFT;
-			/* last part */
+			 
 			new += old_memmap->desc_size;
 			memcpy(new, old, old_memmap->desc_size);
 			md = new;
@@ -223,10 +184,10 @@ void __init efi_memmap_insert(struct efi_memory_map *old_memmap, void *buf,
 
 		if ((start < m_start && m_start < end) &&
 		    (end <= m_end)) {
-			/* first part */
+			 
 			md->num_pages = (m_start - md->phys_addr) >>
 				EFI_PAGE_SHIFT;
-			/* latter part */
+			 
 			new += old_memmap->desc_size;
 			memcpy(new, old, old_memmap->desc_size);
 			md = new;

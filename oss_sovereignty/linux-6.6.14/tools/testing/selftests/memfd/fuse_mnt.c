@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * memfd test file-system
- * This file uses FUSE to create a dummy file-system with only one file /memfd.
- * This file is read-only and takes 1s per read.
- *
- * This file-system is used by the memfd test-cases to force the kernel to pin
- * pages during reads(). Due to the 1s delay of this file-system, this is a
- * nice way to test race-conditions against get_user_pages() in the kernel.
- *
- * We use direct_io==1 to force the kernel to use direct-IO for this
- * file-system.
- */
+
+ 
 
 #define FUSE_USE_VERSION 26
 
@@ -66,7 +55,7 @@ static int memfd_open(const char *path, struct fuse_file_info *fi)
 	if ((fi->flags & 3) != O_RDONLY)
 		return -EACCES;
 
-	/* force direct-IO */
+	 
 	fi->direct_io = 1;
 
 	return 0;

@@ -1,19 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include "mdp5_kms.h"
 
-/*
- * As of now, there are only 2 combinations possible for source split:
- *
- * Left | Right
- * -----|------
- *  LM0 | LM1
- *  LM2 | LM5
- *
- */
+ 
 static int lm_right_pair[] = { 1, -1, 5, -1, -1, -1 };
 
 static int get_right_pair_idx(struct mdp5_kms *mdp5_kms, int lm)
@@ -53,18 +43,12 @@ int mdp5_mixer_assign(struct drm_atomic_state *s, struct drm_crtc *crtc,
 	for (i = 0; i < mdp5_kms->num_hwmixers; i++) {
 		struct mdp5_hw_mixer *cur = mdp5_kms->hwmixers[i];
 
-		/*
-		 * skip if already in-use by a different CRTC. If there is a
-		 * mixer already assigned to this CRTC, it means this call is
-		 * a request to get an additional right mixer. Assume that the
-		 * existing mixer is the 'left' one, and try to see if we can
-		 * get its corresponding 'right' pair.
-		 */
+		 
 		if (new_state->hwmixer_to_crtc[cur->idx] &&
 		    new_state->hwmixer_to_crtc[cur->idx] != crtc)
 			continue;
 
-		/* skip if doesn't support some required caps: */
+		 
 		if (caps & ~cur->caps)
 			continue;
 
@@ -81,19 +65,7 @@ int mdp5_mixer_assign(struct drm_atomic_state *s, struct drm_crtc *crtc,
 			*r_mixer = mdp5_kms->hwmixers[pair_idx];
 		}
 
-		/*
-		 * prefer a pair-able LM over an unpairable one. We can
-		 * switch the CRTC from Normal mode to Source Split mode
-		 * without requiring a full modeset if we had already
-		 * assigned this CRTC a pair-able LM.
-		 *
-		 * TODO: There will be assignment sequences which would
-		 * result in the CRTC requiring a full modeset, even
-		 * if we have the LM resources to prevent it. For a platform
-		 * with a few displays, we don't run out of pair-able LMs
-		 * so easily. For now, ignore the possibility of requiring
-		 * a full modeset.
-		 */
+		 
 		if (!(*mixer) || cur->caps & MDP_LM_CAP_PAIR)
 			*mixer = cur;
 	}

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- *
- * This is an implementation of the BLAKE2s hash and PRF functions.
- *
- * Information: https://blake2.net/
- *
- */
+
+ 
 
 #include <crypto/internal/blake2s.h>
 #include <linux/types.h>
@@ -50,7 +43,7 @@ void blake2s_final(struct blake2s_state *state, u8 *out)
 	WARN_ON(IS_ENABLED(DEBUG) && !out);
 	blake2s_set_lastblock(state);
 	memset(state->buf + state->buflen, 0,
-	       BLAKE2S_BLOCK_SIZE - state->buflen); /* Padding */
+	       BLAKE2S_BLOCK_SIZE - state->buflen);  
 	blake2s_compress(state, state->buf, 1, state->buflen);
 	cpu_to_le32_array(state->h, ARRAY_SIZE(state->h));
 	memcpy(out, state->h, state->outlen);

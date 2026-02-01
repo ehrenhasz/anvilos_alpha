@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Marvell Orion pinctrl driver based on mvebu pinctrl core
- *
- * Author: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
- *
- * The first 16 MPP pins on Orion are easy to handle: they are
- * configured through 2 consecutive registers, located at the base
- * address of the MPP device.
- *
- * However the last 4 MPP pins are handled by a register at offset
- * 0x50 from the base address, so it is not consecutive with the first
- * two registers.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -204,10 +192,7 @@ static struct mvebu_pinctrl_soc_info mv88f5281_info = {
 	.ngpioranges = ARRAY_SIZE(mv88f5281_gpio_ranges),
 };
 
-/*
- * There are multiple variants of the Orion SoCs, but in terms of pin
- * muxing, they are identical.
- */
+ 
 static const struct of_device_id orion_pinctrl_of_match[] = {
 	{ .compatible = "marvell,88f5181-pinctrl", .data = &mv88f5181_info },
 	{ .compatible = "marvell,88f5181l-pinctrl", .data = &mv88f5181_info },

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas R-Mobile Reset Driver
- *
- * Copyright (C) 2014 Glider bvba
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/module.h>
@@ -13,11 +9,11 @@
 #include <linux/printk.h>
 #include <linux/reboot.h>
 
-/* SYSC Register Bank 2 */
-#define RESCNT2		0x20		/* Reset Control Register 2 */
+ 
+#define RESCNT2		0x20		 
 
-/* Reset Control Register 2 */
-#define RESCNT2_PRES	0x80000000	/* Soft power-on reset */
+ 
+#define RESCNT2_PRES	0x80000000	 
 
 static void __iomem *sysc_base2;
 
@@ -26,7 +22,7 @@ static int rmobile_reset_handler(struct notifier_block *this,
 {
 	pr_debug("%s %lu\n", __func__, mode);
 
-	/* Let's assume we have acquired the HPB semaphore */
+	 
 	writel(RESCNT2_PRES, sysc_base2 + RESCNT2);
 
 	return NOTIFY_DONE;
@@ -68,7 +64,7 @@ static int rmobile_reset_remove(struct platform_device *pdev)
 
 static const struct of_device_id rmobile_reset_of_match[] = {
 	{ .compatible = "renesas,sysc-rmobile", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, rmobile_reset_of_match);
 

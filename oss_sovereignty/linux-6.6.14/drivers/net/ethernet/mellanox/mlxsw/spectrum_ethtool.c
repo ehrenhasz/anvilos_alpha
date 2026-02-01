@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2020 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include "reg.h"
 #include "core.h"
@@ -200,9 +200,7 @@ static int mlxsw_sp_port_pause_set(struct mlxsw_sp_port *mlxsw_sp_port,
 			       pfcc_pl);
 }
 
-/* Maximum delay buffer needed in case of PAUSE frames. Similar to PFC delay, but is
- * measured in bytes. Assumes 100m cable and does not take into account MTU.
- */
+ 
 #define MLXSW_SP_PAUSE_DELAY_BYTES 19476
 
 static int mlxsw_sp_port_set_pauseparam(struct net_device *dev,
@@ -795,56 +793,56 @@ static void mlxsw_sp_port_get_stats(struct net_device *dev,
 	struct mlxsw_sp_port *mlxsw_sp_port = netdev_priv(dev);
 	int i, data_index = 0;
 
-	/* IEEE 802.3 Counters */
+	 
 	__mlxsw_sp_port_get_stats(dev, MLXSW_REG_PPCNT_IEEE_8023_CNT, 0,
 				  data, data_index);
 	data_index = MLXSW_SP_PORT_HW_STATS_LEN;
 
-	/* RFC 2863 Counters */
+	 
 	__mlxsw_sp_port_get_stats(dev, MLXSW_REG_PPCNT_RFC_2863_CNT, 0,
 				  data, data_index);
 	data_index += MLXSW_SP_PORT_HW_RFC_2863_STATS_LEN;
 
-	/* RFC 2819 Counters */
+	 
 	__mlxsw_sp_port_get_stats(dev, MLXSW_REG_PPCNT_RFC_2819_CNT, 0,
 				  data, data_index);
 	data_index += MLXSW_SP_PORT_HW_RFC_2819_STATS_LEN;
 
-	/* RFC 3635 Counters */
+	 
 	__mlxsw_sp_port_get_stats(dev, MLXSW_REG_PPCNT_RFC_3635_CNT, 0,
 				  data, data_index);
 	data_index += MLXSW_SP_PORT_HW_RFC_3635_STATS_LEN;
 
-	/* Extended Counters */
+	 
 	__mlxsw_sp_port_get_stats(dev, MLXSW_REG_PPCNT_EXT_CNT, 0,
 				  data, data_index);
 	data_index += MLXSW_SP_PORT_HW_EXT_STATS_LEN;
 
-	/* Discard Counters */
+	 
 	__mlxsw_sp_port_get_stats(dev, MLXSW_REG_PPCNT_DISCARD_CNT, 0,
 				  data, data_index);
 	data_index += MLXSW_SP_PORT_HW_DISCARD_STATS_LEN;
 
-	/* Per-Priority Counters */
+	 
 	for (i = 0; i < IEEE_8021QAZ_MAX_TCS; i++) {
 		__mlxsw_sp_port_get_stats(dev, MLXSW_REG_PPCNT_PRIO_CNT, i,
 					  data, data_index);
 		data_index += MLXSW_SP_PORT_HW_PRIO_STATS_LEN;
 	}
 
-	/* Per-TC Counters */
+	 
 	for (i = 0; i < TC_MAX_QUEUE; i++) {
 		__mlxsw_sp_port_get_stats(dev, MLXSW_REG_PPCNT_TC_CNT, i,
 					  data, data_index);
 		data_index += MLXSW_SP_PORT_HW_TC_STATS_LEN;
 	}
 
-	/* PTP counters */
+	 
 	mlxsw_sp_port->mlxsw_sp->ptp_ops->get_stats(mlxsw_sp_port,
 						    data, data_index);
 	data_index += mlxsw_sp_port->mlxsw_sp->ptp_ops->get_stats_count();
 
-	/* Transceiver counters */
+	 
 	__mlxsw_sp_port_get_env_stats(dev, data, data_index, mlxsw_sp_port_transceiver_stats,
 				      MLXSW_SP_PORT_HW_TRANSCEIVER_STATS_LEN);
 	data_index += MLXSW_SP_PORT_HW_TRANSCEIVER_STATS_LEN;
@@ -1981,17 +1979,11 @@ static u32 mlxsw_sp2_to_ptys_speed_lanes(struct mlxsw_sp *mlxsw_sp, u8 width,
 			link_mode = mlxsw_sp2_port_link_mode[i];
 
 			if (!cmd->lanes) {
-				/* If number of lanes was not set by user space,
-				 * choose the link mode that supports the width
-				 * of the port.
-				 */
+				 
 				if (mask_width & link_mode.mask_sup_width)
 					ptys_proto |= link_mode.mask;
 			} else if (cmd->lanes == link_mode.width) {
-				/* Else if the number of lanes was set, choose
-				 * the link mode that its actual width equals to
-				 * it.
-				 */
+				 
 				ptys_proto |= link_mode.mask;
 			}
 		}

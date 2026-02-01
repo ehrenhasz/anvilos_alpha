@@ -1,10 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright(c) 2021 Intel Corporation.
 
-/*
- * Intel SOF Machine Driver with Cirrus Logic CS42L42 Codec
- * and speaker codec MAX98357A
- */
+
+
+ 
 #include <linux/i2c.h>
 #include <linux/input.h>
 #include <linux/module.h>
@@ -69,7 +66,7 @@ static struct snd_soc_jack_pin jack_pins[] = {
 	},
 };
 
-/* Default: SSP2 */
+ 
 static unsigned long sof_cs42l42_quirk = SOF_CS42L42_SSP_CODEC(2);
 
 struct sof_hdmi_pcm {
@@ -95,7 +92,7 @@ static int sof_hdmi_init(struct snd_soc_pcm_runtime *rtd)
 	if (!pcm)
 		return -ENOMEM;
 
-	/* dai_link id is 1:1 mapped to the PCM device */
+	 
 	pcm->device = rtd->dai_link->id;
 	pcm->codec_dai = dai;
 
@@ -111,10 +108,7 @@ static int sof_cs42l42_init(struct snd_soc_pcm_runtime *rtd)
 	struct snd_soc_jack *jack = &ctx->headset_jack;
 	int ret;
 
-	/*
-	 * Headset buttons map to the google Reference headset.
-	 * These can be configured by userspace.
-	 */
+	 
 	ret = snd_soc_card_jack_new_pins(rtd->card, "Headset Jack",
 					 SND_JACK_HEADSET | SND_JACK_BTN_0 |
 					 SND_JACK_BTN_1 | SND_JACK_BTN_2 |
@@ -155,14 +149,14 @@ static int sof_cs42l42_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
 	int clk_freq, ret;
 
-	clk_freq = sof_dai_get_bclk(rtd); /* BCLK freq */
+	clk_freq = sof_dai_get_bclk(rtd);  
 
 	if (clk_freq <= 0) {
 		dev_err(rtd->dev, "get bclk freq failed: %d\n", clk_freq);
 		return -EINVAL;
 	}
 
-	/* Configure sysclk for codec */
+	 
 	ret = snd_soc_dai_set_sysclk(codec_dai, 0,
 				     clk_freq, SND_SOC_CLOCK_IN);
 	if (ret < 0)
@@ -177,7 +171,7 @@ static const struct snd_soc_ops sof_cs42l42_ops = {
 
 static struct snd_soc_dai_link_component platform_component[] = {
 	{
-		/* name might be overridden during probe */
+		 
 		.name = "0000:00:1f.3"
 	}
 };
@@ -234,15 +228,15 @@ static const struct snd_soc_dapm_widget dmic_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route sof_map[] = {
-	/* HP jack connectors - unknown if we have jack detection */
+	 
 	{"Headphone Jack", NULL, "HP"},
 
-	/* other jacks */
+	 
 	{"HS", NULL, "Headset Mic"},
 };
 
 static const struct snd_soc_dapm_route dmic_map[] = {
-	/* digital mics */
+	 
 	{"DMic", NULL, "SoC DMIC"},
 };
 
@@ -255,7 +249,7 @@ static int dmic_init(struct snd_soc_pcm_runtime *rtd)
 					ARRAY_SIZE(dmic_widgets));
 	if (ret) {
 		dev_err(card->dev, "DMic widget addition failed: %d\n", ret);
-		/* Don't need to add routes if widget addition failed */
+		 
 		return ret;
 	}
 
@@ -268,9 +262,9 @@ static int dmic_init(struct snd_soc_pcm_runtime *rtd)
 	return ret;
 }
 
-/* sof audio machine driver for cs42l42 codec */
+ 
 static struct snd_soc_card sof_audio_card_cs42l42 = {
-	.name = "cs42l42", /* the sof- prefix is added by the core */
+	.name = "cs42l42",  
 	.owner = THIS_MODULE,
 	.controls = sof_controls,
 	.num_controls = ARRAY_SIZE(sof_controls),
@@ -303,7 +297,7 @@ static int create_spk_amp_dai_links(struct device *dev,
 {
 	int ret = 0;
 
-	/* speaker amp */
+	 
 	if (!(sof_cs42l42_quirk & SOF_SPEAKER_AMP_PRESENT))
 		return 0;
 
@@ -329,7 +323,7 @@ static int create_spk_amp_dai_links(struct device *dev,
 	links[*id].platforms = platform_component;
 	links[*id].num_platforms = ARRAY_SIZE(platform_component);
 	links[*id].dpcm_playback = 1;
-	/* firmware-generated echo reference */
+	 
 	links[*id].dpcm_capture = 1;
 
 	links[*id].no_pcm = 1;
@@ -354,7 +348,7 @@ static int create_hp_codec_dai_links(struct device *dev,
 				     struct snd_soc_dai_link_component *cpus,
 				     int *id, int ssp_codec)
 {
-	/* codec SSP */
+	 
 	links[*id].name = devm_kasprintf(dev, GFP_KERNEL, "SSP%d-Codec",
 					 ssp_codec);
 	if (!links[*id].name)
@@ -395,17 +389,17 @@ static int create_dmic_dai_links(struct device *dev,
 {
 	int i;
 
-	/* dmic */
+	 
 	if (dmic_be_num <= 0)
 		return 0;
 
-	/* at least we have dmic01 */
+	 
 	links[*id].name = "dmic01";
 	links[*id].cpus = &cpus[*id];
 	links[*id].cpus->dai_name = "DMIC01 Pin";
 	links[*id].init = dmic_init;
 	if (dmic_be_num > 1) {
-		/* set up 2 BE links at most */
+		 
 		links[*id + 1].name = "dmic16k";
 		links[*id + 1].cpus = &cpus[*id + 1];
 		links[*id + 1].cpus->dai_name = "DMIC16k Pin";
@@ -437,7 +431,7 @@ static int create_hdmi_dai_links(struct device *dev,
 	struct snd_soc_dai_link_component *idisp_components;
 	int i;
 
-	/* HDMI */
+	 
 	if (hdmi_num <= 0)
 		return 0;
 
@@ -493,7 +487,7 @@ static int create_bt_offload_dai_links(struct device *dev,
 				       struct snd_soc_dai_link_component *cpus,
 				       int *id, int ssp_bt)
 {
-	/* bt offload */
+	 
 	if (!(sof_cs42l42_quirk & SOF_BT_OFFLOAD_PRESENT))
 		return 0;
 
@@ -593,7 +587,7 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
 			}
 			break;
 		case LINK_NONE:
-			/* caught here if it's not used as terminator in macro */
+			 
 		default:
 			dev_err(dev, "invalid link type %d\n", link_type);
 			goto devm_err;
@@ -631,7 +625,7 @@ static int sof_audio_probe(struct platform_device *pdev)
 		dmic_be_num = 2;
 		hdmi_num = (sof_cs42l42_quirk & SOF_CS42L42_NUM_HDMIDEV_MASK) >>
 			 SOF_CS42L42_NUM_HDMIDEV_SHIFT;
-		/* default number of HDMI DAI's */
+		 
 		if (!hdmi_num)
 			hdmi_num = 3;
 	}
@@ -646,7 +640,7 @@ static int sof_audio_probe(struct platform_device *pdev)
 
 	ssp_codec = sof_cs42l42_quirk & SOF_CS42L42_SSP_CODEC_MASK;
 
-	/* compute number of dai links */
+	 
 	sof_audio_card_cs42l42.num_links = 1 + dmic_be_num + hdmi_num;
 
 	if (sof_cs42l42_quirk & SOF_SPEAKER_AMP_PRESENT)
@@ -665,7 +659,7 @@ static int sof_audio_probe(struct platform_device *pdev)
 
 	sof_audio_card_cs42l42.dev = &pdev->dev;
 
-	/* set platform name for each dailink */
+	 
 	ret = snd_soc_fixup_dai_links_platform_name(&sof_audio_card_cs42l42,
 						    mach->mach_params.platform);
 	if (ret)
@@ -721,7 +715,7 @@ static struct platform_driver sof_audio = {
 };
 module_platform_driver(sof_audio)
 
-/* Module information */
+ 
 MODULE_DESCRIPTION("SOF Audio Machine driver for CS42L42");
 MODULE_AUTHOR("Brent Lu <brent.lu@intel.com>");
 MODULE_LICENSE("GPL");

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 #define _GNU_SOURCE
 #include <sched.h>
 #include <test_progs.h>
@@ -109,7 +109,7 @@ static void do_bpf_iter_setsockopt(struct bpf_iter_setsockopt *iter_skel,
 	int err, iter_fd = -1, listen_fd = -1;
 	char buf;
 
-	/* Prepare non-reuseport listen_fd */
+	 
 	listen_fd = start_server(AF_INET6, SOCK_STREAM, "::1", 0, 0);
 	if (!ASSERT_GE(listen_fd, 0, "start_server"))
 		return;
@@ -121,12 +121,12 @@ static void do_bpf_iter_setsockopt(struct bpf_iter_setsockopt *iter_skel,
 			"get_local_port(listen_fd)"))
 		goto done;
 
-	/* Connect to non-reuseport listen_fd */
+	 
 	est_fds = make_established(listen_fd, nr_est, &accepted_fds);
 	if (!ASSERT_OK_PTR(est_fds, "create established"))
 		goto done;
 
-	/* Prepare reuseport listen fds */
+	 
 	reuse_listen_fds = start_reuseport_server(AF_INET6, SOCK_STREAM,
 						  "::1", 0, 0,
 						  nr_reuse_listens);
@@ -140,7 +140,7 @@ static void do_bpf_iter_setsockopt(struct bpf_iter_setsockopt *iter_skel,
 			"get_local_port(reuse_listen_fds[0])"))
 		goto done;
 
-	/* Run bpf tcp iter to switch from bpf_cubic to bpf_dctcp */
+	 
 	iter_skel->bss->random_retry = random_retry;
 	iter_fd = bpf_iter_create(bpf_link__fd(iter_skel->links.change_tcp_cc));
 	if (!ASSERT_GE(iter_fd, 0, "create iter_fd"))
@@ -152,20 +152,20 @@ static void do_bpf_iter_setsockopt(struct bpf_iter_setsockopt *iter_skel,
 	if (!ASSERT_OK(err, "read iter error"))
 		goto done;
 
-	/* Check reuseport listen fds for dctcp */
+	 
 	ASSERT_EQ(check_bpf_dctcp(reuse_listen_fds, nr_reuse_listens),
 		  nr_reuse_listens,
 		  "check reuse_listen_fds dctcp");
 
-	/* Check non reuseport listen fd for dctcp */
+	 
 	ASSERT_EQ(check_bpf_dctcp(&listen_fd, 1), 1,
 		  "check listen_fd dctcp");
 
-	/* Check established fds for dctcp */
+	 
 	ASSERT_EQ(check_bpf_dctcp(est_fds, nr_est), nr_est,
 		  "check est_fds dctcp");
 
-	/* Check accepted fds for dctcp */
+	 
 	ASSERT_EQ(check_bpf_dctcp(accepted_fds, nr_est), nr_est,
 		  "check accepted_fds dctcp");
 
@@ -190,7 +190,7 @@ void serial_test_bpf_iter_setsockopt(void)
 	if (create_netns())
 		return;
 
-	/* Load iter_skel */
+	 
 	iter_skel = bpf_iter_setsockopt__open_and_load();
 	if (!ASSERT_OK_PTR(iter_skel, "iter_skel"))
 		return;
@@ -198,7 +198,7 @@ void serial_test_bpf_iter_setsockopt(void)
 	if (!ASSERT_OK_PTR(iter_skel->links.change_tcp_cc, "attach iter"))
 		goto done;
 
-	/* Load bpf_cubic */
+	 
 	cubic_skel = bpf_cubic__open_and_load();
 	if (!ASSERT_OK_PTR(cubic_skel, "cubic_skel"))
 		goto done;
@@ -206,7 +206,7 @@ void serial_test_bpf_iter_setsockopt(void)
 	if (!ASSERT_OK_PTR(cubic_link, "cubic_link"))
 		goto done;
 
-	/* Load bpf_dctcp */
+	 
 	dctcp_skel = bpf_dctcp__open_and_load();
 	if (!ASSERT_OK_PTR(dctcp_skel, "dctcp_skel"))
 		goto done;

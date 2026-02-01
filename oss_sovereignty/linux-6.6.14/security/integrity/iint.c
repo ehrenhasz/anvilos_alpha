@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2008 IBM Corporation
- *
- * Authors:
- * Mimi Zohar <zohar@us.ibm.com>
- *
- * File: integrity_iint.c
- *	- implements the integrity hooks: integrity_inode_alloc,
- *	  integrity_inode_free
- *	- cache integrity information associated with an inode
- *	  using a rbtree tree.
- */
+
+ 
 #include <linux/slab.h>
 #include <linux/init.h>
 #include <linux/spinlock.h>
@@ -27,9 +16,7 @@ static struct kmem_cache *iint_cache __read_mostly;
 
 struct dentry *integrity_dir;
 
-/*
- * __integrity_iint_find - return the iint associated with an inode
- */
+ 
 static struct integrity_iint_cache *__integrity_iint_find(struct inode *inode)
 {
 	struct integrity_iint_cache *iint;
@@ -49,9 +36,7 @@ static struct integrity_iint_cache *__integrity_iint_find(struct inode *inode)
 	return NULL;
 }
 
-/*
- * integrity_iint_find - return the iint associated with an inode
- */
+ 
 struct integrity_iint_cache *integrity_iint_find(struct inode *inode)
 {
 	struct integrity_iint_cache *iint;
@@ -68,12 +53,7 @@ struct integrity_iint_cache *integrity_iint_find(struct inode *inode)
 
 #define IMA_MAX_NESTING (FILESYSTEM_MAX_STACK_DEPTH+1)
 
-/*
- * It is not clear that IMA should be nested at all, but as long is it measures
- * files both on overlayfs and on underlying fs, we need to annotate the iint
- * mutex to avoid lockdep false positives related to IMA + overlayfs.
- * See ovl_lockdep_annotate_inode_mutex_key() for more details.
- */
+ 
 static inline void iint_lockdep_annotate(struct integrity_iint_cache *iint,
 					 struct inode *inode)
 {
@@ -114,13 +94,7 @@ static void iint_free(struct integrity_iint_cache *iint)
 	kmem_cache_free(iint_cache, iint);
 }
 
-/**
- * integrity_inode_get - find or allocate an iint associated with an inode
- * @inode: pointer to the inode
- * @return: allocated iint
- *
- * Caller must lock i_mutex
- */
+ 
 struct integrity_iint_cache *integrity_inode_get(struct inode *inode)
 {
 	struct rb_node **p;
@@ -165,12 +139,7 @@ struct integrity_iint_cache *integrity_inode_get(struct inode *inode)
 	return iint;
 }
 
-/**
- * integrity_inode_free - called on security_inode_free
- * @inode: pointer to the inode
- *
- * Free the integrity information(iint) associated with an inode.
- */
+ 
 void integrity_inode_free(struct inode *inode)
 {
 	struct integrity_iint_cache *iint;
@@ -207,26 +176,14 @@ DEFINE_LSM(integrity) = {
 };
 
 
-/*
- * integrity_kernel_read - read data from the file
- *
- * This is a function for reading file content instead of kernel_read().
- * It does not perform locking checks to ensure it cannot be blocked.
- * It does not perform security checks because it is irrelevant for IMA.
- *
- */
+ 
 int integrity_kernel_read(struct file *file, loff_t offset,
 			  void *addr, unsigned long count)
 {
 	return __kernel_read(file, addr, count, &offset);
 }
 
-/*
- * integrity_load_keys - load integrity keys hook
- *
- * Hooks is called from init/main.c:kernel_init_freeable()
- * when rootfs is ready
- */
+ 
 void __init integrity_load_keys(void)
 {
 	ima_load_x509();

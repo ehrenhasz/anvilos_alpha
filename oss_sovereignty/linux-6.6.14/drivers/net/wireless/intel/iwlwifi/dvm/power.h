@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2014 Intel Corporation. All rights reserved.
- *
- * Portions of this file are derived from the ipw3945 project, as well
- * as portions of the ieee80211 subsystem header files.
- *****************************************************************************/
+ 
+ 
 #ifndef __iwl_power_setting_h__
 #define __iwl_power_setting_h__
 
@@ -25,4 +19,4 @@ void iwl_power_initialize(struct iwl_priv *priv);
 
 extern bool no_sleep_autoadjust;
 
-#endif  /* __iwl_power_setting_h__ */
+#endif   

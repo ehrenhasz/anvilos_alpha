@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung MIPI DSIM glue for Exynos SoCs.
- *
- * Copyright (c) 2014 Samsung Electronics Co., Ltd
- *
- * Contacts: Tomasz Figa <t.figa@samsung.com>
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/of.h>
@@ -175,7 +169,7 @@ static const struct of_device_id exynos_dsi_of_match[] = {
 		.compatible = "samsung,exynos5433-mipi-dsi",
 		.data = &exynos5433_dsi_pdata,
 	},
-	{ /* sentinel. */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, exynos_dsi_of_match);
 

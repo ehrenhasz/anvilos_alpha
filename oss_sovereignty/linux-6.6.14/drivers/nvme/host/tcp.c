@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NVMe over Fabrics TCP host.
- * Copyright (c) 2018 Lightbits Labs. All rights reserved.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/init.h>
@@ -21,23 +18,13 @@
 
 struct nvme_tcp_queue;
 
-/* Define the socket priority to use for connections were it is desirable
- * that the NIC consider performing optimized packet processing or filtering.
- * A non-zero value being sufficient to indicate general consideration of any
- * possible optimization.  Making it a module param allows for alternative
- * values that may be unique for some NIC implementations.
- */
+ 
 static int so_priority;
 module_param(so_priority, int, 0644);
 MODULE_PARM_DESC(so_priority, "nvme tcp socket optimize priority");
 
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
-/* lockdep can detect a circular dependency of the form
- *   sk_lock -> mmap_lock (page fault) -> fs locks -> sk_lock
- * because dependencies are tracked for both nvme-tcp and user contexts. Using
- * a separate class prevents lockdep from conflating nvme-tcp socket use with
- * user-space socket API use.
- */
+ 
 static struct lock_class_key nvme_tcp_sk_key[2];
 static struct lock_class_key nvme_tcp_slock_key[2];
 
@@ -94,7 +81,7 @@ struct nvme_tcp_request {
 	struct bio		*curr_bio;
 	struct iov_iter		iter;
 
-	/* send state */
+	 
 	size_t			offset;
 	size_t			data_sent;
 	enum nvme_tcp_send_state state;
@@ -123,7 +110,7 @@ struct nvme_tcp_queue {
 	struct llist_head	req_list;
 	struct list_head	send_list;
 
-	/* recv state */
+	 
 	void			*pdu;
 	int			pdu_remaining;
 	int			pdu_offset;
@@ -131,7 +118,7 @@ struct nvme_tcp_queue {
 	size_t			ddgst_remaining;
 	unsigned int		nr_cqe;
 
-	/* send state */
+	 
 	struct nvme_tcp_request *request;
 
 	u32			maxh2cdata;
@@ -155,11 +142,11 @@ struct nvme_tcp_queue {
 };
 
 struct nvme_tcp_ctrl {
-	/* read only in the hot path */
+	 
 	struct nvme_tcp_queue	*queues;
 	struct blk_mq_tag_set	tag_set;
 
-	/* other member variables */
+	 
 	struct list_head	list;
 	struct blk_mq_tag_set	admin_tag_set;
 	struct sockaddr_storage addr;
@@ -215,7 +202,7 @@ static inline void *nvme_tcp_req_cmd_pdu(struct nvme_tcp_request *req)
 
 static inline void *nvme_tcp_req_data_pdu(struct nvme_tcp_request *req)
 {
-	/* use the pdu space in the back for the data pdu */
+	 
 	return req->pdu + sizeof(struct nvme_tcp_cmd_pdu) -
 		sizeof(struct nvme_tcp_data_pdu);
 }
@@ -237,7 +224,7 @@ static inline bool nvme_tcp_has_inline_data(struct nvme_tcp_request *req)
 	struct request *rq;
 
 	if (unlikely(nvme_tcp_async_req(req)))
-		return false; /* async events don't have a request */
+		return false;  
 
 	rq = blk_mq_rq_from_pdu(req);
 
@@ -322,7 +309,7 @@ static inline void nvme_tcp_send_all(struct nvme_tcp_queue *queue)
 {
 	int ret;
 
-	/* drain the send queue as much as we can... */
+	 
 	do {
 		ret = nvme_tcp_try_send(queue);
 	} while (ret > 0);
@@ -343,11 +330,7 @@ static inline void nvme_tcp_queue_request(struct nvme_tcp_request *req,
 	empty = llist_add(&req->lentry, &queue->req_list) &&
 		list_empty(&queue->send_list) && !queue->request;
 
-	/*
-	 * if we're the first on the send_list and we can try to send
-	 * directly, otherwise queue io_work. Also, only do that if we
-	 * are on the same cpu, so we don't introduce contention.
-	 */
+	 
 	if (queue->io_cpu == raw_smp_processor_id() &&
 	    sync && empty && mutex_trylock(&queue->send_mutex)) {
 		nvme_tcp_send_all(queue);
@@ -608,12 +591,7 @@ static int nvme_tcp_handle_comp(struct nvme_tcp_queue *queue,
 	struct nvme_completion *cqe = &pdu->cqe;
 	int ret = 0;
 
-	/*
-	 * AEN requests are special as they don't time out and can
-	 * survive any kind of queue freeze and often don't respond to
-	 * aborts.  We don't even bother to allocate a struct request
-	 * for them but rather special case them here.
-	 */
+	 
 	if (unlikely(nvme_is_aen_req(nvme_tcp_queue_id(queue),
 				     cqe->command_id)))
 		nvme_complete_async_event(&queue->ctrl->ctrl, cqe->status,
@@ -783,10 +761,7 @@ static int nvme_tcp_recv_data(struct nvme_tcp_queue *queue, struct sk_buff *skb,
 		if (!iov_iter_count(&req->iter)) {
 			req->curr_bio = req->curr_bio->bi_next;
 
-			/*
-			 * If we don`t have any bios it means that controller
-			 * sent more data than we requested, hence error
-			 */
+			 
 			if (!req->curr_bio) {
 				dev_err(queue->ctrl->ctrl.device,
 					"queue %d no space in request %#x",
@@ -797,7 +772,7 @@ static int nvme_tcp_recv_data(struct nvme_tcp_queue *queue, struct sk_buff *skb,
 			nvme_tcp_init_iter(req, ITER_DEST);
 		}
 
-		/* we can read only from what is left in this bio */
+		 
 		recv_len = min_t(size_t, recv_len,
 				iov_iter_count(&req->iter));
 
@@ -1026,15 +1001,11 @@ static int nvme_tcp_try_send_data(struct nvme_tcp_request *req)
 			nvme_tcp_ddgst_update(queue->snd_hash, page,
 					offset, ret);
 
-		/*
-		 * update the request iterator except for the last payload send
-		 * in the request where we don't want to modify it as we may
-		 * compete with the RX path completing the request.
-		 */
+		 
 		if (req_data_sent + ret < req_data_len)
 			nvme_tcp_advance_req(req, ret);
 
-		/* fully successful last send in current PDU */
+		 
 		if (last && ret == len) {
 			if (queue->data_digest) {
 				nvme_tcp_ddgst_final(queue->snd_hash,
@@ -1255,7 +1226,7 @@ static void nvme_tcp_io_work(struct work_struct *w)
 		if (!pending || !queue->rd_enabled)
 			return;
 
-	} while (!time_after(jiffies, deadline)); /* quota is exhausted */
+	} while (!time_after(jiffies, deadline));  
 
 	queue_work_on(queue->io_cpu, nvme_tcp_wq, &queue->io_work);
 }
@@ -1371,8 +1342,8 @@ static int nvme_tcp_init_connection(struct nvme_tcp_queue *queue)
 	icreq->hdr.pdo = 0;
 	icreq->hdr.plen = cpu_to_le32(icreq->hdr.hlen);
 	icreq->pfv = cpu_to_le16(NVME_TCP_PFV_1_0);
-	icreq->maxr2t = 0; /* single inflight r2t supported */
-	icreq->hpda = 0; /* no alignment constraint */
+	icreq->maxr2t = 0;  
+	icreq->hpda = 0;  
 	if (queue->hdr_digest)
 		icreq->digest |= NVME_TCP_HDR_DIGEST_ENABLE;
 	if (queue->data_digest)
@@ -1536,27 +1507,23 @@ static int nvme_tcp_alloc_queue(struct nvme_ctrl *nctrl, int qid)
 
 	nvme_tcp_reclassify_socket(queue->sock);
 
-	/* Single syn retry */
+	 
 	tcp_sock_set_syncnt(queue->sock->sk, 1);
 
-	/* Set TCP no delay */
+	 
 	tcp_sock_set_nodelay(queue->sock->sk);
 
-	/*
-	 * Cleanup whatever is sitting in the TCP transmit queue on socket
-	 * close. This is done to prevent stale data from being sent should
-	 * the network connection be restored before TCP times out.
-	 */
+	 
 	sock_no_linger(queue->sock->sk);
 
 	if (so_priority > 0)
 		sock_set_priority(queue->sock->sk, so_priority);
 
-	/* Set socket type of service */
+	 
 	if (nctrl->opts->tos >= 0)
 		ip_sock_set_tos(queue->sock->sk, nctrl->opts->tos);
 
-	/* Set 10 seconds timeout for icresp recvmsg */
+	 
 	queue->sock->sk->sk_rcvtimeo = 10 * HZ;
 
 	queue->sock->sk->sk_allocation = GFP_ATOMIC;
@@ -1857,11 +1824,7 @@ static int nvme_tcp_configure_io_queues(struct nvme_ctrl *ctrl, bool new)
 			goto out_free_io_queues;
 	}
 
-	/*
-	 * Only start IO queues for which we have allocated the tagset
-	 * and limitted it to the available queues. On reconnects, the
-	 * queue number might have changed.
-	 */
+	 
 	nr_queues = min(ctrl->tagset->nr_hw_queues + 1, ctrl->queue_count);
 	ret = nvme_tcp_start_io_queues(ctrl, 1, nr_queues);
 	if (ret)
@@ -1871,11 +1834,7 @@ static int nvme_tcp_configure_io_queues(struct nvme_ctrl *ctrl, bool new)
 		nvme_start_freeze(ctrl);
 		nvme_unquiesce_io_queues(ctrl);
 		if (!nvme_wait_freeze_timeout(ctrl, NVME_IO_TIMEOUT)) {
-			/*
-			 * If we timed out waiting for freeze we are likely to
-			 * be stuck.  Fail the controller initialization just
-			 * to be safe.
-			 */
+			 
 			ret = -ENODEV;
 			nvme_unfreeze(ctrl);
 			goto out_wait_freeze_timed_out;
@@ -1885,10 +1844,7 @@ static int nvme_tcp_configure_io_queues(struct nvme_ctrl *ctrl, bool new)
 		nvme_unfreeze(ctrl);
 	}
 
-	/*
-	 * If the number of queues has increased (reconnect case)
-	 * start all new queues now.
-	 */
+	 
 	ret = nvme_tcp_start_io_queues(ctrl, nr_queues,
 				       ctrl->tagset->nr_hw_queues + 1);
 	if (ret)
@@ -1995,7 +1951,7 @@ static void nvme_tcp_reconnect_or_remove(struct nvme_ctrl *ctrl)
 {
 	enum nvme_ctrl_state state = nvme_ctrl_state(ctrl);
 
-	/* If we are resetting/deleting then do nothing */
+	 
 	if (state != NVME_CTRL_CONNECTING) {
 		WARN_ON_ONCE(state == NVME_CTRL_NEW || state == NVME_CTRL_LIVE);
 		return;
@@ -2052,11 +2008,7 @@ static int nvme_tcp_setup_ctrl(struct nvme_ctrl *ctrl, bool new)
 	}
 
 	if (!nvme_change_ctrl_state(ctrl, NVME_CTRL_LIVE)) {
-		/*
-		 * state change failure is ok if we started ctrl delete,
-		 * unless we're during creation of a new controller to
-		 * avoid races with teardown flow.
-		 */
+		 
 		enum nvme_ctrl_state state = nvme_ctrl_state(ctrl);
 
 		WARN_ON_ONCE(state != NVME_CTRL_DELETING &&
@@ -2119,14 +2071,14 @@ static void nvme_tcp_error_recovery_work(struct work_struct *work)
 	nvme_stop_keep_alive(ctrl);
 	flush_work(&ctrl->async_event_work);
 	nvme_tcp_teardown_io_queues(ctrl, false);
-	/* unquiesce to fail fast pending requests */
+	 
 	nvme_unquiesce_io_queues(ctrl);
 	nvme_tcp_teardown_admin_queue(ctrl, false);
 	nvme_unquiesce_admin_queue(ctrl);
 	nvme_auth_stop(ctrl);
 
 	if (!nvme_change_ctrl_state(ctrl, NVME_CTRL_CONNECTING)) {
-		/* state change failure is ok if we started ctrl delete */
+		 
 		enum nvme_ctrl_state state = nvme_ctrl_state(ctrl);
 
 		WARN_ON_ONCE(state != NVME_CTRL_DELETING &&
@@ -2159,7 +2111,7 @@ static void nvme_reset_ctrl_work(struct work_struct *work)
 	nvme_tcp_teardown_ctrl(ctrl, false);
 
 	if (!nvme_change_ctrl_state(ctrl, NVME_CTRL_CONNECTING)) {
-		/* state change failure is ok if we started ctrl delete */
+		 
 		enum nvme_ctrl_state state = nvme_ctrl_state(ctrl);
 
 		WARN_ON_ONCE(state != NVME_CTRL_DELETING &&
@@ -2282,27 +2234,12 @@ static enum blk_eh_timer_return nvme_tcp_timeout(struct request *rq)
 		opc, nvme_opcode_str(qid, opc, fctype));
 
 	if (nvme_ctrl_state(ctrl) != NVME_CTRL_LIVE) {
-		/*
-		 * If we are resetting, connecting or deleting we should
-		 * complete immediately because we may block controller
-		 * teardown or setup sequence
-		 * - ctrl disable/shutdown fabrics requests
-		 * - connect requests
-		 * - initialization admin requests
-		 * - I/O requests that entered after unquiescing and
-		 *   the controller stopped responding
-		 *
-		 * All other requests should be cancelled by the error
-		 * recovery work, so it's fine that we fail it here.
-		 */
+		 
 		nvme_tcp_complete_timed_out(rq);
 		return BLK_EH_DONE;
 	}
 
-	/*
-	 * LIVE state should trigger the normal error recovery which will
-	 * handle completing this request.
-	 */
+	 
 	nvme_tcp_error_recovery(ctrl);
 	return BLK_EH_RESET_TIMER;
 }
@@ -2451,7 +2388,7 @@ static int nvme_tcp_get_address(struct nvme_ctrl *ctrl, char *buf, int size)
 	ret = kernel_getsockname(queue->sock, (struct sockaddr *)&src_addr);
 	if (ret > 0) {
 		if (len > 0)
-			len--; /* strip trailing newline */
+			len--;  
 		len += scnprintf(buf + len, size - len, "%ssrc_addr=%pISc\n",
 				(len) ? "," : "", &src_addr);
 	}

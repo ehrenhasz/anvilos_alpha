@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2014-2017 Mentor Graphics Inc.
- */
+ 
+ 
 
 #ifndef __LINUX_IMX_MEDIA_H__
 #define __LINUX_IMX_MEDIA_H__
 
-/*
- * events from the subdevs
- */
+ 
 #define V4L2_EVENT_IMX_CLASS                V4L2_EVENT_PRIVATE_START
 #define V4L2_EVENT_IMX_FRAME_INTERVAL_ERROR (V4L2_EVENT_IMX_CLASS + 1)
 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __FS_CEPH_BUFFER_H
 #define __FS_CEPH_BUFFER_H
 
@@ -8,11 +8,7 @@
 #include <linux/types.h>
 #include <linux/uio.h>
 
-/*
- * a simple reference counted buffer.
- *
- * use kmalloc for smaller sizes, vmalloc for larger sizes.
- */
+ 
 struct ceph_buffer {
 	struct kref kref;
 	struct kvec vec;

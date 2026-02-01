@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _NF_DEFRAG_IPV6_H
 #define _NF_DEFRAG_IPV6_H
 
@@ -19,4 +19,4 @@ struct nft_ct_frag6_pernet {
 	struct fqdir	*fqdir;
 };
 
-#endif /* _NF_DEFRAG_IPV6_H */
+#endif  

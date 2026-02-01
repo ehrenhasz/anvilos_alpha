@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * ipmi_si_platform.c
- *
- * Handling for platform devices in IPMI (ACPI, OF, and things
- * coming from the platform.
- */
+
+ 
 
 #define pr_fmt(fmt) "ipmi_platform: " fmt
 #define dev_fmt pr_fmt
@@ -53,7 +48,7 @@ MODULE_PARM_DESC(trydmi,
 #endif
 
 #ifdef CONFIG_ACPI
-/* For GPE-type interrupts. */
+ 
 static u32 ipmi_acpi_gpe(acpi_handle gpe_device,
 	u32 gpe_number, void *context)
 {
@@ -166,7 +161,7 @@ static int platform_ipmi_probe(struct platform_device *pdev)
 	case SI_BT:
 		io.si_type = type;
 		break;
-	case SI_TYPE_INVALID: /* User disabled this in hardcode. */
+	case SI_TYPE_INVALID:  
 		return -ENODEV;
 	default:
 		dev_err(&pdev->dev, "ipmi-type property is invalid\n");
@@ -330,7 +325,7 @@ static int acpi_ipmi_probe(struct platform_device *pdev)
 
 	io.addr_info.acpi_info.acpi_handle = handle;
 
-	/* _IFT tells us the interface type: KCS, BT, etc */
+	 
 	status = acpi_evaluate_integer(handle, "_IFT", NULL, &tmp);
 	if (ACPI_FAILURE(status)) {
 		dev_err(dev, "Could not find ACPI IPMI interface type\n");
@@ -347,7 +342,7 @@ static int acpi_ipmi_probe(struct platform_device *pdev)
 	case 3:
 		io.si_type = SI_BT;
 		break;
-	case 4: /* SSIF, just ignore */
+	case 4:  
 		return -ENODEV;
 	default:
 		dev_info(dev, "unknown IPMI type %lld\n", tmp);
@@ -362,7 +357,7 @@ static int acpi_ipmi_probe(struct platform_device *pdev)
 	if (!res)
 		return -EINVAL;
 
-	/* If _GPE exists, use it; otherwise use standard interrupts */
+	 
 	status = acpi_evaluate_integer(handle, "_GPE", NULL, &tmp);
 	if (ACPI_SUCCESS(status)) {
 		io.irq = tmp;

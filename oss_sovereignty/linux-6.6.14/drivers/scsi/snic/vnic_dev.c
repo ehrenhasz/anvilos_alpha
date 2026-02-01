@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright 2014 Cisco Systems, Inc.  All rights reserved.
+
+
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -14,7 +14,7 @@
 #include "vnic_stats.h"
 #include "vnic_wq.h"
 
-#define VNIC_DVCMD_TMO	10000	/* Devcmd Timeout value */
+#define VNIC_DVCMD_TMO	10000	 
 #define VNIC_NOTIFY_INTR_MASK 0x0000ffff00000000ULL
 
 struct devcmd2_controller {
@@ -119,7 +119,7 @@ static int vnic_dev_discover_res(struct vnic_dev *vdev,
 		case RES_TYPE_RQ:
 		case RES_TYPE_CQ:
 		case RES_TYPE_INTR_CTRL:
-			/* each count is stride bytes long */
+			 
 			len = count * VNIC_RES_STRIDE;
 			if (len + bar_offset > bar->len) {
 				pr_err("vNIC BAR0 resource %d out-of-bounds, offset 0x%x + size 0x%x > bar len 0x%lx\n",
@@ -177,11 +177,7 @@ unsigned int svnic_dev_desc_ring_size(struct vnic_dev_ring *ring,
 				      unsigned int desc_count,
 				      unsigned int desc_size)
 {
-	/* The base address of the desc rings must be 512 byte aligned.
-	 * Descriptor count is aligned to groups of 32 descriptors.  A
-	 * count of 0 means the maximum 4096 descriptors.  Descriptor
-	 * size is aligned to 16 bytes.
-	 */
+	 
 
 	unsigned int count_align = 32;
 	unsigned int desc_align = 16;
@@ -258,15 +254,15 @@ static int _svnic_dev_cmd2(struct vnic_dev *vdev, enum vnic_devcmd_cmd cmd,
 	u8 color;
 
 	fetch_idx = ioread32(&dc2c->wq_ctrl->fetch_index);
-	if (fetch_idx == 0xFFFFFFFF) { /* check for hardware gone  */
-		/* Hardware surprise removal: return error */
+	if (fetch_idx == 0xFFFFFFFF) {  
+		 
 		return -ENODEV;
 	}
 
 	posted = ioread32(&dc2c->wq_ctrl->posted_index);
 
-	if (posted == 0xFFFFFFFF) { /* check for hardware gone  */
-		/* Hardware surprise removal: return error */
+	if (posted == 0xFFFFFFFF) {  
+		 
 		return -ENODEV;
 	}
 
@@ -288,11 +284,7 @@ static int _svnic_dev_cmd2(struct vnic_dev *vdev, enum vnic_devcmd_cmd cmd,
 		for (i = 0; i < VNIC_DEVCMD_NARGS; i++)
 			dc2c->cmd_ring[posted].args[i] = vdev->args[i];
 	}
-	/* Adding write memory barrier prevents compiler and/or CPU
-	 * reordering, thus avoiding descriptor posting before
-	 * descriptor is initialized. Otherwise, hardware can read
-	 * stale descriptor fields.
-	 */
+	 
 	wmb();
 	iowrite32(new_posted, &dc2c->wq_ctrl->posted_index);
 
@@ -302,10 +294,7 @@ static int _svnic_dev_cmd2(struct vnic_dev *vdev, enum vnic_devcmd_cmd cmd,
 	result = dc2c->result + dc2c->next_result;
 	color = dc2c->color;
 
-	/*
-	 * Increment next_result, after posting the devcmd, irrespective of
-	 * devcmd result, and it should be done only once.
-	 */
+	 
 	dc2c->next_result++;
 	if (dc2c->next_result == dc2c->result_size) {
 		dc2c->next_result = 0;
@@ -369,16 +358,12 @@ static int svnic_dev_init_devcmd2(struct vnic_dev *vdev)
 		goto err_free_devcmd2;
 
 	fetch_idx = ioread32(&dc2c->wq.ctrl->fetch_index);
-	if (fetch_idx == 0xFFFFFFFF) { /* check for hardware gone  */
-		/* Hardware surprise removal: reset fetch_index */
+	if (fetch_idx == 0xFFFFFFFF) {  
+		 
 		fetch_idx = 0;
 	}
 
-	/*
-	 * Don't change fetch_index ever and
-	 * set posted_index same as fetch_index
-	 * when setting up the WQ for devcmd2.
-	 */
+	 
 	vnic_wq_init_start(&dc2c->wq, 0, fetch_idx, fetch_idx, 0, 0);
 	svnic_wq_enable(&dc2c->wq);
 	ret = svnic_dev_alloc_desc_ring(vdev,
@@ -415,7 +400,7 @@ err_free_devcmd2:
 	vdev->devcmd2 = NULL;
 
 	return ret;
-} /* end of svnic_dev_init_devcmd2 */
+}  
 
 static void vnic_dev_deinit_devcmd2(struct vnic_dev *vdev)
 {
@@ -463,7 +448,7 @@ int svnic_dev_fw_info(struct vnic_dev *vdev,
 
 		a0 = vdev->fw_info_pa;
 
-		/* only get fw_info once and cache it */
+		 
 		err = svnic_dev_cmd(vdev, CMD_MCPU_FW_INFO, &a0, &a1, wait);
 	}
 
@@ -611,8 +596,8 @@ void svnic_dev_notify_unset(struct vnic_dev *vdev)
 	u64 a0, a1;
 	int wait = VNIC_DVCMD_TMO;
 
-	a0 = 0;  /* paddr = 0 to unset notify buffer */
-	a1 = VNIC_NOTIFY_INTR_MASK; /* intr num = -1 to unreg for intr */
+	a0 = 0;   
+	a1 = VNIC_NOTIFY_INTR_MASK;  
 	a1 += sizeof(struct vnic_devcmd_notify);
 
 	svnic_dev_cmd(vdev, CMD_NOTIFY, &a0, &a1, wait);
@@ -729,11 +714,9 @@ err_out:
 	svnic_dev_unregister(vdev);
 
 	return NULL;
-} /* end of svnic_dev_alloc_discover */
+}  
 
-/*
- * fallback option is left to keep the interface common for other vnics.
- */
+ 
 int svnic_dev_cmd_init(struct vnic_dev *vdev, int fallback)
 {
 	int err = -ENODEV;
@@ -746,4 +729,4 @@ int svnic_dev_cmd_init(struct vnic_dev *vdev, int fallback)
 		pr_err("DEVCMD2 resource not found.\n");
 
 	return err;
-} /* end of svnic_dev_cmd_init */
+}  

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM lockd
 
@@ -98,7 +98,7 @@ DEFINE_NLMCLNT_EVENT(nlmclnt_lock);
 DEFINE_NLMCLNT_EVENT(nlmclnt_unlock);
 DEFINE_NLMCLNT_EVENT(nlmclnt_grant);
 
-#endif /* _TRACE_LOCKD_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

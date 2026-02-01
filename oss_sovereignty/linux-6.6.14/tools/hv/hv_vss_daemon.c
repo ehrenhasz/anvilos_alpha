@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * An implementation of the host initiated guest snapshot for Hyper-V.
- *
- * Copyright (C) 2013, Microsoft, Inc.
- * Author : K. Y. Srinivasan <kys@microsoft.com>
- */
+
+ 
 
 
 #include <sys/types.h>
@@ -30,7 +25,7 @@
 
 static bool fs_frozen;
 
-/* Don't use syslog() in the function since that can cause write to disk */
+ 
 static int vss_do_freeze(char *dir, unsigned int cmd)
 {
 	int ret, fd = open(dir, O_RDONLY);
@@ -40,15 +35,7 @@ static int vss_do_freeze(char *dir, unsigned int cmd)
 
 	ret = ioctl(fd, cmd, 0);
 
-	/*
-	 * If a partition is mounted more than once, only the first
-	 * FREEZE/THAW can succeed and the later ones will get
-	 * EBUSY/EINVAL respectively: there could be 2 cases:
-	 * 1) a user may mount the same partition to different directories
-	 *  by mistake or on purpose;
-	 * 2) The subvolume of btrfs appears to have the same partition
-	 * mounted more than once.
-	 */
+	 
 	if (ret) {
 		if ((cmd == FIFREEZE && errno == EBUSY) ||
 		    (cmd == FITHAW && errno == EINVAL)) {
@@ -117,7 +104,7 @@ static int vss_operate(int operation)
 	struct mntent *ent;
 	struct stat sb;
 	char errdir[1024] = {0};
-	char blkdir[23]; /* /sys/dev/block/XXX:XXX */
+	char blkdir[23];  
 	unsigned int cmd;
 	int error = 0, root_seen = 0, save_errno = 0;
 
@@ -187,7 +174,7 @@ err:
 	}
 	vss_operate(VSS_OP_THAW);
 	fs_frozen = false;
-	/* Call syslog after we thaw all filesystems */
+	 
 	if (ent)
 		syslog(LOG_ERR, "FREEZE of %s failed; error:%d %s",
 		       errdir, save_errno, strerror(save_errno));
@@ -262,9 +249,7 @@ reopen_vss_fd:
 		       errno, strerror(errno));
 		exit(EXIT_FAILURE);
 	}
-	/*
-	 * Register ourselves with the kernel.
-	 */
+	 
 	vss_msg->vss_hdr.operation = VSS_OP_REGISTER1;
 
 	len = write(vss_fd, vss_msg, sizeof(struct hv_vss_msg));
@@ -336,11 +321,7 @@ reopen_vss_fd:
 			syslog(LOG_ERR, "Illegal op:%d\n", op);
 		}
 
-		/*
-		 * The write() may return an error due to the faked VSS_OP_THAW
-		 * message upon hibernation. Ignore the error by resetting the
-		 * dev file, i.e. closing and re-opening it.
-		 */
+		 
 		vss_msg->error = error;
 		len = write(vss_fd, vss_msg, sizeof(struct hv_vss_msg));
 		if (len != sizeof(struct hv_vss_msg)) {

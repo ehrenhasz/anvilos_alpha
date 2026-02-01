@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- */
+
+ 
 
 #include <linux/delay.h>
 
@@ -18,9 +16,7 @@ static void mt76x2u_init_dma(struct mt76x02_dev *dev)
 	       MT_USB_DMA_CFG_RX_BULK_EN |
 	       MT_USB_DMA_CFG_TX_BULK_EN;
 
-	/* disable AGGR_BULK_RX in order to receive one
-	 * frame in each rx urb and avoid copies
-	 */
+	 
 	val &= ~MT_USB_DMA_CFG_RX_BULK_AGG_EN;
 	mt76_wr(dev, MT_VEND_ADDR(CFG, MT_USB_U3DMA_CFG), val);
 }
@@ -50,15 +46,15 @@ static void mt76x2u_power_on_rf(struct mt76x02_dev *dev, int unit)
 	int shift = unit ? 8 : 0;
 	u32 val = (BIT(1) | BIT(3) | BIT(4) | BIT(5)) << shift;
 
-	/* Enable RF BG */
+	 
 	mt76_set(dev, MT_VEND_ADDR(CFG, 0x130), BIT(0) << shift);
 	usleep_range(10, 20);
 
-	/* Enable RFDIG LDO/AFE/ABB/ADDA */
+	 
 	mt76_set(dev, MT_VEND_ADDR(CFG, 0x130), val);
 	usleep_range(10, 20);
 
-	/* Switch RFDIG power to internal LDO */
+	 
 	mt76_clear(dev, MT_VEND_ADDR(CFG, 0x130), BIT(2) << shift);
 	usleep_range(10, 20);
 
@@ -71,7 +67,7 @@ static void mt76x2u_power_on(struct mt76x02_dev *dev)
 {
 	u32 val;
 
-	/* Turn on WL MTCMOS */
+	 
 	mt76_set(dev, MT_VEND_ADDR(CFG, 0x148),
 		 MT_WLAN_MTC_CTRL_MTCMOS_PWR_UP);
 
@@ -90,13 +86,13 @@ static void mt76x2u_power_on(struct mt76x02_dev *dev)
 	mt76_set(dev, MT_VEND_ADDR(CFG, 0x148), 0xf << 24);
 	mt76_clear(dev, MT_VEND_ADDR(CFG, 0x148), 0xfff);
 
-	/* Turn on AD/DA power down */
+	 
 	mt76_clear(dev, MT_VEND_ADDR(CFG, 0x1204), BIT(3));
 
-	/* WLAN function enable */
+	 
 	mt76_set(dev, MT_VEND_ADDR(CFG, 0x80), BIT(0));
 
-	/* Release BBP software reset */
+	 
 	mt76_clear(dev, MT_VEND_ADDR(CFG, 0x64), BIT(18));
 
 	mt76x2u_power_on_rf(dev, 0);
@@ -142,7 +138,7 @@ int mt76x2u_init_hardware(struct mt76x02_dev *dev)
 			    MT_WPDMA_GLO_CFG_RX_DMA_BUSY, 0, 100))
 		return -EIO;
 
-	/* wait for asic ready after fw load. */
+	 
 	if (!mt76x02_wait_for_mac(&dev->mt76))
 		return -ETIMEDOUT;
 
@@ -162,11 +158,11 @@ int mt76x2u_init_hardware(struct mt76x02_dev *dev)
 	if (!mt76x02_wait_for_txrx_idle(&dev->mt76))
 		return -ETIMEDOUT;
 
-	/* reset wcid table */
+	 
 	for (i = 0; i < 256; i++)
 		mt76x02_mac_wcid_setup(dev, i, 0, NULL);
 
-	/* reset shared key table and pairwise key table */
+	 
 	for (i = 0; i < 16; i++) {
 		for (k = 0; k < 4; k++)
 			mt76x02_mac_shared_key_setup(dev, i, k, NULL);
@@ -215,7 +211,7 @@ int mt76x2u_register_device(struct mt76x02_dev *dev)
 	if (err < 0)
 		goto fail;
 
-	/* check hw sg support in order to enable AMSDU */
+	 
 	hw->max_tx_fragments = dev->mt76.usb.sg_en ? MT_TX_SG_MAX_SIZE : 1;
 	err = mt76_register_device(&dev->mt76, true, mt76x02_rates,
 				   ARRAY_SIZE(mt76x02_rates));

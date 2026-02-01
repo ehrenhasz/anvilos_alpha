@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell RVU Admin Function driver
- *
- * Copyright (C) 2022 Marvell.
- *
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/module.h>
@@ -110,9 +106,7 @@ static u64 npc_update_use_hash(struct rvu *rvu, int blkaddr,
 	hdr = FIELD_GET(NPC_HDR_OFFSET, cfg);
 	key = FIELD_GET(NPC_KEY_OFFSET, cfg);
 
-	/* Update use_hash(bit-20) to 'true' and
-	 * bytesm1(bit-16:19) to '0x3' in KEX_LD_CFG
-	 */
+	 
 	cfg = KEX_LD_CFG_USE_HASH(0x1, 0x03,
 				  hdr, 0x1, 0x0, key);
 
@@ -128,7 +122,7 @@ static void npc_program_mkex_hash_rx(struct rvu *rvu, int blkaddr,
 	if (is_npc_intf_tx(intf))
 		return;
 
-	/* Program HASH_CFG */
+	 
 	for (lid = 0; lid < NPC_MAX_LID; lid++) {
 		for (lt = 0; lt < NPC_MAX_LT; lt++) {
 			for (ld = 0; ld < NPC_MAX_LD; ld++) {
@@ -140,9 +134,9 @@ static void npc_program_mkex_hash_rx(struct rvu *rvu, int blkaddr,
 
 					cfg = npc_update_use_hash(rvu, blkaddr,
 								  intf, lid, lt, ld);
-					/* Set updated KEX configuration */
+					 
 					SET_KEX_LD(intf, lid, lt, ld, cfg);
-					/* Set HASH configuration */
+					 
 					SET_KEX_LD_HASH(intf, ld,
 							mkex_hash->hash[intf][ld]);
 					SET_KEX_LD_HASH_MASK(intf, ld, 0,
@@ -168,7 +162,7 @@ static void npc_program_mkex_hash_tx(struct rvu *rvu, int blkaddr,
 	if (is_npc_intf_rx(intf))
 		return;
 
-	/* Program HASH_CFG */
+	 
 	for (lid = 0; lid < NPC_MAX_LID; lid++) {
 		for (lt = 0; lt < NPC_MAX_LT; lt++) {
 			for (ld = 0; ld < NPC_MAX_LD; ld++)
@@ -180,9 +174,9 @@ static void npc_program_mkex_hash_tx(struct rvu *rvu, int blkaddr,
 
 					cfg = npc_update_use_hash(rvu, blkaddr,
 								  intf, lid, lt, ld);
-					/* Set updated KEX configuration */
+					 
 					SET_KEX_LD(intf, lid, lt, ld, cfg);
-					/* Set HASH configuration */
+					 
 					SET_KEX_LD_HASH(intf, ld,
 							mkex_hash->hash[intf][ld]);
 					SET_KEX_LD_HASH_MASK(intf, ld, 0,
@@ -224,24 +218,11 @@ void npc_program_mkex_hash(struct rvu *rvu, int blkaddr)
 	struct rvu_hwinfo *hw = rvu->hw;
 	u64 cfg;
 
-	/* Check if hardware supports hash extraction */
+	 
 	if (!hwcap->npc_hash_extract)
 		return;
 
-	/* Check if IPv6 source/destination address
-	 * should be hash enabled.
-	 * Hashing reduces 128bit SIP/DIP fields to 32bit
-	 * so that 224 bit X2 key can be used for IPv6 based filters as well,
-	 * which in turn results in more number of MCAM entries available for
-	 * use.
-	 *
-	 * Hashing of IPV6 SIP/DIP is enabled in below scenarios
-	 * 1. If the silicon variant supports hashing feature
-	 * 2. If the number of bytes of IP addr being extracted is 4 bytes ie
-	 *    32bit. The assumption here is that if user wants 8bytes of LSB of
-	 *    IP addr or full 16 bytes then his intention is not to use 32bit
-	 *    hash.
-	 */
+	 
 	for (intf = 0; intf < hw->npc_intfs; intf++) {
 		for (ld = 0; ld < NPC_MAX_LD; ld++) {
 			cfg = rvu_read64(rvu, blkaddr,
@@ -251,21 +232,13 @@ void npc_program_mkex_hash(struct rvu *rvu, int blkaddr)
 								       ld));
 			hdr_offset = FIELD_GET(NPC_HDR_OFFSET, cfg);
 			byte_len = FIELD_GET(NPC_BYTESM, cfg);
-			/* Hashing of IPv6 source/destination address should be
-			 * enabled if,
-			 * hdr_offset == 8 (offset of source IPv6 address) or
-			 * hdr_offset == 24 (offset of destination IPv6)
-			 * address) and the number of byte to be
-			 * extracted is 4. As per hardware configuration
-			 * byte_len should be == actual byte_len - 1.
-			 * Hence byte_len is checked against 3 but nor 4.
-			 */
+			 
 			if ((hdr_offset == 8 || hdr_offset == 24) && byte_len == 3)
 				mh->lid_lt_ld_hash_en[intf][NPC_LID_LC][NPC_LT_LC_IP6][ld] = true;
 		}
 	}
 
-	/* Update hash configuration if the field is hash enabled */
+	 
 	for (intf = 0; intf < hw->npc_intfs; intf++) {
 		npc_program_mkex_hash_rx(rvu, blkaddr, intf);
 		npc_program_mkex_hash_tx(rvu, blkaddr, intf);
@@ -305,14 +278,9 @@ void npc_update_field_hash(struct rvu *rvu, u8 intf,
 
 			if (mkex_hash->lid_lt_ld_hash_en[intf][lid][ltype][hash_idx]) {
 				switch (ltype & ltype_mask) {
-				/* If hash extract enabled is supported for IPv6 then
-				 * 128 bit IPv6 source and destination addressed
-				 * is hashed to 32 bit value.
-				 */
+				 
 				case NPC_LT_LC_IP6:
-					/* ld[0] == hash_idx[0] == Source IPv6
-					 * ld[1] == hash_idx[1] == Destination IPv6
-					 */
+					 
 					if ((features & BIT_ULL(NPC_SIP_IPV6)) && !hash_idx) {
 						u32 src_ip[IPV6_WORDS];
 
@@ -390,21 +358,12 @@ int rvu_mbox_handler_npc_get_field_hash_info(struct rvu *rvu,
 	return 0;
 }
 
-/**
- *	rvu_exact_prepare_mdata - Make mdata for mcam entry
- *	@mac: MAC address
- *	@chan: Channel number.
- *	@ctype: Channel Type.
- *	@mask: LDATA mask.
- *	Return: Meta data
- */
+ 
 static u64 rvu_exact_prepare_mdata(u8 *mac, u16 chan, u16 ctype, u64 mask)
 {
 	u64 ldata = ether_addr_to_u64(mac);
 
-	/* Please note that mask is 48bit which excludes chan and ctype.
-	 * Increase mask bits if we need to include them as well.
-	 */
+	 
 	ldata |= ((u64)chan << 48);
 	ldata |= ((u64)ctype  << 60);
 	ldata &= mask;
@@ -413,16 +372,7 @@ static u64 rvu_exact_prepare_mdata(u8 *mac, u16 chan, u16 ctype, u64 mask)
 	return ldata;
 }
 
-/**
- *      rvu_exact_calculate_hash - calculate hash index to mem table.
- *	@rvu: resource virtualization unit.
- *	@chan: Channel number
- *	@ctype: Channel type.
- *	@mac: MAC address
- *	@mask: HASH mask.
- *	@table_depth: Depth of table.
- *	Return: Hash value
- */
+ 
 static u32 rvu_exact_calculate_hash(struct rvu *rvu, u16 chan, u16 ctype, u8 *mac,
 				    u64 mask, u32 table_depth)
 {
@@ -452,16 +402,7 @@ static u32 rvu_exact_calculate_hash(struct rvu *rvu, u16 chan, u16 ctype, u8 *ma
 	return hash;
 }
 
-/**
- *      rvu_npc_exact_alloc_mem_table_entry - find free entry in 4 way table.
- *      @rvu: resource virtualization unit.
- *	@way: Indicate way to table.
- *	@index: Hash index to 4 way table.
- *	@hash: Hash value.
- *
- *	Searches 4 way table using hash index. Returns 0 on success.
- *	Return: 0 upon success.
- */
+ 
 static int rvu_npc_exact_alloc_mem_table_entry(struct rvu *rvu, u8 *way,
 					       u32 *index, unsigned int hash)
 {
@@ -471,7 +412,7 @@ static int rvu_npc_exact_alloc_mem_table_entry(struct rvu *rvu, u8 *way,
 	table = rvu->hw->table;
 	depth = table->mem_table.depth;
 
-	/* Check all the 4 ways for a free slot. */
+	 
 	mutex_lock(&table->lock);
 	for (i = 0; i <  table->mem_table.ways; i++) {
 		if (test_bit(hash + i * depth, table->mem_table.bmap))
@@ -494,11 +435,7 @@ static int rvu_npc_exact_alloc_mem_table_entry(struct rvu *rvu, u8 *way,
 	return -ENOSPC;
 }
 
-/**
- *	rvu_npc_exact_free_id - Free seq id from bitmat.
- *	@rvu: Resource virtualization unit.
- *	@seq_id: Sequence identifier to be freed.
- */
+ 
 static void rvu_npc_exact_free_id(struct rvu *rvu, u32 seq_id)
 {
 	struct npc_exact_table *table;
@@ -510,12 +447,7 @@ static void rvu_npc_exact_free_id(struct rvu *rvu, u32 seq_id)
 	dev_dbg(rvu->dev, "%s: freed id %d\n", __func__, seq_id);
 }
 
-/**
- *	rvu_npc_exact_alloc_id - Alloc seq id from bitmap.
- *	@rvu: Resource virtualization unit.
- *	@seq_id: Sequence identifier.
- *	Return: True or false.
- */
+ 
 static bool rvu_npc_exact_alloc_id(struct rvu *rvu, u32 *seq_id)
 {
 	struct npc_exact_table *table;
@@ -533,7 +465,7 @@ static bool rvu_npc_exact_alloc_id(struct rvu *rvu, u32 *seq_id)
 		return false;
 	}
 
-	/* Mark bit map to indicate that slot is used.*/
+	 
 	set_bit(idx, table->id_bmap);
 	mutex_unlock(&table->lock);
 
@@ -543,12 +475,7 @@ static bool rvu_npc_exact_alloc_id(struct rvu *rvu, u32 *seq_id)
 	return true;
 }
 
-/**
- *      rvu_npc_exact_alloc_cam_table_entry - find free slot in fully associative table.
- *      @rvu: resource virtualization unit.
- *	@index: Index to exact CAM table.
- *	Return: 0 upon success; else error number.
- */
+ 
 static int rvu_npc_exact_alloc_cam_table_entry(struct rvu *rvu, int *index)
 {
 	struct npc_exact_table *table;
@@ -565,7 +492,7 @@ static int rvu_npc_exact_alloc_cam_table_entry(struct rvu *rvu, int *index)
 		return -ENOSPC;
 	}
 
-	/* Mark bit map to indicate that slot is used.*/
+	 
 	set_bit(idx, table->cam_table.bmap);
 	mutex_unlock(&table->lock);
 
@@ -575,40 +502,29 @@ static int rvu_npc_exact_alloc_cam_table_entry(struct rvu *rvu, int *index)
 	return 0;
 }
 
-/**
- *	rvu_exact_prepare_table_entry - Data for exact match table entry.
- *	@rvu: Resource virtualization unit.
- *	@enable: Enable/Disable entry
- *	@ctype: Software defined channel type. Currently set as 0.
- *	@chan: Channel number.
- *	@mac_addr: Destination mac address.
- *	Return: mdata for exact match table.
- */
+ 
 static u64 rvu_exact_prepare_table_entry(struct rvu *rvu, bool enable,
 					 u8 ctype, u16 chan, u8 *mac_addr)
 
 {
 	u64 ldata = ether_addr_to_u64(mac_addr);
 
-	/* Enable or disable */
+	 
 	u64 mdata = FIELD_PREP(GENMASK_ULL(63, 63), enable ? 1 : 0);
 
-	/* Set Ctype */
+	 
 	mdata |= FIELD_PREP(GENMASK_ULL(61, 60), ctype);
 
-	/* Set chan */
+	 
 	mdata |= FIELD_PREP(GENMASK_ULL(59, 48), chan);
 
-	/* MAC address */
+	 
 	mdata |= FIELD_PREP(GENMASK_ULL(47, 0), ldata);
 
 	return mdata;
 }
 
-/**
- *	rvu_exact_config_secret_key - Configure secret key.
- *	@rvu: Resource virtualization unit.
- */
+ 
 static void rvu_exact_config_secret_key(struct rvu *rvu)
 {
 	int blkaddr;
@@ -624,10 +540,7 @@ static void rvu_exact_config_secret_key(struct rvu *rvu)
 		    RVU_NPC_HASH_SECRET_KEY2);
 }
 
-/**
- *	rvu_exact_config_search_key - Configure search key
- *	@rvu: Resource virtualization unit.
- */
+ 
 static void rvu_exact_config_search_key(struct rvu *rvu)
 {
 	int blkaddr;
@@ -635,37 +548,31 @@ static void rvu_exact_config_search_key(struct rvu *rvu)
 
 	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NPC, 0);
 
-	/* HDR offset */
+	 
 	reg_val = FIELD_PREP(GENMASK_ULL(39, 32), 0);
 
-	/* BYTESM1, number of bytes - 1 */
+	 
 	reg_val |= FIELD_PREP(GENMASK_ULL(18, 16), ETH_ALEN - 1);
 
-	/* Enable LID and set LID to  NPC_LID_LA */
+	 
 	reg_val |= FIELD_PREP(GENMASK_ULL(11, 11), 1);
 	reg_val |= FIELD_PREP(GENMASK_ULL(10, 8),  NPC_LID_LA);
 
-	/* Clear layer type based extraction */
+	 
 
-	/* Disable LT_EN */
+	 
 	reg_val |= FIELD_PREP(GENMASK_ULL(12, 12), 0);
 
-	/* Set LTYPE_MATCH to 0 */
+	 
 	reg_val |= FIELD_PREP(GENMASK_ULL(7, 4), 0);
 
-	/* Set LTYPE_MASK to 0 */
+	 
 	reg_val |= FIELD_PREP(GENMASK_ULL(3, 0), 0);
 
 	rvu_write64(rvu, blkaddr, NPC_AF_INTFX_EXACT_CFG(NIX_INTF_RX), reg_val);
 }
 
-/**
- *	rvu_exact_config_result_ctrl - Set exact table hash control
- *	@rvu: Resource virtualization unit.
- *	@depth: Depth of Exact match table.
- *
- *	Sets mask and offset for hash for mem table.
- */
+ 
 static void rvu_exact_config_result_ctrl(struct rvu *rvu, uint32_t depth)
 {
 	int blkaddr;
@@ -673,23 +580,20 @@ static void rvu_exact_config_result_ctrl(struct rvu *rvu, uint32_t depth)
 
 	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NPC, 0);
 
-	/* Set mask. Note that depth is a power of 2 */
+	 
 	rvu->hw->table->mem_table.hash_mask = (depth - 1);
 	reg |= FIELD_PREP(GENMASK_ULL(42, 32), (depth - 1));
 
-	/* Set offset as 0 */
+	 
 	rvu->hw->table->mem_table.hash_offset = 0;
 	reg |= FIELD_PREP(GENMASK_ULL(10, 0), 0);
 
-	/* Set reg for RX */
+	 
 	rvu_write64(rvu, blkaddr, NPC_AF_INTFX_EXACT_RESULT_CTL(NIX_INTF_RX), reg);
-	/* Store hash mask and offset for s/w algorithm */
+	 
 }
 
-/**
- *	rvu_exact_config_table_mask - Set exact table mask.
- *	@rvu: Resource virtualization unit.
- */
+ 
 static void rvu_exact_config_table_mask(struct rvu *rvu)
 {
 	int blkaddr;
@@ -697,27 +601,23 @@ static void rvu_exact_config_table_mask(struct rvu *rvu)
 
 	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NPC, 0);
 
-	/* Don't use Ctype */
+	 
 	mask |= FIELD_PREP(GENMASK_ULL(61, 60), 0);
 
-	/* Set chan */
+	 
 	mask |= GENMASK_ULL(59, 48);
 
-	/* Full ldata */
+	 
 	mask |= GENMASK_ULL(47, 0);
 
-	/* Store mask for s/w hash calcualtion */
+	 
 	rvu->hw->table->mem_table.mask = mask;
 
-	/* Set mask for RX.*/
+	 
 	rvu_write64(rvu, blkaddr, NPC_AF_INTFX_EXACT_MASK(NIX_INTF_RX), mask);
 }
 
-/**
- *      rvu_npc_exact_get_max_entries - Get total number of entries in table.
- *      @rvu: resource virtualization unit.
- *	Return: Maximum table entries possible.
- */
+ 
 u32 rvu_npc_exact_get_max_entries(struct rvu *rvu)
 {
 	struct npc_exact_table *table;
@@ -726,24 +626,13 @@ u32 rvu_npc_exact_get_max_entries(struct rvu *rvu)
 	return table->tot_ids;
 }
 
-/**
- *      rvu_npc_exact_has_match_table - Checks support for exact match.
- *      @rvu: resource virtualization unit.
- *	Return: True if exact match table is supported/enabled.
- */
+ 
 bool rvu_npc_exact_has_match_table(struct rvu *rvu)
 {
 	return  rvu->hw->cap.npc_exact_match_enabled;
 }
 
-/**
- *      __rvu_npc_exact_find_entry_by_seq_id - find entry by id
- *      @rvu: resource virtualization unit.
- *	@seq_id: Sequence identifier.
- *
- *	Caller should acquire the lock.
- *	Return: Pointer to table entry.
- */
+ 
 static struct npc_exact_table_entry *
 __rvu_npc_exact_find_entry_by_seq_id(struct rvu *rvu, u32 seq_id)
 {
@@ -753,7 +642,7 @@ __rvu_npc_exact_find_entry_by_seq_id(struct rvu *rvu, u32 seq_id)
 
 	lhead = &table->lhead_gbl;
 
-	/* traverse to find the matching entry */
+	 
 	list_for_each_entry(entry, lhead, glist) {
 		if (entry->seq_id != seq_id)
 			continue;
@@ -764,23 +653,7 @@ __rvu_npc_exact_find_entry_by_seq_id(struct rvu *rvu, u32 seq_id)
 	return NULL;
 }
 
-/**
- *      rvu_npc_exact_add_to_list - Add entry to list
- *      @rvu: resource virtualization unit.
- *	@opc_type: OPCODE to select MEM/CAM table.
- *	@ways: MEM table ways.
- *	@index: Index in MEM/CAM table.
- *	@cgx_id: CGX identifier.
- *	@lmac_id: LMAC identifier.
- *	@mac_addr: MAC address.
- *	@chan: Channel number.
- *	@ctype: Channel Type.
- *	@seq_id: Sequence identifier
- *	@cmd: True if function is called by ethtool cmd
- *	@mcam_idx: NPC mcam index of DMAC entry in NPC mcam.
- *	@pcifunc: pci function
- *	Return: 0 upon success.
- */
+ 
 static int rvu_npc_exact_add_to_list(struct rvu *rvu, enum npc_exact_opc_type opc_type, u8 ways,
 				     u32 index, u8 cgx_id, u8 lmac_id, u8 *mac_addr, u16 chan,
 				     u8 ctype, u32 *seq_id, bool cmd, u32 mcam_idx, u16 pcifunc)
@@ -824,7 +697,7 @@ static int rvu_npc_exact_add_to_list(struct rvu *rvu, enum npc_exact_opc_type op
 		return  -EINVAL;
 	}
 
-	/* Add to global list */
+	 
 	INIT_LIST_HEAD(&entry->glist);
 	list_add_tail(&entry->glist, &table->lhead_gbl);
 	INIT_LIST_HEAD(&entry->list);
@@ -847,7 +720,7 @@ static int rvu_npc_exact_add_to_list(struct rvu *rvu, enum npc_exact_opc_type op
 
 	pprev = lhead;
 
-	/* Insert entry in ascending order of index */
+	 
 	list_for_each_entry_safe(iter, tmp, lhead, list) {
 		if (index < iter->index)
 			break;
@@ -855,47 +728,27 @@ static int rvu_npc_exact_add_to_list(struct rvu *rvu, enum npc_exact_opc_type op
 		pprev = &iter->list;
 	}
 
-	/* Add to each table list */
+	 
 	list_add(&entry->list, pprev);
 	mutex_unlock(&table->lock);
 	return 0;
 }
 
-/**
- *	rvu_npc_exact_mem_table_write - Wrapper for register write
- *	@rvu: resource virtualization unit.
- *	@blkaddr: Block address
- *	@ways: ways for MEM table.
- *	@index: Index in MEM
- *	@mdata: Meta data to be written to register.
- */
+ 
 static void rvu_npc_exact_mem_table_write(struct rvu *rvu, int blkaddr, u8 ways,
 					  u32 index, u64 mdata)
 {
 	rvu_write64(rvu, blkaddr, NPC_AF_EXACT_MEM_ENTRY(ways, index), mdata);
 }
 
-/**
- *	rvu_npc_exact_cam_table_write - Wrapper for register write
- *	@rvu: resource virtualization unit.
- *	@blkaddr: Block address
- *	@index: Index in MEM
- *	@mdata: Meta data to be written to register.
- */
+ 
 static void rvu_npc_exact_cam_table_write(struct rvu *rvu, int blkaddr,
 					  u32 index, u64 mdata)
 {
 	rvu_write64(rvu, blkaddr, NPC_AF_EXACT_CAM_ENTRY(index), mdata);
 }
 
-/**
- *      rvu_npc_exact_dealloc_table_entry - dealloc table entry
- *      @rvu: resource virtualization unit.
- *	@opc_type: OPCODE for selection of table(MEM or CAM)
- *	@ways: ways if opc_type is MEM table.
- *	@index: Index of MEM or CAM table.
- *	Return: 0 upon success.
- */
+ 
 static int rvu_npc_exact_dealloc_table_entry(struct rvu *rvu, enum npc_exact_opc_type opc_type,
 					     u8 ways, u32 index)
 {
@@ -904,7 +757,7 @@ static int rvu_npc_exact_dealloc_table_entry(struct rvu *rvu, enum npc_exact_opc
 	u8 null_dmac[6] = { 0 };
 	int depth;
 
-	/* Prepare entry with all fields set to zero */
+	 
 	u64 null_mdata = rvu_exact_prepare_table_entry(rvu, false, 0, 0, null_dmac);
 
 	table = rvu->hw->table;
@@ -915,7 +768,7 @@ static int rvu_npc_exact_dealloc_table_entry(struct rvu *rvu, enum npc_exact_opc
 	switch (opc_type) {
 	case NPC_EXACT_OPC_CAM:
 
-		/* Check whether entry is used already */
+		 
 		if (!test_bit(index, table->cam_table.bmap)) {
 			mutex_unlock(&table->lock);
 			dev_err(rvu->dev, "%s: Trying to free an unused entry ways=%d index=%d\n",
@@ -929,7 +782,7 @@ static int rvu_npc_exact_dealloc_table_entry(struct rvu *rvu, enum npc_exact_opc
 
 	case NPC_EXACT_OPC_MEM:
 
-		/* Check whether entry is used already */
+		 
 		if (!test_bit(index + ways * depth, table->mem_table.bmap)) {
 			mutex_unlock(&table->lock);
 			dev_err(rvu->dev, "%s: Trying to free an unused entry index=%d\n",
@@ -955,21 +808,7 @@ static int rvu_npc_exact_dealloc_table_entry(struct rvu *rvu, enum npc_exact_opc
 	return 0;
 }
 
-/**
- *	rvu_npc_exact_alloc_table_entry - Allociate an entry
- *      @rvu: resource virtualization unit.
- *	@mac: MAC address.
- *	@chan: Channel number.
- *	@ctype: Channel Type.
- *	@index: Index of MEM table or CAM table.
- *	@ways: Ways. Only valid for MEM table.
- *	@opc_type: OPCODE to select table (MEM or CAM)
- *
- *	Try allocating a slot from MEM table. If all 4 ways
- *	slot are full for a hash index, check availability in
- *	32-entry CAM table for allocation.
- *	Return: 0 upon success.
- */
+ 
 static int rvu_npc_exact_alloc_table_entry(struct rvu *rvu,  char *mac, u16 chan, u8 ctype,
 					   u32 *index, u8 *ways, enum npc_exact_opc_type *opc_type)
 {
@@ -979,7 +818,7 @@ static int rvu_npc_exact_alloc_table_entry(struct rvu *rvu,  char *mac, u16 chan
 
 	table = rvu->hw->table;
 
-	/* Check in 4-ways mem entry for free slote */
+	 
 	hash =  rvu_exact_calculate_hash(rvu, chan, ctype, mac, table->mem_table.mask,
 					 table->mem_table.depth);
 	err = rvu_npc_exact_alloc_mem_table_entry(rvu, ways, index, hash);
@@ -992,7 +831,7 @@ static int rvu_npc_exact_alloc_table_entry(struct rvu *rvu,  char *mac, u16 chan
 
 	dev_dbg(rvu->dev, "%s: failed to insert in 4 ways hash table\n", __func__);
 
-	/* wayss is 0 for cam table */
+	 
 	*ways = 0;
 	err = rvu_npc_exact_alloc_cam_table_entry(rvu, index);
 	if (!err) {
@@ -1006,15 +845,7 @@ static int rvu_npc_exact_alloc_table_entry(struct rvu *rvu,  char *mac, u16 chan
 	return -ENOSPC;
 }
 
-/**
- *	rvu_npc_exact_save_drop_rule_chan_and_mask - Save drop rules info in data base.
- *      @rvu: resource virtualization unit.
- *	@drop_mcam_idx: Drop rule index in NPC mcam.
- *	@chan_val: Channel value.
- *	@chan_mask: Channel Mask.
- *	@pcifunc: pcifunc of interface.
- *	Return: True upon success.
- */
+ 
 static bool rvu_npc_exact_save_drop_rule_chan_and_mask(struct rvu *rvu, int drop_mcam_idx,
 						       u64 chan_val, u64 chan_mask, u16 pcifunc)
 {
@@ -1047,23 +878,14 @@ static bool rvu_npc_exact_save_drop_rule_chan_and_mask(struct rvu *rvu, int drop
 	return true;
 }
 
-/**
- *	rvu_npc_exact_calc_drop_rule_chan_and_mask - Calculate Channel number and mask.
- *      @rvu: resource virtualization unit.
- *	@intf_type: Interface type (SDK, LBK or CGX)
- *	@cgx_id: CGX identifier.
- *	@lmac_id: LAMC identifier.
- *	@val: Channel number.
- *	@mask: Channel mask.
- *	Return: True upon success.
- */
+ 
 static bool rvu_npc_exact_calc_drop_rule_chan_and_mask(struct rvu *rvu, u8 intf_type,
 						       u8 cgx_id, u8 lmac_id,
 						       u64 *val, u64 *mask)
 {
 	u16 chan_val, chan_mask;
 
-	/* No support for SDP and LBK */
+	 
 	if (intf_type != NIX_INTF_TYPE_CGX)
 		return false;
 
@@ -1079,15 +901,7 @@ static bool rvu_npc_exact_calc_drop_rule_chan_and_mask(struct rvu *rvu, u8 intf_
 	return true;
 }
 
-/**
- *	rvu_npc_exact_drop_rule_to_pcifunc - Retrieve pcifunc
- *      @rvu: resource virtualization unit.
- *	@drop_rule_idx: Drop rule index in NPC mcam.
- *
- *	Debugfs (exact_drop_cnt) entry displays pcifunc for interface
- *	by retrieving the pcifunc value from data base.
- *	Return: Drop rule index.
- */
+ 
 u16 rvu_npc_exact_drop_rule_to_pcifunc(struct rvu *rvu, u32 drop_rule_idx)
 {
 	struct npc_exact_table *table;
@@ -1110,18 +924,7 @@ u16 rvu_npc_exact_drop_rule_to_pcifunc(struct rvu *rvu, u32 drop_rule_idx)
 	return -1;
 }
 
-/**
- *	rvu_npc_exact_get_drop_rule_info - Get drop rule information.
- *      @rvu: resource virtualization unit.
- *	@intf_type: Interface type (CGX, SDP or LBK)
- *	@cgx_id: CGX identifier.
- *	@lmac_id: LMAC identifier.
- *	@drop_mcam_idx: NPC mcam drop rule index.
- *	@val: Channel value.
- *	@mask: Channel mask.
- *	@pcifunc: pcifunc of interface corresponding to the drop rule.
- *	Return: True upon success.
- */
+ 
 static bool rvu_npc_exact_get_drop_rule_info(struct rvu *rvu, u8 intf_type, u8 cgx_id,
 					     u8 lmac_id, u32 *drop_mcam_idx, u64 *val,
 					     u64 *mask, u16 *pcifunc)
@@ -1172,18 +975,7 @@ static bool rvu_npc_exact_get_drop_rule_info(struct rvu *rvu, u8 intf_type, u8 c
 	return false;
 }
 
-/**
- *	__rvu_npc_exact_cmd_rules_cnt_update - Update number dmac rules against a drop rule.
- *      @rvu: resource virtualization unit.
- *	@drop_mcam_idx: NPC mcam drop rule index.
- *	@val: +1 or -1.
- *	@enable_or_disable_cam: If no exact match rules against a drop rule, disable it.
- *
- *	when first exact match entry against a drop rule is added, enable_or_disable_cam
- *	is set to true. When last exact match entry against a drop rule is deleted,
- *	enable_or_disable_cam is set to true.
- *	Return: Number of rules
- */
+ 
 static u16 __rvu_npc_exact_cmd_rules_cnt_update(struct rvu *rvu, int drop_mcam_idx,
 						int val, bool *enable_or_disable_cam)
 {
@@ -1207,15 +999,13 @@ static u16 __rvu_npc_exact_cmd_rules_cnt_update(struct rvu *rvu, int drop_mcam_i
 	if (promisc)
 		goto done;
 
-	/* If all rules are deleted and not already in promisc mode;
-	 * disable cam
-	 */
+	 
 	if (!*cnt && val < 0) {
 		*enable_or_disable_cam = true;
 		goto done;
 	}
 
-	/* If rule got added and not already in promisc mode; enable cam */
+	 
 	if (!old_cnt && val > 0) {
 		*enable_or_disable_cam = true;
 		goto done;
@@ -1225,15 +1015,7 @@ done:
 	return *cnt;
 }
 
-/**
- *      rvu_npc_exact_del_table_entry_by_id - Delete and free table entry.
- *      @rvu: resource virtualization unit.
- *	@seq_id: Sequence identifier of the entry.
- *
- *	Deletes entry from linked lists and free up slot in HW MEM or CAM
- *	table.
- *	Return: 0 upon success.
- */
+ 
 static int rvu_npc_exact_del_table_entry_by_id(struct rvu *rvu, u32 seq_id)
 {
 	struct npc_exact_table_entry *entry = NULL;
@@ -1247,7 +1029,7 @@ static int rvu_npc_exact_del_table_entry_by_id(struct rvu *rvu, u32 seq_id)
 
 	mutex_lock(&table->lock);
 
-	/* Lookup for entry which needs to be updated */
+	 
 	entry = __rvu_npc_exact_find_entry_by_seq_id(rvu, seq_id);
 	if (!entry) {
 		dev_dbg(rvu->dev, "%s: failed to find entry for id=%d\n", __func__, seq_id);
@@ -1258,7 +1040,7 @@ static int rvu_npc_exact_del_table_entry_by_id(struct rvu *rvu, u32 seq_id)
 	cnt = (entry->opc_type == NPC_EXACT_OPC_CAM) ? &table->cam_tbl_entry_cnt :
 				&table->mem_tbl_entry_cnt;
 
-	/* delete from lists */
+	 
 	list_del_init(&entry->list);
 	list_del_init(&entry->glist);
 
@@ -1276,7 +1058,7 @@ static int rvu_npc_exact_del_table_entry_by_id(struct rvu *rvu, u32 seq_id)
 	if (entry->cmd)
 		__rvu_npc_exact_cmd_rules_cnt_update(rvu, drop_mcam_idx, -1, &disable_cam);
 
-	/* No dmac filter rules; disable drop on hit rule */
+	 
 	if (disable_cam) {
 		rvu_npc_enable_mcam_by_entry_index(rvu, drop_mcam_idx, NIX_INTF_RX, false);
 		dev_dbg(rvu->dev, "%s: Disabling mcam idx %d\n",
@@ -1296,23 +1078,7 @@ static int rvu_npc_exact_del_table_entry_by_id(struct rvu *rvu, u32 seq_id)
 	return 0;
 }
 
-/**
- *      rvu_npc_exact_add_table_entry - Adds a table entry
- *      @rvu: resource virtualization unit.
- *	@cgx_id: cgx identifier.
- *	@lmac_id: lmac identifier.
- *	@mac: MAC address.
- *	@chan: Channel number.
- *	@ctype: Channel Type.
- *	@seq_id: Sequence number.
- *	@cmd: Whether it is invoked by ethtool cmd.
- *	@mcam_idx: NPC mcam index corresponding to MAC
- *	@pcifunc: PCI func.
- *
- *	Creates a new exact match table entry in either CAM or
- *	MEM table.
- *	Return: 0 upon success.
- */
+ 
 static int rvu_npc_exact_add_table_entry(struct rvu *rvu, u8 cgx_id, u8 lmac_id, u8 *mac,
 					 u16 chan, u8 ctype, u32 *seq_id, bool cmd,
 					 u32 mcam_idx, u16 pcifunc)
@@ -1335,7 +1101,7 @@ static int rvu_npc_exact_add_table_entry(struct rvu *rvu, u8 cgx_id, u8 lmac_id,
 		return err;
 	}
 
-	/* Write mdata to table */
+	 
 	mdata = rvu_exact_prepare_table_entry(rvu, true, ctype, chan, mac);
 
 	if (opc_type == NPC_EXACT_OPC_CAM)
@@ -1343,7 +1109,7 @@ static int rvu_npc_exact_add_table_entry(struct rvu *rvu, u8 cgx_id, u8 lmac_id,
 	else
 		rvu_npc_exact_mem_table_write(rvu, blkaddr, ways, index,  mdata);
 
-	/* Insert entry to linked list */
+	 
 	err = rvu_npc_exact_add_to_list(rvu, opc_type, ways, index, cgx_id, lmac_id,
 					mac, chan, ctype, seq_id, cmd, mcam_idx, pcifunc);
 	if (err) {
@@ -1364,7 +1130,7 @@ static int rvu_npc_exact_add_table_entry(struct rvu *rvu, u8 cgx_id, u8 lmac_id,
 	if (cmd)
 		__rvu_npc_exact_cmd_rules_cnt_update(rvu, drop_mcam_idx, 1, &enable_cam);
 
-	/* First command rule; enable drop on hit rule */
+	 
 	if (enable_cam) {
 		rvu_npc_enable_mcam_by_entry_index(rvu, drop_mcam_idx, NIX_INTF_RX, true);
 		dev_dbg(rvu->dev, "%s: Enabling mcam idx %d\n",
@@ -1378,19 +1144,7 @@ static int rvu_npc_exact_add_table_entry(struct rvu *rvu, u8 cgx_id, u8 lmac_id,
 	return 0;
 }
 
-/**
- *      rvu_npc_exact_update_table_entry - Update exact match table.
- *      @rvu: resource virtualization unit.
- *	@cgx_id: CGX identifier.
- *	@lmac_id: LMAC identifier.
- *	@old_mac: Existing MAC address entry.
- *	@new_mac: New MAC address entry.
- *	@seq_id: Sequence identifier of the entry.
- *
- *	Updates MAC address of an entry. If entry is in MEM table, new
- *	hash value may not match with old one.
- *	Return: 0 upon success.
- */
+ 
 static int rvu_npc_exact_update_table_entry(struct rvu *rvu, u8 cgx_id, u8 lmac_id,
 					    u8 *old_mac, u8 *new_mac, u32 *seq_id)
 {
@@ -1404,7 +1158,7 @@ static int rvu_npc_exact_update_table_entry(struct rvu *rvu, u8 cgx_id, u8 lmac_
 
 	mutex_lock(&table->lock);
 
-	/* Lookup for entry which needs to be updated */
+	 
 	entry = __rvu_npc_exact_find_entry_by_seq_id(rvu, *seq_id);
 	if (!entry) {
 		mutex_unlock(&table->lock);
@@ -1414,9 +1168,7 @@ static int rvu_npc_exact_update_table_entry(struct rvu *rvu, u8 cgx_id, u8 lmac_
 		return -ENODATA;
 	}
 
-	/* If entry is in mem table and new hash index is different than old
-	 * hash index, we cannot update the entry. Fail in these scenarios.
-	 */
+	 
 	if (entry->opc_type == NPC_EXACT_OPC_MEM) {
 		hash_index =  rvu_exact_calculate_hash(rvu, entry->chan, entry->ctype,
 						       new_mac, table->mem_table.mask,
@@ -1437,7 +1189,7 @@ static int rvu_npc_exact_update_table_entry(struct rvu *rvu, u8 cgx_id, u8 lmac_
 	else
 		rvu_npc_exact_cam_table_write(rvu, blkaddr, entry->index, mdata);
 
-	/* Update entry fields */
+	 
 	ether_addr_copy(entry->mac, new_mac);
 	*seq_id = entry->seq_id;
 
@@ -1452,15 +1204,7 @@ static int rvu_npc_exact_update_table_entry(struct rvu *rvu, u8 cgx_id, u8 lmac_
 	return 0;
 }
 
-/**
- *	rvu_npc_exact_promisc_disable - Disable promiscuous mode.
- *      @rvu: resource virtualization unit.
- *	@pcifunc: pcifunc
- *
- *	Drop rule is against each PF. We dont support DMAC filter for
- *	VF.
- *	Return: 0 upon success
- */
+ 
 
 int rvu_npc_exact_promisc_disable(struct rvu *rvu, u16 pcifunc)
 {
@@ -1494,7 +1238,7 @@ int rvu_npc_exact_promisc_disable(struct rvu *rvu, u16 pcifunc)
 	*promisc = false;
 	mutex_unlock(&table->lock);
 
-	/* Enable drop rule */
+	 
 	rvu_npc_enable_mcam_by_entry_index(rvu, drop_mcam_idx, NIX_INTF_RX,
 					   true);
 
@@ -1503,12 +1247,7 @@ int rvu_npc_exact_promisc_disable(struct rvu *rvu, u16 pcifunc)
 	return 0;
 }
 
-/**
- *	rvu_npc_exact_promisc_enable - Enable promiscuous mode.
- *      @rvu: resource virtualization unit.
- *	@pcifunc: pcifunc.
- *	Return: 0 upon success
- */
+ 
 int rvu_npc_exact_promisc_enable(struct rvu *rvu, u16 pcifunc)
 {
 	struct npc_exact_table *table;
@@ -1541,7 +1280,7 @@ int rvu_npc_exact_promisc_enable(struct rvu *rvu, u16 pcifunc)
 	*promisc = true;
 	mutex_unlock(&table->lock);
 
-	/*  disable drop rule */
+	 
 	rvu_npc_enable_mcam_by_entry_index(rvu, drop_mcam_idx, NIX_INTF_RX,
 					   false);
 
@@ -1550,13 +1289,7 @@ int rvu_npc_exact_promisc_enable(struct rvu *rvu, u16 pcifunc)
 	return 0;
 }
 
-/**
- *	rvu_npc_exact_mac_addr_reset - Delete PF mac address.
- *      @rvu: resource virtualization unit.
- *	@req: Reset request
- *	@rsp: Reset response.
- *	Return: 0 upon success
- */
+ 
 int rvu_npc_exact_mac_addr_reset(struct rvu *rvu, struct cgx_mac_addr_reset_req *req,
 				 struct msg_rsp *rsp)
 {
@@ -1572,7 +1305,7 @@ int rvu_npc_exact_mac_addr_reset(struct rvu *rvu, struct cgx_mac_addr_reset_req 
 
 	rc = rvu_npc_exact_del_table_entry_by_id(rvu, seq_id);
 	if (rc) {
-		/* TODO: how to handle this error case ? */
+		 
 		dev_err(rvu->dev, "%s MAC (%pM) del PF=%d failed\n", __func__, pfvf->mac_addr, pf);
 		return 0;
 	}
@@ -1582,13 +1315,7 @@ int rvu_npc_exact_mac_addr_reset(struct rvu *rvu, struct cgx_mac_addr_reset_req 
 	return 0;
 }
 
-/**
- *	rvu_npc_exact_mac_addr_update - Update mac address field with new value.
- *      @rvu: resource virtualization unit.
- *	@req: Update request.
- *	@rsp: Update response.
- *	Return: 0 upon success
- */
+ 
 int rvu_npc_exact_mac_addr_update(struct rvu *rvu,
 				  struct cgx_mac_addr_update_req *req,
 				  struct cgx_mac_addr_update_rsp *rsp)
@@ -1616,7 +1343,7 @@ int rvu_npc_exact_mac_addr_update(struct rvu *rvu,
 
 	mutex_lock(&table->lock);
 
-	/* Lookup for entry which needs to be updated */
+	 
 	entry = __rvu_npc_exact_find_entry_by_seq_id(rvu, req->index);
 	if (!entry) {
 		dev_err(rvu->dev, "%s: failed to find entry for id=0x%x\n", __func__, req->index);
@@ -1638,10 +1365,10 @@ int rvu_npc_exact_mac_addr_update(struct rvu *rvu,
 		return 0;
 	}
 
-	/* Try deleting and adding it again */
+	 
 	rc = rvu_npc_exact_del_table_entry_by_id(rvu, req->index);
 	if (rc) {
-		/* This could be a new entry */
+		 
 		dev_dbg(rvu->dev, "%s MAC (%pM) del PF=%d failed\n", __func__,
 			pfvf->mac_addr, pf);
 	}
@@ -1664,13 +1391,7 @@ int rvu_npc_exact_mac_addr_update(struct rvu *rvu,
 	return 0;
 }
 
-/**
- *	rvu_npc_exact_mac_addr_add - Adds MAC address to exact match table.
- *      @rvu: resource virtualization unit.
- *	@req: Add request.
- *	@rsp: Add response.
- *	Return: 0 upon success
- */
+ 
 int rvu_npc_exact_mac_addr_add(struct rvu *rvu,
 			       struct cgx_mac_addr_add_req *req,
 			       struct cgx_mac_addr_add_rsp *rsp)
@@ -1700,13 +1421,7 @@ int rvu_npc_exact_mac_addr_add(struct rvu *rvu,
 	return LMAC_AF_ERR_EXACT_MATCH_TBL_ADD_FAILED;
 }
 
-/**
- *	rvu_npc_exact_mac_addr_del - Delete DMAC filter
- *      @rvu: resource virtualization unit.
- *	@req: Delete request.
- *	@rsp: Delete response.
- *	Return: 0 upon success
- */
+ 
 int rvu_npc_exact_mac_addr_del(struct rvu *rvu,
 			       struct cgx_mac_addr_del_req *req,
 			       struct msg_rsp *rsp)
@@ -1726,13 +1441,7 @@ int rvu_npc_exact_mac_addr_del(struct rvu *rvu,
 	return LMAC_AF_ERR_EXACT_MATCH_TBL_DEL_FAILED;
 }
 
-/**
- *	rvu_npc_exact_mac_addr_set - Add PF mac address to dmac filter.
- *      @rvu: resource virtualization unit.
- *	@req: Set request.
- *	@rsp: Set response.
- *	Return: 0 upon success
- */
+ 
 int rvu_npc_exact_mac_addr_set(struct rvu *rvu, struct cgx_mac_addr_set_or_get *req,
 			       struct cgx_mac_addr_set_or_get *rsp)
 {
@@ -1747,9 +1456,7 @@ int rvu_npc_exact_mac_addr_set(struct rvu *rvu, struct cgx_mac_addr_set_or_get *
 
 	pfvf = &rvu->pf[pf];
 
-	/* If table does not have an entry; both update entry and del table entry API
-	 * below fails. Those are not failure conditions.
-	 */
+	 
 	rc = rvu_npc_exact_update_table_entry(rvu, cgx_id, lmac_id, pfvf->mac_addr,
 					      req->mac_addr, &seq_id);
 	if (!rc) {
@@ -1761,14 +1468,14 @@ int rvu_npc_exact_mac_addr_set(struct rvu *rvu, struct cgx_mac_addr_set_or_get *
 		return 0;
 	}
 
-	/* Try deleting and adding it again */
+	 
 	rc = rvu_npc_exact_del_table_entry_by_id(rvu, req->index);
 	if (rc) {
 		dev_dbg(rvu->dev, "%s MAC (%pM) del PF=%d failed\n",
 			__func__, pfvf->mac_addr, pf);
 	}
 
-	/* find mcam entry if exist */
+	 
 	rc = nix_get_nixlf(rvu, req->hdr.pcifunc, &nixlf, NULL);
 	if (!rc) {
 		mcam_idx = npc_get_nixlf_mcam_index(&rvu->hw->mcam, req->hdr.pcifunc,
@@ -1793,11 +1500,7 @@ int rvu_npc_exact_mac_addr_set(struct rvu *rvu, struct cgx_mac_addr_set_or_get *
 	return 0;
 }
 
-/**
- *	rvu_npc_exact_can_disable_feature - Check if feature can be disabled.
- *      @rvu: resource virtualization unit.
- *	Return: True if exact match feature is supported.
- */
+ 
 bool rvu_npc_exact_can_disable_feature(struct rvu *rvu)
 {
 	struct npc_exact_table *table = rvu->hw->table;
@@ -1813,20 +1516,13 @@ bool rvu_npc_exact_can_disable_feature(struct rvu *rvu)
 	return empty;
 }
 
-/**
- *	rvu_npc_exact_disable_feature - Disable feature.
- *      @rvu: resource virtualization unit.
- */
+ 
 void rvu_npc_exact_disable_feature(struct rvu *rvu)
 {
 	rvu->hw->cap.npc_exact_match_enabled = false;
 }
 
-/**
- *	rvu_npc_exact_reset - Delete and free all entry which match pcifunc.
- *      @rvu: resource virtualization unit.
- *	@pcifunc: PCI func to match.
- */
+ 
 void rvu_npc_exact_reset(struct rvu *rvu, u16 pcifunc)
 {
 	struct npc_exact_table *table = rvu->hw->table;
@@ -1849,14 +1545,7 @@ void rvu_npc_exact_reset(struct rvu *rvu, u16 pcifunc)
 	mutex_unlock(&table->lock);
 }
 
-/**
- *      rvu_npc_exact_init - initialize exact match table
- *      @rvu: resource virtualization unit.
- *
- *	Initialize HW and SW resources to manage 4way-2K table and fully
- *	associative 32-entry mcam table.
- *	Return: 0 upon success.
- */
+ 
 int rvu_npc_exact_init(struct rvu *rvu)
 {
 	u64 bcast_mcast_val, bcast_mcast_mask;
@@ -1874,26 +1563,24 @@ int rvu_npc_exact_init(struct rvu *rvu)
 	u64 cfg;
 	bool rc;
 
-	/* Read NPC_AF_CONST3 and check for have exact
-	 * match functionality is present
-	 */
+	 
 	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NPC, 0);
 	if (blkaddr < 0) {
 		dev_err(rvu->dev, "%s: NPC block not implemented\n", __func__);
 		return -EINVAL;
 	}
 
-	/* Check exact match feature is supported */
+	 
 	npc_const3 = rvu_read64(rvu, blkaddr, NPC_AF_CONST3);
 	if (!(npc_const3 & BIT_ULL(62)))
 		return 0;
 
-	/* Check if kex profile has enabled EXACT match nibble */
+	 
 	cfg = rvu_read64(rvu, blkaddr, NPC_AF_INTFX_KEX_CFG(NIX_INTF_RX));
 	if (!(cfg & NPC_EXACT_NIBBLE_HIT))
 		return 0;
 
-	/* Set capability to true */
+	 
 	rvu->hw->cap.npc_exact_match_enabled = true;
 
 	table = kzalloc(sizeof(*table), GFP_KERNEL);
@@ -1903,7 +1590,7 @@ int rvu_npc_exact_init(struct rvu *rvu)
 	dev_dbg(rvu->dev, "%s: Memory allocation for table success\n", __func__);
 	rvu->hw->table = table;
 
-	/* Read table size, ways and depth */
+	 
 	table->mem_table.ways = FIELD_GET(GENMASK_ULL(19, 16), npc_const3);
 	table->mem_table.depth = FIELD_GET(GENMASK_ULL(15, 0), npc_const3);
 	table->cam_table.depth = FIELD_GET(GENMASK_ULL(31, 24), npc_const3);
@@ -1911,9 +1598,7 @@ int rvu_npc_exact_init(struct rvu *rvu)
 	dev_dbg(rvu->dev, "%s: NPC exact match 4way_2k table(ways=%d, depth=%d)\n",
 		__func__,  table->mem_table.ways, table->cam_table.depth);
 
-	/* Check if depth of table is not a sequre of 2
-	 * TODO: why _builtin_popcount() is not working ?
-	 */
+	 
 	if ((table->mem_table.depth & (table->mem_table.depth - 1)) != 0) {
 		dev_err(rvu->dev,
 			"%s: NPC exact match 4way_2k table depth(%d) is not square of 2\n",
@@ -1923,7 +1608,7 @@ int rvu_npc_exact_init(struct rvu *rvu)
 
 	table_size = table->mem_table.depth * table->mem_table.ways;
 
-	/* Allocate bitmap for 4way 2K table */
+	 
 	table->mem_table.bmap = devm_bitmap_zalloc(rvu->dev, table_size,
 						   GFP_KERNEL);
 	if (!table->mem_table.bmap)
@@ -1931,7 +1616,7 @@ int rvu_npc_exact_init(struct rvu *rvu)
 
 	dev_dbg(rvu->dev, "%s: Allocated bitmap for 4way 2K entry table\n", __func__);
 
-	/* Allocate bitmap for 32 entry mcam */
+	 
 	table->cam_table.bmap = devm_bitmap_zalloc(rvu->dev, 32, GFP_KERNEL);
 
 	if (!table->cam_table.bmap)
@@ -1949,10 +1634,7 @@ int rvu_npc_exact_init(struct rvu *rvu)
 	dev_dbg(rvu->dev, "%s: Allocated bitmap for id map (total=%d)\n",
 		__func__, table->tot_ids);
 
-	/* Initialize list heads for npc_exact_table entries.
-	 * This entry is used by debugfs to show entries in
-	 * exact match table.
-	 */
+	 
 	for (i = 0; i < NPC_EXACT_TBL_MAX_WAYS; i++)
 		INIT_LIST_HEAD(&table->lhead_mem_tbl_entry[i]);
 
@@ -1967,19 +1649,15 @@ int rvu_npc_exact_init(struct rvu *rvu)
 	rvu_exact_config_table_mask(rvu);
 	rvu_exact_config_result_ctrl(rvu, table->mem_table.depth);
 
-	/* - No drop rule for LBK
-	 * - Drop rules for SDP and each LMAC.
-	 */
+	 
 	exact_val = !NPC_EXACT_RESULT_HIT;
 	exact_mask = NPC_EXACT_RESULT_HIT;
 
-	/* nibble - 3	2  1   0
-	 *	   L3B L3M L2B L2M
-	 */
+	 
 	bcast_mcast_val = 0b0000;
 	bcast_mcast_mask = 0b0011;
 
-	/* Install SDP drop rule */
+	 
 	drop_mcam_idx = &table->num_drop_rules;
 
 	max_lmac_cnt = rvu->cgx_cnt_max * rvu->hw->lmac_per_cgx +
@@ -2000,7 +1678,7 @@ int rvu_npc_exact_init(struct rvu *rvu)
 			return -EINVAL;
 		}
 
-		/* Filter rules are only for PF */
+		 
 		pcifunc = RVU_PFFUNC(i, 0);
 
 		dev_dbg(rvu->dev,

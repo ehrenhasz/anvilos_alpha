@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MediaTek PCIe host controller driver.
- *
- * Copyright (c) 2020 MediaTek Inc.
- * Author: Jianjun Wang <jianjun.wang@mediatek.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -100,38 +95,14 @@
 #define PCIE_ATR_TLP_TYPE_MEM		PCIE_ATR_TLP_TYPE(0)
 #define PCIE_ATR_TLP_TYPE_IO		PCIE_ATR_TLP_TYPE(2)
 
-/**
- * struct mtk_msi_set - MSI information for each set
- * @base: IO mapped register base
- * @msg_addr: MSI message address
- * @saved_irq_state: IRQ enable state saved at suspend time
- */
+ 
 struct mtk_msi_set {
 	void __iomem *base;
 	phys_addr_t msg_addr;
 	u32 saved_irq_state;
 };
 
-/**
- * struct mtk_gen3_pcie - PCIe port information
- * @dev: pointer to PCIe device
- * @base: IO mapped register base
- * @reg_base: physical register base
- * @mac_reset: MAC reset control
- * @phy_reset: PHY reset control
- * @phy: PHY controller block
- * @clks: PCIe clocks
- * @num_clks: PCIe clocks count for this port
- * @irq: PCIe controller interrupt number
- * @saved_irq_state: IRQ enable state saved at suspend time
- * @irq_lock: lock protecting IRQ register access
- * @intx_domain: legacy INTx IRQ domain
- * @msi_domain: MSI IRQ domain
- * @msi_bottom_domain: MSI IRQ bottom domain
- * @msi_sets: MSI sets information
- * @lock: lock protecting IRQ bit map
- * @msi_irq_in_use: bit map for assigned MSI IRQ
- */
+ 
 struct mtk_gen3_pcie {
 	struct device *dev;
 	void __iomem *base;
@@ -153,46 +124,38 @@ struct mtk_gen3_pcie {
 	DECLARE_BITMAP(msi_irq_in_use, PCIE_MSI_IRQS_NUM);
 };
 
-/* LTSSM state in PCIE_LTSSM_STATUS_REG bit[28:24] */
+ 
 static const char *const ltssm_str[] = {
-	"detect.quiet",			/* 0x00 */
-	"detect.active",		/* 0x01 */
-	"polling.active",		/* 0x02 */
-	"polling.compliance",		/* 0x03 */
-	"polling.configuration",	/* 0x04 */
-	"config.linkwidthstart",	/* 0x05 */
-	"config.linkwidthaccept",	/* 0x06 */
-	"config.lanenumwait",		/* 0x07 */
-	"config.lanenumaccept",		/* 0x08 */
-	"config.complete",		/* 0x09 */
-	"config.idle",			/* 0x0A */
-	"recovery.receiverlock",	/* 0x0B */
-	"recovery.equalization",	/* 0x0C */
-	"recovery.speed",		/* 0x0D */
-	"recovery.receiverconfig",	/* 0x0E */
-	"recovery.idle",		/* 0x0F */
-	"L0",				/* 0x10 */
-	"L0s",				/* 0x11 */
-	"L1.entry",			/* 0x12 */
-	"L1.idle",			/* 0x13 */
-	"L2.idle",			/* 0x14 */
-	"L2.transmitwake",		/* 0x15 */
-	"disable",			/* 0x16 */
-	"loopback.entry",		/* 0x17 */
-	"loopback.active",		/* 0x18 */
-	"loopback.exit",		/* 0x19 */
-	"hotreset",			/* 0x1A */
+	"detect.quiet",			 
+	"detect.active",		 
+	"polling.active",		 
+	"polling.compliance",		 
+	"polling.configuration",	 
+	"config.linkwidthstart",	 
+	"config.linkwidthaccept",	 
+	"config.lanenumwait",		 
+	"config.lanenumaccept",		 
+	"config.complete",		 
+	"config.idle",			 
+	"recovery.receiverlock",	 
+	"recovery.equalization",	 
+	"recovery.speed",		 
+	"recovery.receiverconfig",	 
+	"recovery.idle",		 
+	"L0",				 
+	"L0s",				 
+	"L1.entry",			 
+	"L1.idle",			 
+	"L2.idle",			 
+	"L2.transmitwake",		 
+	"disable",			 
+	"loopback.entry",		 
+	"loopback.active",		 
+	"loopback.exit",		 
+	"hotreset",			 
 };
 
-/**
- * mtk_pcie_config_tlp_header() - Configure a configuration TLP header
- * @bus: PCI bus to query
- * @devfn: device/function number
- * @where: offset in config space
- * @size: data size in TLP header
- *
- * Set byte enable field and device information in configuration TLP header.
- */
+ 
 static void mtk_pcie_config_tlp_header(struct pci_bus *bus, unsigned int devfn,
 					int where, int size)
 {
@@ -255,7 +218,7 @@ static int mtk_pcie_set_trans_table(struct mtk_gen3_pcie *pcie,
 	u32 val;
 
 	while (remaining && (*num < PCIE_MAX_TRANS_TABLES)) {
-		/* Table size needs to be a power of 2 */
+		 
 		table_size = BIT(fls(remaining) - 1);
 
 		if (cpu_addr > 0) {
@@ -263,7 +226,7 @@ static int mtk_pcie_set_trans_table(struct mtk_gen3_pcie *pcie,
 			table_size = min(table_size, addr_align);
 		}
 
-		/* Minimum size of translate table is 4KiB */
+		 
 		if (table_size < 0x1000) {
 			dev_err(pcie->dev, "illegal table size %#llx\n",
 				(unsigned long long)table_size);
@@ -316,7 +279,7 @@ static void mtk_pcie_enable_msi(struct mtk_gen3_pcie *pcie)
 		msi_set->msg_addr = pcie->reg_base + PCIE_MSI_SET_BASE_REG +
 				    i * PCIE_MSI_SET_OFFSET;
 
-		/* Configure the MSI capture address */
+		 
 		writel_relaxed(lower_32_bits(msi_set->msg_addr), msi_set->base);
 		writel_relaxed(upper_32_bits(msi_set->msg_addr),
 			       pcie->base + PCIE_MSI_SET_ADDR_HI_BASE +
@@ -340,45 +303,40 @@ static int mtk_pcie_startup_port(struct mtk_gen3_pcie *pcie)
 	int err;
 	u32 val;
 
-	/* Set as RC mode */
+	 
 	val = readl_relaxed(pcie->base + PCIE_SETTING_REG);
 	val |= PCIE_RC_MODE;
 	writel_relaxed(val, pcie->base + PCIE_SETTING_REG);
 
-	/* Set class code */
+	 
 	val = readl_relaxed(pcie->base + PCIE_PCI_IDS_1);
 	val &= ~GENMASK(31, 8);
 	val |= PCI_CLASS(PCI_CLASS_BRIDGE_PCI_NORMAL);
 	writel_relaxed(val, pcie->base + PCIE_PCI_IDS_1);
 
-	/* Mask all INTx interrupts */
+	 
 	val = readl_relaxed(pcie->base + PCIE_INT_ENABLE_REG);
 	val &= ~PCIE_INTX_ENABLE;
 	writel_relaxed(val, pcie->base + PCIE_INT_ENABLE_REG);
 
-	/* Disable DVFSRC voltage request */
+	 
 	val = readl_relaxed(pcie->base + PCIE_MISC_CTRL_REG);
 	val |= PCIE_DISABLE_DVFSRC_VLT_REQ;
 	writel_relaxed(val, pcie->base + PCIE_MISC_CTRL_REG);
 
-	/* Assert all reset signals */
+	 
 	val = readl_relaxed(pcie->base + PCIE_RST_CTRL_REG);
 	val |= PCIE_MAC_RSTB | PCIE_PHY_RSTB | PCIE_BRG_RSTB | PCIE_PE_RSTB;
 	writel_relaxed(val, pcie->base + PCIE_RST_CTRL_REG);
 
-	/*
-	 * Described in PCIe CEM specification sections 2.2 (PERST# Signal)
-	 * and 2.2.1 (Initial Power-Up (G3 to S0)).
-	 * The deassertion of PERST# should be delayed 100ms (TPVPERL)
-	 * for the power and clock to become stable.
-	 */
+	 
 	msleep(100);
 
-	/* De-assert reset signals */
+	 
 	val &= ~(PCIE_MAC_RSTB | PCIE_PHY_RSTB | PCIE_BRG_RSTB | PCIE_PE_RSTB);
 	writel_relaxed(val, pcie->base + PCIE_RST_CTRL_REG);
 
-	/* Check if the link is up or not */
+	 
 	err = readl_poll_timeout(pcie->base + PCIE_LINK_STATUS_REG, val,
 				 !!(val & PCIE_PORT_LINKUP), 20,
 				 PCI_PM_D3COLD_WAIT * USEC_PER_MSEC);
@@ -398,7 +356,7 @@ static int mtk_pcie_startup_port(struct mtk_gen3_pcie *pcie)
 
 	mtk_pcie_enable_msi(pcie);
 
-	/* Set PCIe translation windows */
+	 
 	resource_list_for_each_entry(entry, &host->windows) {
 		struct resource *res = entry->res;
 		unsigned long type = resource_type(res);
@@ -597,14 +555,7 @@ static void mtk_intx_unmask(struct irq_data *data)
 	raw_spin_unlock_irqrestore(&pcie->irq_lock, flags);
 }
 
-/**
- * mtk_intx_eoi() - Clear INTx IRQ status at the end of interrupt
- * @data: pointer to chip specific data
- *
- * As an emulated level IRQ, its interrupt status will remain
- * until the corresponding de-assert message is received; hence that
- * the status can only be cleared when the interrupt has been serviced.
- */
+ 
 static void mtk_intx_eoi(struct irq_data *data)
 {
 	struct mtk_gen3_pcie *pcie = irq_data_get_irq_chip_data(data);
@@ -643,7 +594,7 @@ static int mtk_pcie_init_irq_domains(struct mtk_gen3_pcie *pcie)
 
 	raw_spin_lock_init(&pcie->irq_lock);
 
-	/* Setup INTx */
+	 
 	intc_node = of_get_child_by_name(node, "interrupt-controller");
 	if (!intc_node) {
 		dev_err(dev, "missing interrupt-controller node\n");
@@ -658,7 +609,7 @@ static int mtk_pcie_init_irq_domains(struct mtk_gen3_pcie *pcie)
 		goto out_put_node;
 	}
 
-	/* Setup MSI */
+	 
 	mutex_init(&pcie->lock);
 
 	pcie->msi_bottom_domain = irq_domain_add_linear(node, PCIE_MSI_IRQS_NUM,
@@ -832,7 +783,7 @@ static int mtk_pcie_power_up(struct mtk_gen3_pcie *pcie)
 	struct device *dev = pcie->dev;
 	int err;
 
-	/* PHY power on and enable pipe clock */
+	 
 	reset_control_deassert(pcie->phy_reset);
 
 	err = phy_init(pcie->phy);
@@ -847,7 +798,7 @@ static int mtk_pcie_power_up(struct mtk_gen3_pcie *pcie)
 		goto err_phy_on;
 	}
 
-	/* MAC power on and enable transaction layer clocks */
+	 
 	reset_control_deassert(pcie->mac_reset);
 
 	pm_runtime_enable(dev);
@@ -895,20 +846,17 @@ static int mtk_pcie_setup(struct mtk_gen3_pcie *pcie)
 	if (err)
 		return err;
 
-	/*
-	 * The controller may have been left out of reset by the bootloader
-	 * so make sure that we get a clean start by asserting resets here.
-	 */
+	 
 	reset_control_assert(pcie->phy_reset);
 	reset_control_assert(pcie->mac_reset);
 	usleep_range(10, 20);
 
-	/* Don't touch the hardware registers before power up */
+	 
 	err = mtk_pcie_power_up(pcie);
 	if (err)
 		return err;
 
-	/* Try link up */
+	 
 	err = mtk_pcie_startup_port(pcie);
 	if (err)
 		goto err_setup;
@@ -1016,7 +964,7 @@ static int mtk_pcie_turn_off_link(struct mtk_gen3_pcie *pcie)
 	val |= PCIE_TURN_OFF_LINK;
 	writel_relaxed(val, pcie->base + PCIE_ICMD_PM_REG);
 
-	/* Check the link is L2 */
+	 
 	return readl_poll_timeout(pcie->base + PCIE_LTSSM_STATUS_REG, val,
 				  (PCIE_LTSSM_STATE(val) ==
 				   PCIE_LTSSM_STATE_L2_IDLE), 20,
@@ -1029,14 +977,14 @@ static int mtk_pcie_suspend_noirq(struct device *dev)
 	int err;
 	u32 val;
 
-	/* Trigger link to L2 state */
+	 
 	err = mtk_pcie_turn_off_link(pcie);
 	if (err) {
 		dev_err(pcie->dev, "cannot enter L2 state\n");
 		return err;
 	}
 
-	/* Pull down the PERST# pin */
+	 
 	val = readl_relaxed(pcie->base + PCIE_RST_CTRL_REG);
 	val |= PCIE_PE_RSTB;
 	writel_relaxed(val, pcie->base + PCIE_RST_CTRL_REG);

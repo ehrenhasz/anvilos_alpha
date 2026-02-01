@@ -1,53 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * addi_apci_3501.c
- * Copyright (C) 2004,2005  ADDI-DATA GmbH for the source code of this module.
- * Project manager: Eric Stolz
- *
- *	ADDI-DATA GmbH
- *	Dieselstrasse 3
- *	D-77833 Ottersweier
- *	Tel: +19(0)7223/9493-0
- *	Fax: +49(0)7223/9493-92
- *	http://www.addi-data.com
- *	info@addi-data.com
- */
 
-/*
- * Driver: addi_apci_3501
- * Description: ADDI-DATA APCI-3501 Analog output board
- * Devices: [ADDI-DATA] APCI-3501 (addi_apci_3501)
- * Author: H Hartley Sweeten <hsweeten@visionengravers.com>
- * Updated: Mon, 20 Jun 2016 10:57:01 -0700
- * Status: untested
- *
- * Configuration Options: not applicable, uses comedi PCI auto config
- *
- * This board has the following features:
- *   - 4 or 8 analog output channels
- *   - 2 optically isolated digital inputs
- *   - 2 optically isolated digital outputs
- *   - 1 12-bit watchdog/timer
- *
- * There are 2 versions of the APCI-3501:
- *   - APCI-3501-4  4 analog output channels
- *   - APCI-3501-8  8 analog output channels
- *
- * These boards use the same PCI Vendor/Device IDs. The number of output
- * channels used by this driver is determined by reading the EEPROM on
- * the board.
- *
- * The watchdog/timer subdevice is not currently supported.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/comedi/comedi_pci.h>
 
 #include "amcc_s5933.h"
 
-/*
- * PCI bar 1 register I/O map
- */
+ 
 #define APCI3501_AO_CTRL_STATUS_REG		0x00
 #define APCI3501_AO_CTRL_BIPOLAR		BIT(0)
 #define APCI3501_AO_STATUS_READY		BIT(8)
@@ -60,18 +21,14 @@
 #define APCI3501_DO_REG				0x40
 #define APCI3501_DI_REG				0x50
 
-/*
- * AMCC S5933 NVRAM
- */
+ 
 #define NVRAM_USER_DATA_START	0x100
 
 #define NVCMD_BEGIN_READ	(0x7 << 5)
 #define NVCMD_LOAD_LOW		(0x4 << 5)
 #define NVCMD_LOAD_HIGH		(0x5 << 5)
 
-/*
- * Function types stored in the eeprom
- */
+ 
 #define EEPROM_DIGITALINPUT		0
 #define EEPROM_DIGITALOUTPUT		1
 #define EEPROM_ANALOGINPUT		2
@@ -114,12 +71,7 @@ static int apci3501_ao_insn_write(struct comedi_device *dev,
 	int ret;
 	int i;
 
-	/*
-	 * All analog output channels have the same output range.
-	 *	14-bit bipolar: 0-10V
-	 *	13-bit unipolar: +/-10V
-	 * Changing the range of one channel changes all of them!
-	 */
+	 
 	if (range) {
 		outl(0, dev->iobase + APCI3501_AO_CTRL_STATUS_REG);
 	} else {
@@ -193,24 +145,24 @@ static unsigned short apci3501_eeprom_readw(unsigned long iobase,
 	unsigned char tmp;
 	unsigned char i;
 
-	/* Add the offset to the start of the user data */
+	 
 	addr += NVRAM_USER_DATA_START;
 
 	for (i = 0; i < 2; i++) {
-		/* Load the low 8 bit address */
+		 
 		outb(NVCMD_LOAD_LOW, iobase + AMCC_OP_REG_MCSR_NVCMD);
 		apci3501_eeprom_wait(iobase);
 		outb((addr + i) & 0xff, iobase + AMCC_OP_REG_MCSR_NVDATA);
 		apci3501_eeprom_wait(iobase);
 
-		/* Load the high 8 bit address */
+		 
 		outb(NVCMD_LOAD_HIGH, iobase + AMCC_OP_REG_MCSR_NVCMD);
 		apci3501_eeprom_wait(iobase);
 		outb(((addr + i) >> 8) & 0xff,
 		     iobase + AMCC_OP_REG_MCSR_NVDATA);
 		apci3501_eeprom_wait(iobase);
 
-		/* Read the eeprom data byte */
+		 
 		outb(NVCMD_BEGIN_READ, iobase + AMCC_OP_REG_MCSR_NVCMD);
 		apci3501_eeprom_wait(iobase);
 		tmp = inb(iobase + AMCC_OP_REG_MCSR_NVDATA);
@@ -233,7 +185,7 @@ static int apci3501_eeprom_get_ao_n_chan(struct comedi_device *dev)
 
 	nfuncs = apci3501_eeprom_readw(devpriv->amcc, 10) & 0xff;
 
-	/* Read functionality details */
+	 
 	for (i = 0; i < nfuncs; i++) {
 		unsigned short offset = i * 4;
 		unsigned short addr;
@@ -262,7 +214,7 @@ static int apci3501_eeprom_insn_read(struct comedi_device *dev,
 	unsigned int i;
 
 	if (insn->n) {
-		/* No point reading the same EEPROM location more than once. */
+		 
 		val = apci3501_eeprom_readw(devpriv->amcc, 2 * addr);
 		for (i = 0; i < insn->n; i++)
 			data[i] = val;
@@ -277,15 +229,15 @@ static int apci3501_reset(struct comedi_device *dev)
 	int chan;
 	int ret;
 
-	/* Reset all digital outputs to "0" */
+	 
 	outl(0x0, dev->iobase + APCI3501_DO_REG);
 
-	/* Default all analog outputs to 0V (bipolar) */
+	 
 	outl(APCI3501_AO_CTRL_BIPOLAR,
 	     dev->iobase + APCI3501_AO_CTRL_STATUS_REG);
 	val = APCI3501_AO_DATA_BIPOLAR | APCI3501_AO_DATA_VAL(0);
 
-	/* Set all analog output channels */
+	 
 	for (chan = 0; chan < 8; chan++) {
 		ret = apci3501_wait_for_dac(dev);
 		if (ret) {
@@ -327,7 +279,7 @@ static int apci3501_auto_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* Initialize the analog output subdevice */
+	 
 	s = &dev->subdevices[0];
 	if (ao_n_chan) {
 		s->type		= COMEDI_SUBD_AO;
@@ -344,7 +296,7 @@ static int apci3501_auto_attach(struct comedi_device *dev,
 		s->type		= COMEDI_SUBD_UNUSED;
 	}
 
-	/* Initialize the digital input subdevice */
+	 
 	s = &dev->subdevices[1];
 	s->type		= COMEDI_SUBD_DI;
 	s->subdev_flags	= SDF_READABLE;
@@ -353,7 +305,7 @@ static int apci3501_auto_attach(struct comedi_device *dev,
 	s->range_table	= &range_digital;
 	s->insn_bits	= apci3501_di_insn_bits;
 
-	/* Initialize the digital output subdevice */
+	 
 	s = &dev->subdevices[2];
 	s->type		= COMEDI_SUBD_DO;
 	s->subdev_flags	= SDF_WRITABLE;
@@ -362,11 +314,11 @@ static int apci3501_auto_attach(struct comedi_device *dev,
 	s->range_table	= &range_digital;
 	s->insn_bits	= apci3501_do_insn_bits;
 
-	/* Timer/Watchdog subdevice */
+	 
 	s = &dev->subdevices[3];
 	s->type		= COMEDI_SUBD_UNUSED;
 
-	/* Initialize the eeprom subdevice */
+	 
 	s = &dev->subdevices[4];
 	s->type		= COMEDI_SUBD_MEMORY;
 	s->subdev_flags	= SDF_READABLE | SDF_INTERNAL;

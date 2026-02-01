@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SuperH MSIOF SPI Controller Interface
- *
- * Copyright (c) 2009 Magnus Damm
- * Copyright (C) 2014 Renesas Electronics Corporation
- * Copyright (C) 2014-2017 Glider bvba
- */
+
+ 
 
 #include <linux/bitmap.h>
 #include <linux/clk.h>
@@ -60,53 +54,53 @@ struct sh_msiof_spi_priv {
 	bool target_aborted;
 };
 
-#define MAX_SS	3	/* Maximum number of native chip selects */
+#define MAX_SS	3	 
 
-#define SITMDR1	0x00	/* Transmit Mode Register 1 */
-#define SITMDR2	0x04	/* Transmit Mode Register 2 */
-#define SITMDR3	0x08	/* Transmit Mode Register 3 */
-#define SIRMDR1	0x10	/* Receive Mode Register 1 */
-#define SIRMDR2	0x14	/* Receive Mode Register 2 */
-#define SIRMDR3	0x18	/* Receive Mode Register 3 */
-#define SITSCR	0x20	/* Transmit Clock Select Register */
-#define SIRSCR	0x22	/* Receive Clock Select Register (SH, A1, APE6) */
-#define SICTR	0x28	/* Control Register */
-#define SIFCTR	0x30	/* FIFO Control Register */
-#define SISTR	0x40	/* Status Register */
-#define SIIER	0x44	/* Interrupt Enable Register */
-#define SITDR1	0x48	/* Transmit Control Data Register 1 (SH, A1) */
-#define SITDR2	0x4c	/* Transmit Control Data Register 2 (SH, A1) */
-#define SITFDR	0x50	/* Transmit FIFO Data Register */
-#define SIRDR1	0x58	/* Receive Control Data Register 1 (SH, A1) */
-#define SIRDR2	0x5c	/* Receive Control Data Register 2 (SH, A1) */
-#define SIRFDR	0x60	/* Receive FIFO Data Register */
+#define SITMDR1	0x00	 
+#define SITMDR2	0x04	 
+#define SITMDR3	0x08	 
+#define SIRMDR1	0x10	 
+#define SIRMDR2	0x14	 
+#define SIRMDR3	0x18	 
+#define SITSCR	0x20	 
+#define SIRSCR	0x22	 
+#define SICTR	0x28	 
+#define SIFCTR	0x30	 
+#define SISTR	0x40	 
+#define SIIER	0x44	 
+#define SITDR1	0x48	 
+#define SITDR2	0x4c	 
+#define SITFDR	0x50	 
+#define SIRDR1	0x58	 
+#define SIRDR2	0x5c	 
+#define SIRFDR	0x60	 
 
-/* SITMDR1 and SIRMDR1 */
-#define SIMDR1_TRMD		BIT(31)		/* Transfer Mode (1 = Master mode) */
-#define SIMDR1_SYNCMD_MASK	GENMASK(29, 28)	/* SYNC Mode */
-#define SIMDR1_SYNCMD_SPI	(2 << 28)	/*   Level mode/SPI */
-#define SIMDR1_SYNCMD_LR	(3 << 28)	/*   L/R mode */
-#define SIMDR1_SYNCAC_SHIFT	25		/* Sync Polarity (1 = Active-low) */
-#define SIMDR1_BITLSB_SHIFT	24		/* MSB/LSB First (1 = LSB first) */
-#define SIMDR1_DTDL_SHIFT	20		/* Data Pin Bit Delay for MSIOF_SYNC */
-#define SIMDR1_SYNCDL_SHIFT	16		/* Frame Sync Signal Timing Delay */
-#define SIMDR1_FLD_MASK		GENMASK(3, 2)	/* Frame Sync Signal Interval (0-3) */
+ 
+#define SIMDR1_TRMD		BIT(31)		 
+#define SIMDR1_SYNCMD_MASK	GENMASK(29, 28)	 
+#define SIMDR1_SYNCMD_SPI	(2 << 28)	 
+#define SIMDR1_SYNCMD_LR	(3 << 28)	 
+#define SIMDR1_SYNCAC_SHIFT	25		 
+#define SIMDR1_BITLSB_SHIFT	24		 
+#define SIMDR1_DTDL_SHIFT	20		 
+#define SIMDR1_SYNCDL_SHIFT	16		 
+#define SIMDR1_FLD_MASK		GENMASK(3, 2)	 
 #define SIMDR1_FLD_SHIFT	2
-#define SIMDR1_XXSTP		BIT(0)		/* Transmission/Reception Stop on FIFO */
-/* SITMDR1 */
-#define SITMDR1_PCON		BIT(30)		/* Transfer Signal Connection */
-#define SITMDR1_SYNCCH_MASK	GENMASK(27, 26)	/* Sync Signal Channel Select */
-#define SITMDR1_SYNCCH_SHIFT	26		/* 0=MSIOF_SYNC, 1=MSIOF_SS1, 2=MSIOF_SS2 */
+#define SIMDR1_XXSTP		BIT(0)		 
+ 
+#define SITMDR1_PCON		BIT(30)		 
+#define SITMDR1_SYNCCH_MASK	GENMASK(27, 26)	 
+#define SITMDR1_SYNCCH_SHIFT	26		 
 
-/* SITMDR2 and SIRMDR2 */
-#define SIMDR2_BITLEN1(i)	(((i) - 1) << 24) /* Data Size (8-32 bits) */
-#define SIMDR2_WDLEN1(i)	(((i) - 1) << 16) /* Word Count (1-64/256 (SH, A1))) */
-#define SIMDR2_GRPMASK1		BIT(0)		/* Group Output Mask 1 (SH, A1) */
+ 
+#define SIMDR2_BITLEN1(i)	(((i) - 1) << 24)  
+#define SIMDR2_WDLEN1(i)	(((i) - 1) << 16)  
+#define SIMDR2_GRPMASK1		BIT(0)		 
 
-/* SITSCR and SIRSCR */
-#define SISCR_BRPS_MASK		GENMASK(12, 8)	/* Prescaler Setting (1-32) */
+ 
+#define SISCR_BRPS_MASK		GENMASK(12, 8)	 
 #define SISCR_BRPS(i)		(((i) - 1) << 8)
-#define SISCR_BRDV_MASK		GENMASK(2, 0)	/* Baud Rate Generator's Division Ratio */
+#define SISCR_BRDV_MASK		GENMASK(2, 0)	 
 #define SISCR_BRDV_DIV_2	0
 #define SISCR_BRDV_DIV_4	1
 #define SISCR_BRDV_DIV_8	2
@@ -114,81 +108,81 @@ struct sh_msiof_spi_priv {
 #define SISCR_BRDV_DIV_32	4
 #define SISCR_BRDV_DIV_1	7
 
-/* SICTR */
-#define SICTR_TSCKIZ_MASK	GENMASK(31, 30)	/* Transmit Clock I/O Polarity Select */
-#define SICTR_TSCKIZ_SCK	BIT(31)		/*   Disable SCK when TX disabled */
-#define SICTR_TSCKIZ_POL_SHIFT	30		/*   Transmit Clock Polarity */
-#define SICTR_RSCKIZ_MASK	GENMASK(29, 28) /* Receive Clock Polarity Select */
-#define SICTR_RSCKIZ_SCK	BIT(29)		/*   Must match CTR_TSCKIZ_SCK */
-#define SICTR_RSCKIZ_POL_SHIFT	28		/*   Receive Clock Polarity */
-#define SICTR_TEDG_SHIFT	27		/* Transmit Timing (1 = falling edge) */
-#define SICTR_REDG_SHIFT	26		/* Receive Timing (1 = falling edge) */
-#define SICTR_TXDIZ_MASK	GENMASK(23, 22)	/* Pin Output When TX is Disabled */
-#define SICTR_TXDIZ_LOW		(0 << 22)	/*   0 */
-#define SICTR_TXDIZ_HIGH	(1 << 22)	/*   1 */
-#define SICTR_TXDIZ_HIZ		(2 << 22)	/*   High-impedance */
-#define SICTR_TSCKE		BIT(15)		/* Transmit Serial Clock Output Enable */
-#define SICTR_TFSE		BIT(14)		/* Transmit Frame Sync Signal Output Enable */
-#define SICTR_TXE		BIT(9)		/* Transmit Enable */
-#define SICTR_RXE		BIT(8)		/* Receive Enable */
-#define SICTR_TXRST		BIT(1)		/* Transmit Reset */
-#define SICTR_RXRST		BIT(0)		/* Receive Reset */
+ 
+#define SICTR_TSCKIZ_MASK	GENMASK(31, 30)	 
+#define SICTR_TSCKIZ_SCK	BIT(31)		 
+#define SICTR_TSCKIZ_POL_SHIFT	30		 
+#define SICTR_RSCKIZ_MASK	GENMASK(29, 28)  
+#define SICTR_RSCKIZ_SCK	BIT(29)		 
+#define SICTR_RSCKIZ_POL_SHIFT	28		 
+#define SICTR_TEDG_SHIFT	27		 
+#define SICTR_REDG_SHIFT	26		 
+#define SICTR_TXDIZ_MASK	GENMASK(23, 22)	 
+#define SICTR_TXDIZ_LOW		(0 << 22)	 
+#define SICTR_TXDIZ_HIGH	(1 << 22)	 
+#define SICTR_TXDIZ_HIZ		(2 << 22)	 
+#define SICTR_TSCKE		BIT(15)		 
+#define SICTR_TFSE		BIT(14)		 
+#define SICTR_TXE		BIT(9)		 
+#define SICTR_RXE		BIT(8)		 
+#define SICTR_TXRST		BIT(1)		 
+#define SICTR_RXRST		BIT(0)		 
 
-/* SIFCTR */
-#define SIFCTR_TFWM_MASK	GENMASK(31, 29)	/* Transmit FIFO Watermark */
-#define SIFCTR_TFWM_64		(0 << 29)	/*  Transfer Request when 64 empty stages */
-#define SIFCTR_TFWM_32		(1 << 29)	/*  Transfer Request when 32 empty stages */
-#define SIFCTR_TFWM_24		(2 << 29)	/*  Transfer Request when 24 empty stages */
-#define SIFCTR_TFWM_16		(3 << 29)	/*  Transfer Request when 16 empty stages */
-#define SIFCTR_TFWM_12		(4 << 29)	/*  Transfer Request when 12 empty stages */
-#define SIFCTR_TFWM_8		(5 << 29)	/*  Transfer Request when 8 empty stages */
-#define SIFCTR_TFWM_4		(6 << 29)	/*  Transfer Request when 4 empty stages */
-#define SIFCTR_TFWM_1		(7 << 29)	/*  Transfer Request when 1 empty stage */
-#define SIFCTR_TFUA_MASK	GENMASK(26, 20) /* Transmit FIFO Usable Area */
+ 
+#define SIFCTR_TFWM_MASK	GENMASK(31, 29)	 
+#define SIFCTR_TFWM_64		(0 << 29)	 
+#define SIFCTR_TFWM_32		(1 << 29)	 
+#define SIFCTR_TFWM_24		(2 << 29)	 
+#define SIFCTR_TFWM_16		(3 << 29)	 
+#define SIFCTR_TFWM_12		(4 << 29)	 
+#define SIFCTR_TFWM_8		(5 << 29)	 
+#define SIFCTR_TFWM_4		(6 << 29)	 
+#define SIFCTR_TFWM_1		(7 << 29)	 
+#define SIFCTR_TFUA_MASK	GENMASK(26, 20)  
 #define SIFCTR_TFUA_SHIFT	20
 #define SIFCTR_TFUA(i)		((i) << SIFCTR_TFUA_SHIFT)
-#define SIFCTR_RFWM_MASK	GENMASK(15, 13)	/* Receive FIFO Watermark */
-#define SIFCTR_RFWM_1		(0 << 13)	/*  Transfer Request when 1 valid stages */
-#define SIFCTR_RFWM_4		(1 << 13)	/*  Transfer Request when 4 valid stages */
-#define SIFCTR_RFWM_8		(2 << 13)	/*  Transfer Request when 8 valid stages */
-#define SIFCTR_RFWM_16		(3 << 13)	/*  Transfer Request when 16 valid stages */
-#define SIFCTR_RFWM_32		(4 << 13)	/*  Transfer Request when 32 valid stages */
-#define SIFCTR_RFWM_64		(5 << 13)	/*  Transfer Request when 64 valid stages */
-#define SIFCTR_RFWM_128		(6 << 13)	/*  Transfer Request when 128 valid stages */
-#define SIFCTR_RFWM_256		(7 << 13)	/*  Transfer Request when 256 valid stages */
-#define SIFCTR_RFUA_MASK	GENMASK(12, 4)	/* Receive FIFO Usable Area (0x40 = full) */
+#define SIFCTR_RFWM_MASK	GENMASK(15, 13)	 
+#define SIFCTR_RFWM_1		(0 << 13)	 
+#define SIFCTR_RFWM_4		(1 << 13)	 
+#define SIFCTR_RFWM_8		(2 << 13)	 
+#define SIFCTR_RFWM_16		(3 << 13)	 
+#define SIFCTR_RFWM_32		(4 << 13)	 
+#define SIFCTR_RFWM_64		(5 << 13)	 
+#define SIFCTR_RFWM_128		(6 << 13)	 
+#define SIFCTR_RFWM_256		(7 << 13)	 
+#define SIFCTR_RFUA_MASK	GENMASK(12, 4)	 
 #define SIFCTR_RFUA_SHIFT	4
 #define SIFCTR_RFUA(i)		((i) << SIFCTR_RFUA_SHIFT)
 
-/* SISTR */
-#define SISTR_TFEMP		BIT(29) /* Transmit FIFO Empty */
-#define SISTR_TDREQ		BIT(28) /* Transmit Data Transfer Request */
-#define SISTR_TEOF		BIT(23) /* Frame Transmission End */
-#define SISTR_TFSERR		BIT(21) /* Transmit Frame Synchronization Error */
-#define SISTR_TFOVF		BIT(20) /* Transmit FIFO Overflow */
-#define SISTR_TFUDF		BIT(19) /* Transmit FIFO Underflow */
-#define SISTR_RFFUL		BIT(13) /* Receive FIFO Full */
-#define SISTR_RDREQ		BIT(12) /* Receive Data Transfer Request */
-#define SISTR_REOF		BIT(7)  /* Frame Reception End */
-#define SISTR_RFSERR		BIT(5)  /* Receive Frame Synchronization Error */
-#define SISTR_RFUDF		BIT(4)  /* Receive FIFO Underflow */
-#define SISTR_RFOVF		BIT(3)  /* Receive FIFO Overflow */
+ 
+#define SISTR_TFEMP		BIT(29)  
+#define SISTR_TDREQ		BIT(28)  
+#define SISTR_TEOF		BIT(23)  
+#define SISTR_TFSERR		BIT(21)  
+#define SISTR_TFOVF		BIT(20)  
+#define SISTR_TFUDF		BIT(19)  
+#define SISTR_RFFUL		BIT(13)  
+#define SISTR_RDREQ		BIT(12)  
+#define SISTR_REOF		BIT(7)   
+#define SISTR_RFSERR		BIT(5)   
+#define SISTR_RFUDF		BIT(4)   
+#define SISTR_RFOVF		BIT(3)   
 
-/* SIIER */
-#define SIIER_TDMAE		BIT(31) /* Transmit Data DMA Transfer Req. Enable */
-#define SIIER_TFEMPE		BIT(29) /* Transmit FIFO Empty Enable */
-#define SIIER_TDREQE		BIT(28) /* Transmit Data Transfer Request Enable */
-#define SIIER_TEOFE		BIT(23) /* Frame Transmission End Enable */
-#define SIIER_TFSERRE		BIT(21) /* Transmit Frame Sync Error Enable */
-#define SIIER_TFOVFE		BIT(20) /* Transmit FIFO Overflow Enable */
-#define SIIER_TFUDFE		BIT(19) /* Transmit FIFO Underflow Enable */
-#define SIIER_RDMAE		BIT(15) /* Receive Data DMA Transfer Req. Enable */
-#define SIIER_RFFULE		BIT(13) /* Receive FIFO Full Enable */
-#define SIIER_RDREQE		BIT(12) /* Receive Data Transfer Request Enable */
-#define SIIER_REOFE		BIT(7)  /* Frame Reception End Enable */
-#define SIIER_RFSERRE		BIT(5)  /* Receive Frame Sync Error Enable */
-#define SIIER_RFUDFE		BIT(4)  /* Receive FIFO Underflow Enable */
-#define SIIER_RFOVFE		BIT(3)  /* Receive FIFO Overflow Enable */
+ 
+#define SIIER_TDMAE		BIT(31)  
+#define SIIER_TFEMPE		BIT(29)  
+#define SIIER_TDREQE		BIT(28)  
+#define SIIER_TEOFE		BIT(23)  
+#define SIIER_TFSERRE		BIT(21)  
+#define SIIER_TFOVFE		BIT(20)  
+#define SIIER_TFUDFE		BIT(19)  
+#define SIIER_RDMAE		BIT(15)  
+#define SIIER_RFFULE		BIT(13)  
+#define SIIER_RDREQE		BIT(12)  
+#define SIIER_REOFE		BIT(7)   
+#define SIIER_RFSERRE		BIT(5)   
+#define SIIER_RFUDFE		BIT(4)   
+#define SIIER_RFOVFE		BIT(3)   
 
 
 static u32 sh_msiof_read(struct sh_msiof_spi_priv *p, int reg_offs)
@@ -235,7 +229,7 @@ static irqreturn_t sh_msiof_spi_irq(int irq, void *data)
 {
 	struct sh_msiof_spi_priv *p = data;
 
-	/* just disable the interrupt and wake up */
+	 
 	sh_msiof_write(p, SIIER, 0);
 	complete(&p->done);
 
@@ -277,7 +271,7 @@ static void sh_msiof_spi_set_clk_regs(struct sh_msiof_spi_priv *p,
 
 	div = DIV_ROUND_UP(parent_rate, spi_hz);
 	if (div <= 1024) {
-		/* SISCR_BRDV_DIV_1 is valid only if BRPS is x 1/1 or x 1/2 */
+		 
 		if (!div_pow && div <= 32 && div > 2)
 			div_pow = 1;
 
@@ -289,7 +283,7 @@ static void sh_msiof_spi_set_clk_regs(struct sh_msiof_spi_priv *p,
 		for (; brps > 32; div_pow++)
 			brps = (brps + 1) >> 1;
 	} else {
-		/* Set transfer rate composite divisor to 2^5 * 32 = 1024 */
+		 
 		dev_err(&p->pdev->dev,
 			"Requested SPI transfer rate %d is too low\n", spi_hz);
 		div_pow = 5;
@@ -306,15 +300,7 @@ static void sh_msiof_spi_set_clk_regs(struct sh_msiof_spi_priv *p,
 
 static u32 sh_msiof_get_delay_bit(u32 dtdl_or_syncdl)
 {
-	/*
-	 * DTDL/SYNCDL bit	: p->info->dtdl or p->info->syncdl
-	 * b'000		: 0
-	 * b'001		: 100
-	 * b'010		: 200
-	 * b'011 (SYNCDL only)	: 300
-	 * b'101		: 50
-	 * b'110		: 150
-	 */
+	 
 	if (dtdl_or_syncdl % 100)
 		return dtdl_or_syncdl / 100 + 5;
 	else
@@ -328,13 +314,13 @@ static u32 sh_msiof_spi_get_dtdl_and_syncdl(struct sh_msiof_spi_priv *p)
 	if (!p->info)
 		return 0;
 
-	/* check if DTDL and SYNCDL is allowed value */
+	 
 	if (p->info->dtdl > 200 || p->info->syncdl > 300) {
 		dev_warn(&p->pdev->dev, "DTDL or SYNCDL is too large\n");
 		return 0;
 	}
 
-	/* check if the sum of DTDL and SYNCDL becomes an integer value  */
+	 
 	if ((p->info->dtdl + p->info->syncdl) % 100) {
 		dev_warn(&p->pdev->dev, "the sum of DTDL/SYNCDL is not good\n");
 		return 0;
@@ -353,13 +339,7 @@ static void sh_msiof_spi_set_pin_regs(struct sh_msiof_spi_priv *p, u32 ss,
 	u32 tmp;
 	int edge;
 
-	/*
-	 * CPOL CPHA     TSCKIZ RSCKIZ TEDG REDG
-	 *    0    0         10     10    1    1
-	 *    0    1         10     10    0    0
-	 *    1    0         11     11    0    0
-	 *    1    1         11     11    1    1
-	 */
+	 
 	tmp = SIMDR1_SYNCMD_SPI | 1 << SIMDR1_FLD_SHIFT | SIMDR1_XXSTP;
 	tmp |= !cs_high << SIMDR1_SYNCAC_SHIFT;
 	tmp |= lsb_first << SIMDR1_BITLSB_SHIFT;
@@ -372,7 +352,7 @@ static void sh_msiof_spi_set_pin_regs(struct sh_msiof_spi_priv *p, u32 ss,
 			       (ss < MAX_SS ? ss : 0) << SITMDR1_SYNCCH_SHIFT);
 	}
 	if (p->ctlr->flags & SPI_CONTROLLER_MUST_TX) {
-		/* These bits are reserved if RX needs TX */
+		 
 		tmp &= ~0x0000ffff;
 	}
 	sh_msiof_write(p, SIRMDR1, tmp);
@@ -563,7 +543,7 @@ static int sh_msiof_spi_setup(struct spi_device *spi)
 	    (p->native_cs_high == !!(spi->mode & SPI_CS_HIGH)))
 		return 0;
 
-	/* Configure native chip select mode/polarity early */
+	 
 	clr = SIMDR1_SYNCMD_MASK;
 	set = SIMDR1_SYNCMD_SPI;
 	if (spi->mode & SPI_CS_HIGH)
@@ -588,7 +568,7 @@ static int sh_msiof_prepare_message(struct spi_controller *ctlr,
 	const struct spi_device *spi = msg->spi;
 	u32 ss, cs_high;
 
-	/* Configure pins before asserting CS */
+	 
 	if (spi_get_csgpiod(spi, 0)) {
 		ss = ctlr->unused_native_cs;
 		cs_high = p->native_cs_high;
@@ -608,7 +588,7 @@ static int sh_msiof_spi_start(struct sh_msiof_spi_priv *p, void *rx_buf)
 	bool target = spi_controller_is_target(p->ctlr);
 	int ret = 0;
 
-	/* setup clock and rx/tx signals */
+	 
 	if (!target)
 		ret = sh_msiof_modify_ctr_wait(p, 0, SICTR_TSCKE);
 	if (rx_buf && !ret)
@@ -616,7 +596,7 @@ static int sh_msiof_spi_start(struct sh_msiof_spi_priv *p, void *rx_buf)
 	if (!ret)
 		ret = sh_msiof_modify_ctr_wait(p, 0, SICTR_TXE);
 
-	/* start by setting frame bit */
+	 
 	if (!ret && !target)
 		ret = sh_msiof_modify_ctr_wait(p, 0, SICTR_TFSE);
 
@@ -628,7 +608,7 @@ static int sh_msiof_spi_stop(struct sh_msiof_spi_priv *p, void *rx_buf)
 	bool target = spi_controller_is_target(p->ctlr);
 	int ret = 0;
 
-	/* shut down frame, rx/tx and clock signals */
+	 
 	if (!target)
 		ret = sh_msiof_modify_ctr_wait(p, SICTR_TFSE, 0);
 	if (!ret)
@@ -681,23 +661,23 @@ static int sh_msiof_spi_txrx_once(struct sh_msiof_spi_priv *p,
 	int fifo_shift;
 	int ret;
 
-	/* limit maximum word transfer to rx/tx fifo size */
+	 
 	if (tx_buf)
 		words = min_t(int, words, p->tx_fifo_size);
 	if (rx_buf)
 		words = min_t(int, words, p->rx_fifo_size);
 
-	/* the fifo contents need shifting */
+	 
 	fifo_shift = 32 - bits;
 
-	/* default FIFO watermarks for PIO */
+	 
 	sh_msiof_write(p, SIFCTR, 0);
 
-	/* setup msiof transfer mode registers */
+	 
 	sh_msiof_spi_set_mode_regs(p, tx_buf, rx_buf, bits, words);
 	sh_msiof_write(p, SIIER, SIIER_TEOFE | SIIER_REOFE);
 
-	/* write tx fifo */
+	 
 	if (tx_buf)
 		tx_fifo(p, tx_buf, words, fifo_shift);
 
@@ -710,16 +690,16 @@ static int sh_msiof_spi_txrx_once(struct sh_msiof_spi_priv *p,
 		goto stop_ier;
 	}
 
-	/* wait for tx fifo to be emptied / rx fifo to be filled */
+	 
 	ret = sh_msiof_wait_for_completion(p, &p->done);
 	if (ret)
 		goto stop_reset;
 
-	/* read rx fifo */
+	 
 	if (rx_buf)
 		rx_fifo(p, rx_buf, words, fifo_shift);
 
-	/* clear status bits */
+	 
 	sh_msiof_reset_str(p);
 
 	ret = sh_msiof_spi_stop(p, rx_buf);
@@ -751,7 +731,7 @@ static int sh_msiof_dma_once(struct sh_msiof_spi_priv *p, const void *tx,
 	dma_cookie_t cookie;
 	int ret;
 
-	/* First prepare and submit the DMA request(s), as this may fail */
+	 
 	if (rx) {
 		ier_bits |= SIIER_RDREQE | SIIER_RDMAE;
 		desc_rx = dmaengine_prep_slave_single(p->ctlr->dma_rx,
@@ -788,10 +768,10 @@ static int sh_msiof_dma_once(struct sh_msiof_spi_priv *p, const void *tx,
 		}
 	}
 
-	/* 1 stage FIFO watermarks for DMA */
+	 
 	sh_msiof_write(p, SIFCTR, SIFCTR_TFWM_1 | SIFCTR_RFWM_1);
 
-	/* setup msiof transfer mode registers (32-bit words) */
+	 
 	sh_msiof_spi_set_mode_regs(p, tx, rx, 32, len / 4);
 
 	sh_msiof_write(p, SIIER, ier_bits);
@@ -801,7 +781,7 @@ static int sh_msiof_dma_once(struct sh_msiof_spi_priv *p, const void *tx,
 		reinit_completion(&p->done_txdma);
 	p->target_aborted = false;
 
-	/* Now start DMA */
+	 
 	if (rx)
 		dma_async_issue_pending(p->ctlr->dma_rx);
 	if (tx)
@@ -814,28 +794,28 @@ static int sh_msiof_dma_once(struct sh_msiof_spi_priv *p, const void *tx,
 	}
 
 	if (tx) {
-		/* wait for tx DMA completion */
+		 
 		ret = sh_msiof_wait_for_completion(p, &p->done_txdma);
 		if (ret)
 			goto stop_reset;
 	}
 
 	if (rx) {
-		/* wait for rx DMA completion */
+		 
 		ret = sh_msiof_wait_for_completion(p, &p->done);
 		if (ret)
 			goto stop_reset;
 
 		sh_msiof_write(p, SIIER, 0);
 	} else {
-		/* wait for tx fifo to be emptied */
+		 
 		sh_msiof_write(p, SIIER, SIIER_TEOFE);
 		ret = sh_msiof_wait_for_completion(p, &p->done);
 		if (ret)
 			goto stop_reset;
 	}
 
-	/* clear status bits */
+	 
 	sh_msiof_reset_str(p);
 
 	ret = sh_msiof_spi_stop(p, rx);
@@ -865,7 +845,7 @@ no_dma_tx:
 
 static void copy_bswap32(u32 *dst, const u32 *src, unsigned int words)
 {
-	/* src or dst can be unaligned, but not both */
+	 
 	if ((unsigned long)src & 3) {
 		while (words--) {
 			*dst++ = swab32(get_unaligned(src));
@@ -884,7 +864,7 @@ static void copy_bswap32(u32 *dst, const u32 *src, unsigned int words)
 
 static void copy_wswap32(u32 *dst, const u32 *src, unsigned int words)
 {
-	/* src or dst can be unaligned, but not both */
+	 
 	if ((unsigned long)src & 3) {
 		while (words--) {
 			*dst++ = swahw32(get_unaligned(src));
@@ -924,18 +904,15 @@ static int sh_msiof_transfer_one(struct spi_controller *ctlr,
 	bool swab;
 	int ret;
 
-	/* reset registers */
+	 
 	sh_msiof_spi_reset_regs(p);
 
-	/* setup clocks (clock already enabled in chipselect()) */
+	 
 	if (!spi_controller_is_target(p->ctlr))
 		sh_msiof_spi_set_clk_regs(p, t);
 
 	while (ctlr->dma_tx && len > 15) {
-		/*
-		 *  DMA supports 32-bit words only, hence pack 8-bit and 16-bit
-		 *  words, with byte resp. word swapping.
-		 */
+		 
 		unsigned int l = 0;
 
 		if (tx_buf)
@@ -982,7 +959,7 @@ static int sh_msiof_transfer_one(struct spi_controller *ctlr,
 		swab = false;
 	}
 
-	/* setup bytes per word and fifo read/write functions */
+	 
 	if (bits <= 8) {
 		bytes_per_word = 1;
 		tx_fifo = sh_msiof_spi_write_fifo_8;
@@ -1022,7 +999,7 @@ static int sh_msiof_transfer_one(struct spi_controller *ctlr,
 			rx_fifo = sh_msiof_spi_read_fifo_32;
 	}
 
-	/* transfer in fifo sized chunks */
+	 
 	words = len / bytes_per_word;
 
 	while (words > 0) {
@@ -1099,7 +1076,7 @@ static const struct of_device_id sh_msiof_match[] __maybe_unused = {
 	{ .compatible = "renesas,msiof-r8a7796",   .data = &rcar_gen3_data },
 	{ .compatible = "renesas,rcar-gen3-msiof", .data = &rcar_gen3_data },
 	{ .compatible = "renesas,rcar-gen4-msiof", .data = &rcar_gen3_data },
-	{ .compatible = "renesas,sh-msiof",        .data = &sh_data }, /* Deprecated */
+	{ .compatible = "renesas,sh-msiof",        .data = &sh_data },  
 	{},
 };
 MODULE_DEVICE_TABLE(of, sh_msiof_match);
@@ -1118,7 +1095,7 @@ static struct sh_msiof_spi_info *sh_msiof_spi_parse_dt(struct device *dev)
 	info->mode = of_property_read_bool(np, "spi-slave") ? MSIOF_SPI_TARGET
 							    : MSIOF_SPI_HOST;
 
-	/* Parse the MSIOF properties */
+	 
 	if (info->mode == MSIOF_SPI_HOST)
 		of_property_read_u32(np, "num-cs", &num_cs);
 	of_property_read_u32(np, "renesas,tx-fifo-size",
@@ -1189,18 +1166,18 @@ static int sh_msiof_request_dma(struct sh_msiof_spi_priv *p)
 	struct device *tx_dev, *rx_dev;
 
 	if (dev->of_node) {
-		/* In the OF case we will get the slave IDs from the DT */
+		 
 		dma_tx_id = 0;
 		dma_rx_id = 0;
 	} else if (info && info->dma_tx_id && info->dma_rx_id) {
 		dma_tx_id = info->dma_tx_id;
 		dma_rx_id = info->dma_rx_id;
 	} else {
-		/* The driver assumes no error */
+		 
 		return 0;
 	}
 
-	/* The DMA engine uses the second register set, if present */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
 	if (!res)
 		res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
@@ -1344,7 +1321,7 @@ static int sh_msiof_spi_probe(struct platform_device *pdev)
 	p->pdev = pdev;
 	pm_runtime_enable(&pdev->dev);
 
-	/* Platform data may override FIFO sizes */
+	 
 	p->tx_fifo_size = chipdata->tx_fifo_size;
 	p->rx_fifo_size = chipdata->rx_fifo_size;
 	if (p->info->tx_fifo_override)
@@ -1352,7 +1329,7 @@ static int sh_msiof_spi_probe(struct platform_device *pdev)
 	if (p->info->rx_fifo_override)
 		p->rx_fifo_size = p->info->rx_fifo_override;
 
-	/* init controller code */
+	 
 	ctlr->mode_bits = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH;
 	ctlr->mode_bits |= SPI_LSB_FIRST | SPI_3WIRE;
 	clksrc = clk_get_rate(p->clk);
@@ -1425,7 +1402,7 @@ static SIMPLE_DEV_PM_OPS(sh_msiof_spi_pm_ops, sh_msiof_spi_suspend,
 #define DEV_PM_OPS	(&sh_msiof_spi_pm_ops)
 #else
 #define DEV_PM_OPS	NULL
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static struct platform_driver sh_msiof_spi_drv = {
 	.probe		= sh_msiof_spi_probe,

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Unisoc UMS512 clock driver
- *
- * Copyright (C) 2022 Unisoc, Inc.
- * Author: Xiaolong Zhang <xiaolong.zhang@unisoc.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -26,10 +21,8 @@
 #define UMS512_MUX_FLAG	\
 	(CLK_GET_RATE_NOCACHE | CLK_SET_RATE_NO_REPARENT)
 
-/* pll gate clock */
-/* some pll clocks configure CLK_IGNORE_UNUSED because hw dvfs does not call
- * clock interface. hw dvfs can not gate the pll clock.
- */
+ 
+ 
 static CLK_FIXED_FACTOR_FW_NAME(clk_26m_aud, "clk-26m-aud", "ext-26m", 1, 1, 0);
 static CLK_FIXED_FACTOR_FW_NAME(clk_13m, "clk-13m", "ext-26m", 2, 1, 0);
 static CLK_FIXED_FACTOR_FW_NAME(clk_6m5, "clk-6m5", "ext-26m", 4, 1, 0);
@@ -64,7 +57,7 @@ static SPRD_PLL_SC_GATE_CLK_FW_NAME(mpll2_gate, "mpll2-gate", "ext-26m", 0x198,
 				    0x1000, BIT(0), CLK_IGNORE_UNUSED, 0, 240);
 
 static struct sprd_clk_common *ums512_pmu_gate_clks[] = {
-	/* address base is 0x327e0000 */
+	 
 	&isppll_gate.common,
 	&dpll0_gate.common,
 	&dpll1_gate.common,
@@ -111,23 +104,23 @@ static struct sprd_clk_desc ums512_pmu_gate_desc = {
 	.hw_clks        = &ums512_pmu_gate_hws,
 };
 
-/* pll clock at g0 */
+ 
 static const u64 itable_dpll0[7] = { 6, 0, 0,
 			1173000000ULL, 1475000000ULL,
 			1855000000ULL, 1866000000ULL };
 
 static struct clk_bit_field f_dpll0[PLL_FACT_MAX] = {
-	{ .shift = 18,	.width = 1 },	/* lock_done	*/
-	{ .shift = 0,	.width = 1 },	/* div_s	*/
-	{ .shift = 67,	.width = 1 },	/* mod_en	*/
-	{ .shift = 1,	.width = 1 },	/* sdm_en	*/
-	{ .shift = 0,	.width = 0 },	/* refin	*/
-	{ .shift = 4,	.width = 3 },	/* icp		*/
-	{ .shift = 7,	.width = 11 },	/* n		*/
-	{ .shift = 55,	.width = 7 },	/* nint		*/
-	{ .shift = 32,	.width = 23},	/* kint		*/
-	{ .shift = 0,	.width = 0 },	/* prediv	*/
-	{ .shift = 0,	.width = 0 },	/* postdiv	*/
+	{ .shift = 18,	.width = 1 },	 
+	{ .shift = 0,	.width = 1 },	 
+	{ .shift = 67,	.width = 1 },	 
+	{ .shift = 1,	.width = 1 },	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 4,	.width = 3 },	 
+	{ .shift = 7,	.width = 11 },	 
+	{ .shift = 55,	.width = 7 },	 
+	{ .shift = 32,	.width = 23},	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 0,	.width = 0 },	 
 };
 static SPRD_PLL_HW(dpll0, "dpll0", &dpll0_gate.common.hw, 0x4, 3,
 		   itable_dpll0, f_dpll0, 240, 1000, 1000, 0, 0);
@@ -135,7 +128,7 @@ static CLK_FIXED_FACTOR_HW(dpll0_58m31, "dpll0-58m31", &dpll0.common.hw,
 			   32, 1, 0);
 
 static struct sprd_clk_common *ums512_g0_pll_clks[] = {
-	/* address base is 0x32390000 */
+	 
 	&dpll0.common,
 };
 
@@ -153,24 +146,24 @@ static struct sprd_clk_desc ums512_g0_pll_desc = {
 	.hw_clks	= &ums512_g0_pll_hws,
 };
 
-/* pll clock at g2 */
+ 
 static const u64 itable_mpll[8] = { 7, 0,
 			1400000000ULL, 1600000000ULL,
 			1800000000ULL, 2000000000ULL,
 			2200000000ULL, 2500000000ULL };
 
 static struct clk_bit_field f_mpll[PLL_FACT_MAX] = {
-	{ .shift = 17,	.width = 1 },	/* lock_done	*/
-	{ .shift = 0,	.width = 1 },	/* div_s	*/
-	{ .shift = 67,	.width = 1 },	/* mod_en	*/
-	{ .shift = 1,	.width = 1 },	/* sdm_en	*/
-	{ .shift = 0,	.width = 0 },	/* refin	*/
-	{ .shift = 2,	.width = 3 },	/* icp		*/
-	{ .shift = 5,	.width = 11 },	/* n		*/
-	{ .shift = 55,	.width = 7 },	/* nint		*/
-	{ .shift = 32,	.width = 23},	/* kint		*/
-	{ .shift = 0,	.width = 0 },	/* prediv	*/
-	{ .shift = 77,	.width = 1 },	/* postdiv	*/
+	{ .shift = 17,	.width = 1 },	 
+	{ .shift = 0,	.width = 1 },	 
+	{ .shift = 67,	.width = 1 },	 
+	{ .shift = 1,	.width = 1 },	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 2,	.width = 3 },	 
+	{ .shift = 5,	.width = 11 },	 
+	{ .shift = 55,	.width = 7 },	 
+	{ .shift = 32,	.width = 23},	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 77,	.width = 1 },	 
 };
 static SPRD_PLL_HW(mpll1, "mpll1", &mpll1_gate.common.hw, 0x0, 3,
 		   itable_mpll, f_mpll, 240, 1000, 1000, 1, 1200000000);
@@ -178,7 +171,7 @@ static CLK_FIXED_FACTOR_HW(mpll1_63m38, "mpll1-63m38", &mpll1.common.hw,
 			   32, 1, 0);
 
 static struct sprd_clk_common *ums512_g2_pll_clks[] = {
-	/* address base is 0x323B0000 */
+	 
 	&mpll1.common,
 };
 
@@ -196,24 +189,24 @@ static struct sprd_clk_desc ums512_g2_pll_desc = {
 	.hw_clks	= &ums512_g2_pll_hws,
 };
 
-/* pll at g3 */
+ 
 static const u64 itable[8] = { 7, 0, 0,
 			900000000ULL, 1100000000ULL,
 			1300000000ULL, 1500000000ULL,
 			1600000000ULL };
 
 static struct clk_bit_field f_pll[PLL_FACT_MAX] = {
-	{ .shift = 18,	.width = 1 },	/* lock_done	*/
-	{ .shift = 0,	.width = 1 },	/* div_s	*/
-	{ .shift = 67,	.width = 1 },	/* mod_en	*/
-	{ .shift = 1,	.width = 1 },	/* sdm_en	*/
-	{ .shift = 0,	.width = 0 },	/* refin	*/
-	{ .shift = 2,	.width = 3 },	/* icp		*/
-	{ .shift = 5,	.width = 11 },	/* n		*/
-	{ .shift = 55,	.width = 7 },	/* nint		*/
-	{ .shift = 32,	.width = 23},	/* kint		*/
-	{ .shift = 0,	.width = 0 },	/* prediv	*/
-	{ .shift = 77,	.width = 1 },	/* postdiv	*/
+	{ .shift = 18,	.width = 1 },	 
+	{ .shift = 0,	.width = 1 },	 
+	{ .shift = 67,	.width = 1 },	 
+	{ .shift = 1,	.width = 1 },	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 2,	.width = 3 },	 
+	{ .shift = 5,	.width = 11 },	 
+	{ .shift = 55,	.width = 7 },	 
+	{ .shift = 32,	.width = 23},	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 77,	.width = 1 },	 
 };
 
 static SPRD_PLL_FW_NAME(rpll, "rpll", "ext-26m", 0x0, 3,
@@ -223,17 +216,17 @@ static SPRD_SC_GATE_CLK_FW_NAME(audio_gate, "audio-gate", "ext-26m", 0x24,
 				0x1000, BIT(1), CLK_IGNORE_UNUSED, 0);
 
 static struct clk_bit_field f_mpll2[PLL_FACT_MAX] = {
-	{ .shift = 16,	.width = 1 },	/* lock_done	*/
-	{ .shift = 0,	.width = 1 },	/* div_s	*/
-	{ .shift = 67,	.width = 1 },	/* mod_en	*/
-	{ .shift = 1,	.width = 1 },	/* sdm_en	*/
-	{ .shift = 0,	.width = 0 },	/* refin	*/
-	{ .shift = 2,	.width = 3 },	/* icp		*/
-	{ .shift = 5,	.width = 11 },	/* n		*/
-	{ .shift = 55,	.width = 7 },	/* nint		*/
-	{ .shift = 32,	.width = 23},	/* kint		*/
-	{ .shift = 0,	.width = 0 },	/* prediv	*/
-	{ .shift = 77,	.width = 1 },	/* postdiv	*/
+	{ .shift = 16,	.width = 1 },	 
+	{ .shift = 0,	.width = 1 },	 
+	{ .shift = 67,	.width = 1 },	 
+	{ .shift = 1,	.width = 1 },	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 2,	.width = 3 },	 
+	{ .shift = 5,	.width = 11 },	 
+	{ .shift = 55,	.width = 7 },	 
+	{ .shift = 32,	.width = 23},	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 77,	.width = 1 },	 
 };
 static SPRD_PLL_HW(mpll0, "mpll0", &mpll0_gate.common.hw, 0x54, 3,
 		   itable_mpll, f_mpll, 240, 1000, 1000, 1, 1200000000);
@@ -251,7 +244,7 @@ static CLK_FIXED_FACTOR_HW(mpll2_47m13, "mpll2-47m13", &mpll2.common.hw,
 			   32, 1, 0);
 
 static struct sprd_clk_common *ums512_g3_pll_clks[] = {
-	/* address base is 0x323c0000 */
+	 
 	&rpll.common,
 	&audio_gate.common,
 	&mpll0.common,
@@ -276,7 +269,7 @@ static struct sprd_clk_desc ums512_g3_pll_desc = {
 	.hw_clks	= &ums512_g3_pll_hws,
 };
 
-/* pll clock at gc */
+ 
 static SPRD_PLL_FW_NAME(twpll, "twpll", "ext-26m", 0x0, 3,
 			itable, f_pll, 240, 1000, 1000, 1, 750000000);
 static CLK_FIXED_FACTOR_HW(twpll_768m, "twpll-768m", &twpll.common.hw,
@@ -349,7 +342,7 @@ static CLK_FIXED_FACTOR_HW(cppll_39m32, "cppll-39m32", &cppll.common.hw,
 			   26, 1, 0);
 
 static struct sprd_clk_common *ums512_gc_pll_clks[] = {
-	/* address base is 0x323e0000 */
+	 
 	&twpll.common,
 	&lpll.common,
 	&isppll.common,
@@ -402,7 +395,7 @@ static struct sprd_clk_desc ums512_gc_pll_desc = {
 	.hw_clks	= &ums512_gc_pll_hws,
 };
 
-/* ap ahb gates */
+ 
 static SPRD_SC_GATE_CLK_FW_NAME(dsi_eb, "dsi-eb", "ext-26m",
 				0x0, 0x1000, BIT(0), 0, 0);
 static SPRD_SC_GATE_CLK_FW_NAME(dispc_eb, "dispc-eb", "ext-26m",
@@ -423,7 +416,7 @@ static SPRD_SC_GATE_CLK_FW_NAME(bm_clk_eb, "bm-clk-eb", "ext-26m",
 				0x0, 0x1000, BIT(8), CLK_IGNORE_UNUSED, 0);
 
 static struct sprd_clk_common *ums512_apahb_gate[] = {
-	/* address base is 0x20100000 */
+	 
 	&dsi_eb.common,
 	&dispc_eb.common,
 	&vsp_eb.common,
@@ -456,7 +449,7 @@ static struct sprd_clk_desc ums512_apahb_gate_desc = {
 	.hw_clks	= &ums512_apahb_gate_hws,
 };
 
-/* ap clks */
+ 
 static const struct clk_parent_data ap_apb_parents[] = {
 	{ .fw_name = "ext-26m" },
 	{ .hw = &twpll_64m.hw  },
@@ -622,7 +615,7 @@ static SPRD_DIV_CLK_HW(vdsp_m_clk, "vdsp-m-clk", &vdsp_clk.common.hw,
 		       0xb4, 8, 2, 0);
 
 static struct sprd_clk_common *ums512_ap_clks[] = {
-	/* address base is 0x20200000 */
+	 
 	&ap_apb_clk.common,
 	&ipi_clk.common,
 	&ap_uart0_clk.common,
@@ -698,7 +691,7 @@ static struct sprd_clk_desc ums512_ap_clk_desc = {
 	.hw_clks	= &ums512_ap_clk_hws,
 };
 
-/* aon apb clks */
+ 
 static const struct clk_parent_data aon_apb_parents[] = {
 	{ .hw = &rco_4m.hw  },
 	{ .fw_name = "ext-4m"  },
@@ -1025,7 +1018,7 @@ static SPRD_MUX_CLK_DATA(pmu_26m_clk, "26m-pmu-clk", pmu_26m_parents,
 			 0x318, 0, 1, UMS512_MUX_FLAG);
 
 static struct sprd_clk_common *ums512_aon_apb[] = {
-	/* address base is 0x32080200 */
+	 
 	&aon_apb_clk.common,
 	&adi_clk.common,
 	&aux0_clk.common,
@@ -1130,7 +1123,7 @@ static struct sprd_clk_desc ums512_aon_apb_desc = {
 	.hw_clks	= &ums512_aon_apb_hws,
 };
 
-/* aon apb gates */
+ 
 static SPRD_SC_GATE_CLK_FW_NAME(rc100m_cal_eb, "rc100m-cal-eb", "ext-26m",
 				0x0, 0x1000, BIT(0), CLK_IGNORE_UNUSED, 0);
 static SPRD_SC_GATE_CLK_FW_NAME(djtag_tck_eb, "djtag-tck-eb", "ext-26m",
@@ -1333,7 +1326,7 @@ static SPRD_SC_GATE_CLK_FW_NAME(access_aud_en, "access-aud-en",
 				"ext-26m", 0x14c, 0x1000, BIT(0), 0, 0);
 
 static struct sprd_clk_common *ums512_aon_gate[] = {
-	/* address base is 0x327d0000 */
+	 
 	&rc100m_cal_eb.common,
 	&djtag_tck_eb.common,
 	&djtag_eb.common,
@@ -1548,11 +1541,8 @@ static struct sprd_clk_desc ums512_aon_gate_desc = {
 	.hw_clks	= &ums512_aon_gate_hws,
 };
 
-/* audcp apb gates */
-/* Audcp apb clocks configure CLK_IGNORE_UNUSED because these clocks may be
- * controlled by audcp sys at the same time. It may be cause an execption if
- * kernel gates these clock.
- */
+ 
+ 
 static SPRD_SC_GATE_CLK_HW(audcp_wdg_eb, "audcp-wdg-eb",
 			   &access_aud_en.common.hw, 0x0, 0x100, BIT(1),
 			   CLK_IGNORE_UNUSED, SPRD_GATE_NON_AON);
@@ -1567,7 +1557,7 @@ static SPRD_SC_GATE_CLK_HW(audcp_tmr1_eb, "audcp-tmr1-eb",
 			   CLK_IGNORE_UNUSED, SPRD_GATE_NON_AON);
 
 static struct sprd_clk_common *ums512_audcpapb_gate[] = {
-	/* address base is 0x3350d000 */
+	 
 	&audcp_wdg_eb.common,
 	&audcp_rtc_wdg_eb.common,
 	&audcp_tmr0_eb.common,
@@ -1590,11 +1580,8 @@ static const struct sprd_clk_desc ums512_audcpapb_gate_desc = {
 	.hw_clks	= &ums512_audcpapb_gate_hws,
 };
 
-/* audcp ahb gates */
-/* Audcp aphb clocks configure CLK_IGNORE_UNUSED because these clocks may be
- * controlled by audcp sys at the same time. It may be cause an execption if
- * kernel gates these clock.
- */
+ 
+ 
 static SPRD_SC_GATE_CLK_HW(audcp_iis0_eb, "audcp-iis0-eb",
 			   &access_aud_en.common.hw, 0x0, 0x100, BIT(0),
 			   CLK_IGNORE_UNUSED, SPRD_GATE_NON_AON);
@@ -1651,7 +1638,7 @@ static SPRD_SC_GATE_CLK_HW(audcp_dvfs_ashb_eb, "audcp-dvfs-ashb-eb",
 			   CLK_IGNORE_UNUSED, SPRD_GATE_NON_AON);
 
 static struct sprd_clk_common *ums512_audcpahb_gate[] = {
-	/* address base is 0x335e0000 */
+	 
 	&audcp_iis0_eb.common,
 	&audcp_iis1_eb.common,
 	&audcp_iis2_eb.common,
@@ -1702,7 +1689,7 @@ static const struct sprd_clk_desc ums512_audcpahb_gate_desc = {
 	.hw_clks	= &ums512_audcpahb_gate_hws,
 };
 
-/* gpu clocks */
+ 
 static SPRD_GATE_CLK_HW(gpu_core_gate, "gpu-core-gate", &gpu_eb.common.hw,
 			0x4, BIT(0), 0, 0);
 
@@ -1731,7 +1718,7 @@ static SPRD_DIV_CLK_HW(gpu_sys_clk, "gpu-sys-clk", &gpu_eb.common.hw,
 		       0xc, 4, 3, 0);
 
 static struct sprd_clk_common *ums512_gpu_clk[] = {
-	/* address base is 0x60100000 */
+	 
 	&gpu_core_gate.common,
 	&gpu_core_clk.common,
 	&gpu_mem_gate.common,
@@ -1758,7 +1745,7 @@ static struct sprd_clk_desc ums512_gpu_clk_desc = {
 	.hw_clks	= &ums512_gpu_clk_hws,
 };
 
-/* mm clocks */
+ 
 static const struct clk_parent_data mm_ahb_parents[] = {
 	{ .fw_name = "ext-26m" },
 	{ .hw = &twpll_96m.hw  },
@@ -1859,7 +1846,7 @@ static SPRD_GATE_CLK_HW(mipi_csi2, "mipi-csi2", &mm_eb.common.hw,
 			0x54, BIT(16), CLK_IGNORE_UNUSED, 0);
 
 static struct sprd_clk_common *ums512_mm_clk[] = {
-	/* address base is 0x62100000 */
+	 
 	&mm_ahb_clk.common,
 	&mm_mtx_clk.common,
 	&sensor0_clk.common,
@@ -1902,7 +1889,7 @@ static struct sprd_clk_desc ums512_mm_clk_desc = {
 	.hw_clks	= &ums512_mm_clk_hws,
 };
 
-/* mm gate clocks */
+ 
 static SPRD_SC_GATE_CLK_HW(mm_cpp_eb, "mm-cpp-eb", &mm_eb.common.hw,
 			   0x0, 0x1000, BIT(0), 0, 0);
 static SPRD_SC_GATE_CLK_HW(mm_jpg_eb, "mm-jpg-eb", &mm_eb.common.hw,
@@ -1945,7 +1932,7 @@ static SPRD_SC_GATE_CLK_HW(mm_cphy_en, "mm-cphy-en", &mm_eb.common.hw,
 			   0x8, 0x1000, BIT(8), 0, 0);
 
 static struct sprd_clk_common *ums512_mm_gate_clk[] = {
-	/* address base is 0x62200000 */
+	 
 	&mm_cpp_eb.common,
 	&mm_jpg_eb.common,
 	&mm_dcam_eb.common,
@@ -2000,7 +1987,7 @@ static struct sprd_clk_desc ums512_mm_gate_clk_desc = {
 	.hw_clks	= &ums512_mm_gate_clk_hws,
 };
 
-/* ap apb gates */
+ 
 static SPRD_SC_GATE_CLK_FW_NAME(sim0_eb, "sim0-eb", "ext-26m",
 				0x0, 0x1000, BIT(0), 0, 0);
 static SPRD_SC_GATE_CLK_FW_NAME(iis0_eb, "iis0-eb", "ext-26m",
@@ -2063,7 +2050,7 @@ static SPRD_SC_GATE_CLK_FW_NAME(emmc_32k_eb, "emmc-32k-eb", "ext-26m",
 				0x0, 0x1000, BIT(29), 0, 0);
 
 static struct sprd_clk_common *ums512_apapb_gate[] = {
-	/* address base is 0x71000000 */
+	 
 	&sim0_eb.common,
 	&iis0_eb.common,
 	&iis1_eb.common,
@@ -2139,35 +2126,35 @@ static struct sprd_clk_desc ums512_apapb_gate_desc = {
 };
 
 static const struct of_device_id sprd_ums512_clk_ids[] = {
-	{ .compatible = "sprd,ums512-pmu-gate",		/* 0x327e0000 */
+	{ .compatible = "sprd,ums512-pmu-gate",		 
 	  .data = &ums512_pmu_gate_desc },
-	{ .compatible = "sprd,ums512-g0-pll",		/* 0x32390000 */
+	{ .compatible = "sprd,ums512-g0-pll",		 
 	  .data = &ums512_g0_pll_desc },
-	{ .compatible = "sprd,ums512-g2-pll",		/* 0x323b0000 */
+	{ .compatible = "sprd,ums512-g2-pll",		 
 	  .data = &ums512_g2_pll_desc },
-	{ .compatible = "sprd,ums512-g3-pll",		/* 0x323c0000 */
+	{ .compatible = "sprd,ums512-g3-pll",		 
 	  .data = &ums512_g3_pll_desc },
-	{ .compatible = "sprd,ums512-gc-pll",		/* 0x323e0000 */
+	{ .compatible = "sprd,ums512-gc-pll",		 
 	  .data = &ums512_gc_pll_desc },
-	{ .compatible = "sprd,ums512-apahb-gate",	/* 0x20100000 */
+	{ .compatible = "sprd,ums512-apahb-gate",	 
 	  .data = &ums512_apahb_gate_desc },
-	{ .compatible = "sprd,ums512-ap-clk",		/* 0x20200000 */
+	{ .compatible = "sprd,ums512-ap-clk",		 
 	  .data = &ums512_ap_clk_desc },
-	{ .compatible = "sprd,ums512-aonapb-clk",	/* 0x32080200 */
+	{ .compatible = "sprd,ums512-aonapb-clk",	 
 	  .data = &ums512_aon_apb_desc },
-	{ .compatible = "sprd,ums512-aon-gate",		/* 0x327d0000 */
+	{ .compatible = "sprd,ums512-aon-gate",		 
 	  .data = &ums512_aon_gate_desc },
-	{ .compatible = "sprd,ums512-audcpapb-gate",	/* 0x3350d000 */
+	{ .compatible = "sprd,ums512-audcpapb-gate",	 
 	  .data = &ums512_audcpapb_gate_desc },
-	{ .compatible = "sprd,ums512-audcpahb-gate",	/* 0x335e0000 */
+	{ .compatible = "sprd,ums512-audcpahb-gate",	 
 	  .data = &ums512_audcpahb_gate_desc },
-	{ .compatible = "sprd,ums512-gpu-clk",		/* 0x60100000 */
+	{ .compatible = "sprd,ums512-gpu-clk",		 
 	  .data = &ums512_gpu_clk_desc },
-	{ .compatible = "sprd,ums512-mm-clk",		/* 0x62100000 */
+	{ .compatible = "sprd,ums512-mm-clk",		 
 	  .data = &ums512_mm_clk_desc },
-	{ .compatible = "sprd,ums512-mm-gate-clk",	/* 0x62200000 */
+	{ .compatible = "sprd,ums512-mm-gate-clk",	 
 	  .data = &ums512_mm_gate_clk_desc },
-	{ .compatible = "sprd,ums512-apapb-gate",	/* 0x71000000 */
+	{ .compatible = "sprd,ums512-apapb-gate",	 
 	  .data = &ums512_apapb_gate_desc },
 	{ }
 };

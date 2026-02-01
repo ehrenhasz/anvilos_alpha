@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * OSS compatible sequencer driver
- *
- * seq_oss_event.h - OSS event queue record
- *
- * Copyright (C) 1998,99 Takashi Iwai <tiwai@suse.de>
- */
+ 
+ 
 
 #ifndef __SEQ_OSS_EVENT_H
 #define __SEQ_OSS_EVENT_H
@@ -15,7 +9,7 @@
 #define SHORT_EVENT_SIZE	4
 #define LONG_EVENT_SIZE		8
 
-/* short event (4bytes) */
+ 
 struct evrec_short {
 	unsigned char code;
 	unsigned char parm1;
@@ -23,7 +17,7 @@ struct evrec_short {
 	unsigned char parm2;
 };
 	
-/* short note events (4bytes) */
+ 
 struct evrec_note {
 	unsigned char code;
 	unsigned char chn;
@@ -31,7 +25,7 @@ struct evrec_note {
 	unsigned char vel;
 };
 	
-/* long timer events (8bytes) */
+ 
 struct evrec_timer {
 	unsigned char code;
 	unsigned char cmd;
@@ -39,7 +33,7 @@ struct evrec_timer {
 	unsigned int time;
 };
 
-/* long extended events (8bytes) */
+ 
 struct evrec_extended {
 	unsigned char code;
 	unsigned char cmd;
@@ -48,7 +42,7 @@ struct evrec_extended {
 	unsigned char p1, p2, p3, p4;
 };
 
-/* long channel events (8bytes) */
+ 
 struct evrec_long {
 	unsigned char code;
 	unsigned char dev;
@@ -58,7 +52,7 @@ struct evrec_long {
 	unsigned short val;
 };
 	
-/* channel voice events (8bytes) */
+ 
 struct evrec_voice {
 	unsigned char code;
 	unsigned char dev;
@@ -68,14 +62,14 @@ struct evrec_voice {
 	unsigned short dummy;
 };
 
-/* sysex events (8bytes) */
+ 
 struct evrec_sysex {
 	unsigned char code;
 	unsigned char dev;
 	unsigned char buf[6];
 };
 
-/* event record */
+ 
 union evrec {
 	struct evrec_short s;
 	struct evrec_note n;
@@ -96,4 +90,4 @@ int snd_seq_oss_process_timer_event(struct seq_oss_timer *rec, union evrec *q);
 int snd_seq_oss_event_input(struct snd_seq_event *ev, int direct, void *private_data, int atomic, int hop);
 
 
-#endif /* __SEQ_OSS_EVENT_H */
+#endif  

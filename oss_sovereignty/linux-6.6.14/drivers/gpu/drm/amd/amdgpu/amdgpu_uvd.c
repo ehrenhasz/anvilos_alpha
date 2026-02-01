@@ -1,32 +1,5 @@
-/*
- * Copyright 2011 Advanced Micro Devices, Inc.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- */
-/*
- * Authors:
- *    Christian König <deathsimple@vodafone.de>
- */
+ 
+ 
 
 #include <linux/firmware.h>
 #include <linux/module.h>
@@ -43,19 +16,19 @@
 
 #include "amdgpu_ras.h"
 
-/* 1 second timeout */
+ 
 #define UVD_IDLE_TIMEOUT	msecs_to_jiffies(1000)
 
-/* Firmware versions for VI */
+ 
 #define FW_1_65_10	((1 << 24) | (65 << 16) | (10 << 8))
 #define FW_1_87_11	((1 << 24) | (87 << 16) | (11 << 8))
 #define FW_1_87_12	((1 << 24) | (87 << 16) | (12 << 8))
 #define FW_1_37_15	((1 << 24) | (37 << 16) | (15 << 8))
 
-/* Polaris10/11 firmware version */
+ 
 #define FW_1_66_16	((1 << 24) | (66 << 16) | (16 << 8))
 
-/* Firmware Names */
+ 
 #ifdef CONFIG_DRM_AMDGPU_SI
 #define FIRMWARE_TAHITI		"amdgpu/tahiti_uvd.bin"
 #define FIRMWARE_VERDE		"amdgpu/verde_uvd.bin"
@@ -82,18 +55,14 @@
 #define FIRMWARE_VEGA12		"amdgpu/vega12_uvd.bin"
 #define FIRMWARE_VEGA20		"amdgpu/vega20_uvd.bin"
 
-/* These are common relative offsets for all asics, from uvd_7_0_offset.h,  */
+ 
 #define UVD_GPCOM_VCPU_CMD		0x03c3
 #define UVD_GPCOM_VCPU_DATA0	0x03c4
 #define UVD_GPCOM_VCPU_DATA1	0x03c5
 #define UVD_NO_OP				0x03ff
 #define UVD_BASE_SI				0x3800
 
-/*
- * amdgpu_uvd_cs_ctx - Command submission parser context
- *
- * Used for emulating virtual memory support on UVD 4.2.
- */
+ 
 struct amdgpu_uvd_cs_ctx {
 	struct amdgpu_cs_parser *parser;
 	unsigned int reg, count;
@@ -101,10 +70,10 @@ struct amdgpu_uvd_cs_ctx {
 	unsigned int idx;
 	struct amdgpu_ib *ib;
 
-	/* does the IB has a msg command */
+	 
 	bool has_msg_cmd;
 
-	/* minimum buffer sizes */
+	 
 	unsigned int *buf_sizes;
 };
 
@@ -268,7 +237,7 @@ int amdgpu_uvd_sw_init(struct amdgpu_device *adev)
 		return r;
 	}
 
-	/* Set the default UVD handles that the firmware can handle */
+	 
 	adev->uvd.max_handles = AMDGPU_DEFAULT_UVD_HANDLES;
 
 	hdr = (const struct common_firmware_header *)adev->uvd.fw->data;
@@ -282,12 +251,7 @@ int amdgpu_uvd_sw_init(struct amdgpu_device *adev)
 		DRM_INFO("Found UVD firmware Version: %u.%u Family ID: %u\n",
 			version_major, version_minor, family_id);
 
-		/*
-		 * Limit the number of UVD handles depending on microcode major
-		 * and minor versions. The firmware version which has 40 UVD
-		 * instances support is 1.80. So all subsequent versions should
-		 * also have the same support.
-		 */
+		 
 		if ((version_major > 0x01) ||
 		    ((version_major == 0x01) && (version_minor >= 0x50)))
 			adev->uvd.max_handles = AMDGPU_MAX_UVD_HANDLES;
@@ -339,7 +303,7 @@ int amdgpu_uvd_sw_init(struct amdgpu_device *adev)
 		adev->uvd.filp[i] = NULL;
 	}
 
-	/* from uvd v5.0 HW addressing capacity increased to 64 bits */
+	 
 	if (!amdgpu_device_ip_block_version_cmp(adev, AMD_IP_BLOCK_TYPE_UVD, 5, 0))
 		adev->uvd.address_64_bit = true;
 
@@ -394,12 +358,7 @@ int amdgpu_uvd_sw_fini(struct amdgpu_device *adev)
 	return 0;
 }
 
-/**
- * amdgpu_uvd_entity_init - init entity
- *
- * @adev: amdgpu_device pointer
- *
- */
+ 
 int amdgpu_uvd_entity_init(struct amdgpu_device *adev)
 {
 	struct amdgpu_ring *ring;
@@ -427,7 +386,7 @@ int amdgpu_uvd_suspend(struct amdgpu_device *adev)
 
 	cancel_delayed_work_sync(&adev->uvd.idle_work);
 
-	/* only valid for physical mode */
+	 
 	if (adev->asic_type < CHIP_POLARIS10) {
 		for (i = 0; i < adev->uvd.max_handles; ++i)
 			if (atomic_read(&adev->uvd.handles[i]))
@@ -451,7 +410,7 @@ int amdgpu_uvd_suspend(struct amdgpu_device *adev)
 			return -ENOMEM;
 
 		if (drm_dev_enter(adev_to_drm(adev), &idx)) {
-			/* re-write 0 since err_event_athub will corrupt VCPU buffer */
+			 
 			if (in_ras_intr)
 				memset(adev->uvd.inst[j].saved_bo, 0, size);
 			else
@@ -505,7 +464,7 @@ int amdgpu_uvd_resume(struct amdgpu_device *adev)
 				ptr += le32_to_cpu(hdr->ucode_size_bytes);
 			}
 			memset_io(ptr, 0, size);
-			/* to restore uvd fence seq */
+			 
 			amdgpu_fence_driver_force_completion(&adev->uvd.inst[i].ring);
 		}
 	}
@@ -561,14 +520,7 @@ static u64 amdgpu_uvd_get_addr_from_ctx(struct amdgpu_uvd_cs_ctx *ctx)
 	return addr;
 }
 
-/**
- * amdgpu_uvd_cs_pass1 - first parsing round
- *
- * @ctx: UVD parser context
- *
- * Make sure UVD message and feedback buffers are in VRAM and
- * nobody is violating an 256MB boundary.
- */
+ 
 static int amdgpu_uvd_cs_pass1(struct amdgpu_uvd_cs_ctx *ctx)
 {
 	struct ttm_operation_ctx tctx = { false, false };
@@ -585,10 +537,10 @@ static int amdgpu_uvd_cs_pass1(struct amdgpu_uvd_cs_ctx *ctx)
 	}
 
 	if (!ctx->parser->adev->uvd.address_64_bit) {
-		/* check if it's a message or feedback command */
+		 
 		cmd = amdgpu_ib_get_value(ctx->ib, ctx->idx) >> 1;
 		if (cmd == 0x0 || cmd == 0x3) {
-			/* yes, force it into VRAM */
+			 
 			uint32_t domain = AMDGPU_GEM_DOMAIN_VRAM;
 
 			amdgpu_bo_placement_from_domain(bo, domain);
@@ -601,15 +553,7 @@ static int amdgpu_uvd_cs_pass1(struct amdgpu_uvd_cs_ctx *ctx)
 	return r;
 }
 
-/**
- * amdgpu_uvd_cs_msg_decode - handle UVD decode message
- *
- * @adev: amdgpu_device pointer
- * @msg: pointer to message structure
- * @buf_sizes: placeholder to put the different buffer lengths
- *
- * Peek into the decode message and calculate the necessary buffer sizes.
- */
+ 
 static int amdgpu_uvd_cs_msg_decode(struct amdgpu_device *adev, uint32_t *msg,
 	unsigned int buf_sizes[])
 {
@@ -632,7 +576,7 @@ static int amdgpu_uvd_cs_msg_decode(struct amdgpu_device *adev, uint32_t *msg,
 	image_size = ALIGN(image_size, 1024);
 
 	switch (stream_type) {
-	case 0: /* H264 */
+	case 0:  
 		switch (level) {
 		case 30:
 			num_dpb_buffer = 8100 / fs_in_mb;
@@ -663,54 +607,54 @@ static int amdgpu_uvd_cs_msg_decode(struct amdgpu_device *adev, uint32_t *msg,
 		if (num_dpb_buffer > 17)
 			num_dpb_buffer = 17;
 
-		/* reference picture buffer */
+		 
 		min_dpb_size = image_size * num_dpb_buffer;
 
-		/* macroblock context buffer */
+		 
 		min_dpb_size += width_in_mb * height_in_mb * num_dpb_buffer * 192;
 
-		/* IT surface buffer */
+		 
 		min_dpb_size += width_in_mb * height_in_mb * 32;
 		break;
 
-	case 1: /* VC1 */
+	case 1:  
 
-		/* reference picture buffer */
+		 
 		min_dpb_size = image_size * 3;
 
-		/* CONTEXT_BUFFER */
+		 
 		min_dpb_size += width_in_mb * height_in_mb * 128;
 
-		/* IT surface buffer */
+		 
 		min_dpb_size += width_in_mb * 64;
 
-		/* DB surface buffer */
+		 
 		min_dpb_size += width_in_mb * 128;
 
-		/* BP */
+		 
 		tmp = max(width_in_mb, height_in_mb);
 		min_dpb_size += ALIGN(tmp * 7 * 16, 64);
 		break;
 
-	case 3: /* MPEG2 */
+	case 3:  
 
-		/* reference picture buffer */
+		 
 		min_dpb_size = image_size * 3;
 		break;
 
-	case 4: /* MPEG4 */
+	case 4:  
 
-		/* reference picture buffer */
+		 
 		min_dpb_size = image_size * 3;
 
-		/* CM */
+		 
 		min_dpb_size += width_in_mb * height_in_mb * 64;
 
-		/* IT surface buffer */
+		 
 		min_dpb_size += ALIGN(width_in_mb * height_in_mb * 32, 64);
 		break;
 
-	case 7: /* H264 Perf */
+	case 7:  
 		switch (level) {
 		case 30:
 			num_dpb_buffer = 8100 / fs_in_mb;
@@ -741,28 +685,28 @@ static int amdgpu_uvd_cs_msg_decode(struct amdgpu_device *adev, uint32_t *msg,
 		if (num_dpb_buffer > 17)
 			num_dpb_buffer = 17;
 
-		/* reference picture buffer */
+		 
 		min_dpb_size = image_size * num_dpb_buffer;
 
 		if (!adev->uvd.use_ctx_buf) {
-			/* macroblock context buffer */
+			 
 			min_dpb_size +=
 				width_in_mb * height_in_mb * num_dpb_buffer * 192;
 
-			/* IT surface buffer */
+			 
 			min_dpb_size += width_in_mb * height_in_mb * 32;
 		} else {
-			/* macroblock context buffer */
+			 
 			min_ctx_size =
 				width_in_mb * height_in_mb * num_dpb_buffer * 192;
 		}
 		break;
 
-	case 8: /* MJPEG */
+	case 8:  
 		min_dpb_size = 0;
 		break;
 
-	case 16: /* H265 */
+	case 16:  
 		image_size = (ALIGN(width, 16) * ALIGN(height, 16) * 3) / 2;
 		image_size = ALIGN(image_size, 256);
 
@@ -791,21 +735,12 @@ static int amdgpu_uvd_cs_msg_decode(struct amdgpu_device *adev, uint32_t *msg,
 	buf_sizes[0x1] = dpb_size;
 	buf_sizes[0x2] = image_size;
 	buf_sizes[0x4] = min_ctx_size;
-	/* store image width to adjust nb memory pstate */
+	 
 	adev->uvd.decode_image_width = width;
 	return 0;
 }
 
-/**
- * amdgpu_uvd_cs_msg - handle UVD message
- *
- * @ctx: UVD parser context
- * @bo: buffer object containing the message
- * @offset: offset into the buffer object
- *
- * Peek into the UVD message and extract the session id.
- * Make sure that we don't open up to many sessions.
- */
+ 
 static int amdgpu_uvd_cs_msg(struct amdgpu_uvd_cs_ctx *ctx,
 			     struct amdgpu_bo *bo, unsigned int offset)
 {
@@ -839,10 +774,10 @@ static int amdgpu_uvd_cs_msg(struct amdgpu_uvd_cs_ctx *ctx,
 
 	switch (msg_type) {
 	case 0:
-		/* it's a create msg, calc image size (width * height) */
+		 
 		amdgpu_bo_kunmap(bo);
 
-		/* try to alloc a new handle */
+		 
 		for (i = 0; i < adev->uvd.max_handles; ++i) {
 			if (atomic_read(&adev->uvd.handles[i]) == handle) {
 				DRM_ERROR(")Handle 0x%x already in use!\n",
@@ -860,13 +795,13 @@ static int amdgpu_uvd_cs_msg(struct amdgpu_uvd_cs_ctx *ctx,
 		return -ENOSPC;
 
 	case 1:
-		/* it's a decode msg, calc buffer sizes */
+		 
 		r = amdgpu_uvd_cs_msg_decode(adev, msg, ctx->buf_sizes);
 		amdgpu_bo_kunmap(bo);
 		if (r)
 			return r;
 
-		/* validate the handle */
+		 
 		for (i = 0; i < adev->uvd.max_handles; ++i) {
 			if (atomic_read(&adev->uvd.handles[i]) == handle) {
 				if (adev->uvd.filp[i] != ctx->parser->filp) {
@@ -881,7 +816,7 @@ static int amdgpu_uvd_cs_msg(struct amdgpu_uvd_cs_ctx *ctx,
 		return -ENOENT;
 
 	case 2:
-		/* it's a destroy msg, free the handle */
+		 
 		for (i = 0; i < adev->uvd.max_handles; ++i)
 			atomic_cmpxchg(&adev->uvd.handles[i], handle, 0);
 		amdgpu_bo_kunmap(bo);
@@ -895,13 +830,7 @@ static int amdgpu_uvd_cs_msg(struct amdgpu_uvd_cs_ctx *ctx,
 	return -EINVAL;
 }
 
-/**
- * amdgpu_uvd_cs_pass2 - second parsing round
- *
- * @ctx: UVD parser context
- *
- * Patch buffer addresses, make sure buffer sizes are correct.
- */
+ 
 static int amdgpu_uvd_cs_pass2(struct amdgpu_uvd_cs_ctx *ctx)
 {
 	struct amdgpu_bo_va_mapping *mapping;
@@ -977,14 +906,7 @@ static int amdgpu_uvd_cs_pass2(struct amdgpu_uvd_cs_ctx *ctx)
 	return 0;
 }
 
-/**
- * amdgpu_uvd_cs_reg - parse register writes
- *
- * @ctx: UVD parser context
- * @cb: callback function
- *
- * Parse the register writes, call cb on each complete command.
- */
+ 
 static int amdgpu_uvd_cs_reg(struct amdgpu_uvd_cs_ctx *ctx,
 			     int (*cb)(struct amdgpu_uvd_cs_ctx *ctx))
 {
@@ -1023,14 +945,7 @@ static int amdgpu_uvd_cs_reg(struct amdgpu_uvd_cs_ctx *ctx,
 	return 0;
 }
 
-/**
- * amdgpu_uvd_cs_packets - parse UVD packets
- *
- * @ctx: UVD parser context
- * @cb: callback function
- *
- * Parse the command stream packets.
- */
+ 
 static int amdgpu_uvd_cs_packets(struct amdgpu_uvd_cs_ctx *ctx,
 				 int (*cb)(struct amdgpu_uvd_cs_ctx *ctx))
 {
@@ -1059,15 +974,7 @@ static int amdgpu_uvd_cs_packets(struct amdgpu_uvd_cs_ctx *ctx,
 	return 0;
 }
 
-/**
- * amdgpu_uvd_ring_parse_cs - UVD command submission parser
- *
- * @parser: Command submission parser context
- * @job: the job to parse
- * @ib: the IB to patch
- *
- * Parse the command stream, patch in addresses as necessary.
- */
+ 
 int amdgpu_uvd_ring_parse_cs(struct amdgpu_cs_parser *parser,
 			     struct amdgpu_job *job,
 			     struct amdgpu_ib *ib)
@@ -1095,15 +1002,15 @@ int amdgpu_uvd_ring_parse_cs(struct amdgpu_cs_parser *parser,
 	ctx.buf_sizes = buf_sizes;
 	ctx.ib = ib;
 
-	/* first round only required on chips without UVD 64 bit address support */
+	 
 	if (!parser->adev->uvd.address_64_bit) {
-		/* first round, make sure the buffers are actually in the UVD segment */
+		 
 		r = amdgpu_uvd_cs_packets(&ctx, amdgpu_uvd_cs_pass1);
 		if (r)
 			return r;
 	}
 
-	/* second round, patch buffer addresses into the command stream */
+	 
 	r = amdgpu_uvd_cs_packets(&ctx, amdgpu_uvd_cs_pass2);
 	if (r)
 		return r;
@@ -1187,10 +1094,7 @@ err_free:
 	return r;
 }
 
-/* multiple fence commands without any stream commands in between can
- * crash the vcpu so just try to emmit a dummy create/destroy msg to
- * avoid this
- */
+ 
 int amdgpu_uvd_get_create_msg(struct amdgpu_ring *ring, uint32_t handle,
 			      struct dma_fence **fence)
 {
@@ -1200,7 +1104,7 @@ int amdgpu_uvd_get_create_msg(struct amdgpu_ring *ring, uint32_t handle,
 	int i;
 
 	msg = amdgpu_bo_kptr(bo);
-	/* stitch together an UVD create msg */
+	 
 	msg[0] = cpu_to_le32(0x00000de4);
 	msg[1] = cpu_to_le32(0x00000000);
 	msg[2] = cpu_to_le32(handle);
@@ -1236,7 +1140,7 @@ int amdgpu_uvd_get_destroy_msg(struct amdgpu_ring *ring, uint32_t handle,
 	}
 
 	msg = amdgpu_bo_kptr(bo);
-	/* stitch together an UVD destroy msg */
+	 
 	msg[0] = cpu_to_le32(0x00000de4);
 	msg[1] = cpu_to_le32(0x00000002);
 	msg[2] = cpu_to_le32(handle);
@@ -1271,7 +1175,7 @@ static void amdgpu_uvd_idle_work_handler(struct work_struct *work)
 			amdgpu_dpm_enable_uvd(adev, false);
 		} else {
 			amdgpu_asic_set_uvd_clocks(adev, 0, 0);
-			/* shutdown the UVD block */
+			 
 			amdgpu_device_ip_set_powergating_state(adev, AMD_IP_BLOCK_TYPE_UVD,
 							       AMD_PG_STATE_GATE);
 			amdgpu_device_ip_set_clockgating_state(adev, AMD_IP_BLOCK_TYPE_UVD,
@@ -1310,14 +1214,7 @@ void amdgpu_uvd_ring_end_use(struct amdgpu_ring *ring)
 		schedule_delayed_work(&ring->adev->uvd.idle_work, UVD_IDLE_TIMEOUT);
 }
 
-/**
- * amdgpu_uvd_ring_test_ib - test ib execution
- *
- * @ring: amdgpu_ring pointer
- * @timeout: timeout value in jiffies, or MAX_SCHEDULE_TIMEOUT
- *
- * Test if we can successfully execute an IB
- */
+ 
 int amdgpu_uvd_ring_test_ib(struct amdgpu_ring *ring, long timeout)
 {
 	struct dma_fence *fence;
@@ -1350,24 +1247,14 @@ error:
 	return r;
 }
 
-/**
- * amdgpu_uvd_used_handles - returns used UVD handles
- *
- * @adev: amdgpu_device pointer
- *
- * Returns the number of UVD handles in use
- */
+ 
 uint32_t amdgpu_uvd_used_handles(struct amdgpu_device *adev)
 {
 	unsigned int i;
 	uint32_t used_handles = 0;
 
 	for (i = 0; i < adev->uvd.max_handles; ++i) {
-		/*
-		 * Handles can be freed in any order, and not
-		 * necessarily linear. So we need to count
-		 * all non-zero handles.
-		 */
+		 
 		if (atomic_read(&adev->uvd.handles[i]))
 			used_handles++;
 	}

@@ -1,32 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * comedi/drivers/jr3_pci.c
- * hardware driver for JR3/PCI force sensor board
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 2007 Anders Blomdell <anders.blomdell@control.lth.se>
- */
-/*
- * Driver: jr3_pci
- * Description: JR3/PCI force sensor board
- * Author: Anders Blomdell <anders.blomdell@control.lth.se>
- * Updated: Thu, 01 Nov 2012 17:34:55 +0000
- * Status: works
- * Devices: [JR3] PCI force sensor board (jr3_pci)
- *
- * Configuration options:
- *   None
- *
- * Manual configuration of comedi devices is not supported by this
- * driver; supported PCI devices are configured as comedi devices
- * automatically.
- *
- * The DSP on the board requires initialization code, which can be
- * loaded by placing it in /lib/firmware/comedi.  The initialization
- * code should be somewhere on the media you got with your card.  One
- * version is available from https://www.comedi.org in the
- * comedi_nonfree_firmware tarball.  The file is called "jr3pci.idm".
- */
+
+ 
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -135,7 +109,7 @@ static void set_transforms(struct jr3_sensor __iomem *sensor,
 {
 	int i;
 
-	num &= 0x000f;		/* Make sure that 0 <= num <= 15 */
+	num &= 0x000f;		 
 	for (i = 0; i < 8; i++) {
 		set_u16(&sensor->transforms[num].link[i].link_type,
 			transf->link[i].link_type);
@@ -261,9 +235,9 @@ static int jr3_pci_ai_insn_read(struct comedi_device *dev,
 	errors = get_u16(&spriv->sensor->errors);
 	if (spriv->state != state_jr3_done ||
 	    (errors & (watch_dog | watch_dog2 | sensor_change))) {
-		/* No sensor or sensor changed */
+		 
 		if (spriv->state == state_jr3_done) {
-			/* Restart polling */
+			 
 			spriv->state = state_jr3_poll;
 		}
 		return -EAGAIN;
@@ -297,10 +271,10 @@ static int read_idm_word(const u8 *data, size_t size, int *pos,
 	int value;
 
 	if (pos && val) {
-		/* Skip over non hex */
+		 
 		for (; *pos < size && !isxdigit(data[*pos]); (*pos)++)
 			;
-		/* Collect value */
+		 
 		*val = 0;
 		for (; *pos < size; (*pos)++) {
 			value = hex_to_bin(data[*pos]);
@@ -321,11 +295,7 @@ static int jr3_check_firmware(struct comedi_device *dev,
 	int more = 1;
 	int pos = 0;
 
-	/*
-	 * IDM file format is:
-	 *   { count, address, data <count> } *
-	 *   ffff
-	 */
+	 
 	while (more) {
 		unsigned int count = 0;
 		unsigned int addr = 0;
@@ -370,15 +340,15 @@ static void jr3_write_firmware(struct comedi_device *dev,
 
 		while (more && count > 0) {
 			if (addr & 0x4000) {
-				/* 16 bit data, never seen in real life!! */
+				 
 				unsigned int data1 = 0;
 
 				more = more &&
 				       read_idm_word(data, size, &pos, &data1);
 				count--;
-				/* jr3[addr + 0x20000 * pnum] = data1; */
+				 
 			} else {
-				/* Download 24 bit program */
+				 
 				unsigned int data1 = 0;
 				unsigned int data2 = 0;
 
@@ -409,12 +379,12 @@ static int jr3_download_firmware(struct comedi_device *dev,
 	int subdev;
 	int ret;
 
-	/* verify IDM file format */
+	 
 	ret = jr3_check_firmware(dev, data, size);
 	if (ret)
 		return ret;
 
-	/* write firmware to each subdevice */
+	 
 	for (subdev = 0; subdev < dev->n_subdevices; subdev++)
 		jr3_write_firmware(dev, subdev, data, size);
 
@@ -438,7 +408,7 @@ jr3_pci_poll_subdevice(struct comedi_subdevice *s)
 	if (errors != spriv->errors)
 		spriv->errors = errors;
 
-	/* Sensor communication lost? force poll mode */
+	 
 	if (errors & (watch_dog | watch_dog2 | sensor_change))
 		spriv->state = state_jr3_poll;
 
@@ -449,11 +419,7 @@ jr3_pci_poll_subdevice(struct comedi_subdevice *s)
 
 		if ((errors & (watch_dog | watch_dog2)) ||
 		    model_no == 0 || serial_no == 0) {
-			/*
-			 * Still no sensor, keep on polling.
-			 * Since it takes up to 10 seconds for offsets to
-			 * stabilize, polling each second should suffice.
-			 */
+			 
 		} else {
 			spriv->retries = 0;
 			spriv->state = state_jr3_init_wait_for_offset;
@@ -462,17 +428,14 @@ jr3_pci_poll_subdevice(struct comedi_subdevice *s)
 	case state_jr3_init_wait_for_offset:
 		spriv->retries++;
 		if (spriv->retries < 10) {
-			/*
-			 * Wait for offeset to stabilize
-			 * (< 10 s according to manual)
-			 */
+			 
 		} else {
 			struct jr3_pci_transform transf;
 
 			spriv->model_no = get_u16(&sensor->model_no);
 			spriv->serial_no = get_u16(&sensor->serial_no);
 
-			/* Transformation all zeros */
+			 
 			for (i = 0; i < ARRAY_SIZE(transf.link); i++) {
 				transf.link[i].link_type = (enum link_types)0;
 				transf.link[i].link_amount = 0;
@@ -481,7 +444,7 @@ jr3_pci_poll_subdevice(struct comedi_subdevice *s)
 			set_transforms(sensor, &transf, 0);
 			use_transform(sensor, 0);
 			spriv->state = state_jr3_init_transform_complete;
-			/* Allow 20 ms for completion */
+			 
 			result = poll_delay_min_max(20, 100);
 		}
 		break;
@@ -489,14 +452,14 @@ jr3_pci_poll_subdevice(struct comedi_subdevice *s)
 		if (!is_complete(sensor)) {
 			result = poll_delay_min_max(20, 100);
 		} else {
-			/* Set full scale */
+			 
 			struct six_axis_t max_full_scale;
 
 			max_full_scale = get_max_full_scales(sensor);
 			set_full_scales(sensor, max_full_scale);
 
 			spriv->state = state_jr3_init_set_full_scale_complete;
-			/* Allow 20 ms for completion */
+			 
 			result = poll_delay_min_max(20, 100);
 		}
 		break;
@@ -507,7 +470,7 @@ jr3_pci_poll_subdevice(struct comedi_subdevice *s)
 			struct force_array __iomem *fs = &sensor->full_scale;
 			union jr3_pci_single_range *r = spriv->range;
 
-			/* Use ranges in kN or we will overflow around 2000N! */
+			 
 			r[0].l.range[0].min = -get_s16(&fs->fx) * 1000;
 			r[0].l.range[0].max = get_s16(&fs->fx) * 1000;
 			r[1].l.range[0].min = -get_s16(&fs->fy) * 1000;
@@ -519,7 +482,7 @@ jr3_pci_poll_subdevice(struct comedi_subdevice *s)
 			r[4].l.range[0].min = -get_s16(&fs->my) * 100;
 			r[4].l.range[0].max = get_s16(&fs->my) * 100;
 			r[5].l.range[0].min = -get_s16(&fs->mz) * 100;
-			/* the next five are questionable */
+			 
 			r[5].l.range[0].max = get_s16(&fs->mz) * 100;
 			r[6].l.range[0].min = -get_s16(&fs->v1) * 100;
 			r[6].l.range[0].max = get_s16(&fs->v1) * 100;
@@ -530,7 +493,7 @@ jr3_pci_poll_subdevice(struct comedi_subdevice *s)
 
 			use_offset(sensor, 0);
 			spriv->state = state_jr3_init_use_offset_complete;
-			/* Allow 40 ms for completion */
+			 
 			result = poll_delay_min_max(40, 100);
 		}
 		break;
@@ -575,7 +538,7 @@ static void jr3_pci_poll_dev(struct timer_list *t)
 	delay = 1000;
 	now = jiffies;
 
-	/* Poll all sensors that are ready to be polled */
+	 
 	for (i = 0; i < dev->n_subdevices; i++) {
 		s = &dev->subdevices[i];
 		spriv = s->private;
@@ -589,10 +552,7 @@ static void jr3_pci_poll_dev(struct timer_list *t)
 					       msecs_to_jiffies(sub_delay.min);
 
 			if (sub_delay.max && sub_delay.max < delay)
-				/*
-				 * Wake up as late as possible ->
-				 * poll as many sensors as possible at once.
-				 */
+				 
 				delay = sub_delay.max;
 		}
 	}
@@ -705,12 +665,12 @@ static int jr3_pci_auto_attach(struct comedi_device *dev,
 		if (!spriv)
 			return -ENOMEM;
 
-		/* Channel specific range and maxdata */
+		 
 		s->range_table_list	= spriv->range_table_list;
 		s->maxdata_list		= spriv->maxdata_list;
 	}
 
-	/* Reset DSP card */
+	 
 	for (i = 0; i < dev->n_subdevices; i++)
 		writel(0, &block[i].reset);
 
@@ -720,24 +680,13 @@ static int jr3_pci_auto_attach(struct comedi_device *dev,
 	dev_dbg(dev->class_dev, "Firmware load %d\n", ret);
 	if (ret < 0)
 		return ret;
-	/*
-	 * TODO: use firmware to load preferred offset tables. Suggested
-	 * format:
-	 *     model serial Fx Fy Fz Mx My Mz\n
-	 *
-	 *     comedi_load_firmware(dev, &comedi_to_pci_dev(dev)->dev,
-	 *                          "comedi/jr3_offsets_table",
-	 *                          jr3_download_firmware, 1);
-	 */
+	 
 
-	/*
-	 * It takes a few milliseconds for software to settle as much as we
-	 * can read firmware version
-	 */
+	 
 	msleep_interruptible(25);
 	jr3_pci_show_copyright(dev);
 
-	/* Start card timer */
+	 
 	for (i = 0; i < dev->n_subdevices; i++) {
 		s = &dev->subdevices[i];
 		spriv = s->private;

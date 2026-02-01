@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2005-2007 Takahiro Hirofuchi
- */
+ 
+ 
 
 #ifndef __USBIP_COMMON_H
 #define __USBIP_COMMON_H
@@ -28,13 +26,13 @@
 
 #define VUDC_DEVICE_DESCR_FILE "dev_desc"
 
-/* kernel module names */
+ 
 #define USBIP_CORE_MOD_NAME	"usbip-core"
 #define USBIP_HOST_DRV_NAME	"usbip-host"
 #define USBIP_DEVICE_DRV_NAME	"usbip-vudc"
 #define USBIP_VHCI_DRV_NAME	"vhci_hcd"
 
-/* sysfs constants */
+ 
 #define SYSFS_MNT_PATH         "/sys"
 #define SYSFS_BUS_NAME         "bus"
 #define SYSFS_BUS_TYPE         "usb"
@@ -43,12 +41,12 @@
 #define SYSFS_PATH_MAX		256
 #define SYSFS_BUS_ID_SIZE	32
 
-/* Defines for op_code status in server/client op_common PDUs */
+ 
 #define ST_OK	0x00
 #define ST_NA	0x01
-	/* Device requested for import is not available */
+	 
 #define ST_DEV_BUSY	0x02
-	/* Device requested for import is in error state */
+	 
 #define ST_DEV_ERR	0x03
 #define ST_NODEV	0x04
 #define ST_ERROR	0x05
@@ -105,7 +103,7 @@ struct usbip_usb_interface {
 	uint8_t bInterfaceClass;
 	uint8_t bInterfaceSubClass;
 	uint8_t bInterfaceProtocol;
-	uint8_t padding;	/* alignment */
+	uint8_t padding;	 
 } __attribute__((packed));
 
 struct usbip_usb_device {
@@ -149,4 +147,4 @@ void usbip_names_get_product(char *buff, size_t size, uint16_t vendor,
 void usbip_names_get_class(char *buff, size_t size, uint8_t class,
 			   uint8_t subclass, uint8_t protocol);
 
-#endif /* __USBIP_COMMON_H */
+#endif  

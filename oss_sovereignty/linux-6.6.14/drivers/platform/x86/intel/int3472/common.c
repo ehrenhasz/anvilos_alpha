@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Author: Dan Scally <djrscally@gmail.com> */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/slab.h>
@@ -53,7 +53,7 @@ out_free_obj:
 	return ret;
 }
 
-/* sensor_adev_ret may be NULL, name_ret must not be NULL */
+ 
 int skl_int3472_get_sensor_adev_and_name(struct device *dev,
 					 struct acpi_device **sensor_adev_ret,
 					 const char **name_ret)

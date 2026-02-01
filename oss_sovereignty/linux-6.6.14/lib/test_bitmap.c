@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Test cases for bitmap API.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -46,15 +44,15 @@ static const unsigned long exp2[] __initconst = {
 	BITMAP_FROM_U64(0xffffffff77777777ULL),
 };
 
-/* Fibonacci sequence */
+ 
 static const unsigned long exp2_to_exp3_mask[] __initconst = {
 	BITMAP_FROM_U64(0x008000020020212eULL),
 };
-/* exp3_0_1 = (exp2[0] & ~exp2_to_exp3_mask) | (exp2[1] & exp2_to_exp3_mask) */
+ 
 static const unsigned long exp3_0_1[] __initconst = {
 	BITMAP_FROM_U64(0x33b3333311313137ULL),
 };
-/* exp3_1_0 = (exp2[1] & ~exp2_to_exp3_mask) | (exp2[0] & exp2_to_exp3_mask) */
+ 
 static const unsigned long exp3_1_0[] __initconst = {
 	BITMAP_FROM_U64(0xff7fffff77575751ULL),
 };
@@ -196,27 +194,27 @@ static void __init test_zero_clear(void)
 {
 	DECLARE_BITMAP(bmap, 1024);
 
-	/* Known way to set all bits */
+	 
 	memset(bmap, 0xff, 128);
 
 	expect_eq_pbl("0-22", bmap, 23);
 	expect_eq_pbl("0-1023", bmap, 1024);
 
-	/* single-word bitmaps */
+	 
 	bitmap_clear(bmap, 0, 9);
 	expect_eq_pbl("9-1023", bmap, 1024);
 
 	bitmap_zero(bmap, 35);
 	expect_eq_pbl("64-1023", bmap, 1024);
 
-	/* cross boundaries operations */
+	 
 	bitmap_clear(bmap, 79, 19);
 	expect_eq_pbl("64-78,98-1023", bmap, 1024);
 
 	bitmap_zero(bmap, 115);
 	expect_eq_pbl("128-1023", bmap, 1024);
 
-	/* Zeroing entire area */
+	 
 	bitmap_zero(bmap, 1024);
 	expect_eq_pbl("", bmap, 1024);
 }
@@ -266,27 +264,27 @@ static void __init test_fill_set(void)
 {
 	DECLARE_BITMAP(bmap, 1024);
 
-	/* Known way to clear all bits */
+	 
 	memset(bmap, 0x00, 128);
 
 	expect_eq_pbl("", bmap, 23);
 	expect_eq_pbl("", bmap, 1024);
 
-	/* single-word bitmaps */
+	 
 	bitmap_set(bmap, 0, 9);
 	expect_eq_pbl("0-8", bmap, 1024);
 
 	bitmap_fill(bmap, 35);
 	expect_eq_pbl("0-63", bmap, 1024);
 
-	/* cross boundaries operations */
+	 
 	bitmap_set(bmap, 79, 19);
 	expect_eq_pbl("0-63,79-97", bmap, 1024);
 
 	bitmap_fill(bmap, 115);
 	expect_eq_pbl("0-127", bmap, 1024);
 
-	/* Zeroing entire area */
+	 
 	bitmap_fill(bmap, 1024);
 	expect_eq_pbl("0-1023", bmap, 1024);
 }
@@ -299,7 +297,7 @@ static void __init test_copy(void)
 	bitmap_zero(bmap1, 1024);
 	bitmap_zero(bmap2, 1024);
 
-	/* single-word bitmaps */
+	 
 	bitmap_set(bmap1, 0, 19);
 	bitmap_copy(bmap2, bmap1, 23);
 	expect_eq_pbl("0-18", bmap2, 1024);
@@ -308,7 +306,7 @@ static void __init test_copy(void)
 	bitmap_copy(bmap2, bmap1, 23);
 	expect_eq_pbl("0-18", bmap2, 1024);
 
-	/* multi-word bitmaps */
+	 
 	bitmap_set(bmap1, 0, 109);
 	bitmap_copy(bmap2, bmap1, 1024);
 	expect_eq_pbl("0-108", bmap2, 1024);
@@ -317,16 +315,14 @@ static void __init test_copy(void)
 	bitmap_copy(bmap2, bmap1, 1024);
 	expect_eq_pbl("0-108", bmap2, 1024);
 
-	/* the following tests assume a 32- or 64-bit arch (even 128b
-	 * if we care)
-	 */
+	 
 
 	bitmap_fill(bmap2, 1024);
-	bitmap_copy(bmap2, bmap1, 109);  /* ... but 0-padded til word length */
+	bitmap_copy(bmap2, bmap1, 109);   
 	expect_eq_pbl("0-108,128-1023", bmap2, 1024);
 
 	bitmap_fill(bmap2, 1024);
-	bitmap_copy(bmap2, bmap1, 97);  /* ... but aligned on word length */
+	bitmap_copy(bmap2, bmap1, 97);   
 	expect_eq_pbl("0-108,128-1023", bmap2, 1024);
 }
 
@@ -706,14 +702,14 @@ static void noinline __init test_mem_optimisations(void)
 }
 
 static const unsigned char clump_exp[] __initconst = {
-	0x01,	/* 1 bit set */
-	0x02,	/* non-edge 1 bit set */
-	0x00,	/* zero bits set */
-	0x38,	/* 3 bits set across 4-bit boundary */
-	0x38,	/* Repeated clump */
-	0x0F,	/* 4 bits set */
-	0xFF,	/* all bits set */
-	0x05,	/* non-adjacent 2 bits set */
+	0x01,	 
+	0x02,	 
+	0x00,	 
+	0x38,	 
+	0x38,	 
+	0x0F,	 
+	0xFF,	 
+	0x05,	 
 };
 
 static void __init test_for_each_set_clump8(void)
@@ -723,16 +719,16 @@ static void __init test_for_each_set_clump8(void)
 	unsigned int start;
 	unsigned long clump;
 
-	/* set bitmap to test case */
+	 
 	bitmap_zero(bits, CLUMP_EXP_NUMBITS);
-	bitmap_set(bits, 0, 1);		/* 0x01 */
-	bitmap_set(bits, 9, 1);		/* 0x02 */
-	bitmap_set(bits, 27, 3);	/* 0x28 */
-	bitmap_set(bits, 35, 3);	/* 0x28 */
-	bitmap_set(bits, 40, 4);	/* 0x0F */
-	bitmap_set(bits, 48, 8);	/* 0xFF */
-	bitmap_set(bits, 56, 1);	/* 0x05 - part 1 */
-	bitmap_set(bits, 58, 1);	/* 0x05 - part 2 */
+	bitmap_set(bits, 0, 1);		 
+	bitmap_set(bits, 9, 1);		 
+	bitmap_set(bits, 27, 3);	 
+	bitmap_set(bits, 35, 3);	 
+	bitmap_set(bits, 40, 4);	 
+	bitmap_set(bits, 48, 8);	 
+	bitmap_set(bits, 56, 1);	 
+	bitmap_set(bits, 58, 1);	 
 
 	for_each_set_clump8(start, clump, bits, CLUMP_EXP_NUMBITS)
 		expect_eq_clump8(start, CLUMP_EXP_NUMBITS, clump_exp, &clump);
@@ -746,11 +742,11 @@ static void __init test_for_each_set_bit_wrap(void)
 
 	bitmap_zero(orig, 500);
 
-	/* Set individual bits */
+	 
 	for (bit = 0; bit < 500; bit += 10)
 		bitmap_set(orig, bit, 1);
 
-	/* Set range of bits */
+	 
 	bitmap_set(orig, 100, 50);
 
 	for (wr = 0; wr < 500; wr++) {
@@ -772,11 +768,11 @@ static void __init test_for_each_set_bit(void)
 	bitmap_zero(orig, 500);
 	bitmap_zero(copy, 500);
 
-	/* Set individual bits */
+	 
 	for (bit = 0; bit < 500; bit += 10)
 		bitmap_set(orig, bit, 1);
 
-	/* Set range of bits */
+	 
 	bitmap_set(orig, 100, 50);
 
 	for_each_set_bit(bit, orig, 500)
@@ -793,11 +789,11 @@ static void __init test_for_each_set_bit_from(void)
 
 	bitmap_zero(orig, 500);
 
-	/* Set individual bits */
+	 
 	for (bit = 0; bit < 500; bit += 10)
 		bitmap_set(orig, bit, 1);
 
-	/* Set range of bits */
+	 
 	bitmap_set(orig, 100, 50);
 
 	for (wr = 0; wr < 500; wr++) {
@@ -824,11 +820,11 @@ static void __init test_for_each_clear_bit(void)
 	bitmap_fill(orig, 500);
 	bitmap_fill(copy, 500);
 
-	/* Set individual bits */
+	 
 	for (bit = 0; bit < 500; bit += 10)
 		bitmap_clear(orig, bit, 1);
 
-	/* Set range of bits */
+	 
 	bitmap_clear(orig, 100, 50);
 
 	for_each_clear_bit(bit, orig, 500)
@@ -845,11 +841,11 @@ static void __init test_for_each_clear_bit_from(void)
 
 	bitmap_fill(orig, 500);
 
-	/* Set individual bits */
+	 
 	for (bit = 0; bit < 500; bit += 10)
 		bitmap_clear(orig, bit, 1);
 
-	/* Set range of bits */
+	 
 	bitmap_clear(orig, 100, 50);
 
 	for (wr = 0; wr < 500; wr++) {
@@ -876,11 +872,11 @@ static void __init test_for_each_set_bitrange(void)
 	bitmap_zero(orig, 500);
 	bitmap_zero(copy, 500);
 
-	/* Set individual bits */
+	 
 	for (s = 0; s < 500; s += 10)
 		bitmap_set(orig, s, 1);
 
-	/* Set range of bits */
+	 
 	bitmap_set(orig, 100, 50);
 
 	for_each_set_bitrange(s, e, orig, 500)
@@ -898,11 +894,11 @@ static void __init test_for_each_clear_bitrange(void)
 	bitmap_fill(orig, 500);
 	bitmap_fill(copy, 500);
 
-	/* Set individual bits */
+	 
 	for (s = 0; s < 500; s += 10)
 		bitmap_clear(orig, s, 1);
 
-	/* Set range of bits */
+	 
 	bitmap_clear(orig, 100, 50);
 
 	for_each_clear_bitrange(s, e, orig, 500)
@@ -919,11 +915,11 @@ static void __init test_for_each_set_bitrange_from(void)
 
 	bitmap_zero(orig, 500);
 
-	/* Set individual bits */
+	 
 	for (s = 0; s < 500; s += 10)
 		bitmap_set(orig, s, 1);
 
-	/* Set range of bits */
+	 
 	bitmap_set(orig, 100, 50);
 
 	for (wr = 0; wr < 500; wr++) {
@@ -949,11 +945,11 @@ static void __init test_for_each_clear_bitrange_from(void)
 
 	bitmap_fill(orig, 500);
 
-	/* Set individual bits */
+	 
 	for (s = 0; s < 500; s += 10)
 		bitmap_clear(orig, s, 1);
 
-	/* Set range of bits */
+	 
 	bitmap_set(orig, 100, 50);
 
 	for (wr = 0; wr < 500; wr++) {
@@ -1014,7 +1010,7 @@ static struct test_bitmap_cut test_cut[] = {
 
 static void __init test_bitmap_cut(void)
 {
-	unsigned long b[5], *in = &b[1], *out = &b[0];	/* Partial overlap */
+	unsigned long b[5], *in = &b[1], *out = &b[0];	 
 	int i;
 
 	for (i = 0; i < ARRAY_SIZE(test_cut); i++) {
@@ -1086,7 +1082,7 @@ static const char large_mask[] __initconst = "33333333,11111111,33333333,1111111
 					"33333333,11111111,33333333,11111111,"
 					"33333333,11111111,33333333,11111111\n";
 
-static const char large_list[] __initconst = /* more than 4KB */
+static const char large_list[] __initconst =  
 	"0,4,8,12,16,20,24,28,32-33,36-37,40-41,44-45,48-49,52-53,56-57,60-61,64,68,72,76,80,84,88,92,96-97,100-101,104-1"
 	"05,108-109,112-113,116-117,120-121,124-125,128,132,136,140,144,148,152,156,160-161,164-165,168-169,172-173,176-1"
 	"77,180-181,184-185,188-189,192,196,200,204,208,212,216,220,224-225,228-229,232-233,236-237,240-241,244-245,248-2"
@@ -1151,7 +1147,7 @@ static void __init test_bitmap_print_buf(void)
 		expect_eq_uint(strlen(t->list) + 1, n);
 		expect_eq_str(t->list, print_buf, n);
 
-		/* test by non-zero offset */
+		 
 		if (strlen(t->list) > PAGE_SIZE) {
 			n = bitmap_print_list_to_buf(print_buf, t->bitmap, t->nbits,
 						     PAGE_SIZE, PAGE_SIZE);
@@ -1161,10 +1157,7 @@ static void __init test_bitmap_print_buf(void)
 	}
 }
 
-/*
- * FIXME: Clang breaks compile-time evaluations when KASAN and GCOV are enabled.
- * To workaround it, GCOV is force-disabled in Makefile for this configuration.
- */
+ 
 static void __init test_bitmap_const_eval(void)
 {
 	DECLARE_BITMAP(bitmap, BITS_PER_LONG);
@@ -1173,51 +1166,38 @@ static void __init test_bitmap_const_eval(void)
 	unsigned long var = 0;
 	int res;
 
-	/*
-	 * Compilers must be able to optimize all of those to compile-time
-	 * constants on any supported optimization level (-O2, -Os) and any
-	 * architecture. Otherwise, trigger a build bug.
-	 * The whole function gets optimized out then, there's nothing to do
-	 * in runtime.
-	 */
+	 
 
-	/*
-	 * Equals to `unsigned long bitmap[1] = { GENMASK(6, 5), }`.
-	 * Clang on s390 optimizes bitops at compile-time as intended, but at
-	 * the same time stops treating @bitmap and @bitopvar as compile-time
-	 * constants after regular test_bit() is executed, thus triggering the
-	 * build bugs below. So, call const_test_bit() there directly until
-	 * the compiler is fixed.
-	 */
+	 
 	bitmap_clear(bitmap, 0, BITS_PER_LONG);
 	if (!test_bit(7, bitmap))
 		bitmap_set(bitmap, 5, 2);
 
-	/* Equals to `unsigned long bitopvar = BIT(20)` */
+	 
 	__change_bit(31, &bitopvar);
 	bitmap_shift_right(&bitopvar, &bitopvar, 11, BITS_PER_LONG);
 
-	/* Equals to `unsigned long var = BIT(25)` */
+	 
 	var |= BIT(25);
 	if (var & BIT(0))
 		var ^= GENMASK(9, 6);
 
-	/* __const_hweight<32|64>(GENMASK(6, 5)) == 2 */
+	 
 	res = bitmap_weight(bitmap, 20);
 	BUILD_BUG_ON(!__builtin_constant_p(res));
 	BUILD_BUG_ON(res != 2);
 
-	/* !(BIT(31) & BIT(18)) == 1 */
+	 
 	res = !test_bit(18, &bitopvar);
 	BUILD_BUG_ON(!__builtin_constant_p(res));
 	BUILD_BUG_ON(!res);
 
-	/* BIT(2) & GENMASK(14, 8) == 0 */
+	 
 	res = initvar & GENMASK(14, 8);
 	BUILD_BUG_ON(!__builtin_constant_p(res));
 	BUILD_BUG_ON(res);
 
-	/* ~BIT(25) */
+	 
 	BUILD_BUG_ON(!__builtin_constant_p(~var));
 	BUILD_BUG_ON(~var != ~BIT(25));
 }

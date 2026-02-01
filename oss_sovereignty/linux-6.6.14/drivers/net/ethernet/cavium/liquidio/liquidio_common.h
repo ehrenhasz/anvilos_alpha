@@ -1,24 +1,5 @@
-/**********************************************************************
- * Author: Cavium, Inc.
- *
- * Contact: support@cavium.com
- *          Please include "LiquidIO" in the subject.
- *
- * Copyright (c) 2003-2016 Cavium, Inc.
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- ***********************************************************************/
-/*!  \file  liquidio_common.h
- *   \brief Common: Structures and macros used in PCI-NIC package by core and
- *   host driver.
- */
+ 
+ 
 
 #ifndef __LIQUIDIO_COMMON_H__
 #define __LIQUIDIO_COMMON_H__
@@ -39,7 +20,7 @@ struct lio_version {
 };
 
 #define CONTROL_IQ 0
-/** Tag types used by Octeon cores in its work. */
+ 
 enum octeon_tag_type {
 	ORDERED_TAG = 0,
 	ATOMIC_TAG = 1,
@@ -47,28 +28,23 @@ enum octeon_tag_type {
 	NULL_NULL_TAG = 3
 };
 
-/* pre-defined host->NIC tag values */
+ 
 #define LIO_CONTROL  (0x11111110)
 #define LIO_DATA(i)  (0x11111111 + (i))
 
-/* Opcodes used by host driver/apps to perform operations on the core.
- * These are used to identify the major subsystem that the operation
- * is for.
- */
-#define OPCODE_CORE 0           /* used for generic core operations */
-#define OPCODE_NIC  1           /* used for NIC operations */
-/* Subcodes are used by host driver/apps to identify the sub-operation
- * for the core. They only need to by unique for a given subsystem.
- */
+ 
+#define OPCODE_CORE 0            
+#define OPCODE_NIC  1            
+ 
 #define OPCODE_SUBCODE(op, sub)       ((((op) & 0x0f) << 8) | ((sub) & 0x7f))
 
-/** OPCODE_CORE subcodes. For future use. */
+ 
 
-/** OPCODE_NIC subcodes */
+ 
 
-/* This subcode is sent by core PCI driver to indicate cores are ready. */
+ 
 #define OPCODE_NIC_CORE_DRV_ACTIVE     0x01
-#define OPCODE_NIC_NW_DATA             0x02     /* network packet data */
+#define OPCODE_NIC_NW_DATA             0x02      
 #define OPCODE_NIC_CMD                 0x03
 #define OPCODE_NIC_INFO                0x04
 #define OPCODE_NIC_PORT_STATS          0x05
@@ -91,7 +67,7 @@ enum octeon_tag_type {
 
 #define CORE_DRV_TEST_SCATTER_OP    0xFFF5
 
-/* Application codes advertised by the core driver initialization packet. */
+ 
 #define CVM_DRV_APP_START           0x0
 #define CVM_DRV_NO_APP              0
 #define CVM_DRV_APP_COUNT           0x2
@@ -109,12 +85,12 @@ enum octeon_tag_type {
 
 #define SCR2_BIT_FW_LOADED	    63
 
-/* App specific capabilities from firmware to pf driver */
+ 
 #define LIQUIDIO_TIME_SYNC_CAP 0x1
 #define LIQUIDIO_SWITCHDEV_CAP 0x2
 #define LIQUIDIO_SPOOFCHK_CAP  0x4
 
-/* error status return from firmware */
+ 
 #define OCTEON_REQUEST_NO_PERMISSION 0xc
 
 static inline u32 incr_index(u32 index, u32 count, u32 max)
@@ -130,9 +106,7 @@ static inline u32 incr_index(u32 index, u32 count, u32 max)
 #define OCT_BOARD_NAME 32
 #define OCT_SERIAL_LEN 64
 
-/* Structure used by core driver to send indication that the Octeon
- * application is ready.
- */
+ 
 struct octeon_core_setup {
 	u64 corefreq;
 
@@ -146,30 +120,24 @@ struct octeon_core_setup {
 
 };
 
-/*---------------------------  SCATTER GATHER ENTRY  -----------------------*/
+ 
 
-/* The Scatter-Gather List Entry. The scatter or gather component used with
- * a Octeon input instruction has this format.
- */
+ 
 struct octeon_sg_entry {
-	/** The first 64 bit gives the size of data in each dptr.*/
+	 
 	union {
 		u16 size[4];
 		u64 size64;
 	} u;
 
-	/** The 4 dptr pointers for this entry. */
+	 
 	u64 ptr[4];
 
 };
 
 #define OCT_SG_ENTRY_SIZE    (sizeof(struct octeon_sg_entry))
 
-/* \brief Add size to gather list
- * @param sg_entry scatter/gather entry
- * @param size size to add
- * @param pos position to add it.
- */
+ 
 static inline void add_sg_size(struct octeon_sg_entry *sg_entry,
 			       u16 size,
 			       u32 pos)
@@ -181,13 +149,13 @@ static inline void add_sg_size(struct octeon_sg_entry *sg_entry,
 #endif
 }
 
-/*------------------------- End Scatter/Gather ---------------------------*/
+ 
 
 #define   OCTNET_FRM_LENGTH_SIZE      8
 
 #define   OCTNET_FRM_PTP_HEADER_SIZE  8
 
-#define   OCTNET_FRM_HEADER_SIZE     22 /* VLAN + Ethernet */
+#define   OCTNET_FRM_HEADER_SIZE     22  
 
 #define   OCTNET_MIN_FRM_SIZE        64
 
@@ -196,10 +164,10 @@ static inline void add_sg_size(struct octeon_sg_entry *sg_entry,
 #define   OCTNET_DEFAULT_MTU         (1500)
 #define   OCTNET_DEFAULT_FRM_SIZE  (OCTNET_DEFAULT_MTU + OCTNET_FRM_HEADER_SIZE)
 
-/** NIC Commands are sent using this Octeon Input Queue */
+ 
 #define   OCTNET_CMD_Q                0
 
-/* NIC Command types */
+ 
 #define   OCTNET_CMD_CHANGE_MTU       0x1
 #define   OCTNET_CMD_CHANGE_MACADDR   0x2
 #define   OCTNET_CMD_CHANGE_DEVFLAGS  0x3
@@ -208,7 +176,7 @@ static inline void add_sg_size(struct octeon_sg_entry *sg_entry,
 #define	  OCTNET_CMD_SET_MULTI_LIST   0x5
 #define   OCTNET_CMD_CLEAR_STATS      0x6
 
-/* command for setting the speed, duplex & autoneg */
+ 
 #define   OCTNET_CMD_SET_SETTINGS     0x7
 #define   OCTNET_CMD_SET_FLOW_CTL     0x8
 
@@ -266,18 +234,18 @@ static inline void add_sg_size(struct octeon_sg_entry *sg_entry,
 
 #define   LIO_CMD_WAIT_TM 100
 
-/* RX(packets coming from wire) Checksum verification flags */
-/* TCP/UDP csum */
+ 
+ 
 #define   CNNIC_L4SUM_VERIFIED             0x1
 #define   CNNIC_IPSUM_VERIFIED             0x2
 #define   CNNIC_TUN_CSUM_VERIFIED          0x4
 #define   CNNIC_CSUM_VERIFIED (CNNIC_IPSUM_VERIFIED | CNNIC_L4SUM_VERIFIED)
 
-/*LROIPV4 and LROIPV6 Flags*/
+ 
 #define   OCTNIC_LROIPV4    0x1
 #define   OCTNIC_LROIPV6    0x2
 
-/* Interface flags communicated between host driver and core app. */
+ 
 enum octnet_ifflags {
 	OCTNET_IFFLAG_PROMISC   = 0x01,
 	OCTNET_IFFLAG_ALLMULTI  = 0x02,
@@ -286,22 +254,7 @@ enum octnet_ifflags {
 	OCTNET_IFFLAG_UNICAST   = 0x10
 };
 
-/*   wqe
- *  ---------------  0
- * |  wqe  word0-3 |
- *  ---------------  32
- * |    PCI IH     |
- *  ---------------  40
- * |     RPTR      |
- *  ---------------  48
- * |    PCI IRH    |
- *  ---------------  56
- * |  OCT_NET_CMD  |
- *  ---------------  64
- * | Addtl 8-BData |
- * |               |
- *  ---------------
- */
+ 
 
 union octnet_cmd {
 	u64 u64;
@@ -310,7 +263,7 @@ union octnet_cmd {
 #ifdef __BIG_ENDIAN_BITFIELD
 		u64 cmd:5;
 
-		u64 more:6; /* How many udd words follow the command */
+		u64 more:6;  
 
 		u64 cmdgroup:8;
 		u64 reserved:21;
@@ -339,205 +292,205 @@ union octnet_cmd {
 
 #define   OCTNET_CMD_SIZE     (sizeof(union octnet_cmd))
 
-/*pkiih3 + irh + ossp[0] + ossp[1] + rdp + rptr = 40 bytes */
+ 
 #define LIO_SOFTCMDRESP_IH2       40
 #define LIO_SOFTCMDRESP_IH3       (40 + 8)
 
 #define LIO_PCICMD_O2             24
 #define LIO_PCICMD_O3             (24 + 8)
 
-/* Instruction Header(DPI) - for OCTEON-III models */
+ 
 struct  octeon_instr_ih3 {
 #ifdef __BIG_ENDIAN_BITFIELD
 
-	/** Reserved3 */
+	 
 	u64     reserved3:1;
 
-	/** Gather indicator 1=gather*/
+	 
 	u64     gather:1;
 
-	/** Data length OR no. of entries in gather list */
+	 
 	u64     dlengsz:14;
 
-	/** Front Data size */
+	 
 	u64     fsz:6;
 
-	/** Reserved2 */
+	 
 	u64     reserved2:4;
 
-	/** PKI port kind - PKIND */
+	 
 	u64     pkind:6;
 
-	/** Reserved1 */
+	 
 	u64     reserved1:32;
 
 #else
-	/** Reserved1 */
+	 
 	u64     reserved1:32;
 
-	/** PKI port kind - PKIND */
+	 
 	u64     pkind:6;
 
-	/** Reserved2 */
+	 
 	u64     reserved2:4;
 
-	/** Front Data size */
+	 
 	u64     fsz:6;
 
-	/** Data length OR no. of entries in gather list */
+	 
 	u64     dlengsz:14;
 
-	/** Gather indicator 1=gather*/
+	 
 	u64     gather:1;
 
-	/** Reserved3 */
+	 
 	u64     reserved3:1;
 
 #endif
 };
 
-/* Optional PKI Instruction Header(PKI IH) - for OCTEON-III models */
-/** BIG ENDIAN format.   */
+ 
+ 
 struct  octeon_instr_pki_ih3 {
 #ifdef __BIG_ENDIAN_BITFIELD
 
-	/** Wider bit */
+	 
 	u64     w:1;
 
-	/** Raw mode indicator 1 = RAW */
+	 
 	u64     raw:1;
 
-	/** Use Tag */
+	 
 	u64     utag:1;
 
-	/** Use QPG */
+	 
 	u64     uqpg:1;
 
-	/** Reserved2 */
+	 
 	u64     reserved2:1;
 
-	/** Parse Mode */
+	 
 	u64     pm:3;
 
-	/** Skip Length */
+	 
 	u64     sl:8;
 
-	/** Use Tag Type */
+	 
 	u64     utt:1;
 
-	/** Tag type */
+	 
 	u64     tagtype:2;
 
-	/** Reserved1 */
+	 
 	u64     reserved1:2;
 
-	/** QPG Value */
+	 
 	u64     qpg:11;
 
-	/** Tag Value */
+	 
 	u64     tag:32;
 
 #else
 
-	/** Tag Value */
+	 
 	u64     tag:32;
 
-	/** QPG Value */
+	 
 	u64     qpg:11;
 
-	/** Reserved1 */
+	 
 	u64     reserved1:2;
 
-	/** Tag type */
+	 
 	u64     tagtype:2;
 
-	/** Use Tag Type */
+	 
 	u64     utt:1;
 
-	/** Skip Length */
+	 
 	u64     sl:8;
 
-	/** Parse Mode */
+	 
 	u64     pm:3;
 
-	/** Reserved2 */
+	 
 	u64     reserved2:1;
 
-	/** Use QPG */
+	 
 	u64     uqpg:1;
 
-	/** Use Tag */
+	 
 	u64     utag:1;
 
-	/** Raw mode indicator 1 = RAW */
+	 
 	u64     raw:1;
 
-	/** Wider bit */
+	 
 	u64     w:1;
 #endif
 
 };
 
-/** Instruction Header */
+ 
 struct octeon_instr_ih2 {
 #ifdef __BIG_ENDIAN_BITFIELD
-	/** Raw mode indicator 1 = RAW */
+	 
 	u64 raw:1;
 
-	/** Gather indicator 1=gather*/
+	 
 	u64 gather:1;
 
-	/** Data length OR no. of entries in gather list */
+	 
 	u64 dlengsz:14;
 
-	/** Front Data size */
+	 
 	u64 fsz:6;
 
-	/** Packet Order / Work Unit selection (1 of 8)*/
+	 
 	u64 qos:3;
 
-	/** Core group selection (1 of 16) */
+	 
 	u64 grp:4;
 
-	/** Short Raw Packet Indicator 1=short raw pkt */
+	 
 	u64 rs:1;
 
-	/** Tag type */
+	 
 	u64 tagtype:2;
 
-	/** Tag Value */
+	 
 	u64 tag:32;
 #else
-	/** Tag Value */
+	 
 	u64 tag:32;
 
-	/** Tag type */
+	 
 	u64 tagtype:2;
 
-	/** Short Raw Packet Indicator 1=short raw pkt */
+	 
 	u64 rs:1;
 
-	/** Core group selection (1 of 16) */
+	 
 	u64 grp:4;
 
-	/** Packet Order / Work Unit selection (1 of 8)*/
+	 
 	u64 qos:3;
 
-	/** Front Data size */
+	 
 	u64 fsz:6;
 
-	/** Data length OR no. of entries in gather list */
+	 
 	u64 dlengsz:14;
 
-	/** Gather indicator 1=gather*/
+	 
 	u64 gather:1;
 
-	/** Raw mode indicator 1 = RAW */
+	 
 	u64 raw:1;
 #endif
 };
 
-/** Input Request Header */
+ 
 struct octeon_instr_irh {
 #ifdef __BIG_ENDIAN_BITFIELD
 	u64 opcode:4;
@@ -546,9 +499,9 @@ struct octeon_instr_irh {
 	u64 vlan:12;
 	u64 priority:3;
 	u64 reserved:5;
-	u64 ossp:32;             /* opcode/subcode specific parameters */
+	u64 ossp:32;              
 #else
-	u64 ossp:32;             /* opcode/subcode specific parameters */
+	u64 ossp:32;              
 	u64 reserved:5;
 	u64 priority:3;
 	u64 vlan:12;
@@ -558,7 +511,7 @@ struct octeon_instr_irh {
 #endif
 };
 
-/** Return Data Parameters */
+ 
 struct octeon_instr_rdp {
 #ifdef __BIG_ENDIAN_BITFIELD
 	u64 reserved:49;
@@ -571,33 +524,33 @@ struct octeon_instr_rdp {
 #endif
 };
 
-/** Receive Header */
+ 
 union octeon_rh {
 #ifdef __BIG_ENDIAN_BITFIELD
 	u64 u64;
 	struct {
 		u64 opcode:4;
 		u64 subcode:8;
-		u64 len:3;     /** additional 64-bit words */
+		u64 len:3;      
 		u64 reserved:17;
-		u64 ossp:32;   /** opcode/subcode specific parameters */
+		u64 ossp:32;    
 	} r;
 	struct {
 		u64 opcode:4;
 		u64 subcode:8;
-		u64 len:3;     /** additional 64-bit words */
+		u64 len:3;      
 		u64 extra:28;
 		u64 vlan:12;
 		u64 priority:3;
-		u64 csum_verified:3;     /** checksum verified. */
-		u64 has_hwtstamp:1;      /** Has hardware timestamp. 1 = yes. */
+		u64 csum_verified:3;      
+		u64 has_hwtstamp:1;       
 		u64 encap_on:1;
-		u64 has_hash:1;          /** Has hash (rth or rss). 1 = yes. */
+		u64 has_hash:1;           
 	} r_dh;
 	struct {
 		u64 opcode:4;
 		u64 subcode:8;
-		u64 len:3;     /** additional 64-bit words */
+		u64 len:3;      
 		u64 reserved:11;
 		u64 num_gmx_ports:8;
 		u64 max_nic_ports:10;
@@ -608,7 +561,7 @@ union octeon_rh {
 	struct {
 		u64 opcode:4;
 		u64 subcode:8;
-		u64 len:3;       /** additional 64-bit words */
+		u64 len:3;        
 		u64 reserved:8;
 		u64 extra:25;
 		u64 gmxport:16;
@@ -616,21 +569,21 @@ union octeon_rh {
 #else
 	u64 u64;
 	struct {
-		u64 ossp:32;  /** opcode/subcode specific parameters */
+		u64 ossp:32;   
 		u64 reserved:17;
-		u64 len:3;    /** additional 64-bit words */
+		u64 len:3;     
 		u64 subcode:8;
 		u64 opcode:4;
 	} r;
 	struct {
-		u64 has_hash:1;          /** Has hash (rth or rss). 1 = yes. */
+		u64 has_hash:1;           
 		u64 encap_on:1;
-		u64 has_hwtstamp:1;      /** 1 = has hwtstamp */
-		u64 csum_verified:3;     /** checksum verified. */
+		u64 has_hwtstamp:1;       
+		u64 csum_verified:3;      
 		u64 priority:3;
 		u64 vlan:12;
 		u64 extra:28;
-		u64 len:3;    /** additional 64-bit words */
+		u64 len:3;     
 		u64 subcode:8;
 		u64 opcode:4;
 	} r_dh;
@@ -641,7 +594,7 @@ union octeon_rh {
 		u64 max_nic_ports:10;
 		u64 num_gmx_ports:8;
 		u64 reserved:11;
-		u64 len:3;       /** additional 64-bit words */
+		u64 len:3;        
 		u64 subcode:8;
 		u64 opcode:4;
 	} r_core_drv_init;
@@ -649,7 +602,7 @@ union octeon_rh {
 		u64 gmxport:16;
 		u64 extra:25;
 		u64 reserved:8;
-		u64 len:3;       /** additional 64-bit words */
+		u64 len:3;        
 		u64 subcode:8;
 		u64 opcode:4;
 	} r_nic_info;
@@ -663,13 +616,13 @@ union octnic_packet_params {
 	struct {
 #ifdef __BIG_ENDIAN_BITFIELD
 		u32 reserved:24;
-		u32 ip_csum:1;		/* Perform IP header checksum(s) */
-		/* Perform Outer transport header checksum */
+		u32 ip_csum:1;		 
+		 
 		u32 transport_csum:1;
-		/* Find tunnel, and perform transport csum. */
+		 
 		u32 tnl_csum:1;
-		u32 tsflag:1;		/* Timestamp this packet */
-		u32 ipsec_ops:4;	/* IPsec operation */
+		u32 tsflag:1;		 
+		u32 ipsec_ops:4;	 
 #else
 		u32 ipsec_ops:4;
 		u32 tsflag:1;
@@ -681,7 +634,7 @@ union octnic_packet_params {
 	} s;
 };
 
-/** Status of a RGMII Link on Octeon as seen by core driver. */
+ 
 union oct_link_status {
 	u64 u64;
 
@@ -718,7 +671,7 @@ enum lio_phy_type {
 	LIO_PHY_PORT_UNKNOWN,
 };
 
-/** The txpciq info passed to host from the firmware */
+ 
 
 union oct_txpciq {
 	u64 u64;
@@ -746,7 +699,7 @@ union oct_txpciq {
 	} s;
 };
 
-/** The rxpciq info passed to host from the firmware */
+ 
 
 union oct_rxpciq {
 	u64 u64;
@@ -762,7 +715,7 @@ union oct_rxpciq {
 	} s;
 };
 
-/** Information for a OCTEON ethernet interface shared between core & host. */
+ 
 struct oct_link_info {
 	union oct_link_status link;
 	u64 hw_addr;
@@ -792,35 +745,30 @@ struct oct_link_info {
 #define OCT_LINK_INFO_SIZE   (sizeof(struct oct_link_info))
 
 struct liquidio_if_cfg_info {
-	u64 iqmask; /** mask for IQs enabled for  the port */
-	u64 oqmask; /** mask for OQs enabled for the port */
-	struct oct_link_info linfo; /** initial link information */
+	u64 iqmask;  
+	u64 oqmask;  
+	struct oct_link_info linfo;  
 	char   liquidio_firmware_version[32];
 };
 
-/** Stats for each NIC port in RX direction. */
+ 
 struct nic_rx_stats {
-	/* link-level stats */
-	u64 total_rcvd;		/* Received packets */
-	u64 bytes_rcvd;		/* Octets of received packets */
-	u64 total_bcst;		/* Number of non-dropped L2 broadcast packets */
-	u64 total_mcst;		/* Number of non-dropped L2 multicast packets */
-	u64 runts;		/* Packets shorter than allowed */
-	u64 ctl_rcvd;		/* Received PAUSE packets */
-	u64 fifo_err;		/* Packets dropped due to RX FIFO full */
-	u64 dmac_drop;		/* Packets dropped by the DMAC filter */
-	u64 fcs_err;		/* Sum of fragment, overrun, and FCS errors */
-	u64 jabber_err;		/* Packets larger than allowed */
-	u64 l2_err;		/* Sum of DMA, parity, PCAM access, no memory,
-				 * buffer overflow, malformed L2 header or
-				 * length, oversize errors
-				 **/
-	u64 frame_err;		/* Sum of IPv4 and L4 checksum errors */
-	u64 red_drops;		/* Packets dropped by RED due to buffer
-				 * exhaustion
-				 **/
+	 
+	u64 total_rcvd;		 
+	u64 bytes_rcvd;		 
+	u64 total_bcst;		 
+	u64 total_mcst;		 
+	u64 runts;		 
+	u64 ctl_rcvd;		 
+	u64 fifo_err;		 
+	u64 dmac_drop;		 
+	u64 fcs_err;		 
+	u64 jabber_err;		 
+	u64 l2_err;		 
+	u64 frame_err;		 
+	u64 red_drops;		 
 
-	/* firmware stats */
+	 
 	u64 fw_total_rcvd;
 	u64 fw_total_fwd;
 	u64 fw_total_fwd_bytes;
@@ -833,53 +781,36 @@ struct nic_rx_stats {
 	u64 fw_rx_vxlan;
 	u64 fw_rx_vxlan_err;
 
-	/* LRO */
-	u64 fw_lro_pkts;   /* Number of packets that are LROed      */
-	u64 fw_lro_octs;   /* Number of octets that are LROed       */
-	u64 fw_total_lro;  /* Number of LRO packets formed          */
-	u64 fw_lro_aborts; /* Number of times LRO of packet aborted */
+	 
+	u64 fw_lro_pkts;    
+	u64 fw_lro_octs;    
+	u64 fw_total_lro;   
+	u64 fw_lro_aborts;  
 	u64 fw_lro_aborts_port;
 	u64 fw_lro_aborts_seq;
 	u64 fw_lro_aborts_tsval;
-	u64 fw_lro_aborts_timer;	/* Timer setting error */
-	/* intrmod: packet forward rate */
+	u64 fw_lro_aborts_timer;	 
+	 
 	u64 fwd_rate;
 };
 
-/** Stats for each NIC port in RX direction. */
+ 
 struct nic_tx_stats {
-	/* link-level stats */
-	u64 total_pkts_sent;		/* Total frames sent on the interface */
-	u64 total_bytes_sent;		/* Total octets sent on the interface */
-	u64 mcast_pkts_sent;		/* Packets sent to the multicast DMAC */
-	u64 bcast_pkts_sent;		/* Packets sent to a broadcast DMAC */
-	u64 ctl_sent;			/* Control/PAUSE packets sent */
-	u64 one_collision_sent;		/* Packets sent that experienced a
-					 * single collision before successful
-					 * transmission
-					 **/
-	u64 multi_collision_sent;	/* Packets sent that experienced
-					 * multiple collisions before successful
-					 * transmission
-					 **/
-	u64 max_collision_fail;		/* Packets dropped due to excessive
-					 * collisions
-					 **/
-	u64 max_deferral_fail;		/* Packets not sent due to max
-					 * deferrals
-					 **/
-	u64 fifo_err;			/* Packets sent that experienced a
-					 * transmit underflow and were
-					 * truncated
-					 **/
-	u64 runts;			/* Packets sent with an octet count
-					 * lessthan 64
-					 **/
-	u64 total_collisions;		/* Packets dropped due to excessive
-					 * collisions
-					 **/
+	 
+	u64 total_pkts_sent;		 
+	u64 total_bytes_sent;		 
+	u64 mcast_pkts_sent;		 
+	u64 bcast_pkts_sent;		 
+	u64 ctl_sent;			 
+	u64 one_collision_sent;		 
+	u64 multi_collision_sent;	 
+	u64 max_collision_fail;		 
+	u64 max_deferral_fail;		 
+	u64 fifo_err;			 
+	u64 runts;			 
+	u64 total_collisions;		 
 
-	/* firmware stats */
+	 
 	u64 fw_total_sent;
 	u64 fw_total_fwd;
 	u64 fw_total_fwd_bytes;
@@ -889,8 +820,8 @@ struct nic_tx_stats {
 	u64 fw_err_link;
 	u64 fw_err_drop;
 	u64 fw_err_tso;
-	u64 fw_tso;		/* number of tso requests */
-	u64 fw_tso_fwd;		/* number of packets segmented in tso */
+	u64 fw_tso;		 
+	u64 fw_tso_fwd;		 
 	u64 fw_tx_vxlan;
 	u64 fw_err_pki;
 };
@@ -981,8 +912,8 @@ struct lio_trusted_vf {
 };
 
 struct lio_time {
-	s64 sec;   /* seconds */
-	s64 nsec;  /* nanoseconds */
+	s64 sec;    
+	s64 nsec;   
 };
 
 struct lio_vf_rep_stats {

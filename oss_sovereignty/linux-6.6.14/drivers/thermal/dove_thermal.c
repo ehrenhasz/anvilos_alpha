@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Dove thermal sensor driver
- *
- * Copyright (C) 2013 Andrew Lunn <andrew@lunn.ch>
- */
+
+ 
 #include <linux/device.h>
 #include <linux/err.h>
 #include <linux/io.h>
@@ -16,11 +12,11 @@
 #define DOVE_THERMAL_TEMP_OFFSET	1
 #define DOVE_THERMAL_TEMP_MASK		0x1FF
 
-/* Dove Thermal Manager Control and Status Register */
+ 
 #define PMU_TM_DISABLE_OFFS		0
 #define PMU_TM_DISABLE_MASK		(0x1 << PMU_TM_DISABLE_OFFS)
 
-/* Dove Theraml Diode Control 0 Register */
+ 
 #define PMU_TDC0_SW_RST_MASK		(0x1 << 1)
 #define PMU_TDC0_SEL_VCAL_OFFS		5
 #define PMU_TDC0_SEL_VCAL_MASK		(0x3 << PMU_TDC0_SEL_VCAL_OFFS)
@@ -29,11 +25,11 @@
 #define PMU_TDC0_AVG_NUM_OFFS		25
 #define PMU_TDC0_AVG_NUM_MASK		(0x7 << PMU_TDC0_AVG_NUM_OFFS)
 
-/* Dove Thermal Diode Control 1 Register */
+ 
 #define PMU_TEMP_DIOD_CTRL1_REG		0x04
 #define PMU_TDC1_TEMP_VALID_MASK	(0x1 << 10)
 
-/* Dove Thermal Sensor Dev Structure */
+ 
 struct dove_thermal_priv {
 	void __iomem *sensor;
 	void __iomem *control;
@@ -44,33 +40,33 @@ static int dove_init_sensor(const struct dove_thermal_priv *priv)
 	u32 reg;
 	u32 i;
 
-	/* Configure the Diode Control Register #0 */
+	 
 	reg = readl_relaxed(priv->control);
 
-	/* Use average of 2 */
+	 
 	reg &= ~PMU_TDC0_AVG_NUM_MASK;
 	reg |= (0x1 << PMU_TDC0_AVG_NUM_OFFS);
 
-	/* Reference calibration value */
+	 
 	reg &= ~PMU_TDC0_REF_CAL_CNT_MASK;
 	reg |= (0x0F1 << PMU_TDC0_REF_CAL_CNT_OFFS);
 
-	/* Set the high level reference for calibration */
+	 
 	reg &= ~PMU_TDC0_SEL_VCAL_MASK;
 	reg |= (0x2 << PMU_TDC0_SEL_VCAL_OFFS);
 	writel(reg, priv->control);
 
-	/* Reset the sensor */
+	 
 	reg = readl_relaxed(priv->control);
 	writel((reg | PMU_TDC0_SW_RST_MASK), priv->control);
 	writel(reg, priv->control);
 
-	/* Enable the sensor */
+	 
 	reg = readl_relaxed(priv->sensor);
 	reg &= ~PMU_TM_DISABLE_MASK;
 	writel(reg, priv->sensor);
 
-	/* Poll the sensor for the first reading */
+	 
 	for (i = 0; i < 1000000; i++) {
 		reg = readl_relaxed(priv->sensor);
 		if (reg & DOVE_THERMAL_TEMP_MASK)
@@ -89,16 +85,12 @@ static int dove_get_temp(struct thermal_zone_device *thermal,
 	unsigned long reg;
 	struct dove_thermal_priv *priv = thermal_zone_device_priv(thermal);
 
-	/* Valid check */
+	 
 	reg = readl_relaxed(priv->control + PMU_TEMP_DIOD_CTRL1_REG);
 	if ((reg & PMU_TDC1_TEMP_VALID_MASK) == 0x0)
 		return -EIO;
 
-	/*
-	 * Calculate temperature. According to Marvell internal
-	 * documentation the formula for this is:
-	 * Celsius = (322-reg)/1.3625
-	 */
+	 
 	reg = readl_relaxed(priv->sensor);
 	reg = (reg >> DOVE_THERMAL_TEMP_OFFSET) & DOVE_THERMAL_TEMP_MASK;
 	*temp = ((3220000000UL - (10000000UL * reg)) / 13625);

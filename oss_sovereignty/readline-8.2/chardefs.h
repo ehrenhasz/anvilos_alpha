@@ -1,23 +1,6 @@
-/* chardefs.h -- Character definitions for readline. */
+ 
 
-/* Copyright (C) 1994-2021 Free Software Foundation, Inc.
-
-   This file is part of the GNU Readline Library (Readline), a library
-   for reading lines of text with interactive input and history editing.
-
-   Readline is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Readline is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Readline.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #ifndef _CHARDEFS_H_
 #define _CHARDEFS_H_
@@ -27,13 +10,13 @@
 #if defined (HAVE_CONFIG_H)
 #  if defined (HAVE_STRING_H)
 #    include <string.h>
-#  endif /* HAVE_STRING_H */
+#  endif  
 #  if defined (HAVE_STRINGS_H)
 #    include <strings.h>
-#  endif /* HAVE_STRINGS_H */
+#  endif  
 #else
 #  include <string.h>
-#endif /* !HAVE_CONFIG_H */
+#endif  
 
 #ifndef whitespace
 #define whitespace(c) (((c) == ' ') || ((c) == '\t'))
@@ -46,13 +29,13 @@
 #  undef UNCTRL
 #endif
 
-/* Some character stuff. */
-#define control_character_threshold 0x020   /* Smaller than this is control. */
-#define control_character_mask 0x1f	    /* 0x20 - 1 */
-#define meta_character_threshold 0x07f	    /* Larger than this is Meta. */
-#define control_character_bit 0x40	    /* 0x000000, must be off. */
-#define meta_character_bit 0x080	    /* x0000000, must be on. */
-#define largest_char 255		    /* Largest character value. */
+ 
+#define control_character_threshold 0x020    
+#define control_character_mask 0x1f	     
+#define meta_character_threshold 0x07f	     
+#define control_character_bit 0x40	     
+#define meta_character_bit 0x080	     
+#define largest_char 255		     
 
 #define CTRL_CHAR(c) ((c) < control_character_threshold && (((c) & 0x80) == 0))
 #define META_CHAR(c) ((c) > meta_character_threshold && (c) <= largest_char)
@@ -70,7 +53,7 @@
 #  define CHAR_MAX 127
 #endif
 
-/* use this as a proxy for C89 */
+ 
 #if defined (HAVE_STDLIB_H) && defined (HAVE_STRING_H)
 #  define IN_CTYPE_DOMAIN(c) 1
 #  define NON_NEGATIVE(c) 1
@@ -83,10 +66,10 @@
 #  define isxdigit(c)   (isdigit((unsigned char)(c)) || ((c) >= 'a' && (c) <= 'f') || ((c) >= 'A' && (c) <= 'F'))
 #endif
 
-/* Some systems define these; we want our definitions. */
+ 
 #undef ISPRINT
 
-/* Beware:  these only work with single-byte ASCII characters. */
+ 
 
 #define ISALNUM(c)	(IN_CTYPE_DOMAIN (c) && isalnum ((unsigned char)c))
 #define ISALPHA(c)	(IN_CTYPE_DOMAIN (c) && isalpha ((unsigned char)c))
@@ -155,11 +138,11 @@
 #ifdef SPACE
 #undef SPACE
 #endif
-#define SPACE ' '	/* XXX - was 0x20 */
+#define SPACE ' '	 
 
 #ifdef ESC
 #undef ESC
 #endif
 #define ESC CTRL('[')
 
-#endif  /* _CHARDEFS_H_ */
+#endif   

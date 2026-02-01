@@ -1,30 +1,22 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Process version 3 NFSACL requests.
- *
- * Copyright (C) 2002-2003 Andreas Gruenbacher <agruen@suse.de>
- */
+
+ 
 
 #include "nfsd.h"
-/* FIXME: nfsacl.h is a broken header */
+ 
 #include <linux/nfsacl.h>
 #include <linux/gfp.h>
 #include "cache.h"
 #include "xdr3.h"
 #include "vfs.h"
 
-/*
- * NULL call.
- */
+ 
 static __be32
 nfsd3_proc_null(struct svc_rqst *rqstp)
 {
 	return rpc_success;
 }
 
-/*
- * Get the Access and/or Default ACL of a file.
- */
+ 
 static __be32 nfsd3_proc_getacl(struct svc_rqst *rqstp)
 {
 	struct nfsd3_getaclargs *argp = rqstp->rq_argp;
@@ -49,7 +41,7 @@ static __be32 nfsd3_proc_getacl(struct svc_rqst *rqstp)
 	if (resp->mask & (NFS_ACL|NFS_ACLCNT)) {
 		acl = get_inode_acl(inode, ACL_TYPE_ACCESS);
 		if (acl == NULL) {
-			/* Solaris returns the inode's minimum ACL. */
+			 
 			acl = posix_acl_from_mode(inode->i_mode, GFP_KERNEL);
 		}
 		if (IS_ERR(acl)) {
@@ -59,8 +51,7 @@ static __be32 nfsd3_proc_getacl(struct svc_rqst *rqstp)
 		resp->acl_access = acl;
 	}
 	if (resp->mask & (NFS_DFACL|NFS_DFACLCNT)) {
-		/* Check how Solaris handles requests for the Default ACL
-		   of a non-directory! */
+		 
 		acl = get_inode_acl(inode, ACL_TYPE_DEFAULT);
 		if (IS_ERR(acl)) {
 			resp->status = nfserrno(PTR_ERR(acl));
@@ -69,7 +60,7 @@ static __be32 nfsd3_proc_getacl(struct svc_rqst *rqstp)
 		resp->acl_default = acl;
 	}
 
-	/* resp->acl_{access,default} are released in nfs3svc_release_getacl. */
+	 
 out:
 	return rpc_success;
 
@@ -79,9 +70,7 @@ fail:
 	goto out;
 }
 
-/*
- * Set the Access and/or Default ACL of a file.
- */
+ 
 static __be32 nfsd3_proc_setacl(struct svc_rqst *rqstp)
 {
 	struct nfsd3_setaclargs *argp = rqstp->rq_argp;
@@ -116,16 +105,13 @@ out_drop_lock:
 out_errno:
 	resp->status = nfserrno(error);
 out:
-	/* argp->acl_{access,default} may have been allocated in
-	   nfs3svc_decode_setaclargs. */
+	 
 	posix_acl_release(argp->acl_access);
 	posix_acl_release(argp->acl_default);
 	return rpc_success;
 }
 
-/*
- * XDR decode functions
- */
+ 
 
 static bool
 nfs3svc_decode_getaclargs(struct svc_rqst *rqstp, struct xdr_stream *xdr)
@@ -161,11 +147,9 @@ nfs3svc_decode_setaclargs(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 	return true;
 }
 
-/*
- * XDR encode functions
- */
+ 
 
-/* GETACL */
+ 
 static bool
 nfs3svc_encode_getaclres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 {
@@ -199,7 +183,7 @@ nfs3svc_encode_getaclres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 	return true;
 }
 
-/* SETACL */
+ 
 static bool
 nfs3svc_encode_setaclres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 {
@@ -209,9 +193,7 @@ nfs3svc_encode_setaclres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 		svcxdr_encode_post_op_attr(rqstp, xdr, &resp->fh);
 }
 
-/*
- * XDR release functions
- */
+ 
 static void nfs3svc_release_getacl(struct svc_rqst *rqstp)
 {
 	struct nfsd3_getaclres *resp = rqstp->rq_resp;
@@ -223,10 +205,10 @@ static void nfs3svc_release_getacl(struct svc_rqst *rqstp)
 
 struct nfsd3_voidargs { int dummy; };
 
-#define ST 1		/* status*/
-#define AT 21		/* attributes */
-#define pAT (1+AT)	/* post attributes - conditional */
-#define ACL (1+NFS_ACL_MAX_ENTRIES*3)  /* Access Control List */
+#define ST 1		 
+#define AT 21		 
+#define pAT (1+AT)	 
+#define ACL (1+NFS_ACL_MAX_ENTRIES*3)   
 
 static const struct svc_procedure nfsd_acl_procedures3[3] = {
 	[ACLPROC3_NULL] = {

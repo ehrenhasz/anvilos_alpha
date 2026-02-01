@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2011-2017, The Linux Foundation
- */
+
+ 
 
 #include <linux/irq.h>
 #include <linux/kernel.h>
@@ -16,7 +14,7 @@
 #include <linux/pm_runtime.h>
 #include "slimbus.h"
 
-/* Manager registers */
+ 
 #define	MGR_CFG		0x200
 #define	MGR_STATUS	0x204
 #define	MGR_INT_EN	0x210
@@ -28,7 +26,7 @@
 #define	MGR_VE_STAT	0x300
 #define	MGR_CFG_ENABLE	1
 
-/* Framer registers */
+ 
 #define	FRM_CFG		0x400
 #define	FRM_STAT	0x404
 #define	FRM_INT_EN	0x410
@@ -39,7 +37,7 @@
 #define	FRM_IE_STAT	0x430
 #define	FRM_VE_STAT	0x440
 
-/* Interface registers */
+ 
 #define	INTF_CFG	0x600
 #define	INTF_STAT	0x604
 #define	INTF_INT_EN	0x610
@@ -48,13 +46,13 @@
 #define	INTF_IE_STAT	0x630
 #define	INTF_VE_STAT	0x640
 
-/* Interrupt status bits */
+ 
 #define	MGR_INT_TX_NACKED_2	BIT(25)
 #define	MGR_INT_MSG_BUF_CONTE	BIT(26)
 #define	MGR_INT_RX_MSG_RCVD	BIT(30)
 #define	MGR_INT_TX_MSG_SENT	BIT(31)
 
-/* Framer config register settings */
+ 
 #define	FRM_ACTIVE	1
 #define	CLK_GEAR	7
 #define	ROOT_FREQ	11
@@ -67,7 +65,7 @@
 #define SLIM_ROOT_FREQ 24576000
 #define QCOM_SLIM_AUTOSUSPEND 1000
 
-/* MAX message size over control channel */
+ 
 #define SLIM_MSGQ_BUF_LEN	40
 #define QCOM_TX_MSGS 2
 #define QCOM_RX_MSGS	8
@@ -75,17 +73,17 @@
 
 #define CFG_PORT(r, v) ((v) ? CFG_PORT_V2(r) : CFG_PORT_V1(r))
 
-/* V2 Component registers */
+ 
 #define CFG_PORT_V2(r) ((r ## _V2))
 #define	COMP_CFG_V2		4
 #define	COMP_TRUST_CFG_V2	0x3000
 
-/* V1 Component registers */
+ 
 #define CFG_PORT_V1(r) ((r ## _V1))
 #define	COMP_CFG_V1		0
 #define	COMP_TRUST_CFG_V1	0x14
 
-/* Resource group info for manager, and non-ported generic device-components */
+ 
 #define EE_MGR_RSC_GRP	(1 << 10)
 #define EE_NGD_2	(2 << 6)
 #define EE_NGD_1	0
@@ -124,7 +122,7 @@ static void qcom_slim_queue_tx(struct qcom_slim_ctrl *ctrl, void *buf,
 
 	__iowrite32_copy(ctrl->base + tx_reg, buf, count);
 
-	/* Ensure Oder of subsequent writes */
+	 
 	mb();
 }
 
@@ -216,10 +214,7 @@ static irqreturn_t qcom_slim_handle_rx_irq(struct qcom_slim_ctrl *ctrl,
 	len = SLIM_HEADER_GET_RL(pkt[0]);
 	mc = SLIM_HEADER_GET_MC(pkt[0]>>8);
 
-	/*
-	 * this message cannot be handled by ISR, so
-	 * let work-queue handle it
-	 */
+	 
 	if (mt == SLIM_MSG_MT_CORE && mc == SLIM_MSG_MC_REPORT_PRESENT) {
 		rx_buf = (u32 *)slim_alloc_rxbuf(ctrl);
 		if (!rx_buf) {
@@ -284,17 +279,9 @@ static int qcom_clk_pause_wakeup(struct slim_controller *sctrl)
 	enable_irq(ctrl->irq);
 
 	writel_relaxed(1, ctrl->base + FRM_WAKEUP);
-	/* Make sure framer wakeup write goes through before ISR fires */
+	 
 	mb();
-	/*
-	 * HW Workaround: Currently, slave is reporting lost-sync messages
-	 * after SLIMbus comes out of clock pause.
-	 * Transaction with slave fail before slave reports that message
-	 * Give some time for that report to come
-	 * SLIMbus wakes up in clock gear 10 at 24.576MHz. With each superframe
-	 * being 250 usecs, we wait for 5-10 superframes here to ensure
-	 * we get the message
-	 */
+	 
 	usleep_range(1250, 2500);
 	return 0;
 }
@@ -333,10 +320,10 @@ static int qcom_xfer_msg(struct slim_controller *sctrl,
 	int ret = 0, timeout, retries = QCOM_BUF_ALLOC_RETRIES;
 	u8 la = txn->la;
 	u32 *head;
-	/* HW expects length field to be excluded */
+	 
 	txn->rl--;
 
-	/* spin till buffer is made available */
+	 
 	if (!pbuf) {
 		while (retries--) {
 			usleep_range(10000, 15000);
@@ -473,14 +460,14 @@ static void qcom_slim_prg_slew(struct platform_device *pdev,
 				struct qcom_slim_ctrl *ctrl)
 {
 	if (!ctrl->slew_reg) {
-		/* SLEW RATE register for this SLIMbus */
+		 
 		ctrl->slew_reg = devm_platform_ioremap_resource_byname(pdev, "slew");
 		if (IS_ERR(ctrl->slew_reg))
 			return;
 	}
 
 	writel_relaxed(1, ctrl->slew_reg);
-	/* Make sure SLIMbus-slew rate enabling goes through */
+	 
 	wmb();
 }
 
@@ -580,7 +567,7 @@ static int qcom_slim_probe(struct platform_device *pdev)
 		goto err;
 	}
 
-	/* Register with framework before enabling frame, clock */
+	 
 	ret = slim_register_controller(&ctrl->ctrl);
 	if (ret) {
 		dev_err(ctrl->dev, "error adding controller\n");
@@ -588,9 +575,9 @@ static int qcom_slim_probe(struct platform_device *pdev)
 	}
 
 	ver = readl_relaxed(ctrl->base);
-	/* Version info in 16 MSbits */
+	 
 	ver >>= 16;
-	/* Component register initialization */
+	 
 	writel(1, ctrl->base + CFG_PORT(COMP_CFG, ver));
 	writel((EE_MGR_RSC_GRP | EE_NGD_2 | EE_NGD_1),
 				ctrl->base + CFG_PORT(COMP_TRUST_CFG, ver));
@@ -599,7 +586,7 @@ static int qcom_slim_probe(struct platform_device *pdev)
 			MGR_INT_MSG_BUF_CONTE | MGR_INT_RX_MSG_RCVD |
 			MGR_INT_TX_MSG_SENT), ctrl->base + MGR_INT_EN);
 	writel(1, ctrl->base + MGR_CFG);
-	/* Framer register initialization */
+	 
 	writel((1 << INTR_WAKE) | (0xA << REF_CLK_GEAR) |
 		(0xA << CLK_GEAR) | (1 << ROOT_FREQ) | (1 << FRM_ACTIVE) | 1,
 		ctrl->base + FRM_CFG);
@@ -638,10 +625,7 @@ static int qcom_slim_remove(struct platform_device *pdev)
 	return 0;
 }
 
-/*
- * If PM_RUNTIME is not defined, these 2 functions become helper
- * functions to be called from system suspend/resume.
- */
+ 
 #ifdef CONFIG_PM
 static int qcom_slim_runtime_suspend(struct device *device)
 {
@@ -703,7 +687,7 @@ static int qcom_slim_resume(struct device *dev)
 	}
 	return 0;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct dev_pm_ops qcom_slim_dev_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(qcom_slim_suspend, qcom_slim_resume)

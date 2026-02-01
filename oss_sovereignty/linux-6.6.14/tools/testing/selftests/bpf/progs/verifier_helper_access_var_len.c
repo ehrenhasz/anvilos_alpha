@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Converted from tools/testing/selftests/bpf/verifier/helper_access_var_len.c */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -72,23 +72,19 @@ __retval(0)
 __naked void stack_bitwise_and_zero_included(void)
 {
 	asm volatile ("					\
-	/* set max stack size */			\
+	 			\
 	r6 = 0;						\
 	*(u64*)(r10 - 128) = r6;			\
-	/* set r3 to a random value */			\
+	 			\
 	call %[bpf_get_prandom_u32];			\
 	r3 = r0;					\
-	/* use bitwise AND to limit r3 range to [0, 64] */\
+	 \
 	r3 &= 64;					\
 	r1 = %[map_ringbuf] ll;				\
 	r2 = r10;					\
 	r2 += -64;					\
 	r4 = 0;						\
-	/* Call bpf_ringbuf_output(), it is one of a few helper functions with\
-	 * ARG_CONST_SIZE_OR_ZERO parameter allowed in unpriv mode.\
-	 * For unpriv this should signal an error, because memory at &fp[-64] is\
-	 * not initialized.				\
-	 */						\
+	 						\
 	call %[bpf_ringbuf_output];			\
 	exit;						\
 "	:
@@ -265,23 +261,19 @@ __retval(0)
 __naked void stack_jmp_no_min_check(void)
 {
 	asm volatile ("					\
-	/* set max stack size */			\
+	 			\
 	r6 = 0;						\
 	*(u64*)(r10 - 128) = r6;			\
-	/* set r3 to a random value */			\
+	 			\
 	call %[bpf_get_prandom_u32];			\
 	r3 = r0;					\
-	/* use JMP to limit r3 range to [0, 64] */	\
+	 	\
 	if r3 > 64 goto l0_%=;				\
 	r1 = %[map_ringbuf] ll;				\
 	r2 = r10;					\
 	r2 += -64;					\
 	r4 = 0;						\
-	/* Call bpf_ringbuf_output(), it is one of a few helper functions with\
-	 * ARG_CONST_SIZE_OR_ZERO parameter allowed in unpriv mode.\
-	 * For unpriv this should signal an error, because memory at &fp[-64] is\
-	 * not initialized.				\
-	 */						\
+	 						\
 	call %[bpf_ringbuf_output];			\
 l0_%=:	r0 = 0;						\
 	exit;						\
@@ -755,10 +747,10 @@ __retval(0)
 __naked void variable_memory_8_bytes_leak(void)
 {
 	asm volatile ("					\
-	/* set max stack size */			\
+	 			\
 	r6 = 0;						\
 	*(u64*)(r10 - 128) = r6;			\
-	/* set r3 to a random value */			\
+	 			\
 	call %[bpf_get_prandom_u32];			\
 	r3 = r0;					\
 	r1 = %[map_ringbuf] ll;				\
@@ -769,19 +761,15 @@ __naked void variable_memory_8_bytes_leak(void)
 	*(u64*)(r10 - 56) = r0;				\
 	*(u64*)(r10 - 48) = r0;				\
 	*(u64*)(r10 - 40) = r0;				\
-	/* Note: fp[-32] left uninitialized */		\
+	 		\
 	*(u64*)(r10 - 24) = r0;				\
 	*(u64*)(r10 - 16) = r0;				\
 	*(u64*)(r10 - 8) = r0;				\
-	/* Limit r3 range to [1, 64] */			\
+	 			\
 	r3 &= 63;					\
 	r3 += 1;					\
 	r4 = 0;						\
-	/* Call bpf_ringbuf_output(), it is one of a few helper functions with\
-	 * ARG_CONST_SIZE_OR_ZERO parameter allowed in unpriv mode.\
-	 * For unpriv this should signal an error, because memory region [1, 64]\
-	 * at &fp[-64] is not fully initialized.	\
-	 */						\
+	 						\
 	call %[bpf_ringbuf_output];			\
 	r0 = 0;						\
 	exit;						\

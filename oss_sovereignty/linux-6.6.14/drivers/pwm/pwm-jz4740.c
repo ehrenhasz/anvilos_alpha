@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2010, Lars-Peter Clausen <lars@metafoo.de>
- *  JZ4740 platform PWM support
- *
- * Limitations:
- * - The .apply callback doesn't complete the currently running period before
- *   reconfiguring the hardware.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -37,7 +30,7 @@ static inline struct jz4740_pwm_chip *to_jz4740(struct pwm_chip *chip)
 static bool jz4740_pwm_can_use_chn(struct jz4740_pwm_chip *jz,
 				   unsigned int channel)
 {
-	/* Enable all TCU channels for PWM use by default except channels 0/1 */
+	 
 	u32 pwm_channels_mask = GENMASK(jz->chip.npwm - 1, 2);
 
 	device_property_read_u32(jz->chip.dev->parent,
@@ -88,10 +81,10 @@ static int jz4740_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
 {
 	struct jz4740_pwm_chip *jz = to_jz4740(chip);
 
-	/* Enable PWM output */
+	 
 	regmap_set_bits(jz->map, TCU_REG_TCSRc(pwm->hwpwm), TCU_TCSR_PWM_EN);
 
-	/* Start counter */
+	 
 	regmap_write(jz->map, TCU_REG_TESR, BIT(pwm->hwpwm));
 
 	return 0;
@@ -101,21 +94,14 @@ static void jz4740_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
 {
 	struct jz4740_pwm_chip *jz = to_jz4740(chip);
 
-	/*
-	 * Set duty > period. This trick allows the TCU channels in TCU2 mode to
-	 * properly return to their init level.
-	 */
+	 
 	regmap_write(jz->map, TCU_REG_TDHRc(pwm->hwpwm), 0xffff);
 	regmap_write(jz->map, TCU_REG_TDFRc(pwm->hwpwm), 0x0);
 
-	/*
-	 * Disable PWM output.
-	 * In TCU2 mode (channel 1/2 on JZ4750+), this must be done before the
-	 * counter is stopped, while in TCU1 mode the order does not matter.
-	 */
+	 
 	regmap_clear_bits(jz->map, TCU_REG_TCSRc(pwm->hwpwm), TCU_TCSR_PWM_EN);
 
-	/* Stop counter */
+	 
 	regmap_write(jz->map, TCU_REG_TECR, BIT(pwm->hwpwm));
 }
 
@@ -129,35 +115,22 @@ static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	long rate;
 	int err;
 
-	/*
-	 * Limit the clock to a maximum rate that still gives us a period value
-	 * which fits in 16 bits.
-	 */
+	 
 	do_div(tmp, state->period);
 
-	/*
-	 * /!\ IMPORTANT NOTE:
-	 * -------------------
-	 * This code relies on the fact that clk_round_rate() will always round
-	 * down, which is not a valid assumption given by the clk API, but only
-	 * happens to be true with the clk drivers used for Ingenic SoCs.
-	 *
-	 * Right now, there is no alternative as the clk API does not have a
-	 * round-down function (and won't have one for a while), but if it ever
-	 * comes to light, a round-down function should be used instead.
-	 */
+	 
 	rate = clk_round_rate(clk, tmp);
 	if (rate < 0) {
 		dev_err(chip->dev, "Unable to round rate: %ld", rate);
 		return rate;
 	}
 
-	/* Calculate period value */
+	 
 	tmp = (unsigned long long)rate * state->period;
 	do_div(tmp, NSEC_PER_SEC);
 	period = tmp;
 
-	/* Calculate duty value */
+	 
 	tmp = (unsigned long long)rate * state->duty_cycle;
 	do_div(tmp, NSEC_PER_SEC);
 	duty = tmp;
@@ -173,32 +146,20 @@ static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 		return err;
 	}
 
-	/* Reset counter to 0 */
+	 
 	regmap_write(jz4740->map, TCU_REG_TCNTc(pwm->hwpwm), 0);
 
-	/* Set duty */
+	 
 	regmap_write(jz4740->map, TCU_REG_TDHRc(pwm->hwpwm), duty);
 
-	/* Set period */
+	 
 	regmap_write(jz4740->map, TCU_REG_TDFRc(pwm->hwpwm), period);
 
-	/* Set abrupt shutdown */
+	 
 	regmap_set_bits(jz4740->map, TCU_REG_TCSRc(pwm->hwpwm),
 			TCU_TCSR_PWM_SD);
 
-	/*
-	 * Set polarity.
-	 *
-	 * The PWM starts in inactive state until the internal timer reaches the
-	 * duty value, then becomes active until the timer reaches the period
-	 * value. In theory, we should then use (period - duty) as the real duty
-	 * value, as a high duty value would otherwise result in the PWM pin
-	 * being inactive most of the time.
-	 *
-	 * Here, we don't do that, and instead invert the polarity of the PWM
-	 * when it is active. This trick makes the PWM start with its active
-	 * state instead of its inactive state.
-	 */
+	 
 	if ((state->polarity == PWM_POLARITY_NORMAL) ^ state->enabled)
 		regmap_update_bits(jz4740->map, TCU_REG_TCSRc(pwm->hwpwm),
 				   TCU_TCSR_PWM_INITL_HIGH, 0);

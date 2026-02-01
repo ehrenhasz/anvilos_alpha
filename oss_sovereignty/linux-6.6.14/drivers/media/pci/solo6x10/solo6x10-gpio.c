@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2010-2013 Bluecherry, LLC <https://www.bluecherrydvr.com>
- *
- * Original author:
- * Ben Collins <bcollins@ubuntu.com>
- *
- * Additional work by:
- * John Brooks <john.brooks@bluecherry.net>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/fs.h>
@@ -24,7 +16,7 @@ static void solo_gpio_mode(struct solo_dev *solo_dev,
 
 	ret = solo_reg_read(solo_dev, SOLO_GPIO_CONFIG_0);
 
-	/* To set gpio */
+	 
 	for (port = 0; port < 16; port++) {
 		if (!((1 << port) & port_mask))
 			continue;
@@ -35,7 +27,7 @@ static void solo_gpio_mode(struct solo_dev *solo_dev,
 
 	solo_reg_write(solo_dev, SOLO_GPIO_CONFIG_0, ret);
 
-	/* To set extended gpio - sensor */
+	 
 	ret = solo_reg_read(solo_dev, SOLO_GPIO_CONFIG_1);
 
 	for (port = 0; port < 16; port++) {
@@ -48,7 +40,7 @@ static void solo_gpio_mode(struct solo_dev *solo_dev,
 			ret |= 1UL << port;
 	}
 
-	/* Enable GPIO[31:16] */
+	 
 	ret |= 0xffff0000;
 
 	solo_reg_write(solo_dev, SOLO_GPIO_CONFIG_1, ret);
@@ -68,32 +60,28 @@ static void solo_gpio_clear(struct solo_dev *solo_dev, unsigned int value)
 
 static void solo_gpio_config(struct solo_dev *solo_dev)
 {
-	/* Video reset */
+	 
 	solo_gpio_mode(solo_dev, 0x30, 1);
 	solo_gpio_clear(solo_dev, 0x30);
 	udelay(100);
 	solo_gpio_set(solo_dev, 0x30);
 	udelay(100);
 
-	/* Warning: Don't touch the next line unless you're sure of what
-	 * you're doing: first four gpio [0-3] are used for video. */
+	 
 	solo_gpio_mode(solo_dev, 0x0f, 2);
 
-	/* We use bit 8-15 of SOLO_GPIO_CONFIG_0 for relay purposes */
+	 
 	solo_gpio_mode(solo_dev, 0xff00, 1);
 
-	/* Initially set relay status to 0 */
+	 
 	solo_gpio_clear(solo_dev, 0xff00);
 
-	/* Set input pins direction */
+	 
 	solo_gpio_mode(solo_dev, 0xffff0000, 0);
 }
 
 #ifdef CONFIG_GPIOLIB
-/* Pins 0-7 are not exported, because it seems from code above they are
- * used for internal purposes. So offset 0 corresponds to pin 8, therefore
- * offsets 0-7 are relay GPIOs, 8-23 - input GPIOs.
- */
+ 
 static int solo_gpiochip_get_direction(struct gpio_chip *chip,
 				       unsigned int offset)
 {

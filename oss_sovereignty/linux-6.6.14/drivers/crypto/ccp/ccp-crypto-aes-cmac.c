@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AMD Cryptographic Coprocessor (CCP) AES CMAC crypto API support
- *
- * Copyright (C) 2013,2018 Advanced Micro Devices, Inc.
- *
- * Author: Tom Lendacky <thomas.lendacky@amd.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/sched.h>
@@ -32,7 +26,7 @@ static int ccp_aes_cmac_complete(struct crypto_async_request *async_req,
 		goto e_free;
 
 	if (rctx->hash_rem) {
-		/* Save remaining data to buffer */
+		 
 		unsigned int offset = rctx->nbytes - rctx->hash_rem;
 
 		scatterwalk_map_and_copy(rctx->buf, rctx->src,
@@ -42,7 +36,7 @@ static int ccp_aes_cmac_complete(struct crypto_async_request *async_req,
 		rctx->buf_count = 0;
 	}
 
-	/* Update result area if supplied */
+	 
 	if (req->result && rctx->final)
 		memcpy(req->result, rctx->iv, digest_size);
 
@@ -89,7 +83,7 @@ static int ccp_do_cmac_update(struct ahash_request *req, unsigned int nbytes,
 	rctx->hash_rem = final ? 0 : len & (block_size - 1);
 	rctx->hash_cnt = len - rctx->hash_rem;
 	if (!final && !rctx->hash_rem) {
-		/* CCP can't do zero length final, so keep some data around */
+		 
 		rctx->hash_cnt -= block_size;
 		rctx->hash_rem = block_size;
 	}
@@ -101,9 +95,7 @@ static int ccp_do_cmac_update(struct ahash_request *req, unsigned int nbytes,
 
 	sg_init_one(&rctx->iv_sg, rctx->iv, sizeof(rctx->iv));
 
-	/* Build the data scatterlist table - allocate enough entries for all
-	 * possible data pieces (buffer, input data, padding)
-	 */
+	 
 	sg_count = (nbytes) ? sg_nents(req->src) + 2 : 2;
 	gfp = req->base.flags & CRYPTO_TFM_REQ_MAY_SLEEP ?
 		GFP_KERNEL : GFP_ATOMIC;
@@ -148,7 +140,7 @@ static int ccp_do_cmac_update(struct ahash_request *req, unsigned int nbytes,
 		sg = rctx->data_sg.sgl;
 	}
 
-	/* Initialize the K1/K2 scatterlist */
+	 
 	if (final)
 		cmac_key_sg = (need_pad) ? &ctx->u.aes.k2_sg
 					 : &ctx->u.aes.k1_sg;
@@ -222,7 +214,7 @@ static int ccp_aes_cmac_export(struct ahash_request *req, void *out)
 	struct ccp_aes_cmac_req_ctx *rctx = ahash_request_ctx_dma(req);
 	struct ccp_aes_cmac_exp_ctx state;
 
-	/* Don't let anything leak to 'out' */
+	 
 	memset(&state, 0, sizeof(state));
 
 	state.null_msg = rctx->null_msg;
@@ -230,7 +222,7 @@ static int ccp_aes_cmac_export(struct ahash_request *req, void *out)
 	state.buf_count = rctx->buf_count;
 	memcpy(state.buf, rctx->buf, sizeof(state.buf));
 
-	/* 'out' may not be aligned so memcpy from local variable */
+	 
 	memcpy(out, &state, sizeof(state));
 
 	return 0;
@@ -241,7 +233,7 @@ static int ccp_aes_cmac_import(struct ahash_request *req, const void *in)
 	struct ccp_aes_cmac_req_ctx *rctx = ahash_request_ctx_dma(req);
 	struct ccp_aes_cmac_exp_ctx state;
 
-	/* 'in' may not be aligned so memcpy to local variable */
+	 
 	memcpy(&state, in, sizeof(state));
 
 	memset(rctx, 0, sizeof(*rctx));
@@ -280,20 +272,20 @@ static int ccp_aes_cmac_setkey(struct crypto_ahash *tfm, const u8 *key,
 	}
 	ctx->u.aes.mode = alg->mode;
 
-	/* Set to zero until complete */
+	 
 	ctx->u.aes.key_len = 0;
 
-	/* Set the key for the AES cipher used to generate the keys */
+	 
 	ret = aes_expandkey(&aes, key, key_len);
 	if (ret)
 		return ret;
 
-	/* Encrypt a block of zeroes - use key area in context */
+	 
 	memset(ctx->u.aes.key, 0, sizeof(ctx->u.aes.key));
 	aes_encrypt(&aes, ctx->u.aes.key, ctx->u.aes.key);
 	memzero_explicit(&aes, sizeof(aes));
 
-	/* Generate K1 and K2 */
+	 
 	k0_hi = be64_to_cpu(*((__be64 *)ctx->u.aes.key));
 	k0_lo = be64_to_cpu(*((__be64 *)ctx->u.aes.key + 1));
 
@@ -323,7 +315,7 @@ static int ccp_aes_cmac_setkey(struct crypto_ahash *tfm, const u8 *key,
 	sg_init_one(&ctx->u.aes.k1_sg, ctx->u.aes.k1, sizeof(ctx->u.aes.k1));
 	sg_init_one(&ctx->u.aes.k2_sg, ctx->u.aes.k2, sizeof(ctx->u.aes.k2));
 
-	/* Save the supplied key */
+	 
 	memset(ctx->u.aes.key, 0, sizeof(ctx->u.aes.key));
 	memcpy(ctx->u.aes.key, key, key_len);
 	ctx->u.aes.key_len = key_len;

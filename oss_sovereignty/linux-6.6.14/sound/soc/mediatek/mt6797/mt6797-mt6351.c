@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// mt6797-mt6351.c  --  MT6797 MT6351 ALSA SoC machine driver
-//
-// Copyright (c) 2018 MediaTek Inc.
-// Author: KaiChieh Chuang <kaichieh.chuang@mediatek.com>
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <sound/soc.h>
@@ -71,7 +71,7 @@ SND_SOC_DAILINK_DEFS(pcm2,
 	DAILINK_COMP_ARRAY(COMP_EMPTY()));
 
 static struct snd_soc_dai_link mt6797_mt6351_dai_links[] = {
-	/* FE */
+	 
 	{
 		.name = "Playback_1",
 		.stream_name = "Playback_1",
@@ -157,7 +157,7 @@ static struct snd_soc_dai_link mt6797_mt6351_dai_links[] = {
 		.ignore_suspend = 1,
 		SND_SOC_DAILINK_REG(hostless_speech),
 	},
-	/* BE */
+	 
 	{
 		.name = "Primary Codec",
 		.no_pcm = 1,
@@ -257,7 +257,7 @@ static struct platform_driver mt6797_mt6351_driver = {
 
 module_platform_driver(mt6797_mt6351_driver);
 
-/* Module information */
+ 
 MODULE_DESCRIPTION("MT6797 MT6351 ALSA SoC machine driver");
 MODULE_AUTHOR("KaiChieh Chuang <kaichieh.chuang@mediatek.com>");
 MODULE_LICENSE("GPL v2");

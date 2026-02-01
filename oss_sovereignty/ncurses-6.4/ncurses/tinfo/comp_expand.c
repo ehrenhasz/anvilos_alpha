@@ -1,35 +1,6 @@
-/****************************************************************************
- * Copyright 2020,2021 Thomas E. Dickey                                     *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Thomas E. Dickey                    1998                        *
- ****************************************************************************/
+ 
 
 #include <curses.priv.h>
 
@@ -41,7 +12,7 @@ MODULE_ID("$Id: comp_expand.c,v 1.34 2021/09/04 10:29:15 tom Exp $")
 #if 0
 #define DEBUG_THIS(p) DEBUG(9, p)
 #else
-#define DEBUG_THIS(p)		/* nothing */
+#define DEBUG_THIS(p)		 
 #endif
 
 static int
@@ -52,7 +23,7 @@ trailing_spaces(const char *src)
     return *src == 0;
 }
 
-/* this deals with differences over whether 0x7f and 0x80..0x9f are controls */
+ 
 #define REALPRINT(s) (UChar(*(s)) < 127 && isprint(UChar(*(s))))
 
 #define P_LIMIT(p)   (length - (size_t)(p))
@@ -95,11 +66,7 @@ _nc_tic_expand(const char *srcp, bool tic_format, int numbers)
     while ((ch = UChar(*str)) != 0) {
 	if (ch == '%' && REALPRINT(str + 1)) {
 	    buffer[bufp++] = *str++;
-	    /*
-	     * Though the character literals are more compact, most
-	     * terminal descriptions use numbers and are not easy
-	     * to read in character-literal form.
-	     */
+	     
 	    switch (numbers) {
 	    case -1:
 		if (str[0] == S_QUOTE
@@ -114,13 +81,7 @@ _nc_tic_expand(const char *srcp, bool tic_format, int numbers)
 		    buffer[bufp++] = *str;
 		}
 		break;
-		/*
-		 * If we have a "%{number}", try to translate it into
-		 * a "%'char'" form, since that will run a little faster
-		 * when we're interpreting it.  Also, having one form
-		 * for the constant makes it simpler to compare terminal
-		 * descriptions.
-		 */
+		 
 	    case 1:
 		if (str[0] == L_BRACE
 		    && isdigit(UChar(str[1]))) {
@@ -129,7 +90,7 @@ _nc_tic_expand(const char *srcp, bool tic_format, int numbers)
 		    if (dst != 0
 			&& *dst == R_BRACE
 			&& value < 127
-			&& value != '\\'	/* FIXME */
+			&& value != '\\'	 
 			&& isprint((int) value)) {
 			ch = (int) value;
 			buffer[bufp++] = S_QUOTE;
@@ -147,7 +108,7 @@ _nc_tic_expand(const char *srcp, bool tic_format, int numbers)
 		}
 		break;
 	    default:
-		if (*str == ',')	/* minitel1 uses this */
+		if (*str == ',')	 
 		    buffer[bufp++] = '\\';
 		buffer[bufp++] = *str;
 		break;
@@ -204,13 +165,7 @@ _nc_tic_expand(const char *srcp, bool tic_format, int numbers)
 
     buffer[bufp] = '\0';
 
-    /*
-     * If most of a short string is ASCII control characters, reformat the
-     * string to show those in up-arrow format.  For longer strings, it is
-     * more likely that the characters are just binary coding.
-     *
-     * If we're formatting termcap, just use the shorter format (up-arrows).
-     */
+     
     if (octals != 0 && (!tic_format || (bufp - (4 * octals)) < MIN_TC_FIXUPS)) {
 	while (--octals >= 0) {
 	    char *p = buffer + fixups[octals].offset;

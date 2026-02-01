@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * bebob_pcm.c - a part of driver for BeBoB based devices
- *
- * Copyright (c) 2013-2014 Takashi Sakamoto
- */
+
+ 
 
 #include "./bebob.h"
 
@@ -21,7 +17,7 @@ hw_rule_rate(struct snd_pcm_hw_params *params, struct snd_pcm_hw_rule *rule)
 	unsigned int i;
 
 	for (i = 0; i < SND_BEBOB_STRM_FMT_ENTRIES; i++) {
-		/* entry is invalid */
+		 
 		if (formations[i].pcm == 0)
 			continue;
 
@@ -50,7 +46,7 @@ hw_rule_channels(struct snd_pcm_hw_params *params, struct snd_pcm_hw_rule *rule)
 	unsigned int i;
 
 	for (i = 0; i < SND_BEBOB_STRM_FMT_ENTRIES; i++) {
-		/* entry is invalid */
+		 
 		if (formations[i].pcm == 0)
 			continue;
 
@@ -78,7 +74,7 @@ limit_channels_and_rates(struct snd_pcm_hardware *hw,
 	hw->rates = 0;
 
 	for (i = 0; i < SND_BEBOB_STRM_FMT_ENTRIES; i++) {
-		/* entry has no PCM channels */
+		 
 		if (formations[i].pcm == 0)
 			continue;
 
@@ -151,9 +147,9 @@ static int pcm_open(struct snd_pcm_substream *substream)
 
 	mutex_lock(&bebob->mutex);
 
-	// When source of clock is not internal or any stream is reserved for
-	// transmission of PCM frames, the available sampling rate is limited
-	// at current one.
+	
+	
+	
 	if (src == SND_BEBOB_CLOCK_TYPE_EXTERNAL ||
 	    (bebob->substreams_counter > 0 && d->events_per_period > 0)) {
 		unsigned int frames_per_period = d->events_per_period;

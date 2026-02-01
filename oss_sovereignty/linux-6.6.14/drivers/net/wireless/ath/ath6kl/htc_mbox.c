@@ -1,19 +1,4 @@
-/*
- * Copyright (c) 2007-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2012 Qualcomm Atheros, Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include "core.h"
 #include "hif.h"
@@ -33,10 +18,10 @@ static void ath6kl_htc_set_credit_dist(struct htc_target *target,
 				       struct ath6kl_htc_credit_info *cred_info,
 				       u16 svc_pri_order[], int len);
 
-/* threshold to re-enable Tx bundling for an AC*/
+ 
 #define TX_RESUME_BUNDLE_THRESHOLD	1500
 
-/* Functions for Tx credit handling */
+ 
 static void ath6kl_credit_deposit(struct ath6kl_htc_credit_info *cred_info,
 				  struct htc_endpoint_credit_dist *ep_dist,
 				  int credits)
@@ -80,30 +65,14 @@ static void ath6kl_credit_init(struct ath6kl_htc_credit_info *cred_info,
 		if (cur_ep_dist->svc_id == WMI_CONTROL_SVC) {
 			ath6kl_credit_deposit(cred_info, cur_ep_dist,
 					      cur_ep_dist->cred_min);
-			/*
-			 * Control service is always marked active, it
-			 * never goes inactive EVER.
-			 */
+			 
 			cur_ep_dist->dist_flags |= HTC_EP_ACTIVE;
 		}
 
-		/*
-		 * Streams have to be created (explicit | implicit) for all
-		 * kinds of traffic. BE endpoints are also inactive in the
-		 * beginning. When BE traffic starts it creates implicit
-		 * streams that redistributes credits.
-		 *
-		 * Note: all other endpoints have minimums set but are
-		 * initially given NO credits. credits will be distributed
-		 * as traffic activity demands
-		 */
+		 
 	}
 
-	/*
-	 * For ath6kl_credit_seek function,
-	 * it use list_for_each_entry_reverse to walk around the whole ep list.
-	 * Therefore assign this lowestpri_ep_dist after walk around the ep_list
-	 */
+	 
 	cred_info->lowestpri_ep_dist = cur_ep_dist->list;
 
 	WARN_ON(cred_info->cur_free_credits <= 0);
@@ -115,14 +84,7 @@ static void ath6kl_credit_init(struct ath6kl_htc_credit_info *cred_info,
 		if (cur_ep_dist->svc_id == WMI_CONTROL_SVC) {
 			cur_ep_dist->cred_norm = cur_ep_dist->cred_per_msg;
 		} else {
-			/*
-			 * For the remaining data endpoints, we assume that
-			 * each cred_per_msg are the same. We use a simple
-			 * calculation here, we take the remaining credits
-			 * and determine how many max messages this can
-			 * cover and then set each endpoint's normal value
-			 * equal to 3/4 this amount.
-			 */
+			 
 			count = (cred_info->cur_free_credits /
 				 cur_ep_dist->cred_per_msg)
 				* cur_ep_dist->cred_per_msg;
@@ -142,7 +104,7 @@ static void ath6kl_credit_init(struct ath6kl_htc_credit_info *cred_info,
 	}
 }
 
-/* initialize and setup credit distribution */
+ 
 static int ath6kl_htc_mbox_credit_setup(struct htc_target *htc_target,
 			       struct ath6kl_htc_credit_info *cred_info)
 {
@@ -150,19 +112,19 @@ static int ath6kl_htc_mbox_credit_setup(struct htc_target *htc_target,
 
 	memset(cred_info, 0, sizeof(struct ath6kl_htc_credit_info));
 
-	servicepriority[0] = WMI_CONTROL_SVC;  /* highest */
+	servicepriority[0] = WMI_CONTROL_SVC;   
 	servicepriority[1] = WMI_DATA_VO_SVC;
 	servicepriority[2] = WMI_DATA_VI_SVC;
 	servicepriority[3] = WMI_DATA_BE_SVC;
-	servicepriority[4] = WMI_DATA_BK_SVC; /* lowest */
+	servicepriority[4] = WMI_DATA_BK_SVC;  
 
-	/* set priority list */
+	 
 	ath6kl_htc_set_credit_dist(htc_target, cred_info, servicepriority, 5);
 
 	return 0;
 }
 
-/* reduce an ep's credits back to a set limit */
+ 
 static void ath6kl_credit_reduce(struct ath6kl_htc_credit_info *cred_info,
 				 struct htc_endpoint_credit_dist *ep_dist,
 				 int limit)
@@ -213,10 +175,7 @@ static void ath6kl_credit_update(struct ath6kl_htc_credit_info *cred_info,
 	}
 }
 
-/*
- * HTC has an endpoint that needs credits, ep_dist is the endpoint in
- * question.
- */
+ 
 static void ath6kl_credit_seek(struct ath6kl_htc_credit_info *cred_info,
 				struct htc_endpoint_credit_dist *ep_dist)
 {
@@ -232,27 +191,14 @@ static void ath6kl_credit_seek(struct ath6kl_htc_credit_info *cred_info,
 		if ((ep_dist->cred_assngd >= ep_dist->cred_norm))
 			goto out;
 
-	/*
-	 * For all other services, we follow a simple algorithm of:
-	 *
-	 * 1. checking the free pool for credits
-	 * 2. checking lower priority endpoints for credits to take
-	 */
+	 
 
 	credits = min(cred_info->cur_free_credits, ep_dist->seek_cred);
 
 	if (credits >= ep_dist->seek_cred)
 		goto out;
 
-	/*
-	 * We don't have enough in the free pool, try taking away from
-	 * lower priority services The rule for taking away credits:
-	 *
-	 *   1. Only take from lower priority endpoints
-	 *   2. Only take what is allocated above the minimum (never
-	 *      starve an endpoint completely)
-	 *   3. Only take what you need.
-	 */
+	 
 
 	list_for_each_entry_reverse(curdist_list,
 				    &cred_info->lowestpri_ep_dist,
@@ -264,12 +210,7 @@ static void ath6kl_credit_seek(struct ath6kl_htc_credit_info *cred_info,
 
 		if ((curdist_list->cred_assngd - need) >=
 		     curdist_list->cred_min) {
-			/*
-			 * The current one has been allocated more than
-			 * it's minimum and it has enough credits assigned
-			 * above it's minimum to fulfill our need try to
-			 * take away just enough to fulfill our need.
-			 */
+			 
 			ath6kl_credit_reduce(cred_info, curdist_list,
 					     curdist_list->cred_assngd - need);
 
@@ -285,14 +226,14 @@ static void ath6kl_credit_seek(struct ath6kl_htc_credit_info *cred_info,
 	credits = min(cred_info->cur_free_credits, ep_dist->seek_cred);
 
 out:
-	/* did we find some credits? */
+	 
 	if (credits)
 		ath6kl_credit_deposit(cred_info, ep_dist, credits);
 
 	ep_dist->seek_cred = 0;
 }
 
-/* redistribute credits based on activity change */
+ 
 static void ath6kl_credit_redistribute(struct ath6kl_htc_credit_info *info,
 				       struct list_head *ep_dist_list)
 {
@@ -318,14 +259,7 @@ static void ath6kl_credit_redistribute(struct ath6kl_htc_credit_info *info,
 	}
 }
 
-/*
- *
- * This function is invoked whenever endpoints require credit
- * distributions. A lock is held while this function is invoked, this
- * function shall NOT block. The ep_dist_list is a list of distribution
- * structures in prioritized order as defined by the call to the
- * htc_set_credit_dist() api.
- */
+ 
 static void ath6kl_credit_distribute(struct ath6kl_htc_credit_info *cred_info,
 				     struct list_head *ep_dist_list,
 			      enum htc_credit_dist_reason reason)
@@ -364,7 +298,7 @@ static void ath6kl_htc_tx_prep_pkt(struct htc_packet *packet, u8 flags,
 	packet->buf -= HTC_HDR_LENGTH;
 	hdr =  (struct htc_frame_hdr *)packet->buf;
 
-	/* Endianess? */
+	 
 	put_unaligned((u16)packet->act_len, &hdr->payld_len);
 	hdr->flags = flags;
 	hdr->eid = packet->endpoint;
@@ -419,7 +353,7 @@ static void htc_tx_comp_update(struct htc_target *target,
 		   packet->status, packet->endpoint, packet->act_len,
 		   packet->info.tx.cred_used);
 
-	/* on failure to submit, reclaim credits for this packet */
+	 
 	spin_lock_bh(&target->tx_lock);
 	endpoint->cred_dist.cred_to_dist +=
 				packet->info.tx.cred_used;
@@ -460,7 +394,7 @@ static void htc_tx_comp_handler(struct htc_target *target,
 	htc_tx_comp_update(target, endpoint, packet);
 	INIT_LIST_HEAD(&container);
 	list_add_tail(&packet->list, &container);
-	/* do completion */
+	 
 	htc_tx_complete(endpoint, &container);
 }
 
@@ -484,7 +418,7 @@ static void htc_async_tx_scat_complete(struct htc_target *target,
 	packet = scat_req->scat_list[0].packet;
 	endpoint = &target->endpoint[packet->endpoint];
 
-	/* walk through the scatter list and process */
+	 
 	for (i = 0; i < scat_req->scat_entries; i++) {
 		packet = scat_req->scat_list[i].packet;
 		if (!packet) {
@@ -497,10 +431,10 @@ static void htc_async_tx_scat_complete(struct htc_target *target,
 		list_add_tail(&packet->list, &tx_compq);
 	}
 
-	/* free scatter request */
+	 
 	hif_scatter_req_add(target->dev->ar, scat_req);
 
-	/* complete all packets */
+	 
 	htc_tx_complete(endpoint, &tx_compq);
 }
 
@@ -558,7 +492,7 @@ static int htc_check_credits(struct htc_target *target,
 		if (eid == ENDPOINT_0)
 			return -EINVAL;
 
-		/* Seek more credits */
+		 
 		ep->cred_dist.seek_cred = *req_cred - ep->cred_dist.credits;
 
 		ath6kl_credit_seek(target->credit_info, &ep->cred_dist);
@@ -576,16 +510,16 @@ static int htc_check_credits(struct htc_target *target,
 	ep->cred_dist.credits -= *req_cred;
 	ep->ep_st.cred_cosumd += *req_cred;
 
-	 /* When we are getting low on credits, ask for more */
+	  
 	if (ep->cred_dist.credits < ep->cred_dist.cred_per_msg) {
 		ep->cred_dist.seek_cred =
 		ep->cred_dist.cred_per_msg - ep->cred_dist.credits;
 
 		ath6kl_credit_seek(target->credit_info, &ep->cred_dist);
 
-		/* see if we were successful in getting more */
+		 
 		if (ep->cred_dist.credits < ep->cred_dist.cred_per_msg) {
-			/* tell the target we need credits ASAP! */
+			 
 			*flags |= HTC_FLAGS_NEED_CREDIT_UPDATE;
 			ep->ep_st.cred_low_indicate += 1;
 			ath6kl_dbg(ATH6KL_DBG_CREDIT,
@@ -624,27 +558,27 @@ static void ath6kl_htc_tx_pkts_get(struct htc_target *target,
 				      packet->endpoint, len, &req_cred))
 			break;
 
-		/* now we can fully move onto caller's queue */
+		 
 		packet = list_first_entry(&endpoint->txq, struct htc_packet,
 					  list);
 		list_move_tail(&packet->list, queue);
 
-		/* save the number of credits this packet consumed */
+		 
 		packet->info.tx.cred_used = req_cred;
 
-		/* all TX packets are handled asynchronously */
+		 
 		packet->completion = htc_tx_comp_handler;
 		packet->context = target;
 		endpoint->ep_st.tx_issued += 1;
 
-		/* save send flags */
+		 
 		packet->info.tx.flags = flags;
 		packet->info.tx.seqno = endpoint->seqno;
 		endpoint->seqno++;
 	}
 }
 
-/* See if the padded tx length falls on a credit boundary */
+ 
 static int htc_get_credit_padding(unsigned int cred_sz, int *len,
 				  struct htc_endpoint *ep)
 {
@@ -652,25 +586,20 @@ static int htc_get_credit_padding(unsigned int cred_sz, int *len,
 
 	rem_cred = *len % cred_sz;
 
-	/* No padding needed */
+	 
 	if  (!rem_cred)
 		return 0;
 
 	if (!(ep->conn_flags & HTC_FLGS_TX_BNDL_PAD_EN))
 		return -1;
 
-	/*
-	 * The transfer consumes a "partial" credit, this
-	 * packet cannot be bundled unless we add
-	 * additional "dummy" padding (max 255 bytes) to
-	 * consume the entire credit.
-	 */
+	 
 	cred_pad = *len < cred_sz ? (cred_sz - *len) : rem_cred;
 
 	if ((cred_pad > 0) && (cred_pad <= 255))
 		*len += cred_pad;
 	else
-		/* The amount of padding is too large, send as non-bundled */
+		 
 		return -1;
 
 	return cred_pad;
@@ -707,15 +636,15 @@ static int ath6kl_htc_tx_setup_scat_list(struct htc_target *target,
 		}
 
 		rem_scat -= len;
-		/* now remove it from the queue */
+		 
 		list_del(&packet->list);
 
 		scat_req->scat_list[i].packet = packet;
-		/* prepare packet and flag message as part of a send bundle */
+		 
 		flags = packet->info.tx.flags | HTC_FLAGS_SEND_BUNDLE;
 		ath6kl_htc_tx_prep_pkt(packet, flags,
 				       cred_pad, packet->info.tx.seqno);
-		/* Make sure the buffer is 4-byte aligned */
+		 
 		ath6kl_htc_tx_buf_align(&packet->buf,
 					packet->act_len + HTC_HDR_LENGTH);
 		scat_req->scat_list[i].buf = packet->buf;
@@ -728,7 +657,7 @@ static int ath6kl_htc_tx_setup_scat_list(struct htc_target *target,
 			   i, packet, packet->info.tx.seqno, len, rem_scat);
 	}
 
-	/* Roll back scatter setup in case of any failure */
+	 
 	if (scat_req->scat_entries < HTC_MIN_HTC_MSGS_TO_BUNDLE) {
 		for (i = scat_req->scat_entries - 1; i >= 0; i--) {
 			packet = scat_req->scat_list[i].packet;
@@ -743,15 +672,7 @@ static int ath6kl_htc_tx_setup_scat_list(struct htc_target *target,
 	return status;
 }
 
-/*
- * Drain a queue and send as bundles this function may return without fully
- * draining the queue when
- *
- *    1. scatter resources are exhausted
- *    2. a message that will consume a partial credit will stop the
- *    bundling process early
- *    3. we drop below the minimum number of messages for a bundle
- */
+ 
 static void ath6kl_htc_tx_bundle(struct htc_endpoint *endpoint,
 				 struct list_head *queue,
 				 int *sent_bundle, int *n_bundle_pkts)
@@ -774,13 +695,13 @@ static void ath6kl_htc_tx_bundle(struct htc_endpoint *endpoint,
 		n_scat = min(n_scat, target->msg_per_bndl_max);
 
 		if (n_scat < HTC_MIN_HTC_MSGS_TO_BUNDLE)
-			/* not enough to bundle */
+			 
 			break;
 
 		scat_req = hif_scatter_req_get(target->dev->ar);
 
 		if (!scat_req) {
-			/* no scatter resources  */
+			 
 			ath6kl_dbg(ATH6KL_DBG_HTC,
 				   "htc tx no more scatter resources\n");
 			break;
@@ -788,24 +709,13 @@ static void ath6kl_htc_tx_bundle(struct htc_endpoint *endpoint,
 
 		if ((ac < WMM_NUM_AC) && (ac != WMM_AC_BK)) {
 			if (WMM_AC_BE == ac)
-				/*
-				 * BE, BK have priorities and bit
-				 * positions reversed
-				 */
+				 
 				txb_mask = (1 << WMM_AC_BK);
 			else
-				/*
-				 * any AC with priority lower than
-				 * itself
-				 */
+				 
 				txb_mask = ((1 << ac) - 1);
 
-			/*
-			 * when the scatter request resources drop below a
-			 * certain threshold, disable Tx bundling for all
-			 * AC's with priority lower than the current requesting
-			 * AC. Otherwise re-enable Tx bundling for them
-			 */
+			 
 			if (scat_req->scat_q_depth < ATH6KL_SCATTER_REQS)
 				target->tx_bndl_mask &= ~txb_mask;
 			else
@@ -826,7 +736,7 @@ static void ath6kl_htc_tx_bundle(struct htc_endpoint *endpoint,
 			break;
 		}
 
-		/* send path is always asynchronous */
+		 
 		scat_req->complete = htc_async_tx_scat_complete;
 		n_sent_bundle++;
 		tot_pkts_bundle += scat_req->scat_entries;
@@ -875,10 +785,7 @@ static void ath6kl_htc_tx_from_queue(struct htc_target *target,
 		return;
 	}
 
-	/*
-	 * drain the endpoint TX queue for transmission as long
-	 * as we have enough credits.
-	 */
+	 
 	INIT_LIST_HEAD(&txq);
 
 	if ((HTC_CTRL_RSVD_SVC != endpoint->svc_id) &&
@@ -900,13 +807,13 @@ static void ath6kl_htc_tx_from_queue(struct htc_target *target,
 		n_pkts_bundle = 0;
 
 		while (true) {
-			/* try to send a bundle on each pass */
+			 
 			if ((target->tx_bndl_mask) &&
 			    (get_queue_depth(&txq) >=
 			    HTC_MIN_HTC_MSGS_TO_BUNDLE)) {
 				int temp1 = 0, temp2 = 0;
 
-				/* check if bundling is enabled for an AC */
+				 
 				if (target->tx_bndl_mask & (1 << ac)) {
 					ath6kl_htc_tx_bundle(endpoint, &txq,
 							     &temp1, &temp2);
@@ -937,11 +844,7 @@ static void ath6kl_htc_tx_from_queue(struct htc_target *target,
 		endpoint->ep_st.tx_bundles += bundle_sent;
 		endpoint->ep_st.tx_pkt_bundled += n_pkts_bundle;
 
-		/*
-		 * if an AC has bundling disabled and no tx bundling
-		 * has occured continously for a certain number of TX,
-		 * enable tx bundling for this AC
-		 */
+		 
 		if (!bundle_sent) {
 			if (!(target->tx_bndl_mask & (1 << ac)) &&
 			    (ac < WMM_NUM_AC)) {
@@ -952,7 +855,7 @@ static void ath6kl_htc_tx_from_queue(struct htc_target *target,
 				}
 			}
 		} else {
-			/* tx bundling will reset the counter */
+			 
 			if (ac < WMM_NUM_AC)
 				target->ac_tx_count[ac] = 0;
 		}
@@ -1007,12 +910,7 @@ static void htc_chk_ep_txq(struct htc_target *target)
 	struct htc_endpoint *endpoint;
 	struct htc_endpoint_credit_dist *cred_dist;
 
-	/*
-	 * Run through the credit distribution list to see if there are
-	 * packets queued. NOTE: no locks need to be taken since the
-	 * distribution list is not dynamic (cannot be re-ordered) and we
-	 * are not modifying any state.
-	 */
+	 
 	list_for_each_entry(cred_dist, &target->cred_dist_list, list) {
 		endpoint = cred_dist->htc_ep;
 
@@ -1024,13 +922,7 @@ static void htc_chk_ep_txq(struct htc_target *target)
 				   endpoint->cred_dist.credits,
 				   get_queue_depth(&endpoint->txq));
 			spin_unlock_bh(&target->tx_lock);
-			/*
-			 * Try to start the stalled queue, this list is
-			 * ordered by priority. If there are credits
-			 * available the highest priority queue will get a
-			 * chance to reclaim credits from lower priority
-			 * ones.
-			 */
+			 
 			ath6kl_htc_tx_from_queue(target, endpoint);
 			spin_lock_bh(&target->tx_lock);
 		}
@@ -1059,7 +951,7 @@ static int htc_setup_tx_complete(struct htc_target *target)
 			cpu_to_le16(HTC_MSG_SETUP_COMPLETE_EX_ID);
 
 		if (target->msg_per_bndl_max > 0) {
-			/* Indicate HTC bundling to the target */
+			 
 			flags |= HTC_SETUP_COMP_FLG_RX_BNDL_EN;
 			setup_comp_ext->msg_per_rxbndl =
 						target->msg_per_bndl_max;
@@ -1081,7 +973,7 @@ static int htc_setup_tx_complete(struct htc_target *target)
 				 ENDPOINT_0, HTC_SERVICE_TX_PACKET_TAG);
 	}
 
-	/* we want synchronous operation */
+	 
 	send_pkt->completion = NULL;
 	ath6kl_htc_tx_prep_pkt(send_pkt, 0, 0, 0);
 	status = ath6kl_htc_tx_issue(target, send_pkt);
@@ -1146,7 +1038,7 @@ static int ath6kl_htc_mbox_tx(struct htc_target *target,
 	return 0;
 }
 
-/* flush endpoint TX queue */
+ 
 static void ath6kl_htc_mbox_flush_txep(struct htc_target *target,
 			   enum htc_endpoint_id eid, u16 tag)
 {
@@ -1159,7 +1051,7 @@ static void ath6kl_htc_mbox_flush_txep(struct htc_target *target,
 		return;
 	}
 
-	/* initialize the discard queue */
+	 
 	INIT_LIST_HEAD(&discard_q);
 
 	spin_lock_bh(&target->tx_lock);
@@ -1196,7 +1088,7 @@ static void ath6kl_htc_flush_txep_all(struct htc_target *target)
 	for (i = ENDPOINT_0; i < ENDPOINT_MAX; i++) {
 		endpoint = &target->endpoint[i];
 		if (endpoint->svc_id == 0)
-			/* not in use.. */
+			 
 			continue;
 		ath6kl_htc_mbox_flush_txep(target, i, HTC_TX_PACKET_TAG_ALL);
 	}
@@ -1247,7 +1139,7 @@ static void ath6kl_htc_mbox_activity_changed(struct htc_target *target,
 		htc_chk_ep_txq(target);
 }
 
-/* HTC Rx */
+ 
 
 static inline void ath6kl_htc_rx_update_stats(struct htc_endpoint *endpoint,
 					      int n_look_ahds)
@@ -1328,11 +1220,7 @@ static int ath6kl_htc_rx_packet(struct htc_target *target,
 	return status;
 }
 
-/*
- * optimization for recv packets, we can indicate a
- * "hint" that there are more  single-packets to fetch
- * on this endpoint.
- */
+ 
 static void ath6kl_htc_rx_set_indicate(u32 lk_ahd,
 				       struct htc_endpoint *endpoint,
 				       struct htc_packet *packet)
@@ -1362,13 +1250,13 @@ static void ath6kl_htc_rx_chk_water_mark(struct htc_endpoint *endpoint)
 	}
 }
 
-/* This function is called with rx_lock held */
+ 
 static int ath6kl_htc_rx_setup(struct htc_target *target,
 			       struct htc_endpoint *ep,
 			       u32 *lk_ahds, struct list_head *queue, int n_msg)
 {
 	struct htc_packet *packet;
-	/* FIXME: type of lk_ahds can't be right */
+	 
 	struct htc_frame_hdr *htc_hdr = (struct htc_frame_hdr *)lk_ahds;
 	struct htc_ep_callbacks ep_cb;
 	int status = 0, j, full_len;
@@ -1387,11 +1275,7 @@ static int ath6kl_htc_rx_setup(struct htc_target *target,
 
 	ep_cb = ep->ep_cb;
 	for (j = 0; j < n_msg; j++) {
-		/*
-		 * Reset flag, any packets allocated using the
-		 * rx_alloc() API cannot be recycled on
-		 * cleanup,they must be explicitly returned.
-		 */
+		 
 		no_recycle = false;
 
 		if (ep_cb.rx_allocthresh &&
@@ -1407,7 +1291,7 @@ static int ath6kl_htc_rx_setup(struct htc_target *target,
 						      full_len);
 			spin_lock_bh(&target->rx_lock);
 		} else {
-			/* refill handler is being used */
+			 
 			if (list_empty(&ep->rx_bufq)) {
 				if (ep_cb.rx_refill) {
 					spin_unlock_bh(&target->rx_lock);
@@ -1431,20 +1315,16 @@ static int ath6kl_htc_rx_setup(struct htc_target *target,
 			return -ENOSPC;
 		}
 
-		/* clear flags */
+		 
 		packet->info.rx.rx_flags = 0;
 		packet->info.rx.indicat_flags = 0;
 		packet->status = 0;
 
 		if (no_recycle)
-			/*
-			 * flag that these packets cannot be
-			 * recycled, they have to be returned to
-			 * the user
-			 */
+			 
 			packet->info.rx.rx_flags |= HTC_RX_PKT_NO_RECYCLE;
 
-		/* Caller needs to free this upon any failure */
+		 
 		list_add_tail(&packet->list, queue);
 
 		if (target->htc_flags & HTC_OP_STATE_STOPPING) {
@@ -1456,7 +1336,7 @@ static int ath6kl_htc_rx_setup(struct htc_target *target,
 			packet->info.rx.rx_flags |= HTC_RX_PKT_REFRESH_HDR;
 			packet->info.rx.exp_hdr = 0xFFFFFFFF;
 		} else
-			/* set expected look ahead */
+			 
 			packet->info.rx.exp_hdr = *lk_ahds;
 
 		packet->act_len = le16_to_cpu(htc_hdr->payld_len) +
@@ -1510,15 +1390,11 @@ static int ath6kl_htc_rx_alloc(struct htc_target *target,
 		}
 
 		if (htc_hdr->flags & HTC_FLG_RX_BNDL_CNT) {
-			/*
-			 * HTC header indicates that every packet to follow
-			 * has the same padded length so that it can be
-			 * optimally fetched as a full bundle.
-			 */
+			 
 			n_msg = (htc_hdr->flags & HTC_FLG_RX_BNDL_CNT) >>
 				HTC_FLG_RX_BNDL_CNT_S;
 
-			/* the count doesn't include the starter frame */
+			 
 			n_msg++;
 			if (n_msg > target->msg_per_bndl_max) {
 				status = -ENOMEM;
@@ -1530,18 +1406,14 @@ static int ath6kl_htc_rx_alloc(struct htc_target *target,
 				   "htc rx bundle pkts %d\n",
 				   n_msg);
 		} else
-			/* HTC header only indicates 1 message to fetch */
+			 
 			n_msg = 1;
 
-		/* Setup packet buffers for each message */
+		 
 		status = ath6kl_htc_rx_setup(target, endpoint, &lk_ahds[i],
 					     queue, n_msg);
 
-		/*
-		 * This is due to unavailability of buffers to rx entire data.
-		 * Return no error so that free buffers from queue can be used
-		 * to receive partial data.
-		 */
+		 
 		if (status == -ENOSPC) {
 			spin_unlock_bh(&target->rx_lock);
 			return 0;
@@ -1617,14 +1489,11 @@ static void htc_proc_cred_rpt(struct htc_target *target,
 		endpoint->ep_st.cred_retnd += rpt->credits;
 
 		if (from_ep == rpt->eid) {
-			/*
-			 * This credit report arrived on the same endpoint
-			 * indicating it arrived in an RX packet.
-			 */
+			 
 			endpoint->ep_st.cred_from_rx += rpt->credits;
 			endpoint->ep_st.cred_rpt_from_rx += 1;
 		} else if (from_ep == ENDPOINT_0) {
-			/* credit arrived on endpoint 0 as a NULL message */
+			 
 			endpoint->ep_st.cred_from_ep0 += rpt->credits;
 			endpoint->ep_st.cred_rpt_ep0 += 1;
 		} else {
@@ -1633,18 +1502,14 @@ static void htc_proc_cred_rpt(struct htc_target *target,
 		}
 
 		if (rpt->eid == ENDPOINT_0)
-			/* always give endpoint 0 credits back */
+			 
 			endpoint->cred_dist.credits += rpt->credits;
 		else {
 			endpoint->cred_dist.cred_to_dist += rpt->credits;
 			dist = true;
 		}
 
-		/*
-		 * Refresh tx depth for distribution function that will
-		 * recover these credits NOTE: this is only valid when
-		 * there are credits to recover!
-		 */
+		 
 		endpoint->cred_dist.txq_depth =
 			get_queue_depth(&endpoint->txq);
 
@@ -1652,10 +1517,7 @@ static void htc_proc_cred_rpt(struct htc_target *target,
 	}
 
 	if (dist) {
-		/*
-		 * This was a credit return based on a completed send
-		 * operations note, this is done with the lock held
-		 */
+		 
 		ath6kl_credit_distribute(target->credit_info,
 					 &target->cred_dist_list,
 					 HTC_CREDIT_DIST_SEND_COMPLETE);
@@ -1703,7 +1565,7 @@ static int htc_parse_trailer(struct htc_target *target,
 				   "htc rx lk_ahd found pre_valid 0x%x post_valid 0x%x\n",
 				   lk_ahd->pre_valid, lk_ahd->post_valid);
 
-			/* look ahead bytes are valid, copy them over */
+			 
 			memcpy((u8 *)&next_lk_ahds[0], lk_ahd->lk_ahd, 4);
 
 			ath6kl_dbg_dump(ATH6KL_DBG_HTC,
@@ -1769,7 +1631,7 @@ static int htc_proc_trailer(struct htc_target *target,
 			status = -ENOMEM;
 			break;
 		}
-		/* these are byte aligned structs */
+		 
 		record = (struct htc_record_hdr *) buf;
 		len -= sizeof(struct htc_record_hdr);
 		buf += sizeof(struct htc_record_hdr);
@@ -1788,7 +1650,7 @@ static int htc_proc_trailer(struct htc_target *target,
 		if (status)
 			break;
 
-		/* advance buffer past this record for next time around */
+		 
 		buf += record->len;
 		len -= record->len;
 	}
@@ -1812,31 +1674,21 @@ static int ath6kl_htc_rx_process_hdr(struct htc_target *target,
 	if (n_lkahds != NULL)
 		*n_lkahds = 0;
 
-	/*
-	 * NOTE: we cannot assume the alignment of buf, so we use the safe
-	 * macros to retrieve 16 bit fields.
-	 */
+	 
 	payload_len = le16_to_cpu(get_unaligned(&htc_hdr->payld_len));
 
 	memcpy((u8 *)&lk_ahd, packet->buf, sizeof(lk_ahd));
 
 	if (packet->info.rx.rx_flags & HTC_RX_PKT_REFRESH_HDR) {
-		/*
-		 * Refresh the expected header and the actual length as it
-		 * was unknown when this packet was grabbed as part of the
-		 * bundle.
-		 */
+		 
 		packet->info.rx.exp_hdr = lk_ahd;
 		packet->act_len = payload_len + HTC_HDR_LENGTH;
 
-		/* validate the actual header that was refreshed  */
+		 
 		if (packet->act_len > packet->buf_len) {
 			ath6kl_err("refreshed hdr payload len (%d) in bundled recv is invalid (hdr: 0x%X)\n",
 				   payload_len, lk_ahd);
-			/*
-			 * Limit this to max buffer just to print out some
-			 * of the buffer.
-			 */
+			 
 			packet->act_len = min(packet->act_len, packet->buf_len);
 			status = -ENOMEM;
 			goto fail_rx;
@@ -1921,17 +1773,10 @@ static int ath6kl_htc_rx_bundle(struct htc_target *target,
 	n_scat_pkt = min(n_scat_pkt, target->msg_per_bndl_max);
 
 	if ((get_queue_depth(rxq) - n_scat_pkt) > 0) {
-		/*
-		 * We were forced to split this bundle receive operation
-		 * all packets in this partial bundle must have their
-		 * lookaheads ignored.
-		 */
+		 
 		part_bundle = true;
 
-		/*
-		 * This would only happen if the target ignored our max
-		 * bundle limit.
-		 */
+		 
 		ath6kl_warn("%s(): partial bundle detected num:%d , %d\n",
 			    __func__, get_queue_depth(rxq), n_scat_pkt);
 	}
@@ -1964,15 +1809,11 @@ static int ath6kl_htc_rx_bundle(struct htc_target *target,
 		rem_space -= pad_len;
 
 		if (part_bundle || (i < (n_scat_pkt - 1)))
-			/*
-			 * Packet 0..n-1 cannot be checked for look-aheads
-			 * since we are fetching a bundle the last packet
-			 * however can have it's lookahead used
-			 */
+			 
 			packet->info.rx.rx_flags |=
 			    HTC_RX_PKT_IGNORE_LOOKAHEAD;
 
-		/* NOTE: 1 HTC packet per scatter entry */
+		 
 		scat_req->scat_list[i].buf = packet->buf;
 		scat_req->scat_list[i].len = pad_len;
 
@@ -1992,7 +1833,7 @@ static int ath6kl_htc_rx_bundle(struct htc_target *target,
 	if (!status)
 		*n_pkt_fetched = i;
 
-	/* free scatter request */
+	 
 	hif_scatter_req_add(target->dev->ar, scat_req);
 
 fail_rx_pkt:
@@ -2015,7 +1856,7 @@ static int ath6kl_htc_rx_process_packets(struct htc_target *target,
 		trace_ath6kl_htc_rx(packet->status, packet->endpoint,
 				    packet->buf, packet->act_len);
 
-		/* process header for each of the recv packet */
+		 
 		status = ath6kl_htc_rx_process_hdr(target, packet, lk_ahds,
 						   n_lk_ahd);
 		if (status)
@@ -2024,18 +1865,12 @@ static int ath6kl_htc_rx_process_packets(struct htc_target *target,
 		list_del(&packet->list);
 
 		if (list_empty(comp_pktq)) {
-			/*
-			 * Last packet's more packet flag is set
-			 * based on the lookahead.
-			 */
+			 
 			if (*n_lk_ahd > 0)
 				ath6kl_htc_rx_set_indicate(lk_ahds[0],
 							   ep, packet);
 		} else
-			/*
-			 * Packets in a bundle automatically have
-			 * this flag set.
-			 */
+			 
 			packet->info.rx.indicat_flags |=
 				HTC_RX_FLAGS_INDICATE_MORE_PKTS;
 
@@ -2060,18 +1895,14 @@ static int ath6kl_htc_rx_fetch(struct htc_target *target,
 	struct list_head tmp_rxq;
 	struct htc_packet *packet, *tmp_pkt;
 
-	/* now go fetch the list of HTC packets */
+	 
 	while (!list_empty(rx_pktq)) {
 		fetched_pkts = 0;
 
 		INIT_LIST_HEAD(&tmp_rxq);
 
 		if (target->rx_bndl_enable && (get_queue_depth(rx_pktq) > 1)) {
-			/*
-			 * There are enough packets to attempt a
-			 * bundle transfer and recv bundling is
-			 * allowed.
-			 */
+			 
 			status = ath6kl_htc_rx_bundle(target, rx_pktq,
 						      &tmp_rxq,
 						      &fetched_pkts,
@@ -2089,19 +1920,15 @@ static int ath6kl_htc_rx_fetch(struct htc_target *target,
 			packet = list_first_entry(rx_pktq, struct htc_packet,
 						   list);
 
-			/* fully synchronous */
+			 
 			packet->completion = NULL;
 
 			if (!list_is_singular(rx_pktq))
-				/*
-				 * look_aheads in all packet
-				 * except the last one in the
-				 * bundle must be ignored
-				 */
+				 
 				packet->info.rx.rx_flags |=
 					HTC_RX_PKT_IGNORE_LOOKAHEAD;
 
-			/* go fetch the packet */
+			 
 			status = ath6kl_htc_rx_packet(target, packet,
 						      packet->act_len);
 
@@ -2118,10 +1945,7 @@ static int ath6kl_htc_rx_fetch(struct htc_target *target,
 
 fail_rx:
 
-	/*
-	 * Cleanup any packets we allocated but didn't use to
-	 * actually fetch any packets.
-	 */
+	 
 
 	list_for_each_entry_safe(packet, tmp_pkt, rx_pktq, list) {
 		list_del(&packet->list);
@@ -2153,17 +1977,11 @@ int ath6kl_htc_rxmsg_pending_handler(struct htc_target *target,
 	INIT_LIST_HEAD(&comp_pktq);
 	*num_pkts = 0;
 
-	/*
-	 * On first entry copy the look_aheads into our temp array for
-	 * processing
-	 */
+	 
 	look_aheads[0] = msg_look_ahead;
 
 	while (true) {
-		/*
-		 * First lookahead sets the expected endpoint IDs for all
-		 * packets in a bundle.
-		 */
+		 
 		id = ((struct htc_frame_hdr *)&look_aheads[0])->eid;
 		endpoint = &target->endpoint[id];
 
@@ -2177,10 +1995,7 @@ int ath6kl_htc_rxmsg_pending_handler(struct htc_target *target,
 		INIT_LIST_HEAD(&rx_pktq);
 		INIT_LIST_HEAD(&comp_pktq);
 
-		/*
-		 * Try to allocate as many HTC RX packets indicated by the
-		 * look_aheads.
-		 */
+		 
 		status = ath6kl_htc_rx_alloc(target, look_aheads,
 					     num_look_ahead, endpoint,
 					     &rx_pktq);
@@ -2188,10 +2003,7 @@ int ath6kl_htc_rxmsg_pending_handler(struct htc_target *target,
 			break;
 
 		if (get_queue_depth(&rx_pktq) >= 2)
-			/*
-			 * A recv bundle was detected, force IRQ status
-			 * re-check again
-			 */
+			 
 			target->chk_irq_status_cnt = 1;
 
 		n_fetched += get_queue_depth(&rx_pktq);
@@ -2203,7 +2015,7 @@ int ath6kl_htc_rxmsg_pending_handler(struct htc_target *target,
 		if (!status)
 			ath6kl_htc_rx_chk_water_mark(endpoint);
 
-		/* Process fetched packets */
+		 
 		status = ath6kl_htc_rx_process_packets(target, &comp_pktq,
 						       look_aheads,
 						       &num_look_ahead);
@@ -2211,13 +2023,7 @@ int ath6kl_htc_rxmsg_pending_handler(struct htc_target *target,
 		if (!num_look_ahead || status)
 			break;
 
-		/*
-		 * For SYNCH processing, if we get here, we are running
-		 * through the loop again due to a detected lookahead. Set
-		 * flag that we should re-check IRQ status registers again
-		 * before leaving IRQ processing, this can net better
-		 * performance in high throughput situations.
-		 */
+		 
 		target->chk_irq_status_cnt = 1;
 	}
 
@@ -2226,7 +2032,7 @@ int ath6kl_htc_rxmsg_pending_handler(struct htc_target *target,
 			ath6kl_err("failed to get pending recv messages: %d\n",
 				   status);
 
-		/* cleanup any packets in sync completion queue */
+		 
 		list_for_each_entry_safe(packets, tmp_pkt, &comp_pktq, list) {
 			list_del(&packets->list);
 			htc_reclaim_rxbuf(target, packets,
@@ -2239,10 +2045,7 @@ int ath6kl_htc_rxmsg_pending_handler(struct htc_target *target,
 		}
 	}
 
-	/*
-	 * Before leaving, check to see if host ran out of buffers and
-	 * needs to stop the receiver.
-	 */
+	 
 	if (target->rx_st_flags & HTC_RECV_WAIT_BUFFERS) {
 		ath6kl_warn("host has no rx buffers blocking receiver to prevent overrun\n");
 		ath6kl_hif_rx_control(target->dev, false);
@@ -2252,11 +2055,7 @@ int ath6kl_htc_rxmsg_pending_handler(struct htc_target *target,
 	return status;
 }
 
-/*
- * Synchronously wait for a control message from the target,
- * This function is used at initialization time ONLY.  At init messages
- * on ENDPOINT 0 are expected.
- */
+ 
 static struct htc_packet *htc_wait_for_ctrl_msg(struct htc_target *target)
 {
 	struct htc_packet *packet = NULL;
@@ -2284,17 +2083,17 @@ static struct htc_packet *htc_wait_for_ctrl_msg(struct htc_target *target)
 	if (packet->act_len > packet->buf_len)
 		goto fail_ctrl_rx;
 
-	/* we want synchronous operation */
+	 
 	packet->completion = NULL;
 
-	/* get the message from the device, this will block */
+	 
 	if (ath6kl_htc_rx_packet(target, packet, packet->act_len))
 		goto fail_ctrl_rx;
 
 	trace_ath6kl_htc_rx(packet->status, packet->endpoint,
 			    packet->buf, packet->act_len);
 
-	/* process receive header */
+	 
 	packet->status = ath6kl_htc_rx_process_hdr(target, packet, NULL, NULL);
 
 	if (packet->status) {
@@ -2341,7 +2140,7 @@ static int ath6kl_htc_mbox_add_rxbuf_multiple(struct htc_target *target,
 	if (target->htc_flags & HTC_OP_STATE_STOPPING) {
 		struct htc_packet *packet, *tmp_pkt;
 
-		/* walk through queue and mark each one canceled */
+		 
 		list_for_each_entry_safe(packet, tmp_pkt, pkt_queue, list) {
 			packet->status = -ECANCELED;
 			list_del(&packet->list);
@@ -2355,7 +2154,7 @@ static int ath6kl_htc_mbox_add_rxbuf_multiple(struct htc_target *target,
 
 	list_splice_tail_init(pkt_queue, &endpoint->rx_bufq);
 
-	/* check if we are blocked waiting for a new buffer */
+	 
 	if (target->rx_st_flags & HTC_RECV_WAIT_BUFFERS) {
 		if (target->ep_waiting == first_pkt->endpoint) {
 			ath6kl_dbg(ATH6KL_DBG_HTC,
@@ -2370,7 +2169,7 @@ static int ath6kl_htc_mbox_add_rxbuf_multiple(struct htc_target *target,
 	spin_unlock_bh(&target->rx_lock);
 
 	if (rx_unblock && !(target->htc_flags & HTC_OP_STATE_STOPPING))
-		/* TODO : implement a buffer threshold count? */
+		 
 		ath6kl_hif_rx_control(target->dev, true);
 
 	return status;
@@ -2385,7 +2184,7 @@ static void ath6kl_htc_mbox_flush_rx_buf(struct htc_target *target)
 	for (i = ENDPOINT_0; i < ENDPOINT_MAX; i++) {
 		endpoint = &target->endpoint[i];
 		if (!endpoint->svc_id)
-			/* not in use.. */
+			 
 			continue;
 
 		spin_lock_bh(&target->rx_lock);
@@ -2397,15 +2196,7 @@ static void ath6kl_htc_mbox_flush_rx_buf(struct htc_target *target)
 				   "htc rx flush pkt 0x%p  len %d  ep %d\n",
 				   packet, packet->buf_len,
 				   packet->endpoint);
-			/*
-			 * packets in rx_bufq of endpoint 0 have originally
-			 * been queued from target->free_ctrl_rxbuf where
-			 * packet and packet->buf_start are allocated
-			 * separately using kmalloc(). For other endpoint
-			 * rx_bufq, it is allocated as skb where packet is
-			 * skb->head. Take care of this difference while freeing
-			 * the memory.
-			 */
+			 
 			if (packet->endpoint == ENDPOINT_0) {
 				kfree(packet->buf_start);
 				kfree(packet);
@@ -2437,11 +2228,11 @@ static int ath6kl_htc_mbox_conn_service(struct htc_target *target,
 		   target, conn_req->svc_id);
 
 	if (conn_req->svc_id == HTC_CTRL_RSVD_SVC) {
-		/* special case for pseudo control service */
+		 
 		assigned_ep = ENDPOINT_0;
 		max_msg_sz = HTC_MAX_CTRL_MSG_LEN;
 	} else {
-		/* allocate a packet to send to the target */
+		 
 		tx_pkt = htc_get_control_buf(target, true);
 
 		if (!tx_pkt)
@@ -2457,7 +2248,7 @@ static int ath6kl_htc_mbox_conn_service(struct htc_target *target,
 				 sizeof(*conn_msg) + conn_msg->svc_meta_len,
 				 ENDPOINT_0, HTC_SERVICE_TX_PACKET_TAG);
 
-		/* we want synchronous operation */
+		 
 		tx_pkt->completion = NULL;
 		ath6kl_htc_tx_prep_pkt(tx_pkt, 0, 0, 0);
 		status = ath6kl_htc_tx_issue(target, tx_pkt);
@@ -2465,7 +2256,7 @@ static int ath6kl_htc_mbox_conn_service(struct htc_target *target,
 		if (status)
 			goto fail_tx;
 
-		/* wait for response */
+		 
 		rx_pkt = htc_wait_for_ctrl_msg(target);
 
 		if (!rx_pkt) {
@@ -2483,7 +2274,7 @@ static int ath6kl_htc_mbox_conn_service(struct htc_target *target,
 		}
 
 		conn_resp->resp_code = resp_msg->status;
-		/* check response status */
+		 
 		if (resp_msg->status != HTC_SERVICE_SUCCESS) {
 			ath6kl_err("target failed service 0x%X connect request (status:%d)\n",
 				   resp_msg->svc_id, resp_msg->status);
@@ -2508,13 +2299,13 @@ static int ath6kl_htc_mbox_conn_service(struct htc_target *target,
 		goto fail_tx;
 	}
 
-	/* return assigned endpoint to caller */
+	 
 	conn_resp->endpoint = assigned_ep;
 	conn_resp->len_max = max_msg_sz;
 
-	/* setup the endpoint */
+	 
 
-	/* this marks the endpoint in use */
+	 
 	endpoint->svc_id = conn_req->svc_id;
 
 	endpoint->max_txq_depth = conn_req->max_txq_depth;
@@ -2535,11 +2326,7 @@ static int ath6kl_htc_mbox_conn_service(struct htc_target *target,
 	}
 
 	if (conn_req->max_rxmsg_sz) {
-		/*
-		 * Override cred_per_msg calculation, this optimizes
-		 * the credit-low indications since the host will actually
-		 * issue smaller messages in the Send path.
-		 */
+		 
 		if (conn_req->max_rxmsg_sz > max_msg_sz) {
 			status = -ENOMEM;
 			goto fail_tx;
@@ -2553,7 +2340,7 @@ static int ath6kl_htc_mbox_conn_service(struct htc_target *target,
 	if (!endpoint->cred_dist.cred_per_msg)
 		endpoint->cred_dist.cred_per_msg = 1;
 
-	/* save local connection flags */
+	 
 	endpoint->conn_flags = conn_req->flags;
 
 fail_tx:
@@ -2586,8 +2373,8 @@ static void reset_ep_state(struct htc_target *target)
 		endpoint->target = target;
 	}
 
-	/* reset distribution list */
-	/* FIXME: free existing entries */
+	 
+	 
 	INIT_LIST_HEAD(&target->cred_dist_list);
 }
 
@@ -2604,7 +2391,7 @@ static int ath6kl_htc_mbox_get_rxbuf_num(struct htc_target *target,
 
 static void htc_setup_msg_bndl(struct htc_target *target)
 {
-	/* limit what HTC can handle */
+	 
 	target->msg_per_bndl_max = min(HTC_HOST_MAX_MSG_PER_BUNDLE,
 				       target->msg_per_bndl_max);
 
@@ -2613,7 +2400,7 @@ static void htc_setup_msg_bndl(struct htc_target *target)
 		return;
 	}
 
-	/* limit bundle what the device layer can handle */
+	 
 	target->msg_per_bndl_max = min(target->max_scat_entries,
 				       target->msg_per_bndl_max);
 
@@ -2621,9 +2408,9 @@ static void htc_setup_msg_bndl(struct htc_target *target)
 		   "htc bundling allowed msg_per_bndl_max %d\n",
 		   target->msg_per_bndl_max);
 
-	/* Max rx bundle size is limited by the max tx bundle size */
+	 
 	target->max_rx_bndl_sz = target->max_xfer_szper_scatreq;
-	/* Max tx bundle size if limited by the extended mbox address range */
+	 
 	target->max_tx_bndl_sz = min(HIF_MBOX0_EXT_WIDTH,
 				     target->max_xfer_szper_scatreq);
 
@@ -2631,7 +2418,7 @@ static void htc_setup_msg_bndl(struct htc_target *target)
 		   target->max_rx_bndl_sz, target->max_tx_bndl_sz);
 
 	if (target->max_tx_bndl_sz)
-		/* tx_bndl_mask is enabled per AC, each has 1 bit */
+		 
 		target->tx_bndl_mask = (1 << WMM_NUM_AC) - 1;
 
 	if (target->max_rx_bndl_sz)
@@ -2641,12 +2428,7 @@ static void htc_setup_msg_bndl(struct htc_target *target)
 		ath6kl_warn("credit size: %d is not block aligned! Disabling send bundling\n",
 			    target->tgt_cred_sz);
 
-		/*
-		 * Disallow send bundling since the credit size is
-		 * not aligned to a block size the I/O block
-		 * padding will spill into the next credit buffer
-		 * which is fatal.
-		 */
+		 
 		target->tx_bndl_mask = 0;
 	}
 }
@@ -2659,13 +2441,13 @@ static int ath6kl_htc_mbox_wait_target(struct htc_target *target)
 	struct htc_service_connect_resp resp;
 	int status;
 
-	/* we should be getting 1 control message that the target is ready */
+	 
 	packet = htc_wait_for_ctrl_msg(target);
 
 	if (!packet)
 		return -ENOMEM;
 
-	/* we controlled the buffer creation so it's properly aligned */
+	 
 	rdy_msg = (struct htc_ready_ext_msg *)packet->buf;
 
 	if ((le16_to_cpu(rdy_msg->ver2_0_info.msg_id) != HTC_MSG_READY_ID) ||
@@ -2686,13 +2468,13 @@ static int ath6kl_htc_mbox_wait_target(struct htc_target *target)
 		   "htc target ready credits %d size %d\n",
 		   target->tgt_creds, target->tgt_cred_sz);
 
-	/* check if this is an extended ready message */
+	 
 	if (packet->act_len >= sizeof(struct htc_ready_ext_msg)) {
-		/* this is an extended message */
+		 
 		target->htc_tgt_ver = rdy_msg->htc_ver;
 		target->msg_per_bndl_max = rdy_msg->msg_per_htc_bndl;
 	} else {
-		/* legacy */
+		 
 		target->htc_tgt_ver = HTC_VERSION_2P0;
 		target->msg_per_bndl_max = 0;
 	}
@@ -2704,7 +2486,7 @@ static int ath6kl_htc_mbox_wait_target(struct htc_target *target)
 	if (target->msg_per_bndl_max > 0)
 		htc_setup_msg_bndl(target);
 
-	/* setup our pseudo HTC control endpoint connection */
+	 
 	memset(&connect, 0, sizeof(connect));
 	memset(&resp, 0, sizeof(resp));
 	connect.ep_cb.rx = htc_ctrl_rx;
@@ -2713,14 +2495,11 @@ static int ath6kl_htc_mbox_wait_target(struct htc_target *target)
 	connect.max_txq_depth = NUM_CONTROL_BUFFERS;
 	connect.svc_id = HTC_CTRL_RSVD_SVC;
 
-	/* connect fake service */
+	 
 	status = ath6kl_htc_mbox_conn_service((void *)target, &connect, &resp);
 
 	if (status)
-		/*
-		 * FIXME: this call doesn't make sense, the caller should
-		 * call ath6kl_htc_mbox_cleanup() when it wants remove htc
-		 */
+		 
 		ath6kl_hif_cleanup_scatter(target->dev->ar);
 
 fail_wait_target:
@@ -2732,10 +2511,7 @@ fail_wait_target:
 	return status;
 }
 
-/*
- * Start HTC, enable interrupts and let the target know
- * host has finished setup.
- */
+ 
 static int ath6kl_htc_mbox_start(struct htc_target *target)
 {
 	struct htc_packet *packet;
@@ -2744,32 +2520,32 @@ static int ath6kl_htc_mbox_start(struct htc_target *target)
 	memset(&target->dev->irq_proc_reg, 0,
 	       sizeof(target->dev->irq_proc_reg));
 
-	/* Disable interrupts at the chip level */
+	 
 	ath6kl_hif_disable_intrs(target->dev);
 
 	target->htc_flags = 0;
 	target->rx_st_flags = 0;
 
-	/* Push control receive buffers into htc control endpoint */
+	 
 	while ((packet = htc_get_control_buf(target, false)) != NULL) {
 		status = htc_add_rxbuf(target, packet);
 		if (status)
 			return status;
 	}
 
-	/* NOTE: the first entry in the distribution list is ENDPOINT_0 */
+	 
 	ath6kl_credit_init(target->credit_info, &target->cred_dist_list,
 			   target->tgt_creds);
 
 	dump_cred_dist_stats(target);
 
-	/* Indicate to the target of the setup completion */
+	 
 	status = htc_setup_tx_complete(target);
 
 	if (status)
 		return status;
 
-	/* unmask interrupts */
+	 
 	status = ath6kl_hif_unmask_intrs(target->dev);
 
 	if (status)
@@ -2817,18 +2593,14 @@ static int ath6kl_htc_reset(struct htc_target *target)
 	return 0;
 }
 
-/* htc_stop: stop interrupt reception, and flush all queued buffers */
+ 
 static void ath6kl_htc_mbox_stop(struct htc_target *target)
 {
 	spin_lock_bh(&target->htc_lock);
 	target->htc_flags |= HTC_OP_STATE_STOPPING;
 	spin_unlock_bh(&target->htc_lock);
 
-	/*
-	 * Masking interrupts is a synchronous operation, when this
-	 * function returns all pending HIF I/O has completed, we can
-	 * safely flush the queues.
-	 */
+	 
 	ath6kl_hif_mask_intrs(target->dev);
 
 	ath6kl_htc_flush_txep_all(target);
@@ -2884,7 +2656,7 @@ err_htc_cleanup:
 	return NULL;
 }
 
-/* cleanup the HTC instance */
+ 
 static void ath6kl_htc_mbox_cleanup(struct htc_target *target)
 {
 	struct htc_packet *packet, *tmp_packet;

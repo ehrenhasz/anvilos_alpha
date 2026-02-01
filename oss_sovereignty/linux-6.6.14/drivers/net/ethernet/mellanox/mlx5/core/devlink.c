@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2019 Mellanox Technologies */
+
+ 
 
 #include <devlink.h>
 
@@ -66,7 +66,7 @@ mlx5_devlink_info_get(struct devlink *devlink, struct devlink_info_req *req,
 	if (err)
 		return err;
 
-	/* no pending version, return running (stored) version */
+	 
 	if (stored_fw == 0)
 		stored_fw = running_fw;
 
@@ -150,10 +150,7 @@ static int mlx5_devlink_reload_down(struct devlink *devlink, bool netns_change,
 
 	sf_dev_allocated = mlx5_sf_dev_allocated(dev);
 	if (sf_dev_allocated) {
-		/* Reload results in deleting SF device which further results in
-		 * unregistering devlink instance while holding devlink_mutext.
-		 * Hence, do not support reload.
-		 */
+		 
 		NL_SET_ERR_MSG_MOD(extack, "reload is unsupported when SFs are allocated");
 		return -EOPNOTSUPP;
 	}
@@ -182,7 +179,7 @@ static int mlx5_devlink_reload_down(struct devlink *devlink, bool netns_change,
 			ret = mlx5_devlink_reload_fw_activate(devlink, extack);
 		break;
 	default:
-		/* Unsupported action should not get to this function */
+		 
 		WARN_ON(1);
 		ret = -EOPNOTSUPP;
 	}
@@ -209,7 +206,7 @@ static int mlx5_devlink_reload_up(struct devlink *devlink, enum devlink_reload_a
 	case DEVLINK_RELOAD_ACTION_FW_ACTIVATE:
 		if (limit == DEVLINK_RELOAD_LIMIT_NO_RESET)
 			break;
-		/* On fw_activate action, also driver is reloaded and reinit performed */
+		 
 		*actions_performed |= BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT);
 		ret = mlx5_load_one_devl_locked(dev, true);
 		if (ret)
@@ -217,7 +214,7 @@ static int mlx5_devlink_reload_up(struct devlink *devlink, enum devlink_reload_a
 		ret = mlx5_fw_reset_verify_fw_complete(dev, extack);
 		break;
 	default:
-		/* Unsupported action should not get to this function */
+		 
 		WARN_ON(1);
 		ret = -EOPNOTSUPP;
 	}
@@ -487,7 +484,7 @@ static void mlx5_devlink_hairpin_params_init_values(struct devlink *devlink)
 	u32 link_speed = 0;
 	u64 link_speed64;
 
-	/* set hairpin pair per each 50Gbs share of the link */
+	 
 	mlx5_port_max_linkspeed(dev, &link_speed);
 	link_speed = max_t(u32, link_speed, 50000);
 	link_speed64 = link_speed;
@@ -821,10 +818,7 @@ int mlx5_devlink_params_register(struct devlink *devlink)
 {
 	int err;
 
-	/* Here only the driver init params should be registered.
-	 * Runtime params should be registered by the code which
-	 * behaviour they configure.
-	 */
+	 
 
 	err = devl_params_register(devlink, mlx5_devlink_params,
 				   ARRAY_SIZE(mlx5_devlink_params));

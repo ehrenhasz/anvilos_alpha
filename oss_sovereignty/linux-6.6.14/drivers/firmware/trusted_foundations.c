@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Trusted Foundations support for ARM CPUs
- *
- * Copyright (c) 2013, NVIDIA Corporation.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -138,7 +134,7 @@ static int tf_init_cache(void)
 
 	return 0;
 }
-#endif /* CONFIG_CACHE_L2X0 */
+#endif  
 
 static const struct firmware_ops trusted_foundations_ops = {
 	.set_cpu_boot_addr = tf_set_cpu_boot_addr,
@@ -150,10 +146,7 @@ static const struct firmware_ops trusted_foundations_ops = {
 
 void register_trusted_foundations(struct trusted_foundations_platform_data *pd)
 {
-	/*
-	 * we are not using version information for now since currently
-	 * supported SMCs are compatible with all TF releases
-	 */
+	 
 	register_firmware_ops(&trusted_foundations_ops);
 }
 

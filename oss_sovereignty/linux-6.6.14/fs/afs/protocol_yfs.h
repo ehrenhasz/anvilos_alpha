@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* YFS protocol bits
- *
- * Copyright (C) 2018 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+ 
+ 
 
 #define YFS_FS_SERVICE	2500
 #define YFS_CM_SERVICE	2501
@@ -11,48 +7,48 @@
 #define YFSCBMAX	1024
 
 enum YFS_CM_Operations {
-	YFSCBProbe		= 206,	/* probe client */
-	YFSCBGetLock		= 207,	/* get contents of CM lock table */
-	YFSCBXStatsVersion	= 209,	/* get version of extended statistics */
-	YFSCBGetXStats		= 210,	/* get contents of extended statistics data */
-	YFSCBInitCallBackState3	= 213,	/* initialise callback state, version 3 */
-	YFSCBProbeUuid		= 214,	/* check the client hasn't rebooted */
+	YFSCBProbe		= 206,	 
+	YFSCBGetLock		= 207,	 
+	YFSCBXStatsVersion	= 209,	 
+	YFSCBGetXStats		= 210,	 
+	YFSCBInitCallBackState3	= 213,	 
+	YFSCBProbeUuid		= 214,	 
 	YFSCBGetServerPrefs	= 215,
 	YFSCBGetCellServDV	= 216,
 	YFSCBGetLocalCell	= 217,
 	YFSCBGetCacheConfig	= 218,
 	YFSCBGetCellByNum	= 65537,
-	YFSCBTellMeAboutYourself = 65538, /* get client capabilities */
+	YFSCBTellMeAboutYourself = 65538,  
 	YFSCBCallBack		= 64204,
 };
 
 enum YFS_FS_Operations {
-	YFSFETCHACL		= 64131, /* YFS Fetch file AFS3 ACL */
-	YFSFETCHSTATUS		= 64132, /* YFS Fetch file status */
-	YFSSTOREACL		= 64134, /* YFS Store file AFS3 ACL */
-	YFSSTORESTATUS		= 64135, /* YFS Store file status */
-	YFSREMOVEFILE		= 64136, /* YFS Remove a file */
-	YFSCREATEFILE		= 64137, /* YFS Create a file */
-	YFSRENAME		= 64138, /* YFS Rename or move a file or directory */
-	YFSSYMLINK		= 64139, /* YFS Create a symbolic link */
-	YFSLINK			= 64140, /* YFS Create a hard link */
-	YFSMAKEDIR		= 64141, /* YFS Create a directory */
-	YFSREMOVEDIR		= 64142, /* YFS Remove a directory */
-	YFSGETVOLUMESTATUS	= 64149, /* YFS Get volume status information */
-	YFSSETVOLUMESTATUS	= 64150, /* YFS Set volume status information */
-	YFSSETLOCK		= 64156, /* YFS Request a file lock */
-	YFSEXTENDLOCK		= 64157, /* YFS Extend a file lock */
-	YFSRELEASELOCK		= 64158, /* YFS Release a file lock */
-	YFSLOOKUP		= 64161, /* YFS lookup file in directory */
+	YFSFETCHACL		= 64131,  
+	YFSFETCHSTATUS		= 64132,  
+	YFSSTOREACL		= 64134,  
+	YFSSTORESTATUS		= 64135,  
+	YFSREMOVEFILE		= 64136,  
+	YFSCREATEFILE		= 64137,  
+	YFSRENAME		= 64138,  
+	YFSSYMLINK		= 64139,  
+	YFSLINK			= 64140,  
+	YFSMAKEDIR		= 64141,  
+	YFSREMOVEDIR		= 64142,  
+	YFSGETVOLUMESTATUS	= 64149,  
+	YFSSETVOLUMESTATUS	= 64150,  
+	YFSSETLOCK		= 64156,  
+	YFSEXTENDLOCK		= 64157,  
+	YFSRELEASELOCK		= 64158,  
+	YFSLOOKUP		= 64161,  
 	YFSFLUSHCPS		= 64165,
-	YFSFETCHOPAQUEACL	= 64168, /* YFS Fetch file YFS ACL */
+	YFSFETCHOPAQUEACL	= 64168,  
 	YFSWHOAMI		= 64170,
 	YFSREMOVEACL		= 64171,
 	YFSREMOVEFILE2		= 64173,
 	YFSSTOREOPAQUEACL2	= 64174,
-	YFSINLINEBULKSTATUS	= 64536, /* YFS Fetch multiple file statuses with errors */
-	YFSFETCHDATA64		= 64537, /* YFS Fetch file data */
-	YFSSTOREDATA64		= 64538, /* YFS Store file data */
+	YFSINLINEBULKSTATUS	= 64536,  
+	YFSFETCHDATA64		= 64537,  
+	YFSSTOREDATA64		= 64538,  
 	YFSUPDATESYMLINK	= 64540,
 };
 
@@ -169,8 +165,8 @@ enum yfs_lock_type {
 	yfs_LockMandatoryExtend	= 0x102,
 };
 
-/* RXYFS Viced Capability Flags */
-#define YFS_VICED_CAPABILITY_ERRORTRANS		0x0001 /* Deprecated v0.195 */
-#define YFS_VICED_CAPABILITY_64BITFILES		0x0002 /* Deprecated v0.195 */
-#define YFS_VICED_CAPABILITY_WRITELOCKACL	0x0004 /* Can lock a file even without lock perm */
-#define YFS_VICED_CAPABILITY_SANEACLS		0x0008 /* Deprecated v0.195 */
+ 
+#define YFS_VICED_CAPABILITY_ERRORTRANS		0x0001  
+#define YFS_VICED_CAPABILITY_64BITFILES		0x0002  
+#define YFS_VICED_CAPABILITY_WRITELOCKACL	0x0004  
+#define YFS_VICED_CAPABILITY_SANEACLS		0x0008  

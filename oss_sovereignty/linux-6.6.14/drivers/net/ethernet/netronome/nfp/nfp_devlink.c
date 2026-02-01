@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2017-2018 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/rtnetlink.h>
 #include <net/devlink.h>
@@ -54,7 +54,7 @@ nfp_devlink_set_lanes(struct nfp_pf *pf, unsigned int idx, unsigned int lanes)
 	ret = nfp_eth_config_commit_end(nsp);
 	if (ret < 0)
 		return ret;
-	if (ret) /* no change */
+	if (ret)  
 		return 0;
 
 	return nfp_net_refresh_port_table_sync(pf);
@@ -78,7 +78,7 @@ nfp_devlink_port_split(struct devlink *devlink, struct devlink_port *port,
 	if (eth_port.port_lanes % count)
 		return -EINVAL;
 
-	/* Special case the 100G CXP -> 2x40G split */
+	 
 	lanes = eth_port.port_lanes / count;
 	if (eth_port.lanes == 10 && count == 2)
 		lanes = 8 / count;
@@ -104,7 +104,7 @@ nfp_devlink_port_unsplit(struct devlink *devlink, struct devlink_port *port,
 	if (!eth_port.is_split)
 		return -EINVAL;
 
-	/* Special case the 100G CXP -> 2x40G unsplit */
+	 
 	lanes = eth_port.port_lanes;
 	if (eth_port.port_lanes == 8)
 		lanes = 10;
@@ -155,7 +155,7 @@ static const struct nfp_devlink_versions_simple {
 	{ DEVLINK_INFO_VERSION_GENERIC_BOARD_ID,	"assembly.partno", },
 	{ DEVLINK_INFO_VERSION_GENERIC_BOARD_REV,	"assembly.revision", },
 	{ DEVLINK_INFO_VERSION_GENERIC_BOARD_MANUFACTURE, "assembly.vendor", },
-	{ "board.model", /* code name */		"assembly.model", },
+	{ "board.model",  		"assembly.model", },
 };
 
 static int

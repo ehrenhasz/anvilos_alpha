@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -533,7 +533,7 @@ static int max31760_probe(struct i2c_client *client)
 
 	dev_set_drvdata(dev, state);
 
-	/* Set alert output to comparator mode */
+	 
 	ret = regmap_set_bits(state->regmap, REG_CR2, CR2_ALERTS);
 	if (ret)
 		return dev_err_probe(dev, ret, "cannot write register\n");

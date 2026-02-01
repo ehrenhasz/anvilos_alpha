@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * pcm_local.h - a local header file for snd-pcm module.
- *
- * Copyright (c) Takashi Sakamoto <o-takashi@sakamocchi.jp>
- */
+ 
+ 
 
 #ifndef __SOUND_CORE_PCM_LOCAL_H
 #define __SOUND_CORE_PCM_LOCAL_H
@@ -67,7 +63,7 @@ void snd_pcm_sync_stop(struct snd_pcm_substream *substream, bool sync_irq);
 
 #define PCM_RUNTIME_CHECK(sub) snd_BUG_ON(!(sub) || !(sub)->runtime)
 
-/* loop over all PCM substreams */
+ 
 #define for_each_pcm_substream(pcm, str, subs) \
 	for ((str) = 0; (str) < 2; (str)++) \
 		for ((subs) = (pcm)->streams[str].substream; (subs); \
@@ -80,4 +76,4 @@ static inline void snd_pcm_dma_buffer_sync(struct snd_pcm_substream *substream,
 		snd_dma_buffer_sync(snd_pcm_get_dma_buf(substream), mode);
 }
 
-#endif	/* __SOUND_CORE_PCM_LOCAL_H */
+#endif	 

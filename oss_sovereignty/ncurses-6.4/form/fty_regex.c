@@ -1,55 +1,17 @@
-/****************************************************************************
- * Copyright 2018-2020,2021 Thomas E. Dickey                                *
- * Copyright 1998-2012,2015 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/***************************************************************************
-*                                                                          *
-*  Author : Juergen Pfeifer                                                *
-*                                                                          *
-***************************************************************************/
+ 
 
 #include "form.priv.h"
 
 MODULE_ID("$Id: fty_regex.c,v 1.33 2021/08/14 15:01:52 tom Exp $")
 
-#if HAVE_REGEX_H_FUNCS || HAVE_LIB_PCRE2	/* We prefer POSIX regex */
+#if HAVE_REGEX_H_FUNCS || HAVE_LIB_PCRE2	 
 
 #if HAVE_PCRE2POSIX_H
 #include <pcre2posix.h>
 
-/* pcre2 used to provide its "POSIX" entrypoints using the same names as the
- * standard ones in the C runtime, but that never worked because the linker
- * would use the C runtime.  Debian patched the library to fix this symbol
- * conflict, but overlooked the header file, and Debian's patch was made
- * obsolete when pcre2 was changed early in 2019 to provide different names.
- *
- * Here is a workaround to make the older version of Debian's package work.
- */
+ 
 #if !defined(PCRE2regcomp) && defined(HAVE_PCRE2REGCOMP)
 
 #undef regcomp
@@ -65,13 +27,13 @@ extern "C"
 				       regmatch_t *, int);
   PCRE2POSIX_EXP_DECL void PCRE2regfree(regex_t *);
 #ifdef __cplusplus
-}				/* extern "C" */
+}				 
 #endif
 #define regcomp(r,s,n)          PCRE2regcomp(r,s,n)
 #define regexec(r,s,n,m,x)      PCRE2regexec(r,s,n,m,x)
 #define regfree(r)              PCRE2regfree(r)
 #endif
-/* end workaround... */
+ 
 #elif HAVE_PCREPOSIX_H
 #include <pcreposix.h>
 #else
@@ -123,7 +85,7 @@ typedef struct
 }
 RegExp_Arg;
 
-/* Maximum Length we allow for a compiled regular expression */
+ 
 #define MAX_RX_LEN   (2048)
 #define RX_INCREMENT (256)
 
@@ -135,14 +97,7 @@ RegExp_Arg;
 # define MAYBE_UNUSED GCC_UNUSED
 #endif
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static void *Generic_RegularExpression_Type(void * arg)
-|
-|   Description   :  Allocate structure for regex type argument.
-|
-|   Return Values :  Pointer to argument structure or NULL on error
-+--------------------------------------------------------------------------*/
+ 
 static void *
 Generic_RegularExpression_Type(void *arg MAYBE_UNUSED)
 {
@@ -201,7 +156,7 @@ Generic_RegularExpression_Type(void *arg MAYBE_UNUSED)
 #if HAVE_REGEXP_H_FUNCS
 		  char *last_pos = compile(rx, buf, &buf[blen], '\0');
 
-#else /* HAVE_REGEXPR_H_FUNCS */
+#else  
 		  char *last_pos = compile(rx, buf, &buf[blen]);
 #endif
 		  if (reg_errno)
@@ -237,14 +192,7 @@ Generic_RegularExpression_Type(void *arg MAYBE_UNUSED)
 #endif
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static void *Make_RegularExpression_Type(va_list * ap)
-|
-|   Description   :  Allocate structure for regex type argument.
-|
-|   Return Values :  Pointer to argument structure or NULL on error
-+--------------------------------------------------------------------------*/
+ 
 static void *
 Make_RegularExpression_Type(va_list *ap)
 {
@@ -253,15 +201,7 @@ Make_RegularExpression_Type(va_list *ap)
   return Generic_RegularExpression_Type((void *)rx);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static void *Copy_RegularExpression_Type(
-|                                      const void * argp)
-|
-|   Description   :  Copy structure for regex type argument.
-|
-|   Return Values :  Pointer to argument structure or NULL on error.
-+--------------------------------------------------------------------------*/
+ 
 static void *
 Copy_RegularExpression_Type(const void *argp MAYBE_UNUSED)
 {
@@ -280,14 +220,7 @@ Copy_RegularExpression_Type(const void *argp MAYBE_UNUSED)
 #endif
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static void Free_RegularExpression_Type(void * argp)
-|
-|   Description   :  Free structure for regex type argument.
-|
-|   Return Values :  -
-+--------------------------------------------------------------------------*/
+ 
 static void
 Free_RegularExpression_Type(void *argp MAYBE_UNUSED)
 {
@@ -318,17 +251,7 @@ Free_RegularExpression_Type(void *argp MAYBE_UNUSED)
 #endif
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static bool Check_RegularExpression_Field(
-|                                      FIELD * field,
-|                                      const void  * argp)
-|
-|   Description   :  Validate buffer content to be a valid regular expression
-|
-|   Return Values :  TRUE  - field is valid
-|                    FALSE - field is invalid
-+--------------------------------------------------------------------------*/
+ 
 static bool
 Check_RegularExpression_Field(FIELD *field MAYBE_UNUSED,
 			      const void *argp MAYBE_UNUSED)
@@ -356,7 +279,7 @@ Check_RegularExpression_Field(FIELD *field MAYBE_UNUSED,
 static FIELDTYPE typeREGEXP =
 {
   _HAS_ARGS | _RESIDENT,
-  1,				/* this is mutable, so we can't be const */
+  1,				 
   (FIELDTYPE *)0,
   (FIELDTYPE *)0,
   Make_RegularExpression_Type,
@@ -374,10 +297,7 @@ static FIELDTYPE typeREGEXP =
 FORM_EXPORT_VAR(FIELDTYPE *) TYPE_REGEXP = &typeREGEXP;
 
 #if NCURSES_INTEROP_FUNCS
-/* The next routines are to simplify the use of ncurses from
-   programming languages with restrictions on interop with C level
-   constructs (e.g. variable access or va_list + ellipsis constructs)
-*/
+ 
 FORM_EXPORT(FIELDTYPE *)
 _nc_TYPE_REGEXP(void)
 {
@@ -385,4 +305,4 @@ _nc_TYPE_REGEXP(void)
 }
 #endif
 
-/* fty_regex.c ends here */
+ 

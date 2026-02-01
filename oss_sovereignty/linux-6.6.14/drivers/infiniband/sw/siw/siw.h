@@ -1,7 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
+ 
 
-/* Authors: Bernard Metzler <bmt@zurich.ibm.com> */
-/* Copyright (c) 2008-2019, IBM Corporation */
+ 
+ 
 
 #ifndef _SIW_H
 #define _SIW_H
@@ -17,40 +17,37 @@
 #include <rdma/siw-abi.h>
 #include "iwarp.h"
 
-#define SIW_VENDOR_ID 0x626d74 /* ascii 'bmt' for now */
+#define SIW_VENDOR_ID 0x626d74  
 #define SIW_VENDORT_PART_ID 0
 #define SIW_MAX_QP (1024 * 100)
 #define SIW_MAX_QP_WR (1024 * 32)
 #define SIW_MAX_ORD_QP 128
 #define SIW_MAX_IRD_QP 128
-#define SIW_MAX_SGE_PBL 256 /* max num sge's for PBL */
-#define SIW_MAX_SGE_RD 1 /* iwarp limitation. we could relax */
+#define SIW_MAX_SGE_PBL 256  
+#define SIW_MAX_SGE_RD 1  
 #define SIW_MAX_CQ (1024 * 100)
 #define SIW_MAX_CQE (SIW_MAX_QP_WR * 100)
 #define SIW_MAX_MR (SIW_MAX_QP * 10)
 #define SIW_MAX_PD SIW_MAX_QP
-#define SIW_MAX_MW 0 /* to be set if MW's are supported */
+#define SIW_MAX_MW 0  
 #define SIW_MAX_SRQ SIW_MAX_QP
 #define SIW_MAX_SRQ_WR (SIW_MAX_QP_WR * 10)
 #define SIW_MAX_CONTEXT SIW_MAX_PD
 
-/* Min number of bytes for using zero copy transmit */
+ 
 #define SENDPAGE_THRESH PAGE_SIZE
 
-/* Maximum number of frames which can be send in one SQ processing */
+ 
 #define SQ_USER_MAXBURST 100
 
-/* Maximum number of consecutive IRQ elements which get served
- * if SQ has pending work. Prevents starving local SQ processing
- * by serving peer Read Requests.
- */
+ 
 #define SIW_IRQ_MAXBURST_SQ_ACTIVE 4
 
 struct siw_dev_cap {
 	int max_qp;
 	int max_qp_wr;
-	int max_ord; /* max. outbound read queue depth */
-	int max_ird; /* max. inbound read queue depth */
+	int max_ord;  
+	int max_ird;  
 	int max_sge;
 	int max_sge_rd;
 	int max_cq;
@@ -76,7 +73,7 @@ struct siw_device {
 	int numa_node;
 	char raw_gid[ETH_ALEN];
 
-	/* physical port state (only one port per device) */
+	 
 	enum ib_port_state state;
 
 	spinlock_t lock;
@@ -87,7 +84,7 @@ struct siw_device {
 	struct list_head cep_list;
 	struct list_head qp_list;
 
-	/* active objects statistics to enforce limits */
+	 
 	atomic_t num_qp;
 	atomic_t num_cq;
 	atomic_t num_pd;
@@ -103,18 +100,12 @@ struct siw_ucontext {
 	struct siw_device *sdev;
 };
 
-/*
- * The RDMA core does not define LOCAL_READ access, which is always
- * enabled implictely.
- */
+ 
 #define IWARP_ACCESS_MASK					\
 	(IB_ACCESS_LOCAL_WRITE | IB_ACCESS_REMOTE_WRITE	|	\
 	 IB_ACCESS_REMOTE_READ)
 
-/*
- * siw presentation of user memory registered as source
- * or target of RDMA operations.
- */
+ 
 
 struct siw_page_chunk {
 	struct page **plist;
@@ -124,14 +115,14 @@ struct siw_umem {
 	struct siw_page_chunk *page_chunk;
 	int num_pages;
 	bool writable;
-	u64 fp_addr; /* First page base address */
+	u64 fp_addr;  
 	struct mm_struct *owning_mm;
 };
 
 struct siw_pble {
-	dma_addr_t addr; /* Address of assigned buffer */
-	unsigned int size; /* Size of this entry */
-	unsigned long pbl_off; /* Total offset from start of PBL */
+	dma_addr_t addr;  
+	unsigned int size;  
+	unsigned long pbl_off;  
 };
 
 struct siw_pbl {
@@ -140,20 +131,17 @@ struct siw_pbl {
 	struct siw_pble pbe[];
 };
 
-/*
- * Generic memory representation for registered siw memory.
- * Memory lookup always via higher 24 bit of STag (STag index).
- */
+ 
 struct siw_mem {
 	struct siw_device *sdev;
 	struct kref ref;
-	u64 va; /* VA of memory */
-	u64 len; /* length of the memory buffer in bytes */
-	u32 stag; /* iWarp memory access steering tag */
-	u8 stag_valid; /* VALID or INVALID */
-	u8 is_pbl; /* PBL or user space mem */
-	u8 is_mw; /* Memory Region or Memory Window */
-	enum ib_access_flags perms; /* local/remote READ & WRITE */
+	u64 va;  
+	u64 len;  
+	u32 stag;  
+	u8 stag_valid;  
+	u8 is_pbl;  
+	u8 is_mw;  
+	enum ib_access_flags perms;  
 	union {
 		struct siw_umem *umem;
 		struct siw_pbl *pbl;
@@ -168,10 +156,7 @@ struct siw_mr {
 	struct rcu_head rcu;
 };
 
-/*
- * Error codes for local or remote
- * access to registered memory
- */
+ 
 enum siw_access_state {
 	E_ACCESS_OK,
 	E_STAG_INVALID,
@@ -182,22 +167,22 @@ enum siw_access_state {
 
 enum siw_wr_state {
 	SIW_WR_IDLE,
-	SIW_WR_QUEUED, /* processing has not started yet */
-	SIW_WR_INPROGRESS /* initiated processing of the WR */
+	SIW_WR_QUEUED,  
+	SIW_WR_INPROGRESS  
 };
 
-/* The WQE currently being processed (RX or TX) */
+ 
 struct siw_wqe {
-	/* Copy of applications SQE or RQE */
+	 
 	union {
 		struct siw_sqe sqe;
 		struct siw_rqe rqe;
 	};
-	struct siw_mem *mem[SIW_MAX_SGE]; /* per sge's resolved mem */
+	struct siw_mem *mem[SIW_MAX_SGE];  
 	enum siw_wr_state wr_status;
 	enum siw_wc_status wc_status;
-	u32 bytes; /* total bytes to process */
-	u32 processed; /* bytes processed */
+	u32 bytes;  
+	u32 processed;  
 };
 
 struct siw_cq {
@@ -208,8 +193,8 @@ struct siw_cq {
 	u32 cq_put;
 	u32 cq_get;
 	u32 num_cqe;
-	struct rdma_user_mmap_entry *cq_entry; /* mmap info for CQE array */
-	u32 id; /* For debugging only */
+	struct rdma_user_mmap_entry *cq_entry;  
+	u32 id;  
 };
 
 enum siw_qp_state {
@@ -246,14 +231,14 @@ struct siw_srq {
 	struct ib_srq base_srq;
 	spinlock_t lock;
 	u32 max_sge;
-	u32 limit; /* low watermark for async event */
+	u32 limit;  
 	struct siw_rqe *recvq;
 	u32 rq_put;
 	u32 rq_get;
-	u32 num_rqe; /* max # of wqe's allowed */
-	struct rdma_user_mmap_entry *srq_entry; /* mmap info for SRQ array */
-	bool armed:1; /* inform user if limit hit */
-	bool is_kernel_res:1; /* true if kernel client */
+	u32 num_rqe;  
+	struct rdma_user_mmap_entry *srq_entry;  
+	bool armed:1;  
+	bool is_kernel_res:1;  
 };
 
 struct siw_qp_attrs {
@@ -270,76 +255,60 @@ struct siw_qp_attrs {
 };
 
 enum siw_tx_ctx {
-	SIW_SEND_HDR, /* start or continue sending HDR */
-	SIW_SEND_DATA, /* start or continue sending DDP payload */
-	SIW_SEND_TRAILER, /* start or continue sending TRAILER */
-	SIW_SEND_SHORT_FPDU/* send whole FPDU hdr|data|trailer at once */
+	SIW_SEND_HDR,  
+	SIW_SEND_DATA,  
+	SIW_SEND_TRAILER,  
+	SIW_SEND_SHORT_FPDU 
 };
 
 enum siw_rx_state {
-	SIW_GET_HDR, /* await new hdr or within hdr */
-	SIW_GET_DATA_START, /* start of inbound DDP payload */
-	SIW_GET_DATA_MORE, /* continuation of (misaligned) DDP payload */
-	SIW_GET_TRAILER/* await new trailer or within trailer */
+	SIW_GET_HDR,  
+	SIW_GET_DATA_START,  
+	SIW_GET_DATA_MORE,  
+	SIW_GET_TRAILER 
 };
 
 struct siw_rx_stream {
 	struct sk_buff *skb;
-	int skb_new; /* pending unread bytes in skb */
-	int skb_offset; /* offset in skb */
-	int skb_copied; /* processed bytes in skb */
+	int skb_new;  
+	int skb_offset;  
+	int skb_copied;  
 
 	union iwarp_hdr hdr;
 	struct mpa_trailer trailer;
 
 	enum siw_rx_state state;
 
-	/*
-	 * For each FPDU, main RX loop runs through 3 stages:
-	 * Receiving protocol headers, placing DDP payload and receiving
-	 * trailer information (CRC + possibly padding).
-	 * Next two variables keep state on receive status of the
-	 * current FPDU part (hdr, data, trailer).
-	 */
-	int fpdu_part_rcvd; /* bytes in pkt part copied */
-	int fpdu_part_rem; /* bytes in pkt part not seen */
+	 
+	int fpdu_part_rcvd;  
+	int fpdu_part_rem;  
 
-	/*
-	 * Next expected DDP MSN for each QN +
-	 * expected steering tag +
-	 * expected DDP tagget offset (all HBO)
-	 */
+	 
 	u32 ddp_msn[RDMAP_UNTAGGED_QN_COUNT];
 	u32 ddp_stag;
 	u64 ddp_to;
-	u32 inval_stag; /* Stag to be invalidated */
+	u32 inval_stag;  
 
 	struct shash_desc *mpa_crc_hd;
 	u8 rx_suspend : 1;
-	u8 pad : 2; /* # of pad bytes expected */
-	u8 rdmap_op : 4; /* opcode of current frame */
+	u8 pad : 2;  
+	u8 rdmap_op : 4;  
 };
 
 struct siw_rx_fpdu {
-	/*
-	 * Local destination memory of inbound RDMA operation.
-	 * Valid, according to wqe->wr_status
-	 */
+	 
 	struct siw_wqe wqe_active;
 
-	unsigned int pbl_idx; /* Index into current PBL */
-	unsigned int sge_idx; /* current sge in rx */
-	unsigned int sge_off; /* already rcvd in curr. sge */
+	unsigned int pbl_idx;  
+	unsigned int sge_idx;  
+	unsigned int sge_off;  
 
-	char first_ddp_seg; /* this is the first DDP seg */
-	char more_ddp_segs; /* more DDP segs expected */
-	u8 prev_rdmap_op : 4; /* opcode of prev frame */
+	char first_ddp_seg;  
+	char more_ddp_segs;  
+	u8 prev_rdmap_op : 4;  
 };
 
-/*
- * Shorthands for short packets w/o payload
- * to be transmitted more efficient.
- */
+ 
 struct siw_send_pkt {
 	struct iwarp_send send;
 	__be32 crc;
@@ -364,12 +333,12 @@ struct siw_iwarp_tx {
 	union {
 		union iwarp_hdr hdr;
 
-		/* Generic part of FPDU header */
+		 
 		struct iwarp_ctrl ctrl;
 		struct iwarp_ctrl_untagged c_untagged;
 		struct iwarp_ctrl_tagged c_tagged;
 
-		/* FPDU headers */
+		 
 		struct iwarp_rdma_write rwrite;
 		struct iwarp_rdma_rreq rreq;
 		struct iwarp_rdma_rresp rresp;
@@ -377,7 +346,7 @@ struct siw_iwarp_tx {
 		struct iwarp_send send;
 		struct iwarp_send_inv send_inv;
 
-		/* complete short FPDUs */
+		 
 		struct siw_send_pkt send_pkt;
 		struct siw_write_pkt write_pkt;
 		struct siw_rreq_pkt rreq_pkt;
@@ -385,34 +354,34 @@ struct siw_iwarp_tx {
 	} pkt;
 
 	struct mpa_trailer trailer;
-	/* DDP MSN for untagged messages */
+	 
 	u32 ddp_msn[RDMAP_UNTAGGED_QN_COUNT];
 
 	enum siw_tx_ctx state;
-	u16 ctrl_len; /* ddp+rdmap hdr */
+	u16 ctrl_len;  
 	u16 ctrl_sent;
 	int burst;
-	int bytes_unsent; /* ddp payload bytes */
+	int bytes_unsent;  
 
 	struct shash_desc *mpa_crc_hd;
 
-	u8 do_crc : 1; /* do crc for segment */
-	u8 use_sendpage : 1; /* send w/o copy */
-	u8 tx_suspend : 1; /* stop sending DDP segs. */
-	u8 pad : 2; /* # pad in current fpdu */
-	u8 orq_fence : 1; /* ORQ full or Send fenced */
-	u8 in_syscall : 1; /* TX out of user context */
-	u8 zcopy_tx : 1; /* Use TCP_SENDPAGE if possible */
-	u8 gso_seg_limit; /* Maximum segments for GSO, 0 = unbound */
+	u8 do_crc : 1;  
+	u8 use_sendpage : 1;  
+	u8 tx_suspend : 1;  
+	u8 pad : 2;  
+	u8 orq_fence : 1;  
+	u8 in_syscall : 1;  
+	u8 zcopy_tx : 1;  
+	u8 gso_seg_limit;  
 
-	u16 fpdu_len; /* len of FPDU to tx */
-	unsigned int tcp_seglen; /* remaining tcp seg space */
+	u16 fpdu_len;  
+	unsigned int tcp_seglen;  
 
 	struct siw_wqe wqe_active;
 
-	int pbl_idx; /* Index into current PBL */
-	int sge_idx; /* current sge in tx */
-	u32 sge_off; /* already sent in curr. sge */
+	int pbl_idx;  
+	int sge_idx;  
+	u32 sge_off;  
 };
 
 struct siw_qp {
@@ -432,44 +401,44 @@ struct siw_qp {
 	struct siw_cq *rcq;
 	struct siw_srq *srq;
 
-	struct siw_iwarp_tx tx_ctx; /* Transmit context */
+	struct siw_iwarp_tx tx_ctx;  
 	spinlock_t sq_lock;
-	struct siw_sqe *sendq; /* send queue element array */
-	uint32_t sq_get; /* consumer index into sq array */
-	uint32_t sq_put; /* kernel prod. index into sq array */
+	struct siw_sqe *sendq;  
+	uint32_t sq_get;  
+	uint32_t sq_put;  
 	struct llist_node tx_list;
 
-	struct siw_sqe *orq; /* outbound read queue element array */
+	struct siw_sqe *orq;  
 	spinlock_t orq_lock;
-	uint32_t orq_get; /* consumer index into orq array */
-	uint32_t orq_put; /* shared producer index for ORQ */
+	uint32_t orq_get;  
+	uint32_t orq_put;  
 
 	struct siw_rx_stream rx_stream;
 	struct siw_rx_fpdu *rx_fpdu;
 	struct siw_rx_fpdu rx_tagged;
 	struct siw_rx_fpdu rx_untagged;
 	spinlock_t rq_lock;
-	struct siw_rqe *recvq; /* recv queue element array */
-	uint32_t rq_get; /* consumer index into rq array */
-	uint32_t rq_put; /* kernel prod. index into rq array */
+	struct siw_rqe *recvq;  
+	uint32_t rq_get;  
+	uint32_t rq_put;  
 
-	struct siw_sqe *irq; /* inbound read queue element array */
-	uint32_t irq_get; /* consumer index into irq array */
-	uint32_t irq_put; /* producer index into irq array */
+	struct siw_sqe *irq;  
+	uint32_t irq_get;  
+	uint32_t irq_put;  
 	int irq_burst;
 
-	struct { /* information to be carried in TERMINATE pkt, if valid */
+	struct {  
 		u8 valid;
 		u8 in_tx;
 		u8 layer : 4, etype : 4;
 		u8 ecode;
 	} term_info;
-	struct rdma_user_mmap_entry *sq_entry; /* mmap info for SQE array */
-	struct rdma_user_mmap_entry *rq_entry; /* mmap info for RQE array */
+	struct rdma_user_mmap_entry *sq_entry;  
+	struct rdma_user_mmap_entry *rq_entry;  
 	struct rcu_head rcu;
 };
 
-/* helper macros */
+ 
 #define rx_qp(rx) container_of(rx, struct siw_qp, rx_stream)
 #define tx_qp(tx) container_of(tx, struct siw_qp, tx_ctx)
 #define tx_wqe(qp) (&(qp)->tx_ctx.wqe_active)
@@ -490,7 +459,7 @@ struct siw_user_mmap_entry {
 	void *address;
 };
 
-/* Global siw parameters. Currently set in siw_main.c */
+ 
 extern const bool zcopy_tx;
 extern const bool try_gso;
 extern const bool loopback_enabled;
@@ -504,7 +473,7 @@ extern struct task_struct *siw_tx_thread[];
 extern struct crypto_shash *siw_crypto_shash;
 extern struct iwarp_msg_info iwarp_pktinfo[RDMAP_TERMINATE + 1];
 
-/* QP general functions */
+ 
 int siw_qp_modify(struct siw_qp *qp, struct siw_qp_attrs *attr,
 		  enum siw_qp_attr_mask mask);
 int siw_qp_mpa_rts(struct siw_qp *qp, enum mpa_v2_ctrl ctrl);
@@ -530,7 +499,7 @@ int siw_rqe_complete(struct siw_qp *qp, struct siw_rqe *rqe, u32 bytes,
 void siw_qp_llp_data_ready(struct sock *sk);
 void siw_qp_llp_write_space(struct sock *sk);
 
-/* QP TX path functions */
+ 
 int siw_create_tx_threads(void);
 void siw_stop_tx_threads(void);
 int siw_run_sq(void *arg);
@@ -540,7 +509,7 @@ int siw_activate_tx(struct siw_qp *qp);
 int siw_get_tx_cpu(struct siw_device *sdev);
 void siw_put_tx_cpu(int cpu);
 
-/* QP RX path functions */
+ 
 int siw_proc_send(struct siw_qp *qp);
 int siw_proc_rreq(struct siw_qp *qp);
 int siw_proc_rresp(struct siw_qp *qp);

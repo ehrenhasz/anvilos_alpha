@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Freescale i.MX drm driver
- *
- * Copyright (C) 2011 Sascha Hauer, Pengutronix
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/device.h>
@@ -50,15 +46,12 @@ static int imx_drm_atomic_check(struct drm_device *dev,
 	if (ret)
 		return ret;
 
-	/*
-	 * Check modeset again in case crtc_state->mode_changed is
-	 * updated in plane's ->atomic_check callback.
-	 */
+	 
 	ret = drm_atomic_helper_check_modeset(dev, state);
 	if (ret)
 		return ret;
 
-	/* Assign PRG/PRE channels and check if all constrains are satisfied. */
+	 
 	ret = ipu_planes_assign_pre(dev, state);
 	if (ret)
 		return ret;
@@ -93,13 +86,7 @@ static void imx_drm_atomic_commit_tail(struct drm_atomic_state *state)
 			plane_disabling = true;
 	}
 
-	/*
-	 * The flip done wait is only strictly required by imx-drm if a deferred
-	 * plane disable is in-flight. As the core requires blocking commits
-	 * to wait for the flip it is done here unconditionally. This keeps the
-	 * workitem around a bit longer than required for the majority of
-	 * non-blocking commits, but we accept that for the sake of simplicity.
-	 */
+	 
 	drm_atomic_helper_wait_for_flip_done(dev, state);
 
 	if (plane_disabling) {
@@ -121,18 +108,13 @@ int imx_drm_encoder_parse_of(struct drm_device *drm,
 {
 	uint32_t crtc_mask = drm_of_find_possible_crtcs(drm, np);
 
-	/*
-	 * If we failed to find the CRTC(s) which this encoder is
-	 * supposed to be connected to, it's because the CRTC has
-	 * not been registered yet.  Defer probing, and hope that
-	 * the required CRTC is added later.
-	 */
+	 
 	if (crtc_mask == 0)
 		return -EPROBE_DEFER;
 
 	encoder->possible_crtcs = crtc_mask;
 
-	/* FIXME: cloning support not clear, disable it all for now */
+	 
 	encoder->possible_clones = 0;
 
 	return 0;
@@ -140,7 +122,7 @@ int imx_drm_encoder_parse_of(struct drm_device *drm,
 EXPORT_SYMBOL_GPL(imx_drm_encoder_parse_of);
 
 static const struct drm_ioctl_desc imx_drm_ioctls[] = {
-	/* none so far */
+	 
 };
 
 static int imx_drm_dumb_create(struct drm_file *file_priv,
@@ -178,14 +160,14 @@ static int compare_of(struct device *dev, void *data)
 {
 	struct device_node *np = data;
 
-	/* Special case for DI, dev->of_node may not be set yet */
+	 
 	if (strcmp(dev->driver->name, "imx-ipuv3-crtc") == 0) {
 		struct ipu_client_platformdata *pdata = dev->platform_data;
 
 		return pdata->of_node == np;
 	}
 
-	/* Special case for LDB, one device for two channels */
+	 
 	if (of_node_name_eq(np, "lvds-channel")) {
 		np = of_get_parent(np);
 		of_node_put(np);
@@ -203,11 +185,7 @@ static int imx_drm_bind(struct device *dev)
 	if (IS_ERR(drm))
 		return PTR_ERR(drm);
 
-	/*
-	 * set max width and height as default value(4096x4096).
-	 * this value would be used to check framebuffer size limitation
-	 * at drm_mode_addfb().
-	 */
+	 
 	drm->mode_config.min_width = 1;
 	drm->mode_config.min_height = 1;
 	drm->mode_config.max_width = 4096;
@@ -226,18 +204,14 @@ static int imx_drm_bind(struct device *dev)
 
 	dev_set_drvdata(dev, drm);
 
-	/* Now try and bind all our sub-components */
+	 
 	ret = component_bind_all(dev, drm);
 	if (ret)
 		goto err_kms;
 
 	drm_mode_config_reset(drm);
 
-	/*
-	 * All components are now initialised, so setup the fb helper.
-	 * The fb helper takes copies of key hardware information, so the
-	 * crtcs/connectors/encoders must not change after this point.
-	 */
+	 
 	if (legacyfb_depth != 16 && legacyfb_depth != 32) {
 		dev_warn(dev, "Invalid legacyfb_depth.  Defaulting to 16bpp\n");
 		legacyfb_depth = 16;
@@ -318,7 +292,7 @@ static SIMPLE_DEV_PM_OPS(imx_drm_pm_ops, imx_drm_suspend, imx_drm_resume);
 
 static const struct of_device_id imx_drm_dt_ids[] = {
 	{ .compatible = "fsl,imx-display-subsystem", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, imx_drm_dt_ids);
 

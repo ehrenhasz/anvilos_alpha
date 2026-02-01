@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
-// Copyright(c) 2015-17 Intel Corporation.
+
+
 
 #include <linux/acpi.h>
 #include <linux/of.h>
@@ -33,18 +33,18 @@ int sdw_slave_add(struct sdw_bus *bus,
 	if (!slave)
 		return -ENOMEM;
 
-	/* Initialize data structure */
+	 
 	memcpy(&slave->id, id, sizeof(*id));
 	slave->dev.parent = bus->dev;
 	slave->dev.fwnode = fwnode;
 
 	if (id->unique_id == SDW_IGNORED_UNIQUE_ID) {
-		/* name shall be sdw:link:mfg:part:class */
+		 
 		dev_set_name(&slave->dev, "sdw:%01x:%04x:%04x:%02x",
 			     bus->link_id, id->mfg_id, id->part_id,
 			     id->class_id);
 	} else {
-		/* name shall be sdw:link:mfg:part:class:unique */
+		 
 		dev_set_name(&slave->dev, "sdw:%01x:%04x:%04x:%02x:%01x",
 			     bus->link_id, id->mfg_id, id->part_id,
 			     id->class_id, id->unique_id);
@@ -74,10 +74,7 @@ int sdw_slave_add(struct sdw_bus *bus,
 	if (ret) {
 		dev_err(bus->dev, "Failed to add slave: ret %d\n", ret);
 
-		/*
-		 * On err, don't free but drop ref as this will be freed
-		 * when release method is invoked.
-		 */
+		 
 		mutex_lock(&bus->bus_lock);
 		list_del(&slave->node);
 		mutex_unlock(&bus->bus_lock);
@@ -116,10 +113,10 @@ static bool find_slave(struct sdw_bus *bus,
 	if (!addr)
 		return false;
 
-	/* Extract link id from ADR, Bit 51 to 48 (included) */
+	 
 	link_id = SDW_DISCO_LINK_ID(addr);
 
-	/* Check for link_id match */
+	 
 	if (link_id != bus->link_id)
 		return false;
 
@@ -179,7 +176,7 @@ static int sdw_acpi_find_one(struct acpi_device *adev, void *data)
 	if (!find_slave(bus, adev, &cwd.id))
 		return 0;
 
-	/* Brute-force O(N^2) search for duplicates. */
+	 
 	ret = acpi_dev_for_each_child(ACPI_COMPANION(bus->dev),
 				      sdw_acpi_check_duplicate, &cwd);
 	if (ret)
@@ -188,17 +185,12 @@ static int sdw_acpi_find_one(struct acpi_device *adev, void *data)
 	if (cwd.ignore_unique_id)
 		cwd.id.unique_id = SDW_IGNORED_UNIQUE_ID;
 
-	/* Ignore errors and continue. */
+	 
 	sdw_slave_add(bus, &cwd.id, acpi_fwnode_handle(adev));
 	return 0;
 }
 
-/*
- * sdw_acpi_find_slaves() - Find Slave devices in Master ACPI node
- * @bus: SDW bus instance
- *
- * Scans Master ACPI node for SDW child Slave devices and registers it.
- */
+ 
 int sdw_acpi_find_slaves(struct sdw_bus *bus)
 {
 	struct acpi_device *parent;
@@ -214,12 +206,7 @@ int sdw_acpi_find_slaves(struct sdw_bus *bus)
 
 #endif
 
-/*
- * sdw_of_find_slaves() - Find Slave devices in master device tree node
- * @bus: SDW bus instance
- *
- * Scans Master DT node for SDW child Slave devices and registers it.
- */
+ 
 int sdw_of_find_slaves(struct sdw_bus *bus)
 {
 	struct device *dev = bus->dev;
@@ -255,7 +242,7 @@ int sdw_of_find_slaves(struct sdw_bus *bus)
 		id.unique_id = be32_to_cpup(addr);
 		id.sdw_version = sdw_version;
 
-		/* Check for link_id match */
+		 
 		if (link_id != bus->link_id)
 			continue;
 

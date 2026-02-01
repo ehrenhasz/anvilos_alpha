@@ -1,16 +1,14 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2018 Intel Corporation. All rights reserved.
-//
-// Author: Liam Girdwood <liam.r.girdwood@linux.intel.com>
-//
 
-/*
- * Hardware interface for audio DSP on Baytrail, Braswell and Cherrytrail.
- */
+
+
+
+
+
+
+
+
+
+ 
 
 #include <linux/module.h>
 #include <sound/sof.h>
@@ -73,11 +71,11 @@ static const struct snd_sof_debugfs_map cht_debugfs[] = {
 
 static void byt_reset_dsp_disable_int(struct snd_sof_dev *sdev)
 {
-	/* Disable Interrupt from both sides */
+	 
 	snd_sof_dsp_update_bits64(sdev, DSP_BAR, SHIM_IMRX, 0x3, 0x3);
 	snd_sof_dsp_update_bits64(sdev, DSP_BAR, SHIM_IMRD, 0x3, 0x3);
 
-	/* Put DSP into reset, set reset vector */
+	 
 	snd_sof_dsp_update_bits64(sdev, DSP_BAR, SHIM_CSR,
 				  SHIM_BYT_CSR_RST | SHIM_BYT_CSR_VECTOR_SEL,
 				  SHIM_BYT_CSR_RST | SHIM_BYT_CSR_VECTOR_SEL);
@@ -92,7 +90,7 @@ static int byt_suspend(struct snd_sof_dev *sdev, u32 target_state)
 
 static int byt_resume(struct snd_sof_dev *sdev)
 {
-	/* enable BUSY and disable DONE Interrupt by default */
+	 
 	snd_sof_dsp_update_bits64(sdev, DSP_BAR, SHIM_IMRX,
 				  SHIM_IMRX_BUSY | SHIM_IMRX_DONE,
 				  SHIM_IMRX_DONE);
@@ -126,14 +124,14 @@ static int byt_acpi_probe(struct snd_sof_dev *sdev)
 
 	sdev->num_cores = chip->cores_num;
 
-	/* DSP DMA can only access low 31 bits of host memory */
+	 
 	ret = dma_coerce_mask_and_coherent(sdev->dev, DMA_BIT_MASK(31));
 	if (ret < 0) {
 		dev_err(sdev->dev, "error: failed to set DMA mask %d\n", ret);
 		return ret;
 	}
 
-	/* LPE base */
+	 
 	mmio = platform_get_resource(pdev, IORESOURCE_MEM,
 				     desc->resindex_lpe_base);
 	if (mmio) {
@@ -154,11 +152,11 @@ static int byt_acpi_probe(struct snd_sof_dev *sdev)
 	}
 	dev_dbg(sdev->dev, "LPE VADDR %p\n", sdev->bar[DSP_BAR]);
 
-	/* TODO: add offsets */
+	 
 	sdev->mmio_bar = DSP_BAR;
 	sdev->mailbox_bar = DSP_BAR;
 
-	/* IMR base - optional */
+	 
 	if (desc->resindex_imr_base == -1)
 		goto irq;
 
@@ -173,7 +171,7 @@ static int byt_acpi_probe(struct snd_sof_dev *sdev)
 		return -ENODEV;
 	}
 
-	/* some BIOSes don't map IMR */
+	 
 	if (base == 0x55aa55aa || base == 0x0) {
 		dev_info(sdev->dev, "IMR not set by BIOS. Ignoring\n");
 		goto irq;
@@ -189,7 +187,7 @@ static int byt_acpi_probe(struct snd_sof_dev *sdev)
 	dev_dbg(sdev->dev, "IMR VADDR %p\n", sdev->bar[IMR_BAR]);
 
 irq:
-	/* register our IRQ */
+	 
 	sdev->ipc_irq = platform_get_irq(pdev, desc->irqindex_host_ipc);
 	if (sdev->ipc_irq < 0)
 		return sdev->ipc_irq;
@@ -204,42 +202,42 @@ irq:
 		return ret;
 	}
 
-	/* enable BUSY and disable DONE Interrupt by default */
+	 
 	snd_sof_dsp_update_bits64(sdev, DSP_BAR, SHIM_IMRX,
 				  SHIM_IMRX_BUSY | SHIM_IMRX_DONE,
 				  SHIM_IMRX_DONE);
 
-	/* set default mailbox offset for FW ready message */
+	 
 	sdev->dsp_box.offset = MBOX_OFFSET;
 
 	return ret;
 }
 
-/* baytrail ops */
+ 
 static struct snd_sof_dsp_ops sof_byt_ops = {
-	/* device init */
+	 
 	.probe		= byt_acpi_probe,
 	.remove		= byt_remove,
 
-	/* DSP core boot / reset */
+	 
 	.run		= atom_run,
 	.reset		= atom_reset,
 
-	/* Register IO uses direct mmio */
+	 
 
-	/* Block IO */
+	 
 	.block_read	= sof_block_read,
 	.block_write	= sof_block_write,
 
-	/* Mailbox IO */
+	 
 	.mailbox_read	= sof_mailbox_read,
 	.mailbox_write	= sof_mailbox_write,
 
-	/* doorbell */
+	 
 	.irq_handler	= atom_irq_handler,
 	.irq_thread	= atom_irq_thread,
 
-	/* ipc */
+	 
 	.send_msg	= atom_send_msg,
 	.get_mailbox_offset = atom_get_mailbox_offset,
 	.get_window_offset = atom_get_window_offset,
@@ -247,34 +245,34 @@ static struct snd_sof_dsp_ops sof_byt_ops = {
 	.ipc_msg_data	= sof_ipc_msg_data,
 	.set_stream_data_offset = sof_set_stream_data_offset,
 
-	/* machine driver */
+	 
 	.machine_select = atom_machine_select,
 	.machine_register = sof_machine_register,
 	.machine_unregister = sof_machine_unregister,
 	.set_mach_params = atom_set_mach_params,
 
-	/* debug */
+	 
 	.debug_map	= byt_debugfs,
 	.debug_map_count	= ARRAY_SIZE(byt_debugfs),
 	.dbg_dump	= atom_dump,
 	.debugfs_add_region_item = snd_sof_debugfs_add_region_item_iomem,
 
-	/* stream callbacks */
+	 
 	.pcm_open	= sof_stream_pcm_open,
 	.pcm_close	= sof_stream_pcm_close,
 
-	/*Firmware loading */
+	 
 	.load_firmware	= snd_sof_load_firmware_memcpy,
 
-	/* PM */
+	 
 	.suspend = byt_suspend,
 	.resume = byt_resume,
 
-	/* DAI drivers */
+	 
 	.drv = atom_dai,
-	.num_drv = 3, /* we have only 3 SSPs on byt*/
+	.num_drv = 3,  
 
-	/* ALSA HW info flags */
+	 
 	.hw_info =	SNDRV_PCM_INFO_MMAP |
 			SNDRV_PCM_INFO_MMAP_VALID |
 			SNDRV_PCM_INFO_INTERLEAVED |
@@ -290,31 +288,31 @@ static const struct sof_intel_dsp_desc byt_chip_info = {
 	.hw_ip_version = SOF_INTEL_BAYTRAIL,
 };
 
-/* cherrytrail and braswell ops */
+ 
 static struct snd_sof_dsp_ops sof_cht_ops = {
-	/* device init */
+	 
 	.probe		= byt_acpi_probe,
 	.remove		= byt_remove,
 
-	/* DSP core boot / reset */
+	 
 	.run		= atom_run,
 	.reset		= atom_reset,
 
-	/* Register IO uses direct mmio */
+	 
 
-	/* Block IO */
+	 
 	.block_read	= sof_block_read,
 	.block_write	= sof_block_write,
 
-	/* Mailbox IO */
+	 
 	.mailbox_read	= sof_mailbox_read,
 	.mailbox_write	= sof_mailbox_write,
 
-	/* doorbell */
+	 
 	.irq_handler	= atom_irq_handler,
 	.irq_thread	= atom_irq_thread,
 
-	/* ipc */
+	 
 	.send_msg	= atom_send_msg,
 	.get_mailbox_offset = atom_get_mailbox_offset,
 	.get_window_offset = atom_get_window_offset,
@@ -322,35 +320,35 @@ static struct snd_sof_dsp_ops sof_cht_ops = {
 	.ipc_msg_data	= sof_ipc_msg_data,
 	.set_stream_data_offset = sof_set_stream_data_offset,
 
-	/* machine driver */
+	 
 	.machine_select = atom_machine_select,
 	.machine_register = sof_machine_register,
 	.machine_unregister = sof_machine_unregister,
 	.set_mach_params = atom_set_mach_params,
 
-	/* debug */
+	 
 	.debug_map	= cht_debugfs,
 	.debug_map_count	= ARRAY_SIZE(cht_debugfs),
 	.dbg_dump	= atom_dump,
 	.debugfs_add_region_item = snd_sof_debugfs_add_region_item_iomem,
 
-	/* stream callbacks */
+	 
 	.pcm_open	= sof_stream_pcm_open,
 	.pcm_close	= sof_stream_pcm_close,
 
-	/*Firmware loading */
+	 
 	.load_firmware	= snd_sof_load_firmware_memcpy,
 
-	/* PM */
+	 
 	.suspend = byt_suspend,
 	.resume = byt_resume,
 
-	/* DAI drivers */
+	 
 	.drv = atom_dai,
-	/* all 6 SSPs may be available for cherrytrail */
+	 
 	.num_drv = 6,
 
-	/* ALSA HW info flags */
+	 
 	.hw_info =	SNDRV_PCM_INFO_MMAP |
 			SNDRV_PCM_INFO_MMAP_VALID |
 			SNDRV_PCM_INFO_INTERLEAVED |
@@ -366,7 +364,7 @@ static const struct sof_intel_dsp_desc cht_chip_info = {
 	.hw_ip_version = SOF_INTEL_BAYTRAIL,
 };
 
-/* BYTCR uses different IRQ index */
+ 
 static const struct sof_dev_desc sof_acpi_baytrailcr_desc = {
 	.machines = snd_soc_acpi_intel_baytrail_machines,
 	.resindex_lpe_base = 0,
@@ -464,7 +462,7 @@ static int sof_baytrail_probe(struct platform_device *pdev)
 	return sof_acpi_probe(pdev, desc);
 }
 
-/* acpi_driver definition */
+ 
 static struct platform_driver snd_sof_acpi_intel_byt_driver = {
 	.probe = sof_baytrail_probe,
 	.remove = sof_acpi_remove,

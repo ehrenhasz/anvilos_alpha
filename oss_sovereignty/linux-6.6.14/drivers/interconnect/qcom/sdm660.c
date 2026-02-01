@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Qualcomm SDM630/SDM636/SDM660 Network-on-Chip (NoC) QoS driver
- * Copyright (C) 2020, AngeloGioacchino Del Regno <kholk11@gmail.com>
- */
+
+ 
 
 #include <dt-bindings/interconnect/qcom,sdm660.h>
 #include <linux/device.h>

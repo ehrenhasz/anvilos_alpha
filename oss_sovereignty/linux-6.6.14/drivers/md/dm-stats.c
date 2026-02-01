@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/errno.h>
 #include <linux/numa.h>
 #include <linux/slab.h>
@@ -18,10 +18,7 @@
 
 static int dm_stat_need_rcu_barrier;
 
-/*
- * Using 64-bit values to avoid overflow (which is a
- * problem that block/genhd.c's IO accounting has).
- */
+ 
 struct dm_stat_percpu {
 	unsigned long long sectors[2];
 	unsigned long long ios[2];
@@ -66,11 +63,7 @@ struct dm_stats_last_position {
 	unsigned int last_rw;
 };
 
-/*
- * A typo on the command line could possibly make the kernel run out of memory
- * and crash. To prevent the crash we account all used memory. We fail if we
- * exhaust 1/4 of all memory or 1/2 of vmalloc space.
- */
+ 
 #define DM_STATS_MEMORY_FACTOR		4
 #define DM_STATS_VMALLOC_FACTOR		2
 
@@ -377,13 +370,7 @@ static int dm_stats_create(struct dm_stats *stats, sector_t start, sector_t end,
 		}
 	}
 
-	/*
-	 * Suspend/resume to make sure there is no i/o in flight,
-	 * so that newly created statistics will be exact.
-	 *
-	 * (note: we couldn't suspend earlier because we must not
-	 * allocate memory while suspended)
-	 */
+	 
 	suspend_callback(md);
 
 	mutex_lock(&stats->mutex);
@@ -457,9 +444,7 @@ static int dm_stats_delete(struct dm_stats *stats, int id)
 
 	mutex_unlock(&stats->mutex);
 
-	/*
-	 * vfree can't be called from RCU callback
-	 */
+	 
 	for_each_possible_cpu(cpu)
 		if (is_vmalloc_addr(s->stat_percpu) ||
 		    is_vmalloc_addr(s->stat_percpu[cpu][0].histogram))
@@ -483,10 +468,7 @@ static int dm_stats_list(struct dm_stats *stats, const char *program,
 	sector_t len;
 	unsigned int sz = 0;
 
-	/*
-	 * Output format:
-	 *   <region_id>: <start_sector>+<length> <step> <program_id> <aux_data>
-	 */
+	 
 
 	mutex_lock(&stats->mutex);
 	list_for_each_entry(s, &stats->list, list_entry) {
@@ -522,9 +504,7 @@ static int dm_stats_list(struct dm_stats *stats, const char *program,
 static void dm_stat_round(struct dm_stat *s, struct dm_stat_shared *shared,
 			  struct dm_stat_percpu *p)
 {
-	/*
-	 * This is racy, but so is part_round_stats_single.
-	 */
+	 
 	unsigned long long now, difference;
 	unsigned int in_flight_read, in_flight_write;
 
@@ -558,21 +538,7 @@ static void dm_stat_for_entry(struct dm_stat *s, size_t entry,
 	struct dm_stat_shared *shared = &s->stat_shared[entry];
 	struct dm_stat_percpu *p;
 
-	/*
-	 * For strict correctness we should use local_irq_save/restore
-	 * instead of preempt_disable/enable.
-	 *
-	 * preempt_disable/enable is racy if the driver finishes bios
-	 * from non-interrupt context as well as from interrupt context
-	 * or from more different interrupts.
-	 *
-	 * On 64-bit architectures the race only results in not counting some
-	 * events, so it is acceptable.  On 32-bit architectures the race could
-	 * cause the counter going off by 2^32, so we need to do proper locking
-	 * there.
-	 *
-	 * part_stat_lock()/part_stat_unlock() have this race too.
-	 */
+	 
 #if BITS_PER_LONG == 32
 	unsigned long flags;
 
@@ -677,10 +643,7 @@ void dm_stats_account_io(struct dm_stats *stats, unsigned long bi_rw,
 	end_sector = bi_sector + bi_sectors;
 
 	if (!end) {
-		/*
-		 * A race condition can at worst result in the merged flag being
-		 * misrepresented, so we don't have to disable preemption here.
-		 */
+		 
 		last = raw_cpu_ptr(stats->last);
 		stats_aux->merged =
 			(bi_sector == (READ_ONCE(last->last_sector) &&
@@ -697,7 +660,7 @@ void dm_stats_account_io(struct dm_stats *stats, unsigned long bi_rw,
 	got_precise_time = false;
 	list_for_each_entry_rcu(s, &stats->list, list_entry) {
 		if (s->stat_flags & STAT_PRECISE_TIMESTAMPS && !got_precise_time) {
-			/* start (!end) duration_ns is set by DM core's alloc_io() */
+			 
 			if (end)
 				stats_aux->duration_ns = ktime_to_ns(ktime_get()) - stats_aux->duration_ns;
 			got_precise_time = true;
@@ -817,9 +780,7 @@ static int dm_stats_clear(struct dm_stats *stats, int id)
 	return 1;
 }
 
-/*
- * This is like jiffies_to_msec, but works for 64-bit values.
- */
+ 
 static unsigned long long dm_jiffies_to_msec64(struct dm_stat *s, unsigned long long j)
 {
 	unsigned long long result;
@@ -852,10 +813,7 @@ static int dm_stats_print(struct dm_stats *stats, int id,
 	size_t idx_end;
 	struct dm_stat_shared *shared;
 
-	/*
-	 * Output format:
-	 *   <start_sector>+<length> counters
-	 */
+	 
 
 	mutex_lock(&stats->mutex);
 
@@ -1006,10 +964,7 @@ static int message_stats_create(struct mapped_device *md,
 	const char *a;
 	unsigned int feature_args;
 
-	/*
-	 * Input format:
-	 *   <range> <step> [<extra_parameters> <parameters>] [<program_id> [<aux_data>]]
-	 */
+	 
 
 	if (argc < 3)
 		goto ret_einval;
@@ -1081,12 +1036,7 @@ static int message_stats_create(struct mapped_device *md,
 	if (as.argc)
 		goto ret_einval;
 
-	/*
-	 * If a buffer overflow happens after we created the region,
-	 * it's too late (the userspace would retry with a larger
-	 * buffer, but the region id that caused the overflow is already
-	 * leaked).  So we must detect buffer overflow in advance.
-	 */
+	 
 	snprintf(result, maxlen, "%d", INT_MAX);
 	if (dm_message_test_buffer_overflow(result, maxlen)) {
 		r = 1;
@@ -1213,7 +1163,7 @@ int dm_stats_message(struct mapped_device *md, unsigned int argc, char **argv,
 {
 	int r;
 
-	/* All messages here must start with '@' */
+	 
 	if (!strcasecmp(argv[0], "@stats_create"))
 		r = message_stats_create(md, argc, argv, result, maxlen);
 	else if (!strcasecmp(argv[0], "@stats_delete"))
@@ -1229,7 +1179,7 @@ int dm_stats_message(struct mapped_device *md, unsigned int argc, char **argv,
 	else if (!strcasecmp(argv[0], "@stats_set_aux"))
 		r = message_stats_set_aux(md, argc, argv);
 	else
-		return 2; /* this wasn't a stats message */
+		return 2;  
 
 	if (r == -EINVAL)
 		DMCRIT("Invalid parameters for message %s", argv[0]);

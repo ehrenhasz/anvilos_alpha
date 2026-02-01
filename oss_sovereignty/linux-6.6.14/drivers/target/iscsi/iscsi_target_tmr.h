@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef ISCSI_TARGET_TMR_H
 #define ISCSI_TARGET_TMR_H
 
@@ -18,4 +18,4 @@ extern int iscsit_tmr_post_handler(struct iscsit_cmd *, struct iscsit_conn *);
 extern int iscsit_check_task_reassign_expdatasn(struct iscsi_tmr_req *,
 			struct iscsit_conn *);
 
-#endif /* ISCSI_TARGET_TMR_H */
+#endif  

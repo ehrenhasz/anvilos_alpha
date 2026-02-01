@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+ 
+ 
 
 #ifndef __MLX5_EN_ACCEL_MACSEC_H__
 #define __MLX5_EN_ACCEL_MACSEC_H__
@@ -48,6 +48,6 @@ static inline void mlx5e_macsec_offload_handle_rx_skb(struct net_device *netdev,
 						      struct sk_buff *skb,
 						      struct mlx5_cqe64 *cqe)
 {}
-#endif  /* CONFIG_MLX5_MACSEC */
+#endif   
 
-#endif	/* __MLX5_ACCEL_EN_MACSEC_H__ */
+#endif	 

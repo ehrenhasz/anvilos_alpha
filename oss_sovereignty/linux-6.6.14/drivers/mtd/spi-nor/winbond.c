@@ -1,15 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2005, Intec Automation Inc.
- * Copyright (C) 2014, Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/mtd/spi-nor.h>
 
 #include "core.h"
 
-#define WINBOND_NOR_OP_RDEAR	0xc8	/* Read Extended Address Register */
-#define WINBOND_NOR_OP_WREAR	0xc5	/* Write Extended Address Register */
+#define WINBOND_NOR_OP_RDEAR	0xc8	 
+#define WINBOND_NOR_OP_WREAR	0xc5	 
 
 #define WINBOND_NOR_WREAR_OP(buf)					\
 	SPI_MEM_OP(SPI_MEM_OP_CMD(WINBOND_NOR_OP_WREAR, 0),		\
@@ -22,14 +19,7 @@ w25q256_post_bfpt_fixups(struct spi_nor *nor,
 			 const struct sfdp_parameter_header *bfpt_header,
 			 const struct sfdp_bfpt *bfpt)
 {
-	/*
-	 * W25Q256JV supports 4B opcodes but W25Q256FV does not.
-	 * Unfortunately, Winbond has re-used the same JEDEC ID for both
-	 * variants which prevents us from defining a new entry in the parts
-	 * table.
-	 * To differentiate between W25Q256JV and W25Q256FV check SFDP header
-	 * version: only JV has JESD216A compliant structure (version 5).
-	 */
+	 
 	if (bfpt_header->major == SFDP_JESD216_MAJOR &&
 	    bfpt_header->minor == SFDP_JESD216A_MINOR)
 		nor->flags |= SNOR_F_4B_OPCODES;
@@ -42,7 +32,7 @@ static const struct spi_nor_fixups w25q256_fixups = {
 };
 
 static const struct flash_info winbond_nor_parts[] = {
-	/* Winbond -- w25x "blocks" are 64K, "sectors" are 4KiB */
+	 
 	{ "w25x05", INFO(0xef3010, 0, 64 * 1024,  1)
 		NO_SFDP_FLAGS(SECT_4K) },
 	{ "w25x10", INFO(0xef3011, 0, 64 * 1024,  2)
@@ -145,13 +135,7 @@ static const struct flash_info winbond_nor_parts[] = {
 			      SPI_NOR_QUAD_READ) },
 };
 
-/**
- * winbond_nor_write_ear() - Write Extended Address Register.
- * @nor:	pointer to 'struct spi_nor'.
- * @ear:	value to write to the Extended Address Register.
- *
- * Return: 0 on success, -errno otherwise.
- */
+ 
 static int winbond_nor_write_ear(struct spi_nor *nor, u8 ear)
 {
 	int ret;
@@ -176,15 +160,7 @@ static int winbond_nor_write_ear(struct spi_nor *nor, u8 ear)
 	return ret;
 }
 
-/**
- * winbond_nor_set_4byte_addr_mode() - Set 4-byte address mode for Winbond
- * flashes.
- * @nor:	pointer to 'struct spi_nor'.
- * @enable:	true to enter the 4-byte address mode, false to exit the 4-byte
- *		address mode.
- *
- * Return: 0 on success, -errno otherwise.
- */
+ 
 static int winbond_nor_set_4byte_addr_mode(struct spi_nor *nor, bool enable)
 {
 	int ret;
@@ -193,11 +169,7 @@ static int winbond_nor_set_4byte_addr_mode(struct spi_nor *nor, bool enable)
 	if (ret || enable)
 		return ret;
 
-	/*
-	 * On Winbond W25Q256FV, leaving 4byte mode causes the Extended Address
-	 * Register to be set to 1, so all 3-byte-address reads come from the
-	 * second 16M. We must clear the register to enable normal behavior.
-	 */
+	 
 	ret = spi_nor_write_enable(nor);
 	if (ret)
 		return ret;
@@ -224,14 +196,7 @@ static int winbond_nor_late_init(struct spi_nor *nor)
 	if (params->otp.org->n_regions)
 		params->otp.ops = &winbond_nor_otp_ops;
 
-	/*
-	 * Winbond seems to require that the Extended Address Register to be set
-	 * to zero when exiting the 4-Byte Address Mode, at least for W25Q256FV.
-	 * This requirement is not described in the JESD216 SFDP standard, thus
-	 * it is Winbond specific. Since we do not know if other Winbond flashes
-	 * have the same requirement, play safe and overwrite the method parsed
-	 * from BFPT, if any.
-	 */
+	 
 	params->set_4byte_addr_mode = winbond_nor_set_4byte_addr_mode;
 
 	return 0;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Stub IOMMU driver which does nothing.
- * The main purpose of it being present is to reuse generic IOMMU device tree
- * bindings by Xen grant DMA-mapping layer.
- *
- * Copyright (C) 2022 EPAM Systems Inc.
- */
+
+ 
 
 #include <linux/iommu.h>
 #include <linux/of.h>
@@ -21,7 +15,7 @@ static struct iommu_device *grant_dma_iommu_probe_device(struct device *dev)
 	return ERR_PTR(-ENODEV);
 }
 
-/* Nothing is really needed here except a dummy probe_device callback */
+ 
 static const struct iommu_ops grant_dma_iommu_ops = {
 	.probe_device = grant_dma_iommu_probe_device,
 };

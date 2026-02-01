@@ -1,17 +1,5 @@
-/* $OpenBSD: sshconnect.c,v 1.365 2023/11/20 02:50:00 djm Exp $ */
-/*
- * Author: Tatu Ylonen <ylo@cs.hut.fi>
- * Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>, Espoo, Finland
- *                    All rights reserved
- * Code to connect to a remote host, and to perform the client side of the
- * login (authentication) dialog.
- *
- * As far as I am concerned, the code I have written for this software
- * can be used freely for any purpose.  Any derived versions of this
- * software must be clearly marked as such, and if the derived work is
- * incompatible with the protocol description in the RFC file, it must be
- * called by a name other than "ssh" or "Secure Shell".
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -75,7 +63,7 @@ static int matching_host_key_dns = 0;
 
 static pid_t proxy_command_pid = 0;
 
-/* import */
+ 
 extern int debug_flag;
 extern Options options;
 extern char *__progname;
@@ -83,7 +71,7 @@ extern char *__progname;
 static int show_other_keys(struct hostkeys *, struct sshkey *);
 static void warn_changed_key(struct sshkey *);
 
-/* Expand a proxy command */
+ 
 static char *
 expand_proxy_command(const char *proxy_command, const char *user,
     const char *host, const char *host_arg, int port)
@@ -105,10 +93,7 @@ expand_proxy_command(const char *proxy_command, const char *user,
 	return ret;
 }
 
-/*
- * Connect to the given ssh server using a proxy command that passes a
- * a connected fd back to us.
- */
+ 
 static int
 ssh_proxy_fdpass_connect(struct ssh *ssh, const char *host,
     const char *host_arg, u_short port, const char *proxy_command)
@@ -129,12 +114,12 @@ ssh_proxy_fdpass_connect(struct ssh *ssh, const char *host,
 	    host, host_arg, port);
 	debug("Executing proxy dialer command: %.500s", command_string);
 
-	/* Fork and execute the proxy command. */
+	 
 	if ((pid = fork()) == 0) {
 		char *argv[10];
 
 		close(sp[1]);
-		/* Redirect stdin and stdout. */
+		 
 		if (sp[0] != 0) {
 			if (dup2(sp[0], 0) == -1)
 				perror("dup2 stdin");
@@ -146,10 +131,7 @@ ssh_proxy_fdpass_connect(struct ssh *ssh, const char *host,
 		if (sp[0] >= 2)
 			close(sp[0]);
 
-		/*
-		 * Stderr is left for non-ControlPersist connections is so
-		 * error messages may be printed on the user's terminal.
-		 */
+		 
 		if (!debug_flag && options.control_path != NULL &&
 		    options.control_persist && stdfd_devnull(0, 0, 1) == -1)
 			error_f("stdfd_devnull failed");
@@ -159,15 +141,12 @@ ssh_proxy_fdpass_connect(struct ssh *ssh, const char *host,
 		argv[2] = command_string;
 		argv[3] = NULL;
 
-		/*
-		 * Execute the proxy command.
-		 * Note that we gave up any extra privileges above.
-		 */
+		 
 		execv(argv[0], argv);
 		perror(argv[0]);
 		exit(1);
 	}
-	/* Parent. */
+	 
 	if (pid == -1)
 		fatal("fork failed: %.100s", strerror(errno));
 	close(sp[0]);
@@ -181,16 +160,14 @@ ssh_proxy_fdpass_connect(struct ssh *ssh, const char *host,
 		if (errno != EINTR)
 			fatal("Couldn't wait for child: %s", strerror(errno));
 
-	/* Set the connection file descriptors. */
+	 
 	if (ssh_packet_set_connection(ssh, sock, sock) == NULL)
-		return -1; /* ssh_packet_set_connection logs error */
+		return -1;  
 
 	return 0;
 }
 
-/*
- * Connect to the given ssh server using a proxy command.
- */
+ 
 static int
 ssh_proxy_connect(struct ssh *ssh, const char *host, const char *host_arg,
     u_short port, const char *proxy_command)
@@ -203,7 +180,7 @@ ssh_proxy_connect(struct ssh *ssh, const char *host, const char *host_arg,
 	if ((shell = getenv("SHELL")) == NULL || *shell == '\0')
 		shell = _PATH_BSHELL;
 
-	/* Create pipes for communicating with the proxy. */
+	 
 	if (pipe(pin) == -1 || pipe(pout) == -1)
 		fatal("Could not create pipes to communicate with the proxy: %.100s",
 		    strerror(errno));
@@ -212,11 +189,11 @@ ssh_proxy_connect(struct ssh *ssh, const char *host, const char *host_arg,
 	    host, host_arg, port);
 	debug("Executing proxy command: %.500s", command_string);
 
-	/* Fork and execute the proxy command. */
+	 
 	if ((pid = fork()) == 0) {
 		char *argv[10];
 
-		/* Redirect stdin and stdout. */
+		 
 		close(pin[1]);
 		if (pin[0] != 0) {
 			if (dup2(pin[0], 0) == -1)
@@ -226,13 +203,10 @@ ssh_proxy_connect(struct ssh *ssh, const char *host, const char *host_arg,
 		close(pout[0]);
 		if (dup2(pout[1], 1) == -1)
 			perror("dup2 stdout");
-		/* Cannot be 1 because pin allocated two descriptors. */
+		 
 		close(pout[1]);
 
-		/*
-		 * Stderr is left for non-ControlPersist connections is so
-		 * error messages may be printed on the user's terminal.
-		 */
+		 
 		if (!debug_flag && options.control_path != NULL &&
 		    options.control_persist && stdfd_devnull(0, 0, 1) == -1)
 			error_f("stdfd_devnull failed");
@@ -242,31 +216,28 @@ ssh_proxy_connect(struct ssh *ssh, const char *host, const char *host_arg,
 		argv[2] = command_string;
 		argv[3] = NULL;
 
-		/*
-		 * Execute the proxy command.  Note that we gave up any
-		 * extra privileges above.
-		 */
+		 
 		ssh_signal(SIGPIPE, SIG_DFL);
 		execv(argv[0], argv);
 		perror(argv[0]);
 		exit(1);
 	}
-	/* Parent. */
+	 
 	if (pid == -1)
 		fatal("fork failed: %.100s", strerror(errno));
 	else
-		proxy_command_pid = pid; /* save pid to clean up later */
+		proxy_command_pid = pid;  
 
-	/* Close child side of the descriptors. */
+	 
 	close(pin[0]);
 	close(pout[1]);
 
-	/* Free the command name. */
+	 
 	free(command_string);
 
-	/* Set the connection file descriptors. */
+	 
 	if (ssh_packet_set_connection(ssh, pout[0], pin[1]) == NULL)
-		return -1; /* ssh_packet_set_connection logs error */
+		return -1;  
 
 	return 0;
 }
@@ -274,20 +245,13 @@ ssh_proxy_connect(struct ssh *ssh, const char *host, const char *host_arg,
 void
 ssh_kill_proxy_command(void)
 {
-	/*
-	 * Send SIGHUP to proxy command if used. We don't wait() in
-	 * case it hangs and instead rely on init to reap the child
-	 */
+	 
 	if (proxy_command_pid > 1)
 		kill(proxy_command_pid, SIGHUP);
 }
 
 #ifdef HAVE_IFADDRS_H
-/*
- * Search a interface address list (returned from getifaddrs(3)) for an
- * address that matches the desired address family on the specified interface.
- * Returns 0 and fills in *resultp and *rlenp on success. Returns -1 on failure.
- */
+ 
 static int
 check_ifaddrs(const char *ifname, int af, const struct ifaddrs *ifaddrs,
     struct sockaddr_storage *resultp, socklen_t *rlenp)
@@ -298,10 +262,7 @@ check_ifaddrs(const char *ifname, int af, const struct ifaddrs *ifaddrs,
 	const struct ifaddrs *ifa;
 	int allow_local;
 
-	/*
-	 * Prefer addresses that are not loopback or linklocal, but use them
-	 * if nothing else matches.
-	 */
+	 
 	for (allow_local = 0; allow_local < 2; allow_local++) {
 		for (ifa = ifaddrs; ifa != NULL; ifa = ifa->ifa_next) {
 			if (ifa->ifa_addr == NULL || ifa->ifa_name == NULL ||
@@ -343,9 +304,7 @@ check_ifaddrs(const char *ifname, int af, const struct ifaddrs *ifaddrs,
 }
 #endif
 
-/*
- * Creates a socket for use as the ssh connection.
- */
+ 
 static int
 ssh_create_socket(struct addrinfo *ai)
 {
@@ -365,11 +324,11 @@ ssh_create_socket(struct addrinfo *ai)
 	}
 	(void)fcntl(sock, F_SETFD, FD_CLOEXEC);
 
-	/* Use interactive QOS (if specified) until authentication completed */
+	 
 	if (options.ip_qos_interactive != INT_MAX)
 		set_sock_tos(sock, options.ip_qos_interactive);
 
-	/* Bind the socket to an alternative local IP address */
+	 
 	if (options.bind_address == NULL && options.bind_interface == NULL)
 		return sock;
 
@@ -419,7 +378,7 @@ ssh_create_socket(struct addrinfo *ai)
 		goto fail;
 	}
 	debug_f("bound to %s", ntop);
-	/* success */
+	 
 	goto out;
 fail:
 	close(sock);
@@ -434,15 +393,7 @@ fail:
 	return sock;
 }
 
-/*
- * Opens a TCP/IP connection to the remote server on the given host.
- * The address of the remote host will be returned in hostaddr.
- * If port is 0, the default port will be used.
- * Connection_attempts specifies the maximum number of tries (one per
- * second).  If proxy_command is non-NULL, it specifies the command (with %h
- * and %p substituted for host and port, respectively) to use to contact
- * the daemon.
- */
+ 
 static int
 ssh_connect_direct(struct ssh *ssh, const char *host, struct addrinfo *aitop,
     struct sockaddr_storage *hostaddr, u_short port, int connection_attempts,
@@ -459,14 +410,11 @@ ssh_connect_direct(struct ssh *ssh, const char *host, struct addrinfo *aitop,
 
 	for (attempt = 0; attempt < connection_attempts; attempt++) {
 		if (attempt > 0) {
-			/* Sleep a moment before retrying. */
+			 
 			sleep(1);
 			debug("Trying again...");
 		}
-		/*
-		 * Loop through addresses for this host, and try each one in
-		 * sequence until the connection succeeds.
-		 */
+		 
 		for (ai = aitop; ai; ai = ai->ai_next) {
 			if (ai->ai_family != AF_INET &&
 			    ai->ai_family != AF_INET6) {
@@ -492,10 +440,10 @@ ssh_connect_direct(struct ssh *ssh, const char *host, struct addrinfo *aitop,
 			debug("Connecting to %.200s [%.100s] port %s.",
 				host, ntop, strport);
 
-			/* Create a socket for connecting. */
+			 
 			sock = ssh_create_socket(ai);
 			if (sock < 0) {
-				/* Any error is already output */
+				 
 				errno = 0;
 				continue;
 			}
@@ -503,7 +451,7 @@ ssh_connect_direct(struct ssh *ssh, const char *host, struct addrinfo *aitop,
 			*timeout_ms = saved_timeout_ms;
 			if (timeout_connect(sock, ai->ai_addr, ai->ai_addrlen,
 			    timeout_ms) >= 0) {
-				/* Successful connection. */
+				 
 				memcpy(hostaddr, ai->ai_addr, ai->ai_addrlen);
 				break;
 			} else {
@@ -516,10 +464,10 @@ ssh_connect_direct(struct ssh *ssh, const char *host, struct addrinfo *aitop,
 			}
 		}
 		if (sock != -1)
-			break;	/* Successful connection. */
+			break;	 
 	}
 
-	/* Return failure if we didn't get a successful connection. */
+	 
 	if (sock == -1) {
 		error("ssh: connect to host %s port %s: %s",
 		    host, strport, errno == 0 ? "failure" : strerror(errno));
@@ -528,15 +476,15 @@ ssh_connect_direct(struct ssh *ssh, const char *host, struct addrinfo *aitop,
 
 	debug("Connection established.");
 
-	/* Set SO_KEEPALIVE if requested. */
+	 
 	if (want_keepalive &&
 	    setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (void *)&on,
 	    sizeof(on)) == -1)
 		error("setsockopt SO_KEEPALIVE: %.100s", strerror(errno));
 
-	/* Set the connection. */
+	 
 	if (ssh_packet_set_connection(ssh, sock, sock) == NULL)
-		return -1; /* ssh_packet_set_connection logs error */
+		return -1;  
 
 	return 0;
 }
@@ -557,10 +505,10 @@ ssh_connect(struct ssh *ssh, const char *host, const char *host_arg,
 			if (in >= 0)
 				close(in);
 			error_f("dup() in/out failed");
-			return -1; /* ssh_packet_set_connection logs error */
+			return -1;  
 		}
 		if ((ssh_packet_set_connection(ssh, in, out)) == NULL)
-			return -1; /* ssh_packet_set_connection logs error */
+			return -1;  
 		return 0;
 	} else if (options.proxy_use_fdpass) {
 		return ssh_proxy_fdpass_connect(ssh, host, host_arg, port,
@@ -570,7 +518,7 @@ ssh_connect(struct ssh *ssh, const char *host, const char *host_arg,
 	    options.proxy_command);
 }
 
-/* defaults to 'no' */
+ 
 static int
 confirm(const char *prompt, const char *fingerprint)
 {
@@ -585,8 +533,8 @@ confirm(const char *prompt, const char *fingerprint)
 		cp = p = read_passphrase(msg, RP_ECHO);
 		if (p == NULL)
 			return 0;
-		p += strspn(p, " \t"); /* skip leading whitespace */
-		p[strcspn(p, " \t\n")] = '\0'; /* remove trailing whitespace */
+		p += strspn(p, " \t");  
+		p[strcspn(p, " \t\n")] = '\0';  
 		if (p[0] == '\0' || strcasecmp(p, "no") == 0)
 			ret = 0;
 		else if (strcasecmp(p, "yes") == 0 || (fingerprint != NULL &&
@@ -613,10 +561,7 @@ sockaddr_is_local(struct sockaddr *hostaddr)
 	}
 }
 
-/*
- * Prepare the hostname and ip address strings that are used to lookup
- * host keys in known_hosts files. These may have a port number appended.
- */
+ 
 void
 get_hostfile_hostname_ipaddr(char *hostname, struct sockaddr *hostaddr,
     u_short port, char **hostfile_hostname, char **hostfile_ipaddr)
@@ -639,10 +584,7 @@ get_hostfile_hostname_ipaddr(char *hostname, struct sockaddr *hostaddr,
 		break;
 	}
 
-	/*
-	 * We don't have the remote ip-address for connections
-	 * using a proxy command
-	 */
+	 
 	if (hostfile_ipaddr != NULL) {
 		if (options.proxy_command == NULL) {
 			if (getnameinfo(hostaddr, addrlen,
@@ -655,12 +597,7 @@ get_hostfile_hostname_ipaddr(char *hostname, struct sockaddr *hostaddr,
 		}
 	}
 
-	/*
-	 * Allow the user to record the key under a different name or
-	 * differentiate a non-standard port.  This is useful for ssh
-	 * tunneling over forwarded connections or if you run multiple
-	 * sshd's on different ports on the same machine.
-	 */
+	 
 	if (hostfile_hostname != NULL) {
 		if (options.host_key_alias != NULL) {
 			*hostfile_hostname = xstrdup(options.host_key_alias);
@@ -671,7 +608,7 @@ get_hostfile_hostname_ipaddr(char *hostname, struct sockaddr *hostaddr,
 	}
 }
 
-/* returns non-zero if path appears in hostfiles, or 0 if not. */
+ 
 static int
 path_in_hostfiles(const char *path, char **hostfiles, u_int num_hostfiles)
 {
@@ -691,7 +628,7 @@ struct find_by_key_ctx {
 	u_int nnames;
 };
 
-/* Try to replace home directory prefix (per $HOME) with a ~/ sequence */
+ 
 static char *
 try_tilde_unexpand(const char *path)
 {
@@ -704,11 +641,7 @@ try_tilde_unexpand(const char *path)
 		return xstrdup(path);
 	if (strncmp(path, home, l) != 0)
 		return xstrdup(path);
-	/*
-	 * ensure we have matched on a path boundary: either the $HOME that
-	 * we just compared ends with a '/' or the next character of the path
-	 * must be a '/'.
-	 */
+	 
 	if (home[l - 1] != '/' && path[l] != '/')
 		return xstrdup(path);
 	if (path[l] == '/')
@@ -723,13 +656,13 @@ hostkeys_find_by_key_cb(struct hostkey_foreach_line *l, void *_ctx)
 	struct find_by_key_ctx *ctx = (struct find_by_key_ctx *)_ctx;
 	char *path;
 
-	/* we are looking for keys with names that *do not* match */
+	 
 	if ((l->match & HKF_MATCH_HOST) != 0)
 		return 0;
-	/* not interested in marker lines */
+	 
 	if (l->marker != MRK_NONE)
 		return 0;
-	/* we are only interested in exact key matches */
+	 
 	if (l->key == NULL || !sshkey_equal(ctx->key, l->key))
 		return 0;
 	path = try_tilde_unexpand(l->path);
@@ -763,10 +696,7 @@ hostkeys_find_by_key_hostfile(const char *file, const char *which,
 	return 0;
 }
 
-/*
- * Find 'key' in known hosts file(s) that do not match host/ip.
- * Used to display also-known-as information for previously-unseen hostkeys.
- */
+ 
 static void
 hostkeys_find_by_key(const char *host, const char *ip, const struct sshkey *key,
     char **user_hostfiles, u_int num_user_hostfiles,
@@ -796,7 +726,7 @@ hostkeys_find_by_key(const char *host, const char *ip, const struct sshkey *key,
 		    "system", &ctx) != 0)
 			goto fail;
 	}
-	/* success */
+	 
 	*names = ctx.names;
 	*nnames = ctx.nnames;
 	ctx.names = NULL;
@@ -808,7 +738,7 @@ hostkeys_find_by_key(const char *host, const char *ip, const struct sshkey *key,
 	free(ctx.names);
 }
 
-#define MAX_OTHER_NAMES	8 /* Maximum number of names to list */
+#define MAX_OTHER_NAMES	8  
 static char *
 other_hostkeys_message(const char *host, const char *ip,
     const struct sshkey *key,
@@ -865,13 +795,10 @@ load_hostkeys_command(struct hostkeys *hostkeys, const char *command_template,
 		if ((r = sshkey_to_base64(host_key, &keytext)) != 0)
 			fatal_fr(r, "sshkey_to_base64 failed");
 	}
-	/*
-	 * NB. all returns later this function should go via "out" to
-	 * ensure the original SIGCHLD handler is restored properly.
-	 */
+	 
 	osigchld = ssh_signal(SIGCHLD, SIG_DFL);
 
-	/* Turn the command into an argument vector */
+	 
 	if (argv_split(command_template, &ac, &av, 0) != 0) {
 		error("%s \"%s\" contains invalid quotes", tag,
 		    command_template);
@@ -896,7 +823,7 @@ load_hostkeys_command(struct hostkeys *hostkeys, const char *command_template,
 		free(av[i]);
 		av[i] = tmp;
 	}
-	/* Prepare a printable command for logs, etc. */
+	 
 	command = argv_assemble(ac, av);
 
 	if ((pid = subprocess(tag, command, ac, av, &f,
@@ -922,10 +849,7 @@ load_hostkeys_command(struct hostkeys *hostkeys, const char *command_template,
 	free(keytext);
 }
 
-/*
- * check whether the supplied host key is valid, return -1 if the key
- * is not valid. user_hostfile[0] will not be updated if 'readonly' is true.
- */
+ 
 #define RDRW	0
 #define RDONLY	1
 #define ROQUIET	2
@@ -947,18 +871,11 @@ check_host_key(char *hostname, const struct ssh_conn_info *cinfo,
 	int len, cancelled_forwarding = 0, confirmed;
 	int local = sockaddr_is_local(hostaddr);
 	int r, want_cert = sshkey_is_cert(host_key), host_ip_differ = 0;
-	int hostkey_trusted = 0; /* Known or explicitly accepted by user */
+	int hostkey_trusted = 0;  
 	struct hostkeys *host_hostkeys, *ip_hostkeys;
 	u_int i;
 
-	/*
-	 * Force accepting of the host key for loopback/localhost. The
-	 * problem is that if the home directory is NFS-mounted to multiple
-	 * machines, localhost will refer to a different machine in each of
-	 * them, and the user will get bogus HOST_CHANGED warnings.  This
-	 * essentially disables host authentication for localhost; however,
-	 * this is probably not a real problem.
-	 */
+	 
 	if (options.no_host_authentication_for_localhost == 1 && local &&
 	    options.host_key_alias == NULL) {
 		debug("Forcing accepting of host key for "
@@ -967,28 +884,18 @@ check_host_key(char *hostname, const struct ssh_conn_info *cinfo,
 		return 0;
 	}
 
-	/*
-	 * Don't ever try to write an invalid name to a known hosts file.
-	 * Note: do this before get_hostfile_hostname_ipaddr() to catch
-	 * '[' or ']' in the name before they are added.
-	 */
+	 
 	if (strcspn(hostname, "@?*#[]|'\'\"\\") != strlen(hostname)) {
 		debug_f("invalid hostname \"%s\"; will not record: %s",
 		    hostname, fail_reason);
 		readonly = RDONLY;
 	}
 
-	/*
-	 * Prepare the hostname and address strings used for hostkey lookup.
-	 * In some cases, these will have a port number appended.
-	 */
+	 
 	get_hostfile_hostname_ipaddr(hostname, hostaddr,
 	    clobber_port ? 0 : port, &host, &ip);
 
-	/*
-	 * Turn off check_host_ip if the connection is to localhost, via proxy
-	 * command or if we don't have a hostname to compare with
-	 */
+	 
 	if (options.check_host_ip && (local ||
 	    strcmp(hostname, ip) == 0 || options.proxy_command != NULL))
 		options.check_host_ip = 0;
@@ -1017,30 +924,20 @@ check_host_key(char *hostname, const struct ssh_conn_info *cinfo,
 	}
 
  retry:
-	/* Reload these as they may have changed on cert->key downgrade */
+	 
 	want_cert = sshkey_is_cert(host_key);
 	type = sshkey_type(host_key);
 
-	/*
-	 * Check if the host key is present in the user's list of known
-	 * hosts or in the systemwide list.
-	 */
+	 
 	host_status = check_key_in_hostkeys(host_hostkeys, host_key,
 	    &host_found);
 
-	/*
-	 * If there are no hostfiles, or if the hostkey was found via
-	 * KnownHostsCommand, then don't try to touch the disk.
-	 */
+	 
 	if (!readonly && (num_user_hostfiles == 0 ||
 	    (host_found != NULL && host_found->note != 0)))
 		readonly = RDONLY;
 
-	/*
-	 * Also perform check for the ip address, skip the check if we are
-	 * localhost, looking for a certificate, or the hostname was an ip
-	 * address to begin with.
-	 */
+	 
 	if (!want_cert && ip_hostkeys != NULL) {
 		ip_status = check_key_in_hostkeys(ip_hostkeys, host_key,
 		    &ip_found);
@@ -1054,7 +951,7 @@ check_host_key(char *hostname, const struct ssh_conn_info *cinfo,
 
 	switch (host_status) {
 	case HOST_OK:
-		/* The host is known and the key matches. */
+		 
 		debug("Host '%.200s' is known and matches the %s host %s.",
 		    host, type, want_cert ? "certificate" : "key");
 		debug("Found %s in %s:%lu", want_cert ? "CA key" : "key",
@@ -1067,17 +964,14 @@ check_host_key(char *hostname, const struct ssh_conn_info *cinfo,
 				error("%s", fail_reason);
 				goto fail;
 			}
-			/*
-			 * Do not attempt hostkey update if a certificate was
-			 * successfully matched.
-			 */
+			 
 			if (options.update_hostkeys != 0) {
 				options.update_hostkeys = 0;
 				debug3_f("certificate host key in use; "
 				    "disabling UpdateHostkeys");
 			}
 		}
-		/* Turn off UpdateHostkeys if key was in system known_hosts */
+		 
 		if (options.update_hostkeys != 0 &&
 		    (path_in_hostfiles(host_found->file,
 		    system_hostfiles, num_system_hostfiles) ||
@@ -1136,14 +1030,10 @@ check_host_key(char *hostname, const struct ssh_conn_info *cinfo,
 		}
 		if (readonly || want_cert)
 			goto fail;
-		/* The host is new. */
+		 
 		if (options.strict_host_key_checking ==
 		    SSH_STRICT_HOSTKEY_YES) {
-			/*
-			 * User has requested strict host key checking.  We
-			 * will not add the host key automatically.  The only
-			 * alternative left is to abort.
-			 */
+			 
 			error("No %s host key is known for %.200s and you "
 			    "have requested strict checking.", type, host);
 			goto fail;
@@ -1176,7 +1066,7 @@ check_host_key(char *hostname, const struct ssh_conn_info *cinfo,
 				    matching_host_key_dns ?
 				    "Matching" : "No matching");
 			}
-			/* msg2 informs for other names matching this key */
+			 
 			if ((msg2 = other_hostkeys_message(host, ip, host_key,
 			    user_hostfiles, num_user_hostfiles,
 			    system_hostfiles, num_system_hostfiles)) != NULL)
@@ -1193,23 +1083,20 @@ check_host_key(char *hostname, const struct ssh_conn_info *cinfo,
 			free(msg2);
 			if (!confirmed)
 				goto fail;
-			hostkey_trusted = 1; /* user explicitly confirmed */
+			hostkey_trusted = 1;  
 		}
-		/*
-		 * If in "new" or "off" strict mode, add the key automatically
-		 * to the local known_hosts file.
-		 */
+		 
 		if (options.check_host_ip && ip_status == HOST_NEW) {
 			snprintf(hostline, sizeof(hostline), "%s,%s", host, ip);
 			hostp = hostline;
 			if (options.hash_known_hosts) {
-				/* Add hash of host and IP separately */
+				 
 				r = add_host_to_hostfile(user_hostfiles[0],
 				    host, host_key, options.hash_known_hosts) &&
 				    add_host_to_hostfile(user_hostfiles[0], ip,
 				    host_key, options.hash_known_hosts);
 			} else {
-				/* Add unhashed "host,ip" */
+				 
 				r = add_host_to_hostfile(user_hostfiles[0],
 				    hostline, host_key,
 				    options.hash_known_hosts);
@@ -1235,10 +1122,7 @@ check_host_key(char *hostname, const struct ssh_conn_info *cinfo,
 		error("This could mean that a stolen key is being used to");
 		error("impersonate this host.");
 
-		/*
-		 * If strict host key checking is in use, the user will have
-		 * to edit the key manually and we can only abort.
-		 */
+		 
 		if (options.strict_host_key_checking !=
 		    SSH_STRICT_HOSTKEY_OFF) {
 			error("%s host key for %.200s was revoked and you have "
@@ -1249,11 +1133,7 @@ check_host_key(char *hostname, const struct ssh_conn_info *cinfo,
 
 	case HOST_CHANGED:
 		if (want_cert) {
-			/*
-			 * This is only a debug() since it is valid to have
-			 * CAs with wildcard DNS matches that don't match
-			 * all hosts that one might visit.
-			 */
+			 
 			debug("Host certificate authority does not "
 			    "match %s in %s:%lu", CA_MARKER,
 			    host_found->file, host_found->line);
@@ -1281,7 +1161,7 @@ check_host_key(char *hostname, const struct ssh_conn_info *cinfo,
 				error("Offending key for IP in %s:%lu",
 				    ip_found->file, ip_found->line);
 		}
-		/* The host key has changed. */
+		 
 		warn_changed_key(host_key);
 		if (num_user_hostfiles > 0 || num_system_hostfiles > 0) {
 			error("Add correct host key in %.100s to get rid "
@@ -1292,10 +1172,7 @@ check_host_key(char *hostname, const struct ssh_conn_info *cinfo,
 		    sshkey_type(host_found->key),
 		    host_found->file, host_found->line);
 
-		/*
-		 * If strict host key checking is in use, the user will have
-		 * to edit the key manually and we can only abort.
-		 */
+		 
 		if (options.strict_host_key_checking !=
 		    SSH_STRICT_HOSTKEY_OFF) {
 			error("Host key for %.200s has changed and you have "
@@ -1304,11 +1181,7 @@ check_host_key(char *hostname, const struct ssh_conn_info *cinfo,
 		}
 
  continue_unsafe:
-		/*
-		 * If strict host key checking has not been requested, allow
-		 * the connection but without MITM-able authentication or
-		 * forwarding.
-		 */
+		 
 		if (options.password_authentication) {
 			error("Password authentication is disabled to avoid "
 			    "man-in-the-middle attacks.");
@@ -1356,13 +1229,7 @@ check_host_key(char *hostname, const struct ssh_conn_info *cinfo,
 			fatal("Error: forwarding disabled due to host key "
 			    "check failure");
 
-		/*
-		 * XXX Should permit the user to change to use the new id.
-		 * This could be done by converting the host key to an
-		 * identifying sentence, tell that the host identifies itself
-		 * by that sentence, and ask the user if they wish to
-		 * accept the authentication.
-		 */
+		 
 		break;
 	case HOST_FOUND:
 		fatal("internal error");
@@ -1414,10 +1281,7 @@ check_host_key(char *hostname, const struct ssh_conn_info *cinfo,
 
 fail:
 	if (want_cert && host_status != HOST_REVOKED) {
-		/*
-		 * No matching certificate. Downgrade cert to raw key and
-		 * search normally.
-		 */
+		 
 		debug("No matching CA found. Retry with plain key");
 		if ((r = sshkey_from_private(host_key, &raw_key)) != 0)
 			fatal_fr(r, "decode key");
@@ -1436,7 +1300,7 @@ fail:
 	return -1;
 }
 
-/* returns 0 if key verifies or -1 if key does NOT verify */
+ 
 int
 verify_host_key(char *host, struct sockaddr *hostaddr, struct sshkey *host_key,
     const struct ssh_conn_info *cinfo)
@@ -1484,12 +1348,12 @@ verify_host_key(char *host, struct sockaddr *hostaddr, struct sshkey *host_key,
 		goto out;
 	}
 
-	/* Check in RevokedHostKeys file if specified */
+	 
 	if (options.revoked_host_keys != NULL) {
 		r = sshkey_check_revoked(host_key, options.revoked_host_keys);
 		switch (r) {
 		case 0:
-			break; /* not revoked */
+			break;  
 		case SSH_ERR_KEY_REVOKED:
 			error("Host key %s %s revoked by file %s",
 			    sshkey_type(host_key), fp,
@@ -1506,10 +1370,7 @@ verify_host_key(char *host, struct sockaddr *hostaddr, struct sshkey *host_key,
 	}
 
 	if (options.verify_host_key_dns) {
-		/*
-		 * XXX certs are not yet supported for DNS, so downgrade
-		 * them and try the plain key.
-		 */
+		 
 		if ((r = sshkey_from_private(host_key, &plain)) != 0)
 			goto out;
 		if (sshkey_is_cert(plain))
@@ -1550,13 +1411,7 @@ out:
 	return r;
 }
 
-/*
- * Starts a dialog with the server, and authenticates the current user on the
- * server.  This does not need any extra privileges.  The basic connection
- * to the server must already have been established before this is called.
- * If login fails, this function prints an error and never returns.
- * This function does not require super-user privileges.
- */
+ 
 void
 ssh_login(struct ssh *ssh, Sensitive *sensitive, const char *orighost,
     struct sockaddr *hostaddr, u_short port, struct passwd *pw, int timeout_ms,
@@ -1569,19 +1424,19 @@ ssh_login(struct ssh *ssh, Sensitive *sensitive, const char *orighost,
 	local_user = xstrdup(pw->pw_name);
 	server_user = options.user ? options.user : local_user;
 
-	/* Convert the user-supplied hostname into all lowercase. */
+	 
 	host = xstrdup(orighost);
 	lowercase(host);
 
-	/* Exchange protocol version identification strings with the server. */
+	 
 	if ((r = kex_exchange_identification(ssh, timeout_ms, NULL)) != 0)
 		sshpkt_fatal(ssh, r, "banner exchange");
 
-	/* Put the connection into non-blocking mode. */
+	 
 	ssh_packet_set_nonblocking(ssh);
 
-	/* key exchange */
-	/* authenticate user */
+	 
+	 
 	debug("Authenticating to %s:%d as '%s'", host, port, server_user);
 	ssh_kex2(ssh, host, hostaddr, port, cinfo);
 	ssh_userauth2(ssh, local_user, server_user, host, sensitive);
@@ -1589,7 +1444,7 @@ ssh_login(struct ssh *ssh, Sensitive *sensitive, const char *orighost,
 	free(host);
 }
 
-/* print all known host keys for a given host, but skip keys of given type */
+ 
 static int
 show_other_keys(struct hostkeys *hostkeys, struct sshkey *key)
 {
@@ -1655,9 +1510,7 @@ warn_changed_key(struct sshkey *host_key)
 	free(fp);
 }
 
-/*
- * Execute a local command
- */
+ 
 int
 ssh_local_cmd(const char *args)
 {

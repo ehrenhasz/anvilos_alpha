@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2002-2005, Instant802 Networks, Inc.
- * Copyright 2005-2006, Devicescape Software, Inc.
- * Copyright 2006-2007	Jiri Benc <jbenc@suse.cz>
- * Copyright 2008-2010	Johannes Berg <johannes@sipsolutions.net>
- * Copyright 2013-2014  Intel Mobile Communications GmbH
- * Copyright 2021-2023  Intel Corporation
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/etherdevice.h>
@@ -56,14 +49,7 @@ static void ieee80211_handle_filtered_frame(struct ieee80211_local *local,
 		return;
 	}
 
-	/*
-	 * This skb 'survived' a round-trip through the driver, and
-	 * hopefully the driver didn't mangle it too badly. However,
-	 * we can definitely not rely on the control information
-	 * being correct. Clear it so we don't get junk there, and
-	 * indicate that it needs new processing, but must not be
-	 * modified/encrypted again.
-	 */
+	 
 	memset(&info->control, 0, sizeof(info->control));
 
 	info->control.jiffies = jiffies;
@@ -74,13 +60,7 @@ static void ieee80211_handle_filtered_frame(struct ieee80211_local *local,
 
 	sta->deflink.status_stats.filtered++;
 
-	/*
-	 * Clear more-data bit on filtered frames, it might be set
-	 * but later frames might time out so it might have to be
-	 * clear again ... It's all rather unlikely (this frame
-	 * should time out first, right?) but let's not confuse
-	 * peers unnecessarily.
-	 */
+	 
 	if (hdr->frame_control & cpu_to_le16(IEEE80211_FCTL_MOREDATA))
 		hdr->frame_control &= ~cpu_to_le16(IEEE80211_FCTL_MOREDATA);
 
@@ -88,11 +68,7 @@ static void ieee80211_handle_filtered_frame(struct ieee80211_local *local,
 		u8 *p = ieee80211_get_qos_ctl(hdr);
 		int tid = *p & IEEE80211_QOS_CTL_TID_MASK;
 
-		/*
-		 * Clear EOSP if set, this could happen e.g.
-		 * if an absence period (us being a P2P GO)
-		 * shortens the SP.
-		 */
+		 
 		if (*p & IEEE80211_QOS_CTL_EOSP)
 			*p &= ~IEEE80211_QOS_CTL_EOSP;
 		ac = ieee80211_ac_from_tid(tid);
@@ -100,48 +76,11 @@ static void ieee80211_handle_filtered_frame(struct ieee80211_local *local,
 		ac = IEEE80211_AC_BE;
 	}
 
-	/*
-	 * Clear the TX filter mask for this STA when sending the next
-	 * packet. If the STA went to power save mode, this will happen
-	 * when it wakes up for the next time.
-	 */
+	 
 	set_sta_flag(sta, WLAN_STA_CLEAR_PS_FILT);
 	ieee80211_clear_fast_xmit(sta);
 
-	/*
-	 * This code races in the following way:
-	 *
-	 *  (1) STA sends frame indicating it will go to sleep and does so
-	 *  (2) hardware/firmware adds STA to filter list, passes frame up
-	 *  (3) hardware/firmware processes TX fifo and suppresses a frame
-	 *  (4) we get TX status before having processed the frame and
-	 *	knowing that the STA has gone to sleep.
-	 *
-	 * This is actually quite unlikely even when both those events are
-	 * processed from interrupts coming in quickly after one another or
-	 * even at the same time because we queue both TX status events and
-	 * RX frames to be processed by a tasklet and process them in the
-	 * same order that they were received or TX status last. Hence, there
-	 * is no race as long as the frame RX is processed before the next TX
-	 * status, which drivers can ensure, see below.
-	 *
-	 * Note that this can only happen if the hardware or firmware can
-	 * actually add STAs to the filter list, if this is done by the
-	 * driver in response to set_tim() (which will only reduce the race
-	 * this whole filtering tries to solve, not completely solve it)
-	 * this situation cannot happen.
-	 *
-	 * To completely solve this race drivers need to make sure that they
-	 *  (a) don't mix the irq-safe/not irq-safe TX status/RX processing
-	 *	functions and
-	 *  (b) always process RX events before TX status events if ordering
-	 *      can be unknown, for example with different interrupt status
-	 *	bits.
-	 *  (c) if PS mode transitions are manual (i.e. the flag
-	 *      %IEEE80211_HW_AP_LINK_PS is set), always process PS state
-	 *      changes before calling TX status events if ordering can be
-	 *	unknown.
-	 */
+	 
 	if (test_sta_flag(sta, WLAN_STA_PS_STA) &&
 	    skb_queue_len(&sta->tx_filtered[ac]) < STA_MAX_TX_BUFFER) {
 		skb_queue_tail(&sta->tx_filtered[ac], skb);
@@ -156,7 +95,7 @@ static void ieee80211_handle_filtered_frame(struct ieee80211_local *local,
 
 	if (!test_sta_flag(sta, WLAN_STA_PS_STA) &&
 	    !(info->flags & IEEE80211_TX_INTFL_RETRIED)) {
-		/* Software retry the packet once */
+		 
 		info->flags |= IEEE80211_TX_INTFL_RETRIED;
 		ieee80211_add_pending_skb(local, skb);
 		return;
@@ -210,19 +149,13 @@ static void ieee80211_frame_acked(struct sta_info *sta, struct sk_buff *skb)
 			smps_mode = IEEE80211_SMPS_STATIC;
 			break;
 		case WLAN_HT_SMPS_CONTROL_DISABLED:
-		default: /* shouldn't happen since we don't send that */
+		default:  
 			smps_mode = IEEE80211_SMPS_OFF;
 			break;
 		}
 
 		if (sdata->vif.type == NL80211_IFTYPE_STATION) {
-			/*
-			 * This update looks racy, but isn't -- if we come
-			 * here we've definitely got a station that we're
-			 * talking to, and on a managed interface that can
-			 * only be the AP. And the only other place updating
-			 * this variable in managed mode is before association.
-			 */
+			 
 			sdata->deflink.smps_mode = smps_mode;
 			ieee80211_queue_work(&local->hw, &sdata->recalc_smps);
 		}
@@ -250,7 +183,7 @@ static int ieee80211_tx_radiotap_len(struct ieee80211_tx_info *info,
 	if (status && status->n_rates)
 		status_rate = &status->rates[status->n_rates - 1];
 
-	/* IEEE80211_RADIOTAP_RATE rate */
+	 
 	if (status_rate && !(status_rate->rate_idx.flags &
 						(RATE_INFO_FLAGS_MCS |
 						 RATE_INFO_FLAGS_DMG |
@@ -263,14 +196,13 @@ static int ieee80211_tx_radiotap_len(struct ieee80211_tx_info *info,
 		   (IEEE80211_TX_RC_MCS | IEEE80211_TX_RC_VHT_MCS)))
 		len += 2;
 
-	/* IEEE80211_RADIOTAP_TX_FLAGS */
+	 
 	len += 2;
 
-	/* IEEE80211_RADIOTAP_DATA_RETRIES */
+	 
 	len += 1;
 
-	/* IEEE80211_RADIOTAP_MCS
-	 * IEEE80211_RADIOTAP_VHT */
+	 
 	if (status_rate) {
 		if (status_rate->rate_idx.flags & RATE_INFO_FLAGS_MCS)
 			len += 3;
@@ -314,13 +246,9 @@ ieee80211_add_tx_radiotap_header(struct ieee80211_local *local,
 			    BIT(IEEE80211_RADIOTAP_DATA_RETRIES));
 	pos = (unsigned char *)(rthdr + 1);
 
-	/*
-	 * XXX: Once radiotap gets the bitmap reset thing the vendor
-	 *	extensions proposal contains, we can actually report
-	 *	the whole set of tries we did.
-	 */
+	 
 
-	/* IEEE80211_RADIOTAP_RATE */
+	 
 
 	if (status_rate) {
 		if (!(status_rate->rate_idx.flags &
@@ -343,11 +271,11 @@ ieee80211_add_tx_radiotap_header(struct ieee80211_local *local,
 	if (legacy_rate) {
 		rthdr->it_present |= cpu_to_le32(BIT(IEEE80211_RADIOTAP_RATE));
 		*pos = DIV_ROUND_UP(legacy_rate, 5 * (1 << shift));
-		/* padding for tx flags */
+		 
 		pos += 2;
 	}
 
-	/* IEEE80211_RADIOTAP_TX_FLAGS */
+	 
 	txflags = 0;
 	if (!(info->flags & IEEE80211_TX_STAT_ACK) &&
 	    !is_multicast_ether_addr(hdr->addr1))
@@ -361,8 +289,8 @@ ieee80211_add_tx_radiotap_header(struct ieee80211_local *local,
 	put_unaligned_le16(txflags, pos);
 	pos += 2;
 
-	/* IEEE80211_RADIOTAP_DATA_RETRIES */
-	/* for now report the total retry_count */
+	 
+	 
 	*pos = retry_count;
 	pos++;
 
@@ -387,19 +315,19 @@ ieee80211_add_tx_radiotap_header(struct ieee80211_local *local,
 
 		rthdr->it_present |= cpu_to_le32(BIT(IEEE80211_RADIOTAP_VHT));
 
-		/* required alignment from rthdr */
+		 
 		pos = (u8 *)rthdr + ALIGN(pos - (u8 *)rthdr, 2);
 
-		/* u16 known - IEEE80211_RADIOTAP_VHT_KNOWN_* */
+		 
 		put_unaligned_le16(known, pos);
 		pos += 2;
 
-		/* u8 flags - IEEE80211_RADIOTAP_VHT_FLAG_* */
+		 
 		if (status_rate->rate_idx.flags & RATE_INFO_FLAGS_SHORT_GI)
 			*pos |= IEEE80211_RADIOTAP_VHT_FLAG_SGI;
 		pos++;
 
-		/* u8 bandwidth */
+		 
 		switch (status_rate->rate_idx.bw) {
 		case RATE_INFO_BW_160:
 			*pos = 11;
@@ -416,16 +344,16 @@ ieee80211_add_tx_radiotap_header(struct ieee80211_local *local,
 		}
 		pos++;
 
-		/* u8 mcs_nss[4] */
+		 
 		*pos = (status_rate->rate_idx.mcs << 4) |
 				status_rate->rate_idx.nss;
 		pos += 4;
 
-		/* u8 coding */
+		 
 		pos++;
-		/* u8 group_id */
+		 
 		pos++;
-		/* u16 partial_aid */
+		 
 		pos += 2;
 	} else if (status_rate && (status_rate->rate_idx.flags &
 					RATE_INFO_FLAGS_HE_MCS))
@@ -434,7 +362,7 @@ ieee80211_add_tx_radiotap_header(struct ieee80211_local *local,
 
 		rthdr->it_present |= cpu_to_le32(BIT(IEEE80211_RADIOTAP_HE));
 
-		/* required alignment from rthdr */
+		 
 		pos = (u8 *)rthdr + ALIGN(pos - (u8 *)rthdr, 2);
 		he = (struct ieee80211_radiotap_he *)pos;
 
@@ -505,8 +433,7 @@ ieee80211_add_tx_radiotap_header(struct ieee80211_local *local,
 	if (status_rate || info->status.rates[0].idx < 0)
 		return;
 
-	/* IEEE80211_RADIOTAP_MCS
-	 * IEEE80211_RADIOTAP_VHT */
+	 
 	if (info->status.rates[0].flags & IEEE80211_TX_RC_MCS) {
 		rthdr->it_present |= cpu_to_le32(BIT(IEEE80211_RADIOTAP_MCS));
 		pos[0] = IEEE80211_RADIOTAP_MCS_HAVE_MCS |
@@ -527,47 +454,44 @@ ieee80211_add_tx_radiotap_header(struct ieee80211_local *local,
 
 		rthdr->it_present |= cpu_to_le32(BIT(IEEE80211_RADIOTAP_VHT));
 
-		/* required alignment from rthdr */
+		 
 		pos = (u8 *)rthdr + ALIGN(pos - (u8 *)rthdr, 2);
 
-		/* u16 known - IEEE80211_RADIOTAP_VHT_KNOWN_* */
+		 
 		put_unaligned_le16(known, pos);
 		pos += 2;
 
-		/* u8 flags - IEEE80211_RADIOTAP_VHT_FLAG_* */
+		 
 		if (info->status.rates[0].flags & IEEE80211_TX_RC_SHORT_GI)
 			*pos |= IEEE80211_RADIOTAP_VHT_FLAG_SGI;
 		pos++;
 
-		/* u8 bandwidth */
+		 
 		if (info->status.rates[0].flags & IEEE80211_TX_RC_40_MHZ_WIDTH)
 			*pos = 1;
 		else if (info->status.rates[0].flags & IEEE80211_TX_RC_80_MHZ_WIDTH)
 			*pos = 4;
 		else if (info->status.rates[0].flags & IEEE80211_TX_RC_160_MHZ_WIDTH)
 			*pos = 11;
-		else /* IEEE80211_TX_RC_{20_MHZ_WIDTH,FIXME:DUP_DATA} */
+		else  
 			*pos = 0;
 		pos++;
 
-		/* u8 mcs_nss[4] */
+		 
 		*pos = (ieee80211_rate_get_vht_mcs(&info->status.rates[0]) << 4) |
 			ieee80211_rate_get_vht_nss(&info->status.rates[0]);
 		pos += 4;
 
-		/* u8 coding */
+		 
 		pos++;
-		/* u8 group_id */
+		 
 		pos++;
-		/* u16 partial_aid */
+		 
 		pos += 2;
 	}
 }
 
-/*
- * Handles the tx for TDLS teardown frames.
- * If the frame wasn't ACKed by the peer - it will be re-sent through the AP
- */
+ 
 static void ieee80211_tdls_td_tx_handle(struct ieee80211_local *local,
 					struct ieee80211_sub_if_data *sdata,
 					struct sk_buff *skb, u32 flags)
@@ -576,7 +500,7 @@ static void ieee80211_tdls_td_tx_handle(struct ieee80211_local *local,
 	struct sk_buff *orig_teardown_skb;
 	bool is_teardown = false;
 
-	/* Get the teardown data we need and free the lock */
+	 
 	spin_lock(&sdata->u.mgd.teardown_lock);
 	teardown_skb = sdata->u.mgd.teardown_skb;
 	orig_teardown_skb = sdata->u.mgd.orig_teardown_skb;
@@ -588,10 +512,10 @@ static void ieee80211_tdls_td_tx_handle(struct ieee80211_local *local,
 	spin_unlock(&sdata->u.mgd.teardown_lock);
 
 	if (is_teardown) {
-		/* This mechanism relies on being able to get ACKs */
+		 
 		WARN_ON(!ieee80211_hw_check(&local->hw, REPORTS_TX_ACK_STATUS));
 
-		/* Check if peer has ACKed */
+		 
 		if (flags & IEEE80211_TX_STAT_ACK) {
 			dev_kfree_skb_any(teardown_skb);
 		} else {
@@ -690,7 +614,7 @@ static void ieee80211_report_ack_skb(struct ieee80211_local *local,
 	} else if (dropped) {
 		dev_kfree_skb_any(skb);
 	} else {
-		/* consumes skb */
+		 
 		skb_complete_wifi_ack(skb, acked);
 	}
 }
@@ -733,7 +657,7 @@ static void ieee80211_report_used_skb(struct ieee80211_local *local,
 			unsigned int hdr_size =
 				ieee80211_hdrlen(hdr->frame_control);
 
-			/* Check to see if packet is a TDLS teardown packet */
+			 
 			if (ieee80211_is_data(hdr->frame_control) &&
 			    (ieee80211_get_tdls_action(skb, hdr_size) ==
 			     WLAN_TDLS_TEARDOWN)) {
@@ -777,16 +701,10 @@ static void ieee80211_report_used_skb(struct ieee80211_local *local,
 	}
 }
 
-/*
- * Use a static threshold for now, best value to be determined
- * by testing ...
- * Should it depend on:
- *  - on # of retransmissions
- *  - current throughput (higher value for higher tpt)?
- */
+ 
 #define STA_LOST_PKT_THRESHOLD	50
-#define STA_LOST_PKT_TIME	HZ		/* 1 sec since last ACK */
-#define STA_LOST_TDLS_PKT_TIME		(10*HZ) /* 10secs since last ACK */
+#define STA_LOST_PKT_TIME	HZ		 
+#define STA_LOST_TDLS_PKT_TIME		(10*HZ)  
 
 static void ieee80211_lost_packet(struct sta_info *sta,
 				  struct ieee80211_tx_info *info)
@@ -794,13 +712,11 @@ static void ieee80211_lost_packet(struct sta_info *sta,
 	unsigned long pkt_time = STA_LOST_PKT_TIME;
 	unsigned int pkt_thr = STA_LOST_PKT_THRESHOLD;
 
-	/* If driver relies on its own algorithm for station kickout, skip
-	 * mac80211 packet loss mechanism.
-	 */
+	 
 	if (ieee80211_hw_check(&sta->local->hw, REPORTS_LOW_ACK))
 		return;
 
-	/* This packet was aggregated but doesn't carry status info */
+	 
 	if ((info->flags & IEEE80211_TX_CTL_AMPDU) &&
 	    !(info->flags & IEEE80211_TX_STAT_AMPDU))
 		return;
@@ -811,13 +727,7 @@ static void ieee80211_lost_packet(struct sta_info *sta,
 		pkt_thr = STA_LOST_PKT_THRESHOLD;
 	}
 
-	/*
-	 * If we're in TDLS mode, make sure that all STA_LOST_PKT_THRESHOLD
-	 * of the last packets were lost, and that no ACK was received in the
-	 * last STA_LOST_TDLS_PKT_TIME ms, before triggering the CQM packet-loss
-	 * mechanism.
-	 * For non-TDLS, use STA_LOST_PKT_THRESHOLD and STA_LOST_PKT_TIME
-	 */
+	 
 	if (sta->deflink.status_stats.lost_packets < pkt_thr ||
 	    !time_after(jiffies, sta->deflink.status_stats.last_pkt_time + pkt_time))
 		return;
@@ -838,14 +748,14 @@ static int ieee80211_tx_get_rates(struct ieee80211_hw *hw,
 	for (i = 0; i < IEEE80211_TX_MAX_RATES; i++) {
 		if ((info->flags & IEEE80211_TX_CTL_AMPDU) &&
 		    !(info->flags & IEEE80211_TX_STAT_AMPDU)) {
-			/* just the first aggr frame carry status info */
+			 
 			info->status.rates[i].idx = -1;
 			info->status.rates[i].count = 0;
 			break;
 		} else if (info->status.rates[i].idx < 0) {
 			break;
 		} else if (i >= hw->max_report_rates) {
-			/* the HW cannot have attempted that rate */
+			 
 			info->status.rates[i].idx = -1;
 			info->status.rates[i].count = 0;
 			break;
@@ -871,7 +781,7 @@ void ieee80211_tx_monitor(struct ieee80211_local *local, struct sk_buff *skb,
 	struct net_device *prev_dev = NULL;
 	int rtap_len;
 
-	/* send frame to monitor interfaces now */
+	 
 	rtap_len = ieee80211_tx_radiotap_len(info, status);
 	if (WARN_ON_ONCE(skb_headroom(skb) < rtap_len)) {
 		pr_err("ieee80211_tx_status: headroom too small\n");
@@ -881,7 +791,7 @@ void ieee80211_tx_monitor(struct ieee80211_local *local, struct sk_buff *skb,
 	ieee80211_add_tx_radiotap_header(local, skb, retry_count,
 					 rtap_len, shift, status);
 
-	/* XXX: is this sufficient for BPF? */
+	 
 	skb_reset_mac_header(skb);
 	skb->ip_summed = CHECKSUM_UNNECESSARY;
 	skb->pkt_type = PACKET_OTHERHOST;
@@ -948,7 +858,7 @@ static void __ieee80211_tx_status(struct ieee80211_hw *hw,
 		noack_success = !!(info->flags &
 				   IEEE80211_TX_STAT_NOACK_TRANSMITTED);
 
-		/* mesh Peer Service Period support */
+		 
 		if (ieee80211_vif_is_mesh(&sta->sdata->vif) &&
 		    ieee80211_is_data_qos(fc))
 			ieee80211_mpsp_trigger_process(
@@ -980,11 +890,7 @@ static void __ieee80211_tx_status(struct ieee80211_hw *hw,
 		if (!acked && ieee80211_is_back_req(fc)) {
 			u16 control;
 
-			/*
-			 * BAR failed, store the last SSN and retry sending
-			 * the BAR when the next unicast transmission on the
-			 * same TID succeeds.
-			 */
+			 
 			bar = (struct ieee80211_bar *) skb->data;
 			control = le16_to_cpu(bar->control);
 			if (!(control & IEEE80211_BAR_CTRL_MULTI_TID)) {
@@ -1014,10 +920,7 @@ static void __ieee80211_tx_status(struct ieee80211_hw *hw,
 
 	}
 
-	/* SNMP counters
-	 * Fragments are passed to low-level drivers as separate skbs, so these
-	 * are actually fragments, not frames. Update frame counters only for
-	 * the first fragment of the frame. */
+	 
 	if ((info->flags & IEEE80211_TX_STAT_ACK) ||
 	    (info->flags & IEEE80211_TX_STAT_NOACK_TRANSMITTED)) {
 		if (ieee80211_is_first_frag(hdr->seq_ctrl)) {
@@ -1030,10 +933,7 @@ static void __ieee80211_tx_status(struct ieee80211_hw *hw,
 				I802_DEBUG_INC(local->dot11MultipleRetryCount);
 		}
 
-		/* This counter shall be incremented for an acknowledged MPDU
-		 * with an individual address in the address 1 field or an MPDU
-		 * with a multicast address in the address 1 field of type Data
-		 * or Management. */
+		 
 		if (!is_multicast_ether_addr(hdr->addr1) ||
 		    ieee80211_is_data(fc) ||
 		    ieee80211_is_mgmt(fc))
@@ -1057,17 +957,14 @@ static void __ieee80211_tx_status(struct ieee80211_hw *hw,
 
 	ieee80211_report_used_skb(local, skb, false, status->ack_hwtstamp);
 
-	/* this was a transmitted frame, but now we want to reuse it */
+	 
 	skb_orphan(skb);
 
-	/* Need to make a copy before skb->cb gets cleared */
+	 
 	send_to_cooked = !!(info->flags & IEEE80211_TX_CTL_INJECTED) ||
 			 !(ieee80211_is_data(fc));
 
-	/*
-	 * This is a bit racy but we can avoid a lot of work
-	 * with this test...
-	 */
+	 
 	if (!local->monitors && (!send_to_cooked || !local->cooked_mntrs)) {
 		if (status->free_list)
 			list_add_tail(&skb->list, status->free_list);
@@ -1076,7 +973,7 @@ static void __ieee80211_tx_status(struct ieee80211_hw *hw,
 		return;
 	}
 
-	/* send to monitor interfaces */
+	 
 	ieee80211_tx_monitor(local, skb, retry_count, shift,
 			     send_to_cooked, status);
 }
@@ -1124,9 +1021,7 @@ void ieee80211_tx_status_ext(struct ieee80211_hw *hw,
 
 	if (skb && (tx_time_est =
 		    ieee80211_info_get_tx_time_est(IEEE80211_SKB_CB(skb))) > 0) {
-		/* Do this here to avoid the expensive lookup of the sta
-		 * in ieee80211_report_used_skb().
-		 */
+		 
 		ieee80211_sta_update_pending_airtime(local, sta,
 						     skb_get_queue_mapping(skb),
 						     tx_time_est,
@@ -1163,10 +1058,10 @@ void ieee80211_tx_status_ext(struct ieee80211_hw *hw,
 				if (sta->deflink.status_stats.lost_packets)
 					sta->deflink.status_stats.lost_packets = 0;
 
-				/* Track when last packet was ACKed */
+				 
 				sta->deflink.status_stats.last_pkt_time = jiffies;
 
-				/* Reset connection monitor */
+				 
 				if (sdata->vif.type == NL80211_IFTYPE_STATION &&
 				    unlikely(sdata->u.mgd.probe_send_count > 0))
 					sdata->u.mgd.probe_send_count = 0;
@@ -1179,15 +1074,12 @@ void ieee80211_tx_status_ext(struct ieee80211_hw *hw,
 							    -info->status.ack_signal);
 				}
 			} else if (test_sta_flag(sta, WLAN_STA_PS_STA)) {
-				/*
-				 * The STA is in power save mode, so assume
-				 * that this TX packet failed because of that.
-				 */
+				 
 				if (skb)
 					ieee80211_handle_filtered_frame(local, sta, skb);
 				return;
 			} else if (noack_success) {
-				/* nothing to do here, do not account as lost */
+				 
 			} else {
 				ieee80211_lost_packet(sta, info);
 			}

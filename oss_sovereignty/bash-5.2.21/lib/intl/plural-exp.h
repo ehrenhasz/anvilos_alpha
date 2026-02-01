@@ -1,23 +1,6 @@
-/* plural-exp.h - defines for expression parsing and evaluation for plural form selection. */
+ 
 
-/* Copyright (C) 2000, 2001, 2002, 2005-2009 Free Software Foundation, Inc.
-   Written by Ulrich Drepper <drepper@cygnus.com>, 2000.
-
-   This file is part of GNU Bash.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #ifndef _PLURAL_EXP_H
 #define _PLURAL_EXP_H
@@ -39,44 +22,42 @@
 #endif
 
 
-/* This is the representation of the expressions to determine the
-   plural form.  */
+ 
 struct expression
 {
-  int nargs;			/* Number of arguments.  */
+  int nargs;			 
   enum operator
   {
-    /* Without arguments:  */
-    var,			/* The variable "n".  */
-    num,			/* Decimal number.  */
-    /* Unary operators:  */
-    lnot,			/* Logical NOT.  */
-    /* Binary operators:  */
-    mult,			/* Multiplication.  */
-    divide,			/* Division.  */
-    module,			/* Modulo operation.  */
-    plus,			/* Addition.  */
-    minus,			/* Subtraction.  */
-    less_than,			/* Comparison.  */
-    greater_than,		/* Comparison.  */
-    less_or_equal,		/* Comparison.  */
-    greater_or_equal,		/* Comparison.  */
-    equal,			/* Comparison for equality.  */
-    not_equal,			/* Comparison for inequality.  */
-    land,			/* Logical AND.  */
-    lor,			/* Logical OR.  */
-    /* Ternary operators:  */
-    qmop			/* Question mark operator.  */
+     
+    var,			 
+    num,			 
+     
+    lnot,			 
+     
+    mult,			 
+    divide,			 
+    module,			 
+    plus,			 
+    minus,			 
+    less_than,			 
+    greater_than,		 
+    less_or_equal,		 
+    greater_or_equal,		 
+    equal,			 
+    not_equal,			 
+    land,			 
+    lor,			 
+     
+    qmop			 
   } operation;
   union
   {
-    unsigned long int num;	/* Number value for `num'.  */
-    struct expression *args[3];	/* Up to three arguments.  */
+    unsigned long int num;	 
+    struct expression *args[3];	 
   } val;
 };
 
-/* This is the data structure to pass information to the parser and get
-   the result in a thread-safe way.  */
+ 
 struct parse_args
 {
   const char *cp;
@@ -84,16 +65,7 @@ struct parse_args
 };
 
 
-/* Names for the libintl functions are a problem.  This source code is used
-   1. in the GNU C Library library,
-   2. in the GNU libintl library,
-   3. in the GNU gettext tools.
-   The function names in each situation must be different, to allow for
-   binary incompatible changes in 'struct expression'.  Furthermore,
-   1. in the GNU C Library library, the names have a __ prefix,
-   2.+3. in the GNU libintl library and in the GNU gettext tools, the names
-         must follow ANSI C and not start with __.
-   So we have to distinguish the three cases.  */
+ 
 #ifdef _LIBC
 # define FREE_EXPRESSION __gettext_free_exp
 # define PLURAL_PARSE __gettextparse
@@ -125,4 +97,4 @@ extern unsigned long int plural_eval PARAMS ((struct expression *pexp,
 					      unsigned long int n));
 #endif
 
-#endif /* _PLURAL_EXP_H */
+#endif  

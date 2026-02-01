@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * ChromeOS EC sensor hub
- *
- * Copyright (C) 2016 Google, Inc
- */
+ 
+ 
 
 #ifndef __CROS_EC_SENSORS_CORE_H
 #define __CROS_EC_SENSORS_CORE_H
@@ -21,42 +17,15 @@ enum {
 	CROS_EC_SENSOR_MAX_AXIS,
 };
 
-/* EC returns sensor values using signed 16 bit registers */
+ 
 #define CROS_EC_SENSOR_BITS 16
 
-/*
- * 4 16 bit channels are allowed.
- * Good enough for current sensors, they use up to 3 16 bit vectors.
- */
+ 
 #define CROS_EC_SAMPLE_SIZE  (sizeof(s64) * 2)
 
 typedef irqreturn_t (*cros_ec_sensors_capture_t)(int irq, void *p);
 
-/**
- * struct cros_ec_sensors_core_state - state data for EC sensors IIO driver
- * @ec:				cros EC device structure
- * @cmd_lock:			lock used to prevent simultaneous access to the
- *				commands.
- * @msg:			cros EC command structure
- * @param:			motion sensor parameters structure
- * @resp:			motion sensor response structure
- * @type:			type of motion sensor
- * @range_updated:		True if the range of the sensor has been
- *				updated.
- * @curr_range:			If updated, the current range value.
- *				It will be reapplied at every resume.
- * @calib:			calibration parameters. Note that trigger
- *				captured data will always provide the calibrated
- *				data
- * @samples:			static array to hold data from a single capture.
- *				For each channel we need 2 bytes, except for
- *				the timestamp. The timestamp is always last and
- *				is always 8-byte aligned.
- * @read_ec_sensors_data:	function used for accessing sensors values
- * @fifo_max_event_count:	Size of the EC sensor FIFO
- * @frequencies:		Table of known available frequencies:
- *				0, Min and Max in mHz
- */
+ 
 struct cros_ec_sensors_core_state {
 	struct cros_ec_device *ec;
 	struct mutex cmd_lock;
@@ -124,7 +93,7 @@ int cros_ec_sensors_core_write(struct cros_ec_sensors_core_state *st,
 
 extern const struct dev_pm_ops cros_ec_sensors_pm_ops;
 
-/* List of extended channel specification for all sensors. */
+ 
 extern const struct iio_chan_spec_ext_info cros_ec_sensors_ext_info[];
 
-#endif  /* __CROS_EC_SENSORS_CORE_H */
+#endif   

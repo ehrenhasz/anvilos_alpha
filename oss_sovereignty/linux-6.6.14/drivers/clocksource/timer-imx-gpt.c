@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-//  Copyright (C) 2000-2001 Deep Blue Solutions
-//  Copyright (C) 2002 Shane Nay (shane@minirl.com)
-//  Copyright (C) 2006-2007 Pavel Pisa (ppisa@pikron.com)
-//  Copyright (C) 2008 Juergen Beisert (kernel@pengutronix.de)
+
+
+
+
+
+
 
 #include <linux/interrupt.h>
 #include <linux/irq.h>
@@ -17,26 +17,20 @@
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
 
-/*
- * There are 4 versions of the timer hardware on Freescale MXC hardware.
- *  - MX1/MXL
- *  - MX21, MX27.
- *  - MX25, MX31, MX35, MX37, MX51, MX6Q(rev1.0)
- *  - MX6DL, MX6SX, MX6Q(rev1.1+)
- */
+ 
 enum imx_gpt_type {
-	GPT_TYPE_IMX1,		/* i.MX1 */
-	GPT_TYPE_IMX21,		/* i.MX21/27 */
-	GPT_TYPE_IMX31,		/* i.MX31/35/25/37/51/6Q */
-	GPT_TYPE_IMX6DL,	/* i.MX6DL/SX/SL */
+	GPT_TYPE_IMX1,		 
+	GPT_TYPE_IMX21,		 
+	GPT_TYPE_IMX31,		 
+	GPT_TYPE_IMX6DL,	 
 };
 
-/* defines common for all i.MX */
+ 
 #define MXC_TCTL		0x00
-#define MXC_TCTL_TEN		(1 << 0) /* Enable module */
+#define MXC_TCTL_TEN		(1 << 0)  
 #define MXC_TPRER		0x04
 
-/* MX1, MX21, MX27 */
+ 
 #define MX1_2_TCTL_CLK_PCLK1	(1 << 1)
 #define MX1_2_TCTL_IRQEN	(1 << 4)
 #define MX1_2_TCTL_FRR		(1 << 8)
@@ -44,12 +38,12 @@ enum imx_gpt_type {
 #define MX1_2_TCN		0x10
 #define MX1_2_TSTAT		0x14
 
-/* MX21, MX27 */
+ 
 #define MX2_TSTAT_CAPT		(1 << 1)
 #define MX2_TSTAT_COMP		(1 << 0)
 
-/* MX31, MX35, MX25, MX5, MX6 */
-#define V2_TCTL_WAITEN		(1 << 3) /* Wait enable mode */
+ 
+#define V2_TCTL_WAITEN		(1 << 3)  
 #define V2_TCTL_CLK_IPG		(1 << 6)
 #define V2_TCTL_CLK_PER		(2 << 6)
 #define V2_TCTL_CLK_OSC_DIV8	(5 << 6)
@@ -167,7 +161,7 @@ static int __init mxc_clocksource_init(struct imx_timer *imxtm)
 			clocksource_mmio_readl_up);
 }
 
-/* clock event */
+ 
 
 static int mx1_2_set_next_event(unsigned long evt,
 			      struct clock_event_device *ced)
@@ -203,19 +197,19 @@ static int mxc_shutdown(struct clock_event_device *ced)
 	struct imx_timer *imxtm = to_imx_timer(ced);
 	u32 tcn;
 
-	/* Disable interrupt in GPT module */
+	 
 	imxtm->gpt->gpt_irq_disable(imxtm);
 
 	tcn = readl_relaxed(imxtm->base + imxtm->gpt->reg_tcn);
-	/* Set event time into far-far future */
+	 
 	writel_relaxed(tcn - 3, imxtm->base + imxtm->gpt->reg_tcmp);
 
-	/* Clear pending interrupt */
+	 
 	imxtm->gpt->gpt_irq_acknowledge(imxtm);
 
 #ifdef DEBUG
 	printk(KERN_INFO "%s: changing mode\n", __func__);
-#endif /* DEBUG */
+#endif  
 
 	return 0;
 }
@@ -224,36 +218,29 @@ static int mxc_set_oneshot(struct clock_event_device *ced)
 {
 	struct imx_timer *imxtm = to_imx_timer(ced);
 
-	/* Disable interrupt in GPT module */
+	 
 	imxtm->gpt->gpt_irq_disable(imxtm);
 
 	if (!clockevent_state_oneshot(ced)) {
 		u32 tcn = readl_relaxed(imxtm->base + imxtm->gpt->reg_tcn);
-		/* Set event time into far-far future */
+		 
 		writel_relaxed(tcn - 3, imxtm->base + imxtm->gpt->reg_tcmp);
 
-		/* Clear pending interrupt */
+		 
 		imxtm->gpt->gpt_irq_acknowledge(imxtm);
 	}
 
 #ifdef DEBUG
 	printk(KERN_INFO "%s: changing mode\n", __func__);
-#endif /* DEBUG */
+#endif  
 
-	/*
-	 * Do not put overhead of interrupt enable/disable into
-	 * mxc_set_next_event(), the core has about 4 minutes
-	 * to call mxc_set_next_event() or shutdown clock after
-	 * mode switching
-	 */
+	 
 	imxtm->gpt->gpt_irq_enable(imxtm);
 
 	return 0;
 }
 
-/*
- * IRQ handler for the timer
- */
+ 
 static irqreturn_t mxc_timer_interrupt(int irq, void *dev_id)
 {
 	struct clock_event_device *ced = dev_id;
@@ -317,7 +304,7 @@ static void imx6dl_gpt_setup_tctl(struct imx_timer *imxtm)
 	tctl_val = V2_TCTL_FRR | V2_TCTL_WAITEN | MXC_TCTL_TEN;
 	if (clk_get_rate(imxtm->clk_per) == V2_TIMER_RATE_OSC_DIV8) {
 		tctl_val |= V2_TCTL_CLK_OSC_DIV8;
-		/* 24 / 8 = 3 MHz */
+		 
 		writel_relaxed(7 << V2_TPRER_PRE24M, imxtm->base + MXC_TPRER);
 		tctl_val |= V2_TCTL_24MEN;
 	} else {
@@ -402,16 +389,14 @@ static int __init _mxc_timer_init(struct imx_timer *imxtm)
 
 	clk_prepare_enable(imxtm->clk_per);
 
-	/*
-	 * Initialise to a known state (all timers off, and timing reset)
-	 */
+	 
 
 	writel_relaxed(0, imxtm->base + MXC_TCTL);
-	writel_relaxed(0, imxtm->base + MXC_TPRER); /* see datasheet note */
+	writel_relaxed(0, imxtm->base + MXC_TPRER);  
 
 	imxtm->gpt->gpt_setup_tctl(imxtm);
 
-	/* init and register the timer to the framework */
+	 
 	ret = mxc_clocksource_init(imxtm);
 	if (ret)
 		return ret;
@@ -425,7 +410,7 @@ static int __init mxc_timer_init_dt(struct device_node *np,  enum imx_gpt_type t
 	static int initialized;
 	int ret;
 
-	/* Support one instance only */
+	 
 	if (initialized)
 		return 0;
 
@@ -447,7 +432,7 @@ static int __init mxc_timer_init_dt(struct device_node *np,  enum imx_gpt_type t
 
 	imxtm->clk_ipg = of_clk_get_by_name(np, "ipg");
 
-	/* Try osc_per first, and fall back to per otherwise */
+	 
 	imxtm->clk_per = of_clk_get_by_name(np, "osc_per");
 	if (IS_ERR(imxtm->clk_per))
 		imxtm->clk_per = of_clk_get_by_name(np, "per");
@@ -481,12 +466,7 @@ static int __init imx31_timer_init_dt(struct device_node *np)
 {
 	enum imx_gpt_type type = GPT_TYPE_IMX31;
 
-	/*
-	 * We were using the same compatible string for i.MX6Q/D and i.MX6DL/S
-	 * GPT device, while they actually have different programming model.
-	 * This is a workaround to keep the existing i.MX6DL/S DTBs continue
-	 * working with the new kernel.
-	 */
+	 
 	if (of_machine_is_compatible("fsl,imx6dl"))
 		type = GPT_TYPE_IMX6DL;
 

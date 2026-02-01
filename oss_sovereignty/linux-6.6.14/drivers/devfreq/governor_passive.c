@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/drivers/devfreq/governor_passive.c
- *
- * Copyright (C) 2016 Samsung Electronics
- * Author: Chanwoo Choi <cw00.choi@samsung.com>
- * Author: MyungJoo Ham <myungjoo.ham@samsung.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/cpu.h>
@@ -99,7 +93,7 @@ static int get_target_freq_with_cpufreq(struct devfreq *devfreq,
 			continue;
 		}
 
-		/* Get target freq via required opps */
+		 
 		cpu_cur = parent_cpu_data->cur_freq * HZ_PER_KHZ;
 		freq = get_target_freq_by_required_opp(parent_cpu_data->dev,
 					parent_cpu_data->opp_table,
@@ -110,7 +104,7 @@ static int get_target_freq_with_cpufreq(struct devfreq *devfreq,
 			continue;
 		}
 
-		/* Use interpolation if required opps is not available */
+		 
 		devfreq_get_freq_range(devfreq, &dev_min, &dev_max);
 
 		cpu_min = parent_cpu_data->min_freq;
@@ -136,14 +130,14 @@ static int get_target_freq_with_devfreq(struct devfreq *devfreq,
 	unsigned long child_freq = ULONG_MAX;
 	int i, count;
 
-	/* Get target freq via required opps */
+	 
 	child_freq = get_target_freq_by_required_opp(parent_devfreq->dev.parent,
 						parent_devfreq->opp_table,
 						devfreq->opp_table, freq);
 	if (child_freq)
 		goto out;
 
-	/* Use interpolation if required opps is not available */
+	 
 	for (i = 0; i < parent_devfreq->max_state; i++)
 		if (parent_devfreq->freq_table[i] == *freq)
 			break;
@@ -174,11 +168,7 @@ static int devfreq_passive_get_target_freq(struct devfreq *devfreq,
 	if (!p_data)
 		return -EINVAL;
 
-	/*
-	 * If the devfreq device with passive governor has the specific method
-	 * to determine the next frequency, should use the get_target_freq()
-	 * of struct devfreq_passive_data.
-	 */
+	 
 	if (p_data->get_target_freq)
 		return p_data->get_target_freq(devfreq, freq);
 

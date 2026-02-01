@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Watchdog driver for Conexant Digicolor
- *
- * Copyright (C) 2015 Paradox Innovation Ltd.
- *
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/module.h>
@@ -51,7 +46,7 @@ static int dc_wdt_restart(struct watchdog_device *wdog, unsigned long action,
 	struct dc_wdt *wdt = watchdog_get_drvdata(wdog);
 
 	dc_wdt_set(wdt, 1);
-	/* wait for reset to assert... */
+	 
 	mdelay(500);
 
 	return 0;

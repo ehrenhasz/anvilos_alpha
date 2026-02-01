@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-#define _GNU_SOURCE /* for program_invocation_short_name */
+
+#define _GNU_SOURCE  
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -54,11 +54,7 @@ static void ____test_icr(struct xapic_vcpu *x, uint64_t val)
 	struct ucall uc;
 	uint64_t icr;
 
-	/*
-	 * Tell the guest what ICR value to write.  Use the IRR to pass info,
-	 * all bits are valid and should not be modified by KVM (ignoring the
-	 * fact that vectors 0-15 are technically illegal).
-	 */
+	 
 	vcpu_ioctl(vcpu, KVM_GET_LAPIC, &xapic);
 	*((u32 *)&xapic.regs[APIC_IRR]) = val;
 	*((u32 *)&xapic.regs[APIC_IRR + 0x10]) = val >> 32;
@@ -86,10 +82,7 @@ static void ____test_icr(struct xapic_vcpu *x, uint64_t val)
 static void __test_icr(struct xapic_vcpu *x, uint64_t val)
 {
 	if (x->is_x2apic) {
-		/* Hardware writing vICR register requires reserved bits 31:20,
-		 * 17:16 and 13 kept as zero to avoid #GP exception. Data value
-		 * written to vICR should mask out those bits above.
-		 */
+		 
 		val &= ~X2APIC_RSVED_BITS_MASK;
 	}
 	____test_icr(x, val | APIC_ICR_BUSY);
@@ -109,10 +102,7 @@ static void test_icr(struct xapic_vcpu *x)
 	for (i = 0; i <= 0xff; i++)
 		__test_icr(x, icr | i);
 
-	/*
-	 * Send all flavors of IPIs to non-existent vCPUs.  TODO: use number of
-	 * vCPUs, not vcpu.id + 1.  Arbitrarily use vector 0xff.
-	 */
+	 
 	icr = APIC_INT_ASSERT | 0xff;
 	for (i = 0; i < 0xff; i++) {
 		if (i == vcpu->id)
@@ -121,12 +111,12 @@ static void test_icr(struct xapic_vcpu *x)
 			__test_icr(x, i << (32 + 24) | icr | (j << 8));
 	}
 
-	/* And again with a shorthand destination for all types of IPIs. */
+	 
 	icr = APIC_DEST_ALLBUT | APIC_INT_ASSERT;
 	for (i = 0; i < 8; i++)
 		__test_icr(x, icr | (i << 8));
 
-	/* And a few garbage value, just make sure it's an IRQ (blocked). */
+	 
 	__test_icr(x, 0xa5a5a5a5a5a5a5a5 & ~APIC_DM_FIXED_MASK);
 	__test_icr(x, 0x5a5a5a5a5a5a5a5a & ~APIC_DM_FIXED_MASK);
 	__test_icr(x, -1ull & ~APIC_DM_FIXED_MASK);
@@ -150,14 +140,7 @@ static void __test_apic_id(struct kvm_vcpu *vcpu, uint64_t apic_base)
 		    expected, apic_id);
 }
 
-/*
- * Verify that KVM switches the APIC_ID between xAPIC and x2APIC when userspace
- * stuffs MSR_IA32_APICBASE.  Setting the APIC_ID when x2APIC is enabled and
- * when the APIC transitions for DISABLED to ENABLED is architectural behavior
- * (on Intel), whereas the x2APIC => xAPIC transition behavior is KVM ABI since
- * attempted to transition from x2APIC to xAPIC without disabling the APIC is
- * architecturally disallowed.
- */
+ 
 static void test_apic_id(void)
 {
 	const uint32_t NR_VCPUS = 3;
@@ -197,11 +180,7 @@ int main(int argc, char *argv[])
 	test_icr(&x);
 	kvm_vm_free(vm);
 
-	/*
-	 * Use a second VM for the xAPIC test so that x2APIC can be hidden from
-	 * the guest in order to test AVIC.  KVM disallows changing CPUID after
-	 * KVM_RUN and AVIC is disabled if _any_ vCPU is allowed to use x2APIC.
-	 */
+	 
 	vm = vm_create_with_one_vcpu(&x.vcpu, xapic_guest_code);
 	x.is_x2apic = false;
 

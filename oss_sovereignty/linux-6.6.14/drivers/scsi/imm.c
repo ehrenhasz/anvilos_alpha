@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* imm.c   --  low level driver for the IOMEGA MatchMaker
- * parallel port SCSI host adapter.
- * 
- * (The IMM is the embedded controller in the ZIP Plus drive.)
- * 
- * My unofficial company acronym list is 21 pages long:
- *      FLA:    Four letter acronym with built in facility for
- *              future expansion to five letters.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -24,7 +16,7 @@
 #include <scsi/scsi_device.h>
 #include <scsi/scsi_host.h>
 
-/* The following #define is to avoid a clash with hosts.c */
+ 
 #define IMM_PROBE_SPP   0x0001
 #define IMM_PROBE_PS2   0x0002
 #define IMM_PROBE_ECR   0x0010
@@ -33,18 +25,18 @@
 
 
 typedef struct {
-	struct pardevice *dev;	/* Parport device entry         */
-	int base;		/* Actual port address          */
-	int base_hi;		/* Hi Base address for ECP-ISA chipset */
-	int mode;		/* Transfer mode                */
-	struct scsi_cmnd *cur_cmd;	/* Current queued command       */
-	struct delayed_work imm_tq;	/* Polling interrupt stuff       */
-	unsigned long jstart;	/* Jiffies at start             */
-	unsigned failed:1;	/* Failure flag                 */
-	unsigned dp:1;		/* Data phase present           */
-	unsigned rd:1;		/* Read data in data phase      */
-	unsigned wanted:1;	/* Parport sharing busy flag    */
-	unsigned int dev_no;	/* Device number		*/
+	struct pardevice *dev;	 
+	int base;		 
+	int base_hi;		 
+	int mode;		 
+	struct scsi_cmnd *cur_cmd;	 
+	struct delayed_work imm_tq;	 
+	unsigned long jstart;	 
+	unsigned failed:1;	 
+	unsigned dp:1;		 
+	unsigned rd:1;		 
+	unsigned wanted:1;	 
+	unsigned int dev_no;	 
 	wait_queue_head_t *waiting;
 	struct Scsi_Host *host;
 	struct list_head list;
@@ -117,13 +109,7 @@ static inline void imm_pb_release(imm_struct *dev)
 	parport_release(dev->dev);
 }
 
-/* This is to give the imm driver a way to modify the timings (and other
- * parameters) by writing to the /proc/scsi/imm/0 file.
- * Very simple method really... (Too simple, no error checking :( )
- * Reason: Kernel hackers HATE having to unload and reload modules for
- * testing...
- * Also gives a method to use a script to obtain optimum timings (TODO)
- */
+ 
 static int imm_write_info(struct Scsi_Host *host, char *buffer, int length)
 {
 	imm_struct *dev = imm_dev(host);
@@ -156,20 +142,14 @@ static inline void
 imm_fail(imm_struct *dev, int error_code)
 #endif
 {
-	/* If we fail a device then we trash status / message bytes */
+	 
 	if (dev->cur_cmd) {
 		dev->cur_cmd->result = error_code << 16;
 		dev->failed = 1;
 	}
 }
 
-/*
- * Wait for the high bit to be set.
- * 
- * In principle, this could be tied to an interrupt, but the adapter
- * doesn't appear to be designed to support interrupts.  We spin on
- * the 0x80 ready bit. 
- */
+ 
 static unsigned char imm_wait(imm_struct *dev)
 {
 	int k;
@@ -186,48 +166,20 @@ static unsigned char imm_wait(imm_struct *dev)
 	}
 	while (!(r & 0x80) && (k));
 
-	/*
-	 * STR register (LPT base+1) to SCSI mapping:
-	 *
-	 * STR      imm     imm
-	 * ===================================
-	 * 0x80     S_REQ   S_REQ
-	 * 0x40     !S_BSY  (????)
-	 * 0x20     !S_CD   !S_CD
-	 * 0x10     !S_IO   !S_IO
-	 * 0x08     (????)  !S_BSY
-	 *
-	 * imm      imm     meaning
-	 * ==================================
-	 * 0xf0     0xb8    Bit mask
-	 * 0xc0     0x88    ZIP wants more data
-	 * 0xd0     0x98    ZIP wants to send more data
-	 * 0xe0     0xa8    ZIP is expecting SCSI command data
-	 * 0xf0     0xb8    end of transfer, ZIP is sending status
-	 */
+	 
 	w_ctr(ppb, 0x04);
 	if (k)
 		return (r & 0xb8);
 
-	/* Counter expired - Time out occurred */
+	 
 	imm_fail(dev, DID_TIME_OUT);
 	printk("imm timeout in imm_wait\n");
-	return 0;		/* command timed out */
+	return 0;		 
 }
 
 static int imm_negotiate(imm_struct * tmp)
 {
-	/*
-	 * The following is supposedly the IEEE 1284-1994 negotiate
-	 * sequence. I have yet to obtain a copy of the above standard
-	 * so this is a bit of a guess...
-	 *
-	 * A fair chunk of this is based on the Linux parport implementation
-	 * of IEEE 1284.
-	 *
-	 * Return 0 if data available
-	 *        1 if no data available
-	 */
+	 
 
 	unsigned short base = tmp->base;
 	unsigned char a, mode;
@@ -263,9 +215,7 @@ static int imm_negotiate(imm_struct * tmp)
 	return a;
 }
 
-/* 
- * Clear EPP timeout bit. 
- */
+ 
 static inline void epp_reset(unsigned short ppb)
 {
 	int i;
@@ -275,9 +225,7 @@ static inline void epp_reset(unsigned short ppb)
 	w_str(ppb, i & 0xfe);
 }
 
-/* 
- * Wait for empty ECP fifo (if we are in ECP fifo mode only)
- */
+ 
 static inline void ecp_sync(imm_struct *dev)
 {
 	int i, ppb_hi = dev->base_hi;
@@ -285,7 +233,7 @@ static inline void ecp_sync(imm_struct *dev)
 	if (ppb_hi == 0)
 		return;
 
-	if ((r_ecr(ppb_hi) & 0xe0) == 0x60) {	/* mode 011 == ECP fifo mode */
+	if ((r_ecr(ppb_hi) & 0xe0) == 0x60) {	 
 		for (i = 0; i < 100; i++) {
 			if (r_ecr(ppb_hi) & 0x01)
 				return;
@@ -299,15 +247,15 @@ static int imm_byte_out(unsigned short base, const char *buffer, int len)
 {
 	int i;
 
-	w_ctr(base, 0x4);	/* apparently a sane mode */
+	w_ctr(base, 0x4);	 
 	for (i = len >> 1; i; i--) {
 		w_dtr(base, *buffer++);
-		w_ctr(base, 0x5);	/* Drop STROBE low */
+		w_ctr(base, 0x5);	 
 		w_dtr(base, *buffer++);
-		w_ctr(base, 0x0);	/* STROBE high + INIT low */
+		w_ctr(base, 0x0);	 
 	}
-	w_ctr(base, 0x4);	/* apparently a sane mode */
-	return 1;		/* All went well - we hope! */
+	w_ctr(base, 0x4);	 
+	return 1;		 
 }
 
 static int imm_nibble_in(unsigned short base, char *buffer, int len)
@@ -315,9 +263,7 @@ static int imm_nibble_in(unsigned short base, char *buffer, int len)
 	unsigned char l;
 	int i;
 
-	/*
-	 * The following is based on documented timing signals
-	 */
+	 
 	w_ctr(base, 0x4);
 	for (i = len; i; i--) {
 		w_ctr(base, 0x6);
@@ -326,23 +272,21 @@ static int imm_nibble_in(unsigned short base, char *buffer, int len)
 		*buffer++ = (r_str(base) & 0xf0) | l;
 		w_ctr(base, 0x4);
 	}
-	return 1;		/* All went well - we hope! */
+	return 1;		 
 }
 
 static int imm_byte_in(unsigned short base, char *buffer, int len)
 {
 	int i;
 
-	/*
-	 * The following is based on documented timing signals
-	 */
+	 
 	w_ctr(base, 0x4);
 	for (i = len; i; i--) {
 		w_ctr(base, 0x26);
 		*buffer++ = r_dtr(base);
 		w_ctr(base, 0x25);
 	}
-	return 1;		/* All went well - we hope! */
+	return 1;		 
 }
 
 static int imm_out(imm_struct *dev, char *buffer, int len)
@@ -350,11 +294,7 @@ static int imm_out(imm_struct *dev, char *buffer, int len)
 	unsigned short ppb = dev->base;
 	int r = imm_wait(dev);
 
-	/*
-	 * Make sure that:
-	 * a) the SCSI bus is BUSY (device still listening)
-	 * b) the device is listening
-	 */
+	 
 	if ((r & 0x18) != 0x08) {
 		imm_fail(dev, DID_ERROR);
 		printk("IMM: returned SCSI status %2x\n", r);
@@ -383,7 +323,7 @@ static int imm_out(imm_struct *dev, char *buffer, int len)
 
 	case IMM_NIBBLE:
 	case IMM_PS2:
-		/* 8 bit output, with a loop */
+		 
 		r = imm_byte_out(ppb, buffer, len);
 		break;
 
@@ -399,24 +339,20 @@ static int imm_in(imm_struct *dev, char *buffer, int len)
 	unsigned short ppb = dev->base;
 	int r = imm_wait(dev);
 
-	/*
-	 * Make sure that:
-	 * a) the SCSI bus is BUSY (device still listening)
-	 * b) the device is sending data
-	 */
+	 
 	if ((r & 0x18) != 0x18) {
 		imm_fail(dev, DID_ERROR);
 		return 0;
 	}
 	switch (dev->mode) {
 	case IMM_NIBBLE:
-		/* 4 bit input, with a loop */
+		 
 		r = imm_nibble_in(ppb, buffer, len);
 		w_ctr(ppb, 0xc);
 		break;
 
 	case IMM_PS2:
-		/* 8 bit input, with a loop */
+		 
 		r = imm_byte_in(ppb, buffer, len);
 		w_ctr(ppb, 0xc);
 		break;
@@ -451,91 +387,64 @@ static int imm_in(imm_struct *dev, char *buffer, int len)
 
 static int imm_cpp(unsigned short ppb, unsigned char b)
 {
-	/*
-	 * Comments on udelay values refer to the
-	 * Command Packet Protocol (CPP) timing diagram.
-	 */
+	 
 
 	unsigned char s1, s2, s3;
 	w_ctr(ppb, 0x0c);
-	udelay(2);		/* 1 usec - infinite */
+	udelay(2);		 
 	w_dtr(ppb, 0xaa);
-	udelay(10);		/* 7 usec - infinite */
+	udelay(10);		 
 	w_dtr(ppb, 0x55);
-	udelay(10);		/* 7 usec - infinite */
+	udelay(10);		 
 	w_dtr(ppb, 0x00);
-	udelay(10);		/* 7 usec - infinite */
+	udelay(10);		 
 	w_dtr(ppb, 0xff);
-	udelay(10);		/* 7 usec - infinite */
+	udelay(10);		 
 	s1 = r_str(ppb) & 0xb8;
 	w_dtr(ppb, 0x87);
-	udelay(10);		/* 7 usec - infinite */
+	udelay(10);		 
 	s2 = r_str(ppb) & 0xb8;
 	w_dtr(ppb, 0x78);
-	udelay(10);		/* 7 usec - infinite */
+	udelay(10);		 
 	s3 = r_str(ppb) & 0x38;
-	/*
-	 * Values for b are:
-	 * 0000 00aa    Assign address aa to current device
-	 * 0010 00aa    Select device aa in EPP Winbond mode
-	 * 0010 10aa    Select device aa in EPP mode
-	 * 0011 xxxx    Deselect all devices
-	 * 0110 00aa    Test device aa
-	 * 1101 00aa    Select device aa in ECP mode
-	 * 1110 00aa    Select device aa in Compatible mode
-	 */
+	 
 	w_dtr(ppb, b);
-	udelay(2);		/* 1 usec - infinite */
+	udelay(2);		 
 	w_ctr(ppb, 0x0c);
-	udelay(10);		/* 7 usec - infinite */
+	udelay(10);		 
 	w_ctr(ppb, 0x0d);
-	udelay(2);		/* 1 usec - infinite */
+	udelay(2);		 
 	w_ctr(ppb, 0x0c);
-	udelay(10);		/* 7 usec - infinite */
+	udelay(10);		 
 	w_dtr(ppb, 0xff);
-	udelay(10);		/* 7 usec - infinite */
+	udelay(10);		 
 
-	/*
-	 * The following table is electrical pin values.
-	 * (BSY is inverted at the CTR register)
-	 *
-	 *       BSY  ACK  POut SEL  Fault
-	 * S1    0    X    1    1    1
-	 * S2    1    X    0    1    1
-	 * S3    L    X    1    1    S
-	 *
-	 * L => Last device in chain
-	 * S => Selected
-	 *
-	 * Observered values for S1,S2,S3 are:
-	 * Disconnect => f8/58/78
-	 * Connect    => f8/58/70
-	 */
+	 
 	if ((s1 == 0xb8) && (s2 == 0x18) && (s3 == 0x30))
-		return 1;	/* Connected */
+		return 1;	 
 	if ((s1 == 0xb8) && (s2 == 0x18) && (s3 == 0x38))
-		return 0;	/* Disconnected */
+		return 0;	 
 
-	return -1;		/* No device present */
+	return -1;		 
 }
 
 static inline int imm_connect(imm_struct *dev, int flag)
 {
 	unsigned short ppb = dev->base;
 
-	imm_cpp(ppb, 0xe0);	/* Select device 0 in compatible mode */
-	imm_cpp(ppb, 0x30);	/* Disconnect all devices */
+	imm_cpp(ppb, 0xe0);	 
+	imm_cpp(ppb, 0x30);	 
 
 	if ((dev->mode == IMM_EPP_8) ||
 	    (dev->mode == IMM_EPP_16) ||
 	    (dev->mode == IMM_EPP_32))
-		return imm_cpp(ppb, 0x28);	/* Select device 0 in EPP mode */
-	return imm_cpp(ppb, 0xe0);	/* Select device 0 in compatible mode */
+		return imm_cpp(ppb, 0x28);	 
+	return imm_cpp(ppb, 0xe0);	 
 }
 
 static void imm_disconnect(imm_struct *dev)
 {
-	imm_cpp(dev->base, 0x30);	/* Disconnect all devices */
+	imm_cpp(dev->base, 0x30);	 
 }
 
 static int imm_select(imm_struct *dev, int target)
@@ -543,10 +452,7 @@ static int imm_select(imm_struct *dev, int target)
 	int k;
 	unsigned short ppb = dev->base;
 
-	/*
-	 * Firstly we want to make sure there is nothing
-	 * holding onto the SCSI bus.
-	 */
+	 
 	w_ctr(ppb, 0xc);
 
 	k = IMM_SELECT_TMO;
@@ -557,32 +463,23 @@ static int imm_select(imm_struct *dev, int target)
 	if (!k)
 		return 0;
 
-	/*
-	 * Now assert the SCSI ID (HOST and TARGET) on the data bus
-	 */
+	 
 	w_ctr(ppb, 0x4);
 	w_dtr(ppb, 0x80 | (1 << target));
 	udelay(1);
 
-	/*
-	 * Deassert SELIN first followed by STROBE
-	 */
+	 
 	w_ctr(ppb, 0xc);
 	w_ctr(ppb, 0xd);
 
-	/*
-	 * ACK should drop low while SELIN is deasserted.
-	 * FAULT should drop low when the SCSI device latches the bus.
-	 */
+	 
 	k = IMM_SELECT_TMO;
 	do {
 		k--;
 	}
 	while (!(r_str(ppb) & 0x08) && (k));
 
-	/*
-	 * Place the interface back into a sane state (status mode)
-	 */
+	 
 	w_ctr(ppb, 0xc);
 	return (k) ? 1 : 0;
 }
@@ -592,9 +489,9 @@ static int imm_init(imm_struct *dev)
 	if (imm_connect(dev, 0) != 1)
 		return -EIO;
 	imm_reset_pulse(dev->base);
-	mdelay(1);	/* Delay to allow devices to settle */
+	mdelay(1);	 
 	imm_disconnect(dev);
-	mdelay(1);	/* Another delay to allow devices to settle */
+	mdelay(1);	 
 	return device_check(dev);
 }
 
@@ -603,28 +500,17 @@ static inline int imm_send_command(struct scsi_cmnd *cmd)
 	imm_struct *dev = imm_dev(cmd->device->host);
 	int k;
 
-	/* NOTE: IMM uses byte pairs */
+	 
 	for (k = 0; k < cmd->cmd_len; k += 2)
 		if (!imm_out(dev, &cmd->cmnd[k], 2))
 			return 0;
 	return 1;
 }
 
-/*
- * The bulk flag enables some optimisations in the data transfer loops,
- * it should be true for any command that transfers data in integral
- * numbers of sectors.
- * 
- * The driver appears to remain stable if we speed up the parallel port
- * i/o in this function, but not elsewhere.
- */
+ 
 static int imm_completion(struct scsi_cmnd *const cmd)
 {
-	/* Return codes:
-	 * -1     Error
-	 *  0     Told to schedule
-	 *  1     Finished data transfer
-	 */
+	 
 	struct scsi_pointer *scsi_pointer = imm_scsi_pointer(cmd);
 	imm_struct *dev = imm_dev(cmd->device->host);
 	unsigned short ppb = dev->base;
@@ -637,35 +523,22 @@ static int imm_completion(struct scsi_cmnd *const cmd)
 	bulk = ((v == READ_6) ||
 		(v == READ_10) || (v == WRITE_6) || (v == WRITE_10));
 
-	/*
-	 * We only get here if the drive is ready to comunicate,
-	 * hence no need for a full imm_wait.
-	 */
+	 
 	w_ctr(ppb, 0x0c);
 	r = (r_str(ppb) & 0xb8);
 
-	/*
-	 * while (device is not ready to send status byte)
-	 *     loop;
-	 */
+	 
 	while (r != (unsigned char) 0xb8) {
-		/*
-		 * If we have been running for more than a full timer tick
-		 * then take a rest.
-		 */
+		 
 		if (time_after(jiffies, start_jiffies + 1))
 			return 0;
 
-		/*
-		 * FAIL if:
-		 * a) Drive status is screwy (!ready && !present)
-		 * b) Drive is requesting/sending more data than expected
-		 */
+		 
 		if ((r & 0x88) != 0x88 || scsi_pointer->this_residual <= 0) {
 			imm_fail(dev, DID_ERROR);
-			return -1;	/* ERROR_RETURN */
+			return -1;	 
 		}
-		/* determine if we should use burst I/O */
+		 
 		if (dev->rd == 0) {
 			fast = bulk && scsi_pointer->this_residual >=
 				IMM_BURST_SIZE ? IMM_BURST_SIZE : 2;
@@ -681,10 +554,10 @@ static int imm_completion(struct scsi_cmnd *const cmd)
 
 		if (!status) {
 			imm_fail(dev, DID_BUS_BUSY);
-			return -1;	/* ERROR_RETURN */
+			return -1;	 
 		}
 		if (scsi_pointer->buffer && !scsi_pointer->this_residual) {
-			/* if scatter/gather, advance to the next segment */
+			 
 			if (scsi_pointer->buffers_residual--) {
 				scsi_pointer->buffer =
 					sg_next(scsi_pointer->buffer);
@@ -692,30 +565,23 @@ static int imm_completion(struct scsi_cmnd *const cmd)
 				    scsi_pointer->buffer->length;
 				scsi_pointer->ptr = sg_virt(scsi_pointer->buffer);
 
-				/*
-				 * Make sure that we transfer even number of bytes
-				 * otherwise it makes imm_byte_out() messy.
-				 */
+				 
 				if (scsi_pointer->this_residual & 0x01)
 					scsi_pointer->this_residual++;
 			}
 		}
-		/* Now check to see if the drive is ready to comunicate */
+		 
 		w_ctr(ppb, 0x0c);
 		r = (r_str(ppb) & 0xb8);
 
-		/* If not, drop back down to the scheduler and wait a timer tick */
+		 
 		if (!(r & 0x80))
 			return 0;
 	}
-	return 1;		/* FINISH_RETURN */
+	return 1;		 
 }
 
-/*
- * Since the IMM itself doesn't generate interrupts, we use
- * the scheduler's task queue to generate a stream of call-backs and
- * complete the request when the drive is ready.
- */
+ 
 static void imm_interrupt(struct work_struct *work)
 {
 	imm_struct *dev = container_of(work, imm_struct, imm_tq.work);
@@ -727,7 +593,7 @@ static void imm_interrupt(struct work_struct *work)
 		schedule_delayed_work(&dev->imm_tq, 1);
 		return;
 	}
-	/* Command must of completed hence it is safe to let go... */
+	 
 #if IMM_DEBUG > 0
 	switch ((cmd->result >> 16) & 0xff) {
 	case DID_OK:
@@ -781,30 +647,25 @@ static int imm_engine(imm_struct *dev, struct scsi_cmnd *const cmd)
 	unsigned char l = 0, h = 0;
 	int retv, x;
 
-	/* First check for any errors that may have occurred
-	 * Here we check for internal errors
-	 */
+	 
 	if (dev->failed)
 		return 0;
 
 	switch (scsi_pointer->phase) {
-	case 0:		/* Phase 0 - Waiting for parport */
+	case 0:		 
 		if (time_after(jiffies, dev->jstart + HZ)) {
-			/*
-			 * We waited more than a second
-			 * for parport to call us
-			 */
+			 
 			imm_fail(dev, DID_BUS_BUSY);
 			return 0;
 		}
-		return 1;	/* wait until imm_wakeup claims parport */
+		return 1;	 
 
-	case 1:		/* Phase 1 - Connected */
+	case 1:		 
 		imm_connect(dev, CONNECT_EPP_MAYBE);
 		scsi_pointer->phase++;
 		fallthrough;
 
-	case 2:		/* Phase 2 - We are now talking to the scsi bus */
+	case 2:		 
 		if (!imm_select(dev, scmd_id(cmd))) {
 			imm_fail(dev, DID_NO_CONNECT);
 			return 0;
@@ -812,7 +673,7 @@ static int imm_engine(imm_struct *dev, struct scsi_cmnd *const cmd)
 		scsi_pointer->phase++;
 		fallthrough;
 
-	case 3:		/* Phase 3 - Ready to accept a command */
+	case 3:		 
 		w_ctr(ppb, 0x0c);
 		if (!(r_str(ppb) & 0x80))
 			return 1;
@@ -822,7 +683,7 @@ static int imm_engine(imm_struct *dev, struct scsi_cmnd *const cmd)
 		scsi_pointer->phase++;
 		fallthrough;
 
-	case 4:		/* Phase 4 - Setup scatter/gather buffers */
+	case 4:		 
 		if (scsi_bufflen(cmd)) {
 			scsi_pointer->buffer = scsi_sglist(cmd);
 			scsi_pointer->this_residual = scsi_pointer->buffer->length;
@@ -838,13 +699,13 @@ static int imm_engine(imm_struct *dev, struct scsi_cmnd *const cmd)
 			scsi_pointer->this_residual++;
 		fallthrough;
 
-	case 5:		/* Phase 5 - Pre-Data transfer stage */
-		/* Spin lock for BUSY */
+	case 5:		 
+		 
 		w_ctr(ppb, 0x0c);
 		if (!(r_str(ppb) & 0x80))
 			return 1;
 
-		/* Require negotiation for read requests */
+		 
 		x = (r_str(ppb) & 0xb8);
 		dev->rd = (x & 0x10) ? 1 : 0;
 		dev->dp = (x & 0x20) ? 0 : 1;
@@ -855,8 +716,8 @@ static int imm_engine(imm_struct *dev, struct scsi_cmnd *const cmd)
 		scsi_pointer->phase++;
 		fallthrough;
 
-	case 6:		/* Phase 6 - Data transfer stage */
-		/* Spin lock for BUSY */
+	case 6:		 
+		 
 		w_ctr(ppb, 0x0c);
 		if (!(r_str(ppb) & 0x80))
 			return 1;
@@ -871,7 +732,7 @@ static int imm_engine(imm_struct *dev, struct scsi_cmnd *const cmd)
 		scsi_pointer->phase++;
 		fallthrough;
 
-	case 7:		/* Phase 7 - Post data transfer stage */
+	case 7:		 
 		if ((dev->dp) && (dev->rd)) {
 			if ((dev->mode == IMM_NIBBLE) || (dev->mode == IMM_PS2)) {
 				w_ctr(ppb, 0x4);
@@ -883,16 +744,16 @@ static int imm_engine(imm_struct *dev, struct scsi_cmnd *const cmd)
 		scsi_pointer->phase++;
 		fallthrough;
 
-	case 8:		/* Phase 8 - Read status/message */
-		/* Check for data overrun */
+	case 8:		 
+		 
 		if (imm_wait(dev) != (unsigned char) 0xb8) {
 			imm_fail(dev, DID_ERROR);
 			return 0;
 		}
 		if (imm_negotiate(dev))
 			return 0;
-		if (imm_in(dev, &l, 1)) {	/* read status byte */
-			/* Check for optional message byte */
+		if (imm_in(dev, &l, 1)) {	 
+			 
 			if (imm_wait(dev) == (unsigned char) 0xb8)
 				imm_in(dev, &h, 1);
 			cmd->result = (DID_OK << 16) | (l & STATUS_MASK);
@@ -903,7 +764,7 @@ static int imm_engine(imm_struct *dev, struct scsi_cmnd *const cmd)
 			w_ctr(ppb, 0xe);
 			w_ctr(ppb, 0x4);
 		}
-		return 0;	/* Finished */
+		return 0;	 
 
 	default:
 		printk("imm: Invalid scsi phase\n");
@@ -922,8 +783,8 @@ static int imm_queuecommand_lck(struct scsi_cmnd *cmd)
 	dev->failed = 0;
 	dev->jstart = jiffies;
 	dev->cur_cmd = cmd;
-	cmd->result = DID_ERROR << 16;	/* default return code */
-	imm_scsi_pointer(cmd)->phase = 0;	/* bus free */
+	cmd->result = DID_ERROR << 16;	 
+	imm_scsi_pointer(cmd)->phase = 0;	 
 
 	schedule_delayed_work(&dev->imm_tq, 0);
 
@@ -934,12 +795,7 @@ static int imm_queuecommand_lck(struct scsi_cmnd *cmd)
 
 static DEF_SCSI_QCMD(imm_queuecommand)
 
-/*
- * Apparently the disk->capacity attribute is off by 1 sector 
- * for all disk drives.  We add the one here, but it should really
- * be done in sd.c.  Even if it gets fixed there, this will still
- * work.
- */
+ 
 static int imm_biosparam(struct scsi_device *sdev, struct block_device *dev,
 			 sector_t capacity, int ip[])
 {
@@ -957,17 +813,14 @@ static int imm_biosparam(struct scsi_device *sdev, struct block_device *dev,
 static int imm_abort(struct scsi_cmnd *cmd)
 {
 	imm_struct *dev = imm_dev(cmd->device->host);
-	/*
-	 * There is no method for aborting commands since Iomega
-	 * have tied the SCSI_MESSAGE line high in the interface
-	 */
+	 
 
 	switch (imm_scsi_pointer(cmd)->phase) {
-	case 0:		/* Do not have access to parport */
-	case 1:		/* Have not connected to interface */
-		dev->cur_cmd = NULL;	/* Forget the problem */
+	case 0:		 
+	case 1:		 
+		dev->cur_cmd = NULL;	 
 		return SUCCESS;
-	default:		/* SCSI command sent, can not abort */
+	default:		 
 		return FAILED;
 	}
 }
@@ -990,20 +843,19 @@ static int imm_reset(struct scsi_cmnd *cmd)
 
 	if (imm_scsi_pointer(cmd)->phase)
 		imm_disconnect(dev);
-	dev->cur_cmd = NULL;	/* Forget the problem */
+	dev->cur_cmd = NULL;	 
 
 	imm_connect(dev, CONNECT_NORMAL);
 	imm_reset_pulse(dev->base);
-	mdelay(1);		/* device settle delay */
+	mdelay(1);		 
 	imm_disconnect(dev);
-	mdelay(1);		/* device settle delay */
+	mdelay(1);		 
 	return SUCCESS;
 }
 
 static int device_check(imm_struct *dev)
 {
-	/* This routine looks for a device and then attempts to use EPP
-	   to send a command. If all goes as planned then EPP is available. */
+	 
 
 	static char cmd[6] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 	int loop, old_mode, status, k, ppb = dev->base;
@@ -1011,13 +863,13 @@ static int device_check(imm_struct *dev)
 
 	old_mode = dev->mode;
 	for (loop = 0; loop < 8; loop++) {
-		/* Attempt to use EPP for Test Unit Ready */
+		 
 		if ((ppb & 0x0007) == 0x0000)
 			dev->mode = IMM_EPP_32;
 
 	      second_pass:
 		imm_connect(dev, CONNECT_EPP_MAYBE);
-		/* Select SCSI device */
+		 
 		if (!imm_select(dev, loop)) {
 			imm_disconnect(dev);
 			continue;
@@ -1025,7 +877,7 @@ static int device_check(imm_struct *dev)
 		printk("imm: Found device at ID %i, Attempting to use %s\n",
 		       loop, IMM_MODE_STRING[dev->mode]);
 
-		/* Send SCSI command */
+		 
 		status = 1;
 		w_ctr(ppb, 0x0c);
 		for (l = 0; (l < 3) && (status); l++)
@@ -1047,7 +899,7 @@ static int device_check(imm_struct *dev)
 		}
 		w_ctr(ppb, 0x0c);
 
-		k = 1000000;	/* 1 Second */
+		k = 1000000;	 
 		do {
 			l = r_str(ppb);
 			k--;
@@ -1086,10 +938,7 @@ static int device_check(imm_struct *dev)
 	return -ENODEV;
 }
 
-/*
- * imm cannot deal with highmem, so this causes all IO pages for this host
- * to reside in low memory (hence mapped)
- */
+ 
 static int imm_adjust_queue(struct scsi_device *device)
 {
 	blk_queue_bounce_limit(device->request_queue, BLK_BOUNCE_HIGH);
@@ -1113,17 +962,11 @@ static const struct scsi_host_template imm_template = {
 	.cmd_size		= sizeof(struct scsi_pointer),
 };
 
-/***************************************************************************
- *                   Parallel port probing routines                        *
- ***************************************************************************/
+ 
 
 static LIST_HEAD(imm_hosts);
 
-/*
- * Finds the first available device number that can be alloted to the
- * new imm device and returns the address of the previous node so that
- * we can add to the tail and have a list in the ascending order.
- */
+ 
 
 static inline imm_struct *find_parent(void)
 {
@@ -1178,9 +1021,7 @@ static int __imm_attach(struct parport *pb)
 		goto out;
 
 
-	/* Claim the bus so it remembers what we do to the control
-	 * registers. [ CTR and ECP ]
-	 */
+	 
 	err = -EBUSY;
 	dev->waiting = &waiting;
 	prepare_to_wait(&waiting, &wait, TASK_UNINTERRUPTIBLE);
@@ -1202,15 +1043,13 @@ static int __imm_attach(struct parport *pb)
 	w_ctr(ppb, 0x0c);
 	modes = dev->dev->port->modes;
 
-	/* Mode detection works up the chain of speed
-	 * This avoids a nasty if-then-else-if-... tree
-	 */
+	 
 	dev->mode = IMM_NIBBLE;
 
 	if (modes & PARPORT_MODE_TRISTATE)
 		dev->mode = IMM_PS2;
 
-	/* Done configuration */
+	 
 
 	err = imm_init(dev);
 
@@ -1219,7 +1058,7 @@ static int __imm_attach(struct parport *pb)
 	if (err)
 		goto out1;
 
-	/* now the glue ... */
+	 
 	if (dev->mode == IMM_NIBBLE || dev->mode == IMM_PS2)
 		ports = 3;
 	else

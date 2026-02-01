@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
-/*
- * Copyright (c) 2020 MediaTek Inc.
- * Author Mark-PK Tsai <mark-pk.tsai@mediatek.com>
- */
+
+ 
 #include <linux/interrupt.h>
 #include <linux/io.h>
 #include <linux/irq.h>
@@ -184,7 +181,7 @@ static int mst_intc_domain_translate(struct irq_domain *d,
 		if (fwspec->param_count != 3)
 			return -EINVAL;
 
-		/* No PPI should point to this domain */
+		 
 		if (fwspec->param[0] != 0)
 			return -EINVAL;
 
@@ -207,11 +204,11 @@ static int mst_intc_domain_alloc(struct irq_domain *domain, unsigned int virq,
 	struct irq_fwspec parent_fwspec, *fwspec = data;
 	struct mst_intc_chip_data *cd = domain->host_data;
 
-	/* Not GIC compliant */
+	 
 	if (fwspec->param_count != 3)
 		return -EINVAL;
 
-	/* No PPI should point to this domain */
+	 
 	if (fwspec->param[0])
 		return -EINVAL;
 
@@ -225,12 +222,7 @@ static int mst_intc_domain_alloc(struct irq_domain *domain, unsigned int virq,
 	parent_fwspec.fwnode = domain->parent->fwnode;
 	parent_fwspec.param[1] = cd->irq_start + hwirq;
 
-	/*
-	 * mst-intc latch the interrupt request if it's edge triggered,
-	 * so the output signal to parent GIC is always level sensitive.
-	 * And if the irq signal is active low, configure it to active high
-	 * to meet GIC SPI spec in mst_irq_chip_set_type via REV_POLARITY bit.
-	 */
+	 
 	parent_fwspec.param[2] = IRQ_TYPE_LEVEL_HIGH;
 
 	return irq_domain_alloc_irqs_parent(domain, virq, nr_irqs, &parent_fwspec);

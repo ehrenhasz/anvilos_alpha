@@ -1,16 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Elo serial touchscreen driver
- *
- * Copyright (c) 2004 Vojtech Pavlik
- */
+
+ 
 
 
-/*
- * This driver can handle serial Elo touchscreens using either the Elo standard
- * 'E271-2210' 10-byte protocol, Elo legacy 'E281A-4002' 6-byte protocol, Elo
- * legacy 'E271-140' 4-byte protocol and Elo legacy 'E261-280' 3-byte protocol.
- */
+ 
 
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -26,9 +18,7 @@ MODULE_AUTHOR("Vojtech Pavlik <vojtech@ucw.cz>");
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL");
 
-/*
- * Definitions & global arrays.
- */
+ 
 
 #define ELO_MAX_LENGTH		10
 
@@ -44,9 +34,7 @@ MODULE_LICENSE("GPL");
 #define ELO10_ACK_PACKET	'A'
 #define ELI10_ID_PACKET		'I'
 
-/*
- * Per-touchscreen data.
- */
+ 
 
 struct elo {
 	struct input_dev *dev;
@@ -245,7 +233,7 @@ static int elo_command_10(struct elo *elo, unsigned char *packet)
 	wait_for_completion_timeout(&elo->cmd_done, HZ);
 
 	if (elo->expected_packet == ELO10_TOUCH_PACKET) {
-		/* We are back in reporting mode, the command was ACKed */
+		 
 		memcpy(packet, elo->response, ELO10_PACKET_LEN);
 		rc = 0;
 	}
@@ -279,9 +267,7 @@ static int elo_setup_10(struct elo *elo)
 	return 0;
 }
 
-/*
- * elo_disconnect() is the opposite of elo_connect()
- */
+ 
 
 static void elo_disconnect(struct serio *serio)
 {
@@ -295,11 +281,7 @@ static void elo_disconnect(struct serio *serio)
 	kfree(elo);
 }
 
-/*
- * elo_connect() is the routine that is called when someone adds a
- * new serio device that supports Gunze protocol and registers it as
- * an input device.
- */
+ 
 
 static int elo_connect(struct serio *serio, struct serio_driver *drv)
 {
@@ -340,7 +322,7 @@ static int elo_connect(struct serio *serio, struct serio_driver *drv)
 
 	switch (elo->id) {
 
-	case 0: /* 10-byte protocol */
+	case 0:  
 		if (elo_setup_10(elo)) {
 			err = -EIO;
 			goto fail3;
@@ -348,16 +330,16 @@ static int elo_connect(struct serio *serio, struct serio_driver *drv)
 
 		break;
 
-	case 1: /* 6-byte protocol */
+	case 1:  
 		input_set_abs_params(input_dev, ABS_PRESSURE, 0, 15, 0, 0);
 		fallthrough;
 
-	case 2: /* 4-byte protocol */
+	case 2:  
 		input_set_abs_params(input_dev, ABS_X, 96, 4000, 0, 0);
 		input_set_abs_params(input_dev, ABS_Y, 96, 4000, 0, 0);
 		break;
 
-	case 3: /* 3-byte protocol */
+	case 3:  
 		input_set_abs_params(input_dev, ABS_X, 0, 255, 0, 0);
 		input_set_abs_params(input_dev, ABS_Y, 0, 255, 0, 0);
 		break;
@@ -376,9 +358,7 @@ static int elo_connect(struct serio *serio, struct serio_driver *drv)
 	return err;
 }
 
-/*
- * The serio driver structure.
- */
+ 
 
 static const struct serio_device_id elo_serio_ids[] = {
 	{

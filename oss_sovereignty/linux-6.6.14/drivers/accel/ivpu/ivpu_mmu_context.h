@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
+ 
+ 
 
 #ifndef __IVPU_MMU_CONTEXT_H__
 #define __IVPU_MMU_CONTEXT_H__
@@ -23,7 +21,7 @@ struct ivpu_mmu_pgtable {
 };
 
 struct ivpu_mmu_context {
-	struct mutex lock; /* protects: mm, pgtable, bo_list */
+	struct mutex lock;  
 	struct drm_mm mm;
 	struct ivpu_mmu_pgtable pgtable;
 	struct list_head bo_list;
@@ -48,4 +46,4 @@ int ivpu_mmu_context_map_sgt(struct ivpu_device *vdev, struct ivpu_mmu_context *
 void ivpu_mmu_context_unmap_sgt(struct ivpu_device *vdev, struct ivpu_mmu_context *ctx,
 				u64 vpu_addr, struct sg_table *sgt);
 
-#endif /* __IVPU_MMU_CONTEXT_H__ */
+#endif  

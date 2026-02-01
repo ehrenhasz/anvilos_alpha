@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* CacheFiles extended attribute management
- *
- * Copyright (C) 2021 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/sched.h>
@@ -18,24 +14,22 @@
 #define CACHEFILES_COOKIE_TYPE_DATA 1
 
 struct cachefiles_xattr {
-	__be64	object_size;	/* Actual size of the object */
-	__be64	zero_point;	/* Size after which server has no data not written by us */
-	__u8	type;		/* Type of object */
-	__u8	content;	/* Content presence (enum cachefiles_content) */
-	__u8	data[];		/* netfs coherency data */
+	__be64	object_size;	 
+	__be64	zero_point;	 
+	__u8	type;		 
+	__u8	content;	 
+	__u8	data[];		 
 } __packed;
 
 static const char cachefiles_xattr_cache[] =
 	XATTR_USER_PREFIX "CacheFiles.cache";
 
 struct cachefiles_vol_xattr {
-	__be32	reserved;	/* Reserved, should be 0 */
-	__u8	data[];		/* netfs volume coherency data */
+	__be32	reserved;	 
+	__u8	data[];		 
 } __packed;
 
-/*
- * set the state xattr on a cache file
- */
+ 
 int cachefiles_set_object_xattr(struct cachefiles_object *object)
 {
 	struct cachefiles_xattr *buf;
@@ -88,9 +82,7 @@ int cachefiles_set_object_xattr(struct cachefiles_object *object)
 	return ret;
 }
 
-/*
- * check the consistency between the backing cache and the FS-Cache cookie
- */
+ 
 int cachefiles_check_auxdata(struct cachefiles_object *object, struct file *file)
 {
 	struct cachefiles_xattr *buf;
@@ -125,7 +117,7 @@ int cachefiles_check_auxdata(struct cachefiles_object *object, struct file *file
 	} else if (be64_to_cpu(buf->object_size) != object->cookie->object_size) {
 		why = cachefiles_coherency_check_objsize;
 	} else if (buf->content == CACHEFILES_CONTENT_DIRTY) {
-		// TODO: Begin conflict resolution
+		
 		pr_warn("Dirty object in cache\n");
 		why = cachefiles_coherency_check_dirty;
 	} else {
@@ -139,9 +131,7 @@ int cachefiles_check_auxdata(struct cachefiles_object *object, struct file *file
 	return ret;
 }
 
-/*
- * remove the object's xattr to mark it stale
- */
+ 
 int cachefiles_remove_object_xattr(struct cachefiles_cache *cache,
 				   struct cachefiles_object *object,
 				   struct dentry *dentry)
@@ -167,9 +157,7 @@ int cachefiles_remove_object_xattr(struct cachefiles_cache *cache,
 	return ret;
 }
 
-/*
- * Stick a marker on the cache object to indicate that it's dirty.
- */
+ 
 void cachefiles_prepare_to_write(struct fscache_cookie *cookie)
 {
 	const struct cred *saved_cred;
@@ -185,9 +173,7 @@ void cachefiles_prepare_to_write(struct fscache_cookie *cookie)
 	}
 }
 
-/*
- * Set the state xattr on a volume directory.
- */
+ 
 bool cachefiles_set_volume_xattr(struct cachefiles_volume *volume)
 {
 	struct cachefiles_vol_xattr *buf;
@@ -227,9 +213,7 @@ bool cachefiles_set_volume_xattr(struct cachefiles_volume *volume)
 	return ret == 0;
 }
 
-/*
- * Check the consistency between the backing cache and the volume cookie.
- */
+ 
 int cachefiles_check_volume_xattr(struct cachefiles_volume *volume)
 {
 	struct cachefiles_vol_xattr *buf;

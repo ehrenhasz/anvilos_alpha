@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/*
- * This file is provided under a dual BSD/GPLv2 license. When using or
- * redistributing this file, you may do so under either license.
- *
- * Copyright(c) 2021, 2023 Advanced Micro Devices, Inc. All rights reserved.
- *
- * Author: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
- */
+ 
+ 
 
 #ifndef __SOF_AMD_ACP_H
 #define __SOF_AMD_ACP_H
@@ -117,23 +110,23 @@ struct dma_descriptor {
 	unsigned int reserved;
 };
 
-/* Scratch memory structure for communication b/w host and dsp */
+ 
 struct  scratch_ipc_conf {
-	/* Debug memory */
+	 
 	u8 sof_debug_box[1024];
-	/* Exception memory*/
+	 
 	u8 sof_except_box[1024];
-	/* Stream buffer */
+	 
 	u8 sof_stream_box[1024];
-	/* Trace buffer */
+	 
 	u8 sof_trace_box[1024];
-	/* Host msg flag */
+	 
 	u32 sof_host_msg_write;
-	/* Host ack flag*/
+	 
 	u32 sof_host_ack_write;
-	/* DSP msg flag */
+	 
 	u32 sof_dsp_msg_write;
-	/* Dsp ack flag */
+	 
 	u32 sof_dsp_ack_write;
 };
 
@@ -184,11 +177,11 @@ struct sof_amd_acp_desc {
 	u32 probe_reg_offset;
 };
 
-/* Common device data struct for ACP devices */
+ 
 struct acp_dev_data {
 	struct snd_sof_dev  *dev;
 	const struct firmware *fw_dbin;
-	/* DMIC device */
+	 
 	struct platform_device *dmic_dev;
 	unsigned int fw_bin_size;
 	unsigned int fw_data_bin_size;
@@ -218,23 +211,23 @@ int configure_and_run_sha_dma(struct acp_dev_data *adata, void *image_addr,
 			      unsigned int start_addr, unsigned int dest_addr,
 			      unsigned int image_length);
 
-/* ACP device probe/remove */
+ 
 int amd_sof_acp_probe(struct snd_sof_dev *sdev);
 int amd_sof_acp_remove(struct snd_sof_dev *sdev);
 
-/* DSP Loader callbacks */
+ 
 int acp_sof_dsp_run(struct snd_sof_dev *sdev);
 int acp_dsp_pre_fw_run(struct snd_sof_dev *sdev);
 int acp_sof_load_signed_firmware(struct snd_sof_dev *sdev);
 int acp_get_bar_index(struct snd_sof_dev *sdev, u32 type);
 
-/* Block IO callbacks */
+ 
 int acp_dsp_block_write(struct snd_sof_dev *sdev, enum snd_sof_fw_blk_type blk_type,
 			u32 offset, void *src, size_t size);
 int acp_dsp_block_read(struct snd_sof_dev *sdev, enum snd_sof_fw_blk_type blk_type,
 		       u32 offset, void *dest, size_t size);
 
-/* IPC callbacks */
+ 
 irqreturn_t acp_sof_ipc_irq_thread(int irq, void *context);
 int acp_sof_ipc_msg_data(struct snd_sof_dev *sdev, struct snd_sof_pcm_stream *sps,
 			 void *p, size_t sz);
@@ -248,15 +241,13 @@ int acp_sof_ipc_get_window_offset(struct snd_sof_dev *sdev, u32 id);
 void acp_mailbox_write(struct snd_sof_dev *sdev, u32 offset, void *message, size_t bytes);
 void acp_mailbox_read(struct snd_sof_dev *sdev, u32 offset, void *message, size_t bytes);
 
-/* ACP - DSP  stream callbacks */
+ 
 int acp_dsp_stream_config(struct snd_sof_dev *sdev, struct acp_dsp_stream *stream);
 int acp_dsp_stream_init(struct snd_sof_dev *sdev);
 struct acp_dsp_stream *acp_dsp_stream_get(struct snd_sof_dev *sdev, int tag);
 int acp_dsp_stream_put(struct snd_sof_dev *sdev, struct acp_dsp_stream *acp_stream);
 
-/*
- * DSP PCM Operations.
- */
+ 
 int acp_pcm_open(struct snd_sof_dev *sdev, struct snd_pcm_substream *substream);
 int acp_pcm_close(struct snd_sof_dev *sdev, struct snd_pcm_substream *substream);
 int acp_pcm_hw_params(struct snd_sof_dev *sdev, struct snd_pcm_substream *substream,
@@ -275,15 +266,15 @@ extern struct snd_sof_dsp_ops sof_rembrandt_ops;
 int sof_rembrandt_ops_init(struct snd_sof_dev *sdev);
 
 struct snd_soc_acpi_mach *amd_sof_machine_select(struct snd_sof_dev *sdev);
-/* Machine configuration */
+ 
 int snd_amd_acp_find_config(struct pci_dev *pci);
 
-/* Trace */
+ 
 int acp_sof_trace_init(struct snd_sof_dev *sdev, struct snd_dma_buffer *dmab,
 		       struct sof_ipc_dma_trace_params_ext *dtrace_params);
 int acp_sof_trace_release(struct snd_sof_dev *sdev);
 
-/* PM Callbacks */
+ 
 int amd_sof_acp_suspend(struct snd_sof_dev *sdev, u32 target_state);
 int amd_sof_acp_resume(struct snd_sof_dev *sdev);
 

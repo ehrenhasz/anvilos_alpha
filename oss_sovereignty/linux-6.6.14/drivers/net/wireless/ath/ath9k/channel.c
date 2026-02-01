@@ -1,25 +1,8 @@
-/*
- * Copyright (c) 2014 Qualcomm Atheros, Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include "ath9k.h"
 
-/* Set/change channels.  If the channel is really being changed, it's done
- * by reseting the chip.  To accomplish this we must first cleanup any pending
- * DMA, then restart stuff.
- */
+ 
 static int ath_set_channel(struct ath_softc *sc)
 {
 	struct ath_hw *ah = sc->sc_ah;
@@ -42,18 +25,14 @@ static int ath_set_channel(struct ath_softc *sc)
 	ath_dbg(common, CONFIG, "Set channel: %d MHz width: %d\n",
 		chan->center_freq, chandef->width);
 
-	/* update survey stats for the old channel before switching */
+	 
 	spin_lock_irqsave(&common->cc_lock, flags);
 	ath_update_survey_stats(sc);
 	spin_unlock_irqrestore(&common->cc_lock, flags);
 
 	ath9k_cmn_get_channel(hw, ah, chandef);
 
-	/* If the operating channel changes, change the survey in-use flags
-	 * along with it.
-	 * Reset the survey data for the new channel, unless we're switching
-	 * back to the operating channel from an off-channel operation.
-	 */
+	 
 	if (!sc->cur_chan->offchannel && sc->cur_survey != &sc->survey[pos]) {
 		if (sc->cur_survey)
 			sc->cur_survey->filled &= ~SURVEY_INFO_IN_USE;
@@ -71,16 +50,11 @@ static int ath_set_channel(struct ath_softc *sc)
 	if (r)
 		return r;
 
-	/* The most recent snapshot of channel->noisefloor for the old
-	 * channel is only available after the hardware reset. Copy it to
-	 * the survey stats now.
-	 */
+	 
 	if (old_pos >= 0)
 		ath_update_survey_nf(sc, old_pos);
 
-	/* Enable radar pulse detection if on a DFS channel. Spectral
-	 * scanning and radar detection can not be used concurrently.
-	 */
+	 
 	if (hw->conf.radar_enabled) {
 		u32 rxfilter;
 
@@ -91,7 +65,7 @@ static int ath_set_channel(struct ath_softc *sc)
 		ath_dbg(common, DFS, "DFS enabled at freq %d\n",
 			chan->center_freq);
 	} else {
-		/* perform spectral scan if requested. */
+		 
 		if (test_bit(ATH_OP_SCANNING, &common->op_flags) &&
 			sc->spec_priv.spectral_mode == SPECTRAL_CHANSCAN)
 			ath9k_cmn_spectral_scan_trigger(common, &sc->spec_priv);
@@ -118,7 +92,7 @@ void ath_chanctx_init(struct ath_softc *sc)
 		cfg80211_chandef_create(&ctx->chandef, chan, NL80211_CHAN_HT20);
 		INIT_LIST_HEAD(&ctx->vifs);
 		ctx->txpower = ATH_TXPOWER_MAX;
-		ctx->flush_timeout = HZ / 5; /* 200ms */
+		ctx->flush_timeout = HZ / 5;  
 		for (j = 0; j < ARRAY_SIZE(ctx->acq); j++) {
 			INIT_LIST_HEAD(&ctx->acq[j].acq_new);
 			INIT_LIST_HEAD(&ctx->acq[j].acq_old);
@@ -150,9 +124,9 @@ void ath_chanctx_set_channel(struct ath_softc *sc, struct ath_chanctx *ctx,
 
 #ifdef CONFIG_ATH9K_CHANNEL_CONTEXT
 
-/*************/
-/* Utilities */
-/*************/
+ 
+ 
+ 
 
 struct ath_chanctx* ath_is_go_chanctx_present(struct ath_softc *sc)
 {
@@ -180,9 +154,9 @@ struct ath_chanctx* ath_is_go_chanctx_present(struct ath_softc *sc)
 	return NULL;
 }
 
-/**********************************************************/
-/* Functions to handle the channel context state machine. */
-/**********************************************************/
+ 
+ 
+ 
 
 static const char *offchannel_state_string(enum ath_offchannel_state state)
 {
@@ -267,11 +241,7 @@ void ath_chanctx_check_active(struct ath_softc *sc, struct ath_chanctx *ctx)
 
 		spin_unlock_bh(&sc->chan_lock);
 
-		/*
-		 * There is no need to iterate over the
-		 * active/assigned channel contexts if
-		 * the current context is offchannel.
-		 */
+		 
 		return;
 	}
 
@@ -353,12 +323,10 @@ static void ath_chanctx_adjust_tbtt_delta(struct ath_softc *sc)
 	prev_tsf = prev->last_beacon - (u32) prev->tsf_val + cur_tsf;
 	prev_tsf -= ath9k_hw_get_tsf_offset(&prev->tsf_ts, &ts);
 
-	/* Adjust the TSF time of the AP chanctx to keep its beacons
-	 * at half beacon interval offset relative to the STA chanctx.
-	 */
+	 
 	offset = cur_tsf - prev_tsf;
 
-	/* Ignore stale data or spurious timestamps */
+	 
 	if (offset < 0 || offset > 3 * beacon_int)
 		return;
 
@@ -366,10 +334,7 @@ static void ath_chanctx_adjust_tbtt_delta(struct ath_softc *sc)
 	prev->tsf_val += offset;
 }
 
-/* Configure the TSF based hardware timer for a channel switch.
- * Also set up backup software timer, in case the gen timer fails.
- * This could be caused by a hardware reset.
- */
+ 
 static void ath_chanctx_setup_timer(struct ath_softc *sc, u32 tsf_time)
 {
 	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
@@ -390,21 +355,13 @@ static void ath_chanctx_handle_bmiss(struct ath_softc *sc,
 				     struct ath_chanctx *ctx,
 				     struct ath_vif *avp)
 {
-	/*
-	 * Clear the extend_absence flag if it had been
-	 * set during the previous beacon transmission,
-	 * since we need to revert to the normal NoA
-	 * schedule.
-	 */
+	 
 	if (ctx->active && sc->sched.extend_absence) {
 		avp->noa_duration = 0;
 		sc->sched.extend_absence = false;
 	}
 
-	/* If at least two consecutive beacons were missed on the STA
-	 * chanctx, stay on the STA channel for one extra beacon period,
-	 * to resync the timer properly.
-	 */
+	 
 	if (ctx->active && sc->sched.beacon_miss >= 2) {
 		avp->noa_duration = 0;
 		sc->sched.extend_absence = true;
@@ -428,11 +385,7 @@ static void ath_chanctx_offchannel_noa(struct ath_softc *sc,
 		avp->offchannel_start,
 		avp->noa_index);
 
-	/*
-	 * When multiple contexts are active, the NoA
-	 * has to be recalculated and advertised after
-	 * an offchannel operation.
-	 */
+	 
 	if (ctx->active && avp->noa_duration)
 		avp->noa_duration = 0;
 }
@@ -548,7 +501,7 @@ void ath_chanctx_event(struct ath_softc *sc, struct ieee80211_vif *vif,
 				"Set next context, move chanctx state to WAIT_FOR_BEACON\n");
 		}
 
-		/* if the timer missed its window, use the next interval */
+		 
 		if (sc->sched.state == ATH_CHANCTX_STATE_WAIT_FOR_TIMER) {
 			sc->sched.state = ATH_CHANCTX_STATE_WAIT_FOR_BEACON;
 			ath_dbg(common, CHAN_CTX,
@@ -558,12 +511,7 @@ void ath_chanctx_event(struct ath_softc *sc, struct ieee80211_vif *vif,
 		if (sc->sched.mgd_prepare_tx)
 			sc->sched.state = ATH_CHANCTX_STATE_WAIT_FOR_BEACON;
 
-		/*
-		 * When a context becomes inactive, for example,
-		 * disassociation of a station context, the NoA
-		 * attribute needs to be removed from subsequent
-		 * beacons.
-		 */
+		 
 		if (!ctx->active && avp->noa_duration &&
 		    sc->sched.state != ATH_CHANCTX_STATE_WAIT_FOR_BEACON) {
 			avp->noa_duration = 0;
@@ -584,16 +532,12 @@ void ath_chanctx_event(struct ath_softc *sc, struct ieee80211_vif *vif,
 		cur_conf = &sc->cur_chan->beacon;
 		beacon_int = TU_TO_USEC(cur_conf->beacon_interval);
 
-		/* defer channel switch by a quarter beacon interval */
+		 
 		tsf_time = sc->sched.next_tbtt + beacon_int / 4;
 		sc->sched.switch_start_time = tsf_time;
 		sc->cur_chan->last_beacon = sc->sched.next_tbtt;
 
-		/*
-		 * If an offchannel switch is scheduled to happen after
-		 * a beacon transmission, update the NoA with one-shot
-		 * values and increment the index.
-		 */
+		 
 		if (sc->next_chan == &sc->offchannel.chan) {
 			ath_chanctx_offchannel_noa(sc, ctx, avp, tsf_time);
 			break;
@@ -601,27 +545,18 @@ void ath_chanctx_event(struct ath_softc *sc, struct ieee80211_vif *vif,
 
 		ath_chanctx_handle_bmiss(sc, ctx, avp);
 
-		/*
-		 * If a mgd_prepare_tx() has been called by mac80211,
-		 * a one-shot NoA needs to be sent. This can happen
-		 * with one or more active channel contexts - in both
-		 * cases, a new NoA schedule has to be advertised.
-		 */
+		 
 		if (sc->sched.mgd_prepare_tx) {
 			ath_chanctx_set_oneshot_noa(sc, avp, tsf_time,
 						    jiffies_to_usecs(HZ / 5));
 			break;
 		}
 
-		/* Prevent wrap-around issues */
+		 
 		if (avp->noa_duration && tsf_time - avp->noa_start > BIT(30))
 			avp->noa_duration = 0;
 
-		/*
-		 * If multiple contexts are active, start periodic
-		 * NoA and increment the index for the first
-		 * announcement.
-		 */
+		 
 		if (ctx->active &&
 		    (!avp->noa_duration || sc->sched.force_noa_update))
 			ath_chanctx_set_periodic_noa(sc, avp, cur_conf,
@@ -686,9 +621,7 @@ void ath_chanctx_event(struct ath_softc *sc, struct ieee80211_vif *vif,
 
 		ath_chanctx_adjust_tbtt_delta(sc);
 
-		/* TSF time might have been updated by the incoming beacon,
-		 * need update the channel switch timer to reflect the change.
-		 */
+		 
 		tsf_time = sc->sched.switch_start_time;
 		tsf_time -= (u32) sc->cur_chan->tsf_val +
 			ath9k_hw_get_tsf_offset(&sc->cur_chan->tsf_ts, NULL);
@@ -714,9 +647,7 @@ void ath_chanctx_event(struct ath_softc *sc, struct ieee80211_vif *vif,
 		    sc->cur_chan == &sc->offchannel.chan)
 			break;
 
-		/* If this is a station chanctx, stay active for a half
-		 * beacon period (minus channel switch time)
-		 */
+		 
 		sc->next_chan = ath_chanctx_get_next(sc, sc->cur_chan);
 		cur_conf = &sc->cur_chan->beacon;
 
@@ -793,9 +724,9 @@ static int ath_scan_channel_duration(struct ath_softc *sc,
 	struct cfg80211_scan_request *req = sc->offchannel.scan_req;
 
 	if (!req->n_ssids || (chan->flags & IEEE80211_CHAN_NO_IR))
-		return (HZ / 9); /* ~110 ms */
+		return (HZ / 9);  
 
-	return (HZ / 16); /* ~60 ms */
+	return (HZ / 16);  
 }
 
 static void ath_chanctx_switch(struct ath_softc *sc, struct ath_chanctx *ctx,
@@ -1068,7 +999,7 @@ static void ath_offchannel_timer(struct timer_list *t)
 		if (!sc->offchannel.scan_req)
 			return;
 
-		/* get first active channel context */
+		 
 		ctx = ath_chanctx_get_oper_chan(sc, true);
 		if (ctx->active) {
 			ath_dbg(common, CHAN_CTX,
@@ -1304,10 +1235,7 @@ void ath_chanctx_set_next(struct ath_softc *sc, bool force)
 		if (measure_time)
 			sc->sched.channel_switch_time =
 				ath9k_hw_get_tsf_offset(&ts, NULL);
-		/*
-		 * A reset will ensure that all queues are woken up,
-		 * so there is no need to awaken them again.
-		 */
+		 
 		goto out;
 	}
 
@@ -1378,9 +1306,9 @@ bool ath9k_is_chanctx_enabled(void)
 	return (ath9k_use_chanctx == 1);
 }
 
-/********************/
-/* Queue management */
-/********************/
+ 
+ 
+ 
 
 void ath9k_chanctx_stop_queues(struct ath_softc *sc, struct ath_chanctx *ctx)
 {
@@ -1419,9 +1347,9 @@ void ath9k_chanctx_wake_queues(struct ath_softc *sc, struct ath_chanctx *ctx)
 		ieee80211_wake_queue(sc->hw, sc->hw->queues - 2);
 }
 
-/*****************/
-/* P2P Powersave */
-/*****************/
+ 
+ 
+ 
 
 static void ath9k_update_p2p_ps_timer(struct ath_softc *sc, struct ath_vif *avp)
 {
@@ -1478,13 +1406,7 @@ static u8 ath9k_get_ctwin(struct ath_softc *sc, struct ath_vif *avp)
 	struct ath_beacon_config *cur_conf = &sc->cur_chan->beacon;
 	u8 switch_time, ctwin;
 
-	/*
-	 * Channel switch in multi-channel mode is deferred
-	 * by a quarter beacon interval when handling
-	 * ATH_CHANCTX_EVENT_BEACON_PREPARE, so the P2P-GO
-	 * interface is guaranteed to be discoverable
-	 * for that duration after a TBTT.
-	 */
+	 
 	switch_time = cur_conf->beacon_interval / 4;
 
 	ctwin = avp->vif->bss_conf.p2p_noa_attr.oppps_ctwindow;
@@ -1501,13 +1423,13 @@ void ath9k_beacon_add_noa(struct ath_softc *sc, struct ath_vif *avp,
 			  struct sk_buff *skb)
 {
 	static const u8 noa_ie_hdr[] = {
-		WLAN_EID_VENDOR_SPECIFIC,	/* type */
-		0,				/* length */
-		0x50, 0x6f, 0x9a,		/* WFA OUI */
-		0x09,				/* P2P subtype */
-		0x0c,				/* Notice of Absence */
-		0x00,				/* LSB of little-endian len */
-		0x00,				/* MSB of little-endian len */
+		WLAN_EID_VENDOR_SPECIFIC,	 
+		0,				 
+		0x50, 0x6f, 0x9a,		 
+		0x09,				 
+		0x0c,				 
+		0x00,				 
+		0x00,				 
 	};
 
 	struct ieee80211_p2p_noa_attr *noa;
@@ -1648,4 +1570,4 @@ void ath9k_deinit_p2p(struct ath_softc *sc)
 		ath_gen_timer_free(sc->sc_ah, sc->p2p_ps_timer);
 }
 
-#endif /* CONFIG_ATH9K_CHANNEL_CONTEXT */
+#endif  

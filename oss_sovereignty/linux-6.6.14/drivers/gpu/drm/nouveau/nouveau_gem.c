@@ -1,28 +1,4 @@
-/*
- * Copyright (C) 2008 Ben Skeggs.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial
- * portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE COPYRIGHT OWNER(S) AND/OR ITS SUPPLIERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <drm/drm_gem_ttm_helper.h>
 
@@ -124,7 +100,7 @@ nouveau_gem_object_open(struct drm_gem_object *gem, struct drm_file *file_priv)
 		goto out;
 	}
 
-	/* only create a VMA on binding */
+	 
 	if (!nouveau_cli_uvmm(cli))
 		ret = nouveau_vma_new(nvbo, vmm, &vma);
 	else
@@ -259,8 +235,7 @@ nouveau_gem_new(struct nouveau_cli *cli, u64 size, int align, uint32_t domain,
 	nvbo->bo.base.funcs = &nouveau_gem_object_funcs;
 	nvbo->no_share = domain & NOUVEAU_GEM_DOMAIN_NO_SHARE;
 
-	/* Initialize the embedded gem-object. We return a single gem-reference
-	 * to the caller, instead of a normal nouveau_bo ttm reference. */
+	 
 	ret = drm_gem_object_init(drm->dev, &nvbo->bo.base, size);
 	if (ret) {
 		drm_gem_object_release(&nvbo->bo.base);
@@ -279,10 +254,7 @@ nouveau_gem_new(struct nouveau_cli *cli, u64 size, int align, uint32_t domain,
 	if (ret)
 		return ret;
 
-	/* we restrict allowed domains on nv50+ to only the types
-	 * that were requested at creation time.  not possibly on
-	 * earlier chips without busting the ABI.
-	 */
+	 
 	nvbo->valid_domains = NOUVEAU_GEM_DOMAIN_VRAM |
 			      NOUVEAU_GEM_DOMAIN_GART;
 	if (drm->client.device.info.family >= NV_DEVICE_INFO_V0_TESLA)
@@ -341,9 +313,7 @@ nouveau_gem_ioctl_new(struct drm_device *dev, void *data,
 	struct nouveau_bo *nvbo = NULL;
 	int ret = 0;
 
-	/* If uvmm wasn't initialized until now disable it completely to prevent
-	 * userspace from mixing up UAPIs.
-	 */
+	 
 	nouveau_cli_disable_uvmm_noinit(cli);
 
 	ret = nouveau_gem_new(cli, req->info.size, req->align,
@@ -360,7 +330,7 @@ nouveau_gem_ioctl_new(struct drm_device *dev, void *data,
 			drm_gem_handle_delete(file_priv, req->info.handle);
 	}
 
-	/* drop reference from allocate - handle holds it now */
+	 
 	drm_gem_object_put(&nvbo->bo.base);
 	return ret;
 }
@@ -807,7 +777,7 @@ nouveau_gem_ioctl_pushbuf(struct drm_device *dev, void *data,
 		return nouveau_abi16_put(abi16, PTR_ERR(bo));
 	}
 
-	/* Ensure all push buffers are on validate list */
+	 
 	for (i = 0; i < req->nr_push; i++) {
 		if (push[i].bo_index >= req->nr_buffers) {
 			NV_PRINTK(err, cli, "push %d buffer not in list\n", i);
@@ -816,7 +786,7 @@ nouveau_gem_ioctl_pushbuf(struct drm_device *dev, void *data,
 		}
 	}
 
-	/* Validate buffer list */
+	 
 revalidate:
 	ret = nouveau_gem_pushbuf_validate(chan, file_priv, bo,
 					   req->nr_buffers, &op, &do_reloc);
@@ -826,7 +796,7 @@ revalidate:
 		goto out_prevalid;
 	}
 
-	/* Apply any relocations that are required */
+	 
 	if (do_reloc) {
 		if (!reloc) {
 			validate_fini(&op, chan, NULL, bo);

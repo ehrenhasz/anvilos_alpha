@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 Facebook
+
+
 
 #include <linux/ptrace.h>
 #include <linux/bpf.h>
@@ -29,7 +29,7 @@ int new_handle_kprobe(struct pt_regs *ctx)
 	val = bpf_map_lookup_elem(&hash_map, &key);
 	if (!val)
 		return 1;
-	/* spin_lock in hash map */
+	 
 	bpf_spin_lock(&val->lock);
 	val->var[0] = 99;
 	bpf_spin_unlock(&val->lock);

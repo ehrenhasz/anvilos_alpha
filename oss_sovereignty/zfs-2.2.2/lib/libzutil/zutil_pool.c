@@ -1,27 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- */
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -61,9 +40,7 @@ dump_ddt_stat(const ddt_stat_t *dds, int h)
 	    ref_blocks, ref_lsize, ref_psize, ref_dsize);
 }
 
-/*
- * Print the DDT histogram and the column totals.
- */
+ 
 void
 zpool_dump_ddt(const ddt_stat_t *dds_total, const ddt_histogram_t *ddh)
 {
@@ -96,11 +73,7 @@ zpool_dump_ddt(const ddt_stat_t *dds_total, const ddt_histogram_t *ddh)
 	(void) printf("\n");
 }
 
-/*
- * Process the buffer of nvlists, unpacking and storing each nvlist record
- * into 'records'.  'leftover' is set to the number of bytes that weren't
- * processed as there wasn't a complete record.
- */
+ 
 int
 zpool_history_unpack(char *buf, uint64_t bytes_read, uint64_t *leftover,
     nvlist_t ***records, uint_t *numrecords)
@@ -112,21 +85,21 @@ zpool_history_unpack(char *buf, uint64_t bytes_read, uint64_t *leftover,
 
 	while (bytes_read > sizeof (reclen)) {
 
-		/* get length of packed record (stored as little endian) */
+		 
 		for (i = 0, reclen = 0; i < sizeof (reclen); i++)
 			reclen += (uint64_t)(((uchar_t *)buf)[i]) << (8*i);
 
 		if (bytes_read < sizeof (reclen) + reclen)
 			break;
 
-		/* unpack record */
+		 
 		int err = nvlist_unpack(buf + sizeof (reclen), reclen, &nv, 0);
 		if (err != 0)
 			return (err);
 		bytes_read -= sizeof (reclen) + reclen;
 		buf += sizeof (reclen) + reclen;
 
-		/* add record to nvlist array */
+		 
 		(*numrecords)++;
 		if (ISP2(*numrecords + 1)) {
 			tmp = realloc(*records,

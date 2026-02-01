@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Helper functions used by the EFI stub on multiple
- * architectures. This should be #included by the EFI stub
- * implementation files.
- *
- * Copyright 2011 Intel Corporation; author Matt Fleming
- */
+
+ 
 
 #include <linux/stdarg.h>
 
@@ -29,19 +23,7 @@ bool __pure __efi_soft_reserve_enabled(void)
 	return !efi_nosoftreserve;
 }
 
-/**
- * efi_parse_options() - Parse EFI command line options
- * @cmdline:	kernel command line
- *
- * Parse the ASCII string @cmdline for EFI options, denoted by the efi=
- * option, e.g. efi=nochunk.
- *
- * It should be noted that efi= is parsed in two very different
- * environments, first in the early boot environment of the EFI boot
- * stub, and subsequently during the kernel boot.
- *
- * Return:	status code
- */
+ 
 efi_status_t efi_parse_options(char const *cmdline)
 {
 	size_t len;
@@ -97,16 +79,7 @@ efi_status_t efi_parse_options(char const *cmdline)
 	return EFI_SUCCESS;
 }
 
-/*
- * The EFI_LOAD_OPTION descriptor has the following layout:
- *	u32 Attributes;
- *	u16 FilePathListLength;
- *	u16 Description[];
- *	efi_device_path_protocol_t FilePathList[];
- *	u8 OptionalData[];
- *
- * This function validates and unpacks the variable-size data fields.
- */
+ 
 static
 bool efi_load_option_unpack(efi_load_option_unpacked_t *dest,
 			    const efi_load_option_t *src, size_t size)
@@ -125,7 +98,7 @@ bool efi_load_option_unpack(efi_load_option_unpacked_t *dest,
 	if ((src->attributes & ~EFI_LOAD_OPTION_MASK) != 0)
 		return false;
 
-	/* Scan description. */
+	 
 	description = pos;
 	do {
 		if (size < sizeof(c))
@@ -135,7 +108,7 @@ bool efi_load_option_unpack(efi_load_option_unpacked_t *dest,
 		size -= sizeof(c);
 	} while (c != L'\0');
 
-	/* Scan file_path_list. */
+	 
 	file_path_list = pos;
 	do {
 		if (size < sizeof(header))
@@ -162,13 +135,7 @@ bool efi_load_option_unpack(efi_load_option_unpacked_t *dest,
 	return true;
 }
 
-/*
- * At least some versions of Dell firmware pass the entire contents of the
- * Boot#### variable, i.e. the EFI_LOAD_OPTION descriptor, rather than just the
- * OptionalData field.
- *
- * Detect this case and extract OptionalData.
- */
+ 
 void efi_apply_loadoptions_quirk(const void **load_options, u32 *load_options_size)
 {
 	const efi_load_option_t *load_option = *load_options;
@@ -272,16 +239,12 @@ fail:
 	return status;
 }
 
-/*
- * Convert the unicode UEFI command line to ASCII to pass to kernel.
- * Size of memory allocated return in *cmd_line_len.
- * Returns NULL on error.
- */
+ 
 char *efi_convert_cmdline(efi_loaded_image_t *image, int *cmd_line_len)
 {
 	const efi_char16_t *options = efi_table_attr(image, load_options);
 	u32 options_size = efi_table_attr(image, load_options_size);
-	int options_bytes = 0, safe_options_bytes = 0;  /* UTF-8 bytes */
+	int options_bytes = 0, safe_options_bytes = 0;   
 	unsigned long cmdline_addr = 0;
 	const efi_char16_t *s2;
 	bool in_quote = false;
@@ -312,23 +275,11 @@ char *efi_convert_cmdline(efi_loaded_image_t *image, int *cmd_line_len)
 				continue;
 			}
 
-			/*
-			 * Get the number of UTF-8 bytes corresponding to a
-			 * UTF-16 character.
-			 * The first part handles everything in the BMP.
-			 */
+			 
 			options_bytes += 2 + (c >= 0x800);
-			/*
-			 * Add one more byte for valid surrogate pairs. Invalid
-			 * surrogates will be replaced with 0xfffd and take up
-			 * only 3 bytes.
-			 */
+			 
 			if ((c & 0xfc00) == 0xd800) {
-				/*
-				 * If the very last word is a high surrogate,
-				 * we must ignore it since we can't access the
-				 * low surrogate.
-				 */
+				 
 				if (!options_chars) {
 					options_bytes -= 3;
 				} else if ((*s2 & 0xfc00) == 0xdc00) {
@@ -345,7 +296,7 @@ char *efi_convert_cmdline(efi_loaded_image_t *image, int *cmd_line_len)
 		}
 	}
 
-	options_bytes++;	/* NUL termination */
+	options_bytes++;	 
 
 	status = efi_bs_call(allocate_pool, EFI_LOADER_DATA, options_bytes,
 			     (void **)&cmdline_addr);
@@ -359,21 +310,7 @@ char *efi_convert_cmdline(efi_loaded_image_t *image, int *cmd_line_len)
 	return (char *)cmdline_addr;
 }
 
-/**
- * efi_exit_boot_services() - Exit boot services
- * @handle:	handle of the exiting image
- * @priv:	argument to be passed to @priv_func
- * @priv_func:	function to process the memory map before exiting boot services
- *
- * Handle calling ExitBootServices according to the requirements set out by the
- * spec.  Obtains the current memory map, and returns that info after calling
- * ExitBootServices.  The client must specify a function to perform any
- * processing of the memory map data prior to ExitBootServices.  A client
- * specific structure may be passed to the function via priv.  The client
- * function may be called multiple times.
- *
- * Return:	status code
- */
+ 
 efi_status_t efi_exit_boot_services(void *handle, void *priv,
 				    efi_exit_boot_map_processing priv_func)
 {
@@ -396,19 +333,7 @@ efi_status_t efi_exit_boot_services(void *handle, void *priv,
 	status = efi_bs_call(exit_boot_services, handle, map->map_key);
 
 	if (status == EFI_INVALID_PARAMETER) {
-		/*
-		 * The memory map changed between efi_get_memory_map() and
-		 * exit_boot_services().  Per the UEFI Spec v2.6, Section 6.4:
-		 * EFI_BOOT_SERVICES.ExitBootServices we need to get the
-		 * updated map, and try again.  The spec implies one retry
-		 * should be sufficent, which is confirmed against the EDK2
-		 * implementation.  Per the spec, we can only invoke
-		 * get_memory_map() and exit_boot_services() - we cannot alloc
-		 * so efi_get_memory_map() cannot be used, and we must reuse
-		 * the buffer.  For all practical purposes, the headroom in the
-		 * buffer should account for any changes in the map so the call
-		 * to get_memory_map() is expected to succeed here.
-		 */
+		 
 		map->map_size = map->buff_size;
 		status = efi_bs_call(get_memory_map,
 				     &map->map_size,
@@ -417,12 +342,12 @@ efi_status_t efi_exit_boot_services(void *handle, void *priv,
 				     &map->desc_size,
 				     &map->desc_ver);
 
-		/* exit_boot_services() was called, thus cannot free */
+		 
 		if (status != EFI_SUCCESS)
 			return status;
 
 		status = priv_func(map, priv);
-		/* exit_boot_services() was called, thus cannot free */
+		 
 		if (status != EFI_SUCCESS)
 			return status;
 
@@ -432,11 +357,7 @@ efi_status_t efi_exit_boot_services(void *handle, void *priv,
 	return status;
 }
 
-/**
- * get_efi_config_table() - retrieve UEFI configuration table
- * @guid:	GUID of the configuration table to be retrieved
- * Return:	pointer to the configuration table or NULL
- */
+ 
 void *get_efi_config_table(efi_guid_t guid)
 {
 	unsigned long tables = efi_table_attr(efi_system_table, tables);
@@ -455,16 +376,7 @@ void *get_efi_config_table(efi_guid_t guid)
 	return NULL;
 }
 
-/*
- * The LINUX_EFI_INITRD_MEDIA_GUID vendor media device path below provides a way
- * for the firmware or bootloader to expose the initrd data directly to the stub
- * via the trivial LoadFile2 protocol, which is defined in the UEFI spec, and is
- * very easy to implement. It is a simple Linux initrd specific conduit between
- * kernel and firmware, allowing us to put the EFI stub (being part of the
- * kernel) in charge of where and when to load the initrd, while leaving it up
- * to the firmware to decide whether it needs to expose its filesystem hierarchy
- * via EFI protocols.
- */
+ 
 static const struct {
 	struct efi_vendor_dev_path	vendor;
 	struct efi_generic_dev_path	end;
@@ -483,19 +395,7 @@ static const struct {
 	}
 };
 
-/**
- * efi_load_initrd_dev_path() - load the initrd from the Linux initrd device path
- * @initrd:	pointer of struct to store the address where the initrd was loaded
- *		and the size of the loaded initrd
- * @max:	upper limit for the initrd memory allocation
- *
- * Return:
- * * %EFI_SUCCESS if the initrd was loaded successfully, in which
- *   case @load_addr and @load_size are assigned accordingly
- * * %EFI_NOT_FOUND if no LoadFile2 protocol exists on the initrd device path
- * * %EFI_OUT_OF_RESOURCES if memory allocation failed
- * * %EFI_LOAD_ERROR in all other cases
- */
+ 
 static
 efi_status_t efi_load_initrd_dev_path(struct linux_efi_initrd *initrd,
 				      unsigned long max)
@@ -548,14 +448,7 @@ efi_status_t efi_load_initrd_cmdline(efi_loaded_image_t *image,
 				    &initrd->base, &initrd->size);
 }
 
-/**
- * efi_load_initrd() - Load initial RAM disk
- * @image:	EFI loaded image protocol
- * @soft_limit:	preferred address for loading the initrd
- * @hard_limit:	upper limit address for loading the initrd
- *
- * Return:	status code
- */
+ 
 efi_status_t efi_load_initrd(efi_loaded_image_t *image,
 			     unsigned long soft_limit,
 			     unsigned long hard_limit,
@@ -578,7 +471,7 @@ efi_status_t efi_load_initrd(efi_loaded_image_t *image,
 	} else if (status == EFI_NOT_FOUND) {
 		status = efi_load_initrd_cmdline(image, &initrd, soft_limit,
 						 hard_limit);
-		/* command line loader disabled or no initrd= passed? */
+		 
 		if (status == EFI_UNSUPPORTED || status == EFI_NOT_READY)
 			return EFI_SUCCESS;
 		if (status == EFI_SUCCESS)
@@ -610,15 +503,7 @@ failed:
 	return status;
 }
 
-/**
- * efi_wait_for_key() - Wait for key stroke
- * @usec:	number of microseconds to wait for key stroke
- * @key:	key entered
- *
- * Wait for up to @usec microseconds for a key stroke.
- *
- * Return:	status code, EFI_SUCCESS if key received
- */
+ 
 efi_status_t efi_wait_for_key(unsigned long usec, efi_input_key_t *key)
 {
 	efi_event_t events[2], timer;
@@ -654,20 +539,7 @@ efi_status_t efi_wait_for_key(unsigned long usec, efi_input_key_t *key)
 	return status;
 }
 
-/**
- * efi_remap_image - Remap a loaded image with the appropriate permissions
- *                   for code and data
- *
- * @image_base:	the base of the image in memory
- * @alloc_size:	the size of the area in memory occupied by the image
- * @code_size:	the size of the leading part of the image containing code
- * 		and read-only data
- *
- * efi_remap_image() uses the EFI memory attribute protocol to remap the code
- * region of the loaded image read-only/executable, and the remainder
- * read-write/non-executable. The code region is assumed to start at the base
- * of the image, and will therefore cover the PE/COFF header as well.
- */
+ 
 void efi_remap_image(unsigned long image_base, unsigned alloc_size,
 		     unsigned long code_size)
 {
@@ -676,16 +548,12 @@ void efi_remap_image(unsigned long image_base, unsigned alloc_size,
 	efi_status_t status;
 	u64 attr;
 
-	/*
-	 * If the firmware implements the EFI_MEMORY_ATTRIBUTE_PROTOCOL, let's
-	 * invoke it to remap the text/rodata region of the decompressed image
-	 * as read-only and the data/bss region as non-executable.
-	 */
+	 
 	status = efi_bs_call(locate_protocol, &guid, NULL, (void **)&memattr);
 	if (status != EFI_SUCCESS)
 		return;
 
-	// Get the current attributes for the entire region
+	
 	status = memattr->get_memory_attributes(memattr, image_base,
 						alloc_size, &attr);
 	if (status != EFI_SUCCESS) {
@@ -694,7 +562,7 @@ void efi_remap_image(unsigned long image_base, unsigned alloc_size,
 		return;
 	}
 
-	// Mark the code region as read-only
+	
 	status = memattr->set_memory_attributes(memattr, image_base, code_size,
 						EFI_MEMORY_RO);
 	if (status != EFI_SUCCESS) {
@@ -702,9 +570,9 @@ void efi_remap_image(unsigned long image_base, unsigned alloc_size,
 		return;
 	}
 
-	// If the entire region was already mapped as non-exec, clear the
-	// attribute from the code region. Otherwise, set it on the data
-	// region.
+	
+	
+	
 	if (attr & EFI_MEMORY_XP) {
 		status = memattr->clear_memory_attributes(memattr, image_base,
 							  code_size,

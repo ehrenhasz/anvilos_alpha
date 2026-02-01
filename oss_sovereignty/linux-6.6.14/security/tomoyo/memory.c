@@ -1,22 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * security/tomoyo/memory.c
- *
- * Copyright (C) 2005-2011  NTT DATA CORPORATION
- */
+
+ 
 
 #include <linux/hash.h>
 #include <linux/slab.h>
 #include "common.h"
 
-/**
- * tomoyo_warn_oom - Print out of memory warning message.
- *
- * @function: Function's name.
- */
+ 
 void tomoyo_warn_oom(const char *function)
 {
-	/* Reduce error messages. */
+	 
 	static pid_t tomoyo_last_pid;
 	const pid_t pid = current->pid;
 
@@ -28,22 +20,12 @@ void tomoyo_warn_oom(const char *function)
 		panic("MAC Initialization failed.\n");
 }
 
-/* Memoy currently used by policy/audit log/query. */
+ 
 unsigned int tomoyo_memory_used[TOMOYO_MAX_MEMORY_STAT];
-/* Memory quota for "policy"/"audit log"/"query". */
+ 
 unsigned int tomoyo_memory_quota[TOMOYO_MAX_MEMORY_STAT];
 
-/**
- * tomoyo_memory_ok - Check memory quota.
- *
- * @ptr: Pointer to allocated memory.
- *
- * Returns true on success, false otherwise.
- *
- * Returns true if @ptr is not NULL and quota not exceeded, false otherwise.
- *
- * Caller holds tomoyo_policy_lock mutex.
- */
+ 
 bool tomoyo_memory_ok(void *ptr)
 {
 	if (ptr) {
@@ -60,17 +42,7 @@ bool tomoyo_memory_ok(void *ptr)
 	return false;
 }
 
-/**
- * tomoyo_commit_ok - Check memory quota.
- *
- * @data:   Data to copy from.
- * @size:   Size in byte.
- *
- * Returns pointer to allocated memory on success, NULL otherwise.
- * @data is zero-cleared on success.
- *
- * Caller holds tomoyo_policy_lock mutex.
- */
+ 
 void *tomoyo_commit_ok(void *data, const unsigned int size)
 {
 	void *ptr = kzalloc(size, GFP_NOFS | __GFP_NOWARN);
@@ -84,14 +56,7 @@ void *tomoyo_commit_ok(void *data, const unsigned int size)
 	return NULL;
 }
 
-/**
- * tomoyo_get_group - Allocate memory for "struct tomoyo_path_group"/"struct tomoyo_number_group".
- *
- * @param: Pointer to "struct tomoyo_acl_param".
- * @idx:   Index number.
- *
- * Returns pointer to "struct tomoyo_group" on success, NULL otherwise.
- */
+ 
 struct tomoyo_group *tomoyo_get_group(struct tomoyo_acl_param *param,
 				      const u8 idx)
 {
@@ -134,21 +99,10 @@ out:
 	return found ? group : NULL;
 }
 
-/*
- * tomoyo_name_list is used for holding string data used by TOMOYO.
- * Since same string data is likely used for multiple times (e.g.
- * "/lib/libc-2.5.so"), TOMOYO shares string data in the form of
- * "const struct tomoyo_path_info *".
- */
+ 
 struct list_head tomoyo_name_list[TOMOYO_MAX_HASH];
 
-/**
- * tomoyo_get_name - Allocate permanent memory for string data.
- *
- * @name: The string to store into the permernent memory.
- *
- * Returns pointer to "struct tomoyo_path_info" on success, NULL otherwise.
- */
+ 
 const struct tomoyo_path_info *tomoyo_get_name(const char *name)
 {
 	struct tomoyo_name *ptr;
@@ -186,12 +140,10 @@ out:
 	return ptr ? &ptr->entry : NULL;
 }
 
-/* Initial namespace.*/
+ 
 struct tomoyo_policy_namespace tomoyo_kernel_namespace;
 
-/**
- * tomoyo_mm_init - Initialize mm related code.
- */
+ 
 void __init tomoyo_mm_init(void)
 {
 	int idx;

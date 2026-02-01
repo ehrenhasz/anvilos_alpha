@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Mellanox Technologies.
+
+
 
 #include "health.h"
 #include "lib/eq.h"

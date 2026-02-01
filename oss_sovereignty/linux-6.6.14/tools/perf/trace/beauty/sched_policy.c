@@ -1,10 +1,7 @@
-// SPDX-License-Identifier: LGPL-2.1
+
 #include <sched.h>
 
-/*
- * Not defined anywhere else, probably, just to make sure we
- * catch future flags
- */
+ 
 #define SCHED_POLICY_MASK 0xff
 
 #ifndef SCHED_DEADLINE

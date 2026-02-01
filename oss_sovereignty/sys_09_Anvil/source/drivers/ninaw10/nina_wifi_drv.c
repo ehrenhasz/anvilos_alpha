@@ -1,31 +1,4 @@
-/*
- * This file is part of the OpenMV project, https://openmv.io.
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013-2021 Ibrahim Abdelkader <iabdalkader@openmv.io>
- * Copyright (c) 2013-2021 Kwabena W. Agyeman <kwagyeman@openmv.io>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * NINA-W10 WiFi driver.
- */
+ 
 
 #include "py/mphal.h"
 #include "py/mperrno.h"
@@ -84,7 +57,7 @@ typedef struct {
 } nina_vals_t;
 
 typedef enum {
-    // STA mode commands.
+    
     NINA_CMD_CONNECT_OPEN           = 0x10,
     NINA_CMD_CONNECT_WEP            = 0x11,
     NINA_CMD_CONNECT_WPA            = 0x12,
@@ -93,11 +66,11 @@ typedef enum {
     NINA_CMD_GET_RSSI               = 0x25,
     NINA_CMD_GET_ENCRYPT            = 0x26,
 
-    // AP mode commands.
+    
     NINA_CMD_START_AP_OPEN          = 0x18,
     NINA_CMD_START_AP_WEP           = 0x19,
 
-    // AP mode scan commands.
+    
     NINA_CMD_AP_START_SCAN          = 0x36,
     NINA_CMD_AP_SCAN_RESULT         = 0x27,
     NINA_CMD_AP_GET_RSSI            = 0x32,
@@ -105,22 +78,22 @@ typedef enum {
     NINA_CMD_AP_GET_BSSID           = 0x3C,
     NINA_CMD_AP_GET_CHANNEL         = 0x3D,
 
-    // Disconnect/status commands.
+    
     NINA_CMD_DISCONNECT             = 0x30,
     NINA_CMD_CONN_STATUS            = 0x20,
     NINA_CMD_CONN_REASON            = 0x1F,
 
-    // Interface config commands.
+    
     NINA_CMD_SET_IF_CONFIG          = 0x14,
     NINA_CMD_GET_IF_CONFIG          = 0x21,
     NINA_CMD_SET_DNS_CONFIG         = 0x15,
 
-    // Hostname/Resolv commands.
+    
     NINA_CMD_SET_HOSTNAME           = 0x16,
     NINA_CMD_HOST_BY_NAME           = 0x34,
     NINA_CMD_GET_HOST_BY_NAME       = 0x35,
 
-    // Misc commands.
+    
     NINA_CMD_SET_POWER              = 0x17,
     NINA_CMD_PING                   = 0x3E,
     NINA_CMD_GET_TIME               = 0x3B,
@@ -129,7 +102,7 @@ typedef enum {
     NINA_CMD_TEMP_SENSOR            = 0x1B,
     NINA_CMD_GET_MAC_ADDR           = 0x22,
 
-    // Sockets commands.
+    
     NINA_CMD_SOCKET_REMOTE_ADDR     = 0x3A,
 
     NINA_CMD_SOCKET_SOCKET          = 0x70,
@@ -149,26 +122,26 @@ typedef enum {
     NINA_CMD_SOCKET_GETSOCKOPT      = 0x7E,
     NINA_CMD_SOCKET_GETPEERNAME     = 0x7F,
 
-    // UDP commands.
+    
     NINA_CMD_UDP_SEND               = 0x46,
     NINA_CMD_UDP_RECV               = 0x45,
     NINA_CMD_UDP_ACK                = 0x39,
 
-    // Pin control commands.
+    
     NINA_CMD_SET_PIN_MODE           = 0x50,
     NINA_CMD_SET_DIGITAL_WRITE      = 0x51,
     NINA_CMD_GET_DIGITAL_READ       = 0x53,
     NINA_CMD_SET_ANALOG_WRITE       = 0x52,
     NINA_CMD_GET_ANALOG_READ        = 0x54,
 
-    // File send/recv commands.
+    
     NINA_CMD_CMD_WRITE_FILE         = 0x60,
     NINA_CMD_CMD_READ_FILE          = 0x61,
     NINA_CMD_CMD_DELETE_FILE        = 0x62,
     NINA_CMD_CMD_EXISTS_FILE        = 0x63,
     NINA_CMD_CMD_DOWNLOAD_FILE      = 0x64,
 
-    // OTA upgrade commands.
+    
     NINA_CMD_CMD_APPLY_OTA          = 0x65,
     NINA_CMD_CMD_RENAME_FILE        = 0x66,
     NINA_CMD_CMD_DOWNLOAD_OTA       = 0x67,
@@ -196,7 +169,7 @@ static uint8_t nina_bsp_spi_read_byte(void) {
 
 static int nina_send_command(uint32_t cmd, uint32_t nargs, uint32_t width, nina_args_t *args) {
     int ret = -1;
-    uint32_t length = 4; // 3 bytes header + 1 end byte
+    uint32_t length = 4; 
 
     debug_printf("nina_send_command (cmd 0x%x nargs %d width %d): ", cmd, nargs, width);
 
@@ -205,36 +178,36 @@ static int nina_send_command(uint32_t cmd, uint32_t nargs, uint32_t width, nina_
         goto error_out;
     }
 
-    // Send command header.
+    
     uint8_t cmdbuf_hdr[3] = {CMD_START, cmd, nargs};
     if (nina_bsp_spi_transfer(cmdbuf_hdr, NULL, sizeof(cmdbuf_hdr)) != 0) {
         goto error_out;
     }
 
-    // Send command arg(s).
+    
     for (uint32_t i = 0; i < nargs; i++) {
-        // Send size MSB first if 2 bytes.
+        
         uint16_t size = (width == ARG_8BITS) ? args[i].size : __REVSH(args[i].size);
 
-        // Send arg length.
+        
         if (nina_bsp_spi_transfer((uint8_t *)&size, NULL, width) != 0) {
             goto error_out;
         }
 
-        // Send arg value.
+        
         if (nina_bsp_spi_transfer(args[i].data, NULL, args[i].size) != 0) {
             goto error_out;
         }
         length += args[i].size + width;
     }
 
-    // Send END byte + padding to multiple of 4.
+    
     uint8_t cmdbuf_end[4] = {CMD_END, 0xFF, 0xFF, 0xFF};
     if (nina_bsp_spi_transfer(cmdbuf_end, NULL, 1 + (length % 4)) != 0) {
         goto error_out;
     }
 
-    // All good
+    
     ret = 0;
 
 error_out:
@@ -245,12 +218,12 @@ error_out:
 
 static int nina_read_response(uint32_t cmd, uint32_t nvals, uint32_t width, nina_vals_t *vals) {
     int ret = -1;
-    uint32_t length = 3; // 3 bytes response header
+    uint32_t length = 3; 
     uint8_t header[3] = {0, 0, 0};
 
     debug_printf("nina_read_response(cmd 0x%x nvals %d width %d): ", cmd, nvals, width);
 
-    // Read reply
+    
     nina_bsp_spi_slave_deselect();
     if (nina_bsp_spi_slave_select(0) != 0) {
         goto error_out;
@@ -258,7 +231,7 @@ static int nina_read_response(uint32_t cmd, uint32_t nvals, uint32_t width, nina
 
     if (nina_bsp_spi_transfer(NULL, header, sizeof(header)) != 0
         || header[1] != (cmd | CMD_REPLY)) {
-        // Read padding.
+        
         uint8_t header_padding = nina_bsp_spi_read_byte();
         (void)header_padding;
         debug_printf("nina_read_response() hdr 0x%x 0x%x 0x%x 0x%x\n",
@@ -266,42 +239,42 @@ static int nina_read_response(uint32_t cmd, uint32_t nvals, uint32_t width, nina
         goto error_out;
     }
 
-    // Sanity check the number of returned values.
-    // NOTE: This is to handle the special case for the scan command.
+    
+    
     if (nvals > header[2]) {
         nvals = header[2];
     }
 
-    // Read return value(s).
+    
     for (uint32_t i = 0; i < nvals; i++) {
-        // Read return value size.
+        
         uint16_t bytes = nina_bsp_spi_read_byte();
         if (width == ARG_16BITS) {
             bytes = (bytes << 8) | nina_bsp_spi_read_byte();
         }
 
-        // Check the val fits the buffer.
+        
         if (*(vals[i].size) < bytes) {
             goto error_out;
         }
 
-        // Read the returned value.
+        
         if (nina_bsp_spi_transfer(NULL, vals[i].data, bytes) != 0) {
             goto error_out;
         }
 
-        // Set the size.
+        
         *(vals[i].size) = bytes;
         length += bytes + width;
     }
 
-    // Read CMD_END and padding.
+    
     uint8_t rspbuf_end[4];
     if (nina_bsp_spi_transfer(NULL, rspbuf_end, ((length + 1) % 4) + 1) != 0 || rspbuf_end[0] != CMD_END) {
         goto error_out;
     }
 
-    // All good
+    
     ret = 0;
 
 error_out:
@@ -343,7 +316,7 @@ static void nina_fix_mac_addr(uint8_t *mac) {
 }
 
 int nina_init(void) {
-    // Initialize the BSP.
+    
     nina_bsp_init();
     return 0;
 }
@@ -456,7 +429,7 @@ int nina_ifconfig(nina_ifconfig_t *ifconfig, bool set) {
         if (nina_send_command_read_ack(NINA_CMD_SET_IF_CONFIG,
             4, ARG_8BITS,
             NINA_ARGS(
-                ARG_BYTE(3),         // Valid number of args.
+                ARG_BYTE(3),         
                 {ip_len,  ifconfig->ip_addr},
                 {gw_len,  ifconfig->gateway_addr},
                 {sub_len, ifconfig->subnet_addr})) != 0) {
@@ -467,7 +440,7 @@ int nina_ifconfig(nina_ifconfig_t *ifconfig, bool set) {
         if (nina_send_command_read_ack(NINA_CMD_SET_DNS_CONFIG,
             3, ARG_8BITS,
             NINA_ARGS(
-                ARG_BYTE(1),         // Valid number of args.
+                ARG_BYTE(1),         
                 {dns_len, ifconfig->dns_addr},
                 {dns_len, dns2})) != SPI_ACK) {
             return -1;
@@ -483,7 +456,7 @@ int nina_ifconfig(nina_ifconfig_t *ifconfig, bool set) {
                 {&gw_len,  ifconfig->gateway_addr})) != 0) {
             return -1;
         }
-        // No command to get DNS ?
+        
         memcpy(ifconfig->dns_addr, ifconfig->gateway_addr, NINA_IPV4_ADDR_LEN);
     }
     return 0;
@@ -513,7 +486,7 @@ int nina_netinfo(nina_netinfo_t *netinfo) {
         return -1;
     }
 
-    // Null terminate SSID.
+    
     netinfo->ssid[MIN((NINA_MAX_SSID_LEN - 1), ssid_len)] = 0;
 
     if (nina_send_command_read_vals(NINA_CMD_GET_BSSID,
@@ -522,7 +495,7 @@ int nina_netinfo(nina_netinfo_t *netinfo) {
         return -1;
     }
 
-    // The MAC address is read in reverse from the firmware.
+    
     nina_fix_mac_addr(netinfo->bssid);
 
     return 0;
@@ -533,7 +506,7 @@ int nina_scan(nina_scan_callback_t scan_callback, void *arg, uint32_t timeout) {
     char ssids[NINA_MAX_NETWORK_LIST][NINA_MAX_SSID_LEN];
     nina_vals_t vals[NINA_MAX_NETWORK_LIST];
 
-    // Initialize the values list.
+    
     for (int i = 0; i < NINA_MAX_NETWORK_LIST; i++) {
         sizes[i] = NINA_MAX_SSID_LEN - 1;
         memset(ssids[i], 0, NINA_MAX_SSID_LEN);
@@ -554,12 +527,12 @@ int nina_scan(nina_scan_callback_t scan_callback, void *arg, uint32_t timeout) {
         }
 
         if (ssids[0][0] != 0) {
-            // Found at least 1 network.
+            
             break;
         }
 
         if (timeout && (mp_hal_ticks_ms() - start) >= timeout) {
-            // Timeout, no networks.
+            
             return -MP_ETIMEDOUT;
         }
 
@@ -577,38 +550,38 @@ int nina_scan(nina_scan_callback_t scan_callback, void *arg, uint32_t timeout) {
             break;
         }
 
-        // Set AP SSID
+        
         strncpy(scan_result.ssid, ssids[i], NINA_MAX_SSID_LEN);
 
-        // Read AP RSSI
+        
         if (nina_send_command_read_vals(NINA_CMD_AP_GET_RSSI,
             1, ARG_8BITS, NINA_ARGS(ARG_BYTE(i)),
             1, ARG_8BITS, NINA_VALS({&rssi_len, &scan_result.rssi})) != 0) {
             return -1;
         }
 
-        // Read AP encryption type
+        
         if (nina_send_command_read_vals(NINA_CMD_AP_GET_ENCRYPT,
             1, ARG_8BITS, NINA_ARGS(ARG_BYTE(i)),
             1, ARG_8BITS, NINA_VALS({&sec_len, &scan_result.security})) != 0) {
             return -1;
         }
 
-        // Read AP channel
+        
         if (nina_send_command_read_vals(NINA_CMD_AP_GET_CHANNEL,
             1, ARG_8BITS, NINA_ARGS(ARG_BYTE(i)),
             1, ARG_8BITS, NINA_VALS({&chan_len, &scan_result.channel})) != 0) {
             return -1;
         }
 
-        // Read AP bssid
+        
         if (nina_send_command_read_vals(NINA_CMD_AP_GET_BSSID,
             1, ARG_8BITS, NINA_ARGS(ARG_BYTE(i)),
             1, ARG_8BITS, NINA_VALS({&bssid_len, scan_result.bssid})) != 0) {
             return -1;
         }
 
-        // The MAC address is read in reverse from the firmware.
+        
         nina_fix_mac_addr(scan_result.bssid);
 
         scan_callback(&scan_result, arg);
@@ -786,7 +759,7 @@ int nina_socket_send(int fd, const uint8_t *buf, uint32_t len) {
         return -1;
     }
 
-    // Only args sizes (not args themselves) are reversed in read_response().
+    
     bytes = __REVSH(bytes);
 
     if (bytes == 0) {
@@ -818,7 +791,7 @@ int nina_socket_recv(int fd, uint8_t *buf, uint32_t len) {
     return bytes;
 }
 
-// Check from the upper layer if the socket is bound, if not then auto-bind it first.
+
 int nina_socket_sendto(int fd, const uint8_t *buf, uint32_t len, uint8_t *ip, uint16_t port) {
     uint16_t size = 2;
     uint16_t bytes = 0;
@@ -829,7 +802,7 @@ int nina_socket_sendto(int fd, const uint8_t *buf, uint32_t len, uint8_t *ip, ui
         return -1;
     }
 
-    // Only args sizes (not args themselves) are reversed in read_response().
+    
     bytes = __REVSH(bytes);
 
     if (bytes == 0) {
@@ -842,7 +815,7 @@ int nina_socket_sendto(int fd, const uint8_t *buf, uint32_t len, uint8_t *ip, ui
     return bytes;
 }
 
-// Check from the upper layer if the socket is bound, if not then auto-bind it first.
+
 int nina_socket_recvfrom(int fd, uint8_t *buf, uint32_t len, uint8_t *ip, uint16_t *port) {
     uint16_t bytes = len;
     uint16_t port_len = 2;
@@ -881,7 +854,7 @@ int nina_socket_poll(int fd, uint8_t *flags) {
         return -1;
     }
     if (*flags & 0x80) {
-        // lwip_select() failed.
+        
         return -1;
     }
     return 0;
@@ -907,4 +880,4 @@ int nina_socket_getsockopt(int fd, uint32_t level, uint32_t optname, void *optva
     return 0;
 }
 
-#endif // MICROPY_PY_NINAW10
+#endif 

@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * nct7904.c - driver for Nuvoton NCT7904D.
- *
- * Copyright (c) 2015 Kontron
- * Author: Vadim V. Vlasov <vvlasov@dev.rtsoft.ru>
- *
- * Copyright (c) 2019 Advantech
- * Author: Amy.Shih <amy.shih@advantech.com.tw>
- *
- * Copyright (c) 2020 Advantech
- * Author: Yuechao Zhao <yuechao.zhao@advantech.com.cn>
- *
- * Supports the following chips:
- *
- * Chip        #vin  #fan  #pwm  #temp  #dts  chip ID
- * nct7904d     20    12    4     5      8    0xc5
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/device.h>
@@ -25,11 +9,11 @@
 #include <linux/hwmon.h>
 #include <linux/watchdog.h>
 
-#define VENDOR_ID_REG		0x7A	/* Any bank */
+#define VENDOR_ID_REG		0x7A	 
 #define NUVOTON_ID		0x50
-#define CHIP_ID_REG		0x7B	/* Any bank */
+#define CHIP_ID_REG		0x7B	 
 #define NCT7904_ID		0xC5
-#define DEVICE_ID_REG		0x7C	/* Any bank */
+#define DEVICE_ID_REG		0x7C	 
 
 #define BANK_SEL_REG		0xFF
 #define BANK_0			0x00
@@ -39,65 +23,64 @@
 #define BANK_4			0x04
 #define BANK_MAX		0x04
 
-#define FANIN_MAX		12	/* Counted from 1 */
-#define VSEN_MAX		21	/* VSEN1..14, 3VDD, VBAT, V3VSB,
-					   LTD (not a voltage), VSEN17..19 */
-#define FANCTL_MAX		4	/* Counted from 1 */
-#define TCPU_MAX		8	/* Counted from 1 */
-#define TEMP_MAX		4	/* Counted from 1 */
-#define SMI_STS_MAX		10	/* Counted from 1 */
+#define FANIN_MAX		12	 
+#define VSEN_MAX		21	 
+#define FANCTL_MAX		4	 
+#define TCPU_MAX		8	 
+#define TEMP_MAX		4	 
+#define SMI_STS_MAX		10	 
 
-#define VT_ADC_CTRL0_REG	0x20	/* Bank 0 */
-#define VT_ADC_CTRL1_REG	0x21	/* Bank 0 */
-#define VT_ADC_CTRL2_REG	0x22	/* Bank 0 */
+#define VT_ADC_CTRL0_REG	0x20	 
+#define VT_ADC_CTRL1_REG	0x21	 
+#define VT_ADC_CTRL2_REG	0x22	 
 #define FANIN_CTRL0_REG		0x24
 #define FANIN_CTRL1_REG		0x25
 #define DTS_T_CTRL0_REG		0x26
 #define DTS_T_CTRL1_REG		0x27
 #define VT_ADC_MD_REG		0x2E
 
-#define VSEN1_HV_LL_REG		0x02	/* Bank 1; 2 regs (HV/LV) per sensor */
-#define VSEN1_LV_LL_REG		0x03	/* Bank 1; 2 regs (HV/LV) per sensor */
-#define VSEN1_HV_HL_REG		0x00	/* Bank 1; 2 regs (HV/LV) per sensor */
-#define VSEN1_LV_HL_REG		0x01	/* Bank 1; 2 regs (HV/LV) per sensor */
-#define SMI_STS1_REG		0xC1	/* Bank 0; SMI Status Register */
-#define SMI_STS3_REG		0xC3	/* Bank 0; SMI Status Register */
-#define SMI_STS5_REG		0xC5	/* Bank 0; SMI Status Register */
-#define SMI_STS7_REG		0xC7	/* Bank 0; SMI Status Register */
-#define SMI_STS8_REG		0xC8	/* Bank 0; SMI Status Register */
+#define VSEN1_HV_LL_REG		0x02	 
+#define VSEN1_LV_LL_REG		0x03	 
+#define VSEN1_HV_HL_REG		0x00	 
+#define VSEN1_LV_HL_REG		0x01	 
+#define SMI_STS1_REG		0xC1	 
+#define SMI_STS3_REG		0xC3	 
+#define SMI_STS5_REG		0xC5	 
+#define SMI_STS7_REG		0xC7	 
+#define SMI_STS8_REG		0xC8	 
 
-#define VSEN1_HV_REG		0x40	/* Bank 0; 2 regs (HV/LV) per sensor */
-#define TEMP_CH1_HV_REG		0x42	/* Bank 0; same as VSEN2_HV */
-#define LTD_HV_REG		0x62	/* Bank 0; 2 regs in VSEN range */
-#define LTD_HV_HL_REG		0x44	/* Bank 1; 1 reg for LTD */
-#define LTD_LV_HL_REG		0x45	/* Bank 1; 1 reg for LTD */
-#define LTD_HV_LL_REG		0x46	/* Bank 1; 1 reg for LTD */
-#define LTD_LV_LL_REG		0x47	/* Bank 1; 1 reg for LTD */
-#define TEMP_CH1_CH_REG		0x05	/* Bank 1; 1 reg for LTD */
-#define TEMP_CH1_W_REG		0x06	/* Bank 1; 1 reg for LTD */
-#define TEMP_CH1_WH_REG		0x07	/* Bank 1; 1 reg for LTD */
-#define TEMP_CH1_C_REG		0x04	/* Bank 1; 1 reg per sensor */
-#define DTS_T_CPU1_C_REG	0x90	/* Bank 1; 1 reg per sensor */
-#define DTS_T_CPU1_CH_REG	0x91	/* Bank 1; 1 reg per sensor */
-#define DTS_T_CPU1_W_REG	0x92	/* Bank 1; 1 reg per sensor */
-#define DTS_T_CPU1_WH_REG	0x93	/* Bank 1; 1 reg per sensor */
-#define FANIN1_HV_REG		0x80	/* Bank 0; 2 regs (HV/LV) per sensor */
-#define FANIN1_HV_HL_REG	0x60	/* Bank 1; 2 regs (HV/LV) per sensor */
-#define FANIN1_LV_HL_REG	0x61	/* Bank 1; 2 regs (HV/LV) per sensor */
-#define T_CPU1_HV_REG		0xA0	/* Bank 0; 2 regs (HV/LV) per sensor */
+#define VSEN1_HV_REG		0x40	 
+#define TEMP_CH1_HV_REG		0x42	 
+#define LTD_HV_REG		0x62	 
+#define LTD_HV_HL_REG		0x44	 
+#define LTD_LV_HL_REG		0x45	 
+#define LTD_HV_LL_REG		0x46	 
+#define LTD_LV_LL_REG		0x47	 
+#define TEMP_CH1_CH_REG		0x05	 
+#define TEMP_CH1_W_REG		0x06	 
+#define TEMP_CH1_WH_REG		0x07	 
+#define TEMP_CH1_C_REG		0x04	 
+#define DTS_T_CPU1_C_REG	0x90	 
+#define DTS_T_CPU1_CH_REG	0x91	 
+#define DTS_T_CPU1_W_REG	0x92	 
+#define DTS_T_CPU1_WH_REG	0x93	 
+#define FANIN1_HV_REG		0x80	 
+#define FANIN1_HV_HL_REG	0x60	 
+#define FANIN1_LV_HL_REG	0x61	 
+#define T_CPU1_HV_REG		0xA0	 
 
-#define PRTS_REG		0x03	/* Bank 2 */
-#define PFE_REG			0x00	/* Bank 2; PECI Function Enable */
-#define TSI_CTRL_REG		0x50	/* Bank 2; TSI Control Register */
-#define FANCTL1_FMR_REG		0x00	/* Bank 3; 1 reg per channel */
-#define FANCTL1_OUT_REG		0x10	/* Bank 3; 1 reg per channel */
+#define PRTS_REG		0x03	 
+#define PFE_REG			0x00	 
+#define TSI_CTRL_REG		0x50	 
+#define FANCTL1_FMR_REG		0x00	 
+#define FANCTL1_OUT_REG		0x10	 
 
-#define WDT_LOCK_REG		0xE0	/* W/O Lock Watchdog Register */
-#define WDT_EN_REG		0xE1	/* R/O Watchdog Enable Register */
-#define WDT_STS_REG		0xE2	/* R/O Watchdog Status Register */
-#define WDT_TIMER_REG		0xE3	/* R/W Watchdog Timer Register */
-#define WDT_SOFT_EN		0x55	/* Enable soft watchdog timer */
-#define WDT_SOFT_DIS		0xAA	/* Disable soft watchdog timer */
+#define WDT_LOCK_REG		0xE0	 
+#define WDT_EN_REG		0xE1	 
+#define WDT_STS_REG		0xE2	 
+#define WDT_TIMER_REG		0xE3	 
+#define WDT_SOFT_EN		0x55	 
+#define WDT_SOFT_DIS		0xAA	 
 
 #define VOLT_MONITOR_MODE	0x0
 #define THERMAL_DIODE_MODE	0x1
@@ -105,9 +88,9 @@
 
 #define ENABLE_TSI	BIT(1)
 
-#define WATCHDOG_TIMEOUT	1	/* 1 minute default timeout */
+#define WATCHDOG_TIMEOUT	1	 
 
-/*The timeout range is 1-255 minutes*/
+ 
 #define MIN_TIMEOUT		(1 * 60)
 #define MAX_TIMEOUT		(255 * 60)
 
@@ -136,12 +119,12 @@ struct nct7904_data {
 	u8 fan_mode[FANCTL_MAX];
 	u8 enable_dts;
 	u8 has_dts;
-	u8 temp_mode; /* 0: TR mode, 1: TD mode */
+	u8 temp_mode;  
 	u8 fan_alarm[2];
 	u8 vsen_alarm[3];
 };
 
-/* Access functions */
+ 
 static int nct7904_bank_lock(struct nct7904_data *data, unsigned int bank)
 {
 	int ret;
@@ -162,7 +145,7 @@ static inline void nct7904_bank_release(struct nct7904_data *data)
 	mutex_unlock(&data->bank_lock);
 }
 
-/* Read 1-byte register. Returns unsigned reg or -ERRNO on error. */
+ 
 static int nct7904_read_reg(struct nct7904_data *data,
 			    unsigned int bank, unsigned int reg)
 {
@@ -177,10 +160,7 @@ static int nct7904_read_reg(struct nct7904_data *data,
 	return ret;
 }
 
-/*
- * Read 2-byte register. Returns register in big-endian format or
- * -ERRNO on error.
- */
+ 
 static int nct7904_read_reg16(struct nct7904_data *data,
 			      unsigned int bank, unsigned int reg)
 {
@@ -202,7 +182,7 @@ static int nct7904_read_reg16(struct nct7904_data *data,
 	return ret;
 }
 
-/* Write 1-byte register. Returns 0 or -ERRNO on error. */
+ 
 static int nct7904_write_reg(struct nct7904_data *data,
 			     unsigned int bank, unsigned int reg, u8 val)
 {
@@ -257,10 +237,10 @@ static int nct7904_read_fan(struct device *dev, u32 attr, int channel,
 		if (!data->fan_alarm[channel >> 3])
 			data->fan_alarm[channel >> 3] = ret & 0xff;
 		else
-			/* If there is new alarm showing up */
+			 
 			data->fan_alarm[channel >> 3] |= (ret & 0xff);
 		*val = (data->fan_alarm[channel >> 3] >> (channel & 0x07)) & 1;
-		/* Needs to clean the alarm if alarm existing */
+		 
 		if (*val)
 			data->fan_alarm[channel >> 3] ^= 1 << (channel & 0x07);
 		return 0;
@@ -291,7 +271,7 @@ static umode_t nct7904_fan_is_visible(const void *_data, u32 attr, int channel)
 }
 
 static u8 nct7904_chan_to_index[] = {
-	0,	/* Not used */
+	0,	 
 	0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
 	18, 19, 20, 16
 };
@@ -312,9 +292,9 @@ static int nct7904_read_in(struct device *dev, u32 attr, int channel,
 			return ret;
 		volt = ((ret & 0xff00) >> 5) | (ret & 0x7);
 		if (index < 14)
-			volt *= 2; /* 0.002V scale */
+			volt *= 2;  
 		else
-			volt *= 6; /* 0.006V scale */
+			volt *= 6;  
 		*val = volt;
 		return 0;
 	case hwmon_in_min:
@@ -324,9 +304,9 @@ static int nct7904_read_in(struct device *dev, u32 attr, int channel,
 			return ret;
 		volt = ((ret & 0xff00) >> 5) | (ret & 0x7);
 		if (index < 14)
-			volt *= 2; /* 0.002V scale */
+			volt *= 2;  
 		else
-			volt *= 6; /* 0.006V scale */
+			volt *= 6;  
 		*val = volt;
 		return 0;
 	case hwmon_in_max:
@@ -336,9 +316,9 @@ static int nct7904_read_in(struct device *dev, u32 attr, int channel,
 			return ret;
 		volt = ((ret & 0xff00) >> 5) | (ret & 0x7);
 		if (index < 14)
-			volt *= 2; /* 0.002V scale */
+			volt *= 2;  
 		else
-			volt *= 6; /* 0.006V scale */
+			volt *= 6;  
 		*val = volt;
 		return 0;
 	case hwmon_in_alarm:
@@ -349,10 +329,10 @@ static int nct7904_read_in(struct device *dev, u32 attr, int channel,
 		if (!data->vsen_alarm[index >> 3])
 			data->vsen_alarm[index >> 3] = ret & 0xff;
 		else
-			/* If there is new alarm showing up */
+			 
 			data->vsen_alarm[index >> 3] |= (ret & 0xff);
 		*val = (data->vsen_alarm[index >> 3] >> (index & 0x07)) & 1;
-		/* Needs to clean the alarm if alarm existing */
+		 
 		if (*val)
 			data->vsen_alarm[index >> 3] ^= 1 << (index & 0x07);
 		return 0;
@@ -444,18 +424,18 @@ static int nct7904_read_temp(struct device *dev, u32 attr, int channel,
 		if (channel < 5) {
 			if ((data->tcpu_mask >> channel) & 0x01) {
 				if ((data->temp_mode >> channel) & 0x01)
-					*val = 3; /* TD */
+					*val = 3;  
 				else
-					*val = 4; /* TR */
+					*val = 4;  
 			} else {
 				*val = 0;
 			}
 		} else {
 			if ((data->has_dts >> (channel - 5)) & 0x01) {
 				if (data->enable_dts & ENABLE_TSI)
-					*val = 5; /* TSI */
+					*val = 5;  
 				else
-					*val = 6; /* PECI */
+					*val = 6;  
 			} else {
 				*val = 0;
 			}
@@ -642,9 +622,9 @@ static int nct7904_write_in(struct device *dev, u32 attr, int channel,
 	index = nct7904_chan_to_index[channel];
 
 	if (index < 14)
-		val = val / 2; /* 0.002V scale */
+		val = val / 2;  
 	else
-		val = val / 6; /* 0.006V scale */
+		val = val / 6;  
 
 	val = clamp_val(val, 0, 0x7ff);
 
@@ -780,7 +760,7 @@ static umode_t nct7904_is_visible(const void *data,
 	}
 }
 
-/* Return 0 if detection is successful, -ENODEV otherwise */
+ 
 static int nct7904_detect(struct i2c_client *client,
 			  struct i2c_board_info *info)
 {
@@ -791,7 +771,7 @@ static int nct7904_detect(struct i2c_client *client,
 				     I2C_FUNC_SMBUS_WRITE_BYTE_DATA))
 		return -ENODEV;
 
-	/* Determine the chip type. */
+	 
 	if (i2c_smbus_read_byte_data(client, VENDOR_ID_REG) != NUVOTON_ID ||
 	    i2c_smbus_read_byte_data(client, CHIP_ID_REG) != NCT7904_ID ||
 	    (i2c_smbus_read_byte_data(client, DEVICE_ID_REG) & 0xf0) != 0x50 ||
@@ -805,7 +785,7 @@ static int nct7904_detect(struct i2c_client *client,
 
 static const struct hwmon_channel_info * const nct7904_info[] = {
 	HWMON_CHANNEL_INFO(in,
-			   /* dummy, skipped in is_visible */
+			    
 			   HWMON_I_INPUT | HWMON_I_MIN | HWMON_I_MAX |
 			   HWMON_I_ALARM,
 			   HWMON_I_INPUT | HWMON_I_MIN | HWMON_I_MAX |
@@ -920,14 +900,12 @@ static const struct hwmon_chip_info nct7904_chip_info = {
 	.info = nct7904_info,
 };
 
-/*
- * Watchdog Function
- */
+ 
 static int nct7904_wdt_start(struct watchdog_device *wdt)
 {
 	struct nct7904_data *data = watchdog_get_drvdata(wdt);
 
-	/* Enable soft watchdog timer */
+	 
 	return nct7904_write_reg(data, BANK_0, WDT_LOCK_REG, WDT_SOFT_EN);
 }
 
@@ -942,15 +920,7 @@ static int nct7904_wdt_set_timeout(struct watchdog_device *wdt,
 				   unsigned int timeout)
 {
 	struct nct7904_data *data = watchdog_get_drvdata(wdt);
-	/*
-	 * The NCT7904 is very special in watchdog function.
-	 * Its minimum unit is minutes. And wdt->timeout needs
-	 * to match the actual timeout selected. So, this needs
-	 * to be: wdt->timeout = timeout / 60 * 60.
-	 * For example, if the user configures a timeout of
-	 * 119 seconds, the actual timeout will be 60 seconds.
-	 * So, wdt->timeout must then be set to 60 seconds.
-	 */
+	 
 	wdt->timeout = timeout / 60 * 60;
 
 	return nct7904_write_reg(data, BANK_0, WDT_TIMER_REG,
@@ -959,26 +929,21 @@ static int nct7904_wdt_set_timeout(struct watchdog_device *wdt,
 
 static int nct7904_wdt_ping(struct watchdog_device *wdt)
 {
-	/*
-	 * Note:
-	 * NCT7904 does not support refreshing WDT_TIMER_REG register when
-	 * the watchdog is active. Please disable watchdog before feeding
-	 * the watchdog and enable it again.
-	 */
+	 
 	struct nct7904_data *data = watchdog_get_drvdata(wdt);
 	int ret;
 
-	/* Disable soft watchdog timer */
+	 
 	ret = nct7904_write_reg(data, BANK_0, WDT_LOCK_REG, WDT_SOFT_DIS);
 	if (ret < 0)
 		return ret;
 
-	/* feed watchdog */
+	 
 	ret = nct7904_write_reg(data, BANK_0, WDT_TIMER_REG, wdt->timeout / 60);
 	if (ret < 0)
 		return ret;
 
-	/* Enable soft watchdog timer */
+	 
 	return nct7904_write_reg(data, BANK_0, WDT_LOCK_REG, WDT_SOFT_EN);
 }
 
@@ -1026,20 +991,14 @@ static int nct7904_probe(struct i2c_client *client)
 	mutex_init(&data->bank_lock);
 	data->bank_sel = -1;
 
-	/* Setup sensor groups. */
-	/* FANIN attributes */
+	 
+	 
 	ret = nct7904_read_reg16(data, BANK_0, FANIN_CTRL0_REG);
 	if (ret < 0)
 		return ret;
 	data->fanin_mask = (ret >> 8) | ((ret & 0xff) << 8);
 
-	/*
-	 * VSEN attributes
-	 *
-	 * Note: voltage sensors overlap with external temperature
-	 * sensors. So, if we ever decide to support the latter
-	 * we will have to adjust 'vsen_mask' accordingly.
-	 */
+	 
 	mask = 0;
 	ret = nct7904_read_reg16(data, BANK_0, VT_ADC_CTRL0_REG);
 	if (ret >= 0)
@@ -1049,28 +1008,28 @@ static int nct7904_probe(struct i2c_client *client)
 		mask |= (ret << 16);
 	data->vsen_mask = mask;
 
-	/* CPU_TEMP attributes */
+	 
 	ret = nct7904_read_reg(data, BANK_0, VT_ADC_CTRL0_REG);
 	if (ret < 0)
 		return ret;
 
 	if ((ret & 0x6) == 0x6)
-		data->tcpu_mask |= 1; /* TR1 */
+		data->tcpu_mask |= 1;  
 	if ((ret & 0x18) == 0x18)
-		data->tcpu_mask |= 2; /* TR2 */
+		data->tcpu_mask |= 2;  
 	if ((ret & 0x20) == 0x20)
-		data->tcpu_mask |= 4; /* TR3 */
+		data->tcpu_mask |= 4;  
 	if ((ret & 0x80) == 0x80)
-		data->tcpu_mask |= 8; /* TR4 */
+		data->tcpu_mask |= 8;  
 
-	/* LTD */
+	 
 	ret = nct7904_read_reg(data, BANK_0, VT_ADC_CTRL2_REG);
 	if (ret < 0)
 		return ret;
 	if ((ret & 0x02) == 0x02)
 		data->tcpu_mask |= 0x10;
 
-	/* Multi-Function detecting for Volt and TR/TD */
+	 
 	ret = nct7904_read_reg(data, BANK_0, VT_ADC_MD_REG);
 	if (ret < 0)
 		return ret;
@@ -1087,27 +1046,27 @@ static int nct7904_probe(struct i2c_client *client)
 		} else if (val == THERMISTOR_MODE) {
 			data->vsen_mask &= ~(0x02 << (i * 2));
 		} else {
-			/* Reserved */
+			 
 			data->tcpu_mask &= ~bit;
 			data->vsen_mask &= ~(0x06 << (i * 2));
 		}
 	}
 
-	/* PECI */
+	 
 	ret = nct7904_read_reg(data, BANK_2, PFE_REG);
 	if (ret < 0)
 		return ret;
 	if (ret & 0x80) {
-		data->enable_dts = 1; /* Enable DTS & PECI */
+		data->enable_dts = 1;  
 	} else {
 		ret = nct7904_read_reg(data, BANK_2, TSI_CTRL_REG);
 		if (ret < 0)
 			return ret;
 		if (ret & 0x80)
-			data->enable_dts = 0x3; /* Enable DTS & TSI */
+			data->enable_dts = 0x3;  
 	}
 
-	/* Check DTS enable status */
+	 
 	if (data->enable_dts) {
 		ret = nct7904_read_reg(data, BANK_0, DTS_T_CTRL0_REG);
 		if (ret < 0)
@@ -1128,7 +1087,7 @@ static int nct7904_probe(struct i2c_client *client)
 		data->fan_mode[i] = ret;
 	}
 
-	/* Read all of SMI status register to clear alarms */
+	 
 	for (i = 0; i < SMI_STS_MAX; i++) {
 		ret = nct7904_read_reg(data, BANK_0, SMI_STS1_REG + i);
 		if (ret < 0)
@@ -1142,11 +1101,11 @@ static int nct7904_probe(struct i2c_client *client)
 	if (ret)
 		return ret;
 
-	/* Watchdog initialization */
+	 
 	data->wdt.ops = &nct7904_wdt_ops;
 	data->wdt.info = &nct7904_wdt_info;
 
-	data->wdt.timeout = WATCHDOG_TIMEOUT * 60; /* Set default timeout */
+	data->wdt.timeout = WATCHDOG_TIMEOUT * 60;  
 	data->wdt.min_timeout = MIN_TIMEOUT;
 	data->wdt.max_timeout = MAX_TIMEOUT;
 	data->wdt.parent = &client->dev;

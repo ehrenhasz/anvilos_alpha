@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ADXL313 3-Axis Digital Accelerometer
- *
- * Copyright (c) 2021 Lucas Stankus <lucas.p.stankus@gmail.com>
- *
- * Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/ADXL313.pdf
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -22,7 +16,7 @@ static const struct regmap_config adxl31x_spi_regmap_config[] = {
 		.rd_table	= &adxl312_readable_regs_table,
 		.wr_table	= &adxl312_writable_regs_table,
 		.max_register	= 0x39,
-		/* Setting bits 7 and 6 enables multiple-byte read */
+		 
 		.read_flag_mask	= BIT(7) | BIT(6),
 	},
 	[ADXL313] = {
@@ -31,7 +25,7 @@ static const struct regmap_config adxl31x_spi_regmap_config[] = {
 		.rd_table	= &adxl313_readable_regs_table,
 		.wr_table	= &adxl313_writable_regs_table,
 		.max_register	= 0x39,
-		/* Setting bits 7 and 6 enables multiple-byte read */
+		 
 		.read_flag_mask	= BIT(7) | BIT(6),
 	},
 	[ADXL314] = {
@@ -40,7 +34,7 @@ static const struct regmap_config adxl31x_spi_regmap_config[] = {
 		.rd_table	= &adxl314_readable_regs_table,
 		.wr_table	= &adxl314_writable_regs_table,
 		.max_register	= 0x39,
-		/* Setting bits 7 and 6 enables multiple-byte read */
+		 
 		.read_flag_mask	= BIT(7) | BIT(6),
 	},
 };
@@ -72,10 +66,7 @@ static int adxl313_spi_probe(struct spi_device *spi)
 	if (ret)
 		return ret;
 
-	/*
-	 * Retrieves device specific data as a pointer to a
-	 * adxl313_chip_info structure
-	 */
+	 
 	chip_data = device_get_match_data(&spi->dev);
 	if (!chip_data)
 		chip_data = (const struct adxl313_chip_info *)spi_get_device_id(spi)->driver_data;

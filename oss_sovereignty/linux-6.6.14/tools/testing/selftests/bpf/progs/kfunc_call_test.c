@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 #include <vmlinux.h>
 #include <bpf/bpf_helpers.h>
 #include "../bpf_testmod/bpf_testmod_kfunc.h"
@@ -51,8 +51,8 @@ int kfunc_call_test1(struct __sk_buff *skb)
 		return -1;
 
 	a = bpf_kfunc_call_test1((struct sock *)sk, 1, a | 2, 3, a | 4);
-	ret = a >> 32;   /* ret should be 2 */
-	ret += (__u32)a; /* ret should be 12 */
+	ret = a >> 32;    
+	ret += (__u32)a;  
 
 	return ret;
 }
@@ -109,7 +109,7 @@ int kfunc_syscall_test(struct syscall_test_args *args)
 	const long size = args->size;
 
 	if (size > sizeof(args->data))
-		return -7; /* -E2BIG */
+		return -7;  
 
 	bpf_kfunc_call_test_mem_len_pass1(&args->data, sizeof(args->data));
 	bpf_kfunc_call_test_mem_len_pass1(&args->data, sizeof(*args));
@@ -121,15 +121,7 @@ int kfunc_syscall_test(struct syscall_test_args *args)
 SEC("syscall")
 int kfunc_syscall_test_null(struct syscall_test_args *args)
 {
-	/* Must be called with args as a NULL pointer
-	 * we do not check for it to have the verifier consider that
-	 * the pointer might not be null, and so we can load it.
-	 *
-	 * So the following can not be added:
-	 *
-	 * if (args)
-	 *      return -22;
-	 */
+	 
 
 	bpf_kfunc_call_test_mem_len_pass1(args, 0);
 
@@ -149,7 +141,7 @@ int kfunc_call_test_get_mem(struct __sk_buff *skb)
 		p = bpf_kfunc_call_test_get_rdwr_mem(pt, 2 * sizeof(int));
 		if (p) {
 			p[0] = 42;
-			ret = p[1]; /* 108 */
+			ret = p[1];  
 		} else {
 			ret = -1;
 		}
@@ -157,7 +149,7 @@ int kfunc_call_test_get_mem(struct __sk_buff *skb)
 		if (ret >= 0) {
 			p = bpf_kfunc_call_test_get_rdonly_mem(pt, 2 * sizeof(int));
 			if (p)
-				ret = p[0]; /* 42 */
+				ret = p[0];  
 			else
 				ret = -1;
 		}

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2016, The Linux Foundation. All rights reserved.
+
+
 
 #include <linux/module.h>
 #include <linux/err.h>
@@ -187,14 +187,14 @@
 #define MSM8916_WCD_DIGITAL_FORMATS (SNDRV_PCM_FMTBIT_S16_LE |\
 				     SNDRV_PCM_FMTBIT_S32_LE)
 
-/* Codec supports 2 IIR filters */
+ 
 enum {
 	IIR1 = 0,
 	IIR2,
 	IIR_MAX,
 };
 
-/* Codec supports 5 bands */
+ 
 enum {
 	BAND1 = 0,
 	BAND2,
@@ -253,50 +253,50 @@ static const char *const dec_mux_text[] = {
 
 static const char *const cic_mux_text[] = { "AMIC", "DMIC" };
 
-/* RX1 MIX1 */
+ 
 static const struct soc_enum rx_mix1_inp_enum[] = {
 	SOC_ENUM_SINGLE(LPASS_CDC_CONN_RX1_B1_CTL, 0, 6, rx_mix1_text),
 	SOC_ENUM_SINGLE(LPASS_CDC_CONN_RX1_B1_CTL, 3, 6, rx_mix1_text),
 	SOC_ENUM_SINGLE(LPASS_CDC_CONN_RX1_B2_CTL, 0, 6, rx_mix1_text),
 };
 
-/* RX2 MIX1 */
+ 
 static const struct soc_enum rx2_mix1_inp_enum[] = {
 	SOC_ENUM_SINGLE(LPASS_CDC_CONN_RX2_B1_CTL, 0, 6, rx_mix1_text),
 	SOC_ENUM_SINGLE(LPASS_CDC_CONN_RX2_B1_CTL, 3, 6, rx_mix1_text),
 	SOC_ENUM_SINGLE(LPASS_CDC_CONN_RX2_B2_CTL, 0, 6, rx_mix1_text),
 };
 
-/* RX3 MIX1 */
+ 
 static const struct soc_enum rx3_mix1_inp_enum[] = {
 	SOC_ENUM_SINGLE(LPASS_CDC_CONN_RX3_B1_CTL, 0, 6, rx_mix1_text),
 	SOC_ENUM_SINGLE(LPASS_CDC_CONN_RX3_B1_CTL, 3, 6, rx_mix1_text),
 	SOC_ENUM_SINGLE(LPASS_CDC_CONN_RX3_B2_CTL, 0, 6, rx_mix1_text),
 };
 
-/* RX1 MIX2 */
+ 
 static const struct soc_enum rx_mix2_inp1_chain_enum =
 	SOC_ENUM_SINGLE(LPASS_CDC_CONN_RX1_B3_CTL,
 		0, 3, rx_mix2_text);
 
-/* RX2 MIX2 */
+ 
 static const struct soc_enum rx2_mix2_inp1_chain_enum =
 	SOC_ENUM_SINGLE(LPASS_CDC_CONN_RX2_B3_CTL,
 		0, 3, rx_mix2_text);
 
-/* DEC */
+ 
 static const struct soc_enum dec1_mux_enum = SOC_ENUM_SINGLE(
 				LPASS_CDC_CONN_TX_B1_CTL, 0, 6, dec_mux_text);
 static const struct soc_enum dec2_mux_enum = SOC_ENUM_SINGLE(
 				LPASS_CDC_CONN_TX_B1_CTL, 3, 6, dec_mux_text);
 
-/* CIC */
+ 
 static const struct soc_enum cic1_mux_enum = SOC_ENUM_SINGLE(
 				LPASS_CDC_TX1_MUX_CTL, 0, 2, cic_mux_text);
 static const struct soc_enum cic2_mux_enum = SOC_ENUM_SINGLE(
 				LPASS_CDC_TX2_MUX_CTL, 0, 2, cic_mux_text);
 
-/* RDAC2 MUX */
+ 
 static const struct snd_kcontrol_new dec1_mux = SOC_DAPM_ENUM(
 				"DEC1 MUX Mux", dec1_mux_enum);
 static const struct snd_kcontrol_new dec2_mux = SOC_DAPM_ENUM(
@@ -328,10 +328,10 @@ static const struct snd_kcontrol_new rx1_mix2_inp1_mux = SOC_DAPM_ENUM(
 static const struct snd_kcontrol_new rx2_mix2_inp1_mux = SOC_DAPM_ENUM(
 				"RX2 MIX2 INP1 Mux", rx2_mix2_inp1_chain_enum);
 
-/* Digital Gain control -84 dB to +40 dB in 1 dB steps */
+ 
 static const DECLARE_TLV_DB_SCALE(digital_gain, -8400, 100, -8400);
 
-/* Cutoff Freq for High Pass Filter at -3dB */
+ 
 static const char * const hpf_cutoff_text[] = {
 	"4Hz", "75Hz", "150Hz",
 };
@@ -341,7 +341,7 @@ static SOC_ENUM_SINGLE_DECL(tx1_hpf_cutoff_enum, LPASS_CDC_TX1_MUX_CTL, 4,
 static SOC_ENUM_SINGLE_DECL(tx2_hpf_cutoff_enum, LPASS_CDC_TX2_MUX_CTL, 4,
 			    hpf_cutoff_text);
 
-/* cut off for dc blocker inside rx chain */
+ 
 static const char * const dc_blocker_cutoff_text[] = {
 	"4Hz", "75Hz", "150Hz",
 };
@@ -381,7 +381,7 @@ static uint32_t get_iir_band_coeff(struct snd_soc_component *component,
 {
 	uint32_t value = 0;
 
-	/* Address does not automatically update if reading */
+	 
 	snd_soc_component_write(component,
 		(LPASS_CDC_IIR1_COEF_B1_CTL + 64 * iir_idx),
 		((band_idx * BAND_MAX + coeff_idx)
@@ -411,7 +411,7 @@ static uint32_t get_iir_band_coeff(struct snd_soc_component *component,
 		((band_idx * BAND_MAX + coeff_idx)
 		* sizeof(uint32_t) + 3) & 0x7F);
 
-	/* Mask bits top 2 bits since they are reserved */
+	 
 	value |= ((snd_soc_component_read(component,
 		 (LPASS_CDC_IIR1_COEF_B2_CTL + 64 * iir_idx)) & 0x3f) << 24);
 	return value;
@@ -459,7 +459,7 @@ static void set_iir_band_coeff(struct snd_soc_component *component,
 		(LPASS_CDC_IIR1_COEF_B2_CTL + 64 * iir_idx),
 		(value >> 16) & 0xFF);
 
-	/* Mask top 2 bits, 7-8 are reserved */
+	 
 	snd_soc_component_write(component,
 		(LPASS_CDC_IIR1_COEF_B2_CTL + 64 * iir_idx),
 		(value >> 24) & 0x3F);
@@ -480,8 +480,8 @@ static int msm8x16_wcd_put_iir_band_audio_mixer(
 
 	memcpy(&coeff[0], ucontrol->value.bytes.data, params->max);
 
-	/* Mask top bit it is reserved */
-	/* Updates addr automatically for each B2 write */
+	 
+	 
 	snd_soc_component_write(component,
 		(LPASS_CDC_IIR1_COEF_B1_CTL + 64 * iir_idx),
 		(band_idx * BAND_MAX * sizeof(uint32_t)) & 0x7F);
@@ -581,7 +581,7 @@ static int msm8916_wcd_digital_enable_interpolator(
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
-		/* apply the digital gain after the interpolator is enabled */
+		 
 		usleep_range(10000, 10100);
 		snd_soc_component_write(component, rx_gain_reg[w->shift],
 			      snd_soc_component_read(component, rx_gain_reg[w->shift]));
@@ -611,7 +611,7 @@ static int msm8916_wcd_digital_enable_dec(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		/* Enable TX digital mute */
+		 
 		snd_soc_component_update_bits(component, tx_vol_ctl_reg,
 				    TX_VOL_CTL_CFG_MUTE_EN_MASK,
 				    TX_VOL_CTL_CFG_MUTE_EN_ENABLE);
@@ -619,18 +619,18 @@ static int msm8916_wcd_digital_enable_dec(struct snd_soc_dapm_widget *w,
 					TX_MUX_CTL_CUT_OFF_FREQ_MASK;
 		dec_hpf_cut_of_freq >>= TX_MUX_CTL_CUT_OFF_FREQ_SHIFT;
 		if (dec_hpf_cut_of_freq != TX_MUX_CTL_CF_NEG_3DB_150HZ) {
-			/* set cut of freq to CF_MIN_3DB_150HZ (0x1) */
+			 
 			snd_soc_component_update_bits(component, tx_mux_ctl_reg,
 					    TX_MUX_CTL_CUT_OFF_FREQ_MASK,
 					    TX_MUX_CTL_CF_NEG_3DB_150HZ);
 		}
 		break;
 	case SND_SOC_DAPM_POST_PMU:
-		/* enable HPF */
+		 
 		snd_soc_component_update_bits(component, tx_mux_ctl_reg,
 				    TX_MUX_CTL_HPF_BP_SEL_MASK,
 				    TX_MUX_CTL_HPF_BP_SEL_NO_BYPASS);
-		/* apply the digital gain after the decimator is enabled */
+		 
 		snd_soc_component_write(component, tx_gain_reg[w->shift],
 			      snd_soc_component_read(component, tx_gain_reg[w->shift]));
 		snd_soc_component_update_bits(component, tx_vol_ctl_reg,
@@ -666,7 +666,7 @@ static int msm8916_wcd_digital_enable_dmic(struct snd_soc_dapm_widget *w,
 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
 	unsigned int dmic;
 	int ret;
-	/* get dmic number out of widget name */
+	 
 	char *dmic_num = strpbrk(w->name, "12");
 
 	if (dmic_num == NULL) {
@@ -721,7 +721,7 @@ static const struct snd_kcontrol_new iir2_inp1_mux =
 	SOC_DAPM_ENUM("IIR2 INP1 Mux", iir2_inp1_mux_enum);
 
 static const struct snd_soc_dapm_widget msm8916_wcd_digital_dapm_widgets[] = {
-	/*RX stuff */
+	 
 	SND_SOC_DAPM_AIF_IN("I2S RX1", NULL, 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_IN("I2S RX2", NULL, 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_IN("I2S RX3", NULL, 0, SND_SOC_NOPM, 0, 0),
@@ -736,7 +736,7 @@ static const struct snd_soc_dapm_widget msm8916_wcd_digital_dapm_widgets[] = {
 	SND_SOC_DAPM_MIXER("RX2 MIX1", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("RX3 MIX1", SND_SOC_NOPM, 0, 0, NULL, 0),
 
-	/* Interpolator */
+	 
 	SND_SOC_DAPM_MIXER_E("RX1 INT", LPASS_CDC_CLK_RX_B1_CTL, 0, 0, NULL,
 			     0, msm8916_wcd_digital_enable_interpolator,
 			     SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_POST_PMD),
@@ -771,7 +771,7 @@ static const struct snd_soc_dapm_widget msm8916_wcd_digital_dapm_widgets[] = {
 
 	SND_SOC_DAPM_MUX("CIC1 MUX", SND_SOC_NOPM, 0, 0, &cic1_mux),
 	SND_SOC_DAPM_MUX("CIC2 MUX", SND_SOC_NOPM, 0, 0, &cic2_mux),
-	/* TX */
+	 
 	SND_SOC_DAPM_MIXER("ADC1", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("ADC2", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("ADC3", SND_SOC_NOPM, 0, 0, NULL, 0),
@@ -788,7 +788,7 @@ static const struct snd_soc_dapm_widget msm8916_wcd_digital_dapm_widgets[] = {
 	SND_SOC_DAPM_AIF_OUT("I2S TX2", NULL, 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_OUT("I2S TX3", NULL, 0, SND_SOC_NOPM, 0, 0),
 
-	/* Digital Mic Inputs */
+	 
 	SND_SOC_DAPM_ADC_E("DMIC1", NULL, SND_SOC_NOPM, 0, 0,
 			   msm8916_wcd_digital_enable_dmic,
 			   SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
@@ -804,13 +804,13 @@ static const struct snd_soc_dapm_widget msm8916_wcd_digital_dapm_widgets[] = {
 
 	SND_SOC_DAPM_SUPPLY("MCLK", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("PDM_CLK", LPASS_CDC_CLK_PDM_CTL, 0, 0, NULL, 0),
-	/* Connectivity Clock */
+	 
 	SND_SOC_DAPM_SUPPLY_S("CDC_CONN", -2, LPASS_CDC_CLK_OTHR_CTL, 2, 0,
 			      NULL, 0),
 	SND_SOC_DAPM_MIC("Digital Mic1", NULL),
 	SND_SOC_DAPM_MIC("Digital Mic2", NULL),
 
-	/* Sidetone */
+	 
 	SND_SOC_DAPM_MUX("IIR1 INP1 MUX", SND_SOC_NOPM, 0, 0, &iir1_inp1_mux),
 	SND_SOC_DAPM_PGA_E("IIR1", LPASS_CDC_CLK_SD_CTL, 0, 0, NULL, 0,
 		msm8x16_wcd_codec_set_iir_gain, SND_SOC_DAPM_POST_PMU),
@@ -943,7 +943,7 @@ static const struct snd_soc_dapm_route msm8916_wcd_digital_audio_map[] = {
 	{"CIC2 MUX", "DMIC", "DEC2 MUX"},
 	{"CIC2 MUX", "AMIC", "DEC2 MUX"},
 
-	/* Decimator Inputs */
+	 
 	{"DEC1 MUX", "DMIC1", "DMIC1"},
 	{"DEC1 MUX", "DMIC2", "DMIC2"},
 	{"DEC1 MUX", "ADC1", "ADC1"},
@@ -982,7 +982,7 @@ static const struct snd_soc_dapm_route msm8916_wcd_digital_audio_map[] = {
 	{"RX_I2S_CLK", NULL, "MCLK"},
 	{"RX_I2S_CLK", NULL, "CDC_CONN"},
 
-	/* RX1 PATH.. */
+	 
 	{"PDM_RX1", NULL, "RX1 INT"},
 	{"RX1 INT", NULL, "RX1 MIX1"},
 
@@ -1006,7 +1006,7 @@ static const struct snd_soc_dapm_route msm8916_wcd_digital_audio_map[] = {
 	{"RX1 MIX1 INP3", "RX2", "I2S RX2"},
 	{"RX1 MIX1 INP3", "RX3", "I2S RX3"},
 
-	/* RX2 PATH */
+	 
 	{"PDM_RX2", NULL, "RX2 INT"},
 	{"RX2 INT", NULL, "RX2 MIX1"},
 
@@ -1030,7 +1030,7 @@ static const struct snd_soc_dapm_route msm8916_wcd_digital_audio_map[] = {
 	{"RX2 MIX1 INP3", "RX2", "I2S RX2"},
 	{"RX2 MIX1 INP3", "RX3", "I2S RX3"},
 
-	/* RX3 PATH */
+	 
 	{"PDM_RX3", NULL, "RX3 INT"},
 	{"RX3 INT", NULL, "RX3 MIX1"},
 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2015-2021, Linaro Limited
- */
+ 
+ 
 
 #ifndef OPTEE_PRIVATE_H
 #define OPTEE_PRIVATE_H
@@ -17,7 +15,7 @@
 
 #define OPTEE_MAX_ARG_SIZE	1024
 
-/* Some Global Platform error codes used in this driver */
+ 
 #define TEEC_SUCCESS			0x00000000
 #define TEEC_ERROR_BAD_PARAMETERS	0xFFFF0006
 #define TEEC_ERROR_NOT_SUPPORTED	0xFFFF000A
@@ -28,11 +26,7 @@
 
 #define TEEC_ORIGIN_COMMS		0x00000002
 
-/*
- * This value should be larger than the number threads in secure world to
- * meet the need from secure world. The number of threads in secure world
- * are usually not even close to 255 so we should be safe for now.
- */
+ 
 #define OPTEE_DEFAULT_MAX_NOTIF_VALUE	255
 
 typedef void (optee_invoke_fn)(unsigned long, unsigned long, unsigned long,
@@ -46,14 +40,14 @@ struct optee_call_waiter {
 };
 
 struct optee_call_queue {
-	/* Serializes access to this struct */
+	 
 	struct mutex mutex;
 	struct list_head waiters;
 };
 
 struct optee_notif {
 	u_int max_key;
-	/* Serializes access to the elements below in this struct */
+	 
 	spinlock_t lock;
 	struct list_head db;
 	u_long *bitmap;
@@ -64,27 +58,14 @@ struct optee_notif {
 struct optee_shm_arg_entry;
 struct optee_shm_arg_cache {
 	u32 flags;
-	/* Serializes access to this struct */
+	 
 	struct mutex mutex;
 	struct list_head shm_args;
 };
 
-/**
- * struct optee_supp - supplicant synchronization struct
- * @ctx			the context of current connected supplicant.
- *			if !NULL the supplicant device is available for use,
- *			else busy
- * @mutex:		held while accessing content of this struct
- * @req_id:		current request id if supplicant is doing synchronous
- *			communication, else -1
- * @reqs:		queued request not yet retrieved by supplicant
- * @idr:		IDR holding all requests currently being processed
- *			by supplicant
- * @reqs_c:		completion used by supplicant when waiting for a
- *			request to be queued.
- */
+ 
 struct optee_supp {
-	/* Serializes access to this struct */
+	 
 	struct mutex mutex;
 	struct tee_context *ctx;
 
@@ -94,26 +75,12 @@ struct optee_supp {
 	struct completion reqs_c;
 };
 
-/*
- * struct optee_pcpu - per cpu notif private struct passed to work functions
- * @optee		optee device reference
- */
+ 
 struct optee_pcpu {
 	struct optee *optee;
 };
 
-/*
- * struct optee_smc - optee smc communication struct
- * @invoke_fn		handler function to invoke secure monitor
- * @memremaped_shm	virtual address of memory in shared memory pool
- * @sec_caps:		secure world capabilities defined by
- *			OPTEE_SMC_SEC_CAP_* in optee_smc.h
- * @notif_irq		interrupt used as async notification by OP-TEE or 0
- * @optee_pcpu		per_cpu optee instance for per cpu work or NULL
- * @notif_pcpu_wq	workqueue for per cpu asynchronous notification or NULL
- * @notif_pcpu_work	work for per cpu asynchronous notification
- * @notif_cpuhp_state   CPU hotplug state assigned for pcpu interrupt management
- */
+ 
 struct optee_smc {
 	optee_invoke_fn *invoke_fn;
 	void *memremaped_shm;
@@ -125,33 +92,17 @@ struct optee_smc {
 	unsigned int notif_cpuhp_state;
 };
 
-/**
- * struct optee_ffa_data -  FFA communication struct
- * @ffa_dev		FFA device, contains the destination id, the id of
- *			OP-TEE in secure world
- * @ffa_ops		FFA operations
- * @mutex		Serializes access to @global_ids
- * @global_ids		FF-A shared memory global handle translation
- */
+ 
 struct optee_ffa {
 	struct ffa_device *ffa_dev;
-	/* Serializes access to @global_ids */
+	 
 	struct mutex mutex;
 	struct rhashtable global_ids;
 };
 
 struct optee;
 
-/**
- * struct optee_ops - OP-TEE driver internal operations
- * @do_call_with_arg:	enters OP-TEE in secure world
- * @to_msg_param:	converts from struct tee_param to OPTEE_MSG parameters
- * @from_msg_param:	converts from OPTEE_MSG parameters to struct tee_param
- *
- * These OPs are only supposed to be used internally in the OP-TEE driver
- * as a way of abstracting the different methogs of entering OP-TEE in
- * secure world.
- */
+ 
 struct optee_ops {
 	int (*do_call_with_arg)(struct tee_context *ctx,
 				struct tee_shm *shm_arg, u_int offs);
@@ -163,24 +114,7 @@ struct optee_ops {
 			      const struct optee_msg_param *msg_params);
 };
 
-/**
- * struct optee - main service struct
- * @supp_teedev:	supplicant device
- * @teedev:		client device
- * @ops:		internal callbacks for different ways to reach secure
- *			world
- * @ctx:		driver internal TEE context
- * @smc:		specific to SMC ABI
- * @ffa:		specific to FF-A ABI
- * @call_queue:		queue of threads waiting to call @invoke_fn
- * @notif:		notification synchronization struct
- * @supp:		supplicant synchronization struct for RPC to supplicant
- * @pool:		shared memory pool
- * @rpc_param_count:	If > 0 number of RPC parameters to make room for
- * @scan_bus_done	flag if device registation was already done.
- * @scan_bus_wq		workqueue to scan optee bus and register optee drivers
- * @scan_bus_work	workq to scan optee bus and register optee drivers
- */
+ 
 struct optee {
 	struct tee_device *supp_teedev;
 	struct tee_device *teedev;
@@ -207,7 +141,7 @@ struct optee_session {
 };
 
 struct optee_context_data {
-	/* Serializes access to this struct */
+	 
 	struct mutex mutex;
 	struct list_head sess_list;
 };
@@ -223,9 +157,9 @@ struct optee_rpc_param {
 	u32	a7;
 };
 
-/* Holds context that is preserved during one STD call */
+ 
 struct optee_call_ctx {
-	/* information about pages list used in last allocation */
+	 
 	void *pages_list;
 	size_t num_entries;
 };
@@ -323,9 +257,7 @@ void optee_rpc_cmd_free_suppl(struct tee_context *ctx, struct tee_shm *shm);
 void optee_rpc_cmd(struct tee_context *ctx, struct optee *optee,
 		   struct optee_msg_arg *arg);
 
-/*
- * Small helpers
- */
+ 
 
 static inline void *reg_pair_to_ptr(u32 reg0, u32 reg1)
 {
@@ -338,10 +270,10 @@ static inline void reg_pair_from_64(u32 *reg0, u32 *reg1, u64 val)
 	*reg1 = val;
 }
 
-/* Registration of the ABIs */
+ 
 int optee_smc_abi_register(void);
 void optee_smc_abi_unregister(void);
 int optee_ffa_abi_register(void);
 void optee_ffa_abi_unregister(void);
 
-#endif /*OPTEE_PRIVATE_H*/
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016 Pablo Neira Ayuso <pablo@netfilter.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -44,7 +42,7 @@ static const struct nla_policy nft_quota_policy[NFTA_QUOTA_MAX + 1] = {
 	[NFTA_QUOTA_CONSUMED]	= { .type = NLA_U64 },
 };
 
-#define NFT_QUOTA_DEPLETED_BIT	1	/* From NFT_QUOTA_F_DEPLETED. */
+#define NFT_QUOTA_DEPLETED_BIT	1	 
 
 static void nft_quota_obj_eval(struct nft_object *obj,
 			       struct nft_regs *regs,
@@ -134,10 +132,7 @@ static int nft_quota_do_dump(struct sk_buff *skb, struct nft_quota *priv,
 	u64 consumed, consumed_cap, quota;
 	u32 flags = priv->flags;
 
-	/* Since we inconditionally increment consumed quota for each packet
-	 * that we see, don't go over the quota boundary in what we send to
-	 * userspace.
-	 */
+	 
 	consumed = atomic64_read(priv->consumed);
 	quota = atomic64_read(&priv->quota);
 	if (consumed >= quota) {

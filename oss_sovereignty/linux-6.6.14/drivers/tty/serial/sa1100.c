@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  Driver for SA11x0 serial ports
- *
- *  Based on drivers/char/serial.c, by Linus Torvalds, Theodore Ts'o.
- *
- *  Copyright (C) 2000 Deep Blue Solutions Ltd.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/ioport.h>
@@ -26,7 +20,7 @@
 
 #include "serial_mctrl_gpio.h"
 
-/* We've been assigned a range on the "Low-density serial ports" major */
+ 
 #define SERIAL_SA1100_MAJOR	204
 #define MINOR_START		5
 
@@ -34,9 +28,7 @@
 
 #define SA1100_ISR_PASS_LIMIT	256
 
-/*
- * Convert from ignore_status_mask or read_status_mask to UTSR[01]
- */
+ 
 #define SM_TO_UTSR0(x)	((x) & 0xff)
 #define SM_TO_UTSR1(x)	((x) >> 8)
 #define UTSR0_TO_SM(x)	((x))
@@ -58,17 +50,10 @@
 #define UART_PUT_UTSR1(sport,v)	__raw_writel((v),(sport)->port.membase + UTSR1)
 #define UART_PUT_CHAR(sport,v)	__raw_writel((v),(sport)->port.membase + UTDR)
 
-/*
- * This is the size of our serial port register set.
- */
+ 
 #define UART_PORT_SIZE	0x24
 
-/*
- * This determines how often we check the modem status signals
- * for any change.  They generally aren't connected to an IRQ
- * so we have to poll them.  We also check immediately before
- * filling the TX fifo incase CTS has been dropped.
- */
+ 
 #define MCTRL_TIMEOUT	(250*HZ/1000)
 
 struct sa1100_port {
@@ -78,9 +63,7 @@ struct sa1100_port {
 	struct mctrl_gpios	*gpios;
 };
 
-/*
- * Handle any change of modem status signal since we were last called.
- */
+ 
 static void sa1100_mctrl_check(struct sa1100_port *sport)
 {
 	unsigned int status, changed;
@@ -105,10 +88,7 @@ static void sa1100_mctrl_check(struct sa1100_port *sport)
 	wake_up_interruptible(&sport->port.state->port.delta_msr_wait);
 }
 
-/*
- * This is our per-port timeout handler, for checking the
- * modem status signals.
- */
+ 
 static void sa1100_timeout(struct timer_list *t)
 {
 	struct sa1100_port *sport = from_timer(sport, t, timer);
@@ -123,9 +103,7 @@ static void sa1100_timeout(struct timer_list *t)
 	}
 }
 
-/*
- * interrupts disabled on entry
- */
+ 
 static void sa1100_stop_tx(struct uart_port *port)
 {
 	struct sa1100_port *sport =
@@ -137,9 +115,7 @@ static void sa1100_stop_tx(struct uart_port *port)
 	sport->port.read_status_mask &= ~UTSR0_TO_SM(UTSR0_TFS);
 }
 
-/*
- * port locked and interrupts disabled
- */
+ 
 static void sa1100_start_tx(struct uart_port *port)
 {
 	struct sa1100_port *sport =
@@ -151,9 +127,7 @@ static void sa1100_start_tx(struct uart_port *port)
 	UART_PUT_UTCR3(sport, utcr3 | UTCR3_TIE);
 }
 
-/*
- * Interrupts enabled
- */
+ 
 static void sa1100_stop_rx(struct uart_port *port)
 {
 	struct sa1100_port *sport =
@@ -164,9 +138,7 @@ static void sa1100_stop_rx(struct uart_port *port)
 	UART_PUT_UTCR3(sport, utcr3 & ~UTCR3_RIE);
 }
 
-/*
- * Set the modem control timer to fire immediately.
- */
+ 
 static void sa1100_enable_ms(struct uart_port *port)
 {
 	struct sa1100_port *sport =
@@ -192,10 +164,7 @@ sa1100_rx_chars(struct sa1100_port *sport)
 
 		flg = TTY_NORMAL;
 
-		/*
-		 * note that the error handling code is
-		 * out of the main execution path
-		 */
+		 
 		if (status & UTSR1_TO_SM(UTSR1_PRE | UTSR1_FRE | UTSR1_ROR)) {
 			if (status & UTSR1_TO_SM(UTSR1_PRE))
 				sport->port.icount.parity++;
@@ -231,10 +200,7 @@ static void sa1100_tx_chars(struct sa1100_port *sport)
 {
 	u8 ch;
 
-	/*
-	 * Check the modem control lines before
-	 * transmitting anything.
-	 */
+	 
 	sa1100_mctrl_check(sport);
 
 	uart_port_tx(&sport->port, ch,
@@ -252,13 +218,13 @@ static irqreturn_t sa1100_int(int irq, void *dev_id)
 	status &= SM_TO_UTSR0(sport->port.read_status_mask) | ~UTSR0_TFS;
 	do {
 		if (status & (UTSR0_RFS | UTSR0_RID)) {
-			/* Clear the receiver idle bit, if set */
+			 
 			if (status & UTSR0_RID)
 				UART_PUT_UTSR0(sport, UTSR0_RID);
 			sa1100_rx_chars(sport);
 		}
 
-		/* Clear the relevant break bits */
+		 
 		if (status & (UTSR0_RBB | UTSR0_REB))
 			UART_PUT_UTSR0(sport, status & (UTSR0_RBB | UTSR0_REB));
 
@@ -281,9 +247,7 @@ static irqreturn_t sa1100_int(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * Return TIOCSER_TEMT when transmitter is not busy.
- */
+ 
 static unsigned int sa1100_tx_empty(struct uart_port *port)
 {
 	struct sa1100_port *sport =
@@ -311,9 +275,7 @@ static void sa1100_set_mctrl(struct uart_port *port, unsigned int mctrl)
 	mctrl_gpio_set(sport->gpios, mctrl);
 }
 
-/*
- * Interrupts always disabled.
- */
+ 
 static void sa1100_break_ctl(struct uart_port *port, int break_state)
 {
 	struct sa1100_port *sport =
@@ -337,23 +299,17 @@ static int sa1100_startup(struct uart_port *port)
 		container_of(port, struct sa1100_port, port);
 	int retval;
 
-	/*
-	 * Allocate the IRQ
-	 */
+	 
 	retval = request_irq(sport->port.irq, sa1100_int, 0,
 			     "sa11x0-uart", sport);
 	if (retval)
 		return retval;
 
-	/*
-	 * Finally, clear and enable interrupts
-	 */
+	 
 	UART_PUT_UTSR0(sport, -1);
 	UART_PUT_UTCR3(sport, UTCR3_RXE | UTCR3_TXE | UTCR3_RIE);
 
-	/*
-	 * Enable modem status interrupts
-	 */
+	 
 	spin_lock_irq(&sport->port.lock);
 	sa1100_enable_ms(&sport->port);
 	spin_unlock_irq(&sport->port.lock);
@@ -366,19 +322,13 @@ static void sa1100_shutdown(struct uart_port *port)
 	struct sa1100_port *sport =
 		container_of(port, struct sa1100_port, port);
 
-	/*
-	 * Stop our timer.
-	 */
+	 
 	del_timer_sync(&sport->timer);
 
-	/*
-	 * Free the interrupt
-	 */
+	 
 	free_irq(sport->port.irq, sport);
 
-	/*
-	 * Disable all interrupts, port and break condition.
-	 */
+	 
 	UART_PUT_UTCR3(sport, 0);
 }
 
@@ -392,9 +342,7 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
 	unsigned int utcr0, old_utcr3, baud, quot;
 	unsigned int old_csize = old ? old->c_cflag & CSIZE : CS8;
 
-	/*
-	 * We only support CS7 and CS8.
-	 */
+	 
 	while ((termios->c_cflag & CSIZE) != CS7 &&
 	       (termios->c_cflag & CSIZE) != CS8) {
 		termios->c_cflag &= ~CSIZE;
@@ -415,9 +363,7 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
 			utcr0 |= UTCR0_OES;
 	}
 
-	/*
-	 * Ask the core to calculate the divisor for us.
-	 */
+	 
 	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16); 
 	quot = uart_get_divisor(port, baud);
 
@@ -434,9 +380,7 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
 		sport->port.read_status_mask |=
 				UTSR0_TO_SM(UTSR0_RBB | UTSR0_REB);
 
-	/*
-	 * Characters to ignore
-	 */
+	 
 	sport->port.ignore_status_mask = 0;
 	if (termios->c_iflag & IGNPAR)
 		sport->port.ignore_status_mask |=
@@ -444,36 +388,29 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
 	if (termios->c_iflag & IGNBRK) {
 		sport->port.ignore_status_mask |=
 				UTSR0_TO_SM(UTSR0_RBB | UTSR0_REB);
-		/*
-		 * If we're ignoring parity and break indicators,
-		 * ignore overruns too (for real raw support).
-		 */
+		 
 		if (termios->c_iflag & IGNPAR)
 			sport->port.ignore_status_mask |=
 				UTSR1_TO_SM(UTSR1_ROR);
 	}
 
-	/*
-	 * Update the per-port timeout.
-	 */
+	 
 	uart_update_timeout(port, termios->c_cflag, baud);
 
-	/*
-	 * disable interrupts and drain transmitter
-	 */
+	 
 	old_utcr3 = UART_GET_UTCR3(sport);
 	UART_PUT_UTCR3(sport, old_utcr3 & ~(UTCR3_RIE | UTCR3_TIE));
 
 	while (UART_GET_UTSR1(sport) & UTSR1_TBY)
 		barrier();
 
-	/* then, disable everything */
+	 
 	UART_PUT_UTCR3(sport, 0);
 
-	/* set the parity, stop bits and data size */
+	 
 	UART_PUT_UTCR0(sport, utcr0);
 
-	/* set the baud rate */
+	 
 	quot -= 1;
 	UART_PUT_UTCR1(sport, ((quot & 0xf00) >> 8));
 	UART_PUT_UTCR2(sport, (quot & 0xff));
@@ -496,9 +433,7 @@ static const char *sa1100_type(struct uart_port *port)
 	return sport->port.type == PORT_SA1100 ? "SA1100" : NULL;
 }
 
-/*
- * Release the memory region(s) being used by 'port'.
- */
+ 
 static void sa1100_release_port(struct uart_port *port)
 {
 	struct sa1100_port *sport =
@@ -507,9 +442,7 @@ static void sa1100_release_port(struct uart_port *port)
 	release_mem_region(sport->port.mapbase, UART_PORT_SIZE);
 }
 
-/*
- * Request the memory region(s) being used by 'port'.
- */
+ 
 static int sa1100_request_port(struct uart_port *port)
 {
 	struct sa1100_port *sport =
@@ -519,9 +452,7 @@ static int sa1100_request_port(struct uart_port *port)
 			"sa11x0-uart") != NULL ? 0 : -EBUSY;
 }
 
-/*
- * Configure/autoconfigure the port.
- */
+ 
 static void sa1100_config_port(struct uart_port *port, int flags)
 {
 	struct sa1100_port *sport =
@@ -532,11 +463,7 @@ static void sa1100_config_port(struct uart_port *port, int flags)
 		sport->port.type = PORT_SA1100;
 }
 
-/*
- * Verify the new serial_struct (for TIOCSSERIAL).
- * The only change we allow are to the flags and type, and
- * even then only between PORT_SA1100 and PORT_UNKNOWN
- */
+ 
 static int
 sa1100_verify_port(struct uart_port *port, struct serial_struct *ser)
 {
@@ -582,18 +509,7 @@ static struct uart_ops sa1100_pops = {
 
 static struct sa1100_port sa1100_ports[NR_PORTS];
 
-/*
- * Setup the SA1100 serial ports.  Note that we don't include the IrDA
- * port here since we have our own SIR/FIR driver (see drivers/net/irda)
- *
- * Note also that we support "console=ttySAx" where "x" is either 0 or 1.
- * Which serial port this ends up being depends on the machine you're
- * running this kernel on.  I'm not convinced that this is a good idea,
- * but that's the way it traditionally works.
- *
- * Note that NanoEngine UART3 becomes UART2, and UART2 is no longer
- * used here.
- */
+ 
 static void __init sa1100_init_ports(void)
 {
 	static int first = 1;
@@ -612,10 +528,7 @@ static void __init sa1100_init_ports(void)
 		timer_setup(&sa1100_ports[i].timer, sa1100_timeout, 0);
 	}
 
-	/*
-	 * make transmit lines outputs, so that when the port
-	 * is closed, the output is in the MARK state.
-	 */
+	 
 	PPDR |= PPC_TXD1 | PPC_TXD3;
 	PPSR |= PPC_TXD1 | PPC_TXD3;
 }
@@ -628,10 +541,7 @@ void sa1100_register_uart_fns(struct sa1100_port_fns *fns)
 		sa1100_pops.set_mctrl = fns->set_mctrl;
 
 	sa1100_pops.pm       = fns->pm;
-	/*
-	 * FIXME: fns->set_wake is unused - this should be called from
-	 * the suspend() callback if device_may_wakeup(dev)) is set.
-	 */
+	 
 }
 
 void __init sa1100_register_uart(int idx, int port)
@@ -680,38 +590,28 @@ static void sa1100_console_putchar(struct uart_port *port, unsigned char ch)
 	UART_PUT_CHAR(sport, ch);
 }
 
-/*
- * Interrupts are disabled on entering
- */
+ 
 static void
 sa1100_console_write(struct console *co, const char *s, unsigned int count)
 {
 	struct sa1100_port *sport = &sa1100_ports[co->index];
 	unsigned int old_utcr3, status;
 
-	/*
-	 *	First, save UTCR3 and then disable interrupts
-	 */
+	 
 	old_utcr3 = UART_GET_UTCR3(sport);
 	UART_PUT_UTCR3(sport, (old_utcr3 & ~(UTCR3_RIE | UTCR3_TIE)) |
 				UTCR3_TXE);
 
 	uart_console_write(&sport->port, s, count, sa1100_console_putchar);
 
-	/*
-	 *	Finally, wait for transmitter to become empty
-	 *	and restore UTCR3
-	 */
+	 
 	do {
 		status = UART_GET_UTSR1(sport);
 	} while (status & UTSR1_TBY);
 	UART_PUT_UTCR3(sport, old_utcr3);
 }
 
-/*
- * If the port was already initialised (eg, by a boot loader),
- * try to determine the current setup.
- */
+ 
 static void __init
 sa1100_console_get_options(struct sa1100_port *sport, int *baud,
 			   int *parity, int *bits)
@@ -720,7 +620,7 @@ sa1100_console_get_options(struct sa1100_port *sport, int *baud,
 
 	utcr3 = UART_GET_UTCR3(sport) & (UTCR3_RXE | UTCR3_TXE);
 	if (utcr3 == (UTCR3_RXE | UTCR3_TXE)) {
-		/* ok, the port was enabled */
+		 
 		unsigned int utcr0, quot;
 
 		utcr0 = UART_GET_UTCR0(sport);
@@ -753,11 +653,7 @@ sa1100_console_setup(struct console *co, char *options)
 	int parity = 'n';
 	int flow = 'n';
 
-	/*
-	 * Check whether an invalid uart number has been specified, and
-	 * if so, search for the first available port that does have
-	 * console support.
-	 */
+	 
 	if (co->index == -1 || co->index >= NR_PORTS)
 		co->index = 0;
 	sport = &sa1100_ports[co->index];
@@ -829,9 +725,9 @@ static int sa1100_serial_add_one_port(struct sa1100_port *sport, struct platform
 	sport->port.dev = &dev->dev;
 	sport->port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_SA1100_CONSOLE);
 
-	// mctrl_gpio_init() requires that the GPIO driver supports interrupts,
-	// but we need to support GPIO drivers for hardware that has no such
-	// interrupts.  Use mctrl_gpio_init_noauto() instead.
+	
+	
+	
 	sport->gpios = mctrl_gpio_init_noauto(sport->port.dev, 0);
 	if (IS_ERR(sport->gpios)) {
 		int err = PTR_ERR(sport->gpios);

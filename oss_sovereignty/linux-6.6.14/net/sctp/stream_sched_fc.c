@@ -1,27 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* SCTP kernel implementation
- * (C) Copyright Red Hat Inc. 2022
- *
- * This file is part of the SCTP kernel implementation
- *
- * These functions manipulate sctp stream queue/scheduling.
- *
- * Please send any bug reports or fixes you make to the
- * email addresched(es):
- *    lksctp developers <linux-sctp@vger.kernel.org>
- *
- * Written or modified by:
- *    Xin Long <lucien.xin@gmail.com>
- */
+
+ 
 
 #include <linux/list.h>
 #include <net/sctp/sctp.h>
 #include <net/sctp/sm.h>
 #include <net/sctp/stream_sched.h>
 
-/* Fair Capacity and Weighted Fair Queueing handling
- * RFC 8260 section 3.5 and 3.6
- */
+ 
 static void sctp_sched_fc_unsched_all(struct sctp_stream *stream);
 
 static int sctp_sched_wfq_set(struct sctp_stream *stream, __u16 sid,
@@ -114,11 +99,11 @@ static struct sctp_chunk *sctp_sched_fc_dequeue(struct sctp_outq *q)
 	struct sctp_stream_out_ext *soute;
 	struct sctp_chunk *ch;
 
-	/* Bail out quickly if queue is empty */
+	 
 	if (list_empty(&q->out_chunk_list))
 		return NULL;
 
-	/* Find which chunk is next */
+	 
 	if (stream->out_curr)
 		soute = stream->out_curr->ext;
 	else
@@ -138,7 +123,7 @@ static void sctp_sched_fc_dequeue_done(struct sctp_outq *q,
 
 	sid = sctp_chunk_stream_no(ch);
 	soute = SCTP_SO(stream, sid)->ext;
-	/* reduce all fc_lengths by U32_MAX / 4 if the current fc_length overflows. */
+	 
 	if (soute->fc_length > U32_MAX - ch->skb->len) {
 		for (i = 0; i < stream->outcnt; i++) {
 			pos = SCTP_SO(stream, i)->ext;

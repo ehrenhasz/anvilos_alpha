@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
@@ -17,7 +17,7 @@ int ExtractStatistics(struct dl_phdr_info *info, size_t size, void *data)
 	int i;
 
 	if (info->dlpi_name != NULL && info->dlpi_name[0] != '\0') {
-		// Ignore headers from other than the executable.
+		
 		return 2;
 	}
 
@@ -32,7 +32,7 @@ int ExtractStatistics(struct dl_phdr_info *info, size_t size, void *data)
 			stats->alignment = info->dlpi_phdr[i].p_align;
 	}
 
-	return 1;  // Terminate dl_iterate_phdr.
+	return 1;  
 }
 
 int main(int argc, char **argv)

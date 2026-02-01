@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2014 IBM Corp.
- */
+
+ 
 
 #include <linux/workqueue.h>
 #include <linux/sched/signal.h>
@@ -25,21 +23,18 @@ static bool sste_matches(struct cxl_sste *sste, struct copro_slb *slb)
 		(sste->esid_data == cpu_to_be64(slb->esid)));
 }
 
-/*
- * This finds a free SSTE for the given SLB, or returns NULL if it's already in
- * the segment table.
- */
+ 
 static struct cxl_sste *find_free_sste(struct cxl_context *ctx,
 				       struct copro_slb *slb)
 {
 	struct cxl_sste *primary, *sste, *ret = NULL;
-	unsigned int mask = (ctx->sst_size >> 7) - 1; /* SSTP0[SegTableSize] */
+	unsigned int mask = (ctx->sst_size >> 7) - 1;  
 	unsigned int entry;
 	unsigned int hash;
 
 	if (slb->vsid & SLB_VSID_B_1T)
 		hash = (slb->esid >> SID_SHIFT_1T) & mask;
-	else /* 256M */
+	else  
 		hash = (slb->esid >> SID_SHIFT) & mask;
 
 	primary = ctx->sstp + (hash << 3);
@@ -53,7 +48,7 @@ static struct cxl_sste *find_free_sste(struct cxl_context *ctx,
 	if (ret)
 		return ret;
 
-	/* Nothing free, select an entry to cast out */
+	 
 	ret = primary + ctx->sst_lru;
 	ctx->sst_lru = (ctx->sst_lru + 1) & 0x7;
 
@@ -62,7 +57,7 @@ static struct cxl_sste *find_free_sste(struct cxl_context *ctx,
 
 static void cxl_load_segment(struct cxl_context *ctx, struct copro_slb *slb)
 {
-	/* mask is the group index, we search primary and secondary here. */
+	 
 	struct cxl_sste *sste;
 	unsigned long flags;
 
@@ -121,7 +116,7 @@ static int cxl_handle_segment_miss(struct cxl_context *ctx,
 		cxl_ack_ae(ctx);
 	else {
 
-		mb(); /* Order seg table write to TFC MMIO write */
+		mb();  
 		cxl_ops->ack_irq(ctx, CXL_PSL_TFC_An_R, 0);
 	}
 
@@ -134,20 +129,10 @@ int cxl_handle_mm_fault(struct mm_struct *mm, u64 dsisr, u64 dar)
 	int result;
 	unsigned long access, flags, inv_flags = 0;
 
-	/*
-	 * Add the fault handling cpu to task mm cpumask so that we
-	 * can do a safe lockless page table walk when inserting the
-	 * hash page table entry. This function get called with a
-	 * valid mm for user space addresses. Hence using the if (mm)
-	 * check is sufficient here.
-	 */
+	 
 	if (mm && !cpumask_test_cpu(smp_processor_id(), mm_cpumask(mm))) {
 		cpumask_set_cpu(smp_processor_id(), mm_cpumask(mm));
-		/*
-		 * We need to make sure we walk the table only after
-		 * we update the cpumask. The other side of the barrier
-		 * is explained in serialize_against_pte_lookup()
-		 */
+		 
 		smp_mb();
 	}
 	if ((result = copro_handle_mm_fault(mm, dar, dsisr, &flt))) {
@@ -156,10 +141,7 @@ int cxl_handle_mm_fault(struct mm_struct *mm, u64 dsisr, u64 dar)
 	}
 
 	if (!radix_enabled()) {
-		/*
-		 * update_mmu_cache() will not have loaded the hash since current->trap
-		 * is not a 0x400 or 0x300, so just call hash_page_mm() here.
-		 */
+		 
 		access = _PAGE_PRESENT | _PAGE_READ;
 		if (dsisr & CXL_PSL_DSISR_An_S)
 			access |= _PAGE_WRITE;
@@ -191,10 +173,7 @@ static void cxl_handle_page_fault(struct cxl_context *ctx,
 	}
 }
 
-/*
- * Returns the mm_struct corresponding to the context ctx.
- * mm_users == 0, the context may be in the process of being closed.
- */
+ 
 static struct mm_struct *get_mem_context(struct cxl_context *ctx)
 {
 	if (ctx->mm == NULL)
@@ -237,16 +216,13 @@ void cxl_handle_fault(struct work_struct *fault_work)
 		if (cxl_p2n_read(ctx->afu, CXL_PSL_DSISR_An) != dsisr ||
 		    cxl_p2n_read(ctx->afu, CXL_PSL_DAR_An) != dar ||
 		    cxl_p2n_read(ctx->afu, CXL_PSL_PEHandle_An) != ctx->pe) {
-			/* Most likely explanation is harmless - a dedicated
-			 * process has detached and these were cleared by the
-			 * PSL purge, but warn about it just in case
-			 */
+			 
 			dev_notice(&ctx->afu->dev, "cxl_handle_fault: Translation fault regs changed\n");
 			return;
 		}
 	}
 
-	/* Early return if the context is being / has been detached */
+	 
 	if (ctx->status == CLOSED) {
 		cxl_ack_ae(ctx);
 		return;

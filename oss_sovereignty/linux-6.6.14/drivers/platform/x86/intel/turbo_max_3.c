@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Turbo Boost Max Technology 3.0 legacy (non HWP) enumeration driver
- * Copyright (c) 2017, Intel Corporation.
- * All rights reserved.
- *
- * Author: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/cpufeature.h>
@@ -24,12 +18,7 @@
 #define MSR_OC_MAILBOX_BUSY_BIT		63
 #define OC_MAILBOX_FC_CONTROL_CMD	0x1C
 
-/*
- * Typical latency to get mail box response is ~3us, It takes +3 us to
- * process reading mailbox after issuing mailbox write on a Broadwell 3.4 GHz
- * system. So for most of the time, the first mailbox read should have the
- * response, but to avoid some boundary cases retry twice.
- */
+ 
 #define OC_MAILBOX_RETRY_COUNT		2
 
 static int get_oc_core_priority(unsigned int cpu)
@@ -37,9 +26,9 @@ static int get_oc_core_priority(unsigned int cpu)
 	u64 value, cmd = OC_MAILBOX_FC_CONTROL_CMD;
 	int ret, i;
 
-	/* Issue favored core read command */
+	 
 	value = cmd << MSR_OC_MAILBOX_CMD_OFFSET;
-	/* Set the busy bit to indicate OS is trying to issue command */
+	 
 	value |=  BIT_ULL(MSR_OC_MAILBOX_BUSY_BIT);
 	ret = wrmsrl_safe(MSR_OC_MAILBOX, value);
 	if (ret) {
@@ -74,12 +63,7 @@ static int get_oc_core_priority(unsigned int cpu)
 	return ret;
 }
 
-/*
- * The work item is needed to avoid CPU hotplug locking issues. The function
- * itmt_legacy_set_priority() is called from CPU online callback, so can't
- * call sched_set_itmt_support() from there as this function will aquire
- * hotplug locks in its path.
- */
+ 
 static void itmt_legacy_work_fn(struct work_struct *work)
 {
 	sched_set_itmt_support();
@@ -98,7 +82,7 @@ static int itmt_legacy_cpu_online(unsigned int cpu)
 
 	sched_set_itmt_core_prio(priority, cpu);
 
-	/* Enable ITMT feature when a core with different priority is found */
+	 
 	if (max_highest_perf <= min_highest_perf) {
 		if (priority > max_highest_perf)
 			max_highest_perf = priority;

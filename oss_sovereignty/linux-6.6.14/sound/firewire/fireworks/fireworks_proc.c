@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * fireworks_proc.c - a part of driver for Fireworks based devices
- *
- * Copyright (c) 2009-2010 Clemens Ladisch
- * Copyright (c) 2013-2014 Takashi Sakamoto
- */
+
+ 
 
 #include "./fireworks.h"
 
@@ -118,11 +113,7 @@ proc_read_clock(struct snd_info_entry *entry, struct snd_info_buffer *buffer)
 	snd_iprintf(buffer, "Sampling Rate: %d\n", sampling_rate);
 }
 
-/*
- * NOTE:
- *  dB = 20 * log10(linear / 0x01000000)
- *  -144.0 dB when linear is 0
- */
+ 
 static void
 proc_read_phys_meters(struct snd_info_entry *entry,
 		      struct snd_info_buffer *buffer)
@@ -206,10 +197,7 @@ void snd_efw_proc_init(struct snd_efw *efw)
 {
 	struct snd_info_entry *root;
 
-	/*
-	 * All nodes are automatically removed at snd_card_disconnect(),
-	 * by following to link list.
-	 */
+	 
 	root = snd_info_create_card_entry(efw->card, "firewire",
 					  efw->card->proc_root);
 	if (root == NULL)

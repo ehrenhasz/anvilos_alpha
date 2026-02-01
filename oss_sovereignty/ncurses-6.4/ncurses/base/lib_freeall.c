@@ -1,35 +1,6 @@
-/****************************************************************************
- * Copyright 2018-2020,2021 Thomas E. Dickey                                *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Thomas E. Dickey                    1996-on                     *
- ****************************************************************************/
+ 
 
 #include <curses.priv.h>
 #include <tic.h>
@@ -37,15 +8,12 @@
 #if HAVE_NC_FREEALL
 
 #if HAVE_LIBDBMALLOC
-extern int malloc_errfd;	/* FIXME */
+extern int malloc_errfd;	 
 #endif
 
 MODULE_ID("$Id: lib_freeall.c,v 1.76 2021/11/06 21:52:49 tom Exp $")
 
-/*
- * Free all ncurses data.  This is used for testing only (there's no practical
- * use for it as an extension).
- */
+ 
 NCURSES_EXPORT(void)
 NCURSES_SP_NAME(_nc_freeall) (NCURSES_SP_DCL0)
 {
@@ -73,7 +41,7 @@ NCURSES_SP_NAME(_nc_freeall) (NCURSES_SP_DCL0)
 	    WINDOWLIST *p, *q;
 	    bool deleted = FALSE;
 
-	    /* Delete only windows that're not a parent */
+	     
 	    for (each_window(SP_PARM, p)) {
 		WINDOW *p_win = &(p->win);
 		bool found = FALSE;
@@ -109,9 +77,7 @@ NCURSES_SP_NAME(_nc_freeall) (NCURSES_SP_DCL0)
 		}
 	    }
 
-	    /*
-	     * Don't continue to loop if the list is trashed.
-	     */
+	     
 	    if (!deleted)
 		break;
 	}
@@ -154,7 +120,7 @@ NCURSES_SP_NAME(_nc_free_and_exit) (NCURSES_SP_DCLx int code)
     NCURSES_SP_NAME(_nc_flush) (NCURSES_SP_ARG);
     NCURSES_SP_NAME(_nc_freeall) (NCURSES_SP_ARG);
 #ifdef TRACE
-    curses_trace(0);		/* close trace file, freeing its setbuf */
+    curses_trace(0);		 
     {
 	static va_list fake;
 	free(_nc_varargs("?", fake));
@@ -163,7 +129,7 @@ NCURSES_SP_NAME(_nc_free_and_exit) (NCURSES_SP_DCLx int code)
     exit(code);
 }
 
-#else /* !HAVE_NC_FREEALL */
+#else  
 NCURSES_EXPORT(void)
 _nc_freeall(void)
 {
@@ -177,7 +143,7 @@ NCURSES_SP_NAME(_nc_free_and_exit) (NCURSES_SP_DCLx int code)
     }
     exit(code);
 }
-#endif /* HAVE_NC_FREEALL */
+#endif  
 
 #if NCURSES_SP_FUNCS
 NCURSES_EXPORT(void)
@@ -194,7 +160,7 @@ exit_curses(int code)
 #if NCURSES_SP_FUNCS
     NCURSES_SP_NAME(_nc_free_and_exit) (CURRENT_SCREEN, code);
 #else
-    _nc_free_and_exit(code);	/* deprecated... */
+    _nc_free_and_exit(code);	 
 #endif
 #endif
     exit(code);

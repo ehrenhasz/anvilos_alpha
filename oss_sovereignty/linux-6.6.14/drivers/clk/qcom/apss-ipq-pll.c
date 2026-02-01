@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2018, The Linux Foundation. All rights reserved.
+
+
 #include <linux/clk-provider.h>
 #include <linux/module.h>
 #include <linux/of.h>
@@ -8,11 +8,7 @@
 
 #include "clk-alpha-pll.h"
 
-/*
- * Even though APSS PLL type is of existing one (like Huayra), its offsets
- * are different from the one mentioned in the clk-alpha-pll.c, since the
- * PLL is specific to APSS, so lets the define the same.
- */
+ 
 static const u8 ipq_pll_offsets[][PLL_OFF_MAX_REGS] = {
 	[CLK_ALPHA_PLL_TYPE_HUAYRA] =  {
 		[PLL_OFF_L_VAL] = 0x08,

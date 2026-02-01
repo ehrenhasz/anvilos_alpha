@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/memblock.h>
 #include <linux/compiler.h>
 #include <linux/fs.h>
@@ -25,23 +25,14 @@
 static inline unsigned long get_max_dump_pfn(void)
 {
 #ifdef CONFIG_SPARSEMEM
-	/*
-	 * The memmap of early sections is completely populated and marked
-	 * online even if max_pfn does not fall on a section boundary -
-	 * pfn_to_online_page() will succeed on all pages. Allow inspecting
-	 * these memmaps.
-	 */
+	 
 	return round_up(max_pfn, PAGES_PER_SECTION);
 #else
 	return max_pfn;
 #endif
 }
 
-/* /proc/kpagecount - an array exposing page counts
- *
- * Each entry is a u64 representing the corresponding
- * physical page count.
- */
+ 
 static ssize_t kpagecount_read(struct file *file, char __user *buf,
 			     size_t count, loff_t *ppos)
 {
@@ -61,10 +52,7 @@ static ssize_t kpagecount_read(struct file *file, char __user *buf,
 	count = min_t(unsigned long, count, (max_dump_pfn * KPMSIZE) - src);
 
 	while (count > 0) {
-		/*
-		 * TODO: ZONE_DEVICE support requires to identify
-		 * memmaps that were actually initialized.
-		 */
+		 
 		ppage = pfn_to_online_page(pfn);
 
 		if (!ppage || PageSlab(ppage) || page_has_type(ppage))
@@ -96,11 +84,7 @@ static const struct proc_ops kpagecount_proc_ops = {
 	.proc_read	= kpagecount_read,
 };
 
-/* /proc/kpageflags - an array exposing page flags
- *
- * Each entry is a u64 representing the corresponding
- * physical page flags.
- */
+ 
 
 static inline u64 kpf_copy_bit(u64 kflags, int ubit, int kbit)
 {
@@ -112,22 +96,14 @@ u64 stable_page_flags(struct page *page)
 	u64 k;
 	u64 u;
 
-	/*
-	 * pseudo flag: KPF_NOPAGE
-	 * it differentiates a memory hole from a page with no flags
-	 */
+	 
 	if (!page)
 		return 1 << KPF_NOPAGE;
 
 	k = page->flags;
 	u = 0;
 
-	/*
-	 * pseudo flags for the well known (anonymous) memory mapped pages
-	 *
-	 * Note that page->_mapcount is overloaded in SLAB, so the
-	 * simple test in page_mapped() is not enough.
-	 */
+	 
 	if (!PageSlab(page) && page_mapped(page))
 		u |= 1 << KPF_MMAP;
 	if (PageAnon(page))
@@ -135,22 +111,14 @@ u64 stable_page_flags(struct page *page)
 	if (PageKsm(page))
 		u |= 1 << KPF_KSM;
 
-	/*
-	 * compound pages: export both head/tail info
-	 * they together define a compound page's start/end pos and order
-	 */
+	 
 	if (PageHead(page))
 		u |= 1 << KPF_COMPOUND_HEAD;
 	if (PageTail(page))
 		u |= 1 << KPF_COMPOUND_TAIL;
 	if (PageHuge(page))
 		u |= 1 << KPF_HUGE;
-	/*
-	 * PageTransCompound can be true for non-huge compound pages (slab
-	 * pages or pages allocated by drivers with __GFP_COMP) because it
-	 * just checks PG_head/PG_tail, so we need to check PageLRU/PageAnon
-	 * to make sure a given page is a thp, not a non-huge compound page.
-	 */
+	 
 	else if (PageTransCompound(page)) {
 		struct page *head = compound_head(page);
 
@@ -164,10 +132,7 @@ u64 stable_page_flags(struct page *page)
 		u |= 1 << KPF_ZERO_PAGE;
 
 
-	/*
-	 * Caveats on high order pages: PG_buddy and PG_slab will only be set
-	 * on the head page.
-	 */
+	 
 	if (PageBuddy(page))
 		u |= 1 << KPF_BUDDY;
 	else if (page_count(page) == 0 && is_free_buddy_page(page))
@@ -244,10 +209,7 @@ static ssize_t kpageflags_read(struct file *file, char __user *buf,
 	count = min_t(unsigned long, count, (max_dump_pfn * KPMSIZE) - src);
 
 	while (count > 0) {
-		/*
-		 * TODO: ZONE_DEVICE support requires to identify
-		 * memmaps that were actually initialized.
-		 */
+		 
 		ppage = pfn_to_online_page(pfn);
 
 		if (put_user(stable_page_flags(ppage), out)) {
@@ -294,10 +256,7 @@ static ssize_t kpagecgroup_read(struct file *file, char __user *buf,
 	count = min_t(unsigned long, count, (max_dump_pfn * KPMSIZE) - src);
 
 	while (count > 0) {
-		/*
-		 * TODO: ZONE_DEVICE support requires to identify
-		 * memmaps that were actually initialized.
-		 */
+		 
 		ppage = pfn_to_online_page(pfn);
 
 		if (ppage)
@@ -328,7 +287,7 @@ static const struct proc_ops kpagecgroup_proc_ops = {
 	.proc_lseek	= mem_lseek,
 	.proc_read	= kpagecgroup_read,
 };
-#endif /* CONFIG_MEMCG */
+#endif  
 
 static int __init proc_page_init(void)
 {

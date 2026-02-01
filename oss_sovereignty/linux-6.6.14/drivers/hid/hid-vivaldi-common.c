@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Helpers for ChromeOS HID Vivaldi keyboards
- *
- * Copyright (C) 2022 Google, Inc
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/hid.h>
@@ -19,15 +15,7 @@
 #define HID_VD_FN_ROW_PHYSMAP 0x00000001
 #define HID_USAGE_FN_ROW_PHYSMAP (HID_UP_GOOGLEVENDOR | HID_VD_FN_ROW_PHYSMAP)
 
-/**
- * vivaldi_feature_mapping - Fill out vivaldi keymap data exposed via HID
- * @hdev: HID device to parse
- * @field: HID field to parse
- * @usage: HID usage to parse
- *
- * Note: this function assumes that driver data attached to @hdev contains an
- * instance of &struct vivaldi_data at the very beginning.
- */
+ 
 void vivaldi_feature_mapping(struct hid_device *hdev,
 			     struct hid_field *field, struct hid_usage *usage)
 {
@@ -55,14 +43,7 @@ void vivaldi_feature_mapping(struct hid_device *hdev,
 
 	report_len = hid_report_len(report);
 	if (!report->id) {
-		/*
-		 * hid_hw_raw_request() will stuff report ID (which will be 0)
-		 * into the first byte of the buffer even for unnumbered
-		 * reports, so we need to account for this to avoid getting
-		 * -EOVERFLOW in return.
-		 * Note that hid_alloc_report_buf() adds 7 bytes to the size
-		 * so we can safely say that we have space for an extra byte.
-		 */
+		 
 		report_len++;
 	}
 
@@ -76,10 +57,7 @@ void vivaldi_feature_mapping(struct hid_device *hdev,
 	}
 
 	if (!report->id) {
-		/*
-		 * Undo the damage from hid_hw_raw_request() for unnumbered
-		 * reports.
-		 */
+		 
 		report_data++;
 		report_len--;
 	}

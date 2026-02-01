@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for STM32 DMA controller
- *
- * Inspired by dma-jz4740.c and tegra20-apb-dma.c
- *
- * Copyright (C) M'boumba Cedric Madianga 2015
- * Author: M'boumba Cedric Madianga <cedric.madianga@gmail.com>
- *         Pierre-Yves Mordret <pierre-yves.mordret@st.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -31,30 +23,27 @@
 
 #include "virt-dma.h"
 
-#define STM32_DMA_LISR			0x0000 /* DMA Low Int Status Reg */
-#define STM32_DMA_HISR			0x0004 /* DMA High Int Status Reg */
+#define STM32_DMA_LISR			0x0000  
+#define STM32_DMA_HISR			0x0004  
 #define STM32_DMA_ISR(n)		(((n) & 4) ? STM32_DMA_HISR : STM32_DMA_LISR)
-#define STM32_DMA_LIFCR			0x0008 /* DMA Low Int Flag Clear Reg */
-#define STM32_DMA_HIFCR			0x000c /* DMA High Int Flag Clear Reg */
+#define STM32_DMA_LIFCR			0x0008  
+#define STM32_DMA_HIFCR			0x000c  
 #define STM32_DMA_IFCR(n)		(((n) & 4) ? STM32_DMA_HIFCR : STM32_DMA_LIFCR)
-#define STM32_DMA_TCI			BIT(5) /* Transfer Complete Interrupt */
-#define STM32_DMA_HTI			BIT(4) /* Half Transfer Interrupt */
-#define STM32_DMA_TEI			BIT(3) /* Transfer Error Interrupt */
-#define STM32_DMA_DMEI			BIT(2) /* Direct Mode Error Interrupt */
-#define STM32_DMA_FEI			BIT(0) /* FIFO Error Interrupt */
+#define STM32_DMA_TCI			BIT(5)  
+#define STM32_DMA_HTI			BIT(4)  
+#define STM32_DMA_TEI			BIT(3)  
+#define STM32_DMA_DMEI			BIT(2)  
+#define STM32_DMA_FEI			BIT(0)  
 #define STM32_DMA_MASKI			(STM32_DMA_TCI \
 					 | STM32_DMA_TEI \
 					 | STM32_DMA_DMEI \
 					 | STM32_DMA_FEI)
-/*
- * If (chan->id % 4) is 2 or 3, left shift the mask by 16 bits;
- * if (ch % 4) is 1 or 3, additionally left shift the mask by 6 bits.
- */
+ 
 #define STM32_DMA_FLAGS_SHIFT(n)	({ typeof(n) (_n) = (n); \
 					   (((_n) & 2) << 3) | (((_n) & 1) * 6); })
 
-/* DMA Stream x Configuration Register */
-#define STM32_DMA_SCR(x)		(0x0010 + 0x18 * (x)) /* x = 0..7 */
+ 
+#define STM32_DMA_SCR(x)		(0x0010 + 0x18 * (x))  
 #define STM32_DMA_SCR_REQ_MASK		GENMASK(27, 25)
 #define STM32_DMA_SCR_MBURST_MASK	GENMASK(24, 23)
 #define STM32_DMA_SCR_PBURST_MASK	GENMASK(22, 21)
@@ -62,19 +51,18 @@
 #define STM32_DMA_SCR_MSIZE_MASK	GENMASK(14, 13)
 #define STM32_DMA_SCR_PSIZE_MASK	GENMASK(12, 11)
 #define STM32_DMA_SCR_DIR_MASK		GENMASK(7, 6)
-#define STM32_DMA_SCR_TRBUFF		BIT(20) /* Bufferable transfer for USART/UART */
-#define STM32_DMA_SCR_CT		BIT(19) /* Target in double buffer */
-#define STM32_DMA_SCR_DBM		BIT(18) /* Double Buffer Mode */
-#define STM32_DMA_SCR_PINCOS		BIT(15) /* Peripheral inc offset size */
-#define STM32_DMA_SCR_MINC		BIT(10) /* Memory increment mode */
-#define STM32_DMA_SCR_PINC		BIT(9) /* Peripheral increment mode */
-#define STM32_DMA_SCR_CIRC		BIT(8) /* Circular mode */
-#define STM32_DMA_SCR_PFCTRL		BIT(5) /* Peripheral Flow Controller */
-#define STM32_DMA_SCR_TCIE		BIT(4) /* Transfer Complete Int Enable
-						*/
-#define STM32_DMA_SCR_TEIE		BIT(2) /* Transfer Error Int Enable */
-#define STM32_DMA_SCR_DMEIE		BIT(1) /* Direct Mode Err Int Enable */
-#define STM32_DMA_SCR_EN		BIT(0) /* Stream Enable */
+#define STM32_DMA_SCR_TRBUFF		BIT(20)  
+#define STM32_DMA_SCR_CT		BIT(19)  
+#define STM32_DMA_SCR_DBM		BIT(18)  
+#define STM32_DMA_SCR_PINCOS		BIT(15)  
+#define STM32_DMA_SCR_MINC		BIT(10)  
+#define STM32_DMA_SCR_PINC		BIT(9)  
+#define STM32_DMA_SCR_CIRC		BIT(8)  
+#define STM32_DMA_SCR_PFCTRL		BIT(5)  
+#define STM32_DMA_SCR_TCIE		BIT(4)  
+#define STM32_DMA_SCR_TEIE		BIT(2)  
+#define STM32_DMA_SCR_DMEIE		BIT(1)  
+#define STM32_DMA_SCR_EN		BIT(0)  
 #define STM32_DMA_SCR_CFG_MASK		(STM32_DMA_SCR_PINC \
 					| STM32_DMA_SCR_MINC \
 					| STM32_DMA_SCR_PINCOS \
@@ -83,38 +71,38 @@
 					| STM32_DMA_SCR_TEIE \
 					| STM32_DMA_SCR_DMEIE)
 
-/* DMA Stream x number of data register */
+ 
 #define STM32_DMA_SNDTR(x)		(0x0014 + 0x18 * (x))
 
-/* DMA stream peripheral address register */
+ 
 #define STM32_DMA_SPAR(x)		(0x0018 + 0x18 * (x))
 
-/* DMA stream x memory 0 address register */
+ 
 #define STM32_DMA_SM0AR(x)		(0x001c + 0x18 * (x))
 
-/* DMA stream x memory 1 address register */
+ 
 #define STM32_DMA_SM1AR(x)		(0x0020 + 0x18 * (x))
 
-/* DMA stream x FIFO control register */
+ 
 #define STM32_DMA_SFCR(x)		(0x0024 + 0x18 * (x))
 #define STM32_DMA_SFCR_FTH_MASK		GENMASK(1, 0)
-#define STM32_DMA_SFCR_FEIE		BIT(7) /* FIFO error interrupt enable */
-#define STM32_DMA_SFCR_DMDIS		BIT(2) /* Direct mode disable */
+#define STM32_DMA_SFCR_FEIE		BIT(7)  
+#define STM32_DMA_SFCR_DMDIS		BIT(2)  
 #define STM32_DMA_SFCR_MASK		(STM32_DMA_SFCR_FEIE \
 					| STM32_DMA_SFCR_DMDIS)
 
-/* DMA direction */
+ 
 #define STM32_DMA_DEV_TO_MEM		0x00
 #define	STM32_DMA_MEM_TO_DEV		0x01
 #define	STM32_DMA_MEM_TO_MEM		0x02
 
-/* DMA priority level */
+ 
 #define STM32_DMA_PRIORITY_LOW		0x00
 #define STM32_DMA_PRIORITY_MEDIUM	0x01
 #define STM32_DMA_PRIORITY_HIGH		0x02
 #define STM32_DMA_PRIORITY_VERY_HIGH	0x03
 
-/* DMA FIFO threshold selection */
+ 
 #define STM32_DMA_FIFO_THRESHOLD_1QUARTERFULL		0x00
 #define STM32_DMA_FIFO_THRESHOLD_HALFFULL		0x01
 #define STM32_DMA_FIFO_THRESHOLD_3QUARTERSFULL		0x02
@@ -122,21 +110,17 @@
 #define STM32_DMA_FIFO_THRESHOLD_NONE			0x04
 
 #define STM32_DMA_MAX_DATA_ITEMS	0xffff
-/*
- * Valid transfer starts from @0 to @0xFFFE leading to unaligned scatter
- * gather at boundary. Thus it's safer to round down this value on FIFO
- * size (16 Bytes)
- */
+ 
 #define STM32_DMA_ALIGNED_MAX_DATA_ITEMS	\
 	ALIGN_DOWN(STM32_DMA_MAX_DATA_ITEMS, 16)
 #define STM32_DMA_MAX_CHANNELS		0x08
 #define STM32_DMA_MAX_REQUEST_ID	0x08
 #define STM32_DMA_MAX_DATA_PARAM	0x03
-#define STM32_DMA_FIFO_SIZE		16	/* FIFO is 16 bytes */
+#define STM32_DMA_FIFO_SIZE		16	 
 #define STM32_DMA_MIN_BURST		4
 #define STM32_DMA_MAX_BURST		16
 
-/* DMA Features */
+ 
 #define STM32_DMA_THRESHOLD_FTR_MASK	GENMASK(1, 0)
 #define STM32_DMA_DIRECT_MODE_MASK	BIT(2)
 #define STM32_DMA_ALT_ACK_MODE_MASK	BIT(4)
@@ -155,13 +139,7 @@ enum stm32_dma_burst_size {
 	STM32_DMA_BURST_INCR16,
 };
 
-/**
- * struct stm32_dma_cfg - STM32 DMA custom configuration
- * @channel_id: channel ID
- * @request_line: DMA request
- * @stream_config: 32bit mask specifying the DMA channel configuration
- * @features: 32bit mask specifying the DMA Feature list
- */
+ 
 struct stm32_dma_cfg {
 	u32 channel_id;
 	u32 request_line;
@@ -194,13 +172,7 @@ struct stm32_dma_desc {
 	struct stm32_dma_sg_req sg_req[];
 };
 
-/**
- * struct stm32_dma_mdma_config - STM32 DMA MDMA configuration
- * @stream_id: DMA request to trigger STM32 MDMA transfer
- * @ifcr: DMA interrupt flag clear register address,
- *        used by STM32 MDMA to clear DMA Transfer Complete flag
- * @tcf: DMA Transfer Complete flag
- */
+ 
 struct stm32_dma_mdma_config {
 	u32 stream_id;
 	u32 ifcr;
@@ -311,10 +283,7 @@ static bool stm32_dma_fifo_threshold_is_allowed(u32 burst, u32 threshold,
 
 	if (width != DMA_SLAVE_BUSWIDTH_UNDEFINED) {
 		if (burst != 0) {
-			/*
-			 * If number of beats fit in several whole bursts
-			 * this configuration is allowed.
-			 */
+			 
 			remaining = ((STM32_DMA_FIFO_SIZE / width) *
 				     (threshold + 1) / 4) % burst;
 
@@ -330,15 +299,11 @@ static bool stm32_dma_fifo_threshold_is_allowed(u32 burst, u32 threshold,
 
 static bool stm32_dma_is_burst_possible(u32 buf_len, u32 threshold)
 {
-	/* If FIFO direct mode, burst is not possible */
+	 
 	if (threshold == STM32_DMA_FIFO_THRESHOLD_NONE)
 		return false;
 
-	/*
-	 * Buffer or period length has to be aligned on FIFO depth.
-	 * Otherwise bytes may be stuck within FIFO at buffer or period
-	 * length.
-	 */
+	 
 	return ((buf_len % ((threshold + 1) * 4)) == 0);
 }
 
@@ -387,10 +352,10 @@ static void stm32_dma_set_fifo_config(struct stm32_dma_chan *chan,
 	chan->chan_reg.dma_scr &= ~STM32_DMA_SCR_DMEIE;
 
 	if (!src_burst && !dst_burst) {
-		/* Using direct mode */
+		 
 		chan->chan_reg.dma_scr |= STM32_DMA_SCR_DMEIE;
 	} else {
-		/* Using FIFO mode */
+		 
 		chan->chan_reg.dma_sfcr |= STM32_DMA_SFCR_MASK;
 	}
 }
@@ -402,7 +367,7 @@ static int stm32_dma_slave_config(struct dma_chan *c,
 
 	memcpy(&chan->dma_sconfig, config, sizeof(*config));
 
-	/* Check if user is requesting DMA to trigger STM32 MDMA */
+	 
 	if (config->peripheral_size) {
 		config->peripheral_config = &chan->mdma_config;
 		config->peripheral_size = sizeof(chan->mdma_config);
@@ -419,10 +384,7 @@ static u32 stm32_dma_irq_status(struct stm32_dma_chan *chan)
 	struct stm32_dma_device *dmadev = stm32_dma_get_dev(chan);
 	u32 flags, dma_isr;
 
-	/*
-	 * Read "flags" from DMA_xISR register corresponding to the selected
-	 * DMA channel at the correct bit offset inside that register.
-	 */
+	 
 
 	dma_isr = stm32_dma_read(dmadev, STM32_DMA_ISR(chan->id));
 	flags = dma_isr >> STM32_DMA_FLAGS_SHIFT(chan->id);
@@ -435,10 +397,7 @@ static void stm32_dma_irq_clear(struct stm32_dma_chan *chan, u32 flags)
 	struct stm32_dma_device *dmadev = stm32_dma_get_dev(chan);
 	u32 dma_ifcr;
 
-	/*
-	 * Write "flags" to the DMA_xIFCR register corresponding to the selected
-	 * DMA channel at the correct bit offset inside that register.
-	 */
+	 
 	flags &= STM32_DMA_MASKI;
 	dma_ifcr = flags << STM32_DMA_FLAGS_SHIFT(chan->id);
 
@@ -472,7 +431,7 @@ static void stm32_dma_stop(struct stm32_dma_chan *chan)
 	u32 dma_scr, dma_sfcr, status;
 	int ret;
 
-	/* Disable interrupts */
+	 
 	dma_scr = stm32_dma_read(dmadev, STM32_DMA_SCR(chan->id));
 	dma_scr &= ~STM32_DMA_SCR_IRQ_MASK;
 	stm32_dma_write(dmadev, STM32_DMA_SCR(chan->id), dma_scr);
@@ -480,12 +439,12 @@ static void stm32_dma_stop(struct stm32_dma_chan *chan)
 	dma_sfcr &= ~STM32_DMA_SFCR_FEIE;
 	stm32_dma_write(dmadev, STM32_DMA_SFCR(chan->id), dma_sfcr);
 
-	/* Disable DMA */
+	 
 	ret = stm32_dma_disable_chan(chan);
 	if (ret < 0)
 		return;
 
-	/* Clear interrupt status if it is there */
+	 
 	status = stm32_dma_irq_status(chan);
 	if (status) {
 		dev_dbg(chan2dev(chan), "%s(): clearing interrupt: 0x%08x\n",
@@ -584,7 +543,7 @@ static void stm32_dma_start_transfer(struct stm32_dma_chan *chan)
 	sg_req = &chan->desc->sg_req[chan->next_sg];
 	reg = &sg_req->chan_reg;
 
-	/* When DMA triggers STM32 MDMA, DMA Transfer Complete is managed by STM32 MDMA */
+	 
 	if (chan->trig_mdma && chan->dma_sconfig.direction != DMA_MEM_TO_DEV)
 		reg->dma_scr &= ~STM32_DMA_SCR_TCIE;
 
@@ -598,7 +557,7 @@ static void stm32_dma_start_transfer(struct stm32_dma_chan *chan)
 
 	stm32_dma_sg_inc(chan);
 
-	/* Clear interrupt status if it is there */
+	 
 	status = stm32_dma_irq_status(chan);
 	if (status)
 		stm32_dma_irq_clear(chan, status);
@@ -608,7 +567,7 @@ static void stm32_dma_start_transfer(struct stm32_dma_chan *chan)
 
 	stm32_dma_dump_reg(chan);
 
-	/* Start DMA */
+	 
 	chan->busy = true;
 	chan->status = DMA_IN_PROGRESS;
 	reg->dma_scr |= STM32_DMA_SCR_EN;
@@ -646,16 +605,9 @@ static void stm32_dma_handle_chan_paused(struct stm32_dma_chan *chan)
 	struct stm32_dma_device *dmadev = stm32_dma_get_dev(chan);
 	u32 dma_scr;
 
-	/*
-	 * Read and store current remaining data items and peripheral/memory addresses to be
-	 * updated on resume
-	 */
+	 
 	dma_scr = stm32_dma_read(dmadev, STM32_DMA_SCR(chan->id));
-	/*
-	 * Transfer can be paused while between a previous resume and reconfiguration on transfer
-	 * complete. If transfer is cyclic and CIRC and DBM have been deactivated for resume, need
-	 * to set it here in SCR backup to ensure a good reconfiguration on transfer complete.
-	 */
+	 
 	if (chan->desc && chan->desc->cyclic) {
 		if (chan->desc->num_sgs == 1)
 			dma_scr |= STM32_DMA_SCR_CIRC;
@@ -664,10 +616,7 @@ static void stm32_dma_handle_chan_paused(struct stm32_dma_chan *chan)
 	}
 	chan->chan_reg.dma_scr = dma_scr;
 
-	/*
-	 * Need to temporarily deactivate CIRC/DBM until next Transfer Complete interrupt, otherwise
-	 * on resume NDTR autoreload value will be wrong (lower than the initial period length)
-	 */
+	 
 	if (chan->desc && chan->desc->cyclic) {
 		dma_scr &= ~(STM32_DMA_SCR_DBM | STM32_DMA_SCR_CIRC);
 		stm32_dma_write(dmadev, STM32_DMA_SCR(chan->id), dma_scr);
@@ -689,7 +638,7 @@ static void stm32_dma_post_resume_reconfigure(struct stm32_dma_chan *chan)
 	id = chan->id;
 	dma_scr = stm32_dma_read(dmadev, STM32_DMA_SCR(id));
 
-	/* Clear interrupt status if it is there */
+	 
 	status = stm32_dma_irq_status(chan);
 	if (status)
 		stm32_dma_irq_clear(chan, status);
@@ -699,20 +648,20 @@ static void stm32_dma_post_resume_reconfigure(struct stm32_dma_chan *chan)
 	else
 		sg_req = &chan->desc->sg_req[chan->next_sg - 1];
 
-	/* Reconfigure NDTR with the initial value */
+	 
 	stm32_dma_write(dmadev, STM32_DMA_SNDTR(chan->id), sg_req->chan_reg.dma_sndtr);
 
-	/* Restore SPAR */
+	 
 	stm32_dma_write(dmadev, STM32_DMA_SPAR(id), sg_req->chan_reg.dma_spar);
 
-	/* Restore SM0AR/SM1AR whatever DBM/CT as they may have been modified */
+	 
 	stm32_dma_write(dmadev, STM32_DMA_SM0AR(id), sg_req->chan_reg.dma_sm0ar);
 	stm32_dma_write(dmadev, STM32_DMA_SM1AR(id), sg_req->chan_reg.dma_sm1ar);
 
-	/* Reactivate CIRC/DBM if needed */
+	 
 	if (chan->chan_reg.dma_scr & STM32_DMA_SCR_DBM) {
 		dma_scr |= STM32_DMA_SCR_DBM;
-		/* Restore CT */
+		 
 		if (chan->chan_reg.dma_scr & STM32_DMA_SCR_CT)
 			dma_scr &= ~STM32_DMA_SCR_CT;
 		else
@@ -742,7 +691,7 @@ static void stm32_dma_handle_chan_done(struct stm32_dma_chan *chan, u32 scr)
 		if (chan->trig_mdma)
 			return;
 		stm32_dma_sg_inc(chan);
-		/* cyclic while CIRC/DBM disable => post resume reconfiguration needed */
+		 
 		if (!(scr & (STM32_DMA_SCR_CIRC | STM32_DMA_SCR_DBM)))
 			stm32_dma_post_resume_reconfigure(chan);
 		else if (scr & STM32_DMA_SCR_DBM)
@@ -866,7 +815,7 @@ static int stm32_dma_resume(struct dma_chan *c)
 
 	spin_lock_irqsave(&chan->vchan.lock, flags);
 
-	/* sg_reg[prev_sg] contains original ndtr, sm0ar and sm1ar before pausing the transfer */
+	 
 	if (!chan->next_sg)
 		sg_req = &chan->desc->sg_req[chan->desc->num_sgs - 1];
 	else
@@ -879,10 +828,7 @@ static int stm32_dma_resume(struct dma_chan *c)
 	sm0ar = sg_req->chan_reg.dma_sm0ar;
 	sm1ar = sg_req->chan_reg.dma_sm1ar;
 
-	/*
-	 * The peripheral and/or memory addresses have to be updated in order to adjust the
-	 * address pointers. Need to check increment.
-	 */
+	 
 	if (chan_reg.dma_scr & STM32_DMA_SCR_PINC)
 		stm32_dma_write(dmadev, STM32_DMA_SPAR(id), spar + offset);
 	else
@@ -891,23 +837,16 @@ static int stm32_dma_resume(struct dma_chan *c)
 	if (!(chan_reg.dma_scr & STM32_DMA_SCR_MINC))
 		offset = 0;
 
-	/*
-	 * In case of DBM, the current target could be SM1AR.
-	 * Need to temporarily deactivate CIRC/DBM to finish the current transfer, so
-	 * SM0AR becomes the current target and must be updated with SM1AR + offset if CT=1.
-	 */
+	 
 	if ((chan_reg.dma_scr & STM32_DMA_SCR_DBM) && (chan_reg.dma_scr & STM32_DMA_SCR_CT))
 		stm32_dma_write(dmadev, STM32_DMA_SM1AR(id), sm1ar + offset);
 	else
 		stm32_dma_write(dmadev, STM32_DMA_SM0AR(id), sm0ar + offset);
 
-	/* NDTR must be restored otherwise internal HW counter won't be correctly reset */
+	 
 	stm32_dma_write(dmadev, STM32_DMA_SNDTR(id), chan_reg.dma_sndtr);
 
-	/*
-	 * Need to temporarily deactivate CIRC/DBM until next Transfer Complete interrupt,
-	 * otherwise NDTR autoreload value will be wrong (lower than the initial period length)
-	 */
+	 
 	if (chan_reg.dma_scr & (STM32_DMA_SCR_CIRC | STM32_DMA_SCR_DBM))
 		chan_reg.dma_scr &= ~(STM32_DMA_SCR_CIRC | STM32_DMA_SCR_DBM);
 
@@ -916,7 +855,7 @@ static int stm32_dma_resume(struct dma_chan *c)
 
 	stm32_dma_dump_reg(chan);
 
-	/* The stream may then be re-enabled to restart transfer from the point it was stopped */
+	 
 	chan->status = DMA_IN_PROGRESS;
 	chan_reg.dma_scr |= STM32_DMA_SCR_EN;
 	stm32_dma_write(dmadev, STM32_DMA_SCR(id), chan_reg.dma_scr);
@@ -947,12 +886,12 @@ static int stm32_dma_set_xfer_param(struct stm32_dma_chan *chan,
 
 	switch (direction) {
 	case DMA_MEM_TO_DEV:
-		/* Set device data size */
+		 
 		dst_bus_width = stm32_dma_get_width(chan, dst_addr_width);
 		if (dst_bus_width < 0)
 			return dst_bus_width;
 
-		/* Set device burst size */
+		 
 		dst_best_burst = stm32_dma_get_best_burst(buf_len,
 							  dst_maxburst,
 							  fifoth,
@@ -962,7 +901,7 @@ static int stm32_dma_set_xfer_param(struct stm32_dma_chan *chan,
 		if (dst_burst_size < 0)
 			return dst_burst_size;
 
-		/* Set memory data size */
+		 
 		src_addr_width = stm32_dma_get_max_width(buf_len, buf_addr,
 							 fifoth);
 		chan->mem_width = src_addr_width;
@@ -970,10 +909,7 @@ static int stm32_dma_set_xfer_param(struct stm32_dma_chan *chan,
 		if (src_bus_width < 0)
 			return src_bus_width;
 
-		/*
-		 * Set memory burst size - burst not possible if address is not aligned on
-		 * the address boundary equal to the size of the transfer
-		 */
+		 
 		if (buf_addr & (buf_len - 1))
 			src_maxburst = 1;
 		else
@@ -992,23 +928,23 @@ static int stm32_dma_set_xfer_param(struct stm32_dma_chan *chan,
 			FIELD_PREP(STM32_DMA_SCR_PBURST_MASK, dst_burst_size) |
 			FIELD_PREP(STM32_DMA_SCR_MBURST_MASK, src_burst_size);
 
-		/* Set FIFO threshold */
+		 
 		chan->chan_reg.dma_sfcr &= ~STM32_DMA_SFCR_FTH_MASK;
 		if (fifoth != STM32_DMA_FIFO_THRESHOLD_NONE)
 			chan->chan_reg.dma_sfcr |= FIELD_PREP(STM32_DMA_SFCR_FTH_MASK, fifoth);
 
-		/* Set peripheral address */
+		 
 		chan->chan_reg.dma_spar = chan->dma_sconfig.dst_addr;
 		*buswidth = dst_addr_width;
 		break;
 
 	case DMA_DEV_TO_MEM:
-		/* Set device data size */
+		 
 		src_bus_width = stm32_dma_get_width(chan, src_addr_width);
 		if (src_bus_width < 0)
 			return src_bus_width;
 
-		/* Set device burst size */
+		 
 		src_best_burst = stm32_dma_get_best_burst(buf_len,
 							  src_maxburst,
 							  fifoth,
@@ -1018,7 +954,7 @@ static int stm32_dma_set_xfer_param(struct stm32_dma_chan *chan,
 		if (src_burst_size < 0)
 			return src_burst_size;
 
-		/* Set memory data size */
+		 
 		dst_addr_width = stm32_dma_get_max_width(buf_len, buf_addr,
 							 fifoth);
 		chan->mem_width = dst_addr_width;
@@ -1026,10 +962,7 @@ static int stm32_dma_set_xfer_param(struct stm32_dma_chan *chan,
 		if (dst_bus_width < 0)
 			return dst_bus_width;
 
-		/*
-		 * Set memory burst size - burst not possible if address is not aligned on
-		 * the address boundary equal to the size of the transfer
-		 */
+		 
 		if (buf_addr & (buf_len - 1))
 			dst_maxburst = 1;
 		else
@@ -1049,12 +982,12 @@ static int stm32_dma_set_xfer_param(struct stm32_dma_chan *chan,
 			FIELD_PREP(STM32_DMA_SCR_PBURST_MASK, src_burst_size) |
 			FIELD_PREP(STM32_DMA_SCR_MBURST_MASK, dst_burst_size);
 
-		/* Set FIFO threshold */
+		 
 		chan->chan_reg.dma_sfcr &= ~STM32_DMA_SFCR_FTH_MASK;
 		if (fifoth != STM32_DMA_FIFO_THRESHOLD_NONE)
 			chan->chan_reg.dma_sfcr |= FIELD_PREP(STM32_DMA_SFCR_FTH_MASK, fifoth);
 
-		/* Set peripheral address */
+		 
 		chan->chan_reg.dma_spar = chan->dma_sconfig.src_addr;
 		*buswidth = chan->dma_sconfig.src_addr_width;
 		break;
@@ -1066,7 +999,7 @@ static int stm32_dma_set_xfer_param(struct stm32_dma_chan *chan,
 
 	stm32_dma_set_fifo_config(chan, src_best_burst, dst_best_burst);
 
-	/* Set DMA control register */
+	 
 	chan->chan_reg.dma_scr &= ~(STM32_DMA_SCR_DIR_MASK |
 			STM32_DMA_SCR_PSIZE_MASK | STM32_DMA_SCR_MSIZE_MASK |
 			STM32_DMA_SCR_PBURST_MASK | STM32_DMA_SCR_MBURST_MASK);
@@ -1106,13 +1039,13 @@ static struct dma_async_tx_descriptor *stm32_dma_prep_slave_sg(
 	if (!desc)
 		return NULL;
 
-	/* Set peripheral flow controller */
+	 
 	if (chan->dma_sconfig.device_fc)
 		chan->chan_reg.dma_scr |= STM32_DMA_SCR_PFCTRL;
 	else
 		chan->chan_reg.dma_scr &= ~STM32_DMA_SCR_PFCTRL;
 
-	/* Activate Double Buffer Mode if DMA triggers STM32 MDMA and more than 1 sg */
+	 
 	if (chan->trig_mdma && sg_len > 1) {
 		chan->chan_reg.dma_scr |= STM32_DMA_SCR_DBM;
 		chan->chan_reg.dma_scr &= ~STM32_DMA_SCR_CT;
@@ -1180,12 +1113,7 @@ static struct dma_async_tx_descriptor *stm32_dma_prep_dma_cyclic(
 		return NULL;
 	}
 
-	/*
-	 * We allow to take more number of requests till DMA is
-	 * not started. The driver will loop over all requests.
-	 * Once DMA is started then new requests can be queued only after
-	 * terminating the DMA.
-	 */
+	 
 	if (chan->busy) {
 		dev_err(chan2dev(chan), "Request not allowed when dma busy\n");
 		return NULL;
@@ -1202,7 +1130,7 @@ static struct dma_async_tx_descriptor *stm32_dma_prep_dma_cyclic(
 		return NULL;
 	}
 
-	/*  Enable Circular mode or double buffer mode */
+	 
 	if (buf_len == period_len) {
 		chan->chan_reg.dma_scr |= STM32_DMA_SCR_CIRC;
 	} else {
@@ -1210,7 +1138,7 @@ static struct dma_async_tx_descriptor *stm32_dma_prep_dma_cyclic(
 		chan->chan_reg.dma_scr &= ~STM32_DMA_SCR_CT;
 	}
 
-	/* Clear periph ctrl if client set it */
+	 
 	chan->chan_reg.dma_scr &= ~STM32_DMA_SCR_PFCTRL;
 
 	num_periods = buf_len / period_len;
@@ -1263,7 +1191,7 @@ static struct dma_async_tx_descriptor *stm32_dma_prep_dma_memcpy(
 		xfer_count = min_t(size_t, len - offset,
 				   STM32_DMA_ALIGNED_MAX_DATA_ITEMS);
 
-		/* Compute best burst size */
+		 
 		max_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
 		best_burst = stm32_dma_get_best_burst(len, STM32_DMA_MAX_BURST,
 						      threshold, max_width);
@@ -1308,18 +1236,7 @@ static u32 stm32_dma_get_remaining_bytes(struct stm32_dma_chan *chan)
 	return ndtr << width;
 }
 
-/**
- * stm32_dma_is_current_sg - check that expected sg_req is currently transferred
- * @chan: dma channel
- *
- * This function called when IRQ are disable, checks that the hardware has not
- * switched on the next transfer in double buffer mode. The test is done by
- * comparing the next_sg memory address with the hardware related register
- * (based on CT bit value).
- *
- * Returns true if expected current transfer is still running or double
- * buffer mode is not activated.
- */
+ 
 static bool stm32_dma_is_current_sg(struct stm32_dma_chan *chan)
 {
 	struct stm32_dma_device *dmadev = stm32_dma_get_dev(chan);
@@ -1329,29 +1246,23 @@ static bool stm32_dma_is_current_sg(struct stm32_dma_chan *chan)
 	id = chan->id;
 	dma_scr = stm32_dma_read(dmadev, STM32_DMA_SCR(id));
 
-	/* In cyclic CIRC but not DBM, CT is not used */
+	 
 	if (!(dma_scr & STM32_DMA_SCR_DBM))
 		return true;
 
 	sg_req = &chan->desc->sg_req[chan->next_sg];
 	period_len = sg_req->len;
 
-	/* DBM - take care of a previous pause/resume not yet post reconfigured */
+	 
 	if (dma_scr & STM32_DMA_SCR_CT) {
 		dma_smar = stm32_dma_read(dmadev, STM32_DMA_SM0AR(id));
-		/*
-		 * If transfer has been pause/resumed,
-		 * SM0AR is in the range of [SM0AR:SM0AR+period_len]
-		 */
+		 
 		return (dma_smar >= sg_req->chan_reg.dma_sm0ar &&
 			dma_smar < sg_req->chan_reg.dma_sm0ar + period_len);
 	}
 
 	dma_smar = stm32_dma_read(dmadev, STM32_DMA_SM1AR(id));
-	/*
-	 * If transfer has been pause/resumed,
-	 * SM1AR is in the range of [SM1AR:SM1AR+period_len]
-	 */
+	 
 	return (dma_smar >= sg_req->chan_reg.dma_sm1ar &&
 		dma_smar < sg_req->chan_reg.dma_sm1ar + period_len);
 }
@@ -1366,30 +1277,7 @@ static size_t stm32_dma_desc_residue(struct stm32_dma_chan *chan,
 	struct stm32_dma_sg_req *sg_req = &chan->desc->sg_req[chan->next_sg];
 	int i;
 
-	/*
-	 * Calculate the residue means compute the descriptors
-	 * information:
-	 * - the sg_req currently transferred
-	 * - the Hardware remaining position in this sg (NDTR bits field).
-	 *
-	 * A race condition may occur if DMA is running in cyclic or double
-	 * buffer mode, since the DMA register are automatically reloaded at end
-	 * of period transfer. The hardware may have switched to the next
-	 * transfer (CT bit updated) just before the position (SxNDTR reg) is
-	 * read.
-	 * In this case the SxNDTR reg could (or not) correspond to the new
-	 * transfer position, and not the expected one.
-	 * The strategy implemented in the stm32 driver is to:
-	 *  - read the SxNDTR register
-	 *  - crosscheck that hardware is still in current transfer.
-	 * In case of switch, we can assume that the DMA is at the beginning of
-	 * the next transfer. So we approximate the residue in consequence, by
-	 * pointing on the beginning of next transfer.
-	 *
-	 * This race condition doesn't apply for none cyclic mode, as double
-	 * buffer is not used. In such situation registers are updated by the
-	 * software.
-	 */
+	 
 
 	residue = stm32_dma_get_remaining_bytes(chan);
 
@@ -1401,13 +1289,7 @@ static size_t stm32_dma_desc_residue(struct stm32_dma_chan *chan,
 			residue = sg_req->len;
 	}
 
-	/*
-	 * In cyclic mode, for the last period, residue = remaining bytes
-	 * from NDTR,
-	 * else for all other periods in cyclic mode, and in sg mode,
-	 * residue = remaining bytes from NDTR + remaining
-	 * periods/sg to be transferred
-	 */
+	 
 	if ((!chan->desc->cyclic && !chan->trig_mdma) || n_sg != 0)
 		for (i = n_sg; i < desc->num_sgs; i++)
 			residue += desc->sg_req[i].len;
@@ -1511,7 +1393,7 @@ static void stm32_dma_set_config(struct stm32_dma_chan *chan,
 	chan->chan_reg.dma_scr = cfg->stream_config & STM32_DMA_SCR_CFG_MASK;
 	chan->chan_reg.dma_scr |= FIELD_PREP(STM32_DMA_SCR_REQ_MASK, cfg->request_line);
 
-	/* Enable Interrupts  */
+	 
 	chan->chan_reg.dma_scr |= STM32_DMA_SCR_TEIE | STM32_DMA_SCR_TCIE;
 
 	chan->threshold = FIELD_GET(STM32_DMA_THRESHOLD_FTR_MASK, cfg->features);
@@ -1562,7 +1444,7 @@ static struct dma_chan *stm32_dma_of_xlate(struct of_phandle_args *dma_spec,
 
 static const struct of_device_id stm32_dma_of_match[] = {
 	{ .compatible = "st,stm32-dma", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, stm32_dma_of_match);
 

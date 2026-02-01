@@ -1,16 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2018 Oleksij Rempel <linux@rempel-privat.de>
- *
- * Driver for Alcor Micro AU6601 and AU6621 controllers
- */
 
-/* Note: this driver was created without any documentation. Based
- * on sniffing, testing and in some cases mimic of original driver.
- * As soon as some one with documentation or more experience in SD/MMC, or
- * reverse engineering then me, please review this driver and question every
- * thing what I did. 2018 Oleksij Rempel <linux@rempel-privat.de>
- */
+ 
+
+ 
 
 #include <linux/delay.h>
 #include <linux/pci.h>
@@ -52,9 +43,9 @@ struct alcor_sdmmc_host {
 
 	struct delayed_work timeout_work;
 
-	struct sg_mapping_iter sg_miter;	/* SG state for PIO */
+	struct sg_mapping_iter sg_miter;	 
 	struct scatterlist *sg;
-	unsigned int blocks;		/* remaining PIO blocks */
+	unsigned int blocks;		 
 	int sg_count;
 
 	u32			irq_status_sd;
@@ -62,7 +53,7 @@ struct alcor_sdmmc_host {
 };
 
 static const struct alcor_pll_conf alcor_pll_cfg[] = {
-	/* MHZ,		CLK src,		max div, min div */
+	 
 	{ 31250000,	AU6601_CLK_31_25_MHZ,	1,	511},
 	{ 48000000,	AU6601_CLK_48_MHZ,	1,	511},
 	{125000000,	AU6601_CLK_125_MHZ,	1,	511},
@@ -81,9 +72,7 @@ static inline void alcor_rmw8(struct alcor_sdmmc_host *host, unsigned int addr,
 	alcor_write8(priv, var, addr);
 }
 
-/* As soon as irqs are masked, some status updates may be missed.
- * Use this with care.
- */
+ 
 static inline void alcor_mask_sd_irqs(struct alcor_sdmmc_host *host)
 {
 	struct alcor_pci_priv *priv = host->alcor_pci;
@@ -116,9 +105,7 @@ static void alcor_reset(struct alcor_sdmmc_host *host, u8 val)
 	dev_err(host->dev, "%s: timeout\n", __func__);
 }
 
-/*
- * Perform DMA I/O of a single page.
- */
+ 
 static void alcor_data_set_dma(struct alcor_sdmmc_host *host)
 {
 	struct alcor_pci_priv *priv = host->alcor_pci;
@@ -155,26 +142,14 @@ static void alcor_trigger_data_transfer(struct alcor_sdmmc_host *host)
 		ctrl |= AU6601_DATA_WRITE;
 
 	if (data->host_cookie == COOKIE_MAPPED) {
-		/*
-		 * For DMA transfers, this function is called just once,
-		 * at the start of the operation. The hardware can only
-		 * perform DMA I/O on a single page at a time, so here
-		 * we kick off the transfer with the first page, and expect
-		 * subsequent pages to be transferred upon IRQ events
-		 * indicating that the single-page DMA was completed.
-		 */
+		 
 		alcor_data_set_dma(host);
 		ctrl |= AU6601_DATA_DMA_MODE;
 		host->dma_on = 1;
 		alcor_write32(priv, data->sg_count * 0x1000,
 			       AU6601_REG_BLOCK_SIZE);
 	} else {
-		/*
-		 * For PIO transfers, we break down each operation
-		 * into several sector-sized transfers. When one sector has
-		 * complete, the IRQ handler will call this function again
-		 * to kick off the transfer of the next sector.
-		 */
+		 
 		alcor_write32(priv, data->blksz, AU6601_REG_BLOCK_SIZE);
 	}
 
@@ -316,10 +291,7 @@ static void alcor_request_complete(struct alcor_sdmmc_host *host,
 {
 	struct mmc_request *mrq;
 
-	/*
-	 * If this work gets rescheduled while running, it will
-	 * be run again afterwards but without any active request.
-	 */
+	 
 	if (!host->mrq)
 		return;
 
@@ -344,31 +316,18 @@ static void alcor_finish_data(struct alcor_sdmmc_host *host)
 	host->data = NULL;
 	host->dma_on = 0;
 
-	/*
-	 * The specification states that the block count register must
-	 * be updated, but it does not specify at what point in the
-	 * data flow. That makes the register entirely useless to read
-	 * back so we have to assume that nothing made it to the card
-	 * in the event of an error.
-	 */
+	 
 	if (data->error)
 		data->bytes_xfered = 0;
 	else
 		data->bytes_xfered = data->blksz * data->blocks;
 
-	/*
-	 * Need to send CMD12 if -
-	 * a) open-ended multiblock transfer (no CMD23)
-	 * b) error in multiblock transfer
-	 */
+	 
 	if (data->stop &&
 	    (data->error ||
 	     !host->mrq->sbc)) {
 
-		/*
-		 * The controller needs a reset of internal state machines
-		 * upon error conditions.
-		 */
+		 
 		if (data->error)
 			alcor_reset(host, AU6601_RESET_CMD | AU6601_RESET_DATA);
 
@@ -413,9 +372,7 @@ static int alcor_cmd_irq_done(struct alcor_sdmmc_host *host, u32 intmask)
 	if (!intmask)
 		return true;
 
-	/* got CMD_END but no CMD is in progress, wake thread an process the
-	 * error
-	 */
+	 
 	if (!host->cmd)
 		return false;
 
@@ -439,7 +396,7 @@ static int alcor_cmd_irq_done(struct alcor_sdmmc_host *host, u32 intmask)
 
 	host->cmd->error = 0;
 
-	/* Processed actual command. */
+	 
 	if (!host->data)
 		return false;
 
@@ -460,7 +417,7 @@ static void alcor_cmd_irq_thread(struct alcor_sdmmc_host *host, u32 intmask)
 			intmask);
 	}
 
-	/* Processed actual command. */
+	 
 	if (!host->data)
 		alcor_request_complete(host, 1);
 	else
@@ -474,17 +431,15 @@ static int alcor_data_irq_done(struct alcor_sdmmc_host *host, u32 intmask)
 
 	intmask &= AU6601_INT_DATA_MASK;
 
-	/* nothing here to do */
+	 
 	if (!intmask)
 		return 1;
 
-	/* we was too fast and got DATA_END after it was processed?
-	 * lets ignore it for now.
-	 */
+	 
 	if (!host->data && intmask == AU6601_INT_DATA_END)
 		return 1;
 
-	/* looks like an error, so lets handle it. */
+	 
 	if (!host->data)
 		return 0;
 
@@ -576,7 +531,7 @@ static irqreturn_t alcor_irq_thread(int irq, void *d)
 
 	intmask = host->irq_status_sd;
 
-	/* some thing bad */
+	 
 	if (unlikely(!intmask || AU6601_INT_ALL_MASK == intmask)) {
 		dev_dbg(host->dev, "unexpected IRQ: 0x%04x\n", intmask);
 		ret = IRQ_NONE;
@@ -635,7 +590,7 @@ static irqreturn_t alcor_irq(int irq, void *d)
 	if (tmp == status) {
 		cmd_done = alcor_cmd_irq_done(host, tmp);
 		data_done = alcor_data_irq_done(host, tmp);
-		/* use fast path for simple tasks */
+		 
 		if (cmd_done && data_done) {
 			ret = IRQ_HANDLED;
 			goto alcor_irq_done;
@@ -723,7 +678,7 @@ static int alcor_card_busy(struct mmc_host *mmc)
 	struct alcor_pci_priv *priv = host->alcor_pci;
 	u8 status;
 
-	/* Check whether dat[0:3] low */
+	 
 	status = alcor_read8(priv, AU6601_DATA_PIN_STATE);
 
 	return !(status & AU6601_BUS_STAT_DAT_MASK);
@@ -737,7 +692,7 @@ static int alcor_get_cd(struct mmc_host *mmc)
 
 	detect = alcor_read8(priv, AU6601_DETECT_STATUS)
 		& AU6601_DETECT_STATUS_M;
-	/* check if card is present then send command and data */
+	 
 	return (detect == AU6601_SD_DETECTED);
 }
 
@@ -747,7 +702,7 @@ static int alcor_get_ro(struct mmc_host *mmc)
 	struct alcor_pci_priv *priv = host->alcor_pci;
 	u8 status;
 
-	/* get write protect pin status */
+	 
 	status = alcor_read8(priv, AU6601_INTERFACE_MODE_CTRL);
 
 	return !!(status & AU6601_SD_CARD_WP);
@@ -761,7 +716,7 @@ static void alcor_request(struct mmc_host *mmc, struct mmc_request *mrq)
 
 	host->mrq = mrq;
 
-	/* check if card is present then send command and data */
+	 
 	if (alcor_get_cd(mmc))
 		alcor_send_cmd(host, mrq->cmd, true);
 	else {
@@ -786,19 +741,11 @@ static void alcor_pre_req(struct mmc_host *mmc,
 
 	data->host_cookie = COOKIE_UNMAPPED;
 
-	/* FIXME: looks like the DMA engine works only with CMD18 */
+	 
 	if (cmd->opcode != MMC_READ_MULTIPLE_BLOCK
 			&& cmd->opcode != MMC_WRITE_MULTIPLE_BLOCK)
 		return;
-	/*
-	 * We don't do DMA on "complex" transfers, i.e. with
-	 * non-word-aligned buffers or lengths. A future improvement
-	 * could be made to use temporary DMA bounce-buffers when these
-	 * requirements are not met.
-	 *
-	 * Also, we don't bother with all the DMA setup overhead for
-	 * short transfers.
-	 */
+	 
 	if (data->blocks * data->blksz < AU6601_MAX_DMA_BLOCK_SIZE)
 		return;
 
@@ -812,7 +759,7 @@ static void alcor_pre_req(struct mmc_host *mmc,
 			return;
 	}
 
-	/* This data might be unmapped at this time */
+	 
 
 	sg_len = dma_map_sg(host->dev, data->sg, data->sg_len,
 			    mmc_get_dma_dir(data));
@@ -850,51 +797,42 @@ static void alcor_set_power_mode(struct mmc_host *mmc, struct mmc_ios *ios)
 	switch (ios->power_mode) {
 	case MMC_POWER_OFF:
 		alcor_set_clock(host, ios->clock);
-		/* set all pins to input */
+		 
 		alcor_write8(priv, 0, AU6601_OUTPUT_ENABLE);
-		/* turn of VDD */
+		 
 		alcor_write8(priv, 0, AU6601_POWER_CONTROL);
 		break;
 	case MMC_POWER_UP:
 		break;
 	case MMC_POWER_ON:
-		/* This is most trickiest part. The order and timings of
-		 * instructions seems to play important role. Any changes may
-		 * confuse internal state engine if this HW.
-		 * FIXME: If we will ever get access to documentation, then this
-		 * part should be reviewed again.
-		 */
+		 
 
-		/* enable SD card mode */
+		 
 		alcor_write8(priv, AU6601_SD_CARD,
 			      AU6601_ACTIVE_CTRL);
-		/* set signal voltage to 3.3V */
+		 
 		alcor_write8(priv, 0, AU6601_OPT);
-		/* no documentation about clk delay, for now just try to mimic
-		 * original driver.
-		 */
+		 
 		alcor_write8(priv, 0x20, AU6601_CLK_DELAY);
-		/* set BUS width to 1 bit */
+		 
 		alcor_write8(priv, 0, AU6601_REG_BUS_CTRL);
-		/* set CLK first time */
+		 
 		alcor_set_clock(host, ios->clock);
-		/* power on VDD */
+		 
 		alcor_write8(priv, AU6601_SD_CARD,
 			      AU6601_POWER_CONTROL);
-		/* wait until the CLK will get stable */
+		 
 		mdelay(20);
-		/* set CLK again, mimic original driver. */
+		 
 		alcor_set_clock(host, ios->clock);
 
-		/* enable output */
+		 
 		alcor_write8(priv, AU6601_SD_CARD,
 			      AU6601_OUTPUT_ENABLE);
-		/* The clk will not work on au6621. We need to trigger data
-		 * transfer.
-		 */
+		 
 		alcor_write8(priv, AU6601_DATA_WRITE,
 			      AU6601_DATA_XFER_CTRL);
-		/* configure timeout. Not clear what exactly it means. */
+		 
 		alcor_write8(priv, 0x7d, AU6601_TIME_OUT_CTRL);
 		mdelay(100);
 		break;
@@ -939,7 +877,7 @@ static int alcor_signal_voltage_switch(struct mmc_host *mmc,
 		alcor_rmw8(host, AU6601_OPT, 0, AU6601_OPT_SD_18V);
 		break;
 	default:
-		/* No signal voltage switch required */
+		 
 		break;
 	}
 
@@ -990,43 +928,38 @@ static void alcor_hw_init(struct alcor_sdmmc_host *host)
 	struct alcor_pci_priv *priv = host->alcor_pci;
 	struct alcor_dev_cfg *cfg = priv->cfg;
 
-	/* FIXME: This part is a mimics HW init of original driver.
-	 * If we will ever get access to documentation, then this part
-	 * should be reviewed again.
-	 */
+	 
 
-	/* reset command state engine */
+	 
 	alcor_reset(host, AU6601_RESET_CMD);
 
 	alcor_write8(priv, 0, AU6601_DMA_BOUNDARY);
-	/* enable sd card mode */
+	 
 	alcor_write8(priv, AU6601_SD_CARD, AU6601_ACTIVE_CTRL);
 
-	/* set BUS width to 1 bit */
+	 
 	alcor_write8(priv, 0, AU6601_REG_BUS_CTRL);
 
-	/* reset data state engine */
+	 
 	alcor_reset(host, AU6601_RESET_DATA);
-	/* Not sure if a voodoo with AU6601_DMA_BOUNDARY is really needed */
+	 
 	alcor_write8(priv, 0, AU6601_DMA_BOUNDARY);
 
 	alcor_write8(priv, 0, AU6601_INTERFACE_MODE_CTRL);
-	/* not clear what we are doing here. */
+	 
 	alcor_write8(priv, 0x44, AU6601_PAD_DRIVE0);
 	alcor_write8(priv, 0x44, AU6601_PAD_DRIVE1);
 	alcor_write8(priv, 0x00, AU6601_PAD_DRIVE2);
 
-	/* for 6601 - dma_boundary; for 6621 - dma_page_cnt
-	 * exact meaning of this register is not clear.
-	 */
+	 
 	alcor_write8(priv, cfg->dma, AU6601_DMA_BOUNDARY);
 
-	/* make sure all pins are set to input and VDD is off */
+	 
 	alcor_write8(priv, 0, AU6601_OUTPUT_ENABLE);
 	alcor_write8(priv, 0, AU6601_POWER_CONTROL);
 
 	alcor_write8(priv, AU6601_DETECT_EN, AU6601_DETECT_STATUS);
-	/* now we should be safe to enable IRQs */
+	 
 	alcor_unmask_sd_irqs(host);
 }
 
@@ -1058,17 +991,7 @@ static void alcor_init_mmc(struct alcor_sdmmc_host *host)
 	mmc->caps2 = MMC_CAP2_NO_SDIO;
 	mmc->ops = &alcor_sdc_ops;
 
-	/* The hardware does DMA data transfer of 4096 bytes to/from a single
-	 * buffer address. Scatterlists are not supported at the hardware
-	 * level, however we can work with them at the driver level,
-	 * provided that each segment is exactly 4096 bytes in size.
-	 * Upon DMA completion of a single segment (signalled via IRQ), we
-	 * immediately proceed to transfer the next segment from the
-	 * scatterlist.
-	 *
-	 * The overall request is limited to 240 sectors, matching the
-	 * original vendor driver.
-	 */
+	 
 	mmc->max_segs = AU6601_MAX_DMA_SEGMENTS;
 	mmc->max_seg_size = AU6601_MAX_DMA_BLOCK_SIZE;
 	mmc->max_blk_count = 240;
@@ -1094,7 +1017,7 @@ static int alcor_pci_sdmmc_drv_probe(struct platform_device *pdev)
 	host->cur_power_mode = MMC_POWER_UNDEFINED;
 	host->alcor_pci = priv;
 
-	/* make sure irqs are disabled */
+	 
 	alcor_write32(priv, 0, AU6601_REG_INT_ENABLE);
 	alcor_write32(priv, 0, AU6601_MS_INT_ENABLE);
 
@@ -1159,7 +1082,7 @@ static int alcor_pci_sdmmc_resume(struct device *dev)
 
 	return 0;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static SIMPLE_DEV_PM_OPS(alcor_mmc_pm_ops, alcor_pci_sdmmc_suspend,
 			 alcor_pci_sdmmc_resume);
@@ -1168,7 +1091,7 @@ static const struct platform_device_id alcor_pci_sdmmc_ids[] = {
 	{
 		.name = DRV_NAME_ALCOR_PCI_SDMMC,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(platform, alcor_pci_sdmmc_ids);

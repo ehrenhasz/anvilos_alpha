@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2020 BayLibre, SAS.
- * Author: Jerome Brunet <jbrunet@baylibre.com>
- */
+ 
+ 
 
 #ifndef _MESON_SND_CARD_H
 #define _MESON_SND_CARD_H
@@ -51,4 +48,4 @@ int meson_card_set_fe_link(struct snd_soc_card *card,
 int meson_card_probe(struct platform_device *pdev);
 int meson_card_remove(struct platform_device *pdev);
 
-#endif /* _MESON_SND_CARD_H */
+#endif  

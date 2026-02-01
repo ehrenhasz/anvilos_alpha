@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * OTP Memory controller
- *
- * Copyright (C) 2022 Microchip Technology Inc. and its subsidiaries
- *
- * Author: Claudiu Beznea <claudiu.beznea@microchip.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/iopoll.h>
@@ -28,13 +22,7 @@
 #define MCHP_OTPC_NAME			"mchp-otpc"
 #define MCHP_OTPC_SIZE			(11 * 1024)
 
-/**
- * struct mchp_otpc - OTPC private data structure
- * @base: base address
- * @dev: struct device pointer
- * @packets: list of packets in OTP memory
- * @npackets: number of packets in OTP memory
- */
+ 
 struct mchp_otpc {
 	void __iomem *base;
 	struct device *dev;
@@ -42,12 +30,7 @@ struct mchp_otpc {
 	u32 npackets;
 };
 
-/**
- * struct mchp_otpc_packet - OTPC packet data structure
- * @list: list head
- * @id: packet ID
- * @offset: packet offset (in words) in OTP memory
- */
+ 
 struct mchp_otpc_packet {
 	struct list_head list;
 	u32 id;
@@ -75,74 +58,23 @@ static int mchp_otpc_prepare_read(struct mchp_otpc *otpc,
 {
 	u32 tmp;
 
-	/* Set address. */
+	 
 	tmp = readl_relaxed(otpc->base + MCHP_OTPC_MR);
 	tmp &= ~MCHP_OTPC_MR_ADDR;
 	tmp |= FIELD_PREP(MCHP_OTPC_MR_ADDR, offset);
 	writel_relaxed(tmp, otpc->base + MCHP_OTPC_MR);
 
-	/* Set read. */
+	 
 	tmp = readl_relaxed(otpc->base + MCHP_OTPC_CR);
 	tmp |= MCHP_OTPC_CR_READ;
 	writel_relaxed(tmp, otpc->base + MCHP_OTPC_CR);
 
-	/* Wait for packet to be transferred into temporary buffers. */
+	 
 	return read_poll_timeout(readl_relaxed, tmp, !(tmp & MCHP_OTPC_SR_READ),
 				 10000, 2000, false, otpc->base + MCHP_OTPC_SR);
 }
 
-/*
- * OTPC memory is organized into packets. Each packets contains a header and
- * a payload. Header is 4 bytes long and contains the size of the payload.
- * Payload size varies. The memory footprint is something as follows:
- *
- * Memory offset  Memory footprint     Packet ID
- * -------------  ----------------     ---------
- *
- * 0x0            +------------+   <-- packet 0
- *                | header  0  |
- * 0x4            +------------+
- *                | payload 0  |
- *                .            .
- *                .    ...     .
- *                .            .
- * offset1        +------------+   <-- packet 1
- *                | header  1  |
- * offset1 + 0x4  +------------+
- *                | payload 1  |
- *                .            .
- *                .    ...     .
- *                .            .
- * offset2        +------------+   <-- packet 2
- *                .            .
- *                .    ...     .
- *                .            .
- * offsetN        +------------+   <-- packet N
- *                | header  N  |
- * offsetN + 0x4  +------------+
- *                | payload N  |
- *                .            .
- *                .    ...     .
- *                .            .
- *                +------------+
- *
- * where offset1, offset2, offsetN depends on the size of payload 0, payload 1,
- * payload N-1.
- *
- * The access to memory is done on a per packet basis: the control registers
- * need to be updated with an offset address (within a packet range) and the
- * data registers will be update by controller with information contained by
- * that packet. E.g. if control registers are updated with any address within
- * the range [offset1, offset2) the data registers are updated by controller
- * with packet 1. Header data is accessible though MCHP_OTPC_HR register.
- * Payload data is accessible though MCHP_OTPC_DR and MCHP_OTPC_AR registers.
- * There is no direct mapping b/w the offset requested by software and the
- * offset returned by hardware.
- *
- * For this, the read function will return the first requested bytes in the
- * packet. The user will have to be aware of the memory footprint before doing
- * the read request.
- */
+ 
 static int mchp_otpc_read(void *priv, unsigned int off, void *val,
 			  size_t bytes)
 {
@@ -153,12 +85,7 @@ static int mchp_otpc_read(void *priv, unsigned int off, void *val,
 	size_t len = 0;
 	int ret, payload_size;
 
-	/*
-	 * We reach this point with off being multiple of stride = 4 to
-	 * be able to cross the subsystem. Inside the driver we use continuous
-	 * unsigned integer numbers for packet id, thus devide off by 4
-	 * before passing it to mchp_otpc_id_to_packet().
-	 */
+	 
 	packet = mchp_otpc_id_to_packet(otpc, off / 4);
 	if (!packet)
 		return -EINVAL;
@@ -169,14 +96,14 @@ static int mchp_otpc_read(void *priv, unsigned int off, void *val,
 		if (ret)
 			return ret;
 
-		/* Read and save header content. */
+		 
 		*buf++ = readl_relaxed(otpc->base + MCHP_OTPC_HR);
 		len += sizeof(*buf);
 		offset++;
 		if (len >= bytes)
 			break;
 
-		/* Read and save payload content. */
+		 
 		payload_size = FIELD_GET(MCHP_OTPC_HR_SIZE, *(buf - 1));
 		writel_relaxed(0UL, otpc->base + MCHP_OTPC_AR);
 		do {
@@ -218,9 +145,9 @@ static int mchp_otpc_init_packets_list(struct mchp_otpc *otpc, u32 *size)
 		INIT_LIST_HEAD(&packet->list);
 		list_add_tail(&packet->list, &otpc->packets);
 
-		/* Count size by adding header and paload sizes. */
+		 
 		*size += 4 * (payload_size + 1);
-		/* Next word: this packet (header, payload) position + 1. */
+		 
 		word_pos += payload_size + 2;
 
 		npackets++;

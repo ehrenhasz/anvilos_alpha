@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NXP Wireless LAN device driver: utility functions
- *
- * Copyright 2011-2020 NXP
- */
+
+ 
 
 #include "decl.h"
 #include "ioctl.h"
@@ -104,7 +100,7 @@ static struct mwifiex_debug_data items[] = {
 	{"event_received", item_size(event_received),
 	 item_addr(event_received), 1},
 
-	/* variables defined in struct mwifiex_adapter */
+	 
 	{"cmd_pending", adapter_item_size(cmd_pending),
 	 adapter_item_addr(cmd_pending), 1},
 	{"tx_pending", adapter_item_size(tx_pending),
@@ -115,12 +111,7 @@ static struct mwifiex_debug_data items[] = {
 
 static int num_of_items = ARRAY_SIZE(items);
 
-/*
- * Firmware initialization complete callback handler.
- *
- * This function wakes up the function waiting on the init
- * wait queue for the firmware initialization to complete.
- */
+ 
 int mwifiex_init_fw_complete(struct mwifiex_adapter *adapter)
 {
 
@@ -133,10 +124,7 @@ int mwifiex_init_fw_complete(struct mwifiex_adapter *adapter)
 	return 0;
 }
 
-/*
- * This function sends init/shutdown command
- * to firmware.
- */
+ 
 int mwifiex_init_shutdown_fw(struct mwifiex_private *priv,
 			     u32 func_init_shutdown)
 {
@@ -156,12 +144,7 @@ int mwifiex_init_shutdown_fw(struct mwifiex_private *priv,
 }
 EXPORT_SYMBOL_GPL(mwifiex_init_shutdown_fw);
 
-/*
- * IOCTL request handler to set/get debug information.
- *
- * This function collates/sets the information from/to different driver
- * structures.
- */
+ 
 int mwifiex_get_debug_info(struct mwifiex_private *priv,
 			   struct mwifiex_debug_info *info)
 {
@@ -255,7 +238,7 @@ int mwifiex_debug_info_to_buffer(struct mwifiex_private *priv, char *buf,
 
 		if (i < (num_of_items - 3))
 			addr = d[i].addr + (size_t)info;
-		else /* The last 3 items are struct mwifiex_adapter variables */
+		else  
 			addr = d[i].addr + (size_t)priv->adapter;
 
 		for (j = 0; j < d[i].num; j++) {
@@ -352,7 +335,7 @@ mwifiex_parse_mgmt_packet(struct mwifiex_private *priv, u8 *payload, u16 len,
 			}
 			break;
 		case WLAN_CATEGORY_BACK:
-			/*we dont indicate BACK action frames to cfg80211*/
+			 
 			mwifiex_dbg(priv->adapter, INFO,
 				    "drop BACK action frames");
 			return -1;
@@ -370,10 +353,7 @@ mwifiex_parse_mgmt_packet(struct mwifiex_private *priv, u8 *payload, u16 len,
 
 	return 0;
 }
-/*
- * This function processes the received management packet and send it
- * to the kernel.
- */
+ 
 int
 mwifiex_process_mgmt_packet(struct mwifiex_private *priv,
 			    struct sk_buff *skb)
@@ -409,7 +389,7 @@ mwifiex_process_mgmt_packet(struct mwifiex_private *priv,
 					      pkt_len, rx_pd))
 			return -1;
 	}
-	/* Remove address4 */
+	 
 	memmove(skb->data + sizeof(struct ieee80211_hdr_3addr),
 		skb->data + sizeof(struct ieee80211_hdr),
 		pkt_len - sizeof(struct ieee80211_hdr));
@@ -424,15 +404,7 @@ mwifiex_process_mgmt_packet(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function processes the received packet before sending it to the
- * kernel.
- *
- * It extracts the SKB from the received buffer and sends it to kernel.
- * In case the received buffer does not contain the data in SKB format,
- * the function creates a blank SKB, fills it with the data from the
- * received buffer and then sends this new SKB to the kernel.
- */
+ 
 int mwifiex_recv_packet(struct mwifiex_private *priv, struct sk_buff *skb)
 {
 	struct mwifiex_sta_node *src_node;
@@ -458,23 +430,7 @@ int mwifiex_recv_packet(struct mwifiex_private *priv, struct sk_buff *skb)
 	skb->protocol = eth_type_trans(skb, priv->netdev);
 	skb->ip_summed = CHECKSUM_NONE;
 
-	/* This is required only in case of 11n and USB/PCIE as we alloc
-	 * a buffer of 4K only if its 11N (to be able to receive 4K
-	 * AMSDU packets). In case of SD we allocate buffers based
-	 * on the size of packet and hence this is not needed.
-	 *
-	 * Modifying the truesize here as our allocation for each
-	 * skb is 4K but we only receive 2K packets and this cause
-	 * the kernel to start dropping packets in case where
-	 * application has allocated buffer based on 2K size i.e.
-	 * if there a 64K packet received (in IP fragments and
-	 * application allocates 64K to receive this packet but
-	 * this packet would almost double up because we allocate
-	 * each 1.5K fragment in 4K and pass it up. As soon as the
-	 * 64K limit hits kernel will start to drop rest of the
-	 * fragments. Currently we fail the Filesndl-ht.scr script
-	 * for UDP, hence this fix
-	 */
+	 
 	if ((priv->adapter->iface_type == MWIFIEX_USB ||
 	     priv->adapter->iface_type == MWIFIEX_PCIE) &&
 	    (skb->truesize > MWIFIEX_RX_DATA_BUF_SIZE))
@@ -484,15 +440,7 @@ int mwifiex_recv_packet(struct mwifiex_private *priv, struct sk_buff *skb)
 	return 0;
 }
 
-/*
- * IOCTL completion callback handler.
- *
- * This function is called when a pending IOCTL is completed.
- *
- * If work queue support is enabled, the function wakes up the
- * corresponding waiting function. Otherwise, it processes the
- * IOCTL response and frees the response buffer.
- */
+ 
 int mwifiex_complete_cmd(struct mwifiex_adapter *adapter,
 			 struct cmd_ctrl_node *cmd_node)
 {
@@ -506,11 +454,7 @@ int mwifiex_complete_cmd(struct mwifiex_adapter *adapter,
 	return 0;
 }
 
-/* This function will return the pointer to station entry in station list
- * table which matches specified mac address.
- * This function should be called after acquiring RA list spinlock.
- * NULL is returned if station entry is not found in associated STA list.
- */
+ 
 struct mwifiex_sta_node *
 mwifiex_get_sta_entry(struct mwifiex_private *priv, const u8 *mac)
 {
@@ -540,9 +484,7 @@ mwifiex_get_tdls_sta_entry(struct mwifiex_private *priv, u8 status)
 	return NULL;
 }
 
-/* If tdls channel switching is on-going, tx data traffic should be
- * blocked until the switching stage completed.
- */
+ 
 u8 mwifiex_is_tdls_chan_switching(struct mwifiex_private *priv)
 {
 	struct mwifiex_sta_node *sta_ptr;
@@ -571,9 +513,7 @@ u8 mwifiex_is_tdls_off_chan(struct mwifiex_private *priv)
 	return false;
 }
 
-/* If tdls channel switching is on-going or tdls operate on off-channel,
- * cmd path should be blocked until tdls switched to base-channel.
- */
+ 
 u8 mwifiex_is_send_cmd_allowed(struct mwifiex_private *priv)
 {
 	if (!priv || !ISSUPP_TDLS_ENABLED(priv->adapter->fw_cap_info))
@@ -586,11 +526,7 @@ u8 mwifiex_is_send_cmd_allowed(struct mwifiex_private *priv)
 	return true;
 }
 
-/* This function will add a sta_node entry to associated station list
- * table with the given mac address.
- * If entry exist already, existing entry is returned.
- * If received mac address is NULL, NULL is returned.
- */
+ 
 struct mwifiex_sta_node *
 mwifiex_add_sta_entry(struct mwifiex_private *priv, const u8 *mac)
 {
@@ -616,9 +552,7 @@ done:
 	return node;
 }
 
-/* This function will search for HT IE in association request IEs
- * and set station HT parameters accordingly.
- */
+ 
 void
 mwifiex_set_sta_ht_cap(struct mwifiex_private *priv, const u8 *ies,
 		       int ies_len, struct mwifiex_sta_node *node)
@@ -645,7 +579,7 @@ mwifiex_set_sta_ht_cap(struct mwifiex_private *priv, const u8 *ies,
 	return;
 }
 
-/* This function will delete a station entry from station list */
+ 
 void mwifiex_del_sta_entry(struct mwifiex_private *priv, const u8 *mac)
 {
 	struct mwifiex_sta_node *node;
@@ -662,7 +596,7 @@ void mwifiex_del_sta_entry(struct mwifiex_private *priv, const u8 *mac)
 	return;
 }
 
-/* This function will delete all stations from associated station list. */
+ 
 void mwifiex_del_all_sta_list(struct mwifiex_private *priv)
 {
 	struct mwifiex_sta_node *node, *tmp;
@@ -679,7 +613,7 @@ void mwifiex_del_all_sta_list(struct mwifiex_private *priv)
 	return;
 }
 
-/* This function adds histogram data to histogram array*/
+ 
 void mwifiex_hist_data_add(struct mwifiex_private *priv,
 			   u8 rx_rate, s8 snr, s8 nflr)
 {
@@ -690,7 +624,7 @@ void mwifiex_hist_data_add(struct mwifiex_private *priv,
 	mwifiex_hist_data_set(priv, rx_rate, snr, nflr);
 }
 
-/* function to add histogram record */
+ 
 void mwifiex_hist_data_set(struct mwifiex_private *priv, u8 rx_rate, s8 snr,
 			   s8 nflr)
 {
@@ -705,7 +639,7 @@ void mwifiex_hist_data_set(struct mwifiex_private *priv, u8 rx_rate, s8 snr,
 	atomic_inc(&phist_data->sig_str[rssi + 128]);
 }
 
-/* function to reset histogram data during init/reset */
+ 
 void mwifiex_hist_data_reset(struct mwifiex_private *priv)
 {
 	int ix;

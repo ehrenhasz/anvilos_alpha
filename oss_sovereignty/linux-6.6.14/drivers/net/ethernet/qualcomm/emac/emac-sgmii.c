@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
- */
 
-/* Qualcomm Technologies, Inc. EMAC SGMII Controller driver.
- */
+ 
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/iopoll.h>
@@ -15,7 +13,7 @@
 #include "emac-mac.h"
 #include "emac-sgmii.h"
 
-/* EMAC_SGMII register offsets */
+ 
 #define EMAC_SGMII_PHY_AUTONEG_CFG2		0x0048
 #define EMAC_SGMII_PHY_SPEED_CFG1		0x0074
 #define EMAC_SGMII_PHY_IRQ_CMD			0x00ac
@@ -87,15 +85,13 @@ void emac_sgmii_reset(struct emac_adapter *adpt)
 	adpt->phy.sgmii_ops->reset(adpt);
 }
 
-/* Initialize the SGMII link between the internal and external PHYs. */
+ 
 static void emac_sgmii_link_init(struct emac_adapter *adpt)
 {
 	struct emac_sgmii *phy = &adpt->phy;
 	u32 val;
 
-	/* Always use autonegotiation. It works no matter how the external
-	 * PHY is configured.
-	 */
+	 
 	val = readl(phy->base + EMAC_SGMII_PHY_AUTONEG_CFG2);
 	val &= ~(FORCE_AN_RX_CFG | FORCE_AN_TX_CFG);
 	val |= AN_ENABLE;
@@ -109,13 +105,10 @@ static int emac_sgmii_irq_clear(struct emac_adapter *adpt, u8 irq_bits)
 
 	writel_relaxed(irq_bits, phy->base + EMAC_SGMII_PHY_INTERRUPT_CLEAR);
 	writel_relaxed(IRQ_GLOBAL_CLEAR, phy->base + EMAC_SGMII_PHY_IRQ_CMD);
-	/* Ensure interrupt clear command is written to HW */
+	 
 	wmb();
 
-	/* After set the IRQ_GLOBAL_CLEAR bit, the status clearing must
-	 * be confirmed before clearing the bits in other registers.
-	 * It takes a few cycles for hw to clear the interrupt status.
-	 */
+	 
 	if (readl_poll_timeout_atomic(phy->base +
 				      EMAC_SGMII_PHY_INTERRUPT_STATUS,
 				      status, !(status & irq_bits), 1,
@@ -125,17 +118,17 @@ static int emac_sgmii_irq_clear(struct emac_adapter *adpt, u8 irq_bits)
 		return -EIO;
 	}
 
-	/* Finalize clearing procedure */
+	 
 	writel_relaxed(0, phy->base + EMAC_SGMII_PHY_IRQ_CMD);
 	writel_relaxed(0, phy->base + EMAC_SGMII_PHY_INTERRUPT_CLEAR);
 
-	/* Ensure that clearing procedure finalization is written to HW */
+	 
 	wmb();
 
 	return 0;
 }
 
-/* The number of decode errors that triggers a reset */
+ 
 #define DECODE_ERROR_LIMIT	2
 
 static irqreturn_t emac_sgmii_interrupt(int irq, void *data)
@@ -149,26 +142,18 @@ static irqreturn_t emac_sgmii_interrupt(int irq, void *data)
 	if (!status)
 		return IRQ_HANDLED;
 
-	/* If we get a decoding error and CDR is not locked, then try
-	 * resetting the internal PHY.  The internal PHY uses an embedded
-	 * clock with Clock and Data Recovery (CDR) to recover the
-	 * clock and data.
-	 */
+	 
 	if (status & SGMII_PHY_INTERRUPT_ERR) {
 		int count;
 
-		/* The SGMII is capable of recovering from some decode
-		 * errors automatically.  However, if we get multiple
-		 * decode errors in a row, then assume that something
-		 * is wrong and reset the interface.
-		 */
+		 
 		count = atomic_inc_return(&phy->decode_error_count);
 		if (count == DECODE_ERROR_LIMIT) {
 			schedule_work(&adpt->work_thread);
 			atomic_set(&phy->decode_error_count, 0);
 		}
 	} else {
-		/* We only care about consecutive decode errors. */
+		 
 		atomic_set(&phy->decode_error_count, 0);
 	}
 
@@ -183,17 +168,15 @@ static void emac_sgmii_reset_prepare(struct emac_adapter *adpt)
 	struct emac_sgmii *phy = &adpt->phy;
 	u32 val;
 
-	/* Reset PHY */
+	 
 	val = readl(phy->base + EMAC_EMAC_WRAPPER_CSR2);
 	writel(((val & ~PHY_RESET) | PHY_RESET), phy->base +
 	       EMAC_EMAC_WRAPPER_CSR2);
-	/* Ensure phy-reset command is written to HW before the release cmd */
+	 
 	msleep(50);
 	val = readl(phy->base + EMAC_EMAC_WRAPPER_CSR2);
 	writel((val & ~PHY_RESET), phy->base + EMAC_EMAC_WRAPPER_CSR2);
-	/* Ensure phy-reset release command is written to HW before initializing
-	 * SGMII
-	 */
+	 
 	msleep(50);
 }
 
@@ -217,7 +200,7 @@ static int emac_sgmii_common_open(struct emac_adapter *adpt)
 	int ret;
 
 	if (sgmii->irq) {
-		/* Make sure interrupts are cleared and disabled first */
+		 
 		ret = emac_sgmii_irq_clear(adpt, 0xff);
 		if (ret)
 			return ret;
@@ -239,19 +222,19 @@ static void emac_sgmii_common_close(struct emac_adapter *adpt)
 {
 	struct emac_sgmii *sgmii = &adpt->phy;
 
-	/* Make sure interrupts are disabled */
+	 
 	writel(0, sgmii->base + EMAC_SGMII_PHY_INTERRUPT_MASK);
 	free_irq(sgmii->irq, adpt);
 }
 
-/* The error interrupts are only valid after the link is up */
+ 
 static int emac_sgmii_common_link_change(struct emac_adapter *adpt, bool linkup)
 {
 	struct emac_sgmii *sgmii = &adpt->phy;
 	int ret;
 
 	if (linkup) {
-		/* Clear and enable interrupts */
+		 
 		ret = emac_sgmii_irq_clear(adpt, 0xff);
 		if (ret)
 			return ret;
@@ -259,7 +242,7 @@ static int emac_sgmii_common_link_change(struct emac_adapter *adpt, bool linkup)
 		writel(SGMII_ISR_MASK,
 		       sgmii->base + EMAC_SGMII_PHY_INTERRUPT_MASK);
 	} else {
-		/* Disable interrupts */
+		 
 		writel(0, sgmii->base + EMAC_SGMII_PHY_INTERRUPT_MASK);
 		synchronize_irq(sgmii->irq);
 	}
@@ -313,12 +296,10 @@ static int emac_sgmii_acpi_match(struct device *dev, void *data)
 		status = acpi_evaluate_integer(handle, "_HRV", NULL, &hrv);
 		if (status) {
 			if (status == AE_NOT_FOUND)
-				/* Older versions of the QDF2432 ACPI tables do
-				 * not have an _HRV property.
-				 */
+				 
 				hrv = 1;
 			else
-				/* Something is wrong with the tables */
+				 
 				return 0;
 		}
 
@@ -394,7 +375,7 @@ int emac_sgmii_config(struct platform_device *pdev, struct emac_adapter *adpt)
 		phy->sgmii_ops = (struct sgmii_ops *)match->data;
 	}
 
-	/* Base address is the first address */
+	 
 	res = platform_get_resource(sgmii_pdev, IORESOURCE_MEM, 0);
 	if (!res) {
 		ret = -EINVAL;
@@ -407,7 +388,7 @@ int emac_sgmii_config(struct platform_device *pdev, struct emac_adapter *adpt)
 		goto error_put_device;
 	}
 
-	/* v2 SGMII has a per-lane digital digital, so parse it if it exists */
+	 
 	res = platform_get_resource(sgmii_pdev, IORESOURCE_MEM, 1);
 	if (res) {
 		phy->digital = ioremap(res->start, resource_size(res));
@@ -427,9 +408,7 @@ int emac_sgmii_config(struct platform_device *pdev, struct emac_adapter *adpt)
 	if (ret > 0)
 		phy->irq = ret;
 
-	/* We've remapped the addresses, so we don't need the device any
-	 * more.  of_find_device_by_node() says we should release it.
-	 */
+	 
 	put_device(&sgmii_pdev->dev);
 
 	return 0;

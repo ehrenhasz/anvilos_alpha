@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Regression3
- * Description:
- * Helper radix_tree_iter_retry resets next_index to the current index.
- * In following radix_tree_next_slot current chunk size becomes zero.
- * This isn't checked and it tries to dereference null pointer in slot.
- *
- * Helper radix_tree_iter_resume reset slot to NULL and next_index to index + 1,
- * for tagger iteraction it also must reset cached tags in iterator to abort
- * next radix_tree_next_slot and go to slow-path into radix_tree_next_chunk.
- *
- * Running:
- * This test should run to completion immediately. The above bug would
- * cause it to segfault.
- *
- * Upstream commit:
- * Not yet
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/gfp.h>
 #include <linux/slab.h>

@@ -1,110 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * System Control and Management Interface (SCMI) Raw mode support
- *
- * Copyright (C) 2022 ARM Ltd.
- */
-/**
- * DOC: Theory of operation
- *
- * When enabled the SCMI Raw mode support exposes a userspace API which allows
- * to send and receive SCMI commands, replies and notifications from a user
- * application through injection and snooping of bare SCMI messages in binary
- * little-endian format.
- *
- * Such injected SCMI transactions will then be routed through the SCMI core
- * stack towards the SCMI backend server using whatever SCMI transport is
- * currently configured on the system under test.
- *
- * It is meant to help in running any sort of SCMI backend server testing, no
- * matter where the server is placed, as long as it is normally reachable via
- * the transport configured on the system.
- *
- * It is activated by a Kernel configuration option since it is NOT meant to
- * be used in production but only during development and in CI deployments.
- *
- * In order to avoid possible interferences between the SCMI Raw transactions
- * originated from a test-suite and the normal operations of the SCMI drivers,
- * when Raw mode is enabled, by default, all the regular SCMI drivers are
- * inhibited, unless CONFIG_ARM_SCMI_RAW_MODE_SUPPORT_COEX is enabled: in this
- * latter case the regular SCMI stack drivers will be loaded as usual and it is
- * up to the user of this interface to take care of manually inhibiting the
- * regular SCMI drivers in order to avoid interferences during the test runs.
- *
- * The exposed API is as follows.
- *
- * All SCMI Raw entries are rooted under a common top /raw debugfs top directory
- * which in turn is rooted under the corresponding underlying  SCMI instance.
- *
- * /sys/kernel/debug/scmi/
- * `-- 0
- *     |-- atomic_threshold_us
- *     |-- instance_name
- *     |-- raw
- *     |   |-- channels
- *     |   |   |-- 0x10
- *     |   |   |   |-- message
- *     |   |   |   `-- message_async
- *     |   |   `-- 0x13
- *     |   |       |-- message
- *     |   |       `-- message_async
- *     |   |-- errors
- *     |   |-- message
- *     |   |-- message_async
- *     |   |-- notification
- *     |   `-- reset
- *     `-- transport
- *         |-- is_atomic
- *         |-- max_msg_size
- *         |-- max_rx_timeout_ms
- *         |-- rx_max_msg
- *         |-- tx_max_msg
- *         `-- type
- *
- * where:
- *
- *  - errors: used to read back timed-out and unexpected replies
- *  - message*: used to send sync/async commands and read back immediate and
- *		delayed reponses (if any)
- *  - notification: used to read any notification being emitted by the system
- *		    (if previously enabled by the user app)
- *  - reset: used to flush the queues of messages (of any kind) still pending
- *	     to be read; this is useful at test-suite start/stop to get
- *	     rid of any unread messages from the previous run.
- *
- * with the per-channel entries rooted at /channels being present only on a
- * system where multiple transport channels have been configured.
- *
- * Such per-channel entries can be used to explicitly choose a specific channel
- * for SCMI bare message injection, in contrast with the general entries above
- * where, instead, the selection of the proper channel to use is automatically
- * performed based the protocol embedded in the injected message and on how the
- * transport is configured on the system.
- *
- * Note that other common general entries are available under transport/ to let
- * the user applications properly make up their expectations in terms of
- * timeouts and message characteristics.
- *
- * Each write to the message* entries causes one command request to be built
- * and sent while the replies or delayed response are read back from those same
- * entries one message at time (receiving an EOF at each message boundary).
- *
- * The user application running the test is in charge of handling timeouts
- * on replies and properly choosing SCMI sequence numbers for the outgoing
- * requests (using the same sequence number is supported but discouraged).
- *
- * Injection of multiple in-flight requests is supported as long as the user
- * application uses properly distinct sequence numbers for concurrent requests
- * and takes care to properly manage all the related issues about concurrency
- * and command/reply pairing. Keep in mind that, anyway, the real level of
- * parallelism attainable in such scenario is dependent on the characteristics
- * of the underlying transport being used.
- *
- * Since the SCMI core regular stack is partially used to deliver and collect
- * the messages, late replies arrived after timeouts and any other sort of
- * unexpected message can be identified by the SCMI core as usual and they will
- * be reported as messages under "errors" for later analysis.
- */
+
+ 
+ 
 
 #include <linux/bitmap.h>
 #include <linux/debugfs.h>
@@ -129,47 +25,18 @@
 
 #define SCMI_XFER_RAW_MAX_RETRIES	10
 
-/**
- * struct scmi_raw_queue  - Generic Raw queue descriptor
- *
- * @free_bufs: A freelists listhead used to keep unused raw buffers
- * @free_bufs_lock: Spinlock used to protect access to @free_bufs
- * @msg_q: A listhead to a queue of snooped messages waiting to be read out
- * @msg_q_lock: Spinlock used to protect access to @msg_q
- * @wq: A waitqueue used to wait and poll on related @msg_q
- */
+ 
 struct scmi_raw_queue {
 	struct list_head free_bufs;
-	/* Protect free_bufs[] lists */
+	 
 	spinlock_t free_bufs_lock;
 	struct list_head msg_q;
-	/* Protect msg_q[] lists */
+	 
 	spinlock_t msg_q_lock;
 	wait_queue_head_t wq;
 };
 
-/**
- * struct scmi_raw_mode_info  - Structure holding SCMI Raw instance data
- *
- * @id: Sequential Raw instance ID.
- * @handle: Pointer to SCMI entity handle to use
- * @desc: Pointer to the transport descriptor to use
- * @tx_max_msg: Maximum number of concurrent TX in-flight messages
- * @q: An array of Raw queue descriptors
- * @chans_q: An XArray mapping optional additional per-channel queues
- * @free_waiters: Head of freelist for unused waiters
- * @free_mtx: A mutex to protect the waiters freelist
- * @active_waiters: Head of list for currently active and used waiters
- * @active_mtx: A mutex to protect the active waiters list
- * @waiters_work: A work descriptor to be used with the workqueue machinery
- * @wait_wq: A workqueue reference to the created workqueue
- * @dentry: Top debugfs root dentry for SCMI Raw
- * @gid: A group ID used for devres accounting
- *
- * Note that this descriptor is passed back to the core after SCMI Raw is
- * initialized as an opaque handle to use by subsequent SCMI Raw call hooks.
- *
- */
+ 
 struct scmi_raw_mode_info {
 	unsigned int id;
 	const struct scmi_handle *handle;
@@ -178,10 +45,10 @@ struct scmi_raw_mode_info {
 	struct scmi_raw_queue *q[SCMI_RAW_MAX_QUEUE];
 	struct xarray chans_q;
 	struct list_head free_waiters;
-	/* Protect free_waiters list */
+	 
 	struct mutex free_mtx;
 	struct list_head active_waiters;
-	/* Protect active_waiters list */
+	 
 	struct mutex active_mtx;
 	struct work_struct waiters_work;
 	struct workqueue_struct	*wait_wq;
@@ -189,17 +56,7 @@ struct scmi_raw_mode_info {
 	void *gid;
 };
 
-/**
- * struct scmi_xfer_raw_waiter  - Structure to describe an xfer to be waited for
- *
- * @start_jiffies: The timestamp in jiffies of when this structure was queued.
- * @cinfo: A reference to the channel to use for this transaction
- * @xfer: A reference to the xfer to be waited for
- * @async_response: A completion to be, optionally, used for async waits: it
- *		    will be setup by @scmi_do_xfer_raw_start, if needed, to be
- *		    pointed at by xfer->async_done.
- * @node: A list node.
- */
+ 
 struct scmi_xfer_raw_waiter {
 	unsigned long start_jiffies;
 	struct scmi_chan_info *cinfo;
@@ -208,33 +65,14 @@ struct scmi_xfer_raw_waiter {
 	struct list_head node;
 };
 
-/**
- * struct scmi_raw_buffer  - Structure to hold a full SCMI message
- *
- * @max_len: The maximum allowed message size (header included) that can be
- *	     stored into @msg
- * @msg: A message buffer used to collect a full message grabbed from an xfer.
- * @node: A list node.
- */
+ 
 struct scmi_raw_buffer {
 	size_t max_len;
 	struct scmi_msg msg;
 	struct list_head node;
 };
 
-/**
- * struct scmi_dbg_raw_data  - Structure holding data needed by the debugfs
- * layer
- *
- * @chan_id: The preferred channel to use: if zero the channel is automatically
- *	     selected based on protocol.
- * @raw: A reference to the Raw instance.
- * @tx: A message buffer used to collect TX message on write.
- * @tx_size: The effective size of the TX message.
- * @tx_req_size: The final expected size of the complete TX message.
- * @rx: A message buffer to collect RX message on read.
- * @rx_size: The effective size of the RX message.
- */
+ 
 struct scmi_dbg_raw_data {
 	u8 chan_id;
 	struct scmi_raw_mode_info *raw;
@@ -276,7 +114,7 @@ static void scmi_raw_buffer_put(struct scmi_raw_queue *q,
 {
 	unsigned long flags;
 
-	/* Reset to full buffer length */
+	 
 	rb->msg.len = rb->max_len;
 
 	spin_lock_irqsave(&q->free_bufs_lock, flags);
@@ -373,7 +211,7 @@ static void scmi_xfer_raw_waiter_put(struct scmi_raw_mode_info *raw,
 static void scmi_xfer_raw_waiter_enqueue(struct scmi_raw_mode_info *raw,
 					 struct scmi_xfer_raw_waiter *rw)
 {
-	/* A timestamp for the deferred worker to know how much this has aged */
+	 
 	rw->start_jiffies = jiffies;
 
 	trace_scmi_xfer_response_wait(rw->xfer->transfer_id, rw->xfer->hdr.id,
@@ -386,7 +224,7 @@ static void scmi_xfer_raw_waiter_enqueue(struct scmi_raw_mode_info *raw,
 	list_add_tail(&rw->node, &raw->active_waiters);
 	mutex_unlock(&raw->active_mtx);
 
-	/* kick waiter work */
+	 
 	queue_work(raw->wait_wq, &raw->waiters_work);
 }
 
@@ -406,29 +244,7 @@ scmi_xfer_raw_waiter_dequeue(struct scmi_raw_mode_info *raw)
 	return rw;
 }
 
-/**
- * scmi_xfer_raw_worker  - Work function to wait for Raw xfers completions
- *
- * @work: A reference to the work.
- *
- * In SCMI Raw mode, once a user-provided injected SCMI message is sent, we
- * cannot wait to receive its response (if any) in the context of the injection
- * routines so as not to leave the userspace write syscall, which delivered the
- * SCMI message to send, pending till eventually a reply is received.
- * Userspace should and will poll/wait instead on the read syscalls which will
- * be in charge of reading a received reply (if any).
- *
- * Even though reply messages are collected and reported into the SCMI Raw layer
- * on the RX path, nonetheless we have to properly wait for their completion as
- * usual (and async_completion too if needed) in order to properly release the
- * xfer structure at the end: to do this out of the context of the write/send
- * these waiting jobs are delegated to this deferred worker.
- *
- * Any sent xfer, to be waited for, is timestamped and queued for later
- * consumption by this worker: queue aging is accounted for while choosing a
- * timeout for the completion, BUT we do not really care here if we end up
- * accidentally waiting for a bit too long.
- */
+ 
 static void scmi_xfer_raw_worker(struct work_struct *work)
 {
 	struct scmi_raw_mode_info *raw;
@@ -453,15 +269,7 @@ static void scmi_xfer_raw_worker(struct work_struct *work)
 
 		cinfo = rw->cinfo;
 		xfer = rw->xfer;
-		/*
-		 * Waiters are queued by wait-deadline at the end, so some of
-		 * them could have been already expired when processed, BUT we
-		 * have to check the completion status anyway just in case a
-		 * virtually expired (aged) transaction was indeed completed
-		 * fine and we'll have to wait for the asynchronous part (if
-		 * any): for this reason a 1 ms timeout is used for already
-		 * expired/aged xfers.
-		 */
+		 
 		aging = jiffies - rw->start_jiffies;
 		timeout_ms = max_tmo > aging ?
 			jiffies_to_msecs(max_tmo - aging) : 1;
@@ -477,7 +285,7 @@ static void scmi_xfer_raw_worker(struct work_struct *work)
 		trace_scmi_xfer_end(xfer->transfer_id, xfer->hdr.id,
 				    xfer->hdr.protocol_id, xfer->hdr.seq, ret);
 
-		/* Wait also for an async delayed response if needed */
+		 
 		if (!ret && xfer->async_done) {
 			unsigned long tmo = msecs_to_jiffies(SCMI_MAX_RESPONSE_TIMEOUT);
 
@@ -487,7 +295,7 @@ static void scmi_xfer_raw_worker(struct work_struct *work)
 					pack_scmi_header(&xfer->hdr));
 		}
 
-		/* Release waiter and xfer */
+		 
 		scmi_xfer_raw_put(raw->handle, xfer);
 		scmi_xfer_raw_waiter_put(raw, rw);
 	} while (1);
@@ -503,27 +311,7 @@ static void scmi_xfer_raw_reset(struct scmi_raw_mode_info *raw)
 		scmi_raw_buffer_queue_flush(raw->q[i]);
 }
 
-/**
- * scmi_xfer_raw_get_init  - An helper to build a valid xfer from the provided
- * bare SCMI message.
- *
- * @raw: A reference to the Raw instance.
- * @buf: A buffer containing the whole SCMI message to send (including the
- *	 header) in little-endian binary formmat.
- * @len: Length of the message in @buf.
- * @p: A pointer to return the initialized Raw xfer.
- *
- * After an xfer is picked from the TX pool and filled in with the message
- * content, the xfer is registered as pending with the core in the usual way
- * using the original sequence number provided by the user with the message.
- *
- * Note that, in case the testing user application is NOT using distinct
- * sequence-numbers between successive SCMI messages such registration could
- * fail temporarily if the previous message, using the same sequence number,
- * had still not released; in such a case we just wait and retry.
- *
- * Return: 0 on Success
- */
+ 
 static int scmi_xfer_raw_get_init(struct scmi_raw_mode_info *raw, void *buf,
 				  size_t len, struct scmi_xfer **p)
 {
@@ -537,7 +325,7 @@ static int scmi_xfer_raw_get_init(struct scmi_raw_mode_info *raw, void *buf,
 		return -EINVAL;
 
 	tx_size = len - sizeof(u32);
-	/* Ensure we have sane transfer sizes */
+	 
 	if (tx_size > raw->desc->max_msg_size)
 		return -ERANGE;
 
@@ -547,27 +335,22 @@ static int scmi_xfer_raw_get_init(struct scmi_raw_mode_info *raw, void *buf,
 		return PTR_ERR(xfer);
 	}
 
-	/* Build xfer from the provided SCMI bare LE message */
+	 
 	msg_hdr = le32_to_cpu(*((__le32 *)buf));
 	unpack_scmi_header(msg_hdr, &xfer->hdr);
 	xfer->hdr.seq = (u16)MSG_XTRACT_TOKEN(msg_hdr);
-	/* Polling not supported */
+	 
 	xfer->hdr.poll_completion = false;
 	xfer->hdr.status = SCMI_SUCCESS;
 	xfer->tx.len = tx_size;
 	xfer->rx.len = raw->desc->max_msg_size;
-	/* Clear the whole TX buffer */
+	 
 	memset(xfer->tx.buf, 0x00, raw->desc->max_msg_size);
 	if (xfer->tx.len)
 		memcpy(xfer->tx.buf, (u8 *)buf + sizeof(msg_hdr), xfer->tx.len);
 	*p = xfer;
 
-	/*
-	 * In flight registration can temporarily fail in case of Raw messages
-	 * if the user injects messages without using monotonically increasing
-	 * sequence numbers since, in Raw mode, the xfer (and the token) is
-	 * finally released later by a deferred worker. Just retry for a while.
-	 */
+	 
 	do {
 		ret = scmi_xfer_raw_inflight_register(raw->handle, xfer);
 		if (ret) {
@@ -589,25 +372,7 @@ static int scmi_xfer_raw_get_init(struct scmi_raw_mode_info *raw, void *buf,
 	return ret;
 }
 
-/**
- * scmi_do_xfer_raw_start  - An helper to send a valid raw xfer
- *
- * @raw: A reference to the Raw instance.
- * @xfer: The xfer to send
- * @chan_id: The channel ID to use, if zero the channels is automatically
- *	     selected based on the protocol used.
- * @async: A flag stating if an asynchronous command is required.
- *
- * This function send a previously built raw xfer using an appropriate channel
- * and queues the related waiting work.
- *
- * Note that we need to know explicitly if the required command is meant to be
- * asynchronous in kind since we have to properly setup the waiter.
- * (and deducing this from the payload is weak and do not scale given there is
- *  NOT a common header-flag stating if the command is asynchronous or not)
- *
- * Return: 0 on Success
- */
+ 
 static int scmi_do_xfer_raw_start(struct scmi_raw_mode_info *raw,
 				  struct scmi_xfer *xfer, u8 chan_id,
 				  bool async)
@@ -632,12 +397,12 @@ static int scmi_do_xfer_raw_start(struct scmi_raw_mode_info *raw,
 		return -ENOMEM;
 	}
 
-	/* True ONLY if also supported by transport. */
+	 
 	if (is_polling_enabled(cinfo, raw->desc))
 		xfer->hdr.poll_completion = true;
 
 	reinit_completion(&xfer->done);
-	/* Make sure xfer state update is visible before sending */
+	 
 	smp_store_mb(xfer->state, SCMI_XFER_SENT_OK);
 
 	trace_scmi_xfer_begin(xfer->transfer_id, xfer->hdr.id,
@@ -661,19 +426,7 @@ static int scmi_do_xfer_raw_start(struct scmi_raw_mode_info *raw,
 	return ret;
 }
 
-/**
- * scmi_raw_message_send  - An helper to build and send an SCMI command using
- * the provided SCMI bare message buffer
- *
- * @raw: A reference to the Raw instance.
- * @buf: A buffer containing the whole SCMI message to send (including the
- *	 header) in little-endian binary format.
- * @len: Length of the message in @buf.
- * @chan_id: The channel ID to use.
- * @async: A flag stating if an asynchronous command is required.
- *
- * Return: 0 on Success
- */
+ 
 static int scmi_raw_message_send(struct scmi_raw_mode_info *raw,
 				 void *buf, size_t len, u8 chan_id, bool async)
 {
@@ -717,21 +470,7 @@ scmi_raw_message_dequeue(struct scmi_raw_queue *q, bool o_nonblock)
 	return rb;
 }
 
-/**
- * scmi_raw_message_receive  - An helper to dequeue and report the next
- * available enqueued raw message payload that has been collected.
- *
- * @raw: A reference to the Raw instance.
- * @buf: A buffer to get hold of the whole SCMI message received and represented
- *	 in little-endian binary format.
- * @len: Length of @buf.
- * @size: The effective size of the message copied into @buf
- * @idx: The index of the queue to pick the next queued message from.
- * @chan_id: The channel ID to use.
- * @o_nonblock: A flag to request a non-blocking message dequeue.
- *
- * Return: 0 on Success
- */
+ 
 static int scmi_raw_message_receive(struct scmi_raw_mode_info *raw,
 				    void *buf, size_t len, size_t *size,
 				    unsigned int idx, unsigned int chan_id,
@@ -763,7 +502,7 @@ static int scmi_raw_message_receive(struct scmi_raw_mode_info *raw,
 	return ret;
 }
 
-/* SCMI Raw debugfs helpers */
+ 
 
 static ssize_t scmi_dbg_raw_mode_common_read(struct file *filp,
 					     char __user *buf,
@@ -784,10 +523,10 @@ static ssize_t scmi_dbg_raw_mode_common_read(struct file *filp,
 			return ret;
 		}
 
-		/* Reset any previous filepos change, including writes */
+		 
 		*ppos = 0;
 	} else if (*ppos == rd->rx_size) {
-		/* Return EOF once all the message has been read-out */
+		 
 		rd->rx_size = 0;
 		return 0;
 	}
@@ -809,14 +548,11 @@ static ssize_t scmi_dbg_raw_mode_common_write(struct file *filp,
 	if (count > rd->tx.len - rd->tx_size)
 		return -ENOSPC;
 
-	/* On first write attempt @count carries the total full message size. */
+	 
 	if (!rd->tx_size)
 		rd->tx_req_size = count;
 
-	/*
-	 * Gather a full message, possibly across multiple interrupted wrrtes,
-	 * before sending it with a single RAW xfer.
-	 */
+	 
 	if (rd->tx_size < rd->tx_req_size) {
 		ssize_t cnt;
 
@@ -833,7 +569,7 @@ static ssize_t scmi_dbg_raw_mode_common_write(struct file *filp,
 	ret = scmi_raw_message_send(rd->raw, rd->tx.buf, rd->tx_size,
 				    rd->chan_id, async);
 
-	/* Reset ppos for next message ... */
+	 
 	rd->tx_size = 0;
 	*ppos = 0;
 
@@ -914,7 +650,7 @@ static int scmi_dbg_raw_mode_open(struct inode *inode, struct file *filp)
 		return -ENOMEM;
 	}
 
-	/* Grab channel ID from debugfs entry naming if any */
+	 
 	if (!kstrtou8(id_str, 16, &id))
 		rd->chan_id = id;
 
@@ -1148,22 +884,7 @@ err:
 	return ret;
 }
 
-/**
- * scmi_raw_mode_init  - Function to initialize the SCMI Raw stack
- *
- * @handle: Pointer to SCMI entity handle
- * @top_dentry: A reference to the top Raw debugfs dentry
- * @instance_id: The ID of the underlying SCMI platform instance represented by
- *		 this Raw instance
- * @channels: The list of the existing channels
- * @num_chans: The number of entries in @channels
- * @desc: Reference to the transport operations
- * @tx_max_msg: Max number of in-flight messages allowed by the transport
- *
- * This function prepare the SCMI Raw stack and creates the debugfs API.
- *
- * Return: An opaque handle to the Raw instance on Success, an ERR_PTR otherwise
- */
+ 
 void *scmi_raw_mode_init(const struct scmi_handle *handle,
 			 struct dentry *top_dentry, int instance_id,
 			 u8 *channels, int num_chans,
@@ -1209,11 +930,7 @@ void *scmi_raw_mode_init(const struct scmi_handle *handle,
 	debugfs_create_file("errors", 0400, raw->dentry, raw,
 			    &scmi_dbg_raw_mode_errors_fops);
 
-	/*
-	 * Expose per-channel entries if multiple channels available.
-	 * Just ignore errors while setting up these interfaces since we
-	 * have anyway already a working core Raw support.
-	 */
+	 
 	if (num_chans > 1) {
 		int i;
 		struct dentry *top_chans;
@@ -1240,11 +957,7 @@ void *scmi_raw_mode_init(const struct scmi_handle *handle,
 	return raw;
 }
 
-/**
- * scmi_raw_mode_cleanup  - Function to cleanup the SCMI Raw stack
- *
- * @r: An opaque handle to an initialized SCMI Raw instance
- */
+ 
 void scmi_raw_mode_cleanup(void *r)
 {
 	struct scmi_raw_mode_info *raw = r;
@@ -1268,9 +981,9 @@ static int scmi_xfer_raw_collect(void *msg, size_t *msg_len,
 	if (!xfer || !msg || !msg_len)
 		return -EINVAL;
 
-	/* Account for hdr ...*/
+	 
 	msg_size = xfer->rx.len + sizeof(u32);
-	/* ... and status if needed */
+	 
 	if (xfer->hdr.type != MSG_TYPE_NOTIFICATION)
 		msg_size += sizeof(u32);
 
@@ -1289,23 +1002,7 @@ static int scmi_xfer_raw_collect(void *msg, size_t *msg_len,
 	return 0;
 }
 
-/**
- * scmi_raw_message_report  - Helper to report back valid reponses/notifications
- * to raw message requests.
- *
- * @r: An opaque reference to the raw instance configuration
- * @xfer: The xfer containing the message to be reported
- * @idx: The index of the queue.
- * @chan_id: The channel ID to use.
- *
- * If Raw mode is enabled, this is called from the SCMI core on the regular RX
- * path to save and enqueue the response/notification payload carried by this
- * xfer into a dedicated scmi_raw_buffer for later consumption by the user.
- *
- * This way the caller can free the related xfer immediately afterwards and the
- * user can read back the raw message payload at its own pace (if ever) without
- * holding an xfer for too long.
- */
+ 
 void scmi_raw_message_report(void *r, struct scmi_xfer *xfer,
 			     unsigned int idx, unsigned int chan_id)
 {
@@ -1323,24 +1020,11 @@ void scmi_raw_message_report(void *r, struct scmi_xfer *xfer,
 	q = scmi_raw_queue_select(raw, idx,
 				  SCMI_XFER_IS_CHAN_SET(xfer) ? chan_id : 0);
 
-	/*
-	 * Grab the msg_q_lock upfront to avoid a possible race between
-	 * realizing the free list was empty and effectively picking the next
-	 * buffer to use from the oldest one enqueued and still unread on this
-	 * msg_q.
-	 *
-	 * Note that nowhere else these locks are taken together, so no risk of
-	 * deadlocks du eto inversion.
-	 */
+	 
 	spin_lock_irqsave(&q->msg_q_lock, flags);
 	rb = scmi_raw_buffer_get(q);
 	if (!rb) {
-		/*
-		 * Immediate and delayed replies to previously injected Raw
-		 * commands MUST be read back from userspace to free the buffers:
-		 * if this is not happening something is seriously broken and
-		 * must be fixed at the application level: complain loudly.
-		 */
+		 
 		if (idx == SCMI_RAW_REPLY_QUEUE) {
 			spin_unlock_irqrestore(&q->msg_q_lock, flags);
 			dev_warn(dev,
@@ -1349,24 +1033,14 @@ void scmi_raw_message_report(void *r, struct scmi_xfer *xfer,
 			return;
 		}
 
-		/*
-		 * Notifications and errors queues are instead handled in a
-		 * circular manner: unread old buffers are just overwritten by
-		 * newer ones.
-		 *
-		 * The main reason for this is that notifications originated
-		 * by Raw requests cannot be distinguished from normal ones, so
-		 * your Raw buffers queues risk to be flooded and depleted by
-		 * notifications if you left it mistakenly enabled or when in
-		 * coexistence mode.
-		 */
+		 
 		rb = scmi_raw_buffer_dequeue_unlocked(q);
 		if (WARN_ON(!rb)) {
 			spin_unlock_irqrestore(&q->msg_q_lock, flags);
 			return;
 		}
 
-		/* Reset to full buffer length */
+		 
 		rb->msg.len = rb->max_len;
 
 		dev_warn_once(dev,
@@ -1389,7 +1063,7 @@ static void scmi_xfer_raw_fill(struct scmi_raw_mode_info *raw,
 			       struct scmi_chan_info *cinfo,
 			       struct scmi_xfer *xfer, u32 msg_hdr)
 {
-	/* Unpack received HDR as it is */
+	 
 	unpack_scmi_header(msg_hdr, &xfer->hdr);
 	xfer->hdr.seq = MSG_XTRACT_TOKEN(msg_hdr);
 
@@ -1398,24 +1072,7 @@ static void scmi_xfer_raw_fill(struct scmi_raw_mode_info *raw,
 	raw->desc->ops->fetch_response(cinfo, xfer);
 }
 
-/**
- * scmi_raw_error_report  - Helper to report back timed-out or generally
- * unexpected replies.
- *
- * @r: An opaque reference to the raw instance configuration
- * @cinfo: A reference to the channel to use to retrieve the broken xfer
- * @msg_hdr: The SCMI message header of the message to fetch and report
- * @priv: Any private data related to the xfer.
- *
- * If Raw mode is enabled, this is called from the SCMI core on the RX path in
- * case of errors to save and enqueue the bad message payload carried by the
- * message that has just been received.
- *
- * Note that we have to manually fetch any available payload into a temporary
- * xfer to be able to save and enqueue the message, since the regular RX error
- * path which had called this would have not fetched the message payload having
- * classified it as an error.
- */
+ 
 void scmi_raw_error_report(void *r, struct scmi_chan_info *cinfo,
 			   u32 msg_hdr, void *priv)
 {
@@ -1434,9 +1091,9 @@ void scmi_raw_error_report(void *r, struct scmi_chan_info *cinfo,
 		return;
 	}
 
-	/* Any transport-provided priv must be passed back down to transport */
+	 
 	if (priv)
-		/* Ensure priv is visible */
+		 
 		smp_store_mb(xfer.priv, priv);
 
 	scmi_xfer_raw_fill(raw, cinfo, &xfer, msg_hdr);

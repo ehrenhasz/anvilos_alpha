@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2014-2019 Intel Corporation
- */
+
+ 
 
 #include <linux/bsearch.h>
 
@@ -19,48 +17,13 @@
 #include "intel_uc.h"
 #include "i915_drv.h"
 
-/*
- * The Additional Data Struct (ADS) has pointers for different buffers used by
- * the GuC. One single gem object contains the ADS struct itself (guc_ads) and
- * all the extra buffers indirectly linked via the ADS struct's entries.
- *
- * Layout of the ADS blob allocated for the GuC:
- *
- *      +---------------------------------------+ <== base
- *      | guc_ads                               |
- *      +---------------------------------------+
- *      | guc_policies                          |
- *      +---------------------------------------+
- *      | guc_gt_system_info                    |
- *      +---------------------------------------+
- *      | guc_engine_usage                      |
- *      +---------------------------------------+ <== static
- *      | guc_mmio_reg[countA] (engine 0.0)     |
- *      | guc_mmio_reg[countB] (engine 0.1)     |
- *      | guc_mmio_reg[countC] (engine 1.0)     |
- *      |   ...                                 |
- *      +---------------------------------------+ <== dynamic
- *      | padding                               |
- *      +---------------------------------------+ <== 4K aligned
- *      | golden contexts                       |
- *      +---------------------------------------+
- *      | padding                               |
- *      +---------------------------------------+ <== 4K aligned
- *      | capture lists                         |
- *      +---------------------------------------+
- *      | padding                               |
- *      +---------------------------------------+ <== 4K aligned
- *      | private data                          |
- *      +---------------------------------------+
- *      | padding                               |
- *      +---------------------------------------+ <== 4K aligned
- */
+ 
 struct __guc_ads_blob {
 	struct guc_ads ads;
 	struct guc_policies policies;
 	struct guc_gt_system_info system_info;
 	struct guc_engine_usage engine_usage;
-	/* From here on, location is dynamic! Refer to above diagram. */
+	 
 	struct guc_mmio_reg regset[];
 } __packed;
 
@@ -213,7 +176,7 @@ static void guc_mapping_table_init(struct intel_gt *gt,
 	struct intel_engine_cs *engine;
 	enum intel_engine_id id;
 
-	/* Table must be set to invalid values for entries not used */
+	 
 	for (i = 0; i < GUC_MAX_ENGINE_CLASSES; ++i)
 		for (j = 0; j < GUC_MAX_INSTANCES_PER_CLASS; ++j)
 			info_map_write(info_map, mapping_table[i][j],
@@ -227,17 +190,11 @@ static void guc_mapping_table_init(struct intel_gt *gt,
 	}
 }
 
-/*
- * The save/restore register list must be pre-calculated to a temporary
- * buffer before it can be copied inside the ADS.
- */
+ 
 struct temp_regset {
-	/*
-	 * ptr to the section of the storage for the engine currently being
-	 * worked on
-	 */
+	 
 	struct guc_mmio_reg *registers;
-	/* ptr to the base of the allocated storage for all engines */
+	 
 	struct guc_mmio_reg *storage;
 	u32 storage_used;
 	u32 storage_max;
@@ -290,12 +247,7 @@ static long __must_check guc_mmio_reg_add(struct intel_gt *gt,
 	};
 	struct guc_mmio_reg *slot;
 
-	/*
-	 * The mmio list is built using separate lists within the driver.
-	 * It's possible that at some point we may attempt to add the same
-	 * register more than once. Do not consider this an error; silently
-	 * move on if the register is already in the list.
-	 */
+	 
 	if (bsearch(&entry, regset->registers, count,
 		    sizeof(entry), guc_mmio_reg_cmp))
 		return 0;
@@ -333,14 +285,7 @@ static long __must_check guc_mcr_reg_add(struct intel_gt *gt,
 {
 	u8 group, inst;
 
-	/*
-	 * The GuC doesn't have a default steering, so we need to explicitly
-	 * steer all registers that need steering. However, we do not keep track
-	 * of all the steering ranges, only of those that have a chance of using
-	 * a non-default steering from the i915 pov. Instead of adding such
-	 * tracking, it is easier to just program the default steering for all
-	 * regs that don't need a non-default one.
-	 */
+	 
 	intel_gt_mcr_get_nonterminated_steering(gt, reg, &group, &inst);
 	flags |= GUC_REGSET_STEERING(group, inst);
 
@@ -363,10 +308,7 @@ static int guc_mmio_regset_init(struct temp_regset *regset,
 	unsigned int i;
 	int ret = 0;
 
-	/*
-	 * Each engine's registers point to a new start relative to
-	 * storage
-	 */
+	 
 	regset->registers = regset->storage + regset->storage_used;
 
 	ret |= GUC_MMIO_REG_ADD(gt, regset, RING_MODE_GEN7(base), true);
@@ -380,13 +322,13 @@ static int guc_mmio_regset_init(struct temp_regset *regset,
 	for (i = 0, wa = wal->list; i < wal->count; i++, wa++)
 		ret |= GUC_MMIO_REG_ADD(gt, regset, wa->reg, wa->masked_reg);
 
-	/* Be extra paranoid and include all whitelist registers. */
+	 
 	for (i = 0; i < RING_MAX_NONPRIV_SLOTS; i++)
 		ret |= GUC_MMIO_REG_ADD(gt, regset,
 					RING_FORCE_TO_NONPRIV(base, i),
 					false);
 
-	/* add in local MOCS registers */
+	 
 	for (i = 0; i < LNCFCMOCS_REG_COUNT; i++)
 		if (GRAPHICS_VER_FULL(engine->i915) >= IP_VER(12, 50))
 			ret |= GUC_MCR_REG_ADD(gt, regset, XEHP_LNCFCMOCS(i), false);
@@ -455,7 +397,7 @@ static void guc_mmio_reg_state_init(struct intel_guc *guc)
 		u32 count = guc->ads_regset_count[id];
 		u8 guc_class;
 
-		/* Class index is checked in class converter */
+		 
 		GEM_BUG_ON(engine->instance >= GUC_MAX_INSTANCES_PER_CLASS);
 
 		guc_class = engine_class_to_guc_class(engine->class);
@@ -490,7 +432,7 @@ static void fill_engine_enable_masks(struct intel_gt *gt,
 	info_map_write(info_map, engine_enabled_masks[GUC_VIDEO_CLASS], VDBOX_MASK(gt));
 	info_map_write(info_map, engine_enabled_masks[GUC_VIDEOENHANCE_CLASS], VEBOX_MASK(gt));
 
-	/* The GSC engine is an instance (6) of OTHER_CLASS */
+	 
 	if (gt->engine[GSC0])
 		info_map_write(info_map, engine_enabled_masks[GUC_GSC_OTHER_CLASS],
 			       BIT(gt->engine[GSC0]->instance));
@@ -511,18 +453,7 @@ static int guc_prep_golden_context(struct intel_guc *guc)
 	struct guc_gt_system_info local_info;
 	struct iosys_map info_map;
 
-	/*
-	 * Reserve the memory for the golden contexts and point GuC at it but
-	 * leave it empty for now. The context data will be filled in later
-	 * once there is something available to put there.
-	 *
-	 * Note that the HWSP and ring context are not included.
-	 *
-	 * Note also that the storage must be pinned in the GGTT, so that the
-	 * address won't change after GuC has been told where to find it. The
-	 * GuC will also validate that the LRC base + size fall within the
-	 * allowed GGTT range.
-	 */
+	 
 	if (!iosys_map_is_null(&guc->ads_map)) {
 		offset = guc_ads_golden_ctxt_offset(guc);
 		addr_ggtt = intel_guc_ggtt_offset(guc, guc->ads_vma) + offset;
@@ -547,17 +478,7 @@ static int guc_prep_golden_context(struct intel_guc *guc)
 		if (iosys_map_is_null(&guc->ads_map))
 			continue;
 
-		/*
-		 * This interface is slightly confusing. We need to pass the
-		 * base address of the full golden context and the size of just
-		 * the engine state, which is the section of the context image
-		 * that starts after the execlists context. This is required to
-		 * allow the GuC to restore just the engine state when a
-		 * watchdog reset occurs.
-		 * We calculate the engine state size by removing the size of
-		 * what comes before it in the context image (which is identical
-		 * on all engines).
-		 */
+		 
 		ads_blob_write(guc, ads.eng_state_size[guc_class],
 			       real_size - LRC_SKIP_SIZE(gt->i915));
 		ads_blob_write(guc, ads.golden_context_lrca[guc_class],
@@ -566,7 +487,7 @@ static int guc_prep_golden_context(struct intel_guc *guc)
 		addr_ggtt += alloc_size;
 	}
 
-	/* Make sure current size matches what we calculated previously */
+	 
 	if (guc->ads_golden_ctxt_size)
 		GEM_BUG_ON(guc->ads_golden_ctxt_size != total_size);
 
@@ -604,10 +525,7 @@ static void guc_init_golden_context(struct intel_guc *guc)
 
 	GEM_BUG_ON(iosys_map_is_null(&guc->ads_map));
 
-	/*
-	 * Go back and fill in the golden context data now that it is
-	 * available.
-	 */
+	 
 	offset = guc_ads_golden_ctxt_offset(guc);
 	addr_ggtt = intel_guc_ggtt_offset(guc, guc->ads_vma) + offset;
 
@@ -700,7 +618,7 @@ guc_capture_prep_lists(struct intel_guc *guc)
 		fill_engine_enable_masks(gt, &info_map);
 	}
 
-	/* first, set aside the first page for a capture_list with zero descriptors */
+	 
 	total_size = PAGE_SIZE;
 	if (ads_is_mapped) {
 		if (!intel_guc_capture_getnullheader(guc, &ptr, &size))
@@ -713,7 +631,7 @@ guc_capture_prep_lists(struct intel_guc *guc)
 		for (j = 0; j < GUC_MAX_ENGINE_CLASSES; j++) {
 			u32 engine_mask = guc_get_capture_engine_mask(&info_map, j);
 
-			/* null list if we dont have said engine or list */
+			 
 			if (!engine_mask) {
 				if (ads_is_mapped) {
 					ads_blob_write(guc, ads.capture_class[i][j], null_ggtt);
@@ -799,10 +717,10 @@ static void __guc_ads_init(struct intel_guc *guc)
 			offsetof(struct __guc_ads_blob, system_info));
 	u32 base;
 
-	/* GuC scheduling policies */
+	 
 	guc_policies_init(guc);
 
-	/* System info */
+	 
 	fill_engine_enable_masks(gt, &info_map);
 
 	ads_blob_write(guc, system_info.generic_gt_sysinfo[GUC_GENERIC_GT_SYSINFO_SLICE_ENABLED],
@@ -819,39 +737,33 @@ static void __guc_ads_init(struct intel_guc *guc)
 				& GEN12_DOORBELLS_PER_SQIDI) + 1);
 	}
 
-	/* Golden contexts for re-initialising after a watchdog reset */
+	 
 	guc_prep_golden_context(guc);
 
 	guc_mapping_table_init(guc_to_gt(guc), &info_map);
 
 	base = intel_guc_ggtt_offset(guc, guc->ads_vma);
 
-	/* Lists for error capture debug */
+	 
 	guc_capture_prep_lists(guc);
 
-	/* ADS */
+	 
 	ads_blob_write(guc, ads.scheduler_policies, base +
 		       offsetof(struct __guc_ads_blob, policies));
 	ads_blob_write(guc, ads.gt_system_info, base +
 		       offsetof(struct __guc_ads_blob, system_info));
 
-	/* MMIO save/restore list */
+	 
 	guc_mmio_reg_state_init(guc);
 
-	/* Private Data */
+	 
 	ads_blob_write(guc, ads.private_data, base +
 		       guc_ads_private_data_offset(guc));
 
 	i915_gem_object_flush_map(guc->ads_vma->obj);
 }
 
-/**
- * intel_guc_ads_create() - allocates and initializes GuC ADS.
- * @guc: intel_guc struct
- *
- * GuC needs memory block (Additional Data Struct), where it will store
- * some data. Allocate and initialize such memory block for GuC use.
- */
+ 
 int intel_guc_ads_create(struct intel_guc *guc)
 {
 	void *ads_blob;
@@ -860,28 +772,25 @@ int intel_guc_ads_create(struct intel_guc *guc)
 
 	GEM_BUG_ON(guc->ads_vma);
 
-	/*
-	 * Create reg state size dynamically on system memory to be copied to
-	 * the final ads blob on gt init/reset
-	 */
+	 
 	ret = guc_mmio_reg_state_create(guc);
 	if (ret < 0)
 		return ret;
 	guc->ads_regset_size = ret;
 
-	/* Likewise the golden contexts: */
+	 
 	ret = guc_prep_golden_context(guc);
 	if (ret < 0)
 		return ret;
 	guc->ads_golden_ctxt_size = ret;
 
-	/* Likewise the capture lists: */
+	 
 	ret = guc_capture_prep_lists(guc);
 	if (ret < 0)
 		return ret;
 	guc->ads_capture_size = ret;
 
-	/* Now the total size can be determined: */
+	 
 	size = guc_ads_blob_size(guc);
 
 	ret = intel_guc_allocate_and_map_vma(guc, size, &guc->ads_vma,
@@ -901,13 +810,7 @@ int intel_guc_ads_create(struct intel_guc *guc)
 
 void intel_guc_ads_init_late(struct intel_guc *guc)
 {
-	/*
-	 * The golden context setup requires the saved engine state from
-	 * __engines_record_defaults(). However, that requires engines to be
-	 * operational which means the ADS must already have been configured.
-	 * Fortunately, the golden context state is not needed until a hang
-	 * occurs, so it can be filled in during this late init phase.
-	 */
+	 
 	guc_init_golden_context(guc);
 }
 
@@ -930,14 +833,7 @@ static void guc_ads_private_data_reset(struct intel_guc *guc)
 			 0, size);
 }
 
-/**
- * intel_guc_ads_reset() - prepares GuC Additional Data Struct for reuse
- * @guc: intel_guc struct
- *
- * GuC stores some data in ADS, which might be stale after a reset.
- * Reinitialize whole ADS in case any part of it was corrupted during
- * previous GuC run.
- */
+ 
 void intel_guc_ads_reset(struct intel_guc *guc)
 {
 	if (!guc->ads_vma)

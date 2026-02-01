@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *	vfsv0 quota IO operations on file
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/fs.h>
@@ -71,7 +69,7 @@ static int v2_read_header(struct super_block *sb, int type,
 	return 0;
 }
 
-/* Check whether given file is really vfsv0 quotafile */
+ 
 static int v2_check_quota_file(struct super_block *sb, int type)
 {
 	struct v2_disk_dqheader dqhead;
@@ -86,7 +84,7 @@ static int v2_check_quota_file(struct super_block *sb, int type)
 	return 1;
 }
 
-/* Read information header from quota file */
+ 
 static int v2_read_file_info(struct super_block *sb, int type)
 {
 	struct v2_disk_dqinfo dinfo;
@@ -126,21 +124,17 @@ static int v2_read_file_info(struct super_block *sb, int type)
 	}
 	qinfo = info->dqi_priv;
 	if (version == 0) {
-		/* limits are stored as unsigned 32-bit data */
+		 
 		info->dqi_max_spc_limit = 0xffffffffLL << QUOTABLOCK_BITS;
 		info->dqi_max_ino_limit = 0xffffffff;
 	} else {
-		/*
-		 * Used space is stored as unsigned 64-bit value in bytes but
-		 * quota core supports only signed 64-bit values so use that
-		 * as a limit
-		 */
-		info->dqi_max_spc_limit = 0x7fffffffffffffffLL; /* 2^63-1 */
+		 
+		info->dqi_max_spc_limit = 0x7fffffffffffffffLL;  
 		info->dqi_max_ino_limit = 0x7fffffffffffffffLL;
 	}
 	info->dqi_bgrace = le32_to_cpu(dinfo.dqi_bgrace);
 	info->dqi_igrace = le32_to_cpu(dinfo.dqi_igrace);
-	/* No flags currently supported */
+	 
 	info->dqi_flags = 0;
 	qinfo->dqi_sb = sb;
 	qinfo->dqi_type = type;
@@ -158,7 +152,7 @@ static int v2_read_file_info(struct super_block *sb, int type)
 		qinfo->dqi_ops = &v2r1_qtree_ops;
 	}
 	ret = -EUCLEAN;
-	/* Some sanity checks of the read headers... */
+	 
 	if ((loff_t)qinfo->dqi_blocks << qinfo->dqi_blocksize_bits >
 	    i_size_read(sb_dqopt(sb)->files[type])) {
 		quota_error(sb, "Number of blocks too big for quota file size (%llu > %llu).",
@@ -187,7 +181,7 @@ out:
 	return ret;
 }
 
-/* Write information header to quota file */
+ 
 static int v2_write_file_info(struct super_block *sb, int type)
 {
 	struct v2_disk_dqinfo dinfo;
@@ -201,7 +195,7 @@ static int v2_write_file_info(struct super_block *sb, int type)
 	info->dqi_flags &= ~DQF_INFO_DIRTY;
 	dinfo.dqi_bgrace = cpu_to_le32(info->dqi_bgrace);
 	dinfo.dqi_igrace = cpu_to_le32(info->dqi_igrace);
-	/* No flags currently supported */
+	 
 	dinfo.dqi_flags = cpu_to_le32(0);
 	spin_unlock(&dq_data_lock);
 	dinfo.dqi_blocks = cpu_to_le32(qinfo->dqi_blocks);
@@ -230,7 +224,7 @@ static void v2r0_disk2memdqb(struct dquot *dquot, void *dp)
 	m->dqb_bsoftlimit = v2_qbtos(le32_to_cpu(d->dqb_bsoftlimit));
 	m->dqb_curspace = le64_to_cpu(d->dqb_curspace);
 	m->dqb_btime = le64_to_cpu(d->dqb_btime);
-	/* We need to escape back all-zero structure */
+	 
 	memset(&empty, 0, sizeof(struct v2r0_disk_dqblk));
 	empty.dqb_itime = cpu_to_le64(1);
 	if (!memcmp(&empty, dp, sizeof(struct v2r0_disk_dqblk)))
@@ -283,7 +277,7 @@ static void v2r1_disk2memdqb(struct dquot *dquot, void *dp)
 	m->dqb_bsoftlimit = v2_qbtos(le64_to_cpu(d->dqb_bsoftlimit));
 	m->dqb_curspace = le64_to_cpu(d->dqb_curspace);
 	m->dqb_btime = le64_to_cpu(d->dqb_btime);
-	/* We need to escape back all-zero structure */
+	 
 	memset(&empty, 0, sizeof(struct v2r1_disk_dqblk));
 	empty.dqb_itime = cpu_to_le64(1);
 	if (!memcmp(&empty, dp, sizeof(struct v2r1_disk_dqblk)))
@@ -343,12 +337,7 @@ static int v2_write_dquot(struct dquot *dquot)
 	int ret;
 	bool alloc = false;
 
-	/*
-	 * If space for dquot is already allocated, we don't need any
-	 * protection as we'll only overwrite the place of dquot. We are
-	 * still protected by concurrent writes of the same dquot by
-	 * dquot->dq_lock.
-	 */
+	 
 	if (!dquot->dq_off) {
 		alloc = true;
 		down_write(&dqopt->dqio_sem);

@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * OmniVision OV96xx Camera Driver
- *
- * Copyright (C) 2009 Marek Vasut <marek.vasut@gmail.com>
- *
- * Based on ov772x camera driver:
- *
- * Copyright (C) 2008 Renesas Solutions Corp.
- * Kuninori Morimoto <morimoto.kuninori@renesas.com>
- *
- * Based on ov7670 and soc_camera_platform driver,
- * transition from soc_camera to pxa_camera based on mt9m111
- *
- * Copyright 2006-7 Jonathan Corbet <corbet@lwn.net>
- * Copyright (C) 2008 Magnus Damm
- * Copyright (C) 2008, Guennadi Liakhovetski <kernel@pengutronix.de>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/init.h>
@@ -38,7 +22,7 @@
 
 #define to_ov9640_sensor(sd)	container_of(sd, struct ov9640_priv, subdev)
 
-/* default register setup */
+ 
 static const struct ov9640_reg ov9640_regs_dflt[] = {
 	{ OV9640_COM5,	OV9640_COM5_SYSCLK | OV9640_COM5_LONGEXP },
 	{ OV9640_COM6,	OV9640_COM6_OPT_BLC | OV9640_COM6_ADBLC_BIAS |
@@ -48,28 +32,20 @@ static const struct ov9640_reg ov9640_regs_dflt[] = {
 	{ OV9640_TSLB,	OV9640_TSLB_YUYV_UYVY },
 	{ OV9640_COM16,	OV9640_COM16_RB_AVG },
 
-	/* Gamma curve P */
+	 
 	{ 0x6c, 0x40 },	{ 0x6d, 0x30 },	{ 0x6e, 0x4b },	{ 0x6f, 0x60 },
 	{ 0x70, 0x70 },	{ 0x71, 0x70 },	{ 0x72, 0x70 },	{ 0x73, 0x70 },
 	{ 0x74, 0x60 },	{ 0x75, 0x60 },	{ 0x76, 0x50 },	{ 0x77, 0x48 },
 	{ 0x78, 0x3a },	{ 0x79, 0x2e },	{ 0x7a, 0x28 },	{ 0x7b, 0x22 },
 
-	/* Gamma curve T */
+	 
 	{ 0x7c, 0x04 },	{ 0x7d, 0x07 },	{ 0x7e, 0x10 },	{ 0x7f, 0x28 },
 	{ 0x80, 0x36 },	{ 0x81, 0x44 },	{ 0x82, 0x52 },	{ 0x83, 0x60 },
 	{ 0x84, 0x6c },	{ 0x85, 0x78 },	{ 0x86, 0x8c },	{ 0x87, 0x9e },
 	{ 0x88, 0xbb },	{ 0x89, 0xd2 },	{ 0x8a, 0xe6 },
 };
 
-/* Configurations
- * NOTE: for YUV, alter the following registers:
- *		COM12 |= OV9640_COM12_YUV_AVG
- *
- *	 for RGB, alter the following registers:
- *		COM7  |= OV9640_COM7_RGB
- *		COM13 |= OV9640_COM13_RGB_AVG
- *		COM15 |= proper RGB color encoding mode
- */
+ 
 static const struct ov9640_reg ov9640_regs_qqcif[] = {
 	{ OV9640_CLKRC,	OV9640_CLKRC_DPLL_EN | OV9640_CLKRC_DIV(0x0f) },
 	{ OV9640_COM1,	OV9640_COM1_QQFMT | OV9640_COM1_HREF_2SKIP },
@@ -167,7 +143,7 @@ static const u32 ov9640_codes[] = {
 	MEDIA_BUS_FMT_RGB565_2X8_LE,
 };
 
-/* read a register */
+ 
 static int ov9640_reg_read(struct i2c_client *client, u8 reg, u8 *val)
 {
 	int ret;
@@ -196,7 +172,7 @@ err:
 	return ret;
 }
 
-/* write a register */
+ 
 static int ov9640_reg_write(struct i2c_client *client, u8 reg, u8 val)
 {
 	int ret;
@@ -215,7 +191,7 @@ static int ov9640_reg_write(struct i2c_client *client, u8 reg, u8 val)
 		return ret;
 	}
 
-	/* we have to read the register back ... no idea why, maybe HW bug */
+	 
 	ret = ov9640_reg_read(client, reg, &_val);
 	if (ret)
 		dev_err(&client->dev,
@@ -225,7 +201,7 @@ static int ov9640_reg_write(struct i2c_client *client, u8 reg, u8 val)
 }
 
 
-/* Read a register, alter its bits, write it back */
+ 
 static int ov9640_reg_rmw(struct i2c_client *client, u8 reg, u8 set, u8 unset)
 {
 	u8 val;
@@ -249,7 +225,7 @@ static int ov9640_reg_rmw(struct i2c_client *client, u8 reg, u8 set, u8 unset)
 	return ret;
 }
 
-/* Soft reset the camera. This has nothing to do with the RESET pin! */
+ 
 static int ov9640_reset(struct i2c_client *client)
 {
 	int ret;
@@ -262,13 +238,13 @@ static int ov9640_reset(struct i2c_client *client)
 	return ret;
 }
 
-/* Start/Stop streaming from the device */
+ 
 static int ov9640_s_stream(struct v4l2_subdev *sd, int enable)
 {
 	return 0;
 }
 
-/* Set status of additional camera capabilities */
+ 
 static int ov9640_s_ctrl(struct v4l2_ctrl *ctrl)
 {
 	struct ov9640_priv *priv = container_of(ctrl->handler,
@@ -347,7 +323,7 @@ static int ov9640_s_power(struct v4l2_subdev *sd, int on)
 	return ret;
 }
 
-/* select nearest higher resolution for capture */
+ 
 static void ov9640_res_roundup(u32 *width, u32 *height)
 {
 	unsigned int i;
@@ -367,7 +343,7 @@ static void ov9640_res_roundup(u32 *width, u32 *height)
 	*height = res_y[SXGA];
 }
 
-/* Prepare necessary register changes depending on color encoding */
+ 
 static void ov9640_alter_regs(u32 code,
 			      struct ov9640_reg_alt *alt)
 {
@@ -391,7 +367,7 @@ static void ov9640_alter_regs(u32 code,
 	}
 }
 
-/* Setup registers according to resolution and color encoding */
+ 
 static int ov9640_write_regs(struct i2c_client *client, u32 width,
 		u32 code, struct ov9640_reg_alt *alts)
 {
@@ -401,7 +377,7 @@ static int ov9640_write_regs(struct i2c_client *client, u32 width,
 	int			ret;
 	u8			val;
 
-	/* select register configuration for given resolution */
+	 
 	switch (width) {
 	case W_QQCIF:
 		ov9640_regs	= ov9640_regs_qqcif;
@@ -436,7 +412,7 @@ static int ov9640_write_regs(struct i2c_client *client, u32 width,
 		return -EINVAL;
 	}
 
-	/* select color matrix configuration for given color encoding */
+	 
 	if (code == MEDIA_BUS_FMT_UYVY8_2X8) {
 		matrix_regs	= ov9640_regs_yuv;
 		matrix_regs_len	= ARRAY_SIZE(ov9640_regs_yuv);
@@ -445,7 +421,7 @@ static int ov9640_write_regs(struct i2c_client *client, u32 width,
 		matrix_regs_len	= ARRAY_SIZE(ov9640_regs_rgb);
 	}
 
-	/* write register settings into the module */
+	 
 	for (i = 0; i < ov9640_regs_len; i++) {
 		val = ov9640_regs[i].val;
 
@@ -469,7 +445,7 @@ static int ov9640_write_regs(struct i2c_client *client, u32 width,
 			return ret;
 	}
 
-	/* write color matrix configuration into the module */
+	 
 	for (i = 0; i < matrix_regs_len; i++) {
 		ret = ov9640_reg_write(client, matrix_regs[i].reg,
 				       matrix_regs[i].val);
@@ -480,7 +456,7 @@ static int ov9640_write_regs(struct i2c_client *client, u32 width,
 	return 0;
 }
 
-/* program default register values */
+ 
 static int ov9640_prog_dflt(struct i2c_client *client)
 {
 	unsigned int i;
@@ -493,13 +469,13 @@ static int ov9640_prog_dflt(struct i2c_client *client)
 			return ret;
 	}
 
-	/* wait for the changes to actually happen, 140ms are not enough yet */
+	 
 	msleep(150);
 
 	return 0;
 }
 
-/* set the format we will capture in */
+ 
 static int ov9640_s_fmt(struct v4l2_subdev *sd,
 			struct v4l2_mbus_framefmt *mf)
 {
@@ -596,9 +572,7 @@ static int ov9640_video_probe(struct i2c_client *client)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * check and show product ID and manufacturer ID
-	 */
+	 
 
 	ret = ov9640_reg_read(client, OV9640_PID, &pid);
 	if (!ret)
@@ -647,7 +621,7 @@ static const struct v4l2_subdev_core_ops ov9640_core_ops = {
 	.s_power		= ov9640_s_power,
 };
 
-/* Request bus settings on camera side */
+ 
 static int ov9640_get_mbus_config(struct v4l2_subdev *sd,
 				  unsigned int pad,
 				  struct v4l2_mbus_config *cfg)
@@ -679,9 +653,7 @@ static const struct v4l2_subdev_ops ov9640_subdev_ops = {
 	.pad	= &ov9640_pad_ops,
 };
 
-/*
- * i2c_driver function
- */
+ 
 static int ov9640_probe(struct i2c_client *client)
 {
 	struct ov9640_priv *priv;

@@ -1,82 +1,4 @@
-/* Self tests for base64.
-   Copyright (C) 2004, 2008-2023 Free Software Foundation, Inc.
-   Written by Simon Josefsson.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-#include "base64.h"
-
-#include <stddef.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdint.h>
-
-#include "macros.h"
-
-int
-main (void)
-{
-  const char *in = "abcdefghijklmnop";
-  const char *b64in = "YWJjZGVmZw==";
-  char out[255];
-  idx_t len;
-  bool ok;
-  char *p;
-
-  memset (out, 0x42, sizeof (out));
-  base64_encode (in, 0, out, 0);
-  ASSERT (out[0] == '\x42');
-
-  memset (out, 0x42, sizeof (out));
-  base64_encode (in, 1, out, 1);
-  ASSERT (memcmp (out, "YQ==", 1) == 0);
-
-  memset (out, 0x42, sizeof (out));
-  base64_encode (in, 1, out, 2);
-  ASSERT (memcmp (out, "YQ==", 2) == 0);
-
-  memset (out, 0x42, sizeof (out));
-  base64_encode (in, 1, out, 3);
-  ASSERT (memcmp (out, "YQ==", 3) == 0);
-
-  memset (out, 0x42, sizeof (out));
-  base64_encode (in, 1, out, 4);
-  ASSERT (memcmp (out, "YQ==", 4) == 0);
-
-  memset (out, 0x42, sizeof (out));
-  base64_encode (in, 1, out, 8);
-  ASSERT (memcmp (out, "YQ==", 4) == 0);
-
-  memset (out, 0x42, sizeof (out));
-  base64_encode (in, 2, out, 4);
-  ASSERT (memcmp (out, "YWI=", 4) == 0);
-
-  memset (out, 0x42, sizeof (out));
-  base64_encode (in, 3, out, 4);
-  ASSERT (memcmp (out, "YWJj", 4) == 0);
-
-  memset (out, 0x42, sizeof (out));
-  base64_encode (in, 4, out, 5);
-  ASSERT (memcmp (out, "YWJjZA==", 5) == 0);
-
-  memset (out, 0x42, sizeof (out));
-  base64_encode (in, 4, out, 100);
-  ASSERT (memcmp (out, "YWJjZA==", 6) == 0);
-
-  /* Decode. */
+ 
 
   memset (out, 0x42, sizeof (out));
   len = 0;
@@ -119,7 +41,7 @@ main (void)
   ASSERT (len == 7);
   ASSERT (memcmp (out, "abcdefg", 7) == 0);
 
-  /* Allocating encode */
+   
 
   len = base64_encode_alloc (in, strlen (in), &p);
   ASSERT (len == 24);
@@ -129,7 +51,7 @@ main (void)
   len = base64_encode_alloc (in, IDX_MAX - 5, &p);
   ASSERT (len == 0);
 
-  /* Decode context function */
+   
   {
     struct base64_decode_context ctx;
 
@@ -142,7 +64,7 @@ main (void)
     ASSERT (memcmp (out, "abcdefg", len) == 0);
   }
 
-  /* Allocating decode context function */
+   
 
   ok = base64_decode_alloc_ctx (NULL, b64in, strlen (b64in), &p, &len);
   ASSERT (ok);

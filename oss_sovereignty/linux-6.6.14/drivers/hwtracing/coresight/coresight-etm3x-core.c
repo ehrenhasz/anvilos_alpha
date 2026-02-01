@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2011-2012, The Linux Foundation. All rights reserved.
- *
- * Description: CoreSight Program Flow Trace driver
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/moduleparam.h>
@@ -34,10 +30,7 @@
 #include "coresight-etm-perf.h"
 #include "coresight-trace-id.h"
 
-/*
- * Not really modular but using module_param is the easiest way to
- * remain consistent with existing use cases for now.
- */
+ 
 static int boot_enable;
 module_param_named(boot_enable, boot_enable, int, S_IRUGO);
 
@@ -45,14 +38,10 @@ static struct etm_drvdata *etmdrvdata[NR_CPUS];
 
 static enum cpuhp_state hp_online;
 
-/*
- * Memory mapped writes to clear os lock are not supported on some processors
- * and OS lock must be unlocked before any memory mapped access on such
- * processors, otherwise memory mapped reads/writes will be invalid.
- */
+ 
 static void etm_os_unlock(struct etm_drvdata *drvdata)
 {
-	/* Writing any value to ETMOSLAR unlocks the trace registers */
+	 
 	etm_writel(drvdata, 0x0, ETMOSLAR);
 	drvdata->os_unlock = true;
 	isb();
@@ -62,7 +51,7 @@ static void etm_set_pwrdwn(struct etm_drvdata *drvdata)
 {
 	u32 etmcr;
 
-	/* Ensure pending cp14 accesses complete before setting pwrdwn */
+	 
 	mb();
 	isb();
 	etmcr = etm_readl(drvdata, ETMCR);
@@ -77,7 +66,7 @@ static void etm_clr_pwrdwn(struct etm_drvdata *drvdata)
 	etmcr = etm_readl(drvdata, ETMCR);
 	etmcr &= ~ETMCR_PWD_DWN;
 	etm_writel(drvdata, etmcr, ETMCR);
-	/* Ensure pwrup completes before subsequent cp14 accesses */
+	 
 	mb();
 	isb();
 }
@@ -89,7 +78,7 @@ static void etm_set_pwrup(struct etm_drvdata *drvdata)
 	etmpdcr = readl_relaxed(drvdata->base + ETMPDCR);
 	etmpdcr |= ETMPDCR_PWD_UP;
 	writel_relaxed(etmpdcr, drvdata->base + ETMPDCR);
-	/* Ensure pwrup completes before subsequent cp14 accesses */
+	 
 	mb();
 	isb();
 }
@@ -98,7 +87,7 @@ static void etm_clr_pwrup(struct etm_drvdata *drvdata)
 {
 	u32 etmpdcr;
 
-	/* Ensure pending cp14 accesses complete before clearing pwrup */
+	 
 	mb();
 	isb();
 	etmpdcr = readl_relaxed(drvdata->base + ETMPDCR);
@@ -106,19 +95,7 @@ static void etm_clr_pwrup(struct etm_drvdata *drvdata)
 	writel_relaxed(etmpdcr, drvdata->base + ETMPDCR);
 }
 
-/**
- * coresight_timeout_etm - loop until a bit has changed to a specific state.
- * @drvdata: etm's private data structure.
- * @offset: address of a register, starting from @addr.
- * @position: the position of the bit of interest.
- * @value: the value the bit should have.
- *
- * Basically the same as @coresight_timeout except for the register access
- * method where we have to account for CP14 configurations.
-
- * Return: 0 as soon as the bit has taken the desired state or -EAGAIN if
- * TIMEOUT_US has elapsed, which ever happens first.
- */
+ 
 
 static int coresight_timeout_etm(struct etm_drvdata *drvdata, u32 offset,
 				  int position, int value)
@@ -128,21 +105,17 @@ static int coresight_timeout_etm(struct etm_drvdata *drvdata, u32 offset,
 
 	for (i = TIMEOUT_US; i > 0; i--) {
 		val = etm_readl(drvdata, offset);
-		/* Waiting on the bit to go from 0 to 1 */
+		 
 		if (value) {
 			if (val & BIT(position))
 				return 0;
-		/* Waiting on the bit to go from 1 to 0 */
+		 
 		} else {
 			if (!(val & BIT(position)))
 				return 0;
 		}
 
-		/*
-		 * Delay is arbitrary - the specification doesn't say how long
-		 * we are expected to wait.  Extra check required to make sure
-		 * we don't wait needlessly on the last iteration.
-		 */
+		 
 		if (i - 1)
 			udelay(1);
 	}
@@ -158,10 +131,7 @@ static void etm_set_prog(struct etm_drvdata *drvdata)
 	etmcr = etm_readl(drvdata, ETMCR);
 	etmcr |= ETMCR_ETM_PRG;
 	etm_writel(drvdata, etmcr, ETMCR);
-	/*
-	 * Recommended by spec for cp14 accesses to ensure etmcr write is
-	 * complete before polling etmsr
-	 */
+	 
 	isb();
 	if (coresight_timeout_etm(drvdata, ETMSR, ETMSR_PROG_BIT, 1)) {
 		dev_err(&drvdata->csdev->dev,
@@ -177,10 +147,7 @@ static void etm_clr_prog(struct etm_drvdata *drvdata)
 	etmcr = etm_readl(drvdata, ETMCR);
 	etmcr &= ~ETMCR_ETM_PRG;
 	etm_writel(drvdata, etmcr, ETMCR);
-	/*
-	 * Recommended by spec for cp14 accesses to ensure etmcr write is
-	 * complete before polling etmsr
-	 */
+	 
 	isb();
 	if (coresight_timeout_etm(drvdata, ETMSR, ETMSR_PROG_BIT, 0)) {
 		dev_err(&drvdata->csdev->dev,
@@ -196,15 +163,7 @@ void etm_set_default(struct etm_config *config)
 	if (WARN_ON_ONCE(!config))
 		return;
 
-	/*
-	 * Taken verbatim from the TRM:
-	 *
-	 * To trace all memory:
-	 *  set bit [24] in register 0x009, the ETMTECR1, to 1
-	 *  set all other bits in register 0x009, the ETMTECR1, to 0
-	 *  set all bits in register 0x007, the ETMTECR2, to 0
-	 *  set register 0x008, the ETMTEEVR, to 0x6F (TRUE).
-	 */
+	 
 	config->enable_ctrl1 = ETMTECR1_INC_EXC;
 	config->enable_ctrl2 = 0x0;
 	config->enable_event = ETM_HARD_WIRE_RES_A;
@@ -233,7 +192,7 @@ void etm_set_default(struct etm_config *config)
 		config->ctxid_pid[i] = 0x0;
 
 	config->ctxid_mask = 0x0;
-	/* Setting default to 1024 as per TRM recommendation */
+	 
 	config->sync_freq = 0x400;
 }
 
@@ -245,53 +204,40 @@ void etm_config_trace_mode(struct etm_config *config)
 
 	mode &= (ETM_MODE_EXCL_KERN | ETM_MODE_EXCL_USER);
 
-	/* excluding kernel AND user space doesn't make sense */
+	 
 	if (mode == (ETM_MODE_EXCL_KERN | ETM_MODE_EXCL_USER))
 		return;
 
-	/* nothing to do if neither flags are set */
+	 
 	if (!(mode & ETM_MODE_EXCL_KERN) && !(mode & ETM_MODE_EXCL_USER))
 		return;
 
-	flags = (1 << 0 |	/* instruction execute */
-		 3 << 3 |	/* ARM instruction */
-		 0 << 5 |	/* No data value comparison */
-		 0 << 7 |	/* No exact mach */
-		 0 << 8);	/* Ignore context ID */
+	flags = (1 << 0 |	 
+		 3 << 3 |	 
+		 0 << 5 |	 
+		 0 << 7 |	 
+		 0 << 8);	 
 
-	/* No need to worry about single address comparators. */
+	 
 	config->enable_ctrl2 = 0x0;
 
-	/* Bit 0 is address range comparator 1 */
+	 
 	config->enable_ctrl1 = ETMTECR1_ADDR_COMP_1;
 
-	/*
-	 * On ETMv3.5:
-	 * ETMACTRn[13,11] == Non-secure state comparison control
-	 * ETMACTRn[12,10] == Secure state comparison control
-	 *
-	 * b00 == Match in all modes in this state
-	 * b01 == Do not match in any more in this state
-	 * b10 == Match in all modes excepts user mode in this state
-	 * b11 == Match only in user mode in this state
-	 */
+	 
 
-	/* Tracing in secure mode is not supported at this time */
+	 
 	flags |= (0 << 12 | 1 << 10);
 
 	if (mode & ETM_MODE_EXCL_USER) {
-		/* exclude user, match all modes except user mode */
+		 
 		flags |= (1 << 13 | 0 << 11);
 	} else {
-		/* exclude kernel, match only in user mode */
+		 
 		flags |= (1 << 13 | 1 << 11);
 	}
 
-	/*
-	 * The ETMEEVR register is already set to "hard wire A".  As such
-	 * all there is to do is setup an address comparator that spans
-	 * the entire address range and configure the state and mode bits.
-	 */
+	 
 	config->addr_val[0] = (u32) 0x0;
 	config->addr_val[1] = (u32) ~0x0;
 	config->addr_acctype[0] = flags;
@@ -313,7 +259,7 @@ static int etm_parse_event_config(struct etm_drvdata *drvdata,
 	if (!attr)
 		return -EINVAL;
 
-	/* Clear configuration from previous run */
+	 
 	memset(config, 0, sizeof(struct etm_config));
 
 	if (attr->exclude_kernel)
@@ -322,35 +268,24 @@ static int etm_parse_event_config(struct etm_drvdata *drvdata,
 	if (attr->exclude_user)
 		config->mode = ETM_MODE_EXCL_USER;
 
-	/* Always start from the default config */
+	 
 	etm_set_default(config);
 
-	/*
-	 * By default the tracers are configured to trace the whole address
-	 * range.  Narrow the field only if requested by user space.
-	 */
+	 
 	if (config->mode)
 		etm_config_trace_mode(config);
 
-	/*
-	 * At this time only cycle accurate, return stack  and timestamp
-	 * options are available.
-	 */
+	 
 	if (attr->config & ~ETM3X_SUPPORTED_OPTIONS)
 		return -EINVAL;
 
 	config->ctrl = attr->config;
 
-	/* Don't trace contextID when runs in non-root PID namespace */
+	 
 	if (!task_is_in_init_pid_ns(current))
 		config->ctrl &= ~ETMCR_CTXID_SIZE;
 
-	/*
-	 * Possible to have cores with PTM (supports ret stack) and ETM
-	 * (never has ret stack) on the same SoC. So if we have a request
-	 * for return stack that can't be honoured on this core then
-	 * clear the bit - trace will still continue normally
-	 */
+	 
 	if ((config->ctrl & ETMCR_RETURN_STACK) &&
 	    !(drvdata->etmccer & ETMCCER_RETSTACK))
 		config->ctrl &= ~ETMCR_RETURN_STACK;
@@ -371,17 +306,17 @@ static int etm_enable_hw(struct etm_drvdata *drvdata)
 	if (rc)
 		goto done;
 
-	/* Turn engine on */
+	 
 	etm_clr_pwrdwn(drvdata);
-	/* Apply power to trace registers */
+	 
 	etm_set_pwrup(drvdata);
-	/* Make sure all registers are accessible */
+	 
 	etm_os_unlock(drvdata);
 
 	etm_set_prog(drvdata);
 
 	etmcr = etm_readl(drvdata, ETMCR);
-	/* Clear setting from a previous run if need be */
+	 
 	etmcr &= ~ETM3X_SUPPORTED_OPTIONS;
 	etmcr |= drvdata->port_size;
 	etmcr |= ETMCR_ETM_EN;
@@ -415,13 +350,13 @@ static int etm_enable_hw(struct etm_drvdata *drvdata)
 		etm_writel(drvdata, config->ctxid_pid[i], ETMCIDCVRn(i));
 	etm_writel(drvdata, config->ctxid_mask, ETMCIDCMR);
 	etm_writel(drvdata, config->sync_freq, ETMSYNCFR);
-	/* No external input selected */
+	 
 	etm_writel(drvdata, 0x0, ETMEXTINSELR);
 	etm_writel(drvdata, config->timestamp_event, ETMTSEVR);
-	/* No auxiliary control selected */
+	 
 	etm_writel(drvdata, 0x0, ETMAUXCR);
 	etm_writel(drvdata, drvdata->traceid, ETMTRACEIDR);
-	/* No VMID comparator value selected */
+	 
 	etm_writel(drvdata, 0x0, ETMVMIDCVR);
 
 	etm_clr_prog(drvdata);
@@ -459,12 +394,7 @@ int etm_read_alloc_trace_id(struct etm_drvdata *drvdata)
 {
 	int trace_id;
 
-	/*
-	 * This will allocate a trace ID to the cpu,
-	 * or return the one currently allocated.
-	 *
-	 * trace id function has its own lock
-	 */
+	 
 	trace_id = coresight_trace_id_get_cpu_id(drvdata->cpu);
 	if (IS_VALID_CS_TRACE_ID(trace_id))
 		drvdata->traceid = (u8)trace_id;
@@ -489,17 +419,10 @@ static int etm_enable_perf(struct coresight_device *csdev,
 	if (WARN_ON_ONCE(drvdata->cpu != smp_processor_id()))
 		return -EINVAL;
 
-	/* Configure the tracer based on the session's specifics */
+	 
 	etm_parse_event_config(drvdata, event);
 
-	/*
-	 * perf allocates cpu ids as part of _setup_aux() - device needs to use
-	 * the allocated ID. This reads the current version without allocation.
-	 *
-	 * This does not use the trace id lock to prevent lock_dep issues
-	 * with perf locks - we know the ID cannot change until perf shuts down
-	 * the session
-	 */
+	 
 	trace_id = coresight_trace_id_read_cpu_id(drvdata->cpu);
 	if (!IS_VALID_CS_TRACE_ID(trace_id)) {
 		dev_err(&drvdata->csdev->dev, "Failed to set trace ID for %s on CPU%d\n",
@@ -508,7 +431,7 @@ static int etm_enable_perf(struct coresight_device *csdev,
 	}
 	drvdata->traceid = (u8)trace_id;
 
-	/* And enable it */
+	 
 	return etm_enable_hw(drvdata);
 }
 
@@ -520,15 +443,12 @@ static int etm_enable_sysfs(struct coresight_device *csdev)
 
 	spin_lock(&drvdata->spinlock);
 
-	/* sysfs needs to allocate and set a trace ID */
+	 
 	ret = etm_read_alloc_trace_id(drvdata);
 	if (ret < 0)
 		goto unlock_enable_sysfs;
 
-	/*
-	 * Configure the ETM only if the CPU is online.  If it isn't online
-	 * hw configuration will take place on the local CPU during bring up.
-	 */
+	 
 	if (cpu_online(drvdata->cpu)) {
 		arg.drvdata = drvdata;
 		ret = smp_call_function_single(drvdata->cpu,
@@ -561,7 +481,7 @@ static int etm_enable(struct coresight_device *csdev, struct perf_event *event,
 
 	val = local_cmpxchg(&drvdata->mode, CS_MODE_DISABLED, mode);
 
-	/* Someone is already using the tracer */
+	 
 	if (val)
 		return -EBUSY;
 
@@ -576,7 +496,7 @@ static int etm_enable(struct coresight_device *csdev, struct perf_event *event,
 		ret = -EINVAL;
 	}
 
-	/* The tracer didn't start */
+	 
 	if (ret)
 		local_set(&drvdata->mode, CS_MODE_DISABLED);
 
@@ -593,7 +513,7 @@ static void etm_disable_hw(void *info)
 	CS_UNLOCK(drvdata->base);
 	etm_set_prog(drvdata);
 
-	/* Read back sequencer and counters for post trace analysis */
+	 
 	config->seq_curr_state = (etm_readl(drvdata, ETMSQR) & ETM_SQR_MASK);
 
 	for (i = 0; i < drvdata->nr_cntr; i++)
@@ -617,22 +537,16 @@ static void etm_disable_perf(struct coresight_device *csdev)
 
 	CS_UNLOCK(drvdata->base);
 
-	/* Setting the prog bit disables tracing immediately */
+	 
 	etm_set_prog(drvdata);
 
-	/*
-	 * There is no way to know when the tracer will be used again so
-	 * power down the tracer.
-	 */
+	 
 	etm_set_pwrdwn(drvdata);
 	coresight_disclaim_device_unlocked(csdev);
 
 	CS_LOCK(drvdata->base);
 
-	/*
-	 * perf will release trace ids when _free_aux()
-	 * is called at the end of the session
-	 */
+	 
 
 }
 
@@ -640,30 +554,17 @@ static void etm_disable_sysfs(struct coresight_device *csdev)
 {
 	struct etm_drvdata *drvdata = dev_get_drvdata(csdev->dev.parent);
 
-	/*
-	 * Taking hotplug lock here protects from clocks getting disabled
-	 * with tracing being left on (crash scenario) if user disable occurs
-	 * after cpu online mask indicates the cpu is offline but before the
-	 * DYING hotplug callback is serviced by the ETM driver.
-	 */
+	 
 	cpus_read_lock();
 	spin_lock(&drvdata->spinlock);
 
-	/*
-	 * Executing etm_disable_hw on the cpu whose ETM is being disabled
-	 * ensures that register writes occur when cpu is powered.
-	 */
+	 
 	smp_call_function_single(drvdata->cpu, etm_disable_hw, drvdata, 1);
 
 	spin_unlock(&drvdata->spinlock);
 	cpus_read_unlock();
 
-	/*
-	 * we only release trace IDs when resetting sysfs.
-	 * This permits sysfs users to read the trace ID after the trace
-	 * session has completed. This maintains operational behaviour with
-	 * prior trace id allocation method
-	 */
+	 
 
 	dev_dbg(&csdev->dev, "ETM tracing disabled\n");
 }
@@ -674,11 +575,7 @@ static void etm_disable(struct coresight_device *csdev,
 	enum cs_mode mode;
 	struct etm_drvdata *drvdata = dev_get_drvdata(csdev->dev.parent);
 
-	/*
-	 * For as long as the tracer isn't disabled another entity can't
-	 * change its status.  As such we can read the status here without
-	 * fearing it will change under us.
-	 */
+	 
 	mode = local_read(&drvdata->mode);
 
 	switch (mode) {
@@ -771,27 +668,21 @@ static void etm_init_arch_data(void *info)
 	u32 etmccr;
 	struct etm_drvdata *drvdata = info;
 
-	/* Make sure all registers are accessible */
+	 
 	etm_os_unlock(drvdata);
 
 	CS_UNLOCK(drvdata->base);
 
-	/* First dummy read */
+	 
 	(void)etm_readl(drvdata, ETMPDSR);
-	/* Provide power to ETM: ETMPDCR[3] == 1 */
+	 
 	etm_set_pwrup(drvdata);
-	/*
-	 * Clear power down bit since when this bit is set writes to
-	 * certain registers might be ignored.
-	 */
+	 
 	etm_clr_pwrdwn(drvdata);
-	/*
-	 * Set prog bit. It will be set from reset but this is included to
-	 * ensure it is set
-	 */
+	 
 	etm_set_prog(drvdata);
 
-	/* Find all capabilities */
+	 
 	etmidr = etm_readl(drvdata, ETMIDR);
 	drvdata->arch = BMVAL(etmidr, 4, 11);
 	drvdata->port_size = etm_readl(drvdata, ETMCR) & PORT_SIZE_MASK;
@@ -825,13 +716,13 @@ static int __init etm_hp_setup(void)
 						   "arm/coresight:online",
 						   etm_online_cpu, NULL);
 
-	/* HP dyn state ID returned in ret on success */
+	 
 	if (ret > 0) {
 		hp_online = ret;
 		return 0;
 	}
 
-	/* failed dyn state - remove others */
+	 
 	cpuhp_remove_state_nocalls(CPUHP_AP_ARM_CORESIGHT_STARTING);
 
 	return ret;
@@ -863,7 +754,7 @@ static int etm_probe(struct amba_device *adev, const struct amba_id *id)
 	drvdata->use_cp14 = fwnode_property_read_bool(dev->fwnode, "arm,cp14");
 	dev_set_drvdata(dev, drvdata);
 
-	/* Validity for the resource is already checked by the AMBA core */
+	 
 	base = devm_ioremap_resource(dev, res);
 	if (IS_ERR(base))
 		return PTR_ERR(base);
@@ -873,7 +764,7 @@ static int etm_probe(struct amba_device *adev, const struct amba_id *id)
 
 	spin_lock_init(&drvdata->spinlock);
 
-	drvdata->atclk = devm_clk_get(&adev->dev, "atclk"); /* optional */
+	drvdata->atclk = devm_clk_get(&adev->dev, "atclk");  
 	if (!IS_ERR(drvdata->atclk)) {
 		ret = clk_prepare_enable(drvdata->atclk);
 		if (ret)
@@ -945,17 +836,9 @@ static void etm_remove(struct amba_device *adev)
 
 	etm_perf_symlink(drvdata->csdev, false);
 
-	/*
-	 * Taking hotplug lock here to avoid racing between etm_remove and
-	 * CPU hotplug call backs.
-	 */
+	 
 	cpus_read_lock();
-	/*
-	 * The readers for etmdrvdata[] are CPU hotplug call backs
-	 * and PM notification call backs. Change etmdrvdata[i] on
-	 * CPU i ensures these call backs has consistent view
-	 * inside one call back function.
-	 */
+	 
 	if (smp_call_function_single(drvdata->cpu, clear_etmdrvdata, &drvdata->cpu, 1))
 		etmdrvdata[drvdata->cpu] = NULL;
 
@@ -991,17 +874,17 @@ static const struct dev_pm_ops etm_dev_pm_ops = {
 };
 
 static const struct amba_id etm_ids[] = {
-	/* ETM 3.3 */
+	 
 	CS_AMBA_ID_DATA(0x000bb921, "ETM 3.3"),
-	/* ETM 3.5 - Cortex-A5 */
+	 
 	CS_AMBA_ID_DATA(0x000bb955, "ETM 3.5"),
-	/* ETM 3.5 */
+	 
 	CS_AMBA_ID_DATA(0x000bb956, "ETM 3.5"),
-	/* PTM 1.0 */
+	 
 	CS_AMBA_ID_DATA(0x000bb950, "PTM 1.0"),
-	/* PTM 1.1 */
+	 
 	CS_AMBA_ID_DATA(0x000bb95f, "PTM 1.1"),
-	/* PTM 1.1 Qualcomm */
+	 
 	CS_AMBA_ID_DATA(0x000b006f, "PTM 1.1"),
 	{ 0, 0},
 };
@@ -1026,7 +909,7 @@ static int __init etm_init(void)
 
 	ret = etm_hp_setup();
 
-	/* etm_hp_setup() does its own cleanup - exit on error */
+	 
 	if (ret)
 		return ret;
 

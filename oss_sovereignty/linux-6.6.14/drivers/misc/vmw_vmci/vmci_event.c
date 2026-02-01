@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VMware VMCI Driver
- *
- * Copyright (C) 2012 VMware, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/vmw_vmci_defs.h>
 #include <linux/vmw_vmci_api.h>
@@ -24,7 +20,7 @@ struct vmci_subscription {
 	u32 event;
 	vmci_event_cb callback;
 	void *callback_data;
-	struct list_head node;	/* on one of subscriber lists */
+	struct list_head node;	 
 };
 
 static struct list_head subscriber_array[VMCI_EVENT_MAX];
@@ -44,16 +40,12 @@ void vmci_event_exit(void)
 {
 	int e;
 
-	/* We free all memory at exit. */
+	 
 	for (e = 0; e < VMCI_EVENT_MAX; e++) {
 		struct vmci_subscription *cur, *p2;
 		list_for_each_entry_safe(cur, p2, &subscriber_array[e], node) {
 
-			/*
-			 * We should never get here because all events
-			 * should have been unregistered before we try
-			 * to unload the driver module.
-			 */
+			 
 			pr_warn("Unexpected free events occurring\n");
 			list_del(&cur->node);
 			kfree(cur);
@@ -61,9 +53,7 @@ void vmci_event_exit(void)
 	}
 }
 
-/*
- * Find entry. Assumes subscriber_mutex is held.
- */
+ 
 static struct vmci_subscription *event_find(u32 sub_id)
 {
 	int e;
@@ -78,10 +68,7 @@ static struct vmci_subscription *event_find(u32 sub_id)
 	return NULL;
 }
 
-/*
- * Actually delivers the events to the subscribers.
- * The callback function for each subscriber is invoked.
- */
+ 
 static void event_deliver(struct vmci_event_msg *event_msg)
 {
 	struct vmci_subscription *cur;
@@ -96,10 +83,7 @@ static void event_deliver(struct vmci_event_msg *event_msg)
 	rcu_read_unlock();
 }
 
-/*
- * Dispatcher for the VMCI_EVENT_RECEIVE datagrams. Calls all
- * subscribers for given event.
- */
+ 
 int vmci_event_dispatch(struct vmci_datagram *msg)
 {
 	struct vmci_event_msg *event_msg = (struct vmci_event_msg *)msg;
@@ -115,17 +99,7 @@ int vmci_event_dispatch(struct vmci_datagram *msg)
 	return VMCI_SUCCESS;
 }
 
-/*
- * vmci_event_subscribe() - Subscribe to a given event.
- * @event:      The event to subscribe to.
- * @callback:   The callback to invoke upon the event.
- * @callback_data:      Data to pass to the callback.
- * @subscription_id:    ID used to track subscription.  Used with
- *              vmci_event_unsubscribe()
- *
- * Subscribes to the provided event. The callback specified will be
- * fired from RCU critical section and therefore must not sleep.
- */
+ 
 int vmci_event_subscribe(u32 event,
 			 vmci_event_cb callback,
 			 void *callback_data,
@@ -159,15 +133,12 @@ int vmci_event_subscribe(u32 event,
 
 	mutex_lock(&subscriber_mutex);
 
-	/* Creation of a new event is always allowed. */
+	 
 	for (attempts = 0; attempts < VMCI_EVENT_MAX_ATTEMPTS; attempts++) {
 		static u32 subscription_id;
-		/*
-		 * We try to get an id a couple of time before
-		 * claiming we are out of resources.
-		 */
+		 
 
-		/* Test for duplicate id. */
+		 
 		if (!event_find(++subscription_id)) {
 			sub->id = subscription_id;
 			have_new_id = true;
@@ -189,13 +160,7 @@ int vmci_event_subscribe(u32 event,
 }
 EXPORT_SYMBOL_GPL(vmci_event_subscribe);
 
-/*
- * vmci_event_unsubscribe() - unsubscribe from an event.
- * @sub_id:     A subscription ID as provided by vmci_event_subscribe()
- *
- * Unsubscribe from given event. Removes it from list and frees it.
- * Will return callback_data if requested by caller.
- */
+ 
 int vmci_event_unsubscribe(u32 sub_id)
 {
 	struct vmci_subscription *s;
